@@ -1,0 +1,89 @@
+- module containing a try block with catch statements
+
+    - generate single byte COMDEF with a unique name that represents
+      the type
+      e.g., __XC	for class C
+            __X_1	for basic types (char, short, etc.)
+    - generate code to wind and unwind try-blocks, and test whether
+      exceptions have been thrown
+      e.g.,
+	struct try_stack {
+	    struct try_stack *next;
+	    void (*handler)( void );
+	} __tmp;
+	__tmp.next = __CatchStack;
+	__tmp.handler = L1;
+	__CatchStack = &__tmp;
+	...
+	__CatchStack = __CatchStack->next;
+	...
+	ret
+    L1: cmp	__XC,0
+        je 	L2
+	__XC contains index into __ThrowInfo table of addresses
+	...
+	jmp	after end of this try block
+    L2: cmp	__X_1,0
+	je	L3
+	...
+	jmp	after end of this try block
+    L3  jmp	__MoveOnToNextLevelOfCatch
+	...
+	
+- module containing a continue throw
+
+	jmp	__MoveOnToNextLevelOfCatch
+	
+- module containing a new throw
+
+    - throwing a scalar will always have a long, float, and double
+      conversions
+    - zap COMDEF area with function call if a new throw
+    - alloca enough for the throw object and initialize
+    - alloca enough for the following structure:
+	base address of throw object
+	table of offsets past base for all possible conversions
+    - set __CurrentThrow to point to the structure above
+    - set all possible exceptions that can be caught (COMDEFs)
+    e.g.,
+	mov __XC,index
+	mov __X_1,index
+	
+    for indices larger > 256, we will use Intel coding and increase the
+    size of the COMDEF area for that exception
+    
+Implementation details:
+    
+- The COMDEF areas must go into a read-write data area but this
+  doesn't have to be in DGROUP.  It also needs a begin/end mechanism
+  so that it can be zapped to all zeros at any time.
+- The scalar types should have separate storage for IBM 370/M68K style
+  architectures.
+- Large objects may not be able to be sliced off the stack so a threshold
+  option may be necessary to move to a statically allocated throw object.
+- Resumable exceptions should be possible in a future enhancement!
+- throw data (objects + table) should be COMDEFs (the segments should be
+  arranged so that the throw data is part of or under the stack).
+- catch lists can register the active catches in their variables
+  we could have a special pre-defined function __will_be_caught( type )
+  that generates an expression like ( __XC != 0 ).  Once a throw is
+  executed, the check area has to be zeroed and all pending catches updated.
+  This may be a governing factor in using tables describing catch blocks.
+  This stuff has to be optional.
+
+Optimization headaches:
+
+    - chaining together auto destructors as the objects are created
+    - off[SP] addressing on the 386 shouldn't be used because SP may
+      be far away during catch code execution
+
+Optimization opportunities:
+
+    - option for "I promise not to use exceptions"
+      easy -- any exception will generate a unexpected() because there will
+      be no catch blocks
+    - option for no conversion of exceptions
+    - option for don't care about my auto destructors
+      (#pragma on a per-function basis, too)
+    - compiler should identify times where a compiler generated constructor
+      is used for an object (and all its subobjects!) and ignore these

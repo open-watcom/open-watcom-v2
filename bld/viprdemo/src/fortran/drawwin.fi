@@ -1,0 +1,42 @@
+c$ifdef __386__
+c$ifndef __WINDOWS_386__
+c$define __WINDOWS_386__
+c$endif
+c$endif
+
+        include 'windows.fi'
+        include 'drawmenu.fi'
+        include 'button.fi'
+        include 'room.fi'
+
+c$noreference
+
+        integer hThree_d
+        record /RECT/ Draw_area
+        integer Auto_run
+
+c$ifdef __WINDOWS_386__
+
+c Show how to load & use a 16-bit DLL from a 32-bit Windows program
+
+        integer hThreedDLL
+        integer three_d_init_Proc
+        integer three_d_fini_Proc
+        integer three_d_begin_Proc
+        integer three_d_box_Proc
+        integer three_d_draw_Proc
+        integer three_d_end_Proc
+        integer three_d_get_Proc
+        integer three_d_set_Proc
+
+        common /thunks/ hThreedDLL,three_d_init_Proc,three_d_fini_Proc,
+     &          three_d_begin_Proc,three_d_box_Proc,three_d_draw_Proc,
+     &          three_d_end_Proc, three_d_get_Proc, three_d_set_Proc
+c$endif
+
+        common /static_data/ hThree_d, Draw_area, Auto_run
+
+c$pragma aux draw_box "*_" parm(value,value,value,value,value,value,\
+c                               value,value,value)
+
+c$reference

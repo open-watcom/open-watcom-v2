@@ -1,0 +1,50 @@
+Version 1.0 Initially written by Alex Brodsky, June 20, 1996
+
+Notes regarding the implementation of the OMF part of ORL.
+
+Due to the 'distinct' nature of the OMF versus ELF or COFF the 
+implementation of OMF within the framework involves several peculiarities.  
+To begin OMF has not sections.  Since the section paradigm is the basis 
+of ELF, COFF and hence ORL the OMF implementation presents the 
+information found in OMF in the form of sections.  
+
+The sections are created in the following way.  Each segment or comdat 
+is mapped to a section.  Only these sections are 'real' and hence have 
+contents.  
+
+All symbols through out the object file are colected and placed in a symbol 
+table section.  Only one symbol table section is ever created.  
+
+All relocations (FIXUPPs) are collected and placed into a relocs 
+section.  Similarly to a symbol table section, only one is ever created 
+and contains all relocs for all 'real' sections.  
+
+All comments are collected and placed into a a single notes section.  
+There is also only one of these sections.  All three sections, symbol 
+table, relocs, and notes, may be treated in the same way as their ELF 
+or COFF equivalent.  The important things to note is that all three of 
+these section are virtual and hence have no contents.  Secondly all 
+real sections will return the same reloc section when asked for it.  
+Consequently care must be taken to avoid rescanning the same reloc 
+section multiple times.  
+
+OMF uses two hidden sections which are string tables, one is a 
+collection of all LNAMEs and LLNAMEs and the other is a collection of 
+all EXTDEFs, and COMDEFs.  These are never seen by the client and 
+should never be made visible to the client.  These sections have no 
+content and hence are also virtual.
+
+Symbols are treated the same way as in COFF or ELF.  The only extension 
+is the group and group symbol which will be discussed later.  
+
+The OMF has a concept of a table.  To facilitate groups the ORL 
+interface has been extended to manipulated groups in the same way as 
+sections.  Each group consists of 0 or more segments and has a name 
+associated with it.  Since COFF and ELF don't have groups, the 
+interface will always claim that 0 groups exist if an ELF or COFF file 
+is being read.
+
+Under OMF COMDATs are special and can have associated segments.  These 
+may be accessed using the provided facilities.
+
+For further details refer to the ORL interface and the OMF code.

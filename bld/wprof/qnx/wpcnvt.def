@@ -1,0 +1,2 @@
+//#line "..\c\wpcnvt.c" 53
+extern void WPConvert(a_window *wnd,int convert_select);

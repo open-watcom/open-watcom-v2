@@ -1,0 +1,218 @@
+/*
+ *  fcntl.h     File control options used by open
+ *
+:include crwatqnx.sp
+ */
+#ifndef _FCNTL_H_INCLUDED
+#define _FCNTL_H_INCLUDED
+:include readonly.sp
+:include cpluspro.sp
+
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
+
+:include pshpackl.sp
+
+:include wchar_t.sp
+
+:segment QNX | PENPOINT
+#ifndef __TYPES_H_INCLUDED
+ #include <sys/types.h>
+#endif
+:endsegment
+:segment QNX
+
+/*
+ *  Flag values accessible to both open() and fcntl()
+ *  (The first three can only be set by open)
+ */
+
+/*
+ *  File access modes.
+ */
+
+#define O_RDONLY    000000  /*  Read-only mode  */
+#define O_WRONLY    000001  /*  Write-only mode */
+#define O_RDWR      000002  /*  Read-Write mode */
+
+/*
+ *  Mask for file access modes.
+ */
+
+#define O_ACCMODE   000003
+
+/*
+ *  File status flags used for open() and fcntl().
+ */
+
+#define O_NONBLOCK  000200  /*  Non-blocking I/O                */
+#define O_APPEND    000010  /*  Append (writes guaranteed at the end)   */
+
+/*
+ *  The synchronous I/O status flags are taken from POSIX.4 (draft).
+ *  This implementation doesn't fully support sync I/O (yet)
+ *  (no function RTFSYNCH),
+ *  but it does support the status flags for READ and WRITE.
+ */
+
+#if defined(_QNX_SOURCE) || !defined(NO_EXT_KEYS)
+#if 0
+/*
+ *  Old definitions based on early POSIX.4 draft.
+ */
+#define O_DSYNCH    000020  /*  Data integrity synch    */
+#define O_FSYNCH    000040  /*  File integrity synch    */
+#define O_SYNC      000020
+#else
+#define O_DSYNC     000020  /*  Data integrity synch    */
+#define O_SYNC      000040  /*  File integrity synch    */
+#endif
+#endif
+
+#define O_PRIV      010000
+
+/*
+ *  oflag values for open()
+ */
+
+#define O_CREAT     000400  /*  Opens with file create      */
+#define O_TRUNC     001000  /*  Open with truncation        */
+#define O_EXCL      002000  /*  Exclusive open          */
+#define O_NOCTTY    004000  /*  Don't assign a controlling terminal */
+
+#if defined(_QNX_SOURCE) || !defined(NO_EXT_KEYS)
+#define O_TEMP      010000  /*  Temporary file, don't put to disk   */
+#define O_CACHE     020000  /*  Cache sequential files too      */
+#define O_TEXT      000000  /*  Text file   (DOS thing)     */
+#define O_BINARY    000000  /*  Binary file (DOS thing)     */
+#endif
+
+/*
+ *  fcntl() requests
+ */
+
+#define F_DUPFD     0       /*  Duplicate file descriptor   */
+#define F_GETFD     1       /*  Get file descriptor flags   */
+#define F_SETFD     2       /*  Set file descriptor flags   */
+#define F_GETFL     3       /*  Get file status flags   */
+#define F_SETFL     4       /*  Set file status flags   */
+
+/*#define F_GETOWN    35*/  /* get SIGIO/SIGURG proc/pgrp */
+/*#define F_SETOWN    36*/  /* set SIGIO/SIGURG proc/pgrp */
+
+#define F_SETLK     6       /*  Set record locking info */
+#define F_SETLKW    7       /*  Set record locking info;    */
+                /*  wait if blocked     */
+#define F_CHKFL     8       /*              */
+#define F_ALLOCSP   10      /*              */
+#define F_FREESP    11      /*              */
+#define F_ISSTREAM  13      /*              */
+#define F_GETLK     14      /*  Get record locking info */
+#define F_PRIV      15      /*              */
+#define F_NPRIV     16      /*              */
+#define F_QUOTACTL  17      /*              */
+#define F_BLOCKS    18      /*              */
+#define F_BLKSIZE   19      /*              */
+
+#define F_RSETLK    20      /*              */
+#define F_RGETLK    21      /*              */
+#define F_RSETLKW   22      /*              */
+
+/*
+ *  File descriptor flags used for fcntl()
+ */
+
+#define FD_CLOEXEC  0x01    /*  Close on exec       */
+
+/*
+ *  l_type values for record locking with fcntl()
+ */
+
+#define F_RDLCK     1       /*  Shared or read lock     */
+#define F_WRLCK     2       /*  Exclusive or write lock */
+#define F_UNLCK     3       /*  Unlock          */
+
+/*
+ *  flock structure.
+ */
+
+typedef struct flock {
+    short int   l_type;
+    short int   l_whence;
+    off_t       l_start;
+    off_t       l_len;
+    long        l_sysid;
+    pid_t       l_pid;
+#if defined(M_I86)
+    short int   l_pid_pad;
+#endif
+    short int   zero[3];
+} flock_t;
+
+:elsesegment DOS
+#define O_RDONLY        0x0000  /* open for read only */
+#define _O_RDONLY       0x0000  /* open for read only */
+#define O_WRONLY        0x0001  /* open for write only */
+#define _O_WRONLY       0x0001  /* open for write only */
+#define O_RDWR          0x0002  /* open for read and write */
+#define _O_RDWR         0x0002  /* open for read and write */
+#define O_APPEND        0x0010  /* writes done at end of file */
+#define _O_APPEND       0x0010  /* writes done at end of file */
+#define O_CREAT         0x0020  /* create new file */
+#define _O_CREAT        0x0020  /* create new file */
+#define O_TRUNC         0x0040  /* truncate existing file */
+#define _O_TRUNC        0x0040  /* truncate existing file */
+#define O_NOINHERIT     0x0080  /* file is not inherited by child process */
+#define _O_NOINHERIT    0x0080  /* file is not inherited by child process */
+#define O_TEXT          0x0100  /* text file */
+#define _O_TEXT         0x0100  /* text file */
+#define O_BINARY        0x0200  /* binary file */
+#define _O_BINARY       0x0200  /* binary file */
+#define O_EXCL          0x0400  /* exclusive open */
+#define _O_EXCL         0x0400  /* exclusive open */
+
+:elsesegment PENPOINT
+#define O_RDONLY        0x0000  /* open for read only */
+#define O_WRONLY        0x0001  /* open for write only */
+#define O_RDWR          0x0002  /* open for read and write */
+#define O_APPEND        0x0010  /* writes done at end of file */
+#define O_CREAT         0x0020  /* create new file */
+#define O_TRUNC         0x0040  /* truncate existing file */
+#define O_EXCL          0x0400  /* exclusive open */
+#define O_SHRMEM        0x0800  /* open file for sharing across process */
+
+:endsegment
+/*
+ *  POSIX 1003.1 Prototypes.
+ */
+_WCRTLINK extern int open( const char *__path, int __oflag, ... );
+:segment !PENPOINT
+_WCRTLINK extern int sopen( const char *__path, int __oflag, int __share, ... );
+:endsegment
+:segment QNX | PENPOINT
+_WCRTLINK extern int creat( const char *__path, mode_t __mode );
+:endsegment
+
+_WCRTLINK extern int _wcreat( const wchar_t *, int );
+_WCRTLINK extern int _wopen( const wchar_t *, int, ... );
+_WCRTLINK extern int _wsopen( const wchar_t *, int, int, ... );
+
+:segment QNX
+
+struct _io_open; /* for C++ */
+
+_WCRTLINK extern int fcntl( int __fildes, int __cmd, ... );
+_WCRTLINK extern int __fcntl_slib( int, int, int, struct flock * );
+_WCRTLINK extern int __open_slib( const char *__path, int __oflag,
+                                  mode_t __mode );
+_WCRTLINK extern int __sopen_slib( const char *__path, int __oflag, int __share,
+                                   mode_t __mode );
+_WCRTLINK extern int __resolve_net( unsigned, int, struct _io_open *,
+                                    const char *, unsigned, char * );
+
+:endsegment
+
+:include poppack.sp
+:include cplusepi.sp
+#endif

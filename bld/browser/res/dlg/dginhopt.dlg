@@ -1,0 +1,51 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGINHOPT.H\0"
+END
+
+InheritStyleDlg DIALOG 60, 26, 217, 90
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Inheritance Styles"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "public:", IDD_NV_PUBLIC_TEXT, "Static", WS_GROUP, 12,
+                    20, 43, 8
+    CONTROL         "protected:", IDD_NV_PROTECTED_TEXT, "Static", WS_GROUP,
+                    12, 32, 43, 8
+    CONTROL         "private:", IDD_NV_PRIVATE_TEXT, "Static", WS_GROUP, 12,
+                    44, 43, 8
+    CONTROL         "", IDD_NV_PUBLIC, "Static", SS_BLACKRECT, 58, 20, 40,
+                    10
+    CONTROL         "", IDD_NV_PROTECTED, "Static", SS_BLACKRECT, 58, 32, 40,
+                    10
+    CONTROL         "", IDD_NV_PRIVATE, "Static", SS_BLACKRECT, 58, 44, 40,
+                    10
+    CONTROL         "public:", IDD_V_PUBLIC_TEXT, "Static", WS_GROUP, 118,
+                    20, 42, 8
+    CONTROL         "protected:", IDD_V_PROTECTED_TEXT, "Static", WS_GROUP,
+                    118, 32, 42, 8
+    CONTROL         "private:", IDD_V_PRIVATE_TEXT, "Static", WS_GROUP, 118,
+                    44, 42, 8
+    CONTROL         "", IDD_V_PUBLIC, "Static", SS_BLACKRECT, 164, 20, 40,
+                    10
+    CONTROL         "", IDD_V_PROTECTED, "Static", SS_BLACKRECT, 164, 32, 40,
+                    10
+    CONTROL         "", IDD_V_PRIVATE, "Static", SS_BLACKRECT, 164, 44, 40,
+                    10
+    CONTROL         "OK", IDD_OK_BUTTON, "Button", WS_TABSTOP, 11, 70, 40,
+                    14
+    CONTROL         "Cancel", IDD_CANCEL_BUTTON, "Button", WS_TABSTOP, 61,
+                    70, 40, 14
+    CONTROL         "&Modify...", IDD_MODIFY_BUTTON, "Button", WS_TABSTOP,
+                    111, 70, 44, 14
+    CONTROL         "&Help", IDD_HELP_BUTTON, "Button", WS_TABSTOP, 165, 70,
+                    40, 14
+    CONTROL         "Non-Virtual", IDD_NONVIRTUAL, "Static", WS_GROUP, 8, 6,
+                    87, 8
+    CONTROL         "Virtual", IDD_VIRTUAL, "Static", WS_GROUP, 112, 6, 87,
+                    8
+    CONTROL         "", IDD_NON_VIRT_BOX, "Static", SS_BLACKFRAME, 8, 15, 98,
+                    47
+    CONTROL         "", IDD_VIRT_BOX, "Static", SS_BLACKFRAME, 112, 15, 98,
+                    47
+END

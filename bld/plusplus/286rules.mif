@@ -1,0 +1,16 @@
+.EXTENSIONS:
+.EXTENSIONS: .qnx .exe .obj .cbj .abj .asm .c .h
+
+.asm: ..\a
+.asm.obj:
+        $(asm286) /s/mx $[*;
+
+.c: ..\c;$(wasm_dir)\c
+.c.obj:
+        $(comp286) $[* $(cflags)
+
+.c.abj:
+        $(comp286) $[* $(cflags) /fo=.abj /nt=PASS1_TEXT
+
+.c.cbj:
+        $(comp286) $[* $(cflags) /fo=.cbj /nt=_RNTEXT_TEXT /g=_RNTEXT

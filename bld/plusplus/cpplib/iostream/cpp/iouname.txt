@@ -1,0 +1,33 @@
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
+  %     reserved.  No part of this software may be reproduced or        %
+  %     used in any form or by any means - graphic, electronic or       %
+  %     mechanical, including photocopying, recording, taping or        %
+  %     information storage and retrieval systems - except with the     %
+  %     written permission of WATCOM International Inc.                 %
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+****************************** IOUTIL ****************************************
+
+Filename: ioufgtba.cpp
+Declaration: 
+	int __FlagsToBase( long format_flags ) 
+Semantics: Extract, from "format_flags", the base to be used.
+
+
+Filename: ioufuswr.cpp
+Declaration: 
+	void *__WATCOM_ios::find_user_word( ios *pios, int index ) 
+
+
+Filename: 
+Declaration: ioufrxal.cpp
+	void __WATCOM_ios::free_xalloc_storage( ios *pios ) 
+
+
+Filename: iouwrtit.cpp
+Declaration: 
+	ios::iostate __WATCOM_ios::writeitem( ostream &ostrm,
+                                              char const *buffer,
+					      int size, int fill_offset ) 
+

@@ -1,0 +1,147 @@
+Hash Iterators provide the ability to step through the entries in a hash table
+one by one.  Each entry in the hash will be visited exactly once when stepping
+through until the end.  The order in which the entries are visited is
+undefined.
+
+Use the WCVal/PtrHashTable/Set/DictIter which corresponds to the type of
+hash you wish to step over.
+
+As with all WATCOM container interator classes, after an iterator is reset,
+or for a newly constructed iterator, the iterator is positioned before the
+first entry in the hash.
+
+When the iterator is positioned before the first entry in the hash, only the
+++ and call operators, and the reset and container member functions are valid.
+
+Header File:
+============
+
+  #include <wchiter.h>
+  
+
+A Simple Example
+================
+
+unsigned hash_fn( int & value ) {
+    ..... (calculate hash value)
+}
+
+void fn() {
+    WCValHashTable<int> hash( hash_fn );
+
+    ..... (insert 0 or more entries into hash)
+
+    WCValHashTableIter<int> iter( hash );
+
+    while( ++iter ) {
+	cout << iter.current() << " ";
+    }
+    cout << "\n";
+}
+    
+  
+Exceptions
+==========
+
+  hash iterator classes have WCIterExcept as a base class to provide exception
+  handling.  The following exceptions can be throw by hash iterators:
+
+        WCIterExcept::undef_item
+		 	if an iterator is outside the bounds of the object,
+  		       or the iterator was never initialized with an object,
+  		       this error can be thrown on a call to the current member
+  		       function.
+        WCIterExcept::undef_iter
+			if an iterator is outside the bounds of the list, or
+  		       if the iterator was never initialized with a list,
+                       this error can be thrown on an invalid operation
+  		       other than a call to the member function current.
+
+    the exceptions member function:  see WCListExcept::exceptions in the
+    Container Class Library reference.
+
+
+
+WCValHashTableIter, WCPtrHashTableIter, WCValHashSetIter, WCPtrHashSetIter
+WCValHashTableDict, WCPtrHashTableDict
+==========================================================================
+
+  public constructors/destructors
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      - ..Hash..Iter():
+        The default constuctor.  Creates a hash iterator without hash to
+	iterator over.  Use the reset member function to associate a hash
+	to the iterator.
+
+      - ..Hash..Iter( ..HashTable/Set/Dict &hash_table_set ):
+        Initialize the hash iterator to iterate over hash_table_set.  The
+	iterator position is initialized to before the first entry in the
+	hash.
+
+      - ~..Hash..Iter():
+        the destructor
+
+  public operators
+  ~~~~~~~~~~~~~~~~
+
+      - int operator++()
+        The pre-increment operator.  Increment the hash iterator to the next
+	entry in the hash.  If this forces the iterator past the last entry,
+	0 is returned.  Non-zero is returned if the current position is a
+	valid entry.
+	If the iterator has no associated hash to iterate over, the undef_iter
+	exception is thrown if enabled, or zero is returned if disabled.
+	If the iterator was past the last entry before the increment, the
+	undef_iter exception is thrown if enabled, or zero is returned if
+	disabled.
+
+      - int operator()()
+        The call operator.  Same as operator++.
+
+  public member functions
+  ~~~~~~~~~~~~~~~~~~~~~~~
+
+      - ..HashTable/Set/Dict<Type> *container()
+        return a pointer to the hash being iterated over.  If no hash table
+	or set is associated with the iterator, an undef_iter exception is
+	thrown if enabled.  If it is disabled, zero is returned.
+
+      ** WCValHashTable/Set **
+      - Type current()
+      ** WCPtrHashTable/Set **
+      - Type *current()
+        return the entry of the current iterator position.  If the iterator
+	is before the first entry, past the last entry, or has no hash
+	associated, the undef_item exception is thrown if enabled.  If it is
+	disabled, a default initialized object (Val), or an undefined
+	pointer (Ptr) is returned.
+
+      ** WCValHashDict<Key,Value> **
+      - Key key()
+      ** WCPtrHashDict<Key,Value> **
+      - Key *key()
+        return the key of the current iterator position.  If the iterator
+	is before the first entry, past the last entry, or has to hash
+	associated, the undef_item exception is thrown if enabled.  If it is
+	disabled, a default initialized object (Val), or an undefined
+	pointer (Ptr) is returned.
+
+      - void reset()
+        reset the iterator to its initial state (before the first entry if
+	there is an associated hash)
+
+      - void reset( ..HashTable/Set &hash_table_set ):
+        reset the iterator to iterator over hash_table_set.  The iterator is
+	positioned to before the first entry.
+
+      ** WCValHashDict<Key,Value> **
+      - Value value()
+      ** WCPtrHashDict<Key,Value> **
+      - Value *value()
+        return the value of the current iterator position.  If the iterator
+	is before the first entry, past the last entry, or has to hash
+	associated, the undef_item exception is thrown if enabled.  If it is
+	disabled, a default initialized object (Val), or an undefined
+	pointer (Ptr) is returned.
+

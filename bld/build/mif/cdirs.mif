@@ -1,0 +1,282 @@
+!ifndef bre_dir
+bre_dir       = $(dev_dir)\bre
+!endif
+!ifndef cfread_dir
+cfread_dir       = $(dev_dir)\cfread
+!endif
+!ifndef zipro_dir
+zipro_dir       = $(dev_dir)\zipro
+!endif
+!ifndef bench_dir
+bench_dir       = $(dev_dir)\bench
+!endif
+!ifndef jit_dir
+jit_dir         = $(dev_dir)\jit
+!endif
+!ifndef wjclass_dir
+wjclass_dir     = $(dev_dir)\wjclass
+!endif
+!ifndef brinfo_dir
+brinfo_dir      = $(dev_dir)\brinfo
+!endif
+!ifndef trpr_dir
+trpr_dir        = $(dev_dir)\trpr
+!endif
+!ifndef java_dir
+java_dir        = $(dev_dir)\java
+!endif
+!ifndef javatest_dir
+javatest_dir    = $(dev_dir)\javatest
+!endif
+!ifndef fe_misc_dir
+fe_misc_dir     = $(dev_dir)\fe_misc
+!endif
+!ifndef cg_dir
+cg_dir          = $(dev_dir)\cg
+!endif
+!ifndef cc_dir
+cc_dir          = $(dev_dir)\cc
+!endif
+!ifndef cfloat_dir
+cfloat_dir          = $(dev_dir)\cfloat
+!endif
+!ifndef plusplus_dir
+plusplus_dir    = $(dev_dir)\plusplus
+!endif
+!ifndef cpplib_dir
+cpplib_dir      = $(dev_dir)\plusplus\cpplib
+!endif
+!ifndef dwarf_dir
+dwarf_dir       = $(dev_dir)\dwarf
+!endif
+!ifndef sdk_dir
+sdk_dir         = $(dev_dir)\sdk
+!endif
+!ifndef wzoom_dir
+wzoom_dir       = $(sdk_dir)\zoom
+!endif
+!ifndef wddespy_dir
+wddespy_dir     = $(sdk_dir)\ddespy
+!endif
+!ifndef wimgedit_dir
+wimgedit_dir    = $(sdk_dir)\imgedit
+!endif
+!ifndef wspy_dir
+wspy_dir        = $(sdk_dir)\spy
+!endif
+!ifndef wrc_dir
+wrc_dir         = $(sdk_dir)\rc\rc
+!endif
+!ifndef wr_dir
+wr_dir          = $(sdk_dir)\wr
+!endif
+!ifndef misc_dir
+misc_dir        = $(sdk_dir)\misc
+!endif
+!ifndef owl_dir
+owl_dir         = $(dev_dir)\owl
+!endif
+!ifndef as_dir
+as_dir          = $(dev_dir)\as
+!endif
+!ifndef wtouch_dir
+wtouch_dir      = $(dev_dir)\wtouch
+!endif
+!ifndef wmake_dir
+wmake_dir       = $(dev_dir)\wmake
+!endif
+!ifndef wdump_dir
+wdump_dir       = $(dev_dir)\wdump
+!endif
+!ifndef disasm_dir
+disasm_dir      = $(dev_dir)\ndisasm
+!endif
+!ifndef orl_dir
+orl_dir         = $(dev_dir)\orl
+!endif
+!ifndef watcom_dir
+watcom_dir      = $(dev_dir)\watcom
+!endif
+!ifndef comp_cfg_dir
+comp_cfg_dir    = $(dev_dir)\comp_cfg
+!endif
+!ifndef wpi_dir
+wpi_dir         = $(dev_dir)\wpi
+!endif
+!ifndef trmem_dir
+trmem_dir       = $(dev_dir)\trmem
+!endif
+!ifndef diff_dir
+diff_dir        = $(dev_dir)\diff
+!endif
+!ifndef cpp_dir
+cpp_dir         = $(dev_dir)\cpp
+!endif
+!ifndef nwlib_dir
+nwlib_dir       = $(dev_dir)\nwlib
+!endif
+!ifndef vi_dir
+vi_dir          = $(dev_dir)\vi
+!endif
+!ifndef posix_dir
+posix_dir       = $(dev_dir)\posix
+!endif
+!ifndef rcsdll_dir
+rcsdll_dir      = $(dev_dir)\rcsdll
+!endif
+!ifndef curses_dir
+curses_dir      = $(dev_dir)\curses
+!endif
+!ifndef viper_dir
+viper_dir       = $(dev_dir)\viper
+!endif
+!ifndef wlink_dir
+wlink_dir       = $(dev_dir)\wl
+!endif
+!ifndef stkdepth_dir
+stkdepth_dir    = $(dev_dir)\stkdepth
+!endif
+!ifndef wasm_dir
+wasm_dir        = $(dev_dir)\wasm
+!endif
+!ifndef hdr_dir
+hdr_dir         = $(dev_dir)\hdr
+!endif
+!ifndef plustest_dir
+plustest_dir    = $(dev_dir)\plustest
+!endif
+!ifndef linktest_dir
+linktest_dir    = $(dev_dir)\linktest
+!endif
+!ifndef f77_dir
+f77_dir         = $(dev_dir)\f77
+!endif
+!ifndef clib_dir
+clib_dir        = $(dev_dir)\clib
+!endif
+!ifndef mathlib_dir
+mathlib_dir     = $(dev_dir)\mathlib
+!endif
+!ifndef rtdll_dir
+rtdll_dir       = $(dev_dir)\rtdll
+!endif
+!ifndef lib_misc_dir
+lib_misc_dir    = $(dev_dir)\lib_misc
+!endif
+!ifndef womp_dir
+womp_dir        = $(dev_dir)\womp
+!endif
+!ifndef wclass_dir
+wclass_dir      = $(dev_dir)\wclass
+!endif
+!ifndef batch_dir
+batch_dir       = $(dev_dir)\idebatch
+!endif
+!ifndef editdll_dir
+editdll_dir     = $(dev_dir)\editdll
+!endif
+!ifndef guitools_dir
+guitools_dir    = $(dev_dir)\cdoc\hlp
+!endif
+!ifndef gui_dir
+gui_dir = $(dev_dir)\gui
+!endif
+!ifndef trap_dir
+trap_dir        = $(dev_dir)\trap
+!endif
+!ifndef browse_dir
+browse_dir      = $(dev_dir)\browser
+!endif
+!ifndef wres_dir
+wres_dir        = $(dev_dir)\sdk\rc\wres
+!endif
+!ifndef wedit_dir
+wedit_dir       = $(dev_dir)\wedit
+!endif
+!ifndef lexlib_dir
+lexlib_dir      = $(dev_dir)\lexlib
+!endif
+!ifndef lexutil_dir
+lexutil_dir     = $(dev_dir)\lexutil
+!endif
+!ifndef saveload_dir
+saveload_dir    = $(dev_dir)\saveload
+!endif
+!ifndef compdll_dir
+compdll_dir     = $(dev_dir)\compdll
+!endif
+!ifndef lexus_dir
+lexus_dir       = $(dev_dir)\lexus
+!endif
+!ifndef pprof_dir
+pprof_dir       = $(dev_dir)\pprof
+!endif
+!ifndef dig_dir
+dig_dir         = $(dev_dir)\dig
+!endif
+!ifndef dip_dir
+dip_dir         = $(dev_dir)\dip
+!endif
+!ifndef mad_dir
+mad_dir         = $(dev_dir)\mad
+!endif
+!ifndef wdisasm_dir
+wdisasm_dir     = $(dev_dir)\wdisasm
+!endif
+!ifndef yacc_dir
+yacc_dir        = $(dev_dir)\yacc
+!endif
+!ifndef aui_dir
+aui_dir         = $(dev_dir)\aui
+!endif
+!ifndef wsample_dir
+wsample_dir     = $(dev_dir)\wsample
+!endif
+!ifndef editdll_dir
+editdll_dir     = $(dev_dir)\editdll
+!endif
+!ifndef ui_dir
+ui_dir          = $(dev_dir)\ui
+!endif
+!ifndef help_dir
+help_dir        = $(dev_dir)\help
+!endif
+!ifndef wv_dir
+wv_dir          = $(dev_dir)\wv
+!endif
+!ifndef pil_dir
+pil_dir         = $(dev_dir)\pil
+!endif
+!ifndef jtools_dir
+jtools_dir      = $(dev_dir)\jtools
+!endif
+!ifndef wjdump_dir
+wjdump_dir      = $(jtools_dir)\wjdump
+!endif
+!ifndef cfile_dir
+cfile_dir         = $(jtools_dir)\cfile
+!endif
+!ifndef zipfile_dir
+zipfile_dir    = $(jtools_dir)\zipfile
+!endif
+!ifndef mempool_dir
+mempool_dir    = $(dev_dir)\mempool
+!endif
+!ifndef jlib_dir
+jlib_dir    = $(jtools_dir)\jlib
+!endif
+!ifndef wjitjvm_dir
+wjitjvm_dir = $(jit_dir)\jvm
+!endif
+!ifndef wjitmsvm_dir
+wjitmsvm_dir = $(jit_dir)\msvm
+!endif
+!ifndef willows_dir
+willows_dir = $(dev_dir)\willows
+!endif
+!ifndef wgif2bmp_dir
+wgif2bmp_dir = $(dev_dir)\imgtools\wgif2bmp
+!endif
+!ifndef debugger_dir
+debugger_dir = $(dev_dir)\debugger
+!endif

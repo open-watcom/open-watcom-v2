@@ -1,0 +1,52 @@
+#
+#  Preprocessor Test 2
+#  - test for bang if messages
+#
+!if defined(HELLO) 
+!message bad1
+!else 
+!message good1
+!endif   
+HELLO=GOOD
+!if !defined(HELLO) 
+!message bad2
+!else 
+!message good2
+!endif   
+!if "$(HELLO)" == "BAD"
+!message bad3
+!elseif "$(HELLO)" == "GOOD ENOUGH"
+!message bad3
+!elseif "$(HELLO)" == "GOOD"
+!message good3
+!else
+!message bad3
+!endif
+!if (1+2*3 +(4+5)/3 * 4) == +19
+!message good4
+!else 
+!message bad4
+!endif
+
+hello: .symbolic   
+   echo 1\
+!if (1*2*3*4 -25) == -1    #this part will only work for microsoft option
+good5\
+!else
+bad5
+!endif
+!if !0
+good6\
+!else
+bad6\
+!endif
+!if exist(XXXXX.XXX)
+bad7\
+!else
+good7\
+!endif
+!if exist(PREP02) 
+good8
+!else
+bad8
+!endif

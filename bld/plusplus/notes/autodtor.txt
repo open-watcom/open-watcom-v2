@@ -1,0 +1,238 @@
+Automatic Destruction of Stuff and Error Handling
+=================================================
+
+92/07/20 -- J.W.Welch   -- initial writing
+
+
+A)  Introduction
+    ------------
+
+    - stuff is data to be destructed and includes:
+        - automatic and static variables
+        - significant sub-objects of an object being destructed or constructed
+
+    - scheme must:
+        - integrate with exception handling
+        - handle asynchronous exceptions
+        - support multiple threads of execution
+
+
+B)  Data Structure Overview
+    -----------------------
+
+    - data structures are found in CPPLIB.H; any communication between run-
+      and compile-time is found in WCPP.H
+
+    - as a thread of execution progresses, control blocks are linked and
+      unlinked in stack fashion to maintain a execution description for:
+        - each active block containing autos to be DTOR'd
+        - each initialized module containing statics to be DTOR'd
+        - each try-catch activation
+        - each object being DTOR'd or CTOR'd
+
+    - arrays of objects being DTOR'd or CTOR'd are handled by the run-time
+      support for array DTOR/CTOR
+
+    - five data structures are found in the linked list for a thread:
+        - auto variables in a block
+        - sub-objects of an object being DTOR'd or CTOR'd
+        - static variables in a module
+        - an array being DTOR'd or CTOR'd
+        - try/catch specification
+
+    - each has a unique R/O block and unique routines to process these blocks
+        - a common header is used to distinguish the R/O blocks
+
+    - each R/W block has a common header:
+        - pointer to R/O block
+        - pointer to previous R/W block
+
+    - all structures use RW_DTOR_BLK as a base:
+        - autos, objects, and module-initializations have flags to indicate
+          that the n-th item needs to be DTOR'd
+        - objects also contain the object address
+        - array block contains the count and address of the array
+        - catch blocks contain the address of the JMPBUF used to implement
+          catches
+
+    - except for statics, the R/W block is allocated on the stack
+
+
+C)  R/O Data Structure for items to be DTOR'd
+    -----------------------------------------
+
+    - each such block is located from the RW_DTOR_BLOCK
+        - block is created at compilation time
+        - RW_DTOR_BLK located on stack and is initialized by a run-time
+          routine
+
+    - R/O block is:
+        - count of number of items
+        - vector of item descriptors
+
+    - item descriptor is
+        - address/offset of item to be DTOR'd
+            - is offset from RW_DTOR_BLK for autos
+            - is address for static variables in a module
+            - is offset from start of object for CTOR/DTOR sub-objects
+        - address of DTOR function
+
+D)  Mechanism for Automatic DTOR
+    ----------------------------
+
+    - various routines are invoked to:
+        - DTOR part of a block
+        - DTOR entire block
+        - DTOR current + some number of blocks
+        - DTOR all blocks until a block is encountered
+
+    - try/catch blocks are ignored
+
+    - otherwise, data structure contains enough information to compute the
+      address of each item to be DTOR'd
+
+    - error if exception thrown while DTOR'ing during exception processing
+
+
+E)  Impact on DTOR
+    --------------
+
+    - DTOR epilogue must set up block to record DTOR'ing of sub-objects
+    - DTOR epilogue can be a run-time routine which DTOR's the top-level
+      block (set all flags to 1); alternatively, existing code can turn
+      off flags as sub-objects are DTOR'd
+
+    - the DTOR epilogue can be implemented as call to:
+            cpp_dtor_epi( void *element     // - element to be DTOR'd
+                        , unsigned flags    // - flags passed to DTOR
+                        , RO_DTOR_DEFN *def // - definition for R/T routine
+                        , RW_DTOR_BLK *blk  // - R/W block for element
+                        );
+        - the RW_DTOR_BLK could be allocated dymnamically by cpp_dtor_epi
+          if more code-space saving is desired
+        - one of two routines could be used, depending on the optimization
+          level
+
+    - the RO_DTOR_DEFN block supplies information for the run-time DTOR
+      routine (cpp_dtor_epi):
+
+        struct RO_DTOR_DEFN
+        {   RO_DTOR_BLK *blk;       // - RO_DTOR_BLK for a class element
+            void *(*dtor)           // - DTOR for class element
+                ( void *element     // - - element to be DTOR'd
+                ; unsigned flags ); // - - flags for DTOR routine
+            void (*opdel)           // - operator delete to be used
+                ( void *element );  // - - element to be deleted
+            unsigned virtuals;      // - number of virtual bases
+        };
+
+    - pseudo code for cpp_dtor_epi( element, flags, def, blk ):
+        if array-dtor,
+            (0) call cpp_array_dtor
+        else
+            (1) set '11', non-virtual flags
+            (2) if required to dtor virtuals, set flags for virtuals
+            (3) set up rest of R/W block, link it to R/W dtor chain
+            (4) call cpp_block_close
+            (5) if required to delete
+        endif
+        return addr. of element
+
+
+F)  Impact on CTOR
+    --------------
+
+    - CTOR prologue must set up block to record CTOR'ing of sub-objects
+    - CTOR prologue must turn on flags as sub-objects are CTOR'd
+    - could set up a R/O block to be passed to a run-time routine for
+      CTOR routines without initializers
+
+
+G)  Try/Catch R/O block
+    -------------------
+
+    - assume there is a "signature" for each possible type to be considered
+        - this can be the address of a unique 1-byte variable (COMDAT) for
+          each type
+
+    - at try: R/O block indicates the type for each catch block
+        - count of number of catches
+        - signature of type for each catch, in order of appearance
+
+    - compiled code for try/catch is:
+
+        auto jmpbuf;
+        cpp_try( jmpbuf, rw_blk, ro_blk );
+        switch( setjmp( jmpbuf ) ) {
+          case 0:
+            - code for try
+          case 1:
+            - code for catch[1]
+          ...
+          case n:
+            - code for catch[n]
+        }
+
+    - cpp_try( jmpbuf, rw_blk, ro_blk ) sets up rw_blk using jmpbuf, ro_blk
+        - it cannot contain the setjmp without tricky system-dependent
+          coding since the routine containing a setjmp must remain active
+          for a subsequent longjmp to work
+
+    - at throw: R/O throw block is constructed
+        - COMDAT data named by the type of the throw expression
+        - used to enumerate all possible conversions, for exception purposes,
+          of the throw expression
+        - contains:
+            - count of # of target conversions
+            - vector of conversion entries; each entry contains
+                - signature of target type
+                - address of conversion routine
+
+    - exception handling overview:
+
+        - search the try/catch blocks for the thread; for each block
+            - look for a signature match between a signature in the block
+              and a signature in the throw data structure
+
+        - abandon search at first match, and:
+            - convert (using the corresponding routine in the throw block) the
+              throw expression to target object (unique to the thread)
+            - DTOR items in all intervening blocks
+            - call cpp_catch
+
+        - when no matches, call terminate()
+
+        - cpp_catch( jmpbuf, int retn ) is a run-time routine:
+
+            jmpbuf -- saved by cpp_try
+            retn -- is base-1 index of catch block to be executed
+
+            implemented as: longjmp( jmpbuf, retn )
+
+    - details: incorporate proper control for terminate(), unexpected(),
+        set_terminate(), and set_unexpected()
+
+
+H)  Unknowns
+    --------
+
+    - what happens when exceptions are thrown during static initialization
+      or static completion ?
+        - initialization -- will either be caught by in an active routine or
+          no try blocks will be active and unexpected() will be called
+        - completion :
+            -- terminate() not called:
+                -- caught in an active routine (ok)
+                -- no try block active ==> call unexpected()
+            -- terminate() called
+                -- error condition (15.6.1)
+
+
+I)  Other details
+    -------------
+
+    - latest draft of standard has dictated a number of compilation conditions
+      that need to be detected (for example, "..." must be specified only in
+      last catch block.
+
+    - see description for unexpected(), terminate(), etc. for more details

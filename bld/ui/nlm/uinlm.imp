@@ -1,0 +1,20 @@
+# UI NLM Imports
+#
+# These are the lower-level API functions called by
+# the Netware version of the UI Library, which are not
+# in CLib.Imp.
+#
+
+ GetKey,
+ OpenScreen,
+ CloseScreen,
+ ActivateScreen,
+ CheckKeyStatus,
+ GetKeyboardStatus,
+ PositionInputCursor,
+ PositionOutputCursor,
+ EnableInputCursor,
+ GetScreenSize,
+ DisableInputCursor,
+ GetInputCursorPosition,
+ UngetKey

@@ -1,0 +1,7 @@
+.SILENT
+.IGNORE
+
+all : .symbolic
+    for %i in (1 2 3) do echo %i
+    for %i in (a b c) do type %i
+

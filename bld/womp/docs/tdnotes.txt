@@ -1,0 +1,91 @@
+The following are some things not mentioned in the Turbo object file 
+documenation:
+
+TLINK does not like it when an object file contains types from a different
+language than the 0xEA COMENT record specifies.  (i.e., a TID_PARRAY in a
+C Language file)
+
+0xE6/0xF6   Locals definition records
+
+    The symbol class byte is really a bit field.  The low 3 bits contain one
+    of the SC_ types.  Setting the 4th bit (0x08) indicates the following:
+
+    Contents of low 3 bits:
+
+        SC_AUTO(2)
+        SC_PASVAR(3)
+        SC_REGISTER(4)
+            This indicates a parameter to a function
+
+        SC_STATIC
+            This indicates a function with a valid BP and the upper 4 bits
+            should be set as in COMENT 0xE1.
+
+    For SC_REGISTER, the following extra registers are defined:
+
+        0x20    ST(0)
+        0x21    ST(1)
+        0x22    ST(2)
+        0x23    ST(3)
+        0x24    ST(4)
+        0x25    ST(5)
+        0x26    ST(6)
+        0x27    ST(7)
+
+    Furthermore, setting the 7th bit of the register byte indicates a multi-
+    register variable.  The low 3 bits (0x07) are the low order register, the
+    next 3 bits (0x38)are the high order register.  The values for these two
+    bit fields come from this table:
+
+        0x00    AX
+        0x01    CX
+        0x02    DX
+        0x03    BX
+        0x04    SI
+        0x05    DI
+        0x06    ES
+        0x07    DS
+
+    The register pair AX:AX (0x40 | 0x00 | 0x00 == 0x40) is reserved for the
+    four register set AX:BX:CX:DX.
+
+    The docs seem to imply that module statics can appear anywhere as long as
+    they are not inside a begin scope/end scope pair.  Turbo debug does not
+    behave too well if the statics appear anywhere except at the end of all
+    the scope pairs.  (WOMP places them last in the symbolic COMENTs.)
+
+
+0xE5    Begin scope record
+
+    For a function, Turbo DEBUG expects the following scope format:
+
+
+    void foo( a, b )        ---> begin_scope record with offset of foo
+
+    int a;                  ---> local_defn record (with 0x08 bit set)
+                                 must have the name 'a'
+    long b;                 ---> local_defn record (with 0x08 bit set)
+                                 must have the name 'b'
+    
+    {                       ---> begin_scope record with offset of foo+prolog
+
+        char c;             ---> local_defn for c (without the 0x08 bit)
+                            ---> local_defn for a (no 0x08)
+                            ---> local_defn for b (no 0x08)
+
+        /* rest of foo */
+                            
+    }                       ---> end_scope record with offset of epilog
+                            ---> end_scope record with offset of last byte
+                            
+    If the parameter locals for a and b do not have the names "a" and "b",
+    Turbo DEBUG gets confused and the Variables window looks messy.
+    
+
+
+There may be more nits... I did not test everything.  The following COMENT
+records I have not used:
+
+    0xe0, 0xeb, 0xec, 0xe9 or any of the 0xf? dword formats
+
+There appears to be no need to set the COMENT bits to 0 (purge, list).

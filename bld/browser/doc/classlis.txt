@@ -1,0 +1,58 @@
+wbrwin.h:   class WBRWindow		: public WWindow
+
+    viewsym.h:	class ViewSymbol	: public WBRWindow
+	vwclass.h:  class ViewClassType	    : public ViewSymbol
+	vwenum.h:   class ViewEnum	    : public ViewSymbol
+	vwfunc.h:   class ViewFunction	    : public ViewSymbol
+	vwmacro.h:  class ViewMacro	    : public ViewSymbol
+	
+    browse.h:	class Browse		: public WBRWindow
+    strcview.h: class StrucView		: public WBRWindow
+    
+    texttree.h: class TextTree		: public WBRWindow
+	clstxttr.h: class ClassTextTree	    : public TextTree
+	fnctxttr.h: class FuncTextTree	    : public TextTree
+	
+    methfilt.h: class MethodFilter	: public WBRWindow
+    treecall.h: class TreeCall		: public WBRWindow
+    treeclas.h: class TreeClass		: public WBRWindow
+    treecomp.h: class TreeComposition   : public WBRWindow
+    treenode.h: class TreeNode		: public WBRWindow
+    busyntc.h:  class BusyNotice	: public WBRWindow
+    editsess.h: class EditSession	: public WBRWindow
+    edproj.h:	class EdProject		: public WBRWindow
+
+    opickdlg.h: class ObjectPickDlg	: public WBRWindow
+	ambsympk.h: class AmbigSymPick	    : public ObjectPickDlg
+
+    picksym.h:  class PickSymbol	: public WBRWindow
+
+
+safefile.h: class SafeFile	: public WFile
+	modfile.h:  class ModFile	: public SafeFile
+
+infobttn.h: class InfoButton	: public WPushButton
+
+verblist.h: class VerboseListBox : public WListBox
+opicklst.h: class ObjectPickList : public WListBox
+
+compunit.h: class CompileUnit	: public WObject
+descrip.h:  class Description	: public WObject
+keysym.h:   class KeySymbol	: public WObject
+module.h:   class Module	: public WObject
+projmodl.h: class ProjectModel	: public WObject
+strcview.h: class StrucViewItem : public WObject
+vwcreate.h: class ViewCreator	: public WObject
+classlat.h: class ClassLattice  : public WObject
+
+symbol.h:   class Symbol	: public WObject
+    funcsym.h:  class FunctionSym	: public Symbol
+    referenc.h: class Reference		: public Symbol
+    macrosym.h: class MacroSym		: public Symbol
+    
+    typesym.h:	class TypeSym		: public Symbol
+	classtyp.h: class ClassType	    : public TypeSym
+	enumtype.h: class EnumType	    : public TypeSym
+	
+    varsym.h:   class VariableSym	: public Symbol
+    

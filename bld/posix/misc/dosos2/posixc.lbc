@@ -1,0 +1,15 @@
+-+alloc.cbj
+-+argvenv.cbj
+-+argvrx.cbj
+-+console.cbj
+-+die.cbj
+-+filerx.cbj
+-+fnlower.cbj
+-+fncomp.cbj
+-+getclsz.cbj
+-+getopt.cbj
+-+isdotdot.cbj
+-+lineprt.cbj
+-+quit.cbj
+-+setftime.cbj
+-+regexp.cbj

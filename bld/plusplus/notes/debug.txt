@@ -1,0 +1,30 @@
+C++ Debugging tools
+===================
+
+
+(1) functions callable from wvideo:
+    ------------------------------
+
+    - these may be found by examining DBG.H
+
+
+(2) pragmas enabling debugging information:
+    --------------------------------------
+
+    - enabled by:  #pragma on ( option ... option )
+
+    - disabled by: #pragma off ( option ... option )
+
+    - the following options have been defined:
+        - dump_scopes:  dump full symbol table at end of compilation
+        - dump_tokens:  dump tokens as they are scanned
+        - dump_parse:   dump parsing information
+        - dump_emit_ic: dump intermediate code written to temp. file
+        - dump_exec_ic: dump intermediate code read from temp. file
+        - dump_ptree:   dump parse trees
+
+        - dump_full:    equivalent to specifying all of above
+        - dump_partial: equivalent to specifying all of above, except
+                dump_parse
+
+        - dump_lines:   dumps each line as the '\n' is encountered

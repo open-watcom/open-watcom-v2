@@ -1,0 +1,3 @@
+call DbgRedirectBeg
+call dumpfulltype( <1> )
+viewcapt.dbg

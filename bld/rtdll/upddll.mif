@@ -1,0 +1,25 @@
+!ifndef on_build_machine
+
+libpath_os2_386     =lib386\os2
+libpath_os2_387     =lib386\os2
+libpath_winnt_386   =lib386\nt
+libpath_winnt_387   =lib386\nt
+libpath_winnt_axp   =libaxp\nt
+updlibpath =$(libpath_$(system)_$(processor))
+
+dllpath_os2_386     =binp\dll
+dllpath_os2_387     =binp\dll
+dllpath_winnt_386   =binnt
+dllpath_winnt_387   =binnt
+dllpath_winnt_axp   =axpnt
+upddllpath =$(dllpath_$(system)_$(processor))
+
+update : .symbolic $(libname).lib
+    if exist $(%watcom)\$(updlibpath)\$(libdllname).lib copy $(libname).lib $(%watcom)\$(updlibpath)\$(libdllname).lib
+    if exist $(%watcom)\$(upddllpath)\$(dllname).dll copy $(dllname).dll $(%watcom)\$(upddllpath)\$(dllname).dll
+    if exist $(%watcom)\$(upddllpath)\$(dllname).sym copy $(dllname).sym $(%watcom)\$(upddllpath)\$(dllname).sym
+!ifeq component cpplib
+    if exist $(%watcom)\$(updlibpath)\$(libdllname)x.lib copy $(libname).lib $(%watcom)\$(updlibpath)\$(libdllname)x.lib
+!endif
+
+!endif

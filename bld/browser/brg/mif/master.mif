@@ -1,0 +1,99 @@
+proj_name = merge
+name = wbrg
+
+.mif : $(mif_path)
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+
+.c: ..\cpp;$(trmem_dir)
+.cpp: ..\cpp;$(browse_dir)\cpp
+
+ext = obj
+
+OBJECTS = &
+	blip.$(ext)	&
+	dietree.$(ext)	&
+	dwmerger.$(ext) &
+	main.$(ext)	&
+	mrabbrev.$(ext) &
+	mrdeath.$(ext)	&
+	mrdie.$(ext)	&
+	mrfile.$(ext)	&
+	mrinfo.$(ext)	&
+	mrinfpp.$(ext)	&
+	mrline.$(ext)	&
+	mrnmkey.$(ext)	&
+	mroffset.$(ext) &
+	mrref.$(ext)	&
+	mrreloc.$(ext)	&
+	mrstrhdl.$(ext) &
+	mrtmchk.$(ext)  &
+	patricia.$(ext) &
+	strpool.$(ext)	&
+	chfile.$(ext)	&
+	chbffile.$(ext) &
+	cmdparse.$(ext) &
+	elffile.$(ext)	&
+	mempool.$(ext)	&
+	util.$(ext)	&
+	wtime.$(ext)
+!ifeq browse_trmem 1
+OBJECTS	+= dmem.$(ext) trmem.$(ext)
+!else
+OBJECTS += mem.$(ext)
+!endif
+
+inc_dirs = ..\h;$(browse_dir)\h;$(browse_dir)\contain\h;$(dwarf_dir)\dr\h;$(posix_dir)\h;
+.before
+	SET INCLUDE=$(inc_path)
+
+!ifdef DBG
+extra_cpp_flags	= -xs-ew-dSTANDALONE_MERGER -dDEBUG=0 -dINSTRUMENTS=1
+extra_cpp_flags_dwmerger = -xs-ew-dSTANDALONE_MERGER -dINSTRUMENTS=1 -dDEBUG=1 -dMINALLOC=0
+!else
+extra_cpp_flags	= -xs-ew-dSTANDALONE_MERGER -dDEBUG=0 -dINSTRUMENTS=0
+!endif
+extra_c_flags	= -dSTANDALONE_RX=1
+extra_c_flags_trmem	= /i=$(trmem_dir)
+
+!ifneq host_CPU axp
+mem_flags = -of+
+!endif
+	
+# linker
+extra_l_flags	= op stack=16k, map
+extra_l_flags_nt_axp	= op undefsok
+
+exe_ext_osi = rex
+!ifdef exe_ext_$(host_OS)
+exe_ext = $(exe_ext_$(host_OS))
+!else
+exe_ext = exe
+!endif
+
+$(name).exe : $(OBJECTS)
+	$(linker) $(lflags) name $(name).$(exe_ext) file {$(OBJECTS)}
+!ifeq host_OS osi
+	w32bind $^&.rex $^&.exe $(tools_root)\os2ldr.exe
+	@erase $^&.rex
+!endif
+
+# compiling
+
+cppflags	= $(cflags) $(extra_cpp_flags)
+
+.cpp.obj:
+	@set include=$(inc_path)
+	$(cpp) $(cppflags) $(extra_c_flags_$[&) $[@
+	
+dmem.obj : mem.cpp
+        $(cpp) $(cppflags) -dTRACKER -fo=dmem.obj $(mem_flags) -i=$(trmem_dir) $[@
+	
+!ifdef DBG
+dwmerger.obj: dwmerger.cpp .AUTODEPEND
+	$(cpp) $(cflags) $(extra_cpp_flags_dwmerger) $[@
+!endif
+

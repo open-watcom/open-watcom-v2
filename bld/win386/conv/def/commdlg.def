@@ -1,0 +1,25 @@
+!commdlg
+#lpCustColors
+int #ChooseColor(void *[12]);
+#lpLogFont,lpTemplateName,lpszStyle
+int #ChooseFont(void *[8;30;36]);
+#lpstrFindWhat,lpTemplateName
+int #FindText(void *[12;32]);
+int #GetFileTitle(void *,void *,int);
+#lpstrFilter,lpstrCustomFilter,lpstrFile,lpstrFileTitle
+#lpstrInitialDir,lpstrTitle,lpstrDefExt,lpTemplateName
+int #GetOpenFileName(void *[8;12;24;32;40;44;56;68]);
+int #GetSaveFileName(void *[8;12;24;32;40;44;56;68]);
+#lpPrintTemplateName,lpSetupTemplateName
+int #PrintDlg(void *[40;44]);
+#lpstrFindWhat,lpstrReplaceWith,lpTemplateName
+int #ReplaceText(void *[12;16;32]);
+long #CommDlgExtendedError(void);
+int #_16ChooseColor(long);
+int #_16ChooseFont(long);
+int #_16FindText(long);
+int #_16GetFileTitle(long,long,int);
+int #_16GetOpenFileName(long);
+int #_16GetSaveFileName(long);
+int #_16PrintDlg(long);
+int #_16ReplaceText(long);

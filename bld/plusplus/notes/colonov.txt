@@ -1,0 +1,93 @@
+Determining the rules for operator-overloading of colon operation
+=================================================================
+
+This is an extension. The draft does not provide built-in templates for
+overloading ?: operations.
+
+What the draft says:
+
+    (1) the common type used in colon-conversion is either the left or
+        the right type (not a combination)
+        
+    (2) the common type is a reference when the original types are identical
+        reference types or when one of the referenced objects is derived
+        from the other.
+        
+    (3) otherwise, the common type is an rvalue and the usual arithmetic
+        or pointer conversions are applied.
+
+Our extension is to add built-in operators
+
+    template< class T > operator : ( T, T );
+    
+and to overload, for X:Y, using
+
+    operator : ( T[X], T[X] ) where T[X] is the type of X
+    operator : ( T[Y], T[Y] ) where T[Y] is the type of Y
+    
+to force a conversion of either X or Y to the type of the other.
+
+        
+One will get different results depending upon whether the overloading occurs
+on the original expression or whether conversions to rvalues are applied
+first.
+
+
+Example[1]:
+
+    struct S {
+        S( int );
+    };
+    
+    extern S sv0;
+    extern bool b;
+    
+    S sv1 = b ? 4 : sv0;
+    
+    Overloading using 
+        operator : ( int, int )
+        operator : ( S&, S& )
+        
+    produces a warning since S(4) is bound to S&.
+    
+    Overloading, after converting to rvalues, with
+        operator : ( int, int )
+        operator : ( S, S )
+    
+    produces no errors.
+    
+
+Example[2]:
+
+    struct S {
+        operator int&();
+    };     
+       
+    extern S sv0;
+    extern bool b;
+    extern int i;
+    
+    void foo()
+    {
+        ( b ? i : sv0 ) = 465;
+    }
+    
+    Overloading using 
+        operator : ( &int, &int )
+        operator : ( S&, S& )
+        
+    produces no errors.
+    
+    Overloading, after converting to rvalues, with
+        operator : ( int, int )
+        operator : ( S, S )
+    
+    produces garbage.
+    
+    
+Conclusion
+
+    We should not have the extension.  The work-around for the above examples
+    is to insert a cast to force the desired conversion.
+    
+    I doubt if many people rely on the feature.

@@ -1,0 +1,42 @@
+#
+# create 16-bit version of FILEDLG
+#
+DLLNAME = filedlg
+DLL = dll
+
+CFLAGS = -zW -ml -zu -w4 -d1 -oaxt
+DLLLNK = $(DLLNAME).lnk
+
+OBJS = filedlg.obj
+
+$(DLLNAME).dll : $(OBJS) $(DLLLNK) $(DLLNAME).res
+    wlink @$(DLLLNK)
+    wrc -30 $(DLLNAME).res $(DLLNAME).dll
+    
+$(DLLNAME).res : $(DLLNAME).rc $(DLLNAME).dlg
+    wrc -r -30 $(DLLNAME).rc
+    
+        
+$(DLLLNK) : makefile.w16
+    %create $(DLLLNK)
+    @%append $(DLLLNK) debug all
+    @%append $(DLLLNK) system windows dll
+    @%append $(DLLLNK) lib clibl
+    @%append $(DLLLNK) lib windows
+    @%append $(DLLLNK) libfile libentry
+    @%append $(DLLLNK) name $(DLLNAME).dll
+    @%append $(DLLLNK) option symfile = $(DLLNAME).sym
+    @%append $(DLLLNK) option heapsize=5k
+    @%append $(DLLLNK) option map
+    @%append $(DLLLNK) option oneautodata
+    @for %i in ($(OBJS)) do @%append $(DLLLNK) file %i
+        
+.c.obj : 
+	wcc $(CFLAGS) $[*
+
+clean: .symbolic
+    @erase *.obj
+    @erase *.err
+    @erase *.exe
+    @erase *.lnk
+    @erase *.res

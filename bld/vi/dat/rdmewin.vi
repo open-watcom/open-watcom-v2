@@ -1,0 +1,4 @@
+#
+# Rdhook script - does nothing
+#
+	return

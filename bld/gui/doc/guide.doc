@@ -1,0 +1,924 @@
+User Guide for GUI Library
+==========================
+
+Overview
+--------
+
+  The GUI library is a user interface library that is designed to provide
+a common API (Application Programmer's Interface) across several platforms.
+The API most closely resembles the API, messaging and callback structure
+used by Windows. This library is intended for internal WATCOM use.
+
+Platforms
+---------
+
+    The operating systems currently supported are :
+
+Character based :
+
+DOS  (16-bit, Pharlap, DOS4G)
+OS/2 (16- and 32-bit)
+QNX  (16- and 32-bit)
+WIN  (16-bit)
+NT
+
+Graphical :
+
+Windows
+NT
+PM (16- and 32-bit) (not yet completed)
+
+Operating systems that are intended to be supported are :
+
+Graphical :
+
+QNX/Windows (maybe, if demand and time exist)
+
+  There is another library, known as AUI, which can be used in conjunction
+with the GUI library.  It provides additional support for windows that
+implement text display and selection.
+
+Location
+--------
+
+  The GUI library is found on the network under cproj/gui.  The AUI library
+  is found under /cproj/aui.
+
+Functionality Provided
+----------------------
+
+  The GUI library allows the application program to create windows and process
+messages, including user input message, corresponding to those windows.
+The windows can display text, have menus, have floating popup menus,
+display messages in message boxes and create dialogs.  The GUI library also
+allows the creating of toolbars (floating and fixed) and different fonts (in
+graphical environments). Controls may be created on windows (as opposed
+to controls on dialogs) on all platforms.  In Windows and NT, although,
+putting a group box in a window will not give good results when painting. 
+
+* = for character mode only
++ = for graphical mode only
+
+Functions not implemented for a certain mode will be politely stubbed out.
+Use the GUIIsGUI call to determine mode.
+
+General Information
+-------------------
+
+    Data passed in to GUI functions is not assumed to exist past when the
+function call returns.  The exception to this is the 'hinttext' field of
+the gui_menu_struct.  A copy of this char * is retained.  This is done to
+avoid wasting memory.  When GUISetHintText is called, that char * is retained
+and any previous hint text for that menu item is no longer assumed to exist.
+
+    When the GUI library returns a piece of text, it has been allocated using
+GUIAlloc and must be freed by the application.  When a buffer and length
+are passed in to the GUI function, the buffer will be filled, up to length
+characters, and the GUI library will not allocate any memory.  Examples
+of functions which allocation memory which must be freed by the application
+are : GUIGetText, GUIGetListItem, GUIGetFontInfo, GUIGetFontFromUser.  Text
+is written to an existing buffer in such calls as GUIGetWindowText.
+
+API
+===
+
+Getting Started
+---------------
+
+ The following are initialization functions :
+
+GUIWndInit 		-- must be called first to initialize the library
+GUIGMouseOn*		-- enable graphics mouse and character mapping (DOS only)
+GUIGMouseOff*		-- disable graphics mouse and character mapping (DOS only)
+GUIMDIInit		-- initialize MDI code***
+GUI3DDialogInit+	-- initialized 3D-look controls in dialogs in Windows**
+GUISetBetweenTitles*	-- set the number of characters between mail menu titles
+GUIGetRoundScale	-- ask for information about choosing a good scale
+GUISetScale		-- allows the user to set the scale (screen coordinates)
+GUIGetScale		-- get the scale (as was set with GUISetScale)
+GUISetDClickRate	-- set the double click rate for mouse
+GUISetCharacter*	-- set a character used for drawing windows
+GUIGetCharacter*	-- get a character used for drawing windows
+
+** this function causes the app to need ctd3d.dll to be in the path when
+   it is executing.  It is found in the /lang/binw directory.
+
+Window Creation 
+---------------
+
+GUICreateWindow 	-- create a window
+GUIAddControl		-- add a control to a window.  Do not add a group box
+			   to a window in graphical systems
+GUIDeleteControl	-- delete control from a window or dialog.
+GUISetExtra		-- set data associated with window.  For your use only.
+GUIGetExtra		-- get pointer to data associated with window
+
+Window Functions
+----------------
+
+GUISetWindowText	-- reset the text which is the window title
+GUIGetWindowTextLength 	-- gets the length of a windows title
+GUIGetWindowText	-- copies a windows title to a buffer supplied
+
+GUIDestroyWnd		-- destroy the window.  Passing NULL will destroy all
+			   windows
+
+dirty functions :
+
+GUIWndDirty		-- tell library that a whole window is dirty
+GUIWndDirtyRow		-- tell library that a row of a window is dirty
+GUIWndDirtyRect		-- tell library that a rect in a window is dirty
+GUIRefresh		-- tell library to refresh the screen
+GUIWndUpdate*		-- tell library to update a window
+GUISetBackgroundChar*	-- set the character user to draw the background of
+			   the main window
+
+focus functions :
+
+GUIBringToFront 	-- bring the window to the top of all others
+GUIGetFront		-- returns window that is on top of all others
+GUIGetNextWindow	-- returns window that is below given window in z-order
+GUISetFocus		-- set input (keyboard) focus to a window
+GUIGetFocus		-- find out which window has the focus
+
+resize functions :
+
+GUIResizeWindow		-- give a window a new size (and location)
+GUIMinimizeWindow	-- minimize a window
+GUIIsMinimized		-- returns TRUE if window is minimized
+GUIMaximizeWindow	-- maximize a window
+GUIIsMaximized		-- returns TRUE if window is maximized
+GUIRestoreWindow	-- restore a window to pre-minimize or maximize size
+GUIHideWindow		-- Hide a window
+GUIShowWindow		-- Show a window previously hidden
+
+drawing functions :
+
+GUIDrawRect 		-- draw the outline of a rectangle given a gui_attr
+GUIDrawRectRGB+		-- draw the outline of a rectangle given an RGB
+GUIFillRect 		-- draw a filled in rectangle given a gui_attr
+GUIFillRectRGB+		-- draw a filled in rectangle given an RGB
+GUIDrawLine		-- draw a line given a gui_attr and style information
+GUIDrawLineRGB+		-- draw a line given an RGB and style information
+GUIDrawText		-- draw text at a row and indent.  Indent is in user
+			   coordinates.
+GUIDrawTextPos		-- draw text at a point
+GUIDrawTextExtent	-- draw text at a row and indent, blanking a portion
+			   of the screen to the right of the text as if it
+			   were spaces.  Indent is in user coordinates.
+GUIDrawTextExtentPos	-- draw text at a point, blanking a portion of the
+			   screen to the right of the text as if it were
+			   spaces
+
+information functions :
+
+GUIGetClientRect	-- get the size and location of the window's client
+			   area in absolute user defined units
+GUIGetAbsRect		-- get the window's size and location in absolute
+			   user defined units
+GUIGetRect		-- get the window's size and its location relative
+			   to its parent.  If there is no parent,
+			   GUIGetRect and GUIGetAbsRect will return the same
+			   value.
+GUIGetScrollStyle 	-- get the scroll style (set on creation)
+GUIGetCreateStyle	-- get the creation style (set on creation)
+
+
+Colour Functions
+----------------
+
+GUISetBackgroundColour*	-- set the background colour of the main window
+GUISetDialogColours*	-- set the main and border colours of dialogs
+GUISetWindowColours	-- set the colours for a window
+GUIGetNumWindowColours	-- find the number of colour attribute a window has
+GUIGetWindowColours	-- get a copy of the colours of a window
+GUISetRGB+		-- set the RGB value for a certain gui_colour
+GUIGetRGB+		-- get the RGB value for a certain gui_colour
+GUIGetWndColour		-- get the colour of a certain gui_attr for a window
+GUISetWndColour		-- set the colour of a certain gui_attr for a window
+GUIGetRGBFromUser+	-- create dialog to ask user for colour, return it's RGB
+GUIGetColourFromUser	-- create dialog listing names of colour for user to
+			   choose from
+
+Cursor Functions
+----------------
+
+GUIGetCursorPos*		-- get the position of the window's cursor
+GUISetCursorPos*		-- set the position of the window's cursor
+GUIGetCursorType*		-- get cursor type (none, normal, insert)
+GUISetCursorType*		-- set cursor type (none, normal, insert)
+GUISetMouseCursor+		-- set the type of mouse cursor
+GUIResetMouseCursor+		-- reset the type of mouse cursor
+GUIMouseCursorNeedsReset+	-- check if the type of mouse cursor needs to
+				   be reset
+Font Functions
+--------------
+
+GUIFontsSupported	-- returns TRUE if these font functions are supported
+GUIChangeFont+		-- gets font choice from user and changes the font of
+			   the given window
+GUIGetFontInfo+		-- get the font information for a window
+GUISetFontInfo+		-- sets the font information for a window
+GUIGetFontFromUser+	-- gets font information from the user (using a dialog)
+GUISetSystemFont	-- set font to system font (fixed or proportional)
+
+General Information Functions
+-----------------------------
+
+GUIIsGUI		-- returns TRUE if on a graphical OS, FALSE otherwise
+GUIGetMousePosn		-- get the mouse position (in user coordinates)
+GUIGetKeyState		-- get the current shift state
+GUIGetSystemMetrics	-- get system dependent size information
+GUIGetMinSize		-- get the smallest valid size for a window
+GUIEnumChildWindows	-- enumerate child windows by calling given function
+			   with the gui_window * for each
+GUIEnumControls		-- enumerate controls on a window by calling given
+			   function with the id for each control
+
+Text Functions
+--------------
+
+GUIGetRow		-- return which text row is at the given mouse point
+GUIGetCol		-- find offset (in characters) of the given point
+GUIGetStringPos 	-- find offset (in characters) of the given point if
+			   string is offset from left by given amount
+
+GUIGetExtentX		-- find x extent of given string (in current font)
+GUIGetExtentY		-- find y extent of given string (in current font)
+GUIGetTextMetrics	-- get the metrics of the current font
+GUIGetDlgTextMetrics	-- get the metrics of the dialog font
+
+GUIGetPoint		-- return the point address of given text row and col
+
+Menu Functions
+--------------
+
+GUICreateFloatingPopup	-- create a floating popup menu
+GUITrackFloatingPopup   -- track a floating popup menu created using GUIAppendMenu
+			   and GUIAppendMenuToPopup with floating set to TRUE
+GUIEnableMenuItem	-- enable/disable a menu item
+GUICheckMenuItem	-- check/uncheck a menu item
+GUISetMenuText		-- change text of menu item
+GUISetHintText		-- set the hint text for a menu item
+
+GUIEnableMDIMenus	-- enable/disable a the MDI menus
+GUIEnableMenus		-- enable/disable all menus // NYI
+GUIDeleteMenuItem	-- delete a menu item from a pull down menu
+
+GUIResetMenus		-- reset the entire menu structure for a window
+
+GUIInsertMenu		-- insert menu item before given offset (top level)
+GUIInsertMenuByID-- insert menu before given id
+GUIAppendMenu		-- append menu to top level menus
+GUIAppendMenuByOffset	-- append menu to submenu indicated by offset
+GUIAppendMenuToPopup	-- append menu to a popup menu indicated by id
+
+Toolbar Functions
+-----------------
+
+GUICreateToolBar 	-- create a toolbar
+GUICloseToolBar 	-- close the toolbar
+GUIHasToolBar 		-- check if a window has a toolbar
+GUIChangeToolBar 	-- change the toolbar (fixed->floating or floating->fixed)
+GUIToolBarFixed 	-- returns TRUE if the toolbar is fixed
+
+Status Window Functions
+-----------------------
+
+GUICreateStatusWindow	-- create a status window
+GUICloseStatusWindow	-- close the status window
+GUIHasStatus		-- check if a window has a status window
+GUIDrawStatusText	-- draw text to the status window
+GUIResizeStatusWindow	-- resize the status window
+
+Scroll Functions
+----------------
+
+In the name of the function, words have the following meanings :
+
+Init 		- set value, don't draw anything
+Set  		- set value, do scrolling indicated
+Get  		- just return current value
+Do  		- just do scrolling, don't touch value
+Thumb		- does an init
+
+These are Row/Col functions.  They deal in character units :
+
+GUIInitHScrollCol	-- set horizontal scrolling position
+GUIInitVScrollRow	-- set vertical scrolling position
+GUISetHScrollCol	-- set horizontal scrolling position, do scrolling
+GUISetVScrollRow	-- set vertical scrolling position, do scrolling
+GUIGetHScrollCol	-- get horizontal scrolling position
+GUIGetVScrollRow	-- get vertical scrolling position
+GUISetHScrollRangeCols	-- set horizontal scrolling range
+GUISetVScrollRangeRows  -- set vertical scrolling range
+GUIGetHScrollRangeCols	-- get horizontal scrolling range
+GUIGetVScrollRangeRows	-- get vertical scrolling range
+GUIDoHScroll		-- do horizontal scrolling
+GUIDoVScroll		-- do vertical scrolling
+GUIDoHScrollClip	-- do horizontal scrolling, clipping to a region
+GUIDoVScrollClip	-- do vertical scrolling, clipping to a region
+
+These are Thumb functions.  They deal in percent of range :
+
+GUISetHScrollThumb 	-- initializes the horizontal thumb position (percent)
+GUISetVScrollThumb 	-- initializes the vertical thumb position (percent)
+
+These functions work in terms of the units of the user defined scale :
+
+GUIInitHScroll		-- set horizontal scrolling position
+GUIInitVScroll		-- set vertical scrolling position
+GUISetHScroll		-- set horizontal scrolling position, do scrolling
+GUISetVScroll		-- set vertical scrolling position, do scrolling
+GUIGetHScroll		-- get horizontal scrolling position
+GUIGetVScroll		-- get vertical scrolling position
+GUISetHScrollRange	-- set horizontal scrolling range
+GUISetVScrollRange	-- set vertical scrolling range
+GUIGetHScrollRange	-- get horizontal scrolling range
+GUIGetVScrollRange	-- get vertical scrolling range
+
+GUIGetNumRows		-- get number of text rows that will show in the
+			   window
+
+Sizzling Hot Spot Functions
+---------------------------
+
+GUIInitHotSpots		-- set the character/bitmaps associated with user defined
+			   hot spots
+GUIGetNumHotSpots	-- return the number of hot spots defined
+GUIGetHotSpotSize	-- get the size (in user coords) of a certain hot spot
+GUIDrawHotSpot		-- draw a hot spot at a given location
+
+Spawn Functions
+---------------
+
+GUISpawnStart		-- start a spawn
+GUISpawnEnd		-- end a spawn
+
+Other Functions
+---------------
+
+GUITruncToPixel		-- truncate location (in user coordinates) to nearest pixel
+GUIFlushKeys		-- flush the keyboard buffer
+
+High Level Interactions
+-----------------------
+
+GUIDisplayMessage 	-- display message and get response (like Windows)
+GUIGetNewVal		-- display old value, ask user for new value
+GUIGetFileName		-- get file name using common file dialog.  See
+			   guifdlg.h or a Windows manual for more information.
+GUIDlgPick		-- display choices in list box, have user pick
+GUIDisplayHelp+		-- display windows help for a given topic
+
+Dialog Box Functions
+--------------------
+
+GUICreateDialog		-- create a dialog
+GUICreateSysModalDialog -- create a system modal dialog box ( same as
+			   GUICreateDialog in char-based systems )
+GUICloseDialog		-- close a dialog
+GUIDlgOpen 		-- calls GUICreateDialog, formatting locations to
+			   look good in every OS. Takes coordinates in
+			   character units.  See guindlg.h for more information.
+
+The following functions work with controls in dialogs.  On Windows and NT,
+they also work with controls on windows.
+
+For all controls :
+
+GUIGetControlRect	-- get location of control, relative to parent
+GUIResizeControl	-- set size and location of control (relative to
+			   parent)
+GUIGetControlClass	-- get the gui_control_class for the given control (by id)
+GUIIsControlEnabled+	-- returns TRUE if control is enabled
+GUIEnableControl+	-- set control enabled or not enabled
+GUIHideControl+		-- hide a control
+GUIShowControl+		-- show a control
+GUIIsControlVisible+	-- returns TRUE if control is visible
+
+List box functions :
+
+GUIAddText		-- add a text item to list
+GUISetListItemData+	-- associate data with a list box item
+GUIGetListItemData+	-- get the data associated with a list box item
+GUIAddTextList		-- add a list of text to list using callback
+GUIClearList		-- clear the list
+GUIDeleteItem		-- delete an item from a list
+GUIGetListSize		-- get number of elements in list
+GUIGetCurrSelect	-- get the position of the current selection
+GUISetCurrSelect	-- set the current selection by position
+GUIGetListItem		-- get the text of a list item by position
+GUIDropDown+		-- drop down or raise dropped-down list box
+GUIInsertText		-- insert a text item to given location is list
+GUISetTopIndex		-- scroll list so given index is at top of list
+GUIGetTopIndex		-- get index of item at top of list (-1 if no items)
+GUISetHorizontalExtent+ -- set the width of the widest list box item
+
+Functions that work for all controls with text :
+
+GUISetText		-- set the text
+GUIClearText		-- clear the text
+GUIGetText		-- get a copy of the text
+GUISelectAll+		-- select the text (GUI_EDIT and GUI_EDIT_COMBOBOX)
+GUISetEditSelect+	-- select portion of text
+			   (GUI_EDIT and GUI_EDIT_COMBOBOX)
+GUIGetEditSelect+	-- find out the portion of text selected
+			   (GUI_EDIT and GUI_EDIT_COMBOBOX)
+GUIDlgBuffGetText 	-- get text from control into a buffer
+
+Check box and radio button functions :
+
+GUIIsChecked		-- find of if button (on dialog) is checked or not
+GUISetChecked		-- set button (on dialog) as checked or not
+
+
+Memory routines
+---------------
+
+- used to track memory.  Set environment variable TRMEMFILE to the file
+  which will contain memory tracking information.
+- compile with TRMEM defined (default in GUI makefiles) (see notes for
+  compiling below)
+
+GUIAlloc		-- cover function for alloc
+GUIFree			-- cover function for free
+GUIRealloc		-- cover function for realloc
+GUIMemOpen		-- initialize memory tracker
+GUIMemClose		-- close memory tracker
+GUIMemPrtUsage		-- print current memory usage
+
+
+Directory structure
+-------------------
+
+gui/h - gui.h, guitypes.h, guifdlg.h and guidlg.h are intended to be included
+ 	by the user.
+
+	- gui.h contains the messages, structs and API that you need
+	  to get you started
+
+	- guitypes.h contains common typedefs and constants (bool, TRUE, etc.).
+	  You may want to include this if you're not defining these types
+	  for yourself.
+
+	- guifdlg.h contains the prototypes that you need to call the common
+	  file dialog (as in Windows)
+
+ 	- guidlg.h contains some macros and API to make creating dialogs
+	  easier
+
+gui/ui - contains libraries to be used for character based platforms
+	  (DOS, QNX, OS2, WIN and NT character based).
+	- libraries created are :
+
+	Library		OS		Memory Model	Directory 	16/32
+	-------		--		------------	---------	-----
+
+	guidosm.lib  	DOS		medium		objm		16
+	guidosl.lib  	DOS		large		obj		16
+	guidosf.lib	Pharlap/DOS4G	flat		objf		32
+	guios2l.lib	OS2       	large		obj2		16
+	guios2f.lib	OS2V2   	flat		obj2f		32
+	guiqnxl.lib	QNX		large		objq		16
+	guiqnxs.lib	QNX		small		obj32q		32
+	guintf.lib	NT		flat		objnt		32
+	guiwinl.lib	WIN		large		objw		16
+
+gui/win - contains libraries to be used for graphical platforms (Windows, NT)
+	- libraries created are :
+
+	Library		OS		Memory Model	Directory 	16/32
+	-------		--		------------	---------	-----
+
+	guiwinm.lib	Windows		medium		objm		16
+	guiwinl.lib	Windows		large		obj		16
+	guintf.lib	NT		flat		objnt		32
+	guipmf.lib	PM		flat		objpmf		32
+	guipml.lib	PM		large		objpm		16
+
+gui/sample - contains sample code and directories to build it in
+
+	- gui/sample/c/sample.c and sampdef.c create a sample program that
+	  uses a lot of the functionality of the GUI library.  It includes
+	  gui/sample/h/sample.h.
+
+	- gui/sample/obj* directories are set up to compile the sample
+	  for several operating systems :
+
+	DOS
+	---
+	  obj - DOS large memory model
+	  objm - DOS medium memory model
+	  objf - Pharlap/DOS4G flat memory model
+
+	OS/2
+	----
+	  obj2 - OS2 16-bit large memory model
+	  obj2f - OS2 32-bit flat memory model
+
+	QNX
+	---
+	  objq - QNX large memory model
+	  obj32q - QNX 32 bit small memory model
+
+	Windows
+	-------
+	  objw - Windows large memory model
+	  objwm - Windows medium memory model
+	  objwc	- Windows character mode large memory model
+
+	NT
+	--
+	  objnt - NT flat memory model
+	  objcnt - NT character mode flat memory model
+
+	PM
+	--
+	  objpmf - PM flat memory model
+	  objpm - PM large memory model
+
+Notes for compiling :
+
+-- if you want to use the memory tracker, put the trmem project on your
+   machine (from n:\utils\trmem) and set the environment variable
+   trmem_dir to point to it.  Compile with TRMEM define (default).
+-- set the guidir environment variable to point to the gui directory
+   before trying to compile
+-- you must compile ui and have the environment variable uidir set to point
+   to it
+-- to compile for graphics Windows or NT, set sdk_dir to point to the sdk
+   directory on you machine (from n:\cproj\sdk).
+-- ***when using the GUIMDIInit function call, and compiling for a graphical
+   system, your app must have a .rc which include the gui.rc file found in
+   /gui/win/gui.rc.  The resource compiler must also have the directive
+   /i=$(sdk_dir)/misc so that it can find the bitmap indicated in gui.rc.
+
+
+Messages
+--------
+
+typedef struct gui_window gui_window;
+typedef bool (GUICALLBACK)( gui_window *, gui_event, void * );
+
+When GUICreateWindow is called, a gui_window * is returned.  This is a struct
+private to the GUI library and is used for communication between the
+application and the GUI library.  The prototype for the callback routine is
+shown above.  When it is called, it will be given a gui_window, an event
+and (possibly) a third parameter, depending on the event.  Macros are
+provided to extract information from the third parameter.  The following
+is a description of the messages.  Descriptions of the macros are found
+following the message list.  
+
+Note :	The return codes from processing the following messages are important
+	(the rest are ignored) : GUI_INIT_WINDOW and GUI_CLOSE.
+
+typedef enum {
+    GUI_NO_EVENT,	
+    GUI_INIT_WINDOW,
+    ...
+    ...
+    ...
+    GUI_DESTROY     
+} gui_event;
+
+GUI_NO_EVENT
+ 	Never sent to app.  Included because it can be handy for internal use.
+
+GUI_INIT_WINDOW
+	This is the first message sent to a window.  If TRUE is returned,
+	the creation process continues.  If FALSE is returned, the creation
+	process is aborted and all memory for that window is freed.  NULL
+	will be returned from the GUICreateWindow call.
+
+GUI_INIT_DIALOG
+	This is the first message sent to a dialog.  The app may want to
+	initialize the values of controls.
+
+GUI_NOT_ACTIVE
+	The window was active but now is not.  Either the user selected
+	another window as active through mouse or keyboard input, or
+	GUIBringToFront was called for another window.
+
+GUI_NOW_ACTIVE
+	The window was not active but is now active.  Either the user
+	selected this window through mouse or keyboard input or
+	GUIBringToFront was called for this window.
+
+GUI_MOVE
+ 	This window has just moved, either through user input or a call
+	to GUIResizeWindow.
+
+GUI_RESIZE
+	The window has been resized, either through user input or a call
+	to GUIResizeWindow.
+	Macro : GUI_GET_SIZE
+
+GUI_ICONIFIED
+	The window has just been iconified.
+
+GUI_FONT_CHANGED
+	The font for the window has just been changed.  Either the user
+	used a system menu item to do this, or GUISetFontInfo was called.
+
+GUI_PAINT 
+	The GUI library is requesting the window to paint the specified
+	are, if there is anything to paint there.
+	Macro : GUI_GET_ROWS
+
+GUI_KEYDOWN
+	A key is pressed down.
+	Include guikey.h only if interested in GUI_KEYDOWN and/or GUI_KEYUP.
+	Macro : GUI_GET_KEY or GUI_GET_KEY_STATE (both defined in guikey.h)
+	If just the key name is needed, GUI_GET_KEY will do.  If you also
+	need to know the shift state, use GUI_GET_KEY_STATE.
+
+GUI_KEYUP
+	A key is released.
+	Include guikey.h only if interested in GUI_KEYDOWN and/or GUI_KEYUP.
+	Macro : GUI_GET_KEY or GUI_GET_KEY_STATE (defined in guikey.h)
+	If just the key name is needed, GUI_GET_KEY will do.  If you also
+	need to know the shift state, use GUI_GET_KEY_STATE.
+
+GUI_KEY_CONTROL
+	A key message is sent to a control.  Only one GUI_KEY_CONTROL
+	message will be sent to represent the press and release of a key.
+	Macro : GUI_GET_KEY_CONTROL or GUI_GET_KEY_STATE_CONTROL (defined in
+		guikey.h)
+
+GUI_SCROLL_UP 
+	The user has clicked the up arrow on the vertical scroll bar with
+	the mouse.
+
+GUI_SCROLL_PAGE_UP
+	The user has clicked above the scroll thumb on the vertical scroll
+	bar with the mouse.
+
+GUI_SCROLL_TOP
+	The user has used the mouse to drag the scroll thumb to the top of
+	the vertical scroll bar.  
+
+GUI_SCROLL_DOWN 
+	The user has clicked the down arrow on the vertical scroll bar with
+	the mouse.
+
+GUI_SCROLL_PAGE_DOWN
+	The user has clicked below the scroll thumb on the vertical scroll
+	bar with the mouse.
+
+GUI_SCROLL_BOTTOM
+	The user has used the mouse to drag the scroll thumb to the bottom of
+	the vertcial scroll bar;
+
+GUI_SCROLL_VERTICAL 
+ 	The use has used the mouse to drag the scroll thumb to a new position
+	on the vertical scroll bar.
+ 	Macro : GUI_GET_SCROLL
+
+GUI_SCROLL_LEFT 
+	The user has clicked the left arrow on the horizontal scroll bar with
+	the mouse.
+
+GUI_SCROLL_PAGE_LEFT
+	The user has used the mouse to click to the left of the scroll
+	thumb on the horizontal scroll bar.
+
+GUI_SCROLL_FULL_LEFT
+	The user has used the mouse to drag the scroll thumb to the very
+	left of the horizontal scroll bar.
+
+GUI_SCROLL_RIGHT 
+	The user has clicked the right arrow on the horizontal scroll bar with
+	the mouse.
+
+GUI_SCROLL_PAGE_RIGHT
+	The user has used the mouse to click to the right of the scroll
+	thumb on the horizontal scroll bar.
+
+GUI_SCROLL_FULL_RIGHT
+	The user has used the mouse to drag the scroll thumb to the very
+	right if the horizontal scroll bar.
+
+GUI_SCROLL_HORIZONTAL 
+ 	The use has used the mouse to drag the scroll thumb to a new position
+	on the horizontal scroll bar.
+ 	Macro : GUI_GET_SCROLL
+
+GUI_CLICKED
+	A menu item has been triggered by mouse press or keyboard interaction.
+	Macro : GUI_GETID
+
+GUI_DCLICKED
+	A control was double clicked.
+	Macro : GUI_GETID
+
+GUI_LBUTTONDOWN
+	The left mouse button has been pressed.
+ 	Macro : GUI_GET_POINT
+
+GUI_LBUTTONUP
+	The left mouse button is released.
+ 	Macro : GUI_GET_POINT
+
+GUI_LBUTTONDBLCLK
+	The left mouse button is double clicked.
+	Note : double click sequence is press-release-dblclk-release and
+	       then the sequence is repeated.
+ 	Macro : GUI_GET_POINT
+
+GUI_RBUTTONDOWN
+	The right mouse button is double pressed.
+ 	Macro : GUI_GET_POINT
+
+GUI_RBUTTONUP
+	The right mouse button is double released.
+ 	Macro : GUI_GET_POINT
+
+GUI_RBUTTONDBLCLK
+	The right mouse button is double clicked.
+ 	Macro : GUI_GET_POINT
+	Note : double click sequence is press-release-dblclk-release and
+	       then the sequence is repeated.
+
+GUI_MOUSEMOVE
+	The mouse is moved.
+ 	Macro : GUI_GET_POINT
+
+GUI_TOOLBAR_DESTROYED
+	The tool bar has been destroyed.
+
+GUI_TOOLBAR_FIXED
+	The tool bar was floating but is has now become fixed.  This can
+	happen through user interaction only.
+
+GUI_TOOLBAR_FLOATING
+	The tool bar was fixed but is has now become floating.  This can
+	happen through user interaction only.
+
+GUI_CLOSE
+	This message will be sent to the window before the GUI_DESTROY message
+	is sent if the window has the choice of closing or not.  If TRUE
+	is returned from the message, the window will be destroyed.  If
+	FALSE is returned, the window will not be destroyed.
+
+GUI_DESTROY
+	The window is being destroyed.
+
+GUI_HSCROLL_NOTIFY
+	The window has been scrolled horizontally.  Only sent when no other
+	scroll message was sent (ie. library handling scroll events).
+
+GUI_VSCROLL_NOTIFY
+	The window has been scrolled vertically.  Only sent when no other
+	scroll message was sent (ie. library handling scroll events).
+
+GUI_CONTROL_NOT_ACTIVE
+	Sent to a dialog box or window when the control indicated has just
+	lost input focus.  This message will only be sent to some controls
+	(namely GUI_EDIT, GUI_LISTBOX, GUI_COMBOBOX, and GUI_EDIT_COMBOBOX ).
+	Use the GUI_GETID macro to extract the id of the control that has
+	just lost focus.
+
+GUI_CONTROL_CLICKED
+	A control item has been triggered by mouse press or keyboard interaction.
+	Macro : GUI_GETID
+
+Macros
+------
+
+GUI_GET_POINT :
+
+#define GUI_GET_POINT( param, point ) ( point = *( gui_point * )param )
+
+	Use when receiving the following messages :
+
+	GUI_MOUSEMOVE
+	GUI_LBUTTONUDOWN
+	GUI_LBUTTONUP
+	GUI_LBUTTONDBLCLK
+	GUI_RBUTTONUDOWN
+	GUI_RBUTTONUP
+	GUI_RBUTTONDBLCLK
+
+        Takes 1 parameter of type gui_point, which will be set to the
+	location of the mouse action.
+
+
+GUI_GET_ROWS :
+
+#define GUI_GET_ROWS( param, gui_start, gui_num ) {                          \
+                                gui_start = (( gui_row_num * )param)->start; \
+                                gui_num =   (( gui_row_num * )param)->num;   \
+		                                   }
+	Use when receiving the following message :
+
+	GUI_PAINT
+
+	Takes 2 parameters of type gui_ord ( gui_start ) and int ( gui_num ).
+	gui_start is the row to start painting at and gui_num is the
+	number of rows to paint.  The first row is 0.
+
+GUI_GETID :
+
+#define GUI_GETID( param, id ) ( id = *( unsigned * )param )
+
+	Use when receiving the following messages :
+
+	GUI_CONTROL_NOT_ACTIVE
+	GUI_CLICKED
+	GUI_CONTROL_CLICKED
+	GUI_CONTROL_DCLICKED
+
+	Takes 1 parameter of type unsigned which will be set to the menu
+	or control id.  GUI_CLICKED can be to a menu.  GUI_CONTROL_CLICKED
+	and GUI_CONTROL_DCLICKED can be sent for a control.  A
+	GUI_CONTROL_NOT_ACTIVE message can be sent in a dialog box or window,
+	meaning that the control indicated has just lost input focus.  This
+	message will only be sent to some controls (namely GUI_EDIT,
+	GUI_LISTBOX, GUI_COMBOBOX, and GUI_EDIT_COMBOBOX ).
+
+GUI_GET_SIZE :
+
+#define GUI_GET_SIZE( param, size ) { size.x = (( gui_coord * )param)->x; \
+                                      size.y = (( gui_coord * )param)->y; }
+
+	Use when receiving the following message :
+
+	GUI_RESIZE
+
+	Takes 1 parameter of type gui_coord which will be set to contain
+	the new width and height of the window.
+
+GUI_GET_SCROLL :
+
+#define GUI_GET_SCROLL( param, scroll ) ( scroll = *( int * )param )
+
+	Use when receiving the following messages :
+
+	GUI_SCROLL_VERTICAL
+	GUI_SCROLL_HORIZONTAL
+
+	Takes 1 parameter of type int which will be set to contain the
+	amount scrolled horizontally or vertically (by dragging scroll
+	thumb).
+
+GUI_GET_KEY :
+
+#define GUI_GET_KEY( param, inkey ) ( inkey = (( gui_key_state *)param)->key )
+
+	Use when receiving the following messages :
+
+	GUI_KEY_DOWN
+	GUI_KEY_UP
+
+	Takes one parameter, of type gui_key, which will be set to be
+	the key pressed or released.
+
+
+GUI_GET_KEY_STATE :
+
+#define GUI_GET_KEY_STATE( param, inkey, state ) { 		\
+		inkey = (( gui_key_state *)param)->key;		\
+		state = (( gui_key_state *)param)->state;	\
+						}		\
+
+	Use when receiving the following messages :
+
+	GUI_KEY_DOWN
+	GUI_KEY_UP
+
+	Takes two parameters, of type gui_key and gui_keystate which will
+	be set to be the key pressed or release and they key state when
+	that key was pressed or released.
+
+GUI_GET_KEY_CONTROL :
+
+#define GUI_GET_KEY_CONTROL( param, id, inkey )	{		\
+	id = ((gui_key_control *)param)->id;			\
+	inkey = (( gui_key_control *)param)->key_state.key;	\
+				   		}		\
+
+	Use when receiving the following messages :
+
+	GUI_KEY_CONTROL
+
+	Takes two parameters, of type unsigned and gui_key, which will be
+	set to be the id of the control receiving the keyboard input and
+	the key pressed and released.
+
+GUI_GET_KEY_STATE_CONTROL :
+
+#define GUI_GET_KEY_STATE_CONTROL( param, id, inkey, state ){	\
+	id = ((gui_key_control *)param)->id;			\
+	inkey = (( gui_key_control *)param)->key_state.key;	\
+	state = (( gui_key_control *)param)->key_state.state;	\
+				   	}			\
+
+	Use when receiving the following messages :
+
+	GUI_KEY_CONTROL
+
+	Takes three parameters, of type unsigned, gui_key and gui_keystate
+	which will be set to be the id of the control receiving the keyboard
+	input, the key pressed and release and they key state when
+	that key was pressed or released, respectively.

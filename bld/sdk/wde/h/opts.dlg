@@ -1,0 +1,23 @@
+WdeOptions DIALOG 10, 20, 186, 163
+STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_VISIBLE | WS_DLGFRAME
+CAPTION "Dialog Editor Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+        CONTROL "&Resource Format",                     IDB_NOINPUT, "BUTTON", BS_GROUPBOX | WS_CHILD | WS_VISIBLE | WS_GROUP, 5, 5, 175, 25
+        CONTROL "&WATCOM",                              IDB_OPT_WRES, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 25, 15, 55, 10
+        CONTROL "&Microsoft",                           IDB_OPT_MRES, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 105, 15, 55, 10
+        CONTROL "&Grid",                                IDB_NOINPUT, "BUTTON", BS_GROUPBOX | WS_CHILD | WS_VISIBLE | WS_GROUP, 5, 37, 175, 34
+        CONTROL "&Horizontal:",                         IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 10, 50, 35, 8
+        CONTROL "",                                     IDB_OPT_HINC, "EDIT", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_TABSTOP, 50, 50, 30, 12
+        CONTROL "&Vertical:",                           IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 85, 50, 35, 8
+        CONTROL "",                                     IDB_OPT_VINC, "EDIT", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER, 125, 50, 30, 12
+        CONTROL "&Load Symbols Options",                IDB_NOINPUT, "BUTTON", BS_GROUPBOX | WS_CHILD | WS_VISIBLE | WS_GROUP, 5, 78, 175, 55
+        CONTROL "&Ignore INCLUDE environment variable", IDB_OPT_IGNOREINC, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 10, 88, 140, 12
+        CONTROL "&Additional Include Path:",            IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 10, 103, 85, 8
+        CONTROL "",                                     IDB_OPT_INCPATH, "EDIT", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER, 10, 113, 165, 12
+        CONTROL "OK",                                   IDOK, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP, 5, 141, 40, 14
+        CONTROL "Defaults",                             IDB_OPT_SETDEFS, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 50, 141, 40, 14
+        CONTROL "Cancel",                               IDCANCEL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 95, 141, 40, 14
+        CONTROL "&Help",                                IDB_HELP, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 140, 141, 40, 14
+END
+

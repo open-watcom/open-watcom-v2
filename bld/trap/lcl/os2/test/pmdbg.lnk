@@ -1,0 +1,22 @@
+# This file produced by MS2WLINK
+debug all op symfile,map
+system os2 pm
+file pmdbg.obj
+name pmdbg.exe
+option map=pmdbg.map
+library e:\l\lib286\os2\clibl.lib
+library d:\dev\watcom\lib\os2.lib
+option alignment=16
+option nodefaultlibs
+option modname=pmdbg
+option description 'OS/2 Presentation Manager Sample'
+option manyautodata
+option stack=4096
+option heapsize=1024
+option protmode
+file dbg.obj
+file ..\..\os2\obj\dbgacc1.obj
+file ..\..\os2\obj\dbgacc2.obj
+file ..\..\os2\obj\os2lkup.obj
+file ..\..\os2\obj\os2trap.obj
+file ..\..\os2\obj\dbgstr.obj

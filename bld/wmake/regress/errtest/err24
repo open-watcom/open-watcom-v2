@@ -1,0 +1,19 @@
+# -----------------------------------
+# ERROR 24: more than one cmd list
+# -----------------------------------
+
+test1 : a
+    cmd list 1
+test1 : b
+    cmd list 2
+
+test2 : .symbolic
+    cmd list 1
+test2 : a
+    cmd list 2
+
+test3 : a
+    cmd list 1
+test3 : .symbolic
+    cmd list 2
+

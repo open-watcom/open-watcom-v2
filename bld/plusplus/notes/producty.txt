@@ -1,0 +1,35 @@
+Notes on Productivity Environment
+=================================
+
+Mission:
+-------
+
+    To provide a technical environment which increases programmer 
+    productivity
+         
+    note: "technical" means the C++ compiler and run-time environment
+
+
+What we can do:
+--------------
+    
+    * cut down time between tests (this means cutting down
+      compile time)
+    
+    * provide run-time support for bug detection
+        - zap deleted objects
+        - zap lvalue passed to delete ? could affect code
+    
+    
+Run-time Support:
+----------------
+
+    * memory tracking and related features
+    
+    * ctor/dtor tracker
+    
+    * undefined-auto initialization (to garbage)
+    
+    * checking parameters to run-time routines, support routines
+    
+    * internal integrity tests

@@ -1,0 +1,196 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+//#define DEBUG_TRAP
+#include "trapdbg2.h"
+
+#include <string.h>
+//#include <i86.h>
+#include "trpimp.h"
+#include "trperr.h"
+#include "packet.h"
+
+
+static unsigned DoRequest()
+{
+    unsigned    left;
+    unsigned    len;
+    unsigned    i;
+    unsigned    piece;
+
+    _DBG_EnterFunc( "DoRequest" );
+    StartPacket();
+    if( Out_Mx_Num == 0 ) {
+        /* Tell the server we're not expecting anything back */
+        *(access_req *)In_Mx_Ptr[0].ptr |= 0x80;
+    }
+    for( i = 0; i < In_Mx_Num; ++i ) {
+        AddPacket( In_Mx_Ptr[i].len, In_Mx_Ptr[i].ptr );
+    }
+    *(access_req *)In_Mx_Ptr[0].ptr &= ~0x80;
+    if( PutPacket() == REQUEST_FAILED ) return( REQUEST_FAILED );
+    if( Out_Mx_Num != 0 ) {
+        len = GetPacket();
+        if( len == REQUEST_FAILED ) return( REQUEST_FAILED );
+        left = len;
+        i = 0;
+        for( ;; ) {
+            if( i >= Out_Mx_Num ) break;
+            if( left > Out_Mx_Ptr[i].len ) {
+                piece = Out_Mx_Ptr[i].len;
+            } else {
+                piece = left;
+            }
+            RemovePacket( piece, Out_Mx_Ptr[i].ptr );
+            i++;
+            left -= piece;
+            if( left == 0 ) break;
+        }
+    } else {
+        len = 0;
+    }
+    _DBG_ExitFunc( "DoRequest" );
+    return( len );
+}
+
+
+static unsigned ReqRemoteConnect()
+{
+    connect_ret *connect;
+    char                *data;
+    unsigned    len;
+    unsigned            max;
+
+    _DBG_EnterFunc( "ReqRemoteConnect" );
+    connect = GetOutPtr( 0 );
+    data = (char *)GetOutPtr( sizeof( connect_ret ) );
+    if( !RemoteConnect() ) {
+        strcpy( data, TRP_ERR_CANT_CONNECT );
+        _DBG_WriteErr( "!RemoteConnect" );
+        _DBG_ExitFunc( "AccRemoteConnect" );
+        return( sizeof( connect_ret ) + sizeof( TRP_ERR_CANT_CONNECT ) );
+    }
+    len = DoRequest();
+    if( data[0] != '\0' ) {
+        RemoteDisco();
+    }
+    max = MaxPacketSize();
+    if( connect->max_msg_size > max ) {
+        connect->max_msg_size = max;
+    }
+    _DBG_ExitFunc( "ReqRemoteConnect" );
+    return( len );
+}
+
+static void ReqRemoteDisco()
+{
+    _DBG_EnterFunc( "ReqDisco" );
+    DoRequest();
+    RemoteDisco();
+    _DBG_ExitFunc( "ReqDisco" );
+}
+
+static void ReqRemoteResume()
+{
+    _DBG_EnterFunc( "ReqResume" );
+    while( !RemoteConnect() )
+        ;
+    DoRequest();
+    _DBG_ExitFunc( "ReqResume" );
+}
+
+#pragma off(unreferenced);
+trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
+#pragma on(unreferenced);
+{
+    trap_version    ver;
+    char           *err;
+    int             fix_minor
+
+    _DBG_EnterFunc( "TrapInit" );
+    ver.remote = TRUE;
+    fix_minor = 0;
+    if( parm != NULL && *parm == '!' ) {
+        ++parm;
+        if( *parm != '!' ) fix_minor = 1;
+    }
+    err = RemoteLink( parm, 0 );
+    if( err != NULL ) {
+        strcpy( error, err );
+    } else {
+        error[0] = '\0';
+    }
+    ver.major = TRAP_MAJOR_VERSION;
+    ver.minor = fix_minor ? OLD_TRAP_MINOR_VERSION : TRAP_MINOR_VERSION;
+    _DBG_ExitFunc( "TrapInit" );
+    return( ver );
+}
+
+unsigned TRAPENTRY TrapRequest( unsigned num_in_mx,  mx_entry *mx_in,
+                                       unsigned num_out_mx, mx_entry *mx_out )
+{
+    unsigned            ret;
+
+    _DBG_EnterFunc( "TrapAccess" );
+    _DBG_Writeln( _DBG_Request( *(access_req *)mx_in[0].ptr ) );
+    In_Mx_Num = num_in_mx;
+    Out_Mx_Num = num_out_mx;
+    In_Mx_Ptr = mx_in;
+    Out_Mx_Ptr = mx_out;
+
+    switch( *(access_req *)mx_in[0].ptr ) {
+    case REQ_CONNECT:
+        ret = ReqRemoteConnect();
+        break;
+    case REQ_DISCONNECT:
+    case REQ_SUSPEND:
+        ReqRemoteDisco();
+        ret = 0;
+        break;
+    case REQ_RESUME:
+        ReqRemoteResume();
+        ret = 0;
+        break;
+    default:
+        ret = DoRequest();
+        break;
+    }
+    _DBG_ExitFunc( "TrapAccess" );
+    return( ret );
+}
+
+void TRAPENTRY TrapFini()
+{
+    _DBG_EnterFunc( "TrapFini" );
+    RemoteUnLink();
+    _DBG_ExitFunc( "TrapFini" );
+}

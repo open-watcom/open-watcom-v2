@@ -1,0 +1,29 @@
+expr %a = %4 - %3 + 2
+expr %b = %4+1
+expr %c = %2+1
+assign %e = /EDPATH/$
+assign %f = %e\fhelp.vi
+assign %m = %e\mfchelp.vi
+
+menu float0
+menuitem "&Windows Help" "Look up Windows SDK help for '%1'" help %1
+menuitem "C&Lib Help" "Look up Watcom C Library help for '%1'" source clibhelp.vi %1
+fopen %m 1 x
+if lastrc == ERR_NO_ERR
+    menuitem "&MFC Help" "Look up MFC Library help for '%1'" source mfchelp.vi %1
+endif
+fopen %f 1 x
+if lastrc == ERR_NO_ERR
+    menuitem "&FORTRAN Help" "Look up Watcom FORTRAN help for '%1'" source fhelp.vi %1
+endif
+menuitem "&Open" "Edit file '%1'" edit %1
+menuitem ""
+menuitem "Cu&t" "Delete selected text to the clipboard" @ d 0
+menuitem "&Copy" "Copy selected text to the clipboard" @ y 0
+menuitem ""
+menuitem "&Find" "Search current window for '%1'" execute \<CTRL_F2>%1\n
+menuitem "F&grep" "Search disk files for '%1'" fgrep "%1"
+menuitem "&Tag" "Search for tag '%1'" tag %1
+endmenu
+
+floatmenu 0 %a %b %c

@@ -1,0 +1,86 @@
+proj_name = orl
+
+.extensions:
+.extensions: .lan .exe .obj .c .h .mif
+
+.mif : $(mif_path)
+!include cproj.mif
+!include defrule.mif
+
+obj             = .obj
+exe             = .exe
+
+extra_c_flags_axp =
+
+bin_nt_386 = o
+bin_nt_axp = axp
+bin_os2_386 = os2
+!ifdef orl_rtdll
+!ifeq orl_rtdll 1
+bin_nt_386 = o.dll
+bin_nt_axp = axp.dll
+bin_os2_386 = os2.dll
+!endif
+!endif
+
+.c: $(orl_dir)\c;$(orl_dir)\elf\c;$(orl_dir)\coff\c;$(orl_dir)\omf\c
+.h: $(orl_dir)\h;$(orl_dir)\elf\h;$(orl_dir)\coff\h;$(orl_dir)\omf\h
+
+lbc = ..\tmp.lbc
+
+inc_dirs = $(orl_dir)\h;$(orl_dir)\elf\h;$(orl_dir)\coff\h;$(orl_dir)\omf\h;$(watcom_dir)\h
+
+.before:
+        set include=$(inc_path)
+
+omf_objs        = &
+                omfload$(obj) &
+                omfmunge$(obj) &
+                omfentr$(obj) &
+                omfflhn$(obj) &
+                omfdrctv$(obj) &
+
+elf_objs        = elfentr$(obj) &
+                        elflwlv$(obj) &
+                        elfflhn$(obj) &
+                        elfload$(obj) &
+
+coff_objs       = coffentr$(obj) &
+                        cofflwlv$(obj) &
+                        coffflhn$(obj) &
+                        coffload$(obj)
+
+orl_objs        = orlentry$(obj) &
+                        orlflhnd$(obj) &
+                        orlhash$(obj) &
+                        $(omf_objs) &
+                        $(elf_objs) &
+                        $(coff_objs)
+
+!define %SETUP $(default)
+
+nothing : .SYMBOLIC
+        @set EXE=..\$(bin_$(host_OS)_$(host_CPU))\orl.lib
+        @set SETUP=nothing
+
+.AFTER
+        @%make $(%SETUP)
+        @%make $(%EXE)
+
+..\$(bin_$(host_OS)_$(host_CPU))\orl.lib : $(orl_objs)
+        @%make library
+
+library : .PROCEDURE
+        @%create $(lbc)
+        @for %i in ($(orl_objs)) do @%append $(lbc) -+%i
+        $(librarian) -b $^@ @$(lbc)
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj del *.?bj
+        @if exist *.lnk del *.lnk
+        @if exist *.exe del *.exe
+        @if exist *.lib del *.lib
+        @if exist *.res del *.res
+        @if exist *.clb del *.clb
+        @if exist *.err del *.err
+        @if exist $(lbc) del $(lbc)

@@ -1,0 +1,19 @@
+imp_objs = &
+        wataddr.obj &
+        watdmnd.obj &
+        watgbl.obj &
+        watlcl.obj &
+        watldsym.obj &
+        watlnum.obj &
+        watloc.obj &
+        watmisc.obj &
+        watmod.obj &
+        wattype.obj &
+        demangle.obj
+
+name = watcom
+
+extra_incs = $(lib_misc_dir)\h
+extra_srcs = $(lib_misc_dir)\c
+
+!include ../../imp.mif

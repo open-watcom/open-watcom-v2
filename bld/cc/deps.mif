@@ -1,0 +1,14 @@
+cgen.obj        : cgen.c cmathfun.h
+cexpr.obj       : cexpr.c cmathfun.h
+cdata.obj       : cdata.c cvars.h
+cerror.obj      : cerror.c cerrs.h msgtxt.gh msgdefs.gh msgattr.gh
+cmsg.obj        : cmsg.c cerrs.h msgtxt.gh msgdefs.gh msgattr.gh usage.gh
+cpragma.obj     : cpragma.c pragdefn.h
+cprag86.obj     : cprag86.c pragdefn.h
+ctoken.obj      : ctoken.c ctokens.h
+asmins.obj      : asmins.c asmins.h
+watcom.obj      : watcom.c bancfg.h
+cdrvdll.obj     : cdrvdll.c idedll.h
+idedll.obj      : idedll.c idedll.h
+
+prag$(target_CPU).obj   : prag$(target_CPU).c  pragdefn.h code$(target_CPU).gh

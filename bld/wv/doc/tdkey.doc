@@ -1,0 +1,19 @@
+ F2          menu        Break/Toggle
+ F3          menu        Code/Modules
+ F4          menu        Run/Run to Cursor
+ F5          menu        Window/Zoom
+ F6          menu        Window/Next
+ F7          menu        Run/Trace Into
+ F8          menu        Run/Step Over
+ F9          menu        Run/Go
+ ALT-F2      menu        Break/New...
+ ALT-F3      close the current window
+ ALT-F4      menu        Undo/Undo
+ ALT-F5      menu        Window/Application
+ ALT-F7      trace one assembly instruction
+ ALT-F8      menu        Run/Until Return
+ ALT-F9      menu        Run/Execute to...
+ ALT-F10     activate the popup menu for the current window
+ CTRL-F2     menu        Run/Restart
+ CTRL-F4     open a new watch window
+ CTRL-F7     add a new item to the watch window

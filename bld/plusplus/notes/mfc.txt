@@ -1,0 +1,27 @@
+-- C7 has the following bug (-Zp8 packing enabled)
+    struct P {
+	char c;		// offset 0
+	double d;		// offset 8
+    };
+    struct S {		// vfptr offset 0
+	double d;		// offset 2 (should be offset 8)
+	int a;
+	int b;
+	virtual void foo( void );
+	virtual void foo( int );
+	int c;
+    };
+    
+    S *p;
+    
+    void foo( P *q, S *p )
+    {
+	q->c = 'a';
+	q->d = 1;
+	p->d = 0;
+	p->a = 1;
+	p->b = 2;
+	p->foo();
+	p->foo(1);
+	p->c = 3;
+    }

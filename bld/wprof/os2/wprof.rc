@@ -1,0 +1,4 @@
+#include "../mif/rcdef.h"
+#include "../h/wprof.rc"
+ICON 1          "../bitmap/os2/prof_i.ico"
+ICON WPROF_ICON "../bitmap/os2/prof_i.ico"

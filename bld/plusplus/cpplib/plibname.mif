@@ -1,0 +1,11 @@
+# define prefix names for libraries
+#
+#
+plib_n = plib
+plib_x = plbx
+strg_n = strg
+strg_x = strx
+iost_n = iost
+iost_x = iosx
+cont_n = cont
+cont_x = conx

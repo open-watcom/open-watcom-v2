@@ -1,0 +1,6 @@
+project : .symbolic
+    pexist mathlib
+    pexist emu
+    pexist emu86
+    pexist lib_misc
+    pexist watcom

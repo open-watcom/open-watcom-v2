@@ -1,0 +1,29 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGFILEED.H\0"
+END
+
+FileEditDlg DIALOG 50, 12, 257, 188
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Source Files"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "", IDD_FILEBOX, "ListBox", LBS_NOTIFY | LBS_SORT |
+                    WS_BORDER | WS_VSCROLL | WS_TABSTOP, 6, 7, 188, 105
+    CONTROL         "&Include", IDD_INCLUDE, "Button", WS_TABSTOP, 202, 126,
+                    46, 14
+    CONTROL         "E&xclude", IDD_EXCLUDE, "Button", WS_TABSTOP, 202, 144,
+                    46, 14
+    CONTROL         "OK", IDD_OKBUTTON, "Button", WS_TABSTOP, 199, 7, 54, 14
+    CONTROL         "Cancel", IDD_CANCELBUTTON, "Button", WS_TABSTOP, 199,
+                    25, 54, 14
+    CONTROL         "In&clude All", IDD_SETALL, "Button", WS_TABSTOP, 199,
+                    53, 54, 14
+    CONTROL         "&Exclude All", IDD_CLEARALL, "Button", WS_TABSTOP, 199,
+                    70, 54, 14
+    CONTROL         "&Help", IDD_HELP, "Button", WS_TABSTOP, 199, 98, 54, 14
+    CONTROL         "Pattern", IDD_PATTERNBOX, "Button", BS_GROUPBOX, 6, 114,
+                    247, 68
+    CONTROL         "", IDD_PATTERNTEXT, "ComboBox", CBS_DROPDOWN | CBS_SORT |
+                    WS_VSCROLL | WS_TABSTOP, 10, 126, 185, 55
+END

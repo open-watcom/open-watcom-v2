@@ -1,0 +1,46 @@
+#
+#   upd04   - test that .CONTINUE really aborts an entire sub-tree if there
+#           is an error
+#
+
+.CONTINUE
+
+all : setup targa targb clean .symbolic
+    @%null
+
+setup : .symbolic
+    @echo Should get Error(E42) on (upd04a1) and (upd04b1.d)
+    @wtouch upd04b1.1 upd04b2.2
+
+clean : .symbolic
+    @rm -f -s upd04a2 upd04b1.1 upd04b2.2 upd04b2.d
+
+#
+# example using explicit rules
+#
+
+targa : upd04a1 upd04a2
+    %abort
+
+upd04a1 :
+    @$(mkerr)
+
+upd04a2 :
+    @wtouch upd04a2
+
+
+#
+# example using implicit rules
+#
+
+.extensions:
+.extensions: .d .1 .2
+
+.1.d :
+    @$(mkerr)
+
+.2.d :
+    @wtouch $^@
+
+targb : upd04b1.d upd04b2.d
+    @%abort

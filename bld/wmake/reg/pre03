@@ -1,0 +1,44 @@
+#
+#   wmake regression tests
+#
+#
+true=
+
+# error constructs in !if statements
+
+!ifdef true
+#
+!else
+#
+!else ifdef true            # error - ignoring else if block after else
+#
+!endif
+
+
+!ifdef true
+#
+!else
+#
+!else                       # error - ignoring else block after else
+#
+!endif
+
+!asdf                       # error - unknown preprocessor directive
+!!@#$%                      # error - unknown preprocessor directive
+
+
+!undef dowah                # error - trying to undefine an undefined macro
+
+!include alpha.foo          # error - unable to include
+
+!ifeq humho true            # error - macro is undefined
+!endif
+
+!define a&^b true           # error - invalid macro name
+
+!error should be warnings on lines 15, 24, 32, 36
+!error should be errors on lines 28, 29, 34, 39
+!error one warning should follow, then the abort message
+
+!ifdef glob_glue
+

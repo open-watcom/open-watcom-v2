@@ -1,0 +1,52 @@
+Project plan for the browser
+----------------------------
+
+Well, the browser is moving along quite well, but there are still a few
+major issues left to solve.
+
+**** Big issues that _have_ to be done
+
+- have to resolve global symbols and types
+- references to symbols is unimplemented
+- change the .mbr file format to ELF
+- port to other OS's (waiting on wclass port to LUI)
+- use "infinite" list boxes (waiting on wclass port to LUI/DUI)
+- graphic tree options (waiting on wclass port to LUI)
+
+**** Would be nice (but not absolutely necessary)
+
+- some kind of hardcopy reports			(possibly higher priority?)
+- integrated with message translation stuff	(possibly higher priority?)
+- support for templates, exceptions and labels. (possibly higher priority?)
+- fortran support. 				(possibly higher priority?)
+- dwarf macro stuff is unimplemented (waiting on compiler support)
+- pinned windows (& resultant communication??).	
+- references to a macro were handled
+
+there are also a fair number of little "cleanup" items, but these are the
+biggest issues.
+Changing the file format to ELF gets rid of the rather primitive and
+proprietary "format" we had before, and will let us use the linker to "link" the
+browse information.  This "linking" would involve reading in the browse
+information and interpreting it, scanning for and removing redundant
+information.  This will greatly reduce browser memory requirements and increase
+browser speed, and when we move to DWARF as a debugging information format
+will give the same benefits to the debugger as an added bonus.
+
+After these features are added and the porting is done, then there probably
+should be some time for the browser to be used internally so I can get some
+user feedback on what features need to be modified or added.
+
+So... my development plan for the browser is this:
+1) finish off the big issues
+2) do cleanup then "would be nice" things until wclass is ported to LUI
+3) do the LUI dependant things
+4) do an "internal release" to get it tested & get feedback.
+
+Note that there probably won't be much time in step 2 to do "would be nice"
+things, as the cleanup and big issues are still a fair amount of work, and
+since I will probably spend a fair amount of my time working on the linker
+a lot of it will have to be done by my coop.  (This assumes that the port
+of wclass to LUI does not encounter a major delay from the current plan)
+
+---- jim.

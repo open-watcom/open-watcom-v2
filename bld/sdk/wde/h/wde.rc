@@ -1,0 +1,315 @@
+#include <windows.h>
+#include "banner.h"
+#include "wde_rc.h"
+#include "wdemsgs.h"
+
+#undef pick
+#undef sp
+#define pick( a, b ) a, [ b ]
+#define sp( a, b ) a
+
+STRINGTABLE
+BEGIN
+    #include "wde.msg"
+END
+
+#include "wde.men"
+
+WdeAccelTable ACCELERATORS
+BEGIN
+    VK_RETURN,  IDM_DEFINEOBJECT,       VIRTKEY
+    VK_DELETE,  IDM_DELETEOBJECT,       VIRTKEY
+    "H",        IDM_HIDE_DIALOG,        CONTROL, VIRTKEY
+    "D",        IDM_SELECT_DIALOG,      CONTROL, VIRTKEY
+    VK_ESCAPE,  IDM_ESCAPE,             VIRTKEY
+    VK_F9,      IDM_GOTO_INFOBAR,       VIRTKEY
+    VK_F1,      IDM_HELP,               VIRTKEY
+    VK_TAB,     IDM_TAB,                VIRTKEY
+    VK_TAB,     IDM_STAB, SHIFT,        VIRTKEY
+    "X",        IDM_CUTOBJECT,          CONTROL, VIRTKEY
+    "C",        IDM_COPYOBJECT,         CONTROL, VIRTKEY
+    "V",        IDM_PASTEOBJECT,        CONTROL, VIRTKEY
+    VK_F7,      IDM_SIZETOTEXT,         VIRTKEY
+    "T",        IDM_TEST_MODE,          CONTROL, VIRTKEY
+END
+
+/* icons */
+WdeIcon      ICON wde.ico
+ResIcon      ICON restext.ico
+DefaultIcon  ICON owde.ico
+
+/* ribbon bitmaps */
+New          BITMAP new.bmp
+Clear        BITMAP clear.bmp
+Open         BITMAP open.bmp
+Save         BITMAP save.bmp
+Cut          BITMAP cut.bmp
+Copy         BITMAP copy.bmp
+Paste        BITMAP paste.bmp
+SzToTxt      BITMAP sztotxt.bmp
+Test         BITMAP test.bmp
+Order        BITMAP order.bmp
+Tabs         BITMAP tabs.bmp
+Groups       BITMAP groups.bmp
+
+/* aboutbox bitmap */
+AboutLogo    BITMAP MOVEABLE DISCARDABLE logo4.bmp
+
+/* alignment bitmaps */
+AlignLeft    BITMAP left.bmp
+AlignRight   BITMAP right.bmp
+AlignTop     BITMAP top.bmp
+AlignBottom  BITMAP bottom.bmp
+AlignVCentre BITMAP vcenter.bmp
+AlignHCentre BITMAP hcenter.bmp
+
+/* same size bitmaps */
+SameWidth    BITMAP samew.bmp
+SameHeight   BITMAP sameh.bmp
+SameSize     BITMAP samehw.bmp
+
+/* control menu bitmaps */
+SelMode      BITMAP selmode.bmp
+StikMode     BITMAP stikmode.bmp
+DiagMode     BITMAP diagmode.bmp
+PushMode     BITMAP pushmode.bmp
+RadMode      BITMAP radmode.bmp
+ChekMode     BITMAP chekmode.bmp
+GrpMode      BITMAP grpmode.bmp
+EditMode     BITMAP editmode.bmp
+TextMode     BITMAP textmode.bmp
+FramMode     BITMAP frammode.bmp
+IconMode     BITMAP iconmode.bmp
+ListMode     BITMAP listmode.bmp
+CombMode     BITMAP combmode.bmp
+HScrMode     BITMAP hscrmode.bmp
+VScrMode     BITMAP vscrmode.bmp
+SBoxMode     BITMAP sboxmode.bmp
+Custom1      BITMAP cst1mode.bmp
+Custom2      BITMAP cst2mode.bmp
+
+/* tool bar up bitmaps */
+ChekTool     BITMAP chktool.bmp
+CombTool     BITMAP cbtool.bmp
+Cst1Tool     BITMAP cst1tool.bmp
+Cst2Tool     BITMAP cst2tool.bmp
+DiagTool     BITMAP dlgtool.bmp
+EditTool     BITMAP etool.bmp
+FramTool     BITMAP frtool.bmp
+GrpTool      BITMAP gtool.bmp
+HscrTool     BITMAP hstool.bmp
+IconTool     BITMAP icontool.bmp
+ListTool     BITMAP ltool.bmp
+PushTool     BITMAP pshtool.bmp
+RadTool      BITMAP rdtool.bmp
+SboxTool     BITMAP sboxtool.bmp
+SelTool      BITMAP seltool.bmp
+TextTool     BITMAP texttool.bmp
+VscrTool     BITMAP vstool.bmp
+StikTool     BITMAP stiktool.bmp
+
+/* tool bar down bitmaps */
+WdeToolBk    BITMAP toolbk.bmp
+ChekToolD    BITMAP chktldn.bmp
+CombToolD    BITMAP cbtoold.bmp
+Cst1ToolD    BITMAP cst1tldn.bmp
+Cst2ToolD    BITMAP cst2tldn.bmp
+DiagToolD    BITMAP dlgtoold.bmp
+EditToolD    BITMAP etoold.bmp
+FramToolD    BITMAP frtoold.bmp
+GrpToolD     BITMAP gtoold.bmp
+HscrToolD    BITMAP hstoold.bmp
+IconToolD    BITMAP icontlbk.bmp
+ListToolD    BITMAP ltoold.bmp
+PushToolD    BITMAP pshtoold.bmp
+RadToolD     BITMAP rdtldn.bmp
+SboxToolD    BITMAP sboxtldn.bmp
+SelToolD     BITMAP seltldn.bmp
+TextToolD    BITMAP texttldn.bmp
+VscrToolD    BITMAP vstoold.bmp
+StikToolD    BITMAP stiktldn.bmp
+
+/* Common control toolbox bitmaps */
+SBTool       BITMAP sbtool.bmp
+SBToolD      BITMAP sbtoold.bmp
+LVTool       BITMAP lvtool.bmp
+LVToolD      BITMAP lvtoold.bmp
+TVToolD      BITMAP tvtoold.bmp
+TVTool       BITMAP tvtool.bmp
+TCTool       BITMAP tabtool.bmp
+TCToolD      BITMAP tabtoold.bmp
+AniTool      BITMAP anitool.bmp
+AniToolD     BITMAP anitoold.bmp
+UDTool       BITMAP udtool.bmp
+UDToolD      BITMAP udtoold.bmp
+TBTool       BITMAP tbtool.bmp
+TBToolD      BITMAP tbtoold.bmp
+PGTool       BITMAP pgtool.bmp
+PGToolD      BITMAP pgtoold.bmp
+HKTool       BITMAP hktool.bmp
+HKToolD      BITMAP hktoold.bmp
+HdrTool      BITMAP hdrtool.bmp
+HdrToolD     BITMAP hdrtoold.bmp
+
+#if 0
+/* for compatability with Borland bitmap buttons */
+1000         BITMAP MOVEABLE DISCARDABLE ccompatn.bmp
+3000         BITMAP MOVEABLE DISCARDABLE ccompatp.bmp
+5000         BITMAP MOVEABLE DISCARDABLE ccompatf.bmp
+2000         BITMAP MOVEABLE DISCARDABLE ccompatn.bmp
+4000         BITMAP MOVEABLE DISCARDABLE ccompatp.bmp
+6000         BITMAP MOVEABLE DISCARDABLE ccompatf.bmp
+
+1911         BITMAP MOVEABLE DISCARDABLE ccompatn.bmp
+3911         BITMAP MOVEABLE DISCARDABLE ccompatp.bmp
+5911         BITMAP MOVEABLE DISCARDABLE ccompatf.bmp
+2911         BITMAP MOVEABLE DISCARDABLE ccompatn.bmp
+4911         BITMAP MOVEABLE DISCARDABLE ccompatp.bmp
+6911         BITMAP MOVEABLE DISCARDABLE ccompatf.bmp
+
+1400         BITMAP MOVEABLE DISCARDABLE ccompatn.bmp
+3400         BITMAP MOVEABLE DISCARDABLE ccompatp.bmp
+5400         BITMAP MOVEABLE DISCARDABLE ccompatf.bmp
+2400         BITMAP MOVEABLE DISCARDABLE ccompatn.bmp
+4400         BITMAP MOVEABLE DISCARDABLE ccompatp.bmp
+6400         BITMAP MOVEABLE DISCARDABLE ccompatf.bmp
+
+/* for compatability with Borland define dialog default buttons */
+1001         BITMAP born_1.bmp
+3001         BITMAP borp_1.bmp
+5001         BITMAP born_1.bmp
+2001         BITMAP born_1.bmp
+4001         BITMAP borp_1.bmp
+6001         BITMAP born_1.bmp
+
+1002         BITMAP born_2.bmp
+3002         BITMAP borp_2.bmp
+5002         BITMAP born_2.bmp
+2002         BITMAP born_2.bmp
+4002         BITMAP borp_2.bmp
+6002         BITMAP born_2.bmp
+
+1003         BITMAP born_3.bmp
+3003         BITMAP borp_3.bmp
+5003         BITMAP born_3.bmp
+2003         BITMAP born_3.bmp
+4003         BITMAP borp_3.bmp
+6003         BITMAP born_3.bmp
+
+1004         BITMAP born_4.bmp
+3004         BITMAP borp_4.bmp
+5004         BITMAP born_4.bmp
+2004         BITMAP born_4.bmp
+4004         BITMAP borp_4.bmp
+6004         BITMAP born_4.bmp
+
+1005         BITMAP born_5.bmp
+3005         BITMAP borp_5.bmp
+5005         BITMAP born_5.bmp
+2005         BITMAP born_5.bmp
+4005         BITMAP borp_5.bmp
+6005         BITMAP born_5.bmp
+
+1006         BITMAP born_6.bmp
+3006         BITMAP borp_6.bmp
+5006         BITMAP born_6.bmp
+2006         BITMAP born_6.bmp
+4006         BITMAP borp_6.bmp
+6006         BITMAP born_6.bmp
+
+1007         BITMAP born_7.bmp
+3007         BITMAP borp_7.bmp
+5007         BITMAP born_7.bmp
+2007         BITMAP born_7.bmp
+4007         BITMAP borp_7.bmp
+6007         BITMAP born_7.bmp
+
+1998         BITMAP born_998.bmp
+3998         BITMAP borp_998.bmp
+5998         BITMAP born_998.bmp
+2998         BITMAP born_998.bmp
+4998         BITMAP borp_998.bmp
+6998         BITMAP born_998.bmp
+
+1201         BITMAP born_201.bmp
+3201         BITMAP borp_201.bmp
+5201         BITMAP born_201.bmp
+2201         BITMAP born_201.bmp
+4201         BITMAP borp_201.bmp
+6201         BITMAP born_201.bmp
+
+1901         BITMAP bor_901.bmp
+3901         BITMAP bor_901.bmp
+5901         BITMAP bor_901.bmp
+2901         BITMAP bor_901.bmp
+4901         BITMAP bor_901.bmp
+6901         BITMAP bor_901.bmp
+
+1902         BITMAP bor_902.bmp
+3902         BITMAP bor_902.bmp
+5902         BITMAP bor_902.bmp
+2902         BITMAP bor_902.bmp
+4902         BITMAP bor_902.bmp
+6902         BITMAP bor_902.bmp
+
+1903         BITMAP bor_903.bmp
+3903         BITMAP bor_903.bmp
+5903         BITMAP bor_903.bmp
+2903         BITMAP bor_903.bmp
+4903         BITMAP bor_903.bmp
+6903         BITMAP bor_903.bmp
+
+1904         BITMAP bor_904.bmp
+3904         BITMAP bor_904.bmp
+5904         BITMAP bor_904.bmp
+2904         BITMAP bor_904.bmp
+4904         BITMAP bor_904.bmp
+6904         BITMAP bor_904.bmp
+#endif
+
+#include "about.dlg"
+#include "generic.dlg"
+#include "info.dlg"
+#include "loadcust.dlg"
+#include "opts.dlg"
+#include "selcust.dlg"
+#include "seldlg.dlg"
+// #include "symbols.dlg"
+
+#define WDE_COMMON_DEFINE_CONTROLS \
+        CONTROL "&Text:",       IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 7, 5, 17, 10                                 \
+        CONTROL "",             IDB_TEXT, "EDIT", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP, 29, 5, 126, 12     \
+        CONTROL "&ID:",         IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 7, 18, 17, 10                                \
+        CONTROL "",             IDB_SYMBOL, "COMBOBOX", CBS_AUTOHSCROLL | CBS_SORT | CBS_DROPDOWN | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL, 29, 18, 86, 64   \
+        CONTROL "",             IDB_NOINPUT, "BUTTON", BS_GROUPBOX | WS_CHILD | WS_VISIBLE, 120, 14, 35, 17                                     \
+        CONTROL "",             IDB_ID, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 123, 20, 30, 9                                               \
+        CONTROL "&Help:",       IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 7, 31, 17, 10                                \
+        CONTROL "",             IDB_HELPSYMBOL, "COMBOBOX", CBS_AUTOHSCROLL | CBS_SORT | CBS_DROPDOWN | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL, 29, 31, 86, 64   \
+        CONTROL "",             IDB_NOINPUT, "BUTTON", BS_GROUPBOX | WS_CHILD | WS_VISIBLE, 120, 27, 35, 17                                     \
+        CONTROL "",             IDB_HELPID, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 123, 33, 30, 9
+
+#include "defcheck.dlg"
+#include "defcombo.dlg"
+#include "defdlg.dlg"
+#include "defedit.dlg"
+#include "defframe.dlg"
+#include "defgbox.dlg"
+#include "defhscrl.dlg"
+#include "deficon.dlg"
+#include "deflbox.dlg"
+#include "defpush.dlg"
+#include "defradio.dlg"
+#include "defsbox.dlg"
+#include "deftext.dlg"
+#include "defvscrl.dlg"
+
+#include "defani.dlg"
+#include "defhdr.dlg"
+#include "defhkey.dlg"
+#include "deflview.dlg"
+#include "defpbar.dlg"
+#include "defsbar.dlg"
+#include "deftab.dlg"
+#include "deftbar.dlg"
+#include "deftview.dlg"
+#include "defupdn.dlg"

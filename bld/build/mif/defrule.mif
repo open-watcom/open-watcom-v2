@@ -1,0 +1,9 @@
+.c.obj: $($(proj_name)_autodepends)
+        @set include=$(inc_path)
+        $(cc) $(cflags) $(extra_c_flags_$[&) $[@
+
+!ifdef preproc_rule
+.c.lan: $($(proj_name)_autodepends)
+        @set include=$(inc_path)
+        $(cc) -p$(preproc_flags) $(cflags) $(extra_c_flags_$[&) -fo=.lan $[@
+!endif

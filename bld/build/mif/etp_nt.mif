@@ -1,0 +1,15 @@
+# etp_nt.mif
+#
+# Sets up stuff to build version with -etp switch for profiling using Optima
+# technology.
+#
+# This file should be included before CPROJ.MIF
+
+!ifdef profile_etp_$(proj_name)
+profile_etp = 1
+extra_c_flags_nt = -etp
+!define $(proj_name)_nosymfile 1
+profile_etp_libs_nt =  $(lang_root)\lib386\nt\clbrpdll,
+profile_etp_libs_nt += $(lang_root)\lib386\nt\mthrpdll,
+profile_etp_libs_nt += $(lang_root)\lib386\nt\plbrpdll
+!endif

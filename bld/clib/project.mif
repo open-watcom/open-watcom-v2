@@ -1,0 +1,4 @@
+project : .symbolic
+    pexist clib
+    pexist lib_misc
+    pexist watcom

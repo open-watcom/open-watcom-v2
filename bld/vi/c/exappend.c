@@ -1,0 +1,114 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include <stdio.h>
+#include <string.h>
+#include "vi.h"
+#include "ex.h"
+
+static bool beforeFlag;
+/*
+ * Append - start appending
+ */
+int Append( linenum n1, bool startundo )
+{
+    int i;
+
+    /*
+     * initialize
+     */
+    if( i = ModificationTest() ) {
+        return( i );
+    }
+    if( n1 == 0 || CurrentFcb->nullfcb ) {
+        beforeFlag = TRUE;
+        n1 = 1;
+    } else {
+        beforeFlag = FALSE;
+    }
+    i = SetCurrentLine( n1 );
+    if( i ) {
+        return( i );
+    }
+    Modified( TRUE );
+    if( startundo ) {
+        StartUndoGroup( UndoStack );
+    }
+    EditFlags.Appending = TRUE;
+    return( ERR_NO_ERR );
+
+} /* Append */
+
+/*
+ * AppendAnother
+ */
+int AppendAnother( char *data )
+{
+    bool        dontmove = FALSE;
+    int         i;
+    linenum     cln;
+
+    i = strlen( data );
+    if( i == 1 && data[0] == '.' )  {
+        EndUndoGroup( UndoStack );
+        EditFlags.Appending = FALSE;
+        return( ERR_NO_ERR );
+    }
+
+    if( CurrentFcb->nullfcb ) {
+        dontmove=TRUE;
+    }
+
+    cln = CurrentLineNumber;
+    if( !beforeFlag ) {
+        cln++;
+    }
+
+    UndoInsert( cln, cln, UndoStack );
+
+    if( !beforeFlag ) {
+        AddNewLineAroundCurrent( data,i, INSERT_AFTER );
+    } else {
+        beforeFlag = FALSE;
+        AddNewLineAroundCurrent( data,i, INSERT_BEFORE );
+    }
+
+
+    if( !dontmove) {
+        i = SetCurrentLine( cln );
+        if( i ) {
+            return( i );
+        }
+    }
+    return( ERR_NO_ERR );
+
+} /* AppendAnother */

@@ -1,0 +1,15 @@
+debug all
+system os2v2_pm
+file dbg.obj
+name dbg.exe
+option map=dbg.map
+option modname=dbg
+option description 'OS/2 Presentation Manager Sample Debugger'
+option stack=60k
+# option offset=0x20000
+# option protmode
+import WINQUEUEFROMID PMWIN.305
+import WINREPLYMSG PMWIN.307
+import WINTHREADASSOCQUEUE PMWIN.304
+import WINREPLYMSG PMWIN.307
+import WINQUERYSENDMSG PMWIN.306

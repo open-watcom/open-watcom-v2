@@ -1,0 +1,5 @@
+name = generic
+LNK = $(name).lnk
+OBJS = generic.obj
+resources = ..\generic.ico
+lnk_dependencies = makefile ..\generic.mif ..\..\master.mif

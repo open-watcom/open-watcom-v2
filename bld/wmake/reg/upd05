@@ -1,0 +1,30 @@
+#
+#   test single-colon dependent append
+#
+
+
+all : setup upd05a upd05b clean .symbolic
+    @%null
+
+setup : .symbolic
+    @%null
+
+clean : .symbolic
+    rm -f upd05a upd05a1 upd05a2 upd05b upd05b1 upd05b2
+
+upd05a : upd05a1
+upd05a : upd05a2
+    if not exist upd05a1 cmds\mkerr
+    if not exist upd05a2 cmds\mkerr
+    wtouch upd05a
+
+upd05b : upd05b1
+    if not exist upd05b1 cmds\mkerr
+    if not exist upd05b2 cmds\mkerr
+    wtouch upd05b
+upd05b : upd05b2
+
+
+upd05a1 upd05a2 upd05b1 upd05b2 :
+    wtouch $^@
+

@@ -1,0 +1,34 @@
+# objects to be included in each image (as required)
+#
+# - use file extensions as written; .xbj not required
+
+static_objs = $+ &
+    $(targdir)areaexc.obj &
+    $(targdir)fsroot.obj &
+    $(targdir)moddtorr.obj &
+    $(targdir)stabmod.obj &
+    $(targdir)stablcl.obj &
+    $(targdir)undefmbd.obj &
+    $-
+
+!ifeq target_system ntaxp
+!else
+static_objs += $+ &
+    $(targdir)prwdata.obj &
+    $-
+!endif
+
+!ifeq linkage dynamic
+dynamic_objs = $+ &
+    $(targdir)dfsroot.obj &
+    $(targdir)dstabmod.obj &
+    $-
+
+sw_br_areaexc=_yes
+sw_br_fsroot=_yes
+sw_br_moddtorr=_yes
+sw_br_prwdata=_yes
+sw_br_stabmod=_yes
+sw_br_stablcl=_yes
+sw_br_undefmbd=_yes
+!endif

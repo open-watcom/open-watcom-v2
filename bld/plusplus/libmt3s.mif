@@ -1,0 +1,3 @@
+!include $(plusplus_dir)\lib32.mif
+mflag = -bm-3s-d__MT__ $(text)
+asm_model = -3s -ms -d__MT__

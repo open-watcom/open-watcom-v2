@@ -1,0 +1,4 @@
+#include "aui.rc"
+#include "dialogs.rc"
+#include "strings.rc"
+#include "rcdef.h"

@@ -1,0 +1,6 @@
+tar.obj create.obj extract.obj buffer.obj getoopt.obj +
+list.obj names.obj port.obj ndir.obj getopt.obj +
+dosio.obj \lib\setargv.obj
+tar.exe
+nul
+

@@ -1,0 +1,56 @@
+dig_os_nt       = nt
+dig_os_dos      = dsx
+dig_os_os2      = os2
+dig_os_qnx      = qnx
+dig_os_win      = win
+
+dig_os          = $(dig_os_$(host_OS))
+
+!include $(dig_dir)\mif\dipcli.mif
+!include $(dig_dir)\mif\madcli.mif
+
+srcmgt_obj = srcmgt.obj
+
+!ifndef on_build_machine
+debug_objs = dumpmem.obj
+!endif
+
+!ifdef wprof_trmem
+trmem_objs = $(trmem_dir)\dos\trmemcvr.obj &
+             $(trmem_dir)\dos\trmem.obj
+!endif
+
+objs = $(trmem_objs) $(debug_objs) $(srcmgt_obj) &
+    aboutmsg.obj &
+    clrsamps.obj &
+    dipinter.obj &
+    diginter.obj &
+    dlgcnvt.obj &
+    dlgoptn.obj &
+    dlgsamp.obj &
+    getsamps.obj &
+    madinter.obj &
+    memutil.obj &
+    msg.obj &
+    msgstr.obj &
+    rptsamps.obj &
+    setsamps.obj &
+    support.obj &
+    utils.obj &
+    wndimain.obj &
+    wpasmfil.obj &
+    wpavals.obj &
+    wpbar.obj &
+    wpcnvt.obj &
+    wpdriver.obj &
+    wpgather.obj &
+    wpgetrow.obj &
+    wphelp.obj &
+    wpmain.obj &
+    wpnumrow.obj &
+    wppushin.obj &
+    wpsamp.obj &
+    wpsort.obj &
+    wpstart.obj &
+    wpsrcfil.obj &
+    wpwind.obj

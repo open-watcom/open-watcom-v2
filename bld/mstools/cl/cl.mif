@@ -1,0 +1,85 @@
+!include ..\..\..\master.mif
+
+
+clstub_objs     = clstub.obj $(mstools_stub_obj) $(mstools_objs)
+cl_common_objs  = macro.obj $(mstools_objs)
+cl386_objs      = cl386.obj mesg386.obj parse386.obj xlate386.obj $(cl_common_objs)
+claxp_objs      = claxp.obj mesgaxp.obj parseaxp.obj xlateaxp.obj $(cl_common_objs)
+clppc_objs      = clppc.obj mesgppc.obj parseppc.obj xlateppc.obj $(cl_common_objs)
+cl386_hdrs      = optdata.386
+claxp_hdrs      = optdata.axp
+clppc_hdrs      = optdata.ppc
+
+
+
+#
+# Define the name(s) of the program(s) to build.
+#
+!ifeq      host_OS nt
+!   define cl_stub cl.exe
+!else
+!   define cl_stub
+!endif
+
+
+#
+# Instructions for building the executables.
+#
+done :  $(cl_stub) cl386.exe claxp.exe clppc.exe
+
+cl.exe :  $(clstub_objs)
+        $(linker) $(lflags) name $^@ file {$(clstub_objs)}
+
+cl386.exe :  $(cl386_objs)
+        $(linker) $(lflags) name $^@ file {$(cl386_objs)}
+
+claxp.exe :  $(claxp_objs)
+        $(linker) $(lflags) name $^@ file {$(claxp_objs)}
+
+clppc.exe :  $(clppc_objs)
+        $(linker) $(lflags) name $^@ file {$(clppc_objs)}
+
+
+.c :  ..\..\..\c;..\..\c
+.386 : ..\..\c;..\..\h
+.axp : ..\..\c;..\..\h
+.ppc : ..\..\c;..\..\h
+.gml : ..\..\gml
+
+cl386.obj :  cl.c $(cl386_hdrs)
+        $(mstools_compile) -d__TARGET_386__ -fo=cl386.obj $[@
+claxp.obj :  cl.c $(claxp_hdrs)
+        $(mstools_compile) -d__TARGET_AXP__ -fo=claxp.obj $[@
+clppc.obj :  cl.c $(clppc_hdrs)
+        $(mstools_compile) -d__TARGET_PPC__ -fo=clppc.obj $[@
+
+mesg386.obj :  message.c $(cl386_hdrs)
+        $(mstools_compile) -d__TARGET_386__ -fo=mesg386.obj $[@
+mesgaxp.obj :  message.c $(claxp_hdrs)
+        $(mstools_compile) -d__TARGET_AXP__ -fo=mesgaxp.obj $[@
+mesgppc.obj :  message.c $(clppc_hdrs)
+        $(mstools_compile) -d__TARGET_PPC__ -fo=mesgppc.obj $[@
+
+parse386.obj :  parse.c optparse.386 $(cl386_hdrs)
+        $(mstools_compile) -d__TARGET_386__ -fo=parse386.obj $[@
+parseaxp.obj :  parse.c optparse.axp $(claxp_hdrs)
+        $(mstools_compile) -d__TARGET_AXP__ -fo=parseaxp.obj $[@
+parseppc.obj :  parse.c optparse.ppc $(clppc_hdrs)
+        $(mstools_compile) -d__TARGET_PPC__ -fo=parseppc.obj $[@
+
+xlate386.obj :  translat.c $(cl386_hdrs)
+        $(mstools_compile) -d__TARGET_386__ -fo=xlate386.obj $[@
+xlateaxp.obj :  translat.c $(claxp_hdrs)
+        $(mstools_compile) -d__TARGET_AXP__ -fo=xlateaxp.obj $[@
+xlateppc.obj :  translat.c $(clppc_hdrs)
+        $(mstools_compile) -d__TARGET_PPC__ -fo=xlateppc.obj $[@
+
+optparse.386 optdata.386 :  optencod.exe ms.gml
+        optencod.exe ..\..\gml\ms.gml ..\..\h\optdata.386 ..\..\c\optparse.386 ..\..\h\usagemsg.386 i86
+optparse.axp optdata.axp :  optencod.exe ms.gml
+        optencod.exe ..\..\gml\ms.gml ..\..\h\optdata.axp ..\..\c\optparse.axp ..\..\h\usagemsg.axp axp
+optparse.ppc optdata.ppc :  optencod.exe ms.gml
+        optencod.exe ..\..\gml\ms.gml ..\..\h\optdata.ppc ..\..\c\optparse.ppc ..\..\h\usagemsg.ppc ppc
+
+
+!include ..\..\..\build.mif

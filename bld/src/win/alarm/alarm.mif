@@ -1,0 +1,5 @@
+name = alarm
+LNK = $(name).lnk
+OBJS = alarm.obj
+resources = alarm.ico
+lnk_dependencies = makefile ..\alarm.mif ..\..\master.mif

@@ -1,0 +1,10 @@
+#
+#   err45: maximum string length exceeded
+#
+
+err = 123456789012345678901234567890123456789012345678901234567890
+
+err = $(err)$(err)$(err)$(err)$(err)$(err)$(err)$(err) #will grow exponentially
+
+barf = $+$(err)$-
+

@@ -1,0 +1,38 @@
+
+DLGTEMPLATE DLG_OPTIONS
+BEGIN
+    DIALOG "Options", DLG_OPTIONS, 4, 55, 197, 164, WS_VISIBLE
+                , FCF_TITLEBAR
+                 | WS_VISIBLE | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+
+    BEGIN
+        CONTROL         "~Auto configuration save", CTL_OPT_AUTO, 4, 142, 187, 11, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+        CONTROL         "~Warning Bell", CTL_OPT_BELL, 4, 130, 187, 11, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+        CONTROL         "~Implicit Invoke", CTL_OPT_IMPLICIT, 4, 118, 187, 11, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+        CONTROL         "~Recursion Check", CTL_OPT_RECURSE, 4, 107, 187, 11, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+        CONTROL         "~Screen Flip on Execution", CTL_OPT_FLIP, 4, 83, 187, 11, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+        CONTROL         "Ignore ~Case", CTL_OPT_CASE, 4, 71, 187, 11, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+        CONTROL         "Default Radix", 0, 4, 48, 98, 11, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+        CONTROL         "", 0, 103, 49, 89, 10, WC_ENTRYFIELD
+                 , ES_LEFT | WS_VISIBLE | WS_TABSTOP
+        CONTROL         "Double Click mS", 0, 4, 36, 98, 11, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+        CONTROL         "", 0, 103, 37, 89, 10, WC_ENTRYFIELD
+                 , ES_LEFT | WS_VISIBLE | WS_TABSTOP
+        CONTROL         "OK", CTL_OPT_OK, 18, 13, 51, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+        CONTROL         "~Defaults", CTL_OPT_DEFAULTS, 75, 13, 51, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+        CONTROL         "Cancel", CTL_OPT_CANCEL, 131, 13, 51, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+    END
+END
+

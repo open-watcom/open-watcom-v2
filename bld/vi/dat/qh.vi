@@ -1,0 +1,37 @@
+# Description:
+# ============
+#   This script invokes Microsoft's quick help from the editor. I have found
+#   this to be useful for looking up Windows functions and types.
+#   To make use of this install qh.exe and the quick help version of the help
+#   files from the Windows SDK. Then make sure that qh.exe can find the help
+#   files (you may need to set the HELPFILES environment variable).
+#   Finally call the script with no parameters to get the windows table of 
+#   contents, or give a topic as the first parameter to look up that topic.
+#
+#   I have found the following mapping to be useful in conjuction with this 
+#   script:
+#	map SHIFT_F2 \x\e:so qh.vi \n
+#   With this pressing shift F2 on the first character of a windows function or
+#   type looks up that function or type in the qh help files.
+#
+#
+#   Modified:	By:		Reason:
+#   ---------	---             -------
+#   15 July 92	S.Bosnick	created
+#
+echo off
+assign %(len) = strlen %1
+if %(len) == 0
+    assign %(topic) = win31
+else
+    assign %(topic) = %1
+endif
+set nopauseonspawnerr
+set quiet
+!qh -u %(topic)
+set noquiet
+set pauseonspawnerr
+if %(Sysrc) == 3
+    echo 1 /Topic "%(topic)" not found by qh/
+endif
+echo on

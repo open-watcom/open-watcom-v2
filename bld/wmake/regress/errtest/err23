@@ -1,0 +1,15 @@
+# --------------------------------------------
+# ERROR 23: extensions reversed in implicit rule
+# --------------------------------------------
+
+.extensions: .0 .1 .2
+
+.0.1 :
+    testing
+
+.1.2 :
+    testing
+
+.0.2 :
+    testing
+

@@ -1,0 +1,55 @@
+Criterion for removal of redundant dwarf information
+----------------------------------------------------
+
+Use as the basis for removal the name of the item to be removed.  Always
+replace undefined dies with a defined die of the same name.
+
+Keeping only one symbol of each name is a OK goal to start with.  Ideally
+what should happen is that all definitions in different files should be
+kept.   This leads to a problem dealing with references to undefined dies
+when there are multiple defined dies around, but a reasonable algorithm for
+that would be first pick a definition in the same compile unit, else pick
+randomly from defined symbols.
+
+When you decide to keep a defined symbol, you can just keep all of its kids
+for free.   Note that there may be a problem with other dies referring to
+kids of removed dies, but for now just print a warning about this, & we will
+decide what to do about it later on a case by case basis.
+
+For now, any unnamed die could just be passed into the next file.  Ideally,
+what should happen is that references should be kept track of, and unreferenced
+dies should not be put into the compressed file.
+
+Dies that of interest are:
+
+possibly named:
+DW_TAG_array_type
+DW_TAG_base_type
+DW_TAG_class_type
+DW_TAG_constant
+DW_TAG_enumeration_type
+DW_TAG_structure_type
+DW_TAG_subprogram
+DW_TAG_subroutine_type
+DW_TAG_typedef
+DW_TAG_union_type
+DW_TAG_variable
+
+unnamed:
+DW_TAG_const_type
+DW_TAG_pointer_type
+DW_TAG_reference_type
+DW_TAG_volatile_type
+
+dont remove:
+DW_TAG_lexical_block
+
+recreate:
+DW_TAG_compile_unit
+
+should only be kids:
+DW_TAG_enumerator
+DW_TAG_formal_parameter
+DW_TAG_friend
+DW_TAG_inheritance
+DW_TAG_member

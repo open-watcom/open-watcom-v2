@@ -1,0 +1,281 @@
+# driver for dll
+
+dlldrv_objs =
+dlldrv_objs += idedrv.rbj
+dlldrv_objs += idemsgfm.rbj
+# dlldrv_objs += idemsgpr.rbj
+dlldrv_objs += wppdlldr.rbj
+
+# stand-alone executable
+
+exe_objs =
+exe_objs += idedrv.obj
+exe_objs += idemsgfm.obj
+exe_objs += idemsgpr.obj
+exe_objs += wppdlldr.obj
+exe_objs += idedll.obj
+
+# DLL stuff
+
+dll_objs =
+dll_objs += idedll.lbj
+dll_objs += idemsgfm.lbj
+dll_objs += idemsgpr.lbj
+#dll_objs += wppdlldr.lbj
+
+
+# C Files
+
+common_objs =
+common_objs += analcall.obj
+common_objs += analcast.obj
+common_objs += analclss.obj
+common_objs += analconv.obj
+common_objs += analctor.obj
+common_objs += anallval.obj
+common_objs += analnew.obj
+common_objs += analnode.obj
+common_objs += analpcnv.obj
+common_objs += analretn.obj
+common_objs += analtyid.obj
+common_objs += analtype.obj
+common_objs += analudc.obj
+common_objs += analyse.obj
+common_objs += arglist.obj
+common_objs += ascii.obj
+common_objs += asmstmt.obj
+
+!ifndef plusplus_release
+common_objs += b_write.obj
+common_objs += brinfdep.obj
+common_objs += brinfmac.obj
+common_objs += brinfo.obj
+common_objs += brinfsrc.obj
+common_objs += brmwrite.obj
+!endif
+
+common_objs += browsio.obj
+common_objs += calldiag.obj
+common_objs += callgrph.obj
+common_objs += callopt.obj
+common_objs += carve.obj
+common_objs += casian.obj
+common_objs += caux.obj
+common_objs += cdopt.obj
+common_objs += cgbackhn.obj
+common_objs += cgbkarel.obj
+common_objs += cgbkbpos.obj
+common_objs += cgbkcdpm.obj
+common_objs += cgbkcbak.obj
+common_objs += cgbkcgrf.obj
+common_objs += cgbkclab.obj
+common_objs += cgbkcmds.obj
+common_objs += cgbkcond.obj
+common_objs += cgbkcstb.obj
+common_objs += cgbkcstk.obj
+common_objs += cgbkdecl.obj
+common_objs += cgbkexpr.obj
+common_objs += cgbkfctl.obj
+common_objs += cgbkftab.obj
+common_objs += cgbkibrp.obj
+common_objs += cgbklabs.obj
+common_objs += cgbkmain.obj
+common_objs += cgbkobin.obj
+common_objs += cgbkretn.obj
+common_objs += cgbkrreg.obj
+common_objs += cgbkrtti.obj
+common_objs += cgbkrvar.obj
+common_objs += cgbkscop.obj
+common_objs += cgbkstab.obj
+common_objs += cgbkstrn.obj
+common_objs += cgbksvar.obj
+common_objs += cgbkswit.obj
+common_objs += cgbkthrw.obj
+common_objs += cgbktsig.obj
+common_objs += cgbkutil.obj
+common_objs += cgfront.obj
+common_objs += cginfo.obj
+common_objs += cginimps.obj
+common_objs += cginlibs.obj
+common_objs += cginmisc.obj
+common_objs += cgio.obj
+common_objs += cgiobuff.obj
+common_objs += cgsegid.obj
+common_objs += cgtype.obj
+common_objs += class.obj
+common_objs += cmac1.obj
+common_objs += cmac2.obj
+common_objs += cmacsupp.obj
+common_objs += cmacadd.obj
+common_objs += cmatherr.obj
+common_objs += cmdln.obj
+common_objs += cmdlnany.obj
+common_objs += cmdlnbat.obj
+common_objs += cmdlnctx.obj
+common_objs += cmdscan.obj
+common_objs += conpool.obj
+common_objs += context.obj
+common_objs += convctl.obj
+common_objs += convdiag.obj
+common_objs += cppexit.obj
+common_objs += cpragma.obj
+common_objs += cscan.obj
+common_objs += ctimepc.obj
+common_objs += cusage.obj
+common_objs += datadtor.obj
+common_objs += datainit.obj
+common_objs += dbgsupp.obj
+common_objs += decl.obj
+common_objs += defarg.obj
+common_objs += dgfront.obj
+common_objs += dirgraph.obj
+common_objs += dmpobjmd.obj
+common_objs += dupnode.obj
+common_objs += dwio.obj
+common_objs += dwiobuff.obj
+common_objs += dwarf.obj
+common_objs += dyncast.obj
+common_objs += enum.obj
+common_objs += except.obj
+common_objs += extrf86.obj
+common_objs += floatsup.obj
+common_objs += fmtmsg.obj
+common_objs += fmttype.obj
+common_objs += fmtsym.obj
+common_objs += fname.obj
+common_objs += fnbody.obj
+common_objs += fnname.obj
+common_objs += fnovload.obj
+common_objs += fnovrank.obj
+common_objs += typerank.obj
+common_objs += fold.obj
+common_objs += globdata.obj
+common_objs += gstack.obj
+common_objs += hfile.obj
+common_objs += hashtab.obj
+common_objs += i64supp.obj
+common_objs += icemit.obj
+common_objs += initfini.obj
+common_objs += initref.obj
+common_objs += iosupp.obj
+common_objs += jis2unic.obj
+common_objs += keyword.obj
+common_objs += label.obj
+common_objs += linkage.obj
+common_objs += mainproc.obj
+common_objs += membptr.obj
+common_objs += memmgr.obj
+common_objs += message.obj
+common_objs += mngless.obj
+common_objs += module.obj
+common_objs += name.obj
+common_objs += namspace.obj
+common_objs += objmodel.obj
+common_objs += opovload.obj
+common_objs += pcheader.obj
+common_objs += plusplus.obj
+common_objs += ppexpn.obj
+common_objs += preproc.obj
+common_objs += pstk.obj
+common_objs += ptree.obj
+common_objs += ptreedec.obj
+common_objs += reposit.obj
+common_objs += rewrite.obj
+common_objs += ring.obj
+common_objs += ringcarv.obj
+common_objs += ringfns.obj
+common_objs += ringname.obj
+common_objs += rtfun.obj
+common_objs += rtngen.obj
+common_objs += rtti.obj
+common_objs += scope.obj
+common_objs += segment.obj
+common_objs += srcfile.obj
+common_objs += specfuns.obj
+common_objs += stack.obj
+common_objs += stats.obj
+common_objs += stringl.obj
+common_objs += swchar.obj
+common_objs += symbol.obj
+common_objs += symdbg.obj
+common_objs += symlocn.obj
+common_objs += sysdep.obj
+common_objs += template.obj
+common_objs += tempor.obj
+common_objs += thunk.obj
+common_objs += tokenbuf.obj
+common_objs += tokens.obj
+common_objs += type.obj
+common_objs += typecomp.obj
+common_objs += typesig.obj
+common_objs += utility.obj
+common_objs += vbuf.obj
+common_objs += vfun.obj
+common_objs += vstk.obj
+common_objs += watcom.obj
+common_objs += ytab.obj
+
+# fe_misc files
+common_objs += intlload.obj
+
+# obsolete 9.5 files
+
+# common_objs += cgback.obj
+
+
+# measurement
+!ifdef proepitm
+common_objs += proepitm.obj
+!endif
+
+# debugging objects
+!ifndef plusplus_release
+common_objs += dbg.obj
+common_objs += dbgcomma.obj
+common_objs += dbgheap.obj
+common_objs += dbgio.obj
+common_objs += dbgptree.obj
+common_objs += dbgzap.obj
+common_objs += fnovprt.obj
+!endif
+
+# system-dependent objects
+
+!include sysobjs.mif
+
+#
+# object file macros are of the form <compiler_OS><target>_objs
+#
+# where:
+#       <compiler_OS>   is one of dos, os2, nt, osi, qnx, or cms
+#       <target>        is one of i86, 386, axp, ppc or 370
+#
+dosi86_objs = $(common_objs)
+dos386_objs = $(common_objs)
+dos370_objs = $(common_objs)
+dosaxp_objs = $(common_objs)
+
+os2i86_objs = $(common_objs)
+os2386_objs = $(common_objs)
+os2370_objs = $(common_objs)
+os2axp_objs = $(common_objs)
+
+nti86_objs = $(common_objs)
+nt386_objs = $(common_objs)
+nt370_objs = $(common_objs)
+ntaxp_objs = $(common_objs)
+
+qnxi86_objs = $(common_objs)
+qnx386_objs = $(common_objs)
+qnx370_objs = $(common_objs)
+qnxaxp_objs = $(common_objs)
+
+cmsi86_objs = $(common_objs)
+cms386_objs = $(common_objs)
+cms370_objs = $(common_objs)
+cmsaxp_objs = $(common_objs)
+
+osii86_objs = $(common_objs)
+osi386_objs = $(common_objs)
+osiaxp_objs = $(common_objs)
+

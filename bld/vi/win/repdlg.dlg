@@ -1,0 +1,23 @@
+#include "repdlg.h"
+REPDLG DIALOG 61, 22, 204, 169
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Replace"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        REP_FIND, 39, 8, 159, 12, ES_AUTOHSCROLL
+    EDITTEXT        REP_REPLACE, 39, 25, 159, 12, ES_AUTOHSCROLL
+    CONTROL         "Ignore Case", REP_IGNORE_CASE, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 4, 45, 52, 10
+    CONTROL         "Regular Expressions", REP_REGULAR_EXPRESSIONS, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 4, 57, 76, 10
+    CONTROL         "Prompt On Replace", REP_PROMPT_ON_REPLACE, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 4, 69, 75, 10
+    CONTROL         "Wrap Search", REP_SEARCH_WRAP, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 4, 81, 72, 10
+    LISTBOX         REP_LISTBOX, 88, 57, 108, 111, WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Replace:", -1, 4, 27, 35, 8
+    LTEXT           "Previous Search Strings:", -1, 88, 45, 84, 8
+    LTEXT           "Find:", -1, 4, 11, 29, 7
+    DEFPUSHBUTTON   "&Replace", IDOK, 24, 125, 40, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 24, 144, 40, 14
+END

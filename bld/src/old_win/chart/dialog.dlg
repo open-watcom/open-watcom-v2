@@ -1,0 +1,17 @@
+BARDLG DIALOG 69, 33, 160, 100
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Bar Dialog"
+FONT 8, "Helv"
+BEGIN
+    LTEXT           "Value: ", -1, 14, 25, 23, 10
+    EDITTEXT        DLG_VALUE, 39, 24, 48, 13, ES_AUTOHSCROLL
+    PUSHBUTTON      "OK", IDOK, 114, 3, 40, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 114, 24, 40, 14
+    LTEXT           "Colour:", -1, 14, 45, 25, 10
+    LTEXT           "Red:", 106, 25, 58, 24, 12
+    LTEXT           "Green:", 107, 25, 70, 24, 12
+    LTEXT           "Blue:", 108, 25, 82, 24, 12
+    EDITTEXT        DLG_RED, 55, 58, 32, 12, ES_AUTOHSCROLL
+    EDITTEXT        DLG_GREEN, 55, 70, 32, 12, ES_AUTOHSCROLL
+    EDITTEXT        DLG_BLUE, 55, 82, 32, 12, ES_AUTOHSCROLL
+END

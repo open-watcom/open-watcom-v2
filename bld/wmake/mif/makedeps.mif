@@ -1,0 +1,63 @@
+main.obj     :  main.c       macros.h make.h massert.h mcache.h memory.h    &
+                mexec.h misc.h mparse.h mrcmsg.h msg.h msuffix.h            &
+                mtarget.h mtypes.h mupdate.h mvecstr.h
+mtarget.obj  :  mtarget.c    make.h massert.h memory.h mhash.h misc.h       &
+                mlex.h mrcmsg.h msg.h mtarget.h mtypes.h
+misc.obj     :  misc.c       make.h massert.h memory.h misc.h mpathgrp.h    &
+                mtypes.h
+mlexmac.obj  :  mlexmac.c    make.h massert.h memory.h mlex.h mpreproc.h    &
+                mrcmsg.h msg.h mtypes.h mvecstr.h
+massert.obj  :  massert.c    make.h massert.h mrcmsg.h msg.h
+msg.obj      :  msg.c        make.h massert.h mrcmsg.h msg.h mstream.h      &
+                mtypes.h msg.h
+memory.obj   :  memory.c     make.h massert.h mtypes.h memory.h mrcmsg.h    &
+                msg.h
+tinydir.obj  :  tinydir.c
+mlexprs.obj  :  mlexprs.c    macros.h make.h massert.h memory.h misc.h      &
+                mlex.h mpreproc.h mrcmsg.h msg.h mtypes.h mvecstr.h         &
+
+mglob.obj    :  mglob.c      macros.h make.h massert.h mcache.h memory.h    &
+                mexec.h mhash.h misc.h mrcmsg.h msg.h mparse.h mpreproc.h   &
+                mstream.h msuffix.h mlex.h mtarget.h mtypes.h mupdate.h     &
+                mvecstr.h msysdep.h make.h mtypes.h isarray.inc    &
+
+msuffix.obj  :  msuffix.c    make.h massert.h mcache.h memory.h mhash.h     &
+                misc.h mpathgrp.h mrcmsg.h msg.h msuffix.h mtarget.h        &
+
+winmain.obj  :  winmain.c    wmakerc.h
+mlex.obj     :  mlex.c       make.h massert.h memory.h misc.h mlex.h        &
+                mpreproc.h mrcmsg.h msg.h mstream.h mtypes.h
+mpathgrp.obj :  mpathgrp.c   make.h massert.h memory.h mpathgrp.h           &
+
+mparse.obj   :  mparse.c     make.h massert.h memory.h mlex.h mparse.h      &
+                mrcmsg.h msg.h mstream.h msuffix.h mtarget.h mtypes.h       &
+
+wininit.obj  :  wininit.c
+cretype.obj  :  cretype.c
+mstream.obj  :  mstream.c    macros.h make.h massert.h mtypes.h mrcmsg.h    &
+                msg.h mstream.h msuffix.h memory.h
+mpreproc.obj :  mpreproc.c   macros.h massert.h make.h memory.h misc.h      &
+                mlex.h mpreproc.h mrcmsg.h msg.h mstream.h mtypes.h         &
+
+mvecstr.obj  :  mvecstr.c    make.h massert.h memory.h mrcmsg.h msg.h       &
+                mvecstr.h
+mhash.obj    :  mhash.c      make.h massert.h memory.h mhash.h
+mupdate.obj  :  mupdate.c    make.h macros.h massert.h mcache.h memory.h    &
+                mexec.h misc.h mlex.h mpathgrp.h mrcmsg.h msg.h msuffix.h   &
+                mtarget.h mtypes.h mupdate.h mvecstr.h
+mcache.obj   :  mcache.c     make.h massert.h mhash.h memory.h misc.h       &
+                mpathgrp.h mrcmsg.h msg.h
+msysdep.obj  :  msysdep.c    make.h $(watcom_dir)\h\idedrv.h
+mexec.obj    :  mexec.c      macros.h make.h massert.h mcache.h memory.h    &
+                mexec.h misc.h mrcmsg.h msg.h msuffix.h mtarget.h           &
+                mtypes.h mupdate.h
+macros.obj   :  macros.c     macros.h make.h massert.h memory.h mhash.h     &
+                misc.h mlex.h mpathgrp.h mrcmsg.h msg.h mstream.h           &
+                mtypes.h mupdate.h mvecstr.h
+mrcmsg.obj   :  mrcmsg.c     watcom.h mrcmsg.h mrcmsg.h $(watcom_dir)\h\wressetr.h
+
+idedrv.obj   :  idedrv.c     $(watcom_dir)\h\idedrv.h $(watcom_dir)\h\idedll.h
+
+idemsgfm.obj :  idemsgfm.c   $(watcom_dir)\h\idedrv.h $(watcom_dir)\h\idedll.h
+
+idemsgpr.obj :  idemsgpr.c   $(watcom_dir)\h\idedll.h

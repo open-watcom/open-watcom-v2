@@ -1,0 +1,226 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#ifndef _CG_H_INCLUDED
+
+typedef enum {
+    CG_SWITCH_SCAN      = 0x0001,
+    CG_SWITCH_TABLE     = 0x0002,
+    CG_SWITCH_BSEARCH   = 0x0004,
+} cg_switch_type;
+
+#define CG_SWITCH_ALL   (CG_SWITCH_SCAN|CG_SWITCH_TABLE|CG_SWITCH_BSEARCH)
+
+typedef enum {
+/*  return values for FEAttr() */
+        FE_PROC         = 0x00000001,   /* is the symbol a func/procedure */
+        FE_STATIC       = 0x00000002,   /* as in the C keyword 'static' */
+        FE_GLOBAL       = 0x00000004,   /* ie. import/export */
+        FE_IMPORT       = 0x00000008,   /* is it imported? */
+        FE_CONSTANT     = 0x00000010,   /* is symbol constant? */
+        FE_MEMORY       = 0x00000020,   /* forces symbol to memory */
+        FE_VISIBLE      = 0x00000040,   /* is visible outside procedure? */
+        FE_NOALIAS      = 0x00000080,   /* name has no aliases (pointers to)*/
+        FE_UNIQUE       = 0x00000100,   /* func address has to be unique*/
+        FE_COMMON       = 0x00000200,   /* COMDAT/COMDEF symbol */
+        FE_ADDR_TAKEN   = 0x00000400,   /* symbol has address taken */
+        FE_VOLATILE     = 0x00000800,   /* symbol is volatile */
+        FE_INTERNAL     = 0x00001000,   /* symbol is internal */
+        FE_ONESEG       = 0x00002000,   /* symbol is less than a segment in size - ie not huge */
+        FE_DLLEXPORT    = 0x00004000,   /* symbol is exported */
+        FE_DLLIMPORT    = 0x00008000,   /* symbol is imported from DLL */
+        FE_VARARGS      = 0x00010000,   /* symbol is a varargs function */
+        FE_UNALIGNED    = 0x00020000,   /* no longer used - use CGAlign instead */
+        FE_COMPILER     = 0x00040000,   /* compiler generated i.e thunks */
+        FE_THREAD_DATA  = 0x00080000,   /* part of a thread-local storage block */
+        FE_NAKED        = 0x00100000,   /* naked function - ie no prolog/epilogue */
+} fe_attr;
+
+typedef void *          cg_name;        /* retval for CGName(),CGUnary()*/
+typedef void *          call_handle;    /* retval for CGInitCall(), etc. */
+#ifdef BY_C_FRONT_END
+  // this was only required when front-end and back-end were separate
+  // executables compiled with mismatching data memory models
+  #ifdef __LARGE__
+   typedef unsigned long        cg_sym_handle;
+  #else
+   typedef unsigned     cg_sym_handle;
+  #endif
+#else
+typedef void    *       cg_sym_handle;
+#endif
+
+typedef void *          label_handle;   /*  2nd parm to CGName for CG_LBL */
+typedef void *          sel_handle;     /*  return value for CGSelInit() */
+typedef struct bck_info *back_handle;    /*  return value for BENewBack() */
+typedef void *          aux_handle;     /*  first parm to FEAuxInfo (sometimes) */
+typedef void *          temp_handle;    /*  first parm to FEAuxInfo (sometimes) */
+typedef void *          float_handle;   /*  for the BF... routines */
+typedef void *          callback_handle;/*  passed to rtn from callback node */
+typedef void *          patch_handle;   /*  used to stuff patchable ints into tree */
+
+typedef void            (*cg_callback)( callback_handle );
+
+typedef int             segment_id;     /*  parm to BESetSeg() */
+
+typedef unsigned long   dbg_type;       /*  symbolic debugging type handle */
+typedef void            *dbg_struct;
+typedef void            *dbg_array;
+typedef void            *dbg_enum;
+typedef void            *dbg_proc;
+typedef void            *dbg_name;
+typedef struct location *dbg_loc;
+
+typedef enum {
+        T_DBG_COMPLEX   = 0x47,
+        T_DBG_DCOMPLEX  = 0x4f
+} dbg_ftn_type;                         /* please forgive me! */
+
+
+/* operator constants for DB* routine location expressions */
+typedef enum {
+    DB_OP_POINTS,
+    DB_OP_ZEX,
+    DB_OP_XCHG,
+    DB_OP_MK_FP,
+    DB_OP_ADD,
+    DB_OP_DUP,
+    DB_OP_POP
+} dbg_loc_op;
+
+/* field attribute values for debug info */
+typedef enum {
+    FIELD_ATTR_NONE     = 0x00,
+    FIELD_ATTR_INTERNAL = 0x01,
+    FIELD_ATTR_PUBLIC   = 0x02,
+    FIELD_ATTR_PROTECTED= 0x04,
+    FIELD_ATTR_PRIVATE  = 0x08
+} dbg_field_attr;
+
+typedef enum {
+    INHERIT_DBASE       = 0x01,
+    INHERIT_VBASE       = 0x02,
+    INHERIT_IVBASE      = 0x03
+}dbg_inh_attr;
+
+typedef enum {
+    METHOD_VANILLA       =  0x00,
+    METHOD_STATIC        =  0x01,
+    METHOD_FRIEND        =  0x02,
+    METHOD_VIRTUAL       =  0x03
+}dbg_method_attr;
+
+typedef enum {
+    CG_SYM_CONSTANT,
+    CG_SYM_VOLATILE,
+    CG_SYM_UNALIGNED,
+} cg_sym_attr;
+
+typedef enum {
+        EXEC            = 0x0001,       /* vs non-executable */
+        GLOBAL          = 0x0002,       /* vs local */
+        INIT            = 0x0004,       /* vs uninitialized */
+        ROM             = 0x0008,       /* read only */
+        BACK            = 0x0010,       /* back end may place data here */
+        COMMON          = 0x0020,       /* common block data */
+        PRIVATE         = 0x0040,       /* private segment */
+        GIVEN_NAME      = 0x0080,       /* use the segment name as given */
+        COMDAT          = 0x0100,       /* COMDAT segment (ALPHA) */
+        THREAD_LOCAL    = 0x0200        /* Thread Local Storage */
+} seg_attr;
+
+
+typedef enum {
+        MSG_INFO_FILE,          /*  informational message about file (string) */
+        MSG_CODE_SIZE,          /*  code size message (int) */
+        MSG_DATA_SIZE,          /*  data size message (int) */
+        MSG_ERROR,              /*  cg error message (string) */
+        MSG_FATAL,              /*  fatal error  (string) */
+        MSG_INFO_PROC,          /*  info message about current proc (string) */
+        MSG_BAD_PARM_REGISTER,  /*  bad "aux" parm      (parm num) */
+        MSG_BAD_RETURN_REGISTER,/*  bad "aux" value     (sym) */
+        MSG_REGALLOC_DIED,      /*  register alloc ran out of mem (sym) */
+        MSG_SCOREBOARD_DIED,    /*  scoreboard ran out of mem   (sym) */
+        MSG_PEEPHOLE_FLUSHED,   /*  peep hole optimizer flushed (none) */
+        MSG_BACK_END_ERROR,     /*  back end error (int) */
+        MSG_BAD_SAVE,           /*  bad "aux" modify (sym) */
+        MSG_WANT_MORE_DATA,     /*  back end wants more data space (int) */
+        MSG_BLIP,               /*  blip */
+        MSG_BAD_LINKAGE,        /*  cannot resolve linkage conventions (sym) */
+        MSG_SCHEDULER_DIED,     /*  ins scheduler ran out of mem (sym) */
+        MSG_NO_SEG_REGS,        /*  accessing far memory with no seg regs */
+        MSG_BAD_PEG_REG         /*  bad register pegged to a segment */
+} msg_class;                    /*  fatal cg error message */
+
+#define DBG_NIL_TYPE    0
+#define DBG_FWD_TYPE    0xffffffff
+#define SEG_EXTRN_FAR   0x80
+
+typedef union   cg_init_info {
+        struct {
+            unsigned revision   : 10;
+            unsigned target     : 5;
+            unsigned is_large   : 1;
+        } version;
+        int     success;
+} cg_init_info;
+
+enum {
+        II_TARG_8086,
+        II_TARG_80386,
+        II_TARG_STUB,
+        II_TARG_CHECK,
+        II_TARG_370,
+        II_TARG_AXP,
+        II_TARG_PPC
+};
+
+#define II_REVISION     9
+
+/*
+        Front end should do
+
+        cg_init_info    info;
+
+        info = BEInit(...);
+        if( info.success == 0 ) {
+            // The code generator didn't initialize! terminate (dnpg,dncthd)
+        } else {
+            if( info.version.revision != II_REVISION ) {
+               // crap out --- wrong version of code generator
+           }
+           // look at info.version.is_large and info.version.target
+        }
+
+*/
+#define _CG_H_INCLUDED
+#endif

@@ -1,0 +1,154 @@
+This is a very rough sketch of an extension we're using at WATCOM to
+emit information that is useful for source browsers.  This is not
+a proposal... I'm just releasing it so that other people can see and
+comment.  I may make a proposal out of it in the future.
+
+Dean
+
+FYI: A DWORD is a 4-byte quantity in PC-land.
+
+---
+
+.WATCOM_references Specification  draft 6
+
+In TAG_compile_unit:
+
+    AT_WATCOM_references_start	0x4083
+
+    A constant that indicates the offset into the .WATCOM_references
+    section which defines the references for this compile unit.
+
+.WATCOM_references section:
+    Begins with a 4 byte length that does not include the length itself.
+
+The references section encodes a matrix with the columns:
+
+    user	-- the DIE that is doing the referecing
+    dependant	-- the DIE being referenced
+    file	-- the file the reference occurs in
+    line	-- the line the reference occurs at
+    column	-- the column the reference occurs at
+
+The references section is compressed by using a finite push down automata
+with a stack called scope.  The top of scope is the user register; the
+remaining registers are the same as the columns above.
+
+One of the reasons a stack is used to represent user is because the above
+matrix is not quite accurate.  Consider:
+
+    int foo( int a ) {
+    
+	if( a == 5 ) {
+	    return( SomeGlobal );
+	}
+	return( a );
+    }
+
+SomeGlobal is referenced from within a lexical block, and so it's
+'user' would be the lexical block.  However, it might be desirable
+to consider foo to be a 'user' of SomeGlobal.  (i.e. in a browser,
+the user asks "what functions use SomeGlobal?")  So we use a stack
+to represent the 'user', and consider every DIE in the stack to
+be a 'user' of the dependant.
+
+Using the stack also allows us to emit the references as the compiler
+encounters them:  There is no need to explicitly 'set' the user register
+each time we move out of a scope.  As well, there is no need to group
+the references belonging to one scope together.
+
+The initial state of the machine is:
+
+    scope	empty
+    dependant	undefined
+    file	1
+    line	1
+    column	1
+
+The input is a stream of bytes... which are the following opcodes:
+
+0x01	REF_BEGIN_SCOPE	push next DWORD onto scope stack
+
+0x02	REF_END_SCOPE	pop scope stack
+
+0x03	REF_SET_FILE	ULEB128 read into the file register
+
+0x04	REF_SET_LINE	ULEB128 read into the line register
+
+0x05	REF_SET_COLUMN	ULEB128 read into the column register
+
+0x06	REF_ADD_LINE	LEB128 added to the line register
+			set the column register to 0
+
+0x07	REF_ADD_COLUMN	LEB128 added to the column register
+
+0x08	REF_COPY	Append a row to the matrix with the current value
+			of the registers.  This op-code is probably
+			unnecessary since the dependant register must
+			usually be set, and setting the dependant
+			register causes an implicit REF_COPY.
+
+0x10	REF_CODE_BASE	opcodes >= REF_CODE_BASE are decoded as follows:
+			(These are 'special' opcodes)
+
+			#define REF_COLUMN_RANGE	80
+
+			v = opcode - REF_CODE_BASE;
+			line_delta = v / REF_COLUMN_RANGE;
+			line += line_delta;
+			if( line_delta != 0 ) column = 0;
+			column += v % REF_COLUMN_RANGE;
+			dependant = next DWORD;
+			
+			followed by an implicit REF_COPY.
+	
+    The rationale for resetting column when the line register changes
+    is so that we do not have to encode negative deltas for columns.
+    It is probably not necessary for reference information to have the
+    ability to use negative increments (unlike the source line
+    information).
+
+Notes:
+    Currently we are encoding every reference that appears in the 
+    .debug_info section (except AT_sibling) in the .WATCOM_references
+    section as well.  Possible alternatives include an op-code that
+    means "insert the references present in the user-die from the top
+    of the scope stack".
+
+    Most of the reason for the duplication of the information in the
+    references section was so that the browser could just scan one
+    section for all it's information.
+
+    It is possible for the compiler to trim it's output.  In the
+    following example all uses of a and x are emitted.  The user may
+    only want to know where non-local dies are referenced... or may
+    only want to know if a die is referenced at least once (hence
+    there's no need to emit extra references).
+
+Example:
+
+Let REF_OP( x, y ) be the special op-code with line delta x, and column
+delta y.
+
+ 1: int x;
+ 2: int foo( int a ) {
+ 3:   x += a;
+ 4:   if( x > 0 ) {
+ 5:     a = -x;
+ 6:   }
+ 7:   return( a );
+ 8: }
+
+
+REF_BEGIN_SCOPE		foo
+REF_SET_LINE		3
+REF_OP( 0, 3 ) 		x
+REF_OP( 0, 5 )		a
+REF_BEGIN_SCOPE		lexical block for the if statement
+REF_OP( 1, 7 )		x
+REF_OP( 1, 5 )		a
+REF_OP( 0, 5 )		x
+REF_END_SCOPE
+REF_OP( 2, 11 )		a
+REF_END_SCOPE
+
+--

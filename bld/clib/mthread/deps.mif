@@ -1,0 +1,5 @@
+regdata.obj : ..\..\..\..\h\thread.h
+trdalloc.c  : ..\..\..\..\h\thread.h
+regdata.c   : ..\..\..\..\h\thread.h
+trdlist.c   : ..\..\..\..\h\thread.h
+thredo16.c  : ..\..\..\..\h\thread.h

@@ -1,0 +1,36 @@
+!error obsolete(?) please leave a comment if it is not obsolete (AFS)
+!include local.mif
+!include cobjs.mif
+
+.erase
+.extensions:
+.extensions: .exe .exp .obj .asm .c .y
+
+cops_86 = -d1 -zq -w4 -s -d_OS=_OS_$(config_source_os)
+!ifeq config_sql y
+cops_86 += -dESQL
+!endif
+
+wcc_286 = -mm -oals $(cops_86) $(cops_local)
+wcc_386 = -mf -oals $(cops_86) $(cops_local)
+
+asm_286 = /mx/s/zd;
+asm_386 = -nolist -twocase
+
+wcc = $(comp$(config_source_arch))
+asm = $(asm$(config_source_arch))
+
+.before
+    set include=$(watcomdir)\h;$(%include)
+
+.y: ..\y
+.y.c:
+    yacc $[@
+
+.c: ..\c
+.c.obj:
+    $(wcc) $[@ $(wcc_$(config_source_arch))
+
+.asm: ..\a
+.asm.obj:
+    $(asm) $[@ $(asm_$(config_source_arch))

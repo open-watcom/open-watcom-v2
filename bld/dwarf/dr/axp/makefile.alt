@@ -1,0 +1,9 @@
+# Renamed to avoid it being in the build process - SJHowe
+
+#pmake: cpu_axp os_osi
+
+host_OS = osi
+host_CPU = axp
+inline_vmem=yes
+
+!include ..\dr.mif

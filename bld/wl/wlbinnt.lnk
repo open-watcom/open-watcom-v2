@@ -1,0 +1,18 @@
+# example linker initialization file.
+# remember, don't put carets (^) in these!
+system begin 286
+    option osname='Windows 16-bit'
+    libpath %WATCOM%\lib286
+    libpath %WATCOM%\lib286\win
+    library windows
+    option stack=8k, heapsize=1k
+    format windows
+end
+system begin 386
+    option osname='Windows NT character-mode'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\nt
+    format windows nt
+    runtime console
+end
+@%watcom%\binw\wlsystem.lnk

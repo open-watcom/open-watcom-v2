@@ -1,0 +1,253 @@
+!include $(plusplus_dir)\dirmacs.mif
+
+!include $(plusplus_dir)\tools.mif
+!include $(define_library_include)
+!include $(define_target_include)
+!include cproj.mif
+
+!ifdef on_build_machine
+!   ifeq on_build_machine 0
+!       undef on_build_machine
+!   endif
+!endif
+
+# !ifdef on_JWW_machine
+# uncompressed=1
+# !endif
+
+!ifndef target_objs
+target_objs = $(objs)
+!endif
+
+!ifndef target_xbjs
+target_xbjs = $(xbjs)
+!endif
+
+lib_flags = /b /c /q
+!ifdef on_build_machine
+lib_flags += /t
+!ifeq host_CPU axp
+!else
+lib_flags += /s
+!endif
+!endif
+!ifdef on_JWW_machine
+lib_flags += /p=64
+!else
+lib_flags += /p=16
+!endif
+
+lbcfile = tmp.lbc
+
+!ifdef target_lib_x
+libs : .symbolic $(target_lib) $(target_lib_x) $(files)
+!else
+libs : .symbolic $(target_lib) $(files)
+!endif
+    @%null
+
+$(target_lib) : $(target_objs)
+!ifdef uncompressed
+    %create $(lbcfile)
+    @for %i in ($(target_objs)) do @%append $(lbcfile) +%i
+    $(librarian) -q-n $(lib_flags) $^@ @$(lbcfile)
+    del $(lbcfile)
+!else
+    @set obj_list=$(target_objs)
+    $(concatenate) @obj_list >__wrk__.obj
+    @set obj_list=
+    $(librarian) -q $(lib_flags) $^@ -+__wrk__.obj
+    @erase __wrk__.obj
+    @*$(truncate) -q $(target_objs)
+!endif
+    wtouch compile.tim
+
+!ifdef target_lib_x
+$(target_lib_x) : $(target_xbjs)
+!ifdef uncompressed
+    %create $(lbcfile)
+    @for %i in ($(target_xbjs)) do @%append $(lbcfile) +%i
+    $(librarian) -q-n $(lib_flags) $^@ @$(lbcfile)
+    del $(lbcfile)
+!else
+    @set obj_list=$(target_xbjs)
+    $(concatenate) @obj_list >__wrk__.obj
+    @set obj_list=
+    $(librarian) -q $(lib_flags) $^@ -+__wrk__.obj
+    @erase __wrk__.obj
+    @*$(truncate) -q $(target_xbjs)
+    wtouch compile.tim
+!endif
+!endif
+
+# -zv has to be on in case the user uses -zv
+# -xr has to be on in case the user uses -xr
+comp_flags = -xr -zq-w4-ox $(mflag) -i$(plusplus_runtime_dir)\h -zl
+# temporary fix until AXP targets support -zv properly
+!ifneq host_CPU axp
+comp_flags += -zv
+!endif
+
+!ifeq target_system ntaxp
+asm_flags =
+!else
+asm_flags = -zq-w4 $(asm_model) -i$(watcom_dir)\h
+!endif
+
+!ifdef on_build_machine
+comp_flags += -dNDEBUG
+!else ifdef on_JWW_machine
+comp_flags += -d2
+comp_cpp += -ew
+!else
+comp_flags += -d1
+!endif
+
+!ifeq linkage dynamic
+br_flags=-d__MAKE_DLL_CPPLIB
+br_flags_yes=-br
+!else
+br_flags=
+!endif
+
+!ifdef profile
+etp_flags=-d1-hd-etp
+!endif
+
+!ifndef no_precompiled_headers
+pch_flags = -fhq
+!endif
+
+!ifndef runtime_library_source
+
+!ifeq target_system os2
+comp_flags += -bt=os2 -i$(lib_misc_dir)\h;$(watcom_dir)\os21x_h
+asm_flags += -bt=os2
+!endif
+
+!ifeq target_system os2v2
+comp_flags += -bt=os2 -i$(lib_misc_dir)\h;$(watcom_dir)\os220_h
+asm_flags += -bt=os2
+!endif
+
+!ifeq target_system nt
+comp_flags += -bt=nt -i$(lib_misc_dir)\h;$(watcom_dir)\nt_h
+asm_flags += -bt=nt
+!endif
+
+!ifeq target_system ntaxp
+comp_flags += -bt=nt -i$(lib_misc_dir)\h;$(%watcom)\h\nt
+asm_flags += -bt=ntaxp
+!endif
+
+!ifeq target_system windows
+comp_flags += -bt=windows -i$(lib_misc_dir)\h
+asm_flags += -bt=windows
+!endif
+
+!ifeq target_system generic
+comp_flags += -bt=generic -i$(lib_misc_dir)\h
+asm_flags += -bt=generic
+!endif
+
+!ifeq target_system qnx
+comp_flags += -bt=qnx -i$(lib_misc_dir)\h;$(hdr_dir)\qnx
+asm_flags += -bt=qnx
+!endif
+
+!else
+
+!ifeq target_system os2
+comp_flags += -bt=os2 -i$(lib_misc_dir)\h;$(%watcom)\h\os21x
+asm_flags += -bt=os2
+!endif
+
+!ifeq target_system os2v2
+comp_flags += -bt=os2 -i$(lib_misc_dir)\h;$(%watcom)\h\os2
+asm_flags += -bt=os2
+!endif
+
+!ifeq target_system nt
+comp_flags += -bt=nt -i$(lib_misc_dir)\h;$(%watcom)\h\nt
+asm_flags += -bt=nt
+!endif
+
+!ifeq target_system ntaxp
+comp_flags += -bt=nt -i$(lib_misc_dir)\h;$(%watcom)\h\nt
+asm_flags += -bt=ntaxp
+!endif
+
+!ifeq target_system windows
+comp_flags += -bt=windows -i$(lib_misc_dir)\h
+asm_flags += -bt=windows
+!endif
+
+!ifeq target_system generic
+comp_flags += -bt=generic -i$(lib_misc_dir)\h
+asm_flags += -bt=generic
+!endif
+
+!ifeq target_system qnx
+comp_flags += -bt=qnx -i$(lib_misc_dir)\h;$(hdr_dir)\qnx
+asm_flags += -bt=qnx
+!endif
+
+!endif
+
+comp_flags += -i$(lib_misc_dir)\h;$(inc_dirs);$(bld_h);$(watcom_dir)\h;$(comp_cfg_dir)\h
+
+# personal modifications can be made by including a local .mif file
+!ifdef %plusplus_cpplib_local_mif
+!  include $(%plusplus_cpplib_local_mif)
+!else ifdef plusplus_cpplib_local_mif
+!  include $(plusplus_cpplib_local_mif)
+!endif
+
+.before
+    set compflags=$(comp_flags)
+!ifndef on_build_machine
+    @echo asm_flags = $(asm_flags)
+!endif
+
+reference : .symbolic $(target_lib)
+    copy $(target_lib) $(plusplus_dir)\bin
+
+update : .symbolic $(target_lib)
+    $(librarian) -b -c -n -q -s -t $(lang_root)\$(production_lib)\$(target_lib) +$(target_lib)
+
+.EXTENSIONS:
+.EXTENSIONS: .exe .lnk .obj .xbj .c .cpp .asm
+
+.cpp : $(cpp_dirs)
+
+.c : $(c_dirs)
+
+.asm : $(asm_dirs)
+
+.cpp.obj :
+    $(comp_cpp) -zld-nm=$[& $(pch_flags) $(br_flags$(sw_br_$[&)) $(etp_flags) @compflags $[@ $($[&_opt)
+
+.cpp.xbj :
+    $(comp_cpp) -xs-zld-nm=$[& $(pch_flags) $(br_flags$(sw_br_$[&)) $(etp_flags) -fo=.xbj @compflags $[@
+
+.c.obj :
+    $(comp_c) $(etp_flags) @compflags $[@
+
+.c.xbj :
+    $(comp_c) $(etp_flags) -fo=.xbj @compflags $[@
+
+.asm.obj :
+    #$(comp_cpp) @compflags -p $[@ > $[&.pp
+    $(asm_a) $(asm_flags) $[@
+    #@del $[&.pp
+
+!include $(plusplus_dir)\clean.mif
+
+!ifndef on_build_machine
+!ifdef define_deps_include
+obj_deps_ext=obj
+!include $(define_deps_include)
+obj_deps_ext=xbj
+!include $(define_deps_include)
+!endif
+!endif

@@ -1,0 +1,24 @@
+class CallOptDlg {
+    _numCallsTextR(    IDD_NUM_CALLS_TEXT,   (@,@,@,@) );
+    _numCallsBoxR(     IDD_NUM_CALLS_BOX,    (@,@,@,@) );
+    _oneTextR(	       IDD_ONE_TEXT,	     (@,@,@,@) );
+    _twoTextR(	       IDD_TWO_TEXT,	     (@,@,@,@) );
+    _threeTextR(       IDD_THREE_TEXT,	     (@,@,@,@) );
+    _fourTextR(	       IDD_FOUR_TEXT,	     (@,@,@,@) );
+    _fiveTextR(	       IDD_FIVE_TEXT,	     (@,@,@,@) );
+    _oneLineR(	       IDD_ONE_LINE,	     (@,@,@,@) );
+    _twoLineR(	       IDD_TWO_LINE,	     (@,@,@,@) );
+    _threeLineR(       IDD_THREE_LINE,	     (@,@,@,@) );
+    _fourLineR(	       IDD_FOUR_LINE,	     (@,@,@,@) );
+    _fiveLineR(	       IDD_FIVE_LINE,	     (@,@,@,@) );
+    _repetitionTextR(  IDD_REPETITION_TEXT,  (@,@,@,@) );
+    _repetitionBoxR(   IDD_REPETITION_BOX,   (@,@,@,@) );
+    _occOnceTextR(     IDD_OCC_ONCE_TEXT,    (@,@,@,@) );
+    _occManyTextR(     IDD_OCC_MANY_TEXT,    (@,@,@,@) );
+    _occOnceBoxR(      IDD_OCC_ONCE_BOX,     (@,@,@,@) );
+    _occManyBoxR(      IDD_OCC_MANY_BOX,     (@,@,@,@) );
+    _okButtonR(	       IDD_OK_BUTTON,        (@,@,@,@) );
+    _cancelButtonR(    IDD_CANCEL_BUTTON,    (@,@,@,@) );
+    _modifyButtonR(    IDD_MODIFY_BUTTON,    (@,@,@,@) );
+    _helpButtonR(      IDD_HELP_BUTTON,	     (@,@,@,@) );
+};

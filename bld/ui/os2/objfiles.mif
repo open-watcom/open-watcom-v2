@@ -1,0 +1,163 @@
+objfiles = uibfill.$(obj) uirfrsh.$(obj) uiarea.$(obj) uiblank.$(obj) &
+    uifar.$(obj) uibarf.$(obj) uibfake.$(obj) uibgnd.$(obj) uivopen.$(obj) &
+    uiledit.$(obj) uidirty.$(obj) uicheck.$(obj) uidata.$(obj) uiwin.$(obj) &
+    uiforce.$(obj) uivstr.$(obj) uiev.$(obj) uiballoc.$(obj) uibstr.$(obj) &
+    uitab.$(obj) uifmem.$(obj) uilstbox.$(obj) uibattr.$(obj) uibcopy.$(obj) &
+    uiback.$(obj) uivfld.$(obj) uibpix.$(obj) uipad.$(obj) uimem.$(obj) &
+    uidevent.$(obj) uivedit.$(obj) uiband.$(obj) uimenu.$(obj) uipget.$(obj) &
+    uimget.$(obj) uialloc.$(obj) uiyield.$(obj) uigchar.$(obj) uivattr.$(obj) &
+    uimenucr.$(obj) uiprot.$(obj) uidchfld.$(obj) uigadget.$(obj) &
+    uidlgfcn.$(obj) uivscrn.$(obj) uibox.$(obj) uivfill.$(obj) uivutil.$(obj) &
+    uivhide.$(obj) uimisc.$(obj) uivmove.$(obj) uiinit.$(obj) uihotspt.$(obj) &
+    uipopup.$(obj) uimousev.$(obj) uiattr.$(obj) uivline.$(obj) &
+    uidialcb.$(obj) uiconfig.$(obj) uirefer.$(obj) uilist.$(obj) &
+    uidebug.$(obj) uidialog.$(obj) uibios.$(obj) uispawn.$(obj) uicurs.$(obj) &
+    uisnow.$(obj) uibmous.$(obj) uikeyb.$(obj) uimous.$(obj) uiget.$(obj) &
+    uichlen.$(obj)
+
+uibfill.$(obj) : uibfill.c uidef.h  $(AUTODEPEND)
+
+uirfrsh.$(obj) : uirfrsh.c uidef.h uidebug.h  $(AUTODEPEND)
+
+uiarea.$(obj) : uiarea.c uidef.h  $(AUTODEPEND)
+
+uiblank.$(obj) : uiblank.c uidef.h  $(AUTODEPEND)
+
+uifar.$(obj) : uifar.c uidef.h  $(AUTODEPEND)
+
+uibarf.$(obj) : uibarf.c uidef.h  $(AUTODEPEND)
+
+uibfake.$(obj) : uibfake.c uidef.h  $(AUTODEPEND)
+
+uibgnd.$(obj) : uibgnd.c uidef.h  $(AUTODEPEND)
+
+uivopen.$(obj) : uivopen.c uidef.h uibox.h uigchar.h  $(AUTODEPEND)
+
+uiledit.$(obj) : uiledit.c uidef.h uivedit.h uiledit.h  $(AUTODEPEND)
+
+uidirty.$(obj) : uidirty.c uidef.h  $(AUTODEPEND)
+
+uicheck.$(obj) : uicheck.c uidef.h  $(AUTODEPEND)
+
+uidata.$(obj) : uidata.c uidef.h  $(AUTODEPEND)
+
+uiwin.$(obj) : uiwin.c uidef.h  $(AUTODEPEND)
+
+uiforce.$(obj) : uiforce.c uidef.h  $(AUTODEPEND)
+
+uivstr.$(obj) : uivstr.c uidef.h  $(AUTODEPEND)
+
+uiev.$(obj) : uiev.c uidef.h  $(AUTODEPEND)
+
+uiballoc.$(obj) : uiballoc.c uidef.h  $(AUTODEPEND)
+
+uibstr.$(obj) : uibstr.c uidef.h  $(AUTODEPEND)
+
+uitab.$(obj) : uitab.c uidef.h uitab.h  $(AUTODEPEND)
+
+uifmem.$(obj) : uifmem.c uidef.h  $(AUTODEPEND)
+
+uilstbox.$(obj) : uilstbox.c uidef.h uivedit.h uiledit.h uidialog.h &
+     $(AUTODEPEND)
+
+uibattr.$(obj) : uibattr.c uidef.h  $(AUTODEPEND)
+
+uibcopy.$(obj) : uibcopy.c uidef.h  $(AUTODEPEND)
+
+uiback.$(obj) : uiback.c uidef.h  $(AUTODEPEND)
+
+uivfld.$(obj) : uivfld.c uidef.h uivfld.h uivedit.h uiedit.h  $(AUTODEPEND)
+
+uibpix.$(obj) : uibpix.c uidef.h  $(AUTODEPEND)
+
+uipad.$(obj) : uipad.c uidef.h  $(AUTODEPEND)
+
+uimem.$(obj) : uimem.c uidef.h  $(AUTODEPEND)
+
+uidevent.$(obj) : uidevent.c stdui.h  $(AUTODEPEND)
+
+uivedit.$(obj) : uivedit.c uidef.h uivedit.h uiedit.h  $(AUTODEPEND)
+
+uiband.$(obj) : uiband.c uidef.h uibox.h uigchar.h  $(AUTODEPEND)
+
+uimenu.$(obj) : uimenu.c uidef.h uimenu.h uibox.h uishift.h uigchar.h &
+     $(AUTODEPEND)
+
+uipget.$(obj) : uipget.c uidef.h uidebug.h  $(AUTODEPEND)
+
+uimget.$(obj) : uimget.c uidef.h uimenu.h  $(AUTODEPEND)
+
+uialloc.$(obj) : uialloc.c  $(AUTODEPEND)
+
+uiyield.$(obj) : uiyield.c uidef.h  $(AUTODEPEND)
+
+uigchar.$(obj) : uigchar.c uibox.h uichars.h uidef.h  $(AUTODEPEND)
+
+uivattr.$(obj) : uivattr.c uidef.h  $(AUTODEPEND)
+
+uimenucr.$(obj) : uimenucr.c stdui.h uimenu.h  $(AUTODEPEND)
+
+uiprot.$(obj) : uiprot.c uidef.h  $(AUTODEPEND)
+
+uidchfld.$(obj) : uidchfld.c uidef.h uivedit.h uiledit.h uidialog.h &
+     $(AUTODEPEND)
+
+uigadget.$(obj) : uigadget.c uidef.h uigadget.h  $(AUTODEPEND)
+
+uidlgfcn.$(obj) : uidlgfcn.c uidef.h uidialog.h uigchar.h  $(AUTODEPEND)
+
+uivscrn.$(obj) : uivscrn.c uidef.h  $(AUTODEPEND)
+
+uibox.$(obj) : uibox.c uidef.h uibox.h uigchar.h  $(AUTODEPEND)
+
+uivfill.$(obj) : uivfill.c uidef.h  $(AUTODEPEND)
+
+uivutil.$(obj) : uivutil.c uidef.h  $(AUTODEPEND)
+
+uivhide.$(obj) : uivhide.c uidef.h  $(AUTODEPEND)
+
+uimisc.$(obj) : uimisc.c uidef.h uimenu.h  $(AUTODEPEND)
+
+uivmove.$(obj) : uivmove.c uidef.h  $(AUTODEPEND)
+
+uiinit.$(obj) : uiinit.c uidef.h uiforce.h  $(AUTODEPEND)
+
+uihotspt.$(obj) : uihotspt.c uidef.h uivedit.h uiledit.h uidialog.h uigchar.h &
+     $(AUTODEPEND)
+
+uipopup.$(obj) : uipopup.c uidef.h uimenu.h  $(AUTODEPEND)
+
+uimousev.$(obj) : uimousev.c uidef.h uimouse.h  $(AUTODEPEND)
+
+uiattr.$(obj) : uiattr.c uidef.h uiattrs.h  $(AUTODEPEND)
+
+uivline.$(obj) : uivline.c uidef.h uivedit.h uiedit.h  $(AUTODEPEND)
+
+uidialcb.$(obj) : uidialcb.c stdui.h uidialog.h  $(AUTODEPEND)
+
+uiconfig.$(obj) : uiconfig.c uidef.h uiattrs.h  $(AUTODEPEND)
+
+uirefer.$(obj) : uirefer.c uidef.h  $(AUTODEPEND)
+
+uilist.$(obj) : uilist.c uidef.h  $(AUTODEPEND)
+
+uidebug.$(obj) : uidebug.c uidef.h uidebug.h  $(AUTODEPEND)
+
+uidialog.$(obj) : uidialog.c uidef.h uidialog.h uigchar.h  $(AUTODEPEND)
+
+uibios.$(obj) : uibios.c uidef.h doscall.h  $(AUTODEPEND)
+
+uispawn.$(obj) : uispawn.c doscall.h uidef.h  $(AUTODEPEND)
+
+uicurs.$(obj) : uicurs.c uidef.h uiattrs.h doscall.h  $(AUTODEPEND)
+
+uisnow.$(obj) : uisnow.c uidef.h  $(AUTODEPEND)
+
+uibmous.$(obj) : uibmous.c uidef.h uimouse.h  $(AUTODEPEND)
+
+uikeyb.$(obj) : uikeyb.c uidef.h uishift.h doscall.h  $(AUTODEPEND)
+
+uimous.$(obj) : uimous.c doscall.h uidef.h uimouse.h  $(AUTODEPEND)
+
+uiget.$(obj) : uiget.c doscall.h uidef.h uiforce.h  $(AUTODEPEND)
+

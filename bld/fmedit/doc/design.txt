@@ -1,0 +1,233 @@
+                        Report Editor Design
+
+        This file contains notes on the report editor internal design.
+        Let's try to keep it up to date.
+         
+                            History ( 03/23/91 ) 
+                           
+        The report editor started as just the message processing loop for 
+        the parent window.  The menu items supported were : About, New, 
+        Open, Save, SaveAs and Exit.  These menus simply displayed and 
+        allowed modification of files using an edit window.  
+
+        The DataSource menu item was then implemented to get datasource 
+        information using dialog boxes.  
+
+        The Generate menu item was next to be implemented.  It would take 
+        the text in the edit window and the datasource information already
+        specified and create a report specification, representing both,
+        which could be used as input to the report generator. The text 
+        from the edit window was interpreted as a series of constant value 
+        items.
+
+        Soon the edit window was changed.  Its previous class was Edit, 
+        a predefined control class.  A new class, PaintWClass, now gets 
+        registered on initialization and this is the type of the edit 
+        window - now called the Paint Window.
+
+        The Paint Window allows panels, fields and text to be created,
+        represented on the screen and edited.  The internal data structures 
+        now represent arbitrary levels of panels and this information 
+        can be used to generate input for the report generator.
+
+            
+                            OverView
+                                
+                                
+        The Report Editor consists of the following 8 managers :
+            1) the Main Window Manager
+            2) the Panel Window Message Loop
+            3) the Panel Manager
+            4) the DataSource Manager
+            5) the Mouse Manager
+            6) the Screen Painter
+            7) the Edit Window Manager
+            8) the Output Manager
+
+        which are descriped below.
+        
+                        The Main Window Manager
+                        
+        The Main Window Manager has three main functions : 
+        
+            1)  it contains WinMain which Windows calls to initialize
+                the application and subsequent instances of the application.
+                
+            2)  it contains MainWndProc which is the main message processing
+                loop. This message loop :
+                
+                    - receives messages from Windows when menu items are 
+                      selected.  It then calls the correct function to carry 
+                      out the required action.
+                      
+                    - sends painting information to the Paint Window when 
+                      the Paint Window has lost focus and so will not get 
+                      paint messages directly from Windows.  
+
+            3)  it contains functions called in response to menus being
+                selected if those functions are not the responsibility
+                of any other manager.
+                
+                
+                        The Panel Window Message Loop
+
+        The Panel Window Message Loop receives messages from Windows and
+        passes this informatio on to the correct manager.  
+        
+        Specifically :
+        
+            - if mouse input is received, the correct routine of the 
+              Mouse Manager is called with the information
+              
+            - if a WM_PAINT message is received, the Paint Manager is 
+              called with the information
+              
+                        The Panel Manager
+                        
+        The Panel Manager contains all of the subroutines that access
+        the PANEL data structure.  It alone knows what this structure 
+        looks like and only the Panel Manager is allowed to create, 
+        modify and delete objects contained within this structure.  
+        The Panel Manager gets its information from both the user 
+        ( using dialog boxes ) and other managers ( such as the Mouse 
+        Manager when an object gets moved ).  
+        
+                        The DataSource Manager
+              
+        The DataSource Manager is called by the Main Message Loop when 
+        the DataSource menu item is selected.  The DataSource Manager
+        uses a series of dialog boxes to allow the user to input, view
+        and edit information about datasources.  Only the DataSource 
+        Manager has access to the information in the DATASOURCE data 
+        structure.      
+        
+        
+                        The Mouse Manager
+                        
+        The Mouse Manager receives input from the Panel Window Message
+        Loop when it gets mouse input.  The Mouse Manager is responsible
+        for allowing the user to :
+        
+            - create rectangles
+            - select and rectangle and use it to create a field or panel
+            - select a field or panel and change its attributes
+            - select and move an object 
+              ( in the above three cases, the Panel Manager is called to
+              collect and update information as required )
+            - enter text ( the Edit Window Manager is called )
+            
+                        The Screen Painter
+                        
+        The Screen Painter is called by the Panel Window Message Loop
+        whenever it receives a WM_PAINT message.  The Screen Painter is
+        responsible for repainting the screen so that it is an accurate
+        reflection of the current state of the data without repainting 
+        anything that does not need to be repainted.
+        
+                        The Edit Window Manager
+                        
+        The Edit Window Manager is called by the Mouse Manager whenever
+        the user indicates that he wants to enter or edit text.  The Edit 
+        Window Manager is responsible for allowing the user to enter and 
+        edit text, storing the text information, and ensuring that the 
+        Paint Manager receives the information which it requires to keep 
+        the screen current.
+        
+                        The Output Manager
+                        
+        The Output Manager is called by the Main Window Manager when
+        the Generate menu item is selected.  The Output Manager is 
+        responsible for :
+            - getting the datasource information from the DataSource Manager
+            - getting the panel information from the Panel Manager
+            - using this information to generate a report specification 
+              ( in the specified file ) that can be used as input to the 
+              report generator.
+              
+
+                        Data Structure Change ( 10/04/91 )
+                        
+        There are now three types of data structures :
+            objects ( OBJECT )
+            fields  ( FIELDINFO )
+            panels  ( PANEL ).
+            
+        The first field of both the FIELDINFO and PANEL datastructures
+        is of type OBJECT so that field and panel pointers can be cast
+        as object pointers so that only the Panel Manager actually 
+        accesses the data fields specific to the FIELDINFO and PANEL 
+        data structures.  All other functions only access the fields 
+        in the OBJECT data structure.
+        
+              Outstanding Issues ( 10/04/91 )
+              
+        1)  Occasionally a ButtonDown message will result in the wrong
+            object being selected.  The reason for this is unknown.
+            
+        2)  The Main Window Manager currently intercepts some paint 
+            messages and relays them to the Panel Window Manager.  This 
+            should not really be necessary.
+            
+        3)  Since the local heap should be used for all memory allocations
+            of less than 64K, the entire application should be using 
+            LocalAlloc.  Any memory that is permanent ( ie field labels ) 
+            should be allocated as moveable and then locked when they are
+            referenced.  Using LocalAlloc for allocation of space for 
+            data structures should also be considered.
+            
+              Outstanding Issues( 24/04/91 )
+              
+        1)  Outstanding issue 1) from 10/04/91 has been resolved.
+        
+        2)  Outstanding issuue 3) from 10/04/91 has be partially resolved.
+            All memory is now allocated from the local heap using LocalAlloc.
+            It is currently all fixed.  There are still a few places where
+            memory should be dynamically allocated by it is being statically
+            allocated ( some dialog boxes ).
+           
+                Issues Developers Should Be Aware Of ( 24/04/91 )
+                
+        The function InsertObj() will insert any object it is asked to.
+        Before calling InsertObj( objectptr ), either ValidObj( objectptr ),
+        HorizontalAlign( objectptr ) or VerticalAlign( objectptr ) must be
+        called and return TRUE.
+        
+        It is important to understand what the various states mean.  To 
+        the best of my knowledge they mean the following :
+        
+        SELECT      - an object is selected.  The cursor is a cross and the
+                      selected object can be moved.  The mouse has been
+                      depressed to select the object but not yet released.
+        NOSELECT    - although there is a current object ( that has the
+                      resizing squares around it ) no object is currently
+                      'selected' to be moved.  This is that state that the
+                      system will be in by default if nothing else is 
+                      happening.
+        DRAWRECT    - a new object is being drawn.  The mouse has been
+                      depressed to start drawing the object but has not yet
+                      be released to signify that the object currently drawn
+                      should be created.
+        EDITTEXT    - a textedit window currently exists and text is being 
+                      edited.
+        OVERBOX     - the mouse has not been depressed but it is currently 
+                      placed above one of the sizing squares at the corners
+                      or sides of the current object and so the cursor is
+                      currently in the shape of a filled in black square
+        SIZE        - while in state overbox, the mouse was depressed so 
+                      that the current object is being resized.  The mouse
+                      has not yet been released.
+                      
+        When ValidObj() or InsertObj() are called, they do different things
+        depending on the current state.  As a result, states are occasionally
+        changed before a call to one of these functions and then restored
+        to what is was after the call in order to achieve the desired result.
+        This is probably not a good idea but it works!
+        
+        For example, when ValidObj() is called and the state is DRAWRECT, the 
+        object that is being tested for validity will be considered valid
+        so long that it doesn't partially overlap any objects ( it may 
+        completely enclose objects ).  On the other hand, it ValidObj is 
+        called when the state is SELECT, the object that is being tested for
+        validity may not overlap anything ( because no object may be moved
+        on top of another object ).  
+        

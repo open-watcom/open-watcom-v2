@@ -1,0 +1,424 @@
+Insight:
+--------
+Member pointers are primarily offsets into a class.
+The offset is relative to the start of the class.  (Usually a 'this' pointer).
+The complexity comes in with multiple inheritance and virtual inheritance
+because that makes getting to the proper 'this pointer' complicated.
+
+Language Specification:
+=============================================================================
+
+Declaration:
+------------
+<t> <c>::*<id>;
+
+``<id> is a pointer to a type <t> member of class <c>''
+
+
+Initialization:
+---------------
+<id> = &<c>::<field>;
+
+``<id> points to member <field> in class <c>''
+
+Note:
+1) <field> may be a non-static data or non-static function member.
+2) static data members could be added later as a WATCOM extension.
+
+
+Dereferencing:
+--------------
+<c> <instance>;
+<c> *<Pinstance> = &<instance>;
+
+<instance>.*<id>;
+<Pinstance>->*<id>;
+
+Both expressions yield the value of the member pointed at by <id> in
+<instance>.
+
+
+Assignment:
+-----------
+<t> <c>::*<id1>;
+<t> <c>::*<id2>;
+
+<id2> = <id1>;
+
+
+Pointer to Member vs. Ordinary Pointer:
+---------------------------------------
+Clarify by example...
+
+class A {
+    int i;
+};
+A instance_a;
+
+int *Pi = &instance_a.i;
+int A::*Pmi = &A::i;
+int *Pi2 = &instance_a.*Pmi;
+
+- Pi is the address of the specific int, 'i', in instance_a's copy of class A.
+- Pmi is the offset of field 'i' within the class A.
+- Pi2 is the same address as Pi.  It is obtained by using Pmi to specify the
+  offset of the field 'i' within class A, using that offset relative to
+  instance_a, and then taking the address of the resulting field.
+
+
+Conversion:
+-----------
+Quote from the ARM (p38-39):
+"
+    A constant expression that evaluates to zero is converted to a pointer
+    to member.  It is guaranteed that this value will produce a pointer to
+    member distinguishable from any other pointer to member.
+
+    A pointer to member of a class may be converted to a pointer to member
+    of a class derived from that class provided the (inverse) conversion
+    from the derived class to the base class pointer is accessible and
+    provided this conversion can be done unambiguously.
+"
+
+Additionally, a pointer to member, can be converted up the derivation
+tree via cast.  This is not a guaranteed safe conversion.
+
+The standard makes no mention of what should happen if the programmer
+casts a pointer to member of class A to a pointer to member of class B
+when class A and class B are completely unrelated.
+
+Example:
+
+A B
+ \|
+  C
+  |-virtual
+D E
+ \|
+  F
+
+int B::*pmb1 = &B::int_field;
+int F::*pmf1 = pmb1;		// this is fine
+
+int F::*pmf2 = &F::int_field;
+int B::*pmb2 = (int B::*)pmf2;	// this is not guaranteed
+
+int B::*pmb3 = &B::int_field;
+int F::*pmf3 = pmb3;		// this is fine
+int B::*pmb4 = (int B::*)pmf3;	// this is not guaranteed, but should work
+
+int Q::*pmq = pmb3;		// this is not defined in the standard
+
+
+WATCOM Implementation:
+=============================================================================
+
+Storage:
+--------
+Member pointers are implemented via a three field structure.
+To store this member pointer:
+
+<t> <c>::*<id> = &<c>::<field>;
+
+we implicitly create:
+
+struct member_pointer {
+    <t> &(*fn)( <c> *p );
+    unsigned delta;
+    unsigned index;
+}
+
+fn    - Points to a thunk routine that converts the address of the instance
+        of class <c> to the address of the member being pointed at.
+        i.e.
+	    <t> &thunk_<c>_<field>( <c> *p )
+	    {
+		return( (<t>)p->field );
+	    }
+
+        This thunk routine is compiler generated.
+        If the fn is NULL, then the member pointer is NULL.
+
+=======>Currently this thunk will not compile properly to return references.
+
+delta - Is used for conversions with multiple inheritance
+	Usage is illustrated later
+index - Is used for conversions with virtual inheritance
+	Usage is illustrated later
+
+Additionally the compiler must generate mapping tables for the index field
+to handle the crossing of virtual inheritance.  This table only needs to be
+generated for a conversion that goes from a class with a virtual base table
+to another class with a virtual base table.
+
+pmMap<source_class>to<destination_class>[]
+
+This table maps the positions of virtual bases table indices from the
+source class to the destination class.
+
+i.e.
+class C has virtual base table:
+[0]:0 [1]:W [2]:X [3]:Y [4]:Z
+
+class D has virtual base table:
+[0]:0 [1]:Q [2]:R [3]:W [4]:Z [5]:Y [6]:X
+
+pmMapCtoD[5] = { 0->0, 1->3, 2->6, 3->5, 4->4 };
+
+Note:
+    The potentially unsafe conversion from derived back to base is
+    unsafe because the mapping may not be complete.
+    i.e. in pmMapDtoC[], where does D's virtual base table entry for R map
+         to within C's virtual base table?  We will set that entry to 0 as
+	 follows:
+	 pmMapDtoC[7] = { 0->0, 1->0, 2->0, 3->1, 4->4, 5->3, 6->2 };
+
+If either the source class or the destination class does not have a virtual
+base table, then no pmMap<source_class>to<destination_class>[] table is
+generated.  The use of the table in a conversion is explained below.
+
+If the pmMap<source_class>to<destination_class>[] table is the identity
+mapping, then it is not generated.
+    i.e. pmMap<src>to<dest>[] = { 0->0, 1->1, 2->2, ... } is not required.
+
+
+How to Dereference:
+-------------------
+The code generated by the compiler uses fn, delta and index to dereference
+the member pointer and get the address of the member.  To wit:
+
+<t> <c>::*<id> = &<c>::<field>;
+<c> <instance>;
+<t> <id2>;
+<id2> = <instance>.*<id>;	// this line generates:
+
+    {
+	void *p = &<instance>;		// temporary pointer
+	if( <id>.index != 0 ) {
+	    p += offsetof( <c>.vbptr );
+	    p += (*p)[<id>.index];	// index into virtual base table
+	}
+	p += <id>.delta;
+	<id2> = (<id>.fn)( p );
+    }
+
+For added complexity, consider the case that occurs when <d> is derived
+from <c>:
+
+<d> <instance2>;
+<id2> = <instance2>.*<id>;
+
+First the compiler must convert <instance2> to be of the same type as
+<instance>.  Then the dereference operation is applied.  Member pointers
+may only be dereferenced relative to the class for which they are declared.
+
+
+How To Convert:
+---------------
+Note: Preprocessor directive style lines indicate pieces of code that will be
+      conditionally generated.
+
+
+=====>> From <c1> to completely unrelated <c2>:
+Do nothing, null conversion.
+
+
+=====>> From base <c1> to derived <c2>:
+
+<t> <c1>::*<id1> = &<c1>::<field>;
+<t> <c2>::*<id2> = <id1>;		// this line generates:
+
+	<id2>.fn = <id1>.fn;
+	<id2>.delta = <id1>.delta;
+	<c1'> = most non-virtually derived class in path from <c1> to <c2>
+	if( <id1>.index == 0 ) {
+	    <id2>.delta += delta( <c1> to <c1'> );
+	}
+	#if( exists <c1'>.vbptr )
+	    // existence of <c1'>.vbptr implies existence of <c2>.vbptr
+	    generate pmMap<c1'>to<c2>[];
+	    #if( pmMap<c1'>to<c2>[] is identity )
+		<id2>.index = <id1>.index;
+	    #else
+		<id2>.index = pmMap<c1'>to<c2>[<id1>.index];
+	    #end if
+	#else if( exists <c2>.vbptr )
+	    // this implies that <c1'> will be present in <c2>.vbtable
+	    <id2>.index = position of <c1'> in <c2>.vbtable
+	#else
+	    <id2>.index = <id1>.index;
+	#end if
+
+
+=====>> From derived <c2> to base <c1>:
+
+<t> <c1>::*<id1a> = &<c1>::<field>;
+<t> <c2>::*<id2> = <id1a>;
+<t> <c1>::*<id1> = <id2>;		// this line generates:
+
+	<id1>.fn = <id2>.fn;
+	<c1'> = most non-virtually derived class in path from <c1> to <c2>
+	#if( exists <c1'>.vbptr )
+	    // existence of <c1'>.vbptr implies existence of <c2>.vbptr
+	    generate pmMap<c2>to<c1'>[];
+	    #if( pmMap<c2>to<c1'>[] is identity mapping )
+		<id1>.index = <id2>.index;
+	    #else
+		<id1>.index = pmMap<c2>to<c1'>[<id2>.index];
+	    #end if
+	#else
+	    <id1>.index = 0;
+	#end if
+	<id1>.delta = <id2>.delta;
+	if( <id1>.index == 0 ) {
+	    <id1>.delta += delta( <c1'> to <c1> );
+	}
+
+
+Example Conversions:
+=============================================================================
+
+Simple Conversion:
+------------------
+A
+|
+B
+
+Given the declaration,  ``int A::*pma = &A::field;''
+the conversion,         ``int B::*pmb = pma;''
+yields:
+    pmb.fn    = pma.fn;
+    pmb.delta = pma.delta;
+    pmb.delta += 0;
+    pmb.index = 0;
+
+The reverse conversion, ``int A::*pma2 = (int A::*)pmb;''
+yields:
+    pma2.fn    = pmb.fn;
+    pma2.index = 0;
+    pma2.delta = pmb.delta;
+    pma2.delta += 0;
+
+
+Multiple Inheritance Conversion:
+--------------------------------
+A B C
+ \|/
+  D
+
+Given the declaration,       ``int B::*pmb = &B::field;''
+the conversion,              ``int D::*pmd = pmb;''
+yields:
+    pmd.fn    = pmb.fn;
+    pmd.delta =	pmb.delta;
+    pmd.delta += sizeof( A );
+    pmd.index =	0;
+
+The reverse conversion,      ``int B::*pmb2 = (int B::*)pmd;''
+yields:
+    pmb2.fn    = pmd.fn;
+    pmb2.index = 0;
+    pmb2.delta = pmd.delta;
+    pmb2.delta += -sizeof( A );
+
+Another reverse conversion,  ``int A::*pma = (int A::*)pmd;''
+yields:
+    pma.fn    =	pmd.fn;
+    pma.index = 0;
+    pma.delta =	pmd.delta;
+    pma.delta += 0;
+
+This will be a valid member pointer for A, provided the A used to dereference
+the member pointer is a component of D.
+
+The last reverse conversion, ``int C::*pmc = (int C::*)pmd;''
+yields:
+    pmc.fn    =	pmd.fn;
+    pmc.index = 0;
+    pmc.delta =	pmd.delta;
+    pmc.delta += -(sizeof( A ) + sizeof( B ));
+
+This will be a valid member pointer for C, provided the C used to dereference
+the member pointer is a component of D.
+
+
+Simple Virtual Inheritance Conversion:
+--------------------------------------
+         A B C
+          \|/
+           D
+   virtual-|
+           E
+
+Given the declaration,  ``int B::*pmb = &B::field;''
+the conversion,         ``int E::*pme = pmb;''
+yields:
+    pme.fn    = pmb.fn;
+    pme.delta = pmb.delta;
+    pme.delta += sizeof( A );
+    pme.index = position of D in E's virtual base table
+
+The reverse conversion, ``int B::*pmb2 = (int B::*)pme;''
+yields:
+    pmb2.fn    = pme.fn;
+    pmb2.index = 0;
+    pmb2.delta = pme.delta;
+    pmb2.delta += -sizeof( A );
+
+The reverse conversion, ``int A::*pma = (int A::*)pme;''
+yields:
+    pma.fn    = pme.fn;
+    pma.index = 0;
+    pma.delta = pme.delta;
+    pma.delta += 0;
+
+The reverse conversion, ``int C::*pmc = (int C::*)pme;''
+yields:
+    pmc.fn    = pme.fn;
+    pmc.index = 0;
+    pmc.delta = pme.delta;
+    pmc.delta += -(sizeof( A ) + sizeof( B ));
+
+
+Complex Virtual Inheritance Conversion:
+---------------------------------------
+           A   B
+   virtual-|  /-virtual
+         C D E
+          \|/
+           F
+
+Given the declaration,  ``int A::*pma = &A::field;''
+the conversion,         ``int D::*pmd = pma;''
+yields:
+    pmd.fn    = pma.fn;
+    pmd.delta = pma.delta;
+    pmd.delta += 0;
+    pmd.index = position of A in D's virtual base table
+
+The further conversion, ``int F::*pmf = pmd;''
+yields:
+    pmf.fn    = pmd.fn;
+    pmf.delta = pmd.delta
+    pmf.index = pmMapDtoF[pmd.index];
+
+The reverse conversion, ``int D::*pmd = (int D::*)pmf;''
+yields:
+    pmd.fn    = pmf.fn;
+    pmd.index = pmMapFtoD[pmf.index];
+    pmd.delta = pmf.delta;
+
+The reverse conversion, ``int A::*pma2 = (int A::*)pmf;''
+yields:
+    pma2.fn    = pmf.fn;
+    pma2.index = 0;
+    pma2.delta = pmf.delta;
+    pma2.delta += 0;
+
+The reverse conversion, ``int B::*pmb = (int B::*)pmf;''
+yields:
+    pmb.fn    = pmf.fn;
+    pmb.index = 0;
+    pmb.delta = pmf.delta;
+    pmb.delta += 0;
+This is a completely invalid member pointer.

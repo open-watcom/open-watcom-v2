@@ -1,0 +1,345 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include <stdio.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <dos.h>
+#include "vi.h"
+#include "win.h"
+#include "dosx.h"
+#include "curses.h"
+
+#define PHAR_SCRN_SEL   0x34
+extern int PageCnt;
+
+WINDOW *CursesWindow;
+
+static char oldPath[_MAX_PATH];
+static char oldDrive;
+/*
+ * PushDirectory
+ */
+void PushDirectory( char *orig )
+{
+    unsigned    c;
+
+    oldPath[0] = 0;
+    _dos_getdrive( &c );
+    oldDrive = (char) c;
+    if( orig[1] == ':' ) {
+        ChangeDrive( orig[0] );
+    }
+    GetCWD2( oldPath, _MAX_PATH );
+
+} /* PushDirectory */
+
+/*
+ * PopDirectory
+ */
+void PopDirectory( void )
+{
+    unsigned    total;
+
+    if( oldPath[0] != 0 ) {
+        ChangeDirectory( oldPath );
+    }
+    _dos_setdrive( oldDrive, &total );
+    ChangeDirectory( CurrentDirectory );
+
+} /* PopDirectory */
+
+/*
+ * NewCursor - change cursor to insert mode type
+ */
+void NewCursor( window_id id, cursor_type ct )
+{
+    // could do a curs_set() here
+} /* NewCursor */
+
+void StupidCursesWrite( int y, int x, char c )
+{
+    int row, col;
+
+    getyx( CursesWindow, row, col );
+    wmove( CursesWindow, y, x );
+    addch( c );
+    wmove( CursesWindow, row, col );
+}
+
+/*
+ * MyBeep - ring beeper
+ */
+void MyBeep( void )
+{
+    if( EditFlags.BeepFlag ) {
+        beep();
+    }
+} /* MyBeep */
+
+/*
+ * ScreenInit - get screen info
+ */
+void ScreenInit( void )
+{
+    int size;
+
+    CursesWindow = initscr();
+    WindMaxWidth = COLS;
+    WindMaxHeight = LINES;
+
+    size = WindMaxWidth * WindMaxHeight * sizeof( char_info );
+    Scrn = malloc( size );
+
+    // EditFlags.Monocolor = TRUE;
+    EditFlags.HasSystemMouse = FALSE;
+    curson();
+} /* ScreenInit */
+
+/*
+ * ScreenFini
+ */
+void ScreenFini( void )
+{
+    cursoff();
+    endwin();
+} /* ScreenFini */
+
+/*
+ * ChkExtendedKbd - look for extended keyboard type
+ */
+void ChkExtendedKbd( void )
+{
+    EditFlags.ExtendedKeyboard = 0;
+} /* ChkExtendedKbd */
+
+/*
+ * MemSize - return amount of dos memory left (in 16 byte paragraphs)
+ */
+long MemSize( void )
+{
+    short       x;
+
+    x = DosMaxAlloc();
+#ifdef __386__
+    return( 4096L * (long) x );
+#else
+    return( 16L * (long) x );
+#endif
+
+} /* MemSize */
+
+/*
+ * ScreenPage - set the screen page to active/inactive
+ */
+void ScreenPage( int page )
+{
+    PageCnt += page;
+} /* ScreenPage */
+
+/*
+ * ChangeDrive - change the working drive
+ */
+int ChangeDrive( int drive )
+{
+    char        a;
+    unsigned    b;
+    unsigned    total,c;
+
+    a = (char) tolower(drive) - (char) 'a';
+    b = a+1;
+    _dos_setdrive( b, &total );
+    _dos_getdrive( &c );
+    if( b != c ) {
+        return( ERR_NO_SUCH_DRIVE );
+    }
+    return( ERR_NO_ERR );
+
+}/* ChangeDrive */
+
+#if defined( __386__ ) && !defined( __4G__ )
+#define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
+#else
+#define KEY_PTR (char *) 0x00400017;
+#endif
+/*
+ * ShiftDown - test if shift key is down
+ */
+bool ShiftDown( void )
+{
+    char _FAR   *kptr;
+
+    kptr = KEY_PTR;
+    if( kptr[0] & KEY_SHIFT ) {
+        return( TRUE );
+    }
+    return( FALSE );
+
+} /* ShiftDown */
+
+static bool hadCapsLock;
+
+/*
+ * TurnOffCapsLock - switch off caps lock
+ */
+void TurnOffCapsLock( void )
+{
+    char _FAR   *kptr;
+
+    kptr = KEY_PTR;
+
+    if( kptr[0] & KEY_CAPS_LOCK ) {
+        hadCapsLock = TRUE;
+        kptr[0] &= ~KEY_CAPS_LOCK;
+    } else {
+        hadCapsLock = FALSE;
+    }
+
+} /* TurnOffCapsLock */
+
+extern short CheckRemovable( char );
+#pragma aux CheckRemovable = \
+        "mov    ax,04408h" \
+        "int    021h" \
+        "cmp    ax,0fh" \
+        "jne    ok" \
+        "mov    ax,0" \
+        "jmp    done" \
+        "ok:    inc ax" \
+        "done:" \
+        parm [bl] value[ax];
+
+/*
+ * DoGetDriveType - get the type of drive A-Z
+ */
+drive_type DoGetDriveType( int drv )
+{
+    return( CheckRemovable( drv - 'A' + 1 ) );
+
+} /* DoGetDriveType */
+
+/*
+ * MyDelay - delay a specified number of milliseconds
+ */
+void MyDelay( int ms )
+{
+    int         final_ticks;
+
+    final_ticks = ClockTicks + ((ms*182L+5000L)/10000L );
+    while( ClockTicks < final_ticks );
+
+} /* MyDelay */
+
+/*
+ * SetCursorBlinkRate - set the current blink rate for the cursor
+ */
+void SetCursorBlinkRate( int cbr )
+{
+    CursorBlinkRate = cbr;
+
+} /* SetCursorBlinkRate */
+
+void MyVioShowBuf( unsigned short offset, unsigned short length )
+{
+    int         line, column;
+    extern int  PageCnt;
+    char_info   *info;
+    int         i, x, y;
+
+    if( PageCnt > 0 || EditFlags.Quiet ) {
+        return;
+    }
+    info = &Scrn[ offset ];
+    offset /= sizeof( char_info );
+    getyx( CursesWindow, y, x );
+
+    line = offset / WindMaxWidth;
+    column = offset % WindMaxWidth;
+    wmove( CursesWindow, line, column );
+    for( i = 0; i < length; i++, info++ ) {
+        addch( info->ch | (info->attr << 8) );
+    }
+    wmove( CursesWindow, y, x );
+    refresh();
+} /* MyVioShowBuf */
+
+// void BIOSSetColorRegister( short, char, char, char );
+// void BIOSGetColorPalette( void _FAR * );
+// void BIOSSetBlinkAttr( void );
+// void BIOSSetNoBlinkAttr( void );
+// short BIOSTestKeyboard( void );
+// short BIOSGetKeyboard( char );
+// short BIOSKeyboardHit( char );
+// char BIOSGetRowCount( void );
+// unsigned long BIOSGetVideoMode( void );
+// long BIOSGetColorRegister( short );
+
+short BIOSGetCursor( char type )
+{
+    int x, y;
+
+    getyx( CursesWindow, x, y );
+    return( (y << 16) | x );
+}
+
+void BIOSSetCursor( char page, char row, char col )
+{
+    wmove( CursesWindow, row, col );
+    refresh();
+}
+
+unsigned short BIOSGetKeyboard( int extended )
+{
+    extended = extended;
+}
+
+/*
+ * come up with a correct curses attribute given a color combo and a
+ * window.
+ */
+unsigned short WindowAttr( wind *w, short foreground, short background )
+{
+    unsigned short      attr = A_NORMAL;
+
+    if( w != NULL ) {
+        /* reverse video */
+        if( background == w->text_color && foreground == w->background_color ) {
+            attr |= A_REVERSE;
+        } else {
+            if( foreground != w->text_color ||
+                background != w->background_color ) {
+                attr |= A_BOLD;
+            }
+        }
+    }
+    return( attr >> 8 );
+}

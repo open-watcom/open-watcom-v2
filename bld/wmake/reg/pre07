@@ -1,0 +1,12 @@
+#
+#   test some more error messages
+#
+
+!error errors will follow on lines 7 and 10
+
+    abc         # should get error on this line
+    abc         # should not get error on this line
+.nocheck
+    abc         # should get error on this line
+    abc         # should not get error on this line
+

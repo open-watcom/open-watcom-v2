@@ -1,0 +1,20 @@
+# ORL library finder.  You must define:
+# ~~~~~~~~~~~~~~~~~~
+# 1. host_OS and host_CPU
+#
+orl_nt_386 = o
+orl_osi_386 = o
+orl_dos_386 = o
+orl_qnx_386 = o
+orl_nt_axp = axp
+orl_os2_386 = os2
+
+!ifdef $(proj_name)_rtdll
+!ifeq $(proj_name)_rtdll 1
+orl_nt_386 = o.dll
+orl_nt_axp = axp.dll
+orl_os2_386 = os2.dll
+!endif
+!endif
+
+orl_lib = $(orl_dir)\$(orl_$(host_OS)_$(host_CPU))\orl.lib

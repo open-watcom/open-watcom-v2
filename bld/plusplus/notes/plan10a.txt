@@ -1,0 +1,91 @@
+C++ Compiler Plans for 10.0
+---------------------------
+
+History:    93/04/12 -- initial version
+	    93/06/02 -- adjustment after release of 9.5
+
+
+Note:   The comprehensiveness of the plan depends upon the release dates
+        for 10.0.  The following plan assumes:
+
+            (1) release date in the fall
+
+            (2) no requirements to interface with IBM SOM nor with the
+                Microsoft object model
+
+            (3) no response to users, technical support (this is obviously
+                ridiculous, some slack must be built into the schedule)
+
+            (4) no new platforms beyond the set currently supported
+
+
+Plan: immediate
+-----
+
+(0) bug fixes ( 2 man months terminating when patch level A is shipped )
+
+    - bug fixes detected during testing
+    - customer problems
+    - optional:
+	- DLL entry classes (support __export keyword for classes)
+	- ambient class model (two possibilities)
+	    - ignore
+	    - full support ( lots of work )
+
+(1) Cleanup ( 1 man month )
+    -------
+
+    - clean up source code to minimize future maintenance
+
+
+(2) Compile-time speed ( 1 man month)
+    ------------------
+
+    - measure and respond
+    - pre-compiled headers
+
+
+(3) Execution-time speed (2 man months)
+    --------------------
+
+    - re-think/optimize exceptions, support NT
+    - review Construction/Destruction strategy
+    - implement "call-stretching" generally
+    - implement "routine-flattening" generally
+
+
+(4) Dwarf Support (2 man weeks)
+    -------------
+
+    - just on-going support for the browser, debugger projects
+
+
+(5) Interaction with code-generation (3 man weeks)
+    --------------------------------
+
+    - drive the code-generation upgrades for C++
+    - some desires:
+        - respect precision
+        - tail recursion
+        - more floating optimization
+        - more peep-holing
+        - support for pointer-to-constant fetches
+        - support for -op switch in code-generator
+
+
+Plan: medium range
+------------------
+
+These plans will be firmed up in mid-June.
+
+
+(1) Adaption to IBM SOM, Microsoft object model (2 man months)
+    -------------------------------------------
+
+    - will be done only if business case and definitions are complete
+
+
+(2) Introduce C switch (3 man months)
+    ------------------
+
+    - adapt compiler to compile C source

@@ -1,0 +1,37 @@
+erase result
+call dospell a_cmdmod
+call dospell a_ctags
+call dospell a_edcfg
+call dospell a_errcod
+call dospell a_errmsg
+call dospell a_symkey
+call dospell advan
+call dospell basic
+call dospell basicdis
+call dospell basicmv
+call dospell cmdintro
+call dospell cmds
+call dospell env
+call dospell exerquit
+call dospell exitvi
+call dospell fsdesc
+call dospell gkey
+call dospell int_err
+call dospell inter
+call dospell intro
+call dospell markinfo
+call dospell modes
+call dospell oper
+call dospell operlist
+call dospell regexp
+call dospell rxexp
+call dospell scripts
+call dospell settings
+call dospell speckeys
+call dospell spmapkey
+call dospell symkey
+call dospell textsel
+call dospell vipref
+call dospell win_menu
+call dospell worddef
+erase *.spl

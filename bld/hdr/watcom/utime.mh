@@ -1,0 +1,58 @@
+/*
+ *  sys/utime.h utimbuf structure and prototypes
+ *
+:include crwatqnx.sp
+ */
+#ifndef _UTIME_H_INCLUDED
+#define _UTIME_H_INCLUDED
+:include readonly.sp
+:include cpluspro.sp
+
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
+
+:segment PENPOINT
+#ifndef __TYPES_H_INCLUDED
+ #include <sys/types.h>
+#endif
+
+:endsegment
+:include pshpackl.sp
+:segment !PENPOINT
+
+:include timet.sp
+:endsegment
+
+:include wchar_t.sp
+
+:segment PENPOINT
+/*
+   Which file times and how they are defined are volume specific.
+   For FAT volumes only modtime is defined, actime is always zero.
+*/
+
+:endsegment
+struct utimbuf {
+    time_t      actime;         /* access time */
+    time_t      modtime;        /* modification time */
+};
+#define _utimbuf    utimbuf
+
+/*
+ *  POSIX 1003.1 Prototype
+ */
+:segment PENPOINT
+_WCRTLINK extern int utime( const char *__path, struct utimbuf *__times );
+:elsesegment
+_WCRTLINK extern int utime( const char *__path, const struct utimbuf * __times );
+_WCRTLINK extern int _utime( const char *__path, const struct utimbuf * __times );
+_WCRTLINK extern int _wutime( const wchar_t *__path, const struct utimbuf * __times );
+:endsegment
+:segment QNX
+extern int __futime( int __fildes, const struct utimbuf * __times );
+:endsegment
+
+:include poppack.sp
+:include cplusepi.sp
+#endif

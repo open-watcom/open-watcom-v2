@@ -1,0 +1,196 @@
+objs = &
+        SQRTF.OBJ &
+        STD.OBJ &
+        ACTIVEPG.OBJ &
+        ARC.OBJ &
+        BKCOLOR.OBJ &
+        CLEARSCR.OBJ &
+        CLIP.OBJ &
+        CLIPRGN.OBJ &
+        COLOR.OBJ &
+        CURSOR.OBJ &
+        DEVUTILS.OBJ &
+        DISPCURS.OBJ &
+        ELLIPSE.OBJ &
+        FILLMASK.OBJ &
+        FLOODFLL.OBJ &
+        FONTSUPP.OBJ &
+        GETCONF.OBJ &
+        GETIMAGE.OBJ &
+        GETLOGC.OBJ &
+        GETPHYSC.OBJ &
+        GETPOS.OBJ &
+        GLOBAL.OBJ &
+        GRSTATUS.OBJ &
+        GRTEXT.OBJ &
+        GTXTEXT.OBJ &
+        GTXTSET.OBJ &
+        IMAGESIZ.OBJ &
+        L1BLOCK.OBJ &
+        L1CLIP.OBJ &
+        L1ELLIPS.OBJ &
+        L1FILLAR.OBJ &
+        L1GETDOT.OBJ &
+        L1GETPIC.OBJ &
+        L1HERSH.OBJ &
+        L1LINE.OBJ &
+        L1PAINT.OBJ &
+        L1PUTDOT.OBJ &
+        L1TEXT.OBJ &
+        LINETO.OBJ &
+        LNSTYLE.OBJ &
+        LOGORG.OBJ &
+        MOVETO.OBJ &
+        OUTTEXT.OBJ &
+        PIE.OBJ &
+        PIXEL.OBJ &
+        PLOTACTN.OBJ &
+        POLYGON.OBJ &
+        PUTCHAR.OBJ &
+        PUTIMAGE.OBJ &
+        RECTANGL.OBJ &
+        REMAPPAL.OBJ &
+        SCROLLW.OBJ &
+        SETCHSIZ.OBJ &
+        SETCHSPC.OBJ &
+        SETROWS.OBJ &
+        SETTXPTH.OBJ &
+        SETTXTAL.OBJ &
+        SETTXTOR.OBJ &
+        SETVIDEO.OBJ &
+        SETVIEWP.OBJ &
+        SETWIND.OBJ &
+        STYLWRAP.OBJ &
+        TEXTCOL.OBJ &
+        TEXTPOS.OBJ &
+        TEXTWIND.OBJ &
+        VISUALPG.OBJ &
+        WINDFUNC.OBJ &
+        WRAPON.OBJ &
+        ZARC.OBJ &
+        ZCHSIZE.OBJ &
+        ZELLIPSE.OBJ &
+        ZFLOODFL.OBJ &
+        ZGETIMAG.OBJ &
+        ZGRTEXT.OBJ &
+        ZIMAGESI.OBJ &
+        ZLINETO.OBJ &
+        ZMOVETO.OBJ &
+        ZPIE.OBJ &
+        ZPIXEL.OBJ &
+        ZPOLYGON.OBJ &
+        ZPUTIMAG.OBJ &
+        ZRECTANG.OBJ
+
+eng_nec_objs = &
+        8X8FONT.OBJ &
+        BIT.OBJ &
+        GSTKLOW.OBJ &
+        L0DRWLIN.OBJ &
+        L0ELLIPS.OBJ &
+        L1FILL.OBJ &
+        L1PUTPIC.OBJ &
+        LINEUTIL.OBJ &
+        SEGINIT.OBJ &
+        TRANSPAR.OBJ &
+        VISIT.OBJ &
+
+english_objs = &
+        CGAUTILS.OBJ &
+        CNVCOLOR.OBJ &
+        EGAUTILS.OBJ &
+        FAST256.OBJ &
+        HERCFONT.OBJ &
+        HGCUTILS.OBJ &
+        SVGAUTIL.OBJ &
+        VGAUTILS.OBJ &
+        GRCGA.OBJ &
+        GREGA.OBJ &
+        GRHGC.OBJ &
+        GRSVGA.OBJ &
+        GRVGA.OBJ &
+        SELPAL.OBJ &
+        SETMODE.OBJ &
+        SVGAINFO.OBJ &
+        SYSMTYPE.OBJ
+
+nec_objs = &
+        GRNEC.OBJ &
+        NECUTILS.OBJ &
+        KANJI.OBJ
+
+win_objs = &
+        GPHMAIN.OBJ &
+        WINUTIL.OBJ &
+
+special_objs = &
+        FSMATH.OBJ &
+        DUMMY.OBJ
+
+!ifndef _WIN
+objs += $(eng_nec_objs)
+!endif
+
+!ifdef _NEC_PC
+objs += $(nec_objs)
+!else
+!ifdef _WIN
+objs += $(win_objs)
+!else
+objs += $(english_objs)
+!endif
+!endif
+
+!ifeq _386 386
+.asm: ..\386asm;..\asm
+compiler = $(libcomp386)
+text_seg_name = _TEXT
+!else
+.asm: ..\asm
+compiler = $(libcomp286)
+text_seg_name = GRAPH_TEXT
+!endif
+
+#inc_path = ..\h;$(%watcom)\$(_qnx)h;$(watcom_h)
+!ifeq _qnx q
+inc_path = ..\h;$(build_root)\hdr\qnx;$(build_root)\watcom\h;$(%watcom)\qh;$(%watcom)\h
+!else
+inc_path = ..\h;$(build_root)\hdr\dos;$(build_root)\watcom\h;$(%watcom)\h
+!endif
+
+!ifdef _WIN
+inc_path += ;$(%watcom)\h\win;$(build_root)\clib\h;$(build_root)\clib\defwin\h;$(wpi_dir)\h;$(watcom_dir)\os220_h
+!endif
+
+.before
+        @set include=$(inc_path)
+        @set gr_extra=/osax /w3 /zq /zl /zld /fpc /d1 $(model)
+
+cflags = /nt=$(text_seg_name) /d_CGRAPH=$(cdecl) /d_FARD=$(fard) /nm=$(module) /fo=$[&.obj
+
+.c: $(build_root)\graphlib\c
+
+$(libname).lib : $(objs) $(special_objs) graphics.lbc
+        wlib /b /n /q $(libname) @graphics.lbc
+
+.c.obj:
+        $(compiler) $[* @gr_extra $(cflags) $(extra_c_flags) -bt=dos
+
+.asm.obj:
+        $(asm_cmd) $[@ $(asm_flags)
+!ifeq _386 386
+        erase $[&.err
+!endif
+
+graphics.lbc : ..\graphics.mif
+        %create graphics.lbc
+        for %i in ($(objs)) do %append graphics.lbc -+%i
+
+clean: .symbolic
+        @if exist *.obj @del *.obj
+        @if exist *.lib @del *.lib
+        @if exist *.lbc @del *.lbc
+        @if exist *.mod @del *.mod
+        @if exist *.ref @del *.ref
+        @if exist *.stb @del *.stb
+        @if exist *.2bj @del *.2bj

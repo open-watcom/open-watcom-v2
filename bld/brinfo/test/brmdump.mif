@@ -1,0 +1,13 @@
+all: brmdump.exe
+
+.cpp : ..\
+
+brmdump.exe: brmdump.obj
+	wlink sys $(sys) op q d a f brmdump
+	
+brmdump.obj: brmdump.cpp
+	wpp386 /w4/bt=$(bt)/zq/i=..;..\..\h;$(plusplus_dir)\h /d2 $[*
+	
+clean: .symbolic
+	@if exist brmdump.obj del brmdump.obj
+	@if exist brmdump.exe del brmdump.exe

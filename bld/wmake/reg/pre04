@@ -1,0 +1,296 @@
+#
+#   wmake regression tests
+#
+
+#   be careful, some of these lines have trailing white space purposefully
+
+#   These test do a workout on the preprocessor/macro combinations
+
+#
+#   test a: white space around =, and at eol
+#
+a1=11
+a2= 22
+a3 =33
+a4 = 44
+
+a5=55
+a6= 66
+a7 =77
+a8 = 88
+
+aguess  = $(a1)$(a2)$(a3)$(a4)$(a5)$(a6)$(a7)$(a8)
+aanswer = 1122334455667788
+
+!ifneq aguess $aanswer
+!   error failed pre04 test a
+!endif
+
+#
+#   test b: white space around =, trailing comment
+#
+b1=11#comment
+b2= 22#comment
+b3 =33#comment
+b4 = 44#comment
+
+b5=55 #comment
+b6= 66 #comment
+b7 =77 #comment
+b8 = 88 #comment
+
+bguess  = $(b1)$(b2)$(b3)$(b4)$(b5)$(b6)$(b7)$(b8)
+banswer = 1122334455667788
+
+!ifneq bguess $banswer
+!   error failed pre04 test b
+!endif
+
+
+#
+#   test c: white space around =, line continuation, white space at eol
+#
+c1=1&
+1
+c2= 2&
+2
+c3 =3&
+3
+c4 = 4&
+4
+
+c5=5&
+5
+c6= 6&
+6
+c7 =7&
+7
+c8 = 8&
+8
+
+cguess  = $(c1)$(c2)$(c3)$(c4)$(c5)$(c6)$(c7)$(c8)
+canswer = 1122334455667788
+
+!ifneq cguess $canswer
+!   error failed pre04 test c
+!endif
+
+
+#
+#   test d: white space in !define, before and at eol
+#
+!define d1 11
+!define d2  22
+!define d3 33
+!define d4  44
+
+dguess  = $(d1)$(d2)$(d3)$(d4)
+danswer = 11223344
+
+!ifneq dguess $danswer
+!   error failed pre04 test d
+!endif
+
+
+#
+#   test e: !define, !ifndef, !undef, !ifdef
+#
+!define e1
+!ifndef e1
+!   error failed pre04 test e1
+!else
+!   undef e1
+!   ifdef e1
+!       error failed pre04 test e2
+!   endif
+!endif
+
+
+#
+#   test f: ws and leading $+/$-, with and w/o trailing ws
+#
+f1=$+$-11
+f2= $+$-22
+f3=$+$- 33
+f4= $+$- 44
+
+f5=$+$-55
+f6= $+$-66
+f7=$+$- 77
+f8= $+$- 88
+
+fguess  = $(f1)$(f2)$(f3)$(f4)$(f5)$(f6)$(f7)$(f8)
+fanswer = 1122334455667788
+
+!ifneq fguess $fanswer
+!   error failed pre04 test f
+!endif
+
+
+#
+#   test g: trailing ws and trailing $+/$-
+#
+g1=11$+$-
+g2=22 $+$-
+g3=33$+$-
+g4=44 $+$-
+
+gguess  = $(g1)$(g2)$(g3)$(g4)
+ganswer = 11223344
+
+!ifneq gguess $ganswer
+!   error failed pre04 test g
+!endif
+
+
+#
+#   test h: infix $+$-
+#
+h1=1$+$-1
+h2=2$+2$-2
+h3=$+3$-3
+h4=4$+4$-
+
+hguess  = $(h1)$(h2)$(h3)$(h4)
+hanswer = 112223344
+
+!ifneq hguess $hanswer
+!   error failed pre04 test h
+!endif
+
+
+#
+#   test i: internal ws
+#
+i1=1 1
+i2= 2 2
+i3=3 3
+i4= 4 4
+
+i5=5    5
+i6= 6   6
+i7=7    7
+i8= 8   8
+
+iguess  = $(i1)$(i2)$(i3)$(i4)$(i5)$(i6)$(i7)$(i8)
+ianswer = 1 12 23 34 45 56      67      78      8
+
+!ifneq iguess $ianswer
+!   error failed pre04 test i
+!endif
+
+
+#
+#   test j: equivilance of name+=text and name=$+$(name)$-text
+#
+j1=11
+j1+=22
+j1+= 33
+
+j2=11
+j2=$+$(j2)$-22
+j2=$+$(j2)$- 33
+
+!ifneq j1 $j2
+!   error failed pre04 test j
+!endif
+
+#
+#   test k: case independence in identifiers, legal identifiers
+#
+kalpha=alpha
+!ifndef KaLPha
+!   error failed pre04 test k1
+!else ifneq KaLPha alpha
+!   error failed pre04 test k1
+!endif
+
+KbETa=beta
+!ifndef kbeta
+!   error failed pre04 test k2
+!else ifneq kbeta beta
+!   error failed pre04 test k2
+!endif
+
+_k1 = 1
+_ = 1
+123 = 456
+!ifndef _k1
+!   error failed pre04 test k3
+!else ifneq _k1 1
+!   error failed pre04 test k3
+!endif
+!ifndef _
+!   error failed pre04 test k4
+!else ifneq _ 1
+!   error failed pre04 test k4
+!endif
+!ifndef 123
+!   error failed pre04 test k5
+!else ifneq 123 456
+!   error failed pre04 test k5
+!endif
+
+
+#
+#   test l: $+ and $-
+#
+l1=first
+l2=$+$l1$-
+l1=second
+!ifeq l1 $l2
+!   error failed pre04 test l1
+!endif
+
+l3=first
+l4=$+$(l3)&
+test$-
+!ifneq l4 firsttest
+!   error failed pre04 test l2
+!endif
+
+l5=first
+l6=$+$(l5)$+test$-
+!ifneq l6 firsttest
+!   error failed pre04 test l3
+!endif
+
+#
+#   test m: line continuation inside identifiers
+#
+malpha=11
+mbeta=$+$mal&
+pha$-
+mgamma=$+$(mal&
+pha)$-
+!ifneq mbeta $malpha
+!   error failed pre04 test m1
+!endif
+!ifneq mgamma $malpha
+!   error failed pre04 test m2
+!endif
+
+mde&
+lta= test
+!ifneq mdelta test
+!   error failed pre04 test m3
+!endif
+
+
+#
+#   test n: environment variables
+#
+n1=$+$%path$-
+!ifneq %path $n1
+!   error failed pre04 test n1
+!endif
+
+
+#
+#   test z: $+/$- in cmds
+#
+z1 = @rem
+pre04 : .symbolic
+    $+$z1$- this is a test
+    @%null
+z1 = @echo

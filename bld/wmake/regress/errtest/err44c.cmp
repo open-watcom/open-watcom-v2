@@ -1,0 +1,7 @@
+mkerr
+Error(E14): Cannot execute (mkerr): No such file or directory
+Error(E42): Last command making (all) returned a bad status
+mkerr
+Error(E14): Cannot execute (mkerr): No such file or directory
+Error(F44): ERROR command returned a bad status
+Error(E02): Make execution terminated

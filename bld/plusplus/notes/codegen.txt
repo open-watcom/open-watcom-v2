@@ -1,0 +1,326 @@
+CODEGEN.TXT - notes on code generation
+===========
+
+(A) Philosophy
+    ----------
+
+    - front-end to create virtual file(s) of code-generation commands
+
+    - after processing the input file(s), these files are interpreted to
+      invoke specific code-generation routines
+
+    - intermediate file used for each function being generated and for other
+      interesting stuff such as module data, unitialized data (_BSS), and
+      for constants
+
+    - a file is created by CgFrontFileCreate which returns a CGFILE* ptr.
+
+    - a file is closed by calling CgFrontCloseFile
+
+    - code is emitted to the current file; you can change the current file
+      by calling CgFrontSwitchFile
+
+
+
+(B) Header Files
+    ------------
+
+    CGDATA.H    - code-generation data
+                - included by CGFRONT.H
+
+    CGFRONT.H   - communication with front-end
+                - this is file to be included in C++ modules
+
+    CGIO.H      - i/o on code-generation file
+                - included by CGFRONT.H
+
+    IC.H        - file listing intermediate opcodes
+                - never included directly
+
+    ICODES.H    - enumerate opcodes
+                - included by CGFRONT.H
+
+
+(C) Format of Intermediate Code
+    ---------------------------
+
+    - defined by CGINTER as:
+        byte    opcode;
+        CGVALUE value;
+
+    - CGVALUE is union of "signed long", "unsigned long", "void *"
+
+    - instructions are placed in the current file by optionally calling
+      a routine to set the value (0 is used as the value when no
+      value-setting  routine is called) and then calling a routine to set
+      the opcode.
+
+    - opcode-setting routines:
+        - CgFrontCode       -- set opcode in a code segment
+        - CgFrontDataInit   -- set opcode in constant segment
+        - CgFrontDataUninit -- set opcode in uninitialized-data segment
+
+    - value-setting routines:
+        - CgFrontValueUint  -- set "unsigned long" value
+        - CgFrontValueInt   -- set "signed long" value
+        - CgFrontValuePtr   -- set "void *" value
+
+
+(D) Opcode Conventions
+    ------------------
+
+
+    Internal Opcodes:
+    -----------------
+
+    IC_EOF              -- mark end-of-virtual-file
+
+    IC_NEXT             -- move to next block in virtual file
+
+    IC_DEF_SEG segid    -- set output segment
+
+
+    Code Labels and goto's:
+    -----------------------
+
+    IC_LABGET_CS count  -- allocate "count" labels for control sequences
+
+    IC_LABFREE_CS count -- free "count" labels for control sequences
+
+    IC_LABGET_GOTO      -- allocate label for GOTO
+
+    IC_LABGET_BIG       -- allocate "big" label
+
+    IC_LABDEF_CS lab#   -- define control-sequence label
+
+    IC_LABDEF_SW lab#   -- define "switch" label
+                        -- used internally
+
+    IC_LABDEF_GOTO lab# -- define GOTO label
+
+    IC_LABDEF_BIG lab#  -- define "big" label
+
+    IC_LABEL_CS lab#    -- set control-sequence label for next IC_GOTO_NEAR
+
+    IC_LABEL_SW lab#    -- set switch label for next IC_GOTO_NEAR
+
+    IC_LABEL_GOTO lab#  -- set goto label for next IC_GOTO_NEAR
+
+    IC_GOTO_NEAR cond   -- goto near label (control sequence, goto, switch)
+                        -- target label set by IC_LABEL_CS, IC_LABEL_SW, or
+                           IC_LABEL_GOTO
+
+    IC_GOTO_BIG lab#    -- unconditional goto "big" label
+
+    IC_SWITCH_BEG       -- start a switch statement
+                        -- selection expression will be generated
+                        -- should call CgSwitchId to get switch id
+                           immediately before opcode is generated
+
+    IC_SWITCH_END id    -- complete a switch statement
+                        -- "id" is value returned by CgSwitchId
+
+    IC_SWITCH_CASE case -- next CASE in switch statement
+                        -- "case" is constant value to select the case
+                        -- creates a switch label
+
+    IC_SWITCH_DEFAULT 0 -- DEFAULT in switch statement
+                        -- should call CgFrontLabelSw to get default label
+                           immediately before opcode is generated
+                        -- creates a switch label
+
+
+    FeedBackRoutines: called to get label numbers:
+    ----------------------------------------------
+
+    These routines are called to obtain the next available label number, and
+    so should be called before labels are allocated.
+
+    CgFrontLabelCs      -- label # for control sequence
+
+    CgFrontLabelSw      -- label # for switch
+
+    CgFrontLabelGoTo    -- label # for goto
+
+    CgFrontLabelBig     -- label # for "big"
+
+
+    Expressions:
+    ------------
+
+    The code generator requires the type of expression elements to be
+    specified for each operand or operator node.  This is set by the
+    following opcode:
+
+    IC_SET_TYPE type    -- set the type
+
+
+    Operands are specified as follows:
+
+    IC_LEAF_CONST_INT value -- set an integer value
+
+    IC_LEAF_CONST_FLT value -- set a floating-point value
+
+    IC_LEAF_NAME_FRONT sym  -- set operand specified by symbol-table entry
+
+    IC_LEAF_NAME_BACK hand  -- set operand specified by back-handle "hand"
+                            -- not known if req'd
+
+    IC_LEAF_NAME_TEMP       -- set a temporary
+                            -- not known if req'd
+
+
+    Operators are defined in CGDEFS.H and the C++ extensions are defined
+    in CODEGEN.H. Operators are specified as follows:
+
+    IC_OPR_TERNARY op       -- ternary operator
+                            -- IC_SET_TYPE has been used to set type
+                            -- "op" is the O_xxx code
+
+    IC_OPR_BINARY op        -- binary operator
+                            -- IC_SET_TYPE has been used to set type
+                            -- "op" is the O_xxx code
+
+    IC_OPR_UNARY op         -- unary operator
+                            -- IC_SET_TYPE has been used to set type
+                            -- "op" is the O_xxx code
+
+    When the binary operator is O_INDEX (indexing) the opcode should be
+    immediately preceded by:
+
+    IC_OPR_INDEX type       -- set the type to be indexed
+                            -- IC_SET_TYPE has been used to set type of index
+                            -- the "current type" at this point will be the
+                               type of the subscript
+
+    Once an expression has been generated, one of the following should be
+    specified:
+
+    IC_EXPR_DONE            -- evaluate expression and retain final value
+
+    IC_EXPR_TRASH           -- evaluate expression and ignore final value
+
+    A partially-computed expression can be duplicated pushed and later
+    popped by the following opcodes. The pushing and popping uses another
+    stack from the normal stack used for expression evaluation.
+
+    IC_EXPR_PUSH            -- duplicate and push the expression
+
+    IC_EXPR_POP             -- pop a pushed expression
+
+
+    Scope Processing:
+    -----------------
+
+    IC_FILE_OPEN scope      -- start of file scope
+                            -- "scope" is scope for file
+
+    IC_FILE_CLOSE scope     -- completion of file scope
+                            -- "scope" is scope for file
+
+    IC_FUNCTION_OPEN sym    -- start of function scope
+                            -- "sym" is the function SYMBOL
+
+    IC_FUNCTION_CLOSE sym   -- completion of function scope
+                            -- "sym" is the function SYMBOL
+
+    IC_BLOCK_OPEN scope     -- start of block scope
+                            -- "scope" is scope for the block
+
+    IC_BLOCK_CLOSE scope    -- completion of block scope
+                            -- "scope" is scope for the block
+
+    IC_BLOCK_EXIT scope     -- generated before a jump
+                            -- DTORs blocks up to "scope"
+
+    IC_BLOCK_PART symbol    -- generated before a jump
+                            -- DTORs symbols in current block, from "symbol"
+                               onwards
+
+    IC_BLOCK_ENTER scope    -- generated before a jump
+                            -- initializes for DTORing down to "scope"
+
+    IC_BLOCK_SRC scope      -- sets current scope
+
+    IC_DTOR_SYMBOL sym      -- indicate symbol needs DTORing
+
+
+    Procedure calls:
+    ----------------
+
+    IC_PROC_TEMP            -- create temporary for procedure
+                            -- not known if req'd
+
+    IC_PROC_RETURN bool     -- return statement in procedure
+                            -- IC_SET_TYPE has been used to set type
+                            -- if bool==1, return expression is generated
+
+    IC_CALL_SETUP sym       -- start a direct call using function 'sym'
+                            -- IC_SET_TYPE has been used to set type
+                            -- IC_LEAF_NAME_FRONT used to specify function
+
+    IC_CALL_SETUP_IN type   -- start an indirect call
+                            -- IC_SET_TYPE has been used to set type
+                            -- "type" is TYPE for temporary symbol
+                            -- expression for call address has been gen'ed
+
+    IC_CALL_PARM            -- add parameter for call
+                            -- IC_SET_TYPE has been used to set type
+                            -- last expression computed is parameter
+
+    IC_CALL_EXEC_DIRECT     -- execute the direct call
+                            -- IC_SET_TYPE has been used to set type
+
+    IC_CALL_EXEC_INDIRECT   -- execute the indirect call
+                            -- IC_SET_TYPE has been used to set type
+
+    IC_CALL_SETUP_RT #      -- start a run-time call
+                            -- # is code for run-time function
+                            -- call effected by IC_CALL_EXEC_INDIRECT
+
+    Symbol Handling
+    ---------------
+
+    IC_BACK_ALLOC sym       -- allocate back handle for "sym"
+
+    IC_BACK_FINI sym        -- complete usage for "sym"
+                            -- not known if req'd
+
+    IC_BACK_FREE sym        -- free back handle for "sym"
+
+
+    Data Generation
+    ---------------
+
+    IC_DATA_LABEL sym       -- generate label for "sym"
+
+    IC_DATA_PTR_OFFSET off  -- specify offset for use with IC_DATA_PTR_SYM
+
+    IC_DATA_PTR_SYM sym     -- generate pointer relative to "sym"
+                            -- offset specified by IC_DATA_PTR_OFFSET added
+                               to address of "sym"
+                            -- type of pointer set by IC_SET_TYPE
+
+    IC_DATA_INT value       -- generate integer with value "value"
+                            -- type of integer set by IC_SET_TYPE
+
+    IC_DATA_FLT ptr         -- generate float with value indicated by "ptr"
+                            -- type of float set by IC_SET_TYPE
+
+    IC_DATA_SIZE value      -- specify size for use with upcoming instruction:
+                                -- IC_DATA_BYTES
+                                -- IC_DATA_REPLICATE
+                                -- IC_DATA_UNDEF
+
+    IC_DATA_TEXT string     -- generate text (translated to target codeset)
+                            -- size and pointer in string STRING_CONSTANT
+
+    IC_DATA_BYTES bytes     -- generate string of bytes (not translated)
+                            -- size set by IC_DATA_SIZE
+
+    IC_DATA_REPLICATE byte  -- replicate "byte" value
+                            -- size set by IC_DATA_SIZE
+
+    IC_DATA_UNDEF size      -- set "size" undefined value(s)
+
+    IC_DATA_ALIGN value     -- align to indicated value

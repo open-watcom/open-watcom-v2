@@ -1,0 +1,14 @@
+//#line "..\c\setsamps.c" 66
+extern void SetSampleInfo(sio_data *curr_sio);
+//#line "..\c\setsamps.c" 678
+extern int AddrCmp(address *addr1,address *addr2);
+//#line "..\c\setsamps.c" 710
+extern void GatherSetAll(sio_data *curr_sio,bint gather_active);
+//#line "..\c\setsamps.c" 741
+extern void AbsSetAll(sio_data *curr_sio,bint abs_bar);
+//#line "..\c\setsamps.c" 781
+extern void RelSetAll(sio_data *curr_sio,bint rel_bar);
+//#line "..\c\setsamps.c" 821
+extern void StretchSetAll(sio_data *curr_sio,bint bar_max);
+//#line "..\c\setsamps.c" 861
+extern void SortSetAll(sio_data *curr_sio,int sort_type);

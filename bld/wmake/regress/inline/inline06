@@ -1,0 +1,17 @@
+#  
+#  INLINE TEST 06
+#  - test mispelled keep/nokeep
+# 
+test: .symbolic
+    -diff <<"temp.1" <<"temp.2"
+HELLO
+HELLO
+BOO
+<< KEP /* considered as nokeep */
+HELLO
+HELLO
+BOO
+ <<KEEP  
+/*is not a valid  keep/nokeep  has space << must start at beginining*/
+<<NOKEEP
+

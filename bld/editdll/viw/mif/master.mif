@@ -1,0 +1,31 @@
+proj_name = editdll
+name = weditviw
+
+sys_dll = 1
+
+.mif : $(mif_path)
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.c: ..
+
+inc_dirs = ..;..\..
+
+.before:
+        set INCLUDE=$(inc_path)
+
+extra_c_flags_386 = /bd
+extra_c_flags_axp = /bd
+extra_c_flags_win = /zc /zw
+
+lflags_nt_axp += initinstance terminstance
+lflags_nt_386 += initinstance terminstance
+lflags_win_i86 += initinstance memory
+
+extra_l_flags = op map, verbose, static, heapsize=8k
+extra_l_flags_win = op stack=20k lib windows, ddeml libfile libentry
+extra_l_flags_nt = op stack=40k
+
+$(name).dll : $(name).obj
+        $(linker) $(lflags) name $(name) file $(name)

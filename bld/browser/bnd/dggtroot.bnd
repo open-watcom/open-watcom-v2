@@ -1,0 +1,17 @@
+class GTRootSelectDlg 
+{
+    _leftTextR(	IDD_LEFTTEXT,(@,@,@,@) );
+    _rightTextR(	IDD_RIGHTTEXT,(@,@,@,@) );
+    
+    _toRightButtonR( IDD_DISABLE,(@,@,@,@) );
+    _allRightButtonR(IDD_DISABLE_ALL,(@,@,@,@) );
+    _toLeftButtonR(  IDD_ENABLE,	    (@,@,@,@) );
+    _allLeftButtonR( IDD_ENABLE_ALL, (@,@,@,@) );
+    
+    _okButtonR( IDD_OK, (@,@,@,@) );
+    _cancelButtonR( IDD_CANCEL, (@,@,@,@) );
+    _helpButtonR( IDD_HELP, (@,@,@,@) );
+    
+    _leftBoxR(	IDD_LEFTBOX,  (@,@,@,@) );
+    _rightBoxR(	IDD_RIGHTBOX, (@,@,@,@) );
+};

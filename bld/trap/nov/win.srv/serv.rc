@@ -1,0 +1,3 @@
+#define SERVER_TYPE "Novell"
+
+#include "winserv.rc"

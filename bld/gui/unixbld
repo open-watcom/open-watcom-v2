@@ -1,0 +1,4 @@
+#! /bin/sh
+setup_proj no_objdir
+make $1
+

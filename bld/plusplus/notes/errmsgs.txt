@@ -1,0 +1,23 @@
+Error Messages Require special formatting for symbol names to become
+unmunged.  To this end...
+
+The sprintf() error message formatter has been replaced with FmtMsg().
+FmtMsg() recognizes the following formatting codes:
+
+%s - as sprintf()
+%d - as sprintf()
+%u - as sprintf()
+%c - as sprintf()
+%1 - as sprintf( "%01d" )
+%2 - as sprintf( "%02d" )
+%3 - as sprintf( "%03d" )
+...
+%9 - as sprintf( "%09d" )
+%T - assumes it receives a type pointer
+	the type name is formatted
+%N - assumes it receives a char * pointer to a name
+	that may require special formatting (i.e. $opCONV$)
+%S - assumes it receives a symbol pointer
+	the symbol name is formatted with type and scope resolution
+	
+These format codes should be used in the MESSAGES.GML file.

@@ -1,0 +1,38 @@
+objs = &
+    array.obj &
+    can2ms0.obj &
+    can2ms1.obj &
+    can2ms2.obj &
+    can2td0.obj &
+    can2td1.obj &
+    can2td2.obj &
+    can2txt.obj &
+    canaddr.obj &
+    canmisc.obj &
+    cansymb.obj &
+    cantype.obj &
+    carve.obj &
+    cmdline.obj &
+    deflib.obj &
+    fixup.obj &
+    genmscmt.obj &
+    genmsomf.obj &
+    genphar.obj &
+    genutil.obj &
+    lifix.obj &
+    main.obj &
+    memutil.obj &
+    namemgr.obj &
+    objio.obj &
+    objprs.obj &
+    objrec.obj &
+    pubdef.obj &
+    queue.obj &
+    segment.obj &
+    wat2can0.obj &
+    wat2can1.obj &
+    wpmsg.obj
+
+!ifdef trmem
+objs += trmem.obj
+!endif

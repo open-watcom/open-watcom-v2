@@ -1,0 +1,43 @@
+
+intel_objs = &
+    386funit.obj &
+    386setcc.obj &
+    i86base.obj &
+    i86call.obj &
+    i86cvsup.obj &
+    i86dfsup.obj &
+    i86data.obj &
+    i86dbsup.obj &
+    i86enc.obj &
+    i86enc2.obj &
+    i86esc.obj &
+    i86half.obj &
+    i86index.obj &
+    i86ldstr.obj &
+    i86lesds.obj &
+    i86mul.obj &
+    i86obj.obj &
+    i86opcod.obj &
+    i86proc.obj &
+    i86reg.obj &
+    i86regsv.obj &
+    i86rtlk.obj &
+    i86segs.obj &
+    i86sel.obj &
+    i86split.obj &
+    i86splt3.obj &
+    i86stubs.obj &
+    i86temps.obj &
+    i86ver.obj &
+    i87data.obj &
+    i87exp.obj &
+    i87opt.obj &
+    i87reg.obj &
+    i87sched.obj &
+    i87table.obj &
+    parmreg.obj &
+    wvsyms.obj &
+    wvtypes.obj
+
+include_path    = $+$(include_path)$-;$(cg_dir)\intel\h
+src_path        = $+$(src_path)$-;$(cg_dir)\intel\c

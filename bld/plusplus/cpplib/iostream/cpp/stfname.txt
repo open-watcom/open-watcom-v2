@@ -1,0 +1,103 @@
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
+   %     reserved.  No part of this software may be reproduced or        %
+   %     used in any form or by any means - graphic, electronic or       %
+   %     mechanical, including photocopying, recording, taping or        %
+   %     information storage and retrieval systems - except with the     %
+   %     written permission of WATCOM International Inc.                 %
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+******************************** STREAMBUF ***********************************
+
+Filename: stfgnslk.cpp
+Declaration:
+    __lock *__get_next_streambuf_lock( void )
+
+Filename: stfdbp.cpp
+Declaration:
+    void streambuf::dbp()
+
+Filename: stfconde.cpp
+Declaration:
+    streambuf::streambuf( char *buf, int len )
+Semantics: Construct an empty streambuf using the given buf.
+           If buffer is NULL or len is 0, then the streambuf is unbuffered.
+
+Filename: stfdestr.cpp
+Declaration:
+    streambuf::~streambuf()
+Semantics: Default destructor for a streambuf.
+
+Filename: stfsetb.cpp
+Declaration:
+    void streambuf::setb( char *buf, char *ebuf, int autodelete )
+Semantics: Set up a new reserve area.
+           Delete the old one if necessary.
+           Turn buffering on.
+
+Filename: stfdoall.cpp
+Declaration:
+    int streambuf::doallocate()
+Semantics: Do the allocation required if allocate() thinks it's needed.
+           If the allocation fails, return EOF.
+
+
+Filename: stfdsgtn.cpp
+Declaration:
+    int streambuf::do_sgetn( char *buf, int len )
+Semantics: Return the "len" characters starting at get_ptr.
+           If there aren't enough characters, return as many as possible.
+           Advance the get_ptr.
+
+
+Filename: stfdspun.cpp
+Declaration:
+    int streambuf::do_sputn( char const *buf, int len )
+Semantics: Write the "len" characters starting at "buf" into the put area.
+           Return 0 if not possible.
+           Return the number of characters successfully put.
+
+
+Filename: stfpbfai.cpp
+Declaration:
+    int streambuf::pbackfail( int )
+Semantics: Default virtual function to handle failure of sputbackc.
+           Default behaviour is to return EOF.
+           Usually, this function will be replaced in a derived class.
+
+
+Filename: stfsbuf.cpp
+Declaration:
+    streambuf *streambuf::setbuf( char *buf, int len )
+Semantics: Set up a new reserve area using the specified buffer and length.
+           If a reserve area is already present, then ignore the offered
+	   buffer. If buffer is NULL or len is 0, then the streambuf is
+	   unbuffered.
+
+
+Filename: stfseeko.cpp
+Declaration:
+    streampos streambuf::seekoff( streamoff, ios::seekdir, int )
+Semantics: Seek to a position relative to the current position.
+           Move one or both of the get/put pointers, depending on "mode".
+           Since this is a default virtual function, it just returns EOF.
+
+
+Filename: stfseekp.cpp
+Declaration:
+    streampos streambuf::seekpos( streampos pos, int mode )
+Semantics: Seek to a position relative to the beginning of the file.
+           Move one or both of the get/put pointers, depending on "mode".
+           By calling "seekoff", derived classes may only have to define
+           seekoff, and use the inherited seekpos (meaning both seekoff and seekpos
+           are supported by defining only seekoff!)
+
+
+Filename: stfsync.cpp
+Declaration:
+    int streambuf::sync()
+Semantics: Synchronize stream I/O with standard I/O.
+           Since this is a default virtual function,
+           it returns EOF if either the get or put area is not empty.
+           If both areas are empty, then 0 is returned.
+

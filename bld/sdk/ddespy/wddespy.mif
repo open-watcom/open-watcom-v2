@@ -1,0 +1,45 @@
+name = wddespy
+rcfile = ..\$(name).rc
+sdk_misc_dir = ..\..\misc
+lnk = $(name).lnk
+!ifndef on_build_machine
+cflags += -d2
+!endif
+
+msgh = rcstr.h
+mastermsg = rcstr.msg
+msgfiles = ..\ddespy.msg $(sdk_misc_dir)\about.msg $(sdk_misc_dir)\log.msg &
+           $(sdk_misc_dir)\savelbox.msg $(sdk_misc_dir)\alias.msg
+
+rc = wrc
+
+.EXTENSIONS:
+.EXTENSIONS: .exe
+.EXTENSIONS: .obj
+.EXTENSIONS: .asm .c .h .dlg .rc
+
+
+objs =  savelbox.obj mem.obj font.obj fontstr.obj srchmsg.obj log.obj &
+        pushwin.obj alias.obj toolbr.obj mark.obj ldstr.obj hint.obj &
+        mstatwnd.obj wwinhelp.obj jdlg.obj&
+        dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj ddetrack.obj &
+        ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj about.obj
+
+resources = $(sdk_misc_dir)\log.rc $(sdk_misc_dir)\mark.rc &
+            $(sdk_misc_dir)\alias.rc $(sdk_misc_dir)\about.dlg &
+            $(mastermsg) ..\res\cbfilt.dlg ..\res\msgfilt.dlg ..\menu.rc
+
+$(name).exe : $(msgh) $(objs) $(lnk) $(name).res
+        wlink @$(lnk)
+        $(RC) -k $(name).res
+
+$(msgh) : $(mastermsg)
+        vi -i -q "-k :source ..\\\\..\\\\misc\\\\msgtoh.vi $(msgh)\n" $(mastermsg)
+#       del *.obj
+
+$(mastermsg) : $(msgfiles)
+        $(comp286) -zk0 -p -i=$(sdk_misc_dir) -bt=$(os) ..\ddespy.msg > $(mastermsg)
+
+$(name).res : $(rcfile) $(resources)
+    $(RC) -r -zk0 -i=..\res $(rcfile) $(resflags)
+

@@ -1,0 +1,64 @@
+#
+# Cmdhook script - this script will parse the command line and
+#		   execute commands separated by a ';' one at a time
+#
+    #
+    # starting variables
+    #
+    assign %c = 0 
+    assign %q = 0 
+    assign %a = %(Com) 
+    
+    loop
+	#
+	# get length of command line
+	#
+	assign %(len) = strlen %a 
+	quif %(len) <= 0
+	
+	#
+	# find the next ;
+	#
+	assign %f = strchr %a ; 
+	if %f == 0
+	    #
+	    # no ; found, if we haven't found at least one yet, quit
+	    #
+	    if %c == 0
+		break
+	    endif
+	    #
+	    # we've found at least one, so flag it
+	    #
+	    assign %f = %(len) 
+	    assign %q = 1 
+	else
+	    expr %f = %f - 1
+	endif
+	
+	#
+	# execute command
+	#
+	assign %(cmd) = substr %a 1 %f 
+	%(cmd)
+	if lastrc != 0
+	    return DO_NOT_CLEAR_MESSAGE_WINDOW
+	endif
+	
+	#
+	# quit if we got to the end of the line
+	#
+	quif %q == 1
+	
+	#
+	# remove the command up to the ;
+	#
+	expr %f = %f + 2
+	assign %a = substr %a %f %(len) 
+	assign %c = 1 
+	
+    endloop
+    
+    if %c == 1
+	return DO_NOT_CLEAR_MESSAGE_WINDOW
+    endif

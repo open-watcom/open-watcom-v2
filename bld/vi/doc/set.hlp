@@ -1,0 +1,237 @@
+Settings
+========
+The set command has the following syntax:
+
+    [se]t (variable) (value)
+
+(Value) is assigned to (variable).  If (variable) and
+(value) are not specified, the a window containing a list
+of all values is displayed.
+From the display window, a variable may be selected (with ENTER), and a 
+new value entered. If the variable was boolean, then pressing
+enter toggles the value. 
+
+If a variable is a boolean variable, then it may be set via 
+set var    - set var to TRUE
+set novar  - set var to FALSE
+
+Boolean variables:
+------------------
+[ai][autoi]ndent      - in insert mode, cause cursor to indent to
+			start of previous line when a new line is
+			started; in command mode, cause cursor to go 
+			to first non white-space when ENTER is pressed.
+[ac][automessagecl]ear- automatically erase message window when
+			a key is typed in command mode.
+[bf][beepf]lag		- turns off beep when an error is made
+[ci][caseig]nore      - make all searches case insensitive
+[cs][casesh]ift	      - "case" statements are NOT shifted when
+			cmode is set.
+[cv][ch]angelikevi    - causes the change command to behave like vi
+			(ie, if ESC is pressed when no change has
+			been made, the text is deleted)
+[cl][cl]ock           - enables/disables the clock display
+[cm][cm]ode	      - when cmode is set, certain things will happen
+			when you are entering text:
+			1) after entering a line ending in '{',
+			the next line will be indented a ShiftWidth
+			further than the current one.
+			2) after entering a line ending in '}',
+			the current line is shifted to match the
+			indentation of the line with the matching
+			'{'.  The cursor will flash for a brief
+			instant on the matching '{' if showmatch
+			is set.
+			3) All lines entered will have trailing white
+			space trimmed off.
+			4) "case" and "default" statements are shifted
+			to be aligned with switch statements
+			
+			Each file has its own "cmode" setting; 
+			so setting cmode in one file and not in
+			another (during the same editing session)
+			will work.
+			
+			One thing that is useful is to add the 
+			following lines to your read hook script:
+			
+			if %E str == .c
+			set cmode
+			else
+			set nocmode
+			endif
+
+			This will cause cmode to be set if the file
+			has a .c extension, and not to be set for
+			any other type of file.
+[cf][columninfilest]atus - displays column in file status display
+[ct][currentstatus]   - enables display of the current status on
+			the menu bar
+[eb][eight]bits       - if off, causes non-printable ascii to be
+			displayed as control characters
+[em][escapemess]age   - prints out the current file message when escape
+			is pressed in command mode, rather than just 
+			clearing the message window
+[xm][extendedmem]ory  - use extended memory for swapping, if present
+			(standard extended, EMS, XMS).
+[iz][ignorectrlz]     - do not treat ^Z as a file terminator
+[lm][lefthandm]ouse   - inverts the right and left mouse buttons
+[ln][linenum]bers     - turns on line number window (on left side by
+			default)
+[lr][linenumsonr]ight - for line number window to the right side
+[ma][ma]gic           - if nomagic is set, then the characters
+			specified in magicstring are NOT treated as
+			magic characters by the regular expression handler,
+			and must be escaped to have special meaning.
+			Setting magic causes all characters to be
+			magical, and magical characters must be
+			escaped to use them.
+[me][me]nus	      - enables use of menus
+[ps][pauseons]pawnerr - editor always pauses after spawning
+			(! command) if there was an error, even if
+			spawn was invoked from a script
+[qu][qu]iet	      - editor does not update screen
+[rf][readentirefi]le  - reads entire file into memory when it
+			is edited
+[rc][readonlych]eck   - causes editor to complain about modifications
+			to read only files
+[rt][realtabs]        - tabs are treated as the mystical, magical
+			things that vi normally treats them as.
+			Otherwise, tabs are expanded to spaces when
+			the file is read.
+[rm][regsubm]agic     - if FALSE, then \ characters have no meaning
+			in regular expression substitution.
+[ri][repeati]nfo      - turns off echo of repeat counts as they are
+			typed in
+[sc][samefilech]eck   - normally, the editor just warns you if you
+			edit a file twice (with a different path).
+			if samefilecheck is set, then the if you
+			edit a file that is the same as a file already
+			being edited (only you specified a different
+			path), then that file will be brought up, rather
+			than a duplicate copy being read in
+[sw][searchw]rap      - causes searching to wrap around the top/bottom
+			of a file
+[sm][showm]atch	      - shows matching '(' whenever a ')' is typed
+			in insert mode.  As well, shows matching '{'
+			if a '}' is typed with cmode set in 
+			insert mode.
+[sp][sp]inning        - toggles the idle spin display
+[si][statusi]nfo      - toggles line/column status window
+[tv][togglec]aselikevi- cause case toggle '~' to toggle current
+			char ONLY
+[un][un]do	      - enables/disables undo ability
+[um][usem]ouse	      - enables/disables mouse in the editor
+[ve][ve]rbose         - print extra messages while doing heavy work
+[wg][windowga]dgets   - enables/disables gadgets on file windows
+[ws][wrapbacks]pace   - enables/disables back space wrapping up to
+			previous line in insert mode
+[wl][writecr]lf       - if TRUE, lines are written with CR/LF
+			terminaters.  If FALSE, lines are written with
+			a LF terminator only.
+
+Regular Variables (Parameters)
+------------------------------
+[autosaveint]erval <n>- sets the number of seconds between
+			autosaves of the current file to backup
+			directory (tmpdir). Disabled if <n> is 0.
+
+[commandcursorty]pe <n>- controls size of cursor in command mode
+			(use 0-100, 0 fat, 100 thin)
+[exitattr] <n>	      - defines the attribute to be assigned to
+			the screen when the editor is exited;
+			must be an integer (16*background+
+			foreground gives result), the default
+			is 7 (white text, black background), 
+			31 (16*1+15) would give a blue background 
+			with bright white text.
+[grepd]efault <rexexp>- default files to search through using
+			the grep commands.  Default is *.(c|h)
+[hardt]ab             - distance between hard tabs (in a file)
+[historyf]ile <fname> - if history file is defined, your command
+			history is saved across editing sessions
+			in the file <fname>.
+[insertcursorty]pe <n>- controls size of cursor in insert mode 
+			(use 0-100, 0 fat, 100 thin)
+[magicstr]ing <str>   - if nomagic is set, then the characters
+			specified in magicstring are NOT treated 
+			as magic characters by the regular 
+			expression handler, and must be
+			escaped to have special meaning.
+[maxclh]istory <n>    - maximum number of ':' commands kept
+[maxemsk] <n>	      - number of bytes of EMS memory to use for
+			swapping (in K)
+[maxxmsk] <n>	      - number of bytes of XMS memory to use for
+			swapping (in K)
+[maxfindh]istory <n>  - maximum number of '/' commands kept
+[maxline]len <n>      - maximum line length allowed  (lines
+			longer than this are truncated to 
+			multiple lines)
+[maxpush] <n>	      - maximum number of pushed file positions
+			that are remembered.
+[maxswapk] <n>	      - number of bytes of disk space to use for
+			swapping (in K)
+[overstrikecursort]ype <n> - controls size of cursor in overstrike
+			mode (use 0-100, 0 fat, 100 thin)
+[rad]ix <n>		  - controls radix of output of EVAL
+[shiftwid]th <n>      - sets amount for shift operators 
+			('>' and '<')
+[stackk] <n>	      - size of editor's stack in K (min. 8)
+[tab]amount <n>       - distance between tab stops
+[tmpdir] <dir>        - directory where swap files are to be 
+			created (if needed)
+[word] <word>	      - defines a word. String is a group of
+			character pairs, each pair defines
+			a range; e.g. 09az defines the characters
+			0 through 9 and a thorough z.  The
+			default for this is __09AZaz.
+[wordalt] <word>      - defines the alternate word (used when
+			double clicking the mouse). defined
+			the same as [word].
+
+Mouse Control Parameters
+-----------------------
+[mousedclick]speed <n>- number of ticks for second mouse click
+			to count as a double click
+[mouserepeat]delay <n>- ticks between mouse repeats
+[mousesp]eed <n>      - speed of mouse (0=fastest)
+
+Window Interface Control Parameters
+-----------------------------------
+[clockx]              - x-coordinate of where the clock is to 
+			be displayed
+[clocky]              - y-coordinate of where the clock is to 
+			be displayed
+[currentstatuscol]umn - controls which column current status
+			information is displayed in on the
+			the menu bar
+[inactivewindowc]olor <c> - color for border of inactive windows
+[maxtilecolors] <n>   - number of different color sets for 
+			tiled windows
+[maxwindowtilex] <n>  - maximum number of windows that may be 
+			tiled together in the x direction
+[maxwindowtiley] <n>  - maximum number of windows that may be 
+			tiled together in the y direction
+[movec]olor <c>       - the color of the window border when
+			moving a window is set to <c>
+[resizec]olor <c>     - the color of the window border when 
+			resizing a window is set to <c>
+[spinx]               - x-coordinate of where to display the 
+			idle spin
+[spiny]               - y-coordinate of where to display the 
+			idle spin
+[tilecolor] <n> <f> <b>- set tile area <n> to have 
+			foreground/background colors <f>/<b>
+
+Misc. Variables
+---------------
+[filename] name       - name of file being edited.
+[fignore] <ext>       - extension to ignore (one for each extension)
+			these extensions will be ignored by the 
+			editor when doing a file name completion.
+			eg: set fignore com
+			set fignore exe
+			set fignore obj
+			will cause .com, .exe, and .obj files to 
+			be ignored when displaying file name 
+			completion lists.

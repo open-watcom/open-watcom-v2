@@ -1,0 +1,56 @@
+include watcom.mk
+
+proj = wpack
+ext = o
+
+template = \
+common.$(ext) \
+decode.$(ext) \
+encode.$(ext) \
+message.$(ext) \
+dtparse.$(ext) \
+wpack.$(ext) \
+io.$(ext) \
+lookup.$(ext) \
+qsort.$(ext)
+#wildargv.$(ext) \
+
+OBJECTS := $(foreach i,$(template),$(OBJDIR)/$i)
+
+SOURCE = c
+SOURCE += $(WTOUCH_DIR)
+
+vpath %.c  $(SOURCE)
+
+INCDIRS  = h
+INCDIRS += $(WATCOM_DIR)/h
+INCDIRS += $(WTOUCH_DIR)
+INCDIRS += $(WTOUCH_DIR)/unix
+
+vpath %.h  $(SOURCE) $(INCDIRS)
+
+
+LIBDIRS += $(WCLIB_DIR)/$(OBJDIR)
+
+LIBS += -lwatcom
+LIBS += -lm
+
+
+all	: $(OBJDIR)/$(proj)
+
+$(OBJDIR)/$(proj)	: $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $(OBJECTS) $(LIBS)
+
+.PHONY	: dep depend make
+dep depend make:
+	mkmk -m .depend -f '$$(OBJDIR)/%s' nopath 	\
+		$(foreach i,$(SOURCE),$i/*.[ch])	\
+		$(foreach i,$(INCDIRS),$i/*.h)
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
+
+
+
+

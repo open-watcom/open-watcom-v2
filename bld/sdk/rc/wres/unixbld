@@ -1,0 +1,22 @@
+#! /bin/sh
+if [ "${COMPILER_:-}" = "BOTH" ]; then
+    COMPILER_ORIG=${COMPILER:-}
+
+    COMPILER=gnu
+    export COMPILER
+    echo unixbld ----- using $COMPILER compiler
+    setup_proj
+    make $1
+
+    COMPILER=${PLATFORM}_native
+    export COMPILER
+    echo unixbld ----- using $COMPILER compiler
+    setup_proj
+    make $1
+
+    COMPILER=$COMPILER_ORIG
+    export COMPILER
+else
+    setup_proj
+    make $1
+fi

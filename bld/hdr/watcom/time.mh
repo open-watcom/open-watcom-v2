@@ -1,0 +1,218 @@
+/*
+ *  time.h      Time functions
+ *
+:include crwat.sp
+ */
+#ifndef _TIME_H_INCLUDED
+#define _TIME_H_INCLUDED
+:include readonly.sp
+:include cpluspro.sp
+
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
+
+:include pshpackl.sp
+
+:include wchar_t.sp
+
+:include sizet.sp
+
+:include null.sp
+
+:include timet.sp
+
+:segment PENPOINT
+#define CLOCKS_PER_SEC  1000000
+#if defined(_POSIX_SOURCE) || defined(_PP_SOURCE) || !defined(NO_EXT_KEYS)
+ #define CLK_TCK         CLOCKS_PER_SEC
+#endif
+:elsesegment DOS
+#define CLK_TCK         1000
+#define CLOCKS_PER_SEC  1000
+:endsegment
+
+#ifndef _CLOCK_T_DEFINED
+ #define _CLOCK_T_DEFINED
+ typedef unsigned long  clock_t;
+#endif
+
+:segment QNX
+#define CLOCKS_PER_SEC  1000
+
+#ifndef __TYPES_H_INCLUDED
+ #include <sys/types.h>
+#endif
+
+#if defined(_POSIX_SOURCE) || defined(_QNX_SOURCE) || !defined(NO_EXT_KEYS)
+#ifndef _TIMER_T_DEFINED_
+ #define _TIMER_T_DEFINED_
+ typedef int timer_t;            /* timer type */
+#endif
+
+#ifndef _CLOCKID_T_DEFINED_
+ #define _CLOCKID_T_DEFINED_
+ typedef int clockid_t;          /* clockid type */
+#endif
+
+#define CLK_TCK     1000
+
+/* 1003.4/D12 Clocks and Timers */
+#ifndef __POSIX_TIMERS
+#define __POSIX_TIMERS
+struct timespec {
+    long    tv_sec,
+            tv_nsec;
+    } ;
+
+struct itimerspec {
+    struct timespec it_value,
+                    it_interval;
+    int             notify_type,    /* Uses native int size */
+                    timer_type;
+    long            data;           /* Used by gettimer only */
+    } ;
+
+struct itimercb {
+    struct /*event*/ {
+        long evt_value;     /* Will hold a proxy or a signal */
+        }   itcb_event;
+    int     itcb_count;
+    } ;
+#endif
+
+
+/*  Clock types */
+#define CLOCK_REALTIME      0
+
+/* Timer settime flags */
+#define TIMER_ABSTIME           0x0001
+#define TIMER_ADDREL            0x0100
+#define TIMER_PRESERVE_EXEC     0x0200
+#define TIMER_AUTO_RELEASE      0x0400
+
+/* QNX msg notify types */
+#define _TNOTIFY_SLEEP      0
+#define _TNOTIFY_PROXY      1
+#define _TNOTIFY_MESSENGER  1
+#define _TNOTIFY_SIGNAL     2
+
+/* ticksize flags */
+#define _TICKSIZE_STANDARD  0
+#define _TICKSIZE_CLOSEST   1
+#define _TICKSIZE_EXTERNAL  2
+
+extern int clock_gettime(clockid_t clock_id, struct timespec *tp );
+extern int clock_settime(clockid_t clock_id, struct timespec *tp );
+extern int clock_getres(clockid_t clock_id, struct timespec *res );
+extern int clock_setres(clockid_t clock_id, struct timespec *res );
+:include ext.sp
+extern int qnx_getclock( pid_t pid, clockid_t clock_id, struct timespec *tp );
+extern int qnx_setclock( pid_t pid, clockid_t clock_id, struct timespec *tp );
+extern int qnx_clock( nid_t nid, clockid_t clock_id, struct timespec *tp );
+#endif
+
+struct sigevent; /* for C++ */
+
+extern timer_t timer_create ( clockid_t clock_id, struct sigevent *evp );
+extern int timer_delete ( timer_t timerid );
+extern int timer_gettime ( timer_t timerid, struct itimerspec *value );
+extern int timer_settime ( timer_t timerid, int flags,
+                 struct itimerspec *value, struct itimerspec *ovalue );
+:include ext.sp
+extern long qnx_timerperiod( long );
+extern long qnx_ticksize( long nsec, int flags );
+extern int qnx_adj_time(long, long, long *, long *);
+#endif
+
+extern int nanosleep( const struct timespec *rqtp, struct timespec *rmtp );
+#endif
+
+:endsegment
+struct  tm {
+        int  tm_sec;    /* seconds after the minute -- [0,61] */
+        int  tm_min;    /* minutes after the hour   -- [0,59] */
+        int  tm_hour;   /* hours after midnight     -- [0,23] */
+        int  tm_mday;   /* day of the month         -- [1,31] */
+        int  tm_mon;    /* months since January     -- [0,11] */
+        int  tm_year;   /* years since 1900                   */
+        int  tm_wday;   /* days since Sunday        -- [0,6]  */
+        int  tm_yday;   /* days since January 1     -- [0,365]*/
+        int  tm_isdst;  /* Daylight Savings Time flag */
+};
+
+_WCRTLINK extern char *asctime( const struct tm *__timeptr );
+_WCRTLINK extern clock_t clock( void );
+_WCRTLINK extern char *ctime( const time_t *__timer );
+_WMRTLINK extern double difftime( time_t __t1, time_t __t0 );
+_WCRTLINK extern struct tm *gmtime( const time_t *__timer );
+_WCRTLINK extern struct tm *localtime( const time_t *__timer );
+_WCRTLINK extern time_t mktime( struct tm *__timeptr );
+_WCRTLINK extern size_t strftime( char *__s, size_t __maxsiz, const char *__fmt,
+                                  const struct tm *__tp );
+_WCRTLINK extern time_t time( time_t *__timer );
+
+_WCRTLINK extern wchar_t *_wasctime( const struct tm * );
+_WCRTLINK extern wchar_t *_wctime( const time_t * );
+_WCRTLINK extern wchar_t *_wstrdate( wchar_t *__buf );
+_WCRTLINK extern wchar_t *_wstrtime( wchar_t *__buf );
+_WCRTLINK extern size_t    wcsftime( wchar_t *, size_t, const wchar_t *,
+                                     const struct tm * );
+_WCRTLINK extern size_t   _wstrftime_ms( wchar_t *, size_t, const char *,
+                                         const struct tm * );
+
+#ifndef __cplusplus
+#define difftime(t1,t0) ((double)(t1)-(double)(t0))
+#endif
+
+:include ext.sp
+_WCRTLINK extern char *_asctime( const struct tm *__timeptr, char *__buf );
+_WCRTLINK extern char *_ctime( const time_t *__timer, char *__buf );
+_WCRTLINK extern struct tm *_gmtime( const time_t *__timer, struct tm *__tmbuf );
+_WCRTLINK extern struct tm *_localtime( const time_t *__timer,
+                                        struct tm *__tmbuf );
+_WCRTLINK extern char *_strdate( char *__buf );
+_WCRTLINK extern char *_strtime( char *__buf );
+_WCRTLINK extern wchar_t *__wctime( const time_t *, wchar_t * );
+_WCRTLINK extern wchar_t *__wasctime( const struct tm *, wchar_t * );
+#endif
+
+:segment QNX
+#if defined(_POSIX_SOURCE) || defined(_QNX_SOURCE) || !defined(NO_EXT_KEYS)
+:endsegment
+:segment PENPOINT
+#if defined(_POSIX_SOURCE) || defined(_PP_SOURCE) || !defined(NO_EXT_KEYS)
+:endsegment
+_WCRTLINK extern void tzset( void );
+
+#if defined(__FUNCTION_DATA_ACCESS)
+ #define tzname (*__get_tzname_ptr())
+#elif defined(__SW_BR) || defined(_RTDLL)
+ #define tzname tzname_br
+#endif
+_WCRTLINK extern char   *tzname[2]; /*  time zone names */
+:segment QNX
+:include ext.sp
+:endsegment
+#if defined(__FUNCTION_DATA_ACCESS)
+ #define timezone (*__get_timezone_ptr())
+ #define daylight (*__get_daylight_ptr())
+#elif defined(__SW_BR) || defined(_RTDLL)
+ #define timezone timezone_br
+ #define daylight daylight_br
+#endif
+_WCRTLINK extern long   timezone;       /* # of seconds from GMT */
+_WCRTLINK extern int    daylight;       /* d.s.t. indicator */
+:segment QNX
+#endif
+:endsegment
+:segment QNX
+#endif
+:endsegment
+:segment PENPOINT
+#endif
+:endsegment
+
+:include poppack.sp
+:include cplusepi.sp
+#endif

@@ -1,0 +1,12 @@
+/*
+ *  common.cnv  Common calling conventions used by other compilers.
+ *              This file should be included when creating an object file
+ *              with 'wcc' to be used by "WATCOM Express C"
+ *              This can be done with the /fi command line switch
+ *                      wcc filename /ficommon.cnv
+ *
+:include crwat.sp
+ */
+#pragma aux __default "_*" __parm __caller [] \
+        __value __struct __float __struct __routine [__ax] \
+        __modify [__ax __bx __cx __dx __es];

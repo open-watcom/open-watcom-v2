@@ -1,0 +1,135 @@
+.mif: $(mif_path);..
+!include cproj.mif
+
+system_nt_386   = nt
+system_nt_axp   = ntaxp
+
+compiler_i86    = $(comp286)
+compiler_386    = $(comp386)
+compiler_axp    = wccaxp
+
+librarian_i86   = wlib
+librarian_386   = $(librarian_i86)
+librarian_axp   = wlib
+
+includes_nt_386 = $(lang_root)\h\nt;$(lang_root)\h
+includes_nt_axp = $(lang_root)\h\nt;$(lang_root)\h
+includes_os2_i86= $(watcom_dir)\os21x_h;$(lang_root)\h
+includes_os2_386= $(watcom_dir)\os220_h;$(lang_root)\h
+includes_qnx_i86= $(lang_root)\qh
+includes_qnx_386= $(lang_root)\qh
+
+# database team uses fpi87 as default in 6.0
+!ifdef wsqlver
+!  ifeqi wsqlver 6.0
+!    define deffp /fpi87
+!  else
+!    define deffp /fpc
+!  endif
+!else
+!    define deffp /fpc
+!endif
+
+!ifndef host_CPU
+!ifeq MODEL F
+host_CPU=386
+!else
+host_CPU=i86
+!endif
+!endif
+
+!ifndef INCLUDES
+INCLUDES=$(includes_$(host_OS)_$(host_CPU))
+!endif
+
+!ifndef TARG
+TARG=$(host_OS)
+!endif
+
+!ifndef FORM
+FORM=$(system_$(host_OS)_$(host_CPU))
+!endif
+
+!ifndef EXE
+EXE=exe
+!endif
+
+!ifndef WCCEXE
+WCCEXE=$(compiler_$(host_CPU))
+!endif
+
+libname_i86     = uilib$(MODEL)
+libname_386     = $(libname_i86)
+libname_axp     = uilibaxp
+
+!ifndef LIBNAME
+LIBNAME=$(libname_$(host_CPU))
+!endif
+
+cflags_i86      = /m$(MODEL)
+cflags_386      = $(cflags_i86)
+cflags_axp      =
+!ifndef WCDEB
+WCDEB=/d1
+!endif
+CFLAGS=/bt=$(TARG) /os/s/w3$(WCDEB)/I..\h;..\..\h;$(INCLUDES);$(watcom_dir)\h $(cflags_$(host_CPU))$(EXTRA)
+
+WCC=$(WCCEXE) $[*.c $(CFLAGS) /zq
+
+.EXTENSIONS:
+.EXTENSIONS: .$(EXE) .obj .i .h .c .mif
+
+.JUST_ENOUGH
+
+.mif: ..
+
+target: ..\$(libname).lib .SYMBOLIC
+    @%null
+
+OBJ = obj
+!include objfiles.mif
+
+..\$(LIBNAME).lib: $(objfiles)
+        *$(librarian_$(host_CPU)) /q/b $* $(objfiles)
+
+.$(EXE): ..\x
+!ifeq SAMPLE_MODE WIN_C_M_J
+sample.$(EXE) : samplew.obj sampdial.obj ..\$(LIBNAME).lib
+        %create sample.lnk
+        %append sample.lnk system windows op m D A library ..\$(LIBNAME)
+        %append sample.lnk n sample
+        %append sample.lnk f samplew f sampdial
+        %append sample.lnk import DEATH GDI.121
+        %append sample.lnk import RESURRECTION GDI.122
+        wlink @sample.lnk
+!else ifeq SAMPLE_MODE WIN_C_M
+sample.$(EXE) : samplew.obj sampdial.obj swap.obj ..\$(LIBNAME).lib
+        %create sample.lnk
+        %append sample.lnk system windows op m D A library ..\$(LIBNAME)
+        %append sample.lnk n sample
+        %append sample.lnk f samplew f sampdial f swap
+        %append sample.lnk import DEATH GDI.121
+        %append sample.lnk import RESURRECTION GDI.122
+        wlink @sample.lnk
+!else
+sample.$(EXE) : sample.obj sampdial.obj ..\$(LIBNAME).lib
+        !wlink system $(FORM) op m,st=32k D A library ..\$(LIBNAME) n sample f sample, sampdial
+!endif
+
+.c: ..\c;..\..\c;$(extra_cdir)
+
+.c.obj :
+        $(WCC)
+
+.c.i :
+        $(WCC) -fo=.i -plc
+
+.h: ..\h;..\..\h;$(extra_hdir)
+
+make: .SYMBOLIC
+    %create mkmk.cmd
+    @%append mkmk.cmd  -c & -m objfiles.mif -q 50
+    @%append mkmk.cmd  nopath ..\c\*.c c\*.c h\*.h ..\h\*.h  path
+    @%append mkmk.cmd  -i.h -isample.c -isampdial.c -isamplew.c
+    mkmk @mkmk.cmd
+    erase mkmk.cmd

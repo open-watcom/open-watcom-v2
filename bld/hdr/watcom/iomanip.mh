@@ -1,0 +1,335 @@
+//
+//  iomanip.h   I/O streams manipulators
+//
+:keep CPP_HDR
+:include crwat.sp
+//
+#ifndef _IOMANIP_H_INCLUDED
+#define _IOMANIP_H_INCLUDED
+:include readonly.sp
+
+#ifndef __cplusplus
+#error iomanip.h is for use with C++
+#endif
+
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
+#ifndef _IOSTREAM_H_INCLUDED
+ #include <iostream.h>
+#endif
+:segment MACRO_IOMANIP
+#ifndef _GENERIC_H_INCLUDED
+ #include <generic.h>
+#endif
+
+// In the absence of templates, these macros convert a statement such as
+//      SMANIP_define( int )
+// into the class definitions for
+//      SMANIPint
+//      SAPPint
+//      IMANIPint
+//      IAPPint
+//      OMANIPint
+//      OAPPint
+//      IOMANIPint
+//      IOAPPint
+
+#define SMANIP(__Typ)   name2(SMANIP,__Typ)
+#define SAPP(__Typ)     name2(SAPP,__Typ)
+#define IMANIP(__Typ)   name2(IMANIP,__Typ)
+#define IAPP(__Typ)     name2(IAPP,__Typ)
+#define OMANIP(__Typ)   name2(OMANIP,__Typ)
+#define OAPP(__Typ)     name2(OAPP,__Typ)
+#define IOMANIP(__Typ)  name2(IOMANIP,__Typ)
+#define IOAPP(__Typ)    name2(IOAPP,__Typ)
+
+#define SMANIP_define(__Typ) \
+class SMANIP(__Typ) { \
+    ios & (*__f)( ios &, __Typ ); \
+    __Typ __p; \
+public: \
+    SMANIP(__Typ)( ios & (*__f_in)( ios &, __Typ ), __Typ __p_in ) : \
+        __f(__f_in), __p(__p_in) {} \
+    friend istream &operator >> ( istream &, const SMANIP(__Typ) & ); \
+    friend ostream &operator << ( ostream &, const SMANIP(__Typ) & ); \
+}; \
+class IMANIP(__Typ) { \
+    istream & (*__f)( istream &, __Typ ); \
+    __Typ __p; \
+public: \
+    IMANIP(__Typ)( istream & (*__f_in)( istream &, __Typ ), __Typ __p_in ) : \
+        __f(__f_in), __p(__p_in) {} \
+    friend istream &operator >> ( istream &, const IMANIP(__Typ) & ); \
+}; \
+class OMANIP(__Typ) { \
+    ostream & (*__f)( ostream &, __Typ ); \
+    __Typ __p; \
+public: \
+    OMANIP(__Typ)( ostream & (*__f_in)( ostream &, __Typ ), __Typ __p_in ) : \
+        __f(__f_in), __p(__p_in) {} \
+    friend ostream &operator << ( ostream &, const OMANIP(__Typ) & ); \
+}; \
+class IOMANIP(__Typ) { \
+    iostream & (*__f)( iostream &, __Typ ); \
+    __Typ __p; \
+public: \
+    IOMANIP(__Typ)( iostream & (*__f_in)( iostream &, __Typ ), __Typ __p_in ) :\
+        __f(__f_in), __p(__p_in) {} \
+    friend istream &operator >> ( iostream &, const IOMANIP(__Typ) & ); \
+    friend ostream &operator << ( iostream &, const IOMANIP(__Typ) & ); \
+}; \
+class SAPP(__Typ) { \
+    ios & (*__f)( ios &, __Typ ); \
+public: \
+    SAPP(__Typ)( ios & (*__f_in)( ios &, __Typ ) ) : \
+        __f( __f_in ) {} \
+    SMANIP(__Typ) operator () ( __Typ __p ) { \
+        return SMANIP(__Typ)( __f, __p ); \
+    } \
+}; \
+class IAPP(__Typ) { \
+    istream & (*__f)( istream &, __Typ ); \
+public: \
+    IAPP(__Typ)( istream & (*__f_in)( istream &, __Typ ) ) :
+        __f( __f_in ) {} \
+    IMANIP(__Typ) operator () ( __Typ __p ) { \
+        return IMANIP(__Typ)( __f, __p ); \
+    } \
+}; \
+class OAPP(__Typ) { \
+    ostream & (*__f)( ostream &, __Typ ); \
+public: \
+    OAPP(__Typ)( ostream & (*__f_in)( ostream &, __Typ ) ) : \
+        __f( __f_in ) {} \
+    OMANIP(__Typ) operator () ( __Typ __p ) { \
+        return OMANIP(__Typ)( __f, __p ); \
+    } \
+}; \
+class IOAPP(__Typ) { \
+    iostream & (*__f)( iostream &, __Typ ); \
+public: \
+    IOAPP(__Typ)( iostream & (*__f_in)( iostream &, __Typ ) ) : \
+        __f( __f_in ) {} \
+    IOMANIP(__Typ) operator () ( __Typ __p ) { \
+        return IOMANIP(__Typ)( __f, __p ); \
+    } \
+}; \
+inline istream &operator >> ( istream &__is, const SMANIP(__Typ) &__m ) { \
+    (__m.__f)( __is, __m.__p ); \
+    return( __is ); \
+} \
+inline ostream &operator << ( ostream &__os, const SMANIP(__Typ) &__m ) { \
+    (__m.__f)( __os, __m.__p ); \
+    return( __os ); \
+} \
+inline istream &operator >> ( istream &__is, const IMANIP(__Typ) &__m ) { \
+    (__m.__f)( __is, __m.__p ); \
+    return( __is ); \
+} \
+inline ostream &operator << ( ostream &__os, const OMANIP(__Typ) &__m ) { \
+    (__m.__f)( __os, __m.__p ); \
+    return( __os ); \
+} \
+inline istream &operator >> ( iostream &__is, const IOMANIP(__Typ) &__m ) { \
+    (__m.__f)( __is, __m.__p ); \
+    return( __is ); \
+} \
+inline ostream &operator << ( iostream &__os, const IOMANIP(__Typ) &__m ) { \
+    (__m.__f)( __os, __m.__p ); \
+    return( __os ); \
+}
+#define IOMANIPdeclare(__Typ) SMANIP_define(__Typ)
+
+// In the absence of templates, this macro converts a statement such as
+//      SMANIP_make( int, setw );
+// into
+//      SMANIPint setw( int __p );
+// to create the prototypes for the manipulators used with streams.
+
+#define SMANIP_make(__Typ,__n) SMANIP(__Typ) __n(__Typ __p)
+
+// Create instances of:
+//      SMANIPint
+//      SAPPint
+//      IMANIPint
+//      IAPPint
+//      OMANIPint
+//      OAPPint
+//      IOMANIPint
+//      IOAPPint
+//      SMANIPlong
+//      SAPPlong
+//      IMANIPlong
+//      IAPPlong
+//      OMANIPlong
+//      OAPPlong
+//      IOMANIPlong
+//      IOAPPlong
+
+:include pshpackl.sp
+SMANIP_define( int );
+SMANIP_define( long );
+:include poppack.sp
+
+// Create the prototypes for the manipulator functions.
+
+SMANIP_make( long, resetiosflags );
+SMANIP_make( int,  setbase );
+SMANIP_make( int,  setfill );
+SMANIP_make( long, setiosflags );
+SMANIP_make( int,  setprecision );
+SMANIP_make( int,  setw );
+
+:elsesegment
+
+:include pshpackl.sp
+template<class T>
+    class _WPRTLINK smanip;
+template<class T>
+    class _WPRTLINK sapp {
+    public:
+        sapp( ios &(*__f)( ios &, T ) ) :
+            __fn( __f ) {};
+        smanip<T> operator()( T __p ) { return smanip<T>( __fn, __p ); };
+    private:
+        ios &(*__fn)( ios &, T );
+    };
+template<class T>
+    class _WPRTLINK smanip {
+    public:
+        smanip( ios &(*__f)( ios &, T ), T __p ) :
+            __fn( __f ), __parm( __p ) {};
+        friend _WPRTLINK istream &operator>>( istream &, const smanip<T> & );
+        friend _WPRTLINK ostream &operator<<( ostream &, const smanip<T> & );
+    private:
+        ios &(*__fn)( ios &, T );
+        T __parm;
+    };
+template<class T>
+    _WPRTLINK istream &operator>>( istream &__is, const smanip<T> &__sm ) {
+        __sm.__fn( __is, __sm.__parm );
+        return( __is );
+    }
+template<class T>
+    _WPRTLINK ostream &operator<<( ostream &__os, const smanip<T> &__sm ) {
+        __sm.__fn( __os, __sm.__parm );
+        return( __os );
+    }
+
+template<class T>
+    class _WPRTLINK imanip;
+template<class T>
+    class _WPRTLINK iapp {
+    public:
+        iapp( istream &(*__f)( istream &, T ) ) :
+            __fn( __f ) {};
+        imanip<T> operator()( T __p ) { return imanip<T>( __fn, __p ) };
+    private:
+        istream &(*__fn)( istream &, T );
+    };
+template<class T>
+    class _WPRTLINK imanip {
+    public:
+        imanip( istream &(*__f)( istream &, T ), T __p ) :
+            __fn( __f ), __parm( __p ) {};
+        friend _WPRTLINK istream &operator>>( istream &, const imanip<T> & );
+    private:
+        istream &(*__fn)( istream &, T );
+        T __parm;
+    };
+template<class T>
+    _WPRTLINK istream &operator>>( istream &__is, const imanip<T> &__im ) {
+        __im.__fn( __is, __im.__parm );
+        return( __is );
+    }
+
+template<class T>
+    class _WPRTLINK omanip;
+template<class T>
+    class _WPRTLINK oapp {
+    public:
+        oapp( ostream &(*__f)( ostream &, T ) ) :
+            __fn( __f ) {} ;
+        omanip<T> operator()( T __p ) { return omanip<T>( __fn, __p ); };
+    private:
+        ostream &(*__fn)( ostream &, T );
+    };
+template<class T>
+    class _WPRTLINK omanip {
+    public:
+        omanip( ostream &(*__f)( ostream &, T ), T __p ) :
+            __fn( __f ), __parm( __p ) {};
+        friend _WPRTLINK ostream &operator<<( ostream &, const omanip<T> & );
+    private:
+        ostream &(*__fn)( ostream &, T );
+        T __parm;
+    };
+template<class T>
+    _WPRTLINK ostream &operator<<( ostream &__os, const omanip<T> &__om ) {
+        __om.__fn( __os, __om.__parm );
+        return( __os );
+    }
+
+template<class T>
+    class _WPRTLINK iomanip;
+template<class T>
+    class _WPRTLINK ioapp {
+    public:
+        ioapp( iostream &(*__f)( iostream &, T ) ) :
+            __fn( __f ) {};
+        iomanip<T> operator()( T __p ) { return iomanip<T>( __fn, __p ) };
+    private:
+        iostream &(*__fn)( iostream &, T );
+    };
+template<class T>
+    class _WPRTLINK iomanip {
+    public:
+        iomanip( iostream &(*__f)( iostream &, T ), T __p ) :
+            __fn( __f ), __parm( __p ) {};
+        friend _WPRTLINK iostream &operator>>( iostream &, const iomanip<T> & );
+    private:
+        iostream &(*__fn)( iostream &, T );
+        T __parm;
+    };
+template<class T>
+    _WPRTLINK iostream &operator>>( iostream &__is, const iomanip<T> &__im ) {
+        __im.__fn( __is, __im.__parm );
+        return( __is );
+    }
+
+:include poppack.sp
+
+:segment IOMANIP_SIMPLIFICATION
+// manipulator prototypes
+smanip<long> resetiosflags( long );
+smanip<int>  setbase( int );
+smanip<int>  setfill( int );
+smanip<long> setiosflags( long );
+smanip<int>  setprecision( int );
+smanip<int>  setw( int );
+:elsesegment
+// applicator objects
+_WPRTLINK extern sapp<long> _WCDATA resetiosflags;
+_WPRTLINK extern sapp<int>  _WCDATA setbase;
+_WPRTLINK extern sapp<int>  _WCDATA setfill;
+_WPRTLINK extern sapp<long> _WCDATA setiosflags;
+_WPRTLINK extern sapp<int>  _WCDATA setprecision;
+_WPRTLINK extern sapp<int>  _WCDATA setw;
+:endsegment
+
+// define some compatibility macros for legacy code
+#define SMANIP(__Typ)   smanip<__Typ>
+#define SAPP(__Typ)     sapp<__Typ>
+#define IMANIP(__Typ)   imanip<__Typ>
+#define IAPP(__Typ)     iapp<__Typ>
+#define OMANIP(__Typ)   omanip<__Typ>
+#define OAPP(__Typ)     oapp<__Typ>
+#define IOMANIP(__Typ)  iomanip<__Typ>
+#define IOAPP(__Typ)    ioapp<__Typ>
+
+#define SMANIP_define(__Typ)
+#define IOMANIPdeclare(__Typ)
+
+:endsegment
+#endif

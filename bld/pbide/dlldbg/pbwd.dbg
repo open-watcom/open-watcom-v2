@@ -1,0 +1,8 @@
+/nogo=1
+in wd
+hook quit {
+   if ?PB_DEBUGGER_STUB_OK_TO_END {
+       /PB_DEBUGGER_STUB_OK_TO_END=1;
+       go;
+   }
+}

@@ -1,0 +1,10 @@
+system   nt_win dll
+debug    all
+
+name	 weditcwn
+option   map, elim, verbose, static
+
+file	 weditcwn.obj
+lib	kernel32.lib
+lib	user32.lib
+lib	nt.lib

@@ -1,0 +1,8 @@
+name = watzee
+CFLAGS += -i=..\..
+res1_flags += -i=..\..
+LNK = $(name).lnk
+OBJS = watzee.obj wdice.obj wdlg.obj wdraw.obj wfont.obj wglobal.obj wpc.obj
+resources = watzee.ico dice1.bmp dice2.bmp dice3.bmp dice4.bmp &
+            dice5.bmp dice6.bmp
+lnk_dependencies = makefile ..\watzee.mif ..\..\master.mif

@@ -1,0 +1,7 @@
+#undef auipick
+#ifdef JAPANESE_MESSAGES
+    #define auipick( a,b,c ) auimsg( a,c )
+#else
+    #define auipick( a,b,c ) auimsg( a,b )
+#endif
+#include "aui.msg"

@@ -1,0 +1,28 @@
+LOG DIALOG 64, -24, 178, 194
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Log File Options"
+BEGIN
+    CHECKBOX        "Stack Trace", LOG_STACK_TRACE, 15, 74, 56, 12
+    CHECKBOX        "Current Tasks", LOG_TASKS, 15, 50, 56, 12
+    CHECKBOX        "All Modules", LOG_MODULES, 15, 62, 56, 12
+    CHECKBOX        "GDI Heap Info", LOG_GDI, 15, 38, 56, 12
+    CHECKBOX        "User Heap Info", LOG_USER, 86, 38, 72, 12
+    CHECKBOX        "Mem Manager Info", LOG_MEM, 86, 62, 72, 12
+    LTEXT           "Max Log File Size:", -1, 106, 139, 61, 8, NOT WS_GROUP
+    EDITTEXT        LOG_DISASM_LINES, 117, 110, 35, 12, ES_AUTOHSCROLL
+    EDITTEXT        LOG_MAX_FILE_SIZE, 119, 148, 35, 12, ES_AUTOHSCROLL
+    EDITTEXT        LOG_DISASM_BACKUP, 27, 110, 35, 12, ES_AUTOHSCROLL
+    CTEXT           "Disasm Lines:", -1, 104, 102, 61, 8, NOT WS_GROUP
+    CTEXT           "Disasm Backup:", -1, 14, 102, 61, 8, NOT WS_GROUP
+    GROUPBOX        "Log File Data", -1, 7, 28, 166, 62
+    CHECKBOX        "Log Restarted Tasks", LOG_LOG_IF_RESTART, 14, 151, 79, 12
+    CHECKBOX        "Auto Log", LOG_AUTOLOG, 14, 140, 44, 12
+    CHECKBOX        "Module Segments", LOG_MOD_SEGMENTS, 86, 50, 72, 12
+    PUSHBUTTON      "&Browse", LOG_BROWSE, 133, 12, 40, 14
+    EDITTEXT        LOG_FILE_NAME, 7, 12, 122, 14, ES_AUTOHSCROLL
+    LTEXT           "Log File Name", -1, 7, 3, 56, 8
+    PUSHBUTTON      "&OK", IDOK, 44, 173, 40, 14
+    PUSHBUTTON      "&Cancel", IDCANCEL, 110, 173, 40, 14
+    GROUPBOX        "Log Options", -1, 6, 131, 166, 38
+    GROUPBOX        "Disassembly Options", -1, 6, 92, 167, 37
+END

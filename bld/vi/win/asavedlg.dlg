@@ -1,0 +1,13 @@
+#include "asavedlg.h"
+ASAVEDLG DIALOG 108, 88, 176, 64
+STYLE DS_MODALFRAME  | DS_SYSMODAL | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "WATCOM VI Auto File Recovery"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "&Recover", DLG_RECOVER, 8, 40, 40, 14
+    PUSHBUTTON      "&Ignore", DLG_IGNORE, 68, 40, 40, 14
+    LTEXT           "Please select an option:", -1, 8, 20, 156, 8
+    PUSHBUTTON      "Cancel", IDCANCEL, 128, 40, 40, 14
+    LTEXT           "Files have been lost since your last session.", -1, 8,
+                    8, 156, 8
+END

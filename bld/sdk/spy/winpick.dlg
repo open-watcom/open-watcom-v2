@@ -1,0 +1,13 @@
+WINDOWPICK DIALOG 0, 0, 120, 82
+STYLE WS_CHILD | WS_VISIBLE
+FONT 8, "Helv"
+BEGIN
+    PUSHBUTTON      "OK", IDOK, 10, 64, 40, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 66, 64, 40, 14
+    LTEXT           "Click on window to spy on", -1, 14, 4, 92, 8
+    GROUPBOX        "Current Window", -1, 4, 16, 110, 42
+    LTEXT           "hWnd:", -1, 6, 30, 24, 8
+    LTEXT           "", WINSEL_HWND, 30, 30, 64, 8
+    LTEXT           "Name:", -1, 6, 42, 20, 8
+    LTEXT           "", WINSEL_NAME, 28, 42, 82, 8
+END

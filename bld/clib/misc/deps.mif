@@ -1,0 +1,7 @@
+demangl.obj  : ..\..\..\c\demangl.c  $(lib_misc_dir)\c\demangle.c
+ufulpath.obj : ..\..\..\c\ufulpath.c ..\..\..\c\fullpath.c
+umkpath.obj  : ..\..\..\c\umkpath.c  ..\..\..\c\makepath.c
+usplit2.obj  : ..\..\..\c\usplit2.c  ..\..\..\c\split2.c
+uspltpat.obj : ..\..\..\c\uspltpat.c ..\..\..\c\splitpat.c
+uassert.obj  : ..\..\..\c\uassert.c  ..\..\..\c\assert.c
+ustlocal.obj : ..\..\..\c\ustlocal.c ..\..\..\c\setlocal.c

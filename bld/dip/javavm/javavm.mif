@@ -1,0 +1,14 @@
+imp_objs = &
+        jvmmisc.obj &
+        jvmld.obj &
+        jvmmod.obj &
+        jvmtype.obj &
+        jvmsym.obj &
+        jvmcue.obj &
+        jvmsupp.obj
+
+name = javavm
+
+extra_incs = $(javasdk)\include;$(javasdk)\include\win32;$(java_src_dir)\SRC\WIN32\JAVA\INCLUDE;$(lang_root)\h\nt
+
+!include ../../imp.mif

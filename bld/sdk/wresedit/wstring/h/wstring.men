@@ -1,0 +1,123 @@
+WMainMenu MENU
+BEGIN
+    POPUP      sp( "&File",
+		   "&File" )
+    BEGIN
+        MENUITEM sp( "&Clear...",
+		     "&Clear..." )		IDM_STR_CLEAR
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Update",
+		     "&Update" )		IDM_STR_UPDATE
+        MENUITEM sp( "Save &As...",
+		     "Save &As..." )		IDM_STR_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "E&xit",
+		     "E&xit" )			IDM_STR_EXIT
+    END
+    POPUP      sp( "&Edit",
+    		   "&Edit" )
+    BEGIN
+        MENUITEM sp( "Cu&t\tCtrl+X",
+		     "Cu&t\tCtrl+X" )		IDM_STR_CUT
+        MENUITEM sp( "&Copy\tCtrl+C",
+		     "&Copy\tCtrl+C" )		IDM_STR_COPY
+        MENUITEM sp( "&Paste\tCtrl+V",
+		     "&Paste\tCtrl+V" )		IDM_STR_PASTE
+        MENUITEM sp( "&Delete\tDel",
+		     "&Delete\tDel" )		IDM_STR_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Load Symbols...",
+		     "&Load Symbols..." )	IDM_STR_LOAD_SYMBOLS
+        MENUITEM sp( "&Edit Symbols...",
+		     "&Edit Symbols..." )	IDM_STR_SYMBOLS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Hide Tool&bar",
+		     "Hide Tool&bar" )		IDM_STR_SHOWRIBBON
+    END
+    POPUP      sp( "&Resource",
+    		   "&Resource" )
+    BEGIN
+        MENUITEM sp( "&Memory Flags...",
+		     "&Memory Flags..." )	IDM_STR_MEM_FLAGS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Copy To...",
+		     "&Copy To..." )		IDM_STR_SAVEINTO
+    END
+    POPUP      sp( "&Strings",
+    		   "&Strings" )
+    BEGIN
+        MENUITEM sp( "&Insert New Item",
+		     "&Insert New Item" )	IDM_STR_NEWITEM
+    END
+    POPUP      sp( "&Help",
+    		   "&Help" )
+    BEGIN
+        MENUITEM sp( "&Help",
+		     "&Help" )			IDM_HELP
+        MENUITEM sp( "&About the Editor...",
+		     "&About the Editor..." )	IDM_STR_ABOUT
+    END
+END
+
+WSOMenu MENU
+BEGIN
+    POPUP      sp( "&File",
+		   "&File" )
+    BEGIN
+        MENUITEM sp( "&New",
+		     "&New" )			IDM_STR_CLEAR
+        MENUITEM sp( "&Open...",
+		     "&Open..." )		IDM_STR_SAVE
+        MENUITEM sp( "&Save",
+		     "&Save" )			IDM_STR_SAVE
+        MENUITEM sp( "Save &As...",
+		     "Save &As..." )		IDM_STR_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "E&xit",
+		     "E&xit" )			IDM_STR_EXIT
+    END
+    POPUP      sp( "&Edit",
+    		   "&Edit" )
+    BEGIN
+        MENUITEM sp( "Cu&t\tCtrl+X",
+		     "Cu&t\tCtrl+X" )		IDM_STR_CUT
+        MENUITEM sp( "&Copy\tCtrl+C",
+		     "&Copy\tCtrl+C" )		IDM_STR_COPY
+        MENUITEM sp( "&Paste\tCtrl+V",
+		     "&Paste\tCtrl+V" )		IDM_STR_PASTE
+        MENUITEM sp( "&Delete\tDel",
+		     "&Delete\tDel" )		IDM_STR_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Load Symbols...",
+		     "&Load Symbols..." )	IDM_STR_LOAD_SYMBOLS
+        MENUITEM sp( "&Edit Symbols...",
+		     "&Edit Symbols..." )	IDM_STR_SYMBOLS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Hide Tool&bar",
+		     "Hide Tool&bar" )		IDM_STR_SHOWRIBBON
+    END
+    POPUP      sp( "&Resource",
+    		   "&Resource" )
+    BEGIN
+        MENUITEM sp( "&Memory Flags...",
+		     "&Memory Flags..." )	IDM_STR_MEM_FLAGS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Copy To...",
+		     "&Copy To..." )		IDM_STR_SAVEINTO
+    END
+    POPUP      sp( "&Strings",
+    		   "&Strings" )
+    BEGIN
+        MENUITEM sp( "&Insert New Item",
+		     "&Insert New Item" )	IDM_STR_NEWITEM
+    END
+    POPUP      sp( "&Help",
+    		   "&Help" )
+    BEGIN
+        MENUITEM sp( "&Help",
+		     "&Help" )			IDM_HELP
+        MENUITEM sp( "&About the Editor...",
+		     "&About the Editor..." )	IDM_STR_ABOUT
+    END
+END
+

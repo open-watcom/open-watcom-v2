@@ -1,0 +1,31 @@
+#include "windows.h"
+#include "alarm.h"
+
+AlarmIcon ICON alarm.ico
+AlarmMenu MENU
+BEGIN
+    POPUP "&Settings"
+    BEGIN
+        MENUITEM "&Display Seconds", MENU_DISPLAY_SECONDS
+        MENUITEM "&Supress Seconds", MENU_SUPRESS_SECONDS
+        MENUITEM SEPARATOR
+        MENUITEM "&Resume Running", MENU_RUN_CLOCK
+        MENUITEM "&Set Alarm", MENU_SET_ALARM
+        MENUITEM SEPARATOR
+        MENUITEM "&12 Hour clock", MENU_12_HOUR_CLOCK
+        MENUITEM "&24 Hour clock", MENU_24_HOUR_CLOCK
+        MENUITEM SEPARATOR
+        MENUITEM "&About AlarmClock ...", MENU_ABOUT
+    END
+END
+
+AboutBox DIALOG 22, 17, 144, 75
+        STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+        CAPTION "About WATCOM AlarmClock"
+        BEGIN
+            CTEXT "WATCOM Alarm Clock Program", -1, 0,  5, 144, 8
+            CTEXT "for Windows", -1, 0,  14, 144, 8
+            CTEXT "Version 1.0", -1, 0, 23, 144, 8
+            DEFPUSHBUTTON "OK", IDOK, 53, 59, 32, 14, WS_GROUP
+            ICON "AlarmIcon", -1, 15,15,40,40
+        END

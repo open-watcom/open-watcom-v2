@@ -1,0 +1,4 @@
+# opt_standard  = /w4/zq/mf/fpc/zp4
+opt_standard    = /w4/zq/mf/fpc/zp4
+opt_speed       = /oaxt/d1
+opt_size        = /oaxt/d1

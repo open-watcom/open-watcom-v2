@@ -1,0 +1,65 @@
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %       Copyright (C) 1992, by WATCOM Systems Inc. All rights     %
+   %       reserved. No part of this software may be reproduced      %
+   %       in any form or by any means - graphic, electronic or      %
+   %       mechanical, including photocopying, recording, taping     %
+   %       or information storage and retrieval systems - except     %
+   %       with the written permission of WATCOM Systems Inc.        %
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+   Date         By              Reason
+   ----         --              ------
+   19 Jul 93    Wes Nelson      initial implementation
+*/
+
+#include <windows.h>
+#include "sys_rc.h"
+#include "wmsgfile.h"
+#include "banner.h"
+#include "w.rc"
+
+WAccelAccelTable ACCELERATORS
+BEGIN
+    VK_DELETE,  IDM_ACC_DELETE, VIRTKEY
+    VK_F1,      IDM_HELP,       VIRTKEY
+    "X",        IDM_ACC_CUT,    CONTROL, VIRTKEY
+    "C",        IDM_ACC_COPY,   CONTROL, VIRTKEY
+    "V",        IDM_ACC_PASTE,  CONTROL, VIRTKEY
+END
+
+/* icons */
+WMainIcon      ICON waccel.ico
+
+/* aboutbox bitmap */
+AboutLogo    BITMAP MOVEABLE DISCARDABLE logo.bmp
+
+/* ribbon bitmaps */
+Clear        BITMAP clear.bmp
+New          BITMAP new.bmp
+Open         BITMAP open.bmp
+Save         BITMAP save.bmp
+
+Cut          BITMAP cut.bmp
+Copy         BITMAP copy.bmp
+Paste        BITMAP paste.bmp
+
+InsertKey    BITMAP inskey.bmp
+DeleteKey    BITMAP delkey.bmp
+PressKey     BITMAP presskey.bmp
+
+#undef pick
+#undef sp
+#define pick( a, b ) a, b
+#define sp( a, b ) a
+
+STRINGTABLE
+BEGIN
+    #include "master.msg"
+END
+
+#include "wacc.men"
+
+#include "accedit.dlg"
+#include "accabout.dlg"
+#include "acckey.dlg"
+

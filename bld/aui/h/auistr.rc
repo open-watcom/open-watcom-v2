@@ -1,0 +1,7 @@
+#include "auistr.h"
+STRINGTABLE
+BEGIN
+    #undef auimsg
+    #define auimsg( a, b ) a,b
+    #include "aui.str"
+END

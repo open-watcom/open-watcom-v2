@@ -1,0 +1,17 @@
+
+DIALOG_HISTORY DIALOG 4, 14, 288, 140
+STYLE DS_MODALFRAME | WS_CAPTION | WS_POPUP | WS_VISIBLE | WS_SYSMENU
+CAPTION ""
+FONT 8, "MS Sans Serif"
+BEGIN
+        CONTROL "The undo function has not been able to", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 14, 276, 14
+        CONTROL "completely restore program state.", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 28, 276, 14
+        CONTROL "Proceeding from this point may cause unexpected program behavior.", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 42, 276, 14
+        CONTROL "", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 56, 276, 14
+        CONTROL "Do you want to redo all undos before proceeding", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 70, 276, 14
+        CONTROL "", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 84, 276, 14
+        CONTROL "&Yes", CTL_STK_YES, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 16, 112, 44, 14
+        CONTROL "&No", CTL_STK_NO, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 100, 112, 44, 14
+        CONTROL "&Cancel Operation", CTL_STK_CANCEL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 185, 112, 89, 14
+END
+

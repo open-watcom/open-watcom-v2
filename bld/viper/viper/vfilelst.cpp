@@ -1,0 +1,439 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <windows.h>
+#include <sys\stat.h>
+#include <io.h>
+#include <direct.h>
+#ifdef __WINDOWS__
+#include <commdlg.h>
+#endif
+#include "getfile.h"
+#include "malloc.h"
+#include "win1632.h"
+#include "wstring.hpp"
+#include "wstrlist.hpp"
+#include "wfilenam.hpp"
+#include "wwindow.hpp"
+
+typedef struct {
+    WString     *result;
+    const char  *tgt_file;
+} GetFilesInfo;
+
+static DWORD getMaxItemLen( HWND lb ) {
+    DWORD       cnt;
+    DWORD       len;
+    DWORD       rc;
+    WPARAM      i;
+
+    cnt = SendMessage( lb, LB_GETCOUNT, 0, 0 );
+    len = 0;
+    for( i=0; i < cnt; i++ ) {
+        rc = SendMessage( lb, LB_GETTEXTLEN, i, 0 );
+        if( rc > len ) len = rc;
+    }
+    return( len );
+}
+
+static void checkRemoveButton( HWND hwnd ) {
+    HWND        ctl;
+    DWORD       item;
+
+    ctl = GetDlgItem( hwnd, FOD_FILELIST );
+    item = SendMessage( ctl, LB_GETCURSEL, 0, 0 );
+    if( item == LB_ERR ) {
+        ctl = GetDlgItem( hwnd, FOD_REMOVE );
+        EnableWindow( ctl, FALSE );
+    } else {
+        ctl = GetDlgItem( hwnd, FOD_REMOVE );
+        EnableWindow( ctl, TRUE );
+    }
+}
+
+static void getFullFname( HWND hwnd, const char *fname, WString *fullname ) {
+    unsigned    len;
+    char        buf[_MAX_PATH];
+    char        drive[ _MAX_DRIVE ];
+
+    drive[0] = '\0';
+    _splitpath( fname, drive, NULL, NULL, NULL );
+    if( drive[0] == '\0' ) {
+        hwnd = hwnd;
+        getcwd( buf, _MAX_PATH );
+        *fullname = buf;
+        len = strlen( buf );
+        if( buf[ len-1 ] != '\\' ) fullname->concat( "\\" );
+    }
+    fullname->concat( fname );
+}
+
+static void formRelDir( const char *filedir, const char *tgtdir,WString *dir )
+{
+    const char          *tgt_bs;        //location of last found backslash
+    const char          *file_bs;
+
+    tgt_bs = tgtdir;
+    file_bs = filedir;
+    // get rid of identical prefix directories
+    for( ;; ) {
+        if( tolower( *filedir ) != tolower( *tgtdir ) ) {
+            filedir = file_bs;
+            tgtdir = tgt_bs;
+            break;
+        }
+        if( *filedir == '\0' ) {
+            break;
+        } else if( *filedir == '\\' ) {
+            tgt_bs = tgtdir;
+            file_bs = filedir;
+        }
+        filedir++;
+        tgtdir++;
+    }
+    *dir = "";
+    for( ;; ) {
+        while( *tgtdir == '\\' ) tgtdir++;
+        if( *tgtdir != '\\' && *tgtdir != '\0' ) {
+            while( *tgtdir != '\\' && *tgtdir != '\0' ) tgtdir++;
+            dir->concat( "..\\" );
+        }
+        if( *tgtdir == '\0' ) break;
+    }
+    if( *filedir != '\0' ) dir->concat( filedir + 1 );
+}
+
+static void getRelFname( HWND hwnd, const char *fname, WString *relname ) {
+    WString              fullpath;
+    GetFilesInfo        *info;
+    WFileName            tgt;
+    WFileName            filename;
+    char                 drive[ _MAX_DRIVE ];
+    char                 dir[ _MAX_DIR ];
+
+    info = (GetFilesInfo *)GetWindowLong( hwnd, DWL_USER );
+    getFullFname( hwnd, fname, &fullpath );
+    filename = fullpath.gets();
+    _splitpath( info->tgt_file, drive, dir, NULL, NULL );
+    if( !stricmp( drive, filename.drive() ) ) {
+        formRelDir( filename.dir(), dir, relname );
+        relname->concat( filename.fName() );
+        relname->concat( filename.ext() );
+    } else {
+        *relname = fullpath.gets();
+    }
+}
+
+
+static DWORD findMatchingFile( HWND hwnd, const char *fname ) {
+    DWORD       rc;
+    WString     fullname;
+    HWND        lb;
+
+    getFullFname( hwnd, fname, &fullname );
+    lb = GetDlgItem( hwnd, FOD_FILELIST );
+    fullname.toLower();
+    rc = SendMessage( lb, LB_FINDSTRINGEXACT, -1,
+                      (LPARAM)(LPSTR)fullname.gets() );
+    if( rc == LB_ERR ) {
+        getRelFname( hwnd, fname, &fullname );
+        fullname.toLower();
+        rc = SendMessage( lb, LB_FINDSTRINGEXACT, -1,
+                          (LPARAM)(LPSTR)fullname.gets() );
+    }
+    return( rc );
+}
+
+static void addFileToList( HWND hwnd, char *fname ) {
+    HWND        ctl;
+    DWORD       item;
+    DWORD       match;
+    WFileName   fullname;
+    bool        isLong = FALSE;
+
+    int len = strlen( fname )-1;
+    if( fname[0] == '"' && fname[len] == '"' ) {
+        fname++;
+        fname[len-1] = '\0';
+        isLong = TRUE;
+    } else {
+        WFileName filename( fname );
+        isLong = filename.needQuotes();
+    }
+
+    match = findMatchingFile( hwnd, fname );
+    ctl = GetDlgItem( hwnd, FOD_FILELIST );
+    if( match == LB_ERR ) {
+        if( IsDlgButtonChecked( hwnd, FOD_STORE_ABSOLUTE ) ) {
+            getFullFname( hwnd, fname, &fullname );
+        } else {
+            getRelFname( hwnd, fname, &fullname );
+        }
+        fullname.toLower();
+        if( isLong ) {
+            fullname.addQuotes();
+        }
+        item = SendMessage( ctl, LB_ADDSTRING, 0,
+                            (LPARAM)(LPSTR)fullname.gets() );
+    } else {
+        item = match;
+    }
+    SendMessage( ctl, LB_SETCURSEL, (WPARAM)item, 0 );
+    checkRemoveButton( hwnd );
+}
+
+static void addCurrentFile( HWND hwnd  ) {
+    char        *fname;
+    int          len;
+    HWND         ctl;
+    struct stat  buf;
+
+    ctl = GetDlgItem( hwnd, FOD_FILENAME );
+    len = GetWindowTextLength( ctl );
+    if( len == 0 ) return;
+    fname = (char *)alloca( len + 1 );
+    GetWindowText( ctl, fname, len + 1 );
+    if( fname[ strlen( fname ) - 1 ] == '\\' ) return;
+    stat( fname, &buf );
+    if( S_ISDIR( buf.st_mode ) ) return;
+    if( strpbrk( fname, "?*" ) != NULL ) return;
+    addFileToList( hwnd, fname );
+    SetWindowText( ctl, "" );
+}
+
+static void addAllFiles( HWND hwnd ) {
+    HWND         ctl;
+    LRESULT      cnt;
+    char        *buf;
+    unsigned     alloced;
+    LRESULT      len;
+    WPARAM       i;
+
+    alloced = 512;
+    buf = new char [alloced];
+
+    ctl = GetDlgItem( hwnd, FOD_FILES );
+    cnt = SendMessage( ctl, LB_GETCOUNT, 0, 0 );
+    for( i=0; i < cnt; i++ ) {
+        len = SendMessage( ctl, LB_GETTEXTLEN, i, 0 );
+        len ++;
+        if( len > alloced ) {
+            delete buf;
+            buf = new char [len];
+        }
+        SendMessage( ctl, LB_GETTEXT, i, (LPARAM)(LPSTR)buf );
+        addFileToList( hwnd, buf );
+    }
+    free( buf );
+}
+
+void GetResults( HWND hwnd ) {
+    char                *buf;
+    DWORD               cnt;
+    WPARAM              i;
+    DWORD               len;
+    HWND                lb;
+    GetFilesInfo        *info;
+
+    info = (GetFilesInfo *)GetWindowLong( hwnd, DWL_USER );
+    lb = GetDlgItem( hwnd, FOD_FILELIST );
+    len = getMaxItemLen( lb );
+    buf = (char *)alloca( (size_t)( len + 1 ) );
+    *info->result = "";
+    cnt = SendMessage( lb, LB_GETCOUNT, 0, 0 );
+    for( i=0; i < cnt; i++ ) {
+        SendMessage( lb, LB_GETTEXT, i, (LPARAM)(LPSTR)buf );
+        info->result->concat( buf );
+        info->result->concat( " " );
+    }
+}
+
+void initFileList( HWND hwnd ) {
+    HWND                lb;
+    GetFilesInfo        *info;
+
+    info = (GetFilesInfo *)GetWindowLong( hwnd, DWL_USER );
+    lb = GetDlgItem( hwnd, FOD_FILELIST );
+    if( *info->result != "" ) {
+        WStringList names( *info->result );
+        for( ; names.count() > 0; ) {
+            SendMessage( lb, LB_ADDSTRING, 0,
+                         (LPARAM)(LPSTR)names.cStringAt( 0 ) );
+            names.removeAt( 0 );
+        }
+    }
+}
+
+void doClose( HWND hwnd )
+{
+    HWND         ctl;
+
+    ctl = GetDlgItem( hwnd, FOD_FILENAME );
+    SetWindowText( ctl, "x_it_dlg.now" );
+}
+
+UINT CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+{
+    WORD        cmd;
+    LRESULT     item;
+    DWORD       rc;
+    HWND        ctl;
+
+    lparam = lparam;
+    switch( msg ) {
+    case WM_INITDIALOG:
+        {
+            OPENFILENAME        *of;
+
+            ctl = GetDlgItem( hwnd, FOD_REMOVE );
+            EnableWindow( ctl, FALSE );
+            ctl = GetDlgItem( hwnd, IDOK );
+            EnableWindow( ctl, FALSE );
+            of = (OPENFILENAME *)lparam;
+            SetWindowLong( hwnd, DWL_USER, of->lCustData );
+            initFileList( hwnd );
+        }
+        break;
+    case WM_COMMAND:
+        cmd = LOWORD( wparam );
+        switch( cmd ) {
+        case FOD_FILES:
+            if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_DBLCLK ) {
+                addCurrentFile( hwnd );
+                return( TRUE );
+            } else {
+                return( FALSE );
+            }
+        case IDOK:
+            return( FALSE );
+        case FOD_ADD:
+            addCurrentFile( hwnd );
+            PostMessage( hwnd, WM_COMMAND, IDOK, 0 );
+            return( TRUE );
+        case FOD_ADDALL:
+            addAllFiles( hwnd );
+            break;
+        case FOD_REMOVE:
+            ctl = GetDlgItem( hwnd, FOD_FILELIST );
+            item = SendMessage( ctl, LB_GETCURSEL, 0, 0 );
+            if( item != LB_ERR ) {
+                rc = SendMessage( ctl, LB_DELETESTRING, (WPARAM)item, 0 );
+                if( item != 0 ) {
+                    SendMessage( ctl, LB_SETCURSEL, (WPARAM)(item-1), 0 );
+                } else {
+                    SendMessage( ctl, LB_SETCURSEL, (WPARAM)item, 0 );
+                }
+            }
+            checkRemoveButton( hwnd );
+            break;
+        case FOD_FILELIST:
+            if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_SELCHANGE ||
+                GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_SELCANCEL ) {
+                checkRemoveButton( hwnd );
+            }
+            break;
+        case FOD_CLOSE:
+            GetResults( hwnd );
+            doClose( hwnd );
+            PostMessage( hwnd, WM_COMMAND, IDOK, 0 );
+            return( TRUE );
+        default:
+            return( FALSE );
+        }
+        break;
+    default:
+        return( FALSE );
+    }
+    return( TRUE );
+}
+
+static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
+                    const char *caption, const char *filters  )
+{
+    static DWORD        last_filter_index = 1L;
+    OPENFILENAME        of;
+    int                 rc;
+    char                fname[256];
+    char                 drive[ _MAX_DRIVE ];
+    char                 dir[ _MAX_DIR ];
+    char                 newpath[ _MAX_PATH ];
+
+    _splitpath( info->tgt_file, drive, dir, NULL, NULL );
+    _makepath( newpath, drive, dir, NULL, NULL );
+
+    typedef UINT    (CALLBACK *CallbackFnType)(HWND, UINT, WPARAM, LPARAM);
+
+
+    fname[ 0 ] = 0;
+    memset( &of, 0, sizeof( OPENFILENAME ) );
+    of.lStructSize = sizeof( OPENFILENAME );
+    of.hwndOwner = parent;
+    of.hInstance = hinst;
+    of.lpstrFilter = (LPSTR) filters;
+    of.lpstrDefExt = "";
+    of.nFilterIndex = last_filter_index;
+    of.lpstrFile = fname;
+    of.nMaxFile = _MAX_PATH;
+    of.lpstrTitle = caption;
+    of.Flags = OFN_HIDEREADONLY | OFN_ENABLETEMPLATE | OFN_ENABLEHOOK;
+    #ifdef __WINDOWS__
+        of.lpfnHook = (CallbackFnType)MakeProcInstance( (FARPROC)AddSrcDlgProc, hinst );
+    #else
+        of.lpfnHook = AddSrcDlgProc;
+    #endif
+    of.lpTemplateName = "ADD_SRC_DLG";
+    of.lCustData = (DWORD)info;
+    of.lpstrInitialDir = newpath;
+    rc = GetOpenFileName( &of );
+    last_filter_index = of.nFilterIndex;
+    return( rc );
+}
+
+int GetNewFiles( WWindow *parent, WString *results, const char *caption,
+                 const char *filters, const char *tgt_file )
+{
+    HWND                owner;
+    HINSTANCE           hinst;
+    GetFilesInfo        info;
+
+    // this is a grody kludge to get an HWND from a gui_window
+    // it assumes that the HWND is the first field in the gui_window structure
+    owner = *( (HWND *)(parent->handle() ) );
+    hinst = GET_HINSTANCE( owner );
+    info.result = results;
+    info.tgt_file = tgt_file;
+    return( fileSelectDlg( hinst, owner, &info, caption, filters ) );
+}
+
+

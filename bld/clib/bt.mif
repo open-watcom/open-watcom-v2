@@ -1,0 +1,18 @@
+# bt_(system)
+bt_generic    =-bt=DOS
+bt_msdos      =-bt=DOS
+bt_necdos     =-d__NEC98__ -bt=DOS
+bt_necwin_086 =
+bt_necwin_386 =-d__WIN386__
+bt_necwin     =$(bt_windows_$(processor)) -d__NEC98__ -bt=WINDOWS
+bt_netware    =-bt=NETWARE
+bt_os2        =-bt=OS2
+bt_osi        =-d__OSI__ -bt=DOS
+bt_penpoint   =-bt=PENPOINT
+bt_qnx        =-bt=QNX
+bt_windows_086=
+bt_windows_386=-d__WIN386__
+bt_windows    =$(bt_windows_$(processor)) -bt=WINDOWS
+bt_winnt      =-bt=NT
+
+build_target = $(bt_$(system))

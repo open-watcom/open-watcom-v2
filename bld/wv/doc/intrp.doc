@@ -1,0 +1,43 @@
+Interrupting a running program
+------------------------------
+
+Windows.
+
+	Type CTRL-ALT-F.  Windows must be running in enhanced mode
+	and the device WDEBUG.386 must be installed the [386Enh]
+	section of SYSTEM.INI for this to work.  It will not work
+	under Win-OS/2.
+
+DOS.
+
+	Hit the Print Screen key.  This will work if the program
+	is stuck in a loop.  If it has misbehaved in some other
+	way, the key sequence may have no effect since a
+	misbehaved application may overwrite code and/or data of
+	the debugger or operating system.
+
+OS/2.
+	Switch focus to the debugger screen and type CTRL-BREAK.
+	If you type CTRL-BREAK when the application has focus, you
+	will terminate the task being debugged rather than
+	interrupting it.
+
+NetWare.
+
+	On the NetWare file server console, type ALT-ESCAPE while
+	holding down both shift keys.  This may cause the system
+	debugger to become active instead of $(dbg).
+
+PenPoint
+
+	On the PenPoint machine, type the pause key twice within
+	one second.
+
+NT
+	Switch focus to the application's screen and type CTRL-BREAK.
+
+QNX
+	Switch focus to the debugger console and type CTRL-BREAK.
+	Alternatively you may send any unhandled signal to the
+	application being debugged.  Consult your QNX system documentation
+	for details.

@@ -1,0 +1,8 @@
+debug all
+system win386
+file gen32
+option map
+option stack=12K
+option maxdata=8K
+option mindata=4K
+# option symfile=gen32.sym

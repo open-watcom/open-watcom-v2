@@ -1,0 +1,43 @@
+#include "heapwalk.h"
+#include "about.h"
+#include "banner.h"
+
+#undef pick
+#undef sp
+#ifdef _JAPANESE_
+ #define pick( a, b, c ) a, c
+ #define sp( s1, s2 ) s2
+#else
+ #define pick( a, b, c ) a, b
+ #define sp( s1, s2 ) s1
+#endif
+
+"APPLICON" ICON 10hw.ico
+
+#include "menu.rc"
+
+#undef pick
+#define pick( a, b, c )  a b
+STRINGTABLE PRELOAD DISCARDABLE
+BEGIN
+    #include "rcstr.msg"
+END
+
+NUMBER_OF_STRINGS RCDATA
+BEGIN
+    STR_THIS_IS_THE_LAST_STRING_IN_THE_LIST
+END
+
+#include "heapwlk.dlg"
+#include "memman.dlg"
+#include "heapinfo.dlg"
+#include "lclinfo.dlg"
+#include "menu.dlg"
+#include "add.dlg"
+#include "alloc.dlg"
+#include "freen.dlg"
+#include "code.dlg"
+#include "config.dlg"
+//#include "exsort.dlg"
+#include "..\misc\memwnd.rc"
+#include "..\misc\about.dlg"

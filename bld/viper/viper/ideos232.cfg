@@ -1,0 +1,10 @@
+Project
+     TargetGroup "OS/2 - 32-bit" 
+	  Target *.exe, oc2e_, "Executable"
+	  Target *.exe, op2e_, "PM Executable"
+	  Target *.exe, of2e_, "Fullscreen Executable"
+	  Target *.exe, ov2e_, "Virtual Device"
+	  Target *.dll, o_2d_, "Dynamic Link Library"
+	  Target *.lib, o_2s_, "Library"
+	  Target *.hlp, o__h_, "Help File"
+	  Target *.inf, o__i_, "INF File"

@@ -1,0 +1,68 @@
+include watcom.mk
+#include twin.mk
+include windu.mk
+
+LIBNAME = gui
+
+LIBDIRS += /usr/lib
+
+LIBS += -lncurses
+
+SRCDIRS = $(GUI_DIR)/c $(GUI_DIR)/win/c
+
+__STDINC_DIRS += $(SYS_INCS) $(WININCDIRS) 
+INCDIRS += $(GUI_DIR)/h 
+INCDIRS += $(GUI_DIR)/win/h 
+INCDIRS += $(WATCOM_DIR)/h 
+INCDIRS += $(UI_DIR)/h
+INCDIRS += $(WRES_DIR)/h 
+INCDIRS += $(HELP_DIR) 
+INCDIRS += $(UTILS_DIR) 
+INCDIRS += $(DBDIR)/h
+INCDIRS += $(SDK_DIR)/misc
+INCDIRS += $(WPI_DIR)/h
+INCDIRS += $(WINLIBDIRS)
+
+ifeq ($(PLATFORM),sgi)
+    # SGI's need to grab fnmatch from wclib
+    INCDIRS += $(WCLIB_DIR)/h
+    LIBDIRS += $(WCLIB_DIR)/$(OBJDIR)
+    LIBS    += -lwatcom
+endif
+
+DEFS += -Wl,-t -D_WINDU_SOURCE=0x030101 -DWIN32 -D_WIN32 -DX_USEBFUNCS -DWINNT -D__NT__
+# DEFS += -DWIN -DWINNT -D__NT__ -DWIN32
+
+vpath %.c $(SRCDIRS)
+vpath %.h $(INCDIRS)
+vpath %.msg $(GUI_DIR)/h
+
+GUI_MSG_FILE = $(GUI_DIR)/h/_guimsgs.h
+
+all	: $(GUI_MSG_FILE) $(OBJDIR)/lib$(LIBNAME).a
+
+include objfiles.mk
+OBJECTS := $(foreach i,$(objfiles),$(OBJDIR)/$i)
+
+$(GUI_MSG_FILE)	: $(GUI_DIR)/h/gui.msg $(OBJDIR)/mkstr
+	$(OBJDIR)/mkstr $(GUI_MSG_FILE) $(GUI_MSG_ID_MODIFIER)
+
+$(OBJDIR)/mkstr	: mkstr.c
+	$(CC) $(CFLAGS) $< -o $@
+
+$(OBJDIR)/lib$(LIBNAME).a : $(OBJDIR)/lib$(LIBNAME).a( $(OBJECTS) )
+
+.PHONY	: clean
+clean	:
+	rm -f $(GUI_DIR)/win/$(OBJDIR)/*.[ocha]
+
+.PHONY	: dep depend make
+dep depend make:
+	$(MKMK) -Q -m .depend -a foo nopath \
+		-f '$$(OBJDIR)/lib$$(LIBNAME).a( $$(OBJDIR)/%s )' nopath \
+		$(foreach i,$(SRCDIRS),$i/*.[ch]) \
+		$(foreach i,$(INCDIRS),$i/*.h)
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif

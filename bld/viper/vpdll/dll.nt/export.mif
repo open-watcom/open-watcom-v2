@@ -1,0 +1,7 @@
+EXPORT 'VPDLL_GetVersion'='_VPDLL_GetVersion@0'
+EXPORT 'VPDLL_Init'='_VPDLL_Init@4'
+EXPORT 'VPDLL_ReturnToIDE'='_VPDLL_ReturnToIDE@0'
+EXPORT 'VPDLL_BeginFileList'='_VPDLL_BeginFileList@0'
+EXPORT 'VPDLL_AddFile'='_VPDLL_AddFile@4'
+EXPORT 'VPDLL_EndFileList'='_VPDLL_EndFileList@0'
+EXPORT 'VPDLL_VPDone'='_VPDLL_VPDone@0'

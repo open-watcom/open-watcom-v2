@@ -1,0 +1,16 @@
+( device "ps"
+( font 0 newcenturyschlbk-roman plain 2 10
+( font 1 newcenturyschlbk-bold plain 2 9
+( font 2 newcenturyschlbk-bold plain 2 9
+( font 3 newcenturyschlbk-bold plain 2 12
+( font 4 courier plain 2 10
+( format standard
+( layout "cgdlay.gml"
+( noinclist
+( index
+( script
+( nostatistics
+( passes 2
+( terse
+( warning
+( line

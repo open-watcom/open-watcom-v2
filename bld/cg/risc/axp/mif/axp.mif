@@ -1,0 +1,21 @@
+axp_objs = &
+        axpcall.obj  &
+        axpconv.obj  &
+        axpdfsup.obj &
+        axpenc.obj   &
+        axpenc2.obj  &
+        axpfunit.obj &
+        axpoptab.obj &
+        axpproc.obj  &
+        axpptype.obj &
+        axpreg.obj   &
+        axprgtbl.obj &
+        axprtrtn.obj &
+        axpsplit.obj &
+        axpstub.obj  &
+        axptable.obj &
+        parmreg.obj  &
+        rscconst.obj
+
+src_path        = $(cg_dir)\risc\axp\c
+include_path    = $(cg_dir)\risc\axp\h

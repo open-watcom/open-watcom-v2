@@ -1,0 +1,27 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "FTBAR.H\0"
+END
+
+FTBAR DIALOG 63, 18, 157, 142
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Font"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Drag && Drop:", -1, 6, 73, 48, 8
+    CONTROL         "", FT_FTPICK, "FtPick", 0x0000, 11, 87, 73, 44
+    CONTROL         "", FT_RECTANGLE, "Static", SS_WHITEFRAME, 6, 83, 83, 53
+    LTEXT           "&Point Size:", -1, 98, 73, 36, 8
+    COMBOBOX        FT_SIZE, 108, 83, 43, 53, CBS_SIMPLE | CBS_SORT |
+                    CBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Typeface:", -1, 5, 4, 35, 8
+    LISTBOX         FT_TYPEFACE, 5, 16, 83, 54, LBS_SORT |
+                    LBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Style:", -1, 97, 4, 19, 8
+    LISTBOX         FT_STYLE, 97, 16, 49, 54, LBS_DISABLENOSCROLL |
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Cancel", IDCANCEL, 75, 71, 18, 10, NOT WS_VISIBLE | NOT
+                    WS_TABSTOP
+    DEFPUSHBUTTON   "OK", IDOK, 53, 72, 17, 9, NOT WS_VISIBLE | NOT
+                    WS_TABSTOP
+END

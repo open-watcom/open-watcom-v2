@@ -1,0 +1,100 @@
+            WATCOM C++ work plan
+            ====================
+            
+        
+Mission statement:
+
+To develop an optimizing ANSI C++ compiler for professional programmers.
+
+
+Tactical decisions:
+
+    - high quality implementation (predictable and robust)
+    - large projects will be supported
+    - 286/386 protected mode executables only; will produce code
+      for all current platforms
+    - full standard will be supported with possible absence of
+      ANSI standard exception handling (catch,throw statements)
+    - minimal class libraries will be shipped with the initial
+      commercial offering
+
+
+Implementation strategy:
+
+    - reusing as much of the existing ANSI C compiler source
+    - developing a basis for a new ANSI C compiler based on new
+      technology developed for the ANSI C++ compiler (new ANSI C
+      compiler will be phased in at a later time)
+    - provide a high quality implementation that can diagnose
+      portability problems related to syntax issues (language
+      ambiguities)
+
+
+            Work Assignments
+            ================
+            
+Person  Work
+======  ====
+JR      declaration parsing
+            - construct internal symbol table structure
+        - inline function rewriting must be done
+            - templates are a new concept
+
+AS,JW   statement parsing
+            - expression parsing and checking
+            - steal majority of code from current C compiler
+              for control flow statements
+            - overloading algorithm needed
+            - code sequences for temporary elimination
+            - new intermediate code representation
+            - rewriting of code generator interface
+            - no changes needed to code generator except for support
+          for separate modules and code thunks (JD will do this)
+        - exception handling should be investigated
+
+FC      compiler framework
+            - rewrite of preprocessor/lexical analysis
+            - options processor (unknown)
+            - #pragma changes (unknown)
+
+JW      run-time library
+        - full ANSI C library will be available
+        - C++ library will use ANSI C functions whenever possible
+        - code generation libraries (startup, new, delete, etc.) must
+          be developed
+    
+??  testing
+        - C++ is a superset of C so we should be able to test
+          the C++ compiler with the source code we have in-house
+        - third party vendors of class libraries
+
+BS      linker
+            - unused method removal (unknown)
+            - type-safe linkage (unknown)
+            - single template definitions (unknown)
+
+BS      debugger
+            - class browser (unknown)
+            - typing and ctor/dtor execution (unknown)
+
+JS      documentation
+            - User's Guide
+            - Language Reference?
+    
+??  utilities
+        - many of our object utilities cannot handle large names
+          (e.g., WDISASM)
+        - new utilities may have to be written for C++ development
+
+    
+Legend
+======
+
+FC  Fred Crigger
+AS  Anthony Scian
+JW  Jim Welch
+JR  Jim Randall
+JS  Jack Scheuler
+BS  Brian Stecher
+JD  John Dahms
+??  Unknown

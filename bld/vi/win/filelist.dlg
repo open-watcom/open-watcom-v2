@@ -1,0 +1,12 @@
+#include "filelist.h"
+FILELIST DIALOG 80, 16, 152, 109
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Files Being Edited"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LISTBOX         ID_FILE_LIST, 4, 4, 144, 78, LBS_SORT | LBS_EXTENDEDSEL |
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Cancel", IDCANCEL, 105, 90, 40, 14
+    PUSHBUTTON      "&Close", ID_CLOSE, 56, 90, 40, 14
+    PUSHBUTTON      "&Go To", ID_GOTO, 7, 90, 40, 14
+END

@@ -1,0 +1,4 @@
+//#line "..\c\wpdriver.c" 112
+extern char WndMainMenuProc(a_window *wnd,unsigned int id);
+//#line "..\c\wpdriver.c" 186
+extern void OpenSample(void);

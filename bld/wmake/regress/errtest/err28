@@ -1,0 +1,107 @@
+# ------------------------------
+# ERROR 28: if nested too deeply
+# ------------------------------
+# MAX_NEST = 32
+
+true=
+
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+works=yes it should so far
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+
+
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+!ifdef true
+this=shouldn't work
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif
+!endif

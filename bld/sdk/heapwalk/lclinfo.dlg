@@ -1,0 +1,24 @@
+LCL_HEAP_INFO DIALOG 57, 36, 160, 85
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Local Heap Information"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "Size (bytes)", -1, 114, 4, 43, 8
+    LTEXT           "Count", -1, 77, 4, 24, 8
+    LTEXT           "Free Objects", -1, 4, 17, 49, 8
+    LTEXT           "Moveable Objects", -1, 4, 25, 67, 8
+    LTEXT           "Fixed Objects", -1, 4, 33, 60, 8
+    LTEXT           "Total", -1, 4, 47, 20, 8
+    LTEXT           "", LCL_INFO_FREE_CNT, 77, 17, 28, 8
+    LTEXT           "", LCL_INFO_MOVE_CNT, 77, 25, 25, 8
+    LTEXT           "", LCL_INFO_FIXED_CNT, 77, 33, 20, 8
+    LTEXT           "", LCL_INFO_FREE_SIZE, 124, 17, 20, 8
+    LTEXT           "", LCL_INFO_MOVE_SIZE, 124, 25, 20, 8
+    LTEXT           "", LCL_INFO_FIXED_SIZE, 124, 33, 20, 8
+    LTEXT           "", LCL_INFO_TOT_CNT, 77, 47, 20, 8
+    LTEXT           "", LCL_INFO_TOT_SIZE, 124, 47, 20, 8
+    LTEXT           "-----------------------------------------------------------",
+                    -1, 73, 40, 80, 8
+    PUSHBUTTON      "OK", IDOK, 32, 65, 40, 14
+    PUSHBUTTON      "Refresh", HW_INFO_REFRESH, 88, 65, 40, 14
+END

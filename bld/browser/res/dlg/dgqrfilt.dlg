@@ -1,0 +1,51 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGQRFILT.H\0"
+END
+
+QueryFilterDlg DIALOG FIXED IMPURE 22, 18, 285, 156
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Query Filters"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Symbol Type", IDD_SEARCH_FOR_GROUP, "Button",
+                    BS_GROUPBOX | WS_GROUP, 6, 6, 66, 117
+    CONTROL         "&Classes", IDD_SEARCH_CLASSES, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 11, 19, 59, 10
+    CONTROL         "&Enums", IDD_SEARCH_ENUMS, "Button", BS_AUTOCHECKBOX,
+                    11, 33, 59, 10
+    CONTROL         "&Functions", IDD_SEARCH_FUNCTIONS, "Button",
+                    BS_AUTOCHECKBOX, 11, 47, 59, 10
+    CONTROL         "&Typedefs", IDD_SEARCH_TYPEDEFS, "Button",
+                    BS_AUTOCHECKBOX, 11, 61, 59, 10
+    CONTROL         "&Variables", IDD_SEARCH_VARIABLES, "Button",
+                    BS_AUTOCHECKBOX, 11, 75, 59, 10
+    CONTROL         "&All", IDD_SEARCH_ALL, "Button", WS_TABSTOP, 12, 102,
+                    50, 14
+    CONTROL         "Symbol Scope", IDD_SEARCH_IN_GROUP, "Button",
+                    BS_GROUPBOX | WS_GROUP, 78, 6, 198, 73
+    CONTROL         "Members of C&lass:", IDD_CLASS_TEXT, "Static",
+                    SS_LEFTNOWORDWRAP, 82, 20, 118, 8
+    CONTROL         "", IDD_CLASS_EDIT, "Edit", ES_AUTOHSCROLL | WS_BORDER |
+                    WS_TABSTOP, 82, 30, 189, 12
+    CONTROL         "Local Symbols of Functio&n:", IDD_FUNCTION_TEXT,
+                    "Static", SS_LEFTNOWORDWRAP, 82, 48, 118, 8
+    CONTROL         "", IDD_FUNCTION_EDIT, "Edit", ES_AUTOHSCROLL |
+                    WS_BORDER | WS_TABSTOP, 82, 58, 190, 12
+    CONTROL         "Symbol Attributes", IDD_SYM_ATTRIBUTES, "Button",
+                    BS_GROUPBOX | WS_GROUP, 78, 83, 198, 40
+    CONTROL         "A&rtificial", IDD_ATTRIB_ARTIFICIAL, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 84, 96, 88, 10
+    CONTROL         "Anon&ymous", IDD_ATTRIB_ANONYMOUS, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 84, 108, 88, 10
+    CONTROL         "&Declared Only", IDD_ATTRIB_NO_DEFINITION, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 175, 96, 97, 10
+    CONTROL         "OK", IDD_OK, "Button", BS_DEFPUSHBUTTON | WS_GROUP |
+                    WS_TABSTOP, 7, 136, 63, 14
+    CONTROL         "Cancel", IDD_CANCEL, "Button", WS_TABSTOP, 76, 136, 63,
+                    14
+    CONTROL         "&Source Files...", IDD_FILE_BROWSE, "Button",
+                    WS_TABSTOP, 145, 136, 63, 14
+    CONTROL         "&Help", IDD_HELP, "Button", WS_TABSTOP, 214, 136, 63,
+                    14
+END

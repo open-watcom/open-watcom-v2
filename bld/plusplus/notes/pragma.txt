@@ -1,0 +1,61 @@
+92/12/21 -- Special #pragma's for C++
+=====================================
+
+(1) #pragma inline_depth n
+--------------------------
+
+    - when an inline function is called, the function call may be replaced by
+      the inline expansion for that function; this may result in calls to
+      other inline functions which may also be expanded
+    - the pragma is used to set the number of times this inline expansion
+      of functions will occur for a call
+    - when set to zero, no expansion will occur
+    - when set to one, only the original call is expanded
+    - when set to two, the original call and the inline functions invoked by
+      the original function will be expanded
+    - by default, the inline depth is 8
+    - no expansion of recursive inline calls occurs unless enabled using
+      "#pragma inline_recursion on"
+
+
+(2) #pragma inline_recursion on
+    #pragma inline_recursion off
+--------------------------------
+
+    - enables recursive expansion of inline functions, to the depth set by
+      "#pragma inline_depth"
+    - by default, inline recursion is "off"
+
+
+(3) #pragma warning msg-no level
+    #pragma warning * level
+--------------------------------
+
+    - used to reset the level of warning messages
+    - level is number from 0 to 9
+    - when level is zero, warning becomes an error
+    - "msg-no" must be the number of a warning message
+    - "*" causes the level to be reset for all warning messages
+
+
+(4) #pragma initialize [ adjust-1 ... adjust-n ] number
+    #pragma initialize [ adjust-1 ... adjust-n ] library
+    #pragma initialize [ adjust-1 ... adjust-n ] program
+--------------------------------------------------------
+
+    - used to set the priority at which initialization of static data
+      (at file scope) will occur
+    - this priority ranges from 0 to 255
+    - the larger the number, the later the point at which initialization will
+      occur
+    - "library" stands for priority 32 and should be used for class libraries
+    - "program" stands for priority 64 and is the default priority for
+      any compiled code
+    - "adjust-1" to "adjust-n" are either "before" or "after" and respectively
+      cause the initialization priority to be adjusted down or up by one
+    - the IOSTREAM library is initialized at priority 20
+    - priorities 0-20 are reserved for the C++ compiler
+
+
+NOTE: The C++ compiler also supports the "code_seg", "data_seg", and
+      "alloc_text" pragmas, identical to MicroSoft

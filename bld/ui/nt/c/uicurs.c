@@ -1,0 +1,150 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include <windows.h>
+#include <stdlib.h>
+#include <dos.h>
+#include "uidef.h"
+#include "uiattrs.h"
+
+#define         _swap(a,b)              {int i; i=a; a=b; b=i;}
+
+static ORD      OldCursorRow;
+static ORD      OldCursorCol;
+static int      OldCursorType;
+
+extern HANDLE   OutputHandle;
+
+void global uioffcursor( void )
+{
+    CONSOLE_CURSOR_INFO ci;
+
+    if( UIData->cursor_on ) {
+        ci.bVisible = TRUE;
+        ci.dwSize = 0;
+        SetConsoleCursorInfo( OutputHandle, &ci );
+        UIData->cursor_on = FALSE;
+    }
+    UIData->cursor_type = C_OFF;
+}
+
+
+void global uioncursor( void )
+{
+    CONSOLE_CURSOR_INFO ci;
+    COORD               cpos;
+
+    if( UIData->cursor_type == C_INSERT ) {
+        ci.dwSize = 75;
+    } else {
+        ci.dwSize = 25;
+    }
+    ci.bVisible = TRUE;
+    SetConsoleCursorInfo( OutputHandle, &ci );
+
+    cpos.X = UIData->cursor_col;
+    cpos.Y = UIData->cursor_row;
+    SetConsoleCursorPosition( OutputHandle, cpos );
+
+    UIData->cursor_on = TRUE;
+}
+
+
+static void newcursor( void )
+{
+    if( UIData->cursor_type == C_OFF ) {
+        uioffcursor();
+    } else {
+        uioncursor();
+    }
+}
+
+
+static void swapcursor( void )
+{
+    _swap( UIData->cursor_type, OldCursorType );
+    _swap( UIData->cursor_col, OldCursorCol );
+    _swap( UIData->cursor_row, OldCursorRow );
+    UIData->cursor_on = TRUE;
+}
+
+
+void global uigetcursor( ORD *row, ORD *col, int *type, int *attr )
+{
+    *row = UIData->cursor_row;
+    *col = UIData->cursor_col;
+    *type = UIData->cursor_type;
+    *attr = 0;
+}
+
+
+void global uisetcursor( unsigned row, unsigned col, int typ, int attr )
+{
+    if( ( typ != UIData->cursor_type ) ||
+        ( row != UIData->cursor_row ) ||
+        ( col != UIData->cursor_col ) ||
+        ( attr != UIData->cursor_attr ) ) {
+        UIData->cursor_type = typ;
+        UIData->cursor_row = row;
+        UIData->cursor_col = col;
+        if( attr != -1 ) {
+            UIData->cursor_attr = attr;
+        }
+        newcursor();
+    }
+}
+
+void global uiswapcursor( void )
+{
+    swapcursor();
+    newcursor();
+}
+
+
+void global uiinitcursor( void )
+{
+    int tmp;
+
+    UIData->cursor_row = (ORD)-1;
+    UIData->cursor_col = (ORD)-1;
+    UIData->cursor_type = C_OFF;
+    uigetcursor( &OldCursorRow, &OldCursorCol, &OldCursorType, &tmp );
+    UIData->cursor_on = TRUE;
+    uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, 0 );
+    uioffcursor();
+}
+
+
+void global uifinicursor( void )
+{
+    uioncursor();
+}

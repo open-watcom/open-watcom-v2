@@ -1,0 +1,169 @@
+uncompressed=yes        # mklib wont work because objs_c required in both libs
+no_precompiled_headers=yes    # headers files aren't laid out for pch
+
+
+# dependencies:
+
+# allocexc.obj : ..\cpp\allocexc.cpp ..\h\rtexcept.h
+
+# .ASM files (in RUNTIME\A)
+
+
+!ifeq target_system ntaxp
+objs_asm =
+!else
+objs_asm = fshand.obj
+!endif
+
+# .C files (in RUNTIME\C)
+
+objs_c =
+
+!ifndef on_build_machine
+objs_c +=   rtdbgst.obj
+objs_c +=   rtdbgcom.obj
+!endif
+
+# Obsolete 9.5 files
+
+#           arrcopy.obj
+#           arrctor.obj
+#           blkclose.obj
+#           blkignor.obj
+#           blkpart.obj
+#           moddtor.obj
+#           modinit.obj
+#           rtdebug.obj
+#           srchig.obj
+#           unwindig.obj
+#           unwindlv.obj
+#           varrcopy.obj
+#           varrctor.obj
+
+# .CPP files (in RUNTIME\CPP)
+
+
+# Used for fs,pd registration
+
+!ifdef fs_registration
+require_registration = y
+!else
+!   ifdef pd_registration
+text += -d__USE_PD
+!   else
+sysind_registration = y
+!   endif
+!endif
+
+!ifdef sysind_registration
+text += -d__USE_RW
+require_registration = y
+objs_reg = ljmpdtor.obj &
+           ljmpinit.obj
+!else
+objs_reg =
+!endif
+
+# files that must not be compressed
+targdir=
+!include $(plusplus_cpplib_dir)\runtime\static.mif
+!ifeq linkage dynamic
+objs_dyn = $(dynamic_objs)
+!else
+objs_dyn = $(static_objs)
+!endif
+
+!ifdef require_registration
+objs_reg += fsregist.$(obj_ext) &
+            stabfunc.obj &
+            stabreg.obj
+!else
+objs_reg += pdctxaxp.obj &
+            pdregist.obj
+!endif
+
+
+!ifeq target_system ntaxp
+objs_cpp = prwsdata.obj
+!else
+objs_cpp =
+!endif
+
+objs_cpp += allocexc.$(obj_ext) &
+            arrassgn.obj &
+            arrdel.obj   &
+            arrnew.obj   &
+            bittest.obj  &
+            callterm.obj &
+            callunex.obj &
+            cppdata.obj  &
+            ctorarst.$(obj_ext) &
+            darrnew.obj  &
+            dtorarst.obj &
+            exc_pr.obj   &
+            exstring.obj &
+            fatalerr.obj &
+            $(objs_dyn)  &
+            $(objs_reg)  &
+            generr.obj   &
+            lock.obj     &
+            opnew.obj    &
+            opnewarr.obj &
+            opnewp.obj   &
+            opnewpar.obj &
+            opdel.obj    &
+            opdelarr.obj &
+            pgmthrd.obj  &
+            pure_err.obj &
+            rttidync.obj &
+            rttisupp.obj &
+            rttiptr.obj  &
+            rttivoid.obj &
+            rttiref.$(obj_ext) &
+            rttitid.$(obj_ext) &
+            setnwhdl.obj &
+            _stnwhdl.obj &
+            settrmnt.obj &
+            setunexp.obj &
+            sisema.obj   &
+            stabacp.$(obj_ext)  &
+            stabacpv.$(obj_ext) &
+            stabact.$(obj_ext)  &
+            stabactv.$(obj_ext) &
+            stabadt.$(obj_ext)  &
+            stabdisp.xbj &
+            stabdtor.$(obj_ext) &
+            stabinit.obj &
+            stabthrw.xbj &
+            stabtrav.obj &
+            termnate.obj &
+            thrddata.obj &
+            tsequiv.obj  &
+            tssize.obj   &
+            ti_bfor.obj  &
+            ti_dtor.obj  &
+            ti_name.obj  &
+            ti_raw.obj   &
+            ti_opeq.obj  &
+            ti_opne.obj  &
+            undefed.obj  &
+            undefmbr.obj &
+            unexpect.$(obj_ext) &
+            varrnew.obj  &
+            vfun_err.obj &
+
+# Obsolete 9.5 files
+
+#           throw.obj
+#           throwarr.obj
+#           throwblk.obj
+#           throwcat.obj
+#           throwfne.obj
+#           throwobj.obj
+
+!include $(plusplus_cpplib_dir)\plibname.mif
+
+prefix = $(plib_n)
+prefix_x = $(plib_x)
+
+!include $(plusplus_dir)\mklibtgt.mif

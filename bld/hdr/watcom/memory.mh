@@ -1,0 +1,14 @@
+/*
+ *  memory.h    Memory manipulation functions
+ *
+:include crwat.sp
+ */
+#ifndef _MEMORY_H_INCLUDED
+#define _MEMORY_H_INCLUDED
+:include readonly.sp
+
+#ifndef _STRING_H_INCLUDED
+ #include <string.h>
+#endif
+
+#endif

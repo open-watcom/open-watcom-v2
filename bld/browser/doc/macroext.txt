@@ -1,0 +1,12 @@
+Draft proposal for WATCOM extension to .debug_macinfo to describe
+references (expansions) of macros embedded in code.
+
+
+This is currently implemented by the dwarf writing library, in DWMacUse()
+
+
+MACINFO_vend_ext
+	followed by line number ULEB128
+	0x01	indicates references
+		followed by null-terminated macro name which is used
+		on this line

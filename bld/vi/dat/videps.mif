@@ -1,0 +1,2 @@
+#list all .vi files which are bound into vi.exe here
+videps = rdme.vi wrme.vi rcs.vi menu.vi

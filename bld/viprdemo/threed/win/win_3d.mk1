@@ -1,0 +1,123 @@
+!define BLANK ""
+d:\bld\viprdemo\threed\win\dbgmem.obj : d:\bld\viprdemo\threed\dbgmem.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\dbgmem.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -z&
+q -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\dll.obj : d:\bld\viprdemo\threed\dll.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\dll.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -zq -&
+otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\gblmem.obj : d:\bld\viprdemo\threed\gblmem.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\gblmem.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -z&
+q -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\global.obj : d:\bld\viprdemo\threed\global.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\global.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -z&
+q -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\locmem.obj : d:\bld\viprdemo\threed\locmem.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\locmem.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -z&
+q -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\pipe1.obj : d:\bld\viprdemo\threed\pipe1.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\pipe1.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -zq&
+ -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\pipe2.obj : d:\bld\viprdemo\threed\pipe2.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\pipe2.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -zq&
+ -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\pipemem.obj : d:\bld\viprdemo\threed\pipemem.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\pipemem.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -&
+zq -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\pipeobj.obj : d:\bld\viprdemo\threed\pipeobj.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\pipeobj.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -&
+zq -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\pipeutil.obj : d:\bld\viprdemo\threed\pipeutil.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\pipeutil.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 &
+-zq -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\region.obj : d:\bld\viprdemo\threed\region.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\region.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -z&
+q -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\threed.obj : d:\bld\viprdemo\threed\threed.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\threed.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -z&
+q -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\trmem.obj : d:\bld\viprdemo\threed\trmem.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\trmem.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -zq&
+ -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\window.obj : d:\bld\viprdemo\threed\window.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\window.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -z&
+q -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\world3.obj : d:\bld\viprdemo\threed\world3.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\world3.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -z&
+q -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\wpi_win.obj : d:\bld\viprdemo\threed\wpi_win.c
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ *wcc ..\wpi_win.c -i=d:\watcom\h;d:\watcom\h\win;$(watcom_dir)\h -w4 -e25 -&
+zq -otexan -d1 -bd -fpc -zu -bt=windows -ml
+
+d:\bld\viprdemo\threed\win\win_3d.dll : d:\bld\viprdemo\threed\win\dbgmem.ob&
+j d:\bld\viprdemo\threed\win\dll.obj d:\bld\viprdemo\threed\win\gblmem.obj d&
+:\bld\viprdemo\threed\win\global.obj d:\bld\viprdemo\threed\win\locmem.obj d&
+:\bld\viprdemo\threed\win\pipe1.obj d:\bld\viprdemo\threed\win\pipe2.obj d:\&
+bld\viprdemo\threed\win\pipemem.obj d:\bld\viprdemo\threed\win\pipeobj.obj d&
+:\bld\viprdemo\threed\win\pipeutil.obj d:\bld\viprdemo\threed\win\region.obj&
+ d:\bld\viprdemo\threed\win\threed.obj d:\bld\viprdemo\threed\win\trmem.obj &
+d:\bld\viprdemo\threed\win\window.obj d:\bld\viprdemo\threed\win\world3.obj &
+d:\bld\viprdemo\threed\win\wpi_win.obj
+ @d:
+ cd d:\bld\viprdemo\threed\win
+ @%write win_3d.lk1 NAME win_3d
+ @%append win_3d.lk1 FIL dbgmem.obj,dll.obj,gblmem.obj,global.obj,locmem.obj&
+,pipe1.obj,pipe2.obj,pipemem.obj,pipeobj.obj,pipeutil.obj,region.obj,threed.&
+obj,trmem.obj,window.obj,world3.obj,wpi_win.obj
+ @%append win_3d.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b win_3d.imp 
+ @%append win_3d.lk1 LIBR win_3d.imp
+!endif
+ *wlink SYS windows_dll op m op maxe=25 op q op symf op one @win_3d.lk1
+!ifneq BLANK ""
+ wrc -q -ad -s0  win_3d.dll
+!endif
+ wlib -n -b win_3d.lib +win_3d.dll
+

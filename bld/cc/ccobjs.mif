@@ -1,0 +1,115 @@
+common_objs = &
+        ascii.obj &
+        casian.obj &
+        ccheck.obj &
+        ccmain.obj &
+        cdebug.obj &
+        cdecl1.obj &
+        cdecl2.obj &
+        cdinit.obj &
+        cdump.obj &
+        cems.obj &
+        cenum.obj &
+        cerror.obj &
+        cfeinfo.obj &
+        cinfo.obj &
+        cmac1.obj &
+        cmac2.obj &
+        cmemmgr.obj &
+        cmodel.obj &
+        cmsg.obj &
+        cname.obj &
+        coptions.obj &
+        cpageio.obj &
+        caux.obj &
+        cpragma.obj &
+        cpurge.obj &
+        cscan.obj &
+        csizeof.obj &
+        cstring.obj &
+        csym.obj &
+        ctimepc.obj &
+        ctoken.obj &
+        ctype.obj &
+        cusage.obj &
+        cutil.obj &
+        femore.obj &
+        ftoa.obj &
+        strsave.obj &
+        swchar.obj &
+        watcom.obj &
+        cmatherr.obj &
+        cgetch.obj &
+        cmacadd.obj &
+        asmalloc.obj &
+        asmmsg.obj &
+        jis2unic.obj &
+        pchdr.obj  &
+        dwarf.obj  &
+        browsio.obj  &
+        intlload.obj  &
+        $(inline_objs)
+
+
+cc_objs_tree = &
+        cexpr2.obj &
+        cfold2.obj &
+        cmath2.obj &
+        cstmt2.obj &
+        cgen2.obj &
+        cgendata.obj &
+        exprtree.obj &
+        treewalk.obj
+
+!ifndef on_build_machine
+cc_objs_tree += cfedump.obj
+!endif
+
+cc_objs_i86 = cprag86.obj pragi86.obj
+cc_objs_386 = cprag86.obj prag386.obj
+cc_objs_axp = cpragaxp.obj pragaxp.obj
+cc_objs_ppc = cpragppc.obj pragppc.obj
+cc_objs_sparc = cpragspc.obj pragspc.obj stubspc.obj
+
+cc_objs_i86_tree =
+# fast code generator
+# cc_objs_386_tree = cgen386.obj
+cc_objs_386_tree =
+cc_objs_axp_tree =
+
+cc_objs = &
+        slackdat.obj &
+        cdata.obj &
+        cintmain.obj &
+        $(common_objs) &
+        $(cc_objs_$(cc_version)) &
+        $(cc_objs_$(target_CPU)) &
+        $(cc_objs_$(target_CPU)_$(cc_version)) &
+        cstats.obj &
+        slack2.obj
+cr_objs = &
+        slackdat.obj &
+        cdata.cbj &
+        cintmain.obj &
+        $(common_objs) &
+        $(cc_objs_$(cc_version)) &
+        $(cc_objs_$(target_CPU)) &
+        cstats.cbj &
+        slack2.obj
+dll_objs = &
+        slackdat.obj &
+        cdata.cbj &
+        idedll.obj &
+        idemsgpr.obj &
+        $(common_objs) &
+        $(cc_objs_$(cc_version)) &
+        $(cc_objs_$(target_CPU)) &
+        $(cc_objs_$(target_CPU)_$(cc_version)) &
+        cstats.obj &
+        slack2.obj
+#dll_objs += ntent.obj
+dlldrv_obj = &
+            idedrv.obj &
+            idemsgfm.obj &
+            idemsgpr.obj &
+            wccdlldr.obj

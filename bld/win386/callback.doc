@@ -1,0 +1,9 @@
+when modifying callbacks:
+1) modify wincall.asm
+2) modify table in windata.c
+3) update wincb.asm:
+    a) change CallBackList array
+    b) modify Gimme16BitCallBack routine
+4) modify table in clib\a386\wstart.asm
+5) modify clib\wind386\a\relp16.asm (ReleaseProc16)
+6) add exports to makefile

@@ -1,0 +1,5 @@
+class ViewSymbolDlg { 
+    _fileNameR(	IDD_FILE_NAME,	(@,@,#,@) );
+    _symbolLineR(IDD_SYMBOL_LINE,(@,@,#,@) );
+    _symbolBoxR( IDD_SYMBOL_BOX, (@,@,#,#) );
+};

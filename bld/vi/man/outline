@@ -1,0 +1,90 @@
+- Basic Usage
+    - modal vs non-modal
+	- input mode
+	- command mode
+    - basic commands
+    - menus
+    - simple editing session
+    	- editing the file
+	- inputting text
+	- deleting text
+	- saving the file
+- Intermediate Usage
+    - how to edit a file
+	- :e <file>
+	- :r <file>
+    - moving between files
+	- :next, :prev
+	- F1, F2
+	- :files
+    - how to move around
+	- l,j,k,l, cursor keys
+	- ^F, ^B, page
+	- w,W,b,B
+	- :number
+	- G
+    - how to input text
+	- A,a
+	- i,I
+	- o,O
+    - how to delete text
+	- d?
+	- D
+	- :1,$ delete
+    - how to copy lines
+	- y?
+	- Y
+	- :1,$ yank
+    - pasting
+	- p,P
+	- :put
+    - changing
+    	- c?
+    - repeating last command
+    	- memorize mode
+    - joining text
+	- J
+	- :join
+    - marks
+	- setting
+	- clearing
+	- moving to
+    - searching for text
+    	- /, ?
+	- n,N
+    - how to leave a file
+	- :q, :q!
+	- ^C
+    - how to save a file
+	- ZZ
+	- :write
+	- :wq
+
+- Advanced Usage
+    - substitution command
+    - global command
+    - searching files
+    	- :fgrep
+	- :egrep
+    - mapping keys
+    	- input mode
+	- command mode
+    - scripts
+	- overview
+	- configuratioon
+	- hooks
+
+- Command Mode Keys
+
+- Command Line
+
+- Editor Settings
+
+- Windowing, Menus and the Mouse
+
+- Script Reference
+  - language
+  - configuration
+  - hooks
+
+- Tricks and Tips

@@ -1,0 +1,15 @@
+SELBKCOLOUR DIALOG 221, 206, 204, 83
+STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_VISIBLE | WS_DLGFRAME
+CAPTION "Select Screen Color"
+FONT 8, "MS Sans Serif"
+BEGIN
+        CONTROL "Current Selection:",              -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 7, 11, 60, 8
+        CONTROL "Select the background color ...", -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 84, 11, 107, 8
+        CONTROL "Screen:",                         -1, "STATIC", SS_RIGHT | WS_CHILD | WS_VISIBLE | WS_GROUP, 5, 24, 30, 8
+        CONTROL "Inverse:",                        -1, "STATIC", SS_RIGHT | WS_CHILD | WS_VISIBLE, 5, 36, 30, 8
+        CONTROL "",                                BK_CURRENT, "STATIC", SS_WHITEFRAME | SS_SUNKEN | WS_CHILD | WS_VISIBLE, 42, 22, 158, 26
+        CONTROL "&OK",                             IDOK, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP, 26, 63, 40, 14
+        CONTROL "&Cancel",                         IDCANCEL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 82, 63, 40, 14
+        CONTROL "&Help",                           IDB_HELP, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 138, 63, 40, 14
+END
+

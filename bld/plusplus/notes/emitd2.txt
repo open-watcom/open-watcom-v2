@@ -1,0 +1,30 @@
+Generation of Symbolic Debugging Information "-d2"
+
+Issues
+======
+- special stuff to skip over thunks?
+
+Sequencing
+==========
+- D2 debugging information
+  - traverse type structure
+  - traverse symbol table
+- Dwarf information
+- code generation
+
+For D2 debugging information
+============================
+
+A. Traverse type structure in two stages:
+    1. All the fundamental types, map multiple flavours of base type to a
+       common dbug_type
+    2. All the typedef entries. (this will catch all the named types)
+
+B. Traverse the symbol table, emitting information for interesting entries
+    - what makes a symbol interesting?
+	a. flags & (SF_INITIALIZED|SF_REFERENCED)
+	b. ???
+
+C. Support emission of type information on 'as needed' basis while generating
+    other types and symbols.
+

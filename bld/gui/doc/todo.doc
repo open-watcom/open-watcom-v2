@@ -1,0 +1,88 @@
+ToDo
+====
+
+General
+-------
+
+- +allow top level menus on GUI_POPUP windows
+- +add GUIDrawText that takes a point not row and offset
+- +need to give tab key to app from edit control
+- +multiple selection list boxes
+- *ctrl-tab for next window in MDI, etc
+- *system menus with MDI need work
+- *accelerators for system menus
+- *give character accel to child menu not top level
+- PM
+- GUI_CONTROL_NOW_ACTIVE for those that windows supports
+- status window sections
+- allow window to be stuck in front of another window
+- make gui_rect two points
+- set up error codes
+- modal and non-modal dialog boxes
+
+UI-based
+--------
+
+- +what is GUIWndUpdate used for? get rid of it? Used by DB?
+- *when app gains scroll bar through GUISetScrollRange, redraw whole frame
+- *bug in sample : make hidden window visible, click on it, doesn't redraw
+- *make sure mouse cursor shows whenever it should
+- *disable main menu when doing resize and move
+- *command dialog with flip under character mapping doesn't remap correctly - John?
+- *keyboard accelerators for check boxes and radio buttons
+- *look at splitpath in guifdlg
+- *in OS/2 DOS window, don't use graphical stuff.  Change when message received. - John will use switch
+- *GUISelectAll for edit controls, edit controls with selection, like Windows
+- *optimize drawing when burried windows are painted in (don't paint covered)
+- *get rid of alt tap (Brian) - WIN-OS2 doesn't
+- *don't do char mapping in 50 or 43 line mode or create mapped characters
+  (debugger switch ?)
+- let windows go off of visible screen (up to me)
+- process EV_BACKGROUND_RESIZE event
+- make QNX work properly
+- hint text for floating toolbar 
+- paint problem when creating dialog box with background uncovered under menu
+- scrolling of controls in windows
+- get rid of 'no bright backgrounds' restriction
+- allow app to map colours
+- fix bug that, on windows, listbox, etc. draw one character too wide (will fix itself if I go to UI framed windows)
+- implement GUIDisplayMessage with proper icons
+- multiline edit fields
+- ^more mouse cursor in DOS (hourglass, resize on corners)
+- ^more mapped characters for apps and my dialog boxes (stop sign, etc)
+
+
+Windows
+-------
+
+- +user rwrelockcheck linker option and get rid of bugs
+- +make enablemenu etc work for popups
+- *hint text for popups in NT
+- *give ctrl-esc to windows
+- *take a good look at extra pixel (between maximized and non-max MDI window)
+- *fix bug where a partial bottom line gets drawn
+- *check floating toolbar bitmap placement algorithm
+- *make floating popup have correct initial selection
+- think about making resolution of scroll range sent to windows configureable
+- group box on a window problem
+- fix midsim code so that it doesn't need closebmp
+- ^rewrite of floating popup code for debugger ? -- try ShowOwnedPopups
+
+
+Future Considerations
+---------------------
+
+- windows that attach/detach from parents
+- push pins
+- get and set cursor pos if ever needed
+
+Think About
+-----------
+
+- is library it general enough to have child windows with child windows
+- consider taking out ability to define entire scale, just assume 0,0 and ask for width/height
+
+
+* - for debugger
+^ - in my dreams
++ - for WCLASS

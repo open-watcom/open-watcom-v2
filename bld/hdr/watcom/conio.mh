@@ -1,0 +1,51 @@
+/*
+ *  conio.h     Console and Port I/O functions
+ *
+:include crwat.sp
+ */
+#ifndef _CONIO_H_INCLUDED
+#define _CONIO_H_INCLUDED
+:include readonly.sp
+:include cpluspro.sp
+
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
+
+:include valist.sp
+
+_WCRTLINK extern char *cgets(char *__buf);
+_WCRTLINK extern int cputs(const char *__buf);
+_WCRTLINK extern int cprintf(const char *__fmt,...);
+_WCRTLINK extern int cscanf(const char *__fmt,...);
+_WCRTLINK extern int getch(void);
+_WCRTLINK extern int _getch(void);
+_WCRTLINK extern int getche(void);
+_WCRTLINK extern int _getche(void);
+_WCRTLINK extern int kbhit(void);
+#if defined(_M_IX86)
+ _WCIRTLINK extern unsigned inp(unsigned __port);
+ _WCIRTLINK extern unsigned inpw(unsigned __port);
+ _WCIRTLINK extern unsigned outp(unsigned __port, unsigned __value);
+ _WCIRTLINK extern unsigned outpw(unsigned __port,unsigned __value);
+ #if defined(__386__)
+  _WCIRTLINK extern unsigned inpd(unsigned __port);
+  _WCIRTLINK extern unsigned outpd(unsigned __port, unsigned __value);
+ #endif
+#endif
+:segment NOT_PENPOINT
+_WCRTLINK extern int putch(int __c);
+_WCRTLINK extern int ungetch(int __c);
+_WCRTLINK extern int vcprintf( const char *__format, __va_list __arg );
+_WCRTLINK extern int vcscanf( const char *__format, __va_list __arg );
+:endsegment
+
+#if defined(__INLINE_FUNCTIONS__) && defined(_M_IX86)
+ #pragma intrinsic(inp,inpw,outp,outpw)
+ #if defined(__386__)
+  #pragma intrinsic(inpd,outpd)
+ #endif
+#endif
+
+:include cplusepi.sp
+#endif

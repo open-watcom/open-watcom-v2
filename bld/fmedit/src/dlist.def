@@ -1,0 +1,13 @@
+#include "dlist.h"
+
+extern DLIST_ELT DListElement( DLIST * );
+extern void      DListFree( DLIST * );
+extern DLIST *   DListNext( DLIST * );
+extern DLIST *   DListPrev( DLIST * );
+extern void      DListAddElt( DLIST **, DLIST_ELT );
+extern void      DListRemoveElt( DLIST **, DLIST_ELT );
+extern DLIST *   DListConsume( DLIST * );
+extern DLIST *   DListFindElt( DLIST *, DLIST_ELT );
+extern DLIST *   DListCopy( DLIST * );
+extern int       DListCount( DLIST * );
+extern void      DListInsertElt( DLIST *, DLIST_ELT );

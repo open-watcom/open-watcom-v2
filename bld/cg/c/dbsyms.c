@@ -1,0 +1,980 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include "standard.h"
+#include "hostsys.h"
+#include "coderep.h"
+#include "pattern.h"
+#include "procdef.h"
+#include "cgdefs.h"
+#include "sysmacro.h"
+#include "symdbg.h"
+#include "model.h"
+#include "ocentry.h"
+#include "objrep.h"
+#include "zoiks.h"
+#include "cgaux.h"
+#include "typedef.h"
+#include "dbgstrct.h"
+#include "dbcue.h"
+#define BY_CG
+#include "feprotos.h"
+#include "cgprotos.h"
+#ifndef NDEBUG
+#include "echoapi.h"
+#endif
+#include <string.h>
+
+extern  type_def        *TypeAddress(cg_type);
+extern  instruction     *MakeNop();
+extern  void            AddIns(instruction*);
+extern  name            *AllocRegName(hw_reg_set);
+extern  seg_id          SetOP(seg_id);
+extern  seg_id          AskCodeSeg();
+extern  void            EmptyQueue();
+extern  void            InputOC(any_oc *);
+extern  char            DBNested( char nested );
+extern  dbg_loc         LocDupl(dbg_loc);
+extern  dbg_loc         LocReg(dbg_loc,name*);
+extern  dbg_loc         LocParm(dbg_loc,name*);
+extern  dbg_loc         DBLocInit(void);
+extern  dbg_loc         DBLocSym(dbg_loc,sym_handle);
+extern  void            DBLocFini(dbg_loc);
+#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+/* WV interface */
+extern  void    WVInitDbgInfo() ;
+extern  void    WVFiniDbgInfo() ;
+extern  void    WVGenStatic( sym_handle sym, dbg_loc loc ) ;
+extern  void    WVObjectPtr(  cg_type ptr_type );
+extern  void    WVSetBase() ;
+extern  void    WVBlkEnd( dbg_block *blk, offset lc ) ;
+extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) ;
+#endif
+/* DF interface */
+extern  void    DFInitDbgInfo();
+extern  void    DFObjInitInfo( void );
+extern  void    DFFiniDbgInfo();
+extern  void    DFObjFiniDbgInfo();
+extern  void    DFGenStatic( sym_handle sym, dbg_loc loc );
+extern  void    DFTypedef( char *nm, dbg_type tipe );
+extern  void    DFProEnd( dbg_rtn *rtn, offset lc );
+extern  void    DFBlkBeg( dbg_block *blk, offset lc );
+extern  void    DFBlkEnd( dbg_block *blk, offset lc );
+extern  void    DFEpiBeg( dbg_rtn *blk, offset lc );
+extern  void    DFRtnEnd( dbg_rtn *rtn, offset lc );
+
+/* CV interface */
+extern  void    CVInitDbgInfo();
+extern  void    CVObjInitInfo( void );
+extern  void    CVFiniDbgInfo();
+extern  void    CVObjFiniDbgInfo();
+extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem );
+extern  void    CVTypedef( char *nm, dbg_type tipe );
+extern  void    CVSetBase();
+extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc );
+extern  void    CVProEnd( dbg_rtn *rtn, offset lc );
+extern  void    CVBlkBeg( dbg_block *blk, offset lc );
+extern  void    CVBlkEnd( dbg_block *blk, offset lc );
+extern  void    CVEpiBeg( dbg_rtn *blk, offset lc );
+extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc );
+
+extern    source_line_number    SrcLine;
+extern    proc_def              *CurrProc;
+extern    struct opcode_entry   DbgInfo[];
+
+cue_ctl     LineInfo;
+fname_ctl   DBFiles;
+
+
+
+#define CurrProc_debug ((dbg_rtn *)CurrProc->targ.debug)
+
+
+static  void    SrcFileNoInit( void ){
+/*****************************/
+    DBFiles.lst = NULL;
+    DBFiles.count = 0;
+}
+
+static  void    DBSrcFileFini( void ){
+/*****************************/
+    fname_lst   *curr, *old;
+    curr = DBFiles.lst;
+    while( curr != NULL ){
+        old = curr;
+        curr = curr->next;
+        _Free( old, sizeof( *old ) );
+    }
+    DBFiles.lst = NULL;
+}
+
+extern  uint    _CGAPI DBSrcFile( char *fname ) {
+/***********************************************/
+    int          index;
+    int          len;
+    fname_lst   *curr, **lnk;
+
+#ifndef NDEBUG
+    EchoAPI( "DBSrcFile( %c )", fname );
+#endif
+    lnk  = &DBFiles.lst;
+    curr = *lnk;
+    index = 0;
+    while( (curr = *lnk) != NULL ) {
+       if( strcmp( fname, curr->fname ) == 0 ) {
+            goto found;
+       }
+       ++index;
+       lnk = &curr->next;
+    }
+    len = strlen( fname );
+    _Alloc( curr, sizeof( *curr )+len );
+    curr->len = len+1;
+    curr->next = NULL;
+    strcpy( curr->fname, fname );
+    ++DBFiles.count;
+    *lnk = curr;
+found:
+#ifndef NDEBUG
+    EchoAPI( " -> %i\n", index );
+#endif
+    return( index );
+}
+
+extern  char *SrcFNoFind( uint fno ){
+/****************************************/
+    int          index;
+    fname_lst   *curr;
+
+    curr  = DBFiles.lst;
+    index = 0;
+    while( curr != NULL ){
+       if( index == fno ){
+            goto found;
+       }
+       ++index;
+       curr = curr->next;
+    }
+    return( "unknown" );
+found:;
+    return( curr->fname );
+}
+
+
+static void  AddCueBlk( cue_ctl *ctl ){
+    cue_blk *new;
+
+    new = _Alloc( new, sizeof( *new ) );
+    new->next = NULL;
+    *ctl->lnk = new;
+    ctl->curr = new;
+    ctl->lnk = &new->next;
+    ctl->next = &new->info[0];
+    ctl->end  = &new->info[CUES_PER_BLK];
+}
+
+
+static void  SourceCueInit( cue_ctl *ctl ){
+/*********************************/
+
+    ctl->head = NULL;
+    ctl->lnk  = &ctl->head;
+    ctl->next = &ctl->start[0];
+    ctl->end  = &ctl->start[1];
+    ctl->state.cue = 0;
+    ctl->state.fno = -1; /* force change */
+    ctl->state.line = 0;
+    ctl->state.col =  0;
+    ctl->count = 0;
+}
+
+extern cue_idx CueAdd( int fno, int line, int col ){
+/****************************************************/
+    enum{
+        EQUAL    = 0x00,
+        LINE_NO  = 0x01,
+        COL_NO   = 0x02,
+        FNO_NO   = 0x04,
+    }cmp;
+    cue_ctl    *ctl;
+    long diff;
+
+
+    if( fno == 0 && col == 1 && line < PRIMARY_RANGE ){
+        return( line );
+    }
+    ctl = &LineInfo;
+    cmp = EQUAL;
+    if( fno != ctl->state.fno ){
+        cmp |= FNO_NO;
+    }
+    if( col != ctl->state.col ){
+        cmp |= COL_NO;
+    }
+    diff = line - ctl->state.line;
+    if( diff != 0 ){
+       cmp |= LINE_NO;
+    }
+    if( cmp == LINE_NO && 0 <= diff && diff < MAX_LINE_DELTA  ){
+        ctl->state.line = line;
+        ctl->state.cue += diff;
+        cmp = EQUAL;
+    }
+    if( cmp ){
+        if( ctl->next >= ctl->end ){
+            AddCueBlk( ctl );
+        }
+        ++ctl->state.cue;
+        ctl->state.fno = fno;
+        ctl->state.line = line;
+        ctl->state.col = col;
+        *ctl->next = ctl->state;
+        ++ctl->next;
+        ++ctl->count;
+    }
+    return( ctl->state.cue + PRIMARY_RANGE );
+}
+
+extern bool CueFind( cue_idx cue, cue_state *ret ){
+/**************************************************/
+    cue_ctl    *ctl;
+    cue_blk    *blk;
+    cue_state   *hi;
+    long        diff;
+
+    ctl = &LineInfo;
+    if( ctl->count == 0 || cue < PRIMARY_RANGE ){
+        ret->fno = 0;
+        ret->line = cue;
+        ret->col = 1;
+        return( TRUE );
+    }
+    cue -= PRIMARY_RANGE;
+    if( cue < ctl->start[0].cue ){
+        Zoiks( ZOIKS_078 ); /* lower than low */
+        return( FALSE );
+    }
+    blk = ctl->head;
+    hi = &ctl->start[1];
+    while( blk != NULL ){
+        if( cue < blk->info[0].cue )break;
+        hi = &blk->info[CUES_PER_BLK];
+        blk = blk->next;
+    }
+    if( blk == NULL ){
+    /* if ctl->head == NULL then next is == ctl->start[1] */
+    /* if cue in last blk next is end of entries in blk */
+        hi = ctl->next;
+        if( cue > ctl->state.cue ){ /* high than high */
+            Zoiks( ZOIKS_078 );
+            return( FALSE );
+        }
+    }
+    do{
+        --hi;
+    }while( ( diff = cue - hi->cue ) < 0 );
+    *ret = *hi;
+    ret->line += diff;
+    return( TRUE );
+}
+
+#if 0
+static void CueLen( cue_ctl *ctl ){
+/***************************/
+//Set map number to #cues with entry
+    cue_ctl    *ctl;
+    cue_blk    *blk;
+    cue_state   *curr, *last;
+    long        diff;
+
+    blk = ctl->head;
+    if( ctl->count > 0 ){
+        last = &ctl->start[0];
+    }
+    while( blk != NULL ){
+        curr = &blk->info[0];
+        if( blk->next == NULL ){
+            end = ctl->next;
+        }else{
+            end = &blk->info[CUES_PER_BLK];
+        }
+        while( curr != end ){
+            last->map = curr->cue - last->cue;
+            ++curr;
+        }
+        blk = blk->next;
+    }
+    last->map = ctl->state.cue- last->cue;
+}
+
+// the only time we can do this is if
+// the cue guy has seen all the cues and no cue numbers have been
+// released
+static cue_idx  CueFMap( cue_ctl *ctl, int fno, cue_idx map ){
+/***************************/
+//Map cues with same file together
+    cue_ctl    *ctl;
+    cue_blk    *blk;
+    cue_state   *base, *curr, *last;
+    cue_idx    map;
+    cue_idx    len;
+
+    blk = ctl->head;
+    if( ctl->count > 0 ){
+        curr = &ctl->start[0];
+        if( curr->fno == fno ){
+            len =  curr->map;
+            curr->map = map;
+            map += len;
+        }
+    }
+    while( blk != NULL ){
+        curr = &blk->info[0];
+        if( blk->next == NULL ){
+            end = ctl->next;
+        }else{
+            end = &blk->info[CUES_PER_BLK];
+        }
+        while( curr != end ){
+            if( curr->fno == fno ){
+                len =  curr->map;
+                curr->map = map;
+                map += len;
+            }
+            ++curr;
+        }
+        blk = blk->next;
+    }
+    return( map );
+}
+
+extern void CueMap( cue_ctl *ctl, cue_state *base ){
+/***************************/
+//Add a map number so cues from the same file
+//can be re-written on a continueum
+    cue_ctl    *ctl;
+    cue_blk    *blk;
+    cue_state   *base, *curr, *last;
+    int         fno;
+    cue_idx     curr_idx;
+
+    ctl = &LineInfo;
+    CueLen( ctl ); /* add lengths */
+    curr_idx = 0;
+    for( fno = 0; fno <  DBFiles.count; ++fno ){
+        curr_idx = CueFMap( ctl, fno, curr_idx );
+    }
+    return( TRUE );
+}
+#endif
+#if 0
+extern DmpCue( cue_idx cue  ){
+     cue_state            state;
+    char *fname;
+
+    if( CueFind( cue,  &state ) ){
+        fname = SrcFNoFind( state.fno );
+        printf( "out %s %d %d\n" , fname, state.line, state.col );
+    }else{
+        printf( "bad cue %d\n", cue );
+    }
+}
+#endif
+static void SourceCueFini( cue_ctl *ctl ){
+/*****************************************/
+    cue_blk *old, *list;
+
+    list = ctl->head;
+    while( list != NULL ){
+        old = list;
+        list = list->next;
+        _Free( old, sizeof( *old ) );
+    }
+    ctl->head = NULL;
+}
+
+extern  void    InitDbgInfo() {
+/******************************/
+    cue_idx     idx;
+    char       *fname;
+    uint        fno;
+
+    idx = idx;
+    fname = fname;
+    fno = fno;
+    SrcFileNoInit();
+    DBNested( FALSE ); /* set nesting */
+    SourceCueInit( &LineInfo );
+//  fname = FEAuxInfo( NULL, SOURCE_NAME );
+ // fno = DBSrcFile( fname );
+//  idx = CueAdd( fno, 1, 1 );
+    SrcLine = 1;
+    if( _IsModel( DBG_DF ) ) {
+        DFInitDbgInfo();
+    }else if( _IsModel( DBG_CV ) ) {
+        CVInitDbgInfo();
+    }else{
+#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+        WVInitDbgInfo();
+#endif
+    }
+}
+
+
+extern  void    FiniDbgInfo() {
+/******************************/
+
+    DBSrcFileFini();
+    SourceCueFini( &LineInfo );
+    if( _IsModel( DBG_DF ) ) {
+        DFFiniDbgInfo();
+    }else if( _IsModel( DBG_CV ) ) {
+        CVFiniDbgInfo();
+    }else{
+#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+        WVFiniDbgInfo();
+#endif
+    }
+}
+
+
+extern  void    _CGAPI DBLineNum( uint no ) {
+/*******************************************/
+#ifndef NDEBUG
+    EchoAPI( "\nDBLineNum( %i )\n", no );
+#endif
+    SrcLine = no;
+}
+
+extern  void _CGAPI     DBSrcCue( uint fno, uint line, uint col ) {
+/*****************************************************************/
+    cue_idx     idx;
+    bool        hasxcue;
+//  char       *fname;
+
+#ifndef NDEBUG
+    EchoAPI( "\nDBsrcCue( %i, %i, %i )\n", fno, line, col );
+#endif
+//  fname = SrcFNoFind( fno );
+//  printf( "in %s %d %d\n", fname, line, col );
+    hasxcue =  _IsntModel( DBG_TYPES ); // Just OMF line nums
+    if( hasxcue ) {
+        if( fno == 0 && col == 1 ){
+            DBLineNum( line );
+        }
+    }else{
+        idx = CueAdd( fno, line, col );
+        SrcLine = idx;
+    }
+}
+
+extern  void _CGAPI DBGenStMem( sym_handle sym, dbg_loc loc ) {
+/*********************************************************/
+#ifndef NDEBUG
+    EchoAPI( "DBGenStMem( %s,%i)\n", sym, loc );
+#endif
+    if( _IsModel( DBG_DF ) ) {
+        DFGenStatic( sym, loc );
+    }else if( _IsModel( DBG_CV ) ) {
+        CVGenStatic( sym, loc, TRUE );
+    }else{
+    }
+}
+
+static  void    AddLocal( dbg_local **owner, dbg_local *new  ){
+/************************************************************/
+
+    dbg_local *curr;
+
+    while( (curr = *owner) != NULL ) {
+        owner = &curr->link;
+    }
+    new->link = NULL;
+    *owner = new;
+}
+
+extern  void _CGAPI DBGenSym( sym_handle sym, dbg_loc loc, int scoped ) {
+/***********************************************************************/
+
+    fe_attr     attr;
+    dbg_block   *blk;
+    dbg_local   *new;
+
+#ifndef NDEBUG
+    EchoAPI( "DBGenSym( %s, %i, %i )\n", sym, loc, scoped );
+#endif
+    if( _IsModel( DBG_LOCALS ) ) {
+        attr = FEAttr( sym );
+        if( (attr & FE_IMPORT) == 0 ) {
+            if( attr & FE_PROC ) {
+                CurrProc->state.attr |= ROUTINE_WANTS_DEBUGGING;
+                _Alloc( CurrProc->targ.debug, sizeof( dbg_rtn ) );
+                CurrProc_debug->blk = NULL;
+                CurrProc_debug->parms = NULL;
+                CurrProc_debug->reeturn = LocDupl( loc );
+                CurrProc_debug->obj_type = DBG_NIL_TYPE;
+                CurrProc_debug->obj_loc = NULL;
+                MkBlock();
+            } else if( scoped ) {
+                blk = CurrProc_debug->blk;
+                _Alloc( new, sizeof( dbg_local ) );
+                new->sym = sym;
+                new->loc = LocDupl( loc );
+                new->kind = DBG_SYM_VAR;
+                AddLocal( &blk->locals, new );
+            } else {
+                if( _IsModel( DBG_DF ) ) {
+                    DFGenStatic( sym, loc );
+                }else if( _IsModel( DBG_CV ) ) {
+                    CVGenStatic( sym, loc, FALSE );
+                }else{
+
+                 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+                    WVGenStatic( sym , loc );
+                 #endif
+                }
+            }
+        }
+    }
+}
+
+
+extern  void    _CGAPI DBModSym( sym_handle sym, cg_type indirect ) {
+/*******************************************************************/
+
+
+    fe_attr     attr;
+    dbg_loc     loc;
+
+#ifndef NDEBUG
+    EchoAPI( "DBModSym( %s, %t )\n",  sym, indirect );
+#endif
+    indirect = indirect;
+    if( _IsModel( DBG_LOCALS ) ) {
+        attr = FEAttr( sym );
+        if( (attr & FE_IMPORT) == 0 ) {
+            if( attr & FE_PROC ) {
+                loc = NULL;
+            } else {
+                loc = DBLocInit();
+                loc = DBLocSym( loc, sym );
+            }
+            DBGenSym( sym, loc, FALSE );
+            DBLocFini( loc );
+        }
+    }
+}
+
+
+extern  void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type ) {
+/************************************************************************/
+
+#ifndef NDEBUG
+    EchoAPI( "DBObject( %i, %i, %t )\n", tipe, loc, ptr_type );
+#endif
+    CurrProc_debug->obj_type = tipe;
+    CurrProc_debug->obj_loc = LocDupl( loc );
+    if( _IsModel( DBG_DF ) ) {
+       //
+    }else if( _IsModel( DBG_CV ) ) {
+      //
+    }else{
+#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+        WVObjectPtr( ptr_type );
+#endif
+    }
+}
+
+
+
+extern  void    DBAllocReg( name *reg, name *temp ) {
+/***************************************************/
+
+    temp = temp;
+    reg = reg;
+}
+
+extern void _CGAPI DBTypeDef( char *nm, dbg_type tipe ){
+/******************************************************/
+#ifndef NDEBUG
+    EchoAPI( "DBTypeDef( %c, %t )\n", nm, tipe );
+#endif
+    if( _IsModel( DBG_DF ) ) {
+         DFTypedef( nm, tipe );
+    }else if( _IsModel( DBG_CV ) ) {
+        CVTypedef( nm, tipe );
+    }else{
+     }
+}
+
+extern  void    _CGAPI DBLocalSym( sym_handle sym, cg_type indirect ) {
+/*********************************************************************/
+
+
+    fe_attr     attr;
+    dbg_loc     loc;
+
+#ifndef NDEBUG
+    EchoAPI( "DBLocalSym( %s, %t )\n", sym, indirect );
+#endif
+    indirect = indirect;
+    if( CurrProc->targ.debug != NULL ) {
+        attr = FEAttr( sym );
+        if( (attr & FE_IMPORT) == 0 ) {
+            loc = DBLocInit();
+            loc = DBLocSym( loc, sym );
+            DBGenSym( sym, loc, TRUE );
+            DBLocFini( loc );
+        }
+    }
+}
+
+extern  void    _CGAPI DBLocalType( sym_handle sym, char kind ) {
+/***************************************************************/
+    dbg_block   *blk;
+    dbg_local   *new;
+
+#ifndef NDEBUG
+    EchoAPI( "DBLocalType( %s, %i)\n", sym, kind );
+#endif
+    if( _IsModel( DBG_LOCALS ) ) {
+        if( _IsModel( DBG_CV | DBG_DF ) ) {
+            blk = CurrProc_debug->blk;
+            _Alloc( new, sizeof( dbg_local ) );
+            new->sym = sym;
+            new->loc = NULL;
+            AddLocal( &blk->locals, new );
+            if( kind ){
+               new->kind = DBG_SYM_TYPE;
+            }else{
+                new->kind = DBG_SYM_TYPEDEF;
+           }
+        }
+    }
+}
+
+extern  dbg_block *DoDBBegBlock( int fast_codegen ) {
+/***************************************************/
+
+    if( CurrProc->targ.debug == NULL ) return( NULL );
+    MkBlock();
+    if( !fast_codegen ) {
+        /*%%%% stick a NOP in the instruction stream, point it at block*/
+        AddBlockInfo( CurrProc_debug->blk, TRUE );
+    }
+    return( CurrProc_debug->blk );
+}
+
+extern  void _CGAPI     DBBegBlock() {
+/************************************/
+#ifndef NDEBUG
+    EchoAPI( "DBBegBlock()\n" );
+#endif
+    DoDBBegBlock( 0 );
+}
+
+
+static  void    MkBlock() {
+/*************************/
+
+
+    dbg_block   *new;
+
+    _Alloc( new, sizeof( dbg_block ) );
+    new->parent = CurrProc_debug->blk;
+    CurrProc_debug->blk = new;
+    new->locals = NULL;
+    new->patches = NULL;
+}
+
+
+extern  void    DoDBEndBlock( int fast_codegen ) {
+/************************************************/
+
+    dbg_block   *blk;
+
+#ifndef NDEBUG
+    EchoAPI( "DBEndBlock()\n" );
+#endif
+    if( CurrProc->targ.debug != NULL ) {
+        blk = CurrProc_debug->blk;
+        if( !fast_codegen ) {
+            AddBlockInfo( blk, FALSE );
+        }
+        CurrProc_debug->blk = blk->parent;
+    }
+}
+
+extern  void _CGAPI     DBEndBlock() {
+/************************************/
+
+    DoDBEndBlock( 0 );
+}
+
+
+static  void    AddBlockInfo( dbg_block *blk, bool start ) {
+/**********************************************************/
+
+
+    instruction *ins;
+
+    ins = MakeNop();
+    ins->table = DbgInfo;
+    ins->u.gen_table = ins->table;
+    ins->flags.nop_flags = NOP_DBGINFO;
+    if( start ) ins->flags.nop_flags |= NOP_DBGINFO_START;
+    ins->operands[ 0 ] = (name *)blk;
+    AddIns( ins );
+}
+
+
+extern  void    DbgSetBase() {
+/****************************/
+
+    if( _IsModel( DBG_DF ) ) {
+    /* nothing */
+    }else if( _IsModel( DBG_CV ) ) {
+        CVSetBase();
+    }else{
+#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+        WVSetBase();
+#endif
+    }
+}
+
+
+extern  void    DbgParmLoc( name_def *parm, sym_handle sym ) {
+/********************************************/
+// sym is NULL if no front end sym
+
+    dbg_local           *new;
+    dbg_loc             loc;
+
+    if( _IsntModel( DBG_DF ) ){
+        if( parm->class != N_REGISTER  ){
+            return;
+        }
+    }
+    _Alloc( new, sizeof( dbg_local ) );
+    loc = DBLocInit();
+    loc = LocParm( loc, parm );
+    new->loc = loc;
+    new->sym = sym;
+    new->kind = DBG_SYM_VAR;
+    AddLocal( &CurrProc_debug->parms, new );
+}
+
+
+extern  void    DbgRetLoc() {
+/***************************/
+
+
+    dbg_loc     loc;
+
+    if( CurrProc_debug->reeturn == NULL ) {
+        loc = DBLocInit();
+        loc = LocReg( loc, AllocRegName( CurrProc->state.return_reg ) );
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+        if( CurrProc->targ.return_points == NULL ) {
+            /* nothing to do */
+        } else if( CurrProc->state.attr & ROUTINE_ALLOCS_RETURN ) {
+            loc->class = LOC_IND_REG + IND_RALLOC_NEAR;
+        } else {
+            loc->class = LOC_IND_REG + IND_CALLOC_NEAR;
+        }
+#endif
+        CurrProc_debug->reeturn = loc;
+    }
+}
+
+
+/**/
+/* Going into optimizer queue*/
+/**/
+
+
+extern  void    DbgRetOffset( type_length offset ) {
+/*******************************************/
+
+
+    CurrProc_debug->ret_offset = offset;
+}
+
+
+extern  void    EmitRtnBeg() {
+/****************************/
+
+
+    EmitDbg( INFO_DBG_RTN_BEG, CurrProc->targ.debug );
+}
+
+
+extern  void    EmitProEnd() {
+/****************************/
+
+
+    EmitDbg( INFO_DBG_PRO_END, CurrProc->targ.debug );
+}
+
+
+extern  void    EmitDbgInfo( instruction *ins ) {
+/***********************************************/
+
+
+    if( ins->flags.nop_flags & NOP_DBGINFO_START ) {
+        EmitDbg( INFO_DBG_BLK_BEG, ins->operands[ 0 ] );
+   } else {
+        EmitDbg( INFO_DBG_BLK_END, ins->operands[ 0 ] );
+    }
+}
+
+
+extern  void    EmitEpiBeg() {
+/****************************/
+
+
+    EmitDbg( INFO_DBG_EPI_BEG, CurrProc->targ.debug );
+}
+
+
+extern  void    EmitRtnEnd() {
+/****************************/
+
+
+    seg_id      old;
+
+    EmitDbg( INFO_DBG_RTN_END, CurrProc->targ.debug );
+    old = SetOP( AskCodeSeg() );
+    EmptyQueue();
+    SetOP( old );
+}
+
+
+static  void    EmitDbg( byte class, pointer ptr ) {
+/**************************************************/
+
+
+    any_oc      temp;
+
+    temp.oc_debug.op.class = OC_INFO + class;
+    temp.oc_debug.op.reclen = sizeof( oc_debug );
+    temp.oc_debug.op.objlen = 0;
+    temp.oc_debug.ptr = ptr;
+    InputOC( &temp );
+}
+
+
+/**/
+/* Coming out of optimizer queue*/
+/**/
+
+
+extern  void    DbgRtnBeg( dbg_rtn *rtn,  offset lc ) {
+/***************************************************/
+
+    rtn->blk->start = lc;
+    if( _IsModel( DBG_CV ) ) {
+        CVRtnBeg( rtn, lc );
+    }
+}
+
+
+extern  void    DbgProEnd( dbg_rtn *rtn, offset lc ) {
+/**************************************************/
+
+    rtn->pro_size = lc - rtn->blk->start;
+    if( _IsModel( DBG_DF ) ) {
+        DFProEnd( rtn, lc );
+    }else if( _IsModel( DBG_CV ) ) {
+        CVProEnd( rtn, lc );
+    }
+}
+
+
+extern  void    DbgBlkBeg( dbg_block *blk, offset lc ) {
+/****************************************************/
+
+
+    blk->start = lc;
+    if( _IsModel( DBG_DF ) ) {
+        DFBlkBeg( blk, lc );
+    }else if( _IsModel( DBG_CV ) ) {
+        CVBlkBeg( blk, lc );
+    }
+}
+
+extern  void    DbgBlkEnd( dbg_block *blk, offset lc ) {
+/****************************************************/
+
+
+    if( _IsModel( DBG_DF ) ) {
+        DFBlkEnd( blk, lc );
+    }else if( _IsModel( DBG_CV ) ) {
+        CVBlkEnd( blk, lc );
+    }else{
+#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+        WVBlkEnd( blk, lc );
+#endif
+    }
+    _Free( blk, sizeof( dbg_block ) );
+}
+
+
+extern  void    DbgEpiBeg( dbg_rtn *blk, offset lc ) {
+/****************************************************/
+
+
+    blk->epi_start = lc;
+    if( _IsModel( DBG_DF ) ) {
+        DFEpiBeg( blk, lc );
+    }else if( _IsModel( DBG_CV ) ) {
+        CVEpiBeg( blk, lc );
+    }
+}
+
+
+extern  void    DbgRtnEnd( dbg_rtn *rtn, offset lc ) {
+/****************************************************/
+
+
+    if( _IsModel( DBG_DF ) ) {
+        DFRtnEnd( rtn, lc );
+    }else if( _IsModel( DBG_CV ) ) {
+        CVRtnEnd( rtn, lc );
+    }else{
+#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+        WVRtnEnd( rtn, lc );
+#endif
+    }
+    _Free( rtn->blk, sizeof( dbg_block ) );
+    _Free( rtn, sizeof( dbg_rtn ) );
+}

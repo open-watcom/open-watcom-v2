@@ -1,0 +1,4 @@
+#! /bin/sh
+setup_proj
+make $1
+

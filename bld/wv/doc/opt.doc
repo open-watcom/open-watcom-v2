@@ -1,0 +1,46 @@
+This is a summary of the command line switches.  SEE OLD MANUAL for
+the format of the command line and the meaning of the switches, Use
+this as the definitive list of switches.  Some of the switches in the
+old manual are gone.  If this is not enough to go on, please let
+me know, and I will fill it out a bit.
+
+    *** Common Switches
+    
+	    /Invoke=file
+	    /NOInvoke
+	    /NOSymbols
+	    /NOMouse
+	    /DIp=dipname
+	    - Used to load a non-default Debug information processor
+	    /DYnamic=
+	    /TRap=trpfile
+	    /REMotefiles
+	    /NOFpu
+	    /LInes=n
+	    - number of lines to use in a character mode debugger
+    
+    *** DOS & Windows specific
+	    /Monochrome
+	    /Color
+	    /Colour
+	    /Ega43
+	    /Vga50
+	    /Overwrite
+	    /Page
+	    /Swap
+	    /Two
+    
+    *** DOS Specific
+	    /CHecksize
+	    /NOCHarremap
+	    - Turn off the character re-mapping which is used to make dialogs
+	    look nicer.
+	    /NOGraphicsmouse
+	    - turn off the graphics mouse emulation code that makes the mouse
+	    cursor look like an arrow instead of a block.
+	
+    *** Windows specific
+	    /FAstswap
+	
+    *** QNX specific
+	    /Console

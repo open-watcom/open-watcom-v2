@@ -1,0 +1,14 @@
+# ---------------------------------------
+# ERROR 30:  skipping !%s block after !%s
+# ---------------------------------------
+
+!ifdef false
+!else
+!else
+!endif
+
+!ifdef false
+!else
+!else ifdef true
+!endif
+

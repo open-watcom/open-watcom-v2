@@ -1,0 +1,9 @@
+menu float0
+menuitem "Cu&t" "Delete selected text to the clipboard" @ d 0
+menuitem "&Copy" "Copy selected text to the clipboard" @ y 0
+menuitem ""
+menuitem ">> Shift &Right" "Move selected line range right" %3,%4 >
+menuitem "<< Shift &Left" "Move selected line range left" %3,%4 <
+endmenu
+
+floatmenu 0 0 %2 %1

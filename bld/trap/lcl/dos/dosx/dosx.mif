@@ -1,0 +1,29 @@
+!include $(trap_dir)\lcl\dos\dos.mif
+
+dosx_trap_objs = &
+        $(std_objs) &
+        dosxlink.obj &
+        dosxremo.obj &
+        dosxfork.obj &
+        dosxjump.obj &
+        core.obj &
+        supp.obj &
+        dosrfx.obj &
+        dosfile.obj &
+        doschk.obj &
+        dosenv.obj &
+        dosexc.obj &
+        dosflip.obj &
+        dossplit.obj &
+        fork.obj &
+        packet.obj
+
+dosx_serv_objs = &
+        dosxlink.obj &
+        dosxserv.obj &
+        dosxtrio.obj &
+        dosxstub.obj &
+        core.obj &
+        supp.obj &
+        packet.obj &
+        dosexc.obj

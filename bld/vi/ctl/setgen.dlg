@@ -1,0 +1,48 @@
+#include "setgen.h"
+SETGEN DIALOG 3, 17, 305, 170
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "General Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Word Definitions", 101, 128, 3, 118, 45
+    CONTROL         "Undo (unlimited)", SETGEN_UNDO, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 9, 15, 66, 10
+    CONTROL         "AutoSave", SETGEN_AUTOSAVE, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 9, 27, 44, 10
+    LTEXT           "Interval:", SETGEN_AUTOSAVEINTERVALSTR1, 20, 41, 28, 8
+    EDITTEXT        SETGEN_AUTOSAVEINTERVAL, 51, 39, 41, 12, ES_AUTOHSCROLL
+    LTEXT           "secs", SETGEN_AUTOSAVEINTERVALSTR2, 94, 41, 16, 8
+    CONTROL         "Save configuration on exit", SETGEN_SAVECONFIG,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 9, 65, 98, 10
+    CONTROL         "Save files on IDE build", SETGEN_SAVEONBUILD,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 9, 77, 98, 10
+    CONTROL         "VI Emulation", SETGEN_MODAL, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 9, 106, 80, 10
+    CONTROL         "Ignore case", SETGEN_CASEIGNORE, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 9, 139, 51, 10
+    CONTROL         "Wrap at EOF", SETGEN_SEARCHWRAP, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 9, 151, 55, 10
+    LTEXT           "Ctrl-Left/Right:", -1, 133, 18, 50, 8
+    EDITTEXT        SETGEN_WORD, 185, 16, 56, 12, ES_AUTOHSCROLL
+    LTEXT           "Mouse Clicks:", 105, 133, 33, 47, 8
+    EDITTEXT        SETGEN_WORDALT, 185, 31, 56, 12, ES_AUTOHSCROLL
+    EDITTEXT        SETGEN_TMPDIR, 193, 71, 48, 12, ES_AUTOHSCROLL
+    EDITTEXT        SETGEN_HISTORYFILE, 193, 86, 48, 12, ES_AUTOHSCROLL
+    GROUPBOX        "Miscellaneous", 111, 128, 116, 118, 49
+    CONTROL         "Beep on error", SETGEN_BEEPFLAG, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 133, 128, 57, 10
+    CONTROL         "Same-file check on open", SETGEN_SAMEFILECHECK,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 133, 140, 91, 10
+    CONTROL         "Close rotates forwards", SETGEN_QUITMOVESFORWARD,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 133, 152, 85, 10
+    GROUPBOX        "VI Emulation", 116, 4, 94, 118, 41
+    GROUPBOX        "Filenames/Paths", 120, 128, 61, 118, 43
+    LTEXT           "Temp Directory:", 121, 133, 73, 53, 8
+    LTEXT           "History Filename:", 122, 133, 88, 57, 8
+    GROUPBOX        "Features", 128, 4, 3, 118, 89
+    GROUPBOX        "Searching", 140, 4, 128, 119, 37
+    GROUPBOX        "", 102, 252, 0, 1, 170
+    PUSHBUTTON      "OK", IDOK, 259, 15, 40, 14, WS_GROUP
+    PUSHBUTTON      "Cancel", IDCANCEL, 259, 33, 40, 14
+    PUSHBUTTON      "&Defaults", SETGEN_DEFAULTS, 259, 58, 40, 14
+END

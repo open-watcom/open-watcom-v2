@@ -1,0 +1,21 @@
+64lskwnt.obj : ..\..\..\c\64lskwnt.c ..\..\..\c\lseekwnt.c
+64fillen.obj : ..\..\..\c\64fillen.c ..\..\..\c\filelen.c
+64telwnt.obj : ..\..\..\c\64telwnt.c ..\..\..\c\tellwnt.c
+
+ucreat.obj   : ..\..\..\c\ucreat.c   ..\..\..\c\creat.c
+
+ufsta.obj    : ..\..\..\c\ufsta.c    ..\..\..\c\fstat.c
+ufstaos2.obj : ..\..\..\c\ufstaos2.c ..\..\..\c\fstatos2.c
+u64fstat.obj : ..\..\..\c\u64fstat.c ..\..\..\c\64fstat.c
+
+ufstawnt.obj : ..\..\..\c\ufstawnt.c ..\..\..\c\fstatwnt.c
+64fstwnt.obj : ..\..\..\c\64fstwnt.c ..\..\..\c\fstatwnt.c
+u64fswnt.obj : ..\..\..\c\u64fswnt.c ..\..\..\c\ufstawnt.c ..\..\..\c\fstatwnt.c
+
+uopen.obj    : ..\..\..\c\uopen.c    ..\..\..\c\open.c
+uopenos2.obj : ..\..\..\c\uopenos2.c ..\..\..\c\openos2.c
+uopenwnt.obj : ..\..\..\c\uopenwnt.c ..\..\..\c\openwnt.c
+
+uunln.obj    : ..\..\..\c\uunln.c    ..\..\..\c\unlnk.c
+uunlnos2.obj : ..\..\..\c\uunlnos2.c ..\..\..\c\unlnkos2.c
+uunlnwnt.obj : ..\..\..\c\uunlnwnt.c ..\..\..\c\unlnkwnt.c

@@ -1,0 +1,279 @@
+objfiles = wdefbutt.$(obj) wdefcbox.$(obj) wderdexe.$(obj) wdesvres.$(obj) &
+    trmem.$(obj) wdefmenu.$(obj) wdefdlg.$(obj) wdefdiag.$(obj) &
+    wdetest.$(obj) wdefont.$(obj) wdedefin.$(obj) wdemain.$(obj) &
+    wdefbase.$(obj) wdesdup.$(obj) trmemcvr.$(obj) wdecsize.$(obj) &
+    wdestken.$(obj) wdefstat.$(obj) wdestyle.$(obj) wdecursr.$(obj) &
+    wdercmem.$(obj) wdetool.$(obj) wdestat.$(obj) wdefordr.$(obj) &
+    wdesym.$(obj) wderesin.$(obj) wdesdlg.$(obj) windlg.$(obj) &
+    wdefedit.$(obj) wdercerr.$(obj) wdeflbox.$(obj) wdegeted.$(obj) &
+    wdesfadd.$(obj) wdetfile.$(obj) wdeinfo.$(obj) wdefutil.$(obj) &
+    wdeldres.$(obj) wdefscrl.$(obj) wdeopts.$(obj) wderes.$(obj) &
+    wdemsgbx.$(obj) wdehints.$(obj) wde_wres.$(obj) wdegetfn.$(obj) &
+    wdealign.$(obj) wdedebug.$(obj) wdefinit.$(obj) wdefcntl.$(obj) &
+    wdehash.$(obj) wdemem.$(obj) wdeedit.$(obj) wdeppmem.$(obj) &
+    wdesvexe.$(obj) wdelist.$(obj)
+
+wdefbutt.$(obj) : wdefbutt.c wdefbutt.h wdeglbl.h wdemem.h wdeobjid.h &
+    wdemain.h wdeglbl.h wdedefin.h wdeglbl.h wdeoinfo.h wdehash.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wdedebug.h wdeglbl.h &
+    wdeactn.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdefordr.h wdeglbl.h wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h wdehash.h &
+    wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wde_rc.h wde_wres.h
+
+wdefcbox.$(obj) : wdefcbox.c wdefcbox.h wdeglbl.h wdemem.h wdeobjid.h &
+    wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wde_wres.h wdeedit.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdemain.h &
+    wdeglbl.h wdedefin.h wdeglbl.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wdedebug.h wdeglbl.h wdeactn.h &
+    wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h &
+    wdeglbl.h wde_rc.h
+
+wderdexe.$(obj) : wderdexe.c wdeglbl.h wderdexe.h wdemem.h wdedebug.h &
+    wdeglbl.h wdeactn.h wdemsgbx.h
+
+wdesvres.$(obj) : wdesvres.c wdeglbl.h wdesvres.h wderesin.h wdehash.h &
+    wdeglbl.h wdemem.h wdesfadd.h wdecsize.h wderesin.h wdehash.h wdeglbl.h &
+    wdefdiag.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wderdexe.h wdesvexe.h &
+    wderesin.h wdehash.h wdeglbl.h wdeldres.h wderesin.h wdehash.h wdeglbl.h &
+    wdeopts.h wdemsgbx.h wdetfile.h wdedebug.h wdeglbl.h wdeactn.h wdestat.h
+
+trmem.$(obj) : trmem.c trmem.h
+
+wdefmenu.$(obj) : wdefmenu.c wdefmenu.h wdeglbl.h wdefordr.h wdeglbl.h &
+    wdemain.h wdeglbl.h wderes.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdesdlg.h wderesin.h wdehash.h wdeglbl.h wde_rc.h
+
+wdefdlg.$(obj) : wdefdlg.c wdefdlg.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdedebug.h wdeglbl.h wdeactn.h
+
+wdefdiag.$(obj) : wdefdiag.c wdefdiag.h wdeglbl.h wderesin.h wdehash.h &
+    wdeglbl.h wdemem.h wdeopts.h wdeactn.h wde_wres.h wdemain.h wdeglbl.h &
+    wdemsgbx.h wdesdlg.h wderesin.h wdehash.h wdeglbl.h wdefdlg.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdetest.h wderesin.h wdehash.h wdeglbl.h &
+    wdeobjid.h wdeinfo.h wderesin.h wdehash.h wdeglbl.h wderes.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdefont.h wdeglbl.h wderesiz.h wdestyle.h &
+    wderesiz.h wdefmenu.h wdeglbl.h wdefordr.h wdeglbl.h wdegeted.h wdeglbl.h &
+    wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdetool.h wdesdup.h wdelist.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wdefordr.h wdeglbl.h wdesym.h &
+    wderesin.h wdehash.h wdeglbl.h wdehash.h wdeglbl.h wdestat.h wdedebug.h &
+    wdeglbl.h wdeactn.h wdedefin.h wdeglbl.h wdeoinfo.h wdehash.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wde_rc.h windlg.h
+
+wdetest.$(obj) : wdetest.c wdeglbl.h wdetest.h wderesin.h wdehash.h wdeglbl.h &
+    wderes.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdemain.h wdeglbl.h &
+    wdefmenu.h wdeglbl.h wdefordr.h wdeglbl.h wde_wres.h wdedebug.h wdeglbl.h &
+    wdeactn.h wdestat.h wde_rc.h
+
+wdefont.$(obj) : wdefont.c wdefont.h wdeglbl.h wderesiz.h wdemem.h wdedebug.h &
+    wdeglbl.h wdeactn.h wdemain.h wdeglbl.h wdelist.h wdefutil.h wdeglbl.h &
+    wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdefordr.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h windlg.h
+
+wdedefin.$(obj) : wdedefin.c wdedefin.h wdeglbl.h wdeoinfo.h wdehash.h &
+    wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wdemem.h &
+    wdeobjid.h wdemain.h wdeglbl.h wdeopts.h wdestyle.h wdegeted.h wdeglbl.h &
+    wdedebug.h wdeglbl.h wdeactn.h wdestat.h wdefutil.h wdeglbl.h wdeobjid.h &
+    wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h &
+    wdeglbl.h wderesin.h wdehash.h wdeglbl.h wde_rc.h
+
+wdemain.$(obj) : wdemain.c wdeglbl.h wdemain.h wdeglbl.h wdemem.h wdetest.h &
+    wderesin.h wdehash.h wdeglbl.h wdestat.h wdefdiag.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wderes.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdeedit.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdealign.h wdeglbl.h &
+    wdedefin.h wdeglbl.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h &
+    wdeglbl.h wdefordr.h wdeglbl.h wdesym.h wderesin.h wdehash.h wdeglbl.h &
+    wdehash.h wdeglbl.h wdeinfo.h wderesin.h wdehash.h wdeglbl.h wdefutil.h &
+    wdeglbl.h wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h &
+    wdeglbl.h wdefordr.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdemsgbx.h &
+    wdefont.h wdeglbl.h wderesiz.h wdeopts.h wdefinit.h wdesdlg.h wderesin.h &
+    wdehash.h wdeglbl.h wdetool.h wdehints.h wdeglbl.h wdedebug.h wdeglbl.h &
+    wdeactn.h wdecust.h wdeglbl.h wdefordr.h wdeglbl.h wdestken.h wdeglbl.h &
+    wde_rc.h
+
+wdefbase.$(obj) : wdefbase.c wdefbase.h wdeglbl.h wdeactn.h wdefordr.h &
+    wdeglbl.h wdefmenu.h wdeglbl.h wdefordr.h wdeglbl.h wdefont.h wdeglbl.h &
+    wderesiz.h wdemem.h wdeedit.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wderesiz.h wdeinfo.h wderesin.h wdehash.h wdeglbl.h wderes.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdemain.h wdeglbl.h wdesym.h wderesin.h &
+    wdehash.h wdeglbl.h wdehash.h wdeglbl.h wdefutil.h wdeglbl.h wdeobjid.h &
+    wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h &
+    wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdetool.h wdelist.h wdealign.h &
+    wdeglbl.h wde_rc.h wdedebug.h wdeglbl.h wdeactn.h
+
+wdesdup.$(obj) : wdesdup.c wdesdup.h wdemem.h
+
+trmemcvr.$(obj) : trmemcvr.c trmem.h wdedebug.h wdeglbl.h wdeactn.h
+
+wdecsize.$(obj) : wdecsize.c wdecsize.h wderesin.h wdehash.h wdeglbl.h
+
+wdestken.$(obj) : wdestken.c wdeglbl.h wdestken.h wdeglbl.h wdemem.h
+
+wdefstat.$(obj) : wdefstat.c wdefstat.h wdeglbl.h wdemem.h wdeobjid.h &
+    wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wde_wres.h wdemain.h wdeglbl.h wdedebug.h wdeglbl.h wdeactn.h wdeoinfo.h &
+    wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h &
+    wde_rc.h
+
+wdestyle.$(obj) : wdestyle.c wdestyle.h wdeglbl.h wde_rc.h
+
+wdecursr.$(obj) : wdecursr.c wdecursr.h wdeglbl.h
+
+wdercmem.$(obj) : wdercmem.c wdemem.h
+
+wdetool.$(obj) : wdetool.c wdeglbl.h wdetool.h wdeobjid.h wdemain.h wdeglbl.h &
+    wdeedit.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdeopts.h wde_rc.h &
+    wdemem.h wderes.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdelist.h &
+    wdestat.h wdehints.h wdeglbl.h wdedebug.h wdeglbl.h wdeactn.h
+
+wdestat.$(obj) : wdestat.c wdeglbl.h wdestat.h wdemsgbx.h
+
+wdefordr.$(obj) : wdefordr.c wdefordr.h wdeglbl.h wdemem.h wdelist.h &
+    wdedebug.h wdeglbl.h wdeactn.h wdefdiag.h wdeglbl.h wderesin.h wdehash.h &
+    wdeglbl.h wdefont.h wdeglbl.h wderesiz.h
+
+wdesym.$(obj) : wdesym.c wdeglbl.h wdesym.h wderesin.h wdehash.h wdeglbl.h &
+    wdehash.h wdeglbl.h wdemem.h wdetfile.h wdegetfn.h wdeopts.h wdemain.h &
+    wdeglbl.h wdegeted.h wdeglbl.h wdestat.h wdesdup.h wdemsgbx.h wdefutil.h &
+    wdeglbl.h wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h &
+    wdeglbl.h wdefordr.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdestken.h &
+    wdeglbl.h wdedebug.h wdeglbl.h wdeactn.h wde_rc.h
+
+wderesin.$(obj) : wderesin.c wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdemem.h wdemain.h wdeglbl.h wdetfile.h wdedebug.h wdeglbl.h wdeactn.h &
+    wde_wres.h wdeedit.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h
+
+wdesdlg.$(obj) : wdesdlg.c wdeglbl.h wdesdlg.h wderesin.h wdehash.h wdeglbl.h &
+    wdemem.h wdeactn.h wdeobjid.h wdemain.h wdeglbl.h wdefdlg.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdeldres.h wderesin.h wdehash.h wdeglbl.h &
+    wderes.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdelist.h wdefdiag.h &
+    wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdedebug.h wdeglbl.h wdeactn.h &
+    wde_wres.h wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wderesin.h wdehash.h &
+    wdeglbl.h wdemsgbx.h wde_rc.h
+
+windlg.$(obj) : windlg.c windlg.h
+
+wdefedit.$(obj) : wdefedit.c wdefedit.h wdeglbl.h wdemem.h wdeobjid.h &
+    wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wde_wres.h wdemain.h wdeglbl.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wdedebug.h wdeglbl.h wdeactn.h &
+    wde_rc.h
+
+wdercerr.$(obj) : wdercerr.c wdedebug.h wdeglbl.h wdeactn.h wdemsgbx.h &
+    wdestken.h wdeglbl.h
+
+wdeflbox.$(obj) : wdeflbox.c wdeflbox.h wdeglbl.h wdemem.h wdeobjid.h &
+    wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wde_wres.h wdemain.h wdeglbl.h wdedebug.h wdeglbl.h wdeactn.h wdeoinfo.h &
+    wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h &
+    wde_rc.h
+
+wdegeted.$(obj) : wdegeted.c wdegeted.h wdeglbl.h wdemem.h wde_wres.h
+
+wdesfadd.$(obj) : wdesfadd.c wdesfadd.h wdeglbl.h wdemem.h
+
+wdetfile.$(obj) : wdetfile.c wdeglbl.h wdetfile.h wdemem.h wdedebug.h &
+    wdeglbl.h wdeactn.h
+
+wdeinfo.$(obj) : wdeinfo.c wdeglbl.h wdeinfo.h wderesin.h wdehash.h wdeglbl.h &
+    wdemem.h wdegeted.h wdeglbl.h wdeobjid.h wde_wres.h wdefutil.h wdeglbl.h &
+    wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdefordr.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdedebug.h wdeglbl.h &
+    wdeactn.h wdemain.h wdeglbl.h wde_rc.h
+
+wdefutil.$(obj) : wdefutil.c wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h &
+    wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdelist.h wdemem.h wdemain.h wdeglbl.h &
+    wdestyle.h wdegeted.h wdeglbl.h wdereq.h wdeopts.h wderes.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdedebug.h wdeglbl.h wdeactn.h wdeedit.h &
+    wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdesdup.h wdestat.h wdedefin.h &
+    wdeglbl.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdefordr.h wdeglbl.h wde_wres.h wde_rc.h
+
+wdeldres.$(obj) : wdeldres.c wdeglbl.h wdeldres.h wderesin.h wdehash.h &
+    wdeglbl.h wdemem.h wdedebug.h wdeglbl.h wdeactn.h wderdexe.h wdesdup.h &
+    wdemsgbx.h wdetfile.h wdestat.h
+
+wdefscrl.$(obj) : wdefscrl.c wdefscrl.h wdeglbl.h wdemem.h wdeobjid.h &
+    wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h wdehash.h wdeglbl.h wderesin.h &
+    wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wde_wres.h wdemain.h wdeglbl.h wdedebug.h wdeglbl.h wdeactn.h wdeoinfo.h &
+    wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h &
+    wde_rc.h
+
+wdeopts.$(obj) : wdeopts.c wdeglbl.h wdeopts.h wdemem.h wdegeted.h wdeglbl.h &
+    wdedebug.h wdeglbl.h wdeactn.h wdesdup.h wdefutil.h wdeglbl.h wdeobjid.h &
+    wdeoinfo.h wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h &
+    wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdegetfn.h wdemain.h wdeglbl.h &
+    wdestat.h wde_rc.h
+
+wderes.$(obj) : wderes.c wderes.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdemem.h wdeobjid.h wdemsgbx.h wdeldres.h wderesin.h wdehash.h wdeglbl.h &
+    wdefinit.h wdeedit.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdemain.h &
+    wdeglbl.h wdesvres.h wderesin.h wdehash.h wdeglbl.h wdesdlg.h wderesin.h &
+    wdehash.h wdeglbl.h wdelist.h wdegetfn.h wdesym.h wderesin.h wdehash.h &
+    wdeglbl.h wdehash.h wdeglbl.h wde_wres.h wdesdup.h wdefdiag.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdetfile.h wdetool.h wdefmenu.h wdeglbl.h &
+    wdefordr.h wdeglbl.h wdedebug.h wdeglbl.h wdeactn.h wdestat.h wdefont.h &
+    wdeglbl.h wderesiz.h wde_rc.h
+
+wdemsgbx.$(obj) : wdemsgbx.c wdemsgbx.h wdemain.h wdeglbl.h
+
+wdehints.$(obj) : wdehints.c wdehints.h wdeglbl.h wdemem.h wdestat.h &
+    wdemain.h wdeglbl.h wde_rc.h
+
+wde_wres.$(obj) : wde_wres.c wde_wres.h wdemem.h wdesdup.h
+
+wdegetfn.$(obj) : wdegetfn.c wdegetfn.h wdedebug.h wdeglbl.h wdeactn.h &
+    wdemain.h wdeglbl.h wdemsgbx.h wdesdup.h
+
+wdealign.$(obj) : wdealign.c wdealign.h wdeglbl.h wdemain.h wdeglbl.h &
+    wdestat.h wdedebug.h wdeglbl.h wdeactn.h
+
+wdedebug.$(obj) : wdedebug.c wdedebug.h wdeglbl.h wdeactn.h wdestat.h &
+    wdemain.h wdeglbl.h
+
+wdefinit.$(obj) : wdefinit.c wdefinit.h wdeobjid.h wdefbase.h wdeglbl.h &
+    wdefdiag.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefcntl.h wdeglbl.h &
+    wdefcust.h wdeglbl.h wdefbutt.h wdeglbl.h wdefcbox.h wdeglbl.h wdefedit.h &
+    wdeglbl.h wdeflbox.h wdeglbl.h wdefstat.h wdeglbl.h wdefscrl.h wdeglbl.h &
+    wdemain.h wdeglbl.h wdemem.h
+
+wdefcntl.$(obj) : wdefcntl.c wdefcntl.h wdeglbl.h windlg.h wdeactn.h &
+    wde_wres.h wdemem.h wderes.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdeinfo.h wderesin.h wdehash.h wdeglbl.h wdelist.h wdesdup.h wdefmenu.h &
+    wdeglbl.h wdefordr.h wdeglbl.h wdefdiag.h wdeglbl.h wderesin.h wdehash.h &
+    wdeglbl.h wdetool.h wdefont.h wdeglbl.h wderesiz.h wdemain.h wdeglbl.h &
+    wdecust.h wdeglbl.h wderesiz.h wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h &
+    wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h wdedebug.h wdeglbl.h &
+    wdeactn.h wde_rc.h
+
+wdehash.$(obj) : wdehash.c wdehash.h wdeglbl.h wdemem.h wdedebug.h wdeglbl.h &
+    wdeactn.h wdesdup.h wdelist.h wdestat.h wdemain.h wdeglbl.h
+
+wdemem.$(obj) : wdemem.c trmemcvr.h
+
+wdeedit.$(obj) : wdeedit.c wdeedit.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdemain.h wdeglbl.h wderes.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h &
+    wdedebug.h wdeglbl.h wdeactn.h wdefutil.h wdeglbl.h wdeobjid.h wdeoinfo.h &
+    wdehash.h wdeglbl.h wderesin.h wdehash.h wdeglbl.h wdefordr.h wdeglbl.h &
+    wderesin.h wdehash.h wdeglbl.h wdefont.h wdeglbl.h wderesiz.h wdemsgbx.h
+
+wdeppmem.$(obj) : wdeppmem.c trmemcvr.h wdestken.h wdeglbl.h wdedebug.h &
+    wdeglbl.h wdeactn.h
+
+wdesvexe.$(obj) : wdesvexe.c wdeglbl.h wdesvexe.h wderesin.h wdehash.h &
+    wdeglbl.h wdemem.h wdestken.h wdeglbl.h wdesvres.h wderesin.h wdehash.h &
+    wdeglbl.h wdemsgbx.h wdetfile.h wdedebug.h wdeglbl.h wdeactn.h
+
+wdelist.$(obj) : wdelist.c wdeglbl.h wdelist.h wdemem.h wdedebug.h wdeglbl.h &
+    wdeactn.h
+

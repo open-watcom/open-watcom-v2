@@ -1,0 +1,4 @@
+ERR24(10): Error(E24): More than one command list found for (test1)
+ERR24(15): Error(E24): More than one command list found for (test2)
+Error(E24): More than one command list found for (test3)
+Error(E02): Make execution terminated

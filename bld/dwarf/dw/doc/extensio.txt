@@ -1,0 +1,44 @@
+Here are some miscellaneous extensions.  Also see the WATCOM_references
+specification.
+
+.debug_info extensions:
+
+    AT_WATCOM_pointer_class	0x4080
+	This attribute is used in AT_pointer_type or AT_reference_type and
+	has a constant value which is a bitfield with the following values:
+	    PTR_default		0
+	    PTR_near		1
+	    PTR_far		2
+	    PTR_huge		3
+	    PTR_far16		4
+
+    AT_WATCOM_segment	0x4081
+	TAG_pointer_type
+	TAG_reference_type
+	    AT_WATCOM_segment is a location expression that calculates the
+	    segment portion of the pointer (for based pointers).   It expects
+	    the segment/address of the pointer itself to be pushed on the
+	    stack (for based(_self)).
+
+	Any other tag with a location expression that calculates the address of
+	an object, or an AT_low_pc or AT_high_pc:
+	    AT_WATCOM_segment is a location expression that calculates
+	    the segment portion of the address.
+
+    AT_mod_u_d_type, AT_mod_fund_type
+	Have the following additional modifiers:
+	    MOD_near	0x80
+	    MOD_far	0x81
+	    MOD_huge	0x82
+	    MOD_far16	0x83
+
+
+.debug_macinfo extensions:
+    MACINFO_vend_ext
+	    followed by line number ULEB128
+	    0x01    indicates references
+		    followed by null-terminated macro name which is used
+		    on this line
+		    -- this has been proposed... 92.08.djg2
+			The proposal has a different structure; it asks
+			for a new record MACINFO_reference.

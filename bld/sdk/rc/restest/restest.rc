@@ -1,0 +1,42 @@
+#include <windows.h>
+#ifndef __NT__
+#include <ver.h>
+#else
+#include <winver.h>
+#endif
+#include "res.h"
+#include "verinfo.h"
+#include "resname.h"
+#include "gettype.h"
+#include "getnum.h"
+
+"RESTEST_MENU" MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit", TMENU_EXIT
+    END
+    POPUP "&Resources"
+    BEGIN
+        MENUITEM "&Accelerator", TMENU_ACCEL,           CHECKED
+        MENUITEM "&Bitmaps", TMENU_BITMAP,              CHECKED
+        MENUITEM "&Cursor", TMENU_CURSOR,               CHECKED
+        MENUITEM "&Dialogs", TMENU_DLG,                 CHECKED
+        MENUITEM "&Font", TMENU_FONT
+        MENUITEM "&Icons", TMENU_ICON,                  CHECKED
+        MENUITEM "&Menu", TMENU_MENU,                   CHECKED
+#ifdef __NT__
+        MENUITEM "M&essageTable", TMENU_MSGTBL          CHECKED
+#endif
+        MENUITEM "&Rcdata", TMENU_RCDATA,               CHECKED
+        MENUITEM "&Stringtable", TMENU_STRINGTBL,       CHECKED
+        MENUITEM "&User-defined", TMENU_USERDEF,        CHECKED
+        MENUITEM "&Versioninfo", TMENU_VERINFO,         CHECKED
+    END
+END
+
+#include "verinfo.dlg"
+#include "resname.dlg"
+#include "gettype.dlg"
+#include "getnum.dlg"
+#include "test.rc"

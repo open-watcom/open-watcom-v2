@@ -1,0 +1,824 @@
+Body
+
+--- Overview
+
+    *** It slices, it dices.
+    *** Types of applications that can be debugged with Debugger
+	    ads
+	    dos
+	    nlm
+	    nt
+	    os2
+	    pen
+	    pls
+	    qnx
+	    rsi
+    *** Host environments and target environments
+    *** Remote debugging to extend capabilities
+    *** GUI debuggers and character mode debuggers
+    *** Utilities that can be used in conjuction with debugger - strip, mapfile
+    
+--- Concepts
+
+    The debugger is a context sensitive environment.  When an
+    operation is selected from a right mouse (or Action) menu its action
+    depends on the active window and possibly the selected item or
+    the item under the cursor.  The following right mouse
+    operations recurr throughout the debugger and are central to
+    it's operation.  They will appear in the right mouse menu of
+    any window where the operation might make sense.
+
+    
+    *** Inspect
+
+	Inspects the selcted item in a window.  Typing information
+	to determine how to inspect the item.  If it is a
+	variable, it's displayed in a variable window.  If it's a
+	function, the Source window will be positioned to the
+	starting line of the function.  If it's a hex address,
+	memory is displayed starting at that address.
+
+    *** Modify
+
+        Changes the item under the cursor.  You will be prompted for
+	a new value.
+
+    *** New
+
+        Add a new item to the window.  eg: add a new break point in the
+	break point window.
+
+    *** Delete
+
+        Delete the selected item from the window.  eg: delete a hotkey definition.
+
+    *** Source
+
+        Show the source code associated with the selected item.
+
+    *** Modules
+
+        Show a list of modules associated with the selected item.
+
+    *** Functions
+
+        Show the list of functions associated with the selected item (image)
+	or window (Source/Assembly).
+
+    *** Assembly
+
+        Show the assembly code associated with the selected item.
+
+    *** Watch
+
+        Add the selected item to the watches window.
+
+    *** Search
+
+        Search a window for a specified string.
+
+    *** Break
+
+	Sets a break point based on the selcted item.  Typing information
+	to determine what kind of break to set.  If it is a
+	variable, it's break on write.  If it's a
+	function, it's break on execute.
+
+    *** Home
+
+    	Move the window to the currently executing location.
+
+    *** Address
+
+        Move the window to show code associated with an Address.  You
+	are prompted for an address expression.
+
+    *** Raw Memory
+
+        Show the memory where a variable resides.
+
+    *** Pointer Memory
+
+        Show the memory referenced by a pointer variable.
+
+    *** Globals
+
+        Show a list of global variables.
+
+    *** Unwind/Rewind
+
+        Position the state of the debugger up/down the call stack.
+
+    *** Undo/Redo
+
+        The debugger keeps a history of all interactions that modify the
+	state of the program being debugged.  Undo/Redo lets you browse
+	through this history.
+
+    *** Replay
+
+        The debugger keeps a history of all interactions that might
+	affect program execution.  Replay will let you restart your
+	debugging session and replay it to any point.
+
+    *** Goto
+
+        Let the application program run util the selected code is reached.
+
+--- Preparing a Program to be Debugged
+
+    *** Compiling an application for debugging
+    *** d1, d1+, d2, etc..
+    *** Linking an application for debugging
+    *** debug all, debug lines, debug locals etc...
+    *** creating a separate symbol file
+    
+--- Quick tutorial
+
+    *** primary purpose is to show the look and feel of the debugger
+    *** secondary purpose is to ensure that everything is set up correctly
+    *** quick simple character mode program that should work in every environment
+	    -------------------
+	    Start up debugger
+	    Step into
+	    Look at elements in a structure
+	    set a breakpoint
+	    undo
+	    inspect/modify variable
+	    view/unwind call stack
+	    quit
+	    -------------------
+    
+--- Starting up the Debugger
+    
+    *** Environment setup to run debugger
+	    path, libpath
+	    VxDs, DLLs that need to be loaded
+    
+    *** Summary of Debugger Command Line Options
+    
+   	    see opt.doc
+	
+--- Debugger Environment (describe mouse and keyboard methods)
+    
+    *** Windows
+	    Elements
+	        Frame
+		Max/Min/Restore
+		System Menu
+		Scroll Bars
+		Title
+	    The current window
+	        Switching
+	    Moving
+	    Resizing
+	    Maximizing
+	    Minimizing
+	    Restoring
+	    Zooming
+	    Closing
+	    Buttons (Hot Spots?)
+	        Hint Text
+		Move off to cancel
+	    Right Mouse button menus
+		The Action Menu
+
+	    Cursor
+	    Selection
+
+    *** Menus
+	    Using
+	    Hints
+    
+    *** Dialogs
+	    Using
+	    Elements
+		Text fields
+		Button
+		Default Button (Enter)
+		Cancel (ESC)
+		Radio Buttons
+		Edit fields
+		List Boxes
+		Combo Boxes
+    
+    *** Hot Keys
+    
+    *** Help
+
+    	    NYI
+    
+    *** The ToolBar
+
+    	    Go/Over/Into/Return/Undo/Redo/Unwind/Rewind/Home
+    
+    *** The Status Window
+
+    	    Hint Text
+	    Informational Messages
+    
+    *** The LOG Window
+
+    	    Informational Messages
+	    Dumping windows
+	    Output from Print
+    
+    *** The Window Menu
+	    Window (W)
+	    - Arrange window layouts
+		Application (p)       F4
+		- Show the application's output screen and wait for a keystroke
+		To Log (T)
+		- Write the active window contents to the log window
+		To File... (F)
+		- Write the active window contents to a file
+		Zoom (Z)              CTRL-z
+		- Alternate between maximized and normal sized window
+		Next (N)              F6
+		- Select a new current window
+		Hotkeys (k)
+		- Show a list of all hot keys
+		--------
+		Cascade (C)
+		Tile Horizontally (H)
+		Tile Vertically (V)
+		Arrange Icons (A)
+		--------
+		1. window (1)
+		2. window (2)
+		   ...
+		--------
+    
+    *** The File Menu
+	    File (F)
+	    - Perform file operations
+		Open... (O)
+		- Start debugging a different program
+		View... (V)           ALT-4
+		- View a given file
+		Command... (C)        ALT-9
+		- Enter a debugger command
+		---------
+		Options... (t)
+		- Set global debugging options
+		Window Options... (W)
+		- Set window options across all windows
+		Save Setup... (S)
+		- Save the current setup to a file
+		Load Setup... (L)
+		- Load a new setup from a file
+		Source Path... (P)
+		- Set directories to be used when searching for source files
+		---------
+		About... (A)
+		- Display program information
+		System (y)
+		- Start an operating system shell
+		---------
+		Exit (x)
+		- Exit from the debugger
+    
+    *** The hotkeys Window
+	    Modify... (M)
+	    - Modify the selected item
+	    New... (N)
+	    - Add a new item to this window
+	    Delete (D)
+	    - Delete the selected item from this window
+	    ---------
+	    TD keys (T)
+	    - Use TD style hot keys
+	    CV keys (C)
+	    - Use CV style hot keys
+    
+    *** The Code Menu
+	    Code (C)
+	    - Open a new code window
+		Source (S)            ALT-3
+		- Show the source window
+		Modules (M)
+		- Show a list of all modules in the program
+		Functions (F)
+		- Show a list of all functions in the program
+		Calls (C)
+		- Show the call history window
+		---------
+		Assembly (A)
+		- Show the assembly language window
+		Threads (T)
+		- Show the thread window
+		Images (I)
+		- Show the list of all executable images related to this process
+		Replay (R)
+		- Show the program execution replay window
+    
+    *** The Data Menu
+	    Data (D)
+	    - Open a new data window
+		Watches (W)           ALT-2
+		- Show the watches window
+		Locals (L)            ALT-1
+		- Show the local variable display window
+		File Variables (V)
+		- Show the file scope variables window
+		Globals (G)
+		- Show a list of all external data items the program
+		---------
+		Registers (R)         ALT-7
+		- Show the contents of the CPU registers
+		80x87 FPU (8)         ALT-8
+		- Show the 80x87 window
+		Stack (S)
+		- Show the stack window
+		I/O Ports (I)
+		- Show the I/O port manipulation window
+		Memory at... (M)      ALT-6
+		- Show memory at a given address
+		---------
+		Log (o)
+		- Show the debugging log window
+    
+--- Navigating Through a Program
+    
+    *** The Search Menu
+	    Search (S)
+	    - Search windows and modules
+		Find... (F)           /
+		- Search the current window for a given string
+		Next (N)              ALT-/
+		- Find the next occurrence of a string
+		Previous (P)          N
+		- Find the previous occurrence of a string
+		All Modules... (A)
+		- Search all source modules in the program for a given string
+		Match (M)             =
+		- Match lines using keyboard input
+    
+    *** The source/file/tmpfile Window
+	    Inspect (I)
+	    - Inspect the selected item
+	    Break (B)
+	    - Stop when the selected value changes or the selected function is entered
+	    Enter Function (E)
+	    - Execute until the selected function is entered
+	    Watch (W)
+	    - Add the selected item to the watches window
+	    Find (F)
+	    - Search the window for the selected item
+	    Home (H)
+	    - Move to the currently executing location
+	    Show (S)
+		Assembly (A)
+		- Show the assembly code associated with the selected line
+		Functions (F)
+		- Show all functions in the selected module
+		Address... (d)
+		- Position the window at a given address
+		Module... (M)         v
+		- Show a given module
+		Line... (L)
+		- Position the window at a given line number
+    
+    *** The modules Window
+	    Source (S)
+	    - Show the source code associated with the selected line
+	    Assembly (A)
+	    - Show the assembly code associated with the selected line
+	    Functions (F)
+	    - Show all functions in the selected module
+	    ---------
+	    Break All (B)
+	    - Set a break point at every function in this module
+	    Clear All (C)
+	    - Delete all break points
+    
+    *** The globals Window
+	    Watch (W)
+	    - Add the selected item to the watches window
+	    ---------
+	    Raw Memory (R)
+	    - Display the memory associated with this variable
+	    ---------
+	    Typed Symbols (T)
+	    - Only show symbols with type information
+    
+    *** The functions/globalfunctions Window
+	    Break... (B)
+	    - Set a break point at the selected line
+	    ---------
+	    Source (S)
+	    - Show the source code associated with the selected line
+	    Assembly (A)
+	    - Show the assembly code associated with the selected line
+	    ---------
+	    Typed Symbols (T)
+	    - Only show symbols with type information
+    
+    *** The image Window
+	    New Symbols (N)
+	    - Add symbolic debugging information for the selected image
+	    Delete Symbols (D)
+	    - Delete the symbolic debugging information for the selected image
+	    ---------
+	    Modules (M)
+	    - Show all modules in the selected image
+	    Functions (F)
+	    - Show all functions in the selected image
+	    Globals (G)
+	    - Show all global variables in the selected image
+    
+--- Controlling program execution
+    
+    *** The Run Menu
+	    Run (R)
+	    - Control program execution
+		Go (G)                F5
+		- Resume program execution
+		Run to Cursor (C)
+		- Execute until the cursor position is reached
+		Execute to... (x)     g
+		- Execute until a given address is reached
+		Step Over (S)         F10
+		- Trace once, stepping over calls
+		Trace Into (T)        F8
+		- Trace once, stepping into calls
+		Next Sequential (N)   x
+		- Trace until the next sequential address is reached
+		Until Return (U)
+		- Execute until this function returns
+		---------
+		Skip to Cursor (k)
+		- Re-position the instruction pointer at the cursor position
+		Restart (R)
+		- Restart the program
+		---------
+		Save... (v)
+		- Save event replay information to a file
+		Restore... (o)
+		- Restore event replay information from a file
+    
+    *** The Undo Menu
+	    Undo (U)
+	    - Browse through the execution history
+		Undo (U)              CTRL-LEFT
+		- Undo the last program execution or modification
+		Redo (R)              CTRL-RIGHT
+		- Undo the last undo
+		Unwind Stack (n)      CTRL-UP
+		- Move up the call stack
+		Rewind Stack (e)      CTRL-DOWN
+		- Move down the call stack
+		Home (H)              CTRL-BACKSPACE
+		- Move to the currently executing location
+    
+    *** The replay Window
+	    Goto (G)
+	    - Execute until the program returns to the selected level in the call history
+	    Source (S)
+	    - Show the source code associated with the selected line
+	    Assembly (A)
+	    - Show the assembly code associated with the selected line
+    
+    *** The calls Window
+	    Unwind (U)
+	    - Unwind the call stack to the selected level
+	    Break... (B)
+	    - Set a break point at the selected line
+	    Goto (G)
+	    - Execute until the program returns to the selected level in the call history
+	    ---------
+	    Source (S)
+	    - Show the source code associated with the selected line
+	    Assembly (A)
+	    - Show the assembly code associated with the selected line
+    
+    *** The thread Window
+	    Switch to (S)
+	    - Set the debugger to the selected thread context
+	    Freeze (F)
+	    - Do not allow the selected thread to execute
+	    Thaw (T)
+	    - Allow the selected thread to execute
+    
+--- Examining and Modifying The Program State
+    
+    *** The watch/variable/filescope/locals Window
+	    Modify... (M)
+	    - Modify the selected item
+	    Inspect (I)
+	    - Inspect the selected item
+	    Break (B)
+	    - Stop when the selected value changes or the selected function is entered
+	    Watch (W)
+	    - Add the selected item to the watches window
+	    Edit... (E)
+	    - Edit the selected expression. Type casts are allowed
+	    New... (N)
+	    - Add a new item to this window
+	    Delete (D)                CTRL-y
+	    - Delete the selected item from this window
+	    Root (R)
+	    - Move the selected item to the root of this structure/array
+	    Type (T)
+	    - Display as a different data type
+		Hex (H)
+		Decimal (c)
+		Character (r)
+		- Display the selected variable as a character
+		String (S)
+		- Display the selected variable as a character string
+		Pointer (P)
+		- Display the selected variable as a pointer
+		Array... (A)
+		- Expand variable as an array with given dimensions
+	    Show (S)
+		Raw Memory (R)
+		- Display the memory associated with this variable
+		Pointer Memory (P)
+		- Display the memory associated with this pointer value
+		Pointer Code (C)
+		- Display the source or assembly associated with this pointer
+	    Options (O)
+	    - Set window options for this window only
+		Whole Expression (W)
+		- Show the entire expression on each line
+		Functions (F)
+		- Show C++ member functions
+		Inherited (I)
+		- Show C++ inherited members
+		Compiler (C)
+		- Show C++ compiler generated members
+		Members (M)
+		- Show C++ 'this' members
+		Private (P)
+		- Show C++ private members
+		Protected (r)
+		- Show C++ protected members
+    
+    *** The memory Window
+	    Modify... (M)
+	    - Modify the selected item
+	    Break on Write (B)
+	    - Stop when the selected value changes
+	    ---------
+	    Near Follow (N)
+	    - Follow the near pointer under the cursor
+	    Far Follow (F)
+	    - Follow the far pointer under the cursor
+	    Segment Follow (S)
+	    - Follow the segment under the cursor
+	    Cursor Follow (C)
+	    - Make the cursor position the new starting address
+	    Repeat (R)
+	    - Repeat the previous follow using the same offset
+	    Previous (P)
+	    - Backout to the previous position in the follow chain
+	    Home (H)
+            - Return to the home memory location
+	    ---------
+	    Address... (d)
+	    - Position the window at a given address
+	    Assembly (A)
+	    - Show the assembly code associated with the selected line
+	    Type (T)
+	    - Display as a different data type
+		Byte (B)
+		Word (W)
+		DWord (D)
+		Char (C)
+		Short (S)
+		Long (L)
+		Unsigned Char (r)
+		Unsigned Short (t)
+		Unsigned Long (g)
+		16:16 Pointer (6)
+		16:32 Pointer (3)
+		Binary (i)
+		Float (F)
+		Double (o)
+	
+    
+--- Breakpoints
+
+    *** what is a breakpoint
+    *** types of break points
+	    break on execute
+	    break on write
+	    conditional breakpoints
+    
+    *** how can they be used during debugging
+	    setting breakpoints
+	    clearing breakpoints
+	    disabling breakpoints
+	    enabling breakpoints
+    
+    *** The Break Menu
+	    Break (B)
+	    - Break point operations
+		Toggle (T)            F9
+		- Toggle the break point at the cursor position
+		At Cursor (A)         b
+		- Create/Modify the break point at the cursor position
+		New... (N)
+		- Create a new break point
+		---------
+		On DLL Load (O)
+		- Stop whenever a DLL is dynamically loaded
+		View All (V)
+		- Show a list of all break points
+		Clear All (C)
+		- Delete all break points
+		Disable All (D)
+		- Disable, but do not delete, all break points
+		Enable All (E)
+		- Enable all break points
+		---------
+		Save... (S)
+		- Save all break points to a file
+		Restore... (R)
+		- Restore all break points from a file
+    
+    *** The break Window
+	    Modify... (M)
+	    - Modify the selected item
+	    New... (N)
+	    - Add a new item to this window
+	    Delete (D)
+	    - Delete the selected item from this window
+	    ---------
+	    Source (S)
+	    - Show the source code associated with the selected line
+	    Assembly (A)
+	    - Show the assembly code associated with the selected line
+    
+    *** The Breakpoint Dialog
+	    Address
+	    Condition
+	    Break On
+		Execute
+		Byte
+		Word
+		DWord
+	    Countdown
+	    Total Hits
+		Reset
+	    Execute When Hit
+		Resume
+	    Active
+	    Value
+	    OK
+	    Clear
+	    Symbol ...
+	    Cancel
+    
+--- Expressions
+    
+    *** Lift this chapter from the old manual
+    
+--- Techniques for tracking down bugs in a program
+
+    *** using map files to help
+    
+--- Assembly Level Debugging
+    
+    *** WASM/MASM
+	    Debugging options
+    
+    *** in-line assembly
+    
+    *** The register Window
+	    Modify... (M)
+	    - Modify the selected item
+	    Inspect (I)
+	    - Inspect the selected item
+	    ---------
+	    Hex (H)
+	    Extended (E)
+	    - Show the extended 386 register set
+    
+    *** The assembly Window
+	    Inspect (I)
+	    - Inspect the selected item
+	    Break (B)
+	    - Stop when the selected value changes or the selected function is entered
+	    Enter Function (E)
+	    - Execute until the selected function is entered
+	    Show (S)
+		Source (S)
+		- Show the source code associated with the selected line
+		Functions (F)
+		- Show all functions in the selected module
+		Address... (d)
+		- Position the window at a given address
+		Module... (M)         v
+		- Show a given module
+	    Home (H)
+	    - Move to the currently executing location
+	    Hex (x)
+    
+    *** The io Window
+	    Modify... (M)
+	    - Modify the selected item
+	    New... (N)
+	    - Add a new item to this window
+	    Delete (D)
+	    - Delete the selected item from this window
+	    Read (R)
+	    - Read the displayed value from the selected port
+	    Write (W)
+	    - Write the displayed value to the selected port
+	    Type (T)
+	    - Display as a different data type
+		Byte (B)
+		Word (W)
+		DWord (D)
+		Char (C)
+		Short (S)
+		Long (L)
+		Unsigned Char (r)
+		Unsigned Short (t)
+		Unsigned Long (g)
+	
+    *** The fpu Window
+	    Modify... (M)
+	    - Modify the selected item
+	    ---------
+	    Hex (H)
+    
+    *** The STack Window
+	    - see memory window
+    
+    
+--- Remote debugging
+
+    *** Overview with pretty pictures
+    *** Link specific information and parameters
+	    dqv
+	    net
+	    nmp
+	    nov
+	    par
+	    ser
+	    tcp
+	    vdm
+	    win
+    *** RFX
+            borrow from old manual
+    
+--- Advanced Techniques
+    
+    *** Call
+    *** Capture
+    *** .DBG files
+    *** Patching using BreakPoints
+    *** Resuming after Undo or Unwind
+    *** Custom debugger setups
+    *** Debugging multi-threaded applications
+    *** Debugging DLLs
+    *** Following data structures in the absence of debugging information
+    
+    
+Appendicies
+
+--- Debugger Commands
+
+	see cmd.doc
+
+--- Command Files
+
+--- Predefined Symbols
+
+	see predef.doc
+
+--- Main Menu
+
+	see mainmenu.doc
+
+--- Right Mouse button menus
+
+	see ritemous.doc
+	
+--- Error messages with explanations
+
+--- Parallel Port Wiring
+
+ 	see old manual
+
+--- Serial Port Wiring
+
+ 	see old manual
+
+--- System Specific Debugging Techniques
+
+	PM
+	Windows
+	NT
+	NetWare loadable modules
+	PenPoint
+	AutoCAD ADS
+	QNX
+
+--- Technical Notes
+
+    *** description of Undo mechanism.
+    *** description of Replay mechanism.

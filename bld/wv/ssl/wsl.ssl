@@ -1,0 +1,892 @@
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%       Copyright (C) 1987, by WATCOM Systems Inc. All rights     %
+%       reserved. No part of this software may be reproduced      %
+%       in any form or by any means - graphic, electronic or      %
+%       mechanical, including photocopying, recording, taping     %
+%       or information storage and retrieval systems - except     %
+%       with the written permission of WATCOM Systems Inc.        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Modified     By              Reason
+% --------     --              ------
+% 88-06-25     Steve Fry       initial implementation
+%
+
+
+type int:
+    '-2'        = -2
+    '-1'        = -1
+     '0'        =  0
+     '1'        =  1
+     '2'        =  2
+     '3'        =  3;
+
+type bool:
+    false
+    true;
+
+type expr_type:
+    expr_normal
+    expr_memory
+    expr_call;
+
+type type_classes:
+    class_near
+    class_far;
+
+type stack_class:
+    stk_void
+    stk_bool
+    stk_enum
+    stk_char
+    stk_int
+    stk_near_ptr
+    stk_far_ptr
+    stk_addr
+    stk_real
+    stk_struct
+    stk_array
+    stk_func
+    stk_type
+    stk_name
+    stk_reg_set
+    stk_unsigned        = 0x104;
+
+type type_scalar:
+    type_void
+    type_u1
+    type_s1
+    type_u2
+    type_s2
+    type_u4
+    type_s4
+    type_f4
+    type_f8;
+
+
+
+mechanism Misc:
+    ParenLevelAdd(int)  = 0x00
+    ParenLevel >>int
+    SkipCountAdd(int)
+    SkipCount >>int
+    ExprType >>expr_type
+    CaseSensitive(bool)
+    ModNull
+    ModCurr
+    ModNameLkup
+    ScanSave
+    ScanRestore;
+
+
+mechanism Do:
+    DoAssign            = 0x20
+    DoMul
+    DoDiv
+    DoMod
+    DoMinus
+    DoShift
+    DoAnd
+    DoXor
+    DoOr
+    DoAddr
+    DoPoints(stack_class)
+    DoField
+    DoCall                    % always takes var num
+    DoConvert
+    DoPlus
+    DoMakeAddr
+    DoTstEQ(int) >>bool
+    DoTstLT(int) >>bool
+    DoTstTrue(int) >>bool
+    DoSizeType
+    DoBaseType
+    DoPointType(type_classes)
+    DoLkupType >>bool;
+
+
+mechanism Push_n_Pop:
+    PushInt(int)        = 0x40
+    PushDot
+    PushRegSet >>bool
+    PushName >>bool
+    PushNum >>bool
+    PushLineNum >>bool
+    PushScalarType(type_scalar)
+    PushDup
+    PopEntry;
+
+
+mechanism Stack:
+    StackSwap(int)      = 0x60
+    StackMoveSP(int)
+    StackClass(int) >>stack_class
+    StackValue(int)
+    StackLValue(int)
+    StackRValue(int);
+
+
+% Variables
+
+
+mechanism Num:
+    NumSet(int)         = 0x80
+    NumAdd(int);
+
+
+type bits_type:
+    bits_none           = 0x00
+    bits_char           = 0x01
+    bits_int            = 0x02
+    bits_short          = 0x04
+    bits_long           = 0x08
+    bits_signed         = 0x10
+    bits_unsigned       = 0x20
+    bits_float          = 0x40
+    bits_double         = 0x80
+    bits_void           = 0x100
+    bits_signed_char    = 0x11
+    bits_unsigned_char  = 0x21
+    bits_signed_int     = 0x12
+    bits_unsigned_int   = 0x22
+    bits_signed_short   = 0x14
+    bits_unsigned_short = 0x24
+    bits_short_int      = 0x06
+    bits_signed_short_int=0x16
+    bits_unsigned_short_int=0x26
+    bits_signed_long    = 0x18
+    bits_unsigned_long  = 0x28
+    bits_long_int       = 0x0a
+    bits_signed_long_int= 0x1a
+    bits_unsigned_long_int=0x2a
+    bits_long_float     = 0x48
+    bits_long_double    = 0x88;
+
+mechanism Bits:
+    BitsSet(bits_type)  = 0xa0
+    BitsGet >>bits_type
+    BitsOr(bits_type) >>bool
+    BitsAnd(bits_type) >>bool;
+
+
+error:
+    err_duplicate_type_spec
+    err_ill_type
+    err_illegal_type_spec
+    err_loc_and_want_reg_name
+    err_loc_and_want_operand
+    err_loc_and_want_name;
+
+
+input:
+        % one character delimiters
+    ET_EQ              '='      = 0x20
+    ET_LT              '<'
+    ET_GT              '>'
+    ET_PLUS            '+'
+    ET_MINUS           '-'
+    ET_OR              '|'
+    ET_MUL             '*'
+    ET_DIV             '/'
+    ET_AND             '&'
+    ET_NOT             '~'
+    ET_DOT             '.'
+    ET_COLON           ':'
+    ET_LEFT_PAREN      '('
+    ET_RIGHT_PAREN     ')'
+    ET_COMMA           ','
+    ET_POINT           '^'
+    ET_LEFT_BRACKET    '['
+    ET_RIGHT_BRACKET   ']'
+    ET_POUND           '#'
+    ET_FAR_INDIR       '%'
+    ET_MODULE_SPEC     '@'
+        % two character delimiters
+    ET_GETS            ':='
+    ET_NE              '<>'
+    ET_LE              '<='
+    ET_GE              '>='
+    ET_PLUS_PLUS       '++'
+    ET_MINUS_MINUS     '--'
+    ET_AND_AND         '&&'
+    ET_OR_OR           '||'
+    ET_MUL_GETS        '*='
+    ET_DIV_GETS        '/='
+    ET_PLUS_GETS       '+='
+    ET_MINUS_GETS      '-='
+    ET_AND_GETS        '&='
+    ET_OR_GETS         '|='
+    ET_LSHIFT          '<<'
+    ET_RSHIFT          '>>'
+        % three character delimiters
+    ET_LSHFT_GETS      '<<='
+    ET_RSHFT_GETS      '>>='
+        % keywords
+    ET_MOD             'mod'
+    ET_CHAR            'char'
+    ET_INT             'int'
+    ET_BYTE            'byte'
+    ET_UNSIGNED_8      'unsigned_8'
+    ET_SIGNED_8        'signed_8'
+    ET_UNSIGNED_16     'unsigned_16'
+    ET_SIGNED_16       'signed_16'
+    ET_UNSIGNED_32     'unsigned_32'
+    ET_SIGNED_32       'signed_32'
+    ET_POINTER         'pointer'
+    ET_UINT            'uint'
+    ET_REAL            'real'
+    ET_REALLONG        'reallong';
+
+
+
+rules
+
+    expr:
+        CaseSensitive( true )
+        @assignment
+    ;
+
+    assignment:
+        @logical_or
+        [
+          | ET_GETS:
+            @assignment
+            [SkipCount
+              | 0:
+                DoAssign
+              | *:
+            ]
+          | ET_MUL_GETS:
+            @check_dup
+            [SkipCount
+              | 0:
+                DoMul
+                DoAssign
+              | *:
+            ]
+          | ET_DIV_GETS:
+            @check_dup
+            [SkipCount
+              | 0:
+                DoDiv
+                DoAssign
+              | *:
+            ]
+          | ET_PLUS_GETS:
+            @check_dup
+            [SkipCount
+              | 0:
+                DoPlus
+                DoAssign
+              | *:
+            ]
+          | ET_MINUS_GETS:
+            @check_dup
+            [SkipCount
+              | 0:
+                DoPlus
+                DoAssign
+              | *:
+            ]
+          | ET_RSHFT_GETS:
+            @check_dup
+            [SkipCount
+              | 0:
+                @negate
+                DoShift
+                DoAssign
+              | *:
+            ]
+          | ET_LSHFT_GETS:
+            @check_dup
+            [SkipCount
+              | 0:
+                DoShift
+                DoAssign
+              | *:
+            ]
+          | ET_AND_GETS:
+            @check_dup
+            [SkipCount
+              | 0:
+                DoAnd
+                DoAssign
+              | *:
+            ]
+          | ET_OR_GETS:
+            @check_dup
+            [SkipCount
+              | 0:
+                DoOr
+                DoAssign
+              | *:
+            ]
+          | *:
+        ]
+    ;
+
+    check_dup:
+        [SkipCount
+          | 0:
+            PushDup
+          | *:
+        ]
+        @assignment
+    ;
+
+
+    logical_or:
+        @logical_and
+        {
+            [
+              | ET_OR_OR:
+                [SkipCount
+                  | 0:
+                    [DoTstTrue( -1 )
+                      | false:
+                        PopEntry
+                      | *:
+                        @skip_ors
+                        >
+                    ]
+                  | *:
+                ]
+                @logical_and
+                [SkipCount
+                  | 0:
+                    DoTstTrue( -1 )     % make result either true or false
+                  | *:
+                ]
+              | *:
+                >
+            ]
+        }
+    ;
+
+
+    skip_ors:
+        SkipCountAdd( 1 )
+        {
+            @logical_and
+            [
+              | ET_OR_OR:
+              | *:
+                >
+            ]
+        }
+        SkipCountAdd( -1 )
+    ;
+
+
+    logical_and:
+        @inclusive_or
+        {
+            [
+              | ET_AND_AND:
+                [SkipCount
+                  | 0:
+                    [DoTstTrue( -1 )
+                      | false:
+                        @skip_ands
+                        >
+                      | *:
+                        PopEntry
+                    ]
+                  | *:
+                ]
+                @inclusive_or
+                [SkipCount
+                  | 0:
+                    DoTstTrue( -1 )     % make result either true or false
+                  | *:
+                ]
+              | *:
+                >
+            ]
+        }
+    ;
+
+
+    skip_ands:
+        SkipCountAdd( 1 )
+        {
+            @inclusive_or
+            [
+              | ET_AND_AND:
+              | *:
+                >
+            ]
+        }
+        SkipCountAdd( -1 )
+    ;
+
+
+
+    inclusive_or:
+        @relational
+        {
+            [
+              | ET_OR:
+                @relational
+                [SkipCount
+                  | 0:
+                    DoOr
+                  | *:
+                ]
+              | ET_AND:
+                @relational
+                [SkipCount
+                  | 0:
+                    DoAnd
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
+    ;
+
+
+    relational:
+        @additive
+        {
+            [
+              | ET_EQ:
+                @additive
+                [SkipCount
+                  | 0:
+                    DoTstEQ( -1 )
+                  | *:
+                ]
+              | ET_NE:
+                @additive
+                [SkipCount
+                  | 0:
+                    DoTstEQ( -1 )
+                    PushInt( -1 )
+                    DoXor
+                  | *:
+                ]
+              | ET_LE:
+                @additive
+                [SkipCount
+                  | 0:
+                    StackSwap( 1 )
+                    DoTstLT( -1 )
+                    PushInt( -1 )
+                    DoXor
+                  | *:
+                ]
+              | ET_GE:
+                @additive
+                [SkipCount
+                  | 0:
+                    DoTstLT( -1 )
+                    PushInt( -1 )
+                    DoXor
+                  | *:
+                ]
+              | ET_LT:
+                @additive
+                [SkipCount
+                  | 0:
+                    DoTstLT( -1 )
+                  | *:
+                ]
+              | ET_GT:
+                @additive
+                [SkipCount
+                  | 0:
+                    StackSwap( 1 )
+                    DoTstLT( -1 )
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
+    ;
+
+
+    additive:
+        @multiplicative
+        {
+            [
+              | ET_PLUS:
+                @multiplicative
+                [SkipCount
+                  | 0:
+                    DoPlus
+                  | *:
+                ]
+              | ET_MINUS:
+                @multiplicative
+                [SkipCount
+                  | 0:
+                    DoMinus
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
+    ;
+
+
+
+    multiplicative:
+        @factor
+        {
+            [
+              | ET_MUL:
+                @factor
+                [SkipCount
+                  | 0:
+                    DoMul
+                  | *:
+                ]
+              | ET_DIV:
+                @factor
+                [SkipCount
+                  | 0:
+                    DoDiv
+                  | *:
+                ]
+              | ET_MOD:
+                @factor
+                [SkipCount
+                  | 0:
+                    DoMod
+                  | *:
+                ]
+              | ET_LSHIFT:
+                @factor
+                [SkipCount
+                  | 0:
+                    DoShift
+                  | *:
+                ]
+              | ET_RSHIFT:
+                @factor
+                [SkipCount
+                  | 0:
+                    @negate
+                    DoShift
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
+    ;
+
+
+    factor:
+        [
+          | ET_POUND:
+            @name
+            [SkipCount
+              | 0:
+                DoAddr
+              | *:
+            ]
+          | ET_MINUS:
+            @factor
+            [SkipCount
+              | 0:
+                @negate
+              | *:
+            ]
+          | ET_NOT:
+            @factor
+            [SkipCount
+              | 0:
+                PushInt( -1 )
+                DoXor
+              | *:
+            ]
+          | ET_LSHIFT:
+            @factor
+            [SkipCount
+              | 0:
+                PushInt( 1 )
+                DoShift
+              | *:
+            ]
+          | ET_RSHIFT:
+            @factor
+            [SkipCount
+              | 0:
+                PushInt( -1 )
+                DoShift
+              | *:
+            ]
+          | *:
+            @name
+        ]
+    ;
+
+
+    name:
+        @basic_name
+        {
+            ScanSave
+            [
+              | ET_POINT:
+                [SkipCount
+                  | 0:
+                    DoPoints(stk_unsigned)
+                  | *:
+                ]
+              | ET_FAR_INDIR:
+                [SkipCount
+                  | 0:
+                    DoPoints(stk_far_ptr)
+                  | *:
+                ]
+              | ET_LEFT_BRACKET:
+                @nest_expr
+                [SkipCount
+                  | 0:
+                    StackRValue( 0 )    % get undefined symbols
+                    ET_RIGHT_BRACKET
+                    @scale_add
+                    DoPoints(stk_unsigned)
+                  | *:
+                    ET_RIGHT_BRACKET
+                ]
+              | ET_DOT:
+                % ********have to implement type casting*******
+                PushName
+                [SkipCount
+                  | 0:
+                    DoField
+                  | *:
+                ]
+              | ET_PLUS_PLUS:
+                [SkipCount
+                  | 0:
+                    PushDup
+                    StackRValue( 0 )
+                    StackSwap( 1 )
+                    PushDup
+                    PushInt( 1 )
+                    @scale_add
+                    DoAssign
+                    PopEntry
+                  | *:
+                ]
+              | ET_MINUS_MINUS:
+                [SkipCount
+                  | 0:
+                    PushDup
+                    StackRValue( 0 )
+                    StackSwap( 1 )
+                    PushDup
+                    PushInt( -1 )
+                    @scale_add
+                    DoAssign
+                    PopEntry
+                  | *:
+                ]
+              | ET_LEFT_PAREN:
+                [ExprType
+                  | expr_call:
+                    [ParenLevel
+                      | 0:
+                        ScanRestore     % unget '(' token
+                        >>
+                      | *:
+                    ]
+                  | *:
+                ]
+                NumSet( 0 )
+                [
+                  | ET_RIGHT_PAREN:
+                    % endchoice
+                  | *:
+                    {
+                        @nest_expr
+                        [SkipCount
+                          | 0:
+                            StackValue(0)
+                          | *:
+                        ]
+                        NumAdd( 1 )
+                        [
+                          | ET_COMMA:
+                            % null statement
+                          | ET_RIGHT_PAREN:
+                            >
+                          | *:
+                            ET_RIGHT_PAREN % cause error
+                        ]
+                    }
+                ]
+                [SkipCount
+                  | 0:
+                    DoCall
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
+    ;
+
+
+    basic_name:
+        [
+          | ET_PLUS_PLUS:
+            @basic_name
+            [SkipCount
+              | 0:
+                PushDup
+                PushInt( 1 )
+                @scale_add
+                DoAssign
+              | *:
+            ]
+          | ET_MINUS_MINUS:
+            @basic_name
+            [SkipCount
+              | 0:
+                PushDup
+                PushInt( -1 )
+                @scale_add
+                DoAssign
+              | *:
+            ]
+          | *:
+            @seg_expr
+        ]
+    ;
+
+
+   seg_expr:
+        [
+          | ET_DOT:
+            [SkipCount
+              | 0:
+                PushDot
+              | *:
+            ]
+          | *:
+            @primary
+            [
+              | ET_COLON:
+                @primary
+                [SkipCount
+                  | 0:
+                    DoMakeAddr
+                  | *:
+                ]
+              | *:
+            ]
+        ]
+    ;
+
+
+    primary:
+        [
+          | ET_LEFT_PAREN:
+            @nest_expr
+            @req_right_paren
+          | ET_LEFT_BRACKET:
+            [PushRegSet
+              | false:
+                #err_loc_and_want_reg_name
+              | *:
+                [SkipCount
+                  | 0:
+                  | *:
+                    PopEntry
+                ]
+            ]
+            ET_RIGHT_BRACKET
+          | ET_MODULE_SPEC:
+            ModCurr
+            @name_or_lnum
+            [SkipCount
+              | 0:
+              | *:
+                PopEntry
+            ]
+          | *:
+            ModNull
+            [PushName
+              | false :
+                [PushNum
+                  | false:
+                    #err_loc_and_want_operand
+                  | *:
+                ]
+              | *:
+                [
+                  | ET_MODULE_SPEC:
+                      ModNameLkup
+                      @name_or_lnum
+                  | *:
+                ]
+            ]
+            [SkipCount
+             | 0:
+             | *:
+                PopEntry
+            ]
+        ]
+    ;
+
+
+    name_or_lnum:
+        [PushName
+          | false:
+            [PushLineNum
+              | false:
+                #err_loc_and_want_operand
+              | *:
+            ]
+          | *:
+        ]
+    ;
+
+
+    scale_add:
+        StackRValue( 1 )
+        [StackClass( 1 )
+          | stk_near_ptr, stk_far_ptr:
+            StackMoveSP( 1 )
+            PushDup
+            DoBaseType
+            DoSizeType
+            StackMoveSP( -1 )
+            DoMul
+          | *:
+        ]
+        DoPlus
+    ;
+
+
+    req_right_paren:
+        [
+          | ET_RIGHT_PAREN:
+            % endchoice
+          | *:
+            StackLValue(0)      % get undefined symbol
+            ET_RIGHT_PAREN      % cause error
+        ]
+    ;
+
+
+    negate:
+        PushInt( 0 )
+        StackSwap( 1 )
+        DoMinus
+    ;
+
+
+    nest_expr:
+        ParenLevelAdd( 1 )
+        @assignment
+        ParenLevelAdd( -1 )
+    ;

@@ -1,0 +1,187 @@
+Description of MERGE
+--------------------
+
+- command line arguments are just the names of the .MBR files to merge
+  together
+
+- creates temporary files PRO.DW, LINE.DW, INFO.DW, ABBREV.DW
+
+- produces an output file OUT.MBR
+
+- each input file is an object of class MBRFile
+
+- each MBRFile is stored in a table in DwarfFileMerger; we use its index
+  in the table to identify the MBRFile
+
+- the class DwarfFileMerger is where most of the action happens
+
+- usual pattern is for memory for an object to be allocated in
+  DwarfFileMerger and then added to some sort of table; the object is
+  usually freed by the destructor of the table
+
+- things are done in this order: (DwarfFileMerger::doMerge)
+
+1.  Build abbreviation table from .debug_abbrev
+    Some of this code was stolen from the dwarf reading library and
+    wdump.
+
+    The table is just a linear list of the abbreviations.  If an abbreviation
+    occurs more than once (eg. in two different MBR files), only one
+    copy is kept -- note that two abbreviations are considered to be the
+    same if they have the same abbreviation code.
+
+    Since the abbreviations are used often, this should be changed
+    to be more efficient.
+
+    Outputs abbreviations to ABBREV.DW.
+
+2.  Get the file and directory information out of .debug_line and do
+    all the other processing necessary.
+
+    File and directory information is stored in object of class FileTable.
+    Each file/directory is represented by an object of class FileInfo or
+    DirInfo.
+
+    The class FileTable has a few different structures to store the
+    files/directories because we want to be able to access the data in
+    different ways.
+
+    Multiply defined files (eg. a header file included in two different
+    modules) can occur; we only want one definition of the file in
+    .debug_line.
+
+    We need to use this table to map the old file indices (used in
+    .debug_ref, .debug_line statement program, .debug_info DIEs) to their
+    new file indices.
+
+    The compiler emits the file information as DW_LNE_define_file extended
+    opcodes; the merge program moves these to the prologue.
+
+
+    Outputs prologue to PRO.DW and line information to LINE.DW.
+
+3.  Get defined DIEs from .debug_info and store them in a table.
+    (this is in DwarfFileMerger::processSymbolsPass1 and related funcs)
+
+    Basically, it's here that we decide which symbols we definitely want
+    to keep.  The symbols that are put in the table here are the only
+    choices we'll have on our second pass through .debug_info to replace
+    symbols with.
+
+    Right now, we choose the symbol based on if the DIE is has a string
+    name, if it doesn't have a DW_AT_declaration = True attribute, and
+    based on its TAG.
+
+    Note that we can have multiple symbols with the same name and other
+    attributes stored in this table.  (see 4.)
+
+    If we keep a symbol, we keep all its children as well.
+
+Digression on Symbols :
+
+    Symbols are of class SymbolInfo.  A variety of information can be
+    stored there; you may have to add stuff or delete stuff depending on
+    what you feel is needed to distinguish one symbol from another.
+
+    SymbolInfo objects have two purposes.  In pass 1, they're stored in
+    the defined symbol table for lookup purposes.  Not all the elements
+    of a SymbolInfo object are used in pass 1.  In pass 2, SymbolInfo objects
+    also used to output symbols to the SymbolStream.
+
+    SymbolInfo objects also contain a pointer to the raw data which makes
+    up the DIE.  I decided that instead of completely decoding the DIE
+    into a symbol and the encoding it when writing it out, I'd just keep
+    the raw data and make changes directly to it.  (Note that the raw data
+    isn't a copy of the memory buffer allocated for the .debug_line
+    section -- it's actually a pointer directly into that buffer)  Making
+    changes directly to the buffer has pros and cons of course.  It means
+    that any major changes to the DIE (eg. what if we want to change
+    abbreviation codes?) could wreak havoc; however, this situation probably 
+    won't happen.  The only changes made are changes of numeric values -- in
+    particular, the references and the declaration file number.
+
+    Each symbol has a list of references.  In pass 2, we make use of this
+    list of references to update the buffer for the symbol with new values.
+    Also, note that I store references used by children of the symbol
+    in the same list (no object is actually created for children).  This
+    might have to be changed to be a bit more sophisticated.
+
+end Digression
+
+Digression on SymbolStream :
+
+    A "SymbolStream" is used to output symbols in pass 2 of the .debug_info
+    section.  Whenever we keep a symbol we send the symbol the SymbolStream.
+    The SymbolStream can keep track of things like the current offset of
+    the output file.  Symbols are kept in memory until all of its
+    references are resolved; then it is flushed out to a file.  In the
+    future, you might not want to write out any symbols until the very
+    end because we may want to delete symbols that have no references
+    to them -- in which case we can't flush any symbols out until we've
+    seen all the symbols and determined which symbols are unreferenced.
+
+end Digression
+
+4.  In the second pass through .debug_info, we examine a symbol to see
+    if it can be replaced.  We do this by getting a list of symbols from
+    the defined symbol table created in pass 1 that have the same name
+    and tag as the symbol we're examining; then, we find the best match
+    to the symbol (if a 'good' match exists) and do the replacement.
+    If there is no good match, we just keep the symbol and all its
+    children.  Similarly, if the symbol is itself in the defined symbol
+    table, we just keep it and all its children.
+
+    Whenever we keep a symbol, we have to update its references to the
+    new offset of the referenced symbols and update the DW_AT_decl_file
+    attribute, if it exists.  In order to update reference values, we keep
+    a table ( object of class ReferenceUpdateTable ) which simply
+    consists of <old MbrIndex, old offset, new offset > triples.  We can do
+    a lookup on <old MbrIndex, old offset> to get the new offset.  The
+    problem is that the replacement symbol might occur *later*, in which
+    case there won't be any entry in the ref update table for it.  In this
+    case, we delay the update until it is encountered and processed.
+    Oh, and whenever we keep a symbol, we have to add a triple to the
+    reference update table.  We also keep all of the symbol's children
+    as well -- but instead of adding symbols for the kids, we sort of just
+    mash all its relevant data into the parent.  So we add its references
+    to the parents reference list, for example, and add its raw data to
+    the raw data of the parent as well.  Oh, and of course we add the symbol
+    to the symbol stream.
+
+    When we delete a symbol, we add a triple to the ref update table
+    <old MbrIndex, deleted symbol's offset, replacement symbol's new offset>.
+    The problem is that the replacement symbol's new offset may not be known
+    because it may not have been processed.  In this case, we have a
+    waiting list to keep track of these symbols.  A waiting list consists
+    of triples <old MbrIndex, delete symbol offset, ptr to ref list that
+    need to be updated>.  In actuality, the ref list is the reference list
+    stored in the SymbolInfo object for the replacement symbol in the
+    defined symbol table created in pass 1.  Thus, whenever we need to
+    resolve a reference we check the waiting list to see if the symbol
+    has been deleted but doesn't have a replacement encountered yet; if it
+    fits this case, we add the reference to the waiting list's reference
+    list.  Note that a reference list might be a member of any number
+    of triples in the waiting list.
+
+    When we process a symbol that was put in the defined symbol table in
+    pass 1, we do all the processing that is necessary when we keep a
+    symbol.  In addition, we have to resolve any references in the
+    waiting list.  So we just grab the reference list in the defined
+    symbol table for this symbol, and just update all references in it
+    (recall this ref list was used for when we delete a symbol and the
+    replacement hasn't occured yet).
+
+    Note that the DW_TAG_compile_unit DIE is stripped out because we're
+    merging things into one big compile unit.
+
+    The symbol stream outputs stuff to INFO.DW.
+
+5.  The .debug_ref section is processed.  Very little is done here.
+    Essentially each MBR file's .debug_ref section is copied out, except
+    that the offsets are updated using the reference update table and
+    file indices are updated using the global file table.
+
+    Output is the REF.DW.
+
+6.  All the output files are thrown back together again into OUT.MBR.
+

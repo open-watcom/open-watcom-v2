@@ -1,0 +1,23 @@
+class InheritStyleDlg 
+{
+    _nonVirtualTextR(  IDD_NONVIRTUAL,	     (@,@,@,@) );
+    _nonVirtualBoxR(   IDD_NON_VIRT_BOX,     (@,@,@,@) );
+    _nvPublicTextR(    IDD_NV_PUBLIC_TEXT,   (@,@,@,@) );
+    _nvProtectedTextR( IDD_NV_PROTECTED_TEXT,(@,@,@,@) );
+    _nvPrivateTextR(   IDD_NV_PRIVATE_TEXT,  (@,@,@,@) );
+    _nvPublicR(	       IDD_NV_PUBLIC,	     (@,@,@,@) );
+    _nvProtectedR(     IDD_NV_PROTECTED,     (@,@,@,@) );
+    _nvPrivateR(       IDD_NV_PRIVATE,	     (@,@,@,@) );
+    _virtualTextR(     IDD_VIRTUAL,	     (@,@,@,@) );
+    _virtualBoxR(      IDD_VIRT_BOX,	     (@,@,@,@) );
+    _vPublicTextR(     IDD_V_PUBLIC_TEXT,    (@,@,@,@) );
+    _vProtectedTextR(  IDD_V_PROTECTED_TEXT, (@,@,@,@) );
+    _vPrivateTextR(    IDD_V_PRIVATE_TEXT,   (@,@,@,@) );
+    _vPublicR(	       IDD_V_PUBLIC,	     (@,@,@,@) );
+    _vProtectedR(      IDD_V_PROTECTED,	     (@,@,@,@) );
+    _vPrivateR(	       IDD_V_PRIVATE,	     (@,@,@,@) );
+    _okButtonR(	       IDD_OK_BUTTON,	     (@,@,@,@) );
+    _cancelButtonR(    IDD_CANCEL_BUTTON,    (@,@,@,@) );
+    _modifyButtonR(    IDD_MODIFY_BUTTON,    (@,@,@,@) );
+    _helpButtonR(      IDD_HELP_BUTTON,	     (@,@,@,@) );
+};

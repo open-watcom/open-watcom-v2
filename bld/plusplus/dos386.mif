@@ -1,0 +1,4 @@
+!include $(plusplus_iostream_dir)\iostream.mif
+!include $(plusplus_runtime_dir)\cpplib32.mif
+mflag = -3$(convention) $(text)
+!include $(plusplus_dir)\mklib.mif

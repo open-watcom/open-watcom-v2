@@ -1,0 +1,19 @@
+objdostimeroot = &
+        int.ubj int24.obj
+
+objdossizeroot = &
+        dosmain.ybj
+
+objdossize = &
+        doscmds.ybj &
+        dosmouse.ybj &
+        dossys.ybj &
+        dosdir.ybj &
+        time.ybj  &
+        spawn.ybj
+
+extraobjs = $(objdossize)
+extraobjsroot = $(objdostimeroot) $(objdossizeroot)
+
+int24.obj : ..\dos\int24.asm
+        $(as_i86) $[@

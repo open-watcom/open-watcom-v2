@@ -1,0 +1,12 @@
+#
+# Macro Test # 5
+#
+#  Microsoft DeMacro
+#
+all: hello.obj
+
+.c.obj:
+     echo $@ $* $** $? $< $(**D) $(@B) $(@F) $(@R):
+     
+hello.obj: ..\MACROS\hello.tmp hello.c hello.boo
+

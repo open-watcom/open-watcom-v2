@@ -1,0 +1,87 @@
+VS_VERSION_INFO VERSIONINFO
+PRODUCTVERSION  3 , 4, 1, 2
+FILEOS          VOS_DOS
+FILETYPE        VFT_APP
+
+BEGIN
+  BLOCK "VarFileInfo"
+  BEGIN
+      VALUE "Translation", 0x409, 0x4E4
+  END
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "CompanyName", "WATCOM\0"
+    END
+  END
+END
+
+//STRINGTABLE
+//BEGIN
+//1,    "THIS is a test"
+//2,    "Hey"
+//321,  "Bob"
+//END
+
+BILL_DATA RCDATA
+BEGIN
+    "hey this is rcdataa"
+END
+
+NAMED_USER_DATA DAVE_TYPE
+BEGIN
+    10, 10, 20, 20, 30, 30
+END
+
+NUM_USER_DATA 2000
+BEGIN
+    0x10, 0x10, 0x20, 0x20, 0x30, 0x30
+END
+
+TEST_CUR CURSOR "test.cur"
+
+TEST_ICON ICON "test.ico"
+
+MYACCEL ACCELERATORS
+BEGIN
+    VK_F7,      0x700,  VIRTKEY
+    VK_F8,      0x800,  VIRTKEY
+    VK_F9,      0x900,  VIRTKEY
+END
+
+TEST_BITMAP BITMAP "test.bmp"
+
+
+
+"KANJI_MENU" MENU
+BEGIN
+    POPUP "bill\x81\x9a\x81\xA0"
+    BEGIN
+        MENUITEM "bill\x81\x9a\x81\xa0", TMENU_EXIT
+        MENUITEM "\x81\x9a\x81\xa0", TMENU_EXIT
+        MENUITEM "bill", TMENU_EXIT
+    END
+    POPUP "\x81\x9a\x81\xA0"
+    BEGIN
+        MENUITEM "&Rcdata", TMENU_RCDATA,               CHECKED
+    END
+    POPUP "English"
+    BEGIN
+        MENUITEM "Hi", TMENU_RCDATA,            CHECKED
+    END
+
+END
+
+STRINGTABLE
+BEGIN
+1,      "All Ascii"
+2,      "Mixed\x81\x9a\x81\x9a"
+3,      "\x81\x91\x81\x9a"
+4,      "above is all kanji"
+END
+
+#ifdef __NT__
+LANGUAGE 0x9, 0x1
+1 11 MSG00001.bin
+#endif

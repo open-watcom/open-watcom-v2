@@ -1,0 +1,188 @@
+This is a summary of all right mouse popup menus
+
+The assembly Window
+    Inspect
+    Break
+    Enter Function
+    Show
+	Source
+	Functions
+	Address...
+	Module...
+    Home
+    Hex
+
+The break Window
+    Modify...
+    New...
+    Delete
+    ---------
+    Source
+    Assembly
+
+The calls Window
+    Unwind
+    Break...
+    Goto
+    ---------
+    Source
+    Assembly
+
+The watch/variable/filescope/locals Window
+    Modify...
+    Inspect
+    Break
+    Watch
+    Edit...
+    New...
+    Delete
+    Root
+    Type
+	Hex
+	Decimal
+	Character
+	String
+	Pointer
+	Array...
+    Show
+	Raw Memory
+	Pointer Memory
+	Pointer Code
+    Options
+	Whole Expression
+	Functions
+	Inherited
+	Compiler
+	Members
+	Private
+	Protected
+
+The fpu Window
+    Modify...
+    ---------
+    Hex
+
+The functions Window
+    Break...
+    ---------
+    Source
+    Assembly
+    ---------
+    Typed Symbols
+
+The stack/memory/binary Window
+    Modify...
+    Break on Write
+    ---------
+    Near Follow
+    Far Follow
+    Segment Follow
+    Cursor Follow
+    Repeat
+    Previous
+    Home
+    ---------
+    Address...
+    Assembly
+    Type
+	Byte
+	Word
+	DWord
+	Char
+	Short
+	Long
+	Unsigned Char
+	Unsigned Short
+	Unsigned Long
+	16:16 Pointer
+	16:32 Pointer
+	Binary
+	Float
+	Double
+
+The modules Window
+    Source
+    Assembly
+    Functions
+    ---------
+    Break All
+    Clear All
+
+The register Window
+    Modify...
+    Inspect
+    ---------
+    Hex
+    Extended
+
+The source/file/tmpfile Window
+    Inspect
+    Break
+    Enter Function
+    Watch
+    Find
+    Home
+    Show
+	Assembly
+	Functions
+	Address...
+	Module...
+	Line...
+
+The thread Window
+    Switch to
+    Freeze
+    Thaw
+
+The io Window
+    Modify...
+    New...
+    Delete
+    Read
+    Write
+    Type
+	Byte
+	Word
+	DWord
+	Char
+	Short
+	Long
+	Unsigned Char
+	Unsigned Short
+	Unsigned Long
+
+The globals Window
+    Watch
+    ---------
+    Raw Memory
+    ---------
+    Typed Symbols
+
+The image Window
+    New Symbols
+    Delete Symbols
+    ---------
+    Modules
+    Functions
+    Globals
+
+The globalfunctions Window
+    Break...
+    ---------
+    Source
+    Assembly
+    ---------
+    Typed Symbols
+
+The hotkeys Window
+    Modify...
+    New...
+    Delete
+    ---------
+    TD keys
+    CV keys
+
+The replay Window
+    Goto
+    Source
+    Assembly

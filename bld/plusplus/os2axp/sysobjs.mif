@@ -1,0 +1,4 @@
+# system-dependent files (OS/2)
+
+!include ..\ppobjaxp.mif
+

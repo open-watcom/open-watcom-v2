@@ -1,0 +1,68 @@
+MEMORY_DLG DIALOG 41, 14, 279, 210
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Memory Information for Process 81 (drnt)"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "No Access", -1, 8, 24, 70, 8
+    LTEXT           "Read Only", -1, 8, 33, 70, 8
+    LTEXT           "Read/Write", -1, 8, 42, 70, 8
+    LTEXT           "Write/Copy", -1, 8, 51, 70, 8
+    LTEXT           "Execute", -1, 8, 60, 70, 8
+    LTEXT           "Execute/Read", -1, 8, 69, 70, 8
+    LTEXT           "Execute/Read/Write", -1, 8, 78, 70, 8
+    LTEXT           "Execute/Write/Copy", -1, 8, 87, 70, 8
+    LTEXT           "Total", -1, 8, 96, 70, 8
+    LTEXT           "100000 KB", MEM_MAP_NO_ACCESS, 88, 24, 42, 8
+    LTEXT           "100000 KB", MEM_MAP_READ, 88, 33, 42, 8
+    LTEXT           "100000 KB", MEM_MAP_WRITE, 88, 42, 42, 8
+    LTEXT           "100000 KB", MEM_MAP_COPY, 88, 51, 42, 8
+    LTEXT           "100000 KB", MEM_MAP_EXEC, 88, 60, 42, 8
+    LTEXT           "100000 KB", MEM_MAP_EXEC_READ, 88, 69, 42, 8
+    LTEXT           "100000 KB", MEM_MAP_EXEC_WRITE, 88, 78, 42, 8
+    LTEXT           "100000 KB", MEM_MAP_EXEC_COPY, 88, 87, 42, 8
+    LTEXT           "100000 KB", MEM_MAP_TOTAL, 88, 96, 42, 8
+    GROUPBOX        "Mapped and Committed", -1, 5, 9, 131, 98
+    LTEXT           "No Access", -1, 144, 24, 70, 8
+    LTEXT           "Read Only", -1, 144, 33, 70, 8
+    LTEXT           "Read/Write", -1, 144, 42, 70, 8
+    LTEXT           "Write/Copy", -1, 144, 51, 70, 8
+    LTEXT           "Execute", -1, 144, 60, 70, 8
+    LTEXT           "Execute/Read", -1, 144, 69, 70, 8
+    LTEXT           "Execute/Read/Write", -1, 144, 78, 70, 8
+    LTEXT           "Execute/Write/Copy", -1, 144, 87, 70, 8
+    LTEXT           "Total", -1, 144, 96, 70, 8
+    LTEXT           "100000 KB", MEM_RES_NO_ACCESS, 224, 24, 42, 8
+    LTEXT           "100000 KB", MEM_RES_READ, 224, 33, 42, 8
+    LTEXT           "100000 KB", MEM_RES_WRITE, 224, 42, 42, 8
+    LTEXT           "100000 KB", MEM_RES_COPY, 224, 51, 42, 8
+    LTEXT           "100000 KB", MEM_RES_EXEC, 224, 60, 42, 8
+    LTEXT           "100000 KB", MEM_RES_EXEC_READ, 224, 69, 42, 8
+    LTEXT           "100000 KB", MEM_RES_EXEC_WRITE, 224, 78, 42, 8
+    LTEXT           "100000 KB", MEM_RES_EXEC_COPY, 224, 87, 42, 8
+    LTEXT           "100000 KB", MEM_RES_TOTAL, 224, 96, 42, 8
+    GROUPBOX        "Reserved", -1, 141, 9, 131, 98
+    LTEXT           "No Access", -1, 10, 131, 70, 8
+    LTEXT           "Read Only", 140, 10, 140, 70, 8
+    LTEXT           "Read/Write", -1, 10, 149, 70, 8
+    LTEXT           "Write/Copy", -1, 10, 158, 70, 8
+    LTEXT           "Execute", -1, 10, 167, 70, 8
+    LTEXT           "Execute/Read", -1, 134, 131, 70, 8
+    LTEXT           "Execute/Read/Write", -1, 134, 140, 70, 8
+    LTEXT           "Execute/Write/Copy", -1, 134, 149, 70, 8
+    LTEXT           "Total", -1, 134, 158, 70, 8
+    LTEXT           "100000 KB", MEM_IMAGE_NO_ACCESS, 90, 131, 42, 8
+    LTEXT           "100000 KB", MEM_IMAGE_READ, 90, 140, 42, 8
+    LTEXT           "100000 KB", MEM_IMAGE_WRITE, 90, 149, 42, 8
+    LTEXT           "100000 KB", MEM_IMAGE_COPY, 90, 158, 42, 8
+    LTEXT           "100000 KB", MEM_IMAGE_EXEC, 90, 167, 42, 8
+    LTEXT           "100000 KB", MEM_IMAGE_EXEC_READ, 214, 131, 42, 8
+    LTEXT           "100000 KB", MEM_IMAGE_EXEC_WRITE, 214, 140, 42, 8
+    LTEXT           "100000 KB", MEM_IMAGE_EXEC_COPY, 214, 149, 42, 8
+    LTEXT           "100000 KB", MEM_IMAGE_TOTAL, 214, 158, 42, 8
+    GROUPBOX        "Address Space for ", -1, 6, 112, 265, 66
+    COMBOBOX        MEM_IMAGE_NAME, 75, 113, 80, 56, CBS_DROPDOWNLIST |
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Read Only", -1, 10, 140, 70, 8
+    PUSHBUTTON      "OK", IDOK, 91, 190, 40, 14
+    PUSHBUTTON      "Refresh", MEM_REFRESH, 147, 190, 40, 14
+END

@@ -1,0 +1,26 @@
+!shell
+long #RegOpenKey(long,void *,void *);
+long #RegCreateKey(long,void *,void *);
+long #RegCloseKey(long);
+long #RegDeleteKey(long,void *);
+long #RegSetValue(long,void *,long,void *,long);
+long #RegQueryValue(long,void *,void *,void *);
+long #RegEnumKey(long,long,void *,long);
+int #DragQueryFile(int,int,void *,int);
+int #DragQueryPoint(int,void *);
+void #DragFinish(int);
+void #DragAcceptFiles(int,int);
+int #ExtractIcon(int,void *,int);
+int #ShellExecute(int,void *,void *,void *,void *,int);
+int #FindExecutable(void *,void *,void *);
+long #_16RegOpenKey(long,long,long);
+long #_16RegCreateKey(long,long,long);
+long #_16RegDeleteKey(long,long);
+long #_16RegSetValue(long,long,long,long,long);
+long #_16RegQueryValue(long,long,long,long);
+long #_16RegEnumKey(long,long,long,long);
+int #_16DragQueryFile(int,int,long,int);
+int #_16DragQueryPoint(int,long);
+int #_16ExtractIcon(int,long,int);
+int #_16ShellExecute(int,long,long,long,long,int);
+int #_16FindExecutable(long,long,long);

@@ -1,0 +1,8 @@
+all :   .symbolic
+    @$(envarg) no * version just for reference
+    @*$(envarg) 12345678901
+    @*$(envarg) 123456789012
+    @set wmake0=TEMP
+    *@$(envarg) 12345678901
+    *@$(envarg) 123456789012
+    

@@ -1,0 +1,13 @@
+# Common objects for x86 (_PC) architecture
+
+# Assembler files
+
+!include $(wasm_dir)\inline.mif
+common_objs += $(inline_objs)
+common_objs += asmalloc.obj
+common_objs += asmmsg.obj
+
+# System-dependent files
+
+common_objs += cmdlnx86.obj
+common_objs += cprag86.obj

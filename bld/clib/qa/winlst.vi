@@ -1,0 +1,20 @@
+s/$/\\
+1,1y
+pu
+pu
+pu
+pu
+pu
+1,1s/$/win_s.exe/
+2,2s/$/win_c.exe/
+3,3s/$/win_m.exe/
+4,4s/$/win_l.exe/
+5,5s/$/win32_3r.exe/
+6,6s/$/win32_3s.exe/
+w! win.lst
+%d
+r __PWD__
+s/^/call win c:\\cmds\\winrun.exe -q -x @/
+s/$/\\win.lst/
+w! dowintst.bat
+q!

@@ -1,0 +1,4 @@
+//#line "..\c\dumpmem.c" 14
+extern void DumpMem(void);
+//#line "..\c\dumpmem.c" 76
+extern int WalkMem(void);

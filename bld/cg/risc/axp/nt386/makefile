@@ -1,0 +1,7 @@
+#pmake: brad os_nt cpu_386 axp alpha
+
+
+host_OS         = nt
+host_CPU        = 386
+
+!include ..\mif\master.mif

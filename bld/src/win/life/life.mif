@@ -1,0 +1,7 @@
+name = life
+LNK = $(name).lnk
+OBJS = life.obj array.obj bitmaps.obj mouse.obj patterns.obj timer.obj &
+        bitmap.obj palette.obj file.obj
+CFLAGS += -i=..\..
+resources = life.dlg cell.bmp menu.bmp life.ico
+lnk_dependencies = makefile ..\life.mif ..\..\master.mif

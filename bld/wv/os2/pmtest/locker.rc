@@ -1,0 +1,21 @@
+#include <os2.h>
+#include "locker.h"
+
+ICON    ID_WINDOW hello.ico
+
+MENU    ID_WINDOW PRELOAD
+BEGIN
+  SUBMENU "~Options", ID_OPTIONS
+  BEGIN
+    MENUITEM "~Lock\tCtrl+L", ID_LOCK, MIS_TEXT
+    MENUITEM "~UnLock\tCtrl+U", ID_UNLOCK, MIS_TEXT
+  END
+END
+
+ACCELTABLE ID_WINDOW PRELOAD
+BEGIN
+  "L",   ID_LOCK,                 CONTROL
+  "U",   ID_UNLOCK,               CONTROL
+  "l",   ID_LOCK,                 CONTROL
+  "u",   ID_UNLOCK,               CONTROL
+END

@@ -1,0 +1,267 @@
+Assumptions:
+------------
+- issues of scope, hiding and access control for user-defined conversions
+	are handled elsewhere
+	(p216,270,273-276)
+
+- all array parameter declarations are converted to pointer type
+	(p309)
+
+- issues of scope and hidden functions for overload resolution are
+	handled elsewhere; this code needs only to deal with the
+	functions it is provided
+	(p310)
+
+- issues of overloaded member functions and their access rules and static
+	qualifiers are resolved elsewhere
+	(p309,312)
+
+- issues of default arguments are handled elsewhere
+	(p316)
+
+- issues of matching member functions that require an implied argument which
+	points to the object of the proper type are resolved elsewhere,
+	compiler assumptions concerning the type of the implied argument
+	are resolved elsewhere
+	(p316-317)
+
+- a temporary may be needed for a T& parameter, the rule about not using
+	temporaries for non-const references is handled elsewhere
+	(p318,323)
+
+- in the issue of user-defined conversions in conjunction with standard
+	conversions in overloading resolution,
+	standard conversions applied to the input of the user-defined
+	conversion will be ignored.
+	standard conversions applied to the output of the user-defined
+	conversion will be considered.
+	(p317-318,326-327)
+
+- PC type modifiers (FAR,FAR16,HUGE,BASED...) have no impact on overload
+	resolution
+	
+Rules For Function Selection:
+-----------------------------
+"If one function provides a better than or equal match for every
+argument and provides a strictly better match than all other functions
+for at least one argument, then it is called; otherwise the call is an
+error." (p313)
+
+"For purposes of argument matching, a nonstatic member function is
+considered to have an extra argument specifying the object for which it
+is called.  ...  No temporaries will be introduced for this extra
+argument and no user-defined conversions will be applied to achieve a
+type match." (p316)
+
+"For a given actual argument, no sequence of conversions will be
+considered that contains more than one user-defined conversion or that
+can be shortened by deleting one or more conversions into another
+sequence that leads to the type of the corresponding formal argument of
+any function in consideration." (p317)
+
+Conversion Rules:
+-----------------
+- the best match conversion sequence must be the one considered (p317)
+
+Equivalent Types:
+-----------------
+- T, T&
+- T, const T, volatile T
+- T[], T*	(assumed implicit in type parsing)
+- typedef is a synonym, not a distinct type
+- ... (ellipsis) match any type
+
+Distinguishable Types:
+----------------------
+- T&, const T&, volatile T&
+- T*, const T*, volatile T*
+- each enum
+- char, unsigned char, signed char
+- arrays by magnitude of second and subsequent dimensions
+
+Integral Types:
+---------------
+	char
+	signed char
+	unsigned char
+	long char
+	unsigned short int
+	signed short int
+	signed int
+	unsigned int
+	signed long int
+	unsigned long int
+	enum
+
+Floating Types:
+---------------
+	float
+	double
+	long double
+
+Trivial Conversions:
+--------------------
+	from:	to:
+	T	T&
+	T&	T
+	T[]	T*		(assumed implicit in type parsing)
+	T(args)	T(*)(args)
+	T	const T
+	T	volatile T
+	T*	const T*
+	T*	volatile T*
+
+Integral Promotions:
+--------------------
+	from:			to:
+4.1	char			int
+	signed char		int
+	wide char		unsigned int
+	unsigned char		int
+	signed short int 	int
+	unsigned short int 	unsigned int
+	int bit-field		int
+	enum 			depends on base-type used
+4.3	float			double
+	double			long double
+local INTEL extensions:
+	NEAR *			FAR *
+
+
+Standard Conversions:
+---------------------
+	from:		to:
+4.2	base		signed base
+	base		unsigned base
+	signed base	base
+	signed base	unsigned base
+	unsigned base	base
+	unsigned base	signed base
+			- base is one of { char, short int, int, long int }
+			  (long char does not have signed or unsigned)
+4.4,4.5	floating	integral
+	integral	floating
+4.6	constant 0	T* (null pointer)
+	non-const T*	void*
+	non-volatile T*	void*
+	(T*)()		void*
+	B*		A* (if conversion is unambiguous and
+			    A is accessible to B) (null goes to null) (p36)
+4.7	B&		A& (if conversion is unambiguous and
+			    A is accessible to B) (p38)
+4.8	constant 0	M* (null pointer to member)
+	MA*		MB* (if inverse pointer to object conversion can
+			      be performed) (p39)
+
+User-Defined Conversions:
+-------------------------
+- constructors take one argument and convert to resulting class type
+- conversion functions must be member operator functions of class X
+	that convert class X into the resulting type
+- conversion functions cannot specify argument type or return type,
+	hence, they cannot be overloaded
+- user-defined conversions are selected based on the resulting type
+- no preference is given to user-defined conversion by constructor
+	or conversion function or vice versa
+- only one user-defined conversion can be used in a conversion sequence
+
+Ranking Scheme:
+---------------
+---> 0. Null
+r00	- place holder, not used
+---> 1. Exact
+r10	- exactly identical
+r11	- zero or more trivial conversions
+r12	- those that do not do the following are better than those that do
+		T* to const T*
+		T* to volatile T*
+		T& to const T&
+		T& to volatile T&
+---> 2. Promotions
+	- not mentioned in 1
+r20	- only integral promotion
+		and trivial conversions
+---> 3. Standard Conversions
+	- not mentioned in 2
+r30	- only standard conversions
+		and trivial conversions
+r31	- C is derived from B, which is derived from A, C* to B* is
+	  	better than C* to A*
+r31	- C is derived from B, which is derived from A, C& to B& is
+	  	better than C& to A&
+r31	- pointer to member resolution follows the same class hierarchy
+	  	as pointer to object and reference to object
+r32	- B is derived from A, B* to A* is better than
+		B* to void*
+		B* to const void*
+---> 4. User-Defined Conversions
+	- not mentioned in 3
+r40	- only one user-defined conversion
+		and standard conversions on input and output
+		and trivial conversions on input and output
+r60	- if there is more than one applicable user-defined conversion,
+		it is ambiguous and the function is no longer a candidate
+---> 5. Ellipsis Conversions
+r50	- use of any ellipsis is worst
+---> 6. No Match
+r60	- if no conversion can be made the function is no longer a candidate
+---> 7. Initialized Value
+r70	- initialized, no conversion has been attempted
+
+Ranking names appear as follows in code:
+----------------------------------------
+r00	OV_RANK_NULL
+r10	OV_RANK_EXACT
+r11	OV_RANK_SAME
+r13	OV_RANK_TRIVIAL
+r20	OV_RANK_PROMOTION
+r30	OV_RANK_STD_CONV
+r31	OV_RANK_STD_CONV_DERIV
+r32	OV_RANK_STD_CONV_VOID
+r40	OV_RANK_UD_CONV
+r50	OV_RANK_ELLIPSIS
+r60	OV_RANK_NO_MATCH
+r70	OV_RANK_INVALID
+
+General Comparision Rules:
+--------------------------
+- order of and number of trivial conversions is irrelevant (p318)
+- when comparing, a shorter sequence of equal rank is better (p318)
+- if a user-defined conversion is used, no account is taken of the number of
+	standard conversions on the input to the user-defined conversion,
+	however, standard conversions on the output of the user-defined
+	conversion are considered
+
+Algorithm for Computing Rank of Conversion from src to tgt:
+-----------------------------------------------------------
+===input:
+TYPE src
+TYPE tgt
+OV_RANK *rank
+
+===output:
+BOOLEAN	true  => convertable
+        false => nonconvertable
+
+===working storage:
+wsrc, wtgt are pointers to arg type compare structures:
+{
+reference		- is this a reference?
+original type ptr	- the original provided
+leading flags		- any flags
+reference flags		- flags after reference
+basic type ptr		- basic type (skipping reference)
+imbedded flags		- flags after basic type
+final type ptr		- anything on 'of' from basic type
+}
+
+if errorRank( wsrc, wtgt, rank ) return FALSE
+if ellipsisRank( wsrc, wtgt, rank ) return TRUE
+if exactRank( wsrc, wtgt, rank ) return TRUE
+if trivialRank( wsrc, wtgt, rank ) return FALSE
+    promotionRank( wsrc, wtgt, rank )
+    if stdRank( wsrc, wtgt, rank ) return FALSE
+    if stdDrvRank( wsrc, wtgt, rank ) return FALSE
+    if stdVoidRank( wsrc, wtgt, rank ) return FALSE
+    if usrDefRank( wsrc, wtgt, rank ) return FALSE
+return TRUE

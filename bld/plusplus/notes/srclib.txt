@@ -1,0 +1,328 @@
+SOURCE LIBRARY UTILITY
+======================
+
+92/07/29 -- J.Welch     -- initial documentation
+92/08/27 -- J.Welch     -- revision(1): plan for language-dependent
+                           tokenization
+
+A) Purpose
+   -------
+
+    - to handle "pre-compiled headers" for C, C++, FORTRAN, GML, ...
+
+    - basic idea: one file is used to keep text in a compact format
+        - saves space, since there is no internal disk fragmentation
+        - expedites processing, because
+            - header files can be located without file opens
+            - compact form means less transmission
+            - paging may reduce I/O since a file to be read may already be
+              in memory
+        - decoding the compact format may increase processing time
+
+    - the source library is maintained using the WSLB utility
+        - the utility can be invoked before a compilation to update all
+          files contained with it
+
+    - compilers' interface will be at a read-record level
+        - this means that the access functions can be language-independent
+        - later, could encode and decode in a language-dependent manner to
+          increase processing speed, if first implementation was too slow
+
+B) Overall File Format
+   -------------------
+
+    - file consists of the following areas:
+        - constant header
+        - encoded files
+        - word table
+        - file directory
+
+    - constant header: constant information
+        - marker to indicate proper source library
+        - file-ok indicator (last written to file)
+        - offsets of word table, file directory
+        - any other constant information
+
+    - encoded files: contiguous area for each file (see File Encoding for
+      a description of the encoding method)
+
+    - word table: used to decode text strings (see File Encoding for a
+      description)
+
+    - file directory: one entry for each file
+        - complete file name
+        - date added to or updated in the source library
+        - offsets of next higher,lower entry (files are kept in a balanced
+          binary tree)
+        - offset of encoding for the file
+
+C) Switches on WSLB command line
+   -----------------------------
+
+    WSLB source-lib switch [switch ... switch]
+
+    - exactly one of the following must be specified as the first switch
+
+        /u - update or add file(s) to library
+
+        /l - list source-file information
+
+        /r - remove source file(s) from library
+
+        /e - extract source file(s) from library
+
+        /o - optimize the source library
+
+        /m=filename - merge another source library into current library
+
+    - the following switches act in conjunction with the preceding action
+      switches:
+
+        /f=file-pattern (may contain wild-cards)
+
+            /u - gives pattern for files to be updated/added
+
+            /l - limits listing to files matching the pattern
+
+            /e - limits extraction to files matching the pattern
+
+            /r - removes files whose name matches the pattern
+
+            /m - *** invalid ***
+
+            /o - *** invalid ***
+
+        /t=language (indicate language of source file for language-dependent
+            processing, if desired)
+
+            C - C, C++
+            FORTRAN
+            GML
+            TEXT
+
+            - see Enhancements for possible language-dependent enhancements
+            - set when file is created; validated otherwise
+
+D) File Encoding
+   -------------
+
+    - the encoding method is byte-aligned for decoding efficiency; a similar
+      method is used to encode error messages for the C++ compiler (currently
+      43% compression); expected compression is in the 60% range, since
+      line and column information has to be maintained
+
+    - a file is a number of records, each of which is terminated by a
+      skip-line or end-of-file token:
+        - B'10000000' - end of file
+        - B'10nnnnnn' - 6-bit increment for line number
+        - B'11nnnnnn nnnnnnnn' - 14-bit increment for line number
+        - a record may be void so multiple 14-bit tokens can be used for
+          giant blank files
+
+    - each record consists of zero or more pairs of tokens:
+        - skip-column token (relative to current position)
+            - B'00nnnnnn' - 6-bit column increment
+            - B'01nnnnnn nnnnnnnn' - 14-bit column increment
+            - it is a fatal error to have 2**14 or more consecutive blanks
+              in a record
+        - word token:
+            - B'0nnnnnnn' - 7-bit code for a word
+            - B'10nnnnnn nnnnnnnn' - 14-bit code for word
+            - B'11nnnnnn' - 6-bit size of characters which immediately follow
+        - the last is a "raw encoding"; the first two generate numbers which
+          are used to index a word table
+
+    - obviously, a file may be encoded in an infinite number of different
+      ways; the trick is to find a method which has reasonable storage
+      and processing cost
+
+    - when encoding a record, the record is scanned into "words" which are
+      then encoded
+        - for updates, use only existing codes (words already in word table)
+          and use the raw encoding for words not in the table
+        - when optimizing, scan all source files to build frequency counts
+            - use 7-bit codes for the 128 most frequent words
+            - use 14-bit codes for remainder
+            - use a code only if frequency is high enough to save space
+        - treat operators as words
+        - blanks (and other white-space) are delimiters
+E) C Interface
+   -----------
+
+    SLH is a handle for source library
+    SLF is a handle for a member in the source library
+
+    SLH SrcLibOpen(             // OPEN A SOURCE LIBRARY
+        const char *filename ); // - library name
+                                // returns NULL when open fails
+
+    void SrcLibClose(           // CLOSE A SOURCE LIBRARY
+        SLH library );          // - handle for library
+
+    SLF SrcLibOpenFile(         // OPEN FILE IN SOURCE LIBRARY
+        SLH library,            // - handle for library
+        const char *filename ); // - file name in library
+                                // returns NULL when open fails
+
+    char *SrcLibRead(           // READ NEXT RECORD
+        SLF file,               // - handle for file
+        unsigned *rec_no,       // - addr( record number )
+        size_t *size );         // - addr( size of record )
+                                // returns NULL or record address
+
+    void SrcLibCloseFile(       // CLOSE FILE IN SOURCE LIBRARY
+        SLF file );             // - handle for file
+
+    unsigned SrcLibStatus(      // GET LAST ERROR CONDITION
+        SLH library );          // - handle for library
+
+    SLH SrcLibForSLF(           // GET SLH FOR A SLF
+        SLF file );             // - handle for file
+
+
+    - error conditions to be determined
+
+F) Possible Enhancements
+   ---------------------
+
+    - enhancements should be made only if a significant benefit is to be
+      derived at the expense of the added complication
+
+    - if included, more switches to enable/disable the facilities may be
+      needed
+
+    - the /t switch may be needed
+
+
+    a) Phrases
+       -------
+
+        - phrases are sequences of words; if a sequence occurred many times,
+          it may be advantageous to encode the phrase assigning a new code
+          to the phrase
+
+        - the encoding scheme generalizes to include phrases by extending the
+          word table with phrases; a code number larger than the last word
+          code indicates a phrase; the decoding is recursive and only
+          marginally more complicated
+
+        - the difficulty is in finding the phrases to encode since candidate
+          phrases may overlap and since words/phrases included in an encoded
+          phrase change the frequency count for the words/phrases included
+
+        - experiments with C++ error messages indicate that the space saving
+          is marginal; this might not be the case with other source files
+
+        - it is expensive to execute an optimization procedure which locates
+          a good set of phrases
+
+
+    b) C, C++ once-only optimizations
+       ------------------------------
+
+       - a common coding practice to ensure that a file is processed only
+         once is to bracket a file (such as HEADER.H) with directives such
+         as:
+
+                #ifndef __HEADER_H__
+                #define __HEADER_H__
+                 ... file contents
+                #endif
+
+        - the file need not be scanned a second time if this sort of pattern
+          can be recognized and remembered after the first reading of the file
+        - such processing is language-dependent
+        - as well, there are several different styles used
+        - comments and other white space can obscure the patterns
+
+        - one solution (Jim Randall) is as follows:
+
+            (i) Compiler detects a "guarded" header file as one with some
+                form of #if at the start and a matching #endif at the end
+
+                SrcFileGuarded( SLF file ) -- indicates a guarded header file
+
+                - called just before SrcFileClose of a guarded file (normally
+                  just once, but many calls should be ok)
+
+            (ii)Whenever a compiler encounters some form of #if which fails
+                at the start of the header file, SrcFileDiscardable( SLF ) is
+                called to determine if the remainder of the file can be
+                discarded. TRUE will be returned only if SrcFileGuarded was
+                called previously for the file.
+
+            This method appears to work in all cases regardless of how
+            #define's are processed.
+
+
+    c) Stripping Comments
+       ------------------
+
+        - if comments are removed when a file is added, greater space
+          compaction and better processing speed can be achieved (and the
+          extracted files will be less readable)
+
+        - such processing is language-dependent
+
+
+    d) Language-dependent Tokenization
+       -------------------------------
+
+        - greater processing speed can be achieved if the tokenization was
+          language-dependent
+
+        - this is messy and should only be used if the general solution is
+          too slow
+
+        - a possible method is as follows:
+
+            - insert a token number immediately following the skip-column
+              token
+                - none for TEXT files
+                - 8-bit for language processors
+                - 16-bit for GML
+                - C, C++ can tokenize keywords (not possible in FORTRAN)
+
+            - optional word token is used for identifiers in language
+              processors, for words in GML, for text strings in FORTRAN
+
+            - compiler must supply a token-translation table to transform
+              token numbers to compiler tokens (this will also turn C++
+              keywords into identifiers for C)
+
+            - compilers will have to do some additional work to get actual
+              tokens in messy cases, such as .EQ. in FORTRAN and ->* in C++,
+              as the interface will return only simple tokens such as "->"
+              and "*"
+
+            - tokenizing identifiers, literal character strings, and comments
+              is language-dependent
+
+            - C, C++ must use same tokenization in source library
+
+            - interface uses SrcFileToken instead of SrcFileRead to obtain
+              tokens from the file one at a time:
+
+              TKN *SrcFileToken(    // GET NEXT TOKEN
+                    SLF file );     // - source file
+
+              TKN is token data structure:
+                uint_16 current;    // - current token
+                uint_16 size;       // - size of token
+                uint_32 line;       // - line number
+                uint_32 column;     // - column number
+                uint_32 value;      // - value( when integer constant )
+                const char *string; // - token string
+                uint_8  next_char;  // - next character in file
+
+              The next_char field is useful when combining source-library
+              tokens to fabricate compiler tokens.
+
+            - opening the source library should supply processing information:
+
+                SLH SrcLibOpen(             // OPEN A SOURCE LIBRARY
+                    const char *filename,   // - library name
+                    const char *type,       // - processing type: C, C++, ...
+                    const void *translate );// - token-translation table
+                                            // returns NULL when open fails
+

@@ -1,0 +1,33 @@
+#include <windows.h>
+#include "samprc.h"
+#include "gui.rc"
+
+STRINGTABLE
+BEGIN
+    STRMSG2, "this is msg 2"
+END
+
+#include "..\sample.dlg"
+
+#include "..\sample.men"
+
+#include "win.rc"
+
+MINIMIZE        BITMAP "../res/min.bmp"
+MAXIMIZE        BITMAP "../res/max.bmp"
+RESTORE         BITMAP "../res/restore.bmp"
+RESIZE          BITMAP "../res/resize.bmp"
+CHANGEMENU      BITMAP "../res/change.bmp"
+HOT5            BITMAP "../res/one.bmp"
+HOT4            BITMAP "../res/one.bmp"
+HOT3            BITMAP "../res/one.bmp"
+HOT2            BITMAP "../res/one.bmp"
+HOT1            BITMAP "../res/one.bmp"
+
+ApplIcon        ICON "../res/win/main.ico"
+WIN1            ICON "../res/win/win1.ico"
+WIN2            ICON "../res/win/win2.ico"
+WIN3            ICON "../res/win/win3.ico"
+MAIN            ICON "../res/win/main.ico"
+DLG             ICON "../res/win/dlg.ico"
+

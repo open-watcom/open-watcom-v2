@@ -1,0 +1,29 @@
+This is a new memory tracker... well, it's the an old one which I've modified.
+There is support for DOS, OS/2, QNX, and the 386 extenders.  Check out
+trmem.h for more information.
+
+Some improvements can/should be made.  Most important is the allocation of
+tracker entries in trmem.c.  The old tracker would ask DOS for a segment and
+use it.  This can be done... but I did not want to dig around in each OS
+manual.
+
+Another neat thing, for the OS's that support it, would be to PROTECT the
+tracker's memory when the application is running.  i.e., make it READ-ONLY
+except when the tracker needs to modify it.
+
+Remember, any OS/2 support should be careful about threads!
+
+Dean.
+
+
+The files trmemcvr.h and trmemcvr.c provide cover routines for the memory 
+tracker for use in programs that can accept the assumptions they make.
+See trmemcvr.h for how to add the routines into your program.
+
+Steve B.
+
+
+Make sure that the cover routines are compiled /of+.  You will get garbage
+routine addresses (and possibly death in protect mode) if you do not.
+
+-- jim.

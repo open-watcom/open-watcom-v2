@@ -1,0 +1,4 @@
+# system-dependent files (Alpha, NT)
+
+!include ..\ppobjaxp.mif
+

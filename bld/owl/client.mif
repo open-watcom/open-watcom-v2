@@ -1,0 +1,27 @@
+#
+# owl library
+#
+owl_lib_386     = $(owl_dir)\o.386\owl.lib
+owl_lib_axp     = $(owl_dir)\o.axp\owl.lib
+owl_lib_386_dll = $(owl_dir)\o_rtdll.386\owl.lib
+owl_lib_axp_dll = $(owl_dir)\o_rtdll.dll\owl.lib
+
+#
+# owl dependencies
+#
+owl_dep_386     = $(owl_lib_386)
+owl_dep_axp     = $(owl_lib_axp)
+owl_dep_386_dll = $(owl_lib_386_dll)
+owl_dep_axp_dll = $(owl_lib_axp_dll)
+
+#
+# 'host_CPU' must be set to use these forms
+#
+owl_dll_ext=
+!ifdef $(proj_name)_rtdll
+!ifeq $(proj_name)_rtdll 1
+owl_dll_ext=_dll
+!endif
+!endif
+owl_lib = $(owl_lib_$(host_CPU)$(owl_dll_ext))
+owl_dep = $(owl_dep_$(host_CPU)$(owl_dll_ext))

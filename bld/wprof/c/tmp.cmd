@@ -1,0 +1,13 @@
+@pnews.exe /c
+checkin.exe d:\bld\wprof\C\SETSAMPS.C
+checkin.exe d:\bld\wprof\C\DIGINTER.C
+checkin.exe d:\bld\wprof\C\MADINTER.C
+checkin.exe d:\bld\wprof\C\ABOUTMSG.C
+checkin.exe d:\bld\wprof\H\MSG.H
+checkin.exe d:\bld\wprof\MIF\MASTER.MIF
+checkin.exe d:\bld\wprof\NT\WPROF.RC
+checkin.exe d:\bld\wprof\OS2\WPROF.RC
+checkin.exe d:\bld\wprof\PM\MAKEFILE
+checkin.exe d:\bld\wprof\PM\WPROF.RC
+checkin.exe d:\bld\wprof\WIN\WPROF.RC
+checkin.exe d:\bld\wprof\AXP\WPROF.RC

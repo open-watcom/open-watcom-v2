@@ -1,0 +1,9 @@
+# ----------------------------------
+# ERROR 37A: recursive target defn
+# ----------------------------------
+
+targa : targb
+    cmds
+targb : targa
+    cmds
+

@@ -1,0 +1,10 @@
+#include "grep.h"
+GREPDLG DIALOG 6, 18, 174, 62
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Files Being Searched"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Current File", -1, 4, 4, 164, 28
+    LTEXT           "", GREP_CURRENT_FILE, 8, 16, 156, 8
+    PUSHBUTTON      "Cancel", IDCANCEL, 64, 40, 40, 14
+END

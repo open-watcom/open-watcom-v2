@@ -1,0 +1,16 @@
+#
+# this is a dde server initialization example
+#
+
+# add temporary toolbar items to re-activate ide
+source ideact.vi
+
+ddeinit
+
+createddestring %(Server) "%1"
+
+ddeserver %(Server)
+if lastrc == ERR_NO_ERR
+    assign %(DDEhook) = ddecb.vi
+#    load ddecb.vi
+endif

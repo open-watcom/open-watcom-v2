@@ -1,0 +1,63 @@
+"APPLMENU" MENU
+BEGIN
+    POPUP sp( "&File",
+              "&File" )
+    BEGIN
+        MENUITEM sp( "&Save...",
+                     "&Save..." ), MENU_SAVE
+        MENUITEM sp( "Save &As...",
+                     "Save &As..." ), MENU_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Clear List",
+                     "&Clear List" ), MENU_CLEAR
+        MENUITEM sp( "&Mark...",
+                     "&Mark..." ), MENU_MARK
+        MENUITEM sp( "Set &Font...",
+                     "Set &Font..." ), MENU_FONT
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Continue &Exceptions",
+                     "Continue &Exceptions" ), MENU_EXCEPTION_CONTINUE
+        MENUITEM sp( "Show &DIP status...",
+                     "Show &DIP status..." ), MENU_SHOW_DIP_STATUS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "E&xit",
+                     "E&xit" ), MENU_EXIT
+    END
+    POPUP sp( "&Log",
+              "&Log" )
+    BEGIN
+        MENUITEM sp( "&Log Current State",
+                     "&Log Current State" ), MENU_LOG_CURRENT_STATE
+        MENUITEM sp( "&View Log",
+                     "&View Log" ), MENU_LOG_VIEW
+        MENUITEM sp( "&Erase Log File",
+                     "&Erase Log File" ), MENU_ERASE_LOG_FILE
+        MENUITEM SEPARATOR
+        MENUITEM sp( "L&og Options ...",
+                     "L&og Options ..." ), MENU_LOG_OPTIONS
+    END
+    POPUP sp( "&Process",
+              "&Process" )
+    BEGIN
+        MENUITEM sp( "&Add New Process...",
+                     "&Add New Process..." ), MENU_NEW_TASK
+        MENUITEM sp( "A&uto Add Processes",
+                     "A&uto Add Processes" ), MENU_AUTO_ATTATCH
+        MENUITEM sp( "&Process Control...",
+                     "&Process Control..." ), MENU_TASK_CTL
+    END
+    POPUP sp( "&Help",
+              "&Help" )
+    BEGIN
+        MENUITEM sp( "&Contents",
+                     "&Contents" ), MENU_HELP_CONTENTS
+        MENUITEM sp( "&Search for help on...",
+                     "&Search for help on..." ), MENU_HELP_SRCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to use help",
+                     "&How to use help" ), MENU_HELP_ON_HELP
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&About...",
+                     "&About..." ), MENU_ABOUT
+    END
+END

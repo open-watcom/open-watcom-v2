@@ -1,0 +1,30 @@
+STACKTRACE DIALOG -5, 9, 300, 123
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Stack Trace"
+BEGIN
+    CONTROL         "", ST_DISASM1, "Static", SS_LEFTNOWORDWRAP, 8, 18, 223,
+                    8
+    CONTROL         "", ST_DISASM2, "Static", SS_LEFTNOWORDWRAP, 8, 27, 223,
+                    8
+    CONTROL         "", ST_DISASM3, "Static", SS_LEFTNOWORDWRAP, 8, 35, 223,
+                    8
+    CONTROL         "", ST_DISASM4, "Static", SS_LEFTNOWORDWRAP, 8, 43, 223,
+                    8
+    CONTROL         "", ST_DISASM5, "Static", SS_LEFTNOWORDWRAP, 8, 51, 223,
+                    8
+    CONTROL         "", ST_DISASM6, "Static", SS_LEFTNOWORDWRAP, 8, 59, 223,
+                    8
+    CONTROL         "", ST_DISASM7, "Static", SS_LEFTNOWORDWRAP, 8, 67, 223,
+                    8
+    GROUPBOX        "Instructions Around Call", -1, 4, 6, 229, 80,
+                    WS_TABSTOP
+    LTEXT           "", ST_DISASM8, 8, 75, 223, 8, NOT WS_GROUP
+    SCROLLBAR       ST_SCROLL, 233, 10, 8, 76, SBS_VERT
+    PUSHBUTTON      "&Next  ...", ST_NEXT, 247, 26, 48, 14
+    LTEXT           "CS:IP = 0000:00000000", ST_CSIP, 4, 90, 89, 8
+    LTEXT           "SS:BP = 0000:00000000", ST_SSBP, 109, 90, 80, 8
+    PUSHBUTTON      "&Previous  ...", ST_PREVIOUS, 247, 42, 48, 14
+    PUSHBUTTON      "&Cancel", IDCANCEL, 247, 10, 48, 14
+    LTEXT           "Line 109 of test.c", ST_SOURCE_INFO, 16, 108, 230, 8
+    LTEXT           "Source Information:", -1, 4, 100, 120, 8
+END

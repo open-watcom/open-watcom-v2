@@ -1,0 +1,66 @@
+objtimeroot = regexp.obj rxsupp.obj tab_hell.obj regsub.obj findrx.obj &
+        mem.obj fcbxmint.obj addstr.obj llrtns.obj &
+        parse.obj
+
+objtime = fcbems.obj fcbxms.obj fcbdisk.obj fcbxmem.obj &
+        fcbblock.obj fcb.obj fcbmem.obj &
+        fcbsplit.obj fcbdup.obj fcbmerge.obj &
+        linenew.obj dc.obj &
+        lineptr.obj linecfb.obj linedisp.obj linemisc.obj &
+        linedel.obj lineins.obj lineyank.obj &
+        grep.obj editmain.obj &
+        filesave.obj filenew.obj &
+        undo.obj undostks.obj undo_do.obj &
+        clglob.obj clsubs.obj shove.obj &
+        match.obj cut.obj opmove.obj &
+        srcgen.obj fmatch.obj &
+        status.obj expr.obj op.obj &
+        lang.obj sstyle.obj sstyle_f.obj sstyle_c.obj rcs.obj
+
+objinit = init.obj getopt.ybj
+
+objsizeroot = name.ybj key.ybj &
+        globals.ybj pdata.ybj &
+        bind.ybj exdata.ybj srcdata.ybj
+
+objsize = xmem.ybj fcbswap.ybj clset.ybj hist.ybj samefile.ybj &
+        dirdisp.ybj expandfn.ybj getdir.ybj &
+        mapkey.ybj editmv.ybj &
+        linenum.ybj linework.ybj &
+        undoclne.ybj &
+        fcbdmp.ybj &
+        file.ybj filemove.ybj filelast.ybj &
+        fini.ybj autosave.ybj &
+        srchook.ybj srcgoto.ybj srcif.ybj &
+        srcfile.ybj srccs.ybj srcexpr.ybj srcvar.ybj srcinp.ybj &
+        srcassgn.ybj srcexpnd.ybj srcnextw.ybj &
+        filestk.ybj dotmode.ybj &
+        source.ybj mark.ybj &
+        move.ybj change.ybj delete.ybj &
+        linefind.ybj &
+        dat.ybj parsecl.ybj &
+        findcmd.ybj savebuf.ybj error.ybj cmdline.ybj editdc.ybj &
+        word.ybj hide.ybj &
+        editins.ybj getautoi.ybj &
+        replace.ybj dir.ybj select.ybj &
+        io.ybj clread.ybj cledit.ybj misc.ybj &
+        tags.ybj alias.ybj bnddata.ybj abandon.ybj &
+        filter.ybj ex.ybj exappend.ybj &
+        wingen.ybj printf.ybj getspcmd.ybj &
+        selrgn.ybj cstatus.ybj help.ybj &
+        readstr.ybj tab_e_c.ybj gencfg.ybj fts.ybj
+!ifndef on_build_machine
+!ifeq vi_trmem 1
+extraobjs += trmem.ybj trmemcvr.ybj
+!endif
+!endif
+
+!ifdef sys_windowed
+!include $(vi_dir)\win\win.mif
+!else
+!include $(vi_dir)\$(host_OS)\$(host_OS).mif
+!include $(vi_dir)\ui\ui.mif
+!endif
+
+objs = $(objsize) $(objtime) $(extraobjs) $(xtraobjs) $(uiobjs)
+objsroot = $(objsizeroot) $(objtimeroot) $(extraobjsroot) $(uiobjsroot)

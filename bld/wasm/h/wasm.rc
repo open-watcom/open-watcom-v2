@@ -1,0 +1,30 @@
+#include "asmerr.h"
+#include "wreslang.h"
+
+STRINGTABLE
+BEGIN
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
+
+#include "../h/asmshare.msg"
+#if defined( _WASM_ )
+    #include "../h/wasm.msg"
+#endif
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
+
+#include "../h/asmshare.msg"
+#if defined( _WASM_ )
+    #include "../h/wasm.msg"
+#endif
+
+#if defined( _WASM_ )
+    #include "usage.rc"
+    #include "usagej.rc"
+#endif
+
+END

@@ -1,0 +1,37 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject atoi.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject atol.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject atoll.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject atouni.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
+!inject itoa.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject lltoa.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject ltoa.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject strtol.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject uatoi.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uatol.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uatoll.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uitoa.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ulltoa.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ultoa.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ustrtol.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject fdmd086.obj  d16                               o16     q16     w16
+!inject fdmd386.obj      d32             nt         nv     o32     q32     w32
+!inject fsms086.obj  d16                               o16     q16     w16
+!inject fsms386.obj      d32             nt         nv     o32     q32     w32
+!inject mdfd086.obj  d16                               o16     q16     w16
+!inject mdfd386.obj      d32             nt         nv     o32     q32     w32
+!inject msfs086.obj  d16                               o16     q16     w16
+!inject msfs386.obj      d32             nt         nv     o32     q32     w32
+
+
+!include ..\..\..\..\objlist.mif
+
+!ifneq processor axp
+itoa_opts  =-zc
+lltoa_opts =-zc
+ltoa_opts  =-zc
+uitoa_opts =-zc
+ulltoa_opts=-zc
+ultoa_opts =-zc
+!endif

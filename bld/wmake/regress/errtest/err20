@@ -1,0 +1,9 @@
+# -------------------------------
+# ERROR 20: clist has no owner
+# -------------------------------
+
+    this is a command
+
+all : .symbolic
+    @%null
+

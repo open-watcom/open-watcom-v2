@@ -1,0 +1,27 @@
+Novell NLM's may only be debugged remotely.  You must
+use either the serial, parallel or Novell SPX link.
+There are 6 NLM's distributed with WATCOM C.  The following table
+describes their use:
+
+		NetWare 3.11/3.12	NetWare 4.01
+
+Serial		serserv3.nlm		serserv4.nlm
+Parallel	parserv3.nlm		parserv4.nlm
+SPX		novserv3.nlm		novserv4.nlm
+
+To start remote debugging you load the appropriate NLM on the NetWare
+file server. The debugger is then loaded as in any remote debugging
+session. See the section entitled "remote debugging" for parameter
+details. See the appendix entitled "Wiring for remote debugging" for
+Parallel/Serial cable details.
+
+example:
+
+    On a NetWare 4.01 server type
+
+    	load novserv4
+
+    On a workstation, type
+
+    	$(dbg) /tr=nov mynlm
+

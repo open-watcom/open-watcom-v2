@@ -1,0 +1,232 @@
+"HEAPMENU" MENU
+BEGIN
+    POPUP sp( "&File",
+              "&File" )
+    BEGIN
+        MENUITEM sp( "&Save",
+                     "&Save" ), HEAPMENU_FILE_SAVE
+        MENUITEM sp( "S&ave As ...",
+                     "S&ave As ..." ), HEAPMENU_FILE_SAVE_TO
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Configure ...",
+                     "&Configure ..." ), HEAPMENU_CONFIGURE
+        MENUITEM sp( "Save C&urrent Configuration",
+                     "Save C&urrent Configuration" ), HEAPMENU_SAVE_CONFIG
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Set &Font ...",
+                     "Set &Font ..." ), HEAPMENU_FONT
+        MENUITEM sp( "E&xit",
+                     "E&xit" ), HEAPMENU_EXIT
+    END
+    POPUP sp( "&Display",
+              "&Display" )
+    BEGIN
+        MENUITEM sp( "&Entire Heap",
+                     "&Entire Heap" ), HEAPMENU_DISPLAY_ENTIRE
+        MENUITEM sp( "&Free Items",
+                     "&Free Items" ), HEAPMENU_DISPLAY_FREE
+        MENUITEM sp( "&LRU Items",
+                     "&LRU Items" ), HEAPMENU_DISPLAY_LRU
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Selector List",
+                     "&Selector List" ), HEAPMENU_DISPLAY_DPMI
+    END
+    POPUP sp( "&Sort",
+              "&Sort" )
+    BEGIN
+        MENUITEM SEPARATOR
+    END
+    POPUP sp( "&Object",
+              "&Object" )
+    BEGIN
+        MENUITEM sp( "&Show",
+                     "&Show" ), HEAPMENU_OBJECT_SHOW
+        MENUITEM sp( "&Get Selector",
+                     "&Get Selector" ), HEAPMENU_OBJECT_GET_SELECTOR
+        MENUITEM sp( "&Discard",
+                     "&Discard" ), HEAPMENU_OBJECT_DISCARD
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Oldest",
+                     "&Oldest" ), HEAPMENU_OBJECT_OLDEST
+        MENUITEM sp( "&Newest",
+                     "&Newest" ), HEAPMENU_OBJECT_NEWEST
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Add",
+                     "&Add" ), HEAPMENU_ADD
+    END
+    POPUP sp( "&Local",
+              "&Local" )
+    BEGIN
+        MENUITEM sp( "&Monitor Local Heap...",
+                     "&Monitor Local Heap..." ), HEAPMENU_LOCAL_MONITOR
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Local Walk",
+                     "&Local Walk" ), HEAPMENU_LOCAL_LOCALWALK
+        MENUITEM sp( "&Compact and Local Walk",
+                     "&Compact and Local Walk" ), HEAPMENU_COMPACT_AND_LOCALWALK
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&GDI Local Walk",
+                     "&GDI Local Walk" ), HEAPMENU_GDI_LOCALWALK
+        MENUITEM sp( "&USER Local Walk",
+                     "&USER Local Walk" ), HEAPMENU_USER_LOCALWALK
+    END
+    POPUP sp( "&Global",
+              "&Global" )
+    BEGIN
+        MENUITEM sp( "&Refresh Global Heap List",
+                     "&Refresh Global Heap List" ), HEAPMENU_GLOBAL_REFRESH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Global &Compact",
+                     "Global &Compact" ), HEAPMENU_GLOBAL_COMPACT
+        MENUITEM sp( "Global Compact And &Discard",
+                     "Global Compact And &Discard" ), HEAPMENU_GLOBAL_COMP_DISC
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Global &Heap Info ...",
+                     "Global &Heap Info ..." ), HEAPMENU_GLOBAL_HEAPINFO
+        MENUITEM sp( "&Memory Management Info ...",
+                     "&Memory Management Info ..." ), HEAPMENU_GLOBAL_MEMORYINFO
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Set Swap Area Size ...",
+                     "&Set Swap Area Size ..." ), HEAPMENU_GLOBAL_CODE_SIZE
+    END
+    POPUP sp( "&Alloc",
+              "&Alloc" )
+    BEGIN
+        MENUITEM sp( "&Allocate All Memory",
+                     "&Allocate All Memory" ), HEAPMENU_ALLOC_ALL
+        MENUITEM sp( "&Free All Memory",
+                     "&Free All Memory" ), HEAPMENU_FREE_ALL
+        MENUITEM SEPARATOR
+        POPUP sp( "Allocate all &but",
+                  "Allocate all &but" )
+        BEGIN
+            MENUITEM sp( "1 K",
+                         "1 K" ), HEAPMENU_ALLOC_BUT_1K
+            MENUITEM sp( "2 K",
+                         "2 K" ), HEAPMENU_ALLOC_BUT_2K
+            MENUITEM sp( "5 K",
+                         "5 K" ), HEAPMENU_ALLOC_BUT_5K
+            MENUITEM sp( "10 K",
+                         "10 K" ), HEAPMENU_ALLOC_BUT_10K
+            MENUITEM sp( "25 K",
+                         "25 K" ), HEAPMENU_ALLOC_BUT_25K
+            MENUITEM sp( "50 K",
+                         "50 K" ), HEAPMENU_ALLOC_BUT_50K
+            MENUITEM sp( "n K",
+                         "n K" ), HEAPMENU_ALLOC_BUT_NK
+        END
+        POPUP sp( "A&llocate",
+                  "A&llocate" )
+        BEGIN
+            MENUITEM sp( "1 K",
+                         "1 K" ), HEAPMENU_ALLOC_1K, GRAYED
+            MENUITEM sp( "2 K",
+                         "2 K" ), HEAPMENU_ALLOC_2K, GRAYED
+            MENUITEM sp( "5 K",
+                         "5 K" ), HEAPMENU_ALLOC_5K, GRAYED
+            MENUITEM sp( "10 K",
+                         "10 K" ), HEAPMENU_ALLOC_10K, GRAYED
+            MENUITEM sp( "25 K",
+                         "25 K" ), HEAPMENU_ALLOC_25K, GRAYED
+            MENUITEM sp( "50 K",
+                         "50 K" ), HEAPMENU_ALLOC_50K, GRAYED
+            MENUITEM sp( "n K",
+                         "n K" ), HEAPMENU_ALLOC_NK, GRAYED
+        END
+        POPUP sp( "F&ree",
+                  "F&ree" )
+        BEGIN
+            MENUITEM sp( "1 K",
+                         "1 K" ), HEAPMENU_FREE_1K, GRAYED
+            MENUITEM sp( "2 K",
+                         "2 K" ), HEAPMENU_FREE_2K, GRAYED
+            MENUITEM sp( "5 K",
+                         "5 K" ), HEAPMENU_FREE_5K, GRAYED
+            MENUITEM sp( "10 K",
+                         "10 K" ), HEAPMENU_FREE_10K, GRAYED
+            MENUITEM sp( "25 K",
+                         "25 K" ), HEAPMENU_FREE_25K, GRAYED
+            MENUITEM sp( "50 K",
+                         "50 K" ), HEAPMENU_FREE_50K, GRAYED
+            MENUITEM sp( "n K",
+                         "n K" ), HEAPMENU_FREE_NK, GRAYED
+        END
+    END
+    POPUP sp( "&Help",
+              "&Help" )
+    BEGIN
+        MENUITEM sp( "&Contents",
+                     "&Contents" ), HEAPMENU_HELP_CONTENTS
+        MENUITEM sp( "&Search for help on...",
+                     "&Search for help on..." ), HEAPMENU_HELP_SRCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to use help",
+                     "&How to use help" ), HEAPMENU_HELP_ON_HELP
+        MENUITEM SEPARATOR
+        MENUITEM sp( "A&bout ...",
+                     "A&bout ..." ), HEAPMENU_ABOUT
+    END
+END
+"SORTMENU" MENU
+BEGIN
+        MENUITEM sp( "By &Address",
+                     "By &Address" ), HEAPMENU_SORT_ADDR
+        MENUITEM sp( "By &Handle",
+                     "By &Handle" ), HEAPMENU_SORT_HANDLE
+        MENUITEM sp( "By &Owner",
+                     "By &Owner" ), HEAPMENU_SORT_MODULE
+        MENUITEM sp( "By &Size",
+                     "By &Size" ), HEAPMENU_SORT_SIZE
+        MENUITEM sp( "By &Type",
+                     "By &Type" ), HEAPMENU_SORT_TYPE
+        MENUITEM sp( "By &Flag",
+                     "By &Flag" ), HEAPMENU_SORT_FLAG
+END
+
+"SORTDPMIMENU" MENU
+BEGIN
+        MENUITEM sp( "By &Base Address",
+                     "By &Base Address" ), HEAPMENU_SORT_ADDR
+        MENUITEM sp( "By &Selector",
+                     "By &Selector" ), HEAPMENU_SORT_HANDLE
+        MENUITEM sp( "By &Limit",
+                     "By &Limit" ), HEAPMENU_SORT_SIZE
+        MENUITEM sp( "By &Granularity",
+                     "By &Granularity" ), HEAPMENU_SORT_GRAN
+        MENUITEM sp( "By &Type",
+                     "By &Type" ), HEAPMENU_SORT_TYPE
+        MENUITEM sp( "By &DPL",
+                     "By &DPL" ), HEAPMENU_SORT_DPL
+END
+
+"LOCALHEAPMENU" MENU
+BEGIN
+    POPUP sp( "&File",
+              "&File" )
+    BEGIN
+        MENUITEM sp( "&Save",
+                     "&Save" ), HEAPMENU_FILE_SAVE
+        MENUITEM sp( "S&ave As",
+                     "S&ave As" ), HEAPMENU_FILE_SAVE_TO
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Refresh Local List",
+                     "&Refresh Local List" ), HEAPMENU_GLOBAL_REFRESH
+        MENUITEM sp( "&Heap Info",
+                     "&Heap Info" ), HEAPMENU_GLOBAL_MEMORYINFO
+        MENUITEM SEPARATOR
+        MENUITEM sp( "E&xit",
+                     "E&xit" ), HEAPMENU_EXIT
+    END
+    POPUP sp( "&Sort",
+              "&Sort" )
+    BEGIN
+        MENUITEM sp( "By &Offset",
+                     "By &Offset" ), HEAPMENU_SORT_ADDR
+        MENUITEM sp( "By &Size",
+                     "By &Size" ), HEAPMENU_SORT_SIZE
+        MENUITEM sp( "By &Type",
+                     "By &Type" ), HEAPMENU_SORT_TYPE
+        MENUITEM sp( "By &Handle",
+                     "By &Handle" ), HEAPMENU_SORT_HANDLE
+    END
+END

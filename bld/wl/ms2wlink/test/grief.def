@@ -1,0 +1,55 @@
+code preload executeread iopl conforming moveable
+data multiple nonshared readwrite noiopl loadoncall
+description
+segments
+    'code' readonly iopl preload
+    shoobap   conforming preload loadoncall
+
+exports all
+mimsy=were residentname
+
+
+
+
+
+the @1
+borogroves=and @1
+mome @1 residentname nodata
+raths residentname
+outgrabe @66 residentname 12
+beware @33 2234
+the @12 residentname 1 nodata
+heapsize 023
+heapsize maxval
+imports jabberwock.my
+son.1
+jaws=that.bite
+claws=that.0xf
+catch
+name dude windowapi newfiles
+old 'munchkin.dll'
+protmode
+segments
+    foo_text class 'howard' loadoncall readwrite executeread noiopl nonconforming nonshared movable nondiscardable
+    zippityay    readwrite
+    foo class
+    'fll' eee aaa
+    zippitydodah
+
+stacksize 0x666
+stub 'hurm.obj'
+realmode
+exetype unknown
+exetype windows 3
+include "dingbat.def"
+functions :im on the pavement thinkin about the
+government
+
+functions :123
+
+lookout readwrite kid iopl your noiopl gonna conforming get executeonly hit
+
+segments ovl:3
+;    the pump dont work cause the vandals stole the handles
+
+

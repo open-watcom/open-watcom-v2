@@ -1,0 +1,999 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <conio.h>
+#include <io.h>
+#include <dos.h>
+#include <fcntl.h>
+#include <stdarg.h>
+
+#include "tinyio.h"
+#include "trpimp.h"
+#include "packet.h"
+#include "dbg386.h"
+#include "ioports.h"
+#include "adslib.h"
+#include "doshdl.h"
+#include "madregs.h"
+
+trap_cpu_regs   Regs;
+int             IntNum;
+char            Break;
+
+extern void DumpDbgRegs(void);
+
+
+extern  char            NPXType();
+extern  void            Read387(void *);
+extern  void            Write387(void *);
+extern  void            GrabVects(void);
+extern  void            ReleVects(void);
+extern  dword           GetDS(void);
+extern  dword           GetCS(void);
+extern  dword           GetSS(void);
+extern  dword           GetFL(void);
+extern  void            DoRunProg(void);
+extern  word            DoMapSeg(word);
+extern  int             DoReadMem(word,dword,char*);
+extern  int             DoWriteMem(word,dword,char*);
+extern  dword           GetLinear(word,dword);
+extern  dword           SegLimit(word);
+extern  bool            WriteOk(word);
+extern  unsigned        X86CPUType(void);
+extern  unsigned        ExceptionText( unsigned, char * );
+
+bool                    FakeBreak;
+bool                    AtEnd;
+bool                    DoneAutoCAD;
+
+static int              RealNPXType;
+static int              SaveStdIn;
+static int              SaveStdOut;
+#define BUFF_SIZE       256
+char                    UtilBuff[BUFF_SIZE];
+#define ADSSTACK_SIZE      4096
+char                    ADSStack[ADSSTACK_SIZE];
+
+typedef struct watch {
+    addr48_ptr  addr;
+    dword       value;
+    dword       linear;
+    short       dregs;
+    short       len;
+} watch;
+
+#define MAX_WP  8
+watch   WatchPoints[ MAX_WP ];
+int     WatchCount;
+
+#define _DBG3( x ) // MyOut x
+#define _DBG2( x ) // MyOut x
+#define _DBG1( x ) // MyOut x
+#define _DBG0( x ) // MyOut x
+#define _DBG( x )  // MyOut x
+
+struct {
+        dword   cr0;
+        dword   dr0;
+        dword   dr1;
+        dword   dr2;
+        dword   dr3;
+        dword   res1;
+        dword   res2;
+        dword   dr6;
+        dword   dr7;
+        dword   res3;
+        dword   res4;
+        dword   res5;
+} SysRegs;
+
+extern void GetSysRegs( void * );
+extern void SetSysRegs( void * );
+
+#if 0
+/*
+ * Debugging output code for ADS
+ */
+
+int _cnt;
+static int _line=0;
+
+extern void InitMeg1();
+char far *GetScreenPointer( void )
+{
+    extern      short           Meg1;
+    InitMeg1();
+    return( MK_FP( Meg1, 0xB0000 ) );
+}
+
+void MyClearScreen()
+{
+    int i;
+
+    char far *scrn=GetScreenPointer();
+
+    for( i=0;i<80*25;i++ ) {
+        scrn[i*2] = ' ';
+        scrn[i*2+1] = 7;
+    }
+}
+
+void RawOut( char *str )
+{
+    int         len,i;
+    char        far*scr;
+    char        far*scrn=GetScreenPointer();
+
+    len = strlen( str );
+    scr = &scrn[_line*80*2];
+    for( i=0;i<len;i++ ) {
+        scr[i*2] = str[i];
+        scr[i*2+1] = 7;
+    }
+    for( i=len;i<80;i++ ) {
+        scr[i*2] = ' ';
+        scr[i*2+1] = 7;
+    }
+    _line++;
+    if( _line > 24 ) _line = 0;
+
+    scr = &scrn[_line*80*2];
+    for( i=0;i<80;i++ ) {
+        scr[i*2] = ' ';
+        scr[i*2+1] = 7;
+    }
+}
+
+void MyOut( char *str, ... )
+{
+    va_list     al;
+    char        tmpbuff[128];
+
+    sprintf( tmpbuff,"%03d) ",++_cnt );
+    va_start( al, str );
+    vsprintf( &tmpbuff[5],str, al );
+
+    RawOut( tmpbuff );
+}
+
+#endif
+
+static  word    LookUp( word sdtseg, word seg, word global )
+{
+    dword       sdtoff;
+    dword       sdtlim;
+    dword       linear;
+    word        otherseg;
+
+    sdtlim = SegLimit( sdtseg );
+    linear = GetLinear( seg, 0 );
+    for( sdtoff = 0; sdtoff < sdtlim; sdtoff += 8 ) {
+        if( sdtoff == ( seg & 0xfff8 ) ) continue;
+        otherseg = sdtoff + ( global ? 0 : 4 );
+        if( !WriteOk( otherseg ) ) continue;
+        if( GetLinear( otherseg, 0 ) != linear ) continue;
+                                                                          _DBG3(("lookup %4.4x", otherseg));
+        return( otherseg );
+    }
+    return( 0 );
+}
+
+
+word    AltSegment( word seg )
+{
+    word        otherseg;
+
+    otherseg = LookUp( 0x30, seg, 0 );  /* try LDT */
+    if( otherseg != 0 ) return( otherseg );
+    otherseg = LookUp( 0x38, seg, 1 );  /* try GDT */
+    if( otherseg != 0 ) return( otherseg );
+    return( seg );
+}
+
+static int ReadWrite( int (*r)(word,dword,char*), addr48_ptr *addr, byte *data, int req ) {
+
+    int         len;
+    word        segment;
+    dword       offset;
+
+    offset = addr->offset;
+    segment = addr->segment;
+                                                                          _DBG2(("Read Write %4.4x:%8.8lx",segment,offset));
+    if( SegLimit( segment ) >= offset + req - 1 ) {
+                                                                          _DBG2(("Read Write Ok for %d", req));
+        if( !r( segment, offset, data ) ) {
+            segment = AltSegment( segment );
+        }
+        if( SegLimit( segment ) < offset + req - 1 ) {
+                                                                          _DBG3(("Gosh, we're in trouble dudes"));
+            if( SegLimit( segment ) == 0 ) {
+                                                                          _DBG3(("Gosh, we're in SERIOUS trouble dudes"));
+            }
+        } else {
+            len = req;
+            while( --len >= 0 ) {
+                if( !r( segment, offset++, data++ ) ) {
+                                                                          _DBG3(("failed for %4.4x:%8.8lx", segment, offset-1));
+                }
+            }
+                                                                          _DBG2(("Read Write Done"));
+            return( req );
+        }
+    }
+    len = 0;
+                                                                          _DBG2(("Read Write One byte at a time for %d", req));
+    while( --req >= 0 ) {
+        if( SegLimit( segment ) < offset ) break;
+        if( !r( segment, offset, data ) ) {
+            segment = AltSegment( segment );
+        }
+        if( !r( segment, offset++, data++ ) ) {
+                                                                          _DBG3(("failed for %4.4x:%8.8lx", segment, offset-1));
+        }
+        ++len;
+    }
+                                                                          _DBG2(("Read Write Done"));
+    return( len );
+}
+
+
+static int ReadMemory( addr48_ptr *addr, byte *data, int len )
+{
+    return( ReadWrite( DoReadMem, addr, data, len ) );
+}
+
+static int WriteMemory( addr48_ptr *addr, byte *data, int len )
+{
+    if( addr->segment == Regs.CS ) addr->segment = Regs.DS; // hack, ack
+    return( ReadWrite( DoWriteMem, addr, data, len ) );
+}
+
+unsigned ReqGet_sys_config()
+{
+    get_sys_config_ret  *ret;
+
+                                                                          _DBG1(( "AccGetConfig" ));
+    ret = GetOutPtr(0);
+    ret->sys.os = OS_AUTOCAD;
+    ret->sys.osmajor = _osmajor;
+    ret->sys.osminor = _osminor;
+    ret->sys.cpu = X86CPUType();
+    ret->sys.huge_shift = 12;
+    ret->sys.fpu = RealNPXType;
+    ret->sys.mad = MAD_X86;
+    return( sizeof( *ret ) );
+}
+
+
+unsigned ReqMap_addr()
+{
+    map_addr_req        *acc;
+    map_addr_ret        *ret;
+
+    acc = GetInPtr(0);
+    ret = GetOutPtr(0);
+    if( acc->in_addr.segment == MAP_FLAT_DATA_SELECTOR ) {
+        ret->out_addr.segment = Regs.DS;
+    } else {
+        ret->out_addr.segment = Regs.CS;
+    }
+    ret->out_addr.offset = acc->in_addr.offset;
+    ret->lo_bound = 0;
+    ret->hi_bound = ~(addr48_off)0;
+    return( sizeof( *ret ) );
+}
+
+//OBSOLETE - use ReqMachine_data
+unsigned ReqAddr_info()
+{
+    addr_info_ret       *ret;
+
+                                                                          _DBG1(( "AccAddrInfo" ));
+    ret = GetOutPtr( 0 );
+    ret->is_32 = 1;
+    return( sizeof( *ret ) );
+}
+
+unsigned ReqMachine_data()
+{
+    machine_data_ret    *ret;
+    unsigned_8          *data;
+
+    ret = GetOutPtr( 0 );
+    data = GetOutPtr( sizeof( *ret ) );
+    ret->cache_start = 0;
+    ret->cache_end = ~(addr_off)0;
+    *data = X86AC_BIG;
+    return( sizeof( *ret ) + sizeof( *data ) );
+}
+
+
+unsigned ReqChecksum_mem()
+{
+    unsigned       len;
+    int            i;
+    int            read;
+    checksum_mem_req    *acc;
+    checksum_mem_ret    *ret;
+
+                                                                          _DBG1(( "AccChkSum" ));
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    len = acc->len;
+    ret->result = 0;
+    while( len >= BUFF_SIZE ) {
+        read = ReadMemory( &acc->in_addr, (byte *)&UtilBuff, BUFF_SIZE );
+        acc->in_addr.offset += BUFF_SIZE;
+        for( i = 0; i < read; ++i ) {
+            ret->result += UtilBuff[ i ];
+        }
+        if( read != BUFF_SIZE ) return( sizeof( *ret ) );
+        len -= BUFF_SIZE;
+    }
+    if( len != 0 ) {
+        read = ReadMemory( &acc->in_addr, (byte *)&UtilBuff, len );
+        if( read == len ) {
+            for( i = 0; i < len; ++i ) {
+                ret->result += UtilBuff[ i ];
+            }
+        }
+    }
+    return( sizeof( *ret ) );
+}
+
+
+unsigned ReqRead_mem()
+{
+    read_mem_req        *acc;
+    void                *ret;
+    unsigned            len;
+                                                                          _DBG1(( "ReadMem" ));
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    len = ReadMemory( &acc->mem_addr, ret, acc->len );
+    return( len );
+}
+
+unsigned ReqWrite_mem()
+{
+    write_mem_req       *acc;
+    write_mem_ret       *ret;
+                                                                          _DBG1(( "WriteMem" ));
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof(*acc) ),
+                            GetTotalSize() - sizeof(*acc) );
+    return( sizeof( *ret ) );
+}
+
+unsigned ReqRead_io()
+{
+    read_io_req *acc;
+    void        *ret;
+
+    acc = GetInPtr(0);
+    ret = GetOutPtr(0);
+    if( acc->len == 1 ) {
+        *( (byte *)ret ) = In_b( acc->IO_offset );
+    } else if( acc->len == 2 ) {
+        *( (word *)ret ) = In_w( acc->IO_offset );
+    } else {
+        *( (dword *)ret ) = In_d( acc->IO_offset );
+    }
+    return( acc->len );
+}
+
+
+unsigned ReqWrite_io()
+{
+    int              len;
+    write_io_req        *acc;
+    write_io_ret        *ret;
+    void                *data;
+
+    acc = GetInPtr(0);
+    data = GetInPtr( sizeof( *acc ) );
+    len = GetTotalSize() - sizeof( *acc );
+    ret = GetOutPtr(0);
+    if( len == 1 ) {
+        Out_b( acc->IO_offset, *( (byte *)data ) );
+    } else if( len == 2 ) {
+        Out_w( acc->IO_offset, *( (word *)data ) );
+    } else {
+        Out_d( acc->IO_offset, *( (dword *)data ) );
+    }
+    ret->len = len;
+    return( sizeof( *ret ) );
+}
+
+//OBSOLETE - use ReqRead_regs
+unsigned ReqRead_cpu()
+{
+    trap_cpu_regs       *regs;
+
+    regs = GetOutPtr( 0 );
+    *regs = Regs;
+    return( sizeof( *regs ) );
+}
+
+//OBSOLETE - use ReqRead_regs
+unsigned ReqRead_fpu()
+{
+    Read387( (trap_fpu_regs *)GetOutPtr( 0 ) );
+    return( sizeof( trap_fpu_regs ) );
+}
+
+unsigned ReqRead_regs( void )
+{
+    mad_registers       *mr;
+
+    mr = GetOutPtr(0);
+    mr->x86.cpu = *(struct x86_cpu *)&Regs;
+    Read387( &mr->x86.fpu );
+    return( sizeof( mr->x86 ) );
+}
+
+//OBSOLETE - use ReqWrite_regs
+unsigned ReqWrite_cpu()
+{
+    Regs = *( trap_cpu_regs *)GetInPtr( sizeof( write_cpu_req ) );
+    return( 0 );
+}
+
+//OBSOLETE - use ReqWrite_regs
+unsigned ReqWrite_fpu()
+{
+    Write387( (trap_fpu_regs *)GetInPtr( sizeof( write_fpu_req ) ) );
+    return( 0 );
+}
+
+unsigned ReqWrite_regs( void )
+{
+    mad_registers       *mr;
+
+    mr = GetInPtr(sizeof(write_regs_req));
+    *(struct x86_cpu *)&Regs = mr->x86.cpu;
+    Write387( &mr->x86.fpu );
+    return( 0 );
+}
+
+#pragma aux StackCheck "__STK";
+
+void StackCheck()
+{
+}
+
+
+#pragma aux BreakPoint = 0xCC;
+extern void BreakPoint( void );
+void ADSLoop()
+{
+    short scode = RSRSLT;             /* Normal result code (default) */
+    int stat;
+
+    for ( ;; ) {                      /* Request/Result loop */
+//                                                                        _DBG0(("ADS Loop"));
+
+        if ((stat = ads_link(scode)) < 0) {
+            cputs( "ADSHELP: bad status from ads_link()\r\n");
+            exit(1);
+        }
+
+        scode = RSRSLT;               /* Reset result code */
+
+        switch (stat) {
+
+        case RQSUBR:                  /* Handle external function requests */
+            scode = RSERR;
+            break;
+
+        case RQXUNLD:                 /* Handle external function requests */
+            DoneAutoCAD = TRUE;
+            AtEnd = TRUE;
+            BreakPoint();             /* you figure it out */
+            break;
+        }
+    }
+}
+
+
+unsigned ReqProg_load()
+{
+    prog_load_ret       *ret;
+
+                                                                          _DBG(("We're in AccLoadProg"));
+    GetSysRegs( &SysRegs );
+    ret = GetOutPtr( 0 );
+    ret->err = 0;
+    ret->flags = LD_FLAG_IS_32 | LD_FLAG_IS_PROT | LD_FLAG_IS_STARTED | LD_FLAG_DISPLAY_DAMAGED;
+    ret->task_id = 4;
+    ret->mod_handle = 0;
+    Regs.DS = Regs.ES = Regs.FS = Regs.GS = GetDS();
+    Regs.SS = GetSS();
+    Regs.ESP = (dword)ADSStack + ADSSTACK_SIZE - sizeof( dword );
+    Regs.CS = GetCS();
+    Regs.EIP = (dword)&ADSLoop;
+    Regs.EFL = GetFL();
+    Regs.EAX = Regs.EBX = Regs.ECX = Regs.EDX = Regs.ESI = 0;
+    Regs.EDI = Regs.EBP = 0;
+    IntNum = -1;
+                                                                          _DBG(("We're back from AccLoadProg"));
+    return( sizeof( *ret ) );
+}
+
+static void MyRunProg()
+{
+    _DBG0(( "RunProg - Regs" ));
+    DumpRegs( &Regs );
+    _DBG0(( "RunProg - dbgregs" ));
+    SetSysRegs( &SysRegs );
+    DoRunProg();
+    GetSysRegs( &SysRegs );
+    _DBG0(( "AfterRunProg (%d) - Regs", IntNum ));
+    DumpRegs( &Regs );
+    _DBG0(( "AfterRunProg - dbgregs" ));
+    DumpDbgRegs();
+}
+
+unsigned ReqProg_kill()
+{
+    prog_kill_ret       *ret;
+                                                                          _DBG1(( "AccKillProg" ));
+    ret = GetOutPtr( 0 );
+    SaveStdIn = NIL_DOS_HANDLE;
+    SaveStdOut = NIL_DOS_HANDLE;
+    AtEnd = TRUE;
+    if( !DoneAutoCAD ) {
+        AtEnd = TRUE;
+        cputs( "*** Please quit AUTOCAD in order to restart debugger ***\r\n" );
+        MyRunProg();
+    }
+    ret->err = 0;
+    return( sizeof( *ret ) );
+}
+
+
+unsigned ReqSet_watch()
+{
+    watch        *curr;
+    set_watch_req       *acc;
+    set_watch_ret       *ret;
+    int          i,needed;
+
+    _DBG0(( "AccSetWatch" ));
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    ret->multiplier = 20000;
+    ret->err = 1;
+    if( WatchCount < MAX_WP ) {
+        ret->err = 0;
+        curr = WatchPoints + WatchCount;
+        curr->addr = acc->watch_addr;
+        ReadMemory( &acc->watch_addr, (byte *)&curr->value, 4 );
+        ++WatchCount;
+        curr->linear = GetLinear( curr->addr.segment, curr->addr.offset );
+        curr->len = acc->size;
+        curr->dregs = ( curr->linear & (curr->len-1) ) ? 2 : 1;
+        curr->linear &= ~(curr->len-1);
+        needed = 0;
+        for( i = 0; i < WatchCount; ++i ) {
+            needed += WatchPoints[ i ].dregs;
+        }
+        if( needed <= 4 ) ret->multiplier |= USING_DEBUG_REG;
+        _DBG0((
+        "addr %4.4x:%8.8lx "
+        "linear %8.8x "
+        "len %d "
+        "needed %d "
+        ,curr->addr.segment,curr->addr.offset
+        ,curr->linear
+        ,curr->len
+        ,needed
+        ));
+    }
+    return( sizeof( *ret ) );
+}
+
+unsigned ReqClear_watch()
+{
+    _DBG0(( "AccRestoreWatch" ));
+    /* assume all watches removed at same time */
+    WatchCount = 0;
+    return( 0 );
+}
+
+unsigned ReqSet_break()
+{
+    set_break_req       *acc;
+    set_break_ret       *ret;
+
+    static char brake = 0xCC; /* cause maybe SS != DS */
+
+                                                                          _DBG1(( "AccSetBreak" ));
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    if( ReadMemory( &acc->break_addr, (byte *)&ret->old, 1 ) == 0 ) {
+        ret->old = 0;
+    } else {
+        WriteMemory( &acc->break_addr, &brake, 1 );
+    }
+    return( sizeof( *ret ) );
+}
+
+unsigned ReqClear_break()
+{
+    clear_break_req     *acc;
+
+    acc = GetInPtr( 0 );
+    WriteMemory( &acc->break_addr, (byte *)&acc->old, 1 );
+    _DBG1(( "AccRestoreBreak" ));
+    return( 0 );
+}
+
+static dword *DR[] = { &SysRegs.dr0, &SysRegs.dr1, &SysRegs.dr2, &SysRegs.dr3 };
+
+static void SetDRnBW( int dr, dword linear, int len ) /* Set DRn for break on write */
+{
+    *DR[ dr ] = linear;
+    SysRegs.dr7 |= ( ( DRLen( len )+DR7_BWR) << DR7_RWLSHIFT( dr ) )
+                     | ( DR7_GEMASK << DR7_GLSHIFT( dr ) );
+}
+
+
+static bool SetDebugRegs()
+{
+    int         needed;
+    int         i;
+    int         dr;
+    watch       *wp;
+
+    needed = 0;
+    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
+        needed += wp->dregs;
+    }
+    if( needed > 4 ) return( FALSE );
+    dr = 0;
+    SysRegs.dr7 = DR7_GE;
+    for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
+        SetDRnBW( dr, wp->linear, wp->len );
+        ++dr;
+        if( wp->dregs == 2 ) {
+            SetDRnBW( dr, wp->linear+4, wp->len );
+            ++dr;
+        }
+    }
+    return( TRUE );
+}
+
+void DumpRegs( trap_cpu_regs    *regs )
+{
+    regs=regs;
+    _DBG0(("EAX=%8.8x EBX=%8.8x ECX=%8.8x EDX=%8.8x",
+    regs->EAX, regs->EBX, regs->ECX, regs->EDX ));
+    _DBG0(("ESI=%8.8x EDI=%8.8x ESP=%8.8x EBP=%8.8x",
+    regs->ESI, regs->EDI, regs->ESP, regs->EBP ));
+    _DBG0(("DS=%4.4x ES=%4.4x FS=%4.4x GS=%4.4x",
+    regs->DS, regs->ES, regs->FS, regs->GS ));
+    _DBG0(("CS=%4.4x EIP=%8.8x EFL=%8.8x SS=%4.4x",
+    regs->CS, regs->EIP, regs->EFL, regs->SS ));
+}
+
+static unsigned ProgRun( bool step )
+{
+    watch       *wp;
+    long        trace;
+    int         i;
+    dword       value;
+    prog_go_ret *ret;
+
+                                                                          _DBG1(( "ProgRun" ));
+    ret = GetOutPtr( 0 );
+    ret->conditions = COND_CONFIG;
+    trace = step ? 0x100 : 0;
+    Regs.EFL |= trace;
+    if( AtEnd ) {
+                                                                          _DBG2(("No RunProg"));
+        ;
+    } else if( !trace && WatchCount != 0 ) {
+                                                                          _DBG2(("All that trace goop"));
+        if( SetDebugRegs() ) {
+            MyRunProg();
+            SysRegs.dr6 = 0;
+            SysRegs.dr7 = 0;
+        } else {
+            for( ;; ) {
+                Regs.EFL |= 0x100;
+                MyRunProg();
+                if( DoneAutoCAD ) break;
+                if( IntNum != 1 ) break;
+                if( !( SysRegs.dr6 & DR6_BS ) ) break;
+                for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
+                    ReadMemory( &wp->addr, (void *)&value, 4 );
+                    if( value != wp->value ) {
+                        ret->conditions |= COND_WATCH;
+                        goto leave;
+                    }
+                }
+            }
+        }
+    } else {
+        MyRunProg();
+    }
+    if( AtEnd ) {
+        ret->conditions |= COND_TERMINATE;
+    } else if( DoneAutoCAD ) {
+        ret->conditions = COND_TERMINATE;
+        AtEnd = TRUE;
+    } else if( IntNum == 1 ) {
+        if( trace ) {
+            ret->conditions |= COND_TRACE;
+        } else {
+            ret->conditions |= COND_WATCH;
+        }
+    } else if( IntNum == 3 ) {
+        ret->conditions |= COND_BREAK;
+        Regs.EIP--;
+    } else {
+        ret->conditions |= COND_EXCEPTION;
+    }
+leave:
+    Regs.EFL &= ~trace;
+    ret->program_counter.offset = Regs.EIP;
+    ret->program_counter.segment = Regs.CS;
+    ret->stack_pointer.offset = Regs.ESP;
+    ret->stack_pointer.segment = Regs.SS;
+    WatchCount = 0;
+    return( sizeof( *ret ) );
+}
+
+unsigned ReqProg_go()
+{
+    return( ProgRun( FALSE ) );
+}
+
+unsigned ReqProg_step()
+{
+    return( ProgRun( TRUE ) );
+}
+
+static unsigned Redirect( bool input )
+{
+    int             std_hndl;
+    int             *var;
+    int             handle;
+    char            *name;
+    redirect_stdin_ret  *ret;
+
+    ret = GetOutPtr( 0 );
+    name = GetInPtr( sizeof( redirect_stdin_req ) );
+    ret->err = 0;
+    if( input ) {
+        std_hndl = 0;
+        var = &SaveStdIn;
+    } else {
+        std_hndl = 1;
+        var = &SaveStdOut;
+    }
+    if( *name == '\0' ) {
+        if( *var != NIL_DOS_HANDLE ) {
+            if( dup2( *var, std_hndl ) == -1 ) {
+                ret->err = 1;  // error!
+            } else {
+                close( *var );
+                *var = NIL_DOS_HANDLE;
+            }
+        }
+    } else {
+        if( *var == NIL_DOS_HANDLE ) {
+            *var = dup( std_hndl );
+        }
+        if( input ) {
+            handle = open( name, O_BINARY | O_RDWR, 0 );
+        } else {
+            handle = open( name, O_BINARY | O_RDWR | O_TRUNC | O_CREAT, 0 );
+        }
+        if( handle == -1 ) {
+            ret->err = 1;  // error!
+        } else {
+            dup2( handle, std_hndl );
+            close( handle );
+        }
+    }
+    return( sizeof( *ret ) );
+}
+
+unsigned ReqRedirect_stdin()
+{
+    return( Redirect( TRUE ) );
+}
+
+unsigned ReqRedirect_stdout()
+{
+    return( Redirect( FALSE ) );
+}
+
+#if 0
+static void DOSEnvLkup( char *src, char *dst )
+{
+    char    *p;
+
+    p = getenv( src );
+    if( p == NULL ) {
+        *dst = '\0';
+    } else {
+        strcpy( dst, p );
+    }
+}
+#endif
+
+unsigned ReqGet_next_alias()
+{
+    get_next_alias_req  *acc;
+    get_next_alias_ret  *ret;
+
+                                                                        _DBG(("AccGetNextAlias"));
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    if( acc->seg == 0 ) {
+                                                                        _DBG(("acc->seg == 0"));
+        ret->seg = Regs.CS;
+        ret->alias = Regs.DS;
+    } else {
+                                                                        _DBG(("acc->seg == other"));
+        ret->seg = 0;
+        ret->alias = 0;
+    }
+    return( sizeof( *ret ) );
+}
+
+#if 0
+extern int GtKey();
+#ifdef _NEC_PC
+
+#pragma aux GtKey = \
+        " mov ah, 0 " \
+        " int 18h   " \
+        modify [ ax ];
+
+#else
+
+#pragma aux GtKey =                                            \
+0XB4 0X00       /* mov    ah,0                          */      \
+0XCD 0X16       /* int    16                            */      \
+modify [ ax ];
+
+#endif
+
+static unsigned_16 AccReadUserKey()
+{
+    rd_key_return FAR *retblk;
+
+    retblk = GetOutPtr( 0 );
+    retblk->key = GtKey();
+    return( sizeof( rd_key_return ) );
+}
+#endif
+
+unsigned ReqGet_err_text()
+{
+    static char *DosErrMsgs[] = {
+#include "dosmsgs.h"
+    };
+    get_err_text_req    *acc;
+    char                *err_txt;
+
+    #define MAX_CODE (sizeof( DosErrMsgs ) / sizeof( char * ) - 1)
+
+                                                                          _DBG1(( "AccErrText" ));
+    acc = GetInPtr( 0 );
+    err_txt = GetOutPtr( 0 );
+    if( acc->err > MAX_CODE ) {
+        utoa( acc->err, err_txt, 16 );
+    } else {
+        strcpy( err_txt, DosErrMsgs[ acc->err ] );
+    }
+    return( strlen( err_txt ) + 1 );
+}
+
+unsigned ReqGet_lib_name()
+{
+    char        *ch;
+    get_lib_name_ret    *ret;
+
+    ret = GetOutPtr( 0 );
+    ret->handle = 0;
+    ch = GetOutPtr( sizeof( *ret ) );
+    *ch = '\0';
+    return( sizeof( *ret ) + 1 );
+}
+
+
+unsigned ReqGet_message_text()
+{
+    get_message_text_ret        *ret;
+    char                        *err_txt;
+
+    ret = GetOutPtr( 0 );
+    err_txt = GetOutPtr( sizeof(*ret) );
+    if( IntNum == -1 ) {
+        err_txt[0] = '\0';
+    } else {
+        ExceptionText( IntNum, err_txt );
+        IntNum = -1;
+    }
+    ret->flags = MSG_NEWLINE | MSG_ERROR;
+    return( sizeof( *ret ) + strlen( err_txt ) + 1 );
+}
+
+trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+{
+    trap_version        ver;
+
+                                                                          _DBG0(( "TrapInit" ));
+    remote = remote; parm = parm;
+    err[0] = '\0'; /* all ok */
+    ver.major = TRAP_MAJOR_VERSION;
+    ver.minor = TRAP_MINOR_VERSION;
+    ver.remote = FALSE;
+    SaveStdIn = NIL_DOS_HANDLE;
+    SaveStdOut = NIL_DOS_HANDLE;
+    RealNPXType = NPXType();
+    WatchCount = 0;
+    FakeBreak = FALSE;
+    GrabVects();
+                                                                          _DBG0(( "Done TrapInit" ));
+    return( ver );
+}
+
+void LetACADDie()
+{
+    if( DoneAutoCAD ) {
+        DoneAutoCAD = FALSE;
+        MyRunProg();    /* we're history! */
+    }
+}
+
+void TRAPENTRY TrapFini()
+{
+                                                                          _DBG0(( "TrapFini" ));
+    ReleVects();
+                                                                          _DBG0(( "Done TrapFini" ));
+}
+
+void GotInt3()
+{
+    _DBG0(( "Got Int 3!!!" ));
+}

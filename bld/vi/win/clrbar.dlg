@@ -1,0 +1,14 @@
+#include "clrbar.h"
+CLRBAR DIALOG 66, 46, 130, 140
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Color"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "", CLR_CLRPICK, "ClrPick", WS_TABSTOP, 5, 15, 120, 120
+    GROUPBOX        "", -1, 4, 9, 122, 125
+    LTEXT           "Drag && Drop:", -1, 5, 6, 43, 8
+    DEFPUSHBUTTON   "OK", IDOK, 50, 2, 24, 14, NOT WS_VISIBLE | NOT
+                    WS_TABSTOP
+    PUSHBUTTON      "Cancel", IDCANCEL, 78, 1, 24, 14, NOT WS_VISIBLE | NOT
+                    WS_TABSTOP
+END

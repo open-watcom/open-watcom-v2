@@ -1,0 +1,65 @@
+.extensions:
+.extensions: .pp .obj .c .h .y
+
+
+.h      : ..\h;$(%include)
+.c      : ..\c;.;$(trmem_dir)
+.y      : ..\c
+
+lnk = wig.lnk
+
+ccopt += -w4 -oaxt -zq -fpc /bt=$(os)
+
+!ifndef ext
+ext = exe
+!endif
+
+yacc=..\yacc.exe
+
+objs += &
+    sruparse.obj &
+    keywords.obj &
+    scanner.obj &
+    mem.obj &
+    hashtab.obj &
+    srusuprt.obj &
+    gen_cpp.obj &
+    options.obj &
+    list.obj &
+    filelist.obj &
+    wig.obj
+
+!ifdef on_build_machine
+ccopt += -d1 -dNDEBUG
+!else
+ccopt += -d2 -dDEBUG
+!endif
+
+$(name).$(ext) : $(objs) $(lnk)
+        $(linker) debug all sys $(op_sys) option map name $(name) @$(lnk)
+!ifdef bind
+        $(pharlap)bind386 $(pharlap)run386b.exe $(name).exp -exe $(name).exe
+!endif
+
+$(lnk) : ..\mif\master.mif makefile
+        %create $(lnk)
+!ifdef on_build_machine
+        @%append $(lnk) option symfile
+!endif
+        @for %i in ($(libs)) do @@%append $(lnk) library %i
+        @for %i in ($(objs)) do @@%append $(lnk) file %i
+
+.c.obj:
+        $(compiler) $(ccopt) $[* /fo=$^@
+
+.c.pp:
+        $(compiler) $(ccopt) $[* /fo=.pp /plc
+
+.y.c:
+        wtouch $^@
+        rm $^@
+        $(yacc) $[@ ..\c\yydriver.c
+        cp ytab.c $^@
+
+.before
+        set include = ..\h;$(trmem_dir);$(%include)

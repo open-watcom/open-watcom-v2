@@ -1,0 +1,43 @@
+.extensions:
+.extensions: .lib .imp .lbc .dll .obj .c .cpp .asm
+
+!ifdef profile
+option_symfile =
+!else
+option_symfile = option symfile
+!endif
+
+!ifndef patch_level
+patch_level=0
+!endif
+
+$(libname).lib : $(dllname).imp $(static_objs)
+    $(librarian) $(lib_flags) $(lib_flags_new) -irn $^@ @$(dllname).imp $(static_objs)
+
+$(dllname).imp : $(dllname).lbc $(rtdll_dir)\trimlbc.vi $(rtdll_dir)\add_br.vi
+    copy $(dllname).lbc $(dllname).imp
+!ifeq system os2
+    vi -q -s $(rtdll_dir)\trimlbc.vi $(dllname).imp
+!endif
+!ifeq component clib
+    vi -q -s $(rtdll_dir)\add_br.vi $(dllname).imp
+!endif
+
+$(dllname).dll $(dllname).lbc : $(dll_objs) $(dll_libs) tmp.def
+    $(linker) debug dwarf $(option_symfile) $(l_flags) $(dllbase) op map name $(dllname).dll file { $(dll_objs) } export { @$]@ } lib { $(dll_libs) }
+!ifeq system winnt
+    $(bld_cl) $(fe_misc_dir)\c\genverrc.c $(wcl_util_opts) -d_VERSION=$(bld_ver)
+    genverrc ..\verinfo.rc $(dllname).rc $$ $(dllname).dll $(patch_level)
+    del genverrc.*
+    $(rc) -q -bt=nt -i$(%watcom)\h\nt $(dllname).rc $(dllname).dll
+!endif
+    sort < $(dllname).lbc > $(dllname).tmp
+    -uniq < $(dllname).tmp > $(dllname).lbc
+    @erase $(dllname).tmp
+
+tmp.def : $(dll_def) $(__MAKEFILES__)
+    %create $^@
+    @for %i in ($(dll_def)) do @%append $^@ @%i
+
+!include $(clib_dir)\clean.mif
+!include $(rtdll_dir)\upddll.mif

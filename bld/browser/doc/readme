@@ -1,0 +1,9 @@
+
+This directory contains:
+    the user documentation for WATCOM browser:		wbr.gml
+    the gml gear to format it:				gendoc.bat, *.gml
+    							*.opt, *.lay
+	use 'c:>gendoc shell.gml' - includes wbr.gml
+    misc specs, proposals for dwarf extensions:		*.txt
+    encapsulated postscript screen snaps for wbr.gml: 	*.eps
+	(some of these are dummies - check printout)

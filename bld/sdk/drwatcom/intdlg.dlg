@@ -1,0 +1,26 @@
+INTERRUPT DIALOG 12, 20, 214, 152
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+BEGIN
+    PUSHBUTTON      "&Terminate Application", INT_TERMINATE, 16, 64, 82, 14
+    PUSHBUTTON      "C&hain To Next Handler", INT_CHAIN_TO_NEXT, 16, 84, 82,
+                    14
+    LTEXT           "Fault CS:EIP:", -1, 8, 32, 44, 8, NOT WS_GROUP
+    PUSHBUTTON      "Task &Status ...", INT_TASK_STATUS, 108, 72, 82, 14
+    LTEXT           "Fault Type:", -1, 8, 24, 36, 8, NOT WS_GROUP
+    LTEXT           "Task Name:", INT_TASK_NAME_TEXT, 8, 8, 52, 8, NOT
+                    WS_GROUP
+    LTEXT           "", INT_TASK_NAME, 62, 9, 120, 8, NOT WS_GROUP
+    LTEXT           "", INT_FAULT_TYPE, 62, 25, 110, 8, NOT WS_GROUP
+    LTEXT           "", INT_CS_IP, 62, 33, 52, 8, NOT WS_GROUP
+    ICON            "APPLICON", -1, 186, 8, 24, 27
+    PUSHBUTTON      "&Restart Instruction", INT_RESTART, 16, 104, 82, 14
+    PUSHBUTTON      "Log &Options ...", INT_LOG_OPTIONS, 108, 96, 82, 14
+    CHECKBOX        "&Add To Log", INT_ADD_TO_LOG, 116, 128, 48, 12
+    LTEXT           "Task Path:", INT_TASK_PATH_TEXT, 8, 16, 40, 8, NOT
+                    WS_GROUP
+    LTEXT           "", INT_TASK_PATH, 62, 17, 120, 8, NOT WS_GROUP
+    PUSHBUTTON      "&Cancel", IDCANCEL, 36, 124, 40, 14
+    LTEXT           "Source Info:", -1, 8, 40, 40, 8, NOT WS_GROUP
+    LTEXT           "", INT_SOURCE_INFO, 62, 41, 125, 11, NOT WS_GROUP
+    LTEXT           "", INT_SOURCE_INFO2, 52, 50, 132, 10, NOT WS_GROUP
+END

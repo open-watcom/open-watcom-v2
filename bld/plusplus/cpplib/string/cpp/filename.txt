@@ -1,0 +1,332 @@
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
+// %     reserved.  No part of this software may be reproduced or        %
+// %     used in any form or by any means - graphic, electronic or       %
+// %     mechanical, including photocopying, recording, taping or        %
+// %     information storage and retrieval systems - except with the     %
+// %     written permission of WATCOM International Inc.                 %
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//
+// Check the content of each file that is splitted from string.cpp.
+//
+
+Filename: allocrep.cpp
+Declaration:
+    String::StringRep *String::__AllocStringRep( String::StringRep *old_srep,
+      	  				         size_t len ) 
+Semantics: Allocate a StringRep long enough to hold a string of length "len".
+
+
+Filename: allomusz.cpp
+Declaration:
+    int String::alloc_mult_size( int mult )
+Semantics: Set "string_mult_size" to "mult".
+	   Since the code in AllocStringRep assumes string_mult_size is a multiple
+ 	   of 8, enforce that here.
+ 	   Round down to the nearest multiple of 8.
+
+
+Filename: appendst.cpp
+Declaration:
+	void String::__AppendToStringRep( String &l, const char *r,
+					  size_t rlen ) 
+Semantics: Append r/rlen to l, leaving *this pointing to the result.
+
+
+Filename: compchar.cpp
+Declaration:
+    int CompareChars( const char *l, long p_llen,
+                      const char *r, long p_rlen ) 
+Semantics: Compare the strings specified by l/p_llen and r/p_rlen.
+
+ 
+Filename: compstr.cpp
+Declaration:
+    int String::__CompareStrings( const String &l, const String &r)
+Semantics: Compare two Strings.
+
+
+Filename: condefau.cpp
+Declaration:
+    String::String() : __slength( 0 ), __offset( 0 ), __c_string( NULL ) 
+Semantics: Default constructor: make an empty String
+
+
+Filename: constcst.cpp
+Declaration:
+    String::String( const char *cstr ) : __offset( 0 ), __c_string( NULL ) 
+Semantics: Constructor: make a String from a C string.
+	  If cstr is NULL, then make an empty String.
+
+
+Filename: constrch.cpp
+Declaration:
+    String::String( char c ) : __offset( 0 ), __c_string( NULL ) 
+Semantics: Constructor: make a String from a single character
+
+
+Filename: constrst.cpp
+Declaration:
+     String::String( const String &s ) : __c_string( NULL ) 
+Semantics: Copy constructor: make a String from another String
+
+
+Filename: destruct.cpp
+Declaration:
+    String::~String()
+Semantics: Destructor.
+
+
+Filename: freestr.cpp
+Declaration:
+    void String::__FreeStringRep()
+
+
+Filename: indexcha.cpp
+Declaration:
+    int String::index( const char *searchstr, size_t pos ) const 
+Semantics: "index" member function: find the position of C string "searchstr" in
+	  String "*this", starting at position "pos".
+
+
+Filename: indexstr.cpp
+Declaration:
+    int String::index( const String &searchstr, size_t pos ) const 
+Semantics: "index" member function: find the position of String "searchstr" in
+	  String "*this", starting at position "pos".
+
+
+Filename: joinstr.cpp
+Declaration:
+    void String::__JoinStrings( const   char *l, size_t  llen,
+			    const   char *r, size_t  rlen ) 
+Semantics: Join two strings, specified by l/llen and r/rlen.
+
+
+Filename: matchcst.cpp
+Declaration:
+    int String::match( const char *s ) const 
+Semantics: "match" member function: return the position where String "*this"
+	  and C string "s" differ.
+
+
+Filename: matchs.cpp
+Declaration:
+    int String::match( const String &s ) const 
+Semantics: "match" member function: return the position where String "*this"
+	  and String "s" differ.
+
+
+Filename: matchstr.cpp
+Declaration:
+    signed long MatchStrings( const char *s1, size_t s1len,
+                                 const char *s2, size_t s2len ) 
+Semantics: Match two strings, returning the offset from the start where
+	  "s1" and "s2" differ.
+
+
+Filename: opappcst.cpp
+Declaration:
+    String &String::operator += ( const char *cstr ) 
+Semantics: Append operator: append a C string to a String
+
+
+Filename: opappstr.cpp
+Declaration:
+    String &String::operator += ( const String &s ) 
+Semantics: Append operator: append a String to a String.
+
+
+Filename: opasstcs.cpp
+Declaration:
+    String &String::operator = ( const char *cstr ) 
+Semantics: Assignment operator: assign a String from a C string
+
+
+Filename: opasstst.cpp
+Declaration:
+    String &String::operator = ( const String &s ) 
+Semantics: Assignment operator: assign a String from another String.
+
+
+Filename: opcachst.cpp
+Declaration:
+    String operator + ( const char *l, const String &r ) 
+Semantics: Concatenate operator: C string + String
+
+
+Filename: opcastch.cpp
+Declaration:
+    String operator + ( String &l, const char *r ) 
+Semantics: Concatenate operator: String + C string
+
+
+Filename: opcastst.cpp
+Declaration:
+    String operator + ( String &l, const String &r ) 
+Semantics: Concatenate operator: String + String
+
+
+Filename: opco1sch.cpp
+Declaration:
+    String::operator const char *() const 
+Semantics: Conversion operator: convert a const String to a (const char *)
+
+
+Filename: opcostch.cpp
+Declaration:
+    String::operator const char *() 
+Semantics: Conversion operator: convert a String to a (const char *)
+
+
+Filename: opcostsc.cpp
+Declaration:
+    String::operator char () const 
+Semantics: Conversion operator: convert a String to a single character (the first)
+
+
+Filename: opcrchar.cpp
+Declaration:
+    const char &String::operator () ( size_t pos ) const 
+Semantics: Reference-to-character operator: return a reference to the character
+	  at position "pos".
+
+
+Filename: opeqchst.cpp
+Declaration:
+    int operator == ( const char *l, const String &r ) 
+Semantics: Equality operator: compare a C string to a String
+
+
+Filename: opeqstch.cpp
+Declaration:
+    int operator == ( const String &l, const char *r ) 
+Semantics: Equality operator: compare a String to a C string
+
+
+Filename: opeqstst.cpp
+Declaration:
+    int operator == ( const String &l, const String &r ) 
+Semantics: Equality operator: compare two Strings
+
+
+Filename: opgqchst.cpp
+Declaration:
+    int operator >= ( const char *l, const String &r ) 
+Semantics: Greater-than-or-equal operator: compare a C string to a String
+
+
+Filename: opgqstch.cpp
+Declaration:
+    int operator >= ( const String &l, const char *r ) 
+Semantics: Greater-than-or-equal operator: compare a String to a C string
+
+
+Filename: opgqstst.cpp
+Declaration:
+    int operator >= ( const String &l, const String &r ) 
+Semantics: Greater-than-or-equal operator: compare two Strings
+
+
+Filename: opgrchst.cpp
+Declaration:
+    int operator > ( const char *l, const String &r ) 
+Semantics: Greater-than operator: compare a C string to a String
+
+
+Filename: opgrstch.cpp
+Declaration:
+    int operator > ( const String &l, const char *r ) 
+Semantics: Greater-than operator: compare a String to a C string
+
+
+Filename: opgrstst.cpp
+Declaration:
+    int operator > ( const String &l, const String &r ) 
+Semantics: Greater-than operator: compare two Strings
+
+
+Filename: opinput.cpp
+Declaration:
+    istream &operator >> ( istream &strm, String &s ) 
+Semantics: Input (get from) operator: read a String from the stream.
+
+
+Filename: oplechst.cpp
+Declaration:
+    int operator < ( const char *l, const String &r ) 
+Semantics: Less-than operator: compare a C string to a String
+
+
+Filename: oplestch.cpp
+Declaration:
+    int operator < ( const String &l, const char *r ) 
+Semantics: Less-than operator: compare a String to a C string
+
+
+Filename: oplestst.cpp
+Declaration:
+    int operator < ( const String &l, const String &r ) 
+Semantics: Less-than operator: compare two Strings
+
+
+Filename: oplqchst.cpp
+Declaration:
+    int operator <= ( const char *l, const String &r ) 
+Semantics: Less-than-or-equal operator: compare a C string to a String
+
+
+Filename: oplqstch.cpp
+Declaration:
+    int operator <= ( const String &l, const char *r ) 
+Semantics: Less-than-or-equal operator: compare a String to a C string
+
+
+Filename: oplqstst.cpp
+Declaration:
+    int operator <= ( const String &l, const String &r ) 
+Semantics: Less-than-or-equal operator: compare two Strings
+
+
+Filename: opnechst.cpp
+Declaration:
+    int operator != ( const char *l, const String &r ) 
+Semantics: Inequality operator: compare a C string to a String
+
+
+Filename: opnestch.cpp
+Declaration:
+    int operator != ( const String &l, const char *r ) 
+Semantics: Inequality operator: compare a String to a C string
+
+
+Filename: opnestst.cpp
+Declaration:
+    int operator != ( const String &l, const String &r ) 
+Semantics: Inequality operator: compare two Strings
+
+
+Filename: opoutput.cpp
+Declaration:
+    ostream &operator << ( ostream &strm, const String &s ) 
+Semantics: Output (put to) operator: write a String to the stream.
+
+
+Filename: oprfchar.cpp
+Declaration:
+    char &String::operator () ( size_t pos ) 
+Semantics: Reference-to-character operator: return a reference to the character
+ 	   at position "pos".
+
+
+Filename: opsubstr.cpp
+Declaration:
+    String String::operator () ( size_t pos, size_t len ) const 
+Semantics: Substring operator: return a String containing the characters from
+	  position "pos" for a length of "len".
+
+
+Filename: zapcase.cpp
+Declaration:
+    String String::__ZapCase( __zapcase_t zapfn ) const 
+Semantics: Handle String::upper() and String::lower().

@@ -1,0 +1,16 @@
+#  
+#  INLINE TEST 04
+#
+#  - Long file test 
+# 
+test1: test .symbolic
+    @echo hello
+    -diff "DO INLINE TEST4" "DO INLINE TEST4B$$"
+test: .symbolic
+    -diff <<"DO INLINE TEST4" <<"DO INLINE TEST4B$$"
+HELLO
+BOO
+<<NOKEEP
+HELLO
+BOO2
+<<NOKEEP

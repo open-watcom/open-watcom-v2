@@ -1,0 +1,75 @@
+#
+# CLIB help script
+#
+# clib help is organized into sections a->e, f->i, k->r, s->z
+# leading underbars are ignored
+
+# section = keyword = selected text
+
+assign %s = %1
+assign %k = %1
+
+assign %b = 0
+assign %c = 0
+
+# remove _ or _f from keyword
+assign %a = strchr %s _ 
+
+if ( %a == 1 ) 
+    assign %t = strlen %s 
+    assign %b = strchr %s f 
+    assign %c = strchr %s n 
+    if ( %b == 2 ) 
+        # begins with _f
+        assign %s = substr %s 3 %t
+        assign %k = %s
+    elseif ( %c == 2 ) 
+        # begins with _n
+        assign %s = substr %s 3 %t
+        assign %k = %s
+    else 
+        #just begins with _
+        assign %s = substr %s 2 %t
+    endif
+endif
+
+assign %h = "clib.hlp"
+
+# now look at the first char
+assign %f = substr %s 1 1
+
+#find the appropriate helpfile
+assign %p = ""
+if ( %f < f )
+   assign %p = substr %s 1 4
+else
+   assign %p = substr %s 1 5
+endif
+
+# now deal with special cases
+if ( "%p" == "exec" )
+       assign %k = "exec"
+endif
+
+if ( "%p" == "spawn" )
+       assign %k = "spawn"
+endif
+   
+# the only cases this leaves out are _fpreset, _fullpath, _freect 
+# _asctime, and _gmtime
+
+#deal with all exceptions to rules here
+if ( %1 == "_asctime" ) 
+    assign %k = "asctime"
+elseif ( %1 == "_gmtime" ) 
+    assign %k = "gmtime"
+endif
+
+# now all thats left that we cant get are some _b versions of some functions
+# but there are so many _b exceptions that Id rather not include them
+
+
+#launch winhelp using the whole word, or special case, or _f or _n stripped 
+# version as a partial key 
+
+winhelp HELP_PARTIALKEY %h %k

@@ -1,0 +1,38 @@
+class RegExpCfgDlg
+{
+    _meanTextR(	IDD_REGEXP_ANCHORGROUP,	(@,@,@,@) );
+    _startsWithR( IDD_ANCHORED, (@,@,@,@) );
+    _containsR( IDD_NOT_ANCHORED, (@,@,@,@) );
+    
+    _characterGroupR( IDD_CHARACTER_GROUP, (@,@,@,@) );
+    _anchorCharR( IDD_ANCHOR, (@,@,@,@) );
+    _anchorTextR( IDD_ANCHOR_TEXT, (@,@,@,@) );
+    _eolCharR( IDD_EOL, (@,@,@,@) );
+    _eolTextR( IDD_EOL_TEXT, (@,@,@,@) );
+    _charGroupCharR( IDD_CHARGROUP, (@,@,@,@) );
+    _charGroupTextR( IDD_CHARGROUP_TEXT, (@,@,@,@) );
+    _exprGroupCharR( IDD_EXPR_GROUP, (@,@,@,@) );
+    _exprGroupTextR( IDD_EXPRGROUP_TEXT, (@,@,@,@) );
+    _ignoreCaseCharR( IDD_IGNORE_CASE, (@,@,@,@) );
+    _ignoreCaseTextR( IDD_IGNORECASE_TEXT, (@,@,@,@) );
+    _respectCaseCharR( IDD_RESPECT_CASE, (@,@,@,@) );
+    _respectCaseTextR( IDD_RESPECT_CASE_TEXT, (@,@,@,@) );
+    _escapeCharR( IDD_ESCAPE, (@,@,@,@) );
+    _escapeTextR( IDD_ESCAPE_TEXT, (@,@,@,@) );
+    _dotCharR( IDD_DOT, (@,@,@,@) );
+    _dotTextR( IDD_DOT_TEXT, (@,@,@,@) );
+    _alternateCharR( IDD_ALTERNATE, (@,@,@,@) );
+    _alternateTextR( IDD_ALTERNATE_TEXT, (@,@,@,@) );
+    _questionCharR( IDD_QUESTION, (@,@,@,@) );
+    _questionTextR( IDD_QUESTION_TEXT, (@,@,@,@) );
+    _plusCharR( IDD_PLUS, (@,@,@,@) );
+    _plusTextR( IDD_PLUS_TEXT, (@,@,@,@) );
+    _starCharR( IDD_STAR, (@,@,@,@) );
+    _starTextR( IDD_STAR_TEXT, (@,@,@,@) );
+    _okButtonR( IDD_OK, (@,@,@,@) );
+    _defaultsButtonR( IDD_USE_DEFAULT, (@,@,@,@) );
+    _cancelButtonR( IDD_CANCEL, (@,@,@,@) );
+    _enableAllButtonR( IDD_ENABLE_ALL_RX, (@,@,@,@) );
+    _clearAllButtonR( IDD_DISABLE_ALL_RX, (@,@,@,@) );
+    _helpButtonR( IDD_HELP, (@,@,@,@) );
+};

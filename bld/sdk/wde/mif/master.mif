@@ -1,0 +1,210 @@
+#
+#  Makefile for WDE
+#
+#   Date        Name            Reason
+#   ----        ----            ------
+#   05 May 93   Wesley Nelson   created
+proj_name = wde
+name = wde
+
+.EXTENSIONS:
+.EXTENSIONS: .pp .exe .exp .lib .lnk .rex .obj .cbj .mbj .sbj .asm .c &
+                 .res .rc .dlg .men .h .msg .fi .mif .ico .lst
+
+.mif:$(mif_path)
+sys_windowed=1
+!include cproj.mif
+WINDOWS=1
+MODEL=l
+!include wres.mif
+wres_lib_dir = $(wres_dir)\lib
+
+# path names used in the script
+!ifndef fmedit_dir
+!ifdef build_root
+fmedit_dir      = $(build_root)\fmedit
+!endif
+!endif
+
+!ifndef on_build_machine
+!ifdef build_root
+!ifeq host_OS nt
+!ifeq host_CPU axp
+copy_to = $(build_root)\axp\
+!else
+copy_to = $(build_root)\nt\
+!endif
+!else
+copy_to = $(build_root)\win\
+!endif
+!endif
+!endif
+
+wbind           = wbind
+rc_opts_win     = -bt=windows
+rc_opts_nt      = -bt=NT -d__NT__
+rc_opts         = -q -i=$(fmedit_dir)\dev $(rc_opts_$(host_OS))
+
+!ifeq host_OS nt
+cflags_all = -zq -w4
+!endif
+extra_c_flags_386       = -fpc-s
+extra_c_flags_i86       = -fpc-s-zu-zw-zc
+
+extra_c_flags           = -DWIN_GUI -DSTRICT -we
+
+OF_386  = -of+
+OF_i86  = -of+
+
+TRMEM   = $(OF_$(host_CPU))
+!ifeq wde_trmem 1
+TRMEM   += -dTRMEM
+!endif
+
+OBJS =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.sbj  wdedebug.obj &
+            wdedefin.obj wdeedit.obj  wdefbase.obj wdefbutt.obj wdefcbox.obj &
+            wdefcntl.obj wdefcust.sbj wdefdiag.obj wdefdlg.obj  wdefedit.obj &
+            wdefinit.obj wdeflbox.obj wdefmenu.obj wdefont.obj  wdefordr.obj &
+            wdefscrl.obj wdefstat.obj wdefutil.obj wdegeted.obj wdegetfn.obj &
+            wdehash.obj  wdehints.obj wdeinfo.obj  wdelist.obj  &
+            wdemain.obj  wdemsgbx.obj wdeopts.obj  &
+            wderes.obj   wderesin.obj wdesdlg.obj  wdesdup.obj  &
+            wdestat.obj  wdestyle.obj &
+            wdesym.obj   wdetest.obj  &
+            wdetfile.obj wdetoolb.obj &
+            wdeppmem.obj wdemem.obj wdewait.obj wdedefsz.obj wdetxtsz.obj &
+            wdetmenu.obj wdectool.obj wdezordr.obj wderibbn.obj &
+            wdeselft.obj wdei2mem.obj wdeldres.obj wdesvres.obj wdesvobj.obj &
+            wdestken.obj wdectl3d.obj wdesvdlg.obj wdedde.obj &
+            wdeclear.obj wdecurr.obj wdegoto.obj wdecctl.obj &
+            wdefsbar.obj wdeflvw.obj wdeftvw.obj wdefhdr.obj wdeftabc.obj &
+            wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
+        windlg.obj windlg32.obj &
+        preproc.cbj ppexpr.cbj ppmacro.cbj &
+        toolbr.mbj statwnd.mbj ldstr.mbj wwinhelp.mbj jdlg.mbj
+
+# where to look for various files
+.c              : c;..\c;$(misc_dir);$(cpp_dir);$(wrc_dir)\c
+.h              : h;..\h;$(misc_dir);$(cpp_dir);$(wrc_dir)\h;$(wr_dir)\h
+.lst            : $(wrc_dir)\h
+.rc .ico        : ..\h
+.dlg .men .msg  : ..\h
+!ifeq host_OS nt
+!ifeq host_CPU axp
+.lib            : $(fmedit_dir)\axp;lib;$(watcom_lib)
+!else
+.lib            : $(fmedit_dir)\nt;lib;$(watcom_lib)
+!endif
+!else
+.lib            : $(fmedit_dir)\obj;lib;$(watcom_lib)
+!endif
+
+fmedit_win_i86  = obj
+fmedit_nt_386   = nt
+fmedit_nt_axp   = axp
+fmedit_lib      = $(fmedit_dir)\$(fmedit_$(host_OS)_$(host_CPU))\fmedit.lib
+
+wr_win_i86      = win16
+wr_nt_386       = nt
+wr_nt_axp       = axp
+wr_lib          = $(wr_dir)\$(wr_$(host_OS)_$(host_CPU))\wr.lib
+
+inc_dirs = h;..\h;$(watcom_dir)\h;$(wres_dir)\h;$(wr_dir)\h;$(fmedit_dir)\dev;$(cpp_dir);$(misc_dir)
+
+.BEFORE
+        set INCLUDE=$(inc_path);$(watcom_dir)\nt_h
+
+# explicit rules
+
+all : $(copy_to)$(name).exe .SYMBOLIC
+        @%null
+
+obj=obj
+
+deps: .SYMBOLIC
+        @echo making dependencies...
+        @errout ..\bin\mkwdedep > nul
+
+extra_l_flags   = debug all lib $(wres_lib),$(fmedit_lib),$(wr_lib) op quiet,map,v
+extra_l_flags_nt = op stack=32k,heap=16k commit heap=8k
+!ifeq host_CPU 386
+extra_l_flags_nt += op symfile
+!ifndef TOOLS_10_0
+extra_l_flags_nt += runtime windows=4.0
+!endif
+!endif
+extra_l_flags_win = op symfile,stack=32k,rwr library commdlg,ddeml
+
+$(copy_to)$(name).exe: wdemsgs.h $(OBJS) $(name).res $(wres_lib) $(fmedit_lib) $(wr_lib)
+        *$(linker) name $^. $(lflags) file {$(OBJS)}
+        $(rc) $(rc_opts) -k $^&.res $^.
+!ifdef TOOLS_10_0
+!ifeq host_OS nt
+!ifeq host_CPU 386
+        whack $(name).exe
+!endif
+!endif
+!endif
+!ifdef copy_to
+        copy $^. $^@
+!endif
+
+$(name).res: wde.rc wde.men wde.msg wde.ico wde_rc.h wdemsgs.h wde.msg &
+             defcheck.dlg defcombo.dlg defdlg.dlg defedit.dlg defframe.dlg &
+             defgbox.dlg defhscrl.dlg deficon.dlg deflbox.dlg defpush.dlg &
+             defradio.dlg defsbox.dlg deftext.dlg defvscrl.dlg &
+             defhdr.dlg defsbar.dlg defpbar.dlg deftbar.dlg defupdn.dlg &
+             deflview.dlg deftview.dlg deftab.dlg defani.dlg defhkey.dlg &
+             about.dlg generic.dlg info.dlg loadcust.dlg opts.dlg &
+             selcust.dlg seldlg.dlg symbols.dlg
+
+trmem.obj : trmem.c trmem.h
+        $(cc) $(cflags) $(TRMEM) ..\c\$^&
+
+trmemcvr.obj : trmemcvr.c trmem.h
+        $(cc) $(cflags) $(TRMEM) ..\c\$^&
+
+wdercerr.obj : wdercerr.c error.lst
+        $(cc) -i=$(wrc_dir)\h $(cflags) ..\c\$^&
+
+wdesvexe.obj : wdesvexe.c wdesvexe.h
+        $(cc) -i=$(wrc_dir)\h $(cflags) ..\c\$^&
+
+clean : .SYMBOLIC
+        @-if exist *.?bj @rm *.?bj
+        @-if exist *.res @rm *.res
+        @-if exist *.err @rm *.err
+        @-if exist *.sym @rm *.sym
+        @-if exist *.map @rm *.map
+        @-if exist *.lnk @rm *.lnk
+        @-if exist *.pp  @rm *.pp
+        @-if exist *.h   @rm *.h
+        @-if exist *.exe @rm *.exe
+        @-if exist *.pch @rm *.pch
+
+# implicit rules
+
+.c.cbj: .AUTODEPEND
+        $(cc) $(cflags) -zm $(cpp_dir)\$^& -fo=$^&.cbj
+
+.c.mbj: .AUTODEPEND
+        $(cc) $(cflags) $(misc_dir)\$^& -fo=$^&.mbj
+
+.c.obj: .AUTODEPEND
+        $(cc) $(cflags) -fhq ..\c\$^&
+
+.c.sbj: .AUTODEPEND
+        $(cc) $(cflags) c\$^& -fo=$^&.sbj
+
+.c.pp:
+        $(cc) -p$(cflags) ..\c\$^& > $^&.pp
+
+.rc.res:
+        $(rc) $(rc_opts) -r -fo=.\$^&.res ..\h\$^&.rc
+
+wdemsgs.h: wdetemp.h
+        vi -q -i -s $(sdk_dir)\misc\msgtoh.vi -p"wdemsgs.h" wdetemp.h
+
+wdetemp.h: wde.msg
+        $(cc) $(cflags) -p ..\h\wde.msg > wdetemp.h
+

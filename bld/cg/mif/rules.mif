@@ -1,0 +1,82 @@
+.EXTENSIONS:
+.EXTENSIONS: .exe .exp .lib .wbj .zbj .pbj .sbj .tbj .qbj .ibj .2bj .obj .fbj .dbj .cpp .c .h .asm .psm
+.ERASE
+.DEFAULT
+        @%null
+
+extra_c_flags_386       = -zp4 -fpc
+
+!ifndef cg_autodepends
+cg_autodepends = .AUTODEPEND
+!endif
+
+!ifeq sys_dll 1
+extra_c_flags           = -D_CGDLL
+!endif
+
+track_flags_i86 = /d_TRACK /of+
+track_flags_386 = /d_TRACK /of+
+track_flags_axp = /d_TRACK
+
+!ifeq cg_trmem 1
+extra_c_flags_memmgt    = $(track_flags_$(host_CPU))
+extra_c_flags_memwrap   = $(track_flags_$(host_CPU))
+extra_c_flags_trmem     = $(track_flags_$(host_CPU))
+!endif
+
+wlib_parms      = -q -b
+
+!ifdef on_build_machine
+std_defines = -dNDEBUG
+!endif
+
+!ifdef %CGEXTRAOPTS
+opt_standard += $(%CGEXTRAOPTS)
+!endif
+
+inc_dirs        = $(include_path);$(dwarf_dir)\dw\h;$(watcom_dir)\h;$(mem_include)
+
+.BEFORE
+        @set include=$(inc_path)
+
+.c: $(src_path);$(trmem_dir)
+.h: $(include_path)
+.psm: $(asm_path)
+
+.c.obj: $(cg_autodepends)
+        $(cc) $(cflags) $(extra_c_flags_$[&) $[@
+
+.psm.obj:
+        $(as) $(aflags) $(extra_a_flags_$[&) $[@
+
+libfile: .PROCEDURE
+        @if exist $^&.clb @erase $^&.clb
+!ifdef on_brads_machine
+        @for %i in ($?) do @%append $^&.clb -+%i
+!else
+        @for %i in ($<) do @%append $^&.clb -+%i
+!endif
+        $(librarian) $(wlib_parms) $^. @$^&.clb
+
+global.chk : $(cg_dir)/compile.gbl
+    # do not renable this (build machine is auto-dep) - BBB
+    # if exist *.?bj del *.?bj
+    wtouch -f $[@ $^@
+
+bitset.exe : $(watcom_dir)\c\bitset.c
+    $(bld_cl) -d2 $[@
+
+$(cg_dir)\h\gbit.gh : bitset.exe $(cg_dir)\mif\cg.mif
+    bitset $(gbit_size) _GBit global_bit_set $(cg_dir)\h\gbit.gh
+
+$(cg_dir)\h\lbit.gh : bitset.exe $(cg_dir)\mif\cg.mif
+    bitset $(lbit_size) _LBit local_bit_set $(cg_dir)\h\lbit.gh
+
+$(cg_dir)\h\dbit.gh : bitset.exe $(cg_dir)\mif\cg.mif
+    bitset $(dbit_size) _DBit dom_bit_set $(cg_dir)\h\dbit.gh
+
+$(cg_dir)\h\cgprotos.gh : $(cg_dir)\h\cgfuntab.h $(cg_dir)\h\cgapicvr.h
+    $(cc) -p -fo=$(cg_dir)\h\cgprotos.gh $(cg_dir)\h\cgapicvr.h -I$(cg_dir)\h
+
+$(cg_dir)\h\feprotos.gh : $(cg_dir)\h\cgfertns.h $(cg_dir)\h\cgfecvr.h
+    $(cc) -p -fo=$(cg_dir)\h\feprotos.gh $(cg_dir)\h\cgfecvr.h -I$(cg_dir)\h

@@ -1,0 +1,97 @@
+#include "spy.h"
+#include "about.h"
+#include "banner.h"
+
+APPLICON ICON 10spy.ico
+MAGNIFY BITMAP 10select.bmp
+PEEK BITMAP 10peek.bmp
+MAGNO BITMAP 10endspy.bmp
+OFF BITMAP 10off.bmp
+ON BITMAP 10on.bmp
+NOTONOFF BITMAP 10onoff.bmp
+STOPMSG BITMAP 10stopon.bmp
+WATCHMSG BITMAP 10watch.bmp
+SHOWWIN BITMAP 10winlst.bmp
+ERASE BITMAP 10erase.bmp
+MARK BITMAP 10mark.bmp
+
+SPYMENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save", SPY_SAVE
+        MENUITEM "Save &As ...", SPY_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "&Log to File ...", SPY_LOG
+        MENUITEM "&Pause Log", SPY_PAUSE_LOG
+        MENUITEM "&Configure Log ...", SPY_CONFIG_LOG
+        MENUITEM SEPARATOR
+        MENUITEM "Set &Font...", SPY_SET_FONT
+        MENUITEM "Show &Hint Bar", SPY_SHOW_HELP
+        MENUITEM "Always On &Top", SPY_TOP
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit", SPY_EXIT
+    END
+    POPUP "&List"
+    BEGIN
+//      MENUITEM "&Pause Message List", SPY_PAUSE_MESSAGES
+        MENUITEM "&Clear Message List", SPY_CLEAR_MESSAGES
+        MENUITEM "&Auto Scroll Message List", SPY_AUTO_SCROLL
+        MENUITEM SEPARATOR
+        MENUITEM "&Mark...", SPY_MARK
+    END
+    POPUP "&Spy"
+    BEGIN
+        MENUITEM "&Select Window ...", SPY_WINDOW
+        MENUITEM "&Add Window ...", SPY_ADD_WINDOW
+        MENUITEM "All &Windows", SPY_ALL_WINDOWS
+        MENUITEM SEPARATOR
+        MENUITEM "Stop Spying Temporarily", SPY_OFFON
+        MENUITEM "Done Spying", SPY_STOP
+        MENUITEM SEPARATOR
+        MENUITEM "&Peek At Window ...", SPY_PEEK_WINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "S&how Selected Windows ...", SPY_SHOW_SELECTED_WINDOWS
+    END
+    POPUP "&Messages"
+    BEGIN
+        MENUITEM "&Messages to Watch ...", SPY_MESSAGES_WATCH
+        MENUITEM "&Messages to Stop On ...", SPY_MESSAGES_STOP
+        MENUITEM SEPARATOR
+        MENUITEM "&Auto Save Message Configuration", SPY_MESSAGES_ASCFG
+        MENUITEM SEPARATOR
+        MENUITEM "Save &Message Configuration ...", SPY_MESSAGES_SAVE
+        MENUITEM "&Load Message Configuration ...", SPY_MESSAGES_LOAD
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Contents", SPY_HELP_CONTENTS
+        MENUITEM "&Search for help on...", SPY_HELP_SRCH
+        MENUITEM SEPARATOR
+        MENUITEM "&How to use help", SPY_HELP_ON_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "&About ...", SPY_ABOUT
+    END
+END
+
+#undef pick
+#define pick( a, b, c ) a, b
+STRINGTABLE
+BEGIN
+    #include "rcstr.msg"
+END
+
+#include "msgs.dlg"
+ #ifdef __NT__
+ #include "spymsgnt.dlg"
+#else
+ #include "spymsgs.dlg"
+#endif
+#include "winpick.dlg"
+#include "msgsel.dlg"
+#include "selwin.dlg"
+#include "peekmsg.dlg"
+#include "peekwin.dlg"
+#include "log.rc"
+#include "mark.rc"
+#include "about.dlg"

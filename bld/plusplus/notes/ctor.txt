@@ -1,0 +1,82 @@
+From x3j16=core@redbone.att.com Tue May 21 18:07:17 1991
+Received: from att.att.com by watmsg.waterloo.edu with SMTP
+	id <AA21055>; Tue, 21 May 91 18:07:08 EDT
+From: x3j16=core@redbone.att.com
+Original-From: bartok!att!uunet.uu.net!microsoft!martino
+Errors-To: x3j16-postmaster@redbone.att.com
+Reply-To: x3j16-core@redbone.att.com
+Received: by att.att.com; Tue May 21 15:34:54 EDT 1991
+Received: from microsoft.UUCP (LOCALHOST.UU.NET) by relay1.UU.NET with SMTP 
+	(5.61/UUNET-internet-primary) id AA04707; Tue, 21 May 91 15:34:38 -0400
+Original-From: microsoft!martino@uunet.uu.net
+Message-Id: <9105211934.AA04707@relay1.UU.NET>
+To: uunet!bartok.att.com!redbone!x3j16-core@uunet.UU.NET
+Subject: Temporaries and Base/Member Initialisers
+Date: Tue May 21 12:06:45 1991
+Status: R
+
+To: X3J16 core language mailing list
+Message x3j16-core-621
+
+One of the issues still on my plate, is resolving what to do when the
+initialiser for a base or member requires the generation of a temporary.
+
+Consider :-
+
+	class Nasty
+	{
+	private:
+		const int & ri;
+	public:
+		Nasty ( float f )  : ri ( f )  {}  // Temp. required
+		Nasty ( int & rj ) : ri ( rj ) {}  // No temp required
+	};
+
+	Nasty * foo ( float ff )
+	{
+		// Where can the temp go ????
+		Nasty * pNasty = new Nasty ( ff );
+
+		return pNasty;
+	}
+
+	Nasty * bar ( float ff )
+	{
+		int i = ff;
+
+		// Same thing, but programmers problem
+		Nasty * pNasty = new Nasty ( i );
+
+		return pNasty;
+	}
+
+The specification does not make this illegal, yet, I do not know where to
+put the required temporary.  If the constructor is in a separate translation
+unit, I do not even have the luxury of knowing that the temporary is required.
+
+On my implementation, and that of other vendors who handle this construct,
+the temporary is unfortunately created on the stack of the constructor
+function (where else ?), and of course, this is not persistant, so an error
+occurs due to a transient temporary being bound to a more persistant object.
+
+The problem gets worse, when instead of an 'int' a type with a destructor
+is involved, because its destructor is invoked at the end of the constructors
+execution, since it is a local temporary.
+
+My feeling is that such constructs should be outlawed by the language
+definition.  It is simple to detect the requirement for the persistant
+temporary, and to generate an error message.
+
+A statement in the language definition like :-
+
+       "A const reference member of a class must be initialised with an
+	addressable expression of the exact type of the reference member."
+
+or some such wording should correct the problem, without bringing up the
+thorny implementation problem of required temporaries.
+
+
+	Martin
+
+
+

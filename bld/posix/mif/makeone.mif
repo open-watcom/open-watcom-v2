@@ -1,0 +1,66 @@
+#
+#       This is the common makefile for each individual command.  It
+#       is designed to be activated standalone, or as part of a makeall.
+
+#
+#       The following macros must be defined:
+#
+#       posix_dir       the root of the posix project (no trailing \)
+#
+#       name            the name of the command to be built
+#
+
+!include $(posix_dir)\mif\targos.mif
+!include $(posix_dir)\mif\common.mif
+
+#
+#       define the main target
+#
+lnk=$(name).lnk
+$(name).exe: $(objs) $(lnk) $(posixlib)
+        $(linker) @$(lnk)
+!ifeq targos dosos2
+        $(binder)\bind $(name).exe $(apilib) $(doscalls)
+!else ifeq targos pharlap
+        $(posix_dir)\misc\pharlap\bind386 $(posix_dir)\misc\pharlap\run386b $(name).exp
+!endif
+
+#
+#       create the lnk file
+#
+$(LNK) : makefile $(objs)
+        %create $(LNK)
+        @%append $(lnk) name $(name).exe
+        @%append $(LNK) debug all option quiet,caseexact,map
+        @%append $(LNK) path $(obj_dir)
+        @%append $(LNK) lib $(posixlib)
+!ifeq targos dosos2
+        @%append $(LNK) system os2 pmc
+        @%append $(LNK) option heapsize=8k,newfiles
+        @%append $(LNK) option stack=8k
+        @%append $(LNK) lib $(doscalls)
+!else ifeq targos dos
+        @%append $(LNK) system dos
+!else ifeq targos os2v2
+        @%append $(LNK) system os2v2 pmc
+        @%append $(LNK) lib $(watcomdir)lib\os2386.lib
+!else ifeq targos pharlap
+        @%append $(lnk) name $(name).exp
+        @%append $(LNK) system pharlap
+        @%append $(LNK) option stack=4096
+        @%append $(LNK) option offset=16384
+!else ifeq targos nt
+        @%append $(LNK) system nt
+!else ifeq targos alpha
+        @%append $(LNK) system ntaxp
+!else ifeq targos qnx
+        @%append $(LNK) system qnx386
+!else ifeq targos qnx16
+        @%append $(LNK) system qnx
+!endif
+        @for %i in ($(objs)) do @%append $(lnk) file %i
+!ifdef EXTRA_LNK
+        @%make $(EXTRA_LNK)
+!endif
+
+!include $(posix_dir)\mif\clean.mif

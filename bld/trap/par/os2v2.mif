@@ -1,0 +1,3 @@
+
+extra_linker = lib os2386.lib,os2.lib &
+    op start=_DLL_InitTerm imp OUTPUT_PORT wdio.OUTPORT, INPUT_PORT wdio.INPORT

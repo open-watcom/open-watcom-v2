@@ -1,0 +1,34 @@
+#
+# change the name of this file to match the name of your dip
+#
+
+# change the imp_objs macro to the list of files in your dip
+imp_objs = &
+        skelmisc.obj &
+        skelld.obj &
+        skelmod.obj &
+        skeltype.obj &
+        skelsym.obj &
+        skelcue.obj
+
+# Set imp_libs if there are any additional libraries to be included in
+# the DIP. Delete if none.
+imp_libs =
+
+# change the name macro to the name of your dip
+name = skel
+
+#
+# Set the extra_incs and extra_srcs to any other directories that include
+# additional includes or source files. Delete the definitions if you don't
+# have any.
+#
+extra_incs = $(lib_misc_dir)\h
+extra_srcs = $(lib_misc_dir)\c
+#
+# Set extra_cflags if you have any additional C compiler flags that you
+# want (macro defs most probably). Delete it if you don't have any.
+#
+extra_cflag = -DIM_A_MACRO
+
+!include ../../imp.mif

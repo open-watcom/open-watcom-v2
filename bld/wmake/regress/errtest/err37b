@@ -1,0 +1,13 @@
+# ------------------------------
+# ERROR 37B: recursive target defn
+# ------------------------------
+
+.extensions:
+.extensions: .obj .c
+
+.c.obj :
+    cmds
+
+dowah.c : dowah.obj
+    cmds
+

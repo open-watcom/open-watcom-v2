@@ -1,0 +1,150 @@
+
+# configuration values - sizes of static bitsets
+gbit_size = 128
+lbit_size = 32
+dbit_size = 256
+
+bit_sets = $(cg_dir)\h\gbit.gh $(cg_dir)\h\lbit.gh $(cg_dir)\h\dbit.gh
+
+cg_objs = &
+    addrcnst.obj &
+    addrfold.obj &
+    bldcall.obj &
+    bldins.obj &
+    bldsel.obj &
+    blktrim.obj &
+    breakrtn.obj &
+    cachecon.obj &
+    cgaux.obj &
+    condcode.obj &
+    conflict.obj &
+    cse.obj &
+    cvsyms.obj &
+    cvtypes.obj &
+    data.obj &
+    dataflo.obj &
+    dbsyms.obj &
+    dbsupp.obj &
+    dbtable.obj &
+    dbtypes.obj &
+    dfsyms.obj &
+    dftypes.obj &
+    display.obj &
+    dominate.obj &
+    edge.obj &
+    encode.obj &
+    expand.obj &
+    fixindex.obj &
+    flograph.obj &
+    flood.obj &
+    flowsave.obj &
+    foldins.obj &
+    freelist.obj &
+    generate.obj &
+    i64.obj &
+    inline.obj &
+    insdead.obj &
+    inssched.obj &
+    insutil.obj &
+    intrface.obj &
+    liveinfo.obj &
+    loadstor.obj &
+    loopopts.obj &
+    makeaddr.obj &
+    makeblk.obj &
+    makeins.obj &
+    memtrack.obj &
+    multiply.obj &
+    namelist.obj &
+    nullprop.obj &
+    object.obj &
+    objname.obj &
+    optab.obj &
+    optask.obj &
+    optcom.obj &
+    optdata.obj &
+    optimize.obj &
+    optins.obj &
+    optlbl.obj &
+    optmain.obj &
+    optmkins.obj &
+    optpull.obj &
+    optpush.obj &
+    optq.obj &
+    optrel.obj &
+    opttell.obj &
+    optutil.obj &
+    optvlbl.obj &
+    overlap.obj &
+    parm.obj &
+    patch.obj &
+    peepopt.obj &
+    propind.obj &
+    redefby.obj &
+    regalloc.obj &
+    regassgn.obj &
+    regsave.obj &
+    regtree.obj &
+    revcond.obj &
+    rtrtn.obj &
+    scblock.obj &
+    scdata.obj &
+    scinfo.obj &
+    scins.obj &
+    scmain.obj &
+    scregs.obj &
+    scthrash.obj &
+    scutil.obj &
+    sczero.obj &
+    sortlist.obj &
+    spawn.obj &
+    split.obj &
+    splitvar.obj &
+    temps.obj &
+    trecurse.obj &
+    tree.obj &
+    treeconv.obj &
+    treefold.obj &
+    typeinit.obj &
+    typemap.obj &
+    types.obj &
+    u32moddi.obj &
+    unroll.obj &
+    utils.obj &
+    varusage.obj &
+    verify.obj &
+    zoiks.obj
+
+cg_dump_objs = &
+    dumpan.obj &
+    dumpblk.obj &
+    dumpconf.obj &
+    dumpindv.obj &
+    dumpins.obj &
+    dumpio.obj &
+    dumpopt.obj &
+    dumpref.obj &
+    dumpregt.obj &
+    dumpsc.obj &
+    dumpschd.obj &
+    dumptab.obj &
+    dumptree.obj &
+    dump87.obj &
+    echoapi.obj
+
+cg_stub_objs = &
+    be.obj &
+    cg.obj &
+    cgmem.obj &
+    dg.obj &
+    stubdata.obj &
+    stubs.obj &
+    stubutil.obj
+
+pre_obj_deps    = global.chk $(bit_sets) $(cg_dir)\h\cgprotos.gh $(cg_dir)\h\feprotos.gh
+
+include_path    = $+$(include_path)$-;$(cg_dir)\h;$(watcom_dir)\h;$(cfloat_dir)\h;$(comp_cfg_dir)\h
+src_path        = $+$(src_path)$-;$(cg_dir)\c;$(watcom_dir)\c
+
+asm_include     = $+$(asm_include)$-;$(cg_dir)\a
+asm_path        = $+$(asm_path)$-;$(cg_dir)\a

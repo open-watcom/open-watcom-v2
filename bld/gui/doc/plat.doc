@@ -1,0 +1,16 @@
+Platform	16/32	C/G	Library		DV
+--------	-----	---	-------		--
+
+DOS		16	C	X		X
+DOS protected	32	C	X		X
+OS/2		16	C	X		X
+OS2V2		32	C	X
+QNX		16	C	X		X
+QNX		32	C	X
+WIN		16	C	X		X
+WIN		16	G	X		X
+NT		32	C 	X		X
+NT		32	G	X		X
+NETWARE		32	C	X
+PM		32	G
+QNX/Windows	16	G

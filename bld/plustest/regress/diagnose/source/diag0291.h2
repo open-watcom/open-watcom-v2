@@ -1,0 +1,4 @@
+#ifndef FOO2
+#define FOO2
+#include "diag0291.h1"
+#endif

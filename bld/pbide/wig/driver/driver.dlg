@@ -1,0 +1,23 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DRIVER.H\0"
+END
+
+DRIVER_DLG DIALOG 6, 18, 179, 205
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "PB DLL test driver"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        ID_SRU_NAME, 7, 21, 159, 12, ES_AUTOHSCROLL
+    EDITTEXT        ID_DLL_NAME, 6, 76, 159, 12, ES_AUTOHSCROLL
+    LTEXT           "SRU filename", -1, 8, 11, 113, 8
+    LTEXT           "DLL Name", -1, 6, 67, 113, 8
+    PUSHBUTTON      "Generate Code", ID_GEN_CODE, 35, 103, 108, 14
+    PUSHBUTTON      "Run IDE", ID_RUN_IDE, 35, 122, 108, 14
+    PUSHBUTTON      "Close IDE", ID_CLOSE_IDE, 36, 142, 108, 14
+    PUSHBUTTON      "Check Directory", ID_CHECK_DIR, 36, 162, 108, 14
+    PUSHBUTTON      "Done", ID_DONE, 36, 182, 108, 14
+    EDITTEXT        ID_PARENT_NAME, 6, 48, 159, 12, ES_AUTOHSCROLL
+    LTEXT           "Parent Name (leave empty for no parent)", -1, 6, 39,
+                    167, 8
+END

@@ -1,0 +1,14 @@
+class EnumStyleDlg {
+    _styleGroupR(    IDD_STYLEBOX, (@,@,@,@) );
+    
+    _lowerHexR(      IDD_LOWERHEX, (@,@,@,@) );
+    _upperHexR(      IDD_UPPERHEX, (@,@,@,@) );
+    _mixedHexR(      IDD_MIXEDHEX, (@,@,@,@) );
+    _octalR(	     IDD_OCTAL, (@,@,@,@) );
+    _decimalR(	     IDD_DECIMAL, (@,@,@,@) );
+    _characterR(     IDD_CHARACTER, (@,@,@,@) );
+    
+    _okButtonR(	     IDD_OK, (@,@,@,@) );
+    _defaultButtonR( IDD_DEFAULT, (@,@,@,@) );
+    _cancelButtonR(  IDD_CANCEL, (@,@,@,@) );
+};

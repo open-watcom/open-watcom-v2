@@ -1,0 +1,392 @@
+Source Scripts
+==============
+These are sets of commands that are executed like a dos batch file.  
+White space is ignored in a script file, unless a line starts with a '>'.
+Comments may be imbedded by starting the line with '#'.
+ 
+A source script is started using the source command. Optional parameters
+may be specifed:
+ 
+source <file> <p1> .. <pn>
+  
+These optional parameters are accessed in the script by using %n.  Every
+occurance of '%n' in the script is replaced by the corrosponding parameter.
+To access parameter above 9, %(n) must be used (see below).
+All parameters can be accessed by using '%*'.  To allow multiple words
+in a single parameter, delimit the sequence by '/', eg the command
+source test.vi /a b c/ d e
+would pass the parms  "a b c", "d", and "e" to the script.
+
+Variables are supported. Variables must be preceded by a '%' symbol.
+Variables with more than one letter must be encased in brackets, eg:
+%a     - references variable named a.
+%(abc) - references variable named abc.
+
+Both local and global variables are supported.  They are distinguished
+by the case of the first letter:  Local variables must begin with
+a lower case letter, and global variables begin with an upper case
+variable. Global variables are valid for the life of the editing 
+session.  There are a number of variables that take on values as the 
+editor runs, use these at your own risk:
+ 
+%C   	 - current column
+%D   	 - drive of current file (actual path)
+%(D1)  	 - drive of current file (as typed by user)
+%E   	 - file name extension of current file
+%F   	 - current file name (as typed by the user)
+%H   	 - home directory of a file (directory where edit command was issued)
+%N   	 - name of current file (without extension)
+%M   	 - modified status - contains 1 if current file is modified, 
+	   0 otherwise
+%(OS)    - what operating system the editor is hosted on
+	   (possible values are: nt, qnx, os2, os2v2, dos)
+%(OS386) - is 1 if the host operating system is 386 (or higher) based
+%P   	 - path of current file (actual path)
+%(P1)	 - path of current file (as typed by user)
+%R   	 - current row (line number)
+%(SH)	 - height of screen in characters
+%(SW)	 - width of screen in characters
+%(Sysrc) - return code from last system command
+
+The full command line command set (see cmd.hlp) is supported, along with
+a programming language.
+
+Useful Commands
+---------------
+Command line commands (see cmd.hlp) useful for scripts are:
+ 
+compile - compile a script
+load	- make a script resident in memory
+
+Hook Scripts
+------------
+There are several hooks that may be implemented into the editor.
+If a hook returns a non-zero value, the operation being hooked
+is cancelled.
+ 
+Read Hook    - this hook script is called just after a new file as been
+	       read into the editor.  The script invoked is whatever
+	       file specified by the global variable %(Rdhook).
+ 
+Write Hook   - this hook script is called just before a modified file 
+	       is to be saved and exited. The script invoked is whatever
+	       file specified by the global variable %(Wrhook).
+ 
+Command Hook - this hook script is called after the return is pressed
+	       from the command line.  The global variable %(Com) 
+	       contains the current command line, and may be modified.
+	       The script invoked is whatever file specified by 
+	       the global variable %(Cmdhook).
+
+Mod Hook     - Modified hook. This hook script is called whenever
+	       a command is about to modify an unmodified file
+	       (if it already modifed, the hook is not called). The script 
+	       invoked is whatever file specified by the global variable 
+	       %(Modhook).
+
+Mouse Columns- this hook script is called whenever a selected column range
+ Sel Hook      has been right clicked.  The script is invoked with the
+               following parameters:
+	         %1 - string selected
+		 %2 - line on screen of selected string
+		 %3 - column on screen of start of string
+		 %4 - column on screen of end of string
+	       The script invoked is whatever file is specified by the global
+	       variable %(MCselhook)
+
+Mouse Lines - this hook script is called whenever a selected line range
+ Sel Hook      has been right clicked.  The script is invoked with the
+               following parameters:
+		 %1 - line on screen where mouse was clicked
+		 %2 - column on screen where mouse was clicked
+		 %3 - starting line
+		 %4 - ending line
+	       The script invoked is whatever file is specified by the global
+	       variable %(MLselhook)
+
+Control Constructs
+------------------
+loop
+<break>
+<continue>
+<quif> (expr)
+until (expr)
+ 
+while (expr)
+<break>
+<continue>
+<quif> (expr)
+endloop
+ 
+loop
+<break>
+<continue>
+<quif> (expr)
+endloop
+ 
+if (expr)
+elseif (expr)
+elseif (expr)
+else
+endif
+
+Expressions
+-----------
+Where (expr) is specified, an expression may be used.
+ 
+    expression
+	: conditional-exp
+    
+    conditional-exp
+	: log-or-exp
+	| log-or-exp ? expression : conditional-exp
+    
+    log-or-exp
+	: log-and-exp
+	| log-or-exp || log-and-exp
+    
+    log-and-exp
+	: bit-or-exp
+	| log-and-exp && bit-or-exp
+    
+    bit-or-exp
+	: bit-xor-exp
+	| bit-or-exp | bit-xor-exp
+	
+    bit-xor-exp
+	: bit-and-exp
+	| bit-xor-exp ^ bit-and-exp
+    
+    bit-and-exp
+	: equality-exp
+	| bit-and-exp & equality-exp
+    
+    equality-exp
+	: relational-exp
+	| equality-exp == relational-exp
+	| equality-exp != relational-exp
+    
+    relational-exp
+	: shift-exp
+	| relational-exp > shift-exp
+	| relational-exp < shift-exp
+	| relational-exp >= shift-exp
+	| relational-exp <= shift-exp
+    
+    shift-exp
+	: additive-exp
+	| shift-exp << additive-exp
+	| shift-exp >> additive-exp
+    
+    additive-exp
+	: multiplicative-exp
+	| additive-exp + multiplicative-exp
+	| additive-exp - multiplicative-exp
+	
+    multiplicative-exp
+	: exponent-exp
+	| multiplicative-exp * exponent-exp
+	| multiplicative-exp / exponent-exp
+	| multiplicative-exp % exponent-exp
+
+    exponent-exp
+        : unary-exp
+	| exponent-exp ** unary-exp
+    
+    unary-exp
+	: primary-exp
+	| - unary-exp
+	| ~ unary-exp
+	| ! unary-exp
+    
+    primary-exp
+	: INTEGER
+	: STRING
+	| ( expression )
+
+      A string is indicated by using quotes.
+      
+      The keyword "lastrc" may be used in an expression.  This
+      tests the return code issued by the last command run in the
+      source script.  Possible values to compare against are found in
+      error.dat; this values may be used by name (eg ERR_NO_ERR).
+
+      The keyword "rdonly" may be used in an expression.  This
+      tests if the current file is read only or not (1 or 0)
+      
+      The keyword "config" may be used in an expression. This
+      contains the current screen configuration. Its values are:
+          100 - color mode
+          10  - black and white mode
+          1   - monochrome mode
+      This may be used to have different configurations build into
+      your configuaration script
+
+      Example expressions:
+
+      	if ("%(str)" == "foo") || ("%(str)" == "bar")
+	if (5+%i*3 == 15)
+	if rdonly == 1
+
+Summary
+-------
+  [atomic]
+    - causes all editing actions done by the script to all be part
+      of one undo record.  This way, the action of the entire script
+      can be eliminated with a single undo
+
+  [assign] <v1> = /<val>/(r)($)(@)(x)(l)
+    - assigns string <val> to variable v1.  <val> may contain other variables.
+      The /'s around <val> are only needed if there are spaces in <val>, or
+      if one of the special operations r,$ or @ are coded.
+      The /'s must NOT be used if <val> is one of the special operators
+      defined below.
+      
+      <val> may be coded as a string, or as a special operator:
+	    strlen <v>		 - compute the length of string in 
+	    			   variable <v>
+	    strchr <v> <c>       - compute first occurance of character <c> 
+	    			   in in variable <v>.
+	    substr <v> <n1> <n2> - compute substring of variable v, using
+	    			   character <n1> through <n2> of the
+				   variable.
+	    Locations in strings are based from 1 (not 0, like in C).
+	    Note that additional parameters <c>, <n1>, <n2> may be
+	    variables as well.
+	    
+	    eg: assign foobar to %a        - puts "foobar" into variable %a
+		assign strlen %a to %b     - puts "6" into variable %b
+		assign strchr %a b to %c   - puts "4" into variable %c
+		assign substr %a 2 4 to %d - puts "oob" into variable %d
+      
+      Special flags
+      'r' - if used, <val> may contain regular expression replacement 
+            strings (using the last regular expression searched for). 
+            See regexp.hlp for more information.
+      'x' - if used, <val> is to be treated like an expression, with
+            the result be assigned to <v1>.
+      '$' - if used, <val> may be the name of an environment variable.
+            <v1> will be given the value of the environment variable.
+      '@' - if used, <val> may be the name of one of the items that are
+            used in the "set" command.  <v1> will be given the current
+            value of that setting
+      'l' - if used, <val> is treated as an expression for a line number.
+            The contents of the resulting line are assigned to <v1>
+
+  [break]
+    - unconditionally leave the current looping block
+
+  [continue]
+    - restart current looping block
+
+  [endif]
+    - close an if block
+
+  [endloop]
+    - end a loop block
+
+  [endwhile]
+    - end a while block
+
+  [elseif] <expr>
+    - an alternate case in an if structure
+
+  [else]
+    - last case in an if structure
+
+  [expr] <v1> = <expr>
+    - assign expression <expr) to variable v1
+
+  [fclose] <n>
+    - closes file <n> (where <n> = 1..9)
+
+  [floatmenu] <id> <slen> <x1> <y1>
+    - activates floating menu <id> (defined using the MENU command)
+      <slen> is the length of a string that the menu is around; the
+      floating menu will try to appear around the string.
+      <x1>,<y1> specify the coordinates of the upper left hand corner
+      of the menu.
+
+  [fopen] <name> <n> <type>
+    - open file <name>, assigning it file handle <n> (<n> = 1..9). 
+      <type> is one of r,w,a,x for read, write, append, or existance check.
+      Note that for the existance check, ERR_NO_ERR is returned
+      if the file exists.
+
+  [fread] <n> <v1>
+    - read line from file handle <n> into variable <v1>
+
+  [fwrite] <n> <v1>
+    - write line to file handle <n> from variable <v1>
+
+  [get] <v1>
+    - waits for the user to type a single keystroke, and then assigns
+      the keystroke into variable <v1>.
+
+  [goto] <label>
+    - transfers control to point in script with label <label> defined.
+
+  [if] <expr>
+    - start an if block
+
+  [input] <v1>
+    - input variable <v1> from the user.  if <v1> already has a value,
+      that value is displayed as a prompt string in the input window.
+
+  [label] <name>
+    - define label with name <name>
+
+  [loop]
+    - start a loop block
+
+  [quif] <expr>
+    - leave the current looping block if the condition is true
+
+  [return] (rc)
+    - exit the source script. The option return code may be any value
+      found in errmsg.dat
+
+  [until] <expr>
+    - end a loop block if <expr> is true
+
+  [while] <expr>
+    - start a while block
+
+Sample Script
+=============
+        atomic
+        assign 1 to %(count)
+        execute \eAStarting\n\e
+        while %(count) <= 10
+  
+            execute \eAa=%(count)\n\e
+  
+            assign 1 to %b
+            loop
+             
+                if %b == 1
+                    execute \eAb=ONE\n\e
+                elseif %b == 2
+                    execute \eAb=TWO\n\e
+                elseif %b == 3
+                    execute \eAb=THREE\n\e
+                else
+                    execute \eAb=DONE\n\e
+                    break
+                endif
+                expr %b = %b + 1
+                     
+            until %b == 6
+             
+            assign 1 to %c
+            loop
+                 
+                execute \eA%c\e
+                expr %c = %c + 1
+                quif %c >= 5
+                 
+            endloop
+            execute \eA\n\e
+            expr %(count) = %(count) + 1
+             
+        endloop

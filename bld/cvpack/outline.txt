@@ -1,0 +1,208 @@
+Watcom CodeView Debugging Info Compactor Initial Implementation:
+
+-----------------------------------------------------------------------
+
+Note : The page numbers below refer to the pages in the CV4 Spec.
+       The reference pages contain the relevant infos on the particular item.
+
+Below are a list of things that cvpack does:
+ -------------------------------------------
+
+ 1. Fill in the pParent, pNext, pEnd fields for each module's SYMBOL table.
+    These fields are contained in most lexically scoped start symbols. p2
+
+ 2. Combines all sstTypes subsections into an sstGlobalTypes subsection and
+    deletes the sstTypes tables.  Fixing up the index in $$SYMBOLS and
+    $$TYPES. Type packing is done here to remove duplicate types. (*) p61
+
+ 3. Rewrites previous versions (prior to 3.x) of the SYMBOL and TYPE OMF to
+    conform to the CV4 specifications. ( Does our compiler generate anything
+    before CV4? ) p4
+
+ 4. Places symbols into the executable files in natural alignment and zero
+    pads the symbol to force alignment.  The length of each symbol is adjusted
+    to account for the pad bytes.  p5
+
+ 5. Inserts the Start Search symbols into the SYMBOL table. p9
+
+ 6. Remove the skip record and its reserved spaces. p9
+
+ 7. Move the global data symbols (16:16) into the global symbol table. p12
+
+ 8. Rewrites the publics symbol table to the S_PUB16 format before compacting
+    them into the global publics table. (?) p12
+
+ 9. Global thread storage 16:32 symbols can be compacted into the global
+    symbol table. p16
+
+10. Insert the Symbol Page Alignment symbol to pad symbol space so that the
+    next symbol will not cross a page boundary. p22
+
+11. For the Classes type (0x0004), the @dList field is not filled by the
+    compiler.  Cvpack fills in this field with the type indices of those
+    classes which immediately inherit the current class.  A zero index
+    indicates that the class is not inherited by other classes. (?)
+    Low priority. p30
+
+    - Was not implemented in cvpack.
+
+12. If cvpack encounters a type record that has no equivalent in the CV4.0
+    format, Not Translated (0x0010) will be inserted into the leaf. p34
+
+13. Combines all of the sstPublics/sstPublicSym subsections into an
+    sstGlobalPub subsection. (*)  p62
+
+14. Moves global symbols from the sstSymbols subsection to the sstGlobalSym
+    subsection. (*) p62
+
+15. Moves the remaining unpack symbols into the sstAlignSym subsection. (*)
+    p62
+
+16. Rewrites sstSrcLnSeg tables to sstSrcModule tables.
+    - Does not needed to do as the linker emit sstSrcModule.
+
+18. Create hash/sort tables for the sstGlobalSym, sstGlobalPub, and
+    sstStaticSym subsections according to the spec. on p69.
+
+Additional Notes:
+-----------------
+
+1. Cvpack can pack the precompiled types creators before the users as the
+   subsection index for the $$TYPES segment for a precompiled types creator
+   is emitted as sstPreComp instead of sstTypes.  In other words, it should
+   processes modules with a types table having the sstPreComp index before
+   modules with types table having the sstTypes index.
+   (Don't worry about at this time.)
+
+   - cvpack does not support precompile types at the moment.
+
+Implementation Notes:
+---------------------
+
+    Cvpack was implemented in C++.  There are several fundamental classes that
+supports the operation of cvpack, namely Retriever, ExeMaker, LFLeafStruct,
+SymbolStruct, SymbolDistributor, SstGlobalTypes, and CVpack.
+
+Retriever :     This class supports all input operations.  It contains
+                public interfaces to readin exe codes, and subsections.
+
+                - Directory object
+
+                Retriever contains a Directory object which is responsible to
+                retrieve information about a particular subsection.  The
+                directory is sorted in the order that cvpack uses the
+                subsection, so that a search for the subsection offset and
+                length can be done in constant time.
+
+                - Input buffering
+
+                In order to speed up input operation.  A DEF_BUF_SIZE buffer
+                is set up to store debugging informations.  The retriever
+                object will initially contain the first DEF_BUF_SIZE amount
+                of debugging infos.
+
+                When a read is requested, it will check
+                to see if the infos are contain in the current buffer, if
+                not, it will read in the requested info and readin the
+                debugging infos after the requested one into the buffer.
+                Each miss is counted, and when the number of misses exceeds
+                DEF_MISS_THREHOLD, the retriever object will stop buffer
+                the inputs and do random seeks for subsequent read requests.
+
+                * Therefore, cvpack is most efficient when the order of the
+                subsection tables emitted by the linker is the same as the
+                order cvpack uses them.
+
+                The order that cvpack uses is :
+
+                sstModule       1
+                .
+                .
+                sstModule       n
+                sstTypes        1
+                sstSrcModule    1
+                sstSymbols      1
+                .
+                .
+                sstTypes        n
+                sstSrcModule    n
+                sstSymbols      n
+                sstSegMap
+                sstPublicSym    1
+                .
+                .
+                sstPublicSym    n
+                sstLibrary
+
+ExeMaker :      This class supports all output operations.  It contains
+                overloaded functions that is able to dump out various types
+                of informations to the executable file.
+
+LFLeafStruct :  This class is the base class for all the type records.
+                It contains the leaf index of the type record and a
+                variant string which contains the variant information
+                at the end of each type record.  These informations
+                include numeric leaves, names and various type specific
+                variant informations.
+
+                Its virtual interface supports various operation needed
+                to packtypes.  Please examine packtype.hpp for details.
+
+SymbolStruct :  This class is the base class for all the symbol records.
+                It contains the symbol index plus a variant string
+                containing the name of the symbol follow by variant
+                informations.  All variant string start with the length
+                prefix name of the symbol.  If the symbol does not have
+                a name, then the variant string will be empty.
+
+                Its interface supports various operation for symbol
+                processing.  Please take a look at cssymbol.hpp for details.
+
+SymbolDistributor :
+                This class is responsible to distribute the symbol records
+                to approapriate subsection tables.  If neccessary, it will
+                create S_PROCREF or S_DATAREF records and insert into the
+                right place.
+
+SstGlobalTypes: This class holds all the global type record.  It contains
+                a public interface LoadTypes().  LoadTypes() will load the
+                requested types from the file into the local type table,
+                and then perform type packing w.r.t the global table.
+                Anything that's new will put into the global type table.
+                Please look at typearray.cpp for more details on how the
+                types are store and the hashing schemes.
+
+CVpack :        This class is sort of the main controller of all the actions.
+                It defines neccessary objects to build the packed exe.
+
+Packing Algorithm :
+ ----------------------------
+
+    - Given a mapping table which is empty and shall contain mapping from
+    local type indices to global type indices.
+
+    - Given two directed graphs, i.e. global types table & local types table.
+
+    for each hashable record in local types table {
+        for each item in the chain correspond to the hashrecord[i] {
+            if chain_item[j] is EQUIVALENT to hashrecord[i] {
+                record mapping into mapping table;
+                break;
+            }
+        }
+        insert hashrecord[i] as a new type.
+    }
+    for each record that is not done at this time in the local table, insert
+    them as a new type.
+
+    Please refer to the code for the above algorithm.
+
+    how does EQUIVALENT work:
+
+    The algorithm for how does cvpack determines if a local record is
+    equivalent to a global record is explain in the code, i.e.
+    typerecord.cpp.  It is basically a simultaneous depth first search
+    of two directed graphs with various loop considerations.  In other
+    words, the problem is to see whether a sub-graph of a given graph
+    is equivalent to another graph.
+

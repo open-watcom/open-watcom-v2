@@ -1,0 +1,1262 @@
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	Copyright (C) 1987, by WATCOM Systems Inc. All rights	  %
+%	reserved. No part of this software may be reproduced	  %
+%	in any form or by any means - graphic, electronic or	  %
+%	mechanical, including photocopying, recording, taping	  %
+%	or information storage and retrieval systems - except	  %
+%	with the written permission of WATCOM Systems Inc.	  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Modified     	By	       	Reason
+% --------     	--	       	------
+% 88-06-25     	Steve Fry       initial implementation
+% 93/01/20	B.J. Stecher	added C++ stuff
+%
+
+!include "dbgintr.ssl"
+
+input:
+	% one character delimiters
+    ET_GETS	       '=' = 0x20
+    ET_LT	       '<'
+    ET_GT	       '>'
+    ET_PLUS	       '+'
+    ET_MINUS	       '-'
+    ET_OR	       '|'
+    ET_MUL	       '*'
+    ET_DIV	       '/'
+    ET_AND	       '&'
+    ET_NOT	       '~'
+    ET_MOD	       '%'
+    ET_DOT	       '.'
+    ET_COLON	       ':'
+    ET_LEFT_PAREN      '('
+    ET_RIGHT_PAREN     ')'
+    ET_COMMA	       ','
+    ET_EXCLAMATION     '!'
+    ET_XOR	       '^'
+    ET_LEFT_BRACKET    '['
+    ET_RIGHT_BRACKET   ']'
+    ET_MODULE_SPEC     '@'
+    ET_VAR_EXIST       '?'
+    ET_STRING_QUOTE    '"'
+	% two character delimiters
+    ET_EQ	       '=='
+    ET_NE	       '!='
+    ET_LE	       '<='
+    ET_GE	       '>='
+    ET_PLUS_PLUS       '++'
+    ET_MINUS_MINUS     '--'
+    ET_AND_AND	       '&&'
+    ET_OR_OR	       '||'
+    ET_MUL_GETS        '*='
+    ET_DIV_GETS        '/='
+    ET_MOD_GETS        '%='
+    ET_PLUS_GETS       '+='
+    ET_MINUS_GETS      '-='
+    ET_AND_GETS        '&='
+    ET_XOR_GETS        '^='
+    ET_OR_GETS	       '|='
+    ET_LSHIFT	       '<<'
+    ET_RSHIFT	       '>>'
+    ET_RIGHT_ARROW     '->'
+!ifdef CPP
+    ET_SCOPE		'::'
+!endif
+	% three character delimiters
+    ET_LSHFT_GETS      '<<='
+    ET_RSHFT_GETS      '>>='
+	% keywords
+    ET_CHAR	       'char'
+    ET_DOUBLE	       'double'
+    ET_FLOAT	       'float'
+    ET_INT	       'int'
+    ET_LONG	       'long'
+    ET_SHORT	       'short'
+    ET_SIZEOF	       'sizeof'
+    ET_VOID	       'void'
+!ifdef JAVA
+    ET_BYTE		'byte'
+    ET_BOOLEAN		'boolean'
+!else 
+    ET_FAR	       'far'
+    ET_HUGE	       'huge'
+    ET_NEAR	       'near'
+    ET_SIGNED	       'signed'
+    ET_UNSIGNED        'unsigned'
+!endif
+!ifdef CPP
+    ET_OPERATOR		'operator'
+    ET_TRUE		'true'
+    ET_FALSE		'false'
+!endif
+
+	% character string escape sequences
+	% do NOT alter their values or sequences without corresponding
+	%    modifications in dbgscan.c
+    ET_NL	       '\\n' = 0x80
+    ET_HT	       '\\t'
+    ET_VT	       '\\v'
+    ET_BS	       '\\b'
+    ET_CR	       '\\r'
+    ET_FF	       '\\f'
+    ET_BEL	       '\\a'
+    ET_BACKSLASH       '\\\\'
+    ET_QUESTION_MARK   '\\?'
+    ET_SINGLE_QUOTE    '\\\''
+    ET_DOUBLE_QUOTE    '\\"'
+    ET_ZERO	       '\\0';
+
+input :
+	% character strings for various structure display operators
+	% first character is priority
+    TSTR_PAREN		'9(x)' = 0x1000
+    TSTR_POINTER_IND	'1*x'
+    TSTR_FIELD_SELECT	'2x.y'
+    TSTR_POINTER_FIELD	'2x->y'
+    TSTR_ARRAY		'2x[y]'
+    TSTR_SELF		'0x'
+    TSTR_NULL		'0NULL';
+
+
+rules
+
+    expr:
+!ifdef JAVA
+	[SSLVersion( version_dip )
+	  | false:
+	    #err_bad_version
+	  | *:
+	]
+!endif
+	MarkArrayOrder( false )
+	SwitchOn( sw_case_sensitive )
+	ScanCCharNum( true )	% tell scanner to recognise C char as numbers
+	MoveScanPtr( 0 )    % rescan current token
+	PurgePgmStack
+	@assignment
+    ;
+    
+!ifdef CPP
+
+    get_dtor >>bool:
+        ScanSave
+	[
+	  | ET_NOT:
+	    [GetDtorName
+	      | true:
+		ScanPop
+		>>true
+	      | *: 
+	    ]
+	  | *:
+	]
+	ScanRestore
+ 	>>false
+    ;
+    
+    get_operator >>bool:
+        [
+	| ET_OPERATOR:
+	  GetOperatorName
+	  >>true
+	| *:
+	  >>false
+	]
+    ;
+
+    parse_qualified_name >>bool:
+	[@get_operator
+	  | true:
+	    >>true
+	  | *:
+	]
+        [@get_dtor
+	  | true:
+	    >>true
+	  | *:
+	    [GetName
+	      | false:
+	        >>false
+	      | *:
+	  ]
+	    
+	]
+	>>true
+    ;
+
+!else
+
+    parse_qualified_name >>bool:
+	[GetName
+	| false:
+	    >>false
+	| *:
+	    >>true
+	]
+    ;
+       
+    
+!endif
+
+
+    parse_string:
+	ScanString( true )  %
+	ScanRestore	    % do these so that Scan() won't skip leading spaces
+	MoveScanPtr( 1 )
+	{
+	    [
+	      | ET_STRING_QUOTE:
+		MoveScanPtr( 1 )
+		ScanString( false )
+		ScanSave
+		[
+		  | ET_STRING_QUOTE:	% concaternate adjacent strings
+		    ScanString( true )
+		    ScanRestore
+		    MoveScanPtr( 1 )
+		  | *:
+		    AddCCharZero
+		    ScanPop
+		    PushString
+		    >>
+		]
+	      | ET_NL, ET_HT, ET_VT, ET_BS, ET_CR, ET_FF, ET_BEL,
+		ET_BACKSLASH, ET_QUESTION_MARK, ET_SINGLE_QUOTE,
+		ET_DOUBLE_QUOTE, ET_ZERO:
+		AddCEscapeChar
+		MoveScanPtr( 2 )
+	      | *:
+		AddChar
+		MoveScanPtr( 1 )
+	    ]
+	}
+    ;
+
+
+!include "dbgrules.ssl"
+
+    parsetypename >>bool:
+	BitsSet( bits_none )
+	{
+	    [
+!ifdef JAVA
+	      | ET_BYTE:
+		[BitsOr( bits_byte )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+	      | ET_BOOLEAN:
+		[BitsOr( bits_boolean )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+!else
+	      | ET_SIGNED:
+		[BitsOr( bits_signed )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+	      | ET_UNSIGNED:
+		[BitsOr( bits_unsigned )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+!endif
+	      | ET_VOID:
+		[BitsOr( bits_void )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+	      | ET_CHAR:
+		[BitsOr( bits_char )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+	      | ET_SHORT:
+		[BitsOr( bits_short )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+	      | ET_INT:
+		[BitsOr( bits_int )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+	      | ET_LONG:
+		[BitsOr( bits_long )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+	      | ET_FLOAT:
+		[BitsOr( bits_float )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+	      | ET_DOUBLE:
+		[BitsOr( bits_double )
+		  | false:
+		  | *:
+		    #err_duplicate_type_spec
+		]
+	      | *:
+		[BitsGet
+		  | bits_none:
+		    ScanSave
+		    [@push_symbol
+		     | false:
+			ScanPop
+			>>false
+		     | *:
+			[DoLkupType
+			  | false:
+			      PopEntry
+			      ScanRestore
+			      >>false
+			  | *:
+			]
+		    ]
+		    ScanPop
+		  | *:
+!ifdef JAVA
+		    @push_scalar_type
+!else
+		    [SSLVersion( version_dip )
+		      | false:
+			@push_scalar_type_old
+		      | *:
+		        @push_scalar_type
+		    ]
+!endif
+		]
+		>
+	    ]
+	}
+!ifndef JAVA
+	{
+	    [
+	      | ET_NEAR:
+		ET_MUL
+		@do_point_type_near
+	      | ET_FAR, ET_HUGE:
+		ET_MUL
+		@do_point_type_far
+	      | ET_MUL:
+		@do_point_type_default
+	      | *:
+		>
+	    ]
+	}
+!endif
+	>>true
+    ;
+
+
+!ifdef JAVA
+   push_scalar_type:
+	[BitsGet
+	  | bits_void:
+	    PushType( TI_void )
+	  | bits_char:
+	    PushType( TI_char_unsigned_2 )
+	  | bits_boolean:
+	    PushType( TI_bool_unsigned_1 )
+	  | bits_byte:
+	    PushType( TI_integer_signed_1 )
+	  | bits_short:
+	    PushType( TI_integer_signed_2 )
+	  | bits_int:
+	    PushType( TI_integer_signed_4 )
+	  | bits_long:
+	    PushType( TI_integer_signed_8 )
+	  | bits_float:
+	    PushType( TI_real_4 )
+	  | bits_double:
+	    PushType( TI_real_8 )
+	  | *:
+	    #err_illegal_type_spec
+	]
+    ;
+    
+!else
+
+   push_scalar_type:
+	[BitsGet
+	  | bits_void:
+	    PushType( TI_void )
+	  | bits_int, bits_signed_int, bits_signed:
+	    PushType( TI_integer_signed_0 )
+	  | bits_short, bits_short_int, bits_signed_short_int, bits_signed_short:
+	    PushType( TI_integer_signed_2 )
+	  | bits_long, bits_signed_long, bits_long_int, bits_signed_long_int:
+	    PushType( TI_integer_signed_4 )
+	  | bits_float:
+	    PushType( TI_real_4 )
+	  | bits_double, bits_long_float, bits_long_double:
+	    PushType( TI_real_8 )
+	  | bits_signed_char:
+	    PushType( TI_integer_signed_1 )
+	  | bits_char, bits_unsigned_char:
+	    PushType( TI_integer_unsigned_1 )
+	  | bits_unsigned, bits_unsigned_int:
+	    PushType( TI_integer_unsigned_0 )
+	  | bits_unsigned_short, bits_unsigned_short_int:
+	    PushType( TI_integer_unsigned_2 )
+	  | bits_unsigned_long, bits_unsigned_long_int:
+	    PushType( TI_integer_unsigned_4 )
+	  | *:
+	    #err_illegal_type_spec
+	]
+    ;
+    
+   push_scalar_type_old:	%OBSOLETE
+	[BitsGet
+	  | bits_void:
+	    PushScalarType( type_void )
+	  | bits_char, bits_unsigned_char:
+	    PushScalarType( type_u1 )
+	  | bits_int, bits_signed_int, bits_signed:
+	    [SwitchChk( sw_32_bit )
+	    | false:
+		PushScalarType( type_s2 )
+	    | *:
+		PushScalarType( type_s4 )
+	    ]
+	  | bits_short, bits_short_int, bits_signed_short_int, bits_signed_short:
+	    PushScalarType( type_s2 )
+	  | bits_long, bits_signed_long, bits_long_int, bits_signed_long_int:
+	    PushScalarType( type_s4 )
+	  | bits_float:
+	    PushScalarType( type_f4 )
+	  | bits_double, bits_long_float, bits_long_double:
+	    PushScalarType( type_f8 )
+	  | bits_signed_char:
+	    PushScalarType( type_s1 )
+	  | bits_unsigned, bits_unsigned_int:
+	    [SwitchChk( sw_32_bit )
+	    | false:
+		PushScalarType( type_u2 )
+	    | *:
+		PushScalarType( type_u4 )
+	    ]
+	  | bits_unsigned_short, bits_unsigned_short_int:
+	    PushScalarType( type_u2 )
+	  | bits_unsigned_long, bits_unsigned_long_int:
+	    PushScalarType( type_u4 )
+	  | *:
+	    #err_illegal_type_spec
+	]
+    ;
+!endif
+
+
+    nest_expr:
+	@assignment
+    ;
+
+
+    nest_callexpr:
+        ExprDepthAdj( 1 )
+	@assignment
+        ExprDepthAdj( -1 )
+    ;
+
+
+    assignment:
+	@conditional
+	[
+	  | ET_GETS:
+	    @assignment
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		DoAssign
+	      | *:
+	    ]
+	  | ET_MUL_GETS:
+	    @check_dup
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		DoMul
+		DoAssign
+	      | *:
+	    ]
+	  | ET_DIV_GETS:
+	    @check_dup
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		DoDiv
+		DoAssign
+	      | *:
+	    ]
+	  | ET_MOD_GETS:
+	    @check_dup
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		DoMod
+		DoAssign
+	      | *:
+	    ]
+	  | ET_PLUS_GETS:
+	    @check_dup
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		@perform_add
+		DoAssign
+	      | *:
+	    ]
+	  | ET_MINUS_GETS:
+	    @check_dup
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		@perform_minus
+		DoAssign
+	      | *:
+	    ]
+	  | ET_RSHFT_GETS:
+	    @check_dup
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		@negate
+		DoShift
+		DoAssign
+	      | *:
+	    ]
+	  | ET_LSHFT_GETS:
+	    @check_dup
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		DoShift
+		DoAssign
+	      | *:
+	    ]
+	  | ET_AND_GETS:
+	    @check_dup
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		DoAnd
+		DoAssign
+	      | *:
+	    ]
+	  | ET_XOR_GETS:
+	    @check_dup
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		DoXor
+		DoAssign
+	      | *:
+	    ]
+	  | ET_OR_GETS:
+	    @check_dup
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		DoOr
+		DoAssign
+	      | *:
+	    ]
+	  | *:
+	]
+    ;
+
+    check_dup:
+	[SkipCount
+	  | 0:
+	    PushDup
+	  | *:
+	]
+	@assignment
+    ;
+
+
+    logical_or:
+	@logical_and
+	{
+	    [
+	      | ET_OR_OR:
+		[SkipCount
+		  | 0:
+		    [DoTstTrue( 1 )
+		      | false:
+			PopEntry
+		      | *:
+			@skip_ors
+			>
+		    ]
+		  | *:
+		]
+		@logical_and
+		[SkipCount
+		  | 0:
+		    DoTstTrue( 1 )	% make result either true or false
+		  | *:
+		]
+	      | *:
+		>
+	    ]
+	}
+    ;
+
+
+    skip_ors:
+	SkipCountAdd( 1 )
+	{
+	    @logical_and
+	    [
+	      | ET_OR_OR:
+	      | *:
+		>
+	    ]
+	}
+	SkipCountAdd( -1 )
+    ;
+
+
+    logical_and:
+	@inclusive_or
+	{
+	    [
+	      | ET_AND_AND:
+		[SkipCount
+		  | 0:
+		    [DoTstTrue( 1 )
+		      | false:
+			@skip_ands
+			>
+		      | *:
+			PopEntry
+		    ]
+		  | *:
+		]
+		@inclusive_or
+		[SkipCount
+		  | 0:
+		    DoTstTrue( 1 )	% make result either true or false
+		  | *:
+		]
+	      | *:
+		>
+	    ]
+	}
+    ;
+
+
+    skip_ands:
+	SkipCountAdd( 1 )
+	{
+	    @inclusive_or
+	    [
+	      | ET_AND_AND:
+	      | *:
+		>
+	    ]
+	}
+	SkipCountAdd( -1 )
+    ;
+
+
+
+    inclusive_or:
+	@exclusive_or
+	{
+	    [
+	      | ET_OR:
+		@exclusive_or
+		[SkipCount
+		  | 0:
+		    DoOr
+		  | *:
+		]
+	      | *:
+		>>
+	    ]
+	}
+    ;
+
+
+    exclusive_or:
+	@and
+	{
+	    [
+	      | ET_XOR:
+		@and
+		[SkipCount
+		  | 0:
+		    DoXor
+		  | *:
+		]
+	      | *:
+		>>
+	    ]
+	}
+    ;
+
+
+    and:
+	@equality
+	{
+	    [
+	      | ET_AND:
+		@equality
+		[SkipCount
+		  | 0:
+		    DoAnd
+		  | *:
+		]
+	      | *:
+		>>
+	    ]
+	}
+    ;
+
+
+
+    equality:
+	@relational
+	{
+	    [
+	      | ET_EQ:
+		@relational
+		[SkipCount
+		  | 0:
+		    DoTstEQ(1)
+		  | *:
+		]
+	      | ET_NE:
+		@relational
+		[SkipCount
+		  | 0:
+		    DoTstEQ(1)
+		    PushInt( 1 )
+		    DoXor
+		  | *:
+		]
+	      | *:
+		>>
+	    ]
+	}
+    ;
+
+
+    relational:
+	@shift
+	{
+	    [
+	      | ET_LE:
+		@shift
+		[SkipCount
+		  | 0:
+		    StackSwap( 1 )
+		    DoTstLT( 1 )
+		    PushInt( 1 )
+		    DoXor
+		  | *:
+		]
+	      | ET_GE:
+		@shift
+		[SkipCount
+		  | 0:
+		    DoTstLT( 1 )
+		    PushInt( 1 )
+		    DoXor
+		  | *:
+		]
+	      | ET_LT:
+		@shift
+		[SkipCount
+		  | 0:
+		    DoTstLT( 1 )
+		  | *:
+		]
+	      | ET_GT:
+		@shift
+		[SkipCount
+		  | 0:
+		    StackSwap( 1 )
+		    DoTstLT( 1 )
+		  | *:
+		]
+	      | *:
+		>>
+	    ]
+	}
+    ;
+
+
+
+    shift:
+	@additive
+	{
+	    [
+	      | ET_LSHIFT:
+		@additive
+		[SkipCount
+		  | 0:
+		    DoShift
+		  | *:
+		]
+	      | ET_RSHIFT:
+		@additive
+		[SkipCount
+		  | 0:
+		    @negate
+		    DoShift
+		  | *:
+		]
+	      | *:
+		>>
+	    ]
+	}
+    ;
+
+
+
+    additive:
+	@multiplicative
+	{
+	    [
+	      | ET_PLUS:
+		@multiplicative
+		[SkipCount
+		  | 0:
+		    @perform_add
+		  | *:
+		]
+	      | ET_MINUS:
+		@multiplicative
+		[SkipCount
+		  | 0:
+		    @perform_minus
+		  | *:
+		]
+	      | *:
+		>>
+	    ]
+	}
+    ;
+
+
+
+    multiplicative:
+	@cast
+	{
+	    [
+	      | ET_MUL:
+		@cast
+		[SkipCount
+		  | 0:
+		    DoMul
+		  | *:
+		]
+	      | ET_DIV:
+		@cast
+		[SkipCount
+		  | 0:
+		    DoDiv
+		  | *:
+		]
+	      | ET_MOD:
+		@cast
+		[SkipCount
+		  | 0:
+		    DoMod
+		  | *:
+		]
+	      | *:
+		>>
+	    ]
+	}
+    ;
+
+
+
+
+    unary:
+	[
+	  | ET_PLUS_PLUS:
+	    @unary
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		PushDup
+		PushInt( 1 )
+		@perform_add
+		DoAssign
+	      | *:
+	    ]
+	  | ET_MINUS_MINUS:
+	    @unary
+	    SwitchOn( sw_side_effect )
+	    [SkipCount
+	      | 0:
+		PushDup
+		PushInt( -1 )
+		@perform_add
+		DoAssign
+	      | *:
+	    ]
+	  | ET_AND:
+	    @cast
+	    [SkipCount
+	      | 0:
+		DoAddr
+	      | *:
+	    ]
+	  | ET_MUL:
+	    @cast
+	    [SkipCount
+	      | 0:
+	        @do_points_unsigned
+	      | *:
+	    ]
+	  | ET_MOD:
+	    @cast
+	    [SkipCount
+	      | 0:
+	        @do_points_addr
+	      | *:
+	    ]
+	  | ET_PLUS:
+	    @cast
+	  | ET_MINUS:
+	    @cast
+	    [SkipCount
+	      | 0:
+		@negate
+	      | *:
+	    ]
+	  | ET_NOT:
+!ifdef CPP
+	    GetInit
+	    [GetDtorName
+	      | false:
+!endif
+		@cast
+		[SkipCount
+		  | 0:
+		    PushInt( -1 )
+		    DoXor
+		  | *:
+		]
+!ifdef CPP
+	      | *:
+	        [SkipCount
+		  | 0:
+		    GetFini
+		  | *:
+		]
+	    ]
+!endif
+	  | ET_EXCLAMATION:
+	    @cast
+	    [SkipCount
+	      | 0:
+		PushInt( 0 )
+		DoTstEQ(1)
+	      | *:
+	    ]
+	  | ET_SIZEOF:
+	    [
+	      | ET_LEFT_PAREN:
+		[@parsetypename
+		  | false:
+		    @nest_callexpr
+		  | *:
+		    [SkipCount
+		      | 0:
+		      | *:
+			PopEntry
+		    ]
+		]
+		@req_right_paren
+	      | *:
+		@unary
+	    ]
+	    [SkipCount
+	      | 0:
+		StackLValue( 0 )
+		DoSizeType
+	      | *:
+	    ]
+	  | *:
+	    @postfix
+	]
+    ;
+
+
+
+    postfix:
+	@segmented
+	{
+	    ScanSave
+	    [
+	      | ET_LEFT_BRACKET:
+		[SkipCount
+		  | 0:
+		    StartSubscript
+		  | *:
+		]
+		@nest_callexpr
+		[SkipCount
+		  | 0:
+		    AddSubscriptIndex
+		  | *:
+		]
+		ET_RIGHT_BRACKET
+		[SkipCount
+		  | 0:
+		    EndSubscript
+		  | *:
+		]
+	      | ET_LEFT_PAREN:
+		[ExprIsCall
+		  | true:
+		    ScanRestore	% unget '(' token
+		    >>
+		  | *:
+		]
+		NextNestedCall
+		NumSet( 0 )
+		[
+		  | ET_RIGHT_PAREN:
+		    % endchoice
+		  | *:
+		    {
+			NumPush
+			@nest_callexpr
+			[SkipCount
+			  | 0:
+			    StackValue(0)
+			    StackSwap( 1 )
+			  | *:
+			]
+			NumPop
+			NumAdd( 1 )
+			[
+			  | ET_COMMA:
+			    % null statement
+			  | ET_RIGHT_PAREN:
+			    >
+			  | *:
+			    ET_RIGHT_PAREN % cause error
+			]
+		    }
+		]
+		SwitchOn( sw_side_effect )
+		[SkipCount
+		  | 0:
+		    DoCall( false )
+		  | *:
+		]
+	      | ET_DOT:
+		@field_name
+	      | ET_RIGHT_ARROW:
+		[SkipCount
+		  | 0:
+		    @do_points_unsigned
+		  | *:
+		]
+		@field_name
+	      | ET_PLUS_PLUS:
+	        SwitchOn( sw_side_effect )
+		[SkipCount
+		  | 0:
+		    PushDup
+		    StackRValue( 0 )
+		    StackSwap( 1 )
+		    PushDup
+		    PushInt( 1 )
+		    @perform_add
+		    DoAssign
+		    PopEntry
+		  | *:
+		]
+	      | ET_MINUS_MINUS:
+	        SwitchOn( sw_side_effect )
+		[SkipCount
+		  | 0:
+		    PushDup
+		    StackRValue( 0 )
+		    StackSwap( 1 )
+		    PushDup
+		    PushInt( -1 )
+		    @perform_add
+		    DoAssign
+		    PopEntry
+		  | *:
+		]
+	      | *:
+		ScanPop
+		>>
+	    ]
+	    ScanPop
+	}
+    ;
+
+    field_name:
+        [@push_name
+	| false:
+	    #err_loc_and_want_name
+	| *:
+	]
+	[SkipCount
+	| 0:
+!ifdef JAVA
+	  [StackSymKind(1)
+	  | SK_NAMESPACE:
+	    DoScope( false )
+	  | *:
+	    DoField
+	  ]
+!else
+	  DoField
+!endif
+	| *:
+	  PopEntry
+	]
+    ;
+
+    segmented:
+	[
+	  | ET_DOT:
+	    [SkipCount
+	      | 0:
+		PushDot
+	      | *:
+	    ]
+	  | ET_VAR_EXIST:
+	    @primary
+	    [SkipCount
+	      | 0:
+		DoTstExist(1)
+	      | *:
+	    ]
+	  | *:
+	    @primary
+!ifndef JAVA
+	    [
+	      | ET_COLON:
+		@primary
+		[SkipCount
+		  | 0:
+		    DoMakeAddr
+		  | *:
+		]
+	      | *:
+	    ]
+!endif
+	]
+    ;
+
+!ifdef CPP
+    push_cpp_name:
+      @push_token
+      [StackForm(0)
+      | SF_NAME:
+      | *:
+        #err_loc_and_want_name
+      ]
+    ;
+    
+    handle_scoping:
+      {
+        [
+	| ET_SCOPE:
+	  @push_cpp_name
+	  DoScope( false )
+	| *:
+	  >
+	]
+      }
+    ;
+!endif
+
+    primary:
+	[
+	  | ET_LEFT_PAREN:
+	    [@parsetypename
+	      | false:
+		@nest_expr
+		@req_right_paren
+		[SkipCount
+		| 0:
+		| *:
+		   PushInt( 0 )	% popped later
+		]  
+	      | *:
+		@req_right_paren
+		@cast
+		[SkipCount
+		  | 0:
+		    DoConvert
+		  | *:
+		]
+	    ]
+	  | ET_LEFT_BRACKET:
+	    [PushRegSet
+	      | false:
+		[@parsetypename
+		  | false:
+		    #err_loc_and_want_reg_name
+		  | *:
+		    ET_RIGHT_BRACKET
+		    @cast
+		    [SkipCount
+		      | 0:
+			DoLConvert
+		      | *:
+		    ]
+		]
+	      | *:
+		ET_RIGHT_BRACKET
+	    ]
+!ifdef CPP
+	  | ET_TRUE:
+	    PushInt( 1 )
+	  | ET_FALSE:
+	    PushInt( 0 )
+	  | ET_SCOPE:
+	    @push_cpp_name
+	    DoScope( true )
+	    @handle_scoping
+!endif
+	  | *:
+	    @push_token
+!ifdef CPP
+	    [StackForm(0)
+	    | SF_NAME:
+	      @handle_scoping
+	    | *:
+	    ]
+!endif
+	]
+	@skip_pop
+    ;
+
+
+% bypass unimplemented levels
+    conditional:
+	@logical_or
+    ;
+    cast:
+	@unary
+    ;

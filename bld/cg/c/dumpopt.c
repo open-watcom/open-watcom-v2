@@ -1,0 +1,431 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include "optwif.h"
+#include "dump.h"
+#include "opcodes.h"
+#include "feprotos.h"
+
+extern  void            DumpNL();
+extern  void            DumpPtr(pointer);
+extern  void            Dump8h(unsigned_32);
+extern  void            DumpInt(int);
+extern  void            DumpByte(byte);
+extern  bool            AskIfRTLabel( label_handle );
+extern  bool            AskIfCommonLabel( label_handle );
+extern  char            *AskRTName( int );
+
+extern  ins_entry       *FirstIns;
+
+static char * Names[] = {
+    "OC_DEAD   ",
+    "OC_INFO   ",
+    "OC_CODE   ",
+    "OC_DATA   ",
+    "OC_RCODE  ",
+    "OC_BDATA  ",
+    "OC_LABEL  ",
+    "OC_LREF   ",
+    "OC_CALL   ",
+    "OC_CALLI  ",
+    "OC_JCOND  ",
+    "OC_JCONDI ",
+    "OC_JMP    ",
+    "OC_JMPI   ",
+    "OC_RET    ",
+    "OC_IDATA  ",
+    ""
+};
+
+#if _TARGET & _TARG_INTEL
+static char * Conds[] = {
+    "jo   ",
+    "jno  ",
+    "jb   ",
+    "jae  ",
+    "je   ",
+    "jne  ",
+    "jbe  ",
+    "ja   ",
+    "js   ",
+    "jns  ",
+    "jp   ",
+    "jnp  ",
+    "jl   ",
+    "jge  ",
+    "jle  ",
+    "jg   ",
+    "jmp  ",
+    ""
+};
+
+static  char    *CondName( oc_jcond *oc ) {
+/*****************************************/
+
+    return( Conds[ oc->cond ] );
+}
+#else
+static char * Conds[] = {
+    "je   ",
+    "jne  ",
+    "je   ",
+    "jne  ",
+    "jg   ",
+    "jle  ",
+    "jl   ",
+    "jge  ",
+    ""
+};
+static  char    *CondName( oc_jcond *oc ) {
+/*****************************************/
+
+    return( Conds[ oc->cond - FIRST_CONDITION ] );
+}
+#endif
+
+extern  void    DumpOpt() {
+/*************************/
+
+    DownOpt( FirstIns, -1 );
+}
+
+
+extern  void    UpOpt( ins_entry *ins, uint last ) {
+/**************************************************/
+
+    uint        size;
+
+    size = last;
+    for(;;) {
+        if( size == 0 ) break;
+        ins = ins->ins.prev;
+        if( ins == NULL ) break;
+        --size;
+    }
+    DownOpt( ins, last+1 );
+}
+
+
+extern  void    DownOpt( ins_entry *instr, uint num ) {
+/*****************************************************/
+
+    DumpLiteral( "--------<Queue>-------" );
+    DumpNL();
+    for(;;) {
+        if( instr == NULL ) break;
+        if( num == 0 ) break;
+        DumpOc( instr );
+        --num;
+        instr = instr->ins.next;
+    }
+}
+
+static  bool    LblName( code_lbl *lbl ) {
+/*****************************************/
+
+
+    if( ValidLbl( lbl ) == FALSE ) return( FALSE );
+    DumpLiteral( "L" );
+    DumpPtr( lbl );
+    if( lbl->lbl.sym == NULL ) return( TRUE );
+    DumpLiteral( "(" );
+    if( AskIfRTLabel( lbl ) ) {
+        DumpXString( AskRTName( (int)lbl->lbl.sym ) );
+    } else if( AskIfCommonLabel( lbl ) ) {
+        DumpLiteral( "Common import => [" );
+        DumpInt( (int)lbl->lbl.sym );
+        DumpLiteral( "] " );
+    } else {
+        DumpXString( FEName( lbl->lbl.sym ) );
+    }
+    DumpLiteral( ")" );
+    return( TRUE );
+}
+
+
+
+extern  void    DumpOc( ins_entry *ins ) {
+/****************************************/
+
+    DumpPtr( ins );
+    DumpLiteral( " " );
+    DumpString(  Names[ _Class( ins ) ] );
+    if( _Class( ins ) != OC_INFO ) {
+        CheckAttr( ins->oc.oc_entry.class );
+    }
+    switch( _Class( ins ) ) {
+    case OC_INFO:
+        DoInfo ( &ins->oc );
+        break;
+    case OC_CODE:
+        DoData ( &ins->oc );
+        break;
+    case OC_DATA:
+        DoData ( &ins->oc );
+        break;
+    case OC_IDATA:
+        DoData( &ins->oc );
+        break;
+    case OC_BDATA:
+        DoData ( &ins->oc );
+        break;
+    case OC_LABEL:
+        DoLabel( &ins->oc );
+        break;
+    case OC_LREF:
+        DumpLiteral( "dw   " );
+        DoRef  ( &ins->oc );
+        break;
+    case OC_CALL:
+        DumpLiteral( "call " );
+        DoRef  ( &ins->oc );
+        break;
+    case OC_CALLI:
+        DoData ( &ins->oc );
+        break;
+    case OC_JCOND:
+        DumpString( CondName( &ins->oc.oc_jcond ) );
+        DoRef( &ins->oc );
+        break;
+    case OC_JCONDI:
+        DoData( &ins->oc );
+        break;
+    case OC_JMP:
+        DumpLiteral( "jmp  " );
+        DoRef  ( &ins->oc );
+        break;
+    case OC_JMPI:
+        DoData ( &ins->oc );
+        break;
+    case OC_RET:
+        DumpInt( ins->oc.oc_ret.pops );
+        DumpNL();
+        break;
+#if _TARGET & _TARG_RISC
+    case OC_RCODE:
+        DumpPtr( (pointer)ins->oc.oc_rins.opcode );
+        if( _HasReloc( &ins->oc.oc_rins ) ) {
+            DumpLiteral( " [ " );
+            LblName( ins->oc.oc_rins.sym );
+            DumpLiteral( "," );
+            DumpInt( ins->oc.oc_rins.reloc );
+            DumpLiteral( " ] " );
+        }
+        break;
+#endif
+    default:
+        DumpLiteral( "*** unknown class ***" );
+        break;
+    }
+    DumpNL();
+}
+
+static  void    CheckAttr( oc_class cl ) {
+/****************************************/
+
+    if( cl & ATTR_FAR ) {
+        DumpLiteral( "far " );
+    }
+    if( cl & ATTR_SHORT ) {
+        DumpLiteral( "short " );
+    }
+    if( cl & ATTR_POP ) {
+        DumpLiteral( "popping " );
+    }
+    if( cl & ATTR_FLOAT ) {
+        DumpLiteral( "floating " );
+    }
+}
+
+static  void    DoInfo( any_oc *oc ) {
+/**************************************/
+
+    switch( oc->oc_entry.class & INFO_MASK ) {
+    case INFO_LINE:
+        DumpLiteral( "LINE " );
+        DumpInt( oc->oc_linenum.line );
+        if( oc->oc_linenum.label_line ) {
+            DumpLiteral( " (Label)" );
+        }
+        break;
+    case INFO_LDONE:
+        DumpLiteral( "LDONE " );
+        LblName( oc->oc_handle.handle );
+        break;
+    case INFO_DEAD_JMP:
+        DumpLiteral( "DEAD  " );
+        DumpLiteral( "jmp  " );
+        DoRef( oc );
+        break;
+    case INFO_DBG_RTN_BEG:
+        DumpLiteral( "RTN BEGIN " );
+        DumpPtr( oc->oc_debug.ptr );
+        break;
+    case INFO_DBG_BLK_BEG:
+        DumpLiteral( "BLOCK BEGIN " );
+        DumpPtr( oc->oc_debug.ptr );
+        break;
+    case INFO_DBG_PRO_END:
+        DumpLiteral( "PROLOG END " );
+        DumpPtr( oc->oc_debug.ptr );
+        break;
+    case INFO_DBG_EPI_BEG:
+        DumpLiteral( "EPILOG BEGIN " );
+        DumpPtr( oc->oc_debug.ptr );
+        break;
+    case INFO_DBG_BLK_END:
+        DumpLiteral( "BLOCK END " );
+        DumpPtr( oc->oc_debug.ptr );
+        break;
+    case INFO_DBG_RTN_END:
+        DumpLiteral( "RTN END " );
+        DumpPtr( oc->oc_debug.ptr );
+        break;
+    case INFO_SELECT:
+        DumpLiteral( "SELECT TABLE " );
+        if( oc->oc_select.starts ) {
+            DumpLiteral( "STARTS" );
+        } else {
+            DumpLiteral( "ENDS" );
+        }
+        break;
+    default:
+        DumpLiteral( "*** unknown info ***" );
+        break;
+    }
+}
+
+static  void    DoData( oc_entry *instr ) {
+/*****************************************/
+
+    uint        len;
+
+    len = 0;
+    while( len < instr->reclen - sizeof( oc_header ) ) {
+        DumpByte( instr->data[ len ] );
+        ++len;
+    }
+}
+
+static  void    DoLabel( oc_handle *instr ) {
+/*******************************************/
+
+    code_lbl    *lbl;
+
+    lbl = instr->handle;
+    DumpLiteral( "align=<" );
+    DumpByte( instr->op.objlen+1 );
+    DumpLiteral( "> " );
+    for(;;) {
+        if( LblName( lbl ) == FALSE ) break;
+        lbl = lbl->alias;
+        if( lbl == NULL ) break;
+        DumpLiteral( " " );
+    }
+#if _TARGET & _TARG_RISC
+    if( instr->line != 0 ) {
+        DumpLiteral( "line=<" );
+        DumpInt( instr->line );
+        DumpLiteral( "> " );
+    }
+#endif
+}
+
+static  void    DoRef( oc_handle *instr ) {
+/*****************************************/
+
+    LblName( instr->handle );
+}
+
+extern  void    DumpLbl( code_lbl *lbl ) {
+/****************************************/
+
+    ins_entry   *ref;
+
+    if( _ValidLbl( lbl ) == FALSE ) return;
+    if( lbl->lbl.sym != NULL ) {
+        DumpLiteral( "(" );
+        DumpXString( FEName( lbl->lbl.sym ) );
+        DumpLiteral( ") " );
+    }
+    DumpLiteral( "addr==" );
+    Dump8h( lbl->lbl.address );
+    DumpLiteral( ", patch==" );
+    DumpPtr( lbl->lbl.patch );
+    DumpLiteral( " " );
+    if( _TstStatus( lbl, CODELABEL ) ) {
+        DumpLiteral( "CODE " );
+    }
+    if( _TstStatus( lbl, KEEPLABEL ) ) {
+        DumpLiteral( "KEEP " );
+    }
+    if( _TstStatus( lbl, DYINGLABEL ) ) {
+        DumpLiteral( "DYING " );
+    }
+    if( _TstStatus( lbl, SHORTREACH ) ) {
+        DumpLiteral( "S-REACH " );
+    }
+    if( _TstStatus( lbl, CONDEMNED ) ) {
+        DumpLiteral( "CONDEMNED " );
+    }
+    if( _TstStatus( lbl, RUNTIME ) ) {
+        DumpLiteral( "RT " );
+    }
+    if( _TstStatus( lbl, REDIRECTION ) ) {
+        DumpLiteral( "REDIR " );
+    }
+    if( _TstStatus( lbl, UNIQUE ) ) {
+        DumpLiteral( "UNIQUE " );
+    }
+    DumpNL();
+    if( lbl->ins != NULL ) {
+        DumpLiteral( "ins==" );
+        DumpPtr( lbl->ins );
+        DumpLiteral( " " );
+    }
+    if( lbl->redirect != NULL ) {
+        DumpLiteral( "redir==" );
+        DumpPtr( lbl->redirect );
+        DumpLiteral( " " );
+    }
+    ref = lbl->refs;
+    if( ref != NULL ) {
+        DumpLiteral( "ref==" );
+        for(;;) {
+            DumpPtr( ref );
+            DumpLiteral( "  " );
+            ref = _LblRef( ref );
+            if( ref == NULL ) break;
+        }
+    }
+    DumpNL();
+}

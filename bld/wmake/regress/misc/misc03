@@ -1,0 +1,18 @@
+#
+# Miscellaneous Tests
+#
+# Default Test
+#  
+#
+.DEFAULT
+    echo default
+.AFTER
+    echo after-1
+hello.c: hello .symbolic
+hello: .symbolic
+.BEFORE 
+    echo before
+    
+.AFTER 
+    echo after
+    

@@ -1,0 +1,3 @@
+#define SERVER_TYPE "NetBIOS"
+
+#include "winserv.rc"

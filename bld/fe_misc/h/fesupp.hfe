@@ -1,0 +1,23 @@
+// FESUPP.HFE -- model for front-end independent support
+//
+// This a a model that a front-end must fill in.
+//
+// This provides macro definitions for the front-end independent support
+//
+// These definitions are used in:
+//
+//      carvefns.c
+//      cmdlnprs.c
+//      ringfns.c
+//
+#ifndef __FESUPP_H__
+#define __FESUPP_H__
+
+// MACRO DEFINITIONS
+
+#define _MemoryAllocate( size )     WjbcMemAlloc( size )
+#define _MemoryFree( size )         WjbcMemFree( size )
+#define _MemoryFreePtr( size )      WjbcMemFreePtr( size )
+#define _FatalAbort( msg )          WjbcFatal( msg )
+
+#endif

@@ -1,0 +1,30 @@
+/************************************************************************/
+/*                         WSTRIP RESOURCE FILE                         */
+/************************************************************************/
+
+#include "wstrip.h"
+#include "wreslang.h"
+
+STRINGTABLE
+BEGIN
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
+
+#include "wstrip.msg"
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
+
+#include "wstrip.msg"
+
+#ifdef QNX
+#include "qusage.rc"
+#else
+#include "ousage.rc"
+#include "ousagej.rc"
+#endif
+
+END

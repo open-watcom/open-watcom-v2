@@ -1,0 +1,12 @@
+clean killall: .SYMBOLIC .EXPLICIT
+    @if exist *.err @erase *.err
+    @if exist *.?bj @erase *.?bj
+    @if exist *.?bc @erase *.?bc
+    @if exist *.exe @erase *.exe
+    @if exist *.tmp @erase *.tmp
+    @if exist *.out @erase *.out
+    @if exist *.lnk @erase *.lnk
+    @if exist *.lst @erase *.lst
+    @if exist *.zip @erase *.zip
+    @if exist *.lib @erase *.lib
+    @if exist *.tim @erase *.tim

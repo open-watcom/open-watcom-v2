@@ -1,0 +1,10 @@
+# -------------------------------
+# ERROR 05: no targets specified
+# -------------------------------
+.EXTENSIONS:
+.SUFFIXES: .a .b .c
+
+.b.a:
+	echo dowah ditty
+.c.b:
+	echo blah wah foo

@@ -1,0 +1,52 @@
+//
+//  exception.h Exceptions
+//
+:keep CPP_HDR
+:include crwat.sp
+//
+#ifndef _EXCEPTION_H_INCLUDED
+#define _EXCEPTION_H_INCLUDED
+:include readonly.sp
+
+#ifndef __cplusplus
+#error exception.h is for use with C++
+#endif
+
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
+
+:include cpppfv.sp
+
+:include watexc.sp
+
+// corresponds to Header<exception>
+
+#include <stdexcep.h>
+
+class _WPRTLINK bad_exception : public exception {
+public:
+    bad_exception( void ) _WCTHROWS(())
+        : exception( "exception missing from function exception specification" ) {
+    }
+    bad_exception( bad_exception const & ) _WCTHROWS(()) {
+    }
+    bad_exception & operator=( bad_exception & ) _WCTHROWS(()) {
+        return *this;
+    }
+    virtual ~bad_exception( void ) _WCTHROWS(()) {
+    }
+    virtual char const * what( void ) const _WCTHROWS(()) {
+        return exception::what();
+    }
+};
+
+typedef void (*unexpected_handler)( void );
+typedef void (*terminate_handler)( void );
+
+_WPRTLINK extern void terminate( void );
+_WPRTLINK extern terminate_handler set_terminate( terminate_handler );
+_WPRTLINK extern void unexpected( void );
+_WPRTLINK extern unexpected_handler set_unexpected( unexpected_handler );
+
+#endif

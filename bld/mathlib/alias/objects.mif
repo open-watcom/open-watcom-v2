@@ -1,0 +1,4 @@
+#                    d16c d16i d32c d32i ncc nci wnc wni axp ntp op
+#==================================================================
+!include ..\..\..\objs.mif
+!include ..\..\..\..\objlist.mif

@@ -1,0 +1,59 @@
+include_default =-i..\..\..\h;$(clib_dir)\h;$(lib_misc_dir)\h;$(comp_cfg_dir)\h
+include_watcom =;$(watcom_dir)\h
+
+# include_c_(system)
+!ifndef runtime_library_source
+include_c_generic  =;$(hdr_dir)\dos
+include_c_kanji    =;$(hdr_dir)\dos
+include_c_msdos    =;$(hdr_dir)\dos
+include_c_necdos   =;$(hdr_dir)\dos
+include_c_necwin   =;$(%watcom)\h\win;$(hdr_dir)\dos
+include_c_netware  =;$(%watcom)\novh;$(hdr_dir)\dos
+include_c_os2_286  =$(%watcom)\h\os21x
+include_c_os2_386  =$(%watcom)\h\os2
+include_c_os2_ppc  =$(%watcom)\h\os2ppc
+include_c_os2      =;$(include_c_os2_$(processor));$(hdr_dir)\dos
+include_c_osi      =;$(hdr_dir)\dos
+include_c_osi      =;$(hdr_dir)\dos
+include_c_penpoint =;$(watcom_dir)\pen_h;$(hdr_dir)\penpoint
+include_c_qnx      =;$(hdr_dir)\qnx
+include_c_windows  =;$(%watcom)\h\win;$(hdr_dir)\dos
+include_c_winnt    =;$(%watcom)\h\nt;$(hdr_dir)\dos
+!else
+include_c_generic  =;$(%watcom)\h
+include_c_kanji    =;$(%watcom)\h
+include_c_msdos    =;$(%watcom)\h
+include_c_necdos   =;$(%watcom)\h
+include_c_necwin   =;$(%watcom)\h\win;$(%watcom)\h
+include_c_netware  =;$(%watcom)\novh;$(%watcom)\h
+include_c_os2_286  =$(%watcom)\h\os21x
+include_c_os2_386  =$(%watcom)\h\os2
+include_c_os2_ppc  =$(%watcom)\h\os2ppc
+include_c_os2      =;$(include_c_os2_$(processor));$(%watcom)\h
+include_c_osi      =;$(%watcom)\h
+include_c_penpoint =;$(watcom_dir)\pen_h;$(hdr_dir)\penpoint
+include_c_qnx      =;$(hdr_dir)\qnx
+include_c_windows  =;$(%watcom)\h\win;$(%watcom)\h
+include_c_winnt_386=$(%watcom)\h\nt
+include_c_winnt_axp=$(%watcom)\h\nt
+include_c_winnt_ppc=$(%watcom)\h\nt
+include_c_winnt    =$(%watcom)\h\nt;$(%watcom)\h
+!endif
+
+include_c_path =$(include_default)$(include_c_$(system))$(include_watcom)
+
+# include_a_(system)
+include_a_generic  =
+include_a_kanji    =
+include_a_msdos    =
+include_a_necdos   =
+include_a_necwin   =
+include_a_netware  =
+include_a_os2      =
+include_a_osi      =
+include_a_penpoint =
+include_a_qnx      =
+include_a_windows  =
+include_a_winnt    =
+
+include_a_path =$(include_default)$(include_a_$(system))$(include_watcom)

@@ -1,0 +1,50 @@
+/*
+ *  varargs.h   Variable argument macros (UNIX System V definition)
+ *              definitions for use with variable argument lists
+ *
+:include crwat.sp
+ */
+#ifndef _VARARGS_H_INCLUDED
+#define _VARARGS_H_INCLUDED
+:include readonly.sp
+:include cpluspro.sp
+
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
+#ifndef _STDARG_H_INCLUDED
+ #include <stdarg.h>
+#else
+ #error stdarg.h has already been included
+#endif
+
+#undef va_start
+
+:segment !QNX
+#if defined(__PPC__)
+ extern void *__builtin_va_start(va_list*, ...);
+ #pragma intrinsic(__builtin_va_start);
+ #define va_alist       void *__alist, ...
+ #define va_dcl
+ #define va_start(ap)   (__builtin_va_start(&ap,__alist,0))
+#elif defined(__AXP__)
+ extern void *__builtin_va_start(va_list*, ...);
+ #pragma intrinsic(__builtin_va_start);
+ #define va_alist       void *__alist, ...
+ #define va_dcl
+ #define va_start(ap)   (__builtin_va_start(&ap,__alist,0))
+#else
+:endsegment
+ #define va_alist       void *__alist, ...
+ #define va_dcl
+ #if defined(__HUGE__) || defined(__SW_ZU)
+  #define va_start(ap)  ((ap)[0]=(char _WCFAR*)&__alist,(void)0)
+ #else
+  #define va_start(ap)  ((ap)[0]=(char *)&__alist,(void)0)
+ #endif
+:segment !QNX
+#endif
+:endsegment
+
+:include cplusepi.sp
+#endif

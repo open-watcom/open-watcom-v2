@@ -1,0 +1,28 @@
+!include binname.mif
+!include mlibs.mif
+
+!ifndef sys_dll
+target : $(pre_obj_deps) cg$(target_name).lib cg$(target_name)$(host_OS).lib .SYMBOLIC
+        @%null
+!else
+bin_name = cg$(target_name)
+
+target : $(pre_obj_deps) $(bin_path) cgdllcli.lib .SYMBOLIC
+        @%null
+
+$(bin_path) : cg$(target_name).lib cg$(target_name)$(host_OS).lib cgdmain.obj $(cfloat_lib)
+        $(linker) $(lflags) name $(bin_path) op map file cgdmain.obj lib cg$(target_name).lib lib cg$(target_name)$(host_OS).lib lib $(dw_lib) lib $(owl_lib) lib $(cfloat_lib)
+
+cgdllcli.lib : cgdllcli.obj i64.obj
+        @%make libfile
+
+cgdmain.obj : cgdmain.c
+!endif
+
+!include $(cg_dir)\mif\rules.mif
+
+cg$(target_name).lib : $(target_objs) $(mem_objs) $(cg_dump_objs)
+        @%make libfile
+
+cg$(target_name)$(host_OS).lib : $($(host_OS)_objs)
+        @%make libfile

@@ -1,0 +1,49 @@
+for %%i in (a b c) do echo %%i
+echo a
+a
+echo b
+b
+echo c
+c
+for %i in (a b c) do echo %i
+echo a
+a
+echo b
+b
+echo c
+c
+for %dowah in (a b c) do echo %%dowah %%i
+echo %a %%i
+%a %%i
+echo %b %%i
+%b %%i
+echo %c %%i
+%c %%i
+for %abc in () do echo %abc wow!
+for %abc in (this is a test) do echo %abc and again, %abc
+echo this and again, this
+this and again, this
+echo is and again, is
+is and again, is
+echo a and again, a
+a and again, a
+echo test and again, test
+test and again, test
+for %i in (echo rem) do %i does it work?
+echo does it work?
+does it work?
+rem does it work?
+echo a
+a
+echo b
+b
+echo c
+c
+a
+b
+c
+for %i in (1 2 3 4) do @echo no replacement text!
+no replacement text!
+no replacement text!
+no replacement text!
+no replacement text!

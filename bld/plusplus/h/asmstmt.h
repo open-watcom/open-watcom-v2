@@ -1,0 +1,59 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#ifndef _ASMSTMT_H
+#define _ASMSTMT_H
+
+#include "vbuf.h"
+
+#define MAX_INSTR_SIZE  64
+
+extern PTREE AsmStmt( void );
+
+// from CPRAGxxx
+
+extern boolean AsmSysInsertFixups( VBUF *code );
+extern void *AsmSysCreateAux( char *name );
+extern void AsmSysUsesAuto( void );
+extern void AsmSysInit( void );
+extern void AsmSysDone( void );
+extern uint_32 AsmSysAddress( void );
+extern void AsmSysSetCodeBuffer( void * );
+extern void AsmSysParseLine( char * );
+extern char const *AsmSysDefineByte( void );
+extern void AsmSysCopyCode( void );
+
+// in ASMALLOC
+void *AsmAlloc( unsigned );
+void AsmFree( void * );
+
+#endif

@@ -1,0 +1,800 @@
+Syntax definitions:
+
+    <anything> 		- means that <anything> is a defined term its definition
+    			will be found after the syntax description for the command
+    [x]	   		- means x is optional
+    [x|y|z]	   	- means pick one of x,y or z
+    [x [x [...]]]	- means x may be repeated zero or more times
+    CApital		- indicates that ca,cap,capi,... are accepted shortforms
+    (GUI only)		- this command is ignored in character mode
+    (non-GUI only)	- this command is ignored in the GUI debuggers
+    
+    <expr> is an expression.  These may include any of the variables, etc
+    in the program being debugged, and are evaluated in the current program
+    context. For more information, see the 'expression' section of the manual.
+    
+    <integer> is an integer.
+
+    <intexpr> is an expression which evaluates to an integer.
+    
+    <command> is any debugger command or group of debugger commands.
+    
+	Debugger commands may be grouped together with braces and separated
+	by semi-colons. The resulting compound command may be considered as
+	an atomic command.
+
+	Example: 
+		{<command>;<command>;<command>}
+    
+    <address> is any expression which evaluates to an address
+    
+    <string> is string of text, optionally enclosed in braces.
+
+        Example:
+		this_is_a_string
+		{so is this}
+    
+    <wndname> is the name of a window.  Valid window names (with acceptable
+    shortforms indicated in capitals) are:
+
+	ASsembly	ALl	BReak		Calls		Watch
+	FIle		FPu	FUnctions	FILEScope	LOCals
+	LOG		MEmory	MOdules		Register	SOurce
+	STack		Thread	IO		Globals		Variable
+	BInary		IMage	GLobalfunctions	Hotkeys		TMPFile
+	REPlay		CUrrent
+
+    <file> is any valid operating system file name
+
+    	Example:
+		c:\autoexec.bat
+    
+    <path> is any valid operating system directory path
+
+    	Example:
+		c:\dir1\dir2
+
+
+Command Summary:
+
+==============================================================================
+
+Accelerate
+
+    Accelerate main <menu> {<menu_string>}
+    - behaves as if the named menu item was selected
+
+    Accelerate {<menu_string>}
+    - behaves as if the named menu item in the floating popup for the
+      current window was selected
+
+    <menu> is
+        the string appearing on the main menu bar.
+
+    <menu_string> is
+        Enough of the text appearing in a menu to uniquely identify it.
+
+
+Example:
+
+	accelerate main run {until return}
+	- behaves as if 'Until return' is selected from the run menu
+
+	accelerate {Home}
+	- behaves as if 'home' were picked from the floating popup
+	of the current window.
+
+==============================================================================
+
+Break
+
+    Break
+    - show a list of all break points in the log window
+
+    Break [|/Set|/Byte|/Word|/DWord|/Modify]
+          <address> [ {<do_command>} [ { <condition> } [ <countdown> ]]]
+    - sets a break point at <address>
+
+    - - /Set (default) - break point is triggered when <address> is executed
+    - - /Byte - break point will trigger when the byte at <address> is modified
+    - - /Word - break point will trigger when the word at <address> is modified
+    - - /DWord - break point will trigger when the double word at <address> is modified
+    - - /Modify - break point will trigger when integer at <address> is modified
+
+    <condition> is
+        an expression that must evaluate to true (non-zero value)
+        before the break point will stop program execution
+
+    <countdown> is
+        an integer.  The break point will not stop program
+        execution until <countdown> is decremented to zero.
+	if both <condition> and <countdown> are specified, countdown is only
+	decremented when <condition> evaluates to true.
+
+    <do_command> is
+    	 a command that will be executed each time the break point stops
+	 program execution
+
+    Break/Deactivate <brkid>
+    - turns a break point off without deleting it
+
+    Break/Activate <brkid>
+    - turns a break point back on
+
+    Break/Clear <brkid>
+    - clears, or deletes a break point
+
+    Break/Toggle <brkid>
+    - toggles a break point through the active/inactive/deleted states.
+
+    Break/Resume <brkid>
+    - causes a break point to resume program execution immediately after it
+      executues any associated command.  Useful for patching code.
+
+    Break/UnResume <brkid>
+    - turns off the 'resume' attribute
+
+    <brkid> is
+	*		- means all break points
+	#<integer>	- names a break point by its index
+	<address>	- names a break point by its address
+
+Examples:
+
+    Break /Set foo {do j=7} {i==10} 20
+	- sets a break point at 'foo' the 20th time that i is equal to 10.
+	- 'do j=7' will be executed when this occurs.
+
+    Break /Clear foo
+	- clears the break point at foo
+
+    Break /Activate #1
+	- activates break point #1
+
+    Break /Deactivate *
+	- deactivates all break points
+
+
+==============================================================================
+
+Call
+
+    Call [/Far|/Interrupt|/Near]
+         <address>
+	 [([<parm>[,<parm>[...]]])] [/|<printlist>]
+
+    - call the routine at <address> with parameters
+    - - /Far - use a far call instruction.
+    - - /Near - use a near call instruction.
+    - - /Interrupt - call the routine as if it were an interrupt handler.
+
+    <parm> is
+        [/<location>] <expr>
+
+    <location> is
+        [/|<regset>]
+	/ - means put the parm on the stack
+	/<regset> - means put the parm into the names registers
+
+    <regset> is
+        a register aggregate. See the 'expressions' section
+
+    <printlist> is
+        see the print command for details.
+
+Examples:
+	call foo
+	- calls function foo
+
+	call bar( 1,2,3 )
+	- calls function bar passing the parameters 1, 2, and 3.
+
+	call /near foo( // 1, /ax 2, /[cx bx] 3 ) {%d %x} ax,dx
+	- calls foo putting 1 on the stack, 2 in ax and 3 in cx:bx printing
+	  out the value of ax and dx in decimal and hex respectively on return.
+
+
+==============================================================================
+
+CAPture
+
+    CAPture <command>
+    - executes <command> and puts any resulting program output into a window.
+
+Example:
+	capture call foo
+	- calls routine foo and puts its output into a debugger window
+
+==============================================================================
+
+Display
+
+    Display TOolbar [/Open] [/FLoating/Fixed] [<ord>]
+    - display the toolbar as either fixed (default) or floating.
+      <ord> is the button height to be used (GUI only).
+
+    Display TOolbar [/Close]
+    - closes the toolbar
+
+    Display Status [/Open]
+    - open the status line
+
+    Display Status /Close
+    - close the status line
+
+    Display <wndname> [/Open|/Close|/New|/MInimize|/MAximize|/Restore] [<ord>,<ord>,<ord>,<ord>]
+
+    - <ord>,<ord>,<ord>,<ord> are the x and y coordinates of the top left
+      corner, the width and the height of the window respectively.
+      0,0,10000,10000 is a window covering the entire screen.
+
+    - /open - opens a new window or resizes an existing one
+
+    - /new - opens a new window regardless of an existing one
+
+    - /close - closes the window
+
+    - /minimize - iconizes it
+
+    - /maximize - zaps it up to the full screen size
+
+    - /restore - restores from a minimize or maximize
+
+    Display <wndname>
+
+    - brings a window to the front.
+
+Examples:
+
+	display register /open 0,0,5000,5000
+	- opens a register window in the top left quarter of the screen.
+
+	display source /minimize
+	- minimizes the source window (if it is open)
+
+==============================================================================
+
+DO (or /)
+    DO <expr>
+
+    - evaluates an arbitrary C/C++ or FORTRAN expression.
+
+==============================================================================
+
+ERror
+    ERror <string>
+
+    - displays <string> as an error message.
+
+==============================================================================
+
+Examine
+    Examine [/Byte] [<address>] [,<follow> [,<len>]]
+    Examine /Word [<address>] [,<follow> [,<len>]]
+    Examine /Dword [<address>] [,<follow> [,<len>]]
+    Examine /Pointer [<address>] [,<follow> [,<len>]]
+    - examines memory at <address>.
+
+    <follow> is
+        an expression which will be used if the memory window's Repeat
+	function is chosen.
+
+    <len> is
+        an integer expression indicating the length of memory to examine.
+
+    Examine /Assembly [<address>]
+    - show an assembly window positioned at <address>
+
+    Examine /Source [<address>]
+    - show a source window positioned at <address>
+
+    Examine /IOByte [<address>]
+    Examine /IOWord [<address>]
+    Examine /IODword [<address>]
+    - add <address> to the IO window as a byte, word or dword respectively.
+
+Examples:
+
+	examine /word foo,*(.+4),16
+
+	- opens a memory window positioned at the address of 'foo'. The initial
+	display type will be 2 byte words. If the 'Repeat' menu item is used,
+	it will follow a near pointer 4 bytes past the beginning of the window
+	*(.+$).  The window will display 16 bytes of data at a time.
+
+==============================================================================
+
+MOdify
+    MOdify [/Byte|/Pointer|/Word|/Dword|/IOByte|/IOWord|/IODword]
+    <address>[,<expr>[...]]
+
+    - change memory at <address> to the values specified by the list
+    of expressions.
+
+Examples:
+
+	modify /byte foo 1,2,3
+	- change the 3 bytes a location 'foo' to the values 1, 2 and 3
+
+	modify /dword foo 0x12345678
+	- change the 4 bytes at location 'foo' to the value 12345678 hex.
+
+==============================================================================
+
+Flip
+    Flip
+
+    - switch to the application screen
+
+    Flip ON
+
+    - turn automatic screen flipping on.  When the application runs, its
+    screen will be made visible.
+
+    Flip OFf
+
+    - turn automatic screen flipping on.  When the application runs, the
+    debugger screen will still be visible.  This command should not be used
+    in Windows.  If a windows API call is executed with flip turned off,
+    Windows may crash.
+
+==============================================================================
+
+Go
+
+    Go [/Keep] [/Noflip] [[<start>,]<stop>]
+
+    - /Noflip
+    - - keeps the debugger from flipping to the application's screen
+    - /Keep
+    - - see old manual
+
+    <start> is
+        the <address> at which to start execution
+
+    <stop> is
+        the <address> at which to stop
+
+Examples:
+
+	go /noflip foo
+	- resume execution until function 'foo' is reached. Do not
+	flip to the application screen
+
+	go foo,bar
+	- start execution at 'foo' and run until 'bar' is reached.
+
+==============================================================================
+
+Help
+    - not yet implemented
+
+==============================================================================
+
+HOok
+    HOok <event> <command>
+    - executes <command> whenever <event> occurs.
+
+    <event> is
+	PROGStart
+	- a program is loaded
+	PROGEnd
+	- a program terminates
+	DLLStart
+	- a DLL is loaded
+	DLLEnd
+	- a DLL is unloaded
+	EXECStart
+	- proram executions is beginning
+	EXECEnd
+	- proram execution is stopped
+	Sourceinfo
+	- the current location being examined has debugging information
+	Assemblyinfo
+	- the current location being examined has no debugging information
+	Modulechange
+	- the current location being examined has changed modules
+
+Example:
+	hook sourceinfo {display locals; display source}
+
+	- causes the locals and source window to come to the front whenever
+	a region with symbolic debugging information is entered.
+
+==============================================================================
+
+IF - 
+    IF <expr> <command>
+    [ ELSEIF <expr> <command> [ ELSEIF <expr> <command> [...]]]
+    [ELSE <command>]
+    - see old manual
+
+==============================================================================
+
+INvoke
+    INvoke <file> [<string> [<string> [...]]]
+    - see old manual
+
+==============================================================================
+
+Log (or >)
+    Log
+    Log <file>
+    Log > <file>
+    Log /Append <file>
+    Log /Start <file>
+    - see old manual
+
+==============================================================================
+
+NEW
+    NEW [<args>]
+    NEW /Program [[:<symfile>] <progfile> [<args>]]
+    NEW /Restart [<args>]
+    NEW /STDIn <file>
+    NEW /STDOut <file>
+    NEW /SYmbol <file> [seg [,seg [...]]
+    - see old manual
+
+    <symfile> is
+    	a <file> containing the symbolic information
+
+    <progfile> is
+    	the executable <file>
+
+    <args> is
+        the arguments to be passed to the program
+
+==============================================================================
+
+PAint
+    PAint [Status|<wndname>] <wndattr> <color> ON <color>
+    - set window colours
+
+    PAint DIalog <dlgattr> <color> ON <color>
+    - set dialog colours (non-GUI only)
+
+    <wndattr> is
+	MEnu Plain
+	- menu text (non-GUI only)
+	MEnu STandout
+	- menu accelerator key (non-GUI only)
+	MEnu Disabled
+	- grayed menu item (non-GUI only)
+	MEnu Active
+	- menu item under the cursor (non-GUI only)
+	MEnu Active STandout
+	- menu accelerator key under the cursor (non-GUI only)
+	MEnu Frame
+	- frame of the menu (non-GUI only)
+	MEnu Disabled Active
+	- grayed menu item under the cursor (non-GUI only)
+	TItle Disabled
+	- ???
+	Frame Active
+	- the frame of the active window (non-GUI only)
+	Frame Disabled
+	- the frame an inactive window (non-GUI only)
+	ICon
+	- an icon
+	Plain
+	- normal text within a window
+	Active
+	- window text under the cursor
+	SElected
+	- window text being selected
+	STandout
+	- window text the debugger wishes to highlight
+	Active STandout
+	- window text the debugger wishes to highlight under the cursor
+	BUtton
+	- the gadgets on the left side of a window (non-GUI only)
+    
+    <dlgattr> is
+	Plain
+	- normal text
+	Frame
+	- the dialog frame
+	SHadow
+	- the shadow of a button
+	BUtton Plain
+	- normal button text
+	BUtton STandout
+	- button accelerator key character
+	BUtton Active
+	- a button which has focus
+	BUtton Active STandout
+	- button accelerator key character of a button with focus
+
+    <color> is
+	BLAck
+	BLUe
+	GREEn
+	Cyan
+	Red
+	MAgenta
+	BROwn
+	White
+	GREY
+	GRAy
+	BRIght BLUe
+	BRIght GREEn
+	BRIght Cyan
+	BRIght Red
+	BRIght MAgenta
+	Yellow
+	BRIght BROwn
+	BRIght White
+
+Examples:
+
+	paint all plain black on white
+	- paints plain text black on white in all windows.
+
+	paint dialog button standout bright green on yellow
+
+
+
+==============================================================================
+
+FOnt
+    FOnt <wndname> <fontinfo>
+    - sets the font for <wndname>
+
+    <fontinfo> is
+    	Operating system specific data. Format not described.
+
+==============================================================================
+
+Print (or ?)
+    Print
+    - prompt for an expression and then print it to the log window
+
+    Print /Window [<expr> [,<expr> [...]]]
+    - open up a watch window containing the listed expressions
+
+    Print [/Program] <printlist>
+    - print a list of expressions to the program's screen
+
+    <printlist> is
+        [<format>] [<expr> [,<expr> [...]]]
+
+    <format> is
+        a printf like format <string>. - see old manual
+
+Examples:
+
+	? i
+	- prints the value of 'i'.
+	print {decimal=%d hex=%x} 10,10
+	- will print "decimal=10 hex=a"
+
+==============================================================================
+
+Quit
+    Quit
+    - leave the debugger
+
+==============================================================================
+
+Register
+    Register <intexpr>
+    if intexpr is negative
+	- equivalent to usign the menu item Undo/Undo -<intexpr> times
+    if intexpr is positive
+	- equivalent to usign the menu item Undo/Redo <intexpr> times
+
+==============================================================================
+
+Undo
+    Undo <intexpr>
+    if intexpr is positive
+	- equivalent to usign the menu item Undo/Undo <intexpr> times
+    if intexpr is negative
+	- equivalent to usign the menu item Undo/Redo -<intexpr> times
+
+==============================================================================
+
+RECord <expr> <command>
+    add <command> to the replay window.  Internal use only.
+
+==============================================================================
+
+SKip <address>
+    set CS:EIP to <address>
+
+==============================================================================
+
+STackpos <intexpr>
+    Equivalent to using Undo/Unwind -<intexpr> times.
+
+==============================================================================
+
+REMark
+    REMark <string>
+    - a comment
+
+==============================================================================
+
+Set - These commands used internally by the debugger to save and restore
+      configuration. Only their syntax is documented.
+
+    Set AUtosave [ON|OFf]
+    Set ASsembly [Lower|Upper] [Outside|Inside] [Source|NOSource] [Hexadecimal|Decimal]
+    Set Variable [Entire|Partial] [CODe|NOCODe] [INherit|NOINherit] [COMpiler|NOCOMpiler] [PRIvate|NOPRIvate] [PROtected|NOPROTected] [Members|NOMembers]
+    Set FUnctions [Typed|All]
+    Set GLobals [Typed|All]
+    Set REGister [Hexadecimal|Decimal] [Extended|Normal]
+    Set Fpu [Hexadecimal|Decimal]
+    Set Bell [ON|OFf]
+    Set Call [/Far|/Interrupt|/Near] [ ( [<location> [,<location> [...]]] ) ]
+    	(see call command for <location>)
+    Set Dclick <expr>
+    Set Implicit [ON|OFf]
+    Set INput <wndname>
+    Set Radix <expr>
+    Set RECursion [ON|OFf]
+    Set SEarch [CASEIgnore|CASEREspect] [Rx|NORx] <string>
+    Set SOurce [/Add] [<path> [<path>] [...]]]
+    Set SYmbol [/Add|/Ignore|/Respect] [<lookspec> [<lookspec> [...]]]
+        lookspec is
+	    [/Ignore|/Respect] <string>
+    Set Tab <intexpr>
+    Set Level [Assembly|Mixed|Source]
+    Set LAnguage [CPP|C|FORTRAN]
+    Set SUpportroutine <string>
+    Set MAcro <wndname> <key> <command>
+
+        <key> is
+	- see keys.doc
+
+==============================================================================
+
+SHow
+    These commands are used internally by the debugger to save and restore
+    configuration. Only their syntax is documented.
+
+    SHow Paint
+    SHow Display
+    SHow Font
+    SHow Set
+    SHow Set AUtosave
+    SHow Set ASsembly
+    SHow Set Variable
+    SHow Set FUnctions
+    SHow Set GLobals
+    SHow Set REGister
+    SHow Set Fpu
+    SHow Set Bell
+    SHow Set Call
+    SHow Set Dclick
+    SHow Set Implicit
+    SHow Set INput
+    SHow Set Radix
+    SHow Set RECursion
+    SHow Set SEarch
+    SHow Set SOurce
+    SHow Set SYmbol
+    SHow Set Tab
+    SHow Set Level
+    SHow Set LAnguage
+    SHow Set MAcro
+    SHow Set SUpportroutine
+    SHow Flip
+    SHow Hook
+
+==============================================================================
+
+SYstem
+    SYstem [/Remote|/Local] <string>
+    - spawns an operating system shell to execute <string>
+    - /Remote
+    - - the shell is started on the program side of a remote debug link
+    - /Local (default)
+    - - the shell is started on the debugger side of a remote debug link
+
+==============================================================================
+
+THread (or ~)
+    THread [/Show|/Freeze|/Thaw|/Change] [<threadid>]
+    - see old manual
+
+    <threadid> is
+        *
+	intexpr
+
+==============================================================================
+
+Trace
+    - see old manual
+    Trace [/Assembly|/Mixed|/Source] [/Into|/Next|/Over]
+
+==============================================================================
+
+View
+    View
+    - show the current module in a new source window
+    View [/Binary] <file>
+    - show <file> in a window.
+    - /Binary
+    - - show the file as binary.
+
+==============================================================================
+
+While
+    While <expr> <command>
+    - see old manual
+
+==============================================================================
+
+WIndow
+    - operates on the current window. Useful for defining hotkeys.
+
+    WIndow CLose
+    - close the window
+    WIndow CURSORStart
+    - move cursor to start of line
+    WIndow CURSOREnd
+    - move cursor to end of line
+    WIndow CURSORDown
+    - move cursor down one line
+    WIndow CURSORLeft
+    - move cursor left
+    WIndow CURSORRight
+    - move cursor right
+    WIndow CURSORUp
+    - move up one line
+    WIndow Dump
+    - dump window to file
+    WIndow Log
+    - dump window to log window
+    WIndow FINDNext
+    - find the next occurrence of a the current search string
+    WIndow FINDPrev
+    - find the previous occurrence of the current search string
+    WIndow Next
+    - make another window the current window
+    WIndow PAGEDown
+    - move window down one page
+    WIndow PAGEUp
+    - move window up one page
+    WIndow POpup
+    - show the window's floating popup menu
+    WIndow SEarch
+    - search for a given string
+    WIndow SCROLLDown
+    - scroll the window down one line
+    WIndow SCROLLUp
+    - scroll the window up one line
+    WIndow SCROLLTop
+    - scroll the window to the very top
+    WIndow SCROLLBottom
+    - scroll the window to the very bottom
+    WIndow TABLeft
+    - move to the previous tabstop
+    WIndow TABRight
+    - move to the next tabstop
+    WIndow MAXimize
+    - maximize the window
+    WIndow MINimize
+    - minimize the window
+    WIndow REStore
+    - restore the window
+    WIndow TIle
+    - tile all windows
+    WIndow CAscade
+    - cascade all windows
+    WIndow Move
+    - not yet implemented
+    WIndow SIze
+    - NYI yet implemented
+    WIndow PRevious
+    - move to the previous window
+
+==============================================================================
+
+COnfigfile
+    COnfigfile
+    - Used by the debugger to save and restore configuration. The file
+    containing 'configfile' will be overwritted when the debugger saves
+    configuration information.

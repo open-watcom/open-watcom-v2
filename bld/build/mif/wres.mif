@@ -1,0 +1,57 @@
+# WRES library finder.  You must define:
+# ~~~~~~~~~~~~~~~~~~~
+# 1. host_OS and host_CPU
+# 2. If 32-bit stack-based, define STACK
+# 3. If 16-bit, define memory_model_i86 = l, m, c, or s (l is default)
+# 4. For large memory model pegged version, define PEGGED
+# 5. For large memory model windows version, define WINDOWS
+#
+
+!ifdef MODEL
+#
+# For backwards compatability, delete after a year or two.
+#
+memory_model_i86 = $(MODEL)
+!endif
+
+
+wres_nt_axp = WRESAXP.LIB
+wres_nt_386 = WRESF.LIB
+!ifeq memory_model_386 s
+wres_qnx_386 = WRESSQNX.LIB
+!else
+wres_qnx_386 = WRESF.LIB
+!endif
+
+!ifndef wres_lib_dir
+wres_lib_dir = $(watcom_dir)\lib
+!endif
+!ifdef PEGGED
+wres_l = WRESLP.LIB
+!else ifdef WINDOWS
+wres_l = WRESLW.LIB
+!else
+wres_l = WRESL.LIB
+!endif
+wres_m = WRESM.LIB
+wres_c = WRESC.LIB
+wres_s = WRESS.LIB
+wres_i86 = $(wres_$(memory_model_i86))
+!ifdef STACK
+wres_386 = WRESFS.LIB
+!else
+wres_386 = WRESF.LIB
+!endif
+
+!ifdef $(proj_name)_rtdll
+!ifeq $(proj_name)_rtdll 1
+wres_nt_axp = WRESAXPD.LIB
+wres_nt_386 = WRESFDLL.LIB
+!endif
+!endif
+
+!ifdef wres_$(host_OS)_$(host_CPU)
+wres_lib = $(wres_lib_dir)\$(wres_$(host_OS)_$(host_CPU))
+!else
+wres_lib = $(wres_lib_dir)\$(wres_$(host_CPU))
+!endif

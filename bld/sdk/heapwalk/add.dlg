@@ -1,0 +1,12 @@
+
+ADD_DLG DIALOG -10, -10, 96, 52
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Add"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Items Selected:", ADD_DONT_CARE, 5, 5, 60, 8
+    LTEXT           "Total Bytes:", ADD_DONT_CARE, 5, 18, 52, 8
+    LTEXT           "", ADD_CNT, 63, 5, 20, 8
+    LTEXT           "", ADD_TOTAL, 62, 18, 32, 8
+    DEFPUSHBUTTON      "OK", ADD_OK, 32, 35, 31, 14
+END

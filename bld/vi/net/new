@@ -1,0 +1,240 @@
+Nov 18 1992
+----------
+* make sure to recompile all scripts
+- Windows version has toolbar support
+- added mouse support to QNX version
+- improved QNX version behavior on shared file systems
+- changed behavior of selection to more closely emulate other editors.
+  Only shifted cursor keys will allow selection.  CTRL_R will now re-select
+  a previously selected region.
+- there is an NT console mode and NT GUI version in BINNT (vi & viw)
+- quotes are allowed around stuff in an assign expression
+- bugs:
+    - various and sundry Windows bug fixes
+    - QNX version was locking the keyboard
+    - mapped sequences with a \x (do not open the command window) would
+      cause protect mode editors to die
+
+Oct 19 1992
+-----------
+* make sure to recompile all scripts
+- added "EXITALL" command, which will quit any unmodified files, and
+  prompt to save any modified ones.
+- added 't' option to assign statement to allow use of strftime strings,
+  for example:
+	assign %a = /%A %B %d, %Y/t
+  will put Tuesday October 06, 1992 in the variable %a
+- editor is smarter about creating undos for line updates - if you do not
+  change a line when inserting text, then no undo for that line is generated.
+- bugs:
+    - modified variable %M not initialized when starting up a file
+    - OS/2 2.0 version required larger stacks for latest 9.0 compiler
+    - cursoring to a line and not modifying it and then using the mouse
+      or menus would cause death in protected mode.
+
+Sept 28 1992
+-----------
+- the setcolor command now takes colors in the range 0-255 (instead of
+  0-63) - to maintain your same color mappings, just multiply them all
+  by 4.
+- "set 2" has been eliminated - all settings appear in the selection list
+  when you specify set without a parameter
+- added StatusString - you can use this to control what appears in your
+  status window.  Syntax is as follows:
+
+  	$L - line number
+	$C - column number
+	$n - go to next line in status window
+	$$ - replaced with a '$'
+	$c - replaced with a comma ','
+
+	a number may precede the L or the C, to indicate the amount of
+	space that the string should occupy; for example,
+	$6L  will cause the line number to always occupy at least 6 spaces.
+- added -c (add classes) to CTAGS
+- bugs:
+    - deleting lines which caused a checkout would cause the undo
+      record to be lost, and a possible explosion in the protected mode
+      editors.
+    - setting undo on in configuration would cause death in protected
+      mode.
+
+Sept 4 1992
+-----------
+- added expand command to expand tabs to spaces
+- compress command will add all possible tabs.  Single spaces will not
+  be replaced with tabs, and tabs will not be placed inside quoted
+  strings.
+- in C mode, single spaces will not be replaced with tabs, and tabs will
+  not be placed inside quoted strings when you press CTRL_T or TAB.
+* make sure to recompile all scripts
+- added alternate memorize mode ('=').  By doing a 'm=', it will memorize
+  keystrokes, just like 'm.'.  You re-execute the sequence by pressing '='.
+  This alternate memorize mode is kept until you change it.  It may contain
+  '.' commands as well.
+- added push, pop command line commands. push saves current file and position,
+  pop restores the previous file position.  F11 will also do a push,
+  and F12 will do a pop.  The tag command does an implicit push.
+  The maximum number of positions that can be pushed is set with the
+  maxpush setting
+- CTAGS understands limited C++ (functions inside structures and classes
+  are handled)
+- floatmenu has been made a command line command and not a script only command
+- if you edit a file with no name, then the name becomes "no_name" instead
+  of an empty string
+- initialization time has been sped up by about 30%
+- bugs:
+    - -q caused a protection fault in vip (and was a disaster waiting to
+      happen in the 16-bit version)
+    - -r with no files to recover caused no files to be edited, and horrible
+      death and dismemberment.
+    - wq command wouldn't quit the file
+
+August 27 1992
+--------------
+- EDBIND only stores file name and extensions of files in edbind.dat
+- enhanced CTAGS to accept an option file ('@file')
+- protect mode version of CTAGS (CTAGSP)
+- assign statements now accept an 'l' at the end, which will treat the
+  expression as a line number and give you the line data, e.g.:
+  	assign %a = /5/l  will assign the data from line 5 to %a
+  	assign %a = /5+3*2/l  will assign the data from line 11 to %a
+- assign statements '@' operation now allows you to access all settings,
+  not just boolean ones
+- expressions now allow you to access all settings when you use '.', not
+  just boolean ones; e.g.:
+      if .historyfile == ""
+	   set historyfile = c:\foobar
+      endif
+- color registers (DOS editors) are only saved/restored as needed - this
+  gets rid of the annoying flicker when using -q, and also speeds up
+  initialization/shutdown.
+- bugs
+    - funky things happened if you compiled a script that was loaded
+    - funky things happened if you used execute or keyadd and you had
+      not done an un-compiled map command beforehand.
+    - stdio mode ('--') lost bits of every 8k of a file
+    - fixed CTAGS to recognize some more obscure declarations
+    - fixed a very nasty null pointer dereference introduced by multiple
+      marks on a line
+    - a substitute command that triggered the modified hook did not work
+
+August 24 1992
+--------------
+* make sure to recompile all scripts
+- added a CTAGS program (in BINB) for creating of tags files.  It is hot;
+  far hotter than the MKS ctags program.
+- no limit on number of marks per line
+- added "set tagfilename", to allow override of the default "tags" tag
+  file name
+- bugs:
+    - ALT_TAB in command line window didn't scroll through command history
+      correctly
+    - pageup/pagedown was screwing up internal column
+    - file completion failing would cause your magic string to get reset
+    - when you would fgrep for a string, it wouldnt find strings that were
+      preceded by some letters already in the string; e.g., fgreping for "foo"
+      wouldn't find "ffoo" or "fofoo"
+    - mouse cursor popped up when it shouldn't have sometimes
+    - fixed problem with autosave feature and more than one editor running
+      at the same time
+
+August 14 1992
+--------------
+- key mappings now support \<KEY> instead of having to do a CTRL_V char
+  and ending up with gross unprintable goofy characters in your script.
+  As well, you can use \h instead of  in key mappings to stop
+  a command line from adding the string to the history.
+- the execute and keyadd commands also supports the above syntax
+- fixed nosearchwrap related bug
+- added mapbase command to allow you to map keys in terms of base key
+  functionality (this way, keystrokes in a mapped key sequence will not
+  invoke their mapping as well)
+- added set gadgetstring to allow you to control the window border characters
+
+August 10 1992
+--------------
+* make sure to recompile all scripts
+* The assign statement syntax has changed to be more consistant.  You now say
+    assign %a = STUFF
+  instead of
+    assign STUFF to %a
+  A quick regular expression to change this around for you is:
+  %s/assign *(.*) *to *%([^ ]*)/assign %\2 = \1
+- oldcasetoggle has been changed to togglecaselikevi
+- added scroll bars
+- enchanced insert mode functionality:
+    - menu hot keys work
+    - CTRL_INS: paste above
+    - SHIFT_INS: paste below
+    - CTRL_DEL: delete line
+    - SHIFT_DEL: delete region
+    - SHIFT_<up|down|left|right>: mark region
+    - CTRL_R: start region
+    - ALT_PAGEDOWN - go to end of file
+    - ALT_PAGEUP - go to start of file
+
+August 4 1992
+-------------
+* make sure to recompile all scripts
+* make sure to change endcolumn to %(SW) and pagelen to %(SH) in all scripts
+* the windows CTRLWINDOW and CTRLBARWINDOW have been changed to
+  MENUWINDOW and MENUBARWINDOW.
+* switched the meaning of MAGIC to be consistant with VI; i.e., if
+  MAGIC is set, then all magic regexp characters are treated as magic,
+  if NOMAGIC is set, then all magic regexp characters set in MAGICSTR
+  are NOT treated as magic.
+- added color constants to expression evaluation
+- set commands and windowing commands now evaluate arbitrary expressions.
+  e.g. set exitattr = black*16+white
+- endcolumn and pagelen constants have been eliminated, in favour of
+  the global variables %(SW) (screen width) and %(SH) screen height
+- OS/2 2.0 version (vip.exe in BINP)
+- '-','+' now take a repeat count
+- autosave no longer builds directory hierarchy
+- made editor smarter with "readentirefile" turned off so that it would
+  minimize the amount of file loading done
+- fixed bugs related to mouse in selection lists
+- fixed bug with entering long command lines
+- added overstrikecursortype (like insertcursortype and commandcursortype)
+- insert toggles between insert mode and overstrike mode
+- added ALT_PAGEUP, ALT_PAGEDOWN (got to top of file, end of file)
+- fixed bug redrawing borders on VIO systems (OS/2,QNX,NT)
+- double clicking mouse has the same effect as right-clicking mouse
+- added Word and WordAlt.  Word is used to define what range of characters the
+  editor thinks are in a word, and WordAlt is used to define what range of
+  characters the editor thinks are in a word when you double-click the mouse.
+- added -n switch, which sets "noreadentirefile".
+- added -- switch, which allows vi edit stdin (and writes result to stdout)
+
+July 15 1992
+------------
+* make sure to recompile all scripts, and remove obsolete keywords
+- maxinputscripts and maxscripts keywords are obsolete
+- bind/unbind is obsolete
+- recursive :map commands work as follows:
+	:map a a
+	will execute the 'a' command.
+	:map a 0a
+	will go to column 0 and execute the 'a' command
+- bind.dat has been removed, and replaced with keys.dat
+  (edbind.dat has to be updated to reflect this)
+- added \|<n> in regexp substitution (substitute spaces up to column <n>)
+	e.g.:  %s/([^ ]*) *([^ ]*)/\1\|30\2  will
+	put the second group of characters into column 30.
+- shifted cursor keys can be used to select a region
+- shift delete cuts the selected region
+- shift ins pastes
+- '_' (shift '-') acts the same as if the right mouse button was clicked
+  on a region
+- ^D, ^U have been implemented
+- menus allow wrapping when cursoring through them
+- scripts generate an error file when you are compiling them.
+- added the "+<n>" startup option (position to line <n> after starting)
+- added autosaveinterval - save files to backup directory every specified
+  interval. this happens during "idle" time, and with smartdrive is not
+  noticable. if you turn autosave on (specify an autosaveinterval > 0),
+  you are going to get an "_vi_" directory in you vi tmpdir.  under this
+  directory, files will be saved in a directory identical to the file
+  that they came out of.
+- short forms for all boolean variables (2 letters)

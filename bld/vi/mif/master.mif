@@ -1,0 +1,110 @@
+proj_name = vi
+
+
+msgcheckviw = 1
+msgcheckviwp = 1
+msgcheckvintw = 1
+msgcheckviaxpw = 1
+
+.EXTENSIONS:
+.EXTENSIONS: .exe
+.EXTENSIONS: .obj .ybj .ubj
+.EXTENSIONS: .asm .cpp .c .h
+.EXTENSIONS: .ch .dh
+.EXTENSIONS: .ctl .dyn
+.EXTENSIONS: .vi
+.EXTENSIONS: .mif
+
+.mif : $(mif_path);$(vi_dir)\mif
+!include name.mif
+
+PROJECT : $(name) .symbolic
+
+!include cproj.mif
+!include rcsdll.mif
+!include include.mif
+!include objects.mif
+!include compile.mif
+!include special.mif
+!include link.mif
+
+.h : $(vi_dir)\h
+.ctl : $(vi_dir)\ctl
+.dyn : $(vi_dir)\ctl
+
+.BEFORE:
+        set include=$(inc_path)
+
+!ifdef bind
+.vi : $(vi_dir)\dat
+!include $(vi_dir)\dat\videps.mif
+!else
+videps =
+!endif
+
+!ifdef vroomed
+start_flags += begin section
+more_flags = autosection
+final_flags = end
+!endif
+
+!ifdef sys_windowed
+bindextra = -d$(vi_dir)\dat\winbind.dat
+!endif
+
+$(name) : $(special) $(objs) $(objsroot) $(objinit) $(other) $(videps) master.mif $(mifdep)
+        $(cc) $(cflags) version.c -fo=.ybj
+        -$(linker) $(lflags) name $^& file version.ybj file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
+!ifeq ED vi386
+        $(tnt_dir)\bin\rebind $(tnt_dir)\bin\rtk\tntb.exe $(ED).exp -exe $(name)
+!endif
+!ifeq ED viwp
+        wbind $(name) -s $(lang_root)\binw\win386.ext -R viwp.res
+        @erase $(ED).rex
+!endif
+!ifeq ED viw
+        $(rc) -k -zk0 -bt=windows viw.res
+!endif
+!ifeq ED vintw
+        $(rc) -bt=NT -zk0 vintw.res
+!endif
+!ifeq ED viaxpw
+        $(rc) -bt=NT -zk0 viaxpw.res
+!endif
+!ifdef bind
+!ifdef sys_windowed
+        # don't bind - it screws up everything - BBB
+!else
+        set edpath=$(vi_dir)\dat
+    # run the right version of edbind depending on host platform
+!ifdef __OS2__
+        $(vi_dir)\bind\objos2\edbind $(bindextra) -q $(name)
+!else
+        $(vi_dir)\bind\objnt\edbind $(bindextra) -q $(name)
+!endif
+!endif
+!endif
+
+
+!ifeq ED viw
+tags : ..\win\tags .SYMBOLIC
+
+..\win\tags: vi.tag
+    ctags @vi.tag -f..\win\tags
+!endif
+
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj del *.?bj
+        @if exist *.lnk del *.lnk
+        @if exist *.exe del *.exe
+        @if exist *.dll del *.dll
+        @if exist *.res del *.res
+        @if exist *.clb del *.clb
+        @if exist *.err del *.err
+        @if exist *.map del *.map
+        @if exist *.sym del *.sym
+        @if exist *.dh del *.dh
+        @if exist *.ch del *.ch
+        @if exist *.h del *.h
+        @if exist *.msg del *.msg

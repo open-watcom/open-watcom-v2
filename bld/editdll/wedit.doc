@@ -1,0 +1,75 @@
+Summary
+-------
+
+WEDIT.DLL is a small DLL containing functions which control an editor from 
+within another application.  Currently two Windows implementations exist - 
+WEDITVIW.DLL for Watcom's VIW, and WEDITCW.DLL for Premia's Codewright.  
+Both use DDE to talk to the editors. There is also an implementation which 
+uses the EPM editor under OS/2.
+
+Functions
+---------
+
+All functions return FALSE for success and TRUE for failure.  
+
+BOOL FAR PASCAL EDITConnect()
+    
+    Create a DDE connection to the editor.  If a DDE-enabled copy is
+    not already running, WinExec one.  The app using the DLL is free
+    to call this whenever it feels like it. 
+
+BOOL FAR PASCAL EDITFile( LPSTR szFilename, LPSTR szHelpFile )
+
+    Load a file into the editor.  Many editors (including VIW and CW)
+    will simply move to the file's window if it is already loaded.
+    szHelpFile is either NULL or the name of a help file which is
+    associated with the text file being loaded. Some editors are able
+    to change the default help to look at this file instead of their
+    normal editor-specific help. For example, when double clicking on
+    a C++ error message, this string will specify the C++ help file
+    name.
+    
+BOOL FAR PASCAL EDITLocate( long lRow, int nCol, int nLen )
+
+    Locate the caret at the given row and column in the current file.
+    if nLen is > 0, also highlight nLen characters after this position. 
+
+BOOL FAR PASCAL EDITLocateError( long lRow, int nCol, int nLen, int idResource, LPSTR szErrMsg )
+
+    Locate the caret at the given row and column in the current file.
+    if nLen is > 0, also highlight nLen characters after this position. 
+    idResource identifies the help text for the error message. Under OS/2, 
+    it is a resource id and under Windows it is an integer which can be 
+    used to specify the help context within WinHelp(). szErrMsg points 
+    to the text for the error message which prompted this particular
+    action.
+    
+
+BOOL FAR PASCAL EDITShowWindow( int nCmdShow )
+
+    Something akin to Windows' ShowWindow.  This restricted version 
+    takes only SW_RESTORE (or SW_SHOWNORMAL) and SW_MINIMIZE.
+    
+BOOL FAR PASCAL EDITDisconnect( void )
+
+    Kill our DDE connection to the editor.  If we were forced to 
+    WinExec one in the first place, also try to shut it down.  
+    If the editor decides to give the user a choice on whether
+    to stay alive, the user may choose this and the editor will
+    not die (we can't know this - this function is always successful)
+    
+BOOL FAR PASCAL EDITSaveFiles( void ) ( only for viw so far )
+
+    Prompt the user whether or not to save for all modified files in the editor.
+    
+Using EditDLL
+-------------
+
+-   #include "wedit.h" in your code.  
+    
+-   link with the import library wedit.lib
+
+-   have the DLL wedit.dll available to Windows.  The .lnk file for 
+    EDITCW and EDITVIW create weditcw.dll and weditviw.dll, but internally
+    the DLL thinks it is called wedit.dll.  You must therefore copy
+    one of these files to wedit.dll to use it.

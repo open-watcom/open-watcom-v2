@@ -1,0 +1,215 @@
+				Dialog Parser
+				-------------
+Note:
+=====
+
+   Originally I intended the parser to generate code which actually creates
+   the controls under WClass, but it was too much work at the time so I
+   just suck out the WRect's.  This document is a bit inconsistent in
+   that I haven't fully fixed it up yet.
+	
+Purpose:
+========
+
+    The Dialog Parser (Parser) is a simple utility to convert windows .DLG 
+    files into WRect's.  It is fairly limited, but it you treat it
+    nicely it will help move hard-coded constants out of your code, allowing
+    you to design windows and dialogs in the dialog editor.  Hopefully, this
+    will make it easier to get things looking "just right," without fiddling
+    with a bunch of hairy constants in your source files.
+    
+    Although it is designed for dialog boxes in particular, the parser 
+    operates equally well in defining windows with controls on them.
+
+
+Method:
+=======
+
+    The concept behind the parser is to link dialogs to classes, and
+    the controls in the dialog to WRect member variables in the class.
+    Each dialog is matched to a single binding file, outputting one 
+    generated class.
+    
+    The parser generates a header file and a .cpp file that construct
+    the dialog with the controls in the right position, and assigned
+    to the specified member variables.  Control logic for the dialog
+    is implemented by having a logic-class in your program that 
+    inherits from the generated class.
+    
+    The parser reads in a binding file (*.bnd) that contains the
+    information to make a class out of the dialog, and it reads
+    in a .dlg file to get the positions and styles of the controls.
+    
+    Dialogs are matched to classes by the dialog id matching the class
+    name in the binding file.  Controls are matched by having the 
+    control id specified for each member variable in the binding file.
+    
+Example -- A Locate Dialog
+==========================
+
+Input:
+======
+
+  ..\bnd\locate.bnd
+  -----------------
+    #include <wdialog.h>
+    
+    class Locate : public WDialog 
+    {
+	_findText(	    IDD_FIND_TEXT,	WName,	    (@,@,@,@) );
+	_findEdit(	    IDD_FIND_EDIT,	WEditbox,   (@,@,#,@) );
+	_ignoreCase(	    IDD_CASE,		WCheckBox,  (@,@,@,@) );
+	_useRegexp(	    IDD_REGEXP,		WCheckBox,  (@,@,@,@) ); 
+    };
+    
+  ..\res\locate.dlg
+  -----------------
+    DLGINCLUDE RCDATA DISCARDABLE
+    BEGIN
+	"LOCATE.H\0"
+    END
+    
+    DLG_LOCATE DIALOG 30, 47, 180, 122
+    STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+    CAPTION "Locate"
+    FONT 8, "MS Sans Serif"
+    BEGIN
+	CONTROL         "", IDD_FIND_EDIT, "Edit", ES_AUTOHSCROLL | WS_BORDER | 
+			WS_TABSTOP, 27, 7, 148, 12
+	CONTROL         "&Find:", IDD_FIND_TEXT, "Static", WS_GROUP, 4, 10, 18, 
+			8
+	CONTROL         "Ignore Case", IDD_CASE, "Button", BS_AUTOCHECKBOX | 
+			WS_TABSTOP, 4, 26, 52, 10
+	CONTROL         "Regular Expressions", IDD_REGEXP, "Button", 
+			BS_AUTOCHECKBOX | WS_TABSTOP, 4, 36, 79, 10
+    END
+    
+Output:
+=======
+    ..\gen\locate.h
+    ---------------
+    
+    class Locate : public WDialog 
+    {
+    public:
+			Locate();
+			~Locate();
+    protected:
+	WName *		_findText;
+	WEditBox *	_findEdit;
+	WCheckBox *	_ignoreCase;
+	WCheckBox *	_useRegexp; 
+    };
+    
+    ..\gen\locate.cpp
+    -----------------
+    
+    #include "locate.h"
+    
+    Locate::Locate()
+    //--------------
+    {
+	_findText = new WName( this, WRect(4,10,18,8), 
+			       "&Find:" );
+	_findEdit = new WEditBox( this, WRect(27,7,-32,12), 
+				  "" );
+	_ignoreCase = new WCheckBox( this, WRect(4,26,52,10), 
+				     "Ignore Case" );
+	_useRegexp = new WCheckBox( this, WRect(4,36,79,10), 
+				    "Regular Expressions" );
+    }
+    
+    Locate::~Locate()
+    //---------------
+    {
+	delete _findText;
+	delete _findEdit;
+	delete _ignoreCase;
+	delete _useRegexp;
+    }
+    
+Future Enhancements:
+====================
+
+    Right now, everything is pretty simplistic and there are some
+    features that it would be nice to add:
+    
+    Style Recognition
+    -----------------
+	As of yet, there's no gear for converting from Window's styles to
+	WClass styles, so I'm relying on the default for each control.
+	The default probably is not good enough, especially for things like
+	WText, where centered etc. can be selected.	
+	
+	This would not be too hard to convert -- the dialog processing builds
+	up a style flag with all of the window's styles specified in the
+	dialog editor.  It would only be a matter of converting these to
+	the appropriate WStyles.
+	
+    Font Support
+    ------------
+	Right now the font information in the .dlg file is being ignored,
+	since there is no WClass gear to set the font.
+	
+    Code in the Bind File
+    ---------------------
+	It might be nice to put some simple logic into the bind file,
+	for instance by having: 
+	
+	    _foo( ID_FOO, WName, (@,@,@,@) ) { /* put some code here */ }
+	    
+	Then the parser would paste this code into the constructor right
+	after _foo is constructed.  Also, it might be nice to specify
+	some member functions of the base class to handle things like
+	radio buttons and other simple UI-type logic.  It's really
+	just a question of where you want to locate your UI-logic --
+	all in the derived, logic class, or spread between the two.
+	
+	The reason it might be nice is so that some of the lower-level
+	grunt-work could be pushed "out of the way" into the base class.
+	Of course this would have to be weighed against separating code.
+	
+    Hints
+    -----
+	It is legal to have dialogs in the .dlg file with no matching
+	binding class -- this lets you design several dialogs in one
+	.res / .dlg group, but only generate one dialog class at a time.
+	
+	It's probably a good idea to only generate one dialog at a time so 
+	that you don't have to recompile all your dialogs when you only change
+	one.
+	
+	In the Browser, I intend to use the following directory structure:
+	    browser\cpp	    - human generated source 
+	    browser\h	    -   "       "       "
+	    browser\res	    - dialog editor created .res, .dlg and .h files
+	    browser\bnd	    - class binding files
+	    browser\gen	    - parser generated .h and .cpp files
+
+Implementation:
+===============
+
+    The dialog parser is implemented using two yacc-generated parsers.
+    One parses the .dlg files, the other the .bnd files.  Each file is
+    parsed, and the recognized dialogs and bindings are added to a global 
+    list.
+    
+    After all dialogs and bindings have been parsed, a bind step is executed
+    to match everything up and print it out to the appropriate .h(pp) and .cpp
+    files.
+    
+    It is legal to have dialogs with no matching binding class, but each 
+    binding class must have a dialog.  This allows the user to design 
+    several dialogs in one .res / .dlg group, but only generate a single
+    dialog at a time.  
+    
+    Directory Structure
+    -------------------
+	H	- header files
+	CPP	- source files
+	Y	- yacc grammar files, and check.out
+	O	- object files and executable
+	GEN	- generated code files
+	RES - resource files, .DLG files
+	BND - binding files
+    

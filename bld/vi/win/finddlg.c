@@ -1,0 +1,150 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include "winvi.h"
+#include <string.h>
+#include "finddlg.h"
+
+static fancy_find       findData = {TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,0,NULL,0,NULL,0};
+
+/*
+ * FindDlgProc - callback routine for find dialog
+ */
+BOOL WINEXP FindDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+{
+    int                 curr;
+    int                 i;
+    int                 cmd;
+    DWORD               index;
+    char                find[MAX_INPUT_LINE];
+    history_data        *h;
+    char                *ptr;
+
+    lparam = lparam;
+    switch( msg ) {
+    case WM_INITDIALOG:
+        CenterWindowInRoot( hwnd );
+        EditSubClass( hwnd, FIND_EDIT, &FindHist );
+        CheckDlgButton( hwnd, FIND_IGNORE_CASE, findData.case_ignore );
+        CheckDlgButton( hwnd, FIND_REGULAR_EXPRESSIONS, findData.use_regexp );
+        CheckDlgButton( hwnd, FIND_SEARCH_BACKWARDS, !findData.search_forward );
+        CheckDlgButton( hwnd, FIND_SEARCH_WRAP, findData.search_wrap );
+        SetDlgItemText( hwnd, FIND_EDIT, findData.find );
+        curr = FindHist.curr + FindHist.max - 1;
+        for( i=0;i<FindHist.max;i++ ) {
+            if( FindHist.data[ curr % FindHist.max ] != NULL ) {
+                SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_ADDSTRING, 0,
+                            (LONG) FindHist.data[ curr % FindHist.max ] );
+            }
+            curr--;
+            if( curr < 0 ) {
+                break;
+            }
+        }
+        return( TRUE );
+    case WM_CLOSE:
+        PostMessage( hwnd, WM_COMMAND, GET_WM_COMMAND_MPS( IDCANCEL, 0, 0 ) );
+        return( TRUE );
+    case WM_COMMAND:
+        switch( LOWORD( wparam ) ) {
+        case FIND_LISTBOX:
+            cmd = GET_WM_COMMAND_CMD( wparam, lparam );
+            if( cmd == LBN_SELCHANGE || cmd == LBN_DBLCLK ) {
+                index = SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_GETCURSEL,
+                                                        0, 0L );
+                if( index == LB_ERR ) {
+                    break;
+                }
+                SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_GETTEXT, index,
+                                        (LONG) find );
+                SetDlgItemText( hwnd, FIND_EDIT, find );
+                if( cmd == LBN_DBLCLK ) {
+                    PostMessage( hwnd, WM_COMMAND,
+                                 GET_WM_COMMAND_MPS( IDOK, 0, 0 ) );
+                }
+            }
+            break;
+        case IDCANCEL:
+            RemoveEditSubClass( hwnd, FIND_EDIT );
+            EndDialog( hwnd, 0 );
+            break;
+        case IDOK:
+            GetDlgItemText( hwnd, FIND_EDIT, findData.find, findData.findlen );
+            findData.case_ignore = IsDlgButtonChecked( hwnd, FIND_IGNORE_CASE );
+            findData.use_regexp = IsDlgButtonChecked( hwnd, FIND_REGULAR_EXPRESSIONS );
+            findData.search_forward = !IsDlgButtonChecked( hwnd, FIND_SEARCH_BACKWARDS );
+            findData.search_wrap = IsDlgButtonChecked( hwnd, FIND_SEARCH_WRAP );
+            h = &FindHist;
+            curr = h->curr + h->max - 1;
+            ptr = NULL;
+            if( curr >= 0 ) {
+                ptr = h->data[ curr % h->max ];
+            }
+            if( ptr == NULL || strcmp( ptr, findData.find ) ) {
+                AddString2( &(h->data[ h->curr % h->max ] ), findData.find );
+                h->curr += 1;
+            }
+            RemoveEditSubClass( hwnd, FIND_EDIT );
+            EndDialog( hwnd, 1 );
+            break;
+        default:
+            return( FALSE );
+        }
+        return( TRUE );
+    }
+    return( FALSE );
+
+} /* FindDlgProc */
+
+/*
+ * GetFindStringDialog - create dialog settings
+ */
+bool GetFindStringDialog( fancy_find *ff )
+{
+    DLGPROC     proc;
+    bool        rc;
+
+    findData.find = ff->find;
+    findData.findlen = ff->findlen;
+    proc = (DLGPROC) MakeProcInstance( (FARPROC) FindDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "FINDDLG", Root, proc );
+    FreeProcInstance( (FARPROC) proc );
+    SetWindowCursor();
+    if( rc ) {
+        ff->case_ignore = findData.case_ignore;
+        ff->use_regexp = findData.use_regexp;
+        ff->search_forward = findData.search_forward;
+        ff->search_wrap = findData.search_wrap;
+    }
+    return( rc );
+
+} /* GetFindStringDialog */

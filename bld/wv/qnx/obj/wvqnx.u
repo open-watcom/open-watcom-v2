@@ -1,0 +1,22 @@
+%C  {-options} [:symbol_file] [cmd_line]
+
+cmd_line is one of:
+    [//nid] pid
+    [//nid] executable {arguments}
+
+options are:
+    Console=n           put debugger screen on console number 'n'
+    Console=device      or put debugger screen on device 'device'
+    LInes=n             set debugger screen to 'n' lines
+    COlumns=n           set debugger screen to 'n' columns
+    DYnamic=n           set initial dynamic memory to 'n' bytes
+    TRap=file           use 'file' as the debugger's trap file
+    Invoke=file         invoke 'file' as initial debugger setup file
+    NOInvoke            don't invoke any debugger setup file
+    NOSymbols           ignore any symbolic information
+    NOMouse             ignore any mouse
+    NOFpu               ignore any floating point unit in debuggee
+    DIp=file            load specified Debug Information Processor
+    INITcmd=cmd         process 'cmd' at startup
+    REMotefiles         files are from the remote machine by default
+    XConfig=string      pass X Windows configuration option to xqsh

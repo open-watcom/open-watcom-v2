@@ -1,0 +1,3 @@
+#define SERVER_TYPE "Virtual DOS Machine"
+
+#include "winserv.rc"

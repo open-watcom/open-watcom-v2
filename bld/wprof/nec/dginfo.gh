@@ -1,0 +1,5 @@
+#define D32_NAME "DOS/4G Protected Mode Run-time"
+#define D32_SHORT_NAME "DOS/4G Run-time"
+#define D32_VERSION "1.97"
+#define D32_COPYRIGHT "Copyright (c) Rational Systems, Inc. 1990-1994"
+#define D32_TIMESTAMP "May 19 1994 14:33:17"

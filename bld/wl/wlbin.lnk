@@ -1,0 +1,15 @@
+# example linker initialization file.
+# remember, don't put carets (^) in these!
+system begin 286
+    libpath %WATCOM%\lib286
+    libpath %WATCOM%\lib286\dos
+    format dos
+end
+system begin 386
+    option osname='DOS/4G'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    op stub=wstub.exe
+    format os2 le
+end
+@%watcom%\binw\wlsystem.lnk

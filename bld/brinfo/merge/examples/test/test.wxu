@@ -1,0 +1,116 @@
+Save Format v1.3
+@begin LexusBlock
+ MainWindowPos "0 0 1024 175 1 0";
+ ObjectsWindowPos "256 341 341 256 0 0 0 0";
+ ClassesWindowPos "195 656 341 256 1 0 0 164 3";
+ TargetsWindowPos "274 343 341 256 1 0 0 0 Debug";
+ ResourcesWindowPos "204 199 626 359 0 0 0 164 1053";
+ TraceWindowPos "306 296 432 156 0 0 0 ";
+ ObjectInspectorWindowPos "181 501 335 256 0 0 0";
+
+ @begin DebugBlock
+  @begin RemoteLinkWindow
+   Position 0,0,0,0;
+   State 0;
+   IsOpen 0;
+  @end;
+  @begin AsmWindow
+   Position 258,320,682,256;
+   State 0;
+   IsOpen 0;
+   ShowToolBar 1;
+   ShowStatusBar 1;
+  @end;
+  @begin LocalsWindow
+   Position 256,138,682,256;
+   State 0;
+   IsOpen 1;
+   ShowStatusBar 1;
+   ShowToolBar 1;
+   WholeExpression 0;
+   ShowThis 0;
+   NameWidth 224;
+   ValueWidth 224;
+   TypeWidth 216;
+  @end;
+  @begin WatchesWindow
+   Position 0,0,0,0;
+   State 0;
+   IsOpen 0;
+   ShowStatusBar 1;
+   ShowToolBar 1;
+   WholeExpression 0;
+   ShowThis 0;
+   NameWidth 0;
+   ValueWidth 0;
+   TypeWidth 0;
+  @end;
+  @begin FilescopeWindow
+   Position 0,0,0,0;
+   State 0;
+   IsOpen 0;
+   ShowStatusBar 1;
+   ShowToolBar 1;
+   WholeExpression 0;
+   ShowThis 0;
+   NameWidth 0;
+   ValueWidth 0;
+   TypeWidth 0;
+  @end;
+  @begin CallsWindow
+   Position 0,0,0,0;
+   State 0;
+   IsOpen 0;
+  @end;
+  @begin MemoryWindow
+   Position 0,0,0,0;
+   State 0;
+   IsOpen 0;
+   MemoryType 0;
+   MemoryAddress "0x0000:0x00000000";
+  @end;
+  @begin StackWindow
+   Position 0,0,0,0;
+   State 0;
+   IsOpen 0;
+   MemoryType -1;
+   MemoryAddress "0x0000:0x00000000";
+  @end;
+  @begin ThreadWindow
+   Position 0,0,0,0;
+   State 0;
+   IsOpen 0;
+  @end;
+  @begin RegisterWindow
+   Position 0,0,0,0;
+   State 0;
+   IsOpen 0;
+  @end;
+  @begin FPUWindow
+   Position 0,0,0,0;
+   State 0;
+   IsOpen 0;
+  @end;
+  @begin TypeInfo
+  @end;
+  @begin SourceWindow
+   Position 20,205,699,427;
+  @end;
+ @end;
+
+ @begin TargetBlock "C:\\work\\browse\\merge\\examples\\test\\test.wxt"
+  TargetBreakOnStartup 0;
+  TargetBreakBeforeStartup 0;
+  TargetBreakOnLoad 0;
+  TargetCommandLine "";
+  TargetMainJavaClass "";
+  TargetUseRealJavaConsole 0;
+  TargetRunRemote 0;
+  TargetRemoteLink "";
+  TargetLinkParm "";
+@begin-code VisibleFormList
+
+
+@end-code;
+ @end;
+@end;

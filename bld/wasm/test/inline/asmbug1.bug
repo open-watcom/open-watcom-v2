@@ -1,0 +1,23 @@
+bswap eax
+bswap esi
+mov ds,bx
+mov word ptr x,000fH
+mov word ptr x,007fH
+mov dword ptr x,0000000fH
+mov dword ptr x,0000007fH
+mov dword ptr x,0ffffffffH
+bt dword ptr x,0fH
+bt dword ptr x,1aH
+cmpxchg al,dl
+cmpxchg byte ptr x,dl
+cmpxchg ax,dx
+cmpxchg word ptr x,dx
+cmpxchg eax,edx
+cmpxchg dword ptr x,edx
+enter	0ffffH,01H
+enter	000fH,0ffH
+fucom st(2)
+fucom
+fucomp st(2)
+fucomp
+fucompp

@@ -1,0 +1,42 @@
+pfx__          =$(cpplib_dir)
+letter_register=r
+letter_stack   =s
+!ifdef profile
+letter_profile =p
+!else
+letter_profile =
+!endif
+__ifx__        =nt3$(letter_$(convention))mt
+
+dll_libs = $+ &
+    $(pfx__)\$(__ifx__)$(letter_profile).dll\plbxmt3$(letter_$(convention)).lib &
+    ..\..\..\clib\$(system).386\$(subdir)\clibs.lib &
+    ..\..\..\mathlib\$(system).387\$(subdir)\clibs.lib &
+    $(pfx__)\$(__ifx__)\plbxmt3$(letter_$(convention)).lib &
+    $-
+
+# def_hack.def is necessary to work around a linker bug
+# where exported symbols don't force a hard reference
+dll_def = $+ &
+    ..\..\def_hack.def &
+    $(pfx__)\runtime\nt386.def &
+    $(pfx__)\$(__ifx__)$(letter_profile).dll\exportx.def &
+    $-
+
+dll_objs = $+ &
+    $(clib_dir)\startup\library\$(system).386\$(subdir)\clibdwnt.obj &
+    $-
+
+targdir = $(pfx__)\runtime\$(__ifx__)$(letter_profile).dll\
+!include $(pfx__)\runtime\static.mif
+objs = $+ $(static_objs) $-
+targdir = $(pfx__)\iostream\$(__ifx__)$(letter_profile).dll\
+!include $(pfx__)\iostream\static.mif
+objs += $+ $(static_objs) $-
+targdir =
+static_objs = $+ $(objs) $-
+
+pfx__          =
+letter_register=
+letter_stack   =
+__ifx__        =

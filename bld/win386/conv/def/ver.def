@@ -1,0 +1,21 @@
+!ver
+int #GetFileResource(void *,void *,void *,long,long,void *);
+long #GetFileResourceSize(void *,void *,void *,void *);
+int #GetFileVersionInfo(void *,long,long,void *);
+long #GetFileVersionInfoSize(void *,void *);
+int #GetSystemDir(void *,void *,int);
+int #GetWindowsDir(void *,void *,int);
+int #VerFindFile(int,void *,void *,void *,void *,void *,void *,void *);
+long #VerInstallFile(int,void *,void *,void *,void *,void *,void *,void *);
+int #VerLanguageName(int,void *,int);
+int #VerQueryValue(void *,void *,void *,void *);
+int #_16GetFileResource(long,long,long,long,long,long);
+long #_16GetFileResourceSize(long,long,long,long);
+int #_16GetFileVersionInfo(long,long,long,long);
+long #_16GetFileVersionInfoSize(long,long);
+int #_16GetSystemDir(long,long,int);
+int #_16GetWindowsDir(long,long,int);
+int #_16VerFindFile(int,long,long,long,long,long,long,long);
+long #_16VerInstallFile(int,long,long,long,long,long,long,long);
+int #_16VerLanguageName(int,long,int);
+int #_16VerQueryValue(long,long,long,long);

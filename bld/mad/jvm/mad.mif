@@ -1,0 +1,19 @@
+!include $(disasm_dir)\core\dis.mif
+
+imp_objs = &
+        jvmaddr.obj &
+        jvmctrl.obj &
+        jvmtypes.obj &
+        jvmreg.obj &
+        jvmcall.obj &
+        jvmdisas.obj &
+        jvmtrace.obj &
+        $(dis_objs)
+
+mad = jvm
+
+extra_incs = $(dis_includes);$(javasdk)\include;$(javasdk)\include\win32;$(java_src_dir)\SRC\WIN32\JAVA\INCLUDE;$(lang_root)\h\nt
+extra_srcs = $(dis_srcs)
+extra_gbls = $(disasm_dir)\core\compile.gbl
+
+!include ../../master.mif

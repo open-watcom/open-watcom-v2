@@ -1,0 +1,9 @@
+OPTION case, map, verbose
+LIBPATH f:\comp\c\lib286;f:\comp\c\lib286\dos
+# root
+FILE quoi, check_if, set_fals, do_it, dont_do
+# overlays
+BEGIN
+    SECTION FILE fetch
+    SECTION FILE set_true, show
+END

@@ -1,0 +1,230 @@
+Status of the protected mode debugger as of April 30, 1993 (by Ashish Gupta):
+----------------------------------------------------------------------------
+
+I. Bugs in all versions of the new debugger :
+	1. Start an application (any app). Load a configuration file (any
+	   config file). Without highlighting any of the module names,
+	   open the module list window and make it active. Pressing <ENTER>
+	   should cause an access violation.
+	2. When debugging a rational application, DOS4G's banner is dumped
+	   onto the debugger's screen on startup and whenever a task is
+	   loaded or restarted.
+
+II. Bugs in the protected mode debugger under all platforms :
+	1. The debugger cannot determine if a DPMI host is present.
+	2. Tracing into a function at the source level causes the debugger
+	   to hang (sometimes, hitting ^C or ^Break returns control to the
+	   user) when no source information is available for the function.
+
+III. Bugs in the protected mode debugger in plain DOS with QEMM :
+	No known bugs specific to this platform.
+
+IV. Bugs in the protected mode debugger in plain DOS with HIMEM :
+	1. Pharlap applications cannot be debugged. Attempting to load
+	   a pharlap app generates the error message
+
+	   *** TASK NOT LOADED *** System error: Memory error
+
+V. Bugs in the protected mode debugger in plain DOS without HIMEM or QEMM :
+	1. Pharlap applications cannot be debugged. Attempting to load
+	   a pharlap app generates the error message
+
+	   *** TASK NOT LOADED *** System error: Memory error
+
+VI. Bugs in the protected mode debugger in an OS/2 (December Beta) DOS Box :
+	1. Rational applications cannot be debugged. On startup, and when
+	   attempting to load a rational app, the following message is
+	   dumped on top of the debugger's screen :
+
+	   DOS/16M error: [31]  protected mode already in use in this DPMI
+	   virtual machine
+	   DOS4GW.EXE could not start RSIHELP.EXE
+
+	2. Pharlap applications cannot be debugged. On a REQ_LOAD_PROG,
+	   everthing seems to be okay until the debugger's real mode code
+	   tries to switch back to protected mode. At that point, an access
+	   violation occurs (the crase occurs somewhere between the
+	   debugger's last instruction in real mode and its first instruction
+	   in protected mode).
+
+
+Miscellaneous Notes :
+-------------------
+
+I.  The protected mode debugger crashes with DOS4GW 1.9, when the debugger
+    issues its first int 0x10. DOS4GW 1.8 must be used.
+
+II. The protected mode debugger has been tested with the following trap
+    files under all platforms :  STD.TRP, PAR.TRP, RSI.TRP, PLS.TRP, NOV.TRP.
+    If nothing has been mentioned above regarding any of these trap files,
+    then no known bugs exist.
+
+III.Because the protected mode debugger cannot determine if a DPMI host
+    is present, there is a /DPmihost switch that can be specified on the
+    command line to indicate that a DPMI host is present. The default is to
+    assume a DPMI host is not present. When a DPMI host is present, the
+    debugger will do a 'raw switch' to switch to real mode and switch back to
+    protected mode. When no host is present, the debugger will issue an
+    interrupt (currently 0x66) and then let DOS4G handle the mode switching.
+ 
+    The raw mode switching mechanism was implemented specifically to debug
+    rational and pharlap applications in an OS/2 DOS Box (ie. with all other
+    types of apps, either method of going from protected mode to real mode 
+    and back can be used). However, since rational and pharlap apps still 
+    cannot be debugged in an OS/2 DOS Box, the /DPmihost switch will make
+    no difference, currently (ie. with or without the switch, the debugger
+    will crash, with pls.trp and rsi.trp, in an OS/2 DOS Box).
+
+IV.  There is a TEST subdirectory under WV\DSX which contains a program to
+     test debugging of rational and pharlap applications in an OS/2 DOS Box.
+     Doing a make will produce DEBUGGER.EXE and TASK.EXE.
+ 
+     DEBUGGER.EXE is a 16 bit application which will start in real mode and
+     then use DPMI's Enter Protected Mode call to get itself into protected
+     mode (see diagram below). It will then hook interrupt 0x66 (both
+     protected and real). Then, it will store its real and protected mode
+     vectors in a file and raw switch to real mode. Once in real mode, it
+     will spawn TASK.EXE.
+ 
+     TASK.EXE is a 32 bit protected mode rational or pharlap application.
+     First it will save its real and protected mode vectors. Then it will
+     restore the real and protected mode vectors of DEBUGGER.EXE (from the
+     file). Next, it will issue an interrupt 0x66. This will pass control to
+     the protected mode 0x66 handler of DEBUGGER.EXE.
+ 
+     The protected mode handler just says hello and then chains. Eventually,
+     the real mode handler of DEBUGGER.EXE will get control. The real mode
+     handler says hello and then does a raw switch to protected mode. Once
+     there, a procedure in DEBUGGER.EXE (PMProc) is called which just says
+     hello and returns. Once PMProc is finished, a raw switch is done back to
+     the real mode 0x66 handler which then terminates with an IRET.
+ 
+     When the int 0x66 is completed, TASK.EXE restores its own original real
+     and protected mode vectors and then terminates. This will return control
+     to DEBUGGER.EXE in real mode. Here DEBUGGER.EXE will raw switch back to
+     protected mode, restore its original real and protected mode vectors, 
+     and terminate.
+
+
+	TASK.EXE		DEBUGGER.EXE		  DEBUGGER.EXE
+     (protected mode)	         (real mode)       	(protected mode)
+
+     				  start
+				    |  
+				    -- DPMI's enter pmode call ->
+								|
+							    hook real and
+							    protected mode
+							    0x66 vector
+								|
+							    dump real and
+							    protected mode
+							    vector tables to
+							    a file
+								|
+				    <----- raw switch -----------
+				    |
+			       spawn TASK.EXE
+				    |
+	    <---- DOS4GW or RUN386 --
+	    |
+	save real and
+	protected mode
+	vector tables
+	    |
+     	restore real
+	and protected
+	mode vectors
+	from file
+	    |
+	    --------------- do an int 0x66 --------------------->
+	    							|
+							Protected Mode 0x66
+							      Handler
+	    							|
+							   "Hello World"
+							        |
+			            <----------------------------
+				    |
+		        	Real Mode 0x66
+				  Handler
+				    |
+				    -------- raw switch -------->  <-- CRASH!
+				    			        |
+							      PMProc
+							        |
+							   "Hello World"
+							        |
+				    <------- raw switch ---------
+				    |
+				   IRET
+				    |
+	    <------------------------
+	    |
+	restore saved
+	real and
+	protected mode
+	vector tables
+	    |
+        terminate
+	    |
+	    ------------------------>
+	    			    |
+				    -------- raw switch -------->
+				    				|
+							  restore original
+							  real and protected
+							  mode vector tables
+							  	|
+							      finish
+
+     Currently, this test crashes at the point indicated above. The first
+     instruction in protected mode after the raw switch generates an access
+     violation (every instruction, even a NOP, generates this error at this
+     point). This suggests that the selector being used has invalid
+     attributes. However, BEFORE the int 0x66 is issued, the attributes of
+     this selector look correct (ie. something could go wrong from just
+     before the int 0x66 instruction to just after the raw switch).
+ 
+     Notes:
+ 
+     1. The test works if the real mode 0x66 handler does not attempt a raw
+        switch to the protected mode of DEBUGGER.EXE.
+     2. The test works if the int 0x66 is issued from DEBUGGER.EXE instead
+        of TASK.EXE.
+     3. The situation described above is exactly the same for a rational 
+        or pharlap TASK.EXE (ie. the crash occurs at the same point and
+	produces the same error message).
+     4. The function PMProc doesn't exactly do what has been described.
+        Instead of printing "hello world", it just sets a flag indicating
+	it was called. The reason for this is that the test crashes if
+        "hello world" is printed. It appears as though issueing any
+	interrupt from PMProc causes a crash (but any other code seems to
+	work fine). This could be because issueing an interrupt at this point
+	is causing yet another mode switch. (Note that this applies to the
+	case when an int 0x66 is issued from DEBUGGER.EXE since PMProc could
+	not even be reached when the int 0x66 was issued from TASK.EXE.)
+     5. During this test, there are two protected mode applications in 
+     	memory simultaneously. It was believed that both share the same 
+	LDT. But if TASK.EXE uses the cs selector of DEBUGGER.EXE when
+	restoring the protected mode vectors from the file, the protected
+	mode handler of DEBUGGER.EXE does not get control when TASK.EXE
+	does an int 0x66. However, if TASK.EXE creates a new cs selector,
+	sets this selector at the same base as the cs selector of
+	DEBUGGER.EXE, and then restores protected mode vector 0x66 using
+	this selector, the protected mode 0x66 handler of DEBUGGER.EXE
+	does get control. This suggests that the two protected mode 'states'
+	do not share the same LDT.
+     6. Currently, there is no reason for DEBUGGER.EXE to hook protected mode
+        vector 0x66 since its handler just says hello and chains (ie. all the
+	work is performed by the real mode 0x66 handler). This could
+	be eliminated from the test to make it simpler. The protected mode
+	vector 0x66 had originally been hooked so that the interrupt handler
+	could restore the protected mode vectors of DEBUGGER.EXE. However,
+	this is now done (and always has been done) from TASK.EXE. Note that
+	the original idea of restoring these vectors from the protected mode
+	0x66 handler has never been tried (this may or may not make a
+	difference).
+     7. Complete information regarding the DPMI calls (including raw
+        switching, state saving, etc.) that are being used by the test can
+	be found in the 0.9 DPMI Specs.

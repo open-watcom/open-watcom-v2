@@ -1,0 +1,556 @@
+
+wdpick( First_UI_Message,
+       "",
+       "" )
+
+// Warnings
+
+
+wdpick( WARN_Source_Not_Available,
+       "Source code not found",
+       "jSource code not found" ) // dbginsp
+
+wdpick( WARN_Program_Will_Slow,
+       "Program execution speed will decrease by a factor of %U.",
+       "jProgram execution speed will decrease by a factor of %U." ) // dlgayn
+
+wdpick( WARN_Unable_To_Remap,
+       "Unable to correct address of breakpoint %u",
+       "jUnable to correct address of breakpoint %u" ) //dbgprog
+
+wdpick( WARN_Cycle_Detected,
+       "Cycle detected while following memory pointers",
+       "jCycle detected while following memory pointers" )//dbgwmem
+
+wdpick( WARN_Asynch_Event,
+       "The debugger has been entered asynchronously. Replay information may not be reliable. Process anyway?",
+       "jThe debugger has been entered asynchronously. Replay information may not be reliable. Process anyway?" )//dbgwrep
+
+wdpick( WARN_Incomplete_Undo,
+       "Undo cannot completely restore program state.  Proceed with partial undo?",
+       "jUndo cannot completely restore program state.  Proceed with partial undo?" )//dbgstk
+
+wdpick( WARN_Losing_Redo,
+       "This operation will delete all redo information.  Proceed anyway?",
+       "jThis operation will delete all redo information.  Proceed anyway?" )//dbgstk
+
+wdpick( WARN_Kill_PowerBuilder,
+       "Exiting the debugger will terminate your PowerBuilder session.  Continue?",
+       "Exiting the debugger will terminate your PowerBuilder session.  Continue?" )//dlgfile
+
+wdpick( PowerBuilder_Not_Running,
+       "PowerBuilder is not running",
+       "jPowerBuilder is not running" )
+
+wdpick( PowerBuilder_Debugger_Already_Running,
+       "The PowerBuilder DLL debugger is already running.  Run your application to load the DLL and activate the debugger",
+       "jThe PowerBuilder DLL debugger is already running.  Run your application to load the DLL and activate the debugger" )
+
+wdpick( The_WATCOM_Debugger_for_PowerBuilder,
+       "The Watcom Debugger for PowerBuilder",
+       "jThe Watcom Debugger for PowerBuilder" )//ntinit
+
+// accelerator window
+// - these comprise the title line (in the client area)
+
+wdpick( Definition,
+       "Definition",
+       "jDefinition" )
+
+wdpick( Key_Name,
+       "Key Name",
+       "jKey Name" )
+
+wdpick( Macro_Type,
+       "Action type",
+       "jAction type" )
+
+wdpick( mac_popup_menu,
+	"Popup Menu",
+	"jPopup Menu" )
+
+wdpick( mac_main_menu,
+	"Main Menu",
+	"jMain Menu" )
+
+wdpick( mac_command_string,
+	"Command",
+	"jCommand" )
+
+wdpick( Mac_Window,
+       "Window",
+       "jWindow" )
+
+// - queries
+
+wdpick( Press_the_Key,
+       "Press the key you wish to define - ESC to cancel",
+       "jPress the key you wish to define - ESC to cancel" ) // dbgwmac
+
+wdpick( Redefine_Key,
+       "Press the new key to be used for this accelerator - ESC to cancel",
+       "jPress the new key to be used for this accelerator - ESC to cancel" ) // dbgwmac
+
+
+wdpick( Mem_Addr,
+       "Enter Memory Address",
+       "jEnter Memory Address" ) //dbgexdat
+
+
+wdpick( New_Module,
+       "Enter New Module",
+       "jEnter New Module" ) //dbgwass dbgwfil
+
+wdpick( New_Addr,
+       "Enter New Address",
+       "jEnter New Address" )// dbgwass dbgwfil dbgwmem
+
+wdpick( New_Line,
+       "Enter New Line Number",
+       "jEnter New Line Number" ) //dbgwfil
+
+wdpick( New_Port_Addr,
+       "Enter New Port Address",
+       "jEnter New Port Address" ) //dbgwio
+
+wdpick( New_Offset,
+       "Enter New Offset",
+       "jEnter New Offset" ) //dbgwmem
+
+
+wdpick( Enter_File_Name,
+       "Enter File Name",
+       "jEnter File Name" )//dlgfile
+
+wdpick( Enter_New_Command,
+       "Enter New Command",
+       "jEnter New Command" )
+
+wdpick( Enter_Window,
+       "Enter Window Name",
+       "jEnter Window Name" )
+
+wdpick( Replay_File_Name,
+       "Enter Replay File Name",
+       "jEnter Replay File Name" )//dlgfile
+
+wdpick( Breakpoint_File_Name,
+       "Enter Breakpoint File Name",
+       "jEnter Breakpoint File Name" ) //dlgfile
+
+wdpick( Configuration_File_Name,
+	"Enter Configuration File Name",
+	"jEnter Configuration File Name" ) //dlgfile
+
+wdpick( Symbol_File,
+       "Enter Symbol File Name",
+       "jEnter Symbol File Name" )//dlgfile
+
+wdpick( Program_Name,
+       "Enter Program Name",
+       "jEnter Program Name" ) //dlgfile
+
+// other dialog titles
+
+wdpick( Error,
+       "ERROR",
+       "jERROR" ) //dbgerr
+
+wdpick( DLL_Name,
+       "Break on Image Load",
+       "jBreak on Image Load" )//dbgexec
+
+
+wdpick( The_WATCOM_Debugger,
+       "The Watcom Debugger",
+       "jThe Watcom Debugger" )//dbgmain
+
+wdpick( About_The_WATCOM_Debugger,
+       "About The Watcom Debugger",
+       "jAbout The Watcom Debugger" )//dlgabout
+
+wdpick( GoWhere,
+       "Execute to address",
+       "jExecute to address" ) //dbgmisc
+
+wdpick( New_Source,
+       "Source Files",
+       "jSource Files" ) //dlgsrc
+
+wdpick( Modules,
+       "Modules",
+       "jModules" )
+
+wdpick( DlgBreak,
+       "Break Point",
+       "jBreak Point" ) //dlgbreak
+
+wdpick( Symbol_List,
+       "Pick a symbol",
+       "jPick a symbol" )//symcomp
+
+
+// Buttons int dialogs that prompt the user for a new value
+
+
+wdpick( OK,
+       "OK",
+       "jOK" )
+
+wdpick( XSymbol_,
+       "&Symbol ...",
+       "j&Symbol ..." )
+
+wdpick( XModule_,
+       "&Module ...",
+       "j&Module ..." )
+
+wdpick( Cancel,
+       "Cancel",
+       "jCancel" )
+
+// these are window titles
+
+wdpick( WindowAll, // in macro window, used when macro applies to "All" windows
+       "All",
+       "jAll" )
+
+wdpick( WindowCurrent,
+       "Current",
+       "jCurrent" )
+
+wdpick( WindowVariable,
+       "Variable Inspector",
+       "jVariable Inspector" )
+
+wdpick( WindowBinary,
+       "Binary File",
+       "jBinary File" )
+
+wdpick( WindowTmpFile,
+       "Temporary File",
+       "jTemporary File" )
+
+wdpick( WindowSource,
+       "Source",
+       "jSource" )
+
+wdpick( WindowFileView, // a file browser window
+       "File View",
+       "jFile View" )
+
+wdpick( WindowBrk,
+       "Break Points",
+       "jBreak Points" )
+
+wdpick( WindowLog,
+       "Log",
+       "jLog" )
+
+wdpick( WindowAssembly,
+       "Assembly",
+       "jAssembly" )
+
+wdpick( WindowImages,
+       "Images",
+       "jImages" )
+
+wdpick( WindowIO_Ports,
+       "I/O Ports",
+       "jI/O Ports" )
+
+wdpick( WindowStack,
+       "Stack",
+       "jStack" )
+
+wdpick( WindowRegisters,
+       "Registers",
+       "jRegisters" )
+
+wdpick( WindowLocals,
+       "Locals",
+       "jLocals" )
+
+wdpick( WindowFile_Variables,
+       "File Variables",
+       "jFile Variables" )
+
+wdpick( WindowWatches,
+       "Watches",
+       "jWatches" )
+
+wdpick( WindowThreads,
+       "Threads",
+       "jThreads" )
+
+wdpick( WindowMemory,
+       "Memory",
+       "jMemory" )
+
+wdpick( WindowGlobals,
+       "Globals",
+       "jGlobals" )
+
+wdpick( WindowGlobal_Functions,
+       "Global Functions",
+       "jGlobal Functions" )
+
+wdpick( WindowFunctions,
+       "Functions",
+       "jFunctions" )
+
+wdpick( WindowCalls,
+       "Calls",
+       "jCalls" )
+
+wdpick( WindowModules,
+       "Modules",
+       "jModules" )
+
+wdpick( WindowSearch,
+       "Search Results",
+       "jSearch Results" )
+
+wdpick( WindowFPU,
+       "FPU Registers",
+       "jFPU Registers" )
+
+wdpick( WindowAccelerator,
+       "Accelerator",
+       "jAccelerator" )
+
+wdpick( WindowReplay,
+       "Replay",
+       "jReplay" )
+
+wdpick( WindowMMX,
+       "MMX",
+       "jMMX" )
+
+
+// shown in the source or assembly window when the source file cannot be opened
+
+wdpick( No_Source_Line,
+       "%d: Unable to open source file.",
+       "j%d: Unable to open source file." ) //dbgwass
+
+
+
+// these compose the title line in the images window
+
+wdpick( Debug_Information_Type,
+	"Debug Information Type",
+	"jDebug Information Type" )//dbgwimg
+
+wdpick( Debug_Information,
+       "Debug Information",
+       "jDebug Information" )//dbgwimg
+
+wdpick( Executable_File,
+       "Executable File",
+       "jExecutable File" )//dbgwimg
+
+
+// these form the title line in the thread window
+
+wdpick( ID,
+       "Thread-ID",
+       "jThread-ID" )//dbgwthrd
+
+wdpick( State,
+       "State",
+       "jState" ) //dbgwthrd
+
+
+// - message when Symbol... clicked in a dialog but no edit control was selected
+
+wdpick( No_text_to_complete,
+       "No text to complete",
+       "jNo text to complete" ) //dlgbreak
+
+// - message issued when Symbol... or Module... button cannot find a matching name
+
+wdpick( No_Match_Found,
+       "No Match Found",
+       "jNo Match Found" )//modcomp symcomp
+
+// error messages
+
+wdpick( ERR_BAD_WINDOW_ATTR,
+       "Missing or invalid window attribute",
+       "jMissing or invalid window attribute" )
+
+wdpick( ERR_BAD_COLOUR_ATTR,
+       "Missing or invalid colour attribute",
+       "jMissing or invalid colour attribute" )
+
+wdpick( ERR_WANT_MENU_ITEM,
+       "Expecting the name of a menu item",
+       "jExpecting the name of a menu item" )
+
+wdpick( ERR_BAD_DCLICK,
+       "Double click interval out of range",
+       "jDouble click interval out of range" )
+
+wdpick( ERR_BAD_WIND_NAME,
+       "Missing or invalid window name",
+       "jMissing or invalid window name" )
+
+wdpick( ERR_WIND_NOT_OPEN,
+       "Window '%s' is not open",
+       "jWindow '%s' is not open" )
+
+wdpick( ERR_MACRO_NOT_VALID,
+       "Invalid value for accelerator key",
+       "jInvalid value for accelerator key" )
+
+wdpick( ERR_BAD_TAB,
+       "Tab interval out of range",
+       "jTab interval out of range" )
+
+wdpick( ERR_BAD_ARRAY_INDEX,
+       "Array index is out of range",
+       "jArray index is out of range" )
+
+wdpick( ERR_MATCH_NOT_SUPPORTED,
+       "The current window does not support match mode",
+       "jThe current window does not support match mode" )
+
+wdpick( Unable_to_init_ui,
+       "Internal error #5",
+       "jInternal error #5" )
+
+wdpick( ERR_RX_1,
+       "Internal err #1 in regular expression",
+       "jInternal err #1 in regular expression" )
+
+wdpick( ERR_RX_2,
+       "Internal err #2 in regular expression",
+       "jInternal err #2 in regular expression" )
+
+wdpick( ERR_RX_3,
+       "Internal err #3 in regular expression",
+       "jInternal err #3 in regular expression" )
+
+wdpick( ERR_RX_4,
+       "Trailing \\ in regular expression",
+       "jTrailing \\ in regular expression" )
+
+wdpick( ERR_RX_5,
+       "?+* follows nothing in regular expression",
+       "j?+* follows nothing in regular expression" )
+
+wdpick( ERR_RX_6,
+       "Unmatched [] in regular expression",
+       "jUnmatched [] in regular expression" )
+
+wdpick( ERR_RX_7,
+       "Invalid [] range in regular expression",
+       "jInvalid [] range in regular expression" )
+
+wdpick( ERR_RX_8,
+       "Nested *?+ in regular expression",
+       "jNested *?+ in regular expression" )
+
+wdpick( ERR_RX_9,
+       "*+ operand could be empty in regular expression",
+       "j*+ operand could be empty in regular expression" )
+
+wdpick( ERR_RX_10,
+       "Unmatched () in regular expression",
+       "jUnmatched () in regular expression" )
+
+wdpick( ERR_RX_11,
+       "Too many () in regular expression",
+       "jToo many () in regular expression" )
+
+wdpick( ERR_RX_12,
+       "NULL argument in regular expression",
+       "jNULL argument in regular expression" )
+
+wdpick( ERR_RX_13,
+       "Invalid case toggle in regular expression",
+       "jInvalid case toggle in regular expression" )
+
+wdpick( ERR_NOT_PROCEDURE,
+       "'%S' is not a function",
+       "j'%S' is not a function" )
+
+wdpick( ERR_CANT_GET_RV,
+       "Return value is not available",
+       "jReturn value is not available" )
+
+// these are DOS error messages #1 thru 14
+
+wdpick( DOS_invalid_function,
+       "invalid function number",
+       "jinvalid function number" )
+
+wdpick( DOS_file_not_found,
+       "file not found",
+       "jfile not found" )
+
+wdpick( DOS_path_not_found,
+       "path not found",
+       "jpath not found" )
+
+wdpick( DOS_too_many_open_files,
+       "too many open files",
+       "jtoo many open files" )
+
+wdpick( DOS_access_denied,
+       "access denied",
+       "jaccess denied" )
+
+wdpick( DOS_invalid_handle,
+       "invalid handle",
+       "jinvalid handle" )
+
+wdpick( DOS_memory_control,
+       "memory control blocks destroyed",
+       "jmemory control blocks destroyed" )
+
+wdpick( DOS_insufficient_memory,
+       "insufficient memory",
+       "jinsufficient memory" )
+
+wdpick( DOS_invalid_address,
+       "invalid memory block address",
+       "jinvalid memory block address" )
+
+wdpick( DOS_invalid_environment,
+       "invalid environment",
+       "jinvalid environment" )
+
+wdpick( DOS_invalid_format,
+       "invalid format",
+       "jinvalid format" )
+
+wdpick( DOS_invalid_access_code,
+       "invalid access code",
+       "jinvalid access code" )
+
+wdpick( DOS_invalid_data,
+       "invalid data",
+       "jinvalid data" )
+
+wdpick( DOS_invalid_drive,
+       "invalid drive was specified",
+       "jinvalid drive was specified" )
+
+wdpick( DOS_remove_cd,
+       "attempt to remove current directory",
+       "jattempt to remove current directory" )
+
+wdpick( DOS_not_same_device,
+       "not same device",
+       "jnot same device" )
+
+
+wdpick( Unable_to_alloc_DOS_mem,
+       "Unable to allocate DOS memory",
+       "jUnable to allocate DOS memory" )
+
+wdpick( Unable_to_get_rm_sel,
+       "Unable to allocate real mode selector",
+       "jUnable to allocate real mode selector" )

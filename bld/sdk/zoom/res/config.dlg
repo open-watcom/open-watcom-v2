@@ -1,0 +1,18 @@
+ZOOM_CONFIGURE DIALOG 11, 15, 151, 98
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Configure"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Sticky Magnifier", CFG_STICKY, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 74, 10, 65, 10
+    CONTROL         "Always On Top", CFG_TOP, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 5, 10, 62, 10
+    CONTROL         "enable auto refresh", CFG_AUTOREFRESH, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 9, 42, 87, 10
+    PUSHBUTTON      "OK", IDOK, 26, 78, 40, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 82, 78, 40, 14
+    GROUPBOX        "Auto Refresh ", -1, 5, 28, 141, 47
+    EDITTEXT        CFG_REFRESH_INTERVAL, 108, 56, 32, 12, ES_AUTOHSCROLL
+    LTEXT           "Interval (tenths of seconds)", CFG_INTERVAL_TXT, 9, 57,
+                    91, 8
+END

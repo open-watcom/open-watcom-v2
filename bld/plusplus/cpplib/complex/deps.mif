@@ -1,0 +1,10 @@
+!ifndef on_build_machine
+
+complex.$(obj_deps_ext) : &
+             abs.cp acos.cpp acosh.cpp arg.cpp asin.cpp asinh.cpp atan.cpp &
+             atanh.cpp cos.cpp cosh.cpp dicomcom.cpp direlcom.cpp divide.cpp &
+             exp.cpp log.cpp log10.cpp multiply.cpp opinput.cpp opoutput.cpp &
+             polar.cpp powcbcp.cpp powcbdp.cpp powccbip.cpp powdbcp.cpp &
+             sin.cpp sinh.cpp sqrt.cpp tan.cpp tanh.cpp
+
+!endif

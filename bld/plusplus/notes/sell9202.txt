@@ -1,0 +1,62 @@
+WATCOM Confidential Document
+============================
+
+This document describes the WATCOM C++ product which is under development.
+
+
+Mission Statement:
+------------------
+
+    - to develop the best PC-based C++ compiler for professional developers
+
+
+Implementation Overview:
+------------------------
+
+    - uses same code-generation technology as WATCOM C, and so
+        - will produce superior code
+        - will be supported on same hardware platforms
+        - is link-compatible with WATCOM C
+        - the WATCOM version will be smaller and faster than our competitors
+
+    - will support the ANSI standard for C++ including templates and
+      exception handling
+        - commonly known as AT&T 3.0 language standard
+        - Borland is close to this
+        - Microsoft is reportedly 2.1
+        - Metaware will support same language as ours
+        - Jenson is 2.1
+
+    - will have superior error diagnosis (about 400 error messages now)
+        - seems better than Borland now
+        - Metaware also concentrating on this area
+
+    - will require 286/386 to compile source; will produce code for all
+      targets
+
+
+    - initial release will not have entensive C++ libraries
+
+    - main concentration for first release is on the compiler
+
+Timing
+------
+
+    - Beta version in June
+
+    - a few customers will receive earlier versions
+
+    - general release in early fall
+
+
+What we can do now: build relationships
+-------------------
+
+    - encourage vendors of C++ libraries to send us code
+
+    - find out who wishes to participate in the Beta program
+
+    - listen to any requirements that potential users may indicate
+
+    - vendors of integrated environments or of CASE tools should be
+      cultivated to support our compiler

@@ -1,0 +1,5 @@
+@rem test model
+@rem ---------------------------BAD--------------------------------------
+@call testout\testmsgf.bat %B
+@rem ---------------------------GOOD-------------------------------------
+@call testout\testmsgf.bat %G

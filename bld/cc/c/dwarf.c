@@ -1,0 +1,704 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include "cvars.h"
+#include "dw.h"
+#include "browsio.h"
+#include "standard.h"
+#include "cg.h"
+#include "cgdefs.h"
+#include "cgswitch.h"
+#include "cgprotos.h"
+
+static dw_client       Client;
+static dw_loc_handle   dummyLoc;
+static dw_handle       *SymDWHandles;
+static int             CurFile;
+static int             CurLine;
+
+extern  void    InitDebugTypes();               /* pchdr */
+
+typedef enum
+{   DC_RETURN           = 0x01,         // this is a return type
+    DC_DEFINE           = 0x02,         // generate definition
+    DC_DEFAULT          = 0x00          // default behaviour
+} DC_CONTROL;
+
+static dw_handle dwarfTypeArray( TYPEPTR );
+static dw_handle dwarfTypeFunction( TYPEPTR, char * );
+static dw_handle dwarfType( TYPEPTR, DC_CONTROL );
+static dw_handle dwarfStructUnion( TYPEPTR, DC_CONTROL );
+static dw_handle dwarfVariable( SYMPTR );
+
+
+
+static void type_update( TYPEPTR typ, int mask, dw_handle dh )
+/************************************************************/
+{
+    typ->type_flags = (typ->type_flags & ~TF2_DWARF) | mask;
+    typ->dwarf_type = dh;
+}
+
+static void dwarfFile( unsigned filenum )
+{
+    static unsigned short Current_File_Index = ~0;
+    FNAMEPTR    flist;
+    char       *fname;
+
+    // if current file changed, call DWDeclFile
+    if( filenum != Current_File_Index ) {
+        flist = FileIndexToFName(filenum);
+        fname = FNameFullPath( flist );
+        DWDeclFile( Client, fname );
+        Current_File_Index = filenum;
+    }
+}
+
+static void dwarfLocation( SYMPTR sym )
+/*************************************/
+{
+    dwarfFile( sym->defn_file_index );
+    DWDeclPos( Client, sym->d.defn_line, 0 );
+}
+
+
+static void dwarfStructInfo( TAGPTR tag )
+/***************************************/
+{
+    dw_handle   dh;
+    dw_handle   fld_dh;
+    TYPEPTR     typ;
+    FIELDPTR    field;
+    XREFPTR     xref;
+
+    field = tag->u.field_list;
+    while( field != NULL ) {
+        xref = field->xref;
+        typ = field->field_type;
+        if( typ->decl_type == TYPE_FIELD || typ->decl_type == TYPE_UFIELD ) {
+            fld_dh = dwarfType( GetType( typ->u.f.field_type ), DC_DEFAULT );
+            if( xref != NULL ){  //stupid struct { int x; int y[] ) = init thing
+            // Also watch for side effects with the DWDeclPos and a dwtype
+                 dwarfFile( xref->filenum );
+                  DWDeclPos( Client, xref->linenum, 0 );
+            }
+            dh = DWAddBitField( Client,
+                        fld_dh,
+                        dummyLoc,
+                        TypeSize( typ ),
+                        typ->u.f.field_start,
+                        typ->u.f.field_width,
+                        field->name,
+                        DW_FLAG_PUBLIC );
+        } else {
+            fld_dh =  dwarfType( typ, DC_DEFAULT );
+            if( xref != NULL ){  //stupid struct { int x; int y[] ) = init thing
+                  dwarfFile( xref->filenum );
+                  DWDeclPos( Client, xref->linenum, 0 );
+            }
+            dh = DWAddField( Client,
+                        fld_dh,
+                        dummyLoc,
+                        field->name,
+                        DW_FLAG_PUBLIC );
+        }
+        if( xref != NULL ){
+            for( ; xref = xref->next_xref; ) {
+                dwarfFile( xref->filenum );
+                DWReference( Client, xref->linenum, 0, dh );
+            }
+            FreeXrefs( field->xref );
+            field->xref = NULL;
+        }
+        field = field->next_field;
+    }
+}
+
+static dw_handle dwarfStructUnion( TYPEPTR typ, DC_CONTROL control )
+/******************************************************************/
+{
+    dw_handle   dh;
+    TAGPTR      tag;
+    char        *name;
+    char        defined;
+
+    control = control;
+    if( typ->type_flags & TF2_DWARF ) {
+        dh = typ->dwarf_type;
+    } else {
+        if( typ->decl_type == TYPE_STRUCT ) {
+            dh = DWStruct( Client, DW_ST_STRUCT );
+        } else {
+            dh = DWStruct( Client, DW_ST_UNION );
+        }
+        type_update( typ, TF2_DWARF_FWD, dh );
+    }
+    tag = typ->u.tag;
+    if( typ->type_flags & TF2_DWARF_FWD ) {
+        type_update( typ, TF2_DWARF_DEF, dh );
+        if( tag->name[0] == '\0' ) {
+            name = NULL;
+        } else {
+            name = tag->name;
+        }
+        defined = (tag->size != 0);
+        DWBeginStruct( Client,
+                       dh,
+                       tag->size,
+                       name,
+                       0,
+                       (defined ? 0 : DW_FLAG_DECLARATION ) );
+        if( defined ) {
+            dwarfStructInfo( tag );
+        }
+        DWEndStruct( Client );
+    }
+    return( dh );
+}
+
+ENUMPTR ReverseEnums( ENUMPTR esym )    /* reverse order of enums */
+{
+    ENUMPTR     prev_enum;
+    ENUMPTR     next_enum;
+
+    prev_enum = NULL;
+    while( esym != NULL ) {
+        next_enum = esym->thread;
+        esym->thread = prev_enum;
+        prev_enum = esym;
+        esym = next_enum;
+    }
+    return( prev_enum );
+}
+
+static dw_handle dwarfEnum( TYPEPTR typ )
+/***************************************/
+{
+    dw_handle   dh;
+    ENUMPTR     esym;
+    ENUMPTR     enum_list;
+
+    dh = DWBeginEnumeration( Client,
+                             TypeSize( typ->object ),
+                             typ->u.tag->name,
+                             0,
+                             0 );
+    enum_list = ReverseEnums( typ->u.tag->u.enum_list );
+    for( esym = enum_list; esym; esym = esym->thread ) {
+        DWAddConstant( Client, esym->value.u._32[L], esym->name );
+    }
+    ReverseEnums( enum_list );
+    DWEndEnumeration( Client );
+    type_update( typ, TF2_DWARF_DEF, dh );
+    return( dh );
+}
+
+static dw_handle dwarfTypeArray( TYPEPTR typ )
+/********************************************/
+{
+    dw_handle           dh;
+
+    if( typ->type_flags & TF2_DWARF ) return( typ->dwarf_type );
+    dh = DWSimpleArray( Client,
+                dwarfType( typ->object, DC_DEFAULT ),
+                typ->u.array->dimension );
+    type_update( typ, TF2_DWARF_DEF, dh );
+    return( dh );
+}
+
+static dw_handle dwarfTypeFunction( TYPEPTR typ, char *name )
+/***********************************************************/
+{
+    dw_handle   dh;
+    TYPEPTR     *parm_list;
+
+    if( typ->type_flags & TF2_DWARF ) return( typ->dwarf_type );
+    dh = dwarfType( typ->object, DC_RETURN );
+    dh = DWBeginSubroutineType( Client,
+                                dh,
+                                name,
+                                0,
+                                DW_FLAG_DECLARATION | DW_FLAG_PROTOTYPED );
+    type_update( typ, TF2_DWARF_DEF, dh );
+    parm_list = typ->u.parms;
+    while( parm_list != NULL ) {
+        typ = *parm_list++;
+        if( typ == NULL ) break;
+        if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
+            DWAddEllipsisToSubroutineType( Client );
+        } else {
+            DWAddParmToSubroutineType( Client,
+                                       dwarfType( typ, DC_DEFAULT ),
+                                       dummyLoc,
+                                       dummyLoc,
+                                       NULL );
+        }
+    }
+    DWEndSubroutineType( Client );
+    return( dh );
+}
+
+uint dwarfTypeModifier( type_modifiers decl_flags )
+/***********************************************/
+{
+    uint        modtype = 0;
+
+    if( decl_flags & FLAG_CONST ) {
+        modtype |= DW_MOD_CONSTANT;
+    }
+    if( decl_flags & FLAG_VOLATILE ) {
+        modtype |= DW_MOD_VOLATILE;
+    }
+    #if _CPU == 386
+        if( decl_flags & FLAG_NEAR ) {
+            modtype |= DW_MOD_NEAR32;
+        }
+        if( decl_flags & FLAG_FAR ) {
+            modtype |= DW_MOD_FAR32;
+        }
+        if( decl_flags & FLAG_FAR16 ) {
+            modtype |= DW_MOD_FAR16;
+        }
+    #else
+        if( decl_flags & FLAG_NEAR ) {
+            modtype |= DW_MOD_NEAR16;
+        }
+        if( decl_flags & FLAG_FAR ) {
+            modtype |= DW_MOD_FAR16;
+        }
+        if( decl_flags & FLAG_HUGE ) {
+            modtype |= DW_MOD_HUGE16;
+        }
+    #endif
+    return( modtype  );
+}
+
+static dw_handle dwarfType( TYPEPTR typ, DC_CONTROL control )
+/***********************************************************/
+{
+    dw_handle   dh;
+    SYMPTR      sym;
+
+    if( typ->type_flags & TF2_DWARF ) return( typ->dwarf_type );
+
+    switch( typ->decl_type ) {
+    case TYPE_CHAR:
+        dh = DWFundamental( Client, "char", DW_FT_SIGNED_CHAR, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_UCHAR:
+        dh = DWFundamental( Client, "unsigned char", DW_FT_UNSIGNED_CHAR, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_WCHAR:
+        dh = DWFundamental( Client, "wchar_t", DW_FT_UNSIGNED_CHAR, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_SHORT:
+        dh = DWFundamental( Client, "signed short", DW_FT_SIGNED, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_USHORT:
+        dh = DWFundamental( Client, "unsigned short", DW_FT_UNSIGNED, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_INT:
+        dh = DWFundamental( Client, "signed int", DW_FT_SIGNED, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_UINT:
+        dh = DWFundamental( Client, "unsigned int", DW_FT_UNSIGNED, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_LONG:
+        dh = DWFundamental( Client, "signed long", DW_FT_SIGNED, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_ULONG:
+        dh = DWFundamental( Client, "unsigned long", DW_FT_UNSIGNED, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_LONG64:
+        dh = DWFundamental( Client, "__int64", DW_FT_UNSIGNED, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_ULONG64:
+        dh = DWFundamental( Client, "unsigned __int64", DW_FT_UNSIGNED, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_FLOAT:
+        dh = DWFundamental( Client, "float", DW_FT_FLOAT, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_DOUBLE:
+        dh = DWFundamental( Client, "double", DW_FT_FLOAT, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+#if 0
+    case TYPE_LONG_DOUBLE:
+        dh = DWFundamental( Client, "long double", DW_FT_FLOAT, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+#endif
+    case TYPE_ENUM:
+        dh = dwarfEnum( typ );
+        break;
+    case TYPE_POINTER:
+        dh = DWPointer( Client, dwarfType( typ->object, DC_DEFAULT ), 0 );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_TYPEDEF:
+        dh = dwarfType( typ->object, DC_DEFAULT );
+        sym = SymGetPtr( typ->u.typedefn );
+        dwarfLocation( sym );
+        dh = DWTypedef( Client,
+                        dh,
+                        sym->name,
+                        0,
+                        0 );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    case TYPE_STRUCT:
+    case TYPE_UNION:
+        dh = dwarfStructUnion( typ, DC_DEFAULT );
+        break;
+    case TYPE_FUNCTION:
+        dh = dwarfTypeFunction( typ, NULL );
+        break;
+    case TYPE_ARRAY:
+        dh = dwarfTypeArray( typ );
+        break;
+    case TYPE_VOID:
+        dh = DWFundamental( Client, "void", DW_FT_UNSIGNED, 0 );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
+    default:
+        #ifdef FDEBUG
+            DumpFullType( typ );
+            CFatal( "dwarf: illegal type" );
+        #endif
+        break;
+    }
+    #ifdef FDEBUG
+        if( dh == 0 && !(control & DC_RETURN) ) {
+            DumpFullType( type );
+            CFatal( "dwarf: unable to define type" );
+        }
+    #endif
+    return( dh );
+}
+
+static void dwarfFunctionDefine(SYM_HANDLE  sym_handle, SYMPTR func_sym )
+/********************************************************************/
+{
+    TYPEPTR     typ;
+    dw_handle   return_dh;
+    dw_handle   func_dh;
+    dw_handle   dh;
+    uint        call_type;
+    uint        flags;
+    SYMPTR      sym;
+
+    call_type = 0;
+    typ = func_sym->sym_type;
+    if( func_sym->attrib & FLAG_NEAR ) {
+        call_type = DW_SB_NEAR_CALL;
+    } else if( func_sym->attrib &  FLAG_FAR ) {
+        call_type = DW_SB_FAR_CALL;
+    } else if( func_sym->attrib & FLAG_FAR16 ) {
+        call_type = DW_SB_FAR16_CALL;
+    }
+    flags = DW_FLAG_PROTOTYPED;
+    if( func_sym->stg_class == SC_STATIC ) {
+        flags |= DW_SUB_STATIC;
+    }
+    return_dh = dwarfType( typ->object, DC_RETURN );
+    func_dh = SymDWHandles[ sym_handle ];
+    if( func_dh != NULL ){ //was forward ref'd
+        DWHandleSet( Client, func_dh );
+    }
+    dwarfLocation( func_sym );
+    func_dh = DWBeginSubroutine( Client,
+                   call_type,
+                   return_dh,
+                   dummyLoc,
+                   dummyLoc,
+                   dummyLoc,
+                   NULL,
+                   dummyLoc,
+                   func_sym->name,
+                   0,
+                   flags );
+    SymDWHandles[ sym_handle ] = func_dh;
+    for( sym_handle = func_sym->u.func.parms; sym_handle; ) {
+        sym = SymGetPtr( sym_handle );
+        dh = DWFormalParameter( Client,
+                        dwarfType( sym->sym_type, DC_DEFAULT ),
+                        NULL,
+                        NULL,
+                        sym->name,
+                        DW_DEFAULT_NONE );
+        SymDWHandles[ sym_handle ] = dh;
+        sym_handle = sym->handle;
+    }
+    dwarfEmitVariables( func_sym->u.func.locals );
+}
+
+static dw_handle dwarfFunctionDecl( SYMPTR func_sym )
+/*********************************************/
+{
+    TYPEPTR     typ;
+    dw_handle   return_dh;
+    dw_handle   func_dh;
+    uint        call_type;
+    uint        flags;
+
+    call_type = 0;
+    typ = func_sym->sym_type;
+    if( func_sym->attrib & FLAG_NEAR ) {
+        call_type = DW_SB_NEAR_CALL;
+    } else if( func_sym->attrib &  FLAG_FAR ) {
+        call_type = DW_SB_FAR_CALL;
+    } else if( func_sym->attrib & FLAG_FAR16 ) {
+        call_type = DW_SB_FAR16_CALL;
+    }
+    flags = DW_FLAG_PROTOTYPED;
+    flags |= DW_FLAG_DECLARATION;
+    if( func_sym->stg_class == SC_STATIC ) {
+        flags |= DW_SUB_STATIC;
+    }
+    return_dh = dwarfType( typ->object, DC_RETURN );
+    dwarfLocation( func_sym );
+    func_dh = DWBeginSubroutine( Client,
+                   call_type,
+                   return_dh,
+                   dummyLoc,
+                   dummyLoc,
+                   dummyLoc,
+                   NULL,
+                   dummyLoc,
+                   func_sym->name,
+                   0,
+                   flags );
+   DWEndSubroutine( Client );
+   return( func_dh );
+}
+
+static dw_handle dwarfVariable( SYMPTR sym )
+/******************************************/
+{
+    dw_handle dh;
+    uint      flags;
+
+    flags = 0;
+    if( sym->stg_class == SC_NULL ) {
+        flags = DW_FLAG_GLOBAL;
+    }
+    dh = dwarfType( sym->sym_type, DC_DEFAULT );
+    dwarfLocation( sym );
+    dh = DWVariable( Client,
+                dh,
+                dummyLoc,
+                NULL,
+                dummyLoc,
+                sym->name,
+                0,
+                flags );
+    return( dh );
+}
+
+
+static void dwarfEmitVariables( SYM_HANDLE sym_handle )
+{
+    SYMPTR      sym;
+    TYPEPTR     typ;
+    dw_handle   dh;
+
+    while( sym_handle ) {
+        sym = SymGetPtr( sym_handle );
+        if( !(sym->flags & SYM_TEMP) ) {
+            typ = sym->sym_type;
+            dh = 0;
+            if( sym->flags & SYM_FUNCTION ) {
+                if( !(sym->flags & SYM_DEFINED) ) {
+                    dh = dwarfFunctionDecl( sym );
+                }
+//              printf( "func: %s", sym->name );
+            } else if( sym->stg_class == SC_TYPEDEF ) {
+                dh = dwarfType( typ, DC_DEFAULT );
+//              printf( "typedef: %s", sym->name );
+            } else {
+                dh = dwarfVariable( sym );
+//              printf( "var:: %s", sym->name );
+            }
+            SymDWHandles[ sym_handle ] = dh;
+//          printf( " defined on line %u\n", sym->d.defn_line );
+        }
+        sym_handle = sym->handle;
+    }
+}
+
+void dwarfDumpNode( TREEPTR node )
+{
+    SYMPTR      sym;
+
+    switch( node->op.opr ) {
+    case OPR_FUNCTION:          // start of function
+        sym = SymGetPtr( node->op.func.sym_handle );
+        dwarfFunctionDefine( node->op.func.sym_handle, sym );
+        break;
+    case OPR_FUNCEND:           // end of function
+        DWEndSubroutine( Client );
+        break;
+    case OPR_NEWBLOCK:          // start of new block { vars; }
+        DWBeginLexicalBlock( Client, NULL, NULL );
+        dwarfEmitVariables( node->op.sym_handle );
+        break;
+    case OPR_ENDBLOCK:          // end of new block { vars; }
+        DWEndLexicalBlock( Client );
+        break;
+    case OPR_PUSHSYM:           // push sym_handle
+    case OPR_PUSHADDR:          // push address of sym_handle
+    case OPR_FUNCNAME:          // function name
+        sym = SymGetPtr( node->op.sym_handle );
+        if( !(sym->flags & SYM_TEMP) ) {
+            dw_handle   dh;
+
+            dh = SymDWHandles[ node->op.sym_handle ];
+            if( dh == NULL ){   // forward ref
+                dh = DWHandle( Client, DW_ST_NONE );
+                SymDWHandles[ node->op.sym_handle ] = dh;
+            }
+            dwarfFile( CurFile );
+            DWReference( Client, CurLine, 0, dh );
+        }
+        break;
+    }
+}
+
+
+extern  TREEPTR FirstStmt;
+
+void dwarfEmitFunctions()
+{
+    TREEPTR     tree;
+
+    tree = FirstStmt;
+    while( tree != NULL ) {
+        CurFile =  tree->op.source_fno;
+        CurLine = tree->srclinenum;
+        WalkExprTree( tree->right, dwarfDumpNode, NoOp, NoOp, dwarfDumpNode );
+        tree = tree->left;
+    }
+}
+
+void SetDwarfType( TYPEPTR typ )
+{
+    typ->type_flags &= ~TF2_DWARF;
+    typ->dwarf_type = 0;
+}
+
+void SetFuncDwarfType( TYPEPTR typ, int index )
+{
+    index;
+    typ->type_flags &= ~TF2_DWARF;
+    typ->dwarf_type = 0;
+}
+
+static void EmitAType( TYPEPTR typ )
+{
+    dwarfType( typ, DC_DEFAULT );
+}
+
+void InitDwarfTypes()
+{
+    WalkTypeList( SetDwarfType );
+    WalkFuncTypeList( SetFuncDwarfType );
+}
+
+void dwarfEmit( void )
+/********************/
+{
+    int         i;
+
+    InitDwarfTypes();
+    for( i = TYPE_CHAR; i <= TYPE_DOUBLE; i++ ) {
+        dwarfType( GetType( i ), DC_DEFAULT );
+    }
+    WalkTypeList( EmitAType );
+    dwarfEmitVariables( GlobalSym );
+    dwarfEmitFunctions();
+    InitDebugTypes();
+}
+
+static void InitSymDWHandles( void )
+/***********************************/
+{
+    int i , count;
+
+    count =  NextSymHandle + 1;
+    SymDWHandles = (dw_handle *)CMemAlloc( count * sizeof(dw_handle) );
+    for( i = 0; i < count; ++i ){
+        SymDWHandles[i] = NULL;
+    }
+}
+extern void DwarfBrowseEmit( void )
+/*********************************/
+{
+    InitSymDWHandles();
+    Client = DwarfInit();
+    dummyLoc = DWLocFini( Client, DWLocInit( Client ) );
+    CurFile = 0;
+    CurLine = 0;
+    dwarfEmit();
+    DWLocTrash( Client, dummyLoc );
+    DwarfFini( Client );
+    CMemFree( SymDWHandles );
+}
+
+
+extern void DwarfDebugInit( void )
+/********************************/
+{
+    SymDWHandles = (dw_handle *)
+                CMemAlloc( (NextSymHandle + 1) * sizeof(dw_handle) );
+    Client = DFClient();
+    dummyLoc = DWLocFini( Client, DWLocInit( Client ) );
+}
+
+extern void DwarfDebugFini( void )
+/****************************/
+{
+    DWLocTrash( Client, dummyLoc );
+    CMemFree( SymDWHandles );
+    SymDWHandles = NULL;
+}

@@ -1,0 +1,17 @@
+int _clib_bios_disk(int,void *);
+int _clib_bios_equiplist(void);
+int _clib_bios_keybrd(int);
+int _clib_bios_memsize(void);
+int _clib_bios_printer(int,int,int);
+int _clib_bios_serialcom(int,int,int);
+int _clib_bios_timeofday(int,void *);
+long _clib_clock(void);
+void _clib_delay(long);
+int _clib_dos_findfirst(void *,int,void *);
+int _clib_dos_findnext(void *);
+int _clib_errno(void);
+int _clib_int86(int,void *,void *);
+int _clib_int86x(int,void *,void *,void *);
+int _clib_intdos(void *,void *);
+int _clib_intdosx(void *,void *,void *);
+void _clib_intr(int,void *);

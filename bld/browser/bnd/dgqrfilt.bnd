@@ -1,0 +1,25 @@
+class QueryFilterDlg {
+    _searchForGroupR(	IDD_SEARCH_FOR_GROUP, (@,@,@,@) );
+    _searchClassesR(	IDD_SEARCH_CLASSES, (@,@,@,@) );
+    _searchEnumsR(      IDD_SEARCH_ENUMS, (@,@,@,@) );
+    _searchFunctionsR(	IDD_SEARCH_FUNCTIONS, (@,@,@,@) );
+    _searchTypedefsR(	IDD_SEARCH_TYPEDEFS, (@,@,@,@) );
+    _searchVariablesR(	IDD_SEARCH_VARIABLES, (@,@,@,@) );
+    _searchAllR(	IDD_SEARCH_ALL, (@,@,@,@) );
+    
+    _searchInGroupR(	IDD_SEARCH_IN_GROUP, (@,@,@,@) );
+    _fileButtonR(	IDD_FILE_BROWSE, (@,@,@,@) );
+    _classEditR(	IDD_CLASS_EDIT, (@,@,@,@) );
+    _classTextR(	IDD_CLASS_TEXT, (@,@,@,@) );
+    _functionEditR(	IDD_FUNCTION_EDIT, (@,@,@,@) );
+    _functionTextR(	IDD_FUNCTION_TEXT, (@,@,@,@) );
+    
+    _attributesGroupR(	IDD_SYM_ATTRIBUTES, (@,@,@,@) );
+    _attribAnonR(	IDD_ATTRIB_ANONYMOUS, (@,@,@,@) );
+    _attribArtR(	IDD_ATTRIB_ARTIFICIAL, (@,@,@,@) );
+    _attribDeclR(	IDD_ATTRIB_NO_DEFINITION, (@,@,@,@) );
+    
+    _okButtonR(		IDD_OK, (@,@,@,@) );
+    _cancelButtonR(	IDD_CANCEL, (@,@,@,@) );
+    _helpButtonR(	IDD_HELP, (@,@,@,@) );
+};

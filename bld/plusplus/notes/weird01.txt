@@ -1,0 +1,67 @@
+From: jangr@microsoft.UUCP (Jan GRAY)
+Subject: Re: parsing C++ woes: a puzzle
+Reply-To: jangr@microsoft.UUCP (Jan GRAY)
+Organization: Microsoft Corp., Redmond WA
+
+In article <1991Mar12.220532.897@objy.com> peter@objy.com writes:
+>I think you are making this sound harder than it really is.
+
+I think you are making this sound easier than it really is.
+The three examples which follow build up to a C++ puzzle
+which hopefully illustrates some of the nonsense which
+C++ 2.1 may inflict on a lexical analyzer.
+
+Example 1:
+	struct V { int T; };
+	struct A : virtual V { int T; };
+	struct B : virtual V, A {
+		B() { T = 1; }
+	};
+
+	Here A::T dominates V::T and thus "T = 1" is "this->A::T = 1;"
+
+Example 2:
+	struct V { struct T { }; };
+	struct A : virtual V { T t; };
+
+	Here V's T is in A's scope and thus A has a member "t" of type ::V::T.
+
+Example 3:
+	struct V { struct T { }; };
+	struct A : virtual V { struct T { int ohno; }; };
+	struct B : virtual V, A { T t; };
+
+	Here A::T dominates V::T and thus "T t;" declares "::A::T t;"
+
+	(Or does it: ARM 10.1.1, p. 205, reads, "A name B::f dominates
+	a name A::f if its class B has A as a base." which would apply to
+	type names.  However, if you read
+		"When virtual bases are used, a single function, object,
+		*TYPE*, or enumerator may be reached...this is not an
+		ambiguity"
+	and later
+		"When virtual base classes are used, more than one
+		function, object, or enumerator...dominates..."
+	you might conclude that ARM leaves open whether or not dominance
+	applies to type names.)
+
+Puzzle:
+	struct X { };
+	struct V { struct T { }; };
+	struct A : virtual V { int T; };
+	struct B : virtual V, A { T(X); };
+
+	??? What does "T(X);" mean ???
+
+My answer follows the ^L.
+
+What implications do you suppose this has on the structure of a lexical
+analyzer?
+
+Comments?
+Jan Gray
+
+My answer follows...
+If A::T did not dominate V::T, then "T(X);" would declare X to be a ::V::T.
+Since A::T dominates V::T, T is not a type, therefore "T(X);" means
+"int T(X);"

@@ -1,0 +1,17 @@
+    loop
+            
+        quit
+        if lastrc == ERR_FILE_MODIFIED 
+            assign %a = /Save "%F" (y\/n)? /
+            input %a
+            quif lastrc == NO_VALUE_ENTERED
+            if "%a" == y
+                write
+                quit
+            else 
+                quit!
+            endif
+        endif
+        quif lastrc != ERR_NO_ERR
+        
+    endloop

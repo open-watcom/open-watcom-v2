@@ -1,0 +1,82 @@
+proj_name = wstrip
+name = strip
+
+.extensions:
+.extensions: .exe .qnx .obj .3bj .qbj .asm .h .c .rc .msg .sp .mif
+
+.mif: $(mif_path)
+!include cproj.mif
+!include defrule.mif
+
+MODEL = l
+!include wres.mif
+
+.c .rc .msg .sp: ..
+
+inc_dirs = $(dip_dir)\watcom\h;..;$(watcom_dir)\h
+
+lnk = $(%ramdisk)\tmp.lnk
+
+OBJS = $(name).obj output.obj
+
+res_qnx = qwstrip.res
+res_dos = owstrip.res
+res_nt = owstrip.res
+dependants_qnx = qwstrip.u $(res_qnx)
+dependants_dos = $(res_dos)
+dependants_nt = $(res_nt)
+
+dependants = $(dependants_$(host_OS)) $(OBJS)
+
+extra_l_flags = library $(wres_lib) option map op st=8k
+extra_l_flags_qnx = option res=qwstrip.u, off=8k
+
+.BEFORE
+        set include=$(inc_path)
+
+$(name).exe : $(dependants)
+        $(linker) $(lflags) name $^@ file {$(OBJS)}
+!ifeq host_OS dos
+        copy $^@ $(name).dos
+        $(linker) debug all op symfile name $^@ system os2 pmc op newfile,stub=$(name).dos file {$(OBJS)} library $(wres_lib)
+!endif
+        wstrip -q -a -r $^@ . $(res_$(host_OS))
+
+msg.gh : wstrip.msg
+#       vi -q -d -i "-k:g!/^pick/d\n:w!msg.tmp\n:q!\n" $[@
+#       vi -q -d -i "-k:set magic\n:%s/^.*\\\\( ([A-Z0-9_]*).*$$/$#define \\\\1 (MSG_RC_BASE+0x\\\\\$#)/\n:wq\n" $^@
+#       vi -q -d -i "-k:%s/^.*( \\([A-Z0-9_]*\\).*$$/$#define \\1 (MSG_RC_BASE+0x\\$#)/\n:w!msg.gh\n:q!\n" msg.tmp
+        vi -q -s..\go.vi
+
+owstrip.res : wstrip.rc wstrip.msg msg.gh ousage.rc ousagej.rc
+        $(rc) /r /fo=$^@ -zk0 -DDOS $[@ /bt=windows
+
+qwstrip.res : wstrip.rc wstrip.msg msg.gh qusage.rc
+        $(rc) /r /fo=$^@ -zk0 -DQNX $[@ /bt=windows
+
+ousage.rc : usage.sp
+        wsplice -kIS_RC -kDOS -kENGLISH -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $[@ $^@
+
+ousagej.rc : usage.sp
+        wsplice -kIS_RC -kDOS -kJAPANESE -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" $[@ $^@
+
+qusage.rc : usage.sp
+        wsplice -kIS_RC -kENGLISH -kQNX -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $[@ $^@
+
+qwstrip.u : usage.sp
+        wsplice -kENGLISH -kQNX -t8 -u $[@ $^@
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj del *.?bj
+        @if exist *.lnk del *.lnk
+        @if exist *.exe del *.exe
+        @if exist *.lib del *.lib
+        @if exist *.res del *.res
+        @if exist *.clb del *.clb
+        @if exist *.err del *.err
+        @if exist *.gh del *.gh
+        @if exist *.rc del *.rc
+        @if exist *.map del *.map
+        @if exist *.dos del *.dos
+        @if exist *.u del *.u
+        @if exist *.sym del *.sym

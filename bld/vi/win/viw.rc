@@ -1,0 +1,74 @@
+#include "windows.h"
+#include "filelist.h"
+#include "asavedlg.h"
+#include "finddlg.h"
+#include "snoop.h"
+#include "grep.h"
+#include "cmd.h"
+#include "startup.h"
+#include "banner.h"
+#include "aboutdlg.h"
+#include "about.h"
+#include "usage.h"
+#include "tagdlg.h"
+#include "linedlg.h"
+#include "clrbar.h"
+#include "ftbar.h"
+#include "ssbar.h"
+#include "repdlg.h"
+#include "rcstr.h"
+#include "..\ctl\setfs.h"
+#include "..\ctl\setscr.h"
+#include "..\ctl\setgen.h"
+
+APPLICON        ICON    viw.ico
+WATCOMICON      ICON    watcom.ico
+BUTTONPATTERN   BITMAP  button.bmp
+SAVE            BITMAP  save.bmp
+COPY            BITMAP  copy.bmp
+CUT             BITMAP  cut.bmp
+PASTE           BITMAP  paste.bmp
+UNDO            BITMAP  undo.bmp
+REDO            BITMAP  redo.bmp
+COMMAND         BITMAP  cmd.bmp
+FIND            BITMAP  finddlg.bmp
+REFIND          BITMAP  refind.bmp
+OPEN            BITMAP  open.bmp
+NEXTFILE        BITMAP  nextfile.bmp
+PREVFILE        BITMAP  prevfile.bmp
+FILES           BITMAP  files.bmp
+HAMMER          BITMAP  hammer.bmp
+NEW             BITMAP  new.bmp
+CLOSEBMP        BITMAP  closebmp.bmp
+BMATCH          BITMAP  bmatch.bmp
+DROPCLR         CURSOR  dropclr.cur
+DROPFT          CURSOR  dropft.cur
+NODROP          CURSOR  nodrop.cur
+STATMOVE        CURSOR  statmove.cur
+DROPSS          CURSOR  dropss.cur
+
+#define pick( a, b, c )  a b
+STRINGTABLE PRELOAD DISCARDABLE
+BEGIN
+    #include "rcstr.msg"
+END
+
+#include "filelist.dlg"
+#include "fgrep.dlg"
+#include "asavedlg.dlg"
+#include "finddlg.dlg"
+#include "grep.dlg"
+#include "cmd.dlg"
+#include "startup.dlg"
+#include "about.dlg"
+#include "usage.dlg"
+#include "tagdlg.dlg"
+#include "linedlg.dlg"
+#include "clrbar.dlg"
+#include "ftbar.dlg"
+#include "ssbar.dlg"
+#include "repdlg.dlg"
+#include "snoop.dlg"
+#include "..\ctl\setfs.dlg"
+#include "..\ctl\setscr.dlg"
+#include "..\ctl\setgen.dlg"

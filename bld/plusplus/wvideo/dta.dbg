@@ -1,0 +1,3 @@
+call DbgRedirectBeg
+call __wcpp_4_DbgRtDumpAutoDtor_()
+viewcapt.dbg

@@ -1,0 +1,114 @@
+Precedence Parsing
+------------------
+
+Lisa: here is what I remember about precedence parsing (which we would like
+      to see implemented in PPEXPR.C).  The current implementation is a
+      12-level recursive-descent parser which is inefficient for most
+      pre-processor expressions (which are simply an atomic value or involve 
+      at most a couple of operators).
+
+This is a fancy word for the algorithm originally developed for the 7040
+WATFOR compiler.  Consider a language with operations
+
+    precedence      operators
+    ----------      ---------
+    0               < (termination)
+    1               > (start)
+    2               )
+    3               (
+    -----------language-dependent precedences follow--------------
+    4               =
+    5               unary -
+    6               *
+    7               binary +
+    
+and parentheses and atoms. It is convenient to think of an expression as
+being delimited by a start (>) and termination (<) operator.
+
+The following data structure is used by the algorithm: a stack of operations
+and a stack of operands.
+
+The algorithm (written as if we are implementing a calculator) is as follows:
+
+push start (>) on operands stack
+scan the first token
+loop
+    if the token is an operand
+        - push it on the operand stack
+        - scan next token
+    else if precedence(token) < precedence(top operator)
+        - evaluate the stacked operator (3 cases)
+            case "(": 
+                - token must be ")" 
+                - top operand must be between "(" and ")"
+                - pop the "(" 
+                - scan next token
+            case ">": 
+                - token must be "<" 
+                - there must be one expression left
+                - exit the loop with success
+            case n-ary operator: 
+                - there must be sufficient, adequately-positioned operands
+                - pop operator, n operands, and  evaluate, 
+                - push result on operand stack
+    else
+        - push token on operator stack
+        - read next token
+end-loop
+                            
+Additional error checking: 
+    - goal is to detect error a precisely as possible which means as soon as
+      possible
+    - cannot have two adjacent operands unless the hokey language assumes an
+      operation (like concatenation in C, C++)
+    - using a counter to simulate position, better diagnosis (I believe) will
+      result by checking proper positioning of operands during an evaluation
+      (a temporary has the position of the operator used to create it)
+    - C and C++ do not allow two successive unary operators of the precedence
+      
+Unary operators (+,-) are sometimes overloaded with their binary counterparts
+and must be recognized by the context in which they are used.
+      
+Example:
+
+    >a=b*(c+d)+e*-f<
+    
+    token:      action(s)           operators       operands    evaluations
+    ------      ---------
+    >           push >              >
+    a           push a              >               a
+    =           [=,>] ==> push =    > =             a
+    b           push b              > =             a b
+    *           [*,=] ==> push *    > = *           a b
+    (           push (              > = * (         a b
+    c           push c              > = * (         a b c
+    +           [(,+] ==> push +    > = * ( +       a b c
+    d           push d              > = * ( +       a b c d
+    )           [+,)] ==> evaluate  > = * (         a b t1      t1: c + d
+                [(,)] ==> pop       > = *           a b t1
+    +           [+,*] ==> evaluate  > =             a t2        t2: b * t1
+                [+,=] ==> push +    > = +           a t2
+    e           push e              > = +           a t2 e
+    *           [*,+] ==> push *    > = + *         a t2 e
+    -           [-,*] ==> push -    > = + * -       a t2 e
+    f           push f              > = + * -       a t2 e f
+    <           [<,-] ==> evaluate  > = + *         a t2 e t3   t3: -f
+                [<,*] ==> evaluate  > = +           a t2 t4     t4: e * t3
+                [<,+] ==> evaluate  > =             a t5        t5: t2 + t4
+                [<,=] ==> evaluate  >               t6          t6: a = t5
+                [<,>] completion
+                
+The example is just for you to get a feeling for the algorithm.  I believe
+that precedence parsing works for simple-enough languages (I forget the
+technical categorization) with n-ary operators which can be prefix, postfix,
+or infix.  The C standard gives the precedence levels for pre-processor
+expressions which should correspond to those used in the recursive-descent
+parser in the current PPEXPR implementation.
+
+I think the bounding factor will be how fast we can get a precedence for an
+operator. WATFOR/WATFIV uses a matrix of actions indexed by operator pairs. I
+believe this is unneccessary; precedences and possibly a table of evaluation
+cases is sufficient.
+
+We can generate a vector of precedences indexable by the operator token's
+value.

@@ -1,0 +1,43 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "CONFIG.H\0"
+END
+
+HEAP_CONFIG DIALOG 29, 15, 287, 160
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "WATCOM HeapWalker Configuration"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "File name for Global Heap Saves", CONFIG_DONT_CARE, 6,
+                    6, 128, 8
+    LTEXT           "File name for Local Heap Saves", CONFIG_DONT_CARE, 6,
+                    32, 122, 8
+    LTEXT           "File name for Memory Dumps", CONFIG_DONT_CARE, 6, 58,
+                    105, 8
+    EDITTEXT        CONFIG_GNAME, 5, 16, 230, 12, ES_AUTOHSCROLL | WS_GROUP
+    EDITTEXT        CONFIG_LNAME, 5, 42, 230, 12, ES_AUTOHSCROLL | WS_GROUP
+    EDITTEXT        CONFIG_MNAME, 5, 68, 231, 12, ES_AUTOHSCROLL | WS_GROUP
+    CONTROL         "Display Resources", CONFIG_DISP_RES, "Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP, 156, 92, 81, 10
+    CONTROL         "Display Memory Info window", CONFIG_DISP_MEM_INFO,
+                    "Button", BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP, 156,
+                    103, 112, 10
+    DEFPUSHBUTTON   "&OK", CONFIG_OK, 67, 140, 40, 14
+    PUSHBUTTON      "&Cancel", IDCANCEL, 123, 140, 40, 14
+    PUSHBUTTON      "&Defaults", CONFIG_DEFAULT, 179, 140, 40, 14
+    CONTROL         "Auto Position Memory Info window", CONFIG_AUTOPOS,
+                    "Button", BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP, 156,
+                    114, 127, 10
+    CONTROL         "Save Main window size/position", CONFIG_SAVE_MAIN_POS,
+                    "Button", BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP, 5, 92,
+                    123, 10
+    CONTROL         "Save Memory window size/position", CONFIG_SAVE_MEM_POS,
+                    "Button", BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP, 5,
+                    103, 135, 10
+    CONTROL         "Allow Multiple Memory Display Windows",
+                    CONFIG_MULT_MEM_WND, "Button", BS_AUTOCHECKBOX |
+                    WS_GROUP | WS_TABSTOP, 5, 114, 145, 10
+    PUSHBUTTON      "&Browse", CONFIG_GLOB_BROWSE, 241, 15, 40, 14
+    PUSHBUTTON      "&Browse", CONFIG_LOCAL_BROWSE, 241, 41, 40, 14
+    PUSHBUTTON      "&Browse", CONFIG_MEM_BROWSE, 241, 67, 40, 14
+END

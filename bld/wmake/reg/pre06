@@ -1,0 +1,112 @@
+#
+#   test some of the macro substitutions
+#
+
+
+#
+#   test a: $(prefix$(version)
+#
+
+a1 =abc
+a2 =1
+
+aguess= $+$(a$(a2))$-
+
+!ifneq aguess abc
+!   error failed test a
+!endif
+
+
+#
+#   test b: $(prefix$version)
+#
+
+b1 =abc
+b2 =1
+
+bguess= $+$(b$b2)$-
+
+!ifneq bguess abc
+!   error failed test b
+!endif
+
+
+#
+#   test c: $prefix$(version)
+#
+
+c1 =abc
+c2 =1
+
+cguess= $+$c$(c2)$-
+
+!ifneq cguess abc
+!   error failed test c
+!endif
+
+
+#
+#   test d: $prefix$version
+#
+
+d1 =abc
+d2 =1
+
+dguess= $+$d$d2$-
+
+!ifneq dguess abc
+!   error failed test d
+!endif
+
+
+#
+#   test e: multiple indirection
+#
+
+e1 =abc
+e2 =1
+e3 =2
+
+eguess= $+$(e$(e$(e3)))$-
+
+!ifneq eguess abc
+!   error failed test e
+!endif
+
+
+#
+#   test f: $($(prefix)$(suffix))
+#
+
+f1 = abc
+f2 = f
+f3 = 1
+
+fguess = $+$($(f2)$(f3))$-
+
+!ifneq fguess abc
+!   error failed test f
+!endif
+
+
+#
+#   test g: $prefix$suffix,moretext
+#
+
+g1 = abc
+g2 = 1
+
+gguess = $+$g$g2,moretext$-
+
+!ifneq gguess abc,moretext
+!   error failed test g
+!endif
+
+
+#
+#
+#
+
+pre06 : .symbolic
+    @%null
+

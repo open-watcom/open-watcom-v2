@@ -1,0 +1,42 @@
+#
+# create 16-bit version of SHOOTGAL
+#
+CFLAGS = -zW -oaxt -d1 -w4
+CC = wcc
+NAME = shootgal
+
+LNK = $(name).lnk
+
+OBJS = $(name).obj
+
+$(name).exe : $(OBJS) $(name).res $(LNK)
+    wlink @$(LNK)
+    wrc -30 $(name).res
+    copy /b $(name).exe+$(name).sym
+    del $(name).sym
+
+$(name).res : $(name).rc bolt.ico timer.ico gun.cur keyboard.ico mouse.ico &
+                        scroll.ico $(name).ico target.bmp
+    wrc -r -30 $(name).rc
+
+$(LNK) : makefile.w16
+    %create $(LNK)
+    @%append $(LNK) debug all
+    @%append $(LNK) system windows
+    @%append $(LNK) option heapsize=1k
+    @%append $(LNK) option symfile = $(name).sym
+    @%append $(LNK) library windows
+    @%append $(LNK) option stack=8k
+    @%append $(LNK) name $(name)
+    @for %i in ($(OBJS)) do @%append $(LNK) file %i
+
+$(name).obj : $(name).c $(name).h
+        $(CC) $(CFLAGS) $[*
+
+clean: .symbolic
+    @erase *.obj
+    @erase *.err
+    @erase *.exe
+    @erase *.lnk
+    @erase *.res
+    @erase *.rex

@@ -1,0 +1,9 @@
+# sample makeinit additions needed for this
+
+lang_root = e:\lang
+dev_dir = d:\dev
+build_dir = $(dev_dir)\bld
+mif_path = $(build_dir)\mif
+.mif: $(mif_path)
+
+!include cdirs.mif

@@ -1,0 +1,2 @@
+dinitwin.obj : ..\..\..\c\dinitwin.c ..\..\..\c\initwin.c
+dwmain.obj   : ..\..\..\c\dwmain.c   ..\..\..\c\wmain.c

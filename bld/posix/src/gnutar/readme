@@ -1,0 +1,8 @@
+
+The tar software is public domain source from the early days of GNU.  It
+was not all that great, and has many warnings with our compiler.  I made
+the changes to make it work (fixed clear bugs), eliminated the possibility
+of doing direct sector disk I/O, and changed the code slightly to modify
+the file names being written so that there are no collisions.
+
+            DSMK

@@ -1,0 +1,6 @@
+set nomagic
+set magicstring=""
+g!/^pick/d
+%s/^.*\( ([A-Z0-9_]*).*$/#define \1 (MSG_RC_BASE+0x\#)/
+w!msg.gh
+q!

@@ -1,0 +1,103 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject btom.obj     d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject chkctype.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject fbtom.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject fjgetmoj.obj d16 d32             nt            o16 o32 q16 q32 w16 w32 osi
+!inject fjputmoj.obj d16 d32             nt            o16 o32 q16 q32 w16 w32 osi
+!inject fjstradv.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrcat.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrchr.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrcmp.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrcsp.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstricm.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrlen.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrlwr.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrmat.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrncm.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrncp.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrnic.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrnse.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrrch.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrrev.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrset.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrski.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrspn.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrstr.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrtok.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fjstrupr.obj d16 d32             nt            o16 o32         w16 w32 osi
+!inject fmtob.obj    d16 d32             nt            o16 o32 q16 q32 w16 w32 osi
+!inject fnthctyp.obj d16 d32             nt            o16 o32 q16 q32 w16 w32 osi
+!inject hantozen.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject hanzentb.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject isktable.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject ismbdaln.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbdalp.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbddig.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbdgra.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbdhir.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbdkan.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbdlow.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbdpri.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbdpun.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbdspa.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbdupp.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ismbdxdi.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jasctime.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jctime.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jgetmoji.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jisalpha.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jisdigit.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jishira.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jiskana.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jiskigou.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jisl0.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jisl1.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jisl2.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jislower.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jisprint.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jisspace.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jistojms.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jisupper.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jiszen.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jmstojis.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jperror.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jputmoji.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jstradv.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrcat.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrchr.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrcmp.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrcspn.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrerro.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstricmp.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrlen.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrlwr.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrmatc.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrncmp.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrncpy.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrnicm.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrnset.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrrchr.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrrev.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrset.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrskip.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrspn.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrstr.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrtok.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jstrupr.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject jtohira.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jtokata.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jtolower.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject jtoupper.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject mbdhanto.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject mbdtolow.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject mbdtoupp.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject mbdzento.obj d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject mbisl0.obj   d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject mbisl1.obj   d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject mbisl2.obj   d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject mtob.obj     d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject nthctype.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject zenhantb.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+
+!include ..\..\..\..\objlist.mif

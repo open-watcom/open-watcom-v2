@@ -1,0 +1,41 @@
+100 MENU 
+BEGIN
+	POPUP "&File"
+	BEGIN
+		MENUITEM "&New", 101
+		MENUITEM "&Open...", 102
+		MENUITEM "&Save", 103
+		MENUITEM "Save &as...", 104
+		MENUITEM SEPARATOR
+		MENUITEM "&Print...", 105
+		MENUITEM "Page se&tup...", 106
+		MENUITEM "P&rinter setup...", 107
+		MENUITEM SEPARATOR
+		MENUITEM "E&xit", 108
+		POPUP "Pop-up"
+		BEGIN
+			MENUITEM "Item", 110
+		END
+	END
+
+	POPUP "&Edit"
+	BEGIN
+		MENUITEM "&Cut\tShift+Del", 201
+		MENUITEM "&Copy\tShift+Ins", 202
+		MENUITEM "&Paste\tCtrl+Ins", 203
+	END
+
+
+	POPUP "&Help"
+	BEGIN
+		MENUITEM "&Index\tF1", 901
+		MENUITEM "&Keyboard", 902
+		MENUITEM "&Commands", 903
+		MENUITEM "&Procedures", 904
+		MENUITEM "&Using help", 905
+		MENUITEM SEPARATOR
+		MENUITEM "&About...", 999
+	END
+
+END
+

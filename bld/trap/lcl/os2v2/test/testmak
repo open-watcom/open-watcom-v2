@@ -1,0 +1,95 @@
+.SUFFIXES:
+.SUFFIXES: .res .rc .lst .sbj .obj .h .c .asm .hlp .itl .ipf
+
+# Default compilation macros for sample programs
+#
+# Compile switches  that are enabled
+
+CC	   = wcc386 -d2 -D_Optlink= /i\dev\watcom\os220_h
+
+AFLAGS	= /Mx -t -z
+ASM	= ml /c /Zm
+LFLAGS	=
+LINK	= WLINK  $(LFLAGS)
+
+.c: ..\c
+.h: ..\h
+
+.obj.lst:
+    wdisasm $*/l/s
+
+.c.obj:
+    $(CC) $*.c
+
+.asm.obj:
+    $(ASM)   $*.asm
+
+.ipf.hlp:
+	ipfc $*.ipf /W3
+
+.itl.hlp:
+	cc  -P $*.itl
+	ipfc $*.i
+	del $*.i
+
+.rc.res:
+	@set oinc=$(%include)
+	set include=$(watcom_dir)\os220_h;$(%include)
+	set opath=$(%path)
+	set path=$(os2_tools_root)
+	$(os2_tools_root)\rc -r -i ..\h $*.rc
+	set path=$(%opath)
+	@set include=$(%oinc)
+
+
+HEADERS = hello.h
+
+#-------------------------------------------------------------------
+#   A list of all of the object files
+#-------------------------------------------------------------------
+
+
+all: dbg.exe hello.exe try.exe .symbolic
+    @%null
+
+hello.res: hello.rc hello.ico hello.h
+
+hello.obj: hello.c $(HEADERS)
+
+dbg.sbj: dbg.c
+    wcc dbg /w4 /ml /d2 /dSTANDALONE /fo=.sbj /i$(wvdir)\h;$(dip_dir)\h
+
+dbg.obj: dbg.c
+    wcc dbg /w4 /ml /d2 /i$(wvdir)\h;$(dip_dir)\h
+
+try.exe : try.c
+    wcc386 try /bw /d2 /i$(watcom_dir)\OS220_H
+    wlink sys os2v2_pm @try
+
+hello.exe: hello.obj  hello.lnk hello.res
+    wlink @hello.lnk op symfile
+    $(os2_tools_root)\rc -p -x hello.res hello.exe
+    copy/b hello.exe+hello.sym
+
+dbg.exe: dbg.sbj dbg.lnk hello.res
+    wlink @dbg.lnk
+
+.before :
+
+pmdbg.exe: pmdbg.lnk pmdbg.obj dbg.obj pmdbg.res
+	wlink @pmdbg.lnk
+	$(os2_tools_root)\rc pmdbg.res
+	copy/b pmdbg.exe+pmdbg.sym
+
+pmdbg.obj: pmdbg.c pmdbg.h
+	wcc /d2 /zdp /ml /zu /W4 /s pmdbg.c /id:\dev\watcom\os21x_h
+
+pmdbg.res: pmdbg.rc pmdbg.ico pmdbg.h
+	set include=d:\dev\watcom\os21x_h;$(%include)
+	set opath=$(%path)
+	set path=$(os2_tools_root)
+	$(os2_tools_root)\rc -r pmdbg.rc
+	set path=$(%opath)
+
+testlock.exe : testlock.c
+    wcl /d2 testlock.c pmlock.obj /l=os2 /i\dev\nwv\h;\dev\WATCOM\OS21X_H /fm

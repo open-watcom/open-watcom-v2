@@ -1,0 +1,14 @@
+!lzexpand
+long #CopyLZFile(int,int);
+int #GetExpandedName(void *,void *);
+void #LZClose(int);
+long #LZCopy(int,int);
+void #LZDone(void);
+int #LZInit(int);
+int #LZOpenFile(void *,void *,int);
+int #LZRead(int,void *,int);
+long #LZSeek(int,long,int);
+int #LZStart(void);
+int #_16GetExpandedName(long,long);
+int #_16LZOpenFile(long,long,int);
+int #_16LZRead(int,long,int);

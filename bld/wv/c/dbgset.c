@@ -1,0 +1,1028 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include <string.h>
+#include <ctype.h>
+#include "dbgdefn.h"
+#include "dbgtoken.h"
+#include "dbgerr.h"
+#include "dbgtoggl.h"
+#include "dbglit.h"
+#include "dbgmem.h"
+#include "dbginfo.h"
+#include "dbgio.h"
+#include "mad.h"
+#include "madcli.h"
+
+
+extern unsigned int     ScanCmd(char *);
+extern void             Scan( void );
+extern char             *ScanPos( void );
+extern char             *ReScan( char * );
+extern bool             ScanEOC(void);
+extern bool             ScanItem(bool ,char **,unsigned int *);
+extern void             ReqEOC(void);
+extern unsigned         SetCurrRadix(unsigned int );
+extern char             *GetCmdEntry(char *,int ,char *);
+extern char             *CnvULongDec(unsigned long ,char *);
+extern unsigned         ReqExpr();
+extern unsigned         OptExpr();
+extern void             WndUserAdd(char *,unsigned int );
+extern void             CallSet(void);
+extern void             ImplicitSet(void);
+extern void             LookSet(void);
+extern void             RadixSet(void);
+extern void             SourceSet(void);
+extern void             LevelSet(void);
+extern void             CallConf(void);
+extern void             ImplicitConf(void);
+extern void             LookConf(void);
+extern void             RadixConf(void);
+extern void             SourceConf(void);
+extern void             LevelConf(void);
+extern void             DoConfig(char *,char *,void (**)(), void (**)() );
+extern void             ConfigLine(char *);
+extern void             WndMenuOn(void);
+extern void             WndMenuOff(void);
+extern void             LangInit(void);
+extern void             LangFini(void);
+extern bool             LangLoad(char *,int );
+extern char             *StrCopy(char *,char *);
+extern cmd_list         *AllocCmdList(char *,unsigned int );
+extern void             FreeCmdList(cmd_list *);
+extern char             *Format(char *,char *,... );
+extern void             Recog(unsigned int );
+extern void             VarChangeOptions();
+extern void             RegChangeOptions();
+extern void             FPUChangeOptions();
+extern void             MMXChangeOptions();
+extern void             AsmChangeOptions();
+extern void             FuncChangeOptions();
+extern void             GlobChangeOptions();
+extern void             ModChangeOptions();
+extern void             ConfigCmdList( char *cmds, int indent );
+extern void             WndDlgTxt(char*);
+extern char             *UniqStrAddr( address *addr, char *p ,unsigned);
+extern char             *GetCmdName( int );
+extern void             RegFindData( mad_type_kind kind, mad_reg_set_data const **pdata );
+extern mad_handle       FindMAD( char *, unsigned );
+extern unsigned         QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq );
+extern void             AddrFloat( address * );
+unsigned                GetMADNormalizedString( mad_string, unsigned, char * );
+
+extern char             OnOffNameTab[];
+extern char             *TxtBuff;
+extern char             *Language;
+extern char             WndNameTab[];
+extern tokens           CurrToken;
+extern margins          SrcMar;
+extern margins          AsmMar;
+extern system_config    SysConfig;
+
+static char_ring        *SupportRtns;
+
+typedef struct pending_toggle_list      pending_toggle_list;
+
+struct pending_toggle_list {
+    pending_toggle_list *next;
+    mad_handle          mad;
+    char                toggle[1]; /* variable sized */
+};
+
+typedef enum {
+    MWT_ASM,
+    MWT_REG,
+    MWT_FPU,
+    MWT_MMX,
+    MWT_LAST
+} mad_window_toggles;
+
+static pending_toggle_list *PendToggleList[MWT_LAST];
+
+static char SetNameTab[] = {
+    "AUtosave\0"
+    "ASsembly\0"
+    "Variable\0"
+    "FUnctions\0"
+    "GLobals\0"
+    "MOdules\0"
+    "REGister\0"
+    "Fpu\0"
+    "MMx\0"
+    "Bell\0"
+    "Call\0"
+    "Dclick\0"
+    "Implicit\0"
+    "INput\0"
+    "Radix\0"
+    "RECursion\0"
+    "SEarch\0"
+    "SOurce\0"
+    "SYmbol\0"
+    "TAb\0"
+    "TYpes\0"
+    "Level\0"
+    "LAnguage\0"
+    "MAcro\0"
+    "SUpportroutine\0"
+};
+
+extern void     AutoConf();
+extern void     AsmConf();
+extern void     VarConf();
+extern void     FuncConf();
+extern void     GlobConf();
+extern void     ModConf();
+extern void     RegConf();
+extern void     FPUConf();
+extern void     MMXConf();
+extern void     DClickConf();
+extern void     TabConf();
+extern void     TypeConf();
+extern void     InputConf();
+extern void     MacroConf();
+extern void     BellConf();
+extern void     SearchConf();
+extern void     LangConf();
+extern void     RecursionConf();
+extern void     SupportConf();
+
+extern void     BadSet();
+extern void     AutoSet();
+extern void     AsmSet();
+extern void     VarSet();
+extern void     FuncSet();
+extern void     GlobSet();
+extern void     ModSet();
+extern void     RegSet();
+extern void     FPUSet();
+extern void     MMXSet();
+extern void     DClickSet();
+extern void     BellSet();
+extern void     TabSet();
+extern void     TypeSet();
+extern void     LangSet();
+extern void     InputSet();
+extern void     MacroSet();
+extern void     SearchSet();
+extern void     RecursionSet();
+extern void     SupportSet();
+
+static void (* const SetJmpTab[])() = {
+    &BadSet,
+    &AutoSet,
+    &AsmSet,
+    &VarSet,
+    &FuncSet,
+    &GlobSet,
+    &ModSet,
+    &RegSet,
+    &FPUSet,
+    &MMXSet,
+    &BellSet,
+    &CallSet,
+    &DClickSet,
+    &ImplicitSet,
+    &InputSet,
+    &RadixSet,
+    &RecursionSet,
+    &SearchSet,
+    &SourceSet,
+    &LookSet,
+    &TabSet,
+    &TypeSet,
+    &LevelSet,
+    &LangSet,
+    &MacroSet,
+    &SupportSet,
+};
+
+static void (* SetConfJmpTab[])() = {
+    &AutoConf,
+    &AsmConf,
+    &VarConf,
+    &FuncConf,
+    &GlobConf,
+    &ModConf,
+    &RegConf,
+    &FPUConf,
+    &MMXConf,
+    &BellConf,
+    &CallConf,
+    &DClickConf,
+    &ImplicitConf,
+    &InputConf,
+    &RadixConf,
+    &RecursionConf,
+    &SearchConf,
+    &SourceConf,
+    &LookConf,
+    &TabConf,
+    &TypeConf,
+    &LevelConf,
+    &LangConf,
+    &MacroConf,
+    &SupportConf,
+    NULL,
+};
+
+
+static void (* SetNotAllTab[])() =
+{
+    &CallConf,
+    &LevelConf,
+    &LangConf,
+    &InputConf,
+    NULL,
+};
+
+
+
+
+bool SwitchOnOff()
+{
+    unsigned which;
+
+    which = ScanCmd( OnOffNameTab );
+    if( which == 0 ) Error( ERR_LOC, LIT( ERR_WANT_ON_OFF ) );
+    ReqEOC();
+    return( which == 1 );
+}
+
+
+void ShowSwitch( bool on )
+{
+    GetCmdEntry( OnOffNameTab, on ? 1 : 2, TxtBuff );
+    ConfigLine( TxtBuff );
+}
+
+
+static void BadSet()
+{
+    Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
+}
+
+
+/*
+ * ProcSet -- process set command
+ */
+
+
+void ProcSet()
+{
+    (*SetJmpTab[ ScanCmd( SetNameTab ) ])();
+}
+
+
+void ConfigSet()
+{
+    DoConfig( GetCmdName( CMD_SET ), SetNameTab, SetConfJmpTab, SetNotAllTab );
+}
+
+
+/*
+ * BellSet - set bell on/off processing
+ */
+
+static void BellSet()
+{
+    _SwitchSet( SW_BELL, SwitchOnOff() );
+}
+
+static void BellConf()
+{
+    ShowSwitch( _IsOn( SW_BELL ) );
+}
+
+
+/*
+ * AutoSet - set autoconfig on/off processing
+ */
+
+static void AutoSet()
+{
+    _SwitchSet( SW_AUTO_SAVE_CONFIG, SwitchOnOff() );
+}
+
+static void AutoConf()
+{
+    ShowSwitch( _IsOn( SW_AUTO_SAVE_CONFIG ) );
+}
+
+
+/*
+ * RecursionSet - set recursion checking on/off processing
+ */
+
+static void RecursionSet()
+{
+    _SwitchSet( SW_RECURSE_CHECK, SwitchOnOff() );
+}
+
+static void RecursionConf()
+{
+    ShowSwitch( _IsOn( SW_RECURSE_CHECK ) );
+}
+
+
+bool LangSetInit()
+{
+    static char InitialLang[] = { "cpp" };
+
+    LangInit();
+    _Alloc( Language, sizeof( InitialLang ) + 1 );
+    if( Language == NULL ) return( FALSE );
+    StrCopy( InitialLang, Language );
+    return( LangLoad( Language, strlen( Language ) ) );
+}
+
+void LangSetFini()
+{
+    _Free( Language );
+    LangFini();
+}
+
+
+
+
+/*
+ * NewLang -- load a new expression language, if different from current one
+ */
+
+void NewLang( char *lang )
+{
+    char       *new;
+    unsigned    len;
+
+    if( lang == NULL ) return;
+    strlwr( lang );
+    len = strlen( lang );
+    if( (len != strlen( Language )) || memcmp( lang, Language, len ) != 0 ) {
+        new = DbgMustAlloc( len + 1 );
+        memcpy( new, lang, len );
+        new[ len ] = NULLCHAR;
+        if( !LangLoad( new, len ) ) {
+            LangLoad( Language, strlen( Language ) );
+            _Free( new );
+            Error( ERR_NONE, LIT( ERR_NO_LANG ) );
+        }
+        _Free( Language );
+        Language = new;
+    }
+}
+
+
+static void LangSet()
+{
+    char        *start;
+    unsigned    len;
+
+    ScanItem( TRUE, &start, &len );
+    ReqEOC();
+    NewLang( start );
+}
+
+static void LangConf()
+{
+    ConfigLine( Language );
+}
+
+
+/*
+        Individual Window Settings
+*/
+#define ONCE_FOR_ALL_SWITCHES \
+    once( SW_ASM_SOURCE ) \
+    once( SW_ASM_HEX ) \
+    once( SW_VAR_WHOLE_EXPR ) \
+    once( SW_VAR_SHOW_CODE ) \
+    once( SW_VAR_SHOW_INHERIT ) \
+    once( SW_VAR_SHOW_COMPILER ) \
+    once( SW_VAR_SHOW_MEMBERS ) \
+    once( SW_VAR_SHOW_PRIVATE ) \
+    once( SW_VAR_SHOW_PROTECTED ) \
+    once( SW_VAR_SHOW_STATIC ) \
+    once( SW_FUNC_D2_ONLY ) \
+    once( SW_GLOB_D2_ONLY ) \
+    once( SW_MOD_ALL_MODULES )
+
+enum {
+    #define once( x ) x,
+    ONCE_FOR_ALL_SWITCHES
+    #undef once
+};
+
+typedef struct window_toggle {
+    char        on;
+    char        off;
+    char        sw;
+} window_toggle;
+
+enum {
+    ON,
+    OFF
+};
+
+
+static void SwitchTwiddle( int which, int on )
+{
+    switch( which ) {
+    #define once( x ) \
+    case x: \
+        _SwitchSet( x, on ); \
+        break;
+    ONCE_FOR_ALL_SWITCHES
+    #undef once
+    }
+}
+
+static int SwitchIsOn( int which )
+{
+    switch( which ) {
+    #define once( x ) \
+    case x: \
+        return( _IsOn( x ) ); \
+        break;
+    ONCE_FOR_ALL_SWITCHES
+    #undef once
+    }
+    return( 0 );
+}
+
+static const mad_toggle_strings *GetMADToggleList( const mad_reg_set_data *rsd )
+{
+    if( rsd == NULL ) return( MADDisasmToggleList() );
+    return( MADRegSetDisplayToggleList( rsd ) );
+}
+
+static unsigned DoMADToggle( const mad_reg_set_data *rsd, unsigned on, unsigned off )
+{
+    if( rsd == NULL ) return( MADDisasmToggle( on, off ) );
+    return( MADRegSetDisplayToggle( rsd, on, off ) );
+}
+
+static void PendingAdd( mad_window_toggles wt, mad_handle mh,
+                        char *name, unsigned len )
+{
+    pending_toggle_list **owner;
+    pending_toggle_list *new;
+
+    owner = &PendToggleList[wt];
+    for( ;; ) {
+        new = *owner;
+        if( new == NULL ) break;
+        owner = &new->next;
+    }
+    new = DbgMustAlloc( sizeof( *new ) + len );
+    *owner = new;
+    new->next = NULL;
+    new->mad = mh;
+    memcpy( new->toggle, name, len );
+    new->toggle[len] = '\0';
+}
+
+
+static bool DoOneToggle( mad_window_toggles wt )
+{
+    unsigned                    bit;
+    char                        *start;
+    unsigned                    len;
+    const mad_toggle_strings    *toggles;
+    const mad_reg_set_data      *rsd;
+
+    if( !ScanItem( TRUE, &start, &len ) ) return( FALSE );
+    switch( wt ) {
+    case MWT_ASM:
+        rsd = NULL;
+        break;
+    case MWT_FPU:
+        RegFindData( MTK_FLOAT, &rsd );
+        if( rsd == NULL ) {
+            PendingAdd( SysConfig.mad, wt, start, len );
+            return( TRUE );
+        }
+        break;
+    case MWT_REG:
+        RegFindData( MTK_INTEGER, &rsd );
+        if( rsd == NULL ) {
+            PendingAdd( SysConfig.mad, wt, start, len );
+            return( TRUE );
+        }
+        break;
+    case MWT_MMX:
+        RegFindData( MTK_CUSTOM, &rsd );
+        if( rsd == NULL ) {
+            PendingAdd( SysConfig.mad, wt, start, len );
+            return( TRUE );
+        }
+        break;
+    }
+    bit = 1;
+    toggles = GetMADToggleList( rsd );
+    for( ;; ) {
+        if( toggles->on == MSTR_NIL ) return( FALSE );
+        GetMADNormalizedString( toggles->on, TXT_LEN, TxtBuff );
+        if( TxtBuff[0] != NULLCHAR && strnicmp( start, TxtBuff, len ) == 0 ) {
+            DoMADToggle( rsd, bit, 0 );
+            break;
+        }
+        GetMADNormalizedString( toggles->off, TXT_LEN, TxtBuff );
+        if( TxtBuff[0] != NULLCHAR && strnicmp( start, TxtBuff, len ) == 0 ) {
+            DoMADToggle( rsd, 0, bit );
+            break;
+        }
+        bit <<= 1;
+        ++toggles;
+    }
+    return( TRUE );
+}
+
+void PendingToggles()
+{
+    mad_window_toggles          wt;
+    pending_toggle_list         **owner;
+    pending_toggle_list         *curr;
+    char                        *scan;
+
+    scan = ScanPos();
+    for( wt = 0; wt < MWT_LAST; ++wt ) {
+        owner = &PendToggleList[wt];
+        for( ;; ) {
+            curr = *owner;
+            if( curr == NULL ) break;
+            if( curr->mad == SysConfig.mad ) {
+                ReScan( curr->toggle );
+                DoOneToggle( wt );
+                *owner = curr->next;
+                _Free( curr );
+            } else {
+                owner = &curr->next;
+            }
+        }
+    }
+    ReScan( scan );
+}
+
+static bool OneToggle( mad_window_toggles wt )
+{
+    char                *name;
+    unsigned            len;
+    mad_handle          old_mad;
+    mad_handle          new_mad;
+    char                *scan;
+    bool                res;
+
+
+    scan = ScanPos();
+    if( DoOneToggle( wt ) ) return( TRUE );
+    ReScan( scan );
+    if( !ScanItem( TRUE, &name, &len ) ) return( FALSE );
+    scan = name;
+    for( ;; ) {
+        if( scan > &name[len] ) break;
+        if( *scan == '/' ) {
+            len = scan - name;
+            ReScan( scan );
+            break;
+        }
+        ++scan;
+    }
+    if( CurrToken != T_DIV ) return( FALSE );
+    Scan();
+    new_mad = FindMAD( name, len );
+    if( new_mad == MAD_NIL ) return( FALSE );
+    if( MADLoaded( new_mad ) != MS_OK ) {
+        /* put the toggle on the pending list */
+        if( !ScanItem( TRUE, &name, &len ) ) return( FALSE );
+        PendingAdd( wt, new_mad, name, len );
+        return( TRUE );
+    }
+    old_mad = MADActiveSet( new_mad );
+    res = DoOneToggle( wt );
+    MADActiveSet( old_mad );
+    return( res );
+}
+
+static void ToggleWindowSwitches( window_toggle *toggle, int len,
+                                char *settings, mad_window_toggles wt )
+{
+    int idx;
+    int i;
+
+    while( !ScanEOC() ) {
+        if( settings != NULL ) {
+            idx = ScanCmd( settings );
+            for( i = 0; i < len; ++i ) {
+                if( toggle[ i ].on == idx ) {
+                    SwitchTwiddle( toggle[ i ].sw, 1 );
+                    break;
+                }
+                if( toggle[ i ].off == idx ) {
+                    SwitchTwiddle( toggle[ i ].sw, 0 );
+                    break;
+                }
+            }
+        }
+        if( i == len || settings == NULL ) {
+            if( wt >= MWT_LAST || !OneToggle( wt ) ) {
+                Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
+            }
+        }
+    }
+}
+
+static char *DumpAToggle( char *p, mad_handle mh, char *toggle )
+{
+    if( toggle[0] != NULLCHAR ) {
+        MADNameDescription( mh, TXT_LEN - (p-TxtBuff), p );
+        for( ;; ) {
+            if( *p == '\0' ) break;
+            if( *p == ' ' ) break;
+            ++p;
+        }
+        *p++ = '/';
+        p = StrCopy( toggle, p );
+        *p++ = ' ';
+    }
+    return( p );
+}
+
+struct dump_toggles {
+    mad_window_toggles          wt;
+    char                        *p;
+};
+
+static walk_result DumpToggles( mad_handle mh, void *d )
+{
+    struct dump_toggles         *td = d;
+    const mad_toggle_strings    *toggles;
+    unsigned                    bit;
+    char                        buff[80];
+    const mad_reg_set_data      *rsd;
+
+    if( MADLoaded( mh ) != MS_OK ) return( WR_CONTINUE );
+    switch( td->wt ) {
+    case MWT_FPU:
+        RegFindData( MTK_FLOAT, &rsd );
+        if( rsd == NULL ) return( WR_CONTINUE );
+        break;
+    case MWT_REG:
+        RegFindData( MTK_INTEGER, &rsd );
+        if( rsd == NULL ) return( WR_CONTINUE );
+        break;
+    case MWT_MMX:
+        RegFindData( MTK_CUSTOM, &rsd );
+        if( rsd == NULL ) return( WR_CONTINUE );
+        break;
+    default:
+        rsd = NULL;
+        break;
+    }
+    bit = DoMADToggle( rsd, 0, 0 );
+    toggles = GetMADToggleList( rsd );
+    while( toggles->menu != MSTR_NIL ) {
+        if( bit & 1 ) {
+            GetMADNormalizedString( toggles->on, sizeof( buff ), buff );
+        } else {
+            GetMADNormalizedString( toggles->off, sizeof( buff ), buff );
+        }
+        td->p = DumpAToggle( td->p, mh, buff );
+        bit >>= 1;
+        ++toggles;
+    }
+    return( WR_CONTINUE );
+}
+
+static void ConfWindowSwitches( window_toggle *toggle, int len, char *settings,
+                        mad_window_toggles wt )
+{
+    struct dump_toggles data;
+    pending_toggle_list *curr;
+    char                *ptr;
+    int                 i;
+
+    ptr = TxtBuff;
+    for( i = 0; i < len; ++i ) {
+        ptr = GetCmdEntry( settings,
+                           SwitchIsOn( toggle[ i ].sw ) ?
+                               toggle[ i ].on :
+                               toggle[ i ].off,
+                           ptr );
+        *ptr++= ' ';
+    }
+    if( wt < MWT_LAST ) {
+        data.wt = wt;
+        data.p = ptr;
+        MADWalk( DumpToggles, &data );
+        ptr = data.p;
+        for( curr = PendToggleList[wt]; curr != NULL; curr = curr->next ) {
+            ptr = DumpAToggle( ptr, curr->mad, curr->toggle );
+        }
+    }
+    *ptr = '\0';
+    ConfigLine( TxtBuff );
+}
+
+
+/*
+        Assembly window
+*/
+
+static char AsmSettings[] = {
+    "Source\0"
+    "NOSource\0"
+    "Hexadecimal\0"
+    "Decimal\0"
+};
+
+enum {
+    ASM_SOURCE = 1,
+    ASM_NOSOURCE,
+    ASM_HEX,
+    ASM_DECIMAL,
+};
+
+static window_toggle    AsmToggle[] = {
+    { ASM_SOURCE, ASM_NOSOURCE, SW_ASM_SOURCE },
+    { ASM_HEX, ASM_DECIMAL, SW_ASM_HEX },
+};
+
+static void AsmSet()
+{
+    ToggleWindowSwitches( AsmToggle, ArraySize( AsmToggle ), AsmSettings, MWT_ASM );
+    AsmChangeOptions();
+}
+
+static void AsmConf()
+{
+    ConfWindowSwitches( AsmToggle, ArraySize( AsmToggle ), AsmSettings, MWT_ASM );
+}
+
+/*
+        FPU Window
+*/
+
+static void FPUSet()
+{
+    ToggleWindowSwitches( NULL, 0, NULL, MWT_FPU );
+    FPUChangeOptions();
+}
+
+static void FPUConf()
+{
+    ConfWindowSwitches( NULL, 0, NULL, MWT_FPU );
+}
+
+/*
+        Variables window
+*/
+
+static char VarSettings[] = {
+    "Entire\0"
+    "Partial\0"
+    "CODe\0"
+    "NOCODe\0"
+    "INherit\0"
+    "NOINherit\0"
+    "COMpiler\0"
+    "NOCOMpiler\0"
+    "PRIvate\0"
+    "NOPRIvate\0"
+    "PROtected\0"
+    "NOPROTected\0"
+    "STatic\0"
+    "NOSTatic\0"
+    "Members\0"
+    "NOMembers\0"
+};
+
+enum {
+    VAR_ENTIRE = 1,
+    VAR_PARTIAL,
+    VAR_CODE,
+    VAR_NOCODE,
+    VAR_INHERIT,
+    VAR_NOINHERIT,
+    VAR_COMPILER,
+    VAR_NOCOMPILER,
+    VAR_PRIVATE,
+    VAR_NOPRIVATE,
+    VAR_PROTECTED,
+    VAR_NOPROTECTED,
+    VAR_STATIC,
+    VAR_NOSTATIC,
+    VAR_MEMBERS,
+    VAR_NOMEMBERS,
+};
+
+static window_toggle VarToggle[] = {
+    { VAR_ENTIRE, VAR_PARTIAL, SW_VAR_WHOLE_EXPR },
+    { VAR_CODE, VAR_NOCODE, SW_VAR_SHOW_CODE },
+    { VAR_INHERIT, VAR_NOINHERIT, SW_VAR_SHOW_INHERIT },
+    { VAR_COMPILER, VAR_NOCOMPILER, SW_VAR_SHOW_COMPILER },
+    { VAR_MEMBERS, VAR_NOMEMBERS, SW_VAR_SHOW_MEMBERS },
+    { VAR_PRIVATE, VAR_NOPRIVATE, SW_VAR_SHOW_PRIVATE },
+    { VAR_PROTECTED, VAR_NOPROTECTED, SW_VAR_SHOW_PROTECTED },
+    { VAR_STATIC, VAR_NOSTATIC, SW_VAR_SHOW_STATIC },
+};
+
+static void VarSet()
+{
+    ToggleWindowSwitches( VarToggle, ArraySize( VarToggle ), VarSettings, MWT_LAST );
+    VarChangeOptions();
+}
+
+static void VarConf()
+{
+    ConfWindowSwitches( VarToggle, ArraySize( VarToggle ), VarSettings, MWT_LAST );
+    ConfigLine( TxtBuff );
+}
+
+
+static char FuncSettings[] = {
+    "Typed\0"
+    "All\0"
+};
+
+enum {
+    FUNC_TYPED = 1,
+    FUNC_ALL,
+};
+
+static window_toggle FuncToggle[] = {
+    { FUNC_TYPED, FUNC_ALL, SW_FUNC_D2_ONLY },
+};
+
+static void FuncSet()
+{
+    ToggleWindowSwitches( FuncToggle, ArraySize( FuncToggle ), FuncSettings, MWT_LAST );
+    FuncChangeOptions();
+}
+
+static void FuncConf()
+{
+    ConfWindowSwitches( FuncToggle, ArraySize( FuncToggle ), FuncSettings, MWT_LAST );
+}
+
+
+static window_toggle GlobToggle[] = {
+    { FUNC_TYPED, FUNC_ALL, SW_GLOB_D2_ONLY },
+};
+
+static void GlobSet()
+{
+    ToggleWindowSwitches( GlobToggle, ArraySize( GlobToggle ), FuncSettings, MWT_LAST );
+    GlobChangeOptions();
+}
+
+static void GlobConf()
+{
+    ConfWindowSwitches( GlobToggle, ArraySize( GlobToggle ), FuncSettings, MWT_LAST );
+}
+
+
+static window_toggle ModToggle[] = {
+    { FUNC_ALL, FUNC_TYPED, SW_MOD_ALL_MODULES },
+};
+
+static void ModSet()
+{
+    ToggleWindowSwitches( ModToggle, ArraySize( ModToggle ), FuncSettings, MWT_LAST );
+    ModChangeOptions();
+}
+
+static void ModConf()
+{
+    ConfWindowSwitches( ModToggle, ArraySize( ModToggle ), FuncSettings, MWT_LAST );
+}
+
+
+static void RegSet()
+{
+    ToggleWindowSwitches( NULL, 0, NULL, MWT_REG );
+    RegChangeOptions();
+}
+
+static void RegConf()
+{
+    ConfWindowSwitches( NULL, 0, NULL, MWT_REG );
+}
+
+
+static void MMXSet()
+{
+    ToggleWindowSwitches( NULL, 0, NULL, MWT_MMX );
+    MMXChangeOptions();
+}
+
+static void MMXConf()
+{
+    ConfWindowSwitches( NULL, 0, NULL, MWT_MMX );
+}
+
+
+void SupportFini()
+{
+    char_ring   *curr, *junk;
+
+    curr = SupportRtns;
+    while( curr != NULL ) {
+        junk = curr;
+        curr = curr->next;
+        _Free( junk );
+    }
+    SupportRtns = NULL;
+}
+
+
+static void SupportSet()
+{
+    char_ring   *new;
+    char        *start;
+    unsigned    len;
+    unsigned    count;
+
+    count = 0;
+    while( ScanItem( TRUE, &start, &len ) ) {
+        new = DbgMustAlloc( sizeof( *new ) + len );
+        new->next = SupportRtns;
+        SupportRtns = new;
+        memcpy( new->name, start, len );
+        new->name[len] = '\0';
+        ++count;
+    }
+    ReqEOC();
+    if( count == 0 ) {
+        SupportFini();
+    }
+}
+
+static void SupportConf()
+{
+    char_ring   *curr;
+    char        *p;
+
+    p = TxtBuff;
+    for( curr = SupportRtns; curr != NULL; curr = curr->next ) {
+        p = StrCopy( "}", StrCopy( curr->name, StrCopy( "{", p ) ) );
+        if( p - TxtBuff > 50 ) {
+            ConfigLine( TxtBuff );
+            p = TxtBuff;
+        }
+    }
+    if( p != TxtBuff ) {
+        ConfigLine( TxtBuff );
+    }
+}
+
+static bool SupportName( char *name, char *pattern )
+{
+    for( ;; ) {
+        if( *name == '\0' && *pattern == '\0' ) return( TRUE );
+        if( *pattern == '*' ) return( TRUE );
+        if( *name != *pattern ) return( FALSE );
+        ++name;
+        ++pattern;
+    }
+}
+
+bool IsSupportRoutine( sym_handle *sym )
+{
+    char_ring                   *curr;
+    char                        name[TXT_LEN];
+
+    QualifiedSymName( sym, name, sizeof( name ), TRUE );
+    for( curr = SupportRtns; curr != NULL; curr = curr->next ) {
+        if( SupportName( name, curr->name ) ) return( TRUE );
+    }
+    return( FALSE );
+}

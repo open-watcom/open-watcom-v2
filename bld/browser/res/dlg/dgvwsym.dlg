@@ -1,0 +1,17 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGVWSYM.H\0"
+END
+
+IDD_VIEW_SYMBOL DIALOG 62, 27, 187, 126
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Class ..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Defined: ..\\cpp\\foo.cpp", IDD_FILE_NAME, "Static",
+                    WS_GROUP, 6, 6, 175, 8
+    CONTROL         "class Foo : public A, public B", IDD_SYMBOL_LINE,
+                    "Static", WS_GROUP, 6, 23, 175, 10
+    CONTROL         "", IDD_SYMBOL_BOX, "ListBox", LBS_NOTIFY | LBS_SORT |
+                    WS_BORDER | WS_VSCROLL | WS_TABSTOP, 6, 36, 175, 85
+END

@@ -1,0 +1,6 @@
+# ---------------------------
+# ERROR 33: user's error
+# ---------------------------
+
+!error this is an error message!
+

@@ -1,0 +1,29 @@
+#include <windows.h>
+#include "rcdefs.h"
+#include "gui.rc"
+
+B_newproj       BITMAP  newproj.bmp
+B_openproj      BITMAP  openproj.bmp
+B_saveproj      BITMAP  saveproj.bmp
+B_makeproj      BITMAP  makeproj.bmp
+B_maketarg      BITMAP  maketarg.bmp
+B_debgtarg      BITMAP  debgtarg.bmp
+B_browtarg      BITMAP  browtarg.bmp
+B_samptarg      BITMAP  samptarg.bmp
+B_proftarg      BITMAP  proftarg.bmp
+B_runtarg       BITMAP  runtarg.bmp
+B_edititem      BITMAP  edititem.bmp
+B_makeitem      BITMAP  makeitem.bmp
+
+B_sourceOpen    BITMAP  srcopen.bmp
+B_sourceClosed  BITMAP  srcclos.bmp
+B_sourceItem    BITMAP  srcitem.bmp
+B_flashPage     BITMAP  ide_s.bmp
+B_powerbuilder  BITMAP  rtrn2pb.bmp
+
+I_Viper         ICON    viper.ico
+I_Target        ICON    target.ico
+I_MsgLog        ICON    msglog.ico
+
+#include "getfile.h"
+#include "getfile.dlg"

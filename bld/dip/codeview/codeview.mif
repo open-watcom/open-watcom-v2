@@ -1,0 +1,18 @@
+
+imp_objs = &
+        cvmisc.obj &
+        cvld.obj &
+        cvmod.obj &
+        cvtype.obj &
+        cvsym.obj &
+        cvcue.obj &
+        cvvirt.obj &
+        cvloc.obj &
+        demangle.obj
+
+name = codeview
+
+extra_incs = $(lib_misc_dir)\h
+extra_srcs = $(lib_misc_dir)\c
+
+!include ../../imp.mif

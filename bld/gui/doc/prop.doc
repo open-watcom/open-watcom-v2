@@ -1,0 +1,430 @@
+Graphical User Interface (GUI) Library Proposal
+===============================================
+
+LIBRARY DESIGN
+==============
+
+  - the library will allow applications to :
+      - create windows, controls, dialogs, etc. and use them through calls
+        to the library functions
+      - provide a call back routine whereby the GUI library will call back
+        the application when an event occurs.  The event will be system
+	independent.  The application will respond to the events and can
+	use other GUI library functions to do so.
+
+  - since the application will not be aware of which platform it is running
+    on, the differences between the code for different platforms will look
+    like just several different types of functionality and user interaction
+    which are not necessarily tied to a particular system.  For example, one
+    set of code could, hypothetically, run on several different windowing
+    systems by just using different versions of the GUI library.
+
+
+IMPLEMENTATION PLAN
+===================
+
+Data Structures
+---------------
+
+  - create an abstract data type, say, gui_window
+  - return a gui_window * from a call to CreateWindow and expect it as a
+    parameter to DestroyWindow, RedrawWindow, ShowWindow, ClearWindow,
+    GetWindowPosition, DisplayInWindow (and all other functions)
+  - For WVIDEO, the dbg_window data structure will contain a gui_window *
+    which will contain all of the conditionally compiled data as well as
+    the 'use', 'prev_area' and other fields of dbg_window
+  - a gui_window * would be the implementation of the ID field mentioned in
+    this document
+  - Implementation of controls may be just different types of gui_windows
+    (ie. pass a constant to CreateWindow, specifying the type of window)
+
+    Decisions about dbg_window contents :
+
+    - VSCREEN is a ui structure so screen moves to the DOS gui_x_window
+      structure
+    - gadgets are used for control of UI windows, so it moves to the
+      DOS gui_x_window structure
+    - update_list is a video structure so updtflags stays in dbg_window
+      updtflags are used by both DOS and Windows
+
+
+Events
+------
+
+  - create a system independent set of events that will, to start, be a
+    conglomeration of windows and UI events, suitably renamed.
+  - for DOS and windows implementations of the GUI library, provide my
+    own call back routine to the operating system which deals with some
+    events and passes others back to the application in terms of system
+    independent events
+
+
+File Management
+---------------
+
+  - create a \wv\gui directory to contain the implementation of these
+    functions and \wv\gui\dos and \wv\gui\win to provide the underlying
+    implementation of the specifics for DOS and WINDOWS
+  - the vast majority of dbgwutil.c and dbgwind.c will move into the
+    \wv\gui directories
+  - I think that I will need to branch WVIDEO (done)
+  - Link in only the implementations for the platform to be used.
+    (If run-time switching of platform is required, each of the possible
+    platforms will be linked and then a call to SetMode will
+    decide which of the linked functions will be called.
+    Can use SwitchMode to switch to any other mode whose code has been
+    linked.)
+
+
+To Convert an Application to Use the GUI Library
+------------------------------------------------
+
+  - for example, wvideo (!)
+  - rewrite the windows and/or UI call back routine to expect GUI events and
+    use its own and GUI functions to respond
+  - divide code into a section that is the same regardless of platform
+    (\wv\c) and that which varies according to platform (\wv\dos\c and
+    \wv\win\c).  These last directories should still not talk directly to
+    windows or DOS.
+
+
+If Run Time Switch Of Platform Needed
+=====================================
+
+    Platform Identification
+    -----------------------
+
+      - need to identify platform at run time
+      - MODE : { DOS, WIN, WIN_CHAR, WIN_NT, QNX, OS2, X }
+
+    Functions Needed
+    ----------------
+
+      - SetMode( MODE current ) will set the current platform
+      - SwitchMode( MODE new ) will switch from one platform to another.
+        Currently, the only mode switches possible may be from WIN to WIN_CHAR
+        and back
+
+
+FUNCTIONALITY TO IMPLEMENT
+===========================
+
+WINDOWS
+=======
+
+  - need following information either in a function call or resource file :
+
+      ID : Number identifying window
+      TEXT : text for title of window
+      FORMAT : format for text in title of window
+      LOCATION :
+      ATTRIBUTES : { hscroll, vscroll }
+
+Current Functions
+-----------------
+
+	                     (in dbgwind.c)
+  - SetupWnd : fills in dbg_window data structure
+               called by WndCreate
+  - WndCreate : DOS
+  - WndDestroy : destroys a given window
+  - WndClose : closes a given window
+  - WndOpen
+  - WndMove
+  - WndSize
+  - WndMoveSize
+  - ZoomWnd : shows given window window maximized
+  - WndFront : moves given window to the front
+  - WndActive : makes given window active
+  - WndRedraw : redraws given window
+  - WndRfrsh
+  - WndUpdate
+  - WndInput
+  - WndPushEvent
+  - WndClearEvent
+  - WndNewProg
+  - WndInit : initializes all display windows
+  - WndFini : finishes windowed IO
+                             (in dbgwutil.c)
+  - WndPut : put text in specified location
+  - WndDirty : marks screen contents as bad
+  - WndReshow : refresh windows
+  - WndFill
+
+
+Functions Needed
+----------------
+
+  - CreateWindow
+  - DestroyWindow
+  - RedrawWindow
+  - ShowWindow
+  - ClearWindow
+  - GetWindowPosition
+  - DisplayInWindow
+  - SetGadgets
+
+Nice To Have
+------------
+
+  - floating windows
+  - attached and detached from parent
+
+Notes
+-----
+
+  - have to deal with window's classes of windows
+  - see wincb.c for example
+  - start with "VIDEO Options" window on startup
+
+  Gadgets
+  -------
+
+    - for gadgets, put code in guixwind.c in \wv\dos\gui\c.  Put stub code in
+      \wv\win\gui\c. Allow a call to SetGadgets and leave for now.  All of the
+      gadget work should be eventually moved into the gui code, so calls to
+      get gadget states may never be required.
+
+
+MENUS
+=====
+
+  - need following information either in a function call or resource file :
+
+      ID : Number identifying menu item to be used when it is selected
+      TEXT : text to display
+      FORMAT : formatting information for text
+      ATTRIBUTES : { checked, grayed, enabled, disabled } - initial state
+      INDEX : which character in text is to be underlined for keyboard
+      	      interaction (DOS and windows)
+      ACCELERATOR : accelerator key sequence 
+
+  - allow for specification of dividers (windows)
+
+Functions Needed
+----------------
+
+  - AppendMenu
+  - LoadMenu( char * menuname ) (from .rc file)
+  - Modify Menu
+  - CheckMenuItem
+  - DestroyMenu
+
+Nice To Have
+------------
+
+  - DeleteMenu, InsertMenu (wvideow doesn't use these)
+  - bitmaps as menu items (wvideow doesn't use these)
+  - floating pop-up menus 
+
+Notes
+-----
+
+  - p. 1-56 in Windows Manual
+  - avoid handles to menus
+
+
+CONTROLS
+========
+
+Buttons
+=======
+
+  - need following information either in a function call or resource file :
+
+      ID : Number identifying button to be used when it is selected
+      TEXT : text to display on/beside button
+      FORMAT : formatting information for text
+      ATTRIBUTES : { checked } - initial state
+      LOCATION : 
+      TYPE : { push, default push, checkbox, radio, groupbox }
+
+Functions Needed
+----------------
+
+  - Create
+  - CheckButton
+  - grouping of radio buttons in groupbox
+
+Notes
+-----
+
+  - push buttons corresponds to DOS hotspots
+  - may be able to make default push button a specialization of a push
+    button
+  - callback routine for when button pressed
+
+List Boxes
+==========
+
+  - need following information either in a function call or resource file :
+
+      ID : Number identifying list box
+      FORMAT : formatting information for text in listbox
+      LOCATION :
+
+Functions Needed
+----------------
+
+  - Create
+  - add string with associated ID
+  - delete string (by ID)
+  - get selected string (by ID)
+  - set selected string (by ID)
+
+Nice To Have
+------------
+
+  - multicolumn list boxes (I don't think wvideow uses these)
+
+Edit Controls
+=============
+
+  - need following information either in a function call or resource file :
+
+      ID : Number identifying edit control 
+      TEXT : initial text for edit control
+      FORMAT : formatting information for text in edit control
+      LOCATION : 
+      ATTRIBUTES : { multiline, autoscroll, hscroll, vscroll }
+
+Functions Needed
+----------------
+
+  - Create
+  - get text (by ID of edit control )
+
+Nice To Have
+------------
+
+  -  place caret near where cursor was, between letters
+
+
+Combo Boxes
+===========
+
+  - a combo box is a combination of an edit control and a list box
+  - the list box may initially be hidden
+  - need following information either in a function call or resource file :
+
+      ID : Number identifying combo box
+      FORMAT : formatting information for text in edit control or list box
+      LOCATION :
+      ATTRIBUTES : { multiline, autoscroll, hscroll, vscroll } - for edit
+                   control
+
+Functions Needed
+----------------
+
+  - Create
+  - add string with associated ID
+  - delete string (by ID)
+  - get selected string (by ID)
+  - set selected string (by ID)
+  - display selected in edit control
+
+Nice To Have
+------------
+
+  -  place caret where cursor was but between letters in edit control
+
+
+Scroll Bars
+===========
+
+  - need following information either in a function call or resource file :
+
+      ID : Number identifying scroll bar 
+      LOCATION :
+      RANGE : range covered by scroll bar
+      STARTING LOCATION IN RANGE : initial position in range 
+      ATTRIBUTES : { horizontal, vertical }
+
+Functions Needed
+----------------
+
+  - Create
+  - GetScrollPosition - get current position in range
+
+
+Static Text 
+===========
+
+  - need following information either in a function call or resource file :
+
+      ID : Number identifying static text
+      TEXT : text to be displayed
+      FORMAT : formatting information for text in edit control
+      LOCATION :
+
+Functions Needed
+----------------
+
+  - Create
+  - SetText
+
+
+DIALOG BOXES
+============
+
+  - need following information either in a function call or resource file :
+
+      ID : Number identifying dialog box
+      TEXT : text for title of dialogue box
+      FORMAT : format for text in title of dialog bux
+      LOCATION :
+      ATTRIBUTES : list of controls for dialog box
+
+Functions Needed
+----------------
+
+  - CreateDialogBox
+
+Notes
+-----
+
+  - p. 1-43 in Windows Manual
+  - start with "About" dialog box
+
+
+HIGH LEVEL FUNCTIONS
+====================
+
+Display
+-------
+
+  - just displays text to user 
+
+Decision
+--------
+
+   - displays text
+   - allows user to decide OK or CANCEL
+
+Choice
+------
+
+  - displays a list of choices (text strings), each of which has an
+    associated ID
+  - returns the ID of the choice that the user picks
+
+Get Input
+---------
+
+  - display old value and ask for new
+  - display name and ask for value
+  - also changing values of registers, etc...
+
+GENERAL GUI FUNCTIONS NEEDED
+============================
+
+  - GetTextHeight
+
+number of files referencing structure dbg_window :
+
+#  directory
+-  ---------
+
+24 /wv/c
+9  /wv/win/c
+1  /wv/dos/c

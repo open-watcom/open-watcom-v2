@@ -1,0 +1,371 @@
+Note to Dave Hamm -- I've used $(dbg) to mean WVIDEO (or whatever
+it is going to be changed to.
+
+===================================================================
+
+Overview
+--------
+
+Remote debugging allows you to run the debugger on one side of a
+communication link and the application being debugged on the
+other.  Remote debugging is required when  There is not enough
+memory to run both the debugger and the application on the same
+machine.  The debugger's memory requirements been greatly reduced
+since the last version.  The DOS debugger runs in protected mode
+(above the 1M mark), with a small memory footprint in the first
+640k.  Newer operating systems such as OS/2 and Windows/NT have
+eliminated the 640k barrier, so there is little need for remote
+debugging.  Remote debugging is also required for some operating
+systems.  Novell NetWare and GO Corp's PenPoint applications may
+only debugged remotely.
+
+
+There are many different communication links supported.  Some
+communicate between two machines.  In this case an external
+communication medium is used.  Some links communicate between two
+operating systems shells on the same machine.  In either case, the
+concepts are the same.
+
+The debugger is broken down into 4 parts.
+
+1. The debugger
+    -  This is the portion of the debugger that interacts with you.  When
+       you interact with the debugger, it creates low level requests and
+       sends them to the debug kernel.
+
+2. The debug kernel
+    - This is a dynamic link library that actually loads and controls
+      your application's execution.  Its file name is STD.
+      The file extension depends on the operating system.
+
+4. Remote trap files
+    - These are versions of the debug kernel file that take
+      requests and send them across a communications link to a remote
+      debug server.  You choose a trap file using the debugger's 'trap' option.
+      Trap files have a 3 letter file name that represents the name of the
+      communications layer being used.  The file extension depends on the
+      operating system.
+
+3. Remote debug servers 
+    - receives requests from a communications link and passes them
+      to a debug kernel.  Remote debug server's names all start with
+      ???SERV.  The first 3 letters represent the communication layer
+      being used.
+
+Some examples will clarify these ideas.
+
+A normal non-remote debugging session just uses the user interface and
+the debug kernel.  All components run on the same machine. This simple
+debugging session would be started with the command '$(dbg) APP':
+
++---------------+ +-----------+     +----------+
+|  $(dbg).EXE   | | STD       |     | APP      |
+|              / /            |----\|          |
+|  user        \ \            |----/|          |
+|  interface    | |           |     |          |
++---------------+ +-----------+     +----------+
+
+A remote debugging session uses a remote debug server and a remote
+trap file as well.  For example, using the parallel port to debug between
+two machines would be accomplished as follows:
+
+    machine 1                               machine 2
++-------------+ +---------+             +-------------+ +--------+     +-----+
+| $(dbg)      | | PAR     |  laplink    | PARSERV     | |STD     |     | APP |
+|            / /          |--- ..... ---|            / /         |----\|     |
+| user       \ \          |  cable      |            \ \         |----/|     |
+| interface   | |         |             |             | |        |     |     |
++-------------+ +---------+             +-------------+ +--------+     +-----+
+
+In order to start the above remote debugging session, you must
+follow these steps.
+
+1. Start the remote debug server (PARSERV).
+2. Start the debugger with the option '/trap=PAR'.  This causes
+   the debugger to load the remote trap file (PAR) instead of
+   the debug kernel (STD).
+
+Notes:
+
+	The rest of the debugger command line is identical to the
+	command you would type if you were debugging the
+	application locally.
+
+	You must start the remote debug server first.  If you do
+	not, the remote trap file will not be able to establish a
+	communication link and the debugger will refuse to start.
+
+The following example shows how you two DOS boxes under windows to
+debug a DOS applicaion:
+
+    machine 1                               machine 2
++-------------+ +---------+             +-------------+ +--------+     +-----+
+| $(dbg)      | | WIN     |             | WINSERV     | |STD     |     | APP |
+|            / /          |--- ..... ---|            / /         |----\|     |
+| user       \ \          |      ^      |            \ \         |----/|     |
+| interface   | |         |      |      |             | |        |     |     |
++-------------+ +---------+      |      +-------------+ +--------+     +-----+
+                                 |
+			operating system communications layer
+
+
+$(dbg) provides the following remote links capability:
+
+		DOS	OS/2	Wind-	Net-	QNX	NT
+				ows	ware
+Novell SPX	x	x	x	x
+NetBIOS		x	x	x	x	x
+Parallel	x	x	x	x	x
+Serial		x	x	
+DESQView	x
+Windows	VDM			x
+OS/2 VDM		x	
+Named Pipes	x	x	x
+
+Communication parameters may be passed to the remote trap file and the remote
+server. They are passed to the remote trap file by following the name
+of the trap file with a semi-colon and the parameter. For example:
+
+	A> $(dbg) /tr=ser;2.4800 app
+
+passes the parameter 2.4800 to the remote trap file. To pass the same parameter
+to the remote debug server, use:
+
+	B> serserv 2.4800
+
+These communication paramaters are specific to each remote link and are
+described in the following section.
+
+Link descriptions
+-----------------
+
+NOV (Novell SPX)
+
+    This link communicates over a Novell Network.  In order to use
+    this link, you must have a NetWare requestor installed on both
+    machines.  Be sure that it is configured to include the SPX
+    option.  Consult your NetWare documentation for details.
+
+    parameters:
+
+        The parameter to this link is an arbitrary name to be used
+	for the connection.  This allows multiple netword users users
+	to remote debug simultaneously.  The default name is NovLink.
+
+    examples:
+
+    	A> $(dbg) /tr=nov app
+	B> novserv
+
+    	A> $(dbg) /tr=nov;john app
+	B> novserv john
+
+
+NET (NetBIOS)
+
+    This link communicates over NetBIOS.  In order to use
+    this link, you must have NetBIOS installed on both
+    machines. Consult your network documentation for details.
+
+    parameters:
+
+        The parameter to this link is an arbitrary name to be used
+	for the connection.  This allows multiple network users users
+	to remote debug simultaneously.  The default name is NetLink.
+
+    example:
+
+    	A> $(dbg) /tr=net app
+	B> netserv
+
+    	A> $(dbg) /tr=net;tammy app
+	B> netserv tammy
+
+PAR (Parallel)
+
+    This link communicates over the parallel port.  Three different cable
+    types may be used.  They are called the LapLink, Flying Dutchman, and
+    WATCOM cables.  Although the WATCOM cable will communicate considerably
+    faster than the other two, we have found it to be unreliable on some
+    brands of computer.  See the Appendix entitled "Wiring for Remote Debugging"
+    for wiring details.
+
+    parameters:
+
+        The parameter to this link is a number from 1 to 3.  This
+	tells the software which parallel port the cable is connected
+	to (LPT1, LPT2, LPT3).  The default is 1.
+
+    example:
+
+    	A> $(dbg) /tr=par app
+	B> parserv
+
+    	A> $(dbg) /tr=par;2 app
+	B> parserv 2
+
+SER (Serial)
+
+    This link communicates over the serial port.  See the Appendix
+    entitled "Wiring for Remote Debugging" for wiring details.
+    The debugger and server will automatically synchronize on a
+    communications speed.  They may communicate at rates as high
+    as 115kB.  The DOS and OS/2 'mode' command or the QNX 'stty'
+    commands need not be used.
+
+    parameters:
+
+        The parameter to this link takes the form
+
+		port_number.baud_rate
+
+	port_number is a number from 1 to 3 indicating which serial
+	port the cable is connected to.  The default is 1.
+
+	baud_rate is the maximum baud rate at which to communicate.
+	If you already know the maximum baud rate at which the two
+	machines will communicate, this parameter will speed up
+	the connection time by eliminating some of the syncronization protocol.
+
+	baud_rate may be any of 115200, 57600, 38400, 19200, 9600, 4800,
+	2400, or 1200.  It may be shortened to the first 2 digits.
+
+	A special baud rate of 0 is also allowed.  This should be used
+	if the serial port has been pre-assigned using the 'mode' or 'stty'
+	commands. The pre-assigned baud rate is used and the bad rate
+	negotiation is avoided.
+
+    example:
+
+    	A> $(dbg) /tr=ser app
+	B> serserv
+
+    	A> $(dbg) /tr=ser;2.9600 app
+	B> serserv 2.9600
+
+    QNX Note:
+
+    	Under QNX, a node id may be specified followed by a comma if the
+	serial port is not located on the current node. 'serserv 3,1.9600'
+	would use the device //3/dev/ser1 at a baud rate of 9600.
+
+DQV (DESQView)
+
+    This link communicates between 2 DESQView DOS sessions.
+    In order to use this link, you must have DESQView installed on your
+    machine. Consult your DESQView documentation for details.
+
+    parameters:
+
+        The parameter to this link is an arbitrary name to be used
+	for the connection.  This allows you to have multiple remote 
+	debug sessions active simultaneously.  The default name
+	is 'WATCOM Server'.
+
+    example:
+
+    	A> $(dbg) /tr=dqv app
+	B> dqvserv 
+
+    	A> $(dbg) /tr=dqv;mylink app
+	B> dqvserv mylink
+
+
+WIN (Windows Virtual DOS Machine)
+
+    This link communicates between 2 Windows DOS boxes.
+    In order to use this link, you must have Windows installed on your
+    machine. You must run windows in enhanced mode.  You must also
+    include the "device" specification listed below in the [386Enh]
+    section of your SYSTEM.INI file.
+
+    	DEVICE=[d:]\WATCOM\BINW\WDEBUG.386
+
+    parameters:
+
+        The parameter to this link is an arbitrary name to be used
+	for the connection.  This allows you to have multiple remote 
+	debug sessions active simultaneously.  The default name is WinLink.
+
+    example:
+
+    	A> $(dbg) /tr=win app
+	B> winserv
+
+    	A> $(dbg) /tr=win;whats_in_a_name app
+	B> winserv whats_in_a_name
+
+
+NMP (Named Pipes)
+	The named pipes link allows you to communicate between any
+	two sessions on an OS/2 machine, as well as remotely
+	between DOS, Windows and OS/2 machines if you have
+	installed remote named pipe support on these machines.
+	See your network documentation for details on remote named
+	pipes.
+
+	In order to use named pipes, you must first run the
+	NMPBIND program.  This may run any OS/2 machine on the
+	network.  It can be run detached, by putting the following
+	line into your OS/2 CONFIG.SYS.
+
+		RUN=[D:]\WATCOM\BINP\NMPBIND.EXE
+
+	If you are running NMPSERVW under Win-OS/2, it must be
+	run as a seamless Windows session.  This is due to the fact
+	that full screen Win-OS/2 sessions may not get any processor
+	time when they are not in the foreground.
+
+    parameters:
+
+        The parameter to this link takes the form name@machine.
+
+	'name' is an arbitrary name to be used for the connection.
+	This allows you to have multiple remote debug sessions
+	active simultaneously.  The default name is NMPLink.
+
+	'machine' is the name of the machine on which NMPBIND is running.
+	This allows you to use remote named pipes.
+
+    example:
+
+        A>$(dbg) /tr=nmp app
+	B>nmpserv
+
+	The following example assumes that there is a machine named hal
+	with a remote named pipe server on the network which is running
+	NMPBIND.
+
+        A>$(dbg) /tr=nmp;mylink@hal app
+	B>nmpserv mylink@hal
+
+VDM (OS/2 Virtual DOS Machine)
+
+	VDM is actually a limited version of named pipes that does
+	not require the NMPBIND program to be running.  It has
+	several restrictions however.
+
+	1. It does not allow support network debugging.
+	2. The debugger (user interface) must run in an OS/2 session
+	3. The remote debug server must run in a Win-OS/2 or a DOS session.
+	4. If you are running VDMSERVW under Win-OS/2, it must be
+	    run as a seamless Windows session.  This is due to the fact
+	    that full screen Win-OS/2 sessions may not get any processor
+	    time when they are not in the foreground.
+
+	In short, it allows you to debug a DOS or Windows application
+	from an OS/2 session.
+
+    parameters:
+
+        The parameter to this link is an arbitrary name to be used
+	for the connection.  This allows you to have multiple VDM
+	debug sessions active simultaneously.  The default name is VDMLink.
+
+    example:
+
+    	A> $(dbg) /tr=vdm app
+	B> vdmserv
+
+    	A> $(dbg) /tr=vdm;brian app
+	B> vdmserv brian

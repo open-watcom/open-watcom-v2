@@ -1,0 +1,36 @@
+#
+# create NT version of GENERIC
+#
+CFLAGS = -oaxt -d1 -w4 -bt=nt
+CC = wcc386
+NAME = generic
+
+LNK = $(name).lnk
+
+OBJS = $(name).obj
+
+$(name).exe : $(OBJS) $(name).res $(LNK)
+    wlink @$(LNK)
+    wrc -bt=nt $(name).res
+
+$(name).res : $(name).rc $(name).ico
+    wrc -r -bt=nt $(name).rc
+
+$(LNK) : makefile.nt
+    %create $(LNK)
+    @%append $(LNK) debug all
+    @%append $(LNK) system nt_win
+    @%append $(LNK) option stack=8k
+    @%append $(LNK) name $(name)
+    @for %i in ($(OBJS)) do @%append $(LNK) file %i
+
+$(name).obj : $(name).c $(name).h
+        $(CC) $(CFLAGS) $[*
+
+clean: .symbolic
+    @erase *.obj
+    @erase *.err
+    @erase *.exe
+    @erase *.lnk
+    @erase *.res
+    @erase *.rex

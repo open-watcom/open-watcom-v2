@@ -1,0 +1,69 @@
+#ifndef _OBJECT_DEF_INCLUDED
+
+#define _OBJECT_DEF_INCLUDED
+
+#include "list.def"
+
+/* there are a maximum of 16 internal objects currently reserved */
+
+enum {
+    O_NONE              
+,   O_EATOM
+,   O_ITEM
+,   O_CURROBJ
+,   O_CURRITEM
+};    
+
+typedef BOOL (PASCAL *OBJECT)( ACTION, OBJPTR, void *, void * );
+typedef void * CURROBJPTR;
+
+extern void InitializeObjects( CREATE_TABLE );
+extern BOOL FM_EXPORT Recreate( OBJPTR, POINT * );
+extern void SetCurrObject( OBJPTR );
+extern void AddCurrObject( OBJPTR );
+extern void DeleteCurrObject( OBJPTR );
+extern void DeleteCurrObjptr( OBJPTR );
+extern BOOL DeleteCurrItem( OBJPTR );
+extern void MarkCurrObject();
+extern void ObjMark( CURROBJPTR );
+extern CURROBJPTR GetCurrObjptr( OBJPTR );
+extern void SetPrimaryObject( CURROBJPTR );
+extern CURROBJPTR GetPrimaryObject();
+extern void UndoMove( CURROBJPTR );
+extern void RemoveFromParent( CURROBJPTR );
+extern CURROBJPTR GetECurrObject();
+extern CURROBJPTR GetNextECurrObject( CURROBJPTR );
+extern OBJPTR GetObjptr( OBJECT * );
+extern BOOL   GetAnchor( OBJPTR, POINT * );
+extern void   InitEditMenu( HWND, int );
+extern void   InitEditMenu( HWND, int );
+extern BOOL   RequestScrollRect( RECT * );
+extern BOOL   IsMarkValid( OBJPTR );
+extern void EndCurrObjMod( void );
+extern void StartCurrObjMod( void );
+
+/* editor actions */
+
+#define EDITOR_ACTIONS	    100
+#define EDITOR_NOTE_IDS	    100
+
+enum {
+    RECREATE = EDITOR_ACTIONS
+,   GET_OBJECT
+,   ADD_OBJECT
+,   DELETE_OBJECT
+,   GET_PRIMARY
+,   UNDO_MOVE
+,   REMOVE_FROM_PARENT
+,   GET_OBJPTR
+,   GET_ANCHOR
+,   SHOW_SEL_BOXES
+,   FORCE_REDRAW
+};
+
+enum {
+    CURR_OBJ_MOD_BEGIN = EDITOR_NOTE_IDS    // wraped around multiple
+,   CURR_OBJ_MOD_END			    // changed of the currobj
+};
+
+#endif

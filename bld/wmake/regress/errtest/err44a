@@ -1,0 +1,10 @@
+# ------------------------------------------------
+# ERROR 44A: BEFORE/AFTER/ERROR cmd ret bad status
+# ------------------------------------------------
+
+.AFTER
+    mkerr
+
+all : .symbolic
+    @%null
+

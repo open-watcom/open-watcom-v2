@@ -1,0 +1,5 @@
+HELLO=hello
+"hello.exe:$(HELLO).obj":"$*.c""$(HELLO).c".symbolic
+   echo $** $@ $*
+    
+   

@@ -1,0 +1,8 @@
+/nogo=1
+in wd
+hook progstart {
+    go;
+}
+hook progend {
+    quit;
+}

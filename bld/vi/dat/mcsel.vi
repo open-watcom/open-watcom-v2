@@ -1,0 +1,18 @@
+expr %a = %4 - %3 + 2
+expr %b = %4+1
+expr %c = %2+1
+
+menu float0
+menuitem "&Open" edit %1
+menuitem ""
+menuitem "&Change" execute \<ALT_F1>r
+menuitem "&Delete" execute "1\<ALT_F2>r
+menuitem "&Yank" execute "1\<ALT_F3>r
+menuitem "T&oggle case" execute \<ALT_F4>r
+menuitem ""
+menuitem "&Search" execute \<CTRL_S>%1\n
+menuitem "&Fgrep" fgrep "%1"
+menuitem "&Tag" tag %1
+endmenu
+
+floatmenu 0 %a %b %c

@@ -1,0 +1,19 @@
+class EditDLLDlg {
+    _dllNameTextR(  IDD_NAME_TEXT,  (@,@,@,@) );
+    _dllNameEditR(  IDD_NAME_EDIT,  (@,@,@,@) );
+    _parmBoxTextR(  IDD_PARM_TEXT,  (@,@,@,@) );
+    _editorParmsR(  IDD_PARM_EDIT,  (@,@,@,@) );
+    _fileButtonR(   IDD_FILES,	    (@,@,@,@) );
+    _okButtonR(	    IDD_OK,	    (@,@,@,@) );
+    _defaultButtonR(IDD_DEFAULT,    (@,@,@,@) );
+    _cancelButtonR( IDD_CANCEL,	    (@,@,@,@) );
+    _helpButtonR(   IDD_HELP,	    (@,@,@,@) );
+    _exeButtonR(    IDD_EXE,	    (@,@,@,@) );
+    _dllButtonR(    IDD_DLL,	    (@,@,@,@) );
+    _parmMsgR( 	    IDD_PARM_MSG,   (@,@,@,@) );
+    _macroMsgR(	    IDD_MACRO_MSG,  (@,@,@,@) );
+    _fMsgR( 	    IDD_F_MSG,	    (@,@,@,@) );
+    _rMsgR( 	    IDD_R_MSG,	    (@,@,@,@) );
+    _cMsgR( 	    IDD_C_MSG,	    (@,@,@,@) );
+    _gboxR( 	    IDD_GROUPBOX,   (@,@,@,@) );
+};

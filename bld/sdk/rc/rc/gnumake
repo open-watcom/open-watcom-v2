@@ -1,0 +1,102 @@
+include watcom.mk
+
+SRCDIRS = c
+
+vpath %.c $(SRCDIRS)
+
+OBJECTS =
+OBJECTS += ytab.o
+OBJECTS += error.o errprt.o exeobj.o exeres.o exerespe.o
+OBJECTS += exeseg.o exeutil.o global.o hash1.o hash2.o
+OBJECTS += keyword.o layer0.o param.o pass2.o rc.o rcio.o
+OBJECTS += rcmem.o rcstr.o ppalloc.o scan.o semaccel.o
+OBJECTS += semantic.o semdiag.o semmenu.o semver.o semtbar.o
+OBJECTS += semraw.o semsingl.o semstr.o swchar.o dbtable.o
+# OBJECTS += preproc.o ppexpr.o ppmacro.o
+OBJECTS += tmpctl.o autodep.o
+OBJECTS += ldstr.o rcalloc1.o rcalloc0.o sharedio.o semresfl.o
+
+OBJECTS := $(foreach i,$(OBJECTS),$(OBJDIR)/$i)
+
+GENERATED_FILES = ytab.gh usage.h rcmsg.h weights1.gh weights2.gh
+GENERATED_FILES := $(foreach i,$(GENERATED_FILES),$(OBJDIR)/$i) 
+
+INCDIRS += $(RC_DIR)/h
+INCDIRS += $(OBJDIR)
+INCDIRS += $(CPP_DIR)
+INCDIRS += $(WRES_DIR)/h
+INCDIRS += $(H_DIR)
+INCDIRS += $(WATCOMH)
+
+LIBDIRS += $(RC_DIR)/$(OBJDIR)
+LIBDIRS += $(WRES_DIR)/$(OBJDIR)
+LIBDIRS += $(WCLIB_DIR)/$(OBJDIR)
+LIBDIRS += $(CPP_DIR)/$(OBJDIR)
+LIBDIRS += /usr/local/lib
+
+LIBS	+= -lrc
+LIBS	+= -lcpp
+LIBS	+= -lwres
+LIBS	+= -lwatcom
+
+vpath %.h $(SRCDIRS) $(INCDIRS)
+
+LIBNAME = rc
+NAME = rc
+
+WACC_FLAGS = -d -b -s
+
+# host_OS = dos
+# host_CPU = 386
+
+DEFS += -D_NO_LIB_PRAGMAS_ -DNATURAL_PACK -DBOOTSTRAP_RC -DSCANDEBUG -DYYDEBUG
+CFLAGS += $(OPT_PIC)
+
+$(OBJDIR)/$(NAME)	: $(OBJDIR)/lib$(LIBNAME).a
+	$(CC) $(CFLAGS) -o $@ $(LIBS)
+
+$(OBJDIR)/lib$(LIBNAME).a : $(GENERATED_FILES) $(OBJECTS)
+	@rm -f $@
+	$(AR) crs $@ $(OBJECTS)
+
+$(OBJECTS)	: $(GENERATED_FILES)
+
+$(OBJDIR)/rcmsg.h: $(RC_DIR)/h/rc.msg
+	perl $(SDK_DIR)/misc/msgtoh.pl <$(RC_DIR)/h/rc.msg >$(OBJDIR)/rcmsg.h
+
+$(OBJDIR)/rc.res: rc.rc
+	rc -r -i=/src/cproj/rc/h\;/src/watcom/h rc.rc -fo=$(OBJDIR)/rc.res
+
+$(OBJDIR)/ytab.c: y/rc.y
+	cd $(OBJDIR);wacc $(WACC_FLAGS) $(RC_DIR)/y/rc.y $(RC_DIR)/y/yydriver.c >out
+
+$(OBJDIR)/ytab.gh: $(OBJDIR)/ytab.c
+	rm -f $@
+	ln -s ytab.h $@
+
+$(OBJDIR)/usage.h: usage.sp GNUmakefile
+	sed 's/\(.*\)/"\1",/' <$< | sed 's;/;-;' >$@
+
+#
+# Note: "findhash" is compiled from //lang/fe_misc/c/findhash.c
+#
+$(OBJDIR)/weights1.gh $(OBJDIR)/keyword1.gh	: hash/rc1.key
+	@rm -f $(OBJDIR)/weights1.gh $(OBJDIR)/keyword1.gh
+	cd $(OBJDIR);findhash ../hash/rc1.key >/dev/null; mv weights.gh weights1.gh; mv keywords.gh keyword1.gh
+
+$(OBJDIR)/weights2.gh $(OBJDIR)/keyword2.gh	: hash/rc2.key
+	@rm -f $(OBJDIR)/weights2.gh $(OBJDIR)/keyword2.gh
+	cd $(OBJDIR);findhash ../hash/rc2.key >/dev/null; mv weights.gh weights2.gh; mv keywords.gh keyword2.gh
+
+clean	:
+	rm -f $(OBJDIR)/*
+
+.PHONY	: dep depend make
+dep depend make:
+	$(MKMK) -Q -m .depend -f '$$(OBJDIR)/%s' nopath -f '$$(OBJDIR)/%s' \
+		$(foreach i,$(SRCDIRS),$i/*.[ch]) \
+		$(foreach i,$(INCDIRS),$i/*.h)
+
+ifeq (.depend,$(wildcard .depend))
+    include .depend
+endif

@@ -1,0 +1,610 @@
+Note that for any kind of PtrHash (WCPtrHashTable, WCPtrHashSet, WCPtrHashDict)
+destructors are not called on the elements pointed to.  Only the pointers are
+stored so the elements are not copied, constructed or destroyed.
+
+ValHash classes store a copy of elements (using Type's copy constuctor),
+which will be destroyed when the element is removed or the hash cleared or
+deleted (or if the hash goes out of scope if it is a local variable).
+
+Header File:
+============
+#include <wchash.h>
+
+
+WCExcept:
+=============
+
+  This is the base class to all hash tables and sets.  Exception handling is
+  performed using this class.  By default, no exceptions will be thrown, and
+  hash functions and operators will leave the hash table in a valid
+  state on an error.  Exceptions can be enabled to be thrown using the
+  exceptions member function
+
+  available exceptions:
+  ~~~~~~~~~~~~~~~~~~~~~
+
+    The following exceptions can be thrown by hash tables:
+      - WCExcept::not_empty
+        if a hash which does not have zero entries is being
+  	destroyed by the destructor, this error can be thrown.
+      - WCExcept::not_unique
+        thrown when attempting to insert a value into a HashSet when an
+	equivalent value already exists in the HashSet.
+      - WCExcept::out_of_memory
+        thrown when an attempt to insert an element, resize a hash table,
+	copy a hash table with the copy constructor, or
+	perform an assignment fails due to lack of memory.
+      - WCExcept::zero_buckets
+        thrown when an attempt was made to resize to hash table or set to
+	have zero buckets.
+
+    the exceptions member function:  see WCListExcept::exceptions in the
+    Container Class Library reference.
+
+  An example:
+  ~~~~~~~~~~~
+      #include <wchash.h>
+
+      static unsigned hash_fn( const int &elem ) {
+	  return( WCValHashTable<int>::bitHash( &elem, sizeof( int ) ) );
+      }
+
+      void main() {
+        WCValHashTable<int> hash( &hash_fn, 50 );
+
+        hash.exceptions( WCExcept::out_of_memory );
+	try{
+	    hash.insert( temp );
+	} catch( WCExcept::failure oops ) {
+	    WCExcept::wc_state cause = oops.cause();
+	    if( cause & WCExcept::out_of_memory ) {
+	      	cout << "out of memory!\n";
+	    }
+	}
+      }
+
+
+WCValHashTable<Type>, WCPtrHashTable<Type>:
+===========================================
+
+  These are hash tables which do not require values (or values pointed to) to
+  be unique.  Collisions are handled by seperate changing.
+  
+  The constructor requires a hashing function which given a reference to Type,
+  returns a unsigned:
+  unsigned hash_fn( Type &value );
+  
+  The returned unsigned mod num_buckets determines the
+  bucket into which the value will be hashed to.  The return values of hash_fn
+  can be spread over the entire range of unsigned numbers, and should appear
+  random for any set of value parameters.  hash_fn's returns must be the same
+  for values which are equivalent by Type's == operator.
+
+  See the static member function bitHash for a general hash function which
+  can be used to simply implement hash_fn.
+
+  Hash tables will _not_ automatically resize the number of buckets on
+  insertion or removing elements.  This could be done by using ..HashTable
+  as a base class, and providing an insert member function to do a resize
+  when appropriate, and then call ..HashTable::insert to insert the element.
+  A similar strategy could be used for remove and removeAll member functions if
+  desired.  Note that copy constructors and assignment operators are not
+  inherited, but you can provide the following inline definitions (assuming
+  your class inherited from ..HashTable is named MyHashTable):
+    inline MyHashTable( const MyHashTable &orig ) : ..HashTable( orig ) {};
+    inline MyHashTable &operator=( const MyHashTable &orig ) {
+	return( ..HashTable::operator=( orig ) );
+    }
+
+
+  req'd from <Type>:
+  ~~~~~~~~~~~~~~~~~~
+  
+    - copy constructor (ValHash only)
+    - equivalence operator ==
+
+    
+  public constructors/destructors:
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - ..HashTable( unsigned (*hash_fn)( const Type & )
+    		 , unsigned num_buckets = WC_DEFAULT_HASH_SIZE )
+      constructs a hash table with no entries and with num_buckets buckets.
+      hash_fn is used to determine which bucket each value will be hashed into.
+      num_buckets must be greater than 0, and an attempt to create a hash table
+      with 0 buckets will create a hash table with 1 bucket.
+      If the hash table object can be created, but no buckets allocated, the
+      table will be created with 0 buckets.  Attempting to insert into a hash
+      table with 0 buckets with throw an out_of_memory error (if enabled)
+
+    - ..HashTable( unsigned (*hash_fn)( const Type & )
+    		 , unsigned num_buckets
+		 , void * (*user_alloc)( size_t size )
+		 , void (*user_dealloc)( void *old, size_t size ) )
+      Like the above constructor, but also provides a user allocator and user
+      deallocator to allocate and free memory when entries are inserted and
+      removed from the hash table.  The user_alloc function must return a
+      pointer to allocated memory of at least size bytes, or 0 if it cannot
+      perform the allocation (which will cause insert to fail).  The
+      user_dealloc function must free "old", which was allocated by the
+      user_alloc function, and is of size "size".  You may take advantage
+      of the fact that user_alloc will always be called with the same
+      "size" parameter for hash tables of the same type (same ..HashTable
+      type, and templated over the same size).  To determine the size of
+      the objects that the user_alloc and user_dealloc functions will be
+      required to allocate and free, the following macros may be used:
+	WCValHashTableItemSize( Type )
+	WCPtrHashTableItemSize( Type )
+	WCValHashSetItemSize( Type )		(for hash sets)
+	WCPtrHashSetItemSize( Type )
+      For example, WCValHashTable<my_type> will require user_alloc and
+      user_dealloc to handle objects of size WCValHashTableItemSize( my_Type ).
+
+    - ..HashTable( const ..HashTable &orig )
+      the copy constructor.  Makes a copy of orig, including copying the
+      hash function, all values or pointers stored in the hash, and the
+      exception state.  If there is enough memory to create the hash object,
+      but not enough memory for the buckets, then the hash table will be
+      created with 0 buckets.  If there is not enough memory to copy all of
+      the values or pointers in the hash table, then only some will be copied,
+      and the number of entries will correctly reflect the number copied.
+      If all of the elements cannot be copied, an out_of_memory exception
+      is thrown if enabled in orig,
+
+    - ~..HashTable()
+      the destructor:  destroys the hash table object, including clearing the
+      entries using the clear member function.  If the hash table is not empty
+      (contains at least one entry) when this destructor is invoked, the
+      not_empty exception will be thrown if enabled.
+
+
+  public operators
+  ~~~~~~~~~~~~~~~~
+
+    - ..HashTable &operator=( const ..HashTable &orig )
+      the assignment operator.  destroys this, and then copies orig, including
+      copying the hash function, all values or pointers stored in the hash, and
+      the exception state.  If there is enough memory to create the hash object,
+      but not enough memory for the buckets, then the hash table will be
+      created with 0 buckets, and the out_of_memory exception thrown if enabled
+      in orig. If there is not enough memory to copy all of the values or
+      pointers in the hash table, then only some will be copied, and the
+      out_of_memory exception thrown if enabled in orig. The number of entries
+      will correctly reflect the number copied.
+    
+   - int operator==( const ..HashTable &rhs ) const
+     The hash table equality operator.  Two hash tables are equivalent if they
+     are the same object (ie they have the same address).  Returns 0 if not
+     equal and non-zero if equal.
+      
+
+  public member fns
+  ~~~~~~~~~~~~~~~~~
+
+    **NOTE**:  unless otherwise noted, parameters of type "Type &" are for the
+    WCValHashTable, and the corresponding parameters for WCPtrHashTable member
+    functions have type "Type *".
+
+    - static unsigned bitHash( void * ptr, size_t size )
+      This can be used to implement a hashing function for any type.  A
+      hashing value is generated from the first size bytes pointed to by ptr.
+      For example:
+        unsigned my_hash_fn( const int &elem ) {
+	    return( WCValHashTable<int>::bitHash( &elem, sizeof( int ) );
+        }
+        WCValHashDict<int> hash( &my_hash_fn );
+
+    - unsigned buckets() const
+      return the number of buckets in the hash table.
+
+    - void clear()
+      remove all values or pointers from the hash table, so that the table has
+      no entries.  The number of buckets will remain unchanged.
+
+    ** PTR ONLY **
+    - void clearAndDestroy()
+      call delete for all pointers in the hash table, and reinitialize the
+      hash table to be 0 length.
+    
+    - int contains( const Type &elem ) const
+      return non-zero if an element equivalent to elem is stored in the hash
+      table, or zero if there is no equivalent element.
+      Note that equivalence is based on Type's == operator for both
+      WCValHashTable and WCPtrHashTable.
+
+    - unsigned entries() const
+      returns the number of entries stored in the hash table.
+
+    ** VAL ONLY **
+    - int find( const Type &search, Type &return_val ) const
+      attempts to find an element equivalent to search in the hash table.  If
+      an equivalent element is found, non-zero is returned, and return_val is
+      assigned the found element.  If no such element is found, zero is
+      returned and return_val is unchanged.
+      Note that equivalence is based on Type's == operator.
+
+    ** PTR ONLY **
+    - Type *find( const Type *elem ) const
+      attempts to find an element equivalent to elem in the hash table.  If
+      an equivalent element is found, it is returned. Otherwise zero is
+      returned.
+      Note that equivalence is based on Type's == operator (ie the values
+      pointed to are compared).
+      
+    - void WCValHashTable::forAll( void (*user_fn)( Type elem, void *data )
+    				 , void *data )
+    - void WCPtrHashTable::forAll( void (*user_fn)( Type *elem, void *data )
+    				 , void *data )
+      call user_fn for every element in the hash table.  user_fn has prototype:
+        ** VAL **
+	void user_fn( Type elem, void *data );
+        ** PTR **
+	void user_fn( Type *elem, void *data );
+      and will be passed each element in turn as the first parameter, and the
+      data passed to forAll as the second paramter.  data can be used to
+      pass user_fn any information which it requires.
+
+    - int WCValHashTable::insert( const Type &elem )
+    - int WCPtrHashTable::insert( Type *elem )
+      Insert elem into the hash table, using hash_fn to determine which
+      bucket it should be stored.  If allocation of the node to store elem
+      fails, then an out_of_memory exception will be thrown if enabled.
+      Otherwise, if the allocation failed, zero will be returned, and the
+      hash table will be unchanged.  Non-zero will be returned on a successful
+      insert.
+
+    - int isEmpty() const
+      return non-zero if the hash table is empty, zero if the hash table
+      contains at least one entry.
+
+    - unsigned occurrencesOf( const Type &elem ) const
+      return the number of elements stored in the hash table which are
+      equivalent to elem.
+      Note that equivalence is based on Type's == operator for both
+      WCValHashTable and WCPtrHashTable.
+
+    - int WCValHashTable::remove( const Type &elem )
+    - Type *WCPtrHashTable::remove( const Type *elem )
+      remove one element equivalent to elem from the hash table.  Returns zero
+      if no equivalent element was found.  If an equivalent element was found,
+      non-zero (WCValHashTable) or the pointer being removed (WCPtrHashTable)
+      is returned.
+      If the hash table contains more than one element equivalent to elem,
+      the element which was added first will be removed.
+      Note that equivalence is based on Type's == operator for both
+      WCValHashTable and WCPtrHashTable.
+
+    - unsigned removeAll( const Type &elem )
+      removes all elements equivalent to elem from the hash table, and returns
+      the number of elements removed (zero if the hash table contains no
+      element equivalent to elem).
+      Note that equivalence is based on Type's == operator for both
+      WCValHashTable and WCPtrHashTable.
+
+    - void resize( unsigned new_num_bucket )
+      resize the hash table to have new_num_buckets buckets.  Note that this is
+      fairly expensive since hash_fn must be called for each entry
+      in the hash table, and the entry moved to the new bucket.  Entries are
+      _not_ destroyed or created in the process of being moved.   If there is
+      not enough memory to resize the hash table, the out_of_memory exception
+      will be thrown, if enabled, and the hash table will contain the number
+      of buckets it contained before the resize.
+      If new_num_bucket is 0, then a zero_buckets exception will be thrown if
+      enabled, and no resize will be performed.
+      The hash table is guaranteed to contain the same number of entries after
+      the resize whether or not an error occured or not.
+
+      
+
+WCValHashSet<Type>, WCPtrHashSet<Type>:
+=======================================
+
+  These are hash tables which require every element in the hash set to be
+  unique, by Type's == operator.
+
+  These hash tables are inherited from WCValHashTable<Type> and
+  WCPtrHashTable<Type>.  The hash_fn, exceptions, constructors/destructors,
+  and most member fuctions are identical to those given above.
+
+  
+  changed to privale member fns
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - unsigned occurrencesOf( const Type &elem ) const
+    - int removeAll( const Type &elem )
+      these are no longer available since they are of little use with unique
+      elements, and are just less efficient versions of the contains and
+      remove member functions respectively.
+
+
+  changed public member fn
+  ~~~~~~~~~~~~~~~~~~~~~~~~
+  
+    - int WCValHashSet::insert( const Type &elem )
+    - int WCPtrHashSet::insert( Type *elem )
+      If an entry equivalent to elem was not previously in the hash set,
+      insert elem into the hash set.  hash_fn is used to determine which
+      bucket elem should be stored.  If allocation of the node to store elem
+      fails, then an out_of_memory exception will be thrown if enabled.
+      Otherwise, if the allocation failed, zero will be returned, and the
+      hash set will be unchanged.  If an element equivalent to elem was
+      previously in the hash set, the hash set will remain unchanged, and
+      a not_unique exception will be thrown if enabled.  If the not_unique
+      exception is not enabled, zero will be returned.  Non-zero will be
+      returned on a successful insert.
+
+
+WCValHashDict<Key,Value>, WCPtrHashDict<Key,Value>:
+===================================================
+
+  These are hash dictionaries.  The key is used as a handle to the value
+  stored.  Hashing is done on the key, and key's equality operator is used
+  to find key-value pairs.  Keys must be unique, values do not need to be
+  unique.  Collisions are handled by seperate changing.
+  
+  The constructor requires a hashing function which given a reference to Key,
+  returns a unsigned:
+  unsigned hash_fn( Key &key );
+  
+  The returned unsigned mod num_buckets determines the
+  bucket into which the key-value pair will be hashed to.  The return values
+  of hash_fn can be spread over the entire range of unsigned numbers, and
+  should appear random for any set of value parameters.  hash_fn's returns
+  must be the same for values which are equivalent by Type's == operator.
+
+  See the static member function bitHash for a general hash function which
+  can be used to simply implement hash_fn.
+
+  Hash dictionaries will _not_ automatically resize the number of buckets on
+  insertion or removing elements.  This could be done by using ..HashDict
+  as a base class, and providing an insert member function to do a resize
+  when appropriate, and then call ..HashDict::insert to insert the element.
+  A similar strategy could be used for remove member function if
+  desired.  Note that copy constructors and assignment operators are not
+  inherited, but you can provide the following inline definitions (assuming
+  your class inherited from ..HashDict is named MyHashDict):
+    inline MyHashDict( const MyHashDict &orig ) : ..HashDict( orig ) {};
+    inline MyHashDict &operator=( const MyHashDict &orig ) {
+	return( ..HashDict::operator=( orig ) );
+    }
+
+
+  req'd from <Key>:
+  ~~~~~~~~~~~~~~~~~~
+    - copy and default constructors (ValHash only)
+    - assignment operator (ValHash only)
+    - equivalence operator ==
+
+  req'd from <Value>:
+  ~~~~~~~~~~~~~~~~~~
+    - copy and default constructors (ValHash only)
+    - assignment operator (ValHash only)
+
+    
+  public constructors/destructors:
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - ..HashDict( unsigned (*hash_fn)( const Key & )
+    	       , unsigned num_buckets = WC_DEFAULT_HASH_SIZE )
+      constructs a hash table with no entries and with num_buckets buckets.
+      hash_fn is used to determine which bucket each key/value pair will be
+      hashed into.  num_buckets must be greater than 0, and an attempt to
+      create a hash table with 0 buckets will create a hash table with
+      1 bucket.
+      If the hash dictionary object can be created, but no buckets allocated, the
+      table will be created with 0 buckets.  Attempting to insert into a hash
+      table with 0 buckets with throw an out_of_memory error (if enabled)
+
+    - ..HashDict( unsigned (*hash_fn)( const Type & )
+    		 , unsigned num_buckets
+		 , void * (*user_alloc)( size_t size )
+		 , void (*user_dealloc)( void *old, size_t size ) )
+      Like the above constructor, but also provides a user allocator and user
+      deallocator to allocate and free memory when entries are inserted and
+      removed from the hash table.  The user_alloc function must return a
+      pointer to allocated memory of at least size bytes, or 0 if it cannot
+      perform the allocation (which causes the insert to fail).  The
+      user_dealloc function must free "old", which was allocated by the
+      user_alloc function, and is of size "size".  You may take advantage
+      of the fact that user_alloc will always be called with the same
+      "size" parameter for hash tables of the same type (same ..HashTable
+      type, and templated over the same size).  To determine the size of
+      the objects that the user_alloc and user_dealloc functions will be
+      required to allocate and free, the following macros may be used:
+	WCValHashDictItemSize( Key, Value )
+	WCPtrHashDictItemSize( Key, Value )
+
+      For example, WCValHashDict<key_type, val_type> will require
+      user_alloc and user_dealloc to handle objects of size
+      WCValHashDictItemSize( key_type, val_type ).
+
+    - ..HashDict( const ..HashDict &orig )
+      the copy constructor.  Makes a copy of orig, including copying the
+      hash function, all values or pointers stored in the hash, and the
+      exception state.  If there is enough memory to create the hash object,
+      but not enough memory for the buckets, then the hash Dict will be
+      created with 0 buckets.  If there is not enough memory to copy all of
+      the values or pointers in the hash Dict, then only some will be copied,
+      and the number of entries will correctly reflect the number copied.
+      If all of the elements cannot be copied, an out_of_memory exception
+      is thrown if enabled in orig,
+
+    - ~..HashDict()
+      the destructor:  destroys the hash Dict object, including clearing the
+      entries using the clear member function.  If the hash Dict is not empty
+      (contains zero entries) when this destructor is invoked, the
+      not_empty exception will be thrown if enabled.
+
+
+  public operators
+  ~~~~~~~~~~~~~~~~
+
+    - ..HashDict &operator=( const ..HashDict &orig )
+      the assignment operator.  destroys this, and then copies orig, including
+      copying the hash function, all values or pointers stored in the hash, and
+      the exception state.  If there is enough memory to create the hash object,
+      but not enough memory for the buckets, then the hash Dict will be
+      created with 0 buckets, and the out_of_memory exception thrown if enabled
+      in orig. If there is not enough memory to copy all of the values or
+      pointers in the hash Dict, then only some will be copied, and the
+      out_of_memory exception thrown if enabled in orig. The number of entries
+      will correctly reflect the number copied.
+    
+   - int operator==( const ..HashDict &rhs ) const
+     The hash Dict equality operator.  Two hash Dicts are equivalent if they
+     are the same object (ie they have the same address).  Returns 0 if not
+     equal and non-zero if equal.
+
+
+   - Value & WCValHashDict::operator[]( const Key & key );
+   - Value * & WCPtrHashDict::operator[]( const Key * key );
+     The non-constant index operator.  If a key-value pair is found with
+     key equivalent to "key", then a reference to value or pointer
+     to value is returned.  If no equivalent element is found, then a new
+     key-value pair is created with key "key", and value initialized with
+     the default constructor (an undefined pointer for WCPtrHashDict).  The
+     returned reference to the value/pointer to value can be assigned to,
+     so that insertions can be done like:
+       WCValHashDict<int,String> hash( &my_hash_fn );
+       hash[ 5 ] = "Hello";
+     If an allocation error occurs when inserting a new key-value pair,
+     then the out_of_memory exception is throw, if enabled.  If the exception
+     is not enabled, then a reference to a value/pointer-to-a-value with
+     address zero will be returned, CAUSING A RUN-TIME ERROR.
+
+   - const Value & WCValHashDict::operator[]( const Key & key ) const;
+   - Value * const & WCPtrHashDict::operator[]( const Key * key ) const;
+     The non-constant index operator.  If a key-value pair is found with
+     key equivalent to "key", then a reference to value or pointer
+     to value is returned.  If no equivalent element is found, then an
+     index_range exception is thrown, if enabled.  If the exception is not
+     enabled, then a reference to a value/pointer-to-a-value with
+     address zero will be returned, CAUSING A RUN-TIME ERROR.
+      
+
+  public member fns
+  ~~~~~~~~~~~~~~~~~
+
+    **NOTE**:  unless otherwise noted, parameters of type "Type &" are for the
+    WCValHashDict, and the corresponding parameters for WCPtrHashDict member
+    functions have type "Type *".
+
+    - static unsigned bitHash( void * ptr, size_t size )
+      This can be used to implement a hashing function for any type.  A
+      hashing value is generated from the first size bytes pointed to by ptr.
+      For example:
+        unsigned my_hash_fn( const int &key ) {
+	    return( WCValHashDict<int,String>::bitHash( &key, sizeof( int ) );
+        }
+        WCValHashDict<int,String> hash( &my_hash_fn );
+
+    - unsigned buckets() const
+      return the number of buckets in the hash Dict.
+
+    - void clear()
+      remove all values or pointers from the hash Dict, so that the Dict has
+      no entries.  The number of buckets will remain unchanged.  Note that
+      for WCPtrHashDict, the values pointed to are not deleted.
+
+    ** PTR ONLY **
+    - void clearAndDestroy()
+      call delete for all pointers (both key and value pointers) in the hash,
+      and reinitialize the hash to be 0 length.
+    
+    - int contains( const Key &elem ) const
+      return non-zero if a element with key equivalent to elem is stored in
+      the hash Dict, or zero if there is no equivalent element.
+      Note that equivalence is based on Key's == operator for both
+      WCValHashDict and WCPtrHashDict.
+
+    - unsigned entries() const
+      returns the number of entries stored in the hash Dict.
+
+    ** VAL ONLY **
+    - int find( const Key &search, Value &return_val ) const
+      attempts to find an element with key equivalent to search in the
+      hash Dict.  If an equivalent key-value pair is found, non-zero is
+      returned, and return_val is assigned the found element's Value.
+      If no such element is found, zero is returned and return_val is unchanged.
+      Note that equivalence is based on Key's == operator.
+
+    ** PTR ONLY **
+    - Value *find( const Key *elem ) const
+      attempts to find an element with key equivalent to elem in the
+      hash Dict.  If an equivalent key-value pair is found, a pointer to its
+      value is returned. Otherwise zero is returned.
+      Note that equivalence is based on Key's == operator (ie the keys
+      pointed to are compared).
+      
+    ** VAL ONLY **
+    - int findKeyAndValue( const Key &search, Key &return_key
+    			 , Value &return_val ) const
+      attempts to find an element with key equivalent to search in the
+      hash Dict.  If an equivalent key-value pair is found, non-zero is
+      returned, return_key is assigned the found element's key and
+      return_val is assigned the found element's Value.
+      If no such element is found, zero is returned and both return_key and
+      return_val are unchanged.
+      Note that equivalence is based on Key's == operator.
+
+    ** PTR ONLY **
+    - Value *findKeyAndValue( const Key *elem, Key * &return_key ) const
+      attempts to find an element with key equivalent to elem in the
+      hash Dict.  If an equivalent key-value pair is found, a pointer to its
+      value is returned, and return_key is assigned a pointer to its key.
+      Otherwise zero is returned, and return_key is unchanged.
+      Note that equivalence is based on Key's == operator (ie the keys
+      pointed to are compared).
+      
+    - void WCValHashDict::forAll(
+    		void (*user_fn)( Key key, Value value, void *data )
+	      , void *data )
+    - void WCPtrHashDict::forAll(
+    		void (*user_fn)( Key *key, Value *value, void *data )
+    	      , void *data )
+      call user_fn for every key-value pair in the hash Dict.  user_fn has
+      prototype:
+        ** VAL **
+	void user_fn( Key key, Value value, void *data );
+        ** PTR **
+	void user_fn( Key *key, Value *value, void *data );
+      and will be passed each element's key and value in turn as the first
+      two parameters, and the
+      data passed to forAll as the third paramter.  data can be used to
+      pass user_fn any information which it requires.
+
+    - int WCValHashDict::insert( const Key &key, const Value &value )
+    - int WCPtrHashDict::insert( Key *key, Value *value )
+      Insert key and value into the hash Dict, using hash_fn on the key to
+      determine which bucket it should be stored.  If allocation of the
+      node to store the key-value pair fails, then an out_of_memory
+      exception will be thrown if enabled.
+      Otherwise, if the allocation failed, zero will be returned, and the
+      hash Dict will be unchanged.  Non-zero will be returned on a successful
+      insert.
+
+    - int isEmpty() const
+      return non-zero if the hash Dict is empty, zero if the hash Dict
+      contains at least one entry.
+
+    - int WCValHashDict::remove( const Key &elem )
+    - Value *WCPtrHashDict::remove( const Key *elem )
+      removes the element with key equivalent to elem from the
+      hash Dict.  If an equivent element is found, non-zero (WCValHashDict) or
+      the equivalent pointer removed is returned.  Zero is returned if no
+      equivalent element is found.
+      Note that equivalence is based on Key's == operator for both
+      WCValHashDict and WCPtrHashDict.
+
+    - void resize( unsigned new_num_bucket )
+      resize the hash Dict to have new_num_buckets buckets.  Note that this is
+      fairly expensive since hash_fn must be called for each entry
+      in the hash Dict, and the entry moved to the new bucket.  Entries are
+      _not_ destroyed or created in the process of being moved.   If there is
+      not enough memory to resize the hash Dict, the out_of_memory exception
+      will be thrown, if enabled, and the hash Dict will contain the number
+      of buckets it contained before the resize.
+      If new_num_bucket is 0, then a zero_buckets exception will be thrown if
+      enabled, and no resize will be performed.
+      The hash Dict is guaranteed to contain the same number of entries after
+      the resize whether or not an error occured or not.

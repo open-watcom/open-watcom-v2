@@ -1,0 +1,2 @@
+modify PB_DEBUGGER_STUB_OK_TO_END 1
+g

@@ -1,0 +1,12 @@
+!stress
+int #AllocDiskSpace(long,int);
+int #AllocFileHandles(int);
+int #AllocGDIMem(int);
+int #AllocMem(long);
+int #AllocUserMem(int);
+void #FreeAllGDIMem(void);
+void #FreeAllMem(void);
+void #FreeAllUserMem(void);
+int #GetFreeFileHandles(void);
+void #UnAllocDiskSpace(int);
+void #UnAllocFileHandles(void);

@@ -1,0 +1,354 @@
+
+	Product:	Borland Turbo-C++ 1.0
+
+	Author:		Marshall P. Cline, Ph.D.
+			ECE department
+			Clarkson University
+			Potsdam, NY  13676
+
+	Voice:		315-268-3868
+	Secretary:	315-268-6511
+	FAX:		315-268-7600
+
+	Internet:	cline@sun.soe.clarkson.edu
+	Alternate:	bh0w@clutx.clarkson.edu
+	Bitnet:		BH0W@CLUTX
+	UUnet:		uunet!clutx.clarkson.edu!bh0w
+
+	Copyright:	The Author releases this to the Public Domain
+
+	Revisions:	BugList-Date	BugList-Version
+			11 Jun 90	1.0.1
+			09 Aug 90	1.0.2
+			14 Aug 90	1.0.3
+			29 Aug 90	1.0.4
+			20 Sep 90	1.0.5
+
+
+Copyright:
+    This file, along with code fragments it contains, is PUBLIC DOMAIN.
+    That means no one (including myself) can restrict its use/distribution.
+    In particular, you can't copyright it.  No one can.  Not even me.
+
+Contributions:
+    If you have a TC++ bug to report, please email to the above addresses.
+    But please try to find/send a work-around to the problem/bug.
+    Also please explicitly state that your comments/code are public domain.
+
+=============================================================================
+=============================================================================
+
+Several classlib\include\*.h have #include "foo.h" rather than <foo.h>.
+This will only cause a problem if you have an indentically named header file
+in your current working directory (#include "file.h" starts in current dir,
+then searches the "standard places"; <file.h> only searches standard places).
+Note that TC++ by default doesn't find the classlib header files; if you want
+it to, add the line to turboc.cfg:  -IC:\TC\CLASSLIB\INCLUDE
+
+-----------------------------------------------------------------------------
+
+Some include files have #ifndef __FILENAME_H, others have #ifndef _FILENAME_H.
+(inconsistent #leading underscores).  See for example sortable.h vs set.h, etc.
+
+-----------------------------------------------------------------------------
+
+TCCNVT.EXE (the configuration file converter) isn't in the distribution.
+
+-----------------------------------------------------------------------------
+
+`make -n' looks for and reads `builtins.mak' ONLY if it's in the current dir.
+Naturally this is a bug, since make can't give an accurate picture of what a
+real `make' would do without the macros and implicit rules in `builtins.mak'.
+
+>Craig Orsinger/craig@slovax.wa.com/R&DAssoc/3625 Perkins L SW/Tacoma,WA 98499:
+>This also happens if you call "make" from your makefile. I don't know if this
+>occurs if the makefile and "make" program are on the same disk partition, but
+>it definitely does when they are not. My work-around was to use the new
+>"search path" feature of make to tell it where the "builtins.mak" file is.
+
+-----------------------------------------------------------------------------
+
+<iostream.h> always includes <mem.h> which slows compilation some.  In fact
+<iostream.h> doesn't need `NULL', and only needs memcpy() if _BIG_INLINE_ is
+defined, which will probably be rare.  Therefore the line
+        #include <mem.h>        // to get memcpy and NULL
+can be replaced with:
+        #ifdef _BIG_INLINE_
+        #include <mem.h>        // to get memcpy
+        #endif
+Since nearly everything includes <iostream.h>, and since relatively few things
+will want _BIG_INLINE_, this should be a winner.  Note however that some code
+might assume <iostream.h> pulls in <mem.h>.
+
+-----------------------------------------------------------------------------
+
+<iomanip.h> needs <iostream.h> but doesn't get it.  Add this to <iomanip.h>:
+        #ifndef __IOSTREAM_H
+        #include <iostream.h>
+        #endif
+
+-----------------------------------------------------------------------------
+
+There is no <new.h>.  I constructed the following work-alike.  It should go
+into your standard include directory (where <iostream.h> is, for example):
+	// new.h
+	// Author: Dr. Marshall Cline/ECE Dept/Clarkson Univ/Potsdam,NY 13676
+	// Email: cline@sun.soe.clarkson.edu
+	// Phone: Voice: 315-268-6511; Fax: 315-268-7600
+	// Copyright: The Author releases this to the Public Domain, 9-July-90.
+	// Date: 9-July-1990
+	// Please include these acknowledgements when distributing this file
+	#ifndef __NEW_H
+	#define __NEW_H
+	#ifndef _SIZE_T
+	#define _SIZE_T
+	typedef unsigned size_t;
+	#endif
+	void*  operator new(size_t size, void* ptr);
+	// _new_handler is a ptr to a parameterless function returning void
+	extern void (*_new_handler)();
+	void (*set_new_handler(void (*replacement_handler)()))();
+	#endif __NEW_H
+
+-----------------------------------------------------------------------------
+
+Bug in istream: an extremely common C++ main input loop is something like:
+		while (cin >> chunk) chunk.do_something();
+This works under the condition that istream::operator void* returns 0 (false)
+after the input stream reads past EOF (or encounters an error).  TC++'s
+iostream.h is consistent with its documentation [programmer's guide p.183] in
+stating that this operator returns 0 only when istream::fail() is true (when
+failbit, badbit or hardfail are set), but unfortunately `fail' doesn't get
+set after you've read past EOF.  The correct operation is to return 0 (false)
+on the read after you've run into EOF as well [Lippman p.384], which CAN BE
+accomplished by the _bad bit being set wnen seeking past end-of-file [Lippman
+p.402].  This can be fixed by changing "ios::operator void*()" in <iostream.h>
+as follows:
+	inline _Cdecl ios::operator void* ()
+	{ return (state & (eofbit|failbit|badbit|hardfail)) ? 0 : this; }
+NB: the `official' (if there is such a thing in these pre-ANSI-C++ days)
+behavior of istream::operator>> isn't clear.  I've discussed this matter with
+both Borland, and with a collegue who is in charge of certain C++ libraries
+inside AT&T, and no one is yet sure what is really ``supposed'' to happen.
+The above patch (checking the eofbit) appears to work correctly, but it may
+be that a more comprehensive solution is eventually in order.  In any event,
+most people's code doesn't run around checking individual bits inside an ios,
+so the above is probably `safe'.
+
+-----------------------------------------------------------------------------
+
+There is an error in TCC that isn't in TC (they generate different code).
+[Borland is as surprised that they'd behave differently as I was; I'd imagine
+the internals are identical, and this assumption has be confirmed by Borland].
+When a virtual fn is called from a non-virtual inline member, the virtualness
+of the call vanishes.  Compile the following with `tcc -vi':
+        #include <iostream.h>
+        class B {
+        public:
+          virtual void virt();
+          void nonvirt() { cout << "B::nonvirt() calling "; virt(); }
+        };
+        class D : public B {
+        public:
+          void virt();
+        };
+        main()
+        {
+          D d;
+          (&d)->nonvirt();  // B::nonvirt() should call D::virt()
+          d.nonvirt();      // ditto
+        }
+        void B::virt() { cout << "B::virt()\n"; }
+        void D::virt() { cout << "D::virt()\n"; }
+Unfortunately both of these call B::nonvirt().
+Ie:Both d.nonvirt() & (&d)->nonvirt() translate to "call near ptr @B@virt$qv".
+Obviously these should be virtual function calls.  This is a serious error, as
+calling a virtual from a non-virtual is fairly common.  Note: if B::virt() is
+a pure virtual (another legal operation, but perhaps not as common), the call
+to "@B@virt$qv" generates a linker error (there is no B::virt()!).  If
+B::nonvirt() is a regular (non-inline) function (either by moving it out of
+the class, or by `-v' or `-vi-'), TCC generates the correct code.  Strangely
+enough, TC appears to *always* generate the correct code.
+
+-----------------------------------------------------------------------------
+
+The 1.2 streams package (called <stream.h>) is nice, however AT&T treats the
+inclusion of <stream.h> as an alias to <iostream.h>.  Therefore you should
+rename it from <stream.h> to <oldstream.h>, and let <stream.h> simply be:
+		#include <iostream.h>
+It is notable that a number of posters on comp.lang.c++ have been confused by
+including <stream.h> thinking they were getting <iostream.h>...
+
+-----------------------------------------------------------------------------
+
+<generic.h>: Instead of using the usual "name2" style macros, Borland
+invented their own set of macros for concatenating pieces of names.  Any code
+using the Stroustrup-style macros (eg. code compatable with g++, CC, or
+Zortech C++) will break.  A work-around is to stick the following on the
+bottom of your <generic.h>:
+			#define name2 _Paste2
+			#define name3 _Paste3
+			#define name4 _Paste4
+This bug and its work-around is thanks to:
+	Pete Humphrey / pete@edsr.eds.com / 505-345-1863
+	EDS Research / 5951 Jefferson Street NE / Albuquerque, NM  87109-3432
+
+-----------------------------------------------------------------------------
+
+TC++ signals a compiler error when the LAST default parameter for a
+constructor is initialized by a constructor for some other class.  A
+workaround is to add an extra dummy default parameter of some
+predefined type like int.  Ex: if A and B are classes, then:
+This will be an error:		A::A(B b = B(...));
+But this is ok:			A::A(B b = B(...), int dummy=0);
+Thanks to:Zerksis Umrigar/umrigar@bingvaxu.cc.binghamton.edu/SUNY Binghamton NY
+
+-----------------------------------------------------------------------------
+
+When an object is created as a side effect of an expression, and the expression
+is short-circuited, the destructor for the object seems to get called anyway:
+	class X {
+	public:
+	  X   create_copy_of_X() { return *this; }	//Return *BY VALUE*
+	  int whatever();
+	  //...
+	};
+	main()
+	{
+	  X x;
+	  //...
+	  if (0 && x.create_copy_of_X().whatever()) stmt;
+	  //...
+	}
+At the close of main(), TC++ calls a destructor on the copy of `x' even though
+the copy was never properly constructed.  This only happens when inline functns
+are NOT inlined.  Thanks to: Jamshid Afshar/jamshid@ccwf.cc.utexas.edu
+
+-----------------------------------------------------------------------------
+
+An explicit constructor in a by-value return statement, for example
+	String foo() { char* p;  /*...*/  return String(p); }
+is interpreted by TC++ to mean ``construct the return value right on the
+stack'' (ie: not a temporary object, but the actual return location).  TC++
+does the right thing by not creating a temporary, otherwise it would have to
+copy to the return location and then `destruct' the temporary.  HOWEVER, TC++
+then goes ahead an treats the constructed object as if it *were* a temporary,
+and it tries to copy it to the return location, which is where it already is!
+Thus the copy ctor is called with `this' pointing to *itself*.  This is
+disasterous if copy ctor allocates memory; Ex:
+	String::String(const String& S)
+	{
+	  s=new char[S.len+1];	// If &S == this, changes S.s also!!!
+	  strcpy(s, S.s);	// Copy GARBAGE into itself
+	  len = S.len;
+	}
+WORKAROUNDS: [1] If there's a one-parameter ctor that will automatically
+convert to the return value (such as String(char*) above), then you don't need
+an explicit constructor in the return stmt (ex: ``return p'' would work just as
+well).  [2] If you need a more-than-one parameter ctor (ex: ``return
+complex(re,im)'', then you can construct a temporary and return the temporary
+by value.  For example:
+	complex foo()
+	{ //...
+	  complex my_return_value = complex(re, im);
+	  return  my_return_value;
+	}
+Unfortunately this won't be as fast since it requires an extra copy ctor
+and the temporary (``my_return_value'') has to be `destructed'.
+
+-----------------------------------------------------------------------------
+
+Missed Feature: There is a subtle C++ bug in the code below.  Even though the
+initialization list in String::String(const char*) looks like Len will get
+initialized before s, in fact the initialization order is fixed by the position
+within the class, which is just the opposite.  Thus an arbitrary and
+unpredictable amount of storage will be allocated!  (I put this `missed
+feature' in the `bug' report because TC++ users are used to TC++'s *excellent*
+warnings, and they may be puzzled if the compiler silently accepts code which
+is patently wrong.  For example, TC++ complains about locals that are used
+before they're initialized, and this is an analogous situation.)
+	class String {
+	  char* s;
+	  unsigned Len;
+	public:
+	  String(const char* p);     // char* --> String
+	  //...
+	};
+	String::String(const char* p) : Len(strlen(p)), s(new char[Len+1])
+	{			/////// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	  strcpy(s, p);		/////// Missed feature: TC++ should warn here
+	}			/////// Ex: `Len used before it is initialized'
+
+-----------------------------------------------------------------------------
+
+The following was contributed by Joseph Puglielli, Santa Barbara, CA
+It has NOT been double checked by the editor of this list.
+
+The #if/#else/#endif bracketed pair that follows should be functionally
+equivalent, but they're not:
+
+#include <iostream.h>
+#include <fstream.h>
+void error(const char*);
+#if 1
+class Reader {
+  ifstream input;
+  char     data[100];
+public:
+  Reader(const char* fname)
+  { if (!input.open(fname, ios::nocreate | ios::binary))
+      error("can't open file in Reader::Reader(const char*)");
+  }
+ ~Reader(const char* fname) { input.close(); }
+  void getin()
+  { memset(data, '\0', 100);
+    if (!input) error("Reader::getin() -- input file is trashed");
+    for (int i = 0; i < 100 && !input.eof(); ++i)
+      { char c; input.get(c); data[i] = c; }
+  }
+};
+main() { Reader r("input.txt"); r.getin(); }
+#else
+main()
+{
+  ifstream input;
+  char     data[100];
+  char*    fname = "input.txt";
+  if (!input.open(fname, ios::nocreate|ios::binary)) error("can't open file");
+  memset(data, '\0', 100);
+  if (!input) error("main() -- input file is trashed");
+  for (int i = 0; i < 100 && !input.eof(); ++i)
+    { char c; input.get(c); data[i] = c; }
+  input.close();
+}
+#endif
+
+-----------------------------------------------------------------------------
+
+The following was contributed by Joseph Puglielli, Santa Barbara, CA
+It has NOT been double checked by the editor of this list.
+
+The following two `x's shouldn't conflict, since `x' is a local `type'
+in each class.  However they do conflict.
+
+	class A {  enum x { zero,  one,    two  };  };
+	class B {  enum x { apple, orange, pear };  };
+
+-----------------------------------------------------------------------------
+
+This is thanks to: Scott Schram / 72561,207 on compuserve / sshram on BIX:
+When you compile with -N (stack checking ON), TC++ declares _stklen at the
+first function definition (when it emits code to do the stack-overflow check).
+The only way you can use it to extend the stack is to include <dos.h> *BEFORE*
+your first function definition.  Ex: this will fail:
+	int a(void) { return 0; }  // Implicitly causes _stklen to be declared
+	unsigned _stklen = 20000;  // This *RE*-declares _stklen...
+	main() { a(); return 0; }
+Instead use this:
+	#include <dos.h>           // EXPLICITLY declares _stklen
+	int a(void) { return 0; }  // Implicitly causes _stklen to be declared
+	unsigned _stklen = 20000;
+	main() { a(); return 0; }
+
+-----------------------------------------------------------------------------
+

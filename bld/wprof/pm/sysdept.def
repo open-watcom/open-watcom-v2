@@ -1,0 +1,2 @@
+extern unsigned int BigRead(int ,void *,unsigned int );
+extern void Ring(void );

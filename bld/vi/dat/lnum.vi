@@ -1,0 +1,5 @@
+assign %a = /Enter Line Number: /
+input %a
+if lastrc != NO_VALUE_ENTERED
+    %a
+endif

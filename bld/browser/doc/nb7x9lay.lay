@@ -1,0 +1,1486 @@
+:LAYOUT
+:PAGE
+        top_margin = '0.3i'
+        left_margin = '1.25i'
+        right_margin = '7.25i'
+        depth = '8.5i'
+:DEFAULT
+        spacing = 1
+        columns = 1
+        font = 0
+        justify = no
+        input_esc = '~'
+        gutter = '0.5i'
+        binding = 0
+:WIDOW
+        threshold = 2
+:FN
+        line_indent = 0
+        align = '0.3i'
+        pre_lines = 2
+        skip = 0
+        spacing = 1
+        font = 1
+        number_font = 0
+        number_style = h
+        frame = rule
+:FNREF
+        font = 0
+        number_style = hp
+:P
+        line_indent = 0
+        pre_skip = 1
+        post_skip = 0
+:PC
+        line_indent = 0
+        pre_skip = 1
+        post_skip = 0
+:FIG
+        left_adjust = 0
+        right_adjust = 0
+        pre_skip = 1
+        post_skip = 1
+        spacing = 1
+        font = 4
+        default_place = inline
+        default_frame = none
+:XMP
+        left_indent = '0.3i'
+        right_indent = 0
+        pre_skip = 0
+        post_skip = 0
+        spacing = 1
+        font = 4
+:NOTE
+        left_indent = 0
+        right_indent = 0
+        pre_skip = 1
+        post_skip = 1
+        font = 2
+        spacing = 1
+        note_string = "Notes: "
+:H0
+        group = 0
+        indent = 0
+        pre_top_skip = 4
+        pre_skip = 0
+        post_skip = 4
+        spacing = 1
+        font = 12
+        number_font = 3
+        number_form = none
+        page_position = right
+        number_style = h
+        page_eject = odd
+        line_break = yes
+        display_heading = yes
+        number_reset = no
+        case = mixed
+        align = 0
+:H1
+        group = 0
+        indent = 0
+        pre_top_skip = 0
+        pre_skip = 0
+        post_skip = 2
+        spacing = 1
+        font = 11
+        number_font = 12
+        number_form = new
+        page_position = left
+        number_style = h
+        page_eject = odd
+        line_break = yes
+        display_heading = yes
+        number_reset = yes
+        case = mixed
+        align = 0
+:H2
+        group = 0
+        indent = 0
+        pre_top_skip = 0
+        pre_skip = 1
+        post_skip = 0
+        spacing = 1
+        font = 10
+        number_font = 10
+        number_form = prop
+        page_position = left
+        number_style = h
+        page_eject = no
+        line_break = yes
+        display_heading = yes
+        number_reset = yes
+        case = mixed
+        align = 0
+:H3
+        group = 0
+        indent = 0
+        pre_top_skip = 0
+        pre_skip = 1
+        post_skip = 0
+        spacing = 1
+        font = 9
+        number_font = 9
+        number_form = prop
+        page_position = left
+        number_style = h
+        page_eject = no
+        line_break = yes
+        display_heading = yes
+        number_reset = yes
+        case = mixed
+        align = 0
+:H4
+        group = 0
+        indent = 0
+        pre_top_skip = 0
+        pre_skip = 1
+        post_skip = 0
+        spacing = 1
+        font = 8
+        number_font = 8
+        number_form = prop
+        page_position = left
+        number_style = h
+        page_eject = no
+        line_break = yes
+        display_heading = yes
+        number_reset = yes
+        case = mixed
+        align = 0
+:H5
+        group = 0
+        indent = 0
+        pre_top_skip = 0
+        pre_skip = 1
+        post_skip = 0
+        spacing = 1
+        font = 8
+        number_font = 3
+        number_form = none
+        page_position = left
+        number_style = h
+        page_eject = no
+        line_break = yes
+        display_heading = yes
+        number_reset = yes
+        case = mixed
+        align = 0
+:H6
+        group = 0
+        indent = 0
+        pre_top_skip = 0
+        pre_skip = 1
+        post_skip = 0
+        spacing = 1
+        font = 10
+        number_font = 3
+        number_form = none
+        page_position = centre
+        number_style = h
+        page_eject = no
+        line_break = yes
+        display_heading = yes
+        number_reset = yes
+        case = mixed
+        align = 0
+:HEADING
+        delim = '.'
+        stop_eject = no
+        para_indent = no
+        threshold = 2
+        max_group = 10
+:LQ
+        left_indent = '0.25i'
+        right_indent = '0.25i'
+        pre_skip = 1
+        post_skip = 1
+        spacing = 1
+        font = 0
+:DT
+        font = 1
+:GT
+        font = 2
+:DTHD
+        font = 3
+:CIT
+        font = 1
+:FIGCAP
+        pre_lines = 0
+        font = 1
+        figcap_string = "Figure "
+        string_font = 3
+        delim = '.'
+:FIGDESC
+        pre_lines = 0
+        font = 1
+:DD
+        line_left = '0.5i'
+        font = 0
+:GD
+        font = 0
+:DDHD
+        font = 3
+:ABSTRACT
+        post_skip = 1
+        pre_top_skip = 1
+        font = 2
+        spacing = 1
+        header = no
+        abstract_string = "ABSTRACT"
+        page_eject = yes
+        page_reset = no
+        columns = 1
+:PREFACE
+        post_skip = 1
+        pre_top_skip = 1
+        font = 11
+        spacing = 1
+        header = yes
+        preface_string = ""
+        page_eject = odd
+        page_reset = no
+        columns = 1
+:BODY
+        post_skip = 0
+        pre_top_skip = 0
+        header = no
+        body_string = ""
+        page_eject = yes
+        page_reset = yes
+        font = 1
+:BACKM
+        post_skip = 0
+        pre_top_skip = 0
+        header = no
+        backm_string = ""
+        page_eject = yes
+        page_reset = no
+        columns = 1
+        font = 1
+:LP
+        left_indent = 0
+        right_indent = 0
+        line_indent = 0
+        pre_skip = 1
+        post_skip = 1
+        spacing = 1
+:INDEX
+        post_skip = 0
+        pre_top_skip = 0
+        left_adjust = 0
+        right_adjust = 0
+        spacing = 1
+        columns = 2
+        see_string = "See "
+        see_also_string = "See also "
+        header = no
+        index_string = "Index"
+        page_eject = odd
+        page_reset = no
+        font = 1
+:IXPGNUM
+        font = 0
+:IXMAJOR
+        font = 2
+:IXHEAD
+        pre_skip = 1
+        post_skip = 1
+        font = 8
+        indent = 0
+        frame = box
+        header = yes
+:I1
+        pre_skip = 0
+        post_skip = 0
+        skip = 0
+        font = 0
+        indent = 0
+        wrap_indent = '0.4i'
+        index_delim = "  "
+        string_font = 0
+:I2
+        pre_skip = 0
+        post_skip = 0
+        skip = 0
+        font = 0
+        indent = '0.4cm'
+        wrap_indent = '0.4i'
+        index_delim = "  "
+        string_font = 0
+:I3
+        pre_skip = 0
+        post_skip = 0
+        skip = 0
+        font = 0
+        indent = '0.4cm'
+        wrap_indent = '0.4i'
+        index_delim = "  "
+:TOC
+        left_adjust = 0
+        right_adjust = 0
+        spacing = 1
+        columns = 1
+        toc_levels = 5
+        fill_string = "."
+:TOCPGNUM
+        size = '0.4i'
+        font = 0
+:TOCH0
+        group = 0
+        indent = 4
+        skip = 2
+        pre_skip = 2
+        post_skip = 1
+        font = 0
+        align = 0
+        display_in_toc = yes
+:TOCH1
+        group = 0
+        indent = 4
+        skip = 1
+        pre_skip = 1
+        post_skip = 0
+        font = 0
+        align = 0
+        display_in_toc = yes
+:TOCH2
+        group = 0
+        indent = 4
+        skip = 0
+        pre_skip = 0
+        post_skip = 0
+        font = 0
+        align = 0
+        display_in_toc = yes
+:TOCH3
+        group = 0
+        indent = 4
+        skip = 0
+        pre_skip = 0
+        post_skip = 0
+        font = 0
+        align = 0
+        display_in_toc = yes
+:TOCH4
+        group = 0
+        indent = 4
+        skip = 0
+        pre_skip = 0
+        post_skip = 0
+        font = 0
+        align = 0
+        display_in_toc = no
+:TOCH5
+        group = 0
+        indent = 4
+        skip = 0
+        pre_skip = 0
+        post_skip = 0
+        font = 0
+        align = 0
+        display_in_toc = no
+:TOCH6
+        group = 0
+        indent = '0.2i'
+        skip = 0
+        pre_skip = 0
+        post_skip = 0
+        font = 0
+        align = 0
+        display_in_toc = no
+:FIGLIST
+        left_adjust = 0
+        right_adjust = 0
+        skip = 0
+        spacing = 1
+        columns = 1
+        fill_string = "."
+:FLPGNUM
+        size = '0.4i'
+        font = 0
+:TITLEP
+        spacing = 1
+        columns = 1
+:TITLE
+        left_adjust = 0
+        right_adjust = 0
+        page_position = centre
+        font = 11
+        pre_top_skip = 3
+        skip = 1
+:DOCNUM
+        left_adjust = 0
+        right_adjust = 0
+        page_position = centre
+        font = 0
+        pre_skip = 2
+        docnum_string = "Document Number "
+:DATE
+        date_form = "$ml $dsn, $yl"
+        left_adjust = 0
+        right_adjust = 0
+        page_position = centre
+        font = 2
+        pre_skip = 2
+:AUTHOR
+        left_adjust = 0
+        right_adjust = 0
+        page_position = centre
+        font = 2
+        pre_skip = 8
+        skip = 0
+:ADDRESS
+        left_adjust = 0
+        right_adjust = 0
+        page_position = centre
+        font = 2
+        pre_skip = 4
+:ALINE
+        skip = 0
+:FROM
+        left_adjust = 0
+        page_position = right
+        pre_top_skip = 6
+        font = 0
+:TO
+        left_adjust = 0
+        page_position = left
+        pre_top_skip = 1
+        font = 0
+:ATTN
+        left_adjust = 0
+        page_position = left
+        pre_top_skip = 1
+        font = 1
+        attn_string = "Attention: "
+        string_font = 1
+:SUBJECT
+        left_adjust = 0
+        page_position = centre
+        pre_top_skip = 2
+        font = 1
+:LETDATE
+        date_form = "$ml $dsn, $yl"
+        depth = 15
+        font = 0
+        page_position = right
+:OPEN
+        pre_top_skip = 2
+        font = 0
+        delim = ':'
+:CLOSE
+        pre_skip = 2
+        depth = 6
+        font = 0
+        page_position = centre
+        delim = ','
+        extract_threshold = 2
+:ECLOSE
+        pre_skip = 1
+        font = 0
+:DISTRIB
+        pre_top_skip = 3
+        skip = 1
+        font = 0
+        indent = '0.5i'
+        page_eject = no
+:APPENDIX
+        indent = 0
+        pre_top_skip = 0
+        pre_skip = 0
+        post_skip = 3
+        spacing = 1
+        font = 11
+        number_font = 11
+        number_form = new
+        page_position = left
+        number_style = bd
+        page_eject = odd
+        line_break = yes
+        display_heading = yes
+        number_reset = yes
+        case = mixed
+        align = 0
+        header = yes
+        appendix_string = ""
+        page_reset = no
+        section_eject = yes
+        columns = 1
+:SL
+        level = 1
+        left_indent = '0.3i'
+        right_indent = 0
+        pre_skip = 1
+        skip = 0
+        spacing = 1
+        post_skip = 0
+        font = 0
+:OL
+        level = 1
+        left_indent = '0.3i'
+        right_indent = 0
+        pre_skip = 1
+        skip = 1
+        spacing = 1
+        post_skip = 0
+        font = 0
+        align = '0.3i'
+        number_style = hd
+        number_font = 0
+:UL
+        level = 1
+        left_indent = '0.3i'
+        right_indent = 0
+        pre_skip = 1
+        skip = 1
+        spacing = 1
+        post_skip = 0
+        font = 0
+        align = '0.5i'
+        bullet = '*'
+        bullet_translate = yes
+        bullet_font = 0
+:DL
+        level = 1
+        left_indent = 0
+        right_indent = 0
+        pre_skip = 1
+        skip = 1
+        spacing = 1
+        post_skip = 0
+        align = '0.76i'
+        line_break = no
+:GL
+        level = 1
+        left_indent = 0
+        right_indent = 0
+        pre_skip = 1
+        skip = 1
+        spacing = 1
+        post_skip = 1
+        align = 0
+        delim = ':'
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = top
+        docsect = letter
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = left
+        pouring = none
+        script_format = yes
+        contents = '/&$amp.date.// Page &$amp.$pgnuma./'
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = letlast
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = left
+        pouring = none
+        script_format = yes
+        contents = '/&$amp.date.// Page &$amp.$pgnuma./'
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = body
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = '0.23i'
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = '&$amp.headtxt1$.'
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = rule
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topeven
+        docsect = body
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = '0.23i'
+        font = 8
+        refnum = 1
+        region_position = left
+        pouring = last
+        script_format = no
+        contents = '&$amp.headtxt0$.'
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = rule
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = botodd
+        docsect = body
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = '&$amp.headtext$'
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = right
+        width = '0.4i'
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 2
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = pgnuma
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = bottom
+        docsect = head0
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = rule
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = head1
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = 1
+        font = 8
+        refnum = 1
+        region_position = left
+        pouring = last
+        script_format = no
+        contents = ' '
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = botodd
+        docsect = head1
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = '&$amp.headtext$'
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = right
+        width = '0.4i'
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 2
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = pgnuma
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = abstract
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = '0.23i'
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = none
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = none
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topeven
+        docsect = abstract
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = '0.23i'
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = none
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = none
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = botodd
+        docsect = abstract
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = 5
+        voffset = 1
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = pgnumr
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = boteven
+        docsect = body
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = '0.4i'
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 1
+        region_position = left
+        pouring = last
+        script_format = no
+        contents = pgnuma
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = right
+        width = extend
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 2
+        region_position = left
+        pouring = last
+        script_format = no
+        contents = '&$amp.headtext$'
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = head0
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = ' '
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topeven
+        docsect = head0
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = ' '
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = boteven
+        docsect = abstract
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = 5
+        voffset = 1
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = pgnumr
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = preface
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = '0.23i'
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = none
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = rule
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topeven
+        docsect = preface
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = '0.23i'
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = none
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = rule
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = botodd
+        docsect = preface
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = 5
+        voffset = 1
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = pgnumr
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = boteven
+        docsect = preface
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = 5
+        voffset = 1
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = pgnumr
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = toc
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = '4i'
+        voffset = 1
+        depth = 1
+        font = 11
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = 'Table of Contents'
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topeven
+        docsect = toc
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = '4i'
+        voffset = 1
+        depth = 1
+        font = 11
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = 'Table of Contents'
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = boteven
+        docsect = toc
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = 5
+        voffset = 1
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = pgnumr
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = botodd
+        docsect = toc
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = 5
+        voffset = 1
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = pgnumr
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = figlist
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = '4i'
+        voffset = 1
+        depth = 1
+        font = 11
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = 'List of Figures'
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topeven
+        docsect = figlist
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = '4i'
+        voffset = 1
+        depth = 1
+        font = 11
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = 'List of Figures'
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = boteven
+        docsect = figlist
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = 5
+        voffset = 1
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = pgnumr
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = botodd
+        docsect = figlist
+:BANREGION
+        indent = 0
+        hoffset = centre
+        width = 5
+        voffset = 1
+        depth = 1
+        font = 0
+        refnum = 1
+        region_position = centre
+        pouring = last
+        script_format = no
+        contents = pgnumr
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = appendix
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = '0.23i'
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = '&$amp.headtxt1$.'
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = rule
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topeven
+        docsect = appendix
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = '0.23i'
+        font = 8
+        refnum = 1
+        region_position = left
+        pouring = last
+        script_format = no
+        contents = '&$amp.headtxt0$.'
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = rule
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = botodd
+        docsect = appendix
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = '&$amp.headtext$'
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = right
+        width = '0.4i'
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 2
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = pgnuma
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = boteven
+        docsect = appendix
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = '0.4i'
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 1
+        region_position = left
+        pouring = last
+        script_format = no
+        contents = pgnuma
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = right
+        width = extend
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 2
+        region_position = left
+        pouring = last
+        script_format = no
+        contents = '&$amp.headtext$'
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = index
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = '0.23i'
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = 'Index'
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = rule
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topeven
+        docsect = index
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 0
+        depth = '0.23i'
+        font = 8
+        refnum = 1
+        region_position = left
+        pouring = last
+        script_format = no
+        contents = 'Index'
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = '0.23i'
+        depth = 1
+        font = 5
+        refnum = 2
+        region_position = left
+        pouring = none
+        script_format = no
+        contents = rule
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = botodd
+        docsect = index
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 1
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = none
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = right
+        width = '0.4i'
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 2
+        region_position = right
+        pouring = last
+        script_format = no
+        contents = pgnuma
+:eBANREGION
+:eBANNER
+:BANNER
+        left_adjust = 0
+        right_adjust = 0
+        depth = 2
+        place = boteven
+        docsect = index
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = '0.4i'
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 1
+        region_position = left
+        pouring = last
+        script_format = no
+        contents = pgnuma
+:eBANREGION
+:BANREGION
+        indent = 0
+        hoffset = right
+        width = extend
+        voffset = 1
+        depth = 1
+        font = 8
+        refnum = 2
+        region_position = left
+        pouring = last
+        script_format = no
+        contents = none
+:eBANREGION
+:eBANNER
+:eLAYOUT

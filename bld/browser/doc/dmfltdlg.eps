@@ -1,0 +1,113 @@
+%!PS-Adobe-2.0 EPSF-1.2
+%%Creator: CSG Graphics Screen Capture
+%%EndComments
+
+150 dict begin
+
+/imageStr 128 string def
+/imageChar 1 string def
+/imageLen 0 def
+/imageRepChar 0 def
+
+/Xpixels 245 def
+/Ypixels 45 def
+/bitsPerPixel 4 def
+/dotsPerXpixel 2 def
+/dotsPerYpixel 2 def
+
+/Ysize 21 def
+/Xdots Xpixels dotsPerXpixel mul def
+/Ydots Ypixels dotsPerYpixel mul def
+/Xsize Ysize Xdots Ydots div mul def
+
+/NextData {
+  currentfile imageChar readhexstring
+  {
+    /imageLen exch 0 get def
+    imageLen 128 lt
+      { imageStr 0 imageLen 1 add getinterval
+        currentfile exch readhexstring pop
+      }
+      { currentfile imageChar readhexstring pop
+        /imageRepChar exch 0 get def
+        /imageLen 257 imageLen sub def
+        0 1 imageLen 1 sub {
+          imageStr exch imageRepChar put
+        } for
+        imageStr 0 imageLen getinterval
+      }
+      ifelse
+  } if
+} def
+
+/gPaint
+{
+  matrix currentmatrix
+
+  currentpoint
+  transform
+  itransform
+
+  9 sub
+
+  Ysize sub translate
+  Xsize Ysize scale
+
+  Xpixels
+  Ypixels
+  bitsPerPixel
+  [Xpixels 0 0 Ypixels neg 0 Ypixels]
+  { NextData }
+  image
+  setmatrix
+} def
+
+{ currentpoint }
+stopped
+{ 30 750 moveto }
+{ pop pop } ifelse
+gPaint
+86000001f76100019e610001f761010e06f71600069e160006f716020001608a00036101
+0610f8cc0007a8770070f9ff01f80ff9ff0480160f0160f8cc0007a8770170fcfacc0188
+0ffacc05c88061070610f8cc0007a8770170fcfacc01880ffacc05c88016040160f8cc00
+07a8770170fcfacc01880ffacc05c88061000610f8cc0007a8770170fcfacc01880ffacc
+05c88016080160f8cc0007a8770170fcfacc01880ffacc02c88061ff060010f8cc0007a8
+770170fcfacc01880ffecc00c0fecc06c88016030160ccfb00020ccc07a8770370fcccc0
+fe00ffcc01880ffecc01000cffcc07c880610c0610cc0ffcff0208cc07a8770170fcffcc
+ff00000cffcc01880fffcc00c0ff00ffcc02c88016ff010160ccfb000208cc07a8770170
+fcffcc01c000fecc01880fffccfe00090cccc88061010610ccc8fb8801cc07a8770170fc
+fecc000cfecc01880ffacc02c88016ff010060f8cc0007a8770170fcfacc01880ffacc05
+c88061040610f8cc0007a8770170fcfacc01880ffacc05c880160f0160f8cc0007a87701
+70fcfacc01880ffacc05c88061090610f8cc0007a8770170fcfacc01880ffacc05c88016
+0e0160f8cc0007a8770170fcfacc01880ffacc05c88061000610f8cc0007a8770170f8f9
+88000ff9880480160c0160f8cc0007a8770070f8880008f988028061038700020901608b
+ff04f0610c06108bff01f016ff0100608bff04f061090610fdff00f0fe0003f00ff00ff5
+ff01f00fe5fffe00ffff0000e0ff04f00ffff00ffdff01f00ff3ff04f016040160fdff01
+f00fffff03f00ff00ff5ff01f00ff3ff0000f4ff0500fff00fff00e0ff04f00ffff00ffd
+ff01f00ff3ff04f061000610fdff01f00ffdff01f00ff5ff01f00ff3ff0000f4ff0000ff
+ff0000deff04f00ffff00ffdff01f00ff3ff01f016ff010060fdff01f00fffff04f00ff0
+0fffff00f8ff01f00ffeffff00ffffff0009fff0000ff0000ff0000ff8ff0000ffff0800
+ff00fff0000ffff0ff0000ffff0000ffff0001fff0fd00ffffff00f8ff05f00ffff00fff
+ff0003fff00ff0ff00f6ff04f061030610fdff00f0ff00080ff00ff00ff00ff00ff9ff01
+f00fffff10f00ff00ff00ff00f00ff00ff00ff00ff00f8ff0000ffff1b00ff00ff00ff00
+ff00ff00ff000ff00ff00ff00ff00ff00ff00ff00ff9ff00f0fe000a0ff00ff00ff00ff0
+0ff00ff7ff04f016070160fdff01f00fffff04f00ff00ff0ff00000ff9ff01f00fffff05
+f00ff00ff00ffeffff0002ff00fffe00f8ff0000ffff0200ff00ffffff0005ff00ff00ff
+00ffff0af0000ff00ff00ff00ff00ff7ff05f00ffff00ff0ff00060ff00ff00ff00ff7ff
+04f0610f0610fdff01f00fffff05f00ff00ff00ff7ff01f00fffff05f00ff00ff00fffff
+06f00f00ff00ff00f6ff0000ffff0c00ff00fff00f00ff00ff00ff00ffff0900f00ff00f
+f00ff00fffff00f8ff06f00ffff00ff00fffff05f00ff00ff00ff7ff04f016070160fdff
+01f00fffff05f00ff00ff00ff7ff01f00fffff05f00ff00ff00fffff0600ff00ff00ff00
+f6ff0000ffff1700ff00ff00ff00ff00ff00ff00fff00ff00ff00ff00ff00fffff01f00f
+f9ff06f00ffff00ff00fffff05f00ff00ff00ff7ff04f0610c0610fdff01f00fffff07f0
+0ff00ff00ff00ff9ff01f00fffff10f00ff00ff00ff00f00ff00ff00ff00ff00f8ff1e00
+fff00fff00ff00ff00ff00ff00ff00fff00ff00ff00ff00ff00ff00ff00ff9ff0ef00fff
+f00ff00ff00ff00ff00ff00ff7ff04f016060160fdff01f00fffff04f00ff00fffff00f8
+ff00f0fe0000ffff00ffffff0001fff0ff0005fff00ff0000ff8fffe00ffff0200fff0ff
+0001fff0ff0001ff00ffffff00070ff00ff00ff00fffff00f8ff05f00ffff00fffff0003
+fff00ff0ff00f6ff04f061000610beff0000ddff01f00ff5ff04f0160a0160fdfffd00f1
+fffd00e8ff00f0fd00000ffbff0200ff00e8fffc00fbff01f00ff5ff04f061080610c0ff
+02f0000fddff01f00ff5ff04f0160601608bff01f061ff0600108bff01f016ff0100608a
+0002610106f71600069e160006f716010e01f76100019e610001f761000687000004
+showpage
+end

@@ -1,0 +1,4 @@
+#launch winhelp using the whole word, or special case, or _f or _n stripped 
+# version as a partial key 
+
+winhelp HELP_PARTIALKEY mfc.hlp %1

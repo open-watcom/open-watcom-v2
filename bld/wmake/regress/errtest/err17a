@@ -1,0 +1,15 @@
+# -------------------------------------
+# ERROR 17: maximum token size exceeded
+# -------------------------------------
+#   path specifiers   ( _MAX_PATH == 260 (for NT)
+#
+
+big = 1234567890123456789012345678901234567890
+big = $+$(big)$(big)$(big)$(big)$(big)$(big)$-  # 240 chars
+
+.EXTENSIONS: .foo
+
+# should handle first line, but barf on second
+.foo : $(big)123456789;&
+$(big)1234567890123456789
+

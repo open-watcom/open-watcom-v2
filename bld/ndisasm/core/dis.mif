@@ -1,0 +1,48 @@
+dis_srcs        = $(disasm_dir)\core\c
+dis_includes    = $(disasm_dir)\core\h
+
+dis_objs        =  &
+                disentry.obj &
+                disaxp.obj &
+                disppc.obj &
+                disx86.obj &
+                disjvm.obj &
+                dissparc.obj &
+                distbls.obj
+
+!ifdef dis_test
+dis_link = debug all
+dis_comp = -d2
+!endif
+
+!ifdef __OS2__
+disbuild = dbldos2.exe
+!endif
+!ifdef __NT__
+disbuild = dbbldnt.exe
+!endif
+!ifdef __MSDOS__
+disbuild = dblddos.exe
+!endif
+!ifndef disbuild
+disbuild = dbldxxx.exe
+!endif
+
+!ifndef disbuild_dir
+disbuild_dir = ..
+!endif
+
+disbuild_headers = $(disasm_dir)\core\h\insaxp.h $(disasm_dir)\core\h\refaxp.h $(disasm_dir)\core\h\regaxp.h
+disbuild_headers += $(disasm_dir)\core\h\insppc.h $(disasm_dir)\core\h\refppc.h $(disasm_dir)\core\h\regppc.h
+disbuild_headers += $(disasm_dir)\core\h\insx86.h $(disasm_dir)\core\h\refx86.h $(disasm_dir)\core\h\regx86.h
+
+disbuild_name = $(disbuild_dir)\$(disbuild)
+
+distbls.c : $(disbuild_name) .EXPLICIT
+        $(disbuild_name)
+
+$(disbuild_name) : disbuild.obj .EXPLICIT
+        $(bld_link) op quiet $(dis_link) file disbuild.obj name $(disbuild_name)
+
+disbuild.obj : $(disasm_dir)\core\c\disbuild.c $(disbuild_headers) .EXPLICIT .AUTODEPEND
+        $(bld_cc) -zq $(dis_comp) $(disasm_dir)\core\c\disbuild.c -i$(disasm_dir)\core\h

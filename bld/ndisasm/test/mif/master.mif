@@ -1,0 +1,49 @@
+proj_name = wdistest
+name = dis
+
+.extensions:
+.extensions: .exe .obj .c .h .mif
+
+.mif: $(mif_path)
+!include cproj.mif
+!include defrule.mif
+!include bhost.mif
+
+dis_test=1
+
+!include $(disasm_dir)\core\dis.mif
+
+obj             = .obj
+exe             = .exe
+
+.c: $(dis_srcs);$(disasm_dir)\test\c
+.h: $(dis_includes)
+
+inc_dirs = $(dis_includes);$(watcom_dir)\h
+
+.before:
+        set include=$(inc_path)
+
+test_objs       = main$(obj) $(dis_objs)
+
+$(name)$(exe) : eraseall.obj $(test_objs)
+        *$(bld_link) debug all name $@ option map file { $(test_objs) }
+
+.c.obj
+        *$(bld_cc) -d2 $[@
+
+eraseall.obj : $(disasm_dir)\core\compile.gbl
+        if exist *.obj erase *.obj
+        wtouch eraseall.obj
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj del *.?bj
+        @if exist *.lnk del *.lnk
+        @if exist *.exe del *.exe
+        @if exist *.lib del *.lib
+        @if exist *.res del *.res
+        @if exist *.clb del *.clb
+        @if exist *.err del *.err
+        @if exist *.c del *.c
+        @if exist *.map del *.map
+        @if exist ..\*.exe del ..\*.exe

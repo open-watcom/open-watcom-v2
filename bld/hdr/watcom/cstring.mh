@@ -1,0 +1,19 @@
+//
+//  cstring.h   Cover file to include string.h
+//
+:keep CPP_HDR
+:include crwat.sp
+//
+#ifndef _CSTRING_H_INCLUDED
+#define _CSTRING_H_INCLUDED
+:include readonly.sp
+
+#ifndef __cplusplus
+#error cstring.h is for use with C++
+#endif
+
+#ifndef _STRING_H_INCLUDED
+ #include <string.h>
+#endif
+
+#endif

@@ -1,0 +1,16 @@
+
+DIALOG_HISTORY DIALOG 4, 14, 288, 140
+STYLE DS_MODALFRAME | WS_CAPTION | WS_POPUP | WS_VISIBLE | WS_SYSMENU
+CAPTION ""
+BEGIN
+        CONTROL "jYou have browsed into the execution history to a point", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 14, 276, 14
+        CONTROL "jwhere the debugger cannot completely restore program state.", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 28, 276, 14
+        CONTROL "jProceeding from this point could cause unexpected program behavior.", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 42, 276, 14
+        CONTROL "", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 56, 276, 14
+        CONTROL "jDo you want to return to the currently", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 70, 276, 14
+        CONTROL "jexecuting location before proceeding?", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 84, 276, 14
+        CONTROL "j&Yes", CTL_STK_YES, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 16, 112, 44, 14
+        CONTROL "j&No", CTL_STK_NO, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 100, 112, 44, 14
+        CONTROL "j&Cancel Operation", CTL_STK_CANCEL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 185, 112, 89, 14
+END
+

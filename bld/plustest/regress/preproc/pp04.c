@@ -1,0 +1,7 @@
+#define a bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+#line 1
+1
+a
+3

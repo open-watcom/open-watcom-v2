@@ -1,0 +1,93 @@
+This is a summary of the main menu structure
+
+File
+    Open...
+    View...
+    Command...
+    ---------
+    Options...
+    Window Options...
+    Save Setup...
+    Load Setup...
+    Source Path...
+    ---------
+    About...
+    System
+    ---------
+    Exit
+
+Run
+    Go
+    Run to Cursor
+    Execute to...
+    Step Over
+    Trace Into
+    Next Sequential
+    Until Return
+    ---------
+    Skip to Cursor
+    Restart
+    ---------
+    Save...
+    Restore...
+
+Break
+    Toggle
+    At Cursor
+    New...
+    ---------
+    On DLL Load
+    View All
+    Clear All
+    Disable All
+    Enable All
+    ---------
+    Save...
+    Restore...
+
+Code
+    Source
+    Modules
+    Functions
+    Calls
+    ---------
+    Assembly
+    Threads
+    Images
+    Replay
+
+Data
+    Watches
+    Locals
+    File Variables
+    Globals
+    ---------
+    Registers
+    80x87 FPU
+    Stack
+    I/O Ports
+    Memory at...
+    ---------
+    Log
+
+Undo
+    Undo
+    Redo
+    Unwind Stack
+    Rewind Stack
+    Home
+
+Search
+    Find...
+    Next
+    Previous
+    All Modules...
+    Match
+
+Window
+    Application
+    To Log
+    To File...
+    Zoom
+    Next
+    Hotkeys

@@ -1,0 +1,26 @@
+Here are some things that were not completed:
+
+- the library doesn't check if it is being asked to generate info for the
+	browser or debugger.  Basically the only thing that this should be
+	checked for is the .debug_aranges and .debug_pubnames sections.
+
+- Anthony's example:
+		struct B {
+		    int x, y;
+		}
+		struct D : private B {
+		    B::y;
+		}
+    still has no mapping... this depends on how the DWARF guys decide
+    we should map it.
+
+- I didn't test labels in location expressions.
+
+- dwcnf.h has some pretty arbitrary types in it;  I think that it will
+	need to be changed depending on how Brian decides to store
+	addresses in the files.  In particular, dw_targ_addr should
+	probably just be an uint_32.  The current dwcnf.h is basically
+	for testing purposes only.
+
+- The examples in the docs are just plain wrong... the only real examples
+	available are those in testtest.c.

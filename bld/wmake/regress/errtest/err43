@@ -1,0 +1,19 @@
+# --------------------------------
+# ERROR 43: syserr deleting file
+# --------------------------------
+
+.ERASE
+
+all.43 : first z43.43 last
+    @$(mkerr)
+
+first : .symbolic
+    @chmod  -r all.43
+    @wtouch all.43
+    @chmod  +r all.43
+
+z43.43 :
+    @%null
+
+last : .symbolic
+    @%null    

@@ -1,0 +1,15 @@
+system   windows dll
+debug    all
+
+libpath  d:\watcom\lib
+name	 weditcw
+option   map, elim, verbose, static
+library  windows
+library	 ddeml
+option   stack=8k
+option 	 symfile
+segment  _TEXT PRELOAD FIXED
+segment  CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
+
+file	 %WATCOM%\lib286\win\libentry.obj
+file	 weditcw.obj

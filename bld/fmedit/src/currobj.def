@@ -1,0 +1,1 @@
+extern OBJPTR CurrObjCreate( OBJPTR, RECT *, OBJPTR );

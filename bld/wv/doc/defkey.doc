@@ -1,0 +1,54 @@
+ CTRL-z          Window/Zoom
+ SPACE           Run/Step Over
+ .               display the floating popup menu for the current window
+ /               Search/Find...
+ :               File/Command...
+ =               Search/Match
+ ?               add a new expression to the watch window
+ N               Search/Previous
+ U               Undo/Redo
+ b               Break/At Cursor
+ e               Data/Memory at...
+ g               Run/Execute to...
+ h               move cursor left one
+ i               Run/Trace Into
+ j               move cursor down one
+ k               move cursor up one
+ l               move cursor rithe one
+ n               Search/Next
+ t               Break/Toggle
+ u               Undo/Undo
+ x               Run/Next Sequential
+ CTRL-BACKSPACE  Undo/Home
+ ALT-/           Search/Next
+ CTRL-\          Search/Next
+ F1              invoke help facility
+ F2              Data/Registers
+ F3              toggle between source level and assembly level debugging
+ F4              Window/Application
+ F5              Run/Go
+ F6              Window/Next
+ F8              Run/Trace Into
+ F9              Break/Toggle
+ F10             Run/Step Over
+ SHIFT-F9        add a new item to the watch window
+ CTRL-F4         close the current window
+ CTRL-F5         restore the current window to its normal size
+ CTRL-F6         rotate the current window
+ CTRL-F9         minimize the current window
+ CTRL-F10        maximize the current window
+ ALT-F10         display the floating popup menu for the current window
+ CTRL-LEFT       Undo/Undo
+ CTRL-RIGHT      Undo/Redo
+ ALT-1           Data/Locals
+ ALT-2           Data/Watches
+ ALT-3           Code/Source
+ ALT-4           File/View...
+ ALT-5           Data/Memory at...
+ ALT-6           Data/Memory at...
+ ALT-7           Data/Registers
+ ALT-8           Data/80x87 FPU
+ ALT-9           File/Command...
+ CTRL-UP         Undo/Unwind Stack
+ CTRL-DOWN       Undo/Rewind Stack
+ CTRL-TAB        rotate the current window

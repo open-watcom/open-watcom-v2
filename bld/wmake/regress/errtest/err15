@@ -1,0 +1,21 @@
+# -------------------------
+# ERROR 15: syntax errors
+# -------------------------
+
+.IGNORE
+
+all : .symbolic
+    for
+    for a
+    for %1
+    for %a!
+    for %a1
+    for %a if
+    for %a in(
+    for %a in (a)
+    for %a in (a) dip
+    for %a in (a) do
+
+    set a
+    set =b
+

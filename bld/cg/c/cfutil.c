@@ -1,0 +1,60 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include "standard.h"
+#include "typclass.h"
+#include "cfloat.h"
+#include "hostsys.h"
+
+typedef union flt {
+        real            sngl;
+        reallong        dble;
+        reallong        ldble;  // FIXME - need long double support
+} flt;
+
+extern  reallong        CFToF(cfloat*);
+
+extern  void    CFCnvTarget( cfloat *f, flt *buffer, type_class_def class ) {
+/****************************************************************************/
+
+    switch( class ) {
+    case FL:
+        buffer->ldble = CFToF( f );
+        break;
+    case FD:
+        buffer->dble = CFToF( f );
+        break;
+    case FS:
+        buffer->sngl = CFToF( f );
+        break;
+    }
+}

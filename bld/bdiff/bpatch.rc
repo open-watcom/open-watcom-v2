@@ -1,0 +1,30 @@
+#include "bpatch.h"
+#include "wreslang.h"
+
+STRINGTABLE
+BEGIN
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
+
+#include "bpatch.msg"
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
+
+#include "bpatch.msg"
+
+#if defined( BPATCH )
+#ifdef QNX
+#include "qpusage.rc"
+#else
+#include "opusage.rc"
+#include "opusagej.rc"
+#endif
+#else
+#include "dusage.rc"
+#endif
+
+END

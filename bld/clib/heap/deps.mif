@@ -1,0 +1,1 @@
+chksize.obj  : ..\..\..\c\chksize.c    ..\..\..\h\heap.h

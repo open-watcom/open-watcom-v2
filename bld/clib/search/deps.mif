@@ -1,0 +1,1 @@
+qsort.obj    : ..\..\..\c\qsort.c    ..\..\..\c\qsortrtn.c

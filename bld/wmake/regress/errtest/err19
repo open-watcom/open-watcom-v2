@@ -1,0 +1,22 @@
+# --------------------------------------------------
+# ERROR 19: Target () already declared as (s|d)colon
+# --------------------------------------------------
+
+test1 : a
+test1 :: b
+
+test2 : .symbolic
+test2 :: a
+
+test3 : a
+test3 :: .symbolic
+
+test4 :: a
+test4 : b
+
+test5 :: a
+test5 : .symbolic
+
+test6 :: .symbolic
+test6 : a
+

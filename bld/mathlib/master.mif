@@ -1,0 +1,27 @@
+proj_name=mathlib
+
+clib_host_cpu_086=i86
+clib_host_cpu_286=i86
+clib_host_cpu_287=i86
+clib_host_cpu_386=386
+clib_host_cpu_387=386
+clib_host_cpu_axp=axp
+clib_host_cpu_ppc=ppc
+host_CPU = $(clib_host_cpu_$(processor))
+
+clib_host_os_generic =dos
+clib_host_os_msdos   =dos
+clib_host_os_necdos  =dos
+clib_host_os_necwin  =dos
+clib_host_os_netware =nov
+clib_host_os_os2     =os2
+clib_host_os_osi     =osi
+clib_host_os_penpoint=pen
+clib_host_os_qnx     =qnx
+clib_host_os_windows =win
+clib_host_os_winnt   =nt
+host_OS=$(clib_host_os_$(system))
+
+!include cproj.mif
+
+!include $(mathlib_dir)\flags.mif

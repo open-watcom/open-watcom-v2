@@ -1,0 +1,45 @@
+objs_msdos_286    = $(d16c)
+objs_msdos_287    = $(d16i)
+objs_msdos_386    = $(d32c)
+objs_msdos_387    = $(d32i)
+objs_necdos_386   = $(ncc)
+objs_necdos_387   = $(nci)
+objs_os2_386      = $(d32c)
+objs_os2_387      = $(d32i)
+objs_windows_286  = $(wnc)
+objs_windows_287  = $(wni)
+objs_winnt_386    = $(d32c)
+objs_winnt_387    = $(d32i)
+objs_winnt_axp    = $(axp)
+objs_winnt_ppc    = $(ntp)
+objs_os2_ppc      = $(op)
+
+objs = $+ $(objs_$(system)_$(processor)) $-
+
+objs_msdos_286    =
+objs_msdos_287    =
+objs_msdos_386    =
+objs_msdos_387    =
+objs_necdos_386   =
+objs_necdos_387   =
+objs_os2_386      =
+objs_os2_387      =
+objs_windows_286  =
+objs_windows_287  =
+objs_winnt_386    =
+objs_winnt_387    =
+objs_winnt_axp    =
+objs_winnt_ppc    =
+objs_os2_ppc      =
+
+d16c =
+d16i =
+d32c =
+d32i =
+ncc  =
+nci  =
+wnc  =
+wni  =
+axp  =
+op   =
+ntp  =

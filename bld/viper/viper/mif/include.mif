@@ -1,0 +1,7 @@
+specific_inc_dirs_os2 = $(wclass_dir)\pm\hpp;$(guitools_dir)\os2
+specific_inc_dirs_win = $(wclass_dir)\win\hpp;$(guitools_dir)\win;$(batch_dir)\dos
+specific_inc_dirs_nt = $(wclass_dir)\win\hpp;$(guitools_dir)\win
+
+specific_inc_dirs = $(specific_inc_dirs_$(host_OS))
+
+inc_dirs = $(specific_inc_dirs);$(wclass_dir)\hpp;$(gui_dir)\h;$(viper_dir)\mviper;$(editdll_dir);$(rcsdll_dir);$(batch_dir)\h;$(gui_dir)\win\h

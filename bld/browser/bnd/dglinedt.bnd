@@ -1,0 +1,29 @@
+class GTLineOptDlg
+{
+    _okButtonR(		 IDD_OK_BUTTON,           (@,@,@,@) );
+    _cancelButtonR(	 IDD_CANCEL_BUTTON,       (@,@,@,@) );
+    _helpButtonR(	 IDD_HELP_BUTTON,	  (@,@,@,@) );
+    
+    _exampleTextR(       IDD_EXAMPLE_TEXT,        (@,@,@,@) );
+    _exampleLineR(       IDD_EXAMPLE_LINE,        (@,@,@,@) );
+    _exampleRectR(       IDD_EXAMPLE_RECT,        (@,@,@,@) );
+    
+    _styleTextR(	 IDD_STYLE_TEXT,	  (@,@,@,@) );
+    _styleBoxR(		 IDD_STYLE_BOX,		  (@,@,@,@) );
+    
+    _stl1RectR(		 IDD_NORMAL_RECT,         (@,@,@,@) );
+    _stl2RectR(          IDD_DASH_RECT,           (@,@,@,@) );
+    _stl3RectR(          IDD_DOT_RECT,            (@,@,@,@) );
+    _stl4RectR(          IDD_DASHDOT_RECT,        (@,@,@,@) );
+    _stl5RectR(		 IDD_DASHDOTDOT_RECT,     (@,@,@,@) );
+    
+    _colourTextR(	 IDD_COLR_TEXT,		  (@,@,@,@) );
+    _colourBoxR(	 IDD_COLR_BOX,		  (@,@,@,@) );
+    
+    _colr1RectR(	 IDD_COLR1_RECT,	  (@,@,@,@) );
+    _colr2RectR(	 IDD_COLR2_RECT,	  (@,@,@,@) );
+    _colr3RectR(	 IDD_COLR3_RECT,	  (@,@,@,@) );
+    _colr4RectR(	 IDD_COLR4_RECT,	  (@,@,@,@) );
+    _colr5RectR(	 IDD_COLR5_RECT,	  (@,@,@,@) );
+    
+};

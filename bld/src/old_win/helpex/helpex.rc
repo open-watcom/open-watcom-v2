@@ -1,0 +1,48 @@
+#include <windows.h>
+#include "helpex.h"
+#include "helpex.dlg"
+
+HelpexMenu MENU
+BEGIN
+    POPUP        "&File"
+    BEGIN
+        MENUITEM    "&New",                     IDM_NEW
+        MENUITEM    "&Open...",                 IDM_OPEN
+        MENUITEM    "&Save",                    IDM_SAVE
+        MENUITEM    "Save &As...",              IDM_SAVEAS
+        MENUITEM    "&Print",                   IDM_PRINT
+        MENUITEM    SEPARATOR
+        MENUITEM    "E&xit",                    IDM_EXIT
+    END
+
+    POPUP        "&Edit"
+    BEGIN
+        MENUITEM    "&Undo\tAlt+Bksp",     IDM_UNDO
+        MENUITEM    SEPARATOR
+        MENUITEM    "Cu&t\tShift+Del",     IDM_CUT
+        MENUITEM    "&Copy\tCtrl+Ins",     IDM_COPY
+        MENUITEM    "&Paste\tShift+Ins",   IDM_PASTE
+        MENUITEM    "C&lear\tDel",         IDM_CLEAR   ,GRAYED
+    END
+
+    POPUP   "&Help"
+    BEGIN
+        MENUITEM    "&Index",                   IDM_HELP_INDEX
+        MENUITEM    "&Keyboard",                IDM_HELP_KEYBOARD
+        MENUITEM    "Using &Help",              IDM_HELP_HELP
+        MENUITEM    SEPARATOR
+        MENUITEM    "&About HelpEx...",                 IDM_ABOUT
+    END
+END
+
+HelpexAcc ACCELERATORS
+BEGIN
+    VK_BACK,   IDM_UNDO,  VIRTKEY, ALT
+    VK_DELETE, IDM_CUT,   VIRTKEY, SHIFT
+    VK_INSERT, IDM_COPY,  VIRTKEY, CONTROL
+    VK_INSERT, IDM_PASTE, VIRTKEY, SHIFT
+    VK_DELETE, IDM_CLEAR, VIRTKEY, SHIFT
+END
+
+HelpCursor CURSOR help.cur
+

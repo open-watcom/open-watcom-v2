@@ -1,0 +1,89 @@
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %       Copyright (C) 1992, by WATCOM Systems Inc. All rights     %
+   %       reserved. No part of this software may be reproduced      %
+   %       in any form or by any means - graphic, electronic or      %
+   %       mechanical, including photocopying, recording, taping     %
+   %       or information storage and retrieval systems - except     %
+   %       with the written permission of WATCOM Systems Inc.        %
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+   Date         By              Reason
+   ----         --              ------
+   07 Jun 93    Wes Nelson      initial implementation
+*/
+
+#include <windows.h>
+#include "banner.h"
+#include "wre_rc.h"
+#include "wremsgs.h"
+
+#undef pick
+#undef sp
+#define pick( a, b ) a, [ b ]
+#define sp( a, b ) a
+
+STRINGTABLE
+BEGIN
+    #include "wre.msg"
+END
+
+#include "wre.men"
+
+WREAccelTable ACCELERATORS
+BEGIN
+    VK_DELETE,    IDM_DELETE,       VIRTKEY
+    VK_F1,        IDM_HELP,         VIRTKEY
+    VK_RETURN,    IDM_RES_EDIT,     VIRTKEY
+    "X",          IDM_CUT,          CONTROL, VIRTKEY
+    "C",          IDM_COPY,         CONTROL, VIRTKEY
+    "V",          IDM_PASTE,        CONTROL, VIRTKEY
+    "N",          IDM_NEW,          CONTROL, VIRTKEY
+    "O",          IDM_OPEN,         CONTROL, VIRTKEY
+    "S",          IDM_SAVE,         CONTROL, VIRTKEY
+END
+
+/* icons */
+WREIcon      ICON wre.ico
+ResIcon      ICON restext.ico
+
+/* private clipboard format bitmap */
+PrivateFmt   BITMAP clip.bmp
+
+/* aboutbox bitmap */
+AboutLogo    BITMAP logo4.bmp
+
+/* ribbon bitmaps */
+New          BITMAP new.bmp
+Open         BITMAP open.bmp
+Save         BITMAP save.bmp
+
+Cut          BITMAP cut.bmp
+Copy         BITMAP copy.bmp
+Paste        BITMAP paste.bmp
+
+/* resource type toolbar bitmaps */
+AccelU       BITMAP ACCEL.BMP
+AccelD       BITMAP ACCELD.BMP
+BitmapU      BITMAP BMP.BMP
+BitmapD      BITMAP BMPD.BMP
+CursorU      BITMAP CUR.BMP
+CursorD      BITMAP CURD.BMP
+DialogU      BITMAP DLG.BMP
+DialogD      BITMAP DLGD.BMP
+FontU        BITMAP FONT.BMP
+FontD        BITMAP FONTD.BMP
+IconU        BITMAP ICON.BMP
+IconD        BITMAP ICOND.BMP
+MenuU        BITMAP MENU.BMP
+MenuD        BITMAP MENUD.BMP
+StringU      BITMAP STR.BMP
+StringD      BITMAP STRD.BMP
+UPUser       BITMAP USER.BMP
+UserD        BITMAP USERD.BMP
+
+#include "about.dlg"
+#include "del.dlg"
+#include "paste.dlg"
+#include "renam.dlg"
+#include "res.dlg"
+

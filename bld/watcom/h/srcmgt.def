@@ -1,0 +1,11 @@
+#error Don't include this - use srcmgt.h instead
+#if 0
+extern struct browser *FOpenSource(char *,int ,int );
+extern void FDoneSource(struct browser *);
+extern unsigned long FSize(struct browser *);
+extern unsigned long FLastOffset(struct browser *);
+extern int FileIsRemote(struct browser *);
+extern char *FGetName(struct browser *);
+extern int FCurrLine(struct browser *);
+extern int FReadLine(struct browser *,int ,int ,char *,int );
+#endif

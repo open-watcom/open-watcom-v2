@@ -1,0 +1,29 @@
+# Makefile for MSC compilation of public domain tar program.
+# MS/DOS version - port by Eric Roskos, IDA
+
+DEFS = -DUSG -DNONAMES
+LIBS =
+DEF_AR_FILE = \"ARCHIVE.TAR\"
+DEFBLOCKING = 20
+COPTS = -Osl
+
+CFLAGS = $(COPTS) $(DEFS) \
+	-DDEF_AR_FILE=$(DEF_AR_FILE) \
+	-DDEFBLOCKING=$(DEFBLOCKING)
+
+# Add things here like getopt, readdir, etc that aren't in your
+# standard libraries.  Do *NOT* include binmode for MS-DOS.
+SUBSRC=	ndir.c getopt.c
+SUBOBJ=	ndir.obj getopt.obj \lib\setargv.obj
+
+SRCS =	tar.c create.c extract.c buffer.c getoopt.c list.c names.c \
+	port.c dosio.c $(SUBSRC)
+OBJS = 	tar.obj create.obj extract.obj buffer.obj getoopt.obj \
+	list.obj names.obj port.obj dosio.obj $(SUBOBJ)
+AUX =	README PORTING Makefile TODO tar.1 tar.5 tar.h port.h
+
+.c.obj:
+	cl $(CFLAGS) -c $*.c
+
+tar.exe:	$(OBJS)
+	link /NOE/NOI/STACK:8192 @lk

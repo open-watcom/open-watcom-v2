@@ -1,0 +1,14 @@
+//#line "..\c\utils.c" 71
+extern void ReplaceExt(char *path,char *addext);
+//#line "..\c\utils.c" 93
+extern dip_fhandle PathOpen(char *name,unsigned int len,char *ext);
+//#line "..\c\utils.c" 120
+extern void InitPaths(void);
+//#line "..\c\utils.c" 144
+extern void AddPath(pointer *path_var,char *path_data);
+//#line "..\c\utils.c" 185
+extern char *FindFile(char *path,char *name,path_list *path_tail);
+//#line "..\c\utils.c" 256
+extern unsigned int BigRead(int fh,void *buff,unsigned int size);
+//#line "..\c\utils.c" 276
+extern void Ring(void );

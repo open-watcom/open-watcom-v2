@@ -1,0 +1,63 @@
+#
+# dde callback.
+#
+# %1 = type
+# %2 = hconv
+# %3 = hstr1
+# %4 = hstr2
+# %5 = hdata
+#
+if %1 == XTYP_CONNECT
+    dderet 1
+elseif %1 == XTYP_CONNECT_CONFIRM
+    dderet 1
+elseif %1 == XTYP_DISCONNECT
+    quitall
+    dderet 1
+elseif %1 == XTYP_REQUEST
+    execute \e\e
+    dderet 0
+    ddequerystring %a %4
+    nextword %a %b
+    echo 1 %b
+    if "%b" == "GetFiles"
+	assign %s = /%D%P%N%E/
+	assign %d = %s
+	set quiet
+	assign %t = //
+	loop
+	    assign %t = /%t%d /
+	    next
+	    assign %d = /%D%P%N%E/
+	    quif "%d" == "%s"
+	endloop
+	set noquiet
+	ddecreatedatahandle %a %(4) "%t"
+	dderet %a
+    elseif "%b" == "MapFileName"
+    	nextword %a %b
+	nextword %a %c
+	assign %f = %F
+	e %b
+	w! %c
+	e %f
+    elseif "%b" == "EditFile"
+	nextword %a %b
+	e %b
+	nextword %a %b
+	if %b > 0
+	    %b
+	    nextword %a %b
+	    if %b > 0
+		execute %b|
+	    endif
+	endif
+	updatewindows
+    elseif "%b" == "TakeFocus"
+    	takefocus
+    endif
+elseif %1 == XTYP_POKE
+    dderet DDE_FNOTPROCESSED
+else
+    dderet DDE_FNOTPROCESSED
+endif

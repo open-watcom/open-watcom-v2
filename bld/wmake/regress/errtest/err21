@@ -1,0 +1,12 @@
+# ----------------------------------
+# ERROR 21: extension doesn't exist
+# ----------------------------------
+
+.extensions:
+.extensions: .1 .2 .3
+
+.c.obj :
+    shouldn't work!
+
+.c : path
+

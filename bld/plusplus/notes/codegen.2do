@@ -1,0 +1,14 @@
+- add support for taking the address of big labels so that catch handlers
+  can be linked into a stack at run-time (see EXCEPT.TXT for details on the
+  exception handling)
+DONE- add support for COMDEF data
+DONE- add support for lvalue of a PreGets assignment
+DONE- different functions that result in exactly the same object code
+  cannot be mapped to the same public symbol because of member pointer compares
+  (i.e., different function==different address must be preserved)
+- need to be able to tell code-generator that a pointer is non-zero, so it
+  can optimize away tests during pointer conversion
+- need to be able to tell code-generator that a pointer points at constant
+  data, so it can cache fetches
+- need to drag prologues and epilogues inwards so thunks will work
+- would be nice of code-generator reversed ParmDecls for reverse parm fns

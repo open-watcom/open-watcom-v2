@@ -1,0 +1,576 @@
+# MASTER.MIF include file for CLIBEXAM -- macros for all files in directory.
+
+# Non-working samples
+#FN_BAD =.exec.exe
+
+# Win32, QNX, OS/2
+FN_WQO = wait.exe &
+allocmem.exe &
+freemem.exe
+
+
+# DOS, Pharlap-16
+FN_DP = setblock.exe &
+intr.exe &
+setvect.exe &
+getvect.exe &
+allocmem.exe &
+freemem.exe &
+fp_off.exe &
+fp_seg.exe
+
+# Win16 only
+FN_WIN16 = setvect.exe &
+getvect.exe &
+chainint.exe
+
+# Default Windowing
+FN_DEFWIN = _dwdelcl.exe &
+_dwshutd.exe &
+_dwstabo.exe &
+_dwstapt.exe &
+_dwstcnt.exe &
+_dwyield.exe
+
+# BIOS commands (DOS, Win, Win386)
+FN_BIOS = b_disk.exe &
+b_equip.exe &
+b_keybrd.exe &
+b_memsiz.exe &
+b_print.exe &
+b_serial.exe &
+b_time.exe &
+breakoff.exe &
+intr.exe &
+nosound.exe &
+delay.exe &
+sound.exe
+
+# DOSCALL commands (DOS, Win, Win386, Win32, OS/2, Pharlap-16)
+FN_DOSCALL = creatnew.exe &
+d_close.exe &
+d_creat.exe &
+d_open.exe &
+d_read.exe &
+d_write.exe &
+findfirs.exe &
+setdate.exe &
+setdrive.exe &
+setfattr.exe &
+setftime.exe &
+settime.exe &
+dosfind.exe &
+findclos.exe &
+findnext.exe &
+getdcwd.exe &
+getmbcp.exe &
+ismbbaln.exe &
+ismbbalp.exe &
+ismbbgra.exe &
+ismbbkal.exe &
+ismbbkan.exe &
+ismbbkap.exe &
+ismbbkpr.exe &
+ismbbkpu.exe &
+ismbblea.exe &
+ismbbpri.exe &
+ismbbpun.exe &
+ismbbtra.exe &
+ismbcaln.exe &
+ismbcalp.exe &
+ismbccnt.exe &
+ismbcdig.exe &
+ismbcgra.exe &
+ismbchir.exe &
+ismbckat.exe &
+ismbcl0.exe &
+ismbcl1.exe &
+ismbcl2.exe &
+ismbcleg.exe &
+ismbclow.exe &
+ismbcpri.exe &
+ismbcpun.exe &
+ismbcspa.exe &
+ismbcsym.exe &
+ismbcupp.exe &
+ismbcxdi.exe &
+mbbtombc.exe &
+mbbtype.exe &
+mbccmp.exe &
+mbccpy.exe &
+mbcicmp.exe &
+mbctolow.exe &
+mbctombb.exe &
+mbctoupp.exe &
+mbgetcod.exe &
+mblen.exe &
+mbputcha.exe &
+mbrlen.exe &
+mbrtowc.exe &
+mbsbtype.exe &
+mbsnbcat.exe &
+mbsnbcmp.exe &
+mbsnbcnt.exe &
+mbsnbcpy.exe &
+mbsnbicm.exe &
+mbsnbset.exe &
+mbsnccnt.exe &
+mbsnextc.exe &
+mbsrtowc.exe &
+mbterm.exe &
+mbvtop.exe &
+rewinddi.exe &
+setmbcp.exe &
+sisinit.exe &
+strdec.exe &
+stricoll.exe &
+strinc.exe &
+strspnp.exe &
+tempnam.exe &
+wcrtomb.exe &
+wcsrtomb.exe &
+wctob.exe &
+dgetdriv.exe &
+dgetdskf.exe &
+doscommi.exe
+
+
+# 16-bit functions (DOS/16, Win16, OS/2 1.x, QNX/16)
+# NOTE: intdos and intdosx don't work under QNX/16.
+FN_16BIT = halloc.exe &
+hfree.exe &
+_bfreese.exe &
+_bheapse.exe
+
+# 32-bit functions (DOS/32 Win386, Win32, OS/2-32, QNX/32)
+FN_32BIT = outpd.exe &
+inpd.exe
+
+# DOS16, Win, Win386, Pharlap-16
+FN_DOSWIN = bdos.exe &
+dosexter.exe &
+int86.exe &
+int86x.exe &
+intdos.exe &
+intdosx.exe
+
+# DOS16 and DOS32
+FN_DOS = _harderr.exe &
+chainint.exe &
+bdos.exe &
+keep.exe &
+
+# Thread functions - Win32, QNX, OS/2, Netware
+FN_THREAD = _ethread.exe &
+_bthread.exe
+
+# DOS/32, QNX/32, Netware
+FN_DQN32 = int386.exe &
+int386x.exe &
+intr.exe
+
+#Win32 only
+FN_WIN32 = mktemp.exe &
+mempty.exe &
+mfromint.exe &
+mpaddb.exe &
+mpaddd.exe &
+mpaddsb.exe &
+mpaddsw.exe &
+mpaddusb.exe &
+mpaddusw.exe &
+mpaddw.exe &
+mpand.exe &
+mpandn.exe &
+mpckssdw.exe &
+mpcksswb.exe &
+mpckuswb.exe &
+mpcmpeqb.exe &
+mpcmpeqd.exe &
+mpcmpeqw.exe &
+mpcmpgtb.exe &
+mpcmpgtd.exe &
+mpcmpgtw.exe &
+mpmaddwd.exe &
+mpmulhw.exe &
+mpmullw.exe &
+mpor.exe &
+mpslld.exe &
+mpslldi.exe &
+mpsllq.exe &
+mpsllqi.exe &
+mpsllw.exe &
+mpsllwi.exe &
+mpsrad.exe &
+mpsradi.exe &
+mpsraw.exe &
+mpsrawi.exe &
+mpsrld.exe &
+mpsrldi.exe &
+mpsrlq.exe &
+mpsrlqi.exe &
+mpsrlw.exe &
+mpsrlwi.exe &
+mpsubb.exe &
+mpsubd.exe &
+mpsubsb.exe &
+mpsubsw.exe &
+mpsubusb.exe &
+mpsubusw.exe &
+mpsubw.exe &
+mpxor.exe &
+mtoint.exe &
+mupckhbw.exe &
+mupckhdq.exe &
+mupckhwd.exe &
+mupcklbw.exe &
+mupckldq.exe &
+mupcklwd.exe
+
+#Win32, OS2-16, OS2-32
+FN_OS2WIN32 = cwait.exe &
+_pclose.exe &
+_pipe.exe &
+_popen.exe
+
+#_expand.exe & removed from FN_ALL *******
+
+#Available on ALL platforms (does not include Netware and Pharlap/16).
+FN_ALL = _bprintf.exe &
+_freect.exe &
+_heapchk.exe &
+_heapgrw.exe &
+_heapmin.exe &
+_heapset.exe &
+_heapshr.exe &
+_heapwal.exe &
+_memavl.exe &
+_memmax.exe &
+_searche.exe &
+_splitp2.exe &
+ftime.exe &
+getdiskf.exe &
+getdrive.exe &
+getfattr.exe &
+getftime.exe &
+getdate.exe &
+getpid.exe &
+gettime.exe &
+locking.exe &
+putenv.exe &
+sbrk.exe &
+setenv.exe &
+_heapena.exe &
+iswctype.exe &
+mbcjisto.exe &
+mbcjmsto.exe &
+mbctohir.exe &
+mbctokat.exe &
+rewinddi.exe &
+snprintf.exe &
+strdate.exe &
+stricoll.exe &
+strspnp.exe &
+strtime.exe &
+vsnprint.exe &
+vsprintf.exe &
+wctype.exe
+
+# Macros (available everywhere!)
+FN_MACRO = alloca.exe &
+assert.exe &
+mk_fp.exe &
+offsetof.exe &
+setjmp.exe &
+va_arg.exe &
+va_end.exe &
+va_start.exe &
+mbsnbcnt.exe &
+mbsnbcnt.exe &
+strdec.exe &
+strdec.exe &
+strinc.exe &
+strinc.exe
+
+# Math functions (available everywhere)
+FN_MATH = _clear87.exe &
+_control.exe &
+_disable.exe &
+_enable.exe &
+_setmath.exe &
+_status8.exe &
+abs.exe &
+acos.exe &
+acosh.exe &
+asin.exe &
+asinh.exe &
+atan.exe &
+atan2.exe &
+atanh.exe &
+atof.exe &
+atoi.exe &
+atol.exe &
+cabs.exe &
+bessel.exe &
+ceil.exe &
+cos.exe &
+cosh.exe &
+difftime.exe &
+div.exe &
+ecvt.exe &
+exp.exe &
+fabs.exe &
+fcvt.exe &
+floor.exe &
+fmod.exe &
+frexp.exe &
+gcvt.exe &
+hypot.exe &
+itoa.exe &
+labs.exe &
+ldexp.exe &
+ldiv.exe &
+log.exe &
+log10.exe &
+log2.exe &
+ltoa.exe &
+matherr.exe &
+max.exe &
+min.exe &
+modf.exe &
+pow.exe &
+raise.exe &
+rand.exe &
+sin.exe &
+sinh.exe &
+sqrt.exe &
+srand.exe &
+tan.exe &
+tanh.exe &
+ultoa.exe
+
+#File functions (all platforms & NetWare)
+FN_FILE = dup.exe &
+dup2.exe &
+eof.exe &
+fclose.exe &
+fcloseal.exe &
+fdopen.exe &
+feof.exe &
+ferror.exe &
+fflush.exe &
+fgetc.exe &
+fgetchar.exe &
+fgetpos.exe &
+fgets.exe &
+fileleng.exe &
+fileno.exe &
+flushall.exe &
+fopen.exe &
+fprintf.exe &
+fputc.exe &
+fputchar.exe &
+fputs.exe &
+fread.exe &
+free.exe &
+freopen.exe &
+fscanf.exe &
+fseek.exe &
+fsetpos.exe &
+fstat.exe &
+ftell.exe &
+fwrite.exe &
+getc.exe &
+getch.exe &
+getchar.exe &
+getche.exe &
+getcwd.exe &
+gets.exe &
+open.exe &
+opendir.exe &
+mkdir.exe &
+printf.exe &
+putc.exe &
+putch.exe &
+putchar.exe &
+puts.exe &
+read.exe &
+readdir.exe &
+remove.exe &
+rename.exe &
+rewind.exe &
+rmdir.exe &
+scanf.exe &
+sopen.exe &
+sprintf.exe &
+sscanf.exe &
+stat.exe &
+tell.exe &
+tmpfile.exe &
+tmpnam.exe &
+umask.exe &
+ungetc.exe &
+ungetch.exe &
+unlink.exe &
+unlock.exe &
+vcprintf.exe &
+vcscanf.exe &
+vfprintf.exe &
+vfscanf.exe &
+vprintf.exe &
+vscanf.exe &
+vsscanf.exe &
+write.exe
+
+# String Functions (all + NetWare)
+FN_STRING = strcat.exe &
+strchr.exe &
+strcmp.exe &
+strcmpi.exe &
+strcoll.exe &
+strcpy.exe &
+strcspn.exe &
+strdup.exe &
+strerror.exe &
+strftime.exe &
+stricmp.exe &
+strlen.exe &
+strlwr.exe &
+strncat.exe &
+strncmp.exe &
+strncpy.exe &
+strnicmp.exe &
+strnset.exe &
+strpbrk.exe &
+strrchr.exe &
+strrev.exe &
+strset.exe &
+strspn.exe &
+strstr.exe &
+strtod.exe &
+strtok.exe &
+strtol.exe &
+strtoul.exe &
+strupr.exe &
+strxfrm.exe
+
+# Available on ALL platforms and Netware
+# NOTE: mbstowcs, getosfha, oshandle not available under QNX.
+FN_ALLN = spawn.exe &
+_fsopen.exe &
+_exit.exe &
+_fullpat.exe &
+_grow_ha.exe &
+_lrotl.exe &
+_lrotr.exe &
+_rotl.exe &
+_rotr.exe &
+_makepat.exe &
+_msize.exe &
+_splitpa.exe &
+_vbprint.exe &
+abort.exe &
+access.exe &
+asctime.exe &
+atexit.exe &
+bsearch.exe &
+calloc.exe &
+cgets.exe &
+chdir.exe &
+chmod.exe &
+chsize.exe &
+clearenv.exe &
+clearerr.exe &
+clock_.exe &
+close.exe &
+closedir.exe &
+cprintf.exe &
+cputs.exe &
+creat.exe &
+cscanf.exe &
+ctime.exe &
+exit.exe &
+getcmd.exe &
+getenv.exe &
+getosfha.exe &
+gmtime.exe &
+isalnum.exe &
+isalpha.exe &
+isascii.exe &
+isatty.exe &
+iscntrl.exe &
+isdigit.exe &
+isgraph.exe &
+islower.exe &
+isprint.exe &
+ispunct.exe &
+isspace.exe &
+isupper.exe &
+isxdigit.exe &
+inp.exe &
+inpw.exe &
+kbhit.exe &
+lfind.exe &
+localeco.exe &
+localtim.exe &
+lock.exe &
+longjmp.exe &
+lsearch.exe &
+memccpy.exe &
+memchr.exe &
+memcmp.exe &
+memcpy.exe &
+memicmp.exe &
+memmove.exe &
+memset.exe &
+main.exe &
+malloc.exe &
+mblen.exe &
+mbstowcs.exe &
+mbtowc.exe &
+mktime.exe &
+movedata.exe &
+onexit.exe &
+oshandle.exe &
+outp.exe &
+outpw.exe &
+perror.exe &
+qsort.exe &
+realloc.exe &
+segread.exe &
+setbuf.exe &
+setlocal.exe &
+setmode.exe &
+setvbuf.exe &
+signal.exe &
+sleep.exe &
+stackava.exe &
+swab.exe &
+system.exe &
+time.exe &
+tolower.exe &
+toupper.exe &
+tzset.exe &
+utime.exe &
+utoa.exe &
+wcstombs.exe &
+wctomb.exe &
+_atouni.exe &
+_bgetcmd.exe &
+_cmdname.exe &
+_hdopen.exe &
+bcmp.exe &
+bcopy.exe &
+bzero.exe &
+control8.exe &
+controlf.exe &
+fsync.exe &
+getw.exe &
+mblen.exe &
+openosfh.exe &
+putw.exe &
+snprintf.exe &
+stricoll.exe &
+strspnp.exe &
+vsnprint.exe
+

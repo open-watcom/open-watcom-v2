@@ -1,0 +1,18 @@
+!ifdef vroomed
+rcsdll_dos_i86 = obj286
+!endif
+rcsdll_dos_386 = obj386
+
+rcsdll_os2_i86 = objdos
+rcsdll_os2_386 = objos2
+
+rcsdll_qnx_i86 = objqnx
+
+rcsdll_win_i86 = objwin
+rcsdll_win_386 = objwin
+
+rcsdll_nt_386 = objnt
+
+!ifdef rcsdll_$(host_OS)_$(host_CPU)
+rcsdll = lib $(rcsdll_dir)\$(rcsdll_$(host_OS)_$(host_CPU))\rcsdll
+!endif

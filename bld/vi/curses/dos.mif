@@ -1,0 +1,17 @@
+objdostimeroot = &
+        int.ubj int24.obj
+
+objdossizeroot = &
+        dosmain.ybj
+
+objdossize = &
+        doscmds.ybj &
+        dosmouse.ybj &
+        dossys.ybj &
+        dosdir.ybj &
+        time.ybj  &
+        spawn.ybj &
+        uicurse.c
+
+extraobjs = $(objdossize)
+extraobjsroot = $(objdostimeroot) $(objdossizeroot)

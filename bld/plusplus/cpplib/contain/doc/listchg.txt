@@ -1,0 +1,74 @@
+Changes to C++ Container Class Library for patch on Oct 7, 1993
+
+Fixes to list iterator append and insert which were inserting
+the new entry at the beginning of the list after an iterator error
+have been made.
+
+Pointer and Value single and double linked list find, findLast and
+get member functions now work with empty lists.  An index_range
+exception will be thrown if enabled.  If not, a value list will
+return a default initialized object, and a pointer list will
+return an uninitialized pointer.
+
+A problem was fixed for double linked list iterators over lists
+containing only one element.
+
+
+Iterators now have the following semantics (some semantics were
+previously undocumented):
+  If an iterator is constructed without a list being passed to the
+  constructor and is not reset with a list, only the reset
+  member function is valid.  All other operators or member functions
+  will throw an undef_iter exception or return 0 (except for current
+  which returns an default initialized object for value list iterators,
+  and return an uninitialized pointer for pointer list iterators).
+
+  After an iterator is reset or for a newly constructed iterator, the
+  iterator is positioned before the first element in the list.
+  
+  When the iterator is positioned before the first element in the
+  list, only the following operators/member functions are valid:
+      operator(), operator++, operator+=, container and reset
+  The first increment positions the iterator at the first element in
+  the list.
+
+  If the iterator is incremented past the last element in the list
+  using operator(), operator++, operator+= then 0 will be returned.
+  Attempts to further increment the iterator using operator(),
+  operator++ or operator+= will throw an undef_iter exception
+  if it is enabled, or return 0 if it is not.  The iterator will
+  then be positioned after the last element in the list.  When an
+  iterator for a double linked list is past the end of the list,
+  operator-- and operator-= are valid, with the first decrement
+  positioning the iterator to the last element in list.
+
+  If the iterator for a double linked list is decremented before
+  the first element in the list using operator-- or operator-=
+  then 0 will be returned.  Further attempts to decrement the
+  iterator (or attempting to decrement an iterator which was reset
+  or newly constructed) using operator-- or operator -= will throw an
+  undef_iter exception if it is enabled, or return 0 if it is not.
+  The iterator will then be positioned before the first element in
+  the list.
+
+  The following member functions have the following error semantics
+  when an iterator is positioned before the first element or after
+  the last element in the list:
+
+    current: throw an undef_item exception if enabled, and
+             return 0 in the intrusive iterator, a default
+	     initialized object in the value case, and an
+	     uninitialized pointer in the pointer case.
+    append: throw an indef_iter exception if enabled, and
+            return 0.
+    insert: (double linked list iterators only) throw an
+            undef_iter if enabled, and return 0.
+
+
+A new exception, out_of_memory was added to WCListExcept and is
+thrown, if enabled, when an insert or append fails.
+
+If the insert and append member functions fail, they will throw
+the out_of_memory exception if enabled for the list, and return 0.
+Non-zero is returned on success.  This applies to all list classes
+and list iterator classes.

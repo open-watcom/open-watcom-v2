@@ -1,0 +1,6 @@
+.EXTENSIONS:
+.EXTENSIONS: .exe .exp .obj .zbj .asm .c
+
+.c: .;..\c;$(wasm_dir)\c
+.c.obj:
+        $(comp386) $[* $(cflags)

@@ -1,0 +1,13 @@
+#include "cmd.h"
+CMDDLG DIALOG 56, 35, 204, 108
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Command"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Command:", -1, 4, 6, 36, 8
+    EDITTEXT        CMD_EDIT, 40, 4, 158, 12, ES_AUTOHSCROLL
+    LTEXT           "Previous Commands:", -1, 72, 24, 84, 8
+    LISTBOX         CMD_LISTBOX, 72, 36, 124, 68, WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "&Process", IDOK, 13, 48, 40, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 13, 72, 40, 14
+END

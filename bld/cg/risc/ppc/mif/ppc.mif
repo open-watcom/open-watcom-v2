@@ -1,0 +1,19 @@
+ppc_objs = &
+        ppccall.obj  &
+        ppcdfsup.obj &
+        ppcenc.obj   &
+        ppcoptab.obj &
+        ppcreg.obj   &
+        ppcrtrtn.obj &
+        ppcconv.obj  &
+        ppcfunit.obj &
+        ppclbl.obj   &
+        ppcparm.obj  &
+        ppcproc.obj  &
+        ppcrgtbl.obj &
+        ppcsplit.obj &
+        ppctable.obj &
+        rscptype.obj
+
+src_path        = $(cg_dir)\risc\ppc\c
+include_path    = $(cg_dir)\risc\ppc\h

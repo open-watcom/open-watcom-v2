@@ -1,0 +1,10 @@
+lds si,x
+lds esi,x
+lss si,x
+lss esi,x
+lfs si,x
+lfs esi,x
+lgs si,x
+lgs esi,x
+les si,x
+les esi,x

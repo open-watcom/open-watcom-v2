@@ -1,0 +1,94 @@
+template = &
+common.$(ext) &
+decode.$(ext) &
+encode.$(ext) &
+message.$(ext) &
+wildargv.$(ext) &
+dtparse.$(ext) &
+wpack.$(ext) &
+qsort.$(ext) &
+io.$(ext)
+
+ext = obj
+
+english_objs = $+$(template)$- &
+lookup.$(ext) &
+
+japanese_objs = $+$(template)$- &
+lookup.jbj
+
+.extensions:
+.extensions: .exe .obj .jbj .c
+
+!ifeq targ dos
+copts   = /oaxt /ml /w3 /i$(watcom_dir)\os21x_h /u__OS2__
+CC      = wcc
+sys     = dos
+!else ifeq targ os2
+copts   = /oaxt /w3 /i$(watcom_dir)\os220_h /bt=os2
+CC      = wcc386
+sys     = os2v2
+!else ifeq targ pls
+copts   = /oaxt /w3 /u__OS2__
+CC      = wcc386
+sys     = pharlap
+!else ifeq targ nt
+copts   = /oaxt /w3 /u__OS2__ /u__NT__
+CC      = wcc386
+sys     = nt
+!endif
+
+!ifdef ON_BUILD_MACHINE
+copts   += /d1
+!else
+copts   += /d2
+!endif
+
+compile = $(CC) $[* $(copts)
+wtouch  = $(build_root)\wtouch\
+proj = wpack
+os2proj = os2pack
+boundproj = bpack
+
+.c: ..\c
+.c.obj:
+        $(compile)
+
+.c.jbj:
+        $(compile) -zk0 -d_JAPANESE -fo=*.jbj
+
+w : $(proj).exe .SYMBOLIC
+        @%null
+
+d : .SYMBOLIC $(english_objs) $(proj).lnk
+        wlink debug all system $(sys) name d$(proj) op quiet, map @$(proj)
+
+b : .SYMBOLIC $(english_objs) $(proj).lnk
+        set DEBUG=d a
+        %make bound
+
+nb : .SYMBOLIC $(english_objs) $(proj).lnk
+        set DEBUG=pa .
+        %make bound
+
+$(proj).exe : $(english_objs) $(proj).lnk
+        wlink system $(sys) name $(proj) op quiet, map @$(proj)
+!ifeq targ pls
+        !$(pharlap)bind386 $(pharlap)run386b.exe $(proj)
+!endif
+
+$(proj).lnk : makefile ..\wpack.mif
+        @%write $(proj).lnk $# $(proj)
+        @for %i in ($(english_objs)) do @%append $(proj).lnk file %i
+
+$(proj)j.lnk : makefile ..\wpack.mif
+        @%write $(proj)j.lnk $# $(proj)j
+        @for %i in ($(japanese_objs)) do @%append $(proj)j.lnk file %i
+
+bound : .PROCEDURE
+        wlink system os2 pmcompat $(%DEBUG) n $(os2proj) op quiet, map @$(proj)
+        bind $(os2proj).exe $(doscalls) $(apilib) -o $(boundproj)
+        del $(os2proj).exe
+
+dtparse.$(ext) :
+        $(CC) $(wtouch)dtparse $(copts) /i=$(wtouch) /i=$(wtouch)nt.386 /u__OS2__ /u__NT__ /u__DOS__

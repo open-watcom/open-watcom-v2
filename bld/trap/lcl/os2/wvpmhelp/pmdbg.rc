@@ -1,0 +1,45 @@
+/*********** HELLO2 C Sample Program Resource Script File (.RC) ***************/
+/*                                                                            */
+/*  The window resources used by an application are defined in a resource     */
+/*  script file .RC.  This file is compiled by the resource compiler to       */
+/*  produce an executable-format file.                                        */
+/*  The definitions are either statements which define resources or           */
+/*  references to other files containing resources.                           */
+/*                                                                            */
+/*  In this resource script file:                                             */
+/*  ------------------------------------------------------------------------  */
+/*  Statement:                        References:                             */
+/*  MENU  ID_WINDOW PRELOAD           #include <os2.h>                        */
+/*  ACCELTABLE ID_WINDOW PRELOAD      #include "hello2.h"                     */
+/*  STRINGTABLE PRELOAD               ICON ID_WINDOW hello2.ico               */
+/*                                                                            */
+/******************************************************************************/
+
+
+#include <os2.h>
+#include "pmdbg.h"
+
+ICON    ID_WINDOW pmdbg.ico
+
+MENU    ID_WINDOW PRELOAD
+BEGIN
+  SUBMENU "~Options", ID_OPTIONS
+  BEGIN
+    MENUITEM "~Load\tAlt+l", ID_LOAD, MIS_TEXT
+    MENUITEM "~Run\tAlt+r", ID_RUN, MIS_TEXT
+    MENUITEM "~Kill\tAlt+k", ID_KILL, MIS_TEXT
+    MENUITEM SEPARATOR
+    MENUITEM "~Hard Mode\tAlt+h", ID_HARD, MIS_TEXT
+    MENUITEM SEPARATOR
+    MENUITEM "E~xit \tF3",       ID_EXITPROG, MIS_TEXT
+  END
+END
+
+ACCELTABLE ID_WINDOW PRELOAD
+BEGIN
+  "l",   ID_LOAD, CHAR,        ALT
+  "r",   ID_RUN, CHAR,        ALT
+  "k",   ID_KILL, CHAR,        ALT
+  "h",   ID_HARD, CHAR,        ALT
+   VK_F3, ID_EXITPROG, VIRTUALKEY
+END

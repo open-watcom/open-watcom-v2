@@ -1,0 +1,286 @@
+
+	BASIC TYPES
+	===========
+
+
+image_handle:	unsized
+	- loaded image structure (EXE or DLL).
+	
+smod_handle:	unsigned_16
+	- Handle to a source module structure.
+
+type_handle:	unsized
+	- Handle to a type structure.
+	
+sym_handle:	unsized
+	- Handle to debug info for a symbol.
+
+scue_handle:	unsized
+	- Handle to source cue.
+
+search_result:	enumeration
+	- Returned by any routine the searches for information.
+	- Possible values:
+	    SR_NONE	- couldn't find anything.
+	    SR_EXACT	- found exactly what we were looking for
+	    SR_CLOSEST	- found the closest thing to it.
+
+
+
+	UTILITIES
+	=========
+
+
+unsigned QueryHandleSize( handle_kind h )
+
+	Returns sizes of unsized handle types. Handle kind is one of
+		QHS_IMAGE
+		QHS_TYPE
+		QHS_SYM
+		QHS_CUE
+
+
+bool DIPMoreMem( image_handle *e, unsigned amount )
+
+	Try to free up 'amount' of memory. Return TRUE if anything was
+	freed, FALSE otherwise.
+
+
+bool LoadDebugInfo( char *path, image_handle *e, char *res )
+
+	Loads debugging information for given 'path' and returns TRUE
+	if it succeeds. If the function fails, FALSE is returned and
+	a textual string describing the failure is copied into 'res'.
+	The image_handle structure pointed to by 'e' is filled in if the
+	information is successfully loaded.
+
+
+MapDebugInfo( image_handle *e )
+
+	Perform load time relocations on the symbolic information for
+	image 'e'.
+
+
+UnloadDebugInfo( image_handle *e )
+
+	Remove the debugging information for image 'e' from memory.
+
+
+
+	OPERATIONS
+	==========
+
+
+WalkModList( image_handle *e,
+		bool (*f)( image_handle *e, smod_handle m, void *d ),
+		void *d )
+
+	Walk the list of modules for an executable image. Calls the
+	function 'f' for each module, passing in the image_handle structure,
+	module handle and supplied data pointer. The function returns TRUE
+	if the walk is to continue, FALSE to terminate.
+
+
+unsigned ModName( image_handle *e, smod_handle m, char *name )
+
+	Copy the image_handle, smod_handle name to the buffer pointed to
+	by 'name'. The name length is returned.
+
+
+char *ModSrcLang( image_handle *e, smod_handle m )
+
+	Return a pointer to the name of the source language for the
+	given module.
+
+
+search_result ModInfo( image_handle *e, smod_handle m, enum info_kind k )
+
+	Return TRUE if the module has the indicated kind of debugging
+	information, FALSE otherwise. enum info_kind has the following
+	values:
+		MI_LINE, MI_LOCAL, MI_TYPE
+
+
+type_kind TypeKind( image_handle *e, type_handle *t )
+
+	Given a type_handle, return simplified type information
+	(same thing as Classify in current scheme).
+
+
+TypeBase( image_handle *e, type_handle *t )
+
+	Given a type handle, change it into a handle to the base type.
+
+
+unsigned long TypeSize( image_handle *e, type_handle *t )
+
+	Return the size of a type in bytes.
+
+
+TypeArrayInfo( image_handle *e, type_handle *t, array_info *a )
+
+	Return information about an array type
+		- type of index
+		- high bound of index
+		- low bound of index
+		- array stride in bytes
+		- row or column order?
+
+
+TypeProcInfo( image_handle *e, type_handle *t, type_handle *r, unsigned p )
+
+	Return the type handle of procedure parameter 'p' in the storage
+	pointed to by 'r'. If 'p' is a zero, return the return type of the
+	procedure.
+
+
+WalkTypeList( image_handle *e, smod_handle m,
+		bool (*f)( image_handle *e, type_handle *t, void *d ),
+		void *d )
+
+	Walk the list of types for a module. Calls the
+	function 'f' for each type, passing in the image_info structure,
+	type handle and supplied data pointer. The function returns TRUE
+	if the walk is to continue, FALSE to terminate.
+
+
+CalcFieldAdjust???
+CalcThunkAdjust???
+
+
+unsigned SymName( image_handle *e, sym_handle *s, char *name )
+
+	Copy the name of symbol 's' into buffer 'name'. The length
+	of the name is returned.
+
+
+SymType( image_handle *e, sym_handle *s, type_handle *t )
+
+	Return the type handle of symbol 's' in 't'.
+
+
+SymLocation( image_handle *e, sym_handle *s, location_list *l )
+
+	Return the location of a symbol --- NEEDS WORK
+
+
+SymValue( image_handle *e, sym_handle *s, void *buff )
+
+	Return the value of a symbol for symbolic constants.
+
+
+WalkSymList( image_handle *e, walk_kind k, void *t,
+		bool (*f)( image_handle *e, sym_handle *s, void *d ),
+		void *d )
+
+	Walk a symbol list of some kind. For each symbol in the walk,
+	call the function 'f'. If 'f returns TRUE, continue the walk,
+	else terminate. The walk_kind 'k' parameter determines the
+	type of the walk. It has the following values
+
+		WSL_TYPE: Walk a type list. The 't' parameter is a
+		    	pointer at a type handle. If the type_handle
+			is a structure, walk the fields of the structure.
+			If it is an enumerated type, walk the enumerated
+			constants.
+
+		WSL_SCOPED: Walk a scoped symbol list. The 't' parameter
+			is a pointer to an address. Walk all the symbols
+			visible from the given address.
+
+		WSL_MODULE: Walk a module level list. The 't' parameter is
+			a pointer at a smod_handle. Walk all the module
+			level (non-scoped) symbols for the given module.
+
+
+unsigned CueFile( image_handle *e, scue_handle *l, char *file )
+
+	Copy the source file name for a source cue into 'file'. The
+	length of the name is returned.
+
+
+unsigned CueLine( image_handle *e, scue_handle *l )
+
+	Return the line number for a source cue.
+
+
+unsigned CueColumn( image_handle *e, scue_handle *l )
+
+	Return the column number for a source cue.	
+
+
+address CueAddr( image_handle *e, scue_handle *e )
+
+	Return the address of a source cue.
+
+
+search_result LineCue( image_handle *e, smod_handle m, char *file,
+			unsigned line, unsigned column, scue_handle *l )
+
+	Return the source cue for the given file, line, and column.
+
+
+search_result AddrCue( image_handle *e, smod_handle m, address a,
+			scue_handle *l )
+
+	Return the source cue for the given address.
+
+
+WalkCueList( image_handle *e, smod_handle m,
+		bool (*f)( image_handle *e, scue_handle *t, void *d ),
+		void *d )
+
+	Walk the list of source cues for a module. Calls the
+	function 'f' for each cue, passing in the image_info structure,
+	cue handle and supplied data pointer. The function returns TRUE
+	if the walk is to continue, FALSE to terminate.
+
+
+search_result AddrMod( image_handle *e, address a, unsigned section_map_id,
+			smod_handle *m )
+
+	Return the source module which defines the given address.
+
+
+search_result AddrSection( image_handle *e, address a,
+			unsigned section_map_id, unsigned *section )
+
+	Return the section id for a given address.
+
+
+search_result AddrSym( image_handle *e, address a, sym_handle *s )
+
+	Return the symbol for the given address.
+
+
+search_result LookupSym( image_handle *e, lookup_context *l,
+			sym_handle_list *s )
+
+	Return the list of (ambiguous) symbols which match the name
+	being looked up.
+
+
+LookupContext( image_handle *e, ????? )
+
+	Set the lookup context (function, register set) for subsequent
+	AddrSym, LookupSym, WalkSymList calls -- NEEDS WORK
+	
+
+
+	CLIENT SUPPORT
+	==============
+
+DIPMapAddr( image_handle *e, address *a )
+
+	On entry, 'a' points to a map file address. After exit, the address
+	will have been modifed to a run time address.
+
+void *DIPAlloc( unsigned amount )
+
+	Allocate 'amount' bytes of memory.
+
+DIPFree( void *p )
+
+	Free the memory pointed at by 'p'.
+
+Access to all the routines in DBGIO.H (open, seek, read, etc).

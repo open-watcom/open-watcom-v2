@@ -1,0 +1,62 @@
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
+   %     reserved.  No part of this software may be reproduced or        %
+   %     used in any form or by any means - graphic, electronic or       %
+   %     mechanical, including photocopying, recording, taping or        %
+   %     information storage and retrieval systems - except with the     %
+   %     written permission of WATCOM International Inc.                 %
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+******************************** IOFLOAT *************************************
+
+Filename: iofgldfl.cpp
+Declaration: 
+	ios::iostate __GetLDFloat( streambuf *sb, char *buffer ) 
+Semantics:  Read the input stream into buffer as long as it is a prefix of
+            a floating point number.
+
+
+Filename: iofexflo.cpp
+Declaration: 
+	istream &istream::operator >> ( float &f ) 
+Semantics:  Extract a "float" from the stream.
+
+
+
+Filename: iofexdou.cpp
+Declaration: 
+	istream &istream::operator >> ( double &f ) 
+Semantics:  Extract a "double" from the stream.
+
+
+
+Filename: iofexldo.cpp
+Declaration: 
+	istream &istream::operator >> ( long double &f ) 
+Semantics:  Extract a "long double" from the stream.
+
+
+
+Filename: iofforce.cpp
+Declaration: 
+	void __forcedecpt( char *ptr, int showpoint, char format )
+
+
+Filename: iofldfst.cpp
+Declaration: 
+	void __LDFloatToString( char *buf, double const *f, int precision,
+   				ios::fmtflags format_flags ) 
+
+
+Filename: iofpldfs.cpp
+Declaration: 
+	char *__LDFloatToString( long double &f, int precision,
+    				 ios::fmtflags format_flags, int *length_ptr ) 
+Semantics:  Convert a "long double" floating-point value to a string.
+
+
+Filename: iofoutfl.cpp
+Declaration: 
+	ostream &ostream::__outfloat( long double const &f ) 
+Semantics:  Write a "long double" floating-point value.
+

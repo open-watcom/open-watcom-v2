@@ -1,0 +1,23 @@
+# -----------------------------
+# ERROR 27: macro is undefined   --> ONLY IN DEBUG MODE 
+# -----------------------------
+@echo off
+
+#  !ifeq abc def       # should produce error
+#  !endif
+
+test = $(abc)       # shouldn't produce error
+
+test = $abc         # ditto
+
+test = $+$(abc)$-   # should produce error
+
+test = $+$abc$-     # ditto
+
+test = $+$(%foobar2)$-  # error
+
+test = $+$%foobar2$-    # error
+
+hello: .symbolic
+    @%null
+    echo $(test)

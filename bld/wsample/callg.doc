@@ -1,0 +1,366 @@
+
+		Call Graph Information in the Sampler
+		=====================================
+
+To increase the usefulness of the Watcom Execution Profiler, support
+for call graph information in the sample file has been added.  Each
+sample is now stored along with the sequence of calling functions.
+With this new information, the user is able to examine, for example,
+only samples which occurred in routine bar, called by foo and main.
+In addition, it is now possible to reassign samples from routines into
+the routine from which they were called.  Thus samples which land in
+library routines may be reassigned to the calling routine, giving the
+user a better feel for where the time is actually spent in the program.
+
+Because speed and storage are sacrificed for this additional information,
+it should remain as an option in the sampler.  The Watcom Execution 
+Profiler automatically senses whether a sample file contains call graph
+information and adjusts itself accordingly.  In the Watcom Samplers, the
+/c option specifies that call graph information should be included in the
+sample file.
+
+Storing this new information obviously requires modifications to the sampler.
+As the program is executing, it is necessary to keep track of the current
+sequence of called routines.  This is done through the use of prologue and
+epilogue routines called at the beginning and end of every function executed.
+The prologue routine requires a certain amount of stack space to store the
+address from which the current function was called and a pointer to the 
+information stored for the previously called function (we're in effect 
+creating a sub-stack of call graph information, which takes the form of a
+singly-linked list).  Thus the runtime stack might look like this immediately
+after leaving the prologue routine:
+
+
+	+-------+
+	+ CS:IP	+		address from which bar() was called
+	+-------+
+	+	+--+		pointer to next callgraph stack entry
+	+-------+  |
+	 .......   |		other stack storage
+	 .......   |
+	 .......   |
+	+-------+  |
+	+ CS:IP	+<-+		address from which foo() was called
+	+-------+
+	+	+--+
+	+-------+  |
+	 .......   |
+	 .......   |
+	 .......   |
+	+-------+  |
+	+ CS:IP	+<-+		address from which main() was called
+	+-------+
+	+	+--||
+	+-------+
+	 .......
+	 .......
+	 
+	
+In addition to maintaining this information, it is useful to remember
+a CS:IP address in the most recently known entered function.  Otherwise,
+if a sample occurs in printf() called from bar(), the profiler would
+erroneously assume that printf() was called by foo(), since __PRO and
+__EPI hooks are not installed in printf().  Static variables are sufficient
+for this purpose.  We also need static variables to store the address of
+the top entry in the call graph stack.  Finally, since it's convenient not
+to re-write the entire stack on each sample, variables pop and push are
+used to remember the difference between the last written sample.  These
+are initialized to 0, and reset to 0 by the sampler each time a sample
+is written.
+
+
+Pseudo-code for a possible implementation of the prologue and epilogue
+routines __PRO and __EPI follows:
+
+__PRO	new_stor->ptr = cgraph_top
+	new_stor->addr = caller's cs:ip
+	top_addr = cs:ip in current function
+	cgraph_top = new_stor
+	push_no = push_no + 1
+
+__EPI:	top_addr = cgraph_top->addr
+	cgraph_top = cgraph_top->ptr
+	if push_no = 0
+	    pop_no = pop_no + 1
+	else
+	    push_no = push_no - 1
+	endif
+	
+Once these routines are in place and functioning properly, changes must be
+made to the sampler itself.  For communication purposes, the sampler must
+be told where to look for the common variables (consisting of the variables
+cgraph_top, top_addr, push_no and pop_no in the p-code above).  This is
+done by means of an int 3 from the program before execution begins.
+To distinguish this debugger interrupt from that associated with a mark,
+[DX:AX] should be NULL while [CX:BX] holds a pointer to this common area.
+The interrupt handler can easily test [DX:AX] to determine whether we're
+dealing with a mark or this special call at the beginning of the program.
+
+When the sampler is triggered, we must communicate with the executing program
+to determine the current state of the call graph information.  This can be
+done by first reading the common variables from the storage area pointed
+to by the initial int 3; by then working down the stack of call graph
+information as far as necessary (only push # need be read); and by finally
+resetting push # and pop # to zero (so the difference from this sample is
+written at the next sampling).  Note that if the common area is unknown (ie.
+the initial int 3 has not yet occurred), setting push_no and pop_no to -1
+notifies the profiler of this fact, and these samples will be stored with
+no call graph information.
+
+When a timer interrupt occurs, we now must store this call graph information
+along with the actual sample.  However, since the samples are not written
+to storage immediately, it's conventient to store the samples and call graph
+information together, and extract them into their separate records only
+as they are written.  This prevents the necessity of maintaining two buffers.
+
+Thus a sample could be stored as:
+
+CS:IP		actual sample
+pop:push	pop/push change from previous sample
+CS:IP		address in most recently entered function (top_addr)
+CS:IP	   \
+CS:IP		new call graph addresses to store in sample
+...		(of which there are push #)
+CS:IP	   /
+
+Remember that in case we exceed our buffer before the samples are written
+to storage, we must back up to the start of the previous sample information
+(which is no longer simply one entry back in the array).
+
+This information must written to storage separately, however, as specified
+by the file sample.h.  It should be easy to extract the components as
+necessary.  The format of the sample file follows.  Note particularly the
+SAMP_CALLGRAPH record format, which must immediately follow the corresponding
+SAMP_SAMPLES record as noted.
+
+
+/*
+*******************************************************************
+*	Copyright by WATCOM Systems Inc. 1987, 1990. All rights	  *
+*	reserved. No part of this software may be reproduced	  *
+*	in any form or by any means - graphic, electronic or	  *
+*	mechanical, including photocopying, recording, taping	  *
+*	or information storage and retrieval systems - except	  *
+*	with the written permission of WATCOM Systems Inc.	  *
+*******************************************************************
+
+Modified	By		Reason
+--------	--		------
+21-jan-90	A.F.Scian	added new copyright comment
+26-mar-90	A.F.Scian	cleaned up
+04-feb-91	B.J. Stecher	added SAMP_REMAP_SECTION record
+02-jul-92	C.M.Springer	added SAMP_CALLGRAPH record
+*/
+/*
+	    0 ->+--------+
+		|        | (there is text followed by a ctrl-Z in case
+		|        |  a user tries to edit or type a sample file)
+		|        |
+sample_start  ->+--------+ *
+		| PREFIX |  *
+		+========+   * repeated
+		|  DATA  |  *
+		+--------+ *
+		    .
+		    .
+		    .
+ header_start ->+--------+
+		| HEADER |
+	  EOF ->+--------+
+
+notes:
+	- there are multiple CODE_LOAD records
+	- after all the ADDR_MAPS have been processed (after a CODE_LOAD),
+	  use DoAddrMap to invoke WVIDEO's symbolic code
+	- REMAP_SECTION records will occur after an OVL_LOAD. The data
+	  in them should be fed into the RemapSection routine
+	- CALLGRAPH records must immediately follow the corresponding
+	  SAMPLES record
+*/
+
+#include <stdio.h>		/* for fpos_t */
+
+#define SAMP_SIGNATURE		0xDEED
+#define SAMP_MAJOR_VER		2
+#define SAMP_MINOR_VER		1
+#define SAMP_LARGEST_BLOCK	(0xfe00)
+
+typedef struct samp_address {
+    uint_32		offset;
+    uint_16		segment;
+} samp_address;
+#define SIZE_SAMP_ADDR	(sizeof( samp_address ))
+
+/* sample header: lseek( fh, -((fpos) sizeof( samp_header )), SEEK_END ) */
+typedef struct samp_header {
+    uint_16		signature;	/* must == SAMP_SIGNATURE */
+    uint_8		major_ver;	/* must == SAMP_MAJOR_VER */
+    uint_8		minor_ver;	/* must <= SAMP_MINOR_VER */
+    fpos_t		sample_start;	/* first sample block offset in file */
+} samp_header;
+#define SIZE_HEADER	(sizeof( samp_header ))
+
+typedef enum samp_block_kinds {
+    SAMP_INFO       =  0, /* statistics for sample file */
+    SAMP_SAMPLES    =  1, /* actual CS:EIP samples */
+    SAMP_MARK       =  2, /* a character string occurring at a certain time */
+    SAMP_OVL_LOAD   =  3, /* an overlay section was loaded */
+    SAMP_CODE_LOAD  =  4, /* executable file loaded */
+    SAMP_ADDR_MAP   =  5, /* translation from map addr's to loaded code addr' */
+    SAMP_MAIN_LOAD  =  6, /* main executable file loaded */
+    SAMP_LAST	    =  7, /* always the last block */
+    SAMP_REMAP_SECTION=8, /* overlay section(s) have moved in memory */
+    SAMP_CALLGRAPH  =  9, /* callgraph information for samples */
+    NUM_BLOCK_KINDS = 10
+} samp_block_kinds;
+
+
+typedef struct samp_block_prefix {
+    uint_32		tick;	/* tick number for block */
+    uint_16		length;	/* total size of block, including prefix */
+    uint_16 		kind;	/* what type of information in the block */
+} samp_block_prefix;
+#define SIZE_PREFIX	(sizeof( samp_block_prefix ))
+
+typedef struct count_info {
+    uint_32		number; /* quantity of a block type in sample file */
+    uint_32		size;	/* total size of all blocks of a type */
+} count_info;
+
+/* there is only one samp_info block in a sample file and it is always the
+    first block (pointed at by sample_start field in header)
+
+    the tick field in the prefix is the total number of ticks that have
+    occurred during program execution
+*/
+typedef struct samp_info {
+    uint_32		timer_rate;  /* microseconds between ticks*/
+    count_info		count[NUM_BLOCK_KINDS];
+} samp_info;
+#define SIZE_INFO	(sizeof( samp_info ))
+
+typedef struct samp_mark {
+    samp_address	addr;		/* CS:EIP at time of mark */
+    uint_16		thread_id;	/* thread doing mark */
+    char		mark_string[1]; /* variable len char string */
+} samp_mark;
+#define SIZE_MARK	(sizeof( samp_mark ) - sizeof( char ))
+
+
+/* the tick field in the prefix is set to the tick number at the time the
+    first sample in the block was recorded */
+typedef struct samp_samples {
+    uint_16		thread_id;	/* thread for samples */
+    samp_address	sample[1];	/* variable number of samples */
+} samp_samples;
+#define SIZE_SAMPLE	(sizeof( samp_samples ) - sizeof( samp_address ))
+
+#define OVL_RETURN		(0x8000)
+#define OVL_BITMAP_SIZE( ns )	(((ns) + 7 ) / 8 )
+
+/*
+  NOTE: actual section number is ( req_section & ~OVL_RETURN )
+        ( ( req_section & OVL_RETURN ) != 0 ) indicates RET instr (vs CALL)
+*/
+typedef struct samp_ovl_load {
+    uint_16		req_section;	/* section num requested to load */
+    samp_address	addr;		/* address of requesting instr */
+    uint_8		ovl_map[1];	/* bit map of loaded sections */
+} samp_ovl_load;
+#define SIZE_OVL_LOAD	(sizeof( samp_ovl_load ) - sizeof( uint_8 ))
+
+typedef struct samp_code_load {
+    unsigned long	time_stamp;	/* time-stamp of .EXE file */
+    samp_address	ovl_tab; 	/* pointer to overlay table in root */
+    char		name[1]; 	/* full name of file (includes '\0') */
+} samp_code_load;
+#define SIZE_CODE_LOAD	(sizeof( samp_code_load ) - sizeof( char ))
+
+
+/* the samp_addr_map block gives the transformation from map file addresses
+    to loaded code addresses for the most recent samp_code_load executable file.
+    to convert from a given map address A, perform the following steps.
+	1) find the map.segment field that matches the segment value for A
+	2) replace the segment of A with the segment contained in the
+	    corresponding actual.segment field
+	3) add the actual.offset field to the offset of A
+	4) if in step 1 you could not find a segment number that matched the
+	    segment of A, then add data[0].actual.segment to the segment of A
+*/
+typedef struct mapping {
+    samp_address		map;
+    samp_address		actual;
+} mapping;
+
+typedef struct samp_addr_map {
+    mapping			data[1]; /* variable number */
+} samp_addr_map;
+#define SIZE_ADDR_MAP	(sizeof( samp_addr_map ))
+
+
+/* A remapping takes place when the dynamic overlay manager decides to
+   load or move a section to a different address than what the linker
+   assigned it. These records will only occur after a SAMP_OVL_LOAD record,
+   but there might be multiple records for a single load (depending on
+   what's easier for the sampler to generate). The section field in the
+   'remapping' struct identifies the section number that has moved, and
+    the 'segment' field gives the new base address in memory for the
+    section.
+*/
+
+typedef struct remapping {
+    uint_16	section;
+    uint_16	segment;
+} remapping;
+
+
+typedef struct samp_remap_sect {
+    remapping			data[1]; /* variable number */
+} samp_remap_sect;
+#define SIZE_REMAP_SECT	(sizeof( samp_remap_sect ))
+
+
+/* A callgraph record must immediately follow the sample record, and
+   the sample information must be aligned.  The record is stored as
+   a pop/push number giving the delta from the previous callgraph information
+   stored, followed by a number of samples (corresponding to the push number
+   above).  Note that the last sample pushed gives the address in the last
+   entered routine from which __PRO was called, whereas earlier callgraph
+   samples store the address from which the next routine was called.
+*/
+
+typedef struct cgraph_sample {
+    uint_16		pop_n;		/* number of differing entries */
+    uint_16		push_n;		/* number entries to replace */
+    samp_address	addr[1];	/* variable # of entries to replace */
+} cgraph_sample;
+#define SIZE_CGRAPH_SAMPLE (sizeof( cgraph_sample ) - sizeof( samp_address ))
+
+
+typedef struct samp_callgraph {
+    uint_16		thread_id;	/* thread for callgraph information */
+    uint_16		number;		/* number of samples: not strictly */
+    					/* necessary, but useful for smpdump */
+    cgraph_sample       sample[1];	/* variable number of samples */
+} samp_callgraph;
+#define SIZE_CALLGRAPH	(sizeof( samp_callgraph ) - sizeof( cgraph_sample ))
+
+
+typedef union samp_data {
+    samp_info			info;
+    samp_mark			mark;
+    samp_samples 		sample;
+    samp_ovl_load		ovl;
+    samp_code_load		code;
+    samp_addr_map		map;
+    samp_remap_sect		remap;
+    samp_callgraph		cgraph;
+} samp_data;
+#define SIZE_DATA	(sizeof( samp_data ))
+
+
+typedef struct samp_block {
+    samp_block_prefix		pref;
+    samp_data			d;
+} samp_block;
+#define SIZE_BLOCK	(sizeof( samp_block ))

@@ -1,0 +1,2 @@
+//#line "..\c\wndimain.c" 3
+extern void WndInitWndMain(wnd_create_struct *info);

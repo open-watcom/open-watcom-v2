@@ -1,0 +1,14 @@
+class QueryConfigDlg
+{
+    _symTextR(	IDD_SYMBOL_TEXT, (@,@,@,@) );
+    _symNameR(	IDD_SYMBOL_EDIT, (@,@,@,@) );
+    
+    _matchCaseR( IDD_CASE,	(@,@,@,@) );
+    _anchoredR(  IDD_WHOLE_WORDS,(@,@,@,@) );
+    _useRXR(	IDD_USE_REGEXP, (@,@,@,@) );
+    _searchR(	IDD_SEARCH,	(@,@,@,@) );
+    _cancelR(	IDD_CANCEL,	(@,@,@,@) );
+    _filtersR(	IDD_FILTERS,	(@,@,@,@) );
+    _cfgRegexpR(	IDD_CONFIGURE_RX,(@,@,@,@) );
+    _helpR(	IDD_HELP,	(@,@,@,@) );
+};

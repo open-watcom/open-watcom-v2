@@ -1,0 +1,124 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject allocfp.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject chktty.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject clearerr.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject comtflag.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject fclose.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fdopen.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject feof.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject ferror.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fflush.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fgetc.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fgetchar.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fgetpos.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fgets.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject flush.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject flushall.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fopen.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fprintf.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fprtf.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fputc.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fputchar.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fputs.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fread.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fscanf.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fseek.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fsetpos.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject ftell.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject fwrite.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject getc.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject getchar.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject gets.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject getw.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject initfile.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject ioalloc.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject iob.obj      d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject iobaddr.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject iobptr.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject noefgfmt.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject ntfio.obj                        nt nta ntp
+!inject pclose.obj                       nt nta ntp    o16 o32
+!inject perror.obj   d16 d32             nt nta ntp nv o16 o32         w16 w32 osi
+!inject popen.obj                        nt nta ntp    o16 o32
+!inject printf.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject prtf.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject putc.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject putchar.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject puts.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject putw.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject rewind.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject scanf.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject scnf.obj     d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject setbuf.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject setefg.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject setvbuf.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject tmpfl.obj    d16 d32             nt nta ntp nv o16 o32         w16 w32 osi
+!inject tmputil.obj  d16 d32             nt nta ntp nv o16 o32         w16 w32 osi
+!inject tmpflqnx.obj                                           q16 q32
+!inject ufdopen.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ufgetc.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ufgetcha.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ufgets.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ufopen.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ufprintf.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ufprtf.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ufputc.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ufputcha.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ufputs.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ufscanf.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ugetc.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ugetchar.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ugets.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ungetc.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject uperror.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject upopen.obj                       nt nta ntp    o16 o32
+!inject uprintf.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uprtf.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uputc.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uputchar.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uputs.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uscanf.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uscnf.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uungetc.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uvfprint.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject uvprintf.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject vfprintf.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject vprintf.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+
+!include ..\..\..\..\objlist.mif
+
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject dsetefg.obj                      nt nta ntp        o32
+
+objsuffix=files
+!include ..\..\..\..\objlist.mif
+objsuffix=
+
+ufgetc_opts  =-os
+ufgetcha_opts=-os
+ufgets_opts  =-os
+ufopen_opts  =-os
+ufprintf_opts=-os
+ufprtf_opts  =-os
+ufputc_opts  =-os
+ufputcha_opts=-os
+ufputs_opts  =-os
+ufscanf_opts =-os
+ugetc_opts   =-os
+ugetchar_opts=-os
+ugets_opts   =-os
+uperror_opts =-os
+uprintf_opts =-os
+uprtf_opts   =-os
+uputc_opts   =-os
+uputchar_opts=-os
+uputs_opts   =-os
+uscanf_opts  =-os
+uscnf_opts   =-os
+uungetc_opts =-os
+uvfprint_opts=-os
+uvprintf_opts=-os
+ufdopen_opts =-os
+

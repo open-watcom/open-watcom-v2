@@ -1,0 +1,40 @@
+c$noreference
+
+
+c$ifdef __OS2__
+
+c$pragma aux measure_button parm (value,value,value)
+    integer measure_button
+
+c$pragma aux draw_button parm (value,value)
+
+c$pragma aux add_button parm (value,value,value,value,reference,\
+c                 reference)
+
+c$else
+
+c$ifdef __386__
+
+c$pragma aux measure_button parm (value,value,reference)
+
+c$pragma aux draw_button parm (value,reference)
+
+c$pragma aux add_button parm (value,value,value,value,\
+c                 reference,reference)
+
+c$else
+
+c$pragma aux measure_button parm (value,value,reference far)
+
+c$pragma aux draw_button parm (value,reference far)
+
+c$pragma aux add_button parm (value,value,value,value,\
+c                 reference far,reference far )
+
+c$endif
+c$endif
+
+    external measure_button
+    external draw_button
+    external add_button
+c$reference

@@ -1,0 +1,225 @@
+wdpick( MSTR_NIL,
+	"",
+	"" )
+wdpick( MSTR_BYTE,
+	"&Byte",
+	"j&Byte" )
+wdpick( MSTR_WORD,
+	"&Word",
+	"j&Word" )
+wdpick( MSTR_DWORD,
+	"&DWord",
+	"j&DWord" )
+wdpick( MSTR_LWORD,
+	"LWo&rd",
+	"jLWo&rd" )
+wdpick( MSTR_QWORD,
+	"&QWord",
+	"j&QWord" )
+wdpick( MSTR_CHAR,
+	"&Char",
+	"j&Char" )
+wdpick( MSTR_SHORT,
+	"&Short",
+	"j&Short" )
+wdpick( MSTR_LONG,
+	"&Long",
+	"j&Llong" )
+wdpick( MSTR_UCHAR,
+	"Unsigned Cha&r",
+	"jUnsigned Cha&r" )
+wdpick( MSTR_USHORT,
+	"Unsigned Shor&t",
+	"jUnsigned Shor&t" )
+wdpick( MSTR_ULONG,
+	"Unsigned Lon&g",
+	"jUnsigned Lon&g" )
+wdpick( MSTR_N16_PTR,
+	"&0:16 pointer",
+	"j&0:16 pointer" )
+wdpick( MSTR_F16_PTR,
+	"16:1&6 pointer",
+	"j16:1&6 pointer" )
+wdpick( MSTR_N32_PTR,
+	"0:3&2 pointer",
+	"j0:3&2 pointer" )
+wdpick( MSTR_F32_PTR,
+	"16:&32 pointer",
+	"j16:&32 pointer" )
+wdpick( MSTR_FLOAT,
+	"&Float",
+	"j&Float" )
+wdpick( MSTR_DOUBLE,
+	"D&ouble",
+	"jD&ouble" )
+wdpick( MSTR_EXTENDED,
+	"&Extended Float",
+	"j&Extended Float" )
+wdpick( MSTR_MUPPER,
+	"&Upper",
+	"j&Upper" )
+wdpick( MSTR_MINSIDE,
+	"&Inside",
+	"j&Inside" )
+wdpick( MSTR_UPPER,
+	"Upper",
+	"Upper" ) // do not translate
+wdpick( MSTR_LOWER,
+	"Lower",
+	"Lower" ) // do not translate
+wdpick( MSTR_INSIDE,
+	"Inside",
+	"Inside" ) // do not translate
+wdpick( MSTR_OUTSIDE,
+	"Outside",
+	"Outside" ) // do not translate
+wdpick( MSTR_FAR,
+	"far",
+	"jfar" )
+wdpick( MSTR_NEAR,
+	"near",
+	"jnear" )
+wdpick( MSTR_INTERRUPT,
+	"interrupt",
+	"jinterrupt" )
+wdpick( MSTR_CPU,
+	"CPU registers",
+	"jCPU registers" )
+wdpick( MSTR_FPU,
+	"FPU registers",
+	"jFPU registers" )
+wdpick( MSTR_NONE,
+	"none",
+	"jnone" )
+wdpick( MSTR_EMULATOR,
+	"emulator",
+	"jemulator" )
+wdpick( MSTR_MHEX,
+	"&Hex",
+	"j&Hex" )
+wdpick( MSTR_HEX,
+	"Hexadecimal",
+	"Hexadecimal" ) // do not translate
+wdpick( MSTR_DECIMAL,
+	"Decimal",
+	"Decimal" ) // do not translate
+wdpick( MSTR_MEXTENDED,
+	"&Extended",
+	"j&Extended" )
+wdpick( MSTR_REG_EXTENDED,
+	"Extended",
+	"Extended" ) // do not translate
+wdpick( MSTR_REG_NORMAL,
+	"Normal",
+	"Normal" ) // do not translate
+wdpick( MSTR_VALID,
+	"Valid",
+	"jValid" )
+wdpick( MSTR_ZERO,
+	"Zero",
+	"jZero" )
+wdpick( MSTR_NAN,
+	"Nan",
+	"jNan" )
+wdpick( MSTR_EMPTY,
+	"Empty",
+	"jEmpty" )
+wdpick( MSTR_PCZERO,	//Unused
+	"0",
+	"0" )
+wdpick( MSTR_PCSINGLE,
+	"single",
+	"jsingle" )
+wdpick( MSTR_PCDOUBLE,
+	"double",
+	"jdouble" )
+wdpick( MSTR_PCEXTENDED,
+	"extended",
+	"jextended" )
+wdpick( MSTR_NEAREST,
+	"nearest",
+	"jnearest" )
+wdpick( MSTR_DOWN,
+	"down",
+	"jdown" )
+wdpick( MSTR_UP,
+	"up",
+	"jup" )
+wdpick( MSTR_CHOP,
+	"chop",
+	"jchop" )
+wdpick( MSTR_PROJECTIVE,
+	"projective",
+	"jprojective" )
+wdpick( MSTR_AFFINE,
+	"affine",
+	"jaffine" )
+wdpick( MSTR_F_FLOAT,
+	"F flo&ating",
+	"jF flo&ating" )
+wdpick( MSTR_G_FLOAT,
+	"G floa&ting",
+	"jG floa&ting" )
+wdpick( MSTR_D_FLOAT,
+	"&D floating",
+	"j&D floating" )
+wdpick( MSTR_MVAX,
+	"&Vax",
+	"j&Vax" )
+wdpick( MSTR_VAX,
+	"Vax",
+	"Vax" )
+wdpick( MSTR_IEEE,
+	"IEEE",
+	"IEEE" )
+wdpick( MSTR_MSYMBOLIC,
+	"&Symbolic names",
+	"j&Symbolic names" )
+wdpick( MSTR_REG_SYMBOLIC,
+	"Symbolic",
+	"jSymbolic" )
+wdpick( MSTR_REG_NUMERIC,
+	"Numeric",
+	"jNumeric" )
+wdpick( MSTR_UNSIGNED64,
+	"Unsigned __int6&4",
+	"Unsigned __int6&4" )
+wdpick( MSTR_INT64,
+	"&__int64",
+	"&__int64" )
+wdpick( MSTR_MPSEUDOINS,
+	"&Pseudo instructions",
+	"j&Pseudo instructions" )
+wdpick( MSTR_PSEUDOINS,
+	"Pseudo_instructions",
+	"jPseudo_instructions" )
+wdpick( MSTR_RAWINS,
+	"Raw_instructions",
+	"jRaw_instructions" )
+wdpick( MSTR_N64_PTR,
+	"0:6&4 pointer",
+	"j0:6&4 pointer" )
+wdpick( MSTR_MOS,
+	"&OS",
+	"j&OS" )
+wdpick( MSTR_REG_OS,
+	"OS",
+	"jOS" )
+wdpick( MSTR_REG_USER,
+	"User",
+	"jUser" )
+wdpick( MSTR_HWORD,
+	"&HWord",
+	"j&HWord" )
+wdpick( MSTR_MMX,
+	"MMX Registers",
+	"jMMX Registers" )
+wdpick( MSTR_UNSIGNED,
+	"&Unsigned",
+	"j&Unsigned" )
+wdpick( MSTR_SIGNED,
+	"&Signed",
+	"j&Signed" )
+wdpick( MSTR_INT,
+	"&Int",
+	"j&Int" )

@@ -1,0 +1,6 @@
+# system-dependent files (DOS386)
+
+!include ..\ppobj86.mif
+
+common_objs += &
+prag386.obj

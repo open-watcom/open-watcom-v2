@@ -1,0 +1,10 @@
+class EditModuleListDlg {
+    _moduleBoxR(	IDD_MODULEBOX, 	(@,@,@,@) );
+    _okButtonR(		IDD_OK, 	(@,@,@,@) );
+    _cancelButtonR(	IDD_CANCEL, 	(@,@,@,@) );
+    _addButtonR(	IDD_ADD, 	(@,@,@,@) );
+    _removeButtonR(	IDD_REMOVE, 	(@,@,@,@) );
+    _disableButtonR(	IDD_DISABLE_ALL,(@,@,@,@) );
+    _enableButtonR(	IDD_ENABLE_ALL, (@,@,@,@) );
+    _helpButtonR(	IDD_HELP, 	(@,@,@,@) );
+};

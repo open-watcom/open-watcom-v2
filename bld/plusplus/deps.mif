@@ -1,0 +1,254 @@
+#
+# Dependencies for C++ compiler
+#
+
+analcast.obj: ..\c\analcast.c   &
+              ..\h\fnovload.h
+
+analclss.obj: ..\c\analclss.c   &
+              ..\h\fnbodydt.h   &
+              ..\h\fnovload.h
+
+analconv.obj: ..\c\analconv.c   &
+              ..\h\fnovload.h
+
+analctor.obj: ..\c\analctor.c   &
+              ..\h\fnovload.h
+
+analudc.obj:  ..\c\analudc.c    &
+              ..\h\fnovload.h
+
+analyse.obj : ..\c\analyse.c    &
+              ..\h\ppopsdef.h
+
+analtype.obj : ..\c\analtype.c  &
+              ..\h\type_arr.h
+
+ascii.obj   : keywords.gh       &
+              weights.gh        &
+              ..\c\ascii.c
+
+asmstmt.obj : ..\c\asmstmt.c    &
+                keywords.gh
+
+brmwrite.obj:   ..\c\brmwrite.c &
+                ic_mask.gh      &
+                ..\h\ic.h
+
+cgbkmain.obj: ..\c\cgbkmain.c   &
+              ..\h\ic.h         &
+              ..\h\ppopsdef.h
+
+cgfront.obj : ..\c\cgfront.c    &
+              ..\h\ic.h
+
+cgio.obj    : ..\c\cgio.c       &
+              ..\h\ic.h
+
+cgiobuff.obj :  ..\c\cgiobuff.c &
+                ic_mask.gh      &
+                ..\h\ic.h
+
+cmdln.obj : ..\c\cmdln.c        &
+              $(watcom_dir)\h\banner.h &
+              $(watcom_dir)\h\bancfg.h &
+                cmdlnprs.gh
+
+cmdlnany.obj : ..\c\cmdlnany.c  &
+                cmdlnprs.c      &
+                cmdlnprs.gh
+
+cmdlnx86.obj : ..\c\cmdlnx86.c  &
+                cmdlnprs.gh
+
+cmdlnaxp.obj : ..\c\cmdlnaxp.c  &
+                cmdlnprs.gh
+
+convctl.obj : ..\c\convctl.c    &
+              ..\h\convctl.h
+
+cprag86.obj : ..\c\cprag86.c    &
+              ..\h\pragdefn.h   &
+              ..\h\type_arr.h   &
+              ..\h\dbgtogg.h    &
+                keywords.gh
+
+cpragma.obj : ..\c\cpragma.c    &
+              ..\h\pragdefn.h   &
+              ..\h\dbgtogg.h    &
+                keywords.gh
+
+cscan.obj   : keywords.gh       &
+              weights.gh        &
+              ..\c\cscan.c
+
+cusage.obj  : cusage.c          &
+              cmdlnusg.gh
+
+dbg.obj     : ..\c\dbg.c        &
+              ..\h\ic.h         &
+              ..\h\type_arr.h   &
+              ..\h\ppopsdef.h
+
+defarg.obj  : ..\c\defarg.c     &
+              ..\h\fnbodydt.h
+
+dyncast.obj : ..\c\dyncast.c    &
+              ..\h\convctl.h
+
+ebcdic.obj  : keywords.gh       &
+              weights.gh        &
+              ..\c\ebcdic.c
+
+fnovload.obj : ..\c\fnovload.c  &
+                ..\h\fnovrank.h &
+                ..\h\fnovload.h
+
+fnovprt.obj : ..\c\fnovprt.c    &
+                ..\h\fnovrank.h
+
+fnovrank.obj : ..\c\fnovrank.c  &
+               ..\h\convctl.h   &
+               ..\h\fnovrank.h  &
+               ..\h\fnovload.h
+
+fmtsym.obj  : ..\c\fmtsym.c     &
+              ..\h\fmtsym.h     &
+              ..\h\ppopssym.h
+
+fmttype.obj  : ..\c\fmttype.c   &
+                ..\h\fmttype.h  &
+              ..\h\type_arr.h
+
+fnbody.obj  : ..\c\fnbody.c     &
+              ..\h\fnbody.h     &
+              ..\h\fnbodydt.h   &
+              keywords.gh
+
+fnname.obj  : ..\c\fnname.c     &
+              ..\h\ppopsdef.h   &
+              ..\h\rtfuns.h     &
+              ..\h\ppintnam.h   &
+              ..\h\specname.h
+
+globdata.obj: ..\c\globdata.c   &
+              ..\h\cgdata.h     &
+              ..\h\preproc.h    &
+              ..\h\plusplus.h   &
+              ..\h\compflag.h   &
+              ..\h\dbgtogg.h    &
+              ..\h\pragdefn.h   &
+              ..\h\stats.h
+
+gstack.obj  : ..\c\gstack.c     &
+              ..\h\gstack.h     &
+              ..\h\class.h      &
+              ..\h\datainit.h   &
+              ..\h\enum.h       &
+              ..\h\template.h
+
+idedll.obj  : idedll.c &
+              $(watcom_dir)\h\idedll.h
+
+initfini.obj: $(fe_misc_dir)\c\initfini.c   &
+              ..\h\initspec.h
+
+keyword.obj : keywords.gh       &
+              weights.gh        &
+              ..\c\keyword.c
+
+label.obj   : ..\h\label.h      &
+              ..\h\fnbody.h     &
+              ..\c\label.c
+
+membptr.obj : ..\c\membptr.c    &
+              ..\h\fnbodydt.h
+
+message.obj : ..\c\message.c    &
+              errmsgs.c         &
+              errmsgs.gh        &
+              errlevel.gh
+
+module.obj  : ..\c\module.c     &
+              ..\h\fnbodydt.h
+
+mngless.obj  : $(fe_misc_dir)\c\mngless.c       &
+               $(fe_misc_dir)\h\mngless.h
+
+opovload.obj: ..\c\opovload.c   &
+              ..\h\ppopscnv.h   &
+              ..\h\fnovload.h
+
+pcheader.obj: ..\c\pcheader.c   &
+              ..\h\pcheader.h   &
+              ..\h\compflag.h   &
+              ..\h\typcache.h   &
+              ..\h\pcregdef.h
+
+plusplus.obj: keywords.gh       &
+              weights.gh        &
+              ..\c\plusplus.c
+
+prag370.obj : ..\c\prag370.c    &
+              ..\h\pragdefn.h
+
+prag386.obj : ..\c\prag386.c    &
+              ..\h\pragdefn.h   &
+              ..\h\pdefnfs.h    &
+              $(cc_dir)\h\pdefn386.h &
+              ..\h\code386.gh
+
+pragdata.obj: ..\c\pragdata.c   &
+              ..\h\pragdefn.h   &
+              $(cc_dir)\h\pdefni86.h &
+              ..\h\codei86.gh
+
+ptree.obj   : ..\c\ptree.c      &
+              ..\h\ptreeop.h    &
+              ..\h\ppopsdef.h   &
+              ..\h\ptree.h      &
+              ..\h\ppopscnv.h
+
+rtfun.obj   : ..\c\rtfun.c      &
+              ..\h\rtfuns.h
+
+rtngen.obj  : ..\c\rtngen.c     &
+              ..\h\rtnglist.h
+
+specfuns.obj: ..\c\specfuns.c   &
+              ..\h\specfuns.dfn
+
+type.obj    : ..\c\type.c       &
+              ..\h\typcache.h   &
+              keywords.gh
+
+thunk.obj   : ..\c\thunk.c      &
+              ..\h\fnbodydt.h
+
+tokens.obj  : ..\c\tokens.c     &
+                ..\h\ctokens.h  &
+              keywords.gh
+
+ytab.obj    : yylex.gh          &
+              ytab.c
+
+watcom.obj  : ..\c\watcom.c &
+              $(watcom_dir)\h\bancfg.h &
+              $(watcom_dir)\h\banner.h
+#
+# Dependencies for C++ compiler driver
+#
+idedrv.obj  : $(watcom_dir)\c\idedrv.c &
+              $(watcom_dir)\h\idedll.h &
+              $(watcom_dir)\h\idedrv.h
+
+idemsgfm.obj: $(watcom_dir)\c\idemsgfm.c &
+              $(watcom_dir)\h\idedll.h &
+              $(watcom_dir)\h\idedrv.h
+
+idemsgpr.obj: $(watcom_dir)\c\idemsgpr.c &
+              $(watcom_dir)\h\idedll.h &
+              $(watcom_dir)\h\idedrv.h
+
+wppdldrv.obj: wppdldrv.c &
+              $(watcom_dir)\h\idedrv.h

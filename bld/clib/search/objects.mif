@@ -1,0 +1,17 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject bsearch.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject lfind.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject lsearch.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject qsort.obj    d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+
+!include ..\..\..\..\objlist.mif
+
+086_sub_opt =-of
+286_sub_opt =-of
+386_sub_opt =
+axp_sub_opt =
+bsearch_opts=-os$($(processor)_sub_opt)
+lfind_opts  =-os$($(processor)_sub_opt)
+lsearch_opts=-os$($(processor)_sub_opt)
+qsort_opts  =-os$($(processor)_sub_opt)

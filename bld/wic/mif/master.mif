@@ -1,0 +1,136 @@
+#
+# Master makefile for WIC
+#
+
+##############################################################################
+
+!ifdef _OS
+!   ifeq        _OS DOS
+!   else ifeq   _OS OS2
+!   else ifeq   _OS OS2V2
+!   else ifeq   _OS QNX
+!   else ifeq   _OS NT
+!   else ifeq   _OS PLS
+!   else ifeq   _OS OSI
+!   else
+!       error $(_OS) is not a supported operating system
+!   endif
+!else
+!   error Must define _OS macro for operating system
+!endif
+
+!ifndef LANGUAGE
+LANGUAGE  = ENGLISH
+!endif
+
+!ifeq        LANGUAGE ENGLISH
+lang_prefix = e
+!else ifeq   LANGUAGE JAPANESE
+lang_prefix = j
+!else
+!error Invalid language specified: $(LANGUAGE)!
+!endif
+
+##############################################################################
+
+!ifndef opts_cc
+opts_cc=
+!endif
+!ifndef def_cc
+def_cc =
+!endif
+!ifdef on_build_machine
+!define ndebug
+!endif
+!ifdef ndebug
+def_cc += -dNDEBUG
+!endif
+
+def_cc += -d$(LANGUAGE)
+
+opts_link = debug all
+
+#  Indicate debug level
+!ifdef on_build_machine
+debug_level = -d1
+!else
+debug_level = -d2
+!endif
+
+cflags = $(opts_cc) $(def_cc) $(debug_level) -i..\h -fpc -zq -w3
+
+!include ..\mif\objsdef.mif                #   get objs macro
+
+##############################################################################
+
+name = wic
+lnk = $(name).lnk
+
+!ifeq _OS OSI
+extra_stuff = $(tools_root)\os2ldr.exe
+!endif
+
+$(name).exe : $(objs) $(lnk) $(extra_stuff) wic.res
+    $(linker) @$(lnk)
+!ifeq _OS OSI
+        w32bind $(name).rex $(name).exe $(tools_root)\os2ldr.exe
+        erase $(name).rex
+!endif
+    wstrip -a -r -q $(name).exe . wic.res
+
+$(lnk) : $(__MAKEFILES__)
+        %create $(lnk)
+        @%append $(lnk) $(opts_lnk)
+        @%append $(lnk) option map, quiet
+        @%append $(lnk) debug all
+!ifdef on_build_machine
+        @%append $(lnk) option symfile
+!endif
+        @%append $(lnk) name $(name)
+        @%append $(lnk) lib $(watcom_dir)\lib\wres$(mem_model_prefix)
+        @for %i in ($(objs)) do @@%append $(lnk) file %i
+
+##############################################################################
+
+#.CONTINUE
+.ERASE
+
+.extensions:
+.extensions: . .exe .obj .res .c .h .rc
+
+.h      : ..\h;$(%include)
+.c      : ..\c
+.rc     : ..\rc
+
+.c.obj:
+    $(cc) $[* $(cflags)
+
+##############################################################################
+
+yacc = ..\c\yaccpre
+
+..\c\preparse.c: ..\c\preparse.y
+    $(YACC) pre ..\c\preparse
+
+..\c\cparse.c: ..\c\cparse.y
+    $(YACC) c ..\c\cparse
+
+
+##############################################################################
+
+wic.res: ..\rc\usage$(lang_prefix).rc ..\rc\messages.rc ..\rc\wic.rc
+    wrc ..\rc\wic.rc $(def_cc) -r -fo=wic.res
+
+..\rc\usage$(lang_prefix).rc:  ..\rc\usage.sp ..\h\msg.h
+    wsplice -k $(LANGUAGE)  ..\rc\usage.sp ..\rc\usage$(lang_prefix).rc
+    vi ..\rc\usage$(lang_prefix).rc -q -s ..\rc\usage.vi
+
+clean : .symbolic
+    rm -f *.obj *.lnk
+
+superclean : .symbolic
+    rm -f *.obj *.lnk *.exe *.res
+    rm -f *.map
+    rm -f *.err
+    rm -f ..\c\cparse.c ..\c\preparse.c
+    rm -f ..\rc\usage?.rc

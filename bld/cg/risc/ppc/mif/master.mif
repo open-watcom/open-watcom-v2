@@ -1,0 +1,33 @@
+!include $(cg_dir)\risc\ppc\mif\ppc.mif
+!include $(cg_dir)\risc\mif\risc.mif
+!include $(cg_dir)\mif\master.mif
+
+target_objs     = $(ppc_objs) $(risc_objs) $(cg_objs)
+
+.OPTIMIZE
+
+target : $(pre_obj_deps) cgppc.lib cgstubs.lib cg$(host_OS)ppc.lib .SYMBOLIC
+        @%null
+
+!include $(cg_dir)\mif\rules.mif
+
+cgppc.lib : $(target_objs) $(mem_objs) $(cg_dump_objs)
+        @%make libfile
+
+cgstubs.lib : $(cg_stub_objs)
+        @%make libfile
+
+cgos2ppc.lib : $(os2_objs)
+        @%make libfile
+
+cgosippc.lib : $(osi_objs)
+        @%make libfile
+
+cgntppc.lib : $(nt_objs)
+        @%make libfile
+
+cgqnxppc.lib : $(qnx_objs)
+        @%make libfile
+
+cgdosppc.lib : $(dos_objs)
+        @%make libfile

@@ -1,0 +1,188 @@
+########################################################################
+#       Copyright (C) 1993, by WATCOM International Corp. All rights   #
+#       reserved. No part of this software may be reproduced           #
+#       in any form or by any means - graphic, electronic or           #
+#       mechanical, including photocopying, recording, taping          #
+#       or information storage and retrieval systems - except          #
+#       with the written permission of WATCOM International Corp.      #
+########################################################################
+
+proj_name = wprof
+fname = wprof$(machine)
+
+!ifeq PM 1
+sys_windowed = 1
+!endif
+!ifeq host_OS win
+sys_windowed = 1
+!endif
+!ifeq host_OS nt
+sys_windowed = 1
+!endif
+
+!include cproj.mif
+!include defrule.mif
+
+.mif : ..\mif
+
+!include wproflib.mif
+!include wprofobj.mif
+
+.c : ..\c;$(dig_srcs);$(watcom_dir)\c
+.h : ..\h
+
+!ifeq host_OS qnx
+exe = qnx
+!else
+exe = exe
+!endif
+
+inc_dirs = ..\h;$(wsample_dir)\h;$(aui_dir)\h;$(gui_dir)\h;$(trmem_dir);$(dig_dir)\h
+inc_dirs_os2 = $(watcom_dir)\os21x_h
+inc_dirs_nt = $(watcom_dir)\nt_h
+
+.BEFORE:
+        set INCLUDE=$(inc_path)
+
+extra_c_flags   = -s
+
+!ifdef on_build_machine
+extra_c_flags   += -dNDEBUG
+!endif
+!ifdef check
+extra_c_flags   += -zs
+!endif
+!ifdef wprof_trmem
+!ifneq host_CPU AXP
+extra_c_flags   += -of+
+!endif
+!endif
+
+extra_c_flags_axp       = -d_OS=_OS_NT
+extra_c_flags_386_nt    = -d_OS=_OS_NT
+extra_c_flags_386_dos   = -d_OS=_OS_DOS
+extra_c_flags_386_qnx   = -ms -D_OS=_OS_QNX
+extra_c_flags_i86_os2   = -d_OS=_OS_OS2
+!ifeq PM 1
+extra_c_flags_i86_os2   += -dOS2_PM=1
+!endif
+extra_c_flags_i86_qnx   = -d_OS=_OS_QNX -zt32
+extra_c_flags_i86_win   = -d_OS=_OS_WIN -zW
+
+extra_c_flags_386       = -fpc $(extra_c_flags_386_$(host_OS))
+extra_c_flags_i86       = -fpc $(extra_c_flags_i86_$(host_OS))
+
+!ifeq host_OS dos
+extra_c_flags_finger    = -fidginfo.gh
+!endif
+
+# remove these lines when the source is fixed
+cflags_all              = -zq -w4
+!ifdef on_build_machine
+cflags_all      += -dNDEBUG
+!endif
+
+extra_l_flags_nt        = op stack=30k
+extra_l_flags_os2       = op newfiles, stack=20k, align=16, heap=8k
+extra_l_flags_qnx       = op stack=32k, offset=36k, priv=3, res=wprof.u
+extra_l_flags_dos       = op map,stack=20k export DOS4GOPTIONS=_DOS4GOPTIONS
+
+rc_flags_win            = -k -bt=windows
+rc_flags_nt             = -k -bt=nt
+rc_flags_os2            =
+rc_flags                = $(rc_flags_$(host_OS))
+
+resfile_dos             = wprofui.res
+resfile_qnx             = wprofui.res
+!ifneq PM 1
+resfile_os2             = wprofui.res
+!endif
+resfile                 = $(resfile_$(host_OS))
+!ifeq sys_windowed 1
+resfile                 = wprof.res
+!ifeq host_OS os2
+rc                      = $(rc_os2)
+!endif
+!endif
+
+$(fname).$(exe) : eraseall.obj $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(wprof_libs) $(sys_libs) $(resfile)
+    @if exist finger.obj del finger.obj
+    @%make finger.obj
+    $(linker) name $(fname) $(lflags) op map file {$(objs) $(dip_objs) $(mad_objs) finger.obj} lib {$(wprof_libs) $(sys_libs)}
+!ifdef on_build_machine
+!ifeq host_OS dos
+    @ren $(fname).exe x.exe
+    $(rsi_root)\bin\4gbind $(rsi_root)\bin\dos4g.exe x.exe $(fname).exe -V
+    @del x.exe
+!endif
+!endif
+!ifdef resfile
+!ifeq sys_windowed 1
+    $(rc) $(rc_flags) $(resfile) $(fname).exe
+!else
+    wstrip /q /a /r  $(fname).$(exe) . $(resfile)
+!endif
+!endif
+
+eraseall.obj : ..\compile.gbl
+    del *.obj
+    wtouch eraseall.obj
+
+!ifeq host_OS os2
+wprof.res : wprof.rc
+        @set oinc=$(%include)
+        set include=$(watcom_dir)\os220_h;$(rcinclude);$(%include)
+        wcc -dRC -i$(aui_dir)\pm;$(rcinclude) -p -pw=0 -fo=wprof.i wprof.rc
+#       wcc -dRC -i$(aui_dir)\pm;$(rcinclude) -p -pw=0 -fo=wprofj.i wprof.rc /dJAPANESE_MESSAGES
+        set opath=$(%path)
+        set path=$(lang_root)\binp
+        $(lang_root)\binp\rc -r foros2pm.rc
+        copy foros2pm.res wprof.res
+        set path=$(%opath)
+        @set include=$(%oinc)
+!else
+!ifeq sys_windowed 1
+wprof.res : wprof.rc
+        $(rc) -r $(rc_flags) wprof.rc
+!endif
+!endif
+
+!ifeq host_OS dos
+dbinfo.gh
+        -@$(rsi_root)\bin\dos4g $(rsi_root)\bin\dginfo >dginfo.gh
+
+finger.obj : dbinfo.gh
+!endif
+
+msg.obj : msg.c msg.h
+
+msgstr.obj : msgstr.c msg.h
+
+rcfiles = &
+    $(gui_dir)\h\gui.rc &
+    $(gui_dir)\h\gui.msg &
+    $(aui_dir)\h\aui.rc &
+    $(aui_dir)\h\dlgrx.dlg &
+    $(aui_dir)\h\dlgsrch.dlg &
+    $(aui_dir)\h\dlgsrcha.dlg &
+    $(aui_dir)\h\japrx.dlg &
+    $(aui_dir)\h\japsrch.dlg &
+    $(aui_dir)\h\japsrcha.dlg
+
+rcinclude=.;..\h;$(dig_dir)\h;$(aui_dir)\h;$(gui_dir);$(gui_dir)\h
+
+wprofui.res : ..\h\wprofui.rc $(rcfiles)
+    $(rc) -r -q -bt=windows -i=$(rcinclude);$(lang_root)\h\win ..\h\wprofui.rc /fo=wprofui.res
+
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj del *.?bj
+        @if exist *.lnk del *.lnk
+        @if exist *.exe del *.exe
+        @if exist *.dll del *.dll
+        @if exist *.lib del *.lib
+        @if exist *.res del *.res
+        @if exist *.clb del *.clb
+        @if exist *.err del *.err
+        @if exist *.map del *.map
+        @if exist *.sym del *.sym

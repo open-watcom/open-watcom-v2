@@ -1,0 +1,170 @@
+Schedule: C++       92/05
+========
+
+- language supported: 3.0 without templates, error handling
+
+- schedule:
+
+    SD92 -- need to be able to show something
+
+    March 1, 1992  -- finish coding and start shake-down
+
+    March 15,1992  -- finish Beta documentation
+
+    - ship alpha to treasured customers for preliminary evaluation ASAP
+
+    May 1, 1992    -- start serious internal use at WATCOM (CSG?)
+
+    June 1, 1992   -- start Beta test for first shipment type
+
+    July 15, 1992  -- finish documentation
+
+    Oct. 1, 1992   -- first customer ship
+
+Left to do:    compiler implementation
+==========
+
+(1) long double
+    -----------
+    - awaiting codegen support
+    - should work with minor effort (3 line change!)
+
+(2) linker support
+    --------------
+    - a - Jim Randall now working on it
+
+(3) CodeGen Support
+    ---------------
+
+(4) Pragma support
+    --------------
+    - a - need support for language linkages
+    - b - make warnings levels different or as errors
+    - c - extended information during compilation
+    - d - need support for class generation
+        - public, extern, local
+        - virtual base threshhold (?)
+    - e - re-implement traditional C pragma support (commented out)
+
+(5) Message Support
+    ---------------
+    - need extra message information
+    - need to react to pragma requesting extra information
+
+(6) Data
+    ----
+
+(7) Expressions
+    -----------
+    - d - additional support for ==, != (member pointers)
+    - f - support ->*, .*
+    - g - support :>
+
+(8) Function Support
+    ----------------
+
+(9)Operational Support
+    -------------------
+    - a - review options and upgrade
+    - b - implement profile file for options
+
+(10)Error Handling
+    --------------
+
+(11)Templates
+    ---------
+
+(12)Asm Support
+    -----------
+    - Fred has it in C; we can likely get it easily
+
+(13)Declarations
+    ------------
+    - templates
+    - exception handling - statement parsing
+    - parser ambiguity resolution
+
+(14)OverLoading
+    -----------
+
+(15)Debugging
+    ---------
+    - should be just code-generation work
+
+(16)C header Files
+    --------------
+    - need to be edited to add extern "C" { }
+
+
+Dependencies on others
+======================
+
+- 1 - long double: code generation required
+- 2 - linker support
+
+
+Time Estimates
+==============
+ item    time       who job
+
+- 1    - 2 min.s    - JW - long double: 2 minutes
+- 4(b) - 2 days     -    - #pragma support for warning levels
+- 4(c) - 1 week     -    - extended information listed during compilation
+- 4(d) - 1 day      -    - #pragma support for class generation
+- 4(e) - 1 week     -    - re-implement traditional C pragma support
+- 7(d) -            - -- - covered in 7(f)
+- 7(f) - 3 days     - JW - support for ->*, .*
+- 9(a) - 2 days     -    - review and fix up command-line options
+- 9(b) - 2 days     -    - profile file for options
+- 10   - 3 days     - JW - error handling
+- 11   - 1 week     - AS - templates
+- 14(e)- 3 days     - JW - need to fill out the special functions in Chapter 13
+- 15   - 1 week     -    - add debugging support
+- 16   - 1 day      -    - edit C header files
+
+    days weeks
+    ---- -----
+
+Uncertainties
+=============
+
+- 2(a) - state of linker support
+- 7(g) - support for :>
+- 12 - ASM support
+
+
+Dependencies:
+============
+
+4(d)-----------11
+
+
+Schedule: JW
+============
+
+
+completed:
+---------
+
+not scheduled yet
+-----------------
+- 1    - 2 min.s    - JW - long double: 2 minutes
+- 7(f) - 3 days     - JW - support for ->*, .*
+* 8(b) - 1 week     - JW - CTOR, DTOR routine compilation
+- 10   - 3 days     - JW - error handling
+- 14(e)- 3 days     - JW - need to fill out the special functions in Chapter 13
+
+
+Schedule: AS
+============
+
+not scheduled yet
+-----------------
+
+
+
+Schedule: GB
+============
+
+not scheduled yet
+-----------------

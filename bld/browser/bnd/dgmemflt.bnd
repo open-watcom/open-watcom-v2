@@ -1,0 +1,22 @@
+class MemberFiltDlg {
+    _inheritGroupR(  IDD_INHERITED_GROUP,   (@,@,@,@) );
+    _noneR(	     IDD_NONE,		    (@,@,@,@) );
+    _visibleR(	     IDD_VISIBLE,	    (@,@,@,@) );
+    _allR(	     IDD_ALL,		    (@,@,@,@) );
+    
+    _accessGroupR(   IDD_ACCESS_BOX,	    (@,@,@,@) );
+    _publicR(	     IDD_PUBLIC,	    (@,@,@,@) );
+    _protectedR(     IDD_PROTECTED,	    (@,@,@,@) );
+    _privateR(	     IDD_PRIVATE,	    (@,@,@,@) );
+    
+    _memberGroupR(   IDD_MEMBER_BOX,	    (@,@,@,@) );
+    _variablesR(     IDD_VARIABLES,	    (@,@,@,@) );
+    _varStaticR(     IDD_VAR_STATIC,	    (@,@,@,@) );
+    _functionsR(     IDD_FUNCTIONS,	    (@,@,@,@) );
+    _virtualR(	     IDD_VIRTUAL,	    (@,@,@,@) );
+    _funcStaticR(    IDD_FUNC_STATIC,	    (@,@,@,@) );
+    
+    _okButtonR(	     IDD_OK,		    (@,@,@,@) );
+    _defaultButtonR( IDD_DEFAULT,	    (@,@,@,@) );
+    _cancelButtonR(  IDD_CANCEL,	    (@,@,@,@) );
+};

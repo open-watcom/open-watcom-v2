@@ -1,0 +1,34 @@
+# libname_(model)
+libname_ms =maths
+libname_mm =mathm
+libname_mc =mathc
+libname_ml =mathl
+libname_mh =mathh
+libname_mf =mathf
+libname_   =math
+libname =$(libname_$(model))
+
+lib_flags =/b /c /p=16 /q
+!ifdef on_build_machine
+!ifeq processor axp
+!else
+lib_flags    +=/s /t
+!endif
+!endif
+
+!ifeq processor axp
+lib_linkage_flags_static=
+lib_linkage_flags_dynamic=
+lib_linkage_flags_alias=
+!else
+!ifeq processor ppc
+lib_linkage_flags_static=
+lib_linkage_flags_dynamic=
+lib_linkage_flags_alias=
+!else
+lib_linkage_flags_static=/z
+lib_linkage_flags_dynamic=/z=tmp.def
+lib_linkage_flags_alias=
+!endif
+!endif
+lib_flags_linkage=$(lib_linkage_flags_$(linkage))

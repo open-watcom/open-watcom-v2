@@ -1,0 +1,106 @@
+"DDEMENU" MENU
+BEGIN
+    POPUP sp( "&File",
+              "ファイル(&F)" )
+    BEGIN
+        MENUITEM sp( "&Save",
+                     "上書き保存(&S)" ), DDEMENU_SAVE
+        MENUITEM sp( "Save &As...",
+                     "名前を付けて保存(&A)..." ), DDEMENU_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Log To File...",
+                     "ファイルへのログ(&L)..." ), DDEMENU_LOG_FILE
+        MENUITEM sp( "&Pause Log",
+                     "ログの一時停止(&P)" ), DDEMENU_LOG_PAUSE
+        MENUITEM sp( "C&onfigure Log...",
+                     "ログの設定(&o)..." ), DDEMENU_LOG_CONFIG
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Font...",
+                     "フォント(&F)..." ), DDEMENU_FONT
+        MENUITEM sp( "S&how Toolbar",
+                     "ツ－ルバ－の表示(&h)" ), DDEMENU_TOOLBAR
+        MENUITEM sp( "Show &Hint Bar",
+                     "ヒントバ－の表示(&H)" ), DDEMENU_HINTBAR
+        MENUITEM SEPARATOR
+        MENUITEM sp( "E&xit",
+                     "終了(&x)" ), DDEMENU_EXIT
+    END
+    POPUP sp( "&Output",
+              "出力(&O)" )
+    BEGIN
+        MENUITEM sp( "&Clear",
+                     "消去(&C)" ), DDEMENU_CLEAR
+        MENUITEM sp( "&Mark...",
+                     "マ－ク(&M)..." ), DDEMENU_MARK
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Output to Screen",
+                     "スクリ－ンへの出力(&O)" ), DDEMENU_SCREEN_OUT
+        MENUITEM sp( "&Auto Scroll",
+                     "自動スクロ－ル(&A)" ), DDEMENU_SCROLL
+    END
+
+    POPUP sp( "&Monitor",
+              "モニタ－(&M)" )
+    BEGIN
+        sp( MENUITEM "&Posted Messages",
+                     "ポストメッセ－ジ(&P)" ), DDEMENU_MON_POST
+        MENUITEM sp( "&Sent Messages",
+                     "送信メッセ－ジ(&S)" ), DDEMENU_MON_SENT
+        MENUITEM sp( "String &Handle Data",
+                     "文字列ハンドルデ－タ(&H)" ), DDEMENU_MON_STR
+        MENUITEM sp( "&Callbacks",
+                     "コ－ルバック(&C)" ), DDEMENU_MON_CB
+        MENUITEM sp( "&Errors",
+                     "エラ－(&E)" ), DDEMENU_MON_ERR
+        MENUITEM sp( "C&onversations",
+                     "対話(&o)" ), DDEMENU_MON_CONV
+        MENUITEM sp( "&Links",
+                     "リンク(&L)" ), DDEMENU_MON_LNK
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Set Message Filter...",
+                     "メッセ－ジフィルタ－の設定..." ), DDEMENU_MSG_FILTER
+        MENUITEM sp( "Set Callback Filter...",
+                     "コ－ルバックフィルタ－の設定..." ), DDEMENU_CB_FILTER
+    END
+    POPUP sp( "&Track",
+              "追跡" )
+    BEGIN
+        sp( MENUITEM "&Strings",
+                     "文字列(&S)" ), DDEMENU_TRK_STR
+        MENUITEM sp( "&Conversations",
+                     "対話(&C)" ), DDEMENU_TRK_CONV
+        MENUITEM sp( "&Links",
+                     "リンク(&L)" ), DDEMENU_TRK_LINK
+        MENUITEM sp( "S&ervers",
+                     "サ－バ(&e)" ), DDEMENU_TRK_SERVER
+    END
+    POPUP sp( "&Aliases",
+              "別名(&A)" )
+    BEGIN
+        sp( MENUITEM "&Disable aliases",
+                     "別名の禁止(&D)" ), DDEMENU_NO_ALIAS
+        MENUITEM sp( "&Purge aliases",
+                     "別名の一掃(&P)" ), DDEMENU_ALIAS_PURGE
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Add &hwnd alias...",
+                     "hwndの別名の追加(&h)..." ), DDEMENU_HWND_ALIAS
+        MENUITEM sp( "Add &task alias...",
+                     "タスクの別名の追加(&t)" ), DDEMENU_TASK_ALIAS
+        MENUITEM sp( "Add &conversation alias...",
+                     "対話の別名の追加(&c)" ), DDEMENU_CONV_ALIAS
+    END
+    POPUP sp( "&Help",
+              "ヘルプ(&H)" )
+    BEGIN
+        sp( MENUITEM "&Contents",
+                     "目次(&C)" ), DDEMENU_HELP_CONTENTS
+        MENUITEM sp( "&Search for help on...",
+                     "キ－ワ－ドで検索(&S)" ), DDEMENU_HELP_SRCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to use help",
+                     "ヘルプの使い方(&H)" ), DDEMENU_HELP_ON_HELP
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&About...",
+                     "バ－ジョン情報(&A)" ), DDEMENU_ABOUT
+    END
+END

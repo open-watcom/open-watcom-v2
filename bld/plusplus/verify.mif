@@ -1,0 +1,59 @@
+#
+# VERIFY -- verify macro values 'host_CPU', 'host_OS', and 'target_CPU' are valid
+#
+
+# verify host_CPU
+
+verify_host_CPU_i86 = 1
+verify_host_CPU_386 = 1
+verify_host_CPU_370 = 1
+verify_host_CPU_axp = 1
+verify_host_CPU_ppc = 1
+
+!ifndef verify_host_CPU_$(host_CPU)
+!error host_CPU has an incorrect value
+!endif
+
+!undef verify_host_CPU_i86
+!undef verify_host_CPU_386
+!undef verify_host_CPU_370
+!undef verify_host_CPU_axp
+!undef verify_host_CPU_ppc
+
+# verify host_OS
+
+verify_host_OS_dos = 1
+verify_host_OS_os2 = 1
+verify_host_OS_osi = 1
+verify_host_OS_qnx = 1
+verify_host_OS_cms = 1
+verify_host_OS_nt = 1
+
+!ifndef verify_host_OS_$(host_OS)
+!error host_OS has an incorrect value
+!endif
+
+!undef verify_host_OS_dos
+!undef verify_host_OS_os2
+!undef verify_host_OS_osi
+!undef verify_host_OS_qnx
+!undef verify_host_OS_cms
+!undef verify_host_OS_nt
+
+# verify target_CPU
+
+verify_target_CPU_i86 = 1
+verify_target_CPU_386 = 1
+verify_target_CPU_370 = 1
+verify_target_CPU_axp = 1
+verify_target_CPU_ppc = 1
+
+!ifndef verify_target_CPU_$(target_CPU)
+!error target_CPU has an incorrect value
+!endif
+
+!undef verify_target_CPU_i86
+!undef verify_target_CPU_386
+!undef verify_target_CPU_370
+!undef verify_target_CPU_axp
+!undef verify_target_CPU_ppc

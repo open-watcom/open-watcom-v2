@@ -1,0 +1,7 @@
+!ifeq target_CPU axp
+as_lib = $(as_dir)\alpha\inline\o.$(host_CPU)\asinline.lib
+!else ifeq target_CPU ppc
+as_lib = $(as_dir)\ppc\inline\o.$(host_CPU)\asinline.lib
+!else
+!error invalid RISC target CPU
+!endif

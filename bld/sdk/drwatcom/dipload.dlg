@@ -1,0 +1,15 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DIPLOAD.H\0"
+END
+
+DIP_STATUS_DLG DIALOG 10, 15, 267, 121
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Debugging Information Processor Status"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "OK", IDOK, 113, 101, 40, 14
+    LISTBOX         DIPLD_LIST, 5, 21, 258, 77, LBS_SORT | WS_VSCROLL |
+                    WS_TABSTOP
+    LTEXT           "Processor          Status", DIPLD_HEADER, 5, 8, 258, 8
+END

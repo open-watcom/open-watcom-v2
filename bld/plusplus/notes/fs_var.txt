@@ -1,0 +1,32 @@
+/*
+.386p
+                NAME    head
+DGROUP          GROUP   _NULL
+
+_NULL           SEGMENT DWORD PUBLIC USE32 'BEGDATA'
+___head		equ 0
+		public ___head
+_NULL           ENDS
+                END
+*/
+extern "C" {
+    extern void * __based(__segname("fs:DGROUP")) __head;
+};
+
+struct S {
+    void *link;
+    int a[10];
+};
+
+void bar()
+{
+}
+
+void main() {
+    S x;
+
+    x.link = __head;
+    __head = &x;
+    bar();
+    __head = x.link;
+}

@@ -1,0 +1,61 @@
+
+        DLL Versioning Support
+        ======================
+
+WHAT IT DOES:
+=============
+    This support allows DLLs to be tagged with a version number
+    such that applications can tell if the correct version of
+    the DLL is loaded.
+
+    The only thing that applications have to do is call a 'check'
+    function. If it returns FALSE, then there is a problem. Otherwise,
+    the versions are compatible.
+
+    Applications do not need to know what version of the DLL
+    they are running. This information is embedded into the
+    import library they are using.
+
+
+WHAT DLL-USERS HAVE TO DO:
+==========================
+    DLL-Users do not need any support from this code. The
+    DLLs they are using should have a version check function
+    for them to call. If this function returns FALSE, then
+    the application should notify the user, and possibly
+    exit (to be safe).
+
+    If you have an application or DLL which uses DLLs, and the creator
+    of that DLL does not supply a version check function, direct
+    them to this file!
+
+
+WHAT DLLs HAVE TO DO:
+=====================
+    The versioning support is NOT a library or DLL. It is code which
+    you compile into your DLL and import library.
+
+    1) Copy the file 'version.h' into your project include directory.
+      Modify the three defines it contains to match your project.
+
+    2) Add the file 'verdll.c' as a file you compile into the DLL. If
+       possible, do NOT copy the file into your project directory,
+       but compile it from the version directory (in case it
+       changes in the future).
+
+    3) Compile the file 'verimp.c' into the import library (use
+       wlib to add it to the library). Again if possible,
+       do NOT copy the file into your project directory,
+       but compile it from the version directory (in case it
+       changes in the future).
+
+    4) 'verimp.c' defines a (non-DLL) function which applications
+       can call to do the version checking. Add an extern declaration
+       to your external include file(s): i.e. if 'DLL_PREFIX' in 'version.h'
+       is 'chart', add the declaration
+       'extern unsigned chart_version_check( void );'.
+
+    5) **** INCREMENT THE 'DLL_VERSION' NUMBER WHEN YOUR DLL
+       **** CHANGES IN SOME SIGNIFICANT WAY! This includes cases
+       **** such as: export ordinals change, input
+       **** structures change, messages change, etc.

@@ -1,0 +1,114 @@
+#
+# dde callback.
+#
+# %1 = type
+# %2 = hconv
+# %3 = hstr1
+# %4 = hstr2
+# %5 = hdata
+#
+
+if %1 == XTYP_CONNECT
+    dderet 1
+elseif %1 == XTYP_CONNECT_CONFIRM
+    dderet 1
+elseif %1 == XTYP_DISCONNECT
+
+#    this won't work with synchronous operations!
+#    exitfilesonly
+#    if lastrc == ERR_EXIT_ABORTED
+#	dderet 0
+#    else
+#	dderet 1
+#	exit
+#    endif
+
+    exit
+    
+elseif %1 == XTYP_REQUEST
+    dderet 0
+    ddequerystring %a %4
+    nextword %a %b
+#   echo 1 %b
+    if "%b" == "GetFiles"
+	assign %s = /%D%P%N%E/
+	assign %d = %s
+	set quiet
+	assign %t = //
+	loop
+	    if %M == 1
+		assign %t = /%t%d /
+	    endif
+	    next
+	    assign %d = /%D%P%N%E/
+	    quif "%d" == "%s"
+	endloop
+	set noquiet
+	ddecreatedatahandle %a %(4) "%t"
+	dderet %a
+    elseif "%b" == "MapFileName"
+    	nextword %a %b
+	nextword %a %c
+	assign %f = %F
+	e %b
+	w! %c
+	e %f
+    elseif "%b" == "Locate"
+	takefocus
+	nextword %a %b
+	if %b > 0
+	    nextword %a %c
+	    if %c > 0
+		# may have no length (%d=0), but this is still ok
+		nextword %a %d
+		locate %b %c %d
+	    else
+	    	locate %b 1
+	    endif
+	endif
+	updatewindows
+    elseif "%b" == "EditFile"
+	takefocus
+	nextword %a %b
+	e %b
+	
+#	// no longer supported - use Locate to set cursor pos/selection
+#	nextword %a %b
+#	if %b > 0
+#	    nextword %a %c
+#	    if %c > 0
+#		# may have no length (%d=0), but this is still ok
+#		nextword %a %d
+#		locate %b %c %d
+#	    else
+#	    	locate %b 1
+#	    endif
+#	endif
+
+	updatewindows
+#    elseif "%b" == "TakeFocus"
+#	echo 1 %F
+#    	takefocus
+    elseif "%b" == "Minimize"
+	minimize
+    elseif "%b" == "Restore"
+	restore
+    elseif "%b" == "PromptForSave"
+	PromptForSave
+    elseif "%b" == "PromptThisFileForSave"
+    	nextword %a %b
+	PromptThisFileForSave %b
+    elseif "%b" == "Exit"
+	exitfilesonly
+	if lastrc == ERR_EXIT_ABORTED
+	    dderet 0
+	else
+	    dderet 1
+	    exit
+	endif
+    endif
+elseif %1 == XTYP_POKE
+    dderet DDE_FNOTPROCESSED
+else
+    dderet DDE_FNOTPROCESSED
+endif

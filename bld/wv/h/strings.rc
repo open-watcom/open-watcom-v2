@@ -1,0 +1,8 @@
+#include "litdef.h"
+STRINGTABLE
+BEGIN
+    #undef LITSTR
+    #define LITSTR( a, b ) DBG_LITERAL_##a, b
+    #include "literals.h"
+    #include "menustr.h"
+END

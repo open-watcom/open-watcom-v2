@@ -1,0 +1,14 @@
+//#line "..\c\wpgather.c" 38
+extern bint GetCurrentGather(sio_data *curr_sio);
+//#line "..\c\wpgather.c" 59
+extern void FlipCurrentGather(sio_data *curr_sio);
+//#line "..\c\wpgather.c" 79
+extern void GatherCurrent(sio_data *curr_sio);
+//#line "..\c\wpgather.c" 98
+extern void GatherImage(sio_data *curr_sio,bint gather_active);
+//#line "..\c\wpgather.c" 149
+extern void GatherMod(sio_data *curr_sio,bint gather_active);
+//#line "..\c\wpgather.c" 202
+extern void GatherFile(sio_data *curr_sio,bint gather_active);
+//#line "..\c\wpgather.c" 255
+extern void GatherRtn(sio_data *curr_sio,bint gather_active);

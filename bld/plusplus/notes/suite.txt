@@ -1,0 +1,4 @@
+C++ Test Suite
+--------------
+Source is yahi.stanford.edu:pub/c++-suite-1.00.tar.Z as of 5 Jul 89.
+Root is ~/gnu/g++/c++-suite-1.00.tar.Z, one file, 92,409 bytes.

@@ -1,0 +1,3 @@
+call DbgRedirectBeg
+call dumpptree( <1> )
+viewcapt.dbg

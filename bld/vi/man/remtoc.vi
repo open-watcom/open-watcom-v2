@@ -1,0 +1,8 @@
+/@PREFACE
+/@PREFACE
+1,.d
+/^::::Introduction
+1,.-1w! toc.src
+1,.-1d
+w
+q!

@@ -1,0 +1,5 @@
+
+portos2.obj : portos2.c
+        $(compile) -nt=port
+
+extra_linker = segment 'port' iopl

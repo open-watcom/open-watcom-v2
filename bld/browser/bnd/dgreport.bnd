@@ -1,0 +1,17 @@
+class ReportDlg {
+    _destinationGroupR( IDD_DESTINATION_GROUP, (@,@,@,@) );
+    _destinationEditR(  IDD_DESTINATION_EDIT,  (@,@,@,@) );
+    _filesButtonR(      IDD_FILES_BUTTON,      (@,@,@,@) );
+    
+    _contentsGroupR(    IDD_CONTENTS_GROUP,    (@,@,@,@) );
+    _classesR(          IDD_CLASSES,           (@,@,@,@) );
+    _variablesR(        IDD_VARIABLES,         (@,@,@,@) );
+    _typedefsR(         IDD_TYPEDEFS,          (@,@,@,@) );
+    _functionsR(        IDD_FUNCTIONS,         (@,@,@,@) );
+    _enumsR(            IDD_ENUMS,             (@,@,@,@) );
+    
+    _saveButtonR(       IDD_SAVE_BUTTON,       (@,@,@,@) );
+    _cancelButtonR(     IDD_CANCEL_BUTTON,     (@,@,@,@) );
+    _layoutButtonR(     IDD_LAYOUT_BUTTON,     (@,@,@,@) );
+    _helpButtonR(       IDD_HELP_BUTTON,       (@,@,@,@) );
+};

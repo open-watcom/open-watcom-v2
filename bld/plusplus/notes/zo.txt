@@ -1,0 +1,42 @@
+zo Switch for C++ compiler, version 10.1
+----------------------------------------
+
+Existing programs will function as before when the -zo switch is not used.
+
+A new switch, -zo, has been added to the C++ compiler in order to specify
+that operating-system dependent exception-handling is to be used.  When
+the switch is not specified, the exception-handling mechanism is
+independent of the operating system (as was the case in previous releases).
+
+The switch has an effect only under NT and OS/2 in the 32-bit compiler 
+(WPP386.EXE).  A warning is issued when the switch is used in other
+environments.
+
+When the switch is used, it must be used to produce all C++ object files
+which are linked together to create .EXE or .DLL files.  When only some
+of the object files are compiled with this switch, the linker will
+report unresolved or duplicated global symbols.  If you wish to use this
+switch, the complete application must be recompiled with this switch.  This
+is to ensure that only operating-system dependent libraries are used to
+link the application.
+
+When the -zo switch is used and the target object is for a different system
+than the system used for compilation, the build-target (-bt) switch must
+be used to specify the target system.  If omitted, the C++ compiler will
+assume you are producing object for the system used to compile the program.
+
+This switch should viewed as a temporary mechanism to allow users to avoid
+recompiling applications when they do not require either NT or OS/2 system
+exception handling.  In the next major release, full recompilation will
+be required and the system-dependent exception handling will be the default.
+
+To help resolve errors, the following global symbols are generated:
+
+    __compiled_under_NT  ( compiled using -zo -bt=NT )
+
+    __compiled_under_OS2 ( compiled using -zo -bt=OS2)
+
+    __compiled_under_GENERIC ( compiled otherwise )
+    
+The last is defined in all libraries for which exceptions are handled in a
+system independent manner.

@@ -1,0 +1,37 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGPRINT.H\0"
+END
+
+ReportDlg DIALOG FIXED IMPURE 60, 14, 170, 142
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Report"
+FONT 8, "Helv"
+BEGIN
+    CONTROL         "&Destination", IDD_DESTINATION_GROUP, "Button",
+                    BS_GROUPBOX | WS_GROUP, 6, 6, 157, 36
+    CONTROL         "", IDD_DESTINATION_EDIT, "Edit", ES_AUTOHSCROLL |
+                    WS_BORDER | WS_TABSTOP, 11, 22, 98, 12
+    CONTROL         "&Files...", IDD_FILES_BUTTON, "Button", WS_TABSTOP, 119,
+                    21, 40, 14
+    CONTROL         "&Contents", IDD_CONTENTS_GROUP, "Button", BS_GROUPBOX |
+                    WS_GROUP, 6, 48, 103, 86
+    CONTROL         "Classes", IDD_CLASSES, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 12, 63, 90, 10
+    CONTROL         "Enums", IDD_ENUMS, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 12, 77, 90, 10
+    CONTROL         "Functions", IDD_FUNCTIONS, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 12, 91, 90, 10
+    CONTROL         "Typedefs", IDD_TYPEDEFS, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 12, 105, 90, 10
+    CONTROL         "Variables", IDD_VARIABLES, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 12, 119, 90, 10
+    CONTROL         "Save", IDD_SAVE_BUTTON, "Button", WS_GROUP | WS_TABSTOP,
+                    119, 51, 40, 14
+    CONTROL         "Cancel", IDD_CANCEL_BUTTON, "Button", WS_TABSTOP, 119,
+                    68, 40, 14
+    CONTROL         "&Layout...", IDD_LAYOUT_BUTTON, "Button", WS_TABSTOP,
+                    119, 89, 40, 14
+    CONTROL         "&Help", IDD_HELP_BUTTON, "Button", WS_TABSTOP, 119, 112,
+                    40, 14
+END

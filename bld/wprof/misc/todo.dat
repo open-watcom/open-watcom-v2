@@ -1,0 +1,23 @@
+- printing listings of source histograms and assembly histograms would be nice
+- view modules in sample ordering
+- allow escaping from sample reading
+- WPROF /l=<listing_file> would be nice
+- histogram progress indicator (instead of countdown for source/assembly)
+  - displays a graph of samples over time
+  - graph can be stored in a small amount of memory for use in
+    time range selection
+  - useful information and snazzy!
+- Call Graph Information into the sample file
+  - code generator must be able to insert a call or special INTR hook as
+    the first instruction of the function (FAR/NEAR depends on different
+    hooks)
+  - hook records the return address
+  - return address is changed so that hook is re-entered upon return
+  - stack of return addresses are kept in the same buffer as the samples
+  - every sample will write the change since the last time the call graph
+    was written (the return addresses are written as a block)
+  - if a new return address is identical to the old return address it is
+    overwriting in its stack, make sure the delta doesn't include the new
+    invocation because the return address hasn't changed (handy for loops
+    calling the same function)
+  - analysing this data in the profiler will be fun!

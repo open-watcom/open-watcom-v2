@@ -1,0 +1,106 @@
+!include $(lexlib_dir)\wclass\mak\wclass.mak
+#
+# MAKEFILE for WBROWSE.DLL
+#
+
+#
+#  Define file extensions
+#
+.extensions:
+.extensions: .exe .obj .brm .cpp .res
+
+.cpp: ..\cpp
+
+incpath = ..\hpp;..\res;$(brinfo_dir)\h;$(lexlib_dir)\wclass\hpp;$(plusplus_dir)\h;$(%watcom_dir)\h;$(%watcom)\h\nt;$(%watcom)\h
+.before
+    @set include=$(incpath)
+    @set nt_include=
+    
+cflags=/w4/bt=nt/zq/fhd /d_WIN32 /d_DBCS
+
+.cpp.obj: .AUTODEPEND
+	wpp386 $[@ $(debug_cpp_opts) $(cflags) /fh=wpch.pch
+	
+.cpp.brm: .AUTODEPEND .SYMBOLIC
+	wcpp386d $[@ /fbi=ft/zs $(debug_cpp_opts) $(cflags) /fh=wpchbrm.pch
+	
+objs = &
+    wpch.obj &
+    applic.obj &
+    avltree.obj &
+    wbrowse.obj &
+    brmfile.obj &
+    cache.obj &
+    debugprt.obj &
+    decl.obj &
+    defn.obj &
+    hashtbl.obj &
+    macro.obj &
+    main.obj &
+    pool.obj &
+    ppops.obj &
+    reindex.obj &
+    scopes.obj &
+    strtable.obj &
+    types.obj &
+    usage.obj &
+
+cpps = &
+    applic.cpp &
+    avltree.cpp &
+    wbrowse.cpp &
+    brmfile.cpp &
+    cache.cpp &
+    debugprt.cpp &
+    decl.cpp &
+    defn.cpp &
+    hashtbl.cpp &
+    macro.cpp &
+    main.cpp &
+    pool.cpp &
+    ppops.cpp &
+    reindex.cpp &
+    scopes.cpp &
+    strtable.cpp &
+    types.cpp &
+    usage.cpp
+
+all: .symbolic wbrowse.dll
+
+browse: .symbolic
+    wcpp386d wpch.cpp /fbi=ft/zs/zq/fhd/fh=wpchbrm.pch/i=$(incpath) /d_WIN32 /d_DBCS
+    @for %i in ($(cpps)) do wcpp386d %i /fbi=ft/zs/zq/fhd/fh=wpchbrm.pch/i=$(incpath) /d_WIN32 /d_DBCS
+
+WRes.res : ..\res\WRes.rc
+    wrc $[@ /fo=WRes.res -bt=nt -ad -r -d_DEBUG -d__WATCOMC__ -q -i=$(lexlib_dir)\wclass\rc;$(incpath)
+
+lnk=wbrowse.lnk
+wbrowse.dll: $(objs) WRes.res makefile .autodepend
+    @%write $(lnk) op Quiet,Map $(debug_lnk_opts)
+    @%append $(lnk) op osname='Windows NT' format windows nt dll
+    @%append $(lnk) $(debug_link_opts)
+    @for %i in ($(objs)) do @%append $(lnk) file %i
+    @%append $(lnk) run win=4.0 op Caseexact
+    @%append $(lnk) lib $(lexlib_dir)\wclass\prod\wcmlla$(wclass_version).lib
+    @%append $(lnk) libp $(lexlib_dir)\wclass\lib;$(%watcom)\lib386\nt;$(%watcom)\lib386
+    @%append $(lnk) op resource=WRes.res
+    @%append $(lnk) name wbrowse.dll
+    wlink @$(lnk)
+    wlib -q -n wbrowse +wbrowse.dll
+#    @newer wbrowse.dll \bin\wbrowse.dll "^copy &f $#f > nul"
+	
+clean: .symbolic
+	@if exist *.?bj del *.?bj
+	@if exist *.lnk del *.lnk
+	@if exist *.ilk del *.ilk
+	@if exist *.exe del *.exe
+	@if exist *.sym del *.sym
+	@if exist *.dll del *.dll
+	@if exist *.lib del *.lib
+	@if exist *.res del *.res
+	@if exist *.clb del *.clb
+	@if exist *.lbc del *.lbc
+	@if exist *.map del *.map
+	@if exist *.pch del *.pch
+	@if exist *.err del *.err
+	@if exist wbrowse.bak del wbrowse.bak

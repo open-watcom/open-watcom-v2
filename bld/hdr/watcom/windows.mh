@@ -1,0 +1,16 @@
+/****************************************************************************
+ *
+ *  WINDOWS.H -
+ *
+ *      Include file for Windows 3.0 applications
+ *
+:include crwat.sp
+ *
+ ****************************************************************************/
+
+:include readonly.sp
+#ifdef _WINDOWS_16_
+#include <win16.h>
+#else
+#include <_win386.h>
+#endif

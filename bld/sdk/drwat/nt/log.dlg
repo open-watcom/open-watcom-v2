@@ -1,0 +1,37 @@
+LOG DIALOG 73, 15, 175, 208
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Log Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Log File:", -1, 5, 2, 55, 8, NOT WS_GROUP
+    EDITTEXT        LOG_FILE_NAME, 5, 10, 122, 12, ES_AUTOHSCROLL
+    PUSHBUTTON      "&Browse", LOG_BROWSE_FILE, 133, 9, 40, 14
+    LTEXT           "Log Viewer:", -1, 5, 26, 55, 8, NOT WS_GROUP
+    EDITTEXT        LOG_VIEWER, 5, 34, 123, 12, ES_AUTOHSCROLL
+    PUSHBUTTON      "B&rowse", LOG_BROWSE_VIEWER, 133, 33, 40, 14
+    CONTROL         "Memory Dump", LOG_MEM_DMP, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 10, 63, 68, 10
+    CONTROL         "Query for notes", LOG_QUERY_NOTES, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 10, 75, 68, 10
+#ifndef CHICAGO
+    CONTROL         "Mem Manager Info", LOG_MEM, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 10, 87, 71, 12
+#endif
+    CONTROL         "Current Processes", LOG_TASKS, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 87, 63, 71, 12
+    CONTROL         "Loaded Modules", LOG_LOADED_MODULES, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 87, 75, 68, 10
+    CTEXT           "Disasm Backup:", -1, 17, 113, 65, 8, NOT WS_GROUP
+    EDITTEXT        LOG_DISASM_BACKUP, 27, 124, 45, 12, ES_AUTOHSCROLL
+    CTEXT           "Disasm Lines:", -1, 95, 114, 65, 8, NOT WS_GROUP
+    EDITTEXT        LOG_DISASM_LINES, 105, 125, 45, 12, ES_AUTOHSCROLL
+    CONTROL         "Autolog", LOG_AUTOLOG, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 27, 160, 50, 12
+    CTEXT           "Max Log Size:", -1, 102, 154, 51, 8, NOT WS_GROUP
+    EDITTEXT        LOG_MAXFL, 105, 164, 45, 12, ES_AUTOHSCROLL
+    PUSHBUTTON      "&OK", IDOK, 39, 189, 40, 14
+    PUSHBUTTON      "&Cancel", IDCANCEL, 95, 189, 40, 14
+    GROUPBOX        "Log File Data", -1, 6, 50, 167, 52
+    GROUPBOX        "Log Options", -1, 7, 145, 166, 36
+    GROUPBOX        "Disassembly Options", -1, 7, 103, 166, 41
+END

@@ -1,0 +1,66 @@
+proj_name = dwarf
+!include cproj.mif
+!include defrule.mif
+
+objs = &
+dwabbrev.obj &
+dwarange.obj &
+dwcarve.obj &
+dwdie.obj &
+dwdecl.obj &
+dwgen.obj &
+dwhandle.obj &
+dwinfo.obj &
+dwline.obj &
+dwlngen.obj &
+dwloc.obj &
+dwmac.obj &
+dwmem.obj &
+dwname.obj &
+dwrefer.obj &
+dwsym.obj &
+dwtype.obj &
+dwutils.obj
+
+!ifeq model s
+!ifeq host_cpu 386
+mem_model_386 = -ms
+!endif
+!endif
+
+!ifeq host_cpu 386
+extra_c_flags += -fpc
+!endif
+
+inc_dirs = $(watcom_dir)\h
+
+.BEFORE
+    @set include=$(inc_path)
+
+.c : $(dwarf_dir)/dw/c
+
+dw$(model).lib : dwabenum.i $(objs)
+        @%create tmp.lbc
+        @for %i in ($(objs)) do @%append tmp.lbc +%i
+        $(librarian) -n -b -q $^@ @tmp.lbc
+        wtouch compile.tim
+
+dwabenum.i dwabinfo.i : dwmakeab.exe
+        $[@
+
+dwmakeab.tbj : dwmakeab.c
+        $(bld_cc) -d1 -fo=dwmakeab.tbj dwmakeab.c
+
+dwutils.tbj : dwutils.c
+        $(bld_cc) -d1 -fo=dwutils.tbj  dwutils.c
+
+dwmakeab.exe : dwmakeab.tbj dwutils.tbj
+        $(bld_link) op quiet,map debug all file dwmakeab.tbj, dwutils.tbj
+
+dwabbrev.obj : dwabbrev.c dwabinfo.i
+
+testcli.exe : testcli.obj testtest.obj testdump.obj dw$(model).lib
+        $(link) $(lflags) op quiet,map file testcli,testtest,testdump lib dw$(model).lib
+
+clean : .symbolic
+        @rm -f *.obj *.exe *.map *.lib *.lbc *.err *.i *.tbj *.tim

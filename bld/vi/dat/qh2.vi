@@ -1,0 +1,7 @@
+echo off
+assign %a = /Enter Windows Function: /
+input %a
+if lastrc == ERR_NO_ERR
+    so qh.vi %a
+endif
+echo on

@@ -1,0 +1,17 @@
+
+FREE_N_DLG DIALOG 6, 18, 156, 76
+STYLE DS_SYSMODAL | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION ""
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "K Allocated (approx.):", FREE_DONT_CARE, 6, 3, 80, 8
+    LTEXT           "K Free (approx.):", FREE_DONT_CARE, 6, 13, 60, 8
+    LTEXT           "00000", FREE_ALLOCATED, 90, 3, 49, 8
+    LTEXT           "00000", FREE_FREE_K, 90, 13, 49, 8
+    LTEXT           "", FREE_AMT_TITLE, 6, 40, 77, 8
+    EDITTEXT        FREE_AMOUNT, 86, 39, 62, 12, ES_AUTOHSCROLL | WS_GROUP
+    DEFPUSHBUTTON   "OK", FREE_OK, 25, 59, 40, 14, WS_GROUP
+    PUSHBUTTON      "Cancel", FREE_CANCEL, 85, 59, 40, 14, WS_GROUP
+    LTEXT           "Bytes Free:", FREE_DONT_CARE, 6, 23, 48, 8
+    LTEXT           "00000", FREE_FREE_BYTE, 90, 23, 49, 8
+END

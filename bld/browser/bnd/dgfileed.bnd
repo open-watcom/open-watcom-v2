@@ -1,0 +1,15 @@
+class FileEditDlg {
+    _fileboxR(	   IDD_FILEBOX,	    (@,@,@,@) );
+    
+    _patternGroupR(IDD_PATTERNBOX,  (@,@,@,@) );
+    _patternTextR( IDD_PATTERNTEXT, (@,@,@,@) );
+    _includeR(	   IDD_INCLUDE,	    (@,@,@,@) );
+    _excludeR(	   IDD_EXCLUDE,	    (@,@,@,@) );
+    
+    _setallR(	   IDD_SETALL,	    (@,@,@,@) );
+    _clearallR(	   IDD_CLEARALL,    (@,@,@,@) );
+    
+    _okButtonR(	   IDD_OKBUTTON,    (@,@,@,@) );
+    _cancelButtonR(IDD_CANCELBUTTON,(@,@,@,@) );
+    _helpButtonR(  IDD_HELP,	    (@,@,@,@) );
+};

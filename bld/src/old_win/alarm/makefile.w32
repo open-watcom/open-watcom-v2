@@ -1,0 +1,39 @@
+#
+# create 32-bit version of ALARM
+#
+
+CFLAGS = -zW -oaxt -d1 -w4
+CC = wcc386
+NAME = alarm
+
+LNK = $(name).lnk
+
+OBJS = $(name).obj
+
+$(name).exe : $(OBJS) $(name).res $(LNK)
+    wlink @$(LNK)
+    wbind $(name) -R -30 $(name).res
+
+$(name).res : $(name).rc $(name).ico
+    wrc -r -30 $(name).rc
+
+$(LNK) : makefile.w32
+    %create $(LNK)
+    @%append $(LNK) debug all
+    @%append $(LNK) system win386
+    @%append $(LNK) option mindata=100K
+    @%append $(LNK) option maxdata=100K
+    @%append $(LNK) option stack=8k
+    @%append $(LNK) name $(name)
+    @for %i in ($(OBJS)) do @%append $(LNK) file %i
+
+$(name).obj : $(name).c $(name).h
+        $(CC) $(CFLAGS) $[*
+
+clean: .symbolic
+    @erase *.obj
+    @erase *.err
+    @erase *.exe
+    @erase *.lnk
+    @erase *.res
+    @erase *.rex

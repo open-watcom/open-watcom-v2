@@ -1,0 +1,185 @@
+The following information might be of help working with the Microsoft
+Debug format information:
+
+Microsoft C does not appear to output type indicies for EXTDEFs, or COMDEFs.
+WOMP does not try to either... no one seems to complain about it.
+
+SYMBOLS records
+
+    Names are written pascal string style (length byte followed by text).
+    Type indexes are always written as a word (2 bytes).
+
+    0x01    Procedure start: 
+        Place zeros in the reserved field.
+
+
+TYPES records
+
+    For some reason C 6.0 generates gratuitous nil types.  i.e.,
+    0x01 0x01 0x00 0x80.  (See also void procedures below.)
+
+    It is not very explicit about the '*' or '@' fields.  A '*' refers to a
+    basic component leaf, and an @ refers to an index leaf. Check out page
+    25 and page 26.
+
+    C 6.0 always outputs a TRUE (1) in the linkage field.  WOMP does this as
+    well just in case.
+
+    C 6.0 never generates a NEWTYPE record.  This is probably because Codeview
+    does not interpret NEWTYPE records... or... who knows why.  WOMP does some
+    back-bending to avoid generating NEWTYPE records.
+
+    Page 10, two basic component leaves are missing:
+
+        87H 64-bit unsigned (see Page 26)
+        8BH 64-bit signed   (see Page 26)
+
+    Page 11, I have no idea why there are type leaves INTEGER, UNSIGNED
+    INTEGER, and SIGNED INTEGER.  WOMP uses SIGNED INTEGER and UNSIGNED
+    INTEGER with success.  No further investigation was made.
+
+    Page 11, some "other" leaves require some more explanation:
+
+        5EH HUGE                -+
+        73H FAR / PLM FAR        + These are for POINTER types
+        74H NEAR / PLM NEAR     -+
+
+        63H C NEAR              -+ These are for PROCEDURE types
+        64H C FAR               -+
+        
+    Page 12, 72H Code label.  MASM generates FAR/NEAR as 73H/74H.
+
+    Page 13, 7AH Pointers.  Use 5EH, 73H, or 74H for HUGE, FAR, NEAR.
+
+    (No investigation of the based pointer stuff was done.)
+
+    Page 17, an "enumLIST" is your basic 7FH LIST leaf.  C 6.0 never generates
+    an enumerated constant list.  WOMP does and Codeview does not complain.
+
+    Page 18, if a structure has no name, C 6.0 outputs "(untagged)" as the
+    structure name.  WOMP outputs a null name.  MASM generates PACKED
+    structures, C 6.0 generates UNPACKED structures.  WOMP generates UNPACKED
+    structures.
+
+    Page 20, @rvtype may be the index of a nil leaf (01 01 00 80) if the
+    procedure returns void.  @list may be the index of a nil leaf if the
+    procedure has no parameters.  This is the behaviour of C 6.0 and WOMP.
+
+
+    There is no provision for a void * type.  WOMP uses unsigned char *
+    instead.
+
+Microsoft C 386 investigations:
+
+Some object file notes first.  Microsoft has deemed it appropriate to create
+the empty GROUP named "FLAT".  A C386 object file will contain a GROUP named
+"FLAT" with no members.  That's right: no members.  The semantics of this
+group are questionable... the best bet is that it means place every segment
+in one frame.  (Watch out for FIXUPs, PUBDEFs and so on, that reference the
+FLAT group.)
+
+There were no apparent changes to the TYPES records.  The SYMBOLS records,
+however, had many changes (as expected).  To get a 386-style symbol record
+typ from a 286-style, simply set the 0x80 bit.  Here is a quick list:
+
+    0x80    Block start.  The offset field was widened to 32 bits.  The
+                block length field remains 16 bits.
+    0x81    Procedure start.  The offset field has been widened to 32 bits.
+                (The proc len/dbg start/end remain 16 bits.)
+    0x82    End block/proc/with.
+    0x84    BP Relative.  The offset field was widened to 32 bits.
+    0x85    Local data.  The offset field was widened to 32 bits.
+    0x8D    Register symbol.
+
+It's amazing that Microsoft did not widen the block length, proc length, ...
+fields.
+
+LINK 386 investigations:
+
+The extended .EXE format has been changed for 32-bit .EXEs.  Unfortunately
+Microsoft did it in a brain-damaged way.  They simply widened a bunch of
+fields to 32-bits, and did not leave any indication that the fields had been
+widened.  i.e., a program looking at extended exe information has no way of
+knowing if it is 32-bit or 16-bit.  Dumb dumb dumb.  Here are the changes:
+
+    sstModules (101H)
+
+        00  DW  Code seg base
+        02  DD  Code seg offset
+        06  DD  Code seg length
+        0a  DW  Overlay number
+        0c  DW  Index into sstLibraries or 0
+        0e  DB  Number of segments to follow
+        0f  DB  Reserved still
+        10  DB  Length prefixed string
+
+    sstPublics (102H)
+
+        00  DD  Offset
+        04  DW  Segment
+        06  DW  Type index
+        08  DB  length prefixed string
+
+    sstSrcLine (105H)
+
+        The offset field is 32-bits.
+
+    sstSrcLnSeg (109H)
+
+        The offset field is 32-bits.
+
+
+Metaware 386's Variations on Microsoft:
+
+The object files are PharLap object files with no real big surprises.
+
+The TYPES records remain the same.
+
+The SYMBOLS records are the following:
+
+    0x00    Block start. The offset, and block length fields are 32 bits.
+    0x01    Procedure start. The offset, proc len, and dbg end fields are
+                32 bits.  The dbg start field remains 16 bits.
+    0x02    Block end.
+    0x04    BP Relative. The offset field is widened to 32 bits.
+    0x05    Local data.  The offset field is widened to 32 bits.
+    0x0D    Register symbol.  Metaware uses 0x08 through 0x0f for the 32-bit
+                registers instead of 0x10 through 0x17.  (i.e., EAX is 0x08)
+                I do not know what they do for 16-bit registers.
+
+Problems with Microsoft symbolic info:
+
+    No multi-register support.
+
+    Support for parameters is lacking (compared to Turbo).  There should be
+    methods of giving the locations, names, and types of all parameters.
+    There is only support for Microsoft style parameter passing (cdecl,
+    pascal, fastcall).
+
+    Function return values are assumed to be Microsoft style (DX:AX).  No
+    way to describe structure return location (or who allocates the memory).
+    
+    No auto-dereferenced pointers.
+
+    No void, or void * type.  Or, if there is one it is not documented
+    properly.  C 6.0 does not appear to use one.
+
+    The Fortran support is as deranged as WATCOM's.  Runtime information
+    should not be a part of typing information.  Consider Microsoft's
+    FSTRING (8DH) type.  Tag 1 has a field named "offset" which is the
+    BP-relative offset which at runtime contains the length of the string.
+    It would be much more appropriate if Tag 1 contained no further fields.
+    Then a SYMBOLs record, say a BP-Offset (04H) would contain the actual
+    BP-Offset.  This allows for all code-generation differences (length
+    in static memory, length in auto-memory, or length in register).
+
+    The based pointers support is plagued by the same problems as the
+    Fortran support.
+
+    Microsoft certainly made little attempt at optimizing space, or even
+    speed/ease of access for their typing information.  (The winner here has
+    to be Turbo.)
+
+    The extended .EXE format appears to be very useful.  Some new 386 records
+    should be defined.
+

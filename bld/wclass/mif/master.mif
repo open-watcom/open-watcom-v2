@@ -1,0 +1,107 @@
+proj_name = wclass
+name = wclass
+
+.mif : $(mif_path)
+.cpp : ..\cpp;..\..\cpp
+
+!include cproj.mif
+!include deftarg.mif
+
+inc_dirs = ..\hpp;..\..\hpp;$(gui_dir)\h
+
+.before:
+        set INCLUDE=$(inc_path)
+
+extra_c_flags_386       = -fpc
+extra_c_flags_i86_dos   = -fpc
+extra_c_flags_i86_win   = -fpc-zm-zc
+extra_c_flags_i86       = $+$(extra_c_flags_$(host_CPU))$-
+
+#too many warnings...
+cflags_all      = -zq -w4
+
+WCLASS_OBJS = &
+        wabout.obj &
+        wautodlg.obj &
+        wbaritem.obj &
+        wboolsw.obj &
+        wbutton.obj &
+        wcheckbx.obj &
+        wclass.obj &
+        wcmdargs.obj &
+        wcmdlist.obj &
+        wcolrdlg.obj &
+        wcombox.obj &
+        wcontrol.obj &
+        wdialog.obj &
+        weditbox.obj &
+        weditdlg.obj &
+        wfile.obj &
+        wfiledlg.obj &
+        wfilelst.obj &
+        wfilenam.obj &
+        wgroupbx.obj &
+        whotspot.obj &
+        winflist.obj &
+        winpdlg.obj &
+        wlistbox.obj &
+        wmdichld.obj &
+        wmdiwndw.obj &
+        wmenu.obj &
+        wmenuitm.obj &
+        wmenuobj.obj &
+        wmenusep.obj &
+        wmetrics.obj &
+        wmodel.obj &
+        wmsgdlg.obj &
+        wname.obj &
+        wobjfile.obj &
+        wobjmap.obj &
+        wpaint.obj &
+        wpickbox.obj &
+        wpickcbx.obj &
+        wpickdlg.obj &
+        wpicklst.obj &
+        wpopmenu.obj &
+        wpshbttn.obj &
+        wradbttn.obj &
+        wrect.obj &
+        wstatwin.obj &
+        wstring.obj &
+        wstrlist.obj &
+        wsyshelp.obj &
+        wtext.obj &
+        wtokfile.obj &
+        wtoolbar.obj &
+        wvcllctn.obj &
+        wview.obj &
+        wvlist.obj &
+        wwindow.obj &
+        wwinmain.obj
+
+#objs not used by 16-bit dos
+ndos_objs = &
+        wresstr.obj &
+        wstatdlg.obj
+
+win_objs = &
+        wclient.obj &
+        wprocess.obj &
+        wserver.obj &
+        wsystem.obj &
+        wflashp.obj &
+        wtimer.obj &
+
+extra_objlib_nt_386     = $(win_objs) $(ndos_objs) $(gui_dir)\win\guintf.lib
+extra_objlib_nt_axp     = $(win_objs) $(ndos_objs) $(gui_dir)\win\guintaxp.lib
+extra_objlib_win_i86    = $(win_objs) $(ndos_objs) $(gui_dir)\win\guiwinl.lib
+extra_objlib_dos_386    = $(ndos_objs) $(gui_dir)\win\guiwinl.lib
+extra_objlib_os2_386    = $(win_objs) $(ndos_objs) wddeobj.obj $(gui_dir)\win\guipmf.lib
+
+extra_objlib = $(extra_objlib_$(host_OS)_$(host_CPU))
+
+$(name).lib : $(WCLASS_OBJS) $(extra_objlib)
+        $(librarian) -b -c -n -p=512 $^@ $(WCLASS_OBJS) $(extra_objlib)
+
+.cpp.obj :
+        $(cpp) $(cflags) $[@ -fo=$^@

@@ -1,0 +1,115 @@
+		Modifications to DIP interface
+		==============================
+		
+		
+    void DIPMapInfo( mod_handle );
+    
+	- removed second parameter (DIPCliMapAddr passes mod_handle instead).
+	
+    
+    void DIPCliMapAddr( addr_ptr *, mod_handle );
+    
+    	- second parameter changed from void * to mod_handle.
+	
+	
+    dip_status DIPUnmapInfo( mod_handle );
+    
+    	- new routine. Take the given mod_handle and unmap all the symbolic
+	  information. The client can then do another DIPMapInfo on the
+	  image to move the addresses to new locations. A DIP implementation
+	  may choose to return DS_FAIL to indicate that it does not support
+	  this request. In this case the client should do DIPUnloadInfo 
+	  followed by a DIPLoadInfo/DIPMapInfo. 
+	  
+	  
+    dip_status TypeInfo( type_handle *, location_context *, type_info *,
+    				type_info_need );
+				
+	    - added type_info_need parameter. Definition follows:
+	    
+	    	typedef enum {
+		    TIN_KIND 	= 0x01,
+		    TIN_MODIFER = 0x02,
+		    TIN_SIZE	= 0x04,
+		    TIN_ALL	= 0xff
+		} type_info_need;
+		
+	        This bitset indicates what portions of the type_info
+		structure are required to be filled in. A DIP implementation
+		may choose to not fill in fields whose bits are not on if
+		it's more efficient.
+		
+		
+    dip_status TypeArrayInfo( type_handle *, location_context *, array_info *,
+    				type_handle *, array_info_need );
+				
+	- added array_info_need parameter. Definition follows:
+	
+		typedef enum {
+		    AIN_LOW_BOUND	= 0x01,
+		    AIN_NUM_ELTS	= 0x02,
+		    AIN_STRIDE		= 0x04,
+		    AIN_NUM_DIMS	= 0x08,
+		    AIN_COLUMN_MAJOR	= 0x10,
+		    AIN_ALL	= 0xff
+		} array_info_need;
+		
+	        This bitset indicates what portions of the array_info
+		structure are required to be filled in. A DIP implementation
+		may choose to not fill in fields whose bits are not on if
+		it's more efficient.
+		
+		
+    dip_status SymInfo( sym_handle *, location_context *, sym_info *,
+    			sym_info_need );
+			
+	- added sym_info_need parameter. Definition follows:
+	
+		typedef enum {
+		    SIN_KIND		= 0x0001,
+		    /* for global,member,compiler,private,public,thunk */
+		    SIN_BITS		= 0x0002,
+		    SIN_RTN_FAR		= 0x0004,
+		    SIN_RTN_CALLOC	= 0x0008,
+		    SIN_RET_MODIFIER	= 0x0010,
+		    SIN_RET_SIZE	= 0x0020,
+		    SIN_NUM_PARMS	= 0x0040,
+		    SIN_RET_ADDR_OFFSET	= 0x0080,
+		    SIN_PROLOG_SIZE	= 0x0100,
+		    SIN_EPLIOG_SIZE	= 0x0200,
+		    SIN_RTN_SIZE	= 0x0400,
+		    SIN_ALL		= 0xffff
+		} sym_info_need;
+		
+	        This bitset indicates what portions of the sym_info
+		structure are required to be filled in. A DIP implementation
+		may choose to not fill in fields whose bits are not on if
+		it's more efficient.
+
+		
+    add "thunk" field to the sym_info structure. It's on if the
+    symbol is a piece of thunk code.
+    
+    
+    dip_status DIPThunkInfo( sym_handle *, address * )
+    dip_status DIPImpThunkInfo( imp_image_handle *, imp_sym_handle *,
+    				address * )
+				
+    	- new routine(s). Given an sym_handle that refers to a "thunk"
+	  routine, return the address of the routine that it's thunking
+	  to.
+		
+		    
+    remove SN_EXPRESSION from the symbol_name enumeration.
+    
+    
+    search_result DIPImpAddrMod( imp_image_handle *, address *, 
+    			imp_mod_handle *, unsigned_32 * )
+			
+	- changed second parameter from "address" to "address *". On input,
+	  is address to be searched for. On output it is the first address
+	  for the module in the range that contains the input address.
+	  
+    	- added final "unsigned_32 *" parameter. On output it contains the
+	  length of the range of addresses that contains the search 
+	  address.

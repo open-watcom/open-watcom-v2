@@ -1,0 +1,36 @@
+# build host specific macros - should query WMAKE for details
+!ifdef __OS2__
+bld_sys         = os2v2
+bld_bin         = $(build_dir)\binp
+bld_incs        = $(bld_extra_incs);$(lang_root)\h
+!else ifdef __MSDOS__
+bld_sys         = dos4g
+bld_bin         = $(build_dir)\bin
+bld_incs        = $(bld_extra_incs);$(lang_root)\h
+!else ifdef __NTAXP__
+bld_sys         = ntaxp
+bld_bin         = $(build_dir)\axpnt
+bld_incs        = $(bld_extra_incs);$(lang_root)\h
+!else ifdef __NT386__
+bld_sys         = nt
+bld_bin         = $(build_dir)\binnt
+bld_incs        = $(bld_extra_incs);$(lang_root)\h
+!else ifdef __NT__
+#
+# This is an old make - really should report an error
+#
+bld_sys         = nt
+bld_bin         = $(build_dir)\binnt
+bld_incs        = $(bld_extra_incs);$(lang_root)\h
+!else
+!error HOST OS not set
+!endif
+
+!ifdef __NTAXP__
+bld_cl          = wclaxp -zq -l=$(bld_sys) -i$(bld_incs)
+bld_cc          = wccaxp -zq -i$(bld_incs)
+!else
+bld_cl          = wcl386 -zq -l=$(bld_sys) -i$(bld_incs)
+bld_cc          = wcc386 -zq -i$(bld_incs)
+!endif
+bld_link        = wlink op quiet sys $(bld_sys)

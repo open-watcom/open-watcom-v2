@@ -1,0 +1,98 @@
+Browser todo list - updated Nov 5. 1992
+---------------------------------------
+- finish port to wclass
+- generalize pushpin window stuff
+- move pushpin window stuff into wclass
+- port wclass to lisa's library.
+- make sure everything is smooth (?) under all OS's
+- add text/graphic call tree, text/graphic hierarchy tree options
+- add an option for warning about duplicate symbols
+- add an option for warning about modified source files
+- add an option for disabling load error warnings.
+- TextTree should use VerboseListBox (verblist) for all listboxes
+  to differentiate between cursor move type selection and mouse selection,
+  so that user can cursor up and down these lists without causing refresh
+  Thereafter, only trigger refresh on <enter> when in parent or child list
+- add cursor key movement through graphical tree.
+- make popup menus work with cursor keys.
+- make enter do keyboard doubleclick, space do keyboard right mouse.
+- keyboard Accelerators need to be added for all controls
+- does enter on References list have same effect as dblclick?
+- make sure everything in browser is consistant for right mouse vs. dbl click.
+  (remember - right mouse is menu, dbl click is most frequent menu item)
+- detail view of class members should indicate access level(public/private/prot)
+- rename 'Structure' checkbox to 'Decomposition'?
+- which macro definition is returned in case of macro redefinition?
+- File Symbol type would be useful addition to Locate Symbols (PickSymbol)
+  VWFile detail view could offer:
+    - symbols defined in file
+    - files included (decomposition style expansion of include nesting)
+    - starting point for opening another Locate Symbols dialog already
+      restricted to symbols in that file
+- editor originated queries: allow 'class::' to be embedded in selected name,
+- disabled menus in slave mode
+- add filter button to references list box (for throws, gotos, class deriv,etc)
+- class and function templates not implemented
+- look over logitech browser and think C browser for ideas.
+- optional command line specification of modules to load, not just WBR file
+- does saveAs change the name of the project (shouldn't, unless noname project)
+- check use of "<no project>" if name is nil
+- modules added to empty project should create new project.
+- symbol name completion (either tab or same as the debugger)
+- wildcards on symbol name (currently just accept * for whole name)
+- tune up appearance of pushbutton style user defined symbols embedded within
+  symbol description line at top of symbol view 
+- symbol type (function/class, etc) appear somewhere on detail view
+- move symbol name out of the title bar (too crowded)
+- keypress hunt for symbol of a given name in a list ?
+- allow refresh of single module (or modules) to update after source recompile
+- rename 'uses' checkbox to 'references'
+- objpickdlg client can die prematurely;  need 2-way dying notification,
+  so that client can warn dialog, so it can close (or kill it directly)
+- handle @<filename> on command line.
+- ClassType::dataMembers() & memberFunctions() do not load any members from
+  it's base classes ; perhaps an optional flag to indicate 'deepLoad',
+- currently no way for user to indicate whether diagram should include inherited
+  data members.  Add filter dialogs?
+- ClassType without AT_byte_size is only an incomplete declaration
+- TAG_member without AT_low_pc is a static data member
+- currently using Dwarf Version 2 draft 2 - current draft is 4
+- put in support for references to a macro (when compiler gets it done)
+- ClassType::friends() now does nothing - it needs to read in the AT_friends
+  (need an associated friends checkbox and listbox)
+- do we really want checkboxes for pinned windows?
+- disable class view checkboxes when the list will be empty.
+- Graphical Tree completion, particularly leftward growth from focal node
+- some kinds of hard copy reports - see the microsoft browser for ideas
+- add a larger / more versatile dieinfo cache
+- register memory-freeing functions
+- tie-in to debugger, to augment it's capabilities
+
+--------------Somewhere over the rainbow--------------------------
+
+- busy notice is just 'busy' in a box - a %done indication would be better
+- resolve identically defined types and class dies that share the same name
+- would be great to save current state of all loaded dies into an enhanced
+- wbr file could hold current status of all flags, some of the layouts
+- wbr file could hold inverted version of references information, for faster
+  answer to "What uses this symbol?" (currently looking through
+  the whole table for references to symbol X)
+- various tree representations should print themselves to file or device.
+- user annotation possible for each symbol, and perhaps for edited diagrams
+	(Eg: "this is a pruned class hierarchy for the file IO subsystem")
+- command history on all EditLines, Eg: Locate Symbol specification
+- folders for gathering up pushpin windows, to group together common them
+- sash bars to re-allocate space for adjacent listboxes in detail views
+	(see the borland spy program for an example)
+- type description() handling is a bit messy, also it assumes a c-style
+	ordering of tokens; maybe all formatting of the type information
+	could be done in the view layer? in any case, it should be
+	configurable for Fortran , etc.
+-there is no way to list all globals, or all locals within a given scope
+- user can add or delete mbr files from project while WBR is a slave to VMAKE
+  currently WBR just compares project names - really should check timestamps
+- KeySymbol::setCompareFn(bool (DwarfDie::compareFn)(KeySymbol&)); useful?
+- SourceFile* DwarfDie::defSourceFile() could be used by
+	DieInfo::sourceFile() to check inlined functions instances for the
+	sourcefile where the 'inline template' is declared and/or defined.
+	in general, the handling of abstract vs concrete inlines is a loose end

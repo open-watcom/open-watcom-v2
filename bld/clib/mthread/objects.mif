@@ -1,0 +1,28 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject declthrd.obj                        nta ntp
+!inject declwnt.obj                      nt
+!inject maxthrds.obj                                nv o16 o32     q32
+!inject mthread.obj                      nt nta ntp nv o16 o32     q32
+!inject mthrdini.obj                     nt nta ntp nv     o32     q32
+!inject regdata.obj                      nt nta ntp nv     o32     q32
+!inject register.obj                     nt nta ntp nv     o32     q32
+!inject registrx.obj                     nt nta ntp
+!inject semaqnx.obj                                                q32
+!inject tdhdlwnt.obj                     nt nta ntp
+!inject thrdmax.obj                                 nv o16 o32     q32
+!inject thrednov.obj                                nv
+!inject thredo16.obj                                   o16
+!inject thredo32.obj                                       o32
+!inject thredqnx.obj                                               q32
+!inject thredwnt.obj                     nt nta ntp
+!inject thrdxwnt.obj                     nt nta ntp
+!inject trdalloc.obj                     nt nta ntp nv o16 o32
+!inject trdlist.obj                      nt nta ntp        o32
+
+!include ..\..\..\..\objlist.mif
+
+!ifndef on_build_machine
+mthread_opts  =-d__RUNTIME_CHECKS__
+trdlist_opts  =-d__RUNTIME_CHECKS__
+!endif

@@ -1,0 +1,42 @@
+#include "wddespy.h"
+#include "about.h"
+#include "banner.h"
+
+#undef pick
+#undef sp
+#ifdef _JAPANESE_
+ #define pick( a, b, c ) a, c
+ #define sp( s1, s2 ) s2
+#else
+ #define pick( a, b, c ) a, b
+ #define sp( s1, s2 ) s1
+#endif
+
+
+"APPLICON" ICON 10ddespy.ico
+
+"CONV"    BITMAP "10conv.bmp"
+"LINK"    BITMAP "10link.bmp"
+"STRING"  BITMAP "10string.bmp"
+"SERVER"  BITMAP "10server.bmp"
+"LOG"     BITMAP "10log.bmp"
+"MARK"    BITMAP "10mark.bmp"
+"ERASE"   BITMAP "10erase.bmp"
+"HWNDAKA" BITMAP "10halias.bmp"
+"CONVAKA" BITMAP "10calias.bmp"
+"TASKAKA" BITMAP "10talias.bmp"
+
+#include "menu.rc"
+
+STRINGTABLE
+BEGIN
+    #include "rcstr.msg"
+END
+
+
+#include "msgfilt.dlg"
+#include "cbfilt.dlg"
+#include "..\misc\log.rc"
+#include "..\misc\alias.rc"
+#include "..\misc\mark.rc"
+#include "..\misc\about.dlg"

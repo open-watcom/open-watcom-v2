@@ -1,0 +1,44 @@
+proj_name = ctags
+
+!ifndef clib_ctags
+name_os2 = ctags
+name_dos = ctags
+name_nt = ctags
+!else
+name_os2 = clibtags
+name_dos = clibtags
+name_nt = clibtags
+!endif
+
+name = $(name_$(host_OS))
+
+lnk = $(name).lnk
+
+.mif : $(mif_path)
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.c : ..;$(lang_root)\src\startup;$(posix_dir)\misc
+
+inc_dirs = $(posix_dir)\h;$(watcom_dir)\h
+
+extra_c_flags_386 = -fpc
+extra_c_flags_i86 = -fpc
+extra_c_flags = -s $(def_flags)
+
+!ifdef tools_9_0
+linker = wlink9xx
+!endif
+
+objs = ctags.obj scanc.obj file.obj globals.obj taglist.obj scanfor.obj &
+        scanasm.obj getopt.obj quit.obj die.obj
+
+extra_l_flags = option map name $(name)
+extra_l_flags_os2 = op stack=12k,newfiles,heapsize=11k
+lflags_dos_386 = system dos4g
+extra_l_flags_dos = op stack=20k
+extra_l_flags_nt = option stack=20k
+
+$(name).exe : $(objs)
+        $(linker) $(lflags) file {$(objs)}

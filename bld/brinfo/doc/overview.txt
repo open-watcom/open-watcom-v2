@@ -1,0 +1,510 @@
+Just what the heck's going on in the merger...
+
+
+Entities:
+
+	Id numbers
+	Declarations
+	Definitions
+	Files
+	Usages
+	Deltas
+	Scopes
+	Strings
+	Types
+	Guards/Macros
+	Template stuff
+	
+Other issues:
+
+	Avoiding duplication
+	Pre-compiled headers
+	Caching
+	Container types
+	Re-indexing
+	Memory usage
+	Compiler-generated names
+	How to use the compiler
+	Other stuff to do
+	
+Things to do:
+
+Files to look at:
+	brmtypes.h -- declarations shared by both the compiler end and
+		      the Optima++ end of the merge process.
+		      \\groupdir\cproj\brinfo\h\brmtypes.h
+	pcheader.h -- a PLUSPLUS header file which is unfortunately
+		      needed by the merger DLL.
+		      \\groupdif\cproj\plusplus\h\pcheader.h
+        ppopsdef.h -- a PLUSPLUS header file which in not included by
+		      the DLL, but on which the information in the ppops
+		      module of the DLL is based.
+		      \\groupdir\cproj\plusplus\h\ppopsdef.h
+
+
+Entities
+========
+
+Id numbers
+----------
+
+Many kinds of cross references are used in the compiler-generated
+browse files, and since these files exist on disk rather than use
+pointers a system of id numbers is used.
+
+Every scope, declaration, type and string is assigned a 32-bit id
+number when the browse file is generated.  There are four typedefs
+in brmtypes.h to reflect this:
+	typedef uint_32 BRIStringID;
+	typedef uint_32 BRISymbolID;
+	typedef uint_32 BRITypeID;
+	typedef uint_32 BRIScopeID;
+
+
+Declarations
+------------
+
+Anything we would call a "symbol" in a C++ program is represented by
+a Declaration in a browse file.  This includes classes, functions,
+typedefs, and variables.  The BRI_SymbolAttributes enumeration in
+brmtypes.h describes other kinds of symbols, such as labels, but they're
+just there for future expansion.
+
+In a browse file, Declarations come with a BRI_SymbolAttributes value,
+a name and a type.  The names are supposed to be unmangled, however
+occasionally the compiler will generate symbols with pre-mangled names
+(I've seen this happen with "virtual function thunks", whatever they are).
+Symbols which are not compiler generated will still have the name the
+user gave them.  See the section on compiler-generated names.
+
+The BRI_SymbolAttributes value specifies both the nature of the symbol
+(function, variable, class, etc) but can also specify the access (public,
+protected, or private).  Currently this feature is not implemented nor used.
+
+After merging, a Declaration will also include a reference to the
+enclosing scope.  This information is reconstructed by the merger.
+
+
+Definitions
+-----------
+
+A Definition gives a file name and line and column numbers for a
+specific symbol.  After merging multiple browse files, there will
+often be more than one Definition given for a particular Declaration.
+This happens most often with functions: modules which just use a
+function will think it's defined in the header file, while the module
+which defines it will think it's defined in the source file.
+
+
+Files
+-----
+
+A File record in a browse file just contains the filename.  A FileEnd
+record in a browse file contains no data.  Together the two type of
+records describe a hierarchy which is supposed to be as close to the
+#include heirarchy of the program as possible.
+
+File information is important to the interpretation of Usage records,
+and to the interpretation of Guard information (see below).
+
+See "Avoiding Duplication" on what happens during merging if the same
+source file is used in multiple browse files.
+
+
+Usages
+------
+
+A Usage is a reference to a Declaration or occasionally a Type.  Calling
+a function is considered a reference, as is inheriting from a class.
+
+Every Usage has a location.  In an effort to save some space, these
+locations are stored in a slightly strange fashion.
+
+To determine the source file that a reference is in, you must examine
+where the Usage record is in relation to the heirarchy of File and FileEnd
+records.  To determine the line and column number of a reference, examine
+all of the Usage and Delta (see below) record up to and including this
+one which originate from the correct source file.  Add up all of the
+delta_line and delta_col fields from these records.  The totals will
+be the line and column location of this reference.  With this scheme,
+line deltas are stored as int_16's, while column deltas are stored
+as int_8's.
+
+The scheme is borrowed from Ivan, who noticed that references would tend
+to clump at various locations in a source file.
+
+After merging, the Usage records are grouped by file and stored in sorted
+order by location.  Also, the enclosing scope of the Usage is determined
+at merge time.
+
+
+Deltas
+------
+
+A Delta just contains a line and column number change.  They are used
+when the next Usage located too far away from the previous Usage for the
+line and column number delta to be stored in a single int_16 and int_8.
+
+
+Scopes
+------
+
+Scopes are the most compilicated part of this whole process.
+
+There are seven types of scopes which can appear in a browse file:  File,
+Class, Function, Block, TemplateDecl, TemplateInst, and TemplateParm.
+The first four have obvious functions.  The last three are generated by
+the compiler to contain template declarations and the code created when
+a template is instantiated.
+
+Scopes are heirarchical, just like Files (there is a ScopeEnd record).
+The top of the scope tree should always be a file scope, and there should
+be only one file scope declared in any browse file.  Declarations and
+Usages have enclosing scopes which are determined at merge time by the
+relative order of the Scope, ScopeEnd, Declaration and Usage records.
+
+After merging, lots of information is added to the Scope records.
+The tree structure is reconstructed more explicitly.  Also, each
+Scope record receives a list of all symbols and class types which
+were defined within the scope.
+
+Scopes are also involved with eliminating duplication of browse data.
+Simply put, you should never have two copies of the same function scope.
+More on this in "Avoiding Duplication", below.
+
+
+Strings
+-------
+
+This part is easy.  All strings appear in a String record.  Pre-merge,
+the strings are stored willy-nilly in the browse file (but always appear
+before they are used).  Post-merge, the strings are all stored in a common
+buffer with a hash-table to index them.  Strings are always referred to
+by their BRIStringID.  Strings are '\0'-terminated ASCII-text (so all
+functions in the DLL which manipulate WStrings use "GetAnsiText" and
+"SetAnsiText" rather than just "GetText" and "SetText") and case-sensitive.
+File names, when stored in a browse file, are always full path names in
+lower case.
+
+To save space, no string appears twice in a browse file.  If the same
+string appears in two browse files, one will be discarded during a merge.
+
+
+Types
+-----
+
+Types are complicated simply because the C++ type system is complicated.
+In browse files, types are represented by records which together make
+up a directed acyclic graph.  For example, the type record for (int *)
+would contain the index of a type record for (int).  Class types contain
+the index of the name of the class and the index of the corresponding
+class Declaration.  I won't go into the structure of Type records here
+except to say that it involves lots of nice big unions.
+
+Type records always appear in browse files before they are used.  A type
+may appear twice in a browse file if the compiler has two identical types
+in its records, however identical types are combined during a merge.
+
+
+Guards/Macros
+-------------
+
+A Guard record in a browse file can represent either a dependancy,
+a macro declaration or a macro usage.  (In other words, Guard records
+are where preprocessor stuff gets put.)
+
+A dependancy specifically a preprocessor dependancy on the state of
+a particular macro.  For example, a statement of the form
+"#ifndef __FILE_HPP_INCLUDED" would result in a dependancy being
+placed in the corresponding browse files.  Dependancies are used
+by the merge process to cut down on the amount of duplicate browse
+information that must be examined.  See "Avoiding duplication", below.
+
+Macro declarations and macro usages are included in case browse
+information for them is desired.  Macros are not symbols in any real
+sense (for example, they ignore scopes and can be defined multiple
+times), but some useful information can be gleaned from them.
+
+
+Template stuff
+--------------
+
+Finally, the Template and TemplateEnd records.  These are the only
+records which correspond to nothing in the compiler, but are there
+solely for the convenience of the compiler.  As such, they take
+a little explaining.
+
+Imagine the following two files:
+
+template.hpp:
+	template<class T> class Foo {
+		// ...
+	};
+	
+instance.cpp
+	#include "template.hpp"
+	
+	// ...
+	
+	Foo<int>	my_foo;
+	
+When the compiler is processing "instance.cpp" and gets to the last line,
+it suddenly has to invisibly generate code to implement the class "Foo<int>".
+That code is all defined in "template.hpp", but the compiler tacks it to
+the end of "instance.cpp" in a hidden "TemplateInst" scope.  This causes
+problems with browse information; suddenly the source of the browse
+information jumps from "instance.cpp" back to "template.hpp", even though
+no #include statement appeared and no File record was generated by the
+compiler.
+
+To handle this, the browse section of the compiler creates Template
+and TemplateEnd records, which act like File and FileEnd records but
+encapsulate the jump from the template instantiation back to the
+template declaration.  In a sense, these records tell the merger "Don't
+be alarmed, we're just going back to the header file for a sec to clean
+up some stuff."  Template and TemplateEnd records are part of the same
+heirarchy as File and FileEnd records.
+
+
+Other issues
+============
+
+Avoiding Duplication
+--------------------
+
+Because browse files are generated by the compiler at the level of
+a compilation unit, but view by Optima++ at the level of a target,
+a lot of information will tend to be duplicated in several browse
+file (such as, oh, for example, WClass).  There are several mechanisms
+in the merger to identify this duplicate information and stamp it out.
+
+One is the pre-compiled header support, but more on that in "Pre-compiled
+Headers", below.
+
+The first mechanism works with File and Guard records.  Whenever the
+compiler emits a File record, it immediately follows it with a large
+assortment of Guard information.  The purpose of this information is
+to determine what dependancies on macros exist in the file (such as
+"#ifndef __FILE_HPP" statements), and what the state of the pre-processor
+macros was at the time the file was #included.  Whenever the merger
+reads in a File record, this Guard information is examined and compared
+with the information that appeared every other time this file was included.
+If the information is identical with the information associated with a
+previous inclusion, then the merger knows that this file was seen previously
+in an identical form and can't tell us anything new.  So the merger sets
+a flag to tell itself to ignore most of the browse information it sees
+until the end of the file is reached.
+
+The second mechanism works with function scopes, and is pretty similar.
+The merger should never have to examine the same function scope twice,
+so if sees a function scope identical to a previous one (same name,
+same function type, same enclosing scope) then it sets a flag telling
+it to ignore most of the information it sees until the end of the scope.
+This mechanism, however, is really only effective with inline functions
+which appear in header files.
+
+Note that the above mechanism cannot be applied to class scopes or the
+file scope, because those scopes are opened several times: file scopes
+is opened once for every browse file, and class scopes are opened both
+for the class definition and for definitions of member functions.
+
+The third mechanism detects identical Scopes, Strings, Types, or Declarations
+and merges them together.  Declarations are identical if they have the
+same name and type and appear in the same scope.  Class scopes are
+identical if they have the same name and enclosing scope.  Function scopes
+are identical if they have the same name, type, and enclosing scope.
+When two identical scopes or symbols are merged, their index numbers are
+re-mapped to a common number; see "re-indexing", below.
+
+
+Pre-compiled Headers
+--------------------
+
+If the compiler generates browse info and writes a precompiler header
+at the same time, browse info will be put into the pre-compiled header.
+The format is the same as a normal browse file; it's just tacked onto
+the end of the .PCH file.  The .PCH file header in the 11.0 compiler
+contains a field indicating where the browse section starts.  This file
+header is defined as "precompiled_header_header" in "h\pcheader.h" in the
+PLUSPLUS project.  If you want to include that file to get the definition
+without getting all sorts of compiler-related crap, do the following:
+
+#define _PCH_HEADER_ONLY
+#include "pcheader.h"
+
+If you don't want an Optima++ .DLL to depend on the compiler project,
+you'll have to copy the struct definition to somewhere else and watch
+for any changes made at the compiler end.
+
+
+If browse information does appear in a .PCH, browse files from compilation
+units using that PCH will have a PCHInclude record.  This record gives
+the FULL path name of a PCH file containing browse info.  When the merger
+sees such a record, it will retrieve the PCH and read in the browse info
+via a recursive call to one of the internal functions in the DLL.  If the
+merger sees a reference to the same PCH file a second time, it simply
+notes that the information from the PCH file is in use.
+
+PCH files also affect re-indexing; more on that in "Re-indexing", below.
+
+
+Caching
+-------
+
+The merger is designed to save itself to a file and re-load itself
+later.  The format of the saved file is described in "format2.txt".
+
+A merger should only be "loaded" immediately after it is created and
+before any browse files are added to it.  The interface functions
+in the DLL won't do anything else, so don't change that part.  (All
+of the load functions assume the containers they're dumping data to
+are empty.)  Different classes in the DLL are responsible for saving
+their data to the same save file; the save file format is designed
+to let each class save its data in a different "component" of the file.
+
+If a class implements part of the save and load functionality, it
+will have "SaveTo" and "LoadFrom" member functions.  This is, however,
+just a naming convention.
+
+
+Container Types
+---------------
+
+There are three container types used throughout the merge DLL:
+a hash table, a singly linked list, and an AVL tree.  All three are
+implemented as templates, however the templates are only for type-
+safety; for efficiency reasons the actual implementations are in
+non-template base classes.
+
+The hash table is the most specialized of the three.  It can be used
+with any type which inherits from Hashable, a structure type containing
+a next pointer, a 32-bit index, and a virtual destructor.  Any browse
+information which uses 32-bit indices (Declarations, Definitions, Scopes,
+Types, Strings, and UInt32Pairs which are explained in "Re-indexing")
+inherits from Hashable and is stored in hash table.  Lots of classes
+in the merger inherit from the hash table class.  Hash tables, unlike
+the other two containers, have a ClearAndDelete function to erase both
+the hash table and the data pointed to by it.
+
+Linked-lists are the simplest.  They can store pointers to any type in
+un-sorted order and support pushing and popping at the beginning of the
+list, insertion at the end, and iteration.  They are used in several
+places, especially as stacks.  They are optimized for memory.
+
+AVL trees are a balanced tree algorithm I got from Anthony Scian (he
+got it from Knuth, I believe; see the source code for more info).
+They are used like dictionaries: they support insertion with a key,
+searching via the key, and iteration.  I put these in the DLL when I
+realize that the linked-lists were eating my time, but the AVL-trees
+are memory hogs.
+
+Hash tables and linked list are defined in the hashtbl module.  AVL trees
+are defined in the avltree module.
+
+
+Re-indexing
+-----------
+
+As I've said, most browse information is tagged with a 32-bit index
+by the compiler to identify it.  However, the compiler merrily re-uses
+the same indices in different compilation units, causing a problem for
+the merger.  Different symbols in different browse files may have the
+same index.  Alternatively, the same symbol may have a different index
+in two different browse files.
+
+This problem is handled by the reindex module, which implements the
+ReOrdering class.  When a indexed piece of browse information is read
+into the merger, it is assigned a new id number by a ReOrdering object,
+which then records the old id and the new id so that cross-references
+can be updated properly.  If a piece of browse information is judged 
+to be identical to a previously seen piece of information, the ReOrdering
+object maps the old id to the new id of the previous information and updates
+cross-reference accordingly.
+
+ReOrdering objects are also used when loading a saved merger back into
+memory.  Since pointers don't make sense in a saved file, pointers are
+replaced with indices when a merger is saved, and the ReOrdering objects
+are used to keep track of the indices and correctly change them back
+into pointers during the load.
+
+Most re-ordering information resulting from a browse file is discarded
+once the browse file is completely read into the merger.  The exception
+is re-ordering information from PCH files, which may be needed to resolve
+cross-references in future browse files.
+
+ReOrderings are implemented as hash tables which act on UInt32Pairs.
+UInt32Pair is a class derived from Hashable which just contains a 32-bit
+index (this is the "new index", the "old index" is the index from the
+Hashable base class). 
+
+
+Memory Usage
+------------
+
+
+Because the merger uses a very large number of small, dynamically allocated
+structures, the DLL comes with a memory carving module.  The Pool class
+allocates memory in large blocks and parcels out chunks of it via
+Get and Release methods.  And small structure which is allocated often
+in the DLL should have a static Pool data member, and overloaded new and
+delete operators which get memory from the Pool.
+
+(This, of course, does not work automatically with the memory tracking
+system in WClass, but I think I have the kinks worked out of that now.)
+
+The purpose of the Pool is to save time by using a very low-overhead
+allocator rather than to save space.  However, the Pool objects do re-use
+memory which is Release-d, and are capable of collecting unused memory and
+releasing it to a degree.
+
+
+Compiler-generated names
+------------------------
+
+Constructors, destructors, and operators are assigned special
+internal names by the compiler.  For example, a constructor
+received the name ".@ct", while an assignment operator is ".@aa".
+The DLL looks for these names when loading a browse file and replaces
+them with the user-expected counterparts like "operator =".
+A table of these ".@??" symbols and their meanings is in the ppops
+module of the DLL; however this information is based on the information
+in the ppopsdef.h file from the PLUSPLUS project, so you might want
+to keep an eye on that file for changes.
+
+
+How to use the compiler
+-----------------------
+
+To generate browse information: /fbi
+	Will create a file with a .BRM extenstion.
+	
+To generate limited browse information: /fbi=ft
+	"ft" stands for "functions and templates".  Using this switch
+	will create a browse file with information on functions and classes,
+	but without information on variables, parameters, or macros.
+	
+To generate browse information without generating an object file:
+	/fbi/zs or /fbi=ft/zs
+	Warning: /zs is the syntax checking switch, and will prevent
+	the compiler from entering the code generation phase.  However,
+	it does not stop the compiler from generating a pre-compiled
+	header!!!  Depending on the situation, this may or may not be
+	a bad thing, but be aware.
+	
+	
+Other stuff to do
+-----------------
+
+	-- Improve the handling of template arguments.  Currently,
+	   an instance of a template class has the template arguments
+	   tacked on to the class name in Browser::UnScopedName, but
+	   that code only finds the class template arguments.
+	   Information about constant or pointer template arguments
+	   isn't even being emitted by the compiler.
+	-- More and better error reporting.  Currently, in a few key
+	   places in wbrowse.cpp an error string is dumped to a
+	   WStringArray in the debugprt module, and this is the only
+	   error reporting currently implemented.
+	-- Add something to the CodeCard UI to display types, to let
+	   the user distinguish between versions of an overloaded symbol.
+	-- More optimizations for time and especially for memory usage.

@@ -1,0 +1,251 @@
+Schedule: C++       92/01
+========
+
+- language supported: 3.0 without templates
+
+- schedule:
+
+    SD92 -- need to be able to show something
+
+    March 1, 1992  -- finish coding and start shake-down
+
+    March 15,1992  -- finish Beta documentation
+
+    - ship alpha to treasured customers for preliminary evaluation ASAP
+
+    May 1, 1992    -- start serious internal use at WATCOM (CSG?)
+
+    June 1, 1992   -- start Beta test for first shipment type
+
+    July 15, 1992  -- finish documentation
+
+    Oct. 1, 1992   -- first customer ship
+
+Left to do:    compiler implementation
+==========
+
+(1) long double
+    -----------
+    - awaiting codegen support
+    - should work with minor effort (3 line change!)
+
+(2) linker support
+    --------------
+    - a - not sure state left by Jim Randall
+    - b - what does C++ compiler need to do to get the effect?
+
+(3) CodeGen Support
+    ---------------
+    - a - optimization of pointer deltas is not done (Brian says its coming)
+    - b - need to upgrade to newest C library
+            - new entry sequence
+DONE- d - initialization of class statics
+
+(4) Pragma support
+    --------------
+    - a - need support for language linkages
+    - b - make warnings levels different or as errors
+    - c - extended information during compilation
+    - d - need support for class generation
+        - public, extern, local
+        - virtual base threshhold (?)
+    - e - re-implement traditional C pragma support (commented out)
+
+(5) Message Support
+    ---------------
+    - need to track (file,line,column) in parse tree
+    - need extra message information
+    - need to react to pragma requesting extra information
+
+(6) Data
+    ----
+DONE- data generation for bitfields
+DONE- data generation for character strings
+
+(7) Expressions
+    -----------
+DONE- a - creation and destruction of temporaries
+    - b - virtual class access and pointer conversion
+    - c - complete new, delete
+    - d - additional support for ==, != (member pointers)
+DONE- e - conversion of class objects
+    - f - support ->*, .*
+    - g - support :>
+DONE- h - hook in overloading for function return, assignment, function arg.s
+    - i - 0 argument for CTOR,DTOR with virtual bases
+
+(8) Function Support
+    ----------------
+    - b - compile CTOR, DTOR routines
+    - d - pure virtual
+DONE- e - "this" pointer can be const or volatile (see pg.177 of ARM)
+
+(9)Operational Support
+    -------------------
+    - a - review options and upgrade
+    - b - implement profile file for options
+
+(10)Error Handling
+    --------------
+
+(11)Templates
+    ---------
+
+(12)Asm Support
+    -----------
+    - Fred has it in C; we can likely get it easily
+
+(13)Declarations
+    ------------
+    - d - virtual functions             (???)
+    - e - virtual bases                 (???)
+DONE- f - friend declarations           (1 week)
+    - g - abstract classes              (???)
+DONE- h - anonymous unions              (1 day)
+
+(14)OverLoading
+    -----------
+DONE- a - u-d conversion searching
+    - c - f(&g..) overloading
+    - e - need to fill out the special functions in Chapter 13
+
+(15)Debugging
+    ---------
+    - should be just code-generation work
+
+(16)C header Files
+    --------------
+    - need to be edited to add extern "C" { }
+
+
+Dependencies on others
+======================
+
+- 1 - long double: code generation required
+- 3(a) - optimization of ptr-delta's: code generator
+DONE - 3(b) - lvalue assignment: code generator
+
+
+Time Estimates
+==============
+ item    time       who job
+
+- 1    - 2 min.s    - JW - long double: 2 minutes
+- 2(b) - 1 day      - JW - code generate to drop unused routines
+* 3(b) - 1 day      - JW - new entry-point sequence for new C library
+* 3(c) - 2 days     - JW - initialization of class statics
+- 4(a) - 1 week     -    - #pragma support for languages
+- 4(b) - 2 days     -    - #pragma support for warning levels
+- 4(c) - 1 week     -    - extended information listed during compilation
+- 4(d) - 1 day      -    - #pragma support for class generation
+- 4(e) - 1 week     -    - re-implement traditional C pragma support
+- 5    - 1 week     - GB - message support for (file,line,column)
+* 6    - 3 days     - GB - data generation
+* 7(a) - 2 days     - JW - class temporaries
+- 7(b) - 3 days     - JW - virtual class access and pointer conversion
+- 7(c) - 1 day      - JW - complete new, delete
+- 7(d) -            - -- - covered in 7(f)
+* 7(e) - 2 days     - JW - conversion of class objects (with Greg's support)
+- 7(f) - 3 days     - JW - support for ->*, .*
+- 8(b) - 1 week     - JW - CTOR, DTOR routine compilation
+- 8(d) - 1 day      - AS - pure virtual (just an additional check)
+* 8(e) - 1 day      - JW - further check "this"
+- 9(a) - 2 days     -    - review and fix up command-line options
+- 9(b) - 2 days     -    - profile file for options
+- 10   - 3 days     - JW - error handling
+- 11   - 1 week     - AS - templates
+- 13(d)- (???)      - AS - virtual functions
+- 13(e)- (???)      - AS - virtual bases
+- 13(g)- (???)      - AS - abstract classes
+- 14(a)- 2 days     - GB - u-d conversion searching
+- 14(c)- 2 days     - GB - f(&g..) overloading
+- 14(e)- 3 days     - JW - need to fill out the special functions in Chapter 13
+- 15   - 1 week     -    - add debugging support
+- 16   - 1 day      -    - edit C header files
+
+    days weeks
+    ---- -----
+JW - 19   1     = 24 man-days (5 man-weeks)
+AS -  1   4     = 21 man-days (5 man-weeks)
+GB -  7   1     = 12 man-days (3 man-weeks)
+   -  8   4     = 28 man-days (6 man-weeks)
+                              --------------
+                              (19 man-weeks)
+
+Uncertainties
+=============
+
+- 2(a) - state of linker support
+- 7(g) - support for :>
+- 12 - ASM support
+- time for 13(d), 13(e), 13(g)
+
+
+Dependencies:
+============
+
+        +------8(b)
+        |
+        +------10
+        |
+13(e)---+
+     \
+      \
+       \
+        +------7(b)
+        |
+        +------7(c)
+        |
+        +------7(f)
+
+4(d)-----------11
+
+
+Schedule: JW
+============
+
+
+completed:
+---------
+
+not scheduled yet
+-----------------
+- 1    - 2 min.s    - JW - long double: 2 minutes
+- 2(b) - 1 day      - JW - code generate to drop unused routines
+- 3(b) - 1 day      - JW - new entry-point sequence for new C library
+* 3(c) - 2 days     - JW - initialization of class statics
+* 7(a) - 1 week     - JW - class temporaries
+- 7(b) - 3 days     - JW - virtual class access and pointer conversion
+- 7(c) - 1 day      - JW - complete new, delete
+* 7(e) - 2 days     - JW - conversion of class objects (with Greg's support)
+- 7(f) - 3 days     - JW - support for ->*, .*
+* 8(b) - 1 week     - JW - CTOR, DTOR routine compilation
+* 8(e) - 1 day      - JW - further check "this"
+- 10   - 3 days     - JW - error handling
+- 14(e)- 3 days     - JW - need to fill out the special functions in Chapter 13
+
+
+Schedule: AS
+============
+
+not scheduled yet
+-----------------
+
+* 6    - 1 week     - AS - data generation
+- 8(d) - 1 day      - AS - pure virtual (just an additional check)
+- 11   - 1 week     - AS - templates
+- 13(d)- (???)      - AS - virtual functions
+- 13(e)- (???)      - AS - virtual bases
+- 13(g)- (???)      - AS - abstract classes
+
+
+Schedule: GB
+============
+
+not scheduled yet
+-----------------
+
+- 5    - 1 week     - GB - message support for (file,line,column)
+* 6    - 2 weeks    - GB - data generation
+* 14(a)- 1 week     - GB - u-d conversion searching
+- 14(c)- 2 days     - GB - f(&g..) overloading

@@ -1,0 +1,131 @@
+The Greed for Speed
+===================
+Copyright (c) 1990 by Anthony Scian
+
+  The exponential growth in capabilties that computers have experienced in
+their relatively short history is staggering.  Modern lap-top computers
+are roughly equal in computing power to the large mainframe computers of
+the early 1970s.  This growth in computing power has resulted in computers
+being used in many new areas.  Within this historical context, why is it
+that we cannot wait a few minutes for a spreadsheet calculation to finish?
+After all, the same calculations would have taken days on an ENIAC machine.
+The truth is that for every step forward in computing power provided
+by advances in hardware, there is a corresponding leap forward in user
+demands.  A spreadsheet model that takes a few minutes to recalculate on
+a PC-XT may only take a few seconds on a fast 486 system, but it may be
+enhanced to the point where the recalculation time may be measured
+in minutes.  Hardware designers are reaching the point where physical
+laws are dictating how fast processors can execute instructions.  It is
+up to programmers to extract every last drop of performance out of the
+hardware so that this "greed for speed" can be satisfied.
+
+  Programmers have many tools available to them in order to help them
+produce efficient programs.  Some of these tools include: optimizing
+compilers, execution profilers, and finally, their brain.  WATCOM cannot
+help with the last tool, but the first two are available in the latest
+release of the WATCOM C 8.0 and WATCOM FORTRAN/77 optimizing compilers.
+We shall see how the above mentioned programming tools may be used to
+produce programs that are faster and make more efficient use of computing
+resources.
+
+An optimizing compiler transforms source code into the machine instructions
+that will carry out the programmer's intentions, according to the semantics
+of the programming language.  Selecting an efficient set of instructions for
+execution by the processor is a task that has plagued compiler writers since
+the 1950s.  In order for an optimizing compiler to accomplish this task,
+it must have knowledge about the target architecture along with knowledge
+about the semantics of the programming language.  Combining these pieces
+of knowledge to try to produce an optimal selection of instructions is the
+essence of modern optimizing compilers like WATCOM C.  The freedom from the
+tedium of specifying explicitly how an algorithm is to be executed efficiently
+on a particular machine architecture is an important advantage for the
+use of optimizing compilers.  Programmers used to worry about
+instruction selection and register assignment for every single
+part of a program.  One can see that this amount of attention to detail
+would be wasted on the parts of a program that are executed infrequently.
+An optimizing compiler frees the programmer from worrying about tedious
+details in all parts of the program, and provides the opportunity to
+focus attention on the parts of the program that warrant attention.
+
+Identifying the parts of a program that have the largest effect on the
+execution time is the primary function of an execution profiler.  A
+secondary function of an execution profiler is that it often allows the
+programmer to develop insight into the dynamics of a program.  How is
+this accomplished by an execution profiler?  An execution profiler collects
+data by monitoring different aspects of the execution of a program.  This
+is called "sampling".  Once the data is collected, it must be analyzed.
+The WATCOM development system includes two separate tools, namely, a
+"sampler" and a "profiler".  The "sampler" monitors the execution of a
+program while the "profiler" provides the capability to analyze the results.
+
+The collection of information about the execution of the program involves
+a decision about what type of information to collect.  The collecting of
+information should not impact the program's execution or distort the
+results of the final analysis.  There are two competing schools of thought
+regarding the type of information that should be collected.  One idea is
+to recognize when a function is both entered and exited.  The time that
+elapses between these two events is measured and recorded.  Care must be
+taken to correctly handle recursive functions and CALL-RETURN optimizations
+that distort the data.  Recursive functions pose problems because there are
+multiple invocations of the same function being recorded.  Optimizations
+may remove or combine functions so that optimizations must be disabled for
+accurate measurements.  Another problem arises in the small time overhead
+in measurement.  The time spent recording these events must be removed for
+all of the functions that call the particular function, otherwise the higher
+level functions will record erroneous longer elapsed times.  What is needed
+is a technique that will provide accurate results without impacting the
+program's execution that can be applied to fully optimized programs.
+
+The WATCOM execution sampler monitors a program's execution through
+statistical sampling.  The sampler will periodically interrupt the
+executing program and record the location of the interrupted instruction.
+The instruction locations are recorded in a sample file that is used by
+the profiler during the analysis phase.  This method is free from the
+pitfalls of the previous technique and may be applied to fully optimized
+programs.  The WATCOM execution sampler also monitors overlay activity
+so that permformance bottlenecks in overlaid applications may be identified.
+In addition, the program may optionally insert its own events into the
+sample file by communicating with the execution sampler whenever it reaches
+a certain point in the program.  All of these events are recorded and stored
+in the sample file, and may be analyzed at any time by using the profiler
+tool.
+
+All the information in the world is useless unless the brain can make sense
+out of what it perceives.  The WATCOM execution profiler presents the
+statistical information in a graphical format that can be readily understood.
+The interactive nature of the WATCOM execution profiler allows a lot
+of freedom in how the data may be analysed.  There is a large amount of
+information in a sample file.  The information may be overwhelming unless
+it is presented at just the right level of detail.  There are four main
+levels of detail that may be derived from the sample information, namely,
+module, routine, source code, and assembly code.  Initially, the WATCOM
+execution profiler provides the programmer with an overall view of the
+program's execution by showing the statistics for each module in the form
+of a histogram.  The programmer may then expand on the level of detail
+by "zooming" into a module and looking at the information about the
+routines.  The source code of a routine further increases the amount of
+detail until finally, the assembly code is visible.  A programmer may
+view the program's execution interactively through the use of the
+WATCOM execution profiler.
+
+  One sector in current computer research involves the combining of
+execution analysis and optimizing compilers.  The idea is that a good
+assembly code programmer knows which paths through a sequence of code
+are the most probable and, hence, which paths require the best code
+possible.  The research efforts hope to integrate execution analysis
+information into the optimizing compiler so that an optimizing compiler
+can produce even better code because of the extra information regarding
+the dynamics of the program.  Currently, optimizing compilers have to make
+assumptions about the behaviour of a program.  A compiler may decide that
+all loops will execute 5 times where, in fact, they may each have distinct
+behaviours.  Using the results of execution analysis, an optimizing
+compiler can focus on the sections of code that warrant the extra time
+involved for full optimization.  In this type of closed feedback loop,
+an optimizing compiler may better the best human programmers in
+producing high quality code.
+
+  Programming tools can only go so far when it comes to producing
+efficient programs.  It is up to the programmer to analyze information
+and to develop solutions.  The future may bring new types of tools but
+without a doubt, it will take a human's creativity to develop new algorithms
+and alternatives to computers for solving the problems of tomorrow.

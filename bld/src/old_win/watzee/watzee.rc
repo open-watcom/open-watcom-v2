@@ -1,0 +1,146 @@
+/*
+ * WATZEE resource script
+ */
+
+#include "windows.h"
+#include "watzee.h"
+
+Watzee ICON watzee.ico
+
+DICE1  BITMAP dice1.bmp
+DICE2  BITMAP dice2.bmp
+DICE3  BITMAP dice3.bmp
+DICE4  BITMAP dice4.bmp
+DICE5  BITMAP dice5.bmp
+DICE6  BITMAP dice6.bmp
+
+Watzee MENU
+BEGIN
+    POPUP "&Game"
+    BEGIN
+        MENUITEM    "&New Game",    IDM_NEWGAME
+        MENUITEM    "&Options...",  IDM_OPTIONS
+        MENUITEM SEPARATOR
+        MENUITEM    "E&xit",        IDM_EXIT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM    "&Scoring...",  IDM_SCORING
+        MENUITEM SEPARATOR
+        MENUITEM    "&About",       IDM_ABOUT
+    END
+END
+
+
+GETNUMPLAYERS DIALOG DISCARDABLE PRELOAD PURE MOVEABLE 81, 60, 132, 47
+STYLE WS_POPUP | WS_CAPTION | 0x80L
+CAPTION "Welcome to WATZEE"
+BEGIN
+  CONTROL "How many players will there be?" -1, "STATIC", WS_CHILD | WS_VISIBLE | 0x1L, 8, 9, 113, 12
+  CONTROL "&1" 0x31, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP | 0x1L, 15, 24, 20, 11
+  CONTROL "&2" 0x32, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 42, 24, 20, 11
+  CONTROL "&3" 0x33, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 68, 24, 20, 11
+  CONTROL "&4" 0x34, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 93, 24, 20, 11
+END
+
+
+GETPLAYERSINITIALS DIALOG DISCARDABLE PRELOAD PURE MOVEABLE 48, 55, 168, 97
+STYLE WS_POPUP | WS_CAPTION | 0x80L
+CAPTION "Welcome to WATZEE"
+BEGIN
+  CONTROL "&A" 65, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP | 0x1L, 4, 36, 15, 11
+  CONTROL "&B" 66, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 22, 36, 15, 11
+  CONTROL "&C" 67, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 40, 36, 15, 11
+  CONTROL "&D" 68, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 58, 36, 15, 11
+  CONTROL "&E" 69, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 76, 36, 15, 11
+  CONTROL "&F" 70, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 94, 36, 15, 11
+  CONTROL "&G" 71, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 112, 36, 15, 11
+  CONTROL "&H" 72, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 130, 36, 15, 11
+  CONTROL "&I" 73, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 148, 36, 15, 11
+  CONTROL "&J" 74, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 4, 50, 15, 11
+  CONTROL "&K" 75, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 22, 50, 15, 11
+  CONTROL "&L" 76, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 40, 50, 15, 11
+  CONTROL "&M" 77, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 58, 50, 15, 11
+  CONTROL "&N" 78, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 76, 50, 15, 11
+  CONTROL "&O" 79, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 94, 50, 15, 11
+  CONTROL "&P" 80, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 112, 50, 15, 11
+  CONTROL "&Q" 81, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 130, 50, 15, 11
+  CONTROL "&R" 82, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 148, 50, 15, 11
+  CONTROL "&S" 83, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 13, 64, 15, 11
+  CONTROL "&T" 84, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 31, 64, 15, 11
+  CONTROL "&U" 85, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 49, 64, 15, 11
+  CONTROL "&V" 86, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 67, 64, 15, 11
+  CONTROL "&W" 87, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 85, 64, 15, 11
+  CONTROL "&X" 88, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 103, 64, 15, 11
+  CONTROL "&Y" 89, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 121, 64, 15, 11
+  CONTROL "&Z" 90, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 139, 64, 15, 11
+  CONTROL "CLEAR" 99, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 22, 80, 33, 12
+  CONTROL "PC" 100, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 67, 80, 33, 12
+  CONTROL "OK" 101, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 112, 80, 33, 12
+  CONTROL "Enter the initials for the player and select OK, or select PC to let the computer control this player." -1, "STATIC", WS_CHILD | WS_VISIBLE | 0x1L, 4, 3, 160, 16
+  CONTROL "Player" -1, "STATIC", WS_CHILD | WS_VISIBLE | 0x1L, 34, 22, 25, 8
+END
+
+
+ABOUTWATZEE DIALOG DISCARDABLE LOADONCALL PURE MOVEABLE 72, 59, 125, 58
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | 0x80L
+CAPTION "About"
+BEGIN
+  CONTROL "WATZEE Version 1.0" -1, "STATIC", WS_CHILD | WS_VISIBLE | 0x1L, 28, 6, 71, 9
+  CONTROL "Sample Windows Program" -1, "STATIC", WS_CHILD | WS_VISIBLE | 0x1L, 20, 24, 87, 12
+  CONTROL "OK" IDD_OK, "BUTTON", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 48, 42, 32, 12
+  ICON    "WATZEE" -1, 4, 5, 17, 17
+END
+
+
+OPTIONS DIALOG 102, 85, 160, 90
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Options"
+BEGIN
+    CONTROL         "&OK", IDD_OK, "Button", BS_PUSHBUTTON|0x1L, 116, 13, 40, 14
+    PUSHBUTTON      "&Cancel", IDD_CANCEL, 116, 34, 40, 14
+    GROUPBOX        "Checking dice means...", -1, 8, 10, 103, 47
+    CONTROL         "&Roll them; keep others", IDD_ROLL "Button",
+                    BS_AUTORADIOBUTTON, 14, 25, 87, 11
+    CONTROL         "&Keep them; roll others", IDD_KEEP, "Button",
+                    BS_AUTORADIOBUTTON, 14, 39, 83, 10
+    CONTROL         "Re&set die checks after roll", IDD_RESET, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 8, 68, 101, 10
+END
+
+
+WATZEEHELP DIALOG 42, 17, 269, 154
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Scoring"
+FONT 8, "Helv"
+BEGIN
+    LTEXT           "The object of the game is to achieve the highest score.  Each player has 13 turns, and during each turn, the player may roll the dice 3 times.",
+                    -1, 6, 6, 253, 18
+    LTEXT           "ACES :  1 point for each One.", -1, 6, 28, 120, 9
+    LTEXT           "TWOS :  2 points for each Two.", -1, 6, 37, 120, 8
+    LTEXT           "THREES :  3 points for each Three.", -1, 6, 46, 130,
+                    10
+    LTEXT           "FOURS :  4 points for each Four.", -1, 6, 55, 120,
+                    8
+    LTEXT           "FIVES :  5 points for each Five", -1, 6, 64, 120, 9
+    LTEXT           "SIXES :  6 points for each Six.", -1, 6, 73, 120, 9
+    LTEXT           "THREE OF A KIND :   If three or more die have the same value, score is the sum of the dice.",
+                    -1, 6, 101, 120, 24
+    LTEXT           "FOUR OF A KIND :  Same as Three of a Kind, but requires that at least four dice be equal.",
+                    -1, 6, 126, 120, 24
+    LTEXT           "BONUS :  35 points, if the Upper Total is 63 or more.",
+                    -1, 6, 83, 120, 18
+    LTEXT           "FULL HOUSE :  25 points, if there is a two of a kind and three of a kind.",
+                    -1, 132, 28, 130, 17
+    LTEXT           "SMALL STRAIGHT :  30 points if there are 4 consecutive numbers.",
+                    -1, 132, 46, 126, 16
+    LTEXT           "LARGE STRAIGHT :  40 points if there are 5 consecutive numbers.",
+                    -1, 132, 64, 128, 15
+    LTEXT           "WATZEE :  50 points if all the dice have the same value.",
+                    -1, 132, 82, 122, 18
+    LTEXT           "CHANCE :  Sum of all the dice.", -1, 132, 101, 119,
+                    9
+    LTEXT           "WATZEE BONUS :  100 points for every additional WATZEE.",
+                    -1, 132, 111, 118, 18
+    PUSHBUTTON      "OK", IDD_OK, 168, 134, 40, 14
+END

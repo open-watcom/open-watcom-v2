@@ -1,0 +1,16 @@
+objos2timeroot = &
+        int.obj
+
+objos2sizeroot = &
+        biosos2.ybj
+
+objos2size = &
+        os2sys.ybj &
+        os2main.ybj &
+        os2mouse.ybj &
+        dosdir.ybj &
+        time.ybj  &
+        spawn.ybj
+
+extraobjs = $(objos2size)
+extraobjsroot = $(objos2timeroot) $(objos2sizeroot)

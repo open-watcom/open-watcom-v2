@@ -1,0 +1,122 @@
+#
+#   testfile for preprocessor !if/!else/!else if/!endif
+#   - non nested tests
+#
+#   09-Feb-90   D.J.Gaudet      Initial Implementation
+#
+#   $(guess)    tracks the preprocessor's attempts
+#   $(answer)   is what the result should be
+#
+true=
+guess=
+answer=
+
+#
+# simple true/false conditions
+#
+!ifdef true
+guess += 1
+!endif
+answer += 1
+
+!ifdef false
+guess += 2
+!endif
+
+
+#
+# simple true/false conditions, with else sections
+#
+!ifdef true
+guess += 3
+!else
+guess += 4
+!endif
+answer += 3
+
+!ifdef false
+guess += 5
+!else
+guess += 6
+!endif
+answer += 6
+
+
+#
+# simple true/false conditions, with else if sections
+#
+!ifdef true
+guess += 7
+!else ifdef true
+guess += 8
+!endif
+answer += 7
+
+!ifdef true
+guess += 9
+!else ifdef false
+guess += 10
+!endif
+answer += 9
+
+!ifdef false
+guess += 11
+!else ifdef true
+guess += 12
+!endif
+answer += 12
+
+!ifdef false
+guess += 13
+!else ifdef false
+guess += 14
+!endif
+
+
+#
+# simple true/false, w/else if, w/else
+#
+!ifdef true
+guess += 15
+!else ifdef true
+guess += 16
+!else
+guess += 17
+!endif
+answer += 15
+
+!ifdef true
+guess += 18
+!else ifdef false
+guess += 19
+!else
+guess += 20
+!endif
+answer += 18
+
+!ifdef false
+guess += 21
+!else ifdef true
+guess += 22
+!else
+guess += 23
+!endif
+answer += 22
+
+!ifdef false
+guess += 24
+!else ifdef false
+guess += 25
+!else
+guess += 26
+!endif
+answer += 26
+
+
+#
+# it would be nice to use the preprocessor to test if everything works,
+# but that what we're testing!
+#
+pre01: .symbolic
+    $(ifeq) "$(answer)" "$(guess)"
+

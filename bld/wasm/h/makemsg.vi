@@ -1,0 +1,6 @@
+set nomagic
+%s/^.*( \([A-Z0-9_]*\).*$/#define \1 (MSG_RC_BASE-1+\#)/
+%s/\+0/+/
+%s/\+0/+/
+w! msg.gh
+q!

@@ -1,0 +1,76 @@
+#
+# this make include file is used to build all the win examples
+#
+# It assumes that the following make variables are declared by the makefile
+# that includes it:
+#
+#       CC                      the name of the C compiler to use to create
+#                               the .obj files
+#       CDIR                    directories other than .. to be searched for
+#                               .c files
+#       CFLAGS                  any compiler flags needed to build the
+#                               object files
+#       name                    the name of the EXE file to build (without
+#                               any extension)
+#       LNK                     the name of the linker command file
+#       OBJS                    a list of the .obj files needed to build
+#                               the EXE
+#       resources               a list of all files the .res file is
+#                               dependent upon
+#       res1_flags              flags to be used by the resource compiler's
+#                               first pass
+#       res2_flags              flags to be used by the resource compiler's
+#                               second pass
+#       lnk_dependencies        a list of files the linker command file
+#                               depends upon
+#
+# In addition the makefile must declare a procedure called linkit that
+# that can be used to add commands to the linker command file
+
+!ifeq CFLAGS -zW
+CFLAGS += -i=$(%WATCOM)\h;$(%WATCOM)\h\win
+!else
+CFLAGS += -i=$(%WATCOM)\h;$(%WATCOM)\h\nt
+!endif
+
+CFLAGS += -oaxt -d2 -w4
+
+$(name).exe : $(OBJS) $(name).res $(LNK)
+    wlink @$(LNK)
+    @%make bindit
+
+$(name).res : $(name).rc $(resources)
+    wrc -r -i=.. -fo=.\$(name).res $(res1_flags) $[@
+
+$(LNK) : $(lnk_dependencies)
+    %create $(LNK)
+    @%append $(LNK) debug all
+    @%append $(LNK) name $(name)
+    @%append $(LNK) op map
+    @%make linkit
+    @for %i in ($(OBJS)) do @%append $(LNK) file %i
+
+
+.EXTENSIONS:
+.EXTENSIONS: .exe
+.EXTENSIONS: .obj
+.EXTENSIONS: .c .h .dlg .rc .ico .bmp .cur
+
+.c:..;$(CDIR)
+.ico:..
+.bmp:..
+.cur:..
+.rc:..
+.dlg:..
+
+.c.obj :
+        $(CC) $(CFLAGS) $[*
+
+clean: .symbolic
+    @erase *.obj
+    @erase *.err
+    @erase *.exe
+    @erase *.lnk
+    @erase *.res
+    @erase *.rex
+    @erase *.lib

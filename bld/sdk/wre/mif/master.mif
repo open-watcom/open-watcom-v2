@@ -1,0 +1,164 @@
+#
+#  Makefile for WRE
+#
+#   Date        Name            Reason
+#   ----        ----            ------
+#   25 May 93   Wesley Nelson   created
+
+proj_name = wre
+name = wre
+
+.EXTENSIONS:
+.EXTENSIONS: .pp .exe .exp .lib .rex .obj .tbj .rbj .cbj .mbj .sbj &
+             .asm .c .res .rc .dlg .men .h .msg .fi .mif .lnk .ico .lst
+
+.mif: $(mif_path)
+
+sys_windowed = 1
+!include cproj.mif
+MODEL = l
+WINDOWS = 1
+!include wres.mif
+wres_lib_dir = $(wres_dir)\lib
+
+# path names used in the script
+wacc_dir        =$(sdk_dir)\wresedit\waccel
+wmenu_dir       =$(sdk_dir)\wresedit\wmenu
+wstring_dir     =$(sdk_dir)\wresedit\wstring
+
+!ifdef on_build_machine
+NODEBUG=1
+!else
+!ifdef build_root
+copy_to_win_i86 = $(build_root)\win\
+copy_to_nt_386  = $(build_root)\nt\
+copy_to_nt_axp  = $(build_root)\axp\
+copy_to         = $(copy_to_$(host_OS)_$(host_CPU))
+!endif
+!endif
+
+wbind           =wbind
+
+rc_opts_nt      = -bt=NT -d__NT__
+rc_opts_win     = -bt=windows
+rc_opts         = -q $(rc_opts_$(host_OS))
+
+!ifeq wre_trmem 1
+TRMEM           = -dTRMEM
+!ifneq host_CPU axp
+TRMEM           += -of+
+!endif
+!endif
+
+extra_c_flags           = -s -DWIN_GUI -DSTRICT -we
+extra_c_flags_i86       = -fpc-zu-zw-zc
+extra_c_flags_386       = -fpc
+!ifeq host_OS nt
+# -we will die under NT on lots of calls involving instances
+cflags_all      = -zq-w4
+!endif
+
+OBJS =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
+        wregetfn.obj wrestrdp.obj wreselft.obj wreres.obj wrehints.obj &
+        wrelist.obj wrenames.obj wreopts.obj wretoolb.obj wreribbn.obj &
+        wreseted.obj wreftype.obj wregcres.obj wrerenam.obj wrefres.obj &
+        wrememf.obj wredel.obj wrewait.obj wresvobj.obj wrectl3d.obj &
+        wreaccel.obj wremenu.obj wrestr.obj wrenew.obj wre_wres.obj &
+        wredlg.obj wreimg.obj wredde.obj wresvmlt.obj wreimage.obj &
+        wreclip.obj wresym.obj &
+        preproc.cbj ppexpr.cbj ppmacro.cbj &
+        toolbr.mbj statwnd.mbj ldstr.mbj wwinhelp.mbj jdlg.mbj
+
+!ifeq wre_trmem 1
+OBJS += trmem.tbj trmemcvr.tbj
+!endif
+
+# where to look for various files
+.c        : ..\c;$(misc_dir);$(cpp_dir);$(trmem_dir)
+.h        : ..\h;$(misc_dir);$(cpp_dir);$(trmem_dir);$(wr_dir)\h
+.lst      : $(wrc_dir)\h
+.rc  .ico : ..\h
+.dlg .men : ..\h
+.msg      : ..\h
+.lib      : $(wres_dir)\lib;$(watcom_dir)\lib
+
+inc_dirs = h;..\h;$(watcom_dir)\h;$(wstring_dir)\h;$(wmenu_dir)\h;$(wacc_dir)\h;
+inc_dirs += $(wr_dir)\h;$(trmem_dir);$(wres_dir)\h;$(cpp_dir);$(misc_dir)
+
+.BEFORE
+        set INCLUDE=$(inc_path)
+
+relib_nt_386    = nt
+relib_nt_axp    = axp
+relib_win_i86   = win16
+relib           = $(relib_$(host_OS)_$(host_CPU))
+
+resedit_libs    = $(wacc_dir)\$(relib)\wacc.lib $(wmenu_dir)\$(relib)\wmenu.lib $(wstring_dir)\$(relib)\wstring.lib
+wr_lib          = $(wr_dir)\$(relib)\wr.lib
+
+extra_l_flags = name $(name) debug all library $(wres_lib) op map,v
+extra_l_flags += library {$(resedit_libs) $(wr_lib)}
+extra_l_flags_nt = op stack=32k,heap=16k commit heap=8k
+!ifndef TOOLS_10_0
+!ifeq host_CPU 386
+extra_l_flags_nt += runtime windows=4.0
+!endif
+!endif
+extra_l_flags_win = op stack=32k,rwr library commdlg,ddeml
+
+# explicit rules
+
+$(copy_to)$(name).exe: wremsgs.h $(OBJS) $(name).res $(wres_lib) $(resedit_libs) $(wr_lib)
+        *$(linker) $(lflags) file {$(OBJS)}
+        $(rc) $(rc_opts) -k $(name).res $(name).exe
+!ifdef TOOLS_10_0
+!ifeq host_OS nt
+!ifeq host_CPU 386
+        whack $(name).exe
+!endif
+!endif
+!endif
+!ifdef copy_to
+        copy $(name).exe $(copy_to)$(name).exe
+!endif
+
+$(name).res: $(name).rc $(name).men wremsgs.h wre.msg &
+             about.dlg del.dlg paste.dlg renam.dlg res.dlg
+
+clean : .SYMBOLIC
+        @-if exist *.?bj @rm *.?bj
+        @-if exist *.res @rm *.res
+        @-if exist *.err @rm *.err
+        @-if exist *.sym @rm *.sym
+        @-if exist *.map @rm *.map
+        @-if exist *.lnk @rm *.lnk
+        @-if exist *.exe @rm *.exe
+        @-if exist *.pch @rm *.pch
+        @-if exist *.h   @rm *.h
+
+# implicit rules
+
+.c.cbj: .AUTODEPEND
+        $(cc) $(cflags) -zm $(cpp_dir)\$^& -fo=$^&.cbj
+
+.c.tbj: .AUTODEPEND
+        $(cc) $(cflags) $(TRMEM) $(trmem_dir)\$^& -fo=$^&.tbj
+
+.c.mbj: .AUTODEPEND
+        $(cc) $(cflags) $(misc_dir)\$^& -fo=$^&.mbj
+
+.c.obj: .AUTODEPEND
+        $(cc) $(cflags) -fhq ..\c\$^&
+
+.c.pp:
+        $(cc) -p$(cflags) ..\c\$^& > $^&.pp
+
+.rc.res:
+        $(rc) $(rc_opts) -r -fo=.\$^&.res ..\h\$^&.rc
+
+wremsgs.h: wretemp.h
+        vi -q -i -s $(sdk_dir)\misc\msgtoh.vi -p"wremsgs.h" wretemp.h
+
+wretemp.h: wre.msg
+        $(cc) $(cflags) -p ..\h\wre.msg > wretemp.h
+

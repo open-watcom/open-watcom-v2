@@ -1,0 +1,31 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject clearenv.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
+!inject crtwenv.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject environ.obj  d16 d32             nt nta ntp nv o16 o32         w16 w32
+!inject envptr.obj   d16 d32             nt nta ntp nv o16 o32         w16 w32
+!inject getenv.obj   d16 d32             nt nta ntp    o16 o32 q16     w16 w32 osi
+!inject gtcmddos.obj d16 d32                                           w16
+!inject gtcmd.obj                        nt nta ntp nv o16 o32             w32 osi
+!inject gtcmdqnx.obj                                           q16 q32
+!inject gtpid.obj    d16 d32                                           w16     osi
+!inject gtpidos2.obj                                   o16 o32
+!inject gtpidw32.obj                                                       w32
+!inject gtpidwnt.obj                     nt nta ntp
+!inject isatt.obj    d16 d32                                           w16 w32 osi
+!inject isattos2.obj                                   o16 o32
+!inject isattwnt.obj                     nt nta ntp
+!inject putenv.obj   d16 d32             nt nta ntp    o16 o32 q16     w16 w32
+!inject searchen.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject setenv.obj   d16 d32             nt nta ntp    o16 o32 q16     w16 w32
+!inject setenvp.obj  d16 d32             nt nta ntp nv o16 o32         w16 w32
+!inject stksize.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject ugetenv.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject uputenv.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject usrchen.obj  d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject usetenv.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject wenvptr.obj  d16 d32             nt nta ntp nv o16 o32         w16 w32
+
+!include ..\..\..\..\objlist.mif
+
+searchen_opts=-os

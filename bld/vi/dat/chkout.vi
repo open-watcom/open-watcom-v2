@@ -1,0 +1,9 @@
+if %M == 1
+    assign %a = /File has been modified, are you sure? /
+    input %a
+    if %a != y
+    	return ERR_NO_ERR
+    endif
+endif
+!vchkout %F
+e! %F

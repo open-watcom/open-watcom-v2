@@ -1,0 +1,3 @@
+Warning(W39): Target (.c.obj) not mentioned in any makefile
+Error(F36): Illegal attempt to update special target (.c.obj)
+Error(E02): Make execution terminated

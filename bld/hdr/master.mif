@@ -1,0 +1,238 @@
+proj_name=hdr
+host_CPU=386
+host_OS=nt
+
+!include cproj.mif
+
+splice = $(bld_bin)\wsplice -i.. -k$(system) $(options) ..\common.sp $[@ $^@
+
+.EXTENSIONS
+.EXTENSIONS : .h .hpp .cnv .mh .mhp
+
+common = &
+        assert.h &
+        _comdef.h &
+        conio.h &
+        crtdbg.h &
+        ctype.h &
+        env.h &
+        errno.h &
+        fcntl.h &
+        float.h &
+        i86.h &
+        iso646.h &
+        limits.h &
+        malloc.h &
+        math.h &
+        mbctype.h &
+        mbstring.h &
+        mmintrin.h &
+        search.h &
+        setjmp.h &
+        signal.h &
+        stdarg.h &
+        stddef.h &
+        stdio.h &
+        stdlib.h &
+        string.h &
+        tchar.h &
+        time.h &
+        varargs.h &
+        wchar.h &
+        sys/stat.h &
+        sys/types.h
+
+dos_qnx_common = &
+        complex.h &
+        except.h &
+        exceptio.h &
+        exstring.h &
+        iomanip.h &
+        iostream.h &
+        fstream.h &
+        generic.h &
+        graph.h &
+        jctype.h &
+        jstring.h &
+        jtime.h &
+        pgchart.h &
+        locale.h &
+        mem.h &
+        new.h &
+        process.h &
+        share.h &
+        stdexcep.h &
+        stdiobuf.h &
+        streambu.h &
+        string.hpp &
+        strstrea.h &
+        typeinfo.h &
+        wcdefs.h &
+        wcexcept.h &
+        wchash.h &
+        wchbase.h &
+        wchiter.h &
+        wclbase.h &
+        wclcom.h &
+        wclibase.h &
+        wclist.h &
+        wclistit.h &
+        wcqueue.h &
+        wcsbase.h &
+        wcskip.h &
+        wcsibase.h &
+        wcskipit.h &
+        wcstack.h &
+        wcvbase.h &
+        wcvector.h &
+        sys/locking.h &
+        sys/timeb.h &
+
+DOS_files = &
+      $(common) &
+      $(dos_qnx_common) &
+        common.cnv &
+        direct.h &
+        dosfunc.h &
+        io.h &
+        bios.h &
+        bios98.h &
+        dos.h &
+        graph98.h &
+        setjmpex.h &
+        wsample.h &
+        win/_win386.h &
+        win/win16.h &
+        win/windows.h &
+        win/win386.h &
+        sys/utime.h &
+        unistd.h &
+        wdefwin.h &
+        memory.h &
+        eh.h
+
+QNX_files = &
+      $(common) &
+      $(dos_qnx_common) &
+        cdrom.h &
+        curses.h &
+        dir.h &
+        dirent.h &
+        form.h &
+        fnmatch.h &
+        ftw.h &
+        grp.h &
+        libc.h &
+        mig.h &
+        mqueue.h &
+        pwd.h &
+        queue.h &
+        regex.h &
+        semaphor.h &
+        sgtty.h &
+        shadow.h &
+        tar.h &
+        term.h &
+        termcap.h &
+        termios.h &
+        unistd.h &
+        unix.h &
+        ustat.h &
+        utime.h &
+        utmp.h &
+        syslog.h &
+        sys/cdrom.h &
+        sys/console.h &
+        sys/con_msg.h &
+        sys/debug.h &
+        sys/dev.h &
+        sys/dev_msg.h &
+        sys/dir.h &
+        sys/disk.h &
+        sys/dumper.h &
+        sys/fd.h &
+        sys/feedback.h &
+        sys/file.h &
+        sys/fsys.h &
+        sys/fsys_msg.h &
+        sys/inline.h &
+        sys/interact.h &
+        sys/io_msg.h &
+        sys/ioctl.h &
+        sys/irqinfo.h &
+        sys/kernel.h &
+        sys/keyboard.h &
+        sys/lmf.h &
+        sys/magic.h &
+        sys/mman.h &
+        sys/mouse.h &
+        sys/mous_msg.h &
+        sys/name.h &
+        sys/osinfo.h &
+        sys/osstat.h &
+        sys/param.h &
+        sys/prfx.h &
+        sys/pci.h &
+        sys/pointer.h &
+        sys/proc_msg.h &
+        sys/proxy.h &
+        sys/psinfo.h &
+        sys/qioctl.h &
+        sys/qnxterm.h &
+        sys/qnx_glob.h &
+        sys/sched.h &
+        sys/seginfo.h &
+        sys/select.h &
+        sys/sendmx.h &
+        sys/ser_msg.h &
+        sys/sidinfo.h &
+        sys/slib16.h &
+        sys/statfs.h &
+        sys/sys_msg.h &
+        sys/termio.h &
+        sys/time.h &
+        sys/timers.h &
+        sys/times.h &
+        sys/trace.h &
+        sys/tracecod.h &
+        sys/uio.h &
+        sys/uscsi.h &
+        sys/utsname.h &
+        sys/vc.h &
+        sys/wait.h &
+        sys/fsysinfo.h &
+        sys/sigconte.h &
+        sys/sysi86.h
+
+
+all : $($(system)_files) .symbolic
+    @%null
+
+.mh:$(path)
+.mhp:$(path)
+
+.mhp.hpp:
+        $(splice)
+
+.mh.h:
+        $(splice)
+
+.mh.cnv:
+        $(splice)
+
+#
+# Special case for sys/time.h since there is also a time.h
+#
+!ifeq system QNX
+sys/time.h : ..\quantum/sys_time.mh ..\poppack.sp ..\pshpackl.sp
+        $(splice)
+!endif
+
+!include ..\deps.mif
+
+clean: .SYMBOLIC
+      @if exist *.h @del *.h
+      @if exist sys\*.h @del sys\*.h
+      @if exist win\*.h @del win\*.h
+      @if exist *.hpp @del *.hpp
+      @if exist common.cnv @del common.cnv

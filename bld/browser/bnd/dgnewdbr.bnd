@@ -1,0 +1,7 @@
+class NewDBRDlg {
+    _browsefileGroupR(	 IDD_BROWSEFILE_GROUP,	  (@,@,@,@) );
+    _browseFilesButtonR( IDD_BROWSE_FILES_BUTTON, (@,@,@,@) );
+    _okButtonR(		 IDD_OK_BUTTON,		  (@,@,@,@) );
+    _fileEditR(		 IDD_FILE_EDIT,		  (@,@,@,@) );
+    _cancelButtonR(	 IDD_CANCEL_BUTTON,	  (@,@,@,@) );
+};

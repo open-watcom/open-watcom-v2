@@ -1,0 +1,8 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject align.obj                           nta
+!inject fpcraxp.obj                         nta
+!inject fclexaxp.obj                        nta
+!inject pdreg.obj                           nta
+
+!include ..\..\..\..\objlist.mif

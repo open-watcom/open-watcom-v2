@@ -1,0 +1,106 @@
+Suggestions for next C++ Release
+--------------------------------
+
+
+(1) (JWW) Segment cleanup
+-------------------------
+    - keep track of whether each segment is used (bit already in PC_SEGMENT)
+    - emit segment definitions only if segment was used
+    - note: (YIB, YI, YIE) and (XIB, XI, XIE) have to be defined together
+        - bit is already implemented for these segments
+
+
+(2) (JWW) Optimize CTOR's more
+------------------------------
+    - introduce opcodes for:
+        - default CTOR
+        - copy CTOR
+        - other CTOR
+    - analysis to do simple-minded parse-tree generation using these codes
+    - write an optimization pass to remove redundant copies
+    - extension: comma-connect straight-line code (under appropriate
+      circumstances) and optimize the comglomerate
+
+
+(3) (JWW) Virtual Function Forced Includes
+------------------------------------------
+    - talk code generators into a revised interface whereby
+      (function,source-segment) pairs can be passed to code generator
+      at end (not at virtual-function call)
+    - this is cleaner and can be used to implement member-pointer
+      references to virtual functions
+
+
+(4) (JWW) Array destructors
+---------------------------
+    - consider extending type signatures to arrays
+    - use type signatures everywhere in r/o dtor blocks
+    - no longer need to generate array-dtor routines
+
+
+(5) (JWW) Virtual Function Removal
+----------------------------------
+    - don't do it when -za
+
+
+(6) (JWW) Relop warnings
+------------------------
+    - should be done on right and left
+    - disregard ( ==, != ) comparisons to constant 0, 1
+    - look at all comparisons, assignments by classifying operands as
+      ( #bits, signed/unsigned ) ranges
+      - warn on determinant comparisons
+      - warn on range mis-matches
+
+
+(7) (JWW) ANALPCNV
+------------------
+    - look at using support in analtype.c
+
+
+(8) (AFS) Errors instantiating templates
+----------------------------------------
+    - traceback is req'd for templates causing templates to be instantiated
+
+
+(9) Home Object Support
+-----------------------
+    - motivation: cut down duplicated routines across many object files
+    - introduce pragmas:
+        (a) #pragma home class name
+        (b) #pragma home enable
+    - (a) causes all possible routine generations for the indicated class
+    - (b) stops any generation, except for those in (a)
+
+
+(10) Support for -v, -zg switches
+---------------------------------
+    - idea: no need to keep .H for an implementation
+    - generate into .def file any functions (like C) and any class or template
+      definitions which are defined within the primary source module
+
+(11) Exceptions
+---------------
+    - implement reference to function, member pointers
+    - need type sig.s for functions, member pointers (no conversions)
+
+(12) Returns from Functions
+---------------------------
+    - handle consistently: the parameter order differs between ellipsis
+      functions and non-ellipsis functions (make them appear as now
+      implemented for ellipsis functions)
+    - warn about struct returns with ellipsis for which:
+        - dtor's are present
+        - contain pointers/references
+
+(13) Copy Optimization for ellipsis, reversed-arg func.s
+--------------------------------------------------------
+    - is now inhibited
+    - upgrade in ANALCLSS
+    - requires more sophistigated search for return argument in parse tree
+
+(14) Thunking for DTOR tables
+-----------------------------
+    - special thunks to be emitted for constructors and destructors which
+      have non-standard calling sequences (reverse, ellipsis) because the
+      run-time support always calls with the standard calling sequence

@@ -1,0 +1,11 @@
+#
+# Macro Test # 2
+#
+# Testing String Substitution
+#
+temp1 = HELLO
+all: hello .symbolic
+   echo $(temp1)
+temp = $(temp1:LLO=222) 
+hello: .symbolic
+   echo $(temp)

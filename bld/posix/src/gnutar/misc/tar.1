@@ -1,0 +1,269 @@
+.TH TAR 1 "31 October 1986"
+.SH NAME
+tar \- tape (or other media) file archiver
+.SH SYNOPSIS
+\fBtar\fP \-[\fBBcDhikmopstvxzZ\fP]
+[\fB\-b\fP \fIN\fP]
+[\fB\-f\fP \fIF\fP]
+[\fB\-S\fP \fIX\fP]
+[\fB\-T\fP \fIF\fP]
+[\fB\-u\fP \fIX\fP]
+[\fB\-V\fP \fIX\fP]
+[ \fIfilename\fP\| .\|.\|.  ]
+.SH DESCRIPTION
+\fItar\fP provides a way to store many files into a single archive,
+which can be kept in another Unix file, stored on an I/O device
+such as tape, floppy, cartridge, or disk, or piped to another program.
+It is useful for making backup copies, or for packaging up a set of
+files to move them to another system.
+.LP
+\fItar\fP has existed since Version 7 Unix with very little change.
+It has been proposed as the standard format for interchange of files
+among systems that conform to the P1003 ``Portable Operating System''
+standard.
+.LP
+This version of \fItar\fP supports the extensions which
+were proposed in the P1003 draft standards, including owner and group
+names, and support for named pipes, fifos, and block and character devices.
+Under DOS and Minix, it also supports the P1003 Trial Use Standard
+format for multivolume archives on floppy disk.
+.LP
+When run under DOS, this version of \fItar\fP performs various conversions
+intended to aid in transferring files between DOS and Unix.  Filenames
+are converted by deleting all but the last ``.'' from the filename when
+reading an archive under DOS; and they are converted to lowercase when
+writing an archive under DOS.  (If you use the \fB\-v\fP option, it will
+show you when dot conversions like this take place.)  If a conversion
+is dubious, it will prompt you to enter a proper DOS filename.
+.LP
+Also
+when running under DOS, conversion between newlines and CR/LFs is performed
+for ASCII files (the archive is always written in the Unix-compatible
+form, i.e., with only newlines present).  See the DOS \fB\-u\fP option for
+more information on this feature.
+.LP
+When reading an archive, this version of \fItar\fP continues after
+finding an error.  Previous versions required the `i' option to ignore
+checksum errors.
+.SH OPTIONS
+\fItar\fP options can be specified in either of two ways.  The usual
+Unix conventions can be used: each option is preceded by `\-'; arguments
+directly follow each option; multiple options can be combined behind one `\-'
+as long as they take no arguments.  For compatability with the Unix
+\fItar\fP program, the options may also be specified as ``keyletters,''
+wherein all the option letters occur in the first argument to \fItar\fP,
+with no `\-', and their arguments, if any, occur in the second, third, ...
+arguments.  Examples:
+.LP
+Normal:  tar -f arcname -cv file1 file2
+.LP
+Old:  tar fcv arcname file1 file2
+.LP
+At least one of the \fB\-c\fP, \fB\-t\fP, or \fB\-x\fP options
+must be included.  The rest are optional.
+.LP
+If you are specifying a lot of options which take arguments, it is
+best that you use the ``\fB\-\fP'' form of all arguments to avoid
+confusing \fItar\fP.
+.LP
+Files to be operated upon are specified by a list of file names, which
+follows the option specifications (or can be read from a file by the
+\fB\-T\fP option).  Specifying a directory name causes that directory
+and all the files it contains to be (recursively) processed.  In general,
+specifying full path names when creating an archive is a bad idea,
+since when the files are
+extracted, they will have to be extracted into exactly where they were
+dumped from.  Instead, \fIcd\fP to the
+root directory and use relative file names.
+.IP "\fB\-b\fP \fIN\fP"
+Specify a blocking factor for the archive.  The block size will be
+\fIN\fP x 512 bytes.  Larger blocks typically run faster and let you
+fit more data on a tape.  The default blocking factor is set when
+\fItar\fP is compiled, and is typically 20.  There is no limit to the
+maximum block size, as long as enough memory can be allocated for it,
+and as long as the device containing the archive can read or write
+that block size.
+.IP \fB\-B\fP
+When reading an archive, reblock it as we read it.
+Normally, \fItar\fP reads each
+block with a single \fIread(2)\fP system call.  This does not work
+when reading from a pipe or network socket under Berkeley Unix.
+With this option, it
+will do multiple \fIread(2)\fPs until it gets enough data to fill 
+the specified block size.  \fB\-B\fP can also be used to speed up
+the reading of tapes that were written with small blocking factors,
+by specifying a large blocking factor with \fB\-b\fP and having \fItar\fP
+read many small blocks into memory before it tries to process them.
+.IP \fB\-c\fP
+Create an archive from a list of files.
+.IP \fB\-D\fP
+With each message that \fItar\fP produces, print the record number
+within the archive where the message occurred.  This option is especially
+useful when reading damaged archives, since it helps to pinpoint the damaged
+section.
+.IP "\fB\-f\fP \fIF\fP"
+Specify the filename of the archive.  If the specified filename is ``\-'',
+the archive is read from the standard input or written to the standard output.
+If this option is not used,
+a default archive name (which was picked when tar was compiled) is used.
+The default is normally set to the ``first'' tape drive or other transportable
+I/O medium on the system.
+.IP \fB\-h\fP
+When creating an archive, if a symbolic link is encountered, dump
+the file or directory to which it points, rather than
+dumping it as a symbolic link.
+.IP \fB\-i\fP
+When reading an archive, ignore blocks of zeros in the archive.  Normally
+a block of zeros indicates the end of the archive,
+but in a damaged archive, or one which was
+created by appending several archives, this option allows \fItar\fP to 
+continue.  It is not on by default because there is garbage written after the
+zeroed blocks by the Unix \fItar\fP program.
+.IP \fB\-k\fP
+When extracting files from an archive, keep existing files, rather than
+overwriting them with the version from the archive.
+.IP \fB\-m\fP
+When extracting files from an archive, set each file's modified timestamp
+to the current time, rather than extracting each file's modified
+timestamp from the archive.
+.IP \fB\-o\fP
+When creating an archive, write an old format archive, which does not
+include information about directories, pipes, or device files, and 
+specifies file ownership by uid's and gid's rather than by
+user names and group names.  In most cases, a ``new'' format archive
+can be read by an ``old'' tar program without serious trouble, so this
+option should seldom be needed.
+.IP \fB\-p\fP
+When extracting files from an archive, restore them to the same permissions
+that they had in the archive.  If \fB\-p\fP is not specified, the current
+umask limits the permissions of the extracted files.  See \fIumask(2)\fP.
+.IP \fB\-t\fP
+List a table of contents of an existing archive.  If file names are
+specified, just list files matching the specified names.
+.IP \fB\-s\fP
+When specifying a list of filenames to be listed
+or extracted from an archive,
+the \fB\-s\fP flag specifies that the list
+is sorted into the same order as the tape.  This allows a large list
+to be used, even on small machines, because
+the entire list need not be read into memory at once.  Such a sorted
+list can easily be created by running ``tar \-t'' on the archive and
+editing its output.
+.IP "\fB\-S\fP \fIX\fP"
+MS-DOS only.  Device for \fB\-V\fP option is an \fIX\fPK-byte drive.
+The default is 360K.  Since DOS doesn't have a way to detect end-of-volume
+in raw I/O mode, this option is used to know when it is time to switch
+disks in multivolume raw floppy disk mode.
+.IP "\fB\-T\fP \fIF\fP"
+Rather than specifying the file names to operate on as arguments to
+the \fItar\fP command, this option specifies that the file names should
+be read from the file \fIF\fP, one per line.
+If the file name specified is ``\-'',
+the list is read from the standard input.
+This option, in conjunction with the \fB\-s\fP option,
+allows an arbitrarily large list of files to be processed, 
+and allows the list to be piped to \fItar\fP.
+.IP \fB\-u\fP \fIX\fP
+This option is available only under MS-DOS.  \fIX\fP is a file extension
+which is to be added to the list of files which \fBtar\fR recognizes
+as a ``binary file.''  Files without one of these extensions
+are treated as ASCII files.
+Under DOS, files which are ASCII files undergo
+certain standard conversions when being read into the archive, and the
+inverse conversions are applied when the files are being written out of
+the archive.  Specifically, binary files are opened with the O_BINARY
+file translation mode, whereas other files are opened with O_TEXT.
+When verbose listing mode is selected, binary files have a dash (-) as
+the first character of the mode flags, while other files
+have an ``a'' (for ``ASCII'').  By default, the extensions COM, EXE,
+and OBJ are treated as binary files;  these extensions cannot be
+overridden, and will always be treated as binary, since they are
+extensions having special meaning to DOS.
+\fIX\fP can be the
+single character ``.'' to denote that files with no extension should
+be treated as binary.  \fINote:\fP When specifying the extension, you
+should leave off the leading ``.''.  Thus, you would write DAT,
+not .DAT, to specify that files with extension DAT are to be treated
+as binary files.
+.IP \fB\-v\fP
+Be verbose about the files that are being processed or listed.  Normally,
+archive creation or file extraction are silent, and archive listing just
+gives file names.  The \fB\-v\fP option causes an ``ls \-l''\-like listing
+to be produced.
+.IP "\fB\-V\fP \fIX\fP"
+MS-DOS only.  Write the archive in multivolume raw-disk mode.  The archive
+will be written to floppy disk drive \fIX\fP, using direct BIOS I/O (note
+that this may cause some virus-detection software to generate a warning
+message).  The disks in the drive must have been previously formatted
+under MS-DOS.  The archive will be written onto the entire disk, overwriting
+any MS-DOS directory and other information on the floppy disk.  When the
+diskette becomes full, you will be asked to change volumes.  No volume
+labels or other header information are written; the data is written as
+if the floppy disks were a single, larger, contiguous disk.  Floppy disks
+written in raw mode with this option under MS-DOS may be read under Minix
+by specifying \fB\-f\fP \fI/dev/fd0\fP.  This is useful to transfer large
+numbers of files between DOS and Minix (it is much faster than dosread
+and doswrite, and works correctly under DOS 3.x).  See ``bugs'' regarding
+a bug in Minix, however, which affects writing in raw mode.  The default
+disk size for this option is 360K; see the \fB\-S\fP option to specify
+a different-sized disk.
+.IP \fB\-x\fP
+Extract files from an existing archive.  If file names are
+specified, just extract files matching the specified names, otherwise extract
+all the files in the archive.
+.IP "\fB\-z\fP or \fB\-Z\fP"
+When extracting or listing an archive,
+these options specify
+that the archive should be decompressed while it is read, using the \-d
+option of the \fIcompress(1)\fP program.  The archive itself is not
+modified.
+.SH "AUTHOR"
+John Gilmore wrote the original PD Tar, and continues to support the
+non-DOS version of it.
+.LP
+This port is by Eric Roskos (csed-1!roskos, roskos@CSED-1.IDA.ORG,
+or Roskos@DOCKMASTER.ARPA), and has unfortunately diverged too far to
+make re-merging with future releases of the original PD Tar very
+feasible.
+.SH "SEE ALSO"
+shar(1), tar(5), compress(1), ar(1), arc(1), cpio(1), dump(8), restore(8),
+restor(8)
+.SH BUGS
+The \fBr, u, w, X, l, F, C\fP, and \fIdigit\fP options of Unix \fItar\fP
+are not supported.
+.LP
+It should be possible to create a compressed archive with the \fB\-z\fP option.
+.LP
+When run under Minix, multivolume support will not work on writes unless
+you fix a bug in Minix.  Minix detects the end of a device by checking the
+size stored in the inode for the device's special file.  This works correctly
+on reading, but due to a bug in 1.1 and 1.2 does not work on writing,
+which causes Minix to try to step the head beyond the physical end of the
+disk.  A source code change was posted to fix this in March of 1988 to
+comp.os.minix.
+.LP
+Due to an extreme lack of interest (I would almost say aggressive
+disinterest) on the part of Minix users, I no longer support the tar
+port for Minix outside IDA.  The Minix port has not been beta tested
+as well as I would like due to the difficulty in finding Minix beta
+testers; however, the DOS port has been tested extensively at several
+locations for transferring files between DOS and Unix.
+.LP
+The code for filename conversion under MS-DOS is embarassingly
+complex, and should be rewritten.  One routine is used where two
+should actually exist, due to historical reasons.
+.LP
+The raw disk I/O writes its sectors in the order Minix reads them; this
+appears to be different from the order in which DOS 3.x writes sectors,
+so I/O is done through the PC BIOS rather than through DOS to insure that
+the sector order is kept correct under different DOS versions. 
+.LP
+The program doesn't recognize the more traditional DOS ``/'' switch
+character.
+.LP
+When running under DOS, due to the CR/LF<->newline conversion, it is not
+possible to know the size of a file being written to the archive from the
+information obtained via \fBstat\fP.  Thus, the program has to read to the
+end of the file and count the characters.  This only has a visible performance
+impact on very large files, but it is important to remember.  There is
+no other way to do it (except to backpatch the archive).

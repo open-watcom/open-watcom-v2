@@ -1,0 +1,269 @@
+#
+# Common stuff between trap file and server implementations
+#
+# Macros:
+#       os              - Name of the operating system the executable is
+#                         being built for. Look at the "comp_*" macros
+#                         below for the list of acceptable names (required).
+#       srv             - Name of the remote link that the server/trap file
+#                         is implementing. Use "lcl" for "STD" trap
+#                         files (required).
+#       cpu             - Name of the CPU that the server/trap is being
+#                         built for (x86,axp,ppc,etc).
+#       machine         - Machine type: IBM/FMR/NEC. Assumes IBM
+#       name            - Root name of the server/trap file. A name is
+#                         created from the "srv" macro if this is not
+#                         defined (optional).
+#       extra_objs      - names of extra object files to be included in the
+#                         the link (optional, but I can't think of a case
+#                         where it wouldn't be defined).
+#       extra_dobjs     - names of extra object files to be included in the
+#                         debugging version. If not defined, extra_objs is
+#                         used (options).
+#       extra_incs      - A list of extra directories to search for include
+#                         files (optional).
+#       extra_srcs      - A list of extra directories to search for source
+#                         files (optional).
+#       extra_libs      - A (space separated) list of extra libraries to
+#                         include in the link (optional).
+#       extra_cflags    - Extra C compiler flags (optional).
+#       extra_aflags    - Extra wasm flags (optional).
+#       extra_linker    - Extra linker directives (optional).
+#       extra_deps      - Extra dependencies for executable (optional).
+#       extra_cmds      - Extra commands to be executed when creating
+#                         the executable (optional).
+#       resource_file   - root name of a resource file (optional).
+
+.CONTINUE
+.ERASE
+.EXTENSIONS
+.EXTENSIONS : .exe .obj .res .rc .i .h .c .asm .cpp
+
+!ifndef bin_root
+!ifdef bin_root_wv
+bin_root = $(bin_root_wv)
+!endif
+!endif
+
+asm_x86                 = $(wasm)
+
+comp_x86_os2            = $(comp286) -mc-fpc
+comp_x86_os2v2          = $(comp386) -mf-fpc
+comp_x86_qnx            = $(comp386) -ms-fpc
+comp_x86_win            = $(comp286) -mc-fpc
+comp_x86_dos            = $(comp286) -mc-fpc
+comp_x86_rsi            = $(comp286) -mc-fpc
+comp_x86_ads            = $(comp386) -mf-fpc-3s
+comp_x86_pls            = $(comp386) -mf-fpc
+comp_x86_nt             = $(comp386) -mf-fpc
+comp_x86_nlm            = $(comp386) -mf-fpc-3s
+comp_x86_penpoint       = $(comp386) -mf-fpc
+
+comp_axp_nt             = $(compaxp)
+
+comp_ppc_nt             = $(compppc)
+
+cpp_x86_nt              = wpp386 -mf-fpc
+
+TRAP_opts_x86_os2       = -zu
+TRAP_opts_x86_win       = -zu-bd
+TRAP_opts_x86_dos       = -zu
+
+libs_x86_os2            = clibc
+libs_x86_os2v2          = clib3r
+libs_x86_qnx            = $(lang_root)\lib386\qnx\clib3r
+libs_x86_win            = clibc
+libs_x86_dos            = clibc
+libs_x86_rsi            = clib3r
+libs_x86_ads            = clib3s
+libs_x86_pls            = clib3r
+libs_x86_nt             = clib3r
+libs_x86_nlm            = math3s
+libs_x86_penpoint       = clib3r
+
+libs_axp_nt             = clib
+
+libs_ppc_nt             = clib
+
+nw30dir = $(nwdir)
+nw30src = $(nwsrc)
+incs_os2        = $(watcom_dir)\os21x_h;$(watcom_dir)\h;$(lang_root)\h
+incs_os2v2      = $(watcom_dir)\os220_h;$(watcom_dir)\h;$(lang_root)\h
+incs_qnx        = $(watcom_dir)\qh;$(watcom_dir)\h;$(lang_root)\qh
+incs_win        = $(lang_root)\h\win;$(watcom_dir)\h;$(lang_root)\h
+incs_dos        = $(watcom_dir)\h;$(lang_root)\h
+incs_rsi        = $(watcom_dir)\h;$(lang_root)\h;$(rsilib)
+incs_ads        = $(watcom_dir)\h;$(lang_root)\h;$(adsdir)
+incs_pls        = $(watcom_dir)\h;$(lang_root)\h;$(plsdir)
+incs_nt         = $(lang_root)\h\nt;$(watcom_dir)\h;$(lang_root)\h
+incs_nlm        = $(watcom_dir)\h;$(nw$(nlm_ver)0dir);$(nw$(nlm_ver)0src);$(watcom_dir)\nw40_h
+incs_penpoint   = $(watcom_dir)\pen$(ver)_h;$(watcom_dir)\h;$(lang_root)\h
+
+!ifndef machine
+machine = IBM
+!endif
+
+!ifndef name
+!ifeq srv lcl
+name = std
+!else ifeq which SERVER
+name = $(srv)serv
+!ifeq os win
+name+=w
+!endif
+!else
+name = $(srv)
+!endif
+!endif
+
+remote_objs = &
+        $($(which)_remote_objs) &
+        packet.obj &
+        $(os)noth.obj &
+        $(srv)link.obj &
+
+!ifeq os win
+targ = windows
+!else ifeq os nlm
+targ = netware
+!else ifeq os pls
+targ = dos
+!else ifeq os ads
+targ = dos
+!else ifeq os rsi
+targ = dos
+!else
+targ = $(os)
+!endif
+
+comp_opts += -D$(which) -D_$(machine)_PC -DMD_$(cpu) -zq-w3-bt=$(targ) @IPATHS $(%COMP_DEBUG)
+!ifdef japanese
+comp_opts += -DJAPANESE_MESSAGES
+!endif
+
+!ifdef on_build_machine
+default_targ    = w
+!else
+default_targ    = d
+!endif
+
+first : $(default_targ) .SYMBOLIC
+        @%null
+
+save_name =$+$(name)$-
+name = $(name_debug)$(save_name)
+!ifdef test
+name_debug=z
+!else
+name_debug=
+!endif
+target = $+$(bin_root)\$(targ_$(cpu)_$(os))$-
+!ifdef test
+name_debug=t
+!else
+name_debug=d
+!endif
+dtarget = $+$(bin_root)\$(targ_$(cpu)_$(os))$-
+
+trperr_h = $(trap_dir)\h\_err.gh
+jtrperr_h = $(trap_dir)\h\_jerr.gh
+mkstr_c = $(trap_dir)\c\mkstr.c
+trap_msg = $(trap_dir)\h\trap.msg
+
+w : .SYMBOLIC $(trperr_h) $(jtrperr_h)
+        @set COMP_DEBUG=-d1 -oxt
+        @set LINK_DEBUG=d a op symfile
+        @%make $(target)
+
+d : .SYMBOLIC $(trperr_h) $(jtrperr_h)
+        @set COMP_DEBUG=-d2 -s
+        @set LINK_DEBUG=d a
+        @%make $(dtarget)
+
+cv : .SYMBOLIC $(trperr_h) $(jtrperr_h)
+        @set COMP_DEBUG=-d1 -s -hc
+        @set LINK_DEBUG=debug codeview
+        @%make $(dtarget)
+        !cvpack $(dtarget)
+
+$(trperr_h) $(jtrperr_h) : $(mkstr_c) $(trap_msg)
+        wcl386 $(mkstr_c) /zq /dJAPANESE_MESSAGES /i$(trap_dir)\h
+        mkstr $(jtrperr_h)
+        wcl386 $(mkstr_c) /zq /i$(trap_dir)\h
+        mkstr $(trperr_h)
+        del mkstr.obj
+        del mkstr.exe
+
+!ifndef extra_dobjs
+extra_dobjs = $(extra_objs)
+!endif
+
+objs  = $($(which)_objs) mxutil.obj $(extra_objs)
+dobjs = $($(which)_objs) mxutil.obj $(extra_dobjs)
+
+!ifndef substitute_linker
+$(target) : eraseall.obj $(objs) $(extra_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
+        $(linker) op quiet,map,case $(%LINK_DEBUG) $(sys_$(cpu)_$(os)) name $^@ &
+                file {$(objs)} &
+                library {$(libs_$(cpu)_$(os)) $(extra_libs)} &
+                $(extra_linker)
+!ifdef resource_file
+        wrc -bt=$(targ) $(resource_file) $^@
+!endif
+!ifdef extra_cmds
+        $(extra_cmds)
+!endif
+!ifdef lexusbld
+        @newer $^@ $(lexlib_dir)\tools\system\$^. "^copy &f $#f > nul"
+!endif
+
+!ifneq target $(dtarget)
+$(dtarget) : eraseall.obj $(dobjs) $(extra_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
+        $(linker) op quiet,map,case $(%LINK_DEBUG) $(sys_$(cpu)_$(os)) name $^@ &
+                file {$(dobjs)} &
+                library {$(extra_libs) $(libs_$(cpu)_$(os))} &
+                $(extra_linker)
+!ifdef resource_file
+        wrc -bt=$(targ) $(resource_file) $^@
+!endif
+!ifdef extra_cmds
+        $(extra_cmds)
+!endif
+!endif
+
+!endif
+
+eraseall.obj : $(trap_dir)\compile.gbl
+        if exist *.obj erase *.obj
+        wtouch eraseall.obj
+
+allcompopts = $(comp_opts) $($(which)_opts_$(cpu)_$(os)) $(extra_cflags) $(extra_flags_$[&) $[@
+compile = $(comp_$(cpu)_$(os)) $(allcompopts)
+ppcompile = $(cpp_$(cpu)_$(os)) $(allcompopts)
+whole_inc_path = $(extra_incs);$(dig_dir)\h;$(trap_dir)\common\$(os);$(trap_dir)\common;$(trap_dir)\h;$(incs_$(os))
+
+.c: ..\c;..\..\c;$(trap_dir)\common\$(os);$(trap_dir)\common;$(trap_dir)\c;$(extra_srcs)
+.cpp: ..\c;..\..\c;$(trap_dir)\common\$(os);$(trap_dir)\common;$(trap_dir)\c;$(extra_srcs)
+
+.c.obj: .autodepend
+        @set IPATHS=-i$(whole_inc_path)
+        $(compile)
+
+.cpp.obj: .autodepend
+        @set IPATHS=-i$(whole_inc_path)
+        $(ppcompile)
+
+.c.i:
+        @set IPATHS=-i$(whole_inc_path)
+        $(compile) -plc -fo=.i
+
+.asm: ..\asm;..\..\asm;$(trap_dir)\common\$(os);$(trap_dir)\common;$(extra_srcs)
+
+.asm.obj:
+        @set IPATHS=-i$(whole_inc_path)
+        $(asm_$(cpu)) $(comp_opts) $(extra_aflags) $(extra_flags_$[&) $[@
+
+.rc: ..\c;$(trap_dir)\common\$(os);$(trap_dir)\common;$(extra_srcs)
+
+.rc.res: .autodepend
+        *wrc -r -i$(whole_inc_path) -bt=$(targ) $[@ /fo=$^&.res

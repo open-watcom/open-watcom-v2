@@ -1,0 +1,3 @@
+call DbgRedirectBeg
+call DbgPrintPTREE( <1> )
+viewcapt.dbg

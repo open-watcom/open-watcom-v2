@@ -1,0 +1,13 @@
+dos_objs = dossplit.obj &
+        dosenv.obj &
+        dosexc.obj &
+        dosredir.obj &
+        dosrfx.obj &
+        dosfile.obj &
+        doschk.obj &
+        dosflip.obj &
+        fork.obj &
+        supp.obj &
+        core.obj
+
+!include $(trap_dir)\lcl\lcl.mif

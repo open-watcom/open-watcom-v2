@@ -1,0 +1,67 @@
+include watcom.mk
+
+SRCDIRS = $(WRES_DIR)/c
+
+OBJECTS = 
+# OBJECTS += loadstr.o wresrtns.o wriidfn.o wrfindrs.o wrgetli.o ropenfro.o 
+# OBJECTS += wrinitdi.o wrreaddi.o wrfreedi.o rclosef.o wridcmp.o wrerror.o 
+# OBJECTS += ralliae.o wrrfrr.o wridexby.o wrrewrid.o wrrftr.o wrrhr.o 
+# OBJECTS += mrrdrh.o wrfree.o wridfnoo.o wraddres.o wriswrf.o wridnacm.o 
+# OBJECTS += resseek.o rduint32.o rrnamoor.o rduint16.o wridfrnu.o wridfrst.o 
+# OBJECTS += rduint8.o rrdstr.o varstr.o loadres.o resmenu.o write.o
+# OBJECTS += wrrinfo.o
+
+OBJECTS += loadstr.o
+OBJECTS += loadres.o
+OBJECTS += wrfree.o
+OBJECTS += mropnewf.o mrrdrh.o ralliae.o rclosef.o rdlli.o
+OBJECTS += rduint16.o rduint32.o rduint8.o resseek.o
+OBJECTS += restell.o rillia.o rillib.o ropenfro.o ropenfrw.o
+OBJECTS += rrdstr.o rrlli.o rrnamoor.o wraddres.o wrchkwrf.o wrdelrs.o
+OBJECTS += wrerror.o wrfilein.o wrfindrs.o wrfirres.o wrfreedi.o
+OBJECTS += wrgetli.o wrgetri.o wrgetti.o wrhidcmp.o wridcmp.o wridexby.o
+OBJECTS += wridfnoo.o wridfree.o wridfrnu.o wridfrst.o
+OBJECTS += wrhidfno.o wrhidfre.o wrhidfrn.o wrhidfrs.o
+OBJECTS += wridnacm.o wridnfst.o wridtnoo.o wridtonu.o
+OBJECTS += wridtost.o wriidfn.o wrinitdi.o wrisempt.o
+OBJECTS += wrihidf.o
+OBJECTS += wrislr.o wriswrf.o wrnextrs.o wropnewf.o
+OBJECTS += wrreaddi.o wrrewrid.o wrrfrr.o wrrftr.o wrrfwrid.o
+OBJECTS += wrrhr.o wrrwrid.o
+OBJECTS += wrwritdi.o resver.o wresrtns.o
+OBJECTS += resaccel.o resbitmp.o resdiag.o resfont.o resiccu.o
+OBJECTS += resmenu.o resnamor.o resraw.o resstr.o varstr.o write.o
+OBJECTS += restbar.o wrauto.o wrmergdi.o
+
+OBJECTS := $(foreach i,$(OBJECTS),$(OBJDIR)/$i)
+
+vpath %.c $(SRCDIRS)
+
+INCDIRS += $(WRES_DIR)/h $(H_DIR) $(WATCOMH)
+
+vpath %.h $(SRCDIRS) $(INCDIRS)
+
+LIBNAME = wres
+
+# host_OS = dos
+# host_CPU = 386
+
+DEFS += -D_NO_LIB_PRAGMAS_ -DNATURAL_PACK
+CFLAGS += $(OPT_PIC)
+
+$(OBJDIR)/lib$(LIBNAME).a : $(OBJECTS)
+	@rm -f $@
+	$(AR) crs $@ $(OBJECTS)
+
+clean	:
+	rm -f $(OBJDIR)/*
+
+.PHONY	: dep depend make
+dep depend make:
+	$(MKMK) -Q -m .depend -f '$$(OBJDIR)/%s' nopath -f '$$(OBJDIR)/%s' \
+		$(foreach i,$(SRCDIRS),$i/*.[ch]) \
+		$(foreach i,$(INCDIRS),$i/*.h)
+
+ifeq (.depend,$(wildcard .depend))
+    include .depend
+endif

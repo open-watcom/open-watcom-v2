@@ -1,0 +1,14 @@
+GBL_HEAP_INFO DIALOG 86, 43, 125, 57
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Global Heap Information"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "Total Items on the Heap:", -1, 4, 4, 89, 8
+    LTEXT           "Number of Free Items:", -1, 4, 13, 88, 8
+    LTEXT           "Number of LRU Items:", -1, 4, 22, 85, 8
+    LTEXT           "", GBL_INFO_TOT_ITEMS, 99, 4, 20, 8
+    LTEXT           "", GBL_INFO_FREE_ITEMS, 99, 13, 20, 8
+    LTEXT           "", GBL_INFO_LRU_ITEMS, 99, 22, 20, 8
+    PUSHBUTTON      "OK", IDOK, 15, 37, 40, 14
+    PUSHBUTTON      "Refresh", HW_INFO_REFRESH, 70, 37, 40, 14
+END

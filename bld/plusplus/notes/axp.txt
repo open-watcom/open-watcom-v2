@@ -1,0 +1,16 @@
+Digital AXP notes
+=================
+
+- longjmp() restores registers by following up the call stack so the
+  restored register set is the last active one in the function that
+  contains the setjmp (this is different than Intel where it is the
+  register set when the setjmp executed)
+  
+  - long term: we should fix our longjmp to behave like the Intel
+    longjmp in all circumstances since we have potential problems
+    with optimizations that don't "know" about the behaviour of
+    setjmp/longjmp
+  
+- the stack unwinding process cannot execute properly if a breakpoint
+  occurs in the prologue or epilogue code (always set breakpoints
+  after the prologue)

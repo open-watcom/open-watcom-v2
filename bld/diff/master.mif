@@ -1,0 +1,38 @@
+proj_name = diff
+name = diff
+
+.c: $(diff_dir)
+.mif: $(mif_path)
+!include cproj.mif
+
+inc_dirs = $(diff_dir)
+
+c_flags_i86 = /ml
+c_flags_nt = /bt=nt
+
+cflags = /w4 /ox $(c_flags_$(host_CPU)) $(c_flags_$(host_OS))
+!ifdef debug
+cflags += /d2
+!endif
+
+.c.obj:
+        @set include=$(inc_path)
+        $(cc) $[@ $(cflags)
+
+lflags_dos_386 = sys pharlap debug all
+
+extra_l_flags_os2_i86 = op stub=$(diff_dir)\o\diff.exe libpath $(watcom_dir)\lib
+extra_l_flags_os2 = $(extra_l_flags_os2_$(host_CPU))
+
+$(name).exe : $(name).obj
+        wlink $(lflags) file $[@ name $^&
+!ifeq host_OS dos
+! ifeq host_CPU 386
+        !$(pharlap)bind386 $(pharlap)\run386b diff.exp
+! endif
+!endif
+
+clean : .SYMBOLIC .EXPLICIT
+        @if exist *.obj del *.obj
+        @if exist *.exe del *.exe
+        @if exist *.exp del *.exp

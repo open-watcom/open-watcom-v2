@@ -1,0 +1,55 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+// INITDEFS.H  -- definitions for automated initialization/completion
+//
+//
+
+#ifndef __INITDEFS_H__
+#define __INITDEFS_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define EXIT_BEG(name) extern EXIT_POINT EXIT_POINT_NAME( name );
+#define EXIT_REG(name) extern INITFINI   INIT_FINI_NAME( name );
+#define EXIT_END
+#define SPLIT_INIT( name, fini ) EXIT_BEG( fini ) EXIT_REG( name )
+
+#include "initfini.h"
+
+#ifdef __cplusplus
+};
+#endif
+
+#endif

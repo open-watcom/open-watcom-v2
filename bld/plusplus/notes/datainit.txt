@@ -1,0 +1,312 @@
+
+Plan For Data Initialization:
+=============================
+
+Initial Assumptions:
+--------------------
+- don't worry about array[] of size zero
+- don't worry about special requirements for aggregate class initialization
+- don't worry about emitting excess zeros
+- treat aggregate lists as several independent initializations plus a copy
+- don't worry about bit fields
+- don't worry about ``char a[] = "abc";''
+- don't worry about absence of braces, assume all will be provided
+
+
+Combinations Of Cases To Consider:
+----------------------------------
+cd  = code inside function
+fcd = flag once only code inside function
+ecd = code outside function
+dt  = initialize data
+sdt = allocate special storage
+zdt = initialize data to zero
+
+                  +-----------------+-----------------+-----------------+
+                  |      Scalar     |       Ctor      |    Aggregate    |
+                  |  Data  |  Code  |  Data  |  Code  |  Data  |  Code  |
++-----------------+--------+--------+--------+--------+--------+--------+
+| Internal Auto   |   cd   |   cd   |   cd   |   cd   | cd+sdt | cd+sdt |
++-----------------+--------+--------+--------+--------+--------+--------+
+| Internal Static |   dt   | zdt+fcd|   dt   | zdt+fcd|   dt   | zdt+fcd|
++-----------------+--------+--------+--------+--------+--------+--------+
+| External Static |   dt   | zdt+ecd|   dt   | zdt+ecd|   dt   | zdt+ecd|
++-----------------+--------+--------+--------+--------+--------+--------+
+
+Distinct Cases To Implement:
+----------------------------
+cd 	- emit code to do init
+dt	- init data
+cd+sdt	- allocate special data,
+	  init special data,
+	  copy special data to data,
+	  emit code to do init
+zdt+fcd	- init data to zero,
+	  allocate flag,
+	  emit code to check flag,
+	  emit code to set flag and do init if not flag
+zdt+ecd	- init data to zero,
+	  open data init function
+	  emit code to do init
+	  close data init function
+
+Entry Points From Parser:
+-------------------------
+DataInitInit( void );
+    - start of compilation
+DataInitFini( void );
+    - end of compilation
+DataInitStart( INITIALIZE_DATA *init, DECL_INFO *dinfo );
+    - start of an initialization unit
+    - init is area to save initialization information
+    - dinfo is declaration information about thing being inititialized
+DataInitFinish( void );
+    - end of an initialization unit
+DataInitSimple( PTREE expr );
+    - initialization of simple object
+    - i.e. type-spec symbol = expression;
+DataInitConstructorParms( PTREE expression-list );
+    - ctor style initialization
+    - i.e. type-spec symbol( expression-list );
+DataInitFirst( PTREE expression );
+    - start aggregate list initialization
+    - i.e. type-spec symbol = { expression, expression, ... };
+    - called for first expression in expression-list
+DataInitNext( PTREE expression );
+    - continue aggregate list initialization
+    - called for each next expression in expression-list
+DataInitPush( void );
+    - start another level of brace nesting
+DataInitPop( void );
+    - end a level of brace nesting
+    
+   
+Philosophy Of Implementation:
+-----------------------------
+- analysis of expressions handled by AnalyseDataInitExpr()
+- allocation of special data handled by ??
+- allocation of flag for once only handled by ??
+- generation of code handled as follows:
+	cd  = tweak parse tree and invoke EffectCtor()
+	fcd = generate parse tree ?? and invoke EffectCtor()
+	ecd = change function, tweak parse tree and invoke EffectCtor()
+- initialization of data handled by primitives in DGFRONT.C
+    DgZeroBytes( sym, offset, n	)
+    	- pad n bytes of zero at sym+offset
+    DgStore??( sym, value )
+    	- store value of type ?? at sym
+    
+   
+Algorithm For DataInitStart:
+----------------------------
+    fill in currInit structure
+    allocate init structure
+    set offset and size
+    
+    if( data item aggregate )
+	target = aggregate
+	state = expecting open brace
+    else
+	target = scalar
+	state = expecting expression
+    end
+    
+    if( within function )
+	if( symbol is static )
+	    form = InternalStatic;
+	else
+	    form = InternalAuto;
+	end
+    else
+	form = ExternalStatic;
+    end
+
+
+Algorithm For DataInitFinish:
+-----------------------------
+    verify state expectancy
+    if( nestdepth != 0 )
+	abandon initialization
+    end
+    state = completed
+    free nest
+    clear currInit pointer
+    
+
+Algorithm For DataInitSimple:
+-----------------------------
+    verify state expectancy
+    analyse expression
+    switch( form )
+	case InternalAuto:
+	    emit code for assignment
+	    break;
+	case InternalStatic:
+	    if( linker constant )
+		emit data
+	    else
+		set storage to zero
+		allocate bss flag storage
+		emit flag once only code
+		emit code for assignment
+	    end
+	    break;
+	case ExternalStatic:
+	    if( linker constant )
+		emit data
+	    else
+		set storage to zero
+		CgFrontModuleInitOpen()
+		emit code for assignment
+		CgFrontModuleInitClose()
+	    end
+	    break;
+    end
+    state = expecting finish;
+	
+
+Algorithm For DataInitConstructorParms:
+---------------------------------------
+    verify state expectancy
+    analyse expression
+    switch( form )
+	case InternalAuto:
+	    emit code for assignment
+	    break;
+	case InternalStatic:
+	    if( linker constant )
+		emit data
+	    else
+		set storage to zero
+		allocate bss flag storage
+		emit flag once only code
+		emit code for assignment
+	    end
+	    break;
+	case ExternalStatic:
+	    if( linker constant )
+		emit data
+	    else
+		set storage to zero
+		CgFrontModuleInitOpen()
+		emit code for assignment
+		CgFrontModuleInitClose()
+	    end
+	    break;
+    end
+    state = expecting finish;
+
+
+Algorithm For DataInitFirst:
+----------------------------
+    verify state expectancy
+    analyse expression
+    switch( form )
+	case InternalAuto:
+	    if( linker constant )
+		emit data into special
+		emit code for copy from special to local
+	    else
+		emit zero into special
+		emit code for assignment to local
+	    end
+	    break;
+	case InternalStatic:
+	    if( linker constant )
+		emit data
+	    else
+		set storage to zero
+		allocate bss flag storage
+		emit flag once only code
+		emit code for assignment
+	    end
+	    break;
+	case ExternalStatic:
+	    if( linker constant )
+		emit data
+	    else
+		set storage to zero
+		CgFrontModuleInitOpen()
+		emit code for assignment
+		CgFrontModuleInitClose()
+	    end
+	    break;
+    end
+    update offset
+    if( offset < size )
+	state = expecting next expression;
+    else
+	state = expecting close brace;
+    end
+
+
+Algorithm For DataInitNext:
+---------------------------
+    verify state expectancy
+    analyse expression
+    switch( form )
+	case InternalAuto:
+	    if( linker constant )
+		emit data into special
+		emit code for copy from special to local
+	    else
+		emit zero into special
+		emit code for assignment to local
+	    end
+	    break;
+	case InternalStatic:
+	    if( linker constant )
+		emit data
+	    else
+		set storage to zero
+		allocate bss flag storage
+		emit flag once only code
+		emit code for assignment
+	    end
+	    break;
+	case ExternalStatic:
+	    if( linker constant )
+		emit data
+	    else
+		set storage to zero
+		CgFrontModuleInitOpen()
+		emit code for assignment
+		CgFrontModuleInitClose()
+	    end
+	    break;
+    end
+    update offset
+    if( offset < size )
+	state = expecting next expression;
+    else
+	state = expecting close brace;
+    end
+
+
+Algorithm For DataInitPush:
+---------------------------
+    verify state expectancy
+    allocate newinit structure
+    set newinit size and offset based on existing init
+    push existing init
+    state = expecting first expression
+
+
+Algorithm For DataInitPop:
+--------------------------
+    verify state expectancy
+    pad any required zeros
+    free init structure
+    pop init structure
+    update init structure offset
+    
+    if( offset < size )
+	state = expecting first expression
+    else
+	if( nesting > 1 )
+	    state = expecting close brace
+	else
+	    state = expecting finish
+	end
+    end
+

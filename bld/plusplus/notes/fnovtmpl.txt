@@ -1,0 +1,84 @@
+Overloading in the presence of templates:
+
+Question:
+=========
+    Is this allowed:
+	template<class T> T foo( T, int );
+	template<class T> T foo( int, T );
+    which implies that:
+	int foo( int, int );
+    is ambiguous.  But these
+	char foo( char, int );
+	char foo( int, char );
+    are fine.
+
+ARM states:
+===========
+1.  look for an exact match on existing functions. (i.e. functions currently
+    in the symbol table) (exact match == FNOV_RANK_SAME)
+2.  look for a function template that can be used to create a template
+    function that is an exact match.
+3.  look for an ordinary function overload match on existing functions in
+    the symbol table.
+
+Notes:
+======
+1.  For function template:
+	``template<class T> T foo( T );''
+    the declaration:
+        ``int foo( int );''
+    causes an entry to be added to the symbol table.  This entry can be
+    used in step 1 during future overloading.  Whereas the usage:
+	``char c = foo( 'q' );''
+    generates a reference to the template function but does not cause an
+    entry to be added to the symbol table for use in future overloading.
+2.  Step 2 is not clear on whether the exact match applies only to
+    the template-arguments of the function template or to all arguments
+    of the function template.
+    i.e.
+	template<class T> T foo( T, int );
+	int a = foo( 1, 2 );	// ok
+	int b = foo( 3, 'c' );	// not clear (my guess is: NO_MATCH )
+
+ARM states:
+===========
+pg347
+Declaring a function with the same name as a function template with a
+matching type constitutes a declaration of a specific template function.
+pg348
+The definition of a (nontemplate) function with a type that exactly matches
+the type of a function template declaration is a definition of that specific
+template function. (i.e. the template definition is over-ridden)
+
+--> These sections imply a change to the distinct function checking.
+    When a function declaration is checked for uniqueness it must also be
+    considered in terms of templates.
+
+Proposed Overloading Algorithm for Function Resolution:
+=======================================================
+while building list of functions, note any SC_TEMPLATE entries
+o_result = existing overload
+if( o_result <= FNOV_RANK_SAME ) {
+    if( unique ) {
+	return symbol
+    } else {
+	return ambiguous
+    }
+} else {
+    if( there are SC_TEMPLATE entries ) {
+	t_result = make template function with provided args
+	if( t_result = OK ) {
+	    return created symbol
+	} else if( t_result == AMBIGUOUS ) {
+	    return ambiguous
+	}
+    }
+    if( o_result < NO_MATCH ) {
+	if( unique ) {
+	    return symbol
+	} else {
+	    return ambiguous
+	}
+    }
+    return NO_MATCH
+}

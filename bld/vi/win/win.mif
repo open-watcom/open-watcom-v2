@@ -1,0 +1,50 @@
+msgh = rcstr.h
+mastermsg = rcstr.msg
+msgfiles = ..\vi.msg $(sdk_dir)\misc\about.msg
+special = $(msgh)
+
+objwiny  =  main.ybj mainwnd.ybj editwnd.ybj dosdir.ybj time.ybj &
+                stubs.ybj color.ybj wstatus.ybj font.ybj &
+                window.ybj display.ybj getkey.ybj cursor.ybj command.ybj &
+                utils.ybj menu.ybj filesel.ybj flist.ybj &
+                message.ybj windir.ybj contain.ybj bitmap.ybj palette.ybj &
+                dde.ybj srcwin.ybj srcdde.ybj tool.ybj wintica.ybj &
+                repcnt.ybj clipbrd.ybj asavedlg.ybj profile.ybj &
+                finddlg.ybj ectlsub.ybj grepdlg.ybj cmddlg.ybj &
+                statwnd.ybj toolbr.ybj ftbar.ybj about.ybj &
+                startdlg.ybj usage.ybj tagdlg.ybj ldstr.ybj &
+                hasshare.ybj getidata.ybj ctl3d32.ybj linedlg.ybj &
+                clrbar.ybj clrpick.ybj ftpick.ybj repdlg.ybj &
+                setfs.ybj setscr.ybj setgen.ybj util.ybj hotkey.ybj &
+                ssbar.ybj subclass.ybj snoop.ybj wwinhelp.ybj &
+                ideactiv.ybj
+
+extraobjs = $(objcb) $(objwiny)
+
+rc_deps = ..\win\viw.ico ..\win\filelist.dlg ..\win\fgrep.dlg &
+          ..\win\asavedlg.dlg ..\win\finddlg.dlg ..\win\grep.dlg ..\win\cmd.dlg &
+          ..\win\repdlg.dlg ..\win\snoop.dlg &
+          ..\win\startup.dlg  ..\win\usage.dlg ..\win\tagdlg.dlg &
+          ..\win\linedlg.dlg ..\win\clrbar.dlg ..\win\ftbar.dlg &
+          ..\win\dropclr.cur ..\win\nodrop.cur ..\win\dropft.cur &
+          ..\win\dropss.cur &
+          $(sdk_dir)\misc\about.dlg  &
+          ..\ctl\setfs.dlg ..\ctl\setscr.dlg ..\ctl\setgen.dlg
+
+!ifdef sys_windowed
+! ifeq host_OS nt
+!  ifeq host_CPU 386
+other = vintw.res
+!  else
+other = viaxpw.res
+!  endif
+extraobjs += spawn.ybj getfpath.ybj ntcmds.ybj
+! else
+! ifeq host_CPU 386
+other = viwp.res
+! else
+other = viw.res
+! endif
+extraobjs += exec.ybj doscmds.ybj
+! endif
+!endif

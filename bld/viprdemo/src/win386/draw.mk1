@@ -1,0 +1,58 @@
+!define BLANK ""
+d:\bld\viprdemo\src\win386\drawwin.obj : d:\bld\viprdemo\src\drawwin.c .AUTO&
+DEPEND
+ @d:
+ cd d:\bld\viprdemo\src\win386
+ *wcc386 ..\drawwin.c -i=d:\watcom\h;d:\watcom\h\win -w4 -e25 -zq -otexan -d&
+1 -5r -bt=windows -mf
+
+d:\bld\viprdemo\src\win386\box.obj : d:\bld\viprdemo\src\box.cpp .AUTODEPEND
+ @d:
+ cd d:\bld\viprdemo\src\win386
+ *wpp386 ..\box.cpp -i=d:\watcom\h;d:\watcom\h\win -w4 -e25 -zq -otexan -d1 &
+-5r -bt=windows -mf
+
+d:\bld\viprdemo\src\win386\drawroom.obj : d:\bld\viprdemo\src\drawroom.cpp .&
+AUTODEPEND
+ @d:
+ cd d:\bld\viprdemo\src\win386
+ *wpp386 ..\drawroom.cpp -i=d:\watcom\h;d:\watcom\h\win -w4 -e25 -zq -otexan&
+ -d1 -5r -bt=windows -mf
+
+d:\bld\viprdemo\src\win386\furnitu.obj : d:\bld\viprdemo\src\furnitu.cpp .AU&
+TODEPEND
+ @d:
+ cd d:\bld\viprdemo\src\win386
+ *wpp386 ..\furnitu.cpp -i=d:\watcom\h;d:\watcom\h\win -w4 -e25 -zq -otexan &
+-d1 -5r -bt=windows -mf
+
+d:\bld\viprdemo\src\win386\draw.res : d:\bld\viprdemo\src\draw.rc .AUTODEPEN&
+D
+ @d:
+ cd d:\bld\viprdemo\src\win386
+ *wrc ..\draw.rc -bt=windows -i=$[:;d:\watcom\h;d:\watcom\h\win -q -ad -r -f&
+o=draw.res
+
+d:\bld\viprdemo\src\win386\draw.exe : d:\bld\viprdemo\src\back.bmp d:\bld\vi&
+prdemo\src\brighter.bmp d:\bld\viprdemo\src\darker.bmp d:\bld\viprdemo\src\d&
+own.bmp d:\bld\viprdemo\src\forward.bmp d:\bld\viprdemo\src\left.bmp d:\bld\&
+viprdemo\src\right.bmp d:\bld\viprdemo\src\up.bmp d:\bld\viprdemo\src\win386&
+\drawwin.obj d:\bld\viprdemo\src\win386\box.obj d:\bld\viprdemo\src\win386\d&
+rawroom.obj d:\bld\viprdemo\src\win386\furnitu.obj d:\bld\viprdemo\src\win38&
+6\button.lib d:\bld\viprdemo\src\win386\draw.res .AUTODEPEND
+ @d:
+ cd d:\bld\viprdemo\src\win386
+ @%write draw.lk1 NAME draw
+ @%append draw.lk1 FIL drawwin.obj,box.obj,drawroom.obj,furnitu.obj
+ @%append draw.lk1 LIBR button.lib
+!ifneq BLANK ""
+ *wlib -q -n -b draw.imp 
+ @%append draw.lk1 LIBR draw.imp
+!endif
+ *wlink SYS win386 op m op maxe=25 op q op symf @draw.lk1
+!ifneq BLANK "draw.res"
+ wbind draw -q -s d:\watcom\binw\win386.ext -R -q draw.res draw.exe
+!else
+ wbind draw -q -n -s d:\watcom\binw\win386.ext
+!endif
+

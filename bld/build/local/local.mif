@@ -1,0 +1,60 @@
+!ifeq host_CPU axp
+nlang_tools     = 1
+!endif
+!ifeq proj_name ochook
+nlang_tools     = 1
+!endif
+
+!ifeq $(proj_name)_rtdll 1
+nlang_tools     = 1
+!endif
+
+!ifeq nlang_tools 1
+!ifdef %open_nlang_root
+lang_root = $(%open_nlang_root)
+!else
+lang_root = d:\nlang
+!endif
+%WATCOM=$+$(lang_root)$-
+%PATH=$+$(lang_root)\binnt;$(lang_root)\binw;$(%PATH)$-
+%INCLUDE=$+$(lang_root)\h;$(lang_root)\h\nt$-
+librarian       = $(lang_root)\binnt\wlib
+libaxp          = $(lang_root)\binnt\wlib
+# this is since the path stuff above doesn't appear to work at the moment
+!ifdef __NTAXP__
+bld_cl          = $(lang_root)\binnt\wclaxp -zq -l=$(bld_sys) -i$(bld_incs)
+bld_cc          = $(lang_root)\binnt\wccaxp -zq -i$(bld_incs)
+!else
+bld_cl          = $(lang_root)\binnt\wcl386 -zq -l=$(bld_sys) -i$(bld_incs)
+bld_cc          = $(lang_root)\binnt\wcc386 -zq -i$(bld_incs)
+
+!ifdef clib_rtdll
+# C runtime library must compile against local headers!!!!
+cc_386          = *$(lang_root)\binnt\wcc386 -zq
+cpp_386         = *$(lang_root)\binnt\wpp386 -zq
+!else
+cc_386          = *$(lang_root)\binnt\wcc386 -zq -i$(bld_incs)
+cpp_386         = *$(lang_root)\binnt\wpp386 -zq -i$(bld_incs)
+!endif
+
+!endif
+
+!ifdef __LOADDLL__
+!loaddll wccaxp $(lang_root)\binnt\wccdaxp.dll
+!loaddll wppaxp $(lang_root)\binnt\wppdaxp.dll
+!loaddll wlink  $(lang_root)\binnt\wlink.dll
+!loaddll wlib   $(lang_root)\binnt\wlibd.dll
+!loaddll $(lang_root)\binnt\wlib   $(lang_root)\binnt\wlibd.dll
+!loaddll $(lang_root)\binnt\wccaxp $(lang_root)\binnt\wccdaxp.dll
+!loaddll $(lang_root)\binnt\wppaxp $(lang_root)\binnt\wppdaxp.dll
+!loaddll $(lang_root)\binnt\wlink  $(lang_root)\binnt\wlink.dll
+!loaddll $(lang_root)\binnt\wcc386 $(lang_root)\binnt\wccd386.dll
+!endif
+!endif
+
+!ifeq proj_name cc
+extra_l_flags_nt = lib $(watcom_dir)\lib\ld.lib
+!ifeq host_CPU axp
+def_targ        = wcc$(target_CPU)c.exe
+!endif
+!endif

@@ -1,0 +1,5 @@
+extern void HorizontalScroll( WPARAM, LPARAM, HWND );
+extern void VerticalScroll( WPARAM, LPARAM, HWND );
+extern void InitScroll( SCR_CONFIG, HWND );
+extern void ScrollResize( HWND, WPARAM );
+extern void AutoScroll( RECT, POINT );

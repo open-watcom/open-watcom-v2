@@ -1,0 +1,116 @@
+#
+#  Makefile for   WRes library
+#
+#   Date        Name        Reason
+#   ----        ----        ------
+#   10 May 90   Steve B.    created
+#   07 Oct 91   Craig Eisler    cleaned up
+#   13 Oct 92   Jim Randall     added large model pegged stuff
+#   21 May 93   Wes Nelson      added last of large model windows stuff
+
+# path names used in the script
+
+proj_name = wres
+name = wres$(libname)
+
+# where to look for various files
+.c : $(wres_dir)\c
+
+.mif: $(mif_path)
+
+
+OBJS = &
+ loadstr.obj &
+ loadres.obj &
+ wrfree.obj &
+ mropnewf.obj mrrdrh.obj ralliae.obj rclosef.obj rdlli.obj &
+ rduint16.obj rduint32.obj rduint8.obj resseek.obj &
+ restell.obj rillia.obj rillib.obj ropenfro.obj ropenfrw.obj &
+ rrdstr.obj rrlli.obj rrnamoor.obj wraddres.obj wrchkwrf.obj wrdelrs.obj &
+ wrerror.obj wrfilein.obj wrfindrs.obj wrfirres.obj wrfreedi.obj &
+ wrgetli.obj wrgetri.obj wrgetti.obj wrhidcmp.obj wridcmp.obj wridexby.obj &
+ wridfnoo.obj wridfree.obj wridfrnu.obj wridfrst.obj &
+ wrhidfno.obj wrhidfre.obj wrhidfrn.obj wrhidfrs.obj &
+ wridnacm.obj wridnfst.obj wridtnoo.obj wridtonu.obj &
+ wridtost.obj wriidfn.obj wrinitdi.obj wrisempt.obj &
+ wrihidf.obj &
+ wrislr.obj wriswrf.obj wrnextrs.obj wropnewf.obj &
+ wrreaddi.obj wrrewrid.obj wrrfrr.obj wrrftr.obj wrrfwrid.obj &
+ wrrhr.obj wrrwrid.obj &
+ wrwritdi.obj resver.obj wresrtns.obj &
+ resaccel.obj resbitmp.obj resdiag.obj resfont.obj resiccu.obj &
+ resmenu.obj resnamor.obj resraw.obj resstr.obj varstr.obj write.obj &
+ restbar.obj wrauto.obj wrmergdi.obj
+
+# removed files: wrrtr.obj wrrwridn.obj
+
+# options to use
+extra_c_flags = -dMICROSOFT -we
+
+#
+# FLAGS FOR THE DATABASE TEAM
+#
+# Don't include pragmas, because WRES code is put in DBLIB
+#
+!ifdef NO_PRAGMA
+extra_c_flags += -d_NO_LIB_PRAGMAS_
+!endif
+#
+# Option to compile with -r (used in QNX build)
+#
+!ifdef MAINTAIN_SR
+extra_c_flags += -r
+!endif
+
+!ifdef MODEL
+mem_model_i86 = -m$(MODEL)
+mem_model_386 = -m$(MODEL)
+!endif
+!ifdef CONV
+extra_c_flags += -3$(CONV)
+!endif
+!ifdef PEGGED
+extra_c_flags += -zdp
+!endif
+!ifdef WINDOWS
+extra_c_flags += -zw-zu
+!endif
+!ifdef IS_GUI
+extra_c_flags += -DWIN_GUI
+!endif
+!ifdef no_stack
+extra_c_flags += -s
+!endif
+
+lbcfile = $(%ramdisk)\tmp.lbc
+
+inc_dirs_NT = $(watcom_dir)\h\nt
+inc_dirs = $(watcom_dir)\h;$(wres_dir)\h;$(inc_dirs_$(NT))
+
+!include cproj.mif
+!include defrule.mif
+
+.BEFORE
+        set INCLUDE=$(inc_path)
+
+# explicit rules
+
+all : $(wres_dir)\lib\$(name).lib .SYMBOLIC
+        @%null
+
+$(wres_dir)\lib\$(name).lib : $(OBJS) $(__MAKEFILES__) .PRECIOUS
+        %create $(lbcfile)
+        @for %i in ($(OBJS)) do @%append $(lbcfile) +%i
+        $(librarian) -n -b -q $^@ @$(lbcfile)
+!ifdef on_build_machine
+!ifdef __OS2__
+        xcopy /o/r $^@ $(watcom_dir)\lib
+!else
+        xcopy /k/r $^@ $(watcom_dir)\lib
+!endif
+!endif
+        @del $(lbcfile)
+
+clean : .SYMBOLIC .EXPLICIT
+    -@if exist *.obj @del *.obj
+    -@if exist $(wres_dir)\lib\$(name).lib @del $(wres_dir)\lib\$(name).lib

@@ -1,0 +1,43 @@
+#
+# create 16-bit version of LIFE
+#
+
+CFLAGS = -zW -oaxt -d1 -w4 -i..\filedll
+CC = wcc
+NAME = life
+
+LNK = $(name).lnk
+
+OBJS = life.obj array.obj bitmaps.obj mouse.obj patterns.obj timer.obj &
+	bitmap.obj palette.obj file.obj
+
+$(name).exe : $(OBJS) $(name).res $(LNK)
+    wlink @$(LNK)
+    wrc -30 $(name).res
+    copy /b $(name).exe+$(name).sym
+    del $(name).sym
+    
+$(name).res : $(name).rc $(name).ico
+    wrc -r -30 $(name).rc
+    
+$(LNK) : makefile.w16
+    %create $(LNK)
+    @%append $(LNK) debug all
+    @%append $(LNK) system windows
+    @%append $(LNK) option heapsize=1k
+    @%append $(LNK) option symfile = $(name).sym
+    @%append $(LNK) library windows
+    @%append $(LNK) option stack=8k
+    @%append $(LNK) name $(name)
+    @for %i in ($(OBJS)) do @%append $(LNK) file %i
+        
+.c.obj :
+	$(CC) $(CFLAGS) $[*
+
+clean: .symbolic
+    @erase *.obj
+    @erase *.err
+    @erase *.exe
+    @erase *.lnk
+    @erase *.res
+    @erase *.rex

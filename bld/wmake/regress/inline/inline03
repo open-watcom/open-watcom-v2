@@ -1,0 +1,17 @@
+#  
+#  INLINE TEST 03
+#  - missing ending << 
+# 
+test1: test .symbolic
+    @-diff test.2 test.3
+test: .symbolic
+    @-diff <<test.1 <<test.2
+HELLO
+BOO
+KEEP
+HELLO
+BOO2
+<<KEEP
+    @-diff test.1 <<test.3
+HELLO1
+BOO

@@ -1,0 +1,102 @@
+#
+#   test the interpreted if
+#
+
+.silent
+
+tests = pre08.001 pre08.002 pre08.003 pre08.004 pre08.005 pre08.006     &
+        pre08.007 pre08.008 pre08.009 pre08.010 pre08.011
+
+all: .symbolic $(tests)
+    del pre08.005
+    del pre08.007
+    del pre08.008
+
+
+pre08.001: .symbolic
+    if a == b $(mkerr)
+    if a== b $(mkerr)
+    if a ==b $(mkerr)
+    if a==b $(mkerr)
+
+
+pre08.002: .symbolic
+    if not a == a $(mkerr)
+    if not a== a $(mkerr)
+    if not a ==a $(mkerr)
+    if not a==a $(mkerr)
+
+
+pre08.003: .symbolic
+    wtouch pre08.003
+    if not exist pre08.003 $(mkerr)
+    del pre08.003
+    if exist pre08.003 $(mkerr)
+
+
+pre08.004: .symbolic
+    wtouch pre08.003
+    if not exist pre*.003 $(mkerr)
+    del pre08.003
+
+
+pre08.005:
+    if a == a if a== a if a ==a if a==a wtouch pre08.005
+
+
+pre08.006: .symbolic
+    $(mkerr) 0
+    if not errorlevel 0 $(mkerr)
+    -$(mkerr) 1
+    if errorlevel 2 $(mkerr)
+
+
+# this is an oddball case - try if a b == a echo hi under DOS
+pre08.007:
+    if a b == a wtouch pre08.007
+
+
+pre08.008:
+    if a	==	a	wtouch pre08.008
+
+
+pre08.009: .symbolic
+    echo you should get 11 syntax errors now
+    -if
+    -if a
+    -if a ==
+    -if a==
+    -if a ==a
+    -if a== a
+    -if a == a
+    -if a =
+    -if a=
+    -if ==
+    -if =
+
+
+pre08.010: .symbolic
+    echo you should get 11 syntax errors now
+    -if not
+    -if not a
+    -if not a ==
+    -if not a==
+    -if not a ==a
+    -if not a== a
+    -if not a == a
+    -if not a =
+    -if not a=
+    -if not ==
+    -if not =
+
+
+pre08.011: .symbolic
+    echo you should get 8 syntax errors now
+    -if errorlevel
+    -if errorlevel 0
+    -if not errorlevel
+    -if not errorlevel 0
+    -if exist
+    -if exist a
+    -if not exist
+    -if not exist a

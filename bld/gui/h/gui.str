@@ -1,0 +1,9 @@
+#undef guipick
+#ifdef JAPANESE_MESSAGES
+#define guipick( a, b, c ) GUI_LITERAL_##a, c
+#else
+#define guipick( a, b, c ) GUI_LITERAL_##a, b
+#endif
+
+#include "gui.msg"
+

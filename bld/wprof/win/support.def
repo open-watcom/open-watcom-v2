@@ -1,0 +1,58 @@
+//#line "..\c\support.c" 141
+extern file_handle ExeOpen(char *name);
+//#line "..\c\support.c" 157
+extern void ExeClose(file_handle fh);
+//#line "..\c\support.c" 165
+extern void SetExeOffset(uint_16 seg,uint_32 off,uint_16 sect_id);
+//#line "..\c\support.c" 183
+extern void SetExeImage(image_info *image);
+//#line "..\c\support.c" 192
+extern bint SetExeFile(file_handle fh,bint overlay);
+//#line "..\c\support.c" 327
+extern int ExeHeader(file_handle fh);
+//#line "..\c\support.c" 619
+extern image_info *AddrImage(address *addr);
+//#line "..\c\support.c" 674
+extern void MapAddressToActual(image_info *curr_image,addr_ptr *addr);
+//#line "..\c\support.c" 703
+extern void MapAddressToMap(addr_ptr *addr);
+//#line "..\c\support.c" 742
+extern void MapAddressIntoSection(address *addr);
+//#line "..\c\support.c" 775
+extern bint LoadImageOverlays(void );
+//#line "..\c\support.c" 1174
+extern void SetNumBytes(uint_16 num);
+//#line "..\c\support.c" 1182
+extern void SkipCode(void );
+//#line "..\c\support.c" 1323
+extern void GetFullInstruct(char *buffer,int max,form_option option);
+//#line "..\c\support.c" 1429
+extern char *JmpLabel(uint_32 addr,uint_32 off);
+//#line "..\c\support.c" 1452
+extern char *ToStr(uint_32 value,uint_16 length,uint_32 addr);
+//#line "..\c\support.c" 1466
+extern char *ToIndex(unsigned long value,unsigned long addr);
+//#line "..\c\support.c" 1480
+extern char *ToBrStr(uint_32 value,uint_32 addr);
+//#line "..\c\support.c" 1504
+extern char *ToSegStr(uint_32 value,uint_16 seg,uint_32 addr);
+//#line "..\c\support.c" 1525
+extern uint_32 GetOffset(void );
+//#line "..\c\support.c" 1533
+extern void GetCurrAddrPtr(address *addr);
+//#line "..\c\support.c" 1542
+extern int_16 GetNextByte(void );
+//#line "..\c\support.c" 1554
+extern int_16 GetDataByte(void );
+//#line "..\c\support.c" 1566
+extern int_16 GetDataWord(void );
+//#line "..\c\support.c" 1579
+extern int_32 GetDataLong(void );
+//#line "..\c\support.c" 1594
+extern char EndOfSegment(void );
+//#line "..\c\support.c" 1609
+extern int IsWtk(void );
+//#line "..\c\support.c" 1615
+extern void DoWtk(void );
+//#line "..\c\support.c" 1620
+extern char *GetWtkInsName(uint_16 wopcode);

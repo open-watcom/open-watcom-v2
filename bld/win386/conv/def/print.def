@@ -1,0 +1,1 @@
+int ResetDC(int,void *);

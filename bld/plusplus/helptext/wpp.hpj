@@ -1,0 +1,22 @@
+;
+; Help Command file for C++ messages
+; ==================================
+;
+;   Modified        By              Reason
+;   --------        --              ------
+;   93/01/20        J.W.Welch       Defined
+;
+
+[Options]
+COMPRESS=FALSE
+WARNING=3
+INDEX=index
+Title=C++ Diagnostic Messages
+
+[Files]
+winhelp.rtf
+
+[Bitmaps]
+
+[Map]
+#include <winhelp.gh>

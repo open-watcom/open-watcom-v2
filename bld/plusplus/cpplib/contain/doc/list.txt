@@ -1,0 +1,12 @@
+WCS/DIsvList requires from <Type>:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  - nothing
+  
+WCS/DValList requires from <Type>:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  - well defined copy, default constructors
+  - == operator
+  
+WCS/DPtrList requires from <Type>:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  - == operator

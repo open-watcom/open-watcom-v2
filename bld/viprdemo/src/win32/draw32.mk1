@@ -1,0 +1,56 @@
+!define BLANK ""
+d:\bld\viprdemo\src\win32\drawwin.obj : d:\bld\viprdemo\src\drawwin.c .AUTOD&
+EPEND
+ @d:
+ cd d:\bld\viprdemo\src\win32
+ *wcc386 ..\drawwin.c -i=d:\watcom\h;d:\watcom\h\nt -w4 -e25 -zq -otexan -d1&
+ -5r -bt=nt -mf
+
+d:\bld\viprdemo\src\win32\BOX.obj : d:\bld\viprdemo\src\BOX.CPP .AUTODEPEND
+ @d:
+ cd d:\bld\viprdemo\src\win32
+ *wpp386 ..\BOX.CPP -i=d:\watcom\h;d:\watcom\h\nt -w4 -e25 -zq -otexan -d1 -&
+5r -bt=nt -mf
+
+d:\bld\viprdemo\src\win32\DRAWROOM.obj : d:\bld\viprdemo\src\DRAWROOM.CPP .A&
+UTODEPEND
+ @d:
+ cd d:\bld\viprdemo\src\win32
+ *wpp386 ..\DRAWROOM.CPP -i=d:\watcom\h;d:\watcom\h\nt -w4 -e25 -zq -otexan &
+-d1 -5r -bt=nt -mf
+
+d:\bld\viprdemo\src\win32\FURNITU.obj : d:\bld\viprdemo\src\FURNITU.CPP .AUT&
+ODEPEND
+ @d:
+ cd d:\bld\viprdemo\src\win32
+ *wpp386 ..\FURNITU.CPP -i=d:\watcom\h;d:\watcom\h\nt -w4 -e25 -zq -otexan -&
+d1 -5r -bt=nt -mf
+
+d:\bld\viprdemo\src\win32\draw.res : d:\bld\viprdemo\src\draw.rc .AUTODEPEND
+ @d:
+ cd d:\bld\viprdemo\src\win32
+ *wrc ..\draw.rc -bt=nt -i=$[:;d:\watcom\h;d:\watcom\h\nt -q -ad -r -fo=draw&
+.res
+
+d:\bld\viprdemo\src\win32\draw32.exe : d:\bld\viprdemo\src\BACK.BMP d:\bld\v&
+iprdemo\src\BRIGHTER.BMP d:\bld\viprdemo\src\DARKER.BMP d:\bld\viprdemo\src\&
+DOWN.BMP d:\bld\viprdemo\src\FORWARD.BMP d:\bld\viprdemo\src\LEFT.BMP d:\bld&
+\viprdemo\src\RIGHT.BMP d:\bld\viprdemo\src\UP.BMP d:\bld\viprdemo\src\win32&
+\drawwin.obj d:\bld\viprdemo\src\win32\BOX.obj d:\bld\viprdemo\src\win32\DRA&
+WROOM.obj d:\bld\viprdemo\src\win32\FURNITU.obj d:\bld\viprdemo\src\win32\nt&
+_3d.dll d:\bld\viprdemo\src\win32\button.lib d:\bld\viprdemo\src\win32\draw.&
+res .AUTODEPEND
+ @d:
+ cd d:\bld\viprdemo\src\win32
+ @%write draw32.lk1 NAME draw32
+ @%append draw32.lk1 FIL drawwin.obj,BOX.obj,DRAWROOM.obj,FURNITU.obj
+ @%append draw32.lk1 LIBR button.lib
+!ifneq BLANK "nt_3d.dll"
+ *wlib -q -n -b draw32.imp nt_3d.dll
+ @%append draw32.lk1 LIBR draw32.imp
+!endif
+ *wlink SYS nt_win op m op maxe=25 op q op symf @draw32.lk1
+!ifneq BLANK "draw.res"
+ wrc -q -ad draw.res draw32.exe
+!endif
+

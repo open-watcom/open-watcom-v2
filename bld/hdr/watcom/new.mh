@@ -1,0 +1,41 @@
+//
+//  new.h -- C++ default storage allocators
+//
+:keep CPP_HDR
+:include crwat.sp
+//
+#ifndef _NEW_H_INCLUDED
+#define _NEW_H_INCLUDED
+:include readonly.sp
+
+#ifndef __cplusplus
+#error new.h is for use with C++
+#endif
+
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
+#ifndef _STDDEF_H_INCLUDED
+ #include <stddef.h>
+#endif
+
+:include cpppfv.sp
+
+extern void *operator new( size_t );
+extern void *operator new( size_t, void * );
+extern void *operator new []( size_t );
+extern void *operator new []( size_t, void * );
+extern void operator delete( void * );
+extern void operator delete []( void * );
+_WPRTLINK extern PFV set_new_handler( PFV );
+_WPRTLINK extern PFU _set_new_handler( PFU );
+:segment !QNX
+#if defined(__SW_BR)
+  _WPRTLINK extern _PUP _set_op_new( _PUP );
+  _WPRTLINK extern _PUP _set_op_new_array( _PUP );
+  _WPRTLINK extern _PVV _set_op_delete( _PVV );
+  _WPRTLINK extern _PVV _set_op_delete_array( _PVV );
+#endif
+:endsegment
+
+#endif

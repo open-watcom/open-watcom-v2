@@ -1,0 +1,19 @@
+!include $(wdisasm_dir)/mif/disasm.mif
+
+imp_objs = &
+        x86addr.obj &
+        x86ctrl.obj &
+        x86types.obj &
+        x86reg.obj &
+        x86call.obj &
+        x86disas.obj &
+        x86trace.obj &
+        $(disasm)
+
+mad = x86
+
+extra_incs = $(wdisasm_dir)\h
+extra_srcs = $(wdisasm_dir)\c
+extra_gbls = $(wdisasm_dir)\compile.gbl
+
+!include ../../master.mif

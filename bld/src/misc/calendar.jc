@@ -1,0 +1,257 @@
+#define JAPAN_VER
+/* #define ANSI_VER */
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void tprintf( int row, int col, char *fmt, ... );
+
+#define FEBRUARY        1
+#define NARROW          3
+#define WIDE            4
+
+
+static int   Jump[ 12 ] =       { 1, 4, 4, 0, 2, 5, 0, 3, 6, 1, 4, 6 };
+static int   MonthDays[ 12 ] =  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+#if defined(JAPAN_VER)
+static char  *MonthName[ 12 ] = { "1ŒŽ", "2ŒŽ", "3ŒŽ", "4ŒŽ", "5ŒŽ", "6ŒŽ",
+                                  "7ŒŽ", "8ŒŽ", "9ŒŽ", "10ŒŽ", "11ŒŽ", "12ŒŽ" };
+static char  *WideTitle =       { " “ú  ŒŽ  ‰Î  …  –Ø  ‹à  “y" };
+static char  *NarrowTitle =     { "“ú ŒŽ ‰Î … –Ø ‹à “y" };
+#else
+static char  *MonthName[ 12 ] = { "January", "February", "March", "April",
+                                  "May", "June", "July", "August",
+                                  "September", "October", "November", "December" };
+static char  *WideTitle =       { "Sun Mon Tue Wed Thu Fri Sat" };
+static char  *NarrowTitle =     { "Su Mo Tu We Th Fr Sa" };
+#endif
+
+
+int main()
+/********/
+
+{
+    time_t                      curr_time;
+    register struct tm          *tyme;
+
+    ClearScreen();
+
+    /* get today's date */
+
+    curr_time = time( NULL );
+    tyme = localtime( &curr_time );
+
+    /* draw calendar for this month */
+
+    Calendar( tyme->tm_mon, tyme->tm_year, 10, 26, WIDE, WideTitle );
+
+    /* draw calendar for last month */
+
+    tyme->tm_mon--;
+    if( tyme->tm_mon < 0 ) {
+        tyme->tm_mon = 11;
+        tyme->tm_year--;
+    }
+    Calendar( tyme->tm_mon, tyme->tm_year, 5, 3, NARROW, NarrowTitle );
+
+    /* draw calendar for next month */
+
+    tyme->tm_mon += 2;
+    if( tyme->tm_mon > 11 ) {
+        tyme->tm_mon -= 12;
+        tyme->tm_year++;
+    }
+    Calendar( tyme->tm_mon, tyme->tm_year, 5, 56, NARROW, NarrowTitle );
+
+    PosCursor( 20, 1 );
+    return( 0 );
+}
+
+
+void Calendar( month, year, row, col, width, title )
+/**************************************************/
+
+    int                         month;
+    int                         year;
+    int                         row;
+    int                         col;
+    int                         width;
+    char                        *title;
+{
+    register int                start;
+    register int                days;
+    register int                box_width;
+    register char               *str;
+    register int                i;
+
+    box_width = 7 * width - 1;
+    Box( row, col, box_width, 8 );
+    str = MonthName[ month ];
+
+    tprintf( row - 1, col + 1 + ( box_width - strlen( str ) - 5 ) / 2 ,
+                "%s 19%d\n", str, year );
+    tprintf( row + 1, col + 1, title );
+
+    start = year + year / 4 + Jump[ month ];
+    if( ( year % 4 == 0 ) && ( month <= FEBRUARY ) ) {
+        --start;
+    }
+    start = start % 7 + 1;
+    if( ( year % 4 == 0 ) && ( month == FEBRUARY ) ) {
+        days = 29;
+    } else {
+        days = MonthDays[ month ];
+    }
+    row += 3;
+    for( i = 1; i <= days; ++i ) {
+
+        tprintf( row, col + width * start - 2, "%2d", i );
+
+        if( start == 7 ) {
+            ++row;
+            start = 1;
+        } else {
+            ++start;
+        }
+    }
+}
+
+
+void Box( row, col, width, height )
+/*********************************/
+
+    int                         row;
+    int                         col;
+    int                         width;
+    int                         height;
+{
+    register int                i;
+
+#if defined(JAPAN_VER)
+    Line( row, col, width, '+', '-', '+' );
+    Line( row + 1, col, width, '|', ' ', '|' );
+    Line( row + 2, col, width, '|', '-', '|' );
+    for( i = 3; i <= height; ++i ) {
+        Line( row + i, col, width, '|', ' ', '|' );
+    }
+    Line( row + height + 1, col, width, '+', '-', '+' );
+#else
+    Line( row, col, width, 'Ú', 'Ä', '¿' );
+    Line( row + 1, col, width, '³', ' ', '³' );
+    Line( row + 2, col, width, 'Ã', 'Ä', '´' );
+    for( i = 3; i <= height; ++i ) {
+        Line( row + i, col, width, '³', ' ', '³' );
+    }
+    Line( row + height + 1, col, width, 'À', 'Ä', 'Ù' );
+#endif
+}
+
+
+void Line( row, col, width, left, centre, right )
+/***********************************************/
+
+    int                         row;
+    int                         col;
+    int                         width;
+    char                        left;
+    char                        centre;
+    char                        right;
+{
+    char                        buffer[ 80 ];
+
+    buffer[ 0 ] = left;
+    memset( &buffer[ 1 ], centre, width );
+    buffer[ width + 1 ] = right;
+    buffer[ width + 2 ] = '\0';
+    tprintf( row, col, buffer );
+}
+
+#if defined(__QNX__)
+    #include <sys/qnxterm.h>
+#else
+    #include <dos.h>
+#endif
+#include <stdarg.h>
+
+void tprintf( int row, int col, char *fmt, ... )
+/**********************************************/
+{
+    auto va_list ap;
+    char *p1, *p2;
+
+
+#if defined(__QNX__)
+    va_start( ap, fmt );
+    p1 = va_arg( ap, char * );
+    p2 = va_arg( ap, char * );
+    term_printf( row - 1, col -1, TERM_NORMAL, fmt, p1, p2 );
+    va_end( ap );
+    term_flush();       /* flush output for debugging purposes only */
+#else
+    PosCursor( row, col );
+    va_start( ap, fmt );
+    vprintf( fmt, ap );
+    va_end( ap );
+    fflush( stdout );
+#endif
+}
+
+void PosCursor( row, col )
+/************************/
+    int                         row;
+    int                         col;
+{
+#if defined(__OS2__)
+    extern int far pascal   VioSetCurPos( unsigned short, unsigned short,
+                            unsigned short );
+
+    VioSetCurPos( row, col, 0 );
+#elif defined(__QNX__)
+    term_cur( row - 1, col - 1 );
+    term_flush();       /* flush output for debugging purposes only */
+#elif defined(ANSI_VER)
+    printf( "%c[%2.2d;%2.2dH", 27, row, col );
+#else
+    union REGS                  regs;
+
+    regs.w.dx = ( row << 8 ) + col - 0x0101;
+    regs.h.bh = 0;
+    regs.h.ah = 2;
+#ifdef __386__
+    int386( 0x10, &regs, &regs );
+#else
+    int86( 0x10, &regs, &regs );
+#endif
+#endif
+}
+
+void ClearScreen()
+/****************/
+{
+#if defined(__OS2__)
+    extern int far pascal   VioWrtNChar( char far *, unsigned short,
+                            unsigned short, unsigned short, unsigned short );
+
+    VioWrtNChar( " ", 2000, 0, 0, 0 );
+#elif defined(__QNX__)
+    term_load();
+    term_clear( TERM_CLS_SCR );
+    term_flush();       /* flush output for debugging purposes only */
+#elif defined(ANSI_VER)
+    printf( "%c[2J", 27 );
+#else
+    union REGS                  regs;
+
+    regs.w.cx = 0;
+    regs.w.dx = 0x1850;
+    regs.h.bh = 7;
+    regs.w.ax = 0x0600;
+#ifdef __386__
+    int386( 0x10, &regs, &regs );
+#else
+    int86( 0x10, &regs, &regs );
+#endif
+#endif
+}
+

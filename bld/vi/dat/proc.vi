@@ -1,0 +1,22 @@
+#
+# build procedure prototype
+# 
+        assign %a = /Procedure Name: /
+        input %a
+        if lastrc == NO_VALUE_ENTERED
+	    return
+        endif
+        atomic
+	echo off
+	assign %x = /autoindent/@ 
+	set noautoindent
+        execute \e0o/*\n * %a\n */\n\e0ivoid %a( @ )\n{\n\n} /* %a */\n\e
+	if %x == 1
+	    set autoindent
+	endif
+        .-4
+        execute \e0f@x
+	echo on
+        echo 1 Procedure %a added
+        echo 2 " "
+	keyadd i

@@ -1,0 +1,235 @@
+DESCRIPTION
+
+CMDEDIT (OS2EDIT) is a program that allows editing and retrieval of the
+command line, allows commands to be assigned to functions keys, and allows
+aliases for commands to be created
+
+COMMAND LINE
+
+        CMDEDIT [options] [aliasfile [cmdfile]] (DOS)
+        CMDEDIT -q [cmdfile]                    (DOS)
+        OS2EDIT                                 (OS/2)
+
+        Options:
+
+          -i    Go to insert mode at the start of each command.
+          -s    Make insert mode 'sticky' between commands. (overrides -i)
+          -e    Always save commands at the end of the buffer.
+                Normally, duplicate commands are not stored in the buffer.
+          -a    Use the aliases regardless of the process requesting the string.
+                Normally it tries to determine if COMMAND.COM is the requesting
+                process, but the check does not work properly on some systems,
+                or if a subsequent command processor has been invoked.
+          -f    Stop completing a file name when multiple choices exist. See
+                descriptions of Tab and Shift-Tab keys for details.
+	  -l	Complete file names in lower case
+          -mx   Character x will be used to separate multiple commands
+	  -h    Directory commands (u,d,o,r) must be preceded with '#'
+	  -\	Append '\' after directories, and ' ' after normal files
+	  	during filename completion
+
+        Notes:
+
+        - If the environment variable CMDEDIT (or OS2EDIT) is set, and
+          no command is given to CMDEDIT (OS2EDIT) the environment variable
+          will be used as the command line.
+
+        - [cmdfile] may be used to save the command buffer if CMDEDIT is
+          unloaded then reloaded. For example:
+
+              cmdedit -q cmd.fil
+              cmdedit alias.fil cmd.fil
+
+          will use cmd.fil to save/restore the internal command buffer.
+          
+        Notes for OS/2:
+
+        - OS2EDIT.DLL is also loaded and needs to be in a LIBPATH directory
+          (where you keep your other .DLL files)
+
+        - You must remove the SET KEYS=ON statment from CONFIG.SYS.
+
+        - You may not pass the command line directly to OS2EDIT. You must
+          use the environment variable method to pass the command line.
+
+
+The default alias file name is
+
+        none                                (DOS)
+        C:\ALIAS.OS2                        (OS/2)
+
+
+FORM OF THE ALIAS FILE
+
+The alias file contains records of the following form
+
+word  string             - When <word> appears as the first word on the
+                           command line, it will be substituted with
+                           <string> before being passed to DOS.
+
+<Fn> string              - When <Fn> is hit, CMDEDIT behaves as if <string> were
+                           typed by you. It is inserted if you are in insert
+                           mode, overstrikes if not, etc..
+                           keys F1 thru F40 are supported.
+
+<Fn> !string             - As above, but an <ENTER> is generated
+                           following string.
+
+Only keys F1 through F10 on the keyboard are actually used.  For F11 thru
+F20, use the shift key, for F21 to F30 use Ctrl key and for F31 to F40 use
+the Alt key.
+
+Within the replacement string, the symbols %1 %2 ...  %9 are replaceable by
+parameters.  When the alias is invoked, each blank delimited word following
+the alias word is considered to be a parameter to the alias.  Parameters
+which have no corresponding %n in the alias are appended to the end of the
+command.  For example, if
+
+        printps myfile lpt1
+
+is typed, and the alias
+
+        printps copy preamble.ps+%1.c+eoj.ps
+
+is present in the alias list, the resulting DOS command would be
+
+        copy preamble.ps+myfile.c+eoj.ps lpt1
+
+A symbol such as %name% within an alias will be replaced with the corresponding
+DOS or OS/2 environment variable name. For example, the alias
+
+        addpath      set path=%path%;%1
+
+will cause another directory to be added to your path when used.
+
+Aliases are substituted recursively. For example, if the aliases
+
+        rn   rename %1 %2
+        bk   rn %1.c %1.bak
+
+are present, typing
+
+        bk foo
+
+is equivalent to typing
+
+        rename foo.c foo.bak
+
+Recursive definitions are handled as well. The alias
+
+        dir     dir *.c
+
+is perfectly alright, although somewhat limited in its usefulness.
+EDITING FEATURES
+
+Whenever a command is executed, CMDEDIT will save the command in a buffer for
+future recall and editing.  When the buffer becomes full, the oldest command is
+discarded.  CMDEDIT will not save a second copy of a command that is already
+present in the buffer.
+
+Multiple commands
+
+!   (or as set by -m)         Separates multiple commands on a line.
+                              A real exclamation point must be entered as !!.
+
+Command Retrieval
+
+Key               Alternate   Meaning
+
+Cursor-Up                     retrieve previous command from the buffer
+Cursor-Down                   retrieve next command from the buffer
+Ctrl-Cursor-Up    Alt-E       retrieve first command from buffer
+Ctrl-Cursor-Down  Alt-B       retrieve last command from buffer
+Ctrl-Delete       Alt-X       delete the current command from the buffer
+Page-Down                     save the unentered command line in the buffer
+Alt-C                         list all commands in the buffer
+Alt-L                         list all current aliases
+Ctrl-Tab          Alt-N       retrieve next command that begins as ... see below
+Alt-Tab           Alt-P       retrieve previous command that begins as ...
+Ctrl-Insert       Alt-Z       retrieve accidentally erased line
+
+The Alt-Tab and Ctrl-Tab commands are used by typing the beginning of a command
+which is in the buffer then pressing the key.  The entire command will then
+appear on the command line.  You can press Alt-Tab again to see other commands
+starting with that prefix.
+
+Cursor movement
+
+Cursor-Left                   move left on command line
+Cursor-Right                  move right on command line
+Home                          move to beginning of line
+End                           move to end of line
+Ctrl-Cursor-Left              move left word
+Ctrl-Cursor-Right             move right word
+
+Line editing
+
+Insert                        toggle in and out of insert mode
+Delete                        delete character under cursor
+Ctrl-Delete                   delete to end of word
+Backspace                     delete character to left of cursor
+Ctrl-Backspace                delete to beginning of word
+Escape                        delete input line and leave insert mode
+Ctrl-Home                     erase to beginning of line
+Ctrl-End                      erase to end of line
+Alt-H		              toggle the -h option interactively
+
+Retrieving screen items
+
+Alt-Cursor-Up     Alt-U       move a cursor up the screen
+Alt-Cursor-Down   Alt-D       move a cursor down the screen
+Alt-Cursor-Left   Alt-L       move a cursor left on the screen
+Alt-Cursor-Right  Alt-R       move a cursor right on the screen
+Alt-Home          Alt-0       move screen cursor to column 0
+Alt-End           Alt-2       retrieve two lines from screen
+
+This is useful for changing your path.  Type path, then retrieve it from
+the screen, edit it into a command and press Enter.  You can also type a
+batch file, then execute certain commands from it using this capability.
+
+File name completion
+
+Tab                           Complete file name
+Shift-Tab                  /  List choices if -f option in effect.
+                           \  List previous file name if -f not in effect.
+
+These keys are used by typing the first part of a filename and then
+pressing Tab.  For example, typing edit my<TAB> will expand to edit
+MYFILE.C if the file MYFILE.C is the first file starting with 'MY' in the
+current directory.  If Tab is pressed before the first space on the line,
+the path is searched for a matching command.  For example, typeing
+cmde<TAB> might expand to c:\lang\bin\CMDEDIT.EXE.  Subsequent TABS
+will list the next file matching the pattern.  Shift-Tab will back up one
+file name.  With -f in effect, the file name is only completed to a point
+where a choice must be made, and Shift-Tab will list those choices.  More
+characters may then by typed to differentiate between the choices and Tab
+hit again.  Also the environment variable CMDMATCH controls which file
+extensions are to be matched.  For example, set CMDMATCH=.C.H.ASM means
+only match files of type .C, .H and .ASM.  set CMDMATCH=~.OBJ.EXE means
+match all files except those of type
+.OBJ and .EXE.
+
+DIRECTORY COMMANDS
+
+I hate typing the '\' character.  It's in an awkward spot on the keyboard.
+This fact prompted me to put some support into CMDEDIT to change the
+current working directory without typing '\'.  I also like to change my
+current working directory and drive as an atomic operation.  In the
+directory commands, the following substitutions are made in a path.
+
+    /   becomes \
+    ' ' becomes \
+    -   becomes ..\
+
+For example, "--codegen 8086 c" and "--codegen/8086/c" both become
+"..\..\codegen\8086\c".
+
+Commands
+
+        d [d:]path             Set current drive to d and directory to path
+        o [d:]path             The "over" command. Equivalent to #d [d:]..\path
+        u [n]                  Go up n levels in the tree
+        r                      Return to the previous drive and directory
+
+You can alias these commands as well. I have aliases for 'd', 'o', 'u' and
+'r' in my alias file.

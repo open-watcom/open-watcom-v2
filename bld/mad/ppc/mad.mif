@@ -1,0 +1,19 @@
+!include $(disasm_dir)\core\dis.mif
+
+imp_objs = &
+        ppcaddr.obj &
+        ppcctrl.obj &
+        ppctypes.obj &
+        ppcreg.obj &
+        ppccall.obj &
+        ppcdisas.obj &
+        ppctrace.obj &
+        $(dis_objs)
+
+mad = ppc
+
+extra_incs = $(dis_includes)
+extra_srcs = $(dis_srcs)
+extra_gbls = $(disasm_dir)\core\compile.gbl
+
+!include ../../master.mif

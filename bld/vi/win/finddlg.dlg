@@ -1,0 +1,21 @@
+#include "finddlg.h"
+FINDDLG DIALOG 59, 29, 204, 124
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Find"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        FIND_EDIT, 24, 4, 174, 12, ES_AUTOHSCROLL
+    CONTROL         "Ignore Case", FIND_IGNORE_CASE, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 4, 24, 52, 10
+    CONTROL         "Regular Expressions", FIND_REGULAR_EXPRESSIONS,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 4, 36, 76, 10
+    CONTROL         "Search Backwards", FIND_SEARCH_BACKWARDS, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 4, 48, 72, 10
+    CONTROL         "Wrap Search", FIND_SEARCH_WRAP, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 4, 60, 72, 10
+    LISTBOX         FIND_LISTBOX, 88, 36, 108, 80, WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Find:", -1, 4, 6, 16, 8
+    LTEXT           "Previous Search Strings:", -1, 88, 24, 84, 8
+    DEFPUSHBUTTON   "&Find", IDOK, 24, 79, 40, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 24, 99, 40, 14
+END

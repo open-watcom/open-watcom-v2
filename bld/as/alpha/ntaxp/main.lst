@@ -1,0 +1,237 @@
+.globl		main
+.globl		ExitStatus
+.globl		AsmParse
+.text
+main:
+    lda            $sp,-0x40($sp)
+    stq            $ra,0x30($sp)
+    stq            $s5,0x28($sp)
+    stq            $s4,0x20($sp)
+    stq            $s3,0x18($sp)
+    stq            $s2,0x10($sp)
+    stq            $s1,0x8($sp)
+    stq            $s0,($sp)
+    mov            $a1,$s0
+    mov            $a0,$s1
+    bsr            $ra,j^AsMemInit
+    bsr            $ra,j^AsMsgInit
+    sextl          $v0,$a0
+    beq            $a0,L$1
+    br             L$2
+L$1:
+    mov            0x000000ff,$a0
+    bsr            $ra,j^exit
+L$2:
+    sextl          $s1,$a0
+    cmpeq          $a0,0x00000001,$t0
+    bne            $t0,L$3
+    br             L$4
+L$3:
+    bsr            $ra,j^Banner
+    bsr            $ra,j^Usage
+    br             L$22
+L$4:
+    mov            0xffffffff,$v0
+    addl           $s1,$v0,$s1
+    addl           $s0,0x00000004,$s0
+    sextl          $s1,$a0
+    sextl          $s0,$a1
+    bsr            $ra,j^OptionsInit
+    zapnot         $v0,0x00000001,$a0
+    bne            $a0,L$5
+    br             L$22
+L$5:
+    bsr            $ra,j^Banner
+    ldah           $v0,h^AsOptions($zero)
+    lda            $v0,l^AsOptions($v0)
+    ldl            $v0,($v0)
+    and            $v0,0x00000004,$v0
+    sextl          $v0,$a0
+    bne            $a0,L$6
+    br             L$7
+L$6:
+    bsr            $ra,j^Usage
+    mov            0x00000000,$v0
+    stl            $v0,($s0)
+    br             L$9
+L$7:
+    ldl            $v0,($s0)
+    zapnot         $v0,0x0000000f,$a0
+    beq            $a0,L$8
+    br             L$9
+L$8:
+    ldah           $v0,h^__iob($zero)
+    lda            $v0,l^__iob+56($v0)
+    mov            0x00000001,$a1
+    sextl          $v0,$a0
+    bsr            $ra,j^AsOutMessage
+    ldah           $v0,h^__iob($zero)
+    lda            $v0,l^__iob+56($v0)
+    mov            0x00000027,$a1
+    sextl          $v0,$a0
+    bsr            $ra,j^AsOutMessage
+    ldah           $v0,h^__iob($zero)
+    lda            $v0,l^__iob+56($v0)
+    mov            0x0000000a,$a0
+    sextl          $v0,$a1
+    bsr            $ra,j^fputc
+L$9:
+    mov            0x00000000,$s3
+    sextl          0x00000001,$s4
+    mov            0x00000004,$s5
+    mov            0x00000028,$s1
+    mov            0x0000000a,$s2
+L$10:
+    ldl            $v0,($s0)
+    zapnot         $v0,0x0000000f,$a0
+    bne            $a0,L$11
+    br             L$22
+L$11:
+    sextl          $v0,$a0
+    bsr            $ra,j^MakeAsmFilename
+    ldah           $a0,h^L0($zero)
+    lda            $a0,l^L0($a0)
+    stl            $v0,($a0)
+    ldah           $v0,h^AsIncPath($zero)
+    lda            $v0,l^AsIncPath($v0)
+    ldl            $v0,($v0)
+    sextl          $v0,$a2
+    ldah           $v0,h^L0($zero)
+    lda            $v0,l^L0($v0)
+    ldl            $v0,($v0)
+    mov            $s3,$a1
+    sextl          $v0,$a0
+    bsr            $ra,j^PP_Init
+    sextl          $v0,$a0
+    bne            $a0,L$12
+    br             L$13
+L$12:
+    ldah           $v0,h^L0($zero)
+    lda            $v0,l^L0($v0)
+    ldl            $v0,($v0)
+    sextl          $v0,$a2
+    ldah           $v0,h^__iob($zero)
+    lda            $v0,l^__iob+56($v0)
+    mov            $s1,$a1
+    sextl          $v0,$a0
+    bsr            $ra,j^AsOutMessage
+    ldah           $v0,h^__iob($zero)
+    lda            $v0,l^__iob+56($v0)
+    mov            $s2,$a0
+    sextl          $v0,$a1
+    bsr            $ra,j^fputc
+    br             L$21
+L$13:
+    bsr            $ra,j^OptionsPPDefine
+    bsr            $ra,j^AsSymInit
+    bsr            $ra,j^AsInsInit
+    bsr            $ra,j^AsDirInit
+    ldah           $v0,h^L0($zero)
+    lda            $v0,l^L0($v0)
+    ldl            $v0,($v0)
+    sextl          $v0,$a0
+    bsr            $ra,j^ObjInit
+    zapnot         $v0,0x00000001,$a0
+    bne            $a0,L$14
+    br             L$20
+L$14:
+    ldah           $v0,h^AsmParse($zero)
+    lda            $v0,l^AsmParse($v0)
+    sextl          $v0,$a0
+    bsr            $ra,j^_setjmp
+    sextl          $v0,$a0
+    beq            $a0,L$15
+    br             L$18
+L$15:
+    bsr            $ra,j^ErrorCountsReset
+    ldah           $v0,h^DoReport($zero)
+    lda            $v0,l^DoReport($v0)
+    zapnot         $s4,0x00000001,$a0
+    lda            $a1,($v0)
+    ldq_u          $t0,($v0)
+    mskbl          $t0,$a1,$t0
+    insbl          $a0,$a1,$a0
+    bis            $t0,$a0,$t0
+    stq_u          $t0,($v0)
+    bsr            $ra,j^asyyparse
+    sextl          $v0,$a0
+    beq            $a0,L$16
+    br             L$17
+L$16:
+    ldah           $v0,h^CurrLineno($zero)
+    lda            $v0,l^CurrLineno($v0)
+    ldl            $a0,($v0)
+    subl           $a0,0x00000001,$a0
+    stl            $a0,($v0)
+    bsr            $ra,j^ObjRelocsFini
+    br             L$19
+L$17:
+    sextl          0x00000000,$v0
+    ldah           $a0,h^DoReport($zero)
+    lda            $a0,l^DoReport($a0)
+    zapnot         $v0,0x00000001,$a2
+    lda            $t0,($a0)
+    ldq_u          $a1,($a0)
+    mskbl          $a1,$t0,$a1
+    insbl          $a2,$t0,$a2
+    bis            $a1,$a2,$a1
+    stq_u          $a1,($a0)
+    br             L$19
+L$18:
+    sextl          0x00000000,$v0
+    ldah           $a0,h^DoReport($zero)
+    lda            $a0,l^DoReport($a0)
+    zapnot         $v0,0x00000001,$a2
+    lda            $t0,($a0)
+    ldq_u          $a1,($a0)
+    mskbl          $a1,$t0,$a1
+    insbl          $a2,$t0,$a2
+    bis            $a1,$a2,$a1
+    stq_u          $a1,($a0)
+L$19:
+    bsr            $ra,j^ErrorReport
+    bsr            $ra,j^AsLexerFini
+    bsr            $ra,j^ObjFini
+L$20:
+    bsr            $ra,j^AsDirFini
+    bsr            $ra,j^AsInsFini
+    bsr            $ra,j^AsSymFini
+L$21:
+    addl           $s0,$s5,$s0
+    bsr            $ra,j^PP_Fini
+    br             L$10
+L$22:
+    bsr            $ra,j^OptionsFini
+    bsr            $ra,j^AsMsgFini
+    bsr            $ra,j^AsMemFini
+    ldah           $v0,h^ExitStatus($zero)
+    lda            $v0,l^ExitStatus($v0)
+    ldl            $v0,($v0)
+    sextl          $v0,$a0
+    bsr            $ra,j^exit
+    ldq            $s0,($sp)
+    ldq            $s1,0x8($sp)
+    ldq            $s2,0x10($sp)
+    ldq            $s3,0x18($sp)
+    ldq            $s4,0x20($sp)
+    ldq            $s5,0x28($sp)
+    ldq            $ra,0x30($sp)
+    lda            $sp,0x40($sp)
+    ret            $zero,($ra),0x00000001
+
+.pdata
+
+		//  0000		Procedure descriptor for main
+		.long	main			//  BeginAddress      : 0
+		.long	main+0x304		//  EndAddress        : 772
+		.long	00000000		//  ExceptionHandler  : 0
+		.long	00000000		//  HandlerData       : 0
+		.long	main+0x20		//  PrologEnd         : 32
+
+.data
+ExitStatus:
+		.byte	0x00, 0x00, 0x00, 0x00
+
+		.lcomm	AsmParse, 0x000000c0
+		.lcomm	L0, 0x00000004
+

@@ -1,0 +1,215 @@
+.TH TAR 5 "31 October 1986"
+.SH NAME
+tar \- tape (or other media) archive file format
+.SH DESCRIPTION
+A ``tar tape'' or file contains a series of records.  Each record contains
+TRECORDSIZE bytes (see below).  Although this format may be thought of as
+being on magnetic tape, other media are often used.
+Each file archived is represented by a header record
+which describes the file, followed by zero or more records which give the
+contents of the file.  At the end of the archive file there may be a record
+filled with binary zeros as an end-of-file indicator.  A conforming
+system must write a record of zeros at the end, but must not assume that
+an end-of-file record exists when reading an archive.
+
+The records may be blocked for physical I/O operations.  Each block of
+\fIN\fP records (where \fIN\fP is set by the \fB\-b\fP option to \fItar\fP)
+is written with a single write() operation.  On
+magnetic tapes, the result of such a write is a single tape record.
+When writing an archive, the last block of records shall be written
+at the full size, with records after the zero record containing
+undefined data.  When reading an archive, a confirming system shall
+properly handle an archive whose last block is shorter than the rest.
+
+The header record is defined in the header file <tar.h> as follows:
+.nf
+.sp .5v
+.DT
+/*
+ * Standard Archive Format - Standard TAR - USTAR
+ */
+#define	RECORDSIZE	512
+#define	NAMSIZ	100
+#define	TUNMLEN	32
+#define	TGNMLEN	32
+
+union record {
+	char		charptr[RECORDSIZE];
+	struct header {
+		char	name[NAMSIZ];
+		char	mode[8];
+		char	uid[8];
+		char	gid[8];
+		char	size[12];
+		char	mtime[12];
+		char	chksum[8];
+		char	linkflag;
+		char	linkname[NAMSIZ];
+		char	magic[8];
+		char	uname[TUNMLEN];
+		char	gname[TGNMLEN];
+		char	devmajor[8];
+		char	devminor[8];
+	} header;
+};
+
+/* The checksum field is filled with this while the checksum is computed. */
+#define	CHKBLANKS	"        "		/* 8 blanks, no null */
+
+/* The magic field is filled with this if uname and gname are valid. */
+#define	TMAGIC	"ustar  "		/* 7 chars and a null */
+
+/* The linkflag defines the type of file */
+#define	LF_OLDNORMAL '\\0'		/* Normal disk file, Unix compatible */
+#define	LF_NORMAL	'0'		/* Normal disk file */
+#define	LF_LINK	'1'		/* Link to previously dumped file */
+#define	LF_SYMLINK	'2'		/* Symbolic link */
+#define	LF_CHR	'3'		/* Character special file */
+#define	LF_BLK	'4'		/* Block special file */
+#define	LF_DIR		'5'		/* Directory */
+#define	LF_FIFO	'6'		/* FIFO special file */
+#define	LF_CONTIG	'7'		/* Contiguous file */
+/* Further link types may be defined later. */
+
+/* Bits used in the mode field - values in octal */
+#define	TSUID		04000		/* Set UID on execution */
+#define	TSGID		02000		/* Set GID on execution */
+#define	TSVTX		01000		/* Save text (sticky bit) */
+
+/* File permissions */
+#define	TUREAD	00400		/* read by owner */
+#define	TUWRITE	00200		/* write by owner */
+#define	TUEXEC	00100		/* execute/search by owner */
+#define	TGREAD	00040		/* read by group */
+#define	TGWRITE	00020		/* write by group */
+#define	TGEXEC	00010		/* execute/search by group */
+#define	TOREAD	00004		/* read by other */
+#define	TOWRITE	00002		/* write by other */
+#define	TOEXEC	00001		/* execute/search by other */
+.fi
+.LP
+All characters in header records
+are represented using 8-bit characters in the local
+variant of ASCII.
+Each field within the structure is contiguous; that is, there is
+no padding used within the structure.  Each character on the archive medium
+is stored contiguously.
+
+Bytes representing the contents of files (after the header record
+of each file) are not translated in any way and
+are not constrained to represent characters or to be in any character set.
+The \fItar\fP(5) format does not distinguish text files from binary
+files, and no translation of file contents should be performed.
+
+The fields \fIname, linkname, magic, uname\fP, and \fIgname\fP are
+null-terminated
+character strings.  All other fields are zero-filled octal numbers in
+ASCII.  Each numeric field (of width \fIw\fP) contains \fIw\fP-2 digits, a space, and
+a null, except \fIsize\fP and \fImtime\fP,
+which do not contain the trailing null.
+
+The \fIname\fP field is the pathname of the file, with directory names
+(if any) preceding the file name, separated by slashes.
+
+The \fImode\fP field provides nine bits specifying file permissions and three
+bits to specify the Set UID, Set GID and Save Text (TSVTX) modes.  Values
+for these bits are defined above.  When special permissions are required
+to create a file with a given mode, and the user restoring files from the
+archive does not hold such permissions, the mode bit(s) specifying those
+special permissions are ignored.  Modes which are not supported by the
+operating system restoring files from the archive will be ignored.
+Unsupported modes should be faked up when creating an archive; e.g.
+the group permission could be copied from the `other' permission.
+
+The \fIuid\fP and \fIgid\fP fields are the user and group ID of the file owners,
+respectively.
+
+The \fIsize\fP field is the size of the file in bytes; linked files are archived
+with this field specified as zero.
+
+The \fImtime\fP field is the modification time of the file at the time it was
+archived.  It is the ASCII representation of the octal value of the
+last time the file was modified, represented as in integer number of
+seconds since January 1, 1970, 00:00 Coordinated Universal Time.
+
+The \fIchksum\fP field is the ASCII representaion of the octal value of the
+simple sum of all bytes in the header record.  Each 8-bit byte in the
+header is treated as an unsigned value.  These values are added to an
+unsigned integer, initialized to zero, the precision of which shall be no
+less than seventeen bits.  When calculating the checksum, the \fIchksum\fP
+field is treated as if it were all blanks.
+
+The \fItypeflag\fP field specifies the type of file archived.  If a particular
+implementation does not recognize or permit the specified type, the file
+will be extracted as if it were a regular file.  As this action occurs,
+\fItar\fP issues a warning to the standard error.
+.IP "LF_NORMAL or LF_OLDNORMAL"
+represents a regular file.
+For backward compatibility, a \fItypeflag\fP value of LF_OLDNORMAL
+should be silently recognized as a regular file.  New archives should
+be created using LF_NORMAL.
+Also, for backward
+compatability, \fItar\fP treats a regular file whose name ends
+with a slash as a directory.
+.IP LF_LINK
+represents a file linked to another file, of any type,
+previously archived.  Such files are identified (in Unix) by each file
+having the same device and inode number.  The linked-to
+name is specified in the \fIlinkname\fP field with a trailing null.
+.IP LF_SYMLINK
+represents a symbolic link to another file.  The linked-to
+name is specified in the \fIlinkname\fP field with a trailing null.
+.IP "LF_CHR or LF_BLK"
+represent character special files and block
+special files respectively.
+In this case the \fIdevmajor\fP and \fIdevminor\fP
+fields will contain the
+major and minor device numbers respectively.  Operating
+systems may map the device specifications to their own local
+specification, or may ignore the entry.
+.IP LF_DIR
+specifies a directory or sub-directory.  The directory name
+in the \fIname\fP field should end with a slash.
+On systems where
+disk allocation is performed on a directory basis the \fIsize\fP
+field will contain the maximum number of bytes (which may be
+rounded to the nearest disk block allocation unit) which the
+directory may hold.  A \fIsize\fP field of zero indicates no such
+limiting.  Systems which do not support limiting in this
+manner should ignore the \fIsize\fP field.
+.IP LF_FIFO
+specifies a FIFO special file.  Note that the archiving of
+a FIFO file archives the existence of this file and not its
+contents.
+.IP LF_CONTIG
+specifies a contiguous file, which is the same as a normal
+file except that, in operating systems which support it,
+all its space is allocated contiguously on the disk.  Operating
+systems which do not allow contiguous allocation should silently treat
+this type as a normal file.
+.IP "`A' \- `Z'"
+are reserved for custom implementations.  None are used by this
+version of the \fItar\fP program.
+.IP \fIother\fP
+values are reserved for specification in future revisions of the
+P1003 standard, and should not be used by any \fItar\fP program.
+.LP
+The \fImagic\fP field indicates that this archive was output in the P1003
+archive format.  If this field contains TMAGIC, then the
+\fIuname\fP and \fIgname\fP
+fields will contain the ASCII representation of the owner and group of the
+file respectively.  If found, the user and group ID represented by these
+names
+will be used rather than the values contained
+within the \fIuid\fP and \fIgid\fP fields.
+User names longer than TUNMLEN-1 or group
+names longer than TGNMLEN-1 characters will be truncated.
+.SH "SEE ALSO"
+tar(1), ar(5), cpio(5)
+.SH BUGS
+Names or link names longer than NAMSIZ-1 characters cannot be archived.
+
+This format does not address multi-volume archives.
+.SH NOTES
+This manual page was adapted by John Gilmore
+from Draft 6 of the P1003 specification

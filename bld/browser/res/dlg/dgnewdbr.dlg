@@ -1,0 +1,21 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGNEWDBR.H\0"
+END
+
+NewCBRDlg DIALOG 79, 41, 171, 70
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "New Browser File"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Browser File Name", IDD_BROWSEFILE_GROUP, "Button",
+                    BS_GROUPBOX, 9, 9, 152, 33
+    CONTROL         "", IDD_FILE_EDIT, "Edit", ES_AUTOHSCROLL | WS_BORDER |
+                    WS_TABSTOP, 14, 24, 143, 12
+    CONTROL         "OK", IDD_OK_BUTTON, "Button", WS_TABSTOP, 13, 50, 40,
+                    14
+    CONTROL         "&Files...", IDD_BROWSE_FILES_BUTTON, "Button",
+                    WS_TABSTOP, 65, 50, 40, 14
+    CONTROL         "Cancel", IDD_CANCEL_BUTTON, "Button", WS_TABSTOP, 117,
+                    50, 40, 14
+END

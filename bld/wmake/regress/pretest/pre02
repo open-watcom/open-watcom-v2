@@ -1,0 +1,348 @@
+#
+#   testfile for preprocessor !if/etc/!endif directives
+#   - one level nesting test
+#
+#   09-Feb-90   D.J.Gaudet      Initial Implementation
+#
+#   $(guess)    tracks the preprocessor's attempts
+#   $(answer)   tracks the actual answer
+#
+true=
+guess=
+answer=
+
+#
+#   !if/!if/!endif/!endif
+#
+!ifdef true
+guess += 1
+!ifdef true
+guess += 2
+!endif
+guess += 3
+!endif
+answer += 1
+answer += 2
+answer += 3
+
+!ifdef true
+guess += 4
+!ifdef false
+guess += 5
+!endif
+guess += 6
+!endif
+answer += 4
+answer += 6
+
+!ifdef false
+guess += 7
+!ifdef true
+guess += 8
+!endif
+guess += 9
+!endif
+
+!ifdef false
+guess += 10
+!ifdef false
+guess += 11
+!endif
+guess += 12
+!endif
+
+
+#
+#   !if/!if/!else/!endif/!endif
+#
+!ifdef true
+guess += 13
+!ifdef true
+guess += 14
+!else
+guess += 15
+!endif
+guess += 16
+!endif
+answer += 13
+answer += 14
+answer += 16
+
+!ifdef true
+guess += 17
+!ifdef false
+guess += 18
+!else
+guess += 19
+!endif
+guess += 20
+!endif
+answer += 17
+answer += 19
+answer += 20
+
+!ifdef false
+guess += 21
+!ifdef true
+guess += 22
+!else
+guess += 23
+!endif
+guess += 24
+!endif
+
+!ifdef false
+guess += 25
+!ifdef false
+guess += 26
+!else
+guess += 27
+!endif
+guess += 28
+!endif
+
+
+#
+#   !if/!else/!if/!endif/!endif
+#
+!ifdef true
+guess += 29
+!else
+guess += 30
+!ifdef true
+guess += 31
+!endif
+guess += 32
+!endif
+answer += 29
+
+!ifdef true
+guess += 33
+!else
+guess += 34
+!ifdef false
+guess += 35
+!endif
+guess += 36
+!endif
+answer += 33
+
+!ifdef false
+guess += 37
+!else
+guess += 38
+!ifdef true
+guess += 39
+!endif
+guess += 40
+!endif
+answer += 38
+answer += 39
+answer += 40
+
+!ifdef false
+guess += 29
+!else
+guess += 30
+!ifdef false
+guess += 31
+!endif
+guess += 32
+!endif
+answer += 30
+answer += 32
+
+# timeout!
+a1 = $+$(answer)$-
+g1 = $+$(guess)$-
+answer=
+guess=
+# timein!
+
+#
+#   !if/!if/!endif/!else/!endif
+#
+!ifdef true
+guess += 1
+!ifdef true
+guess += 2
+!endif
+guess += 3
+!else
+guess += 4
+!endif
+answer += 1
+answer += 2
+answer += 3
+
+!ifdef true
+guess += 5
+!ifdef false
+guess += 6
+!endif
+guess += 7
+!else
+guess += 8
+!endif
+answer += 5
+answer += 7
+
+!ifdef false
+guess += 9
+!ifdef true
+guess += 10
+!endif
+guess += 11
+!else
+guess += 12
+!endif
+answer += 12
+
+!ifdef false
+guess += 13
+!ifdef false
+guess += 14
+!endif
+guess += 15
+!else
+guess += 16
+!endif
+answer += 16
+
+#
+#   if/else/if/else/end/end
+#
+!ifdef true
+guess += 17
+!else
+guess += 18
+!ifdef true
+guess += 19
+!else
+guess += 20
+!endif
+guess += 21
+!endif
+answer += 17
+
+!ifdef true
+guess += 22
+!else
+guess += 23
+!ifdef false
+guess += 24
+!else
+guess += 25
+!endif
+guess += 26
+!endif
+answer += 22
+
+!ifdef false
+guess += 27
+!else
+guess += 28
+!ifdef true
+guess += 29
+!else
+guess += 30
+!endif
+guess += 31
+!endif
+answer += 28
+answer += 29
+answer += 31
+
+!ifdef false
+guess += 32
+!else
+guess += 33
+!ifdef false
+guess += 34
+!else
+guess += 35
+!endif
+guess += 36
+!endif
+answer += 33
+answer += 35
+answer += 36
+
+#   timeout!
+a2 = $+$(answer)$-
+g2 = $+$(answer)$-
+answer=
+guess=
+#   timein!
+
+
+#
+#   if/if/else/end/else/end
+#
+!ifdef true
+guess += 1
+!ifdef true
+guess += 2
+!else
+guess += 3
+!endif
+guess += 4
+!else
+guess += 5
+!endif
+answer += 1
+answer += 2
+answer += 4
+
+!ifdef true
+guess += 6
+!ifdef false
+guess += 7
+!else
+guess += 8
+!endif
+guess += 9
+!else
+guess += 10
+!endif
+answer += 6
+answer += 8
+answer += 9
+
+!ifdef false
+guess += 11
+!ifdef true
+guess += 12
+!else
+guess += 13
+!endif
+guess += 14
+!else
+guess += 15
+!endif
+answer += 15
+
+!ifdef false
+guess += 16
+!ifdef false
+guess += 17
+!else
+guess += 18
+!endif
+guess += 19
+!else
+guess += 20
+!endif
+answer += 20
+
+a3 = $+$(answer)$-
+g3 = $+$(answer)$-
+
+#
+pre02: .symbolic
+    $(ifeq) "$(a1)" "$(g1)"
+    $(ifeq) "$(a2)" "$(g2)"
+    $(ifeq) "$(a3)" "$(g3)"
+
+
+

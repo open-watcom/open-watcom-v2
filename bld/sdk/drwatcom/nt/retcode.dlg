@@ -1,0 +1,11 @@
+RET_CODE_DLG DIALOG 22, 18, 129, 88
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Sans Serif"
+BEGIN
+    CTEXT           "Enter return code for", -1, 0, 7, 129, 8
+    CTEXT           "process 00000000 ", RET_PROC_INFO, 0, 17, 129, 8
+    CTEXT           "(Prefix hex values with 0x)", -1, 0, 27, 129, 8
+    EDITTEXT        RET_VALUE, 21, 45, 86, 12, ES_AUTOHSCROLL
+    PUSHBUTTON      "OK", IDOK, 16, 68, 40, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 72, 68, 40, 14
+END

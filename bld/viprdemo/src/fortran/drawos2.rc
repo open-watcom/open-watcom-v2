@@ -1,0 +1,44 @@
+#define INCL_WINSTDFILE
+#include "os2.h"
+#include "drawmenu.h"
+
+#if 0
+ICON DrawIcon ..\..\DRAWOS2.ICO
+#endif
+
+BITMAP IDM_ROTATE_LEFT "..\\..\\LEFT.BMP"
+BITMAP IDM_ROTATE_RIGHT "..\\..\\RIGHT.BMP"
+BITMAP IDM_ROTATE_UP "..\\..\\UP.BMP"
+BITMAP IDM_ROTATE_DOWN "..\\..\\DOWN.BMP"
+BITMAP IDM_MOVE_IN "..\\..\\FORWARD.BMP"
+BITMAP IDM_MOVE_OUT "..\\..\\BACK.BMP"
+BITMAP IDM_MORE_BRIGHTNESS "..\\..\\BRIGHTER.BMP"
+BITMAP IDM_LESS_BRIGHTNESS "..\\..\\DARKER.BMP"
+
+
+MENU 200 PRELOAD
+{
+    SUBMENU       "~File",201
+    {
+        MENUITEM "E~xit", IDM_EXIT
+    }
+    SUBMENU       "~Lighting",202
+    {
+        MENUITEM "~Brighter", IDM_MORE_BRIGHTNESS
+        MENUITEM "~Dimmer", IDM_LESS_BRIGHTNESS
+        MENUITEM "~More Contrast", IDM_MORE_CONTRAST
+        MENUITEM "~Less Contrast", IDM_LESS_CONTRAST
+    }
+    SUBMENU       "~Move",203
+    {
+        MENUITEM "~Left", IDM_ROTATE_LEFT
+        MENUITEM "~Right", IDM_ROTATE_RIGHT
+        MENUITEM "~Up", IDM_ROTATE_UP
+        MENUITEM "~Down", IDM_ROTATE_DOWN
+        MENUITEM "~In", IDM_MOVE_IN
+        MENUITEM "~Out", IDM_MOVE_OUT
+        MENUITEM SEPARATOR
+        MENUITEM "~Wide Angle", IDM_MORE_PERSPECTIVE
+        MENUITEM "~Narrow Angle", IDM_LESS_PERSPECTIVE
+    }
+}

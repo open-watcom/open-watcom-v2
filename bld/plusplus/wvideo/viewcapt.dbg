@@ -1,0 +1,3 @@
+if !?cpp_log_ctr { do cpp_log_ctr = 0 }
+call DbgRedirectEnd() cpp_log_ctr = eax
+invoke vw cpp_log_ctr 

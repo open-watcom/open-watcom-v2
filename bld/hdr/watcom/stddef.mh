@@ -1,0 +1,47 @@
+/*
+ *  stddef.h    Standard definitions
+ *
+:include crwat.sp
+ */
+#ifndef _STDDEF_H_INCLUDED
+#define _STDDEF_H_INCLUDED
+:include readonly.sp
+:include cpluspro.sp
+
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
+
+:include sizet.sp
+
+:include wchar_t.sp
+
+:include null.sp
+
+:include ptrdiff.sp
+
+#ifdef __cplusplus
+#define offsetof(__typ,__id) __offsetof(__typ,__id)
+#else
+#define offsetof(__typ,__id) ((size_t)&(((__typ*)0)->__id))
+#endif
+:segment QNX
+#if defined(__386__)
+ _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
+ #define _threadid (__threadid())
+#endif
+:elsesegment DOS
+:include ext.sp
+#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
+ _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
+ #define _threadid (__threadid())
+ #if defined(__NT__)
+  _WCRTLINK extern unsigned long __threadhandle( void );
+ #endif
+#else
+ _WCRTLINK extern int _WCFAR *_threadid;        /* pointer to thread id */
+#endif
+#endif
+:endsegment
+:include cplusepi.sp
+#endif

@@ -1,0 +1,11 @@
+
+MENU_CONST DIALOG 6, 18, 161, 25
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Menu Item Constant"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Item:", MENU_DONT_CARE, 3, 4, 20, 8
+    LTEXT           "Constant:", MENU_DONT_CARE, 3, 14, 37, 8
+    LTEXT           "&About", MENU_ITEM, 42, 4, 113, 8
+    LTEXT           "0x0000", MENU_CONSTANT, 42, 14, 33, 8
+END

@@ -1,0 +1,13 @@
+#include "tagdlg.h"
+TAGS DIALOG 28, 25, 143, 98
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Pick A Tag"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LISTBOX         TAGS_LISTBOX, 9, 31, 124, 40, LBS_SORT | WS_VSCROLL |
+                    WS_TABSTOP
+    DEFPUSHBUTTON   "OK", IDOK, 23, 78, 40, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 79, 78, 40, 14
+    GROUPBOX        "Tag", 102, 9, 3, 124, 24
+    LTEXT           "Text", TAGS_TAGNAME, 13, 14, 116, 8
+END

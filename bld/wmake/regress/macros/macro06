@@ -1,0 +1,3 @@
+all: hello2.obj hello.obj
+hello2.obj hello.obj: $*.c 
+   echo $*.c $$  $@  $**

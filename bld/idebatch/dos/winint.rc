@@ -1,0 +1,26 @@
+#include "windows.h"
+#include "winint.h"
+
+DemoIcon ICON demo.ico
+
+DemoMenu MENU
+BEGIN
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&About...", MENU_ABOUT
+        MENUITEM "&CTRL_BREAK", MENU_CTRL_BREAK
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit", MENU_EXIT
+    END
+END
+
+AboutBox DIALOG 22, 17, 144, 75
+    STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+    CAPTION "About Interrupt Demo"
+    BEGIN
+        CTEXT "Interrupt Demo", -1, 0,  5, 144, 8
+        CTEXT "Version 1.0", -1, 0, 14, 144, 8
+        DEFPUSHBUTTON "OK", IDOK, 53, 59, 32, 14, WS_GROUP
+        ICON "DemoIcon", -1, 15,15,40,40
+    END
+

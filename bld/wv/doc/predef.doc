@@ -1,0 +1,60 @@
+This is a summary of the pre-defined variables that may be used in expressions.
+
+dbg$radix
+    - value of the last radix set by the user
+dbg$monitor
+    - 0 if mono monitor, 1 if color
+dbg$psp
+    - SEE OLD MANUAL
+dbg$pid
+    - SEE OLD MANUAL
+dbg$remote
+    - 1 if /remote option used, 0 otherwise
+dbg$code
+    - the address of the code last udner the cursor
+dbg$data
+    - the address last data examined
+dbg$cpu
+    - 0 if running on an 8086,
+    - 1 if running on a 80186,
+    - 2 if running on a 286,
+    - 3 if running on a 386,
+    - 4 if running on a 486,
+    - 5 if running on a Pentium.
+dbg$fpu
+    - -1 if running with a floating point emulator.
+    - 0 if no coprocessor or emulator present.
+    - 1 if running on an 8087.
+    - 2 if running on a 287.
+    - 3 if running on a 387.
+    - 3 if running on a 487.
+    - 3 if running on a Pentium.
+dbg$os
+    - 1:  if debugging a DOS application
+    - 2:  if debugging an OS2 application
+    - 3:  if debugging a PHARLAP application
+    - 4:  if debugging an ECLIPSE application
+    - 5:  if debugging a NW386 application
+    - 6:  if debugging a QNX application
+    - 7:  if debugging a DOS4G application
+    - 8:  if debugging a WINDOWS application
+    - 9:  if debugging a PENPOINT application
+    - 10: if debugging an NT application
+    - 11: if debugging an AUTOCAD application
+dbg$32
+    - 0 if debugging a 16-bit application
+    - 1 if debugging a 32-bit application
+dbg$etid
+    - the thread id of the last thread which executed
+dbg$ctid
+    - the thread id of the thread the current thread
+dbg$ip
+    - the value of CS:IP (16-bit apps) or CS:EIP (32-bit apps)
+dbg$sp
+    - the value of SS:SP (16-bit apps) or SS:ESP (32-bit apps)
+dbg$bp
+    - the value of SS:BP (16-bit apps) or SS:EBP (32-bit apps)
+dbg$loaded
+    - 1 if application already loaded, 0 otherwise
+dbg$WV_TNG
+    - 1 if version of debugger >= 10.0, 0 otherwise

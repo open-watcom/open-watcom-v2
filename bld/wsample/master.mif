@@ -1,0 +1,59 @@
+proj_name = wsample
+# note: only used for nt, os2, os22
+
+!include cproj.mif
+!include defrule.mif
+MODEL = l
+!include wres.mif
+
+samp_obj_nt_axp         = sampaxp.obj
+samp_obj_nt_386         = sampnt.obj
+samp_obj_os2_386        = sampos22.obj
+samp_obj_os2_i86        = sampos2.obj
+
+objects = sample.obj sampdata.obj $(samp_obj_$(host_OS)_$(host_CPU)) io.obj &
+          sysio.obj sampexe.obj wmsg.obj sysinit.obj
+
+extra_c_flags           = /dFAR_PTR= /dREPORT_TYPE= /fiwatcom.h
+extra_c_flags_i86       = /2
+inc_dirs                = $(watcom_dir)\h;$(dig_dir)\h;
+
+rc_flags_nt             = /dNT
+rc_flags_os2_386        = /dOS22
+rc_flags_os2_i86        = /dOS2
+rc_flags_os2            = $(rc_flags_$(host_CPU))
+rc_flags                = /zk0 /r $(rc_flags_$(host_OS)) /bt=windows
+
+xname_nt_axp    = wsmpaxp
+xname_nt_386    = wsmpnt
+xname_os2_386   = wsmpos22
+xname_os2_i86   = wsampos2
+
+xname = $(xname_$(host_OS)_$(host_CPU))
+
+extra_l_flags = op symfile,map,quiet lib $(wres_lib) name ..\bin\$(xname)
+extra_l_flasg_os2_i86 = lib $(watcom_dir)\lib\doscalls.lib op stack=4k
+extra_l_flags_os2 = op newfiles $(extra_l_flags_os2_$(host_CPU))
+
+..\bin\$(xname).exe : $(objects) makefile $(xname).res $(wres_lib)
+    $(linker) $(lflags) file {$(objects)}
+    wstrip /q /a /r ..\bin\$(xname).exe . $(xname).res
+
+.c: ..\c
+
+$(xname).res : ..\h\wsample.rc ..\h\wmsg.h
+        @set include=$(inc_path)
+        $(rc) $(rc_flags) /fo=$^. ..\h\wsample.rc
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj del *.?bj
+        @if exist *.lnk del *.lnk
+        @if exist *.exe del *.exe
+        @if exist *.dll del *.dll
+        @if exist *.lib del *.lib
+        @if exist *.res del *.res
+        @if exist *.clb del *.clb
+        @if exist *.err del *.err
+        @if exist *.map del *.map
+        @if exist ..\bin\$(xname).exe del ..\bin\$(xname).exe
+        @if exist ..\bin\$(xname).sym del ..\bin\$(xname).sym

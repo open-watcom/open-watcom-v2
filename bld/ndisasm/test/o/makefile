@@ -1,0 +1,1 @@
+!include ..\mif\master.mif

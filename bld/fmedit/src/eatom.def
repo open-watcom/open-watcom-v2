@@ -1,0 +1,4 @@
+typedef struct eatom EATOM;
+
+extern OBJPTR EAtomCreate( OBJPTR, RECT *, OBJPTR );
+extern void InitEAtom();

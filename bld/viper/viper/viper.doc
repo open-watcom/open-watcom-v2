@@ -1,0 +1,596 @@
+WATCOM VIPER DEVELOPMENT ENVIRONMENT
+====================================
+
+I. Overview
+-----------
+    Viper addresses the problem of managing all the files and tools
+    that a programmer uses when developing a project.  This includes
+    all the source files, include files, libraries, compiler(s), linkers,
+    preprocessors etc. that are used.
+
+    Viper has a graphical interface that makes it easy to visualize the
+    make up of a project.  A single Viper session shows a *project*.  If
+    the project consists of a number of components (such as 2 executables
+    and 1 library), these are each shown as a *target* sub-windows on the
+    project window.  Each target window shows the files that are needed
+    to construct the target and is associated via its filename extension
+    with a *rule* that describes the construction mechanism.  For example,
+    a filename with the extension .exe may be associated with the rule
+    for constructing 16Bit Windows executables, or a filename with the
+    extension .lib may be associated with the rule for constructing static
+    libraries.  Different projects can refer to the same target.  If they
+    do, the target is shared and can be manipulated via either project,
+    with changes made through one effecting the other.
+
+    Viper itself is a collection of programs that manage the various
+    files and tools that are used to create the target libraries and
+    executables.  It creates makefile(s) from the information in the
+    target descriptions and invokes WMAKE to construct the targets
+    themselves.  Via a configuration file, Viper contains build-in
+    knowledge of the WATCOM compilers, editor and program browser and
+    all their switches.  The open architecture of the configuration file
+    makes it is easy to add new tools and file types.
+
+II. Tutorial
+------------
+    This tutorial will take you through creating and executing a simple
+    C program under MS Windows.  It will give you an understanding of the
+    basic concepts of Viper and the steps involved in project development.
+    
+    First, start the Viper environment.  Under MS Windows, this is done
+    by double-clicking on the Viper icon in the program manager window.
+
+    1. Defining a Project.
+
+	Define a project by selecting the *File/New project...* menu item.
+	When asked for a project name, enter the name *\mydir\test.vpr*
+	where mydir is the desired root directory of the project.  The
+	project description will be stored in this file, and Viper will make
+	it the current-working-directory during your session.  Press *Ok*
+	and Viper will ask for a target name.  Here, type *test.exe* to
+	specify the name of the first target program in the project.
+	Press *Ok* and you will be asked to choose from a list of executable
+	types that Viper knows how to build.  Choose *16Bit Windows
+	Executable* and press *Ok*.  You will now see the *target
+	sub-window* for the test.exe target.  (Note: If the project were
+	to contain more than one target, each would have to reside in a
+	different directory!)
+
+    2. Adding a source file.
+
+	Next, add a source file to the list of items that make up test.exe.
+	Choose the menu item *Items/New item...*, and enter the filename
+	*test.c*.  (Note: You can do this either by choosing from the menu
+	bar or by positioning the mouse over the items list area and
+	pressing and holding the right mouse button.  Viper displays a
+	*popup menu* from which you can choose the desired action.)  When
+	you have entered the source file name, press *Ok*.
+    
+	Next, edit/create the source file by selecting *test.c* (click with
+	the left mouse button) and then choosing the menu item *Items/Edit*.
+	(Note: Editing can also be invoked by double-clicking on the
+	filename.)  This action invokes the WATCOM Editor to edit the file.
+	Enter the following source for test.c using the editor.
+    
+	    #include <stdio.h>
+    
+	    void main()
+	    {
+		printf( "Hello World!\n" );
+	    }
+    
+	Exit the editor by choosing the menu item *File/Exit*.
+
+    3. Making the target.
+
+	Since this is the only file in the target, you are now ready to
+	compile and link it.  Do this by pressing the *Make* button shown
+	on the target sub-window for test.exe.  Viper will now construct
+	a makefile based on its knowledge of the target and construction
+	rules, and then invoke the WMAKE utility to create test.exe.  The
+	output of this procedure is displayed in a Message Log window.  If
+	everything went well, the procedure has created the executable file
+	test.exe.  If errors are encountered during the compile, error
+	messages are shown in the log window.  You can edit the offending
+	file by selecting the error message (left mouse button) and then
+	selecting *Edit* from a popup menu (right mouse button). (Note:
+	Editing can also be invoked by double-clicking on the error message.)
+	An explanation of the error can be displayed by choosing *Help* from
+	the popup menu.  Correct the error using the editor, exit as before,
+	and choose *Make* again.  Repeat this procedure until you have an
+	error-free compile and link.
+
+    4. Executing the target program.
+    
+	You are now ready to execute the program you have developed.  Do this
+	by pressing the *Run* button on the target sub-window.  Viper will
+	execute the program test.exe.
+
+    5. Debugging the target program.
+
+	Since this is a simple program, you probably have no need to debug it
+	using the WATCOM Debugger.  However, lets go though the steps so that
+	you will know what to do on your own, more complex programs.
+    
+	To debug a program, first it must be compiled to include debugging
+	information.  The WATCOM C compiler has a switch to do this and you
+	set it as follows.  Choose the menu item *Items/Setup item.../
+	Item switches...*.  A dialog window is displayed that describes all
+	the switches available for the compiler.  Press the *>>* button until
+	you are at the *Debugging* screen, where you will see a set of radio
+	buttons titled *Debugging style*.  Select the option *Full debugging
+	information* using the left mouse button and the press *Ok*.
+
+	The WATCOM Linker requires that you also set a target switch to
+	include the debugging information in test.exe.  Choose the menu item
+	*Targets/Setup targets.../Target switches...*.  (Note: You can do
+	this either by choosing from the menu bar or by positioning the
+	mouse over the target sub-window (not on the items list area) and
+	pressing and holding the right mouse button.)  Select the *Debug
+	all* option and press *Ok*.
+
+	Remake test.exe by pressing the *Make* button again.  You have now
+	created a version of test.exe that contains full debugging
+	information.  To invoke the debugger, press the *Debug* button on
+	the target sub-window.  Viper will invoke the debugger.  Step
+	through the code using the *Run/Step over* menu item until the
+	message *Task completed* is encountered.  Then choose *File/Exit*
+	to terminate the debugging session.
+
+    6. Saving the project and terminating the session.
+
+        You can now exit the Viper session by choosing the menu item
+	*File/Exit*.  If you have not already saved your project, you will
+	be prompted to do so.  Choose *Yes*, and the session will end.
+
+    7. Review of what happened.
+
+ 	In this tutorial, you created a project called test.vpr, which
+	was composed of one target called test.exe.  The target was a
+	16Bit Windows executable.  You used the WATCOM Editor to enter
+	and edit the source text in a file called test.c and then compiled
+	and linked it into an executable program using the WMAKE utility,
+	the WATCOM C Compiler and the WATCOM Linker.  You executed it both
+	directly and under the control of the WATCOM Debugger.
+
+	When you saved the project, Viper created the following permanent
+	files.  Test.vpr describes the screen layout and refers to a file
+	called test.tgt.  Test.tgt describes the target executable test.exe
+	and all switches required to link it.  It also describes test.c,
+	and switches required to compile it.
+
+	When you pressed the *Make* button, Viper created a number of
+	temporary makefiles (called mkfile.*).
+
+III. Reference
+--------------
+    1. Methodology.
+    
+        Viper deals with an entity called a 'project', which consists of
+	a number of 'targets'.  A project is represented on disk by a
+	project descriptor file having the file extension of 'vpr', while
+	a target is represented on disk by a target descriptor file having
+	the file extension of 'tgt'.  Each target descriptor file must
+	reside in a different disk directory.  This directory is considered
+	the target directory, and all compiler and linker executions for
+	that target take place there.
+
+	    (Note: You *cannot* safely edit either the .vpr or
+	    the .tgt files with a text editor!)
+
+	The project descriptor file (.vpr) describes a project.  It contains
+	the names of all the target descriptor files that make up the project
+	plus certain housekeeping information about the Viper session.
+
+	Each target descriptor file (.tgt) describes a target within a
+	project.  It contains the name and type of the target program, and
+	a reference to a *Rule* defined in the Viper configuration file
+	(viper.cfg) describing how to build it, and a list of relevant
+	switches used by the rule.  In addition, it contains the names of
+	all the files used to construct the target program, references
+	to similar rules for compiling them, and relevant switches.  Other
+	housekeeping data is also kept in the target descriptor file.
+
+	In constructing targets, Viper references a list of *Rules* that
+	are defined in a configuration file called viper.cfg.  Among other
+	things, each rule defines a command line used to do the construction,
+	and a list of actions that can be performed on the target program
+	(e.g., make, run, debug) or on the files in the item list (e.g.,
+	make, edit).  Additionally, rules refer to *Tools* that define
+	the command line switches settable by the programmer using the
+	Viper environment.
+
+	Once a project and one or more targets is defined, Viper can create
+	a makefile and invoke the WMAKE utility to construct the target
+	program.  These steps are described in the following paragraphs.
+
+	When a Make command is executed, Viper first constructs a set of
+	makefiles usable by the WATCOM WMAKE utility program.  The root
+	makefile is created in the project directory and other target
+	makefiles are created in each of the target directories.  Then
+	Viper executes WMAKE in a batch program environment associated
+	with the current platform.
+
+	For example, under MS Windows, Viper executes a Windows program
+	called winmsg.exe.  This program displays a Message Log window
+	and in turn starts a DOS program dosserv.exe (via batchbox.pif).
+	Viper then uses DDE messages to tell winmsg.exe to execute the
+	WMAKE utility and display the output in the log window.  Under
+	MS Windows, DOS versions of WMAKE and all the compilers etc,
+	are used. (Make sure the setup has been done as described in
+	appendix C.)
+
+	Under WinOS2, Viper follows a similar strategy.  It executes a
+	WinOS2 program called os2msg.exe that displays a Message Log
+	window.  Viper then uses DDE to tell os2msg.exe to execute the
+	WMAKE utility and display the output in the log window.  Under
+	WinOS2, OS2 versions of WMAKE and all the compilers etc, are used.
+	(Make sure the setup has been done as described in appendix C.)
+	
+    2. Viper Development Environment (VIPER.EXE):
+
+        The main program in the Viper suite of programs is viper.exe.
+	It is used to define the .vpr and .tgt files, create makefiles,
+	invoke WMAKE and other tools, invoke the editor and browser when
+	requested, and otherwise apply the tools described in the Viper
+	configuration file (viper.cfg).
+
+        a) Command line switches.
+
+	    viper.exe is invoked using the following command line:
+
+		viper [switches] [filename.vpr]
+
+	    where:
+
+	        [switches] is zero or more of the following:
+    
+			+c filename	- this defines an alternate file to
+				          be used in place of viper.cfg.
+			-b		- this disables the batch feature
+					  and is not very useful.
+			+d		- this is a debugging switch and
+					  periodically displays debugging
+					  information during the execution
+					  of viper.exe.
+		[filename.vpr] is an optional project descriptor file.
+
+	b) Screen layout.
+
+	    The main screen for viper.exe describes one project, with the
+	    project name displayed in the title bar of the main window.
+	    It can contain a number of sub-windows which resemble the
+	    Windows MDI interface and can be iconisized, cascaded, tiled,
+	    etc., using the close box and the *Window* menu items.
+    
+	    Each sub-window in the main screen represents a target in the
+	    project, with the name of the target program or library shown
+	    in the title bar, relative to the project file directory.  There
+	    can be only one target per directory.
+    
+	    Each target sub-window contains a list of filename items that
+	    are required to construct the target program.  These names are
+	    relative to the target directory.
+    
+	    The menu lists called *Targets* and *Items* operate on the
+	    current target sub-window.  They can be invoked from the menu
+	    bar or activated with the right mouse button. Some of the menu
+	    items in these lists are present for all targets and items, and
+	    some exist only for certain file types.  These optional menu
+	    items are called *Actions* and are defined as part of the rules
+	    associated with the target and its file items.
+    
+	    The target sub-window also contains buttons that represent
+	    certain additional actions that can be performed on the target.
+	    They are also called *Actions* and are defined using the
+	    *Button* option as part of the rule associated with the target.
+    
+	    Similarly, an *Autodepend* checkbox may appear in the target
+	    sub-window.  If checked, Viper will enable the '.autodepend'
+	    feature of WMAKE for the target and its file items.  This causes
+	    WMAKE to check the timestamps of all included files (e.g., all
+	    .h files) as well as the actual source file when deciding
+	    whether or not a file item needs to be recompiled.
+
+	c) Menu Bar and Menu items.
+
+	    The Viper menu bar and menu items are listed here for reference.
+	    Complete descriptions follow.
+	    
+	    File
+	        New
+		Open
+		Save
+		Save As
+		Exit
+	    Window
+	        Cascade
+		Tile
+		Arrange
+		Refresh
+	    Targets
+	        New
+		Remove
+		Rename
+		Setup
+		    Target switches
+		    Setup actions
+		        *actions with settable switches
+		Touchback
+		Attach
+		*rule actions that are not 'Button'
+	    Items
+	        New
+		Remove
+		Rename
+		Setup
+		    Item switches
+		    Setup actions
+		        *actions with settable switches
+		Shadow
+		Include
+		Exclude
+		Touchback
+		*actions (both source and result)
+	    Actions
+	        *project level actions
+	    Help
+	        Contents
+		Search for help on
+		How to use Help
+		About Viper
+
+	    The following paragraphs describe the menu items available in
+	    viper.exe.
+
+	    File/New
+	        - creates a new project.
+		- if there already is a project that has not been saved,
+		  you will be asked to save it.
+		- uses a dialog to let you specify the new project name.
+		- changes the cwd to match the newly created project.
+	    File/Open
+	        - opens/loads an existing project from disk.
+		- if there already is a project that has not been saved,
+		  you will be asked to save it.
+		- uses a file-open dialog to let you specify the name;
+		  allows browsing of disk directories.
+		- changes the cwd to match the newly loaded project.
+	    File/Save
+	        - saves a copy of the currently loaded project to disk.
+	    File/Save As
+	        - saves a copy of the currently loaded project to disk,
+		  allowing you to give a new name.
+		- uses a file-saveas dialog to let you specify the name;
+		  allows browsing of disk directories.
+		- changes the project name to match the newly saved project
+		  and changes the cwd to match.
+	    File/Exit
+	        - exit the Viper session.
+		- if there already is a project that has not been saved,
+		  you will be asked to save it.
+
+	    Window/Cascade
+	        - changes the screen locations of the non-iconisized target
+		  sub-windows to a cascaded format.
+		- relocates iconisized sub-windows.
+	    Window/Tile
+	        - changes the screen locations of the non-iconisized target
+		  sub-windows to a tiled format.
+		- relocates iconisized sub-windows.
+	    Window/Arrange
+	        - relocates iconisized target sub-windows
+	    Window/Refresh
+	        - scans disk directories to make sure information displayed
+		  in the file item lists is accurate. (e.g., r/w, r/o, n/a)
+
+	    Targets/New
+	        - create a new target in the project.
+		- uses a dialog to allow you to enter the new target name.
+	    Targets/Remove
+	        - remove a target from the project.
+		- allows you to say whether or not the actual target
+		  descriptor file should be deleted; don't delete it if
+		  it is used by another project, or if you will later wish
+		  to use it in another project.
+	    Targets/Rename
+	        - give the target program a new name or correct a spelling
+		  mistake.
+	    Target/Setup target/Target switches
+	        - set linker switches for the target
+		- switches that you see are defined in viper.cfg for
+		  the related tool.
+	    Target/Setup target/Setup Actions/'action'
+	        - set switches for each action defined for the rule
+		  and which has settable switches as defined in viper.cfg.
+		- there can be a number of such menu items
+	    Target/Touchback
+	        - change the timestamp of the target file back to Jan 1,1980
+		  so as to force re-linking on the next Make action.
+	    Target/Attach
+	        - attach an existing .tgt file to this project
+		- uses a dialog to allow you to enter the name of the
+		  target descriptor file; allows browsing of the disk
+		  directories.
+	    Target/'action'
+	        - invoke actions defined for the associated rule that are
+		  *not* specified as *Button* actions.
+		- there can be a number of such menu items
+
+	    Items/New
+	        - add a new item to the list of files that make up the
+		  current target.
+		- a dialog is used to let you specify the file name, and
+		  a browse option lets you browse the disk directories.
+	    Items/Remove
+	        - remove a file item from the target.
+		- allows you to say whether or not the actual disk file
+		  should be deleted.
+	    Items/Rename
+	        - give the file item a new name or correct a spelling
+		  mistake.
+	    Items/Setup item/Item switches
+	        - set compiler switches for the file item
+		- switches that you see are defined in viper.cfg for
+		  the related tool.
+	    Items/Setup item/Setup actions/'action'
+	        - set switches for each action defined for the rule
+		  and which has settable switches as defined in viper.cfg.
+		- there can be a number of such menu items
+	    Items/Shadow
+	        - this menu item applies to file items that are wildcards.
+		- it controls whether (on) or not (off) the list of files
+		  matching the wildcard should be updated to shadow the
+		  actual files found on the disk.
+		- use this option if all the files in the target directory
+		  that match the wildcard are used in constructing the
+		  target program.
+	    Items/Include
+	        - this menu item applies only if the *Items/Shadow* option
+		  is set *off*.
+		- specifies that a file is to always be included in the target.
+	    Items/Exclude
+	        - this menu item applies only if the *Items/Shadow* option
+		  is set *on*.
+		- specifies that a file is *never* to be included in the
+		  target.
+	    Items/Touchback
+	        - change the timestamp of the result file back to Jan 1,1980
+		  so as to force re-compiling on the next Make action.
+	    Items/'action'(both source and result)
+	        - invoke actions defined for the rule associated with the
+		  file item.
+		- there can be a number of such menu items
+		- includes both the rule associated with the file item
+		  and the rule associated with the result file
+
+	    Actions/'action'
+	        - invoke actions defined for the project as a whole.
+		- there can be a number of such menu items
+
+	    Help/Contents
+	        - (not available at this time)
+	    Help/Search for help on
+	        - (not available at this time)
+	    Help/How to use Help
+	        - (not available at this time)
+	    Help/About Viper
+	        - display a dialog describing the Version of Viper
+		  that you are currently running.
+
+    3) Batch Viper (BVIPER.EXE):
+
+        A supplementary program in the Viper suite of programs is bviper.exe.
+	It is run from the DOS command line and takes as input existing
+	target descriptor (.tgt) files, and creates the same makefiles that
+	viper.exe creates when the *Make* button is pressed.  It uses the
+	same Viper configuration file (viper.cfg) that is used by viper.exe.
+
+	Using bviper.exe, you can create makefiles from .tgt files in
+	batch mode, and then invoke WMAKE to process them.  This is handy
+	if you want to develop applications using the Viper Development
+	Envirinment, but have a need to build the target programs in some
+	sort of automated, batch mode manner.
+
+	a) Command line switches:
+
+	    bviper.exe is invoked using the following command line:
+
+		bviper [switches] [filename.tgt]*
+
+	    where:
+
+	        [switches] is zero or more of the following:
+    
+			-f filename	- this defines an alternate name to
+				          be used for the resulting makefile.
+
+		[filename.tgt]* is one or more target descriptor files to
+				be used to create the makefiles.
+
+Appendix A: Viper and Batch Viper configuration file (VIPER.CFG)
+----------------------------------------------------------------
+    - Syntax:
+	- Tool (all WATCOM tools)
+	    - IncludeTool
+	    - Family
+		- CSwitch (mask)
+		- RSwitch (mask)
+		- VSwitch (mask)
+	- Rule (dos/windows/os2 etc libraries and executables) (rule mask)
+	    - Autodepend
+	    - BrowseSwitch "-db"
+	    - Symbol (lists of file names)
+	    - Command (refrences target masks and symbol masks)
+	    - Action
+		- Command
+		    - '!Editor'
+		    - '!Batch'
+		    - '!Browse'
+		    - '!Make'
+		- Hint
+		- Default
+		- Button
+	- Project
+	    - Action (see above)
+	    - Target (target mask)
+	    - Editor (viw)
+	    - Browse (wbrw)
+	    - Batch (os2msg or winmsg)
+	    - Makefile (must match WMAKE rule!)
+
+    - Tools described in VIPER.CFG as distributed:
+        - WCC(386)
+	- WPP(386)
+	- WASM
+	- VIW
+	- WBRW
+	- WMAKE
+	- WDV
+	- WVIDEO
+	- WLINK
+	- WLIB
+	- WRC
+	- WFC(386)
+
+	- WDISASM	??????????
+	- WPROF		??????????
+	- WSAMPLE	??????????
+
+Appendix B: Message Log configuration file (MSG.CFG)
+----------------------------------------------------
+    - used by WINMSG.EXE and OS2MSG.EXE
+    - Help masks
+    - Editor masks
+
+Appendix C: Setup
+-----------------
+    1. Setup under OS2/WinOS2.
+
+        To execute Viper under WinOS2, you simply install it as a program
+	either in the Full Screen WinOS2 or as an OS2 program (seamless
+	Windows feature).  Make sure that all the Viper components are
+	accessable via the PATH environment variable for your WinOS2
+	sessions.
+
+	Next, make sure that the *Program/Batch* setting (near the end
+	if the viper.cfg file) is set to os2msg.exe.
+
+	Before you can invoke Make and other batch operations, you must
+	first have started the program batserv.exe in an OS2 session.
+	WATCOM recommends that you start this program as part of your
+	OS2/Startup and just leave it running.
+
+    2. Setup under Windows/DOS.
+
+        To execute Viper under MS Windows, you simply install it as a program
+	in Program manager. Make sure that all the Viper components are
+	accessable via the PATH environment variable DOS box sessions.
+
+	Next, make sure that the *Program/Batch* setting (near the end
+	if the viper.cfg file) is set to winmsg.exe.
+
+	Before you can invoke Make and other batch operations, you must
+	have WDEBUG.386 installed as a device in your SYSTEM.INI file.
+	If you are using a Novell network, check that you have the correct
+	network drivers (>=3.26) in Windows/Setup.

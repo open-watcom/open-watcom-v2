@@ -1,0 +1,38 @@
+proj_name       = owl
+inc_dirs        = $(watcom_dir)\h;..\h
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+
+.c: $(owl_dir)\c
+
+owl_objs = owl.obj &
+        owbuffer.obj &
+        owcoff.obj &
+        owdebug.obj &
+        owelf.obj &
+        owemit.obj &
+        owfile.obj &
+        owreloc.obj &
+        owsect.obj &
+        owstring.obj &
+        owsymbol.obj &
+        owsymdmp.obj &
+        log.obj
+
+owl.lib : $(owl_objs)
+        @if exist $^&.clb @erase $^&.clb
+        @for %i in ($<) do @%append $^&.clb -+%i
+        $(librarian) -n -q -b $^. @$^&.clb
+
+
+bufftest.exe : bufftest.obj $(owl_objs)
+        $(link) $(lflags) file bufftest option map option quiet name bufftest.exe file { $(owl_objs) }
+
+strtest.exe : strtest.obj $(owl_objs)
+        $(link) $(lflags) file strtest option map option quiet name strtest.exe file { $(owl_objs) }
+
+patchtst.exe : patchtst.obj $(owl_objs)
+        $(link) $(lflags) file patchtst option map option quiet name patchtst.exe file { $(owl_objs) }

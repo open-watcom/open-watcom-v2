@@ -1,0 +1,75 @@
+//
+//  wcstack.h    Defines the WATCOM Stack Container Class
+//
+:keep CPP_HDR
+:include crwat.sp
+//
+#ifndef _WCSTACK_H_INCLUDED
+#define _WCSTACK_H_INCLUDED
+:include readonly.sp
+
+#ifndef __cplusplus
+#error wcstack.h is for use with C++
+#endif
+
+#ifndef _WCDEFS_H_INCLUDED
+ #include <wcdefs.h>
+#endif
+#ifndef _WCLIST_H_INCLUDED
+ #include <wclist.h>
+#endif
+
+
+
+//
+//  The WCStack template class defines a stack.  The template supplies
+//  the type of the data maintained in the stack, and the methods for
+//  manipulating the stack.
+//
+//  The class 'Type' should be properly defined for copy and assignment
+//  operations.
+//
+
+template<class Type, class FType>
+class WCStack : private FType {
+public:
+    inline WCStack() {};
+    inline WCStack( void * (*user_alloc)( size_t )
+                  , void (*user_dealloc)( void *, size_t )
+                ) : FType( user_alloc, user_dealloc ) {};
+    inline ~WCStack() {};
+
+    inline WCbool push( const Type & data )  {
+        return( FType::insert( data ) );
+    };
+
+    inline Type pop() {
+        return( FType::get() );
+    };
+
+    inline Type top() const {
+        return( FType::find( 0 ) );
+    };
+
+    inline WCbool isEmpty() const {
+        return( FType::isEmpty() );
+    };
+
+    inline int entries() const {
+        return( FType::entries() );
+    };
+
+    inline void clear() {
+        FType::clear();
+    };
+
+    inline wc_state exceptions() const {
+        return( FType::exceptions() );
+    };
+
+    inline wc_state exceptions( wc_state const set_flags ) {
+        return( FType::exceptions( set_flags ) );
+    };
+};
+
+#endif

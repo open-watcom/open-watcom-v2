@@ -1,0 +1,156 @@
+.EXTENSIONS: .rc .dlg
+
+!ifndef drwatcom_95
+drwatcom_95 = 0
+!endif
+
+.BEFORE
+!ifeq drwatcom_95 1
+    set include=$(inc_path);$(watcom_dir)\win95_h
+!else
+    set include=$(inc_path)
+!endif
+
+
+sys_windowed = TRUE
+proj_name = drwatcom
+
+exc_name = $(proj_name).exe
+
+msgh = rcstr.h
+mastermsg = rcstr.msg
+msgfiles = ..\drwatcom.msg $(sdk_misc)\about.msg $(sdk_misc)\savelbox.msg &
+           $(sdk_misc)\memwnd.msg $(dig_dir)\h\mad.str
+
+link_name = $(proj_name).lnk
+common_dir=..\..\common
+sdk_misc = $(sdk_dir)\misc
+
+inc_dirs=..\;$(common_dir);$(dig_dir)\h;$(sdk_misc);$(wdisasm_dir)\h;
+
+#cflags stuff
+#########
+extra_c_flags_386 = -fpc
+extra_c_flags_axp =
+extra_c_flags_i86 = -ml -zW -zu
+extra_c_flags_mem = -dWANT_MSGS -dNO_WPI
+
+!ifneq host_OS win
+extra_c_flags = -dNOUSE3D
+!endif
+
+#lflags stuff
+#########
+extra_l_flags = option map,quiet name $(exc_name)
+
+#extra_l_flags_nt_axp = op start=WinMainCRTStartup ref WinMainCRTStartup lib { user32 kernel32 gdi32 comdlg32 advapi32}
+
+extra_l_flags_win = lib toolhelp.lib,commdlg.lib,ctl3d.lib
+
+!include cproj.mif
+
+dig_os = $(host_OS)
+!include $(dig_dir)\mif\dipcli.mif
+!include $(dig_dir)\mif\madcli.mif
+!include $(wdisasm_dir)\mif\disasm.mif
+
+extra_proj_obj_nt = global.obj param.obj procctl.obj dipcli.obj memory.obj &
+            drproc.obj handler.obj memview.obj proclist.obj thrdctl.obj &
+            pefile.obj autoget.obj lddips.obj srchmsg.obj &
+            madrtn.obj madsys.obj regstr.obj reglist.obj bitman.obj &
+            strcnv.obj regcrt.obj &
+            $(mad_objs)
+!ifeq drwatcom_95 1
+extra_proj_obj_nt += reg95.obj
+extra_c_flags += -dCHICAGO
+extra_l_flags += lib $(watcom_dir)\lib\win95\th32.lib
+!else
+extra_proj_obj_nt += reg.obj
+!endif
+
+extra_proj_obj_win = globals.obj notify.obj winproc.obj debug.obj dump.obj &
+            win32app.obj lddips.obj stack.obj &
+            mythelp.obj intdata.obj inth.obj dbg386.obj sdkasm.obj &
+            ismod32.obj segmem.obj segmem2.obj getsaddr.obj getcsip.obj &
+            $(disasm)
+
+extra_proj_rsc_nt = regcmbo.dlg regedit.dlg thrdctl.dlg procctl.dlg &
+                    priority.dlg retcode.dlg memory.dlg memdmp.dlg
+
+extra_proj_rsc_win = $(sdk_misc)\seginfo.dlg &
+                dmptask.dlg taskctl.dlg segmap.dlg &
+                dbgopt.dlg
+
+
+proj_rsc =  $(common_dir)\notelog.dlg $(common_dir)\10drwat.ico &
+            $(common_dir)\10err.ico $(common_dir)\dipload.dlg $(mastermsg) &
+            log.dlg stat.dlg $(mastermsg) $(sdk_misc)\about.dlg &
+            $(sdk_misc)\mark.rc $(common_dir)\intdlg.dlg &
+            $(extra_proj_rsc_$(host_OS))
+
+
+proj_obj =   mem.obj listbox.obj log.obj wwinhelp.obj stat.obj lognote.obj &
+            drwatcom.obj sym.obj profile.obj fault.obj &
+            font.obj fontstr.obj about.obj savelbox.obj mark.obj dlgmod.obj &
+            memwnd.obj memwndcd.obj ldstr.obj jdlg.obj disasm.obj &
+            $(extra_proj_obj_$(host_OS)) &
+            $(dip_objs)
+
+#implicit rules
+#####
+
+.c.obj: .AUTODEPEND
+        $(CC) $(cflags) $(extra_c_flags_$[&) $[@
+
+.asm.obj:
+        $(AS) /Ml $[@
+
+.asm : .;$(sdk_misc)
+.c : ..\;$(common_dir);$(dig_srcs);$(mad_srcs);$(sdk_misc);$(wdisasm_dir)\c
+.dlg: ..\;$(common_dir);$(sdk_misc)
+.rc: ..\;$(common_dir);$(sdk_misc)
+
+#explicit rules
+######
+
+$(exc_name) :$(msgh) $(link_name) $(proj_name).res $(proj_obj)
+        $(LINKER).exe @$(link_name)
+        $(RC) -k $(proj_name).res
+
+
+$(link_name) : $(__MAKEFILES__)
+        @%write $^@ $(lflags)
+        @%append  $^@ file { $(proj_obj) }
+
+$(msgh) : $(mastermsg) $(sdk_misc)\msgtoh.vi
+        vi -i -q -s $(sdk_misc)\msgtoh.vi -p "$(msgh)" $(mastermsg)
+!ifeq host_OS win
+$(proj_name).res : ..\drwatcom.rc $(proj_rsc)
+        $(RC) -r ..\drwatcom.rc  -zk -fo=$(proj_name).res -bt=windows
+!else
+$(proj_name).res : ..\drnt.rc $(proj_rsc)
+!ifeq drwatcom_95 1
+        $(RC) -r ..\drnt.rc  -zk0 -d__NT__ -fo=$(proj_name).res -bt=nt /dCHICAGO
+!else
+        $(RC) -r ..\drnt.rc  -zk0 -d__NT__ -fo=$(proj_name).res -bt=nt
+!endif
+!endif
+
+$(mastermsg) : $(msgfiles)
+!ifeq drwatcom_95 1
+        $(cc) -zk0 -p -i=$(sdk_misc) ..\drwatcom.msg -fo=$(mastermsg) /dCHICAGO
+!else
+        $(cc) -zk0 -p -i=$(sdk_misc) ..\drwatcom.msg -fo=$(mastermsg)
+!endif
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.exe @del *.exe
+        @if exist *.lnk @del *.lnk
+        @if exist *.err @del *.err
+        @if exist *.map @del *.map
+        @if exist *.sym @del *.sym
+        @if exist *.?bj @del *.?bj
+        @if exist $(msgh) @del $(msgh)
+        @if exist $(mastermsg) @del $(mastermsg)
+        @if exist $(proj_name).res @del $(proj_name).res
+        @if exist $(proj_name).exe @del $(proj_name).exe

@@ -1,0 +1,10 @@
+#
+#change the bases header
+#
+execute :1\n
+execute $xA800\e
+
+#
+#quit
+#
+execute :x\n

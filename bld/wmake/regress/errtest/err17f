@@ -1,0 +1,12 @@
+# -------------------------------
+# ERROR 17F: maximum token sizes
+# -------------------------------
+#   suffixes        ( MAX_SUFFIX == _MAX_EXT == 256 )
+#
+tmp=123456789012345678901234567890
+ext=$(tmp)$(tmp)$(tmp)$(tmp)$(tmp)$(tmp)$(tmp)$(tmp)
+.extensions: .234567890a .234567890b$(ext)     #Does not produce error
+
+.234567890a.234567890b$(ext):                  #Produce error
+    testing
+

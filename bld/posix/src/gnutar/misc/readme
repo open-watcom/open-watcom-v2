@@ -1,0 +1,44 @@
+This is a public domain tar(1) replacement.  It implements the 'c',
+'x', and 't' commands of Unix tar, and many of the options.  It creates
+P1003 "Unix Standard" [draft 6] tapes by default, and can read and
+write both old and new formats.  It can decompress tar archives when
+reading them from disk files (using the 'z' option), but cannot do so
+when writing, or when reading from a tape drive.  Its verbose output
+looks more like "ls -l" than the Unix tar, and even lines up the
+columns.  It is a little better at reading damaged tapes than Unix tar.
+
+It is designed to be a lot more efficient than the standard Unix tar;
+it does as little bcopy-ing as possible, and does file I/O in large
+blocks.  On the other hand, it has not been timed or performance-tuned;
+it's just *designed* to be faster.
+
+On the Sun, the tar archives it creates under the 'old' option are
+byte-for-byte the same as those created by /bin/tar, except the trash
+at the end of each file and at the end of the archive.
+
+It was written and initially debugged on a Sun Workstation running
+4.2BSD.  It has been run on Xenix, Unisoft, Vax 4.2BSD, V7, and USG
+systems.  I'm interested in finding people who will port it to other
+types of (Unix and non-Unix) systems, use it, and send back the
+changes; and people who will add the obscure tar options that they
+happen to use and I don't.  In particular, VMS, MSDOS, Mac, Atari and
+Amiga versions would be handy.
+
+It still has a number of loose ends, marked by "FIXME" comments in the
+source.  For example, it does not chown() extracted files.  Fixes to
+these things are also welcome.
+
+I am the author of all the code in this program.  I hereby place it in
+the public domain.  If you modify it, or port it to another system,
+please send me back a copy, so I can keep a master source.
+
+	John Gilmore
+	Nebula Consultants
+	1504 Golden Gate Ave.
+	San Francisco, California, USA  94115
+	+1 415 931 4667		voice
+	hoptoad!gnu		data
+	jgilmore@lll-crg.arpa	data
+Hoptoad talks to sun, ptsfa, well, lll-crg, ihnp4, cbosgd, ucsfcgl, pyramid.
+
+@(#)README 1.5	86/10/29

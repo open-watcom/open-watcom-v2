@@ -1,0 +1,9 @@
+# rfx link file
+debug all
+OPTION quiet,map
+file dbg.sbj
+file ..\..\os2\obj\dbgacc1.obj
+file ..\..\os2\obj\dbgacc2.obj
+file ..\..\os2\obj\os2lkup.obj
+file ..\..\os2\obj\os2trap.obj
+file ..\..\os2\obj\dbgstr.obj

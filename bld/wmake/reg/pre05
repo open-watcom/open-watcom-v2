@@ -1,0 +1,41 @@
+#
+#   test that the preprocessor doesn't try to process preprocessor commands
+#   while it is skipping a section
+#
+true=
+
+!ifdef false
+!ifeq false dowah ditty!
+!endif
+!endif
+
+!ifdef false
+!   ifeq false dowah
+!   else ifeq false true
+!       error shouldn't get here
+!   else
+!       error shouldn't get here
+!   endif
+!endif
+
+!ifdef false
+!   undef true
+!endif
+!ifndef true
+!   error shouldn't get here
+!endif
+
+!ifdef false
+!   include an_impossibly_long_filename
+!endif
+
+!ifdef false
+!   define false
+!endif
+!ifdef false
+!   error shouldn't get here
+!endif
+
+pre05 : .symbolic
+    @%null
+

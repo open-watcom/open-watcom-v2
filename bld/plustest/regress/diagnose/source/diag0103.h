@@ -1,0 +1,10 @@
+typedef int ST1;
+typedef int ST2;
+struct CT1 {};
+struct CT2 {};
+union UT1 {};
+union UT2 {};
+int VN1;
+int VN2;
+int FN1( int );
+int FN2( int );

@@ -1,0 +1,9 @@
+extern void ProcessDBLCLK( POINT );
+extern void ProcessButtonDown( POINT, WORD, OBJPTR );
+extern void ProcessButtonUp( POINT );
+extern void ProcessMouseMove( POINT );
+extern void FinishMoveOperation( BOOL );
+extern void BeginMoveOperation( LIST * );
+extern BOOL CheckMoveOperation( LIST ** );
+extern void AbortMoveOperation( void );
+extern void AbortResize( void );

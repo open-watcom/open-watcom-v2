@@ -1,0 +1,11 @@
+# ------------------------------------------
+# ERROR 39: target not mentioned in any makefile
+# ------------------------------------------
+
+.extensions:
+.extensions: .obj .c
+
+.c.obj :
+    @echo Compile $[@
+    @wtouch $^@
+

@@ -1,0 +1,31 @@
+#if defined(_JAPANESE)
+
+DEF_MSG( TXT_OUT_MEM	    ,"メモリ不足です" );
+DEF_MSG( TXT_DISK_FULL	    ,"ディスクがいっぱいです" );
+DEF_MSG( TXT_INV_ARC	    ,"圧縮ファイルが壊れています" );
+DEF_MSG( TXT_INC_VER_ARC    ,"圧縮ファイルのバージョンが間違っています" );
+DEF_MSG( TXT_UNPACK	    ,"展開するファイル " );
+DEF_MSG( TXT_ARC_NOT_EXIST  ,"圧縮ファイルが存在しません: " );
+DEF_MSG( TXT_WARN_FILE	    ,"警告: ファイル " );
+DEF_MSG( TXT_INC_CRC	    ," の CRC が壊れています" );
+DEF_MSG( TXT_NOT_IN_ARC     ," は、アーカイブの中にありません" );
+DEF_MSG( TXT_ERR_READ	    ,"読み込みエラー: " );
+DEF_MSG( TXT_ERR_WRIT	    ,"書き込みエラー: " );
+DEF_MSG( TXT_NOT_OPEN	    ,"オープンできません: " );
+
+#else
+
+DEF_MSG( TXT_OUT_MEM	    ,"Out of memory" );
+DEF_MSG( TXT_DISK_FULL	    ,"Disk full" );
+DEF_MSG( TXT_INV_ARC	    ,"Invalid archive file" );
+DEF_MSG( TXT_INC_VER_ARC    ,"Incompatible version of archive file" );
+DEF_MSG( TXT_UNPACK	    ,"Unpacking file " );
+DEF_MSG( TXT_ARC_NOT_EXIST  ,"Archive file does not exist: " );
+DEF_MSG( TXT_WARN_FILE	    ,"Warning: file " );
+DEF_MSG( TXT_INC_CRC	    ," has incorrect CRC" );
+DEF_MSG( TXT_NOT_IN_ARC     ," not in archive" );
+DEF_MSG( TXT_ERR_READ	    ,"Error reading: " );
+DEF_MSG( TXT_ERR_WRIT	    ,"Error writing: " );
+DEF_MSG( TXT_NOT_OPEN	    ,"Cannot open: " );
+
+#endif

@@ -1,0 +1,93 @@
+Left to do:     rough cut at what's left 91/11
+----------
+
+(1) long double
+    -----------
+    - awaiting codegen support
+    - should work with minor effort (3 line change!)
+
+(2) linker support
+    --------------
+    - not sure state left by Jim Randall
+    - what does C++ compiler need to do to get the effect?
+
+(3) CodeGen Support
+    ---------------
+    - optimization of pointer deltas is not done (Brian says its coming)
+    - lvalue support for assignment (John was nudged 91/10/29)
+    - need to upgrade to newest code generator
+        - new entry sequence
+
+(4) Pragma support
+    --------------
+    - need support for language linkages
+    - need support to:  - disable default generation for class, all classes
+                        - enable default generation for class, all classes
+                        - make warnings levels different or as errors
+                        - extended information during compilation
+
+(5) Message Support
+    ---------------
+    - need to track (file,line,column) in parse tree
+    - need extra message information
+    - need to react to pragma requesting extra information
+
+(6) Data
+    ----
+    - need to do data generation
+
+(7) Expressions
+    -----------
+    - work through CTOR, DTOR invocation
+    - creation and destruction of temporaries
+    - support for virtual classes throughout (stubbed at present)
+    - operators not supported: ->*, .*, new, delete, :>, lvalue form of ?:, ::
+    - lvalue assignment (awaiting codegen support)
+    - additional support for ==, != (member pointers)
+
+(8) Class support
+    -------------
+    - virtual classes
+    - virtual functions
+
+(9) Function Support
+    ----------------
+    - definition of member fns (should only require parsing support)
+    - pure virtual
+    - inline support required (start as out-of-line, then back off)
+    - "this" pointer can be const or volatile (see pg.177 of ARM)
+
+(10)Operational Support
+    -------------------
+    - review options and upgrade
+    - implement profile file for options
+
+(11)Error Handling & Templates
+    --------------------------
+    - need to decide if necessary
+    - depends what competition implements
+    - need more codegen support when we do error handling
+
+(12)Asm Support
+    -----------
+    - Fred has it in C; we can likely get it easily
+
+(13)Declarations
+    ------------
+    - constructor declarations      (2 days)
+    - function definitions          (1 week)
+    - inline function definitions   (2 days)
+    - virtual functions             (???)
+    - virtual bases                 (???)
+    - friend declarations           (1 week)
+    - abstract classes              (???)
+
+(14)OverLoading
+    -----------
+    - overloading support: Greg working here
+    - need to fill out the special functions in Chapter 13
+    - taking address of overloaded function
+
+(15)Debugging
+    ---------
+    - should be just code-generation work

@@ -1,0 +1,253 @@
+Description of interface to browse merge DLL
+============================================
+
+Note on callbacks
+-----------------
+
+All of the "*Iter" function in this interface take as their last two
+arguments a variable of type BCallBack and a "cookie" variable of
+type (void *).  The type BCallBack is defined as follows:
+
+    struct SourceLocn {
+        char const  *filePath;
+	char const  *name;
+	int         line;
+	int         col;
+    };
+    
+    typedef void __stdcall (*BCallBack)(SourceLocn *, DeclRec const *, void *)
+    
+The arguments that are passed by the DLL to a BCallBack are as follows:
+    
+    SourceLocn *    -- Points to a structure containing information
+    		       about the name and/or location of a symbol.
+		       DO NOT assume the structure will persist after the
+		       callback function returns; it likely will not.
+		       Likewise, DO NOT assume that all fields of the
+		       SourceLocn are valid.  See the information on the
+		       different iterators to determine which fields are
+		       filled in by which iterator.
+    DeclRec const * -- Points to a DeclRec, which is a structure internal
+    		       to the DLL.  These pointers may be passed as
+		       arguments to other functions in the interface.  The
+		       structures to which these point are persisted and
+		       are only destroyed when the browser object itself is
+		       destroyed via DestroyBrowser().
+    void *          -- A copy of the "cookie" parameter passed to the
+    		       iterator.
+
+
+Functions
+---------
+
+NewBrowser
+    Purpose:	Create a new Browser.
+    Returns:	The handle of the created Browser.
+    
+SaveBrowser
+    Purpose:	Save a Browser to disk.
+    Parameters:	m -- handle of a Browser to save
+    		filepath -- pathname of the file to save to.
+    Returns:	TRUE or FALSE: was the Browser saved correctly?
+    
+LoadOldBrowser
+    Purpose:	Load a Browser from the disk.
+    Parameters: filepath -- pathname of the file to load from.
+    Returns:	Handle of the created Browser, or NULL if failed.
+    
+DestroyBrowser
+    Purpose:	Destroy a Browser and delete the memory.
+    Parameters:	Handle to destroy.
+    
+DebugMessages
+    Purpose:    Retrieve the WStringArray of saved debug messages.
+    Returns:	A (WStringArray const *) of messages.
+    
+AddFile
+    Purpose:	Merge a compiler-generated browse file with the current data.
+    Parameters:	Handle of a Browser.
+    		filepath -- pathname of the .BRM file to add.
+    Returns:    TRUE or FALSE: was the file added without errors?
+    
+DefnNameIter
+    Purpose:	Iterate over all symbols with a given name.
+    Parameters:	Handle of a Browser.
+    		name -- name of the symbol.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			filePath, name, line, col
+		
+DefnAtIter
+    Purpose:    Iterate over all symbols defined at a particular location.
+    Parameters:	Handle of a Browser.
+    		locn -- pointer to a SourceLocn.  All fields are used as
+			input.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			filePath, name, line, col
+		
+DefnOfIter
+    Purpose:    Iterate over all definitions of a given symbol.
+    Parameters: Handle of a Browser.
+    		sym -- pointer to a DeclRec for a symbol.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			filePath, name, line, col
+		
+FileClassesIter
+    Purpose:	Iterate over all class symbols defined in a given file.
+    Parameters:	Handle of a Browser.
+    		filepath -- the FULL PATH NAME of a source file, in
+			    ASCII text.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			name
+		
+ReferenceIter
+    Purpose:	Iterate over all references of a given type to a given symbol.
+    Parameters:	Handle of a Browser.
+    		sym -- pointer to a DeclRec for a symbol.
+		refType -- type of reference to search for.  If
+			   refType==BRI_RT_None, all references.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			filePath, line, col
+		
+SymbolIter
+    Purpose:	Iterate over all symbols of a given type.
+    Parameters:	Handle of a Browser.
+    		symType -- the type of symbol to search for.  If
+			   symType==BRI_SA_None, all symbols.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			name
+		
+UsedFnsIter
+    Purpose:	Iterate over all functions which either call something
+    		or are called by something.
+    Parameters:	Handle of a Browser.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			name
+		
+UserClassesIter
+    Purpose:	Iterate over all classes which are not defined by a
+    		pre-compiled header.
+    Parameters:	Handle of a Browser.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			name
+		
+CallingFnsIter
+    Purpose:	Iterate over all functions which call a given function.
+    Parameters:	Handle of a Browser.
+    		sym -- DeclRec corresponding to a function symbol.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			name
+		
+CalledFnsIter
+    Purpose:	Iterate over all functions called by a given function.
+    Parameters:	Handle of a Browser.
+    		sym -- DeclRec corresponding to a function symbol.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			name
+		
+ParentClassesIter
+    Purpose:	Iterate over all immediate ancestors of a given class.
+    Parameters:	Handle of a Browser.
+    		sym -- DeclRec corresponding to a class symbol.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			name
+		
+ChildClassesIter
+    Purpose:	Iterate over all immediate children of a given class.
+    Parameters:	Handle of a Browser.
+    		sym -- DeclRec corresponding to a class symbol.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			name
+		
+MemberFnsIter
+    Purpose:	Iterate over all member functions of a given class.
+    Parameters:	Handle of a Browser.
+    		sym -- DeclRec corresponding to a class symbol.
+		cb -- a BCallBack function.
+		cookie -- a cookie for the callback function.
+    Returns:	The number of calls to the callback function.
+    NOTE:	Fills in the following fields in the SourceLocn passed
+    		to the callback function:
+			name
+		
+UnScopedName
+    Purpose:	Get the name of a symbol, without scope or type information.
+    Parameters:	Handle of a Browser.
+    		sym -- DeclRec corresponding to a symbol.
+    Returns:	A WString.
+		
+ScopedName
+    Purpose:	Get the name of a symbol, qualified with scope information.
+    Parameters:	Handle of a Browser.
+    		sym -- DeclRec corresponding to a symbol.
+    Returns:	A WString.
+		
+NameOfScope
+    Purpose:	Get the name a symbol's scope.
+    Parameters:	Handle of a Browser.
+    		sym -- DeclRec corresponding to a symbol.
+    Returns:	A WString.
+		
+TypedName
+    Purpose:	Get the name of a symbol, qualified with type information.
+    Parameters:	Handle of a Browser.
+    		sym -- DeclRec corresponding to a symbol.
+    Returns:	A WString.
+		
+NameOfType
+    Purpose:	Get the name of symbol's type.
+    Parameters:	Handle of a Browser.
+    		sym -- DeclRec corresponding to a symbol.
+    Returns:	A WString.
+		
+SymAttrs
+    Purpose:	Get the attributes of a symbol.
+    Parameters: sym -- DeclRec corresponding to a symbol.
+    Returns:	The BRI_SymbolAttributes of the symbol.

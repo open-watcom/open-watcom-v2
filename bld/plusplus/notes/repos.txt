@@ -1,0 +1,314 @@
+Rough Notes on Repository
+-------------------------
+
+(A) A model
+-----------
+
+- Attributes: key in databases
+    - each attribute has a current value
+    - AV pair is <attribute,value>
+    
+- File:
+    - can "define" set of AV pairs
+        - e.g. - attribute( time of file F ) has value ( time last edited )
+    - can "use" set of AV pairs
+        - e.g. - object file would use above for primary source file
+    - the files are found in a Registration set 
+        
+- property: each attribute is defined by exactly one file
+
+- DB-DEF: database of AV pairs containing definitions for the repository and
+    the file defining each pair
+
+- file is "out of date" when "use" set contains at least one attribute
+  whose value differs from the corresponding value in DB-DEF
+
+- Production: < procedure, input-set, output-set >
+    - all files in the "input-set" must be up to date (like MAKE)
+    - "procedure" is executed to produce files in the set "output-set"
+    - DB-DEF updated with the "define" AV pairs for each file in the set
+    
+    - we have:
+    
+        DB-PR: < production-name, procedure >
+        DB-IN: < production-name, file >
+        DB-OUT:< production-name, file >
+        DB-USE:< attribute, value, file >
+
+- property: a file can be a member of at most one rule set
+
+- deduction: the files in the registration set have a partial ordering
+    established by the rules
+
+- edit: operation by which a file is changed
+    - normally, this is a file not found in DB-OUT
+    - view as external operation which changes a file (and it's editing
+      counter or time-of-day )
+    
+- make "file"
+    - ensure that file is uptodate
+    
+    update "file" using its production (determine from DB-OUT)
+    
+        (a) recursively update files in DB-IN for the production
+        
+        (b) if any of the attributes for the file don't match, execute
+            the procedure
+            
+        (c) a file without a production causes its editing counter to
+            be updated in DB-DEF
+            
+            
+(B) example (like wmake)
+-----------
+
+    headers: h1 (includes h2)
+             h2
+             h3
+             
+    sources: A (includes h2, h3 )
+             B (includes h1, h3 )
+             
+    objects: A.O, B.O, PGM
+    
+    productions: 
+    
+        comp-A: compile-A, (A), (A.O)
+        comp-B: compile-B, (B), (B.O)
+        link:   link-PGM, (A.O,B.O), (PGM)
+    
+    --------------------------------------------------------------------
+    
+    time (1)
+        
+        register h1, h2, h3, A, B, C
+        
+        register productions
+        
+            DB-PR < comp-A, compile-A
+                  < comp-B, compile-B
+                  < link,   link-PGM
+                  
+            DB-IN < comp-A, A
+                  < comp-B, B
+                  < link,   A.O
+                  < link,   B.O
+                  
+            DB-OUT< comp-A, A.O
+                  < comp-B, B.O
+                  < link,   PGM
+                  
+            DB-DEF< h1
+                  
+            DB-USE< A.O,    A,      0
+                  < B.O,    A,      0
+                  < PGM,    A.O,    0
+                  < PGM,    A.O,    0
+        
+    times (2-6)
+    
+        edit (create) h1, h2, h3, A, B 
+    
+    time(7)
+        
+        make PGM
+        
+            update A.0
+            
+                update A (time only)
+                  
+            DB-DEF< A,      5
+                  
+            DB-USE< A.O,    A,      0
+                  < B.O,    A,      0
+                  < PGM,    B.O,    0
+                  < PGM,    A.O,    0
+        
+            comp-A (attribute for A differs)
+                  
+            DB-DEF< A,      5
+                  < A.O,    7
+                  
+            DB-USE< A.O,    A,      7
+                  < B.O,    A,      0
+                  < PGM,    A.O,    0
+                  < PGM,    B.O,    0
+                  < A.O,    h1,     2
+                  < A.O,    h2,     3
+                  < A.O,    h3,     4
+                  
+                update B (time only)
+                  
+            DB-DEF< A,      5
+                  < A.O,    7
+                  < B,      6
+                  
+            DB-USE< A.O,    A,      7
+                  < B.O,    A,      0
+                  < PGM,    A.O,    0
+                  < PGM,    B.O,    0
+                  < A.O,    h1,     2
+                  < A.O,    h2,     3
+                  < A.O,    h3,     4
+                  
+            comp-B (attribute for B differs)
+                  
+            DB-DEF< A,      5
+                  < B,      6
+                  < A.O,    7
+                  < B.O,    7
+                  
+            DB-USE< A.O,    A,      7
+                  < B.O,    A,      7
+                  < PGM,    A.O,    0
+                  < PGM,    B.O,    0
+                  < A.O,    h1,     2
+                  < A.O,    h2,     3
+                  < A.O,    h3,     4
+                  < B.O,    h1,     2
+                  < B.O,    h3,     4
+                  
+        link (attributes for A.O, B.O differ )
+                  
+            DB-DEF< h1,     2
+                  < h2,     3
+                  < h3,     4
+                  < A,      5
+                  < B,      6
+                  < A.O,    7
+                  < B.O,    7
+                  < PGM,    7
+                  
+            DB-USE< A.O,    A,      7
+                  < B.O,    A,      7
+                  < PGM,    A.O,    7
+                  < PGM,    B.O,    7
+                  < A.O,    h1,     2
+                  < A.O,    h2,     3
+                  < A.O,    h3,     4
+                  < B.O,    h1,     2
+                  < B.O,    h3,     4
+                  
+                  
+- in reality:
+
+    (a) productions are likely "macro" based, like wmake
+    
+    (b) need production to "compile" header files so their attributes
+        can be registered
+        - can this be automated ?
+        
+    (c) note that h1, h2, h3 could be one header file with three
+        attribute values
+        
+        
+(C) experiment by building simulator
+
+(D) Optimizations with attributes
+
+    - principle: information volume can be reduced and/or value comparison
+      can be simplified by using a more gross attribute
+      
+    - example: any attribute which is known to be defined in a non-changeable
+      file can be instead represented as the time-stamp of the non-changeable
+      file
+      - this should be used for some header files
+      
+    - also, where attribute is defined locally, no definition is recorded
+    
+    - also, when attribute is used in the same file that it is defined, no
+      usage needs to be recorded
+
+(E) What are the attribute-value pairs?
+
+    (1) <file,time-stamp>
+
+        - most gross AV
+        
+        - must be updated by MAKE for "leaf" files
+        
+    (2) Linked executables
+    
+        - defines time-stamp for executable
+        - uses <file,time-stamp> for libraries, objects, other inputs
+        
+    (3) Compiled Object
+    
+        - defines time-stamp for output files
+        - usages include:
+        
+            (a) name value: < name, value >
+            
+                - used for "offsetof" situations (value is offset)
+                - used for virtual functions (value is VF index)
+                - fully qualified name
+                
+            (b) field type: < name, type >
+            
+                - used to check type equivalence
+                - what is a "type" value (mangled type name?)
+                
+            (c) field contents: < name, contents >
+            
+                - used for "int const i = 19"
+                
+            (d) name reference: < class-name, name >
+            
+                - used for references from a class to a name
+                - name is fully qualified
+                - use of internal fields such as VFT, VBT, etc should be
+                  treated consistently like a normal name
+                  
+                - could be implemented as a combination of:
+                    < { not_found, class }, name >
+                        - for all fully-qualified classes where name not
+                          found
+                        - name is bare name
+                    < { found, class }, name >
+                        - for class in which name was found
+                        - name is bare name
+                
+            (e) class size : < class-name, size >
+            
+                - used for "sizeof" situations
+                
+            (f) function reference
+            
+                - accessed from "class"
+                - is really an access to the entire overload set
+                - so: requires "name reference" for each function
+                
+            (g) user-defined conversions
+            
+                - not thought thru yet
+                
+            (h) macros
+            
+                - can be treated like names
+                - what about re-definition ? undef ?
+                
+            (i) class inheritance
+            
+                - need < {vbase, from, to}, index >
+                - need < {dbase, from, to}, index >
+                
+                - "from" and "to" are fully-qualified class names
+                
+            (j) compilation options
+            
+                - need < file, option-string >
+                
+                - this is an environmental option (defined by MAKE)
+                
+            (k) environment variable
+            
+                - need < variable, value >
+                
+                - this is an environmental option (defined by MAKE)
+                
+                
+(F) Using a repository for optimizations
+----------------------------------------
+
+    Information can be stored in the repository which would aid a compiler
+    while optimizing.  This is discussed in GBLOPT.TXT.

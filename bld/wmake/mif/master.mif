@@ -1,0 +1,213 @@
+#
+#   The master file for creating wmake.
+#
+#   Winter90    D.J.Gaudet      Re-Implementation of WMAKE
+#
+
+##############################################################################
+
+proj_name   = wmake
+xname       = wmk
+
+.ERASE
+.CONTINUE
+
+.extensions:
+.extensions: . .qnx .exe .obj .wbj .asm .c .inc .h .mif
+
+.h      : ..\h;$(watcom_dir)\h;$(trmem_dir)
+.mif    : ..\mif;$(mif_path)
+.c      : ..\c;..\support;$(watcom_dir)\c;$(trmem_dir)
+.inc    : .;..\h
+
+!include cproj.mif
+!include defrule.mif
+
+!ifdef COMPACT
+MODEL = c
+!else ifdef MEDIUM
+MODEL = m
+!else ifdef LARGE
+MODEL = l
+!else
+MODEL = s
+!endif
+
+!include wres.mif
+
+cc16 = $(cc_i86)
+
+#asm     = optasm
+echo    = echo
+
+# Compiler Flags
+
+extra_c_flags_win = -zW
+!ifdef COMPACT
+mem_model_i86 = -mc -zt32
+!else ifdef MEDIUM
+mem_model_i86 = -mm -zt32
+!else ifdef LARGE
+mem_model_i86 = -ml -zt32
+!ifdef NEC_98_BUG
+extra_c_flags_dos += -DNEC_98_BUG
+!endif
+!else
+mem_model_i86 = -ms
+!endif
+
+# DOS, OS2 code will not fit in 64k with /d2
+!ifeq host_OS dos
+mode_cflags = -oaxs -d1
+!endif
+!ifeq host_OS os2
+!ifeq host_CPU 386
+mode_cflags = -oaxs -s -d2
+!else
+mode_cflags = -oaxs -s -d1
+!endif
+!endif
+
+inc_dirs = $(wmake_dir)\h;$(watcom_dir)\h;$(orl_dir)\h;$(trmem_dir)
+
+extra_c_flags =
+!ifeq release 1
+extra_c_flags = -dNDEBUG
+!endif
+!ifdef cachestat
+extra_c_flags += -dCACHE_STATS
+!endif
+
+!ifeq host_OS os2
+!ifeq host_CPU 386
+extra_c_flags += -i$(watcom_dir)\os220_h
+!endif
+!endif
+
+!include wmk.mif                    #   get our objs macro
+
+.BEFORE
+        set include=$(inc_path)
+
+##############################################################################
+
+ext_qnx = qnx
+!ifdef ext_$(host_OS)
+ext = $(ext_$(host_OS))
+!else
+ext = exe
+!endif
+
+# LINKER FLAGS
+
+# large stacks are necessary for !loaddll support
+# os2 seems to crash with 128k stack and wccd386 - mjc
+extra_l_flags_os2 = option stack=96k
+extra_l_flags_nt = option stack=0x10000k commit stack=32k
+extra_l_flags_qnx = option stack=20k
+lflags_win_i86 = system windows mem font
+extra_l_flags_win = library windows,clibc export MAINDRIVER option stack=16k
+!ifdef LARGE
+extra_l_flags_dos = option stack=16k
+!else ifdef COMPACT
+extra_l_flags_dos = option stack=16k
+!else
+extra_l_flags_dos = option stack=4k
+!endif
+extra_l_flags = NAME $(xname) option map=$(xname),quiet op symfile
+
+libs_nt_386     = $(orl_dir)\o\orl.lib
+libs_nt_axp     = $(orl_dir)\axp\orl.lib
+libs_os2_386    = $(orl_dir)\os2\orl.lib
+libs_qnx_386    = $(orl_dir)\o\orl.lib
+libs            = $(libs_$(host_OS)_$(host_CPU))
+
+.exe. : .symbolic   # so that "wmake wmk" works as expected
+    @%null
+
+$(xname).$(ext) :: usageend.h wmake.res $(objs) $(__MAKEFILES__)
+    $(linker) $(lflags) OPTION MAP FILE {$(objs) } LIBRARY { $(wres_lib) $(libs) }
+#
+# If the linker files were different (i.e. if we needed a QNX version),
+# the copy would be replaced by a separate link. CSK
+!ifeq host_OS win
+#    wstrip  wmk.exe . x.sym
+    rc wmk
+    rc wmkj
+#    copy /b wmk.exe+x.sym
+#    erase x.sym
+!endif
+    wstrip /q /a /r $(xname).$(ext) . wmake.res
+
+wmake.res : ..\h\wmake.rc mrcmsg.h usage.rc usagej.rc
+        $(rc) /bt=windows /zk0 /q /r /fo=$^@ $[@
+
+usage.rc : ..\h\usage.sp
+        wsplice -kIS_RC -kENGLISH -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\""..\h\usage.sp usage.rc
+
+usagej.rc : ..\h\usage.sp
+        wsplice -kIS_RC -kJAPANESE -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\""..\h\usage.sp usagej.rc
+
+usageend.h : usage.rc usagej.rc
+        wsplice usage.rc -o "%n%n%n%n" usage.rcp
+        wsplice -f "%+" usage.rcp -o "$#define USAGE_LAST (USAGE_BASE+%$#)" usageend.h
+        del usage.rcp
+
+# usage.h : ..\h\usage.sp
+# I want the usage message codes to be generated on the fly, and also
+# padded by ten ( so that versions in different languages will still
+# compile ).  Fortunately, by simply defining more constants, we don't
+# make the final program any larger.  Oh well - the end justifying the
+# means, I suppose. CSK
+#       wsplice -k$(OS) -kENGLISH -f "%s"..\h\usage.sp -o "%n%n%n%n%n%n%n%n%n%n" usage.h
+#       wsplice -f "$#define USAGE_LN_%$# (USAGE_BASE+%$#)%+"usage.h usage.h
+#       wsplice -f "%s%+"usage.h -o "$#define USAGE_LAST (USAGE_BASE+%$#)" usage.h
+
+
+##############################################################################
+# special case targets
+
+isarray.inc : cretype.exe
+    cretype >isarray.inc
+
+cretype.exe : cretype.c
+    $(bld_cl) /d2 /zq /w4 $[@
+
+!include makedeps.mif               # dependencies on .h files
+
+
+##############################################################################
+# symbolic targets
+
+# print a list of unreferenced messages
+chkmsg :
+    sed -f ..\mif\msgdef.sed ..\h\msg.h | sort -u >chkmsg.1
+    awk -f ..\mif\msgref.awk chkmsg.1 >chkmsg.2
+    sed -f chkmsg.2 ..\c\*.c | sort -u >chkmsg.3
+    comm -3 chkmsg.1 chkmsg.3 | tee chkmsg
+    rm chkmsg.?
+
+strip : .symbolic
+    wstrip /q wmk.$(ext) wmks.$(ext) >nul
+    ls -l *.$(ext)
+
+deps : .symbolic
+    cd ..\c
+    ..\support\mmk >..\mif\makedeps.mif
+
+do : .symbolic
+    wmake -h -n | sed -f ..\mif\mkdo.sed >do.bat
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj del *.?bj
+        @if exist *.lnk del *.lnk
+        @if exist *.exe del *.exe
+        @if exist *.lib del *.lib
+        @if exist *.res del *.res
+        @if exist *.clb del *.clb
+        @if exist *.err del *.err
+        @if exist *.h del *.h
+        @if exist *.sym del *.sym
+        @if exist *.map del *.map
+        @if exist *.rc del *.rc
+        @if exist *.inc del *.inc

@@ -1,0 +1,26 @@
+ /               Search/Find...
+ ALT-/           Search/Next
+ CTRL-\          Search/Next
+ F2              Data/Registers
+ F3              toggle between source level and assembly level debugging
+ F4              Window/Application
+ F5              Run/Go
+ F6              Window/Next
+ F8              Run/Trace Into
+ F9              Break/Toggle
+ F10             Run/Step Over
+ ALT-1           Data/Locals
+ ALT-2           Data/Watches
+ ALT-3           Code/Source
+ ALT-4           File/View...
+ ALT-5           Data/Memory at...
+ ALT-6           Data/Memory at...
+ ALT-7           Data/Registers
+ ALT-8           Data/80x87 FPU
+ ALT-9           File/Command...
+ CTRL-F4         close the current window
+ CTRL-F5         restore the current window to its normal size
+ CTRL-F6         rotate the current window
+ CTRL-F9         minimize the current window
+ CTRL-F10        maximize the current window
+ SHIFT-F9        add a new item to the watch window

@@ -1,0 +1,205 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
+#include <string.h>
+#include "dbgdefn.h"
+#include "dbgtoggl.h"
+#include "dbgmem.h"
+#include "trpcore.h"
+#include "dbglit.h"
+#include "dbgio.h"
+
+extern void RestoreHandlers();
+extern void GrabHandlers();
+extern void StartupErr(char *);
+//extern void TrapErrTranslate( char *, int );
+extern void             FiniCoreSupp(void);
+extern bool             InitCoreSupp(void);
+extern bool             InitFileSupp(void);
+extern bool             InitFileInfoSupp(void);
+extern bool             InitEnvSupp(void);
+extern bool             InitOvlSupp(void);
+extern bool             InitThreadSupp(void);
+extern void             StartupErr( char *err );
+extern char             *DupStr( char * );
+
+extern system_config    SysConfig;
+extern char             *TxtBuff;
+extern char             *TrpFile;
+
+unsigned int            MaxPacketLen;
+
+//NYI: We don't know the size of the incoming err msg.
+#define MAX_ERR_MSG_SIZE        (TXT_LEN/2)
+
+static void TrapFailed()
+{
+    StartupErr( LIT( ERR_REMOTE_LINK_BROKEN ) );
+}
+
+void InitSuppServices()
+{
+    InitCoreSupp();
+    InitFileSupp();
+    InitFileInfoSupp();
+    InitEnvSupp();
+    InitThreadSupp();
+    InitOvlSupp();
+}
+
+void FiniSuppServices()
+{
+    FiniCoreSupp();
+}
+
+static bool InitTrapError;
+InitTrap( char *trap_file )
+{
+    mx_entry            in[1];
+    mx_entry            out[2];
+    connect_req         in_mx;
+    connect_ret         out_mx;
+    char                *error;
+    trap_version        ver;
+    char                buff[ TXT_LEN ];
+
+
+/* Don't use TxtBuff except for error -- it may have a Finger message in it */
+
+    TrapSetFailCallBack( TrapFailed );
+    InitTrapError = FALSE;
+    RestoreHandlers();
+    ver.remote = FALSE;
+    if( stricmp( trap_file, "dumb" ) == 0 ) {
+        error = LoadDumbTrap( &ver );
+    } else {
+        error = LoadTrap( trap_file, buff, &ver );
+    }
+    GrabHandlers();
+    if( error != NULL ) {
+        strcpy( buff, error );
+        InitTrapError = TRUE;
+        StartupErr( buff );
+    }
+    in_mx.req = REQ_CONNECT;
+    in_mx.ver.major = TRAP_MAJOR_VERSION;
+    in_mx.ver.minor = TRAP_MINOR_VERSION;
+    in[0].ptr = &in_mx;
+    in[0].len = sizeof( in_mx );
+    out[0].ptr = &out_mx;
+    out[0].len = sizeof( out_mx );
+    buff[0] = '\0';
+    out[1].ptr = buff;
+    out[1].len = MAX_ERR_MSG_SIZE;
+    TrapAccess( 1, &in, 2, &out );
+    MaxPacketLen = out_mx.max_msg_size;
+    if( buff[0] != '\0' ) {
+        KillTrap();
+        InitTrapError = TRUE;
+        StartupErr( buff );
+    }
+    if( !InitTrapError ) {
+        InitSuppServices();
+    }
+    if( ver.remote ) {
+        _SwitchOn( SW_REMOTE_LINK );
+    } else {
+        _SwitchOff( SW_REMOTE_LINK );
+    }
+}
+
+trap_shandle GetSuppId( char *name )
+{
+    mx_entry                            in[2];
+    mx_entry                            out[1];
+    get_supplementary_service_req       acc;
+    get_supplementary_service_ret       ret;
+
+    acc.req = REQ_GET_SUPPLEMENTARY_SERVICE;
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
+    in[1].ptr = name;
+    in[1].len = strlen( name ) + 1;
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
+    TrapAccess( 2, &in, 2, &out );
+    if( ret.err != 0 ) return( 0 );
+    return( ret.id );
+}
+
+
+void RemoteSuspend()
+{
+    suspend_req         acc;
+
+    acc.req = REQ_SUSPEND;
+    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+}
+
+void RemoteResume()
+{
+    resume_req          acc;
+
+    acc.req = REQ_RESUME;
+    TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
+}
+
+void RemoteErrMsg( sys_error err, char *msg )
+{
+    get_err_text_req    acc;
+
+    acc.req = REQ_GET_ERR_TEXT;
+    acc.err = err;
+    TrapSimpAccess( sizeof( acc ), &acc, MAX_ERR_MSG_SIZE, msg );
+//    TrapErrTranslate( msg, MAX_ERR_MSG_SIZE );
+}
+
+void FiniTrap()
+{
+    disconnect_req      in_mx;
+
+    in_mx.req = REQ_DISCONNECT;
+    TrapSimpAccess( sizeof( in_mx ), &in_mx, 0, NULL );
+    RestoreHandlers();
+    KillTrap();
+    GrabHandlers();
+    FiniSuppServices();
+}
+
+bool ReInitTrap( char *trap_file )
+/********************************/
+{
+    // only tested under NT - this is here for Lexus/Fusion/What's my name?
+    FiniTrap();
+    InitTrap( trap_file );
+    return( !InitTrapError );
+}

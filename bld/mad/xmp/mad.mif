@@ -1,0 +1,35 @@
+# !include $(disasm_dir)\core\dis.mif
+
+imp_objs = &
+        xmpaddr.obj &
+        xmpctrl.obj &
+        xmptypes.obj &
+        xmpreg.obj &
+        xmpcall.obj &
+        xmpdisas.obj &
+        xmptrace.obj
+
+#
+# Change this macro name to whatever the name of your machine is
+#
+mad = xmp
+
+#
+# Set 'extr_incs' to the directories where any extra include files are
+# located.
+#
+# extra_incs = $(dis_includes)
+
+#
+# Set 'extra_srcs' to the directories where any extra source files are
+# located.
+#
+# extra_srcs = $(dis_srcs)
+
+#
+# Set 'extra_gbls' to the names of any extra global compilation time stamp
+# files are located
+#
+# extra_gbls = $(disasm_dir)\core\compile.gbl
+
+!include ../../master.mif

@@ -1,0 +1,50 @@
+#include "windows.h"
+#include "life.h"
+
+#include "life.dlg"
+
+CellBitMap BITMAP cell.bmp
+MenuBitMap BITMAP menu.bmp
+LifeIcon ICON life.ico
+LifeMenu MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save Selected Region ...", MENU_SAVE
+        MENUITEM "&Load New Pattern ...", MENU_LOAD
+        MENUITEM SEPARATOR
+        MENUITEM "&About Life ...", MENU_ABOUT
+    END
+    POPUP "&Boundary"
+    BEGIN
+        MENUITEM "&Wrap Around", MENU_WRAP_AROUND
+        MENUITEM "&Bounded Edges", MENU_BOUNDED_EDGES
+    END
+    POPUP "&Pattern"
+    BEGIN
+        MENUITEM "", MENU_PATTERN
+    END
+    POPUP "&Mouse"
+    BEGIN
+        MENUITEM "&Select A Region", MENU_SELECT
+        MENUITEM "&Flip Patterns", MENU_FLIP_PATTERNS
+    END
+    POPUP "&Control"
+    BEGIN
+        MENUITEM "&Pause", MENU_PAUSE
+        MENUITEM "&Resume", MENU_RESUME
+        MENUITEM "&Single Step", MENU_SINGLE_STEP
+        MENUITEM "&Fastest", MENU_FASTEST
+    END
+    POPUP "&Screen"
+    BEGIN
+        MENUITEM "&Clear", MENU_CLEAR
+        MENUITEM "&Randomize", MENU_RANDOM
+        MENUITEM "&Grid", MENU_GRID
+    END
+    POPUP "&New"
+    BEGIN
+        MENUITEM "&Bitmap ...", MENU_LOAD_BITMAP
+        MENUITEM "&Rules ...", MENU_NEW_RULES
+    END
+END

@@ -1,0 +1,32 @@
+Notes regarding 10.0 Wish List
+------------------------------
+
+On March 10, there was a general meeting regarding plans for release 10.0.
+
+I said that our wish list was as follows:
+
+    (1) Optimizations
+        - some code-generator independent, C++ only
+        - some in conjunction with code generator
+
+    (2) Clean up of existing source base.
+
+    (3) Conversion to C compiler (driven by switch)
+        - the current C front-end will be maintained for release 10.0
+
+    (4) Pre-compiled headers
+
+    (5) Some object-model work
+        - Microsoft object format
+        - perhaps SOM, depending upon timing of the definition
+
+    (6) Some extensions:
+        - asynchronous exceptions
+        - perhaps to implement new stuff from ANSI committee
+
+I indicated that these were only my own ideas, without input from the rest
+of the C++ team.
+
+No date has been set for release of 10.0.
+
+Geno to circulate a complete list of goodies from the meeting.

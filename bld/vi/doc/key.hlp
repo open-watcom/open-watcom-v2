@@ -1,0 +1,309 @@
+Keys, or How To Get Around in a Modal Editor
+============================================
+This editor is a mode-based editor.  When you are in command mode (the
+default mode), there are a number of valid commands that may be entered.
+Command mode may be entered at any time by pressing the ESC key.
+ 
+When in insert mode, text may be entered.  Insert mode is entered via a 
+number of different commands, and is indicated by a larger cursor (see 
+"set insertcursortype" in cmd.hlp ).  While in insert mode, the following 
+keys are valid:
+  
+UP,DOWN,LEFT,RIGHT (arrow keys) - move about through text
+SHIFT_UP,SHIFT_DOWN,SHIFT_LEFT,SHIFT_RIGHT,
+	SHIFT_HOME, SHIFT_END	- select text
+CTRL_R				- start text selection
+CTRL_DEL			- delete current line
+SHIFT_DEL			- delete selected region
+CTRL_INS			- paste before current position
+SHIFT_INS			- paste after before current position
+PAGEUP, PAGEDOWN                - move up/down a page in the text
+ENTER                           - start a new line
+HOME, END                       - move to the start/end of the current line
+BS, DELETE                      - delete character
+TAB, SHIFT-TAB                  - move up/back to the next/previous tab stop
+CTRL_T,CTRL_D                   - move up/back to the next/previous shift-
+                                  width stop.
+CTRL_Q,CTRL_V                   - generates the character representing the
+                                  the next key typed
+ 
+As well, keys may be defined to perform macros, see the map command in
+cmd.hlp.
+
+Valid Commands
+==============
+The following commands may be entered while in command mode.  Some commands
+may be prefixed by a repeat count (these are prefixed with a '*'). When 
+entering a repeat count, a window pops up indicating the number you 
+are typing.  
+
+Text Marks
+----------
+Text marks are used to memorize a point in text that you may want to return
+to later.  Each file may have up to 26 marks in it (identified via the
+letters 'a' through 'z').
+  
+ m? - allows setting of mark ?.
+ '? - move to start of line with mark ?.
+ `? - move to mark ?.
+  
+A special case of mark setting, "m!", clears the marks on the current 
+line.
+  
+`` and '' take you to the last position you were at before you used a 
+non-linear movement command (',`,?,/,G, and a :n command).  
+So, if you are at (5,10) and type /foo, pressing `` will first move 
+you back to (5,10). Pressing `` again will move you to the occurance of 
+foo, since the previous `` command was a non-linear movement command.
+ 
+Text may be modified using marks, see "Text Manipulation".
+
+One special character that may follow the "m" is a ".".  This puts
+the editor in memorize mode (see the '.' command later on).
+
+Text Buffers
+------------
+There are a number of text save buffers available.  There are 9 default
+buffers that text is placed into when it is deleted/yanked.  The current
+buffer may be selected using function keys, the defaults are to have
+SHIFT_F5-SHIFT_F12 select buffers 1-8.  When a buffer is selected, 
+information about its contents is displayed in the message window.
+  
+When text is yanked/deleted into the current buffer, the contents of the 
+the buffers is cascaded forward from the current buffer into the next one,
+with the last buffer losing its contents.
+  
+Text may be yanked/deleted into a specific buffer by typing "[1-9] before
+the appropriate command. As well, the are 26 static buffers that may
+be used, 'a'-'z'.  When text is yanked/deleted into a static buffer,
+it remains there for the life of the editing session (or until replaced).
+  
+To retrieve the contents of a buffer, use:
+  
+ p  - place contents of current buffer after current position
+ P  - place contents of current buffer before current position
+  
+Without a "? prefix, these commands retrieve the contents of the current
+buffer.
+ 
+To execute the contents of a buffer, as if the contents were typed from the
+keyboard, use the @ command (see below).
+
+Text Search
+-----------
+/ - enter a search string to search for from current position forwards
+? - enter a search string to search for from current position backwards
+n - repeat last search command, in the direction of the last search
+N - repeat last search command, in the opposite direction of the last search
+  
+The following keys are recognized while typing a search string:
+ 
+CTRL_O  - insert current command after current line in file
+ALT_O   - insert current command before current line in file
+
+CTRL_W  - adds current word in file to command string
+CTRL_L  - adds current line in file to command string
+
+TAB     - try to file name complete on the current string. There are two 
+          methods:
+          1) FileComplete2 NOT set:
+               The first match is completed, and a window with possible
+               choices is displayed. Subsequent presses of TAB will
+               scroll forward through the list of possible matches, and
+               pressing SHIFT_TAB will scroll backwards through the
+               list of possible matches
+                
+          2) FileComplete2 set:
+               As much of the file name that can be completed is, and
+               a window is displayed with possible matches.  This window
+               can be scrolled through by using UP/PAGEUP and DOWN/PAGEDOWN.
+               Pressing TAB again will cause no result until additional
+               characters (helping to uniquely identify the file name) are
+               entered.
+
+ALT_TAB - command completion. Looks backwards through history for
+          first command starting with what is entered.  Subsequent
+          presses of ALT_TAB get the 2nd last command, and so on
+
+UP      - scroll forwards through command history
+DOWN    - scroll backwards through command history
+RIGHT   - move cursor right through command
+LEFT    - move cursor left through command
+
+CTRL_END- delete to end of command line
+END     - move to end of command line
+HOME    - move to start of command line
+
+INSERT  - toggle text insertion/overstrike mode
+DELETE  - delete character
+
+ENTER   - process current command
+ESC     - cancel current command
+
+Text Insertion
+--------------
+ A  - append text at end of line
+ a  - append text after current character
+ I  - insert text at start of line
+ i  - insert text at current character
+ O  - open a new line above current line and begin text insertion
+ o  - open a new line below current line and begin text insertion
+
+Text Replacement
+----------------
+ R  - overtype on current line starting at current character
+*r? - replace current character with ?
+ 
+Character Deletion
+------------------
+ D  - delete rest of characters on line
+*X  - delete previous character
+*x  - delete current character
+
+Text Movement 1
+---------------
+*|  - move column specified by repeat count
+ `? - moves to specific mark position (line and column)
+ '? - move to start of line with mark specified by ? (see Text Marks)
+ %  - moves to matching brace or other defined match strings
+ $  - move to end of line
+ ^  - move to first non-white space on line
+*;  - repeat last f,F,t,T movement
+*,  - reverse last f,F,t,T movement
+ 0  - move to start of line
+*B  - move backward to start of (space delimited) previous word 
+*b  - move backward to start of previous word
+*E  - move to the end of the next (space delimited) word.
+*e  - move the the end of the next word
+*F? - move backward to character ? on current line
+*f? - move forward to character ? on current line
+*h  - move left one character (also cursor left)
+*j  - move down one line (also cursor down)
+*k  - move down up line (also cursor up)
+*l  - move right one character (also cursor right)
+*T? - move backward to after character ? on current line
+*t? - move forward to before character ? on current line
+*W  - move forward to next (space delimited) word
+*w  - move forward to next word
+
+Text Manipulation
+-----------------
+The following commands manipulate text using the commands in
+Text Movement 1 (TM1), using search commands ?,/,n,N, or
+using an 'r' (uses selected region)
+  
+*c? - change characters.  If ? is from TM1, then text is deleted from
+      the current cursor position to movement position, and then
+      insert mode is entered. ? can also be a c, which causes 
+      a change of the current line.
+ 
+*d? - delete characters.  If ? is from TM1, then text is deleted from
+      the current cursor position to movement position.
+      ? can also be a d, which causes deletion of current line.
+      dd may be prefixed with a repeat count. As well, d may be 
+      prefixed by "?, which causes deleted text to be placed
+      in the buffer ?.  Without such a prefix, deleted text is 
+      placed into the current buffer.
+  
+*y? - yank characters.  If ? is from TM1, then text is yanked from
+      the current cursor position to movement position.
+      ? can also be a y, which causes yanking of current line.
+      yy may be prefixed with a repeat count.  As well, y may be 
+      prefixed by "?, which causes yanked text to be placed
+      in the buffer ?.  Without such a prefix, yanked text is placed
+      into the current buffer.
+      
+*!? - filter - takes lines, runs them through a specified dos command
+      (the command must take input from standard in and put its output
+      to standard out) and replaces the lines with the output of the
+      the dos command.
+      
+*>? - shift characters - shifts data ShiftWidth characters to the right.
+      ? may be from TM1 (commands for movement from line to line only).
+      As well, >> may be used to shift the current line.
+      
+*<? - shift characters - shifts data ShiftWidth characters to the left.
+      ? may be from TM1 (commands for movement from line to line only).
+      As well, << may be used to shift the current line.
+      
+*~? - toggle case of characters.  If ? is from TM1, then text is toggled
+      from the current cursor position to movement position.
+      ? can also be a ~, which causes toggling of current line.
+      ~~ may be prefixed with a repeat count.  
+      
+Text Movement 2
+---------------
+*G  - go to line specified by the repeat count.  No repeat count sends
+      you to the end of the file.
+*H  - go to line at the top of the current file window.
+ M  - go to the line in the middle of the current file window.
+*L  - go to the line at the bottom of the current file window.
+*^B - move backwards a page (also PAGEUP)
+*^D - move down 1/2 page.  If a number is typed, then that many lines
+      is moved down from then on.
+*^E - expose one more line below the current screen, leaving the cursor
+      where it is if possible.
+*^F - move forward a page (also PAGEDOWN)
+*^Y - expose one more line above the current screen, leaving the cursor
+      where it is if possible.
+*^N - move to next line
+*^P - move to previous line
+*^U - move up 1/2 page.  If a number is typed, then that many lines
+      is moved up from then on.
+ENTER - move to start of next line
+-   - move to start of previous line
++   - move to start of next line
+ 
+Misc. Commands
+--------------
+  @?   - causes buffer ? (a-z or 1-9) to be executed as if the contents
+  	 of the buffer were being typed at the keyboard. Special characters
+	 \e,\n, and \x are allowed (see :map in cmd.hlp).
+* z?   - causes the current screen to be redrawn, with the current line 
+	 moved as follows:
+	 ? = ENTER - top of screen
+	 ? = . 	   - center of screen
+	 ? = -	   - bottom of screen
+	 if z is preceded by a count, then that line becomes the current
+	 line.
+  C    - change characters to end of line
+* J    - join the next line to the current line
+  Q    - enter EX mode; see cmd.hlp
+* S    - substitute lines with text
+* Y    - yank lines
+ ^C    - quit editor (with a verification prompt if files have been modified)
+ ^G    - display information about the current file
+ ^L    - redraw screen
+ ^V    - display current version
+ ^X    - display hex value of character under cursor
+ ALT_W - activate individual file menu
+ ALT_X - insert a single character, using its numeric representation
+         (replacement for ALT-numeric keypad). Either enter a decimal
+         number or a hex number (preceded by an 'x', eg x4c )
+* ^DEL - delete lines
+ ^]    - go to the tag given by the current word. (see 'tag' in cmd.hlp)
+ F1    - move forward through file list to next file
+ F2    - move backwards through file list to previous file
+ :     - enter a command line (see cmd.hlp)
+ .     - repeat last command that changed text.  It is also possible to
+ 	 memorize more than just one command for '.', using memorize
+	 mode.  Type "m." and the editor enters memorize mode, until
+	 you press "." to end it.  Anything that you type while in
+	 memorize mode will be repeated when you press ".".
+
+Text Selection
+--------------
+Once text selection has been started, any movement commands add to
+the selected region.   The selected region may be cleared by
+pression the ESC key.
+
+ ^R         - start a selection region, if not started.  if region
+ 	      is selected, cancel selected region
+SHIFT_UP    - start selection (if not already started) and move up
+SHIFT_DOWN  - start selection (if not already started) and move down
+SHIFT_LEFT  - start selection (if not already started) and move left
+SHIFT_RIGHT - start selection (if not already started) and move right
+SHIFT_DEL   - delete selected region
+SHIFT_INS   - paste last deleted area after current position
+CTRL_INS    - paste last deleted area before current position
+ _	    - simulates right mouse click.

@@ -1,0 +1,29 @@
+OBJECTS = &
+        inifile.obj &
+        vabout.obj &
+        vcompdlg.obj &
+        vcompon.obj &
+        veditdlg.obj &
+        veditdll.obj &
+        vhelpstk.obj &
+        vlistbox.obj &
+        vmsglog.obj &
+        vpemain.obj &
+        vpemain2.obj &
+        vsetup.obj &
+        vtoolitm.obj &
+        vwmclien.obj &
+        whotlist.obj &
+        whotpbox.obj &
+        batcli.obj &
+        objautod.obj &
+        vrcscli.obj
+
+!ifneq host_OS os2
+OBJECTS += vfilelst.obj resautod.obj
+! ifeq host_OS win
+OBJECTS += link.obj
+! else
+OBJECTS += batpipe.obj
+! endif
+!endif

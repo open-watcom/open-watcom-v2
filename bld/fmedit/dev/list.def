@@ -1,0 +1,24 @@
+#ifndef _LIST_INCLUDE
+
+#define _LIST_INCLUDE 
+
+#ifndef FM_EXPORT
+#define FM_EXPORT   __export PASCAL
+#endif
+
+typedef struct list LIST;
+
+extern void * FM_EXPORT ListElement( LIST * );
+extern void   FM_EXPORT ListFree( LIST * );
+extern LIST * FM_EXPORT ListNext( LIST * );
+extern LIST * FM_EXPORT ListPrev( LIST * );
+extern void   FM_EXPORT ListAddElt( LIST **, void * );
+extern void   FM_EXPORT ListRemoveElt( LIST **, void * );
+extern LIST * FM_EXPORT ListConsume( LIST * );
+extern LIST * FM_EXPORT ListFindElt( LIST *, void * );
+extern LIST * FM_EXPORT ListCopy( LIST * );
+extern int    FM_EXPORT ListCount( LIST * );
+extern void   FM_EXPORT ListInsertElt( LIST *, void * );
+extern void   FM_EXPORT ListMerge( LIST **, LIST * );
+
+#endif

@@ -1,0 +1,2 @@
+ifeq = @..\cmds\ifeq
+mkerr = @..\cmds\mkerr

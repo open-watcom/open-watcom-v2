@@ -1,0 +1,85 @@
+- error message utilities
+    - Jim Welch's co-op is working on a utility that will extract out header
+      files from a GML script.
+    - the format will be something like this:
+      :MSG_ID ERR_UNION_CANT_BE_BASE_CLASS
+      :MSG_TEXT "A union cannot be used as a base class"
+    - another utility that would be useful is one that would identify
+      :MSG_TEXT tags followed by a source code example (:CODE,:ECODE?)
+      - the utility would extract the source file for a compile-time
+        error test stream
+- an article detailing all of the known language problems
+  would be interesting because it would reveal pitfalls in the use of C++
+  and blow our own horn for revealing these stupid problems
+- if no storage-class-specifier is used for a declaration inside
+  of a linkage, "extern" is assumed (see: LinkagePresent())
+- if no type is specified, "int" is assumed
+- typedef char * ptr_t;
+  const ptr_t x;
+  is equivalent to: char * const x;
+- externally defined struct signatures only need the name because the
+  1 def'n rule guarantees this
+- use hashing for combining type+name signatures (option -hs=<seed> would
+  be useful in case of collisions)
+- ordering of constructor/destructors
+  define segments in the following order
+  _cinit    _dinit
+  _cearly   _dearly
+  _cnormal  _dnormal
+  _clate    _dlate
+  _cend     _dend
+
+  constructors would be called with forward movement through list
+  and destructors with reverse movement through list
+- for S/R and R/R errors in C++ grammar we should print warnings so that
+  users can parenthesise expressions
+  - this can be done as follows:
+    - tag productions with %warn directive
+    - when YACC detects the conflict have it tag the state
+      if all the productions involved have %warn directives attached
+    - the tagged states should output a different action that has extra
+      info indicating that a standard warning should be issued
+- member functions should not change behaviour in different translation units
+- promotion of char, float parms must be done so that ANSI C library may be
+  used directly
+- extern "C" type var; should be necessary for linking with C
+  (extern type var; is the norm)
+- const int my_size = 15;
+  strictly speaking storage does not have to be allocated because a compiler
+  can pull up the 1 def'n rule and say that you cannot use:
+  extern const int my_size;
+  defining the storage in another module can get the best of both worlds
+  so that storage isn't required if no module has an extern
+- think about using different code segment for static constructors and
+  destructors because they can be tossed once done and brought in one needed
+  (dynamic overlay potential!)
+- struct X { X(); X *p; }; should work. X() does not declare a new name.
+- add constrained genericity for templates
+- add contravariance checking for overriding of functions in inherited classes
+- what should this do?
+    const int a = 5;
+    struct {
+    int a : a;  // error or a : 5?
+    };
+- temporary destruction: early destruction for all temps except the last temp
+  in an expression which is destroyed at the end of a statement (if possible)
+- intermediate code representation should be paged so that parsing is fast and
+  code generation is deferred until everything checks out
+  (stack oriented IR is preferred due to experience in BASIC and WATFOR
+  compilers)
+- SIGPLAN dec 1988 V23 #12 shows how to enhance YACC to print better error
+  messages for S/R and R/R conflicts
+- vtables can have -ve offsets for private functions, +ve offsets for publics
+- the body of a function can be parsed with recursive descent techniques
+  The parser function should be configurable so that it can accept packaged
+  up tokens as input as well as the standard NextToken() interface.
+- Inline functions will be handled as follows:
+  Once the '{' is seen the tokens will be collected together in a series of
+  byte arrays.  The nesting of the '{''s will be preserved and the package
+  of tokens will be stored away and associated with the correct symbol in the
+  class definition.  After the class level is done, the tokens can be fed into
+  the function body processor so that the correct mappings are accomplished!
+- inline functions in template class definitions cannot be rewritten until the
+  template is instantiated
+- template args: Y_CLASS Y_ID       -> generic type (name Y_ID)
+         Y_CLASS Y_CLASSNAME    -> unnamed argument type

@@ -1,0 +1,416 @@
+#
+# extra options
+#
+opt_diag0006  = -xs
+!ifeq arch 386
+opt_diag0075  = -ms
+!endif
+opt_diag0079  = -w10
+!ifeq arch 386
+opt_diag0080  = -ms
+opt_diag0081  = -ms
+!endif
+opt_diag0082  = -xs
+opt_diag0094  = -xcmb
+!ifeq arch 386
+opt_diag0097  = -ms
+!endif
+opt_diag0104 = -xs
+!ifeq arch 386
+opt_diag0105 = -xs -i$(%watcom)\h\win
+!endif
+opt_diag0106 = -w10
+opt_diag0116 = -xs
+opt_diag0127 = -xs
+opt_diag0128 = -xs
+opt_diag0129 = -xs -za
+opt_diag0130 = -xs -za
+opt_diag0131 = -xs -za
+opt_diag0132 = -xs -za
+opt_diag0133 = -xs -za
+opt_diag0134 = -xs -za
+opt_diag0135 = -xs -za
+opt_diag0136 = -xs -za
+opt_diag0137 = -xs -za
+opt_diag0138 = -xs -za
+opt_diag0153 = -w10
+opt_diag0155 = -za
+!ifeq arch 386
+opt_diag0168 = -ml
+opt_diag0173 = -ml
+!endif
+opt_diag0176 = -xs
+opt_diag0189 = -xs
+opt_diag0193 = -xs
+opt_diag0197 = -xs
+opt_diag0203 = -w0
+opt_diag0204 = -w0
+opt_diag0212 = -za
+opt_diag0215 = -e3
+!ifeq arch 386
+opt_diag0216 = -ms
+!endif
+opt_diag0219 = -za
+opt_diag0230 = -xs
+opt_diag0231 = -xs
+opt_diag0235 = -xs
+!ifeq arch 386
+opt_diag0236 = -ml-zu
+!endif
+opt_diag0238 = -xs
+opt_diag0240 = -xs
+opt_diag0241 = -za
+opt_diag0245 = -xr
+opt_diag0251 = -za
+opt_diag0255 = -za
+!ifeq arch 386
+opt_diag0270 = -ml
+!endif
+opt_diag0280 = -wx
+opt_diag0281 = -wx
+opt_diag0283 = -xr
+opt_diag0285 = -fh -fi=diag0285.hh
+opt_diag0287 = -dMACRO_0287=1
+opt_diag0292 = -zpw -zk0
+opt_diag0296 = -jw
+
+diags_sys_defn = &
+    diag0077$(err_sys) &
+    diag0080$(err_sys) &
+    diag0105$(err_sys) &
+    diag0153$(err_sys) &
+    diag0166$(err_sys) &
+    diag0168$(err_sys) &
+    diag0173$(err_sys) &
+    diag0261$(err_sys) &
+    diag0274$(err_sys) &
+
+
+diags_0099_defn = &
+    diag0001$(err_sin) &
+    diag0001$(err_sin) &
+    diag0002$(err_sin) &
+    diag0003$(err_sin) &
+    diag0004$(err_sin) &
+    diag0005$(err_sin) &
+    diag0006$(err_sin) &
+    diag0007$(err_sin) &
+    diag0008$(err_sin) &
+    diag0009$(err_sin) &
+    diag0010$(err_sin) &
+    diag0011$(err_sin) &
+    diag0012$(err_sin) &
+    diag0013$(err_sin) &
+    diag0014$(err_sin) &
+    diag0015$(err_sin) &
+    diag0016$(err_sin) &
+    diag0017$(err_sin) &
+    diag0018$(err_sin) &
+    diag0019$(err_sin) &
+    diag0020$(err_sin) &
+    diag0021$(err_sin) &
+    diag0022$(err_sin) &
+    diag0023$(err_sin) &
+    diag0024$(err_sin) &
+    diag0025$(err_sin) &
+    diag0026$(err_sin) &
+    diag0027$(err_sin) &
+    diag0028$(err_sin) &
+    diag0029$(err_sin) &
+    diag0030$(err_sin) &
+    diag0031$(err_sin) &
+    diag0032$(err_sin) &
+    diag0033$(err_sin) &
+    diag0034$(err_sin) &
+    diag0035$(err_sin) &
+    diag0036$(err_sin) &
+    diag0037$(err_sin) &
+    diag0038$(err_sin) &
+    diag0039$(err_sin) &
+    diag0040$(err_sin) &
+    diag0041$(err_sin) &
+    diag0042$(err_sin) &
+    diag0043$(err_sin) &
+    diag0044$(err_sin) &
+    diag0045$(err_sin) &
+    diag0046$(err_sin) &
+    diag0047$(err_sin) &
+    diag0048$(err_sin) &
+    diag0049$(err_sin) &
+    diag0050$(err_sin) &
+    diag0051$(err_sin) &
+    diag0052$(err_sin) &
+    diag0053$(err_sin) &
+    diag0054$(err_sin) &
+    diag0055$(err_sin) &
+    diag0056$(err_sin) &
+    diag0057$(err_sin) &
+    diag0058$(err_sin) &
+    diag0059$(err_sin) &
+    diag0060$(err_sin) &
+    diag0061$(err_sin) &
+    diag0062$(err_sin) &
+    diag0063$(err_sin) &
+    diag0064$(err_sin) &
+    diag0065$(err_sin) &
+    diag0066$(err_sin) &
+    diag0067$(err_sin) &
+    diag0068$(err_sin) &
+    diag0069$(err_sin) &
+    diag0070$(err_sin) &
+    diag0071$(err_sin) &
+    diag0072$(err_sin) &
+    diag0073$(err_sin) &
+    diag0074$(err_sin) &
+    diag0075$(err_sin) &
+    diag0076$(err_sin) &
+    diag0077$(err_sin) &
+    diag0078$(err_sin) &
+    diag0079$(err_sin) &
+    diag0080$(err_sin) &
+    diag0081$(err_sin) &
+    diag0082$(err_sin) &
+    diag0083$(err_sin) &
+    diag0084$(err_sin) &
+    diag0085$(err_sin) &
+    diag0086$(err_sin) &
+    diag0087$(err_sin) &
+    diag0088$(err_sin) &
+    diag0089$(err_sin) &
+    diag0090$(err_sin) &
+    diag0091$(err_sin) &
+    diag0092$(err_sin) &
+    diag0093$(err_sin) &
+    diag0094$(err_sin) &
+    diag0095$(err_sin) &
+    diag0096$(err_sin) &
+    diag0097$(err_sin) &
+    diag0098$(err_sin) &
+    diag0099$(err_sin)
+
+diags_0199_defn = &
+    diag0100$(err_sin) &
+    diag0101$(err_sin) &
+    diag0102$(err_sin) &
+    diag0103$(err_sin) &
+    diag0104$(err_sin) &
+    diag0105$(err_sin) &
+    diag0106$(err_sin) &
+    diag0107$(err_sin) &
+    diag0108$(err_sin) &
+    diag0109$(err_sin) &
+    diag0110$(err_sin) &
+    diag0111$(err_sin) &
+    diag0112$(err_sin) &
+    diag0113$(err_sin) &
+    diag0114$(err_sin) &
+    diag0115$(err_sin) &
+    diag0116$(err_sin) &
+    diag0117$(err_sin) &
+    diag0118$(err_sin) &
+    diag0119$(err_sin) &
+    diag0120$(err_sin) &
+    diag0121$(err_sin) &
+    diag0122$(err_sin) &
+    diag0123$(err_sin) &
+    diag0124$(err_sin) &
+    diag0125$(err_sin) &
+    diag0126$(err_sin) &
+    diag0127$(err_sin) &
+    diag0128$(err_sin) &
+    diag0129$(err_sin) &
+    diag0130$(err_sin) &
+    diag0131$(err_sin) &
+    diag0132$(err_sin) &
+    diag0133$(err_sin) &
+    diag0134$(err_sin) &
+    diag0135$(err_sin) &
+    diag0136$(err_sin) &
+    diag0137$(err_sin) &
+    diag0138$(err_sin) &
+    diag0139$(err_sin) &
+    diag0140$(err_sin) &
+    diag0141$(err_sin) &
+    diag0142$(err_sin) &
+    diag0143$(err_sin) &
+    diag0144$(err_sin) &
+    diag0145$(err_sin) &
+    diag0146$(err_sin) &
+    diag0147$(err_sin) &
+    diag0148$(err_sin) &
+    diag0149$(err_sin) &
+    diag0150$(err_sin) &
+    diag0151$(err_sin) &
+    diag0152$(err_sin) &
+    diag0153$(err_sin) &
+    diag0154$(err_sin) &
+    diag0155$(err_sin) &
+    diag0156$(err_sin) &
+    diag0157$(err_sin) &
+    diag0158$(err_sin) &
+    diag0159$(err_sin) &
+    diag0160$(err_sin) &
+    diag0161$(err_sin) &
+    diag0162$(err_sin) &
+    diag0163$(err_sin) &
+    diag0164$(err_sin) &
+    diag0165$(err_sin) &
+    diag0166$(err_sin) &
+    diag0167$(err_sin) &
+    diag0168$(err_sin) &
+    diag0169$(err_sin) &
+    diag0170$(err_sin) &
+    diag0171$(err_sin) &
+    diag0172$(err_sin) &
+    diag0173$(err_sin) &
+    diag0174$(err_sin) &
+    diag0175$(err_sin) &
+    diag0176$(err_sin) &
+    diag0177$(err_sin) &
+    diag0178$(err_sin) &
+    diag0179$(err_sin) &
+    diag0180$(err_sin) &
+    diag0181$(err_sin) &
+    diag0182$(err_sin) &
+    diag0183$(err_sin) &
+    diag0184$(err_sin) &
+    diag0185$(err_sin) &
+    diag0186$(err_sin) &
+    diag0187$(err_sin) &
+    diag0188$(err_sin) &
+    diag0189$(err_sin) &
+    diag0190$(err_sin) &
+    diag0191$(err_sin) &
+    diag0192$(err_sin) &
+    diag0193$(err_sin) &
+    diag0194$(err_sin) &
+    diag0195$(err_sin) &
+    diag0196$(err_sin) &
+    diag0197$(err_sin) &
+    diag0198$(err_sin) &
+    diag0199$(err_sin)
+
+diags_0299_defn = &
+    diag0200$(err_sin) &
+    diag0201$(err_sin) &
+    diag0202$(err_sin) &
+    diag0203$(err_sin) &
+    diag0204$(err_sin) &
+    diag0205$(err_sin) &
+    diag0206$(err_sin) &
+    diag0207$(err_sin) &
+    diag0208$(err_sin) &
+    diag0209$(err_sin) &
+    diag0210$(err_sin) &
+    diag0211$(err_sin) &
+    diag0212$(err_sin) &
+    diag0213$(err_sin) &
+    diag0214$(err_sin) &
+    diag0215$(err_sin) &
+    diag0216$(err_sin) &
+    diag0217$(err_sin) &
+    diag0218$(err_sin) &
+    diag0219$(err_sin) &
+    diag0220$(err_sin) &
+    diag0221$(err_sin) &
+    diag0222$(err_sin) &
+    diag0223$(err_sin) &
+    diag0224$(err_sin) &
+    diag0225$(err_sin) &
+    diag0226$(err_sin) &
+    diag0227$(err_sin) &
+    diag0228$(err_sin) &
+    diag0229$(err_sin) &
+    diag0230$(err_sin) &
+    diag0231$(err_sin) &
+    diag0232$(err_sin) &
+    diag0233$(err_sin) &
+    diag0234$(err_sin) &
+    diag0235$(err_sin) &
+    diag0236$(err_sin) &
+    diag0237$(err_sin) &
+    diag0238$(err_sin) &
+    diag0239$(err_sin) &
+    diag0240$(err_sin) &
+    diag0241$(err_sin) &
+    diag0242$(err_sin) &
+    diag0243$(err_sin) &
+    diag0244$(err_sin) &
+    diag0245$(err_sin) &
+    diag0246$(err_sin) &
+    diag0247$(err_sin) &
+    diag0248$(err_sin) &
+    diag0249$(err_sin) &
+    diag0250$(err_sin) &
+    diag0251$(err_sin) &
+    diag0252$(err_sin) &
+    diag0253$(err_sin) &
+    diag0254$(err_sin) &
+    diag0255$(err_sin) &
+    diag0256$(err_sin) &
+    diag0257$(err_sin) &
+    diag0258$(err_sin) &
+    diag0259$(err_sin) &
+    diag0260$(err_sin) &
+    diag0261$(err_sin) &
+    diag0262$(err_sin) &
+    diag0263$(err_sin) &
+    diag0264$(err_sin) &
+    diag0265$(err_sin) &
+    diag0266$(err_sin) &
+    diag0267$(err_sin) &
+    diag0268$(err_sin) &
+    diag0269$(err_sin) &
+    diag0270$(err_sin) &
+    diag0271$(err_sin) &
+    diag0272$(err_sin) &
+    diag0273$(err_sin) &
+    diag0274$(err_sin) &
+    diag0275$(err_sin) &
+    diag0278$(err_sin) &
+    diag0279$(err_sin) &
+    diag0280$(err_sin) &
+    diag0281$(err_sin) &
+    diag0282$(err_sin) &
+    diag0283$(err_sin) &
+    diag0284$(err_sin) &
+    diag0285$(err_sin) &
+    diag0286$(err_sin) &
+    diag0287$(err_sin) &
+    diag0288$(err_sin) &
+    diag0289$(err_sin) &
+    diag0290$(err_sin) &
+    diag0291$(err_sin) &
+    diag0292$(err_sin) &
+    diag0293$(err_sin) &
+    diag0294$(err_sin) &
+    diag0295$(err_sin) &
+    diag0296$(err_sin) &
+    diag0297$(err_sin) &
+    diag0298$(err_sin) &
+    diag0299$(err_sin) &
+
+diags_0399_defn = &
+    diag0300$(err_sin) &
+    diag0301$(err_sin) &
+    diag0302$(err_sin) &
+    
+    
+err_sin = .err
+err_sys = .ser
+
+diags_sys = $+ $(diags_sys_defn) $-
+diags_0099 = $+ $(diags_0099_defn) $-
+diags_0199 = $+ $(diags_0199_defn) $-
+diags_0299 = $+ $(diags_0299_defn) $-
+diags_0399 = $+ $(diags_0399_defn) $-
+    
+    
+err_sin =
+err_sys =
+
+diags_sys_c = $+ $(diags_sys_defn) $-
+diags_0099_c = $+ $(diags_0099_defn) $-
+diags_0199_c = $+ $(diags_0199_defn) $-
+diags_0299_c = $+ $(diags_0299_defn) $-
+diags_0399_c = $+ $(diags_0399_defn) $-

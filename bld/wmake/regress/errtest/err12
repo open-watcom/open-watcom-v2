@@ -1,0 +1,11 @@
+# -------------------------------
+# ERROR 12: command line too long
+# -------------------------------
+#   Max Length of Argument = _MAX_PATH = 260
+#
+num  = $(num1)$(num1)$(num1)$(num1)$(num1)$(num1)$(num1)$(num1)
+num1 =123456789012345678901234567890
+def =abcdefghijklmnopqrstuv$(num)
+all : .symbolic
+    $def
+

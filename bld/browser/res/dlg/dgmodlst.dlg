@@ -1,0 +1,28 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGMODLST.H\0"
+END
+
+EdModuleDlg DIALOG 54, 15, 234, 145
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Browser Modules"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "", IDD_MODULEBOX, "ListBox", LBS_NOTIFY | LBS_SORT |
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_BORDER |
+                    WS_VSCROLL | WS_TABSTOP, 4, 6, 162, 129
+    CONTROL         "OK", IDD_OK, "Button", BS_DEFPUSHBUTTON | WS_GROUP |
+                    WS_TABSTOP, 175, 6, 54, 14
+    CONTROL         "Cancel", IDD_CANCEL, "Button", WS_TABSTOP, 175, 23, 54,
+                    14
+    CONTROL         "&Add...", IDD_ADD, "Button", WS_GROUP | WS_TABSTOP, 175,
+                    44, 54, 14
+    CONTROL         "&Remove", IDD_REMOVE, "Button", WS_TABSTOP, 175, 61, 54,
+                    14
+    CONTROL         "&Disable All", IDD_DISABLE_ALL, "Button", WS_GROUP |
+                    WS_TABSTOP, 175, 84, 54, 14
+    CONTROL         "&Enable All", IDD_ENABLE_ALL, "Button", WS_TABSTOP, 175,
+                    101, 54, 14
+    CONTROL         "&Help", IDD_HELP, "Button", WS_GROUP | WS_TABSTOP, 175,
+                    121, 54, 14
+END

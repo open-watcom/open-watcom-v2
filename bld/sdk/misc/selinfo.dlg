@@ -1,0 +1,21 @@
+SEL_INFO DIALOG 9, 12, 89, 60
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Selector Information"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Selector: ", SEL_INFO_DONT_CARE, 3, 2, 36, 8
+    LTEXT           "Base:", SEL_INFO_DONT_CARE, 3, 10, 26, 8
+    LTEXT           "Limit: ", SEL_INFO_DONT_CARE, 3, 18, 40, 9
+    LTEXT           "Type", SEL_INFO_DONT_CARE, 3, 26, 44, 8
+    LTEXT           "DPL: ", SEL_INFO_DONT_CARE, 3, 34, 42, 8
+    LTEXT           "Granularity: ", SEL_INFO_DONT_CARE, 3, 42, 43, 9
+    LTEXT           "Access: ", SEL_INFO_DONT_CARE, 3, 50, 36, 8
+    LTEXT           "0000", SEL_INFO_SEL, 43, 2, 20, 8
+    LTEXT           "00000000", SEL_INFO_BASE, 43, 10, 36, 8
+    LTEXT           "00000000", SEL_INFO_LIMIT, 43, 18, 36, 8
+    LTEXT           "DATA", SEL_INFO_TYPE, 43, 26, 36, 8
+    LTEXT           "0", SEL_INFO_DPL, 43, 34, 20, 8
+    LTEXT           "BYTE", SEL_INFO_GRAN, 43, 42, 27, 8
+    LTEXT           "EX/R", SEL_INFO_ACCESS, 43, 50, 33, 8
+END
+

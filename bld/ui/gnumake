@@ -1,0 +1,67 @@
+include watcom.mk
+
+LIBNAME = ui
+
+obj = o
+include unix/objfiles.mk
+OBJECTS := $(foreach i,$(objfiles),$(OBJDIR)/$i)
+
+SRCDIRS = c unix/c
+
+INCDIRS += h unix/h $(WATCOM_DIR)/h $(H_DIR) $(UTILS_DIR) /usr/local/include
+
+CFLAGS += -Dcdecl= 
+
+ifeq ($(PLATFORM),hp)
+   CFLAGS += -D_XOPEN_SOURCE_EXTENDED
+endif
+
+vpath %.c $(SRCDIRS)
+vpath %.h $(INCDIRS)
+
+ifeq ($(THREADMODEL),)
+    all :
+	$(MAKE) THREADMODEL=nothr
+	$(MAKE) THREADMODEL=posix
+
+    setup :
+	$(MAKE) THREADMODEL=nothr setup
+	$(MAKE) THREADMODEL=posix setup
+else
+    all	  : setup $(OBJDIR)/lib$(LIBNAME).a
+
+    setup : $(OBJDIR)
+endif
+
+$(OBJDIR)/lib$(LIBNAME).a : $(OBJECTS)
+	@rm -f $@
+	$(AR) crs $@ $(OBJECTS)
+
+include $(MK_DIR)/trailer.mk
+
+.PHONY	: clean
+ifeq ($(THREADMODEL),)
+    clean :
+	$(MAKE) THREADMODEL=nothr clean
+	$(MAKE) THREADMODEL=posix clean
+else
+    clean :
+	rm -f $(OBJDIR)/*
+endif
+
+.PHONY	: dep depend make
+ifeq ($(THREADMODEL),)
+    dep depend make:
+	$(MAKE) THREADMODEL=nothr depend
+	$(MAKE) THREADMODEL=posix depend
+else
+    dep depend make: 
+	$(MKMK) -Q -m .depend_$(THREADMODEL) -a foo nopath -f '$$(OBJDIR)/%s' \
+		$(foreach i,$(SRCDIRS),$i/*.[ch]) \
+		$(foreach i,$(INCDIRS),$i/*.h)
+endif
+
+ifeq (.depend,$(wildcard .depend))
+    include .depend
+endif
+

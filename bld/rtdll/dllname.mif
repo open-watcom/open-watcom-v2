@@ -1,0 +1,24 @@
+dllname_version    =$(bld_ver)
+dllname_register   =r
+dllname_stack      =s
+dllname_           =
+!ifdef profile
+dllname_profile    =p
+!else
+dllname_profile    =
+!endif
+dllname_clib_386   =clb
+dllname_clib_387   =clb
+dllname_clib_axp   =clb
+dllname_mathlib_386=mth
+dllname_mathlib_387=mt7
+dllname_mathlib_axp=mth
+dllname_cpplib_386 =plb
+dllname_cpplib_387 =plb
+dllname_cpplib_axp =plb
+dllname_wrtlib_386 =wrt
+dllname_wrtlib_387 =wr7
+dllname_wrtlib_axp =wrt
+dllname =$(dllname_$(component)_$(processor))$(dllname_$(convention))$(dllname_profile)$(dllname_version)
+libdllname =$(dllname_$(component)_$(processor))$(dllname_$(convention))dll$(dllname_profile)
+

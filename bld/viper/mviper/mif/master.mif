@@ -1,0 +1,51 @@
+proj_name = mviper
+name = mviper
+
+.mif : $(mif_path)
+.cpp : ..
+
+!include cproj.mif
+!include deftarg.mif
+
+extra_c_flags_386_nt    = -fpc-zm-zc
+extra_c_flags_386_os2   = -fpc
+extra_c_flags_386       = $(extra_c_flags_386_$(host_OS))
+extra_c_flags_i86       = -fpc-zm-zc
+
+inc_dirs = $(gui_dir)\h;$(wclass_dir)\hpp
+
+.before:
+        SET INCLUDE=$(inc_path)
+
+objects =       contfile.obj &
+                maccel.obj &
+                maction.obj &
+                mactset.obj &
+                mc2swtch.obj &
+                mcommand.obj &
+                mcompon.obj &
+                mconfig.obj &
+                mcstate.obj &
+                mcswitch.obj &
+                mfamily.obj &
+                mitem.obj &
+                mproject.obj &
+                mrstate.obj &
+                mrswitch.obj &
+                mrule.obj &
+                mstate.obj &
+                mswitch.obj &
+                msymbol.obj &
+                mtarget.obj &
+                mtool.obj &
+                mtoolitm.obj &
+                mtypo.obj &
+                mvstate.obj &
+                mvswitch.obj &
+                mworkfil.obj
+
+$(name).lib : $(objects)
+        $(librarian) -b -n $^@ $(objects)
+
+.cpp.obj :
+        $(cpp) $(cflags) $[@ -fo=$^@

@@ -1,0 +1,55 @@
+__cifx__       =\library\$(system).386\$(subdir)\
+__mifx__       =\library\$(system).387\$(subdir)
+letter_register=r
+letter_stack   =s
+__pifx__       =nt3$(letter_$(convention))mt
+
+dll_libs = $+ &
+    $(new_clib)$(__cifx__)clibs.lib &
+    $(new_mlib)$(__mifx__)dll\maths.lib &
+    $(plusplus_cpplib_dir)\$(__pifx__).dll\plbxmt3$(letter_$(convention)).lib &
+    $(plusplus_cpplib_dir)\$(__pifx__)\plbxmt3$(letter_$(convention)).lib &
+    $-
+
+dll_def = $+ &
+    $(new_clib)$(__cifx__)export.def &
+    $(new_clib)\fpu\export.def &
+    $(new_clib)\intel\export.def &
+    $(new_clib)\startup\export.def &
+    $(new_clib)\startup\$(convention).def &
+    $(new_clib)\startup\library\$(system).386\$(convention).def &
+    $(new_mlib)$(__mifx__)dll\export.def &
+    $(new_mlib)\export.387 &
+    $(new_mlib)\$(convention).387 &
+    $(plusplus_cpplib_dir)\runtime\nt386.def &
+    $(plusplus_cpplib_dir)\$(__pifx__).dll\exportx.def &
+    $-
+
+dll_objs = $+ &
+    $(new_clib)\startup$(__cifx__)clibdwnt.obj &
+    $-
+
+targdir = $(plusplus_cplib_dir)\runtime\$(__pifx__).dll\
+!include $(plusplus_cplib_dir)\runtime\static.mif
+targdir =
+
+static_objs += $+ &
+    $(new_clib)\startup$(__cifx__)cstrtwnt.obj &
+    $(new_clib)\startup$(__cifx__)cstrtwwt.obj &
+    $(new_clib)\startup$(__cifx__)dcinit.obj &
+    $(new_clib)\startup$(__cifx__)dmndwnt.obj &
+    $(new_clib)\startup$(__cifx__)dstrt386.obj &
+    $(new_clib)\startup$(__cifx__)fltused.obj &
+    $(new_clib)\startup$(__cifx__)initrtns.obj &
+    $(new_clib)\startup$(__cifx__)main3wnt.obj &
+    $(new_clib)\startup$(__cifx__)segdefns.obj &
+    $(new_clib)\startup$(__cifx__)seg386.obj &
+    $(new_clib)\startup$(__cifx__)wmndwnt.obj &
+    $(new_clib)\streamio$(__cifx__)dsetefg.obj &
+    $-
+
+__cifx__       =
+__mifx__       =
+letter_register=
+letter_stack   =
+__pifx__       =

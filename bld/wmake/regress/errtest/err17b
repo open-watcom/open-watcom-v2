@@ -1,0 +1,17 @@
+# --------------------------------------
+# ERROR 17B: maximum token size exceeded
+# --------------------------------------
+#   filenames   ( _MAX_PATH == 260 )
+#
+
+big = 1234567890123456789012345678901234567890
+big = 1234567890$+$(big)$(big)$(big)$(big)$(big)$(big)$-  # 250 chars
+
+# should handle first target, but barf on second
+$(big)123456789 : .symbolic
+    abc
+
+$(big)1234567890 : .symbolic
+    def
+
+

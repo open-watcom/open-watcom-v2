@@ -1,0 +1,63 @@
+
+  32-bit OS/2 debugger
+  ====================
+
+ I have started work on fully 32-bit version of the OS/2 debugger for
+two reasons:
+
+ 1) The current implementation has problems on newer releases of OS/2, making
+   WD completely unusable (I have created a workaround for that but it isn't
+   perfect).
+
+ 2) I cannot see any reason why WD and WDW shouldn't be 32-bit. Theoreticaly
+   16-bit WD can run on OS/2 1.x but I don't think anyone cares at this point.
+   OTOH having 16-bit WD on 32-bit OS/2 unnecessarily complicates matters and
+   requires lots of thunking and address translations.
+
+ What is already done:
+
+ - I have rebuilt WD and the required libraries (UI etc.) with wcc386. This
+  went quite smoothly for the most part as the code is being built as 32-bit
+  for other platforms/projects. Biggest changes were required in OS/2 specific
+  parts of the UI and the trap/dip/mad loaders (under \bld\dig) where I had
+  to convert to 32-bit OS/2 API. But nothing major.
+
+ - I have rebuilt the DIPs and MAD. This was very easy as the code is being
+  built as 32-bit for other platforms.
+
+ - I have cloned the original STD32.DLL and converted it to 32-bit. This was
+  by far the most complex part as it required some significant changes. The
+  code is almost completely OS/2 specific and was written for the 16-bit API,
+  hence lots of minor and some major changes were required.
+
+ All these projects are building without errors. The debugger appears to be
+working. One known problem is the inability to display data pointed to by the
+FS selector.
+
+ I have made some packaging changes to avoid conflicts with 16-bit DLLs: the
+32-bit DIPs, MAD and trap files have a .D32 extension and must be located along
+the path (not libpath). The local trap file is now called STD.D32 for instance
+(there is only one version now, not two as before). This allows debugging of
+the new 32-bit debugger with the old 16-bit debugger. The 32-bit debugger
+itself is now built as DV32.EXE and DVW32.EXE, respectively (in \bld\bin\binp).
+
+ What needs to be done:
+
+ - Convert the other trap files (SER, PAR, etc.) to 32-bit.
+
+ - Convert the servers (SERSERV, PARSERV etc.) to 32-bit.
+
+ - Investigate and if necessary, fix PM debugging issues.
+
+
+ Implementation note: The current implementation uses a technique I call
+'DLL splicing' to extend OS/2 debugging capabilities. The trap file forces
+the debuggee to load the trap DLL into its address space. Then it can execute
+certain functions on behalf of the debuggee. There are some problems with
+this - major issue is that it can cause unpredictable side effects in the
+debuggee. This functionality is disabled at the moment. I believe it would
+be possible achieve the same functionality (if required) by copying
+function code into debuggee's address space only when necessary and after
+execution remove it again. Of course the code to be 'injected' would have
+to be written with that in mind (position independent etc.).
+

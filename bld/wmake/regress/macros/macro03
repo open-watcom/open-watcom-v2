@@ -1,0 +1,9 @@
+#
+# Macro Test # 3
+#
+# No recursion for microsoft option 
+#
+temp = HELLO
+temp = $(temp$temp) 
+all: .symbolic
+   echo $(temp) $$

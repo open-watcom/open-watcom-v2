@@ -1,0 +1,36 @@
+AFS
+~~~
+
+- rewrite ppexpn.c to use a precedence parser
+        - add new tests to check pp-expression parsing
+        
+- develop and implement CLIB optimizations
+        - printf( "%s\n", p ); ==> puts( p );
+        - printf( "%c", c ); ==> putchar( c );
+        - printf( "sdasdsd" ); ==> fputs( "sdasdsd", stdout );
+        - sprintf( buff, "%d", i ) ==> ltoa( buff, i, 10 );
+        - strcpy( buff, "1234" ) ==> memcpy( buff, "1234", 5 );
+                - or even better, ((long*)buff)[0] = '1234'; buff[4] = '\0';
+        - type-checking on printf-style calls would be great
+        
+JWW
+~~~
+
+- i agree with first
+
+- the second has marginal long-range benefit to a C++ compiler (but not a C
+  compiler)
+    - if we do do them, then we should implement them in a front-end
+      independent manner, in a new codegen directory, so the C compiler can 
+      also snag them
+  
+- instead I'd prefer to start to implement a debugging PLIB
+    - implement the new/delete checking
+    - implement the app call-trace now a macro in LEXUS
+    - the intent would be to immediately support LEXUS; long-range to develop
+      a debugging/statistics-gathering library
+    - the run-time support could also be utilized by the C compiler
+      
+- we should aim to have a couple of small projects which will give her some
+  familiarity with the C++ compiler and then to develop a year-long plan
+  among the three of us

@@ -1,0 +1,11 @@
+hook progstart {
+    if ?PB_DLL_DEBUGGING_MAIN_LINE {
+	go PB_DLL_DEBUGGING_MAIN_LINE;
+	if PB_DEBUGGER_GOT_DLL_LOADED {
+	    e/s <1>@@libmain
+	} else {
+	    modify PB_DEBUGGER_STUB_OK_TO_END 1;
+	    error {Unable to load <1>.dll};
+	}
+    }
+}

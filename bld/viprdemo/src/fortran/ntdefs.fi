@@ -1,0 +1,282 @@
+c$noreference
+
+c$pragma library gdi32
+
+        structure /POINT/
+            integer x
+            integer y
+        end structure
+
+        structure /MSG/
+            integer        hwnd
+            integer        message
+            integer        wParam
+            integer        lParam
+            integer        time
+            record /POINT/ pt
+        end structure
+
+        structure /RECT/
+            integer left
+            integer top
+            integer right
+            integer bottom
+        end structure
+
+        structure /PAINTSTRUCT/
+            integer       hdc
+            logical       fErase
+            record /RECT/ rcPaint
+            logical       fRestore
+            logical       fIncUpdate
+            integer*1     rgbReserved(32)
+        end structure
+
+        structure /WNDCLASS/
+            integer style
+            integer lpfnWndProc
+            integer cbClsExtra
+            integer cbWndExtra
+            integer hInstance
+            integer hIcon
+            integer hCursor
+            integer hbrBackground
+            integer lpszMenuName
+            integer lpszClassName
+        end structure
+
+        structure /MEASUREITEMSTRUCT/
+            integer CtlType
+            integer CtlID
+            integer itemID
+            integer itemWidth
+            integer itemHeight
+            integer itemData
+        end structure
+
+        structure /BITMAP/
+            integer bmType
+            integer bmWidth
+            integer bmHeight
+            integer bmWidthBytes
+            integer bmPlanes
+            integer bmBitsPixel
+            integer bmBits
+        end structure
+
+        structure /DRAWITEMSTRUCT/
+            integer       CtlType
+            integer       CtlID
+            integer       itemID
+            integer       itemAction
+            integer       itemState
+            integer       hwndItem
+            integer       hDC
+            record /RECT/ rcItem
+            integer itemData
+        end structure
+
+c$pragma aux (__stdcall) GetMessageA "_GetMessageA@#" parm (reference,value*4,value*4,value*4)
+c$pragma aux (__stdcall) TranslateMessage "_TranslateMessage@#" parm (reference)
+c$pragma aux (__stdcall) DispatchMessageA "_DispatchMessageA@#" parm (reference)
+c$pragma aux (__stdcall) IntersectRect "_IntersectRect@#" parm (reference,reference,reference)
+c$pragma aux (__stdcall) BeginPaint "_BeginPaint@#" parm (value*4,reference)
+c$pragma aux (__stdcall) DefWindowProcA "_DefWindowProcA@#" parm (value*4,value*4,value*4,value*4)
+c$pragma aux (__stdcall) CreateWindowExA "_CreateWindowExA@#" parm (value*4,value*4,value*4,value*4,\
+c                                           value*4,value*4,value*4,value*4,\
+c                                           value*4,value*4,value*4,value*4)
+c$pragma aux (__stdcall) LoadIconA "_LoadIconA@#" parm (value*4,value*4)
+c$pragma aux (__stdcall) LoadCursorA "_LoadCursorA@#" parm (value*4,value*4)
+c$pragma aux (__stdcall) GetStockObject "_GetStockObject@#" parm (value*4)
+c$pragma aux (__stdcall) RegisterClassA "_RegisterClassA@#" parm (reference)
+c$pragma aux (__stdcall) EndPaint "_EndPaint@#" parm (value*4,reference)
+c$pragma aux (__stdcall) GetClientRect "_GetClientRect@#" parm (value*4,reference)
+c$pragma aux (__stdcall) PostQuitMessage "_PostQuitMessage@#" parm (value*4)
+c$pragma aux (__stdcall) PostMessageA "_PostMessageA@#" parm (value*4,value*4,value*8)
+c$pragma aux (__stdcall) InvalidateRect "_InvalidateRect@#" parm (value*4,reference,value*4)
+c$pragma aux (__stdcall) ShowWindow "_ShowWindow@#" parm (value*4,value*4)
+c$pragma aux (__stdcall) UpdateWindow "_UpdateWindow@#" parm (value*4)
+c$pragma aux (__stdcall) GetWindowLongA "_GetWindowLongA@#" parm (value*4,value*4)
+c$pragma aux (__stdcall) LoadBitmapA "_LoadBitmapA@#" parm (value*4,value*4)
+c$pragma aux (__stdcall) CreateCompatibleDC "_CreateCompatibleDC@#" parm (value*4)
+c$pragma aux (__stdcall) GetSysColor "_GetSysColor@#" parm (value*4)
+c$pragma aux (__stdcall) CreatePen "_CreatePen@#" parm (value*4,value*8)
+c$pragma aux (__stdcall) SelectObject "_SelectObject@#" parm (value*4,value*4)
+c$pragma aux (__stdcall) DeleteObject "_DeleteObject@#" parm (value*4)
+c$pragma aux (__stdcall) DeleteDC "_DeleteDC@#" parm (value*4)
+c$pragma aux (__stdcall) GetObjectA "_GetObjectA@#" parm (value*4,value*4,reference)
+c$pragma aux (__stdcall) MoveToEx "_MoveToEx@#" parm (value*4,value*4,value*4,value*4)
+c$pragma aux (__stdcall) LineTo "_LineTo@#" parm (value*4,value*4,value*4)
+c$pragma aux (__stdcall) BitBlt "_BitBlt@#" parm (value*4,value*4,value*4,\
+c                                  value*4,value*4,value*4,\
+c                                  value*4,value*4,value*4 )
+
+
+c$pragma aux LOWORD = \
+c                   parm( value*2 ) [ax] \
+c                   value [ax] \
+c                   modify exact []
+
+c$pragma aux MakeProcInstance = \
+c                   parm( reference ) [eax] \
+c                   value [eax] \
+c                   modify exact []
+
+c$pragma aux MAKEINTRESOURCE = \
+c                   parm( value ) [eax] \
+c                   value [eax] \
+c                   modify exact []
+
+c$pragma aux RGB = z30f6   \ xor   dh,dh
+c                  zc1e210 \ shl   edx,16
+c                  z0bc2   \ or    eax,edx
+c                  parm ( value*1, value*1, value*1 ) [al] [ah] [dl] \
+c                  value [eax] \
+c                  modify exact [eax edx]
+
+c$reference
+c Force startup code to be included
+c$pragma aux wstart "_wstart2_"
+
+        external  wstart
+c$noreference
+
+        external  GetMessageA
+        external  TranslateMessage
+        external  DispatchMessageA
+        external  IntersectRect
+        external  BeginPaint
+        external  DefWindowProcA
+        external  CreateWindowExA
+        external  LoadIconA
+        external  LoadCursorA
+        external  GetStockObject
+        external  RegisterClassA
+        external  EndPaint
+        external  GetClientRect
+        external  PostQuitMessage
+        external  PostMessageA
+        external  InvalidateRect
+        external  ShowWindow
+        external  UpdateWindow
+        external  GetWindowLongA
+        external  LoadBitMapA
+        external  CreateCompatibleDC
+        external  GetSysColor
+        external  CreatePen
+        external  SelectObject
+        external  DeleteObject
+        external  DeleteDC
+        external  GetObjectA
+        external  MoveToEx
+        external  LineTo
+        external  BitBlt
+
+        integer*4 GetMessageA
+        integer*4 TranslateMessage
+        integer*4 DispatchMessageA
+        integer*4 IntersectRect
+        integer*4 BeginPaint
+        integer*2 LOWORD
+        integer*4 DefWindowProcA
+        integer*4 CreateWindowExA
+        integer*4 LoadIconA
+        integer*4 LoadCursorA
+        integer*4 GetStockObject
+        integer*4 RegisterClassA
+        integer*4 MakeProcInstance
+        integer*4 EndPaint
+        integer*4 GetClientRect
+        integer*4 PostMessageA
+        integer*4 InvalidateRect
+        integer*4 ShowWindow
+        integer*4 UpdateWindow
+        integer*4 GetWindowLongA
+        integer*4 LoadBitMapA
+        integer*4 MAKEINTRESOURCE
+        integer*4 CreateCompatibleDC
+        integer*4 GetSysColor
+        integer*4 CreatePen
+        integer*4 RGB
+        integer*4 SelectObject
+        integer*4 DeleteObject
+        integer*4 DeleteDC
+        integer*4 GetObjectA
+        integer*4 MoveToEx
+        integer*4 LineTo
+        integer*4 BitBlt
+
+
+        integer NULL
+        parameter( NULL                 = 0 )
+
+        integer WM_CREATE
+        parameter( WM_CREATE            = '0001'x )
+        integer WM_DESTROY
+        parameter( WM_DESTROY           = '0002'x )
+        integer WM_SIZE
+        parameter( WM_SIZE              = '0005'x )
+        integer WM_COMMAND
+        parameter( WM_COMMAND           = '0111'x )
+        integer WM_PAINT
+        parameter( WM_PAINT             = '000F'x )
+        integer WM_DRAWITEM
+        parameter( WM_DRAWITEM          = '002B'x )
+        integer WM_MEASUREITEM
+        parameter( WM_MEASUREITEM       = '002C'x )
+
+        integer SIZEICONIC
+        parameter( SIZEICONIC           = '0001'x )
+
+        integer WS_MINIMIZEBOX
+        parameter( WS_MINIMIZEBOX       = '00020000'x )
+        integer WS_MAXIMIZEBOX
+        parameter( WS_MAXIMIZEBOX       = '00010000'x )
+        integer WS_THICKFRAME
+        parameter( WS_THICKFRAME        = '00040000'x )
+        integer WS_SYSMENU
+        parameter( WS_SYSMENU           = '00080000'x )
+        integer WS_CAPTION
+        parameter( WS_CAPTION           = '00C00000'x )
+        integer WS_OVERLAPPED
+        parameter( WS_OVERLAPPED        = '00000000'x )
+        integer WS_VISIBLE
+        parameter( WS_VISIBLE           = '10000000'x )
+        integer WS_CHILD
+        parameter( WS_CHILD             = '40000000'x )
+
+        integer WS_OVERLAPPEDWINDOW
+        parameter( WS_OVERLAPPEDWINDOW  = WS_OVERLAPPED .or. WS_CAPTION
+     &                          .or. WS_SYSMENU .or. WS_MAXIMIZEBOX
+     &                          .or. WS_MINIMIZEBOX .or. WS_THICKFRAME )
+
+        integer CW_USEDEFAULT
+        parameter( CW_USEDEFAULT        = '80000000'x )
+
+        integer IDC_ARROW
+        parameter( IDC_ARROW            = 32512 )
+
+        integer WHITE_BRUSH
+        parameter( WHITE_BRUSH          = 0 )
+
+        integer GWL_HINSTANCE
+        parameter( GWL_HINSTANCE        = -6 )
+
+        integer BS_OWNERDRAW
+        parameter( BS_OWNERDRAW         = '0B'x )
+
+        integer COLOR_BTNFACE
+        parameter( COLOR_BTNFACE        = 15 )
+        integer COLOR_BTNSHADOW
+        parameter( COLOR_BTNSHADOW      = 16 )
+
+        integer ODS_SELECTED
+        parameter( ODS_SELECTED         = '0001'x )
+
+        integer PS_SOLID
+        parameter( PS_SOLID             = 0 )
+
+        integer SRCCOPY
+        parameter( SRCCOPY              = '00CC0020'x )
+
+c$reference

@@ -1,0 +1,13 @@
+nlm_objs = nlmfile.obj nlmclib.obj nlmio.obj nlmacc.obj nlmintr.obj x86cpu.obj supp.obj core.obj
+extra_srcs = $(trap_dir)\lcl\nlm\c;$(trap_dir)\lcl\nlm\asm;$(trap_dir)\lcl\asm;$(trap_dir)\lcl\c
+extra_incs = $(trap_dir)\lcl\nlm\h
+extra_cflags = /d__NW$(nlm_ver)0__ /dDEBUG_ME
+extra_linker4 = module clib
+extra_linker3 =
+extra_linker = $(extra_linker$(nlm_ver))
+extra_aflags = -3
+!ifdef on_build_machine
+name= $(srv)serv$(nlm_ver)
+!else
+name= $(srv)srv$(nlm_ver)
+!endif

@@ -1,0 +1,9 @@
+menu float0
+menuitem "&Delete" %3,%4 d 
+menuitem "&Yank" %3,%4 y
+menuitem "&Change" execute "1cr
+menuitem "Shift &Right" %3,%4 >
+menuitem "Shift &Left" %3,%4 <
+endmenu
+
+floatmenu 0 0 %2 %1

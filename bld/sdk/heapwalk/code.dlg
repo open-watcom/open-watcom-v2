@@ -1,0 +1,15 @@
+
+CODE_AREA_DLG DIALOG 6, 18, 114, 66
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+CAPTION "Set Swap Area Size"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Current Size:", CODE_DONT_CARE, 3, 5, 50, 8
+    LTEXT           "Max. Size:", CODE_DONT_CARE, 3, 15, 50, 8
+    LTEXT           "New Size:", CODE_DONT_CARE, 3, 27, 50, 8
+    EDITTEXT        CODE_VALUE, 64, 27, 43, 12, ES_AUTOHSCROLL | WS_GROUP
+    DEFPUSHBUTTON   "OK", CODE_OK, 10, 49, 40, 14, WS_GROUP
+    PUSHBUTTON      "Cancel", CODE_CANCEL, 64, 49, 40, 14, WS_GROUP
+    LTEXT           "", CODE_CUR_SIZE, 64, 6, 41, 8
+    LTEXT           "", CODE_MAX_SIZE, 64, 16, 34, 8
+END

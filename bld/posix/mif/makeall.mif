@@ -1,0 +1,34 @@
+!include $(posix_dir)\mif\targos.mif
+!include $(posix_dir)\mif\commands.mif
+
+all : .symbolic lib $(commands)
+        @%null
+
+lib : .symbolic
+        cd $(posix_dir)\misc\$(targos)
+!ifeq targos dos
+        wmake -h model=c
+        wmake -h model=s
+!else ifeq targos dosos2
+        wmake -h model=c
+        wmake -h model=s
+!else
+        wmake -h
+!endif
+
+        cd $(posix_dir)\systems\$(targos)
+
+$(commands) : .symbolic
+        wmake -h -f $(posix_dir)\src\$^@\makefile targos=$(targos) make_all=1
+!ifdef install
+        wstrip $^@.exe $(install)\$^@.exe
+        wtouch -f $^@.exe $(install)\$^@.exe
+!endif
+
+clean : .symbolic
+        -del rm.ex?
+        rm -f *.?bj *.ex? *.map *.lst *.smp *.lnk *.lbc *.lib *.err
+        @for %i in ($(commands)) do -rm -r $(posix_dir)\src\%i\$(targos)
+        cd $(posix_dir)\misc\$(targos)
+        rm -f *.?bj *.ex? *.map *.lst *.smp *.lnk *.lbc *.lib *.err
+        cd $(posix_dir)\systems\$(targos)

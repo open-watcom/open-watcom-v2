@@ -1,0 +1,30 @@
+/*************************************************************************/
+/*                          WLINK RESOURCE FILE                          */
+/*************************************************************************/
+#ifndef MSG_BASE
+#define MSG_BASE        0
+#endif
+#include "wlmsgs.h"
+#include "wreslang.h"
+#include "rcmsg.h"
+
+STRINGTABLE
+BEGIN
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
+
+#include "..\h\lnkerror.msg"
+#include "..\h\wlink.msg"
+#include "..\h\rc.msg"
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
+
+#include "..\h\lnkerror.msg"
+#include "..\h\wlink.msg"
+#include "..\h\rc.msg"
+
+END

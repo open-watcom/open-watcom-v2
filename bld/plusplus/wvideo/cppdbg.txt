@@ -1,0 +1,60 @@
+C++ Debugging Commands
+======================
+
+Control:
+--------
+
+Normal mode is to dump output to a file (_CPPDBG_) and to view the file.
+
+Logging mode causes dumping to be appended. While this mode is active, any
+debugging output created by the debugging pragmas will also be captured.
+
+Restarting a program or compiler will cause normal mode to become active.
+
+(1) modelog
+    -------
+    Enter logging mode
+    
+(2) modenorm
+    --------
+    Enter normal mode
+    
+(3) viewlog
+    -------
+    View logging to date
+    
+
+Compiler (requires debug version of compiler)
+---------------------------------------------
+
+(1) bt PTREE
+    --------
+    View parse tree (PTREE) in beautiful format
+    
+(2) pt PTREE
+    --------
+    View parse tree (PTREE) on a field-by-field basis.
+    
+(3) sym SYM
+    -------
+    View symbol (SYM) on a field-by-field basis.
+    
+(4) ft TYPE
+    -------
+    View full type (TYPE) in a beautiful format
+    
+(5) dcgrf
+    -----
+    Dump call graph
+    
+    
+Executing Program (requires debug version of library)
+-----------------------------------------------------
+
+(1) dta
+    ---
+    View exceptions data structure, autos
+
+(2) dtm
+    ---
+    View exceptions data structure, statics

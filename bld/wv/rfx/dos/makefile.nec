@@ -1,0 +1,5 @@
+os	= dos
+bin	= bin.nec
+form	= dos
+
+!include ..\makefile

@@ -1,0 +1,6 @@
+name = view
+LNK = $(name).lnk
+OBJS = view.obj icon.obj mdi.obj util.obj switch.obj
+CFLAGS += -i=..\..
+resources = view.ico
+lnk_dependencies = makefile ..\view.mif ..\..\master.mif

@@ -1,0 +1,13 @@
+Items to be done at next global recompile:
+==========================================
+
+- compflag.h
+- ic.h
+    - move IC_INIT_AUTO into IC_INIT_* range
+- datainit.h
+    - remove auto_type field
+- remove SwitchChar if we don't use it
+
+Items we don't want to forget
+=============================
+- update diag0008.c once we have i64 literals (can't form type for enum diagnostic)

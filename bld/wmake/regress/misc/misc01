@@ -1,0 +1,26 @@
+#
+# Miscellaneous Tests
+#
+#  Before/After Test
+#  
+#
+.AFTER 
+    echo after-1
+hello:
+    echo hello
+.BEFORE 
+
+    echo before
+    
+.BEFORE 
+
+    echo before2
+    echo before3
+    
+    
+.AFTER 
+
+    echo after
+    
+.BEFORE 
+    echo before4

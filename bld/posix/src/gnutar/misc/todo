@@ -1,0 +1,48 @@
+@(#) TODO 1.6 86/10/29
+
+Install new mkdir from the net for non-Berkeley systems.
+
+Look at SUID, SGID; look at -p and -m options.  (test them).
+
+Handle owner/group on extraction.
+
+creation of links and symlinks doesn't follow the -k (f_keep) guidelines;
+if the file already exists, it is not replaced, even though no -k.
+
+Check stderr and stdout for errors after writing, and quit if so.
+
+Compression option to automatically pipe thru compress (both input&output).
+(Need a 3rd process to reblock compress's output for output case, and when
+reading from tape drives.)
+
+Preliminary design of Multifile option to handle EOFs on input and output.
+Multifile can just write EOF when it hits end of archive, and ask for
+archive to be changed.  Start off 2nd archive medium with odd header
+block, duplicating original, but with offset to start of data spec'd.
+Reading such a header causes tar non-'M' to complain while extracting
+(but to seek there and do it anyway!)  Big win -- this works on
+cartridge tapes, should work on floppies, might work on magtape.
+It would encourage the *&%#$ systems programmers to fix their drivers, too!
+
+Profile it and see where the time, call counts, etc are going.
+
+Test reading compressed tapes with odd blocksizes.
+(real tape drives, that is...)
+(may need buffer proc no matter what.)
+
+Fix directory timestamps after inserting files into them.  Wait til next
+file that's not in the directory.  Need a stack of them.
+
+Add option to delete N matching(?) chars from the front of a file to
+be extracted/listed.  Great for reading tapes written with names starting
+from "/"...
+
+Option to seek the input file (in skip_file) rather than reading
+and tossing it?  (Could just jump in buffer if stuff is in core.)
+Could misalign archive reads versus filesys and slow it down, who knows?
+
+Add -C option for creating from odd directories a la 4.2BSD?
+
+Break out odd bits of code into separate support modules.
+
+Add the r, u, X, l, F, C, and digit options of Unix tar.

@@ -1,0 +1,43 @@
+/*********************** Start of the hello.rc ***************************
+ * Adapted from a sample program provided by IBM Corporation.
+ *************************************************************************/
+
+#include <os2.h>
+#include "hello.h"
+
+ICON    ID_WINDOW hello.ico
+
+MENU    ID_WINDOW PRELOAD
+BEGIN
+  SUBMENU "~Options", ID_OPTIONS
+  BEGIN
+    MENUITEM "Option ~1\tCtrl+A", ID_OPTION1, MIS_TEXT
+    MENUITEM "Option ~2\tCtrl+B", ID_OPTION2, MIS_TEXT
+    MENUITEM "Option ~3\tCtrl+C", ID_OPTION3, MIS_TEXT
+  END
+END
+
+ACCELTABLE ID_WINDOW PRELOAD
+BEGIN
+  "a",   ID_OPTION1,              CONTROL
+  "b",   ID_OPTION2,              CONTROL
+  "c",   ID_OPTION3,              CONTROL
+  "A",   ID_OPTION1,              CONTROL
+  "B",   ID_OPTION2,              CONTROL
+  "C",   ID_OPTION3,              CONTROL
+  "a",   ID_OPTION1,              CONTROL, SHIFT
+  "b",   ID_OPTION2,              CONTROL, SHIFT
+  "c",   ID_OPTION3,              CONTROL, SHIFT
+  "A",   ID_OPTION1,              CONTROL, SHIFT
+  "B",   ID_OPTION2,              CONTROL, SHIFT
+  "C",   ID_OPTION3,              CONTROL, SHIFT
+  VK_F3, ID_EXITPROG, VIRTUALKEY
+END
+
+STRINGTABLE PRELOAD
+BEGIN
+ IDS_HELLO, "Hello"
+ IDS_1,     "--1--    "
+ IDS_2,     "--2--    "
+ IDS_3,     "--3--    "
+END

@@ -1,0 +1,178 @@
+#include  "os2.h"
+rcinclude "img_os2.h"
+rcinclude "dialogs.h"
+rcinclude "settings.h"
+rcinclude "menuids.h"
+rcinclude "res\selimg.dlg"
+rcinclude "res\settings.dlg"
+rcinclude "res\selcolor.dlg"
+
+//ICON  ICON_ID         test.ico
+ICON    ICON_ID         BMP_DIR\app_pm.ico
+
+POINTER POINT_CUR       BMP_DIR\pasteptr.ptr
+POINTER PENCILCURSOR    BMP_DIR\pencil.ptr
+POINTER CROSSHAIRSCUR   BMP_DIR\crosshrs.ptr
+POINTER FILLCURSOR      BMP_DIR\fill.ptr
+POINTER PAINTBRUSHCUR   BMP_DIR\paintb.ptr
+POINTER HOTSPOTCUR      BMP_DIR\hotspot.ptr
+
+BITMAP  OPENBMP         MISC_DIR\open.bmp
+BITMAP  NEWBMP          MISC_DIR\new.bmp
+BITMAP  SAVEBMP         MISC_DIR\save.bmp
+BITMAP  GRIDBMP         BMP_DIR\grid.bmp
+BITMAP  GRIDDBMP        BMP_DIR\gridd.bmp
+BITMAP  MAXIMIZEBMP     BMP_DIR\maxmize.bmp
+BITMAP  MAXIMIZEDBMP    BMP_DIR\maxmized.bmp
+BITMAP  CUTBMP          MISC_DIR\cut.bmp
+BITMAP  COPYBMP         MISC_DIR\copy.bmp
+BITMAP  PASTEBMP        MISC_DIR\paste.bmp
+BITMAP  UNDOBMP         MISC_DIR\undo.bmp
+BITMAP  REDOBMP         MISC_DIR\redo.bmp
+BITMAP  CLEARBMP        MISC_DIR\clear.bmp
+BITMAP  SNAPBMP         BMP_DIR\snap.bmp
+BITMAP  RIGHTBMP        BMP_DIR\right.bmp
+BITMAP  LEFTBMP         BMP_DIR\left.bmp
+BITMAP  UPBMP           BMP_DIR\up.bmp
+BITMAP  DOWNBMP         BMP_DIR\down.bmp
+BITMAP  HFLIPBMP        BMP_DIR\fliph.bmp
+BITMAP  HFLIPDBMP       BMP_DIR\fliphd.bmp
+BITMAP  VFLIPBMP        BMP_DIR\flipv.bmp
+BITMAP  VFLIPDBMP       BMP_DIR\flipvd.bmp
+BITMAP  CLROTBMP        BMP_DIR\rotcl.bmp
+BITMAP  CLROTDBMP       BMP_DIR\rotcld.bmp
+BITMAP  CCROTBMP        BMP_DIR\rotcc.bmp
+BITMAP  CCROTDBMP       BMP_DIR\rotccd.bmp
+
+BITMAP  PENCIL          BMP_DIR\pencil.bmp
+BITMAP  PENCILD         BMP_DIR\pencild.bmp
+BITMAP  LINE            BMP_DIR\line.bmp
+BITMAP  LINED           BMP_DIR\lined.bmp
+BITMAP  CIRCLEO         BMP_DIR\circleo.bmp
+BITMAP  CIRCLEOD        BMP_DIR\circleod.bmp
+BITMAP  CIRCLEF         BMP_DIR\circlef.bmp
+BITMAP  CIRCLEFD        BMP_DIR\circlefd.bmp
+BITMAP  RECTO           BMP_DIR\recto.bmp
+BITMAP  RECTOD          BMP_DIR\rectod.bmp
+BITMAP  RECTF           BMP_DIR\rectf.bmp
+BITMAP  RECTFD          BMP_DIR\rectfd.bmp
+BITMAP  FILL            BMP_DIR\fill.bmp
+BITMAP  FILLD           BMP_DIR\filld.bmp
+BITMAP  BRUSH           BMP_DIR\brush.bmp
+BITMAP  BRUSHD          BMP_DIR\brushd.bmp
+BITMAP  CLPRECT         BMP_DIR\clprect.bmp
+BITMAP  CLPRECTD        BMP_DIR\clprectd.bmp
+BITMAP  HOTSPOT         BMP_DIR\hotspot.bmp
+BITMAP  HOTSPOTD        BMP_DIR\hotspotd.bmp
+
+MENU    MENU_ID PRELOAD
+BEGIN
+    SUBMENU "~File", IMGED_FILE
+    BEGIN
+        MENUITEM "~New ...\tF2", IMGED_NEW, MIS_TEXT
+        MENUITEM "~Open ...\tShift+F2", IMGED_OPEN, MIS_TEXT
+        MENUITEM "~Save\tF3", IMGED_SAVE, MIS_TEXT
+        MENUITEM "Save ~As ...\tShift+F3", IMGED_SAVE_AS, MIS_TEXT
+        MENUITEM "", -1, MIS_SEPARATOR
+        MENUITEM "~Close\tShift+F10", IMGED_CLOSE, MIS_TEXT
+        MENUITEM "Close ~All\tCtrl+F10", IMGED_CLOSEALL, MIS_TEXT
+        MENUITEM "", -1, MIS_SEPARATOR
+        MENUITEM "E~xit\tAlt+F4", IMGED_EXIT, MIS_TEXT
+    END
+    SUBMENU "~Edit", IMGED_EDIT
+    BEGIN
+        MENUITEM "~Undo\tCtrl+U", IMGED_UNDO, MIS_TEXT
+        MENUITEM "~Redo\tCtrl+R", IMGED_REDO, MIS_TEXT
+        MENUITEM "R~estore", IMGED_REST, MIS_TEXT
+        MENUITEM "", -1, MIS_SEPARATOR
+        MENUITEM "Cu~t\tCtrl+X", IMGED_CUT, MIS_TEXT
+        MENUITEM "~Copy\tCtrl+C", IMGED_COPY, MIS_TEXT
+        MENUITEM "~Paste\tCtrl+V", IMGED_PASTE, MIS_TEXT
+        MENUITEM "", -1, MIS_SEPARATOR
+        MENUITEM "~Snap Bitmap", IMGED_SNAP, MIS_TEXT
+        MENUITEM "C~lear\tDel", IMGED_CLEAR, MIS_TEXT
+        MENUITEM "", -1, MIS_SEPARATOR
+        SUBMENU "S~hift", IMGED_SHIFT
+        BEGIN
+            MENUITEM "~Right\tShift+Right", IMGED_RIGHT, MIS_TEXT
+            MENUITEM "~Left\tShift+Left", IMGED_LEFT, MIS_TEXT
+            MENUITEM "~Up\tShift+Up", IMGED_UP, MIS_TEXT
+            MENUITEM "~Down\tShift+Down", IMGED_DOWN, MIS_TEXT
+        END
+        SUBMENU "~Flip", IMGED_FLIP
+        BEGIN
+            MENUITEM "Over ~Horizontal axis", IMGED_FLIPHORZ, MIS_TEXT
+            MENUITEM "Over ~Vertical axis", IMGED_FLIPVERT, MIS_TEXT
+        END
+        SUBMENU "~Rotate", IMGED_ROTATE
+        BEGIN
+            MENUITEM "~Counter Clockwise", IMGED_ROTATECC, MIS_TEXT
+            MENUITEM "C~lockwise", IMGED_ROTATECL, MIS_TEXT
+        END
+        MENUITEM "", -1, MIS_SEPARATOR
+        MENUITEM "~Add an Icon ...", IMGED_NEWIMG, MIS_TEXT
+        MENUITEM "Select ~Icon Image ...", IMGED_SELIMG, MIS_TEXT
+        MENUITEM "~Delete an Icon ...", IMGED_DELIMG, MIS_TEXT
+    END
+    SUBMENU "~Options", IMGED_OPTIONS
+    BEGIN
+        MENUITEM "~Current Settings ...\tCtrl+S", IMGED_SETTINGS, MIS_TEXT
+        MENUITEM "", -1, MIS_SEPARATOR
+        MENUITEM "~Grid\tCtrl+G", IMGED_GRID, MIS_TEXT
+        MENUITEM "~Keep Grid Square\tCtrl+K", IMGED_SQUARE, MIS_TEXT
+        MENUITEM "~Maximize Current Image\tCtrl+M", IMGED_MAXIMIZE, MIS_TEXT
+        MENUITEM "", -1, MIS_SEPARATOR
+        SUBMENU "~Brush Size", IMGED_BS
+        BEGIN
+            MENUITEM "~2x2\tCtrl+2", IMGED_2x2, MIS_TEXT
+            MENUITEM "~3x3\tCtrl+3", IMGED_3x3, MIS_TEXT
+            MENUITEM "~4x4\tCtrl+4", IMGED_4x4, MIS_TEXT
+            MENUITEM "~5x5\tCtrl+5", IMGED_5x5, MIS_TEXT
+        END
+        MENUITEM "Change ~Image Size ...", IMGED_SIZE, MIS_TEXT
+        MENUITEM "", -1, MIS_SEPARATOR
+        MENUITEM "Show ~Tool Window\tF6", IMGED_TOOLBAR, MIS_TEXT
+        MENUITEM "Show Color ~Palette\tF7", IMGED_COLOUR, MIS_TEXT
+        MENUITEM "Show ~View Window(s)\tF8", IMGED_VIEW, MIS_TEXT
+    END
+    SUBMENU "~Palette", IMGED_PAL
+    BEGIN
+        MENUITEM "~Edit Current Color ...", IMGED_CEDIT, MIS_TEXT
+        MENUITEM "~Reset Current Palette", IMGED_CRESET, MIS_TEXT
+        MENUITEM "~Set Screen Color ...", IMGED_CSCREEN, MIS_TEXT
+        MENUITEM "", -1, MIS_SEPARATOR
+        MENUITEM "~Load Color Palette ...", IMGED_LCOLOUR, MIS_TEXT
+        MENUITEM "Sa~ve Color Palette ...", IMGED_SCOLOUR, MIS_TEXT
+        MENUITEM "Res~tore Color Palette", IMGED_RCOLOUR, MIS_TEXT
+    END
+    SUBMENU "~Tools", IMGED_TOOLS
+    BEGIN
+        MENUITEM "~Pencil", IMGED_FREEHAND, MIS_TEXT
+        MENUITEM "~Line", IMGED_LINE, MIS_TEXT
+        SUBMENU "~Ellipse", IMGED_ELLIPSE
+        BEGIN
+            MENUITEM "~Outline", IMGED_CIRCLEO, MIS_TEXT
+            MENUITEM "~Fill", IMGED_CIRCLEF, MIS_TEXT
+        END
+        SUBMENU "~Rectangle", IMGED_RECTANGLE
+        BEGIN
+            MENUITEM "~Outline", IMGED_RECTO, MIS_TEXT
+            MENUITEM "~Fill", IMGED_RECTF, MIS_TEXT
+        END
+        MENUITEM "~Fill", IMGED_FILL, MIS_TEXT
+        MENUITEM "~Brush", IMGED_BRUSH, MIS_TEXT
+        MENUITEM "~Select Clip Region", IMGED_CLIP, MIS_TEXT
+        MENUITEM "~Hot Spot", IMGED_HOTSPOT, MIS_TEXT
+    END
+    SUBMENU "~Windows", IMGED_WINDOWS
+    BEGIN
+        MENUITEM "~Arrange Icons", IMGED_ARRANGE, MIS_TEXT
+        MENUITEM "~Tile Windows\tShift+F4", IMGED_TILE, MIS_TEXT
+        MENUITEM "~Cascade Windows\tShift+F5", IMGED_CASCADE, MIS_TEXT
+    END
+    SUBMENU "~Help", IMGED_HELP
+    BEGIN
+        MENUITEM "~About ...", IMGED_ABOUT, MIS_TEXT
+    END
+END
+

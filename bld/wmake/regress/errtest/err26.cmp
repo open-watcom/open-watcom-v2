@@ -1,0 +1,4 @@
+ERR26(5): Error(E26): Unknown preprocessor directive: asdf
+ERR26(6): Error(E26): Unknown preprocessor directive: 
+ERR26(8): Error(E26): Unknown preprocessor directive: asdcdfe
+Error(E02): Make execution terminated

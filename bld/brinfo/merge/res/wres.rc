@@ -1,0 +1,36 @@
+/*  WRes.rc -- Resource definitions.
+
+*/
+#include "wresdefn.h"
+#include "WRes.h"
+
+#include "wcm.rc"
+
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION 0,1,0,0
+    PRODUCTVERSION 0,1,0,0
+    FILEFLAGSMASK 0x0000003f
+    FILEFLAGS 0
+    FILEOS VOS_NT_WINDOWS32
+    FILETYPE VFT_APP
+    FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "STRINGFILEINFO"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "\0"
+            VALUE "FileVersion", "1.0\0"
+            VALUE "InternalName", "\0"
+            VALUE "LegalCopyright", "Copyright © 1996\0"
+            VALUE "OriginalFilename", "\0"
+            VALUE "ProductName", "\0"
+            VALUE "ProductVersion", "1.0\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x00000409, 0x000004b0
+    END
+END

@@ -1,0 +1,277 @@
+
+
+
+-------------------Options main menu item------------------------------
+
+		- text/graphic call tree, text/graphic hierarchy
+
+		-language setting?
+
+		-warn on duplicate symbols (already command line option)
+
+		-flag for disable load warnings
+
+-TextTree should use VerboseListBox (verblist) for parent and child listboxes
+  to differentiate between cursor move type selection and mouse selection,
+  so that user can cursor up and down these lists without causing refresh,
+
+  Thereafter, only trigger refresh on <enter> when in parent or child list
+
+------------------Keyboard (vs mouse) interface work:------------------------------------
+
+
+
+-no cursor key movement possible through graphical tree
+
+-need a hot key to popup menu on nodes of grapical tree for keybd intfc
+  (currently only available through right mouse click)
+
+    once activated, does right mouse popup menu work with cursor keys?
+
+-should enter key on text tree popup detail view?  (maybe restrict access to
+	detail view to popup menu item selection, to avoid conflict with
+	enter key for new focal point selection)
+	In any case, there should also be a popup menu for the text tree
+	items, as there is for graphical tree items.
+
+-keyboard Accelerators need to be added for all controls
+
+-does enter on References list have same effect as dblclick?
+
+-----------------------------------------------------------------------------------
+
+-detail view of class members should indicate access level (public/private/prot)
+
+-rename 'Structure' checkbox to 'Decomposition'?
+
+-check double click on decomposition - does it pop detail view?
+   -right mouse button here should also pop menu
+
+-which macro definition is returned in case of macro redefinition.
+    (perhaps some global value for 'last indicated scope' - could be used for
+    getting correct macro definition?)
+
+--------------SourceFile die-----------------------------------------------------------
+
+-
+
+    File Symbol type would be useful addition to Locate Symbols (PickSymbol)
+
+    VWFile detail view could offer:
+    		
+		-symbols defined in file
+
+    		-files included (decomposition style expansion of include nesting)
+
+		-starting point for opening another Locate Symbols dialog already
+		restricted to symbols in that file
+
+-----------------------------------------------------------
+
+
+-how about a set of global symbols that represent the keywords of the language?
+	(to allow smarter handling of symbol queries for keywords)
+
+-editor originated queries: allow 'class::' to be embedded in selected name,
+    to reduce ambiguities
+
+-make 'show details' top item in tree node popup menu, to follow convention
+    of 'double click == right click popupmenu/top item selection'
+
+
+--------------------------------------------------------------------
+
+-disabled menus in slave mode
+
+-Filter button/dialog on references list box in ViewSymbol, to constrain
+	references to certain types, Eg: throws, gotos, class derivation...
+	(only types defined so far are throw, goto, other)
+	(see doc/refstat6.txt)
+
+-class and function templates not implemented (but dwarf extensions to support
+    have been drafted (by brian/anthony/me - see doc/template.txt)
+
+-user can add or delete mbr files from project while WBR is a slave to VMAKE;
+    problem arises when VMAKE requests WBR to load up a new project - currently
+    WBR just compares project names - really should check timestamps of modules
+    to reload newly generated info.  Maybe also need to flag added and deleted
+    modules so that modules that have been removed by user do not get reloaded,
+    and added modules do not get wiped out.
+
+-VMAKE may specify modules that do not exist, or do not have associated MBR
+    files - WBR needs to march on, but could display a list of modules as
+    each is loaded, and indicate any problems, Eg:not found, wrong format
+
+    -this suggests flag for disable load warnings, attached to command line
+    and Options menu
+
+-optional command line specification of modules to load, not just WBR file
+
+-do windows created from editor queries disappear if main window is iconicized?
+
+-pushpin re-attach - push pin, drag to new parent - see the wonderful description
+    desired behavior in wbr.gml. (currently the use has no way to re-attach a
+    detached pushpin window)
+
+
+SaveAs:
+    -does saveAs change the name of the project (shouldn't, unless the project
+	has no name)
+    -does saveAs prompt user if the destination already exists?
+
+-check use of "<no project>" if name is nil
+
+-modules added to empty project should create new project (I don't think that
+    File/Modules is enabled if no project is loaded)
+
+
+Symbol Name specification in Locate Symbols Dialog:
+
+    -symbol name completion <tab>
+    
+    -wildcards on symbol name (currently just accept * for whole name -
+    there must be some reqular expression code floating around watcom?)
+
+-tune up appearance of pushbutton style user defined symbols embedded within
+	symbol description line at top of symbol view (I had to switch to new
+	button style on leaving borland behind) - should use getTextExtent
+	to find exact string size
+
+-symbol type (function/class, etc) appear somewhere on detail view
+
+-keypress hunt for symbol of a given name in a list ?
+
+-time stamp on editor file warning - if editor is working on a version of
+   the file that is newer than the associated mbr file
+    - maybe go so far as to allow WBR to request vmake to rebuild the module
+
+-allow refresh of single module to update after source recompile
+
+-rename 'uses' checkbox to 'references'
+
+-objpickdlg client can die prematurely;  need 2-way dying notification,
+    so that client can warn dialog, so it can close
+
+
+-KeySymbol::setCompareFn(bool (DwarfDie::compareFn)(KeySymbol&));
+	// not sure about the function type yet
+	this would allow KeySymbol to find arbitrary matches based
+	on a comparison function supplied by client, on top of
+	the fixed categories of match available now (This is just
+	a feeling - i don't have a specific use in mind)
+
+-ClassType::dataMembers() & memberFunctions() do not load any members from
+	it's base classes ; perhaps an optional flag to indicate 'deepLoad',
+	which might be set by the ViewClass, depending on the state of the
+	associated filter
+
+	-associated issue with StructView ( decomposition picture ) - currently
+	no way for user to indicate whether diagram should include inherited
+	data members.
+
+-----------------Dwarf interpretation --------------------------------
+
+-ClassType without AT_byte_size is only an incomplete declaration
+	(not currently considered)
+
+-TAG_member without AT_low_pc is a static data member
+	(static members not now differentiated from non-static)
+
+-use compilation directory of TAG_compile_unit, combine with sourcefile
+    directories and use to compare with paths in BrowseRqst's
+	(need to double check what i am doing with this info now)
+
+-currently using Dwarf Version 2 draft 2 - current draft is 4
+
+-Dean implemented (i think) a mechanism for recording references to
+    a macro (ie: a macro expansion point) - see mac.txt
+    I haven't done anything to read this stuff, and compiler calls
+    to this will be a way off; i understand that the pre-processor
+    is considered a (scary) black box.
+
+-ClassType::friends() now does nothing - it needs to read in the AT_friends
+	stuff  (this also suggests that ViewClass should have a
+	'Friends' checkbox and associated ListBox
+
+-SourceFile* DwarfDie::defSourceFile() could be used by
+	DieInfo::sourceFile() to check inlined functions instances for the
+	sourcefile where the 'inline template' is declared and/or defined.
+	in general, the handling of abstract vs concrete inlines is a loose end
+
+--------------Misc-----------------------------------
+
+-Graphical Tree completion, particularly leftward growth from focal node
+
+-some kinds of hard copy reports - see the microsoft browser for ideas
+
+-title bar on ViewSymbols contains scoped-style symbol name, but it usually
+	gets truncated, cuz views tend to be small - could maintain an
+	appropriately front-truncated title, based on the current window size
+
+-DieInfo now has cache of a single item - could benefit from from
+	a larger last-used type cache
+
+-DwarfDie::collapseSymbols - i don't think this will ever get used
+
+-default is for each DwarfDie to have it's own OrdCollect of Attribs
+	(_attribsBuf) loaded once on first demand; this can be replaced by
+	a single _attribsBuf and _attribsOwner indicator, shared by all DwarfDies
+	by #defining THIN (as in skinny DIEs).  Probably something in
+	between would be best, with a cache of _attribsBufs shared by all.
+	Alternative is for each to keep it's own attribs buf, but blow it away
+	if more memory is needed (tho this means the overhead of an
+	OrdCollect* for each DIE)
+
+-previous point suggests possibility for registering memory-freeing functions
+	with VMManager
+
+-maybe overload DwarfDie::new to make sure that all DIEs are loaded from
+	Windows GlobalHeap, rather than from the local heap as is currently
+	done by C++Views version of the overloaded global new operator.
+
+--------------Somewhere over the rainbow--------------------------
+
+-busy notice is just 'busy' in a box - a %done indication would be better
+
+-resolve identically defined types and class dies that share the same
+	name - should warn on duplicate classes with different definitions
+	Maybe classes should make use of the globalRegister (now called
+	on global variables and functoins from within DwarfDie::createDieTree)
+
+
+-would be great to save current state of all loaded dies into an enhanced
+	.wbr file for faster loading later
+
+-wbr file could hold current status of all flags, some of the layouts
+	(like an edited version of the project class hierarchy)
+
+-wbr file could hold inverted version of references information, for faster
+	answer to "What uses this symbol?" (currently looking through
+	the whole table for references to symbol X)
+
+-various tree representations should print themselves to file or device.
+	In fact, it would be great if all windows overloaded something
+	like virtual ostream& printPostScript(ostream&);
+
+-user annotation possible for each symbol, and perhaps for edited diagrams
+	(Eg: "this is a pruned class hierarchy for the file IO subsystem")
+
+-command history on all EditLines, Eg: Locate Symbol specification
+
+-folders for gathering up pushpin windows, to group together common them
+
+-tie-in to debugger, to augment it's capabilities
+
+-sash bars to re-allocate space for adjacent listboxes in detail views
+	(see the borland spy program for an example)
+
+-type description() handling is a bit messy, also it assumes a c-style
+	ordering of tokens; maybe all formatting of the type information
+	could be done in the view layer? in any case, it should be
+	configurable for Fortran , etc.
+	
+-AmbigSymPick inheritance path is flakey - see the preface to that code
+	for more info
+
+-there is no way to list all globals, or all locals within a given scope
+

@@ -1,0 +1,25 @@
+( device ps
+( font 0 times-roman plain 2 10
+( font 1 times-italic plain 2 10
+( font 2 times-bold plain 2 10
+( font 3 times-bolditalic plain 2 10
+( font 4 courier plain 1 10
+( font 5 courier plain 1 8
+( font 6 courier-bold plain 1 10
+( font 7 symbol plain 2 10
+( font 8 helvetica-narrow-boldoblique plain 2 14
+( font 9 helvetica-narrow-boldoblique plain 2 16
+( font 10 helvetica-narrow-boldoblique plain 2 20
+( font 11 helvetica-narrow-boldoblique plain 2 24
+( font 12 helvetica-narrow-boldoblique plain 2 32
+( format standard
+( layout nb7x9lay
+( noinclist
+( noindex
+( nostatistics
+( pause
+( script
+( setsymbol $draft "no"
+( terse
+( wait
+( warning

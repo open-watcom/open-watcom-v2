@@ -1,0 +1,7 @@
+#include "aui.rc"
+#include "dlgoptn.h"
+#ifdef JAPANESE_MESSAGES
+#include "japoptn.dlg"
+#else
+#include "dlgoptn.dlg"
+#endif

@@ -1,0 +1,12 @@
+#
+# this is a dde server initialization example
+#
+ddeinit
+
+assign %(VMakeServer) = %2
+createddestring %(Server) "%1"
+ddeserver %(Server)
+if lastrc == ERR_NO_ERR
+    assign %(DDEhook) = ddecb.vi
+#    load ddecb.vi
+endif

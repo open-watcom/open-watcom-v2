@@ -1,0 +1,83 @@
+!include $(plusplus_dir)\ppdirs.mif
+!include $(plusplus_dir)\tools.mif
+!include $(define_library_include)
+!include cproj.mif
+
+!ifndef source_libs
+source_libs = $(libs)
+!endif
+
+!ifndef source_libs_x
+source_libs_x = $(libx)
+!endif
+
+lib_flags = /b /c /n /t
+!ifdef on_build_machine
+!ifeq host_CPU axp
+!else
+lib_flags += /s
+!endif
+!endif
+!ifdef on_JWW_machine
+lib_flags += /p=64
+!else
+lib_flags += /p=16
+!endif
+!ifeq linkage dynamic
+export_name=export.def
+exportx_name=exportx.def
+exp_lib_flags = /z=$(export_name)
+exp_libx_flags = /z=$(exportx_name)
+!else
+!ifeq host_CPU axp
+exp_lib_flags =
+exp_libx_flags =
+!else
+exp_lib_flags = /z
+exp_libx_flags = /z
+!endif
+!endif
+
+lbcfile = tmp.lbc
+
+libs : .symbolic $(target_lib) $(target_lib_x)
+    @%null
+
+$(target_lib) : $(source_libs)
+    %create $(lbcfile)
+    @for %i in ($(source_libs)) do @%append $(lbcfile) +%i
+    $(librarian) -q $(lib_flags) $(exp_lib_flags) $^@ @$(lbcfile)
+!ifeq linkage dynamic
+    vi -q -s $(plusplus_cpplib_dir)\export.vi $(export_name)
+!endif
+    del $(lbcfile)
+    wtouch compile.tim
+
+!ifdef target_lib_x
+$(target_lib_x) : $(source_libs_x)
+    %create $(lbcfile)
+    @for %i in ($(source_libs_x)) do @%append $(lbcfile) +%i
+    $(librarian) -q $(lib_flags) $(exp_libx_flags) $^@ @$(lbcfile)
+!ifeq linkage dynamic
+    vi -q -s $(plusplus_cpplib_dir)\export.vi $(exportx_name)
+!endif
+    del $(lbcfile)
+    wtouch compile.tim
+!endif
+
+reference : .symbolic $(target_lib)
+    copy $(target_lib) $(plusplus_dir)\bin
+!ifdef target_lib_x
+    copy $(target_lib_x) $(plusplus_dir)\bin
+!endif
+
+update : .symbolic $(target_lib)
+    $(librarian) -b -c -n -q -s -t $(lang_root)\$(production_lib)\$(target_lib) +$(target_lib)
+!ifdef target_lib_x
+    $(librarian) -b -c -n -q -s -t $(lang_root)\$(production_lib)\$(target_lib_x) +$(target_lib_x)
+!endif
+
+.EXTENSIONS:
+.EXTENSIONS: .lib
+
+!include $(plusplus_dir)\clean.mif

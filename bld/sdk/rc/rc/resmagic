@@ -1,0 +1,7 @@
+#
+#   If you add these two lines to your \etc\magic file the mks file command
+#   will report "WATCOM .RES format" for .RES file in WATCOM format and 
+#   "binary data" for .RES files in MS format.
+#
+0		long		0xC3D4C1D7
+>4		long		0xC3D2CDCF	WATCOM .RES format

@@ -1,0 +1,2 @@
+dig_srcs = $(dig_dir)/c/$(dig_os);$(dig_dir)/c;$(watcom_dir)/c
+dip_objs = dipman.obj dipld.obj

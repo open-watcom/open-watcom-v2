@@ -1,0 +1,87 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject __copy.obj                   g32
+!inject __stos.obj                   g32
+!inject 7fu8086.obj              g16                                   w16
+!inject 7fu8386.obj                  g32
+!inject 7u8f086.obj              g16                                   w16
+!inject 7u8f386.obj                  g32
+!inject amodf086.obj             g16                                   w16
+!inject amodf386.obj                 g32
+!inject bufld086.obj             g16                                   w16
+!inject bufld386.obj                 g32
+!inject div386.obj                   g32
+!inject fdc086.obj               g16                                   w16
+!inject fdc386.obj                   g32
+!inject fdfs086.obj              g16                                   w16
+!inject fdfs386.obj                  g32
+!inject fdi4086.obj              g16                                   w16
+!inject fdi4386.obj                  g32
+!inject fdi8086.obj              g16                                   w16
+!inject fdi8386.obj                  g32
+!inject fdmath.obj                   g32
+!inject fdmth086.obj             g16                                   w16
+!inject fdmth386.obj                 g32
+!inject fdn086.obj               g16                                   w16
+!inject fdn386.obj                   g32
+!inject fprem086.obj             g16                                   w16
+!inject fprem386.obj                 g32
+!inject fsc086.obj               g16                                   w16
+!inject fsc386.obj                   g32
+!inject fsfd086.obj              g16                                   w16
+!inject fsfd386.obj                  g32
+!inject fsi4086.obj              g16                                   w16
+!inject fsi4386.obj                  g32
+!inject fsi8086.obj              g16                                   w16
+!inject fsi8386.obj                  g32
+!inject fsmth086.obj             g16                                   w16
+!inject fsmth386.obj                 g32
+!inject fsn086.obj               g16                                   w16
+!inject fsn386.obj                   g32
+!inject fstat086.obj             g16                                   w16
+!inject fstat386.obj                 g32
+!inject i4fs086.obj              g16                                   w16
+!inject i4fs386.obj                  g32
+!inject i4d.obj                  g16                                   w16
+!inject i4fd086.obj              g16                                   w16
+!inject i4fd386.obj                  g32
+!inject i4m.obj                  g16                                   w16
+!inject i8d.obj                      g32
+!inject i8d086.obj               g16                                   w16
+!inject i8fs086.obj              g16                                   w16
+!inject i8fs386.obj                  g32
+!inject i8fd086.obj              g16                                   w16
+!inject i8fd386.obj                  g32
+!inject i8ls086.obj              g16                                   w16
+!inject i8m086.obj               g16                                   w16
+!inject i8m386.obj                   g32
+!inject u8rs086.obj              g16                                   w16
+!inject i8rs086.obj              g16                                   w16
+!inject i8rs386.obj                  g32
+!inject ldiv086.obj              g16                                   w16
+!inject ldiv386.obj                  g32
+!inject lrot.obj                 g16                                   w16
+!inject mcpyaxp.obj                                 nta
+!inject pia.obj                  g16                                   w16
+!inject ppcconv.obj                                     ntp
+!inject ptc.obj                  g16                                   w16
+!inject pts.obj                  g16                                   w16
+!inject sard.obj                 g16                                   w16
+!inject shld.obj                 g16                                   w16
+!inject shrd.obj                 g16                                   w16
+!inject stkaxp.obj                                  nta
+!inject stkppc.obj                                      ntp
+!inject U64Add.obj               g16                                   w16
+!inject U64Div.obj               g16                                   w16
+!inject U64Mul.obj               g16                                   w16
+!inject U64Shift.obj             g16                                   w16
+
+!include ..\..\..\..\objlist.mif
+
+086_fpi_postopts=-fpi
+286_fpi_postopts=-fpi
+386_fpi_postopts=
+axp_fpi_postopts=
+
+7u8f086_postopts=$($(processor)_fpi_postopts)
+7fu8086_postopts=$($(processor)_fpi_postopts)

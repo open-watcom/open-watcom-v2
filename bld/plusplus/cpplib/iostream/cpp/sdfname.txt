@@ -1,0 +1,55 @@
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
+   %     reserved.  No part of this software may be reproduced or        %
+   %     used in any form or by any means - graphic, electronic or       %
+   %     mechanical, including photocopying, recording, taping or        %
+   %     information storage and retrieval systems - except with the     %
+   %     written permission of WATCOM International Inc.                 %
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+
+******************************** STDIOBUF ************************************
+
+Filename: sdfconde.cpp
+Declaration: 
+	stdiobuf::stdiobuf() 
+Semantics: Construct an empty stdiobuf object.
+
+
+Filename: sdfconfp.cpp
+Declaration: 
+	stdiobuf::stdiobuf( FILE *fptr ) 
+Semantics: Connect a C POSIX file pointer to an input streambuf.
+
+
+Filenames: sdfdestr.cpp
+Declaration: 
+	stdiobuf::~stdiobuf() 
+Semantics: Destructor
+
+
+Filenames: sdfoverf.cpp
+Declaration: 
+	int stdiobuf::overflow( int c ) 
+Semantics: Handle allocating a buffer, if required.
+	   Handle overflow of the output streambuf buffer.
+
+
+Filenames: sdfsread.cpp
+Declaration: 
+	int __stdiobuf_read( char *buf, size_t size, size_t len, FILE *fp ) 
+Semantics:
+
+
+Filenames: sdfundrf.cpp
+Declaration: 
+	int stdiobuf::underflow() 
+Semantics: Handle allocating a buffer, if required.
+	   Handle filling the get area of the streambuf.
+
+
+Filenames: sdfsync.cpp
+Declaration: 
+	int stdiobuf::sync() 
+Semantics: Synchronize the output of this stream with the underlying
+	   C standard I/O.

@@ -1,0 +1,6 @@
+plusplus_cpplib_dir = $(plusplus_dir)\cpplib
+plusplus_runtime_dir = $(plusplus_cpplib_dir)\runtime
+plusplus_string_dir = $(plusplus_cpplib_dir)\string
+plusplus_complex_dir = $(plusplus_cpplib_dir)\complex
+plusplus_iostream_dir = $(plusplus_cpplib_dir)\iostream
+plusplus_contain_dir = $(plusplus_cpplib_dir)\contain

@@ -1,0 +1,525 @@
+Class Layout
+============
+
+This document details how a class is laid out in memory. Unless noted, the
+design follows the MicroSoft specification document.
+
+- related documents:
+    - CTORDTOR.TXT: discusses constructors, destructors, error handling
+
+
+History
+-------
+
+91/11/21 -- JWW     - initial version
+
+
+Layout
+======
+
+- a class object is allocated as follows (each section is optional and will
+  be allocated only if required):
+
+    (a) VFPTR - pointer to virtual functions table
+        - this is a list of function/thunk pointers
+
+    (b) VBPTR - pointer to virtual bases table
+        - this is a list of offsets to be added to the "this" pointer in order
+          to access a virtual base object
+
+    (c) any non-virtual base objects with virtual functions
+        - occur (recursively) in order of definition
+
+    (d) any non-virtual base objects without virtual functions
+        - occur (recursively) in order of definition
+        - this gives better addressing on first such object
+
+    (e) data members of the class
+        - occur in order of definition
+
+  - the virtual base objects of an object occur following all non-virtual
+    objects
+    - each object is followed by a "construction-displacement" offset when the
+      class has virtual functions
+
+  - data members and class objects are aligned as required
+
+  - an empty class object requires one byte of storage when it is immediately
+    followed by an empty class of the same type
+
+- example:                                                   A
+                                                            /
+    class A { a1; a2; };                                   /
+    class B : public A { b1; b2; };                 A     B
+    class C : public A, public B { c1; c2; };        \   /
+                                                      \ /
+    - laid out as:                                     C
+
+        - storage for C::A
+            - C::A.a1
+            - C::A.a2
+
+        - storage for C::B
+            - storage for C::B::A
+                - C::B::A.a1
+                - C::B::A.a2
+            - A::B.b1
+            - A::B.b2
+
+        - storage for C
+            - C::c1
+            - C::c2
+
+
+- example:  (only data members shown)                          A (virtual)
+                                                               |\
+    class A { a1; a2; };                                       | \
+    class B : public virtual A { b1; b2; };                    |  B
+    class C : public virtual A, public B { c1; c2; };          | /
+                                                               |/
+    - laid out as:                                             C
+
+        - storage for C::B
+            - A::B.b1
+            - A::B.b2
+
+        - storage for C
+            - C::c1
+            - C::c2
+
+        - storage for C::A (virtual)
+            - C::A.a1
+            - C::A.a2
+
+Virtual Base Tables
+===================
+
+- virtual bases exist because the virtual classes do not occur at
+  fixed offsets from a derived class
+
+- a "virtual base pointer" (VBPTR) is used to point at a table of
+  offsets to establish the location of base classes
+    - allocated in self unless allocated in non-virtual base class
+    - offsets are relative to the VBPTR
+
+- access to a virtual base class is accomplished by:
+
+      table = this_derived->vbptr;
+      this_base = this_derived + vbptr + table->offset_base;
+
+    - offsets are not relative to the "this" pointer so that more sharing
+      of VBPTR's can be possible
+
+- thus, we need to construct the follow parse-tree when converting to a
+  virtual base
+
+                VBPTR
+               / \
+              /   \
+             *     type-list (virtual-class)
+            /
+           /
+         this
+
+- we need support to supply offsets of VBPTR and class-offset for a
+  <derived,virtual> combination
+
+- in general, virtual base tables are used to access virtual base class
+  objects, from compiled code and from thunks (described later)
+
+- optimization: if the exact type of an object is known, then direct
+                addressing can be used, since the location of all class
+                objects will be known.
+
+Virtual Function Tables
+=======================
+
+- operate similarily to Virtual Base Tables, except are used to access tables
+  of addresses of virtual functions
+
+- a "virtual function pointer" (VFPTR) is used to point at a table of
+  function addresses
+    - allocated in self, unless allocated in a non-virtual base class
+
+- example: (assume all functions are virtual)
+
+        class A { f(); g() };
+        class B : public virtual A { f(); h(); };
+        class C : public virtual A { g(); h(); };
+        class D : public B, public C { f(); g(); h(); };
+
+
+
+              A { f(); g() };
+             / \
+            /   \
+           /     \
+          /       \
+         /         \
+  B { f(); h() }    C { g(); h(); }
+         \         /
+          \       /
+           \     /
+            \   /
+             \ /
+              D { f(); g(); h() };
+
+    - the following virtual function tables exist in A,B,C,D when each,
+      respectively, is the allocated class
+        VFT_A : { A.f, A.g }
+        VFT_B : { B.f, t(B)_A.g, B.h }
+        VFT_C : { t(C)_A.f, C.g, C.h }
+        VFT_D : { D.f, D.g, D.h }
+
+    - t(C1)_C2.f is a "thunk" from class C1 to a function f in class C2
+
+- optimization: if the exact type of an object is known, then the functions
+                or appropriate thunk, can be directly called, since the
+                appropriate function to be invoked can be determined from
+                the information in the symbol table
+
+Thunks
+======
+
+    - notation t(C1)_C2.fun is for a "thunk" routine (generated whenever
+      an adjustment to the "this" pointer is required); for example:
+
+        this_C2 += offset(C2)-offset(C1)
+        goto fun;
+
+        - this can be compiled since offset(C1) and offset(C2) are known
+          when a class object is allocated; offset(C) is the offset of the C
+          object from the start of the allocated object
+
+        - note: need support for this from code-generator
+            - thunk must not change anything except "this"
+            - thunk must allow arbitrary return
+
+        - note: optimization - pragma support to avoid duplicate thunks
+            - this is the same optimization as is required for virtual
+              tables in general (normally they are (static, public, extern)
+              code when tables are correspondingly (static, public, extern).
+
+        - note: optimization for space - generate thunks using call to
+                generated this-conversion routines, when warranted
+
+    - when a D is allocated
+        - storage for D
+            - storage for D::B
+                - VFPTR --> VFT_B_D = { D.f, D.h }
+                - VBPTR --> VBT_B_D = { offset(D::B::A) }
+            - storage for D::C
+                - VFPTR --> VFT_A_D = { t(C)_D.f, t(C)_D.g, t(C)_D.h }
+                - VBPTR --> VBT_A_D = { offset(D::B::A) - offset(D::C) }
+
+        - storage for D::B::A   (virtual)
+            - VFPTR --> VFT_A_D = { t(A)_D.f, t(A)_D.g }
+            - con_disp_A
+
+        t(C)_D.f( this_C ) : D.f( this_C + offset( D::B::A ) )
+        t(C)_D.g( this_C ) : D.g( this_C + offset( D::B::A ) )
+        t(C)_D.h( this_C ) : D.h( this_C + offset( D::B::A ) )
+        t(A)_D.f( this_A ) : D.f( this_A - this_A->con_disp_A
+                                  - offset( D::B::A ) )
+        t(A)_D.g( this_A ) : D.g( this_A - this_A->con_disp_A
+                                  - offset( D::B::A ) )
+
+
+    - when a C is allocated
+        - storage for D::C
+            - VFPTR --> VFT_C   = { t(C)_A.f, C.g, C.h }
+            - VBPTR --> { offset(C::A) }
+
+        - storage for C::A      (virtual)
+            - VFPTR --> VFT_A_C = { A.f, t(A)_C.g, t(A)_C.h }
+
+        t(C)_A.f( this_C ) : D.f( this_C + offset( C::A ) )
+        t(A)_C.g( this_A ) : D.g( this_A - this_A->con_disp_A
+                                  - offset( C::A ) )
+        t(A)_C.h( this_A ) : D.h( this_A - this_A->con_disp_A
+                                  - offset( C::A ) )
+
+
+                VFPTR
+               / \
+              /   \
+             *     type-list (virtual-class)
+            /
+           /
+         this
+
+- we need support to supply offsets of VFPTR and member-function-offset for a
+  <derived,function> combination
+
+
+Constructors/Destructors
+========================
+
+- require that their own virtual functions are called when they are active
+- a constructor must set its own VFPTR in self and all base classes, after
+  the base classes and members of the class have been constructed
+- a destructor must set its own VFPTR in self and all base classes, before
+  execution of the destructor body.
+
+- note: MicroSoft instead places a "construction displacement" following
+        a virtual member
+        - always uses the same VFPTR's
+        - displacement is zero after construction
+        - displacement added by all thunks
+        - displacement is non-zero during construction
+
+- note: Borland (2.0) compiles code to do a "new" when the "this" pointer
+        is passed as 0. When the "new" fails, nothing happens. The address
+        of the object is always returned.
+
+Constructor Displacements (justification)
+========================
+
+- eliminate the need for virtual function tables and/or thunks that might be
+  required only during construction:
+
+  class V { virtual void f(); virtual void g(); }
+  class A : public virtual V { virtual void f() };
+  class B : public A { virtual void g(); int b1; };
+
+  - allocated as (if no constructor displacement for V): (V_A, V_B are offsets
+    of V when A, B allocated, respectively)
+
+          B               A
+        ===========     ============
+        vfptr(A)        vfptr(A)
+        vbptr(A)        vbptr(A)
+        b1          V_A:vfptr(V)
+    V_B:vfptr(V)
+
+  - during V construction:
+
+    (1) vfptr(V)   V.f, V.g
+
+  - during and after A construction (if A created)
+
+    (2) vfptr(A)   A.f, t(A)_V.g ( this += V_A; goto V.g )
+    (3) vfptr(V)   t(V)_A.f ( this -= V_A; goto A.f ), V.g
+
+  - during A construction (if B created)
+
+    (4) vfptr(A)   A.f, t(A)_V.g ( this += V_B; goto V.g )
+    (5) vfptr(V)   t(V)_A.f ( this -= V_B; goto A.f ), V.g
+
+        note: these two virtual function tables are required only during
+              construction
+
+    (4) & (2) can be the same, if virtual base table is used:
+
+    (2) vfptr(A)   A.f, t(A)_V.g ( this += offset(vbptr)
+                                           + this->vbptr->offset_A; goto V.g )
+
+  - during and after B construction (if B created)
+
+    (6) vfptr(A)   A.f, B.g
+    (7) vfptr(V)   t_V_B_f ( this -= V_B; goto A.f ),
+                   t_V_B_g ( this -= V_B; goto B.g )
+
+  - Borland (2.0) defines all the tables as shown
+
+        - this will be expensive when there is lots of virtual inheritance,
+          as each virtual derived inheritance will require separate tables
+          for its virtual bases (order nxn tables with n inheritance levels)
+
+  - MicroSoft introduces a constructor-delta (stored as the last a member
+    of V) in order that only one version of tables (3) and (5) need be
+    constructed:
+
+    (3) V:  vfptr   T(V)_A.f ( this -= V_A+con_delta(V); goto A.f ), V.g
+
+    - con_disp's are always zero after construction
+
+    - while constructing A (standalone), con_disp(V) is zero
+
+    - while constructing A (in B), con_disp(V) is set to be ( V_B - V_A ), the
+      difference between the location of V in the standalone version and in
+      the containment version
+
+
+Rules: virtual base tables
+==========================
+
+- used in code and thunks when converting "this-derived" to
+  "this-virtual-base"
+
+- can use a VBPTR in a non-virtual base class if one exists; otherwise, one
+  is required for current class
+
+- a virtual base table can be uniquely named using the name of the
+  allocating class and of the class containing the VFPTR
+
+
+Rules: virtual function tables
+==============================
+
+- always used to call a virtual function
+
+- if class defines virtual functions, it requires a table
+
+- if class inherits virtual functions from a virtual base, it requires a table
+
+- if class inherits virtual functions from a non-virtual base whose "this"
+  differs from the "this" for the class, it requires a table
+
+- if class inherits from multiple bases with different function ordering,
+  a table is required
+
+- a virtual function table can be uniquely named using the name of the
+  allocating class and of the class containing the VFPTR
+
+
+Additional Ambiguities
+======================
+
+- the compiler needs to detect ambiguities during creation of virtual
+  function tables:
+
+        class A { virtual void f(); };
+        class B { virtual void f(); };
+        class C : public virtual A, public virtual B { };
+
+  - here f() is ambiguous for class C, even though no functions in C
+    reference f()
+  - this needs to be detected when the C scope is closed
+
+Rules: thunks
+=============
+
+- required as an intermediary to a function when the "this" pointer must
+  be converted
+
+- conversion to non-virtual base: adjust by offset
+
+- conversion to derived from non-virtual base; adjust by offset
+
+- conversion to virtual base: use a VBPTR to determine adjustment
+
+- conversion to derived from virtual base: subtract sum of construction
+  displacement of base + constant difference between classes
+
+- a thunk can be uniquely named using the names of the function, the class
+  containing the VFPTR, and of the allocating class.
+
+
+Numbering virtual functions
+===========================
+
+- each virtual function is assigned a unique index to be translated into an
+  offset in the virtual functions table
+
+- for such function (derived or defined), the VFPTR to be used must be
+  chosen
+    - if the function exists in the associated table, then, the number
+      already assigned is used; otherwise, the table is to be extended
+      by one entry and the next number for that table is used
+    - a new function is assigned to the leftmost table
+
+Numbering virtual bases
+=======================
+
+- the virtual bases must also be assigned a unique order
+
+- for such a base, the VBPTR to be used must be chosen
+    - if the base exists in the associated table, then, the number
+      already assigned is used; otherwise, the table is to be extended
+      by one entry and the next number for that table is used
+    - a new function is assigned to the leftmost table
+
+Generation of virtual tables
+============================
+
+- bit associated with each class indicates if data-generation of virtual
+  function tables and virtual base tables for the class have been completed
+
+- the current class is called sclass (source class)
+
+- internal names of thunks and virtual tables are kept in file scope
+    - when a name needs to be added, the data (if required) for the table
+      is also generated
+    - when a new thunk name is used, the code for that name is generated
+      as a separate "procedure"
+
+- normally tables and thunks are generated as local statics
+    - proposed #pragma support may modify this behavior
+        #pragma class name static   ( generate data/thunks as static )
+        #pragma class name extern   ( reference data/thunks externally )
+        #pragma class name public   ( generate data/thunks as public )
+??????  #pragma class name common   ( generate data/thunks as public/common )
+        - "name" indicates name of class to be handled as above
+        - "*" for "name" sets defaults
+        - this allows home modules for classes
+
+- generate name for virtual base table using (sclass, bclass) where bclass
+  is the class name containing the VBPTR
+    - for all VFPTRS in class and base classes
+        - generate label for the function table using (sclass, fclass) where
+          fclass is name of class containing the VFPTR
+        - for a virtual function table to be generated (if not external name)
+            - generate the label
+        - for the virtual functions, in order
+            - detect ambiguity if present !!!!!!!!!!!!!!!!!!!
+            - tclass is the class containing the function
+            - compute "this" adjustment required
+            - if adjustment is zero
+                - generate addr(function)
+              else
+                - generate a thunk-name from( tclass, function, adjustment )
+                  if adjustment does not cross a virtual boundary
+                - generate a thunk-name from( tclass, function, vclass ) where
+                  vclass is least-derived class with same "this" as sclass
+                  which can access the VBPTR used in the thunk, when sclass
+                  and tclass are separated by a virtual boundary
+                - generate addr( thunk name )
+                - if a newly defined thunk, generate the thunk
+Thunk Generation
+================
+
+- thunks are generated as follows:
+
+    thunk( tclass, function, adjustment )   [ adjustment not virtual ]
+        this += adjustment or this -= adjustment
+        goto tclass.function
+
+    thunk( tclass, function, vclass )       [ tclass is base of vclass ]
+        temp = this->vclass.vbptr
+        this = temp + temp->offset_function
+        goto tclass.function
+
+    thunk( tclass, function, vclass )       [ vclass is base of tclass ]
+        this -= offset + this->cons_disp_vclass
+        goto tclass.function
+
+Differences between Borland(doc'd) and MicroSoft
+================================================
+
+- this section written from Borland point of view
+
+- stores pointer (16-bit offset for "this") at location that virtual class
+  object would be allocated, if the class were not virtual
+
+- stores construction displacement before (not after) virtual members
+
+- adds extra pointers to virtual base classes to ensure at most one level
+  of computation to cast a "this" to a virtual base
+
+- minimum class object size is always 1 byte
+
+- can declare classes to be near or far
+
+- can declare classes to be _export
+
+- constructors passed 0 as "this" will use "new" to allocate object
+    - "this" returned by constructors
+    - constructors with virtual bases are passed a flag int
+        0 ==> construct virtuals bases
+
+- destructors always passed extra int flag of bits:
+    x'01' ==> call delete for object
+    x'02' ==> destruct virtual classes
+
+- name mangling is different

@@ -1,0 +1,13 @@
+
+ALLOC_DLG DIALOG 6, 18, 142, 34
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Allocation Information"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "K allocated (approx):", ALLOC_DONT_CARE, 5, 3, 92, 8
+    LTEXT           "Bytes Free:", ALLOC_DONT_CARE, 5, 23, 60, 8
+    LTEXT           "", ALLOC_ALLOCATED, 85, 3, 49, 8
+    LTEXT           "", ALLOC_FREE_K, 85, 13, 49, 8
+    LTEXT           "K Free:", ALLOC_DONT_CARE, 5, 13, 34, 8
+    LTEXT           "", ALLOC_FREE_BYTE, 85, 23, 49, 8
+END

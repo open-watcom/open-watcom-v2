@@ -1,0 +1,59 @@
+# CPPEXAMP.MIF
+#
+# This file is always included by MAKEFILE's in sample sub-directories.
+#
+# Note: the file includes LOCAL.MIF from this directory. LOCAL.MIF is empty
+#       as shipped.  It can be used for any customization required in a
+#       particular installation.
+#
+
+
+!include ..\local.mif
+
+.extensions:
+.extensions: .exe .lnk .obj .cpp .c
+
+!ifndef cpp_compiler
+!   ifdef __NTAXP__
+!       define cpp_compiler wppaxp
+!       define c_compiler wccaxp
+!   else
+!       define cpp_compiler wpp386
+!       define c_compiler wcc386
+!   endif
+!endif
+
+!ifndef linker
+!   define linker wlink
+!endif
+
+!ifndef link_cmds
+!   define link_cmds linkpgm.lnk
+!endif
+
+!ifndef cpp_options
+!   define cpp_options -zq -xs -d1
+!   define c_options -zq -d1
+!endif
+
+.cpp.obj: .AUTODEPEND
+    $(cpp_compiler) $(cpp_options) $[*
+
+.c.obj: .AUTODEPEND
+    $(c_compiler) $(c_options) $[*
+
+test.exe: $(objects) $(link_cmds)
+    $(linker) @$(link_cmds)
+
+linkpgm.lnk: $(__MAKEFILES__) ..\local.mif
+    @%create $^@
+    @%append $^@ NAME    test
+    @%append $^@ OPTION  quiet, eliminate, map, show
+    @%append $^@ DEBUG   all
+    @for %i in ($(objects)) do @%append $^@ FILE    %i
+
+clean: .SYMBOLIC
+    @if exist *.exe del *.exe
+    @if exist *.lnk del *.lnk
+    @if exist *.obj del *.obj
+    @if exist *.map del *.map

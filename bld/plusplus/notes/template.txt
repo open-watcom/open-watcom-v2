@@ -1,0 +1,39 @@
+problems encountered with templates
+-----------------------------------
+
+primary problem: member functions in a class template can be defined in a file
+other than the current file. So, in a case like this,
+
+/*beginning of file*/
+template <class T> class rolling {
+    T stones( T );
+};
+
+rolling< double > sixes;
+/*end of file*/
+
+The member function "stones" for the class "sixes" cannont be instantiated
+without reading in the file where the function "stones" is defined! (if it is
+defined...)  We really need some way of restricting templates so that the
+definitions for all of the dependant member functions is parsed before the
+template is used.
+
+How do generic base classes work?
+
+Template processing will probably have to be handled like a big macro
+substitution. Dealing with full contant-expressions could be rather tricky,
+and could be quite hard to do by substituting into an already built parse
+tree (especially wrt. offsets of members in classes).  The rewriting stuff
+should work pretty well for this.
+
+Probably we have to be able to handle default arguments in templates. The
+ARM does not mention these, but they do fall out as part of the grammar,
+and might (maybe) be useful.
+
+Parsing the "generic type argument" (e.g. <class T> in above example) is
+going to be a bit of a pain, since putting it in the grammar as they specify
+would cause massive YACC problems, so we are going to have to fish it out
+after it has been parsed as a class-key.
+
+If problem with not knowing the member functions is fixed, then to the best
+of my knowledge we should be able to implement them.

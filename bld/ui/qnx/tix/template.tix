@@ -1,0 +1,301 @@
+##
+## Blank lines and everything following a '#' are ignored. 
+## The following directives are supported:
+##
+##	display <internal_display_code> [alt] <display_code>
+##
+##	key <internal_key_code> <input_stream>
+##
+## Where:
+##	<internal_display_code> is the internal number used for the character.
+##
+##	<display_code> 	is the value sent to the output device. If "alt" 
+##			preceeds the number, the program will check the
+##			terminfo 'acsc' capability string for the character
+##			and use the indicated alternate drawing character 
+##			from that. If <display_code> is not in the acsc
+##			string for the terminal, an internal default acsc
+##			string is checked. If <display_code> is not in the
+##			default acsc string, <display_code> itself is used
+##			for the output code, after being preceeded by the
+##			alternate character set sequence as specified by
+##			terminfo.
+##
+##	<internal_key_code>	is the internal number used for the key.
+##
+##	<input_stream>	the list of values the input device sends for the
+##			key.
+##
+##
+## Any code or numeric value may be specfied by a C format number ( '0'
+## prefix for octal, "0x" prefix for hexadecimal), or a C string literal.
+## In a string literal, the escape sequence '\e' is recognized as the ASCII
+## ESC character (code=0x1b). All the other C escape sequences are recognized
+## as well.
+##	
+
+# Arrows
+#display 0x10 # RightArrow	#    
+#display 0x11 # LeftArrow	# 
+#display 0x1e # UpArrow		# 
+#display 0x1f # DownArrow	# 
+#display 0x1a # RightArrow	# (ctrl-z)   
+#display 0x1b # LeftArrow	#    
+#display 0x18 # UpArrow		# 
+#display 0x19 # DownArrow	# 
+
+# Squares
+#display 0xb0 # Checkers	# °
+#display 0xb1 # Checkers	# ±
+#display 0xb2 # Squares		# ²
+#display 0xdb # Square		# Û
+#display 0xdc # 0x20 		# Ü
+#display 0xdd # Square		# Ý
+#display 0xde # 0x20		# Þ
+#display 0xdf # Square		# ß
+
+# Line drawing
+#display 0xb3 # V_Line		# ³
+#display 0xb4 # RightTee	# ´
+#display 0xb5 # RightTee	# µ
+#display 0xb6 # RightTee	# ¶
+#display 0xb7 # TopRightCorner	# ·
+#display 0xb8 # TopRightCorner	# ¸
+#display 0xb9 # RightTee	# ¹
+#display 0xba # V_Line		# º
+#display 0xbb # TopRightCorner	# »
+#display 0xbc # BottomRightCorner# ¼
+#display 0xbd # BottomRightCorner# ½
+#display 0xbe # BottomRightCorner# ¾
+#display 0xbf # TopRightCorner	# ¿
+#display 0xc0 # BottomLeftCorner# À
+#display 0xc1 # BottomTee	# Á
+#display 0xc2 # TopTee		# Â
+#display 0xc3 # LeftTee		# Ã
+#display 0xc4 # H_Line		# Ä
+#display 0xc5 # Cross		# Å
+#display 0xc6 # LeftTee		# Æ
+#display 0xc7 # LeftTee		# Ç
+#display 0xc8 # BottomLeftCorner# È
+#display 0xc9 # TopLeftCorner	# É
+#display 0xca # BottomTee	# Ê
+#display 0xcb # TopTee		# Ë
+#display 0xcc # LeftTee		# Ì
+#display 0xcd # H_Line		# Í
+#display 0xce # Cross		# Î
+#display 0xcf # BottomTee	# Ï
+#display 0xd0 # BottomTee	# Ð
+#display 0xd1 # TopTee		# Ñ
+#display 0xd2 # TopTee		# Ò
+#display 0xd3 # BottomLeftCorner# Ó
+#display 0xd4 # BottomLeftCorner# Ô
+#display 0xd5 # TopLeftCorner	# Õ
+#display 0xd6 # TopLeftCorner	# Ö
+#display 0xd7 # Cross		# ×
+#display 0xd8 # Cross		# Ø
+#display 0xd9 # BottomRightCorner# Ù
+#display 0xda # TopLeftCorner	# Ú
+
+# Misc.
+#display 0xf1 # Plus_Minus	# ñ
+#display 0xf8 # Degree		# ø
+#display 0xf9 # Bullet		# ù
+#display 0xfa # Bullet		# ú
+#display 0xfe # Square		# þ
+#display 0xfb # Check           # {
+#display 0xff # Other Space     #
+
+#key 0x000	# EV_NO_EVENT 		(ignore <input_stream>)
+
+#key 0x108	# EV_RUB_OUT		(normally from terminfo)
+#key 0x109	# EV_TAB_FORWARD	
+#key 0x10F	# EV_TAB_BACKWARD	(normally from terminfo)
+#key 0x10D	# EV_ENTER	
+#key 0x11B	# EV_ESCAPE	
+
+#key 0x147	# EV_HOME		(normally from terminfo)
+#key 0x148	# EV_CURSOR_UP		(normally from terminfo)
+#key 0x149	# EV_PAGE_UP		(normally from terminfo)
+#key 0x14B	# EV_CURSOR_LEFT	(normally from terminfo)
+#key 0x14D	# EV_CURSOR_RIGHT	(normally from terminfo)
+#key 0x14F	# EV_END		(normally from terminfo)
+#key 0x150	# EV_CURSOR_DOWN	(normally from terminfo)
+#key 0x151	# EV_PAGE_DOWN		(normally from terminfo)
+#key 0x152	# EV_INSERT		(normally from terminfo)
+#key 0x153	# EV_DELETE		(normally from terminfo)
+
+#key 0x173	# EV_CTRL_CURSOR_LEFT
+#key 0x174	# EV_CTRL_CURSOR_RIGHT
+#key 0x175	# EV_CTRL_END	
+#key 0x176	# EV_CTRL_PAGE_DOWN
+#key 0x177	# EV_CTRL_HOME	
+#key 0x184	# EV_CTRL_PAGE_UP	
+#key 0x18d	# EV_CTRL_CURSOR_UP
+#key 0x191	# EV_CTRL_CURSOR_DOWN
+#key 0x192	# EV_CTRL_INSERT	
+#key 0x193	# EV_CTRL_DELETE	
+#key 0x194	# EV_CTRL_TAB	
+#key 0x00A	# EV_CTRL_ENTER	
+
+#key 0x1C0	# EV_SHIFT_HOME	
+#key 0x1C1	# EV_SHIFT_END	
+
+#key 0x1C2	# EV_SHIFT_CURSOR_UP
+#key 0x1C3	# EV_SHIFT_CURSOR_DOWN
+#key 0x1C4	# EV_SHIFT_CURSOR_LEFT
+#key 0x1C5	# EV_SHIFT_CURSOR_RIGHT
+
+#key 0x1C6	# EV_SHIFT_PAGE_UP
+#key 0x1C7	# EV_SHIFT_PAGE_DOWN
+
+#key 0x13b	# EV_FUNC_1		(normally from terminfo)
+#key 0x13c	# EV_FUNC_2		(normally from terminfo)
+#key 0x13d	# EV_FUNC_3		(normally from terminfo)
+#key 0x13e	# EV_FUNC_4		(normally from terminfo)
+#key 0x13f	# EV_FUNC_5		(normally from terminfo)
+#key 0x140	# EV_FUNC_6		(normally from terminfo)
+#key 0x141	# EV_FUNC_7		(normally from terminfo)
+#key 0x142	# EV_FUNC_8		(normally from terminfo)
+#key 0x143	# EV_FUNC_9		(normally from terminfo)
+#key 0x144	# EV_FUNC_10		(normally from terminfo)
+#key 0x185	# EV_FUNC_11		(normally from terminfo)
+#key 0x186	# EV_FUNC_12		(normally from terminfo)
+
+#key 0x154	# EV_SHIFT_FUNC_1	(normally from terminfo)
+#key 0x155	# EV_SHIFT_FUNC_2	(normally from terminfo)
+#key 0x156	# EV_SHIFT_FUNC_3	(normally from terminfo)
+#key 0x157	# EV_SHIFT_FUNC_4	(normally from terminfo)
+#key 0x158	# EV_SHIFT_FUNC_5	(normally from terminfo)
+#key 0x159	# EV_SHIFT_FUNC_6	(normally from terminfo)
+#key 0x15a	# EV_SHIFT_FUNC_7	(normally from terminfo)
+#key 0x15b	# EV_SHIFT_FUNC_8	(normally from terminfo)
+#key 0x15c	# EV_SHIFT_FUNC_9	(normally from terminfo)
+#key 0x15d	# EV_SHIFT_FUNC_10	(normally from terminfo)
+#key 0x187	# EV_SHIFT_FUNC_11	(normally from terminfo)
+#key 0x188	# EV_SHIFT_FUNC_12	(normally from terminfo)
+
+#key 0x15e	# EV_CTRL_FUNC_1	(normally from terminfo)
+#key 0x15f	# EV_CTRL_FUNC_2	(normally from terminfo)
+#key 0x160	# EV_CTRL_FUNC_3	(normally from terminfo)
+#key 0x161	# EV_CTRL_FUNC_4	(normally from terminfo)
+#key 0x162	# EV_CTRL_FUNC_5	(normally from terminfo)
+#key 0x163	# EV_CTRL_FUNC_6	(normally from terminfo)
+#key 0x164	# EV_CTRL_FUNC_7	(normally from terminfo)
+#key 0x165	# EV_CTRL_FUNC_8	(normally from terminfo)
+#key 0x166	# EV_CTRL_FUNC_9	(normally from terminfo)
+#key 0x167	# EV_CTRL_FUNC_10	(normally from terminfo)
+#key 0x189	# EV_CTRL_FUNC_11 	(normally from terminfo)
+#key 0x18A	# EV_CTRL_FUNC_12 	(normally from terminfo)
+
+#key 0x168	# EV_ALT_FUNC_1		(normally from terminfo)
+#key 0x169	# EV_ALT_FUNC_2		(normally from terminfo)
+#key 0x16a	# EV_ALT_FUNC_3		(normally from terminfo)
+#key 0x16b	# EV_ALT_FUNC_4		(normally from terminfo)
+#key 0x16c	# EV_ALT_FUNC_5		(normally from terminfo)
+#key 0x16d	# EV_ALT_FUNC_6		(normally from terminfo)
+#key 0x16e	# EV_ALT_FUNC_7		(normally from terminfo)
+#key 0x16f	# EV_ALT_FUNC_8		(normally from terminfo)
+#key 0x170	# EV_ALT_FUNC_9		(normally from terminfo)
+#key 0x171	# EV_ALT_FUNC_10	(normally from terminfo)
+#key 0x18B	# EV_ALT_FUNC_11	(normally from terminfo)
+#key 0x18C	# EV_ALT_FUNC_12	(normally from terminfo)
+
+#key 0x133	# EV_ALT_SPACE
+
+#key 0x11e	# EV_ALT_A
+#key 0x130	# EV_ALT_B
+#key 0x12e	# EV_ALT_C
+#key 0x120	# EV_ALT_D
+#key 0x112	# EV_ALT_E
+#key 0x121	# EV_ALT_F
+#key 0x122	# EV_ALT_G
+#key 0x123	# EV_ALT_H
+#key 0x117	# EV_ALT_I
+#key 0x124	# EV_ALT_J
+#key 0x125	# EV_ALT_K
+#key 0x126	# EV_ALT_L
+#key 0x132	# EV_ALT_M
+#key 0x131	# EV_ALT_N
+#key 0x118	# EV_ALT_O
+#key 0x119	# EV_ALT_P
+#key 0x110	# EV_ALT_Q
+#key 0x113	# EV_ALT_R
+#key 0x11f	# EV_ALT_S
+#key 0x114	# EV_ALT_T
+#key 0x116	# EV_ALT_U
+#key 0x12f	# EV_ALT_V
+#key 0x111	# EV_ALT_W
+#key 0x12d	# EV_ALT_X
+#key 0x115	# EV_ALT_Y
+#key 0x12c	# EV_ALT_Z
+
+#key 0x178	# EV_ALT_1
+#key 0x179	# EV_ALT_2
+#key 0x17a	# EV_ALT_3
+#key 0x17b	# EV_ALT_4
+#key 0x17c	# EV_ALT_5
+#key 0x17d	# EV_ALT_6
+#key 0x17e	# EV_ALT_7
+#key 0x17f	# EV_ALT_8
+#key 0x180	# EV_ALT_9
+#key 0x181	# EV_ALT_0
+
+#key 0x197	# EV_ALT_HOME	
+#key 0x198	# EV_ALT_CURSOR_UP
+#key 0x199	# EV_ALT_PAGE_UP	
+#key 0x19b	# EV_ALT_CURSOR_LEFT
+#key 0x19d	# EV_ALT_CURSOR_RIGHT
+#key 0x19f	# EV_ALT_END	
+#key 0x1a0	# EV_ALT_CURSOR_DOWN
+#key 0x1a1	# EV_ALT_PAGE_DOWN
+#key 0x1a2	# EV_ALT_INSERT	
+#key 0x1a3	# EV_ALT_DELETE	
+
+#key 0x209	# EV_ALT_PRESS
+#key 0x20a	# EV_ALT_RELEASE
+#key 0x20d	# EV_SHIFT_PRESS
+#key 0x20e	# EV_SHIFT_RELEASE
+#key 0x20f	# EV_CTRL_PRESS
+#key 0x210	# EV_CTRL_RELEASE
+#
+# These following keys are magical. They enable the indicated shift state
+# for the *next* key sequence. For example, if you press the EV_STICKY_SHIFT
+# key and then 'a', the program will act as if 'A' had been pressed. 
+# EV_STICKY_FUNC followed by a digit will cause the program to receive
+# the EV_FUNC_<digit> key. For example pressing EV_STICKY_FUNC followed by
+# '5' will cause the program to see EV_FUNC_5. To send EV_FUNC_10, press
+# '0'. For EV_FUNC_11 and EV_FUNC_12, press 'a' and 'b' respectively. The
+# sticky keys can be combined. For example, pressing:
+#
+#		EV_STICKY_FUNC, EV_STICKY_CTRL, '6'
+#
+# will send EV_CTRL_FUNC_6 to the program.
+#
+#key 0xff0	# EV_STICKY_FUNC
+#key 0xff1	# EV_STICKY_SHIFT
+#key 0xff2	# EV_STICKY_CTRL
+#key 0xff3	# EV_STICKY_ALT
+
+# The above keys are nice - but stealing 4 key codes may make program
+# operation a little awkward if those keys map on to frequently used 
+# sequences. It turns out that the debugger uses pretty well all the key
+# codes that a dumb terminal might be able to generate, so setting up a 
+# sensible default for the above is impossible without annoying someone.
+# The following key code solves that problem, at the cost of being somewhat 
+# harder to use. EV_STICKY_INTRO is used introduce a sticky shift sequence. 
+# It needs to be followed by one of the following characters to indicate 
+# which shift state is being set:
+#
+#	a - ALT
+#	c - CTRL
+#	f - Function key
+#	s - SHIFT
+#
+# For example, pressing:
+#
+#	EV_STICKY_INTRO, 'f', EV_STICKY_INTRO, 'c', '6'
+#
+# will produce the same effect as above example - send EV_CTRL_FUNC_6 to
+# the program.	
+#
+#key 0xfff 	# EV_STICKY_INTRO

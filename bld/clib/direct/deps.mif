@@ -1,0 +1,23 @@
+uchdrwnt.obj : ..\..\..\c\uchdrwnt.c ..\..\..\c\chdirwnt.c
+uchdros2.obj : ..\..\..\c\uchdros2.c ..\..\..\c\chdiros2.c
+uchdr.obj    : ..\..\..\c\uchdr.c    ..\..\..\c\chdir.c
+
+ugetdcwd.obj : ..\..\..\c\ugetdcwd.c ..\..\..\c\getdcwd.c
+
+ugtcdwnt.obj : ..\..\..\c\ugtcdwnt.c ..\..\..\c\gtcwdwnt.c
+ugtcdos2.obj : ..\..\..\c\ugtcdos2.c ..\..\..\c\gtcwdos2.c
+ugtcd.obj    : ..\..\..\c\ugtcd.c    ..\..\..\c\gtcwd.c
+
+umkdrwnt.obj : ..\..\..\c\umkdrwnt.c ..\..\..\c\mkdirwnt.c
+umkdros2.obj : ..\..\..\c\umkdros2.c ..\..\..\c\mkdiros2.c
+umkdr.obj    : ..\..\..\c\umkdr.c    ..\..\..\c\mkdir.c
+
+urmdrwnt.obj : ..\..\..\c\urmdrwnt.c ..\..\..\c\rmdirwnt.c
+urmdros2.obj : ..\..\..\c\urmdros2.c ..\..\..\c\rmdiros2.c
+urmdr.obj    : ..\..\..\c\urmdr.c    ..\..\..\c\rmdir.c
+
+untdrinf.obj : ..\..\..\c\untdrinf.c ..\..\..\c\ntdirinf.c
+
+udirwnt.obj  : ..\..\..\c\udirwnt.c  ..\..\..\c\dirwnt.c
+udiros2.obj  : ..\..\..\c\udiros2.c  ..\..\..\c\diros2.c
+udir.obj     : ..\..\..\c\udir.c     ..\..\..\c\dir.c

@@ -1,0 +1,25 @@
+#  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#  %       Copyright (C) 1992, by WATCOM Systems Inc. All rights     %
+#  %       reserved. No part of this software may be reproduced      %
+#  %       in any form or by any means - graphic, electronic or      %
+#  %       mechanical, including photocopying, recording, taping     %
+#  %       or information storage and retrieval systems - except     %
+#  %       with the written permission of WATCOM Systems Inc.        %
+#  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#
+#  Date         By              Reason
+#  ----         --              ------
+#  19 Dec 93    Wes Nelson      initial implementation
+#
+
+name = wstring
+
+sys_object =    wmain.sbj winfo.sbj wstr.sbj whndl.sbj &
+                whints.sbj wstat.sbj &
+                wedit.sbj wtoolbar.sbj wribbon.sbj &
+                wdel.sbj wnewitem.sbj wsvobj.sbj wstr2rc.sbj
+
+!include ..\..\master.mif
+
+$(name).res: $(name).rc rename.dlg w_rc.h sys_rc.h wmsgfile.h &
+             wstring.men strabout.dlg stredit.dlg

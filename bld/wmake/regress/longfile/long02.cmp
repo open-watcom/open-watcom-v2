@@ -1,0 +1,2 @@
+echo hello.exe:hello.c hello.c hello.exe:hello.obj hello.exe:hello
+hello.exe:hello.c hello.c hello.exe:hello.obj hello.exe:hello

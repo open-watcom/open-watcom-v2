@@ -1,0 +1,77 @@
+ .WATCOM_references Specification  draft 6
+ 
+ In TAG_compile_unit:
+ 
+     AT_WATCOM_references_start	0x4083
+ 
+     A constant that indicates the offset into the .WATCOM_references
+     section which defines the references for this compile unit.
+ 
+ .WATCOM_references section:
+	 May contain references for more than one compile unit.  The portion
+	 for each compile unit begins with a 4 byte length that does not
+	 include the length itself.
+ 
+ The references section encodes a matrix with the columns
+ 
+     user	-- the DIE that is doing the referecing
+|    usee	-- the DIE being referenced
+     file	-- the file the reference occurs in
+     line	-- the line the reference occurs at
+     column	-- the column the reference occurs at
+|    refType	-- the type of the reference.
+
+|    Initially defined values for refType are:
+|	0 - undefined
+|	1 - throw - given scope throws usee type
+|	2 - goto - given scope has goto usee label
+|
+|    This set will likely expand with time, to include other
+|    flavors of 'using'.
+ 
+ The references section is compressed by using a finite push down automata
+ with a stack called scope.  The top of scope is the user register; the
+ remaining registers are the same as the columns above.
+ 
+ The initial state of the machine is:
+ 
+     scope	empty
+|    usee	undefined
+     file	1
+     line	1
+     column	1
+|    refType	0
+ 
+ The input is a stream of bytes... which are the following opcodes:
+ 
+ 0x01	REF_BEGIN_SCOPE	push next DWORD onto scope stack
+ 
+ 0x02	REF_END_SCOPE	pop scope stack
+ 
+ 0x03	REF_SET_FILE	ULEB128 read into the file register
+ 
+ 0x04	REF_SET_LINE	ULEB128 read into the line register
+						 ? and implicit set column 0
+ 
+|0x09	REF_SET_TYPE	ULEB128 read into the refType register
+|
+ 0x05	REF_SET_COLUMN	ULEB128 read into the column register
+ 
+ 0x06	REF_ADD_LINE	LEB128 added to the line register
+						 ? and implicit set column 0
+ 
+ 0x07	REF_ADD_COLUMN	LEB128 added to the column register
+ 
+ 0x08	REF_COPY	append a row to the matrix with the current value
+			 of the registers
+ 
+ 0x10	REF_CODE_BASE	opcodes >= REF_CODE_BASE are decoded as follows:
+ 
+			 #define REF_COLUMN_RANGE	80
+ 
+			 v = opcode - REF_CODE_BASE;
+			 line += v / REF_COLUMN_RANGE;
+			 column += v % REF_COLUMN_RANGE;
+			 dependant = next DWORD;
+			 
+			 followed by an implicit REF_COPY.

@@ -1,0 +1,553 @@
+# MASTER.MIF include file for CLIBEXAM -- macros for all files in directory.
+
+# Non-working samples
+#FN_BAD =.nlmc.nlm
+
+# Win32, QNX, OS/2
+FN_WQO = wait.nlm &
+allocmem.nlm &
+freemem.nlm
+
+
+# DOS, Pharlap-16
+FN_DP = setblock.nlm &
+intr.nlm &
+setvect.nlm &
+getvect.nlm &
+allocmem.nlm &
+freemem.nlm &
+fp_off.nlm &
+fp_seg.nlm
+
+# Win16 only
+FN_WIN16 = setvect.nlm &
+getvect.nlm &
+chainint.nlm
+
+# Default Windowing
+FN_DEFWIN = _dwdelcl.nlm &
+_dwshutd.nlm &
+_dwstabo.nlm &
+_dwstapt.nlm &
+_dwstcnt.nlm &
+_dwyield.nlm
+
+# BIOS commands (DOS, Win, Win386)
+FN_BIOS = b_disk.nlm &
+b_equip.nlm &
+b_keybrd.nlm &
+b_memsiz.nlm &
+b_print.nlm &
+b_serial.nlm &
+b_time.nlm &
+breakoff.nlm &
+intr.nlm &
+nosound.nlm &
+delay.nlm &
+sound.nlm
+
+# DOSCALL commands (DOS, Win, Win386, Win32, OS/2, Pharlap-16)
+FN_DOSCALL = creatnew.nlm &
+d_close.nlm &
+d_creat.nlm &
+d_open.nlm &
+d_read.nlm &
+d_write.nlm &
+findfirs.nlm &
+setdate.nlm &
+setdrive.nlm &
+setfattr.nlm &
+setftime.nlm &
+settime.nlm &
+dosfind.nlm &
+findclos.nlm &
+findnext.nlm &
+getdcwd.nlm &
+getmbcp.nlm &
+ismbbaln.nlm &
+ismbbalp.nlm &
+ismbbgra.nlm &
+ismbbkal.nlm &
+ismbbkan.nlm &
+ismbbkap.nlm &
+ismbbkpr.nlm &
+ismbbkpu.nlm &
+ismbblea.nlm &
+ismbbpri.nlm &
+ismbbpun.nlm &
+ismbbtra.nlm &
+ismbcaln.nlm &
+ismbcalp.nlm &
+ismbccnt.nlm &
+ismbcdig.nlm &
+ismbcgra.nlm &
+ismbchir.nlm &
+ismbckat.nlm &
+ismbcl0.nlm &
+ismbcl1.nlm &
+ismbcl2.nlm &
+ismbcleg.nlm &
+ismbclow.nlm &
+ismbcpri.nlm &
+ismbcpun.nlm &
+ismbcspa.nlm &
+ismbcsym.nlm &
+ismbcupp.nlm &
+ismbcxdi.nlm &
+mbbtombc.nlm &
+mbbtype.nlm &
+mbccmp.nlm &
+mbccpy.nlm &
+mbcicmp.nlm &
+mbctolow.nlm &
+mbctombb.nlm &
+mbctoupp.nlm &
+mbgetcod.nlm &
+mbputcha.nlm &
+mbrlen.nlm &
+mbrtowc.nlm &
+mbsbtype.nlm &
+mbsnbcat.nlm &
+mbsnbcmp.nlm &
+mbsnbcnt.nlm &
+mbsnbcpy.nlm &
+mbsnbicm.nlm &
+mbsnbset.nlm &
+mbsnccnt.nlm &
+mbsnextc.nlm &
+mbsrtowc.nlm &
+mbterm.nlm &
+mbvtop.nlm &
+rewinddi.nlm &
+setmbcp.nlm &
+sisinit.nlm &
+strdec.nlm &
+stricoll.nlm &
+strinc.nlm &
+strspnp.nlm &
+tempnam.nlm &
+wcrtomb.nlm &
+wcsrtomb.nlm &
+wctob.nlm &
+dgetdriv.nlm &
+dgetdskf.nlm &
+doscommi.nlm
+
+
+# 16-bit functions (DOS/16, Win16, OS/2 1.x, QNX/16)
+# NOTE: intdos and intdosx don't work under QNX/16.
+FN_16BIT = halloc.nlm &
+hfree.nlm &
+_bfreese.nlm &
+_bheapse.nlm
+
+# 32-bit functions (DOS/32 Win386, Win32, OS/2-32, QNX/32)
+FN_32BIT = outpd.nlm &
+inpd.nlm
+
+# DOS16, Win, Win386, Pharlap-16
+FN_DOSWIN = bdos.nlm &
+dosexter.nlm &
+int86.nlm &
+int86x.nlm &
+intdos.nlm &
+intdosx.nlm
+
+# DOS16 and DOS32
+FN_DOS = _harderr.nlm &
+chainint.nlm &
+bdos.nlm &
+keep.nlm &
+
+# Thread functions - Win32, QNX, OS/2, Netware
+FN_THREAD = _ethread.nlm &
+_bthread.nlm
+
+# DOS/32, QNX/32, Netware
+FN_DQN32 = int386.nlm &
+int386x.nlm &
+intr.nlm
+
+#Win32 only
+FN_WIN32 = mktemp.nlm &
+mempty.nlm &
+mfromint.nlm &
+mpaddb.nlm &
+mpaddd.nlm &
+mpaddsb.nlm &
+mpaddsw.nlm &
+mpaddusb.nlm &
+mpaddusw.nlm &
+mpaddw.nlm &
+mpand.nlm &
+mpandn.nlm &
+mpckssdw.nlm &
+mpcksswb.nlm &
+mpckuswb.nlm &
+mpcmpeqb.nlm &
+mpcmpeqd.nlm &
+mpcmpeqw.nlm &
+mpcmpgtb.nlm &
+mpcmpgtd.nlm &
+mpcmpgtw.nlm &
+mpmaddwd.nlm &
+mpmulhw.nlm &
+mpmullw.nlm &
+mpor.nlm &
+mpslld.nlm &
+mpslldi.nlm &
+mpsllq.nlm &
+mpsllqi.nlm &
+mpsllw.nlm &
+mpsllwi.nlm &
+mpsrad.nlm &
+mpsradi.nlm &
+mpsraw.nlm &
+mpsrawi.nlm &
+mpsrld.nlm &
+mpsrldi.nlm &
+mpsrlq.nlm &
+mpsrlqi.nlm &
+mpsrlw.nlm &
+mpsrlwi.nlm &
+mpsubb.nlm &
+mpsubd.nlm &
+mpsubsb.nlm &
+mpsubsw.nlm &
+mpsubusb.nlm &
+mpsubusw.nlm &
+mpsubw.nlm &
+mpxor.nlm &
+mtoint.nlm &
+mupckhbw.nlm &
+mupckhdq.nlm &
+mupckhwd.nlm &
+mupcklbw.nlm &
+mupckldq.nlm &
+mupcklwd.nlm
+
+#Win32, OS2-16, OS2-32
+FN_OS2WIN32 = cwait.nlm &
+_pclose.nlm &
+_pipe.nlm &
+_popen.nlm
+
+#_expand.nlm & removed from FN_ALL *******
+
+#Available on ALL platforms (does not include Netware and Pharlap/16).
+FN_ALL = _bprintf.nlm &
+_freect.nlm &
+_heapchk.nlm &
+_heapgrw.nlm &
+_heapmin.nlm &
+_heapset.nlm &
+_heapshr.nlm &
+_heapwal.nlm &
+_memavl.nlm &
+_memmax.nlm &
+_searche.nlm &
+_splitp2.nlm &
+ftime.nlm &
+getdiskf.nlm &
+getdrive.nlm &
+getfattr.nlm &
+getftime.nlm &
+getdate.nlm &
+getpid.nlm &
+gettime.nlm &
+locking.nlm &
+putenv.nlm &
+sbrk.nlm &
+setenv.nlm &
+_heapena.nlm &
+iswctype.nlm &
+mbcjisto.nlm &
+mbcjmsto.nlm &
+mbctohir.nlm &
+mbctokat.nlm &
+rewinddi.nlm &
+snprintf.nlm &
+strdate.nlm &
+stricoll.nlm &
+strspnp.nlm &
+strtime.nlm &
+vsnprint.nlm &
+vsprintf.nlm &
+wctype.nlm
+
+# Macros (available everywhere!)
+FN_MACRO = alloca.nlm &
+assert.nlm &
+mk_fp.nlm &
+offsetof.nlm &
+setjmp.nlm &
+va_arg.nlm
+
+# Math functions (available everywhere)
+FN_MATH = _clear87.nlm &
+_control.nlm &
+_disable.nlm &
+_enable.nlm &
+_setmath.nlm &
+_status8.nlm &
+abs.nlm &
+acos.nlm &
+acosh.nlm &
+asin.nlm &
+asinh.nlm &
+atan.nlm &
+atan2.nlm &
+atanh.nlm &
+atof.nlm &
+atoi.nlm &
+atol.nlm &
+cabs.nlm &
+bessel.nlm &
+ceil.nlm &
+cos.nlm &
+cosh.nlm &
+difftime.nlm &
+div.nlm &
+ecvt.nlm &
+exp.nlm &
+fabs.nlm &
+fcvt.nlm &
+floor.nlm &
+fmod.nlm &
+frexp.nlm &
+gcvt.nlm &
+hypot.nlm &
+itoa.nlm &
+labs.nlm &
+ldexp.nlm &
+ldiv.nlm &
+log.nlm &
+log10.nlm &
+log2.nlm &
+ltoa.nlm &
+matherr.nlm &
+max.nlm &
+min.nlm &
+modf.nlm &
+pow.nlm &
+raise.nlm &
+rand.nlm &
+sin.nlm &
+sinh.nlm &
+sqrt.nlm &
+srand.nlm &
+tan.nlm &
+tanh.nlm &
+ultoa.nlm
+
+#File functions (all platforms & NetWare)
+FN_FILE = dup.nlm &
+dup2.nlm &
+eof.nlm &
+fclose.nlm &
+fcloseal.nlm &
+fdopen.nlm &
+feof.nlm &
+ferror.nlm &
+fflush.nlm &
+fgetc.nlm &
+fgetchar.nlm &
+fgetpos.nlm &
+fgets.nlm &
+fileleng.nlm &
+fileno.nlm &
+flushall.nlm &
+fopen.nlm &
+fprintf.nlm &
+fputc.nlm &
+fputchar.nlm &
+fputs.nlm &
+fread.nlm &
+free.nlm &
+freopen.nlm &
+fscanf.nlm &
+fseek.nlm &
+fsetpos.nlm &
+fstat.nlm &
+ftell.nlm &
+fwrite.nlm &
+getc.nlm &
+getch.nlm &
+getchar.nlm &
+getche.nlm &
+getcwd.nlm &
+gets.nlm &
+open.nlm &
+opendir.nlm &
+mkdir.nlm &
+printf.nlm &
+putc.nlm &
+putch.nlm &
+putchar.nlm &
+puts.nlm &
+read.nlm &
+readdir.nlm &
+remove.nlm &
+rename.nlm &
+rewind.nlm &
+rmdir.nlm &
+scanf.nlm &
+sopen.nlm &
+sprintf.nlm &
+sscanf.nlm &
+stat.nlm &
+tell.nlm &
+tmpfile.nlm &
+tmpnam.nlm &
+umask.nlm &
+ungetc.nlm &
+ungetch.nlm &
+unlink.nlm &
+unlock.nlm &
+vcscanf.nlm &
+vfprintf.nlm &
+vfscanf.nlm &
+vprintf.nlm &
+vscanf.nlm &
+vsscanf.nlm &
+write.nlm
+
+# String Functions (all + NetWare)
+FN_STRING = strcat.nlm &
+strchr.nlm &
+strcmp.nlm &
+strcmpi.nlm &
+strcoll.nlm &
+strcpy.nlm &
+strcspn.nlm &
+strdup.nlm &
+strerror.nlm &
+strftime.nlm &
+stricmp.nlm &
+strlen.nlm &
+strlwr.nlm &
+strncat.nlm &
+strncmp.nlm &
+strncpy.nlm &
+strnicmp.nlm &
+strnset.nlm &
+strpbrk.nlm &
+strrchr.nlm &
+strrev.nlm &
+strset.nlm &
+strspn.nlm &
+strstr.nlm &
+strtod.nlm &
+strtok.nlm &
+strtol.nlm &
+strtoul.nlm &
+strupr.nlm &
+strxfrm.nlm
+
+# Available on ALL platforms and Netware
+# NOTE: mbstowcs, getosfha, oshandle not available under QNX.
+FN_ALLN = _fsopen.nlm &
+_exit.nlm &
+_fullpat.nlm &
+_grow_ha.nlm &
+_lrotl.nlm &
+_lrotr.nlm &
+_rotl.nlm &
+_rotr.nlm &
+_makepat.nlm &
+_msize.nlm &
+_splitpa.nlm &
+_vbprint.nlm &
+abort.nlm &
+access.nlm &
+atexit.nlm &
+bsearch.nlm &
+calloc.nlm &
+cgets.nlm &
+chdir.nlm &
+chmod.nlm &
+chsize.nlm &
+clearerr.nlm &
+clock_.nlm &
+close.nlm &
+closedir.nlm &
+cprintf.nlm &
+cputs.nlm &
+creat.nlm &
+cscanf.nlm &
+exit.nlm &
+getcmd.nlm &
+getenv.nlm &
+getosfha.nlm &
+isalnum.nlm &
+isalpha.nlm &
+isascii.nlm &
+isatty.nlm &
+iscntrl.nlm &
+isdigit.nlm &
+isgraph.nlm &
+islower.nlm &
+isprint.nlm &
+ispunct.nlm &
+isspace.nlm &
+isupper.nlm &
+isxdigit.nlm &
+inp.nlm &
+inpw.nlm &
+kbhit.nlm &
+lfind.nlm &
+localeco.nlm &
+lock.nlm &
+longjmp.nlm &
+lsearch.nlm &
+memccpy.nlm &
+memchr.nlm &
+memcmp.nlm &
+memcpy.nlm &
+memicmp.nlm &
+memmove.nlm &
+memset.nlm &
+main.nlm &
+malloc.nlm &
+mbstowcs.nlm &
+mktime.nlm &
+movedata.nlm &
+onexit.nlm &
+oshandle.nlm &
+outp.nlm &
+outpw.nlm &
+perror.nlm &
+qsort.nlm &
+realloc.nlm &
+segread.nlm &
+setbuf.nlm &
+setlocal.nlm &
+setmode.nlm &
+setvbuf.nlm &
+signal.nlm &
+sleep.nlm &
+stackava.nlm &
+swab.nlm &
+system.nlm &
+time.nlm &
+tolower.nlm &
+toupper.nlm &
+utime.nlm &
+utoa.nlm &
+wcstombs.nlm &
+_atouni.nlm &
+_bgetcmd.nlm &
+_cmdname.nlm &
+bcmp.nlm &
+bcopy.nlm &
+bzero.nlm &
+control8.nlm &
+controlf.nlm &
+fsync.nlm &
+getw.nlm &
+openosfh.nlm &
+putw.nlm &
+snprintf.nlm &
+strspnp.nlm &
+vsnprint.nlm
+

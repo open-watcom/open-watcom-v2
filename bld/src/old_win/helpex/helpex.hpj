@@ -1,0 +1,33 @@
+[OPTIONS]
+INDEX=main_index
+TITLE=Help Example
+COMPRESS=true
+WARNING=1  ; If you remove this line, then HC will report the following
+           ; error message:
+           ;
+           ;    R1023: Keyword(s) defined without title in page 59
+           ;           of file helpex.rtf
+           ;
+           ; This message indicates that a topic will be listed in
+           ; the Search Topics Found box as ">>Untitled Topic<<"
+
+[FILES]
+helpex.rtf  ; main topics
+keys.rtf   ; keyboard topics
+terms.rtf   ; look-up terms
+
+[BITMAPS]
+bullet.bmp
+chkboff.bmp
+chkbon.bmp
+codec.bmp
+continue.bmp
+done.bmp
+helpicon.bmp
+max2icon.bmp
+mouse.bmp
+winword.bmp
+
+[MAP]
+#include <helpids.h>
+

@@ -1,0 +1,336 @@
+This file represents places where we feel that the standard requires
+fixing or clarification.
+
+(1) JWW -- 92/02/14 -- goto's with catch blocks
+
+    - transfer into a catch block should be prohibited
+
+(2) JWW -- 92/02/14 -- implicit conversions
+
+    - it is not clear what conversions are allowed from class values or
+      references with operators
+
+    - every compiler does it differently
+
+(3) JWW -- 92/02/14 -- jumps past declarations
+
+    - text of 92/02 draft states that a destructor is called
+      "if and only if the variable is constructed"; this is imprecise
+        - does this include all class variables or just those for which
+          a constructor need be called?
+        - does it includes those initialized without constructors?
+        - does it include all data definitions?
+
+    - a better rule for disallowing jumps past declarations is when
+      any of the following are true (when meaning is class variables
+      initialized or for which a constructor is necessary)
+        - initialization is specified
+        - constructor specified
+        - destructor specified
+        - class is virtual
+        - constructor and destructor must be generated ( has members or
+          bases with above properties)
+        - static variables
+      or (when meaning indicates all class varibles)
+        - initialization is specified
+        - class type
+        - static variables
+      or (when meaning is all data definitions)
+        - all data definitions
+
+    - text of 92\02 draft says (6.7, paragraph 3) "with an explicit or
+      implicit initializer"; this is imprecise
+
+    - text of 92\02 draft says (6.7, paragraph 5) "if and only if the
+      variable was constructed"; this is imprecise (DTOR may exist without
+      a CTOR)
+
+(4) JWW -- 92/03/27 -- passing class values to 'extern "lang"' routines
+
+    - standard should have statement about which class objects can be
+      passed as values to these functions
+
+(5) AFS -- 92/04/24 -- which delete is used in a nested class
+
+    - the standard says "standard scoping rules" are used so it is
+      clear but it this the intent?
+
+(6) JWW -- 92/05/13 -- pointer to class member (address-of resolution)
+
+    - the standard makes no mention of overload resolution when the address
+      of an overloaded member function is taken; rules should parallel those
+      for pointers
+
+    - resolve when the "target" is known:
+        - assignment
+        - initialization( of data, of function argument, of return value )
+        - explicit casts
+
+(7) AFS -- 92/05/19 -- "common type" for comparison purposes
+
+    - extremely ill-defined right now
+    - what about "common ancestors" of two classes?
+                                                //      Z       //
+        struct Z { int z; };                    //     / \      //
+        struct Q : virtual Z { int q; };        //    Q   R     //
+        struct R : virtual Z { int r; };        //     \ /      //
+        struct A : Q, R { int a; };             //      A       //
+
+        Q *q;
+        R *r;
+
+        int foo( A *x )
+        {
+            q = x;
+            r = x;
+            return q == r;      // should be TRUE? [(Z*) is common type!]
+        }
+
+    - we support general solution; draft 93\01\28 says the common type must
+      be one of the two source types
+
+(8) JWW -- 92/06/12 -- LVALUE of constructed expressions
+
+    - the ARM is not specific about whether a CTOR results in an LVALUE or
+      an RVALUE
+
+    - most compilers treat CTOR's of scalars as RVALUEs and CTOR's of
+      classes as LVALUEs
+
+(9) JWW -- 92/06/12 -- difference between C and C++ function returns
+
+    - it should be noted that function returns in C are LVALUEs and in C++
+      are RVALUEs (unless references, which is a new construct)
+
+(10) JWW -- 92/06/12 -- member pointer conversions
+
+    - although it can be deduced that member pointers to const and volatile
+      items are converted with identical rules as pointers, it would perhaps
+      be better if the standard explicitly stated or referenced these rules
+      when discussing member-pointer conversions
+
+(11) fixed in 93/01/28 draft
+
+(12) JWW -- 92/07/10 -- operator[], operator()
+
+    - standard should indicate whether or not further conversions are
+      to be attempted when no operator exists for the class in question
+
+(13) AFS -- 92/08/17 -- ctor-initializer for indirect virtual bases
+
+    - standard doesn't contain clear words saying this is OK
+
+(14) AFS -- 92/10/08 -- inline friends in local classes OK?
+    void main( void )
+    {
+        class D {
+            int di;
+            friend void f(D &d) {
+                    D *dp = &d;
+            };
+        };
+    }
+
+(15) AFS -- 92/10/12 -- what about this qualifiers and op=?
+    struct S {
+        operator = ( S const & ) const;
+    };
+    struct T : public S {
+    };
+    /*
+        It is possible to attribute meaning to both 'const' and 'volatile'
+        this qualifiers.  In the PC world, 'near' and 'far' become very
+        important to propagate.
+    */
+    void g( T a, T const b ) {
+        /* should this work? */
+        b = a;
+    }
+
+(16) JWW -- 93/02/02 -- deletion of objects during exception handling
+
+    - standard does not mandate deletion of objects during stack unwinding
+      during exception handling
+
+    struct S
+    {
+        S();    // can throw exception
+        ~S();   // can throw exception
+    };
+
+    ...
+
+        S* p1 = new S;
+        S* p2 = new S[10];
+        delete p1;
+        delete[] p2;
+
+    - ~S() can throw an exception which is caught by a calling routine
+    - stack unwinding will destruct objects located by p1, p2
+    - our implementation will free (using ::operator delete) the objects
+      located by p2; the object located by p1 is not freed.
+
+    - consideration should also consider what happens when an exception is
+      thrown during construction resulting from "new"
+        - should the memory be freed?
+        - if yes, then S::operator delete (if it exists) must be accessible
+          whenever "new" is specified (could change semantics of some
+          programs)
+        - we do not free objects allocated by new during stack unwinding
+          from the middle of new
+
+    - note: if memory should not be freed in these circumstances, then the
+      prevention of memory leaks will require exceptional adeptness on the
+      part of users.
+
+(17) AFS -- 93/03/05 -- logical-or-expr ? throw-expr : throw-expr case
+        should be explicitly mentioned in 5.16
+
+(18) AFS -- 93/04/08 -- trivial conversions allowed in function template binding?
+        we do it if we know the overload will not work without it (BindGenericTypes)
+
+(19) AFS -- 93/04/08 -- type decay before function template binding
+        we do it before argument binding (BindGenericTypes)
+
+(20) JWW -- 93/04/13 -- overloading operator throw
+
+    - standard does not mention possibility, although it has been talked
+      about at standards meeting
+    - no reason to disallow, and there are some advantages to having it (as
+      with new and delete)
+
+(21) JWW -- 93/04/26 -- lifetime of temporaries
+
+    - make sure life times of temporaries introduced while initializing
+      statics is discussed and mandated
+     
+(22) AFS - 93/06/01 -- access of a inherited virtual base
+
+    - nothing is mentioned about any changes in access but no compiler
+      except Borland diagnoses that V() is inaccessible.  This is wrong
+      but the conversion of 'D&' to 'V&' going through a private base
+      is questionable.
+
+    // should the conversion from D& to V& be diagnosed when constructing 'D'?
+    class V {
+    protected:
+	V() { }
+    };
+    
+    class B : private virtual V { };
+    
+    class D : public B { };
+    
+    int main()
+    {
+       B b;	// OK
+       D d;	// OK?
+       return 0;
+    }
+
+(22) AFS - 93/07/27 -- exit() and longjmp() combined with destructors
+
+    what is the effect on the local block symbols that require
+    destruction in the function that calls 'exit' or 'longjmp'?
+	
+	#include <stdlib.h>
+	#include <stdio.h>
+	
+	struct S {
+	    S(){ printf("ctor\n"); }
+	    ~S(){ printf("dtor\n"); }
+	};
+	
+	void main()
+	{
+	    S x;	// 'x' will not be destructed
+	
+	    exit(0);
+	}
+
+(23) AFS - 93/08/27 -- const and array declarators
+	
+In C++, the language is ill-specified currently.  Based on what is in the 
+current draft, only the pointer conversion occurs but it isn't clear what is 
+declared 'const'.  For instance, are you allowed to modify the contents of 
+the array?  Are you allowed to modify the pointer argument? WATCOM C++ 
+transformed the declaration to 'const char *SourcePath' (i.e., applied the 
+qualifier to the contents of the array).  This also makes sense for near/far 
+modifiers and the 'volatile' modifier.  This will require study so until 
+then, declare the argument as a pointer so that you get exactly the behaviour 
+you want (e.g., const pointer, const contents, or both).
+
+Here are the results of feeding the following program into 7 C++ compilers:
+
+    typedef char A[32];
+    
+    void foo( const A x )
+    {
+        *x = 'a';    // const array contents?
+        ++x;         // const array pointer?
+    }
+    
+Microsoft C++:  compiled fine
+Zortech C++:    compiled fine
+MetaWare C++:   disallowed '++x' (const pointer)
+Borland C++:    disallowed everything (both const pointer and const contents) 
+WATCOM C++:     disallowed '*x = 'a'' (const contents)
+CFRONT 2.1:     disallowed '*x = 'a'' (const contents)
+CFRONT 3.0:     disallowed '*x = 'a'' (const contents)
+GNU C++ 2.x:    disallowed '*x = 'a'' (const contents)
+
+(24) AFS - 93/09/27 -- mem-init temporaries
+
+When should they be destructed?
+
+(25) AFS - 93/09/30 -- delete p; where p points to a class with a op del
+		       but no destructor.  Is the definition of operator
+		       delete responsible for checking for NULL?
+		       
+    struct S {
+	void operator delete( void * );
+    };
+    
+    void foo( S *p )
+    {
+	delete p;	// what if p == NULL?
+    }
+
+		compiler		      programmer
+	    (NULL check in foo)		(NULL check in op delete)
+CFRONT		  xx
+IBM CSet++	  xx
+GNU C++						xx
+MetaWare C++					xx
+Borland C++					xx
+Microsoft C++					xx
+WATCOM C++					xx
+
+If the class has a declared or inherited dtor, all of the above
+compilers check for NULL in foo before calling the dtor.
+
+(26) AFS - 94/01/06 -- access specifiers for non-direct base classes
+		       (what is allowed?)
+
+    struct PU {
+	int a;
+    };
+    struct PO {
+	int b;
+    };
+    struct PI {
+	int c;
+    };
+    struct D : public PU, protected PO, private PI {
+	int d;
+    };
+    struct DPI : private D {
+	D::a;
+	D::b;
+	D::c;
+    };
+    struct DPO : protected D {
+	D::a;
+	D::b;
+	D::c;
+    };

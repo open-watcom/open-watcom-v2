@@ -1,0 +1,14 @@
+set noautoindent
+set nocmode
+0 append
+::::Contents
+:h
+Index zTopics
+:eh
+.
+%s/^  :::://
+%s/([A-Z]) *::::([^ ]*) .*/         \1   \2/
+%s/([^ ][^ ]*) *::::([^ ]*) .*/Chapterÿ\1  \2/
+%s/ \.\.\.*.*//
+w! toc.ind
+q!

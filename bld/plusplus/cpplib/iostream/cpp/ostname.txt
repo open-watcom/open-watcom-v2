@@ -1,0 +1,159 @@
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
+   %     reserved.  No part of this software may be reproduced or        %
+   %     used in any form or by any means - graphic, electronic or       %
+   %     mechanical, including photocopying, recording, taping or        %
+   %     information storage and retrieval systems - except with the     %
+   %     written permission of WATCOM International Inc.                 %
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+
+******************************* OSTREAM **************************************
+
+Filename: ostconde.cpp
+Declaration: 
+    ostream::ostream()
+Semantics: Protected constructor creates an ostream without other information.
+
+
+Filename: ostconsf.cpp
+Declaration: 
+    ostream::ostream( streambuf *sb ) : ios( sb )
+Semantics: Constructor creates an ostream using the specified streambuf.
+           The "ios" portion of the object has already been initialized.
+
+
+Filename: ostcoost.cpp
+Declaration: 
+    ostream::ostream( ostream const &ostrm )
+Semantics: Constructor creates an ostream using the ostrm streambuf.
+
+
+Filename: ostcoesf.cpp
+Declaration: 
+    ostream &ostream::operator = ( streambuf *sb )
+Semantics: *this is an ostream that has been initialized, and may or may not
+           have a streambuf associated with it.
+           Associate the streambuf "sb" with the stream.
+
+
+Filename: ostcoeos.cpp
+Declaration: 
+    ostream &ostream::operator = ( ostream const &ostrm )
+Semantics: *this is an ostream that has been initialized, and may or may not
+           have a streambuf associated with it.
+           Associate the streambuf found in "ostrm" with the stream.
+
+
+Filename: ostdestr.cpp
+Declaration: 
+    ostream::~ostream()
+Semantics: Destructor.
+
+
+Filename: ostopfx.cpp
+Declaration: 
+    int ostream::opfx()
+Semantics: Prefix to all ostream activities.
+           Return a 0 (fail) if an error state is set.
+
+
+Filename: ostosfx.cpp
+Declaration: 
+    void ostream::osfx()
+
+
+Filename: ostincha.cpp
+Declaration: 
+    ostream &ostream::operator << ( char c )
+Semantics: Write a single character to the stream.
+
+
+Filename: ostadpre.cpp
+Declaration: 
+    void __AddPrefix( char iszero, char *buffer, int &size, int base,
+    		      long format_flags )
+Semantics: Add a prefix to an output integer representing the base used.
+           Add 0 for octal numbers, except for zero.
+           Add 0x or 0X for hex numbers.
+           Add nothing for decimal numbers.
+
+
+Filename: ostinslo.cpp
+Declaration: 
+    ostream &ostream::operator << ( signed long i )
+Semantics: Write a signed long integer to the stream.
+
+
+Filename: ostinulo.cpp
+Declaration: 
+    ostream &ostream::operator << ( unsigned long i )
+Semantics: Write an unsigned long integer to the stream.
+           A signed long integer displayed in base 8 or base 16 also uses
+           this routine.
+
+
+Filename: ostincch.cpp
+Declaration: 
+    ostream &ostream::operator << ( char const *s )
+
+
+Filename: ostinptr.cpp
+Declaration: 
+    ostream &ostream::operator << ( void *p )
+Semantics: Write the value of a pointer (the address contained in the pointer).
+
+
+Filename: ostinstf.cpp
+Declaration: 
+    ostream &ostream::operator << ( streambuf *sb )
+Semantics: Read all characters from the streambuf and write them to the ostream.
+
+
+Filename: ostput.cpp
+Declaration: 
+    ostream &ostream::put( char c )
+Semantics: Write a single character to the ostream.
+
+
+Filename: ostwrite.cpp
+Declaration: 
+    ostream &ostream::write( char const *buf, int len )
+Semantics: Write a sequence of characters to the ostream.
+
+
+Filename: ostflush.cpp
+Declaration: 
+    ostream &ostream::flush()
+Semantics: Flush the ostream.
+
+
+Filename: ostinomn.cpp
+Declaration: 
+    ostream &ostream::operator << ( ostream &(*f)( ostream & ) )
+Semantics: Handles things like cout << endl where "endl" is a function taking
+	   a stream reference and returning the same. Essentially, this just does
+	   an indirect call to the function.
+
+
+Filename: ostiniom.cpp
+Declaration: 
+    ostream &ostream::operator << ( ios &(*f)( ios & ) )
+Semantics: Handles things like cout << endl where "endl" is a function taking
+	   an ios reference and returning the same. Essentially, this just
+	   does an indirect call to the function.
+
+
+Filename: ostspstp.cpp
+Declaration: 
+    ostream &ostream::seekp( streampos pos )
+
+
+Filename: ostspsto.cpp
+Declaration: 
+    ostream &ostream::seekp( streamoff offset, ios::seekdir dir )
+
+
+Filename: osttellp.cpp
+Declaration: 
+    streampos ostream::tellp()

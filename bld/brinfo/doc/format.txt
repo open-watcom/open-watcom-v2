@@ -1,0 +1,403 @@
+Browse file format:
+===================
+
+This is intended to specify the first of two file formats to
+communicate browse information between the C++ compiler and Optima.
+This format is produced by the C++ compiler and hence
+is intended to be easy to write out rather than easy to search.
+Files in this format are used as input to the merge process described
+in Jim Welch's document.
+
+A compiler-generated browse file consists of a file header followed
+by a series of records.  There are currently fourteen different
+types of record, although three of those are just delimiters and
+contain no additional information.  Each record is preceded by
+a one-byte flag identifying its type.
+
+The file header contains a variety of "checksum" information,
+including a magic number, version numbers, the number of each type of
+record, and the length of the file.
+
+NOTE:  To save space, browse information is stored unaligned, i.e.
+with 0-byte structure packing.  Since the compiler default is 4-byte
+packing (and may change to 8-byte packing for all I know) the structure
+definitions below do not correspond byte-for-byte with the data that
+appears in a browse file.  Use care when loading from or saving to disk.
+I have tried to include the unaligned sizes of all important data
+structures as #define-d constants.
+
+The structure definition which follow are all taken from
+\cproj\brinfo\h\brmtypes.h on the groupdir drive.  That file also
+contains the following important definitions:
+
+typedef uint_32			BRI_SymbolID;
+typedef uint_32			BRI_StringID;
+typedef uint_32			BRI_TypeID;
+typedef uint_32			BRI_ScopeID;
+
+#define BRI_NULL_ID		((uint_32) 0x0)
+
+
+Types of records:
+-----------------
+
+One of the following flags precedes each record in a pre-merge
+browse file.  Note the BRI_Rec_FileEnd, BRI_Rec_ScopeEnd, and
+BRI_Rec_TemplateEnd flags do not have a corresponding record type;
+they merely delimit the scope of a previously occuring File, Scope,
+or Template record.
+
+typedef enum BRI_RecordType {	// TYPES OF .BRI RECORDS
+    BRI_Rec_Declaration		= 0x00,
+    BRI_Rec_File		= 0x01,
+    BRI_Rec_FileEnd		= 0x02,
+    BRI_Rec_Scope		= 0x03,
+    BRI_Rec_ScopeEnd		= 0x04,
+    BRI_Rec_Delta		= 0x05,
+    BRI_Rec_Usage		= 0x06,
+    BRI_Rec_String		= 0x07,
+    BRI_Rec_Type		= 0x08,
+    BRI_Rec_Guard		= 0x09,
+    BRI_Rec_Definition		= 0x0a,
+    BRI_Rec_Template		= 0x0c,
+    BRI_Rec_TemplateEnd		= 0x0d,
+    BRI_Rec_PCHInclude		= 0x0e,
+} BRI_RecordType;
+
+#define BRI_SIZE_RECORDTYPE	1
+
+
+String Record:
+--------------
+
+All strings appear in these records. Strings must appear in the browse
+file before they are used.  These are ANSI strings; no provision has
+been made for Unicode.
+
+typedef struct BRI_String {
+    BRI_StringID	index;		// index of this string
+    uint_32		string_length;	// including '\0'
+//  followed by a variable length '\0'-terminated string 
+} BRI_String;
+
+#define BRI_MIN_SIZE_STRING	(sizeof(BRI_StringID)	\
+				+sizeof(uint_32))
+
+
+Type Record
+-----------
+
+All types appear in these records.  Types must appear in the browse file
+before they are used.
+
+Note:  some of the admittedly unusual choices for the numerical
+values of BRI_TypeCodes are copied from the C++ compiler, to
+facilitate the writing of the browse file.
+
+typedef enum BRI_TypeCode {	// KINDS OF TYPES
+    				//  num_ops	Interpretation
+    BRI_TC_None		= 0x00,	//  -------	--------------
+    BRI_TC_BaseType	= 0x81,	//    1         code identifying the type
+    BRI_TC_Modifier	= 0x1a,	//    2		modifier flags and parent type
+    BRI_TC_Pointer	= 0x12,	//    1		parent type
+    BRI_TC_PtrToMember	= 0x1b,	//    2		class and member type
+    BRI_TC_Reference	= 0x85,	//    1		parent type
+    BRI_TC_Array	= 0x17, //    2		size and element type
+    BRI_TC_Function	= 0x16,	//  variable	return type and args
+    BRI_TC_Class	= 0x14,	//    2         name_id and symbol_id
+    BRI_TC_Struct	= 0x89,	//    "		         "
+    BRI_TC_Union	= 0x8a,	//    "                  "
+    BRI_TC_Enum		= 0x11,	//    "                  "
+    BRI_TC_TypeDef	= 0x13, //    1         parent type
+    BRI_TC_BitField	= 0x15, //    1		field width
+} BRI_TypeCode;
+
+#define BRI_SIZE_TYPECODE	1	// type-codes occupy 1 byte
+
+typedef struct BRI_Type {
+    BRI_TypeID		index;		// Index of this type
+    BRI_TypeCode	typecode;	
+    uint_32		num_ops;	// number of dwords to follow
+//  followed by a variable number of data dwords.
+} BRI_Type;
+
+#define BRI_MIN_SIZE_TYPE	(sizeof(BRI_TypeID)	\
+				+BRI_SIZE_TYPECODE	\
+				+sizeof(uint_32))
+				
+
+Declaration records:
+--------------------
+
+Every symbol declared in a module would generate one of these records.
+Because of the parsing requirements of the compiler, these records won't
+quite be in the order in which they appear in the source.
+
+typedef enum BRI_SymbolAttributes {	    // ATTRIBUTES OF A SYMBOL
+    BRI_SA_None		    = 0x0000,
+    BRI_SA_Label	    = 0x0001,	    // - goto label
+    BRI_SA_Variable	    = 0x0002,	    // - variable, member, or parm
+    BRI_SA_Parameter	    = 0x0003,	    // - formal parameter
+    BRI_SA_Typedef	    = 0x0004,	    // - typedef
+    BRI_SA_Class	    = 0x0005,	    // - class
+    BRI_SA_Struct	    = 0x0006,	    // - struct
+    BRI_SA_Union	    = 0x0007,	    // - union
+    BRI_SA_Enum		    = 0x0008,	    // - enumeration type
+    BRI_SA_Function	    = 0x0009,	    // - function
+    BRI_SA_Macro	    = 0x000a,	    // - macro
+    BRI_SA_TypeMask	    = 0x000f,	    // - mask of symbol type bits
+
+    BRI_SA_FlagTemp	    = 0x0010,	    // - symbol generated by merger
+    BRI_SA_FlagMask	    = 0x00f0,	    // - mask of flag bits
+
+    BRI_SA_AccessNone	    = 0x0000,	    // - no access specified
+    BRI_SA_AccessPrivate    = 0x0400,	    // - private access
+    BRI_SA_AccessProtected  = 0x0800,	    // - protected access
+    BRI_SA_AccessPublic	    = 0x0200,	    // - public access
+    BRI_SA_AccessMask	    = 0x0f00,	    // - mask of access bits
+} BRI_SymbolAttributes;
+
+#define BRI_SIZE_SYMBOLATTRIBUTES	2
+
+
+typedef struct BRI_Declaration {
+    BRI_SymbolID		index;		// Index of this Symbol
+    BRI_SymbolAttributes	attributes;
+    BRI_StringID		name_id;	// index of a string record
+    BRI_TypeID			type_id;	// index of a type record
+} BRI_Declaration;
+
+#define BRI_SIZE_DECLARATION	(sizeof(BRI_SymbolID)		\
+				+BRI_SIZE_SYMBOLATTRIBUTES	\
+				+sizeof(BRI_StringID)		\
+				+sizeof(BRI_TypeID))
+
+
+Scope Records:
+--------------
+
+Scope records give information about scopes contained in the source
+file.  If the scope is a class scope, the index of the corresponding
+class type is included.  If the scope is a function scope, the name
+and type of the corresponding symbol are included.
+
+Scope and ScopeEnd records together form a heirarchical structure, and
+the first time a scope is opened it will be in the proper parent scope.
+However, class scopes in particular can be opened multiple times.
+
+typedef enum BRI_ScopeType {		// TYPES OF SCOPES
+    BRI_ST_File		= 0x00,
+    BRI_ST_Class	= 0x01,
+    BRI_ST_Function	= 0x02,
+    BRI_ST_Block	= 0x03,
+    BRI_ST_TemplateDecl	= 0x04,
+    BRI_ST_TemplateInst = 0x05,
+    BRI_ST_TemplateParm	= 0x06,
+} BRI_ScopeType;
+
+#define BRI_SIZE_SCOPETYPE		1
+
+typedef struct BRI_Scope {
+    BRI_ScopeID		index;		// index of this scope
+    BRI_ScopeType	flags;
+    union {
+	struct {
+	    BRI_StringID	fn_name_index;	// Name and type of function,
+	    BRI_TypeID		fn_type_index;	//    if function scope
+	} fn;
+	BRI_TypeID	type_index;	// type, if class scope
+    };
+} BRI_Scope;
+
+#define BRI_MIN_SIZE_SCOPE	(sizeof(BRI_ScopeID)	\
+				+BRI_SIZE_SCOPETYPE	\
+				+sizeof(BRI_TypeID))
+
+
+Usage Records:
+--------------
+
+Usage records represent references to symbols.  The location of a
+reference can be calculated by examining previous File, Usage, and
+Delta records and adding up the delta_col and delta_line fields which
+apply to the current source file.
+
+The target of a reference is almost always a symbol, except in the case
+of BRI_RT_TypeOf, in which case the target is a type.  Currently, the
+compiler only emits BRI_RT_TypeOf references for references to class types.
+
+typedef enum BRI_ReferenceType {	// TYPE OF REFERENCE TO "X"
+    BRI_RT_None		= 0x00,
+    BRI_RT_Function	= 0x03,		// - "X" is a function symbol
+    BRI_RT_ClsMember	= 0x04,		// - "X" is a class member
+    BRI_RT_Var		= 0x05,		// - "X" is a variable
+    BRI_RT_TypeOf	= 0x06,		// - "X" is a type
+    BRI_RT_Enum		= 0x07,		// - "X" is an enum
+    BRI_RT_InheritFrom	= 0x08,		// - inherit from base class "X"
+    BRI_RT_Friend	= 0x09,		// - declare "X" a friend
+    BRI_RT_Macro	= 0x0a,		// - "X" is a macro
+    BRI_RT_Unknown	= 0x0b,		// - unknown reference type
+} BRI_ReferenceType;
+
+#define BRI_SIZE_REFERENCETYPE	1
+
+typedef struct BRI_Usage {
+    BRI_ReferenceType	type;
+    int_8		delta_col;
+    int_16		delta_line;
+    union {
+	BRI_SymbolID	target_index;	// index of a Declaration record.
+	BRI_TypeID	type_index;	// Used only when type==BRI_RT_TypeOf
+    };
+} BRI_Usage;
+
+#define BRI_SIZE_USAGE	(BRI_SIZE_REFERENCETYPE		\
+			+sizeof(int_8)			\
+			+sizeof(int_16)			\
+			+sizeof(BRI_SymbolID))
+
+
+Delta Records:
+--------------
+
+Delta records indicate a change in the location of subsequent Usage
+records, and are used when a large line or column number change has
+to be made.
+
+typedef struct BRI_Delta {
+    int_8		delta_col;
+    int_16		delta_line;
+} BRI_Delta;
+
+#define BRI_SIZE_DELTA	(sizeof(int_8)			\
+			+sizeof(int_16))
+
+
+Definition Record:
+------------------
+
+Definition records give the location of a definition of a particular
+symbol.
+
+typedef struct BRI_Definition {
+    uint_32		column;
+    uint_32		line;
+    BRI_StringID	filename;
+    BRI_SymbolID	symbol_index;	// index of a declaration record
+} BRI_Definition;
+
+#define BRI_SIZE_DEFINITION	(sizeof(uint_32)	\
+				+sizeof(uint_32)	\
+				+sizeof(BRI_StringID)	\
+				+sizeof(BRI_SymbolID))
+
+
+File Records:
+-------------
+
+File and FileEnd records together indicate the source of Usage records.
+The File and FileEnd records form a heirarchy which roughly mimics
+the #include heirarchy; however, see Templates, below.
+
+struct BRI_File {
+    BRI_StringID	filename_id;	// index of a string record
+} BRI_File;
+
+#define BRI_SIZE_FILE	(sizeof(BRI_StringID))
+
+
+Template Records:
+-----------------
+
+Template and TemplateEnd records together delimit instatiations of
+template code.  They act like file records, in that they change the
+current location from where the template is instantiated to the file
+in which the template is defined.  But unlike file records, this change
+is caused by compiler-generated information and is not directly visible
+in the source code.  This information extends the heirarchy of File and
+FileEnd records.
+
+typedef struct BRI_Template {
+    BRI_StringID	filename_id;	// index of a string record
+} BRI_Template;
+
+#define BRI_SIZE_TEMPLATE	(sizeof(BRI_StringID))
+
+
+Guard Record
+------------
+
+Guard records are used to signify what pre-processor macro conditions
+were satisfied while a file was compiled.  These records used during
+the merge process to detect whether the symbol information
+from a single source file must be loaded into the merged file twice.
+Guard records are also used to put macro definitions in the browse file.
+
+Each Guard record specifies a type of condition, and the string
+specified in the corresponding pre-processor statement.
+
+typedef enum BRI_GuardTypes {	// TYPES OF GUARD INFORMATION
+    BRI_GT_Value	= 0x00,
+    BRI_GT_RefValue	= 0x01,
+    BRI_GT_RefUndef	= 0x02,
+    BRI_GT_Defined	= 0x03,
+    BRI_GT_NotDefined	= 0x04,
+    BRI_GT_Declaration	= 0x09,	// tags declaration of a macro
+} BRI_GuardTypes;
+
+#define BRI_SIZE_GUARDTYPES	1
+
+typedef struct BRI_Guard {
+    BRI_GuardTypes	type;
+    uint_32		string_id;
+
+    /* Only meaningful if type==BRI_GT_Value */
+    uint_32		num_params;
+    uint_32		defn_len;
+//  followed by a variable-length vector of uint_8's for the definition
+} BRI_Guard;
+
+#define BRI_MIN_SIZE_GUARD	(BRI_SIZE_GUARDTYPES	\
+				+sizeof(uint_32)	\
+				+sizeof(uint_32)	\
+				+sizeof(uint_32))
+				
+				
+PCHInclude Records:
+-------------------
+
+PCHInclude records indicate that browse information has been stored
+in a pre-compiled header, and should be included with this browse
+information.  Browse records following a PCHInclude record may refer
+to browse information in the pre-compiled header.
+
+The string referred to by "filename_id" will be the full pathname of
+a pre-compiled header file.
+
+typedef struct BRI_PCHInclude {
+    BRI_StringID	filename_id;	// index of a string record
+} BRI_PCHInclude;
+
+#define BRI_SIZE_PCHINCLUDE	(sizeof(BRI_StringID))
+
+
+Browse File Header
+==================
+
+typedef struct BRI_Header {
+    uint_32		magic;
+    uint_32		major_ver;
+    uint_32		minor_ver;
+    uint_32		num_declaration;
+    uint_32		num_file;
+    uint_32		num_scope;
+    uint_32		num_delta;
+    uint_32		num_definition;
+    uint_32		num_usage;
+    uint_32		num_string;
+    uint_32		num_type;
+    uint_32		num_guard;
+    uint_32		num_template;
+    uint_32		num_pch;
+    uint_32		file_len;
+} BRI_Header;

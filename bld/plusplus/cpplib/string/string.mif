@@ -1,0 +1,79 @@
+# files in STRING\CPP
+
+objs_cpp +=     allocrep.$(obj_ext) &
+                allomusz.$(obj_ext) &
+                constrch.$(obj_ext) &
+                destruct.$(obj_ext) &
+                opcostsc.$(obj_ext) &
+                opasstcs.$(obj_ext) &
+                opappcst.$(obj_ext) &
+                opsubstr.$(obj_ext) &
+                oprfchar.$(obj_ext) &
+                zapcase.$(obj_ext)  &
+                compstr.$(obj_ext)  &
+                opeqchst.$(obj_ext) &
+                opnechst.$(obj_ext) &
+                oplqchst.$(obj_ext) &
+                opgrchst.$(obj_ext) &
+                opgqchst.$(obj_ext) &
+                opcachst.$(obj_ext) &
+                opinput.$(obj_ext)  &
+                opoutput.$(obj_ext) &
+                matchcst.$(obj_ext) &
+                compchar.$(obj_ext) &
+                joinstr.$(obj_ext)  &
+                freestr.$(obj_ext)  &
+                indexcha.$(obj_ext) &
+                appendst.$(obj_ext) &
+                indexstr.$(obj_ext) &
+                condefau.$(obj_ext) &
+                constrst.$(obj_ext) &
+                constcst.$(obj_ext) &
+                matchstr.$(obj_ext) &
+                matchs.$(obj_ext)   &
+                opappstr.$(obj_ext) &
+                opcastst.$(obj_ext) &
+                opcastch.$(obj_ext) &
+                opcostch.$(obj_ext) &
+                opco1sch.$(obj_ext) &
+                opgrstst.$(obj_ext) &
+                opgrstch.$(obj_ext) &
+                opeqstst.$(obj_ext) &
+                opeqstch.$(obj_ext) &
+                oplqstst.$(obj_ext) &
+                oplqstch.$(obj_ext) &
+                oplestst.$(obj_ext) &
+                oplestch.$(obj_ext) &
+                oplechst.$(obj_ext) &
+                opnestst.$(obj_ext) &
+                opnestch.$(obj_ext) &
+                opgqstst.$(obj_ext) &
+                opgqstch.$(obj_ext) &
+                opasstst.$(obj_ext) &
+                opcrchar.$(obj_ext) &
+                conszcap.$(obj_ext) &
+                opeqcrst.$(obj_ext) &
+                opnecrst.$(obj_ext) &
+                oplecrst.$(obj_ext) &
+                oplqcrst.$(obj_ext) &
+                opgrcrst.$(obj_ext) &
+                opgqcrst.$(obj_ext) &
+                opcacrst.$(obj_ext) &
+                opeqstcr.$(obj_ext) &
+                opnestcr.$(obj_ext) &
+                opgrstcr.$(obj_ext) &
+                opgqstcr.$(obj_ext) &
+                oplestcr.$(obj_ext) &
+                oplqstcr.$(obj_ext) &
+                opcastcr.$(obj_ext)
+
+# files in STRING\C
+
+objs_c += strsrch.$(obj_ext)
+
+!include $(plusplus_cpplib_dir)\plibname.mif
+
+prefix = $(strg_n)
+prefix_x = $(strg_x)
+
+!include $(plusplus_dir)\mklibtgt.mif

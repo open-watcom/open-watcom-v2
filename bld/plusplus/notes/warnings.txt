@@ -1,0 +1,157 @@
+- make string literals const char [] but allow (with warning) a conversion
+  to char *
+- local vars: warn if var was only "set" but never "used"
+    - set: assigned to, &taken
+    - used: r-value, &taken
+- trigraph warning if trigraph is seen and we used the non-trigraph char
+- float f;
+  f != 0.1 (always true since ((double)(float)0.1) != 0.1)
+  this was delayed because the user can't correct the problem
+  via f != 0.1f since our float constants are not precisely
+  correct (i.e., 0.1f==0.1d)
+- signed/unsigned mismatches on relational+equality operators (promotions
+  cause problems also)
+  (need to consider constants for this one to eliminate spurious warnings)
+  (combine with previous warning?)
+    // microsoft does this (AFS)
+    void foo(unsigned ui,int si,unsigned short sui,short ssi)
+    {
+	if( ui == si ) {	// signed/unsigned mismatch warning (3)
+	    if( sui < ssi ) {	// signed/unsigned mismatch warning (3)
+		++ui;
+	    }
+	}
+    }
+    enum U { X1 = 0, X2 = 0xa000 };
+    enum S { X3 = -23, X4 = 34 };
+    
+    void foo( U x, S y )
+    {
+	if( x == y ) {
+	}
+    }
+- an overriding virtual function doesn't match original w.r.t. default args
+- an overriding virtual function doesn't match original w.r.t. throw specs
+- complain about taking the address of a static function so that people
+  that use overlays can be warned of potential problems (an overlay checking
+  mode?)
+- issue warning about "up and down" conversions
+    char far *p;
+    char far *q;
+
+    void foo( void )
+    {
+        q = (char *) p;
+    }
+- the concatenated string literal warning (during init) should try to be
+  smarter and only warn if the next field is a char *
+
+- warn when inline'd in declaration and not in definition; e.g.,
+    struct S {
+        int a;
+        inline S();
+    };
+
+    S::S()
+    {
+        a = 0;
+    }
+
+- provide extra info in case programmer wants to override functions but just
+  got them wrong
+  struct S {
+  };
+  
+  void foo( S x )
+  {
+    x++;	// info if ++@ is available
+    x[t];	// info if any [] are available
+  }
+- warn about fields that are used before they are initialized in a ctor
+- warn if a object is initialized but not subsequently referenced (level 9?)
+- warn if all enumerators are not checked in a switch statment with a enum
+  control expression
+- warn if a structure is passed to the *printf class of ANSI C CLIB fns
+- better error message for this case
+	struct foo {
+	    foo( int a );	// foo has a ctor
+	};
+				
+	struct bar : public foo {
+	    bar( int b );
+	    
+	    foo mem;
+	    int _b;
+	};
+
+	bar::bar( int b ) : foo( b ), _b( b ) // no mem(b) in mem-init!
+	{
+	}
+
+// (14,1): Error! E390: cannot generate default constructor to initialize 'foo' since constructors were declared
+
+When I first got this error, it was from adding a constructor to a
+member of another class.  I looked at the error and the class, and I
+thought there was a problem constructing the bar class, when actually
+the error points to no constructor for the "mem" member of bar.
+
+I think it might be better if somehow the member name were mentioned,
+especially since the line number of the error does not point to mem
+(which is not in the constructor list).
+
+- warn about "sign-loss" in addition to "bit-loss"
+// we were getting a truncation warning but it seems to have gone away
+#include <stddef.h>
+#ifdef __cplusplus
+#include <iostream.h>
+#endif
+#include <string.h>
+#include <stdio.h>
+
+#if 1
+typedef char CHAR;
+#else
+typedef unsigned char CHAR;
+#endif
+
+CHAR name[] = "Mark\n";
+
+void func(unsigned int x);
+
+main()
+{
+        char Name[16];
+        char c = -1;
+        int x = 0;
+#ifdef __386__
+        signed int y = 4294967295;
+        unsigned int z = 4294967295;
+#else
+        signed int y = 65535;
+        unsigned int z = 65535;
+#endif
+
+#if 1
+        func(z);
+        func(y);
+
+        x = y;
+        z = y;
+        y = z;
+#endif
+
+        printf("x %d   y %d    z %d\n", x, y, z);
+        printf("sizeof %d\n", sizeof(int));
+
+        strcpy(Name, name);
+
+#if 0
+        cout << Name;
+#endif
+}
+
+void
+func(int x)
+{
+        printf("==%d==\n", x);
+}

@@ -1,0 +1,18 @@
+g!/::::/d
+%s/(.*)::::([^ ]*) .*/\2/
+0 append
+::::~~~LINKS
+.
+3
+loop
+    yank
+    put
+    .-1
+    join
+    .+1
+    quif lastrc != ERR_NO_ERR
+    .+1
+    quif lastrc != ERR_NO_ERR
+endloop
+w! links.hlp
+q!

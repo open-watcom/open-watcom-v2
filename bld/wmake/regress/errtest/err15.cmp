@@ -1,0 +1,24 @@
+for
+Error(E15): Syntax error in FOR command
+for a
+Error(E15): Syntax error in FOR command
+for %1
+Error(E15): Syntax error in FOR command
+for %a!
+Error(E15): Syntax error in FOR command
+for %a1
+Error(E15): Syntax error in FOR command
+for %a if
+Error(E15): Syntax error in FOR command
+for %a in(
+Error(E15): Syntax error in FOR command
+for %a in (a)
+Error(E15): Syntax error in FOR command
+for %a in (a) dip
+Error(E15): Syntax error in FOR command
+for %a in (a) do
+Error(E15): Syntax error in FOR command
+set a
+Error(E15): Syntax error in SET command
+set =b
+Error(E15): Syntax error in SET command

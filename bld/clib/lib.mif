@@ -1,0 +1,37 @@
+# libname_(model)
+libname_ms =clibs
+libname_mm =clibm
+libname_mc =clibc
+libname_ml =clibl
+libname_mh =clibh
+libname_mf =clibf
+libname_   =clib
+libname =$(libname_$(model))
+
+lib_flags     =/b /c /q
+!ifdef on_build_machine
+!ifeq processor axp
+!else
+lib_flags    +=/s /t
+!endif
+!endif
+!ifdef profile
+lib_flags    +=/p=32
+!else
+lib_flags    +=/p=16
+!endif
+lib_flags_new =/n
+
+!ifeq processor axp
+lib_linkage_flags_static=
+lib_linkage_flags_dynamic=
+!else
+!ifeq processor ppc
+lib_linkage_flags_static=
+lib_linkage_flags_dynamic=
+!else
+lib_linkage_flags_static=/z
+lib_linkage_flags_dynamic=/z=export.def
+!endif
+!endif
+lib_flags_linkage=$(lib_linkage_flags_$(linkage))

@@ -1,0 +1,20 @@
+c$ifndef __NT__
+c$define __NT__
+c$endif
+        include 'ntdefs.fi'
+        include 'drawmenu.fi'
+        include 'button.fi'
+        include 'room.fi'
+
+c$noreference
+
+        integer hThree_d
+        record /RECT/ Draw_area
+        integer Auto_run
+
+        common /static_data/ hThree_d, Draw_area, Auto_run
+
+c$pragma aux draw_box "*_" parm(value,value,value,value,value,value,\
+c                               value,value,value)
+
+c$reference

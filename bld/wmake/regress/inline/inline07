@@ -1,0 +1,15 @@
+#  
+#  INLINE TEST 06
+#  - test creation of temp file 
+# 
+test: .symbolic
+    -@diff << <<
+HELLO
+HELLO
+BOO2
+<< 
+HELLO
+HELLO
+BOO
+<<NOKEEP
+

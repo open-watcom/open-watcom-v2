@@ -1,0 +1,30 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject asctime.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject clock.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject dyltptr.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject ftime.obj    d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject ftimeqnx.obj                                           q16 q32
+!inject gmtime.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject gtctm.obj    d16 d32                                           w16 w32 osi
+!inject gtctmos2.obj                                   o16 o32
+!inject gtctmwnt.obj                     nt nta ntp
+!inject localtim.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject mktime.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject strdate.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject strftime.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+!inject strtime.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject time.obj     d16 d32             nt nta ntp    o16 o32         w16 w32 osi
+!inject timeutil.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject tmznptr.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject tzset.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject tznmptr.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+!inject uasctime.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ustrdate.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ustrftim.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject ustrtime.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+
+!include ..\..\..\..\objlist.mif
+
+uasctime_opts=-os
+ustrftim_opts=-os

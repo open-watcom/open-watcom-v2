@@ -1,0 +1,16 @@
+# example linker initialization file.
+# remember, don't put carets (^) in these!
+system begin 286
+    option osname='OS/2 16-bit'
+    libpath c:\os2
+    libpath %WATCOM%\lib286
+    libpath %WATCOM%\lib286\os2
+    format os2
+end
+system begin 386
+    option osname='OS/2 32-bit'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\os2
+    format os2 lx
+end
+@%watcom%\binw\wlsystem.lnk

@@ -1,0 +1,100 @@
+The following times were recorded during a test run of the debug compiler
+(wcpp386.exe) on the source files for WBROWSE.DLL.  The purpose of the test
+was to determine the effect of generating browse information on the execution
+time of the compiler.
+
+The first set of tests were run before I had done any profiling of my
+changes to the compiler.  A standard set of compiler switches was used
+as a base, with different switches added for each test.  The test itself
+consisted of compiling all of the .CPP files in the directory 
+$(brinfo_dir)\merge\cpp, generating a pre-compiled header to do so.
+
+Keep in mind that no attempt had yet been made to optimize my changes
+to the compiler.
+
+
+First test:	no special switches
+
+    Time: Wed Aug 14 10:44:32 1996
+    Time: Wed Aug 14 10:46:51 1996
+    Total:  2:19
+    
+Second test:	/fbi
+
+    Time: Wed Aug 14 10:47:36 1996
+    Time: Wed Aug 14 11:04:11 1996
+    Total: 16:35
+    
+Third test:	/fbi=ft
+
+    Time: Wed Aug 14 11:06:00 1996
+    Time: Wed Aug 14 11:13:03 1996
+    Total:  7:03
+    
+Fourth test:	/zs
+
+    Time: Wed Aug 14 11:13:56 1996
+    Time: Wed Aug 14 11:15:40 1996
+    Total:  1:44
+    
+Fifth test:	/fbi/zs
+
+    Time: Wed Aug 14 11:19:33 1996
+    Time: Wed Aug 14 11:35:35 1996
+    Total: 16:02
+    
+Sixth test:	/fbi=ft/zs
+
+    Time: Wed Aug 14 11:36:43 1996
+    Time: Wed Aug 14 11:43:06 1996
+    Total:  6:23
+    
+   
+After the dismal results of the first test, I profiled my code and managed
+to optimize somewhat.  Repeating the tests which used the /fbi switch
+now yielded the following results:
+
+Second test, repeated:
+
+    Time: Thu Aug 15 13:25:50 1996
+    Time: Thu Aug 15 13:29:17 1996
+    Total:  3:27
+    
+Third test, repeated:
+
+    Time: Thu Aug 15 13:31:39 1996
+    Time: Thu Aug 15 13:34:42 1996
+    Total:  3:03
+    
+Fifth test, repeated:
+
+    Time: Thu Aug 15 13:36:03 1996
+    Time: Thu Aug 15 13:38:52 1996
+    Total:  2:49
+    
+Sixth test, repeated:
+
+    Time: Thu Aug 15 13:43:38 1996
+    Time: Thu Aug 15 13:46:06 1996
+    Total:  2:28
+    
+   
+I'm encouraged that generating limited browse information without generating
+object code (the sixth test, /fbi=ft/zs) now takes about the same time
+as generating object code without browse information (the first test), but
+clearly there's still work to do.
+
+
+Optimizations that have been performed
+--------------------------------------
+
+-- The use of carvers in b_write.c to save allocation overhead
+-- Implementation of a BTREE-like algorithm instead of a linked list
+   for the BRI_TypeCounter structure in b_write.c
+   
+Suggestions for further optimizations
+-------------------------------------
+
+-- Optimize the file I/O in b_write.c, perhaps with a buffering scheme
+-- Using something other than an unsorted ring for the "values" variable
+   in brinfmac.c

@@ -1,0 +1,23 @@
+"ZOOM_MENU" MENU
+BEGIN
+    POPUP sp( "&File",
+              "ファイル(&F)" )
+    BEGIN
+#ifndef __NT__
+        MENUITEM sp( "&Begin Zoom",
+                     "ズーム開始(&B)" ), ZMMENU_BEGIN
+#endif
+        MENUITEM sp( "&Paste To Clipboard",
+                     "クリップボードに張り付け(&P)" ), ZMMENU_PASTE
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Configure...",
+                     "設定(&C)" ), ZMMENU_CONFIG
+        MENUITEM sp( "&About...",
+                     "バージョン情報(&A)" ), ZMMENU_ABOUT
+        MENUITEM SEPARATOR
+        MENUITEM sp( "E&xit",
+                     "終了(&x)" ), ZMMENU_EXIT
+    END
+    MENUITEM "<<", ZMMENU_ZOOMOUT
+    MENUITEM ">>", ZMMENU_ZOOMIN
+END

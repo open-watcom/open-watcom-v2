@@ -1,0 +1,32 @@
+# --------------------------------
+# ERROR 10: macros nested too deep
+# --------------------------------
+
+abcdefghijklmnop = it works!
+abcdefghijklmno = abcdefghijklmno
+abcdefghijklmn = abcdefghijklmn
+abcdefghijklm = abcdefghijklm
+abcdefghijkl = abcdefghijkl
+abcdefghijk = abcdefghijk
+abcdefghij = abcdefghij
+abcdefghi = abcdefghi
+abcdefgh = abcdefgh
+abcdefg = abcdefg
+abcdef = abcdef
+abcde = abcde
+abcd = abcd
+abc = abc
+ab = ab
+a = a
+
+# this should make it (16 nestings)
+test = $+$($($($($($($($($($($($($($($($(a)b)c)d)e)f)g)h)i)j)k)l)m)n)o)p)$-
+
+
+
+abcdefghijklmnopq = it shouldn't expand me!
+abcdefghijklmnop = abcdefghijklmnop
+
+# this shouldn't make it (17 nestings)
+test = $+$($($($($($($($($($($($($($($($($(a)b)c)d)e)f)g)h)i)j)k)l)m)n)o)p)q)$-
+

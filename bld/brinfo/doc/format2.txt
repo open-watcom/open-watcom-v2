@@ -1,0 +1,228 @@
+Format of saved browser:
+===============================
+
+
+When cached to disk, a browser has the following format:  a file header
+followed by one or more components.  Each component is preceded
+by a component header.  One component is reserved and serves as a
+directory to the other components.
+
+
+The format of the file header is as follows:
+
+SIZE (bytes)	ELEMENT
+4		magic number  (0x4D524257)
+4		length of entire file, including this header
+4		position of directory component
+4		number of components, not including directory
+
+
+The format of the component header is a follows:
+
+SIZE (bytes)	ELEMENT
+4		magic number  (0x454C4946)
+4		length of this component, including this header
+
+
+The directory component consists of a number of variable-length records
+in the following format:
+
+SIZE (bytes)	ELEMENT
+4		length of the string to follow including '\0'
+??		name of a component as a '\0'-terminated ASCII string
+4		position of the corresponding component in the file
+
+
+Note on compression
+-------------------
+
+By default, the "cache" module performs a very simple compression of the
+data being saved and loaded.  The compression is restricted to dwords,
+but most of the data being manipulated by this module comes in the form
+of dwords anyway.
+
+When using compression, a 32-bit quantity "d" would be saved as follows:
+	d <<= 1
+	if( d <= 0xFFFF ){
+	    save d as a WORD
+	} else {
+	    d |= 1
+	    save d as a DWORD
+	}
+
+In other words, dwords are saved in 2 bytes instead of 4 if they're small
+enough.  The low bit is used to indicate of the quantity is two bytes
+long (low bit==0) or four bytes long (low bit==1).
+
+Note this implies that the high bit of any 32-bit quantity can't be saved
+in this scheme.  In particular, negative 32-bit quantities SHOULD NOT BE
+SAVED using the "cache" module, as the sign bit will be lost.  Similarly,
+unsigned quantities larger than 0x80000000 should not be saved, but that's
+clearly less of a restriction.
+
+Compression is selected by an argument to the AddDword and ReadDword
+functions in the "cache" module; by default compression is selected.
+I honestly can forsee no situation in which you would not want to select
+compression.
+
+(While the compiler will emit negative 32-bit quantities into the .BRM
+files, these values will be changed into something else by the browser
+before they are ever cached.)
+
+
+Component formats
+-----------------
+
+Note that each module in the browser is responsible for it's own saving
+and loading.
+
+Component	Data size	Description
+
+Declarations
+		dword		number of declaration records to follow
+
+	for each declaration record:
+		dword		index of the declaration
+		2 bytes		symbol attribues (BRI_SymbolAttributes)
+		dword		BRIStringID of the name
+		dword		BRITypeID of the type
+		dword		BRIScopeID of the enclosing scope
+		dword		BRISymbolID of the _nextDecl
+		
+Types
+		dword		number of types records to follow
+
+	for each type record:
+		dword		BRITypeID of the type
+		byte		typecode (eg, BRI_TC_Pointer)
+		
+	   then one of, depending on the typecode:
+	   for base types:
+	   	byte		BRITypeID of base type (eg, int, BRI_TYP_BOOL)
+		
+	   for modifiers (eg const):
+		dword		modifer flags
+		dword		BRITypeID of a parent type
+		
+	   for pointers, references, typedefs:
+		dword		BRITypeID of a parent type
+		
+	   for pointers to members:
+		dword		BRITypeID of a class type
+		dword		BRITypeID of a member type
+		
+	   for arrays:
+	        dword		size of the array
+		dword		BRITypeID of the element type	
+		
+	   for functions:
+	   	dword		number of "arguments" (including return type)
+		dword		BRITypeID of return type
+		dword		BRITypeID of first argument type
+		...
+		
+	   for classes, structures, unions, enums
+	        dword		BRITypeID of the type name
+		dword		BRISymbolID of the correspoding declaration
+		
+	   for bitfields
+	   	dword		width of the bitfield
+		
+Scopes
+		dword		BRIScopeID of the head of the scope tree
+		dword		number of scope records to follow
+	for each scope record:
+		dword		BRIScopeID of this scope
+		dword		BRIScopeID of the first child of this scope
+		dword		BRIScopeID of the last child of this scope
+		dword		BRIScopeID of the first sibling of this scope
+		dword		BRIScopeID of the parent of this scope
+		dword		number of symbols declared in this scope
+		
+	  for each symbol:
+	  	dword		BRISymbolID of the symbol
+		
+		dword		number of class types declared in this scope
+	  
+	  for each type:
+		dword		key for storing the type in an AvlTree
+		dword		BRITypeID of the type
+		
+		one byte	scope type (eg, BRI_ST_File)
+		dword		id of the scope owner
+
+Usages
+		dword		number of LINE and COLUMN records to follow
+	for each source file:
+		1 byte		File flag (0x01)
+		dword		BRIStringID of filename
+		dword		current line position
+		dword		current column position
+	   for each line in the source file with a reference:
+	   	1 byte		Line flag (0x02)
+		dword		line number
+		dword		column number
+		1 byte		reference type (eg, BRI_RT_Function)
+		dword		target of the reference
+		dword		BRIScopeID of enclosing scope
+            for each additional refererence on that line:
+	        1 byte		Column flag (0x03)
+		dword		column number
+		1 byte		reference type (eg, BRI_RT_Function)
+		dword		target of the reference
+		dword		BRIScopeID of enclosing scope
+		
+Definitions
+		dword		number of definitions to follow
+	 for each definition:
+	 	dword		BRISymbolID being defined
+		dword		column number
+		dword		line number
+		dword		BRIStringID of filename
+		
+Dependancies (ie, guards)
+		dword		number of saved states
+		
+	 for each saved state:
+	 	dword		BRIStringID of the filename
+		
+		dword		number of "defined" dependancies (#ifdef)
+	   for each "defined" dependancy:
+	   	dword		BRIStringID of macro name
+		
+		dword		number of "undefined" dependancies (#ifndef)
+	   for each "undefined" dependancy:
+	   	dword		BRIStringID of macro name
+		
+		dword		number of "value" dependancies (#ifeq)
+	   for each "value" dependancy:
+	   	dword		BRIStringID of macro name
+		dword		number of parameters
+		dword		length in bytes of data to follow
+		???		macro definition as string of bytes
+		
+Strings
+		dword		size of string buffer
+		???		string buffer
+		dword		number of string entries
+	 for each string entry:
+		dword		BRIStringID of this entry
+		dword		offset into string buffer
+		
+Macros
+		dword		number of macros
+	 for each macro:
+	 	dword		BRIStringID of macro name
+		
+ReOrderings	(NOTE: four of these, with different component names,
+		       are saved with the browser)
+		dword		current smallest unused id number
+		dword		number of stored PCH indices
+	 for each stored PCH index:
+		dword		BRIStringID of PCH filename
+		dword		start of range encompassed by this index
+		dword		stop of range encompassed by this index
+		dword		number of uint_32 pairs in the index
+	    for each uint_32 pair:
+		dword		old index
+		dword		new index

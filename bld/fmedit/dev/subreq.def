@@ -1,0 +1,25 @@
+
+#ifndef _SUBREQ_INCLUDE
+
+#define _SUBREQ_INCLUDE 
+
+typedef enum {
+    ALL
+,   BY_POINT
+} REQ_ID;
+
+typedef struct {
+    REQ_ID  ty;
+} ALL_REQ;
+
+typedef struct {
+    REQ_ID   ty;
+    POINT    pt;
+} POINT_REQ; 
+
+typedef union {
+    ALL_REQ    a;
+    POINT_REQ  p;
+} SUBOBJ_REQUEST;
+
+#endif

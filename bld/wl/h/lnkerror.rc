@@ -1,0 +1,19 @@
+/*
+ *  linker information, warning messages and error messages
+ */
+
+#include "wlnkmsg.h"
+
+#undef pick
+#if defined( JAPANESE )
+#define pick( code, e_string, j_string ) code, j_string
+#else
+#define pick( code, e_string, j_string ) code, e_string
+#endif
+
+STRINGTABLE
+BEGIN
+
+#include "lnkerror.msg"
+
+END

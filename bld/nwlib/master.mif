@@ -1,0 +1,148 @@
+# be very careful with the ordering of the cproj.mif and defrule.mif
+proj_name       = wlib
+!include cproj.mif
+
+.extensions:
+.extensions: .exe .obj .c .h .mif .dll .lib
+
+.c: $(trmem_dir);..\c;$(lib_misc_dir)\c;$(watcom_dir)\c
+.h: $(trmem_dir);..\h;$(watcom_dir)\h
+
+.mif: $(mif_path)
+
+!include defrule.mif
+
+obj             = .obj
+dll_name        = $(proj_name)d.dll
+exe_name        = $(proj_name).exe
+
+wlib_objs = &
+        wlib$(obj) &
+        libio$(obj) &
+        symtable$(obj) &
+        symomf$(obj) &
+        writelib$(obj) &
+        convert$(obj) &
+        util$(obj) &
+        libwalk$(obj) &
+        symlist$(obj) &
+        proclib$(obj) &
+        cmdline$(obj) &
+        error$(obj) &
+        implib$(obj) &
+        elfobjs$(obj) &
+        orlrtns$(obj) &
+        memfuncs$(obj) &
+        trmemcvr$(obj) &
+        demangle$(obj) &
+        omfutil$(obj) &
+        coffwrt$(obj) &
+        inlib$(obj) &
+        idemsgpr$(obj) &
+        idedll$(obj)
+
+stub_objs =  libdlldr.obj idedrv.obj idemsgfm.obj
+
+!ifdef wlib_dll
+stub_objs += idemsgpr$(obj)
+targ_name = $(dll_name)
+!ifeq host_OS nt
+wlib_objs += ntdll$(obj)
+!else ifeq host_OS os2
+wlib_objs += os2dll$(obj)
+!endif
+common_lflags = debug all option quiet opt symfile opt map
+!ifeq release 0
+#common_lflags += debug all
+!endif
+extra_lflags_nt += op offset=0x6A000000
+lflags_nt_386   = sys nt_dll initinstance terminstance
+lflags_nt_axp   = sys ntaxp_dll initinstance terminstance
+lflags_os2_386  = sys os2v2 dll INITINSTANCE TERMINSTANCE reference __DLLstart_
+exe_lflags_nt_386 = sys nt
+exe_lflags_nt_axp = sys ntaxp
+exe_lflags_os2_386 = sys os2v2
+!else
+targ_name = $(exe_name)
+wlib_objs += $(stub_objs)
+extra_c_flags = -dIDE_PGM
+common_lflags = debug all option quiet opt symfile opt map
+!endif
+
+extra_lflags_qnx += op offset=64k, stack=60k
+
+
+MODEL = s
+!include orl.mif
+!include wres.mif
+
+inc_dirs = ..\h;$(orl_dir)\h;$(trmem_dir);$(lib_misc_dir)\h;$(watcom_dir)\h
+
+extra_c_flags_ntdll = -bd
+extra_c_flags_os2dll = -bd
+extra_c_flags_idedrv = -dSTATIC_LINKAGE
+!ifeq release 0
+extra_c_flags += -dTRMEM -d__DEBUG__
+wlib_objs += trmem$(obj)
+!ifneq host_CPU axp
+extra_c_flags_trmem     = -of+
+extra_c_flags_trmemcvr  = -of+
+!endif
+!endif
+
+
+extra_l_flags = op map
+
+wlib_libs = $(orl_lib) $(wres_lib)
+
+.before:
+        set include=$(inc_path)
+
+!ifdef wlib_dll
+$(exe_name): $(stub_objs) $(proj_name).lib
+    $(LINKER) $(exe_lflags_$(host_OS)_$(host_CPU)) $(common_lflags) name $^@ file { $(stub_objs) } lib $(proj_name).lib
+
+$(proj_name).lib: $(targ_name)
+    @if exist $(exe_name) del $(exe_name)
+    $(librarian) -q-b-n $^@ + $(targ_name)
+!endif
+
+$(targ_name): ..\h\msg.gh $(wlib_objs) wlib.res $(wlib_libs)
+!ifeq host_OS osi
+        $(LINKER) $(lflags_$(host_OS)_$(host_CPU)) $(common_lflags) $(extra_lflags_$(host_OS)) name wlib.rex file { $(wlib_objs) } lib { $(wlib_libs) }
+        $(bld_bin)\w32bind wlib.rex $@ $(tools_root)\os2ldr.exe
+        erase wlib.rex
+!else
+        $(LINKER) $(lflags_$(host_OS)_$(host_CPU)) $(common_lflags) $(extra_lflags_$(host_OS)) name $^@ file { $(wlib_objs) } lib { $(wlib_libs) }
+!endif
+        wstrip /q /a /r $^@ . wlib.res
+
+
+error.obj : ..\h\msg.gh error.c
+
+MKSTR.EXE : ..\mkstr.c ..\wlib.msg
+        $(bld_cl) ..\mkstr /i..
+
+..\h\msg.gh : MKSTR.EXE
+    *MKSTR.exe ..\h\msg.gh
+
+!ifeq host_OS qnx
+msg_rc_flags = /d__QNX__
+!endif
+
+wlib.res : ..\wlib.rc ..\wlib.msg ..\h\msg.gh
+        $(rc) /bt=windows /r /zk0 /fo=$^@ $(msg_rc_flags) ..\wlib.rc
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj del *.?bj
+        @if exist *.lnk del *.lnk
+        @if exist *.exe del *.exe
+        @if exist *.lib del *.lib
+        @if exist *.res del *.res
+        @if exist *.clb del *.clb
+        @if exist *.dll del *.dll
+        @if exist *.err del *.err
+        @if exist *.sym del *.sym
+        @if exist *.map del *.map
+        @if exist *.pch del *.pch
+        @if exist *.gh  del *.gh

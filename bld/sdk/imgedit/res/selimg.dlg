@@ -1,0 +1,86 @@
+SELECTIMAGE DIALOG 110, 60, 160, 81
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Image Type"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Select the type of image to create...", -1, 15, 9, 120,
+                    12
+    CONTROL         "&Bitmap", SEL_BITMAP, "Button", BS_AUTORADIOBUTTON |
+                    WS_GROUP | WS_TABSTOP, 50, 23, 39, 10
+    CONTROL         "&Icon", SEL_ICON, "Button", BS_AUTORADIOBUTTON |
+                    WS_TABSTOP, 50, 35, 39, 10
+    CONTROL         "&Cursor", SEL_CURSOR, "Button", BS_AUTORADIOBUTTON |
+                    WS_TABSTOP, 50, 47, 39, 10
+    DEFPUSHBUTTON   "&OK", IDOK, 10, 61, 40, 14, WS_GROUP
+    PUSHBUTTON      "Cancel", IDCANCEL, 60, 61, 40, 14
+    PUSHBUTTON      "&Help", IDB_HELP, 110, 61, 40, 14
+END
+
+ICONTYPE DIALOG 90, 48, 160, 140
+STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_VISIBLE | WS_DLGFRAME
+CAPTION "Icon Target"
+FONT 8, "MS Sans Serif"
+BEGIN
+        CONTROL "",        TARGETLISTBOX, "LISTBOX", LBS_NOTIFY | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_GROUP | WS_TABSTOP, 30, 27, 105, 90
+        CONTROL "&OK",     IDOK, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP, 10, 118, 40, 14
+        CONTROL "&Cancel", IDCANCEL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 60, 118, 40, 14
+        CONTROL "&Help",   IDB_HELP, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 110, 118, 40, 14
+        CONTROL "",        DIALOGTEXT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 25, 13, 115, 8
+END
+
+BITMAPTYPE DIALOG 110, 60, 234, 100
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Bitmap Information"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        BMP_WIDTH, 59, 20, 32, 12, ES_AUTOHSCROLL | WS_GROUP
+    EDITTEXT        BMP_HEIGHT, 59, 33, 32, 12, ES_AUTOHSCROLL
+    PUSHBUTTON      "&Screen Select", SEL_SELECT, 36, 50, 55, 14, WS_GROUP
+    CONTROL         "256 &Color", BMP_256COLOUR, "Button", BS_AUTORADIOBUTTON |
+                    WS_GROUP | WS_TABSTOP, 127, 19, 50, 10
+    CONTROL         "16 C&olor", BMP_16COLOUR, "Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP, 127, 32, 44, 10
+    CONTROL         "2 Color &Monochrome", BMP_2COLOUR, "Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP, 127, 45, 81, 10
+    RTEXT           "&Width:", -1, 29, 22, 28, 8
+    RTEXT           "&Height:", -1, 29, 35, 26, 8, NOT WS_GROUP
+    GROUPBOX        "Dimensions", -1, 27, 6, 75, 64, WS_GROUP
+    GROUPBOX        "Color Scheme", -1, 118, 6, 94, 56
+    DEFPUSHBUTTON   "&OK", IDOK, 41, 80, 40, 14, WS_GROUP
+    PUSHBUTTON      "C&ancel", IDCANCEL, 97, 80, 40, 14
+    PUSHBUTTON      "&Help", IDB_HELP, 153, 80, 40, 14
+END
+
+CURSORTYPE DIALOG 93, 51, 160, 79
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Cursor Format"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Select the target for the cursor ...", -1, 23, 10, 115,
+                    8
+    LISTBOX         TARGETLISTBOX, 25, 22, 105, 32, WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "&OK", IDOK, 10, 59, 40, 14
+    PUSHBUTTON      "&Cancel", IDCANCEL, 60, 59, 40, 14
+    PUSHBUTTON      "&Help", IDB_HELP, 110, 59, 40, 14
+END
+
+IMAGESIZE DIALOG 96, 60, 260, 78
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Change Image Size"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        SIZE_WIDTH, 50, 21, 40, 12, ES_AUTOHSCROLL | WS_GROUP
+    EDITTEXT        SIZE_HEIGHT, 50, 35, 40, 12, ES_AUTOHSCROLL
+    CONTROL         "Stretch to new dimensions.", SIZE_STRETCH, "Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP, 144, 22, 100,
+                    10
+    CONTROL         "Clip into new dimensions.", SIZE_CLIP, "Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP, 144, 35, 95, 10
+    DEFPUSHBUTTON   "&OK", IDOK, 54, 58, 40, 14, WS_GROUP
+    PUSHBUTTON      "&Cancel", IDCANCEL, 110, 58, 40, 14
+    PUSHBUTTON      "&Help", IDB_HELP, 166, 58, 40, 14
+    GROUPBOX        "New Image Size", -1, 7, 6, 115, 46, WS_GROUP
+    RTEXT           "Width:", -1, 24, 24, 23, 8, NOT WS_GROUP
+    RTEXT           "Height:", -1, 22, 38, 25, 8, NOT WS_GROUP
+    GROUPBOX        "New Image", -1, 138, 6, 115, 46
+END

@@ -1,0 +1,19 @@
+#include "mark.h"
+
+MARK_DLG DIALOG 30, 18, 112, 87
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Set Mark"
+FONT 10, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK", MARK_OK, 5, 70, 40, 14
+    PUSHBUTTON      "CANCEL", MARK_CANCEL, 64, 70, 40, 14
+    EDITTEXT        MARK_EDIT, 5, 14, 99, 12, ES_AUTOHSCROLL
+    LTEXT           "Enter mark text:", MARK_TEXT, 5, 4, 73, 8
+    CONTROL         "plain", MARK_PLAIN, "Button", BS_AUTORADIOBUTTON,
+                    12, 43, 39, 10
+    CONTROL         "boxed", MARK_BOXED, "Button", BS_AUTORADIOBUTTON,
+                    62, 43, 39, 10
+    GROUPBOX        "Mark Style", MARK_STYLE_GRP, 5, 30, 99, 29,
+                    WS_GROUP | WS_TABSTOP
+END
+

@@ -1,0 +1,84 @@
+Optimizations Driven by Lexus
+-----------------------------
+
+(1) Templates
+-------------
+
+    - commands, for a template instantiation, exist to:
+        (a) prohibit generation of template definitions
+        (b) force generation of template definitions
+        
+    - both ANSI and Microsoft forms of commands
+    
+    - implement them
+    
+    - benefits:
+    
+        (a) required instantiations are generated only once
+        
+        
+(2) Generated Class Functions
+-----------------------------
+
+    - generated in the module containing
+    
+        (a) a non-inlined destructor
+        
+        (b) if not (a), in all modules containing something out of line
+            - out of line function
+            - static data
+            
+        (c) if not (a) or (b), in each module
+        
+    - (a) or (b) generate all functions
+        - when doing this, we want to disable protection errors
+        - would we get protection errors in other cases
+        - we will likely need some global mode to:
+            - disable diagnostics when doing default generation
+            - enable diagnostics but not generate code when not doing
+              default generation
+
+    
+    - (c) generates on demand
+    
+    - what is "all functions" ?
+
+        - default constructor
+        - default destructor
+        - default copy constructor
+        - default assignment operator
+        - virtual-function tables
+        - virtual-base tables
+        - inline functions referenced by the class type signature
+
+        plus (we have to decide)
+
+        - addressiblity thunks
+        - type signature
+        - default-argument inlines
+        - inlined functions that are static'ed by overflowing inline_depth 
+        - inlined functions in a class
+        
+    - proposed changes to CLASS_INFO: add 3 flags
+        
+        - checked_home_module: set when class has been examined (after eof)
+            to see if we are compiling a home module for this class
+            
+        - home_module: valid only if "checked_home_module" is set
+            - indicates cases (a) or (b) when set
+            
+        - default_gen: valid only if "checked_home_module" is set
+            - indicates that class declaration indicates no home module can
+              exist
+              
+    - what are we not optimizing:
+    
+        (a) classes with everything inline: optimization can be triggered by
+            adding a static char variable and creating a new source module
+            containing only the definition of that variable.
+            
+        (b) we are marginally sub-optimal (for most users) when a class has
+            no non-inlined destructor, has multiple source files, and has
+            non-inlined components
+            - look at our classes to see if this is the case
+                - string, complex, iostream, containers, STL 

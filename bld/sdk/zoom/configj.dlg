@@ -1,0 +1,18 @@
+
+ZOOM_CONFIGURE DIALOG 11, 15, 151, 98
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "設定"
+FONT 10, "ＭＳ 明朝"
+BEGIN
+    CONTROL         "張り付け", 101, "Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+                    74, 10, 65, 10
+    CONTROL         "常に先頭", 102, "Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+                    5, 10, 62, 10
+    CONTROL         "自動更新許可", 103, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 9, 42, 87, 10
+    PUSHBUTTON      "OK", IDOK, 26, 78, 40, 14
+    PUSHBUTTON      "キャンセル", IDCANCEL, 82, 78, 40, 14
+    GROUPBOX        "自動更新", -1, 5, 28, 141, 47
+    EDITTEXT        105, 108, 56, 32, 12, ES_AUTOHSCROLL
+    LTEXT           "間隔（0.1秒単位）", 104, 8, 58, 91, 8
+END

@@ -1,0 +1,31 @@
+-- UPDATES OF TEST STREAMS AND HOW TO USE THEM
+
+-- Update to the use of teststrm:
+
+	- there is now the option of using the DEF_CPP environment variable.
+	    DEF_CPP sets the compiler to be used for the teststream.  If
+	    DEF_CPP is not set, RUN386 ..\WCPPCP\WCPPCPD.EXP is used.  DEF_CPP
+	    could be set to ..\BIN\WCPPCPB.EXE to test the compiler in BIN
+	    
+	- teststreams are still invoked by TESTSTRM.BAT [stream] from the TEST
+	    directory
+	    
+-- New teststreams
+
+	- EXPRES.TST:  A test of expressions including basic operators.  All
+	    15 base types are tested individually.  
+	  - The first file PLUSPLUS\TEST\TESTSRC\C\BADEXPR.C tests that 
+	    invalid cases give errors.
+	  - PLUSPLUS\TEST\TESTSRC\C\TESTEXPR.C is the source file for most
+	    of the tests (all but the first).  An ouput line from TESTEXPR.C
+	    has the format: [VALUE] [C++ Ref No.] [test no.].  Search for
+	    [C++ Ref No.] [test no.] in TESTEXPR.C to locate the statement
+	    which caused the difference.  
+
+	- CONVERT.TST:  A test of a multitude of conversions.  
+	  - PLUSPLUS\TEST\TESTSRC\C\TESTCONV.C is a generated file of 225 
+	    combinations of types.  If there is a compiler error, execution
+	    will produce output of the form "Test Failed: [operator] [number]"
+	    Operator is +, -, *, /.  Number is the instance of the test which
+	    failed.  Search for number in TESTCONV to determine which types 
+	    cause the error.

@@ -1,0 +1,52 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGCLLOPT.H\0"
+END
+
+CallOptDlg DIALOG 44, 38, 226, 115
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Call Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "OK", IDD_OK_BUTTON, "Button", WS_TABSTOP, 9, 95, 45, 14
+    CONTROL         "Cancel", IDD_CANCEL_BUTTON, "Button", WS_TABSTOP, 63,
+                    95, 45, 14
+    CONTROL         "&Modify...", IDD_MODIFY_BUTTON, "Button", WS_TABSTOP,
+                    117, 95, 45, 14
+    CONTROL         "&Help", IDD_HELP_BUTTON, "Button", WS_TABSTOP, 171, 95,
+                    45, 14
+    CONTROL         "One:", IDD_ONE_TEXT, "Static", SS_RIGHT | WS_GROUP, 10,
+                    25, 26, 8
+    CONTROL         "Two:", IDD_TWO_TEXT, "Static", SS_RIGHT | WS_GROUP, 10,
+                    37, 26, 8
+    CONTROL         "Three:", IDD_THREE_TEXT, "Static", SS_RIGHT | WS_GROUP,
+                    10, 49, 26, 8
+    CONTROL         "Four:", IDD_FOUR_TEXT, "Static", SS_RIGHT | WS_GROUP,
+                    10, 61, 26, 8
+    CONTROL         "Five +:", IDD_FIVE_TEXT, "Static", SS_RIGHT | WS_GROUP,
+                    10, 73, 26, 8
+    CONTROL         "", IDD_ONE_LINE, "Static", SS_BLACKRECT, 40, 25, 58, 10
+    CONTROL         "", IDD_TWO_LINE, "Static", SS_BLACKRECT, 40, 37, 58, 10
+    CONTROL         "", IDD_THREE_LINE, "Static", SS_BLACKRECT, 40, 49, 58,
+                    10
+    CONTROL         "", IDD_FOUR_LINE, "Static", SS_BLACKRECT, 40, 61, 58,
+                    10
+    CONTROL         "", IDD_FIVE_LINE, "Static", SS_BLACKRECT, 40, 73, 58,
+                    10
+    CONTROL         "Occurs Once:", IDD_OCC_ONCE_TEXT, "Static", SS_RIGHT |
+                    WS_GROUP, 118, 31, 63, 8
+    CONTROL         "Repeated:", IDD_OCC_MANY_TEXT, "Static", SS_RIGHT |
+                    WS_GROUP, 118, 67, 63, 8
+    CONTROL         "", IDD_OCC_ONCE_BOX, "Static", SS_BLACKRECT, 183, 25,
+                    33, 20
+    CONTROL         "", IDD_OCC_MANY_BOX, "Static", SS_BLACKRECT, 183, 61,
+                    33, 20
+    CONTROL         "Number of Calls", IDD_NUM_CALLS_TEXT, "Static",
+                    WS_GROUP, 4, 7, 102, 8
+    CONTROL         "Repetition", IDD_REPETITION_TEXT, "Static", WS_GROUP,
+                    112, 6, 102, 8
+    CONTROL         "", IDD_NUM_CALLS_BOX, "Static", SS_BLACKFRAME, 4, 18,
+                    102, 69
+    CONTROL         "", IDD_REPETITION_BOX, "Static", SS_BLACKFRAME, 112, 18,
+                    109, 68
+END

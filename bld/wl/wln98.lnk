@@ -1,0 +1,47 @@
+# example linker initialization file.
+# remember, don't put carets (^) in these!
+system begin 286
+    libpath %WATCOM%\lib286
+    libpath %WATCOM%\lib286\dos
+    libpath %WATCOM%\lib286\dos\n98
+    format dos
+end
+system begin 386
+    option osname='DOS/4G'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    libpath %WATCOM%\lib386\dos\n98
+    op stub=wstub.exe
+    format os2 le
+end
+@%watcom%\binw\wlsystem.lnk
+
+system delete dos 
+system delete dos4g 
+system delete dos4gnz 
+system delete pharlap 
+system delete ergo 
+system delete x32r 
+system delete x32rv 
+system delete x32s 
+system delete x32sv 
+system delete win386 
+system delete windows 
+system delete windows_dll 
+system delete com 
+system delete tnt 
+
+system begin dos sys n98_dos ^ end
+system begin dos4g sys n98_dos4g end
+system begin dos4gnz sys n98_dos4gnz end
+system begin pharlap sys n98_pharlap ^ end
+system begin ergo sys n98_ergo ^ end
+system begin x32r sys n98_x32r ^ end
+system begin x32rv sys n98_x32rv ^ end
+system begin x32s sys n98_x32s ^ end
+system begin x32sv sys n98_x32sv ^ end
+system begin win386 sys n98_win386 end
+system begin windows sys n98_windows ^ end
+system begin windows_dll sys n98_windows_dll ^ end
+system begin com sys n98_com end
+system begin tnt sys n98_tnt ^ end

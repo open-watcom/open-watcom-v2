@@ -1,0 +1,13 @@
+# -------------------------------
+# ERROR 06: expecting <something>
+# -------------------------------
+
+form_qualifier = $+ $^ $-       # expecting a form qualifier
+macro_name = $+ $ $-            # expecting a macro name
+
+# path specifier
+.c : =
+
+# single colon
+.extensions::
+

@@ -1,0 +1,27 @@
+This directory contains a number of Windows programming examples.
+
+The code is designed to be compiled using either the WATCOM C16
+or WATCOM C32 compiler.
+
+If the file build.mif (found in this directory) contains:
+	WIN386=1
+then 32-bit examples will be built. If it contains:
+	WIN386=0
+then 16-bit examples will be built.
+
+The 32-bit specific code is between the conditional statements
+#ifdef __WINDOWS_386__
+or 
+#ifndef __WINDOWS_386__
+
+There are some functions that are for the 32-bit environment
+that are macroed away in the 16-bit environment:
+
+AllocAlias16 - gets a 16-bit far pointer to some 32-bit memory
+	       (just returns the pointer in 16-bit code)
+	       
+FreeAlias16  - releases the 16-bit far pointer obtained by AllocAlias16
+	       (does nothing in 16-bit code)
+	       
+GetProc16    - gets a special 16-bit thunk that points at 32-bit callbacks
+	       (just returns the callback address in 16-bit code)

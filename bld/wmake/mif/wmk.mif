@@ -1,0 +1,72 @@
+#
+#   The purpose of this file is to define the objs macro.  Any change here
+#   will cause the wmk.lnk file to be recreated.
+#
+#   Winter90    D.J.Gaudet      Re-Implementation of WMAKE
+#
+#   95/10/17    J.W.Welch       Add DLL support
+#
+
+objs =          &
+macros.obj      &
+main.obj        &
+mautodep.obj    &
+mautoomf.obj    &
+mautoorl.obj    &
+mautores.obj    &
+mcache.obj      &
+memory.obj      &
+mexec.obj       &
+mglob.obj       &
+mhash.obj       &
+misc.obj        &
+mlex.obj        &
+mlexmac.obj     &
+mlexprs.obj     &
+mparse.obj      &
+mpathgrp.obj    &
+mpreproc.obj    &
+mrcmsg.obj      &
+msg.obj         &
+mstream.obj     &
+msuffix.obj     &
+msysdep.obj     &
+mtarget.obj     &
+mupdate.obj     &
+mvecstr.obj
+
+!ifeq host_OS nt
+!   define DLLS_IMPLEMENTED
+!endif
+
+!ifeq host_OS os2
+!   ifeq host_CPU 386
+!       define DLLS_IMPLEMENTED
+!   else ifeq host_CPU ppc
+!       define DLLS_IMPLEMENTED
+!   endif
+!endif
+!ifdef DLLS_IMPLEMENTED
+objs += idedrv.obj
+objs += idemsgfm.obj
+objs += idemsgpr.obj
+!endif
+
+!ifeq host_OS win
+objs += winmain.wbj
+!endif
+
+!ifdef on_build_machine
+!define release_wmake 1
+!endif
+
+!ifndef release_wmake
+objs += massert.obj
+!ifndef wmake_trmem
+wmake_trmem = 1
+!endif
+!endif
+!ifeq wmake_trmem 1
+objs += trmem.obj
+extra_c_flags_memory += -dTRACK -of+
+!endif

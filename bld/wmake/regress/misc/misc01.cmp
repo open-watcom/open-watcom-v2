@@ -1,0 +1,14 @@
+echo before
+before
+echo before2
+before2
+echo before3
+before3
+echo before4
+before4
+echo hello
+hello
+echo after-1
+after-1
+echo after
+after

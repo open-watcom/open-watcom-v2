@@ -1,0 +1,7 @@
+debug all
+system windows memory font
+file gen16
+option map
+option stack=8K
+option heapsize=32K
+# option symfile=gen16.sym

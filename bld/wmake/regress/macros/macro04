@@ -1,0 +1,11 @@
+#
+# Macro Test # 4
+#
+# DeMacro during different times
+#
+temp = HELLO
+all: hello .symbolic
+   echo $(temp) 
+temp = HELLO2
+hello: .symbolic
+   echo $(temp)

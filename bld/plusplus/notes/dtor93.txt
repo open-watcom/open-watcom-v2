@@ -1,0 +1,691 @@
+Design of Destruction/Exception Implementation for Release 10.0
+===============================================================
+
+(1) History:
+    -------
+
+    - 93/08/19 (JWW) first document
+
+
+(2) Mission:
+    -------
+
+    - devise a methodology to support destruction of C++ objects
+
+    - should involve minimal overhead when exceptions are disabled
+      and appropriate compiler options are specified
+
+
+(3) Overall Design Decisions
+    ------------------------
+
+    - support direct call of destructors for speed
+
+    - no requirement of tables when exceptions disabled and direct DTOR
+      calls are used
+
+    - be able to mix direct-call and table-driven approaches
+
+    - when exceptions are enabled, a routine must be compiled using the
+      table-driven approach; additionally, the direct-call mechanism may
+      be used to increase speed with a code-space penalty
+
+    - when exceptions are disabled, a routine may be compiled using either
+      method
+
+    - use a "state-variable" approach for the table-driven version, as
+      opposed to an instruction-pointer approach
+
+    - isolate construction and usage of data structure to permit migration
+      to possible operating-system dependent methods if they become available
+
+    - should permit the degeneration of constructors and destructors into
+      component, actual, and deletion parts
+
+
+(4) Background
+    ----------
+
+    - current method needs upgrading since ANSI committee has just mandated
+      the requirements for handling temporary objects (on a per-statement
+      basis, opposed to a per-block basis in our current implementation)
+
+    - current method is entirely table-driven (on a block basis) and can be
+      improved by:
+      - directly calling DTOR's (instead of interpreting a table) at end
+        of blocks (this will increase code space and decrease data space
+        when exceptions are disabled)
+      - registering tables on a routine basis (instead of a block basis)
+
+    - the ANSI standard requires exception handling for standard libraries
+      and so the enabling of exception handling will become the normal
+      mode in which programs execute, instead of the one used only when
+      exception capabilities are directly coded in the program.
+
+    - a "state-variable" approach to table handling is used because:
+      - it is portable
+      - code generation must be restricted when instruction pointer is used,
+        since the run-time system would be required to access return addresses
+        on the stack for routines which have called other routines
+
+    - table-driven implementation is required for exceptions and could be
+      used when exceptions are disabled; this will be allowed since it is
+      anticipated to use less space than direct calls of DTOR's
+
+    - implementation of direct calls of DTOR's will be faster and so can be
+      used by itself when exceptions are disabled or additionally when
+      exceptions are enabled.
+
+
+(5) Direct-call of Destructors
+------------------------------
+
+    - poses no new problems
+
+    - at points where there are (or would be) calls to run-time for
+      destruction based upon the tables, calls are generated directly
+
+
+(6) Data Structure for Tables
+-----------------------------
+
+    - as before, a combination of R/W (read-write) and R/O (read-only) control
+      blocks
+
+    - the R/W blocks are linked together by a registration run-time call at
+      the start of a function; R/W block points at R/O block; deregistration
+      routine is called at end of routine to unlink the R/W block
+
+    - R/W block contains state-variable (SV) representing the state with 0
+      reserved to indicate that nothing has happened yet
+
+    - R/W block may contain a number of flags indicating which optional
+      sequences of items need to be destructed
+
+    - R/O block contains a constant header, a section of DTOR items, and a
+      section of commands; this is an optimization of a design involving
+      only commands (discussed first)
+
+    - one view of the R/O table is that it is a sequence of commands which
+      are executed to control destruction and are searched during throws;
+      the commands are:
+      - destruct object
+      - end of destruction sequence
+      - start of try block
+      - end of catch block
+      - function exception specification
+      - reset the state variable
+
+    - consider the following function:
+
+        void foo() throw( int, float )
+        {
+            S v1;
+            S v2;
+            try {
+                S v3;
+                throw v3;
+            } catch( S v4 ) {
+                S v5;
+            } catch( int ) {
+                S v6;
+            }
+            expr ? tmp( t1 ) : tmp( t2 );
+        }
+
+        where v1 .. v6 and t1 .. t2 all require destruction.
+
+    - conceptually, the R/O table could be represented as follows:
+
+        1   < FNEXC, control block for function-exc. spec. >
+        2   < DTOR, addr[dtor], offset(v1) >
+        3   < DTOR, addr[dtor], offset(v2) >
+        4   < TRY, &try_cb (control block for try) >
+        5   < SET_SV, 2 >
+        6   < DTOR, addr[dtor], offset(v3) >
+        7   < SET_SV, 2 >
+        8   < DTOR, addr[dtor], offset(v4) >
+        9   < CATCH, 3 >
+        10  < DTOR, addr[dtor], offset(v5) >
+        11  < SET_SV, 2 >
+        12  < CATCH, 3 >
+        13  < DTOR, addr[dtor], offset(v6) >
+        14  < SET_SV, 2 >
+        15  < DTOR, addr[dtor], offset(t1) >
+        16  < SET_SV, 2 >
+        17  < DTOR, addr[dtor], offset(t2) >
+        18  < TEST_FLAG, 0, 13, 15 >
+
+      where the R/W block is:
+
+        addr[ previous R/W block ]
+        addr[ R/O block ]
+        state-variable (sv)
+        bit flags[1];
+
+      and the routine is pseudo-compiled as:
+
+1 ==> generated for table-driven method
+2 ==> generated for direct-call method
+
+/////   void foo() throw( int, float )
+/////   {
+1       Register( RW, RO )      // link stuff, sv <- 0
+/////       S v1;
+        ctor( v1 )
+1       RW.sv <- 2
+/////       S v2;
+        ctor( v2 )
+1     [ RW.sv <- 3 ]            // optimized away
+/////       try {
+1       RW.sv <- 4
+        select( setjmp for try )
+        ( labels: C0, C1, C2, C3 )
+    C0  label
+/////           S v3;
+        ctor( v3 )
+1       RW.sv <- 6
+/////           throw v3;
+        throw v3
+/////       }    
+1     [ destruct( 2 ) ]         // dead-coded away
+2,1   [ RW.sv <- 2    ]
+2     [ dtor( v3 )    ]
+      [ goto L_1      ]
+/////         catch( S v4 ) {
+    C1  label
+/////           S v5;
+        ctor( v5 );
+1       RW.sv <- 10
+/////       }
+1       destruct( 2 )
+2,1     RW.sv <- 2
+2       dtor( v5 )
+        catch_over();
+        goto L_1   
+/////         catch( int ) {
+    C2  label
+/////           S v6;
+        ctor( v6 )
+1       RW.sv <- 13
+/////       }
+1       destruct( 2 )
+2&1     RW.sv <- 2
+2       dtor( v6 )
+        catch_over();
+      [ goto L_1 ]
+    C_3 label
+    L_1 label
+/////       expr ?
+        branch-true L_2
+/////              tmp( t1 )
+        ctor( t1 )
+1       RW.flag[0] <- 1
+1       RW.sv <- 15
+/////                        :
+1       destruct( 2 )
+2&1     RW.sv <- 2
+2       dtor( t1 )
+        goto L_3
+    L_2 label
+/////                          tmp( t2 )
+        ctor( t2 )
+1       RW.flag[0] <- 0
+1       RW.sv <- 17
+/////                                   ;
+1       destruct( 2 )
+2&1     RW.sv <- 2
+2       dtor( t2 )
+/////   }
+    L_3 label
+1       destruct( 0 )
+2&1     RW.sv <- 1
+2       dtor( v2 )
+2&1     RW.sv <- 0 
+2       dtor( v1 )
+1       deregister RW
+        return
+
+    - claim: the data structure provides enough information to implement
+      destruction ( destruct n ==> destruct from current point up to
+      the place where the state variable is n) and to implement catching
+      exceptions
+
+    - because the original table cannot indexed efficiently and
+      because it is anticipated that most of the memory in R/O tables
+      will be destructor (DTOR) commands, the table will be implemented
+      as two tables where the first table consists of <addr,addr> pairs
+      interpreted as follows:
+
+      - when the first item is non-zero, it is a destructor-function address
+        and the second operand is the offset/address of the item to be
+        destructed
+
+      - when the first item is zero, it is the address of a command
+
+    - the revised table appears as follows:
+    
+        1   < 0, &C1 >
+        2   < addr[dtor], offset(v1) >
+        3   < addr[dtor], offset(v2) >
+        4   < 0, &C2 >
+        5   < 0, &C3 >
+        6   < addr[dtor], offset(v3) >
+        7   < 0, &C3 >
+        8   < addr[dtor], offset(v4) >
+        9   < 0, &C4 >
+        10  < addr[dtor], offset(v5) >
+        11  < 0, &C3 >
+        12  < 0, &C4 >
+        13  < addr[dtor], offset(v6) >
+        14  < 0, &C3 >
+        15  < addr[dtor], offset(t1) >
+        16  < 0, &C3 >
+        17  <  addr[dtor], offset(t2) >
+        18  < 0, &C5 >
+
+        - the following commands may reside anywhere in memory
+
+        C1: < FNEXC, control block for function-exc. spec. >
+        C2: < TRY, control block for try >
+        C3: < SET_SV, 2 >
+        C4: < CATCH, 3 >
+        C5: < TEST_FLAG, 0, 13, 15 >
+
+        - C3, C4, and C5 can be comdat since they are likely to be repeated
+          for other control blocks
+
+        - if addresses can be reserved in the command-ptr field, then
+          special addresses can be used to represent common commands; if
+          the addresses 0-15 are reserved:
+
+          - 0:13  ==> SET_SV n ( n = 0, 1, ... 7 )
+          - 14    ==> VIRTUAL_BASE
+          - 15    ==> DIRECT_BASE
+
+        - the catch command can consist only of a code and can be compiled
+          directly in front of the try command
+
+        - the try and function-exception commands contain the actual control
+          information (they don't point at control blocks)
+
+
+    - code when only table-driven method is used
+
+/////   void foo() throw( int, float )
+/////   {
+1       Register( RW, RO )      // link stuff, sv <- 0
+/////       S v1;
+        ctor( v1 )
+1       RW.sv <- 2
+/////       S v2;
+        ctor( v2 )
+1       RW.sv <- 3
+/////       try {
+1       RW.sv <- 4
+        select( setjmp for try )
+        ( labels: C0, C1, C2, C3 )
+    C0  label
+/////           S v3;
+        ctor( v3 )
+1       RW.sv <- 6
+/////           throw v3;
+        throw v3
+/////       }    
+1     [ destruct( 2 ) ]       // dead-coded away
+      [ goto L_1      ]
+/////         catch( S v4 ) {
+    C1  label
+/////           S v5;
+        ctor( v5 );
+1       RW.sv <- 10
+/////       }
+1       destruct( 2 )
+        catch_over();
+        goto L_1   
+/////         catch( int ) {
+    C2  label
+/////           S v6;
+        ctor( v6 )
+1       RW.sv <- 13
+/////       }
+1       destruct( 2 )
+        catch_over();
+      [ goto L_1 ]
+    C_3 label
+    L_1 label
+/////       expr ?
+        branch-true L_2
+/////              tmp( t1 )
+        ctor( t1 )
+1       RW.flag[0] <- 1
+1       RW.sv <- 15
+/////                        :
+1       destruct( 2 )
+        goto L_3
+    L_2 label
+/////                          tmp( t2 )
+        ctor( t2 )
+1       RW.flag[0] <- 0
+1       RW.sv <- 17
+/////                                   ;
+1       destruct( 2 )
+/////   }
+    L_3 label
+1       destruct( 0 )
+1       deregister RW
+        return
+
+
+(7) Sub-object considerations
+-----------------------------
+
+    - constructors and destructors require up to 2 R/W blocks:
+        - one for the object being operated upon
+        - one for the function
+
+    - blocks are not required when object has no destructable objects or
+      when the function has no destructable objects, respectively
+
+    - consider the following:
+    
+        struct U { U(); ~U(); };
+        struct S { ~S(); S( U const&, U const& ); };
+        struct Class {
+            U var;
+            Class();
+        };
+    
+        Class::Class() : var( U(), U() ) {
+            S xxx;
+            foo();
+        };
+        
+        - the function Class::Class() can be pseudo-compiled as:
+
+        Table-diven                     Direct calls
+
+        register RW_Class
+        register RW_ctor
+        t1.ctorU()                      t1.ctorU()
+        RW_ctor.rv = 1
+        t2.ctorU()                      t2.ctorU()
+        RW_ctor.rv = 2
+        (this+tv).ctorS( t1, t2 )       (this+tv)ctorS( t1, t2 )
+        RW_Class.rv = 1                 t2.dtorU()
+        destruct( 0 )                   t1.dtorU()
+        xxx.ctorU()                     xxx.ctorU()
+        RW_ctor.rv = 4
+        foo()                           foo()
+        destruct( 0 )                   xxx.dtorU()
+        deregister RW_ctor
+        deregister RW_Class
+
+        foo RO table:                   Class R/O table:
+
+        1   < dtorU, offset t1 >        1   < dtorU, offset var >
+        2   < dtorU, offset t2 >
+        3   < 0, &CM-1 >
+        4   < dtorU, offset xxx >
+
+        CM-1: SET_SV 0
+
+
+    - an example with virtual base, direct base, and a member:
+
+        struct U { U(); ~U(); };
+        struct S { ~S(); S( U const&, U const& ); };
+        struct B : T, virtual S
+        {
+            U var;
+            B();
+            ~B();
+        };
+        
+        B::B()
+                : T( U(), U() )
+                , S()
+                , var()
+        {
+            U xxx;
+            foo();
+        }
+        
+        - the function B::B() can be pseudo-compiled as:
+
+        Table-diven                     Direct calls
+
+        register RW_B
+        register RW_ctor
+        if( cdtor & 01 ) goto L_1       if( cdtor & 01 ) goto L_1
+        (this+S).ctorS()                (this+S).ctorS()
+        RW_B.sv = 1
+    L_1 label                       L_1 label
+        t1.ctorU()                      t1.ctorU()
+        RW_ctor.rv = 1
+        t2.ctorU()                      t2.ctorU()
+        RW_ctor.rv = 2
+        (this+T).ctorS( t1, t2 )        (this+T)ctorS( t1, t2 )
+        RW_B.rv = 3                     t2.dtorU()
+   (*)  destruct( 0 )                   t1.dtorU()
+        (this+S).ctorS()                (this+S).ctorS()
+        RW_B.rv = 5
+        xxx.ctorU()                     xxx.ctorU()
+        RW_ctor.rv = 4
+        foo()                           foo()
+        destruct( 0 )                   xxx.dtorU()
+        deregister RW_ctor
+        deregister RW_B
+
+        foo RO table:                   Class R/O table:
+
+        1   < dtorU, offset t1 >        1   < dtorT, offset T (virtual base) >
+        2   < dtorU, offset t2 >        2   < 0, &CM-2 >
+        3   < 0, &CM-1 >                3   < dtorS, offset S (direct base) >
+        4   < dtorU, offset xxx >       4   < 0, &CM-3 >
+                                        5   < dtorU, offset xxx (member) >
+        CM-1: SET_SV 0
+                                        CM-2: VIRTUAL_BASE
+                                        CM-3: DIRECT_BASE
+
+        - the registration run-time routine must store CDTOR parm in the
+          R/W control block
+
+        (*) the remainder of the routine, under appropriate conditions, can
+            be implemented by a run-time call if type signatures were
+            used instead of DTOR addresses
+        
+
+    - the destructor B::~B() could be pseudo-compiled as:
+
+        Table-diven                     Direct calls
+
+        array-deletion code             array-deletion code
+        register RW_B
+        register RW_dtor
+        RW_B.rv = 5
+        xxx.ctorU()                     xxx.ctorU()
+        RW_dtor.rv = 1
+        foo()                           foo()
+    (*) destruct( 0 )                   xxx.dtorU()
+        RW_B.rv = 3
+        (this+var).dtorU()              (this+var).dtorU()
+        RW_B.rv = 1
+        if( ! (cdtor & 02) ) goto L_1   if( ! (cdtor & 02) ) goto L_1
+        (this+S).dtorS()                (this+S).dtorS()
+        RW_B.rv = 0
+    L_1 label                       L_1 label
+        deregister RW_dtor
+        deregister RW_B
+        (this.T).dtorT()                (this+T).dtorT()
+        return                          return
+
+    (*) the remainder of the routine can be implemented as a run-time
+        call since it implements exactly what would be accomplished by
+        a throw at this point.
+
+
+(8) Module Initialization
+-------------------------
+
+    - R/O table compiled with addresses of variables to be initialized
+    - R/W entries placed in special segment, using same philosophy as _XI, _YI
+    - special segment can be buzzed for initialization and destruction
+
+
+(9) Command Sequences:
+----------------------
+
+
+    VIRTUAL_BASE        - preceding entries are virtual bases
+                        - used by R/T to choose CDTOR argument for DTOR's
+
+    DIRECT_BASE         - preceding entries are direct bases
+                        - used by R/T to choose CDTOR argument for DTOR's
+
+    SET_SV sv           - reset state variable to "sv"
+
+    TEST_FLAG n, sv1, sv2  - test flag[n] and set state variable to "sv1" (ON)
+                          or to "sv2" (FALSE)
+
+    FNEXC cb            - function's exception specification in "cb"
+
+    TRY cb              - try control block in "cb"
+
+    CATCH sv            - end of a catch handler for try with state-variable
+                          "sv"                        
+
+(10) Run-time Functions supporting Table-driven method
+------------------------------------------------------
+
+    FunctionRegister    register "normal" function R/W block
+        ( RW            - R/W block
+        , RO )          - R/O block
+        
+        - initializes R/W block
+
+    FunctionDeregister  deregister "normal" function R/W block
+        ( void )
+
+        - unlinks R/W block
+
+    CtorRegister        registers class object R/W block for CTOR
+        ( this          - "this" pointer
+        , cdtor         - "cdtor" item
+        , RW            - R/W block for object
+        , RO )          - R/O block for object
+
+        - initializes R/W block for CTOR
+
+    DtorRegister        registers class object R/W block for DTOR
+        ( this          - "this" pointer
+        , cdtor         - "cdtor" item
+        , RW            - R/W block for object
+        , RO )          - R/O block for object
+
+        - initializes R/W block for DTOR
+
+    ObjectDeregister    de-registers object
+        ( void )
+
+        - unlinks R/W block
+
+    Destruct            destruct objects up to state "sv"
+        ( sv )          - next value of state variable
+
+        - using R/O table, destructs until state-variable reaches "sv"
+
+    CatchOver           processing at end of catch
+        ( void )
+
+        - destructs catch variable if req'd
+        - destructs exception variable if req'd
+        - pops exception stack
+
+------ the following are optimizations for tighter code -----------
+
+
+    DestructFunctionDeregister  
+        ( void )
+    {
+        Destruct(0)
+        FunctionDeregister();
+    }
+
+    FuncCtorRegister    registers function, class object R/W block for CTOR
+        ( this          - "this" pointer
+        , cdtor         - "cdtor" item
+        , RW            - R/W block for function, object
+        , RO_OBJ        - R/O block for object
+        , RO_FUN        - R/O block for function
+    {
+        CtorRegister( this, cdtor, rw, RO_OBJ );
+        FuncRegister( rw + 1, RO_FUN );
+    }
+
+    CtorRegisterOpt   registers object w/o CTOR-cdtor R/W block for CTOR
+        ( this          - "this" pointer
+        , RW            - R/W block for object
+        , RO )          - R/O block for object
+    {
+        CtorRegister( this, 0, RW, RO );
+    }
+
+    FuncObjectDeregister deregister object, function
+        ( void )
+    {
+        ObjectDeregister();
+        FunctionDeregister();
+    }
+
+    DestructFuncObjectDeregister destruct all, deregister object, function
+        ( void )
+    {
+        Destruct( 0 );
+        ObjectDeregister();
+        FunctionDeregister();
+    }
+
+    FuncCtorRegisterOpt registers function, object w/o cdtor R/W block for CTOR
+        ( this          - "this" pointer
+        , RW            - R/W block for function, object
+        , RO_OBJ        - R/O block for object
+        , RO_FUN        - R/O block for function
+    {
+        CtorRegister( this, 0, rw, RO_OBJ );
+        FuncRegister( rw + 1, RO_FUN );
+    }
+
+    CompleteDestruction completes the destructor code, as space optimation
+        ( void )        in a destructor
+
+
+
+(11) Implementation Plan
+------------------------
+
+    (1) write revised run-time system, except exception processing
+
+    (2) adapt compiler for (1)
+
+    (3) write run-time system for exception processing
+
+    (4) adapt compiler for (3)
+
+
+(12) Asynchronous Exceptions
+----------------------------
+
+    - can be implemented by the following:
+
+    (A) DTORs
+    ---------
+
+    - insert lock before state-variable is reset ahead of a dtor
+    - insert un-lock after R/W block for object is chained in
+
+    (B) CTORs
+    ---------
+
+    - insert lock before R/W block for object is unchained
+    - insert un-lock after state-variable is reset following a ctor

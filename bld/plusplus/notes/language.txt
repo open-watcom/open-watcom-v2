@@ -1,0 +1,21 @@
+10.1
+====
+
+    - templates (doesn't include latest ISO C++ changes)
+    - exceptions
+    - operator new []/operator delete []
+    
+11.0
+====
+
+    - mutable keyword supported
+    - bool type added (new keywords: bool, true, false)
+    
+Future
+======
+
+    - RTTI (Run Time Type Identification)
+    - name spaces
+    - new style casts
+    - new template features
+    - ISO C++ templatized library

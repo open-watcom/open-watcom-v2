@@ -1,0 +1,30 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGENUMS.H\0"
+END
+
+EnumStyleDlg DIALOG 90, 31, 200, 74
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Enum Style"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "OK", IDD_OK, "Button", WS_TABSTOP, 157, 11, 40, 14
+    CONTROL         "Default", IDD_DEFAULT, "Button", WS_TABSTOP, 157, 30,
+                    40, 14
+    CONTROL         "Cancel", IDD_CANCEL, "Button", WS_TABSTOP, 157, 49, 40,
+                    14
+    CONTROL         "0xa5", IDD_LOWERHEX, "Button", BS_AUTORADIOBUTTON, 12,
+                    22, 39, 10
+    CONTROL         "0XA5", IDD_UPPERHEX, "Button", BS_AUTORADIOBUTTON, 12,
+                    35, 39, 10
+    CONTROL         "0xA5", IDD_MIXEDHEX, "Button", BS_AUTORADIOBUTTON, 12,
+                    48, 39, 10
+    CONTROL         "0245 (octal)", IDD_OCTAL, "Button", BS_AUTORADIOBUTTON,
+                    58, 22, 92, 10
+    CONTROL         "165 (decimal)", IDD_DECIMAL, "Button",
+                    BS_AUTORADIOBUTTON, 58, 35, 92, 10
+    CONTROL         "'a' (character)", IDD_CHARACTER, "Button",
+                    BS_AUTORADIOBUTTON, 58, 48, 92, 10
+    CONTROL         "Enum Value Style", IDD_STYLEBOX, "Button", BS_GROUPBOX,
+                    7, 7, 146, 58
+END

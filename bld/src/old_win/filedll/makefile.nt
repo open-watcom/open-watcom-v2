@@ -1,0 +1,38 @@
+#
+# create NT version of FILEDLG
+#
+DLLNAME = filedlg
+DLL = dll
+
+CFLAGS = -bt=nt -bd -w4 -d1 -oaxt
+DLLLNK = $(DLLNAME).lnk
+
+OBJS = filedlg.obj
+
+$(DLLNAME).dll : $(OBJS) $(DLLLNK) $(DLLNAME).res
+    wlink @$(DLLLNK)
+    wrc -bt=nt $(DLLNAME).res $(DLLNAME).dll
+    
+$(DLLNAME).res : $(DLLNAME).rc $(DLLNAME).dlg
+    wrc -r -bt=nt $(DLLNAME).rc
+    
+        
+$(DLLLNK) : makefile.nt
+    %create $(DLLLNK)
+    @%append $(DLLLNK) debug all
+    @%append $(DLLLNK) system nt_dll
+    @%append $(DLLLNK) name $(DLLNAME).dll
+    @%append $(DLLLNK) option symfile = $(DLLNAME).sym
+    @%append $(DLLLNK) option heapsize=8k
+    @%append $(DLLLNK) option map
+    @for %i in ($(OBJS)) do @%append $(DLLLNK) file %i
+        
+.c.obj : 
+	wcc386 $(CFLAGS) $[*
+
+clean: .symbolic
+    @erase *.obj
+    @erase *.err
+    @erase *.exe
+    @erase *.lnk
+    @erase *.res

@@ -1,0 +1,93 @@
+#
+# Master makefile for creating trap files
+#
+
+!ifdef test
+sys_x86_os2  = sys os2
+sys_x86_os2v2  = sys os2v2
+sys_x86_win  = sys windows
+sys_x86_nt   = sys nt
+sys_x86_dos  = sys dos
+sys_x86_qnx  = sys qnx
+
+sys_axp_nt   = sys ntaxp
+
+targ_x86_os2    = binp\$(name)cli.exe
+targ_x86_os2v2  = binp\$(name)cli2.exe
+targ_x86_qnx    = qnx\$(name)cli.qnx
+targ_x86_win    = bin\$(name)cliw.exe
+targ_x86_dos    = bin\$(name)cli.exe
+targ_x86_nt     = binnt\$(name)cli.exe
+
+targ_axp_nt     = axpnt\$(name)cli.exe
+
+TRAP_objs   = testcli.obj
+TRAP_remote_objs =
+
+!else
+
+sys_x86_os2  = sys os2 dll initinstance &
+            exp TrapInit_.1,TrapRequest_.3,TrapFini_.2 &
+            op modname=$^& &
+            lib $(lang_root)\lib286\os2\os2.lib
+sys_x86_os2v2  = sys os2v2 dll initinstance terminstance &
+            exp TrapInit_.1,TrapRequest_.3,TrapFini_.2 &
+            op modname=$^&
+sys_x86_win  = sys windows dll &
+            exp WEP.1 resident &
+            exp TRAPINIT.2,TRAPREQUEST.4,TRAPFINI.3 &
+            exp INPUTHOOK.5,INFOFUNCTION.6,HARDMODECHECK.7 &
+            exp GETHWNDFUNC.8,SETHARDMODE.12,UNLOCKINPUT.13 &
+            op modname=$^& &
+            option description 'WATCOM Debugger Trap File' &
+            file $(lang_root)\lib286\win\libentry.obj
+sys_x86_nt   = sys nt_dll initinstance &
+            exp TrapInit_.1,TrapRequest_.3,TrapFini_.2,InfoFunction_.4, &
+                InterruptProgram_.5,Terminate_.6 &
+            option description 'WATCOM Debugger Trap File' &
+            op offset=0x6e900000, modname=$^&
+sys_x86_dos  = sys dos
+sys_x86_qnx  = sys pharlap rex disable 1014, 1023
+
+sys_axp_nt   = sys ntaxp_dll initinstance &
+            exp TrapInit.1,TrapRequest.3,TrapFini.2,InfoFunction.4, &
+                InterruptProgram.5,Terminate.6 &
+            option description 'WATCOM Debugger Trap File' &
+            op modname=$^&
+
+sys_ppc_nt   = sys ntppc_dll initinstance &
+            exp TrapInit.1,TrapRequest.3,TrapFini.2,InfoFunction.4, &
+                InterruptProgram.5,Terminate.6 &
+            option description 'WATCOM Debugger Trap File' &
+            op modname=$^&
+
+!ifeq machine IBM
+machsuff=
+!else
+machsuff=$+$(machine)$-
+!endif
+
+targ_x86_os2    = binp\dll\$(name).dll
+targ_x86_os2v2  = binp\dll\$(name).d32
+targ_x86_qnx    = qnx\$(name).trp
+targ_x86_win    = bin.$(machsuff)\$(name).dll
+targ_x86_dos    = bin.$(machsuff)\$(name).trp
+targ_x86_nt     = binnt\$(name).dll
+
+targ_axp_nt     = axpnt\$(name).dll
+
+targ_ppc_nt     = ppcnt\$(name).dll
+
+TRAP_objs   = $(os)strt.obj
+TRAP_remote_objs = remote.obj
+!endif
+
+!ifeq os win
+TRAP_remote_objs += winstub.obj
+!else ifeq os nt
+TRAP_remote_objs += ntstub.obj
+!endif
+
+which = TRAP
+
+!include $(trap_dir)\imp.mif

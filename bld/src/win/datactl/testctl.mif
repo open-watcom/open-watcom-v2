@@ -1,0 +1,11 @@
+name = testctl
+LNK = $(name).lnk
+
+OBJS =  testctl.obj check.obj combo.obj combomod.obj ctltype.obj &
+        ctluser.obj dcombo.obj float.obj int.obj radio.obj  &
+        rfloat.obj rint.obj text.obj textmod.obj
+
+CFLAGS += -i=..\..
+resources = dialog.dlg
+
+lnk_dependencies = makefile ..\testctl.mif ..\..\master.mif

@@ -1,0 +1,28 @@
+                    WATCOM  .RES  File Manipulation
+		    
+
+The files in this project allow mainipulation of the WATCOM  .RES  format files
+and Microsoft .RES format files, both on disk and in memory.
+
+To use this project include the file WRESALL.H and link the libray WRES?.LIB
+where ? is the model you are using.
+
+The layout of a WATCOM .RES file can be found in the file  filefmt.h.
+
+There are three layers to this project. Layer 0 is the low level I/O and memory
+allocation routines. By defualt these will be the Posix I/O routines and
+malloc/free. An application may replaces these routines with its own provided
+the routines supplied take the same parameters and return the same values as
+the defaults. Also the routines must perform trasparently as to their functions.
+See the setrtns.h and wresrtns.c files for the means of replacing these
+instuctions.
+
+Layer 1 is the record level I/O routines. It provied routines to open and close
+.RES files, and to read and write the various structures contained in a .RES
+file. This layer does no memory allocation except to store the name of a
+resource on calls that read a WResID in and need a name. Use the WResIDFreeName
+function to release this memory.
+
+Layer 2 is the directory management routines. This layer allows you to read and
+write a complete directory and to manage that directory in memory. It does
+memory allocation and deallocation as required to acomplish this.

@@ -1,0 +1,25 @@
+imp_objs = &
+        dfmisc.obj &
+        dfld.obj &
+        dfmod.obj &
+        dfmodbld.obj &
+        dftype.obj &
+        dfsym.obj &
+        dfaddr.obj &
+        dfsegs.obj &
+        dfloc.obj &
+        dfcue.obj &
+        dfline.obj &
+        dfaddsym.obj &
+        dfscope.obj &
+        dfhash.obj &
+        demangle.obj &
+        stub.obj
+
+name = dwarf
+
+extra_incs = $(dwarf_dir)\dr\h;$(lib_misc_dir)\h
+extra_srcs = $(lib_misc_dir)\c
+extra_cflags =  -DDIP_PRIORITY=DP_DEFAULT
+
+!include ../../imp.mif

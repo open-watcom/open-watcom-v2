@@ -1,0 +1,40 @@
+# 96/01/04 - J.Welch        -- fixed os/2 definitions
+
+
+#
+# DWARF library
+#
+dwarf_dw_lib_dos_386     = $(dwarf_dir)\dw\o\dwf.lib
+dwarf_dw_lib_os2_386     = $(dwarf_dir)\dw\os2\dwf.lib
+dwarf_dw_lib_osi_386     = $(dwarf_dir)\dw\o\dwf.lib
+dwarf_dw_lib_qnx_386     = $(dwarf_dir)\dw\o\dwf.lib
+dwarf_dw_lib_nt_386      = $(dwarf_dir)\dw\o\dwf.lib
+dwarf_dw_lib_nt_axp      = $(dwarf_dir)\dw\axp\dw.lib
+dwarf_dw_lib_os2_386_dll = $(dwarf_dir)\dw\os2.dll\dwfdll.lib
+dwarf_dw_lib_nt_386_dll  = $(dwarf_dir)\dw\o.dll\dwfdll.lib
+dwarf_dw_lib_nt_axp_dll  = $(dwarf_dir)\dw\axp.dll\dwdll.lib
+
+#
+# DWARF dependencies
+#
+dwarf_dw_dep_dos_386     = $(dwarf_dir)\dw\o\compile.tim
+dwarf_dw_dep_os2_386     = $(dwarf_dir)\dw\os2\compile.tim
+dwarf_dw_dep_osi_386     = $(dwarf_dir)\dw\o\compile.tim
+dwarf_dw_dep_qnx_386     = $(dwarf_dir)\dw\o\compile.tim
+dwarf_dw_dep_nt_386      = $(dwarf_dir)\dw\o\compile.tim
+dwarf_dw_dep_nt_axp      = $(dwarf_dir)\dw\axp\compile.tim
+dwarf_dw_dep_os2_386_dll = $(dwarf_dir)\dw\os2.dll\compile.tim
+dwarf_dw_dep_nt_386_dll  = $(dwarf_dir)\dw\o.dll\compile.tim
+dwarf_dw_dep_nt_axp_dll  = $(dwarf_dir)\dw\axp.dll\compile.tim
+
+#
+# 'host_OS' and 'host_CPU' must be set to use these forms
+#
+dwarf_dll_ext=
+!ifdef $(proj_name)_rtdll
+!ifeq $(proj_name)_rtdll 1
+dwarf_dll_ext=_dll
+!endif
+!endif
+dwarf_dw_lib = $(dwarf_dw_lib_$(host_OS)_$(host_CPU)$(dwarf_dll_ext))
+dwarf_dw_dep = $(dwarf_dw_dep_$(host_OS)_$(host_CPU)$(dwarf_dll_ext))

@@ -1,0 +1,27 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject chipd16.obj  d16                               o16     q16     w16
+!inject chipa16.obj  d16                               o16     q16     w16
+!inject chipw16.obj  d16                               o16     q16     w16
+!inject chipt16.obj  d16                               o16     q16     w16
+!inject chipr16.obj  d16                               o16     q16     w16
+!inject chipd32.obj      d32             nt         nv     o32     q32     w32
+!inject chipa32.obj      d32             nt         nv     o32     q32     w32
+!inject chipw32.obj      d32             nt         nv     o32     q32     w32
+!inject chipt32.obj      d32             nt         nv     o32     q32     w32
+!inject chipr32.obj      d32             nt         nv     o32     q32     w32
+!inject cntrl87.obj  d16 d32             nt         nv o16 o32 q16 q32 w16 w32
+!inject cntrlfp.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
+!inject fclex387.obj                     nt
+!inject fpe87.obj    d16                               o16
+!inject ini87086.obj d16                               o16     q16     w16
+!inject ini87386.obj     d32             nt         nv     o32     q32     w32
+!inject old87.obj    d16 d32             nt         nv o16 o32 q16 q32 w16 w32
+
+!include ..\..\..\..\objlist.mif
+
+chipd16_opts=-fpi87
+chipa16_opts=-fpi87
+chipw16_opts=-fpi87
+chipt16_opts=-fpi87
+chipr16_opts=-fpi87

@@ -1,0 +1,17 @@
+#
+# Wrhook script - called just before saving and exiting a file.
+#		  if the file has a null name, the user is prompted for
+#		  a real name.
+#
+	if "%F" != "no_name"
+	    return ERR_NO_ERR
+	endif
+	assign %a = /Enter file name: /
+	input %a
+	if lastrc == NO_VALUE_ENTERED
+	    return DO_NOT_CLEAR_MESSAGE_WINDOW
+	endif
+	echo off
+	set filename = %a
+	echo on
+	return ERR_NO_ERR

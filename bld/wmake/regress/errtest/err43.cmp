@@ -1,0 +1,3 @@
+Error(E42): Last command making (all.43) returned a bad status
+Error(F43): Deleting (all.43): Permission denied
+Error(E02): Make execution terminated

@@ -1,0 +1,202 @@
+BUILDER is a sort of quick and dirty command line processor that is optimized
+for the tasks performed when creating an executable image as part of the
+build process.
+
+
+        Searching for the default control file
+        --------------------------------------
+
+If no -c command line options are specified, BUILDER looks for an environment
+variable called "BUILDER.CTL". The value of that environment variable is
+used as name of the default control file. If the variable is not defined, the
+file called "BUILDER.CTL" is used. It first checks the current directory, if
+the file is not present it will check the parent directories, up to the root
+of the current drive. If BUILDER.CTL has not yet been found, the PATH
+environment variable is checked. This means that you can put the BUILDER.CTL
+in the root directory of a project, and a "BUILDER" command will find it
+no matter what project directory you're located in.
+
+
+        Macro Substitution
+        ------------------
+
+Each line of the control file is read in and examined for substrings of the
+form "<"var_name">", where var_name is the name of an enviroment variable.
+The string is then replaced with the value of the environment variable.
+The subsitutions can be nested so that:
+
+        SET FOOBAR=hi there
+        SET HA=BAR
+
+        <FOO<HA>>
+
+would be "hi there". A "^" character will escape the character following
+so it has no special meaning.
+
+There are two special macro names:
+
+        <CWD>   will be replaced with the current working directory.
+        <*>     will be replaced with a space separated list of all the
+                command line parameters.
+
+
+        BUILDER Directives
+        ------------------
+
+After the command line is macro-substituted, the first non-blank character
+is examined. If it's a "#" character, the line is a comment and is ignored.
+If the line starts with "[", it's a BUILDER directive line, otherwise, it's
+a system command to be executed. Here are the directives.
+
+        [INCLUDE file_name]
+
+This causes the named file to opened and it's contents processed as a nested
+control file.
+
+        [LOG file_name {backup_copies} ]
+
+This causes the named file to be opened and used as the output log file
+_if_ there is not already a log file open. Before opening the log file
+(or not, if there is already one open), a backup copy of the current contents
+of the log file are made. This is done by taking the 3d character of the
+log file name extension and changing it to a "1". E.g., a log file of the
+name "FOO.BAR" would be backed up to a file named "FOO.BA1". Backup copies
+of the backup copies can be made as well. The digit in the extension
+increments for each version ("FOO.BA1" => "FOO.BA2"). The number of backup
+copies kept is determined by the optional backup_copies value in the LOG
+directive. If backup_copies is not specified in the LOG directive, the value
+of the -b command line option is used. If no -b is specified, the default
+number of backup copies is one.
+
+        [BLOCK match word1 word2 word3...]
+
+The "match" word is compared in turn with the words following. If it matches
+one of the words following, the commands following are executed. If none
+of the words match, the commands are skipped, until the next BLOCK directive
+or until the end of the control file. If you want to start unconditional
+execution of commands after you've had a sequence of BLOCK's, just use a
+BLOCK that's sure to match, e.g.:
+
+        [BLOCK . .]
+
+
+        Built-in Commands
+        -----------------
+
+If a line is not a comment, or a directive, it is handed off to be executed
+(assuming you're not in a BLOCK section that's being skipped). Normally
+it's given to the system to be executed, but there are a number of
+commands that are "built-in" and executed directly by BUILDER. These are:
+
+        CD new_dir
+
+Change the current working directory to "new_dir". Note that unlike the
+DOS command processor, if a drive letter is included in the new_dir string,
+the current drive is changed as well.
+
+        CDSAY new_dir
+
+Same as above, but the resulting directory name is written to the screen and
+to any log file(s).
+
+        SET var=value
+
+Set the environment variable "var" to "value".
+
+        COPY src_file dst_file
+
+Copy the source file to the destination file. The src_file may have
+wild card characters in it. The destination file may only be a full pathname,
+or it may end in a '\' or '/' character, in which case the source file
+name is used in the destination.
+
+        ACOPY src_file dst_file
+
+Same as the COPY command, except that the file is only copied if dst_file
+does not exist or src_file has the archive bit turned on. At the _end_ of
+the control file, all src_file's copied by an ACOPY have their archive bits
+turned off.
+
+        PMAKE pmake_command_line
+
+The PMAKE command has been built into the BUILDER program. You can specify
+all the same things as with PMAKE.EXE, except that the -b option is ignored.
+See the PMAKE.EXE usage message for more information.
+
+
+        Command Line Options
+        --------------------
+
+The following command line options are recognized:
+
+        -c ctl_file
+
+                Use the file "ctl_file" as the name of the control file
+                to be executed, rather than the default. You can have any
+                number of control files specified. BUILDER will process
+                each sequentially.
+
+
+        -l log_file
+
+                Use the file "log_file" as the name of the log file where
+                command output is written to in addition to being sent to
+                the screen.
+
+        -b backup_copies
+
+                Determine the default number of backup copies of a log file
+                that are to be kept.
+
+        -v
+                Verbose. Commands that are about to be executed are written
+                to the screen and any log file(s) unless the command is
+                prefixed by the "@" character. Those commands are never
+                echoed.
+        -q
+                Quiet. Only a minimal amount of messages is echoed
+                to the console but everything is still logged.
+
+        -u
+                Check for undefines. Print out a warning message if any
+                environment variable name being looked up during macro
+                substitution is not found.
+
+        -?
+                Print out the usage message.
+
+        --
+                All arguments following this are considered parameters, and
+                not options.
+
+Anything that doesn't start with a "-" (or anything at all after a "--")
+are considered control file parameters. Each parameter is examined for
+a "=" character. If it contains an equals sign, the environment variable name
+to the left of the equals is set to the value on the right of the equals.
+That is:
+
+        BUILDER FOO=BAR
+
+will set the environment variable "FOO" to the value "BAR". If no equals
+sign is found, the ordinal position of the parameter is used as the
+environment variable name and the whole of the parameter contents are used
+as the value. E.g.:
+
+        BUILDER HI_HO FOO=BAR GOODBYE
+
+will set the following environment variables:
+
+        1=HI_HO
+        FOO=BAR
+        2=GOODBYE
+
+
+        Current Working Directories
+        ---------------------------
+
+Whenever a control file is opened (via the command line, or an INCLUDE
+directive), the current working directory is set the same directory as
+the control file. This means that the control file always has a known
+starting state. Moreover, when an INCLUDE'd control file is finished, the
+current working directory is reset to what ever it was before the INCLUDE
+took place.

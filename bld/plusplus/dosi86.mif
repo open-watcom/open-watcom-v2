@@ -1,0 +1,4 @@
+!include $(plusplus_iostream_dir)\iostream.mif
+!include $(plusplus_runtime_dir)\cpplib16.mif
+mflag = $(text)
+!include $(plusplus_dir)\mklib.mif

@@ -1,0 +1,19 @@
+# having fun with for
+
+temp =  msupport.$(ext) mcache.$(ext) mfar.$(ext) mglobs.$(ext) &
+        main.$(ext) mflags.$(ext) mgetchar.$(ext) mparse.$(ext) &
+        mfile.$(ext) mprint.$(ext) mscan.$(ext) msuffix.$(ext)  &
+        msystem.$(ext) mtarget.$(ext) mupdate.$(ext)            &
+        macros.$(ext) mlang.$(ext)
+ext = obj
+objs = $+ $(temp) $-
+ext = def
+defs = $+ $(temp) $-
+
+FOR= @for
+ECHO= @echo
+
+all : .symbolic
+    $(ECHO) NAME wmake
+    $(FOR) %i in ($(objs)) do $(ECHO) FILE %i
+

@@ -1,0 +1,22 @@
+WRSelectFileType DIALOG 65, 42, 204, 135
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Select File Type"
+FONT 8, "MS Sans Serif"
+BEGIN
+        LTEXT "File:",                          IDM_NOINPUT, 6, 7, 15, 8, WS_CHILD | WS_VISIBLE
+        CONTROL "",                             IDM_FILENAME, "EDIT", ES_LEFT | ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED | WS_CHILD | WS_VISIBLE | WS_BORDER, 23, 6, 176, 12
+        CONTROL "File Type",                    IDM_NOINPUT, "BUTTON", BS_GROUPBOX | WS_CHILD | WS_VISIBLE, 5, 22, 113, 58
+        CONTROL "Resource (*.res)",             IDM_FTRES, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP, 12, 36, 100, 10
+        CONTROL "Executable (*.exe)",           IDM_FTEXE, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 12, 50, 100, 10
+        CONTROL "Dynamic Link Library (*.dll)", IDM_FTDLL, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 12, 64, 100, 10
+        CONTROL "Target System",                IDM_NOINPUT, "BUTTON", BS_GROUPBOX | WS_CHILD | WS_VISIBLE, 123, 23, 76, 57
+        CONTROL "Windows",                      IDM_TSWIN, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP, 129, 43, 55, 10
+        CONTROL "Windows NT",                   IDM_TSWINNT, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 129, 57, 55, 10
+        CONTROL "Resource File Format",         IDM_NOINPUT, "BUTTON", BS_GROUPBOX | WS_CHILD | WS_VISIBLE, 5, 84, 193, 28
+        CONTROL "WATCOM",                       IDM_RFWAT, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP, 31, 96, 58, 10
+        CONTROL "Microsoft",                    IDM_RFMS, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 116, 96, 58, 10
+        CONTROL "OK",                           IDOK, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP, 26, 117, 40, 14
+        PUSHBUTTON "Cancel",                    IDCANCEL, 82, 117, 40, 14
+        PUSHBUTTON "&Help",                     IDM_SFTHELP, 138, 117, 40, 14
+END
+

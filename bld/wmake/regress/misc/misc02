@@ -1,0 +1,27 @@
+#
+# Miscellaneous Tests
+#
+#  Before/After Test
+#  
+#
+.AFTER
+    echo after-1
+.AFTER    # clears the after list
+hello:
+    echo hello
+.BEFORE 
+
+    echo before
+    
+.BEFORE    # clears the before list
+.BEFORE
+    echo before2
+    echo before3
+    
+    
+.AFTER 
+
+    echo after
+    
+.BEFORE 
+    echo before4

@@ -1,0 +1,8 @@
+for %i in (1 2 3) do for %j in (2 4 6) do echo %j %i
+for %j in (2 4 6) do echo %j 1
+Error(E16): Nested FOR loops not allowed
+for %i in (echo for) do %i %j in (2 4 6) do echo %j %i
+echo %j in (2 4 6) do echo %j echo
+%j in (2 4 6) do echo %j echo
+for %j in (2 4 6) do echo %j for
+Error(E16): Nested FOR loops not allowed

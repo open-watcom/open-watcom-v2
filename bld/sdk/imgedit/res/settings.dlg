@@ -1,0 +1,47 @@
+CURRENT_SETTINGS DIALOG 54, 52, 264, 206
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "WATCOM Image Editor Current Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Profile information", -1, 15, 15, 235, 30, WS_GROUP
+    GROUPBOX        "Windows", -1, 15, 49, 112, 57, WS_GROUP
+    GROUPBOX        "Shifting", -1, 15, 111, 113, 58, WS_GROUP
+    LTEXT           "Shift Amount:", -1, 36, 153, 45, 8
+    GROUPBOX        "Image Pasting", -1, 143, 49, 107, 43, WS_GROUP
+    GROUPBOX        "Image Rotating", -1, 143, 100, 107, 69, WS_GROUP
+    CONTROL         "Save settings on exit", SAVE_SETTINGS, "Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP, 25, 28, 81, 10
+    CONTROL         "Save position on exit", SAVE_POSITION, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 153, 28, 81, 10
+    CONTROL         "Show one view window", SHOW_ONE, "Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP, 25, 63, 88,
+                    10
+    CONTROL         "Show all view windows", SHOW_ALL, "Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP, 25, 76, 87, 10
+    CONTROL         "Keep grid square", KEEP_SQUARE, "Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP, 25, 89, 68, 10
+    CONTROL         "Perform wrapping shift", WRAP_SHIFT, "Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP, 25, 125, 85,
+                    10
+    CONTROL         "Perform clipping shift", CLIP_SHIFT, "Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP, 25, 138, 81, 10
+    EDITTEXT        SHIFT_AMOUNT, 82, 151, 25, 12, ES_AUTOHSCROLL | WS_GROUP
+    CONTROL         "Stretch image into region", STRETCH_PASTE, "Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP, 153, 62, 94,
+                    10
+    CONTROL         "Clip image into region", CLIP_PASTE, "Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP, 153, 75, 83, 10
+    CONTROL         "Perform simple rotation", SIMPLE_ROTATE, "Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP, 153, 113, 87,
+                    10
+    CONTROL         "Stretch image into region", STRETCH_ROTATE, "Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP, 153, 126, 94, 10
+    CONTROL         "Clip image into region", CLIP_ROTATE, "Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP, 153, 139, 83, 10
+    CONTROL         "Leave area selected", LEAVE_AREA, "Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP, 153, 152, 79,
+                    10
+    DEFPUSHBUTTON   "&OK", IDOK, 56, 186, 40, 14, WS_GROUP
+    PUSHBUTTON      "&Cancel", IDCANCEL, 112, 186, 40, 14
+    PUSHBUTTON      "&Help", SETTINGS_HELP, 168, 186, 40, 14
+END

@@ -1,0 +1,61 @@
+#
+# WATCOM Presentation Graphics (PGCHART.LIB)
+#
+
+objs = &
+        PGANCOM.OBJ &
+        PGANMS.OBJ &
+        PGANPIE.OBJ &
+        PGANSCMS.OBJ &
+        PGAXIS.OBJ &
+        PGCHART.OBJ &
+        PGCHRDEF.OBJ &
+        PGCHRTPI.OBJ &
+        PGDFAULT.OBJ &
+        PGHLABEL.OBJ &
+        PGINIT.OBJ &
+        PGLEGEND.OBJ &
+        PGMISC.OBJ &
+        PGPAL.OBJ &
+        PGSCALE.OBJ &
+        PGSCTTER.OBJ &
+        PGSTYLE.OBJ &
+        PGTITLE.OBJ &
+        PGVARS.OBJ &
+        PGVLABEL.OBJ
+
+!ifeq _386 386
+text_seg_name = _TEXT
+.before
+        @set inc386=..\h;$(build_root)\graphlib\h;$(build_root)\watcom\h;$(build_root)\hdr\dos;$(%include)
+        @set wcc386=/osax /w3 /zq /zl /fpc /d1 $(model)
+!else
+text_seg_name = GRAPH_TEXT
+.before
+        @set include=..\h;$(build_root)\graphlib\h;$(build_root)\watcom\h;$(build_root)\hdr\dos;$(%include)
+        @set wcc=/osax /w3 /zq /zl /fpc /d1 $(model)
+!endif
+
+cflags = /nt=$(text_seg_name) /d_CGRAPH=$(cdecl) /d_FARD=$(fard) /nm=$(module) /fo=$[&.obj
+
+.c: $(build_root)\pgchart\c
+
+$(libname).lib : $(objs) ..\pgchart.lbc
+        wlib /b /n /q $(libname).lib @..\pgchart.lbc
+
+.c.obj:
+!ifeq _386 386
+        $(libcomp386) $(cflags) $(extra_c_flags) $[*
+!else
+        $(libcomp286) $(cflags) $(extra_c_flags) $[*
+!endif
+
+..\pgchart.lbc : ..\pgchart.mif
+        %create ..\pgchart.lbc
+        for %i in ($(objs)) do %append ..\pgchart.lbc -+%i
+
+clean: .symbolic
+        @if exist *.obj @del *.obj
+        @if exist *.lib @del *.lib
+        @if exist ..\*.lbc @del ..\*.lbc
+        @if exist *.tmp @del *.tmp

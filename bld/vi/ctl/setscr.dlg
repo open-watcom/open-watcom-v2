@@ -1,0 +1,26 @@
+#include "setscr.h"
+SETSCR DIALOG 50, 20, 184, 123
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Screen/Window Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Jumpy scrolling", SETSCR_JUMPYSCROLL, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 11, 16, 62, 10
+    CONTROL         "Line-based selection", SETSCR_LINEBASED, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 11, 27, 80, 10
+    EDITTEXT        SETSCR_PAGELINESEXPOSED, 38, 40, 32, 12, ES_AUTOHSCROLL
+    EDITTEXT        SETSCR_FILEENDSTRING, 52, 75, 66, 12, ES_AUTOHSCROLL
+    CONTROL         "Save editor position on exit", SETSCR_SAVEPOSITION,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 12, 90, 106, 10
+    CONTROL         "Auto message clear", SETSCR_AUTOMESSAGECLEAR, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 12, 101, 76, 10
+    LTEXT           "EOF String:", SETSCR_FILEENDSTRINGSTR, 11, 77, 39, 8
+    GROUPBOX        "Miscellaneous", 105, 5, 63, 118, 53
+    DEFPUSHBUTTON   "OK", IDOK, 137, 6, 40, 14, WS_GROUP
+    PUSHBUTTON      "Cancel", IDCANCEL, 137, 24, 40, 14
+    PUSHBUTTON      "&Defaults", SETSCR_DEFAULTS, 137, 48, 40, 14
+    LTEXT           "Paging:", 115, 11, 41, 26, 8
+    GROUPBOX        "Editting", 117, 5, 4, 117, 53
+    LTEXT           "common lines", 118, 73, 42, 45, 8
+    GROUPBOX        "", 119, 129, 0, 1, 123
+END

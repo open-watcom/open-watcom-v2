@@ -1,0 +1,34 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGGTROOT.H\0"
+END
+
+GTRootSelectDlg DIALOG 28, 37, 319, 112
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Select Roots"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Enabled Roots:", IDD_LEFTTEXT, "Static", WS_GROUP, 4, 6,
+                    120, 8
+    CONTROL         "", IDD_LEFTBOX, "ListBox", LBS_NOTIFY | LBS_SORT |
+                    LBS_NOINTEGRALHEIGHT | WS_BORDER | WS_VSCROLL |
+                    WS_TABSTOP, 4, 16, 124, 70
+    CONTROL         "Disabled Roots:", IDD_RIGHTTEXT, "Static", WS_GROUP,
+                    191, 7, 120, 8
+    CONTROL         "", IDD_RIGHTBOX, "ListBox", LBS_NOTIFY | LBS_SORT |
+                    LBS_NOINTEGRALHEIGHT | WS_BORDER | WS_VSCROLL |
+                    WS_HSCROLL | WS_TABSTOP, 191, 17, 124, 70
+    CONTROL         "&Disable All", IDD_DISABLE_ALL, "Button", WS_TABSTOP,
+                    133, 16, 52, 14
+    CONTROL         "Disa&ble ->", IDD_DISABLE, "Button", WS_TABSTOP, 133,
+                    35, 52, 14
+    CONTROL         "<- E&nable", IDD_ENABLE, "Button", WS_TABSTOP, 133, 52,
+                    52, 14
+    CONTROL         "&Enable All", IDD_ENABLE_ALL, "Button", WS_TABSTOP, 133,
+                    73, 52, 14
+    CONTROL         "OK", IDD_OK, "Button", BS_DEFPUSHBUTTON | WS_TABSTOP,
+                    83, 92, 40, 14
+    CONTROL         "Cancel", IDD_CANCEL, "Button", WS_TABSTOP, 139, 92, 40,
+                    14
+    CONTROL         "&Help", IDD_HELP, "Button", WS_TABSTOP, 195, 92, 40, 14
+END

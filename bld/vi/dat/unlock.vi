@@ -1,0 +1,9 @@
+if %M == 1
+    assign %a = /File is modified, really unlock? /
+    input %a
+    if "%a" != y
+    	return ERR_NO_ERR
+    endif
+endif
+!vunlock %F
+e! %F

@@ -1,0 +1,35 @@
+!ifeq vi_trmem 1
+inc_dirs_trmem = $(trmem_dir)
+!endif
+
+inc_dirs = $(rcsdll_dir);$(posix_dir)\h;$(inc_dirs_trmem);$(watcom_dir)\h
+
+!ifdef curses
+inc_dirs_dos = $(curses_dir)\h
+!endif
+
+winstuff = $(watcom_dir)\h;$(sdk_dir)\misc;$(wpi_dir)\h;$(datactl_dir)
+
+!ifdef sys_windowed
+inc_dirs_nt = $(vi_dir)\win;$(sdk_dir)\misc;$(watcom_dir)\nt_h;$(wpi_dir)\h
+inc_dirs_win = $(vi_dir)\win;$(vi_dir)\h;$(winstuff)
+!else
+inc_dirs_nt = $(watcom_dir)\nt_h
+inc_dirs_win = $(vi_dir)\win;$(vi_dir)\h
+!endif
+
+!ifeq host_CPU axp
+! ifdef sys_windowed
+inc_dirs_nt = $(watcom_dir)\h;$(vi_dir)\win;$(sdk_dir)\misc;$(wpi_dir)\h
+! else
+inc_dirs_nt = $(watcom_dir)\h
+! endif
+!endif
+
+!ifdef vroomed
+inc_dirs_dos = $(watcom_dir)\h
+!endif
+
+inc_dirs_os2_386 = $(watcom_dir)\os220_h
+inc_dirs_os2_i86 = $(watcom_dir)\os21x_h
+inc_dirs_os2 = inc_dirs_os2_$(host_CPU)

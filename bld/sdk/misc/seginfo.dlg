@@ -1,0 +1,26 @@
+SEGMENTINFO DIALOG 4, 16, 302, 80
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+BEGIN
+    LTEXT           "Block Address:", -1, 4, 16, 60, 8, NOT WS_GROUP
+    LTEXT           "Block Size:", -1, 4, 24, 60, 8, NOT WS_GROUP
+    LTEXT           "Lock Count:", -1, 4, 32, 60, 8, NOT WS_GROUP
+    LTEXT           "Page Lock Count:", -1, 4, 40, 60, 8, NOT WS_GROUP
+    LTEXT           "Block Type:", -2, 4, 48, 56, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_ADDR, 64, 17, 40, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_BLOCKSIZE, 64, 25, 40, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_LOCKCOUNT, 64, 33, 32, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_PAGELOCKCOUNT, 64, 41, 32, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_TYPE, 64, 49, 56, 8, NOT WS_GROUP
+    PUSHBUTTON      "Ok", SEGINFO_OK, 56, 62, 24, 14
+    LTEXT           "", SEGINFO_LINE1, 112, 16, 168, 8, NOT WS_GROUP
+    LTEXT           "Memory Contents", -1, 124, 4, 68, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_LINE2, 112, 24, 168, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_LINE3, 112, 32, 168, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_LINE4, 112, 40, 168, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_LINE5, 112, 48, 168, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_LINE6, 112, 56, 168, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_LINE7, 112, 64, 168, 8, NOT WS_GROUP
+    SCROLLBAR       SEGINFO_SCROLL, 288, 12, 8, 60, SBS_VERT
+    LTEXT           "Block Handle:", -1, 4, 8, 60, 8, NOT WS_GROUP
+    LTEXT           "", SEGINFO_HANDLE, 64, 9, 40, 8, NOT WS_GROUP
+END

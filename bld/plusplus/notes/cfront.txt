@@ -1,0 +1,43 @@
+Features not implement in cfront 3.x
+====================================
+
+Support for the `volatile' keyword.
+
+Support for the `signed' keyword.
+
+Support for wide character literals.
+
+Support for wide character strings.
+
+Exceptions.
+
+
+-----------------------------------
+Additionally, I have received all of the following messages from cfront 3.x
+at one time or another:
+
+
+sorry, not implemented:  class hierarchy too complicated
+sorry, not implemented:  constructor needed for argument initializer
+sorry, not implemented:  parameter expression of type float, double, or long double
+sorry, not implemented: & of =
+sorry, not implemented: 2nd operand of .* too complicated
+sorry, not implemented: cannot expand inline function
+sorry, not implemented: cannot expand inline function needing temporary variable of array type
+sorry, not implemented: cannot expand inline function with static
+sorry, not implemented: copy of  A[], no memberwise copy for A
+sorry, not implemented: default argument too complicated
+sorry, not implemented: formal type parameter used as base class of template
+sorry, not implemented: forward declaration of a specialized version of template
+sorry, not implemented: general initializer in initializer list
+sorry, not implemented: local class as  parameter type to  template class
+sorry, not implemented: local class within template function
+sorry, not implemented: local typedef within template function
+sorry, not implemented: lvalue  = too complicated
+sorry, not implemented: needs temporary variable to evaluate argument initializer
+sorry, not implemented: nested  typedef within nested class within template class 
+sorry, not implemented: nested class within template
+sorry, not implemented: nested type in template
+sorry, not implemented: reuse of formal template parameter
+sorry, not implemented: static member anonymous union
+sorry, not implemented: variant nested typedef in template

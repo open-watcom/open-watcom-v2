@@ -1,0 +1,6 @@
+# system-dependent files (NT for i86)
+
+!include ..\ppobj86.mif
+
+common_objs += &
+pragdata.obj

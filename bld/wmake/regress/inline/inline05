@@ -1,0 +1,14 @@
+#  
+#  INLINE TEST 05
+#  - missing quotes in inline file
+# 
+test:
+    -diff <<"temp.1 <<temp.2"
+HELLO
+HELLO
+BOO
+<<
+HELLO
+HELLO
+BOO
+<<NOKEEP

@@ -1,0 +1,7 @@
+# objects to be included in each image (as required)
+#
+# - use file extensions as written; .xbj not required
+
+static_objs = $+ &
+    $(targdir)iofdefg.obj &
+    $-

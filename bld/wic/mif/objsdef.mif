@@ -1,0 +1,24 @@
+OBJS = &
+        cmdline.obj &
+        cparse.obj &
+        ctree.obj &
+        dupzap.obj &
+        exptok.obj &
+        gentypes.obj &
+        globals.obj &
+        hash.obj &
+        main.obj &
+        outfort.obj &
+        outasm.obj &
+        output.obj &
+        preparse.obj &
+        symtab.obj &
+        tables.obj &
+        token.obj &
+        trandecl.obj &
+        trmem.obj &
+        wicgener.obj &
+        wicstr.obj &
+                   &
+        fmem.obj &
+        carver.obj &

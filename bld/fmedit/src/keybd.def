@@ -1,0 +1,13 @@
+/*
+    Description:
+    ===========
+    Prototypes for the keyboard input processing routines.
+*/
+
+#ifndef KEYBD_DEF_INCLUDED
+#define KEYBD_DEF_INCLUDED
+
+extern BOOL ProcessKeyDown( int keycode );
+extern BOOL ProcessKeyUp( int keycode );
+
+#endif

@@ -1,0 +1,122 @@
+Math Library Work:
+==================
+
+See \clib\clib.txt for rationale.
+
+Notes:
+======
+- see notes in \clib\clib.txt appendix A
+- asm files that use 386asm -pparse "_" will need to be modified
+
+Common All:
+===========
+C flags:		/r /fpr /ox /of /zld /w3 /zq /zl
+wasm flags:		/q
+wlib:			/n /b (/s /t)-> build machine
+
+16 bit 87: 87\(scsd,scbd,bcsd,bcbd,bchd)
+==========
+wasm include:		\clib
+wasm flags		/fpi87
+			/ms
+			/mm
+			/mc
+			/ml
+			/mh
+C include:		..\..\h \clib\h \hdr\dos
+C flags:		/fpi
+			/ms     /nt=_TEXT
+			/mm
+			/mc /zu /nt=_TEXT
+			/ml /zu
+			/mh /zu
+
+16 bit emu: emu\(scsd,scbd,bcsd,bcbd,bchd)
+===========
+wasm include:		\clib \emu \emu86
+wasm flags 		/ms
+			/mm
+			/mc
+			/ml
+			/mh
+C include:		..\..\h \clib\h \hdr\dos
+C flags:		/fpc
+			/ms     /nt=_TEXT
+			/mm
+			/mc /zu /nt=_TEXT
+			/ml /zu
+			/mh /zu
+
+Windows 16 bit 87: 87\(wscbd,wbcbd)
+==================
+wasm include:		\clib
+wasm flags:		/bt=WINDOWS /fpi87
+			/mc
+			/ml
+C include:		..\..\h \clib\h \hdr\dos
+C flags:		/bt=WINDOWS /fpi
+			/mc /zu /nt=_TEXT
+			/ml /zu
+
+Windows 16 bit emu: emu\(wscbd,wbcbd)
+===================
+wasm include:		\clib \emu \emu86
+wasm flags:		/bt=WINDOWS
+			/mc
+			/ml
+C include:		..\..\h \clib\h \hdr\dos
+C flags:		/bt=WINDOWS /fpc
+			/mc /zu /nt=_TEXT
+			/ml /zu
+
+32 bit 87: 87\(ms386r,ms386s)
+==========
+wasm include:		\clib \emu
+wasm flags:		/ms
+			/3r
+			/3s
+			/d_OS=_PLDT (for some files)
+C include:		..\..\h \clib\h \hdr\dos
+C flags:		/zc /7
+			/d__NEC__ (on some files)
+			/ms /3r
+			/ms /3s /d__3S__
+womp flags:		/q
+
+32 bit emu: emu\(ms386r,ms386s)
+===========
+wasm include:		\clib \emu
+wasm flags:		/ms
+			/3r
+			/3s
+			/d_OS=_PLDT (for some files)
+C include:		..\..\h \clib\h \hdr\dos
+C flags:		/zc /fpc
+			/ms /3r
+			/ms /3s /d__3S__
+womp flags:		/q
+
+Penpoint 32 bit 87: go\(go3s,go3sd)
+===================
+wasm include:		\clib \emu
+wasm flags:		/3s /mf /bt=PENPOINT
+			/d_OS=_PLDT (for some files)
+			/d__387__ (for some files)
+C include:		..\..\h \clib\h \hdr\penpoint \clib\ph \watcom\pen_h
+C flags:		/zc /7 /of+
+			/d__PENPOINT__ /d__3S__ /mf /3s
+		  (dbg) /en 
+			/d__UNICODE__ (for some files)
+womp flags:		/q
+
+Penpoint 32 bit emu: emu\(go3s,go3sd)
+====================
+wasm include:		\clib \emu
+wasm flags:		/3s /mf /bt=PENPOINT
+			/d_OS=_PLDT (for some files)
+C include:		..\..\h \clib\h \hdr\penpoint \clib\ph \watcom\pen_h
+C flags:		/zc /fpc /of+
+			/d__PENPOINT__ /d__3S__ /mf /3s
+		  (dbg) /en 
+			/d__UNICODE__ (for some files)
+womp flags:		/q

@@ -1,0 +1,50 @@
+List of Worries
+===============
+
+(1) Buffering
+-------------
+    - compiler wants to emit stuff as it sees it (no buffering)
+    - merger wants stuff in another order
+    - so, compiler has to buffer, or merger must either buffer or look ahead
+    
+    - if the compiler buffers, then the CgIo approach will be used
+    
+    (a) Names
+    ---------
+        - solved by interspersing names with other stuff, but the merger must
+          now relocate name references since a reference can be to an element
+          which has been discarded (because of duplication) from the current
+          module
+          
+    (b) Macro Dependencies
+    ----------------------
+        - these are the "guards" for determining when a header-file is to be
+          included
+        - these are:
+            * macro not defined
+            * macro defined
+            * macro defined and satisfies one the six comparison 
+              relationships ( ==, !=, >, <, >=, <= )
+              
+    (c) Scopes
+    ----------
+        - the obvious emit algorithm will record start and end of scopes
+        - this will generate a bunch of trivial scopes without use
+        - nested scopes can be non-trivial 
+              
+(2) Volume
+----------
+    - do we got too much
+    - we may have to provide limiting capabilities for the user (i.e., don't
+      record field references)
+      
+(3) C++
+-------
+
+    (a) Pre-defined stuff
+    ---------------------
+        - we should implement a pseudo-header file for this
+        
+    (b) Anonymus Classes
+    --------------------
+        - we should get get better name

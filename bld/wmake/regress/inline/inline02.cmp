@@ -1,0 +1,14 @@
+2c2
+< BOO
+---
+> BOO2
+1c1
+< HELLO
+---
+> HELLO1
+1,2c1,2
+< HELLO
+< BOO2
+---
+> HELLO1
+> BOO

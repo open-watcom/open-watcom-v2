@@ -1,0 +1,268 @@
+From x3j16=syntax@redbone.att.com  Fri Jan 18 04:37:45 1991
+Received: from att.att.com by watmsg.waterloo.edu with SMTP
+	id <AA15117>; Fri, 18 Jan 91 04:37:45 EST
+From: x3j16=syntax@redbone.att.com
+Original-From: att!kitchen.bellcore.com!krohn
+Errors-To: x3j16-postmaster@redbone.att.com
+Reply-To: x3j16-syntax@redbone.att.com
+Received: by att.att.com; Thu Jan 17 16:22:56 EST 1991
+Received: from [128.96.133.138] by bellcore.bellcore.com (5.61/1.34)
+	id AA03604; Thu, 17 Jan 91 16:22:34 -0500
+Message-Id: <9101172122.AA03604@bellcore.bellcore.com>
+To: redbone.att.com!x3j16-syntax@bellcore.bellcore.com
+Cc: research!bs@bellcore.bellcore.com
+Subject: (RFC) grammar changes for throw expression
+Date: Thu, 17 Jan 91 16:21:42 -0500
+Original-From: krohn@kitchen.bellcore.com
+Status: R
+
+To: X3J16 syntax mailing list
+Message x3j16-syntax-32
+
+I am soliciting comments for this report on throw expression conflicts
+and proposed changes to the grammar to eliminate them.
+	Eric Krohn
+
+
+
+
+						Doc No:	X3J16/91-XXXX
+						  Date:	January	17, 1991
+					       Project:	Programming Language C++
+					       Ref Doc:
+					      Reply To:	Eric J.	Krohn
+							krohn@bae.bellcore.com
+							908 699-2708
+
+				Throw-expression Conflicts
+
+
+
+	  1.  Current Throw-expression Syntax
+
+	  In  X3J16/90-0043,  a	 throw-expression  is  described  with	two
+	  grammar rules:
+
+	  unary-expression:
+		  throw-expression
+
+	  throw-expression:
+		  throw	 expression(opt)
+
+
+	  Additionally,	a throw-expression  is	constrained  to	 have  type
+	  void.
+
+
+	  2.  Conflicts
+
+	  To clarify the effects of different grammar rules, let us look at
+	  four	throw  expressions  and	 how they would	be parsed.  For	the
+	  syntax  described  in	 X3J16/90-0043,	 we  have   the	  following
+	  interpretations.
+
+
+			   throw a, b;	  =   throw (a,	b);
+			   throw a = b;	  =   throw (a = b);
+			   throw a + b;	  =   throw (a + b);
+			   throw - b;	  =   throw (- b);
+
+	  These	interpretations	are analogous to the  behavior	of  Wreturn
+	  statement.   Unfortunately,  adding  these  syntax  rules  to	Jim
+	  Roskind's  YACC   grammar   adds   75	  shift/reduce	 conflicts.
+	  (Roskind's  original	grammar	had 25 shift/reduce conflicts and 7
+	  reduce/reduce	conflicts.)  The conflicts arise  on  nearly  every
+	  binary operator.
+
+	  The problems are that	the operand for	throw is optional and  that
+	  throw	 binds loosely to its operand but is placed with the unary-
+	  expressions which bind tightly to their operand.   The  following
+	  sections explore several alternative syntax rules.
+
+
+
+
+
+
+
+
+
+
+
+
+	  January 17, 1991	       Page 2		      X3J16/91-XXXX
+
+	  2.1  unary-expression: throw cast-expression(opt)
+
+	  unary-expression:
+		  throw-expression
+
+	  throw-expression:
+		  throw	 cast-expression(opt)
+
+	  Interpretations:
+
+
+			   throw a, b;	  =   (throw a), b;
+			   throw a = b;	  =   (throw a)	= b;
+			   throw a + b;	  =   (throw a)	+ b;
+			   throw - b;	  =   throw (- b);
+
+	  This syntax makes throw bind just as tightly as the other  unary-
+	  expressions.	 It does, however, break the parallels with return.
+	  This syntax introduces four new shift/reduce	conflicts  on  '+',
+	  '-',	'*', and '&' (i.e. those operators that	can be either unary
+	  or binary).
+
+	     throw.expression :	THROW .	 (171)
+	     throw.expression :	THROW .	cast.expression	 (172)
+
+	  2.2  unary-expression: throw postfix-expression(opt)
+
+	  unary-expression:
+		  throw-expression
+
+	  throw-expression:
+		  throw	 postfix-expression(opt)
+
+	  Interpretations:
+
+
+			   throw a, b;	  =   (throw a), b;
+			   throw a = b;	  =   (throw a)	= b;
+			   throw a + b;	  =   (throw a)	+ b;
+			   throw - b;	  =   (throw) -	b;
+
+	  This syntax makes throw bind more tightly than the  other  unary-
+	  expressions.	 It  too  breaks  the  parallels with return.  This
+	  syntax introduces no new shift/reduce	conflicts.
+
+	  2.3  throw-expression: assignment-expression | throw
+	       expression(opt)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  January 17, 1991	       Page 3		      X3J16/91-XXXX
+
+
+	  throw-expression:
+		  assignment-expression
+		  throw	 expression(opt)
+
+	  expression:
+		  throw-expression
+		  expression , throw-expression
+
+	  Interpretations:
+
+
+			   throw a, b;	  =   throw (a,	b);
+			   throw a = b;	  =   throw (a = b);
+			   throw a + b;	  =   throw (a + b);
+			   throw - b;	  =   throw (- b);
+
+	  This syntax introduces one shift reduce conflict on comma.
+
+	     expression	: expression . ',' throw.expression  (169)
+	     throw.expression :	THROW expression .  (172)
+
+	  2.4  throw-expression: assignment-expression | throw assignment-
+	       expression(opt)
+
+	  throw-expression:
+		  assignment-expression
+		  throw	 assignment-expression(opt)
+
+	  expression:
+		  throw-expression
+		  expression , throw-expression
+
+	  Interpretations:
+
+
+			   throw a, b;	  =   (throw a), b;
+			   throw a = b;	  =   throw (a = b);
+			   throw a + b;	  =   throw (a + b);
+			   throw - b;	  =   throw (- b);
+
+	  This introduces no  shift  reduce  conflicts	and  is	 reasonably
+	  liberal  about  the  operand to throw.  This interpretation makes
+	  sense	for resumable exceptions.
+
+	  2.5  statement: throw	expression(opt)
+
+	  throw-statement:
+		  throw	 expression(opt)  ;
+
+	  statement:
+		  throw-statement
+
+	  Interpretations:
+
+
+
+
+
+
+
+
+
+
+	  January 17, 1991	       Page 4		      X3J16/91-XXXX
+
+
+			   throw a, b;	  =   throw (a,	b);
+			   throw a = b;	  =   throw (a = b);
+			   throw a + b;	  =   throw (a + b);
+			   throw - b;	  =   throw (- b);
+
+	  This syntax is included for completeness.  It	introduces  no	new
+	  conflicts; however, throw is no longer an expression.
+
+
+
+	  3.  Recommendations
+
+	  I reject the syntax from both	Section	3.1 and	Section	3.2 as	too
+	  restrictive  about  the  throw operand.  I reject the	syntax from
+	  X3J16/90-0043	because	it introduces a	large number of	conflicts.
+
+	  The remaining	syntax rules divide along the following	issues:
+
+	  (I1)	expression vs. statement
+
+	  (I2)	zero or	one shift/reduce conflict
+
+	  (I3)	interpret throw	a, b; as equivalent to	throw  (a,  b);	 or
+		(throw a), b;
+
+	  Given	 a  choice  between  expression	 and  statement,  I  prefer
+	  expression due to the	additional flexibility,	e.g.
+
+	     T *p = (s ? s->ptr	: throw	Null);
+
+	  I prefer having the  expression  syntax  of  C++  as	"clean"	 as
+	  possible.   The  portion  of the expression syntax taken directly
+	  from ANSI C has no conflicts;	the expression syntax  of  C++	has
+	  only	the  conflict  on  trailing  asterisk  in  a new-declarator
+	  following an allocation-expression.
+
+	  I have no preference for the interpretation of throw a, b;.
+
+	  My preferences for (I1) and (I2) eliminate the  Section  3.3	and
+	  Section  3.5	syntax	rules,	leaving	only the Section 3.4 syntax
+	  rules.

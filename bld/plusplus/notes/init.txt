@@ -1,0 +1,107 @@
+Although the two forms
+
+	T a = b;
+
+and
+
+	T a(b);
+
+mean nearly the same thing, they aren't quite identical.
+
+Writing
+
+	T a = b;
+
+is a request to call the copy constructor T::T(const T&) and pass
+"b" as its argument, with whatever conversions that implies.  Among
+other things, this means that if T doesn't have a copy constructor,
+the initialization above is illegal.
+
+Writing
+
+	T a(b);
+
+is a request to call any appropriate constructor of T and pass
+"b" as its argument.  This may be the copy constructor, if that's
+the only one appropriate, or it may be any other constructor.
+The usual ambiguity control rules apply.
+
+In practice, these two declarations very often do exactly the
+same thing, which is why it can sometimes be difficult to tell
+them apart.  One case where they differ greatly, though, is
+when T doesn't have a copy constructor at all.  Then only the
+second form is legal.
+-- 
+				--Andrew Koenig
+				  ark@europa.att.com
+
+
+Additional information about temporaries and copying:
+
+Suppose Thing is a class with a constructor, destructor,
+copy constructor, and so on.  Now consider a function:
+
+	Thing copy(const Thing& t)
+	{
+		Thing r = t;
+		return r;
+	}
+
+Suppose we use it this way:
+
+	main()
+	{
+		Thing t = /* some value */;
+		Thing u = copy(t);
+		u = copy(t);
+	}
+
+How many times must Things be copied?  Assume the `copy' function
+is separately compiled from the main program.
+
+First let's look at the main program, and ignore the declaration of t.
+
+The declaration of `u' calls `copy' and puts its result into `u'.
+Formally, that should put the result of `copy' into a temporary
+and then construct `u' from the temporary, but it is permissible
+to ask `copy' to construct its result directly into `u'.  Call this
+optmization 1.
+
+The assignment to `u' in the next statement formally asks `copy' to
+construct its result in a temporary and then copy the temporary
+into `u' using Thing::operator=.  This cannot be shortened, because
+it is necessary to deal with the previous value of `u' somehow
+and it is precisely that operation that Thing::operator= exists
+to perform.  In particular, we can't rewrite it into a request
+to destroy `u' and then construct a new value there.  No optimization
+is therefore possible here.
+
+Now let's look at the copy function itself.  The formal parameter
+doesn't involve copying because it's a reference.  The creation of
+`r', however, does require a copy operation, and again that can't
+be helped.
+
+The final place where Things might be copied is in `return r'.
+This must copy `r' into wherever `copy' is expected to put its
+result.  This copy can be optimized, however, by aliasing `r' to
+that location.  After all, the destination location is known not
+to contain an object already because `copy' is expected to construct
+one there.  The only issue, then, is whether it constructs it directly
+there or whether it copies it there afterwards.  Call this optimization 2.
+
+Every version of cfront performs optimization 1.  Cfront 3.0 also
+performs optimization 2.  Using cfront 3.0,
+
+	Thing u = copy(t);
+
+therefore has the effect of copying t directly into u with no
+intermediaries at all, whereas
+
+	u = copy(t);
+
+must copy t into a temporary and assign it to u.
+-- 
+				--Andrew Koenig
+				  ark@europa.att.com
+
+

@@ -1,0 +1,113 @@
+WATCOM Dwarf Extensions For Templates Draft 1
+
+
+A template may describe either a class or a function; these are
+handled uniquely.
+
+----------------------------------------------------------------
+
+Class Templates General Description:
+
+    Variables declared as being of a class template instantiation type
+    will have a AT_user_def_type referencing a TAG_WATCOM_class_templ_inst,
+    which will own TAG_WATCOM_template_parameter dies indicating the supplied
+    parameters.  This instance die may be shared by any number of variables.
+
+    The template instance die will have an AT_user_def_type or
+    an AT_mod_u_d_type that references the TAG_WATCOM_template which
+    defines it.
+
+    The TAG_WATCOM_template die owns TAG_WATCOM_template_parameter dies
+    corresponding to each of the template's parameters.  It may also own
+    TAG_member and TAG_global_subroutine dies.  Member functions may
+    themselves be template functions (see below.).
+
+    Member functions of the class will be handled as non-member template
+    functions (see Function Templates below).  These function dies may own
+    TAG_formal_parameter dies that correspond to the
+    TAG_WATCOM_template_parameter dies of the class, with an AT_user_def_type
+    value of zero.
+
+TAG_WATCOM_class_template
+
+    Describes the declaration or definition of a C++ class or function
+    template.
+
+    Children dies include TAG_WATCOM_template_parameter, described
+    below.  These dies occur in the same order as they are encounterd in
+    the source code.
+
+    The AT_name attribute will have a name of the form "templateBaseName",
+    not "templateBaseName<Parm1, Parm2, ...>".
+
+    The AT_declaration attribute may be used to indicate a declaration
+    (eg: "template<class T, int size> class buffer;").  Although a
+    declaration will own no data or function dies, it may own template 
+    parameter dies.
+
+TAG_WATCOM_class_templ_inst
+
+    Describes an instantiation of a C++ class or function template
+    (ie: specific parameters have been supplied to fill in a usage
+    of the template.)
+
+    It will have an AT_user_def_type that holds a reference to the
+    TAG_WATCOM_template_definition die.
+
+    Children dies include TAG_WATCOM_template_parameter dies, in the same
+    order as they are supplied.
+
+
+TAG_WATCOM_template_parameter
+
+    Describes an parameter to a C++ class or function template
+    (see also Function Templates below).
+    These dies must occur in the same order as they occur in the
+    template declaration or definition.  This tag can correspond to either
+    the parameters in the template definition or (in the case of class
+    templates) the parameters supplied for a particular instantiation. 
+
+    Definitions and declarations:
+
+	If the parameter is a constant expression, it will have an
+	AT_location to allow the consumer to get its value.
+	
+	For class templates, the parameter may be a place-holder that
+	must be supplied a type upon instantiation;  these parameters will
+	have an AT_user_def_type with a value of zero (or references NIL
+	die?  or an AT_template_parm_type? ).
+    
+    Instantiations:
+
+	Parameters for function templates are described using
+	TAG_formal_parameter (see Function Templates below).
+
+	Parameter dies for class template instantiations indicate the
+	value that has been supplied for the instantiation.  The links
+	between the parameters of the instantiation and those of
+	declaration/definition are maintained by order of occurrence.
+
+	Constant valued parameters (int, pointer, etc.) may have a location
+	expression that allows the consumer to find the supplied value.
+       	
+       	Parameters that have been supplied a type may have a regular
+	type attribute to indicate the type.
+
+-----------------------------------------------------------------------------------
+
+Function Templates General Description:
+
+    Function templates are handled in a manner that parallels the current
+    dwarf description of inlined functions.
+
+    A function template definition is handled by a TAG_global_subroutine or
+    TAG_local_subroutine, with the attribute of AT_template.  Parameters to
+    the function are indicated with TAG_template_parameter, in the save order
+    as they occur in the source code.
+
+    Instantiations of a template are represented by a TAG_func_templ_inst
+    die.  This die has an AT_template_origin that references the
+    template definition.  Parameters to the instance are represented by
+    regular TAG_formal_parameter entries.
+    	
+

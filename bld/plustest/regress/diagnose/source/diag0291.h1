@@ -1,0 +1,4 @@
+#ifndef FOO1
+#define FOO1
+#endif
+#endif

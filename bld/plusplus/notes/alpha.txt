@@ -1,0 +1,33 @@
+Stuff to do after ship of alpha
+===============================
+
+(1) (DONE) BaseRemove -- remove this function (same as TypedefModifierRemove)
+
+(2) (JWW) FOLD.C -- remove CNV_FIX protection
+    - protection is disabled, now, and can be removed
+
+(3) (DONE) GUARD_IMPL -- remove #define from SRCFILE.H
+                     -- re-compile all modules which reference it
+
+(4) (DONE) set up new header for source files.
+
+(5) (DONE) handle the (ptr. to extern "C" function conversion) to/from
+    (ptr. to function)
+    - allow when class value is neither returned nor passed
+    - otherwise, there will a problem indirectly calling the function
+    - decide whether this is an error or a level 1 warning (could be used
+      for a purpose other than call, or the user code could handle the
+      different calling conventions)
+
+(6) (JWW) decide how to handle intrinsic functions (sin, cos, etc)
+
+    use #pragma intrinsic( fun [,fun] [,fun] )
+
+(7) (JWW) optimize away remaining copy-ctor of ctor
+    - introduce opcode for ctor-call, ctor-copy
+    - have optimization pass on parse tree
+    - decide whether we will buffer up parse trees with CO_COMMA under
+      appropriate optimization levels
+
+(8) (DONE) CGBACK.C
+    - enable reference-arguments optimizations

@@ -1,0 +1,63 @@
+#
+#   COMMANDS:   define the names of all the commands in the project
+#
+
+#   The directory $(posix_dir)\src\<command_name> must exist and contain
+#   the source for each command.
+
+COMMANDS = &
+    basename &
+    cat &
+    cmp &
+    comm &
+    compress &
+    cut &
+    date &
+    dev &
+    dirname &
+    env &
+    expand &
+    false &
+    fmt &
+    fold &
+    head &
+    lc &
+    line &
+    more &
+    paste &
+    ps &
+    pwd &
+    rev &
+    split &
+    strings &
+    tail &
+    tee &
+    tr &
+    true &
+    trunc &
+    unexpand &
+    uniq &
+    uuencode &
+    uudecode &
+    wc &
+    who
+
+!ifeq           targos  qnx
+!else ifeq      targos  qnx16
+!else
+COMMANDS += &
+    chmod &
+    cp &
+    df &
+    du &
+    egrep &
+    fgrep &
+    gnutar &
+    ls &
+    mkdir &
+    od &
+    rm &
+    rmdir &
+    sleep &
+    which
+!endif

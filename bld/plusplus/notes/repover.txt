@@ -1,0 +1,86 @@
+Repository Use in Program Development
+=====================================
+
+Potential User Benefits:
+------------------------
+
+* faster turn-around during the program-development cycle
+
+* better code optimization
+
+* increased functionality: version control, group control
+
+
+
+Potential Detailed Benefits:
+----------------------------
+
+* reduce storage redundancy of compiled files ==> faster compilation and
+  linking
+  
+* reduce # of compilations/links following an edit
+
+* reduce link time by providing information for incremental linking
+
+* better optimization by providing information about items not fully
+  defined in a compilation unit
+  
+* increased functionality:
+    * versioning should be pervasive across all aspects of repository
+    * group control: protection across group of developers (like PVCS, RCS)
+        * should have project, sub-project capabilities
+    * should also apply to sources
+      
+      
+Background (compilation and linking):
+-------------------------------------
+
+* current technology emits in object file:
+    - compiled code
+    - debugging information
+    - browsing information (C++)
+    - generated functions (C++)
+    - internal data for included definitions (C++)
+    
+* all of above can be redundant (present in many object files) when they
+  pertain to items shared (by inclusion directives) by a number of source
+  modules
+  
+* result is slowed compilation and linking when redundant information is
+  produced or processed
+  
+* a compiler can query the repository to decide that redundant information
+  need not be generated during a specific compilation
+  
+* a linker processes less information by the elimination of redundancy
+    - using a repository may consume less system resource than conventional
+      file-based storage of object files
+
+* while optimizing, a compiler can query the repository about items compiled
+  in other compilation units, resulting in better code
+
+
+Background (Make engine):
+-------------------------
+
+* conventional technology requires dependency rules to be file based
+    - hand-entered for small to medimum C projects and for non-compiler
+      dependencies
+    - automatically generated (based on inclusion) for larger or more complex
+      projects
+    - file dates are used to decide when re-compilation is required
+      
+* when automatic generation is used, many files get re-compiled needlessly,
+  because of the grossness of the dependency rule
+  
+* compiler can add dependencies (definitions and uses) to the repository to
+  build a finer set of rules for processing by a Make engine
+  - e.g., compiler adds item during source compilation:
+            "used field x from structure y with offset z"
+          compiler adds item for header file, following an edit:
+            " field x in structure y has offset Z"
+          source file has to recompliled if z is different than Z
+
+* result will be recompilation of fewer source files
+ 
+* note: mechanism can apply to any compilation system, not only C, C++         

@@ -1,0 +1,36 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGPRINT.H\0"
+END
+
+PrintDlg DIALOG FIXED IMPURE 60, 14, 238, 106
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Print"
+FONT 10, "MS Sans Serif"
+BEGIN
+    CONTROL         "&Contents", IDD_CONTENTS_GROUP, "Button", BS_GROUPBOX |
+                    WS_GROUP, 6, 6, 80, 71
+    CONTROL         "Functions", IDD_FUNCTIONS, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 13, 20, 67, 10
+    CONTROL         "Classes", IDD_CLASSES, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 13, 34, 67, 10
+    CONTROL         "Variables", IDD_VARIABLES, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 13, 48, 67, 10
+    CONTROL         "Typedefs", IDD_TYPEDEFS, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 13, 62, 67, 10
+    CONTROL         "&Destination", 112, "Button", BS_GROUPBOX | WS_GROUP,
+                    92, 6, 138, 54
+    CONTROL         "", IDD_HELP_BUTTON, "Edit", WS_BORDER | WS_TABSTOP, 98,
+                    38, 125, 14
+    CONTROL         "&Files...", 111, "Button", WS_TABSTOP, 183, 21, 40, 14
+    CONTROL         "Print", IDD_PRINT_BUTTON, "Button", WS_GROUP |
+                    WS_TABSTOP, 18, 86, 40, 14
+    CONTROL         "Cancel", IDD_CANCEL_BUTTON, "Button", WS_TABSTOP, 74,
+                    86, 40, 14
+    CONTROL         "&Layout...", IDD_LAYOUT_BUTTON, "Button", WS_TABSTOP,
+                    130, 86, 40, 14
+    CONTROL         "&Help", IDD_HELP_BUTTON, "Button", WS_TABSTOP, 186, 86,
+                    40, 14
+    CONTROL         "Print to File:", IDD_TODISK, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 98, 25, 82, 10
+END

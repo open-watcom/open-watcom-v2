@@ -1,0 +1,3 @@
+# .mif file for clients
+cfloat_lib      = $(cfloat_dir)\O.$(host_CPU)\cf.lib
+cfloat_include  = $(cfloat_dir)\h

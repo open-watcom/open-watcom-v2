@@ -1,0 +1,211 @@
+Design of test stream:
+----------------------
+
+(A) Overview
+    --------
+
+    - make your current directory \plusplus\test
+
+    - test streams are kept as packed files (WPACK) such as BASICS.TST
+
+    - a stream is executed by the batch file TESTSTRM:
+        TESTSTRM basics.tst
+
+    - this creates two sub-directories: TESTIN and TESTOUT
+        - TESTIN -- contains unpacked version of test stream
+        - TESTOUT -- contains target files for test stream
+
+    - TESTSTRM batch file also executes the test by executing the batch file
+      TESTRUN.BAT unpacked into the TESTIN directory
+        - edit TEST.LOG to see the effect of the test
+
+    - if the test was successful, you can wipe out the directories by:
+        FASTDEL testin
+        FASTDEL testout
+
+    - to revise a new test stream, the TESTARCH command will pack the
+      contents of the TESTIN directory:
+        TESTARCH basics.tst
+
+    - the following file-type conventions are used:
+        .VCL -- log of console output
+        .VAS -- disassembled object file
+        .VAC -- disassembled object file grep'ed down to CALL statements
+        .C   -- source file to be compiled
+        .TST -- test stream file (archived using wpack)
+
+    - when an aspect of a specific test fails, the appropriate .VCL, .VAS or
+      .VAC file is copied to the TESTOUT directory
+        - this means you can copy it to the TESTIN directory and then use
+          TESTARCH to revise the test stream
+
+    - a new test stream can be created by creating the TESTRUN.BAT file and
+      the appropriate .C files for it
+
+    - a number of environment variables TEST_... are used
+
+
+(B) Batch files:
+    -----------
+
+
+ The following commands are issued from the TEST directory
+
+    (1) TESTSTRM file
+        - if environment variable DEF_CPP is not set, then
+		RUN386 ..\wcppcp\wcppcpd.exp is used
+	- if DEF_CPP is set then the value of DEF_CPP is used for the compile
+	  	(ie set DEF_CPP=..\BIN\WCPPCPB.EXE)
+        - file is an archived file created with TESTARCH.BAT
+        - the files are de-archived into TESTIN
+        - the batch file TESTIN\TESTRUN.BAT is executed
+
+    (2) TESTARCH file
+        - packs contents of TESTIN directory into "file"
+
+ The following are used the TESTRUN.BAT file:
+
+    (1) TEST file [ option option ... option ] [ check check ... check ]
+
+        - tests "file".C
+
+        - "file".C read from the TESTIN directory given (unless option SRCDIR) 
+
+        - "option" is C++ command-line option
+
+        - "check" is a validation option:
+
+
+        (A) EXECUTE
+
+	    - links with print.obj and executes
+	    - differences will be discovered by CONSOLE
+
+
+        (B) DISASM
+
+            - disassembles and compares output with "file".VAS
+
+
+        (C) DISCALL
+
+            - disassembles, greps and compares output with "file".VAC
+
+
+        (D) CONSOLE
+
+            - compares logged console output with "file".VCL
+	    
+	    
+	(E) SRCDIR
+	
+	    - tells TEST.BAT to get source C file from TEST\TESTSRC\C
+
+
+    (2) TESTINC file [ option option ... option] INCLUDE header 
+    						[ check check ... check ]
+
+        - tests "file".C
+
+        - "file".C read from the TESTIN directory given (unless option SRCDIR) 
+	
+	- forces "header".H to be included from the TESTIN directory (unless
+	    option SRCDIR)
+	    
+	- names output files header.OBJ, header.EXE, header.VAS, header.VCL
+
+        - "option" is C++ command-line option
+
+        - "check" is a validation option:
+
+
+        (A) EXECUTE
+
+	    - links with print.obj and executes
+	    - differences will be discovered by CONSOLE
+
+
+        (B) DISASM
+
+            - disassembles and compares output with "file".VAS
+
+
+        (C) CONSOLE
+
+            - compares logged console output with "file".VCL
+	    
+	    
+	(D) SRCDIR
+	
+	    - tells TEST.BAT to get "file".C from TEST\TESTSRC\C
+	    - tells TEST.BAT to get "header".H from TEST\TESTSRC\H
+
+
+    (3) TESTBEG
+
+        - first call in a test stream
+
+        - performs initialization for test stream
+
+
+    (4) TESTEND
+
+        - last call in a test stream
+
+        - performs clean-up after a test stream
+
+
+ The following are used internally:
+
+    (1) VERASM
+
+        - diassembles current object and compares to current .VAS
+        - when the two files are the same a message is sent the log file
+        - when the files differ, the .VAS file is left in the TESTOUT
+          directory and the differences are noted in the log
+
+    (2) VERCLOG
+
+        - compares the console log for the test with the current .VCL file
+        - when the two files are the same a message is sent the log file
+        - when the files differ, the .VCL file is left in the TESTOUT
+          directory and the differences are noted in the log
+
+    (3) VERCALL
+
+        - diassembles current object, greps for CALL lines and compares
+	  to current .VAC
+        - when the two files are the same a message is sent the log file
+        - when the files differ, the .VAC file is left in the TESTOUT
+          directory and the differences are noted in the log
+
+
+
+(B) ENVIRONMENT VARIABLES
+    ---------------------
+
+    - used internally by batch files
+
+    TEST_LOG -- output log file
+
+    TEST_IN  -- path for input files
+    
+    TEST_CDIR-- path for "file".C (see TEST.BAT, TESTINC.BAT)
+    
+    TEST_HDIR-- path for "header".H (see TESTINC.BAT)
+
+    TEST_OUT -- path for target files (object, logs, exe.s, etc)
+
+    TEST_CMD -- command used internally
+
+    TEST_FIL -- current file used in test
+
+    TEST_ASM -- indicates if disassembly verification required
+    
+    TEST_CALL -- indicates if disassembly call verification required
+
+    TEST_CON -- indicates if console-log verification required
+
+    TEST_EXE -- indicates if program to be executed
+    
+    TEST_DIF -- flag set if difference in console log or assembly

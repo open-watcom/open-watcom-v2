@@ -1,0 +1,118 @@
+#include "windows.h"
+#include "shootgal.h"
+
+ShootGalIcon    ICON shootgal.ico
+Bolt            ICON bolt.ico
+MouseIcon       ICON mouse.ico
+KeyboardIcon    ICON keyboard.ico
+TimerIcon       ICON timer.ico
+ScrollIcon      ICON scroll.ico
+
+guncursor       CURSOR gun.cur
+
+target          BITMAP target.bmp
+
+ShootGalMenu MENU
+BEGIN
+    POPUP "&Info"
+    BEGIN
+        MENUITEM "&About ShootGal...", MENU_ABOUT
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit", MENU_EXIT
+    END
+    POPUP "&Messages"
+    BEGIN
+        MENUITEM "&Message Window On", MENU_MESSAGE_WINDOW_ON
+    END
+    POPUP "&Show Score"
+    BEGIN
+        MENUITEM "&Score Window On", MENU_SCORE_WINDOW_ON
+    END
+    POPUP "&Configure"
+    BEGIN
+        MENUITEM "&Target Speed", MENU_SET_TARGET_SPEED
+        MENUITEM "&Lightning Speed", MENU_SET_BOLT_SPEED
+#ifndef __NT__
+        MENUITEM "&Sound On", MENU_SOUND_ON
+#endif
+    END
+END
+
+AboutBox DIALOG 22, 17, 144, 75
+        STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+        CAPTION "About WATCOM ShootGal"
+        BEGIN
+            CTEXT "WATCOM Shooting Gallery Program", -1, 0,  5, 144, 8
+            CTEXT "for Windows", -1, 0,  14, 144, 8
+            CTEXT "Version 1.0", -1, 0, 23, 144, 8
+            DEFPUSHBUTTON "OK", IDOK, 53, 59, 40, 14, WS_GROUP
+            ICON "ShootGalIcon", -1, 15,15,40,40
+        END
+
+SpeedDlg DIALOG 113, 17, 160, 100
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Speed"
+FONT 8, "Helv"
+BEGIN
+    CTEXT           "", SET_WHAT, 50, 10, 98, 8
+    SCROLLBAR       SPEED_SCROLL, 32, 25, 96, 10
+    PUSHBUTTON      "OK", IDOK, 32, 80, 40, 14
+    PUSHBUTTON      "CANCEL", IDCANCEL, 88, 80, 40, 14
+    CTEXT           "", TEST, 50, 40, 98, 8
+    LTEXT           "Fastest", FAST_TEXT, 2, 25, 28, 8
+    LTEXT           "Slowest", SLOW_TEXT, 132, 26, 28, 8
+END
+
+MessageWindow DIALOG 161, 51, 185, 196
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Messages"
+FONT 8, "Helv"
+BEGIN
+    ICON            "MouseIcon", -1, 140, 0, 18, 20
+    LTEXT           "", MOUSE_MOVE_BOX, 45, 26, 136, 12
+    CONTROL         "", FRAME, "Static", SS_BLACKFRAME, 44, 25, 139, 14
+    LTEXT           "", L_BUTTON_BOX, 45, 41, 136, 12
+    CONTROL         "", FRAME, "Static", SS_BLACKFRAME, 44, 40, 139, 14
+    LTEXT           "", R_BUTTON_BOX, 45, 56, 136, 12
+    CONTROL         "", FRAME, "Static", SS_BLACKFRAME, 44, 55, 139, 14
+    LTEXT           "Mouse Messages", MOUSE_TITLE, 2, 8, 58, 8
+    LTEXT           "Movement", MOVMENT_TITLE, 2, 26, 37, 8
+    LTEXT           "Left Button", L_BUTTON_TITLE, 2, 41, 38, 8
+    LTEXT           "Right Button", R_BUTTON_TITLE, 2, 56, 41, 8
+    ICON            "KeyboardIcon", -1, 140, 71, 18, 20
+    LTEXT           "Keyboard Messages", KEYBOARD_MSG_TITLE, 2, 81, 69, 8
+    LTEXT           "", KEY_UP_OR_DOWN_BOX, 2, 96, 155, 12
+    CONTROL         "", FRAME, "Static", SS_BLACKFRAME, 1, 95, 182, 14
+    LTEXT           "", CHARACTER_BOX, 2, 111, 155, 12
+    CONTROL         "", FRAME, "Static", SS_BLACKFRAME, 1, 110, 182, 14
+    ICON            "TimerIcon", -1, 140, 131, 18, 20
+    LTEXT           "Timer Messages", TIMER_MSG_TITLE, 0, 131, 69, 8
+    ICON            "ScrollIcon", -1, 140, 158, 18, 20
+    LTEXT           "Scroll Messages", SCROLL_MSG_TITLE, 2, 167, 69, 8
+    LTEXT           "", TIMER_BOX, 2, 144, 115, 12
+    CONTROL         "", FRAME, "Static", SS_BLACKFRAME, 1, 143, 117, 14
+    LTEXT           "", SCROLL_BOX, 2, 181, 178, 12
+    CONTROL         "", FRAME, "Static", SS_BLACKFRAME, 1, 180, 182, 14
+END
+
+ScoreWindow DIALOG 0, 12, 52, 132
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Score"
+FONT 8, "Helv"
+BEGIN
+    ICON            "ShootgalIcon", -1, 11, 6, 18, 20
+    LTEXT           "Shots", -1, 2, 30, 25, 8
+    LTEXT           "", SHOTS, 30, 30, 20, 8
+    LTEXT           "Yellow", -1, 2, 45, 25, 8
+    LTEXT           "", YELLOW, 30, 45, 20, 8
+    LTEXT           "Red", -1, 2, 60, 25, 8
+    LTEXT           "", RED, 30, 60, 20, 8
+    LTEXT           "Blue", -1, 2, 75, 25, 8
+    LTEXT           "", BLUE, 30, 75, 20, 8
+    LTEXT           "Black", -1, 2, 90, 25, 8
+    LTEXT           "", BLACK, 30, 90, 20, 8
+    LTEXT           "White", -1, 2, 105, 25, 8
+    LTEXT           "", WHITE, 30, 105, 20, 8
+    LTEXT           "Misses", -1, 2, 120, 25, 8
+    LTEXT           "", MISSED, 30, 120, 20, 8
+END

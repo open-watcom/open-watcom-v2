@@ -1,0 +1,2 @@
+//#line "..\c\dlgcnvt.c" 106
+extern void DlgGetConvert(a_window *wnd);

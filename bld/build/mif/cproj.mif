@@ -1,0 +1,203 @@
+!include preclude.mif
+
+!ifndef lang_root
+lang_root       = $(lang_root_$(host_CPU))
+!endif
+
+cc_386          = *wcc386
+cc_i86          = *wcc
+cc_axp          = *wccaxp
+cc_ppc          = *wccppc
+
+cpp_386         = *wpp386
+cpp_i86         = *wpp
+cpp_axp         = *wppaxp
+cpp_ppc         = *wppppc
+
+linker_386      = *wlink
+linker_i86      = *wlink
+linker_axp      = *wlink
+linker_ppc      = *wlink
+
+librarian_386   = *wlib
+librarian_i86   = *wlib
+librarian_axp   = *wlib
+librarian_ppc   = *wlib
+
+as_386          = *wasm -3
+as_i86          = *wasm
+as_axp          = *wasaxp
+as_ppc          = *wasppc
+
+#rc_os2          = *rc
+rc_os2          = d:\lang\binp\rc
+!ifeq host_OS os2
+#%PATH = $+$(%PATH);$(%watcom)\binp$-
+%PATH = $+$(%PATH);d:\lang\binp$-
+# this extra line appears to be needed
+!endif
+rc              = *wrc
+
+
+!ifndef release_$(proj_name)
+!ifeq on_build_machine 1
+release = 1
+!else
+release = 0
+!endif
+!else
+release = $(release_$(proj_name))
+!endif
+
+ldebug_i86      = debug all
+ldebug_386      = debug all
+ldebug_axp      = debug dwarf
+ldebug_ppc      = debug dwarf
+
+mode_cflags_r   = -oaxt -d1
+mode_lflags_r   = $(ldebug_$(host_CPU))
+mode_cflags_d   = -od -d2
+mode_lflags_d   = $(ldebug_$(host_CPU))
+!ifeq release 1
+mode_cflags     = $(mode_cflags_r)
+mode_lflags     = $(mode_lflags_r)
+!else
+mode_cflags     = $(mode_cflags_d)
+mode_lflags     = $(mode_lflags_d)
+!endif
+
+!ifndef $(proj_name)_nosymfile
+mode_lflags    += option symfile
+!endif
+
+!ifndef memory_model_i86
+memory_model_i86 = l
+!endif
+
+!ifdef mem_model_i86
+model_switch_i86        = $(mem_model_i86)
+!else
+model_switch_i86        = -m$(memory_model_i86)
+!endif
+
+!ifdef mem_model_386
+model_switch_386        = $(mem_model_386)
+!else ifdef memory_model_386
+model_switch_386        = -m$(memory_model_386)
+!endif
+
+!ifndef memory_model_386
+memory_model_386 = f
+!endif
+
+
+cflags_all      = -zq -w4 -we
+!ifeq release 1
+cflags_all      += -dNDEBUG
+!endif
+
+cflags_386      = $(model_switch_$(host_CPU)) -zc
+cflags_i86      = $(model_switch_$(host_CPU))
+cflags_axp      =
+cflags_ppc      =
+
+cflags_nt       = -bt=nt
+cflags_win      = -bt=windows
+cflags_os2      = -bt=os2
+cflags_qnx      = -bt=qnx
+cflags_osi      = -bt=osi
+cflags_dos      = -bt=dos
+cflags_nov      = -bt=netware
+
+!ifdef $(proj_name)_rtdll
+!ifeq $(proj_name)_rtdll 1
+sys_rtdll       = 1
+!else
+sys_rtdll       = 0
+!endif
+!endif
+
+!ifndef sys_rtdll
+sys_rtdll       = 0
+!endif
+
+!ifeq sys_rtdll 1
+cflags_nt      += -br
+cflags_win     += -br
+cflags_os2     += -br
+!endif
+
+proj_c_flags    = $(extra_c_flags) $(extra_c_flags_$(host_CPU)) $(extra_c_flags_$(host_OS))
+cflags          = $(cflags_all) $(cflags_$(host_CPU)) $(cflags_$(host_OS)) $(mode_cflags) $(proj_c_flags)
+
+lflags_dos_i86  = sys dos
+lflags_nt_axp   = sys ntaxp
+lflags_nt_386   = sys nt
+lflags_os2_386  = sys os2v2
+lflags_os2_i86  = sys os2 pmc
+lflags_dos_386  = sys dos4g
+lflags_qnx_386  = sys qnx386 flat
+lflags_qnx_i86  = sys qnx
+lflags_win_386  = sys win386
+lflags_win_i86  = sys windows
+lflags_nov_386  = sys novell
+lflags_osi_386  = sys osi
+
+!ifdef sys_windowed
+# this is really stupid
+lflags_nt_386   = sys nt_win
+lflags_nt_axp   = sys ntaxp_win
+lflags_os2_386  = sys os2v2_pm
+!endif
+!ifdef sys_dll
+#this is equally bad
+lflags_nt_386   = sys nt_dll
+lflags_nt_axp   = sys ntaxp_dll
+lflags_win_i86  = sys windows_dll
+lflags_os2_386  = sys os2v2 dll
+lflags_os2_i86  = sys os2 dll
+!ifndef suppress_bd
+cflags_all     += -bd
+!endif
+!endif
+
+lflags          = $(mode_lflags) $(lflags_$(host_OS)_$(host_CPU)) $(extra_l_flags_$(host_OS)) $(extra_l_flags)
+
+rc_flags_nt     = -bt=nt
+rc_flags_win    = -bt=windows
+
+rc_flags_axp    = -d__AXP__
+
+rc_flags        = $(rc_flags_$(host_OS)) $(rc_flags_$(host_CPU))
+
+inc_dirs_sys_os2_386 = $(lang_root)\h\os2
+inc_dirs_sys_os2_i86 = $(lang_root)\h\os21x
+inc_dirs_sys_nt = $(lang_root)\h\nt
+inc_dirs_sys_win= $(lang_root)\h\win
+inc_dirs_sys_os2= $(inc_dirs_sys_os2_$(host_CPU))
+inc_dirs_sys_dos=
+inc_dirs_sys_nov=
+inc_dirs_sys_qnx=
+
+inc_dirs_lang_qnx = $(lang_root)\qh
+inc_dirs_lang_netware = $(lang_root)\novh
+
+!ifdef inc_dirs_lang_$(host_OS)
+inc_dirs_lang   = $(inc_dirs_lang_$(host_OS))
+!else
+inc_dirs_lang   = $(lang_root)\h
+!endif
+
+inc_dirs_sys    = $(inc_dirs_lang);$(inc_dirs_sys_$(host_OS))
+inc_path        = $(inc_dirs);$(inc_dirs_$(host_OS));$(inc_dirs_sys);$(watcom_dir)\h
+
+cc              = $(cc_$(host_CPU))
+cpp             = $(cpp_$(host_CPU))
+linker          = $(linker_$(host_CPU))
+librarian       = $(librarian_$(host_CPU))
+as              = $(as_$(host_CPU))
+yacc            = $(bld_bin)\yacc
+re2c            = $(bld_bin)\re2c
+
+!include bhost.mif
+!include local.mif

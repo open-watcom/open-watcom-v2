@@ -1,0 +1,25 @@
+/*
+ *  wsample.h   WATCOM Execution Sampler include file
+ *
+:include crwat.sp
+ */
+#ifndef _WSAMPLE_H_INCLUDED
+#define _WSAMPLE_H_INCLUDED
+:include readonly.sp
+:include cpluspro.sp
+#ifdef _MARK_ON
+  #if defined(__386__)
+    extern void __mark( char __far * );
+    #pragma aux __mark = 0xcc __parm __nomemory [__dx __eax] __modify __exact __nomemory [];
+  #elif defined(M_I86)
+    extern void __mark( char __far * );
+    #pragma aux __mark = 0xcc __parm __nomemory [__dx __ax] __modify __exact __nomemory [];
+  #else
+    #error __mark not defined for this platform
+  #endif
+  #define _MARK_( x )   __mark( x )
+#else
+  #define _MARK_( x )
+#endif
+:include cplusepi.sp
+#endif

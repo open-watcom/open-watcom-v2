@@ -1,0 +1,170 @@
+proj_name = wasm
+!ifeq host_OS qnx
+exc_name = $(proj_name).qnx
+!else
+exc_name = $(proj_name).exe
+!endif
+link_name = $(proj_name).lnk
+!include cproj.mif
+!include deftarg.mif
+
+.OPTIMIZE
+
+inc_dirs = ..\h;$(womp_dir)\h;$(womp_dir);$(trmem_dir)
+
+.BEFORE
+        @set include=$(inc_path)
+        @set DGINFO=
+!ifeq release 1
+!ifeq host_OS dos
+!ifeq tools_9_0
+        @$(rsi_root)\bin\dos4g $(rsi_root)\bin\dginfo >dginfo.gh
+        @set DGINFO=-fidginfo.gh
+
+!endif
+!endif
+!endif
+
+#cflags stuff
+#########
+!ifeq release 0
+extra_c_flags =/dTRMEM /dDEBUG_OUT /d_WASM_
+extra_c_flags_386 = /fpc /of
+!else
+extra_c_flags =/d_WASM_
+extra_c_flags_386 = /fpc
+!endif
+#lflags stuff
+#########
+extra_l_flags = option map,quiet,symfile,stack=12k
+extra_l_flags_qnx = option offset=16k, res=usage.u
+
+.c      : ..\c;$(womp_dir)\c;$(trmem_dir)
+
+
+proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
+    main.obj            &
+    write.obj           &
+    fatal.obj           &
+    util.obj            &
+    direct.obj          &
+    posndir.obj         &
+    asmeval.obj         &
+    asmalloc.obj        &
+    asmmsg.obj          &
+    wasmmsg.obj         &
+    mem.obj             &
+    macro.obj           &
+    condasm.obj         &
+    breakout.obj        &
+    asmstruc.obj        &
+    fpfixup.obj         &
+    expand.obj          &
+    mangle.obj          &
+    for.obj             &
+    objio.obj           &
+    carve.obj           &
+    genmsomf.obj        &
+    objrec.obj          &
+    queue.obj           &
+    fixup.obj           &
+    lifix.obj           &
+    array.obj           &
+    asmins.obj          &
+    asmscan.obj         &
+    asmline.obj         &
+    asmsym.obj          &
+    tbyte.obj           &
+    asmlabel.obj        &
+    asmfixup.obj        &
+    asmmatch.obj        &
+    asmdata.obj         &
+    insthash.obj        &
+    asmjump.obj         &
+    finger.obj
+
+!ifeq release 0
+proj_obj += trmem.obj trmemcvr.obj
+!endif
+
+extra_c_flags_finger = $(%DGINFO)
+
+#implicit rules
+#####
+.c.obj: .AUTODEPEND
+        $(CC) $(cflags) $(extra_c_flags_$[&) $[@
+
+#explicit rules
+######
+
+$(exc_name) : ..\h\fullops.h ..\h\inlnops.h $(link_name) $(proj_name).res $(proj_obj)
+!ifeq  host_OS qnx
+        @%make usage.u
+!endif
+        $(LINKER) @$(link_name)
+!ifeq host_OS osi
+        $(bld_bin)\w32bind $(proj_name).rex $@ $(tools_root)\os2ldr.exe
+        erase $(proj_name).rex
+!endif
+        wstrip /a /r /q $@ . $(proj_name)
+
+
+$(link_name) : $(__MAKEFILES__)
+        @%write $^@ $(lflags)
+        @%append  $^@ file { $(proj_obj) }
+!ifeq host_CPU 386
+        @%append $^@  lib $(watcom_dir)\lib\wresf.lib
+!else ifeq host_CPU axp
+        @%append $^@  lib $(watcom_dir)\lib\wresaxp.lib
+!endif
+!ifeq host_OS osi
+        @%append  $^@ name $(proj_name).rex
+!else
+        @%append  $^@ name $(exc_name)
+!endif
+
+###################################################################
+# resource stuff
+
+$(proj_name).res : ../h/$(proj_name).rc ../h/asmshare.msg ../h/$(proj_name).msg usage.rc usagej.rc ../h/msg.gh ../h/wasmmsg.gh
+        $(RC) /bt=windows /d_WASM_ /r /zk0 /fo=$^@ ..\h\$(proj_name).rc
+
+usage.rc : ../h/usage.sp
+        $(bld_bin)\wsplice -kIS_RC -kENGLISH -k$(host_OS) -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\""../h/usage.sp usage.rc
+
+usagej.rc : ../h/usage.sp
+        $(bld_bin)\wsplice -kIS_RC -kJAPANESE -k$(host_OS) -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\""../h/usage.sp usagej.rc
+
+../h/msg.gh : ../h/asmshare.msg
+        @SET OLD_CWD=$+$(%cwd)$-
+        @cd ..\h
+        vi -d -i "-k:g!/^pick/d\n:w!t.msg\n:q!\n" asmshare.msg
+        vi -d -s makemsg.vi t.msg
+        del t.msg
+        @cd $(%OLD_CWD)
+
+../h/wasmmsg.gh : ../h/$(proj_name).msg
+        @SET OLD_CWD=$+$(%cwd)$-
+        @cd ..\h
+        vi -q -d -i "-k:g!/^pick/d\n:w!t.msg\n:q!\n" $(proj_name).msg
+        vi -d -s makewmsg.vi t.msg
+        del t.msg
+        @cd $(%OLD_CWD)
+
+usage.u : ../h/usage.sp
+        $(bld_bin)\wsplice -kENGLISH -k$(host_OS) -t8 -u ../h/usage.sp usage.u
+
+usagej.u : ../h/usage.sp
+        $(bld_bin)\wsplice -kJAPANESE -k$(host_OS) -t8 -u ../h/usage.sp usagej.u
+
+###################################################################
+
+..\h\inlnops.h: ..\inlnops.tok ..\mkopcode.exe
+        ..\mkopcode ..\inlnops.tok $^@
+
+..\h\fullops.h: ..\fullops.tok ..\inlnops.tok ..\mkopcode.exe
+        ..\mkopcode ..\fullops.tok ..\inlnops.tok $^@
+
+..\mkopcode.exe: ..\mkopcode.c
+        $(bld_cl) $[@ /fe=$^@
+        del mkopcode.obj

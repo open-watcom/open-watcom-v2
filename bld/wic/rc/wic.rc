@@ -1,0 +1,10 @@
+#include "msg.h"
+#include "..\rc\messages.rc"
+#ifdef ENGLISH
+#include "..\rc\usagee.rc"
+#elif  defined(JAPANESE)
+#include "..\rc\usagej.rc"
+#else
+#error Invalid language code!
+#endif
+

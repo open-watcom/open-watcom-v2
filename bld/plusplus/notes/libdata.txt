@@ -1,0 +1,42 @@
+This file contains a description of how global data is currently handled
+for the C library.  The C++ library attempts to model itself after the
+C library.
+
+There are several factors affecting the global data:
+1. Environment (DOS,OS/2 1.x,OS/2 2.0,NT,PENPOINT,NOVELL,...)
+2. Multi-threading vs. Non-multi-threading
+3. DLL vs. Non DLL (DLL pre-supposes multi-threading)
+
+There are three types of global data:
+1. System   - common to all processes in a system   (i.e. osmajor,osminor)
+2. Process  - common to all threads in a process    (i.e. fmode,psp)
+3. Thread   - specific to a single thread	    (i.e. errno)
+
+C++ has four libraries:
+1. plib?.lib - run time support routines	(Process & Thread global data)
+2. iost?.lib - iostream				(Process global data)
+3. str?.lib  - string class library		(No global data)
+4. cplx?.lib - complex number class library	(No global data)
+
+System and Process data is handled together in two ways:
+1. Everything but PENPOINT
+    An assembler file (crwdata.obj,prwdata.obj) contains the instances of
+    all the data objects.
+2. PENPOINT
+    A file (?) contains a data structure with all the global data in it.
+
+Thread data is handled in three ways:
+1. PENPOINT
+    The data structure has an area for thread specific data.
+2. Non multi-thread environments
+    The data is allocated, at compile time, in the object file that
+    defines it.
+3. Multi-thread environemnts
+    The data is allocated, at run time, by the BeginThread() library routine.
+
+This scheme is implemented via a bewildering array of include files and
+conditional compilation.
+
+- need to describe how the header files work for thread data
+- need to describe how the header files work for system/process data
+- describe the _RWD_qwerty mechanism

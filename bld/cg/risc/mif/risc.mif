@@ -1,0 +1,23 @@
+risc_objs = &
+        rtcall.obj   &
+        rscmul.obj   &
+        rscregsv.obj &
+        rscsplit.obj &
+        rscver.obj   &
+        rcsilen.obj  &
+        rscobj.obj   &
+        rscscore.obj &
+        rscstubs.obj &
+        rsccvsup.obj &
+        rscdfsup.obj &
+        rscopt.obj   &
+        rscsel.obj   &
+        rsctemps.obj &
+        rscdata.obj  &
+        rscindex.obj &
+        rscsib.obj   &
+        rsctype.obj  &
+        rscqueue.obj
+
+include_path    = $+$(include_path)$-;$(cg_dir)\risc\h;$(owl_dir)\h
+src_path        = $+$(src_path)$-;$(cg_dir)\risc\c

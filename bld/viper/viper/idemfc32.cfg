@@ -1,0 +1,10 @@
+Project
+    TargetGroup "MFC - 32-bit (4.1)"
+      Target *.exe, nm2e_, "Executable"
+      Target *.exe, na2e_, "Executable (AFXDLL)"
+      Target *.exe, nu2e_, "Unicode Executable"
+      Target *.exe, no2e_, "Unicode Executable (AFXDLL)"
+      Target *.dll, nm2d_, "DLL (USRDLL)"
+      Target *.dll, na2d_, "DLL (AFXEXT)"
+      Target *.dll, nu2d_, "Unicode DLL (USRDLL)"
+      Target *.dll, no2d_, "Unicode DLL (AFXEXT)"

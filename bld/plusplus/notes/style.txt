@@ -1,0 +1,46 @@
+C++ Style Notes
+---------------
+
+
+(A) H Files
+===========
+
+    PLUSPLUS.H  - include in every module
+
+    CMDLINE.H   - comannd-line processing
+
+    CGDATA.H    - code-generation information
+
+    ERRDEFNS.H  - error definitions: message codes, routines
+
+    HFILE.H     - H file processing: functions
+
+    IOSUPP.H    - i/o support: functions
+
+    MEMMGR.H    - memory management: functions
+
+    PREPROC.H   - for use by modules which interact with the scanning
+
+    RING.H      - ring (list and stack) management
+
+    RINGNAME.H  - rings of names
+
+    STATS.H     - statistics: data
+
+=================
+
+    CVARS.H     - I have slimmed this down; try to eliminate its use
+
+    JUNK.H      - used to park required variables
+
+
+(B) Obsolete H Files
+====================
+
+    CMEMMGR.H
+
+
+(C) Obsolete C Files
+====================
+
+    These are commented out in COBJS.MIF.

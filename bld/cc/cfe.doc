@@ -1,0 +1,106 @@
+
+        C Front End Notes
+        -----------------
+1. There are two implementations: TREE vs QUAD. The version to be built
+   can be controlled with an entry in the makefile.
+   cc_version = quad    - this builds older quads and leafs version
+   cc_version = tree    - this builds the newer parse tree version
+   All new development has been done on the TREE version and is the
+   recommended version for the future. Features required for the Alpha
+   were only added to the TREE version. Some of the new Microsoft
+   compatibility issues were fixed only in the TREE version.
+
+   The TREE version uses some new source files with suffix 2. e.g.
+   QUAD version: cexpr.c  cfold.c  cmath.c  cgen.c  cstmt.c
+   TREE version: cexpr2.c cfold2.c cmath2.c cgen2.c cstmt2.c
+   Other source files that only had minor changes are controlled with
+   the macro NEWCFE. e.g.
+        #ifdef NEWCFE
+                code for TREE version
+        #else
+                code for QUAD version
+        #endif
+
+2. Major header files
+   The major header files are cvars.h and ctypes.h. For the TREE version
+   xcgops.h is also a major file. Most source files need only include
+   cvars.h.
+   CVARS.H      - primary include file. The file includes most of the
+                  other header files. Most global data variables are
+                  declared here using the GLOBAL macro. All function
+                  prototypes are also in this file.
+   CTYPES.H     - defines common data structures, enum constants
+   XCGOPS.H     - defines parse tree operators and parse tree data structures
+   CERRS.H      - error messages
+
+3. Adding a new keyword:
+   - CC\H directory contains 4 files containing list of keywords
+   C.KEY     - normal standard C keywords
+   SEH.KEY   - keywords for structured exception handling
+   PC.KEY    - keywords generally associated with PC implementations
+   DUMMY.KEY - some extra dummy keywords to make total number of
+               keywords a power of 2. These keywords start with a
+               digit which is an impossible keyword.
+   e.g. to add __int64 as a keyword
+   - add entry to PC.KEY
+     The second column indicates what token class this new token
+     belongs to. Token classes start with TC_ and can be found in
+     CTOKENS.H. Since 'int' and 'long' are listed as TC_KEYWORD,
+     we should make '__int64' a TC_KEYWORD.
+   - delete an entry from DUMMY.KEY (to keep total power of 2)
+   - wmake will run findhash which tries to find a perfect hash for
+     the list of keywords it is given. If it is successful, it will
+     create 2 files: WEIGHTS.GH and KEYWORDS.GH
+   - Since findhash usually ends up assigning new token values for
+     all the keywords when a new one is added, you SHOULD do a global
+     recompile after adding/removing a keyword. MASTER.MIF should be
+     modified to make this automatic.
+
+4. Adding a new error message:
+   All error messages are added to CERRS.H. There are several groups:
+   - warning level 1
+   - warning level 2
+   - warning level 3
+   - errors
+   The warning levels are defined using the warn() macro at the top of
+   the file. Different macros are used for each group of messages:
+   Message Group        Macro
+   -------------        -----
+   warning level 1      err1
+   warning level 2      err2
+   warning level 3      err3
+   errors               err9
+
+   The following is an example of a message entry: Note that there is
+   no comma between the E("english message") and J("japanese message")
+   macros. Additional language translations can be added by adding
+   additional entries: e.g. German messages could be added by adding a
+   G("german message") entry to every message.
+   CMSG.C is where the arrays of error messages are initialized. This
+   has NOT been done yet, BUT when we get the Japanese translations,
+   CMSG.C needs to be modified to include CERRS.H a second time with
+   appropriate definitions for the macros to cause the J() messages to
+   be selected while ignoring the E() messages. Code also needs to be
+   added to select at execution time which translation to display.
+   Brian knows what the code sequence should be. There is a global
+   variable that is updated by the OSI loader that can be used to
+   select the appropriate translation.
+   NOTE: We are still waiting for the Japanese translations.
+
+err2(   ERR_DEAD_CODE,                  <- enum constant used in code
+        E("Unreachable code" )          <- english error message
+        J("Unreachable code" )          <- japanese error message
+),
+#ifdef GML                              <- GML description for manual
+.np
+The statement will never be executed, because there is no path through
+the program that causes control to reach this statement.
+#endif
+
+   The GML portion of the file is enclosed in #ifdef GML, #endif pairs.
+   The file mkgml.c is used to extract the GML portions of the file and
+   create the neccesary GML files for the manual and help files.
+
+   New messages should always be added at the end of the appropriate
+   group of messages so that the message numbers do not change from
+   one release to the next.

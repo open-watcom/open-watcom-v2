@@ -1,0 +1,468 @@
+#
+# Test stream environment
+#
+
+#
+# configuration flags (default: flag symbol not defined)
+#
+# no_continue = yes     -- continue in the face of errors
+# dev = yes             -- use development tools
+# use_dll = yes		-- use !loaddll
+
+#
+# configuration values:
+#
+# targ_env_386 = wnt386/d4g386/os2386 (depends on current OS)
+# targ_env_i86 = os2i86/dosi86 (depends on current OS)
+# targ_env_axp = os2axp/ntaxp (depends on current OS)
+#
+# nb: above directories can have extensions:
+#   .    - Intel 386 hosted compiler
+#   .axp - Digital AXP hosted compiler
+#   ( more to be defined )
+#
+# wcc_386 = wcc386
+# wcc_i86 = wcc
+# wcc_axp = wccaxp
+# wpp_386 = wpp386
+# wpp_i86 = wpp
+# wpp_axp = wppaxp
+# dll_i86 = wppdi86.dll
+# dll_386 = wppd386.dll
+# dll_axp = wppdaxp.dll
+# arch = 386/axp (depends on current hardware)
+# linker = wlink
+# log_file = $(plustest_dir)\$(plustest_name).log
+
+#
+# use plustest_* environment vars to set make variables
+#
+!ifndef dev
+!  ifdef %plustest_dev
+!    define dev $+$(%plustest_dev)$-
+!  endif
+!endif
+
+!ifndef use_dll
+!  ifdef %plustest_use_dll
+!    define use_dll $+$(%plustest_use_dll)$-
+!  endif
+!endif
+
+!ifndef wpp_386
+!  ifdef %plustest_wpp_386
+!    define wpp_386 $(%plustest_wpp_386)
+!  endif
+!endif
+
+!ifndef wpp_i86
+!  ifdef %plustest_wpp_i86
+!    define wpp_i86 $(%plustest_wpp_i86)
+!  endif
+!endif
+
+!ifndef wpp_axp
+!  ifdef %plustest_wpp_axp
+!    define wpp_axp $(%plustest_wpp_axp)
+!  endif
+!endif
+
+!ifndef dll_386
+!  ifdef %plustest_dll_386
+!    define dll_386 $(%plustest_dll_386)
+!  endif
+!endif
+
+!ifndef dll_i86
+!  ifdef %plustest_dll_i86
+!    define dll_i86 $(%plustest_dll_i86)
+!  endif
+!endif
+
+!ifndef dll_axp
+!  ifdef %plustest_dll_axp
+!    define dll_axp $(%plustest_dll_axp)
+!  endif
+!endif
+
+!ifndef targ_env_386
+!  ifdef %plustest_targ_env_386
+!    define targ_env_386 $(%plustest_targ_env_386)
+!  endif
+!endif
+
+!ifndef targ_env_i86
+!  ifdef %plustest_targ_env_i86
+!    define targ_env_i86 $(%plustest_targ_env_i86)
+!  endif
+!endif
+
+!ifndef targ_env_axp
+!  ifdef %plustest_targ_env_axp
+!    define targ_env_axp $(%plustest_targ_env_axp)
+!  endif
+!endif
+
+!ifndef plustest_name
+!error macro 'plustest_name' has not been set
+!endif
+
+.extensions:
+.extensions: .exp .exe .obj .sbj .2bj .3bj .ser .err .c .cc .cpp .mif
+.mif: ..;$(mif_path)
+
+!ifndef no_continue
+.continue
+!else
+!  ifneq no_continue yes
+.continue
+!  endif
+!endif
+
+!ifndef __LOADDLL__
+# this feature isn't supported
+!undef use_dll
+!endif
+
+.erase
+
+#
+# architectures -- 386, i86, axp
+#
+!ifndef arch
+!   ifdef __NTAXP__
+!       define arch axp
+!   else
+!       define arch 386
+!   endif
+!endif
+
+#
+# 386 environments
+#
+# pls386 -- PharLap .EXP
+# d4g386 -- DOS4G .EXE
+# tnt386 -- PharLap TNT .EXE
+# os2386 -- OS/2 2.x .EXE
+# wnt386 -- Windows NT .EXE
+# wntaxp -- Windows NT .EXE
+#
+
+#
+# i86 environments
+#
+# dosi86 -- DOS .EXE
+# os2i86 -- OS/2 1.x .EXE
+#
+!ifndef targ_env_386
+!  ifdef __DOS__
+!    define targ_env_386 d4g386
+!  else ifdef __OS2__
+!    define targ_env_386 os2386
+!  else ifdef __NT386__
+!    define targ_env_386 wnt386
+!  endif
+!endif
+
+!ifndef targ_env_i86
+!  ifdef __DOS__
+!    define targ_env_i86 dosi86
+!  else ifdef __OS2__
+!    define targ_env_i86 os2i86
+!  else ifdef __NT__
+!    define targ_env_i86 wnti86
+!  endif
+!endif
+
+!ifndef targ_env_axp
+!  ifdef __DOS__
+!    define targ_env_axp dosaxp
+!  else ifdef __OS2__
+!    define targ_env_axp os2axp
+!  else ifdef __NT__
+!    define targ_env_axp wntaxp
+!  endif
+!endif
+
+#
+# targ_run      name of executable loader (e.g., run386)
+targ_run_pls386 = run386
+targ_run_d4g386 = dos4gw
+targ_run_tnt386 = tntrun
+targ_run_os2386 =
+targ_run_wnt386 =
+targ_run_wnti86 =
+targ_run_dosi86 =
+targ_run_os2i86 =
+targ_run_wntaxp =
+targ_run_dosaxp =
+targ_run_os2axp =
+
+run_386 = $(targ_run_$(targ_env_386))
+run_i86 = $(targ_run_$(targ_env_i86))
+run_axp = $(targ_run_$(targ_env_i86))
+
+run = $(run_$(arch))
+
+#
+# targ_ext      extension (e.g., exp )
+targ_ext_pls386 = exp
+targ_ext_d4g386 = exe
+targ_ext_tnt386 = exe
+targ_ext_os2386 = exe
+targ_ext_wnt386 = exe
+targ_ext_wnti86 = exe
+targ_ext_dosi86 = exe
+targ_ext_os2i86 = exe
+targ_ext_wntaxp = exe
+targ_ext_dosaxp = exe
+targ_ext_os2axp = exe
+
+ext_386 = $(targ_ext_$(targ_env_386))
+ext_i86 = $(targ_ext_$(targ_env_i86))
+ext_axp = $(targ_ext_$(targ_env_axp))
+
+exe = $(ext_$(arch))
+
+#
+# targ_lnk      linker directives (e.g., system pharlap option offset=64k)
+targ_lnk_pls386 = system pharlap option offset=64k
+targ_lnk_d4g386 = system dos4g
+targ_lnk_tnt386 = system nt option offset=64k
+targ_lnk_os2386 = system os2v2 option offset=64k
+targ_lnk_wnt386 = system nt option offset=64k
+targ_lnk_wnti86 = system os2 pmc libpath $(watcom_dir)\lib
+targ_lnk_dosi86 = system dos
+targ_lnk_os2i86 = system os2 pmc libpath $(watcom_dir)\lib
+targ_lnk_wntaxp = system ntaxp
+targ_lnk_dosaxp = system ntaxp
+targ_lnk_os2axp = system ntaxp
+
+lnk_any    = # option noundefsok # add once we only use 11.0 linkers
+
+lnk_386 = $(targ_lnk_$(targ_env_386)) $(lnk_any)
+lnk_i86 = $(targ_lnk_$(targ_env_i86)) $(lnk_any)
+lnk_axp = $(targ_lnk_$(targ_env_axp)) $(lnk_any)
+
+#
+# targ_ldb      linker debug directive (e.g., DEBUG all)
+targ_ldb_pls386 = debug all
+targ_ldb_d4g386 = debug all
+targ_ldb_tnt386 = debug all
+targ_ldb_os2386 = debug all
+targ_ldb_wnt386 = debug all
+targ_ldb_wnti86 = debug all
+targ_ldb_dosi86 = debug all
+targ_ldb_os2i86 = debug all
+targ_ldb_wntaxp = debug codeview
+targ_ldb_dosaxp = debug codeview
+targ_ldb_os2axp = debug codeview
+
+ldb_386 = $(targ_ldb_$(targ_env_386))
+ldb_i86 = $(targ_ldb_$(targ_env_i86))
+ldb_axp = $(targ_ldb_$(targ_env_axp))
+
+#
+# targ_bld      build options (e.g., -bt=dos)
+targ_bld_pls386 = -bt=dos
+targ_bld_d4g386 = -bt=dos
+targ_bld_tnt386 = -bt=nt
+targ_bld_os2386 = -bt=os2
+targ_bld_wnt386 = -bt=nt
+targ_bld_wnti86 = -bt=nt
+targ_bld_dosi86 = -bt=dos
+targ_bld_os2i86 = -bt=os2
+#
+# these will be empty
+#
+targ_bld_wntaxp = -si
+targ_bld_dosaxp =
+targ_bld_os2axp =
+
+#
+# build environment
+#
+!ifndef wcc_386
+wcc_386 = wcc386 $(targ_bld_$(targ_env_386))
+!endif
+!ifndef wcc_i86
+wcc_i86 = wcc $(targ_bld_$(targ_env_i86))
+!endif
+!ifndef wcc_axp
+wcc_axp = wccaxp $(targ_bld_$(targ_env_axp))
+!endif
+
+!ifndef wpp_386
+!  ifdef dev
+!    ifdef __DOS__
+!      define wpp_386 run386 $(plusplus_dir)\dos386\wcpp386d
+!    else ifdef __OS2__
+!      define wpp_386 $(plusplus_dir)\os2386\wcpp386d
+!    else ifdef __NT386__
+!      define wpp_386 $(plusplus_dir)\nt386\wcpp386d
+!    else ifdef __NTAXP__
+!      define wpp_386 $(plusplus_dir)\nt386.axp\wcpp386d
+!    endif
+!  else
+!    define wpp_386 wpp386
+!  endif
+!endif
+!ifndef wpp_i86
+!  ifdef dev
+!    ifdef __DOS__
+!      define wpp_i86 run386 $(plusplus_dir)\dosi86\wcppi86d
+!    else ifdef __OS2__
+!      define wpp_i86 $(plusplus_dir)\os2i86\wcppi86d
+!    else ifdef __NT386__
+!      define wpp_i86 $(plusplus_dir)\nti86\wcppi86d
+!    else ifdef __NTAXP__
+!      define wpp_i86 $(plusplus_dir)\nti86.axp\wcppi86d
+!    endif
+!  else
+!    define wpp_i86 wpp
+!  endif
+!endif
+!ifndef wpp_axp
+!  ifdef dev
+!    ifdef __DOS__
+!      define wpp_axp run386 $(plusplus_dir)\dosaxp\wcppaxpd
+!    else ifdef __OS2__
+!      define wpp_axp $(plusplus_dir)\os2axp\wcppaxpd
+!    else ifdef __NT386__
+!      define wpp_axp $(plusplus_dir)\ntaxp\wcppaxpd
+!    else ifdef __NTAXP__
+!      define wpp_axp $(plusplus_dir)\ntaxp.axp\wcppaxpd
+!    endif
+!  else
+!    define wpp_axp wppaxp
+!  endif
+!endif
+
+!ifndef dll_386
+!  ifdef dev
+!    ifdef __OS2__
+!      define dll_386 $(plusplus_dir)\os2386\wppd386d.dll
+!    else ifdef __NT386__
+!      define dll_386 $(plusplus_dir)\nt386\wppd386d.dll
+!    else ifdef __NTAXP__
+!      define dll_386 $(plusplus_dir)\nt386.axp\wppd386d.dll
+!    endif
+!  else
+!    define dll_386 wppd386.dll
+!  endif
+!endif
+!ifndef dll_i86
+!  ifdef dev
+!    ifdef __OS2__
+!      define dll_i86 $(plusplus_dir)\os2i86\wppdi86d.dll
+!    else ifdef __NT386__
+!      define dll_i86 $(plusplus_dir)\nti86\wppdi86d.dll
+!    else ifdef __NTAXP__
+!      define dll_i86 $(plusplus_dir)\nti86.axp\wppdi86d.dll
+!    endif
+!  else
+!    define dll_i86 wppdi86.dll
+!  endif
+!endif
+!ifndef dll_axp
+!  ifdef dev
+!    ifdef __OS2__
+!      define dll_axp $(plusplus_dir)\os2axp\wppdaxpd.dll
+!    else ifdef __NT386__
+!      define dll_axp $(plusplus_dir)\ntaxp\wppdaxpd.dll
+!    else ifdef __NTAXP__
+!      define dll_axp $(plusplus_dir)\ntaxp.axp\wppdaxpd.dll
+!    endif
+!  else
+!    define dll_axp wppdaxp.dll
+!  endif
+!endif
+
+!undef dll_loaded
+!ifdef use_dll
+!  ifdef __LOADDLL__
+!    define dll_loaded
+!    loaddll $(wpp_$(arch)) $(dll_$(arch))
+!  endif
+!endif
+
+# add architecture common options
+wpp_386 += $(targ_bld_$(targ_env_386))
+wpp_i86 += $(targ_bld_$(targ_env_i86))
+wpp_axp += $(targ_bld_$(targ_env_axp))
+
+#
+# MAKEINIT vars
+#
+proj_name = plustest
+host_CPU = $(arch)
+!ifdef __DOS__
+!  define host_OS dos
+!else ifdef __OS2__
+!  define host_OS os2
+!else ifdef __NT__
+!  define host_OS nt
+!else
+!  error unknown OS
+!endif
+!include cproj.mif
+
+#
+# linker
+#
+!ifdef %plustest_linker
+!  define linker $+$(%plustest_linker)$-
+!else
+!  ifndef linker
+!    define linker wlink
+!  endif
+!  ifdef __LOADDLL__
+!    ifdef use_dll
+!      loaddll wlink wlink.dll
+!    endif
+!  endif
+!endif
+
+#
+# output log file location
+#
+!ifndef log_file
+!  ifdef %plustest_log_file
+!    define log_file $+$(%plustest_log_file)$-
+!  else ifdef %plustest_name
+!    define log_file $(plustest_dir)\$+$(%plustest_name)$-.log
+!  else
+!    define log_file $(plustest_dir)\$(plustest_name).log
+!  endif
+!endif
+
+first_target : .symbolic start test
+    @%null
+
+start : .symbolic
+!ifdef dll_loaded
+    @echo using !loaddll $(dll_$(arch))
+!endif
+    @cdsay
+    @cdsay >> $(log_file)
+    
+clean : .symbolic global
+    @%null
+    
+common_clean : .symbolic
+    @if exist *.?bj del *.?bj
+    @if exist *.err del *.err
+    @if exist *.lnk del *.lnk
+    @if exist *.lbc del *.lbc
+    @if exist *.$(exe) del *.$(exe)
+    @if exist *.dll del *.dll
+    @if exist *.out del *.out
+    @if exist *.sym del *.sym
+    @if exist *.dmp del *.dmp
+    @if exist *.map del *.map
+    @if exist *.lst del *.lst
+    @if exist *.log del *.log
+    @if exist *.pdb del *.pdb
+    @if exist *.pch del *.pch
+    @if exist *.lib del *.lib
+    @if exist *.res del *.res

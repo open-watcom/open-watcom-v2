@@ -1,0 +1,56 @@
+set macro all F1 {help}
+set macro all F2 {accel main {&Data} {&Register}}
+set macro all F3 {
+    if ( dbg$src ) {
+	display source/close;
+	display locals/close;
+	display register;
+	display assembly
+    } else {
+	display assembly/close;
+	display register/close;
+	display locals;
+	display source
+    }
+}
+set macro all F4 {accel main {&Window} {A&pplication}}
+set macro all F5 {accel main {&Run} {&Go}}
+set macro all F6 {accel main {&Window} {Next}}
+rem macro all F7 is what?
+set macro all F8 {accel main {&Run} {&Trace Into}}
+set macro all F9 {accel main {&Break} {&Toggle}}
+set macro all F10 {accel main {&Run} {&Step Over}}
+
+set macro all ALT-1 {accel main {&Data} {&Locals}}
+set macro all ALT-2 {accel main {&Data} {&Watch}}
+set macro all ALT-3 {accel main {&Code} {&Source}}
+set macro all ALT-4 {accel main {&File} {&View}}
+set macro all ALT-5 {accel main {&Data} {&Memory at}}
+set macro all ALT-6 {accel main {&Data} {&Memory at}}
+set macro all ALT-7 {accel main {&Data} {&Register}}
+set macro all ALT-8 {accel main {&Data} {&FPU Registers}}
+set macro all ALT-9 {accel main {&File} {&Command}}
+
+set macro all CTRL-F4 {Window Close}
+set macro all CTRL-F5 {Window Restore}
+set macro all CTRL-F7 {print {Window Move HotKey not implemented}}
+set macro all CTRL-F8 {print {Window Size HotKey not implemented}}
+set macro all CTRL-F9 {Window Minimize}
+set macro all CTRL-F10 {Window Maximize}
+
+set macro all ALT-F5 {print {Window Cascade HotKey not implemented}}
+
+set macro all / {accel main {&Search} {&Find}}
+set macro source CTRL-\ {accel main {&Search} {&Next}}
+set macro all ALT-/ {accel main {&Search} {&Next}}
+rem macro all CTRL-R {accel main {&Search} {&Next}}
+
+set macro watch CTRL-Y {accel {&Delete}}
+
+rem set macro all CTRL-W {accel {&Watch}} // already done
+rem not quite - CV has delete watch dialog
+rem macro all CTRL-U {display watch}
+
+set macro all SHIFT-F5 {print {Window Tile HotKey not implemented}}
+set macro all SHIFT-F6 {Window Previous}
+set macro all SHIFT-F9 {display watch; accel {&New}}

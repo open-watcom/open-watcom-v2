@@ -1,0 +1,8 @@
+#
+#	    Small model link file for RES2RES
+#
+name RES2RES
+system dos
+debug all
+@objlist.lnk
+option map

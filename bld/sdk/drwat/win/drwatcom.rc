@@ -1,0 +1,50 @@
+#include <windows.h>
+#include "const.h"
+#include "intdlg.h"
+#include "stat.h"
+#include "stackt.h"
+#include "memwnd.h"
+#include "log.h"
+#include "dmptask.h"
+#include "taskctl.h"
+#include "about.h"
+#include "rcstr.h"
+#include "dbgopt.h"
+#include "segmap.h"
+#include "dipload.h"
+#include "notelog.h"
+#include "banner.h"
+
+#undef pick
+#undef sp
+#ifdef _JAPANESE_
+ #define pick( a, b, c ) a, c
+ #define sp( s1, s2 ) s2
+#else
+ #define pick( a, b, c ) a, b
+ #define sp( s1, s2 ) s1
+#endif
+
+"APPLICON" ICON 10drwat.ico
+"ALERTICON" ICON 10err.ico
+
+#include "menu.rc"
+
+STRINGTABLE
+BEGIN
+    #include "rcstr.msg"
+END
+
+#include "about.dlg"
+#include "intdlg.dlg"
+#include "stat.dlg"
+#include "stackt.dlg"
+#include "memwnd.rc"
+#include "log.dlg"
+//#include "dmptask.dlg"
+#include "taskctl.dlg"
+#include "mark.rc"
+#include "dbgopt.dlg"
+#include "segmap.dlg"
+#include "dipload.dlg"
+#include "notelog.dlg"

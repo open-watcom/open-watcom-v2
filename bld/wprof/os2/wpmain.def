@@ -1,0 +1,4 @@
+//#line "..\c\wpmain.c" 56
+extern void GUImain(void );
+//#line "..\c\wpmain.c" 83
+extern char WndProcMacro(a_window *wnd,unsigned int key);

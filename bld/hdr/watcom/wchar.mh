@@ -1,0 +1,149 @@
+/*
+ *  wchar.h     Wide character functions
+ *
+:include crwat.sp
+ */
+#ifndef _WCHAR_H_INCLUDED
+#define _WCHAR_H_INCLUDED
+:include readonly.sp
+
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
+:segment !QNX
+#ifndef _IO_H_INCLUDED
+    #include <io.h>
+#endif
+#ifndef _STAT_H_INCLUDED
+    #include <sys\stat.h>
+#endif
+:endsegment
+#ifndef _STDARG_H_INCLUDED
+    #include <stdarg.h>
+#endif
+#ifndef _STDIO_H_INCLUDED
+    #include <stdio.h>
+#endif
+#ifndef _STDLIB_H_INCLUDED
+    #include <stdlib.h>
+#endif
+#ifndef _TIME_H_INCLUDED
+    #include <time.h>
+#endif
+
+:include cpluspro.sp
+
+:include wchar_t.sp
+
+:include wctypet.sp
+
+:include sizet.sp
+
+:include null.sp
+
+:include mbmax.sp
+
+typedef int mbstate_t;
+
+_WCRTLINK extern int mbrlen( const char *__s, size_t __n, mbstate_t *__ps );
+_WCRTLINK extern int mbrtowc( wchar_t *__pwc, const char *__s, size_t __n, mbstate_t *__ps );
+_WCRTLINK extern size_t mbsrtowcs( wchar_t *__dst, const char **__src, size_t __n, mbstate_t *__ps );
+_WCRTLINK extern int sisinit( const mbstate_t *__ps );
+_WCRTLINK extern int wcrtomb( char *__s, wchar_t __wc, mbstate_t *__ps );
+_WCRTLINK extern size_t wcsrtombs( char *__dst, const wchar_t **__src, size_t __n, mbstate_t *__ps );
+_WCRTLINK extern int wctob( wint_t __wc );
+
+_WCRTLINK extern int iswalnum( wint_t __wc );
+_WCRTLINK extern int iswalpha( wint_t __wc );
+_WCRTLINK extern int iswascii( wint_t __wc );
+_WCRTLINK extern int iswcntrl( wint_t __wc );
+_WCRTLINK extern int iswdigit( wint_t __wc );
+_WCRTLINK extern int iswgraph( wint_t __wc );
+_WCRTLINK extern int iswlower( wint_t __wc );
+_WCRTLINK extern int iswprint( wint_t __wc );
+_WCRTLINK extern int iswpunct( wint_t __wc );
+_WCRTLINK extern int iswspace( wint_t __wc );
+_WCRTLINK extern int iswupper( wint_t __wc );
+_WCRTLINK extern int iswxdigit( wint_t __wc );
+
+_WCRTLINK extern wctype_t wctype( const char *__property );
+_WCRTLINK extern int iswctype( wint_t __wc, wctype_t __desc );
+
+_WCRTLINK extern wint_t towlower( wint_t __wc );
+_WCRTLINK extern wint_t towupper( wint_t __wc );
+
+_WCRTLINK extern int fwprintf( FILE *__strm, const wchar_t *__format, ... );
+_WCRTLINK extern int fwscanf( FILE *__strm, const wchar_t *__format, ... );
+_WCRTLINK extern int wprintf( const wchar_t *__format, ... );
+_WCRTLINK extern int wscanf( const wchar_t *__format, ... );
+#ifndef swprintf
+_WCRTLINK extern int swprintf( wchar_t *__s, size_t __n, const wchar_t *__format, ... );
+#endif
+_WCRTLINK extern int swscanf( const wchar_t *__s, const wchar_t *__format, ... );
+_WCRTLINK extern int vfwprintf( FILE *__strm, const wchar_t *__format, va_list __arg );
+_WCRTLINK extern int vwprintf( const wchar_t *__format, va_list __arg );
+_WCRTLINK extern int vwscanf( const wchar_t *, __va_list );
+_WCRTLINK extern int vswprintf( wchar_t *__s, size_t __n, const wchar_t *__format, va_list __arg );
+
+_WCRTLINK extern wint_t fgetwc( FILE *__strm );
+_WCRTLINK extern wchar_t *fgetws( wchar_t *__s, int __n, FILE *__strm );
+_WCRTLINK extern wint_t fputwc( wint_t __wc, FILE *__strm );
+_WCRTLINK extern int fputws( const wchar_t *__s, FILE *__strm );
+_WCRTLINK extern wint_t getwc( FILE *__strm );
+_WCRTLINK extern wint_t getwchar( void );
+_WCRTLINK extern wint_t putwc( wint_t __wc, FILE *__strm );
+_WCRTLINK extern wint_t putwchar( wint_t __wc );
+_WCRTLINK extern wint_t ungetwc( wint_t __wc, FILE *__strm );
+
+_WMRTLINK extern double wcstod( const wchar_t *__nptr, wchar_t **__endptr );
+_WCRTLINK extern long int wcstol( const wchar_t *, wchar_t **, int );
+_WCRTLINK extern unsigned long int wcstoul( const wchar_t *, wchar_t **, int );
+
+_WCRTLINK extern wchar_t *wcscpy( wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern wchar_t *wcsncpy( wchar_t *__s1, const wchar_t *__s2, size_t __n );
+_WCRTLINK extern wchar_t *wcscat( wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern wchar_t *wcsncat( wchar_t *__s1, const wchar_t *__s2, size_t __n );
+_WCRTLINK extern int wcscmp( const wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern int _wcsicmp( const wchar_t *, const wchar_t * );
+_WCRTLINK extern int wcscoll( const wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern int wcsncmp( const wchar_t *__s1, const wchar_t *__s2, size_t __n );
+_WCRTLINK extern int _wcsnicmp( const wchar_t *, const wchar_t *, size_t );
+_WCRTLINK extern wchar_t *_wcsdup( const wchar_t * );
+_WCRTLINK extern size_t wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
+_WCRTLINK extern wchar_t *wcschr( const wchar_t *__s, wint_t __wc );
+_WCRTLINK extern size_t wcscspn( const wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern wchar_t *_wcslwr( wchar_t * );
+_WCRTLINK extern wchar_t *_wcsupr( wchar_t * );
+_WCRTLINK extern wchar_t *wcspbrk( const wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern wchar_t *wcsrchr( const wchar_t *__s, wint_t __wc );
+_WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
+_WCRTLINK extern wchar_t *_wcsset( wchar_t *, wchar_t );
+_WCRTLINK extern wchar_t *_wcsnset( wchar_t *, int, size_t );
+_WCRTLINK extern size_t wcsspn( const wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern wchar_t *wcsstr( const wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern wchar_t *wcstok( wchar_t *__s1, const wchar_t *__s2, wchar_t **__ptr );
+_WCRTLINK extern size_t wcslen( const wchar_t *__s );
+
+_WCRTLINK extern size_t wcsftime( wchar_t *__s, size_t __maxsize, const wchar_t *__format, const struct tm *__timeptr );
+
+_WCRTLINK extern wchar_t *  _wmktemp( wchar_t *__template );
+_WCRTLINK extern wchar_t *  _wtempnam( wchar_t *__dir, wchar_t *__prefix );
+
+
+:include ext.sp
+
+_WCRTLINK extern int _swprintf( wchar_t *__s, const wchar_t *__format, ... );
+_WCRTLINK extern int _vswprintf( wchar_t *__s, const wchar_t *__format, va_list __arg );
+_WCRTLINK extern int _fmbrlen( const char _WCFAR *__s, size_t __n, mbstate_t _WCFAR *__ps );
+_WCRTLINK extern int _fmbrtowc( wchar_t _WCFAR *__pwc, const char _WCFAR *__s, size_t __n, mbstate_t _WCFAR *__ps );
+_WCRTLINK extern size_t _fmbsrtowcs( wchar_t _WCFAR *__dst, const char _WCFAR * _WCFAR *__src, size_t __n, mbstate_t _WCFAR *__ps );
+_WCRTLINK extern int _fwcrtomb( char _WCFAR *__s, wchar_t __wc, mbstate_t _WCFAR *__ps );
+_WCRTLINK extern size_t _fwcsrtombs( char _WCFAR *__dst, const wchar_t _WCFAR * _WCFAR *__src, size_t __n, mbstate_t _WCFAR *__ps );
+
+#endif
+
+
+#define WEOF ((wint_t)(-1))
+
+:include cplusepi.sp
+#endif

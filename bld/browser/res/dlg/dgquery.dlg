@@ -1,0 +1,31 @@
+DLGINCLUDE RCDATA DISCARDABLE
+BEGIN
+    "DGQUERY.H\0"
+END
+
+QueryDlgUnfolded DIALOG FIXED IMPURE 36, 35, 225, 85
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Query"
+FONT 8, "Helv"
+BEGIN
+    CONTROL         "&Pattern:", IDD_SYMBOL_TEXT, "Static", SS_RIGHT, 6, 8,
+                    51, 9
+    CONTROL         "", IDD_SYMBOL_EDIT, "ComboBox", CBS_DROPDOWN | CBS_SORT |
+                    WS_VSCROLL | WS_TABSTOP, 61, 6, 104, 54
+    CONTROL         "Match &Case", IDD_CASE, "Button", BS_AUTOCHECKBOX |
+                    WS_TABSTOP, 6, 22, 162, 12
+    CONTROL         "Match &Whole Symbols only", IDD_WHOLE_WORDS, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 6, 35, 162, 12
+    CONTROL         "Use &Regular Expressions", IDD_USE_REGEXP, "Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 6, 48, 162, 12
+    CONTROL         "OK", IDD_SEARCH, "Button", BS_DEFPUSHBUTTON | WS_GROUP |
+                    WS_TABSTOP, 176, 6, 43, 14
+    CONTROL         "Cancel", IDD_CANCEL, "Button", WS_TABSTOP, 176, 22, 43,
+                    14
+    CONTROL         "&Filters...", IDD_FILTERS, "Button", WS_GROUP |
+                    WS_TABSTOP, 176, 43, 43, 14
+    CONTROL         "&Edit...", IDD_CONFIGURE_RX, "Button", WS_TABSTOP, 17,
+                    64, 46, 14
+    CONTROL         "&Help", IDD_HELP, "Button", WS_GROUP | WS_TABSTOP, 176,
+                    64, 43, 14
+END

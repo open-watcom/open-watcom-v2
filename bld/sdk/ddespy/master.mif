@@ -1,0 +1,79 @@
+proj_name = wddespy
+name = wddespy
+sys_windowed = 1
+
+!include cproj.mif
+#!include deftarg.mif
+!include defrule.mif
+
+# Got rid of "-we" switch because FreeProcInstance() gives warning.
+cflags_all      = -zq -w4
+
+objs =  savelbox.obj mem.obj font.obj fontstr.obj srchmsg.obj log.obj &
+        pushwin.obj alias.obj toolbr.obj mark.obj ldstr.obj hint.obj &
+        mstatwnd.obj wwinhelp.obj jdlg.obj &
+        dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj ddetrack.obj &
+        ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj about.obj
+
+
+extra_c_flags_mem = -DNO_WPI
+extra_l_flags_win = option stack=7k option heapsize=2k lib windows.lib &
+                    lib toolhelp.lib lib ddeml.lib lib commdlg.lib &
+                    lib $(sdk_dir)\misc\ctl3d.lib
+
+extra_l_flags_nt_axp  = lib ctl3d32.lib
+
+extra_l_flags     = option map
+
+inc_dirs        = $(wddespy_dir);$(sdk_dir)\misc;$(watcom_dir)\h
+
+.before:
+        @set INCLUDE=$(inc_path)
+
+.c: $(wddespy_dir);$(sdk_dir)\misc
+.h: $(wddespy_dir);$(sdk_dir)\misc
+
+msgh = rcstr.h
+mastermsg = rcstr.msg
+msgfiles  = $(wddespy_dir)\ddespy.msg $(sdk_dir)\misc\about.msg $(sdk_dir)\misc\log.msg &
+            $(sdk_dir)\misc\savelbox.msg $(sdk_dir)\misc\alias.msg
+
+resinc    = -i$(wddespy_dir)\res
+resources = $(sdk_dir)\misc\log.rc $(sdk_dir)\misc\mark.rc &
+            $(sdk_dir)\misc\alias.rc $(sdk_dir)\misc\about.dlg &
+            $(mastermsg) $(wddespy_dir)\res\cbfilt.dlg &
+            $(wddespy_dir)\res\msgfilt.dlg $(wddespy_dir)\menu.rc
+rcopts1 = -r -zk0
+rcopts2 = -k
+
+$(name).exe : $(msgh) $(objs) $(name).res
+        $(LINKER) $(lflags) name $(name).exe file { $(objs) }
+!ifeq host_CPU axp
+!ifndef on_build_machine
+        cvpack $(name).exe
+        wstrip $(name).exe $(name).exe $(name).sym
+!endif
+!endif
+        $(RC) $(rc_flags) $(rcopts2) $(name).res
+
+$(msgh) : $(mastermsg)
+        vi -i -q "-k :source ..\\\\..\\\\misc\\\\msgtoh.vi $(msgh)\n" $(mastermsg)
+
+$(mastermsg) : $(msgfiles)
+        $(cc) -zk0 -p -i=$(sdk_dir)\misc $(wddespy_dir)\ddespy.msg -fo=$(mastermsg)
+
+$(name).res : $(wddespy_dir)\$(name).rc $(resources)
+        $(RC) $(rc_flags) $(wddespy_dir)\$(name).rc -fo=$(name).res $(rcopts1) $(resinc)
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj @del *.?bj
+        @if exist *.lnk @del *.lnk
+        @if exist *.exe @del *.exe
+        @if exist *.lib @del *.lib
+        @if exist *.res @del *.res
+        @if exist *.clb @del *.clb
+        @if exist *.err @del *.err
+        @if exist *.sym @del *.sym
+        @if exist $(name).map @del $(name).map
+        @if exist $(msgh) @del $(msgh)
+        @if exist $(mastermsg) @del $(mastermsg)

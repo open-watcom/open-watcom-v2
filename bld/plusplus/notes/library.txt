@@ -1,0 +1,26 @@
+This is an attempt to rationalize the library names.
+The idea is to make the library naming consistent with existing practice
+and not too different from our current names.
+
+Upon consultation with Brian and Jim R. the following library
+naming and positioning scheme seems good:
+
+%WATCOM%\lib286\cpplibs.lib
+%WATCOM%\lib286\cpplibm.lib
+%WATCOM%\lib286\cpplibl.lib
+%WATCOM%\lib286\cpplibh.lib
+%WATCOM%\lib286\win\cpplibs.lib		<- compiled with -zw switch
+%WATCOM%\lib286\win\cpplibm.lib		<- "
+%WATCOM%\lib286\win\cpplibl.lib		<- "
+%WATCOM%\lib286\win\cpplibh.lib		<- "
+%WATCOM%\lib386\cpplib3r.lib
+%WATCOM%\lib386\cpplib3s.lib
+
+The libraries for iostream,complex,string1,string2 can use the same scheme.
+
+The act of making a reference copy of the library would copy the library
+to plusplus\bin and to the appropriate spot in the \lang hierarchy.
+
+There is a #pragma library ( "name" ) that can be included in the appropriate
+header files to cause the object file to point at the proper libraries.
+Greg will add these pragmas to the header files.

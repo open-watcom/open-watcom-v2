@@ -1,0 +1,234 @@
+Additional Marketing Information                    CONFIDENTIAL
+--------------------------------                    ************
+
+This document must remain confidential as it discusses WATCOM C++
+weaknesses and makes derogatory comments regarding competitive
+products.
+
+Contents
+--------
+
+    A) History
+
+    B) WATCOM C++ Weaknesses
+        B-1:    Compilation Speed
+        B-2:    Near and Far
+        B-3:    Old code
+        B-4:    Too Strict
+        B-5:    Lack of Tool Integration
+
+    C) WATCOM C++ Strengths
+        C-1:    Platforms
+        C-2:    Language
+        C-3:    Error Diagnosis
+
+    D) Comparison with Borland
+        D-1:    General
+        D-2:    Platforms
+        D-3:    Optimization
+        D-4:    Error Diagnosis
+        D-5:    Buggyness
+
+    E) Comparison with MicroSoft
+        E-1:    General
+        E-2:    OS/2
+        E-3:    Optimizations
+        E-4:    Templates
+
+
+A) History
+   -------
+
+93/02   -- JWW wrote initial version
+
+
+B) WATCOM C++ Weaknesses
+   ---------------------
+
+    Naturally, we should omit mention of weaknesses if possible.  This
+    section contains some responses to combat them, should they be
+    raised.
+
+
+    B-1:    Compilation Speed
+    -------------------------
+
+    - WATCOM appears competitive with all products except Borland, unless
+      pre-compiled files are used with very large header files
+        - large header files occur in WINDOWS, NT, OS/2 support
+
+    - stratgy vs. Borland: of course they're faster, since they don't
+        check as many errors, support as general a language, and do as
+        much optimization
+
+    - pre-compiled headers: will be available in a future release
+
+
+    B-2:    Near and Far
+    --------------------
+
+    - Borland and Microsoft support near and far classes which cause the
+      data and code for the class to be near/far respectively
+
+    - this is not required for 386+ targets
+
+    - we do support near/far to the same extent as the C compiler (you can
+      have near/far data and code, but cannot treat them as C++ objects)
+
+
+    B-3:    Old code
+    ----------------
+
+    - some compilers support ATT2.1 features which are dropped or
+      contradictory in the ANSI version
+
+    - users will want to convert anyway; low impact has been observed
+
+
+    B-4:    Too Strict
+    ------------------
+
+    - because we detect errors that other compilers miss, we may be
+      perceived as being too strict
+
+    - better to be pure; other compilers will detect these errors in the
+      future as they become ANSI compliant
+
+
+    B-5:    Lack of Tool Integration
+    --------------------------------
+
+    - now, we lack complete tool integration
+
+    - we'll have it soon
+
+
+C) WATCOM C++ Strengths
+   --------------------
+
+    C-1:    Platforms
+    -----------------
+
+    - nobody else runs on as many x86 platforms
+    - nobody else produces as good code on any platform
+    - one set of tools can be used across the most platforms
+    - we support all popular DOS extenders, if that's important
+
+
+    C-2:    Language
+    ----------------
+
+    - nobody else supports the C++ language to the degree that we do
+        - no other implementation of exceptions has been released
+        - other compilers have difficulty parsing ambiguous expressions
+            - get AFS comment
+        - out templates are more general than the competition
+            - get AFS comment
+
+    - we are more ANSI-compliant than anybody else
+        - as with the C compiler, we will be first to have full compliancy
+          when the ANSI standard is accepted (this will actually be a long
+          time in the future)
+
+    - we have the only complete implementation of member pointers
+        - other implementations disallow member-pointer conversions across
+          virtual inheritance
+
+
+    C-3:    Error Diagnosis
+    -----------------------
+
+    - over 500 messages
+    - we diagnose incorrect programs more precisely than anybody else
+    - errors are pinpointed to the column at which they occur
+
+
+    C-4:    User Support
+    --------------------
+
+    - we have best track record in industry and will continue to have
+    - illustrate with our support features
+
+
+D) Comparison with Borland
+--------------------------
+
+
+    D-1:    General
+    ---------------
+
+    - Borland does not exist on as many platforms, does not produce code
+      of the same quality, does not diagnose errors to the same degree,
+      and appears to be buggy
+
+
+    D-2:    Platforms
+    -----------------
+
+    - no 386+ support, except by embedding 386+ instructions in 16-bit
+      programs now; 32-bit under construction, but much of leadership of
+      C++ project has left or been let go
+    - has no 32-bit Windows support
+    - may not be available for some time with their track record of
+      releasing software in a timely fashion
+
+    - PC Week (Jan.25) -- OS/2 to ship in February
+                       -- NT due "this spring"
+
+
+    D-3:    Optimization
+    --------------------
+
+    - is not an optimizing compiler, so the code quality is poor
+    - reference C benchmarks as an illustration
+
+
+    D-4:    Error Diagnosis
+    -----------------------
+
+    - is inferior: they miss errors and diagnose errors generally instead
+      of specifically in many cases
+    - can not parse some ambiguous expressions
+
+
+    D-5:    Buggyness
+    -----------------
+
+    - in our compilation of third party libraries, we have observed numerous
+      cases where the library vendor had to program around Borland bugs
+    - suggest that potential customers talk to existing users for their
+      experience
+
+
+E) Comparison with MicroSoft
+----------------------------
+
+
+    E-1:    General
+    ---------------
+
+    - platforms limited to theirs; optimizations at 386 level; no
+      implementation of templates
+
+
+    E-2:    OS/2
+    ------------
+
+    - not supported; no announced plans to do so
+    - no FAR16 support, so cross-compiling may be difficult
+
+
+    E-3:    Optimizations
+    ---------------------
+
+    - are close to us on 386
+    - no support for 486, Pentium
+
+    E-4:    Templates
+    -----------------
+
+    - not implemented: public stance is that templates are not well defined
+    - if that is so, how come there are so many other vendors with reasonably
+      compatible implementations
+    - users want feature, since it enables generic classes and functions to
+      implemented (leverages development)

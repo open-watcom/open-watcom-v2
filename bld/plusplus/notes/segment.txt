@@ -1,0 +1,22 @@
+Segment Issues:
+
+- default, pre-defined segments and attributes
+STACK			GLOBAL			(stack)
+[<ModuleName>]_TEXT	GLOBAL INIT EXEC	(code, only one EXEC allowed)
+[<ModuleName>]_DATA	GLOBAL INIT		(R/W data)
+CONST			ROM INIT BACK		(R/O string literals)
+CONST2			ROM INIT		(R/O data)
+_CPP_CLASS		GLOBAL COMMON		(???)
+_BSS			GLOBAL			(R/W zero data)
+XIB			ROM INIT		(???)
+XI			ROM INIT		(???)
+
+- far data segments are defined as needed
+<ModuleName><#>_DATA	PRIVATE INIT		(R/W data)
+
+- based segments may be defined as follows
+<defined_name>		PRIVATE INIT		(R/W data)
+
+- based segments may also be defined
+<defined_name>_TEXT	GLOBAL INIT [EXEC]	(not yet implemented)
+

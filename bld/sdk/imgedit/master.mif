@@ -1,0 +1,184 @@
+proj_name = wimgedit
+name = wimgedit
+sys_windowed = 1
+
+!include cproj.mif
+#!include deftarg.mif
+!include defrule.mif
+
+WINDOWS=1
+MODEL=l
+!include wres.mif
+wres_lib_dir = $(wres_dir)\lib
+
+# Got rid of "-we" switch because FreeProcInstance() gives warning.
+cflags_all      = -zq -w4
+
+.JUST_ENOUGH
+
+!ifeq host_OS os2
+# OS/2 specific stuff here
+.EXTENSIONS:
+.EXTENSIONS: .exe
+.EXTENSIONS: .obj
+.EXTENSIONS: .asm .c .h .dlg
+
+resdir = $(wimgedit_dir)\objos2\res
+rcdeps = $(resdir)\$(name).rc
+objs =  imgedit.obj ieproc.obj ieclrpal.obj ieglob.obj pmcreate.obj &
+        curclr.obj clrcntls.obj colours.obj imgdata.obj hinttext.obj &
+        ienew.obj ieutil.obj drawproc.obj pmutils.obj xorand.obj &
+        iedraw.obj ieviewin.obj trnsform.obj iesave.obj wptoolbr.obj &
+        wstatus.obj mem.obj iestatus.obj iefonts.obj fill.obj freehand.obj &
+        ieopen.obj wbitmap.obj palette.obj ieprofil.obj settings.obj &
+        getdata.obj clip.obj iconinfo.obj bkcolour.obj pmicon.obj undo.obj &
+        ietoolbr.obj funcbar.obj chgsize.obj bits.obj wpi_mem.obj closeall.obj &
+        errors.obj
+.c : $(wimgedit_dir)\objos2\c;$(wimgedit_dir)\c;$(sdk_dir)\misc
+.h : $(wimgedit_dir)\objos2\h;$(wimgedit_dir)\h;$(sdk_dir)\misc
+.dlg : $(wimgedit_dir)\objos2\res;$(wimgedit_dir)\res;$(sdk_dir)\misc
+!else
+# Other OS's specific stuff
+.EXTENSIONS:
+.EXTENSIONS: .exe
+.EXTENSIONS: .obj
+.EXTENSIONS: .asm .pp .c .h .dlg
+
+msgh            = rcstr.h
+mastermsg       = rcstr.msg
+msgfiles        = $(wimgedit_dir)\h\wimgedit.msg $(sdk_dir)\misc\about.msg
+
+resdir = $(wimgedit_dir)\res
+rcdeps = $(resdir)\$(name).rc $(resdir)\wimgedit.ico $(resdir)\selimg.dlg &
+        $(resdir)\selcolor.dlg $(resdir)\settings.dlg &
+        $(sdk_dir)\misc\about.dlg $(resdir)\title.dlg $(msgfiles)
+objs =  imgedit.obj ieproc.obj ieglob.obj ieclrpal.obj ienew.obj &
+        ieopen.obj iesave.obj ieviewin.obj iedraw.obj icon.obj wstatus.obj &
+        palette.obj bitmap.obj ietoolbr.obj wptoolbr.obj wwinhelp.obj &
+        xorand.obj freehand.obj clip.obj drawproc.obj iestatus.obj &
+        undo.obj snap.obj colours.obj iconinfo.obj ieutil.obj fill.obj &
+        clrcntls.obj curclr.obj funcbar.obj modclrs.obj bkcolour.obj &
+        imgdata.obj getdata.obj pickbmp.obj iefonts.obj chgsize.obj &
+        settings.obj trnsform.obj hinttext.obj ieprofil.obj about.obj &
+        ldstr.obj wpi_mem.obj closeall.obj bits.obj errors.obj &
+        iebmpdat.obj iedde.obj iemem.obj iectl3d.obj jdlg.obj $(extras)
+!ifeq host_OS nt
+extras = wincreat.obj desknt.obj title.obj winutils.obj
+.c : $(wimgedit_dir)\objnt\c;$(wimgedit_dir)\c;$(sdk_dir)\misc
+.dlg : $(wimgedit_dir)\objnt\res;$(wimgedit_dir)\res;$(sdk_dir)\misc
+!else
+extras = wincreat.obj title.obj winutils.obj
+.c : $(wimgedit_dir)\c;$(sdk_dir)\misc
+.dlg : $(wimgedit_dir)\res;$(sdk_dir)\misc
+!endif
+!endif
+
+
+!ifeq host_OS os2
+resinc  = -I $(wimgedit_dir)\objos2\res
+!else
+resinc  = -i=$(wimgedit_dir)\res;$(sdk_dir)\misc
+!endif
+
+rcopts1 = -r -zk0
+rcopts2 = -k
+
+# Overriding the default rc_flags_$(host_OS) here
+rc_flags_nt = -bt=nt -d__NT__
+rc_flags_win = -bt=windows -zm
+
+!ifdef wpitest
+extra_c_flags = -DWIN_GUI /d_WPI_TEST_ -s
+!else
+extra_c_flags = -DWIN_GUI -s
+!endif
+extra_c_flags_i86 = -zc -fpc
+extra_c_flags_386 = -fpc
+
+extra_l_flags_win = libpath $(watcom_dir)\lib &
+                    lib toolhelp.lib lib commdlg.lib lib ddeml.lib &
+                    lib $(wpi_dir)\lib\wpi_win.lib &
+                    lib $(wr_dir)\win16\wr.lib &
+                    option rwr option stack=16k option heapsize=2k
+!ifeq host_CPU 386
+extra_l_flags_nt  = libpath $(watcom_dir)\lib &
+                    lib $(wpi_dir)\lib\wpi_nt.lib &
+                    lib $(wr_dir)\nt\wr.lib &
+                    option stack=32k runtime windows=4.0 &
+                    alias '_WinMain'='_WinMain@16'
+!else ifeq host_CPU axp
+extra_l_flags_nt  = libpath $(wpi_dir)\lib &
+                    lib $(wpi_dir)\lib\wpi_axp.lib &
+                    lib $(wr_dir)\axp\wr.lib &
+                    option stack=32k
+!endif
+extra_l_flags_os2 = lib wpi_os2.lib option stack=12k option heapsize=2k &
+                    option symfile=$(name).sym
+extra_l_flags     = lib $(wres_lib) option map
+
+inc_dirs        = h;$(wimgedit_dir)\h;$(wres_dir)\h;$(wr_dir)\h;$(wpi_dir)\h;$(sdk_dir)\misc;$(watcom_dir)\h
+inc_dirs_os2    = $(watcom_dir)\os220_h;$(%toolkit)\c\os2h
+
+.before:
+        @set INCLUDE=$(inc_path)
+
+!ifeq host_OS os2
+$(name).exe : $(objs) $(name).res
+        *$(linker) $(lflags) name $(name).exe file { $(objs) }
+        $(%toolkit)\os2bin\rc $(name).res $(name).exe
+        wstrip -a $(name).exe . $(name).sym
+#       $(RC) $(rc_flags) $(rcopts2) $(name).res
+
+$(name).res : $(rcdeps)
+        @$(%toolkit)\os2bin\rc -r -DBMP_DIR=$(sdk_dir)\wimgedit\res &
+        -DMISC_DIR=$(sdk_dir)\misc $(resinc) &
+        $(wimgedit_dir)\objos2\res\$(name).rc $(name).res
+!else
+$(name).exe : $(msgh) $(objs) $(name).res
+        *$(linker) $(lflags) name $(name).exe file { $(objs) }
+        $(RC) $(rc_flags) $(rcopts2) $(name).res
+!ifdef TOOLS_10_0
+!ifeq host_OS nt
+!ifeq host_CPU 386
+        whack $(name).exe
+!endif
+!endif
+!endif
+
+$(msgh) : $(mastermsg)
+        vi -i -q "-k :source ..\\\\..\\\\misc\\\\msgtoh.vi $(msgh)\n" $(mastermsg)
+
+$(mastermsg) : $(msgfiles)
+        $(cc) -zk0 -p -i=$(sdk_dir)\misc $(wimgedit_dir)\h\wimgedit.msg -fo=$(mastermsg)
+
+$(name).res : $(rcdeps)
+        $(RC) $(rc_flags) $(resdir)\$(name).rc -fo=$(name).res $(rcopts1) $(resinc)
+!endif
+
+about.obj : .AUTODEPEND
+        $(cc) $(cflags) $(extra_c_flags_$[&) -DNOUSE3D $(misc_dir)\$^&
+
+.c.obj : #.AUTODEPEND
+        @set include=$(inc_path)
+        $(cc) $(cflags) $(extra_c_flags_$[&) $[@
+
+!ifndef host_OS os2
+.c.pp : #.AUTODEPEND
+        $(cc) $[* $(cflags) $(extra_c_flags_$[&) -p -fo=$^&.pp
+!endif
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj @del *.?bj
+        @if exist *.lnk @del *.lnk
+        @if exist *.exe @del *.exe
+        @if exist *.dll @del *.dll
+        @if exist *.lib @del *.lib
+        @if exist *.res @del *.res
+        @if exist *.clb @del *.clb
+        @if exist *.err @del *.err
+        @if exist *.map @del *.map
+        @if exist *.sym @del *.sym
+!ifdef msgh
+        @if exist $(msgh) @del $(msgh)
+        @if exist $(mastermsg) @del $(mastermsg)
+!endif

@@ -1,0 +1,7 @@
+echo off
+assign %a = /Enter Windows Function: /
+input %a
+if lastrc == ERR_NO_ERR
+    winhelp win31wh.hlp HELP_PARTIALKEY %a
+endif
+echo on

@@ -1,0 +1,34 @@
+!ifdef is286
+name_dos_i86 = vi
+!else ifdef vroomed
+name_dos_i86 = viv
+!else
+name_dos_i86 = vi86
+!endif
+name_dos_386 = vi386
+
+name_os2_i86 = vi2r
+name_os2_386 = vi2
+
+name_win_i86 = viw
+name_win_386 = viwp
+
+!ifdef sys_windowed
+name_nt_386 = vintw
+name_nt_axp = viaxpw
+!else
+name_nt_386 = vint
+name_nt_axp = viaxp
+!endif
+
+name_qnx_i86 = viq
+
+!ifneq host_OS qnx
+name = $(name_$(host_OS)_$(host_CPU)).exe
+!else
+name = $(name_$(host_OS)_$(host_CPU)).qnx
+!endif
+
+lnk = $(name_$(host_OS)_$(host_CPU)).lnk
+
+ED = $(name_$(host_OS)_$(host_CPU))

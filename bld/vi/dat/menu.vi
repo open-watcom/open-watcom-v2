@@ -1,0 +1,20 @@
+if %1 == 2
+    if %2 == 1 || %2 == 2
+    	if !hassel
+	    return -1
+	endif
+    elseif %2 == 3
+	if emptybuf1
+	    return -1
+	endif
+    elseif %2 == 8
+    	if numundos == 0
+	    return -1
+	endif
+    elseif %2 == 9
+    	if numredos == 0
+	    return -1
+	endif
+    endif
+endif
+return 0

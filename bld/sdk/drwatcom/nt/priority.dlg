@@ -1,0 +1,51 @@
+#if(0)
+THREAD_PRIORITY_DLG DIALOG 26, 18, 125, 162
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Set Thread Priority"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "IDLE", PRIORITY_IDLE, "Button", BS_AUTORADIOBUTTON, 27,
+                    50, 71, 10
+    CONTROL         "LOWEST", PRIORITY_LOWEST, "Button", BS_AUTORADIOBUTTON,
+                    27, 60, 71, 10
+    CONTROL         "BELOW NORMAL", PRIORITY_BELOW_NORMAL, "Button",
+                    BS_AUTORADIOBUTTON, 27, 70, 71, 10
+    CONTROL         "NORMAL", PRIORITY_NORMAL, "Button", BS_AUTORADIOBUTTON,
+                    27, 80, 71, 10
+    CONTROL         "ABOVE NORMAL", PRIORITY_ABOVE_NORMAL, "Button",
+                    BS_AUTORADIOBUTTON, 27, 90, 71, 10
+    CONTROL         "HIGHEST", PRIORITY_HIGHEST, "Button",
+                    BS_AUTORADIOBUTTON, 27, 100, 71, 10
+    CONTROL         "TIME_CRITICAL", PRIORITY_TIME_CRITICAL, "Button",
+                    BS_AUTORADIOBUTTON, 27, 110, 71, 10
+    PUSHBUTTON      "OK", IDOK, 15, 142, 40, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 70, 142, 40, 14
+    CTEXT           "Select a priority class for ", -1, 3, 4, 117, 8
+    CTEXT           "Pid = 00000000 Tid = 00000000", PRIORITY_INFO, 3,
+                    14, 117, 8
+    CTEXT           "(d:\\dev\\sdk\\bill.exe)", PRIORITY_PATH, 3, 24, 117, 8
+    GROUPBOX        "Priorities", -1, 22, 39, 79, 86
+END
+#endif
+
+PROC_PRIORITY DIALOG 26, 18, 125, 129
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Set Process Priority"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "IDLE", PRIORITY_IDLE, "Button", BS_AUTORADIOBUTTON, 27,
+                    50, 71, 10
+    CONTROL         "NORMAL", PRIORITY_NORMAL, "Button", BS_AUTORADIOBUTTON,
+                    27, 60, 71, 10
+    CONTROL         "HIGH", PRIORITY_HIGHEST, "Button", BS_AUTORADIOBUTTON,
+                    27, 70, 71, 10
+    CONTROL         "REAL TIME", PRIORITY_TIME_CRITICAL, "Button",
+                    BS_AUTORADIOBUTTON, 27, 80, 71, 10
+    PUSHBUTTON      "OK", IDOK, 15, 110, 40, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 70, 110, 40, 14
+    CTEXT           "Select a priority class for ", -1, 3, 4, 117,
+                    8
+    CTEXT           "Pid = 00000000", PRIORITY_INFO, 3, 14, 117, 8
+    CTEXT           "(d:\\dev\\sdk\\bill.exe)", PRIORITY_PATH, 3, 24, 117, 8
+    GROUPBOX        "Priorities", -1, 22, 39, 79, 58
+END

@@ -1,0 +1,19 @@
+( device "tty"
+( font 0 mono01 plain
+( font 1 mono01 uline
+( font 2 mono01 bold
+( font 3 mono01 ulbold
+( font 4 mono01 ulbold
+( font 6 mono01 bold
+( font 11 mono01 bold
+( format standard
+( layout "linelay"
+( noinclist
+( noindex
+( passes 2
+( pause
+( script
+( statistics
+( terse
+( wait
+( warning

@@ -1,0 +1,4 @@
+ugetenv.obj  : ..\..\..\c\ugetenv.c  ..\..\..\c\getenv.c
+uputenv.obj  : ..\..\..\c\uputenv.c  ..\..\..\c\putenv.c
+usrchen.obj  : ..\..\..\c\usrchen.c  ..\..\..\c\searchen.c
+usetenv.obj  : ..\..\..\c\usetenv.c  ..\..\..\c\setenv.c

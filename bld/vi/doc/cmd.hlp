@@ -1,0 +1,575 @@
+Entering Commands:
+==================
+The command window is entered by pressing ':'. Commands
+may be up to 768 bytes in length; the command window scrolls.
+
+The following keys are recognized while typing a command:
+
+CTRL_V  - insert next keystroke directly.
+CTRL_Q  - same as CTRL_V
+
+CTRL_O  - insert current command after current line in file
+ALT_O   - insert current command before current line in file
+
+CTRL_D	- add the current "dot buffer" to the command string;
+	  this is useful in conjunction with "memorize mode" ("m.").
+	  Once a sequence has been memorized, then this can be 
+	  used to make a map command (eg :map CTRL_A <press CTRL_D>)
+
+ALT_L   - adds current line in the file, from the current column to the
+	  end of the line, to the command string
+CTRL_E  - adds current space delimited word in file to command string
+CTRL_L  - adds current line in file to command string
+CTRL_R  - adds currently selected column range to command string
+CTRL_W  - adds current word in file to command string
+
+TAB     - try to file name complete on the current string.
+	   The first match is completed, and a window with possible
+	   choices is displayed. Subsequent presses of TAB will
+	   scroll forward through the list of possible matches, and
+	   pressing SHIFT_TAB will scroll backwards through the
+	   list of possible matches. Cursor keys may also be used
+
+ALT_TAB - command completion. Looks backwards through history for
+	  first command starting with what is entered.  Subsequent
+	  presses of ALT_TAB get the 2nd last command, and so on.
+
+CTRL_INS- restores last thing typed in the command window (one
+	  level undo).
+
+UP      - scroll forwards through command history
+DOWN    - scroll backwards through command history
+RIGHT   - move cursor right through command
+LEFT    - move cursor left through command
+
+CTRL_END- delete to end of command line
+END     - move to end of command line
+HOME    - move to start of command line
+
+INSERT  - toggle text insertion/overstrike mode
+DELETE  - delete character
+
+ENTER   - process current command
+ESC     - cancel current command
+
+Commands
+========
+Some commands take an address range and/or an address; the following 
+characters have special meaning in an address:
+
+.  	 - current line
+$  	 - last line
+%  	 - short for the pair of addresses 1,$
+'a 	 - line with mark a set 
+/regexp/ - search forward for regular expression regexp. the trailing '/'
+	   is only needed if you want to have something following regexp.
+	   if regexp is not specified, then the last search string is used.
+?regexp? - like /regexp/, only searches backwards
++  	 - add next value
+-  	 - subtract next value
+     (if + or - are the first character, then they are assumed to operate
+      on the current line number, e.g. specifying +1 takes you forward one
+      line in the file)
+
+Ranges are specified as two addresses n1,n2; eg:
+ 1,5
+ 'a,.
+ 'z+5,$-10
+ /foo/+5,/bar/-1
+
+Strings are specified either by themselves (if they contain no white space),
+or as /string/, if there are spaces.  To include a '/' in a string, escape
+it (ie, use '\/' instead of '/')
+
+The part of each command surrounded by square brackets must be typed;
+the rest is optional.
+
+(range) [>] 
+	 - shift specified range to the right "ShiftWidth" spaces.
+
+(range) [<] 
+	 - shift specified range to the left "ShiftWidth" spaces.
+
+(range)	[!] (cmd)
+	 - if range is specified, then the lines are run through the specified 
+	   dos command (the command must take input from standard in and put 
+	   its output to standard out) and replaces the lines with the output 
+	   of the the dos command.
+	   If no range is specified, then the dos command (cmd) is run.
+	   The global variable %(Sysrc) contains the return code
+	   from the last system command, and %(Syserr) contains
+	   the errno value.
+
+	[ab]brev (short) (long)
+	 - create an abbreviation of (short) for (long).  If (short)
+	   is typed as a word in insert mode, it is expanded to (long).
+	   See unabbrev.
+
+	[al]ias (name) (what)
+	 - create an alias of (what) for (name).  This is recognized
+	   on the command line. See unalias.
+
+(addr)	[a]ppend
+    	  - append lines of text after line '.'.  append is terminated by 
+	    including a line with nothing but a '.' in it.
+	    Valid in EX mode only (source scripts or 'Q' from command mode)
+
+	[cascade]
+	  - cascade all windows
+
+	[cd] (dir)
+	  - change to directory (dir).  If (dir) is not specified, the 
+	    current directory is displayed.  (dir) may contain a drive
+	    along with a path.
+
+(range) [c]hange (!)
+	  - delete the lane range, and replace with input text lines.
+	    The input of text is terminated by including a line with
+	    nothing by a '.' in it.
+	    Valid in EX mode only (source scripts or 'Q' from command mode)
+
+	[comp]ile (-aA) (script) (compname)
+	  - compile the script (script).  If -a is specified, then all 
+	    local variables are translated at compile time (rather
+	    than at run time) - this is useful for the startup script.
+	    if -A is specified, all variables (both local and global)
+	    are translated at compile time. The file will be compiled 
+	    into a file with the extension ._vi., unless (compname) 
+	    is specified.  Also see "starting" and "script" help files
+	    for more information.
+
+	[com]press
+	  - insert tabs into file to replace leading spaces
+
+(range)	[co]py (addr)
+	  - copy the specified range of lines after the line number (addr)
+
+	[da]te
+	  - display current date and time
+
+(range)	[d]elete (buffer)
+	  - delete line range.  If a buffer ('1'-'9', or 'a'-'z')
+	    is specified, the text is deleted into it, otherwise the 
+	    text is deleted into the active buffer.
+
+	[echo] (line) /msg/
+	  - echos the message /msg/ on line (line) of the message window.
+	    if (line) is coded as "off", then all message window data
+	    is supressed (except for echo commands).  "on" turns messages
+	    back on.
+
+	[e]dit(!) (file1 (file2 file3...))
+	  - open a new window for file.  If a file already is
+	    being edited, then control is transferred to the window for that
+	    file.  If no files are specified, then a window containing
+	    a list of files in the current directory is opened, from
+	    which a file may be selected. If (!) is used, then the current
+	    file being edited is discarded and is replaced.
+	    DOS wildcards may be specified in the file names.
+
+	[egr]ep "regexp" (file)
+	  - searches for regular expression in the specified wild card 
+	    (file). (if (file) is not specified, it defaults to *.c).  
+	    When all matches are found, a selection window is presented 
+	    with the files that contained regexp.  If you are not
+	    using regular expressions, fgrep is much faster.
+
+	[eval] <expr>
+	  - evaluates given expression
+
+	[execute] <str>
+	  - execute the string <str> (acts as if <str> was typed at
+	    the keyboard). The string that may be added has the same
+	    syntax as the "map" command. See keyadd for a delayed addition of
+	    keystrokes.
+
+	[fgr]ep (-c) (-u) "string" (file)
+	  - searches for string in the specified wild card (file). (if
+	    (file) is not specified, it defaults to *.c).  Search is
+	    case insensitive, unless -c is specified, in which case
+	    the search is case sensitve.  -u uses the CaseIgnore setting
+	    to determine whether or not to be case sensitive in the search
+	    When all matches are found, a selection window is presented 
+	    with the files that contained string.  
+
+	[f]iles
+	  - open a window with a list of all files currently being edited;
+	    a file may be selected from the list
+	    in EX mode, displays the current file status (like ^G)
+
+(range)	[g]lobal(!) /regexp/ (cmd)
+	  - for each line with the regular expresson regexp, the command
+	    (cmd) is executed. (cmd) may contain replacement expressions,
+	    if g! is specified, then the command is executed for each line
+	    NOT containing the regular expression.
+	    see substitute for more information.
+
+	[help] <topic>
+	  - brings up help for a specified topic.  Topics are:
+		[com]mandline		- all command line commands
+		[keys]			- what different keys do
+		[reg]ularexpressions	- how to use regular expressions
+		[scr]ipts		- editor script commands
+		[start]ing		- starting the editor
+
+(addr)	[i]nsert (!)
+	  - insert text after the specified line number. The input of 
+	    text is terminated by including a line with nothing by a '.' 
+	    in it.
+	    Valid in EX mode only (source scripts or 'Q' from command mode)
+
+(range)	[j]oin
+	  - join the specified line range together onto a single line.
+
+	[keya]dd data
+	  - adds a set of keystrokes to the key buffer, just as if they
+	    were typed by the user.  This is useful in a script, for
+	    allowing keystrokes to be executed after the script is exited.
+	    This prevents re-entrance of a script that is hooking
+	    keys in input mode, for example.
+	    Keys are processed in FIFO order.
+	    The string that may be added has the same
+	    syntax as the "map" command.
+
+(range)	[l]ist
+	  - list the specified line range
+	    Valid in EX mode only (source scripts or 'Q' from command mode)
+
+	[load] (script)
+	  - loads a script into memory for the life of the edit session.
+	    This allows for much faster access to the script, since the
+	    data structures for the script to not have to be built
+	    every time the script is invoked.  This is especially important
+	    for hook scripts. (see "scripts" help for more information).
+
+	[map](!) (key) (keysequence)
+	  - tells the editor to run the keys (keysequence) whenever (key)
+	    is pressed in command mode.  (key) may be one of many special
+	    tokens, e.g. CTRL_A, ALT_TAB etc.
+	    if ! is specified, then the mapping is for insert mode.
+	    Along with normal
+	    ascii characters, the following control characters are allowed:
+	    \h - if this follows a ':' (start command line), then the
+	         command line is not added to the command history, e.g.:
+		    map CTRL_T :\hdate\n
+		 pressing CTRL_T to display the current date,
+		 but it will not be added to the history.
+	    \e - escape
+	    \n - newline (enter)
+	    \x - if it is the first character in the sequence, then the 
+	         opening of the command window is suppressed for the life
+		 of the sequence. This prevents the "flashing" of the
+		 command window on the screen if a command line command
+		 is used.
+	    \< - starts a key token.  the string between the first <
+	         and a closing > is translated into the appropriate key,e.g.:
+		    map CTRL_W :fgrep \<CTRL_W>\n
+		 press CTRL_W will execute an fgrep command, grabbing the
+		 current word.
+
+	    Recursion of maps does not occur, so map! a a causes
+	    an "a" to appear when "a" is typed in insert mode.
+	    See unmap.
+
+	[mapbase](!) (key) (keysequence)
+	  - works exactly the same as the map command, all keys in the
+	    keysequence work as their base functionality (mappings are
+	    ignored)
+
+(addr)	[ma]rk (m)
+	  - set mark (m) at line (addr)
+
+	[match] /s1/s2/
+	  - Set what is matched by the '%' command.  Defaults are "{","}" 
+	    and "(",")". For example, by performing a "%" on the first 
+	    '(' in the line:
+		if( (i=fred(x)) ) return;
+	    moves the cursor to the last ')' in the line.
+	    This command allows you to extend what is matched to 
+	    general regular expressions strings.
+	    s1 is the regular expression that opens a match, s2 is 
+	    the regular expression that closes a match.
+	    Note that in the matching regular expressions, "magic"
+	    is automatically set (ie, special characters automatically
+	    have their meaning).
+
+	[max]imize
+	  - maximizes the current window
+
+	[min]imize
+	  - minimizes the current window
+
+(range)	[m]ove (addr)
+	  - delete the specified line range and place after line (addr)
+
+	[movew]in
+	  - enter window move mode.  The cursor keys may be used to move the
+	    current file window.
+
+	[n]ext
+	  - move to next file being edited.
+
+	[o]pen <file>
+	  - open a new window on specified file.  If no file is specified,
+	    then a new window is opened on the current file.  These new
+	    windows are different views on the same file.
+
+	[p]rev
+	  - move to the previous file being edited.
+
+(addr)	[pu]t (buff)
+	  - put the specified buffer (buff) (either numbered or named) after
+	    the specified line.
+
+	[q]uit(!)
+	  - exit current file.  If it has been modified, ! must be specified.
+
+	[quita]ll
+	  - exits the editor if no files have been modified
+
+(line)	[r]ead
+	  - read text from file (filename) after line specified by (line).  
+	    If (line) is not specified, the current line is assumed.
+	    Line 0 may be specified in order to read a file 
+	    in before the first line of the file being edited.
+	    If (filename) is not specified, then a window containing
+	    a list of files in the current directory is opened, from
+	    which a file may be selected.
+
+	[res]ize
+	  - enter window resize mode.  The cursor keys may be used to resize 
+	    the current file window:
+			UP - move top border up
+		      DOWN - move top border down
+		      LEFT - move right border left
+		     RIGHT - move right border right
+		  SHIFT_UP - move bottom border up
+		SHIFT_DOWN - move bottom border down
+		SHIFT_LEFT - move left border left
+	       SHIFT_RIGHT - move left border right
+
+	[se]t (variable) (value)
+	  - certain variables within the editor are modifiable after it is
+	    running.  (Value) is assigned to (variable).  See the
+	    "settings" help for more information.
+
+	[setcolor] <c> <rgb>  
+	  - set color <c> to have the <rgb> value <r>,<g>,<b>
+	    e.g. setcolor %(pink) 63 0 38
+
+	[sh]ell
+	  - escape to a dos shell.
+
+	[size] x1 y1 x2 y2
+	  - resizes current window to have upper left-hand corner at
+	    (x1,y1) and lower right-hand corner at (x2,y2)
+
+	[so]urce (script) (p1) (p2) ... (pn)
+	  - run source script file (script).  Optional parameters (p1) to
+	    (pn) may be specififed, these are passed to the specified source
+	    script. if "." is specified as the script name, the current
+	    file being edited is run. See "scripts" help for more information.
+
+(range) [s]ubstitute /regexp/repl/(g)(i)
+	  - replace each occurance of regular expression regexp with the
+	    replacement string repl (in the specifed line range).  Each
+	    line is searched only once for regexp; if (g) is specified,
+	    all occurances of regexp on a line are matched. If (i) is
+	    specified, then each substitution is verified. See
+	    "regularexpressions" help for more information on regular
+	    expressions.
+
+	[tag] (tagname)
+	  - searches for the tag (tagname). uses the file "tags", which
+	    has a collection of procedure names and typedefs, along with
+	    the file in which they are located and a search command/line
+	    number with which to exactly locate the tag.
+
+	[tile] (h)|(v)|(x y)
+	  - tile all current file windows.  The tiling layout is specified
+	    as an x*y grid. If no parms are given, maxwindowtilex and 
+	    maxwindowtiley are used. If (h) is specified, then files are
+	    tiled horizontally (as many as will fit).  If (v) is specified,
+	    then files are tiled vertically (as many as will fit).  
+	    Specifiying (x y) overrides the default tile grid.
+	    Specifying tile 1 1 causes all windows to be restored
+
+	[unab]brev (abbrev)
+	  - removes the abbreviation (abbrev). See abbrev.
+
+	[unal]ias (alias)
+	  - removes definition of the the command line alias (alias).
+	    See alias.
+
+	[u]ndo (!)
+	  - removes last change, specifying (!) undoes the last undo.
+
+	[unmap](!) (key)
+	  - remove the mapping of the key (key) in command mode.
+	    If ! is specified, then the key mapping is removed in
+	    insert mode. See map.
+
+	[ver]sion
+	  - display version of the editor
+
+	[vie]w (!) (filename)
+	  - like the edit command, only causes file to be a "view only"
+	    file (no modification commands work)
+
+	[vi]sual (filename)
+	  - re-enter visual mode (if in EX mode), and, if (filename)
+	    is specified, edit it.
+
+(range) [w]rite (!) (filename)
+	  - write specified range of lines into a file.  If no line range 
+	    is specified, all lines are written.  If (filename) is not
+	    specified, the current file name is assumed.  If (filename)
+	    exists, ! forces an overwrite.
+
+(range) [y]ank (buffer)
+	  - yank (copy) line range.  If a buffer ('1'-'9', or 'a'-'z')
+	    is specified, the text is yanked into it, otherwise the 
+	    text is yanked into the active buffer.
+
+	[x]it
+	  - exit current file, saving it if it has been modified.
+
+Menu Setting Commands
+=====================
+The editor menus are set dynamically.  Any menu will
+automatically be added to the menu bar when created, and removed when
+destroyed.  There are some reserved menus:
+
+windowgadget - this menu is the one that appears when the upper left hand
+	       corner of a window is clicked.
+float<0-3>   - this are floating menus.  They are made to appear via
+ 	       the script command "floatmenu".
+
+	[addmenui]tem <menuname> <itemname> <cmd>
+	    - adds a new item to a previously created menu <menuname>
+	      see MENUITEM for details.
+
+	[deletemenu] <menuname>
+	    - destroys menu with name <menuname>
+
+	[deletemenui]tem <menuname> <index>
+	    - deletes item number <index> from menu <menuname> (0 based).
+	      if <index> is -1, then the last item is removed from the
+	      menu.
+
+	[endmenu]
+	    - terminates the creation of a new menu
+
+	[menu] <menuname>
+	    - starts the creation of a new menu <menuname>. If a menu
+	      exists with the name already, it is destroyed an re-created.
+	      A character preceded with an '&' will be the hot key
+	      for activating the menu, eg &Control would have 'C' as
+	      the hot key.
+	      <menuname> may be a reserved name: windowgadget, float0,
+	      float1, float2, or float3
+
+	[menuitem] <itemname> <cmd>
+	    - adds an item to the menu started with the MENU command.
+	      <itemname> may be a quoted string. A character preceded
+	      with an '&' will be the hot key for activating the menu
+	      item, eg &Exit would have 'X' as the hot key.
+	      cmd may be any editor command
+
+Window Setting Commands
+=======================
+Each window in the editor can be configured.  The following are used to
+specify the active window's properties:
+
+	[border] <hasbord> <fg_clr> <bg_clr>
+	  - set whether or not there is a border: <hasbord>=-1: none,
+	    <hasbord>=1: has border
+	    <fg_clr> - foreground color of border  (ignored for no border)
+	    <bg_clr> - background color of border  (ignored for no border)
+	     
+	[dimension] <x1> <y1> <x2> <y2>
+	  - (x1,y1) - coordinates of upper left-hand corner of window
+	    (x2,y2) - coordinates of lower right-hand corner of window
+	    the editor automatically senses the number of lines and columns 
+	    avaliable. window dimensions can be set relative to this.
+	    All parameters may be coded as arbitrary expressions. The
+	    global variables %(SW) (screen width) and %(SH) (screen height)
+	    are useful for coding dimensions that are relative to the
+	    current screen size.
+	   
+	[endw]indow
+	  -  cease entry of information for the active window
+		 
+	[hilight] <fg_clr> <bg_clr>
+	  - sets foreground and background color of hilighted text in 
+	    the window
+	 
+	[text] <fg_clr> <bg_clr>
+	  - sets foreground and background color of normal text in the window
+
+The active window is set by using one of the following commands.  Once
+an active window is set, all border, dimension, hilight and text
+commands apply to that window.  Information is processed when
+either a new active window is entered, or when the endwindow command is used.
+
+An example of a command sequence for setting a window is:
+    editwindow
+    border 1 %(light_green) %(blue)
+    dimension 0 1 %(SW)-1 %(SH)-5
+    text %(bright_white) %(blue)
+    hilight %(light_magenta) %(blue)
+    endwindow
+
+	[commandw]indow
+	  - window where commands and search expressions are entered
+
+	[countw]indow
+	  - window that opens when repeat counts are entered (toggled
+	    with the "repeatinfo" flag)
+
+	[ctrlw]indow
+	  - sets properties of the windows that open up when a topic 
+	    is selected from the control bar (menu).
+
+	[ctrlbarw]indow
+	  - sets properties of the windows the control bar (menu) window
+
+    	[defaultw]indow
+	  - after this is set, all windows get its properties
+
+	[dirw]indow
+	  - window that opens up when a file name is not specified 
+	    in the "edit" or "read" commands.
+
+	[editw]indow
+	  - default text editing window
+
+	[extrainfow]indo
+	  - window in which extra information about possible activites 
+	    is displayed (displayed with the fgrep and files command)
+
+	[filew]indow
+	  - window in which list of files currently being edited is displayed
+
+	[filecw]indow
+	  - window in which list of possible file choices when 
+	    file completion cannot match one specific file
+
+	[linenumberw]indow
+	  - window in which line numbers are displayed
+
+	[messagew]indow
+	  - window in which all editor feedback is reported. 
+	    (the hilight color is the color errors are reported in)
+
+	[setw]indow
+	  - the window in which current editor settings are displayed 
+	    (displayed when "set" is entered without parameters)
+
+	[setvalw]indow
+	  - window in which the new value of an editor setting is entered 
+	    (in conjunction with the setwindow, above)
+
+	[statusw]indow
+	  - window where current line and column are reported (toggled with
+	    with flag "statusinfo")

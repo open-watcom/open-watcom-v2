@@ -1,0 +1,82 @@
+Examples of layouts for class objects
+=====================================
+
+- related documents:
+    - LAYOUT.TXT -- discusses particular layouts
+
+- history:
+    - 91/11/28 -- J.W.Welch         -- initial version
+
+
+- construction displacements are not shown
+
+- Borland and Microsoft layouts match when virtual bases are not present,
+  except, possibly, for the location of the VFPTR
+
+- speed: Borland wins after construction; slightly slower during
+
+
+Example(1) : single virtual class
+---------------------------------
+
+  class V1                                                  { int m1; };
+  class B : public virtual V1                               { int mb; };
+  class A : public B                                        { int ma; };
+
+  Microsoft:            Borland:
+  ---------             -------
+
+  B:    VBPTR           B:  addr(V)
+        mb                  mb
+  A:    ma              A:  ma
+  V1:   m1              V1: m1
+
+- space: Borland wins always (no virtual table, pointer smaller or same size)
+
+
+Example(2) : two virtual classes
+--------------------------------
+
+  class V1                                                  { int m1; };
+  class V2                                                  { int m2; };
+  class B : public virtual V1, public virtual V2            { int mb; };
+  class A : public B                                        { int ma; };
+
+
+  Microsoft:            Borland:
+
+  B:    VBPTR           B:  addr(V1)
+        mb                  addr(V2)
+  A:    ma                  mb
+  V1:   m1              A:  ma
+  V2:   m2              V1: m1
+                        V2: m2
+
+- space: Borland wins in large-data model
+         Microsoft wins in small-data model after 3 objects allocated
+
+
+Example(3) : three virtual classes, two levels
+----------------------------------------------
+
+  class V1                                                  { int m1; };
+  class V2                                                  { int m2; };
+  class B : public virtual V1, public virtual V2            { int mb; };
+  class A : public B                                        { int ma; };
+  class C : public virtual A                                { int mc; };
+
+
+  Microsoft:            Borland:
+
+  C:    VBPTR-C         C:  addr(B)
+        mc                  addr(V1)
+                            addr(V2)
+                            mc
+  B:    VBPTR-B         B:  addr(V1)
+        mb                  addr(V2)
+  A:    ma                  mb
+  V1:   m1              A:  ma
+  V2:   m2              V1: m1
+                        V2: m2
+
+- space: Microsoft wins after 2 objects allocated

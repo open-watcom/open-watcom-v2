@@ -1,0 +1,40 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject initwin.obj                      nt nta ntp        o32
+!inject pmdlg.obj                                          o32
+!inject pmdlg2.obj                                         o32
+!inject pmdrvr.obj                                         o32
+!inject pmlines.obj                                        o32
+!inject pmmain.obj                                         o32
+!inject pmmisc.obj                                         o32
+!inject pmnew.obj                                          o32
+!inject windisp.obj                      nt nta ntp        o32         w16 w32
+!inject windlg.obj                       nt nta ntp                    w16 w32
+!inject windlg2.obj                      nt nta ntp                    w16 w32
+!inject windrvr.obj                      nt nta ntp                    w16 w32
+!inject wingen.obj                       nt nta ntp        o32         w16 w32
+!inject winglob.obj                      nt nta ntp        o32         w16 w32
+!inject winio.obj                        nt nta ntp        o32         w16 w32
+!inject winkey.obj                       nt nta ntp        o32         w16 w32
+!inject winlines.obj                     nt nta ntp        o32         w16 w32
+!inject winlsem.obj                      nt nta ntp
+!inject winmain.obj                      nt nta ntp                    w16 w32
+!inject winmisc.obj                      nt nta ntp                    w16 w32
+!inject winmove.obj                      nt nta ntp        o32         w16 w32
+!inject winnew.obj                       nt nta ntp                    w16 w32
+!inject winpaint.obj                     nt nta ntp        o32         w16 w32
+!inject winrtns.obj                      nt nta ntp    o16 o32         w16 w32
+!inject wintitle.obj                     nt nta ntp                    w16 w32
+!inject wmain.obj                        nt nta ntp                    w16 w32
+!inject dwapi.obj                        nt nta ntp        o32         w16 w32
+
+!include ..\..\..\..\objlist.mif
+
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject dinitwin.obj                     nt nta ntp        o32
+!inject dwmain.obj                       nt nta ntp                    w16 w32
+
+objsuffix=files
+!include ..\..\..\..\objlist.mif
+objsuffix=

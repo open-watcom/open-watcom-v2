@@ -1,0 +1,6 @@
+//#line "..\c\wphelp.c" 42
+extern void WPInitHelp(void);
+//#line "..\c\wphelp.c" 51
+extern void WPFiniHelp(void);
+//#line "..\c\wphelp.c" 59
+extern void WPProcHelp(gui_help_actions action);

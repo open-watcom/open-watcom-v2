@@ -1,0 +1,25 @@
+#include "wzoom.h"
+#include "about.h"
+#include "banner.h"
+
+#undef pick
+#undef menupick
+#ifdef _JAPANESE_
+ #define pick( a, b, c ) a, c
+ #define sp( s1, s2 ) s2
+#else
+ #define pick( a, b, c ) a, b
+ #define sp( s1, s2 ) s1
+#endif
+
+"APPLICON" ICON 10zoom.ico
+
+#include "menu.rc"
+
+STRINGTABLE
+BEGIN
+    #include "rcstr.msg"
+END
+
+#include "config.dlg"
+#include "about.dlg"

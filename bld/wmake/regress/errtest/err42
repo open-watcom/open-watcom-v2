@@ -1,0 +1,12 @@
+# ----------------------------------------
+# ERROR 42: last cmd returned bad status
+# ----------------------------------------
+
+.HOLD
+.NOCHECK
+
+dowah :
+    @wtouch zzz.zzz
+    @del zzz.zzz
+    @errout chmod -w zzz.zzz  > tmpfile.tmp
+

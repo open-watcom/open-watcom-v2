@@ -1,0 +1,21 @@
+   **********************************************************************
+   *       Copyright by WATCOM International Corporation, 1987, 1992.   *
+   *       All rights reserved. No part of this software may be         *
+   *       reproduced in any form or by any means - graphic, electronic,*
+   *       mechanical or otherwise, including, without limitation,      *
+   *       photocopying, recording, taping or information storage and   *
+   *       retrieval systems - except with the written permission of    *
+   *       WATCOM International Corporation.                            *
+   **********************************************************************
+
+
+********************************* IOLOCK *************************************
+
+Filename: iolglcon.cpp
+Declaration:	
+	__get_lock::__get_lock( __lock *lp ) : __lk( lp ) 
+
+
+Filename: iolgldes.cpp
+Declaration:
+	__get_lock::~__get_lock() 

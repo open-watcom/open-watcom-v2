@@ -1,0 +1,32 @@
+		Porting hints for public domain tar
+		  John Gilmore, ihnp4!hoptoad!gnu
+		     @(#)PORTING 1.5	86/10/29
+
+The Makefile should be edited to comment out all the undesired
+versions, and create the following configuration lines for the system
+you are compiling it on:
+
+DEFS = the proper #define's to conditionally compile for
+your system.
+LIBS = the system libraries and/or object modules to link
+with the program.
+LINTFLAGS = a good strong way to invoke 'lint' on your system.
+DEF_AR_FILE = the name of the default archive file on your system.
+It should be enclosed in quoted quotes, e.g. \"/dev/foo\" .
+DEFBLOCKING = the default blocking factor on your system.
+
+A copy of "getopt", the standard argument parser, is required.  It's in
+libc on Missed'em V systems and 4.3BSD; on most other systems, you'll
+need a copy of a public domain getopt, available through mod.sources
+or the AT&T Toolchest if you can't find it elsewhere.
+
+A copy of the Berkeley directory access routines is also required.
+These are in libc and <sys/dir.h> on Berkeley systems.  A public domain
+version is available through mod.sources.  There is an #include you
+have to change in create.c for this, to set the name of the include
+file you have.  Some systems have the include file in <sys/ndir.h>.
+You'll have to find it on your system, or get the public domain one
+and place it somewhere.
+
+Grep for FIXME to find places that aren't finished or which have
+portability problems.  Also see the file TODO.

@@ -1,0 +1,40 @@
+- Introduction
+        - features
+        - brief description
+        - terms and manual notation
+        - etc ...
+
+- Getting Started
+        - gives a brief description of getting started
+        - this is for the person who isn't interested in going through
+          the whole manual
+        - maybe talk about similarities with other image editors
+
+- Image Description
+        - discuss bitmaps, icons and cursors and stuff ...
+        - about bitmaps
+        - about icons
+        - about cursors
+
+- Using the Tools
+        - describe each of the tools 
+
+- Editing Features
+        - describe each of the functions
+
+- Colour discussion
+	- selecting, editing, restoring, setting screen colours
+	- dithering concept
+        - about colour palettes
+
+- Various configuration options
+        - talk about the settings and what they do
+
+- Capabilities and Limitations
+        - discuss what is possible (bitmap size & colour schemes)
+        - note what is not possible
+
+- Appendices (?)
+- Glossary (?)
+- Table of Contents
+

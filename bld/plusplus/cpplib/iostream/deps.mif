@@ -1,0 +1,90 @@
+iofdefg.$(obj_deps_ext) : iofdefg.cpp iofefg.cpp
+
+!ifndef on_build_machine
+
+flf.$(obj_deps_ext) : flfattac.cpp flfclose.cpp flfconde.cpp flfconfd.cpp &
+                      flfconsf.cpp flfdestr.cpp flfopen.cpp  flfoprot.cpp &
+                      flfoverf.cpp flfpbfai.cpp flfseeko.cpp flfsetbf.cpp &
+                      flfsync.cpp  flfundrf.cpp
+
+fsb.$(obj_deps_ext) : fsbattac.cpp fsbclose.cpp fsbconde.cpp fsbconfd.cpp &
+                      fsbconnm.cpp fsbconsf.cpp fsbdestr.cpp fsbopen.cpp  &
+                      fsbsetbf.cpp
+
+fst.$(obj_deps_ext) : fstconde.cpp fstconfd.cpp fstconnm.cpp fstconsf.cpp &
+                      fstdestr.cpp
+
+ifs.$(obj_deps_ext) : ifsconde.cpp ifsconfd.cpp ifsconnm.cpp ifsconsf.cpp &
+                      ifsdestr.cpp
+
+iof.$(obj_deps_ext) : iofexdou.cpp iofexflo.cpp iofexldo.cpp iofgldfl.cpp &
+                      iofldfst.cpp iofnoefg.cpp iofoutfl.cpp
+
+ioi.$(obj_deps_ext) : ioicerr.cpp  ioicin.cpp  ioiclog.cpp ioicout.cpp &
+                      ioilfofg.cpp ioilock.cpp ioixainx.cpp
+
+iol.$(obj_deps_ext) : iolglcon.cpp iolgldes.cpp
+
+ios_.$(obj_deps_ext) : iosbital.cpp iosclear.cpp ioscoeio.cpp ioscoios.cpp &
+                       iosconde.cpp ioscostf.cpp iosdestr.cpp iosexcep.cpp &
+                       iosfacau.cpp iosfail.cpp  iosgnilk.cpp iosinit.cpp  &
+                       iosiword.cpp iospword.cpp iossetst.cpp iosxallo.cpp
+
+iot.$(obj_deps_ext) : iotconbf.cpp iotconde.cpp iotconsm.cpp iotdestr.cpp &
+                      iotopbuf.cpp iotopstm.cpp
+
+iou.$(obj_deps_ext) : ioufgtba.cpp ioufrxal.cpp ioufuswr.cpp iouwrtit.cpp
+
+iss.$(obj_deps_ext) : isscochz.cpp issconch.cpp issconsc.cpp issconuc.cpp &
+                      isscoscz.cpp isscoucz.cpp issdestr.cpp
+
+ist.$(obj_deps_ext) : istcoeis.cpp istcoesf.cpp istcoist.cpp istconde.cpp &
+                      istconsf.cpp istdestr.cpp istdipfx.cpp istdoget.cpp &
+                      istdread.cpp istdrshf.cpp isteatwh.cpp istexcha.cpp &
+                      isteximn.cpp istexiom.cpp istexpch.cpp istexsin.cpp &
+                      istexslo.cpp istexssh.cpp istexstf.cpp istexuin.cpp &
+                      istexulo.cpp istexush.cpp istgalin.cpp istgbase.cpp &
+                      istgch.cpp   istget.cpp   istgetul.cpp istgline.cpp &
+                      istgnum.cpp  istgpch.cpp  istgsign.cpp istgstf.cpp  &
+                      istignor.cpp istipfx.cpp  istpback.cpp istpeek.cpp  &
+                      istread.cpp  istsgsto.cpp istsgstp.cpp istsync.cpp  &
+                      isttellg.cpp istexi64.cpp istexu64.cpp istgnm64.cpp &
+                      istgtu64.cpp
+
+man.$(obj_deps_ext) : mandec.cpp  manendl.cpp  manends.cpp  manflush.cpp &
+                      manhex.cpp  manoct.cpp   manriofg.cpp mansbase.cpp &
+                      mansetw.cpp mansfill.cpp mansiofl.cpp mansprec.cpp &
+                      manws.cpp
+
+ofs.$(obj_deps_ext) : ofsconde.cpp ofsconfd.cpp ofsconnm.cpp ofsconsf.cpp &
+                      ofsdestr.cpp
+
+oss.$(obj_deps_ext) : ossconch.cpp ossconde.cpp ossconsc.cpp ossconuc.cpp &
+                      ossdestr.cpp
+
+ost.$(obj_deps_ext) : ostadpre.cpp ostcoeos.cpp ostcoesf.cpp ostconde.cpp &
+                      ostconsf.cpp ostcoost.cpp ostdestr.cpp ostdlshf.cpp &
+                      ostflush.cpp ostincch.cpp ostincha.cpp ostiniom.cpp &
+                      ostinomn.cpp ostinptr.cpp ostinslo.cpp ostinstf.cpp &
+                      ostinulo.cpp ostopfx.cpp  ostosfx.cpp  ostput.cpp   &
+                      ostspsto.cpp ostspstp.cpp osttellp.cpp ostwrite.cpp &
+                      ostini64.cpp ostinu64.cpp
+
+sdf.$(obj_deps_ext) : sdfconde.cpp sdfconfp.cpp sdfdestr.cpp sdfoverf.cpp &
+                      sdfsread.cpp sdfsync.cpp  sdfundrf.cpp
+
+ssb.$(obj_deps_ext) : ssbconde.cpp ssbconsz.cpp ssbdestr.cpp
+
+ssf.$(obj_deps_ext) : ssfdestr.cpp ssfdoall.cpp ssfempsf.cpp ssfempsz.cpp &
+                      ssfgpos.cpp  ssfoverf.cpp ssfseeko.cpp ssfsetbf.cpp &
+                      ssfstbuf.cpp ssfstr.cpp   ssfsync.cpp  ssfundrf.cpp
+
+sst.$(obj_deps_ext) : sstconch.cpp sstconde.cpp sstconsc.cpp sstconuc.cpp &
+                      sstdestr.cpp
+
+stf.$(obj_deps_ext) : stfconde.cpp stfdbp.cpp   stfdestr.cpp stfdoall.cpp &
+                      stfdsgtn.cpp stfdspun.cpp stfgnslk.cpp stfpbfai.cpp &
+                      stfsbuf.cpp  stfseeko.cpp stfseekp.cpp stfsetb.cpp  &
+                      stfsync.cpp
+
+!endif

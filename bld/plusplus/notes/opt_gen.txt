@@ -1,0 +1,47 @@
+Optimizing compiler generated functions
+=======================================
+
+    Possible contexts:
+    
+    (V) virtual function call application (only dtor and op=)
+    (B) base class application
+    (E) exact instance application
+    
+- all constructors & destructors
+    - no user-code means no ctor-disp setting has to be done
+
+- default constructor
+
+- default destructor
+
+- default copy constructor
+    if( info.has_data ) {
+	generate flattened copy ctor
+	V - N/A
+	B - can be ignored (by another default copy ctor)
+	E - must be called
+    } else {
+	copy ctor is identical to a compiler generated default ctor
+	if( info.needs_ctor ) {
+	    V - N/A
+	    B - can be ignored (by another default copy ctor)
+	    E - must be called
+	} else {
+	    V - N/A
+	    B - can be ignored
+	    E - can be ignored
+	}
+    }
+
+- default operator =
+    if( info.has_data ) {
+	generate flattened op=
+	V - must be called
+	B - can be ignored (by another default operator =)
+	E - must be called
+    } else {
+	no code to generate
+	V - must be called
+	B - can be ignored
+	E - can be ignored
+    }

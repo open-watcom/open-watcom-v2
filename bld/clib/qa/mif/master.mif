@@ -1,0 +1,323 @@
+#
+# C Run-Time Library test programs master makefile
+#
+
+# code  platform                invocation
+# ====  ========                ==========
+# DOS   16-bit DOS              dos_s
+#                               dos_c
+#                               dos_m
+#                               dos_l
+#                               dos_h
+# PLS   PharLap                 pls_3s
+#                               pls_3r
+# RSI   Rational Systems        rsi_3s
+#                               rsi_3r
+# X32   Flashtek                x32_3s
+#                               x32_3r
+# OS2   OS/2 16-bit             os2_s
+#                               os2_c
+#                               os2_m
+#                               os2_l
+#                               os2_h
+#                               os2_mt
+# OS3   OS/2 32-bit             os3_3r
+# OS3   OS/2 32-bit pm          os3pm_3r
+#                               os3pm_3s
+# WIN   Windows 16-bit          create icons; click ( or use WinRun )
+# W32   Windows 32-bit          create icons; click ( or use WinRun )
+# WNT   Windows NT Console      wnt_3r
+#                               wnt_3s
+# WNT   Windows NT Window       wntw_3r
+#                               wntw_3s
+# WNT   Windows NT Console(AXP) wnt_axp
+# WNT   Windows NT Window(AXP)  wntw_axp
+
+!include cproj.mif
+
+.erase
+.extensions:
+.extensions: .exe .rex .exp .obj .c .asm
+
+.before
+!ifdef on_build_machine
+    set watcom=$(%relroot)\$(%defrel)
+    set include=
+    set dos_include=$(%watcom)\h
+    set nt_include=$(%watcom)\h
+    set os2_include=$(%watcom)\h
+    set qnx_include=$(%watcom)\qh
+    set windows_include=$(%watcom)\h\win;$(%watcom)\h
+    set path=$(%watcom)\binnt;$(%watcom)\binw;$(%path)
+!endif
+
+!ifndef defwin
+defwin=-bw
+!endif
+
+comp_i86  = -fpc
+comp_axp  =
+comp_opts = -oaxt -d1 -zq -fo=$^*.obj
+link_i86  = DEBUG dwarf
+link_axp  = DEBUG codeview
+link_opts = NAME $^* OPTION quiet
+
+dosexes = &
+    dos_s.exe dos_c.exe dos_m.exe dos_l.exe dos_h.exe &
+    pls_3s.exe pls_3r.exe &
+    rsi_3s.exe rsi_3r.exe &
+    x32_3s.exe x32_3r.exe
+
+winexes = &
+    win_s.exe win_c.exe win_m.exe win_l.exe &
+    win32_3s.exe win32_3r.exe
+
+os2exes = &
+    os2_s.exe os2_c.exe os2_m.exe os2_l.exe os2_h.exe os2_mt.exe
+
+os3exes = &
+    os3_3r.exe os3_3s.exe os3pm_3r.exe os3pm_3s.exe
+
+wntexes = &
+    wnt_3s.exe wnt_3r.exe
+
+wntwexes = &
+    wntw_3s.exe wntw_3r.exe
+
+wntaxpexes = &
+    wnt_axp.exe wntw_axp.exe
+
+exes = &
+    $(dosexes) $(winexes) $(os2exes) $(os3exes) $(wntexes) $(wntwexes) $(wntaxpexes)
+
+all : .symbolic $(exes)
+    @%null
+
+underos2 : .symbolic $(dosexes) $(winexes) $(os2exes) $(os3exes) $(wntexes)
+    @%null
+
+underdos : .symbolic $(dosexes) $(winexes) $(os2exes) $(wntexes)
+    @%null
+
+underwnt : .symbolic $(dosexes) $(winexes) $(os2exes) $(wntexes) $(wntwexes)
+    @%null
+
+underwntaxp : .symbolic $(wntaxpexes)
+    @%null
+
+runtests : .symbolic
+!ifdef notnt
+    set notnt=NOTNT
+!endif
+!ifdef norun386
+    set norun386=NORUN386
+!endif
+!ifdef norun286
+    set norun286=NORUN286
+!endif
+!ifdef nodos4gw
+    set nodos4gw=NODOS4GW
+!endif
+!ifdef __OS2__
+    @%make underos2
+    @cdsay | tee.exe os2.log
+    @echo Running tests under OS/2 and Win-OS/2... | tee.exe -a os2.log
+    -@..\os2.cmd | tee.exe -a os2.log
+    -@..\winos2.cmd | tee.exe -a os2.log
+    -@command /e:2048 /c ..\dos.bat | tee.exe -a os2.log
+    @cat os2.log >> ..\_os2_.log
+!else ifdef __MSDOS__
+    @%make underdos
+    -@clog dos.log
+    @cdsay
+    @echo Running tests under DOS...
+    -@command /e:2048 /c ..\dos.bat
+    -@command /e:2048 /c ..\windows.bat
+    -@clog
+    @cat dos.log >> ..\_dos_.log
+!else ifdef __NT__
+    @%make underwnt
+    @cdsay | tee.exe wnt.log
+    @echo Running tests under Windows NT... | tee.exe -a wnt.log
+    -@..\wnt.bat | tee.exe -a wnt.log
+    @cat wnt.log >> ..\_wnt_.log
+!else
+!error Operating system unknown.
+!endif
+
+dos_s.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -ms -bt=dos
+    wlink SYSTEM dos $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+dos_c.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -mc -bt=dos
+    wlink SYSTEM dos $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+dos_m.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -mm -bt=dos
+    wlink SYSTEM dos $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+dos_l.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -ml -bt=dos
+    wlink SYSTEM dos $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+dos_h.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -mh -bt=dos
+    wlink SYSTEM dos $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+pls_3s.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3s -bt=dos -d__PHARLAP__
+    wlink SYSTEM pharlap $(link_opts) $(link_i86) FILE $^*
+    $(pharlap)bind386 $(pharlap)run386b $^*.exp -exe $^*.exe>nul
+    @del $^*.exp>nul
+    @del $^*.obj>nul
+
+pls_3r.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3r -bt=dos -d__PHARLAP__
+    wlink SYSTEM pharlap $(link_opts) $(link_i86) FILE $^*
+    $(pharlap)bind386 $(pharlap)run386b $^*.exp -exe $^*.exe>nul
+    @del $^*.exp>nul
+    @del $^*.obj>nul
+
+rsi_3s.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3s -bt=dos -d__DOS4G__
+    wlink SYSTEM dos4g $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+rsi_3r.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3r -bt=dos -d__DOS4G__
+    wlink SYSTEM dos4g $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+x32_3s.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3s -bt=dos -d__X32__
+    wlink $(link_opts) $(link_i86) SYSTEM x32s FILE $^* libpath $(flashtek)
+    $(flashtek)x32fix $^*.exe>nul
+    @del $^*.obj>nul
+
+x32_3r.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3r -bt=dos -d__X32__
+    wlink $(link_opts) $(link_i86) SYSTEM x32r FILE $^* libpath $(flashtek)
+    $(flashtek)x32fix $^*.exe>nul
+    @del $^*.obj>nul
+
+os2_s.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -ms -2 -bt=os2
+    wlink SYSTEM os2 pmcompatible $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+os2_c.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -mc -2 -bt=os2
+    wlink SYSTEM os2 pmcompatible $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+os2_m.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -mm -2 -bt=os2
+    wlink SYSTEM os2 pmcompatible $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+os2_l.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -ml -2 -bt=os2
+    wlink SYSTEM os2 pmcompatible $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+os2_h.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -mh -2 -bt=os2
+    wlink SYSTEM os2 pmcompatible $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+os2_mt.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -ml -bm -2 -bt=os2
+    wlink SYSTEM os2 pmcompatible $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+os3_3r.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3r -bt=os2
+    wlink SYSTEM os2v2 pmcompatible $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+os3_3s.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3s -bt=os2
+    wlink SYSTEM os2v2 pmcompatible $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+os3pm_3r.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3r $(defwin) -bt=os2
+    wlink SYSTEM os2v2_pm $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+os3pm_3s.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3s $(defwin) -bt=os2
+    wlink SYSTEM os2v2_pm $(link_opts) $(link_i86) FILE $^*
+    @del $^*.obj>nul
+
+win_s.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -ms -zw $(defwin) -bt=windows
+    wlink SYSTEM windows $(link_opts) $(link_i86) OPTION heap=10k, stack=5k FILE $^*
+    @del $^*.obj>nul
+
+win_c.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -mc -zw $(defwin) -bt=windows
+    *wlink SYSTEM windows $(link_opts) $(link_i86) OPTION heap=10k, stack=5k FILE $^*
+    @del $^*.obj>nul
+
+win_m.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -mm -zw $(defwin) -bt=windows
+    *wlink SYSTEM windows $(link_opts) $(link_i86) OPTION heap=10k, stack=5k FILE $^*
+    @del $^*.obj>nul
+
+win_l.exe : $(srcfile)
+    $(cc_i86) $[@ $(comp_opts) $(comp_i86) -ml -zw $(defwin) -bt=windows
+    *wlink SYSTEM windows $(link_opts) $(link_i86) OPTION heap=10k, stack=5k FILE $^*
+    @del $^*.obj>nul
+
+win32_3r.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3r -zw $(defwin) -bt=windows
+    *wlink SYSTEM win386 $(link_opts) $(link_i86) OPTION mindata=32K,maxdata=32K FILE $^*
+    @del $^*.obj>nul
+    wbind -n -q -s $(%watcom)\binw\win386.ext $^*
+    @del $^*.rex>nul
+
+win32_3s.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3s -zw $(defwin) -bt=windows
+    wlink SYSTEM win386 $(link_opts) $(link_i86) OPTION mindata=32K,maxdata=32K FILE $^*
+    @del $^*.obj>nul
+    wbind -n -q -s $(%watcom)\binw\win386.ext $^*
+    @del $^*.rex>nul
+
+wnt_3r.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3r -bt=nt
+    wlink SYSTEM nt $(link_opts) $(link_i86) FILE $^*
+    @del *.obj>nul
+
+wnt_3s.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3s -bt=nt
+    wlink SYSTEM nt $(link_opts) $(link_i86) FILE $^*
+    @del *.obj>nul
+
+wntw_3r.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3r $(defwin) -bt=nt
+    wlink SYSTEM nt_win $(link_opts) $(link_i86) FILE $^*
+    @del *.obj>nul
+
+wntw_3s.exe : $(srcfile)
+    $(cc_386) $[@ $(comp_opts) $(comp_i86) -mf -3s $(defwin) -bt=nt
+    wlink SYSTEM nt_win $(link_opts) $(link_i86) FILE $^*
+    @del *.obj>nul
+
+wnt_axp.exe : $(srcfile)
+    $(cc_axp) $[@ $(comp_opts) $(comp_axp) -bt=nt
+    wlink SYSTEM ntaxp $(link_opts) $(link_axp) FILE $^*
+    @del *.obj>nul
+
+wntw_axp.exe : $(srcfile)
+    $(cc_axp) $[@ $(comp_opts) $(comp_axp) $(defwin) -bt=nt
+    wlink SYSTEM ntaxp_win $(link_opts) $(link_axp) FILE $^*
+    @del *.obj>nul
+
+!include ..\mif\clean.mif

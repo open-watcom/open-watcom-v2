@@ -1,0 +1,140 @@
+proj_name = browse
+name = wbrw
+
+.extensions:
+.extensions: .exe .obj .cpp .gpp .c .y .mif
+
+.mif : $(mif_path);..\mif
+sys_windowed = 1
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c: ..\cpp;..\merge\c;$(posix_dir)\misc;$(lib_misc_dir)\c
+.cpp: ..\cpp;..\brg\cpp
+.gpp: ..\gen
+
+!include template.mif
+
+ext = obj
+OBJECTS = $+$(template)$-
+
+!ifeq browse_trmem 1
+OBJECTS += dmem.obj trmem.obj
+!else
+OBJECTS += mem.obj
+!endif
+
+!ifdef gen_browse_file
+ext = mbr
+mbr_files = $+$(template)$-
+!endif
+	
+inc_dirs_nt	= $(wclass_dir)\win\hpp;$(guitools_dir)\win
+inc_dirs_win	= $(wclass_dir)\win\hpp;$(guitools_dir)\win
+inc_dirs_dos	= $(wclass_dir)\dos\hpp;$(guitools_dir)\os2
+inc_dirs_os2	= $(wclass_dir)\pm\hpp;$(guitools_dir)\os2
+
+inc_dirs	= ..\h;..\brg\h;..\gen;$(wclass_dir)\hpp;$(gui_dir)\h;$(dwarf_dir)\dr\h;$(posix_dir)\h;..\contain\h;$(editdll_dir);$(ind_dirs_$(host_OS))
+
+.before:
+	SET INCLUDE=$(inc_path)
+
+cflags_all	= -zq -w4
+!ifdef DBG
+extra_c_flags_i86 = /zc/zm/zw
+!else
+extra_c_flags_i86 = /zc/zm/zW
+extra_c_flags_386_os2 = /dNDEBUG=1
+!endif
+!ifndef NOASSERT
+extra_c_flags_386_dos = /dDEBUG=1
+!endif
+extra_c_flags_386 = $(extra_c_flags_386_$(host_OS))
+
+extra_c_flags	= -dSTANDALONE_RX=1
+!ifndef release
+extra_c_flags	+= -dDEBUG=1 -dDEBUG_ASSERT=1 -dDEBUGTREE=1
+!endif
+extra_cpp_flags	= -ew-xs-dNOPERSIST=1
+!ifdef gen_browse_file
+extra_cpp_flags	+= -db 
+!endif
+
+extra_c_flags_trmem = /i=$(trmem_dir)
+extra_c_flags_regexp = /i=$(posix_dir)\h /dALLOC=WBRAlloc /fi=..\h\mem.h
+extra_c_flags_demangle = /i=$(lib_misc_dir)\h
+!ifneq host_OS axp
+mem_flag = -of+
+!endif
+!ifeq browse_trmem 1
+extra_c_flags_mem = /fo=dmem.obj $(mem_flag) /i=$(trmem_dir) /dTRACKER
+!endif
+
+rc_flags_nt	= -bt=nt -K
+rc_flags_win	= -bt=windows -K
+rc_flags_os2	= -p
+rc_flags	= $(rc_flags_$(host_OS))
+
+rc_file_nt	= ..\res\wbrw.rc
+rc_file_win	= ..\res\wbrw.rc
+rc_file_os2	= ..\res\wbrwpm.rc
+rc_file		= $(rc_file_$(host_OS))
+
+#linker
+LIBS_win	= dwarfrlw.lib ctl3d.lib
+LIBS_nt_axp	= draxp.lib guintaxp
+LIBS_nt_386	= dwarfrp.lib guintf
+LIBS_nt		= $(LIBS_NT_$(HOST_CPU))
+LIBS_os2	= dwarfrp.lib guipmf
+LIBS_dos	= dwarfrp.lib guidosf uilibf
+
+LIBS	= $(LIBS_$(host_OS))
+
+lflags_win_i86	= sys windows font mem
+extra_l_flags_win = op packdata=48k libpath $(wclass_dir)\win\obj;$(gui_dir)\win seg CLASS CODE FIXED, CLASS FAR_DATA FIXED, CLASS DATA FIXED
+lflags_dos_386	= sys pharlap
+extra_l_flags_dos = libpath $(gui_dir)\ui;$(ui_dir)\dos op stub=$(pharlap)stub386.exe
+extra_l_flags_nt_386 = libpath $(wclass_dir)\win\nt
+extra_l_flags_nt_axp = libpath $(wclass_dir)\win\axp op undefsok
+extra_l_flags_nt = $(extra_l_flags_nt_$(host_CPU)) libpath $(gui_dir)\win
+extra_l_flags_os2 = libpath $(wclass_dir)\pm\obj32;$(gui_dir)\win
+
+extra_l_flags	= op stack=16k libpath $(watcom_dir)\lib
+
+!ifndef quick_link
+extra_l_flags	+= op map=wbr,show,art,static
+!endif
+
+exe_ext_osi = .rex
+!ifdef exe_ext_$(host_OS)
+exe_ext	= $(exe_ext_$(host_OS))
+!else
+exe_ext = exe
+!endif
+
+$(name).exe : $(OBJECTS)
+	$(linker) $(lflags) name $(name).$(exe_ext) file {$(OBJECTS)} lib {$(LIBS)}
+!ifeq host_OS os2
+	$(rc_os2) $(rc_flags) $(rc_file) $^@
+!else
+	$(rc) $(rc_flags) $(rc_file) $^@
+!endif
+!ifdef gen_browse_file
+	@%create browser.wbr
+	@for %i in ($(mbr_files)) do @%append browser.wbr file %i
+!endif
+
+#compiling
+
+cppflags	= $(cflags) $(extra_cpp_flags)
+
+.cpp.obj:
+	@set include=$(inc_path)
+	$(cpp) $(cppflags) $(extra_c_flags_$[&) $[@
+	
+.gpp.obj:
+	@set include=$(inc_path)
+	$(cpp) $(cppflags) $(extra_c_flags_$[&) $[@
+
+dmem.obj : mem.cpp

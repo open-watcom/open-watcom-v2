@@ -1,0 +1,2 @@
+//#line "..\c\rptsamps.c" 54
+extern void ReportSampleInfo(void);

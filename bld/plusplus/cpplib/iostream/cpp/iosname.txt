@@ -1,0 +1,108 @@
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
+   %     reserved.  No part of this software may be reproduced or        %
+   %     used in any form or by any means - graphic, electronic or       %
+   %     mechanical, including photocopying, recording, taping or        %
+   %     information storage and retrieval systems - except with the     %
+   %     written permission of WATCOM International Inc.                 %
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+********************************** IOS ***************************************
+
+Filename: iosgnilk.cpp
+Declaration:
+    __lock *__get_next_ios_lock( void )
+
+Filename: iosfail.cpp
+Declaration:
+    ios::failure::failure( ios::iostate state )
+
+Filename: iosfacau.cpp
+Declaration:
+    ios::iostate ios::failure::cause() const
+
+Filename: iosinit.cpp
+Declaration:
+    void ios::init( streambuf *sb )
+Semantics: Initialize the ios, including a streambuf pointer.
+           If the streambuf pointer is NULL, mark the stream as currently invalid.
+
+Filename: iosconde.cpp
+Declaration:
+    ios::ios()
+Semantics: Default constructor, no associated streambuf.
+
+
+Filename: ioscostf.cpp
+Declaration:
+    ios::ios( streambuf *sb )
+Semantics: Construct an "ios" and initialize it.
+           Retain a pointer to the specified streambuf.
+
+Filename: ioscoios.cpp
+Declaration:
+    ios::ios( const ios &is )
+Semantics: Construct an "ios" and initialize it.
+           New "ios" gets all fields of "is" except streambuf.
+
+
+Filename: iosdestr.cpp
+Declaration:
+    ios::~ios()
+Semantics: Destructor
+
+Filename: ioscoeio.cpp
+Declaration:
+    ios &ios::operator = ( const ios &is )
+Semantics: Construct an "ios" and initialize it.
+           New "ios" gets all fields of "is" except streambuf.
+
+
+Filename: iosbital.cpp
+Declaration:
+    ios::fmtflags ios::bitalloc()
+Semantics: Find an unused bit in "__format_flags".
+           Note that there is only one "__last_format_flag" value for all
+	   streams.
+
+
+Filename: iossetst.cpp
+Declaration:
+	void ios::setstate( ios::iostate on_bits ) 
+Sematntics: Set __error_state and throw an exception, if enabled.
+
+
+Filename: iosxallo.cpp
+Declaration:
+    int ios::xalloc()
+Semantics: Find an unused (long) or (void *) for the user to use.
+           Return a number that can be used to find a reference to it
+           (via iword or pword).
+           Presumably, such a reference must remain valid forever, so
+           allocating a new value must not move old values.
+
+
+Filename: iosiword.cpp
+Declaration:
+    long &ios::iword( int index )
+Semantics: Find the (long) referred to by "index".
+           Assumes that "index" was returned by "xalloc".
+
+
+Filename: iospword.cpp
+Declaration:
+    void *&ios::pword( int index )
+Semantics: Find the (void *) referred to by "index".
+           Assumes that "index" was returned by "xalloc".
+
+
+Filename: iosclear.cpp
+Declaration:
+    ios::iostate ios::clear( ios::iostate state )
+Semantics: Set __error_state to state
+
+Filename: iosexcep.cpp
+Declaration:
+    ios::iostate ios::exceptions( ios::iostate enable )
+Semantics: Set __enabled_exceptions
+

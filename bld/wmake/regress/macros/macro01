@@ -1,0 +1,11 @@
+#
+# Macro Test # 1
+# Test in Microsoft Mode
+#
+temp = HELLO
+temp = $(temp:LLO=2) 
+all: hello .symbolic
+   echo $(temp)
+temp = $(temp:2=LLO) 
+hello: .symbolic
+   echo $(temp)

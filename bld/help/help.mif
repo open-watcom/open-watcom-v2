@@ -1,0 +1,11 @@
+help_objs = &
+    help.$(help_objext) &
+    vvscroll.$(help_objext) &
+    helpmem.$(help_objext) &
+    helpopen.$(help_objext) &
+    helpio.$(help_objext) &
+    helpscan.$(help_objext) &
+    dlg.$(help_objext) &
+    msgbox.$(help_objext) &
+    search.$(help_objext) &
+    dialcb.$(help_objext)

@@ -1,0 +1,5 @@
+#include "_guimsgs.h"
+STRINGTABLE
+BEGIN
+    #include "gui_str.rc"
+END

@@ -1,0 +1,113 @@
+#
+# Master makefile for creating MAD's
+#
+
+.CONTINUE
+.ERASE
+.EXTENSIONS
+.EXTENSIONS : .exe .lan .obj .i .h .c .asm .mif
+
+!ifndef bin_root
+!ifdef bin_root_wv
+bin_root = $(bin_root_wv)
+!endif
+!endif
+
+host_OS = $(os)
+
+.mif: $(mif_path)
+!include cproj.mif
+!include defrule.mif
+
+model_os2 = l
+model_os2v2 = f
+model_qnx = s
+model_win = l
+model_dos = f
+model_nt  = f
+
+comp_os2_x86 = $(comp286) -zu
+comp_os2v2_x86 = $(comp386)
+comp_qnx_x86 = $(comp386)
+comp_win_x86 = $(comp286) -zu
+comp_dos_x86 = $(comp386)
+comp_nt_x86  = $(comp386)
+comp_nt_axp  = *wccaxp
+
+sys_os2_x86  = os2 dll export MADLOAD op modname=$(name)
+sys_os2v2_x86  = os2v2 dll export MADLOAD op modname=$(name)
+sys_qnx_x86  = pharlap rex disable 1023,1014
+sys_win_x86  = windows op modname=$(name),rwr
+sys_dos_x86  = pharlap rex disable 1023,1014
+sys_nt_x86   = nt_dll export MADLOAD op offset=0x6eb00000, modname=$(name)
+sys_nt_axp   = ntaxp_dll export MADLOAD op modname=$(name), dosseg
+
+name = mad$(mad)
+mad_os2_x86 = $(bin_root)\binp\dll\$(name).dll
+mad_os2v2_x86 = $(bin_root)\binp\dll\$(name).d32
+mad_qnx_x86 = $(bin_root)\qnx\$(name).mad
+mad_win_x86 = $(bin_root)\bin\$(name).dll
+mad_dos_x86 = $(bin_root)\bin\$(name).mad
+mad_nt_x86  = $(bin_root)\binnt\$(name).dll
+mad_nt_axp  = $(bin_root)\axpnt\$(name).dll
+
+!ifeq os win
+targ = windows
+!else
+targ = $(os)
+!endif
+
+comp_opts_x86 = -m$(model_$(os)) -fpc -zc
+comp_opts = $(comp_opts_$(cpu)) -DMD_$(mad) -zq -w3 -bt=$(targ)
+ipaths=-i..\h;..\..\h;$(dig_dir)\h;$(inc_dirs_lang)
+
+!ifdef extra_incs
+ipaths+=;$(extra_incs)
+!endif
+
+!ifdef on_build_machine
+comp_opts       += -d1 -oaxt
+dbg_opts        = d a op symfile
+!else
+comp_opts       += -d2 -s
+dbg_opts        = d a
+comp_opts       += -dDEBUG
+!endif
+
+compile = $(comp_$(os)_$(cpu)) $(comp_opts) @ipaths $(extra_cflags) $[@
+
+.c: ..\c;..\..\c;$(extra_srcs)
+
+.c.obj: .autodepend
+        @set ipaths=$(ipaths)
+        $(compile)
+
+.c.i:
+        set ipaths=$(ipaths)
+        $(compile) -p -fo=.i
+
+objs = &
+        madimp.obj &
+        $(imp_objs)
+
+!ifeq cpu x86
+clib = clib$(model_$(os))
+!ifeq clib clibf
+clib = clib3r
+!else ifeq os qnx
+clib = clib3r
+!endif
+!else
+clib = clib
+!endif
+$(mad_$(os)_$(cpu)) : eraseall.obj $(objs) $(imp_libs)
+        *wlink op quiet,map $(dbg_opts) sys $(sys_$(os)_$(cpu)) name $^@ &
+                file {$(objs)} &
+                library {$(clib) $(imp_libs)}
+!ifdef lexusbld
+        @newer $^@ $(lexlib_dir)\tools\system\$^. "^copy &f $#f > nul"
+!endif
+
+eraseall.obj : ../compile.gbl ../../compile.gbl $(extra_gbls)
+        if exist *.obj erase *.obj
+        wtouch eraseall.obj

@@ -1,0 +1,40 @@
+system nt_dll
+#option undefsok
+#option nodefault
+option map, v, static, elim
+option quiet
+option symfile=fmedit.sym
+#option stack=40k, heap=16k
+#commit heap=8k
+runtime  windows=4.0
+name fmedit
+#segment _TEXT PRELOAD FIXED
+#segment CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
+#file %WATCOM%\lib286\win\libentry
+file align
+file fmedit
+file grid
+file paint
+file mouse
+file eatom
+file object
+file state
+file list
+file memory
+file cursor
+file scroll
+file currobj
+file oitem
+file curritem
+file dlist
+file clip
+file verdll
+file keybd
+#
+#   libraries
+#
+#
+#library nt
+#library %WATCOM%\lib386\nt\nt
+#library %WATCOM%\lib386\nt\clib3r
+# @exports

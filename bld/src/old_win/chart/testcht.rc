@@ -1,0 +1,21 @@
+#include "windows.h"
+#include "testcht.h"
+#include "dialog.h"
+#include "dialog.dlg"
+
+Testcht MENU
+BEGIN
+    POPUP "&Info"
+    BEGIN
+        MENUITEM "&About Test Chart...", MENU_ABOUT
+    END
+END
+
+AboutBox DIALOG 22, 17, 144, 75
+        STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+        CAPTION "About WATCOM Test Chart"
+        BEGIN
+            CTEXT "WATCOM Chart Program for Windows", -1, 0,  5, 144, 8
+            CTEXT "Version 1.0", -1, 0, 14, 144, 8
+            DEFPUSHBUTTON "OK", IDOK, 53, 59, 32, 14, WS_GROUP
+        END

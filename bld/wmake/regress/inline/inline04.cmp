@@ -1,0 +1,11 @@
+diff "DO INLINE TEST4" "DO INLINE TEST4B$"
+2c2
+< BOO
+---
+> BOO2
+hello
+diff "DO INLINE TEST4" "DO INLINE TEST4B$"
+2c2
+< BOO
+---
+> BOO2

@@ -1,0 +1,2 @@
+OBJDIR=obj_sun
+include ../sample.mk

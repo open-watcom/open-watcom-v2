@@ -1,0 +1,29 @@
+MEMMAN_INFO DIALOG 46, 10, 212, 132
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Memory Management Information"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "Largest Free Memory Block", -1, 4, 77, 108, 8
+    LTEXT           "Maximum Allocatable Pages", -1, 4, 85, 114, 8
+    LTEXT           "Number of Unlocked Pages", -1, 4, 55, 108, 8
+    LTEXT           "Maximum Lockable Pages", -1, 4, 93, 97, 8
+    LTEXT           "Size of Linear Address Space (in pages)", -1, 4, 3, 142,
+                    9
+    LTEXT           "Number of Free Pages", -1, 4, 63, 94, 10
+    LTEXT           "Pages in Swap File", -1, 4, 33, 85, 8
+    LTEXT           "Free Pages in Linear Address Space", -1, 4, 11, 138, 8
+    LTEXT           "Total Pages in System", -1, 4, 47, 92, 8
+    LTEXT           "System Page Size (in bytes)", -1, 4, 25, 105, 8
+    LTEXT           "", MEMMAN_TOT_LIN_SPACE, 165, 3, 44, 8
+    LTEXT           "", MEMMAN_FREE_LIN_SPACE, 165, 11, 44, 8
+    LTEXT           "", MEMMAN_PAGE_SIZE, 165, 25, 44, 8
+    LTEXT           "", MEMMAN_MAX_PAGES_AVAIL, 165, 85, 42, 8
+    LTEXT           "", MEMMAN_SWAP_PAGES, 165, 33, 43, 8
+    LTEXT           "", MEMMAN_LOCKABLE_PAGES, 165, 93, 43, 8
+    LTEXT           "", MEMMAN_FREE_PAGES, 165, 63, 43, 8
+    LTEXT           "", MEMMAN_TOT_PAGES, 165, 47, 43, 8
+    LTEXT           "", MEMMAN_LARGEST_FREE_BLOCK, 165, 77, 42, 8
+    LTEXT           "", MEMMAN_UNLOCKED_PAGES, 165, 55, 42, 8
+    PUSHBUTTON      "OK", IDOK, 58, 112, 40, 14
+    PUSHBUTTON      "Refresh", HW_INFO_REFRESH, 114, 112, 40, 14
+END

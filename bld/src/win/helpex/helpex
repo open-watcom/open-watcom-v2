@@ -1,0 +1,17 @@
+all: helpex.exe helpex.hlp
+
+helpex.hlp: helpex.rtf
+    hc helpex
+
+helpex.obj: helpex.c
+    cl -c -AS -Gsw -Os -Zpe -W2 helpex.c
+
+helpex.res: helpex.rc helpex.dlg
+    rc -r helpex.rc
+
+helpex.exe: helpex.obj helpex.def
+    link /NOD helpex,,, libw slibcew, helpex.def
+    rc helpex.res
+
+helpex.exe: helpex.res
+    rc helpex.res

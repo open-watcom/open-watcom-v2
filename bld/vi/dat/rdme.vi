@@ -1,0 +1,96 @@
+#
+# Rdhook script - if the file edited is a new file, then this script attempts
+#		  to find the requested file in different directories.
+#		  if it completely fails, then the original name is left.
+#
+	if "%E" != ".obj" && "%E" != ".ybj"
+	    if lastrc != NEW_FILE
+		return
+	    endif
+	endif
+	
+	#
+	# did we edit the null string? if so, just quit
+	#
+        if "%F" == ""
+            return
+        endif
+	
+	#
+	# null name? - if so, interpolate based on previous file name
+	#
+	if "%N" == ""
+	    prev
+	    if "%N" == ""
+		next
+		return ERR_NO_ERR
+	    endif
+	    assign %q = %N 
+	    assign %p = %(D1)%(P1)
+	    next
+	    edit! %p%q%E
+	    if lastrc != NEW_FILE
+		return 
+	    endif
+	else
+	    assign %q = %N 
+	endif
+	    
+	
+	#
+	# obtain stuff after '.' in extension (change .obj to .c)
+	#
+	if "%E" == ".obj" || "%E" == ".ybj"
+	    edit! %b
+	    assign %x = .c 
+	    assign %b = %(D1)%(P1)%q%x 
+	    fopen %b 1 x
+	    if lastrc == ERR_NO_ERR
+		edit! %b
+		return
+	    endif
+	else
+	    assign %x = %E 
+	endif
+	assign %l = strlen %x 
+	assign %e = substr %x 2 %l 
+	
+	#
+	# look up one
+	#
+	assign %b = ..\%q%x 
+	fopen %b 1 x
+	if lastrc == ERR_NO_ERR
+	    edit! %b
+	    return
+	endif
+	
+	#
+	# look down in the directory with the same name as the extension
+	#
+	assign %b = %e\%q%x 
+	fopen %b 1 x
+	if lastrc == ERR_NO_ERR
+	    edit! %b
+	    return
+	endif
+	
+	#
+	# try up one
+	#
+	assign %b = ..\%e\%q%x 
+	fopen %b 1 x
+	if lastrc == ERR_NO_ERR
+	    edit! %b
+	    return
+	endif
+	
+	#
+	# try up two
+	#
+	assign %b = ..\..\%e\%q%x 
+	fopen %b 1 x
+	if lastrc == ERR_NO_ERR
+	    edit! %b
+	    return
+	endif

@@ -1,0 +1,7 @@
+#
+# Temp makeinit until Alpha stuff is fully integrated
+#
+
+.mif: $(%PATH)
+
+!include make110.mif

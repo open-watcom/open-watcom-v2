@@ -1,0 +1,9 @@
+# ---------------------------------
+# ERROR 17E: maximum token sizes
+# ---------------------------------
+#   suffixes        ( MAX_SUFFIX == _MAX_EXTENSIONS == 256 )
+#
+ext1 = 123456789012345678901234567890
+ext=$+ $(ext1)$(ext1)$(ext1)$(ext1)$(ext1)$(ext1)$(ext1)$(ext1) $-
+.extensions: .2345678901 &
+.$(ext)123456789012345

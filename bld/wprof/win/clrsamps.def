@@ -1,0 +1,12 @@
+//#line "..\c\clrsamps.c" 38
+extern void ClearAllSamples(void);
+//#line "..\c\clrsamps.c" 48
+extern void ClearSample(sio_data *curr_sio);
+//#line "..\c\clrsamps.c" 149
+extern void ClearMassaged(sio_data *curr_sio);
+//#line "..\c\clrsamps.c" 171
+extern void ClearModuleInfo(image_info *curr_image);
+//#line "..\c\clrsamps.c" 194
+extern void ClearFileInfo(mod_info *curr_mod);
+//#line "..\c\clrsamps.c" 217
+extern void ClearRoutineInfo(file_info *curr_file);

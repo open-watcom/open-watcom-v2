@@ -1,0 +1,65 @@
+#include "windows.h"
+#include "edit.h"
+
+EditMenu MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New", MENU_NEW
+        MENUITEM "&Open ...", MENU_OPEN
+        MENUITEM "&Save", MENU_SAVE
+        MENUITEM "Save &As ...", MENU_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "&Print", MENU_PRINT
+        MENUITEM "P&rinter Setup ...", MENU_PRINT_SETUP
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit", MENU_EXIT
+        MENUITEM SEPARATOR
+        MENUITEM "A&bout Edit...", MENU_ABOUT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Undo", MENU_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "&Clear", MENU_CLEAR
+        MENUITEM "C&opy", MENU_COPY
+        MENUITEM "Cu&t", MENU_CUT
+        MENUITEM "&Paste", MENU_PASTE
+    END
+    POPUP "F&ont"
+    BEGIN
+        MENUITEM "&Choose New Font ...", MENU_FONT_SELECT
+    END
+END
+
+AboutBox DIALOG 22, 17, 144, 75
+    STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+    CAPTION "About WATCOM Edit"
+    BEGIN
+        CTEXT "WATCOM Simple Editor for Windows", -1, 0,  5, 144, 8
+        CTEXT "Version 1.0", -1, 0, 14, 144, 8
+        DEFPUSHBUTTON "OK", IDOK, 53, 59, 32, 14, WS_GROUP
+    END
+
+AbortDialog DIALOG 22,17, 144, 75
+    STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+    CAPTION "WATCOM Edit"
+    BEGIN
+        DEFPUSHBUTTON "Cancel", IDCANCEL, 53, 59, 32, 14, WS_GROUP
+        CTEXT "Printing", -1, -1,  5, 144, 8
+        CTEXT "", PRINT_TITLE, -1, 20, 144, 8;
+        CTEXT "", PRINT_REST, -1, 40, 144, 8;
+    END
+
+GetFont DIALOG 10, 25, 180, 95
+    STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+    CAPTION "Select a Font"
+    BEGIN
+        DEFPUSHBUTTON "OK", IDOK,  123, 10, 45, 15, WS_TABSTOP
+        PUSHBUTTON "&Cancel", IDCANCEL,  123, 30, 45, 15, WS_TABSTOP
+        CTEXT "A Sample", FONT_SAMPLE, 117, 53, 57, 35
+        CTEXT "Font:", -1, 6, 6, 44, 8
+        LISTBOX FONT_NAME, 6, 19, 65, 65, LBS_NOTIFY | WS_VSCROLL | WS_TABSTOP
+        CTEXT "Size:",  -1, 79, 7, 29, 8
+        LISTBOX  FONT_SIZE, 80, 19, 32, 65, LBS_NOTIFY | WS_VSCROLL | WS_TABSTOP
+    END

@@ -1,0 +1,37 @@
+
+c$ifndef __OS2__
+c$define __OS2__
+c$endif
+
+        include 'os2.fi'
+        include 'drawmenu.fi'
+        include 'button.fi'
+        include 'room.fi'
+
+c$noreference
+
+        integer Main_hwnd
+        integer Main_hab
+        integer Main_hmq
+        integer hThree_d
+        record /RECTL/ Draw_area
+        integer Button_height
+        integer Auto_run
+
+c$ifdef DRAW_ALL_AT_ONCE
+        integer Hdc;
+        integer Mem_dc;
+        integer Draw_bitmap = NULLHANDLE;
+        integer Old_bitmap = NULLHANDLE;
+c$endif
+
+        common /static_data/ Main_hwnd, Main_hab, Main_hmq, hThree_d,
+     &                       Draw_area, Button_height, Auto_run
+
+c$ifdef DRAW_ALL_AT_ONCE
+        common /additional/ Hdc, Mem_dc, Draw_bitmap, Old_bitmap
+c$endif
+
+c$pragma aux draw_box "*_" parm(value)
+
+c$reference

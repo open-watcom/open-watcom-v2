@@ -1,0 +1,96 @@
+# target_CPU = 386 | i86 | ppc | axp
+# host_CPU = 386 | ppc | axp
+# host_OS  = nt | os2 | qnx | dos
+
+obj_dir         = $(host_OS)$(host_CPU)
+!ifdef $(proj_name)_rtdll
+!ifeq $(proj_name)_rtdll 1
+obj_dir         = $(host_OS)$(host_CPU).rtd
+!endif
+!endif
+
+o_dir_386       = $(cg_dir)\intel\386\$(obj_dir)
+i_dir_386       = $(cg_dir)\intel\386\h;$(cg_dir)\intel\h
+
+o_dir_i86       = $(cg_dir)\intel\i86\$(obj_dir)
+i_dir_i86       = $(cg_dir)\intel\i86\h;$(cg_dir)\intel\h
+
+o_dir_axp       = $(cg_dir)\risc\axp\$(obj_dir)
+i_dir_axp       = $(cg_dir)\risc\axp\h;$(cg_dir)\risc\h;$(owl_dir)\h
+
+o_dir_ppc       = $(cg_dir)\risc\ppc\$(obj_dir)
+i_dir_ppc       = $(cg_dir)\risc\ppc\h;$(cg_dir)\risc\h;$(owl_dir)\h
+
+!ifndef bootstrap
+!ifndef o_dir_$(target_CPU)
+!error unsupported target_CPU
+!endif
+o_dir           = $(o_dir_$(target_CPU))
+i_dir           = $(i_dir_$(target_CPU));$(cg_dir)\h;$(cfloat_dir)\h
+!endif
+cg_target       = $(target_CPU)
+cg_host         = $(host_OS)
+
+owl_lib         = $(owl_dir)\o.$(host_CPU)\owl.lib
+cf_lib          = $(cfloat_dir)\o.$(host_CPU)\cf.lib
+
+use_owl_lib_axp = 1
+use_owl_lib_ppc = 1
+use_owl_lib_386 = 0
+use_owl_lib_i86 = 0
+
+!include $(cg_dir)\mif\cg.mif
+
+cg_inc_dirs = $(i_dir)
+
+!ifeq cg_dll 1
+cg_deps = $(o_dir).dll\cgdllcli.lib
+cg_libs = lib $(o_dir).dll\cgdllcli.lib
+!else
+!ifeq use_owl_lib_$(target_CPU) 1
+cg_deps = &
+    $(owl_lib) &
+    $(cf_lib) &
+    $(o_dir)\cg$(cg_target).lib &
+    $(o_dir)\cg$(cg_target)$(cg_host).lib
+
+cg_libs = &
+    lib $(owl_lib) &
+    lib $(cf_lib) &
+    lib $(o_dir)\cg$(cg_target).lib &
+    lib $(o_dir)\cg$(cg_target)$(cg_host).lib
+!else
+cg_deps = &
+    $(cf_lib) &
+    $(o_dir)\cg$(cg_target).lib &
+    $(o_dir)\cg$(cg_target)$(cg_host).lib
+
+cg_libs = &
+    lib $(cf_lib) &
+    lib $(o_dir)\cg$(cg_target).lib &
+    lib $(o_dir)\cg$(cg_target)$(cg_host).lib
+!endif
+!endif
+
+cg_debug_deps = &
+    $(cg_deps)
+
+cg_debug_libs = &
+    $(cg_libs)
+
+!ifndef cg_dll
+owl_debug_refs_axp_axp = , OWLDumpSymTab
+owl_debug_refs_axp_386 = , OWLDumpSymTab_
+
+cg_debug_libs_386 = &
+    $(cg_libs) &
+    reference DumpTree_, DumpCurrLoop_, DumpInsList_, DumpString_, DumpOpt_, DumpOpcodeName_, &
+        DumpRegTree_, DumpSc_, DumpADataDag_, DumpGen_, Dumpan_, DumpBlk_, DumpConflicts_ $(owl_debug_refs_$(cg_target)_$(host_CPU))
+
+cg_debug_libs_axp = &
+    $(cg_libs) &
+    reference DumpTree, DumpCurrLoop, DumpInsList, DumpString, DumpOpt, DumpOpcodeName, &
+        DumpRegTree, DumpSc, DumpADataDag, DumpGen, Dumpan, DumpBlk, DumpConflicts $(owl_debug_refs_$(cg_target)_$(host_CPU))
+
+cg_debug_libs = $(cg_debug_libs_$(host_CPU))
+!endif

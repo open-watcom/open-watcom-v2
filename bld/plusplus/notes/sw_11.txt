@@ -1,0 +1,171 @@
+Multiple files Can be compiled
+==============================
+- more than one file name can be specified on a command line
+- will compile each file
+- faster than compiling separately
+- see -k switch for details about when process stops due to compilation errors
+
+Changes from 10.5
+=================
+	- -d2 now inlines functions
+	- -zp4 is the default rather than -zp1
+	
+
+Switches for 11.0
+=================
+
+
+
+d2
+--
+- now does inlining of functions
+
+
+d2t
+---
+- typedef names are not emitted with debug information
+- so, a user cannot use these names while debugging
+
+
+d2i
+---
+- disables inlining of functions (d2 inlines functions)
+
+
+fc=<file>
+---------
+- specify a file of commands
+- for each line in file, -fc is replaced by the line, and the compiler is
+  invoked with the resultant command line
+- see -k switch for details about when process stops
+- faster than compiling separately
+
+
+fhd
+---
+- valid only for DWARF debug format (-hd)
+- causes debug information to be stored only in the object file when 
+  that pre-compiled header is being created
+- should only be used when all object files using the pre-compiled header
+  are created using WMAKE and where .AUTODEPENDS (see WMAKE) is specified
+  for all such object files
+
+
+fhq
+---
+- prevents the display of messages about the processing of pre-compiled 
+  headers
+
+
+fpd
+---
+- causes extra code to be generated so correct results are obtained despite
+  the hardware errors in floating-point division on early Pentium chips 
+
+ 
+k
+-
+- when multiple files are being compiled (either specified on command line
+  or when -fc is used), compilation will stop if an error occurs as soon
+  as an error occurs during a compilation
+- this switch causes compilation to stop only when a fatal error (such as
+  exhausting disk space) occurs
+
+
+ob
+--
+-get Brad to describe
+
+
+ol+
+---
+-get Brad to describe
+
+
+oz
+--
+-get Brad to describe
+  
+  
+pe
+--
+- during preprocessing, changes all user-defined names to a coded format
+- permits sensitive files to be preprocessed and sent to WATCOM
+
+
+t=<number>
+----------
+- specifies the tab interval
+
+
+wcd=<number>
+------------
+- disables printing warning messages with the indicated number
+
+
+xd
+--
+- disable exceptions
+
+
+xdt
+---
+- same as -xd
+
+
+xds
+---
+- disable exceptions, but use the table-handling methodology of exception
+  processing to implement destructors
+- may result in less code (but a longer execution time) when objects have
+  many items to be destructed
+
+  
+xs
+--
+- enable exceptions
+- destructors are not called directly
+- tables are interpretted to cause destructions
+
+
+xst
+---
+- enable exceptions, call destructors directly
+- may result in more code (but will have a shorter execution time)
+
+
+xss
+---
+- enable exceptions
+- tables are interpretted to cause destructions
+- tables are used to implement destructors
+
+
+zm
+--
+- place each function in its own segment
+- segment names are different within a module
+- functions explicitly typed as near generate warnings since the module
+  may be split across physical segments in the .EXE (a near call may
+  be in a different segment)
+- module code size can exceed 64k
+
+
+
+zmf
+---
+- place each function in its own segment
+- segment name are all the same in a module
+- module code size cannot exceed 64k
+
+
+zv
+--
+- enable removal of unreferenced virtual functions
+- are removed by linker
+- should not be used in conjunction with DLL's that might reference one
+  of the removed functions
+  
+zz
+--
+- put out names for __stdcall functions that are compatible with version 10.0

@@ -1,0 +1,67 @@
+<HTML>
+<TITLE>Debugging the Watcom code generator
+</TITLE>
+<BODY>
+<H1>General</H1>
+<P>If you want to use my <a href="vc.dbg">vc.dbg</a> command, make
+sure you have a \tmp directory (see dumpio.c for details). Note: I 
+usually make a s:\tmp to facilitate debugging in s:\brad :) Yeah,
+it's a cheap and sleazy hack...
+<P> If you need to dump something and don't know the routine to 
+call, try "e/s Dump<ALT-S>" and see what pops up...
+
+<H2>Instructions</H2>
+<P> You can get a dump of instructions for current function via
+<i>DumpRange</i> anytime between <i>FixEdges</i> and start of <i>GenObject</i>.
+<P> You can dump an individual instruction via <i>DumpIns</i>
+<P> If you need live info for a basic block, find address and call 
+<i>DumpABlk( block )</i>.
+
+<H2>Symbols</H2>
+<P> If you need to see a list of symbols, use <i>DumpSymTab</i>.
+<P> To look at one symbol, use <i>DumpSym</i>.
+
+<H1>Tree Problems</H1>
+<DL>
+<DD> Find the line number of a piece of source near the problem.
+<DD> Do a "bif { edx == LINENUMBER } <i>DBSrcCue</i>" to stop near that
+<DD> Go to <i>CGDone</i> in order to see what resulting tree is (<i>DumpTree</i>)
+<DD> If there is a problem with tree, but not with API calls,
+do to <i>DBSrcCue</i> as above and then break on next appropriate CG API call.
+</DL>
+
+<H1>Optimization Problems (Loopopts et al)</H1>
+<DL>
+<DD> Find the ordinal of the problem function in the file (ie 4th function)
+<DD> Do a "bcnt 4 <i>FixEdges</i>" in order to stop on 4th call (for example) to <i>FixEdges</i>
+<DD> Dump instructions (using <i>DumpRange</i>) and see if problem is in trees
+<DD> If not, go to <i>RegAlloc</i> and see if problem shows up yet
+<DD> If so, binary search between <i>FixEdges</i> and <i>RegAlloc</i> to find optimization
+at fault.
+</DL>
+
+<H1>Instruction Select Problems</H1>
+<DL>
+<DD> Go to <i>RegAlloc</i> for appropriate function (called once per function when not -od)
+<DD> Find address of instruction which gets translated or handled improperly. (Look in 
+results of <i>DumpRange</i> for this address).
+<DD> Do a "bif { eax == address } <i>ExpandIns</i>" to look at what we do to this 
+instruction (trace through).
+</DL>
+
+<H1>Register Allocation Problem</H1>
+<DL>
+<DD> Call John.
+</DL>
+
+<H1>Instruction Encoding Problem</H1>
+<DL>
+<DD> Go to <i>RegAlloc</i> invocation for routine in question.
+<DD> Go to <i>GenObject</i> and call <i>DumpRange</i>.
+<DD> Find address of instruction that gets encoded incorrectly, and do 
+a "bif { eax == address } <i>GenObjCode</i>"
+<DD> Trace into <i>GenObjCode</i> at appropriate time.
+</DL>
+
+</BODY>
+</HTML>

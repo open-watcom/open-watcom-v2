@@ -1,0 +1,71 @@
+#include <windows.h>
+#include "const.h"
+#include "intdlg.h"
+#include "stat.h"
+#include "stackt.h"
+#include "..\misc\memwnd.h"
+#include "log.h"
+#include "dmptask.h"
+#include "taskctl.h"
+#include "about.h"
+#include "rcstr.h"
+#include "dbgopt.h"
+#include "segmap.h"
+#include "dipload.h"
+
+"APPLICON" ICON drwatcom.ico
+"ALERTICON" ICON sadicon.ico
+
+"APPLMENU" MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save", MENU_SAVE
+        MENUITEM "Sa&ve As ...", MENU_SAVE_AS
+        MENUITEM "&Clear", MENU_CLEAR
+        MENUITEM "&Mark", MENU_MARK
+        MENUITEM SEPARATOR
+        MENUITEM "Alert On &Warnings", MENU_ALERT_WARNINGS
+        MENUITEM "Show &DIP status", MENU_SHOW_DIP_STATUS
+        MENUITEM "Set &Font", MENU_SET_FONT
+        MENUITEM SEPARATOR
+        MENUITEM "&Reset Fault Handled Flag", MENU_RESET_FAULT_BIT
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit", MENU_EXIT
+    END
+    POPUP "&Log"
+    BEGIN
+        MENUITEM "&Log Current State", MENU_LOG_CURRENT_STATE
+        MENUITEM "&Erase Log File", MENU_ERASE_LOG_FILE
+        MENUITEM SEPARATOR
+        MENUITEM "L&og Options ...", MENU_LOG_OPTIONS
+    END
+    POPUP "&Task"
+    BEGIN
+        MENUITEM "&Task Control ...", MENU_DUMP_A_TASK
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About ...", MENU_ABOUT
+    END
+END
+
+#undef pick
+#define pick( a, b ) a, b
+STRINGTABLE
+BEGIN
+    #include "rcstr.msg"
+END
+
+#include "about.dlg"
+#include "intdlg.dlg"
+#include "stat.dlg"
+#include "stackt.dlg"
+#include "memwnd.rc"
+#include "log.dlg"
+#include "dmptask.dlg"
+#include "taskctl.dlg"
+#include "mark.rc"
+#include "dbgopt.dlg"
+#include "segmap.dlg"
+#include "dipload.dlg"

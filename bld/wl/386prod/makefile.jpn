@@ -1,0 +1,3 @@
+comp = $(comp386)
+default = j
+!include ..\o\wlink.mif 

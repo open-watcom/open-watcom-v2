@@ -1,0 +1,4 @@
+ERR21(8): Error(E21): Extension(s) (.c.obj) not defined
+ERR21(9): Warning(W20): Command list does not belong to any target
+ERR21(11): Error(E21): Extension(s) (.c) not defined
+Error(E02): Make execution terminated

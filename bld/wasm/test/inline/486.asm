@@ -1,0 +1,2 @@
+bswap eax
+bswap esi

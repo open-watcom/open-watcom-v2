@@ -1,0 +1,113 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject cenvarg.obj  d16 d32             nt nta ntp    o16 o32
+!inject cwaitos2.obj                                   o16 o32
+!inject cwaitwnt.obj                     nt nta ntp
+!inject delay.obj    d16 d32                                           w16
+!inject delayos2.obj                                   o16 o32
+!inject delayw32.obj                                                       w32
+!inject delaywnt.obj                     nt nta ntp
+!inject doexec.obj   d16
+!inject dospnos2.obj                                   o16 o32
+!inject dospnwnt.obj                     nt nta ntp
+!inject exaddos2.obj                                   o16 o32
+!inject exaddwnt.obj                     nt nta ntp
+!inject excptwnt.obj                     nt nta ntp
+!inject execaddr.obj d16 d32
+!inject exl.obj      d16                 nt nta ntp    o16 o32
+!inject exle.obj     d16                 nt nta ntp    o16 o32
+!inject exleqnx.obj                                            q16 q32
+!inject exlp.obj     d16                 nt nta ntp    o16 o32
+!inject exlpe.obj    d16                 nt nta ntp    o16 o32
+!inject exlpeqnx.obj                                           q16 q32
+!inject exlpqnx.obj                                            q16 q32
+!inject exlqnx.obj                                             q16 q32
+!inject exv.obj      d16                 nt nta ntp    o16 o32
+!inject exve.obj     d16
+!inject exveos2.obj                                    o16 o32
+!inject exveqnx.obj                                            q16 q32
+!inject exvewnt.obj                      nt nta ntp
+!inject exvp.obj     d16                 nt nta ntp    o16 o32
+!inject exvpe.obj    d16                 nt nta ntp    o16 o32
+!inject exvpeqnx.obj                                           q16 q32
+!inject exvpqnx.obj                                            q16 q32
+!inject exvqnx.obj                                             q16 q32
+!inject exwc2mb.obj  d16 d32                           o16 o32         w16 w32
+!inject _povrlay.obj                     nt nta ntp
+!inject raise.obj                                              q16 q32
+!inject sigjmp.obj                                             q16 q32
+!inject signl.obj    d16 d32                                           w16 w32
+!inject signlo16.obj                                   o16
+!inject signlo32.obj                                       o32
+!inject signlq16.obj                                           q16
+!inject signlwnt.obj                     nt nta ntp
+!inject sigsy.obj    d16 d32                                           w16
+!inject sigsyo16.obj                                   o16
+!inject _slashc.obj  d16 d32             nt nta ntp    o16 o32
+!inject sleep.obj    d16 d32                        nv                 w16 w32
+!inject sleepos2.obj                                   o16 o32
+!inject sleepwnt.obj                     nt nta ntp
+!inject spawn086.obj d16
+!inject spawn386.obj     d32
+!inject spl.obj      d16 d32             nt nta ntp    o16 o32
+!inject sple.obj     d16 d32             nt nta ntp    o16 o32
+!inject spleqnx.obj                                            q16 q32
+!inject splp.obj     d16 d32             nt nta ntp    o16 o32
+!inject splpe.obj    d16 d32             nt nta ntp    o16 o32
+!inject splpeqnx.obj                                           q16 q32
+!inject splpqnx.obj                                            q16 q32
+!inject splqnx.obj                                             q16 q32
+!inject spv.obj      d16 d32             nt nta ntp    o16 o32
+!inject spve.obj     d16 d32             nt nta ntp    o16 o32
+!inject spveqnx.obj                                            q16 q32
+!inject spvp.obj     d16 d32             nt nta ntp    o16 o32
+!inject spvpe.obj    d16 d32             nt nta ntp    o16 o32
+!inject spvpeqnx.obj                                           q16 q32
+!inject spvpqnx.obj                                            q16 q32
+!inject spvqnx.obj                                             q16 q32
+!inject system.obj   d16 d32             nt nta ntp    o16 o32         w16 w32
+!inject ucenvarg.obj                     nt nta ntp
+!inject udospwnt.obj                     nt nta ntp
+!inject uexl.obj     d16                 nt nta ntp    o16 o32
+!inject uexle.obj    d16                 nt nta ntp    o16 o32
+!inject uexlp.obj    d16                 nt nta ntp    o16 o32
+!inject uexlpe.obj   d16                 nt nta ntp    o16 o32
+!inject uexv.obj     d16                 nt nta ntp    o16 o32
+!inject uexve.obj    d16                 nt nta ntp    o16 o32
+!inject uexvp.obj    d16                 nt nta ntp    o16 o32
+!inject uexvpe.obj   d16                 nt nta ntp    o16 o32
+!inject _uslashc.obj d16 d32             nt nta ntp    o16 o32
+!inject uspl.obj     d16 d32             nt nta ntp    o16 o32
+!inject usple.obj    d16 d32             nt nta ntp    o16 o32
+!inject usplp.obj    d16 d32             nt nta ntp    o16 o32
+!inject usplpe.obj   d16 d32             nt nta ntp    o16 o32
+!inject uspv.obj     d16 d32             nt nta ntp    o16 o32
+!inject uspve.obj    d16 d32             nt nta ntp    o16 o32
+!inject uspvp.obj    d16 d32             nt nta ntp    o16 o32
+!inject uspvpe.obj   d16 d32             nt nta ntp    o16 o32
+!inject usystem.obj  d16 d32             nt nta ntp    o16 o32         w16 w32
+!inject waitos2.obj                                    o16 o32
+!inject waitwnt.obj                      nt nta ntp
+!inject _raise.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
+
+!include ..\..\..\..\objlist.mif
+
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject ergospwn.obj     d32
+
+objsuffix=files
+!include ..\..\..\..\objlist.mif
+objprefix=
+
+cenvarg_opts    =-os
+exve_opts       =-os
+exveos2_opts    =-os
+exveqnx_opts    =-os
+exvewnt_opts    =-os
+exvpe_opts      =-os
+exvpeqnx_opts   =-os
+spve_opts       =-os
+spveqnx_opts    =-os
+spvpe_opts      =-os
+spvpeqnx_opts   =-os

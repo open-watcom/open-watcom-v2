@@ -1,0 +1,30 @@
+#include "samprc.h"
+#include "gui.rc"
+
+STRINGTABLE
+BEGIN
+    STRMSG1, "this is msg 1"
+    STRMSG2, "this is msg 2"
+END
+
+#include "winpm.rc"
+
+BITMAP  MINIMIZE        "../res/min.bmp"
+BITMAP  MAXIMIZE        "../res/max.bmp"
+BITMAP  RESTORE         "../res/restore.bmp"
+BITMAP  RESIZE          "../res/resize.bmp"
+BITMAP  CHANGEMENU      "../res/change.bmp"
+BITMAP  HOT5            "../res/one.bmp"
+BITMAP  HOT4            "../res/one.bmp"
+BITMAP  HOT3            "../res/one.bmp"
+BITMAP  HOT2            "../res/one.bmp"
+BITMAP  HOT1            "../res/one.bmp"
+
+ICON    ApplIcon        "../res/pm/main.ico"
+ICON    WIN1            "../res/pm/win1.ico"
+ICON    WIN2            "../res/pm/win2.ico"
+ICON    WIN3            "../res/pm/win3.ico"
+ICON    MAIN            "../res/pm/main.ico"
+ICON    DLG             "../res/pm/dlg.ico"
+
+#include "..\samplepm.dlg"

@@ -1,0 +1,38 @@
+#
+# create NT version of LIFE
+#
+
+CFLAGS = -bt=nt -oaxt -d1 -w4 -i..\filedll
+CC = wcc386
+NAME = life
+
+LNK = $(name).lnk
+
+OBJS = life.obj array.obj bitmaps.obj mouse.obj patterns.obj timer.obj &
+	bitmap.obj palette.obj file.obj
+
+$(name).exe : $(OBJS) $(name).res $(LNK)
+    wlink @$(LNK)
+    wrc -bt=nt $(name).res
+    
+$(name).res : $(name).rc $(name).ico
+    wrc -r -bt=nt $(name).rc
+    
+$(LNK) : makefile.nt
+    %create $(LNK)
+    @%append $(LNK) debug all
+    @%append $(LNK) system nt_win
+    @%append $(LNK) option stack=8k
+    @%append $(LNK) name $(name)
+    @for %i in ($(OBJS)) do @%append $(LNK) file %i
+        
+.c.obj :
+	$(CC) $(CFLAGS) $[*
+
+clean: .symbolic
+    @erase *.obj
+    @erase *.err
+    @erase *.exe
+    @erase *.lnk
+    @erase *.res
+    @erase *.rex

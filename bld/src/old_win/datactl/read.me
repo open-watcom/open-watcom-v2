@@ -1,0 +1,309 @@
+		Documentation for the Data Control Example
+		==========================================
+		
+What is the Data Control Example?
+=================================
+    This example is the prototype for a library which allows applications
+    to develop data driven dialogs. A dialog of this form can be created
+    simply from the data which governs the various controls
+    (i.e. a BOOL governs a checkmark, a char buffer makes a text field).
+    Also, when the dialog is completed, the data can be reset directly
+    to match the input values of the dialog.
+    
+    Data control dialogs help prevent duplicate code in the dialog routines.
+    Data controls can be mixed in with other dialog routine functionality.
+    
+What do you need to use it?
+===========================
+    The Data Control functionality is formed from these files:
+	- check.c
+	- combo.c
+	- combomod.c
+	- ctltype.c
+	- ctltype.h
+	- ctluser.c
+	- ctluser.h
+	- dcombo.c
+	- float.c
+	- int.c
+	- parsectl.c
+	- radio.c
+	- rfloat.c
+	- rint.c
+	- text.c
+	- textmod.c
+	
+    The remaining files form the example demonstrating Data Control dialogs:
+	- dialog.res	: Dialog Editor RES file for the 'DATACTL' dialog.
+	- dialog.dlg	: dialog file from the above.
+	- dialog.h	: Include file from the above.
+	- testctl.c	: Example program with a Data Control Dialog.
+	- testctl.h	: Include file for the above.
+	- testctl.rc	: Resource file for the above.
+	- testdata.ctl	: Data Control file for the dialog (see later).
+	
+    To build the example, type 'wmake' at the DOS command line. The
+    WINDOWS program 'testctl.exe' should be built.
+
+How does it work?
+=================
+    SUMMARY:
+    	- Using the Dialog Editor, create the dialog.
+	- Create a 'data control' file which defines the 'data connection'
+	  for the controls on the dialog.
+	- preprocess the data control file into a C file using 'PARSECTL.EXE'.
+	- Include the preprocessed data control file in the C file
+	  containing the dialog code.
+	- Make the dialog routine call 'ctl_dlg_init' on the 'WM_INITDIALOG'
+	  command. This initializes the controls on the dialog according
+	  to the corresponding data.
+	- Make the dialog routine call the 'ctl_dlg_done' routine on
+	  the 'IDOK' command. After calling this routine, the data running
+	  the dialog will be filled with the correct values (those
+	  entered by the user on the dialog).
+	- Make the dialog routine call the 'ctl_dlg_process' routine
+	  on all other WM_COMMAND messages.
+	  
+	 
+Data Control File:
+==================
+    The data control file has the following format:
+    
+    file := {control}*
+    control := {type} {control_id}
+	       {data_offset_line}
+	       {field_data_line}
+	       
+    type := ctl_radio | ctl_text | ctl_combo | ctl_dcombo  \
+    			| ctl_rint | ctl_rfloat | {user_ctl}
+    user_ctl := <user defined control typedef name>
+    control_id := <control id that this data control governs>
+    data_offset_line := <constant defining the data offset of the control>
+    field_data_line := <constant data for the control. Use '*' when no data>
+    
+    *** blank lines are ignored. Comment lines begin with '#' ***
+    
+    An example data control file follows. The typedef 'data_def' is defined
+    before the preprocessed file is included (containing the struct
+    fields 'b1', 'l1', etc.):
+    
+    
+	#######################################
+	#
+	# Example data control file
+	#
+	#######################################
+    
+	ctl_radio DLG_B1
+	    offsetof( data_def, b1 )
+	    DLG_B3
+	    
+	ctl_combo DLG_L1
+	    offsetof( data_def, l1 )
+	    0, STR_F1, STR_F4
+	    
+	ctl_combo DLG_L2
+	    offsetof( data_def, l2 )
+	    1, STR_T1, STR_T2
+	
+	ctl_check DLG_C1
+	    offsetof( data_def, c1 )
+	    *
+	
+	ctl_text DLG_TEXT1
+	    offsetof( data_def, t1 )
+	    100
+	    
+	ctl_int DLG_INT1
+	    offsetof( data_def, i1 )
+	    *
+	    
+	ctl_float DLG_FLOAT1
+	    offsetof( data_def, f1 )
+	    *
+	    
+	ctl_dcombo DLG_L3
+	    offsetof( data_def, l3 )
+	    2, get_data
+	    
+	ctl_rint DLG_RINT1
+	    offsetof( data_def, ri1 )
+	    0, -1
+	    
+	ctl_rfloat DLG_RFLOAT1
+	    offsetof( data_def, rf1 )
+	    -5, 10
+	    
+	    
+PARSECTL.EXE:
+=============
+    This program preprocesses a data control file into a C file for
+    inclusion into your program. The format is as follows:
+    
+	PARSECTL [input file] [output file] [data control name]
+	
+    The output file will define a structure variable (with the specified
+    name) defining the data control for the dialog. A pointer to this 
+    structure is passed into the 'ctl_dlg_...' routines.
+    
+   
+   
+Control Routines:
+=================
+
+BOOL ctl_dlg_init( HANDLE inst, HWND dlg, void *ptr, void *ctl_ptr);
+/******************************************************************/
+    inst:	- Instance handle of the owner of the dialog.
+    dlg:	- Window handle of the dialog.
+    ptr:	- Base data pointer. The pointer to the data governing a
+    		  control is made by adding the constant defined by the
+		  'data_offset_line' to this pointer. What this combined
+		  pointer points to depends on the field type (i.e. to an int
+		  for a radio button).
+    ctl_ptr:	- pointer to the data control for the dialog generated
+    		  by PARSECTL.EXE.
+		  
+    - This function should be called only once in the dialog message routine 
+      on the 'WM_INITDIALOG' command. This function will setup all the
+      controls based on the data control (i.e. the radio buttons will
+      be set, the text fields filled).
+    - TRUE is returned if the dialog is successfully initialized, FALSE
+      otherwise.
+      
+
+BOOL ctl_dlg_done( HANDLE inst, HWND dlg, void *ptr, void *ctl_ptr);
+/******************************************************************/
+    parameters same as 'ctl_dlg_init'
+    
+    - This function should be called only once in the dialog message routine
+      on the 'IDOK' command. The data governing the control will be
+      filled with the new values from the dialog. Do not call this
+      function on the 'IDCANCEL' message since the initial data values
+      should not be changed.
+    - FALSE is returned if any field verification fails (i.e. if
+      an integer field does not contain a valid integer). Do not
+      exit the dialog in this case (simply continue processing until
+      the user fills the dialog with correct values, or cancels).
+      
+
+BOOL ctl_dlg_process( void *ctl_ptr, WORD wParam, LONG lParam );
+/**************************************************************/
+    ctl_ptr:	- pointer to the data control for the dialog generated
+    		  by PARSECTL.EXE.
+    wParam:	- word data value for the WM_COMMAND message.
+    lParam:	- long data value for the WM_COMMAND message.
+    
+    - This function must be called on all WM_COMMAND messages for the
+     dialog (except IDOK). The data control library looks at these
+     messages to determine if the controls have been modified by
+     the user.
+		  
+    
+The default field types:
+========================
+ctl_check:
+    - defines a check field. Make sure that the corresponding control in
+      the dialog editor has the 'AUTOCHECKMARK' flag set.
+    - The data points to a BOOL (TRUE = checked).
+    - This field type has no field data (set 'field_data_line' in the
+      control file to '*').
+      
+ctl_radio:
+    - defines a radio button group. Set the 'control_id' in the data control
+      file to the id of the first button in the group. The field data
+      is the control id of the last button in the group.
+    - The data points to an int. A '1' value indicates the first radio
+      button setting. '0' causes no button to be set.
+    - make sure that the corresponding controls in the dialog editor
+      have the 'AUTORADIOBUTTON' flag set.
+      
+ctl_text:
+    - defines a text field (edit control).
+    - The data points to a buffer for the text.
+    - The field data is an integer defining the size of the text buffer.
+    - The input and output string are NULL terminated.
+    
+ctl_combo:
+    - defines a list box or drop down list box (static edit text field only).
+    - The data points to an int.
+    - The field data is an integer defining the origin value of the data, and
+      two string table ids defining a range of static strings. The data
+      value is relative to the origin. The string table is assumed to be part
+      of the application resource.
+
+ctl_dcombo:
+    - dynamic 'ctl_combo' field (string values can change at runtime).
+    - The data points to an int.
+    - The field data is an integer defining the origin value of the data,
+      and a string fetch routine: char *(*fetch_rtn)( int elt). The index
+      passed in is 0 origin. Return NULL after the last string.
+      
+ctl_int:
+    - defines an integer field.
+    - The data points to an int.
+    - This field type has no field data (set 'field_data_line' in the
+      control file to '*').
+    - An invalid entry will cause an error dialog to be displayed when
+      the 'ctl_dlg_done' routine is called.
+      
+ctl_float:
+    - defines a float field.
+    - The data points to a float.
+    - This field type has no field data (set 'field_data_line' in the
+      control file to '*').
+    - An invalid entry will cause an error dialog to be displayed when
+      the 'ctl_dlg_done' routine is called.
+      
+ctl_rint:
+    - defines an int field within a range.
+    - The data points to an int.
+    - The field data is two ints which define the valid range (min, max).
+      If the max value is less than the min value, then there is
+      no max value.
+    - An invalid entry will cause an error dialog to be displayed when
+      the 'ctl_dlg_done' routine is called.
+    
+ctl_rfloat:
+    - defines an float field within a range.
+    - The data points to a float.
+    - The field data is two floats which define the valid range (min, max).
+      If the max value is less than the min value, then there is
+      no max value.
+    - An invalid entry will cause an error dialog to be displayed when
+      the 'ctl_dlg_done' routine is called.
+    
+   
+Removing default field support:
+===============================
+    Most likely, some of the default field types will not be necessary
+    in some applications (i.e. the float field support). To remove
+    a field type, obtain a copy of ctluser.c, modify it,
+    and add it to your application (replaces default copy in ctl(l).lib).
+    'ctluser.c' contains further documentation on doing this.
+    
+   
+Adding additional field types:
+==============================
+    To add additonal field types, you will need a copy of ctluser.h and
+    ctluser.c. See these files for the further instructions on adding
+    user field types.
+    
+    All fields have three routines which are called internally:
+	start routine:  called by the data control library to initialize
+		        the control with the data.
+	done routine:   called by the control library to set the data with
+		        the value of the control on the dialog.
+        modify routine:	called by the control library to determine if a user
+			has modified a control.
+    See me for details.
+    
+
+Using the Data Control Library with other dialog code:
+======================================================
+    Any dialog functionality can be 'mixed in' with data controls. Call
+    the data control functions to establish those parts of the dialog
+    under data control, and use additional dialog message routine
+    code to define other features (i.e. push buttons which pop up 
+    other dialogs).
+	
+    

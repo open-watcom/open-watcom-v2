@@ -1,0 +1,9 @@
+option dst
+file c\*.c
+file win\*.c
+file dos\*.c
+file qnx\*.c
+file os2\*.c
+file nt\*.c
+file h\*.h
+file ui\*.c

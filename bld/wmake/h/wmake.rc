@@ -1,0 +1,59 @@
+/************************************************************************/
+/*                         WMAKE RESOURCE FILE                          */
+/************************************************************************/
+/*
+ *  %D  : decimal with leading 0 modulo 100 ie: %02d
+ *  %C  : 'safe' character ie: if(!isprint) then do %x
+ *  %E  : envoloped string ie: "(%s)"
+ *  %F  : far string
+ *  %L  : string longer than 256 characters
+ *  %M  : another message from '%M msgs' (see below)
+ *  %Z  : message from 'system error' (see below)
+ *  %c  : character
+ *  %d  : decimal
+ *  %s  : string
+ *  %1  : string
+ *  %2  : string
+ *  %x  : hex number (2 or 4 digits)
+ */
+
+#include "mrcmsg.h"
+#include "wreslang.h"
+
+STRINGTABLE
+BEGIN
+
+/*
+ * Error/warning messages - please do not change the ordering of any of these
+ * err/wrn msgs.  Please group all err/wrn msgs here.  These messages have
+ * numbers output with them; hence, at some point those numbers may be
+ * documented.
+ */
+
+/*
+ * Note: Actually, the err/wrn messages have been moved.  They are in the
+ * same order.  But they have been moved to a separate .MSG file to simplify
+ * processing when we must choose one language or another.
+ */
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
+
+#include "wmake.msg"
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
+
+#include "wmake.msg"
+
+#include "usage.rc"
+#include "usagej.rc"
+
+/*
+ * help page ( max 32 lines ( 0 - 31 ) )
+ * For a page break, leave a line undefined.
+ * For the new and improved Help page, please see usage.sp CSK
+ */
+END

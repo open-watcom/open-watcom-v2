@@ -1,0 +1,2 @@
+pts.obj: pts.asm ..\..\..\h\csnorm.inc
+ptc.obj: ptc.asm ..\..\..\h\csnorm.inc

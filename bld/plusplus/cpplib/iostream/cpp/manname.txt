@@ -1,0 +1,90 @@
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
+   %     reserved.  No part of this software may be reproduced or        %
+   %     used in any form or by any means - graphic, electronic or       %
+   %     mechanical, including photocopying, recording, taping or        %
+   %     information storage and retrieval systems - except with the     %
+   %     written permission of WATCOM International Inc.                 %
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+****************************** APPLICATORS ***********************************
+
+Filename: mandec.cpp
+Declaration:
+    ios &dec( ios &strm )
+Semantics: Do input/output conversion in decimal.
+
+
+Filename: manhex.cpp
+Declaration:
+    ios &hex( ios &strm )
+Semantics: Do input/output conversion in hexadecimal.
+
+
+Filename: manoct.cpp
+Declaration:
+    ios &oct( ios &strm )
+Semantics: Do input/output conversion in octal.
+
+
+Filename: manws.cpp
+Declaration:
+    istream &ws( istream &istrm )
+Semantics: Skip any whitespace characters lurking in the input stream.
+
+
+Filename: manendl.cpp
+Declaration:
+    ostream &endl( ostream &ostrm )
+Semantics: Write a carriage-return/line-feed (\n) at the end of the line.
+           Flush the output buffer.
+
+
+Filename: manends.cpp
+Declaration:
+    ostream &ends( ostream &ostrm )
+Semantics: End a string by writing a zero.
+
+
+Filename: manflush.cpp
+Declaration:
+    ostream &flush( ostream &ostrm )
+Semantics: Flush the stream.
+
+
+******************************* MANIPULATORS *********************************
+
+Filename: manriofg.cpp
+Declaration:
+    SMANIP_make( long, resetiosflags )
+Semantics: Set all format flags to those specified in "__p".
+
+
+Filename: mansbase.cpp
+Declaration:
+    SMANIP_make( int, setbase )
+Semantics: Set the base used for input/output conversion of integers.
+
+
+Filename: mansfill.cpp
+Declaration:
+    SMANIP_make( int, setfill )
+Semantics: Set the fill character used for output conversion of integers.
+
+
+Filename: mansiofl.cpp
+Declaration:
+    SMANIP_make( long, setiosflags )
+Semantics: Turn on all format flags specified in "__p".
+
+
+Filename: mansprec.cpp
+Declaration:
+    SMANIP_make( int, setprecision )
+Semantics: Set the precision used for output conversion of floating-point values.
+
+
+Filename: mansetw.cpp
+Declaration:
+    SMANIP_make( int, setw )
+Semantics: Set the width used for output conversion of values.

@@ -1,0 +1,37 @@
+#
+# ORL library
+#
+orl_lib_dos_386     = $(orl_dir)\o\orl.lib
+orl_lib_os2_386     = $(orl_dir)\os2\orl.lib
+orl_lib_osi_386     = $(orl_dir)\o\orl.lib
+orl_lib_qnx_386     = $(orl_dir)\o\orl.lib
+orl_lib_nt_386      = $(orl_dir)\o\orl.lib
+orl_lib_nt_axp      = $(orl_dir)\axp\orl.lib
+orl_lib_os2_386_dll = $(orl_dir)\os2.dll\orl.lib
+orl_lib_nt_386_dll  = $(orl_dir)\o.dll\orl.lib
+orl_lib_nt_axp_dll  = $(orl_dir)\axp.dll\orl.lib
+
+#
+# ORL dependencies
+#
+orl_dep_dos_386     = $(orl_lib_dos_386)
+orl_dep_os2_386     = $(orl_lib_os2_386)
+orl_dep_osi_386     = $(orl_lib_osi_386)
+orl_dep_qnx_386     = $(orl_lib_qnx_386)
+orl_dep_nt_386      = $(orl_lib_nt_386)
+orl_dep_nt_axp      = $(orl_lib_nt_axp)
+orl_dep_os2_386_dll = $(orl_lib_os2_386_dll)
+orl_dep_nt_386_dll  = $(orl_lib_nt_386_dll)
+orl_dep_nt_axp_dll  = $(orl_lib_nt_axp_dll)
+
+#
+# 'host_OS' and 'host_CPU' must be set to use these forms
+#
+orl_dll_ext=
+!ifdef $(proj_name)_rtdll
+!ifeq $(proj_name)_rtdll 1
+orl_dll_ext=_dll
+!endif
+!endif
+orl_lib = $(orl_lib_$(host_OS)_$(host_CPU)$(orl_dll_ext))
+orl_dep = $(orl_dep_$(host_OS)_$(host_CPU)$(orl_dll_ext))

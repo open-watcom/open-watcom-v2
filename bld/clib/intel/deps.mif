@@ -1,0 +1,17 @@
+dp5prof2.obj : ..\..\..\c\dp5prof2.c   ..\..\..\c\p5prof2.c
+
+
+#
+# programmer hell awaits...
+#
+use_bleeding_edge_compiler=$(%dwatcom)\binnt\wcc386 $[@ $(include_c_path) $(build_target) $($[&_opts) $(c_flags) $($[&_postopts)
+!ifdef on_build_machine
+!ifeq %bld_ver 110
+profilog.obj : ..\..\..\c\profilog.c
+    $(use_bleeding_edge_compiler)
+p5prof2.obj : ..\..\..\c\p5prof2.c
+    $(use_bleeding_edge_compiler)
+dp5prof2.obj : ..\..\..\c\dp5prof2.c ..\..\..\c\p5prof2.c
+    $(use_bleeding_edge_compiler)
+!endif
+!endif

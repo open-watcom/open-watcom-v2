@@ -1,0 +1,89 @@
+#
+# Master makefile for creating remote servers
+#
+
+sys_x86_os2     = sys os2 op st=4k,modname=$^&, desc $^&
+sys_x86_qnx     = sys qnx386 flat op st=16k, offset=20k, res=$(srv).use
+sys_x86_win     = sys windows op st=20k, modname=$^&, desc $^&
+sys_x86_dos     = sys dos op st=4k
+sys_x86_rsi     = stub
+sys_x86_ads     = sys ads op st=8k lib $(adsdir)\wcads.lib
+!ifndef sys_x86_pls
+sys_x86_pls     = sys pharlap op st=8k
+!endif
+!ifeq srv jvm
+sys_x86_nt      = sys nt dll op modname=$^&, desc $^&
+!else
+!ifeq srv msj
+sys_x86_nt      = sys nt dll op modname=$^&, desc $^&
+!else
+!ifdef test
+sys_x86_nt      = sys nt op st=20k, modname=$^&, desc $^&
+!else
+sys_x86_nt      = sys nt_win op st=20k, modname=$^&, desc $^&
+!endif
+!endif
+!endif
+sys_x86_nlm     = form novell nlm 'WATCOM Debug Server' &
+                        libpath $(lang_root)\lib386 &
+                        op st=8k &
+                        import @$(trap_dir)\common\nlm\trap.imp op nodef
+sys_x86_penpoint= sys penpoint op st=8k, modname=$^&, desc $^&
+
+sys_axp_nt      = sys ntaxp op st=16k, modname=$^&, desc $^&
+
+sys_ppc_nt      = sys ntppc op st=16k, modname=$^&, desc $^&
+
+!ifeq machine IBM
+machsuff=
+!else
+machsuff=$+$(machine)$-
+!endif
+
+targ_x86_os2    = binp\$(name).exe
+targ_x86_qnx    = qnx\$(name).qnx
+targ_x86_win    = bin\$(name).exe
+targ_x86_dos    = bin.$(machsuff)\$(name).exe
+targ_x86_rsi    = bin.$(machsuff)\$(name).exp
+targ_x86_ads    = bin.$(machsuff)\$(name).exp
+!ifndef targ_pls
+targ_x86_pls    = bin.$(machsuff)\$(name).exp
+!endif
+!ifeq srv jvm
+targ_x86_nt     = binnt\jvmhlp_g.dll
+!endif
+!ifeq srv msj
+targ_x86_nt     = binnt\msjhlp.dll
+!else
+targ_x86_nt     = binnt\$(name).exe
+!endif
+targ_x86_nlm    = nlm\$(name).nlm
+targ_x86_penpoint= pen\$(name).dll
+
+targ_axp_nt     = axpnt\$(name).exe
+
+targ_ppc_nt     = ppcnt\$(name).exe
+
+objs_nlm        = nlmstrt.obj
+
+dig_os = $(os)
+!include $(dig_dir)\mif\trpcli.mif
+
+SERVER_objs = $(objs_$(os))
+
+!ifdef test
+SERVER_remote_objs = testserv.obj servname.obj
+!else
+!ifdef gui
+SERVER_remote_objs = wserver.obj options.obj
+resource_file = wserver.res
+!else
+SERVER_remote_objs += serv.obj $(os)trio.obj
+!endif
+SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trap_objs)
+extra_srcs +=;$(dig_srcs)
+!endif
+
+which = SERVER
+
+!include $(trap_dir)\imp.mif

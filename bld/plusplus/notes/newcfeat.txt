@@ -1,0 +1,85 @@
+This message is primarily for the Optima development team but it may be
+of interest to others.
+
+There are three main features that have been added to the latest C++
+compiler, namely, new style casts, RTTI and namespaces.
+
+new style casts:
+
+        - cost: none unless you use them
+        - benefits:
+
+                - allows you to use less powerful casts that the all
+                  powerful C-style cast and to write more meaningful code
+                  
+                  - try to eliminate explicit casts by using a more
+                    meaningful new-style cast
+                  
+                - an explicit cast is defined to be
+                    (a) one of /nothing/static_cast/reinterpret_cast where a
+                        static_cast is preferred to a reinterpret_cast
+                    followed by
+                    (b) /nothing/const_cast/
+                    
+                    additionally, it ignores protection on derived->base casts
+                  
+                - reinterpret_cast< type >(expr) does not change any
+                  bits; it reinterprets them as the new type; const/volatile
+                  cannot be added
+                  
+                - const_cast< type >( expr ) allows only const/volatile to be
+                  added
+                
+                - static_cast< type >( expr ) are all the "reasonable" casts;
+                  const/volatile cannot be added
+                    source type     target type
+                    -----------     -----------
+                    anything        void
+                    ptr: base       ptr: derived
+                    ref: base       ref: derived
+                    integer         enum
+
+RTTI (Run-Time Type Information):
+
+        - cost:
+                - space:  small amount of data attached to the vftable
+                        no extra fields added to objects (must be enabled
+                        with the -xr option)
+                - time: none unless you use the feature
+
+        - benefits:
+                - standard method for getting the name of a class or type
+                        typeid( expr ).name()
+                - is this expr the same type?
+                        typeid( expr ) == typeid( type )
+                - is this expr derived from this type?
+                        dynamic_cast< X * >( p );
+                        // NULL if 'p' cannot be cast to 'X*'
+
+namespaces:
+
+        - cost: none except longer mangled names
+        - benefits:
+                (1) Eliminates hand-mangling; instead of prefixing names with
+                    a distinguishing string (e.g., XPQ_Lookup), put the names
+                    in a namespace XPQ
+                (2) Allows private names; this is most useful for types which
+                    are used in a single module
+                (3) Encourages meaningful classification of implementation
+                    components; for example, code-generation components
+                    might reside in a namespace CodeGen
+                    
+                e.g.,
+                        namespace x {
+                                // anything that can go in file-scope
+                        }
+                        namespace {
+                                // anything in here is local to your module!
+                        }
+
+                - x:: scoping is used to access names in namespaces
+                - using namespace x; can be used to hook up a namespace
+                  into your lexical lookups (no need for ::-qualification)
+                - using x::foo; can be used to pull in a name into the current
+                  scope which you can then use without ::-qualification
+

@@ -1,0 +1,46 @@
+DLGTEMPLATE CURRENT_SETTINGS LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "WATCOM Image Editor Current Settings", CURRENT_SETTINGS, 54, -28, 264, 206, FS_SYSMODAL
+                 | WS_VISIBLE, FCF_SYSMODAL
+                 | WS_VISIBLE | FCF_TITLEBAR | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+    BEGIN
+        GROUPBOX        "Profile information", -1, 15, 161, 235, 30, WS_GROUP
+        GROUPBOX        "Windows", -1, 15, 100, 112, 57, WS_GROUP
+        GROUPBOX        "Shifting", -1, 15, 37, 113, 58, WS_GROUP
+        LTEXT           "Shift Amount:", -1, 36, 45, 45, 8, DT_MNEMONIC
+        GROUPBOX        "Image Pasting", -1, 143, 114, 107, 43, WS_GROUP
+        GROUPBOX        "Image Rotating", -1, 143, 37, 107, 69, WS_GROUP
+        CONTROL         "Save settings on exit", SAVE_SETTINGS, 25, 168, 81, 10, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Save position on exit", SAVE_POSITION, 153, 168, 81, 10, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Show one view window", SHOW_ONE, 25, 133, 88, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Show all view windows", SHOW_ALL, 25, 120, 87, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Keep grid square", KEEP_SQUARE, 25, 107, 68, 10, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Perform wrapping shift", WRAP_SHIFT, 25, 71, 85, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Perform clipping shift", CLIP_SHIFT, 25, 58, 81, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_TABSTOP | WS_VISIBLE
+        EDITTEXT        "", SHIFT_AMOUNT, 82, 43, 25, 12, ES_AUTOSCROLL
+                 | WS_GROUP | DT_MNEMONIC
+        CONTROL         "Stretch image into region", STRETCH_PASTE, 153, 134, 94, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Clip image into region", CLIP_PASTE, 153, 121, 83, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Perform simple rotation", SIMPLE_ROTATE, 153, 83, 87, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Stretch image into region", STRETCH_ROTATE, 153, 70, 94, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Clip image into region", CLIP_ROTATE, 153, 57, 83, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Leave area selected", LEAVE_AREA, 153, 44, 79, 10, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        DEFPUSHBUTTON   "~OK", DID_OK, 56, 6, 40, 14, WS_GROUP
+        PUSHBUTTON      "~Cancel", DID_CANCEL, 112, 6, 40, 14
+        PUSHBUTTON      "~Help", DID_HELP_BUTTON, 168, 6, 40, 14
+    END
+END

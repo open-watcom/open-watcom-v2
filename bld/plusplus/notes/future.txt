@@ -1,0 +1,179 @@
+- optimize generation of copy ctor so that if all refs are optimized away in a
+  module, the object code for the copy-ctor is not included in the .obj file
+  (see ..\bugs\afs239.c)
+ 
+- add unary operator O_PAREN so that things like
+        ( f + 1.0 ) - 1e-32 don't get constant folded
+
+- string-literal compression:
+    - drive from CGBACK.C
+    - do compression only when safe:
+        - when strings are going in code segment
+        - when strings are read-only
+        
+- fast references:
+    Good point from Martin O'Riordan at Microsoft:
+    
+    The key is that references are OFTEN implemented as pointers, but there 
+    is no reason why this has to be true.  Consider a simple local case :-
+    
+            void foo () {
+                int i;
+                {
+                    int& outer_i = i;   // I want to still see the earlier 'i'
+                    int i;              // But it is hidden here
+                    
+                    i = outer_i + 1;
+                }
+            }
+- don't allocate space for an empty class when it is embedded in another
+  class
+  struct B { static int foo(); };
+  struct D : B { int x; };
+  // sizeof( D ) == sizeof( int )
+  
+- if the linker can associate extra info with an extern so that it can print
+  extra info if the EXTDEF is unresolved, we should use the feature so that
+  pure virtual destructors can have an extra message that they have to be
+  defined in a C++ program
+  
+- add something so that users who declare an op new that never returns NULL
+  can indicate this so that we don't check for NULL in new-exprs
+  
+- allow informational notes to be turned off
+
+- set auto variables to -3 so that uninitialized vars are consistent in -d2
+
+- (jww) look at ANALCLSS to see if we can completely get rid of access
+  checking, since it is done by cdopt facilities now
+
+- (jww) look at a general scheme for initialization of static names for
+  names such as operator names, R/T fun. names
+
+- (jww) for diagnostics with anonymous structs/unions, we currently display
+  the generated name; use the typedef name when it exists
+
+- (jww) can optimize -xss destructors
+
+    - if no code, generate rtn:
+
+            S::dtor( S& this, unsigned char extra )
+            {
+                return _rt_destruct_xss( this, extra, state_table, state-val );
+            }
+
+            - can have a number of r/t routines, to put out delete and array
+              destruction combinations
+
+    - if user code, could do same thing, passing an extra parm which is
+      the address of a generated routine containing the user code (passed
+      only the this-pointer).
+
+- (jww) more optimizations:
+    - when no state-table, the flags symbol should not have the SF_ADDR_TAKEN
+      bit set
+    - upgrade FNBODY to start flags offset at zero for each expression
+
+- (jww) miscellaneous small fixes for standard
+    - prohibit "X cv & volatile" ref.s
+    - execute LHS of ->,. static calls and/or references (warn if side-effect
+      since this is a potentially significant change)
+    - fix built-ins to match paper, if they differ at all
+    - get greg to review overloading
+    - get anthony to fix function-like casts or detect in ANALYSE if possible
+
+- (jww) Common-routine optimizations
+    - look at generating common-routines as COMDAT functions
+    - binary-copy of n bytes (called for copy ctor, assignments)
+    - zero-out of n bytes (called for default ctor)
+    - do-nothing ctor/dtor (could help speed linking?)
+    - do-nothing routines, returning void
+
+- (jww) upgrades for pre-compiled hdrs
+    - get pre-compiled hdr.s working with -fi file
+    - support named pre-compiled hdr.s
+
+- (jww) more diagnosis
+    - when default-int used
+    - when declaration in a class hides virtual function in a base class
+    
+- (jww) can we bind references for functions returning references
+
+- (jww) new debug mode -d2i (d2 with inlining)
+    - add new switch
+    - do inlining when d2 and switch has been set
+  
+- (jww) place SCOPE for a class in the CLASSINFO structure
+    - this will allow one ptr. to be used for both
+
+- (jww) provide better diagnosis of returning ref. to temp by using a bit
+  in auto reference symbols to indicate that they are bound to a temporary
+
+- (jww) convert run-time to use FS under DOS, ... when possible
+
+- (afs) optimize uses of string literals and C run-time functions
+
+        - printf( "blah" )      -> ( fputs( stdout, "blah" ), 4 )
+        - printf( "blah\n" )    -> ( puts( "blah" ), 5 )
+        - printf( "xy" )        -> ( putchar('x'), putchar('y'), 2 )
+        - printf( "%c", c )     -> ( putchar(c), 1 )
+        - printf( "%s", s )     -> ( fputs( stdout, s ), strlen(s) )
+        - strlen( "asdf" )      -> ( sizeof( "asdf" ) [+1] )
+        - strcpy( s, "wer" )    -> memcpy( s, "wer", 4 )
+        
+- (jww) extend command syntax to support wildcards
+
+- (jww) dump macro definitions
+
+- (jww) add -eq option to not echo to console when -fe file present
+
+- (jww) add warning when enum==0 is converted to a ptr (implicitly)
+
+- (jww) add warning with virtual conversions of member ptr across a virtual
+    boundary
+    
+- (jww) modify PTREE structure so that there is another dimension which
+    reflects "unimportant" stuff from tree that was placed on top of the
+    node in the "regular" ptree
+    - we want to get rid of PTreeOp, PTreeRef routines
+    - push casts, commas into the third dimension
+    
+- (afs) optimize out exception registration in simple cases:
+#include "fail.h"
+
+int bar( int x )
+{
+    throw x;
+    return x;
+}
+
+int foo( int x ) {
+    try {
+        x = bar( x );
+    } catch( ... ) {
+        throw;
+    }
+    return x;
+}
+
+int main() {
+    int ok = 0;
+    try {
+        foo( 1 );
+        fail(__LINE__);
+    } catch(...) {
+        ++ok;
+    }
+    if( ok != 1 ) fail(__LINE__);
+    _PASS;
+}
+
+- (jww) check multi-level pointers for near/far consistency
+
+- (jww) considerable cleanup of MEMBPTR and ANALYSE are now possible since
+  the member-ptr extension (not requiring the &class::) is now implemented
+  by OPAC entries
+  
+- (jww) optimization possibilities may now exist in the processing of OPAC
+  strings since the "goto" trick from the Java compiler has been added to
+  ANALYSE

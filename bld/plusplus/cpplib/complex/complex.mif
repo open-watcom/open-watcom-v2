@@ -1,0 +1,36 @@
+prefix = cplx
+
+cpp_dirs = ..\cpp
+c_dirs = ..\c
+inc_dirs = ..\h
+
+objs = &
+abs.obj &
+acos.obj &
+acosh.obj &
+arg.obj &
+asin.obj &
+asinh.obj &
+atan.obj &
+atanh.obj &
+cos.obj &
+cosh.obj &
+dicomcom.obj &
+direlcom.obj &
+divide.obj &
+exp.obj &
+log.obj &
+log10.obj &
+multiply.obj &
+opinput.obj &
+opoutput.obj &
+polar.obj &
+powcbcp.obj &
+powcbdp.obj &
+powccbip.obj &
+powdbcp.obj &
+sin.obj &
+sinh.obj &
+sqrt.obj &
+tan.obj &
+tanh.obj

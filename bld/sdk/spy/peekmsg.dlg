@@ -1,0 +1,22 @@
+PEEKMSGS DIALOG 0, 0, 172, 122
+STYLE WS_CHILD | WS_VISIBLE
+FONT 8, "Helv"
+BEGIN
+    LTEXT           "Window:", -1, 2, 4, 30, 8
+    LTEXT           "Class:", -1, 2, 14, 26, 8
+    LTEXT           "Parent:", -1, 2, 24, 26, 8
+    LTEXT           "Size:", -1, 2, 34, 26, 8
+    PUSHBUTTON      "&OK", IDOK, 66, 102, 40, 14
+    LTEXT           "Window Style:", -1, 2, 44, 26, 16
+    LTEXT           "", PEEKMSG_TITLE, 36, 4, 136, 8
+    LTEXT           "", PEEKMSG_CLASS, 36, 14, 136, 8
+    LTEXT           "", PEEKMSG_PARENT, 36, 24, 136, 8
+    LTEXT           "", PEEKMSG_SIZE, 36, 34, 136, 8
+    LTEXT           "Class Style:", -1, 2, 74, 26, 16
+    COMBOBOX        PEEKMSG_STYLECB, 36, 54, 118, 162, CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "", PEEKMSG_STYLE, 36, 44, 136, 8
+    COMBOBOX        PEEKMSG_STYLECLASSCB, 36, 84, 118, 86, CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "", PEEKMSG_STYLECLASS, 36, 74, 136, 8
+END

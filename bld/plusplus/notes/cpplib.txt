@@ -1,0 +1,221 @@
+* items are completed
+
+Runtime:
+- add support for exception handling
+
+Complex:
+* make sure that implementation names in header files have __ prefix
+* watch out for keywords
+* dummy arguments in declarations (prototypes) are all changed to __ignore
+* dummy arguments in definitions are unnamed
+* double check for [[un]signed] char completeness (make duplicates inline)
+* inserting of complex numbers on output, width/2 behaviour
+* inserting of complex numbers on output, no spaces imbedded
+* inserting of complex numbers on output, same format for both floats
+* when extracting complex numbers, white space skipping based on ios::skipws flag
+* when extracting complex numbers, comma is required (set ios::failbit?)
+
+String:
+* make sure that implementation names in header files have __ prefix
+* watch out for keywords
+* dummy arguments in declarations (prototypes) are all changed to __ignore
+* dummy arguments in definitions are unnamed
+* double check for [[un]signed] char completeness (make duplicates inline)
+* limit validity checking to String::valid() and String::op!()
+* add String::op[] which behaves the same as the current single parm op()
+    i.e. subscripting
+* see standard for name of include files
+* no white space skipping done on extractor
+* no extra character insertion done on inserter
+
+IOStream Documentation:
+- beef up examples
+    each example should be an executable program that exercises the
+    documented function
+* change documentation so that include file name extensions are .h
+
+IOStream In General:
+* make sure that implementation names in header files have __ prefix
+* watch out for keywords
+* dummy arguments in declarations (prototypes) are all changed to __ignore
+* dummy arguments in definitions are unnamed
+* make member functions that reference data members that have inline
+    functions, use the inline function
+* change _NOT_EOF to __NOT_EOF
+* proof read source code and settle on consistent formatting
+* put include files into WATCOM headers (splice?)
+* examine non-inline functions to see if they should be inline
+* double check for [[un]signed] char completeness (make duplicates inline)
+* make definition of streampos and streamoff like size_t in 'c' headers
+    put definition into iostream.h and streambuf.h
+* remove references to common.h, make streambuf.h refer to <stddef.h>
+* change name of ioutil.h to stdiobuf.h
+* remove _GetPrecision from ioutil.c, rename ioutil.def to ioutil.h
+* change #include of header files to use <> rather than ""
+* write generic.h
+* rewrite IOMANIP.H in terms of generic.h
+
+Streambuf:
+* document streambuf::do_sgetn() streambuf::do_sputn()
+* unbuffered putback support left as currently implemented and documented
+* sputn looks at 'buffered' to determine if stream is buffered, should look
+    for pbase() to be non-NULL instead
+* setbuf() should reject an offered buffer that is too small
+* setbuf() should return 'this' if unbuffered() and NULL is offered as buffer
+* allocate() and do_allocate() return EOF on failure otherwise _NOT_EOF
+* streambuf::sync() should return _NOT_EOF, rather than 0
+* streambuf::setb() handle case of base==0 or ebuf < base -> unbuffered
+* change name of buffered data member to unbuffered and invert associated logic
+* make delete_reseve and unbuffered data members bit fields at end of class
+* remove streambuf::do_underflow() and just call underflow()
+* make default streambuf::dbp() more informative
+* document changes to streambuf::dbp()
+* do not make __do_setbuf() contain common code used by streambuf::setbuf()
+    and filebuf::setbuf()
+* look for commonality in derived virtual functions (overflow/underflow, etc)
+
+Filebuf:
+* remove unbuffered() calls from setbuf(), setb() will handle it
+* move ios::openprot to filebuf::openprot and make it effective
+* define filebuf::openprot in terms of POSIX bits in <sys/stat.h>
+* implement filebuf::openprot in ::open() function to follow POSIX
+* filebuf::openprot is initialized out of the c library
+* filebuf::open() passes provided protection through to c library
+* filebuf::open() passes open mode bits through to c library for
+  operating system dependant interpretation
+* filebuf::pbackfail() is defined to allow unlimited backing up (ala sync())
+* filebuf::attach() does not set up get or put areas
+* filebuf::filebuf(fd,buf,len) should call attach() first then setbuf()
+* make sure filebuf::underflow() and stdstreambuf::underflow() are consistent
+* make sure filebuf::overflow() and stdstreambuf::overflow() are consistent
+* seekoff() needs to handle invalid 'direction' requests and return EOF
+    i.e. direction = 0 or both forward and backward
+* filebuf::underflow() uses imbedded storage in filebuf when unbuffered
+* filebuf::overflow() has bug when ::write() doesn't store all the bytes
+    ptrs get set up incorrectly (see stdstreambuf::overflow() too)
+* filebuf::sync() should return _NOT_EOF on success
+
+Stdstreambuf:
+* change name to stdiobuf
+* merge istdstreambuf and ostdstreambuf into just stdstreambuf
+    (it was documented this way)
+* make data member ``handle'' private when merge [io] instances
+* stdstreambuf is considered obsolete and is provided for backwards compatibility
+* default constructor is required
+* ctor/dtor are public
+* remove setbuf() in favour of default one in streambuf
+* stdstreambuf::sync() does not attempt to seek backwards
+* stdstreambuf::sync() performs a check of out_waiting() before overflow()
+* stdstreambuf::overflow() has bug when ::write() doesn't store all the bytes
+    ptrs get set up incorrectly (see filebuf::overflow() too)
+
+Strstreambuf:
+* extend to have alloc_size_increment() function to grow size of allocation
+* strstreambuf::doallocate() fails if buffer is frozen
+* strstreambuf::doallocate() free()'s the old buffer
+* strstreambuf::overflow() does not free the buffer since doallocate() does
+* strstreambuf::overflow() should invoke doallocate() directly rather than
+    going through allocate() because allocate() will not grow a dynamic buffer
+* GetPos() doesn't handle (ios::seekdir == ios::cur && offset==0) properly
+* make strstreambuf::freeze() inline
+* rename Init_strstreambuf() to __strstreambuf()
+* collapse extra unlimited_... fields into one unlimited bit field
+* put bit fields at end of class
+* make unlimited buffer cases trigger on strstreambuf::underfow() and
+    strstreambuf::overflow() and have these routines just adjust end pointers
+    by DEFAULT_BUFFER_SIZE
+
+Ios:
+* ensure initialization by using pragma support
+* consider removing _withassign classes as no longer needed?
+* make [io]stream_withassign have proper assignment functionality
+* make cin/cout/cerr be of type [io]stream
+* make cin/cout/cerr use filebuf rather than stdiobuf
+* document [io]stream_withassign and changes to cin/cout/cerr
+* ios::init() remains in implementation
+* ios::skipws set by istream and iostream ctors only
+* ios::openmode will behave as documented for BINARY vs TEXT file opening
+* ios::uppercase affects all letters produced to format numbers
+* ios::stdio -> opfx will fflush(stdout); fflush(stderr);
+- add tests for the ios::showpoint format flag to TSTSTRM
+* remove ios::rdbuf( streambuf * )
+* make ios::fail() return( state & ios::badbit || state & ios::failbit )
+* make ios::xalloc_list a static member (like xalloc_index)
+
+Istream:
+- DRAFT indicates should peek() first rather than get() and putback()
+    consider modifing to this method
+* remove istream::istream( streambuf & ) in favour of
+    istream::istream( streambuf * )
+* remove istream::op=( streambuf & ) in favour of istream::op=( streambuf * )
+* add support for processing a leading sign when extracting unsigned values
+    negative numbers are considered a failure
+* verify that leading sign on integer extractors implies decimal extraction
+* ios::failbit set on overflow while extracting arithmetic (integer&float)
+* extractors take no action for trailing F or L suffixes on floating point
+    numbers found in the input stream (i.e. not looked at or consumed)
+* formatted arithmetic extractors ios::failbit on zero bytes extracted
+* ios::eofbit set when operation started and stream is already at eof
+* eof treatment for get( char*, int, int ) consistent with whole implementation
+* note that istream::ignore( -n ) with is a local extension
+* change istream:ipfx() parm to ``noskipws'' from ``need''
+* make last_read_length set to zero by ipfx() and only set by get/getline/read
+    to ensure behaviour of istream::gcount()
+* make usage of istream::ipfx() istream::isfx() by all extractors consistent
+    with draft standard
+
+Ostream:
+* insertion failure only sets ios::failbit, not ios::badbit
+* remove ostream::ostream( streambuf & ) in favour of
+    ostream::ostream( streambuf * )
+* inserter <<(streambuf&) should call opfx()
+* endl() should not call opfx(), it should insert << '\n' and then flush()
+* replace 'strm.clear(strm.rdstate()|...)' with setstate() instead
+* leading '+' sign only allowed for decimal formatting (integer & float)
+* arithmetic value zero only displays a single '0' when octal base indicator
+* resolve usage of 'ios::showpos' in formatting of floating point values
+* rationalize precision formatting, make 0 a valid precision, default is 6
+    when scientific format, precision must be at least 1 (for all digits)
+- modify TSTSTRM tests to reflect this change
+* op<<( void * ) uses default memory model
+- make op<<( void * ) display the right number of bits for the addressing
+    of the target machine by imbedding leading zeros
+* do not extend ostream::write(buf,len) so that if len<=0 then len = strlen( buf )
+* put() and write() should set the error state 'ios::failbit'
+* ostream::flush() should call rdbuf()->sync() not overflow()
+* make usage of ostream::opfx() ostream::osfx() consistent with draft standard
+* reconcile LDFloatToString() with pg59 of draft iostream doc
+
+Iostream:
+* remove iostream::iostream( streambuf & ) in favour of
+    iostream::iostream( streambuf * )
+
+Fstreambase:
+* fstreambase::setbuf() sets ios::failbit on failure
+* fstreambase::setbuf() is no longer inline
+* fstreambase ctor that invokes setbuf() should use this->setbuf()
+    not buf.setbuf() so that error state will be set properly
+
+Ifstream:
+* open() should be inlined outside of the class definition
+
+Ofstream:
+* open() should be inlined outside of the class definition
+
+Fstream:
+* remove rdbuf(), use inherited fstreambase::rdbuf()
+
+Istrstream:
+* ios::skipws is being set properly by istream ctor
+* istrstream( ptr ) should pass 0 to strstreambase ctor and let strstreambase
+    call strlen() itself, same for strstream( str, size, mode )
+
+Ostrstream:
+* constructor with mode should have ios::in | ios::out as default argument
+
+Strstream:
+* for unbuffered case, imbedded buffer is used
+* for strstream( buff, len, ios::append ) reading should start at front,
+    writing at end
+* for strstream( buff, len, ios::atend ) reading should start at end,
+    writing at end -> implement with seekoff() in the body of the ctor

@@ -1,0 +1,15 @@
+win31.def
+win31_16.def
+dpmi.def
+clib.def
+ddeml.def
+commdlg.def
+shell.def
+penwin.def
+ver.def
+stress.def
+lzexpand.def
+mmsystem.def
+toolhelp.def
+odbc.def
+print.def

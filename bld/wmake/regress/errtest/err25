@@ -1,0 +1,8 @@
+# -----------------------------
+# ERROR 25:  redef of suffix
+# -----------------------------
+
+.extensions:
+.extensions: .a .a .b
+.extensions: .b
+

@@ -1,0 +1,58 @@
+#include "windows.h"
+#include "view.h"
+#include "switch.h"
+
+ViewIcon ICON view.ico
+IconMenu MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open...",       IDM_OPEN
+        MENUITEM "&Close",      IDM_CLOSE
+        MENUITEM     SEPARATOR
+        MENUITEM "E&xit",       IDM_EXIT
+    END
+
+    POPUP "&Options"
+    BEGIN
+        POPUP "Stretch &Mode..."
+        BEGIN
+            MENUITEM "&Black on White", IDM_BLACKONWHITE
+            MENUITEM "&Color on Color", IDM_COLORONCOLOR
+            MENUITEM "&White on Black", IDM_WHITEONBLACK
+        END
+        MENUITEM "Switch &Icon...", IDM_SWITCHICON
+    END
+
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Cascade",    IDM_CASCADE
+        MENUITEM "&Tile",       IDM_TILE
+        MENUITEM "Arrange &Icons", IDM_ARRANGE
+    END
+
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About View...", IDM_ABOUT
+    END
+END
+
+AboutBox DIALOG 22, 17, 144, 75
+        STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+        CAPTION "About WATCOM View"
+        BEGIN
+            CTEXT "WATCOM Icon Viewer", -1, 0,  5, 144, 8
+            CTEXT "Version 1.0", -1, 0, 14, 144, 8
+            DEFPUSHBUTTON "OK", IDOK, 53, 59, 32, 14, WS_GROUP
+            ICON "ViewIcon", -1, 15,15,40,40
+        END
+
+SwitchBox DIALOG 79, 44, 164, 150
+        STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+        CAPTION "Available Icons..."
+        FONT 8, "Helv"
+        BEGIN
+            LISTBOX IDLISTBOX, 2, 4, 160, 108, WS_VSCROLL | WS_TABSTOP
+            PUSHBUTTON "OK", IDOK, 33, 126, 40, 14
+            PUSHBUTTON "Cancel", IDCANCEL, 89, 126, 40, 14
+        END

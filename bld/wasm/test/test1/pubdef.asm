@@ -1,0 +1,224 @@
+.386
+.model small
+.code
+lbl01:
+lbl02:
+lbl03:
+lbl04:
+lbl05:
+lbl06:
+lbl07:
+lbl08:
+lbl09:
+lbl00:
+lbl11:
+lbl12:
+lbl13:
+lbl14:
+lbl15:
+lbl16:
+lbl17:
+lbl18:
+lbl19:
+lbl10:
+lbl21:
+lbl22:
+lbl23:
+lbl24:
+lbl25:
+lbl26:
+lbl27:
+lbl28:
+lbl29:
+lbl20:
+lbl31:
+lbl32:
+lbl33:
+lbl34:
+lbl35:
+lbl36:
+lbl37:
+lbl38:
+lbl39:
+lbl30:
+lbl41:
+lbl42:
+lbl43:
+lbl44:
+lbl45:
+lbl46:
+lbl47:
+lbl48:
+lbl49:
+lbl40:
+lbl51:
+lbl52:
+lbl53:
+lbl54:
+lbl55:
+lbl56:
+lbl57:
+lbl58:
+lbl59:
+lbl50:
+lbl61:
+lbl62:
+lbl63:
+lbl64:
+lbl65:
+lbl66:
+lbl67:
+lbl68:
+lbl69:
+lbl60:
+lbl71:
+lbl72:
+lbl73:
+lbl74:
+lbl75:
+lbl76:
+lbl77:
+lbl78:
+lbl79:
+lbl70:
+lbl81:
+lbl82:
+lbl83:
+lbl84:
+lbl85:
+lbl86:
+lbl87:
+lbl88:
+lbl89:
+lbl80:
+lbl91:
+lbl92:
+lbl93:
+lbl94:
+lbl95:
+lbl96:
+lbl97:
+lbl98:
+lbl99:
+lbl90:
+public lbl01, lbl02, lbl03, lbl04, lbl05, lbl06, lbl07, lbl08, lbl09, lbl00
+public lbl11, lbl12, lbl13, lbl14, lbl15, lbl16, lbl17, lbl18, lbl19, lbl10
+public lbl21, lbl22, lbl23, lbl24, lbl25, lbl26, lbl27, lbl28, lbl29, lbl20
+public lbl31, lbl32, lbl33, lbl34, lbl35, lbl36, lbl37, lbl38, lbl39, lbl30
+public lbl41, lbl42, lbl43, lbl44, lbl45, lbl46, lbl47, lbl48, lbl49, lbl40
+public lbl51, lbl52, lbl53, lbl54, lbl55, lbl56, lbl57, lbl58, lbl59, lbl50
+public lbl61, lbl62, lbl63, lbl64, lbl65, lbl66, lbl67, lbl68, lbl69, lbl60
+public lbl71, lbl72, lbl73, lbl74, lbl75, lbl76, lbl77, lbl78, lbl79, lbl70
+public lbl81, lbl82, lbl83, lbl84, lbl85, lbl86, lbl87, lbl88, lbl89, lbl80
+public lbl91, lbl92, lbl93, lbl94, lbl95, lbl96, lbl97, lbl98, lbl99, lbl90
+lbl201:
+lbl202:
+lbl203:
+lbl204:
+lbl205:
+lbl206:
+lbl207:
+lbl208:
+lbl209:
+lbl200:
+lbl211:
+lbl212:
+lbl213:
+lbl214:
+lbl215:
+lbl216:
+lbl217:
+lbl218:
+lbl219:
+lbl210:
+lbl221:
+lbl222:
+lbl223:
+lbl224:
+lbl225:
+lbl226:
+lbl227:
+lbl228:
+lbl229:
+lbl220:
+lbl231:
+lbl232:
+lbl233:
+lbl234:
+lbl235:
+lbl236:
+lbl237:
+lbl238:
+lbl239:
+lbl230:
+lbl241:
+lbl242:
+lbl243:
+lbl244:
+lbl245:
+lbl246:
+lbl247:
+lbl248:
+lbl249:
+lbl240:
+lbl251:
+lbl252:
+lbl253:
+lbl254:
+lbl255:
+lbl256:
+lbl257:
+lbl258:
+lbl259:
+lbl250:
+lbl261:
+lbl262:
+lbl263:
+lbl264:
+lbl265:
+lbl266:
+lbl267:
+lbl268:
+lbl269:
+lbl260:
+lbl271:
+lbl272:
+lbl273:
+lbl274:
+lbl275:
+lbl276:
+lbl277:
+lbl278:
+lbl279:
+lbl270:
+lbl281:
+lbl282:
+lbl283:
+lbl284:
+lbl285:
+lbl286:
+lbl287:
+lbl288:
+lbl289:
+lbl280:
+lbl291:
+lbl292:
+lbl293:
+lbl294:
+lbl295:
+lbl296:
+lbl297:
+lbl298:
+lbl299:
+lbl290:
+public lbl201, lbl202, lbl203, lbl204, lbl205, lbl206, lbl207, lbl208, lbl209, lbl200
+public lbl211, lbl212, lbl213, lbl214, lbl215, lbl216, lbl217, lbl218, lbl219, lbl210
+public lbl221, lbl222, lbl223, lbl224, lbl225, lbl226, lbl227, lbl228, lbl229, lbl220
+public lbl231, lbl232, lbl233, lbl234, lbl235, lbl236, lbl237, lbl238, lbl239, lbl230
+public lbl241, lbl242, lbl243, lbl244, lbl245, lbl246, lbl247, lbl248, lbl249, lbl240
+public lbl251, lbl252, lbl253, lbl254, lbl255, lbl256, lbl257, lbl258, lbl259, lbl250
+public lbl261, lbl262, lbl263, lbl264, lbl265, lbl266, lbl267, lbl268, lbl269, lbl260
+public lbl271, lbl272, lbl273, lbl274, lbl275, lbl276, lbl277, lbl278, lbl279, lbl270
+public lbl281, lbl282, lbl283, lbl284, lbl285, lbl286, lbl287, lbl288, lbl289, lbl280
+public lbl291, lbl292, lbl293, lbl294, lbl295, lbl296, lbl297, lbl298, lbl299, lbl290
+end

@@ -1,0 +1,13 @@
+system   windows 
+debug    all
+
+libpath  d:\watcom\lib
+name	 apptest
+option   map, elim, verbose, static
+library  windows
+library  weditviw.lib
+option   stack=8k
+segment  _TEXT PRELOAD FIXED
+segment  CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
+
+file	 apptest.obj

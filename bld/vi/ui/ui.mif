@@ -1,0 +1,28 @@
+objuitimeroot = &
+        windisp.obj &
+        winscrl.obj &
+        winnew.obj
+
+objuisizeroot = &
+        uiglob.ybj &
+        ui8086.ybj &
+        winbrdr.ybj &
+        winthumb.ybj &
+        winover.ybj &
+        winshow.ybj &
+        winswap.ybj &
+        mouse.ybj
+
+objuisize = &
+        adjwin.ybj &
+        hdlmouse.ybj &
+        mouseev.ybj &
+        winaux.ybj &
+        wininit.ybj &
+        winsize.ybj &
+        wintica.ybj &
+        filesel.ybj &
+        menu.ybj
+
+uiobjs = $(objuisize) $(objuitime)
+uiobjsroot = $(objuisizeroot) $(objuitimeroot)

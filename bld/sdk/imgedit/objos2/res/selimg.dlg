@@ -1,0 +1,99 @@
+DLGTEMPLATE SELECTIMAGE LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "Image Type", SELECTIMAGE, 110, 89, 160, 81, FS_SYSMODAL |
+                 WS_VISIBLE, FCF_SYSMODAL | FCF_TITLEBAR | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+    BEGIN
+        LTEXT           "Select the type of image to create...", -1, 15, 60, 120, 12, DT_MNEMONIC
+        CONTROL         "~Bitmap", SEL_BITMAP, 50, 48, 39, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "~Icon", SEL_ICON, 50, 36, 39, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "~Cursor", SEL_CURSOR, 50, 24, 39, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_TABSTOP | WS_VISIBLE
+        DEFPUSHBUTTON   "~OK", DID_OK, 10, 6, 40, 14, WS_GROUP
+        PUSHBUTTON      "Cancel", DID_CANCEL, 60, 6, 40, 14
+        PUSHBUTTON      "~Help", DID_HELP_BUTTON, 110, 6, 40, 14
+    END
+END
+
+DLGTEMPLATE ICONTYPE LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "Icon Target", ICONTYPE, 90, 82, 160, 100, FS_SYSMODAL |
+                 WS_VISIBLE, FCF_SYSMODAL | FCF_TITLEBAR | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+    BEGIN
+        LISTBOX         TARGETLISTBOX, 30, 33, 105, 40, WS_GROUP
+                 | WS_TABSTOP | WS_VISIBLE
+        DEFPUSHBUTTON   "~OK", DID_OK, 10, 6, 40, 14, WS_GROUP
+        PUSHBUTTON      "~Cancel", DID_CANCEL, 60, 6, 40, 14
+        PUSHBUTTON      "~Help", DID_HELP_BUTTON, 110, 6, 40, 14
+        LTEXT           "", DIALOGTEXT, 25, 79, 115, 8, DT_MNEMONIC
+    END
+END
+
+DLGTEMPLATE BITMAPTYPE LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "Bitmap Information", BITMAPTYPE, 110, 88, 234, 82, FS_SYSMODAL |
+                 WS_VISIBLE, FCF_SYSMODAL | FCF_TITLEBAR | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+    BEGIN
+        EDITTEXT        "", BMP_WIDTH, 59, 50, 32, 12, ES_AUTOSCROLL
+                 | WS_GROUP | DT_MNEMONIC | WS_VISIBLE
+        EDITTEXT        "", BMP_HEIGHT, 59, 37, 32, 12, ES_AUTOSCROLL
+                 | DT_MNEMONIC | WS_VISIBLE
+        CONTROL         "16 ~Colour", BMP_16COLOUR, 127, 50, 48, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "2 Colour ~Monochrome", BMP_2COLOUR, 127, 37, 81, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_TABSTOP | WS_VISIBLE
+        RTEXT           "~Width:", -1, 29, 52, 28, 8, DT_MNEMONIC
+        RTEXT           "~Height:", -1, 29, 39, 26, 8, NOT
+                 WS_GROUP | DT_MNEMONIC
+        GROUPBOX        "Dimensions", -1, 27, 29, 75, 47, WS_GROUP | WS_VISIBLE
+        GROUPBOX        "Colour Scheme", -1, 118, 29, 94, 47
+        DEFPUSHBUTTON   "~OK", DID_OK, 16, 6, 40, 14, WS_GROUP
+        PUSHBUTTON      "~Select", SEL_SELECT, 70, 6, 40, 14
+        PUSHBUTTON      "C~ancel", DID_CANCEL, 124, 6, 40, 14
+        PUSHBUTTON      "~Help", DID_HELP_BUTTON, 178, 6, 40, 14
+    END
+END
+
+DLGTEMPLATE CURSORTYPE LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "Cursor Target", CURSORTYPE, 93, 100, 160, 79, FCF_SYSMODAL
+                 | WS_VISIBLE | FCF_TITLEBAR | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+    BEGIN
+        LTEXT           "Select the target for the cursor ...", -1, 23, 61, 115, 8, DT_MNEMONIC | WS_VISIBLE
+        LISTBOX         TARGETLISTBOX, 25, 25, 105, 32, WS_TABSTOP
+        DEFPUSHBUTTON   "~OK", DID_OK, 10, 6, 40, 14
+        PUSHBUTTON      "~Cancel", DID_CANCEL, 60, 6, 40, 14
+        PUSHBUTTON      "~Help", DID_HELP_BUTTON, 110, 6, 40, 14
+    END
+END
+
+DLGTEMPLATE IMAGESIZE LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "Change Image Size", IMAGESIZE, 96, 92, 260, 78, FCF_SYSMODAL
+                 | WS_VISIBLE | FCF_TITLEBAR | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+    BEGIN
+        EDITTEXT        "", SIZE_WIDTH, 50, 45, 40, 12, ES_AUTOSCROLL
+                 | WS_GROUP | DT_MNEMONIC | WS_VISIBLE
+        EDITTEXT        "", SIZE_HEIGHT, 50, 31, 40, 12, ES_AUTOSCROLL
+                 | DT_MNEMONIC | WS_VISIBLE
+        CONTROL         "Stretch to new dimensions.", SIZE_STRETCH, 144, 46, 100, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Clip into new dimensions.", SIZE_CLIP, 144, 33, 95, 10, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_TABSTOP | WS_VISIBLE
+        DEFPUSHBUTTON   "~OK", DID_OK, 54, 6, 40, 14, WS_GROUP
+        PUSHBUTTON      "~Cancel", DID_CANCEL, 110, 6, 40, 14
+        PUSHBUTTON      "~Help", DID_HELP_BUTTON, 166, 6, 40, 14
+        GROUPBOX        "New Image Size", -1, 7, 26, 115, 46, WS_GROUP | WS_VISIBLE
+        RTEXT           "Width:", -1, 24, 46, 23, 8, NOT
+                 WS_GROUP | DT_MNEMONIC | WS_VISIBLE
+        RTEXT           "Height:", -1, 22, 32, 25, 8, NOT
+                 WS_GROUP | DT_MNEMONIC | WS_VISIBLE
+        GROUPBOX        "New Image", -1, 138, 26, 115, 46, WS_VISIBLE
+    END
+END

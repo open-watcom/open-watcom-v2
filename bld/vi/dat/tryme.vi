@@ -1,0 +1,39 @@
+#
+# sample script using all the new constructs (I think)
+#
+        atomic
+        assign %(maincount) = 1 
+        execute \eAStarting\n\e
+        while %(maincount) <= 10
+ 
+            execute \eAa=%(maincount)\n\e
+ 
+            assign %b = 1 
+            loop
+            
+                if %b == 1
+                    execute \eAb=ONE\n\e
+                elseif %b == 2
+                    execute \eAb=TWO\n\e
+                elseif %b == 3
+                    execute \eAb=THREE\n\e
+                else
+                    execute \eAb=DONE\n\e
+                    break
+                endif
+                expr %b = %b + 1
+                    
+            until %b == 6
+            
+            assign %c = 1 
+            loop
+                
+                execute \eA%c\e
+                expr %c = %c + 1
+                quif %c >= 5
+                
+            endloop
+            execute \eA\n\e
+            expr %(maincount) = %(maincount) + 1
+            
+        endloop

@@ -1,0 +1,5 @@
+os      = os2
+bin     = fmrbinp
+form    = os2 pmc
+
+!include ..\makefile

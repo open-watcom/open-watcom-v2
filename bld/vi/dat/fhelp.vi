@@ -1,0 +1,6 @@
+#
+# F77 help script
+#
+assign %h = "f77lr.hlp"
+#launch winhelp using the whole word as a partial key 
+winhelp HELP_PARTIALKEY %h %1

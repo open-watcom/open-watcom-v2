@@ -1,0 +1,24 @@
+proj_name = builder
+name = builder
+
+.extensions:
+.extensions: .exe .obj .h .c .mif
+
+.mif: $(mif_path)
+!include cproj.mif
+!include defrule.mif
+
+extra_c_flags = -i..\..\pmake
+
+.c: ..\c;..\..\pmake
+
+OBJS = builder.obj utils.obj runit.obj sys$(host_OS).obj pmake.obj pmkcmd.obj
+
+$(name).exe : $(OBJS)
+        wlink $(lflags) name $^@ file {$(OBJS)}
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj del *.?bj
+        @if exist *.exe del *.exe
+        @if exist *.err del *.err
+        @if exist *.map del *.map

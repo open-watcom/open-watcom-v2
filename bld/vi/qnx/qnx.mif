@@ -1,0 +1,16 @@
+objqnxtimeroot = &
+        int.obj
+
+objqnxsizeroot = &
+        biosqnx.ybj
+
+objqnxsize = &
+        qnxsys.ybj &
+        qnxdir.ybj &
+        qnxmain.ybj &
+        qnxmouse.ybj &
+        time.ybj  &
+        spawn.ybj
+
+extraobjs = $(objqnxsize)
+extraobjsroot = $(objqnxtimeroot) $(objqnxsizeroot)

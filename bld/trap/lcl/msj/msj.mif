@@ -1,0 +1,27 @@
+!include $(trap_dir)\lcl\lcl.mif
+
+extra_srcs=$(watcom_dir)\c;$(trmem_dir)
+
+msjx_trap_objs = &
+        $(std_objs) &
+        msjacc.obj &
+        control.obj &
+        readwr.obj &
+        core.obj &
+        supp.obj &
+        msjutil.obj &
+        mapper.obj &
+        guid.obj
+
+#       packet.obj
+#       msjxlink.obj &
+#       msjxremo.obj &
+
+#msjx_serv_objs = &
+#       msjxlink.obj &
+#       msjxserv.obj &
+#       msjxtrio.obj &
+#       msjxstub.obj &
+#       core.obj &
+#       supp.obj &
+#       packet.obj &

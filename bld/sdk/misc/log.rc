@@ -1,0 +1,44 @@
+LOG_EXISTS_DLG DIALOG 63, 49, 160, 62
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Log Information"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CTEXT           "The log file exits.", LOG_TEXT, 28, 11, 108, 8
+    CTEXT           "What do you want to do with it?", LOG_TEXT, 28, 26,
+                    110, 8
+    PUSHBUTTON      "Replace", LOG_REPLACE, 10, 42, 40, 14
+    PUSHBUTTON      "Append", LOG_APPEND, 60, 42, 40, 14
+    PUSHBUTTON      "Cancel", LOG_CANCEL, 109, 42, 40, 14
+END
+
+LOG_CFG_DLG DIALOG 29, 11, 230, 130
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Log Configuration"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Logging Type", LOG_CFG_TYPE_GROUP, 128, 34, 93, 39,
+                    WS_GROUP | WS_TABSTOP
+    CONTROL         "Continuous logging", LOG_CFG_CONT, "Button",
+                    BS_AUTORADIOBUTTON, 136, 49, 80, 10
+    CONTROL         "Periodic logging", LOG_CFG_PERIODIC, "Button",
+                    BS_AUTORADIOBUTTON, 136, 59, 76, 10
+    GROUPBOX        "Log Name", LOG_CFG_NAME_GROUP, 7, 34, 104, 39, WS_GROUP |
+                    WS_TABSTOP
+    CONTROL         "Query for log name", LOG_CFG_QUERY_NAME, "Button",
+                    BS_AUTORADIOBUTTON, 18, 49, 77, 10
+    CONTROL         "Use default log name", LOG_CFG_USE_NAME, "Button",
+                    BS_AUTORADIOBUTTON, 18, 59, 85, 10
+    GROUPBOX        "Action when log file exists", LOG_CFG_ACTION_GROUP, 7,
+                    79, 104, 47, WS_GROUP | WS_TABSTOP
+    CONTROL         "Replace", LOG_CFG_REPLACE, "Button", BS_AUTORADIOBUTTON,
+                    16, 92, 72, 10
+    CONTROL         "Append", LOG_CFG_APPEND, "Button", BS_AUTORADIOBUTTON,
+                    16, 102, 72, 10
+    CONTROL         "Query", LOG_CFG_QUERY, "Button", BS_AUTORADIOBUTTON, 16,
+                    112, 72, 10
+    PUSHBUTTON      "&OK", IDOK, 130, 98, 40, 14
+    PUSHBUTTON      "&Cancel", IDCANCEL, 181, 98, 40, 14
+    GROUPBOX        "Default Log Name", LOG_CFG_LNAME_GROUP, 7, 2, 213, 29
+    EDITTEXT        LOG_CFG_NAME_EDIT, 14, 14, 158, 12, ES_AUTOHSCROLL
+    PUSHBUTTON      "&Browse", LOG_CFG_BROWSE, 176, 13, 40, 14
+END

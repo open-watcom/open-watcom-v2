@@ -1,0 +1,12 @@
+#
+#   err36: illegal attempt to update special target
+#
+#   has a companion err36.bat that causes the actual error
+#
+
+.extensions:
+.extensions: .obj .c
+
+.c.obj :
+    echo dowah ditty
+

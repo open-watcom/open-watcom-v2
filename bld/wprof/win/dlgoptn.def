@@ -1,0 +1,2 @@
+//#line "..\c\dlgoptn.c" 111
+extern void DlgGetOptions(a_window *wnd);

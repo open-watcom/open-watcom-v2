@@ -1,0 +1,12 @@
+.SUFFIXES:
+.SUFFIXES: .obj .cpp
+
+hello.obj:
+
+hello.obj: hello.cpp
+    echo hello.obj
+
+hello.cpp: hello.h 
+    echo hello.cpp
+
+

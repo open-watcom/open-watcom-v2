@@ -1,0 +1,12 @@
+        win386.def contains all windows prototypes. routines that need special
+        care begin with __ and must have a function provided in 
+        the extender
+        
+/* 
+ * THESE FUNCTIONS ARE UNDEFINED WHEN LINKED INTO A WINDOWS PROGRAM...
+ * BUT, THEY ARE DEFINED IN WINDOWS.H...
+ */
+int far ChangeSelector( int , int );
+void far SetConvertHook(int );
+int far ConvertRequest( int ,void far *);
+int far SetConvertParams(int ,int );

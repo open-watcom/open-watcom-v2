@@ -1,0 +1,37 @@
+system windows dll
+option nodefault
+option map,v
+option rwr
+option quiet
+option symfile=fmedit.sym
+name fmedit
+#segment _TEXT PRELOAD FIXED
+#segment CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
+#segment CLASS 'CODE' PRELOAD
+file %WATCOM%\lib286\win\libentry
+file align
+file fmedit
+file grid
+file paint
+file mouse
+file eatom
+file object
+file state
+file list
+file memory
+file cursor
+file scroll
+file currobj
+file oitem
+file curritem
+file dlist
+file clip
+file verdll
+file keybd
+#
+#   libraries
+#
+#
+library %WATCOM%\lib286\win\windows
+library %WATCOM%\lib286\win\clibl
+#@exports

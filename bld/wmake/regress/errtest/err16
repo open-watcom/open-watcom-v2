@@ -1,0 +1,8 @@
+# ---------------------------
+# ERROR 16: no nested for loops
+# ---------------------------
+
+all : .symbolic
+    -for %i in (1 2 3) do for %j in (2 4 6) do echo %j %i
+    -for %i in (echo for) do %i %j in (2 4 6) do echo %j %i
+

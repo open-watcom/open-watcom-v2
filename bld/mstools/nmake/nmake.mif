@@ -1,0 +1,36 @@
+!include ..\..\..\master.mif
+
+
+common_objs = parse.obj $(mstools_objs)
+nmake_objs  = nmake.obj message.obj translat.obj $(common_objs)
+nmake_hdrs  = optdata.h
+
+!ifeq host_CPU axp
+targdef=-d__TARGET_AXP__
+!else ifeq host_CPU ppc
+targdef=-d__TARGET_PPC__
+!else
+targdef=-d__TARGET_$(host_CPU)__
+!endif
+
+#
+# Instructions for building the executable.
+#
+nmake.exe :  $(nmake_objs)
+        $(linker) $(lflags) name $^@ file {$(nmake_objs)}
+
+
+.c :  ..\..\..\c;..\..\c
+.h :  ..\..\..\h;..\..\h
+.gml : ..\..\gml
+
+nmake.obj :  nmake.c $(nmake_hdrs)
+message.obj :  message.c $(nmake_hdrs)
+translat.obj :  translat.c $(nmake_hdrs)
+parse.obj :  parse.c optparse.c $(nmake_hdrs)
+
+optparse.c optdata.h :  optencod.exe ms.gml
+        optencod.exe ..\..\gml\ms.gml ..\..\h\optdata.h ..\..\c\optparse.c ..\..\h\usagemsg.h i86
+
+
+!include ..\..\..\build.mif

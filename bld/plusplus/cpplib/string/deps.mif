@@ -1,0 +1,19 @@
+!ifndef on_build_machine
+
+string.$(obj_deps_ext) : &
+            allocrep.cpp allomusz.cpp appendst.cpp compchar.cpp compstr.cpp &
+            condefau.cpp constcst.cpp constrch.cpp constrst.cpp destruct.cpp &
+            freestr.cpp indexcha.cpp indexstr.cpp joinstr.cpp matchcst.cpp &
+            matchs.cpp matchstr.cpp opappcst.cpp opappstr.cpp opasstcs.cpp &
+            opasstst.cpp opcachst.cpp opcastch.cpp opcastst.cpp opco1sch.cpp &
+            opcostch.cpp opcostsc.cpp opcrchar.cpp opeqchst.cpp opeqstch.cpp &
+            opeqstst.cpp opgqchst.cpp opgqstch.cpp opgqstst.cpp opgrchst.cpp &
+            opgrstch.cpp opgrstst.cpp opinput.cpp oplechst.cpp oplestch.cpp  &
+            oplestst.cpp oplqchst.cpp oplqstch.cpp oplqstst.cpp opnechst.cpp &
+            opnestch.cpp opnestst.cpp opoutput.cpp oprfchar.cpp opsubstr.cpp &
+            zapcase.cpp conszcap.cpp opeqcrst.cpp opnecrst.cpp oplecrst.cpp &
+            oplqcrst.cpp opgrcrst.cpp opgqcrst.cpp opcacrst.cpp opeqstcr.cpp &
+            opnestcr.cpp opgrstcr.cpp opgqstcr.cpp oplestcr.cpp oplqstcr.cpp &
+            opcastcr.cpp
+
+!endif

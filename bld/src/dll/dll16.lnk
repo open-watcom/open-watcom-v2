@@ -1,0 +1,7 @@
+debug all
+system windows dll initinstance memory
+file dll16
+option oneautodata
+option map
+option heapsize=32K
+libfile libentry

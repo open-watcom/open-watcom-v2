@@ -1,0 +1,15 @@
+%s/^:::[^:]/:&/
+loop
+    /^[ \t]+:h$
+    quif lastrc != ERR_NO_ERR
+    .,.+2<
+    .,.+2<
+    .,.+2<
+    .,.+2<
+    .,.+2<
+    .,.+2<
+    .+1
+endloop
+compress
+w! vi.hlp
+q!

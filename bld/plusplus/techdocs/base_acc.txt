@@ -1,0 +1,40 @@
+Base class is inaccessible
+==========================
+
+struct A {
+    int a;
+};
+struct B : A {
+};
+struct C : A, B {
+};
+
+void foo( C *p )
+{
+    p->a = 1;	// error: which A::a?
+}
+
+Borland, Microsoft, and CFRONT diagnose a problem with the class
+definition for 'C'.  They generate a hard error describing that the
+direct base class 'A' cannot be accessed because it is a base class of
+'B'.  This is true in this example but all of the compilers should
+diagnose ambiguous accesses of the base class 'A' or its member 'a'.
+WATCOM C++ accepts the declaration but will diagnose any ambiguous use
+of base class 'A'.  Unfortunately, the previously mentioned compilers
+will not compile the following correct code:
+
+struct A {
+    static int a;
+};
+struct B : A {
+};
+struct C : A, B {
+};
+
+void foo( C *p )
+{
+    p->a = 1;	// OK: A::a is a static member
+}
+
+Any access to the static member 'a' is *not* ambiguous according to the
+rules of the C++ language.  The WATCOM C++ compiler accepts this code.

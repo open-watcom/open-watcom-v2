@@ -1,0 +1,10 @@
+//#line "..\c\wpsamp.c" 223
+extern void WPSampleOpen(void);
+//#line "..\c\wpsamp.c" 1275
+extern void WPZoomIn(a_window *wnd,int row);
+//#line "..\c\wpsamp.c" 1353
+extern void WPBackOut(a_window *wnd);
+//#line "..\c\wpsamp.c" 1368
+extern void WPFindDoPopUp(a_window *wnd,int id);
+//#line "..\c\wpsamp.c" 1384
+extern void WPDoPopUp(a_window *wnd,gui_menu_struct *gui_menu);

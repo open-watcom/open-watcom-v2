@@ -1,0 +1,61 @@
+proj_name = viper
+name = ide
+
+.SUFFIXES : .rc
+.mif : $(mif_path);..\mif
+c_path_os2 = $(batch_dir)\os2
+c_path_nt = $(batch_dir)\nt
+c_path_win = $(batch_dir)\dos;$(batch_dir)\os2
+
+.c : $(c_path_$(host_OS));$(watcom_dir)\c
+.cpp : ..
+!ifeq host_OS nt
+.rc : ..\win
+!endif
+
+sys_windowed = 1
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!include objects.mif
+!include lib.mif
+!include include.mif
+
+extra_c_flags_386       = -fpc
+extra_c_flags_i86       = -fpc
+
+extra_cpp_flags_386_nt  = -zm-zc
+extra_cpp_flags_386     = $(extra_cpp_flags_386_$(host_OS))
+extra_cpp_flags_i86     = -zm-zc
+
+.before:
+        set INCLUDE=$(inc_path)
+
+$(name).exe : $(OBJECTS) $(LIBS) viper.res
+        $(linker) $(lflags) name $(name) op map op stack=12k, de 'WATCOM IDE' f {$(OBJECTS)} lib {$(LIBS)}
+!ifneq host_OS os2
+        $(rc) -q viper.res $(name).exe
+!else
+        $(rc_os2) -p -x viper.res $(name).exe
+!endif
+
+viper.res : viper.rc
+!ifneq host_OS os2
+        $(rc) $(rc_flags) -i..\ -q -r $[@ -fo=$^@
+!else
+!ifeq host_lang japan
+        $(cc) -zk0 -dJAPANESE_MESSAGES -i=..\ -p $[@ -fo=viper.prc
+!else
+        $(cc) -i=..\ -p $[@ -fo=viper.prc
+!endif
+        $(rc_os2) -i ..\ -r viper.prc viper.res
+!endif
+
+!ifeq host_OS win
+link.obj: link.c
+        $(cc) $(cflags) $(extra_c_flags_$(host_CPU)) -dSERVER $[@ -fo=$^@
+!endif
+
+.cpp.obj:
+        $(cpp) $(cflags) $(extra_cpp_flags_$(host_CPU)) $[@ -fo=$^@

@@ -1,0 +1,17 @@
+HDL_INFO DIALOG 61, 20, 105, 43
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Handle Information"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Block Address: ", HDL_INFO_DONT_CARE, 3, 2, 53, 8
+    LTEXT           "Block Handle: ", HDL_INFO_DONT_CARE, 3, 10, 50, 8
+    LTEXT           "Block Size: ", HDL_INFO_DONT_CARE, 3, 18, 40, 9
+    LTEXT           "Lock Count: ", HDL_INFO_DONT_CARE, 3, 26, 44, 8
+    LTEXT           "Page Lock Count:", HDL_INFO_DONT_CARE, 3, 34, 62, 9
+    LTEXT           "00000000", HDL_INFO_ADDR, 66, 2, 40, 8
+    LTEXT           "0000", HDL_INFO_HDL, 66, 10, 20, 8
+    LTEXT           "0000", HDL_INFO_SIZE, 66, 18, 20, 8
+    LTEXT           "0000", HDL_INFO_LOCK, 66, 26, 20, 8
+    LTEXT           "0000", HDL_INFO_PLOCK, 66, 34, 20, 8
+END
+

@@ -1,0 +1,7 @@
+all : .symbolic
+    for %i in (*) do @echo %i
+    for %i in (for??) do @echo %i
+    for %i in (hmm.*) do @echo %i
+    for %i in (for04) do @echo %i
+
+

@@ -1,0 +1,6 @@
+# -----------------------------------------------
+# ERROR 35: trying to undefine an undefined macro --> ONLY IN DEBUG MODE
+# -----------------------------------------------
+
+!undef asdfrrree__1
+

@@ -1,0 +1,544 @@
+Skip List Intro
+===============
+Skip Lists are a probabilistic alternative to balanced trees, as
+described in the June 1990 issue of CACM and were invented by
+William Pugh in 1987.
+
+Skip lists have fast element insertion, search, and deletion.
+
+
+
+Note that for any kind of PtrSkipList (WCPtrSkipList, WCPtrSkipList,
+WCPtrSkipListDict)
+destructors are not called on the elements pointed to.  Only the pointers are
+stored so the elements are not copied, constructed or destroyed.
+
+ValSkipList classes store a copy of elements (using Type's copy constuctor),
+which will be destroyed when the element is removed or the skip list cleared or
+deleted (or if the skip list goes out of scope if it is a local variable).
+
+Header File:
+============
+#include <wcskip.h>
+
+
+
+WCExcept:
+=========
+
+  This is the base class to all skip lists.  Exception handling is
+  performed using this class.  By default, no exceptions will be thrown, and
+  functions and operators will leave the skip list in a valid
+  state on an error.  Exceptions can be enabled to be thrown using the
+  exceptions member function
+
+  available exceptions:
+  ~~~~~~~~~~~~~~~~~~~~~
+
+    The following exceptions can be thrown by skip lists:
+      - WCExcept::not_empty
+        if a skip list was not zero length is being
+  	destroyed by the destructor, this error can be thrown.
+      - WCExcept::not_unique
+        thrown when attempting to insert a value into a SkipListSet or
+	SkipListDict when an equivalent value already exists.
+      - WCExcept::out_of_memory
+        thrown when an attempt to insert an element, copy a skip list with the
+	copy constructor, or perform an assignment fails due to lack of memory.
+
+    the exceptions member function:  see WCListExcept::exceptions in the
+    Container Class Library reference.
+
+  An example:
+  ~~~~~~~~~~~
+      #include <wcskip.h>
+
+      void main() {
+        WCValSkipList<int> skip_list;
+
+        skip_list.exceptions( WCExcept::out_of_memory );
+	try{
+	    skip list.insert( temp );
+	} catch( WCExcept::failure oops ) {
+	    WCExcept::wc_state cause = oops.cause();
+	    if( cause & WCExcept::out_of_memory ) {
+	      	cout << "out of memory!\n";
+	    }
+	}
+      }
+
+
+WCValSkipList<Type>, WCPtrSkipList<Type>:
+=========================================
+
+  These are skip which do not require values (or values pointed to) to
+  be unique, based on Type's == operator.
+
+
+  req'd from <Type>:
+  ~~~~~~~~~~~~~~~~~~
+  
+    - copy and default constructors (ValSkipList only)
+    - equivalence operator (operator ==)
+    - less than operator (operator <)
+
+    
+  public constructors/destructors:
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - ..SkipList( unsigned probability = WCSKIPLIST_PROB_QUARTER
+    		, unsigned max_ptrs = WCDEFAULT_SKIPLIST_MAX_PTRS
+      constructs a skip list with no entries.  probability is used to determine
+      the number of pointers in each skip list node.  If probability is
+      WCSKIPLIST_PROB_QUARTER, then each element will have an average of
+      1 1/3 pointers linking it into the skip list.  If probability is
+      WCSKIPLIST_PROB_HALF, then each element will have an average of
+      2 pointers linking it into the skip list.  max_ptrs is the maximum
+      number of link pointers which an element can have to link it into the
+      skip list.  The default probability and max_ptrs is appropriate for
+      upto about 2^16 elements.
+      If a max_ptrs is greater than WCSKIPLIST_MAX_PTRS, then
+      WCSKIPLIST_MAX_PTRS will be used as the maximum number of pointers.
+      For more information on the choice and effects of probability and
+      maximum number of pointers, see the description of skip lists in
+      the June 1990 issue of CACM.
+
+
+    - ..SkipList( unsigned probability, unsigned max_ptrs
+		, void * (*user_alloc)( size_t size )
+		, void (*user_dealloc)( void *old, size_t size ) )
+      Like the above constructor, but also provides a user allocator and user
+      deallocator to allocate and free memory when entries are inserted and
+      removed from the skip list.  The user_alloc function must return a
+      pointer to allocated memory of at least size bytes, or 0 if it cannot
+      perform the allocation (which will cause insert to fail).  The
+      user_dealloc function must free "old", which was allocated by the
+      user_alloc function, and is of size "size".  The size passed to
+      user_alloc will depend on the number of pointers of the inserted element.
+      The number of pointers can be from 1 to max_ptrs, but most elements will
+      have only one or two pointers.  To determine the size of
+      the objects that the user_alloc and user_dealloc functions will be
+      required to allocate and free, the following macros may be used:
+	WCValSkipListItemSize( Type, num_ptrs )
+	WCPtrSkipListItemSize( Type, num_ptrs )
+	WCValSkipListSetItemSize( Type, num_ptrs )	(for skip list sets)
+	WCPtrSkipListSetItemSize( Type, num_ptrs )
+      For example, WCValSkipList<my_type> will require user_alloc and
+      user_dealloc to handle objects of size
+      WCValSkipListItemSize( my_Type, 1 ), WCValSkipListItemSize( my_Type, 2 ),
+      ...., WCValSkipListItemSize( my_Type, max_ptrs ).
+
+    - ..SkipList( const ..SkipList &orig )
+      the copy constructor.  Makes a copy of orig, including copying
+      probability and max_ptrs, all values or pointers stored in the skip
+      list, and the exception state.  If there is enough memory to create
+      the skip list object, but not enough memory to copy all of
+      the values or pointers in the skip list, then only some will be copied,
+      and the number of entries will correctly reflect the number copied.
+      If all of the elements cannot be copied, an out_of_memory exception
+      is thrown if enabled in orig,
+
+    - ~..SkipList()
+      the destructor:  destroys the skip list object, including clearing the
+      entries using the clear member function.  If the skip list is not empty
+      (contains at least one entry) when this destructor is invoked, the
+      not_empty exception will be thrown if enabled.
+
+
+  public operators
+  ~~~~~~~~~~~~~~~~
+
+    - ..SkipList &operator=( const ..SkipList &orig )
+      the assignment operator.  Clears this (using the clear member function),
+      and then a copies orig, including copying
+      probability and max_ptrs, all values or pointers stored in the skip
+      list, and the exception state.  If there is not enough memory to copy
+      all of the values or pointers in the skip list, then only some will
+      be copied, and the out_of_memory exception thrown if enabled in orig.
+      The number of entries will correctly reflect the number copied.
+    
+   - int operator==( const ..SkipList &rhs ) const
+     The skip list equality operator.  Two skip lists are equivalent if they
+     are the same object (ie they have the same address).  Returns 0 if not
+     equal and non-zero if equal.
+      
+
+  public member fns
+  ~~~~~~~~~~~~~~~~~
+
+    **NOTE**:  unless otherwise noted, parameters of type "Type &" are for the
+    WCValSkipList, and the corresponding parameters for WCPtrSkipList member
+    functions have type "Type *".
+
+    - void clear()
+      remove all values or pointers from the skip list, so that there are
+      no entries.  For WCPtrSkipList, the values pointed to are NOT deleted.
+
+    ** PTR ONLY **
+    - void clearAndDestroy()
+      call delete for all pointers in the skip list, and clear the skip list
+      to contain no entries.
+    
+    - int contains( const Type &elem ) const
+      return non-zero if an element equivalent to elem is stored in the skip
+      list, or zero if there is no equivalent element.
+      Note that equivalence is based on Type's == operator for both
+      WCValSkipList and WCPtrSkipList.
+
+    - unsigned entries() const
+      returns the number of entries stored in the skip list.
+
+    ** VAL ONLY **
+    - int find( const Type &search, Type &return_val ) const
+      attempts to find an element equivalent to search in the skip list.  If
+      an equivalent element is found, non-zero is returned, and return_val is
+      assigned the found element.  If no such element is found, zero is
+      returned and return_val is unchanged.
+      Note that equivalence is based on Type's == operator.
+
+    ** PTR ONLY **
+    - Type *find( const Type *elem ) const
+      attempts to find an element equivalent to elem in the skip list.  If
+      an equivalent element is found, it is returned.  Otherwise zero is
+      returned.
+      If more then one element equivalent to elem is stored in the skip list,
+      then the last element inserted is found.
+      Note that equivalence is based on Type's == operator (ie the values
+      pointed to are compared).
+      
+    - void WCValSkipList::forAll( void (*user_fn)( Type elem, void *data )
+    				 , void *data )
+    - void WCPtrSkipList::forAll( void (*user_fn)( Type *elem, void *data )
+    				 , void *data )
+      call user_fn for every element in the skip list (in order of least
+      element to greatest, by Type's < operator).  user_fn has prototype:
+        ** VAL **
+	void user_fn( Type elem, void *data );
+        ** PTR **
+	void user_fn( Type *elem, void *data );
+      and will be passed each element in turn as the first parameter, and the
+      data passed to forAll as the second paramter.  data can be used to
+      pass user_fn any information which it requires.
+
+    - int WCValSkipList::insert( const Type &elem )
+    - int WCPtrSkipList::insert( Type *elem )
+      Insert elem into the skip list.  If allocation of the node to store elem
+      fails, then an out_of_memory exception will be thrown if enabled.
+      Otherwise, if the allocation failed, zero will be returned, and the
+      skip list will be unchanged.  Non-zero will be returned on a successful
+      insert.  If entries equivalent to elem were previously stored in the
+      skip list, then elem is insert before these equivalent elements (i.e.
+      elem is inserted after entries less then elem, and before entries greater
+      than or equal to elem).
+
+    - int isEmpty() const
+      return non-zero if the skip list is empty, zero if the skip list
+      contains at least one entry.
+
+    - unsigned occurrencesOf( const Type &elem ) const
+      return the number of elements stored in the skip list which are
+      equivalent to elem.
+      Note that equivalence is based on Type's == operator for both
+      WCValSkipList and WCPtrSkipList.
+
+    - int WCValSkipList::remove( const Type &elem )
+    - Type *WCPtrSkipList::remove( const Type *elem )
+      remove one element equivalent to elem from the skip list.  Returns
+      non-zero (Val) or the removed pointer (Ptr) if an equivent element
+      was found to remove, zero if not.
+      If the skip list contains more than one element equivalent to elem,
+      the element that was added last will be removed (LIFO).
+      Note that equivalence is based on Type's == operator for both
+      WCValSkipList and WCPtrSkipList.
+
+    - unsigned removeAll( const Type &elem )
+      removes all elements equivalent to elem from the skip list, and returns
+      the number of elements removed (zero if the skip list contains no
+      element equivalent to elem).
+      Note that equivalence is based on Type's == operator for both
+      WCValSkipList and WCPtrSkipList.
+
+      
+
+WCValSkipListSet<Type>, WCPtrSkipListSet<Type>:
+=======================================
+
+  These are skip lists which require every element in the skip list set to be
+  unique, by Type's == operator.
+
+  The exceptions, constructors/destructors, operators
+  and most member fuctions are identical to those given above for
+  WCValSkipList and WCPtrSkipList.
+
+  
+  member fns not defined for WCValSkipListSet/WCPtrSkipListSet
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - unsigned occurrencesOf( const Type &elem ) const
+    - int removeAll( const Type &elem )
+      these are no longer available since they are of little use with unique
+      elements, and are just less efficient versions of the contains and
+      remove member functions respectively.
+
+
+  changed public member fn
+  ~~~~~~~~~~~~~~~~~~~~~~~~
+  
+    - int WCValskip listSet::insert( const Type &elem )
+    - int WCPtrskip listSet::insert( Type *elem )
+      If an entry equivalent to elem was not previously in the skip list,
+      insert elem into the skip list.  If elem was already in the skip list,
+      then the skip list remains unchanged, and the not_unique exception will
+      be thrown if enabled.  If the exception is not enabled, zero is
+      returned.  If elem is unique to the skip list, but allocation of the
+      node to store elem
+      fails, then an out_of_memory exception will be thrown if enabled.
+      Otherwise, if the allocation failed, zero will be returned, and the
+      skip list will be unchanged.  Non-zero will be returned on a successful
+      insert.
+
+
+WCValSkipListDict<Key,Value>, WCPtrSkipListDict<Key,Value>:
+===========================================================
+
+  These are skip list dictionaries.  The key is used as a handle to the value
+  stored.  Key's equality operator and less than operator is used to order and
+  find key-value pairs.  Keys must be unique, values do not need to be
+  unique.
+  
+
+  req'd from <Key>:
+  ~~~~~~~~~~~~~~~~~~
+    - copy and default constructors (ValSkipListDict only)
+    - assignment constructor (ValSkipListDict only)
+    - equivalence operator (operator==)
+    - less than operator (operator<)
+
+  req'd from <Value>:
+  ~~~~~~~~~~~~~~~~~~
+    - copy and default constructors (ValSkipListDict only)
+    - assignment constructor (ValSkipListDict only)
+
+    
+  public constructors/destructors:
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - ..SkipListDict( unsigned probability = WCSKIPLIST_PROB_QUARTER
+    		, unsigned max_ptrs = WCDEFAULT_SKIPLIST_MAX_PTRS
+      constructs a skip list with no entries.  probability is used to determine
+      the number of pointers in each skip list node.  If probability is
+      WCSKIPLIST_PROB_QUARTER, then each element will have an average of
+      1 1/3 pointers linking it into the skip list.  If probability is
+      WCSKIPLIST_PROB_HALF, then each element will have an average of
+      2 pointers linking it into the skip list.  max_ptrs is the maximum
+      number of link pointers which an element can have to link it into the
+      skip list.  The default probability and max_ptrs is appropriate for
+      upto about 2^16 elements.
+      If a max_ptrs is greater than WCSKIPLIST_MAX_PTRS, then
+      WCSKIPLIST_MAX_PTRS will be used as the maximum number of pointers.
+      For more information on the choice and effects of probability and
+      maximum number of pointers, see the description of skip lists in
+      the June 1990 issue of CACM.
+
+
+    - ..SkipListDict( unsigned probability, unsigned max_ptrs
+		, void * (*user_alloc)( size_t size )
+		, void (*user_dealloc)( void *old, size_t size ) )
+      Like the above constructor, but also provides a user allocator and user
+      deallocator to allocate and free memory when entries are inserted and
+      removed from the skip list.  The user_alloc function must return a
+      pointer to allocated memory of at least size bytes, or 0 if it cannot
+      perform the allocation (which causes the insert to fail).  The
+      user_dealloc function must free "old", which was allocated by the
+      user_alloc function, and is of size "size".  The size passed to
+      user_alloc will depend on the number of pointers of the inserted element.
+      The number of pointers can be from 1 to max_ptrs, but most elements will
+      have only one or two pointers.  To determine the size of
+      the objects that the user_alloc and user_dealloc functions will be
+      required to allocate and free, the following macros may be used:
+	WCValSkipListDictItemSize( Key, Value, num_ptrs )
+	WCPtrSkipListDictItemSize( Key, Value, num_ptrs )
+      For example, WCValSkipListDict<my_key_type, my_value_type> will require
+      user_alloc and user_dealloc to handle objects of size
+      WCValSkipListDictItemSize( my_key_type, my_value_type, 1 ),
+      WCValSkipListDictItemSize( my_key_type, my_value_type, 2 ),
+      ...., WCValSkipListDictItemSize( my_key_type, my_value_type, max_ptrs ).
+
+    - ..SkipListDict( const ..SkipListDict &orig )
+      the copy constructor.  Makes a copy of orig, including copying
+      probability and max_ptrs, all values or pointers stored in the skip
+      list, and the exception state.  If there is enough memory to create
+      the skip list object, but not enough memory to copy all of
+      the values or pointers in the skip list, then only some will be copied,
+      and the number of entries will correctly reflect the number copied.
+      If all of the elements cannot be copied, an out_of_memory exception
+      is thrown if enabled in orig.
+
+
+    - ~..SkipListDict()
+      the destructor:  destroys the skip list object, including clearing the
+      entries using the clear member function.  If the skip list is not empty
+      (contains at least one entry) when this destructor is invoked, the
+      not_empty exception will be thrown if enabled.
+
+
+
+
+  public operators
+  ~~~~~~~~~~~~~~~~
+
+    - ..SkipListDict &operator=( const ..SkipListDict &orig )
+      the assignment operator.  Clears this (using the clear member function),
+      then makes a copy of orig, including copying
+      probability and max_ptrs, all values or pointers stored in the skip
+      list, and the exception state.  If there is enough memory to create
+      the skip list object, but not enough memory to copy all of
+      the values or pointers in the skip list, then only some will be copied,
+      and the number of entries will correctly reflect the number copied.
+      If all of the elements cannot be copied, an out_of_memory exception
+      is thrown if enabled in orig.
+    
+   - int operator==( const ..SkipListDict &rhs ) const
+     The skip list Dict equality operator.  Two skip list Dicts are
+     equivalent if they are the same object (ie they have the same address).
+     Returns 0 if not equal and non-zero if equal.
+
+
+   - Value & WCValSkipListDict::operator[]( const Key & key );
+   - Value * & WCPtrSkipListDict::operator[]( const Key * key );
+     The non-constant index operator.  If a key-value pair is found with
+     key equivalent to "key", then a reference to value or pointer
+     to value is returned.  If no equivalent element is found, then a new
+     key-value pair is created with key "key", and value initialized with
+     the default constructor (an undefined pointer for WCPtrSkipListDict).  The
+     returned reference to the value/pointer to value can be assigned to,
+     so that insertions can be done like:
+       WCValSkipListDict<int,String> skip_list;
+       skip_list[ 5 ] = "Hello";
+     If an allocation error occurs when inserting a new key-value pair,
+     then the out_of_memory exception is thrown, if enabled.  If the exception
+     is not enabled, then a reference to an object/pointer to an object with
+     address zero will be returned, CAUSING A RUN-TIME ERROR.
+
+   - const Value & WCValSkipListDict::operator[]( const Key & key ) const;
+   - Value * const & WCPtrSkipListDict::operator[]( const Key * key ) const;
+     The constant index operator.  If a key-value pair is found with
+     key equivalent to "key", then a reference to value or pointer
+     to value is returned.  If no equivalent element is found, then an
+     index_range exception is thrown, if enabled.  If the exception is not
+     enabled, then a reference to a value/pointer to an object with
+     address zero will be returned, CAUSING A RUN-TIME ERROR.
+      
+
+  public member fns
+  ~~~~~~~~~~~~~~~~~
+
+    **NOTE**:  unless otherwise noted, parameters of type "Type &" are for the
+    WCValSkipListDict, and the corresponding parameters for WCPtrSkipListDict
+    member functions have type "Type *".
+
+    - void clear()
+      remove all values or pointers from the skip list Dict, so that the
+      Dict has no entries.  Note that for WCPtrSkipListDict, the values
+      pointed to are not deleted.
+
+    ** PTR ONLY **
+    - void clearAndDestroy()
+      call delete for all pointers (both key and value pointers) in the
+      skip list, and clear the skip list so that it contains zero entries.
+    
+    - int contains( const Key &elem ) const
+      return non-zero if a element with key equivalent to elem is stored in
+      the skip list Dict, or zero if there is no equivalent element.
+      Note that equivalence is based on Key's == operator for both
+      WCValSkipListDict and WCPtrSkipListDict.
+
+    - unsigned entries() const
+      returns the number of entries stored in the skip list Dict.
+
+    ** VAL ONLY **
+    - int find( const Key &search, Value &return_val ) const
+      attempts to find an element with key equivalent to search in the
+      skip list Dict.  If an equivalent key-value pair is found, non-zero is
+      returned, and return_val is assigned the found element's Value.
+      If no such element is found, zero is returned and return_val is unchanged.
+      Note that equivalence is based on Key's == operator.
+
+    ** PTR ONLY **
+    - Value *find( const Key *elem ) const
+      attempts to find an element with key equivalent to elem in the
+      skip list Dict.  If an equivalent key-value pair is found, a pointer
+      to its value is returned.  Otherwise zero is returned.
+      Note that equivalence is based on Key's == operator (ie the keys
+      pointed to are compared).
+      
+    ** VAL ONLY **
+    - int findKeyAndValue( const Key &search, Key &return_key
+    			 , Value &return_val ) const
+      attempts to find an element with key equivalent to search in the
+      skip list Dict.  If an equivalent key-value pair is found, non-zero is
+      returned, return_key is assigned the found element's key and
+      return_val is assigned the found element's Value.
+      If no such element is found, zero is returned and both return_key and
+      return_val are unchanged.
+      Note that equivalence is based on Key's == operator.
+
+    ** PTR ONLY **
+    - Value *findKeyAndValue( const Key *elem, Key * &return_key ) const
+      attempts to find an element with key equivalent to elem in the
+      skip list Dict.  If an equivalent key-value pair is found, a pointer
+      to its value is returned, and return_key is assigned a pointer to its key.
+      Otherwise zero is returned, and return_key is unchanged.
+      Note that equivalence is based on Key's == operator (ie the keys
+      pointed to are compared).
+      
+    - void WCValSkipListDict::forAll(
+    		void (*user_fn)( Key key, Value value, void *data )
+	      , void *data )
+    - void WCPtrSkipListDict::forAll(
+    		void (*user_fn)( Key *key, Value *value, void *data )
+    	      , void *data )
+      call user_fn for every key-value pair in the skip list Dict (in order
+      of least element to greatest, by Key's < operator).  user_fn
+      has prototype:
+        ** VAL **
+	void user_fn( Key key, Value value, void *data );
+        ** PTR **
+	void user_fn( Key *key, Value *value, void *data );
+      and will be passed each element's key and value in turn as the first
+      two parameters, and the
+      data passed to forAll as the third paramter.  data can be used to
+      pass user_fn any information which it requires.
+
+    - int WCValSkipListDict::insert( const Key &key, const Value &value )
+    - int WCPtrSkipListDict::insert( Key *key, Value *value )
+      Insert key and value into the skip list Dict.  If allocation of the
+      node to store the key-value pair fails, then an out_of_memory
+      exception will be thrown if enabled.
+      Otherwise, if the allocation failed, zero will be returned, and the
+      skip list Dict will be unchanged.  Non-zero will be returned on a
+      successful insert.
+
+    - int isEmpty() const
+      return non-zero if the skip list Dict is empty, zero if the skip list Dict
+      contains at least one entry.
+
+    - int WCValSkipListDict::remove( const Key &elem )
+    - Type * WCPtrSkipListDict::remove( const Key *elem )
+      removes the element equivalent with key equivalent to elem from the
+      skip list Dict.  Returns
+      non-zero (Val) or the removed pointer (Ptr) if an equivent element was
+      found to remove, zero if not.
+      Note that equivalence is based on Key's == operator for both
+      WCValSkipListDict and WCPtrSkipListDict.
+
+
+Skip List Iterators
+===================
+
+see hash iterators, user interface is identical.  Iterator class type names
+are WCVal/PtrSkipListIter, WCVal/PtrSkipListSetIter, WCVal/PtrSkipListDictIter.
+Skip Lists are iteratored (using the ++ and call operators) in
+Type/Key assending order (based on Type's/Key's < operator).
+
+The include file is <wcskipit.h>

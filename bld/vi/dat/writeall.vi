@@ -1,0 +1,14 @@
+set quiet
+push
+
+assign %c = %F
+
+loop
+quif %F == ""
+write
+next
+quif "%c" == "%F"
+endloop
+
+pop
+set noquiet

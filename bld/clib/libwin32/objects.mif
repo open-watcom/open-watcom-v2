@@ -1,0 +1,21 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+#=================================================================================
+!inject creatdir.obj                     nt
+!inject creatfil.obj                     nt
+!inject crtproc.obj                      nt
+!inject delfile.obj                      nt
+!inject ffrstfil.obj                     nt
+!inject fnextfil.obj                     nt
+!inject fgtattr.obj                      nt nta ntp
+!inject getcdir.obj                      nt
+!inject getfattr.obj                     nt
+!inject getmodfn.obj                     nt
+!inject getfulpn.obj                     nt
+!inject movefile.obj                     nt
+!inject removdir.obj                     nt
+!inject setcdir.obj                      nt
+!inject setenvar.obj                     nt
+!inject setfattr.obj                     nt
+!inject ufgtattr.obj                     nt nta ntp
+
+!include ..\..\..\..\objlist.mif
