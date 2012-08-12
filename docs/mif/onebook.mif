@@ -90,13 +90,19 @@ dep_pdf = $(hbook).pdf
 # There should be settings for supported building platforms
 #
 !ifeq %build_platform dos386
-wgml = ..\gml\dos\wgml
+WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
 !else ifeq %build_platform os2386
-wgml = ..\gml\os2\wgml
+WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
 !else ifeq %build_platform nt386
-wgml = ..\gml\dos\wgml
+!ifdef %OW_DOSBOX
+WGMLCMD = $(%OW_DOSBOX) -c "mount c $(%OWROOT)\docs" -c "mount d ." -c "mount e $(%OWROOT)\bld" -c "d:$(dosemu_wgml_batch)" -noconsole
+use_dosemu = dosbox
+!else
+WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
+!endif
 !else ifeq %build_platform linux386
-wgml = dosemu -dumb $(dosemu_wgml_batch)
+WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) "$(book_src) ( file $(optfile_wgml)"
+use_dosemu = dosemu
 !else
 !error Unsupported building platform !!!!!!
 !endif
@@ -116,10 +122,6 @@ wgml_target=$(dotarget)
 
 !ifdef dep_$(dotarget)
 .BEFORE
-    @set GMLLIB=$(gml_lib:/=\)
-!ifeq verbose 1
-    @echo GMLLIB=$(%GMLLIB)
-!endif
 !ifneq header 1
 !ifdef __UNIX__
     @echo ===== $(dotarget) $+$(%cwd)$--$(hbook)/$(book_src) =====
@@ -271,11 +273,18 @@ $(hbook).chm $(hbook).chi : $(hbook).htm
 
 .EXTENSIONS: .pdf
 
-# Note that this relies on the fact that you are building from the pdf directory
-# and the ps directory belongs to the same parent directory. not good but I don't
-# have a better solution for now.
-
 $(hbook).pdf : $(hbook).ps
+!ifeq %build_platform nt386
+#
+# it is simple workaround for bug in OW 1.9 wmake
+#
+    @%create pdf.bat
+    @%append pdf.bat @set OWDOCS_OLD_PATH=$(%PATH)
+    @%append pdf.bat @set PATH=$(%GHOSTSCRIPTPATH);$(%PATH)
+    @%append pdf.bat $(hc_pdf) -r600 $[@ $(hbook).pdf
+    @%append pdf.bat @set PATH=%OWDOCS_OLD_PATH%
+    @pdf.bat
+!else
     @set OWDOCS_OLD_PATH=$(%PATH)
 !ifdef __UNIX__
     @set PATH=$(%GHOSTSCRIPTPATH):$(%PATH)
@@ -284,6 +293,7 @@ $(hbook).pdf : $(hbook).ps
 !endif
     !$(hc_pdf) -r600 $[@ $(hbook).pdf
     @set PATH=$(%OWDOCS_OLD_PATH)
+!endif
 
 ####################################################
 #
@@ -325,20 +335,16 @@ $(hbook).ipf $(hbook).h : $(book_objs) $(proj_objs)
 .EXTENSIONS: .ps .bmp
 
 $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
-    @set GMLINC=tmp;$(book_incs);$(whelp_incs);$(gml_incs)
-    @set GMLINC=$(%GMLINC:/=\)
-!ifeq verbose 1
-    @echo GMLINC=$(%GMLINC)
-!endif
+    @set OWGMLINC=tmp;$(book_incs);$(whelp_incs);$(gml_incs)
     %make prepare_wgml_opts
-    -$(wgml) "$(book_src) ( file $(optfile_wgml)"
+    -$(WGMLCMD)
 
 .bmp: $(book_bmroot)
 .ps: tmp
 
 .bmp.ps:
     @if not exist tmp mkdir tmp
-    bmp2eps -c $< tmp/$^@
+    bmp2eps -c $< tmp/$^.
 
 ####################################################
 #
@@ -405,12 +411,43 @@ prepare_whpcvt_opts : .PROCEDURE
 
 ####################################################
 #
-# Set up options for the wgml utility
+# Set up environment for the wgml utility
 #
 ####################################################
 prepare_wgml_opts : .PROCEDURE
-!ifeq %build_platform linux386
-    %make $(dosemu_wgml_batch)
+#-------------------------------------------------------
+# set up environment variables used by wgml utility
+#-------------------------------------------------------
+    @set GMLLIB=$(gml_lib:/=\)
+    @set GMLINC=$(%OWGMLINC:/=\)
+!ifeq use_dosemu dosbox
+    @set GMLLIB=$(%GMLLIB:..\=c:\)
+    @set GMLINC=$(%GMLINC:..\..\bld\=e:\)
+    @set GMLINC=$(%GMLINC:..\=c:\)
+!endif
+!ifeq verbose 1
+    @echo GMLLIB=$(%GMLLIB)
+    @echo GMLINC=$(%GMLINC)
+!endif
+!ifeq use_dosemu dosemu
+#-------------------------------------------------------
+# create DOSEMU batch file to run wgml utility
+#-------------------------------------------------------
+    @%create $(dosemu_wgml_batch)
+    @%append $(dosemu_wgml_batch) set GMLLIB=$(%GMLLIB)
+    @%append $(dosemu_wgml_batch) set GMLINC=$(%GMLINC)
+    @%append $(dosemu_wgml_batch) ..\gml\dos\wgml.exe "$(book_src) ( file $(optfile_wgml)"
+    @%append $(dosemu_wgml_batch) exitemu
+!else ifeq use_dosemu dosbox
+#-------------------------------------------------------
+# create DOSBOX batch file to run wgml utility
+#-------------------------------------------------------
+    @%create $(dosemu_wgml_batch)
+    @%append $(dosemu_wgml_batch) d:
+    @%append $(dosemu_wgml_batch) set GMLLIB=$(%GMLLIB)
+    @%append $(dosemu_wgml_batch) set GMLINC=$(%GMLINC)
+    @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe "$(book_src) ( file $(optfile_wgml)"
+    @%append $(dosemu_wgml_batch) exit
 !endif
     @%create $(optfile_wgml)
 !ifeq hbook cpplib
@@ -532,17 +569,13 @@ compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.idx @%create $*.idx
     @if not exist $*.tbl @%create $*.tbl
     @if not exist $*.kw @%create $*.kw
-    @set GMLINC=.;$(whelp_incs);$(gml_lib);$(hlp_incs);$(book_incs);$(gml_incs);
-    @set GMLINC=$(%GMLINC:/=\)
-!ifeq verbose 1
-    @echo GMLINC=$(%GMLINC)
-!endif
+    @set OWGMLINC=.;$(whelp_incs);$(gml_lib);$(hlp_incs);$(book_incs);$(gml_incs);
     @%make prepare_wgml_opts
-    -$(wgml) "$(book_src) ( file $(optfile_wgml)"
+    -$(WGMLCMD)
     @%make prepare_whpcvt_opts
     whpcvt -@ $(optfile_whpcvt) $*.ptf
     @%create sysusr02.gml
-    -$(wgml) "$(book_src) ( file $(optfile_wgml)"
+    -$(WGMLCMD)
     @if exist $*.cn1 @%erase $*.cn1
     @$(RENCMD) sysusr03.gml $*.cn1
     @if exist $*.h @%erase $*.h
@@ -613,16 +646,6 @@ compile_hpj_nt : .PROCEDURE
     @%append $^@ BrowseButtons()
     @%append $^@ CreateButton( "btn_index", "&Index", "JumpId( `$(hbook).hlp', `index_of_topics' )" )
     @%append $^@ CreateButton( "btn_up", "&Up", "Contents()" )
-
-#-------------------------------------------------------
-# create DOSEMU batch file to run wgml utility
-#-------------------------------------------------------
-$(dosemu_wgml_batch): $(__MAKEFILES__)
-    @%create $@
-    @%append $@ unix -s GMLLIB
-    @%append $@ unix -s GMLINC
-    @%append $@ ..\gml\dos\wgml.exe "%1 %2 %3 %4 %5 %6 %7 %8"
-    @%append $@ exitemu
 
 ####################################################
 

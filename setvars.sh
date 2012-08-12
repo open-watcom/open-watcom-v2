@@ -5,11 +5,7 @@
 # NOTE: Do not use this script directly, but copy it and
 #       modify it as necessary for your own use!!
 
-# Setup environment variables for Perforce
-export P4PORT=perforce.openwatcom.org:3488
-export P4USER=YourName
-export P4CLIENT=YOURCLIENT
-export P4PASSWD=YourPassword
+# Setup environment variables for CVS repository
 
 # root of source tree
 export OWROOT=`cd \`dirname -- $0\` && pwd`
