@@ -47,11 +47,12 @@
 
 #ifdef BOOTSTRAP
 
-    #define pick( id, en, jp )  {id, en},
 
     static struct idstr { int id; char *s; } StringTable[] = {
+        #define pick( id, en, jp )  {id, en},
         #include "wmake.msg"
         #include "usage.gh"
+        #undef pick
     };
 
     static int compar( const void *s1, const void *s2 ) {
@@ -66,10 +67,20 @@
 
 #define NIL_HANDLE      ((int)-1)
 
-#define FORMTABLE
+/* this is a table storing msg id's which need two parameters for PrtMsg.
+ * keep it in order.
+ */
 static  TABLE_TYPE  PARA_TABLE[] = {
-#include "mrcmsg.h"
-#undef  FORMTABLE
+/*        msgid                         msgtype */
+        { TARGET_ALREADY_M,             "EM" },
+        { SKIPPING_AFTER_ELSE,          "12" },
+        { NOT_ALLOWED_AFTER_ELSE,       "12" },
+        { NO_DEF_CMDS_FOR_MAKE,         "sE" },
+        { PTARG_IS_TYPE_M,              "EM" },
+        { IMP_ENV_M,                    "EM" },
+        { GETDATE_MSG,                  "sE" },
+        { END_OF_RESOURCE_MSG,          NULL } 
+};
 
 #ifndef BOOTSTRAP
 
@@ -121,7 +132,7 @@ int MsgInit( void )
         }
     }
     MsgShift = WResLanguage() * MSG_LANG_SPACING;
-    if( !initerror && !MsgGet( USAGE_BASE, name ) ) {
+    if( !initerror && !MsgGet( MSG_USAGE_BASE, name ) ) {
         initerror = 1;
     }
     if( initerror ) {

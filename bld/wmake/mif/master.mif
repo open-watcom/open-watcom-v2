@@ -33,8 +33,10 @@ wmake_autodepends = .AUTODEPEND
 .inc    : .
 .inc    : ../h
 
+!ifndef bootstrap
 !include $(orl_dir)/client.mif
 !include wres.mif
+!endif
 
 echo    = echo
 
@@ -49,6 +51,9 @@ extra_c_flags += -DDLLS_IMPLEMENTED
 !endif
 !ifdef cachestat
 extra_c_flags += -DCACHE_STATS
+!endif
+!ifdef bootstrap
+extra_c_flags += -DBOOTSTRAP
 !endif
 !ifdef wmake_causeway
 !ifeq host_cpu 386
@@ -76,6 +81,9 @@ ext = exe
 # LINKER FLAGS
 
 extra_l_flags = NAME $(xname).$(ext) OPTION MAP,statics sort
+!ifndef bootstrap
+extra_l_flags += LIBRARY {$(libs)}
+!endif
 
 # large stacks are necessary for !loaddll support
 # os2 seems to crash with 128k stack and wccd386 - mjc
@@ -96,35 +104,36 @@ extra_l_flags_dos_386 = option stack=4k
 !endif
 extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
 
+!ifndef bootstrap
 libs = $(wres_lib) $(orl_lib)
+!endif
 
 # systems where version resources must be added to .EXE
 version_res_nt_386 = exever.res
 
 $(xname).$(ext) :: usageend.gh wmake.res $(objs) $(libs) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-        $(linker) $(lflags) FILE {$(objs)} LIBRARY {$(libs)}
+        $(linker) $(lflags) FILE {$(objs)}
 !ifdef version_res_$(host_os)_$(host_cpu)
         $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
-
 #
 # If the linker files were different (i.e. if we needed a QNX version),
 # the copy would be replaced by a separate link. CSK
         wstrip -q -a -r $(xname).$(ext) . wmake.res
 
-wmake.res : ../h/wmake.rc mrcmsg.h usage.rc usagej.rc
+wmake.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh
         $(rc_aui) $(extra_rc_flags) $[@ -fo=$^@
 
-usage.rc : ../h/usage.sp
-        @%write usage.tmp -kIS_RC -kENGLISH -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $< -o "%n%n%n%n" $^@
+usage.gh : ../h/usage.sp
+        @%write usage.tmp -kIS_RC -kENGLISH -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< -o "%n%n%n%n" $^@
         wsplice @usage.tmp
 
-usagej.rc : ../h/usage.sp
-        @%write usage.tmp -kIS_RC -kJAPANESE -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" $< -o "%n%n%n%n" $^@
+usagej.gh : ../h/usage.sp
+        @%write usage.tmp -kIS_RC -kJAPANESE -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< -o "%n%n%n%n" $^@
         wsplice @usage.tmp
 
-usageend.gh : usage.rc usagej.rc
-        @%write usage.tmp -f "%+" usage.rc -o "$#define USAGE_LAST (USAGE_BASE+%$#)%n" $^@
+usageend.gh : usage.gh usagej.gh
+        @%write usage.tmp -f "%+" usage.gh -o "$#define MSG_USAGE_LAST (MSG_USAGE_BASE+%$#)%n" $^@
         wsplice @usage.tmp
 
 # usage.h : ..\h\usage.sp
@@ -134,8 +143,8 @@ usageend.gh : usage.rc usagej.rc
 # make the final program any larger.  Oh well - the end justifying the
 # means, I suppose. CSK
 #       wsplice -k$(OS) -kENGLISH -f "%s"..\h\usage.sp -o "%n%n%n%n%n%n%n%n%n%n" usage.h
-#       wsplice -f "$#define USAGE_LN_%$# (USAGE_BASE+%$#)%+" usage.h usage.h
-#       wsplice -f "%s%+"usage.h -o "$#define USAGE_LAST (USAGE_BASE+%$#)" usage.h
+#       wsplice -f "$#define USAGE_LN_%$# (MSG_USAGE_BASE+%$#)%+" usage.h usage.h
+#       wsplice -f "%s%+"usage.h -o "$#define MSG_USAGE_LAST (MSG_USAGE_BASE+%$#)" usage.h
 
 !include verrc.mif
 

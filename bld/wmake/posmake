@@ -81,11 +81,11 @@ wsplice: wsplice.o clibext.o
 	$(CC) -g wsplice.o clibext.o -o $@
 
 usage.gh : ../h/usage.sp wsplice
-	./wsplice -kIS_RC -kENGLISH -f '{%+(MSG_USE_E_BASE+%#-1), "%s"},' ../h/usage.sp $@
+	./wsplice -kIS_RC -kENGLISH -f 'pick(%+(MSG_USAGE_BASE+%#-1), "%s", "")' ../h/usage.sp $@
 
 usageend.gh: usage.gh wsplice
 	./wsplice usage.gh -o "%n%n%n%n" usage.rcp
-	./wsplice -f "%+" usage.rcp -o "#define USAGE_LAST (USAGE_BASE+%#)%n" $@
+	./wsplice -f "%+" usage.rcp -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n" $@
 	rm -f usage.rcp
 
 cretype : ../c/cretype.c

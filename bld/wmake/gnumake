@@ -3,7 +3,7 @@ CFLAGS = -funsigned-char -fno-common -g -O2 -Wall -Wno-switch
 DEFS = -D__LINUX__ -D__UNIX__= -DUNIX -Uunix -DBOOTSTRAP -DWMAKE
 
 $(OBJDIR)/%.o : %.c
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) -I$(OBJDIR) -o $@ $<
+        $(CC) -c $(CFLAGS) $(CPPFLAGS) -I$(OBJDIR) -o $@ $<
 
 vpath %.c c ../watcom/c ../builder/c
 
@@ -18,30 +18,30 @@ OBJS=$(CFILES:.c=.o)
 OBJS:=$(foreach i,$(OBJS),$(OBJDIR)/$i)
 
 $(OBJDIR)/wsplice: $(OBJDIR)/wsplice.o $(OBJDIR)/clibext.o
-	$(CC) -g $^ -o $@
+        $(CC) -g $^ -o $@
 
 $(OBJDIR)/usage.gh : h/usage.sp $(OBJDIR)/wsplice
-	$(OBJDIR)/wsplice -kIS_RC -kENGLISH -f '{%+(MSG_USE_E_BASE+%#-1), "%s"},' $< $@
+        $(OBJDIR)/wsplice -kIS_RC -kENGLISH -f 'pick(%+(MSG_USAGE_BASE+%#-1), "%s", "")' $< $@
 
 $(OBJDIR)/usageend.gh: $(OBJDIR)/usage.gh $(OBJDIR)/wsplice
-	$(OBJDIR)/wsplice $< -o "%n%n%n%n" $(OBJDIR)/usage.rcp
-	$(OBJDIR)/wsplice -f "%+" $(OBJDIR)/usage.rcp -o "#define USAGE_LAST (USAGE_BASE+%#)%n" $@
-	rm -f $(OBJDIR)/usage.rcp
+        $(OBJDIR)/wsplice $< -o "%n%n%n%n" $(OBJDIR)/usage.rcp
+        $(OBJDIR)/wsplice -f "%+" $(OBJDIR)/usage.rcp -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n" $@
+        rm -f $(OBJDIR)/usage.rcp
 
 $(OBJDIR)/cretype : cretype.c
-	$(CC) -o $@ $<
+        $(CC) -o $@ $<
 
 $(OBJDIR)/isarray.gh : $(OBJDIR)/cretype
-	$< > $@
+        $< > $@
 
 $(OWBINDIR)/wmake: $(OBJDIR)/wmake
-	cp $< $@
+        cp $< $@
 
 $(OBJDIR)/wmake: $(OBJDIR)/usageend.gh $(OBJDIR)/isarray.gh $(OBJS)
-	$(CC) -g $(OBJS) -o $@
+        $(CC) -g $(OBJS) -o $@
 
 $(OBJDIR):
-	mkdir $(OBJDIR)
+        mkdir $(OBJDIR)
 
 clean:
-	rm -f $(OBJDIR)/*.o $(OBJDIR)/*.gh
+        rm -f $(OBJDIR)/*.o $(OBJDIR)/*.gh

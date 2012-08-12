@@ -47,7 +47,7 @@
 #define MSG_USAGE_LN_11                 26
 #define MSG_USAGE_LN_12                 27
 
-#define MSG_USAGE_LAST          27
+#define MSG_USAGE_LAST                  27
 
 /* messages issued by BDIFF only */
 
@@ -89,9 +89,6 @@
 
 #define MSG_LANG_SPACING    1000
 
-#define MSG_USE_E_BASE  (MSG_USAGE_LN_1 + RLE_ENGLISH*MSG_LANG_SPACING)
-#define MSG_USE_J_BASE  (MSG_USAGE_LN_1 + RLE_JAPANESE*MSG_LANG_SPACING)
-
 /* Function prototypes */
 
 /* From msg.c */
@@ -102,19 +99,21 @@ void MsgFini( void );
 void Input( MY_FILE *file, void *tmp, foff off, size_t len );
 void Output( MY_FILE *file, void *tmp, foff off, size_t len );
 
-typedef enum { PATCH_RET_OKAY,
-            PATCH_NO_MEMORY,
-        PATCH_BAD_PATCH_FILE,
-        PATCH_CANT_FIND_PATCH,
-        PATCH_BAD_PATCH,
-        PATCH_ALREADY_PATCHED,
-        PATCH_BAD_LENGTH,
-        PATCH_CANT_RENAME,
-        PATCH_CANT_WRITE,
-        PATCH_CANT_READ,
-        PATCH_IO_ERROR,
-        PATCH_CANT_OPEN_FILE,
-        PATCH_CANT_GET_ATTRIBUTES,
-        PATCH_RET_CANCEL,
-        PATCH_BAD_CHECKSUM } PATCH_RET_CODE;
+typedef enum {
+    PATCH_RET_OKAY,
+    PATCH_NO_MEMORY,
+    PATCH_BAD_PATCH_FILE,
+    PATCH_CANT_FIND_PATCH,
+    PATCH_BAD_PATCH,
+    PATCH_ALREADY_PATCHED,
+    PATCH_BAD_LENGTH,
+    PATCH_CANT_RENAME,
+    PATCH_CANT_WRITE,
+    PATCH_CANT_READ,
+    PATCH_IO_ERROR,
+    PATCH_CANT_OPEN_FILE,
+    PATCH_CANT_GET_ATTRIBUTES,
+    PATCH_RET_CANCEL,
+    PATCH_BAD_CHECKSUM
+} PATCH_RET_CODE;
 #endif

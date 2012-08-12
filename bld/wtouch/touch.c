@@ -197,7 +197,7 @@ banner3a,
         writeStr( *text++ );
         newLine();
     }
-    for( i = MSG_USE_BASE;; i++ ) {
+    for( i = MSG_USAGE_BASE;; i++ ) {
         MsgGet( i, msgbuff );
         if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) ) break;
         writeStr( msgbuff );

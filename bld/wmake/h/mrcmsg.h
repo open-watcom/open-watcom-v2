@@ -35,7 +35,6 @@
  * at the end of this file so that the resource functions know what kinds of
  * parameters are in the message
  */
-#ifndef FORMTABLE
 
 /*
  * Error/warning messages - please do not change the ordering of any of these
@@ -239,7 +238,7 @@
 #define SIG_ERR_14                      225
 #define SIG_ERR_15                      226
 
-#define USAGE_BASE                      230
+#define MSG_USAGE_BASE                  230
 
 
 // #define USAGE_LN_0                   160
@@ -250,10 +249,7 @@
 
 #define MSG_LANG_SPACING                1000
 
-#define MSG_USE_E_BASE  (USAGE_BASE + RLE_ENGLISH*MSG_LANG_SPACING)
-#define MSG_USE_J_BASE  (USAGE_BASE + RLE_JAPANESE*MSG_LANG_SPACING)
-
-#define END_OF_RESOURCE_MSG             USAGE_LAST
+#define END_OF_RESOURCE_MSG             MSG_USAGE_LAST
 
 #define MAX_RESOURCE_SIZE               128
 
@@ -271,16 +267,3 @@ extern int      MsgReOrder( int resourceid, char *buff, char **paratype );
 extern BOOLEAN  ResAutoDep( char *name, time_t stamp, BOOLEAN (*chk)(time_t,time_t), time_t *pmax_time );
 
 // extern long FileShift; /* This is defined in %devdir%\sdk\rc\wres\c\loadstr.c */ incompatible with mautores.c W.Briscoe 20031106
-#else
-/* this is a table storing msg id's which need two parameters for PrtMsg.
- * keep it in order. see PARA_TABLE in mrcmsg.c.
- *        msgid                         msgtype */
-        { TARGET_ALREADY_M,             "EM" },
-        { SKIPPING_AFTER_ELSE,          "12" },
-        { NOT_ALLOWED_AFTER_ELSE,       "12" },
-        { NO_DEF_CMDS_FOR_MAKE,         "sE" },
-        { PTARG_IS_TYPE_M,              "EM" },
-        { IMP_ENV_M,                    "EM" },
-        { GETDATE_MSG,                  "sE" },
-        { END_OF_RESOURCE_MSG,          NULL } };
-#endif

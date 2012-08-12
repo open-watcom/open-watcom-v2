@@ -29,38 +29,49 @@
 ****************************************************************************/
 
 
-#include "banner.h"
+/*
+ * See msg.c for a description of the % options.
+ *
+ * Be sure to keep these strings, including the substitutions under 250 bytes
+ *
+ * These strings are the banner and messages for the debugging version, so
+ * they are here and not in the resource file.
+ */
 
-#define YES_CHAR    'Y' /* must be upper case */
+/* banner */
 
-enum MsgClass {
-    NUM_MSK     = 0x03ff,   /* these are valid msg numbers          */
+pick( BANNER = END_OF_RESOURCE_MSG,
+    banner1("Open Watcom Make",_WMAKE_VERSION_) "\n" banner2("1988") "\n" banner3 "\n" banner3a )
 
-    INF         = 0x0000,   /* an inform message - always printed   */
-    WRN         = 0x0400,   /* Warning(Wnn): msg                    */
-    ERR         = 0x0800,   /* Error(Enn): msg                      */
-    FTL         = 0x0C00,   /* Error(Fnn): msg - aborts execution   */
-    CLASS_MSK   = 0x0C00,
+/*
+ * All messages beyond here appear only under certain conditions in debugging
+ * versions of WMake...
+ */
 
+#ifndef NDEBUG
+pick( ASSERTION_FAILED,         "Assertion %E in %s(%d) failed" )
+#endif
 
-    PRNTSTR     = 0x1000,   /* print first arg as a string. used for*/
-                                /* printing ANYTHING greater than 256   */
-    LOC         = 0x2000,   /* print file and line info if possible */
-    NEOL        = 0x4000,   /* suppress the automatic end of line   */
+#ifdef TRACK
+pick( UNABLE_TO_TRACK,          "Unable to track memory!" )
+pick( HEAP_IS_DAMAGED,          "%s heap is damaged" )
+pick( BAD_NODE_IN_HEAP,         "Bad node in %s heap" )
+#endif
 
-    DBG         = 0x8000,   /* only if Glob.debug                   */
-};
+#ifdef DEVELOPMENT
+pick( INVALID_TOKEN_IN,         "Invalid token 0x%x in %s" )
+pick( INTERPRETING,             "Interpreting %s" )
+pick( CHUNKS_UNFREED,           "%d chunks unfreed" )
+#endif
 
+#ifdef CACHE_STATS
+/* note %l is only available if CACHE_STATS is defined */
+pick( CACHING_DIRECTORY,        "Caching Directory %E..." )
+pick( CACHERELEASE,             "Releasing Directory Cache" )
+pick( CACHE_FILES_BYTES,        "\t%l files, %l bytes, %l hits" )
+pick( HIT_ON_HASH,              "\thit %d" )
+pick( CACHE_FREED_BYTES,        "\t%l bytes freed" )
+pick( CACHE_MEM,                "\tNot enough memory to cache directory" )
+#endif
 
-enum {
-    #define pick( name, string ) name,
-    #include "_msg.h"
-    #undef pick
-};
-
-extern size_t   FmtStr( char *buf, const char *fmt, ... );
-extern void     PrtMsg( enum MsgClass num, ... );
-extern void     Usage( void );
-extern BOOLEAN  GetYes( enum MsgClass querymsg );
-extern void     LogInit( const char *logname );
-extern void     LogFini( void );
+pick( MSG_MAX,                  NULL )

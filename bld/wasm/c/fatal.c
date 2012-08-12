@@ -47,9 +47,9 @@ typedef struct {
 } Msg_Struct;
 
 static const Msg_Struct Fatal_Msg[] = {
-#undef pick
-#define pick( cmd, number, msg, act, ret )    { number, msg, act, ret }
-#include "fatald.h"
+    #define pick( cmd, number, msg, act, ret )    { number, msg, act, ret }
+    #include "fatald.h"
+    #undef pick
 };
 
 extern void             ObjRecFini( void );

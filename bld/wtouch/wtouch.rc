@@ -12,19 +12,16 @@
 STRINGTABLE
 BEGIN
 
-#undef pick
 #define pick( code, string1, string2 )  \
         (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
-
 #include "wtouch.msg"
-
+#include "usage.gh"
 #undef pick
+
 #define pick( code, string1, string2 )  \
         (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
-
 #include "wtouch.msg"
-
-#include "usage.rc"
-#include "usagej.rc"
+#include "usagej.gh"
+#undef pick
 
 END

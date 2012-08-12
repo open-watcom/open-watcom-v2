@@ -352,7 +352,7 @@ extra_l_flags_os2_i86 = op stack=16k, newfile
 extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
 extra_l_flags_qnx_386 = opt stack = 0x8000, offset=0x9000, resource=..\wvqnx.u
 extra_l_flags_qnx = $(extra_l_flags_qnx_$(host_cpu))
-extra_l_flags_rdos = libpath $(clib_dir)/library/rdos.386/mf_r libpath $(mathlib_dir)/library/msdos.387/mf_r libpath $(emu386)/stub386
+extra_l_flags_rdos = libpath $(clib_dir)/library/rdos.386/mf_r libpath $(mathlib_dir)/library/msdos.387/mf_r libpath $(emu387_dir)/stub386
 ############
 
 # resources
@@ -561,7 +561,7 @@ rcfiles = &
     japstk.dlg &
     japhis.dlg
 
-wvui.res : $(hdir)/wvui.rc auistr.gh _guimsgs.gh $(rcfiles) usage.rc usagej.rc .autodepend
+wvui.res : $(hdir)/wvui.rc auistr.gh _guimsgs.gh $(rcfiles) usage.gh usagej.gh .autodepend
         $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
 
 wvntdll.res : $(hdir)/strings.rc litdef.gh .autodepend
@@ -679,12 +679,12 @@ wsplice_keys = -kIS_RC -k$(host_os) -kHIDDEN
 wsplice_keys = -kIS_RC -k$(host_os)
 !endif
 
-usage.rc : $(hdir)/usage.sp
-        @%write usage.tmp -kENGLISH $(wsplice_keys) -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $< $^@
+usage.gh : $(hdir)/usage.sp
+        @%write usage.tmp -kENGLISH $(wsplice_keys) -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $^@
         wsplice @usage.tmp
 
-usagej.rc : $(hdir)/usage.sp
-        @%write usagej.tmp -kJAPANESE $(wsplice_keys) -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" $< $^@
+usagej.gh : $(hdir)/usage.sp
+        @%write usagej.tmp -kJAPANESE $(wsplice_keys) -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $^@
         wsplice @usagej.tmp
 
 usage.u : $(hdir)/usage.sp

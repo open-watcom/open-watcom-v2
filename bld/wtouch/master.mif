@@ -29,15 +29,15 @@ $(proj_name).exe : $(dependants) $(version_res_$(host_os)_$(host_cpu))
 !endif
         wstrip -q -a -r $(proj_name).exe . $(proj_name).res
 
-$(proj_name).res : $(proj_name).rc $(proj_name).msg usage.rc usagej.rc msg.gh
+$(proj_name).res : $(proj_name).rc $(proj_name).msg usage.gh usagej.gh msg.gh
         $(rc_aui) $[@ -fo=$^@
 
-usage.rc : usage.sp
-        @%write $^&.tmp -kIS_RC -kENGLISH -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $< $^@
+usage.gh : usage.sp
+        @%write $^&.tmp -kIS_RC -kENGLISH -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $^@
         wsplice @$^&.tmp
 
-usagej.rc : usage.sp
-        @%write $^&.tmp -kIS_RC -kJAPANESE -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" $< $^@
+usagej.gh : usage.sp
+        @%write $^&.tmp -kIS_RC -kJAPANESE -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $^@
         wsplice @$^&.tmp
 
 msg.gh : $(proj_name).msg

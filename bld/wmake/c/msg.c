@@ -59,15 +59,11 @@ typedef union msg_arg {
 STATIC MSG_ARG  ArgValue[2];
 STATIC int      USEARGVALUE = 0;    /* set to non_zero if ArgValue is used */
 
-/*
- * now we do some pre-processor magic, and build msgText[]
- */
-#undef pick
-#define pick( num, string ) string
-
 STATIC const char FAR * const FAR msgText[] = {
-#include "msg.h"
-
+    #define pick( num, string ) string,
+    #include "_msg.h"
+    #undef pick
+};
 
 STATIC void reOrder( va_list args, char *paratype )
 /*************************************************/
@@ -538,7 +534,7 @@ void Usage( void )
     char        msgbuff[MAX_RESOURCE_SIZE];
     int         i;
 
-    for( i = USAGE_BASE;; i++ ) {
+    for( i = MSG_USAGE_BASE;; i++ ) {
         MsgGet( i, msgbuff );
         if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) ) {
             break;

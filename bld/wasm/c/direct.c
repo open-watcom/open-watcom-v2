@@ -88,16 +88,16 @@ typedef struct {
 } last_seg_info;        // information about last opened simplified segment
 
 enum {
-#undef pick
-#define pick(token,string,value,init_val)   token
-#include "directd.h"
+    #define pick(token,string,value,init_val)   token
+    #include "directd.h"
+    #undef pick
 };
 
 
 static typeinfo TypeInfo[] = {
-#undef pick
-#define pick(token,string,value,init_val)   { string, value, init_val }
-#include "directd.h"
+    #define pick(token,string,value,init_val)   { string, value, init_val }
+    #include "directd.h"
+    #undef pick
 };
 
 #define LOCAL_DEFAULT_SIZE      2

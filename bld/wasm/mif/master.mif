@@ -106,8 +106,10 @@ proj_obj += $(trmem_objs)
 proj_obj += clibext.obj
 !endif
 
-#explicit rules
-######
+depend_objs = asmops.gh asmopsd.gh wmpmsg.gh
+!ifdef use_text_msgs
+depend_objs += usage.gh
+!endif
 
 !ifndef use_text_msgs
 res_objs = $(name).res
@@ -118,7 +120,10 @@ res_objs = $(name).res
 version_res_nt_386 = exever.res
 !endif
 
-$(name).exe : usage.msg asmops.gh asmopsd.gh wmpmsg.gh $(res_objs) $(proj_obj) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+#explicit rules
+######
+
+$(name).exe : $(depend_objs) $(res_objs) $(proj_obj) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifdef bootstrap
         $(cl) -o $@ $(proj_obj) $(libs)
 !else
@@ -146,7 +151,7 @@ $(name).exe : usage.msg asmops.gh asmopsd.gh wmpmsg.gh $(res_objs) $(proj_obj) $
 ###################################################################
 # resource stuff
 
-$(name).res : ../h/$(proj_name).rc usage.rc usagej.rc msg.gh wasmmsg.gh wmpmsg.gh
+$(name).res : ../h/$(proj_name).rc usage.gh usagej.gh msg.gh wasmmsg.gh wmpmsg.gh
         $(rc_aui) -D_STANDALONE_ $[@ -fo=$^@
 
 msg.gh : ../h/asmshare.msg
@@ -158,20 +163,12 @@ wasmmsg.gh : ../h/wasm.msg
 wmpmsg.gh : ../h/womp.msg
         $(awk) -v base=MSG_WOMP_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
 
-usage.rc : usage.u
-        @%write $^&.tmp -t8 -f "(MSG_USE_E_BASE+%$#%+), \"%s\"" $< $^@
+usage.gh : usage.u
+        @%write $^&.tmp -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $< $^@
         wsplice @$^&.tmp
 
-usagej.rc : usagej.u
-        @%write $^&.tmp -t8 -f "(MSG_USE_J_BASE+%$#%+), \"%s\"" $< $^@
-        wsplice @$^&.tmp
-
-usage.msg : usage.u
-        @%write $^&.tmp -t8 -f "pick((MSG_USE_BASE+%$#%+), \"%s\")" $< $^@
-        wsplice @$^&.tmp
-
-usagej.msg : usagej.u
-        @%write $^&.tmp -t8 -f "pick((MSG_USE_BASE+%$#%+), \"%s\")" $< $^@
+usagej.gh : usagej.u
+        @%write $^&.tmp -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $^@
         wsplice @$^&.tmp
 
 ./optencod.exe: $(fe_misc_dir)/c/optencod.c

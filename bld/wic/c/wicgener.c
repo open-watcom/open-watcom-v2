@@ -388,7 +388,7 @@ void checkMemory(void) {
 /*------------------------ Exit -----------------------------------*/
 
 void printUsageAndExit(void) {
-    int i = USAGE_MSG_BASE;
+    int i = MSG_USAGE_BASE;
     int j = 0;
     char resStr[MAX_RESOURCE_SIZE];
 

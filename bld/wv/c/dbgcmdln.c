@@ -384,7 +384,7 @@ static void ProcOptList( int pass )
         curr = buff;
 #ifndef __GUI__
         if( CurrChar == '?' ) {
-            PrintUsage( MSG_USE_BASE );
+            PrintUsage( MSG_USAGE_BASE );
             StartupErr( "" );
         }
 #endif
@@ -502,7 +502,7 @@ static void ProcOptList( int pass )
             break;
         case OPT_HELP:
 #ifndef __GUI__
-            PrintUsage( MSG_USE_BASE );
+            PrintUsage( MSG_USAGE_BASE );
             StartupErr( "" );
 #endif
             break;

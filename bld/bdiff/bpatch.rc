@@ -4,23 +4,24 @@
 STRINGTABLE
 BEGIN
 
-#undef pick
 #define pick( code, string1, string2 )  \
         (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
-
 #include "bpatch.msg"
-
+#if defined( BPATCH )
+#include "pusage.gh"
+#else
+#include "dusage.gh"
+#endif
 #undef pick
+
 #define pick( code, string1, string2 )  \
         (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
-
 #include "bpatch.msg"
-
 #if defined( BPATCH )
-#include "pusage.rc"
-#include "pusagej.rc"
+#include "pusagej.gh"
 #else
-#include "dusage.rc"
+#include "dusage.gh"
 #endif
+#undef pick
 
 END

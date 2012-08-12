@@ -100,11 +100,8 @@
 
 typedef int     WicErrors;  // This used to be enum
 
-#define USAGE_MSG_BASE             400
+#define MSG_USAGE_BASE             400
 
-#define MSG_LANG_SPACING    1000
+#define MSG_LANG_SPACING           1000
 
-#define USAGEE_MSG_BASE      (USAGE_MSG_BASE + RLE_ENGLISH*MSG_LANG_SPACING)
-#define USAGEJ_MSG_BASE      (USAGE_MSG_BASE + RLE_JAPANESE*MSG_LANG_SPACING)
-
-#define MAX_RESOURCE_SIZE       200  // Max size of any string
+#define MAX_RESOURCE_SIZE          200  // Max size of any string

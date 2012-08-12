@@ -33,9 +33,9 @@
 #define _FATAL_H_
 
 enum {
-#undef pick
-#define pick( cmd, number, msg, act, ret )  cmd
-#include "fatald.h"
+    #define pick( cmd, number, msg, act, ret )  cmd
+    #include "fatald.h"
+    #undef pick
 };
 
 /* number = number of arguments that follow; ret = return value */

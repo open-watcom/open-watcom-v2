@@ -73,7 +73,7 @@ extern void             AsmNote( int level, int msgnum, ... );
     #define MSG_SHARE_RC_BASE   1
     #define MSG_WOMP_RC_BASE    200
     #define MSG_WASM_RC_BASE    500
-    #define MSG_USE_BASE        900
+    #define MSG_USAGE_BASE      900
 
     extern int MsgInit( void );
     extern int MsgGet( int, char * );
@@ -83,23 +83,20 @@ extern void             AsmNote( int level, int msgnum, ... );
 
 #if defined( USE_TEXT_MSGS )
 
-#define pick(num,etext,jtext) num,
 enum {
+#define pick(num,etext,jtext) num,
     START_BASE1 = MSG_SHARE_RC_BASE - 1,
 #include "../h/asmshare.msg"
     START_BASE2 = MSG_WOMP_RC_BASE - 1,
 #include "../h/womp.msg"
     START_BASE3 = MSG_WASM_RC_BASE - 1,
 #include "../h/wasm.msg"
-};
 #undef pick
+};
 
 #else
 
     #define MSG_LANG_SPACING    1000
-
-    #define MSG_USE_E_BASE      (MSG_USE_BASE + RLE_ENGLISH*MSG_LANG_SPACING)
-    #define MSG_USE_J_BASE      (MSG_USE_BASE + RLE_JAPANESE*MSG_LANG_SPACING)
 
     #include "wmpmsg.gh"
     #include "msg.gh"
@@ -122,11 +119,9 @@ enum {
 #else
     /* set up the enum for error messages */
 
-    #undef pick
-    #define pick(code,msg,japanese_msg)   asmerr(code,msg),
-
+    #define pick(code,emsg,jmsg)   asmerr(code,emsg),
   #ifndef asmerr
-    #define asmerr(code,msg)   code
+    #define asmerr(code,emsg)   code
     enum    asmerr_codes {
   #else
     static char const ASMFAR * const ASMFAR AsmErrMsgs[] = {

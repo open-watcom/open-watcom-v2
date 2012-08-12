@@ -1,9 +1,19 @@
 #include "../../brinfo/merge/res/wresdefn.h"
 #include "wdmsg.h"
+#include "wreslang.h"
 #include "wv.rc"
 
 STRINGTABLE
 BEGIN
-    #include "usage.rc"
-    #include "usagej.rc"
+
+#define pick( code, string1, string2 )  \
+        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
+#include "usage.gh"
+#undef pick
+
+#define pick( code, string1, string2 )  \
+        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
+#include "usagej.gh"
+#undef pick
+
 END

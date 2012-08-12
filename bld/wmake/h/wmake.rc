@@ -36,20 +36,17 @@ BEGIN
  * processing when we must choose one language or another.
  */
 
-#undef pick
 #define pick( code, string1, string2 )  \
         (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
-
 #include "wmake.msg"
-
+#include "usage.gh"
 #undef pick
+
 #define pick( code, string1, string2 )  \
         (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
-
 #include "wmake.msg"
-
-#include "usage.rc"
-#include "usagej.rc"
+#include "usagej.gh"
+#undef pick
 
 /*
  * help page ( max 32 lines ( 0 - 31 ) )

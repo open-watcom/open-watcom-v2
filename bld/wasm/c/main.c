@@ -551,7 +551,7 @@ static void set_some_kinda_name( char token, char *name )
 static void usage_msg( void )
 /***************************/
 {
-    PrintfUsage( MSG_USE_BASE );
+    PrintfUsage( MSG_USAGE_BASE );
     exit(1);
 }
 

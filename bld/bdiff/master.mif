@@ -100,17 +100,17 @@ bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
 
 # resources
 ############
-pusage.rc : ../usage.sp
-        wsplice -kBPATCH -kENGLISH -t8 -f "%+MSG_USE_E_BASE-1+%$#, \"%s\"" $[@ $^@
+pusage.gh : ../usage.sp
+        wsplice -kBPATCH -kENGLISH -t8 -f "pick(%+MSG_USAGE_LN_1-1+%$#, \"%s\", \"\")" $[@ $^@
 
-pusagej.rc : ../usage.sp
-        wsplice -kBPATCH -kJAPANESE -t8 -f "%+MSG_USE_J_BASE-1+%$#, \"%s\"" $[@ $^@
+pusagej.gh : ../usage.sp
+        wsplice -kBPATCH -kJAPANESE -t8 -f "pick(%+MSG_USAGE_LN_1-1+%$#, \"\", \"%s\")" $[@ $^@
 
-dusage.rc : ../usage.sp
-        wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 -f "%+MSG_USAGE_LN_%$#, \"%s\"" $[@ $^@
+dusage.gh : ../usage.sp
+        wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(%+MSG_USAGE_LN_%$#, \"%s\", \"%s\")" $[@ $^@
 
-bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.rc pusagej.rc
+bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
         $(rc_aui) -I.. -DBPATCH $[@ -fo=$^@
 
-bdiff.res : ../bpatch.rc dusage.rc ../h/bpatch.h
+bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
         $(rc_aui) -I.. -DBDIFF $[@ -fo=$^@

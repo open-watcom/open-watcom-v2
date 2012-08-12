@@ -19,7 +19,8 @@ Options:  ('/' may be substituted for '-', and '#' for '=')
 -p print the dependency tree, macro definitions, and extension information
 -q query mode (commands not executed)    -r  ignore built-in definitions
 -s silent mode (do not print commands)   -sn noisy mode (print all commands)
--t touch files (commands not executed)   -u  UNIX compatibility mode
+-t touch files (commands not executed)
+-u  UNIX compatibility mode
 -v verbose listing of inline files       -y  show why a target will be updated
 -z do not erase files (no prompt)
 macro=text      overrides the definition of 'macro' with the value 'text'

@@ -36,7 +36,6 @@ extra_c_flags_wicgener = $(trmem_cover_cflags)
 
 .h      : ../h
 .c      : ../c;$(trmem_dir)
-.rc     : ../rc
 
 inc_dirs = -I"../h"
 
@@ -62,7 +61,7 @@ $(name).exe : $(objs) $(extra_stuff) wic.res $(wres_lib)
         $(linker) $(lflags) @$^&.lnk
         $(w32bind) $^&.rex $@ $(os2ldr)
         @rm -f $^&.rex
-!else	
+!else
         @%append $^&.lnk name $@
         $(linker) $(lflags) @$^&.lnk
 !endif
@@ -70,13 +69,13 @@ $(name).exe : $(objs) $(extra_stuff) wic.res $(wres_lib)
 
 ##############################################################################
 
-wic.res: ../rc/wic.rc usagee.rc usagej.rc #../rc/messages.rc
+wic.res: ../rc/wic.rc usagee.gh usagej.gh #../rc/messages.rc
     $(rc_aui) $[@ -fo=$^@
 
-usagee.rc:  ../rc/usage.sp
-    @%write usagee.tmp -kENGLISH -t8 -f "%+(USAGEE_MSG_BASE+%$#-1), \"%s\"" $< $^@
+usagee.gh:  ../rc/usage.sp
+    @%write usagee.tmp -kENGLISH -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $^@
     wsplice @usagee.tmp
 
-usagej.rc:  ../rc/usage.sp
-    @%write usagej.tmp -kJAPANESE -t8 -f "%+(USAGEJ_MSG_BASE+%$#-1), \"%s\"" $< $^@
+usagej.gh:  ../rc/usage.sp
+    @%write usagej.tmp -kJAPANESE -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $^@
     wsplice @usagej.tmp
