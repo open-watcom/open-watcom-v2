@@ -1,0 +1,350 @@
+#include <os2.h>
+#include "test.h"
+// #include "sty_dlg.h"
+
+//ICON IDR_MAIN test.ico
+//ICON IDR_ICON1 test1.ico
+//ICON IDR_ICON2 test2.ico
+//ICON IDR_ICON3 sty_ico3.ico
+//ICON IDR_ICON4 sty_ico4.ico
+
+BITMAP IDR_BITMAP test.bmp
+
+MENU IDR_MAIN
+{
+   SUBMENU     "~File", IDM_FILE, MIS_TEXT
+   {
+      MENUITEM    "~New",             IDM_FILENEW,        MIS_TEXT
+      MENUITEM    "~Open...",         IDM_FILEOPEN,       MIS_TEXT
+      MENUITEM SEPARATOR
+      MENUITEM    "~Save",            IDM_FILESAVE,       MIS_TEXT
+      MENUITEM    "Save ~as...",      IDM_FILESAVEAS,     MIS_TEXT
+   }
+
+   SUBMENU     "~Edit", IDM_EDIT, MIS_TEXT
+   {
+      MENUITEM    "~Undo\tAlt+Backspace",     IDM_EDITUNDO,   MIS_TEXT
+      MENUITEM SEPARATOR
+      MENUITEM    "Cu~t\tShift+Delete",       IDM_EDITCUT,    MIS_TEXT
+      MENUITEM    "~Copy\tCtrl+Insert",       IDM_EDITCOPY,   MIS_TEXT
+      MENUITEM    "~Paste\tShift+Insert",     IDM_EDITPASTE,  MIS_TEXT
+      MENUITEM SEPARATOR
+      MENUITEM    "Cl~ear\tDelete",           IDM_EDITCLEAR,  MIS_TEXT
+   }
+
+   SUBMENU     "~Options", IDM_OPTIONS, MIS_TEXT
+   {
+      SUBMENU     "~Foreground color",  IDM_OPTIONSFORECOLOR, MIS_TEXT
+      {
+         MENUITEM    "~Black",   IDM_OPTIONSFORECOLORBLACK,  MIS_TEXT
+         MENUITEM    "B~lue",    IDM_OPTIONSFORECOLORBLUE,   MIS_TEXT
+         MENUITEM    "~Red",     IDM_OPTIONSFORECOLORRED,    MIS_TEXT
+         MENUITEM    "~Default", IDM_OPTIONSFORECOLORDEFAULT,MIS_TEXT
+      }
+
+      SUBMENU     "~Background color",  IDM_OPTIONSBACKCOLOR, MIS_TEXT
+      {
+         MENUITEM    "~Yellow",  IDM_OPTIONSBACKCOLORYELLOW, MIS_TEXT
+         MENUITEM    "~Pink",    IDM_OPTIONSBACKCOLORPINK,   MIS_TEXT
+         MENUITEM    "~Cyan",    IDM_OPTIONSBACKCOLORCYAN,   MIS_TEXT
+         MENUITEM    "~Default", IDM_OPTIONSBACKCOLORDEFAULT,MIS_TEXT
+      }
+
+      MENUITEM SEPARATOR
+      MENUITEM    "F~ont...\tCtrl+F",      IDM_OPTIONSFONT,     MIS_TEXT
+   }
+
+  SUBMENU     "~Demo",    IDM_DEMO, MIS_TEXT
+  {
+     SUBMENU     "~Dialog controls",     IDM_DEMODLG,    MIS_TEXT
+     {
+        MENUITEM    "~Buttons...",      IDM_DEMODLGBUTTONS,     MIS_TEXT
+        MENUITEM    "~List boxes...",   IDM_DEMODLGLISTBOXES,   MIS_TEXT
+        MENUITEM    "~Combo boxes...",  IDM_DEMODLGCOMBOBOXES,  MIS_TEXT
+        MENUITEM    "~Entry fields...", IDM_DEMODLGENTRYFIELDS, MIS_TEXT
+        MENUITEM    "~Static...",       IDM_DEMODLGSTATIC,      MIS_TEXT
+        MENUITEM    "~Presentation parameters...",   IDM_DEMODLGPP,  MIS_TEXT
+        MENUITEM SEPARATOR
+        SUBMENU     "C~ua controls",    IDM_DEMOCUACONTROLS,    MIS_TEXT
+        {
+           MENUITEM    "Sl~iders...",      IDM_DEMODLGSLIDER,     MIS_TEXT
+           MENUITEM    "S~pin Buttons...", IDM_DEMODLGSPINBUTTON, MIS_TEXT
+           MENUITEM    "~Notebook...",     IDM_DEMODLGNOTEBOOK,   MIS_TEXT
+           MENUITEM    "~Value Set...",    IDM_DEMODLGVALUESET,   MIS_TEXT
+           MENUITEM    "C~ontainer...",    IDM_DEMODLGCONTAINER,  MIS_TEXT
+        }
+     }
+
+     SUBMENU     "~Message boxes",     IDM_DEMOMSGBOX,    MIS_TEXT
+     {
+        MENUITEM    "~Ok Button...",  IDM_DEMOMSGBOXOK, MIS_TEXT
+        MENUITEM    "O~k/Cancel Buttons...", IDM_DEMOMSGBOXOKCANCEL, MIS_TEXT
+        MENUITEM    "~Yes/No Buttons...", IDM_DEMOMSGBOXYESNO, MIS_TEXT
+        MENUITEM    "Ye~s/No/Cancel Buttons...", IDM_DEMOMSGBOXYESNOCANCEL, MIS_TEXT
+        MENUITEM    "~Retry/Cancel Buttons...",   IDM_DEMOMSGBOXRETRYCANCEL,  MIS_TEXT
+        MENUITEM    "~Abort/Retry/Ignore Buttons...",   IDM_DEMOMSGBOXABORT,  MIS_TEXT
+        MENUITEM    "~Enter Button...",   IDM_DEMOMSGBOXENTER,  MIS_TEXT
+        MENUITEM    "E~nter/Cancel Buttons...",   IDM_DEMOMSGBOXENTERCANCEL,  MIS_TEXT
+        MENUITEM SEPARATOR
+        MENUITEM    "~Query Icon...",   IDM_DEMOMSGBOXQUERY, MIS_TEXT
+        MENUITEM    "~Warning Icon...",   IDM_DEMOMSGBOXWARNING, MIS_TEXT
+        MENUITEM    "~Information Icon...",   IDM_DEMOMSGBOXINFO, MIS_TEXT
+        MENUITEM    "~Action...",   IDM_DEMOMSGBOXCRITICAL, MIS_TEXT
+        MENUITEM SEPARATOR
+        MENUITEM    "~Application modal...", IDM_DEMOMSGBOXAPP, MIS_TEXT
+        MENUITEM    "~System modal...", IDM_DEMOMSGBOXSYS, MIS_TEXT
+        MENUITEM    "~Help...",  IDM_DEMOMSGBOXHELP,    MIS_TEXT
+     }
+  }
+
+  SUBMENU     "~Help",    IDM_HELP,   MIS_TEXT
+  {
+     MENUITEM    "Help ~index",          IDM_HELPINDEX,      MIS_TEXT
+     MENUITEM    "~General help",        IDM_HELPGENERAL,    MIS_TEXT
+     MENUITEM    "~Keys help",           IDM_HELPKEYS,       MIS_TEXT
+     MENUITEM    "~Using help",          IDM_HELPUSINGHELP,  MIS_TEXT
+     MENUITEM SEPARATOR
+     MENUITEM    "~Product information", IDM_HELPPRODINFO,   MIS_TEXT
+  }
+}
+
+MENU    IDD_CONTAINERMENU
+{
+   SUBMENU  "~Views", IDM_VIEWS
+   {
+      MENUITEM "ICON",      IDM_ICON,      MIS_TEXT
+      MENUITEM "NAME",      IDM_NAME,      MIS_TEXT
+      MENUITEM "TEXT",      IDM_TEXT,      MIS_TEXT
+      MENUITEM "DETAIL",    IDM_DETAIL,    MIS_TEXT
+    }
+}
+
+/* include dialog templates created by dialog box editor */
+
+//rcinclude sty_help.rc
+//rcinclude sty_main.dlg
+#include <os2.h>
+#include "test.h"
+// #include "sty_dlg.h"
+
+//ICON IDR_MAIN sty_main.ico
+//ICON IDR_ICON1 sty_ico1.ico
+//ICON IDR_ICON2 sty_ico2.ico
+//ICON IDR_ICON3 sty_ico3.ico
+//ICON IDR_ICON4 sty_ico4.ico
+
+//BITMAP IDR_BITMAP prodinfo.bmp
+
+MENU IDR_MAIN
+{
+   SUBMENU     "~File", IDM_FILE, MIS_TEXT
+   {
+      MENUITEM    "~New",             IDM_FILENEW,        MIS_TEXT
+      MENUITEM    "~Open...",         IDM_FILEOPEN,       MIS_TEXT
+      MENUITEM SEPARATOR
+      MENUITEM    "~Save",            IDM_FILESAVE,       MIS_TEXT
+      MENUITEM    "Save ~as...",      IDM_FILESAVEAS,     MIS_TEXT
+   }
+
+   SUBMENU     "~Edit", IDM_EDIT, MIS_TEXT
+   {
+      MENUITEM    "~Undo\tAlt+Backspace",     IDM_EDITUNDO,   MIS_TEXT
+      MENUITEM SEPARATOR
+      MENUITEM    "Cu~t\tShift+Delete",       IDM_EDITCUT,    MIS_TEXT
+      MENUITEM    "~Copy\tCtrl+Insert",       IDM_EDITCOPY,   MIS_TEXT
+      MENUITEM    "~Paste\tShift+Insert",     IDM_EDITPASTE,  MIS_TEXT
+      MENUITEM SEPARATOR
+      MENUITEM    "Cl~ear\tDelete",           IDM_EDITCLEAR,  MIS_TEXT
+   }
+
+   SUBMENU     "~Options", IDM_OPTIONS, MIS_TEXT
+   {
+      SUBMENU     "~Foreground color",  IDM_OPTIONSFORECOLOR, MIS_TEXT
+      {
+         MENUITEM    "~Black",   IDM_OPTIONSFORECOLORBLACK,  MIS_TEXT
+         MENUITEM    "B~lue",    IDM_OPTIONSFORECOLORBLUE,   MIS_TEXT
+         MENUITEM    "~Red",     IDM_OPTIONSFORECOLORRED,    MIS_TEXT
+         MENUITEM    "~Default", IDM_OPTIONSFORECOLORDEFAULT,MIS_TEXT
+      }
+
+      SUBMENU     "~Background color",  IDM_OPTIONSBACKCOLOR, MIS_TEXT
+      {
+         MENUITEM    "~Yellow",  IDM_OPTIONSBACKCOLORYELLOW, MIS_TEXT
+         MENUITEM    "~Pink",    IDM_OPTIONSBACKCOLORPINK,   MIS_TEXT
+         MENUITEM    "~Cyan",    IDM_OPTIONSBACKCOLORCYAN,   MIS_TEXT
+         MENUITEM    "~Default", IDM_OPTIONSBACKCOLORDEFAULT,MIS_TEXT
+      }
+
+      MENUITEM SEPARATOR
+      MENUITEM    "F~ont...\tCtrl+F",      IDM_OPTIONSFONT,     MIS_TEXT
+   }
+
+  SUBMENU     "~Demo",    IDM_DEMO, MIS_TEXT
+  {
+     SUBMENU     "~Dialog controls",     IDM_DEMODLG,    MIS_TEXT
+     {
+        MENUITEM    "~Buttons...",      IDM_DEMODLGBUTTONS,     MIS_TEXT
+        MENUITEM    "~List boxes...",   IDM_DEMODLGLISTBOXES,   MIS_TEXT
+        MENUITEM    "~Combo boxes...",  IDM_DEMODLGCOMBOBOXES,  MIS_TEXT
+        MENUITEM    "~Entry fields...", IDM_DEMODLGENTRYFIELDS, MIS_TEXT
+        MENUITEM    "~Static...",       IDM_DEMODLGSTATIC,      MIS_TEXT
+        MENUITEM    "~Presentation parameters...",   IDM_DEMODLGPP,  MIS_TEXT
+        MENUITEM SEPARATOR
+        SUBMENU     "C~ua controls",    IDM_DEMOCUACONTROLS,    MIS_TEXT
+        {
+           MENUITEM    "Sl~iders...",      IDM_DEMODLGSLIDER,     MIS_TEXT
+           MENUITEM    "S~pin Buttons...", IDM_DEMODLGSPINBUTTON, MIS_TEXT
+           MENUITEM    "~Notebook...",     IDM_DEMODLGNOTEBOOK,   MIS_TEXT
+           MENUITEM    "~Value Set...",    IDM_DEMODLGVALUESET,   MIS_TEXT
+           MENUITEM    "C~ontainer...",    IDM_DEMODLGCONTAINER,  MIS_TEXT
+        }
+     }
+
+     SUBMENU     "~Message boxes",     IDM_DEMOMSGBOX,    MIS_TEXT
+     {
+        MENUITEM    "~Ok Button...",  IDM_DEMOMSGBOXOK, MIS_TEXT
+        MENUITEM    "O~k/Cancel Buttons...", IDM_DEMOMSGBOXOKCANCEL, MIS_TEXT
+        MENUITEM    "~Yes/No Buttons...", IDM_DEMOMSGBOXYESNO, MIS_TEXT
+        MENUITEM    "Ye~s/No/Cancel Buttons...", IDM_DEMOMSGBOXYESNOCANCEL, MIS_TEXT
+        MENUITEM    "~Retry/Cancel Buttons...",   IDM_DEMOMSGBOXRETRYCANCEL,  MIS_TEXT
+        MENUITEM    "~Abort/Retry/Ignore Buttons...",   IDM_DEMOMSGBOXABORT,  MIS_TEXT
+        MENUITEM    "~Enter Button...",   IDM_DEMOMSGBOXENTER,  MIS_TEXT
+        MENUITEM    "E~nter/Cancel Buttons...",   IDM_DEMOMSGBOXENTERCANCEL,  MIS_TEXT
+        MENUITEM SEPARATOR
+        MENUITEM    "~Query Icon...",   IDM_DEMOMSGBOXQUERY, MIS_TEXT
+        MENUITEM    "~Warning Icon...",   IDM_DEMOMSGBOXWARNING, MIS_TEXT
+        MENUITEM    "~Information Icon...",   IDM_DEMOMSGBOXINFO, MIS_TEXT
+        MENUITEM    "~Action...",   IDM_DEMOMSGBOXCRITICAL, MIS_TEXT
+        MENUITEM SEPARATOR
+        MENUITEM    "~Application modal...", IDM_DEMOMSGBOXAPP, MIS_TEXT
+        MENUITEM    "~System modal...", IDM_DEMOMSGBOXSYS, MIS_TEXT
+        MENUITEM    "~Help...",  IDM_DEMOMSGBOXHELP,    MIS_TEXT
+     }
+  }
+
+  SUBMENU     "~Help",    IDM_HELP,   MIS_TEXT
+  {
+     MENUITEM    "Help ~index",          IDM_HELPINDEX,      MIS_TEXT
+     MENUITEM    "~General help",        IDM_HELPGENERAL,    MIS_TEXT
+     MENUITEM    "~Keys help",           IDM_HELPKEYS,       MIS_TEXT
+     MENUITEM    "~Using help",          IDM_HELPUSINGHELP,  MIS_TEXT
+     MENUITEM SEPARATOR
+     MENUITEM    "~Product information", IDM_HELPPRODINFO,   MIS_TEXT
+  }
+}
+
+MENU    IDD_CONTAINERMENU
+{
+   SUBMENU  "~Views", IDM_VIEWS
+   {
+      MENUITEM "ICON",      IDM_ICON,      MIS_TEXT
+      MENUITEM "NAME",      IDM_NAME,      MIS_TEXT
+      MENUITEM "TEXT",      IDM_TEXT,      MIS_TEXT
+      MENUITEM "DETAIL",    IDM_DETAIL,    MIS_TEXT
+    }
+}
+
+ACCELTABLE IDR_MAIN
+{
+   VK_F3,          IDM_EXIT,           VIRTUALKEY
+   VK_BACKSPACE,   IDM_EDITUNDO,       VIRTUALKEY,    ALT
+   VK_DELETE,      IDM_EDITCUT,        VIRTUALKEY,    SHIFT
+   VK_INSERT,      IDM_EDITCOPY,       VIRTUALKEY,    CONTROL
+   VK_INSERT,      IDM_EDITPASTE,      VIRTUALKEY,    SHIFT
+   VK_DELETE,      IDM_EDITCLEAR,      VIRTUALKEY
+   "c",    IDM_OPTIONSFORECOLOR,    CHAR,  CONTROL
+   "f",    IDM_OPTIONSFONT,         CHAR,  CONTROL
+}
+
+STRINGTABLE
+{
+   IDS_APPNAME                 "Style"
+   IDS_FILEOPENEXT             "*.TXT"
+   IDS_HELPLIBRARYNAME         "STYLE.HLP"
+   IDS_OPENDLGTITLE            "Open"
+   IDS_OPENDLGBUTTON           "~Open"
+   IDS_HELPWINDOWTITLE         "Style Help"
+   IDS_SAVEDLGTITLE            "Save"
+   IDS_SAVEDLGBUTTON           "Save"
+   IDS_UNTITLED                "Untitled"
+   IDS_TITLEBARSEPARATOR       " - "
+   IDS_FONTDLGTITLE            "Font"
+   IDS_PPFONTPOINT             "8."
+   IDS_DEMOMSGBOXOK            "Ok button"
+   IDS_DEMOMSGBOXOKCANCEL      "Ok and Cancel buttons"
+   IDS_DEMOMSGBOXYESNO         "Yes and No buttons"
+   IDS_DEMOMSGBOXYESNOCANCEL   "Yes, No, and Cancel buttons"
+   IDS_DEMOMSGBOXRETRYCANCEL   "Retry and Cancel buttons"
+   IDS_DEMOMSGBOXABORT         "Abort, Retry, and Ignore buttons"
+   IDS_DEMOMSGBOXENTER         "Enter button"
+   IDS_DEMOMSGBOXENTERCANCEL   "Enter and Cancel buttons"
+   IDS_DEMOMSGBOXQUERY         "Query icon"
+   IDS_DEMOMSGBOXWARNING       "Warning icon"
+   IDS_DEMOMSGBOXINFO          "Information icon"
+   IDS_DEMOMSGBOXCRITICAL      "Action icon"
+   IDS_DEMOMSGBOXAPP           "Application modal message box"
+   IDS_DEMOMSGBOXSYS           "System modal message box"
+   IDS_DEMOMSGBOXHELP          "Help button"
+
+   IDS_LISTBOX1                "Test Text 1"
+   IDS_LISTBOX2                "Test Text 2"
+   IDS_LISTBOX3                "Test Text 3"
+   IDS_LISTBOX4                "Test Text 4"
+   IDS_LISTBOX5                "Test Text 5"
+   IDS_LISTBOX6                "Test Text 6"
+   IDS_LISTBOX7                "Test Text 7"
+   IDS_LISTBOX8                "Test Text 8"
+   IDS_LISTBOX9                "Test Text 9"
+   IDS_LISTBOX10               "Test Text 10"
+
+   IDS_BLUE                    "Blue"
+   IDS_RED                     "Red"
+   IDS_PINK                    "Pink"
+   IDS_GREEN                   "Green"
+   IDS_CYAN                    "Cyan"
+   IDS_YELLOW                  "Yellow"
+   IDS_DARKGRAY                "Dark Gray"
+   IDS_DARKBLUE                "Dark Blue"
+   IDS_DARKRED                 "Dark Red"
+   IDS_DARKPINK                "Dark Pink"
+   IDS_DARKGREEN               "Dark Green"
+   IDS_DARKCYAN                "Dark Cyan"
+   IDS_BROWN                   "Brown"
+   IDS_PALEGRAY                "Pale Gray"
+   IDS_DEFAULT                 "Default"
+   IDS_WARNING                 "Warning"
+}
+
+MESSAGETABLE
+{
+   IDMSG_INITFAILED            "Initalization failed."
+   IDMSG_MAINWINCREATEFAILED   "Failed to create main window."
+   IDMSG_CANNOTOPENINPUTFILE   "Cannot open input file."
+   IDMSG_CANNOTOPENOUTPUTFILE  "Cannot open output file."
+   IDMSG_CANNOTRUNCOLOR        "Cannot run Color dialog."
+   IDMSG_CANNOTGETHPS          "Cannot get HPS for window."
+   IDMSG_HELPLOADERROR         "Failed to load help manager."
+   IDMSG_CANNOTLOADSTRING      "Failed to load string."
+   IDMSG_CANNOTOPENPRINTER     "Failed to open printer."
+   IDMSG_HELPDISPLAYERROR      "Failed to display help panel."
+   IDMSG_CANNOTLOADEXITLIST    "Cannot load Exit List processor."
+   IDMSG_OVERWRITEFILE         "The file exists.  Do you want to overwrite it?"
+   IDMSG_FILECHANGED           "The file has changed.  Do you want to save it?"
+   IDMSG_UNDOFAILED            "Failed to Undo."
+   IDMSG_CANNOTGETFILEINFO     "Error getting file information."
+   IDMSG_CANNOTALLOCATEMEMORY  "Not enough memory."
+   IDMSG_CANNOTREADFILE        "Error reading file."
+   IDMSG_CANNOTWRITETOFILE     "Error writing file."
+   IDMSG_CANNOTLOADFONTS       "Cannot load fonts."
+   IDMSG_CANNOTSETPP           "Error setting presentation parameters."
+   IDMSG_ISOFAILED             "The font selected is not compliant with the"
+                               " ISO 9241 standard on the IBM 9515, 9517, or"
+                               " 9518 displays."
+   IDMSG_ISONOTTESTED          "The font selected is not tested for compliance"
+                               " with the ISO 9241 standard."
+}
+
+/* include dialog templates created by dialog box editor */
+
+//rcinclude sty_help.rc
+//rcinclude sty_main.dlg

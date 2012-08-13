@@ -6,4 +6,4 @@ host_cpu   = 386
 cc_dll     = 1
 cc_rtdll   = 1
 
-!include ../targ_386.mif
+!include ../target.mif
