@@ -7,4 +7,4 @@ cc_release = 0
 debug_cg   = 1
 debug      = 1
 
-!include ../targ_ppc.mif
+!include ../target.mif

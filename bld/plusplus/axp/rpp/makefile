@@ -22,4 +22,4 @@ host_cpu     = 386
 
 reference = 1
 
-!include ../targ_axp.mif
+!include ../target.mif

@@ -3,4 +3,4 @@
 host_os    = linux
 host_cpu   = 386
 
-!include ../targ_axp.mif
+!include ../target.mif

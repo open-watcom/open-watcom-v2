@@ -4,4 +4,4 @@ host_OS = osi
 
 cc_version = tree
 
-!include ../targ_i86.mif
+!include ../target.mif

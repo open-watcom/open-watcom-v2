@@ -22,4 +22,4 @@ host_cpu     = 386
 
 reference = 1
 
-!include ../targ_386.mif
+!include ../target.mif

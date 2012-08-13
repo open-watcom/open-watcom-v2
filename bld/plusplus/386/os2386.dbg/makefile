@@ -6,4 +6,4 @@ host_cpu   = 386
 debug_cg          = 1
 plusplus_release  = 0
 
-!include ../targ_386.mif
+!include ../target.mif

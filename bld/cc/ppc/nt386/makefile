@@ -5,4 +5,4 @@ host_cpu   = 386
 
 cc_dll     = 1
 
-!include ../targ_ppc.mif
+!include ../target.mif
