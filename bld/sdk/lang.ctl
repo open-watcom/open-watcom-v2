@@ -8,14 +8,13 @@ set PROJDIR=<CWD>
 
 cdsay .
 
-[ INCLUDE rc/lang.ctl ]
 [ INCLUDE ddespy/lang.ctl ]
 [ INCLUDE heapwalk/lang.ctl ]
 [ INCLUDE spy/lang.ctl ]
 [ INCLUDE drwat/lang.ctl ]
 [ INCLUDE zoom/lang.ctl ]
 
-[ INCLUDE <DEVDIR>/fmedit/lang.ctl ]
+[ INCLUDE fmedit/lang.ctl ]
 [ INCLUDE wr/lang.ctl ]
 [ INCLUDE wresedit/lang.ctl ]
 [ INCLUDE wre/lang.ctl ]

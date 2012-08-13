@@ -20,10 +20,10 @@ INCS = &
  tagtab.inc tentab.inc xception.inc
 
 .inc : ../inc
-.c : ../c;../../emu86/c
+.c : ../c;$(emu16_dir)/c
 .asm : ../asm
 
-extra_a_flags = -fpc -I"$(mathlib_dir)/h" -I"$(emu386)/inc"
+extra_a_flags = -fpc -I"$(mathlib_dir)/h" -I"../inc"
 extra_a_flags_dos = -ms -D_OS=_PLDT -DSEGMENTED
 extra_a_flags_qnx = -ms -D_OS=_QNX -DSEGMENTED
 extra_a_flags_win = -mf -D_OS=_PLDT -D__WIN387__
@@ -42,7 +42,7 @@ emu387.lib: emu387.obj 386inite.obj
 !else ifeq host_OS qnx
 
 emu387: qnxemu87.obj emu387.obj fpeqnx.obj
-    $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,quiet,res=../../emu86/emu87.u
+    $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,quiet,res=$(emu16_dir)/emu87.u
 
 !else ifeq host_OS win
 

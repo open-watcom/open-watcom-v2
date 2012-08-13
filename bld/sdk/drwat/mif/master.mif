@@ -115,7 +115,7 @@ $(proj_name).res : ../drnt.rc .AUTODEPEND
 !endif
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../drwatcom.msg
 !ifeq drwatcom_95 1

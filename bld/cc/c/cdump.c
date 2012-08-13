@@ -36,9 +36,9 @@ extern  char    *Tokens[];
 
 /* matches table of type in ctypes.h */
 static  char    *CTypeNames[] = {
-#undef  pick1
-#define pick1(enum,cgtype,x86asmtype,name,size) name,
-#include "cdatatyp.h"
+    #define pick1(enum,cgtype,x86asmtype,name,size) name,
+    #include "cdatatyp.h"
+    #undef  pick1
 };
 
 static  char   do_message_output; /* Optimize output for human */

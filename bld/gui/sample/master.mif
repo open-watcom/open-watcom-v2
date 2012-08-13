@@ -8,12 +8,12 @@ name = sample
 LNK=sample.lnk
 
 !ifeq type win
-rcopt += -I"$(guidir)/$(type)" -I"$(guidir)/h" -I"$(sdk_dir)/misc" $(inc_dirs_sys)
+rcopt += -I"$(gui_dir)/$(type)" -I"$(gui_dir)/h" -I"$(sdk_dir)/misc" $(inc_dirs_sys)
 !else
-rcopt += -I"$(guidir)/$(type)" -I"$(sdk_dir)/misc" -I"$(guidir)/win" -I"$(guidir)/h" -I"$(lang_root)/h/win"
+rcopt += -I"$(gui_dir)/$(type)" -I"$(sdk_dir)/misc" -I"$(gui_dir)/win" -I"$(gui_dir)/h" -I"$(lang_root)/h/win"
 !endif
 
-inc_dirs = -I"$(guidir)/h" -I"$(guidir)/$(type)/h"
+inc_dirs = -I"$(gui_dir)/h" -I"$(gui_dir)/$(type)/h"
 
 objs =                  &
         dlgstat.obj     &
@@ -28,10 +28,10 @@ ext = exe
 
 !ifeq type win
 uilib =
-guilib = $(guidir)/win/$(host_os)$(host_cpu)/gui.lib
+guilib = $(gui_dir)/win/$(host_os)$(host_cpu)/gui.lib
 !else
-uilib = $(uidir)/$(os)/$(host_os)$(host_cpu)/ui.lib
-guilib = $(guidir)/ui/$(host_os)$(host_cpu)/gui.lib
+uilib = $(ui_dir)/$(os)/$(host_os)$(host_cpu)/ui.lib
+guilib = $(gui_dir)/ui/$(host_os)$(host_cpu)/gui.lib
 !endif
 
 

@@ -35,7 +35,7 @@ $(name).exe : rcstr.gh $(objs) $(name).res $(xlibs) $(version_res_$(host_os)_$(h
 !endif
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(uninstal_dir)/uninstal.msg
         $(c_pp) -zk0 $(inc_path) $[@ >$^@

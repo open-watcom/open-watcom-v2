@@ -10,6 +10,5 @@ type  = remote_link
 
 extra_cflags = -d2
 extra_objs = vdmcli2.obj
-extra_libs = $(os2386)
 
 !include $(trap_dir)/master.mif

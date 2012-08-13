@@ -34,15 +34,15 @@
 #include "cgswitch.h"
 
 static char *_Ops[] = {
-#undef pick1
-#define pick1(enum,dump,cgenum) dump,
-#include "copcodes.h"
+    #define pick1(enum,dump,cgenum) dump,
+    #include "copcodes.h"
+    #undef pick1
 };
 
 char    *CCOps[] = {
-#undef pick1
-#define pick1(enum,dump,cgenum) dump,
-#include "copcond.h"
+    #define pick1(enum,dump,cgenum) dump,
+    #include "copcond.h"
+    #undef pick1
 };
 
 static void DumpAString( STR_HANDLE str_handle )

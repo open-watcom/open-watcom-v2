@@ -1225,13 +1225,10 @@ typedef struct magic_word {
     struct aux_info *info;
 } MAGIC_WORD;
 
-#ifdef pick
-#undef pick
-#endif
-#define pick( a, b, c ) { b , c },
-
 static MAGIC_WORD magicWords[] = {
-#include "auxinfo.h"
+    #define pick( a, b, c ) { b , c },
+    #include "auxinfo.h"
+    #undef pick
 };
 
 

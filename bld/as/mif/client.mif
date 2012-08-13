@@ -8,15 +8,15 @@
 !ifdef bootstrap
 asminline_lib = $(as_dir)/$(host_cpu)/inline/$(%OBJDIR)/asinline.lib
 !else
-asminline_axp_lib_386  = $(as_dir)/alpha/inline/osi386/asinline.lib
-asminline_axp_lib_axp  = $(as_dir)/alpha/inline/osiaxp/asinline.lib
+asminline_axp_lib_386  = $(as_dir)/axp/inline/osi386/asinline.lib
+asminline_axp_lib_axp  = $(as_dir)/axp/inline/osiaxp/asinline.lib
 
 asminline_ppc_lib_386  = $(as_dir)/ppc/inline/osi386/asinline.lib
 asminline_ppc_lib_axp  = $(as_dir)/ppc/inline/osiaxp/asinline.lib
 
-asminline_mps_lib_386  = $(as_dir)/mips/inline/osi386/asinline.lib
-asminline_mps_lib_axp  = $(as_dir)/mips/inline/osiaxp/asinline.lib
-asminline_mps_lib_mps  = $(as_dir)/mips/inline/osimps/asinline.lib
+asminline_mps_lib_386  = $(as_dir)/mps/inline/osi386/asinline.lib
+asminline_mps_lib_axp  = $(as_dir)/mps/inline/osiaxp/asinline.lib
+asminline_mps_lib_mps  = $(as_dir)/mps/inline/osimps/asinline.lib
 
 #
 # AS in-line run-time DLL used
@@ -27,8 +27,8 @@ asminline_mps_lib_mps  = $(as_dir)/mips/inline/osimps/asinline.lib
 #
 !ifeq target_cpu axp
 asminline_c = $(as_dir)/c
-asminline_h = $(as_dir)/alpha/h;$(as_dir)/h;$(owl_dir)/h
-asminline_inc_dirs = -I"$(as_dir)/alpha/h" -I"$(as_dir)/h" -I"$(owl_dir)/h"
+asminline_h = $(as_dir)/axp/h;$(as_dir)/h;$(owl_dir)/h
+asminline_inc_dirs = -I"$(as_dir)/axp/h" -I"$(as_dir)/h" -I"$(owl_dir)/h"
 asminline_deps =
 asminline_objs =
 !ifdef asminline_axp_lib_$(host_os)_$(host_cpu)

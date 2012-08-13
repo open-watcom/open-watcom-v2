@@ -101,21 +101,21 @@ struct func_save {
 
 /* matches table of type in ctypes.h */
 static  char    CGDataType[] = {
-#undef  pick1
-#define pick1(enum,cgtype,x86asmtype,name,size) cgtype,
-#include "cdatatyp.h"
+    #define pick1(enum,cgtype,x86asmtype,name,size) cgtype,
+    #include "cdatatyp.h"
+    #undef  pick1
 };
 
 static  cg_op   CGOperator[] = {
-#undef pick1
-#define pick1(enum,dump,cgenum) cgenum,
-#include "copcodes.h"
+    #define pick1(enum,dump,cgenum) cgenum,
+    #include "copcodes.h"
+    #undef pick1
 };
 
 static  cg_op   CC2CGOp[] = {
-#undef pick1
-#define pick1(enum,dump,cgenum) cgenum,
-#include "copcond.h"
+    #define pick1(enum,dump,cgenum) cgenum,
+    #include "copcond.h"
+    #undef pick1
 };
 
 #ifdef HEAP_SIZE_STAT

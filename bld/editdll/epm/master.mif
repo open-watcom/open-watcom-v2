@@ -19,6 +19,8 @@ extra_l_flags_os2 = initinstance terminstance pm
 extra_l_flags_os2 += op manyautodata
 extra_l_flags_os2 += op map
 
+.c : ..
+
 all: epmlink.dll wedit.lib .SYMBOLIC
 
 epmlink.dll: epmlink.obj dll.lnk

@@ -50,7 +50,6 @@
 #endif
 
 #include "gui.h"
-#include "text.h"
 #include "setupinf.h"
 #include "setup.h"
 #include "genvbl.h"
@@ -58,8 +57,11 @@
 #include "guiutil.h"
 #include "utils.h"
 #include "setupio.h"
-#include "wpack.h"
 #include "diskos.h"
+#ifdef PATCH
+#include "bdiff.h"
+#include "wpack.h"
+#endif
 
 #include "errno.h"
 

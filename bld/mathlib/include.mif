@@ -33,9 +33,9 @@ include_c_qnx      = -I"$(%watcom)/qh"
 include_c_path = $(include_default) $(include_c_$(system)) $(include_watcom)
 
 # include_a_(processor)
-include_a_286 = -I"$(emu286)/inc" -I"$(emu386)/inc"
+include_a_286 = -I"$(emu16_dir)/inc" -I"$(emu32_dir)/inc"
 include_a_287 =
-include_a_386 = -I"$(emu386)/inc"
+include_a_386 = -I"$(emu32_dir)/inc"
 include_a_387 =
 include_a_axp =
 include_a_ppc =

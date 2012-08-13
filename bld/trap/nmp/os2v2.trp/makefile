@@ -9,6 +9,5 @@ which = TRAP
 type  = remote_link
 
 extra_objs = nmpos22.obj
-extra_libs = $(os2386)
 
 !include $(trap_dir)/master.mif

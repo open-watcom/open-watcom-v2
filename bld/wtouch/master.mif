@@ -41,6 +41,6 @@ usagej.gh : usage.sp
         wsplice @$^&.tmp
 
 msg.gh : $(proj_name).msg
-        $(awk) -v base=MSG_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
+        $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
 !include verrc.mif

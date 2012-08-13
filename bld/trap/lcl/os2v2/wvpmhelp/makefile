@@ -27,7 +27,7 @@ wdpmhook.dll: pmhook.obj
     @%append $(tmplnk) debug all op symf
     @%append $(tmplnk) option map
     @%append $(tmplnk) file pmhook.obj
-    @%append $(tmplnk) library $(os2386)
+    @%append $(tmplnk) library os2386.lib
     @%append $(tmplnk) export SendMsgHookProc.1,SetHmqDebugee.2
     $(linker) @$(tmplnk)
 

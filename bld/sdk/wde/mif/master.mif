@@ -103,7 +103,7 @@ $(name).exe: rcstr.gh $(OBJS) $(name).res $(xlibs) $(version_res_$(host_os)_$(ho
 # explicit rules
 #################
 rcstr.gh: rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../h/wde.msg
         $(c_pp) -zk0 $(inc_path) $[@ >$^@

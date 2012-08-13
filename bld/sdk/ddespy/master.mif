@@ -51,7 +51,7 @@ $(name).exe : rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_$(host_os)_$(h
 !endif
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../ddespy.msg
         $(c_pp) -zk0 $(inc_path) $[@ >$^@

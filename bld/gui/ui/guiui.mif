@@ -97,7 +97,7 @@ sys_hooks = &
 
 sysobjs = $(wv_sysobjs) $(sys_hooks) $(sys_dep_objs)
 
-extra_c_flags += -I"$(sdk_dir)/rc/wres/h"
+extra_c_flags += -I"$(wres_dir)/h"
 
 !ifndef bootstrap
 # memory tracker cover routines

@@ -8,19 +8,19 @@ splice_opts = -kAS_MIPS
 
 as_extra_defines = -DAS_MIPS
 
-as_cdir = $(as_dir)/mips/c;$(as_dir)/c
-as_hdir = $(as_dir)/mips/h;$(as_dir)/h
-as_ydir = $(as_dir)/mips/y;$(as_dir)/y
-as_incs = -I"$(as_dir)/mips/h" -I"$(as_dir)/h"
+as_cdir = $(as_dir)/mps/c;$(as_dir)/c
+as_hdir = $(as_dir)/mps/h;$(as_dir)/h
+as_ydir = $(as_dir)/mps/y;$(as_dir)/y
+as_incs = -I"$(as_dir)/mps/h" -I"$(as_dir)/h"
 
 target_as_comm_objs = &
     mipsfmt.obj &
     mipsins.obj
 
 !ifdef __UNIX__
-asi_dir = $(as_dir)/mips/inline/osi$(host_cpu)
+asi_dir = $(as_dir)/mps/inline/osi$(host_cpu)
 !else
-asi_dir = $(as_dir)\mips\inline\osi$(host_cpu)
+asi_dir = $(as_dir)\mps\inline\osi$(host_cpu)
 !endif
 
 !include $(as_dir)/mif/master.mif

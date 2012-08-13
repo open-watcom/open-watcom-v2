@@ -1,10 +1,10 @@
 # C++ Reference Compilers Prerequisite Tool Clean Control File
 # ============================================================
 
-    cdsay <PROJDIR>/../rpp.i86
+    cdsay <DEVDIR>/plusplus/i86/rpp
     wmake -h -k clean
-    cdsay <PROJDIR>/../rpp.386
+    cdsay <DEVDIR>/plusplus/386/rpp
     wmake -h -k clean
-    cdsay <PROJDIR>/../rpp.axp
+    cdsay <DEVDIR>/plusplus/axp/rpp
     wmake -h -k clean
     cdsay <PROJDIR>

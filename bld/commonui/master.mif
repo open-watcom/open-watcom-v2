@@ -80,7 +80,7 @@ all : uistr.gh $(name).lib .symbolic
     @%null
 
 uistr.gh : uistrmsg.gh
-    $(awk) -f $(misc_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_UI_BASE $[@ > $^@
+    $(awk) -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_UI_BASE $[@ > $^@
 
 uistrmsg.gh : $(commonui_dir)/commonui.msg
     $(c_pp) -zk0 -I"$(commonui_dir)/h" $[@ >$^@

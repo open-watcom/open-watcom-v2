@@ -35,7 +35,7 @@ appwiz.lnk : makefile ../master.mif
     @for %i in ( $(libs) ) do @%append appwiz.lnk lib %i
 
 rcstr.gh : ../h/appwiz.msg
-    $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+    $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 appwiz.res : ../h/appwiz.rc .AUTODEPEND
     $(rc) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$^@

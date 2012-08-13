@@ -47,6 +47,7 @@
 *.sh  text
 *.sp  text
 *.ssl text
+*.tix text
 *.txt text
 *.vbs text
 *.vi  text
@@ -66,22 +67,33 @@ makefile text
 # Denote all files that are truly binary and should not be modified.
 *.7z  binary
 *.bmp binary
+*.bz2 binary
 *.chi binary
 *.chm binary
+*.com binary
 *.cop binary
 *.cur binary
+*.cw  binary
 *.dll binary
 *.exe binary
 *.gif binary
 *.ico binary
+*.jpg binary
 *.lib binary
+*.obj binary
+*.ovl binary
 *.pch binary
 *.pdf binary
 *.png binary
 *.res binary
 *.rez binary
+*.sdl binary
+*.sex binary
 *.sym binary
+*.sys binary
 *.uni binary
+*.wbr binary
+*.wri binary
 *.zip binary
 unicode*.* binary
 

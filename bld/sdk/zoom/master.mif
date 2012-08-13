@@ -42,7 +42,7 @@ $(name)j.exe : $(name).exe $(name)j.res
         $(rc) -k $(name)j.res $^@
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../wzoom.msg
         $(c_pp) -zk0 $(inc_path) $[@ >$^@

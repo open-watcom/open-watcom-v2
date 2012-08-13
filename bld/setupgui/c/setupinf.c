@@ -63,7 +63,7 @@
 #include "utils.h"
 #include "setupio.h"
 #include "diskos.h"
-#if !defined( __UNIX__ )
+#ifdef PATCH
     #include "bdiff.h"
 #endif
 
@@ -1927,7 +1927,7 @@ static bool ProcLine( char *line, pass_type pass )
         num = SetupInfo.patch_files.num;
         if( !BumpArray( &SetupInfo.patch_files ) )
             return( FALSE );
-        memset( &PatchInfo[num], NULL, sizeof( *PatchInfo ) );
+        memset( &PatchInfo[num], 0, sizeof( *PatchInfo ) );
         next = NextToken( line, ',' );
         if( stricmp( line, "copy" ) == 0 ) {
             PatchInfo[num].command = PATCH_COPY_FILE;
@@ -3881,7 +3881,7 @@ extern bool PatchFiles( void )
     }
 
     for( i = 0; i < SetupInfo.patch_files.num; i++, Index = -1 ) {
-        destfullpath[0] = srcfullpath[0] = NULL;
+        destfullpath[0] = srcfullpath[0] = '\0';
         if( PatchInfo[i].condition ) {
             if( !EvalCondition( PatchInfo[i].condition ) ) {
                 StatusAmount( i + 1, SetupInfo.patch_files.num );

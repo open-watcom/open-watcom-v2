@@ -45,7 +45,7 @@
 /builder/*/proctab.c
 /builder/*/ytab.h
 #
-/cc/*/*.dll
+/cc/*/*/*.dll
 #
 /cg/intel/386/nt386.dll/*.dll
 /cg/intel/i86/nt386.dll/*.dll
@@ -101,9 +101,9 @@
 /pbide/wig/nt386.dll/*.dll
 /pbide/wig/wini86.dll/*.dll
 #
-/plusplus/*/*.dll
-/plusplus/*/ytab.c
-/plusplus/*/y.out
+/plusplus/*/*/*.dll
+/plusplus/*/*/ytab.c
+/plusplus/*/*/y.out
 #
 /plustest/*.out
 /plustest/*.sav

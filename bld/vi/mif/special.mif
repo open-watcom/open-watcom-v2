@@ -6,7 +6,7 @@ $(proj_name).res : $(vi_dir)/win/viw.rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(vi_dir)/vi.msg $(vi_dir)/tooltips.msg ../h/langdef.h $(msgfiles)
         $(c_pp) -zk0 -I"$(sdk_dir)/misc" $[@ >$^@

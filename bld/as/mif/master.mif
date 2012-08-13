@@ -154,7 +154,7 @@ splice_opts += -k_STANDALONE_
 .gh: .
 .msg: $(as_dir)/h
 
-inc_dirs = -I. $(as_incs) -I"$(owl_dir)/h" -I$(cpp_dir) -I$(trmem_dir)
+inc_dirs = -I. $(as_incs) -I"$(owl_dir)/h" -I"$(cpp_dir)" -I"$(trmem_dir)"
 
 # explicit rules
 #################

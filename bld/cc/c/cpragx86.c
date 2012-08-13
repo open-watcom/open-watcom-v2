@@ -348,9 +348,9 @@ static int AsmPtrType( TYPEPTR typ, type_modifiers flags )
 
 /* matches enum DataType in ctypes.h */
 static enum sym_type AsmDataType[] = {
-#undef  pick1
-#define pick1(enum,cgtype,x86asmtype,name,size) x86asmtype,
-#include "cdatatyp.h"
+    #define pick1(enum,cgtype,x86asmtype,name,size) x86asmtype,
+    #include "cdatatyp.h"
+    #undef  pick1
 };
 
 local int AsmType( TYPEPTR typ, type_modifiers flags )

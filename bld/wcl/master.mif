@@ -6,15 +6,6 @@ wcl_autodepends = .AUTODEPEND
 
 wcl_trmem = 1
 
-name_target_i86 = wcl.exe
-name_target_386 = wcl386.exe
-name_target_axp = wclaxp.exe
-name_target_ppc = wclppc.exe
-name_target_mps = wclmps.exe
-name_target_    = owcc.exe
-
-name = $(name_target_$(target_cpu))
-
 !ifdef target_cpu
 objs = clcommon.obj cmdlhelp.obj wcl.obj $(trmem_objs)
 !else
@@ -28,13 +19,7 @@ extra_deps = owcchelp.gh
 
 !include trmem.mif
 
-extra_c_flags_target_i86 = -DWCLI86
-extra_c_flags_target_386 = -DWCL386
-extra_c_flags_target_axp = -DWCLAXP
-extra_c_flags_target_ppc = -DWCLPPC
-extra_c_flags_target_mps = -DWCLMPS
-
-extra_c_flags = -s $(extra_c_flags_target_$(target_cpu))
+extra_c_flags += -s
 
 extra_c_flags_owcc   = -I"$(posix_dir)/h"
 extra_c_flags_getopt = -I"$(posix_dir)/h"
@@ -44,20 +29,24 @@ extra_c_flags_trmem = $(trmem_cflags)
 
 extra_l_flags = op map
 
-.c: ../c;../../c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
+inc_dirs = -I"../../h"
+
+.c: ../../c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
 
 # systems where version resources must be added to .EXE
 !ifndef prebuild
 version_res_nt_386 = exever.res
 !endif
 
-$(name) : $(extra_deps) $(objs) $(version_res_$(host_os)_$(host_cpu))
+$(name).exe : $(extra_deps) $(objs) $(version_res_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(objs)}
 !ifdef version_res_$(host_os)_$(host_cpu)
         $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
 
+verrc_exe = $(name)
+verrc_exe_skel = ../../exever.rc
 !include verrc.mif
 
-owcchelp.gh: ../owcchelp.sp
+owcchelp.gh: ../../owcchelp.sp
         wsplice "-f\"%s\"," $< $@

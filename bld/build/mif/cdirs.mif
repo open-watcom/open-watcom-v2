@@ -45,7 +45,7 @@ cfloat_dir      = $(dev_dir)/cfloat
 plusplus_dir    = $(dev_dir)/plusplus
 !endif
 !ifndef cpplib_dir
-cpplib_dir      = $(dev_dir)/plusplus/cpplib
+cpplib_dir      = $(dev_dir)/cpplib
 !endif
 !ifndef dwarf_dir
 dwarf_dir       = $(dev_dir)/dwarf
@@ -66,7 +66,7 @@ wimgedit_dir    = $(sdk_dir)/imgedit
 wspy_dir        = $(sdk_dir)/spy
 !endif
 !ifndef wrc_dir
-wrc_dir         = $(sdk_dir)/rc/rc
+wrc_dir         = $(dev_dir)/rc/rc
 !endif
 !ifndef wr_dir
 wr_dir          = $(sdk_dir)/wr
@@ -156,7 +156,7 @@ stkdepth_dir    = $(dev_dir)/stkdepth
 wasm_dir        = $(dev_dir)/wasm
 !endif
 !ifndef wasmtest_dir
-wasmtest_dir    = $(dev_dir)/wasm/test
+wasmtest_dir    = $(dev_dir)/wasmtest
 !endif
 !ifndef hdr_dir
 hdr_dir         = $(dev_dir)/hdr
@@ -210,7 +210,7 @@ trap_dir        = $(dev_dir)/trap
 browse_dir      = $(dev_dir)/browser
 !endif
 !ifndef wres_dir
-wres_dir        = $(dev_dir)/sdk/rc/wres
+wres_dir        = $(dev_dir)/wres
 !endif
 !ifndef wedit_dir
 wedit_dir       = $(dev_dir)/wedit
@@ -312,7 +312,7 @@ debugger_dir    = $(dev_dir)/debugger
 re2c_dir        = $(dev_dir)/re2c
 !endif
 !ifndef fmedit_dir
-fmedit_dir      = $(dev_dir)/fmedit
+fmedit_dir      = $(sdk_dir)/fmedit
 !endif
 !ifndef uninstal_dir
 uninstal_dir    = $(dev_dir)/uninstal
@@ -325,6 +325,12 @@ zlib_dir        = $(contrib_dir)/zlib
 !endif
 !ifndef awk_dir
 awk_dir         = $(contrib_dir)/awk
+!endif
+!ifndef emu16_dir
+emu16_dir       = $(dev_dir)/emu86
+!endif
+!ifndef emu32_dir
+emu32_dir       = $(dev_dir)/emu
 !endif
 
 !else
@@ -375,7 +381,7 @@ cfloat_dir      = $(dev_dir)\cfloat
 plusplus_dir    = $(dev_dir)\plusplus
 !endif
 !ifndef cpplib_dir
-cpplib_dir      = $(dev_dir)\plusplus\cpplib
+cpplib_dir      = $(dev_dir)\cpplib
 !endif
 !ifndef dwarf_dir
 dwarf_dir       = $(dev_dir)\dwarf
@@ -396,7 +402,7 @@ wimgedit_dir    = $(sdk_dir)\imgedit
 wspy_dir        = $(sdk_dir)\spy
 !endif
 !ifndef wrc_dir
-wrc_dir         = $(sdk_dir)\rc\rc
+wrc_dir         = $(dev_dir)\rc\rc
 !endif
 !ifndef wr_dir
 wr_dir          = $(sdk_dir)\wr
@@ -486,7 +492,7 @@ stkdepth_dir    = $(dev_dir)\stkdepth
 wasm_dir        = $(dev_dir)\wasm
 !endif
 !ifndef wasmtest_dir
-wasmtest_dir    = $(dev_dir)\wasm\test
+wasmtest_dir    = $(dev_dir)\wasmtest
 !endif
 !ifndef hdr_dir
 hdr_dir         = $(dev_dir)\hdr
@@ -540,7 +546,7 @@ trap_dir        = $(dev_dir)\trap
 browse_dir      = $(dev_dir)\browser
 !endif
 !ifndef wres_dir
-wres_dir        = $(dev_dir)\sdk\rc\wres
+wres_dir        = $(dev_dir)\wres
 !endif
 !ifndef wedit_dir
 wedit_dir       = $(dev_dir)\wedit
@@ -642,7 +648,7 @@ re2c_dir        = $(dev_dir)\re2c
 cw_dir          = $(dev_dir)\causeway
 !endif
 !ifndef fmedit_dir
-fmedit_dir      = $(dev_dir)\fmedit
+fmedit_dir      = $(sdk_dir)\fmedit
 !endif
 !ifndef uninstal_dir
 uninstal_dir    = $(dev_dir)\uninstal
@@ -655,6 +661,12 @@ zlib_dir        = $(contrib_dir)\zlib
 !endif
 !ifndef awk_dir
 awk_dir         = $(contrib_dir)\awk
+!endif
+!ifndef emu16_dir
+emu16_dir       = $(dev_dir)\emu86
+!endif
+!ifndef emu32_dir
+emu32_dir       = $(dev_dir)\emu
 !endif
 
 !endif

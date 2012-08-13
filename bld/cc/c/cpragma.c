@@ -308,16 +308,13 @@ local void PragPack( void )
     MustRecog( T_RIGHT_PAREN );
 }
 
-#ifdef pick
-#undef pick
-#endif
-
-#define pick(a,b,c) { b, c },
 struct magic_words {
     char            *name;
     struct aux_info *info;
 } MagicWords[] = {
-#include "auxinfo.h"
+    #define pick(a,b,c) { b, c },
+    #include "auxinfo.h"
+    #undef pick
 };
 
 struct aux_info *MagicKeyword( char *name )

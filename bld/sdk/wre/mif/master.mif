@@ -91,7 +91,7 @@ $(name).exe: rcstr.gh $(OBJS) $(name).res $(xlibs) $(version_res_$(host_os)_$(ho
 !endif
 
 rcstr.gh: rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh: ../h/wre.msg $(msgfiles)
         $(c_pp) -zk0 -I"$(sdk_dir)/misc" $(inc_path) $[@ >$^@

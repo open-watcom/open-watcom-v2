@@ -97,7 +97,7 @@ test.exe: $(name).lib $(TESTLNK) test.obj
         $(linker) $(test_lflags) library $(name) file test
 
 rcmsg.gh: wrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 wrmsg.gh: ../h/master.msg $(msgfiles)
         $(c_pp) -zk0 -I"../h" -I"$(wrc_dir)/h" $[@ >$^@

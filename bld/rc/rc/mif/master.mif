@@ -126,12 +126,12 @@ exe_version_res_nt_386 = exever.res
 !endif
 
 # where to look for various files
-.c : .;$(wrc_dir)/c;$(cpp_dir);$(trmem_dir);$(watcom_dir)/c
-.y : $(wrc_dir)/y
-.key : $(wrc_dir)/hash
-.h : $(wrc_dir)/h;$(trmem_dir)
+.c : .;../c;$(cpp_dir);$(trmem_dir);$(watcom_dir)/c
+.y : ../y
+.key : ../hash
+.h : ../h;$(trmem_dir)
 
-inc_dirs = -I. -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(fe_misc_dir)/h" -I"$(cpp_dir)" -I$(trmem_dir)
+inc_dirs = -I. -I"../h" -I"$(wres_dir)/h" -I"$(fe_misc_dir)/h" -I"$(cpp_dir)" -I"$(trmem_dir)"
 
 xlibs = $(wres_lib)
 
@@ -215,14 +215,14 @@ dll.lnk : $(__MAKEFILES__)
         @for %i in ($(xlibs)) do @%append $@ lib %i
 
 # ytab.c is renamed to ytabw.c to avoid filename conflict
-ytabw.c ytab.gh : rc.y $(wrc_dir)/y/yydriver.c rcmem.h
+ytabw.c ytab.gh : rc.y ../y/yydriver.c rcmem.h
         $(byacc) -d -b $[@ $[:yydriver.c >$(nulldevice)
         @cp ytab.c ytabw.c
         @rm -f ytab.c
         @cp ytab.h ytab.gh
         @rm -f ytab.h
 
-ytab2.c ytab2.gh : rcos2.y $(wrc_dir)/y/yydrivr2.c rcmem.h
+ytab2.c ytab2.gh : rcos2.y ../y/yydrivr2.c rcmem.h
         $(byacc) -d -b $[@ $[:yydrivr2.c >$(nulldevice)
         @cp ytab.c ytab2.c
         @rm -f ytab.c
@@ -254,10 +254,10 @@ msg.gh : ../h/rc.msg
         $(c_pp) -zk0 $(rc_defines) $[@ >$@
 
 rcmsg.gh : msg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 $(name).res : ../rc.rc rcmsg.gh .AUTODEPEND
-        $(rc_aui) -ad $(rc_defines) -I../h $[@ -fo=$^@
+        $(rc_aui) -ad $(rc_defines) -I"../h" $[@ -fo=$^@
 
 keyword.obj : keyword.c keywords.gh weights.gh .AUTODEPEND
 

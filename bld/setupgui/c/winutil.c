@@ -29,10 +29,17 @@
 ****************************************************************************/
 
 
-#if defined( __NT__ )  ||  defined( __WINDOWS__ )
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+  #if defined( __WINDOWS__ )
+    #define INCLUDE_COMMDLG_H
+  #endif
     #include <windows.h>
+  #if defined( __NT__ )
     #include <commdlg.h>
+  #endif
+  #if !defined( _UI )
     #include "fontstr.h"
+  #endif
 #endif
 #include <stdio.h>
 #include <string.h>

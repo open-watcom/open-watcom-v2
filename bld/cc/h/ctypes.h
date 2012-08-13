@@ -178,9 +178,9 @@ typedef enum BASED_KIND {
 
 typedef enum DATA_TYPE {
     TYPE_UNDEFINED = -1,
-#undef pick1
-#define pick1(enum,cgtype,asmtype,name,size) TYPE_##enum,
-#include "cdatatyp.h"
+    #define pick1(enum,cgtype,asmtype,name,size) TYPE_##enum,
+    #include "cdatatyp.h"
+    #undef pick1
     TYPE_LAST_ENTRY,        /* make sure this is always last */
 } DATA_TYPE;
 
@@ -471,9 +471,9 @@ enum quad_flags {           /* code data */
 };
 
 enum quad_type {
-#undef pick1
-#define pick1(enum,cgtype,asmtype,name,size) QDT_##enum,
-#include "cdatatyp.h"
+    #define pick1(enum,cgtype,asmtype,name,size) QDT_##enum,
+    #include "cdatatyp.h"
+    #undef pick1
     QDT_STATIC,
     QDT_CONSTANT,
     QDT_STRING,

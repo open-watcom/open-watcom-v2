@@ -10,8 +10,6 @@ cdsay .
 
 [ BLOCK <1> build rel2 ]
 #=======================
-    cdsay <PROJDIR>/wres
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
     cdsay <PROJDIR>/mkcdpg
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
     cdsay <PROJDIR>/exedmp
@@ -68,8 +66,6 @@ cdsay .
 
 [ BLOCK <1> clean ]
 #==================
-    cdsay <PROJDIR>/wres
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
     cdsay <PROJDIR>/mkcdpg
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
     cdsay <PROJDIR>/exedmp

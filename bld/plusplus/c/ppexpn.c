@@ -75,25 +75,27 @@
 #define I64SetZero( a ) ( I32ToI64( 0, &(a).sval) );
 #define U64SetZero( a ) ( U32ToU64( 0, &(a).uval) );
 
-#ifdef pick
-#undef pick
-#endif
-
-/* include ctokens.h for the precedence values */
-#define prec(value) value
-#define pick(token,string,class)
-#define no_keywords
+/* include _ctokens.h for the precedence values */
 static  int    Prec[] = {     // table of token precedences
-#include "ctokens.h"
-#undef no_keywords
+    #define prec(value) value,
+    #define pick(token,string,class)
+    #define no_keywords
+    #include "_ctokens.h"
+    #undef no_keywords
+    #undef pick
+    #undef prec
+};
 
 #ifndef NDEBUG
-#define prec(value)
-#define pick(token,string,class) string
-#define no_keywords
 static char * TokenNames[] = {
-#include "ctokens.h"
-#undef no_keywords
+    #define prec(value)
+    #define pick(token,string,class) string,
+    #define no_keywords
+    #include "_ctokens.h"
+    #undef no_keywords
+    #undef pick
+    #undef prec
+};
 #endif
 
 #define NUM_PREC (sizeof(Prec) / sizeof(int))
@@ -211,7 +213,6 @@ boolean ( *CExpr[] )(void) = { // table of functions to reduce expressions
     CMultiplicative,    /* Level 14 */
     CUnary              /* Level 15 */
 };
-#define UNARY_PREC (14)
 
 static void ppexpnInit(         // INITIALIZATION FOR MODULE
     INITFINI* defn )            // - definition

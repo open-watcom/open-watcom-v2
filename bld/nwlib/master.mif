@@ -236,7 +236,7 @@ dll.lnk : $(__MAKEFILES__)
     @for %i in ($(xlibs)) do @%append $@ lib %i
 
 msg.gh : wlibmsg.gh
-    $(awk) -f $(misc_dir)/msgtoh.awk $[@ >$^@
+    $(awk) -f $(build_dir)/msgtoh.awk $[@ >$^@
 
 incltext.gh : ../wlib.msg
     $(c_pp) -zk0 $(rc_defines_$(host_os)) >$^@ <<

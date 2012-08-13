@@ -20,7 +20,7 @@ additional_cleanup = *.u *.int y.out ytab.c
  
 !include trmem.mif
  
-!include ../ppobjs.mif
+!include ../../ppobjs.mif
  
 pre_obj_deps = &
     errmsgs1.gh &
@@ -40,11 +40,11 @@ pre_obj_deps += wpp$(target_cpu)01.int
 pre_obj_deps += usage.u
 !endif
  
-inc_dirs = -I"../h/$(target_cpu)"
+inc_dirs = -I"../../h/$(target_cpu)"
 #!ifeq plusplus_trmem 1
-#inc_dirs += -I$(trmem_dir)
+#inc_dirs += -I"$(trmem_dir)"
 #!endif
-inc_dirs += -I"../h"
+inc_dirs += -I"../../h"
 inc_dirs += $(cg_inc_dirs)
 inc_dirs += $(asminline_inc_dirs)
 inc_dirs += -I"$(dwarf_dir)/dw/h"
@@ -166,7 +166,7 @@ optencod_targ_dbg = dbg
  
 # source search path
  
-.c: ../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c;$(brinfo_dir)/c
+.c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c;$(brinfo_dir)/c
  
 #
 # External libraries
@@ -311,33 +311,33 @@ wpp$(target_cpu)01.int : ./intlbin.exe errors01.int usage01.int
 ./msgencod.exe: $(fe_misc_dir)/c/msgencod.c
     $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(wcl_util_opts)
  
-errmsgs1.gh errmsgs2.gh errlevel.gh errors01.int : ./msgencod.exe ../gml/messages.gml
-    $[@ -s -i -q ../gml/messages.gml errmsgs1.gh errmsgs2.gh errlevel.gh
+errmsgs1.gh errmsgs2.gh errlevel.gh errors01.int : ./msgencod.exe ../../gml/messages.gml
+    $[@ -s -i -q ../../gml/messages.gml errmsgs1.gh errmsgs2.gh errlevel.gh
  
 ./findhash.exe: $(fe_misc_dir)/c/findhash.c
     $(bld_cl) $[@ $(wcl_util_opts)
  
-keywords.gh weights.gh : ./findhash.exe ../hash/plusplus.key ../hash/pc.key
-    $[@ -q ../hash/plusplus.key ../hash/pc.key
+keywords.gh weights.gh : ./findhash.exe ../../hash/plusplus.key ../../hash/pc.key
+    $[@ -q ../../hash/plusplus.key ../../hash/pc.key
  
-./umktable.exe: ../c/umktable.c xlat.gh
-    $(bld_cl) $[@ $(wcl_util_opts)
+./umktable.exe: ../../c/umktable.c xlat.gh
+    $(bld_cl) $[@ -I"../../h" $(wcl_util_opts)
  
 yylex.gh : ./umktable.exe
     $[@ $@
  
-./mktrans.exe: ../c/mktrans.c
+./mktrans.exe: ../../c/mktrans.c
     $(bld_cl) $[@ $(wcl_util_opts)
  
-xlat.gh : ./mktrans.exe ../h/ctokens.h keywords.gh ytab.gh
+xlat.gh : ./mktrans.exe ../../h/ctokens.h keywords.gh ytab.gh
     $[@ $]@ $@
  
-ytab.c ytab.gh : ../y/plusplus.y ../c/yydriver.c
+ytab.c ytab.gh : ../../y/plusplus.y ../../c/yydriver.c
     $(byacc) -b -d -f -t -u $[@ $]@ >y.out
 # The -p and -s switches are v. useful when debugging parser but gen large file!
 #    $(byacc) -b -d -f -t -u -p -s $[@ $]@ >y.out
 # comment out the next line during testing of grammar changes
-    diff y.out ../y/check.out
+    diff y.out ../../y/check.out
     rm -f ytab.gh
     cp ytab.h ytab.gh
     rm -f ytab.h
@@ -345,14 +345,14 @@ ytab.c ytab.gh : ../y/plusplus.y ../c/yydriver.c
 ./optencod.exe: $(fe_misc_dir)/c/optencod.c
     $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(wcl_util_opts)
  
-cmdlnpr1.gh cmdlnpr2.gh cmdlnusg.gh usage.u usage01.int : ./optencod.exe ../gml/options.gml
+cmdlnpr1.gh cmdlnpr2.gh cmdlnusg.gh usage.u usage01.int : ./optencod.exe ../../gml/options.gml
     $[@ -i -q $(optencod_opt_$(host_os)) $]@ cmdlnpr1.gh cmdlnpr2.gh cmdlnusg.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))
  
-./icmask.exe: ../c/icmask.c
-    $(bld_cl) $< $(wcl_util_opts)
+./icmask.exe: ../../c/icmask.c
+    $(bld_cl) $< -I"../../h" $(wcl_util_opts)
  
-ic_mask.gh : ./icmask.exe ../h/ic.h ../c/dwarf.c ../c/cgbkcgrf.c ../c/cgio.c ../c/brmwrite.c
-    $[@ ../h/ic.h ../c/dwarf.c ../c/cgbkcgrf.c ../c/cgio.c ../c/brmwrite.c
+ic_mask.gh : ./icmask.exe ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c
+    $[@ ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c
  
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
     $(bld_cl) -I"$(wasm_dir)/h" $[@ $(wcl_util_opts)
@@ -367,7 +367,9 @@ asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@
  
 verrc_dll = $(dll_name)
+verrc_dll_skel = ../../version.rc
 verrc_exe = $(exe_name)
+verrc_exe_skel = ../../exever.rc
 !include verrc.mif
  
 !ifeq target_cpu axp
@@ -397,7 +399,7 @@ target_as_386 = bwasm -zq -3 -w8
 target_as_ppc = wasmppc -zq -w8
  
 xcode$(target_cpu).tmp: $(cc_dir)/a/code$(target_cpu).asm
-    $(target_as_$(target_cpu)) -fo=.obj -I$(watcom_h) $[@
+    $(target_as_$(target_cpu)) -fo=.obj -I"$(watcom_dir)/h" $[@
     $(linker) format dos com op nodefault file code$(target_cpu).obj name $@ disable 1023,1080
  
 ./mkcode.exe: $(cc_dir)/a/mkcode.c

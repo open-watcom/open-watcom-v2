@@ -23,7 +23,7 @@ echo Bootstrapping compiler using GNU tools...
 [ INCLUDE <DEVDIR>/cpp/prereq.ctl ]
 [ INCLUDE <DEVDIR>/pmake/prereq.ctl ]
 [ INCLUDE <DEVDIR>/nwlib/prereq.ctl ]
-[ INCLUDE <DEVDIR>/cc/wcl/prereq.ctl ]
+[ INCLUDE <DEVDIR>/wcl/prereq.ctl ]
 [ INCLUDE <DEVDIR>/wasm/prereq.ctl ]
 [ INCLUDE <DEVDIR>/causeway/prereq.ctl ]
 [ BLOCK .<BUILDMODE>. .. ]
@@ -43,7 +43,8 @@ echo Bootstrapping compiler using GNU tools...
 #        Prebuild POSIX tools for build process
 [ INCLUDE <DEVDIR>/posix/prereq.ctl ]
 #        Prebuild wres.lib and new WRC with OS/2 support for build process
-[ INCLUDE <DEVDIR>/sdk/rc/prereq.ctl ]
+[ INCLUDE <DEVDIR>/wres/prereq.ctl ]
+[ INCLUDE <DEVDIR>/rc/rc/prereq.ctl ]
 #        Prebuild parsedlg tool for build process
 [ INCLUDE <DEVDIR>/parsedlg/prereq.ctl ]
 #
@@ -59,11 +60,12 @@ echo Bootstrapping compiler using GNU tools...
 #        Next step, build libraries used by various projects
 #
 #        RC builds resource file libraries for everybody
-[ INCLUDE <DEVDIR>/fmedit/lang.ctl ]
+[ INCLUDE <DEVDIR>/wres/lang.ctl ]
 #        WPI and commonui needs to be done before SDK
 [ INCLUDE <DEVDIR>/wpi/lang.ctl ]
 [ INCLUDE <DEVDIR>/commonui/lang.ctl ]
 #
+[ INCLUDE <DEVDIR>/rc/lang.ctl ]
 #        SDK must be done after DISASM?
 [ INCLUDE <DEVDIR>/sdk/lang.ctl ]
 #        Librariess for different program are next
@@ -121,7 +123,7 @@ echo Bootstrapping compiler using GNU tools...
 [ INCLUDE <DEVDIR>/cg/lang.ctl ]
 #        C front ends must be built after code generator
 [ INCLUDE <DEVDIR>/cc/lang.ctl ]
-[ INCLUDE <DEVDIR>/cc/wcl/lang.ctl ]
+[ INCLUDE <DEVDIR>/wcl/lang.ctl ]
 [ INCLUDE <DEVDIR>/plusplus/lang.ctl ]
 [ INCLUDE <DEVDIR>/fe_misc/lang.ctl ]
 #        FORTRAN 77 compilers must be built after code generators
@@ -134,7 +136,7 @@ echo Bootstrapping compiler using GNU tools...
 #        Now we can build the C++ libraries - must be done after C library
 #        as well as after the C++ compilers
 #
-[ INCLUDE <DEVDIR>/plusplus/cpplib/lang.ctl ]
+[ INCLUDE <DEVDIR>/cpplib/lang.ctl ]
 [ INCLUDE <DEVDIR>/wclass/lang.ctl ]
 #        rtdll must be made after all other libraries
 #[ INCLUDE <DEVDIR>/rtdll/lang.ctl ]

@@ -999,7 +999,7 @@ void dump_hash( void )
         fputs( "pick( T_", outfile );
         if( ord == 0 || ord > num_keywords ) {
             dump_token_name( 0 );
-            fprintf( outfile, ",\"???%02u\",TC_UNKNOWN),\n", extra );
+            fprintf( outfile, ",\"???%02u\",TC_UNKNOWN)\n", extra );
             ++extra;
             continue;
         }
@@ -1015,7 +1015,7 @@ void dump_hash( void )
             k = 2;
         }
         dump_n_blanks( 15 - k );
-        fprintf( outfile, "%s ),\n", token_class[ ord ] );
+        fprintf( outfile, "%s )\n", token_class[ ord ] );
     }
     fclose( outfile );
 }

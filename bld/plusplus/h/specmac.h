@@ -52,4 +52,3 @@ pick( "xor_eq",         MACRO_ALT_XOR_EQ,  MFLAG_SPECIAL )
 pick( "not",            MACRO_ALT_NOT,     MFLAG_SPECIAL )
 pick( "not_eq",         MACRO_ALT_NOT_EQ,  MFLAG_SPECIAL )
 pick( "compl",          MACRO_ALT_COMPL,   MFLAG_SPECIAL )
-#undef pick

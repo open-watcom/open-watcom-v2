@@ -35,7 +35,6 @@
 */
 #include "scan.h"
 #include "ctokens.h"
-#include "weights.h"
 
 /* The following table is EBCDIC dependent. */
 

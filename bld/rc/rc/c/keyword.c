@@ -131,13 +131,12 @@ typedef struct HashEntry {
 #define TC_UNKNOWN -1
 
 /* create the hash table by using the a pick macro and the keywords?.gh files */
-#define pick( a, b, c ) {b, c}
 
 static const HashEntry HashTable[] = {
+    #define pick( a, b, c ) {b, c},
     #include "keywords.gh"
+    #undef pick
 };
-
-#undef pick
 
 int LookupKeyword( ScanString newstring )
 /***************************************/

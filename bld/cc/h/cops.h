@@ -30,15 +30,15 @@
 
 
 typedef enum ops {
-#undef pick1
-#define pick1(enum,dump,cgenum) enum,
-#include "copcodes.h"
+    #define pick1(enum,dump,cgenum) enum,
+    #include "copcodes.h"
+    #undef pick1
 } opr_code;
 
 typedef enum condition_codes {
-#undef pick1
-#define pick1(enum,dump,cgenum) enum,
-#include "copcond.h"
+    #define pick1(enum,dump,cgenum) enum,
+    #include "copcond.h"
+    #undef pick1
 } cond_code;
 
 typedef enum{

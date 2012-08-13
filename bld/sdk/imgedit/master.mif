@@ -115,7 +115,7 @@ $(name).exe : $(name).res $(objs) $(libs) $(version_res_$(host_os)_$(host_cpu))
 !endif
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(wimgedit_dir)/h/wimgedit.msg
         $(c_pp) -zk0 $(inc_path) $[@ >$^@

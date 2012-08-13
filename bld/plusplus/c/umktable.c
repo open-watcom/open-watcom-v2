@@ -36,9 +36,12 @@
 #include "xlat.gh"
 
 char *Tokens[] = {
-
-#define pick(token,string,class) string
-#include "ctokens.h"
+    #define prec( value )
+    #define pick(token,string,class) string,
+    #include "_ctokens.h"
+    #undef pick
+    #undef prec
+};
 
 
 int main( int argc, char **argv )

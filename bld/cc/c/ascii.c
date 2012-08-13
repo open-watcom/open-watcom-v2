@@ -31,7 +31,6 @@
 
 #include "cvars.h"
 #include "scan.h"
-#include "weights.gh"
 
 #define C_XW    (C_WS | C_EX)
 // C++ has TAB and CR set to C_XW

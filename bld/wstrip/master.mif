@@ -61,7 +61,7 @@ $(name).exe : $(dependants) $(objs) $(version_res_$(host_os)_$(host_cpu))
 !endif
 
 msg.gh : wstrip.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 incltext.gh : ../wstrip.msg
         $(c_pp) -zk0 $(rc_defines_$(host_os)) >$^@ <<

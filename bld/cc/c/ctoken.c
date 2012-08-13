@@ -29,17 +29,17 @@
 *
 ****************************************************************************/
 
-#undef pick
 #include "ctokens.h"
 
 char            *Tokens[] = {
-#undef  pick
-#define pick(token,string,class) string
-#include "ctokens.h"
+    #define pick(token,string,class) string,
+    #include "_ctokens.h"
+    #undef  pick
+};
 
 token_class     TokenClass[] = {
-#undef pick
-#define pick(token,string,class) class
-#include "ctokens.h"
-#undef pick
+    #define pick(token,string,class) class,
+    #include "_ctokens.h"
+    #undef pick
+};
 

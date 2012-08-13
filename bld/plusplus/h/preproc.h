@@ -49,13 +49,10 @@ typedef unsigned char TOKEN;
 #define BUF_SIZE_SHIFT          (9)
 #define BUF_SIZE                (1<<BUF_SIZE_SHIFT)
 
-#ifdef pick
-#undef pick
-#endif
-#define pick( a, b, c ) a,
-enum
-{
-#include "auxinfo.h"
+enum {
+    #define pick( a, b, c ) a,
+    #include "auxinfo.h"
+    #undef pick
 };
 
 //typedef target_ulong target_int_const;

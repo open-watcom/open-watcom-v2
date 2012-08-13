@@ -1,7 +1,6 @@
-#pmake: buildwcl os_dos cpu_i86 target_axp
+#pmake: build os_dos cpu_i86 target_axp
 
 host_os  = dos
 host_cpu = i86
-target_cpu = axp
 
-!include ../master.mif
+!include ../target.mif

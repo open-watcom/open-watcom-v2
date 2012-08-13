@@ -51,9 +51,9 @@ local void CheckBitfieldType( TYPEPTR typ );
 
 /* matches enum DataType in ctypes.h */
 static  char    CTypeSizes[] = {
-#undef  pick1
-#define pick1(enum,cgtype,x86asmtype,name,size) size,
-#include "cdatatyp.h"
+    #define pick1(enum,cgtype,x86asmtype,name,size) size,
+    #include "cdatatyp.h"
+    #undef  pick1
 };
 
 TYPEPTR CTypeHash[TYPE_LAST_ENTRY];

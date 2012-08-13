@@ -20,29 +20,29 @@ cdsay .
 #========================
 
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <PROJDIR>/alpha/dos386/wasaxp.exe    <RELROOT>/binw/wasaxp.exe
-    <CPCMD> <PROJDIR>/ppc/dos386/wasppc.exe      <RELROOT>/binw/wasppc.exe
+    <CPCMD> axp/dos386/wasaxp.exe      <RELROOT>/binw/wasaxp.exe
+    <CPCMD> ppc/dos386/wasppc.exe      <RELROOT>/binw/wasppc.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <PROJDIR>/alpha/os2386/wasaxp.exe    <RELROOT>/binp/wasaxp.exe
-    <CPCMD> <PROJDIR>/ppc/os2386/wasppc.exe      <RELROOT>/binp/wasppc.exe
-    <CPCMD> <PROJDIR>/mips/os2386/wasmps.exe     <RELROOT>/binp/wasmps.exe
+    <CPCMD> axp/os2386/wasaxp.exe      <RELROOT>/binp/wasaxp.exe
+    <CPCMD> ppc/os2386/wasppc.exe      <RELROOT>/binp/wasppc.exe
+    <CPCMD> mps/os2386/wasmps.exe      <RELROOT>/binp/wasmps.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <PROJDIR>/alpha/nt386/wasaxp.exe     <RELROOT>/binnt/wasaxp.exe
-    <CPCMD> <PROJDIR>/ppc/nt386/wasppc.exe       <RELROOT>/binnt/wasppc.exe
-    <CPCMD> <PROJDIR>/mips/nt386/wasmps.exe      <RELROOT>/binnt/wasmps.exe
+    <CPCMD> axp/nt386/wasaxp.exe       <RELROOT>/binnt/wasaxp.exe
+    <CPCMD> ppc/nt386/wasppc.exe       <RELROOT>/binnt/wasppc.exe
+    <CPCMD> mps/nt386/wasmps.exe       <RELROOT>/binnt/wasmps.exe
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <PROJDIR>/alpha/ntaxp/wasaxp.exe     <RELROOT>/axpnt/wasaxp.exe
-    <CPCMD> <PROJDIR>/ppc/ntaxp/wasppc.exe       <RELROOT>/axpnt/wasppc.exe
+    <CPCMD> axp/ntaxp/wasaxp.exe       <RELROOT>/axpnt/wasaxp.exe
+    <CPCMD> ppc/ntaxp/wasppc.exe       <RELROOT>/axpnt/wasppc.exe
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> <PROJDIR>/alpha/linux386/wasaxp.exe  <RELROOT>/binl/wasaxp
-    <CPCMD> <PROJDIR>/ppc/linux386/wasppc.exe    <RELROOT>/binl/wasppc
-    <CPCMD> <PROJDIR>/mips/linux386/wasmps.exe   <RELROOT>/binl/wasmps
+    <CPCMD> axp/linux386/wasaxp.exe    <RELROOT>/binl/wasaxp
+    <CPCMD> ppc/linux386/wasppc.exe    <RELROOT>/binl/wasppc
+    <CPCMD> mps/linux386/wasmps.exe    <RELROOT>/binl/wasmps
 
-#    <CPCMD> <PROJDIR>/alpha/ntaxp/wasaxp.exe     <RELROOT>/axpnt/wasaxp.exe
+#    <CPCMD> axp/ntaxp/wasaxp.exe       <RELROOT>/axpnt/wasaxp.exe
 
 [ BLOCK <1> clean ]
 #==================

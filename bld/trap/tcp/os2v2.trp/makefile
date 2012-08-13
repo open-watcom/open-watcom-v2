@@ -8,6 +8,4 @@ cpu = x86
 which = TRAP
 type  = remote_link
 
-extra_libs = $(os2386)
-
 !include $(trap_dir)/master.mif
