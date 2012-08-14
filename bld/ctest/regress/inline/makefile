@@ -3,7 +3,6 @@ ctest_name = inline
 !include ../environ.mif
 !include inline.mif
 
-wasmtest_dir = $(wasm_dir)/test
 inline_dir = $(wasmtest_dir)/inline
 
 !ifdef test1
