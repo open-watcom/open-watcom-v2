@@ -57,7 +57,7 @@
 #
 /cmdedit/*/*.dll
 #
-/cpplib/*/*/*/*.def
+/cpplib/*/*.dll/*.def
 /cpplib/rtdll/*/*/*.dll
 #
 /ctest/*.out
