@@ -19,6 +19,7 @@ cdsay .
     rm -f <OWBINDIR>/wgrep<CMDEXT>
     rm -f <OWBINDIR>/wtouch<CMDEXT>
     rm -f <OWBINDIR>/aliasgen<CMDEXT>
+    rm -f <OWBINDIR>/genverrc<CMDEXT>
     rm -f <OWBINDIR>/wmake<CMDEXT>
 # POSIX tools
     rm -f <OWBINDIR>/diff.exe

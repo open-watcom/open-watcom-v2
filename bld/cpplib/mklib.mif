@@ -163,9 +163,9 @@ reference : .symbolic $(target_lib)
 !ifdef __LOADDLL__
 comp_cpp = rpp$(host_cpu)
 !else ifdef __UNIX__
-comp_cpp = $(plusplus_dir)/rpp.$(host_cpu)/rpp$(host_cpu).exe
+comp_cpp = $(plusplus_dir)/$(host_cpu)/rpp/rpp$(host_cpu).exe
 !else
-comp_cpp = $(plusplus_dir:/=\)\rpp.$(host_cpu)\rpp$(host_cpu).exe
+comp_cpp = $(plusplus_dir:/=\)\$(host_cpu)\rpp\rpp$(host_cpu).exe
 !endif
 
 .cpp : $(cpp_dirs)

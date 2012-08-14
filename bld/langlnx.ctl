@@ -16,7 +16,8 @@ set WLINK_LNK=bootstrp.lnk
 
 # compiled using wmake + gcc + ar/wlib
 [ INCLUDE <DEVDIR>/yacc/prereq.ctl ]
-[ INCLUDE <DEVDIR>/sdk/rc/prereq.ctl ]
+[ INCLUDE <DEVDIR>/wres/prereq.ctl ]
+[ INCLUDE <DEVDIR>/rc/rc/prereq.ctl ]
 [ INCLUDE <DEVDIR>/wstrip/prereq.ctl ]
 [ INCLUDE <DEVDIR>/orl/prereq.ctl ]
 [ INCLUDE <DEVDIR>/cfloat/prereq.ctl ]
@@ -32,25 +33,25 @@ set WLINK_LNK=bootstrp.lnk
 [ INCLUDE <DEVDIR>/clib/lang.ctl ]
 [ INCLUDE <DEVDIR>/mathlib/lang.ctl ]
 [ INCLUDE <DEVDIR>/emu/lang.ctl ]
-[ INCLUDE <DEVDIR>/cc/wcl/prereq.ctl ]
+[ INCLUDE <DEVDIR>/wcl/prereq.ctl ]
 [ INCLUDE <DEVDIR>/cfloat/lang.ctl ]
 [ INCLUDE <DEVDIR>/owl/lang.ctl ]
 [ INCLUDE <DEVDIR>/dwarf/lang.ctl ]
 [ INCLUDE <DEVDIR>/re2c/prereq.ctl ]
-[ INCLUDE <DEVDIR>/sdk/rc/wres/prereq.ctl ]
+[ INCLUDE <DEVDIR>/wres/lang.ctl ]
 [ INCLUDE <DEVDIR>/as/lang.ctl ]
 [ INCLUDE <DEVDIR>/cg/lang.ctl ]
 [ INCLUDE <DEVDIR>/cc/lang.ctl ]
 [ INCLUDE <DEVDIR>/plusplus/lang.ctl ]
-[ INCLUDE <DEVDIR>/plusplus/cpplib/lang.ctl ]
-[ INCLUDE <DEVDIR>/cc/wcl/lang.ctl ]
+[ INCLUDE <DEVDIR>/cpplib/lang.ctl ]
+[ INCLUDE <DEVDIR>/wcl/lang.ctl ]
 
 [ BLOCK <1> rel2 cprel2 ]
-    <CPCMD> <DEVDIR>/cc/wcl/linux386.386/wcl386.exe    <OWBINDIR>/wcl386
-    <CPCMD> <DEVDIR>/cc/wcl/linux386.i86/wcl.exe       <OWBINDIR>/wcl
-    <CPCMD> <DEVDIR>/cc/linux386.386/wcc386c.exe       <OWBINDIR>/wcc386
-    <CPCMD> <DEVDIR>/plusplus/linux386.386/wcpp386.exe <OWBINDIR>/wpp386
-    <CPCMD> <DEVDIR>/plusplus/linux386.i86/wcppi86.exe <OWBINDIR>/wpp
+    <CPCMD> <DEVDIR>/wcl/386/linux386/wcl386.exe       <OWBINDIR>/wcl386
+    <CPCMD> <DEVDIR>/wcl/i86/linux386/wcl.exe          <OWBINDIR>/wcl
+    <CPCMD> <DEVDIR>/cc/386/linux386/wcc386c.exe       <OWBINDIR>/wcc386
+    <CPCMD> <DEVDIR>/plusplus/386/linux386/wcpp386.exe <OWBINDIR>/wpp386
+    <CPCMD> <DEVDIR>/plusplus/i86/linux386/wcppi86.exe <OWBINDIR>/wpp
 
 [ BLOCK . . ]
 set OWLINUXBUILD=normal
@@ -58,7 +59,8 @@ set WLINK_LNK=
 
 # create full-featured wmake...
 
-[ INCLUDE <DEVDIR>/sdk/rc/prereq.ctl ]
+[ INCLUDE <DEVDIR>/wres/prereq.ctl ]
+[ INCLUDE <DEVDIR>/rc/rc/prereq.ctl ]
 [ INCLUDE <DEVDIR>/orl/lang.ctl ]
 [ INCLUDE <DEVDIR>/wmake/prereq.ctl ]
 
@@ -69,8 +71,8 @@ set WLINK_LNK=
     rm -rf <DEVDIR>/pmake/<OBJDIR>
     rm -rf <DEVDIR>/cpp/<OBJDIR>
     rm -rf <DEVDIR>/yacc/<OBJDIR>
-    rm -rf <DEVDIR>/sdk/rc/wres/<OBJDIR>
-    rm -rf <DEVDIR>/sdk/rc/rc/<OBJDIR>
+    rm -rf <DEVDIR>/wres/<OBJDIR>
+    rm -rf <DEVDIR>/rc/rc/<OBJDIR>
     rm -rf <DEVDIR>/wstrip/<OBJDIR>
     rm -rf <DEVDIR>/wmake/<OBJDIR>
 
@@ -81,7 +83,7 @@ set WLINK_LNK=
     rm -rf <DEVDIR>/dwarf/dw/<OBJDIR>
     rm -rf <DEVDIR>/cg/intel/386/<OBJDIR>
     rm -rf <DEVDIR>/cc/<OBJDIR>
-    rm -rf <DEVDIR>/cc/wcl/<OBJDIR>
+    rm -rf <DEVDIR>/wcl/<OBJDIR>
     rm -rf <DEVDIR>/wasm/<OBJDIR>
     rm -rf <DEVDIR>/wl/<OBJDIR>
 
@@ -91,8 +93,6 @@ set WLINK_LNK=
     rm -f <OWBINDIR>/wcc
     rm -f <OWBINDIR>/wpp386
     rm -f <OWBINDIR>/wpp
-    rm -f <OWBINDIR>/wmake
     rm -f <OWBINDIR>/wgml
     rm -f <OWBINDIR>/diff
     rm -f <OWBINDIR>/builder
-    

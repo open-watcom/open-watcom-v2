@@ -100,6 +100,9 @@ $(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $
 !endif
         # don't bind - it screws up everything - BBB
 !else
+# OW 1.9 workaround ######
+        set edpath=
+# OW 1.9 workaround ######
         set edpath=$(vi_dir)/dat
         $(edbind) $(bindextra) -q $(name)
 !endif

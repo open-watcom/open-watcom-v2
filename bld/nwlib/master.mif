@@ -136,7 +136,7 @@ version_res_nt_386 = version.res
 exe_version_res_nt_386 = exever.res
 !endif
 
-inc_dirs =  -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
+inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
 .c: ../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
 .h: ../h;$(watcom_dir)/h
 
