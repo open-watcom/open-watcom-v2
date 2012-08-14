@@ -173,7 +173,7 @@ cflags_win      = -bt=windows -DSTRICT
 cflags_os2      = -bt=os2
 cflags_qnx      = -bt=qnx
 cflags_osi      = -bt=osi
-cflags_dos      = -bt=dos
+cflags_dos      = -bt=dos -D__WATCOM_LFN__
 cflags_zdos     = -bt=zdos
 cflags_rdos     = -bt=rdos -bm
 cflags_rdosdev  = -bt=rdosdev -bm -zu
@@ -270,8 +270,8 @@ clflags_os2_386    = -l=os2v2
 clflags_qnx_i86    = -l=qnx
 clflags_qnx_386    = -l=qnx
 clflags_osi_386    = -l=osi
-clflags_dos_i86    = -l=dos
-clflags_dos_386    = -l=dos4g
+clflags_dos_i86    = -l=dos -D__WATCOM_LFN__
+clflags_dos_386    = -l=dos4g -D__WATCOM_LFN__
 clflags_zdos_386   = -l=zdos
 clflags_rdos_386   = -l=rdos
 clflags_rdosdev_386= -l=rdosdev

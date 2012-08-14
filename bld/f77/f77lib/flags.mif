@@ -239,7 +239,7 @@ a_dbg_flags = -DNDEBUG
 !endif
 
 # bt_(system)
-bt_msdos      =-bt=dos
+bt_msdos      =-bt=dos -D__WATCOM_LFN__
 bt_netware    =-bt=netware
 bt_os2        =-bt=os2
 bt_qnx        =-bt=qnx
