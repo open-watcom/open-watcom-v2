@@ -87,6 +87,6 @@ xx.dis
 
 asm_flags_x = -c
 asm_flags_loader2 = -c
-asm_flags_getenv = -I"../../../watcom/h"
+asm_flags_getenv = -I"$(watcom_dir)/h"
 
 !include ../test.mif
