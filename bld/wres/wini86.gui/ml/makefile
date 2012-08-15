@@ -2,6 +2,7 @@
 host_OS = win
 host_CPU = i86
 
+is_gui  = y
 model = l
 linkage = static
 

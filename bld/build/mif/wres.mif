@@ -16,8 +16,12 @@ name_model_conv = m$(memory_model_386)_r/wres.lib
 name_i86_s = $(wres_dir)/dosi86/ms/wres.lib
 name_i86_m = $(wres_dir)/dosi86/mm/wres.lib
 name_i86_c = $(wres_dir)/dosi86/mc/wres.lib
+!ifeq host_os win
 !ifdef WINDOWS
+name_i86_l = $(wres_dir)/wini86.gui/ml/wres.lib
+!else
 name_i86_l = $(wres_dir)/wini86/ml/wres.lib
+!endif
 !else ifdef pegged
 name_i86_l = $(wres_dir)/os2i86/ml/wres.lib
 !else
