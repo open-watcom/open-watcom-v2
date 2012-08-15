@@ -488,6 +488,7 @@ print REPORT "=====================================\n\n";
 # Do a p4 sync to get the latest changes.
 #########################################
 
+if (0) {
 p4_sync();
 
 get_prev_changeno;
@@ -515,6 +516,7 @@ print REPORT "\n";
 if (!$build_needed) { # nothing changed, don't waste computer time
     close(REPORT);
     exit 0;
+}
 }
 
 ############################################################
@@ -575,7 +577,7 @@ my $docs_result = run_docs_build();
 # Display p4 sync messages for reference.
 ##########################################
 
-display_p4_messages();
+# display_p4_messages();
 
 set_prev_changeno( $prev_changeno, $date_stamp );  #remember changeno and date
 
