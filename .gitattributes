@@ -98,4 +98,5 @@ makefile text
 unicode*.* binary
 
 /docs/doc/fl/items.dat binary
-
+/bld/ctest/regress/positive/source/pp15.c binary
+/bld/plustest/regress/positive/source/pp15.c binary
