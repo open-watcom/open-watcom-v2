@@ -62,7 +62,7 @@ cdsay .
 
     <CPCMD> <DEVDIR>/src/misc/*                         <RELROOT>/src/
 
-    <CPCMD> <DEVDIR>/plusplus/cpplib/contain/cpp/*      <RELROOT>/src/cpplib/contain/
+    <CPCMD> <DEVDIR>/cpplib/contain/cpp/*               <RELROOT>/src/cpplib/contain/
 
     <CPCMD> <DEVDIR>/src/clibexam/*                     <RELROOT>/samples/clibexam/
     <CPCMD> <DEVDIR>/src/cplbexam/*                     <RELROOT>/samples/cplbexam/
