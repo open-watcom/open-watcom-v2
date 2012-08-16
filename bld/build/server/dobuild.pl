@@ -31,6 +31,7 @@
 use strict;
 
 use Common;
+use Config;
 
 my(@p4_messages);
 my($OStype);
@@ -59,7 +60,12 @@ if ($^O eq "MSWin32") {
     $OStype = "WIN32";
     $ext    = "bat";
     $setenv = "set";
-    $build_platform = "win32-x86";
+    if ($Config{archname} =~ /64/) {
+        $build_platform = "win32-x64";
+    } else {
+        $build_platform = "win32-x86";
+    }
+    
 } elsif ($^O eq "linux") {
     $OStype = "UNIX";
     $ext    = "sh";
@@ -124,8 +130,9 @@ sub make_build_batch
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
-        if    (/$setenv OWROOT/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM/i) { print BATCH "$setenv WATCOM=", $WATCOM, "\n"; }
+        if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
+        elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", $WATCOM, "\n"; }
+        elsif (/$setenv OW_DOSBOX=/i) { print BATCH "$setenv OW_DOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
         else                      { print BATCH; }
     }
     close(INPUT);
@@ -178,8 +185,9 @@ sub make_docs_batch
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
-        if    (/$setenv OWROOT/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM/i) { print BATCH "$setenv WATCOM=", $WATCOM, "\n"; }
+        if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
+        elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", $WATCOM, "\n"; }
+        elsif (/$setenv OW_DOSBOX=/i) { print BATCH "$setenv OW_DOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
         elsif (/$setenv GHOSTSCRIPTPATH/i) { ; }
         elsif (/$setenv WIN95HC/i) { ; }
         elsif (/$setenv HHC/i)    { ; }
@@ -213,21 +221,22 @@ sub make_test_batch
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
-        if    (/$setenv OWROOT/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM/i) { print BATCH "$setenv WATCOM=", get_reldir(), "\n"; }
+        if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
+        elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", get_reldir(), "\n"; }
+        elsif (/$setenv OW_DOSBOX=/i) { print BATCH "$setenv OW_DOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
         else                      { print BATCH; }
     }
     close(INPUT);
 
     # Add additional commands to do the testing.
     print BATCH "\n";
-    if ($^O eq "MSWin32") {
-        print BATCH "$setenv EXTRA_ARCH=i86\n\n";
+    if ($^O eq "MSWin32") { 
+        print BATCH "if '%OW_DOSBOX%' == '' $setenv EXTRA_ARCH=i86\n\n";
     }
     print BATCH "cd $OW\ncd bld\ncd ctest\n";
     print BATCH "rm *.log\n";
     print BATCH "wmake -h targ_env_386=cw386\n";
-    print BATCH "cd $OW\ncd bld\ncd wasm\ncd test\n";
+    print BATCH "cd $OW\ncd bld\ncd wasmtest\n";
     print BATCH "rm *.log\n";
     print BATCH "wmake -h targ_env_386=cw386\n";
     print BATCH "cd $OW\ncd bld\ncd f77\ncd regress\n";
@@ -300,7 +309,7 @@ sub process_log
                         $result = "fail";      # in case others failed on os2
                     }
                 }
-            }			
+            }                   
             @fields = split;
             $project_name = Common::remove_OWloc($fields[2]);
             $arch_test = "";
@@ -383,7 +392,7 @@ sub run_tests
     print REPORT "\tC++ Compiler    : ";
     if (process_log("$OW\/bld\/plustest\/result.log") ne "success") { $result = "fail"; }
     print REPORT "\tWASM            : ";
-    if (process_log("$OW\/bld\/wasm\/test\/result.log") ne "success") { $result = "fail"; }
+    if (process_log("$OW\/bld\/wasmtest\/result.log") ne "success") { $result = "fail"; }
     print REPORT "\n";
 
     return $result;
@@ -482,41 +491,41 @@ if (stat($report_name)) {
     rename $report_name, $bak_name;
 }
 open(REPORT, ">$report_name") || die "Unable to open $report_name file.";
-print REPORT "Open Watcom Build Report (", $build_platform, ")\n";
-print REPORT "=====================================\n\n";
+print REPORT "Open Watcom Build Report (build on ", $build_platform, ")\n";
+print REPORT "================================================\n\n";
 
 # Do a p4 sync to get the latest changes.
 #########################################
 
-if (0) {
-p4_sync();
+if ($Common::config{'OWCVS'} eq "p4") {
+    p4_sync();
 
-get_prev_changeno;
+    get_prev_changeno;
     
-if ($prev_changeno > 0) {
-   print REPORT "\tBuilt through change   : $prev_changeno on $prev_report_stamp\n";
-} else {
-   $prev_changeno = -1; # no previous changeno / build
-}
+    if ($prev_changeno > 0) {
+       print REPORT "\tBuilt through change   : $prev_changeno on $prev_report_stamp\n";
+    } else {
+       $prev_changeno = -1; # no previous changeno / build
+    }
     
-open(LEVEL, "p4 counters|");
-while (<LEVEL>) {
-  if (/^change = (.*)/) {
-     if ($prev_changeno eq $1) {
-        $build_needed = 0;
-        print REPORT "\tNo source code changes, build not needed\n";
-     } else {
-        $prev_changeno = $1;
-        print REPORT "\tBuilding through change: $1\n";
-     }
-  }
-}
-close(LEVEL);
-print REPORT "\n";
-if (!$build_needed) { # nothing changed, don't waste computer time
-    close(REPORT);
-    exit 0;
-}
+    open(LEVEL, "p4 counters|");
+    while (<LEVEL>) {
+      if (/^change = (.*)/) {
+         if ($prev_changeno eq $1) {
+            $build_needed = 0;
+            print REPORT "\tNo source code changes, build not needed\n";
+         } else {
+            $prev_changeno = $1;
+            print REPORT "\tBuilding through change: $1\n";
+         }
+      }
+    }
+    close(LEVEL);
+    print REPORT "\n";
+    if (!$build_needed) { # nothing changed, don't waste computer time
+        close(REPORT);
+        exit 0;
+    }
 }
 
 ############################################################
@@ -577,7 +586,9 @@ my $docs_result = run_docs_build();
 # Display p4 sync messages for reference.
 ##########################################
 
-# display_p4_messages();
+if ($Common::config{'OWCVS'} eq "p4") {
+    display_p4_messages();
+}
 
 set_prev_changeno( $prev_changeno, $date_stamp );  #remember changeno and date
 

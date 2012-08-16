@@ -14,6 +14,9 @@ OW=C:\OW
 # The location of your installed compiler (for doing the build).
 WATCOM=C:\WATCOM
 
+# The location of DOSBOX emulator
+DOSBOX=dosbox.exe
+
 # PATH required by GhostScript for PDF creation on used host OS
 GHOSTSCRIPTPATH=c:\gs\gs7.04\bin;c:\gs\gs7.04\lib
 
@@ -21,17 +24,16 @@ GHOSTSCRIPTPATH=c:\gs\gs7.04\bin;c:\gs\gs7.04\lib
 WIN95HC=hcrtf
 HHC=hhc
 
-# File holding the baseline build results for pass1. Relative to HOME.
+# File holding the baseline build results for each pass. Relative to HOME.
 BLDBASE1=bldbase1.txt
-# File holding the most recent build results for pass1. Relative to HOME.
-BLDLAST1=bldlast1.txt
-
-# File holding the baseline build results for pass2. Relative to HOME.
 BLDBASE2=bldbase2.txt
-# File holding the most recent build results for pass2. Relative to HOME.
-BLDLAST2=bldlast2.txt
-
-# File holding the baseline build results for documentation build. Relative to HOME.
 BLDBASED=bldbased.txt
-# File holding the most recent build results for documentation build. Relative to HOME.
+
+# File holding the most recent build results for each pass. Relative to HOME.
+BLDLAST1=bldlast1.txt
+BLDLAST2=bldlast2.txt
 BLDLASTD=bldlastd.txt
+
+# CVS version
+OWCVS=git
+

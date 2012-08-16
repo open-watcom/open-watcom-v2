@@ -57,6 +57,9 @@ sub read_config
     if (!defined($Common::config{"GHOSTSCRIPTPATH"})) {
         $Common::config{"GHOSTSCRIPTPATH"} = "";
     }
+    if (!defined($Common::config{"DOSBOX"})) {
+        $Common::config{"DOSBOX"} = "";
+    }
     if (defined($Common::config{"OW"})) {
         $OWloc = $Common::config{"OW"};
         $OWloc =~ s/\\/\\\\/g;
