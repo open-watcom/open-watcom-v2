@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Error processing, fatal and non-fatal.
 *
 ****************************************************************************/
 
@@ -35,6 +34,27 @@
 #include "myprtf.h"
 
 static void readErrorMsgData( void );
+
+/*
+ * StartupError - process fatal startup error
+ */
+void StartupError( vi_rc err )
+{
+    char    *str;
+
+    if( err == ERR_NO_MEMORY ) {
+        str = "Out of memory";
+    } else {
+        str = GetErrorMsg( err );
+    }
+    MyPrintf( "%s (fatal)\n", str );
+
+#ifdef TRMEM
+    DumpTRMEM();
+#endif
+    /* Do not call ExitEditor() because almost nothing is initialized yet. */
+    exit( -1 );
+} /* StartupError */
 
 /*
  * FatalError - process fatal error

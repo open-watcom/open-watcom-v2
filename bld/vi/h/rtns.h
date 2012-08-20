@@ -261,6 +261,7 @@ vi_rc MoveTopOfPage( range *, long );
 vi_rc MoveBottomOfPage( range *, long );
 
 /* error.c */
+void    StartupError( vi_rc );
 void    FatalError( vi_rc );
 void    Die( const char *, ... );
 char    *GetErrorMsg( vi_rc );
