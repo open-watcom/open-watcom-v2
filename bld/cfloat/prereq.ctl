@@ -1,6 +1,6 @@
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .

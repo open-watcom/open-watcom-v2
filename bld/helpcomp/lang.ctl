@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -20,16 +20,16 @@ cdsay .
 #========================
 
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <PROJDIR>/dos386/whc.exe      <RELROOT>/binw/
+    <CPCMD> dos386/whc.exe      <RELROOT>/binw/
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <PROJDIR>/os2386/whc.exe      <RELROOT>/binp/
+    <CPCMD> os2386/whc.exe      <RELROOT>/binp/
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <PROJDIR>/nt386/whc.exe       <RELROOT>/binnt/
+    <CPCMD> nt386/whc.exe       <RELROOT>/binnt/
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> <PROJDIR>/linux386/whc.exe    <RELROOT>/binl/whc
+    <CPCMD> linux386/whc.exe    <RELROOT>/binl/whc
 
 [ BLOCK <1> clean ]
 #==================

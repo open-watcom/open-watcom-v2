@@ -5,7 +5,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -21,11 +21,11 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> <PROJDIR>/wini86/fmedit.dll <RELROOT>/binw/
+    <CPCMD> wini86/fmedit.dll <RELROOT>/binw/
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <PROJDIR>/nt386/fmedit.dll <RELROOT>/binnt/
+    <CPCMD> nt386/fmedit.dll <RELROOT>/binnt/
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <PROJDIR>/ntaxp/fmedit.dll <RELROOT>/axpnt/
+    <CPCMD> ntaxp/fmedit.dll <RELROOT>/axpnt/
 
 [ BLOCK <1> clean ]
 #==================

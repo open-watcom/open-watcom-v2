@@ -1,6 +1,6 @@
 # --------------------------------------------------------------------
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <DEVDIR>/<LOGFNAME>.<LOGEXT> ]
 
 set FULLBUILD=1

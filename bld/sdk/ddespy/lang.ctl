@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,13 +19,13 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> <DEVDIR>/sdk/ddespy/wini86/wddespy.exe <RELROOT>/binw/wddespy.exe
+    <CPCMD> wini86/wddespy.exe <RELROOT>/binw/wddespy.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <DEVDIR>/sdk/ddespy/nt386/wddespy.exe <RELROOT>/binnt/wddespy.exe
+    <CPCMD> nt386/wddespy.exe <RELROOT>/binnt/wddespy.exe
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <DEVDIR>/sdk/ddespy/ntaxp/wddespy.exe <RELROOT>/axpnt/wddespy.exe
+    <CPCMD> ntaxp/wddespy.exe <RELROOT>/axpnt/wddespy.exe
 
 [ BLOCK <1> clean ]
 #==================

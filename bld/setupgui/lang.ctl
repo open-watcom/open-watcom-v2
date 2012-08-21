@@ -3,7 +3,7 @@
  
 set PROJDIR=<CWD>
  
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
  
 cdsay .
@@ -18,10 +18,10 @@ cdsay .
 
 [ BLOCK <1> build rel2 cprel2 ]
 #==============================
-    <CPCMD> <PROJDIR>/mkdisk/mkexezip.exe <OWBINDIR>/mkexezip<CMDEXT>
-    <CPCMD> <PROJDIR>/mkdisk/uzip.exe <OWBINDIR>/uzip<CMDEXT>
-    <CPCMD> <PROJDIR>/mkdisk/langdat.exe <OWBINDIR>/langdat<CMDEXT>
-    <CPCMD> <PROJDIR>/mkdisk/mkinf.exe <OWBINDIR>/mkinf<CMDEXT>
+    <CPCMD> mkdisk/mkexezip.exe <OWBINDIR>/mkexezip<CMDEXT>
+    <CPCMD> mkdisk/uzip.exe <OWBINDIR>/uzip<CMDEXT>
+    <CPCMD> mkdisk/langdat.exe <OWBINDIR>/langdat<CMDEXT>
+    <CPCMD> mkdisk/mkinf.exe <OWBINDIR>/mkinf<CMDEXT>
  
 [ BLOCK <1> clean ]
 #==================

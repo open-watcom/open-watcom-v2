@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,27 +19,27 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <DEVDIR>/wmake/dosi86/wmk.exe    <RELROOT>/binw/wmaker.exe
-    <CPCMD> <DEVDIR>/wmake/dos386/wmk.exe    <RELROOT>/binw/wmake.exe
+    <CPCMD> dosi86/wmk.exe    <RELROOT>/binw/wmaker.exe
+    <CPCMD> dos386/wmk.exe    <RELROOT>/binw/wmake.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <DEVDIR>/wmake/os2386/wmk.exe    <RELROOT>/binp/wmake.exe
-    <CPCMD> <DEVDIR>/wmake/os2386/wmk.sym    <RELROOT>/binp/wmake.sym
+    <CPCMD> os2386/wmk.exe    <RELROOT>/binp/wmake.exe
+    <CPCMD> os2386/wmk.sym    <RELROOT>/binp/wmake.sym
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <DEVDIR>/wmake/nt386/wmk.exe     <RELROOT>/binnt/wmake.exe
-    <CPCMD> <DEVDIR>/wmake/nt386/wmk.sym     <RELROOT>/binnt/wmake.sym
+    <CPCMD> nt386/wmk.exe     <RELROOT>/binnt/wmake.exe
+    <CPCMD> nt386/wmk.sym     <RELROOT>/binnt/wmake.sym
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> <DEVDIR>/wmake/linux386/wmk.elf  <RELROOT>/binl/wmake
-    <CPCMD> <DEVDIR>/wmake/linux386/wmk.sym  <RELROOT>/binl/wmake.sym
+    <CPCMD> linux386/wmk.elf  <RELROOT>/binl/wmake
+    <CPCMD> linux386/wmk.sym  <RELROOT>/binl/wmake.sym
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <DEVDIR>/wmake/ntaxp/wmk.exe     <RELROOT>/axpnt/wmake.exe
+    <CPCMD> ntaxp/wmk.exe     <RELROOT>/axpnt/wmake.exe
 
 # I'm guessing for the QNX output, can't build it to check (Mat Nieuwenhoven)
   [ IFDEF (os_qnx)]
-    <CPCMD> <DEVDIR>/qnxi86/wmk.qnx          <RELROOT>/qnx/binq/wmake
+    <CPCMD> qnxi86/wmk.qnx          <RELROOT>/qnx/binq/wmake
 
 [ BLOCK <1> clean ]
 #==================

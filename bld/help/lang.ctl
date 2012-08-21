@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,11 +19,11 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <PROJDIR>/dos386/whelp.exe    <RELROOT>/binw/whelp.exe
+    <CPCMD> dos386/whelp.exe    <RELROOT>/binw/whelp.exe
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <PROJDIR>/os2386/whelp.exe    <RELROOT>/binp/whelp.exe
+    <CPCMD> os2386/whelp.exe    <RELROOT>/binp/whelp.exe
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> <PROJDIR>/linux386/whelp.exe  <RELROOT>/binl/whelp
+    <CPCMD> linux386/whelp.exe  <RELROOT>/binl/whelp
 
 [ BLOCK <1> clean ]
 #==================

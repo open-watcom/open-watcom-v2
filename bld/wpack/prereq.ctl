@@ -4,7 +4,7 @@
 set PROJDIR=<CWD>
 set PROJNAME=wpack
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .

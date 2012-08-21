@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,18 +19,18 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <PROJDIR>/wini86/rcsdll.dll  <RELROOT>/binw/rcsdll.dll
-    <CPCMD> <PROJDIR>/bat/*.bat          <RELROOT>/binw/
+    <CPCMD> wini86/rcsdll.dll  <RELROOT>/binw/rcsdll.dll
+    <CPCMD> bat/*.bat          <RELROOT>/binw/
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <PROJDIR>/os2386/rcsdll.dll  <RELROOT>/binp/dll/rcsdll.dll
-    <CPCMD> <PROJDIR>/cmd/*.cmd          <RELROOT>/binp/
+    <CPCMD> os2386/rcsdll.dll  <RELROOT>/binp/dll/rcsdll.dll
+    <CPCMD> cmd/*.cmd          <RELROOT>/binp/
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <PROJDIR>/nt386/rcsdll.dll   <RELROOT>/binnt/rcsdll.dll
+    <CPCMD> nt386/rcsdll.dll   <RELROOT>/binnt/rcsdll.dll
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <PROJDIR>/ntaxp/rcsdll.dll   <RELROOT>/axpnt/rcsdll.dll
+    <CPCMD> ntaxp/rcsdll.dll   <RELROOT>/axpnt/rcsdll.dll
 
 [ BLOCK <1> clean ]
 #==================

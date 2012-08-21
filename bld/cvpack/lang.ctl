@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,22 +19,22 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <PROJDIR>/dos386/cvpack.exe    <RELROOT>/binw/cvpack.exe
+    <CPCMD> dos386/cvpack.exe    <RELROOT>/binw/cvpack.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <PROJDIR>/os2386/cvpack.exe    <RELROOT>/binp/cvpack.exe
+    <CPCMD> os2386/cvpack.exe    <RELROOT>/binp/cvpack.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <PROJDIR>/nt386/cvpack.exe     <RELROOT>/binnt/cvpack.exe
+    <CPCMD> nt386/cvpack.exe     <RELROOT>/binnt/cvpack.exe
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <PROJDIR>/ntaxp/cvpack.exe     <RELROOT>/axpnt/cvpack.exe
+    <CPCMD> ntaxp/cvpack.exe     <RELROOT>/axpnt/cvpack.exe
 
   [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> <PROJDIR>/qnx386/cvpack.exe    <RELROOT>/qnx/binq/cvpack
+    <CPCMD> qnx386/cvpack.exe    <RELROOT>/qnx/binq/cvpack
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> <PROJDIR>/linux386/cvpack.exe  <RELROOT>/binl/cvpack
+    <CPCMD> linux386/cvpack.exe  <RELROOT>/binl/cvpack
 
 [ BLOCK <1> clean ]
 #==================

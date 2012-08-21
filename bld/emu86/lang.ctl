@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,22 +19,22 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos os_win os_os2 "") <2*> ]
-    <CPCMD> <DEVDIR>/emu86/stubi86/noemu87.lib  <RELROOT>/lib286/noemu87.lib
+    <CPCMD> stubi86/noemu87.lib  <RELROOT>/lib286/noemu87.lib
 
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <DEVDIR>/emu86/dosi86/emu87.lib     <RELROOT>/lib286/dos/emu87.lib
+    <CPCMD> dosi86/emu87.lib     <RELROOT>/lib286/dos/emu87.lib
 
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> <DEVDIR>/emu86/wini86/emu87.lib     <RELROOT>/lib286/win/emu87.lib
+    <CPCMD> wini86/emu87.lib     <RELROOT>/lib286/win/emu87.lib
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <DEVDIR>/emu86/os2i86/emu87.lib     <RELROOT>/lib286/os2/emu87.lib
+    <CPCMD> os2i86/emu87.lib     <RELROOT>/lib286/os2/emu87.lib
 
   [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> <DEVDIR>/emu86/stubi86/noemu87.lib  <RELROOT>/lib286/qnx/emu87.lib
-    <CPCMD> <DEVDIR>/emu86/qnxi86/emu86         <RELROOT>/qnx/binq/emu86
-    <CPCMD> <DEVDIR>/emu86/qnxi86/emu86_16      <RELROOT>/qnx/binq/emu86_16
-    <CPCMD> <DEVDIR>/emu86/qnxi86/emu86_32      <RELROOT>/qnx/binq/emu86_32
+    <CPCMD> stubi86/noemu87.lib  <RELROOT>/lib286/qnx/emu87.lib
+    <CPCMD> qnxi86/emu86         <RELROOT>/qnx/binq/emu86
+    <CPCMD> qnxi86/emu86_16      <RELROOT>/qnx/binq/emu86_16
+    <CPCMD> qnxi86/emu86_32      <RELROOT>/qnx/binq/emu86_32
 
 [ BLOCK <1> clean ]
 #==================

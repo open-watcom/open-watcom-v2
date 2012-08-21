@@ -1,6 +1,6 @@
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -45,7 +45,7 @@ set ODIR=<PREOBJDIR>
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
-    echo Building the wres library and the resource compiler
+    echo Building the wres library
     mkdir <PROJDIR>/<OBJDIR>
     cdsay <PROJDIR>/<OBJDIR>
     wmake -h -f ../linux386/mf_r/makefile bootstrap=1

@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,16 +19,16 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <DEVDIR>/idebatch/os2/batserv.exe  <RELROOT>/binp/batserv.exe
+    <CPCMD> os2/batserv.exe  <RELROOT>/binp/batserv.exe
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <DEVDIR>/idebatch/nt/batserv.exe   <RELROOT>/binnt/batserv.exe
+    <CPCMD> nt/batserv.exe   <RELROOT>/binnt/batserv.exe
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <DEVDIR>/idebatch/dos/int.exe      <RELROOT>/binw/dosserv.exe
+    <CPCMD> dos/int.exe      <RELROOT>/binw/dosserv.exe
 # there is no makefile in the wini86 dir
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> <DEVDIR>/idebatch/wini86/batchbox.pif <RELROOT>/binw/batchbox.pif
+    <CPCMD> wini86/batchbox.pif <RELROOT>/binw/batchbox.pif
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <DEVDIR>/idebatch/nt/axp/batserv.exe  <RELROOT>/axpnt/batserv.exe
+    <CPCMD> nt/axp/batserv.exe  <RELROOT>/axpnt/batserv.exe
 
 [ BLOCK <1> clean ]
 #==================

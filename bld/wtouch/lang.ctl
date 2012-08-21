@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,19 +19,19 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <PROJDIR>/dosi86/wtouch.exe    <RELROOT>/binw/wtouch.exe
+    <CPCMD> dosi86/wtouch.exe    <RELROOT>/binw/wtouch.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <PROJDIR>/os2386/wtouch.exe    <RELROOT>/binp/wtouch.exe
+    <CPCMD> os2386/wtouch.exe    <RELROOT>/binp/wtouch.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <PROJDIR>/nt386/wtouch.exe     <RELROOT>/binnt/wtouch.exe
+    <CPCMD> nt386/wtouch.exe     <RELROOT>/binnt/wtouch.exe
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> <PROJDIR>/linux386/wtouch.exe  <RELROOT>/binl/wtouch
+    <CPCMD> linux386/wtouch.exe  <RELROOT>/binl/wtouch
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <PROJDIR>/ntaxp/wtouch.exe     <RELROOT>/axpnt/wtouch.exe
+    <CPCMD> ntaxp/wtouch.exe     <RELROOT>/axpnt/wtouch.exe
 
 
 [ BLOCK <1> clean ]

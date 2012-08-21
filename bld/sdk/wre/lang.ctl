@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,16 +19,16 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> <DEVDIR>/sdk/wre/wini86/wre.exe         <RELROOT>/binw/wre.exe
-    <CPCMD> <DEVDIR>/sdk/wre/wini86/wre.sym         <RELROOT>/binw/wre.sym
+    <CPCMD> wini86/wre.exe         <RELROOT>/binw/wre.exe
+    <CPCMD> wini86/wre.sym         <RELROOT>/binw/wre.sym
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <DEVDIR>/sdk/wre/nt386/wre.exe          <RELROOT>/binnt/wre.exe
-    <CPCMD> <DEVDIR>/sdk/wre/nt386/wre.sym          <RELROOT>/binnt/wre.sym
+    <CPCMD> nt386/wre.exe          <RELROOT>/binnt/wre.exe
+    <CPCMD> nt386/wre.sym          <RELROOT>/binnt/wre.sym
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <DEVDIR>/sdk/wre/ntaxp/wre.exe          <RELROOT>/axpnt/wre.exe
-    <CPCMD> <DEVDIR>/sdk/wre/ntaxp/wre.sym          <RELROOT>/axpnt/wre.sym
+    <CPCMD> ntaxp/wre.exe          <RELROOT>/axpnt/wre.exe
+    <CPCMD> ntaxp/wre.sym          <RELROOT>/axpnt/wre.sym
 
 [ BLOCK <1> clean ]
 #==================

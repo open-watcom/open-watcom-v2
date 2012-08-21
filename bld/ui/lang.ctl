@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,7 +19,7 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> <PROJDIR>/qnx/tix/*.tix <RELROOT>/qnx/tix/
+    <CPCMD> qnx/tix/*.tix <RELROOT>/qnx/tix/
 
 [ BLOCK <1> clean ]
 #==================

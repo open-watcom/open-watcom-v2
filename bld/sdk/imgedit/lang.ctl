@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,13 +19,13 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> <DEVDIR>/sdk/imgedit/wini86/wimgedit.exe <RELROOT>/binw/
+    <CPCMD> wini86/wimgedit.exe <RELROOT>/binw/
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <DEVDIR>/sdk/imgedit/nt386/wimgedit.exe <RELROOT>/binnt/
+    <CPCMD> nt386/wimgedit.exe <RELROOT>/binnt/
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <DEVDIR>/sdk/imgedit/ntaxp/wimgedit.exe <RELROOT>/axpnt/
+    <CPCMD> ntaxp/wimgedit.exe <RELROOT>/axpnt/
 
 [ BLOCK <1> clean ]
 #==================

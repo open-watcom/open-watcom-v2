@@ -3,7 +3,7 @@
 # a small subset can be built
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 
 set OWLINUXBUILD=bootstrap
 set WLINK_LNK=bootstrp.lnk

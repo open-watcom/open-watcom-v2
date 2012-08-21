@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,15 +19,15 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <PROJDIR>/dosi86/dmpobj.exe    <RELROOT>/binw/dmpobj.exe
+    <CPCMD> dosi86/dmpobj.exe    <RELROOT>/binw/dmpobj.exe
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <PROJDIR>/os2386/dmpobj.exe    <RELROOT>/binp/dmpobj.exe
+    <CPCMD> os2386/dmpobj.exe    <RELROOT>/binp/dmpobj.exe
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <PROJDIR>/nt386/dmpobj.exe     <RELROOT>/binnt/dmpobj.exe
+    <CPCMD> nt386/dmpobj.exe     <RELROOT>/binnt/dmpobj.exe
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> <PROJDIR>/linux386/dmpobj.exe  <RELROOT>/binl/dmpobj
+    <CPCMD> linux386/dmpobj.exe  <RELROOT>/binl/dmpobj
   [ IFDEF cpu_axp <2*> ]
-    <CPCMD> <PROJDIR>/ntaxp/dmpobj.exe     <RELROOT>/axpnt/dmpobj.exe
+    <CPCMD> ntaxp/dmpobj.exe     <RELROOT>/axpnt/dmpobj.exe
 
 [ BLOCK <1> clean ]
 #==================

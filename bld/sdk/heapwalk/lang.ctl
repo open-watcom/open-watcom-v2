@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,7 +19,7 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> <DEVDIR>/sdk/heapwalk/wini86/wheapwlk.exe <RELROOT>/binw/wheapwlk.exe
+    <CPCMD> wini86/wheapwlk.exe <RELROOT>/binw/wheapwlk.exe
 
 [ BLOCK <1> clean ]
 #==================

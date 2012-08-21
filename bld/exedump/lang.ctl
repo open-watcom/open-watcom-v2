@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,22 +19,22 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <PROJDIR>/dosi86/wdump.exe    <RELROOT>/binw/wdump.exe
+    <CPCMD> dosi86/wdump.exe    <RELROOT>/binw/wdump.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <PROJDIR>/os2386/wdump.exe    <RELROOT>/binp/wdump.exe
+    <CPCMD> os2386/wdump.exe    <RELROOT>/binp/wdump.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <PROJDIR>/nt386/wdump.exe     <RELROOT>/binnt/wdump.exe
+    <CPCMD> nt386/wdump.exe     <RELROOT>/binnt/wdump.exe
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <PROJDIR>/ntaxp/wdump.exe     <RELROOT>/axpnt/wdump.exe
+    <CPCMD> ntaxp/wdump.exe     <RELROOT>/axpnt/wdump.exe
 
   [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> <PROJDIR>/qnx386/wdump.exe    <RELROOT>/qnx/wdump
+    <CPCMD> qnx386/wdump.exe    <RELROOT>/qnx/wdump
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> <PROJDIR>/linux386/wdump.exe  <RELROOT>/binl/wdump
+    <CPCMD> linux386/wdump.exe  <RELROOT>/binl/wdump
 
 [ BLOCK <1> clean ]
 #==================

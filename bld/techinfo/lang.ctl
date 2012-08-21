@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -19,9 +19,9 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <PROJDIR>/dosi86/techinfo.exe <RELROOT>/binw/
+    <CPCMD> dosi86/techinfo.exe <RELROOT>/binw/
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <PROJDIR>/os2i86/techinfo.exe <RELROOT>/binp/
+    <CPCMD> os2i86/techinfo.exe <RELROOT>/binp/
 
 [ BLOCK <1> clean ]
 #==================

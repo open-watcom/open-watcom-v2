@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -22,20 +22,20 @@ cdsay .
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CPCMD> <PROJDIR>/helper/*.nls          <RELROOT>/wipfc/
-    <CPCMD> <PROJDIR>/helper/*.txt          <RELROOT>/wipfc/
+    <CPCMD> helper/*.nls          <RELROOT>/wipfc/
+    <CPCMD> helper/*.txt          <RELROOT>/wipfc/
 
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <PROJDIR>/dos386/wipfc.exe      <RELROOT>/binw/wipfc.exe
+    <CPCMD> dos386/wipfc.exe      <RELROOT>/binw/wipfc.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <PROJDIR>/os2386/wipfc.exe      <RELROOT>/binp/wipfc.exe
+    <CPCMD> os2386/wipfc.exe      <RELROOT>/binp/wipfc.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <PROJDIR>/nt386/wipfc.exe       <RELROOT>/binnt/wipfc.exe
+    <CPCMD> nt386/wipfc.exe       <RELROOT>/binnt/wipfc.exe
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> <PROJDIR>/linux386/wipfc.exe    <RELROOT>/binl/wipfc
+    <CPCMD> linux386/wipfc.exe    <RELROOT>/binl/wipfc
 
 [ BLOCK <1> clean ]
 #==================

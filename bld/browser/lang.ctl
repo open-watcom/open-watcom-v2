@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -28,22 +28,22 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <DEVDIR>/browser/brg/dos386/wbrg.exe    <RELROOT>/binw/wbrg.exe
+    <CPCMD> brg/dos386/wbrg.exe    <RELROOT>/binw/wbrg.exe
 
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> <DEVDIR>/browser/wini86/wbrw.exe        <RELROOT>/binw/wbrw.exe
+    <CPCMD> wini86/wbrw.exe        <RELROOT>/binw/wbrw.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> <DEVDIR>/browser/os2386/wbrw.exe        <RELROOT>/binp/wbrw.exe
-    <CPCMD> <DEVDIR>/browser/brg/os2386/wbrg.exe    <RELROOT>/binp/wbrg.exe
+    <CPCMD> os2386/wbrw.exe        <RELROOT>/binp/wbrw.exe
+    <CPCMD> brg/os2386/wbrg.exe    <RELROOT>/binp/wbrg.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <DEVDIR>/browser/nt386/wbrw.exe         <RELROOT>/binnt/wbrw.exe
-    <CPCMD> <DEVDIR>/browser/brg/nt386/wbrg.exe     <RELROOT>/binnt/wbrg.exe
+    <CPCMD> nt386/wbrw.exe         <RELROOT>/binnt/wbrw.exe
+    <CPCMD> brg/nt386/wbrg.exe     <RELROOT>/binnt/wbrg.exe
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> <DEVDIR>/browser/axpnt/wbrw.exe         <RELROOT>/axpnt/wbrw.exe
-    <CPCMD> <DEVDIR>/browser/brg/ntaxp/wbrg.exe     <RELROOT>/axpnt/wbrg.exe
+    <CPCMD> axpnt/wbrw.exe         <RELROOT>/axpnt/wbrw.exe
+    <CPCMD> brg/ntaxp/wbrg.exe     <RELROOT>/axpnt/wbrg.exe
 
 [ BLOCK <1> clean ]
 #==================

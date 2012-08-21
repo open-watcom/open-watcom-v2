@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -18,9 +18,9 @@ cdsay .
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CPCMD> <DEVDIR>/redist/dos4gw/*                <RELROOT>/binw/
-    <CPCMD> <DEVDIR>/redist/dos32a/*                <RELROOT>/binw/
-    <CPCMD> <DEVDIR>/redist/pmodew/*                <RELROOT>/binw/
+    <CPCMD> dos4gw/*                <RELROOT>/binw/
+    <CPCMD> dos32a/*                <RELROOT>/binw/
+    <CPCMD> pmodew/*                <RELROOT>/binw/
 
 [ BLOCK <1> clean ]
 #==================

@@ -3,7 +3,7 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -18,9 +18,9 @@ cdsay .
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CCCMD> <PROJDIR>/test/nt386/objread.exe    <RELROOT>/binnt/objread.exe
-    <CCCMD> <PROJDIR>/test/os2386/objread.exe   <RELROOT>/binp/objread.exe
-    <CCCMD> <PROJDIR>/test/linux386/objread.exe <RELROOT>/binl/objread
+    <CCCMD> test/nt386/objread.exe    <RELROOT>/binnt/objread.exe
+    <CCCMD> test/os2386/objread.exe   <RELROOT>/binp/objread.exe
+    <CCCMD> test/linux386/objread.exe <RELROOT>/binl/objread
 
 [ BLOCK <1> clean ]
 #==================
