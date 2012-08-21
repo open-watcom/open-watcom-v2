@@ -20,6 +20,9 @@ echo Bootstrapping compiler using GNU tools...
 #        First of all build prerequisite utilities used in the build
 #
 [ INCLUDE <DEVDIR>/builder/lang.ctl ]
+[ BLOCK <BLD_HOST> DOS NT OS2 ]
+[ INCLUDE <DEVDIR>/awk/prereq.ctl ]
+[ BLOCK . . ]
 [ INCLUDE <DEVDIR>/cpp/prereq.ctl ]
 [ INCLUDE <DEVDIR>/pmake/prereq.ctl ]
 [ INCLUDE <DEVDIR>/nwlib/prereq.ctl ]

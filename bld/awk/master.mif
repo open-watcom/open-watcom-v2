@@ -1,0 +1,36 @@
+proj_name = awk
+
+!ifndef awk_autodepends
+awk_autodepends = .autodepend
+!endif
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"../h"
+
+.c: ../c
+
+objs =              &
+        b.obj       &
+        main.obj    &
+        parse.obj   &
+        proctab.obj &
+        tran.obj    &
+        lib.obj     &
+        run.obj     &
+        lex.obj     &
+        ytab.obj    &
+        missin95.obj
+
+extra_c_flags_ytab = -wcd=118 -wcd=202
+
+!include exetarg.mif
+
+proctab.c : maketab.exe ../h/ytab.h
+        copy $]@ ytab.h
+        $[@ > proctab.c
+
+maketab.exe : maketab.obj
+        $(cl) $(clflags) $<

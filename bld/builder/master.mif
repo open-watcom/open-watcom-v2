@@ -2,15 +2,13 @@ proj_name = builder
 
 builder_autodepends = .autodepend
 
-additional_cleanup= proctab.c ytab.h awk.c
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
 all : cdsay.exe sweep.exe wsplice.exe comstrip.exe aliasgen.exe genverrc.exe &
 !ifndef __UNIX__
-    diff.exe awk.exe sed.exe &
+    diff.exe sed.exe &
 !endif
 !ifndef bootstrap
     wgrep.exe builder.exe &
@@ -38,22 +36,6 @@ builder.exe : clibext.obj
 sweep.exe : sweep.obj clibext.obj
 wsplice.exe : wsplice.obj clibext.obj
 diff.exe : diff.obj clibext.obj
-!else ifndef __UNIX__
-inc_dirs += -I$(awk_dir)
-.c : $(awk_dir)
-# -pil is temporary fix for OW C compiler
-extra_c_flags += -pil
-
-sed.exe : sed.obj sedcomp.obj
-
-awk.exe : awk.obj b.obj parse.obj proctab.obj tran.obj lib.obj run.obj lex.obj ytab.obj pfileio.obj
-
-proctab.c : maketab.exe
-        copy $(awk_dir)\ytab.h ytab.h > nul
-        $[@ >proctab.c
-
-awk.c :
-        copy $(awk_dir)\main.c awk.c > nul
 !endif
 
 !ifdef __MSDOS__
@@ -80,6 +62,7 @@ builder.exe : builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals
         copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
 !endif
 
+sed.exe : sed.obj sedcomp.obj
 cdsay.exe : cdsay.obj equals.obj
 rm.exe: rm.obj getopt.obj quit.obj lineprt.obj alloc.obj filerx.obj &
         regexp.obj fnlower.obj die.obj isdotdot.obj
