@@ -16,7 +16,7 @@ verbose      = $(%OWVERBOSE)
 # don't ask, just nuke the files
 .ERASE
 
-mif_path     = $(dev_dir)/build/local;$(dev_dir)/build/mif
+mif_path     = $(build_dir)/mif
 
 .mif: $(mif_path)
 

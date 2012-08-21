@@ -52,7 +52,7 @@ nulldevice      = /dev/null
 #
 # This is an old make - really should report an error
 #
-!error Please correct this makefile, see bld\build\mif\bhost.mif for details.
+!error Please correct this makefile, see build\mif\bhost.mif for details.
 bld_sys         = nt
 bld_incs        = $(bld_extra_incs) -I$(lang_root)\h -I$(watcom_dir)\h
 nulldevice      = nul
