@@ -34,14 +34,15 @@
 #define _globals_h
 
 #include "basics.h"
+#include "bool.h"
 
-extern char *fileName;
-extern bool sFlag;
-extern bool bFlag;
+extern const char   *fileName;
+extern bool         sFlag;
+extern bool         bFlag;
+extern bool         iFlag;
+extern bool         bUsedYYAccept;
+extern uint         oline;
 
-extern uchar asc2ebc[256];
-extern uchar ebc2asc[256];
-
-extern uchar *xlat, *talx;
+extern char         *mystrdup( const char *str );
 
 #endif

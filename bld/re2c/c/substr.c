@@ -30,57 +30,35 @@
 ****************************************************************************/
 
 
-#include <fstream>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-
+#include <string.h>
+#include "substr.h"
 #include "globals.h"
-#include "parser.h"
-#include "dfa.h"
 
-char *fileName;
-bool sFlag = false;
-bool bFlag = false;
+void SubStr_out( const SubStr *s, FILE *o )
+{
+    uint    i;
 
-int main(int argc, char *argv[]){
-    fileName = NULL;
-    if(argc == 1)
-        goto usage;
-    while(--argc > 1){
-        char *p = *++argv;
-        while(*++p != '\0'){
-            switch(*p){
-            case 'e':
-                xlat = asc2ebc;
-                talx = ebc2asc;
-                break;
-            case 's':
-                sFlag = true;
-                break;
-            case 'b':
-                sFlag = true;
-                bFlag = true;
-                break;
-            default:
-                goto usage;
-            }
+    fwrite( s->str, s->len, 1, o );
+    for( i = 0; i < s->len; i++ ) {
+        if( s->str[i] == '\n' ) {
+            oline++;
         }
     }
-    fileName = *++argv;
-    int fd;
-    if(fileName[0] == '-' && fileName[1] == '\0'){
-        fileName = "<stdin>";
-        fd = 0;
-    } else {
-        if((fd = open(fileName, O_RDONLY)) < 0){
-            std::cerr << "can't open " << fileName << "\n";
-            return 1;
-        }
-    }
-    parse(fd, std::cout);
-    return 0;
-usage:
-    std::cerr << "usage: re2c [-esb] name\n";
-    return 2;
+}
+
+int SubStr_eq( const SubStr *s1, const SubStr *s2 )
+{
+    return( s1->len == s2->len && memcmp( s1->str, s2->str, s1->len ) == 0 );
+}
+
+void SubStr_init( SubStr *r, char *s, uint l )
+{
+    r->str = s;
+    r->len = l;
+}
+
+void Str_init( Str *r, const SubStr* s )
+{
+    SubStr_init( r, malloc( s->len ), s->len );
+    memcpy( r->str, s->str, s->len );
 }

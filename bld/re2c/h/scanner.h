@@ -33,31 +33,18 @@
 #ifndef _scanner_h
 #define _scanner_h
 
+#include <stdio.h>
 #include "token.h"
-#include <iostream>
 
-class Scanner {
-  private:
-    int                 in;
-    uchar               *bot, *tok, *ptr, *cur, *pos, *lim, *top, *eof;
-    uint                tchar, tline, cline;
-  private:
-    uchar *fill(uchar*);
-  public:
-    Scanner(int);
-    int echo(std::ostream&);
-    int scan();
-    void fatal(char*);
-    SubStr token();
-    uint line();
-};
+typedef struct Scanner {
+    FILE        *in;
+    uchar       *bot, *tok, *ptr, *cur, *pos, *lim, *top, *eof;
+    uint        tchar, tline, cline;
+} Scanner;
 
-inline SubStr Scanner::token(){
-    return SubStr(tok, cur - tok);
-}
-
-inline uint Scanner::line(){
-    return cline;
-}
+extern Scanner  *Scanner_new( FILE * );
+extern int      Scanner_echo( Scanner *, FILE * );
+extern int      Scanner_scan( Scanner * );
+extern void     Scanner_fatal( Scanner *, const char * );
 
 #endif

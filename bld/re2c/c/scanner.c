@@ -32,15 +32,11 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <iostream>
+#include <stdio.h>
 #include <unistd.h>
 #include "scanner.h"
 #include "parser.h"
 #include "ytab.h"
-
-#ifdef __WATCOM_CPLUSPLUS__
-    #pragma warning 17 10
-#endif
 
 extern YYSTYPE yylval;
 
@@ -48,59 +44,82 @@ extern YYSTYPE yylval;
 
 #define YYCTYPE         uchar
 #define YYCURSOR        cursor
-#define YYLIMIT         lim
-#define YYMARKER        ptr
-#define YYFILL(n)       {cursor = fill(cursor);}
+#define YYLIMIT         s->lim
+#define YYMARKER        s->ptr
+#define YYFILL(n)       {cursor = fill( s, cursor );}
 
-#define RETURN(i)       {cur = cursor; return i;}
+#define RETURN(i)       {s->cur = cursor; return i;}
 
-
-Scanner::Scanner(int i) : in(i),
-        bot(NULL), tok(NULL), ptr(NULL), cur(NULL), pos(NULL), lim(NULL),
-        top(NULL), eof(NULL), tchar(0), tline(0), cline(1) {
-    ;
+static void Scanner_init( Scanner *s, FILE *i )
+{
+    s->in = i;
+    s->bot = s->tok = s->ptr = s->cur = s->pos = s->lim = s->top = s->eof = NULL;
+    s->tchar = s->tline = 0;
+    s->cline = 1;
 }
 
-uchar *Scanner::fill(uchar *cursor){
-    if(!eof){
-        uint cnt = tok - bot;
-        if(cnt){
-            memcpy(bot, tok, lim - tok);
-            tok = bot;
-            ptr -= cnt;
+static SubStr Scanner_token( Scanner *s )
+{
+    SubStr  r;
+
+    SubStr_init( &r, (char *)s->tok, s->cur - s->tok );
+    return( r );
+}
+
+static uchar *fill( Scanner *s, uchar *cursor )
+{
+    if( s->eof == NULL ) {
+        uint cnt = s->tok - s->bot;
+        if( cnt ){
+            memcpy( s->bot, s->tok, s->lim - s->tok );
+            s->tok = s->bot;
+            s->ptr -= cnt;
             cursor -= cnt;
-            pos -= cnt;
-            lim -= cnt;
+            s->pos -= cnt;
+            s->lim -= cnt;
         }
-        if((top - lim) < BSIZE){
-            uchar *buf = new uchar[(lim - bot) + BSIZE];
-            memcpy(buf, tok, lim - tok);
-            tok = buf;
-            ptr = &buf[ptr - bot];
-            cursor = &buf[cursor - bot];
-            pos = &buf[pos - bot];
-            lim = &buf[lim - bot];
-            top = &lim[BSIZE];
-            delete bot;
-            bot = buf;
+        if( ( s->top - s->lim ) < BSIZE ) {
+            uchar *buf = malloc( ( s->lim - s->bot ) + BSIZE );
+            memcpy( buf, s->tok, s->lim - s->tok );
+            s->tok = buf;
+            s->ptr = &buf[s->ptr - s->bot];
+            cursor = &buf[cursor - s->bot];
+            s->pos = &buf[s->pos - s->bot];
+            s->lim = &buf[s->lim - s->bot];
+            s->top = &s->lim[BSIZE];
+            free( s->bot );
+            s->bot = buf;
         }
-        if((cnt = read(in, (char*) lim, BSIZE)) != BSIZE){
-            eof = &lim[cnt]; *eof++ = '\n';
+        if( (cnt = fread( s->lim, 1, BSIZE, s->in )) != BSIZE ) {
+            s->eof = &s->lim[cnt]; *s->eof++ = '\n';
         }
-        lim += cnt;
+        s->lim += cnt;
     }
-    return cursor;
+    return( cursor );
+}
+
+static Token *token( Scanner *s )
+{
+    Token   *r = malloc( sizeof( Token ) );
+    uint    len = s->cur - s->tok;
+
+    r->line = s->tline;
+    r->text.len = len;
+    r->text.str = malloc( len );
+    memcpy( r->text.str, s->tok, len );
+    return( r );
 }
 
 
+int Scanner_echo( Scanner *s, FILE *out )
+{
+    uchar   *cursor = s->cur;
 
-int Scanner::echo(std::ostream &out){
-    uchar *cursor = cur;
-    tok = cursor;
+    s->tok = cursor;
 echo:
 {
         YYCTYPE yych;
-        unsigned int yyaccept;
+        uint yyaccept;
         goto yy0;
 yy1:    ++YYCURSOR;
 yy0:
@@ -115,9 +134,10 @@ yy3:
         { goto echo; }
 yy4:    yych = *++YYCURSOR;
 yy5:
-        { if(cursor == eof) RETURN(0);
-                                  out.write((char *)tok, cursor - tok);
-                                  tok = pos = cursor; cline++;
+        { if( cursor == s->eof )
+                                  RETURN(0);
+                                  fwrite( s->tok, 1, cursor - s->tok, out );
+                                  s->tok = s->pos = cursor; s->cline++;
                                   goto echo; }
 yy6:    yych = *++YYCURSOR;
         goto yy3;
@@ -137,25 +157,26 @@ yy12:   yych = *++YYCURSOR;
         if(yych != 'c') goto yy8;
 yy13:   yych = *++YYCURSOR;
 yy14:
-        { out.write((char *)tok, &cursor[-7] - tok);
-                                  tok = cursor;
+        { fwrite( s->tok, 1, &cursor[-7] - s->tok, out );
+                                  s->tok = cursor;
                                   RETURN(1); }
 }
 
 }
 
 
-int Scanner::scan(){
-    uchar *cursor = cur;
-    uint depth;
+int Scanner_scan( Scanner *s )
+{
+    uchar   *cursor = s->cur;
+    uint    depth;
 
 scan:
-    tchar = cursor - pos;
-    tline = cline;
-    tok = cursor;
+    s->tchar = cursor - s->pos;
+    s->tline = s->cline;
+    s->tok = cursor;
 {
         YYCTYPE yych;
-        unsigned int yyaccept;
+        uint yyaccept;
         goto yy15;
 yy16:   ++YYCURSOR;
 yy15:
@@ -214,22 +235,22 @@ yy18:
 yy19:   yych = *++YYCURSOR;
         if(yych == '*') goto yy54;
 yy20:
-        { RETURN(*tok); }
+        { RETURN(*s->tok); }
 yy21:   yych = *++YYCURSOR;
         if(yych == '/') goto yy52;
 yy22:
-        { yylval.op = *tok;
+        { yylval.op = *s->tok;
                                   RETURN(CLOSE); }
 yy23:   yyaccept = 0;
         yych = *(YYMARKER = ++YYCURSOR);
         if(yych != '\n')        goto yy48;
 yy24:
-        { fatal("bad string"); }
+        { Scanner_fatal( s, "bad string" ); }
 yy25:   yyaccept = 1;
         yych = *(YYMARKER = ++YYCURSOR);
         if(yych != '\n')        goto yy42;
 yy26:
-        { fatal("bad character constant"); }
+        { Scanner_fatal( s, "bad character constant" ); }
 yy27:   yych = *++YYCURSOR;
         goto yy20;
 yy28:   yych = *++YYCURSOR;
@@ -237,8 +258,8 @@ yy28:   yych = *++YYCURSOR;
 yy29:   yych = *++YYCURSOR;
         goto yy40;
 yy30:
-        { cur = cursor;
-                                  yylval.symbol = Symbol::find(token());
+        { s->cur = cursor;
+                                  yylval.symbol = Symbol_find( Scanner_token( s ) );
                                   return ID; }
 yy31:   yych = *++YYCURSOR;
         goto yy38;
@@ -246,13 +267,13 @@ yy32:
         { goto scan; }
 yy33:   yych = *++YYCURSOR;
 yy34:
-        { if(cursor == eof) RETURN(0);
-                                  pos = cursor; cline++;
+        { if(cursor == s->eof) RETURN(0);
+                                  s->pos = cursor; s->cline++;
                                   goto scan;
                                 }
 yy35:   yych = *++YYCURSOR;
 yy36:
-        { std::cerr << "unexpected character: " << *tok << std::endl;
+        { fprintf( stderr, "unexpected character: %s\n", *s->tok );
                                   goto scan;
                                 }
 yy37:   ++YYCURSOR;
@@ -296,8 +317,8 @@ yy44:   ++YYCURSOR;
         goto yy41;
 yy45:   yych = *++YYCURSOR;
 yy46:
-        { cur = cursor;
-                                  yylval.regexp = ranToRE(token());
+        { s->cur = cursor;
+                                  yylval.regexp = ranToRE( Scanner_token( s ) );
                                   return RANGE; }
 yy47:   ++YYCURSOR;
         if(YYLIMIT == YYCURSOR) YYFILL(1);
@@ -316,12 +337,12 @@ yy49:   ++YYCURSOR;
         goto yy47;
 yy50:   yych = *++YYCURSOR;
 yy51:
-        { cur = cursor;
-                                  yylval.regexp = strToRE(token());
+        { s->cur = cursor;
+                                  yylval.regexp = strToRE( Scanner_token( s ) );
                                   return STRING; }
 yy52:   yych = *++YYCURSOR;
 yy53:
-        { tok = cursor;
+        { s->tok = cursor;
                                   RETURN(0); }
 yy54:   yych = *++YYCURSOR;
 yy55:
@@ -333,7 +354,7 @@ yy55:
 code:
 {
         YYCTYPE yych;
-        unsigned int yyaccept;
+        uint yyaccept;
         goto yy56;
 yy57:   ++YYCURSOR;
 yy56:
@@ -359,8 +380,8 @@ yy56:
 yy58:   yych = *++YYCURSOR;
 yy59:
         { if(--depth == 0){
-                                        cur = cursor;
-                                        yylval.token = new Token(token(), tline);
+                                        s->cur = cursor;
+                                        yylval.token = token( s );
                                         return CODE;
                                   }
                                   goto code; }
@@ -370,8 +391,8 @@ yy61:
                                   goto code; }
 yy62:   yych = *++YYCURSOR;
 yy63:
-        { if(cursor == eof) fatal("missing '}'");
-                                  pos = cursor; cline++;
+        { if(cursor == s->eof) Scanner_fatal( s, "missing '}'" );
+                                  s->pos = cursor; s->cline++;
                                   goto code;
                                 }
 yy64:   yych = *++YYCURSOR;
@@ -447,8 +468,8 @@ yy79:   yych = *++YYCURSOR;
         goto yy78;
 yy80:   yych = *++YYCURSOR;
 yy81:
-        { if(cursor == eof) RETURN(0);
-                                  tok = pos = cursor; cline++;
+        { if(cursor == s->eof) RETURN(0);
+                                  s->tok = s->pos = cursor; s->cline++;
                                   goto comment;
                                 }
 yy82:   yych = *++YYCURSOR;
@@ -467,8 +488,16 @@ yy86:
 
 }
 
-void Scanner::fatal(char *msg){
-    std::cerr << "line " << tline << ", column " << (tchar + 1) << ": "
-        << msg << std::endl;
+void Scanner_fatal( Scanner *s, const char *msg ) {
+    fprintf( stderr, "line %d, column %d: %s\n", s->tline, s->tchar + 1, msg );
     exit(1);
 }
+
+Scanner *Scanner_new( FILE *i )
+{
+    Scanner *r = malloc( sizeof( Scanner ) );
+
+    Scanner_init( r, i );
+    return( r );
+}
+

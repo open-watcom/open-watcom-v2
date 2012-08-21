@@ -33,150 +33,84 @@
 #ifndef _dfa_h
 #define _dfa_h
 
-#include <iostream>
+#include <stdio.h>
 #include "re.h"
 
-extern void prtCh(std::ostream&, uchar);
-extern void printSpan(std::ostream&, uint, uint);
+struct DFA;
+struct State;
 
-class DFA;
-class State;
+typedef enum {
+    MATCHACT = 1,
+    ENTERACT,
+    SAVEMATCHACT,
+    MOVEACT,
+    ACCEPTACT,
+    RULEACT
+} ActionType;
 
-class Action {
-public:
-    State               *state;
-public:
-    Action(State*);
-    virtual void emit(std::ostream&) = 0;
-};
+typedef struct Action {
+    struct State    *state;
+    ActionType      type;
+    union {
+        struct {
+            uint    label;
+        } Enter;
+        struct {
+            uint    selector;
+        } SaveMatch;
+        struct {
+            uint    nRules;
+            uint    *saves;
+            struct State    **rules;
+        } Accept;
+        struct {
+            RegExp  *rule;  /* RuleOp */
+        } Rule;
+    } u;
+} Action;
 
-class Match: public Action {
-public:
-    Match(State*);
-    void emit(std::ostream&);
-};
+typedef struct Span {
+    uint            ub;
+    struct State    *to;
+} Span;
 
-class Enter: public Action {
-public:
-    uint                label;
-public:
-    Enter(State*, uint);
-    void emit(std::ostream&);
-};
+typedef struct Go {
+    uint            nSpans;
+    Span            *span;
+} Go;
 
-class Save: public Match {
-public:
-    uint                selector;
-public:
-    Save(State*, uint);
-    void emit(std::ostream&);
-};
+typedef struct State {
+    uint            label;
+    RegExp          *rule;  /* RuleOp */
+    struct State    *next;
+    struct State    *link;
+    uint            depth;          /* for finding SCCs */
+    uint            kCount;
+    Ins             **kernel;
+    uint            isBase:1;
+    Go              go;
+    Action          *action;
+} State;
 
-class Move: public Action {
-public:
-    Move(State*);
-    void emit(std::ostream&);
-};
+typedef struct DFA {
+    uint            lbChar;
+    uint            ubChar;
+    uint            nStates;
+    State           *head, **tail;
+    State           *toDo;
+} DFA;
 
-class Accept: public Action {
-public:
-    uint                nRules;
-    uint                *saves;
-    State               **rules;
-public:
-    Accept(State*, uint, uint*, State**);
-    void emit(std::ostream&);
-};
+extern DFA      *DFA_new( Ins *, uint, uint, uint, Char * );
+extern void     DFA_delete( DFA * );
+extern void     DFA_addState( DFA *, State **, State * );
+extern void     DFA_emit( DFA *, FILE * );
+extern State    *State_new( void );
 
-class Rule: public Action {
-public:
-    RuleOp              *rule;
-public:
-    Rule(State*, RuleOp*);
-    void emit(std::ostream&);
-};
-
-class Span {
-public:
-    uint                ub;
-    State               *to;
-public:
-    uint show(std::ostream&, uint);
-};
-
-class Go {
-public:
-    uint                nSpans;
-    Span                *span;
-public:
-    void genGoto(std::ostream&, State*);
-    void genBase(std::ostream&, State*);
-    void genLinear(std::ostream&, State*);
-    void genBinary(std::ostream&, State*);
-    void genSwitch(std::ostream&, State*);
-    void compact();
-    void unmap(Go*, State*);
-};
-
-class State {
-public:
-    uint                label;
-    RuleOp              *rule;
-    State               *next;
-    State               *link;
-    uint                depth;          // for finding SCCs
-    uint                kCount;
-    Ins                 **kernel;
-    bool                isBase:1;
-    Go                  go;
-    Action              *action;
-public:
-    State();
-    ~State();
-    void emit(std::ostream&);
-    friend std::ostream& operator<<(std::ostream&, const State&);
-    friend std::ostream& operator<<(std::ostream&, const State*);
-};
-
-class DFA {
-public:
-    uint                lbChar;
-    uint                ubChar;
-    uint                nStates;
-    State               *head;
-    State               **tail;
-    State               *toDo;
-public:
-    DFA(Ins*, uint, uint, uint, Char*);
-    ~DFA();
-    void addState(State**, State*);
-    State *findState(Ins**, uint);
-    void split(State*);
-
-    void findSCCs();
-    void emit(std::ostream&);
-
-    friend std::ostream& operator<<(std::ostream&, const DFA&);
-    friend std::ostream& operator<<(std::ostream&, const DFA*);
-};
-
-inline Action::Action(State *s) : state(s) {
-    s->action = this;
-}
-
-inline Match::Match(State *s) : Action(s)
-    { }
-
-inline Enter::Enter(State *s, uint l) : Action(s), label(l)
-    { }
-
-inline Save::Save(State *s, uint i) : Match(s), selector(i)
-    { }
-
-inline std::ostream& operator<<(std::ostream &o, const State *s)
-    { return o << *s; }
-
-inline std::ostream& operator<<(std::ostream &o, const DFA *dfa)
-    { return o << *dfa; }
+extern Action   *Action_new_Match( State *s );
+extern Action   *Action_new_Enter( State *s, uint l );
+extern Action   *Action_new_Save( State *s, uint i );
+extern Action   *Action_new_Move( State *s );
+extern Action   *Action_new_Rule( State *s, RegExp *r );
+extern Action   *Action_new_Accept( State *s, uint n, uint *sv, State **r );
 
 #endif

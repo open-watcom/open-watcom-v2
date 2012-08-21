@@ -33,182 +33,86 @@
 #ifndef _re_h
 #define _re_h
 
-#include <iostream>
+#include <stdio.h>
 #include "token.h"
 #include "ins.h"
 
-struct CharPtn {
-    uint        card;
-    CharPtn     *fix;
-    CharPtn     *nxt;
-};
+typedef struct extop {
+    char    op;
+    int     minsize;
+    int     maxsize;
+} ExtOp;
 
-struct CharSet {
+typedef struct CharPtn {
+    uint            card;
+    struct CharPtn  *fix;
+    struct CharPtn  *nxt;
+} CharPtn;
+
+typedef struct CharSet {
     CharPtn     *fix;
     CharPtn     *freeHead;
     CharPtn     **freeTail;
-    CharPtn     *rep[nChars];
-    CharPtn     ptn[nChars];
-};
+    CharPtn     *rep[NCHARS];
+    CharPtn     ptn[NCHARS];
+} CharSet;
 
-class Range {
-public:
-    Range       *next;
-    uint        lb, ub;         // [lb,ub)
-public:
-    Range(uint l, uint u) : next(NULL), lb(l), ub(u)
-        { }
-    Range(Range &r) : next(NULL), lb(r.lb), ub(r.ub)
-        { }
-    friend std::ostream& operator<<(std::ostream&, const Range&);
-    friend std::ostream& operator<<(std::ostream&, const Range*);
-};
+typedef struct Range {
+    struct Range    *next;
+    uint            lb, ub;     // [lb,ub)
+} Range;
 
-inline std::ostream& operator<<(std::ostream &o, const Range *r){
-        return r? o << *r : o;
-}
+typedef enum {
+        NULLOP = 1,
+        MATCHOP,
+        RULEOP,
+        ALTOP,
+        CATOP,
+        CLOSEOP,
+        CLOSEVOP
+} RegExpType;
 
-class RegExp {
-public:
+typedef struct RegExp {
+    RegExpType  type;
     uint        size;
-public:
-    virtual char *typeOf() = 0;
-    RegExp *isA(char *t)
-        { return typeOf() == t? this : NULL; }
-    virtual void split(CharSet&) = 0;
-    virtual void calcSize(Char*) = 0;
-    virtual uint fixedLength();
-    virtual void compile(Char*, Ins*) = 0;
-    virtual void display(std::ostream&) const = 0;
-    friend std::ostream& operator<<(std::ostream&, const RegExp&);
-    friend std::ostream& operator<<(std::ostream&, const RegExp*);
-};
+    union {
+        struct {
+            Range           *match;
+        } MatchOp;
+        struct {
+            struct RegExp   *exp;
+            struct RegExp   *ctx;
+            Ins             *ins;
+            uint            accept;
+            Token           *code;
+            uint            line;
+        } RuleOp;
+        struct {
+            struct RegExp   *exp1, *exp2;
+        } AltOp;
+        struct {
+            struct RegExp   *exp1, *exp2;
+        } CatOp;
+        struct {
+            struct RegExp   *exp;
+        } CloseOp;
+        struct {
+            struct RegExp   *exp;
+            int             min;
+            int             max;
+        } CloseVOp;
+    } u;
+} RegExp;
 
-inline std::ostream& operator<<(std::ostream &o, const RegExp &re){
-    re.display(o);
-    return o;
-}
-
-inline std::ostream& operator<<(std::ostream &o, const RegExp *re){
-    return o << *re;
-}
-
-class NullOp: public RegExp {
-public:
-    static char *type;
-public:
-    char *typeOf()
-        { return type; }
-    void split(CharSet&);
-    void calcSize(Char*);
-    uint fixedLength();
-    void compile(Char*, Ins*);
-    void display(std::ostream &o) const {
-        o << "_";
-    }
-};
-
-class MatchOp: public RegExp {
-public:
-    static char *type;
-    Range       *match;
-public:
-    MatchOp(Range *m) : match(m)
-        { }
-    char *typeOf()
-        { return type; }
-    void split(CharSet&);
-    void calcSize(Char*);
-    uint fixedLength();
-    void compile(Char*, Ins*);
-    void display(std::ostream&) const;
-};
-
-class RuleOp: public RegExp {
-private:
-    RegExp      *exp;
-public:
-    RegExp      *ctx;
-    static char *type;
-    Ins         *ins;
-    uint        accept;
-    Token       *code;
-    uint        line;
-public:
-    RuleOp(RegExp*, RegExp*, Token*, uint);
-    char *typeOf()
-        { return type; }
-    void split(CharSet&);
-    void calcSize(Char*);
-    void compile(Char*, Ins*);
-    void display(std::ostream &o) const {
-        o << exp << "/" << ctx << ";";
-    }
-};
-
-
-RegExp *mkAlt(RegExp*, RegExp*);
-
-class AltOp: public RegExp {
-private:
-    RegExp      *exp1, *exp2;
-public:
-    static char *type;
-public:
-    AltOp(RegExp *e1, RegExp *e2)
-        { exp1 = e1;  exp2 = e2; }
-    char *typeOf()
-        { return type; }
-    void split(CharSet&);
-    void calcSize(Char*);
-    uint fixedLength();
-    void compile(Char*, Ins*);
-    void display(std::ostream &o) const {
-        o << exp1 << "|" << exp2;
-    }
-    friend RegExp *mkAlt(RegExp*, RegExp*);
-};
-
-class CatOp: public RegExp {
-private:
-    RegExp      *exp1, *exp2;
-public:
-    static char *type;
-public:
-    CatOp(RegExp *e1, RegExp *e2)
-        { exp1 = e1;  exp2 = e2; }
-    char *typeOf()
-        { return type; }
-    void split(CharSet&);
-    void calcSize(Char*);
-    uint fixedLength();
-    void compile(Char*, Ins*);
-    void display(std::ostream &o) const {
-        o << exp1 << exp2;
-    }
-};
-
-class CloseOp: public RegExp {
-private:
-    RegExp      *exp;
-public:
-    static char *type;
-public:
-    CloseOp(RegExp *e)
-        { exp = e; }
-    char *typeOf()
-        { return type; }
-    void split(CharSet&);
-    void calcSize(Char*);
-    void compile(Char*, Ins*);
-    void display(std::ostream &o) const {
-        o << exp << "+";
-    }
-};
-
-extern void genCode(std::ostream&, RegExp*);
-extern RegExp *mkDiff(RegExp*, RegExp*);
-extern RegExp *strToRE(SubStr);
-extern RegExp *ranToRE(SubStr);
+extern uint     RegExp_fixedLength( RegExp * );
+extern RegExp   *RegExp_new_NullOp( void );
+extern RegExp   *RegExp_new_CatOp( RegExp *e1, RegExp *e2 );
+extern RegExp   *RegExp_new_RuleOp( RegExp *, RegExp *, Token *, uint );
+extern RegExp   *RegExp_new_CloseOp( RegExp *e );
+extern void     genCode( FILE *, RegExp * );
+extern RegExp   *mkAlt( RegExp *, RegExp * );
+extern RegExp   *mkDiff( RegExp *, RegExp * );
+extern RegExp   *ranToRE( SubStr );
+extern RegExp   *strToRE( SubStr );
 
 #endif

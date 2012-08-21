@@ -33,41 +33,28 @@
 #ifndef _ins_h
 #define _ins_h
 
-#include <iostream>
 #include "basics.h"
 
-const uint nChars = 256;
-typedef uchar Char;
+#define NCHARS  256
+typedef uchar 	Char;
 
-const uint CHAR = 0;
-const uint GOTO = 1;
-const uint FORK = 2;
-const uint TERM = 3;
-const uint CTXT = 4;
+#define CHAR    0
+#define GOTO    1
+#define FORK    2
+#define TERM    3
+#define CTXT    4
 
-union Ins {
+typedef union Ins {
     struct {
         byte    tag;
         byte    marked;
         void    *link;
-    }                   i;
+    } i;
     struct {
         ushort  value;
         ushort  bump;
         void    *link;
-    }                   c;
-};
-
-inline bool isMarked(Ins *i){
-    return (bool) i->i.marked;
-}
-
-inline void mark(Ins *i){
-    i->i.marked = true;
-}
-
-inline void unmark(Ins *i){
-    i->i.marked = false;
-}
+    } c;
+} Ins;
 
 #endif

@@ -7,7 +7,7 @@ re2c_autodepends = .autodepend
 
 inc_dirs = -I"$(re2c_dir)/h"
 
-.cpp: ../cpp
+.c: ../c
 
 objs =                  &
        actions.obj      &
@@ -16,12 +16,11 @@ objs =                  &
        main.obj         &
        parser.obj       &
        scanner.obj      &
-       substr.obj       &
-       translat.obj
+       substr.obj
 
-!ifdef bootstrap
-# awful hack to link this executable; if you know how to do this right, please do!
-cl = g++
+!ifndef bootstrap
+extra_c_flags_scanner = -wcd=118
+extra_c_flags_parser = -pil
 !endif
 
 !include exetarg.mif

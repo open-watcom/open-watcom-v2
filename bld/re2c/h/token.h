@@ -35,16 +35,9 @@
 
 #include "substr.h"
 
-class Token {
-  public:
-    Str                 text;
-    uint                line;
-  public:
-    Token(SubStr, uint);
-};
-
-inline Token::Token(SubStr t, uint l) : text(t), line(l) {
-    ;
-}
+typedef struct Token {
+    Str     text;
+    uint    line;
+} Token;
 
 #endif

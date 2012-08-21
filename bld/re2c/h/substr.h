@@ -33,45 +33,23 @@
 #ifndef _substr_h
 #define _substr_h
 
-#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 #include "basics.h"
 
-class SubStr {
-public:
-    char                *str;
-    uint                len;
-public:
-    friend bool operator==(const SubStr, const SubStr);
-    SubStr(uchar*, uint);
-    SubStr(char*, uint);
-    SubStr(const SubStr&);
-    void out(std::ostream&) const;
-};
+typedef struct SubStr {
+    char    *str;
+    uint    len;
+} SubStr;
 
-class Str: public SubStr {
-public:
-    Str(const SubStr&);
-    Str(Str&);
-    Str();
-    ~Str();
-};
+typedef struct SubStr Str;
 
-inline std::ostream& operator<<(std::ostream& o, const SubStr s){
-    s.out(o);
-    return o;
-}
+extern int      SubStr_eq( const SubStr *, const SubStr * );
+extern void     SubStr_init( SubStr *, char *, uint );
+extern void     SubStr_out( const SubStr *, FILE * );
 
-inline std::ostream& operator<<(std::ostream& o, const SubStr* s){
-    return o << *s;
-}
-
-inline SubStr::SubStr(uchar *s, uint l)
-    : str((char*) s), len(l) { }
-
-inline SubStr::SubStr(char *s, uint l)
-    : str(s), len(l) { }
-
-inline SubStr::SubStr(const SubStr &s)
-    : str(s.str), len(s.len) { }
+extern void     Str_init( Str *, const SubStr * );
+extern void     Str_copy( Str *, Str * );
+extern void     Str_destroy( Str * );
 
 #endif

@@ -35,11 +35,13 @@
 #define CODE 259
 #define RANGE 260
 #define STRING 261
+
 typedef union {
     Symbol      *symbol;
     RegExp      *regexp;
     Token       *token;
     char        op;
 } YYSTYPE;
+
 extern YYSTYPE yylval;
 
