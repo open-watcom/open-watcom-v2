@@ -55,7 +55,7 @@ $(LNK): $(__makefiles__)
         @%append $(LNK) libpath %WATCOM%\lib386
         @%append $(LNK) libpath %WATCOM%\lib386\netware
         @%append $(LNK) import @%WATCOM%\novi\clib.imp
-        @%append $(LNK) import @$(uidir)\$(os)\uinlm.imp
+        @%append $(LNK) import @$(ui_dir)\$(os)\uinlm.imp
         set lib=$(watcomlib);$(%lib)
 
 !else
@@ -121,7 +121,7 @@ samp2.$(ext) : samp2.obj $(guilib) $(uilib) $(LNK)
         @%append $(LNK) file samp2.obj
         $(linker) @$(LNK)
 
-.c:     $(guidir)/sample/c;$(os_source_dir);$(os_extra_dir)
+.c:     $(gui_dir)/sample/c;$(os_source_dir);$(os_extra_dir)
 .h:     ../h
 
 $(rcname).res : ../$(rcname).rc ../$(rcname).dlg _guimsgs.gh

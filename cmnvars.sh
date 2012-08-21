@@ -22,7 +22,7 @@ export RELROOT=$OWROOT/rel2
 export DWATCOM=$WATCOM
 export INCLUDE=$WATCOM/lh
 export EDPATH=$WATCOM/eddat
-export PATH=$OWBINDIR:$OWROOT/bat:$WATCOM/binl:$DEFPATH
+export PATH=$OWBINDIR:$OWROOT/build:$WATCOM/binl:$DEFPATH
 
 echo Open Watcom compiler build environment
 

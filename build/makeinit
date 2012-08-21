@@ -1,7 +1,31 @@
+bld_ver      = $(%BLD_VER)
+patch_level  = 0
+lang_root    = $(%WATCOM)
+!ifdef __UNIX__
+build_dir    = $(%OWROOT)/build
+contrib_dir  = $(%OWROOT)/contrib
+dev_dir      = $(%OWROOT)/bld
+!else
+build_dir    = $(%OWROOT)\build
+contrib_dir  = $(%OWROOT)\contrib
+dev_dir      = $(%OWROOT)\bld
+!endif
+
+verbose      = $(%OWVERBOSE)
+
+# don't ask, just nuke the files
+.ERASE
+
+mif_path     = $(build_dir)/mif
+
+.mif: $(mif_path)
+
+!include cdirs.mif
+
 # it prevents different target header path mixing
 !ifndef bootstrap
 .BEFORE
-     @set include= 
+#     @set include= 
 !endif
 
 # if you wish to build debug version

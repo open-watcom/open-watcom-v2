@@ -45,10 +45,10 @@ gui_lib = $(gui_dir_$(host_os))
 
 extra_lib_dos   = $(ui_dir)/dos/dos386/ui.lib
 !ifeq sys_windowed 1
-extra_lib_os2   = $(os2386)
+extra_lib_os2   = os2386.lib
 !else
 extra_lib_nt    = $(ui_dir)/nt/nt$(host_cpu)/ui.lib
-extra_lib_os2   = $(ui_dir)/os2/os2386/ui.lib $(os2386)
+extra_lib_os2   = $(ui_dir)/os2/os2386/ui.lib os2386.lib
 !endif
 extra_lib_qnx   = $(ui_dir)/qnx/qnx386/ui.lib
 !ifdef bootstrap

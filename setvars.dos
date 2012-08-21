@@ -58,7 +58,7 @@ set RELROOT=%OWROOT%\rel2
 set DWATCOM=%WATCOM%
 set INCLUDE=%WATCOM%\h;%WATCOM%\h\win
 set EDPATH=%WATCOM%\eddat
-set PATH=%OWBINDIR%;%OWROOT%\bat;%WATCOM%\binw;%DOC_ROOT%\cmds;%DEFPATH%
+set PATH=%OWBINDIR%;%OWROOT%\build;%WATCOM%\binw;%DOC_ROOT%\cmds;%DEFPATH%
 
 echo Open Watcom compiler build environment
 

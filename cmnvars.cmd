@@ -22,7 +22,7 @@ set RELROOT=%OWROOT%\rel2
 set DWATCOM=%WATCOM%
 set INCLUDE=%WATCOM%\h;%WATCOM%\h\os2
 set EDPATH=%WATCOM%\eddat
-set PATH=%OWBINDIR%;%OWROOT%\bat;%WATCOM%\binp;%WATCOM%\binw;%OS2TKROOT%\bin;%DEFPATH%
+set PATH=%OWBINDIR%;%OWROOT%\build;%WATCOM%\binp;%WATCOM%\binw;%OS2TKROOT%\bin;%DEFPATH%
 
 echo Open Watcom compiler build environment
 
