@@ -159,7 +159,7 @@ objs += $(english_objs)
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I"$(dev_dir)/graphlib/h" -I"$(mathlib_dir)/h"
+inc_dirs = -I"$(src_dir)/graphlib/h" -I"$(mathlib_dir)/h"
 !ifeq host_os qnx
 inc_dirs += -I"$(hdr_dir)/qnx"
 !else ifeq host_os win
@@ -169,10 +169,10 @@ inc_dirs += -I"$(hdr_dir)/dos"
 !endif
 
 !ifeq host_cpu 386
-.asm: $(dev_dir)/graphlib/386asm #;$(dev_dir)/graphlib/asm
+.asm: $(src_dir)/graphlib/386asm #;$(src_dir)/graphlib/asm
 !else
 !endif
-.asm: $(dev_dir)/graphlib/asm
+.asm: $(src_dir)/graphlib/asm
 
 .c: ../c
 

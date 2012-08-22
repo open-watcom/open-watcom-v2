@@ -22,27 +22,27 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> <DEVDIR>/pbide/fscopy/wfscopy.exe       <OWRELROOT>/binw/wfscopy.exe
+    <CPCMD> <SRCDIR>/pbide/fscopy/wfscopy.exe       <OWRELROOT>/binw/wfscopy.exe
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> <DEVDIR>/pbide/run/wini86/run.exe       <OWRELROOT>/binw/watrun.exe
-    <CPCMD> <DEVDIR>/pbide/dlldbg/wini86/dlldbg.exe <OWRELROOT>/binw/dlldbg.exe
-    <CPCMD> <DEVDIR>/pbide/wig/wini86.dll/pbide.dll <OWRELROOT>/binw/pbide.dll
-    <CPCMD> <DEVDIR>/pbide/cfg/wini86/pbide.cfg     <OWRELROOT>/binw/pbide.cfg
-    <CPCMD> <DEVDIR>/pbide/cfg/wini86/pbidex.cfg    <OWRELROOT>/binw/pbidex.cfg
+    <CPCMD> <SRCDIR>/pbide/run/wini86/run.exe       <OWRELROOT>/binw/watrun.exe
+    <CPCMD> <SRCDIR>/pbide/dlldbg/wini86/dlldbg.exe <OWRELROOT>/binw/dlldbg.exe
+    <CPCMD> <SRCDIR>/pbide/wig/wini86.dll/pbide.dll <OWRELROOT>/binw/pbide.dll
+    <CPCMD> <SRCDIR>/pbide/cfg/wini86/pbide.cfg     <OWRELROOT>/binw/pbide.cfg
+    <CPCMD> <SRCDIR>/pbide/cfg/wini86/pbidex.cfg    <OWRELROOT>/binw/pbidex.cfg
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <DEVDIR>/pbide/run/nt386/run.exe        <OWRELROOT>/binnt/watrun.exe
-    <CPCMD> <DEVDIR>/pbide/dlldbg/nt386/dlldbg.exe  <OWRELROOT>/binnt/dlldbg.exe
-    <CPCMD> <DEVDIR>/pbide/wig/nt386.dll/pbide.dll  <OWRELROOT>/binnt/pbide.dll
-    <CPCMD> <DEVDIR>/pbide/dlldbg/pbwdnt.dbg        <OWRELROOT>/binnt/pbwdnt.dbg
-    <CPCMD> <DEVDIR>/pbide/cfg/nt386/pbide.cfg      <OWRELROOT>/binnt/pbide.cfg
-    <CPCMD> <DEVDIR>/pbide/cfg/nt386/pbidex.cfg     <OWRELROOT>/binnt/pbidex.cfg
-    <CPCMD> <DEVDIR>/viper/cfg/idepbnt.cfg          <OWRELROOT>/binnt/idepbnt.cfg
+    <CPCMD> <SRCDIR>/pbide/run/nt386/run.exe        <OWRELROOT>/binnt/watrun.exe
+    <CPCMD> <SRCDIR>/pbide/dlldbg/nt386/dlldbg.exe  <OWRELROOT>/binnt/dlldbg.exe
+    <CPCMD> <SRCDIR>/pbide/wig/nt386.dll/pbide.dll  <OWRELROOT>/binnt/pbide.dll
+    <CPCMD> <SRCDIR>/pbide/dlldbg/pbwdnt.dbg        <OWRELROOT>/binnt/pbwdnt.dbg
+    <CPCMD> <SRCDIR>/pbide/cfg/nt386/pbide.cfg      <OWRELROOT>/binnt/pbide.cfg
+    <CPCMD> <SRCDIR>/pbide/cfg/nt386/pbidex.cfg     <OWRELROOT>/binnt/pbidex.cfg
+    <CPCMD> <SRCDIR>/viper/cfg/idepbnt.cfg          <OWRELROOT>/binnt/idepbnt.cfg
   [ ENDIF ]
-    <CPCMD> <DEVDIR>/pbide/dlldbg/pbend.dbg         <OWRELROOT>/binw/pbend.dbg
-    <CPCMD> <DEVDIR>/pbide/dlldbg/pbstart.dbg       <OWRELROOT>/binw/pbstart.dbg
-    <CPCMD> <DEVDIR>/pbide/dlldbg/pbwd.dbg          <OWRELROOT>/binw/pbwd.dbg
-    <CPCMD> <DEVDIR>/pbide/pbdll.h                  <OWRELROOT>/h/pbdll.h
-    <CPCMD> <DEVDIR>/viper/cfg/idepb.cfg            <OWRELROOT>/binw/idepb.cfg
+    <CPCMD> <SRCDIR>/pbide/dlldbg/pbend.dbg         <OWRELROOT>/binw/pbend.dbg
+    <CPCMD> <SRCDIR>/pbide/dlldbg/pbstart.dbg       <OWRELROOT>/binw/pbstart.dbg
+    <CPCMD> <SRCDIR>/pbide/dlldbg/pbwd.dbg          <OWRELROOT>/binw/pbwd.dbg
+    <CPCMD> <SRCDIR>/pbide/pbdll.h                  <OWRELROOT>/h/pbdll.h
+    <CPCMD> <SRCDIR>/viper/cfg/idepb.cfg            <OWRELROOT>/binw/idepb.cfg
 
 [ BLOCK <1> clean ]
 #==================

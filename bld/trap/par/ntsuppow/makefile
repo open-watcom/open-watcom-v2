@@ -15,9 +15,9 @@ suppress_zc = 1
 !include deftarg.mif
 
 extra_c_flags = -zp8 -s -D_X86_=1 -Di386=1 -DWIN32_LEAN_AND_MEAN=1
-inc_dirs = -I. -I"../h" -I"$(lang_root)/h" -I"$(lang_root)/h/nt" -I"$(dev_dir)/w32api/nt/ddk"
+inc_dirs = -I. -I"../h" -I"$(lang_root)/h" -I"$(lang_root)/h/nt" -I"$(src_dir)/w32api/nt/ddk"
 
-ddk_dir = $(dev_dir)/w32api/nt386/ddk
+ddk_dir = $(src_dir)/w32api/nt386/ddk
 
 .c : ../c
 

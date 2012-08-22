@@ -46,7 +46,7 @@ object =                &
 # Source info
 #
 
-.c:   ../src;$(dev_dir)/version
+.c:   ../src;$(src_dir)/version
 .rc : ../src
 
 inc_dirs = -I"../src" -I"../dev"

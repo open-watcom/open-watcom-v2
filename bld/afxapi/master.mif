@@ -8,7 +8,7 @@ afxapi_autodepends  = .autodepend
 !include deftarg.mif
 !include defrule.mif
 
-inc_path += -I"$(dev_dir)/afxapi/$(host_os)"
+inc_path += -I"$(src_dir)/afxapi/$(host_os)"
 
 splice = wsplice -i$(hdr_dir) $[@ $^@
 

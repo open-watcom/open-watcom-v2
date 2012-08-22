@@ -4,8 +4,8 @@ if [ -f setvars ]; then
 else
     . ./setvars.sh
 fi
-if [ ! -f $DEVDIR/build/binl/wtouch ]; then
-    cp -p `which touch` $DEVDIR/build/binl/wtouch
+if [ ! -f $OWBINDIR/wtouch ]; then
+    cp -p `which touch` $OWBINDIR/wtouch
 fi
 cd bld
 export BUILDMODE=bootstrap

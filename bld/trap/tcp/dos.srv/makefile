@@ -14,7 +14,7 @@ type  = remote_link
 inc_dirs     = -I"$(contrib_dir)/wattcp/inc"
 extra_cflags = -zm
 extra_linker = op eliminate
-extra_libs   = $(dev_dir)/wattcp/dosi86/wattcpwl.lib
+extra_libs   = $(src_dir)/wattcp/dosi86/wattcpwl.lib
 
 !include $(trap_dir)/master.mif
 

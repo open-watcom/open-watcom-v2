@@ -51,7 +51,7 @@ objs = &
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = -I"../h" -I"$(dev_dir)/graphlib/h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hdr_dir)/dos"
+inc_dirs = -I"../h" -I"$(src_dir)/graphlib/h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hdr_dir)/dos"
 
 .c: ../c
 

@@ -19,7 +19,7 @@ zlib   = ../zlib/osi386/zlib.lib
 !else
 !endif
 
-bld_extra_incs = -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(dev_dir)/builder/h"
+bld_extra_incs = -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(src_dir)/builder/h"
 
 !include cproj.mif
 !include deftarg.mif
@@ -32,7 +32,7 @@ all : $(commands) .SYMBOLIC
 .c.exe:
     $(bld_cl) -fe=$@ $<
 
-langdat.exe : langdat.c $(dev_dir)/builder/c/utils.c
+langdat.exe : langdat.c $(src_dir)/builder/c/utils.c
 
 uzip.exe: microzip.c $(ziplib) $(zlib)
     $(bld_cl) -fe=$@ $<

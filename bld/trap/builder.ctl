@@ -65,10 +65,10 @@ cdsay .
 #os2
 #    <CPCMD> nov/os2.trp/nov.dll                      <OWRELROOT>/binp/dll/
 #    <CPCMD> nov/os2.srv/novserv1.exe                 <OWRELROOT>/binp/
-#    <CPCMD> <DEVDIR>/bin/binp/dll/???.dll                          <OWRELROOT>/binp/dll/
-#    <CPCMD> <DEVDIR>/bin/binp/dll/std??.dll                        <OWRELROOT>/binp/dll/
-#    <CPCMD> <DEVDIR>/bin/binp/dll/???serv.exe                      <OWRELROOT>/binp/dll/
-#    <CPCMD> <DEVDIR>/bin/binp/???serv1.exe                         <OWRELROOT>/binp/
+#    <CPCMD> <SRCDIR>/bin/binp/dll/???.dll                          <OWRELROOT>/binp/dll/
+#    <CPCMD> <SRCDIR>/bin/binp/dll/std??.dll                        <OWRELROOT>/binp/dll/
+#    <CPCMD> <SRCDIR>/bin/binp/dll/???serv.exe                      <OWRELROOT>/binp/dll/
+#    <CPCMD> <SRCDIR>/bin/binp/???serv1.exe                         <OWRELROOT>/binp/
 
   [ IFDEF (os_win "") <2*> ]
     <CPCMD> lcl/win/std/std.dll                       <OWRELROOT>/binw/

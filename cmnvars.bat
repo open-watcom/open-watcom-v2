@@ -14,9 +14,8 @@ if "%OWDEFPATH%" == "" set OWDEFPATH=%PATH%
 
 REM Stuff for the Open Watcom build environment
 set BUILD_PLATFORM=nt386
-set DEVDIR=%OWROOT%\bld
 REM Subdirectory to be used for bootstrapping/prebuild binaries
-set OWBINDIR=%DEVDIR%\build\binnt
+set OWBINDIR=%OWROOT%\bld\build\binnt
 set DWATCOM=%WATCOM%
 set INCLUDE=%WATCOM%\h;%WATCOM%\h\nt
 set EDPATH=%WATCOM%\eddat

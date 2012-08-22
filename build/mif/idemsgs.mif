@@ -1,4 +1,4 @@
-ide_dir=$(dev_dir)\ide
+ide_dir=$(src_dir)\ide
 ide_msg_dir=$(ide_dir)\msg
 
 # IDE_E is the extension

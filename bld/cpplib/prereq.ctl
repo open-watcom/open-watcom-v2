@@ -2,10 +2,10 @@
 # ============================================================
 
     echo Building C++ reference compilers
-    cdsay <DEVDIR>/plusplus/i86/rpp
+    cdsay <SRCDIR>/plusplus/i86/rpp
     wmake -h -k
-    cdsay <DEVDIR>/plusplus/386/rpp
+    cdsay <SRCDIR>/plusplus/386/rpp
     wmake -h -k
-    cdsay <DEVDIR>/plusplus/axp/rpp
+    cdsay <SRCDIR>/plusplus/axp/rpp
     wmake -h -k
     cdsay <PROJDIR>

@@ -7,7 +7,7 @@ if [ -f setvars ]; then
 else
     . ./setvars.sh
 fi
-if [ ! -f $DEVDIR/build/binl/builder ]; then
+if [ ! -f $OWBINDIR/builder ]; then
     echo Cannot find builder - did you run boot.sh?
 else
     cd bld

@@ -66,12 +66,11 @@ rem NT/XP? or OS/2 or eCS?
 :BLD1
    call %myow%.cmd
 rem start with the builder
-   cd %devdir%
-   cd builder\%builderdir%
+   cd %owroot%\bld\builder\%builderdir%
    wmake %makeclean%
 
 REM now we can start the builder with 9 generations of logfiles
-   cd %devdir%
+   cd %owroot%\bld
    builder %target% -b 9
 
 :EOF

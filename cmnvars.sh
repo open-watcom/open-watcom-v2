@@ -13,10 +13,9 @@ export BLD_VER_STR=2.0
 
 # Stuff for the Open Watcom build environment
 export BUILD_PLATFORM=linux386
-export DEVDIR=$OWROOT/bld
 
 # Subdirectory to be used for bootstrapping/prebuild binaries
-export OWBINDIR=$DEVDIR/build/binl
+export OWBINDIR=$OWROOT/bld/build/binl
 export DWATCOM=$WATCOM
 export INCLUDE=$WATCOM/lh
 export EDPATH=$WATCOM/eddat

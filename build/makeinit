@@ -4,13 +4,12 @@ lang_root    = $(%WATCOM)
 !ifdef __UNIX__
 build_dir    = $(%OWROOT)/build
 contrib_dir  = $(%OWROOT)/contrib
-dev_dir      = $(%OWROOT)/bld
+src_dir      = $(%OWROOT)/bld
 !else
 build_dir    = $(%OWROOT)\build
 contrib_dir  = $(%OWROOT)\contrib
-dev_dir      = $(%OWROOT)\bld
+src_dir      = $(%OWROOT)\bld
 !endif
-
 verbose      = $(%OWVERBOSE)
 
 # don't ask, just nuke the files
@@ -45,7 +44,7 @@ nlang_root      = $(%DWATCOM)
 # The NOVELLNDK environment variable should be added during install. If not, the default location is
 # C:\NOVELL\NDK\NWSDK.
 nwndk_root      = $(%NOVELLNDK)
-ow_nwoss_root   = $(dev_dir)\os_supp\novell
+ow_nwoss_root   = $(src_dir)\os_supp\novell
 nwos2dir=$(tools_root)\nwos2lib
 #nwdir=$(tools_root)\nwclib
 #nwsrc=$(tools_root)\src
@@ -72,7 +71,7 @@ nlang_root      = $(%DWATCOM)
 # The NOVELLNDK environment variable should be added during install. If not, the default location is
 # C:\NOVELL\NDK\NWSDK.
 nwndk_root      = $(%NOVELLNDK)
-ow_nwoss_root   = $(dev_dir)/os_supp/novell
+ow_nwoss_root   = $(src_dir)/os_supp/novell
 nwos2dir=$(tools_root)/nwos2lib
 
 #
