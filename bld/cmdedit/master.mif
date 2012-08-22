@@ -93,7 +93,7 @@ all: os2edit.dll os2edit.exe os22edit.exe
 cmd2objs = cmdstart.obj $(os2zuobjs)
 
 os2edit.dll: $(cmd2objs) makefile
-            @%write $(lnk) option dosseg,nocaseex name os2edit lib os2.lib, clibs
+            @%write $(lnk) option dosseg,nocaseex name os2edit lib clibs
             @%append $(lnk) system os2 dll initinstance option manyautodata
             @%append $(lnk) option newfiles op map
             @%append $(lnk) export OS2EDIT_
@@ -107,7 +107,7 @@ ts2objs = dcmdedit.obj ftos.obj $(os2objs)
 
 dos2edit.exe: $(ts2objs) makefile
             @%write $(lnk) debug all name dos2edit system os2 pmc option dosseg
-            @%append $(lnk) lib os2.lib option newfiles
+            @%append $(lnk) option newfiles
             @for %i in ($(ts2objs)) do @%append $(lnk) file %i
             $(linker) @$(lnk)
 
@@ -118,7 +118,6 @@ cmdshellobjs = cmdshell.cbj ftos.cbj $(os2cmdshellobjs)
 
 cmdshell.exe: $(cmdshellobjs) makefile
             @%write $(lnk) debug all name cmdshell system os2 pmc option dosseg
-            @%append $(lnk) lib os2.lib
             @for %i in ($(cmdshellobjs)) do @%append $(lnk) file %i
             $(linker) @$(lnk)
 

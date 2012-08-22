@@ -20,7 +20,6 @@ wdpmhook.dll: pmhook.obj loadstd.obj
     @%append $^&.lnk option dosseg,quiet
     @%append $^&.lnk option map
     @%append $^&.lnk file loadstd.obj,pmhook.obj
-    @%append $^&.lnk library os2.lib
     @%append $^&.lnk export SENDMSGHOOKPROC.1,SETHMQDEBUGEE.2
     @%append $^&.lnk segment class 'DATA' shared
     @%append $^&.lnk segment class 'BSS' shared
@@ -31,7 +30,6 @@ wdpmhelp.exe: _err.gh pmhelp.res pmhelp.obj
     @%append $^&.lnk debug all op symfile
     @%append $^&.lnk file pmhelp.obj
     @%append $^&.lnk library clibl.lib
-    @%append $^&.lnk library os2.lib
     @%append $^&.lnk option alignment=16
     @%append $^&.lnk option nodefaultlibs,quiet
     @%append $^&.lnk option modname=wdpmhelp

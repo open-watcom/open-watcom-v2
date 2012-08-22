@@ -121,7 +121,7 @@ nlm_imports = &
     Free
 
 extra_l_flags = op symfile,map
-extra_l_flags_os2_i86 = lib os2.lib op stack=4k, newfiles
+extra_l_flags_os2_i86 = op stack=4k, newfiles
 extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
 extra_l_flags_win = option heap=10k, stack=10k segment class 'CODE' preload fixed segment class 'DATA' preload fixed lib commdlg,toolhelp
 

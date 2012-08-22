@@ -296,7 +296,7 @@ dig_srcs +=;$(dig_dir)/c/dsx
 !ifeq sys_windowed 1
 libs_win_i86        = $(aui_dir)/wini86/aui.lib $(gui_dir)/win/wini86/gui.lib
 libs_nt_386         = $(aui_dir)/nt386/aui.lib $(gui_dir)/win/nt386/gui.lib
-libs_os2_i86        = $(aui_dir)/os2i86.pm/aui.lib $(gui_dir)/win/os2i86/gui.lib os2.lib
+libs_os2_i86        = $(aui_dir)/os2i86.pm/aui.lib $(gui_dir)/win/os2i86/gui.lib
 libs_os2_386        = $(aui_dir)/os2386.pm/aui.lib $(gui_dir)/win/os2386/gui.lib
 libs_nt_axp         = $(aui_dir)/ntaxp/aui.lib $(gui_dir)/win/ntaxp/gui.lib
 !else

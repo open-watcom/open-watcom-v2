@@ -41,7 +41,6 @@ sys_x86_os2  = sys os2 dll initinstance &
             export TrapInit_.1 &
             export TrapFini_.2 &
             export TrapRequest_.3 &
-            lib os2.lib &
             op modname=$^& &
             option description $(description)
 sys_x86_os2v2  = sys os2v2 dll initinstance terminstance &

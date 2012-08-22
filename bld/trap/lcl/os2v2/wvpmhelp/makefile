@@ -38,7 +38,6 @@ wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj pmhelp.res
     @%append $(tmplnk) import WinLockInput PMMERGE.5225
     @%append $(tmplnk) import WinThreadAssocQueue PMMERGE.5398
     @%append $(tmplnk) file pmhelp.obj
-    @%append $(tmplnk) library os2386.lib
     @%append $(tmplnk) option modname=wdpmhelp
     @%append $(tmplnk) option description $(description)
     $(linker) @$(tmplnk)
