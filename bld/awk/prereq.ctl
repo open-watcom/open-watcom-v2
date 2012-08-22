@@ -8,6 +8,12 @@ set PROJDIR=<CWD>
 
 cdsay .
 
+set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
+
+[ BLOCK <OWLINUXBUILD> bootstrap ]
+#=================================
+    set BUILD_PLATFORM=<BUILD_PLATFORM>boot
+
 [ BLOCK <1> clean ]
 #==================
     echo rm -f -r <PROJDIR>/<OWPREOBJDIR>
@@ -24,5 +30,7 @@ cdsay .
 
 [ BLOCK . . ]
 #============
+set BUILD_PLATFORM=<TMP_BUILD_PLATFORM>
+set TMP_BUILD_PLATFORM=
 
 cdsay <PROJDIR>
