@@ -2,9 +2,9 @@
 # ===========================
 
 # Set default output directory
-[ BLOCK .<RELROOT> . ]
+[ BLOCK .<OWRELROOT> . ]
 #=====================
-    set RELROOT=<OWROOT>/rel2
+    set OWRELROOT=<OWROOT>/rel2
 
 [ BLOCK . . ]
 #============

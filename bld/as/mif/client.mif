@@ -6,7 +6,7 @@
 #
 
 !ifdef bootstrap
-asminline_lib = $(as_dir)/$(host_cpu)/inline/$(%OBJDIR)/asinline.lib
+asminline_lib = $(as_dir)/$(host_cpu)/inline/$(%OWOBJDIR)/asinline.lib
 !else
 asminline_axp_lib_386  = $(as_dir)/axp/inline/osi386/asinline.lib
 asminline_axp_lib_axp  = $(as_dir)/axp/inline/osiaxp/asinline.lib

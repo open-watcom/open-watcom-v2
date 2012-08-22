@@ -6,12 +6,12 @@ set PROJDIR=<CWD>
 cdsay .
 
 set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
-set ODIR=<PREOBJDIR>
+set ODIR=<OWPREOBJDIR>
 
 [ BLOCK <OWLINUXBUILD> bootstrap ]
 #=================================
     set BUILD_PLATFORM=<BUILD_PLATFORM>boot
-    set ODIR=<OBJDIR>
+    set ODIR=<OWOBJDIR>
 
 [ BLOCK <1> clean ]
 #==================
@@ -21,33 +21,33 @@ set ODIR=<PREOBJDIR>
 
 [ BLOCK <BUILD_PLATFORM> dos386 ]
 #================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../small386/ms_r/makefile prebuild=1
 
 [ BLOCK <BUILD_PLATFORM> nt386 os2386 ]
 #======================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../flat386/mf_r/makefile prebuild=1
 
 [ BLOCK <BUILD_PLATFORM> ntaxp ]
 #===============================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../ntaxp/_s/makefile prebuild=1
 
 [ BLOCK <BUILD_PLATFORM> linux386 ]
 #==================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../linux386/mf_r/makefile prebuild=1
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
     echo Building the wres library
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
     wmake -h -f ../linux386/mf_r/makefile bootstrap=1
 
 [ BLOCK . . ]

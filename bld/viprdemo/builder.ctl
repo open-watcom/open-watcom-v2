@@ -57,43 +57,43 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
     cd src
-    <CPCMD> ./*.*                   <RELROOT>/samples/ide/
-    <CPCMD> fortran/*.*             <RELROOT>/samples/ide/fortran/
-    <CPCMD> fortran/win32/*.*       <RELROOT>/samples/ide/fortran/win32/
-    <CPCMD> fortran/os2/*.*         <RELROOT>/samples/ide/fortran/os2/
-    <CPCMD> fortran/win/*.*         <RELROOT>/samples/ide/fortran/win/
-    <CPCMD> fortran/win386/*.*      <RELROOT>/samples/ide/fortran/win386/
-    <CPCMD> win32/*.tgt             <RELROOT>/samples/ide/win32/
-    <CPCMD> os2/*.tgt               <RELROOT>/samples/ide/os2/
-    <CPCMD> win/*.tgt               <RELROOT>/samples/ide/win/
-    <CPCMD> win386/*.tgt            <RELROOT>/samples/ide/win386/
+    <CPCMD> ./*.*                   <OWRELROOT>/samples/ide/
+    <CPCMD> fortran/*.*             <OWRELROOT>/samples/ide/fortran/
+    <CPCMD> fortran/win32/*.*       <OWRELROOT>/samples/ide/fortran/win32/
+    <CPCMD> fortran/os2/*.*         <OWRELROOT>/samples/ide/fortran/os2/
+    <CPCMD> fortran/win/*.*         <OWRELROOT>/samples/ide/fortran/win/
+    <CPCMD> fortran/win386/*.*      <OWRELROOT>/samples/ide/fortran/win386/
+    <CPCMD> win32/*.tgt             <OWRELROOT>/samples/ide/win32/
+    <CPCMD> os2/*.tgt               <OWRELROOT>/samples/ide/os2/
+    <CPCMD> win/*.tgt               <OWRELROOT>/samples/ide/win/
+    <CPCMD> win386/*.tgt            <OWRELROOT>/samples/ide/win386/
     cd ..
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> threed/os2/os2_3d.dll   <RELROOT>/samples/ide/
-    <CPCMD> threed/os2/os2_3d.dll   <RELROOT>/samples/ide/os2/
-    <CPCMD> threed/os2/os2_3d.dll   <RELROOT>/samples/ide/fortran/
-    <CPCMD> threed/os2/os2_3d.dll   <RELROOT>/samples/ide/fortran/os2/
+    <CPCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/
+    <CPCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/os2/
+    <CPCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/fortran/
+    <CPCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/fortran/os2/
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> threed/nt/nt_3d.dll     <RELROOT>/samples/ide/win32/
-    <CPCMD> threed/nt/nt_3d.dll     <RELROOT>/samples/ide/fortran/win32/
+    <CPCMD> threed/nt/nt_3d.dll     <OWRELROOT>/samples/ide/win32/
+    <CPCMD> threed/nt/nt_3d.dll     <OWRELROOT>/samples/ide/fortran/win32/
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> threed/win/win_3d.dll   <RELROOT>/samples/ide/win/
-    <CPCMD> threed/win/win_3d.dll   <RELROOT>/samples/ide/win386/
-    <CPCMD> threed/win/win_3d.dll   <RELROOT>/samples/ide/fortran/win/
-    <CPCMD> threed/win/win_3d.dll   <RELROOT>/samples/ide/fortran/win386/
+    <CPCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/win/
+    <CPCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/win386/
+    <CPCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/fortran/win/
+    <CPCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/fortran/win386/
   [ ENDIF ]
-    <CPCMD> src/os2/box.obj         <RELROOT>/samples/ide/fortran/os2/
-    <CPCMD> src/os2/drawroom.obj    <RELROOT>/samples/ide/fortran/os2/
-    <CPCMD> src/os2/furnitu.obj     <RELROOT>/samples/ide/fortran/os2/
-    <CPCMD> src/win/box.obj         <RELROOT>/samples/ide/fortran/win/
-    <CPCMD> src/win/drawroom.obj    <RELROOT>/samples/ide/fortran/win/
-    <CPCMD> src/win/furnitu.obj     <RELROOT>/samples/ide/fortran/win/
-    <CPCMD> src/win386/box.obj      <RELROOT>/samples/ide/fortran/win386/
-    <CPCMD> src/win386/drawroom.obj <RELROOT>/samples/ide/fortran/win386/
-    <CPCMD> src/win386/furnitu.obj  <RELROOT>/samples/ide/fortran/win386/
-    <CPCMD> src/win32/box.obj       <RELROOT>/samples/ide/fortran/win32/
-    <CPCMD> src/win32/drawroom.obj  <RELROOT>/samples/ide/fortran/win32/
-    <CPCMD> src/win32/furnitu.obj   <RELROOT>/samples/ide/fortran/win32/
+    <CPCMD> src/os2/box.obj         <OWRELROOT>/samples/ide/fortran/os2/
+    <CPCMD> src/os2/drawroom.obj    <OWRELROOT>/samples/ide/fortran/os2/
+    <CPCMD> src/os2/furnitu.obj     <OWRELROOT>/samples/ide/fortran/os2/
+    <CPCMD> src/win/box.obj         <OWRELROOT>/samples/ide/fortran/win/
+    <CPCMD> src/win/drawroom.obj    <OWRELROOT>/samples/ide/fortran/win/
+    <CPCMD> src/win/furnitu.obj     <OWRELROOT>/samples/ide/fortran/win/
+    <CPCMD> src/win386/box.obj      <OWRELROOT>/samples/ide/fortran/win386/
+    <CPCMD> src/win386/drawroom.obj <OWRELROOT>/samples/ide/fortran/win386/
+    <CPCMD> src/win386/furnitu.obj  <OWRELROOT>/samples/ide/fortran/win386/
+    <CPCMD> src/win32/box.obj       <OWRELROOT>/samples/ide/fortran/win32/
+    <CPCMD> src/win32/drawroom.obj  <OWRELROOT>/samples/ide/fortran/win32/
+    <CPCMD> src/win32/furnitu.obj   <OWRELROOT>/samples/ide/fortran/win32/
     cd ..
 
 [ BLOCK <1> clean ]

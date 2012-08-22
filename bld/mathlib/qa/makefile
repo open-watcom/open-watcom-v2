@@ -52,7 +52,7 @@
 
 .before
 !ifdef __UNIX__
-    @set WATCOM=$(%RELROOT)
+    @set WATCOM=$(%OWRELROOT)
     @set INCLUDE=
     @set DOS_INCLUDE=$(%WATCOM)/h
     @set NT_INCLUDE=$(%WATCOM)/h
@@ -62,7 +62,7 @@
     @set WINDOWS_INCLUDE=$(%WATCOM)/h/win:$(%WATCOM)/h
     @set PATH=$(%WATCOM)/binl:$(%WATCOM)/binw:$(%PATH)
 !else
-    @set WATCOM=$(%RELROOT)
+    @set WATCOM=$(%OWRELROOT)
     @set INCLUDE=
     @set DOS_INCLUDE=$(%WATCOM)\h
     @set NT_INCLUDE=$(%WATCOM)\h

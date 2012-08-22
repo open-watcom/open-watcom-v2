@@ -10,7 +10,7 @@
 !include $(cfloat_dir)/client.mif
 
 !ifdef bootstrap
-obj_dir = $(%OBJDIR)
+obj_dir = $(%OWOBJDIR)
 !else ifeq cg_dll 1
 obj_dir = $(host_os)$(host_cpu).dll
 !else ifeq $(proj_name)_rtdll 1

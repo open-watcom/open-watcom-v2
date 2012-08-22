@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 cdsay .
 
 set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
-set ODIR=<PREOBJDIR>
+set ODIR=<OWPREOBJDIR>
 
 [ BLOCK <OWLINUXBUILD> bootstrap ]
 #=================================
 set BUILD_PLATFORM=<BUILD_PLATFORM>boot
-set ODIR=<OBJDIR>
+set ODIR=<OWOBJDIR>
 
 [ BLOCK <1> clean ]
 #==================
@@ -26,43 +26,43 @@ set ODIR=<OBJDIR>
 
 [ BLOCK <BUILD_PLATFORM> dos386 ]
 #================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../dos386/makefile prebuild=1
     <CPCMD> yacc.exe <OWBINDIR>/byacc.exe
 
 [ BLOCK <BUILD_PLATFORM> os2386 ]
 #================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../os2386/makefile prebuild=1
     <CPCMD> yacc.exe <OWBINDIR>/byacc.exe
 
 [ BLOCK <BUILD_PLATFORM> nt386 ]
 #===============================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../nt386/makefile prebuild=1
     <CPCMD> yacc.exe <OWBINDIR>/byacc.exe
 
 [ BLOCK <BUILD_PLATFORM> ntaxp ]
 #===============================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../ntaxp/makefile prebuild=1
     <CPCMD> yacc.exe <OWBINDIR>/byacc.exe
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../linux386/makefile bootstrap=1
     <CPCMD> yacc.exe <OWBINDIR>/byacc
 
 [ BLOCK <BUILD_PLATFORM> linux386 ]
 #==================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../linux386/makefile prebuild=1
     <CPCMD> yacc.exe <OWBINDIR>/byacc
 

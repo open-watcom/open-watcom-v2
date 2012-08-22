@@ -19,28 +19,28 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> waccel/wini86/wacc.dll     <RELROOT>/binw/wacc.dll
-    <CPCMD> waccel/wini86/wacc.sym     <RELROOT>/binw/wacc.sym
-    <CPCMD> wmenu/wini86/wmenu.dll     <RELROOT>/binw/wmenu.dll
-    <CPCMD> wmenu/wini86/wmenu.sym     <RELROOT>/binw/wmenu.sym
-    <CPCMD> wstring/wini86/wstring.dll <RELROOT>/binw/wstring.dll
-    <CPCMD> wstring/wini86/wstring.sym <RELROOT>/binw/wstring.sym
+    <CPCMD> waccel/wini86/wacc.dll     <OWRELROOT>/binw/wacc.dll
+    <CPCMD> waccel/wini86/wacc.sym     <OWRELROOT>/binw/wacc.sym
+    <CPCMD> wmenu/wini86/wmenu.dll     <OWRELROOT>/binw/wmenu.dll
+    <CPCMD> wmenu/wini86/wmenu.sym     <OWRELROOT>/binw/wmenu.sym
+    <CPCMD> wstring/wini86/wstring.dll <OWRELROOT>/binw/wstring.dll
+    <CPCMD> wstring/wini86/wstring.sym <OWRELROOT>/binw/wstring.sym
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> waccel/nt386/wacc.dll      <RELROOT>/binnt/wacc.dll
-    <CPCMD> waccel/nt386/wacc.sym     <RELROOT>/binnt/wacc.sym
-    <CPCMD> wmenu/nt386/wmenu.dll      <RELROOT>/binnt/wmenu.dll
-    <CPCMD> wmenu/nt386/wmenu.sym      <RELROOT>/binnt/wmenu.sym
-    <CPCMD> wstring/nt386/wstring.dll  <RELROOT>/binnt/wstring.dll
-    <CPCMD> wstring/nt386/wstring.sym  <RELROOT>/binnt/wstring.sym
+    <CPCMD> waccel/nt386/wacc.dll      <OWRELROOT>/binnt/wacc.dll
+    <CPCMD> waccel/nt386/wacc.sym     <OWRELROOT>/binnt/wacc.sym
+    <CPCMD> wmenu/nt386/wmenu.dll      <OWRELROOT>/binnt/wmenu.dll
+    <CPCMD> wmenu/nt386/wmenu.sym      <OWRELROOT>/binnt/wmenu.sym
+    <CPCMD> wstring/nt386/wstring.dll  <OWRELROOT>/binnt/wstring.dll
+    <CPCMD> wstring/nt386/wstring.sym  <OWRELROOT>/binnt/wstring.sym
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> waccel/ntaxp/wacc.dll      <RELROOT>/axpnt/wacc.dll
-    <CPCMD> waccel/ntaxp/wacc.sym      <RELROOT>/axpnt/wacc.sym
-    <CPCMD> wmenu/ntaxp/wmenu.dll      <RELROOT>/axpnt/wmenu.dll
-    <CPCMD> wmenu/ntaxp/wmenu.sym      <RELROOT>/axpnt/wmenu.sym
-    <CPCMD> wstring/ntaxp/wstring.dll  <RELROOT>/axpnt/wstring.dll
-    <CPCMD> wstring/ntaxp/wstring.sym  <RELROOT>/axpnt/wstring.sym
+    <CPCMD> waccel/ntaxp/wacc.dll      <OWRELROOT>/axpnt/wacc.dll
+    <CPCMD> waccel/ntaxp/wacc.sym      <OWRELROOT>/axpnt/wacc.sym
+    <CPCMD> wmenu/ntaxp/wmenu.dll      <OWRELROOT>/axpnt/wmenu.dll
+    <CPCMD> wmenu/ntaxp/wmenu.sym      <OWRELROOT>/axpnt/wmenu.sym
+    <CPCMD> wstring/ntaxp/wstring.dll  <OWRELROOT>/axpnt/wstring.dll
+    <CPCMD> wstring/ntaxp/wstring.sym  <OWRELROOT>/axpnt/wstring.sym
 
 [ BLOCK <1> clean ]
 #==================

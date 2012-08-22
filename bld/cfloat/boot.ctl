@@ -8,13 +8,13 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/<OBJDIR>
-    rm -f -r <PROJDIR>/<OBJDIR>
+    echo rm -f -r <PROJDIR>/<OWOBJDIR>
+    rm -f -r <PROJDIR>/<OWOBJDIR>
 
 [ BLOCK <1> boot ]
 #=================
     echo Building the cfloat bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
     wmake -h -f ../bootmake
     cdsay <PROJDIR>

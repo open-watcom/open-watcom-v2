@@ -20,16 +20,16 @@ cdsay .
 #========================
 
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dos386/whc.exe      <RELROOT>/binw/
+    <CPCMD> dos386/whc.exe      <OWRELROOT>/binw/
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/whc.exe      <RELROOT>/binp/
+    <CPCMD> os2386/whc.exe      <OWRELROOT>/binp/
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/whc.exe       <RELROOT>/binnt/
+    <CPCMD> nt386/whc.exe       <OWRELROOT>/binnt/
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/whc.exe    <RELROOT>/binl/whc
+    <CPCMD> linux386/whc.exe    <OWRELROOT>/binl/whc
 
 [ BLOCK <1> clean ]
 #==================

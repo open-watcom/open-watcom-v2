@@ -48,12 +48,12 @@ all : ../$(installer_c) ../$(installer_f77) .SYMBOLIC
 ../$(installer_c) : ../files.dat $(setup_c) .ALWAYS
     langdat -l filelist -c $[@ c
     @cp $]@ setup.exe >$(nulldevice)
-    mkinf -i.. -i../../include -dDstDir=$(dstdir) c filelist $(%RELROOT)
+    mkinf -i.. -i../../include -dDstDir=$(dstdir) c filelist $(%OWRELROOT)
     @rm filelist
-    @cp setup.inf $(%RELROOT)/setup.inf >$(nulldevice)
-    uzip setup.zip instarch.lst $(%RELROOT)
+    @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
+    uzip setup.zip instarch.lst $(%OWRELROOT)
     @rm instarch.lst
-    @rm $(%RELROOT)/setup.inf
+    @rm $(%OWRELROOT)/setup.inf
     @rm setup.exe
     @rm setup.inf
     mkexezip $@ setup.zip $]@
@@ -62,12 +62,12 @@ all : ../$(installer_c) ../$(installer_f77) .SYMBOLIC
 ../$(installer_f77) : ../files.dat $(setup_f77) .ALWAYS
     langdat -l filelist -c $[@ f77
     @cp $]@ setup.exe >$(nulldevice)
-    mkinf -i.. -i../../include -dDstDir=$(dstdir) f77 filelist $(%RELROOT)
+    mkinf -i.. -i../../include -dDstDir=$(dstdir) f77 filelist $(%OWRELROOT)
     @rm filelist
-    @cp setup.inf $(%RELROOT)/setup.inf >$(nulldevice)
-    uzip setup.zip instarch.lst $(%RELROOT)
+    @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
+    uzip setup.zip instarch.lst $(%OWRELROOT)
     @rm instarch.lst
-    @rm $(%RELROOT)/setup.inf
+    @rm $(%OWRELROOT)/setup.inf
     @rm setup.exe
     @rm setup.inf
     mkexezip $@ setup.zip $]@

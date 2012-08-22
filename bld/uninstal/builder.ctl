@@ -19,7 +19,7 @@ cdsay .
 [ BLOCK <1> <2> rel2 cprel2 ]
 #============================
     [ IFDEF (os_nt "") <2*> ]
-      <CPCMD> nt386/uninstal.exe <RELROOT>/
+      <CPCMD> nt386/uninstal.exe <OWRELROOT>/
 
 [ BLOCK <1> clean ]
 #==================

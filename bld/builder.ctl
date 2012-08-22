@@ -194,7 +194,7 @@ echo Bootstrapping compiler using GNU tools...
 [ INCLUDE <DEVDIR>/viper/builder.ctl ]
 [ INCLUDE <DEVDIR>/idebatch/builder.ctl ]
 [ INCLUDE <DEVDIR>/viprdemo/builder.ctl ]
-[ BLOCK <DOC_BUILD> 1 ]
+[ BLOCK <OWDOCBUILD> 1 ]
 [ INCLUDE <OWROOT>/docs/builder.ctl ]
 [ BLOCK . . ]
 #

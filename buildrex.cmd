@@ -137,7 +137,7 @@ Do While Lines( devvar ) > 0
       If uword2 = "OWROOT" Then Iterate
       If uword2 = "WATCOM" Then Iterate
       Parse Var orgline word1 word2 "=" word3
-      If uword2 = "DOC_BUILD" Then word3 = doc_build
+      If uword2 = "OWDOCBUILD" Then word3 = doc_build
       Else word3 = repvars( word3 )
       Call Value uword2, word3, "ENVIRONMENT"
       Call Value uword2, word3
@@ -149,10 +149,10 @@ Do While Lines( devvar ) > 0
     End
     When uword1 = "ECHO" Then Say orgline
     When uword1 = "IF" Then Do
-      If upline = 'IF "%DEFPATH%" == "" SET DEFPATH=%PATH%' Then Do
+      If upline = 'IF "%OWDEFPATH%" == "" SET OWDEFPATH=%PATH%' Then Do
         path = Value( "PATH", , "ENVIRONMENT" )
-        Call Value "DEFPATH", path, "ENVIRONMENT"
-        Call Value "DEFPATH", path
+        Call Value "OWDEFPATH", path, "ENVIRONMENT"
+        Call Value "OWDEFPATH", path
       End
     End
     Otherwise

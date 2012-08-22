@@ -22,7 +22,7 @@ cfloat_lib_mps = $(cfloat_dir)\osimps\cf.lib
 
 #
 !ifdef bootstrap
-cfloat_lib = $(cfloat_dir)/$(%OBJDIR)/cf.lib
+cfloat_lib = $(cfloat_dir)/$(%OWOBJDIR)/cf.lib
 !else ifdef cfloat_lib_$(host_os)_$(host_cpu)
 cfloat_lib = $(cfloat_lib_$(host_os)_$(host_cpu))
 !else

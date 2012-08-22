@@ -17,7 +17,7 @@ REM Change this to point to your OS/2 Toolkit directory
 set OS2TKROOT=c:\Toolkit
 
 REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
-set GHOSTSCRIPTPATH=c:\gs\gs7.04
+set OWGHOSTSCRIPTPATH=c:\gs\gs7.04
 
 REM Set this variable to 1 to get debug build
 set DEBUG_BUILD=0
@@ -26,18 +26,18 @@ REM Set this variable to 1 to get default windowing support in clib
 set DEFAULT_WINDOWING=0
 
 REM Set this variable to 0 to suppress documentation build
-set DOC_BUILD=1
+set OWDOCBUILD=1
 
 REM Documentation related variables
 REM set appropriate variables to blank for help compilers which you haven't installed
-rem set WIN95HC=hcrtf
-rem set HHC=hhc
+rem set OWWIN95HC=hcrtf
+rem set OWHHC=hhc
 
 REM Subdirectory to be used for bootstrapping
-set OBJDIR=bootstrp
+set OWOBJDIR=bootstrp
 
 REM Subdirectory to be used for building prerequisite utilities
-set PREOBJDIR=prebuild
+set OWPREOBJDIR=prebuild
 
 REM Invoke the script for the common environment
 call %OWROOT%\cmnvars.cmd

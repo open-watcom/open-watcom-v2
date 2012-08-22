@@ -13,15 +13,15 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/dw/<OBJDIR>
-    rm -f -r <PROJDIR>/dw/<OBJDIR>
+    echo rm -f -r <PROJDIR>/dw/<OWOBJDIR>
+    rm -f -r <PROJDIR>/dw/<OWOBJDIR>
     set BUILD_PLATFORM=
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
     echo Building the dwarf write library
-    mkdir <PROJDIR>/dw/<OBJDIR>
-    cdsay <PROJDIR>/dw/<OBJDIR>
+    mkdir <PROJDIR>/dw/<OWOBJDIR>
+    cdsay <PROJDIR>/dw/<OWOBJDIR>
     wmake -h -f ../osi386/makefile bootstrap=1
 
 [ BLOCK . . ]

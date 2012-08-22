@@ -9,7 +9,7 @@ export BLD_VER=20
 export BLD_VER_STR=2.0
 
 # Set up default path information variable
-[ -n "$DEFPATH" ] || export DEFPATH=$PATH
+[ -n "$OWDEFPATH" ] || export OWDEFPATH=$PATH
 
 # Stuff for the Open Watcom build environment
 export BUILD_PLATFORM=linux386
@@ -17,11 +17,10 @@ export DEVDIR=$OWROOT/bld
 
 # Subdirectory to be used for bootstrapping/prebuild binaries
 export OWBINDIR=$DEVDIR/build/binl
-export RELROOT=$OWROOT/rel2
 export DWATCOM=$WATCOM
 export INCLUDE=$WATCOM/lh
 export EDPATH=$WATCOM/eddat
-export PATH=$OWBINDIR:$OWROOT/build:$WATCOM/binl:$DEFPATH
+export PATH=$OWBINDIR:$OWROOT/build:$WATCOM/binl:$OWDEFPATH
 
 echo Open Watcom compiler build environment
 

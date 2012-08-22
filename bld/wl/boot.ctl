@@ -8,17 +8,17 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/<OBJDIR>
-    rm -f -r <PROJDIR>/<OBJDIR>
+    echo rm -f -r <PROJDIR>/<OWOBJDIR>
+    rm -f -r <PROJDIR>/<OWOBJDIR>
     wmake -h clean
 
 [ BLOCK <1> boot ]
 #=================
     echo Building the wlink bootstrap
     wmake -h
-    <CPCMD> wlsystem.lnk <RELROOT>/binw/wlsystem.lnk
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
+    <CPCMD> wlsystem.lnk <OWRELROOT>/binw/wlsystem.lnk
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
     wmake -h -f ../bootmake
     <CPCMD> wl.exe <DEVDIR>/build/bin/wlink
     cdsay <PROJDIR>

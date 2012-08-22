@@ -19,11 +19,11 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dos386/whelp.exe    <RELROOT>/binw/whelp.exe
+    <CPCMD> dos386/whelp.exe    <OWRELROOT>/binw/whelp.exe
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/whelp.exe    <RELROOT>/binp/whelp.exe
+    <CPCMD> os2386/whelp.exe    <OWRELROOT>/binp/whelp.exe
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/whelp.exe  <RELROOT>/binl/whelp
+    <CPCMD> linux386/whelp.exe  <OWRELROOT>/binl/whelp
 
 [ BLOCK <1> clean ]
 #==================

@@ -13,16 +13,16 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/<OBJDIR>
-    rm -f -r <PROJDIR>/<OBJDIR>
-    echo rm -f -r <PROJDIR>/<PREOBJDIR>
-    rm -f -r <PROJDIR>/<PREOBJDIR>
+    echo rm -f -r <PROJDIR>/<OWOBJDIR>
+    rm -f -r <PROJDIR>/<OWOBJDIR>
+    echo rm -f -r <PROJDIR>/<OWPREOBJDIR>
+    rm -f -r <PROJDIR>/<OWPREOBJDIR>
     set BUILD_PLATFORM=
 
 [ BLOCK <BUILD_PLATFORM> linux386 ]
 #==================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../linux386/makefile prebuild=1
     <CPCMD> wmk.elf <OWBINDIR>/wmake
 
@@ -31,7 +31,7 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
     echo Building the wmake bootstrap
     cdsay <PROJDIR>
     <MAKE> -f gnumake
-    <CPCMD> <OBJDIR>/wmake <OWBINDIR>/wmake
+    <CPCMD> <OWOBJDIR>/wmake <OWBINDIR>/wmake
 
 [ BLOCK . . ]
 #============

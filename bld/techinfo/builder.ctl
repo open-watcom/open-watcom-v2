@@ -19,9 +19,9 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dosi86/techinfo.exe <RELROOT>/binw/
+    <CPCMD> dosi86/techinfo.exe <OWRELROOT>/binw/
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2i86/techinfo.exe <RELROOT>/binp/
+    <CPCMD> os2i86/techinfo.exe <OWRELROOT>/binp/
 
 [ BLOCK <1> clean ]
 #==================

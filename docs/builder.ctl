@@ -18,19 +18,19 @@ cdsay .
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CPCMD> dos/*.ihp       <RELROOT>/binw/
-    <CPCMD> win/*.hlp       <RELROOT>/binw/
-    <CPCMD> os2/*.inf       <RELROOT>/binp/help/
-    <CPCMD> os2/*.hlp       <RELROOT>/binp/help/
-    <CCCMD> nt/*.hlp        <RELROOT>/binnt/
-    <CCCMD> nt/*.cnt        <RELROOT>/binnt/
-    <CCCMD> htmlhelp/*.chi  <RELROOT>/binnt/help/
-    <CCCMD> htmlhelp/*.chm  <RELROOT>/binnt/help/
-    <CCCMD> pdf/*.pdf       <RELROOT>/docs/
-    <CPCMD> readme.txt      <RELROOT>/readme.txt
-    <CPCMD> freadme.txt     <RELROOT>/freadme.txt
-    <CPCMD> areadme.txt     <RELROOT>/areadme.txt
-    <CPCMD> instlic.txt     <RELROOT>/instlic.txt
+    <CPCMD> dos/*.ihp       <OWRELROOT>/binw/
+    <CPCMD> win/*.hlp       <OWRELROOT>/binw/
+    <CPCMD> os2/*.inf       <OWRELROOT>/binp/help/
+    <CPCMD> os2/*.hlp       <OWRELROOT>/binp/help/
+    <CCCMD> nt/*.hlp        <OWRELROOT>/binnt/
+    <CCCMD> nt/*.cnt        <OWRELROOT>/binnt/
+    <CCCMD> htmlhelp/*.chi  <OWRELROOT>/binnt/help/
+    <CCCMD> htmlhelp/*.chm  <OWRELROOT>/binnt/help/
+    <CCCMD> pdf/*.pdf       <OWRELROOT>/docs/
+    <CPCMD> readme.txt      <OWRELROOT>/readme.txt
+    <CPCMD> freadme.txt     <OWRELROOT>/freadme.txt
+    <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
+    <CPCMD> instlic.txt     <OWRELROOT>/instlic.txt
 
 [ BLOCK <1> clean ]
 #==================

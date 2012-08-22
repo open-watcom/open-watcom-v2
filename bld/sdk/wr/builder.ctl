@@ -19,16 +19,16 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/wr.dll        <RELROOT>/binw/wr.dll
-    <CPCMD> wini86/wr.sym        <RELROOT>/binw/wr.sym
+    <CPCMD> wini86/wr.dll        <OWRELROOT>/binw/wr.dll
+    <CPCMD> wini86/wr.sym        <OWRELROOT>/binw/wr.sym
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wr.dll         <RELROOT>/binnt/wr.dll
-    <CPCMD> nt386/wr.sym         <RELROOT>/binnt/wr.sym
+    <CPCMD> nt386/wr.dll         <OWRELROOT>/binnt/wr.dll
+    <CPCMD> nt386/wr.sym         <OWRELROOT>/binnt/wr.sym
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wr.dll         <RELROOT>/axpnt/wr.dll
-    <CPCMD> ntaxp/wr.sym         <RELROOT>/axpnt/wr.sym
+    <CPCMD> ntaxp/wr.dll         <OWRELROOT>/axpnt/wr.dll
+    <CPCMD> ntaxp/wr.sym         <OWRELROOT>/axpnt/wr.sym
 
 [ BLOCK <1> clean ]
 #==================

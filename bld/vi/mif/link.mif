@@ -27,7 +27,7 @@ extra_l_flags_nt = runtime console op stack=20k
 extra_l_flags_qnx = op stack=2k,priv=3
 
 !ifdef bootstrap
-libs = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
+libs = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
 !else
 !ifeq host_os linux
 libs = $(ncurses_dir)/linux$(host_cpu)/ncurses.lib $(ui_dir)/unix/linux$(host_cpu)/ui.lib

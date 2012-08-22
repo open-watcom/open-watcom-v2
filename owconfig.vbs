@@ -87,30 +87,30 @@ Else
     OutFile.WriteLine
     OutFile.WriteLine "REM Set this variable to 0 to suppress documentation build"
     If Documentation Then
-        OutFile.WriteLine "set DOC_BUILD=1"
+        OutFile.WriteLine "set OWDOCBUILD=1"
     Else
-        OutFile.WriteLine "set DOC_BUILD=0"
+        OutFile.WriteLine "set OWDOCBUILD=0"
     End If
     OutFile.WriteLine
     OutFile.WriteLine "REM Documentation related variables"
     If Len(HcrtfPath) > 0 Then
-        OutFile.WriteLine "set WIN95HC=hcrtf"
+        OutFile.WriteLine "set OWWIN95HC=hcrtf"
         OutFile.WriteLine "set PATH=%PATH%;" + HcrtfPath
     Else
-        OutFile.WriteLine "set WIN95HC="
+        OutFile.WriteLine "set OWWIN95HC="
     End If
     If Len(HhcPath) > 0 Then
-        OutFile.WriteLine "set HHC=hhc"
+        OutFile.WriteLine "set OWHHC=hhc"
         OutFile.WriteLine "set PATH=%PATH%;" + HhcPath
     Else
-        OutFile.WriteLine "set HHC="
+        OutFile.WriteLine "set OWHHC="
     End If
     OutFile.WriteLine
     OutFile.WriteLine "REM Subdirectory to be used for bootstrapping"
-    OutFile.WriteLine "set OBJDIR=bootstrp"
+    OutFile.WriteLine "set OWOBJDIR=bootstrp"
     OutFile.WriteLine
     OutFile.WriteLine "REM Subdirectory to be used for building prerequisite utilities"
-    OutFile.WriteLine "set PREOBJDIR=prebuild"
+    OutFile.WriteLine "set OWPREOBJDIR=prebuild"
     OutFile.WriteLine
     OutFile.WriteLine "REM Invoke the batch file for the common environment"
     OutFile.WriteLine "call %OWROOT%\cmnvars.bat"

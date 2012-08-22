@@ -8,8 +8,8 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/<OBJDIR>
-    rm -f -r <PROJDIR>/<OBJDIR>
+    echo rm -f -r <PROJDIR>/<OWOBJDIR>
+    rm -f -r <PROJDIR>/<OWOBJDIR>
     [ INCLUDE <PROJDIR>/linux/boot.ctl ]
 
 [ BLOCK <1> boot ]

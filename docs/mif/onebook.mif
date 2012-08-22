@@ -16,8 +16,8 @@ LOWERC=ren
 # If 'verbose' is set to 1, wgml displays warnings and statistics.
 # The default is a quiet build.
 doc_verbose = $(verbose)
-# 'DOC_QUIET' is used by build server to disable documentation verbose output.
-!ifeq %DOC_QUIET 1
+# 'OWDOCQUIET' is used by build server to disable documentation verbose output.
+!ifeq %OWDOCQUIET 1
 doc_verbose = 0
 !endif
 
@@ -43,11 +43,11 @@ wine_hc_batch=winehc.bat
 # define target and platform help compilers
 #
 !ifdef __UNIX__
-hc_nt = $(%WIN95HC:\=/)
-hc_hh = $(%HHC:\=/)
+hc_nt = $(%OWWIN95HC:\=/)
+hc_hh = $(%OWHHC:\=/)
 !else
-hc_nt = $(%WIN95HC:/=\)
-hc_hh = $(%HHC:/=\)
+hc_nt = $(%OWWIN95HC:/=\)
+hc_hh = $(%OWHHC:/=\)
 !endif
 hc_pdf = ps2pdf12
 
@@ -82,7 +82,7 @@ dep_html = $(hbook).htm
 dep_htmlhelp = $(hbook).chm
 !endif
 dep_ps = $(hbook).ps
-!ifdef %GHOSTSCRIPTPATH
+!ifdef %OWGHOSTSCRIPTPATH
 dep_pdf = $(hbook).pdf
 !endif
 
@@ -94,8 +94,8 @@ WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
 !else ifeq %build_platform os2386
 WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
 !else ifeq %build_platform nt386
-!ifdef %OW_DOSBOX
-WGMLCMD = $(%OW_DOSBOX) -c "mount c $(%OWROOT)\docs" -c "mount d ." -c "mount e $(%OWROOT)\bld" -c "d:$(dosemu_wgml_batch)" -noconsole
+!ifdef %OWDOSBOX
+WGMLCMD = $(%OWDOSBOX) -c "mount c $(%OWROOT)\docs" -c "mount d ." -c "mount e $(%OWROOT)\bld" -c "d:$(dosemu_wgml_batch)" -noconsole
 use_dosemu = dosbox
 !else
 WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
@@ -280,16 +280,16 @@ $(hbook).pdf : $(hbook).ps
 #
     @%create pdf.bat
     @%append pdf.bat @set OWDOCS_OLD_PATH=$(%PATH)
-    @%append pdf.bat @set PATH=$(%GHOSTSCRIPTPATH);$(%PATH)
+    @%append pdf.bat @set PATH=$(%OWGHOSTSCRIPTPATH);$(%PATH)
     @%append pdf.bat $(hc_pdf) -r600 $[@ $(hbook).pdf
     @%append pdf.bat @set PATH=%OWDOCS_OLD_PATH%
     @pdf.bat
 !else
     @set OWDOCS_OLD_PATH=$(%PATH)
 !ifdef __UNIX__
-    @set PATH=$(%GHOSTSCRIPTPATH):$(%PATH)
+    @set PATH=$(%OWGHOSTSCRIPTPATH):$(%PATH)
 !else
-    @set PATH=$(%GHOSTSCRIPTPATH);$(%PATH)
+    @set PATH=$(%OWGHOSTSCRIPTPATH);$(%PATH)
 !endif
     !$(hc_pdf) -r600 $[@ $(hbook).pdf
     @set PATH=$(%OWDOCS_OLD_PATH)

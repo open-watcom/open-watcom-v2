@@ -8,14 +8,14 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/<OBJDIR>
-    rm -f -r <PROJDIR>/<OBJDIR>
+    echo rm -f -r <PROJDIR>/<OWOBJDIR>
+    rm -f -r <PROJDIR>/<OWOBJDIR>
 
 [ BLOCK <1> boot ]
 #=================
     echo Building the re2c bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
     wmake -h -f ../bootmake
     <CPCMD> re2c.exe <DEVDIR>/build/bin/re2c
     <CPCMD> re2c.exe <DEVDIR>/build/binl/re2c

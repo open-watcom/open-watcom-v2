@@ -314,7 +314,7 @@ libs_rdos_386       = $(aui_dir)/rdos386/aui.lib $(gui_dir)/ui/rdos386/gui.lib $
 !endif
 
 !ifdef bootstrap
-libs = $(aui_dir)/$(%OBJDIR)/aui.lib $(gui_dir)/ui/$(%OBJDIR)/gui.lib $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib $(wres_lib)
+libs = $(aui_dir)/$(%OWOBJDIR)/aui.lib $(gui_dir)/ui/$(%OWOBJDIR)/gui.lib $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib $(wres_lib)
 !else
 libs = $(libs_$(host_os)_$(host_cpu)) $(wres_lib)
 !endif

@@ -9,12 +9,12 @@ set PROJDIR=<CWD>
 cdsay .
 
 set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
-set ODIR=<PREOBJDIR>
+set ODIR=<OWPREOBJDIR>
 
 [ BLOCK <OWLINUXBUILD> bootstrap ]
 #=================================
 set BUILD_PLATFORM=<BUILD_PLATFORM>boot
-set ODIR=<OBJDIR>
+set ODIR=<OWOBJDIR>
 
 [ BLOCK <1> clean ]
 #==================
@@ -26,29 +26,29 @@ set ODIR=<OBJDIR>
 
 [ BLOCK <BUILD_PLATFORM> dos386 ]
 #================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../dosi86/makefile prebuild=1
     <CPCMD> hcdos.exe <OWBINDIR>/hcdos.exe
 
 [ BLOCK <BUILD_PLATFORM> os2386 ]
 #================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../os2386/makefile prebuild=1
     <CPCMD> hcdos.exe <OWBINDIR>/hcdos.exe
 
 [ BLOCK <BUILD_PLATFORM> nt386 ]
 #===============================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../nt386/makefile prebuild=1
     <CPCMD> hcdos.exe <OWBINDIR>/hcdos.exe
 
 [ BLOCK <BUILD_PLATFORM> ntaxp ]
 #===============================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../ntaxp/makefile prebuild=1
     <CPCMD> hcdos.exe <OWBINDIR>/hcdos.exe
 
@@ -56,12 +56,12 @@ set ODIR=<OBJDIR>
 #======================================
     cdsay <PROJDIR>
     <MAKE> -f gnumake
-    <CPCMD> <OBJDIR>/hcdos <OWBINDIR>/hcdos
+    <CPCMD> <OWOBJDIR>/hcdos <OWBINDIR>/hcdos
 
 [ BLOCK <BUILD_PLATFORM> linux386 ]
 #==================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../linux386/makefile prebuild=1
     <CPCMD> hcdos.exe <OWBINDIR>/hcdos
 

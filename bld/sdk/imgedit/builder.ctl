@@ -19,13 +19,13 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/wimgedit.exe <RELROOT>/binw/
+    <CPCMD> wini86/wimgedit.exe <OWRELROOT>/binw/
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wimgedit.exe <RELROOT>/binnt/
+    <CPCMD> nt386/wimgedit.exe <OWRELROOT>/binnt/
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wimgedit.exe <RELROOT>/axpnt/
+    <CPCMD> ntaxp/wimgedit.exe <OWRELROOT>/axpnt/
 
 [ BLOCK <1> clean ]
 #==================

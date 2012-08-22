@@ -13,16 +13,16 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/386/<OBJDIR>
-    rm -f -r <PROJDIR>/386/<OBJDIR>
+    echo rm -f -r <PROJDIR>/386/<OWOBJDIR>
+    rm -f -r <PROJDIR>/386/<OWOBJDIR>
     rm -f <OWBINDIR>/wcc386
     set BUILD_PLATFORM=
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
     echo Building the wcc386 bootstrap
-    mkdir <PROJDIR>/386/<OBJDIR>
-    cdsay <PROJDIR>/386/<OBJDIR>
+    mkdir <PROJDIR>/386/<OWOBJDIR>
+    cdsay <PROJDIR>/386/<OWOBJDIR>
     wmake -h -f ../linux386/makefile bootstrap=1
     <CPCMD> wcc386c.exe <OWBINDIR>/wcc386
 

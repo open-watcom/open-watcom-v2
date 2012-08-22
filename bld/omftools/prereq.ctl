@@ -16,8 +16,8 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/<PREOBJDIR>
-    rm -f -r <PROJDIR>/<PREOBJDIR>
+    echo rm -f -r <PROJDIR>/<OWPREOBJDIR>
+    rm -f -r <PROJDIR>/<OWPREOBJDIR>
     rm -f <OWBINDIR>/objchg<CMDEXT>
     rm -f <OWBINDIR>/objfind<CMDEXT>
     rm -f <OWBINDIR>/objlist<CMDEXT>
@@ -27,8 +27,8 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 
 [ BLOCK <BUILD_PLATFORM> dos386 os2386 nt386 linux386 ]
 #======================================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../<BUILD_PLATFORM>/makefile prebuild=1
     <CPCMD> objchg.exe   <OWBINDIR>/objchg<CMDEXT>
     <CPCMD> objfind.exe  <OWBINDIR>/objfind<CMDEXT>

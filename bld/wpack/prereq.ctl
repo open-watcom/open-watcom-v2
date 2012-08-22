@@ -10,13 +10,13 @@ set PROJNAME=wpack
 cdsay .
 
 set BLD_OPT=prebuild=1
-set ODIR=<PREOBJDIR>
+set ODIR=<OWPREOBJDIR>
 set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 
 [ BLOCK <OWLINUXBUILD> bootstrap ]
 #=================================
 set BLD_OPT=bootstrp=1
-set ODIR=<OBJDIR>
+set ODIR=<OWOBJDIR>
 
 [ BLOCK <1> clean ]
 #==================
@@ -28,15 +28,15 @@ set ODIR=<OBJDIR>
 
 [ BLOCK <BUILD_PLATFORM> dos386 ]
 #================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../dosi86/makefile <BLD_OPT>
     <CPCMD> <PROJNAME>.exe <OWBINDIR>/<PROJNAME><CMDEXT>
 
 [ BLOCK <BUILD_PLATFORM> linux386 nt386 os2386 ]
 #===============================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../<BUILD_PLATFORM>/makefile <BLD_OPT>
     <CPCMD> <PROJNAME>.exe <OWBINDIR>/<PROJNAME><CMDEXT>
     

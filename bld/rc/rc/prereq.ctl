@@ -6,12 +6,12 @@ set PROJDIR=<CWD>
 cdsay .
 
 set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
-set ODIR=<PREOBJDIR>
+set ODIR=<OWPREOBJDIR>
 
 [ BLOCK <OWLINUXBUILD> bootstrap ]
 #=================================
     set BUILD_PLATFORM=<BUILD_PLATFORM>boot
-    set ODIR=<OBJDIR>
+    set ODIR=<OWOBJDIR>
 
 [ BLOCK <1> clean ]
 #==================
@@ -23,16 +23,16 @@ set ODIR=<PREOBJDIR>
 
 [ BLOCK <BUILD_PLATFORM> dos386 nt386 os2386 linux386 ntaxp ]
 #============================================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../<BUILD_PLATFORM>/makefile prebuild=1
     <CPCMD> wrce.exe <OWBINDIR>/bwrc<CMDEXT>
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
     echo Building the resource compiler
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
     wmake -h -f ../linux386/makefile bootstrap=1
     <CPCMD> wrce.exe <OWBINDIR>/bwrc<CMDEXT>
 

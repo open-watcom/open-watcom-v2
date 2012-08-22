@@ -13,16 +13,16 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/<OBJDIR>
-    rm -f -r <PROJDIR>/<OBJDIR>
+    echo rm -f -r <PROJDIR>/<OWOBJDIR>
+    rm -f -r <PROJDIR>/<OWOBJDIR>
     rm -f <OWBINDIR>/wstrip
     set BUILD_PLATFORM=
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
     echo Building the wstrip bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
     wmake -h -f ../linux386/makefile bootstrap=1
     <CPCMD> wstripx.exe <OWBINDIR>/wstrip
 

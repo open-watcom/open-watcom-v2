@@ -18,9 +18,9 @@ cdsay .
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CPCMD> dos4gw/*                <RELROOT>/binw/
-    <CPCMD> dos32a/*                <RELROOT>/binw/
-    <CPCMD> pmodew/*                <RELROOT>/binw/
+    <CPCMD> dos4gw/*                <OWRELROOT>/binw/
+    <CPCMD> dos32a/*                <OWRELROOT>/binw/
+    <CPCMD> pmodew/*                <OWRELROOT>/binw/
 
 [ BLOCK <1> clean ]
 #==================

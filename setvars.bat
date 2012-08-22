@@ -14,7 +14,7 @@ REM Change this to point to your existing Open Watcom installation
 set WATCOM=c:\c\ow10
 
 REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
-set GHOSTSCRIPTPATH=c:\gs\gs7.04\bin;c:\gs\gs7.04\lib
+set OWGHOSTSCRIPTPATH=c:\gs\gs7.04\bin;c:\gs\gs7.04\lib
 
 REM Set this variable to 1 to get debug build
 set DEBUG_BUILD=0
@@ -23,26 +23,26 @@ REM Set this variable to 1 to get default windowing support in clib
 set DEFAULT_WINDOWING=0
 
 REM Set this variable to 0 to suppress documentation build
-set DOC_BUILD=1
+set OWDOCBUILD=1
 
 REM Documentation related variables
 REM set appropriate variables to point to Windows help compilers which you have installed
-rem set WIN95HC=hcrtf
-rem set HHC=hhc
+rem set OWWIN95HC=hcrtf
+rem set OWHHC=hhc
 
 REM check if DOS is available on Windows
 if not '%OS%' == 'Windows_NT' goto dos_ok
 if exist %SystemRoot%\system32\dosx.exe goto dos_ok
-REM set OW_DOSBOX variable to point to DOSBOX emulator
+REM set OWDOSBOX variable to point to DOSBOX emulator
 REM it can be LFN, but must not include any spaces
-set OW_DOSBOX=dosbox
+set OWDOSBOX=dosbox
 :dos_ok
 
 REM Subdirectory to be used for bootstrapping
-set OBJDIR=bootstrp
+set OWOBJDIR=bootstrp
 
 REM Subdirectory to be used for building prerequisite utilities
-set PREOBJDIR=prebuild
+set OWPREOBJDIR=prebuild
 
 REM Invoke the batch file for the common environment
 call %OWROOT%\cmnvars.bat

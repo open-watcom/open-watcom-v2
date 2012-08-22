@@ -8,30 +8,30 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/x86/<OBJDIR>
-    rm -f -r <PROJDIR>/x86/<OBJDIR>
+    echo rm -f -r <PROJDIR>/x86/<OWOBJDIR>
+    rm -f -r <PROJDIR>/x86/<OWOBJDIR>
 
 [ BLOCK <1> boot ]
 #=================
     echo Building the DIP bootstrap
-    mkdir <PROJDIR>/dwarf/<OBJDIR>
-    cdsay <PROJDIR>/dwarf/<OBJDIR>
+    mkdir <PROJDIR>/dwarf/<OWOBJDIR>
+    cdsay <PROJDIR>/dwarf/<OWOBJDIR>
     wmake -h -f ../bootmake
-    <CPCMD> <PROJDIR>/dwarf/<OBJDIR>/dwarf.so <DEVDIR>/build/bin/
-    mkdir <PROJDIR>/watcom/<OBJDIR>
-    cdsay <PROJDIR>/watcom/<OBJDIR>
+    <CPCMD> <PROJDIR>/dwarf/<OWOBJDIR>/dwarf.so <DEVDIR>/build/bin/
+    mkdir <PROJDIR>/watcom/<OWOBJDIR>
+    cdsay <PROJDIR>/watcom/<OWOBJDIR>
     wmake -h -f ../bootmake
-    <CPCMD> <PROJDIR>/watcom/<OBJDIR>/watcom.so <DEVDIR>/build/bin/
-    mkdir <PROJDIR>/codeview/<OBJDIR>
-    cdsay <PROJDIR>/codeview/<OBJDIR>
+    <CPCMD> <PROJDIR>/watcom/<OWOBJDIR>/watcom.so <DEVDIR>/build/bin/
+    mkdir <PROJDIR>/codeview/<OWOBJDIR>
+    cdsay <PROJDIR>/codeview/<OWOBJDIR>
     wmake -h -f ../bootmake
-    <CPCMD> <PROJDIR>/codeview/<OBJDIR>/codeview.so <DEVDIR>/build/bin/
-    mkdir <PROJDIR>/export/<OBJDIR>
-    cdsay <PROJDIR>/export/<OBJDIR>
+    <CPCMD> <PROJDIR>/codeview/<OWOBJDIR>/codeview.so <DEVDIR>/build/bin/
+    mkdir <PROJDIR>/export/<OWOBJDIR>
+    cdsay <PROJDIR>/export/<OWOBJDIR>
     wmake -h -f ../bootmake
-    <CPCMD> <PROJDIR>/export/<OBJDIR>/export.so <DEVDIR>/build/bin/
-    mkdir <PROJDIR>/mapsym/<OBJDIR>
-    cdsay <PROJDIR>/mapsym/<OBJDIR>
+    <CPCMD> <PROJDIR>/export/<OWOBJDIR>/export.so <DEVDIR>/build/bin/
+    mkdir <PROJDIR>/mapsym/<OWOBJDIR>
+    cdsay <PROJDIR>/mapsym/<OWOBJDIR>
     wmake -h -f ../bootmake
-    <CPCMD> <PROJDIR>/mapsym/<OBJDIR>/mapsym.so <DEVDIR>/build/bin/
+    <CPCMD> <PROJDIR>/mapsym/<OWOBJDIR>/mapsym.so <DEVDIR>/build/bin/
     cdsay <PROJDIR>

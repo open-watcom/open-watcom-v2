@@ -8,16 +8,16 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> bootclean ]
 #======================
-    echo rm -f -r <PROJDIR>/<OBJDIR>.i86
-    rm -f -r <PROJDIR>/<OBJDIR>.i86
+    echo rm -f -r <PROJDIR>/<OWOBJDIR>.i86
+    rm -f -r <PROJDIR>/<OWOBJDIR>.i86
     echo rm -f <OWBINDIR>/wpp<CMDEXT>
     rm -f <OWBINDIR>/wpp<CMDEXT>
 
 [ BLOCK <1> boot ]
 #=================
     echo Building the wpp bootstrap
-    mkdir <PROJDIR>/<OBJDIR>.i86
-    cdsay <PROJDIR>/<OBJDIR>.i86
+    mkdir <PROJDIR>/<OWOBJDIR>.i86
+    cdsay <PROJDIR>/<OWOBJDIR>.i86
     cp -f ../linux386.i86/target.h .
     wmake -h -f ../makei86
     <CPCMD> wcppi86.exe <OWBINDIR>/wpp<CMDEXT>

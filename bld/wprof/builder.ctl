@@ -19,29 +19,29 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dos386/wprof.exe     <RELROOT>/binw/wprof.exe
+    <CPCMD> dos386/wprof.exe     <OWRELROOT>/binw/wprof.exe
 
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/wprof.exe     <RELROOT>/binw/wprofw.exe
+    <CPCMD> wini86/wprof.exe     <OWRELROOT>/binw/wprofw.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386pm/wprof.exe   <RELROOT>/binp/wprof.exe
-    <CPCMD> os2386/wprof.exe     <RELROOT>/binp/wprofc.exe
+    <CPCMD> os2386pm/wprof.exe   <OWRELROOT>/binp/wprof.exe
+    <CPCMD> os2386/wprof.exe     <OWRELROOT>/binp/wprofc.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wprof.exe      <RELROOT>/binnt/wprof.exe
-    <CPCMD> nt386c/wprof.exe     <RELROOT>/binnt/wprofc.exe
+    <CPCMD> nt386/wprof.exe      <OWRELROOT>/binnt/wprof.exe
+    <CPCMD> nt386c/wprof.exe     <OWRELROOT>/binnt/wprofc.exe
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wprof.exe      <RELROOT>/axpnt/wprof.exe
+    <CPCMD> ntaxp/wprof.exe      <OWRELROOT>/axpnt/wprof.exe
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/wprof.exe   <RELROOT>/binl/wprof
-    <CPCMD> linux386/wprof.sym   <RELROOT>/binl/wprof.sym
+    <CPCMD> linux386/wprof.exe   <OWRELROOT>/binl/wprof
+    <CPCMD> linux386/wprof.sym   <OWRELROOT>/binl/wprof.sym
 
   [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> qnx386/wprof.qnx     <RELROOT>/qnx/binq/wprof.
-    <CPCMD> qnx386/wprof.sym     <RELROOT>/qnx/sym/wprof.sym
+    <CPCMD> qnx386/wprof.qnx     <OWRELROOT>/qnx/binq/wprof.
+    <CPCMD> qnx386/wprof.sym     <OWRELROOT>/qnx/sym/wprof.sym
 
 [ BLOCK <1> clean ]
 #==================

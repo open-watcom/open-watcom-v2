@@ -19,9 +19,9 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (all build os_dos os_win cpu_i86 cpu_386 "") <2*> ]
-    <CPCMD> wstub.exe   <RELROOT>/binw/wstub.exe
-    <CPCMD> wstubq.exe  <RELROOT>/binw/wstubq.exe
-    <CPCMD> wstub.c     <RELROOT>/src/wstub.c
+    <CPCMD> wstub.exe   <OWRELROOT>/binw/wstub.exe
+    <CPCMD> wstubq.exe  <OWRELROOT>/binw/wstubq.exe
+    <CPCMD> wstub.c     <OWRELROOT>/src/wstub.c
 
 [ BLOCK <1> clean ]
 #==================

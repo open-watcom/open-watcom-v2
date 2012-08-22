@@ -5,19 +5,19 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/wres/<OBJDIR>
-    rm -f -r <PROJDIR>/wres/<OBJDIR>
-    echo rm -f -r <PROJDIR>/rc/<OBJDIR>
-    rm -f -r <PROJDIR>/rc/<OBJDIR>
+    echo rm -f -r <PROJDIR>/wres/<OWOBJDIR>
+    rm -f -r <PROJDIR>/wres/<OWOBJDIR>
+    echo rm -f -r <PROJDIR>/rc/<OWOBJDIR>
+    rm -f -r <PROJDIR>/rc/<OWOBJDIR>
 
 [ BLOCK <1> boot ]
 #=================
     echo Building the resource compiler bootstrap
-    mkdir <PROJDIR>/wres/<OBJDIR>
-    cdsay <PROJDIR>/wres/<OBJDIR>
+    mkdir <PROJDIR>/wres/<OWOBJDIR>
+    cdsay <PROJDIR>/wres/<OWOBJDIR>
     wmake -h -f ../bootmake
-    mkdir ../../rc/<OBJDIR>
-    cdsay ../../rc/<OBJDIR>
+    mkdir ../../rc/<OWOBJDIR>
+    cdsay ../../rc/<OWOBJDIR>
     wmake -h -f ../bootmake
     <CPCMD> wrce.exe <OWROOT>/bld/build/bin/wrc
     <CPCMD> wrce.exe <OWROOT>/bld/build/bin/bwrc

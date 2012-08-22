@@ -27,42 +27,42 @@ cdsay .
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-  <CPCMD> rc/*.uni                    <RELROOT>/binw/
-  <CPCMD> rc/*.uni                    <RELROOT>/binl/
+  <CPCMD> rc/*.uni                    <OWRELROOT>/binw/
+  <CPCMD> rc/*.uni                    <OWRELROOT>/binl/
 
   [ IFDEF (os_osi) <2*> ]
-#    <CPCMD> rc/osi386/wrce.exe        <RELROOT>/binw/wrc.exe
+#    <CPCMD> rc/osi386/wrce.exe        <OWRELROOT>/binw/wrc.exe
 
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> rc/dos386/wrce.exe        <RELROOT>/binw/wrc.exe
-    <CPCMD> rc/dos386/wrce.sym        <RELROOT>/binw/wrc.sym
+    <CPCMD> rc/dos386/wrce.exe        <OWRELROOT>/binw/wrc.exe
+    <CPCMD> rc/dos386/wrce.sym        <OWRELROOT>/binw/wrc.sym
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> rc/os2386.dll/wrce.exe    <RELROOT>/binp/wrc.exe
-    <CPCMD> rc/os2386.dll/wrce.sym    <RELROOT>/binp/wrc.sym
-    <CPCMD> rc/os2386.dll/wrcde.dll   <RELROOT>/binp/dll/wrcd.dll
-    <CPCMD> rc/os2386.dll/wrcde.sym   <RELROOT>/binp/dll/wrcd.sym
-    <CPCMD> exedmp/os2386/exedmp.exe  <RELROOT>/binp/exedmp.exe
+    <CPCMD> rc/os2386.dll/wrce.exe    <OWRELROOT>/binp/wrc.exe
+    <CPCMD> rc/os2386.dll/wrce.sym    <OWRELROOT>/binp/wrc.sym
+    <CPCMD> rc/os2386.dll/wrcde.dll   <OWRELROOT>/binp/dll/wrcd.dll
+    <CPCMD> rc/os2386.dll/wrcde.sym   <OWRELROOT>/binp/dll/wrcd.sym
+    <CPCMD> exedmp/os2386/exedmp.exe  <OWRELROOT>/binp/exedmp.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> rc/nt386.dll/wrce.exe     <RELROOT>/binnt/wrc.exe
-    <CPCMD> rc/nt386.dll/wrce.sym     <RELROOT>/binnt/wrc.sym
-    <CPCMD> rc/nt386.dll/wrcde.dll    <RELROOT>/binnt/wrcd.dll
-    <CPCMD> rc/nt386.dll/wrcde.sym    <RELROOT>/binnt/wrcd.sym
-    <CPCMD> rc/nt386rt.dll/wrce.exe   <RELROOT>/binnt/rtdll/wrc.exe
-    <CPCMD> rc/nt386rt.dll/wrce.sym   <RELROOT>/binnt/rtdll/wrc.sym
-    <CPCMD> rc/nt386rt.dll/wrcde.dll  <RELROOT>/binnt/rtdll/wrcd.dll
-    <CPCMD> rc/nt386rt.dll/wrcde.sym  <RELROOT>/binnt/rtdll/wrcd.sym
-    <CPCMD> mkcdpg/nt386/mkcdpg.exe   <RELROOT>/binnt/mkcdpg.exe
-    <CPCMD> exedmp/nt386/exedmp.exe   <RELROOT>/binnt/exedmp.exe
+    <CPCMD> rc/nt386.dll/wrce.exe     <OWRELROOT>/binnt/wrc.exe
+    <CPCMD> rc/nt386.dll/wrce.sym     <OWRELROOT>/binnt/wrc.sym
+    <CPCMD> rc/nt386.dll/wrcde.dll    <OWRELROOT>/binnt/wrcd.dll
+    <CPCMD> rc/nt386.dll/wrcde.sym    <OWRELROOT>/binnt/wrcd.sym
+    <CPCMD> rc/nt386rt.dll/wrce.exe   <OWRELROOT>/binnt/rtdll/wrc.exe
+    <CPCMD> rc/nt386rt.dll/wrce.sym   <OWRELROOT>/binnt/rtdll/wrc.sym
+    <CPCMD> rc/nt386rt.dll/wrcde.dll  <OWRELROOT>/binnt/rtdll/wrcd.dll
+    <CPCMD> rc/nt386rt.dll/wrcde.sym  <OWRELROOT>/binnt/rtdll/wrcd.sym
+    <CPCMD> mkcdpg/nt386/mkcdpg.exe   <OWRELROOT>/binnt/mkcdpg.exe
+    <CPCMD> exedmp/nt386/exedmp.exe   <OWRELROOT>/binnt/exedmp.exe
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> rc/ntaxp/wrce.exe         <RELROOT>/axpnt/wrc.exe
-    <CPCMD> mkcdpg/ntaxp/mkcdpg.exe   <RELROOT>/axpnt/mkcdpg.exe
+    <CPCMD> rc/ntaxp/wrce.exe         <OWRELROOT>/axpnt/wrc.exe
+    <CPCMD> mkcdpg/ntaxp/mkcdpg.exe   <OWRELROOT>/axpnt/mkcdpg.exe
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> rc/linux386/wrce.exe      <RELROOT>/binl/wrc
-    <CPCMD> rc/linux386/wrce.sym      <RELROOT>/binl/wrc.sym
+    <CPCMD> rc/linux386/wrce.exe      <OWRELROOT>/binl/wrc
+    <CPCMD> rc/linux386/wrce.sym      <OWRELROOT>/binl/wrc.sym
 
 [ BLOCK <1> clean ]
 #==================

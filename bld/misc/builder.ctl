@@ -19,10 +19,10 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
 
-    <CPCMD> unicode*                <RELROOT>/binw/
-    <CPCMD> watcom.ico              <RELROOT>/
-    <CPCMD> unicode*                <RELROOT>/binl/
-    <CPCMD> <OWROOT>/license.txt    <RELROOT>/license.txt
+    <CPCMD> unicode*                <OWRELROOT>/binw/
+    <CPCMD> watcom.ico              <OWRELROOT>/
+    <CPCMD> unicode*                <OWRELROOT>/binl/
+    <CPCMD> <OWROOT>/license.txt    <OWRELROOT>/license.txt
 
 [ BLOCK <1> clean ]
 #==================

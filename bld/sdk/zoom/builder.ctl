@@ -19,13 +19,13 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/wzoom.exe <RELROOT>/binw/wzoom.exe
+    <CPCMD> wini86/wzoom.exe <OWRELROOT>/binw/wzoom.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wzoom.exe  <RELROOT>/binnt/wzoom.exe
+    <CPCMD> nt386/wzoom.exe  <OWRELROOT>/binnt/wzoom.exe
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wzoom.exe  <RELROOT>/axpnt/wzoom.exe
+    <CPCMD> ntaxp/wzoom.exe  <OWRELROOT>/axpnt/wzoom.exe
 
 [ BLOCK <1> clean ]
 #==================

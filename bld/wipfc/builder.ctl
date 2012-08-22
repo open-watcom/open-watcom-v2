@@ -22,20 +22,20 @@ cdsay .
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CPCMD> helper/*.nls          <RELROOT>/wipfc/
-    <CPCMD> helper/*.txt          <RELROOT>/wipfc/
+    <CPCMD> helper/*.nls          <OWRELROOT>/wipfc/
+    <CPCMD> helper/*.txt          <OWRELROOT>/wipfc/
 
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dos386/wipfc.exe      <RELROOT>/binw/wipfc.exe
+    <CPCMD> dos386/wipfc.exe      <OWRELROOT>/binw/wipfc.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/wipfc.exe      <RELROOT>/binp/wipfc.exe
+    <CPCMD> os2386/wipfc.exe      <OWRELROOT>/binp/wipfc.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wipfc.exe       <RELROOT>/binnt/wipfc.exe
+    <CPCMD> nt386/wipfc.exe       <OWRELROOT>/binnt/wipfc.exe
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/wipfc.exe    <RELROOT>/binl/wipfc
+    <CPCMD> linux386/wipfc.exe    <OWRELROOT>/binl/wipfc
 
 [ BLOCK <1> clean ]
 #==================

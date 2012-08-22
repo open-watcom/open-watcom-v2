@@ -14,7 +14,7 @@ dlltest_autodepends = .AUTODEPEND
 
 # Force uptodate libs to be picked up
 .before
-    @set WATCOM=$(%RELROOT)
+    @set WATCOM=$(%OWRELROOT)
 
 inc_dirs = -I"../../inc"
 

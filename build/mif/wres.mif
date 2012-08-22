@@ -51,9 +51,9 @@ name_ppc = $(wres_dir)/$(host_os)ppc/_s/wres.lib
 name_mps = $(wres_dir)/$(host_os)mps/_s/wres.lib
 
 !ifdef bootstrap
-wres_lib = $(wres_dir)/$(%OBJDIR)/wres.lib
+wres_lib = $(wres_dir)/$(%OWOBJDIR)/wres.lib
 !else ifdef prebuild
-wres_lib = $(wres_dir)/$(%PREOBJDIR)/wres.lib
+wres_lib = $(wres_dir)/$(%OWPREOBJDIR)/wres.lib
 !else
 wres_lib = $(name_$(host_cpu))
 !endif

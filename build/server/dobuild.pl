@@ -132,14 +132,14 @@ sub make_build_batch
         s/\r?\n/\n/;
         if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
         elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", $WATCOM, "\n"; }
-        elsif (/$setenv OW_DOSBOX=/i) { print BATCH "$setenv OW_DOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
+        elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
         else                      { print BATCH; }
     }
     close(INPUT);
     # Add additional commands to do the build.
-    print BATCH "$setenv RELROOT=", get_reldir(), "\n";
-    print BATCH "$setenv DOC_BUILD=0\n";
-    print BATCH "$setenv DOC_QUIET=1\n";
+    print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
+    print BATCH "$setenv OWDOCBUILD=0\n";
+    print BATCH "$setenv OWDOCQUIET=1\n";
     # Create fresh builder tools, to prevent lockup build server 
     # if builder tools from previous build are somehow broken
     print BATCH "cd $OW\ncd bld\n";
@@ -187,25 +187,25 @@ sub make_docs_batch
         s/\r?\n/\n/;
         if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
         elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", $WATCOM, "\n"; }
-        elsif (/$setenv OW_DOSBOX=/i) { print BATCH "$setenv OW_DOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
-        elsif (/$setenv GHOSTSCRIPTPATH/i) { ; }
-        elsif (/$setenv WIN95HC/i) { ; }
-        elsif (/$setenv HHC/i)    { ; }
+        elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
+        elsif (/$setenv OWGHOSTSCRIPTPATH=/i) { ; }
+        elsif (/$setenv OWWIN95HC=/i) { ; }
+        elsif (/$setenv OWHHC=/i)    { ; }
         else                      { print BATCH; }
     }
     close(INPUT);
     # Add additional commands to do the build.
-    print BATCH "$setenv RELROOT=", get_reldir(), "\n";
+    print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
     if ($Common::config{"GHOSTSCRIPTPATH"} ne "") {
-        print BATCH "$setenv GHOSTSCRIPTPATH=", $Common::config{"GHOSTSCRIPTPATH"}, "\n";
+        print BATCH "$setenv OWGHOSTSCRIPTPATH=", $Common::config{"GHOSTSCRIPTPATH"}, "\n";
     }
     if ($Common::config{"WIN95HC"} ne "") {
-        print BATCH "$setenv WIN95HC=", $Common::config{"WIN95HC"}, "\n";
+        print BATCH "$setenv OWWIN95HC=", $Common::config{"WIN95HC"}, "\n";
     }
     if ($Common::config{"HHC"} ne "") {
-        print BATCH "$setenv HHC=", $Common::config{"HHC"}, "\n";
+        print BATCH "$setenv OWHHC=", $Common::config{"HHC"}, "\n";
     }
-    print BATCH "$setenv DOC_QUIET=1\n";
+    print BATCH "$setenv OWDOCQUIET=1\n";
     # Start build process.
     print BATCH "cd $OW\ncd docs\n";
     print BATCH "builder -i clean\n";
@@ -223,7 +223,7 @@ sub make_test_batch
         s/\r?\n/\n/;
         if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
         elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", get_reldir(), "\n"; }
-        elsif (/$setenv OW_DOSBOX=/i) { print BATCH "$setenv OW_DOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
+        elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
         else                      { print BATCH; }
     }
     close(INPUT);
@@ -231,7 +231,7 @@ sub make_test_batch
     # Add additional commands to do the testing.
     print BATCH "\n";
     if ($^O eq "MSWin32") { 
-        print BATCH "if '%OW_DOSBOX%' == '' $setenv EXTRA_ARCH=i86\n\n";
+        print BATCH "if '%OWDOSBOX%' == '' $setenv EXTRA_ARCH=i86\n\n";
     }
     print BATCH "cd $OW\ncd bld\ncd ctest\n";
     print BATCH "rm *.log\n";
@@ -256,13 +256,13 @@ sub make_installer_batch
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
-        if    (/$setenv OWROOT/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM/i) { print BATCH "$setenv WATCOM=", $Common::config{"WATCOM"}, "\n"; }
+        if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
+        elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", $Common::config{"WATCOM"}, "\n"; }
         else                      { print BATCH; }
     }
     close(INPUT);
     # Add additional commands to do installers.
-    print BATCH "$setenv RELROOT=", get_reldir(), "\n";
+    print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
     if ($OStype eq "UNIX") {
         # set up max open file handle to be enough for uzip
         print BATCH "ulimit -n 4096\n";

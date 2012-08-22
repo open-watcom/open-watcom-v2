@@ -19,27 +19,27 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dosi86/wmk.exe    <RELROOT>/binw/wmaker.exe
-    <CPCMD> dos386/wmk.exe    <RELROOT>/binw/wmake.exe
+    <CPCMD> dosi86/wmk.exe    <OWRELROOT>/binw/wmaker.exe
+    <CPCMD> dos386/wmk.exe    <OWRELROOT>/binw/wmake.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/wmk.exe    <RELROOT>/binp/wmake.exe
-    <CPCMD> os2386/wmk.sym    <RELROOT>/binp/wmake.sym
+    <CPCMD> os2386/wmk.exe    <OWRELROOT>/binp/wmake.exe
+    <CPCMD> os2386/wmk.sym    <OWRELROOT>/binp/wmake.sym
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wmk.exe     <RELROOT>/binnt/wmake.exe
-    <CPCMD> nt386/wmk.sym     <RELROOT>/binnt/wmake.sym
+    <CPCMD> nt386/wmk.exe     <OWRELROOT>/binnt/wmake.exe
+    <CPCMD> nt386/wmk.sym     <OWRELROOT>/binnt/wmake.sym
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/wmk.elf  <RELROOT>/binl/wmake
-    <CPCMD> linux386/wmk.sym  <RELROOT>/binl/wmake.sym
+    <CPCMD> linux386/wmk.elf  <OWRELROOT>/binl/wmake
+    <CPCMD> linux386/wmk.sym  <OWRELROOT>/binl/wmake.sym
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wmk.exe     <RELROOT>/axpnt/wmake.exe
+    <CPCMD> ntaxp/wmk.exe     <OWRELROOT>/axpnt/wmake.exe
 
 # I'm guessing for the QNX output, can't build it to check (Mat Nieuwenhoven)
   [ IFDEF (os_qnx)]
-    <CPCMD> qnxi86/wmk.qnx          <RELROOT>/qnx/binq/wmake
+    <CPCMD> qnxi86/wmk.qnx          <OWRELROOT>/qnx/binq/wmake
 
 [ BLOCK <1> clean ]
 #==================

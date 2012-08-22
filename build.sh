@@ -14,8 +14,8 @@ if [ ! -f $DEVDIR/build/binl/wtouch ]; then
 fi
 cd bld/wmake
 $MAKE -f gnumake
-mkdir -p ../builder/$OBJDIR
-cd ../builder/$OBJDIR
+mkdir -p ../builder/$OWOBJDIR
+cd ../builder/$OWOBJDIR
 wmake -h -f ../linux386/makefile builder.exe bootstrap=1
 cd ../..
 export BUILDMODE=bootstrap

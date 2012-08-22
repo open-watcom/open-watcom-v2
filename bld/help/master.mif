@@ -21,7 +21,7 @@ objs +=  trmemcvr.obj trmem.obj
 !endif
 
 !ifdef bootstrap
-libs = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
+libs = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
 !else
 !ifeq host_os linux
 libs = $(ui_dir)/unix/$(host_os)$(host_cpu)/ui.lib $(ncurses_dir)/$(host_os)$(host_cpu)/ncurses.lib

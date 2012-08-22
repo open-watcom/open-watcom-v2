@@ -19,22 +19,22 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dosi86/wdump.exe    <RELROOT>/binw/wdump.exe
+    <CPCMD> dosi86/wdump.exe    <OWRELROOT>/binw/wdump.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/wdump.exe    <RELROOT>/binp/wdump.exe
+    <CPCMD> os2386/wdump.exe    <OWRELROOT>/binp/wdump.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wdump.exe     <RELROOT>/binnt/wdump.exe
+    <CPCMD> nt386/wdump.exe     <OWRELROOT>/binnt/wdump.exe
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wdump.exe     <RELROOT>/axpnt/wdump.exe
+    <CPCMD> ntaxp/wdump.exe     <OWRELROOT>/axpnt/wdump.exe
 
   [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> qnx386/wdump.exe    <RELROOT>/qnx/wdump
+    <CPCMD> qnx386/wdump.exe    <OWRELROOT>/qnx/wdump
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/wdump.exe  <RELROOT>/binl/wdump
+    <CPCMD> linux386/wdump.exe  <OWRELROOT>/binl/wdump
 
 [ BLOCK <1> clean ]
 #==================

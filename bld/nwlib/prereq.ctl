@@ -16,23 +16,23 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/<PREOBJDIR>
-    rm -f -r <PROJDIR>/<PREOBJDIR>
+    echo rm -f -r <PROJDIR>/<OWPREOBJDIR>
+    rm -f -r <PROJDIR>/<OWPREOBJDIR>
     rm -f <OWBINDIR>/bwlib<CMDEXT>
     set BUILD_PLATFORM=
 
 [ BLOCK <BUILD_PLATFORM> dos386 os2386 nt386 ntaxp linux386 ]
 #============================================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../<BUILD_PLATFORM>/makefile prebuild=1
     <CPCMD> wlib.exe <OWBINDIR>/bwlib<CMDEXT>
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
     echo Building the wlib bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
     wmake -h -f ../linux386/makefile bootstrap=1
     <CPCMD> wlib.exe <OWBINDIR>/bwlib<CMDEXT>
 

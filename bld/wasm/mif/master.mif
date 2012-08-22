@@ -27,7 +27,7 @@ inc_dirs  = -I. -I"../h" -I"$(womp_dir)/h"
 
 !ifndef use_text_msgs
 !include wres.mif
-libs = $(wres_dir)/$(%OBJDIR)/wres.lib
+libs = $(wres_dir)/$(%OWOBJDIR)/wres.lib
 !endif
 
 #cflags stuff

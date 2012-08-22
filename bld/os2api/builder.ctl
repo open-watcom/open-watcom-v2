@@ -19,18 +19,18 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 acprel2 ]
 #================================
 #16-bit stuff
-    <CPCMD> os2286/*.h          <RELROOT>/h/os21x/
-    <CPCMD> os2286/*.lib        <RELROOT>/lib286/os2/
+    <CPCMD> os2286/*.h          <OWRELROOT>/h/os21x/
+    <CPCMD> os2286/*.lib        <OWRELROOT>/lib286/os2/
 #32-bit stuff
-    <CPCMD> os2386/*.h          <RELROOT>/h/os2/
-    <CPCMD> os2386/arpa/*.h     <RELROOT>/h/os2/arpa/
-    <CPCMD> os2386/machine/*.h  <RELROOT>/h/os2/machine/
-    <CPCMD> os2386/net/*.h      <RELROOT>/h/os2/net/
-    <CPCMD> os2386/netinet/*.h  <RELROOT>/h/os2/netinet/
-    <CPCMD> os2386/protocol/*.h <RELROOT>/h/os2/protocol/
-    <CPCMD> os2386/sys/*.h      <RELROOT>/h/os2/sys/
-    <CPCMD> os2386/GL/*.h       <RELROOT>/h/os2/GL/
-    <CPCMD> os2386/*.lib        <RELROOT>/lib386/os2/
+    <CPCMD> os2386/*.h          <OWRELROOT>/h/os2/
+    <CPCMD> os2386/arpa/*.h     <OWRELROOT>/h/os2/arpa/
+    <CPCMD> os2386/machine/*.h  <OWRELROOT>/h/os2/machine/
+    <CPCMD> os2386/net/*.h      <OWRELROOT>/h/os2/net/
+    <CPCMD> os2386/netinet/*.h  <OWRELROOT>/h/os2/netinet/
+    <CPCMD> os2386/protocol/*.h <OWRELROOT>/h/os2/protocol/
+    <CPCMD> os2386/sys/*.h      <OWRELROOT>/h/os2/sys/
+    <CPCMD> os2386/GL/*.h       <OWRELROOT>/h/os2/GL/
+    <CPCMD> os2386/*.lib        <OWRELROOT>/lib386/os2/
 
 [ BLOCK <1> clean ]
 #==================

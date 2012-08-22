@@ -8,13 +8,13 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/ui/<OBJDIR>
-    rm -f -r <PROJDIR>/ui/<OBJDIR>
+    echo rm -f -r <PROJDIR>/ui/<OWOBJDIR>
+    rm -f -r <PROJDIR>/ui/<OWOBJDIR>
 
 [ BLOCK <1> boot ]
 #=================
     echo Building the gui bootstrap
-    mkdir <PROJDIR>/ui/<OBJDIR>
-    cdsay <PROJDIR>/ui/<OBJDIR>
+    mkdir <PROJDIR>/ui/<OWOBJDIR>
+    cdsay <PROJDIR>/ui/<OWOBJDIR>
     wmake -h -f ../bootmake
     cdsay <PROJDIR>

@@ -19,22 +19,22 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dosi86/wstripx.exe    <RELROOT>/binw/wstrip.exe
+    <CPCMD> dosi86/wstripx.exe    <OWRELROOT>/binw/wstrip.exe
 
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/wstripx.exe    <RELROOT>/binp/wstrip.exe
+    <CPCMD> os2386/wstripx.exe    <OWRELROOT>/binp/wstrip.exe
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wstripx.exe     <RELROOT>/binnt/wstrip.exe
+    <CPCMD> nt386/wstripx.exe     <OWRELROOT>/binnt/wstrip.exe
 
   [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/wstripx.exe  <RELROOT>/binl/wstrip
+    <CPCMD> linux386/wstripx.exe  <OWRELROOT>/binl/wstrip
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wstripx.exe     <RELROOT>/axpnt/wstrip.exe
+    <CPCMD> ntaxp/wstripx.exe     <OWRELROOT>/axpnt/wstrip.exe
 
   [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> qnx386/wstripx.exe    <RELROOT>/qnx/binq/wstrip.
+    <CPCMD> qnx386/wstripx.exe    <OWRELROOT>/qnx/binq/wstrip.
 
 [ BLOCK <1> clean ]
 #==================

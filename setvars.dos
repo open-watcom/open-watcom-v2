@@ -17,7 +17,7 @@ REM placeholder
 REM placeholder
 
 REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
-set GHOSTSCRIPTPATH=c:\gs\gs7.04
+set OWGHOSTSCRIPTPATH=c:\gs\gs7.04
 
 REM Modifications beyond this point should not be necessary
 
@@ -28,21 +28,21 @@ REM Set this variable to 1 to get default windowing support in clib
 set DEFAULT_WINDOWING=0
 
 REM Set this variable to 0 to suppress documentation build
-set DOC_BUILD=1
+set OWDOCBUILD=1
 
 REM Documentation related variables
 REM set appropriate variables to blank for help compilers which you haven't installed
-rem set WIN95HC=hcrtf
-rem set HHC=hhc
+rem set OWWIN95HC=hcrtf
+rem set OWHHC=hhc
 
 REM Set up default path information variable
-if "%DEFPATH%" == "" set DEFPATH=%PATH%
+if "%OWDEFPATH%" == "" set OWDEFPATH=%PATH%
 
 REM Subdirectory to be used for bootstrapping
-set OBJDIR=bootstrp
+set OWOBJDIR=bootstrp
 
 REM Subdirectory to be used for building prerequisite utilities
-set PREOBJDIR=prebuild
+set OWPREOBJDIR=prebuild
 
 REM Set the version numbers
 set BLD_VER=17
@@ -53,11 +53,10 @@ set BUILD_PLATFORM=dos386
 set DEVDIR=%OWROOT%\bld
 REM Subdirectory to be used for bootstrapping/prebuild binaries
 set OWBINDIR=%DEVDIR%\build\bin
-set RELROOT=%OWROOT%\rel2
 set DWATCOM=%WATCOM%
 set INCLUDE=%WATCOM%\h;%WATCOM%\h\win
 set EDPATH=%WATCOM%\eddat
-set PATH=%OWBINDIR%;%OWROOT%\build;%WATCOM%\binw;%DOC_ROOT%\cmds;%DEFPATH%
+set PATH=%OWBINDIR%;%OWROOT%\build;%WATCOM%\binw;%OWDEFPATH%
 
 echo Open Watcom compiler build environment
 

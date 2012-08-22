@@ -5,13 +5,13 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/<OBJDIR>
-    rm -f -r <PROJDIR>/<OBJDIR>
+    echo rm -f -r <PROJDIR>/<OWOBJDIR>
+    rm -f -r <PROJDIR>/<OWOBJDIR>
 
 [ BLOCK <1> boot ]
 #=================
     echo Building the wmake bootstrap
     cdsay <PROJDIR>
     <MAKE> -f gnumake
-    <CPCMD> <OBJDIR>/wmake <DEVDIR>/build/bin/wmake
+    <CPCMD> <OWOBJDIR>/wmake <DEVDIR>/build/bin/wmake
     cdsay <PROJDIR>

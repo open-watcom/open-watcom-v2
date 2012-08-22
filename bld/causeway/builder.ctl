@@ -19,10 +19,10 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> cwc.exe                 <RELROOT>/binw/
-    <CPCMD> cw32/dosi86/cwstub.exe  <RELROOT>/binw/
-    <CPCMD> cw32/dos386/cwdll.lib   <RELROOT>/lib386/dos/
-    <CPCMD> inc/cwdllfnc.h          <RELROOT>/h/
+    <CPCMD> cwc.exe                 <OWRELROOT>/binw/
+    <CPCMD> cw32/dosi86/cwstub.exe  <OWRELROOT>/binw/
+    <CPCMD> cw32/dos386/cwdll.lib   <OWRELROOT>/lib386/dos/
+    <CPCMD> inc/cwdllfnc.h          <OWRELROOT>/h/
 
 [ BLOCK <1> clean ]
 #==================

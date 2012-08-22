@@ -19,7 +19,7 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> qnx/tix/*.tix <RELROOT>/qnx/tix/
+    <CPCMD> qnx/tix/*.tix <OWRELROOT>/qnx/tix/
 
 [ BLOCK <1> clean ]
 #==================

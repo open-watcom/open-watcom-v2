@@ -17,8 +17,8 @@ cdsay .
 
 [ BLOCK <1> rel2 cprel2 acprel2 ]
 #================================
-#   <CPCMD> womp.exe  <RELROOT>/binw/womp.exe
-#   <CPCMD> wompj.exe <RELROOT>/binw/japan/womp.exe
+#   <CPCMD> womp.exe  <OWRELROOT>/binw/womp.exe
+#   <CPCMD> wompj.exe <OWRELROOT>/binw/japan/womp.exe
 
 [ BLOCK <1> clean ]
 #==================

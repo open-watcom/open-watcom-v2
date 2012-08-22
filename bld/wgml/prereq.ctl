@@ -16,37 +16,37 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/<PREOBJDIR>
-    rm -f -r <PROJDIR>/<PREOBJDIR>
+    echo rm -f -r <PROJDIR>/<OWPREOBJDIR>
+    rm -f -r <PROJDIR>/<OWPREOBJDIR>
     rm -f <OWBINDIR>/wgml
     rm -f <OWBINDIR>/wgml.exe
     set BUILD_PLATFORM=
 
 [ BLOCK <BUILD_PLATFORM> dos386 ]
 #================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../dos386/makefile prebuild=1
     <CPCMD> wgml.exe <OWBINDIR>/wgml.exe
 
 [ BLOCK <BUILD_PLATFORM> os2386 ]
 #================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../os2386/makefile prebuild=1
     <CPCMD> wgml.exe <OWBINDIR>/wgml.exe
 
 [ BLOCK <BUILD_PLATFORM> nt386 ]
 #===============================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../nt386/makefile prebuild=1
     <CPCMD> wgml.exe <OWBINDIR>/wgml.exe
 
 #[ BLOCK <BUILD_PLATFORM> linux386 ]
 #===============================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
+    mkdir <PROJDIR>/<OWPREOBJDIR>
+    cdsay <PROJDIR>/<OWPREOBJDIR>
     wmake -h -f ../linux386/makefile prebuild=1
     <CPCMD> wgml.exe <OWBINDIR>/wgml
 

@@ -14,7 +14,7 @@ export OWROOT=`cd \`dirname -- $0\` && pwd`
 export WATCOM=$OWROOT/rel2
 
 # Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
-export GHOSTSCRIPTPATH=/usr/bin
+export OWGHOSTSCRIPTPATH=/usr/bin
 
 # Set this variable to 1 to get debug build
 export DEBUG_BUILD=0
@@ -23,18 +23,18 @@ export DEBUG_BUILD=0
 export DEFAULT_WINDOWING=0
 
 # Set this variable to 0 to suppress documentation build
-export DOC_BUILD=0      # Documentation building uses DOS programs.
+export OWDOCBUILD=0      # Documentation building uses DOS programs.
 
 # Documentation related variables - none likely to work in Linux
 # set appropriate variables to point to Windows help compilers which you have installed
-# export WIN95HC=hcrtf
-# export HHC=hhc
+# export OWWIN95HC=hcrtf
+# export OWHHC=hhc
 
 # Subdirectory to be used for bootstrapping
-export OBJDIR=bootstrp
+export OWOBJDIR=bootstrp
 
 # Subdirectory to be used for building prerequisite utilities
-export PREOBJDIR=prebuild
+export OWPREOBJDIR=prebuild
 
 # Invoke the script for the common environment
 . $OWROOT/cmnvars.sh

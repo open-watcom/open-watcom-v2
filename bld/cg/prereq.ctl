@@ -13,15 +13,15 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -f -r <PROJDIR>/intel/386/<OBJDIR>
-    rm -f -r <PROJDIR>/intel/386/<OBJDIR>
+    echo rm -f -r <PROJDIR>/intel/386/<OWOBJDIR>
+    rm -f -r <PROJDIR>/intel/386/<OWOBJDIR>
     set BUILD_PLATFORM=
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
     echo Building the 386 codegen bootstrap
-    mkdir <PROJDIR>/intel/386/<OBJDIR>
-    cdsay <PROJDIR>/intel/386/<OBJDIR>
+    mkdir <PROJDIR>/intel/386/<OWOBJDIR>
+    cdsay <PROJDIR>/intel/386/<OWOBJDIR>
     wmake -h -f ../linux386/makefile bootstrap=1
 
 [ BLOCK . . ]

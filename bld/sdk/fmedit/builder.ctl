@@ -19,11 +19,11 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/fmedit.dll <RELROOT>/binw/
+    <CPCMD> wini86/fmedit.dll <OWRELROOT>/binw/
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/fmedit.dll <RELROOT>/binnt/
+    <CPCMD> nt386/fmedit.dll <OWRELROOT>/binnt/
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/fmedit.dll <RELROOT>/axpnt/
+    <CPCMD> ntaxp/fmedit.dll <OWRELROOT>/axpnt/
 
 [ BLOCK <1> clean ]
 #==================

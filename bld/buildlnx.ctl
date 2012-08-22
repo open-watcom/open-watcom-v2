@@ -67,25 +67,25 @@ set WLINK_LNK=
 # all is ready to do everything else now
 
 [ BLOCK <1> clean ]
-    rm -rf <DEVDIR>/builder/<OBJDIR>
-    rm -rf <DEVDIR>/pmake/<OBJDIR>
-    rm -rf <DEVDIR>/cpp/<OBJDIR>
-    rm -rf <DEVDIR>/yacc/<OBJDIR>
-    rm -rf <DEVDIR>/wres/<OBJDIR>
-    rm -rf <DEVDIR>/rc/rc/<OBJDIR>
-    rm -rf <DEVDIR>/wstrip/<OBJDIR>
-    rm -rf <DEVDIR>/wmake/<OBJDIR>
+    rm -rf <DEVDIR>/builder/<OWOBJDIR>
+    rm -rf <DEVDIR>/pmake/<OWOBJDIR>
+    rm -rf <DEVDIR>/cpp/<OWOBJDIR>
+    rm -rf <DEVDIR>/yacc/<OWOBJDIR>
+    rm -rf <DEVDIR>/wres/<OWOBJDIR>
+    rm -rf <DEVDIR>/rc/rc/<OWOBJDIR>
+    rm -rf <DEVDIR>/wstrip/<OWOBJDIR>
+    rm -rf <DEVDIR>/wmake/<OWOBJDIR>
 
-    rm -rf <DEVDIR>/orl/<OBJDIR>
-    rm -rf <DEVDIR>/nwlib/<OBJDIR>
-    rm -rf <DEVDIR>/cfloat/<OBJDIR>
-    rm -rf <DEVDIR>/owl/<OBJDIR>
-    rm -rf <DEVDIR>/dwarf/dw/<OBJDIR>
-    rm -rf <DEVDIR>/cg/intel/386/<OBJDIR>
-    rm -rf <DEVDIR>/cc/<OBJDIR>
-    rm -rf <DEVDIR>/wcl/<OBJDIR>
-    rm -rf <DEVDIR>/wasm/<OBJDIR>
-    rm -rf <DEVDIR>/wl/<OBJDIR>
+    rm -rf <DEVDIR>/orl/<OWOBJDIR>
+    rm -rf <DEVDIR>/nwlib/<OWOBJDIR>
+    rm -rf <DEVDIR>/cfloat/<OWOBJDIR>
+    rm -rf <DEVDIR>/owl/<OWOBJDIR>
+    rm -rf <DEVDIR>/dwarf/dw/<OWOBJDIR>
+    rm -rf <DEVDIR>/cg/intel/386/<OWOBJDIR>
+    rm -rf <DEVDIR>/cc/<OWOBJDIR>
+    rm -rf <DEVDIR>/wcl/<OWOBJDIR>
+    rm -rf <DEVDIR>/wasm/<OWOBJDIR>
+    rm -rf <DEVDIR>/wl/<OWOBJDIR>
 
     rm -f <OWBINDIR>/wcl386
     rm -f <OWBINDIR>/wcl

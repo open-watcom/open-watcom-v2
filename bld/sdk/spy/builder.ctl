@@ -19,16 +19,16 @@ cdsay .
 [ BLOCK <1> rel2 cprel2 ]
 #========================
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/wspy.exe    <RELROOT>/binw/wspy.exe
-    <CPCMD> wini86/wspyhk.dll  <RELROOT>/binw/wspyhk.dll
+    <CPCMD> wini86/wspy.exe    <OWRELROOT>/binw/wspy.exe
+    <CPCMD> wini86/wspyhk.dll  <OWRELROOT>/binw/wspyhk.dll
 
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wspy.exe     <RELROOT>/binnt/wspy.exe
-    <CPCMD> nt386/ntspyhk.dll  <RELROOT>/binnt/ntspyhk.dll
+    <CPCMD> nt386/wspy.exe     <OWRELROOT>/binnt/wspy.exe
+    <CPCMD> nt386/ntspyhk.dll  <OWRELROOT>/binnt/ntspyhk.dll
 
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wspy.exe     <RELROOT>/axpnt/wspy.exe
-    <CPCMD> ntaxp/ntspyhk.dll  <RELROOT>/axpnt/ntspyhk.dll
+    <CPCMD> ntaxp/wspy.exe     <OWRELROOT>/axpnt/wspy.exe
+    <CPCMD> ntaxp/ntspyhk.dll  <OWRELROOT>/axpnt/ntspyhk.dll
 
 [ BLOCK <1> clean ]
 #==================
