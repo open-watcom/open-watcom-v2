@@ -1,13 +1,22 @@
 # Master Languages Builder Control File
 # =====================================
 
-[ BLOCK . . ]
+# Set default output directory
+[ BLOCK .<RELROOT> . ]
+#=====================
+    set RELROOT=<OWROOT>/rel2
 
-#default to build.log
+[ BLOCK . . ]
+#============
+
+# Default to build.log
 set LOGFNAME=build
 set LOGEXT=log
 set CPCMD=acopy
 set CCCMD=accopy
+
+# Set up directories
+set SRCDIR=<OWROOT>/bld
 
 [ BLOCK .<1> . ]
 #===============
@@ -19,73 +28,86 @@ set CCCMD=accopy
     # default rule
     set 1=build
 
-[ BLOCK <1> whatsout ]
-#=====================
-    echo **** WHATSOUT rule
-    set LOGFNAME=wout
-
-[ BLOCK <1> qlocks ]
-#===================
-    echo **** QLOCKS rule
-    set LOGFNAME=qlocks
-
-[ BLOCK <1> refresh ]
-#====================
-    echo **** REFRESH rule
-    set LOGFNAME=refresh
-
-[ BLOCK <1> whatsnew ]
-#====================
-    echo **** WHATSNEW rule
-    set LOGFNAME=wnew
-
 [ BLOCK <1> cprel2 ]
 #===================
-    echo **** CPREL2 rule
     set LOGFNAME=cprel2
+    echo **** CPREL2 rule
     # with 'cprel2', we want to force the copy to occur
     set CPCMD=copy
     set CCCMD=ccopy
 
 [ BLOCK <1> build ]
 #==================
-    echo **** BUILD rule
     set LOGFNAME=build
+    echo **** BUILD rule
 
 [ BLOCK <1> rel2 ]
-#==================
-    echo **** REL2 rule
+#=================
     set LOGFNAME=build
+    echo **** REL2 rule
 
 [ BLOCK <1> clean ]
 #==================
-    echo **** CLEAN rule
     set LOGFNAME=clean
+    echo **** CLEAN rule
 
 [ BLOCK <1> install ]
-#==================
+#====================
     set LOGFNAME=install
 
 [ BLOCK <1> boot ]
 #==================
     set LOGFNAME=boot
+    echo **** Building the <PROJNAME> bootstrap
+
+[ BLOCK <1> bootclean ]
+#======================
+    set LOGFNAME=btclean
+    echo **** BOOTCLEAN rule
 
 [ BLOCK <1> pass1 ]
 #==================
-    echo **** REL2 rule
     set LOGFNAME=pass1
+    echo **** REL2 rule
     set 1=rel2
 
 [ BLOCK <1> pass2 ]
 #==================
-    echo **** REL2 rule
     set LOGFNAME=pass2
+    echo **** REL2 rule
     set 1=rel2
+
+[ BLOCK <1> test ]
+#==================
+    set LOGFNAME=test
+    echo **** TEST rule
+
+[ BLOCK <1> testclean ]
+#======================
+    set LOGFNAME=tstclean
+    echo **** TESTCLEAN rule
+
+[ BLOCK <1> doc ]
+#==================
+    set LOGFNAME=doc
+    echo **** DOC rule
+    set 1=build
+
+[ BLOCK <1> docclean ]
+#======================
+    set LOGFNAME=docclean
+    echo **** DOCCLEAN rule
+    set 1=clean
 
 # Configure executable extension: DOS, OS/2 and Windows use .exe, others nothing
 
-[ BLOCK <BUILD_PLATFORM> nt386 ntaxp os2386 dos386 ]
-#===================================================
+[ BLOCK <BLD_HOST> NT OS2 DOS ]
+#==============================
     set CMDEXT=.exe
 
+[ BLOCK <BLD_HOST> UNIX ]
+#========================
+    set CMDEXT=
+
 [ BLOCK . . ]
+#============
