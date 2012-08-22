@@ -138,7 +138,7 @@ proj_objs= &
     ../mif/depends.mif
 #    ../mif/books.mif &
 #    ../mif/master.mif &
-#    ../lang.ctl &
+#    ../builder.ctl &
 #    makefile
 
 all : $(dep_$(dotarget)) .SYMBOLIC

@@ -1,7 +1,5 @@
 # FMEDIT Builder Control file
 # ===========================
-# This should really be part of the SDK
-# it is called from SDK\lang.ctl
 
 set PROJDIR=<CWD>
 

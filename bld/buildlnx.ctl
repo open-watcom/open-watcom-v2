@@ -10,7 +10,7 @@ set WLINK_LNK=bootstrp.lnk
 
 # compiled using GNU make + gcc + ar
 [ INCLUDE <DEVDIR>/wmake/prereq.ctl ]
-[ INCLUDE <DEVDIR>/builder/lang.ctl ]
+[ INCLUDE <DEVDIR>/builder/builder.ctl ]
 [ INCLUDE <DEVDIR>/cpp/prereq.ctl ]
 [ INCLUDE <DEVDIR>/nwlib/prereq.ctl ]
 
@@ -29,22 +29,22 @@ set WLINK_LNK=bootstrp.lnk
 [ INCLUDE <DEVDIR>/cc/prereq.ctl ]
 
 # compiled using watcom utilities
-[ INCLUDE <DEVDIR>/hdr/lang.ctl ]
-[ INCLUDE <DEVDIR>/clib/lang.ctl ]
-[ INCLUDE <DEVDIR>/mathlib/lang.ctl ]
-[ INCLUDE <DEVDIR>/emu/lang.ctl ]
+[ INCLUDE <DEVDIR>/hdr/builder.ctl ]
+[ INCLUDE <DEVDIR>/clib/builder.ctl ]
+[ INCLUDE <DEVDIR>/mathlib/builder.ctl ]
+[ INCLUDE <DEVDIR>/emu/builder.ctl ]
 [ INCLUDE <DEVDIR>/wcl/prereq.ctl ]
-[ INCLUDE <DEVDIR>/cfloat/lang.ctl ]
-[ INCLUDE <DEVDIR>/owl/lang.ctl ]
-[ INCLUDE <DEVDIR>/dwarf/lang.ctl ]
+[ INCLUDE <DEVDIR>/cfloat/builder.ctl ]
+[ INCLUDE <DEVDIR>/owl/builder.ctl ]
+[ INCLUDE <DEVDIR>/dwarf/builder.ctl ]
 [ INCLUDE <DEVDIR>/re2c/prereq.ctl ]
-[ INCLUDE <DEVDIR>/wres/lang.ctl ]
-[ INCLUDE <DEVDIR>/as/lang.ctl ]
-[ INCLUDE <DEVDIR>/cg/lang.ctl ]
-[ INCLUDE <DEVDIR>/cc/lang.ctl ]
-[ INCLUDE <DEVDIR>/plusplus/lang.ctl ]
-[ INCLUDE <DEVDIR>/cpplib/lang.ctl ]
-[ INCLUDE <DEVDIR>/wcl/lang.ctl ]
+[ INCLUDE <DEVDIR>/wres/builder.ctl ]
+[ INCLUDE <DEVDIR>/as/builder.ctl ]
+[ INCLUDE <DEVDIR>/cg/builder.ctl ]
+[ INCLUDE <DEVDIR>/cc/builder.ctl ]
+[ INCLUDE <DEVDIR>/plusplus/builder.ctl ]
+[ INCLUDE <DEVDIR>/cpplib/builder.ctl ]
+[ INCLUDE <DEVDIR>/wcl/builder.ctl ]
 
 [ BLOCK <1> rel2 cprel2 ]
     <CPCMD> <DEVDIR>/wcl/386/linux386/wcl386.exe       <OWBINDIR>/wcl386
@@ -61,7 +61,7 @@ set WLINK_LNK=
 
 [ INCLUDE <DEVDIR>/wres/prereq.ctl ]
 [ INCLUDE <DEVDIR>/rc/rc/prereq.ctl ]
-[ INCLUDE <DEVDIR>/orl/lang.ctl ]
+[ INCLUDE <DEVDIR>/orl/builder.ctl ]
 [ INCLUDE <DEVDIR>/wmake/prereq.ctl ]
 
 # all is ready to do everything else now

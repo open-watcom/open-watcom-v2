@@ -99,17 +99,17 @@ tree (rel2), making fully automated builds a possibility.
 
 This tool is called builder.
 
-See d:\bld\builder\builder.doc for detailed info on the tool and the source
+See \bld\builder\builder.doc for detailed info on the tool and the source
 if the documentation doesn't satisfy you.
 
 Here's how we use it:
 
-Each project has a "lang.ctl" builder script file.
+Each project has a "builder.ctl" builder script file.
 If you go to a project directory and run builder, it will make only that
 project; if you go to \bld and run builder, it will build everything
-the overall build uses \bat\lang.ctl which includes all of the individual
-project lang.ctl files that we use. Note that if you run builder, it will
-traverse directories upwards until it finds a lang.ctl (or it hits the
+the overall build uses \bld\builder.ctl which includes all of the individual
+project builder.ctl files that we use. Note that if you run builder, it will
+traverse directories upwards until it finds a builder.ctl (or it hits the
 root and still doesn't find anything, but then you must have done something
 wrong).
 
@@ -126,7 +126,7 @@ Many of the projects use the "pmake" features of builder (see builder.doc).
 To determine what to build, pmake source is in \bld\pmake.
 
 Each makefile has a comment line at the top of the file which is read by pmake.
-Most of our lang.ctl files will have a line similar to this:
+Most of our builder.ctl files will have a line similar to this:
 
 pmake -d build -h ...
 

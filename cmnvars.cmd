@@ -14,7 +14,6 @@ if "%DEFPATH%" == "" set DEFPATH=%PATH%
 
 REM Stuff for the Open Watcom build environment
 set BUILD_PLATFORM=os2386
-set BUILDER_CTL=lang.ctl
 set DEVDIR=%OWROOT%\bld
 REM Subdirectory to be used for bootstrapping/prebuild binaries
 set OWBINDIR=%DEVDIR%\build\binp

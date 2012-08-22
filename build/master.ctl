@@ -1,5 +1,5 @@
-# Master Languages Builder Control File
-# =====================================
+# Master Builder Control File
+# ===========================
 
 # Set default output directory
 [ BLOCK .<RELROOT> . ]
