@@ -254,8 +254,8 @@ graphlib_dir    = $(src_dir)/graphlib
 !ifndef wattcp_dir
 wattcp_dir      = $(src_dir)/wattcp
 !endif
-!ifndef ipfc_dir
-ipfc_dir        = $(src_dir)/wipfc
+!ifndef wipfc_dir
+wipfc_dir       = $(src_dir)/wipfc
 !endif
 !ifndef builder_dir
 builder_dir     = $(src_dir)/builder
@@ -527,8 +527,8 @@ graphlib_dir    = $(src_dir)\graphlib
 !ifndef wattcp_dir
 wattcp_dir      = $(src_dir)\wattcp
 !endif
-!ifndef ipfc_dir
-ipfc_dir        = $(src_dir)\wipfc
+!ifndef wipfc_dir
+wipfc_dir       = $(src_dir)\wipfc
 !endif
 !ifndef builder_dir
 builder_dir     = $(src_dir)\builder

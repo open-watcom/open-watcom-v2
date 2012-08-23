@@ -2612,523 +2612,520 @@ objs_wddoc = &
 bmroot_vi = ../doc/vi/snaps
 incs_vi = ../doc/vi;../doc/vi/snaps
 objs_vi = &
-    ../doc/vi/advan.gml &
-    ../doc/vi/basic.gml &
-    ../doc/vi/basicdis.gml &
-    ../doc/vi/basicmv.gml &
-    ../doc/vi/cmds.gml &
-    ../doc/vi/cmdintro.gml &
-    ../doc/vi/env.gml &
-    ../doc/vi/exerquit.gml &
-    ../doc/vi/exitvi.gml &
-    ../doc/vi/extra.gml &
-    ../doc/vi/fsdesc.gml &
-    ../doc/vi/gkey.gml &
-    ../doc/vi/ids.gml &
-    ../doc/vi/inter.gml &
-    ../doc/vi/intro.gml &
-    ../doc/vi/markinfo.gml &
-    ../doc/vi/modes.gml &
-    ../doc/vi/oper.gml &
-    ../doc/vi/operlist.gml &
-    ../doc/vi/rxexp.gml &
-    ../doc/vi/speckeys.gml &
-    ../doc/vi/spmapkey.gml &
-    ../doc/vi/textsel.gml &
-    ../doc/vi/vi.gml &
-    ../doc/vi/vipref.gml &
-    ../doc/vi/worddef.gml &
-    ../doc/vi/win_menu.gml &
-    ../doc/vi/settings.gml &
-    ../doc/vi/regexp.gml &
-    ../doc/vi/scripts.gml &
-    ../doc/vi/a_cmdmod.gml &
-    ../doc/vi/a_errmsg.gml &
-    ../doc/vi/int_err.gml &
-    ../doc/vi/a_ctags.gml &
-    ../doc/vi/a_symkey.gml &
-    ../doc/vi/symkey.gml &
-    ../doc/vi/a_errcod.gml &
-    $(bmroot_vi)/vi001.bmp &
-    $(bmroot_vi)/vi003.bmp &
-    $(bmroot_vi)/vi004.bmp &
-    $(bmroot_vi)/vi005.bmp &
-    $(bmroot_vi)/vi006.bmp &
-    $(bmroot_vi)/vi007.bmp &
-    $(bmroot_vi)/vi008.bmp &
-    $(bmroot_vi)/vi009.bmp &
-    $(bmroot_vi)/vi010.bmp &
-    $(bmroot_vi)/vi012.bmp &
-    $(bmroot_vi)/vi013.bmp &
-    $(bmroot_vi)/vi015.bmp &
-    $(bmroot_vi)/vi016.bmp &
-    $(bmroot_vi)/vi017.bmp &
-    $(bmroot_vi)/vi018.bmp &
-    $(bmroot_vi)/vi019.bmp &
-    $(bmroot_vi)/vi020.bmp &
-    $(bmroot_vi)/vi021.bmp &
-    $(bmroot_vi)/vi022.bmp &
-    $(bmroot_vi)/vi023.bmp &
-    $(bmroot_vi)/vi024.bmp &
-    $(bmroot_vi)/vi025.bmp &
-    $(bmroot_vi)/vi026.bmp &
-    $(bmroot_vi)/vi027.bmp &
-    $(bmroot_vi)/vi028.bmp &
-    $(bmroot_vi)/vi029.bmp &
-    $(bmroot_vi)/vi030.bmp &
-    $(bmroot_vi)/vi031.bmp
+../doc/vi/advan.gml &
+../doc/vi/basic.gml &
+../doc/vi/basicdis.gml &
+../doc/vi/basicmv.gml &
+../doc/vi/cmds.gml &
+../doc/vi/cmdintro.gml &
+../doc/vi/env.gml &
+../doc/vi/exerquit.gml &
+../doc/vi/exitvi.gml &
+../doc/vi/extra.gml &
+../doc/vi/fsdesc.gml &
+../doc/vi/gkey.gml &
+../doc/vi/ids.gml &
+../doc/vi/inter.gml &
+../doc/vi/intro.gml &
+../doc/vi/markinfo.gml &
+../doc/vi/modes.gml &
+../doc/vi/oper.gml &
+../doc/vi/operlist.gml &
+../doc/vi/rxexp.gml &
+../doc/vi/speckeys.gml &
+../doc/vi/spmapkey.gml &
+../doc/vi/textsel.gml &
+../doc/vi/vi.gml &
+../doc/vi/vipref.gml &
+../doc/vi/worddef.gml &
+../doc/vi/win_menu.gml &
+../doc/vi/settings.gml &
+../doc/vi/regexp.gml &
+../doc/vi/scripts.gml &
+../doc/vi/a_cmdmod.gml &
+../doc/vi/a_errmsg.gml &
+../doc/vi/int_err.gml &
+../doc/vi/a_ctags.gml &
+../doc/vi/a_symkey.gml &
+../doc/vi/symkey.gml &
+../doc/vi/a_errcod.gml &
+$(bmroot_vi)/vi001.bmp &
+$(bmroot_vi)/vi003.bmp &
+$(bmroot_vi)/vi004.bmp &
+$(bmroot_vi)/vi005.bmp &
+$(bmroot_vi)/vi006.bmp &
+$(bmroot_vi)/vi007.bmp &
+$(bmroot_vi)/vi008.bmp &
+$(bmroot_vi)/vi009.bmp &
+$(bmroot_vi)/vi010.bmp &
+$(bmroot_vi)/vi012.bmp &
+$(bmroot_vi)/vi013.bmp &
+$(bmroot_vi)/vi015.bmp &
+$(bmroot_vi)/vi016.bmp &
+$(bmroot_vi)/vi017.bmp &
+$(bmroot_vi)/vi018.bmp &
+$(bmroot_vi)/vi019.bmp &
+$(bmroot_vi)/vi020.bmp &
+$(bmroot_vi)/vi021.bmp &
+$(bmroot_vi)/vi022.bmp &
+$(bmroot_vi)/vi023.bmp &
+$(bmroot_vi)/vi024.bmp &
+$(bmroot_vi)/vi025.bmp &
+$(bmroot_vi)/vi026.bmp &
+$(bmroot_vi)/vi027.bmp &
+$(bmroot_vi)/vi028.bmp &
+$(bmroot_vi)/vi029.bmp &
+$(bmroot_vi)/vi030.bmp &
+$(bmroot_vi)/vi031.bmp
 objs_vi_ps=&
-    vi001.ps &
-    vi003.ps &
-    vi004.ps &
-    vi005.ps &
-    vi006.ps &
-    vi007.ps &
-    vi008.ps &
-    vi009.ps &
-    vi010.ps &
-    vi012.ps &
-    vi013.ps &
-    vi014.ps &
-    vi015.ps &
-    vi016.ps &
-    vi017.ps &
-    vi018.ps &
-    vi019.ps &
-    vi020.ps &
-    vi021.ps &
-    vi022.ps &
-    vi023.ps &
-    vi024.ps &
-    vi025.ps &
-    vi026.ps &
-    vi027.ps &
-    vi028.ps &
-    vi029.ps &
-    vi030.ps &
-    vi031.ps
+vi001.ps &
+vi003.ps &
+vi004.ps &
+vi005.ps &
+vi006.ps &
+vi007.ps &
+vi008.ps &
+vi009.ps &
+vi010.ps &
+vi012.ps &
+vi013.ps &
+vi014.ps &
+vi015.ps &
+vi016.ps &
+vi017.ps &
+vi018.ps &
+vi019.ps &
+vi020.ps &
+vi021.ps &
+vi022.ps &
+vi023.ps &
+vi024.ps &
+vi025.ps &
+vi026.ps &
+vi027.ps &
+vi028.ps &
+vi029.ps &
+vi030.ps &
+vi031.ps
 
 # wgmlref sub-directory
-wgmlref_dir = ../doc/wgmlref/
-bmroot_wgmlref = $(wgmlref_dir)screens
-incs_wgmlref = ../doc/wgmlref;$(wgmlref_dir)screens
+bmroot_wgmlref = ../doc/wgmlref/screens
+incs_wgmlref = ../doc/wgmlref;../doc/wgmlref/screens
 objs_wgmlref = &
-    $(wgmlref_dir)rfman.gml &
-    $(wgmlref_dir)mspslay.gml &
-    $(wgmlref_dir)rfabst.gml &
-    $(wgmlref_dir)rfdaddr.gml &
-    $(wgmlref_dir)rfdaugd.gml &
-    $(wgmlref_dir)rfdcrdev.gml &
-    $(wgmlref_dir)rfddef.gml &
-    $(wgmlref_dir)rfddev.gml &
-    $(wgmlref_dir)rfddriv.gml &
-    $(wgmlref_dir)rfderra.gml &
-    $(wgmlref_dir)rfderrm.gml &
-    $(wgmlref_dir)rfdev.gml &
-    $(wgmlref_dir)rfdfont.gml &
-    $(wgmlref_dir)rfdgen.gml &
-    $(wgmlref_dir)rfdgtag.gml &
-    $(wgmlref_dir)rfdindd.gml &
-    $(wgmlref_dir)rfdindex.gml &
-    $(wgmlref_dir)rfdmem.gml &
-    $(wgmlref_dir)rfdmisin.gml &
-    $(wgmlref_dir)rfdrgen.gml &
-    $(wgmlref_dir)rfdropt.gml &
-    $(wgmlref_dir)rfdrun.gml &
-    $(wgmlref_dir)rfdspec.gml &
-    $(wgmlref_dir)rfdvalue.gml &
-    $(wgmlref_dir)rferrp.gml &
-    $(wgmlref_dir)rffgen.gml &
-    $(wgmlref_dir)rffhead.gml &
-    $(wgmlref_dir)rffile.gml &
-    $(wgmlref_dir)rffpcdos.gml &
-    $(wgmlref_dir)rffvms.gml &
-    $(wgmlref_dir)rffvmsp.gml &
-    $(wgmlref_dir)rfg2pd.gml &
-    $(wgmlref_dir)rfgbeg.gml &
-    $(wgmlref_dir)rfgcite.gml &
-    $(wgmlref_dir)rfgdl.gml &
-    $(wgmlref_dir)rfgerra.gml &
-    $(wgmlref_dir)rfgerrm.gml &
-    $(wgmlref_dir)rfgfhref.gml &
-    $(wgmlref_dir)rfgfig1.gml &
-    $(wgmlref_dir)rfgfig2.gml &
-    $(wgmlref_dir)rfgfig3.gml &
-    $(wgmlref_dir)rfghead.gml &
-    $(wgmlref_dir)rfghp.gml &
-    $(wgmlref_dir)rfgindx.gml &
-    $(wgmlref_dir)rfgindx2.gml &
-    $(wgmlref_dir)rfgindx3.gml &
-    $(wgmlref_dir)rfgint.gml &
-    $(wgmlref_dir)rfgisym.gml &
-    $(wgmlref_dir)rfglgen.gml &
-    $(wgmlref_dir)rfglgqut.gml &
-    $(wgmlref_dir)rfglp.gml &
-    $(wgmlref_dir)rfglpc.gml &
-    $(wgmlref_dir)rfglvax.gml &
-    $(wgmlref_dir)rfglvm.gml &
-    $(wgmlref_dir)rfgnest.gml &
-    $(wgmlref_dir)rfgnote.gml &
-    $(wgmlref_dir)rfgol.gml &
-    $(wgmlref_dir)rfgpc.gml &
-    $(wgmlref_dir)rfgshid.gml &
-    $(wgmlref_dir)rfgshqut.gml &
-    $(wgmlref_dir)rfgsl.gml &
-    $(wgmlref_dir)rfgsym.gml &
-    $(wgmlref_dir)rfgtitpg.gml &
-    $(wgmlref_dir)rfgul.gml &
-    $(wgmlref_dir)rfgxmp.gml &
-    $(wgmlref_dir)rfintro.gml &
-    $(wgmlref_dir)rfl2pd.gml &
-    $(wgmlref_dir)rflaaln.gml &
-    $(wgmlref_dir)rflacol.gml &
-    $(wgmlref_dir)rfladaf.gml &
-    $(wgmlref_dir)rflafil.gml &
-    $(wgmlref_dir)rflafon.gml &
-    $(wgmlref_dir)rflahdr.gml &
-    $(wgmlref_dir)rflahdr2.gml &
-    $(wgmlref_dir)rflaina.gml &
-    $(wgmlref_dir)rflalad.gml &
-    $(wgmlref_dir)rflalev.gml &
-    $(wgmlref_dir)rflalii.gml &
-    $(wgmlref_dir)rflalin.gml &
-    $(wgmlref_dir)rflanfo.gml &
-    $(wgmlref_dir)rflanfo2.gml &
-    $(wgmlref_dir)rflanfon.gml &
-    $(wgmlref_dir)rflanst.gml &
-    $(wgmlref_dir)rflanst2.gml &
-    $(wgmlref_dir)rflapes.gml &
-    $(wgmlref_dir)rflapge.gml &
-    $(wgmlref_dir)rflapgp.gml &
-    $(wgmlref_dir)rflapgp2.gml &
-    $(wgmlref_dir)rflapgr.gml &
-    $(wgmlref_dir)rflapli.gml &
-    $(wgmlref_dir)rflapos.gml &
-    $(wgmlref_dir)rflapts.gml &
-    $(wgmlref_dir)rflarad.gml &
-    $(wgmlref_dir)rflarin.gml &
-    $(wgmlref_dir)rflasiz.gml &
-    $(wgmlref_dir)rflaskp.gml &
-    $(wgmlref_dir)rflaspc.gml &
-    $(wgmlref_dir)rflathr.gml &
-    $(wgmlref_dir)rflay.gml &
-    $(wgmlref_dir)rflay1.gml &
-    $(wgmlref_dir)rflay2.gml &
-    $(wgmlref_dir)rflbeg.gml &
-    $(wgmlref_dir)rflcase.gml &
-    $(wgmlref_dir)rfldl.gml &
-    $(wgmlref_dir)rflfhref.gml &
-    $(wgmlref_dir)rflfig1.gml &
-    $(wgmlref_dir)rflfig2.gml &
-    $(wgmlref_dir)rflfig3.gml &
-    $(wgmlref_dir)rflgroup.gml &
-    $(wgmlref_dir)rflhead.gml &
-    $(wgmlref_dir)rflib.gml &
-    $(wgmlref_dir)rflint.gml &
-    $(wgmlref_dir)rflisym.gml &
-    $(wgmlref_dir)rfllgqut.gml &
-    $(wgmlref_dir)rfllp.gml &
-    $(wgmlref_dir)rflnest.gml &
-    $(wgmlref_dir)rflnote.gml &
-    $(wgmlref_dir)rflnumr.gml &
-    $(wgmlref_dir)rflol.gml &
-    $(wgmlref_dir)rflpc.gml &
-    $(wgmlref_dir)rflshqut.gml &
-    $(wgmlref_dir)rflsl.gml &
-    $(wgmlref_dir)rflsym.gml &
-    $(wgmlref_dir)rfltabs.gml &
-    $(wgmlref_dir)rfltadd.gml &
-    $(wgmlref_dir)rfltags.gml &
-    $(wgmlref_dir)rfltalin.gml &
-    $(wgmlref_dir)rfltapp.gml &
-    $(wgmlref_dir)rfltattn.gml &
-    $(wgmlref_dir)rfltauth.gml &
-    $(wgmlref_dir)rfltback.gml &
-    $(wgmlref_dir)rfltbann.gml &
-    $(wgmlref_dir)rfltbanr.gml &
-    $(wgmlref_dir)rfltbody.gml &
-    $(wgmlref_dir)rfltcit.gml &
-    $(wgmlref_dir)rfltclos.gml &
-    $(wgmlref_dir)rfltdate.gml &
-    $(wgmlref_dir)rfltdd.gml &
-    $(wgmlref_dir)rfltddhd.gml &
-    $(wgmlref_dir)rfltdef.gml &
-    $(wgmlref_dir)rfltdist.gml &
-    $(wgmlref_dir)rfltdl.gml &
-    $(wgmlref_dir)rfltdoc.gml &
-    $(wgmlref_dir)rfltdt.gml &
-    $(wgmlref_dir)rfltdthd.gml &
-    $(wgmlref_dir)rflteban.gml &
-    $(wgmlref_dir)rfltebre.gml &
-    $(wgmlref_dir)rflteclo.gml &
-    $(wgmlref_dir)rfltelay.gml &
-    $(wgmlref_dir)rfltfig.gml &
-    $(wgmlref_dir)rfltfigc.gml &
-    $(wgmlref_dir)rfltfigd.gml &
-    $(wgmlref_dir)rfltfigl.gml &
-    $(wgmlref_dir)rfltflp.gml &
-    $(wgmlref_dir)rfltfn.gml &
-    $(wgmlref_dir)rfltfnre.gml &
-    $(wgmlref_dir)rfltfrom.gml &
-    $(wgmlref_dir)rfltgd.gml &
-    $(wgmlref_dir)rfltgl.gml &
-    $(wgmlref_dir)rfltgt.gml &
-    $(wgmlref_dir)rflth0.gml &
-    $(wgmlref_dir)rflthead.gml &
-    $(wgmlref_dir)rflti1.gml &
-    $(wgmlref_dir)rfltindx.gml &
-    $(wgmlref_dir)rfltitpg.gml &
-    $(wgmlref_dir)rfltixh.gml &
-    $(wgmlref_dir)rfltixm.gml &
-    $(wgmlref_dir)rfltixp.gml &
-    $(wgmlref_dir)rfltlay.gml &
-    $(wgmlref_dir)rfltletd.gml &
-    $(wgmlref_dir)rfltlp.gml &
-    $(wgmlref_dir)rfltlq.gml &
-    $(wgmlref_dir)rfltnote.gml &
-    $(wgmlref_dir)rfltol.gml &
-    $(wgmlref_dir)rfltopen.gml &
-    $(wgmlref_dir)rfltp.gml &
-    $(wgmlref_dir)rfltpage.gml &
-    $(wgmlref_dir)rfltpc.gml &
-    $(wgmlref_dir)rfltpref.gml &
-    $(wgmlref_dir)rfltsl.gml &
-    $(wgmlref_dir)rfltsubj.gml &
-    $(wgmlref_dir)rflttitl.gml &
-    $(wgmlref_dir)rflttitp.gml &
-    $(wgmlref_dir)rfltto.gml &
-    $(wgmlref_dir)rflttoc.gml &
-    $(wgmlref_dir)rflttoc0.gml &
-    $(wgmlref_dir)rflttocp.gml &
-    $(wgmlref_dir)rfltul.gml &
-    $(wgmlref_dir)rfltwid.gml &
-    $(wgmlref_dir)rfltxmp.gml &
-    $(wgmlref_dir)rflul.gml &
-    $(wgmlref_dir)rflxmp.gml &
-    $(wgmlref_dir)rfman.gml &
-    $(wgmlref_dir)rfmlay.gml &
-    $(wgmlref_dir)rfpcincl.gml &
-    $(wgmlref_dir)rfpref.gml &
-    $(wgmlref_dir)rfrgen.gml &
-    $(wgmlref_dir)rfropt.gml &
-    $(wgmlref_dir)rfrun.gml &
-    $(wgmlref_dir)rfrvmpc.gml &
-    $(wgmlref_dir)rfrvms.gml &
-    $(wgmlref_dir)rfsapp.gml &
-    $(wgmlref_dir)rfsattr.gml &
-    $(wgmlref_dir)rfsbak.gml &
-    $(wgmlref_dir)rfsbde.gml &
-    $(wgmlref_dir)rfsbod.gml &
-    $(wgmlref_dir)rfscrgg.gml &
-    $(wgmlref_dir)rfscrip.gml &
-    $(wgmlref_dir)rfscripa.gml &
-    $(wgmlref_dir)rfsdbd.gml &
-    $(wgmlref_dir)rfsflnk.gml &
-    $(wgmlref_dir)rfsfrt.gml &
-    $(wgmlref_dir)rfsgel.gml &
-    $(wgmlref_dir)rfsgen.gml &
-    $(wgmlref_dir)rfshor.gml &
-    $(wgmlref_dir)rfsid.gml &
-    $(wgmlref_dir)rfsintr.gml &
-    $(wgmlref_dir)rfslet.gml &
-    $(wgmlref_dir)rfspec.gml &
-    $(wgmlref_dir)rfspos.gml &
-    $(wgmlref_dir)rfspre.gml &
-    $(wgmlref_dir)rfsproc.gml &
-    $(wgmlref_dir)rfssymb.gml &
-    $(wgmlref_dir)rfsum.gml &
-    $(wgmlref_dir)rfsvert.gml &
-    $(wgmlref_dir)rftags.gml &
-    $(wgmlref_dir)rftgabst.gml &
-    $(wgmlref_dir)rftgacon.gml &
-    $(wgmlref_dir)rftgaddr.gml &
-    $(wgmlref_dir)rftgadep.gml &
-    $(wgmlref_dir)rftgalin.gml &
-    $(wgmlref_dir)rftgapp.gml &
-    $(wgmlref_dir)rftgauth.gml &
-    $(wgmlref_dir)rftgback.gml &
-    $(wgmlref_dir)rftgbinc.gml &
-    $(wgmlref_dir)rftgbody.gml &
-    $(wgmlref_dir)rftgcit.gml &
-    $(wgmlref_dir)rftgcmt.gml &
-    $(wgmlref_dir)rftgdate.gml &
-    $(wgmlref_dir)rftgdd.gml &
-    $(wgmlref_dir)rftgddhd.gml &
-    $(wgmlref_dir)rftgdl.gml &
-    $(wgmlref_dir)rftgdnum.gml &
-    $(wgmlref_dir)rftgdt.gml &
-    $(wgmlref_dir)rftgdthd.gml &
-    $(wgmlref_dir)rftgeadd.gml &
-    $(wgmlref_dir)rftgecit.gml &
-    $(wgmlref_dir)rftgedl.gml &
-    $(wgmlref_dir)rftgefig.gml &
-    $(wgmlref_dir)rftgefn.gml &
-    $(wgmlref_dir)rftgegdo.gml &
-    $(wgmlref_dir)rftgegl.gml &
-    $(wgmlref_dir)rftgehp.gml &
-    $(wgmlref_dir)rftgelay.gml &
-    $(wgmlref_dir)rftgelq.gml &
-    $(wgmlref_dir)rftgeol.gml &
-    $(wgmlref_dir)rftgepsc.gml &
-    $(wgmlref_dir)rftgeq.gml &
-    $(wgmlref_dir)rftgesf.gml &
-    $(wgmlref_dir)rftgesl.gml &
-    $(wgmlref_dir)rftgetpg.gml &
-    $(wgmlref_dir)rftgeul.gml &
-    $(wgmlref_dir)rftgexmp.gml &
-    $(wgmlref_dir)rftgfig.gml &
-    $(wgmlref_dir)rftgfigc.gml &
-    $(wgmlref_dir)rftgfigd.gml &
-    $(wgmlref_dir)rftgfigl.gml &
-    $(wgmlref_dir)rftgfigr.gml &
-    $(wgmlref_dir)rftgfn.gml &
-    $(wgmlref_dir)rftgfnre.gml &
-    $(wgmlref_dir)rftgfrnt.gml &
-    $(wgmlref_dir)rftggd.gml &
-    $(wgmlref_dir)rftggdoc.gml &
-    $(wgmlref_dir)rftggl.gml &
-    $(wgmlref_dir)rftggraf.gml &
-    $(wgmlref_dir)rftggt.gml &
-    $(wgmlref_dir)rftghdre.gml &
-    $(wgmlref_dir)rftghead.gml &
-    $(wgmlref_dir)rftghp.gml &
-    $(wgmlref_dir)rftgi.gml &
-    $(wgmlref_dir)rftgih.gml &
-    $(wgmlref_dir)rftgii.gml &
-    $(wgmlref_dir)rftgimbe.gml &
-    $(wgmlref_dir)rftgincl.gml &
-    $(wgmlref_dir)rftgindx.gml &
-    $(wgmlref_dir)rftgint.gml &
-    $(wgmlref_dir)rftgipg.gml &
-    $(wgmlref_dir)rftgiref.gml &
-    $(wgmlref_dir)rftgisee.gml &
-    $(wgmlref_dir)rftgisid.gml &
-    $(wgmlref_dir)rftglay.gml &
-    $(wgmlref_dir)rftgli.gml &
-    $(wgmlref_dir)rftglire.gml &
-    $(wgmlref_dir)rftglp.gml &
-    $(wgmlref_dir)rftglq.gml &
-    $(wgmlref_dir)rftgnote.gml &
-    $(wgmlref_dir)rftgol.gml &
-    $(wgmlref_dir)rftgp.gml &
-    $(wgmlref_dir)rftgpc.gml &
-    $(wgmlref_dir)rftgpref.gml &
-    $(wgmlref_dir)rftgpsc.gml &
-    $(wgmlref_dir)rftgq.gml &
-    $(wgmlref_dir)rftgset.gml &
-    $(wgmlref_dir)rftgsf.gml &
-    $(wgmlref_dir)rftgsl.gml &
-    $(wgmlref_dir)rftgtitl.gml &
-    $(wgmlref_dir)rftgtoc.gml &
-    $(wgmlref_dir)rftgtpg.gml &
-    $(wgmlref_dir)rftgul.gml &
-    $(wgmlref_dir)rftgxmp.gml &
-    $(wgmlref_dir)rftitle.gml &
-    $(wgmlref_dir)rftlatt.gml &
-    $(wgmlref_dir)rftlclo.gml &
-    $(wgmlref_dir)rftldat.gml &
-    $(wgmlref_dir)rftldis.gml &
-    $(wgmlref_dir)rftldit.gml &
-    $(wgmlref_dir)rftldoc.gml &
-    $(wgmlref_dir)rftlecl.gml &
-    $(wgmlref_dir)rftledi.gml &
-    $(wgmlref_dir)rftlfro.gml &
-    $(wgmlref_dir)rftlope.gml &
-    $(wgmlref_dir)rftlsub.gml &
-    $(wgmlref_dir)rftlto.gml &
-    $(wgmlref_dir)rftrade.gml &
-    $(wgmlref_dir)rftuapp.gml &
-    $(wgmlref_dir)rftuback.gml &
-    $(wgmlref_dir)rftubegn.gml &
-    $(wgmlref_dir)rftubody.gml &
-    $(wgmlref_dir)rftucite.gml &
-    $(wgmlref_dir)rftuconc.gml &
-    $(wgmlref_dir)rftudstr.gml &
-    $(wgmlref_dir)rftufco.gml &
-    $(wgmlref_dir)rftufdp.gml &
-    $(wgmlref_dir)rftufds.gml &
-    $(wgmlref_dir)rftufdv.gml &
-    $(wgmlref_dir)rftufig.gml &
-    $(wgmlref_dir)rftufom.gml &
-    $(wgmlref_dir)rftufop.gml &
-    $(wgmlref_dir)rftufrd.gml &
-    $(wgmlref_dir)rftufrnt.gml &
-    $(wgmlref_dir)rftufsm.gml &
-    $(wgmlref_dir)rftuhead.gml &
-    $(wgmlref_dir)rftuhp.gml &
-    $(wgmlref_dir)rftuidx.gml &
-    $(wgmlref_dir)rftulay.gml &
-    $(wgmlref_dir)rftulban.gml &
-    $(wgmlref_dir)rftulcnv.gml &
-    $(wgmlref_dir)rftuldoc.gml &
-    $(wgmlref_dir)rftulgen.gml &
-    $(wgmlref_dir)rftulist.gml &
-    $(wgmlref_dir)rftulmdo.gml &
-    $(wgmlref_dir)rftulspc.gml &
-    $(wgmlref_dir)rftuprd.gml &
-    $(wgmlref_dir)rftuquot.gml &
-    $(wgmlref_dir)rfturef.gml &
-    $(wgmlref_dir)rftuscr.gml &
-    $(wgmlref_dir)rftustrt.gml &
-    $(wgmlref_dir)rftustru.gml &
-    $(wgmlref_dir)rftut.gml &
-    $(wgmlref_dir)rftuxmp.gml &
-    $(wgmlref_dir)wbsymbol.gml
+../doc/wgmlref/rfman.gml &
+../doc/wgmlref/mspslay.gml &
+../doc/wgmlref/rfabst.gml &
+../doc/wgmlref/rfdaddr.gml &
+../doc/wgmlref/rfdaugd.gml &
+../doc/wgmlref/rfdcrdev.gml &
+../doc/wgmlref/rfddef.gml &
+../doc/wgmlref/rfddev.gml &
+../doc/wgmlref/rfddriv.gml &
+../doc/wgmlref/rfderra.gml &
+../doc/wgmlref/rfderrm.gml &
+../doc/wgmlref/rfdev.gml &
+../doc/wgmlref/rfdfont.gml &
+../doc/wgmlref/rfdgen.gml &
+../doc/wgmlref/rfdgtag.gml &
+../doc/wgmlref/rfdindd.gml &
+../doc/wgmlref/rfdindex.gml &
+../doc/wgmlref/rfdmem.gml &
+../doc/wgmlref/rfdmisin.gml &
+../doc/wgmlref/rfdrgen.gml &
+../doc/wgmlref/rfdropt.gml &
+../doc/wgmlref/rfdrun.gml &
+../doc/wgmlref/rfdspec.gml &
+../doc/wgmlref/rfdvalue.gml &
+../doc/wgmlref/rferrp.gml &
+../doc/wgmlref/rffgen.gml &
+../doc/wgmlref/rffhead.gml &
+../doc/wgmlref/rffile.gml &
+../doc/wgmlref/rffpcdos.gml &
+../doc/wgmlref/rffvms.gml &
+../doc/wgmlref/rffvmsp.gml &
+../doc/wgmlref/rfg2pd.gml &
+../doc/wgmlref/rfgbeg.gml &
+../doc/wgmlref/rfgcite.gml &
+../doc/wgmlref/rfgdl.gml &
+../doc/wgmlref/rfgerra.gml &
+../doc/wgmlref/rfgerrm.gml &
+../doc/wgmlref/rfgfhref.gml &
+../doc/wgmlref/rfgfig1.gml &
+../doc/wgmlref/rfgfig2.gml &
+../doc/wgmlref/rfgfig3.gml &
+../doc/wgmlref/rfghead.gml &
+../doc/wgmlref/rfghp.gml &
+../doc/wgmlref/rfgindx.gml &
+../doc/wgmlref/rfgindx2.gml &
+../doc/wgmlref/rfgindx3.gml &
+../doc/wgmlref/rfgint.gml &
+../doc/wgmlref/rfgisym.gml &
+../doc/wgmlref/rfglgen.gml &
+../doc/wgmlref/rfglgqut.gml &
+../doc/wgmlref/rfglp.gml &
+../doc/wgmlref/rfglpc.gml &
+../doc/wgmlref/rfglvax.gml &
+../doc/wgmlref/rfglvm.gml &
+../doc/wgmlref/rfgnest.gml &
+../doc/wgmlref/rfgnote.gml &
+../doc/wgmlref/rfgol.gml &
+../doc/wgmlref/rfgpc.gml &
+../doc/wgmlref/rfgshid.gml &
+../doc/wgmlref/rfgshqut.gml &
+../doc/wgmlref/rfgsl.gml &
+../doc/wgmlref/rfgsym.gml &
+../doc/wgmlref/rfgtitpg.gml &
+../doc/wgmlref/rfgul.gml &
+../doc/wgmlref/rfgxmp.gml &
+../doc/wgmlref/rfintro.gml &
+../doc/wgmlref/rfl2pd.gml &
+../doc/wgmlref/rflaaln.gml &
+../doc/wgmlref/rflacol.gml &
+../doc/wgmlref/rfladaf.gml &
+../doc/wgmlref/rflafil.gml &
+../doc/wgmlref/rflafon.gml &
+../doc/wgmlref/rflahdr.gml &
+../doc/wgmlref/rflahdr2.gml &
+../doc/wgmlref/rflaina.gml &
+../doc/wgmlref/rflalad.gml &
+../doc/wgmlref/rflalev.gml &
+../doc/wgmlref/rflalii.gml &
+../doc/wgmlref/rflalin.gml &
+../doc/wgmlref/rflanfo.gml &
+../doc/wgmlref/rflanfo2.gml &
+../doc/wgmlref/rflanfon.gml &
+../doc/wgmlref/rflanst.gml &
+../doc/wgmlref/rflanst2.gml &
+../doc/wgmlref/rflapes.gml &
+../doc/wgmlref/rflapge.gml &
+../doc/wgmlref/rflapgp.gml &
+../doc/wgmlref/rflapgp2.gml &
+../doc/wgmlref/rflapgr.gml &
+../doc/wgmlref/rflapli.gml &
+../doc/wgmlref/rflapos.gml &
+../doc/wgmlref/rflapts.gml &
+../doc/wgmlref/rflarad.gml &
+../doc/wgmlref/rflarin.gml &
+../doc/wgmlref/rflasiz.gml &
+../doc/wgmlref/rflaskp.gml &
+../doc/wgmlref/rflaspc.gml &
+../doc/wgmlref/rflathr.gml &
+../doc/wgmlref/rflay.gml &
+../doc/wgmlref/rflay1.gml &
+../doc/wgmlref/rflay2.gml &
+../doc/wgmlref/rflbeg.gml &
+../doc/wgmlref/rflcase.gml &
+../doc/wgmlref/rfldl.gml &
+../doc/wgmlref/rflfhref.gml &
+../doc/wgmlref/rflfig1.gml &
+../doc/wgmlref/rflfig2.gml &
+../doc/wgmlref/rflfig3.gml &
+../doc/wgmlref/rflgroup.gml &
+../doc/wgmlref/rflhead.gml &
+../doc/wgmlref/rflib.gml &
+../doc/wgmlref/rflint.gml &
+../doc/wgmlref/rflisym.gml &
+../doc/wgmlref/rfllgqut.gml &
+../doc/wgmlref/rfllp.gml &
+../doc/wgmlref/rflnest.gml &
+../doc/wgmlref/rflnote.gml &
+../doc/wgmlref/rflnumr.gml &
+../doc/wgmlref/rflol.gml &
+../doc/wgmlref/rflpc.gml &
+../doc/wgmlref/rflshqut.gml &
+../doc/wgmlref/rflsl.gml &
+../doc/wgmlref/rflsym.gml &
+../doc/wgmlref/rfltabs.gml &
+../doc/wgmlref/rfltadd.gml &
+../doc/wgmlref/rfltags.gml &
+../doc/wgmlref/rfltalin.gml &
+../doc/wgmlref/rfltapp.gml &
+../doc/wgmlref/rfltattn.gml &
+../doc/wgmlref/rfltauth.gml &
+../doc/wgmlref/rfltback.gml &
+../doc/wgmlref/rfltbann.gml &
+../doc/wgmlref/rfltbanr.gml &
+../doc/wgmlref/rfltbody.gml &
+../doc/wgmlref/rfltcit.gml &
+../doc/wgmlref/rfltclos.gml &
+../doc/wgmlref/rfltdate.gml &
+../doc/wgmlref/rfltdd.gml &
+../doc/wgmlref/rfltddhd.gml &
+../doc/wgmlref/rfltdef.gml &
+../doc/wgmlref/rfltdist.gml &
+../doc/wgmlref/rfltdl.gml &
+../doc/wgmlref/rfltdoc.gml &
+../doc/wgmlref/rfltdt.gml &
+../doc/wgmlref/rfltdthd.gml &
+../doc/wgmlref/rflteban.gml &
+../doc/wgmlref/rfltebre.gml &
+../doc/wgmlref/rflteclo.gml &
+../doc/wgmlref/rfltelay.gml &
+../doc/wgmlref/rfltfig.gml &
+../doc/wgmlref/rfltfigc.gml &
+../doc/wgmlref/rfltfigd.gml &
+../doc/wgmlref/rfltfigl.gml &
+../doc/wgmlref/rfltflp.gml &
+../doc/wgmlref/rfltfn.gml &
+../doc/wgmlref/rfltfnre.gml &
+../doc/wgmlref/rfltfrom.gml &
+../doc/wgmlref/rfltgd.gml &
+../doc/wgmlref/rfltgl.gml &
+../doc/wgmlref/rfltgt.gml &
+../doc/wgmlref/rflth0.gml &
+../doc/wgmlref/rflthead.gml &
+../doc/wgmlref/rflti1.gml &
+../doc/wgmlref/rfltindx.gml &
+../doc/wgmlref/rfltitpg.gml &
+../doc/wgmlref/rfltixh.gml &
+../doc/wgmlref/rfltixm.gml &
+../doc/wgmlref/rfltixp.gml &
+../doc/wgmlref/rfltlay.gml &
+../doc/wgmlref/rfltletd.gml &
+../doc/wgmlref/rfltlp.gml &
+../doc/wgmlref/rfltlq.gml &
+../doc/wgmlref/rfltnote.gml &
+../doc/wgmlref/rfltol.gml &
+../doc/wgmlref/rfltopen.gml &
+../doc/wgmlref/rfltp.gml &
+../doc/wgmlref/rfltpage.gml &
+../doc/wgmlref/rfltpc.gml &
+../doc/wgmlref/rfltpref.gml &
+../doc/wgmlref/rfltsl.gml &
+../doc/wgmlref/rfltsubj.gml &
+../doc/wgmlref/rflttitl.gml &
+../doc/wgmlref/rflttitp.gml &
+../doc/wgmlref/rfltto.gml &
+../doc/wgmlref/rflttoc.gml &
+../doc/wgmlref/rflttoc0.gml &
+../doc/wgmlref/rflttocp.gml &
+../doc/wgmlref/rfltul.gml &
+../doc/wgmlref/rfltwid.gml &
+../doc/wgmlref/rfltxmp.gml &
+../doc/wgmlref/rflul.gml &
+../doc/wgmlref/rflxmp.gml &
+../doc/wgmlref/rfman.gml &
+../doc/wgmlref/rfmlay.gml &
+../doc/wgmlref/rfpcincl.gml &
+../doc/wgmlref/rfpref.gml &
+../doc/wgmlref/rfrgen.gml &
+../doc/wgmlref/rfropt.gml &
+../doc/wgmlref/rfrun.gml &
+../doc/wgmlref/rfrvmpc.gml &
+../doc/wgmlref/rfrvms.gml &
+../doc/wgmlref/rfsapp.gml &
+../doc/wgmlref/rfsattr.gml &
+../doc/wgmlref/rfsbak.gml &
+../doc/wgmlref/rfsbde.gml &
+../doc/wgmlref/rfsbod.gml &
+../doc/wgmlref/rfscrgg.gml &
+../doc/wgmlref/rfscrip.gml &
+../doc/wgmlref/rfscripa.gml &
+../doc/wgmlref/rfsdbd.gml &
+../doc/wgmlref/rfsflnk.gml &
+../doc/wgmlref/rfsfrt.gml &
+../doc/wgmlref/rfsgel.gml &
+../doc/wgmlref/rfsgen.gml &
+../doc/wgmlref/rfshor.gml &
+../doc/wgmlref/rfsid.gml &
+../doc/wgmlref/rfsintr.gml &
+../doc/wgmlref/rfslet.gml &
+../doc/wgmlref/rfspec.gml &
+../doc/wgmlref/rfspos.gml &
+../doc/wgmlref/rfspre.gml &
+../doc/wgmlref/rfsproc.gml &
+../doc/wgmlref/rfssymb.gml &
+../doc/wgmlref/rfsum.gml &
+../doc/wgmlref/rfsvert.gml &
+../doc/wgmlref/rftags.gml &
+../doc/wgmlref/rftgabst.gml &
+../doc/wgmlref/rftgacon.gml &
+../doc/wgmlref/rftgaddr.gml &
+../doc/wgmlref/rftgadep.gml &
+../doc/wgmlref/rftgalin.gml &
+../doc/wgmlref/rftgapp.gml &
+../doc/wgmlref/rftgauth.gml &
+../doc/wgmlref/rftgback.gml &
+../doc/wgmlref/rftgbinc.gml &
+../doc/wgmlref/rftgbody.gml &
+../doc/wgmlref/rftgcit.gml &
+../doc/wgmlref/rftgcmt.gml &
+../doc/wgmlref/rftgdate.gml &
+../doc/wgmlref/rftgdd.gml &
+../doc/wgmlref/rftgddhd.gml &
+../doc/wgmlref/rftgdl.gml &
+../doc/wgmlref/rftgdnum.gml &
+../doc/wgmlref/rftgdt.gml &
+../doc/wgmlref/rftgdthd.gml &
+../doc/wgmlref/rftgeadd.gml &
+../doc/wgmlref/rftgecit.gml &
+../doc/wgmlref/rftgedl.gml &
+../doc/wgmlref/rftgefig.gml &
+../doc/wgmlref/rftgefn.gml &
+../doc/wgmlref/rftgegdo.gml &
+../doc/wgmlref/rftgegl.gml &
+../doc/wgmlref/rftgehp.gml &
+../doc/wgmlref/rftgelay.gml &
+../doc/wgmlref/rftgelq.gml &
+../doc/wgmlref/rftgeol.gml &
+../doc/wgmlref/rftgepsc.gml &
+../doc/wgmlref/rftgeq.gml &
+../doc/wgmlref/rftgesf.gml &
+../doc/wgmlref/rftgesl.gml &
+../doc/wgmlref/rftgetpg.gml &
+../doc/wgmlref/rftgeul.gml &
+../doc/wgmlref/rftgexmp.gml &
+../doc/wgmlref/rftgfig.gml &
+../doc/wgmlref/rftgfigc.gml &
+../doc/wgmlref/rftgfigd.gml &
+../doc/wgmlref/rftgfigl.gml &
+../doc/wgmlref/rftgfigr.gml &
+../doc/wgmlref/rftgfn.gml &
+../doc/wgmlref/rftgfnre.gml &
+../doc/wgmlref/rftgfrnt.gml &
+../doc/wgmlref/rftggd.gml &
+../doc/wgmlref/rftggdoc.gml &
+../doc/wgmlref/rftggl.gml &
+../doc/wgmlref/rftggraf.gml &
+../doc/wgmlref/rftggt.gml &
+../doc/wgmlref/rftghdre.gml &
+../doc/wgmlref/rftghead.gml &
+../doc/wgmlref/rftghp.gml &
+../doc/wgmlref/rftgi.gml &
+../doc/wgmlref/rftgih.gml &
+../doc/wgmlref/rftgii.gml &
+../doc/wgmlref/rftgimbe.gml &
+../doc/wgmlref/rftgincl.gml &
+../doc/wgmlref/rftgindx.gml &
+../doc/wgmlref/rftgint.gml &
+../doc/wgmlref/rftgipg.gml &
+../doc/wgmlref/rftgiref.gml &
+../doc/wgmlref/rftgisee.gml &
+../doc/wgmlref/rftgisid.gml &
+../doc/wgmlref/rftglay.gml &
+../doc/wgmlref/rftgli.gml &
+../doc/wgmlref/rftglire.gml &
+../doc/wgmlref/rftglp.gml &
+../doc/wgmlref/rftglq.gml &
+../doc/wgmlref/rftgnote.gml &
+../doc/wgmlref/rftgol.gml &
+../doc/wgmlref/rftgp.gml &
+../doc/wgmlref/rftgpc.gml &
+../doc/wgmlref/rftgpref.gml &
+../doc/wgmlref/rftgpsc.gml &
+../doc/wgmlref/rftgq.gml &
+../doc/wgmlref/rftgset.gml &
+../doc/wgmlref/rftgsf.gml &
+../doc/wgmlref/rftgsl.gml &
+../doc/wgmlref/rftgtitl.gml &
+../doc/wgmlref/rftgtoc.gml &
+../doc/wgmlref/rftgtpg.gml &
+../doc/wgmlref/rftgul.gml &
+../doc/wgmlref/rftgxmp.gml &
+../doc/wgmlref/rftitle.gml &
+../doc/wgmlref/rftlatt.gml &
+../doc/wgmlref/rftlclo.gml &
+../doc/wgmlref/rftldat.gml &
+../doc/wgmlref/rftldis.gml &
+../doc/wgmlref/rftldit.gml &
+../doc/wgmlref/rftldoc.gml &
+../doc/wgmlref/rftlecl.gml &
+../doc/wgmlref/rftledi.gml &
+../doc/wgmlref/rftlfro.gml &
+../doc/wgmlref/rftlope.gml &
+../doc/wgmlref/rftlsub.gml &
+../doc/wgmlref/rftlto.gml &
+../doc/wgmlref/rftrade.gml &
+../doc/wgmlref/rftuapp.gml &
+../doc/wgmlref/rftuback.gml &
+../doc/wgmlref/rftubegn.gml &
+../doc/wgmlref/rftubody.gml &
+../doc/wgmlref/rftucite.gml &
+../doc/wgmlref/rftuconc.gml &
+../doc/wgmlref/rftudstr.gml &
+../doc/wgmlref/rftufco.gml &
+../doc/wgmlref/rftufdp.gml &
+../doc/wgmlref/rftufds.gml &
+../doc/wgmlref/rftufdv.gml &
+../doc/wgmlref/rftufig.gml &
+../doc/wgmlref/rftufom.gml &
+../doc/wgmlref/rftufop.gml &
+../doc/wgmlref/rftufrd.gml &
+../doc/wgmlref/rftufrnt.gml &
+../doc/wgmlref/rftufsm.gml &
+../doc/wgmlref/rftuhead.gml &
+../doc/wgmlref/rftuhp.gml &
+../doc/wgmlref/rftuidx.gml &
+../doc/wgmlref/rftulay.gml &
+../doc/wgmlref/rftulban.gml &
+../doc/wgmlref/rftulcnv.gml &
+../doc/wgmlref/rftuldoc.gml &
+../doc/wgmlref/rftulgen.gml &
+../doc/wgmlref/rftulist.gml &
+../doc/wgmlref/rftulmdo.gml &
+../doc/wgmlref/rftulspc.gml &
+../doc/wgmlref/rftuprd.gml &
+../doc/wgmlref/rftuquot.gml &
+../doc/wgmlref/rfturef.gml &
+../doc/wgmlref/rftuscr.gml &
+../doc/wgmlref/rftustrt.gml &
+../doc/wgmlref/rftustru.gml &
+../doc/wgmlref/rftut.gml &
+../doc/wgmlref/rftuxmp.gml &
+../doc/wgmlref/wbsymbol.gml
 
 # wipfc sub-directory
-wipfc_dir = ../doc/wipfc/
 bmroot_wipfc = ../doc/wipfc
 incs_wipfc = ../doc/wipfc
 objs_wipfc = &
-    $(wipfc_dir)wipfc.gml &
-    $(wipfc_dir)ipfdefs.gml &
-    $(wipfc_dir)ipfintro.gml &
-    $(wipfc_dir)ipfuse.gml &
-    $(wipfc_dir)ipftags.gml &
-    $(wipfc_dir)ipfcmds.gml &
-    $(wipfc_dir)ipftref.gml &
-    $(wipfc_dir)ipferr.gml &
-    $(wipfc_dir)ipfsym.gml &
-    $(wipfc_dir)acvwprt.gml &
-    $(wipfc_dir)artlink.gml &
-    $(wipfc_dir)artwork.gml &
-    $(wipfc_dir)caution.gml &
-    $(wipfc_dir)cgraphic.gml &
-    $(wipfc_dir)color.gml &
-    $(wipfc_dir)ctrl.gml &
-    $(wipfc_dir)ctrldef.gml &
-    $(wipfc_dir)ddf.gml &
-    $(wipfc_dir)dl.gml &
-    $(wipfc_dir)docprof.gml &
-    $(wipfc_dir)fig.gml &
-    $(wipfc_dir)figcap.gml &
-    $(wipfc_dir)font.gml &
-    $(wipfc_dir)fn.gml &
-    $(wipfc_dir)hn.gml &
-    $(wipfc_dir)hdref.gml &
-    $(wipfc_dir)hide.gml &
-    $(wipfc_dir)hpn.gml &
-    $(wipfc_dir)i1.gml &
-    $(wipfc_dir)i2.gml &
-    $(wipfc_dir)icmd.gml &
-    $(wipfc_dir)isyn.gml &
-    $(wipfc_dir)li.gml &
-    $(wipfc_dir)lines.gml &
-    $(wipfc_dir)link.gml &
-    $(wipfc_dir)lm.gml &
-    $(wipfc_dir)lp.gml &
-    $(wipfc_dir)note.gml &
-    $(wipfc_dir)nt.gml &
-    $(wipfc_dir)ol.gml &
-    $(wipfc_dir)p.gml &
-    $(wipfc_dir)parml.gml &
-    $(wipfc_dir)pbutton.gml &
-    $(wipfc_dir)rm.gml &
-    $(wipfc_dir)sl.gml &
-    $(wipfc_dir)table.gml &
-    $(wipfc_dir)title.gml &
-    $(wipfc_dir)ul.gml &
-    $(wipfc_dir)userdoc.gml &
-    $(wipfc_dir)warning.gml &
-    $(wipfc_dir)xmp.gml
-
+../doc/wipfc/wipfc.gml &
+../doc/wipfc/ipfdefs.gml &
+../doc/wipfc/ipfintro.gml &
+../doc/wipfc/ipfuse.gml &
+../doc/wipfc/ipftags.gml &
+../doc/wipfc/ipfcmds.gml &
+../doc/wipfc/ipftref.gml &
+../doc/wipfc/ipferr.gml &
+../doc/wipfc/ipfsym.gml &
+../doc/wipfc/acvwprt.gml &
+../doc/wipfc/artlink.gml &
+../doc/wipfc/artwork.gml &
+../doc/wipfc/caution.gml &
+../doc/wipfc/cgraphic.gml &
+../doc/wipfc/color.gml &
+../doc/wipfc/ctrl.gml &
+../doc/wipfc/ctrldef.gml &
+../doc/wipfc/ddf.gml &
+../doc/wipfc/dl.gml &
+../doc/wipfc/docprof.gml &
+../doc/wipfc/fig.gml &
+../doc/wipfc/figcap.gml &
+../doc/wipfc/font.gml &
+../doc/wipfc/fn.gml &
+../doc/wipfc/hn.gml &
+../doc/wipfc/hdref.gml &
+../doc/wipfc/hide.gml &
+../doc/wipfc/hpn.gml &
+../doc/wipfc/i1.gml &
+../doc/wipfc/i2.gml &
+../doc/wipfc/icmd.gml &
+../doc/wipfc/isyn.gml &
+../doc/wipfc/li.gml &
+../doc/wipfc/lines.gml &
+../doc/wipfc/link.gml &
+../doc/wipfc/lm.gml &
+../doc/wipfc/lp.gml &
+../doc/wipfc/note.gml &
+../doc/wipfc/nt.gml &
+../doc/wipfc/ol.gml &
+../doc/wipfc/p.gml &
+../doc/wipfc/parml.gml &
+../doc/wipfc/pbutton.gml &
+../doc/wipfc/rm.gml &
+../doc/wipfc/sl.gml &
+../doc/wipfc/table.gml &
+../doc/wipfc/title.gml &
+../doc/wipfc/ul.gml &
+../doc/wipfc/userdoc.gml &
+../doc/wipfc/warning.gml &
+../doc/wipfc/xmp.gml
