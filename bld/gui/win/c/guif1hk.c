@@ -135,7 +135,7 @@ void GUIHookF1( void )
 
         // we cant use a system wide hook because they only can be
         // used in DLL's
-        #if defined(__NT__) && !defined(WILLOWS)
+        #if defined(__NT__)
             F1HookHandle = SetWindowsHookEx( WH_MSGFILTER,
                                              (HOOKPROC)F1ProcInst,
                                              GUIMainHInst,

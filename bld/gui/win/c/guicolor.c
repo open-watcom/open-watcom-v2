@@ -210,7 +210,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     CHOOSECOLOR choose;
     WPI_PROC    func;
     bool        ret;
-#if !(defined(__NT__) || defined(WILLOWS))
+#if !defined(__NT__)
     HINSTANCE   h;
 #endif
 #ifdef __WINDOWS_386__
@@ -231,7 +231,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
 #endif
     choose.lStructSize = sizeof( CHOOSECOLOR );
 
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
     func = ChooseColor;
 #else
     h = LoadLibrary( "COMMDLG.DLL" );
@@ -256,7 +256,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     /* was missing WINAPI */
     ret = ((BOOL(WINAPI *)(LPCHOOSECOLOR))func)( &choose );
 #endif
-#if !(defined(__NT__) || defined(WILLOWS))
+#if !defined(__NT__)
     FreeLibrary( h );
 #endif
 

@@ -59,7 +59,7 @@ bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
     CHOOSEFONT  cf;
     bool        ret;
     WPI_PROC    func;
-#if !(defined(__NT__) || defined(WILLOWS))
+#if !defined(__NT__)
     HINSTANCE   h;
 #endif
 #ifdef __WINDOWS_386__
@@ -81,7 +81,7 @@ bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
     cf.lStructSize = sizeof(CHOOSEFONT);
     cf.hwndOwner = hwnd;
 
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
     func = ChooseFont;
 #else
     h = LoadLibrary( "COMMDLG.DLL" );
@@ -108,7 +108,7 @@ bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
 #else
     ret = ((BOOL(WINAPI *)(LPCHOOSEFONT))func)( &cf );
 #endif
-#if !(defined(__NT__) || defined(WILLOWS))
+#if !defined(__NT__)
     FreeLibrary( h );
 #endif
 

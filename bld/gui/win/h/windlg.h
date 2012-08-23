@@ -68,7 +68,7 @@ typedef BYTE INFOTYPE;
 
 typedef struct {
     DWORD   dtStyle;
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
     DWORD   dtExtendedStyle;
     WORD    dtItemCount;
 #else
@@ -89,7 +89,7 @@ typedef struct {
 } FONTINFO;
 
 typedef struct {
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
     DWORD   dtilStyle;
     DWORD   dtExtendedStyle;
 #endif
@@ -100,7 +100,7 @@ typedef struct {
     WORD    dtilID;
 #ifdef __NT__
     WORD    crap;
-#elif !defined(WILLOWS)
+#else
     DWORD   dtilStyle;
 #endif
 //  char    dtilClass[];

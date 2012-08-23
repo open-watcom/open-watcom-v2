@@ -37,7 +37,7 @@
 /* include from the app */
 extern void GUITimer( void );
 
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
 VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime )
 {
     gui_window *wnd;

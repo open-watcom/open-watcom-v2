@@ -60,7 +60,7 @@ extern void GUIFreeStatus( void );
 extern void GUISetFreeStatus( void (*func)( void ) );
 
 /* 3D control functions */
-#if defined( __WINDOWS__ ) || defined( __NT__ ) || define(WILLOWS)
+#if defined( __WINDOWS__ ) || defined( __NT__ )
 extern void GUISetCtl3dUnregister( BOOL _DLLFAR PASCAL (*func)(HANDLE) );
 extern void GUISetCtl3dSubclassDlg( BOOL _DLLFAR PASCAL (*func)( HWND ,WORD ) );
 extern void GUISetCtl3dColorChange( BOOL _DLLFAR PASCAL (*func)(void));

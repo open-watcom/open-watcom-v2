@@ -61,7 +61,7 @@
 
 extern bool     GUIMainTouched;
 
-#if !(defined(__NT__) || defined(WILLOWS))
+#if !defined(__NT__)
 #define WM_PAINTICON            0x0026
 #endif
 #define WM_GUI_USEREVENT        (WM_USER+0x654)
@@ -251,7 +251,7 @@ void GUICleanup( void )
     GUILoadStrFini();
     GUISysFini();
     GUIFiniDialog();
-#if defined( __WINDOWS__ ) || defined( __NT__ ) || defined(WILLOWS)
+#if defined( __WINDOWS__ ) || defined( __NT__ )
     GUICtl3dUnregister();
 #endif
 }
@@ -980,7 +980,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
         }
         break;
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
     case WM_CTLCOLORBTN :
     case WM_CTLCOLORDLG :
     //case WM_CTLCOLORLISTBOX :
@@ -1042,7 +1042,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         use_defproc = TRUE;
         break;
 #endif
-#if !defined(__OS2_PM__) && !defined(WILLOWS)
+#if !defined(__OS2_PM__)
     case WM_PAINTICON :
     {
         HICON   old;

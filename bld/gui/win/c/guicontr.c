@@ -578,7 +578,7 @@ static HWND CreateControl( gui_control_info *info, gui_window *parent,
 #ifdef __OS2_PM__
     ENTRYFDATA  edata;
 #endif
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
     DWORD       xstyle;
     char        *classname;
 #endif
@@ -612,7 +612,7 @@ static HWND CreateControl( gui_control_info *info, gui_window *parent,
         style |= WS_CHILD;
     }
 
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
     #if !defined(WS_EX_CLIENTEDGE)
     #define WS_EX_CLIENTEDGE    0x00000200L
     #endif

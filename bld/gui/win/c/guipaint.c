@@ -71,7 +71,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     }
     WinFillRect( wnd->hdc, &fill_area, GUIGetBack( wnd, GUI_BACKGROUND ) );
 #endif
-#if defined( __NT__ ) || defined(WILLOWS)
+#if defined( __NT__ )
     if( isdlg ) {
         _wpi_fillrect( wnd->hdc, &fill_area, GUIGetBack( wnd, GUI_BACKGROUND ),
                        wnd->bk_brush );

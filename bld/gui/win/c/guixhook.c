@@ -46,7 +46,7 @@ static  int     (*NewWindow)( HWND )                    = NULL;
 static  void    (*MDIMaximize)(bool, gui_window *)      = NULL;
 static  bool    (*IsMDIChildWindow)(gui_window *)       = NULL;
 static  void    (*SetMDIRestoredSize)(HWND, WPI_RECT *) = NULL;
-#if defined( __WINDOWS__ ) || defined( __NT__ ) || defined(WILLOWS)
+#if defined( __WINDOWS__ ) || defined( __NT__ )
 static  BOOL _DLLFAR PASCAL (*Ctl3dUnregister)(HANDLE)  = NULL;
 static  BOOL _DLLFAR PASCAL (*Ctl3dSubclassDlg)(HWND, WORD) = NULL;
 static  BOOL _DLLFAR PASCAL (*Ctl3dColorChange)(void)   = NULL;
@@ -172,7 +172,7 @@ void GUISetMDIRestoredSize( HWND hwnd, WPI_RECT *rect )
     }
 }
 
-#if defined( __WINDOWS__ ) || defined( __NT__ ) || defined(WILLOWS)
+#if defined( __WINDOWS__ ) || defined( __NT__ )
 void GUISetCtl3dUnregister( BOOL _DLLFAR PASCAL (*func)(HANDLE) )
 {
     Ctl3dUnregister = func;

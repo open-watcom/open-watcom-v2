@@ -32,7 +32,7 @@
 
 #include "guiwind.h"
 #ifndef __OS2_PM__
-    #if !defined( __NT__ ) && !defined( __WINDOWS_386__ ) && !defined( WILLOWS )
+    #if !defined( __NT__ ) && !defined( __WINDOWS_386__ )
         #pragma library( "commdlg.lib" );
     #endif
     #include <ctl3d.h>
@@ -81,7 +81,7 @@ void GUIHookFileDlg( bool hook )
     hookFileDlg = hook;
 }
 
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
 char *GetStrFromEdit( HWND hDlg, int id )
 {
     char  *cp;
@@ -124,7 +124,7 @@ UINT CALLBACK OpenHook( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lp
     hwnd = hwnd;
     ret = FALSE;
     switch( msg ) {
-#if defined(__NT__) || defined(WILLOWS)
+#if defined(__NT__)
     case WM_DESTROY:
         LastPath = GetStrFromEdit( hwnd, PATH_STATIC_CONTROL );
         break;
@@ -220,7 +220,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     }
 
     if( hookFileDlg ) {
-        #if  !(defined(__NT__) || defined(WILLOWS))
+        #if !defined(__NT__)
             _wpi_freeprocinstance( (WPI_PROC)wofn.lpfnHook );
         #endif
     }

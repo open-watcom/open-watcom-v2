@@ -58,7 +58,7 @@ static void MBInit( void )
     #else
         USHORT          rc;
     #endif
-#elif defined( __WINDOWS__ ) || defined( __UNIX__ ) || defined( WILLOWS )
+#elif defined( __WINDOWS__ ) || defined( __UNIX__ )
     int                 countVal;
     DWORD               version;
 #endif
@@ -95,7 +95,7 @@ static void MBInit( void )
                 IsDBCS = TRUE;
             }
         }
-    #elif defined( __WINDOWS__ ) || defined( __UNIX__ ) || defined( WILLOWS )
+    #elif defined( __WINDOWS__ ) || defined( __UNIX__ )
         /*** Initialize the __CharLenTable values ***/
         version = GetVersion();
         if( LOWORD(version) < ((10<<8)+3) )  return;   /* 3.1+ needed */

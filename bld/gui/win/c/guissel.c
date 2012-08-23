@@ -71,7 +71,7 @@ static bool GUISelect( gui_window *wnd, unsigned id, bool set,
     #ifdef __OS2_PM__
         wparam = lparam;
         lparam = 0;
-    #elif defined(__NT__) || defined(WILLOWS)
+    #elif defined(__NT__)
         wparam = (INT)LOWORD( lparam );
         lparam = (INT)HIWORD( lparam );
     #else
