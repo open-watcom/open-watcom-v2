@@ -40,6 +40,9 @@ prebuild
 /setvars
 
 /distrib/ow/open-watcom-*
+/distrib/ow/filelist
+/distrib/ow/*/filelist
+/distrib/ow/*/setup.*
 
 /rel2/
 /pass1/
