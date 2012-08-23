@@ -8,9 +8,9 @@ name = sample
 LNK=sample.lnk
 
 !ifeq type win
-rcopt += -I"$(gui_dir)/$(type)" -I"$(gui_dir)/h" -I"$(sdk_dir)/misc" $(inc_dirs_sys)
+rcopt += -I"$(gui_dir)/$(type)" -I"$(gui_dir)/h" -I"$(sdk_misc_dir)" $(inc_dirs_sys)
 !else
-rcopt += -I"$(gui_dir)/$(type)" -I"$(sdk_dir)/misc" -I"$(gui_dir)/win" -I"$(gui_dir)/h" -I"$(lang_root)/h/win"
+rcopt += -I"$(gui_dir)/$(type)" -I"$(sdk_misc_dir)" -I"$(gui_dir)/win" -I"$(gui_dir)/h" -I"$(lang_root)/h/win"
 !endif
 
 inc_dirs = -I"$(gui_dir)/h" -I"$(gui_dir)/$(type)/h"
@@ -75,7 +75,7 @@ $(LNK): $(__makefiles__)
 !ifdef watcomlib
         @%append $(LNK) libpath $(watcomlib)
 !endif
-        @%append $(LNK) libpath $(sdk_dir)\misc
+        @%append $(LNK) libpath $(sdk_misc_dir)
         @%append $(LNK) library $(guilib)
 !ifneq type win
         @%append $(LNK) library $(uilib)

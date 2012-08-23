@@ -12,8 +12,8 @@ cpu = x86
 which = TRAP
 type  = remote_link
 
-inc_dirs = -I"$(src_dir)/wattcp/inc"
-extra_libs = $(src_dir)/wattcp/dosi86/wattcpwl.lib
+inc_dirs = -I"$(wattcp_dir)/inc"
+extra_libs = $(wattcp_dir)/dosi86/wattcpwl.lib
 
 extra_a_flags = -D__LARGE__
 

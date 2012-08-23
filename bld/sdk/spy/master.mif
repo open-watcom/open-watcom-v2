@@ -75,8 +75,8 @@ wspy_dll_lflags_ntaxp  = $(dll_debug_$(host_cpu)) &
                          option map &
                          file { $(dllobjs) }
 
-.c: $(wspy_dir);$(sdk_dir)/misc
-.h: $(wspy_dir);$(sdk_dir)/misc
+.c: $(wspy_dir);$(sdk_misc_dir)
+.h: $(wspy_dir);$(sdk_misc_dir)
 
 inc_dirs = -I"$(wspy_dir)" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
 inc_dirs += -I"$(commonui_dir)/h" -I"$(wpi_dir)/h"

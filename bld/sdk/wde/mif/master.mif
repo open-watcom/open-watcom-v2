@@ -66,7 +66,7 @@ extra_c_flags_nt    = -DNOUSE3D
 .c : c;../c;$(cpp_dir)
 
 inc_dirs  = -Ih -I"../h" -I"$(fmedit_dir)/dev" -I"$(wres_dir)/h"
-inc_dirs += -I"$(wr_dir)/h" -I"$(cpp_dir)" -I"$(wpi_dir)/h" -I"$(misc_dir)"
+inc_dirs += -I"$(wr_dir)/h" -I"$(cpp_dir)" -I"$(wpi_dir)/h" -I"$(sdk_misc_dir)"
 inc_dirs += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
 
 extra_l_flags = op map,symfile

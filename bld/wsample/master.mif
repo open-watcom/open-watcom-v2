@@ -128,7 +128,7 @@ extra_l_flags_win = option heap=10k, stack=10k segment class 'CODE' preload fixe
 !ifeq target nov
 inc_dirs = -I"$(ow_nwoss_root)/common/h" -I"$(ow_nwoss_root)/nw4/h" -I"$(nwsrc)"
 !else ifeq target win
-inc_dirs = -I"$(sdk_dir)/misc" -I"$(commonui_dir)/h"
+inc_dirs = -I"$(sdk_misc_dir)" -I"$(commonui_dir)/h"
 !else ifeq target rsi
 inc_dirs = -I"../rsii86" -I"$(rsilib)"
 !else ifeq target pls
@@ -141,7 +141,7 @@ inc_dirs += -I"$(dig_dir)/h" -I"../h"
 !ifeq target dos
 .c: ../dosi86;../c
 !else ifeq target win
-.c: ../c;$(sdk_dir)/misc;$(commonui_dir)/c
+.c: ../c;$(sdk_misc_dir);$(commonui_dir)/c
 !else ifeq target rsi
 .c: ../rsii86;../c;$(rsilib)
 !else ifeq target pls
@@ -153,7 +153,7 @@ inc_dirs += -I"$(dig_dir)/h" -I"../h"
 !endif
 
 !ifeq target win
-.asm: ../asm;$(sdk_dir)/misc;$(commonui_dir)/asm
+.asm: ../asm;$(sdk_misc_dir);$(commonui_dir)/asm
 !else ifeq target rsi
 .asm: ../rsii86;../asm;$(rsilib)
 !else

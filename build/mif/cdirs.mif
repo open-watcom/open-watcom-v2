@@ -1,33 +1,9 @@
 !ifdef __UNIX__
-!ifndef bre_dir
-bre_dir         = $(src_dir)/bre
-!endif
-!ifndef cfread_dir
-cfread_dir      = $(src_dir)/cfread
-!endif
-!ifndef zipro_dir
-zipro_dir       = $(src_dir)/zipro
-!endif
 !ifndef bench_dir
 bench_dir       = $(src_dir)/bench
 !endif
-!ifndef jit_dir
-jit_dir         = $(src_dir)/jit
-!endif
-!ifndef wjclass_dir
-wjclass_dir     = $(src_dir)/wjclass
-!endif
 !ifndef brinfo_dir
 brinfo_dir      = $(src_dir)/brinfo
-!endif
-!ifndef trpr_dir
-trpr_dir        = $(src_dir)/trpr
-!endif
-!ifndef java_dir
-java_dir        = $(src_dir)/java
-!endif
-!ifndef javatest_dir
-javatest_dir    = $(src_dir)/javatest
 !endif
 !ifndef fe_misc_dir
 fe_misc_dir     = $(src_dir)/fe_misc
@@ -50,32 +26,29 @@ cpplib_dir      = $(src_dir)/cpplib
 !ifndef dwarf_dir
 dwarf_dir       = $(src_dir)/dwarf
 !endif
-!ifndef sdk_dir
-sdk_dir         = $(src_dir)/sdk
-!endif
 !ifndef wzoom_dir
-wzoom_dir       = $(sdk_dir)/zoom
+wzoom_dir       = $(src_dir)/sdk/zoom
 !endif
 !ifndef wddespy_dir
-wddespy_dir     = $(sdk_dir)/ddespy
+wddespy_dir     = $(src_dir)/sdk/ddespy
 !endif
 !ifndef wimgedit_dir
-wimgedit_dir    = $(sdk_dir)/imgedit
+wimgedit_dir    = $(src_dir)/sdk/imgedit
 !endif
 !ifndef wspy_dir
-wspy_dir        = $(sdk_dir)/spy
+wspy_dir        = $(src_dir)/sdk/spy
 !endif
 !ifndef wrc_dir
 wrc_dir         = $(src_dir)/rc/rc
 !endif
 !ifndef wr_dir
-wr_dir          = $(sdk_dir)/wr
+wr_dir          = $(src_dir)/sdk/wr
 !endif
-!ifndef misc_dir
-misc_dir        = $(sdk_dir)/misc
+!ifndef sdk_misc_dir
+sdk_misc_dir    = $(src_dir)/sdk/misc
 !endif
 !ifndef wheapwlk_dir
-wheapwlk_dir    = $(sdk_dir)/heapwalk
+wheapwlk_dir    = $(src_dir)/sdk/heapwalk
 !endif
 !ifndef commonui_dir
 commonui_dir    = $(src_dir)/commonui
@@ -125,8 +98,8 @@ bdiff_dir       = $(src_dir)/bdiff
 !ifndef cpp_dir
 cpp_dir         = $(src_dir)/cpp
 !endif
-!ifndef nwlib_dir
-nwlib_dir       = $(src_dir)/nwlib
+!ifndef wlib_dir
+wlib_dir        = $(src_dir)/nwlib
 !endif
 !ifndef vi_dir
 vi_dir          = $(src_dir)/vi
@@ -149,9 +122,6 @@ viper_dir       = $(src_dir)/viper
 !ifndef wlink_dir
 wlink_dir       = $(src_dir)/wl
 !endif
-!ifndef stkdepth_dir
-stkdepth_dir    = $(src_dir)/stkdepth
-!endif
 !ifndef wasm_dir
 wasm_dir        = $(src_dir)/wasm
 !endif
@@ -166,9 +136,6 @@ plustest_dir    = $(src_dir)/plustest
 !endif
 !ifndef ctest_dir
 ctest_dir       = $(src_dir)/ctest
-!endif
-!ifndef linktest_dir
-linktest_dir    = $(src_dir)/linktest
 !endif
 !ifndef f77_dir
 f77_dir         = $(src_dir)/f77
@@ -218,21 +185,6 @@ wedit_dir       = $(src_dir)/wedit
 !ifndef lexlib_dir
 lexlib_dir      = $(src_dir)/lexlib
 !endif
-!ifndef lexutil_dir
-lexutil_dir     = $(src_dir)/lexutil
-!endif
-!ifndef saveload_dir
-saveload_dir    = $(src_dir)/saveload
-!endif
-!ifndef compdll_dir
-compdll_dir     = $(src_dir)/compdll
-!endif
-!ifndef lexus_dir
-lexus_dir       = $(src_dir)/lexus
-!endif
-!ifndef pprof_dir
-pprof_dir       = $(src_dir)/pprof
-!endif
 !ifndef dig_dir
 dig_dir         = $(src_dir)/dig
 !endif
@@ -272,47 +224,11 @@ wv_dir          = $(src_dir)/wv
 !ifndef cw_dir
 cw_dir          = $(src_dir)/causeway
 !endif
-!ifndef pil_dir
-pil_dir         = $(src_dir)/pil
-!endif
-!ifndef jtools_dir
-jtools_dir      = $(src_dir)/jtools
-!endif
-!ifndef wjdump_dir
-wjdump_dir      = $(jtools_dir)/wjdump
-!endif
-!ifndef cfile_dir
-cfile_dir       = $(jtools_dir)/cfile
-!endif
-!ifndef zipfile_dir
-zipfile_dir     = $(jtools_dir)/zipfile
-!endif
-!ifndef mempool_dir
-mempool_dir     = $(src_dir)/mempool
-!endif
-!ifndef jlib_dir
-jlib_dir        = $(jtools_dir)/jlib
-!endif
-!ifndef wjitjvm_dir
-wjitjvm_dir     = $(jit_dir)/jvm
-!endif
-!ifndef wjitmsvm_dir
-wjitmsvm_dir    = $(jit_dir)/msvm
-!endif
-!ifndef willows_dir
-willows_dir     = $(src_dir)/willows
-!endif
-!ifndef wgif2bmp_dir
-wgif2bmp_dir    = $(src_dir)/imgtools/wgif2bmp
-!endif
-!ifndef debugger_dir
-debugger_dir    = $(src_dir)/debugger
-!endif
 !ifndef re2c_dir
 re2c_dir        = $(src_dir)/re2c
 !endif
 !ifndef fmedit_dir
-fmedit_dir      = $(sdk_dir)/fmedit
+fmedit_dir      = $(src_dir)/sdk/fmedit
 !endif
 !ifndef uninstal_dir
 uninstal_dir    = $(src_dir)/uninstal
@@ -324,7 +240,7 @@ libzip_dir      = $(contrib_dir)/libzip
 zlib_dir        = $(contrib_dir)/zlib
 !endif
 !ifndef awk_dir
-awk_dir         = $(contrib_dir)/awk
+awk_dir         = $(src_dir)/awk
 !endif
 !ifndef emu16_dir
 emu16_dir       = $(src_dir)/emu86
@@ -332,38 +248,35 @@ emu16_dir       = $(src_dir)/emu86
 !ifndef emu32_dir
 emu32_dir       = $(src_dir)/emu
 !endif
+!ifndef graphlib_dir
+graphlib_dir    = $(src_dir)/graphlib
+!endif
+!ifndef wattcp_dir
+wattcp_dir      = $(src_dir)/wattcp
+!endif
+!ifndef ipfc_dir
+ipfc_dir        = $(src_dir)/wipfc
+!endif
+!ifndef builder_dir
+builder_dir     = $(src_dir)/builder
+!endif
+!ifndef ide_dir
+ide_dir         = $(src_dir)/ide
+!endif
+!ifndef version_dir
+version_dir     = $(src_dir)/version
+!endif
+!ifndef wresedit_dir
+wresedit_dir    = $(src_dir)/sdk/wresedit
+!endif
 
 !else
 
-!ifndef bre_dir
-bre_dir         = $(src_dir)\bre
-!endif
-!ifndef cfread_dir
-cfread_dir      = $(src_dir)\cfread
-!endif
-!ifndef zipro_dir
-zipro_dir       = $(src_dir)\zipro
-!endif
 !ifndef bench_dir
 bench_dir       = $(src_dir)\bench
 !endif
-!ifndef jit_dir
-jit_dir         = $(src_dir)\jit
-!endif
-!ifndef wjclass_dir
-wjclass_dir     = $(src_dir)\wjclass
-!endif
 !ifndef brinfo_dir
 brinfo_dir      = $(src_dir)\brinfo
-!endif
-!ifndef trpr_dir
-trpr_dir        = $(src_dir)\trpr
-!endif
-!ifndef java_dir
-java_dir        = $(src_dir)\java
-!endif
-!ifndef javatest_dir
-javatest_dir    = $(src_dir)\javatest
 !endif
 !ifndef fe_misc_dir
 fe_misc_dir     = $(src_dir)\fe_misc
@@ -386,32 +299,29 @@ cpplib_dir      = $(src_dir)\cpplib
 !ifndef dwarf_dir
 dwarf_dir       = $(src_dir)\dwarf
 !endif
-!ifndef sdk_dir
-sdk_dir         = $(src_dir)\sdk
-!endif
 !ifndef wzoom_dir
-wzoom_dir       = $(sdk_dir)\zoom
+wzoom_dir       = $(src_dir)\sdk\zoom
 !endif
 !ifndef wddespy_dir
-wddespy_dir     = $(sdk_dir)\ddespy
+wddespy_dir     = $(src_dir)\sdk\ddespy
 !endif
 !ifndef wimgedit_dir
-wimgedit_dir    = $(sdk_dir)\imgedit
+wimgedit_dir    = $(src_dir)\sdk\imgedit
 !endif
 !ifndef wspy_dir
-wspy_dir        = $(sdk_dir)\spy
+wspy_dir        = $(src_dir)\sdk\spy
 !endif
 !ifndef wrc_dir
 wrc_dir         = $(src_dir)\rc\rc
 !endif
 !ifndef wr_dir
-wr_dir          = $(sdk_dir)\wr
+wr_dir          = $(src_dir)\sdk\wr
 !endif
-!ifndef misc_dir
-misc_dir        = $(sdk_dir)\misc
+!ifndef sdk_misc_dir
+sdk_misc_dir    = $(src_dir)\sdk\misc
 !endif
 !ifndef wheapwlk_dir
-wheapwlk_dir    = $(sdk_dir)\heapwalk
+wheapwlk_dir    = $(src_dir)\sdk\heapwalk
 !endif
 !ifndef commonui_dir
 commonui_dir    = $(src_dir)\commonui
@@ -461,8 +371,8 @@ bdiff_dir       = $(src_dir)\bdiff
 !ifndef cpp_dir
 cpp_dir         = $(src_dir)\cpp
 !endif
-!ifndef nwlib_dir
-nwlib_dir       = $(src_dir)\nwlib
+!ifndef wlib_dir
+wlib_dir        = $(src_dir)\nwlib
 !endif
 !ifndef vi_dir
 vi_dir          = $(src_dir)\vi
@@ -477,16 +387,13 @@ rcsdll_dir      = $(src_dir)\rcsdll
 curses_dir      = $(src_dir)\curses
 !endif
 !ifndef ncurses_dir
-ncurses_dir      = $(src_dir)\ncurses
+ncurses_dir     = $(src_dir)\ncurses
 !endif
 !ifndef viper_dir
 viper_dir       = $(src_dir)\viper
 !endif
 !ifndef wlink_dir
 wlink_dir       = $(src_dir)\wl
-!endif
-!ifndef stkdepth_dir
-stkdepth_dir    = $(src_dir)\stkdepth
 !endif
 !ifndef wasm_dir
 wasm_dir        = $(src_dir)\wasm
@@ -503,14 +410,11 @@ plustest_dir    = $(src_dir)\plustest
 !ifndef ctest_dir
 ctest_dir       = $(src_dir)\ctest
 !endif
-!ifndef linktest_dir
-linktest_dir    = $(src_dir)\linktest
-!endif
 !ifndef f77_dir
 f77_dir         = $(src_dir)\f77
 !endif
 !ifndef ftest_dir
-ftest_dir         = $(src_dir)\f77\regress
+ftest_dir       = $(src_dir)\f77\regress
 !endif
 !ifndef clib_dir
 clib_dir        = $(src_dir)\clib
@@ -554,21 +458,6 @@ wedit_dir       = $(src_dir)\wedit
 !ifndef lexlib_dir
 lexlib_dir      = $(src_dir)\lexlib
 !endif
-!ifndef lexutil_dir
-lexutil_dir     = $(src_dir)\lexutil
-!endif
-!ifndef saveload_dir
-saveload_dir    = $(src_dir)\saveload
-!endif
-!ifndef compdll_dir
-compdll_dir     = $(src_dir)\compdll
-!endif
-!ifndef lexus_dir
-lexus_dir       = $(src_dir)\lexus
-!endif
-!ifndef pprof_dir
-pprof_dir       = $(src_dir)\pprof
-!endif
 !ifndef dig_dir
 dig_dir         = $(src_dir)\dig
 !endif
@@ -605,42 +494,6 @@ help_dir        = $(src_dir)\help
 !ifndef wv_dir
 wv_dir          = $(src_dir)\wv
 !endif
-!ifndef pil_dir
-pil_dir         = $(src_dir)\pil
-!endif
-!ifndef jtools_dir
-jtools_dir      = $(src_dir)\jtools
-!endif
-!ifndef wjdump_dir
-wjdump_dir      = $(jtools_dir)\wjdump
-!endif
-!ifndef cfile_dir
-cfile_dir       = $(jtools_dir)\cfile
-!endif
-!ifndef zipfile_dir
-zipfile_dir     = $(jtools_dir)\zipfile
-!endif
-!ifndef mempool_dir
-mempool_dir     = $(src_dir)\mempool
-!endif
-!ifndef jlib_dir
-jlib_dir        = $(jtools_dir)\jlib
-!endif
-!ifndef wjitjvm_dir
-wjitjvm_dir     = $(jit_dir)\jvm
-!endif
-!ifndef wjitmsvm_dir
-wjitmsvm_dir    = $(jit_dir)\msvm
-!endif
-!ifndef willows_dir
-willows_dir     = $(src_dir)\willows
-!endif
-!ifndef wgif2bmp_dir
-wgif2bmp_dir    = $(src_dir)\imgtools\wgif2bmp
-!endif
-!ifndef debugger_dir
-debugger_dir    = $(src_dir)\debugger
-!endif
 !ifndef re2c_dir
 re2c_dir        = $(src_dir)\re2c
 !endif
@@ -648,7 +501,7 @@ re2c_dir        = $(src_dir)\re2c
 cw_dir          = $(src_dir)\causeway
 !endif
 !ifndef fmedit_dir
-fmedit_dir      = $(sdk_dir)\fmedit
+fmedit_dir      = $(src_dir)\sdk\fmedit
 !endif
 !ifndef uninstal_dir
 uninstal_dir    = $(src_dir)\uninstal
@@ -660,13 +513,34 @@ libzip_dir      = $(contrib_dir)\libzip
 zlib_dir        = $(contrib_dir)\zlib
 !endif
 !ifndef awk_dir
-awk_dir         = $(contrib_dir)\awk
+awk_dir         = $(src_dir)\awk
 !endif
 !ifndef emu16_dir
 emu16_dir       = $(src_dir)\emu86
 !endif
 !ifndef emu32_dir
 emu32_dir       = $(src_dir)\emu
+!endif
+!ifndef graphlib_dir
+graphlib_dir    = $(src_dir)\graphlib
+!endif
+!ifndef wattcp_dir
+wattcp_dir      = $(src_dir)\wattcp
+!endif
+!ifndef ipfc_dir
+ipfc_dir        = $(src_dir)\wipfc
+!endif
+!ifndef builder_dir
+builder_dir     = $(src_dir)\builder
+!endif
+!ifndef ide_dir
+ide_dir         = $(src_dir)\ide
+!endif
+!ifndef version_dir
+version_dir     = $(src_dir)\version
+!endif
+!ifndef wresedit_dir
+wresedit_dir    = $(src_dir)\sdk\wresedit
 !endif
 
 !endif

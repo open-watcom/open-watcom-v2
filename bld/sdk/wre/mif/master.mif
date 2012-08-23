@@ -19,9 +19,9 @@ WINDOWS = 1
 !include wres.mif
 
 # path names used in the script
-wacc_dir        = $(sdk_dir)/wresedit/waccel
-wmenu_dir       = $(sdk_dir)/wresedit/wmenu
-wstring_dir     = $(sdk_dir)/wresedit/wstring
+wacc_dir        = $(wresedit_dir)/waccel
+wmenu_dir       = $(wresedit_dir)/wmenu
+wstring_dir     = $(wresedit_dir)/wstring
 
 !ifeq wre_trmem 1
 TRMEM           = -DTRMEM
@@ -57,7 +57,7 @@ OBJS += trmem.tbj trmemcvr.tbj
 .c         : ../c;$(cpp_dir);$(trmem_dir)
 
 inc_dirs  = -Ih -I"../h" -I"$(wstring_dir)/h" -I"$(wmenu_dir)/h" -I"$(wacc_dir)/h"
-inc_dirs += -I"$(wr_dir)/h" -I"$(trmem_dir)" -I"$(wres_dir)/h" -I"$(cpp_dir)" -I"$(misc_dir)"
+inc_dirs += -I"$(wr_dir)/h" -I"$(trmem_dir)" -I"$(wres_dir)/h" -I"$(cpp_dir)" -I"$(sdk_misc_dir)"
 inc_dirs += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)" -I"$(wpi_dir)/h"
 
 
@@ -94,7 +94,7 @@ rcstr.gh: rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh: ../h/wre.msg $(msgfiles)
-        $(c_pp) -zk0 -I"$(sdk_dir)/misc" $(inc_path) $[@ >$^@
+        $(c_pp) -zk0 -I"$(sdk_misc_dir)" $(inc_path) $[@ >$^@
 
 $(name).res: ../h/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@

@@ -38,11 +38,11 @@ extra_c_flags_ppmacro = -zm -fh=preproc.pch
 
 wr_lib = $(wr_dir)/$(host_os)$(host_cpu)/wr.lib
 
-.c: ../c;../../c;$(misc_dir);$(cpp_dir)
+.c: ../c;../../c;$(sdk_misc_dir);$(cpp_dir)
 
 inc_dirs = -I"../h" -I"../../h" -I"$(wr_dir)/h" -I"$(wres_dir)/h" -I"$(cpp_dir)"
 inc_dirs += -I"$(wpi_dir)/h" -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
-inc_dirs += -I"$(misc_dir)"
+inc_dirs += -I"$(sdk_misc_dir)"
 
 extra_l_flags = op map
 extra_l_flags_nt = op stack=16k,heap=16k commit heap=8k
@@ -77,6 +77,6 @@ rcstr.gh: rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh: ../h/$(name).msg
-        $(c_pp) -zk0 -I"$(sdk_dir)/misc" $(inc_path) $[@ >$^@
+        $(c_pp) -zk0 -I"$(sdk_misc_dir)" $(inc_path) $[@ >$^@
 
 !include verrc.mif

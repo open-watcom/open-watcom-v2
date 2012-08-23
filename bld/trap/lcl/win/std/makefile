@@ -57,8 +57,8 @@ extra_linker = &
         segment CLASS 'BEGDATA' MOVEABLE &
         segment CLASS 'BSS' MOVEABLE
 
-extra_srcs += ;$(trap_dir)/lcl/dos/c;$(sdk_dir)/misc
-inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(sdk_dir)/misc"
+extra_srcs += ;$(trap_dir)/lcl/dos/c;$(sdk_misc_dir)
+inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(sdk_misc_dir)"
 inc_dirs += -I"$(commonui_dir)/h" -I"$(wpi_dir)/h"
 
 extra_c_flags_i86 = -3

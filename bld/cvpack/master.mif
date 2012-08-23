@@ -2,29 +2,21 @@ proj_name = cvpack
 
 cvpack_autodepends = .autodepend
 
-inc_dirs = -I"$(src_dir)/$(proj_name)/hpp"
+inc_dirs = -I"../hpp"
 
 extra_cpp_flags = -xs
-extra_l_flags   = name $(exe_file) op map #option eliminate
+extra_l_flags   = name cvpack.exe op map #option eliminate
 
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
 
-exe_file = $(proj_name).exe
-
-h_dir = $(src_dir)/$(proj_name)/hpp/
-cpp_dir = $(src_dir)/$(proj_name)/cpp/
-makefile = $(src_dir)/$(proj_name)/master.mif
-
 object_files =  cvpack.obj retrieve.obj cverror.obj packtype.obj
 object_files += subsect.obj cssymbol.obj makeexe.obj symdis.obj
 object_files += typemap.obj typearay.obj typercrd.obj common.obj
 
-.cpp : $(cpp_dir)
-.hpp : $(h_dir)
+.cpp : ../cpp
+.hpp : ../hpp
 
-$(exe_file) : $(object_files) $(makefile)
+cvpack.exe : $(object_files) $(__MAKEFILES__)
     $(linker) $(lflags) FILE { $(object_files) }
-
-

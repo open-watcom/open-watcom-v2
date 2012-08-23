@@ -13,7 +13,7 @@ comp = $(comp386)
         @set LIB=$(wpi_dir)/lib;$(%lib)
 
 $(name).res : $(rcdeps)
-        @$(%toolkit)\os2bin\rc -r -DBMP_DIR=$(sdk_dir)\wimgedit\res -DMISC_DIR=$(sdk_dir)\misc -I .\res res\$(name).rc $(name).res
+        @$(%toolkit)\os2bin\rc -r -DBMP_DIR=$(wimgedit_dir)\res -DMISC_DIR=$(sdk_misc_dir) -I .\res res\$(name).rc $(name).res
 
 $(lnk) : makefile ../imgedit2.mif
         %create $(lnk)

@@ -65,7 +65,7 @@ $(name).lib: $(name).dll $(__MAKEFILES__)
         $(librarian) $(libflags) +$[@
 
 #------------- LINK
-extra_l_flags = libpath $(misc_dir) op map
+extra_l_flags = libpath $(sdk_misc_dir) op map
 extra_l_flags_nt = op stack=32k,heap=16k commit heap=8k
 extra_l_flags_nt += option offset=0x69900000
 extra_l_flags_win = op rwr,stack=16k export WEP RESIDENT

@@ -83,7 +83,7 @@ extra_l_flags_os2 = option stack=12k option heapsize=2k &
 
 inc_dirs  = -Ih -I"$(wimgedit_dir)/h" -I"$(wres_dir)/h" -I"$(wr_dir)/h"
 inc_dirs += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
-inc_dirs += -I"$(misc_dir)" -I"$(wpi_dir)/h"
+inc_dirs += -I"$(sdk_misc_dir)" -I"$(wpi_dir)/h"
 
 # systems where version resource must be added to .EXE
 version_res_nt_386 = exever.res
@@ -98,8 +98,8 @@ $(name).exe : $(name).res $(objs) $(libs)
         $(rc) -k $^&.res $^@
 
 $(name).res : $(wimgedit_dir)/objos2/res/$(name).rc $(rcdeps)
-        $(rc) $(rc_flags) -DBMP_DIR=$(sdk_dir)/wimgedit/res &
-        -DMISC_DIR=$(sdk_dir)/misc $(inc_path) $(resinc) $[@ $^@
+        $(rc) $(rc_flags) -DBMP_DIR=$(wimgedit_dir)/res &
+        -DMISC_DIR=$(sdk_misc_dir) $(inc_path) $(resinc) $[@ $^@
 
 !else
 

@@ -2,16 +2,16 @@
 .EXTENSIONS: .pp .exe .lib .obj .res .asm .c .h
 
 LNK=sample.lnk
-source_dir = $(guidir)\sample\c
+source_dir = $(gui_dir)\sample\c
 name = sample
 !ifeq type win
-rcopt += -i=$(guidir)\$(type);$(sdk_dir)\misc
+rcopt += -i=$(gui_dir)\$(type);$(sdk_misc_dir)
 !else
-rcopt += -i=$(guidir)\$(type);$(sdk_dir)\misc;$(guidir)\win
+rcopt += -i=$(gui_dir)\$(type);$(sdk_misc_dir);$(gui_dir)\win
 !endif
 
 .before
-    @set include=$(sysinclude);$(guidir)\h;$(guidir)\$(type)\h;$(%include);$(lang_root)\h
+    @set include=$(sysinclude);$(gui_dir)\h;$(gui_dir)\$(type)\h;$(%include);$(lang_root)\h
 
 # database team uses fpi87 as default in 6.0
 !ifdef wsqlver
@@ -56,11 +56,11 @@ ext = exe
 !endif
 
 !ifeq type ui
-uilib = $(uidir)\$(os)\uilib$(model).lib
-guilib = $(guidir)\$(type)\gui$(os)$(model).lib
+uilib = $(ui_dir)\$(os)\uilib$(model).lib
+guilib = $(gui_dir)\$(type)\gui$(os)$(model).lib
 !else
 uilib =
-guilib = $(guidir)\$(type)\gui$(os)$(model).lib
+guilib = $(gui_dir)\$(type)\gui$(os)$(model).lib
 !endif
 
 
@@ -85,7 +85,7 @@ $(LNK): $(__makefiles__)
         @%append $(LNK) libpath %WATCOM%\lib386
         @%append $(LNK) libpath %WATCOM%\lib386\netware
         @%append $(LNK) import @%WATCOM%\novi\clib.imp
-        @%append $(LNK) import @$(uidir)\$(os)\uinlm.imp
+        @%append $(LNK) import @$(ui_dir)\$(os)\uinlm.imp
         set lib=$(watcomlib);$(%lib)
 
 !else
@@ -111,7 +111,7 @@ $(LNK): $(__makefiles__)
 !ifdef watcomlib
         @%append $(LNK) libpath $(watcomlib)
 !endif
-        @%append $(LNK) libpath $(sdk_dir)\misc
+        @%append $(LNK) libpath $(sdk_misc_dir)
         @%append $(LNK) library $(guilib)
 !ifeq type ui
         @%append $(LNK) library $(uilib)
@@ -186,8 +186,8 @@ $(rcname).res : ../$(rcname).rc ../$(rcname).dlg
         @set oinc=$(%include)
         #set include=$(watcom_dir)\os220_h;$(%include)
         set include=$(watcom_os220_h);$(%include)
-        copy $(sdk_dir)\misc\closebmp.bmp
-        wcc -p -i..;..\h;$(guidir)\$(type) ..\$(rcname).rc -fo=tmp.rc
+        copy $(sdk_misc_dir)\closebmp.bmp
+        wcc -p -i..;..\h;$(gui_dir)\$(type) ..\$(rcname).rc -fo=tmp.rc
         @%write $(rcname).rc $#include <os2.h>
         copy $(rcname).rc+tmp.rc
         del tmp.rc
