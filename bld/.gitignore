@@ -149,6 +149,10 @@
 /wasmtest/*/*.out
 /wasmtest/*/*.sav
 #
+/wattcp/inc/sys/*
+!/wattcp/inc/sys/*.err
+!/wattcp/inc/sys/*.h
+#
 /wcl/*.owc
 #
 /win386/asm/dllthk.asm
