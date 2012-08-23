@@ -1,13 +1,13 @@
-CPPFLAGS = -I$(OBJDIR) -Ih -I../watcom/h -I../lib_misc/h $(DEFS)
+CPPFLAGS = -I$(OWOBJDIR) -Ih -I../watcom/h -I../lib_misc/h $(DEFS)
 CFLAGS = -funsigned-char -fno-common -g -O2 -Wall -Wno-switch
 DEFS = -D__LINUX__ -D__UNIX__= -DUNIX -Uunix -DBOOTSTRAP -DWMAKE
 
-$(OBJDIR)/%.o : %.c
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) -I$(OBJDIR) -o $@ $<
+$(OWOBJDIR)/%.o : %.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -I$(OWOBJDIR) -o $@ $<
 
 vpath %.c c ../watcom/c ../builder/c
 
-all: $(OBJDIR) $(OWBINDIR)/wmake
+all: $(OWOBJDIR) $(OWBINDIR)/wmake
 
 CFILES=macros.c main.c massert.c mautodep.c mautoomf.c mautoorl.c mautores.c \
  mcache.c memory.c mexec.c mglob.c mhash.c misc.c mlex.c mlexmac.c mlexprs.c \
@@ -15,33 +15,33 @@ CFILES=macros.c main.c massert.c mautodep.c mautoomf.c mautoorl.c mautores.c \
  mtarget.c mupdate.c mvecstr.c autodept.c clibext.c
 
 OBJS=$(CFILES:.c=.o)
-OBJS:=$(foreach i,$(OBJS),$(OBJDIR)/$i)
+OBJS:=$(foreach i,$(OBJS),$(OWOBJDIR)/$i)
 
-$(OBJDIR)/wsplice: $(OBJDIR)/wsplice.o $(OBJDIR)/clibext.o
+$(OWOBJDIR)/wsplice: $(OWOBJDIR)/wsplice.o $(OWOBJDIR)/clibext.o
 	$(CC) -g $^ -o $@
 
-$(OBJDIR)/usage.gh : h/usage.sp $(OBJDIR)/wsplice
-	$(OBJDIR)/wsplice -kIS_RC -kENGLISH -f 'pick(%+(MSG_USAGE_BASE+%#-1), "%s", "")' $< $@
+$(OWOBJDIR)/usage.gh : h/usage.sp $(OWOBJDIR)/wsplice
+	$(OWOBJDIR)/wsplice -kIS_RC -kENGLISH -f 'pick(%+(MSG_USAGE_BASE+%#-1), "%s", "")' $< $@
 
-$(OBJDIR)/usageend.gh: $(OBJDIR)/usage.gh $(OBJDIR)/wsplice
-	$(OBJDIR)/wsplice $< -o "%n%n%n%n" $(OBJDIR)/usage.rcp
-	$(OBJDIR)/wsplice -f "%+" $(OBJDIR)/usage.rcp -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n" $@
-	rm -f $(OBJDIR)/usage.rcp
+$(OWOBJDIR)/usageend.gh: $(OWOBJDIR)/usage.gh $(OWOBJDIR)/wsplice
+	$(OWOBJDIR)/wsplice $< -o "%n%n%n%n" $(OWOBJDIR)/usage.rcp
+	$(OWOBJDIR)/wsplice -f "%+" $(OWOBJDIR)/usage.rcp -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n" $@
+	rm -f $(OWOBJDIR)/usage.rcp
 
-$(OBJDIR)/cretype : cretype.c
+$(OWOBJDIR)/cretype : cretype.c
 	$(CC) -o $@ $<
 
-$(OBJDIR)/isarray.gh : $(OBJDIR)/cretype
+$(OWOBJDIR)/isarray.gh : $(OWOBJDIR)/cretype
 	$< > $@
 
-$(OWBINDIR)/wmake: $(OBJDIR)/wmake
+$(OWBINDIR)/wmake: $(OWOBJDIR)/wmake
 	cp $< $@
 
-$(OBJDIR)/wmake: $(OBJDIR)/usageend.gh $(OBJDIR)/isarray.gh $(OBJS)
+$(OWOBJDIR)/wmake: $(OWOBJDIR)/usageend.gh $(OWOBJDIR)/isarray.gh $(OBJS)
 	$(CC) -g $(OBJS) -o $@
 
-$(OBJDIR):
-	mkdir $(OBJDIR)
+$(OWOBJDIR):
+	mkdir $(OWOBJDIR)
 
 clean:
-	rm -f $(OBJDIR)/*.o $(OBJDIR)/*.gh
+	rm -f $(OWOBJDIR)/*.o $(OWOBJDIR)/*.gh
