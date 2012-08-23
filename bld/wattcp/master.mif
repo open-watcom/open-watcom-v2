@@ -74,10 +74,10 @@ extra_c_flags = -zm -s
 
 extra_c_flags_language = -wcd=202
 
-inc_dirs = -I"$(contrib_dir)/wattcp/inc"
+inc_dirs = -I"../inc"
 
-.c : $(contrib_dir)/wattcp/src
-.asm : $(contrib_dir)/wattcp/src
+.c : ../src
+.asm : ../src
 
 wattcpwl.lib: $(objs) $(__MAKEFILES__)
     @%create $^&.lbc
