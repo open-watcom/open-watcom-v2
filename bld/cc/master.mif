@@ -145,7 +145,7 @@ exe_objs += clibext.obj
 
 !endif
 
-inc_dirs  = -I. -I"../../h/$(target_cpu)" -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs)
+inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs)
 inc_dirs += -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
 .c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
@@ -253,7 +253,7 @@ target_as_mps   = wasmps -zq -w8
 
 xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
         $(target_as_$(target_cpu)) -I"$(watcom_dir)/h" -fo=.obj $[@
-        $(linker) format dos com op nodefault file code$(target_cpu).obj name $@ disable 1023,1080
+        $(linker) format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
 
 ./mkcode.exe: ../../a/mkcode.c
         $(bld_cl) $[@ $(wcl_util_opts)

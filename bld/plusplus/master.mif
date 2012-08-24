@@ -40,11 +40,10 @@ pre_obj_deps += wpp$(target_cpu)01.int
 pre_obj_deps += usage.u
 !endif
  
-inc_dirs = -I"../../h/$(target_cpu)"
+inc_dirs = -I. -I.. -I"../../h"
 #!ifeq plusplus_trmem 1
 #inc_dirs += -I"$(trmem_dir)"
 #!endif
-inc_dirs += -I"../../h"
 inc_dirs += $(cg_inc_dirs)
 inc_dirs += $(asminline_inc_dirs)
 inc_dirs += -I"$(dwarf_dir)/dw/h"
@@ -394,7 +393,7 @@ target_as_ppc = wasmppc -zq -w8
  
 xcode$(target_cpu).tmp: $(cc_dir)/a/code$(target_cpu).asm
     $(target_as_$(target_cpu)) -fo=.obj -I"$(watcom_dir)/h" $[@
-    $(linker) format dos com op nodefault file code$(target_cpu).obj name $@ disable 1023,1080
+    $(linker) format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
  
 ./mkcode.exe: $(cc_dir)/a/mkcode.c
     $(bld_cl) $[@ $(wcl_util_opts)
