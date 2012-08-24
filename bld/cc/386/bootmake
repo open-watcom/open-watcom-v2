@@ -5,6 +5,4 @@ bootstrap = 1
 host_os  = $(%BOOTSTRAP_OS)
 host_cpu = $(%BOOTSTRAP_CPU)
 
-target_cpu = i86
-
-!include ../master.mif
+!include ../target.mif
