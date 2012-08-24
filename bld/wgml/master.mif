@@ -54,8 +54,8 @@ libs     += $(wres_lib)
 
 
 wgml.exe: $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
-    $(linker) name $^@ $(lflags) op map file { $(objs) } lib { $(libs) }
-    wstrip -q -a -r $@ . wgml.res
+        $(linker) name $^@ $(lflags) op map file { $(objs) } lib { $(libs) }
+        $(wstrip) -q -a -r $@ . wgml.res
 
 $(name).res : wgmlmsgs.gh ../h/wgml.msg ../h/wgmlmsg.h ../h/wgmlerr.msg ../h/wgml.rc
         $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$@

@@ -85,7 +85,7 @@ $(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(cg_deps) $(flibs) $(
 !ifdef version_res_$(host_os)_$(host_cpu)
     $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
-    wstrip -q -a -r $@ . errmsg.res
+    $(wstrip) -q -a -r $@ . errmsg.res
 
 option.obj : option.c optinfo.h
 

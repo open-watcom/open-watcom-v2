@@ -96,7 +96,7 @@ $(name).exe : rcstr.gh $(objs) $(name).res $(dllname).lib $(xlibs) $(version_res
 !ifeq host_cpu axp
 !ifeq release 0
         cvpack $(name).exe
-        wstrip -q $(name).exe $(name).exe $(name).sym
+        $(wstrip) -q $(name).exe $(name).exe $(name).sym
 !endif
 !endif
 !ifdef version_res_$(host_os)_$(host_cpu)
@@ -106,7 +106,7 @@ $(name).exe : rcstr.gh $(objs) $(name).res $(dllname).lib $(xlibs) $(version_res
 !endif
 !ifeq host_cpu axp
 !ifeq release 0
-        wstrip -q -a wspy.exe . wspy.sym
+        $(wstrip) -q -a wspy.exe . wspy.sym
 !endif
 !endif
 

@@ -143,7 +143,7 @@ $(name).exe : $(depend_objs) $(res_objs) $(proj_obj) $(version_res_$(host_os)_$(
         $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
 !ifdef res_objs
-        wstrip -a -r -q $@ . $(res_objs)
+        $(wstrip) -a -r -q $@ . $(res_objs)
 !endif
 
 !include verrc.mif

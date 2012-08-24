@@ -32,7 +32,7 @@ command.exe : $(objs) wlink.res
 !else
         copy/b $(pharlap)stub386.exe+command.exp $^@
 !endif
-        wstrip -q -a -r command.exe . wlink.res
+        $(wstrip) -q -a -r command.exe . wlink.res
 
 trmem.obj : $(%OWROOT)/bld/trmem/trmem.c
         $(compile) -i="$(%OWROOT)/bld/trmem"

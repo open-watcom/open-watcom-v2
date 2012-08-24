@@ -203,7 +203,7 @@ virgin.exe: $(gendeps)
 
 setup.exe: $(gendeps) setupui.res
     $(linker) name $^@ @setup.lnk
-    wstrip -q -a -r setup.exe . setupui.res
+    $(wstrip) -q -a -r setup.exe . setupui.res
 
 !endif
 
@@ -229,7 +229,7 @@ virgin.exe: $(gendeps)
 
 setup.exe: $(gendeps) setupui.res
     $(linker) name $^@ @setup.lnk
-    wstrip -q -a -r setup.exe . setupui.res
+    $(wstrip) -q -a -r setup.exe . setupui.res
 
 !endif
 
@@ -239,7 +239,7 @@ all : setup.exe .SYMBOLIC
 
 setup.exe: $(gendeps) setupui.res
     $(linker) name $^@ @setup.lnk
-    wstrip -q -a -r setup.exe . setupui.res
+    $(wstrip) -q -a -r setup.exe . setupui.res
 
 !else ifeq host_os linux
 
@@ -247,7 +247,7 @@ all : setup.exe .SYMBOLIC
 
 setup.exe: $(gendeps) setupui.res
     $(linker) name $^@ @setup.lnk
-    wstrip -q -a -r setup.exe . setupui.res
+    $(wstrip) -q -a -r setup.exe . setupui.res
 
 !else
 

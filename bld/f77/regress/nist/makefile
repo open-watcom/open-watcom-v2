@@ -88,7 +88,7 @@ fflags_axp += -INCPath=$(positive_dir) $(run_quietly) #-we-w0
     diff $*.out expected/$*.exp >> exec.out
     rm $[@
     rm $*.out
-#    wstrip -q $^@
+#    $(wstrip) -q $^@
 
 test : .symbolic start_test test.lnk $(positive_exes) finish_test
     

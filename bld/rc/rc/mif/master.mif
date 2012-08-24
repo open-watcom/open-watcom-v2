@@ -173,7 +173,7 @@ $(name)e.exe : $(depends_exe) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKE
         $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
 !endif
 !ifndef incl_msgtext
-        wstrip -q -a -r $@ . $(name).res
+        $(wstrip) -q -a -r $@ . $(name).res
 !endif
 
 !endif
@@ -184,7 +184,7 @@ $(dll_name)e.dll : $(depends_dll) $(version_res_$(host_os)_$(host_cpu)) $(__MAKE
         $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
 !ifndef incl_msgtext
-        wstrip -q -a -r $@ . $(name).res
+        $(wstrip) -q -a -r $@ . $(name).res
 !endif
 
 $(dll_name).lib : $(dll_name)e.dll

@@ -54,7 +54,7 @@ bpatch.exe : bpatch.res $(OBJ) $(wres_lib) $(__MAKEFILES__)
         @%append $^&.lnk lib $(wres_lib)
         @for %i in ($(OBJ)) do @%append $^&.lnk file %i
         $(linker) @$^&.lnk
-        wstrip -q -a -r $^@ . bpatch.res
+        $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
 # BDUMP.
@@ -67,7 +67,7 @@ bdump.exe : bpatch.res $(XBJ) $(wres_lib) $(__MAKEFILES__)
         @%append $^&.lnk lib $(wres_lib)
         @for %i in ($(XBJ)) do @%append $^&.lnk file %i
         $(linker) @$^&.lnk
-        wstrip -q -a -r $^@ . bpatch.res
+        $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
 # BDIFF.
@@ -80,7 +80,7 @@ bdiff.exe : $(DBJ) bdiff.res $(wres_lib) $(__MAKEFILES__)
         @%append $^&.lnk lib $(wres_lib)
         @for %i in ($(DBJ)) do @%append $^&.lnk file %i
         $(linker) @$^&.lnk
-        wstrip -q -a -r $^@ . bdiff.res
+        $(wstrip) -q -a -r $^@ . bdiff.res
 
 #
 # BCMT
@@ -110,7 +110,7 @@ dusage.gh : ../usage.sp
         wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(%+MSG_USAGE_LN_%$#, \"%s\", \"%s\")" $[@ $^@
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
-        $(rc_aui) -I.. -DBPATCH $[@ -fo=$^@
+        *$(rc_aui) -I.. -DBPATCH $[@ -fo=$^@
 
 bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
-        $(rc_aui) -I.. -DBDIFF $[@ -fo=$^@
+        *$(rc_aui) -I.. -DBDIFF $[@ -fo=$^@

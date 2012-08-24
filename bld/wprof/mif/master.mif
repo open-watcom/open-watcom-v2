@@ -78,14 +78,14 @@ $(proj_name).$(exe) : _guimsgs.gh auistr.gh $(objs) $(sys_objs) $(dip_objs) $(ma
     @rm -f finger.obj
     @%make finger.obj
     $(cl) $(clflags) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) finger.obj $(cl_objs) $(wprof_libs) $(sys_libs) $(cl_libs) -ldl
-    wstrip -q -a -r  $^@ . $(resfile)
+    $(wstrip) -q -a -r  $^@ . $(resfile)
 !else
 $(proj_name).$(exe) : _guimsgs.gh auistr.gh $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(wprof_libs) $(sys_libs) $(resfile) $(version_res_$(host_os)_$(host_cpu))
     @rm -f finger.obj
     @%make finger.obj
     $(linker) name $^@ $(lflags) op map file {$(objs) $(dip_objs) $(mad_objs) finger.obj} lib {$(wprof_libs) $(sys_libs)}
 !ifneq sys_windowed 1
-    wstrip -q -a -r  $^@ . $(resfile)
+    $(wstrip) -q -a -r  $^@ . $(resfile)
 !else ifdef version_res_$(host_os)_$(host_cpu)
     $(rc) -k $(resfile) $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
 !else
@@ -95,13 +95,13 @@ $(proj_name).$(exe) : _guimsgs.gh auistr.gh $(objs) $(sys_objs) $(dip_objs) $(ma
 
 !ifeq host_os os2
 wprofgui.res : ../h/wprofgui.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $]@ -fo=$^@
+    $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $]@ -fo=$^@
 !else ifeq host_os nt
 wprofgui.res : ../h/wprofgui.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_nt) $]@ -fo=$^@
+    $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_nt) $]@ -fo=$^@
 !else
 wprofgui.res : ../h/wprofgui.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_win) $]@ -fo=$^@
+    $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_win) $]@ -fo=$^@
 !endif
 
 msg.obj : msg.c msg.h
@@ -109,18 +109,18 @@ msg.obj : msg.c msg.h
 msgstr.obj : msgstr.c msg.h
 
 wprofui.res : ../h/wprofui.rc .AUTODEPEND
-        $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
+    $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
 
 ./auimkstr.exe : $(aui_dir)/h/aui.msg $(aui_dir)/c/mkstr.c
-        $(bld_cl) -I"$(aui_dir)/h" $(wcl_util_opts) $]@
+    $(bld_cl) -I"$(aui_dir)/h" $(wcl_util_opts) $]@
 
 auistr.gh : $(aui_dir)/h/aui.msg ./auimkstr.exe
-        $]@ $^@
+    $]@ $^@
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+    $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
 
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
-        $[@ $^@ $(gui_msg_id_modifier)
+    $[@ $^@ $(gui_msg_id_modifier)
 
 !include verrc.mif

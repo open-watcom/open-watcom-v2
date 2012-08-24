@@ -146,7 +146,7 @@ wl.exe : wlink.res $(comp_objs_exe) $(xlibs) $(exe_version_res_$(host_os)_$(host
 !ifdef exe_version_res_$(host_os)_$(host_cpu)
     $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
 !endif
-    wstrip -q -a -r $@ . wlink.res
+    $(wstrip) -q -a -r $@ . wlink.res
 !endif
 
 wld.dll : wlink.res $(comp_objs_dll) $(xlibs) $(version_res_$(host_os)_$(host_cpu)) dll.lnk
@@ -154,7 +154,7 @@ wld.dll : wlink.res $(comp_objs_dll) $(xlibs) $(version_res_$(host_os)_$(host_cp
 !ifdef version_res_$(host_os)_$(host_cpu)
     $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $@
 !endif
-    wstrip -q -a -r $@ . wlink.res
+    $(wstrip) -q -a -r $@ . wlink.res
 
 wlinkd.lib : wld.dll
     $(librarian) $(libflags) +$<
@@ -187,10 +187,10 @@ verrc_dll = wlinkd
 !include verrc.mif
 
 wlink.res : rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg ../h/wlink.rc
-        $(rc_aui) $(rc_defines_$(host_os)) -I"$(wrc_dir)/h" $]@ -fo=$^@
+    $(rc_aui) $(rc_defines_$(host_os)) -I"$(wrc_dir)/h" $]@ -fo=$^@
 
 rcmsg.gh : wrcmsg.gh
-        $(awk) -v rcbase=800 -f $(build_dir)/msgtoh.awk $[@ > $^@
+    $(awk) -v rcbase=800 -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 wrcmsg.gh : $(wrc_dir)/h/rc.msg
-        $(c_pp) -zk0 $(rc_defines_$(host_os)) $[@ >$@
+    $(c_pp) -zk0 $(rc_defines_$(host_os)) $[@ >$@

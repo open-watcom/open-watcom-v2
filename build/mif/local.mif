@@ -19,8 +19,11 @@ brc        += -q
 # redirect standard tools to pre-build versions
 as = $(bas)
 librarian = $(blib)
-rc = $(brc)
-rcaui = $(brc)
+#rc = *$(rc)
+#rcaui = *$(rc)
+rc = *$(brc)
+rcaui = *$(brc)
+brc = *$(brc)
 
 # options used for setup source code Japanese DBCS character set
 c_japan_charset = -zk0

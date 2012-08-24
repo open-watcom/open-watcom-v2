@@ -269,6 +269,9 @@ version_dir     = $(src_dir)/version
 !ifndef wresedit_dir
 wresedit_dir    = $(src_dir)/sdk/wresedit
 !endif
+!ifndef pmake_dir
+pmake_dir       = $(src_dir)/pmake
+!endif
 
 !else
 
@@ -541,6 +544,9 @@ version_dir     = $(src_dir)\version
 !endif
 !ifndef wresedit_dir
 wresedit_dir    = $(src_dir)\sdk\wresedit
+!endif
+!ifndef pmake_dir
+pmake_dir       = $(src_dir)\pmake
 !endif
 
 !endif

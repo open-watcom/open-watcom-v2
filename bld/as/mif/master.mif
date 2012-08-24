@@ -199,7 +199,7 @@ $(name).exe : msg.gh $(as_objs) $(cl_objs) $(libs) $(owl_lib) $(name).res $(vers
 !ifdef version_res_$(host_os)_$(host_cpu)
         $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $(name).exe
 !endif
-        wstrip -q -a -r $@ . $(name).res
+        $(wstrip) -q -a -r $@ . $(name).res
 
 !ifndef inline_as
 $(name).res : as.rc msg.gh

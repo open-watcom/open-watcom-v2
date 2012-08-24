@@ -379,7 +379,7 @@ version_res_nt_386 = exever.res
 !ifdef bootstrap
 $(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(cl_objs) $(libs)
         $(cl) $(clflags) fingmsg.obj $(objs) $(sysobjs) $(cl_objs) $(libs) $(cl_libs) -ldl
-        wstrip -q -a -r $^@ . $(resfile)
+        $(wstrip) -q -a -r $^@ . $(resfile)
 !else
 $(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs) $(lnk) $(version_res_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ @$(lnk) $(endsect)
@@ -387,7 +387,7 @@ $(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs) $(lnk) $(version
 !ifdef version_res_$(host_os)_$(host_cpu)
         $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
-        wstrip -q -a -r $^@ . $(resfile)
+        $(wstrip) -q -a -r $^@ . $(resfile)
 !else
 !ifdef version_res_$(host_os)_$(host_cpu)
         $(rc) -k $(resfile) $^@ -fr=$(version_res_$(host_os)_$(host_cpu))

@@ -153,9 +153,9 @@ sample.$(ext) : $(objs) $(guilib) $(uilib) $(sysdep) $(LNK)
         !$(pharlap)bind386 $(pharlap)run386b sample
 !endif
 !ifeq ext qnx
-        wstrip -q -a -r sample.qnx . $(rcname).res
+        $(wstrip) -q -a -r sample.qnx . $(rcname).res
 !else
-        wstrip -q -a -r sample.exe . $(rcname).res
+        $(wstrip) -q -a -r sample.exe . $(rcname).res
 !endif
 !endif
 

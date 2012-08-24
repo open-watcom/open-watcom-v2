@@ -56,8 +56,8 @@ as_axp          = *wasaxp
 as_ppc          = *wasppc
 as_mps          = *wasmps
 
-rc              = *wrc
-rcaui           = *wrc
+rc              = wrc
+rcaui           = wrc
 
 
 !ifdef $(proj_name)_release
@@ -418,11 +418,10 @@ as              = $(as_$(host_cpu))
 vi              = vi -q -d -i
 sed             = sed
 awk             = awk
-!ifdef __UNIX__
-rc_aui          = $(rcaui) -bt=windows -I$(watcom_dir)/h -zk0 -r
-!else
-rc_aui          = $(rcaui) -bt=windows -I$(watcom_dir)\h -zk0 -r
-!endif
+rc_aui          = $(rcaui) -bt=windows -I"$(watcom_dir)/h" -zk0 -r
+re2c            = re2c
+wstrip          = wstrip
+yacc            = yacc
 
 # simple C preprocessing
 c_pp            = wcpp

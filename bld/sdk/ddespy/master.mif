@@ -41,7 +41,7 @@ $(name).exe : rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_$(host_os)_$(h
 !ifeq host_CPU axp
 !ifeq release 0
         cvpack $(name).exe
-        wstrip $(name).exe $(name).exe $(name).sym
+        $(wstrip) $(name).exe $(name).exe $(name).sym
 !endif
 !endif
 !ifdef version_res_$(host_os)_$(host_cpu)

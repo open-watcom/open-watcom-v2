@@ -119,7 +119,7 @@ $(xname).$(ext) :: usageend.gh wmake.res $(objs) $(libs) $(version_res_$(host_os
 #
 # If the linker files were different (i.e. if we needed a QNX version),
 # the copy would be replaced by a separate link. CSK
-        wstrip -q -a -r $(xname).$(ext) . wmake.res
+        $(wstrip) -q -a -r $(xname).$(ext) . wmake.res
 
 wmake.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh
         $(rc_aui) $(extra_rc_flags) $[@ -fo=$^@
@@ -173,7 +173,7 @@ chkmsg :
     rm chkmsg.?
 
 strip : .symbolic
-    wstrip /q wmk.$(ext) wmks.$(ext) >nul
+    $(wstrip) /q wmk.$(ext) wmks.$(ext) >nul
     ls -l *.$(ext)
 
 deps : .symbolic

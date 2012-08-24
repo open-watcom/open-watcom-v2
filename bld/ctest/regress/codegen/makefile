@@ -103,7 +103,7 @@ test_cflags_386 += $(add_br_$(no_br_$^*))
     @%append exec.out PASS executing $^@
     $(run) $(exec_prefix)$^@ >>exec.out
     rm $[@
-#    wstrip -q $^@
+#    $(wstrip) -q $^@
 
 ./chk_exec.exe : ../../c/chk_exec.c
     $(bld_cl) $< $(wcl_util_opts)

@@ -108,7 +108,7 @@ sample.$(ext) : $(objs) $(guilib) $(uilib) $(rcname).res $(LNK)
 !ifeq sys pharlap
         !$(pharlap)bind386 $(pharlap)run386b sample
 !endif
-        wstrip -q -a -r $@ . $(rcname).res
+        $(wstrip) -q -a -r $@ . $(rcname).res
 !endif
 
 ################

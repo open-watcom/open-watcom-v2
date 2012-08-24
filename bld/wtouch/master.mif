@@ -27,7 +27,7 @@ $(proj_name).exe : $(dependants) $(version_res_$(host_os)_$(host_cpu))
 !ifdef version_res_$(host_os)_$(host_cpu)
         $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
-        wstrip -q -a -r $(proj_name).exe . $(proj_name).res
+        $(wstrip) -q -a -r $(proj_name).exe . $(proj_name).res
 
 $(proj_name).res : $(proj_name).rc $(proj_name).msg usage.gh usagej.gh msg.gh
         $(rc_aui) $[@ -fo=$^@

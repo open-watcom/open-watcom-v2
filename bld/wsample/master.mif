@@ -176,14 +176,14 @@ libs += $(lang_root)/lib286/dos/clibl.lib
 
 $(xname).exe : $(xname).exp $(xname).res
     $(rsidir)\splice $^@ $(xname).exp -ALT ../../wstub/wstubq.exe
-    wstrip -q -a -r $^@ . $(xname).res
+    $(wstrip) -q -a -r $^@ . $(xname).res
 !else
 $(xname).exe : $(objects) $(xname).res $(libs) $(__MAKEFILES__)
     @%write tmp.lnk $(lflags)
     @for %i in ($(objects)) do @%append tmp.lnk file %i
     @for %i in ($(libs)) do @%append tmp.lnk lib %i
     $(linker) name $^@ @tmp.lnk
-    wstrip -q -a -r $^@ . $(xname).res
+    $(wstrip) -q -a -r $^@ . $(xname).res
 !endif
 
 $(xname).exp : $(objects) $(libs) $(__MAKEFILES__)
@@ -218,7 +218,7 @@ $(xname).nlm : $(xname).res $(objects) $(libs) nversion.tmp $(__MAKEFILES__)
     @for %i in ($(libs)) do @%append tmp.lnk lib %i
     @%append tmp.lnk module clib
     $(linker) @tmp.lnk
-    wstrip -q -a -r $^@ . $(xname).res
+    $(wstrip) -q -a -r $^@ . $(xname).res
 
 !else ifeq target pls
 
@@ -241,7 +241,7 @@ $(xname).exp : $(objects) $(xname).res $(libs) $(__MAKEFILES__)
     @for %i in ($(objects)) do @%append tmp.lnk file %i
     @for %i in ($(libs)) do @%append tmp.lnk lib %i
     $(linker) @tmp.lnk
-    wstrip -q -a -r $^@ . $(xname).res
+    $(wstrip) -q -a -r $^@ . $(xname).res
 !else
 
 libs = $(wres_lib)
@@ -249,7 +249,7 @@ libs = $(wres_lib)
 !ifdef bootstrap
 $(xname).exe : $(objects) $(cl_objs) $(xname).res $(libs) $(__MAKEFILES__)
     $(cl) $(clflags) $(objects) $(cl_objs) $(libs) $(cl_libs)
-    wstrip -q -a -r $^@ . $(xname).res
+    $(wstrip) -q -a -r $^@ . $(xname).res
 !else
 $(xname).exe : $(objects) $(xname).res $(libs) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%write tmp.lnk $(lflags)
@@ -262,17 +262,17 @@ $(xname).exe : $(objects) $(xname).res $(libs) $(version_res_$(host_os)_$(host_c
 !ifdef version_res_$(host_os)_$(host_cpu)
     $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
-    wstrip -q -a -r $^@ . $(xname).res
+    $(wstrip) -q -a -r $^@ . $(xname).res
 !endif
 !endif
 
 !endif
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
-        $(bld_cl) $(wcl_util_opts) -I"$(watcom_dir)/h" $[@
+    $(bld_cl) $(wcl_util_opts) -I"$(watcom_dir)/h" $[@
 
 nversion.tmp: ./mknver.exe
-    	$[@ $^@
+    $[@ $^@
 
 !ifeq host_os win
 $(xname).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg

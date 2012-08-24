@@ -82,7 +82,7 @@ $(exe_name) : $(proj_name).res $(dis_prereq) $(disasm_objs) $(cl_objs) $(pre_dep
 !ifdef version_res_$(host_os)_$(host_cpu)
         $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
-        wstrip -q -a -r $@ . $^&.res
+        $(wstrip) -q -a -r $@ . $^&.res
 
 $(proj_name).res : wdis.rc msg.gh
         $(rc_aui) $[@ -fo=$@

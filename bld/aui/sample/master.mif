@@ -55,7 +55,7 @@ app.exe : $(aui_prereq) $(objs) $(auilib) $(guilib) $(uilib) $(wres_lib) $(resfi
 !ifeq sys_windowed 1
         $(rc) -k $(resfile) $^@
 !else
-        wstrip -q -a -r $^@ . $(resfile)
+        $(wstrip) -q -a -r $^@ . $(resfile)
 !endif
 
 app.res : ../h/app.rc $(rcfiles)

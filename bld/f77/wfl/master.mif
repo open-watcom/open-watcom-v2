@@ -37,7 +37,7 @@ version_res_nt_386 = exever.res
 
 $(target_exe).exe : $(files) $(wres_lib) errmsg.res $(version_res_$(host_os)_$(host_cpu))
     $(linker) $(lflags) name $^@ file { $(files) } lib $(wres_lib)
-    wstrip -q -a -r $^@ . errmsg.res
+    $(wstrip) -q -a -r $^@ . errmsg.res
 !ifdef version_res_$(host_os)_$(host_cpu)
     $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif

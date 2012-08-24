@@ -91,10 +91,10 @@ bas             = *bwasm
 !endif
 
 blib            = *bwlib
-bre2c           = re2c
+bre2c           = $(re2c)
 w32bind         = w32bind
 byacc           = byacc
-brc             = *bwrc
+brc             = bwrc
 !ifdef __UNIX__
 os2ldr          = $(%OWBINDIR)/os2ldr.exe
 !else

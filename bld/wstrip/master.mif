@@ -56,7 +56,7 @@ $(name).exe : $(dependants) $(objs) $(version_res_$(host_os)_$(host_cpu))
         $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
 !ifndef incl_msgtext
-        wstrip -q -a -r $^@ . wstrip.res
+        $(wstrip) -q -a -r $^@ . wstrip.res
 !endif
 !endif
 

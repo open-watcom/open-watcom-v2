@@ -194,7 +194,7 @@ wlib.exe: $(depends_exe) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES
     $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
 !endif
 !ifndef incl_msgtext
-    wstrip -q -a -r $@ . wlib.res
+    $(wstrip) -q -a -r $@ . wlib.res
 !endif
 
 !endif
@@ -205,7 +205,7 @@ wlibd.dll: $(depends_dll) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
 !ifndef incl_msgtext
-    wstrip -q -a -r $@ . wlib.res
+    $(wstrip) -q -a -r $@ . wlib.res
 !endif
 
 wlibd.lib: wlibd.dll

@@ -48,24 +48,24 @@ extra_stuff = $(os2ldr)
 ##############################################################################
 
 $(name).exe : $(objs) $(extra_stuff) wic.res $(wres_lib)
-        %create $^&.lnk
-        @%append $^&.lnk option map, quiet
-        @%append $^&.lnk debug all
+    %create $^&.lnk
+    @%append $^&.lnk option map, quiet
+    @%append $^&.lnk debug all
 !ifeq release 1
-        @%append $^&.lnk option symfile
+    @%append $^&.lnk option symfile
 !endif
-        @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(objs)) do @@%append $^&.lnk file %i
+    @%append $^&.lnk lib $(wres_lib)
+    @for %i in ($(objs)) do @@%append $^&.lnk file %i
 !ifeq host_os osi
-        @%append $^&.lnk name $^&.rex
-        $(linker) $(lflags) @$^&.lnk
-        $(w32bind) $^&.rex $@ $(os2ldr)
-        @rm -f $^&.rex
+    @%append $^&.lnk name $^&.rex
+    $(linker) $(lflags) @$^&.lnk
+    $(w32bind) $^&.rex $@ $(os2ldr)
+    @rm -f $^&.rex
 !else
-        @%append $^&.lnk name $@
-        $(linker) $(lflags) @$^&.lnk
+    @%append $^&.lnk name $@
+    $(linker) $(lflags) @$^&.lnk
 !endif
-        wstrip -a -r -q $@ . wic.res
+    $(wstrip) -a -r -q $@ . wic.res
 
 ##############################################################################
 

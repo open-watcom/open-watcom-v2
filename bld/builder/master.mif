@@ -17,9 +17,9 @@ all : cdsay.exe sweep.exe wsplice.exe comstrip.exe aliasgen.exe genverrc.exe &
 !endif
 !endif
 
-inc_dirs = -I"../../pmake" -I"../../posix/h"
+inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
 
-.c : ../c;../../pmake;../../posix/src/rm;../../posix/src/sed;../../posix/misc;../../lib_misc/c;
+.c : ../c;$(pmake_dir);$(posix_dir)/src/rm;$(posix_dir)/src/sed;$(posix_dir)/misc;$(lib_misc_dir)/c;
 
 sys_dos   = sys.obj sysdos.obj sysdoscd.obj
 sys_os2   = sys.obj sysos2.obj sysdoscd.obj
@@ -29,20 +29,18 @@ sys_linux = sys.obj sysposix.obj
 extra_c_flags = -D__OS_$(host_os)__ -DSTANDALONE_RX
 extra_c_flags_genverrc = -D_VERSION=$(bld_ver)
 
-!ifdef bootstrap
-inc_dirs += -I"../h"
-.c : $(watcom_dir)/c
-builder.exe : clibext.obj
-sweep.exe : sweep.obj clibext.obj
-wsplice.exe : wsplice.obj clibext.obj
-diff.exe : diff.obj clibext.obj
-!endif
-
 !ifdef __MSDOS__
 __DOS__=1
 !endif
 
-builder.exe : builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals.obj
+sweep.exe : sweep.obj $(cl_objs)
+wsplice.exe : wsplice.obj $(cl_objs)
+diff.exe : diff.obj $(cl_objs)
+sed.exe : sed.obj sedcomp.obj
+cdsay.exe : cdsay.obj equals.obj
+rm.exe: rm.obj getopt.obj quit.obj lineprt.obj alloc.obj filerx.obj regexp.obj fnlower.obj die.obj isdotdot.obj
+
+builder.exe : builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals.obj $(cl_objs)
         $(cl) $(clflags) $<
 !ifndef __$(host_os)__                  # Don't copy unless host_os=build_os
 !else ifndef %LOGFNAME                  # Don't copy unless build outside builder
@@ -61,8 +59,3 @@ builder.exe : builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals
 !else
         copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
 !endif
-
-sed.exe : sed.obj sedcomp.obj
-cdsay.exe : cdsay.obj equals.obj
-rm.exe: rm.obj getopt.obj quit.obj lineprt.obj alloc.obj filerx.obj &
-        regexp.obj fnlower.obj die.obj isdotdot.obj
