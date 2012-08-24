@@ -36,26 +36,18 @@ inc_dirs +=  -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
 # Instructions for building the executable.
 #
 
-lib.exe :  $(libstub_objs) $(version_res_$(host_os)_$(host_cpu))
+lib.exe :  $(libstub_objs) $(version_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(libstub_objs)}
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_exe
 
-lib386.exe :  $(lib_hdrs) $(lib386_objs) $(lib_common_libs) $(ver386_res_$(host_os)_$(host_cpu))
+lib386.exe :  $(lib_hdrs) $(lib386_objs) $(lib_common_libs) $(ver386_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(lib386_objs)} library {$(lib_common_libs)}
-!ifdef ver386_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(ver386_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_ver386_res_exe
 
-libaxp.exe :  $(lib_hdrs) $(libaxp_objs) $(lib_common_libs) $(veraxp_res_$(host_os)_$(host_cpu))
+libaxp.exe :  $(lib_hdrs) $(libaxp_objs) $(lib_common_libs) $(veraxp_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(libaxp_objs)} library {$(lib_common_libs)}
-!ifdef veraxp_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(veraxp_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_veraxp_res_exe
 
-libppc.exe :  $(lib_hdrs) $(libppc_objs) $(lib_common_libs) $(verppc_res_$(host_os)_$(host_cpu))
+libppc.exe :  $(lib_hdrs) $(libppc_objs) $(lib_common_libs) $(verppc_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(libppc_objs)} library {$(lib_common_libs)}
-!ifdef verppc_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(verppc_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_verppc_res_exe

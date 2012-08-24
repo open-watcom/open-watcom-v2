@@ -66,15 +66,11 @@ $(name).lib: $(name).dll
     $(librarian) $(libflags) +$(name).dll +verimp.obj
 
 # systems where version resource must be added to .DLL
-version_res_nt_386 = version.res
+version_res_dll_nt_386 = version.res
 
-$(name).dll: $(object) verimp.obj $(library_files) $(name).res $(version_res_$(host_os)_$(host_cpu))
+$(name).dll: $(object) verimp.obj $(library_files) $(name).res $(version_res_dll_$(host_os)_$(host_cpu))
     $(linker) $(lflags) name $^@ file {$(object) verimp.obj}
-!ifdef version_res_$(host_os)_$(host_cpu)
-    $(rc) -k $(name).res $(name).dll -fr=$(version_res_$(host_os)_$(host_cpu))
-!else
-    $(rc) -k $(name).res $(name).dll
-!endif
+    $(rc) -k $(name).res $(name).dll $(bind_version_res_dll_add)
 
 $(name).res: $(name).rc .AUTODEPEND
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$^@

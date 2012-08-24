@@ -46,12 +46,10 @@ rcsdll.lib: $(OBJS)
 !endif
 
 # systems where version resources must be added to .DLL
-version_res_nt_386 = version.res
+version_res_dll_nt_386 = version.res
 
-rcsdll.dll : $(OBJS) $(version_res_$(host_os)_$(host_cpu))
+rcsdll.dll : $(OBJS) $(version_res_dll_$(host_os)_$(host_cpu))
     $(linker) name $@ $(lflags) file {$(OBJS)}
-!ifdef version_res_$(host_os)_$(host_cpu)
-    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make bind_version_res_dll
 
 !include verrc.mif

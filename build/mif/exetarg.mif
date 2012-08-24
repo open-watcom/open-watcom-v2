@@ -1,10 +1,10 @@
-$(proj_name).exe : $(objs) $(libs) $(cl_objs) $(version_res_$(host_os)_$(host_cpu))
+$(proj_name).exe : $(objs) $(libs) $(cl_objs) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifeq verbose 1
         $(cl) $(clflags) $< $(cl_libs)
 !else
         @echo cl $@
         @$(cl) $(clflags) $< $(cl_libs)
 !endif
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_exe
+
+!include verrc.mif

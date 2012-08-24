@@ -28,7 +28,7 @@ host_OS=$(rtdll_host_os_$(system))
 !include $(rtdll_dir)/dllbase.mif
 !include ../objs.mif
 
-version_res_nt_386 = version.res
+version_res_dll_nt_386 = version.res
 
 !ifdef profile
 rtdll_nosymfile = 1
@@ -66,7 +66,7 @@ extra_lib_flags += -s-t-zld
 $(libdllname).lib : $(dllname).lbc
     $(librarian) $(libflags) @$(dllname).lbc
 
-$(dllname).lbc : $(dllname).imp $(rtdll_dir)/proclbc.awk $(static_objs)
+$(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
     $(awk) -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v LSTFILE="$(rtdll_dir:\=/)/brfunc.lst" $(dllname).imp > $@
     @for %i in ($(static_objs)) do @%append $@ +%i
 
@@ -81,20 +81,16 @@ lnk_alias = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
 !endif
 !endif
 
-$(dllname).imp : $(version_res_$(host_os)_$(host_cpu)) $(dll_objs) $(dll_libs) $(dllname).lnk $(__MAKEFILE__)
+$(dllname).dll : $(version_res_dll_$(host_os)_$(host_cpu)) $(dll_objs) $(dll_libs) $(dll_def) $(__MAKEFILE__)
+    %create $(dllname).lnk
+    @%append $(dllname).lnk $(lflags_dll)
+    @%append $(dllname).lnk op map $(dllbase)
+    @for %i in ($(dll_objs)) do @%append $(dllname).lnk file %i
+    @for %i in ($(dll_def)) do @%append $(dllname).lnk export { @%i }
+    @for %i in ($(dll_libs) $(extra_libs)) do @%append $(dllname).lnk lib %i
+    @%append $(dllname).lnk $(lnk_alias)
     $(linker) name $(dllname).dll @$(dllname).lnk
-!ifdef version_res_$(host_os)_$(host_cpu)
-    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $(dllname).dll
-!endif
-
-$(dllname).lnk : $(dll_def) $(__MAKEFILES__)
-    %create $@
-    @%append $@ $(lflags_dll)
-    @%append $@ op map $(dllbase)
-    @for %i in ($(dll_objs)) do @%append $@ file %i
-    @for %i in ($(dll_def)) do @%append $@ export { @%i }
-    @for %i in ($(dll_libs) $(extra_libs)) do @%append $@ lib %i
-    @%append $@ $(lnk_alias)
+    @%make bind_version_res_dll
 
 verrc_dll_skel = ../verinfo.rc
 verrc_dll      = $(dllname)

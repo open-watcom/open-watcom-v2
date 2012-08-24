@@ -333,15 +333,11 @@ $(intname).lib: $(objs)
     @rm tmp3.def
 
 # systems where version resource must be added to .DLL
-version_res_nt_386 = version.res
+version_res_dll_nt_386 = version.res
 
-$(dllname).dll: $(intname).lib $(dllname).lnk owf.res $(version_res_$(host_os)_$(host_cpu))
+$(dllname).dll: $(intname).lib $(dllname).lnk owf.res $(version_res_dll_$(host_os)_$(host_cpu))
     $(linker) name $(dllname).dll @$(dllname).lnk
-!ifdef version_res_$(host_os)_$(host_cpu)
-    $(rc) -k owf.res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
-!else
-    $(rc) -k owf.res $^@
-!endif
+    $(rc) -k owf.res $^@ $(bind_version_res_dll_add)
 
 $(dllname).lib: $(dllname).dll
     $(librarian) $(libflags) +$(dllname).dll

@@ -85,21 +85,19 @@ extra_l_flags_dll_win     = op modname=$(name)
 extra_l_flags_dll_rdos    = export DIPLOAD op modname=$(name) $(lflags_rdos_386_$(name))
 
 # systems where version resources must be added to .DLL
-version_res_nt_386 = version.res
+version_res_dll_nt_386 = version.res
 
 !ifdef bootstrap
 $(lib_name) : $(objs) $(imp_libs) $(cl_libs) $(__MAKEFILES__)
         $(cl) -shared $(clflags) $(objs) $(imp_libs) $(cl_libs)
 !else
-$(lib_name) : $(objs) $(imp_libs) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(lib_name) : $(objs) $(imp_libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifdef imp_libs
         $(linker) name $^@ $(lflags_dll) file {$(objs)} library {$(imp_libs)}
 !else
         $(linker) name $^@ $(lflags_dll) file {$(objs)}
 !endif
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_dll
 !endif
 
 verrc_dll = $(name)

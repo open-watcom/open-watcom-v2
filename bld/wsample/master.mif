@@ -161,7 +161,7 @@ inc_dirs += -I"$(dig_dir)/h" -I"../h"
 !endif
 
 # systems where version resources must be added to .EXE
-version_res_nt_386 = exever.res
+version_res_exe_nt_386 = exever.res
 
 rsidir = $(tools_root)
 
@@ -251,7 +251,7 @@ $(xname).exe : $(objects) $(cl_objs) $(xname).res $(libs) $(__MAKEFILES__)
     $(cl) $(clflags) $(objects) $(cl_objs) $(libs) $(cl_libs)
     $(wstrip) -q -a -r $^@ . $(xname).res
 !else
-$(xname).exe : $(objects) $(xname).res $(libs) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(xname).exe : $(objects) $(xname).res $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%write tmp.lnk $(lflags)
     @for %i in ($(objects)) do @%append tmp.lnk file %i
     @for %i in ($(libs)) do @%append tmp.lnk lib %i
@@ -259,9 +259,7 @@ $(xname).exe : $(objects) $(xname).res $(libs) $(version_res_$(host_os)_$(host_c
 !ifeq host_os win
     $(rc) $(xname).res $^@
 !else
-!ifdef version_res_$(host_os)_$(host_cpu)
-    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make bind_version_res_exe
     $(wstrip) -q -a -r $^@ . $(xname).res
 !endif
 !endif

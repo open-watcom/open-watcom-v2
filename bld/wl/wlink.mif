@@ -110,50 +110,36 @@ xlibs = $(wres_lib) $(dwarf_dw_lib) $(orl_lib)
 ###########
 # rc stuff
 
-rc_defines_qnx   = -DRC_UNIX
-rc_defines_linux = -DRC_UNIX
-rc_defines_osx   = -DRC_UNIX
-rc_defines_bsd   = -DRC_UNIX
-rc_defines_os2   = -DRC_OS2
-rc_defines_nt    = -DRC_NT
-rc_defines_osi   = -DRC_OSI
-
 # systems where version resources must be added to .DLL
-version_res_nt_386 = version.res
+version_res_dll_nt_386 = version.res
 
 # systems where version resources must be added to .EXE
-exe_version_res_nt_386 = exever.res
+version_res_exe_nt_386 = exever.res
 
 #################
 # explicit rules
 
 !ifdef wlink_dll
 
-wl.exe : $(drv_objs) wlinkd.lib $(exe_version_res_$(host_os)_$(host_cpu)) drv.lnk
+wl.exe : $(drv_objs) wlinkd.lib $(version_res_exe_$(host_os)_$(host_cpu)) drv.lnk
     $(linker) name $@ @drv.lnk
-!ifdef exe_version_res_$(host_os)_$(host_cpu)
-    $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make bind_version_res_exe
 
 !else
 
-wl.exe : wlink.res $(comp_objs_exe) $(xlibs) $(exe_version_res_$(host_os)_$(host_cpu)) exe.lnk
+wl.exe : wlink.res $(comp_objs_exe) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu)) exe.lnk
 !ifeq bootstrap 1
     $(cc) -o $@ $(comp_objs_exe) $(xlibs)
 !else
     $(linker) name $@ @exe.lnk
 !endif
-!ifdef exe_version_res_$(host_os)_$(host_cpu)
-    $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make bind_version_res_exe
     $(wstrip) -q -a -r $@ . wlink.res
 !endif
 
-wld.dll : wlink.res $(comp_objs_dll) $(xlibs) $(version_res_$(host_os)_$(host_cpu)) dll.lnk
+wld.dll : wlink.res $(comp_objs_dll) $(xlibs) $(version_res_dll_$(host_os)_$(host_cpu)) dll.lnk
     $(linker) name $@ @dll.lnk
-!ifdef version_res_$(host_os)_$(host_cpu)
-    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $@
-!endif
+    @%make bind_version_res_dll
     $(wstrip) -q -a -r $@ . wlink.res
 
 wlinkd.lib : wld.dll

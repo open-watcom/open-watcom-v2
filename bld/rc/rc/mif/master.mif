@@ -80,9 +80,6 @@ parser_defines = -DYYDEBUG -DSCANDEBUG
 
 # global defines
 ################
-rc_defines_os2 = -DRC_OS2
-rc_defines_nt  = -DRC_NT
-rc_defines_osi = -DRC_OSI
 
 rc_defines     = -D_STANDALONE_ $(parser_defines) $(rc_defines_$(host_os))
 
@@ -117,12 +114,12 @@ extra_l_flags_dll_os2 += option modname='$(dll_name)'
 
 # systems where version resources must be added to .DLL
 !ifndef prebuild
-version_res_nt_386 = version.res
+version_res_dll_nt_386 = version.res
 !endif
 
 # systems where version resources must be added to .EXE
 !ifndef prebuild
-exe_version_res_nt_386 = exever.res
+version_res_exe_nt_386 = exever.res
 !endif
 
 # where to look for various files
@@ -151,15 +148,13 @@ depends_exe += exe.lnk
 
 !ifdef wrc_dll
 
-$(name)e.exe : $(depends_drv) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(name)e.exe : $(depends_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
         $(linker) name $@ @drv.lnk
-!ifdef exe_version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_exe
 
 !else
 
-$(name)e.exe : $(depends_exe) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(name)e.exe : $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifdef bootstrap
         $(cc) -o $@ $(objs_exe) $(xlibs)
 !else ifeq host_os osi
@@ -169,20 +164,16 @@ $(name)e.exe : $(depends_exe) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKE
 !else
         $(linker) name $@ @exe.lnk
 !endif
-!ifdef exe_version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_exe
 !ifndef incl_msgtext
         $(wstrip) -q -a -r $@ . $(name).res
 !endif
 
 !endif
 
-$(dll_name)e.dll : $(depends_dll) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(dll_name)e.dll : $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
         $(linker) name $@ @dll.lnk
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_dll
 !ifndef incl_msgtext
         $(wstrip) -q -a -r $@ . $(name).res
 !endif

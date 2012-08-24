@@ -134,10 +134,10 @@ depends_dll = $(pre_obj_deps) $(comp_objs_dll) $(external_dependencies)
 depends_drv = $(pre_obj_deps) $(drv_objs)
 
 # systems where version resources must be added to .DLL
-version_res_nt_386 = version.res
+version_res_dll_nt_386 = version.res
 
 # systems where version resources must be added to .EXE
-exe_version_res_nt_386 = exever.res
+version_res_exe_nt_386 = exever.res
 
 !ifdef bootstrap
 
@@ -156,15 +156,13 @@ comp_objs_dll = $(common_objs) $(dll_objs)
 
 !ifdef cc_dll
 
-$(exe_name).exe : $(drv_objs) $(dll_name).lib $(exe_version_res_$(host_os)_$(host_cpu)) drv.lnk
+$(exe_name).exe : $(drv_objs) $(dll_name).lib $(version_res_exe_$(host_os)_$(host_cpu)) drv.lnk
         $(linker) name $@ @drv.lnk
-!ifdef exe_version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_exe
 
 !else
 
-$(exe_name).exe: $(depends_exe) exe.lnk $(exe_version_res_$(host_os)_$(host_cpu))
+$(exe_name).exe: $(depends_exe) exe.lnk $(version_res_exe_$(host_os)_$(host_cpu))
 !ifdef bootstrap
         $(cc) $(ldflags) -o $@ $(comp_objs_exe) $(xlibs) $(libs) $(cg_deps)
 !else ifeq host_os osi
@@ -173,9 +171,7 @@ $(exe_name).exe: $(depends_exe) exe.lnk $(exe_version_res_$(host_os)_$(host_cpu)
         @rm -f $^&.rex
 !else   
         $(linker) name $@ @exe.lnk
-!ifdef exe_version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_exe
 !ifeq host_os qnx
         serialize $@ wcc
 !endif
@@ -183,12 +179,9 @@ $(exe_name).exe: $(depends_exe) exe.lnk $(exe_version_res_$(host_os)_$(host_cpu)
 
 !endif
 
-$(dll_name).dll : $(depends_dll) $(version_res_$(host_os)_$(host_cpu)) dll.lnk
+$(dll_name).dll : $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) dll.lnk
         $(linker) name $@ @dll.lnk
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $@
-!endif
-
+        @%make bind_version_res_dll
 
 $(dll_name).lib : $(dll_name).dll
         $(librarian) $(libflags) +$[@

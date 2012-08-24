@@ -69,22 +69,18 @@ LIBS = &
     $(wres_lib)
 
 # systems where version resource must be added to .EXE
-version_res_nt_386 = exever.res
+version_res_exe_nt_386 = exever.res
 
 all: $(prereq_ide_h) $(name).exe
 
-$(name).exe : $(OBJECTS) $(LIBS) viper.res $(version_res_$(host_os)_$(host_cpu))
+$(name).exe : $(OBJECTS) $(LIBS) viper.res $(version_res_exe_$(host_os)_$(host_cpu))
         %create $(name).lnk
         %append $(name).lnk $(lflags)
         %append $(name).lnk op map, de $(description)
         %append $(name).lnk f {$(OBJECTS)}
         %append $(name).lnk lib {$(LIBS)}	
         $(linker) name $(name) @$(name).lnk
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k viper.res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
-!else
-        $(rc) -k viper.res $^@
-!endif
+        $(rc) -k viper.res $^@ $(bind_version_res_exe_add)
 
 viper.res : _guimsgs.gh $(gui_dir)/h/gui.rc viper.rc
         $(rc) $(rc_flags) -I.. $(inc_path) $]@ -fo=$^@

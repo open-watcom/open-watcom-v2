@@ -86,7 +86,7 @@ inc_dirs += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
 inc_dirs += -I"$(sdk_misc_dir)" -I"$(wpi_dir)/h"
 
 # systems where version resource must be added to .EXE
-version_res_nt_386 = exever.res
+version_res_exe_nt_386 = exever.res
 
 !ifeq host_OS os2
 
@@ -103,16 +103,12 @@ $(name).res : $(wimgedit_dir)/objos2/res/$(name).rc $(rcdeps)
 
 !else
 
-$(name).exe : $(name).res $(objs) $(libs) $(version_res_$(host_os)_$(host_cpu))
+$(name).exe : $(name).res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cpu))
         %create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk file { $(objs) }
         $(linker)  name $^@ @$^&.lnk
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $^&.res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
-!else
-        $(rc) -k $^&.res $^@
-!endif
+        $(rc) -k $^&.res $^@ $(bind_version_res_exe_add)
 
 rcstr.gh : rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@

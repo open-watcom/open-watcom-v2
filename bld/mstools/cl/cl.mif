@@ -26,26 +26,18 @@ clppc_hdrs      = optpppch.gh
 # Instructions for building the executables.
 #
 
-cl.exe :  $(clstub_objs) $(version_res_$(host_os)_$(host_cpu))
+cl.exe :  $(clstub_objs) $(version_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(clstub_objs)}
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_exe
 
-cl386.exe :  $(cl386_hdrs) $(cl386_objs) $(ver386_res_$(host_os)_$(host_cpu))
+cl386.exe :  $(cl386_hdrs) $(cl386_objs) $(ver386_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(cl386_objs)}
-!ifdef ver386_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(ver386_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_ver386_res_exe
 
-claxp.exe :  $(claxp_hdrs) $(claxp_objs) $(veraxp_res_$(host_os)_$(host_cpu))
+claxp.exe :  $(claxp_hdrs) $(claxp_objs) $(veraxp_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(claxp_objs)}
-!ifdef veraxp_res_$(host_os)_$(host_cpu) $^@
-        $(rc) -k $(veraxp_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_veraxp_res_exe
 
-clppc.exe :  $(clppc_hdrs) $(clppc_objs) $(verppc_res_$(host_os)_$(host_cpu))
+clppc.exe :  $(clppc_hdrs) $(clppc_objs) $(verppc_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(clppc_objs)}
-!ifdef verppc_res_$(host_os)_$(host_cpu) $^@
-        $(rc) -k $(verppc_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_verppc_res_exe

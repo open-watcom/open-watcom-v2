@@ -80,23 +80,21 @@ bindextra = -d$(vi_dir)\dat\winbind.dat
 
 # systems where version resources must be added to .EXE
 !ifdef sys_windowed
-version_res_nt_386 = exever.res
+version_res_exe_nt_386 = exever.res
 !endif
 
 !ifdef bootstrap
 $(name) : $(special) $(objs) $(cl_objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(res_objs)
         $(cl) $(clflags) $< $(cl_libs)
 !else
-$(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(version_res_$(host_os)_$(host_cpu))
+$(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(version_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $(lname) file version.obj file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
 !ifdef sys_windowed
 !ifdef win_386
         wbind $(lname) -s $(lang_root)/binw/win386.ext -R -q $(proj_name).res
         rm $(lname)
-!else ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(proj_name).res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
 !else
-        $(rc) -k $(proj_name).res $^@
+        $(rc) -k $(proj_name).res $^@ $(bind_version_res_exe_add)
 !endif
         # don't bind - it screws up everything - BBB
 !else

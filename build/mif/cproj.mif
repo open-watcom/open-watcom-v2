@@ -372,11 +372,22 @@ lflags_dll      = $(mode_lflags) $(lflags_dll_$(host_os)_$(host_cpu)) $(extra_l_
 libflags_all    = -b-n-pa $(mode_libflags)
 libflags        =  $(libflags_all) $(libflags_$(host_os)_$(host_cpu)) $(extra_lib_flags) $(extra_lib_flags_$(host_cpu)) $^@
 
-rc_flags_all    = -r
+rc_defines_dos   = -DRC_DOS
+rc_defines_nt    = -DRC_NT
+rc_defines_os2   = -DRC_OS2
+rc_defines_osi   = -DRC_OSI
+rc_defines_win   = -DRC_WIN
+rc_defines_linux = -DRC_UNIX -DRC_LINUX
+rc_defines_qnx   = -DRC_UNIX -DRC_QNX
+rc_defines_bsd   = -DRC_UNIX -DRC_BSD
+rc_defines_osx   = -DRC_UNIX -DRC_OSX
+
+rc_flags_all    = -r $(rc_defines_$(host_os))
 
 rc_flags_nt     = -bt=nt $(win32ver)
 rc_flags_win    = -bt=windows
 rc_flags_os2    = -bt=os2
+
 rc_flags_axp    = -D__AXP__
 
 rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu)) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
@@ -418,10 +429,11 @@ as              = $(as_$(host_cpu))
 vi              = vi -q -d -i
 sed             = sed
 awk             = awk
-rc_aui          = $(rcaui) -bt=windows -I"$(watcom_dir)/h" -zk0 -r
 re2c            = re2c
 wstrip          = wstrip
 yacc            = yacc
+
+rc_aui          = $(rcaui) -bt=windows -I"$(watcom_dir)/h" -zk0 -r
 
 # simple C preprocessing
 c_pp            = wcpp

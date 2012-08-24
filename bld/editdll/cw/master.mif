@@ -24,21 +24,17 @@ extra_l_flags_win += segment CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
 extra_l_flags_win += export WEP RESIDENT
 
 # systems where version resources must be added to .DLL
-version_res_nt_386 = version.res
+version_res_dll_nt_386 = version.res
 
 all: weditcw.dll wedit.lib .SYMBOLIC
 
-weditcw.dll : weditcw.obj dll.lnk $(version_res_$(host_os)_$(host_cpu))
+weditcw.dll : weditcw.obj dll.lnk $(version_res_dll_$(host_os)_$(host_cpu))
     $(linker) name $^@ @dll.lnk file $[@
-!ifdef version_res_$(host_os)_$(host_cpu)
-    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make bind_version_res_dll
 
-wedit.dll : weditcw.obj dll.lnk $(version_res_$(host_os)_$(host_cpu))
+wedit.dll : weditcw.obj dll.lnk $(version_res_dll_$(host_os)_$(host_cpu))
     $(linker) name $^@ @dll.lnk file $[@
-!ifdef version_res_$(host_os)_$(host_cpu)
-    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make bind_version_res_dll
 
 wedit.lib : wedit.dll
     $(librarian) $(libflags) +$[@

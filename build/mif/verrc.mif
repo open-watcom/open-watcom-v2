@@ -135,3 +135,39 @@ $(verrc_dll_out): $(verrc_dll_skel)
         @echo rc $@
         @$(rc) $(rc_flags) $(inc_path) $(verrc_dll_int) -fo=$^@
 !endif
+
+#
+# Macros to bind version resource (for PE images)
+#
+!ifdef version_res_exe_$(host_os)_$(host_cpu)
+bind_version_res_exe_add = -fr=$(version_res_exe_$(host_os)_$(host_cpu)
+!endif
+
+bind_version_res_exe: .procedure
+!ifdef version_res_exe_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_exe_$(host_os)_$(host_cpu)) $^@
+!endif
+
+!ifdef version_res_dll_$(host_os)_$(host_cpu)
+bind_version_res_dll_add = -fr=$(version_res_dll_$(host_os)_$(host_cpu)
+!endif
+
+bind_version_res_dll: .procedure
+!ifdef version_res_dll_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_dll_$(host_os)_$(host_cpu)) $^@
+!endif
+
+bind_ver386_res_exe: .procedure
+!ifdef ver386_res_exe_$(host_os)_$(host_cpu)
+        $(rc) -k $(ver386_res_exe_$(host_os)_$(host_cpu)) $^@
+!endif
+
+bind_veraxp_res_exe: .procedure
+!ifdef veraxp_res_exe_$(host_os)_$(host_cpu)
+        $(rc) -k $(veraxp_res_exe_$(host_os)_$(host_cpu)) $^@
+!endif
+
+bind_verppc_res_exe: .procedure
+!ifdef verppc_res_exe_$(host_os)_$(host_cpu)
+        $(rc) -k $(verppc_res_exe_$(host_os)_$(host_cpu)) $^@
+!endif

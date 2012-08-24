@@ -110,7 +110,7 @@ dusage.gh : ../usage.sp
         wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(%+MSG_USAGE_LN_%$#, \"%s\", \"%s\")" $[@ $^@
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
-        *$(rc_aui) -I.. -DBPATCH $[@ -fo=$^@
+        $(rc_aui) -I.. -DBPATCH $[@ -fo=$^@
 
 bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
-        *$(rc_aui) -I.. -DBDIFF $[@ -fo=$^@
+        $(rc_aui) -I.. -DBDIFF $[@ -fo=$^@

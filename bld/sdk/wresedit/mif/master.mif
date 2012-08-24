@@ -50,7 +50,7 @@ extra_l_flags_win = library commdlg op stack=8k,rwr &
                     export WEP RESIDENT
 
 # systems where version resources must be added to .DLL
-version_res_nt_386 = version.res
+version_res_dll_nt_386 = version.res
 
 xlibs = $(wres_lib) $(wr_lib) $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib &
         $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
@@ -58,17 +58,13 @@ xlibs = $(wres_lib) $(wr_lib) $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib &
 $(name).lib: $(name).dll
         $(librarian) $(libflags) +$[@
 
-$(name).dll: rcstr.gh $(object) $(name).res $(xlibs) $(version_res_$(host_os)_$(host_cpu))
+$(name).dll: rcstr.gh $(object) $(name).res $(xlibs) $(version_res_dll_$(host_os)_$(host_cpu))
         @%create tmp.lnk
         @%append tmp.lnk $(lflags)
         @for %i in ($(object)) do @%append tmp.lnk file %i
         @for %i in ($(xlibs)) do @%append tmp.lnk lib %i
         $(linker) name $^@ @tmp.lnk
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(name).res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
-!else
-        $(rc) -k $(name).res $^@
-!endif
+        $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
 
 $(name).res: ../h/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@

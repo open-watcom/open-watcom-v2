@@ -109,13 +109,11 @@ libs = $(wres_lib) $(orl_lib)
 !endif
 
 # systems where version resources must be added to .EXE
-version_res_nt_386 = exever.res
+version_res_exe_nt_386 = exever.res
 
-$(xname).$(ext) :: usageend.gh wmake.res $(objs) $(libs) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(xname).$(ext) :: usageend.gh wmake.res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
         $(linker) $(lflags) FILE {$(objs)}
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_exe
 #
 # If the linker files were different (i.e. if we needed a QNX version),
 # the copy would be replaced by a separate link. CSK

@@ -20,11 +20,6 @@ inc_dirs = -I. -I"$(dip_dir)/watcom/h"
 
 .c : $(watcom_dir)/c
 
-rc_defines_linux = -DRC_UNIX
-rc_defines_qnx   = -DRC_UNIX
-rc_defines_bsd   = -DRC_UNIX
-rc_defines_osx   = -DRC_UNIX
-
 objs = strip.obj output.obj
 !ifdef bootstrap
 objs += clibext.obj
@@ -38,7 +33,7 @@ extra_l_flags = lib $(wres_lib)
 
 # systems where version resources must be added to .EXE
 !ifndef bootstrap
-version_res_nt_386 = exever.res
+version_res_exe_nt_386 = exever.res
 !endif
 
 !ifdef incl_msgtext
@@ -47,14 +42,12 @@ dependants = msg.gh incltext.gh
 dependants = msg.gh wstrip.res $(wres_lib)
 !endif
 
-$(name).exe : $(dependants) $(objs) $(version_res_$(host_os)_$(host_cpu))
+$(name).exe : $(dependants) $(objs) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifdef bootstrap
         $(cc) $(objs) -o $@
 !else
         $(linker) option quiet $(lflags) name $^. file { $(objs) }
-!ifdef version_res_$(host_os)_$(host_cpu)
-        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
-!endif
+        @%make bind_version_res_exe
 !ifndef incl_msgtext
         $(wstrip) -q -a -r $^@ . wstrip.res
 !endif
