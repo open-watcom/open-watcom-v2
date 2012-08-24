@@ -2,9 +2,8 @@
 
 host_os  = osi
 host_cpu = axp
-target_cpu = axp
 
 inline_as = 1
 asi_build_lib = 1
 
-!include ../../alpha.mif
+!include ../../target.mif

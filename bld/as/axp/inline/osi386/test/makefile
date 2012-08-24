@@ -2,9 +2,8 @@
 
 host_os  = nt
 host_cpu = 386
-target_cpu = axp
 
 inline_as = 1
 test_inline_as = 1
 
-!include ../../../alpha.mif
+!include ../../../target.mif

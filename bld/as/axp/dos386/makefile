@@ -2,6 +2,5 @@
 
 host_os  = dos
 host_cpu = 386
-target_cpu = axp
 
-!include ../alpha.mif
+!include ../target.mif

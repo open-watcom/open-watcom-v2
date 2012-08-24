@@ -2,6 +2,5 @@
 
 host_os  = nt
 host_cpu = axp
-target_cpu = axp
 
-!include ../alpha.mif
+!include ../../target.mif

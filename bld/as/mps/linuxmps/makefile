@@ -2,6 +2,5 @@
 
 host_os    = linux
 host_cpu   = mps
-target_cpu = mips
 
-!include ../mips.mif
+!include ../target.mif

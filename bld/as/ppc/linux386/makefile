@@ -2,6 +2,5 @@
 
 host_os  = linux
 host_cpu = 386
-target_cpu = ppc
 
-!include ../ppc.mif
+!include ../target.mif

@@ -2,9 +2,8 @@
 
 host_os    = osi
 host_cpu   = mps
-target_cpu = mips
 
 inline_as     = 1
 asi_build_lib = 1
 
-!include ../../mips.mif
+!include ../../target.mif
