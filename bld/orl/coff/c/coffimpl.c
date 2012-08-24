@@ -59,24 +59,14 @@ typedef struct {
     coff_file_handle    coff_file_hnd;
 } coff_lib_file;
 
-typedef enum {
-    IMPORT_DESCRIPTOR,
-    NULL_IMPORT_DESCRIPTOR,
-    NULL_THUNK_DATA,
-    ORDINAL,    // ordinal and name
-    NAMED,      // name only
-    ELF,        // name only or name and ordinal
-    ELFRENAMED, // renamed entry,
-} importType;
-
 typedef struct {
-    importType  type;
-    short       processor;
-    char        *DLLName;
-    long        ordinal;
-    char        *symName;
-    char        *exportedName;
-    uint_32     time_date_stamp;
+    coff_import_object_name_type    type;
+    short                           processor;
+    char                            *DLLName;
+    long                            ordinal;
+    char                            *symName;
+    char                            *exportedName;
+    uint_32                         time_date_stamp;
 } import_sym;
 
 //IMPORT_DESCRIPT optional header
@@ -311,7 +301,8 @@ static void CreateCoffStringTable( coff_file_handle coff_file_hnd, coff_lib_file
     AddDataImpLib( coff_file_hnd, c_file->string_table, c_file->string_table_size - 4 );
 }
 
-char * getImportName(char * src, int type){
+static char * getImportName(char * src, coff_import_object_name_type type)
+{
     char    *end;
 
 /*
