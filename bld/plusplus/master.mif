@@ -169,12 +169,12 @@ optencod_targ_dbg = dbg
 #
 # External libraries
 #
-xlibs = $(dwarf_dw_lib) $(asminline_lib)
+xlibs = $(dwarf_dw_lib) $(asminline_lib) $(cg_libs)
  
 #
 # External dependencies
 #
-external_dependencies = $(xlibs) $(cg_deps)
+external_dependencies = $(xlibs)
 !ifeq host_os osi
 external_dependencies += $(os2ldr)
 !endif
@@ -253,7 +253,6 @@ exe.lnk : $(__MAKEFILES__)
 !endif
     @for %i in ($(comp_objs_exe)) do @%append $@ file %i
     @for %i in ($(xlibs)) do @%append $@ library %i
-    @%append $@ $(cg_libs)
  
 #
 # compiler .DLL driver
@@ -276,7 +275,6 @@ dll.lnk : $(__MAKEFILES__)
 !endif
     @for %i in ($(comp_objs_dll)) do @%append $@ file %i
     @for %i in ($(xlibs)) do @%append $@ library %i
-    @%append $@ $(cg_libs)
  
 #
 # miscellaneous build rules

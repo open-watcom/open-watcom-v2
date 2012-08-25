@@ -109,12 +109,12 @@ extra_l_flags_dll_os2 = initinstance terminstance option manyautodata
 #
 # external libraries
 #
-xlibs = $(dwarf_dw_lib) $(asminline_lib)
+xlibs = $(dwarf_dw_lib) $(asminline_lib) $(cg_libs)
 
 #
 # External dependencies
 #
-external_dependencies = $(xlibs) $(cg_deps)
+external_dependencies = $(xlibs)
 !ifeq host_os osi
 external_dependencies += $(os2ldr)
 !endif
@@ -158,7 +158,7 @@ $(exe_name).exe : $(drv_objs) $(dll_name).lib $(version_res_exe_$(host_os)_$(hos
 
 $(exe_name).exe: $(depends_exe) exe.lnk $(version_res_exe_$(host_os)_$(host_cpu))
 !ifdef bootstrap
-        $(cc) $(ldflags) -o $@ $(comp_objs_exe) $(xlibs) $(libs) $(cg_deps)
+        $(cc) $(ldflags) -o $@ $(comp_objs_exe) $(xlibs) $(libs)
 !else ifeq host_os osi
         $(linker) name $^&.rex @exe.lnk
         $(w32bind) $^&.rex $@ $(os2ldr)
@@ -195,7 +195,6 @@ exe.lnk : $(__MAKEFILES__)
 !endif
         @for %i in ($(comp_objs_exe)) do @%append $@ file %i
         @for %i in ($(xlibs)) do @%append $@ lib %i
-        @%append $@ $(cg_libs)
 
 dll.lnk : $(__MAKEFILES__)
         @%write $@ $(lflags_dll)
@@ -204,7 +203,6 @@ dll.lnk : $(__MAKEFILES__)
 !endif
         @for %i in ($(comp_objs_dll)) do @%append $@ file %i
         @for %i in ($(xlibs)) do @%append $@ lib %i
-        @%append $@ $(cg_libs)
 
 #
 # done

@@ -59,32 +59,22 @@ cg_inc_dirs = $(i_path)
 
 cg_objs =
 !ifeq cg_dll 1
-cg_deps = $(o_dir)/cgdllcli.lib
-cg_libs = lib $(o_dir)/cgdllcli.lib
+cg_libs = $(o_dir)/cgdllcli.lib
 !else ifeq use_owl_lib_$(target_cpu) 1
-cg_deps = &
-    $(o_dir)/cg$(target_cpu).lib &
-    $(o_dir)/cg$(target_cpu)$(cg_host).lib &
-    $(owl_lib) &
-    $(cfloat_lib)
 !ifeq debug_cg 1
 cg_objs = $(o_dir)/dmpinc.obj $(owl_debug_objs)
 !endif
 cg_libs = &
-    lib $(o_dir)/cg$(target_cpu).lib &
-    lib $(o_dir)/cg$(target_cpu)$(cg_host).lib &
-    lib $(owl_lib) &
-    lib $(cfloat_lib)
-!else
-cg_deps = &
     $(o_dir)/cg$(target_cpu).lib &
     $(o_dir)/cg$(target_cpu)$(cg_host).lib &
+    $(owl_lib) &
     $(cfloat_lib)
+!else
 !ifeq debug_cg 1
 cg_objs = $(o_dir)/dmpinc.obj
 !endif
 cg_libs = &
-    lib $(o_dir)/cg$(target_cpu).lib &
-    lib $(o_dir)/cg$(target_cpu)$(cg_host).lib &
-    lib $(cfloat_lib)
+    $(o_dir)/cg$(target_cpu).lib &
+    $(o_dir)/cg$(target_cpu)$(cg_host).lib &
+    $(cfloat_lib)
 !endif
