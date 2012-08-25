@@ -431,8 +431,8 @@ headers = &
         directx/dsound.h     &
         directx/dvp.h        &
         directx/dxtrans.h    &
-        gl/gl.h              &
-        gl/glu.h
+        GL/gl.h              &
+        GL/glu.h
 
 libs =                       &
         aclui.lib            &
@@ -594,7 +594,7 @@ all : $($(what_to_build)) .SYMBOLIC
 {directx}.mh{directx}.h:
     $(splice)
 
-{gl}.mh{gl}.h:
+{GL}.mh{GL}.h:
     $(splice)
 
 .mh.rh:
@@ -683,7 +683,7 @@ directx/dxguid.obj: directx/dxguid.c
     @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
 !endif
 
-all_subdirs = ./ddk ./directx ./gl $(%cwd)
+all_subdirs = ./ddk ./directx ./GL $(%cwd)
 
 clean: $(all_subdirs) .SYMBOLIC
 

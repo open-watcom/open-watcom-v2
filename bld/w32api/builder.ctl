@@ -22,7 +22,7 @@ cdsay .
   [ IFDEF (os_nt "") <2*> ]
     <CPCMD> nt/*.h                        <OWRELROOT>/h/nt/
     <CPCMD> nt/*.rh                       <OWRELROOT>/h/nt/
-    <CPCMD> nt/gl/*.h                     <OWRELROOT>/h/nt/gl/
+    <CPCMD> nt/GL/*.h                     <OWRELROOT>/h/nt/GL/
     <CPCMD> nt/ddk/*.h                    <OWRELROOT>/h/nt/ddk/
     <CPCMD> nt/directx/*.h                <OWRELROOT>/h/nt/directx/
 

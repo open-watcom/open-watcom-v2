@@ -411,7 +411,7 @@ usr="dinput.h"
 usr="dsound.h"
 usr="dvp.h"
 usr="dxtrans.h"
-[ DEFAULT type="s" dir="h/nt/gl" where="c jc f77 jf77 ac" cond="wnttarg" ]
+[ DEFAULT type="s" dir="h/nt/GL" where="c jc f77 jf77 ac" cond="wnttarg" ]
 usr="gl.h"
 usr="glu.h"
 
