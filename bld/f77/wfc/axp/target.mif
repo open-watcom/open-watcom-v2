@@ -1,0 +1,3 @@
+target_cpu = axp
+
+!include ../../master.mif

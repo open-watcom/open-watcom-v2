@@ -12,13 +12,13 @@ wfc_autodepends = .AUTODEPEND
 !include $(dwarf_dir)/dw/client.mif
 !include wres.mif
 
-!include ../files.mif
+!include ../../files.mif
 
 !ifeq release 0
 wfc_trmem = 1
 !endif
 
-inc_dirs=-I"../h" -I"../../h" $(cg_inc_dirs) -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $(asminline_inc_dirs)
+inc_dirs= -I. -I.. -I"../../h" -I"../../../h" $(cg_inc_dirs) -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $(asminline_inc_dirs)
 
 # define _USE_RESOURCES_ so that WASM error messages come from resources
 extra_c_flags = -D_USE_RESOURCES_
@@ -28,12 +28,12 @@ extra_c_flags_386 = -zp1
 extra_c_flags += -D_CGDLL
 !endif
 
-.h: ../h;../../h
-.c: ../c;../../c;$(asminline_c);$(trmem_dir);
+.h: ..;../../h;../../../h
+.c: ..;../../c;../../../c;$(asminline_c);$(trmem_dir);
 
 !ifeq host_cpu axp
 extra_a_flags = -oc
-.asm: ../../asmaxp
+.asm: ../../../asmaxp
 !endif
 
 !ifeq wfc_trmem 1
@@ -49,10 +49,8 @@ target_exe  = $(exename_$(target_cpu))
 
 !ifdef mkstubs
 wfc_cg_libs = $(cg_stub_libs);
-!else ifeq release 1
-wfc_cg_libs = $(cg_libs)
 !else
-wfc_cg_libs = $(cg_debug_libs)
+wfc_cg_libs = $(cg_libs)
 !endif
 
 extra_c_flags_trmem = -DTRMEM -of+
@@ -87,8 +85,8 @@ $(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(cg_deps) $(flibs) $(
 
 option.obj : option.c optinfo.h
 
-errmsg.res : ../c/errmsg.rc ../h/errmsgi.rc ../h/errmsg3.rc ../h/errcod.h ../h/errcodi.h ../h/errcod3.h
-    $(rc_aui) -I"../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@
+errmsg.res : ../../c/errmsg.rc ../../h/errmsgi.rc ../../h/errmsg3.rc ../../h/errcod.h ../../h/errcodi.h ../../h/errcod3.h
+    $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
     $(bld_cl) -I"$(wasm_dir)/h" $[@ $(wcl_util_opts)
@@ -106,4 +104,5 @@ msg.gh : $(wasm_dir)/h/asmshare.msg
     $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
 verrc_exe = $(target_exe)
+verrc_exe_skel = ../../exever.rc
 !include verrc.mif

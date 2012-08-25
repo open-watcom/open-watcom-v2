@@ -1,8 +1,8 @@
-!include ../tdfiles.mif
-!include ../emsfiles.mif
-!include ../i86files.mif
-!include ../386files.mif
-!include ../axpfiles.mif
+!include ../../tdfiles.mif
+!include ../../emsfiles.mif
+!include ../../i86files.mif
+!include ../../386files.mif
+!include ../../axpfiles.mif
 
 # system independent compile-time files
 
@@ -239,17 +239,16 @@ comovl1 += &
 dbfiles = &
     dumpnode.obj
 
+# code generator extra files
+dbfiles += $(cg_objs)
+
 comfiles = $(comroot) $(comovl1) $(comovl2)
 
 rootfiles = $(comroot) $(tdroot) $(emsroot) $(i86root)
 ovl1files = $(comovl1) $(tdovl1) $(emsovl1) $(i86ovl1)
 ovl2files = $(comovl2) $(tdovl2) $(emsovl2) $(i86ovl2)
 
-!ifeq host_CPU axp
-fobjs = $(comfiles) $(axpfiles) $(tdfiles) $(dbfiles)
-!else
-fobjs = $(comfiles) $(386files) $(tdfiles) $(dbfiles)
-!endif
+fobjs = $(comfiles) $($(host_cpu)files) $(tdfiles) $(dbfiles)
 
 !ifdef use_ems
 fobjs += $(emsfiles)

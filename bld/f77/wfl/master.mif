@@ -10,13 +10,13 @@ wfl_autodepends = .AUTODEPEND
 
 !include wres.mif
 
-inc_dirs=-I"../h" -I"../../wfc/h" -I"../../h" -I"$(comp_cfg_dir)/h"
+inc_dirs = -I. -I.. -I"../../h" -I"../../../wfc/h" -I"../../../h" -I"$(comp_cfg_dir)/h"
 
 extra_c_flags = -D__WFL__
 
 extra_l_flags = op map
 
-.c: ../c;../../wfc/c;../../c
+.c: ../../c;../../../wfc/c;../../../c
 
 files = &
     blderr.obj &
@@ -40,8 +40,9 @@ $(target_exe).exe : $(files) $(wres_lib) errmsg.res $(version_res_exe_$(host_os)
     @%make bind_version_res_exe
     $(wstrip) -q -a -r $^@ . errmsg.res
 
-errmsg.res : ../c/errmsg.rc ../h/errmsgi.rc ../h/errmsg3.rc ../h/errcod.h ../h/errcodi.h ../h/errcod3.h
-    $(rc_aui) -I"../../h" $[@ -fo=$^@ -I"$(comp_cfg_dir)/h"
+errmsg.res : ../../c/errmsg.rc ../../h/errmsgi.rc ../../h/errmsg3.rc ../../h/errcod.h ../../h/errcodi.h ../../h/errcod3.h
+    $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $[@ -fo=$^@ -I"$(comp_cfg_dir)/h"
 
 verrc_exe = $(target_exe)
+verrc_exe_skel = ../../exever.rc
 !include verrc.mif

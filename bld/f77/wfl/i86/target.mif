@@ -1,0 +1,3 @@
+target_cpu = i86
+
+!include ../../master.mif
