@@ -140,7 +140,7 @@
 /w32api/nt/*.rh
 /w32api/nt/ddk/*.h
 /w32api/nt/directx/*.h
-/w32api/nt/gl/*.h
+/w32api/nt/GL/*.h
 #
 /wasmtest/*.sav
 /wasmtest/*/*.dib

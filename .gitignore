@@ -39,11 +39,15 @@ prebuild
 
 /setvars
 
+/build/bin/*
+!/build/bin/afile
+
 /distrib/ow/open-watcom-*
 /distrib/ow/filelist
 /distrib/ow/*/filelist
 /distrib/ow/*/setup.*
 
+/rel/
 /rel2/
 /pass1/
 /pass2/
