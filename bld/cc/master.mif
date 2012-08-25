@@ -14,7 +14,6 @@ cc_nosymfile = 1
 
 # CODEGEN stuff
 !include $(cg_dir)/mif/fe.mif
-!include $(cg_dir)/mif/hostos.mif
 !include $(dwarf_dir)/dw/client.mif
 
 !include trmem.mif
@@ -115,12 +114,7 @@ xlibs = $(dwarf_dw_lib) $(asminline_lib)
 #
 # External dependencies
 #
-external_dependencies = $(xlibs)
-!ifeq release 0
-external_dependencies += $(cg_debug_deps)
-!else
-external_dependencies += $(cg_deps)
-!endif
+external_dependencies = $(xlibs) $(cg_deps)
 !ifeq host_os osi
 external_dependencies += $(os2ldr)
 !endif
@@ -201,11 +195,7 @@ exe.lnk : $(__MAKEFILES__)
 !endif
         @for %i in ($(comp_objs_exe)) do @%append $@ file %i
         @for %i in ($(xlibs)) do @%append $@ lib %i
-!ifeq release 0
-        @%append $@ $(cg_debug_libs)
-!else   
         @%append $@ $(cg_libs)
-!endif
 
 dll.lnk : $(__MAKEFILES__)
         @%write $@ $(lflags_dll)
@@ -214,11 +204,7 @@ dll.lnk : $(__MAKEFILES__)
 !endif
         @for %i in ($(comp_objs_dll)) do @%append $@ file %i
         @for %i in ($(xlibs)) do @%append $@ lib %i
-!ifeq release 0
-        @%append $@ $(cg_debug_libs)
-!else   
         @%append $@ $(cg_libs)
-!endif
 
 #
 # done

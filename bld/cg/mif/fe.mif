@@ -43,8 +43,6 @@ i_path = $(i_path_$(target_cpu)) -I"$(cg_dir)/h" -I"$(cfloat_dir)/h"
 i_path += -I"$(o_dir_$(target_cpu))"
 !endif
 
-cg_target = $(target_cpu)
-
 !ifeq host_os linux
 cg_host = lnx
 !else
@@ -57,58 +55,36 @@ use_owl_lib_mps   = 1
 use_owl_lib_386   = 0
 use_owl_lib_i86   = 0
 
-!include $(cg_dir)/mif/cg.mif
-
 cg_inc_dirs = $(i_path)
 
+cg_objs =
 !ifeq cg_dll 1
 cg_deps = $(o_dir)/cgdllcli.lib
 cg_libs = lib $(o_dir)/cgdllcli.lib
-!else
-!ifeq use_owl_lib_$(target_cpu) 1
+!else ifeq use_owl_lib_$(target_cpu) 1
 cg_deps = &
-    $(o_dir)/cg$(cg_target).lib &
-    $(o_dir)/cg$(cg_target)$(cg_host).lib &
+    $(o_dir)/cg$(target_cpu).lib &
+    $(o_dir)/cg$(target_cpu)$(cg_host).lib &
     $(owl_lib) &
     $(cfloat_lib)
-
+!ifeq debug_cg 1
+cg_objs = $(o_dir)/dmpinc.obj $(owl_debug_objs)
+!endif
 cg_libs = &
-    lib $(o_dir)/cg$(cg_target).lib &
-    lib $(o_dir)/cg$(cg_target)$(cg_host).lib &
+    lib $(o_dir)/cg$(target_cpu).lib &
+    lib $(o_dir)/cg$(target_cpu)$(cg_host).lib &
     lib $(owl_lib) &
     lib $(cfloat_lib)
 !else
 cg_deps = &
-    $(o_dir)/cg$(cg_target).lib &
-    $(o_dir)/cg$(cg_target)$(cg_host).lib &
+    $(o_dir)/cg$(target_cpu).lib &
+    $(o_dir)/cg$(target_cpu)$(cg_host).lib &
     $(cfloat_lib)
-
+!ifeq debug_cg 1
+cg_objs = $(o_dir)/dmpinc.obj
+!endif
 cg_libs = &
-    lib $(o_dir)/cg$(cg_target).lib &
-    lib $(o_dir)/cg$(cg_target)$(cg_host).lib &
+    lib $(o_dir)/cg$(target_cpu).lib &
+    lib $(o_dir)/cg$(target_cpu)$(cg_host).lib &
     lib $(cfloat_lib)
-!endif
-!endif
-
-cg_debug_deps = &
-    $(cg_deps)
-
-cg_debug_libs = &
-    $(cg_libs)
-
-!ifndef cg_dll
-owl_debug_refs_axp_axp = , OWLDumpSymTab
-owl_debug_refs_axp_386 = , OWLDumpSymTab_
-
-cg_debug_libs_386 = &
-    $(cg_libs) &
-    reference DumpTree_, DumpCurrLoop_, DumpInsList_, DumpString_, DumpOpt_, DumpOpcodeName_, &
-        DumpRegTree_, DumpSc_, DumpADataDag_, DumpGen_, Dumpan_, DumpBlk_, DumpConflicts_ $(owl_debug_refs_$(cg_target)_$(host_cpu))
-
-cg_debug_libs_axp = &
-    $(cg_libs) &
-    reference DumpTree, DumpCurrLoop, DumpInsList, DumpString, DumpOpt, DumpOpcodeName, &
-        DumpRegTree, DumpSc, DumpADataDag, DumpGen, Dumpan, DumpBlk, DumpConflicts $(owl_debug_refs_$(cg_target)_$(host_cpu))
-
-cg_debug_libs = $(cg_debug_libs_$(host_cpu))
 !endif

@@ -89,6 +89,9 @@ common_objs += cfedump.obj
 # in-line assembler files
 common_objs += $(asminline_objs)
 
+# code generator extra files
+common_objs += $(cg_objs)
+
 #
 # target specific files
 #

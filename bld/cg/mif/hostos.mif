@@ -54,7 +54,7 @@ bsd_objs   = $(unix_objs)
 osx_objs   = $(unix_objs)
 
 !ifeq cg_trmem 1
-mem_include = -I$(trmem_dir)
+mem_include = -I"$(trmem_dir)"
 mem_objs = &
     memwrap.obj &
     memmgt.obj &

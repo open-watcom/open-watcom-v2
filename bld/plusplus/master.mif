@@ -15,7 +15,6 @@ additional_cleanup = *.u *.int y.out ytab.c
 !include deftarg.mif
  
 !include $(cg_dir)/mif/fe.mif
-!include $(cg_dir)/mif/hostos.mif
 !include $(dwarf_dir)/dw/client.mif
  
 !include trmem.mif
@@ -175,12 +174,7 @@ xlibs = $(dwarf_dw_lib) $(asminline_lib)
 #
 # External dependencies
 #
-external_dependencies = $(xlibs)
-!ifeq release 1
-external_dependencies += $(cg_deps)
-!else
-external_dependencies += $(cg_debug_deps)
-!endif
+external_dependencies = $(xlibs) $(cg_deps)
 !ifeq host_os osi
 external_dependencies += $(os2ldr)
 !endif
@@ -259,11 +253,7 @@ exe.lnk : $(__MAKEFILES__)
 !endif
     @for %i in ($(comp_objs_exe)) do @%append $@ file %i
     @for %i in ($(xlibs)) do @%append $@ library %i
-!ifeq release 0
-    @%append $@ $(cg_debug_libs)
-!else
     @%append $@ $(cg_libs)
-!endif
  
 #
 # compiler .DLL driver
@@ -286,11 +276,7 @@ dll.lnk : $(__MAKEFILES__)
 !endif
     @for %i in ($(comp_objs_dll)) do @%append $@ file %i
     @for %i in ($(xlibs)) do @%append $@ library %i
-!ifeq release 0
-    @%append $@ $(cg_debug_libs)
-!else
     @%append $@ $(cg_libs)
-!endif
  
 #
 # miscellaneous build rules

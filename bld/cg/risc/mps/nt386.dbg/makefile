@@ -1,4 +1,4 @@
-#pmake: os_nt cpu_386 mips target_mips
+#pmake: debug os_nt cpu_386 mips target_mips
 
 host_os  = nt
 host_cpu = 386

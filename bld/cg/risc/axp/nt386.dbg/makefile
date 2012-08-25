@@ -1,4 +1,4 @@
-#pmake: os_nt cpu_386 axp alpha target_axp
+#pmake: debug os_nt cpu_386 axp alpha target_axp
 
 host_os  = nt
 host_cpu = 386

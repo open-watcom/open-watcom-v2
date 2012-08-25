@@ -1,14 +1,9 @@
-
-extra_c_flags_386       = -zp4
-
-!ifndef cg_autodepends
-cg_autodepends = .AUTODEPEND
-!endif
-
 extra_c_flags   = -DBY_CG
 !ifeq sys_dll 1
 extra_c_flags  += -D_CGDLL
 !endif
+
+extra_c_flags_386 = -zp4
 
 track_flags_i86 = -D_TRACK -of+
 track_flags_386 = -D_TRACK -of+
@@ -23,10 +18,6 @@ extra_c_flags_trmem     = $(track_flags_$(host_cpu))
 !ifeq release 0
 !else
 std_defines = -DNDEBUG
-!endif
-
-!ifdef %CGEXTRAOPTS
-opt_standard += $(%CGEXTRAOPTS)
 !endif
 
 inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)

@@ -237,6 +237,9 @@ common_objs += $(asminline_objs)
 common_objs += asmalloc.obj
 common_objs += asmmsg.obj
 
+# code generator extra files
+common_objs += $(cg_objs)
+
 # target processor-dependent objects
 
 cpp_objs_i86 = cmdlnx86.obj cpragx86.obj pragi86.obj

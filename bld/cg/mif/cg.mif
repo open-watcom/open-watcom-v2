@@ -41,7 +41,6 @@ cg_objs = &
     foldins.obj &
     freelist.obj &
     generate.obj &
-    i64.obj &
     inline.obj &
     insdead.obj &
     inssched.obj &
@@ -140,7 +139,14 @@ cg_stub_objs = &
     stubs.obj &
     stubutil.obj
 
-pre_obj_deps    = $(bit_sets) cgprotos.gh feprotos.gh
+cg_client_objs = &
+    cgdllcli.obj &
+    i64.obj
+
+cg_debug_objs = &
+    dmpinc.obj
+
+pre_obj_deps    = $(bit_sets) cgprotos.gh feprotos.gh $(cg_debug_objs)
 
 include_path    = $+$(include_path)$-;$(cg_dir)/h;$(watcom_dir)/h;$(cfloat_dir)/h;$(comp_cfg_dir)/h
 inc_dirs       += -I"$(cg_dir)/h" -I"$(cfloat_dir)/h" -I"$(comp_cfg_dir)/h"

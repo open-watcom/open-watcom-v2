@@ -1,9 +1,9 @@
 !include binname.mif
 
-!ifeq host_OS linux
+!ifeq host_os linux
 hostcglibname=cg$(target_name)lnx.lib
 !else
-hostcglibname=cg$(target_name)$(host_OS).lib
+hostcglibname=cg$(target_name)$(host_os).lib
 !endif
 
 !ifndef sys_dll
@@ -15,6 +15,7 @@ target : $(pre_obj_deps) cg$(target_name).lib $(hostcglibname) .SYMBOLIC
 
 !include $(cfloat_dir)/client.mif
 !include $(dwarf_dir)/dw/client.mif
+!include $(owl_dir)/client.mif
 
 libs = cg$(target_name).lib $(hostcglibname) $(dwarf_dw_lib) $(owl_lib) $(cfloat_lib)
 
@@ -26,15 +27,19 @@ target : $(pre_obj_deps) $(bin_path) cgdllcli.lib .SYMBOLIC
 $(bin_path) : cgdmain.obj $(libs)
         $(linker) $(lflags) name $@ op map file $[@ lib {$(libs)}
 
-cgdllcli.lib : cgdllcli.obj i64.obj
+cgdllcli.lib : $(cg_client_objs)
         $(librarian) $(libflags) $<
 
 !endif
 
 !include $(cg_dir)/mif/rules.mif
 
-cg$(target_name).lib : $(target_objs) $(mem_objs) $(cg_dump_objs)
+!ifeq release 0
+debug_objs = $(cg_dump_objs)
+!endif
+
+cg$(target_name).lib : $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs)
         $(librarian) $(libflags) $<
 
-$(hostcglibname) : $($(host_OS)_objs)
+$(hostcglibname) : $($(host_os)_objs)
         $(librarian) $(libflags) $<
