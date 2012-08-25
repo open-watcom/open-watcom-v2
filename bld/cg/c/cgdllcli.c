@@ -29,6 +29,9 @@
 *
 ****************************************************************************/
 
+
+#ifdef _CGDLL
+
 #ifdef __OS2__
 #define INCL_DOS
 #include <os2.h>
@@ -137,3 +140,4 @@ void _CGAPI CauseTBreak( void )
 {
 }
 
+#endif

@@ -780,6 +780,7 @@ static  void    Encode( instruction *ins )
     default:
         _Zoiks( ZOIKS_028 );
     }
+#ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "        " );
         DumpGen( ins->u.gen_table );
@@ -787,6 +788,7 @@ static  void    Encode( instruction *ins )
         DumpInsOnly( ins );
         DumpNL();
     }
+#endif
 }
 
 
@@ -818,23 +820,27 @@ extern  void    CodeLabel( label_handle label, unsigned alignment )
         ObjBytes( &Zeros[0], alignment - modulus );
     }
     OutLabel( label );
+#ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "L" );
         DumpPtr( label );
         DumpString( ":" );
         DumpNL();
     }
+#endif
 }
 
 
 extern  void    CodeLineNum( cg_linenum line, bool label )
 /********************************************************/
 {
+#ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "Source Line: " );
         DumpInt( line );
         DumpNL();
     }
+#endif
     OutLineNum( line, label );
 }
 
@@ -843,11 +849,13 @@ extern  void    GenJumpLabel( pointer label )
 /*******************************************/
 {
     GenBRANCH( 18, label, FALSE, FALSE );
+#ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "JMP L" );
         DumpPtr( label );
         DumpNL();
     }
+#endif
 }
 
 #define LT      0x00
@@ -875,11 +883,13 @@ extern  void    GenJumpIf( instruction *ins, pointer label )
 
     ops = &BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][0]; // fixme - floating point
     GenCONDBR( 16, ops[0], ops[1], label );
+#ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "Jcc L" );
         DumpPtr( label );
         DumpNL();
     }
+#endif
 }
 
 

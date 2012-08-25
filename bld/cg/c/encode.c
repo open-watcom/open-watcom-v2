@@ -94,12 +94,14 @@ extern  void    CodeLabel( label_handle label, unsigned align ) {
     if( OptForSize > 50 || align == 0 ) align = 1;
     CodeHandle( OC_LABEL, align-1, label );
 #if _TARGET & _TARG_RISC
+#ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "L" );
         DumpPtr( label );
         DumpString( ":" );
         DumpNL();
     }
+#endif
 #endif
 }
 
@@ -117,11 +119,13 @@ extern  void    CodeLineNum( cg_linenum line, bool label_line ) {
         temp.label_line = label_line;
         temp.line = line;
 #if _TARGET & _TARG_RISC
+#ifndef NDEBUG
         if( _IsTargetModel( ASM_OUTPUT ) ) {
             DumpString( "Source Line: " );
             DumpInt( line );
             DumpNL();
         }
+#endif
 #endif
         InputOC( (any_oc *)&temp );
     }
@@ -198,11 +202,13 @@ static  void    DoCondJump( instruction *cond ) {
         temp.handle = dest_true;
         InputOC( (any_oc *)&temp );
 #if _TARGET & _TARG_RISC
+#ifndef NDEBUG
         if( _IsTargetModel( ASM_OUTPUT ) ) {
             DumpString( "Jcc L" );
             DumpPtr( dest_true );
             DumpNL();
         }
+#endif
 #endif
     }
     if( dest_false != dest_next && dest_false != NULL ) {
@@ -239,11 +245,13 @@ extern  void    GenJumpLabel( pointer label ) {
 
     CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), label );
 #if _TARGET & _TARG_RISC
+#ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "JMP L" );
         DumpPtr( label );
         DumpNL();
     }
+#endif
 #endif
 }
 

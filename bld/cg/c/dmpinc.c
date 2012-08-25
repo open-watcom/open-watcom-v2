@@ -46,6 +46,8 @@ extern void DumpTree();
 extern void DumpCurrLoop();
 extern void DumpIVList();
 extern void DumpInvariants();
+extern void DumpOpt();
+extern void DumpDataDag();
 
 extern void (*__DmpRef[])(void) = {
         &DumpFPUIns,
@@ -62,4 +64,7 @@ extern void (*__DmpRef[])(void) = {
         &DumpCurrLoop,
         &DumpIVList,
         &DumpInvariants,
-        0 };
+        &DumpOpt,
+        &DumpDataDag,
+        0
+};

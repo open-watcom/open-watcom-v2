@@ -1036,6 +1036,7 @@ static  void Encode( instruction *ins )
     default:
         _Zoiks( ZOIKS_028 );
     }
+#ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "        " );
         DumpGen( ins->u.gen_table );
@@ -1043,6 +1044,7 @@ static  void Encode( instruction *ins )
         DumpInsOnly( ins );
         DumpNL();
     }
+#endif
 }
 
 

@@ -909,6 +909,7 @@ static  void    Encode( instruction *ins ) {
     default:
         _Zoiks( ZOIKS_028 );
     }
+#ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "        " );
         DumpGen( ins->u.gen_table );
@@ -916,6 +917,7 @@ static  void    Encode( instruction *ins ) {
         DumpInsOnly( ins );
         DumpNL();
     }
+#endif
 }
 
 extern  void    GenObjCode( instruction *ins )  {
@@ -931,11 +933,13 @@ extern  void    GenJumpIf( instruction *ins, pointer label ) {
 
     GenBRANCH( BranchOpcodes[ ins->head.opcode - FIRST_COMPARISON ][ _IsFloating( ins->type_class ) ],
                 _NameReg( ins->operands[ 0 ] ), label );
+#ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "Jcc L" );
         DumpPtr( label );
         DumpNL();
     }
+#endif
 }
 #endif
 
