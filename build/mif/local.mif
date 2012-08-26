@@ -1,3 +1,7 @@
+!ifndef bootstrap
+!define __WATCOM__
+!endif
+
 # global definition which tool is quiet
 cl         += -zq
 cc         += -zq

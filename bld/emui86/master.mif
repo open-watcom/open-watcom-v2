@@ -35,7 +35,7 @@ INCS = &
 
 .c : ../c
 .asm : ../asm
-.inc : ../inc;$(emu32_dir)/inc
+.inc : ../inc;$(emu386_dir)/inc
 
 aflag_386 =
 !ifeq host_cpu i86
@@ -52,7 +52,7 @@ extra_a_flags_dosinit  = -fpi
 extra_a_flags_initemu  = -fpi87 -i"$(comp_cfg_dir)/h"
 extra_a_flags_initemu2 = -fpc -i"$(comp_cfg_dir)/h"
 extra_a_flags_initemuw = -fpc -i"$(comp_cfg_dir)/h"
-extra_a_flags_emu8087  = -fpc -i"../inc" -i"$(emu32_dir)/inc" -i"$(mathlib_dir)/h"
+extra_a_flags_emu8087  = -fpc -i"../inc" -i"$(emu386_dir)/inc" -i"$(mathlib_dir)/h"
 extra_a_flags_emustub =
 
 extra_c_flags = -s

@@ -1,7 +1,3 @@
-!ifndef bootstrap
-!define __WATCOM__
-!endif
-
 bld_ver      = $(%BLD_VER)
 patch_level  = 0
 lang_root    = $(%WATCOM)
