@@ -352,7 +352,7 @@ extra_l_flags_os2_i86 = op stack=16k, newfile
 extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
 extra_l_flags_qnx_386 = opt stack = 0x8000, offset=0x9000, resource=..\wvqnx.u
 extra_l_flags_qnx = $(extra_l_flags_qnx_$(host_cpu))
-extra_l_flags_rdos = libpath $(clib_dir)/library/rdos.386/mf_r libpath $(mathlib_dir)/library/msdos.387/mf_r libpath $(emu387_dir)/stub386
+extra_l_flags_rdos = libpath $(clib_dir)/library/rdos.386/mf_r libpath $(mathlib_dir)/library/msdos.387/mf_r libpath $(emu386_dir)/stub386
 ############
 
 # resources

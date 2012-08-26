@@ -5,15 +5,9 @@
 bld_ver      = $(%BLD_VER)
 patch_level  = 0
 lang_root    = $(%WATCOM)
-!ifdef __UNIX__
-build_dir    = $(%OWROOT)/build
 contrib_dir  = $(%OWROOT)/contrib
+build_dir    = $(%OWROOT)/build
 src_dir      = $(%OWROOT)/bld
-!else
-build_dir    = $(%OWROOT)\build
-contrib_dir  = $(%OWROOT)\contrib
-src_dir      = $(%OWROOT)\bld
-!endif
 verbose      = $(%OWVERBOSE)
 
 # don't ask, just nuke the files

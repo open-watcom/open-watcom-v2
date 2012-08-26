@@ -394,7 +394,6 @@ rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu))
 
 !include incdirs.mif
 
-inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
 inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 
 

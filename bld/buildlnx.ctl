@@ -32,7 +32,7 @@ set WLINK_LNK=bootstrp.lnk
 [ INCLUDE <SRCDIR>/hdr/builder.ctl ]
 [ INCLUDE <SRCDIR>/clib/builder.ctl ]
 [ INCLUDE <SRCDIR>/mathlib/builder.ctl ]
-[ INCLUDE <SRCDIR>/emu/builder.ctl ]
+[ INCLUDE <SRCDIR>/emu386/builder.ctl ]
 [ INCLUDE <SRCDIR>/wcl/prereq.ctl ]
 [ INCLUDE <SRCDIR>/cfloat/builder.ctl ]
 [ INCLUDE <SRCDIR>/owl/builder.ctl ]

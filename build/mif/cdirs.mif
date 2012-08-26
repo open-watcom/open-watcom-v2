@@ -241,11 +241,11 @@ zlib_dir        = $(contrib_dir)/zlib
 !ifndef awk_dir
 awk_dir         = $(src_dir)/awk
 !endif
-!ifndef emu16_dir
-emu16_dir       = $(src_dir)/emu86
+!ifndef emui86_dir
+emui86_dir      = $(src_dir)/emui86
 !endif
-!ifndef emu32_dir
-emu32_dir       = $(src_dir)/emu
+!ifndef emu386_dir
+emu386_dir      = $(src_dir)/emu386
 !endif
 !ifndef graphlib_dir
 graphlib_dir    = $(src_dir)/graphlib
@@ -271,7 +271,19 @@ wresedit_dir    = $(src_dir)/sdk/wresedit
 !ifndef pmake_dir
 pmake_dir       = $(src_dir)/pmake
 !endif
+!ifndef os2api_dir
+os2api_dir      = $(src_dir)/os2api
+!endif
+!ifndef w16api_dir
+w16api_dir      = $(src_dir)/w16api
+!endif
+!ifndef w32api_dir
+w32api_dir      = $(src_dir)/w32api
+!endif
 !ifndef nwoss_dir
 nwoss_dir       = $(src_dir)/os_supp/novell
+!endif
+!ifndef setupgui_dir
+setupgui_dir    = $(src_dir)/setupgui
 !endif
 

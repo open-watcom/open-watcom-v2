@@ -14,7 +14,7 @@ w32api_distrib_lib  = 1
 
 # This should be including the newly built headers when bootstrapping.
 !ifdef bootstrapmode
-inc_dirs = -I"$(src_dir)/w32api/nt/ddk" -I"$(src_dir)/w32api/nt/directx"
+inc_dirs = -I"$(w32api_dir)/nt/ddk" -I"$(w32api_dir)/nt/directx"
 !else
 inc_dirs = -I"$(lang_root)/h/nt/ddk" -I"$(lang_root)/h/nt/directx"
 !endif

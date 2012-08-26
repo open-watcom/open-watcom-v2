@@ -1,0 +1,58 @@
+proj_name = emu386
+
+emu386_autodepends = .AUTODEPEND
+emu386_distrib_lib = 1
+
+.ERASE
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+INCS = &
+ flda386.asm fldc386.asm fldm386.asm fldd386.asm ldi4386.asm &
+ ldfs386.asm fdld386.asm i4ld386.asm ldfd386.asm fsld386.asm &
+ ldi8386.asm i8ld386.asm &
+ sqrt386.asm 386fprem.inc 386log.inc 386poly.inc &
+ 386trig.inc 386sind.inc 386atan.inc &
+ 386f2xm1.inc 386fpemu.inc 386fxam.inc 386round.inc &
+ consts.inc fpubits.inc fpucc.inc memops.inc stkops.inc &
+ tagtab.inc tentab.inc
+
+.inc : ../inc
+.c : ../c;$(emui86_dir)/c
+.asm : ../asm
+
+extra_a_flags = -fpc -I"$(mathlib_dir)/h" -I"../inc"
+extra_a_flags_dos = -ms -D_OS=_PLDT -DSEGMENTED
+extra_a_flags_qnx = -ms -D_OS=_QNX -DSEGMENTED
+extra_a_flags_win = -mf -D_OS=_PLDT -D__WIN387__
+extra_a_flags_386inite = -I"$(comp_cfg_dir)/h"
+extra_a_flags_386stub = -ms -I"$(comp_cfg_dir)/h"
+
+extra_c_flags = -s -fpc
+extra_c_flags_dos = -zl -zls
+extra_c_flags_qnx = -oais-w3 -I"$(new_qnx_h)" -DQNX32
+
+!ifeq host_OS dos
+
+emu387.lib: emu387.obj 386inite.obj
+    $(librarian) $(libflags) $<
+
+!else ifeq host_OS qnx
+
+emu387: qnxemu87.obj emu387.obj fpeqnx.obj
+    $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,quiet,res=$(emui86_dir)/emu87.u
+
+!else ifeq host_OS win
+
+INCS += win30vxd.inc
+
+!else
+
+emu387.lib: 386stub.obj
+    $(librarian) $(libflags) $<
+
+!endif
+
+emu387.obj: emu387.asm $(INCS)
