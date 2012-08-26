@@ -31,29 +31,29 @@ additional_cleanup = *.dh *.ch
 
 # get the right version of tool depending on host platform
 !ifdef __OS2__
-edbind = $(vi_dir)\bind\os2386\edbind
-parsectl = $(vi_dir)\ctl\os2386\parsectl
-parsedyn = $(vi_dir)\ctl\os2386\parsedyn
+edbind = $(vi_dir:/=\)\bind\os2386\edbind
+parsectl = $(vi_dir:/=\)\ctl\os2386\parsectl
+parsedyn = $(vi_dir:/=\)\ctl\os2386\parsedyn
 !else ifdef __MSDOS__
-edbind = $(vi_dir)\bind\dos386\edbind
-parsectl = $(vi_dir)\ctl\dos386\parsectl
-parsedyn = $(vi_dir)\ctl\dos386\parsedyn
+edbind = $(vi_dir:/=\)\bind\dos386\edbind
+parsectl = $(vi_dir:/=\)\ctl\dos386\parsectl
+parsedyn = $(vi_dir:/=\)\ctl\dos386\parsedyn
 !else ifdef __LINUXMIPS__
-edbind = $(vi_dir)/bind/linuxmps/edbind.exe
-parsectl = $(vi_dir)/ctl/linuxmps/parsectl.exe
-parsedyn = $(vi_dir)/ctl/linuxmps/parsedyn.exe
+edbind = $(vi_dir:\=/)/bind/linuxmps/edbind.exe
+parsectl = $(vi_dir:\=/)/ctl/linuxmps/parsectl.exe
+parsedyn = $(vi_dir:\=/)/ctl/linuxmps/parsedyn.exe
 !else ifdef __LINUX__
-edbind = $(vi_dir)/bind/linux386/edbind.exe
-parsectl = $(vi_dir)/ctl/linux386/parsectl.exe
-parsedyn = $(vi_dir)/ctl/linux386/parsedyn.exe
+edbind = $(vi_dir:\=/)/bind/linux386/edbind.exe
+parsectl = $(vi_dir:\=/)/ctl/linux386/parsectl.exe
+parsedyn = $(vi_dir:\=/)/ctl/linux386/parsedyn.exe
 !else ifdef __NTAXP__
-edbind = $(vi_dir)\bind\ntaxp\edbind
-parsectl = $(vi_dir)\ctl\ntaxp\parsectl
-parsedyn = $(vi_dir)\ctl\ntaxp\parsedyn
+edbind = $(vi_dir:/=\)\bind\ntaxp\edbind
+parsectl = $(vi_dir:/=\)\ctl\ntaxp\parsectl
+parsedyn = $(vi_dir:/=\)\ctl\ntaxp\parsedyn
 !else
-edbind = $(vi_dir)\bind\nt386\edbind
-parsectl = $(vi_dir)\ctl\nt386\parsectl
-parsedyn = $(vi_dir)\ctl\nt386\parsedyn
+edbind = $(vi_dir:/=\)\bind\nt386\edbind
+parsectl = $(vi_dir:/=\)\ctl\nt386\parsectl
+parsedyn = $(vi_dir:/=\)\ctl\nt386\parsedyn
 !endif
 
 !include ../mif/rcsdll.mif
