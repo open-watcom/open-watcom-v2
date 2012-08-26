@@ -126,7 +126,7 @@ extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
 extra_l_flags_win = option heap=10k, stack=10k segment class 'CODE' preload fixed segment class 'DATA' preload fixed lib commdlg,toolhelp
 
 !ifeq target nov
-inc_dirs = -I"$(ow_nwoss_root)/common/h" -I"$(ow_nwoss_root)/nw4/h" -I"$(nwsrc)"
+inc_dirs = -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)"
 !else ifeq target win
 inc_dirs = -I"$(sdk_misc_dir)" -I"$(commonui_dir)/h"
 !else ifeq target rsi
@@ -214,7 +214,7 @@ $(xname).nlm : $(xname).res $(objects) $(libs) nversion.tmp $(__MAKEFILES__)
     @%append tmp.lnk @nversion.tmp
     @for %i in ($objects) do @%append tmp.lnk file %i
     @for %i in ($(nlm_imports)) do @%append tmp.lnk import %i
-    @%append tmp.lnk import @$(ow_nwoss_root)/common/imp/owclib.imp
+    @%append tmp.lnk import @$(nwoss_dir)/common/imp/owclib.imp
     @for %i in ($(libs)) do @%append tmp.lnk lib %i
     @%append tmp.lnk module clib
     $(linker) @tmp.lnk

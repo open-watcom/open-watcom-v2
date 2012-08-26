@@ -55,7 +55,7 @@ extra_c_flags_trmem = $(trmem_cflags)
 
 .c:   ../c;$(trmem_dir);$(cpp_dir);$(wrc_dir)/c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" -I$(cpp_dir) -I"$(wres_dir)/h" -I"$(wrc_dir)/h"
+inc_dirs = -I. -I"../h" -I"$(cpp_dir)" -I"$(wres_dir)/h" -I"$(wrc_dir)/h"
 inc_dirs += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
 
 xlibs = $(wres_lib) $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib

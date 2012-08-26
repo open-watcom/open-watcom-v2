@@ -1,8 +1,8 @@
 trmem_cflag_i86 = -of+
 trmem_cflag_386 = -of+
 
-trmem_cflags = -s -I$(trmem_dir)
-trmem_cover_cflags = -s -I$(trmem_dir)
+trmem_cflags = -s -I"$(trmem_dir)"
+trmem_cover_cflags = -s -I"$(trmem_dir)"
 !ifeq $(proj_name)_trmem 1
 !ifeq release 0
 trmem_cover_cflags += -dTRMEM $(trmem_cflag_$(host_cpu))

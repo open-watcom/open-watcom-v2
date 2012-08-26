@@ -1,7 +1,7 @@
 # build host specific macros - should query WMAKE for details
 !ifdef __OS2__
 bld_sys         = os2v2
-bld_incs        = $(bld_extra_incs) -I$(lang_root)\h -I$(watcom_dir)\h
+bld_incs        = $(bld_extra_incs) -I"$(lang_root)/h" -I"$(watcom_dir)/h"
 lang_bin        = $(lang_root)\binp
 nlang_bin       = $(nlang_root)\binp
 lang_dll        = $(lang_root)\binp\dll
@@ -9,14 +9,14 @@ nlang_dll       = $(nlang_root)\binp\dll
 nulldevice      = nul
 !else ifdef __MSDOS__
 bld_sys         = dos4g
-bld_incs        = $(bld_extra_incs) -I$(lang_root)\h -I$(watcom_dir)\h
+bld_incs        = $(bld_extra_incs) -I"$(lang_root)/h" -I"$(watcom_dir)/h"
 lang_bin        = $(lang_root)\binw
 nlang_bin       = $(nlang_root)\binw
 nulldevice      = nul
 # DOS should never need the DLL related macros
 !else ifdef __NTAXP__
 bld_sys         = ntaxp
-bld_incs        = $(bld_extra_incs) -I$(lang_root)\h -I$(watcom_dir)\h
+bld_incs        = $(bld_extra_incs) -I"$(lang_root)/h" -I"$(watcom_dir)/h"
 lang_bin        = $(lang_root)\axpnt
 nlang_bin       = $(nlang_root)\axpnt
 lang_dll        = $(lang_root)\axpnt
@@ -24,7 +24,7 @@ nlang_dll       = $(nlang_root)\axpnt
 nulldevice      = nul
 !else ifdef __NT386__
 bld_sys         = nt
-bld_incs        = $(bld_extra_incs) -I$(lang_root)\h -I$(watcom_dir)\h
+bld_incs        = $(bld_extra_incs) -I"$(lang_root)/h" -I"$(watcom_dir)/h"
 lang_bin        = $(lang_root)\binnt
 nlang_bin       = $(nlang_root)\binnt
 lang_dll        = $(lang_root)\binnt
@@ -39,9 +39,9 @@ bld_sys         = linuxmips
 bld_sys         = linux
 !endif
 !ifdef bootstrap
-bld_incs        = $(bld_extra_incs) -I$(hdr_dir)/linux -I$(watcom_dir)/h
+bld_incs        = $(bld_extra_incs) -I"$(hdr_dir)/linux" -I"$(watcom_dir)/h"
 !else
-bld_incs        = $(bld_extra_incs) -I$(lang_root)/lh -I$(watcom_dir)/h
+bld_incs        = $(bld_extra_incs) -I"$(lang_root)/lh" -I"$(watcom_dir)/h"
 !endif
 lang_bin        = $(lang_root)/binl
 nlang_bin       = $(nlang_root)/binl
@@ -54,7 +54,7 @@ nulldevice      = /dev/null
 #
 !error Please correct this makefile, see build\mif\bhost.mif for details.
 bld_sys         = nt
-bld_incs        = $(bld_extra_incs) -I$(lang_root)\h -I$(watcom_dir)\h
+bld_incs        = $(bld_extra_incs) -I"$(lang_root)/h" -I"$(watcom_dir)/h"
 nulldevice      = nul
 !else
 !error HOST OS not set

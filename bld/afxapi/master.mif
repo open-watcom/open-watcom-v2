@@ -10,7 +10,7 @@ afxapi_autodepends  = .autodepend
 
 inc_path += -I"../$(host_os)"
 
-splice = wsplice -i$(hdr_dir) $[@ $^@
+splice = wsplice -i"$(hdr_dir)" $[@ $^@
 
 headers =               &
         afx.h           &
@@ -316,7 +316,7 @@ all : $($(what_to_build)) .SYMBOLIC
     $(splice)
 
 afx.h: afx.mh
-    wsplice -i$(hdr_dir) $[@ tmp.h
+    wsplice -i"$(hdr_dir)" $[@ tmp.h
     awk -f ../dobldver.awk -v bld_ver=$(bld_ver) tmp.h > afx.h
     @rm tmp.h
 
@@ -353,7 +353,7 @@ $(statname).lib: $(static_objs)
     $(librarian) $(libflags) $<
 
 owf.res: ../lib/owf.rc .AUTODEPEND
-    $(rc) $(rc_flags) -ad -zk0 $(inc_path) -I../include $[@ -fo=$^@
+    $(rc) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$^@
 
 verrc_dll = $(dllname)
 !include verrc.mif

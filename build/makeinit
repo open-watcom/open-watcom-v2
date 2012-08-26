@@ -1,3 +1,7 @@
+!ifndef bootstrap
+!define __WATCOM__
+!endif
+
 bld_ver      = $(%BLD_VER)
 patch_level  = 0
 lang_root    = $(%WATCOM)
@@ -21,12 +25,6 @@ mif_path     = $(build_dir)/mif
 
 !include cdirs.mif
 
-# it prevents different target header path mixing
-!ifndef bootstrap
-.BEFORE
-#     @set include= 
-!endif
-
 # if you wish to build debug version
 !ifdef %DEBUG_BUILD
 debug_build = $(%DEBUG_BUILD)
@@ -44,7 +42,6 @@ nlang_root      = $(%DWATCOM)
 # The NOVELLNDK environment variable should be added during install. If not, the default location is
 # C:\NOVELL\NDK\NWSDK.
 nwndk_root      = $(%NOVELLNDK)
-ow_nwoss_root   = $(src_dir)\os_supp\novell
 nwos2dir=$(tools_root)\nwos2lib
 #nwdir=$(tools_root)\nwclib
 #nwsrc=$(tools_root)\src
@@ -71,7 +68,6 @@ nlang_root      = $(%DWATCOM)
 # The NOVELLNDK environment variable should be added during install. If not, the default location is
 # C:\NOVELL\NDK\NWSDK.
 nwndk_root      = $(%NOVELLNDK)
-ow_nwoss_root   = $(src_dir)/os_supp/novell
 nwos2dir=$(tools_root)/nwos2lib
 
 #

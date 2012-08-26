@@ -184,7 +184,7 @@ errsrc.exe : errsrc.obj
         wlink d a f errsrc
 
 errsrc.obj : ../c/errsrc.c
-        wcc386 $[@ -w3 -d1 -I"$(lang_root)/h" -I$(c_dir)h
+        wcc386 $[@ -w3 -d1 -I"$(lang_root)/h" -I"$(c_dir)h"
 
 makedoc : errdoc.exe .symbolic
         errdoc

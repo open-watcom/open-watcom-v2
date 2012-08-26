@@ -6,7 +6,7 @@ whelp_autodepends = .AUTODEPEND
 !include deftarg.mif
 !include defrule.mif
 
-inc_dirs = -I"$(help_dir)/h" -I"$(ui_dir)/h" -I$(trmem_dir)
+inc_dirs = -I"$(help_dir)/h" -I"$(ui_dir)/h" -I"$(trmem_dir)"
 
 .c: ../c;$(trmem_dir)
 

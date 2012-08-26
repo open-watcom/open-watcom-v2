@@ -169,7 +169,7 @@ res_inc_dirs = -I"$(res_dir)" -I"../res" -I"$(gui_dir)/h" $(inc_dirs_sys)
 inc_dirs  = -I"../h" -I"$(sdk_misc_dir)" -I"$(build_root)/wpack/h"
 inc_dirs += -I"$(ui_dir)/h" -I"$(wpi_dir)/h" -I"$(gui_dir)/h"
 inc_dirs += -I"$(commonui_dir)/h"
-inc_dirs += -I"$(build_root)/bdiff/h" -I$(trmem_dir) -I"$(libzip_dir)/lib"
+inc_dirs += -I"$(build_root)/bdiff/h" -I"$(trmem_dir)" -I"$(libzip_dir)/lib"
 
 
 # explicit rules

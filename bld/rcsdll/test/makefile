@@ -1,7 +1,7 @@
 #pmake: cpu_i86 os_win
 CC = wcc
-CFLAGS = -d2 -w4 -zW -zq -zu -ml -i$(win_h);..\..\h;..
-res1_flags = -bt=windows -i..\..\h;..
+CFLAGS = -d2 -w4 -zW -zq -zu -ml -i"$(win_h)" -I"../../h" -I..
+res1_flags = -bt=windows -i"../../h" -I..
 name = test
 CDIR = .;..\c
 
@@ -13,7 +13,7 @@ $(name).obj : $(name).c
     wcc $< -bt=windows $(CFLAGS)
 
 $(name).res : $(name).rc $(resources)
-    wrc -r -i=.. -i$(win_h) -fo=.\$(name).res $(res1_flags) $[@
+    wrc -r -i=.. -i"$(win_h)" -fo=.\$(name).res $(res1_flags) $[@
 
 clean : .SYMBOLIC
     rm -f *.obj *.exe *.map *.res *.err

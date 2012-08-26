@@ -1,4 +1,4 @@
-compile = $(comp386) $[@ -ox-4-d1-w4-zq-i$(watcom_h)
+compile = $(comp386) $[@ -ox-4-d1-w4-zq-i"$(watcom_h)"
 
 .c: ../c
 .c.obj :

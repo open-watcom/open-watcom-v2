@@ -1,4 +1,4 @@
-cflags = -zq-d1-osal-s-w3 -i$(ui_h)
+cflags = -zq-d1-osal-s-w3 -i"$(ui_h)"
 cflags286 = -ml-of
 cflags386 = -mf
 

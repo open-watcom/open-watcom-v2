@@ -25,7 +25,7 @@ extra_a_flags = -Dcompact -DDOS4G
 extra_a_flags_dbgliba = -zcm
 
 extra_srcs = $(rsilib);
-inc_dirs = -I$(rsilib)
+inc_dirs = -I"$(rsilib)"
 
 extra_libs = $(rsilib)/d16libc.lib
 

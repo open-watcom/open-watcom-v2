@@ -17,7 +17,7 @@ opt_diag0097  = -ms
 !endif
 opt_diag0104 = -xs
 !ifeq arch 386
-opt_diag0105 = -xs -i$(%watcom)\h\win
+opt_diag0105 = -xs -i"$(%watcom)/h/win"
 !endif
 opt_diag0106 = -w10
 opt_diag0116 = -xs

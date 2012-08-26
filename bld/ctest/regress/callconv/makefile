@@ -67,11 +67,11 @@ exec_prefix =
 run_quietly = -zq
 !endif
 
-test_cflags_386 += -we-w0 -I$(callconv_dir) $(run_quietly)
-test_cflags_i86 += -we-w0 -I$(callconv_dir) $(run_quietly)
-test_cflags_axp += -we-w0 -I$(callconv_dir) $(run_quietly)
-test_cflags_ppc += -we-w0 -I$(callconv_dir) $(run_quietly)
-test_cflags_mps += -we-w0 -I$(callconv_dir) $(run_quietly)
+test_cflags_386 += -we-w0 -I"$(callconv_dir)" $(run_quietly)
+test_cflags_i86 += -we-w0 -I"$(callconv_dir)" $(run_quietly)
+test_cflags_axp += -we-w0 -I"$(callconv_dir)" $(run_quietly)
+test_cflags_ppc += -we-w0 -I"$(callconv_dir)" $(run_quietly)
+test_cflags_mps += -we-w0 -I"$(callconv_dir)" $(run_quietly)
 
 !ifeq arch 386
 test_cflags_386 += $(add_br_$(no_br_$^*))

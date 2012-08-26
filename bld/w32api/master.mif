@@ -19,9 +19,9 @@ inc_dirs = -I"$(src_dir)/w32api/nt/ddk" -I"$(src_dir)/w32api/nt/directx"
 inc_dirs = -I"$(lang_root)/h/nt/ddk" -I"$(lang_root)/h/nt/directx"
 !endif
 
-splice = wsplice -i$(hdr_dir) -i$(root_dir)/include $[@ $^@
-rsplice = wsplice -i$(hdr_dir) -i$(root_dir)/include -kRESOURCE $[@ $^@
-ws2splice = wsplice -i$(hdr_dir) -i$(root_dir)/include -kWINSOCK2 $[@ $^@
+splice = wsplice -i"$(hdr_dir)" -i"$(root_dir)/include" $[@ $^@
+rsplice = wsplice -i"$(hdr_dir)" -i"$(root_dir)/include" -kRESOURCE $[@ $^@
+ws2splice = wsplice -i"$(hdr_dir)" -i"$(root_dir)/include" -kWINSOCK2 $[@ $^@
 
 headers = &
         _w32ials.h           &

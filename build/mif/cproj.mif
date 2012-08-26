@@ -395,11 +395,7 @@ rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu))
 !include incdirs.mif
 
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
-!ifdef __UNIX__
-inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I$(watcom_dir)/h
-!else
-inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I$(watcom_dir)\h
-!endif
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 
 
 rtdll_clib_os2_386     = $(clib_dir)/rtdll/os2.386/mf_r

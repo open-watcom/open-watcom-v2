@@ -33,7 +33,7 @@ objs += trmemcvr.obj trmem.obj
 .c      : ../c;.;$(trmem_dir)
 .y      : ../c
 
-inc_dirs = -I"../h" -I$(trmem_dir)
+inc_dirs = -I"../h" -I"$(trmem_dir)"
 
 lnk = wig.lnk
 

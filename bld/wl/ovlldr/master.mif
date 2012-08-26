@@ -36,7 +36,7 @@ extra_c_flags_movldbg  = -I"$(dig_dir)/h" -DOVL_WHOOSH -DOVL_MULTITHREAD
 
 extra_c_flags_dovlboth = -DOVL_DEBUG
 
-extra_a_flags = -Fo=$^@ -i$(watcom_h) -i"../h" -nc=_OVLCODE -nt=_TEXT
+extra_a_flags = -Fo=$^@ -i"$(watcom_h)" -i"../h" -nc=_OVLCODE -nt=_TEXT
 
 extra_a_flags_ovldata  =
 extra_a_flags_dovldata = -DOVL_DEBUG

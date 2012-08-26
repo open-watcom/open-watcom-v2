@@ -359,35 +359,29 @@ ldebug_axp = $(targ_ldb_$(targ_env_axp))
 ldebug_ppc = $(targ_ldb_$(targ_env_ppc))
 ldebug_mps = $(targ_ldb_$(targ_env_mps))
 
-!ifdef __UNIX__
-SL = /
-!else
-SL = \
-!endif
-
 #
 # targ_bld      build options (e.g., -bt=dos)
 #
-targ_bld_pls386 = -bt=dos -I$(lang_root)$(SL)h
-targ_bld_d4g386 = -bt=dos -I$(lang_root)$(SL)h
-targ_bld_cw386  = -bt=dos -I$(lang_root)$(SL)h
-targ_bld_tnt386 = -bt=nt -I$(lang_root)$(SL)h
-targ_bld_os2386 = -bt=os2 -I$(lang_root)$(SL)h -I$(lang_root)$(SL)h$(SL)os2
-targ_bld_wnt386 = -bt=nt -I$(lang_root)$(SL)h -I$(lang_root)$(SL)h$(SL)nt
-targ_bld_lnx386 = -bt=linux -I$(lang_root)$(SL)lh
+targ_bld_pls386 = -bt=dos -I"$(lang_root)/h"
+targ_bld_d4g386 = -bt=dos -I"$(lang_root)/h"
+targ_bld_cw386  = -bt=dos -I"$(lang_root)/h"
+targ_bld_tnt386 = -bt=nt -I"$(lang_root)/h"
+targ_bld_os2386 = -bt=os2 -I"$(lang_root)/h" -I"$(lang_root)/h/os2"
+targ_bld_wnt386 = -bt=nt -I"$(lang_root)/h" -I"$(lang_root)/h/nt"
+targ_bld_lnx386 = -bt=linux -I"$(lang_root)/lh"
 !ifdef __NT386__
-targ_bld_wnti86 = -bt=dos -I$(lang_root)$(SL)h
+targ_bld_wnti86 = -bt=dos -I"$(lang_root)/h"
 !else
-targ_bld_wnti86 = -bt=nt -I$(lang_root)$(SL)h
+targ_bld_wnti86 = -bt=nt -I"$(lang_root)/h"
 !endif
-targ_bld_dosi86 = -bt=dos -I$(lang_root)$(SL)h
-targ_bld_os2i86 = -bt=os2 -I$(lang_root)$(SL)h -I$(lang_root)$(SL)h$(SL)os21x
+targ_bld_dosi86 = -bt=dos -I"$(lang_root)/h"
+targ_bld_os2i86 = -bt=os2 -I"$(lang_root)/h" -I"$(lang_root)/h/os21x"
 #
 # these will be empty
 #
-targ_bld_wntaxp = -si -I$(lang_root)$(SL)h -I$(lang_root)$(SL)h$(SL)nt
-targ_bld_dosaxp = -I$(lang_root)$(SL)h
-targ_bld_os2axp = -I$(lang_root)$(SL)h
+targ_bld_wntaxp = -si -I"$(lang_root)/h" -I"$(lang_root)/h/nt"
+targ_bld_dosaxp = -I"$(lang_root)/h"
+targ_bld_os2axp = -I"$(lang_root)/h"
 
 #
 # build environment

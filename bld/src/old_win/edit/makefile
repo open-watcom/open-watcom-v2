@@ -1,6 +1,6 @@
 !include ../build.mif
 
-CFLAGS = -zW -oaxt -d1 -w4 -i..\filedll
+CFLAGS = -zW -oaxt -d1 -w4 -i"../filedll"
 !ifeq WIN386 1
 CC = wcc386p
 !else

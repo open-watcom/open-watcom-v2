@@ -50,7 +50,7 @@ opt_pch11 = -fhq -dAFS_CM
 opt_pp08 = -w0
 opt_prag01 = -fhq       # (1) write PCH
 opt_prag02 = -fhq       # (2) read PCH
-opt_thread01 = -i$(lang_root)\h\nt
+opt_thread01 = -i"$(lang_root)/h/nt"
 
 !ifneq arch i86
 opt_link_opt32 = option stack=128k

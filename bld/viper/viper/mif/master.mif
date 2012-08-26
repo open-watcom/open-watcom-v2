@@ -59,7 +59,7 @@ prereq_ide_h = $(prereq_inc_$(host_os))/ide.h
 
 inc_dirs_win = -I"$(batch_dir)/dos"
 
-inc_dirs  = $(wclass_inc_dirs) -I"$(viper_dir)/mviper" -I$(editdll_dir) -I$(rcsdll_dir) 
+inc_dirs  = $(wclass_inc_dirs) -I"$(viper_dir)/mviper" -I"$(editdll_dir)" -I"$(rcsdll_dir)" 
 inc_dirs += -I"$(batch_dir)/h" -I"$(gui_dir)/win/h" -I"$(prereq_inc_$(host_os))"
 
 LIBS = &

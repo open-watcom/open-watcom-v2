@@ -11,7 +11,7 @@ objread_autodepends = .autodepend
 .c: $(orl_dir)/test/c;$(trmem_dir)
 .h: $(orl_dir)/test/h;$(trmem_dir)
 
-inc_dirs = -I"$(orl_dir)/h" -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(watcom_dir)/h" -I$(trmem_dir)
+inc_dirs = -I"$(orl_dir)/h" -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(watcom_dir)/h" -I"$(trmem_dir)"
 
 !ifeq release 0
 extra_c_flags_test      = -DTRMEM -of+

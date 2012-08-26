@@ -9,13 +9,13 @@ optimized = yes
 .cpp.obj : .AUTODEPEND
 !ifdef optimized
 !   ifdef TRPRTDLL
-        $(comp386plus) $[* -ew-d1-zm-bt=os2-w4-zq-hd-ox -dTRPRTDLL -i..\test\trpr
+        $(comp386plus) $[* -ew-d1-zm-bt=os2-w4-zq-hd-ox -dTRPRTDLL -i"../test/trpr"
 !   else
         $(comp386plus) $[* -ew-d2-zm-bt=os2-w4-zq
 !   endif
 !else
 !   ifdef TRPRTDLL
-        $(comp386plus) $[* -ew-d2-bt=os2-w4-zq-hd -dTRPRTDLL -i..\test\trpr
+        $(comp386plus) $[* -ew-d2-bt=os2-w4-zq-hd -dTRPRTDLL -i"../test/trpr"
 !   else
         $(comp386plus) $[* -ew-d2-zm-bt=os2-w4-zq
 !   endif

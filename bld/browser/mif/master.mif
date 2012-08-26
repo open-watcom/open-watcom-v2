@@ -52,7 +52,7 @@ inc_dirs_win = -I"$(docs_root)/win"
 inc_dirs_dos = -I"$(docs_root)/os2"
 inc_dirs_os2 = -I"$(docs_root)/os2"
 
-inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) -I"$(dwarf_dir)/dr/h" -I"$(posix_dir)/h" -I$(editdll_dir)
+inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) -I"$(dwarf_dir)/dr/h" -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
 extra_c_flags_i86 = -zc -zm
 !ifdef DBG

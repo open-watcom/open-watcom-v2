@@ -25,7 +25,7 @@ test_cflags = -op-d2
 alt_error=00
 !endif
 
-test_cflags += -zq -I../.. -w0
+test_cflags += -zq -I"../.." -w0
 !ifdef __UNIX__
 test_cflags += -fi=../__ialias.h
 !endif

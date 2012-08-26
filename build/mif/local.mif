@@ -106,7 +106,7 @@ wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w8 -fe=$^@
 cc = gcc
 cpp = gcc
 cl = $(cc)
-bld_incs = $(bld_extra_incs) -I$(watcom_dir)/h
+bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 bld_cl = gcc $(bld_incs)
 bld_cc = gcc $(bld_incs)
 bld_link = gcc
@@ -155,7 +155,7 @@ cc = qcc
 cpp = qcc
 cl = $(cc)
 !ifdef __QNX__
-bld_incs = $(bld_extra_incs) -I$(watcom_dir)/h
+bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 bld_cl = $(cc) $(bld_incs)
 bld_cc = $(cc) $(bld_incs)
 bld_link = $(cc)

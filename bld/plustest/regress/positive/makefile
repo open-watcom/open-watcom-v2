@@ -81,9 +81,9 @@ alt_error = 00
 add_br_ = $(br_opt)
 !endif
 
-test_cflags_386 += -we-w0-zq -I$(positive_dir)
-test_cflags_i86 += -we-w0-zq -I$(positive_dir)
-test_cflags_axp += -we-w0-zq -I$(positive_dir)
+test_cflags_386 += -we-w0-zq -I"$(positive_dir)"
+test_cflags_i86 += -we-w0-zq -I"$(positive_dir)"
+test_cflags_axp += -we-w0-zq -I"$(positive_dir)"
 
 !ifeq arch 386
 test_cflags_386 += $(add_br_$(no_br_$^*))

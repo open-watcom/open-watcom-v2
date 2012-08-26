@@ -149,7 +149,7 @@ opt_rtti05 = -xr
 opt_rtti06 = -xr
 opt_rtti07 = -xr
 opt_rtti08 = -xr -xbnm
-opt_thread01 = -i$(lang_root)\h\nt
+opt_thread01 = -i"$(lang_root)/h/nt"
 opt_vf18 = -za
 
 !ifneq arch i86

@@ -12,7 +12,7 @@ extra_objs = &
     adsacc.obj &
     adsintr.obj
 
-extra_c_flags = -DACAD -I$(adsdir)
+extra_c_flags = -DACAD -I"$(adsdir)"
 
 extra_a_flags = -ms -3s -DACAD
 

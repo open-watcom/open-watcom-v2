@@ -416,7 +416,7 @@ $(lnk) : $(__MAKEFILES__)
 !endif
     @for %i in ($(objs)) do @%append $(lnk) file %i
 
-rcinclude=-I. -I"$(hdir)" -I"$(dig_dir)/h" -I"$(aui_dir)/h" -I$(gui_dir) -I"$(gui_dir)/h" -I"$(lang_root)/h"
+rcinclude=-I. -I"$(hdir)" -I"$(dig_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)" -I"$(gui_dir)/h" -I"$(lang_root)/h"
 
 bitmaps = &
         $(wv_dir)/win/zapant.ico &

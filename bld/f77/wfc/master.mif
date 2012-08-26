@@ -37,7 +37,7 @@ extra_a_flags = -oc
 !endif
 
 !ifeq wfc_trmem 1
-extra_c_flags_fmemmgr = -DTRMEM -I$(trmem_dir)
+extra_c_flags_fmemmgr = -DTRMEM -I"$(trmem_dir)"
 fobjs += trmem.obj trmemcvr.obj
 !endif
 

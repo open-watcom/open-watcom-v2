@@ -239,8 +239,8 @@ dbgstr.lib : dbgstr.obj
 inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(os)" 
 inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h"
 !ifeq host_os nov
-inc_dirs += -I"$(ow_nwoss_root)/nw$(nlm_ver)/h" 
-inc_dirs += -I"$(ow_nwoss_root)/nw$(nlm_ver)/src" -I"$(ow_nwoss_root)/common/h"
+inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/h" 
+inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/src" -I"$(nwoss_dir)/common/h"
 !endif
 
 .c: ../c;../../c;$(trap_dir)/common/$(os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
