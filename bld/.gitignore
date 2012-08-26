@@ -114,6 +114,8 @@
 /plustest/*/*/*.sav
 /plustest/*/*/*/*.out
 /plustest/*/*/*/*.sav
+/plustest/regress/owstl/mmwin16.cpp
+/plustest/regress/owstl/mmwindef.cpp
 #
 /rc/rc/*/ytab2.c
 /rc/rc/*/ytabw.c
