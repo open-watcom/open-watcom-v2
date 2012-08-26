@@ -92,7 +92,8 @@ ifdef __WASM__
         _MATH = _8087
     endif
 else
-include         .\model.inc     ; defines _MODEL, _MATH symbols
+;include         .\model.inc     ; defines _MODEL, _MATH symbols
+.ERR
 endif
 
 if _MODEL and _BIG_CODE
