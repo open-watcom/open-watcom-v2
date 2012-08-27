@@ -1,4 +1,4 @@
-#pmake/50: os_linux cpu_mps
+#pmake: os_linux cpu_mps
 
 host_os  = linux
 host_cpu = mps
