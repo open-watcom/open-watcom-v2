@@ -18,12 +18,13 @@ c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/ui;$(watcom_dir)/c
 !endif
 
 .c : $(c_dirs)
+.c : $(trmem_dir)
 .asm : $(c_dirs)
 
-!ifeq vi_trmem 1
-extra_c_flags_trmem = -dTRMEM
-!endif
-
+extra_c_flags_getopt = -D__ISVI__
+extra_c_flags_ideactiv = -D__ISVI__
+extra_c_flags_mem = $(trmem_cover_cflags)
+extra_c_flags_trmem = $(trmem_cflags)
 
 !ifdef is286
 extra_c_flags_i86_dos = -D__286__ -2
@@ -51,9 +52,4 @@ extra_c_flags_386_win = -zw -s
 
 extra_c_flags_386 = $(extra_c_flags_386_$(host_os))
 
-extra_c_flags = $(extra_c_flags_trmem) $(extra_c_flags_debug) -DNOUSE3D=1 -fh
-
-.ctl.ch:
-        $(parsectl) $[@ $[&.ch Ctl_$^&
-.dyn.dh:
-        $(parsedyn) $[@ $[&.dh Dyn_$^&
+extra_c_flags = $(extra_c_flags_debug) -DNOUSE3D=1 -fh

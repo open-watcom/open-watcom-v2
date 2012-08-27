@@ -124,9 +124,7 @@ void Quit( const char **usage_msg, const char *str, ... )
     // yet (this is always called from checkFlags)
     // ExitEditor( 0 );
     ChangeDirectory( HomeDirectory );
-#ifdef TRMEM
-    DumpTRMEM();
-#endif
+    FiniMem();
     exit( 0 );
 
 } /* Usage */
@@ -217,9 +215,7 @@ void ExitEditor( int rc )
 #if defined( VI_RCS )
     ViRCSFini();
 #endif
-#ifdef TRMEM
-    DumpTRMEM();
-#endif
+    FiniMem();
     exit( rc );
 
 } /* ExitEditor */

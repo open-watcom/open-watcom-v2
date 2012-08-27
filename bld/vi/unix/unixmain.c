@@ -38,9 +38,7 @@ int main( int argc, char *argv[] )
 {
     static char buffer[FILENAME_MAX];
 
-#ifdef TRMEM
-    InitTRMEM();
-#endif
+    InitMem();
 
     argc = argc;
 #ifndef __WATCOMC__
@@ -53,9 +51,8 @@ int main( int argc, char *argv[] )
     InitializeEditor();
     EditMain();
 
-#ifdef TRMEM
-    DumpTRMEM();
-#endif
+    FiniMem();
+
     return( 0 );
 
 } /* main */

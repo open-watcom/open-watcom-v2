@@ -2,39 +2,7 @@
 
 special = rcstr.gh
 
-$(proj_name).res : $(vi_dir)/win/viw.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
-
-rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
-
-rcstrmsg.gh : $(vi_dir)/vi.msg $(vi_dir)/tooltips.msg ../h/langdef.h $(msgfiles)
-        $(c_pp) -zk0 -I"$(sdk_misc_dir)" $[@ >$^@
-
-setfs.obj : setfs.c setfs.ch setfs.dh
-setfs.ch : setfs.ctl
-setfs.dh : setfs.dyn
-
-setgen.obj : setgen.c setgen.ch setgen.dh
-setgen.ch : setgen.ctl
-setgen.dh : setgen.dyn
-
-setscr.obj : setscr.c setscr.ch
-setscr.ch : setscr.ctl
-
 !endif
-
-extra_c_flags_ideactiv = -D__ISVI__
-extra_c_flags_getopt = -D__ISVI__
 
 .c : $(viper_dir)/ideact
 .c : $(posix_dir)/misc
-
-!ifeq release 0
-!ifeq vi_trmem 1
-!ifneq host_cpu axp
-extra_c_flags += -of+
-!endif
-.c : $(trmem_dir)
-!endif
-!endif

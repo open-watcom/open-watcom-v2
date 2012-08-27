@@ -28,7 +28,7 @@ rc_deps = ../win/viw.ico ../win/filelist.dlg ../win/fgrep.dlg &
           ../ctl/setfs.dlg ../ctl/setscr.dlg ../ctl/setgen.dlg
 
 !ifdef sys_windowed
-other = vi.res
+other = $(name).res
 ! ifeq host_os nt
 extraobjs += spawn.obj ntcmds.obj
 ! else

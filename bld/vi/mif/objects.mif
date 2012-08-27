@@ -68,9 +68,7 @@ objsize = xmem.obj fcbswap.obj clset.obj hist.obj samefile.obj &
 !include $(vi_dir)/ui/ui.mif
 !endif
 
-!ifeq vi_trmem 1
-extraobjs += trmem.obj trmemcvr.obj
-!endif
+extraobjs += $(trmem_objs)
 
 objs = $(objsize) $(objtime) $(extraobjs) $(xtraobjs) $(uiobjs)
 objsroot = $(objsizeroot) $(objtimeroot) $(extraobjsroot) $(uiobjsroot)

@@ -388,17 +388,22 @@ extern void trmemPrint( int * handle, const char * buff, size_t len )
     write( *handle, buff, len );
 }
 
-void DumpTRMEM( void )
+#endif
+
+void FiniMem( void )
 {
+#ifdef TRMEM
     _trmem_prt_list( trmemHandle );
     _trmem_close( trmemHandle );
     if( trmemOutput != -1 ) {
         close( trmemOutput );
     }
+#endif
 }
 
-void InitTRMEM( void )
+void InitMem( void )
 {
+#ifdef TRMEM
     char        file[FILENAME_MAX];
 
     strcpy( file, getenv( "EDPATH" ) );
@@ -410,5 +415,5 @@ void InitTRMEM( void )
         _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
         _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
     // atexit( DumpTRMEM );
-}
 #endif
+}

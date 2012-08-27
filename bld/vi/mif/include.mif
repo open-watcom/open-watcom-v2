@@ -1,10 +1,5 @@
 inc_dirs = -I"$(vi_dir)/h" -I"$(rcsdll_dir)" -I"$(posix_dir)/h" -I"$(watcom_dir)/h"
 
-!ifeq vi_trmem 1
-inc_dirs += -I"$(trmem_dir)"
-!endif
-
-
 !ifdef curses
 inc_dirs_dos = -I"$(curses_dir)/h"
 !endif

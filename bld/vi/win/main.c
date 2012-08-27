@@ -116,9 +116,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
     prev = prev;
     cmdline = cmdline;
 
-#ifdef TRMEM
-    InitTRMEM();
-#endif
+    InitMem();
 
 #ifndef __NT__
     if( prev != NULL && !HasShare() ) {
@@ -155,9 +153,8 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
     ResizeRoot();
     EditMain();
 
-#ifdef TRMEM
-    DumpTRMEM();
-#endif
+    FiniMem();
+
     return( 0 );
 
 } /* WinMain */

@@ -599,10 +599,8 @@ void    StaticStart( void );
 void    StaticFini( void );
 char    *MemStrDup( char * );
 vi_rc   DumpMemory( void );
-#ifdef TRMEM
-void    InitTRMEM( void );
-void    DumpTRMEM( void );
-#endif
+void    InitMem( void );
+void    FiniMem( void );
 
 #define MemFree2( pp ) \
     do {                    \

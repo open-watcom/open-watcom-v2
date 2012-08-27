@@ -1,0 +1,29 @@
+!ifdef sys_windowed
+bind_conf = ./weditor.ini
+bind_compiled_extra = ./untitled.vi ./writewin.vi ./writeall.vi ./qall.vi ./proc.vi ./err.vi ./chkout.vi ./forceout.vi ./unlock.vi ./fin.vi ./toggle.vi
+bind_compiled = $(bind_conf) ./wrme.vi ./rdmewin.vi ./rcs.vi ./menuwin.vi ./mlselw.vi ./mcselw.vi $(bind_compiled_extra)
+!else
+bind_conf = ./ed.cfg
+bind_compiled_extra =
+bind_compiled = $(bind_conf) ./wrme.vi ./rdme.vi ./rcs.vi ./menu.vi ./mlsel.vi ./mcsel.vi $(bind_compiled_extra)
+!endif
+bind_lang_data = &
+    awk.dat &
+    basic.dat &
+    bat.dat &
+    c.dat &
+    cpp.dat &
+    dbtest.dat &
+    declspec.dat &
+    fortran.dat &
+    gml.dat &
+    html.dat &
+    java.dat &
+    mif.dat &
+    perl.dat &
+    pragma.dat &
+    rc.dat &
+    sql.dat &
+    wml.dat
+bind_data = error.dat errmsg.dat keys.dat
+bind_files = $(bind_compiled) $(bind_data) $(bind_lang_data)

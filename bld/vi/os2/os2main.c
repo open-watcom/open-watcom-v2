@@ -58,9 +58,7 @@ static void getEXEName( char *name )
 
 void main( int argc, char *argv[] )
 {
-#ifdef TRMEM
-    InitTRMEM();
-#endif
+    InitMem();
 
     argc = argc;
     getEXEName( argv[0] );
@@ -77,8 +75,6 @@ void main( int argc, char *argv[] )
 #endif
     EditMain();
 
-#ifdef TRMEM
-    DumpTRMEM();
-#endif
+    FiniMem();
 
 } /* main */

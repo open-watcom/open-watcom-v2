@@ -131,6 +131,14 @@
 /trap/*/*/*.dll
 /trap/*/*/*/*.dll
 #
+/vi/*/*.vi
+!/vi/dat/*.vi
+!/vi/man/*.vi
+/vi/*/ed.cfg
+!/vi/dat/ed.cfg
+/vi/*/weditor.ini
+!/vi/dat/weditor.ini
+#
 /viper/cfg/ide.cfg
 /viper/cfg/*/idex.cfg
 #
