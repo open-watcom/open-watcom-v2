@@ -286,4 +286,7 @@ nwoss_dir       = $(src_dir)/os_supp/novell
 !ifndef setupgui_dir
 setupgui_dir    = $(src_dir)/setupgui
 !endif
+!ifndef win386_dir
+win386_dir      = $(src_dir)/win386
+!endif
 
