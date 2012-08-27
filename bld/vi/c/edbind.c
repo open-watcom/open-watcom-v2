@@ -111,7 +111,7 @@ void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long to
     int                 h, i, newh;
     char                buff[MAGIC_COOKIE_SIZE + 3];
     long                shift;
-    short               taillen;
+    unsigned            taillen;
     char                *copy;
     char                foo[128];
     char                drive[_MAX_DRIVE], dir[_MAX_DIR];
@@ -156,7 +156,7 @@ void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long to
             Abort( "\"%s\" does not contain configuration data!", exe );
         }
     } else {
-        taillen = *( (unsigned short *)&(buff[MAGIC_COOKIE_SIZE + 1]) );
+        taillen = *((unsigned short *)&(buff[MAGIC_COOKIE_SIZE + 1]));
         shift = (long)-((long)taillen + (long)MAGIC_COOKIE_SIZE + 3);
         tocopy += shift;
     }

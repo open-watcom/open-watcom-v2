@@ -59,7 +59,7 @@ void CheckForBoundData( void )
 {
     int         h, i;
     char        buff[MAGIC_COOKIE_SIZE + 3], *tmp;
-    short       taillen;
+    unsigned    taillen;
 
     /*
      * get trailer
@@ -75,8 +75,8 @@ void CheckForBoundData( void )
         close( h );
         return;
     }
-    taillen = *((short *) &(buff[MAGIC_COOKIE_SIZE + 1]));
-    dataStart = (long) -((long) taillen + (long) MAGIC_COOKIE_SIZE + 3);
+    taillen = *((unsigned short *)&(buff[MAGIC_COOKIE_SIZE + 1]));
+    dataStart = (long) -((long)taillen + (long) MAGIC_COOKIE_SIZE + 3);
     lseek( h, dataStart, SEEK_END );
 
     /*
@@ -89,7 +89,7 @@ void CheckForBoundData( void )
     /*
      * get number of files, and get space to store data
      */
-    dataFcnt = *(short *) BndMemory;
+    dataFcnt = *(short *)BndMemory;
     dataOffsets = MemAlloc( dataFcnt * sizeof( long ) );
     entryCounts = MemAlloc( dataFcnt * sizeof( short ) );
 
@@ -97,7 +97,7 @@ void CheckForBoundData( void )
      * get file names
      */
     tmp = BndMemory + 2;
-    i = *(short *) tmp;
+    i = *(short *)tmp;
     tmp += 2;
     dataFnames = MemAlloc( i );
     memcpy( dataFnames, tmp, i );
