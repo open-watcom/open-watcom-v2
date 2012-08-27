@@ -1,20 +1,15 @@
 proj_name = edbind
 
+edbind_autodepends = .AUTODEPEND
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-.c : ..
-
-extra_c_flags = -s
+.c : ../../c
 
 inc_dirs = -I"../../h"
 
-extra_l_flags_os2 = op stack=12k,heap=8k
-extra_l_flags_nt = op stack=20k
+objs = edbind.obj
 
-edbind.exe: main.obj
-        $(linker) $(lflags) file $[@ name $^@
-#!ifeq host_os os2
-#       $(binder)\bind edbind.exe $(apilib) $(doscalls)
-#!endif
+!include exetarg.mif
