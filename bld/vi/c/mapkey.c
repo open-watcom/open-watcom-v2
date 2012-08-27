@@ -60,11 +60,7 @@ static vi_rc readKeyData( void )
     if( keysRead ) {
         return( ERR_NO_ERR );
     }
-#ifdef __WIN__
-    rc = ReadDataFile( "winkeys.dat", &charTokens, key_alloc, key_save );
-#else
     rc = ReadDataFile( "keys.dat", &charTokens, key_alloc, key_save );
-#endif
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
