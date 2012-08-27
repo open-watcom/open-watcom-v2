@@ -35,10 +35,7 @@
 #define SETFS_IGNORETAGCASE         106
 #define SETFS_TAGPROMPT             107
 #define SETFS_FILETYPE              108
-#define SETFS_LANGUAGESELECT        109
-#define SETFS_LANGUAGEC             109
-#define SETFS_LANGUAGECPP           110
-#define SETFS_LANGUAGEFORTRAN       111
+#define SETFS_LANGUAGESELECT        110
 #define SETFS_REALTABS              120
 #define SETFS_HARDTABS              121
 #define SETFS_AUTOINDENT            122

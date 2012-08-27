@@ -5,7 +5,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
     COMBOBOX        SETFS_FILETYPE, 232, 114, 60, 63, CBS_SIMPLE |
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    LTEXT           "Syntax Highlighting", SETFS_LANGUAGE, 9, 66, 75, 12
+    LTEXT           "Syntax Highlighting", 109, 9, 66, 75, 12
     GROUPBOX        "Language", 105, 4, 56, 100, 79
     COMBOBOX        SETFS_LANGUAGESELECT, 20, 78, 75, 18, CBS_DROPDOWNLIST |
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
