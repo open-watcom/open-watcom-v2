@@ -185,7 +185,7 @@ void ResetArchives( copy_entry *list )
     }
 }
 
-static copy_entry *BuildList( char *src, char *dst, bool test_abit )
+static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy_entry **list )
 {
     copy_entry          *head;
     copy_entry          *curr;
@@ -208,6 +208,7 @@ static copy_entry *BuildList( char *src, char *dst, bool test_abit )
     int                 dstrc, srcrc;
     char                pattern[_MAX_PATH];
 #endif
+    int                 rc;
 
     strcpy( srcdir, src );
     end = &dst[strlen( dst ) - 1];
@@ -253,79 +254,94 @@ static copy_entry *BuildList( char *src, char *dst, bool test_abit )
             }
 #endif
         }
-        return( head );
+        *list = head;
+        return( 0 );
     }
 #ifdef __UNIX__
     _splitpath2( srcdir, buff, &drive, &dir, &fn, &ext );
     _makepath( srcdir, drive, dir, NULL, NULL );
     _makepath( pattern, NULL, NULL, fn, ext );
+    if( srcdir[0] == '\0' ) {
+        srcdir[0] = '.';
+        srcdir[1] = '\0';
+    }
 #endif
+    head = NULL;
+    rc = 1;
     directory = opendir( srcdir );
     if( directory == NULL ) {
-        Log( FALSE, "Can not open source directory '%s': %s\n", srcdir, strerror( errno ) );
-        return( NULL );
-    }
-    head = NULL;
-    owner = &head;
-    for( ;; ) {
-        dent = readdir( directory );
-        if( dent == NULL )
-            break;
+        if( !cond_copy ) {
+            Log( FALSE, "Can not open source directory '%s': %s\n", srcdir, strerror( errno ) );
+        }
+    } else {
+        owner = &head;
+        for( ;; ) {
+            dent = readdir( directory );
+            if( dent == NULL )
+                break;
 #ifdef __UNIX__
-        {
-            struct stat buf;
-            size_t len = strlen( srcdir );
+            {
+                struct stat buf;
+                size_t len = strlen( srcdir );
 
-            if( __fnmatch( pattern, dent->d_name ) == 0 )
-                continue;
+                if( __fnmatch( pattern, dent->d_name ) == 0 )
+                    continue;
 
-            strcat( srcdir, dent->d_name );
-            stat( srcdir, &buf );
-            srcdir[len] = '\0';
-            if( S_ISDIR( buf.st_mode ) )
-                continue;
-        }
+                strcat( srcdir, dent->d_name );
+                stat( srcdir, &buf );
+                srcdir[len] = '\0';
+                if( S_ISDIR( buf.st_mode ) ) {
+                    continue;
+                }
+            }
 #else
-        if( dent->d_attr & ( _A_SUBDIR | _A_VOLID ) )
-            continue;
+            if( dent->d_attr & ( _A_SUBDIR | _A_VOLID ) ) {
+                continue;
+            }
 #endif
-        curr = Alloc( sizeof( *curr ) );
-        curr->next = NULL;
-        _splitpath2( srcdir, buff, &drive, &dir, &fn, &ext );
-        _makepath( full, drive, dir, dent->d_name, NULL );
-        _fullpath( curr->src, full, sizeof( curr->src ) );
-        strcpy( full, dst );
-        switch( *end ) {
-        case '\\':
-        case '/':
-            strcat( full, dent->d_name );
-            break;
-        }
-        _fullpath( curr->dst, full, sizeof( curr->dst ) );
-        if( test_abit ) {
+            rc = 0;
+            curr = Alloc( sizeof( *curr ) );
+            curr->next = NULL;
+            _splitpath2( srcdir, buff, &drive, &dir, &fn, &ext );
+            _makepath( full, drive, dir, dent->d_name, NULL );
+            _fullpath( curr->src, full, sizeof( curr->src ) );
+            strcpy( full, dst );
+            switch( *end ) {
+            case '\\':
+            case '/':
+                strcat( full, dent->d_name );
+                break;
+            }
+            _fullpath( curr->dst, full, sizeof( curr->dst ) );
+            if( test_abit ) {
 #ifndef __UNIX__
-            fp = fopen( curr->dst, "rb" );
-            if( fp != NULL )
-                fclose( fp );
-            if( !(dent->d_attr & _A_ARCH) && fp != NULL ) {
-                /* file hasn't changed */
-                free( curr );
-                continue;
-            }
+                fp = fopen( curr->dst, "rb" );
+                if( fp != NULL )
+                    fclose( fp );
+                if( !(dent->d_attr & _A_ARCH) && fp != NULL ) {
+                    /* file hasn't changed */
+                    free( curr );
+                    continue;
+                }
 #else
-            /* Linux has (strangely) no 'archive' attribute, compare modification times */
-            dstrc = stat( curr->dst, &statdst );
-            srcrc = stat( curr->src, &statsrc );
-            if( (dstrc != -1) && (srcrc != -1) && (statdst.st_mtime == statsrc.st_mtime) ) {
-                free( curr );
-                continue;
-            }
+                /* Linux has (strangely) no 'archive' attribute, compare modification times */
+                dstrc = stat( curr->dst, &statdst );
+                srcrc = stat( curr->src, &statsrc );
+                if( (dstrc != -1) && (srcrc != -1) && (statdst.st_mtime == statsrc.st_mtime) ) {
+                    free( curr );
+                    continue;
+                }
 #endif
+            }
+            *owner = curr;
+            owner = &curr->next;
         }
-        *owner = curr;
-        owner = &curr->next;
     }
-    return( head );
+    *list = head;
+    if( cond_copy ) {
+        return( 0 );
+    }
+    return( rc );
 }
 
 static int mkdir_nested( char *path )
@@ -506,29 +522,29 @@ static int ProcCopy( char *cmd, bool test_abit, bool cond_copy )
         Log( FALSE, "Missing destination parameter\n" );
         return( 1 );
     }
-    list = BuildList( src, dst, test_abit );
-    for( ;; ) {
-        if( list == NULL )
-            break;
-        res = ProcOneCopy( list->src, list->dst, cond_copy );
-        if( res != 0 ) {
-            while( list != NULL ) {
-                next = list->next;
-                free( list );
-                list = next;
+    res = BuildList( src, dst, test_abit, cond_copy, &list );
+    if( res == 0 ) {
+        for( ; list != NULL; ) {
+            res = ProcOneCopy( list->src, list->dst, cond_copy );
+            if( res != 0 ) {
+                while( list != NULL ) {
+                    next = list->next;
+                    free( list );
+                    list = next;
+                }
+                break;
             }
-            return( res );
+            next = list->next;
+            if( test_abit ) {
+                list->next = IncludeStk->reset_abit;
+                IncludeStk->reset_abit = list;
+            } else {
+                free( list );
+            }
+            list = next;
         }
-        next = list->next;
-        if( test_abit ) {
-            list->next = IncludeStk->reset_abit;
-            IncludeStk->reset_abit = list;
-        } else {
-            free( list );
-        }
-        list = next;
     }
-    return( 0 );
+    return( res );
 }
 
 static int ProcMkdir( char *cmd )
