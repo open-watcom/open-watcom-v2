@@ -102,8 +102,6 @@ echo Bootstrapping compiler using GNU tools...
 [ INCLUDE <SRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <SRCDIR>/cfloat/builder.ctl ]
 [ INCLUDE <SRCDIR>/win386/builder.ctl ]
-#        src must be made after the C library
-[ INCLUDE <SRCDIR>/src/builder.ctl ]
 #        graphics library must be made after C library
 [ INCLUDE <SRCDIR>/graphlib/builder.ctl ]
 [ INCLUDE <SRCDIR>/nwlib/builder.ctl ]
@@ -133,7 +131,6 @@ echo Bootstrapping compiler using GNU tools...
 [ INCLUDE <SRCDIR>/f77/builder.ctl ]
 #        FORTRAN 77 libraries
 [ INCLUDE <SRCDIR>/f77/f77lib/builder.ctl ]
-[ INCLUDE <SRCDIR>/f77/samples/builder.ctl ]
 [ INCLUDE <SRCDIR>/wl/builder.ctl ]
 #
 #        Now we can build the C++ libraries - must be done after C library
@@ -194,6 +191,9 @@ echo Bootstrapping compiler using GNU tools...
 [ INCLUDE <SRCDIR>/viper/builder.ctl ]
 [ INCLUDE <SRCDIR>/idebatch/builder.ctl ]
 [ INCLUDE <SRCDIR>/viprdemo/builder.ctl ]
+# prepare source code samples
+[ INCLUDE <SRCDIR>/src/builder.ctl ]
+#
 [ BLOCK <OWDOCBUILD> 1 ]
 [ INCLUDE <OWROOT>/docs/builder.ctl ]
 [ BLOCK . . ]
