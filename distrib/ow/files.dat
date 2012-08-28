@@ -46,7 +46,6 @@
 [ INCLUDE <SRCDIR>/cvpack/files.dat ]
 [ INCLUDE <SRCDIR>/w32loadr/files.dat ]
 [ INCLUDE <SRCDIR>/f77/files.dat ]
-[ INCLUDE <SRCDIR>/f77/samples/files.dat ]
 [ INCLUDE <SRCDIR>/win386/files.dat ]
 [ INCLUDE <SRCDIR>/misc/files.dat ]
 [ INCLUDE <SRCDIR>/cmdedit/files.dat ]

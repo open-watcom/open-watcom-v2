@@ -65,5 +65,3 @@ dir="lib286/win" 	usr="flibl.lib"		cond="tools16 wintarg ml"	desc="16-bit Window
 dir="lib286/win" 	usr="flib7l.lib"	cond="tools16 wintarg ml"	desc="16-bit Windows FORTRAN 77 library"
 dir="lib286/win" 	usr="flibm.lib"		cond="tools16 wintarg mm"	desc="16-bit Windows FORTRAN 77 library"
 dir="lib286/win" 	usr="flib7m.lib"	cond="tools16 wintarg mm"	desc="16-bit Windows FORTRAN 77 library"
-
-[ INCLUDE src/files.dat ]
