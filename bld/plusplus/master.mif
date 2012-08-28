@@ -15,6 +15,8 @@ additional_cleanup = *.u *.int y.out ytab.c
 !include deftarg.mif
  
 !include $(cg_dir)/mif/fe.mif
+!include $(as_dir)/mif/client.mif
+!include $(wasm_dir)/mif/client.mif
 !include $(dwarf_dir)/dw/client.mif
  
 !include trmem.mif
@@ -46,6 +48,7 @@ inc_dirs = -I. -I.. -I"../../h"
 inc_dirs += $(cg_inc_dirs)
 inc_dirs += $(asminline_inc_dirs)
 inc_dirs += -I"$(dwarf_dir)/dw/h"
+inc_dirs += -I"$(cfloat_dir)/h"
 inc_dirs += -I"$(cc_dir)/h"
 inc_dirs += -I"$(comp_cfg_dir)/h"
 inc_dirs += -I"$(fe_misc_dir)/h"

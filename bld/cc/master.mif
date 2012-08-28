@@ -14,6 +14,8 @@ cc_nosymfile = 1
 
 # CODEGEN stuff
 !include $(cg_dir)/mif/fe.mif
+!include $(as_dir)/mif/client.mif
+!include $(wasm_dir)/mif/client.mif
 !include $(dwarf_dir)/dw/client.mif
 
 !include trmem.mif

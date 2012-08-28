@@ -9,7 +9,11 @@ wfc_autodepends = .AUTODEPEND
 !include defrule.mif
 
 !include $(cg_dir)/mif/fe.mif
+!include $(as_dir)/mif/client.mif
+!include $(wasm_dir)/mif/client.mif
 !include $(dwarf_dir)/dw/client.mif
+!include $(cfloat_dir)/client.mif
+
 !include wres.mif
 
 !include ../../files.mif
@@ -49,13 +53,14 @@ target_exe  = $(exename_$(target_cpu))
 
 extra_c_flags_trmem = -DTRMEM -of+
 extra_c_flags_trmemcvr = -DTRMEM -of+
+extra_c_flags_fcdata = -I"$(cfloat_dir)/h"
 
-extra_l_flags = op map
+extra_l_flags += op map
 
 # Need lots of stack for NT because code gen turns off safe recurse.
 extra_l_flags_nt = op stack=1024k commit stack=32k
 
-flibs = $(wres_lib) $(dwarf_dw_lib) $(asminline_lib) $(cg_libs)
+flibs = $(dwarf_dw_lib) $(cfloat_lib) $(asminline_lib) $(cg_libs) $(wres_lib)
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res

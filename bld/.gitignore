@@ -47,8 +47,7 @@
 #
 /cc/*/*/*.dll
 #
-/cg/intel/386/nt386.dll/*.dll
-/cg/intel/i86/nt386.dll/*.dll
+/cg/*/*/*/*.dll
 #
 /clib/alias/objs.mif
 /clib/alias/a/*.asm
@@ -117,11 +116,9 @@
 /plustest/regress/owstl/mmwin16.cpp
 /plustest/regress/owstl/mmwindef.cpp
 #
+/rc/rc/*/*.dll
 /rc/rc/*/ytab2.c
 /rc/rc/*/ytabw.c
-/rc/rc/nt386.dll/*.dll
-/rc/rc/nt386rt.dll/*.dll
-/rc/rc/os2386.dll/*.dll
 #
 /rcsdll/*/*.dll
 #

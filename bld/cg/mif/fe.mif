@@ -4,10 +4,9 @@
 # host_cpu = 386 | ppc | axp
 # host_os  = nt | os2 | qnx | dos | linux | osx | bsd
 
-!include $(as_dir)/mif/client.mif
-!include $(wasm_dir)/mif/client.mif
 !include $(owl_dir)/client.mif
 !include $(cfloat_dir)/client.mif
+!include $(dwarf_dir)/dw/client.mif
 
 !ifdef bootstrap
 obj_dir = $(%OWOBJDIR)
@@ -29,16 +28,16 @@ o_dir_mps    = $(cg_dir)/risc/mps/$(obj_dir)
 
 i_path_386   = -I"$(cg_dir)/intel/386/h" -I"$(cg_dir)/intel/h"
 i_path_i86   = -I"$(cg_dir)/intel/i86/h" -I"$(cg_dir)/intel/h"
-i_path_axp   = -I"$(cg_dir)/risc/axp/h" -I"$(cg_dir)/risc/h" -I"$(owl_dir)/h"
-i_path_ppc   = -I"$(cg_dir)/risc/ppc/h" -I"$(cg_dir)/risc/h" -I"$(owl_dir)/h"
-i_path_mps   = -I"$(cg_dir)/risc/mps/h" -I"$(cg_dir)/risc/h" -I"$(owl_dir)/h"
+i_path_axp   = -I"$(cg_dir)/risc/axp/h" -I"$(cg_dir)/risc/h"
+i_path_ppc   = -I"$(cg_dir)/risc/ppc/h" -I"$(cg_dir)/risc/h"
+i_path_mps   = -I"$(cg_dir)/risc/mps/h" -I"$(cg_dir)/risc/h"
 
 !ifndef o_dir_$(target_cpu)
 !error unsupported target_cpu
 !endif
 
 o_dir  = $(o_dir_$(target_cpu))
-i_path = $(i_path_$(target_cpu)) -I"$(cg_dir)/h" -I"$(cfloat_dir)/h"
+i_path = $(i_path_$(target_cpu)) -I"$(cg_dir)/h"
 !ifeq cg_dll 1
 i_path += -I"$(o_dir_$(target_cpu))"
 !endif
@@ -68,7 +67,8 @@ cg_libs = &
     $(o_dir)/cg$(target_cpu).lib &
     $(o_dir)/cg$(target_cpu)$(cg_host).lib &
     $(owl_lib) &
-    $(cfloat_lib)
+    $(cfloat_lib) &
+    $(dwarf_dw_lib)
 !else
 !ifeq debug_cg 1
 cg_objs = $(o_dir)/dmpinc.obj
@@ -76,5 +76,6 @@ cg_objs = $(o_dir)/dmpinc.obj
 cg_libs = &
     $(o_dir)/cg$(target_cpu).lib &
     $(o_dir)/cg$(target_cpu)$(cg_host).lib &
-    $(cfloat_lib)
+    $(cfloat_lib) &
+    $(dwarf_dw_lib)
 !endif
