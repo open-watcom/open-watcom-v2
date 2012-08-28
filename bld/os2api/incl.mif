@@ -185,6 +185,6 @@ $(dirs386):
 clean : .SYMBOLIC
         rm -f *.h
 !ifeq host_cpu 386
-        rm -r -f $(dirs386)
+        !rm -rf $(dirs386)
 !endif
 
