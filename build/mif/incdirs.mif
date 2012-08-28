@@ -2,8 +2,8 @@
 #############################
 # new headers
 #############################
-inc_dirs_sys_os2_386 = -I"$(os2api_dir)/os2386"
-inc_dirs_sys_os2_i86 = -I"$(os2api_dir)/os2286"
+inc_dirs_sys_os2_386 = -I"$(os2api_dir)/os2386/h"
+inc_dirs_sys_os2_i86 = -I"$(os2api_dir)/os2286/h"
 inc_dirs_sys_nt      = -I"$(w32api_dir)/nt"
 inc_dirs_sys_win     = -I"$(w16api_dir)/wini86"
 inc_dirs_sys_os2     = $(inc_dirs_sys_os2_$(host_cpu))

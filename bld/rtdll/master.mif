@@ -51,7 +51,7 @@ extra_l_flags_dll = option impfile=$(dllname).imp reference __DLLstart_ disable 
 extra_l_flags_dll += option map,mangle,artificial,verbose
 !endif
 
-extra_l_flags_dll_os2 = initinstance terminstance op manyautodata libpath $(os2api_dir)/os2386
+extra_l_flags_dll_os2 = initinstance terminstance op manyautodata libpath $(os2api_dir)/os2386/lib
 extra_l_flags_dll_nt = initinstance terminstance libpath $(w32api_dir)/nt$(host_cpu)
 
 libflags_nt_386 = -io -ii

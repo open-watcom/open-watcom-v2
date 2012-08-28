@@ -8,10 +8,12 @@ all : testc.exe testpp.exe .symbolic
 !include defrule.mif
 
 !ifeq host_cpu 386
-#inc_dirs = -I"../../os2386"
+inc_dirs = -I"../../os2386/h"
 !else
-#inc_dirs = -I"../../os2286"
+inc_dirs = -I"../../os2286/h"
 !endif
+
+extra_c_flags = -D_ENABLE_AUTODEPEND
 
 testc.exe : testc.obj $(libs) $(cl_objs)
     $(cl) $(clflags) $< $(cl_libs)

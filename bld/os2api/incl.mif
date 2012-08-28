@@ -1,4 +1,6 @@
-proj_name = os2api
+proj_name =  os2api
+
+os2api_autodepends = .AUTODEPEND
 
 os2api_distrib_lib = 1
 
@@ -7,7 +9,7 @@ os2api_distrib_lib = 1
 
 splice = wsplice -i"$(hdr_dir)" $[@ $^@
 
-.EXTENSIONS : .lbc .def .mh
+.EXTENSIONS : .mh
 
 headers286 =         &
         bse.h        &
@@ -129,103 +131,27 @@ headers386 =                 &
         sys/uio.h            &
         sys/un.h
 
-libs286 =            &
-        os2.lib
-
-libs386 =            &
-        os2386.lib   &
-        rexx.lib     &
-        tcpip32.lib  &
-        ftpapi.lib   &
-        opengl.lib   &
-        glut.lib     &
-        libtk.lib    &
-        libaux.lib   &
-        mmpm2.lib    &
-        rtmidi.lib   &
-        upm32.lib    &
-        libuls.lib   &
-        libconv.lib
-
-components286 =      &
-        ansicall.lbc &
-        doscalls.lbc &
-        kbdcalls.lbc &
-        moncalls.lbc &
-        moucalls.lbc &
-        msg.lbc      &
-        nampipes.lbc &
-        nls.lbc      &
-        os2sm.lbc    &
-        pmgpi.lbc    &
-        pmshapi.lbc  &
-        pmviop.lbc   &
-        pmwin.lbc    &
-        quecalls.lbc &
-        sesmgr.lbc   &
-        viocalls.lbc
-
-components386 =      &
-        bdcalls.lbc  &
-        doscalls.lbc &
-        helpmgr.lbc  &
-        kbdcalls.lbc &
-        moncalls.lbc &
-        moucalls.lbc &
-        msg.lbc      &
-        nampipes.lbc &
-        nls.lbc      &
-        pmctls.lbc   &
-        pmdrag.lbc   &
-        pmgpi.lbc    &
-        pmspl.lbc    &
-        pmshapi.lbc  &
-        pmviop.lbc   &
-        pmwin.lbc    &
-        pmwp.lbc     &
-        quecalls.lbc &
-        sesmgr.lbc   &
-        viocalls.lbc
-
-componentsrexx =     &
-        rexx.lbc     &
-        rexxapi.lbc
-
-componentsmmpm2 =    &
-        dive.lbc     &
-        mciapi.lbc   &
-        mdm.lbc      &
-        mmio.lbc     &
-        sw.lbc
+dirs386 =            &
+        arpa         &
+        GL           &
+        machine      &
+        net          &
+        netinet      &
+        protocol     &
+        sys
 
 !ifeq host_cpu i86
 headers = $(headers286)
-libs = $(libs286)
 incldir = incl16
-libdir = lib286
 !else
 headers = $(headers386)
-libs = $(libs386)
 dirs = $(dirs386)
 incldir = incl32
-libdir = lib386
 !endif
 
-extra_lib_flags = -io -ii
+all : $(dirs) $(headers) .SYMBOLIC
 
-all : $(headers) $(libs) .SYMBOLIC
-
-.def .asm: ../$(libdir)
-.mh: ../$(incldir)
-
-.def.lbc:
-        sed -f ../def2lbc.sed ../$(libdir)/$[. > $@
-
-.lbc.lib:
-        $(librarian) $(libflags) @$<
-
-.obj.lib:
-        $(librarian) $(libflags) $<
+.mh: ../../$(incldir)
 
 .mh.h:
         $(splice)
@@ -251,49 +177,14 @@ all : $(headers) $(libs) .SYMBOLIC
 {sys}.mh{sys}.h:
         $(splice)
 
-os2.lib: lib286.lbc msgseg.obj
-        $(librarian) $(libflags) @$[@ +$]@
-
-lib286.lbc: $(components286)
-        %create $@
-        @for %f in ($<) do cat %f >> $@
-
-os2386.lib: lib386.lbc msgseg32.obj
-        $(librarian) $(libflags) @$[@ +$]@
-
-lib386.lbc: $(components386)
-        %create $@
-        @for %f in ($<) do cat %f >> $@
-
-rexx.lib: rexxall.lbc
-        $(librarian) $(libflags) @$<
-
-rexxall.lbc: $(componentsrexx)
-        %create $@
-        @for %f in ($<) do cat %f >> $@
-
-mmpm2.lib: mmpm2all.lbc
-        $(librarian) $(libflags) @$<
-
-mmpm2all.lbc: $(componentsmmpm2)
-        %create $@
-        @for %f in ($<) do cat %f >> $@
-
-libuls.lib: libuni.lbc
-        $(librarian) $(libflags) @$<
-
-libconv.lib: uconv.lbc
-        $(librarian) $(libflags) @$<
+!ifeq host_cpu 386
+$(dirs386):
+        @if not exist $@ mkdir $@
+!endif
 
 clean : .SYMBOLIC
         rm -f *.h
-        rm -f *.lbc
-        rm -f *.lib
-        rm -f *.obj
-        rm -f arpa/*.h
-        rm -f GL/*.h
-        rm -f machine/*.h
-        rm -f net/*.h
-        rm -f netinet/*.h
-        rm -f protocol/*.h
-        rm -f sys/*.h
+!ifeq host_cpu 386
+        rm -r -f $(dirs386)
+!endif
+

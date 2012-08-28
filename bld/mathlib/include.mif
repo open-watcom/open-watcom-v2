@@ -4,10 +4,10 @@ include_watcom  = -I"$(watcom_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h
 # include_c_(system)
 !ifndef runtime_library_source
 include_c_msdos    = -I"$(hdr_dir)/dos"
-include_c_os2_286  = -I"$(os2api_dir)/os2286"
-include_c_os2_287  = -I"$(os2api_dir)/os2286"
-include_c_os2_386  = -I"$(os2api_dir)/os2386"
-include_c_os2_387  = -I"$(os2api_dir)/os2386"
+include_c_os2_286  = -I"$(os2api_dir)/os2286/h"
+include_c_os2_287  = -I"$(os2api_dir)/os2286/h"
+include_c_os2_386  = -I"$(os2api_dir)/os2386/h"
+include_c_os2_387  = -I"$(os2api_dir)/os2386/h"
 include_c_os2_ppc  = -I"$(%watcom)/h/os2ppc"
 include_c_os2      = -I"$(hdr_dir)/dos" $(include_c_os2_$(processor))
 include_c_windows  = -I"$(hdr_dir)/dos" -I"$(w16api_dir)/wini86"

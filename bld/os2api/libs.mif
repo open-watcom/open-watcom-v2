@@ -1,0 +1,139 @@
+proj_name =  os2api
+
+os2api_autodepends = .AUTODEPEND
+
+os2api_distrib_lib = 1
+
+!include cproj.mif
+!include defrule.mif
+
+splice = wsplice -i"$(hdr_dir)" $[@ $^@
+
+.EXTENSIONS : .lbc .def
+
+libs286 =            &
+        os2.lib
+
+libs386 =            &
+        os2386.lib   &
+        rexx.lib     &
+        tcpip32.lib  &
+        ftpapi.lib   &
+        opengl.lib   &
+        glut.lib     &
+        libtk.lib    &
+        libaux.lib   &
+        mmpm2.lib    &
+        rtmidi.lib   &
+        upm32.lib    &
+        libuls.lib   &
+        libconv.lib
+
+components286 =      &
+        ansicall.lbc &
+        doscalls.lbc &
+        kbdcalls.lbc &
+        moncalls.lbc &
+        moucalls.lbc &
+        msg.lbc      &
+        nampipes.lbc &
+        nls.lbc      &
+        os2sm.lbc    &
+        pmgpi.lbc    &
+        pmshapi.lbc  &
+        pmviop.lbc   &
+        pmwin.lbc    &
+        quecalls.lbc &
+        sesmgr.lbc   &
+        viocalls.lbc
+
+components386 =      &
+        bdcalls.lbc  &
+        doscalls.lbc &
+        helpmgr.lbc  &
+        kbdcalls.lbc &
+        moncalls.lbc &
+        moucalls.lbc &
+        msg.lbc      &
+        nampipes.lbc &
+        nls.lbc      &
+        pmctls.lbc   &
+        pmdrag.lbc   &
+        pmgpi.lbc    &
+        pmspl.lbc    &
+        pmshapi.lbc  &
+        pmviop.lbc   &
+        pmwin.lbc    &
+        pmwp.lbc     &
+        quecalls.lbc &
+        sesmgr.lbc   &
+        viocalls.lbc
+
+componentsrexx =     &
+        rexx.lbc     &
+        rexxapi.lbc
+
+componentsmmpm2 =    &
+        dive.lbc     &
+        mciapi.lbc   &
+        mdm.lbc      &
+        mmio.lbc     &
+        sw.lbc
+
+!ifeq host_cpu i86
+libs = $(libs286)
+libdir = lib286
+!else
+libs = $(libs386)
+libdir = lib386
+!endif
+
+extra_lib_flags = -io -ii
+
+all : $(libs) .SYMBOLIC
+
+.def .asm: ../../$(libdir)
+
+.def.lbc:
+        sed -f ../../def2lbc.sed ../../$(libdir)/$[. > $@
+
+.lbc.lib:
+        $(librarian) $(libflags) @$<
+
+.obj.lib:
+        $(librarian) $(libflags) $<
+
+os2.lib: lib286.lbc msgseg.obj
+        $(librarian) $(libflags) @$[@ +$]@
+
+lib286.lbc: $(components286)
+        cat $< > $@
+
+os2386.lib: lib386.lbc msgseg32.obj
+        $(librarian) $(libflags) @$[@ +$]@
+
+lib386.lbc: $(components386)
+        cat $< > $@
+
+rexx.lib: rexxall.lbc
+        $(librarian) $(libflags) @$<
+
+rexxall.lbc: $(componentsrexx)
+        cat $< > $@
+
+mmpm2.lib: mmpm2all.lbc
+        $(librarian) $(libflags) @$<
+
+mmpm2all.lbc: $(componentsmmpm2)
+        cat $< > $@
+
+libuls.lib: libuni.lbc
+        $(librarian) $(libflags) @$<
+
+libconv.lib: uconv.lbc
+        $(librarian) $(libflags) @$<
+
+clean : .SYMBOLIC
+        rm -f *.lbc
+        rm -f *.lib
+        rm -f *.obj
