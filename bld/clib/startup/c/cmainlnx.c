@@ -58,7 +58,7 @@ void __cdecl _LinuxMain( int argc, char **argv, char **arge )
     _STACKLOW           = _curbrk;
     _argc               = argc;
     _argv               = argv;
-    environ             = arge;
+    _Envptr             = arge;
     _LpPgmName          = argv[0];
 
     __InitRtns( INIT_PRIORITY_THREAD );
