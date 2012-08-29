@@ -35,7 +35,7 @@ cdsay .
 
 [ BLOCK <1> clean ]
 #==================
-    pmake -d all <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
 [ BLOCK . . ]
 #============

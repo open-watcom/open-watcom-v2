@@ -1,0 +1,255 @@
+.EXTENSIONS : .lbc .def
+
+proj_name = w32api
+
+w32api_autodepends  = .autodepend
+w32api_distrib_lib  = 1
+
+!include cproj.mif
+!include defrule.mif
+
+# This should be including the newly built headers when bootstrapping.
+!ifdef bootstrapmode
+inc_dirs = -I"$(w32api_dir)/nt/ddk" -I"$(w32api_dir)/nt/directx"
+!else
+inc_dirs = -I"$(lang_root)/h/nt/ddk" -I"$(lang_root)/h/nt/directx"
+!endif
+
+dirs = ./ddk ./directx
+
+libs =                       &
+        aclui.lib            &
+        adsiid.lib           &
+        advapi32.lib         &
+        bcrypt.lib           &
+        comctl32.lib         &
+        comdlg32.lib         &
+        credui.lib           &
+        crypt32.lib          &
+        cryptnet.lib         &
+        ctl3d32.lib          &
+        dbghelp.lib          &
+        ddraw.lib            &
+        dflayout.lib         &
+        dhcpcsvc.lib         &
+        dnsapi.lib           &
+        dsprop.lib           &
+        dsuiext.lib          &
+        faultrep.lib         &
+        gdi32.lib            &
+        glu32.lib            &
+        htmlhelp.lib         &
+        icm32.lib            &
+        icmui.lib            &
+        imagehlp.lib         &
+        imm32.lib            &
+        iphlpapi.lib         &
+        kernel32.lib         &
+        ksuser.lib           &
+        largeint.lib         &
+        lz32.lib             &
+        mapi32.lib           &
+        mfuuid.lib           &
+        mgmtapi.lib          &
+        mpr.lib              &
+        mprapi.lib           &
+        mqrt.lib             &
+        msacm32.lib          &
+        mscms.lib            &
+        msimg32.lib          &
+        mswsock.lib          &
+        ncrypt.lib           &
+        nddeapi.lib          &
+        netapi32.lib         &
+        newdev.lib           &
+        normaliz.lib         &
+        ntdsapi.lib          &
+        ntdsbcli.lib         &
+        odbc32.lib           &
+        odbccp32.lib         &
+        ole32.lib            &
+        oleacc.lib           &
+        oleaut32.lib         &
+        olecli32.lib         &
+        oledlg.lib           &
+        olepro32.lib         &
+        olesvr32.lib         &
+        opengl32.lib         &
+        powrprof.lib         &
+        propsys.lib          &
+        psapi.lib            &
+        qosname.lib          &
+        quartz.lib           &
+        rasapi32.lib         &
+        rasdlg.lib           &
+        rassapi.lib          &
+        rpcns4.lib           &
+        rpcrt4.lib           &
+        rtm.lib              &
+        rtutils.lib          &
+        scarddlg.lib         &
+        secur32.lib          &
+        setupapi.lib         &
+        shdocvw.lib          &
+        shell32.lib          &
+        shfolder.lib         &
+        shlwapi.lib          &
+        snmpapi.lib          &
+        strmiids.lib         &
+        strquery.lib         &
+        th32.lib             &
+        url.lib              &
+        urlmon.lib           &
+        user32.lib           &
+        userenv.lib          &
+        usp10.lib            &
+        uuid.lib             &
+        uxtheme.lib          &
+        version.lib          &
+        vfw32.lib            &
+        wbemuuid.lib         &
+        wininet.lib          &
+        winmm.lib            &
+        winscard.lib         &
+        winspool.lib         &
+        wintrust.lib         &
+        wldap32.lib          &
+        ws2_32.lib           &
+        wsnmp32.lib          &
+        wsock32.lib          &
+        wtsapi32.lib         &
+        ddk/battc.lib        &
+        ddk/cfgmgr32.lib     &
+        ddk/classpnp.lib     &
+        ddk/clfs.lib         &
+        ddk/dxapi.lib        &
+        ddk/hal.lib          &
+        ddk/hid.lib          &
+        ddk/hidparse.lib     &
+        ddk/ks.lib           &
+        ddk/ksecdd.lib       &
+        ddk/mcd.lib          &
+        ddk/ndis.lib         &
+        ddk/ntdll.lib        &
+        ddk/ntoskrnl.lib     &
+        ddk/pshed.lib        &
+        ddk/rtlver.lib       &
+        ddk/scsiport.lib     &
+        ddk/storport.lib     &
+        ddk/tape.lib         &
+        ddk/tdi.lib          &
+        ddk/usbcamd.lib      &
+        ddk/videoprt.lib     &
+        ddk/wdmguid.lib      &
+        ddk/win32k.lib       &
+        ddk/wmilib.lib       &
+        directx/d3d9.lib     &
+        directx/d3drm.lib    &
+        directx/dinput.lib   &
+        directx/dinput8.lib  &
+        directx/dsound.lib   &
+        directx/dxguid.lib
+
+vfw32_lbcs =         &
+        avicap32.lbc &
+        avifil32.lbc &
+        msvfw32.lbc
+
+extra_lib_flags_386 = -io -ii
+extra_lib_flags_axp = -ic -ia
+extra_lib_flags_ppc = -ic -ip
+
+all : $(dirs) $(libs) .SYMBOLIC
+    @%null
+
+.def: $(w32api_dir)/lib
+
+.c: $(w32api_dir)/lib
+
+.def.lbc:
+    $(awk) -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+
+.lbc.lib:
+    $(librarian) $(libflags) @$<
+
+.obj.lib:
+    $(librarian) $(libflags) $<
+
+{ddk}.def{ddk}.lbc:
+    $(awk) -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+
+{ddk}.lbc{ddk}.lib:
+    $(librarian) $(libflags) @$<
+
+{ddk}.obj{ddk}.lib:
+    $(librarian) $(libflags) $<
+
+{directx}.c{directx}.lib: $(w32api_autodepends)
+!ifeq verbose 1
+    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
+!else
+    @echo cc $@
+    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
+!endif
+
+{directx}.def{directx}.lbc:
+    $(awk) -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+
+{directx}.lbc{directx}.lib:
+    $(librarian) $(libflags) @$<
+
+{directx}.obj{directx}.lib:
+    $(librarian) $(libflags) $<
+
+vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
+    @%create $@
+    @for %i in ($(vfw32_lbcs)) do @%append $@ @ %i
+    @%append $@ +vfwuuid.obj
+
+directx/dinput.lbc: directx/dinput.def directx/dinpstat.obj
+    $(awk) -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+    @%append $@ +directx/dinpstat.obj
+
+directx/dinput8.lbc: directx/dinput8.def directx/dinpstat.obj
+    $(awk) -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+    @%append $@ +directx/dinpstat.obj
+
+ddk/rtlver.obj: ddk/rtlver.c
+!ifeq verbose 1
+    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!else
+    @echo cc $@
+    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!endif
+
+ddk/wdmguid.obj: ddk/wdmguid.c
+!ifeq verbose 1
+    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!else
+    @echo cc $@
+    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!endif
+
+directx/dinpstat.obj: directx/dinpstat.c
+!ifeq verbose 1
+    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!else
+    @echo cc $@
+    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!endif
+
+directx/dxguid.obj: directx/dxguid.c
+!ifeq verbose 1
+    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!else
+    @echo cc $@
+    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!endif
+
+$(dirs):
+    @if not exist $@ @mkdir $@
+
+clean: .SYMBOLIC
+    rm -f *.obj *.lbc *.lib *.tmp *.err *.pch
+    !rm -rf $(dirs)
+
