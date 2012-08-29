@@ -105,7 +105,7 @@ options_c_wchar   = -kCONLY
 options_c_wctype  = -kCONLY
 
 
-dos_clean   = win/*.h
+dos_clean   =
 linux_clean = arpa/*.h netinet/*.h
 qnx_clean   =
 

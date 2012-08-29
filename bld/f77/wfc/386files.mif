@@ -1,7 +1,0 @@
-386root =
-
-386ovl1 =
-
-386ovl2 =
-
-386files = $(386root) $(386ovl1) $(386ovl2)

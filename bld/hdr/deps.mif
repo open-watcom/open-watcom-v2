@@ -246,10 +246,6 @@ wctype.h        : $(wctype_deps)
 wcvbase.h       : ../watcom/wcvbase.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
 wcvector.h      : ../watcom/wcvector.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(redefnew)
 wdefwin.h       : ../watcom/wdefwin.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
-win/win386.h    : ../watcom/win386.mh ../readonly.sp ../crwat.sp
-win/windows.h   : ../watcom/windows.mh ../readonly.sp ../crwat.sp
-win/_win386.h   : ../watcom/_win386.mh ../readonly.sp $(cplus) ../crwat.sp
-win/win16.h     : ../watcom/win16.mh ../readonly.sp $(cplus)
 wsample.h       : ../watcom/wsample.mh ../crwat.sp ../readonly.sp $(cplus)
 
 # The follow describe the system specific dependencies

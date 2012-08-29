@@ -87,10 +87,6 @@ extern  bool            ForceStatic(unsigned_16);
 extern  sym_id          FindArgShadow(sym_id);
 extern  sym_id          STEqSetShadow(sym_id);
 extern  char *          StackBuffer(int *);
-#ifdef _EMS
-extern  void            InitEMS(void);
-extern  void            FiniEMS(void);
-#endif
 
 extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
@@ -102,9 +98,6 @@ extern  char            ProgName[];
 extern  char            ObjExtn[];
 extern  default_lib     *DefaultLibs;
 extern  dep_info        *DependencyInfo;
-#ifdef _EMS
-extern  unsigned int    EMSsegment;
-#endif
 
 static  void            DefDbgStruct( sym_id sym );
 
@@ -2082,13 +2075,6 @@ void    *FEAuxInfo( aux_handle aux, int request ) {
         }
         return( &TokenBuff );
     case FREE_SEGMENT :
-#ifdef _EMS
-        if( EMSsegment == 0 ) {
-            InitEMS();
-            atexit( &FiniEMS );
-            return( (void *)MK_FP( EMSsegment, EMSsegment ) );
-        }
-#endif
         return( 0 );
     case REVISION_NUMBER :
         return( (void *)II_REVISION );

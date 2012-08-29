@@ -1,8 +1,3 @@
-!include ../../tdfiles.mif
-!include ../../emsfiles.mif
-!include ../../i86files.mif
-!include ../../386files.mif
-!include ../../axpfiles.mif
 
 # system independent compile-time files
 
@@ -108,6 +103,17 @@ comovl1 = &
 comovl2 = &
     errinit.obj
 
+tdovl1 = &
+    boot77.obj &
+    declare.obj &
+    fmacros.obj &
+    fmtemit.obj &
+    implicit.obj &
+    inout.obj &
+    option.obj &
+    proclist.obj &
+    rstmgr.obj
+
 # system independent compile-time and run-time files
 
 # "errgrp" and "errmsg" contain data that gets placed in
@@ -187,6 +193,36 @@ comovl1 += &
     upcat.obj &
     _matherr.obj
 
+tdroot = &
+    auxlook.obj &
+    forcstat.obj &
+    gsegs.obj &
+    objutil.obj
+
+tdovl1 += &
+    fieldops.obj &
+    gflow.obj &
+    gsubstr.obj &
+    initopt.obj &
+    mainline.obj &
+    regs.obj &
+    wf77aux.obj &
+    asmalloc.obj &
+    asmmsg.obj &
+    $(asminline_objs)
+
+tdovl2 = &
+    fccall.obj &
+    fcdata.obj &
+    fcfield.obj &
+    fcgmain.obj &
+    fcrtns.obj &
+    inline.obj &
+    fcifns.obj &
+    fcstack.obj &
+    wf77info.obj &
+    fctypes.obj
+
 #
 # The browse generator
 #
@@ -240,16 +276,18 @@ dbfiles = &
     dumpnode.obj
 
 # code generator extra files
+
 dbfiles += $(cg_objs)
+
+# platform specific files
+
+386files =
+axpfiles = intovfrt.obj
+i86files = i4mul.obj
 
 comfiles = $(comroot) $(comovl1) $(comovl2)
 
-rootfiles = $(comroot) $(tdroot) $(emsroot) $(i86root)
-ovl1files = $(comovl1) $(tdovl1) $(emsovl1) $(i86ovl1)
-ovl2files = $(comovl2) $(tdovl2) $(emsovl2) $(i86ovl2)
+tdfiles = $(tdroot) $(tdovl1) $(tdovl2)
 
 fobjs = $(comfiles) $($(host_cpu)files) $(tdfiles) $(dbfiles)
 
-!ifdef use_ems
-fobjs += $(emsfiles)
-!endif

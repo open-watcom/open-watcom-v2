@@ -10,8 +10,6 @@ installer_f77_os2_386   = open-watcom-f77-os2-$(%BLD_VER_STR).exe
 installer_f77_linux_386 = open-watcom-f77-linux-$(%BLD_VER_STR)
 installer_f77 = $(installer_f77_$(host_os)_$(host_cpu))
 
-setupgui_dir = $(%OWROOT)/bld/setupgui
-
 setup_c_dos_386     = $(setupgui_dir)/dos386/setup.exe
 setup_c_nt_386      = $(setupgui_dir)/nt386.gui/csetup.exe
 setup_c_os2_386     = $(setupgui_dir)/os2386.gui/csetup.exe
