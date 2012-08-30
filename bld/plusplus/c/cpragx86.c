@@ -444,10 +444,10 @@ static void doPragAux(                   // #PRAGMA AUX ...
             have.uses_auto = GetByteSeq();
             have.f_call = 1;
         } else if( !have.f_call && PragRecog( "far" ) ) {
-            CurrInfo->cclass |= FAR;
+            CurrInfo->cclass |= FAR_CALL;
             have.f_call = 1;
         } else if( !have.f_call && PragRecog( "near" ) ) {
-            CurrInfo->cclass &= ~FAR;
+            CurrInfo->cclass &= ~FAR_CALL;
             have.f_call = 1;
         } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
             CurrInfo->cclass |= LOAD_DS_ON_ENTRY;

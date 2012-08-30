@@ -553,7 +553,7 @@ static AUX_INFO *IntrinsicAuxLookup(
         if( CgTypeSize( type ) != 4 )  return( NULL );
     }
     inf = &InlineInfo;
-    inf->cclass = (DefaultInfo.cclass & FAR) | MODIFY_EXACT;
+    inf->cclass = (DefaultInfo.cclass & FAR_CALL) | MODIFY_EXACT;
     inf->code = ifunc->code;
     inf->parms = ifunc->parms;
     inf->returns = ifunc->returns;
@@ -794,16 +794,16 @@ static call_class getCallClass( // GET CLASS OF CALL
             #if _INTEL_CPU
             if( flags & TF1_FAR ) {
                 /* function has an explicit FAR */
-                value |= FAR;
+                value |= FAR_CALL;
             } else if( flags & TF1_NEAR ) {
                 /* function has an explicit NEAR */
-                value &= ~ FAR;
+                value &= ~FAR_CALL;
             } else if( flags & TF1_FAR16 ) {
                 value |= FAR16_CALL;
             } else {
                 if( TargetSwitches & BIG_CODE ) {
                     if( makeFileScopeStaticNear( sym ) ) {
-                        value &= ~ FAR;
+                        value &= ~FAR_CALL;
                     }
                 }
             }

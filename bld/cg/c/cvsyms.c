@@ -665,7 +665,7 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     ptr->proctype = tipe;
     ptr->flags.s = 0;
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-    if( *class_ptr & FAR ) {
+    if( *class_ptr & FAR_CALL ) {
         ptr->flags.f.far_ret = TRUE;
     }
 #endif

@@ -808,7 +808,7 @@ void            Pragma( void ) {
 #if _INTEL_CPU
                     have.f_far = 1;
                 } else if( !have.f_far && RecToken( "FAR" ) ) {
-                    CurrAux->cclass |= FAR;
+                    CurrAux->cclass |= FAR_CALL;
                     have.f_far = 1;
 #if _CPU == 386
                 } else if( !have.f_far16 && RecToken( "FAR16" ) ) {
@@ -816,7 +816,7 @@ void            Pragma( void ) {
                     have.f_far16 = 1;
 #endif
                 } else if( !have.f_far && RecToken( "NEAR" ) ) {
-                    CurrAux->cclass &= ~FAR;
+                    CurrAux->cclass &= ~FAR_CALL;
                     have.f_far = 1;
                 } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
                     CurrAux->cclass |= LOAD_DS_ON_ENTRY;

@@ -88,7 +88,7 @@ hw_reg_set              WinParms[] =
 
 aux_info                RtRtnInfo = {
         NULL,
-        FAR | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
+        FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         HW_D( HW_FULL ),
         HW_D( HW_EMPTY ),
         RtRtnParms,
@@ -100,7 +100,7 @@ aux_info                RtRtnInfo = {
 
 aux_info                RtStopInfo = {
         NULL,
-        FAR | NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
+        FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
         HW_D( HW_FULL ),
         HW_D( HW_EMPTY ),
         RtRtnParms,
@@ -112,7 +112,7 @@ aux_info                RtStopInfo = {
 
 aux_info                RtVarInfo = {
         NULL,
-        FAR | CALLER_POPS | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
+        FAR_CALL | CALLER_POPS | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         HW_D( HW_FULL ),
         HW_D( HW_EMPTY ),
         StackParms,
@@ -124,7 +124,7 @@ aux_info                RtVarInfo = {
 
 aux_info                CoRtnInfo = {
         NULL,
-        FAR | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
+        FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         HW_D( HW_FULL ),
         HW_D( HW_EMPTY ),
         RtRtnParms,
@@ -136,7 +136,7 @@ aux_info                CoRtnInfo = {
 
 aux_info               IFXInfo = {
         NULL,
-        FAR | NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
         HW_D( HW_FULL ),
         HW_D( HW_EMPTY ),
         FortranParms,
@@ -148,7 +148,7 @@ aux_info               IFXInfo = {
 
 aux_info                IFInfo = {
         NULL,
-        FAR | NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
         HW_D( HW_FULL ),
         HW_D( HW_EMPTY ),
         IFParms,
@@ -160,7 +160,7 @@ aux_info                IFInfo = {
 
 aux_info                IFCharInfo = {
         NULL,
-        FAR | NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
         HW_D( HW_FULL ),
         HW_D( HW_EMPTY ),
         IFParms,
@@ -172,7 +172,7 @@ aux_info                IFCharInfo = {
 
 aux_info                IFChar2Info = {
         NULL,
-        FAR | NO_MEMORY_READ | NO_MEMORY_CHANGED,
+        FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
         HW_D( HW_FULL ),
         HW_D( HW_EMPTY ),
         IFParms,
@@ -184,7 +184,7 @@ aux_info                IFChar2Info = {
 
 aux_info                IFVarInfo = {
         NULL,
-        FAR | NO_MEMORY_READ | NO_MEMORY_CHANGED | CALLER_POPS,
+        FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | CALLER_POPS,
         HW_D( HW_FULL ),
         HW_D( HW_EMPTY ),
         StackParms,
@@ -196,7 +196,7 @@ aux_info                IFVarInfo = {
 
 aux_info                DefaultInfo = {
         NULL,
-        FAR,
+        FAR_CALL,
         HW_D( HW_FULL ),
         HW_D( HW_EMPTY ),
         FortranParms,

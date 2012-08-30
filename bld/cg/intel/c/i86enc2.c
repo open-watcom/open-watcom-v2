@@ -381,7 +381,7 @@ extern  void    GenCall( instruction *ins ) {
     } else if( ( class & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
-        if( ( class & FAR ) != EMPTY && ( FEAttr( sym ) & FE_IMPORT ) ) {
+        if( ( class & FAR_CALL ) != EMPTY && ( FEAttr( sym ) & FE_IMPORT ) ) {
             CodeHandle( OC_JMP | ATTR_FAR,
                         OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
         } else {
@@ -393,7 +393,7 @@ extern  void    GenCall( instruction *ins ) {
         } else {
             pop_bit = 0;
         }
-        if( class & FAR ) {
+        if( class & FAR_CALL ) {
             big = TRUE;
         } else {
             big = FALSE;

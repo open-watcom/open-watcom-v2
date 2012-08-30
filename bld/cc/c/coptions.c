@@ -2082,7 +2082,7 @@ local void Define_Memory_Model( void )
         break;
     case BIG_CODE:                      /* -mm */
         model = 'm';
-        WatcallInfo.cclass |= FAR;
+        WatcallInfo.cclass |= FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         Define_Macro( "M_I86MM" );
         Define_Macro( "__MEDIUM__" );
@@ -2096,7 +2096,7 @@ local void Define_Memory_Model( void )
         DataPtrSize = TARGET_FAR_POINTER;                       /* 04-may-90 */
         break;
     case BIG_CODE | BIG_DATA:
-        WatcallInfo.cclass |= FAR;
+        WatcallInfo.cclass |= FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;                       /* 04-may-90 */
         if( TargetSwitches & CHEAP_POINTER ) {
             model = 'l';

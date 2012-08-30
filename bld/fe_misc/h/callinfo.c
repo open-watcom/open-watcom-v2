@@ -83,7 +83,7 @@ void PragmaAuxInfoInit( int flag_stdatnum )
     HW_CAsgn( full_no_segs, HW_FULL );
     HW_CTurnOff( full_no_segs, HW_SEGS );
 
-    call_type = WatcallInfo.cclass & FAR;
+    call_type = WatcallInfo.cclass & FAR_CALL;
 
 /*************************************************
  *  __fortran calling convention
@@ -342,7 +342,7 @@ void PragmaAuxInfoInit( int flag_stdatnum )
 void SetAuxStackConventions( void )
 /*********************************/
 {
-    WatcallInfo.cclass &= ( GENERATE_STACK_FRAME | FAR );
+    WatcallInfo.cclass &= ( GENERATE_STACK_FRAME | FAR_CALL );
     WatcallInfo.cclass |= CALLER_POPS | NO_8087_RETURNS;
     WatcallInfo.parms = metaWareParms;
     HW_CTurnOff( WatcallInfo.save, HW_EAX );

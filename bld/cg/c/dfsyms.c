@@ -972,7 +972,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     class_ptr = FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS );
     flags = 0;
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-    if( *class_ptr & FAR ) {
+    if( *class_ptr & FAR_CALL ) {
         flags |= DW_PTR_TYPE_FAR;
     }
 #endif

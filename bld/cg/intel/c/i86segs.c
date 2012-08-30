@@ -60,7 +60,7 @@ extern  bool    IsFarFunc( sym_handle sym ) {
     call_class  *pclass;
 
     pclass = FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS );
-    return( ( *pclass & FAR ) != EMPTY );
+    return( ( *pclass & FAR_CALL ) != EMPTY );
 }
 
 

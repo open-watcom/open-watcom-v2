@@ -34,7 +34,7 @@
 #define DLL_EXPORT                     ( 0x00000002LL << _TARG_AUX_SHIFT )
 #define SPECIAL_RETURN                 ( 0x00000004LL << _TARG_AUX_SHIFT )
 #define SPECIAL_STRUCT_RETURN          ( 0x00000008LL << _TARG_AUX_SHIFT )
-#define FAR                            ( 0x00000010LL << _TARG_AUX_SHIFT )
+#define FAR_CALL                       ( 0x00000010LL << _TARG_AUX_SHIFT )
 #define INTERRUPT                      ( 0x00000020LL << _TARG_AUX_SHIFT )
 #define LOAD_DS_ON_CALL                ( 0x00000040LL << _TARG_AUX_SHIFT )
 #define LOAD_DS_ON_ENTRY               ( 0x00000080LL << _TARG_AUX_SHIFT )

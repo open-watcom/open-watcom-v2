@@ -96,7 +96,7 @@ extern  type_class_def  CallState( aux_handle aux,
     cclass = *pcclass;
     if( cclass & INTERRUPT ) {
         state->attr |= ROUTINE_INTERRUPT;
-    } else if( cclass & FAR ) {
+    } else if( cclass & FAR_CALL ) {
         state->attr |= ROUTINE_LONG;
     } else if( cclass & FAR16_CALL ) {
         state->attr |= ROUTINE_FAR16;

@@ -170,7 +170,7 @@ static void CopyAuxInfo( void )
         CurrInfo->code = AuxInfo.code;
     }
     if( AuxInfoFlg.f_near ) {
-        CurrInfo->cclass &= ~FAR;
+        CurrInfo->cclass &= ~FAR_CALL;
     }
     if( AuxInfoFlg.f_routine_pops ) {
         CurrInfo->cclass &= ~CALLER_POPS;
@@ -977,10 +977,10 @@ void PragAux( void )
             have.uses_auto = GetByteSeq( &AuxInfo.code );
             have.f_call = 1;
         } else if( !have.f_call && PragRecog( "far" ) ) {
-            AuxInfo.cclass |= FAR;
+            AuxInfo.cclass |= FAR_CALL;
             have.f_call = 1;
         } else if( !have.f_call && PragRecog( "near" ) ) {
-            AuxInfo.cclass &= ~FAR;
+            AuxInfo.cclass &= ~FAR_CALL;
             AuxInfoFlg.f_near = 1;
             have.f_call = 1;
         } else if( !have.f_loadds && PragRecog( "loadds" ) ) {

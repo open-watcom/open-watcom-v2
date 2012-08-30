@@ -353,7 +353,7 @@ struct aux_info *InfoLookup( SYMPTR sym )
                 }
             }
             inf = &InlineInfo;
-            inf->cclass = (WatcallInfo.cclass & FAR) | MODIFY_EXACT;
+            inf->cclass = (WatcallInfo.cclass & FAR_CALL) | MODIFY_EXACT;
             if( (sym->flags & SYM_INTRINSIC) && ( ent != NULL ) )
                 inf->cclass |= ent->info->cclass;
             inf->code = ifunc->code;
@@ -486,12 +486,12 @@ void GetCallClass( SYM_HANDLE sym_handle )
                 CallClass |= EMIT_FUNCTION_NAME;
             }
             if( sym.attrib & FLAG_FAR ) {
-                CallClass |= FAR;
+                CallClass |= FAR_CALL;
                 if( sym.attrib & FLAG_NEAR ) {
                     CallClass |= INTERRUPT;
                 }
             } else if( sym.attrib & FLAG_NEAR ) {
-                CallClass &= ~ FAR;
+                CallClass &= ~ FAR_CALL;
             }
 #endif
 #ifdef DLL_EXPORT

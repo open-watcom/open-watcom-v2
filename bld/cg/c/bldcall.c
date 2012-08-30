@@ -469,7 +469,7 @@ extern  void    AddCallIns( instruction *ins, cn call ) {
             addr_type = WD;
         #if _TARGET & (_TARG_80386|_TARG_IAPX86)
             class = *(call_class *)FindAuxInfo( call_name, CALL_CLASS );
-            if( class & FAR ) {
+            if( class & FAR_CALL ) {
                 addr_type = CP;
             }
         #endif

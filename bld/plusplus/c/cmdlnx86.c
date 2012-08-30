@@ -332,7 +332,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         break;
     case OPT_mem_model_mm:
         model = 'm';
-        WatcallInfo.cclass |= FAR;
+        WatcallInfo.cclass |= FAR_CALL;
         DataPtrSize = TARGET_POINTER;
         CodePtrSize = TARGET_FAR_POINTER;
         PreDefineStringMacro( "M_" MM_ARCH "MM" );
@@ -347,7 +347,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         PreDefineStringMacro( "M_" MM_ARCH "LM" );
         PreDefineStringMacro( "_M_" MM_ARCH "LM" );
         PreDefineStringMacro( "__LARGE__" );
-        WatcallInfo.cclass |= FAR;
+        WatcallInfo.cclass |= FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         bit |= BIG_CODE | BIG_DATA | CHEAP_POINTER;
@@ -380,7 +380,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         PreDefineStringMacro( "M_" MM_ARCH "HM" );
         PreDefineStringMacro( "_M_" MM_ARCH "HM" );
         PreDefineStringMacro( "__HUGE__" );
-        WatcallInfo.cclass |= FAR;
+        WatcallInfo.cclass |= FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
         DataPtrSize = TARGET_FAR_POINTER;
         bit |= BIG_CODE | BIG_DATA;

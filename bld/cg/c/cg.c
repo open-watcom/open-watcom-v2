@@ -338,7 +338,7 @@ extern  void    DumpCClass( call_class c ) {
 /******************************************/
 
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
-    if( c & FAR ) Action( "FAR " );
+    if( c & FAR_CALL ) Action( "FAR " );
     if( c & ROUTINE_RETURN ) Action( "ROUTINE_RETURN " );
     if( c & SPECIAL_RETURN ) Action( "SPECIAL_RETURN " );
 #endif

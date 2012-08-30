@@ -228,7 +228,7 @@ extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) {
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgType( sym );
     class_ptr = FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS );
-    if( *class_ptr & FAR ) {
+    if( *class_ptr & FAR_CALL ) {
         BuffStart( &temp, SYM_CODE + CODE_FAR_RTN );
    } else {
         BuffStart( &temp, SYM_CODE + CODE_NEAR_RTN );
