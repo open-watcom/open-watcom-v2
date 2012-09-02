@@ -1754,8 +1754,7 @@ convert:                                /* moved here 30-aug-89 */
             }
             if( cast_op  ||  cnv != P2P ) {
 /* convert: moved 30-aug-89 */
-                if( opnd->op.opr == OPR_PUSHINT ||
-                    opnd->op.opr == OPR_PUSHFLOAT ) {
+                if( IsConstLeaf( opnd ) ) {
                     CastConstNode( opnd, newtyp );
                     opnd->expr_type = newtyp;
                 } else {
@@ -1783,8 +1782,7 @@ convert:                                /* moved here 30-aug-89 */
                     opnd->expr_type = newtyp;
                 }
             }
-        } else if( opnd->op.opr == OPR_PUSHINT ||
-                   opnd->op.opr == OPR_PUSHFLOAT ) {
+        } else if( IsConstLeaf( opnd ) ) {
             CastConstValue( opnd, newtyp->decl_type );
             opnd->expr_type = newtyp;
         } else if( opnd->expr_type != newtyp ) {
@@ -1838,7 +1836,7 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
             opnd->op.result_type = newtyp;
         }
     } else {
-        if( opnd->op.opr == OPR_PUSHINT || opnd->op.opr == OPR_PUSHFLOAT ) {
+        if( IsConstLeaf( opnd ) ) {
             CastConstValue( opnd, newtyp->decl_type );
         } else {
             opnd = ExprNode( NULL, OPR_CONVERT, opnd );

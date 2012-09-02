@@ -987,16 +987,6 @@ static void FoldQuestionTree( TREEPTR tree )
 }
 
 
-static bool IsConstLeaf( TREEPTR opnd )
-{
-    if( opnd->op.opr == OPR_PUSHINT  || opnd->op.opr == OPR_PUSHFLOAT ) {
-        return( TRUE );
-    } else {
-        return( FALSE );
-    }
-}
-
-
 static bool FoldableTree( TREEPTR tree )
 {
     TREEPTR     opnd;

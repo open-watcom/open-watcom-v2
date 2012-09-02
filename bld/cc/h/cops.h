@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#define IsConstLeaf(opnd)   (opnd->op.opr==OPR_PUSHINT||opnd->op.opr==OPR_PUSHFLOAT)
+
 typedef enum ops {
     #define pick1(enum,dump,cgenum) enum,
     #include "copcodes.h"

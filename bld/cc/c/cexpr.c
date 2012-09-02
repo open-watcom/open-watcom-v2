@@ -2416,11 +2416,8 @@ TREEPTR BoolExpr( TREEPTR tree )
         break;                          // tree is a boolean expression
     default:
         if( tree->op.opr == OPR_EQUALS ) {
-            switch( tree->right->op.opr ) {
-            case OPR_PUSHINT:
-            case OPR_PUSHFLOAT:
+            if( IsConstLeaf( tree ) ) {
                 CWarn1( WARN_ASSIGNMENT_IN_BOOL_EXPR, ERR_ASSIGNMENT_IN_BOOL_EXPR );
-                break;
             }
         }
         tree = RValue( tree );
@@ -2448,7 +2445,7 @@ local TREEPTR NotOp( TREEPTR tree )
     TREEPTR     opnd;
     FLOATVAL    *flt;
 
-    if( tree->op.opr == OPR_PUSHINT || tree->op.opr == OPR_PUSHFLOAT ) {
+    if( IsConstLeaf( tree ) ) {
         switch( tree->op.const_type ) {
         case TYPE_CHAR:
         case TYPE_UCHAR:
@@ -2485,7 +2482,7 @@ local TREEPTR NotOp( TREEPTR tree )
     } else {
         if( tree->op.opr == OPR_EQUALS ) {
             opnd = tree->right;
-            if( opnd->op.opr == OPR_PUSHINT || opnd->op.opr == OPR_PUSHFLOAT ) {
+            if( IsConstLeaf( opnd ) ) {
                 CWarn1( WARN_ASSIGNMENT_IN_BOOL_EXPR, ERR_ASSIGNMENT_IN_BOOL_EXPR );
             }
         }
@@ -2565,10 +2562,10 @@ static TREEPTR TernOp( TREEPTR expr1, TREEPTR true_part, TREEPTR false_part )
         tree = ExprNode( expr1, OPR_QUESTION, tree );
         tree->op.result_type = result_typ;
         ops = OPFLAG_NONE;
-        if( true_part->op.opr != OPR_PUSHINT && true_part->op.opr != OPR_PUSHFLOAT ) {
+        if( !IsConstLeaf( true_part ) ) {
             ops |= (true_part->op.flags & OPFLAG_MEM_MODEL);
         }
-        if( false_part->op.opr != OPR_PUSHINT && false_part->op.opr != OPR_PUSHFLOAT ) {
+        if( !IsConstLeaf( false_part ) ) {
             ops |= (true_part->op.flags & OPFLAG_MEM_MODEL);
         }
         tree->op.flags = ops;

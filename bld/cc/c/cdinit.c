@@ -624,7 +624,7 @@ local void StoreInt64( TYPEPTR typ )
     if( CurToken != T_RIGHT_BRACE ) {
         tree = SingleExpr();
         tree = InitAsgn( typ, tree ); // as if we are assigning
-        if( tree->op.opr == OPR_PUSHINT || tree->op.opr == OPR_PUSHFLOAT ) {
+        if( IsConstLeaf( tree ) ) {
             CastConstValue( tree, typ->decl_type );
             dq.u.long64 = tree->op.ulong64_value;
         } else {
@@ -736,7 +736,7 @@ local void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
             return( NULL );
         NextToken();
         tree = SingleExpr();
-        if( tree->op.opr == OPR_PUSHINT || tree->op.opr == OPR_PUSHFLOAT ) {
+        if( IsConstLeaf( tree ) ) {
             CastConstValue( tree, typ->decl_type );
             *(unsigned long *)field = tree->op.ulong_value;
         } else {
@@ -1125,7 +1125,7 @@ local void StoreFloat( DATA_TYPE dtype, unsigned long size )
     dq.u.double_value = 0.0;
     if( CurToken != T_RIGHT_BRACE ) {
         tree = SingleExpr();
-        if( tree->op.opr == OPR_PUSHINT || tree->op.opr == OPR_PUSHFLOAT ) {
+        if( IsConstLeaf( tree ) ) {
             CastConstValue( tree, dtype );
             {
 #ifdef _LONG_DOUBLE_
