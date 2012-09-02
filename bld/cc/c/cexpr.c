@@ -67,8 +67,6 @@ local      void IncSymWeight( SYMPTR sym );
 local      void AddCallNode( TREEPTR tree );
 extern    int64 LongValue64( TREEPTR leaf );
 
-#define PTR_FLAGS  (FLAG_CONST | FLAG_VOLATILE | FLAG_UNALIGNED | FLAG_MEM_MODEL|FLAG_FAR16 | FLAG_BASED )
-
         call_list   *CallNodeList;
 static  call_list   **LastCallLnk;
 static  call_list   **FirstCallLnk;
@@ -334,7 +332,7 @@ TREEPTR VarLeaf( SYMPTR sym, SYM_HANDLE sym_handle )
     leaf->op.sym_handle = sym_handle;
     typ = sym->sym_type;
     leaf->expr_type = typ;
-    flags = sym->attrib & PTR_FLAGS;
+    flags = sym->attrib & MASK_PTR;
     leaf->op.flags = OpFlags( flags );
     return( leaf );
 }
@@ -415,7 +413,7 @@ TREEPTR SymLeaf( void )
         if( CurToken == T_LEFT_PAREN ) {
             sym.stg_class = SC_FORWARD;     /* indicate forward decl */
             /* Warn about unprototyped function */
-            CWarn( WARN_ASSUMED_IMPORT, ERR_ASSUMED_IMPORT, sym.name );
+            CWarn2p( WARN_ASSUMED_IMPORT, ERR_ASSUMED_IMPORT, sym.name );
             sym_handle = SymAddL0( hash, &sym ); /* add symbol to level 0 */
             sym.flags |= SYM_FUNCTION;
             sym.sym_type = FuncNode( GetType( TYPE_INT ), 0, NULL );
@@ -593,9 +591,7 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
                     if( !(sym.flags & SYM_ASSIGNED) ) {
                       /* turn on flag so msg only comes out once per sym */
                         sym.flags |= SYM_ASSIGNED;
-                        CWarn( WARN_SYM_NOT_ASSIGNED,
-                                ERR_SYM_NOT_ASSIGNED,
-                                SymName( &sym, tree->op.sym_handle ) );
+                        CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, SymName( &sym, tree->op.sym_handle ) );
                     }
                 }
             }
@@ -736,7 +732,7 @@ static TREEPTR AddrOp( TREEPTR tree )
                 modifiers |= FLAG_FAR;
             }
         }
-        typ = PtrNode( typ, modifiers & PTR_FLAGS, segid );
+        typ = PtrNode( typ, modifiers & MASK_PTR, segid );
     } else if( tree->op.opr == OPR_POINTS ) {
         typ = tree->op.result_type;
     } else {
@@ -777,7 +773,7 @@ static TREEPTR FarPtrCvt( SYMPTR sym, SYM_HANDLE sym_handle )
         }
     } else {
         assert( 0 );
-	tree = NULL;
+        tree = NULL;
     }
     return( tree );
 }
@@ -870,7 +866,7 @@ static TREEPTR CheckBasedPtr( TREEPTR tree, TYPEPTR typ, type_modifiers *p_flags
 {
     type_modifiers  flags;
 
-    flags = typ->u.p.decl_flags & PTR_FLAGS;
+    flags = typ->u.p.decl_flags & MASK_PTR;
     if( flags & FLAG_BASED ) {
         tree = BasedPtrNode( typ, tree );
         flags &= ~(FLAG_NEAR | FLAG_BASED);
@@ -883,7 +879,7 @@ static TREEPTR CheckBasedPtr( TREEPTR tree, TYPEPTR typ, type_modifiers *p_flags
             base_sym_handle = typ->u.p.based_sym;
             base_sym = SymGetPtr( base_sym_handle );
             base_typ = base_sym->sym_type;
-            flags |= base_typ->u.p.decl_flags & PTR_FLAGS;
+            flags |= base_typ->u.p.decl_flags & MASK_PTR;
         } else {
             flags |= FLAG_FAR;
         }
@@ -1001,7 +997,7 @@ TREEPTR DotOp( TREEPTR tree )
     offset = 0;
     field = SearchFields( &get_typ, &offset, Buffer );
     if( field == NULL ) {
-        CErr( ERR_NAME_NOT_FOUND_IN_STRUCT, Buffer, typ->u.tag->name );
+        CErr3p( ERR_NAME_NOT_FOUND_IN_STRUCT, Buffer, typ->u.tag->name );
         return( ErrorNode( tree ) );
     }
     typ = field->field_type;
@@ -1058,7 +1054,7 @@ TREEPTR ArrowOp( TREEPTR tree )
     offset = 0;
     field = SearchFields( &get_typ, &offset, Buffer );
     if( field == NULL ) {
-        CErr( ERR_NAME_NOT_FOUND_IN_STRUCT, Buffer, typ->u.tag->name );
+        CErr3p( ERR_NAME_NOT_FOUND_IN_STRUCT, Buffer, typ->u.tag->name );
         return( ErrorNode( tree ) );
     }
     if( CompFlags.emit_browser_info ) {                 /* 27-oct-94 */
@@ -1415,8 +1411,7 @@ local TREEPTR GetExpr( void )
             if( Class[ Level ] != TC_PARM_LIST ) {
                 if( CompFlags.meaningless_stmt == 1 ) {
                     if( CompFlags.useful_side_effect ) {
-                        CWarn1( WARN_USEFUL_SIDE_EFFECT,
-                                ERR_USEFUL_SIDE_EFFECT );
+                        CWarn1( WARN_USEFUL_SIDE_EFFECT, ERR_USEFUL_SIDE_EFFECT );
                     } else {
                         CWarn1( WARN_MEANINGLESS, ERR_MEANINGLESS );
                     }
@@ -1667,7 +1662,7 @@ local TREEPTR ExprId( void )
             }
         } else {
 //          if( SizeOfCount == 0 ) {                    /* 17-jul-94 */
-//              CWarn( WARN_UNDECLARED_PP_SYM, ERR_UNDECLARED_PP_SYM, Buffer);
+//              CWarn2p( WARN_UNDECLARED_PP_SYM, ERR_UNDECLARED_PP_SYM, Buffer);
 //          }
             NextToken();
             if( CurToken == T_LEFT_PAREN ) {    /* 26-may-89 */
@@ -1747,7 +1742,7 @@ local TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
         tree_flags = OpFlags( flags );
     } else {
         CErr2p( ERR_FATAL_ERROR, "Bad array index tree" );
-	tree_flags = OPFLAG_NONE;
+        tree_flags = OPFLAG_NONE;
     }
     typ = typ->object;
     SKIP_TYPEDEFS( typ );
@@ -1874,7 +1869,7 @@ local TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
     typ = SkipTypeFluff( tree->expr_type );
     plist = *plistptr;
     if( plist != NULL ) {
-        if( *plist == NULL || (*plist)->decl_type == TYPE_VOID ) {  // To many parm trees
+        if( *plist == NULL ) {  // To many parm trees
 #if _CPU == 386
             /* can allow wrong number of parms with -3s option; 06-dec-91 */
             if( !CompFlags.register_conventions ) {
@@ -1889,11 +1884,13 @@ local TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
             plist = NULL;
         } else if( (*plist)->decl_type == TYPE_DOT_DOT_DOT ) {
             plist = NULL;
+        } else if( (*plist)->decl_type == TYPE_VOID ) {
+            return( tree );
         }
     }
     if( plist != NULL ) {  //do conversion from tree to parm type
         parm_typ = *plist;
-        ParmAsgnCheck( parm_typ, tree, ParmNum() );
+        ParmAsgnCheck( parm_typ, tree, ParmNum(), TRUE );
         if( parm_typ != NULL ) {
             parm_typ = SkipTypeFluff( parm_typ );
             if( parm_typ != typ ) {
@@ -2249,7 +2246,9 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
     TYPEPTR             *parms;
     type_modifiers      decl_flags;
     char                recursive = 0;
+#ifdef __SEH__
     opr_code            opr;
+#endif
     SYM_HANDLE          sym_handle;
     SYM_ENTRY           sym;
 
@@ -2320,14 +2319,14 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
         Token[ Level ] = T_LEFT_PAREN;
         tree = NULL;               /* indicate need operand for parm */
     } else { // foo() build call
+#ifdef __SEH__
         opr = OPR_CALL;
-#ifdef __SEH__                                          /* 25-mar-94 */
         if( CompFlags.exception_filter_expr ||
             CompFlags.in_finally_block      ||
             CompFlags.exception_handler ) {
             SYM_NAMEPTR         func_name;
 
-            if( tree->op.opr == OPR_FUNCNAME ) {
+            if( !(sym.flags & SYM_TEMP) ) {
                 sym_handle = tree->op.sym_handle;
                 SymGet( &sym, sym_handle );
                 func_name = SymName( &sym, sym_handle );
@@ -2347,17 +2346,18 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
                 }
                 if( opr != OPR_CALL ) {
                     FreeExprNode( tree );
+                    tree = LeafNode( opr );
+                    tree->expr_type = GetType( TYPE_INT );
                 }
             }
         }
+        if( opr == OPR_CALL ) {
 #endif
-        typ = typ->object; //get return type
-        SKIP_TYPEDEFS( typ );
-        if( opr != OPR_CALL ) {
-            tree = LeafNode( opr );
-            tree->expr_type = GetType( TYPE_INT );
-        } else {
-            tree = CallNode( tree, 0, typ );
+            typ = typ->object; //get return type
+            SKIP_TYPEDEFS( typ );
+            if( !(sym.flags & SYM_TEMP) )
+                SetDiagSymbol( &sym, sym_handle );
+            tree = CallNode( tree, NULL, typ );
             if( parms != NULL ) {        /* function has prototype */
                 if( *parms != NULL && (*parms)->decl_type != TYPE_VOID ) {
                     CErr1( ERR_PARM_COUNT_MISMATCH );
@@ -2365,7 +2365,12 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
             } else {                                /* check later */
                 AddCallNode(tree);
             }
+            if( !(sym.flags & SYM_TEMP) ) {
+                SetDiagPop();
+            }
+#ifdef __SEH__
         }
+#endif
         CompFlags.meaningless_stmt = 0;
         CompFlags.useful_side_effect = 1;
         NextToken();                    /* skip over ')' */
@@ -2414,8 +2419,7 @@ TREEPTR BoolExpr( TREEPTR tree )
             switch( tree->right->op.opr ) {
             case OPR_PUSHINT:
             case OPR_PUSHFLOAT:
-                CWarn1( WARN_ASSIGNMENT_IN_BOOL_EXPR,
-                        ERR_ASSIGNMENT_IN_BOOL_EXPR );
+                CWarn1( WARN_ASSIGNMENT_IN_BOOL_EXPR, ERR_ASSIGNMENT_IN_BOOL_EXPR );
                 break;
             }
         }
@@ -2482,8 +2486,7 @@ local TREEPTR NotOp( TREEPTR tree )
         if( tree->op.opr == OPR_EQUALS ) {
             opnd = tree->right;
             if( opnd->op.opr == OPR_PUSHINT || opnd->op.opr == OPR_PUSHFLOAT ) {
-                CWarn1( WARN_ASSIGNMENT_IN_BOOL_EXPR,
-                        ERR_ASSIGNMENT_IN_BOOL_EXPR );
+                CWarn1( WARN_ASSIGNMENT_IN_BOOL_EXPR, ERR_ASSIGNMENT_IN_BOOL_EXPR );
             }
         }
         tree = RelOp( ScalarExpr( tree ), T_EQ, IntLeaf( 0 ) );

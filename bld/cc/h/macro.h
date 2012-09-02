@@ -66,6 +66,7 @@ typedef struct  macro_entry {
     unsigned    macro_len;      /* length of macro definition */
     unsigned    parm_count;     /* special macro indicator if defn == 0 */
     macro_flags macro_flags;    /* flags */
+    source_loc  src_loc;        /* where macro defined, for diagnostic */
     char        macro_name[1];  /* name,parms, and macro definition */
 } MEDEFN, *MEPTR;
 

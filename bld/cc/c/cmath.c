@@ -819,7 +819,7 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             if( cmp_cc == CMP_COMPLEX ) {
                 CWarn1( WARN_COMPARE_UNSIGNED_VS_ZERO, ERR_COMPARE_UNSIGNED_VS_ZERO );
             } else {
-                int res = cmp_cc == CMP_TRUE;
+                int res = ( cmp_cc == CMP_TRUE );
 
                 CWarn2( WARN_COMPARE_ALWAYS, ERR_COMPARE_ALWAYS, res );
             }
@@ -828,7 +828,7 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     if( op1_type == TYPE_VOID || op2_type == TYPE_VOID ) {
         ;           /* do nothing, since error has already been given */
     } else if( op1_type == TYPE_POINTER && op2_type == TYPE_POINTER ) {
-         CompatiblePtrType( typ1, typ2 );
+         CompatiblePtrType( typ1, typ2, opr );
          if( TypeSize( typ2 ) > TypeSize( typ1 ) ) {
              /* Make sure near pointer is converted to far if necessary */
              cmp_type = typ2;
@@ -837,11 +837,9 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
                (op2_type == TYPE_POINTER && IsInt( op1_type )) ) {
         /* ok to compare pointer with constant 0 */
         if( opr != T_EQ && opr != T_NE ) {
-            CWarn1( WARN_POINTER_TYPE_MISMATCH,
-                    ERR_POINTER_TYPE_MISMATCH );
+            CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
         } else if( !( IsZero( op1 ) || IsZero( op2 ) ) ) {
-            CWarn1( WARN_POINTER_TYPE_MISMATCH,
-                    NON_ZERO_CONST );
+            CWarn1( WARN_POINTER_TYPE_MISMATCH, NON_ZERO_CONST );
         }
         if( op2_type == TYPE_POINTER ) {
             cmp_type = typ2;
@@ -1196,7 +1194,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             result_type = SubResult[ op1_type ][ op2_type ];
             if(( op1_type == PTR )&&( op2_type == PTR )) {
                 /* make sure both pointers are same type */
-                CompatiblePtrType( op1_tp, op2_tp );
+                CompatiblePtrType( op1_tp, op2_tp, opr );
                 if(( op1_tp->u.p.decl_flags & FLAG_HUGE ) ||
                    ( op2_tp->u.p.decl_flags & FLAG_HUGE ) ) {
                     result_type = LNG;
@@ -1382,7 +1380,7 @@ TREEPTR InitAsgn( TYPEPTR typ, TREEPTR op2 )
     op2 = RValue( op2 );
     op2 = BoolConv( typ, op2 );
     if( !CompFlags.no_check_inits ) {   // else fuck em
-        ParmAsgnCheck( typ, op2, 0 );
+        ParmAsgnCheck( typ, op2, 0, TRUE );
     }
     return( op2 );
 }
@@ -1435,7 +1433,7 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         SetSymAssigned( op1 );
         typ = TypeOf( op1 );
         op2 = RValue( op2 );
-        ParmAsgnCheck( typ, op2, 0 );
+        ParmAsgnCheck( typ, op2, 0, TRUE );
         op2 = BaseConv( typ, op2 );
         op2 = BoolConv( typ, op2 );
         if( opr == T_ASSIGN_LAST ) opr = T_EQUAL;
@@ -1621,8 +1619,6 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
     return( is_safe );
 }
 
-#define NEAR_FAR_HUGE   (FLAG_NEAR|FLAG_FAR|FLAG_HUGE|FLAG_FAR16)
-
 TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, int cast_op )
 {
     TYPEPTR             typ;
@@ -1658,8 +1654,7 @@ TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, int cast_op )
             if( cast_op )  CompFlags.meaningless_stmt = 0;      /* 21-jul-89 */
         } else if( newtyp->decl_type == TYPE_ENUM ) {
             if( typ->decl_type == TYPE_POINTER ) {
-                CWarn1( WARN_POINTER_TYPE_MISMATCH,
-                        ERR_POINTER_TYPE_MISMATCH );
+                CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
             }
             newtyp = newtyp->object;            /* 02-feb-93 */
             goto convert;
@@ -1684,16 +1679,14 @@ convert:                                /* moved here 30-aug-89 */
             return( ErrorNode( opnd ) );
         } else if( cnv != NIL ) {
             if( cnv == P2P ) {
-                if( ( typ->u.p.decl_flags & NEAR_FAR_HUGE )
-                    != ( newtyp->u.p.decl_flags & NEAR_FAR_HUGE )
+                if( ( typ->u.p.decl_flags & MASK_ALL_MEM_MODELS )
+                    != ( newtyp->u.p.decl_flags & MASK_ALL_MEM_MODELS )
                     || ( opnd_type == TYPE_ARRAY ) ) {
                     if( !IsPtrConvSafe( opnd, newtyp, typ ) ) {
                         if( cast_op ) {
-                            CWarn1( WARN_CAST_POINTER_TRUNCATION,
-                                    ERR_CAST_POINTER_TRUNCATION );
+                            CWarn1( WARN_CAST_POINTER_TRUNCATION, ERR_CAST_POINTER_TRUNCATION );
                         } else {
-                            CWarn1( WARN_POINTER_TRUNCATION,
-                                    ERR_POINTER_TRUNCATION );
+                            CWarn1( WARN_POINTER_TRUNCATION, ERR_POINTER_TRUNCATION );
                         }
                     }
                     if( cast_op == 0 ) {
@@ -1747,8 +1740,7 @@ convert:                                /* moved here 30-aug-89 */
                 }
             }
             if( !cast_op && cnv == P2A && TypeSize( typ ) > TypeSize( newtyp ) ) {
-                CWarn1( WARN_POINTER_TRUNCATION,
-                        ERR_POINTER_TRUNCATION );
+                CWarn1( WARN_POINTER_TRUNCATION, ERR_POINTER_TRUNCATION );
             }
             if( cnv == P2A || cnv == A2P ) {
                 if( TypeSize( typ ) != TypeSize( newtyp ) ) {
@@ -2017,7 +2009,7 @@ local TYPEPTR MergedType( TYPEPTR typ1, TYPEPTR typ2 )  /* 25-jul-90 */
 */
     typ = typ1;
     flags = typ1->u.p.decl_flags | typ2->u.p.decl_flags;
-    new_flags = flags & (FLAG_CONST | FLAG_VOLATILE);
+    new_flags = flags & MASK_CV_QUALIFIERS;
     if( flags & FLAG_HUGE ) {
         new_flags |= FLAG_HUGE;
     } else if( flags & FLAG_FAR ) {
@@ -2053,15 +2045,13 @@ TYPEPTR TernType( TREEPTR true_part, TREEPTR false_part )
     dtype2 = DataTypeOf( typ2 );
     if( dtype1 == TYPE_POINTER && false_part->op.opr == OPR_PUSHINT ) {
         if( false_part->op.long_value != 0 ) {
-            CWarn1( WARN_NONPORTABLE_PTR_CONV,
-                     ERR_NONPORTABLE_PTR_CONV );
+            CWarn1( WARN_NONPORTABLE_PTR_CONV, ERR_NONPORTABLE_PTR_CONV );
         }
         return( MergedType( typ1, typ2 ) ); /* merge near/far/const etc. */
     }
     if( dtype2 == TYPE_POINTER && true_part->op.opr == OPR_PUSHINT ) {
         if( true_part->op.long_value != 0 ) {
-            CWarn1( WARN_NONPORTABLE_PTR_CONV,
-                     ERR_NONPORTABLE_PTR_CONV );
+            CWarn1( WARN_NONPORTABLE_PTR_CONV, ERR_NONPORTABLE_PTR_CONV );
         }
         return( MergedType( typ2, typ1 ) ); /* merge near/far/const etc. */
     }

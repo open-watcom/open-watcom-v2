@@ -112,12 +112,11 @@ void InvDecl( void )
     CErr1( ERR_INVALID_DECLARATOR );
 }
 
-#define FUNC_MASK     (~(FLAG_INLINE | FLAG_LOADDS | FLAG_EXPORT | FLAG_LANGUAGES))
 local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
 {
     TYPEPTR     type_new, type_old;
 
-    if( (new_sym->attrib & FUNC_MASK) != (old_sym->attrib & FUNC_MASK) ) {
+    if( (new_sym->attrib & ~MASK_FUNC) != (old_sym->attrib & ~MASK_FUNC) ) {
         CErr2p( ERR_MODIFIERS_DISAGREE, new_sym->name );
     }
 
@@ -128,7 +127,7 @@ local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
     type_old = old_sym->sym_type;
     SKIP_TYPEDEFS( type_old );
 
-    SetDiagType2( type_new->object, type_old->object );
+    SetDiagType2( type_old->object, type_new->object );
     if( !IdenticalType( type_new->object, type_old->object ) ) {
         TYPEPTR     ret_new, ret_old;
 
@@ -148,7 +147,7 @@ local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
     SetDiagPop();
 
     /* check types of parms, including promotion */
-    ChkCompatibleFunction( type_new, type_old, 1 );
+    ChkCompatibleFunction( type_old, type_new, 1 );
 }
 
 
@@ -167,7 +166,7 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     PrevProtoType = NULL;                               /* 12-may-91 */
     // Warn if assuming 'int' return type - should be an error in strict C99 mode
     if( *state & DECL_STATE_NOTYPE ) {
-        CWarn( WARN_NO_RET_TYPE_GIVEN, ERR_NO_RET_TYPE_GIVEN, sym->name );
+        CWarn2p( WARN_NO_RET_TYPE_GIVEN, ERR_NO_RET_TYPE_GIVEN, sym->name );
     }
     sym->rent = FALSE;   // Assume not override aka re-entrant
     if( CompFlags.rent && (sym->declspec == DECLSPEC_DLLIMPORT) ) {
@@ -220,7 +219,7 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             // check lang flags to make sure no one saw an incompatible prototype; if
             // previous prototype specified calling convention and later definition does
             // not, propagate the convention from the prototype
-            if( (sym->attrib & FLAG_LANGUAGES) && !ChkCompatibleLanguage( sym->attrib, old_sym.attrib ) ) {
+            if( (sym->attrib & MASK_LANGUAGES) && !ChkCompatibleLanguage( sym->attrib, old_sym.attrib ) ) {
                 CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
             }
             if( (sym->attrib & FLAG_INLINE) != (old_sym.attrib & FLAG_INLINE) ) {
@@ -248,8 +247,7 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             if( stg_class == SC_STATIC && old_sym.stg_class == SC_EXTERN ) {
                 /* can't redeclare extern function as static */
                 /* NB: We may want to handle SC_FORWARD functions too! */
-                CWarn( WARN_FUNCTION_STG_CLASS_REDECLARED,
-                       ERR_FUNCTION_STG_CLASS_REDECLARED, sym->name );
+                CWarn2p( WARN_FUNCTION_STG_CLASS_REDECLARED, ERR_FUNCTION_STG_CLASS_REDECLARED, sym->name );
             }
             CMemFree( sym->name );
             if( stg_class == SC_NULL && old_sym.stg_class != SC_FORWARD ) {     /* 05-jul-89 */
@@ -286,11 +284,9 @@ TYPEPTR SkipDummyTypedef( TYPEPTR typ )                 /* 25-nov-94 */
     return( typ );
 }
 
-#define QUAL_FLAGS (FLAG_CONST|FLAG_VOLATILE|FLAG_UNALIGNED)
-#define ATTRIB_MASK     (~(FLAG_INLINE | FLAG_LOADDS | FLAG_EXPORT | FLAG_LANGUAGES))
 local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
 {
-    int                 which;
+    bool                old_def;
     TYPEPTR             typ;
     SYM_HANDLE          sym_handle;
     SYM_HANDLE          old_sym_handle;
@@ -302,13 +298,13 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
     // Warn if neither type nor storage class were given; this should probably be
     // an error in strict C89 (and naturally C99) mode
     if( (stg_class == SC_NULL) && (*state & DECL_STATE_NOTYPE) && !(*state & DECL_STATE_NOSTWRN) ) {
-        CWarn( WARN_NO_STG_OR_TYPE, ERR_NO_STG_OR_TYPE );
+        CWarn1( WARN_NO_STG_OR_TYPE, ERR_NO_STG_OR_TYPE );
         *state |= DECL_STATE_NOSTWRN;   // Only warn once for each declarator list
     }
 
     // Additionally warn if assuming 'int' type - should be an error in strict C99 mode
     if( *state & DECL_STATE_NOTYPE ) {
-        CWarn( WARN_NO_DATA_TYPE_GIVEN, ERR_NO_DATA_TYPE_GIVEN, sym->name );
+        CWarn2p( WARN_NO_DATA_TYPE_GIVEN, ERR_NO_DATA_TYPE_GIVEN, sym->name );
     }
     if( CompFlags.rent ) {
         sym->rent = TRUE; //Assume instance data
@@ -344,7 +340,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
             stg_class = SC_AUTO;
         }
         if( stg_class == SC_AUTO  ||  stg_class == SC_REGISTER ) {
-            if( sym->attrib & FLAG_LANGUAGES ) {
+            if( sym->attrib & MASK_LANGUAGES ) {
                 CErr1( ERR_INVALID_DECLARATOR );
             }
             if( sym->declspec != DECLSPEC_NONE ) {          /* 25-jul-95 */
@@ -406,13 +402,13 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
                 old_attrs |= FLAG_NEAR;
                 new_attrs |= FLAG_NEAR;
             }
-            if( (new_attrs & ATTRIB_MASK) != (old_attrs & ATTRIB_MASK) ) {
+            if( (new_attrs & ~MASK_FUNC) != (old_attrs & ~MASK_FUNC) ) {
                  CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
             }
-            if( (sym->attrib & FLAG_LANGUAGES) != (old_sym.attrib & FLAG_LANGUAGES) ) {
+            if( (sym->attrib & MASK_LANGUAGES) != (old_sym.attrib & MASK_LANGUAGES) ) {
                 // just inherit old lang flags
                 // if new != 0 then it's possible someone saw a different prototype
-                if( (sym->attrib & FLAG_LANGUAGES) != 0 ) {
+                if( (sym->attrib & MASK_LANGUAGES) != 0 ) {
                      CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
                 }
             }
@@ -441,9 +437,9 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         /* make sure sym->sym_type same type as old_sym->sym_type */
 
         SetDiagSymbol( &old_sym, old_sym_handle );
-        which = VerifyType( sym->sym_type, old_sym.sym_type, sym );
+        old_def = VerifyType( sym->sym_type, old_sym.sym_type, sym );
         SetDiagPop();
-        if( which == 0 && old_sym.level == SymLevel ) { /* 06-jul-88 AFS */
+        if( !old_def && old_sym.level == SymLevel ) { /* 06-jul-88 AFS */
             /* new symbol's type supersedes old type */
             old_sym.sym_type = sym->sym_type;
             if( (old_sym.flags & SYM_FUNCTION) ) {
@@ -537,13 +533,13 @@ local void AdjSymTypeNode( SYMPTR sym, type_modifiers decl_mod )
     if( decl_mod ) {
         typ = sym->sym_type;
         if( typ->decl_type == TYPE_FUNCTION ) {
-            if( (sym->attrib & FLAG_LANGUAGES) != decl_mod ) {
-                if( sym->attrib & FLAG_LANGUAGES ) {
+            if( (sym->attrib & MASK_LANGUAGES) != decl_mod ) {
+                if( sym->attrib & MASK_LANGUAGES ) {
                     CErr1( ERR_INVALID_DECLSPEC );
                 } else {
                     sym->attrib |= decl_mod;
-                    if( (typ->u.fn.decl_flags & FLAG_LANGUAGES) != decl_mod ) {
-                        if( typ->u.fn.decl_flags & FLAG_LANGUAGES ) {
+                    if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != decl_mod ) {
+                        if( typ->u.fn.decl_flags & MASK_LANGUAGES ) {
                             CErr1( ERR_INVALID_DECLSPEC );
                         } else {
                             sym->sym_type = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
@@ -560,15 +556,15 @@ local void AdjSymTypeNode( SYMPTR sym, type_modifiers decl_mod )
                 typ = typ->object;
             }
             if( typ->decl_type == TYPE_FUNCTION ) {
-                if( (typ->u.fn.decl_flags & FLAG_LANGUAGES) != decl_mod ) {
-                    if( typ->u.fn.decl_flags & FLAG_LANGUAGES ) {
+                if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != decl_mod ) {
+                    if( typ->u.fn.decl_flags & MASK_LANGUAGES ) {
                         CErr1( ERR_INVALID_DECLSPEC );
                     } else {
                         *xtyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
                     }
                 }
             } else {
-                if( sym->attrib & FLAG_LANGUAGES ) {
+                if( sym->attrib & MASK_LANGUAGES ) {
                     CErr1( ERR_INVALID_DECLSPEC );
                 } else {
                     sym->attrib |= decl_mod;
@@ -1047,7 +1043,7 @@ local TYPEPTR Pointer( TYPEPTR ptr_typ, struct mod_info *info )
                 break;
             }
             MustRecog( T_RIGHT_PAREN );
-            info->modifier &= ~(FLAG_NEAR | FLAG_FAR | FLAG_HUGE);
+            info->modifier &= ~MASK_ALL_MEM_MODELS;
             info->modifier = FLAG_NEAR | FLAG_BASED;
         }
         if( CurToken == T_TIMES ) {

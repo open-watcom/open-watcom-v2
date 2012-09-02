@@ -107,7 +107,7 @@ local void FuncDefn( SYMPTR sym )
 
     if( typ->decl_type != TYPE_VOID ) {         /* 26-mar-91 */
         if( TypeSize( typ ) == 0 ) {
-            CErr( ERR_INCOMPLETE_TYPE, sym_name );
+            CErr2p( ERR_INCOMPLETE_TYPE, sym_name );
         }
     }
     sym->flags |= /*SYM_REFERENCED | 18-jan-89 */ SYM_DEFINED;
@@ -133,7 +133,7 @@ local void FuncDefn( SYMPTR sym )
         }
     }
     if( strcmp( CurFunc->name, "main" ) == 0 || strcmp( CurFunc->name, "wmain" ) == 0 ) {
-        sym->attrib &= ~FLAG_LANGUAGES;  // Turn off any language flags
+        sym->attrib &= ~MASK_LANGUAGES;  // Turn off any language flags
         sym->attrib |= LANG_WATCALL;     // Turn on __watcall calling convention for main
     }
     SymReplace( sym, CurFuncHandle );

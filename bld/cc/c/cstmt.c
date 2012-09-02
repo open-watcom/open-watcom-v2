@@ -177,7 +177,7 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
     sym = SymGetPtr( sym_handle );
     tree->op.func.sym_handle = sym_handle;
     tree->op.func.flags = FUNC_NONE;
-    if( ( Toggles & TOGGLE_INLINE ) | ( sym->attrib & FLAG_INLINE ) ){
+    if( (Toggles & TOGGLE_INLINE) || (sym->attrib & FLAG_INLINE) ){
         if( !sym->naked ){
             if( strcmp( sym->name, "main" ) != 0 ) {
                 tree->op.func.flags |= FUNC_OK_TO_INLINE;
@@ -427,8 +427,7 @@ static void ChkRetValue( void )
     typ = typ->object;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type != TYPE_VOID ) {
-        CWarn( WARN_MISSING_RETURN_VALUE,
-                ERR_MISSING_RETURN_VALUE, CurFunc->name );
+        CWarn2p( WARN_MISSING_RETURN_VALUE, ERR_MISSING_RETURN_VALUE, CurFunc->name );
     }
 }
 
@@ -1430,8 +1429,7 @@ void Statement( void )
         }
     } else if( ! return_at_outer_level ) {              /* 28-feb-92 */
         if( ! DeadCode && !CurFunc->naked ) {
-            CWarn( WARN_MISSING_RETURN_VALUE,
-                    ERR_MISSING_RETURN_VALUE, CurFunc->name );
+            CWarn2p( WARN_MISSING_RETURN_VALUE, ERR_MISSING_RETURN_VALUE, CurFunc->name );
         }
     }
     if( end_of_func_label != 0 ) {

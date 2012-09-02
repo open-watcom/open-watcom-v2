@@ -482,7 +482,7 @@ static MACRO_ARG *CollectParms(void)
                 if( tok != T_WHITE_SPACE ) break;
             } while( MTokenLen == 0 );
             if( tok == T_EOF || tok == T_NULL ) {       /* 08-dec-94 */
-                CErr( ERR_INCOMPLETE_MACRO, mentry->macro_name );
+                CErr2p( ERR_INCOMPLETE_MACRO, mentry->macro_name );
                 break;
             }
             if( tok == T_BAD_TOKEN &&                   /* 18-feb-90 */
@@ -578,11 +578,11 @@ static MACRO_ARG *CollectParms(void)
               (parm_cnt < mentry->parm_count - 2) )
            || ( !(mentry->macro_flags & MFLAG_VAR_ARGS) &&
                  (parm_cnt < mentry->parm_count - 1) ) ) {
-            CErr( ERR_TOO_FEW_MACRO_PARMS, mentry->macro_name );
+            CErr2p( ERR_TOO_FEW_MACRO_PARMS, mentry->macro_name );
         } else if( !(mentry->macro_flags & MFLAG_VAR_ARGS) &&
                    (parm_cnt > mentry->parm_count - 1) ) {
             if( mentry->parm_count - 1 != 0 ) {
-                CWarn( WARN_PARM_COUNT_MISMATCH, ERR_TOO_MANY_MACRO_PARMS, mentry->macro_name  );
+                CWarn2p( WARN_PARM_COUNT_MISMATCH, ERR_TOO_MANY_MACRO_PARMS, mentry->macro_name  );
             }
         } else if( far_strcmp( mentry->macro_name, "va_start", 9 ) == 0 ) {
             if( SymLevel != 0  &&  ! VarParm( CurFunc ) ) {

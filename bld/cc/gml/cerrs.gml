@@ -101,8 +101,8 @@ This message is issued whenever you convert a non-zero constant to a pointer.
 :MSGJTXT. 型が一致しません
 :WARNING. 1
 .np
-This message is issued for a function return value or an assignment where
-both types are pointers, but they are pointers to different kinds of objects.
+This message is issued for a function return value, an assignment or operators
+where one type is pointer and second one is non-pointer type.
 :MSGSYM. ERR_PARM_COUNT_WARNING
 :MSGTXT. Parameter count does not agree with previous definition (warning)
 :MSGJTXT. パラメーター数が，前の定義と一致しません
@@ -2237,6 +2237,24 @@ This informational message indicates that the specified file was opened
 as a result of
 .id #include
 directive processing.
+:MSGSYM. INFO_OPERATOR
+:MSGTXT. operator '%s'
+:MSGJTXT. operator '%s'
+:INFO.
+This informational message indicates the operator, for the
+preceding diagnostic.
+:MSGSYM. INFO_FIRST_OPND_TYPE
+:MSGTXT. first operand type is '%s'
+:MSGJTXT. first operand type is '%s'
+:INFO.
+This informational message indicates the type of the first operand, for the
+preceding diagnostic.
+:MSGSYM. INFO_SECOND_OPND_TYPE
+:MSGTXT. second operand type is '%s'
+:MSGJTXT. second operand type is '%s'
+:INFO.
+This informational message indicates the type of the second operand, for the
+preceding diagnostic.
 :eMSGGRP. Info
 :cmt -------------------------------------------------------------------
 :MSGGRP. PCHDR
@@ -2338,6 +2356,12 @@ String used in message construction.
 :MSGSYM. PHRASE_PRESS_RETURN
 :MSGTXT. (Press return to continue)
 :MSGJTXT. (リターンを押すと，続行します)
+:INFO.
+.np
+String used in message construction.
+:MSGSYM. PHRASE_PARAM
+:MSGTXT. Parameter %d:
+:MSGJTXT. Parameter %d:
 :INFO.
 .np
 String used in message construction.

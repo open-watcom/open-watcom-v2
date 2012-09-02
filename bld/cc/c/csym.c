@@ -527,21 +527,16 @@ local void ChkReference( SYM_ENTRY *sym, SYM_NAMEPTR name )
         if( sym->stg_class != SC_EXTERN ) {
             if( !(sym->flags & SYM_REFERENCED) ) {
                 if( !(sym->flags & SYM_IGNORE_UNREFERENCE) ) {  /*25-apr-91*/
-                    SetErrLoc( &sym->src_loc );
                     if( sym->is_parm ) {
-                        CWarn( WARN_PARM_NOT_REFERENCED,
-                                ERR_PARM_NOT_REFERENCED, name );
+                        CWarn2p( WARN_PARM_NOT_REFERENCED, ERR_PARM_NOT_REFERENCED, name );
                     } else {
-                        CWarn( WARN_SYM_NOT_REFERENCED,
-                                ERR_SYM_NOT_REFERENCED, name );
+                        CWarn2p( WARN_SYM_NOT_REFERENCED, ERR_SYM_NOT_REFERENCED, name );
                     }
                 }
             } else if( ! (sym->flags & SYM_ASSIGNED) ) {
                 if( sym->sym_type->decl_type != TYPE_ARRAY
                 &&  sym->stg_class != SC_STATIC ) {         /* 06-aug-90 */
-                    SetErrLoc( &sym->src_loc );
-                    CWarn( WARN_SYM_NOT_ASSIGNED,
-                            ERR_SYM_NOT_ASSIGNED, name );
+                    CWarn2p( WARN_SYM_NOT_ASSIGNED, ERR_SYM_NOT_ASSIGNED, name );
                 }
             }
         }
@@ -566,8 +561,7 @@ local void ChkIncomplete( SYM_ENTRY *sym, SYM_NAMEPTR name )
             if( SizeOfArg( typ ) == 0  &&  typ->decl_type != TYPE_FUNCTION
             &&  typ->decl_type != TYPE_DOT_DOT_DOT ) {
                 if( !(sym->stg_class == SC_EXTERN) ) {
-                    SetErrLoc( &sym->src_loc );
-                    CErr( ERR_INCOMPLETE_TYPE, name );
+                    CErr2p( ERR_INCOMPLETE_TYPE, name );
                 }
             }
         }
@@ -581,9 +575,7 @@ local void ChkDefined( SYM_ENTRY *sym, SYM_NAMEPTR name )
         if( sym->stg_class == SC_STATIC ) {
             if( !(sym->flags & SYM_REFERENCED) ) {
                 if( !(sym->flags & SYM_IGNORE_UNREFERENCE) ) {  /*14-may-91*/
-                    SetErrLoc( &sym->src_loc );
-                    CWarn( WARN_SYM_NOT_REFERENCED,
-                            ERR_SYM_NOT_REFERENCED, name );
+                    CWarn2p( WARN_SYM_NOT_REFERENCED, ERR_SYM_NOT_REFERENCED, name );
                 }
             }
         }
@@ -594,8 +586,7 @@ local void ChkDefined( SYM_ENTRY *sym, SYM_NAMEPTR name )
                     /* Check to see if we have a matching aux entry with code attached */
                     struct aux_entry * paux = AuxLookup( name );
                     if( !paux || !paux->info || !paux->info->code ) {
-                        SetErrLoc( &sym->src_loc );
-                        CErr( ERR_FUNCTION_NOT_DEFINED, name );
+                        CErr2p( ERR_FUNCTION_NOT_DEFINED, name );
                     }
                 }
             } else if( sym->stg_class == SC_FORWARD ) {
@@ -611,8 +602,7 @@ local void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
     if( sym->stg_class == SC_STATIC ) {
         if( sym->flags & SYM_ADDR_TAKEN ) {
             if( CompFlags.using_overlays ) {
-                CWarn( WARN_ADDR_OF_STATIC_FUNC_TAKEN,  /* 25-may-92 */
-                        ERR_ADDR_OF_STATIC_FUNC_TAKEN, name );
+                CWarn2p( WARN_ADDR_OF_STATIC_FUNC_TAKEN, ERR_ADDR_OF_STATIC_FUNC_TAKEN, name );
             }
         } else {
             if( (sym->attrib & (FLAG_FAR | FLAG_NEAR)) == 0
@@ -641,8 +631,7 @@ local  void InitExtName( struct xlist **where  )
     *where = NULL;
 }
 
-local void ChkExtName( struct xlist **link, SYM_ENTRY *sym,
-                                          SYM_NAMEPTR name  )
+local void ChkExtName( struct xlist **link, SYM_ENTRY *sym, SYM_NAMEPTR name  )
 /***Restricted extern names i.e 8 char upper check *****/
 {
     struct xlist    *new, *curr;
@@ -650,15 +639,16 @@ local void ChkExtName( struct xlist **link, SYM_ENTRY *sym,
     new =  CMemAlloc( sizeof ( struct xlist ) );
     Copy8( name, new->xname );
     strupr( new->xname );
-    while( (curr = *link) != NULL ){
+    while( (curr = *link) != NULL ) {
         int cmp;
         cmp =  strcmp( new->xname, curr->xname );
-        if( cmp == 0 ){
+        if( cmp == 0 ) {
             SetErrLoc( &sym->src_loc );
-            CErr( ERR_DUPLICATE_ID, name, new->xname );
+            CErr3p( ERR_DUPLICATE_ID, name, new->xname );
+            InitErrLoc();
             CMemFree( new );
             return;
-        }else if( cmp < 0 ){
+        } else if( cmp < 0 ) {
             break;
         }
         link = &curr->next;
@@ -858,6 +848,7 @@ local SYM_HASHPTR FreeSym( void )
             sym.info.backinfo = NULL;
             SymReplace( &sym, hsym->handle );
         }
+        SetErrLoc( &sym.src_loc );
         ChkIncomplete( &sym, hsym->name );
         if( SymLevel == 0 ) {
             ChkDefined( &sym, hsym->name );
@@ -869,6 +860,7 @@ local SYM_HASHPTR FreeSym( void )
                 SymReplace( CurFunc, CurFuncHandle );
             }
         }
+        InitErrLoc();
     }
     if( SymLevel == 0 ) {
         GlobalSym = 0;
@@ -970,8 +962,7 @@ void FreeLabels( void )
         if( label->defined == 0 ) {
             CErr2p( ERR_UNDEFINED_LABEL, label->name );
         } else if( label->referenced == 0 ) {           /* 05-apr-91 */
-            CWarn( WARN_UNREFERENCED_LABEL,
-                    ERR_UNREFERENCED_LABEL, label->name );
+            CWarn2p( WARN_UNREFERENCED_LABEL, ERR_UNREFERENCED_LABEL, label->name );
         }
         CMemFree( label );
     }

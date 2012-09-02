@@ -842,7 +842,7 @@ void CloseSrcFile( FCB *srcfcb )
     }
     FEfree( srcfcb->src_buf );
     if( CompFlags.scanning_comment ) {
-        CErr( ERR_INCOMPLETE_COMMENT, CommentLoc.line );
+        CErr2( ERR_INCOMPLETE_COMMENT, CommentLoc.line );
     }
     if( srcfcb->no_eol ) {
         source_loc  err_loc;
@@ -851,6 +851,7 @@ void CloseSrcFile( FCB *srcfcb )
         err_loc.fno = srcfcb->src_flist->index;
         SetErrLoc( &err_loc );
         CWarn1( WARN_NO_EOL_BEFORE_EOF, ERR_NO_EOL_BEFORE_EOF );
+        InitErrLoc();
     }
     SrcFile = srcfcb->prev_file;
     CurrChar = srcfcb->prev_currchar;

@@ -84,7 +84,7 @@ static int ReadBuffer( FCB *srcfcb )
                             srcfcb->src_ptr,
                             srcfcb->src_bufsize );
     if( srcfcb->src_cnt == -1 ) {
-        CErr( ERR_IO_ERR, srcfcb->src_name, strerror( errno ) );
+        CErr3p( ERR_IO_ERR, srcfcb->src_name, strerror( errno ) );
         CloseSrcFile( srcfcb );
         return( 1 );
     } else if( ( srcfcb->src_cnt == 0 ) && ( last_char == '\n' ) ) {

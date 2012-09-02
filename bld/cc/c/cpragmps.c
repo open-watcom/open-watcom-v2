@@ -54,7 +54,7 @@ static struct {
 void AsmWarning( char *msg )
 /**************************/
 {
-    CWarn( WARN_ASSEMBLER_WARNING, ERR_ASSEMBLER_WARNING, msg );
+    CWarn2p( WARN_ASSEMBLER_WARNING, ERR_ASSEMBLER_WARNING, msg );
 }
 
 

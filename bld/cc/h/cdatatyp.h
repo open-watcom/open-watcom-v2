@@ -58,7 +58,7 @@ pick1( ARRAY,       TY_POINTER,      0,           "array",                  0   
 pick1( STRUCT,      TY_POINTER,      0,           "struct",                 0                  )
 pick1( UNION,       TY_POINTER,      0,           "union",                  0                  )
 pick1( FUNCTION,    TY_DEFAULT,      0,           "function",               0                  )
-pick1( FIELD,       TY_DEFAULT,      0,           "field",                  0                  )
+pick1( FIELD,       TY_DEFAULT,      0,           "<field>",                0                  )
 pick1( VOID,        TY_INTEGER,      SYM_INT1,    "void",                   0                  )
 pick1( ENUM,        TY_INTEGER,      0,           "enum",                   0                  )
 pick1( TYPEDEF,     TY_INTEGER,      0,           "<typdef>",               0                  )

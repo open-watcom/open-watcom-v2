@@ -597,8 +597,8 @@ static void DeclSpecifiers( char *plain_int, decl_info *info )
                         CErr1( ERR_INVALID_DECLSPEC );
                         goto done;
                     }
-                    if( modifier & FLAG_LANGUAGES ) {
-                        if( info->decl_mod & FLAG_LANGUAGES ) {
+                    if( modifier & MASK_LANGUAGES ) {
+                        if( info->decl_mod & MASK_LANGUAGES ) {
                             CErr1( ERR_INVALID_DECLSPEC );
                         } else {
                             info->decl_mod |= modifier;
@@ -781,7 +781,7 @@ local FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
         if( (typ->decl_type == TYPE_ARRAY  &&
         (SizeOfArg( typ->object ) == 0 || !CompFlags.extensions_enabled ) )
         ||      typ->decl_type != TYPE_ARRAY ) { /* JFD 15-jun-90 */
-            CErr( ERR_INCOMPLETE_TYPE, (SYM_NAMEPTR)(new_field->name) );
+            CErr2p( ERR_INCOMPLETE_TYPE, new_field->name );
         }
     }
     tag = decl->u.tag;
@@ -806,7 +806,7 @@ local FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
         prev_field = tag->last_field;
         prev_field->next_field = new_field;
         if( SizeOfArg( prev_field->field_type ) == 0 ) { /* 05-jun-92 */
-            CErr( ERR_INCOMPLETE_TYPE, (SYM_NAMEPTR)(prev_field->name) );
+            CErr2p( ERR_INCOMPLETE_TYPE, prev_field->name );
         }
     }
     tag->last_field = new_field;
@@ -897,8 +897,7 @@ local unsigned long FieldAlign( unsigned long next_offset,
         next_offset += align - 1;
         next_offset &= - (long)align;
         if( CompFlags.slack_byte_warning && (next_offset - old_offset) ) {
-            CWarn2( WARN_LEVEL_1,
-                    ERR_SLACK_ADDED, (next_offset - old_offset) );
+            CWarn2( WARN_LEVEL_1, ERR_SLACK_ADDED, (next_offset - old_offset) );
         }
     }
     field->offset = next_offset;
@@ -972,8 +971,8 @@ static void AdjFieldTypeNode( FIELDPTR field, type_modifiers decl_mod )
             typ = *xtyp;
         }
         if( typ->decl_type == TYPE_FUNCTION ) {
-            if( (typ->u.fn.decl_flags & FLAG_LANGUAGES) != decl_mod ) {
-                if( typ->u.fn.decl_flags & FLAG_LANGUAGES ) {
+            if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != decl_mod ) {
+                if( typ->u.fn.decl_flags & MASK_LANGUAGES ) {
                     CErr1( ERR_INVALID_DECLSPEC );
                 } else {
                     *xtyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
@@ -1101,8 +1100,7 @@ local unsigned long GetFields( TYPEPTR decl )
             NextToken();
         }
         if( CurToken == T_RIGHT_BRACE ) {
-            CWarn1( WARN_MISSING_LAST_SEMICOLON,
-                    ERR_MISSING_LAST_SEMICOLON );
+            CWarn1( WARN_MISSING_LAST_SEMICOLON, ERR_MISSING_LAST_SEMICOLON );
         } else {
             MustRecog( T_SEMI_COLON );
         }

@@ -282,7 +282,8 @@ TYPEPTR EnumDecl( int flags )
             if( error != ENUM_UNDEF ) {
                 SetErrLoc( &error_loc );
                 get_msg_range( buff, error );
-                CErr( ERR_ENUM_CONSTANT_OUT_OF_RANGE, buff );
+                CErr2p( ERR_ENUM_CONSTANT_OUT_OF_RANGE, buff );
+                InitErrLoc();
             }
             esym->value = n;
             EnumTable[ esym->hash ] = esym;             /* 08-nov-94 */

@@ -259,7 +259,7 @@ struct inline_funcs *IF_Lookup( char *name )
 
 struct aux_info *GetLangInfo( type_modifiers flags )
 {
-    switch( flags & FLAG_LANGUAGES ) {
+    switch( flags & MASK_LANGUAGES ) {
     case LANG_WATCALL:
         return( &WatcallInfo );
     case LANG_CDECL:
@@ -433,7 +433,7 @@ struct aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
 #if _CPU == 386
     if( ( inf->flags & AUX_FLAG_FAR16 )
       || ( sym->attrib & FLAG_FAR16 ) ) {
-        if( ( (sym->attrib & FLAG_LANGUAGES) == LANG_PASCAL )
+        if( ( (sym->attrib & MASK_LANGUAGES) == LANG_PASCAL )
           || ( inf->cclass & REVERSE_PARMS ) ) {
             return( &Far16PascalInfo );
         } else {

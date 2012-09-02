@@ -68,8 +68,8 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
     FLAG_NEAR       = 0x0008,       /* Y0008  Y0008  Y0008 */
     FLAG_FAR        = 0x0010,       /* Y0010  Y0010  Y0010 */
     FLAG_HUGE       = 0x0020,       /* Y0020  Y0020  Y0020 */
-    FLAG_MEM_MODEL  = FLAG_NEAR | FLAG_FAR| FLAG_HUGE,
-
+    FLAG_INTERRUPT  = (FLAG_NEAR+FLAG_FAR), /* interrupt function */
+    /* FLAG_NEAR + FLAG_FAR both on ==> interrupt far */
 
     LANG_CDECL      = 0x0040,       /* Y0040         Y0040 */
     LANG_PASCAL     = 0x0080,       /* Y0080         Y0080 */
@@ -79,16 +79,7 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
     LANG_OPTLINK    = 0x0180,       /* Y0180         Y0180 */
     LANG_FASTCALL   = 0x01C0,       /* Y01C0         Y01C0 */
     LANG_WATCALL    = 0x0200,       /* Y0200         Y0200 */
-    FLAG_LANGUAGES  = (LANG_CDECL  |
-                       LANG_PASCAL |
-                       LANG_FORTRAN|
-                       LANG_SYSCALL|
-                       LANG_STDCALL|
-                       LANG_OPTLINK|
-                       LANG_FASTCALL|
-                       LANG_WATCALL ),
-    FLAG_INTERRUPT  = (FLAG_NEAR+FLAG_FAR), /* interrupt function */
-    /* FLAG_NEAR + FLAG_FAR both on ==> interrupt far */
+
     FLAG_SAVEREGS   = 0x0400,       /* Y0400         Y0400 */
     FLAG_LOADDS     = 0x0800,       /* Y0800         Y0800 */
     FLAG_EXPORT     = 0x1000,       /* Y1000         Y1000 */
@@ -99,6 +90,15 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
     FLAG_INLINE     =0x20000,       /* Y20000              _inline keyword */
     FLAG_WAS_ARRAY  =0x20000,       /* Y20000              for "char *argv[]" */
 } type_modifiers;
+
+#define MASK_CV_QUALIFIERS  (FLAG_CONST|FLAG_VOLATILE)
+#define MASK_QUALIFIERS     (MASK_CV_QUALIFIERS|FLAG_UNALIGNED|FLAG_RESTRICT)
+#define MASK_MEM_MODEL      (FLAG_NEAR|FLAG_FAR|FLAG_HUGE|FLAG_FAR16)
+#define MASK_LANGUAGES      (LANG_CDECL|LANG_PASCAL|LANG_FORTRAN|LANG_SYSCALL|LANG_STDCALL|LANG_OPTLINK|LANG_FASTCALL|LANG_WATCALL)
+
+#define MASK_ALL_MEM_MODELS (MASK_MEM_MODEL|FLAG_BASED)
+#define MASK_PTR            (MASK_QUALIFIERS|MASK_ALL_MEM_MODELS)
+#define MASK_FUNC           (MASK_LANGUAGES|FLAG_INLINE|FLAG_LOADDS|FLAG_EXPORT|FLAG_SAVEREGS)
 
 typedef enum sym_flags {
     SYM_FUNCTION            = 0x01,     /* ON => function, OFF => variable */

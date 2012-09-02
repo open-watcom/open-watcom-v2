@@ -140,14 +140,14 @@ source\diag0008.c(18): Error! E1101: Cannot #undef '__TIME__'
 source\diag0009.c(11): Warning! W106: Constant out of range - truncated
 source\diag0009.c(13): Warning! W106: Constant out of range - truncated
 source\diag0009.c(19): Warning! W106: Constant out of range - truncated
-source\diag0009.c(19): Note! I2003: source conversion type is 'int '
-source\diag0009.c(19): Note! I2004: target conversion type is '<ufield> '
+source\diag0009.c(19): Note! I2003: source conversion type is 'int'
+source\diag0009.c(19): Note! I2004: target conversion type is '<ufield>'
 source\diag0009.c(20): Warning! W106: Constant out of range - truncated
-source\diag0009.c(20): Note! I2003: source conversion type is 'int '
-source\diag0009.c(20): Note! I2004: target conversion type is '<ufield> '
+source\diag0009.c(20): Note! I2003: source conversion type is 'int'
+source\diag0009.c(20): Note! I2004: target conversion type is '<ufield>'
 source\diag0009.c(23): Warning! W106: Constant out of range - truncated
-source\diag0009.c(23): Note! I2003: source conversion type is 'long '
-source\diag0009.c(23): Note! I2004: target conversion type is 'field '
+source\diag0009.c(23): Note! I2003: source conversion type is 'long'
+source\diag0009.c(23): Note! I2004: target conversion type is '<field>'
 source\diag0009.c(30): Warning! W124: Comparison result always 1
 source\diag0009.c(32): Warning! W124: Comparison result always 1
 source\diag0009.c(34): Warning! W124: Comparison result always 1
@@ -160,7 +160,7 @@ source\diag0011.c(6): Error! E1069: String literal not terminated before end of 
 source\diag0012.c(43): Warning! W112: Pointer truncated
 source\diag0012.c(43): Note! I2003: source conversion type is 'void __far *'
 source\diag0012.c(43): Note! I2004: target conversion type is 'struct HMENU__ __near const *'
-source\diag0012.c(52): Warning! W112: Pointer truncated
+source\diag0012.c(52): Warning! W112: Parameter 1: Pointer truncated
 source\diag0012.c(52): Note! I2003: source conversion type is 'void __far *'
 source\diag0012.c(52): Note! I2004: target conversion type is 'struct HMENU__ __near const **'
 source\diag0012.c(52): Note! I2002: 'foo' defined in: source\diag0012.c(26)
@@ -237,18 +237,20 @@ source\diag0017.c(27): Error! E1034: Symbol 'TWO' already defined
 source\diag0017.c(27): Note! I2002: 'TWO' defined in: source\diag0017.c(20)
 source\diag0017.c(30): Error! E1012: Expression is not a function
 source\diag0018.c(7): Error! E1071: Type of parameter 1 does not agree with previous definition
-source\diag0018.c(7): Note! I2003: source conversion type is 'enum foo_enum '
-source\diag0018.c(7): Note! I2004: target conversion type is 'char '
+source\diag0018.c(7): Note! I2003: source conversion type is 'enum foo_enum'
+source\diag0018.c(7): Note! I2004: target conversion type is 'char'
 source\diag0018.c(7): Note! I2002: 'foo' defined in: source\diag0018.c(4)
 source\diag0018.c(13): Warning! W113: Pointer type mismatch
-source\diag0018.c(13): Note! I2003: source conversion type is 'enum foo_enum *'
-source\diag0018.c(13): Note! I2004: target conversion type is 'char *'
-source\diag0018.c(14): Error! E1010: Type mismatch
+source\diag0018.c(13): Note! I2006: operator '-'
+source\diag0018.c(13): Note! I2007: first operand type is 'char *'
+source\diag0018.c(13): Note! I2008: second operand type is 'enum foo_enum *'
+source\diag0018.c(14): Warning! W113: Pointer type mismatch
 source\diag0018.c(14): Note! I2003: source conversion type is 'enum foo_enum *'
 source\diag0018.c(14): Note! I2004: target conversion type is 'char *'
 source\diag0018.c(16): Warning! W113: Pointer type mismatch
-source\diag0018.c(16): Note! I2003: source conversion type is 'enum foo_enum *'
-source\diag0018.c(16): Note! I2004: target conversion type is 'char *'
+source\diag0018.c(16): Note! I2006: operator '=='
+source\diag0018.c(16): Note! I2007: first operand type is 'char *'
+source\diag0018.c(16): Note! I2008: second operand type is 'enum foo_enum *'
 source\diag0019.c(4): Warning! W124: Comparison result always 0
 source\diag0019.c(9): Warning! W124: Comparison result always 0
 source\diag0019.c(14): Warning! W124: Comparison result always 1
@@ -259,14 +261,46 @@ source\diag0020.c(9): Error! E1040: Field width too large
 source\diag0021.c(12): Error! E1089: Missing ) for expansion of 'VERIFY' macro
 source\diag0021.c(12): Error! E1077: Missing '}'
 source\diag0022.c(17): Warning! W102: Type mismatch (warning)
-source\diag0022.c(17): Note! I2003: source conversion type is '_Bool '
+source\diag0022.c(17): Note! I2003: source conversion type is '_Bool'
 source\diag0022.c(17): Note! I2004: target conversion type is 'char *'
 source\diag0022.c(19): Warning! W102: Type mismatch (warning)
-source\diag0022.c(19): Note! I2003: source conversion type is '_Bool '
+source\diag0022.c(19): Note! I2003: source conversion type is '_Bool'
 source\diag0022.c(19): Note! I2004: target conversion type is 'char *'
 source\diag0022.c(20): Warning! W102: Type mismatch (warning)
-source\diag0022.c(20): Note! I2003: source conversion type is '<ufield> '
+source\diag0022.c(20): Note! I2003: source conversion type is '<ufield>'
 source\diag0022.c(20): Note! I2004: target conversion type is 'char *'
 source\diag0022.c(22): Warning! W102: Type mismatch (warning)
 source\diag0022.c(22): Note! I2003: source conversion type is 'char *'
-source\diag0022.c(22): Note! I2004: target conversion type is 'int '
+source\diag0022.c(22): Note! I2004: target conversion type is 'int'
+source\diag0100.c(7): Error! E1100: Definition of macro 'MAC1' not identical to previous definition
+source\diag0100.c(7): Note! I2002: 'MAC1' defined in: source\diag0100.c(3)
+source\diag0100.c(9): Error! E1100: Definition of macro 'MAC2' not identical to previous definition
+source\diag0100.c(9): Note! I2002: 'MAC2' defined in: source\diag0100.c(5)
+source\diag0101.c(10): Error! E1062: Inconsistent return type for function 'f1'
+source\diag0101.c(10): Note! I2003: source conversion type is 'int'
+source\diag0101.c(10): Note! I2004: target conversion type is 'char'
+source\diag0101.c(10): Note! I2002: 'f1' defined in: source\diag0101.c(1)
+source\diag0101.c(10): Error! E1071: Type of parameter 1 does not agree with previous definition
+source\diag0101.c(10): Note! I2003: source conversion type is 'int'
+source\diag0101.c(10): Note! I2004: target conversion type is 'unsigned char'
+source\diag0101.c(10): Error! E1071: Type of parameter 2 does not agree with previous definition
+source\diag0101.c(10): Note! I2003: source conversion type is 'unsigned int'
+source\diag0101.c(10): Note! I2004: target conversion type is 'int'
+source\diag0101.c(10): Error! E1071: Type of parameter 3 does not agree with previous definition
+source\diag0101.c(10): Note! I2003: source conversion type is 'long'
+source\diag0101.c(10): Note! I2004: target conversion type is 'unsigned int'
+source\diag0101.c(10): Error! E1071: Type of parameter 4 does not agree with previous definition
+source\diag0101.c(10): Note! I2003: source conversion type is 'unsigned long'
+source\diag0101.c(10): Note! I2004: target conversion type is 'long'
+source\diag0101.c(10): Error! E1071: Type of parameter 5 does not agree with previous definition
+source\diag0101.c(10): Note! I2003: source conversion type is '__int64'
+source\diag0101.c(10): Note! I2004: target conversion type is 'unsigned long'
+source\diag0101.c(12): Error! E1151: Parameter count does not agree with previous definition
+source\diag0101.c(12): Note! I2002: 'f3' defined in: source\diag0101.c(3)
+source\diag0101.c(14): Error! E1151: Parameter count does not agree with previous definition
+source\diag0101.c(14): Note! I2002: 'f3' defined in: source\diag0101.c(3)
+source\diag0101.c(15): Error! E1151: Parameter count does not agree with previous definition
+source\diag0101.c(15): Note! I2002: 'f2' defined in: source\diag0101.c(2)
+source\diag0101.c(18): Error! E1151: Parameter count does not agree with previous definition
+source\diag0101.c(20): Error! E1151: Parameter count does not agree with previous definition
+source\diag0101.c(21): Error! E1151: Parameter count does not agree with previous definition

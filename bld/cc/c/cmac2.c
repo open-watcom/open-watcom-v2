@@ -51,7 +51,7 @@ static void    CIdent( void );
 static void    CUnknown( void );
 
 local void Flush2EOL( void );
-local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char *mac_name );
+local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char *mac_name, source_loc *src_loc );
 local void IncLevel( int value );
 local int  FormalParm( struct macro_parm *formal_parms );
 local void ChkEOL( void );
@@ -282,6 +282,7 @@ local void CDefine( void )
     int         parm_cnt, parm_end = 0;
     int         ppscan_mode;
     char        *token_buf;
+    source_loc  macro_loc;
 
     PPNextToken();
     if( CurToken != T_ID ) {
@@ -294,6 +295,7 @@ local void CDefine( void )
     }
     token_buf = CStrSave( Buffer );
     formal_parms = NULL;
+    macro_loc = SrcFileLoc;
     parm_cnt = -1;              /* -1 ==> no () following */
     if( CurrChar == '(' ) {     /* parms present */
         PPNextToken();          /* grab the '(' */
@@ -351,7 +353,7 @@ local void CDefine( void )
     }
     /* grab replacement tokens */
     ppscan_mode = InitPPScan();         // enable T_PPNUMBER tokens
-    GrabTokens( parm_end ? -(parm_cnt + 1) : (parm_cnt + 1), formal_parms, token_buf );
+    GrabTokens( parm_end ? -(parm_cnt + 1) : (parm_cnt + 1), formal_parms, token_buf, &macro_loc );
     FiniPPScan( ppscan_mode );          // disable T_PPNUMBER tokens
     for( ; (mp = formal_parms) != NULL; ) {
         formal_parms = mp->next_macro_parm;
@@ -362,7 +364,7 @@ local void CDefine( void )
 }
 
 
-local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char *mac_name )
+local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char *mac_name, source_loc *loc )
 {
     MEPTR       mentry;
     int         i;
@@ -382,6 +384,8 @@ local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char
     }
     mentry->parm_count = parm_cnt;
     strcpy( mentry->macro_name, mac_name );
+    mentry->src_loc.fno = loc->fno;
+    mentry->src_loc.line = loc->line;
     mlen = offsetof( MEDEFN, macro_name ) + j;
     mentry->macro_defn = mlen;
     MacroOverflow( mlen, 0 );
@@ -685,8 +689,7 @@ local void CEndif( void )
         --NestLevel;
         cpp = CppStack;
         if( cpp->flist != SrcFile->src_flist ) {
-             CWarn( WARN_LEVEL_1, ERR_WEIRD_ENDIF_ENCOUNTER,
-                                 FileIndexToCorrectName( cpp->src_loc.fno ) );
+             CWarn2p( WARN_LEVEL_1, ERR_WEIRD_ENDIF_ENCOUNTER, FileIndexToCorrectName( cpp->src_loc.fno ) );
         }
         CppStack = cpp->prev_cpp;
         CMemFree( cpp );
@@ -845,6 +848,7 @@ void CppStackFini( void )
     while( (cpp = CppStack) != NULL ) {
         SetErrLoc( &cpp->src_loc );
         CErr1( ERR_MISSING_CENDIF );
+        InitErrLoc();
         CppStack = cpp->prev_cpp;
         CMemFree( cpp );
     }

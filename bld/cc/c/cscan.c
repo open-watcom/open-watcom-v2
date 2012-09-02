@@ -1201,8 +1201,7 @@ static void ScanComment( void )
                     c = NextChar();
                     if( c == '/' )
                         break;
-                    CWarn2( WARN_NESTED_COMMENT,
-                             ERR_NESTED_COMMENT, CommentLoc.line );
+                    CWarn2( WARN_NESTED_COMMENT, ERR_NESTED_COMMENT, CommentLoc.line );
                 }
             }
             // NextChar might not be pointing to GetNextChar at this point
@@ -1259,8 +1258,7 @@ static TOKEN CharConst( int char_type )
                         if( n > 0377 && char_type != TYPE_WCHAR ) {
                             BadTokenInfo = ERR_CONSTANT_TOO_BIG;
                             if( NestLevel == SkipLevel ) {
-                                CWarn1( WARN_CONSTANT_TOO_BIG,
-                                         ERR_CONSTANT_TOO_BIG );
+                                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                             }
                             n &= 0377;          // mask off high bits
                         }

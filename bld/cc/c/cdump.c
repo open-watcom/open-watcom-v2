@@ -62,6 +62,10 @@ static char *ChunkToStr( STRCHUNK *pch )
 {
     char    *ret;
 
+    /* remove spaces from end of string */
+    while( pch->cursize > 0 && pch->data[pch->cursize - 1] == ' ' ) {
+        pch->data[--pch->cursize] = '\0';
+    }
     ret = pch->data;
     if( ret == NULL ) {
         ret = CStrSave( "" );
@@ -219,15 +223,13 @@ void DumpFuncDefn( void )
 }
 
 
-static void DumpPointer( TYPEPTR typ, STRCHUNK *pch )        /* 26-may-89 */
+static void DumpPointer( TYPEPTR typ, STRCHUNK *pch )
 {
     if( typ->decl_type == TYPE_POINTER ) {
         DumpPointer( Object( typ ), pch );
-        if( !( typ->u.p.decl_flags & FLAG_WAS_ARRAY) ) {    /* 07-jun-94 */
-            DumpFlags( typ->u.p.decl_flags & ~(FLAG_CONST | FLAG_VOLATILE),
-                                typ, pch );
-            DumpFlags( typ->u.p.decl_flags &  (FLAG_CONST | FLAG_VOLATILE),
-                                typ, pch );
+        if( !( typ->u.p.decl_flags & FLAG_WAS_ARRAY) ) {
+            DumpFlags( typ->u.p.decl_flags & ~MASK_QUALIFIERS, typ, pch );
+            DumpFlags( typ->u.p.decl_flags & MASK_QUALIFIERS, typ, pch );
             ChunkSaveChar( pch, '*' );
         }
     }
@@ -338,8 +340,16 @@ static void DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp )
         put_keyword( T_VOLATILE, fp );
     if( flags & FLAG_CONST )
         put_keyword( T_CONST, fp );
+    if( flags & FLAG_UNALIGNED )
+        put_keyword( T___UNALIGNED, fp );
     if( flags & FLAG_RESTRICT )
         put_keyword( T_RESTRICT, fp );
+    if( flags & FLAG_LOADDS )
+        put_keyword( T___LOADDS, fp );
+    if( flags & FLAG_EXPORT )
+        put_keyword( T___EXPORT, fp );
+    if( flags & FLAG_SAVEREGS)
+        put_keyword( T___SAVEREGS, fp );
     if( ( flags & FLAG_INTERRUPT ) == FLAG_INTERRUPT ) {
         put_keyword( T___INTERRUPT, fp );
     } else if( flags & FLAG_NEAR ) {
@@ -358,11 +368,12 @@ static void DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp )
         }
     } else if( flags & FLAG_FAR ) {
         put_keyword( T___FAR, fp );
-    }
-    if( flags & FLAG_HUGE ) {
+    } else if( flags & FLAG_HUGE ) {
         put_keyword( T___HUGE, fp );
+    } else if( flags & FLAG_FAR16 ) {
+        put_keyword( T___FAR16, fp );
     }
-    switch( flags & FLAG_LANGUAGES ) {
+    switch( flags & MASK_LANGUAGES ) {
     case LANG_WATCALL:
         put_keyword( T___WATCALL, fp );
         break;

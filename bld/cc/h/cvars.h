@@ -56,9 +56,9 @@ typedef char        *MACADDR_T; /* contains actual pointer to block of memory */
 typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 typedef void        *VOIDPTR;
 
-#include "macro.h"
 #include "dw.h"
 #include "ctypes.h"
+#include "macro.h"
 #include "cfcb.h"
 #include "csegid.h"
 #include "ctokens.h"
@@ -428,11 +428,11 @@ extern  void    TernChk( TYPEPTR typ1, TYPEPTR typ2 ); /*check */
 extern  void    ChkCallParms(void);             /* ccheck */
 extern  void    ChkRetType(TREEPTR);            /* ccheck */
 extern  void    ChkConst(TREEPTR);              /* ccheck */
-extern  void    CompatiblePtrType(TYPEPTR,TYPEPTR); /* ccheck */
-extern  int     IdenticalType(TYPEPTR,TYPEPTR); /* ccheck */
-extern  int     VerifyType(TYPEPTR,TYPEPTR,SYMPTR);/* ccheck */
+extern  void    CompatiblePtrType(TYPEPTR,TYPEPTR,TOKEN); /* ccheck */
+extern  bool    IdenticalType(TYPEPTR,TYPEPTR); /* ccheck */
+extern  bool    VerifyType(TYPEPTR,TYPEPTR,SYMPTR);/* ccheck */
 extern  TYPEPTR SkipTypeFluff( TYPEPTR typ );      /* ccheck */
-extern  void    ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parm_num ); /* ccheck */
+extern  void    ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check ); /* ccheck */
 
 //ccmain.c
 extern  void    FreeRDir( void );
@@ -524,15 +524,18 @@ extern  void    EnumInit(void);                 /* cenum */
 extern  void    FreeEnums(void);                /* cenum */
 
 //cerror.c
-extern  void    CErr1(int);
-extern  void    CErr2(int,int);
-extern  void    CErr2p(int,const char *);
-extern  void    CErr(int,...);
+extern  void    CErr1(int msgnum);
+extern  void    CErr2(int msgnum,int);
+extern  void    CErr2p(int msgnum,const char *);
+extern  void    CErr3p(int msgnum,const char *,const char *);
+extern  void    CErr4p(int msgnum,const char *,const char *,const char *);
+extern  void    CErrP1(int parmno,int msgnum);
 extern  void    SetErrLoc(source_loc *);
 extern  void    InitErrLoc(void);
-extern  void    CWarn1(int,int);
-extern  void    CWarn2(int,int,int);
-extern  void    CWarn(int,int,...);
+extern  void    CWarn1(int level,int msgnum);
+extern  void    CWarn2(int level,int msgnum,int);
+extern  void    CWarn2p(int level,int msgnum,const char *);
+extern  void    CWarnP1(int parmno,int level,int msgnum);
 extern  void    PCHNote( int msgnum, ... );
 extern  void    CInfoMsg(int,...);
 extern  void    CSuicide(void);
@@ -540,8 +543,10 @@ extern  void    OpenErrFile(void);
 extern  void    FmtCMsg( char *buff, cmsg_info *info );
 extern  void    SetDiagSymbol(SYMPTR sym, SYM_HANDLE handle);
 extern  void    SetDiagEnum(ENUMPTR);
+extern  void    SetDiagMacro(MEPTR);
 extern  void    SetDiagType1(TYPEPTR typ_source);
-extern  void    SetDiagType2(TYPEPTR typ_source, TYPEPTR typ_target);
+extern  void    SetDiagType2(TYPEPTR typ_target, TYPEPTR typ_source);
+extern  void    SetDiagType3(TYPEPTR typ_first, TYPEPTR typ_second, TOKEN opr);
 extern  void    SetDiagPop(void);
 
 //  cexpr.c

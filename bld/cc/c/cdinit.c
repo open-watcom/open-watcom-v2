@@ -754,7 +754,7 @@ local void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
         offs = 0;
         field = SearchFields( &typ, &offs, Buffer );
         if( field == NULL ) {
-            CErr( ERR_NAME_NOT_FOUND_IN_STRUCT, Buffer, typ->u.tag->name );
+            CErr3p( ERR_NAME_NOT_FOUND_IN_STRUCT, Buffer, typ->u.tag->name );
         }
         NextToken();
     }

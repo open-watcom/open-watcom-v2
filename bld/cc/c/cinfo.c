@@ -98,7 +98,7 @@ void SetFarHuge( SYMPTR sym, int report )
     size = SizeOfArg( sym->sym_type );
     if( TargetSwitches & BIG_DATA ) {
         attrib = sym->attrib;
-        if( (attrib & (FLAG_NEAR | FLAG_FAR | FLAG_HUGE)) == 0 ) {
+        if( (attrib & MASK_ALL_MEM_MODELS) == 0 ) {
             if( size == 0 ) {   /* unspecified array size */
                 if( sym->stg_class == SC_EXTERN ) {
                     typ = sym->sym_type;
@@ -124,13 +124,14 @@ void SetFarHuge( SYMPTR sym, int report )
 #if _CPU == 8086
    if( report && size > 0x10000 && !(sym->attrib & FLAG_HUGE) ) {
         SetErrLoc( &sym->src_loc );
-        CErr( ERR_VAR_TOO_LARGE );
+        CErr1( ERR_VAR_TOO_LARGE );
+        InitErrLoc();
    }
 #endif
 }
 
 
-#define CONSTANT( decl_flags ) ( ( decl_flags & (FLAG_CONST | FLAG_VOLATILE) ) == FLAG_CONST )
+#define CONSTANT( decl_flags ) ( (decl_flags & MASK_CV_QUALIFIERS) == FLAG_CONST )
 
 
 
@@ -710,7 +711,8 @@ void FEMessage( int class, void *parm )
 
             sym = SymGetPtr( (SYM_HANDLE)parm );
             SetErrLoc( &sym->src_loc );
-            CWarn( WARN_SYMBOL_NAME_TOO_LONG, ERR_SYMBOL_NAME_TOO_LONG, sym->name );
+            CWarn2p( WARN_SYMBOL_NAME_TOO_LONG, ERR_SYMBOL_NAME_TOO_LONG, sym->name );
+            InitErrLoc();
         }
         break;
     case MSG_BLIP:
