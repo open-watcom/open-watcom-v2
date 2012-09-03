@@ -390,8 +390,8 @@ enum sym_type AsmQueryType( char *name )
     return( AsmType( sym.sym_type, sym.attrib ) );
 }
 
-static int InsertFixups( unsigned char *buff, unsigned i, byte_seq **code )
-/*************************************************************************/
+static int InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code )
+/*******************************************************************************/
 {
                         /* additional slop in buffer to simplify the code */
     unsigned char       temp[MAXIMUM_BYTESEQ + 1 + 2 * sizeof( long )];
@@ -404,7 +404,7 @@ static int InsertFixups( unsigned char *buff, unsigned i, byte_seq **code )
     unsigned char       *src;
     unsigned char       *end;
     byte_seq            *seq;
-    byte_seq_len        perform_fixups;
+    bool                perform_fixups;
     unsigned char       cg_fix;
     SYM_HANDLE          sym_handle;
     SYM_ENTRY           sym;
@@ -418,7 +418,7 @@ static int InsertFixups( unsigned char *buff, unsigned i, byte_seq **code )
 
     sym_handle = 0;
     uses_auto = 0;
-    perform_fixups = 0;
+    perform_fixups = FALSE;
     head = FixupHead;
     if( head != NULL ) {
         FixupHead = NULL;
@@ -437,7 +437,7 @@ static int InsertFixups( unsigned char *buff, unsigned i, byte_seq **code )
         }
         dst = temp;
         src = buff;
-        end = src + i;
+        end = src + len;
         fix = FixupHead;
         owner = &FixupHead;
         /* insert fixup escape sequences */
@@ -589,25 +589,26 @@ static int InsertFixups( unsigned char *buff, unsigned i, byte_seq **code )
             }
         }
         buff = temp;
-        i = dst - temp;
-        perform_fixups = DO_FLOATING_FIXUPS;
+        len = dst - temp;
+        perform_fixups = TRUE;
     }
-    seq = (byte_seq *)CMemAlloc( sizeof( byte_seq ) + i );
-    seq->length = i | perform_fixups;
-    memcpy( &seq->data[0], buff, i );
+    seq = (byte_seq *)CMemAlloc( sizeof( byte_seq ) + len );
+    seq->relocs = perform_fixups;
+    seq->length = len;
+    memcpy( &seq->data[0], buff, len );
     *code = seq;
     return( uses_auto );
 }
 
 
-local void AddAFix( unsigned i, char *name, unsigned type, unsigned long off )
-/****************************************************************************/
+local void AddAFix( unsigned loc, char *name, unsigned type, unsigned long off )
+/******************************************************************************/
 {
     struct asmfixup     *fix;
 
     fix = (struct asmfixup *)CMemAlloc( sizeof( *fix ) );
     fix->external = 1;
-    fix->fixup_loc = i;
+    fix->fixup_loc = loc;
     fix->name = name;
     fix->offset = off;
     fix->fixup_type = type;

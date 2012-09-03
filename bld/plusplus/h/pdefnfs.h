@@ -38,20 +38,22 @@
 #define fs_push_ret     HW_D( HW_EMPTY )
 #define fs_push_parms   P_EAX
 #define fs_push_saves   HW_NotD( HW_EMPTY )
-static byte_seq fs_push =
-{   15, {
-    0x64,0xff,0x35,0x00,0x00,0x00,0x00          // push fs:0
-,   0x8f,0x00                                   // pop [eax]
-,   0x64,0xa3,0x00,0x00,0x00,0x00               // mov fs:0,eax
-} };
+static byte_seq fs_push = {
+    15, FALSE,
+    {
+        0x64,0xff,0x35,0x00,0x00,0x00,0x00,     // push fs:0
+        0x8f,0x00,                              // pop [eax]
+        0x64,0xa3,0x00,0x00,0x00,0x00           // mov fs:0,eax
+    }
+};
 
 
 #define fs_pop_ret      HW_D( HW_EMPTY )
 #define fs_pop_parms    P_EAX
 #define fs_pop_saves    HW_NotD( HW_EAX )
-static byte_seq fs_pop =
-{   6,
-    { 0x64,0xa3,0x00,0x00,0x00,0x00 }          // mov fs:0,eax
+static byte_seq fs_pop = {
+    6, FALSE,
+    { 0x64,0xa3,0x00,0x00,0x00,0x00 }           // mov fs:0,eax
 };
 
 

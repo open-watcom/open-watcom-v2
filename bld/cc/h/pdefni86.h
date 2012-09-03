@@ -127,7 +127,9 @@ struct  aux_info        InlineInfo;
 #define C_8087_fabs_parms  P_8087
 #define C_8087_fabs_saves  HW_NotD( HW_EMPTY )
 
-static byte_seq _8087_fabs = { 5 | DO_FLOATING_FIXUPS, {
+static byte_seq _8087_fabs = {
+    5, TRUE,
+    {
         FLOATING_FIXUP_BYTE,     /* 8087 fixup indicator */
         FIX_FPP_NORMAL,          /* FP patch type */
         0x9b,                    /* fwait */

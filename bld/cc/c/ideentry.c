@@ -39,7 +39,7 @@
 #include "idedll.h"
 #include "cgdefs.h"
 #include "cgmisc.h"
-#include "cgdllcli.h"
+#include "cgcli.h"
 #include "feprotos.h"
 
 extern  void    SetNoCurrInc( void ); // no curr inc

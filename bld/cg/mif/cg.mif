@@ -140,7 +140,7 @@ cg_stub_objs = &
     stubutil.obj
 
 cg_client_objs = &
-    cgdllcli.obj &
+    cgcli.obj &
     i64.obj
 
 cg_debug_objs = &

@@ -40,11 +40,7 @@
 struct aux_info {
         call_class      cclass;
         union {
-  #if _RISC_CPU
-            risc_byte_seq   *code;
-  #else
-            byte_seq        *code;
-  #endif
+            byte_seq   *code;
             int         code_size;      // for C pre-compiled header
         };
         union {

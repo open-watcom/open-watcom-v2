@@ -3241,14 +3241,12 @@ start_opac_string:
             }
             continue;
           case CONV_FUN_MP_RIGHT :  // right --> member ptr, if req'd
-          { if( ! CompFlags.extensions_enabled ) continue;
-            if( ! MembPtrExtension( right ) ) continue;
+          { if( ! MembPtrExtension( right ) ) continue;
             expr->u.subtree[1] = MembPtrExtend( expr->u.subtree[1] );
             right = PTreeOpRight( expr );
           } continue;
           case CONV_FUN_MP_LEFT :   // left --> member ptr, if req'd
-          { if( ! CompFlags.extensions_enabled ) continue;
-            if( ! MembPtrExtension( left ) ) continue;
+          { if( ! MembPtrExtension( left ) ) continue;
             expr->u.subtree[0] = MembPtrExtend( expr->u.subtree[0] );
             left = PTreeOpLeft( expr );
             type = TypedefModifierRemoveOnly( left->type );
@@ -3260,7 +3258,6 @@ start_opac_string:
             opac_memb_ptr_ext = opac_CMP_MP;
             continue;
           case CONV_FUN_MP_CHECK :  // CHECK FOR MEMBPTR EXTENSION
-            if( ! CompFlags.extensions_enabled ) continue;
             if( MembPtrExtension( right )
              || MembPtrExtension( left ) ) {
                 ap = opac_memb_ptr_ext;

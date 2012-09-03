@@ -63,7 +63,7 @@
 #include "fmtsym.h"
 #include "floatsup.h"
 #include "rtti.h"
-#include "cgdllcli.h"
+#include "cgcli.h"
 
 #ifndef NDEBUG
 #include "pragdefn.h"
@@ -3347,7 +3347,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
     }
 #endif
     CtxSetContext( CTX_CG_FUNC );
-    if( BEDLLLoad( NULL ) ) {
+    if( BELoad( NULL ) ) {
         cg_info = BEInitCg( GenSwitches, TargetSwitches, OptSize, CpuSwitches );
         if( ! cg_info.success ) {
             CErr1( ERR_CODEGEN_CANT_INITIALIZE );
@@ -3412,7 +3412,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
             FreeSymbol( thisSym );
             FreeSymbol( cdtorSym );
         }
-        BEDLLUnload();
+        BEUnload();
     } else {
         CErr1( ERR_CODEGEN_CANT_INITIALIZE );
         CSuicide();

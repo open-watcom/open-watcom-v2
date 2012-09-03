@@ -105,6 +105,26 @@ static char *VarParmFuncs[] = {
   #endif
 #endif
 
+#if _CPU == 386
+
+extern byte_seq     *FlatAlternates[];
+
+static byte_seq FinallyCode = { 
+    1, FALSE, { 0xc3 }   /* ret */
+};
+
+static hw_reg_set TryFiniParms[] = {
+    HW_D( HW_EAX ),
+    HW_D( HW_EMPTY )
+};
+
+static byte_seq TryFiniCode = { 
+    6, FALSE, { 0x64, 0xA3, 0, 0, 0, 0 }  /* mov fs:[0],eax */
+};
+
+#endif
+
+
 /*
 //    does the specified symbol take variable parameters? manual search.
 */
@@ -166,8 +186,7 @@ int VarFunc( SYMPTR sym )
 static struct inline_funcs *Flat( struct inline_funcs *ifunc )
 {
   #if _CPU == 386
-    extern byte_seq *    FlatAlternates[];
-    byte_seq **            p;
+    byte_seq            **p;
 
     if( TargetSwitches & FLAT_MODEL ) {
         for( p = FlatAlternates; p[0] != NULL; p += 2 ) {
@@ -394,20 +413,10 @@ struct aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
     if( (sym_handle == SymSTOSB) || (sym_handle == SymSTOSD) ) {
         return( &STOSBInfo );
     } else if( sym_handle == SymFinally ) {
-        static byte_seq FinallyCode = { 1, { 0xc3 } };  /* ret */
-
         InlineInfo = WatcallInfo;
         InlineInfo.code = &FinallyCode;
         return( &InlineInfo );
     } else if( sym_handle == SymTryFini ) {
-        static hw_reg_set TryFiniParms[] = {
-            HW_D( HW_EAX ),
-            HW_D( HW_EMPTY )
-        };
-        static byte_seq TryFiniCode = {
-            6, { 0x64, 0xA3, 0, 0, 0, 0 }
-        };  /* mov fs:[0],eax */
-
         InlineInfo = WatcallInfo;
         InlineInfo.parms = TryFiniParms;
         InlineInfo.code = &TryFiniCode;
@@ -800,8 +809,8 @@ static char *GetBaseName( CGSYM_HANDLE sym_handle )
     return( sym.name );
 }
 
-extern char *FEExtName( CGSYM_HANDLE sym_handle, int request )
-/************************************************************/
+char *FEExtName( CGSYM_HANDLE sym_handle, int request )
+/*****************************************************/
 {
     switch( request ) {
     case EXTN_BASENAME:
@@ -1434,7 +1443,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
 }
 #endif
 
-extern char *SrcFullPath( char *buff, char const *name, unsigned max )
+char *SrcFullPath( char *buff, char const *name, unsigned max )
 {
     return( _getFilenameFullPath( buff, name, max ) );
 }

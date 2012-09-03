@@ -24,12 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  Interface to DLL-based code generator.
+* Description:  Interface to Load/Unload code generator.
 *
 ****************************************************************************/
 
 
 #include "cgapi.h"
 
-int     _CGAPI BEDLLLoad( char *dll_name );
-void    _CGAPI BEDLLUnload( void );
+extern bool     _CGAPI BELoad( char * );
+extern void     _CGAPI BEUnload( void );

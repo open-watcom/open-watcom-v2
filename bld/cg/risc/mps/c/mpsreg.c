@@ -100,7 +100,7 @@ extern  type_class_def CallState( aux_handle aux,
     hw_reg_set          *pregs;
     call_class          cclass;
     call_class          *pcclass;
-    risc_byte_seq       *code;
+    byte_seq            *code;
     bool                have_aux_code = FALSE;
 
     state->unalterable = FixedRegs();

@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         }
         p = Xptr(cb->burst);
         len = *p;
-        fprintf( fp, "static byte_seq %s = { 0x%2.2X, {\n    ", 
+        fprintf( fp, "static byte_seq %s = { 0x%2.2X, FALSE, {\n    ", 
             Xptr(cb->name), *p++ );
         i = 0;
         for(;;) {

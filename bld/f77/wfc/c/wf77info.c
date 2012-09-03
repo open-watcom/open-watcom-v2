@@ -108,8 +108,8 @@ static  void            DefDbgStruct( sym_id sym );
 static  char            GData[] = { "GDATA@" };
 #if _CPU == 8086 || _CPU == 386
 static  char            *CSSuff = TS_SEG_CODE;
-static  BYTE_SEQ(2)     CodeAlignSeq = { 2, sizeof( inttarg ), 1 };
-static  BYTE_SEQ(1)     DefCodeAlignSeq = { 1, 1 };
+static  byte_seq        CodeAlignSeq = { 2, FALSE, { sizeof( inttarg ), 1 } };
+static  byte_seq        DefCodeAlignSeq = { 1, FALSE, { 1 } };
 #endif
 static  sym_id          ImpSym;
 static  segment_id      CurrSegId;
@@ -283,8 +283,8 @@ void    SubCodeSeg( void ) {
 
 
 #if _CPU == 8086 || _CPU == 386
-static  byte_seq        *AlignmentSeq( void ) {
-//=======================================
+static  byte_seq    *AlignmentSeq( void ) {
+//=========================================
 
     if( OZOpts & OZOPT_O_TIME ) {
         return( (byte_seq *)&CodeAlignSeq );
@@ -300,11 +300,11 @@ static  void    DefCodeSeg( void ) {
 // Define a code segment.
 
     char        seg_name[MAX_SYMLEN+CS_SUFF_LEN+1];
-    BYTE_SEQ(1) *align_seq;
+    byte_seq    *align_seq;
     int         len;
     int         alignment;
 
-    align_seq = (void *) AlignmentSeq();  // variable length
+    align_seq = AlignmentSeq();  // variable length
     alignment = 1;
     len = 0;
     while( len != align_seq->length ) {

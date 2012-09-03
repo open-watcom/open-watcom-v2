@@ -322,7 +322,7 @@ static  void    doCall( instruction *ins )
 /****************************************/
 {
     pointer         sym;
-    risc_byte_seq   *code;
+    byte_seq        *code;
     ppc_ins         encoding;
     code_lbl        *lbl;
 

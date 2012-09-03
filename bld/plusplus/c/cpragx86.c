@@ -700,12 +700,12 @@ static int insertFixups( VBUF *src_code )
     unsigned char       *src_start;
     unsigned char       *src_end;
     unsigned char       cg_fix;
-    unsigned long       perform_fixups;
+    bool                perform_fixups;
     byte_seq            *seq;
     SYMBOL              sym;
     char                *name;
     unsigned char       *dst;
-    unsigned            len;
+    byte_seq_len        len;
     unsigned            skip;
     int                 mutate_to_segment;
     boolean             uses_auto;
@@ -715,7 +715,7 @@ static int insertFixups( VBUF *src_code )
     VBUF                out_code;
 
     uses_auto = FALSE;
-    perform_fixups = 0;
+    perform_fixups = FALSE;
     head = FixupHead;
     if( head == NULL ) {
         out_code = *src_code;
@@ -873,11 +873,12 @@ static int insertFixups( VBUF *src_code )
             }
             VbufSetLen( &out_code, len );
         }
-        perform_fixups = DO_FLOATING_FIXUPS;
+        perform_fixups = TRUE;
     }
     len = VbufLen( &out_code );
     seq = CMemAlloc( offsetof( byte_seq, data ) + len );
-    seq->length = len | perform_fixups;
+    seq->relocs = perform_fixups;
+    seq->length = len;
     memcpy( seq->data, VbufBuffer( &out_code ), len );
     CurrInfo->code = seq;
     if( VbufBuffer( &out_code ) != VbufBuffer( src_code ) )
@@ -907,17 +908,13 @@ static void AddAFix(
 static byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
     byte_seq *code )
 {
-    byte_seq *new_code;
-    byte_seq_len code_length;
     byte_seq_len size;
 
     if( code == NULL ) {
         return( code );
     }
-    code_length = code->length & MAX_BYTE_SEQ_LEN;
-    size = offsetof( byte_seq, data ) + code_length;
-    new_code = (byte_seq *)vctsave( (char *)code, size );
-    return( new_code );
+    size = offsetof( byte_seq, data ) + code->length;
+    return( (byte_seq *)vctsave( (char *)code, size ) );
 }
 
 void AsmSysCopyCode( void )
@@ -1026,10 +1023,10 @@ void AsmSysPCHWriteCode( AUX_INFO *info )
         PCHWriteUInt( seq_size );
         return;
     }
-    code_length = code->length & MAX_BYTE_SEQ_LEN;
+    code_length = code->length;
     seq_size = offsetof( byte_seq, data ) + code_length;
     PCHWriteUInt( seq_size );
-    if(( code->length & DO_FLOATING_FIXUPS ) == 0 ) {
+    if( !code->relocs ) {
         /* code has no relocs */
         PCHWrite( code, seq_size );
         return;
@@ -1091,32 +1088,31 @@ void AsmSysPCHReadCode( AUX_INFO *info )
     code = CMemAlloc( seq_size );
     info->code = code;
     PCHRead( code, seq_size );
-    if(( code->length & DO_FLOATING_FIXUPS ) == 0 ) {
-        /* code has no relocs */
-        return;
-    }
-    code_length = code->length & MAX_BYTE_SEQ_LEN;
-    p = code->data;
-    s = code->data + code_length;
-    while( p != s ) {
-        if( p[0] == FLOATING_FIXUP_BYTE ) {
-            fixup = p[1];
-            p += 2;
-            if( fixup != FLOATING_FIXUP_BYTE ) {
-                switch( fixup ) {
-                case FIX_SYM_OFFSET:
-                case FIX_SYM_SEGMENT:
-                case FIX_SYM_RELOFF:
-                    sym = SymbolMapIndex( *((SYMBOL*)p) );
-                    copyCodeLen( p, &sym, sizeof( sym ) );
-                    p += sizeof( SYMBOL ) + sizeof( unsigned long );
-                    break;
-                default:
-                    break;
+    if( code->relocs ) {
+        /* code has relocs */
+        code_length = code->length;
+        p = code->data;
+        s = code->data + code_length;
+        while( p != s ) {
+            if( p[0] == FLOATING_FIXUP_BYTE ) {
+                fixup = p[1];
+                p += 2;
+                if( fixup != FLOATING_FIXUP_BYTE ) {
+                    switch( fixup ) {
+                    case FIX_SYM_OFFSET:
+                    case FIX_SYM_SEGMENT:
+                    case FIX_SYM_RELOFF:
+                        sym = SymbolMapIndex( *((SYMBOL*)p) );
+                        copyCodeLen( p, &sym, sizeof( sym ) );
+                        p += sizeof( SYMBOL ) + sizeof( unsigned long );
+                        break;
+                    default:
+                        break;
+                    }
                 }
+            } else {
+                ++p;
             }
-        } else {
-            ++p;
         }
     }
 }

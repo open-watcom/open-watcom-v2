@@ -148,8 +148,8 @@ void AsmSysLine( char *buff )
     AsmLine( buff );
 }
 
-local int GetByteSeq( risc_byte_seq **code )
-/******************************************/
+local int GetByteSeq( byte_seq **code )
+/*************************************/
 {
     unsigned char       buff[MAXIMUM_BYTESEQ + 32];
     int                 uses_auto;
@@ -184,11 +184,11 @@ local int GetByteSeq( risc_byte_seq **code )
     if( too_many_bytes ) {
         uses_auto = 0;
     } else {
-        risc_byte_seq *seq;
-        uint_32       len;
+        byte_seq      *seq;
+        byte_seq_len  len;
 
         len = AsmCodeAddress;
-        seq = (risc_byte_seq *)CMemAlloc( sizeof( risc_byte_seq ) + len );
+        seq = (byte_seq *)CMemAlloc( sizeof( byte_seq ) + len );
         seq->relocs = GetFixups();
         seq->length = len;
         memcpy( &seq->data[0], buff, len );
@@ -480,7 +480,7 @@ void AsmSysFini( void )
 void AsmSysMakeInlineAsmFunc( int too_many_bytes )
 /************************************************/
 {
-    int                 code_length;
+    byte_seq_len        code_length;
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
     int                 uses_auto;
@@ -499,9 +499,9 @@ void AsmSysMakeInlineAsmFunc( int too_many_bytes )
         if( too_many_bytes ) {
             uses_auto = 0;
         } else {
-            risc_byte_seq   *seq;
+            byte_seq    *seq;
 
-            seq = (risc_byte_seq *)CMemAlloc( sizeof( risc_byte_seq ) + code_length );
+            seq = (byte_seq *)CMemAlloc( sizeof( byte_seq ) + code_length );
             seq->relocs = GetFixups();
             seq->length = code_length;
             memcpy( &seq->data[0], AsmCodeBuffer, code_length );

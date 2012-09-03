@@ -32,6 +32,7 @@
 #ifndef _CG_AUX_INCLUDED
 
 #include "hwreg.h"
+#include "cgauxa.h"
 
 typedef enum {
         AUX_LOOKUP,
@@ -94,18 +95,6 @@ typedef enum  {
 #endif
 
 typedef unsigned long long call_class;
-typedef unsigned long byte_seq_len;
-
-#include "cgauxa.h"
-
-#define MAX_BYTE_SEQ_LEN        (0x7fffffff)
-
-#include "cgnoalgn.h"
-typedef struct byte_seq {
-        byte_seq_len    length;
-        byte            data[];
-} byte_seq;
-#include "cgrealgn.h"
 
 #define _CG_AUX_INCLUDED
 #endif

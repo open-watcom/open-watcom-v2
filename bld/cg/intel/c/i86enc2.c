@@ -373,8 +373,8 @@ extern  void    GenCall( instruction *ins ) {
     code = FindAuxInfo( op, CALL_BYTES );
     if( code != NULL ) {
         _Emit;
-        if( code->length & DO_FLOATING_FIXUPS ) {
-            CodeSequence( code->data, code->length & ~DO_FLOATING_FIXUPS );
+        if( code->relocs ) {
+            CodeSequence( code->data, code->length );
         } else {
             CodeBytes( code->data, code->length );
         }
@@ -675,8 +675,8 @@ extern  void    CodeBytes( byte *src, byte_seq_len len ) {
     DoCodeBytes( src, len, OC_BDATA );
 }
 
-extern  void    EyeCatchBytes( byte *src, uint len ) {
-/************************************************/
+extern  void    EyeCatchBytes( byte *src, byte_seq_len len ) {
+/************************************************************/
 
     DoCodeBytes( src, len, OC_IDATA );
 }

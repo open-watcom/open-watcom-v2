@@ -224,30 +224,24 @@ rtn_info RTInfo[RT_NOP-BEG_RTNS+1] = {
 
 {"__NOP",    OP_NOP,        0,     RL_,            RL_,            RL_ }};
 
-#include "cgnoalgn.h"
-typedef struct {
-        call_class      class;
-        byte_seq_len    length;
-        byte            data[];
-}rt_aux_info;
+static  call_class     rt_cclass = 0;
 
-
-static  rt_aux_info Scn1 = {
-                        0, 6,
+static  byte_seq Scn1 = {
+                        6, FALSE,
                        {0xF2,                   /*       repne*/
                         0xAE,                   /*       scasb*/
                         0xD1, 0xE1,             /*       shl     cx,1*/
                         0x89, 0xCF}             /*       mov     di,cx*/
                         };
 
-static  rt_aux_info Scn2 = {
-                        0, 2,
+static  byte_seq Scn2 = {
+                        2, FALSE,
                        {0xF2,                   /*       repne*/
                         0xAF}                   /*       scasw*/
                         };
 
-static  rt_aux_info Scn4 = {
-                        0, 18,
+static  byte_seq Scn4 = {
+                        18, FALSE,
                        {0x83, 0xC7, 0x02,       /* L1:   add     d1,2*/
                         0x49,                   /* L2:   dec     cx*/
                         0x74, 0x08,             /*       je      L3*/
@@ -261,7 +255,6 @@ static  rt_aux_info Scn4 = {
                         0x89, 0xCF}             /*       mov     di,cx*/
                         };
 
-#include "cgrealgn.h"
 
 extern  char    *AskRTName( int rtindex )
 /***************************************/
@@ -717,35 +710,26 @@ extern  pointer BEAuxInfo( pointer hdl, aux_class request )
     see ScanCall for explanation
 */
 {
-    pointer     info = NULL;
-
     switch( request ) {
     case AUX_LOOKUP:
         switch( FindRTLabel( hdl ) ) {
         case RT_SCAN1:
-            info = &Scn1;
-            break;
+            return( &Scn1 );
         case RT_SCAN2:
-            info = &Scn2;
-            break;
+            return( &Scn2 );
         case RT_SCAN4:
-            info = &Scn4;
-            break;
+            return( &Scn4 );
         default:
-            info = NULL;
             break;
         }
         break;
     case CALL_CLASS:
-        info = hdl;
-        info = &((rt_aux_info *)info)->class;
-        break;
+        return( &rt_cclass );
     case CALL_BYTES:
-        info = hdl;
-        info = &((rt_aux_info *)info)->length;
-        break;
+        return( hdl );
     default:
+        _Zoiks( ZOIKS_128 );
         break;
     }
-    return( info );
+    return( NULL );
 }

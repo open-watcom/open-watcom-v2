@@ -74,7 +74,7 @@ extern void             TryScrapLabel( code_lbl * );
 extern  offset          AskLocation();
 extern  void            OutLineNum( unsigned_16 line, bool label_line );
 extern void             EmitDbgInfo(instruction*);
-extern  void            ObjEmitSeq( risc_byte_seq * );
+extern  void            ObjEmitSeq( byte_seq * );
 extern  bool            AskIfRTLabel( code_lbl * );
 extern  void            InputOC( any_oc * );
 extern  opcode_defs     FlipOpcode( opcode_defs );
@@ -481,7 +481,7 @@ static  void    doCall( instruction *ins ) {
 /******************************************/
 
     pointer             sym;
-    risc_byte_seq       *code;
+    byte_seq            *code;
     code_lbl            *lbl;
 
     code = NULL;

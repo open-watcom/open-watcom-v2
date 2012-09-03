@@ -34,7 +34,7 @@
 #include "cgdefs.h"
 #include "cgswitch.h"
 #include "pragdefn.h"
-#include "cgdllcli.h"
+#include "cgcli.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 #include "cgen.h"
@@ -1379,7 +1379,7 @@ void DoCompile( void )
     old_env = Environment;
     if( ! setjmp( env ) ) {
         Environment = &env;
-        if( BEDLLLoad( NULL ) ) {
+        if( BELoad( NULL ) ) {
             if( ! CompFlags.zu_switch_used ) {
                 TargetSwitches &= ~ FLOATING_SS;
             }
@@ -1429,7 +1429,7 @@ void DoCompile( void )
                 FreeTryTableBackHandles();
 #endif
                 BEFini();
-                BEDLLUnload();
+                BEUnload();
             }
         } else {
             NoCodeGenDLL();

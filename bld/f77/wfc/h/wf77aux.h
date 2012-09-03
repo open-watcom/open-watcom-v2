@@ -59,21 +59,13 @@ typedef struct pass_by {
     unsigned_16         info;
 } pass_by;
 
-#define BYTE_SEQ( len ) struct { byte_seq_len length; byte data[ len ]; }
-
 typedef struct aux_info {
     struct aux_info     *link;
     call_class          cclass;
     hw_reg_set          save;
     hw_reg_set          returns;
     hw_reg_set          *parms;
-#if _CPU == 386 || _CPU == 8086
     byte_seq            *code;
-#elif _CPU == _AXP || _CPU == _PPC
-    risc_byte_seq       *code;
-#else
-  #error Unknown Target
-#endif
     hw_reg_set          streturn;
     char                *objname;
     pass_by             *arg_info;

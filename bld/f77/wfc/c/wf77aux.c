@@ -1094,30 +1094,26 @@ void            CopyAuxInfo( aux_info *dst, aux_info *src ) {
 
 static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
 //============================================================
-#if _INTEL_CPU
 
-    byte_seq    *new_seq;
-    uint        seq_len;
-    seq_len = src->code->length & ~DO_FLOATING_FIXUPS;
-    new_seq = FMemAlloc( sizeof( byte_seq ) + seq_len );
-    memcpy( new_seq->data, src->code->data, seq_len );
-    dst->code = new_seq;
-    dst->code->length = src->code->length;
-
-#elif _CPU == _AXP || _CPU == _PPC
-
-    risc_byte_seq       *new_seq;
-    uint                seq_len;
-    byte_seq_reloc      **lnk;
-    byte_seq_reloc      *new;
-    byte_seq_reloc      *head;
-    byte_seq_reloc      *reloc;
+    byte_seq        *new_seq;
+    byte_seq_len    seq_len;
 
     seq_len = src->code->length;
     new_seq = FMemAlloc( sizeof( byte_seq ) + seq_len );
     memcpy( new_seq->data, src->code->data, seq_len );
     dst->code = new_seq;
     dst->code->length = src->code->length;
+
+#if _INTEL_CPU
+
+    dst->code->relocs = src->code->relocs;
+
+#elif _CPU == _AXP || _CPU == _PPC
+
+    byte_seq_reloc      **lnk;
+    byte_seq_reloc      *new;
+    byte_seq_reloc      *head;
+    byte_seq_reloc      *reloc;
 
     head = NULL;
     lnk = &head;
@@ -1249,8 +1245,8 @@ enum    sym_type        AsmQueryType( char *name ) {
 }
 
 
-static  void    InsertFixups( unsigned char *buff, unsigned i ) {
-//===============================================================
+static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
+//===================================================================
                         // additional slop in buffer to simplify the code
     unsigned char       temp[MAXIMUM_BYTESEQ + 2 * sizeof( byte )];
     struct asmfixup     *fix;
@@ -1262,10 +1258,10 @@ static  void    InsertFixups( unsigned char *buff, unsigned i ) {
     byte                *src;
     byte                *end;
     byte_seq            *seq;
-    byte_seq_len        perform_fixups;
+    bool                perform_fixups;
     char                *name;
 
-    perform_fixups = 0;
+    perform_fixups = FALSE;
     head = FixupHead;
     if( head != NULL ) {
         FixupHead = NULL;
@@ -1355,10 +1351,11 @@ static  void    InsertFixups( unsigned char *buff, unsigned i ) {
         }
         buff = temp;
         i = dst - temp;
-        perform_fixups = DO_FLOATING_FIXUPS;
+        perform_fixups = TRUE;
     }
     seq = FMemAlloc( sizeof( byte_seq ) + i );
-    seq->length = i | perform_fixups;
+    seq->relocs = perform_fixups;
+    seq->length = i;
     memcpy( &seq->data, buff, i );
     if( CurrAux->code != DefaultInfo.code ) {
         FMemFree( CurrAux->code );
@@ -1375,10 +1372,10 @@ uint_32 AsmQuerySPOffsetOf( char *name ) {
 }
 
 
-static  void    InsertFixups( unsigned char *buff, unsigned i ) {
-//===============================================================
+static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
+//===================================================================
 
-    risc_byte_seq       *seq;
+    byte_seq            *seq;
     asmreloc            *reloc;
     byte_seq_reloc      *head;
     byte_seq_reloc      *new;

@@ -782,8 +782,7 @@ static void OutPutAuxInfo( struct aux_info *info )
         len += info->objname_size;
     }
     if( save_code != NULL ) {
-        info->code_size = (save_code->length & MAX_BYTE_SEQ_LEN)
-                                + sizeof( byte_seq );
+        info->code_size = save_code->length + sizeof( byte_seq );
         len += info->code_size;
     }
     padding = _RoundUp( len, sizeof( int ) ) - len;
@@ -802,7 +801,7 @@ static void OutPutAuxInfo( struct aux_info *info )
         rc |= WritePHeader( save_objname, len );
     }
     if( save_code != NULL ) {
-        len = (save_code->length & MAX_BYTE_SEQ_LEN) + sizeof( byte_seq );
+        len = save_code->length + sizeof( byte_seq );
         rc |= WritePHeader( save_code, len );
     }
     rc |= WritePHeader( "    ", padding );

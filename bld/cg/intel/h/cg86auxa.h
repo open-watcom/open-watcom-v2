@@ -61,17 +61,23 @@
     #error Overflowed a long
 #endif
 
-#define DO_FLOATING_FIXUPS      0x80000000
 #define FLOATING_FIXUP_BYTE     0xFF
 
-#define DO_SYM_FIXUPS           DO_FLOATING_FIXUPS      /* must be the same */
-#define SYM_FIXUP_BYTE          FLOATING_FIXUP_BYTE     /* must be the same */
-
 typedef enum {
-#define pick_fp(enum,name,alt_name) FIX_ ## enum,
-#include "fppatche.h"
-#undef pick_fp
+    #define pick_fp(enum,name,alt_name) FIX_ ## enum,
+    #include "fppatche.h"
+    #undef pick_fp
     FIX_SYM_OFFSET,     /* followed by a long */
     FIX_SYM_SEGMENT,    /* .. */
     FIX_SYM_RELOFF      /* .. */
 } cg_fixups;
+
+typedef unsigned    byte_seq_len;
+
+#include "pushpck1.h"
+typedef struct byte_seq {
+    byte_seq_len    length;
+    bool            relocs;
+    byte            data[];
+} byte_seq;
+#include "poppck.h"

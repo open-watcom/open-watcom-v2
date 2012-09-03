@@ -46,7 +46,7 @@
 #include "emitobj.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-#include "cgdllcli.h"
+#include "cgcli.h"
 
 #include <stdarg.h>
 
@@ -94,7 +94,7 @@ static  void    CGProgFini( void ) {
             BEStop();
         }
         BEFini();
-        BEDLLUnload();
+        BEUnload();
     }
 }
 
@@ -152,7 +152,7 @@ static  void    CGStart( void ) {
     cg_init_info        info;
     proc_revision       cpu;
 
-    if( BEDLLLoad( NULL ) ) {
+    if( BELoad( NULL ) ) {
         CGFlags |= CG_LOADED;
         cpu = 0;
         cg_opts = FORTRAN_ALIASING|RELAX_ALIAS;

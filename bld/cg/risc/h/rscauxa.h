@@ -33,17 +33,19 @@
 #include "offset.h"
 #include "owl.h"
 
-#include "cgnoalgn.h"
+typedef unsigned        byte_seq_len;
+
+#include "pushpck1.h"
 typedef struct byte_seq_reloc {
-    struct byte_seq_reloc *     next;
-    offset                      off;
-    void *                      sym;
-    owl_reloc_type              type;
+    struct byte_seq_reloc   *next;
+    offset                  off;
+    void                    *sym;
+    owl_reloc_type          type;
 } byte_seq_reloc;
 
-typedef struct risc_byte_seq {
-    byte_seq_reloc *    relocs;
+typedef struct byte_seq {
     byte_seq_len        length;
+    byte_seq_reloc      *relocs;
     char                data[];
-} risc_byte_seq;
-#include "cgrealgn.h"
+} byte_seq;
+#include "poppck.h"

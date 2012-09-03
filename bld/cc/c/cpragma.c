@@ -443,24 +443,18 @@ local void CopyParms( void )
     CurrInfo->parms = regs;
 }
 
-#if _RISC_CPU
-#define BYTE_SEQ    risc_byte_seq
-#else
-#define BYTE_SEQ    byte_seq
-#endif
-
 local void CopyCode( void )
 /*************************/
 {
-    BYTE_SEQ    *code;
+    byte_seq    *code;
     int         size;
 //TODO deal with reloc list
     if( CurrInfo->code == NULL )
         return;
     if( CurrInfo->code != CurrAlias->code )
         return;
-    size = sizeof( BYTE_SEQ ) + CurrInfo->code->length;
-    code = (BYTE_SEQ *)CMemAlloc( size );
+    size = sizeof( byte_seq ) + CurrInfo->code->length;
+    code = (byte_seq *)CMemAlloc( size );
     memcpy( code, CurrInfo->code, size );
     CurrInfo->code = code;
 }

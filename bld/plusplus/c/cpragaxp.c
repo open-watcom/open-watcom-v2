@@ -42,7 +42,7 @@
 #include "carve.h"
 #include "pcheader.h"
 
-static risc_byte_seq *AuxCodeDup( risc_byte_seq *code );
+static byte_seq *AuxCodeDup( byte_seq *code );
 
 static void pragmaInit(         // INIT PRAGMAS
     INITFINI* defn )            // - definition
@@ -156,11 +156,11 @@ boolean AsmSysInsertFixups( VBUF *code )
     asmreloc        *next;
     byte_seq_reloc  *cg_relocs;
     byte_seq_reloc  *new_reloc;
-    risc_byte_seq   *seq;
+    byte_seq        *seq;
     unsigned        len;
 
     len = VbufLen( code );
-    seq = CMemAlloc( offsetof( risc_byte_seq, data ) + len );
+    seq = CMemAlloc( offsetof( byte_seq, data ) + len );
     seq->length = len;
     memcpy( seq->data, VbufBuffer( code ), len );
     cg_relocs = NULL;
@@ -258,7 +258,7 @@ void AsmSysPCHWriteCode( AUX_INFO *info )
 {
     SYMBOL sym;
     byte_seq_reloc *reloc;
-    risc_byte_seq *code;
+    byte_seq *code;
     unsigned code_size;
 
     code = info->code;
@@ -267,7 +267,7 @@ void AsmSysPCHWriteCode( AUX_INFO *info )
         PCHWriteUInt( 0 );
         return;
     }
-    code_size = offsetof( risc_byte_seq, data ) + code->length;
+    code_size = offsetof( byte_seq, data ) + code->length;
     PCHWriteUInt( code_size );
     PCHWrite( code, code_size );
     for( reloc = code->relocs; reloc != NULL; reloc = reloc->next ) {
@@ -286,7 +286,7 @@ void AsmSysPCHReadCode( AUX_INFO *info )
     cv_index si;
     byte_seq_reloc *reloc;
     byte_seq_reloc **head;
-    risc_byte_seq *code;
+    byte_seq *code;
     unsigned code_size;
 
     code_size = PCHReadUInt();
@@ -317,12 +317,12 @@ void AsmSysLine( char *buff )
     AsmLine( buff );
 }
 
-static risc_byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
-    risc_byte_seq *code )
+static byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
+    byte_seq *code )
 {
     byte_seq_len code_length;
     byte_seq_len size;
-    risc_byte_seq *new_code;
+    byte_seq *new_code;
     byte_seq_reloc *reloc;
     byte_seq_reloc *new_reloc;
 
@@ -330,8 +330,8 @@ static risc_byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
         return( code );
     }
     code_length = code->length;
-    size = offsetof( risc_byte_seq, data ) + code_length;
-    new_code = (risc_byte_seq *)vctsave( (char *)code, size );
+    size = offsetof( byte_seq, data ) + code_length;
+    new_code = (byte_seq *)vctsave( (char *)code, size );
     new_code->relocs = NULL;
     for( reloc = code->relocs; reloc != NULL; reloc = reloc->next ) {
         new_reloc = CMemAlloc( sizeof( *new_reloc ) );
@@ -347,7 +347,7 @@ static risc_byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
 void AsmSysCopyCode( void )
 /*************************/
 {
-    risc_byte_seq *code;
+    byte_seq *code;
 
     code = CurrInfo->code;
     if( code != NULL && code == CurrAlias->code ) {

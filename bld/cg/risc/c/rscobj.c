@@ -1157,13 +1157,13 @@ static  bool    relocBefore( void *_p1, void *_p2 )
     return( p1->off < p2->off );
 }
 
-extern  void    ObjEmitSeq( risc_byte_seq *code )
-/***********************************************/
+extern  void    ObjEmitSeq( byte_seq *code )
+/******************************************/
 {
     byte_seq_reloc      *curr;
     bck_info            *back;
     type_length         loc;
-    unsigned            i;
+    byte_seq_len        i;
     axp_ins             *code_ptr;
     axp_ins             opcode;
     pointer             reloc_sym;

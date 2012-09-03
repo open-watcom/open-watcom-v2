@@ -93,7 +93,7 @@ extern  label_handle    AskForSymLabel(pointer ,cg_class );
 extern  bool        AskIfRTLabel(label_handle);
 extern  unsigned    DepthAlign( unsigned );
 extern  char        *CopyStr(char*,char*);
-extern  void        EyeCatchBytes(byte*,uint);
+extern  void        EyeCatchBytes(byte*,byte_seq_len);
 extern  void        GenSelEntry(bool);
 extern  void        TellKeepLabel(label_handle);
 extern  label_handle    AskForNewLabel(void);
@@ -503,7 +503,7 @@ static  void    EmitNameInCode( void ) {
     TellKeepLabel( lbl );
     CodeLabel( lbl, 0 );
     GenKillLabel( lbl );
-    EyeCatchBytes( (byte *)name, *endname + 1 );
+    EyeCatchBytes( (byte *)name, *(unsigned char *)endname + 1 );
 }
 
 
