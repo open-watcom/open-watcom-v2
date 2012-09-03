@@ -400,8 +400,7 @@ extern  void    GenCall( instruction *ins ) {
         }
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
-            DoCall( FEBack( sym )->lbl,
-                  (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0, big, pop_bit );
+            DoCall( FEBack( sym )->lbl, (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0, big, pop_bit );
         } else {
             DoCall( sym, TRUE, big, pop_bit );
         }

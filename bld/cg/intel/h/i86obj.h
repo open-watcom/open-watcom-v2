@@ -96,7 +96,7 @@ typedef enum {
         BASE_ABS
 } base_type;
 
-#include "cgnoalgn.h"
+#include "pushpck1.h"
 
 typedef struct fixup {
         byte                    locatof;
@@ -104,7 +104,7 @@ typedef struct fixup {
         byte                    fixdat;
 } fixup;
 
-#include "cgrealgn.h"
+#include "poppck.h"
 
 /* Data Structures used internally in object file generation */
 

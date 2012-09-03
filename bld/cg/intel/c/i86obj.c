@@ -90,12 +90,12 @@
 #define _ARRAYOF( what, type )  ((type *)(what)->array)
 #define _CHGTYPE( what, type )  (*(type *)&(what))
 
-#include "cgnoalgn.h"
+#include "pushpck1.h"
 typedef struct line_num_entry {
     unsigned_16     line;
     offset          off;
 } line_num_entry;
-#include "cgrealgn.h"
+#include "poppck.h"
 
 typedef struct lname_cache {
     struct lname_cache  *next;

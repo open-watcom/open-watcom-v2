@@ -51,7 +51,6 @@ extern  hw_reg_set      ReturnReg(type_class_def,bool);
 extern  hw_reg_set      StructReg( void );
 extern  byte            *Copy(void*,void*,uint);
 extern  type_class_def  ReturnClass(type_def*,call_attributes);
-extern  pointer         BEAuxInfo(pointer,aux_class);
 extern  bool            AskIfRTLabel(label_handle);
 extern  hw_reg_set      FixedRegs( void );
 extern  hw_reg_set      StackReg( void );

@@ -355,13 +355,13 @@ extern  void    PutObjBytes( byte *buff, uint len )
 extern  void    PutObjRec( byte class, byte *buff, uint len )
 /***********************************************************/
 {
-#include "cgnoalgn.h"
+#include "pushpck1.h"
     static struct {
         byte            class;
         unsigned_16     len;
         unsigned_8      data[1024+1]; /* +1 for check sum */
     } header;
-#include "cgrealgn.h"
+#include "poppck.h"
     byte        cksum;
 
     if( NeedSeek ) {

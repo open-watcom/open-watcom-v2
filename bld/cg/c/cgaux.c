@@ -61,9 +61,8 @@ extern  pointer FindAuxInfo( name *name, aux_class request ) {
         bck = name->v.symbol;
         info = FEAuxInfo( AskForLblSym( bck->lbl ), AUX_LOOKUP );
         return( FEAuxInfo( info, request ) );
-    }
 #if _TARGET & _TARG_INTEL
-    else if( name->m.memory_type == CG_LBL
+    } else if( name->m.memory_type == CG_LBL
          && AskIfRTLabel( name->v.symbol ) ) {
         info = BEAuxInfo( name->v.symbol, AUX_LOOKUP );
         if( info == NULL ) {
@@ -72,9 +71,8 @@ extern  pointer FindAuxInfo( name *name, aux_class request ) {
         } else {
             return( BEAuxInfo( info, request ) );
         }
-    }
 #endif
-    else {
+    } else {
         info = FEAuxInfo( NULL, AUX_LOOKUP );  /* return default*/
         return( FEAuxInfo( info, request ) );
     }
