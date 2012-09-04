@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include "rtclass.h"
+
 typedef struct rtn_info {
         char            *nam;
         opcode_defs     op;
@@ -39,8 +41,7 @@ typedef struct rtn_info {
         reg_set_index   result;
 } rtn_info;
 
-extern    int           RoutineNum;
+extern    rt_class      RoutineNum;
 extern    rtn_info      RTInfo[];
 
-#define RTSIZE (RT_NOP - BEG_RTNS + 1)           /* includes NOP*/
 #define OP_CMP    OP_CMP_EQUAL

@@ -54,7 +54,6 @@ extern  name            *STempOffset(name*,type_length,type_class_def,type_lengt
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            ReplIns(instruction*,instruction*);
-extern  label_handle    RTLabel(int);
 extern  void            ChangeType(instruction*,type_class_def);
 
 extern  void            UpdateLive( instruction *, instruction * );

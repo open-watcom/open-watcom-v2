@@ -41,7 +41,6 @@
 #include "model.h"
 #include "regset.h"
 #include "rttable.h"
-#include "rtclass.h"
 #include "zoiks.h"
 #include "mipsenc.h"
 #include "feprotos.h"
@@ -66,7 +65,7 @@ extern  void            OutFuncEnd( offset end );
 extern  uint_8          RegTrans( hw_reg_set );
 extern  void            GenCallLabel( label_handle lbl );
 extern  void            GenCallLabelReg( pointer label, uint reg );
-extern  label_handle    RTLabel( int );
+extern  label_handle    RTLabel( rt_class );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            EmitRtnBeg( void );

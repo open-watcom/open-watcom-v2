@@ -73,7 +73,7 @@ extern  name            *DoParmDecl(sym_handle,type_def*,hw_reg_set);
 extern  hw_reg_set      ReturnReg(type_class_def,bool);
 extern  type_length     PushSize(type_length);
 extern  type_def        *QParmType(sym_handle,sym_handle,type_def*);
-extern  label_handle    RTLabel( int rtindex );
+extern  label_handle    RTLabel( rt_class rtindex );
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            ReverseParmNodeList(pn *);
 extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
@@ -110,7 +110,7 @@ static  void    Far16Parms( cn call ) {
     type_length         offset;
     name                *parmlist;
     call_state          *state;
-    int                 thunk_rtn;
+    rt_class            thunk_rtn;
 
     call_ins = call->ins;
     parm_size = 0;
@@ -160,7 +160,7 @@ static  void    Far16Parms( cn call ) {
     } else {
         thunk_rtn = RT_Far16Func;
     }
-    lbl = RTLabel( thunk_rtn - BEG_RTNS );
+    lbl = RTLabel( thunk_rtn );
     call->name->u.name = AllocMemory( lbl, 0, CG_LBL, WD );
     call_ins->flags.call_flags |= CALL_FAR16 | CALL_POPS_PARMS;
     call_ins->operands[CALL_OP_USED] = AllocRegName( state->parm.used );

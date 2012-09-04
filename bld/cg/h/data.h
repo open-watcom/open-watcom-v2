@@ -37,7 +37,7 @@ extern  block                   *BlockList;
 extern  int                     InsId;
 extern  int                     TempId;
 extern  pointer                 ConfList;
-extern  int                     RoutineNum;
+extern  rt_class                RoutineNum;
 extern  pointer                 Names[N_INDEXED+1];
 extern  pointer                 LastTemp;
 extern  pointer                 DummyIndex;

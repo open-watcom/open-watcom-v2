@@ -34,14 +34,12 @@
 #include "regset.h"
 #include "opcodes.h"
 #include "rttable.h"
-#include "rtclass.h"
 #include "makeins.h"
 
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocIntConst(int);
-extern  rt_class        AskHow(type_class_def,type_class_def);
-extern  label_handle    RTLabel(int);
+extern  label_handle    RTLabel(rt_class);
 extern  hw_reg_set      FirstReg(reg_set_index);
 extern  void            LookupRoutine(instruction*);
 extern  void            LookupConvertRoutine(instruction*);

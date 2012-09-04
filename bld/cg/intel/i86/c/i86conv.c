@@ -34,11 +34,12 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "regset.h"
-#include "rtclass.h"
 #include "vergen.h"
 #include "model.h"
 #include "funits.h"
 #include "makeins.h"
+#include "zoiks.h"
+#include "rttable.h"
 
 extern  name            *AllocTemp( type_class_def );
 extern  void            MoveSegOp( instruction *, instruction *, int );
@@ -47,11 +48,9 @@ extern  void            DupSeg( instruction *, instruction * );
 extern  void            ReplIns( instruction *, instruction * );
 extern  bool            IsTrickyPointerConv( instruction *ins );
 
-extern  int             RoutineNum;
 
-
-static  opcode_entry    C2to1[] = {
-/*********************************/
+static  opcode_entry    ctable_C2TO1[] = {
+/****************************************/
 /*    from  to    eq       verify        gen             reg fu*/
 {_Un( R,    ANY,  NONE ),  V_NO,       R_MOVELOW,        RG_TWOBYTE,FU_NO},
 {_Un( R,    ANY,  NONE ),  V_NO,       R_MOVOP1TEMP,     RG_,    FU_NO},
@@ -61,29 +60,29 @@ static  opcode_entry    C2to1[] = {
 };
 
 
-static  opcode_entry    C4to1[] = {
-/*********************************/
+static  opcode_entry    ctable_C4TO1[] = {
+/****************************************/
 /*    from  to    eq          verify          gen             reg fu*/
 {_Un( ANY,  ANY,  NONE ),     V_NO,           R_CONVERT_LOW,  RG_DBL_BYTE,FU_NO},
 };
 
 
-static  opcode_entry    C4to2[] = {
-/*********************************/
+static  opcode_entry    ctable_C4TO2[] = {
+/****************************************/
 /*    from  to    eq       verify        gen             reg fu*/
 {_Un( ANY,  ANY,  NONE ),  V_NO,         R_MOVELOW,      RG_,FU_NO},
 };
 
 
-static  opcode_entry    C8to4[] = {
-/*********************************/
+static  opcode_entry    ctable_C8TO4[] = {
+/****************************************/
 /*    from  to    eq       verify        gen             reg fu*/
 {_Un( ANY,  ANY,  NONE ),  V_NO,         R_MOVE8LOW,      RG_,FU_NO},
 };
 
 
-static  opcode_entry    Z1to2[] = {
-/*********************************/
+static  opcode_entry    ctable_Z1TO2[] = {
+/****************************************/
 /*    from  to    eq          verify   gen             reg fu*/
 {_Un( R|M,  R,    NONE ),     V_GOOD_CLR,R_CLRHIGH_R,  RG_BYTE_2BYTE,FU_NO},
 {_Un( R|M,  R,    NONE ),     V_80386, G_MOVZX,        RG_BYTE_WORD,FU_ALU1},
@@ -94,22 +93,22 @@ static  opcode_entry    Z1to2[] = {
 };
 
 
-static  opcode_entry    Z2to4[] = {
-/*********************************/
+static  opcode_entry    ctable_Z2TO4[] = {
+/****************************************/
 /*    from  to    eq          verify          gen             reg fu*/
 {_Un( ANY,  ANY,  NONE ),     V_NO,           R_CLRHIGH_W,    RG_WORD_DBL,FU_NO},
 };
 
 
-static  opcode_entry    Z4to8[] = {
-/*********************************/
+static  opcode_entry    ctable_Z4TO8[] = {
+/****************************************/
 /*    from  to    eq          verify          gen             reg fu*/
 {_Un( ANY,  ANY,  NONE ),     V_NO,           R_CLRHIGH_D,   RG_WORD_DBL,FU_NO},
 };
 
 
-static  opcode_entry    S1to2[] = {
-/*********************************/
+static  opcode_entry    ctable_S1TO2[] = {
+/****************************************/
 /*    from  to    eq          verify          gen             reg fu*/
 {_Un( R,    R,    NONE ),     V_NO,           G_SIGNEX,       RG_CBW,FU_ALU1},
 {_Un( R|M,  R,    NONE ),     V_80386,        G_MOVSX,        RG_BYTE_WORD,FU_ALU1},
@@ -120,22 +119,22 @@ static  opcode_entry    S1to2[] = {
 };
 
 
-static  opcode_entry    S2to4[] = {
-/*********************************/
+static  opcode_entry    ctable_S2TO4[] = {
+/****************************************/
 /*    from  to    eq          verify          gen             reg fu*/
 {_Un( R,    R,    NONE ),     V_NO,           G_SIGNEX,       RG_CWD,FU_ALU1},
 {_Un( ANY,  ANY,  NONE ),     V_NO,           R_OP1RESREG,    RG_CWD,FU_NO},
 };
 
-static  opcode_entry    S4to8[] = {
-/*********************************/
+static  opcode_entry    ctable_S4TO8[] = {
+/****************************************/
 /*    from  to    eq          verify          gen             reg fu*/
 {_Un( ANY,  ANY,  NONE ),     V_NO,           R_CDQ,   RG_WORD_DBL,FU_NO},
 };
 
 
-static  opcode_entry    ExtPT[] = {
-/*********************************/
+static  opcode_entry    ctable_EXT_PT[] = {
+/****************************************/
 /*    from  to    eq          verify          gen             reg fu*/
 {_Un( ANY,  ANY,  NONE ),     V_NO,           R_EXTPT,        RG_,FU_NO},
 };
@@ -147,21 +146,83 @@ static  opcode_entry    CRtn[] = {
 {_Un( ANY,  ANY,  NONE ),     V_NO,           R_MAKECALL,     RG_,FU_NO},
 };
 
-static opcode_entry     *CvtAddr[] = {
-        C2to1,
-        C4to1,
-        C4to2,
-        C8to4,
-        S1to2,
-        S2to4,
-        S4to8,
-        Z1to2,
-        Z2to4,
-        Z4to8,
-        ExtPT
-        };
+#define CVTFUNC_MAPS \
+    CVT_MAP( C2TO1 ) \
+    CVT_MAP( C4TO1 ) \
+    CVT_MAP( C4TO2 ) \
+    CVT_MAP( C8TO4 ) \
+    CVT_MAP( S1TO2 ) \
+    CVT_MAP( S2TO4 ) \
+    CVT_MAP( S4TO8 ) \
+    CVT_MAP( Z1TO2 ) \
+    CVT_MAP( Z2TO4 ) \
+    CVT_MAP( Z4TO8 ) \
+    CVT_MAP( EXT_PT )
 
-static  rt_class         CvtTable[] = {
+#define RTFUNC_MAPS \
+    RT_MAP( C_U4_S, RT_U4FS ) \
+    RT_MAP( C_I4_S, RT_I4FS ) \
+    RT_MAP( C_U4_D, RT_U4FD ) \
+    RT_MAP( C_I4_D, RT_I4FD ) \
+    RT_MAP( C_S_D,  RT_FSFD ) \
+    RT_MAP( C_S_4,  RT_FSI4 ) \
+    RT_MAP( C_S_U,  RT_FSU4 ) \
+    RT_MAP( C_D_4,  RT_FDI4 ) \
+    RT_MAP( C_D_U,  RT_FDU4 ) \
+    RT_MAP( C_D_S,  RT_FDFS ) \
+    RT_MAP( C_U8_S, RT_U8FS ) \
+    RT_MAP( C_I8_S, RT_I8FS ) \
+    RT_MAP( C_U8_D, RT_U8FD ) \
+    RT_MAP( C_I8_D, RT_I8FD ) \
+    RT_MAP( C_S_I8, RT_FSI8 ) \
+    RT_MAP( C_S_U8, RT_FSU8 ) \
+    RT_MAP( C_D_I8, RT_FDI8 ) \
+    RT_MAP( C_D_U8, RT_FDU8 ) \
+    RT_MAP( C7U8_S, RT_U8FS7 ) \
+    RT_MAP( C7U8_D, RT_U8FD7 ) \
+    RT_MAP( C7S_U8, RT_FSU87 ) \
+    RT_MAP( C7D_U8, RT_FDU87 )
+
+typedef enum {
+    CU1,
+    CI1,
+    CU2,
+    CI2,
+    CU4,
+    CI4,
+    CU8,
+    CI8,
+    CCP,
+    CPT,
+    CFS,
+    CFD,
+    CFL,
+    OK,
+    #define CVT_MAP(a) a,
+    CVTFUNC_MAPS
+    #undef CVT_MAP
+    FPOK,
+    BAD,
+    #define RT_MAP(a,b) a,
+    RTFUNC_MAPS
+    #undef RT_MAP
+} conv_method;
+
+static opcode_entry     *CvtAddr[] = {
+    #define CVT_MAP(a) ctable_##a,
+    CVTFUNC_MAPS
+    #undef CVT_MAP
+};
+
+static  rt_class        RTRoutineTable[] = {
+    #define RT_MAP(a,b) b,
+    RTFUNC_MAPS
+    #undef RT_MAP
+};
+
+#define __x__   BAD
+
+static  conv_method     CvtTable[] = {
 /*                               from*/
 /*U1    I1     U2     I2     U4     I4     U8     I8     CP     PT     FS     FD    FL       to*/
 OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C4TO1, C4TO1, CU4,   CU4,   CU4,   CU4,  CU4,     /* U1*/
@@ -172,14 +233,14 @@ CU2,   CI2,   Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,    OK,    C_S_U, C_D
 CU2,   CI2,   Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,    OK,    C_S_4, C_D_4,C_D_4,   /* I4*/
 CU4,   CI4,   CU4,   CI4,   Z4TO8, S4TO8, OK,    OK,    Z4TO8, Z4TO8, C_S_U8,C_D_U8,C_D_U8, /* U8*/
 CU4,   CI4,   CU4,   CI4,   Z4TO8, S4TO8, OK,    OK,    Z4TO8, Z4TO8, C_S_I8,C_D_I8,C_D_I8, /* I8*/
-CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    BAD,   BAD,  BAD,     /* CP*/
-CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    BAD,   BAD,  BAD,     /* PT*/
-CU4,   CI4,   CU4,   CI4,   C_U4_S,C_I4_S,C_U8_S,C_I8_S,BAD,   BAD,   OK,    C_D_S,C_D_S,   /* FS*/
-CU4,   CI4,   CU4,   CI4,   C_U4_D,C_I4_D,C_U8_D,C_I8_D,BAD,   BAD,   C_S_D, OK,   OK,      /* FD*/
-CU4,   CI4,   CU4,   CI4,   C_U4_D,C_I4_D,C_U8_D,C_I8_D,BAD,   BAD,   C_S_D, OK,   OK,      /* FL*/
+CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    __x__, __x__,__x__,   /* CP*/
+CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    __x__, __x__,__x__,   /* PT*/
+CU4,   CI4,   CU4,   CI4,   C_U4_S,C_I4_S,C_U8_S,C_I8_S,__x__, __x__, OK,    C_D_S,C_D_S,   /* FS*/
+CU4,   CI4,   CU4,   CI4,   C_U4_D,C_I4_D,C_U8_D,C_I8_D,__x__, __x__, C_S_D, OK,   OK,      /* FD*/
+CU4,   CI4,   CU4,   CI4,   C_U4_D,C_I4_D,C_U8_D,C_I8_D,__x__, __x__, C_S_D, OK,   OK,      /* FL*/
 };
 
-static  rt_class FPCvtTable[] = {
+static  conv_method     FPCvtTable[] = {
 /*                               from*/
 /*U1    I1     U2     I2     U4     I4     U8     I8     CP     PT     FS     FD    FL       to*/
 OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C4TO1, C4TO1, CU4,   CU4,   CI2,   CI2,   CI2,     /* U1*/
@@ -190,14 +251,14 @@ CU2,   CI2,   Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,    OK,    FPOK,  FPO
 CU2,   CI2,   Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,    OK,    FPOK,  FPOK,  FPOK,    /* I4*/
 CU4,   CI4,   CU4,   CI4,   Z4TO8, S4TO8, OK,    OK,    Z4TO8, Z4TO8, C7S_U8,C7D_U8,C7D_U8,  /* U8*/
 CU4,   CI4,   CU4,   CI4,   Z4TO8, S4TO8, OK,    OK,    Z4TO8, Z4TO8, FPOK,  FPOK,  FPOK,    /* I8*/
-CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    BAD,   BAD,   BAD,     /* CP*/
-CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    BAD,   BAD,   PT,      /* PT*/
-CI2,   CI2,   CI4,   FPOK,  FPOK,  FPOK,  C7U8_S,FPOK,  BAD,   BAD,   FPOK,  FPOK,  FPOK,    /* FS*/
-CI2,   CI2,   CI4,   FPOK,  FPOK,  FPOK,  C7U8_D,FPOK,  BAD,   BAD,   FPOK,  FPOK,  FPOK,    /* FD*/
-CI2,   CI2,   CI4,   FPOK,  FPOK,  FPOK,  C7U8_D,FPOK,  BAD,   BAD,   FPOK,  FPOK,  FPOK,    /* FL*/
+CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    __x__, __x__, __x__,   /* CP*/
+CU4,   CI4,   EXT_PT,CI4,   OK,    OK,    OK,    OK,    OK,    OK,    __x__, __x__, PT,      /* PT*/
+CI2,   CI2,   CI4,   FPOK,  FPOK,  FPOK,  C7U8_S,FPOK,  __x__, __x__, FPOK,  FPOK,  FPOK,    /* FS*/
+CI2,   CI2,   CI4,   FPOK,  FPOK,  FPOK,  C7U8_D,FPOK,  __x__, __x__, FPOK,  FPOK,  FPOK,    /* FD*/
+CI2,   CI2,   CI4,   FPOK,  FPOK,  FPOK,  C7U8_D,FPOK,  __x__, __x__, FPOK,  FPOK,  FPOK,    /* FL*/
 };
 
-extern  rt_class        AskHow( type_class_def fr, type_class_def to )
+static  conv_method     AskHow( type_class_def fr, type_class_def to )
 /********************************************************************/
 {
     if( _FPULevel( FPU_87 ) ) {
@@ -225,7 +286,7 @@ extern  instruction     *rDOCVT( instruction *ins )
     name        *dst;
     name        *name;
     instruction *new_ins;
-    rt_class    how;
+    conv_method how;
 
     src = ins->operands[ 0 ];
     dst = ins->result;
@@ -249,10 +310,6 @@ extern  instruction     *rDOCVT( instruction *ins )
         ins->operands[ 0 ] = name;
         MoveSegOp(ins,new_ins,0);
         PrefixIns( ins, new_ins );
-    } else if( how == OK ) {
-        new_ins = MakeMove( src, dst, ins->type_class );
-        DupSeg(ins,new_ins);
-        ReplIns( ins, new_ins );
     } else if( how == FPOK ) {
         ins->head.opcode = OP_MOV;
         ins->table = NULL;
@@ -261,13 +318,29 @@ extern  instruction     *rDOCVT( instruction *ins )
         if( !_IsFloating( ins->type_class ) ) {
             ins->type_class = ins->base_type_class;
         }
-    } else if( how <= EXT_PT ) {
+    } else if( how > OK && how < FPOK ) {
         ins->table = CvtAddr[  how - ( OK + 1 )  ];
         new_ins = ins;
-    } else {
+    } else if( how > BAD ) {
         ins->table = CRtn;
-        RoutineNum = how - BEG_RTNS;
+        RoutineNum = RTRoutineTable[how - ( BAD + 1 )];
         new_ins = ins;
+    } else {
+        new_ins = MakeMove( src, dst, ins->type_class );
+        DupSeg(ins,new_ins);
+        ReplIns( ins, new_ins );
+        if( how != OK ) {
+            _Zoiks( ZOIKS_092 );
+        }
     }
     return( new_ins );
+}
+
+extern  void    LookupConvertRoutine( instruction *ins ) {
+/********************************************************/
+
+    conv_method     how;
+
+    how = AskHow( ins->base_type_class, ins->type_class );
+    RoutineNum = RTRoutineTable[how - ( BAD + 1 )];
 }

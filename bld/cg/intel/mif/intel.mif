@@ -21,7 +21,6 @@ intel_objs = &
     i86proc.obj &
     i86reg.obj &
     i86regsv.obj &
-    i86rtlk.obj &
     i86segs.obj &
     i86sel.obj &
     i86split.obj &

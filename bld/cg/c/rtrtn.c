@@ -35,7 +35,6 @@
 #include "opcodes.h"
 #include "regset.h"
 #include "rttable.h"
-#include "rtclass.h"
 #include "zoiks.h"
 
 static    import_handle RTHdls[RTSIZE];
@@ -47,11 +46,11 @@ extern  void    LookupRoutine( instruction *ins ) {
 /*************************************************/
 
     rtn_info    *rtn;
-    int         idx;
+    rt_class    rtindex;
     opcode_defs opcode;
 
     rtn = RTInfo;
-    idx = 0;
+    rtindex = 0;
     opcode = ins->head.opcode;
     if( opcode >= FIRST_CONDITION ) {
         opcode = OP_CMP;
@@ -59,67 +58,63 @@ extern  void    LookupRoutine( instruction *ins ) {
     for(;;) {
         if( rtn->op == opcode && rtn->operand_class == ins->type_class ) break;
         ++ rtn;
-        ++ idx;
+        ++ rtindex;
         if( rtn->op == OP_NOP ) {
             _Zoiks( ZOIKS_021 );
             break;
         }
     }
-    RoutineNum = idx;
+    RoutineNum = rtindex;
 }
 
 
-extern  void    InitRT() {
-/************************/
+extern  void    InitRT( void ) {
+/******************************/
 
-    int i       ;
+    rt_class    rtindex;
 
-    i = 0;
-    while( i < RTSIZE ) {
-        RTHdls[  i  ] = NOT_IMPORTED;
-        RTLbls[  i  ] = NULL;
-        i++;
+    for( rtindex = 0; rtindex < RTSIZE; ++rtindex ) {
+        RTHdls[rtindex] = NOT_IMPORTED;
+        RTLbls[rtindex] = NULL;
     }
 }
 
 
-extern  import_handle   AskRTHandle( int rtindex ) {
-/**************************************************/
+extern  import_handle   AskRTHandle( rt_class rtindex ) {
+/*******************************************************/
 
-    return( RTHdls[  rtindex  ] );
+    return( RTHdls[rtindex] );
 }
 
 
-extern  void    TellRTHandle( int rtindex, import_handle hdl ) {
-/**************************************************************/
+extern  void    TellRTHandle( rt_class rtindex, import_handle hdl ) {
+/*******************************************************************/
 
-    RTHdls[  rtindex  ] = hdl;
+    RTHdls[rtindex] = hdl;
 }
 
 
-extern  label_handle    RTLabel( int rtindex ) {
-/**********************************************/
+extern  label_handle    RTLabel( rt_class rtindex ) {
+/***************************************************/
 
     label_handle        lbl;
 
-    lbl = RTLbls[  rtindex  ];
+    lbl = RTLbls[rtindex];
     if( lbl == NULL ) {
         lbl = AskRTLabel( (sym_handle *)rtindex );
-        RTLbls[  rtindex  ] = lbl;
+        RTLbls[rtindex] = lbl;
     }
     return( lbl );
 }
 
 
-extern  int     FindRTLabel( label_handle hdl ) {
-/***********************************************/
+extern  rt_class    FindRTLabel( label_handle hdl ) {
+/***************************************************/
 
-    int i;
+    rt_class    rtindex;
 
-    i = 0;
-    while( i < RTSIZE ) {
-        if( RTLbls[  i  ] == hdl ) break;
-        i++;
+    for( rtindex = 0; rtindex < RTSIZE; ++rtindex ) {
+        if( RTLbls[rtindex] == hdl ) break;
     }
-    return( i + BEG_RTNS );
+    return( rtindex );
 }

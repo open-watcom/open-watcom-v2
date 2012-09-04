@@ -54,6 +54,7 @@
 #include "bldcall.h"
 #include "bldins.h"
 #include "blips.h"
+#include "rtclass.h"
 #include "data.h"
 #include "display.h"
 #include "foldins.h"
@@ -1687,8 +1688,8 @@ static  an  TNBitShift( an retv, btn node, bool already_masked )
         U64ShiftR( &mask, 1, &mask );
         U64Not( &mask, &mask );
         if( mask.u._32[I64LO32] == 0xffffffff ) { /* a one-bit signed bit field */
-			unsigned_64 one;
-			I32ToI64( 1, &one );
+                        unsigned_64 one;
+                        I32ToI64( 1, &one );
             retv = BGUnary( O_COMPLEMENT, retv, tipeu );
             retv = BGBinary( O_PLUS, retv, Int64( one ), tipes, TRUE );
         } else if( mask.u._32[I64LO32] == 0xfffff80 ) { /* an eight-bit signed bit field */
@@ -2210,7 +2211,7 @@ static  bool    ModifiesSP( tn node )
 /************************************
     see if the given tree can modify SP in any way - for now,
     just see if we make a call to a routine which modifies SP
-    or use an OP_STK_ALLOC unary expression (might want to check
+    or use an OP_STACK_ALLOC unary expression (might want to check
     results of assignments for SP in the future).
 */
 {
@@ -2229,7 +2230,7 @@ static  bool    ModifiesSP( tn node )
         if( node->rite != NULL && ModifiesSP( node->rite ) ) return( TRUE );
         break;
     case TN_UNARY:
-        if( node->op == OP_STK_ALLOC ) return( TRUE );
+        if( node->op == OP_STACK_ALLOC ) return( TRUE );
     /* fall through */
     default:
         if( node->rite != NULL ) {

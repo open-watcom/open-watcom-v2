@@ -30,22 +30,9 @@
 ****************************************************************************/
 
 
-/*        NB entries up until OK must match typclass.wif */
-
 typedef enum {
-/* misc runtime routines */
-        BEG_RTNS,
-        RT_MEMCPY = BEG_RTNS,
-        RT_TOC_NAME,
-        RT_STK_CRAWL,
-        RT_STK_CRAWL_SIZE,
-        RT_STK_STOMP,
-        RT_EXCEPT_RTN,
-        RT_I4TOD,
-        RT_U4TOD,
-        RT_DTOI4,
-        RT_DTOU4,
-        RT_NOP,
+    #define PICK(e,name,op,class,left,right,result) e,
+    #include "_rtinfo.h"
+    #undef PICK
+    RTSIZE
 } rt_class;
-
-/*  beginning of runtime calls */

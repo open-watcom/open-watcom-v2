@@ -41,7 +41,6 @@
 #include "model.h"
 #include "regset.h"
 #include "rttable.h"
-#include "rtclass.h"
 #include "zoiks.h"
 #include "axpencod.h"
 #include "feprotos.h"
@@ -71,7 +70,7 @@ extern void             OutPDataRec( label_handle label, uint_32 pro_size, uint_
 extern  hw_reg_set      FrameBaseReg(void);
 extern  uint_8          RegTrans(hw_reg_set);
 extern  void            GenCallLabelReg( label_handle lbl, uint reg );
-extern  label_handle    RTLabel( int );
+extern  label_handle    RTLabel( rt_class );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            FactorInt32( signed_32, signed_16 *, signed_16 *, signed_16 * );

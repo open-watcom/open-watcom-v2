@@ -32,7 +32,6 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "rtclass.h"
 #include "regset.h"
 #include "rttable.h"
 #include "model.h"
@@ -54,7 +53,6 @@ extern  void            DelSeg( instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  name            *AllocRegName( hw_reg_set );
-extern  rt_class        AskHow( type_class_def, type_class_def );
 extern  label_handle    AskRTLabel( sym_handle * );
 extern  conflict_node   *NameConflict( instruction *, name * );
 extern  conflict_node   *InMemory( conflict_node * );
@@ -65,8 +63,8 @@ extern  name            *AllocIndex( name *, name *, type_length, type_class_def
 extern  name            *AddrConst( name *, int, constant_class );
 extern  seg_id          AskBackSeg( void );
 extern  void            LookupRoutine( instruction * );
-extern  label_handle    RTLabel( int );
-extern  int             FindRTLabel( label_handle );
+extern  label_handle    RTLabel( rt_class );
+extern  rt_class        FindRTLabel( label_handle );
 extern  instruction     *rMAKECALL( instruction * );
 extern  hw_reg_set      FirstReg( reg_set_index );
 
@@ -75,161 +73,11 @@ extern  hw_reg_set      FirstReg( reg_set_index );
  * these.
  */
 
-rtn_info RTInfo[RT_NOP-BEG_RTNS+1] = {
-/* name    op            class   left            right           result*/
-"__U4FS", OP_CONVERT,   U4,     RL_EAX,         RL_,            RL_EAX,
-"__I4FS", OP_CONVERT,   I4,     RL_EAX,         RL_,            RL_EAX,
-"__U4FD", OP_CONVERT,   U4,     RL_EAX,         RL_,            RL_EDX_EAX,
-"__I4FD", OP_CONVERT,   I4,     RL_EAX,         RL_,            RL_EDX_EAX,
-"__FSFD", OP_CONVERT,   FS,     RL_EAX,         RL_,            RL_EDX_EAX,
-"__FSI4", OP_CONVERT,   FS,     RL_EAX,         RL_,            RL_EAX,
-"__RSI4", OP_ROUND,     FS,     RL_EAX,         RL_,            RL_EAX,
-"__FSU4", OP_CONVERT,   FS,     RL_EAX,         RL_,            RL_EAX,
-"__RSU4", OP_ROUND,     FS,     RL_EAX,         RL_,            RL_EAX,
-"__FDI4", OP_CONVERT,   FD,     RL_EDX_EAX,     RL_,            RL_EAX,
-"__RDI4", OP_ROUND,     FD,     RL_EDX_EAX,     RL_,            RL_EAX,
-"__FDU4", OP_CONVERT,   FD,     RL_EDX_EAX,     RL_,            RL_EAX,
-"__RDU4", OP_ROUND,     FD,     RL_EDX_EAX,     RL_,            RL_EAX,
-"__FDFS", OP_CONVERT,   FD,     RL_EDX_EAX,     RL_,            RL_EAX,
-"__RDFS", OP_ROUND,     FD,     RL_EDX_EAX,     RL_,            RL_EAX,
-
-"__U8FS", OP_CONVERT,   U8,     RL_EDX_EAX,     RL_,            RL_EAX,
-"__I8FS", OP_CONVERT,   I8,     RL_EDX_EAX,     RL_,            RL_EAX,
-"__U8FD", OP_CONVERT,   U8,     RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"__I8FD", OP_CONVERT,   I8,     RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"__FSI8", OP_CONVERT,   FS,     RL_EAX,         RL_,            RL_EDX_EAX,
-"__RSI8", OP_ROUND,     FS,     RL_EAX,         RL_,            RL_EDX_EAX,
-"__FSU8", OP_CONVERT,   FS,     RL_EAX,         RL_,            RL_EDX_EAX,
-"__RSU8", OP_ROUND,     FS,     RL_EAX,         RL_,            RL_EDX_EAX,
-"__FDI8", OP_CONVERT,   FD,     RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"__RDI8", OP_ROUND,     FD,     RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"__FDU8", OP_CONVERT,   FD,     RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"__RDU8", OP_ROUND,     FD,     RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-
-"__U8FS7",OP_CONVERT,   U8,     RL_EDX_EAX,     RL_,            RL_EAX,
-"__U8FD7",OP_CONVERT,   U8,     RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"__FSU87",OP_CONVERT,   FS,     RL_EAX,         RL_,            RL_EDX_EAX,
-"__FDU87",OP_CONVERT,   FD,     RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-
-"__I8M",    OP_MUL,        I8,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__I8D",    OP_DIV,        I8,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__I8D",    OP_MOD,        I8,    RL_EDX_EAX,     RL_FPPARM2,     RL_FPPARM2,
-"__I8RS",   OP_RSHIFT,     I8,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__I8LS",   OP_LSHIFT,     I8,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-
-"__U8M",    OP_MUL,        U8,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__U8D",    OP_DIV,        U8,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__U8D",    OP_MOD,        U8,    RL_EDX_EAX,     RL_FPPARM2,     RL_FPPARM2,
-"__U8RS",   OP_RSHIFT,     U8,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__U8LS",   OP_LSHIFT,     U8,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-
-
-"__FSA",  OP_ADD,       FS,     RL_EAX,         RL_EDX,         RL_EAX,
-"__FSS",  OP_SUB,       FS,     RL_EAX,         RL_EDX,         RL_EAX,
-"__FSM",  OP_MUL,       FS,     RL_EAX,         RL_EDX,         RL_EAX,
-"__FSD",  OP_DIV,       FS,     RL_EAX,         RL_EDX,         RL_EAX,
-"__FSC",  OP_CMP,       FS,     RL_EAX,         RL_EDX,         RL_,
-"__FSN",  OP_NEGATE,    FS,     RL_EAX,         RL_,            RL_EAX,
-"__FDA",  OP_ADD,       FD,     RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__FDS",  OP_SUB,       FD,     RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__FDM",  OP_MUL,       FD,     RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__FDD",  OP_DIV,       FD,     RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__FDC",  OP_CMP,       FD,     RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"__FDN",  OP_NEGATE,    FD,     RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"__CHK",  OP_CALL,       0,     RL_,            RL_,            RL_,
-"__GRO",  OP_CALL,       0,     RL_,            RL_,            RL_,
-"__TNK",  OP_CALL,       0,     RL_,            RL_,            RL_,
-"__TNC",  OP_CALL,       0,     RL_,            RL_,            RL_,
-"__CHP",  OP_CALL,       0,     RL_,            RL_,            RL_,
-"__SCN1", OP_SELECT,     0,     RL_AL,          RL_,            RL_,
-"__SCN2", OP_SELECT,     0,     RL_AX,          RL_,            RL_,
-"__SCN4", OP_SELECT,     0,     RL_EAX,         RL_,            RL_,
-"__GETDS",OP_CALL,       0,     RL_,            RL_,            RL_,
-"__EPI",  OP_CALL,       0,     RL_,            RL_,            RL_,
-"__PRO",  OP_CALL,       0,     RL_,            RL_,            RL_,
-"__PON",  OP_CALL,       0,     RL_,            RL_,            RL_,
-"__POFF", OP_CALL,       0,     RL_,            RL_,            RL_,
-
-"__FlatToFar16",  OP_PTR_TO_FOREIGN,   U4,    RL_EAX,  RL_,     RL_EAX,
-"__Far16ToFlat",  OP_PTR_TO_NATIVE,    U4,    RL_EAX,  RL_,     RL_EAX,
-"__Far16Func2",   OP_CALL,             U4,    RL_EAX,  RL_,     RL_EAX,
-"__Far16Cdecl2",  OP_CALL,             U4,    RL_EAX,  RL_,     RL_EAX,
-"__Far16Pascal2", OP_CALL,             U4,    RL_EAX,  RL_,     RL_EAX,
-"__Far32Func",    OP_CALL,             0,     RL_,     RL_,     RL_,
-
-"IF@DP5DIV",OP_P5DIV,      FD,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"IF@P5DIV", OP_P5DIV,      FS,    RL_EAX,         RL_EDX,         RL_EAX,
-
-"IF@DPOW",  OP_POW,        FD,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"IF@DPOWI", OP_POW,        FD,    RL_EDX_EAX,     RL_ECX,         RL_EDX_EAX,
-"IF@POW",   OP_POW,        FS,    RL_EAX,         RL_EDX,         RL_EAX,
-"IF@POWI",  OP_POW,        FS,    RL_EAX,         RL_EDX,         RL_EAX,
-"IF@IPOW",  OP_POW,        I4,    RL_EAX,         RL_EDX,         RL_EAX,
-
-"IF@DATAN2",OP_ATAN2,      FD,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"IF@DFMOD", OP_FMOD,       FD,    RL_EDX_EAX,     RL_FPPARM2,     RL_EDX_EAX,
-"IF@DLOG",  OP_LOG,        FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DCOS",  OP_COS,        FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DSIN",  OP_SIN,        FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DTAN",  OP_TAN,        FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DSQRT", OP_SQRT,       FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DFABS", OP_FABS,       FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DACOS", OP_ACOS,       FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DASIN", OP_ASIN,       FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DATAN", OP_ATAN,       FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DCOSH", OP_COSH,       FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DEXP",  OP_EXP,        FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DLOG10",OP_LOG10,      FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DSINH", OP_SINH,       FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-"IF@DTANH", OP_TANH,       FD,    RL_EDX_EAX,     RL_,            RL_EDX_EAX,
-
-"IF@ATAN2", OP_ATAN2,      FS,    RL_EAX,         RL_EDX,         RL_EAX,
-"IF@FMOD",  OP_FMOD,       FS,    RL_EAX,         RL_EDX,         RL_EAX,
-"IF@LOG",   OP_LOG,        FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@COS",   OP_COS,        FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@SIN",   OP_SIN,        FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@TAN",   OP_TAN,        FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@SQRT",  OP_SQRT,       FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@FABS",  OP_FABS,       FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@ACOS",  OP_ACOS,       FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@ASIN",  OP_ASIN,       FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@ATAN",  OP_ATAN,       FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@COSH",  OP_COSH,       FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@EXP",   OP_EXP,        FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@LOG10", OP_LOG10,      FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@SINH",  OP_SINH,       FS,    RL_EAX,         RL_,            RL_EAX,
-"IF@TANH",  OP_TANH,       FS,    RL_EAX,         RL_,            RL_EAX,
-
-/* Following are special runtime routines called from the FAST -od codegen */
-
-"__87LDI2", OP_NOP,        0,     RL_,            RL_,            RL_,
-"__87LDI4", OP_NOP,        0,     RL_,            RL_,            RL_,
-"__COPY",   OP_NOP,        0,     RL_,            RL_,            RL_,
-"__FADD",   OP_NOP,        0,     RL_,            RL_,            RL_,
-"__FSUB",   OP_NOP,        0,     RL_,            RL_,            RL_,
-"__FSUBR",  OP_NOP,        0,     RL_,            RL_,            RL_,
-"__FMUL",   OP_NOP,        0,     RL_,            RL_,            RL_,
-"__FDIV",   OP_NOP,        0,     RL_,            RL_,            RL_,
-"__FDIVR",  OP_NOP,        0,     RL_,            RL_,            RL_,
-"__FCMP",   OP_NOP,        0,     RL_,            RL_,            RL_,
-"__FCMPR",  OP_NOP,        0,     RL_,            RL_,            RL_,
-"__TryInit",OP_NOP,        0,     RL_,            RL_,            RL_,
-"__TryUnwind",OP_NOP,      0,     RL_,            RL_,            RL_,
-
-/* End of special runtime routines called from the FAST -od codegen */
-
-"__chipbug",OP_NOP,        0,     RL_,            RL_,            RL_,
-"__fdiv_m32",OP_NOP,       0,     RL_,            RL_,            RL_,
-"__fdiv_m64",OP_NOP,       0,     RL_,            RL_,            RL_,
-"__fdiv_m32r",OP_NOP,      0,     RL_,            RL_,            RL_,
-"__fdiv_m64r",OP_NOP,      0,     RL_,            RL_,            RL_,
-"__fdiv_fpr",OP_NOP,       0,     RL_,            RL_,            RL_,
-"__tls_index",OP_NOP,      0,     RL_,            RL_,            RL_,
-"__tls_array",OP_NOP,      0,     RL_,            RL_,            RL_,
-"__tls_region",OP_NOP,     0,     RL_,            RL_,            RL_,
-
-"__NOP",    OP_NOP,        0,     RL_,            RL_,            RL_ };
-
+rtn_info RTInfo[] = {
+    #define PICK(e,name,op,class,left,right,result) {name, op, class, left, right, result},
+    #include "_rtinfo.h"
+    #undef PICK
+};
 
 static call_class       rt_cclass = 0;
 
@@ -282,11 +130,11 @@ static  byte_seq Scn4ES = {          /* or Scn2 in USE16 */
                         };
 
 
-extern  char    *AskRTName( int rtindex )
-/***************************************/
+extern  char    *AskRTName( rt_class rtindex )
+/********************************************/
 {
     if( _IsTargetModel( INDEXED_GLOBALS ) ) {
-        switch( rtindex + BEG_RTNS ) {
+        switch( rtindex ) {
         case RT_FDA:
             return( "__FXA" );
         case RT_FDS:
@@ -305,7 +153,7 @@ extern  char    *AskRTName( int rtindex )
             return( "IF@XFMOD" );
         }
     }
-    return( RTInfo[  rtindex  ].nam );
+    return( RTInfo[rtindex].nam );
 }
 
 
@@ -338,13 +186,13 @@ extern  name    *ScanCall( tbl_control *table, name *value,
 
     switch( tipe ) {
     case U1:
-        RoutineNum = RT_SCAN1 - BEG_RTNS;
+        RoutineNum = RT_SCAN1;
         break;
     case U2:
-        RoutineNum = RT_SCAN2 - BEG_RTNS;
+        RoutineNum = RT_SCAN2;
         break;
     case U4:
-        RoutineNum = RT_SCAN4 - BEG_RTNS;
+        RoutineNum = RT_SCAN4;
         break;
     }
 

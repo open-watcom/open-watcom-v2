@@ -47,6 +47,7 @@
 #include "dbcue.h"
 #include "import.h"
 #include "feprotos.h"
+#include "rtclass.h"
 
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -116,9 +117,9 @@ typedef struct dbg_seg_info {
 
 
 extern  pointer         Copy(pointer,pointer,uint);
-extern  char            *AskRTName(int);
-extern  void            TellRTHandle(int,import_handle);
-extern  import_handle   AskRTHandle(int);
+extern  char            *AskRTName(rt_class);
+extern  void            TellRTHandle(rt_class,import_handle);
+extern  import_handle   AskRTHandle(rt_class);
 extern  void            TellImportHandle(sym_handle,import_handle);
 extern  import_handle   AskImportHandle(sym_handle);
 extern  void            TellDonePatch(label_handle);
@@ -2910,8 +2911,8 @@ extern  void    OutImport( sym_handle sym, fix_class class, bool rel )
 }
 
 
-extern  void    OutRTImportRel( int rtindex, fix_class class, bool rel )
-/**********************************************************************/
+extern  void    OutRTImportRel( rt_class rtindex, fix_class class, bool rel )
+/***************************************************************************/
 {
     omf_idx     idx;
 
@@ -2930,10 +2931,10 @@ extern  void    OutRTImportRel( int rtindex, fix_class class, bool rel )
 }
 
 
-extern  void    OutRTImport( int rtindex, fix_class class )
-/*********************************************************/
+extern  void    OutRTImport( rt_class rtindex, fix_class class )
+/**************************************************************/
 {
-    OutRTImportRel( rtindex, class, (class==F_OFFSET)||(class==F_LDR_OFFSET) );
+    OutRTImportRel( rtindex, class, (class == F_OFFSET)||(class == F_LDR_OFFSET) );
 }
 
 extern  void    OutBckExport( char *name, bool is_export )

@@ -32,28 +32,24 @@
 #include "standard.h"
 #include "pattern.h"
 #include "coderep.h"
-#include "tables.h"
-#include "opcodes.h"
 #include "regset.h"
 #include "funits.h"
 #include "vergen.h"
 #include "zoiks.h"
 #include "model.h"
 #include "makeins.h"
+#include "rttable.h"
 
 extern  name            *AllocS32Const( signed_32 );
 extern  name            *AllocTemp( type_class_def );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            ReplIns( instruction *, instruction * );
-extern  opcode_entry    *OpcodeTable( table_def );
 extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *TrimConst( name *, type_class_def );
 
-extern  int     RoutineNum;
 
-
-static  opcode_entry    FDTOSTable[] = {
-/**************************************/
+static  opcode_entry    ctable_FDTOS[] = {
+/****************************************/
 /*   from  to   eq        verify        gen             reg           fu*/
 _Un( R,    R,   NONE ),   V_NO,         G_CVTTS,        RG_FLOAT,     FU_NO,
 _Un( C,    ANY, NONE ),   V_NO,         R_FORCEOP1CMEM, RG_FLOAT,     FU_NO,
@@ -62,15 +58,8 @@ _Un( ANY,  M,   NONE ),   V_NO,         R_MOVRESTEMP,   RG_FLOAT,     FU_NO,
 _Un( ANY,  ANY, NONE ),   V_NO,         G_UNKNOWN,      RG_FLOAT_NEED,FU_NO,
 };
 
-
-static instruction *cFDTOS( instruction *ins )
-{
-    ins->table = &FDTOSTable[0];
-    return( ins );
-}
-
-static  opcode_entry    FSTODTable[] = {
-/**************************************/
+static  opcode_entry    ctable_FSTOD[] = {
+/****************************************/
 /*   from  to   eq        verify        gen             reg           fu*/
 _Un( R,    R,   NONE ),   V_NO,         G_MOVE_FP,      RG_FLOAT,     FU_NO,
 _Un( C,    ANY, NONE ),   V_NO,         R_FORCEOP1CMEM, RG_FLOAT,     FU_NO,
@@ -79,15 +68,8 @@ _Un( ANY,  M,   NONE ),   V_NO,         R_MOVRESTEMP,   RG_FLOAT,     FU_NO,
 _Un( ANY,  ANY, NONE ),   V_NO,         G_UNKNOWN,      RG_FLOAT_NEED,FU_NO,
 };
 
-
-static instruction *cFSTOD( instruction *ins ) {
-
-    ins->table = &FSTODTable[0];
-    return( ins );
-}
-
-static  opcode_entry    FI8TODTable[] = {
-/***************************************/
+static  opcode_entry    ctable_FI8TOD[] = {
+/*****************************************/
 /*   from  to   eq        verify        gen             reg           fu*/
 _Un( M,    R,   NONE ),   V_NO,         G_MI8TOFREG,    RG_FLOAT,     FU_NO,
 _Un( M,    M,   NONE ),   V_NO,         R_MOVRESTEMP,   RG_FLOAT,     FU_NO,
@@ -96,22 +78,10 @@ _Un( U,    R,   NONE ),   V_NO,         R_FORCEOP1MEM,  RG_,          FU_NO,
 _Un( ANY,  ANY, NONE ),   V_NO,         G_UNKNOWN,      RG_FLOAT_NEED,FU_NO,
 };
 
+#define ctable_FI8TOS   ctable_FI8TOD
 
-static instruction *cFI8TOD( instruction *ins )
-{
-    ins->table = &FI8TODTable[0];
-    return( ins );
-}
-
-
-static instruction *cFI8TOS( instruction *ins )
-{
-    ins->table = &FI8TODTable[0];
-    return( ins );
-}
-
-static  opcode_entry    FDTOI8Table[] = {
-/***************************************/
+static  opcode_entry    ctable_FDTOI8[] = {
+/*****************************************/
 /*   from  to   eq        verify        gen             reg           fu */
 _Un( R,    M,   NONE ),   V_NO,         G_FREGTOMI8,    RG_FLOAT,     FU_NO,
 _Un( M|C,  M,   NONE ),   V_NO,         R_MOVOP1REG,    RG_FLOAT,     FU_NO,
@@ -120,15 +90,8 @@ _Un( R,    U,   NONE ),   V_NO,         R_FORCERESMEM,  RG_,          FU_NO,
 _Un( ANY,  ANY, NONE ),   V_NO,         G_UNKNOWN,      RG_FLOAT_NEED,FU_NO,
 };
 
-static instruction *cFDTOI8( instruction *ins )
-{
-    ins->table = &FDTOI8Table[0];
-    return( ins );
-}
-
-
-static  opcode_entry    FDTOI4Table[] = {
-/***************************************/
+static  opcode_entry    ctable_FDTOI4[] = {
+/*****************************************/
 /*   from  to   eq        verify        gen             reg           fu */
 _Un( R,    M,   NONE ),   V_NO,         G_FREGTOMI8,    RG_FLOAT,     FU_NO,
 _Un( M|C,  M,   NONE ),   V_NO,         R_MOVOP1REG,    RG_FLOAT,     FU_NO,
@@ -137,35 +100,15 @@ _Un( R,    U,   NONE ),   V_NO,         R_FORCERESMEM,  RG_,          FU_NO,
 _Un( ANY,  ANY, NONE ),   V_NO,         G_UNKNOWN,      RG_FLOAT_NEED,FU_NO,
 };
 
-static instruction *cFDTOI4( instruction *ins )
-{
-    ins->table = &FDTOI4Table[0];
-    return( ins );
-}
-
-
-typedef enum {
-    FIRST_METHOD = XX,  // last typeclass from typclass.h
-    NA,
-    OK,
-    #define _C_( a )    a,
-    #include "convert.h"
-    #undef _C_
-    LST
-} conv_method;
-
-typedef instruction *(*convert_rtn)( instruction * );
-
-#define CONVERT_ROUTINE( x, gen, reg )                                                          \
-static  opcode_entry    ctable_##x[] = {                                                        \
-/**************************************/                                                        \
-/*      from    to      eq              verify          gen             reg       fu */         \
-_Un(    R,      R,      NONE ),         V_NO,           gen,            RG_##reg, FU_ALU,       \
-_Un(    R,      M,      NONE ),         V_NO,           R_MOVRESREG,    RG_##reg, FU_NO,        \
-_Un(    M,      ANY,    NONE ),         V_NO,           R_MOVOP1REG,    RG_##reg, FU_NO,        \
-_Un(    ANY,    ANY,    NONE ),         V_NO,           G_UNKNOWN,      RG_##reg##_NEED, FU_NO, \
-};                                                                                              \
-static instruction *c##x( instruction *ins ) { ins->table = &ctable_##x[0]; return( ins ); }
+#define CONVERT_ROUTINE( x, gen, reg )                                                           \
+static  opcode_entry    ctable_##x[] = {                                                         \
+/**************************************/                                                         \
+/*      from    to      eq              verify          gen             reg              fu */   \
+_Un(    R,      R,      NONE ),         V_NO,           gen,            RG_##reg,        FU_ALU, \
+_Un(    R,      M,      NONE ),         V_NO,           R_MOVRESREG,    RG_##reg,        FU_NO,  \
+_Un(    M,      ANY,    NONE ),         V_NO,           R_MOVOP1REG,    RG_##reg,        FU_NO,  \
+_Un(    ANY,    ANY,    NONE ),         V_NO,           G_UNKNOWN,      RG_##reg##_NEED, FU_NO,  \
+};
 
 CONVERT_ROUTINE( Z1TO2, G_ZERO, BW );
 CONVERT_ROUTINE( Z1TO4, G_ZERO, BD );
@@ -193,15 +136,11 @@ static opcode_entry ctable_C8TO4[] = {
 _Un(    ANY,    ANY,    NONE ),         V_NO,           R_MOVELOW,      RG_,      FU_NO,
 };
 
-static instruction *cC8TO4( instruction *ins ) { ins->table = ctable_C8TO4; return( ins ); }
-
 static opcode_entry ctable_S4TO8[] = {
 /************************************/
 /*      from    to      eq              verify          gen             reg       fu */
 _Un(    ANY,    ANY,    NONE ),         V_NO,           R_SEX_4TO8,     RG_,      FU_NO,
 };
-
-static instruction *cS4TO8( instruction *ins ) { ins->table = ctable_S4TO8; return( ins ); }
 
 static opcode_entry ctable_Z4TO8[] = {
 /************************************/
@@ -209,33 +148,67 @@ static opcode_entry ctable_Z4TO8[] = {
 _Un(    ANY,    ANY,    NONE ),         V_NO,           R_CLRHI_4,      RG_,      FU_NO,
 };
 
-static instruction *cZ4TO8( instruction *ins ) { ins->table = ctable_Z4TO8; return( ins ); }
+#define CONVERSIONS \
+    _C_( C8TO4 ) \
+    _C_( C8TO2 ) \
+    _C_( C8TO1 ) \
+    _C_( C4TO2 ) \
+    _C_( C4TO1 ) \
+    _C_( C2TO1 ) \
+    _C_( Z1TO2 ) \
+    _C_( Z1TO4 ) \
+    _C_( Z1TO8 ) \
+    _C_( Z2TO4 ) \
+    _C_( Z2TO8 ) \
+    _C_( Z4TO8 ) \
+    _C_( S1TO2 ) \
+    _C_( S1TO4 ) \
+    _C_( S1TO8 ) \
+    _C_( S2TO4 ) \
+    _C_( S2TO8 ) \
+    _C_( S4TO8 ) \
+    _C_( FDTOS ) \
+    _C_( FSTOD ) \
+    _C_( FI8TOS ) \
+    _C_( FI8TOD ) \
+    _C_( FDTOI4 ) \
+    _C_( FDTOI8 )
 
-static convert_rtn ConvertRoutines[] = {
-    #define _C_( a )    c##a,
-    #include "convert.h"
+typedef enum {
+    OK = XX,            // last typeclass from typclass.h
+    #define _C_( a )    a,
+    CONVERSIONS
+    #undef _C_
+    BAD
+} conv_method;
+
+static opcode_entry     *CvtAddr[] = {
+    #define _C_( a )    ctable_##a,
+    CONVERSIONS
     #undef _C_
 };
 
+#define __x__   BAD
+
 static  conv_method         CvtTable[] = {
 /*                               from*/
-/*U1   I1     U2     I2     U4     I4     U8     I8     CP    PT    FS     FD     FL         to*/
-OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1, C4TO1,C4TO1,U4,    U4,    U4,     /* U1*/
-OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1, C4TO1,C4TO1,I4,    I4,    I4,     /* I1*/
-Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2, C4TO2,C4TO2,U4,    U4,    U4,     /* U2*/
-Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2, C4TO2,C4TO2,I4,    I4,    I4,     /* I2*/
-Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,   OK,   FD,    NA,    NA,     /* U4*/
-Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,   OK,   FD,    FDTOI4,NA,     /* I4*/
-Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    S4TO8,S4TO8,NA,    NA,    NA,     /* U8*/
-Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    S4TO8,S4TO8,FD,    FDTOI8,NA,     /* I8*/
-NA,    NA,    NA,    NA,    OK,    OK,    NA,    NA,    OK,   OK,   NA,    NA,    NA,     /* CP*/
-NA,    NA,    NA,    NA,    OK,    OK,    NA,    NA,    OK,   OK,   NA,    NA,    NA,     /* PT*/
-I8,    I8,    I8,    I8,    I8,    I8,    NA,    FD,    NA,   NA,   OK,    FDTOS, FDTOS,  /* FS*/
-I8,    I8,    I8,    I8,    I8,    I8,    NA,    FI8TOD,NA,   NA,   FSTOD, OK,    OK,     /* FD*/
-I8,    I8,    I8,    I8,    I8,    I8,    NA,    FI8TOD,NA,   NA,   FSTOD, OK,    OK,     /* FL*/
+/*U1   I1     U2     I2     U4     I4     U8     I8      CP     PT     FS     FD      FL         to*/
+OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1,  C4TO1, C4TO1, U4,    U4,     U4,     /* U1*/
+OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1,  C4TO1, C4TO1, I4,    I4,     I4,     /* I1*/
+Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2,  C4TO2, C4TO2, U4,    U4,     U4,     /* U2*/
+Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2,  C4TO2, C4TO2, I4,    I4,     I4,     /* I2*/
+Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4,  OK,    OK,    FD,    __x__,  __x__,  /* U4*/
+Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4,  OK,    OK,    FD,    FDTOI4, __x__,  /* I4*/
+Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,     S4TO8, S4TO8, __x__, __x__,  __x__,  /* U8*/
+Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,     S4TO8, S4TO8, FD,    FDTOI8, __x__,  /* I8*/
+__x__, __x__, __x__, __x__, OK,    OK,    __x__, __x__,  OK,    OK,    __x__, __x__,  __x__,  /* CP*/
+__x__, __x__, __x__, __x__, OK,    OK,    __x__, __x__,  OK,    OK,    __x__, __x__,  __x__,  /* PT*/
+I8,    I8,    I8,    I8,    I8,    I8,    __x__, FD,     __x__, __x__, OK,    FDTOS,  FDTOS,  /* FS*/
+I8,    I8,    I8,    I8,    I8,    I8,    __x__, FI8TOD, __x__, __x__, FSTOD, OK,     OK,     /* FD*/
+I8,    I8,    I8,    I8,    I8,    I8,    __x__, FI8TOD, __x__, __x__, FSTOD, OK,     OK,     /* FL*/
 };
 
-extern conv_method AskHow( type_class_def fr, type_class_def to )
+static conv_method AskHow( type_class_def fr, type_class_def to )
 /****************************************************************
     return the conversion method required to convert from "fr" to "to"
 */
@@ -253,7 +226,7 @@ extern bool CvtOk( type_class_def fr, type_class_def to )
 {
     if( fr == XX ) return( FALSE );
     if( to == XX ) return( FALSE );
-    if( AskHow( fr, to ) != NA ) return( TRUE );
+    if( AskHow( fr, to ) != BAD ) return( TRUE );
     return( FALSE );
 }
 
@@ -279,7 +252,7 @@ extern instruction *rDOCVT( instruction *ins )
     } else {
         how = AskHow( ins->base_type_class, ins->type_class );
     }
-    if( how < NA ) {
+    if( how < OK ) {
         temp = AllocTemp( how );
         new_ins = MakeConvert( src, temp, how, ins->base_type_class );
         ins->operands[0] = temp;
@@ -287,8 +260,9 @@ extern instruction *rDOCVT( instruction *ins )
         new_ins->table = NULL;
         PrefixIns( ins, new_ins );
         UpdateLive( new_ins, ins );
-    } else if( how < LST && how > OK ) {
-        new_ins = ConvertRoutines[how - OK - 1]( ins );
+    } else if( how < BAD && how > OK ) {
+        ins->table = CvtAddr[how - ( OK + 1 )];
+        new_ins = ins;
     } else {
         new_ins = MakeMove( src, dst, ins->type_class );
         ReplIns( ins, new_ins );
@@ -297,4 +271,12 @@ extern instruction *rDOCVT( instruction *ins )
         }
     }
     return( new_ins );
+}
+
+extern void LookupConvertRoutine( instruction *ins )
+/**************************************************/
+{
+    ins = ins;
+    RoutineNum = RT_NOP;
+    _Zoiks( ZOIKS_101 );
 }

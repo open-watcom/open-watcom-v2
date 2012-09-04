@@ -41,7 +41,6 @@
 #include "cfloat.h"
 #include "regset.h"
 #include "rttable.h"
-#include "rtclass.h"
 #include "feprotos.h"
 #include "types.h"
 #include "makeins.h"
@@ -88,7 +87,6 @@ extern  hw_reg_set      ScratchReg( void );
 extern  hw_reg_set      StackReg( void );
 extern  hw_reg_set      VarargsHomePtr( void );
 extern  an              RegName( hw_reg_set, type_def *);
-extern  label_handle    RTLabel( int );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 
 extern    bool          BlockByBlock;

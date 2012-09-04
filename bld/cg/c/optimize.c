@@ -57,127 +57,23 @@ extern  bool            ReDefinedBy(instruction*,name*);
 extern  void            FreeJunk(block*);
 
 typedef enum {
-        MOVEABLE        = 0x01,
-        SWAPABLE        = 0x02,
-        SIDE_EFFECT     = 0x04,
-        PUSHABLE        = 0x08
+    NONE            = 0x00,
+    MOVEABLE        = 0x01,
+    SWAPABLE        = 0x02,
+    SIDE_EFFECT     = 0x04,
+    PUSHABLE        = 0x08
 } opcode_attr;
 
 static  opcode_attr OpAttrs[LAST_OP-FIRST_OP+1] = {
 /********************************
     define the attributes of any given opcode
 */
-        FALSE,                          /* OP_NOP,*/
-/* NOP's are always where they are for a good reason*/
-                                        /*   binary operators*/
-
-        PUSHABLE,                       /* OP_ADD,*/
-        MOVEABLE,                       /* OP_EXT_ADD,*/
-        PUSHABLE,                       /* OP_SUB,*/
-        MOVEABLE,                       /* OP_EXT_SUB,*/
-        MOVEABLE +      SWAPABLE,       /* OP_MUL,*/
-        MOVEABLE +      SWAPABLE,       /* OP_EXT_MUL,*/
-        MOVEABLE +      SWAPABLE,       /* OP_DIV,*/
-        MOVEABLE +      SWAPABLE,       /* OP_MOD,*/
-        MOVEABLE +      SWAPABLE,       /* OP_AND,*/
-        MOVEABLE +      SWAPABLE,       /* OP_OR,*/
-        MOVEABLE +      SWAPABLE,       /* OP_XOR,*/
-        MOVEABLE +      SWAPABLE,       /* OP_RSHIFT,*/
-        MOVEABLE +      SWAPABLE,       /* OP_LSHIFT,*/
-        MOVEABLE +      SWAPABLE,       /* OP_POW */
-        MOVEABLE +      SWAPABLE,       /* OP_P5FDIV */
-        MOVEABLE +      SWAPABLE,       /* OP_ATAN2 */
-        MOVEABLE +      SWAPABLE,       /* OP_FMOD */
-        MOVEABLE +      SWAPABLE,       /* OP_NEGATE,*/
-        MOVEABLE +      SWAPABLE,       /* OP_COMPLEMENT,*/
-        MOVEABLE +      SWAPABLE,       /* OP_LOG */
-        MOVEABLE +      SWAPABLE,       /* OP_COS */
-        MOVEABLE +      SWAPABLE,       /* OP_SIN */
-        MOVEABLE +      SWAPABLE,       /* OP_TAN */
-        MOVEABLE +      SWAPABLE,       /* OP_SQRT */
-        MOVEABLE +      SWAPABLE,       /* OP_FABS */
-        MOVEABLE +      SWAPABLE,       /* OP_ACOS */
-        MOVEABLE +      SWAPABLE,       /* OP_ASIN */
-        MOVEABLE +      SWAPABLE,       /* OP_ATAN */
-        MOVEABLE +      SWAPABLE,       /* OP_COSH */
-        MOVEABLE +      SWAPABLE,       /* OP_EXP */
-        MOVEABLE +      SWAPABLE,       /* OP_LOG10 */
-        MOVEABLE +      SWAPABLE,       /* OP_SINH */
-        MOVEABLE +      SWAPABLE,       /* OP_TANH */
-        MOVEABLE +      SWAPABLE,       /* OP_PTR_TO_NATIVE  */
-        MOVEABLE +      SWAPABLE,       /* OP_PTR_TO_FOREIGN  */
-        FALSE,                          /* OP_SLACK */
-
-        MOVEABLE +      SWAPABLE,       /* OP_CONVERT,*/
-        MOVEABLE +      SWAPABLE,       /* OP_LA,*/
-        MOVEABLE +      SWAPABLE,       /* OP_CAREFUL_LA*/
-        MOVEABLE +      SWAPABLE,       /* OP_ROUND,*/
-
-        MOVEABLE +      SWAPABLE,       /* OP_MOV,*/
-
-                                        /*   Calling operators*/
-
-        SIDE_EFFECT,                    /* OP_CALL_INDIRECT,*/
-                        SWAPABLE,       /* OP_PUSH,*/
-                        SWAPABLE,       /* OP_POP,*/
-        FALSE,                          /* OP_PARM_DEF,*/
-
-                                        /*   Select statement operator*/
-
-        FALSE,                          /* OP_SELECT*/
-
-/*   Condition code setting instructions (no result, third operand is a label)*/
-
-        SIDE_EFFECT,                    /* OP_BIT_TEST_TRUE,*/
-        SIDE_EFFECT,                    /* OP_BIT_TEST_FALSE,*/
-        SIDE_EFFECT,                    /* OP_CMP_EQUAL,*/
-        SIDE_EFFECT,                    /* OP_CMP_NOT_EQUAL,*/
-        SIDE_EFFECT,                    /* OP_CMP_GREATER,*/
-        SIDE_EFFECT,                    /* OP_CMP_LESS_EQUAL,*/
-        SIDE_EFFECT,                    /* OP_CMP_LESS,*/
-        SIDE_EFFECT,                    /* OP_CMP_GREATER_EQUAL,*/
-
-/*   Operator whose argument is a label*/
-
-        SIDE_EFFECT,                    /* OP_CALL,*/
-
-        SIDE_EFFECT,                    /* OP_SET_EQUAL,*/
-        SIDE_EFFECT,                    /* OP_SET_NOT_EQUAL,*/
-        SIDE_EFFECT,                    /* OP_SET_GREATER,*/
-        SIDE_EFFECT,                    /* OP_SET_LESS_EQUAL,*/
-        SIDE_EFFECT,                    /* OP_SET_LESS,*/
-        SIDE_EFFECT,                    /* OP_SET_GREATER_EQUAL,*/
-
-        FALSE,                          /* OP_DEBUG_INFO */
-        FALSE,                          /* OP_CHEAP_NOP */
-
-        FALSE,                          /* OP_LOAD_UNALIGNED */
-        FALSE,                          /* OP_STORE_UNALIGNED */
-        FALSE,                          /* OP_EXTRACT_LOW */
-        FALSE,                          /* OP_EXTRACT_HIGH */
-        FALSE,                          /* OP_INSERT_LOW */
-        FALSE,                          /* OP_INSERT_HIGH */
-        FALSE,                          /* OP_MASK_LOW */
-        FALSE,                          /* OP_MASK_HIGH */
-        FALSE,                          /* OP_ZAP */
-        FALSE,                          /* OP_ZAP_NOT */
-
-        FALSE,                          /* OP_STK_ALLOC */
-        FALSE,                          /* OP_VA_START */
-
-/* add opcodes here */
-
-        FALSE,                          /* OP_SLACK */
-        FALSE,                          /* OP_SLACK */
-        FALSE,                          /* OP_SLACK */
-        FALSE,                          /* OP_SLACK */
-        FALSE,                          /* OP_SLACK */
-        FALSE,                          /* OP_SLACK */
-        FALSE,                          /* OP_SLACK */
-        FALSE,                          /* OP_SLACK */
-
-        FALSE                           /* OP_BLOCK */
-    };
+    #define PICK(e,i,d1,d2,ot,pnum,attr)  attr,
+    #define ONLY_INTERNAL_CGOPS
+    #include "cgops.h"
+    #undef ONLY_INTERNAL_CGOPS
+    #undef PICK
+};
 
 
 #define _IsIns( ins, attr )        ( OpAttrs[ ins->head.opcode ] & attr )

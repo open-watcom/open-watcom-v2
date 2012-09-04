@@ -42,13 +42,14 @@
 #include "zoiks.h"
 #include "fppatch.h"
 #include "feprotos.h"
+#include "rtclass.h"
 
 extern  void            DbgSetBase( void );
 extern  void            OutAbsPatch(abspatch*,patch_attr);
 extern  void            OutFPPatch(fp_patches);
 extern  void            OutImport(sym_handle,fix_class,bool);
-extern  void            OutRTImport(int,fix_class);
-extern  void            OutRTImportRel(int,fix_class,bool rel);
+extern  void            OutRTImport(rt_class,fix_class);
+extern  void            OutRTImportRel(rt_class,fix_class,bool rel);
 extern  void            OutSelect(bool);
 extern  bool            AskIfRTLabel(label_handle);
 extern  sym_handle      AskForLblSym(label_handle);
@@ -404,7 +405,7 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
 
     sym = AskForLblSym( lbl );
     if( AskIfRTLabel( lbl ) ) {
-        OutRTImport( (int)sym, f );
+        OutRTImport( (rt_class)(uintptr_t)sym, f );
         if( class & ATTR_FAR ) {
             _OutFarD( 0, 0 );
         } else {
@@ -516,7 +517,7 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
             lbl = *(pointer *)cur;
             cur += sizeof( pointer );
             if( AskIfRTLabel( lbl ) ) {
-                OutRTImportRel( (int)AskForLblSym( lbl ), F_OFFSET, FALSE );
+                OutRTImportRel( (rt_class)(uintptr_t)AskForLblSym( lbl ), F_OFFSET, FALSE );
                 val = 0;
             } else {
                 if( AskIfCommonLabel( lbl ) ) {
@@ -624,7 +625,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
         lbl = oc->oc_handle.handle;
         sym = AskForLblSym( lbl );
         if( AskIfRTLabel( lbl ) ) {
-            OutRTImport( (int)sym, F_OFFSET );
+            OutRTImport( (rt_class)(uintptr_t)sym, F_OFFSET );
             lc = 0;
         } else if( AskIfCommonLabel( lbl ) ) {
             OutSpecialCommon( (import_handle)sym, F_OFFSET, FALSE );

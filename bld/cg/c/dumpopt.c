@@ -42,7 +42,7 @@ extern  void            DumpInt(int);
 extern  void            DumpByte(byte);
 extern  bool            AskIfRTLabel( label_handle );
 extern  bool            AskIfCommonLabel( label_handle );
-extern  char            *AskRTName( int );
+extern  char            *AskRTName( rt_class );
 
 static  void            DoData( oc_entry *instr );
 static  void            DoLabel( oc_handle *instr );
@@ -112,7 +112,7 @@ static  bool    LblName( code_lbl *lbl ) {
     if( lbl->lbl.sym == NULL ) return( TRUE );
     DumpLiteral( "(" );
     if( AskIfRTLabel( lbl ) ) {
-        DumpXString( AskRTName( (int)lbl->lbl.sym ) );
+        DumpXString( AskRTName( (rt_class)(uintptr_t)lbl->lbl.sym ) );
     } else if( AskIfCommonLabel( lbl ) ) {
         DumpLiteral( "Common import => [" );
         DumpInt( (int)lbl->lbl.sym );

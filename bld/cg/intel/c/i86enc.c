@@ -45,7 +45,6 @@
 #include "objrep.h"
 #include "regset.h"
 #include "rttable.h"
-#include "rtclass.h"
 #include "zoiks.h"
 #include "zeropage.h"
 #include "fppatch.h"
@@ -66,7 +65,7 @@ extern  hw_reg_set      CalcSegment(sym_handle,cg_class);
 extern  void            EmitDbgInfo(instruction*);
 extern  void            DoCall(label_handle,bool,bool,oc_class);
 extern  void            RTCall( rt_class rtn, oc_class pop_bit );
-extern  label_handle    RTLabel(int);
+extern  label_handle    RTLabel(rt_class);
 extern  void            GenMJmp(instruction*);
 extern  void            GenRJmp(instruction*);
 extern  void            GenICall(instruction*);
@@ -834,7 +833,7 @@ static  void    DoP5Divide( instruction *ins ) {
     LayOpword( 0x06f6 );        // test byte ptr L1,1
 #endif
     ILen += WORD_SIZE;
-    DoLblRef( RTLabel( RT_BUGLIST - BEG_RTNS ), AskBackSeg(), 0, OFST );
+    DoLblRef( RTLabel( RT_BUGLIST ), AskBackSeg(), 0, OFST );
     AddWData( 1, U1 );
     _Emit;
     if( used_ds ) {
@@ -1361,7 +1360,7 @@ extern  void    GenObjCode( instruction *ins ) {
             LayOpword( 0xFBD9 );
             break;
         case G_FCHOP:
-            DoCall( RTLabel( RT_CHOP - BEG_RTNS ),
+            DoCall( RTLabel( RT_CHOP ),
                 TRUE, _IsTargetModel( BIG_CODE ), EMPTY );
             break;
         case G_FTST:

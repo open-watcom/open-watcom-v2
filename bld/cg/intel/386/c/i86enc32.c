@@ -641,7 +641,7 @@ extern  void            OutDataByte( byte );
 extern  void            OutDataInt( int );
 extern  void            OutDataLong(long);
 extern  void            OutDBytes(unsigned_32,byte*);
-extern  void            OutRTImport( int, fix_class );
+extern  void            OutRTImport( rt_class, fix_class );
 extern  void            TellKeepLabel( label_handle );
 extern  void            OutReloc( seg_id, fix_class, bool );
 extern  void            TellByPassOver( void );
@@ -665,7 +665,7 @@ extern  pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remov
     OutDataByte( 0xb9 );                /* mov cx,# */
     OutDataInt( parms_size );
     OutDataByte( 0x9a );
-    OutRTImport( RT_Far32Func - BEG_RTNS, F_FAR16 );
+    OutRTImport( RT_Far32Func, F_FAR16 );
     OutDataInt( 0 );
     OutDataInt( 0 );
     if( remove_parms ) {

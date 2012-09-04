@@ -34,33 +34,18 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "regset.h"
-#include "rtclass.h"
 #include "rttable.h"
 #include "zoiks.h"
 
-extern    int   RoutineNum;
-
-#define RTSIZE (RT_NOP - BEG_RTNS + 1)           /* includes NOP*/
-
-#define OP_CMP    OP_CMP_EQUAL
-
 rtn_info RTInfo[] = {
-/* name                 op              class   left      right  result*/
-"_WtcMemCopy",          OP_MOV,         XX,     RL_PARM_4,RL_PARM2_4,RL_RET_4,
-".toc",                 OP_MOV,         XX,     RL_,RL_,RL_,
-"_WtcStkCrawl",         OP_STK_ALLOC,   XX,     RL_,RL_,RL_,
-"_WtcStkCrawlSize",     OP_STK_ALLOC,   XX,     RL_,RL_,RL_,
-"_WtcStkScribble",      OP_CALL,        XX,     RL_,RL_,RL_,
-"__ExceptionFilter",    OP_CALL,        XX,     RL_,RL_,RL_,
-"_WtcI4TOD",            OP_CONVERT,     FD,     RL_PARM_4,RL_,RL_RET_F,
-"_WtcU4TOD",            OP_CONVERT,     FD,     RL_PARM_4,RL_,RL_RET_F,
-"_WtcDTOI4",            OP_CONVERT,     I4,     RL_PARM_F,RL_,RL_RET_4,
-"_WtcDTOU4",            OP_CONVERT,     U4,     RL_PARM_F,RL_,RL_RET_4,
-"__NOP", OP_NOP };
+    #define PICK(e,name,op,class,left,right,result) {name, op, class, left, right, result},
+    #include "_rtinfo.h"
+    #undef PICK
+};
 
-extern  char    *AskRTName( int rtindex ) {
-/*****************************************/
-    return( RTInfo[  rtindex  ].nam );
+extern  char    *AskRTName( rt_class rtindex ) {
+/**********************************************/
+    return( RTInfo[rtindex].nam );
 }
 
 extern  bool    RTLeaveOp2( instruction *ins ) {

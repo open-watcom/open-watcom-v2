@@ -58,7 +58,7 @@ extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            SuffixIns( instruction *, instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            ReplIns( instruction *, instruction * );
-extern  label_handle    RTLabel( int );
+extern  label_handle    RTLabel( rt_class );
 extern  void            ChangeType( instruction *, type_class_def );
 
 extern  instruction     *rSWAPCMP( instruction * );
@@ -227,8 +227,8 @@ extern instruction *rLOAD_4U( instruction *ins )
 }
 
 
-static instruction *CheapCall( instruction *ins, int rt_call, name *p1, name *p2 )
-/********************************************************************************/
+static instruction *CheapCall( instruction *ins, rt_class rt_call, name *p1, name *p2 )
+/*************************************************************************************/
 {
     instruction         *call;
     hw_reg_set          reg;

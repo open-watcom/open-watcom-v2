@@ -33,6 +33,7 @@
 #include "standard.h"
 #include "coderep.h"
 #include "cgswitch.h"
+#include "rtclass.h"
 #include "data.h"
 
 block                   *HeadBlock;
@@ -42,7 +43,7 @@ int                     InsId;
 int                     TempId;
 pointer                 ConfList;
 // pointer                 CurrProc;
-int                     RoutineNum;
+rt_class                RoutineNum;
 pointer                 Names[N_INDEXED+1];
 pointer                 LastTemp;
 pointer                 DummyIndex;

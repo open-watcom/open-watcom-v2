@@ -30,17 +30,20 @@
 ****************************************************************************/
 
 
-#include "standard.h"
-#include "coderep.h"
-#include "regset.h"
-#include "opcodes.h"
-#include "rttable.h"
-#include "rtclass.h"
+/*        NB entries up until OK must match typclass.wif */
 
-extern  rt_class        AskHow(type_class_def,type_class_def);
+/*  beginning of runtime calls */
 
-extern  void    LookupConvertRoutine( instruction *ins ) {
-/********************************************************/
+/*    enum                name                  op              class   left        right       result */
+PICK( RT_MEMCPY,          "_WtcMemCopy",        OP_MOV,         XX,     RL_PARM_4,  RL_PARM2_4, RL_RET_4 )
+PICK( RT_TOC_NAME,        ".toc",               OP_MOV,         XX,     RL_,        RL_,        RL_ )
+PICK( RT_STK_CRAWL,       "_WtcStkCrawl",       OP_STACK_ALLOC, XX,     RL_,        RL_,        RL_ )
+PICK( RT_STK_CRAWL_SIZE,  "_WtcStkCrawlSize",   OP_STACK_ALLOC, XX,     RL_,        RL_,        RL_ )
+PICK( RT_STK_STOMP,       "_WtcStkScribble",    OP_CALL,        XX,     RL_,        RL_,        RL_ )
+PICK( RT_EXCEPT_RTN,      "__ExceptionFilter",  OP_CALL,        XX,     RL_,        RL_,        RL_ )
+PICK( RT_I4TOD,           "_WtcI4TOD",          OP_CONVERT,     FD,     RL_PARM_4,  RL_,        RL_RET_F )
+PICK( RT_U4TOD,           "_WtcU4TOD",          OP_CONVERT,     FD,     RL_PARM_4,  RL_,        RL_RET_F )
+PICK( RT_DTOI4,           "_WtcDTOI4",          OP_CONVERT,     I4,     RL_PARM_F,  RL_,        RL_RET_4 )
+PICK( RT_DTOU4,           "_WtcDTOU4",          OP_CONVERT,     U4,     RL_PARM_F,  RL_,        RL_RET_4 )
+PICK( RT_NOP,             "__NOP",              OP_NOP,         0,      RL_,        RL_,        RL_ )
 
-    RoutineNum = AskHow( ins->base_type_class, ins->type_class ) - BEG_RTNS;
-}

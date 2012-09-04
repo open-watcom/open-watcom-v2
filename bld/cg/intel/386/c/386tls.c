@@ -43,7 +43,7 @@
 #include "feprotos.h"
 #include "makeins.h"
 
-extern  label_handle    RTLabel( int );
+extern  label_handle    RTLabel( rt_class );
 extern  name            *AllocRegName( hw_reg_set );
 extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocMemory( pointer, type_length, cg_class, type_class_def );
@@ -52,7 +52,6 @@ extern  name            *AllocIndex( name *, name *, type_length, type_class_def
 extern  name            *ScaleIndex( name *, name *,
                                 type_length, type_class_def, type_length, int, i_flags );
 extern  void            PrefixIns( instruction *, instruction * );
-extern  label_handle    RTLabel( int );
 
 extern  type_length     TypeClassSize[];
 extern  proc_def        *CurrProc;
@@ -60,14 +59,14 @@ extern  bool            BlockByBlock;
 extern  block           *HeadBlock;
 
 
-static  name    *RTMemRef( int rt_index )
-/****************************************
+static  name    *RTMemRef( rt_class rt_index )
+/*********************************************
     create a memory_name to reference the given runtime label.
 */
 {
     label_handle        hdl;
 
-    hdl = RTLabel( rt_index - BEG_RTNS );
+    hdl = RTLabel( rt_index );
     return( AllocMemory( hdl, 0, CG_LBL, WD ) );
 }
 

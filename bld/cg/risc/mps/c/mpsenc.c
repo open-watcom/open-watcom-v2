@@ -72,7 +72,7 @@ extern bool             AskIfRTLabel( code_lbl * );
 extern void             InputOC( any_oc * );
 extern opcode_defs      FlipOpcode( opcode_defs );
 extern void             FactorInt32( signed_32 val, signed_16 *, signed_16 *, signed_16 * );
-extern label_handle     RTLabel( int );
+extern label_handle     RTLabel( rt_class );
 extern  void            GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
 
 extern type_class_def   Unsigned[];
@@ -738,7 +738,7 @@ static  bool    encodeThreadDataRef( instruction *ins )
         to be v0 when foo is a piece of thread-local storage.
         This is done in FixMemRefs.
     */
-    tls_index = RTLabel( RT_TLS_INDEX - BEG_RTNS );
+    tls_index = RTLabel( RT_TLS_INDEX );
 #if 0
     GenMEMINSRELOC( 0x09, MIPS_GPR_SCRATCH, MIPS_ZERO_SINK, 0,
                 tls_index, OWL_RELOC_HALF_HI );

@@ -38,7 +38,6 @@
 #include "optopts.h"
 #include "optlbl.h"
 #include "rttable.h"
-#include "rtclass.h"
 #include "zoiks.h"
 
 void StartBlockProfiling( block *blk ) {

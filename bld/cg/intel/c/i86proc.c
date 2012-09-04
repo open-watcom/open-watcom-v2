@@ -75,7 +75,7 @@ extern  void        RelocParms( void );
 extern  type_length AdjustBase( void );
 extern  hw_reg_set  SaveRegs( void );
 extern  void        DoCall(label_handle,bool,bool,oc_class);
-extern  label_handle    RTLabel(int);
+extern  label_handle    RTLabel(rt_class);
 extern  void        GenUnkPush(pointer);
 extern  void        GenPushC(signed_32);
 extern  void        GenUnkMov(hw_reg_set,pointer);
@@ -440,7 +440,7 @@ static void FindIfExported( void ) {
 extern void RTCall( rt_class rtn, oc_class pop_bit ) {
 /****************************************************/
 
-    DoCall( RTLabel( rtn - BEG_RTNS ), TRUE, _IsTargetModel( BIG_CODE ), pop_bit );
+    DoCall( RTLabel( rtn ), TRUE, _IsTargetModel( BIG_CODE ), pop_bit );
 }
 
 

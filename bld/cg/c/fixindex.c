@@ -53,84 +53,11 @@ static byte NumTab[LAST_OP-FIRST_OP+1] = {
     Give the number of operand for each opcode. Anything above this
     is probably a segment override tagging along for the ride.
 */
-        0,                                      /* OP_NOP*/
-        2,                                      /* OP_ADD*/
-        2,                                      /* OP_EXT_ADD*/
-        2,                                      /* OP_SUB*/
-        2,                                      /* OP_EXT_SUB*/
-        2,                                      /* OP_MUL*/
-        2,                                      /* OP_EXT_MUL*/
-        2,                                      /* OP_DIV*/
-        2,                                      /* OP_MOD*/
-        2,                                      /* OP_AND*/
-        2,                                      /* OP_OR*/
-        2,                                      /* OP_XOR*/
-        2,                                      /* OP_RSHIFT*/
-        2,                                      /* OP_LSHIFT*/
-        2,                                      /* OP_POW */
-        2,                                      /* OP_P5DIV */
-        2,                                      /* OP_ATAN2 */
-        2,                                      /* OP_FMOD */
-        1,                                      /* OP_NEGATE*/
-        1,                                      /* OP_COMPLEMENT*/
-        1,                                      /* OP_LOG*/
-        1,                                      /* OP_COS*/
-        1,                                      /* OP_SIN*/
-        1,                                      /* OP_TAN*/
-        1,                                      /* OP_SQRT*/
-        1,                                      /* OP_FABS*/
-        1,                                      /* OP_ACOS */
-        1,                                      /* OP_ASIN */
-        1,                                      /* OP_ATAN */
-        1,                                      /* OP_COSH */
-        1,                                      /* OP_EXP */
-        1,                                      /* OP_LOG10 */
-        1,                                      /* OP_SINH */
-        1,                                      /* OP_TANH */
-        1,                                      /* OP_PTR_TO_NATIVE */
-        1,                                      /* OP_PTR_TO_FOREIGN */
-        0,                                      /* OP_SLACK_19 */
-        1,                                      /* OP_CONVERT*/
-        1,                                      /* OP_LA*/
-        1,                                      /* OP_CAREFUL_LA*/
-        1,                                      /* OP_ROUND*/
-        1,                                      /* OP_MOV*/
-        3,                                      /* OP_CALL_INDIRECT*/
-        1,                                      /* OP_PUSH*/
-        0,                                      /* OP_POP*/
-        0,                                      /* OP_PARM_DEF*/
-        1,                                      /* OP_SELECT*/
-        2,                                      /* OP_BIT_TEST_TRUE*/
-        2,                                      /* OP_BIT_TEST_FALSE*/
-        2,                                      /* OP_CMP_EQUAL*/
-        2,                                      /* OP_CMP_NOT_EQUAL*/
-        2,                                      /* OP_CMP_GREATER*/
-        2,                                      /* OP_CMP_LESS_EQUAL*/
-        2,                                      /* OP_CMP_LESS*/
-        2,                                      /* OP_CMP_GREATER_EQUAL*/
-        2,                                      /* OP_CALL*/
-        2,                                      /* OP_SET_EQUAL*/
-        2,                                      /* OP_SET_NOT_EQUAL*/
-        2,                                      /* OP_SET_GREATER*/
-        2,                                      /* OP_SET_LESS_EQUAL*/
-        2,                                      /* OP_SET_LESS*/
-        2,                                      /* OP_SET_GREATER_EQUAL*/
-        0,                                      /* OP_DEBUG_INFO */
-        0,                                      /* OP_CHEAP_NOP */
-        1,                                      /* OP_LOAD_UNALIGNED */
-        1,                                      /* OP_STORE_UNALIGNED */
-        2,                                      /* OP_EXTRACT_LOW */
-        2,                                      /* OP_EXTRACT_HIGH */
-        2,                                      /* OP_INSERT_LOW */
-        2,                                      /* OP_INSERT_HIGH */
-        2,                                      /* OP_MASK_LOW */
-        2,                                      /* OP_MASK_HIGH */
-        2,                                      /* OP_ZAP */
-        2,                                      /* OP_ZAP_NOT */
-        0,                                      /* OP_STK_ALLOC */
-        1,                                      /* OP_VA_START */
-        0,0,0,0,0,0,0,0,0,                      /* OP_SLACK_31 .. 39 */
-        0                                       /* OP_BLOCK*/
+    #define PICK(e,i,d1,d2,ot,pnum,attr)  pnum,
+    #define ONLY_INTERNAL_CGOPS
+    #include "cgops.h"
+    #undef ONLY_INTERNAL_CGOPS
+    #undef PICK
 };
 
 
