@@ -34,7 +34,7 @@ objsize = xmem.obj fcbswap.obj clset.obj hist.obj samefile.obj &
         fcbdmp.obj &
         file.obj filemove.obj filelast.obj &
         fini.obj autosave.obj &
-        srchook.obj srcgoto.obj srcif.obj &
+        srchook.obj srcgoto.obj srclabel.obj srcif.obj &
         srcfile.obj srccs.obj srcexpr.obj srcvar.obj srcinp.obj &
         srcassgn.obj srcexpnd.obj srcnextw.obj &
         filestk.obj dotmode.obj &

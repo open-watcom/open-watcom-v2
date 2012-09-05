@@ -56,9 +56,6 @@ void    GetCurrentFilePath( char *path );
 
 /* bnddata.c */
 void    CheckForBoundData( void );
-bool    SpecialOpen( char *, GENERIC_FILE * );
-void    SpecialFclose( GENERIC_FILE * );
-int     SpecialFgets( char *, int, GENERIC_FILE * );
 
 /* change.c */
 vi_rc   DoSubstitute( event **, event ** );
@@ -456,13 +453,13 @@ void    FiniCFName( void );
 vi_rc   FileExists( char * );
 vi_rc   FileOpen( char *, int, int, int, int * );
 vi_rc   FileSeek( int, long );
-FILE    *GetFromEnvAndOpen( char * );
-void    GetFromEnv( char *, char * );
+FILE    *GetFromEnvAndOpen( const char * );
+void    GetFromEnv( const char *, char * );
 vi_rc   TmpFileOpen( char *, int * );
 void    TmpFileClose( int, char * );
 void    FileLower( char *str );
-bool    FileTemplateMatch( char *, char * );
-char    *StripPath( char * );
+bool    FileTemplateMatch( const char *, const char * );
+char    *StripPath( const char * );
 void    VerifyTmpDir( void );
 void    MakeTmpPath( char *out, char *in );
 
@@ -667,11 +664,12 @@ int     NextWord( char *, char *, char *);
 int     NextWordSlash( char *, char * );
 int     NextWord1( char *, char * );
 void    EliminateFirstN( char *, int );
-int     Tokenize( char *, char *, bool );
+int     Tokenize( char *, const char *, bool );
 int     GetLongestTokenLength( char * );
 int     GetNumberOfTokens( char * );
 char    **BuildTokenList( int, char * );
 char    *GetTokenString( char *, int );
+char    *ExpandTokenSet( char *token_no, char *buff );
 int     AddColorToken( char *);
 int     ReplaceSubString( char *, int, int, int, char *, int );
 void    GetSubString( char *, int, int, char * );

@@ -277,10 +277,11 @@ extern char toLower( char );
 /*
  * Tokenize - convert character to a token
  */
-int Tokenize( char *Tokens, char *token, bool entireflag )
+int Tokenize( char *Tokens, const char *token, bool entireflag )
 {
     int         i = 0;
-    char        *t, *tkn, c, tc;
+    char        *t, c, tc;
+    const char  *tkn;
 
     if( Tokens == NULL ) {
         return( -1 );

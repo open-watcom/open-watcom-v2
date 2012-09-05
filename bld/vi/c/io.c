@@ -192,7 +192,7 @@ static int closeAFile( void )
 /*
  * GetFromEnvAndOpen - search env and fopen a file
  */
-FILE *GetFromEnvAndOpen( char *path )
+FILE *GetFromEnvAndOpen( const char *path )
 {
     char        tmppath[FILENAME_MAX];
 
@@ -207,7 +207,7 @@ FILE *GetFromEnvAndOpen( char *path )
 /*
  * GetFromEnv - get file name from environment
  */
-void GetFromEnv( char *what, char *path )
+void GetFromEnv( const char *what, char *path )
 {
     _searchenv( what, "EDPATH", path );
     if( path[0] != 0 ) {
@@ -327,7 +327,7 @@ void FileLower( char *str )
 /*
  * FileTemplateMatch - check if name falls in subset of template
  */
-bool FileTemplateMatch( char *name, char *template )
+bool FileTemplateMatch( const char *name, const char *template )
 {
     bool    inExtension = FALSE;
 
@@ -369,9 +369,10 @@ bool FileTemplateMatch( char *name, char *template )
 /*
  * StripPath - return pointer to where actual filename begins
  */
-char *StripPath( char *name )
+char *StripPath( const char *name )
 {
-    char *ptr;
+    const char  *ptr;
+
     if( name == NULL ) {
         return( NULL );
     }
@@ -384,6 +385,6 @@ char *StripPath( char *name )
         ptr++;
     }
 
-    return( ptr );
+    return( (char *)ptr );
 
 } /* StripPath */

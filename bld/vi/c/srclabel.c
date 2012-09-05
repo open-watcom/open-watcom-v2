@@ -31,46 +31,49 @@
 
 
 #include "vi.h"
-#include "util.h"
 #include "source.h"
 
-vi_rc UtilUpdateBoolean( BOOL old, BOOL val, char *name )
-{
-    char    cmd[MAX_SRC_LINE] = "set ";
-    if( old == val ) {
-        return( ERR_NO_ERR );
-    }
-    ADD_BOOL_PREFIX( cmd, val );
-    strcat( cmd, name );
-    return( RunCommandLine( cmd ) );
-}
 
-vi_rc UtilUpdateInt( int old, int val, char *name )
+/*
+ * FindLabel - locate a label
+ */
+int FindLabel( labels *labs, label lbl )
 {
-    char    cmd[MAX_SRC_LINE];
-    if( old == val ) {
-        return( ERR_NO_ERR );
-    }
-    sprintf( cmd, "set %s %d", name, val );
-    return( RunCommandLine( cmd ) );
-}
+    int i;
 
-vi_rc UtilUpdateChar( char old, char val, char *name )
-{
-    char    cmd[MAX_SRC_LINE];
-    if( old == val ) {
-        return( ERR_NO_ERR );
+    for( i = 0; i < labs->cnt; i++ ) {
+        if( !stricmp( lbl, labs->name[i] ) )  {
+            return( i );
+        }
     }
-    sprintf( cmd, "set %s %c", name, val );
-    return( RunCommandLine( cmd ) );
-}
+    return( -1 );
 
-vi_rc UtilUpdateStr( char *old, char *val, char *name )
+} /* findLabel */
+
+/*
+ * AddLabel - add a label in the file
+ */
+vi_rc AddLabel( sfile *sf, labels *labs, label lbl )
 {
-    char    cmd[MAX_SRC_LINE];
-    if( !strcmp( old, val ) ) {
+    /*
+     * find label name
+     */
+    if( FindLabel( labs, lbl ) >= 0 ) {
         return( ERR_NO_ERR );
     }
-    sprintf( cmd, "set %s %s", name, val );
-    return( RunCommandLine( cmd ) );
-}
+
+    /*
+     * reallocate buffers
+     */
+    labs->name = MemReAlloc( labs->name, (labs->cnt + 1) * sizeof( char * ) );
+    labs->pos = MemReAlloc( labs->pos, (labs->cnt + 1) * sizeof( struct sfile * ) );
+
+    /*
+     * set name and position of label
+     */
+    AddString( &(labs->name[labs->cnt]), lbl );
+    labs->pos[labs->cnt] = sf;
+    labs->cnt++;
+    return( ERR_NO_ERR );
+
+} /* AddLabel */

@@ -34,6 +34,7 @@
 #include "rxsupp.h"
 #include "source.h"
 
+#ifndef VICOMP
 /*
  * VarAddGlobalStr
  */
@@ -85,6 +86,7 @@ void VarAddGlobalLong( char *name, long val )
     VarAddStr( name, ltoa( val, ibuff, 10 ), NULL );
 
 } /* VarAddGlobalLong */
+#endif /* VICOMP */
 
 /*
  * VarAddStr - add a new variable
@@ -116,9 +118,11 @@ void VarAddStr( char *name, char *val, vlist *vl )
         if( !strcmp( curr->name, name ) ) {
             AddString2( &curr->value, val );
             curr->len = len;
+#ifndef VICOMP
             if( glob && !EditFlags.CompileAssignmentsDammit ) {
                 EditFlags.CompileAssignments = FALSE;
             }
+#endif
             return;
         }
         curr = curr->next;
@@ -135,7 +139,9 @@ void VarAddStr( char *name, char *val, vlist *vl )
 
     if( glob ) {
         AddLLItemAtEnd( (ss **)&VarHead, (ss **)&VarTail, (ss *)new );
+#ifndef VICOMP
         EditFlags.CompileAssignments = FALSE;
+#endif
     } else {
         AddLLItemAtEnd( (ss **)&vl->head, (ss **)&vl->tail, (ss *)new );
     }
@@ -159,6 +165,7 @@ void VarListDelete( vlist *vl )
 
 } /* VarListDelete */
 
+#ifndef VICOMP
 /*
  * VarName - parse a variable name of the form %(foo)
  */
@@ -266,3 +273,4 @@ void VarSC( char *str )
     }
     /// DEBUG END
 }
+#endif /* VICOMP */

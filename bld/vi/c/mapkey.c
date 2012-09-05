@@ -80,12 +80,16 @@ vi_rc MapKey( int flag, char *data )
     vi_key      key;
     vi_rc       rc;
 
+#ifndef VICOMP
     if( !EditFlags.ScriptIsCompiled || (flag & MAPFLAG_UNMAP) ) {
+#endif
         rc = readKeyData();
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
+#ifndef VICOMP
     }
+#endif
 
     /*
      * get if it is an input/regular key mapping
@@ -104,18 +108,24 @@ vi_rc MapKey( int flag, char *data )
     /*
      * get key we are using
      */
+#ifndef VICOMP
     if( !EditFlags.ScriptIsCompiled || (flag & MAPFLAG_UNMAP) ) {
+#endif
         j = Tokenize( charTokens, keystr, TRUE );
         if( j < 0 ) {
             key = (unsigned char)keystr[0];
         } else {
             key = keyVals[j];
         }
+#ifndef VICOMP
     } else {
         key = atoi( keystr );
     }
+#endif
 
+#ifndef VICOMP
     if( EditFlags.CompileScript ) {
+#endif
         if( !(flag & MAPFLAG_UNMAP) ) {
             key_map     scr;
 
@@ -134,7 +144,9 @@ vi_rc MapKey( int flag, char *data )
             MySprintf( WorkLine->data, "%d %s", key, data );
             return( ERR_NO_ERR );
         }
+#ifndef VICOMP
     }
+#endif
 
     if( key < 0 || key >= MAX_EVENTS ) {
         return( ERR_INVALID_KEY );
@@ -153,6 +165,7 @@ vi_rc MapKey( int flag, char *data )
 
 } /* MapKey */
 
+#ifndef VICOMP
 /*
  * DoKeyMap - process a key mapping
  */
@@ -307,6 +320,7 @@ void DoneInputKeyMap( void )
     TryEndUndoGroup( currUndoStack );
 
 } /* DoneInputKeyMap */
+#endif /* VICOMP */
 
 /*
  * extractViKeyToken - extract the character token from a data string,
@@ -389,10 +403,14 @@ vi_rc AddKeyMap( key_map *scr, char *data )
                 *sdata = VI_KEY( TAB );
                 break;
             default:
+#ifndef VICOMP
                 if( EditFlags.CompileScript ) {
+#endif
                     *sdata = '\\';
                     sdata++;
+#ifndef VICOMP
                 }
+#endif
                 *sdata = c;
                 break;
             }
@@ -407,6 +425,7 @@ vi_rc AddKeyMap( key_map *scr, char *data )
 
 } /* AddKeyMap */
 
+#ifndef VICOMP
 /*
  * InitKeyMaps - allocate key mapping arrays
  */
@@ -504,4 +523,4 @@ char *LookUpCharToken( vi_key key, bool want_single )
     return( NULL );
 
 } /* LookUpCharToken */
-
+#endif /* VICOMP */

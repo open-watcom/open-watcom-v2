@@ -51,11 +51,9 @@ vi_rc FTSStart( char *data )
     fts->cmd_head = fts->cmd_tail = NULL;
     fts->template_head = fts->template_tail = NULL;
     while( NextWord1( data, template_data ) > 0 ) {
-        templatePtr = MemAlloc( sizeof( template_ll ) +
-                                strlen( template_data ) ); // +1 not needed
+        templatePtr = MemAlloc( sizeof( template_ll ) + strlen( template_data ) ); // +1 not needed
         strcpy( templatePtr->data, template_data );
-        AddLLItemAtEnd( (ss **)&fts->template_head,
-                        (ss **)&fts->template_tail, (ss *)templatePtr );
+        AddLLItemAtEnd( (ss **)&fts->template_head, (ss **)&fts->template_tail, (ss *)templatePtr );
     }
 
     if( ftsOld = FTSMatchTemplate( fts->template_head ) ) {
@@ -80,13 +78,16 @@ vi_rc FTSAddCmd( char *data, int setkilled )
     assert( ftsTail );
     assert( EditFlags.FileTypeSource );
 
+    cmd_data[0] = '\0';
     // Source gets cute & trashes "set "...
     if( setkilled >= SRC_T_NULL + 1 ) {
-        strcpy( cmd_data, "set" );
-        strcat( cmd_data, data );
-    } else {
-        strcpy( cmd_data, data );
+        strcpy( cmd_data, "set " );
+        if( EditFlags.ScriptIsCompiled ) {
+            NextWord1( data, cmd_data + 4 );
+            ExpandTokenSet( cmd_data + 4, cmd_data + 4 );
+        }
     }
+    strcat( cmd_data, data );
 
     cmd = MemAlloc( sizeof( cmd_ll ) + strlen( cmd_data ) );
     strcpy( cmd->data, cmd_data );
@@ -103,9 +104,8 @@ vi_rc FTSAddCmd( char *data, int setkilled )
 vi_rc FTSAddBoolean( bool val, char *name )
 {
     char    cmd[MAX_SRC_LINE] = "set ";
-    if( !val ) {
-        strcat( cmd, "no" );
-    }
+
+    ADD_BOOL_PREFIX( cmd, val );
     strcat( cmd, name );
     return( FTSAddCmd( cmd, 0 ) );
 
@@ -154,7 +154,7 @@ vi_rc FTSEnd( void )
 
 } /* FTSEnd */
 
-static ft_src *searchFT( char *name )
+static ft_src *searchFT( const char *name )
 {
     template_ll *template;
     ft_src      *fts;
@@ -175,7 +175,7 @@ static ft_src *searchFT( char *name )
 /*
  * FTSSearchFTIndex - search if 'name' has a registered file type
  */
-int FTSSearchFTIndex( char *name )
+int FTSSearchFTIndex( const char *name )
 {
     template_ll *template;
     ft_src      *fts;
@@ -210,8 +210,7 @@ static vi_rc runCmds( ft_src *fts )
     EditFlags.Quiet = TRUE;
     EditFlags.DisplayHold = TRUE;
 
-    cmd = fts->cmd_head;
-    while( cmd ) {
+    for( cmd = fts->cmd_head; cmd != NULL; cmd = cmd->next ) {
         strcpy( cmd_data, cmd->data );
         rc = RunCommandLine( cmd_data );
 #if 0
@@ -219,7 +218,6 @@ static vi_rc runCmds( ft_src *fts )
             break;
         }
 #endif
-        cmd = cmd->next;
     }
     EditFlags.ScriptIsCompiled = oldScript;
     EditFlags.Quiet = oldQuiet;
@@ -294,8 +292,7 @@ void FTSBarfData( FILE *f )
     cmd_ll      *cmd;
     template_ll *template;
 
-    fts = ftsHead;
-    while( fts ) {
+    for( fts = ftsHead; fts != NULL; fts = fts->next ) {
         MyFprintf( f, "filetypesource" );
 
         template = fts->template_head;
@@ -311,8 +308,6 @@ void FTSBarfData( FILE *f )
             cmd = cmd->next;
         }
         MyFprintf( f, "endfiletypesource\n\n" );
-
-        fts = fts->next;
     }
 
 } /* FTSBarfData */
@@ -325,8 +320,7 @@ ft_src *FTSMatchTemplate( template_ll *template_head )
     ft_src      *fts;
     template_ll *tpCur, *tpNew;
 
-    fts = ftsHead;
-    while( fts ) {
+    for( fts = ftsHead; fts != NULL; fts = fts->next ) {
         tpCur = fts->template_head;
         tpNew = template_head;
         do {
@@ -339,7 +333,6 @@ ft_src *FTSMatchTemplate( template_ll *template_head )
         if( tpCur == NULL && tpNew == NULL ) {
             return( fts );
         }
-        fts = fts->next;
     }
     return( NULL );
 
@@ -369,11 +362,9 @@ ft_src *FTSMatchTemplateData( char *data )
     // build a template list
     template_head = template_tail = NULL;
     while( NextWord1( data, template_data ) > 0 ) {
-        templatePtr = MemAlloc( sizeof( template_ll ) +
-                                strlen( template_data ) ); // +1 not needed
+        templatePtr = MemAlloc( sizeof( template_ll ) + strlen( template_data ) ); // +1 not needed
         strcpy( templatePtr->data, template_data );
-        AddLLItemAtEnd( (ss **)&template_head, (ss **)&template_tail,
-                        (ss *)templatePtr );
+        AddLLItemAtEnd( (ss **)&template_head, (ss **)&template_tail, (ss *)templatePtr );
     }
 
     fts = FTSMatchTemplate( template_head );
@@ -393,17 +384,11 @@ void FTSKill( ft_src *fts )
 
     deleteTemplateList( fts->template_head );
 
-    cmdnext = fts->cmd_head;
-    do {
-        if( !cmdnext ) {
-            // cmd list may have 0 entries
-            break;
-        }
-        cmd = cmdnext;
+    // cmd list may have 0 entries
+    for( cmd = fts->cmd_head; cmd != NULL; cmd = cmdnext ) {
         cmdnext = cmd->next;
         MemFree( cmd );
-    } while( cmdnext );
-
+    }
     MemFree( fts );
 }
 

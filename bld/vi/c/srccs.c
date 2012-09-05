@@ -33,9 +33,16 @@
 #include "vi.h"
 #include <setjmp.h>
 #include "source.h"
-static  cs_entry      *TOS;
 
 #define FreeLabel( a ) MemFree( a )
+
+#ifdef VICOMP
+#define MyError(f,...)  printf(f "\n", __VA_ARGS__)
+#else
+#define MyError(f,...)  Error(f, __VA_ARGS__)
+#endif
+
+static  cs_entry      *TOS;
 
 /*
  * oopsBob - fatal block nesting error
@@ -45,7 +52,7 @@ static  cs_entry      *TOS;
 #endif
 static void oopsBob( char *current, char *start )
 {
-    Error( "'%s' has no %s", current, start );
+    MyError( "'%s' has no %s", current, start );
     AbortGen( DO_NOT_CLEAR_MESSAGE_WINDOW );
 
 } /* oopsBob */
@@ -57,9 +64,11 @@ static void Push( cstype type )
 {
     cs_entry    *new;
 
+#ifndef VICOMP
     if( EditFlags.ScriptIsCompiled ) {
         return;
     }
+#endif
     new = MemAlloc( sizeof( cs_entry ) );
     new->next = TOS;
     TOS = new;
@@ -77,9 +86,11 @@ static void Pop( void )
 {
     cs_entry    *crap;
 
+#ifndef VICOMP
     if( EditFlags.ScriptIsCompiled ) {
         return;
     }
+#endif
     crap = TOS;
     TOS = TOS->next;
     FreeLabel( crap->end );
@@ -105,10 +116,12 @@ vi_rc CSFini( void )
 {
     bool        iserr = FALSE;
 
+#ifndef VICOMP
     if( !EditFlags.ScriptIsCompiled ) {
+#endif
         while( TOS->type != CS_EOS ) {
             iserr = TRUE;
-            Error( "unfinished c.s. at line %d", TOS->srcline );
+            MyError( "unfinished c.s. at line %d", TOS->srcline );
             Pop();
         }
 
@@ -116,6 +129,7 @@ vi_rc CSFini( void )
             return( DO_NOT_CLEAR_MESSAGE_WINDOW );
         }
         Pop();
+#ifndef VICOMP
     } else {
         if( TOS ){
             // why the heck shouldn't I pop it!
@@ -128,6 +142,7 @@ vi_rc CSFini( void )
             MemFree( crap );
         }
     }
+#endif
     return( ERR_NO_ERR );
 
 } /* CSFini */
@@ -139,7 +154,7 @@ void CSIf( void )
 {
     Push( CS_IF );
     GenTestCond();
-    GenJmpIf( FALSE, TOS->top );
+    GenJmpIf( COND_FALSE, TOS->top );
 
 } /* if */
 
@@ -156,7 +171,7 @@ void CSElseIf( void )
     FreeLabel( TOS->top );
     TOS->top = NewLabel();
     GenTestCond();
-    GenJmpIf( FALSE, TOS->top );
+    GenJmpIf( COND_FALSE, TOS->top );
 
 } /* CSElseIf */
 
@@ -197,7 +212,7 @@ void CSWhile( void )
     Push( CS_LOOP );
     GenLabel( TOS->top );
     GenTestCond();
-    GenJmpIf( FALSE, TOS->end );
+    GenJmpIf( COND_FALSE, TOS->end );
 
 } /* CSWhile */
 
@@ -235,7 +250,7 @@ void CSUntil( void )
         oopsBob( "until", _strlw );
     }
     GenTestCond();
-    GenJmpIf( FALSE, TOS->top );
+    GenJmpIf( COND_FALSE, TOS->top );
     GenLabel( TOS->end );
     Pop();
 
@@ -289,6 +304,6 @@ void CSBreak( void )
 void CSQuif( void )
 {
     GenTestCond();
-    GenJmpIf( TRUE, FindLoop()->end );
+    GenJmpIf( COND_TRUE, FindLoop()->end );
 
 } /* CSQuif */

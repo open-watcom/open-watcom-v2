@@ -39,10 +39,7 @@
 #include <malloc.h>
 #include <sys/stat.h>
 #include "banner.h"
-
-char    magic_cookie[] = "CGEXXX";
-
-#define MAGIC_COOKIE_SIZE sizeof( magic_cookie )
+#include "bnddata.h"
 
 #define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
@@ -109,7 +106,7 @@ void MyPrintf( char *str, ... )
 void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long tocopy )
 {
     int                 h, i, newh;
-    char                buff[MAGIC_COOKIE_SIZE + 3];
+    char                buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_unsigned )];
     long                shift;
     unsigned            taillen;
     char                *copy;
@@ -138,11 +135,11 @@ void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long to
     /*
      * get trailer
      */
-    i = lseek( h, -((long)MAGIC_COOKIE_SIZE + 3L), SEEK_END );
+    i = lseek( h, -((long)sizeof( buff )), SEEK_END );
     if( i == -1 ) {
         Abort( "Initial seek error on \"%s\"", exe );
     }
-    i = read( h, buff, 3 + MAGIC_COOKIE_SIZE );
+    i = read( h, buff, sizeof( buff ) );
     if( i == -1 ) {
         Abort( "Read error on \"%s\"", exe );
     }
@@ -151,13 +148,13 @@ void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long to
      * if trailer is one of ours, then set back to overwrite data;
      * else just set to write at end of file
      */
-    if( strcmp( buff, magic_cookie ) ) {
+    if( strcmp( buff, MAGIC_COOKIE ) ) {
         if( sflag ) {
             Abort( "\"%s\" does not contain configuration data!", exe );
         }
     } else {
-        taillen = *((unsigned short *)&(buff[MAGIC_COOKIE_SIZE + 1]));
-        shift = (long)-((long)taillen + (long)MAGIC_COOKIE_SIZE + 3);
+        taillen = *((bind_unsigned *)&(buff[sizeof( MAGIC_COOKIE )]));
+        shift = (long)-((long)taillen + (long)sizeof( buff ));
         tocopy += shift;
     }
     i = lseek( h, 0, SEEK_SET );
@@ -201,13 +198,11 @@ void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long to
         if( i != len ) {
             Abort( "write 1 error on \"%s\"", exe );
         }
-        i = write( newh, magic_cookie, MAGIC_COOKIE_SIZE + 1 );
-        if( i != MAGIC_COOKIE_SIZE + 1 ) {
+        strcpy( buff, MAGIC_COOKIE );
+        *((bind_unsigned *)&(buff[sizeof( MAGIC_COOKIE )])) = len;
+        i = write( newh, buff, sizeof( buff ) );
+        if( i != sizeof( buff ) ) {
             Abort( "write 2 error on \"%s\"", exe );
-        }
-        i = write( newh, &len, sizeof( short ) );
-        if( i != sizeof( short ) ) {
-            Abort( "write 3 error on \"%s\"", exe );
         }
     }
     close( newh );
@@ -325,7 +320,8 @@ int main( int argc, char *argv[] )
     char                *buff = NULL;
     char                *buff2, *buff3;
     char                *buffn, *buffs;
-    int                 i, cnt, bytes, lines, j, k, sl;
+    int                 i, bytes, lines, j, k, sl;
+    unsigned            cnt;
     FILE                *f;
     struct stat         fs;
     char                drive[_MAX_DRIVE], dir[_MAX_DIR];

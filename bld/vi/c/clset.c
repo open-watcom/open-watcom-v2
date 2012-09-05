@@ -40,6 +40,8 @@
 #include "menu.h"
 #include "source.h"
 
+#ifndef VICOMP
+
 static bool msgFlag;
 static bool needsRedisplay = FALSE;
 static char msgString[MAX_STR];
@@ -333,13 +335,17 @@ vi_rc GetNewValueDialog( char *value )
 #else
 extern vi_rc GetNewValueDialog( char * );
 #endif
+#endif /* VICOMP */
+
 
 /*
  * processSetToken - set value for set token
  */
 static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
 {
-    char        fn[MAX_STR], str[MAX_STR], tmp[3];
+    char        fn[MAX_STR], str[MAX_STR];
+#ifndef VICOMP
+    char        tmp[3];
     char        tokstr[MAX_STR];
     char        save[MAX_STR];
     vi_rc       rc = ERR_NO_ERR;
@@ -352,35 +358,44 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
     command_rtn fptr;
     event_bits  eb;
     bool        redisplay = FALSE;
+#endif
+    bool        bvalue;
 
     /*
      * set up value for boolean set commands
      */
     if( j < 0 ) {
         j *= -1;
-        i = FALSE;
+        bvalue = FALSE;
     } else {
-        i = TRUE;
+        bvalue = TRUE;
     }
+#ifndef VICOMP
     if( !(*winflag) ) {
         toggle = TRUE;
         set1 = isnonbool;
     } else {
         toggle = FALSE;
+#endif
         if( j >= SET1_T_ ) {
+#ifndef VICOMP
             if( EditFlags.CompileScript ) {
-                if( !i ) {
+#endif
+                if( !bvalue ) {
                     j *= -1;
                 }
                 itoa( j, str, 10 );
                 StrMerge( 2, WorkLine->data, str, SingleBlank );
                 return( ERR_NO_ERR );
+#ifndef VICOMP
             }
             set1 = FALSE;
             j -= SET1_T_;
         } else {
             set1 = TRUE;
+#endif
         }
+#ifndef VICOMP
     }
     *winflag = FALSE;
 
@@ -392,7 +407,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
             return( ERR_INVALID_SET_COMMAND );
         }
         ptr = &(((bool *)&EditFlags)[j]);
-        newset = (bool) i;
+        newset = bvalue;
         if( toggle ) {
             newset = !(*ptr);
         }
@@ -551,13 +566,13 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
      * process value settings
      */
     } else {
-
         if( toggle ) {
             if( GetNewValueDialog( value ) ) {
                 return( NO_VALUE_ENTERED );
             }
             strcpy( save, value );
         }
+#endif /* VICOMP */
         RemoveLeadingSpaces( value );
         if( value[0] == '"' ) {
             NextWord( value, fn, "\"" );
@@ -565,7 +580,9 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
         } else {
             NextWord1( value, fn );
         }
+#ifndef VICOMP
         if( EditFlags.CompileScript ) {
+#endif
             itoa( j, str, 10 );
             StrMerge( 4, WorkLine->data, str, SingleBlank, fn, SingleBlank );
             switch( j ) {
@@ -588,6 +605,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 break;
             }
             return( ERR_NO_ERR );
+#ifndef VICOMP
         }
         switch( j ) {
         case SET1_T_STATUSSECTIONS:
@@ -970,11 +988,12 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
     if( rc == ERR_NO_ERR && toggle ) {
         strcpy( value, save );
     }
-
     return( rc );
+#endif /* VICOMP */
 
 } /* processSetToken */
 
+#ifndef VICOMP
 /*
  * SettingSelected - a setting was selected from the dialog
  */
@@ -1061,6 +1080,7 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
 
 } /* getSetInfo */
 #endif
+#endif /* VICOMP */
 
 /*
  * Set - set editor control variable
@@ -1070,18 +1090,22 @@ vi_rc Set( char *name )
     char        fn[MAX_STR];
     vi_rc       rc = ERR_NO_ERR;
     int         j, i;
+#ifndef VICOMP
 #ifndef __WIN__
     int         tmp, tc;
     char        **vals = NULL;
     char        **list;
     int         longest;
 #endif
+#endif
 
     /*
      * get item to set
      */
+#ifndef VICOMP
     msgFlag = FALSE;
     if( !EditFlags.ScriptIsCompiled ) {
+#endif
         RemoveLeadingSpaces( name );
         j = strlen( name );
         for( i = 0; i < j; i++ ) {
@@ -1089,9 +1113,12 @@ vi_rc Set( char *name )
                 name[i] = ' ';
             }
         }
+#ifndef VICOMP
     }
+#endif
 
     if( NextWord1( name, fn ) <=0 ) {
+#ifndef VICOMP
         if( !EditFlags.WindowsStarted ) {
             return( ERR_NO_ERR );
         }
@@ -1112,13 +1139,18 @@ vi_rc Set( char *name )
         MemFreeList( tc, list );
         ReDisplayScreen();
 #endif
+#endif /* VICOMP */
         return( rc );
     } else {
+#ifndef VICOMP
         if( !EditFlags.Starting) {
             msgFlag = TRUE;
         }
+#endif
         do {
+#ifndef VICOMP
             if( !EditFlags.ScriptIsCompiled ) {
+#endif
                 if( !strnicmp( fn, "no", 2 ) ) {
                     EliminateFirstN( fn, 2 );
                     i = -1;
@@ -1139,9 +1171,11 @@ vi_rc Set( char *name )
                     j += SET1_T_;
                 }
                 j *= i;
+#ifndef VICOMP
             } else {
                 j = atoi( fn );
             }
+#endif
             i = TRUE;
             rc = processSetToken( j, name, &i, FALSE );
             if( rc > ERR_NO_ERR ) {
@@ -1149,14 +1183,17 @@ vi_rc Set( char *name )
             }
             RemoveLeadingSpaces( name );
         } while( NextWord1( name, fn ) > 0 );
+#ifndef VICOMP
         if( msgFlag ) {
             putMessage();
         }
+#endif
         return( rc );
     }
 
 } /* Set */
 
+#ifndef VICOMP
 /*
  * GetASetVal - get set val data
  */
@@ -1179,3 +1216,26 @@ char *GetASetVal( char *token )
     return( "" );
 
 } /* GetASetVal */
+
+char *ExpandTokenSet( char *token_no, char *buff )
+{
+    char        settokstr[MAX_STR + 1];
+    bool        val;
+    int         tok;
+
+    tok = atoi( token_no );
+    val = TRUE;
+    if( tok < 0 ) {
+        tok *= -1;
+        val = FALSE;
+    }
+    *buff = '\0';
+    if( tok >= SET1_T_ ) {
+        strcpy( settokstr, GetTokenString( SetTokens2, tok - SET2_T_ ) );
+    } else {
+        ADD_BOOL_PREFIX( settokstr, val );
+        strcat( settokstr, GetTokenString( SetTokens1, tok ) );
+    }
+    return( strcat( buff, settokstr ) );
+}
+#endif

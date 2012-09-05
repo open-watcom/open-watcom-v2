@@ -31,6 +31,7 @@
 
 
 #include "vi.h"
+#include "specio.h"
 
 /*
  * ReadDataFile - do just that

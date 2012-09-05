@@ -68,8 +68,7 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
 !endif
 
 $(bind_compiled) : $(bind_compiled:./=../dat/)
-#        vicomp ../dat/$^. $^.
-        cp -n ../dat/$^. $^. >$(nulldevice)
+        vicomp ../dat/$^. $^.
 
 ./edbind.exe : ../c/edbind.c $(cl_objs)
     	$(bld_cl) $(wcl_util_opts) $<

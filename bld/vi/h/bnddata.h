@@ -24,53 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  bind data structures and definition
 *
 ****************************************************************************/
 
 
-#include "vi.h"
-#include "util.h"
-#include "source.h"
+#define MAGIC_COOKIE    "CGEXXX"
 
-vi_rc UtilUpdateBoolean( BOOL old, BOOL val, char *name )
-{
-    char    cmd[MAX_SRC_LINE] = "set ";
-    if( old == val ) {
-        return( ERR_NO_ERR );
-    }
-    ADD_BOOL_PREFIX( cmd, val );
-    strcat( cmd, name );
-    return( RunCommandLine( cmd ) );
-}
+typedef unsigned short  bind_unsigned;
 
-vi_rc UtilUpdateInt( int old, int val, char *name )
-{
-    char    cmd[MAX_SRC_LINE];
-    if( old == val ) {
-        return( ERR_NO_ERR );
-    }
-    sprintf( cmd, "set %s %d", name, val );
-    return( RunCommandLine( cmd ) );
-}
-
-vi_rc UtilUpdateChar( char old, char val, char *name )
-{
-    char    cmd[MAX_SRC_LINE];
-    if( old == val ) {
-        return( ERR_NO_ERR );
-    }
-    sprintf( cmd, "set %s %c", name, val );
-    return( RunCommandLine( cmd ) );
-}
-
-vi_rc UtilUpdateStr( char *old, char *val, char *name )
-{
-    char    cmd[MAX_SRC_LINE];
-    if( !strcmp( old, val ) ) {
-        return( ERR_NO_ERR );
-    }
-    sprintf( cmd, "set %s %s", name, val );
-    return( RunCommandLine( cmd ) );
-}

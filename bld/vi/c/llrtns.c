@@ -71,6 +71,7 @@ void InsertLLItemAfter( ss **tail, ss *who, ss *item )
 
 } /* InsertLLItemAfter */
 
+#ifndef VICOMP
 /*
  * InsertLLItemBefore - insert an item into a linked list after an item
  */
@@ -151,3 +152,4 @@ bool ValidateLL( ss *head, ss *tail )
     }
     return( curr == tail );
 }
+#endif /* VICOMP */

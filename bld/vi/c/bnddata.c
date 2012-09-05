@@ -40,12 +40,10 @@
   #define sopen3( a, b, c )     open( a, b )
   #define sopen4( a, b, c, d )  open( a, b, d )
 #endif
+#include "bnddata.h"
+#include "specio.h"
 
 #define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
-
-static char magicCookie[] = "CGEXXX";
-
-#define MAGIC_COOKIE_SIZE sizeof( magicCookie )
 
 static long     *dataOffsets;
 static short    *entryCounts, dataFcnt;
@@ -58,25 +56,26 @@ static long     dataStart;
 void CheckForBoundData( void )
 {
     int         h, i;
-    char        buff[MAGIC_COOKIE_SIZE + 3], *tmp;
+    char        buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_unsigned)];
+    char        *tmp;
     unsigned    taillen;
 
     /*
      * get trailer
      */
     h = sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
-    lseek( h, -((long) MAGIC_COOKIE_SIZE + 3L), SEEK_END );
-    read( h, buff, 3 + MAGIC_COOKIE_SIZE );
+    lseek( h, -((long)sizeof( buff )), SEEK_END );
+    read( h, buff, sizeof( buff ) );
 
     /*
      * seek to start of data
      */
-    if( strcmp( buff, magicCookie ) ) {
+    if( strcmp( buff, MAGIC_COOKIE ) ) {
         close( h );
         return;
     }
-    taillen = *((unsigned short *)&(buff[MAGIC_COOKIE_SIZE + 1]));
-    dataStart = (long) -((long)taillen + (long) MAGIC_COOKIE_SIZE + 3);
+    taillen = *((bind_unsigned *)&(buff[sizeof( MAGIC_COOKIE )]));
+    dataStart = (long) -((long)taillen + (long)sizeof( buff ));
     lseek( h, dataStart, SEEK_END );
 
     /*
@@ -118,7 +117,7 @@ void CheckForBoundData( void )
 /*
  * SpecialOpen - open a file or exe
  */
-bool SpecialOpen( char *fn, GENERIC_FILE *gf )
+bool SpecialOpen( const char *fn, GENERIC_FILE *gf )
 {
     long        shift = 0;
     int         h, i;

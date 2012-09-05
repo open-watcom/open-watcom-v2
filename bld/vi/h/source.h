@@ -40,6 +40,7 @@
 #define MAX_SRC_LABELS          512
 #define MAX_SRC_FILES           9
 #define MAX_SRC_CLVARS          9
+
 typedef enum {
     EXPR_EQ,
     EXPR_PLUSEQ,
@@ -154,13 +155,19 @@ typedef struct files {
     } u;
 } files;
 
+typedef enum branch_cond {
+    COND_FALSE,
+    COND_TRUE,
+    COND_JMP
+} branch_cond;
+
 typedef struct sfile {
     struct sfile    *next, *prev;
     char            *arg1, *arg2;
     int             token;
-    char            branchcond;
+    branch_cond     branchcond;
     union {
-        char        branchres;
+        branch_cond branchres;
         expr_oper   oper;
     } u;
     char            hasvar;
@@ -223,8 +230,8 @@ extern vi_rc    SrcWrite( sfile *, files *, char *, vlist * );
 extern vi_rc    SrcClose( sfile *, vlist *, files *, char * );
 
 /* srcgen.c */
-extern vi_rc    PreProcess( char *, sfile **, labels * );
-extern void     GenJmpIf( int, label );
+extern vi_rc    PreProcess( const char *, sfile **, labels * );
+extern void     GenJmpIf( branch_cond, label );
 extern void     GenJmp( label );
 extern void     GenLabel( label );
 extern void     GenTestCond( void );
@@ -232,8 +239,11 @@ extern label    NewLabel( void );
 extern void     AbortGen( vi_rc );
 
 /* srcgoto.c */
-extern vi_rc    SrcGoTo( sfile **, char *, labels * );
-extern vi_rc    AddLabel( sfile *, labels *, char * );
+extern vi_rc    SrcGoTo( sfile **, label, labels * );
+
+/* srclabel.c */
+extern vi_rc    AddLabel( sfile *, labels *, label );
+extern int      FindLabel( labels *labs, label lbl );
 
 /* srchook.c */
 extern vi_rc    SourceHook( hooktype, vi_rc );

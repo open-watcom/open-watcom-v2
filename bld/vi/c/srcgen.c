@@ -35,6 +35,7 @@
 #include "source.h"
 #include "parsecl.h"
 #include "ex.h"
+#include "specio.h"
 
 static sfile    *tmpTail;
 static bool     freeSrcData, hasVar;
@@ -55,9 +56,13 @@ static void genItem( int token, label where )
 
     tsf = MemAlloc( sizeof( sfile ) );
 
+    tsf->arg1 = NULL;
+    tsf->arg2 = NULL;
+    tsf->data = NULL;
     tsf->token = token;
     tsf->line = CurrentSrcLine;
     tsf->hasvar = hasVar;
+    tsf->branchcond = COND_FALSE;
 
     if( where != NULL ) {
         AddString( &(tsf->data), where );
@@ -70,13 +75,17 @@ static void genItem( int token, label where )
 /*
  * GenJmpIf - jump based on last expression result
  */
-void GenJmpIf( int when, label where )
+void GenJmpIf( branch_cond when, label where )
 {
+#ifndef VICOMP
     if( !EditFlags.ScriptIsCompiled ) {
+#endif
         genItem( SRC_T_GOTO, where );
         tmpTail->branchcond = when;
         tmpTail->hasvar = FALSE;
+#ifndef VICOMP
     }
+#endif
 
 } /* GenJmpIf */
 
@@ -86,7 +95,7 @@ void GenJmpIf( int when, label where )
 void GenJmp( label where )
 {
     genItem( SRC_T_GOTO, where );
-    tmpTail->branchcond = 2;
+    tmpTail->branchcond = COND_JMP;
     tmpTail->hasvar = FALSE;
 
 } /* GenJmp */
@@ -127,12 +136,16 @@ void GenTestCond( void )
     /*
      * build the if data structure
      */
+#ifndef VICOMP
     if( EditFlags.CompileScript ) {
+#endif
         genItem( SRC_T_IF, v1 );
+#ifndef VICOMP
     } else {
         genItem( SRC_T_IF, NULL );
         AddString( &tmpTail->arg1, v1 );
     }
+#endif
 
 } /* GenTestCond */
 
@@ -177,10 +190,11 @@ static void genExpr( void )
     if( v2[0] == 0 ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
+#ifndef VICOMP
     if( EditFlags.CompileScript ) {
-
+#endif
         genItem( SRC_T_EXPR, StrMerge( 4, v1, SingleBlank, tmp, SingleBlank, v2 ) );
-
+#ifndef VICOMP
     } else {
         /*
          * build the expr data structure
@@ -190,6 +204,7 @@ static void genExpr( void )
         AddString( &tmpTail->arg1, v1 );
         AddString( &tmpTail->arg2, v2 );
     }
+#endif
 
 } /* genExpr */
 
@@ -210,7 +225,7 @@ label NewLabel( void )
 /*
  * PreProcess - pre-process source file
  */
-vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
+vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 {
     GENERIC_FILE        gf;
     int                 i, token, k, len, dammit, rec;
@@ -219,15 +234,24 @@ vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
     char                tmp3[MAX_SRC_LINE];
     vi_rc               rc;
     bool                ret;
+#ifdef VICOMP
+    bool                AppendingFlag = FALSE;
+#else
+    #define             AppendingFlag   EditFlags.Appending
+#endif
 
     /*
      * get source file
      */
+#ifndef VICOMP
     if( EditFlags.CompileScript ) {
         EditFlags.OpeningFileToCompile = TRUE;
     }
+#endif
     ret = SpecialOpen( fn, &gf );
+#ifndef VICOMP
     EditFlags.OpeningFileToCompile = FALSE;
+#endif
     if( !ret ) {
         return( ERR_FILE_NOT_FOUND );
     }
@@ -239,6 +263,11 @@ vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
     CurrentSrcLine = 0L;
 
     tsf = MemAlloc( sizeof( sfile ) );
+    tsf->next = NULL;
+    tsf->prev = NULL;
+    tsf->arg1 = NULL;
+    tsf->arg2 = NULL;
+    tsf->data = NULL;
     tsf->token = SRC_T_NULL;
     *sf = tmpTail = tsf;
     cLab = lab;
@@ -261,7 +290,9 @@ vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
          * prepare this line
          */
         CurrentSrcLine++;
+#ifndef VICOMP
         if( !EditFlags.ScriptIsCompiled ) {
+#endif
             RemoveLeadingSpaces( tmp );
             k = strlen( tmp );
             memcpy( tmp3, tmp, k + 1 );
@@ -283,21 +314,24 @@ vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
              * if we are appending (ie, an append token was encounterd
              * before, stop tokenizing
              */
-            if( !EditFlags.Appending ) {
+            if( !AppendingFlag ) {
                 token = Tokenize( SourceTokens, tmp2, TRUE );
+#ifndef VICOMP
                 if( token == SRC_T_VBJ__ ) {
                     EditFlags.ScriptIsCompiled = TRUE;
                     continue;
                 }
+#endif
             } else {
                 token = -1;
             }
+#ifndef VICOMP
         } else {
             len = NextWord1( tmp, tmp2 );
             hasVar = (bool) tmp2[0] - '0';
             token = atoi( &tmp2[1] );
         }
-
+#endif
         /*
          * process recognized tokens
          */
@@ -362,13 +396,17 @@ vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
             default:
                 genItem( token, NULL );
                 if( token == SRC_T_GOTO ) {
+#ifndef VICOMP
                     if( EditFlags.ScriptIsCompiled ) {
                         NextWord1( CurrentSrcData, tmp );
                         tmpTail->branchcond = atoi( CurrentSrcData );
                         strcpy( CurrentSrcData, tmp );
                     } else {
-                        tmpTail->branchcond = 2;
+#endif
+                        tmpTail->branchcond = COND_JMP;
+#ifndef VICOMP
                     }
+#endif
                 }
                 tmpTail->data = CurrentSrcData;
                 freeSrcData = FALSE;
@@ -381,11 +419,13 @@ vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
          * set all other tokens to be processed at run time
          */
         } else {
+#ifndef VICOMP
             if( EditFlags.ScriptIsCompiled ) {
                 RemoveLeadingSpaces( tmp );
                 genItem( token, tmp );
                 continue;
             }
+#endif
             if( tmp2[len - 1] == '!' ) {
                 dammit = TRUE;
                 tmp2[len - 1] = 0;
@@ -393,7 +433,7 @@ vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
                 dammit = FALSE;
             }
 
-            if( !EditFlags.Appending ) {
+            if( !AppendingFlag ) {
                 rec = token = Tokenize( ParseClTokens, tmp2, TRUE );
                 if( dammit && token != PCL_T_MAP ) {
                     tmp2[len - 1] = '!';
@@ -467,22 +507,28 @@ vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
 
             case PCL_T_SET:
                 token += SRC_T_NULL + 1;
+#ifndef VICOMP
                 if( EditFlags.CompileScript ) {
+#endif
                     WorkLine->data[0] = 0;
                     rc = Set( tmp );
+#ifndef VICOMP
                     if( rc != ERR_NO_ERR ) {
                         Error( GetErrorMsg( rc ) );
                     }
+#endif
                     genItem( token, WorkLine->data );
+#ifndef VICOMP
                 } else {
                     genItem( token, tmp );
                 }
+#endif
                 break;
 
             default:
-                if( EditFlags.Appending ) {
+                if( AppendingFlag ) {
                     if( tmp3[0] == '.' && tmp3[1] == 0 ) {
-                        EditFlags.Appending = FALSE;
+                        AppendingFlag = FALSE;
                     }
                 } else if( rec < 0 ) {
                     /*
@@ -495,7 +541,7 @@ vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
                         if( NextWord1( tmp, tmp2 ) >= 0 ) {
                             token = Tokenize( ExTokens, tmp2, FALSE );
                             if( token == EX_T_APPEND ) {
-                                EditFlags.Appending = TRUE;
+                                AppendingFlag = TRUE;
                             }
                         }
                     }
@@ -511,7 +557,7 @@ vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
     }
 
     SpecialFclose( &gf );
-    EditFlags.Appending = FALSE;
+    AppendingFlag = FALSE;
     return( CSFini() );
 
 } /* PreProcess */

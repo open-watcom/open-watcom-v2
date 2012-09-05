@@ -1,0 +1,34 @@
+proj_name = vicomp
+
+!ifndef vicomp_autodepends
+vicomp_autodepends = .autodepend
+!endif
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c : ../../c
+
+inc_dirs = -I"../../h" -I"$(posix_dir)/h"
+
+srcs = &
+    vicomp.c &
+    addstr.c &
+    srcgen.c &
+    srclabel.c &
+    printf.c &
+    srccs.c &
+    srcdata.c &
+    pdata.c &
+    exdata.c &
+    mapkey.c &
+    dat.c &
+    clset.c &
+    llrtns.c &
+    srcvar.c &
+    parse.c
+
+vicomp.exe : $(srcs) $(host_cl_objs)
+    $(bld_cl) $(wcl_util_opts) $(inc_dirs) -DVICOMP $<
+

@@ -33,26 +33,21 @@
 #include "vi.h"
 #include "source.h"
 
-static int findLabel( labels *, char * );
 
 /*
  * SrcGoTo - goto processor
  */
-vi_rc SrcGoTo( sfile **sf, char *data, labels *lab )
+vi_rc SrcGoTo( sfile **sf, label lbl, labels *labs )
 {
     int         i;
-    char        dest[MAX_SRC_LINE];
 
     /*
      * get label
      */
-    if( NextWord1( data, dest ) <= 0 ) {
-        return( ERR_SRC_INVALID_GOTO );
-    }
-    i = findLabel( lab, dest );
+    i = FindLabel( labs, lbl );
     if( i >= 0 ) {
-        if( (*sf)->branchcond == 2 || (*sf)->branchcond == (*sf)->prev->u.branchres ) {
-            (*sf) = lab->pos[i];
+        if( (*sf)->branchcond == COND_JMP || (*sf)->branchcond == (*sf)->prev->u.branchres ) {
+            (*sf) = labs->pos[i];
         }
         return( ERR_NO_ERR );
     }
@@ -60,53 +55,3 @@ vi_rc SrcGoTo( sfile **sf, char *data, labels *lab )
     return( ERR_SRC_LABEL_NOT_FOUND );
 
 } /* SrcGoTo */
-
-/*
- * AddLabel - add a label in the file
- */
-vi_rc AddLabel( sfile *sf, labels *lab, char *data )
-{
-    int         j, i;
-    char        tmp[MAX_SRC_LINE];
-
-    /*
-     * find label name
-     */
-    if( (j = NextWord1( data, tmp )) <= 0 ) {
-        return( ERR_SRC_INVALID_LABEL );
-    }
-    if( (i = findLabel( lab, tmp )) >= 0 ) {
-        return( ERR_NO_ERR );
-    }
-
-    /*
-     * reallocate buffers
-     */
-    lab->name = MemReAlloc( lab->name, (lab->cnt + 1) * sizeof( char * ) );
-    lab->pos = MemReAlloc( lab->pos, (lab->cnt + 1) * sizeof( struct sfile * ) );
-
-    /*
-     * set name and position of label
-     */
-    AddString( &(lab->name[lab->cnt]), tmp );
-    lab->pos[lab->cnt] = sf;
-    lab->cnt++;
-    return( ERR_NO_ERR );
-
-} /* AddLabel */
-
-/*
- * findLabel - locate a label
- */
-static int findLabel( labels *lab, char *dest )
-{
-    int i;
-
-    for( i = 0; i < lab->cnt; i++ ) {
-        if( !stricmp( dest, lab->name[i] ) )  {
-            return( i );
-        }
-    }
-    return( -1 );
-
-} /* findLabel */

@@ -50,6 +50,8 @@ echo Bootstrapping compiler using GNU tools...
 [ INCLUDE <SRCDIR>/rc/rc/prereq.ctl ]
 #        Prebuild parsedlg tool for build process
 [ INCLUDE <SRCDIR>/parsedlg/prereq.ctl ]
+#        Prebuild vi script compiler for build process
+[ INCLUDE <SRCDIR>/vi/vicomp/prereq.ctl ]
 #
 #        Before building anything for real, create up-to-date header files
 #
