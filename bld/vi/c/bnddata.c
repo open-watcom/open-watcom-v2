@@ -45,20 +45,22 @@
 
 #define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
-static long     *dataOffsets;
-static short    *entryCounts, dataFcnt;
-static char     *dataFnames;
-static long     dataStart;
+static bind_size    *dataOffsets;
+static bind_size    *entryCounts;
+static char         *dataFnames;
+static long         dataStart;
 
 /*
  * CheckForBoundData - check if data is bound to our exe
  */
 void CheckForBoundData( void )
 {
-    int         h, i;
-    char        buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_unsigned)];
+    int         h;
+    unsigned    i;
+    char        buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
     char        *tmp;
     unsigned    taillen;
+    unsigned    dataFcnt;
 
     /*
      * get trailer
@@ -74,30 +76,30 @@ void CheckForBoundData( void )
         close( h );
         return;
     }
-    taillen = *((bind_unsigned *)&(buff[sizeof( MAGIC_COOKIE )]));
+    taillen = *((bind_size *)&(buff[sizeof( MAGIC_COOKIE )]));
     dataStart = (long) -((long)taillen + (long)sizeof( buff ));
     lseek( h, dataStart, SEEK_END );
 
     /*
      * get everything
      */
-    BndMemory = MemAlloc( taillen + 4 );
-    read( h, BndMemory, taillen + 4 );
+    BndMemory = MemAlloc( taillen + sizeof( bind_size ) + sizeof( bind_size ) );
+    read( h, BndMemory, taillen + sizeof( bind_size ) + sizeof( bind_size ) );
     close( h );
 
     /*
      * get number of files, and get space to store data
      */
-    dataFcnt = *(short *)BndMemory;
-    dataOffsets = MemAlloc( dataFcnt * sizeof( long ) );
-    entryCounts = MemAlloc( dataFcnt * sizeof( short ) );
+    dataFcnt = *(bind_size *)BndMemory;
+    dataOffsets = MemAlloc( dataFcnt * sizeof( bind_size ) );
+    entryCounts = MemAlloc( dataFcnt * sizeof( bind_size ) );
 
     /*
      * get file names
      */
-    tmp = BndMemory + 2;
-    i = *(short *)tmp;
-    tmp += 2;
+    tmp = BndMemory + sizeof( bind_size );
+    i = *(bind_size *)tmp;
+    tmp += sizeof( bind_size );
     dataFnames = MemAlloc( i );
     memcpy( dataFnames, tmp, i );
     tmp += i;
@@ -105,10 +107,10 @@ void CheckForBoundData( void )
     /*
      * copy over file offset and linenumber data
      */
-    i = dataFcnt * sizeof( long );
+    i = dataFcnt * sizeof( bind_size );
     memcpy( dataOffsets, tmp, i );
     tmp += i;
-    memcpy( entryCounts, tmp , dataFcnt * sizeof( short ) );
+    memcpy( entryCounts, tmp , dataFcnt * sizeof( bind_size ) );
 
     EditFlags.BoundData = TRUE;
 
@@ -157,7 +159,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf )
             }
             gf->gf.a.currline = 0;
             gf->gf.a.maxlines = entryCounts[i];
-            gf->gf.a.length = (int) a;
+            gf->gf.a.length = (int)a;
             return( TRUE );
 
         }

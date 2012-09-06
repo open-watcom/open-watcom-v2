@@ -275,8 +275,7 @@ vi_rc EditFile( char *name, int dammit )
             SaveCurrentInfo();
             for( il = InfoHead; il != NULL; il = il->next ) {
                 if( SameFile( il->CurrentFile->name, currfn ) ) {
-                    BringUpFile( il, TRUE );
-                    goto EVIL_CONTINUE;
+                    break;
                 }
                 if( strcmp( CurrentDirectory, il->CurrentFile->home ) ) {
                     /* directory has changed -- check with full path
@@ -303,36 +302,34 @@ vi_rc EditFile( char *name, int dammit )
                     _makepath( path, drive, dir, fname, ext );
 
                     if( SameFile( path, currfn ) ) {
-                        BringUpFile( il, TRUE );
-                        goto EVIL_CONTINUE;
+                        break;
                     }
                 }
             }
 
-            /*
-             * file not edited, go get it
-             */
-            rc = NewFile( currfn, FALSE );
-            if( rc != ERR_NO_ERR && rc != NEW_FILE ) {
-                RestoreInfo( ci );
-                DCDisplayAllLines();
-                break;
+            if( il != NULL ) {
+                BringUpFile( il, TRUE );
+            } else {
+                /*
+                 * file not edited, go get it
+                */
+                rc = NewFile( currfn, FALSE );
+                if( rc != ERR_NO_ERR && rc != NEW_FILE ) {
+                    RestoreInfo( ci );
+                    DCDisplayAllLines();
+                    break;
+                }
+                if( !dammit ) {
+                    InactiveWindow( wn );
+                }
+                if( EditFlags.BreakPressed ) {
+                    break;
+                }
             }
-
-            if( !dammit ) {
-                InactiveWindow( wn );
-            }
-
-            if( EditFlags.BreakPressed ) {
-                break;
-            }
-
-EVIL_CONTINUE:
             if( cnt > 0 ) {
                 currfn = list[index];
                 index++;
             }
-
         }
 
         if( ocnt > 0 ) {

@@ -52,8 +52,6 @@
 char    *dats[MAX_DATA_FILES];
 
 short   FileCount;
-long    *index;
-short   *entries;
 short   sflag = FALSE;
 short   qflag = FALSE;
 char    _bf[] = "edbind.dat";
@@ -103,10 +101,10 @@ void MyPrintf( char *str, ... )
 /*
  * AddDataToEXE - tack data to end of an EXE
  */
-void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long tocopy )
+void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
 {
     int                 h, i, newh;
-    char                buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_unsigned )];
+    char                buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
     long                shift;
     unsigned            taillen;
     char                *copy;
@@ -153,7 +151,7 @@ void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long to
             Abort( "\"%s\" does not contain configuration data!", exe );
         }
     } else {
-        taillen = *((bind_unsigned *)&(buff[sizeof( MAGIC_COOKIE )]));
+        taillen = *((bind_size *)&(buff[sizeof( MAGIC_COOKIE )]));
         shift = (long)-((long)taillen + (long)sizeof( buff ));
         tocopy += shift;
     }
@@ -199,7 +197,7 @@ void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long to
             Abort( "write 1 error on \"%s\"", exe );
         }
         strcpy( buff, MAGIC_COOKIE );
-        *((bind_unsigned *)&(buff[sizeof( MAGIC_COOKIE )])) = len;
+        *((bind_size *)&(buff[sizeof( MAGIC_COOKIE )])) = len;
         i = write( newh, buff, sizeof( buff ) );
         if( i != sizeof( buff ) ) {
             Abort( "write 2 error on \"%s\"", exe );
@@ -320,8 +318,7 @@ int main( int argc, char *argv[] )
     char                *buff = NULL;
     char                *buff2, *buff3;
     char                *buffn, *buffs;
-    int                 i, bytes, lines, j, k, sl;
-    unsigned            cnt;
+    int                 i, bytes, j, k, sl;
     FILE                *f;
     struct stat         fs;
     char                drive[_MAX_DRIVE], dir[_MAX_DIR];
@@ -329,6 +326,10 @@ int main( int argc, char *argv[] )
     char                path[_MAX_PATH];
     char                tmppath[_MAX_PATH];
     char                tmpfname[_MAX_FNAME], tmpext[_MAX_EXT];
+    unsigned            cnt;
+    unsigned            lines;
+    bind_size           *index;
+    bind_size           *entries;
 
     j = argc - 1;
     while( j > 0 ) {
@@ -409,18 +410,18 @@ int main( int argc, char *argv[] )
             }
         }
         fclose( f );
-        index = MyAlloc( FileCount * sizeof( long ) );
-        entries = MyAlloc( FileCount * sizeof( short ) );
+        index = MyAlloc( FileCount * sizeof( bind_size ) );
+        entries = MyAlloc( FileCount * sizeof( bind_size ) );
 
         buffn = buff;
         cnt = 0;
 
-        *(short *)buffn = FileCount;
-        buffn += sizeof( short );
-        cnt += sizeof( short );
+        *(bind_size *)buffn = FileCount;
+        buffn += sizeof( bind_size );
+        cnt += sizeof( bind_size );
         buffs = buffn;
-        buffn += sizeof( short );
-        cnt += sizeof( short );
+        buffn += sizeof( bind_size );
+        cnt += sizeof( bind_size );
         k = 0;
         for( i = 0; i < FileCount; i++ ) {
 //          j = strlen( dats[i] ) + 1;
@@ -433,13 +434,13 @@ int main( int argc, char *argv[] )
             cnt += j;
             k += j;
         }
-        *(short *)buffs = k + 1;    /* size of token list */
-        *buffn = 0;                 /* trailing zero */
+        *(bind_size *)buffs = k + 1;  /* size of token list */
+        *buffn = 0;                             /* trailing zero */
         buffn++;
         cnt++;
         buffs = buffn;
-        buffn += FileCount * (sizeof( short ) + sizeof( long ));
-        cnt += FileCount * (sizeof( short ) + sizeof( long ));
+        buffn += FileCount * ( sizeof( bind_size ) + sizeof( bind_size ) );
+        cnt += FileCount * ( sizeof( bind_size ) + sizeof( bind_size ) );
 
         for( j = 0; j < FileCount; j++ ) {
             MyPrintf( "Loading" );
@@ -449,10 +450,12 @@ int main( int argc, char *argv[] )
             }
             setvbuf( f, buff2, _IOFBF, 32000 );
             bytes = lines = 0;
-            index[j] = (long)cnt;
+            index[j] = cnt;
             while( fgets( buff3, MAX_LINE_LEN, f ) != NULL ) {
-                for( i = strlen( buff3 ); i && isWSorCtrlZ( buff3[i - 1] ); --i )
-                    buff3[i - 1] = '\0';
+                unsigned    len;
+
+                for( len = strlen( buff3 ); len && isWSorCtrlZ( buff3[len - 1] ); --len )
+                    buff3[len - 1] = '\0';
                 if( buff3[0] == '\0' ) {
                     continue;
                 }
@@ -460,23 +463,22 @@ int main( int argc, char *argv[] )
                 if( buff3[0] == '#' ) {
                     continue;
                 }
-                i = strlen( buff3 );
-                *buffn = (char)i;
+                len = strlen( buff3 );
+                *buffn = (char)len;
                 buffn++;
-                memcpy( buffn, buff3, i );
-                buffn += i;
-                cnt += i + 1;
+                memcpy( buffn, buff3, len );
+                buffn += len;
+                cnt += len + 1;
                 lines++;
-                bytes += i;
+                bytes += len;
             }
             fclose( f );
             entries[j] = lines;
             MyPrintf( "Added %d lines (%d bytes)\n", lines, bytes );
         }
-        i = FileCount;
-        memcpy( buffs, index, FileCount * sizeof( long ) );
-        buffs += FileCount * sizeof( long );
-        memcpy( buffs, entries, FileCount * sizeof( short ) );
+        memcpy( buffs, index, FileCount * sizeof( bind_size ) );
+        buffs += FileCount * sizeof( bind_size );
+        memcpy( buffs, entries, FileCount * sizeof( bind_size ) );
     }
 
     AddDataToEXE( path, buff, cnt, fs.st_size );

@@ -34,6 +34,7 @@
 #include "fts.h"
 #include "source.h"
 #include <assert.h>
+#include "parsecl.h"
 
 static  ft_src  *ftsHead;
 static  ft_src  *ftsTail;
@@ -70,7 +71,7 @@ vi_rc FTSStart( char *data )
 /*
  * FTSAddCmd - add a 1-line command to the current (tail) fts
  */
-vi_rc FTSAddCmd( char *data, int setkilled )
+vi_rc FTSAddCmd( char *data, int tok )
 {
     char    cmd_data[MAX_STR];
     cmd_ll  *cmd;
@@ -80,11 +81,15 @@ vi_rc FTSAddCmd( char *data, int setkilled )
 
     cmd_data[0] = '\0';
     // Source gets cute & trashes "set "...
-    if( setkilled >= SRC_T_NULL + 1 ) {
-        strcpy( cmd_data, "set " );
-        if( EditFlags.ScriptIsCompiled ) {
-            NextWord1( data, cmd_data + 4 );
-            ExpandTokenSet( cmd_data + 4, cmd_data + 4 );
+    if( tok >= SRC_T_NULL + 1 ) {
+        switch( tok ) {
+        case SRC_T_NULL + PCL_T_SET + 1:
+            strcpy( cmd_data, "set " );
+            if( EditFlags.ScriptIsCompiled ) {
+                NextWord1( data, cmd_data + 4 );
+                ExpandTokenSet( cmd_data + 4, cmd_data + 4 );
+            }
+            break;
         }
     }
     strcat( cmd_data, data );
@@ -103,10 +108,9 @@ vi_rc FTSAddCmd( char *data, int setkilled )
  */
 vi_rc FTSAddBoolean( bool val, char *name )
 {
-    char    cmd[MAX_SRC_LINE] = "set ";
+    char    cmd[MAX_SRC_LINE];
 
-    ADD_BOOL_PREFIX( cmd, val );
-    strcat( cmd, name );
+    sprintf( cmd, "set %s%s", GET_BOOL_PREFIX( val ), name );
     return( FTSAddCmd( cmd, 0 ) );
 
 } /* FTSAddBoolean */
@@ -117,6 +121,7 @@ vi_rc FTSAddBoolean( bool val, char *name )
 vi_rc FTSAddInt( int val, char *name )
 {
     char    cmd[MAX_SRC_LINE];
+
     sprintf( cmd, "set %s %d", name, val );
     return( FTSAddCmd( cmd, 0 ) );
 
@@ -128,6 +133,7 @@ vi_rc FTSAddInt( int val, char *name )
 vi_rc FTSAddChar( char val, char *name )
 {
     char    cmd[MAX_SRC_LINE];
+
     sprintf( cmd, "set %s %c", name, val );
     return( FTSAddCmd( cmd, 0 ) );
 
@@ -139,6 +145,7 @@ vi_rc FTSAddChar( char val, char *name )
 vi_rc FTSAddStr( char *val, char *name )
 {
     char    cmd[MAX_SRC_LINE];
+
     sprintf( cmd, "set %s %s", name, val );
     return( FTSAddCmd( cmd, 0 ) );
 
@@ -294,18 +301,12 @@ void FTSBarfData( FILE *f )
 
     for( fts = ftsHead; fts != NULL; fts = fts->next ) {
         MyFprintf( f, "filetypesource" );
-
-        template = fts->template_head;
-        while( template ) {
+        for( template = fts->template_head; template != NULL; template = template->next ) {
             MyFprintf( f, " %s", template->data );
-            template = template->next;
         }
         MyFprintf( f, "\n" );
-
-        cmd = fts->cmd_head;
-        while( cmd ) {
+        for( cmd = fts->cmd_head; cmd != NULL; cmd = cmd->next ) {
             MyFprintf( f, "    %s\n", cmd->data );
-            cmd = cmd->next;
         }
         MyFprintf( f, "endfiletypesource\n\n" );
     }
@@ -341,12 +342,11 @@ ft_src *FTSMatchTemplate( template_ll *template_head )
 void deleteTemplateList( template_ll *template_head )
 {
     template_ll *tp, *tpnext;
-    tpnext = template_head;
-    do {
-        tp = tpnext;
+
+    for( tp = template_head; tp != NULL; tp = tpnext ) {
         tpnext = tp->next;
         MemFree( tp );
-    } while( tpnext );
+    }
 }
 
 /*

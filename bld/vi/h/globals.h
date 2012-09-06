@@ -46,6 +46,7 @@ extern char _NEAR   CONFIG_FILE[];
 extern char _NEAR   MEMORIZE_MODE[];
 extern char _NEAR   SingleBlank[];
 extern char _NEAR   SingleSlash[];
+extern char _NEAR   SingleQuote[];
 extern char         * _NEAR EditOpts[];
 extern char         * _NEAR BoolStr[];
 extern int          NumEditOpts;

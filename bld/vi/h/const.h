@@ -44,7 +44,7 @@
 
 #define NO_WINDOW ((window_id) -1)
 
-#define ADD_BOOL_PREFIX(s,b)  if(!(b)) strcat( s, "no" );
+#define GET_BOOL_PREFIX(b)  ((b) ? "" : "no")
 
 typedef enum {
     DRIVE_NONE,

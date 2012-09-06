@@ -141,8 +141,8 @@ vi_rc Source( char *fn, char *data, int *ln )
     EditFlags.SourceScriptActive = TRUE;
     EditFlags.WatchForBreak = TRUE;
     EditFlags.ExMode = TRUE;
-    curr = sf->next;
-    while( curr != NULL ) {
+    rc = ERR_NO_ERR;
+    for( curr = sf->next;  rc == ERR_NO_ERR && curr != NULL; curr = curr->next ) {
 
         cTokenID = curr->token - SRC_T_NULL - 1;
 
@@ -164,21 +164,20 @@ vi_rc Source( char *fn, char *data, int *ln )
                 Expand( tmp, &vl );
             }
             rc = AppendAnother( tmp );
-            goto evil_continue;
-        }
-
-        if( cTokenID == PCL_T_ENDFILETYPESOURCE ) {
+        } else if( cTokenID == PCL_T_ENDFILETYPESOURCE ) {
             rc = FTSEnd();
-            goto evil_continue;
-        }
-
-        if( EditFlags.FileTypeSource ) {
+        } else if( EditFlags.FileTypeSource ) {
             rc = FTSAddCmd( tmp, curr->token );
-            goto evil_continue;
-        }
-
-        if( curr->token > SRC_T_NULL ) {
-
+        } else if( curr->token == SRC_T_RETURN ) {
+            if( curr->data != NULL ) {
+                int     ret;
+                GetErrorTokenValue( &ret, curr->data );
+                rc = ret;
+            } else {
+                rc = ERR_NO_ERR;
+            }
+            break;
+        } else if( curr->token > SRC_T_NULL ) {
             if( curr->hasvar) {
                 Expand( tmp, &vl );
             }
@@ -189,7 +188,6 @@ vi_rc Source( char *fn, char *data, int *ln )
             if( rc < ERR_NO_ERR ) {
                 rc = ERR_NO_ERR;
             }
-
         } else switch( curr->token ) {
         case SRC_T_ATOMIC:
             if( atomic == NULL ) {
@@ -208,16 +206,6 @@ vi_rc Source( char *fn, char *data, int *ln )
 
         case SRC_T_LABEL:
             break;
-
-        case SRC_T_RETURN:
-            if( curr->data != NULL ) {
-                int     ret;
-                GetErrorTokenValue( &ret, curr->data );
-                rc = ret;
-            } else {
-                rc = ERR_NO_ERR;
-            }
-            goto evil_exit;
 
         case SRC_T_GET:
             SrcGet( tmp, &vl );
@@ -283,16 +271,7 @@ vi_rc Source( char *fn, char *data, int *ln )
             }
             break;
         }
-
-evil_continue:
-        if( rc != ERR_NO_ERR ) {
-            break;
-        }
-        curr = curr->next;
-
     }
-
-evil_exit:
     if( EditFlags.Appending ) {
         AppendAnother( "." );
     }
@@ -321,25 +300,17 @@ evil_exit:
 static vi_rc initSource( vlist *vl, char *data )
 {
     int         j;
-    char        tmp[MAX_SRC_LINE], name[MAX_NUM_STR], all[MAX_SRC_LINE];
-    vi_rc       rc;
-
-    all[0] = 0;
+    char        tmp[MAX_SRC_LINE];
+    char        name[MAX_NUM_STR];
+    char        all[MAX_SRC_LINE];
 
     /*
      * break up command line parms
      */
-    j = 1;
-    while( TRUE ) {
-
-        rc = GetStringWithPossibleQuote( data, tmp );
-        if( rc != ERR_NO_ERR ) {
-            break;
-        }
+    all[0] = 0;
+    for( j = 1; GetStringWithPossibleQuote( data, tmp ) == ERR_NO_ERR; ++j ) {
         VarAddStr( itoa( j, name, 10 ), tmp, vl );
         StrMerge( 2, all, tmp, SingleBlank );
-        j++;
-
     }
     VarAddStr( "*", all, vl );
 

@@ -584,17 +584,28 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
         if( EditFlags.CompileScript ) {
 #endif
             itoa( j, str, 10 );
-            StrMerge( 4, WorkLine->data, str, SingleBlank, fn, SingleBlank );
+            strcat( WorkLine->data, str );
+            if( fn[0] == '\0' )
+                return( ERR_NO_ERR );
             switch( j ) {
+            case SET1_T_STATUSSTRING:
+            case SET1_T_FILEENDSTRING:
+            case SET1_T_HISTORYFILE:
+            case SET1_T_TMPDIR:
+            case SET1_T_TAGFILENAME:
+                StrMerge( 4, WorkLine->data, SingleBlank, SingleQuote, fn, SingleQuote );
+                break;
             case SET1_T_COMMANDCURSORTYPE:
             case SET1_T_OVERSTRIKECURSORTYPE:
             case SET1_T_INSERTCURSORTYPE:
+                StrMerge( 2, WorkLine->data, SingleBlank, fn );
                 if( NextWord1( value, fn ) <= 0 ) {
                     break;
                 }
-                strcat( WorkLine->data, fn );
+                StrMerge( 2, WorkLine->data, SingleBlank, fn );
                 break;
             case SET1_T_TILECOLOR:
+                StrMerge( 2, WorkLine->data, SingleBlank, fn );
                 if( NextWord1( value, fn ) <= 0 ) {
                     return( ERR_INVALID_SET_COMMAND );
                 }
@@ -602,6 +613,22 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                     return( ERR_INVALID_SET_COMMAND );
                 }
                 StrMerge( 4, WorkLine->data, fn, SingleBlank, str, SingleBlank );
+                break;
+            case SET1_T_STATUSSECTIONS:
+                StrMerge( 2, WorkLine->data, SingleBlank, fn );
+                while( NextWord1( value, fn ) > 0 ) {
+#ifdef VICOMP
+                    int k;
+#endif
+                    k = atoi( fn );
+                    if( k <= 0 ) {
+                        break;
+                    }
+                    StrMerge( 2, WorkLine->data, SingleBlank, fn );
+                }
+                break;
+            default:
+                StrMerge( 2, WorkLine->data, SingleBlank, fn );
                 break;
             }
             return( ERR_NO_ERR );
@@ -1219,7 +1246,6 @@ char *GetASetVal( char *token )
 
 char *ExpandTokenSet( char *token_no, char *buff )
 {
-    char        settokstr[MAX_STR + 1];
     bool        val;
     int         tok;
 
@@ -1229,13 +1255,11 @@ char *ExpandTokenSet( char *token_no, char *buff )
         tok *= -1;
         val = FALSE;
     }
-    *buff = '\0';
     if( tok >= SET1_T_ ) {
-        strcpy( settokstr, GetTokenString( SetTokens2, tok - SET2_T_ ) );
+        sprintf( buff, "%s%s", GET_BOOL_PREFIX( val ), GetTokenString( SetTokens2, tok - SET1_T_ ) );
     } else {
-        ADD_BOOL_PREFIX( settokstr, val );
-        strcat( settokstr, GetTokenString( SetTokens1, tok ) );
+        sprintf( buff, "%s", GetTokenString( SetTokens1, tok ) );
     }
-    return( strcat( buff, settokstr ) );
+    return( buff );
 }
 #endif

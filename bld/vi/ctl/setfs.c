@@ -40,16 +40,15 @@
 #include <assert.h>
 
 #define VI_LANG_FIRST   VI_LANG_LANG0
-#define VI_LANG_LAST    VI_LANG_LANG14
+#define VI_LANG_LAST    VI_LANG_LANG0 + LANG_MAX - 1
 
 #define TAGFILENAMEWIDTH        129
 #define GREPDEFAULTWIDTH        20
 #define FT_TITLE                "File Specific Options ("
-#define MAX_FT_ENTRIES          20  // limit of setfs.c, not of fts.c
 
 
 typedef struct {
-    lang_t      Language;
+    int         Language;
     BOOL        PPKeywordOnly;
     BOOL        CMode;
     BOOL        ReadEntireFile;
@@ -70,9 +69,8 @@ typedef struct {
     BOOL        ShowMatch;
 } dlg_data;
 
-static dlg_data     dlg_dataArray[MAX_FT_ENTRIES];
-
-static dlg_data     cancelData;
+static dlg_data     *dlgDataArray = NULL;
+static int          dlgDataArray_size = 0;
 
 static dyn_dim_type dynGetLanguage( HWND hwndDlg, BOOL initial )
 {
@@ -106,63 +104,113 @@ static BOOL dynIsLanguage( UINT wParam, LONG lParam, HWND hwndDlg )
 #include "setfs.dh"
 #include "setfs.ch"
 
-static void globalTodlg_data( dlg_data *data, info *envInfo )
+static void globalTodlgData( dlg_data *data, info *envInfo )
 {
-    if( envInfo ) {
-        data->Language = envInfo->Language;
-        data->PPKeywordOnly = EditFlags.PPKeywordOnly;
-        data->CMode = EditFlags.CMode;
-        data->ReadEntireFile = EditFlags.ReadEntireFile;
-        data->ReadOnlyCheck = EditFlags.ReadOnlyCheck;
-        data->IgnoreCtrlZ = EditFlags.IgnoreCtrlZ;
-        data->CRLFAutoDetect = EditFlags.CRLFAutoDetect;
-        data->WriteCRLF = EditFlags.WriteCRLF;
-        data->EightBits = EditFlags.EightBits;
-        data->TabAmount = TabAmount;
-        data->RealTabs = EditFlags.RealTabs;
-        data->HardTab = HardTab;
-        data->AutoIndent = EditFlags.AutoIndent;
-        data->ShiftWidth = ShiftWidth;
+    if( envInfo != NULL ) {
+        data->Language          = envInfo->Language;
+        data->PPKeywordOnly     = EditFlags.PPKeywordOnly;
+        data->CMode             = EditFlags.CMode;
+        data->ReadEntireFile    = EditFlags.ReadEntireFile;
+        data->ReadOnlyCheck     = EditFlags.ReadOnlyCheck;
+        data->IgnoreCtrlZ       = EditFlags.IgnoreCtrlZ;
+        data->CRLFAutoDetect    = EditFlags.CRLFAutoDetect;
+        data->WriteCRLF         = EditFlags.WriteCRLF;
+        data->EightBits         = EditFlags.EightBits;
+        data->TabAmount         = TabAmount;
+        data->RealTabs          = EditFlags.RealTabs;
+        data->HardTab           = HardTab;
+        data->AutoIndent        = EditFlags.AutoIndent;
+        data->ShiftWidth        = ShiftWidth;
         strncpy( data->TagFileName, TagFileName, TAGFILENAMEWIDTH - 1 );
         data->TagFileName[TAGFILENAMEWIDTH - 1] = '\0';
-        data->IgnoreTagCase = EditFlags.IgnoreTagCase;
-        data->TagPrompt = EditFlags.TagPrompt;
+        data->IgnoreTagCase     = EditFlags.IgnoreTagCase;
+        data->TagPrompt         = EditFlags.TagPrompt;
         strncpy( data->GrepDefault, GrepDefault, GREPDEFAULTWIDTH - 1 );
         data->GrepDefault[GREPDEFAULTWIDTH - 1] = '\0';
-        data->ShowMatch = EditFlags.ShowMatch;
+        data->ShowMatch         = EditFlags.ShowMatch;
     }
 }
 
-static void dlg_dataDefault( dlg_data *data )
+static void dlgDataDefault( dlg_data *data )
 {
-    data->Language = LANG_NONE;
-    data->PPKeywordOnly = FALSE;
-    data->CMode = FALSE;
+    data->Language       = LANG_NONE;
+    data->PPKeywordOnly  = FALSE;
+    data->CMode          = FALSE;
     data->ReadEntireFile = FALSE;
-    data->ReadOnlyCheck = TRUE;
-    data->IgnoreCtrlZ = TRUE;
+    data->ReadOnlyCheck  = TRUE;
+    data->IgnoreCtrlZ    = TRUE;
     data->CRLFAutoDetect = TRUE;
-    data->WriteCRLF = TRUE;
-    data->EightBits = TRUE;
-    data->TabAmount = 8;
-    data->RealTabs = FALSE;
-    data->HardTab = 8;
-    data->AutoIndent = FALSE;
-    data->ShiftWidth = 4;
+    data->WriteCRLF      = TRUE;
+    data->EightBits      = TRUE;
+    data->TabAmount      = 8;
+    data->RealTabs       = FALSE;
+    data->HardTab        = 8;
+    data->AutoIndent     = FALSE;
+    data->ShiftWidth     = 4;
     data->TagFileName[0] = '\0';
-    data->IgnoreTagCase = TRUE;
-    data->TagPrompt = TRUE;
+    data->IgnoreTagCase  = TRUE;
+    data->TagPrompt      = TRUE;
     data->GrepDefault[0] = '\0';
-    data->ShowMatch = FALSE;
+    data->ShowMatch      = FALSE;
 }
 
-static void filldlg_dataArray( int index, char *match, info *useInfo )
+static void dlgDataToGlobal( dlg_data *data )
 {
+    LangInit( data->Language );
+    EditFlags.PPKeywordOnly     = data->PPKeywordOnly;
+    EditFlags.CMode             = data->CMode;
+    EditFlags.ReadEntireFile    = data->ReadEntireFile;
+    EditFlags.ReadOnlyCheck     = data->ReadOnlyCheck;
+    EditFlags.IgnoreCtrlZ       = data->IgnoreCtrlZ;
+    EditFlags.CRLFAutoDetect    = data->CRLFAutoDetect;
+    EditFlags.WriteCRLF         = data->WriteCRLF;
+    EditFlags.EightBits         = data->EightBits;
+    EditFlags.RealTabs          = data->RealTabs;
+    EditFlags.AutoIndent        = data->AutoIndent;
+    EditFlags.IgnoreTagCase     = data->IgnoreTagCase;
+    EditFlags.TagPrompt         = data->TagPrompt;
+    EditFlags.ShowMatch         = data->ShowMatch;
+    TabAmount                   = data->TabAmount;
+    HardTab                     = data->HardTab;
+    ShiftWidth                  = data->ShiftWidth;
+
+    /*
+     * language specific variables with extra handling
+     */
+    if( strcmp( TagFileName, data->TagFileName ) ) {
+        AddString2( &TagFileName, data->TagFileName );
+    }
+    if( strcmp( GrepDefault, data->GrepDefault ) ) {
+        AddString2( &GrepDefault, data->GrepDefault );
+    }
+}
+
+static void dlgDataInit( void )
+{
+    ft_src      *fts;
+
+    dlgDataArray_size = 0;
+    for( fts = FTSGetFirst(); fts != NULL; fts = FTSGetNext( fts ) ) {
+        ++dlgDataArray_size;
+    }
+    dlgDataArray = MemAlloc( dlgDataArray_size * sizeof( dlg_data ) );
+}
+
+static void dlgDataFini( void )
+{
+    MemFree( dlgDataArray );
+}
+
+static void filldlgData( dlg_data *data, char *match, info *useInfo )
+{
+    // setup default values
+    memset( useInfo, 0, sizeof( info ) );
+    dlgDataDefault( data );
+    dlgDataToGlobal( data );
     // run ftype commands (the wildcard should match itself ok!)
     FTSRunCmds( match );
-
     // copy environment
-    globalTodlg_data( &(dlg_dataArray[index]), useInfo );
+    globalTodlgData( data, useInfo );
 }
 
 static void fillFileType( HWND hwndDlg )
@@ -173,10 +221,15 @@ static void fillFileType( HWND hwndDlg )
     char        str[_MAX_PATH];
     int         strLen;
     int         index;
-    info        envInfo, *oldCurrentInfo;
+    info        envInfo;
+    info        *oldCurrentInfo;
+    dlg_data    old_dlgData;
 
+    // save vi setup, because this routine destroy it
+    if( CurrentInfo != NULL ) {
+        globalTodlgData( &old_dlgData, CurrentInfo );
+    }
     oldCurrentInfo = CurrentInfo;
-    memset( &envInfo, 0, sizeof( envInfo ) );
     CurrentInfo = &envInfo;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
@@ -193,7 +246,7 @@ static void fillFileType( HWND hwndDlg )
             strcat( str, template->data );
             template = FTSGetNextTemplate( template );
         }
-        filldlg_dataArray( index, template1->data, CurrentInfo );
+        filldlgData( dlgDataArray + index, template1->data, CurrentInfo );
         SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)(str + 1) );
     }
     index = 0;
@@ -205,19 +258,11 @@ static void fillFileType( HWND hwndDlg )
     }
     SendMessage( hwndCB, CB_SETCURSEL, index, 0L );
 
+    // restore vi original setup
+    LangFini( CurrentInfo->Language );
     CurrentInfo = oldCurrentInfo;
-}
-
-static void fillLanguage( HWND hwndDlg )
-{
-    HWND    hwndCB;
-    char    str[_MAX_PATH];
-    int     i;
-
-    hwndCB = GetDlgItem( hwndDlg, SETFS_LANGUAGESELECT );
-    for( i = VI_LANG_FIRST; i <= VI_LANG_LAST; i++ ) {
-        LoadString( GET_HINSTANCE( hwndDlg ), i, str, _MAX_PATH );
-        SendMessage( hwndCB, CB_INSERTSTRING, -1, (LPARAM)str );
+    if( CurrentInfo != NULL ) {
+        dlgDataToGlobal( &old_dlgData );
     }
 }
 
@@ -236,51 +281,50 @@ static void updateDialogSettings( HWND hwndDlg, BOOL title )
         totallen += sizeof( FT_TITLE ) + 1;
         template = MemAlloc( totallen );
         strcpy( template, FT_TITLE );
-        SendMessage( hwndCB, CB_GETLBTEXT, index,
-                     (LONG)(template + sizeof( FT_TITLE ) - 1) );
+        SendMessage( hwndCB, CB_GETLBTEXT, index, (LONG)(template + sizeof( FT_TITLE ) - 1) );
         template[totallen - 2] = ')';
         template[totallen - 1] = '\0';
         SetWindowText( hwndDlg, template );
         MemFree( template );
     }
 
-    ctl_dlg_init( GET_HINSTANCE( hwndDlg ), hwndDlg,
-                  &(dlg_dataArray[index]), &Ctl_setfs );
+    ctl_dlg_init( GET_HINSTANCE( hwndDlg ), hwndDlg, dlgDataArray + index, &Ctl_setfs );
     dyn_tpl_init( &Dyn_setfs, hwndDlg );
 }
 
-static void dumpCommands( int i )
+static void dumpCommands( dlg_data *data )
 {
-    FTSAddBoolean( dlg_dataArray[i].ReadEntireFile, "readentirefile" );
-    FTSAddBoolean( dlg_dataArray[i].ReadOnlyCheck, "readonlycheck" );
-    FTSAddBoolean( dlg_dataArray[i].IgnoreCtrlZ, "ignorectrlz" );
-    FTSAddBoolean( dlg_dataArray[i].CRLFAutoDetect, "crlfautodetect" );
-    FTSAddBoolean( dlg_dataArray[i].WriteCRLF, "writecrlf" );
-    FTSAddBoolean( dlg_dataArray[i].EightBits, "eightbits" );
-    FTSAddBoolean( dlg_dataArray[i].RealTabs, "realtabs" );
-    FTSAddBoolean( dlg_dataArray[i].AutoIndent, "autoindent" );
-    FTSAddBoolean( dlg_dataArray[i].IgnoreTagCase, "ignoretagcase" );
-    FTSAddBoolean( dlg_dataArray[i].TagPrompt, "tagprompt" );
-    FTSAddBoolean( dlg_dataArray[i].CMode, "cmode" );
-    FTSAddBoolean( dlg_dataArray[i].ShowMatch, "showmatch" );
-    FTSAddBoolean( dlg_dataArray[i].PPKeywordOnly, "ppkeywordonly" );
+    FTSAddBoolean( data->ReadEntireFile,    "readentirefile" );
+    FTSAddBoolean( data->ReadOnlyCheck,     "readonlycheck" );
+    FTSAddBoolean( data->IgnoreCtrlZ,       "ignorectrlz" );
+    FTSAddBoolean( data->CRLFAutoDetect,    "crlfautodetect" );
+    FTSAddBoolean( data->WriteCRLF,         "writecrlf" );
+    FTSAddBoolean( data->EightBits,         "eightbits" );
+    FTSAddBoolean( data->RealTabs,          "realtabs" );
+    FTSAddBoolean( data->AutoIndent,        "autoindent" );
+    FTSAddBoolean( data->IgnoreTagCase,     "ignoretagcase" );
+    FTSAddBoolean( data->TagPrompt,         "tagprompt" );
+    FTSAddBoolean( data->CMode,             "cmode" );
+    FTSAddBoolean( data->ShowMatch,         "showmatch" );
+    FTSAddBoolean( data->PPKeywordOnly,     "ppkeywordonly" );
 
-    FTSAddInt( dlg_dataArray[i].Language, "language" );
+    FTSAddInt( data->Language,              "language" );
 
-    FTSAddInt( dlg_dataArray[i].TabAmount, "tabamount" );
+    FTSAddInt( data->TabAmount,             "tabamount" );
 
-    FTSAddInt( dlg_dataArray[i].HardTab, "hardtab" );
-    FTSAddInt( dlg_dataArray[i].ShiftWidth, "shiftwidth" );
+    FTSAddInt( data->HardTab,               "hardtab" );
+    FTSAddInt( data->ShiftWidth,            "shiftwidth" );
 
-    FTSAddStr( dlg_dataArray[i].TagFileName, "tagfilename" );
-    FTSAddStr( dlg_dataArray[i].GrepDefault, "grepdefault" );
+    FTSAddStr( data->TagFileName,           "tagfilename" );
+    FTSAddStr( data->GrepDefault,           "grepdefault" );
 }
 
 static void writeSettings( HWND hwndDlg )
 {
     // dump our little structure back into source line for fts
     HWND    hwndCB;
-    int     nTemplates, i;
+    int     dlgDataArray_count;
+    int     index;
     char    *template;
     int     len;
 
@@ -288,15 +332,15 @@ static void writeSettings( HWND hwndDlg )
     FTSInit();
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    nTemplates = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
+    dlgDataArray_count = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
 
-    for( i = 0; i < nTemplates; i++ ) {
+    for( index = 0; index < dlgDataArray_count; index++ ) {
         // put back in order we got them
-        len = SendMessage( hwndCB, CB_GETLBTEXTLEN, i, 0L );
+        len = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
         template = MemAlloc( len + 1 );
-        SendMessage( hwndCB, CB_GETLBTEXT, i, (LONG)template );
+        SendMessage( hwndCB, CB_GETLBTEXT, index, (LONG)template );
         FTSStart( template );
-        dumpCommands( i );
+        dumpCommands( dlgDataArray + index );
         FTSEnd();
         MemFree( template );
     }
@@ -308,43 +352,39 @@ static void writeSettings( HWND hwndDlg )
 static long deleteSelectedFT( HWND hwndDlg )
 {
     HWND    hwndCB;
-    int     i, len, rc;
+    int     len, rc;
+    int     index;
     char    *template;
+    int     dlgDataArray_count;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    i = SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
-    if( i == CB_ERR ) {
+    dlgDataArray_count = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
+
+    index = SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
+    if( index == CB_ERR ) {
         MessageBox( hwndDlg, "No item selected", "", MB_ICONINFORMATION | MB_OK );
         return( 1L );
     }
-
     // get template in string form
-    len = SendMessage( hwndCB, CB_GETLBTEXTLEN, i, 0L );
+    len = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
     template = MemAlloc( len + 1 );
-    SendMessage( hwndCB, CB_GETLBTEXT, i, (LONG)template );
-
+    SendMessage( hwndCB, CB_GETLBTEXT, index, (LONG)template );
     // can't delete *.* entry
     rc = IDYES;
     if( !strcmp( template, "*.*" ) ) {
-        MessageBox( hwndDlg, "Cannot delete catch-all item",
-                    "", MB_ICONINFORMATION | MB_OK );
+        MessageBox( hwndDlg, "Cannot delete catch-all item", "", MB_ICONINFORMATION | MB_OK );
         rc = IDNO;
     }
-
     if( rc == IDYES ) {
         // remove from our internal list
-        memmove( dlg_dataArray + i, dlg_dataArray + i + 1,
-                 sizeof( dlg_data ) * (MAX_FT_ENTRIES - i - 1) );
-
+        memmove( dlgDataArray + index, dlgDataArray + index + 1, sizeof( dlg_data ) * ( dlgDataArray_count - index - 1 ) );
         // remove from Windows combo box
-        SendMessage( hwndCB, CB_DELETESTRING, i, 0l );
-
+        SendMessage( hwndCB, CB_DELETESTRING, index, 0L );
         // reset selection
-        if( i > 0 ) {
-            i--;
+        if( index > 0 ) {
+            index--;
         }
-        SendMessage( hwndCB, CB_SETCURSEL, i, 0L );
-
+        SendMessage( hwndCB, CB_SETCURSEL, index, 0L );
         // update other dialog settings
         updateDialogSettings( GetParent( hwndCB ), TRUE );
     }
@@ -356,64 +396,37 @@ static long insertFT( HWND hwndDlg )
 {
     HWND    hwndCB;
     char    *text;
-    int     len, i;
-    int     nTemplates;
+    int     len;
+    int     index;
+    int     dlgDataArray_count;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
+    dlgDataArray_count = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
 
     // get new template
     len = GetWindowTextLength( hwndCB );
     text = MemAlloc( len + 1 );
     GetWindowText( hwndCB, text, len + 1 );
-    nTemplates = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
 
     // attempt to insert at current position
-    i = SendMessage( hwndCB, CB_FINDSTRING, -1, (LONG)text );
-    if( i != CB_ERR &&
-        SendMessage( hwndCB, CB_GETLBTEXTLEN, i, 0L ) == strlen( text ) ) {
-        MessageBox( hwndDlg, "Template already defined",
-                    "", MB_ICONINFORMATION | MB_OK );
+    index = SendMessage( hwndCB, CB_FINDSTRING, -1, (LONG)text );
+    if( index != CB_ERR && SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L ) == strlen( text ) ) {
+        MessageBox( hwndDlg, "Template already defined", "", MB_ICONINFORMATION | MB_OK );
         return( 0L );
     }
-    if( nTemplates == MAX_FT_ENTRIES ) {
-        MessageBox( hwndDlg, "Cannot hold any more templates",
-                    "", MB_ICONINFORMATION | MB_OK );
-        return( 0L );
+    // make memory space for new FT entry if necessary
+    if( dlgDataArray_count + 1 > dlgDataArray_size ) {
+        dlgDataArray = MemReAlloc( dlgDataArray, ( ++dlgDataArray_size ) * sizeof( dlg_data ) );
     }
     // for now, always insert at top of list
-    i = 0;
-    memmove( dlg_dataArray + i + 1, dlg_dataArray + i,
-             sizeof( dlg_data ) * (MAX_FT_ENTRIES - i - 1) );
-    dlg_dataDefault( &dlg_dataArray[i] );
-    SendMessage( hwndCB, CB_INSERTSTRING, i, (LONG)text );
-    SendMessage( hwndCB, CB_SETCURSEL, i, 0L );
+    index = 0;
+    memmove( dlgDataArray + index + 1, dlgDataArray + index, sizeof( dlg_data ) * ( dlgDataArray_count - index ) );
+    dlgDataDefault( dlgDataArray + index );
+    SendMessage( hwndCB, CB_INSERTSTRING, index, (LONG)text );
+    SendMessage( hwndCB, CB_SETCURSEL, index, 0L );
     updateDialogSettings( hwndDlg, TRUE );
 
     return( 1L );
-}
-
-static void cancelSettings( void )
-{
-    LangInit( cancelData.Language );
-    EditFlags.PPKeywordOnly     = cancelData.PPKeywordOnly;
-    EditFlags.CMode             = cancelData.CMode;
-    EditFlags.ReadEntireFile    = cancelData.ReadEntireFile;
-    EditFlags.ReadOnlyCheck     = cancelData.ReadOnlyCheck;
-    EditFlags.IgnoreCtrlZ       = cancelData.IgnoreCtrlZ;
-    EditFlags.CRLFAutoDetect    = cancelData.CRLFAutoDetect;
-    EditFlags.WriteCRLF         = cancelData.WriteCRLF;
-    EditFlags.EightBits         = cancelData.EightBits;
-    EditFlags.RealTabs          = cancelData.RealTabs;
-    EditFlags.AutoIndent        = cancelData.AutoIndent;
-    EditFlags.IgnoreTagCase     = cancelData.IgnoreTagCase;
-    EditFlags.TagPrompt         = cancelData.TagPrompt;
-    EditFlags.ShowMatch         = cancelData.ShowMatch;
-    TabAmount                   = cancelData.TabAmount;
-    HardTab                     = cancelData.HardTab;
-    ShiftWidth                  = cancelData.ShiftWidth;
-
-    // strncpy( cancelData->TagFileName, TagFileName, TAGFILENAMEWIDTH - 1 );
-    // GrepDefault = cancelData->GrepDefault[GREPDEFAULTWIDTH - 1] = '\0';
 }
 
 /*
@@ -421,18 +434,15 @@ static void cancelSettings( void )
  */
 BOOL WINEXP SetFSProc( HWND hwndDlg, unsigned msg, UINT wParam, LONG lParam )
 {
-    dlg_data    oldData;        // junk
-    int         rc;
     int         index;
     HWND        ctlhwnd;
     WORD        cmd;
 
     switch( msg ) {
     case WM_INITDIALOG:
-        globalTodlg_data( &cancelData, CurrentInfo );
         CenterWindowInRoot( hwndDlg );
+        dlgDataInit();
         fillFileType( hwndDlg );
-        fillLanguage( hwndDlg );
         updateDialogSettings( hwndDlg, TRUE );
         return( TRUE );
 
@@ -441,9 +451,8 @@ BOOL WINEXP SetFSProc( HWND hwndDlg, unsigned msg, UINT wParam, LONG lParam )
         case SETFS_FILETYPE:
             cmd = GET_WM_COMMAND_CMD( wParam, lParam );
             if( cmd == CBN_SELCHANGE ) {
-                rc = ctl_dlg_done( GET_HINSTANCE( hwndDlg ),
-                                   hwndDlg, &oldData, &Ctl_setfs );
-                assert( rc != 0 );
+//                rc = ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, &oldData, &Ctl_setfs );
+//                assert( rc != 0 );
                 updateDialogSettings( hwndDlg, TRUE );
             } else if( cmd == CBN_SETFOCUS ) {
                 // if we are getting the focus, something probably changed
@@ -451,8 +460,7 @@ BOOL WINEXP SetFSProc( HWND hwndDlg, unsigned msg, UINT wParam, LONG lParam )
                 index = SendMessage( ctlhwnd, CB_GETCURSEL, 0, 0L );
 
                 // this may bump focus back to a bad field
-                if( ctl_dlg_done( GET_HINSTANCE( hwndDlg ),
-                                  hwndDlg, &(dlg_dataArray[index]), &Ctl_setfs ) ) {
+                if( ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, dlgDataArray + index, &Ctl_setfs ) ) {
                     updateDialogSettings( hwndDlg, FALSE );
                 }
             }
@@ -464,20 +472,14 @@ BOOL WINEXP SetFSProc( HWND hwndDlg, unsigned msg, UINT wParam, LONG lParam )
             insertFT( hwndDlg );
             return( TRUE );
         case IDOK:
-            index = SendMessage( GetDlgItem( hwndDlg, SETFS_FILETYPE ),
-                                 CB_GETCURSEL, 0, 0L );
-            if( !ctl_dlg_done( GET_HINSTANCE( hwndDlg ),
-                               hwndDlg, &(dlg_dataArray[index]),
-                               &Ctl_setfs ) ) {
+            index = SendMessage( GetDlgItem( hwndDlg, SETFS_FILETYPE ), CB_GETCURSEL, 0, 0L );
+            if( !ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, dlgDataArray + index, &Ctl_setfs ) ) {
                 return( TRUE );
             }
             writeSettings( hwndDlg );
-            EndDialog( hwndDlg, TRUE );
-            return( TRUE );
+            // fall through
         case IDCANCEL:
-            if( CurrentInfo ) {
-                cancelSettings();
-            }
+            dlgDataFini();
             EndDialog( hwndDlg, TRUE );
             return( TRUE );
         }
@@ -496,9 +498,9 @@ bool GetSetFSDialog( void )
     DLGPROC     proc;
     bool        rc;
 
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) SetFSProc, InstanceHandle );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)SetFSProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "SETFS", Root, proc );
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( TRUE );

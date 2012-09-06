@@ -7,7 +7,7 @@ BEGIN
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_GROUP | WS_TABSTOP
     LTEXT           "Syntax Highlighting", 109, 9, 66, 75, 12
     GROUPBOX        "Language", 105, 4, 56, 100, 79
-    COMBOBOX        SETFS_LANGUAGESELECT, 20, 78, 75, 18, CBS_DROPDOWNLIST |
+    COMBOBOX        SETFS_LANGUAGESELECT, 20, 78, 75, 132, CBS_DROPDOWNLIST |
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
     CONTROL         "Block preprocessor", SETFS_PPKEYWORDONLY, "Button",
                     BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_GROUP | WS_TABSTOP,

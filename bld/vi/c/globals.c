@@ -43,6 +43,7 @@ char _NEAR      MEMORIZE_MODE[] = "Memorize Mode ";
 char _NEAR      CONFIG_FILE[] = CFG_NAME;
 char _NEAR      SingleBlank[] = " ";
 char _NEAR      SingleSlash[] = "/";
+char _NEAR      SingleQuote[] = "\"";
 char            * _NEAR BoolStr[] = { "FALSE", "TRUE" };
 
 /* edit options */

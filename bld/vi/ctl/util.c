@@ -36,18 +36,19 @@
 
 vi_rc UtilUpdateBoolean( BOOL old, BOOL val, char *name )
 {
-    char    cmd[MAX_SRC_LINE] = "set ";
+    char    cmd[MAX_SRC_LINE];
+
     if( old == val ) {
         return( ERR_NO_ERR );
     }
-    ADD_BOOL_PREFIX( cmd, val );
-    strcat( cmd, name );
+    sprintf( cmd, "set %s%s", GET_BOOL_PREFIX( val ), name );
     return( RunCommandLine( cmd ) );
 }
 
 vi_rc UtilUpdateInt( int old, int val, char *name )
 {
     char    cmd[MAX_SRC_LINE];
+
     if( old == val ) {
         return( ERR_NO_ERR );
     }
@@ -58,6 +59,7 @@ vi_rc UtilUpdateInt( int old, int val, char *name )
 vi_rc UtilUpdateChar( char old, char val, char *name )
 {
     char    cmd[MAX_SRC_LINE];
+
     if( old == val ) {
         return( ERR_NO_ERR );
     }
@@ -68,6 +70,7 @@ vi_rc UtilUpdateChar( char old, char val, char *name )
 vi_rc UtilUpdateStr( char *old, char *val, char *name )
 {
     char    cmd[MAX_SRC_LINE];
+
     if( !strcmp( old, val ) ) {
         return( ERR_NO_ERR );
     }

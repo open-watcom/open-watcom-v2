@@ -31,5 +31,5 @@
 
 #define MAGIC_COOKIE    "CGEXXX"
 
-typedef unsigned short  bind_unsigned;
+typedef unsigned short  bind_size;
 
