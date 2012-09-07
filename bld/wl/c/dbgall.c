@@ -132,17 +132,12 @@ section *DBIGetSect( char *clname )
 void DBIColClass( class_entry *class )
 /*******************************************/
 {
-    bool        isdbi;
-
-    isdbi = TRUE;
     if( stricmp( class->name, _DwarfClass ) == 0 ) {
         class->flags |= CLASS_DWARF;
     } else if( stricmp( class->name, _MSTypeClass ) == 0 ) {
         class->flags |= CLASS_MS_TYPE;
     } else if( stricmp( class->name, _MSLocalClass ) == 0 ) {
         class->flags |= CLASS_MS_LOCAL;
-    } else {
-        isdbi = FALSE;
     }
 }
 
@@ -565,6 +560,7 @@ void DBIWrite( void )
             CVWriteDebugTypeMisc( Root->outfile->fname );
         }
     }
+    save = NULL;
     if( SymFileName != NULL ) {
         InitBuffFile( &symfile, SymFileName, FALSE );
         OpenBuffFile( &symfile );

@@ -101,7 +101,6 @@ static void WriteRDOSCode( void )
     struct seg_leader   *leader;
     SEGDATA             *piece;
     int                 iscode;
-    int                 isdata;
 
     DEBUG(( DBG_BASE, "Writing code" ));
     OrderGroups( CompareDosSegments );
@@ -112,19 +111,16 @@ static void WriteRDOSCode( void )
     leader = 0;
 
 /* write groups and relocations */
+    iscode = 0;
     for( group = Groups; group != NULL; ) {
         if( leader != group->leaders ) {
             iscode = 0;
-            isdata = 0;
             leader = group->leaders;
             if( leader && leader->size && Extension == E_RDV ) {
                 piece = leader->pieces; 
                 if( piece ) {
                     if( piece->iscode && ( leader->seg_addr.seg == FmtData.u.rdos.code_seg ) ) {
                         iscode = 1;
-                    }
-                    if( ( piece->isidata || piece->isuninit ) && ( leader->seg_addr.seg == FmtData.u.rdos.data_seg ) ) {
-                        isdata = 1;
                     }
                 }
             }
@@ -139,7 +135,7 @@ static void WriteRDOSCode( void )
                 PadLoad( group->totalsize - group->size );
 
             CodeSize += group->totalsize;
-        }                
+        }
         group = group->next_group;
     }
 }
@@ -152,23 +148,20 @@ static void WriteRDOSData( void )
     SECTION             *sect;
     struct seg_leader   *leader;
     SEGDATA             *piece;
-    int                 iscode;
     int                 isdata;
 
     DEBUG(( DBG_BASE, "Writing data" ));
 
 /* write groups and relocations */
+    leader = NULL;
+	isdata = 0;
     for( group = Groups; group != NULL; ) {
         if( leader != group->leaders ) {
-            iscode = 0;
             isdata = 0;
             leader = group->leaders;
             if( leader && leader->size && Extension == E_RDV ) {
                 piece = leader->pieces; 
                 if( piece ) {
-                    if( piece->iscode && ( leader->seg_addr.seg == FmtData.u.rdos.code_seg ) ) {
-                        iscode = 1;
-                    }
                     if( ( piece->isidata || piece->isuninit ) && ( leader->seg_addr.seg == FmtData.u.rdos.data_seg ) ) {
                         isdata = 1;
                     }
@@ -194,7 +187,7 @@ static void WriteRDOSData( void )
             if( group->totalsize > group->size )
                 PadLoad( group->totalsize - group->size );
             DataSize += group->totalsize;
-        }                
+        }
         group = group->next_group;
     }
 }
@@ -205,15 +198,11 @@ void GetRdosSegs( void )
     group_entry         *group;
     struct seg_leader   *leader;
     SEGDATA             *piece;
-    int                 iscode;
-    int                 isdata;
 
     leader = 0;
 
     for( group = Groups; group != NULL; ) {
         if( leader != group->leaders ) {
-            iscode = 0;
-            isdata = 0;
             leader = group->leaders;
             if( leader && leader->size ) {
                 piece = leader->pieces; 

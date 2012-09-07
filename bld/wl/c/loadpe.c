@@ -683,14 +683,12 @@ static void WriteFixupInfo( pe_header *header, pe_object *object )
     group_entry         *group;
     void ***            reloclist;
     unsigned long       size;
-    unsigned long       count;
 
     strncpy( object->name, ".reloc", PE_OBJ_NAME_LEN );
     object->physical_offset = NullAlign( header->file_align );
     object->rva = header->image_size;
     object->flags = PE_OBJ_INIT_DATA | PE_OBJ_READABLE | PE_OBJ_DISCARDABLE;
     size = 0;
-    count = 0;
     /* When using non-default object alignment, groups and pages need
      * not be in sync at all.
      */

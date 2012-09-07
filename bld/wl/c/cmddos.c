@@ -140,6 +140,8 @@ bool ProcBegin( void )
 
     LinkState |= FMT_SPECIFIED;      // she must want DOS mode.
     if( ( OvlLevel > 0 ) && FmtData.u.dos.dynamic ) {
+        oldsect = NULL;
+        oldflist = NULL;
         CmdFlags &= ~CF_AUTOSECTION;        // merge old area with this.
     } else {
         oldsect = CurrSect;

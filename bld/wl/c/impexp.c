@@ -63,6 +63,7 @@ static entry_export * FindPlace( entry_export *exp )
     entry_export *  ret;
 
     ret = NULL;
+	prev = NULL;
     place = exp->next;
     if( place != NULL && place->ordinal <= exp->ordinal ) {
         for(;;) {

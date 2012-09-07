@@ -307,9 +307,11 @@ void HexOutput( void )
     group_entry         *group;
     group_entry         *wrkgrp;
     section             *sect;
+#ifdef _INT_DEBUG
     outfilelist         *finfo;
+#endif
     unsigned_32         size;
-    class_entry        *class;
+    class_entry         *class;
     grpwriteinfo        info;
 
     nextAddr = 0L;  // Start at absolute linear address 0
@@ -336,7 +338,9 @@ void HexOutput( void )
                 info.addr = (group->grp_addr.off + group->linear - FmtData.output_offset);
                 sect = wrkgrp->section;
                 CurrSect = sect;
+#ifdef _INT_DEBUG
                 finfo = sect->outfile;
+#endif
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                     &group->grp_addr, sect->ovl_num, info.addr, finfo->fname ));
                 if( group->leaders->class->flags & CLASS_COPY ) {
@@ -359,7 +363,9 @@ void HexOutput( void )
             if( class->flags & CLASS_COPY ) {
                 sect = group->section;
                 CurrSect = sect;
+#ifdef _INT_DEBUG
                 finfo = sect->outfile;
+#endif
                 info.addr = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                     &group->grp_addr, sect->ovl_num, info.addr, finfo->fname ));
@@ -369,7 +375,9 @@ void HexOutput( void )
                 if( group->size != 0 ) {
                     sect = group->section;
                     CurrSect = sect;
-                    finfo = sect->outfile;
+#ifdef _INT_DEBUG
+					finfo = sect->outfile;
+#endif
                     info.addr = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
                     DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                         &group->grp_addr, sect->ovl_num, info.addr, finfo->fname ));

@@ -185,11 +185,9 @@ void RehashHTable( pHTable table ) {
     int i;
     pHTElem *tbl;
     pHTElem elem, *pelem;
-    pFreeFunc free;
     unsigned hash;
 
     tbl = table->tbl;
-    free = table->freeFunc;
     for( i = 0; i < table->size; i++ ) {
         for( pelem = &tbl[i]; *pelem != NULL; ) {
             elem = *pelem;
