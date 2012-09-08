@@ -34,17 +34,15 @@
 #include "cgdata.h"
 #include "cginmisc.h"
 
-uint_8 *CgInfoCodeAlignment( void )
-/*********************************/
-{
-    static uint_8 codeAlignment[3];
+static unsigned char    codeAlignment[] = { 2, TARGET_CHAR, TARGET_CHAR };
 
-    codeAlignment[0] = ( sizeof( codeAlignment ) / sizeof( codeAlignment[0] ) ) - 1;
+unsigned char   *CgInfoCodeAlignment( void )
+/******************************************/
+{
     if( OptSize == 0 ) {
         codeAlignment[1] = TARGET_INT;
     } else {
         codeAlignment[1] = TARGET_CHAR;
     }
-    codeAlignment[2] = TARGET_CHAR;
     return( codeAlignment );
 }

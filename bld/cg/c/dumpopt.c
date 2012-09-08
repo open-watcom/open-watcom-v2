@@ -31,6 +31,7 @@
 
 #include "cgdefs.h"
 #include "optwif.h"
+#include "rtclass.h"
 #include "dump.h"
 #include "opcodes.h"
 #include "feprotos.h"

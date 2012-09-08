@@ -108,8 +108,8 @@ static  void            DefDbgStruct( sym_id sym );
 static  char            GData[] = { "GDATA@" };
 #if _CPU == 8086 || _CPU == 386
 static  char            *CSSuff = TS_SEG_CODE;
-static  byte_seq        CodeAlignSeq = { 2, FALSE, { sizeof( inttarg ), 1 } };
-static  byte_seq        DefCodeAlignSeq = { 1, FALSE, { 1 } };
+static  unsigned char   CodeAlignSeq[] = { 2, sizeof( inttarg ), 1 };
+static  unsigned char   DefCodeAlignSeq[] = { 2, 1, 1 };
 #endif
 static  sym_id          ImpSym;
 static  segment_id      CurrSegId;
@@ -283,13 +283,13 @@ void    SubCodeSeg( void ) {
 
 
 #if _CPU == 8086 || _CPU == 386
-static  byte_seq    *AlignmentSeq( void ) {
-//=========================================
+static  unsigned char   *AlignmentSeq( void ) {
+//=============================================
 
     if( OZOpts & OZOPT_O_TIME ) {
-        return( (byte_seq *)&CodeAlignSeq );
+        return( CodeAlignSeq );
     } else {
-        return( (byte_seq *)&DefCodeAlignSeq );
+        return( DefCodeAlignSeq );
     }
 }
 
@@ -299,19 +299,17 @@ static  void    DefCodeSeg( void ) {
 
 // Define a code segment.
 
-    char        seg_name[MAX_SYMLEN+CS_SUFF_LEN+1];
-    byte_seq    *align_seq;
-    int         len;
-    int         alignment;
+    char            seg_name[MAX_SYMLEN+CS_SUFF_LEN+1];
+    unsigned char   *align_info_bytes;
+    int             i;
+    int             alignment;
 
-    align_seq = AlignmentSeq();  // variable length
+    align_info_bytes = AlignmentSeq();  // variable length
     alignment = 1;
-    len = 0;
-    while( len != align_seq->length ) {
-        if( alignment < align_seq->data[len] ) {
-            alignment = align_seq->data[len];
+    for( i = 1; i < align_info_bytes[0]; ++i ) {
+        if( alignment < align_info_bytes[i] ) {
+            alignment = align_info_bytes[i];
         }
-        ++len;
     }
     BldCSName( seg_name );
     CurrCodeSegId = AllocSegId();

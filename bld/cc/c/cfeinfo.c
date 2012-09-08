@@ -1104,7 +1104,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
         return( (VOIDPTR)SymChipBug ); /* 09-dec-94 */
     case CODE_LABEL_ALIGNMENT:
         {
-            static unsigned char    Alignment[] = { 2, 1, 1 };
+            static  unsigned char   Alignment[] = { 2, 1, 1 };
 
             if( OptSize == 0 )
                 Alignment[1] = TARGET_INT;

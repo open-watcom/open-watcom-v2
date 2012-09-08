@@ -33,6 +33,6 @@
 #ifndef _CGINMISC_H
 #define _CGINMISC_H
 
-extern uint_8 *CgInfoCodeAlignment( void );
+extern unsigned char    *CgInfoCodeAlignment( void );
 
 #endif

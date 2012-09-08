@@ -159,11 +159,11 @@ static issigned Signed[] = {
 extern unsigned DepthAlign( unsigned depth )
 /******************************************/
 {
-    static byte AlignArray[10] = { 0 };
+    static unsigned char AlignArray[10] = { 0 };
 
     if( AlignArray[0] == 0 || depth == PROC_ALIGN ) {
-        Copy( FEAuxInfo( NULL, CODE_LABEL_ALIGNMENT ), AlignArray,
-                    sizeof( AlignArray ) );
+        unsigned char *align_info_bytes = FEAuxInfo( NULL, CODE_LABEL_ALIGNMENT );
+        Copy( align_info_bytes, AlignArray, align_info_bytes[0] + 1 );
     }
     if( OptForSize )
         return( 1 );
@@ -177,7 +177,7 @@ extern unsigned DepthAlign( unsigned depth )
             return( 4 );
         return( 1 );
     }
-    if( depth == PROC_ALIGN ) {
+    if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN ) {
         return( AlignArray[1] );
     }
     if( depth == 0 )
