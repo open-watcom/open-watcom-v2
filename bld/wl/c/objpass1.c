@@ -520,6 +520,18 @@ void AddSegment( segdata *sd, class_entry *class )
     }
 }
 
+class_entry *DuplicateClass( class_entry *old )
+/*********************************************/
+{
+    class_entry *new;
+
+    new = CarveAlloc( CarveClass );
+    memcpy( new, old, sizeof( class_entry ) );
+    new->name = AddBufferStringTable( &PermStrings, old->name, strlen( old->name ) + 1 );
+    old->next_class = new;
+    return( new );
+}
+
 class_entry *FindClass( section *sect, char *name, bool is32bit, bool iscode )
 /****************************************************************************/
 {

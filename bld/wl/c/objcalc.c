@@ -67,8 +67,8 @@ typedef enum {
     ORD_STACK
 } class_orders;
 
-#define ORD_FIRST	0
-#define ORD_LAST 	ORD_STACK
+#define ORD_FIRST       0
+#define ORD_LAST        ORD_STACK
 
 
 typedef struct  {
@@ -971,6 +971,44 @@ void SetSegFlags( seg_flags *flag_list )
     }
 }
 
+static void SplitDGroupClasses( section *sec )
+/********************************************/
+// split classes in DGROUP
+{
+    class_entry         *currcl;
+    class_entry         *newclass;
+    seg_leader          *curr;
+    seg_leader          *newlist;
+    seg_leader          *oldlist;
+
+    for( currcl = sec->classlist; currcl != NULL; currcl = currcl->next_class ){
+        newlist = NULL;
+        oldlist = NULL;
+        while( (curr = RingPop( &currcl->segs )) != NULL ) {
+            if( curr->group == DataGroup ) {
+                RingAppend( &newlist, curr );
+            } else {
+                RingAppend( &oldlist, curr );
+            }
+        }
+        if( oldlist != NULL ) {
+            currcl->segs = oldlist;
+            if( newlist != NULL ) {
+                newclass = DuplicateClass( currcl );
+                newclass->segs = newlist;
+                currcl->next_class = newclass;
+                currcl = newclass;
+                curr = NULL;
+                while( (curr = RingStep( newlist, curr )) != NULL ) {
+                    curr->class = newclass;
+                }
+            }
+        } else if( newlist != NULL ) {
+            currcl->segs = newlist;
+        }
+    }
+}
+
 static void ReOrderClasses( section *sec )
 /****************************************/
 // rebuild the class list using the Microsoft DOS segment ordering.
@@ -990,6 +1028,7 @@ static void ReOrderClasses( section *sec )
     for( i = ORD_FIRST; i <= ORD_LAST; ++i ) {
         rings[i] = NULL;
     }
+    SplitDGroupClasses( sec );
     for( currcl = sec->classlist; currcl != NULL; currcl = nextcl ) {
         nextcl = currcl->next_class;  // Take class out of original ring
         currcl->next_class = NULL;
