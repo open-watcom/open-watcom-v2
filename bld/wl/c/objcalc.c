@@ -51,6 +51,7 @@
 #include "mapio.h"
 #include "virtmem.h"
 #include "load16m.h"
+#include "objpass1.h"
 
 
 typedef enum {
