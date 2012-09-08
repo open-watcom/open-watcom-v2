@@ -241,11 +241,8 @@ zlib_dir        = $(contrib_dir)/zlib
 !ifndef awk_dir
 awk_dir         = $(src_dir)/awk
 !endif
-!ifndef emui86_dir
-emui86_dir      = $(src_dir)/emui86
-!endif
-!ifndef emu386_dir
-emu386_dir      = $(src_dir)/emu386
+!ifndef fpuemu_dir
+fpuemu_dir      = $(src_dir)/fpuemu
 !endif
 !ifndef graphlib_dir
 graphlib_dir    = $(src_dir)/graphlib

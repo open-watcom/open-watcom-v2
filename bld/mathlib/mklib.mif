@@ -36,6 +36,6 @@ $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
 !endif
 
 .c   : ../../../c
-.asm : ../../../a;$(emui86_dir)/asm;$(emu386_dir)/asm
+.asm : ../../../a;$(fpuemu_dir)/i86/asm;$(fpuemu_dir)/386/asm
 
 !include $(mathlib_dir)/clean.mif

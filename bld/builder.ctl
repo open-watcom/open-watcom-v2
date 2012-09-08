@@ -95,9 +95,8 @@ echo Bootstrapping compiler using GNU tools...
 #
 #        Now build Open Watcom libraries
 #
-#        emu libraries must be made before C libraries
-[ INCLUDE <SRCDIR>/emu386/builder.ctl ]
-[ INCLUDE <SRCDIR>/emui86/builder.ctl ]
+#        FPU emu libraries must be made before C libraries
+[ INCLUDE <SRCDIR>/fpuemu/builder.ctl ]
 #        C libraries must be made after linker
 [ INCLUDE <SRCDIR>/lib_misc/builder.ctl ]
 [ INCLUDE <SRCDIR>/clib/builder.ctl ]

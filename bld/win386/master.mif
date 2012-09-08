@@ -48,7 +48,7 @@ OBJS_exe = $(OBJS_common) &
         winmain.obj
 
 OBJS_vxd = wdebug.obj &
-        $(emu386_dir)/win386/emu387.obj
+        $(fpuemu_dir)/386/win386/emu387.obj
 
 
 .asm : ../asm
@@ -72,7 +72,7 @@ extra_c_flags_toolhelp = -DDLL32 -zu
 
 # aflags stuff
 ###############
-extra_a_flags_wdebug   = -I"$(emu386_dir)/inc" -mf
+extra_a_flags_wdebug   = -I"$(fpuemu_dir)/386/inc" -mf
 extra_a_flags_winglue  = -I"../h"
 extra_a_flags_wincb    = -I"../h"
 extra_a_flags_call16   = -I"../../watcom/h"
@@ -100,7 +100,7 @@ LNK = $^&.lnk
         @%append $(LNK) segment '_TEXT'   nondiscardable
         @%append $(LNK) segment '_DATA'   nondiscardable
         @%append $(LNK) export WDEBUG_DDB.1
-        @%append $(LNK) file $(emu386_dir)/win386/emu387.obj
+        @%append $(LNK) file $(fpuemu_dir)/386/win386/emu387.obj
         @%append $(LNK) file wdebug.obj
 
 dllexelink : .PROCEDURE
