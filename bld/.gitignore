@@ -98,8 +98,7 @@
 !/os2api/os2386/lib/makefile
 #
 /pbide/cfg/*/*.cfg
-/pbide/wig/nt386.dll/*.dll
-/pbide/wig/wini86.dll/*.dll
+/pbide/wig/*/*.dll
 #
 /plusplus/*/*/*.dll
 /plusplus/*/*/ytab.c
@@ -167,9 +166,7 @@
 /win386/h/winglue.inc
 /win386/vxd/*.386
 #
-/wl/nt386.dll/*.dll
-/wl/nt386.rtd/*.dll
-/wl/os2386.dll/*.dll
+/wl/*/*.dll
 #
 /wv/os2/*/*.dlg
 
