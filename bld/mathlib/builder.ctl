@@ -39,7 +39,7 @@ cdsay .
 #    <CCCMD> library/msdos.387/ms_r/math387r.lib     <OWRELROOT>/lib386/math387r.lib
 #    <CCCMD> library/msdos.387/ms_rd/math387r.lib    <OWRELROOT>/lib386/mth387rd.lib
 #    <CCCMD> library/msdos.387/ms_s/math387s.lib     <OWRELROOT>/lib386/math387s.lib
-    <CPCMD> library/msdos.386/mf_r/math3r.lib       <OWRELROOT>/lib386/math3r.lib
+    <CCCMD> library/msdos.386/mf_r/math3r.lib       <OWRELROOT>/lib386/math3r.lib
     <CCCMD> library/msdos.386/mf_rd/math3r.lib      <OWRELROOT>/lib386/math3rd.lib
     <CCCMD> library/msdos.386/mf_s/math3s.lib       <OWRELROOT>/lib386/math3s.lib
     <CCCMD> library/msdos.387/mf_r/math387r.lib     <OWRELROOT>/lib386/math387r.lib
@@ -56,45 +56,45 @@ cdsay .
 
     <CCCMD> library/winnt.axp/_s/mathaxp.lib        <OWRELROOT>/libaxp/nt/math.lib
 
-    <CPCMD> rtdll/os2.386/mf_r/mt*.lib              <OWRELROOT>/lib386/os2/
-    <CPCMD> rtdll/os2.386/mf_r/mt*.dll              <OWRELROOT>/binp/dll/
-    <CPCMD> rtdll/os2.386/mf_r/mt*.sym              <OWRELROOT>/binp/dll/
-    <CPCMD> rtdll/os2.386/mf_rd/mt*.lib             <OWRELROOT>/lib386/os2/
-    <CPCMD> rtdll/os2.386/mf_rd/mt*.dll             <OWRELROOT>/binp/dll/
-    <CPCMD> rtdll/os2.386/mf_s/mt*.lib              <OWRELROOT>/lib386/os2/
-    <CPCMD> rtdll/os2.386/mf_s/mt*.dll              <OWRELROOT>/binp/dll/
-    <CPCMD> rtdll/os2.386/mf_s/mt*.sym              <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.386/mf_r/mt*.lib              <OWRELROOT>/lib386/os2/
+    <CCCMD> rtdll/os2.386/mf_r/mt*.dll              <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.386/mf_r/mt*.sym              <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.386/mf_rd/mt*.lib             <OWRELROOT>/lib386/os2/
+    <CCCMD> rtdll/os2.386/mf_rd/mt*.dll             <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.386/mf_s/mt*.lib              <OWRELROOT>/lib386/os2/
+    <CCCMD> rtdll/os2.386/mf_s/mt*.dll              <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.386/mf_s/mt*.sym              <OWRELROOT>/binp/dll/
 
-    <CPCMD> rtdll/os2.387/mf_r/mt*.lib              <OWRELROOT>/lib386/os2/
-    <CPCMD> rtdll/os2.387/mf_r/mt*.dll              <OWRELROOT>/binp/dll/
-    <CPCMD> rtdll/os2.387/mf_r/mt*.sym              <OWRELROOT>/binp/dll/
-    <CPCMD> rtdll/os2.387/mf_rd/mt*.lib             <OWRELROOT>/lib386/os2/
-    <CPCMD> rtdll/os2.387/mf_rd/mt*.dll             <OWRELROOT>/binp/dll/
-    <CPCMD> rtdll/os2.387/mf_s/mt*.lib              <OWRELROOT>/lib386/os2/
-    <CPCMD> rtdll/os2.387/mf_s/mt*.dll              <OWRELROOT>/binp/dll/
-    <CPCMD> rtdll/os2.387/mf_s/mt*.sym              <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.387/mf_r/mt*.lib              <OWRELROOT>/lib386/os2/
+    <CCCMD> rtdll/os2.387/mf_r/mt*.dll              <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.387/mf_r/mt*.sym              <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.387/mf_rd/mt*.lib             <OWRELROOT>/lib386/os2/
+    <CCCMD> rtdll/os2.387/mf_rd/mt*.dll             <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.387/mf_s/mt*.lib              <OWRELROOT>/lib386/os2/
+    <CCCMD> rtdll/os2.387/mf_s/mt*.dll              <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.387/mf_s/mt*.sym              <OWRELROOT>/binp/dll/
 
-    <CPCMD> rtdll/winnt.386/mf_r/mt*.lib            <OWRELROOT>/lib386/nt/
-    <CPCMD> rtdll/winnt.386/mf_r/mt*.dll            <OWRELROOT>/binnt/
-    <CPCMD> rtdll/winnt.386/mf_r/mt*.sym            <OWRELROOT>/binnt/
-    <CPCMD> rtdll/winnt.386/mf_rd/mt*.lib           <OWRELROOT>/lib386/nt/
-    <CPCMD> rtdll/winnt.386/mf_rd/mt*.dll           <OWRELROOT>/binnt/
-    <CPCMD> rtdll/winnt.386/mf_rp/mt*.lib           <OWRELROOT>/lib386/nt/
-    <CPCMD> rtdll/winnt.386/mf_rp/mt*.dll           <OWRELROOT>/binnt/
-    <CPCMD> rtdll/winnt.386/mf_s/mt*.lib            <OWRELROOT>/lib386/nt/
-    <CPCMD> rtdll/winnt.386/mf_s/mt*.dll            <OWRELROOT>/binnt/
-    <CPCMD> rtdll/winnt.386/mf_s/mt*.sym            <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.386/mf_r/mt*.lib            <OWRELROOT>/lib386/nt/
+    <CCCMD> rtdll/winnt.386/mf_r/mt*.dll            <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.386/mf_r/mt*.sym            <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.386/mf_rd/mt*.lib           <OWRELROOT>/lib386/nt/
+    <CCCMD> rtdll/winnt.386/mf_rd/mt*.dll           <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.386/mf_rp/mt*.lib           <OWRELROOT>/lib386/nt/
+    <CCCMD> rtdll/winnt.386/mf_rp/mt*.dll           <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.386/mf_s/mt*.lib            <OWRELROOT>/lib386/nt/
+    <CCCMD> rtdll/winnt.386/mf_s/mt*.dll            <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.386/mf_s/mt*.sym            <OWRELROOT>/binnt/
 
-    <CPCMD> rtdll/winnt.387/mf_r/mt*.lib            <OWRELROOT>/lib386/nt/
-    <CPCMD> rtdll/winnt.387/mf_r/mt*.dll            <OWRELROOT>/binnt/
-    <CPCMD> rtdll/winnt.387/mf_r/mt*.sym            <OWRELROOT>/binnt/
-    <CPCMD> rtdll/winnt.387/mf_rd/mt*.lib           <OWRELROOT>/lib386/nt/
-    <CPCMD> rtdll/winnt.387/mf_rd/mt*.dll           <OWRELROOT>/binnt/
-    <CPCMD> rtdll/winnt.387/mf_rp/mt*.lib           <OWRELROOT>/lib386/nt/
-    <CPCMD> rtdll/winnt.387/mf_rp/mt*.dll           <OWRELROOT>/binnt/
-    <CPCMD> rtdll/winnt.387/mf_s/mt*.lib            <OWRELROOT>/lib386/nt/
-    <CPCMD> rtdll/winnt.387/mf_s/mt*.dll            <OWRELROOT>/binnt/
-    <CPCMD> rtdll/winnt.387/mf_s/mt*.sym            <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.387/mf_r/mt*.lib            <OWRELROOT>/lib386/nt/
+    <CCCMD> rtdll/winnt.387/mf_r/mt*.dll            <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.387/mf_r/mt*.sym            <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.387/mf_rd/mt*.lib           <OWRELROOT>/lib386/nt/
+    <CCCMD> rtdll/winnt.387/mf_rd/mt*.dll           <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.387/mf_rp/mt*.lib           <OWRELROOT>/lib386/nt/
+    <CCCMD> rtdll/winnt.387/mf_rp/mt*.dll           <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.387/mf_s/mt*.lib            <OWRELROOT>/lib386/nt/
+    <CCCMD> rtdll/winnt.387/mf_s/mt*.dll            <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.387/mf_s/mt*.sym            <OWRELROOT>/binnt/
 
 [ BLOCK <1> clean ]
 #==================

@@ -405,7 +405,7 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
 
     sym = AskForLblSym( lbl );
     if( AskIfRTLabel( lbl ) ) {
-        OutRTImport( (rt_class)(uintptr_t)sym, f );
+        OutRTImport( (rt_class)(int)sym, f );
         if( class & ATTR_FAR ) {
             _OutFarD( 0, 0 );
         } else {
@@ -517,7 +517,7 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
             lbl = *(pointer *)cur;
             cur += sizeof( pointer );
             if( AskIfRTLabel( lbl ) ) {
-                OutRTImportRel( (rt_class)(uintptr_t)AskForLblSym( lbl ), F_OFFSET, FALSE );
+                OutRTImportRel( (rt_class)(int)AskForLblSym( lbl ), F_OFFSET, FALSE );
                 val = 0;
             } else {
                 if( AskIfCommonLabel( lbl ) ) {
@@ -625,7 +625,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
         lbl = oc->oc_handle.handle;
         sym = AskForLblSym( lbl );
         if( AskIfRTLabel( lbl ) ) {
-            OutRTImport( (rt_class)(uintptr_t)sym, F_OFFSET );
+            OutRTImport( (rt_class)(int)sym, F_OFFSET );
             lc = 0;
         } else if( AskIfCommonLabel( lbl ) ) {
             OutSpecialCommon( (import_handle)sym, F_OFFSET, FALSE );

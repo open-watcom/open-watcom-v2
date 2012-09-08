@@ -429,7 +429,7 @@ static  char            *LabelName( code_lbl *label )
 
     sym = AskForLblSym( label );
     if( AskIfRTLabel( label ) ) {
-        name = AskRTName( (rt_class)(uintptr_t)sym );
+        name = AskRTName( (rt_class)(int)sym );
         if( _TstStatus( label, WEIRD_PPC_ALIAS ) ) {
             objName[ 0 ] = '.';
             objName[ 1 ] = '.';

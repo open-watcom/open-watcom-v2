@@ -24,7 +24,7 @@ system begin 386
     libpath %SRCDIR%/mathlib/library/msdos.387/mf_s
     libpath %SRCDIR%/mathlib/library/msdos.386/mf_r
     libpath %SRCDIR%/mathlib/library/msdos.386/mf_s
-    libpath %SRCDIR%/emu/stub386
+    libpath %SRCDIR%/fpuemu/386/stub386
     format elf
     runtime linux
     op exportall
@@ -41,7 +41,7 @@ system begin linux
     libpath %SRCDIR%/mathlib/library/msdos.387/mf_s
     libpath %SRCDIR%/mathlib/library/msdos.386/mf_r
     libpath %SRCDIR%/mathlib/library/msdos.386/mf_s
-    libpath %SRCDIR%/emu/stub386
+    libpath %SRCDIR%/fpuemu/386/stub386
     format elf
     runtime linux
     op exportall
