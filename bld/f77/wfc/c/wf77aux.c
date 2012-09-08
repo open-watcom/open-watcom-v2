@@ -1372,8 +1372,8 @@ uint_32 AsmQuerySPOffsetOf( char *name ) {
 }
 
 
-static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
-//===================================================================
+static  void    InsertFixups( unsigned char *buff, byte_seq_len len ) {
+//=====================================================================
 
     byte_seq            *seq;
     asmreloc            *reloc;
@@ -1393,10 +1393,10 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
         lnk = &new->next;
     }
 
-    seq = FMemAlloc( sizeof( byte_seq ) + i );
+    seq = FMemAlloc( sizeof( byte_seq ) + len );
     seq->relocs = head;
-    seq->length = i;
-    memcpy( &seq->data, buff, i );
+    seq->length = len;
+    memcpy( &seq->data, buff, len );
     if( CurrAux->code != DefaultInfo.code ) {
         FMemFree( CurrAux->code );
     }
@@ -1428,8 +1428,8 @@ static  void    AddAFix( unsigned i, char *name, unsigned type,
 static  void    GetByteSeq( void ) {
 //==================================
 
-    int             seq_len;
-    int             len;
+    byte_seq_len    seq_len;
+    byte_seq_len    len;
     char            *ptr;
     byte            buff[MAXIMUM_BYTESEQ + 32]; // extra for assembler
 #if _CPU == 8086
