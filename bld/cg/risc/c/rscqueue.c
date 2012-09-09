@@ -221,7 +221,7 @@ extern  void    OutputOC( any_oc *oc ) {
         }
         DoAlignment( len );
         OutLabel( lbl );            /* do patches*/
-        if( _TstStatus( lbl, PROC ) ) {
+        if( _TstStatus( lbl, PROCEDURE ) ) {
             lc = AskLocation();
             procStart = lc;
             procLabel = lbl;

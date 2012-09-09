@@ -85,7 +85,7 @@ extern  void    TellProcLabel( code_lbl *lbl )
 /********************************************/
 {
     _ValidLbl( lbl );
-    _SetStatus( lbl, PROC );
+    _SetStatus( lbl, PROCEDURE );
 }
 
 extern  void    TellCommonLabel( code_lbl *lbl, unsigned hdl )

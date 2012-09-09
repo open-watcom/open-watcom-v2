@@ -49,7 +49,7 @@ typedef enum {
             OWL_OWNED           = 0x0800,
             WEIRD_PPC_ALIAS     = 0x1000,
             HAS_PPC_ALIAS       = 0x2000,
-            PROC                = 0x4000,
+            PROCEDURE           = 0x4000,
 } status_bits;
 
 typedef struct label_def {
