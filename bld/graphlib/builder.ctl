@@ -10,9 +10,6 @@ cdsay .
 
 [ BLOCK <1> build rel2 ]
 #=======================
-    cd <PROJDIR>/../pgchart
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-    cdsay <PROJDIR>
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
 
 [ BLOCK <1> rel2 ]
@@ -30,10 +27,6 @@ cdsay .
 
 [ BLOCK <1> clean ]
 #==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-    cd <PROJDIR>/../pgchart
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-    cdsay <PROJDIR>/fix
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
 [ BLOCK . . ]

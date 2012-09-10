@@ -169,7 +169,6 @@ echo Bootstrapping compiler using GNU tools...
 #[ INCLUDE <SRCDIR>/online/builder.ctl ]
 [ INCLUDE <SRCDIR>/posix/builder.ctl ]
 [ INCLUDE <SRCDIR>/cpp/builder.ctl ]
-[ INCLUDE <SRCDIR>/pgchart/builder.ctl ]
 [ INCLUDE <SRCDIR>/dig/builder.ctl ]
 [ INCLUDE <SRCDIR>/uiforms/builder.ctl ]
 [ INCLUDE <SRCDIR>/watcom/builder.ctl ]
