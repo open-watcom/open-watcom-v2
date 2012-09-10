@@ -48,6 +48,8 @@
 #include "import.h"
 #include "feprotos.h"
 #include "rtclass.h"
+#include "optlbl.h"
+#include "rtrtn.h"
 
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -118,14 +120,10 @@ typedef struct dbg_seg_info {
 
 extern  pointer         Copy(pointer,pointer,uint);
 extern  char            *AskRTName(rt_class);
-extern  void            TellRTHandle(rt_class,import_handle);
-extern  import_handle   AskRTHandle(rt_class);
 extern  void            TellImportHandle(sym_handle,import_handle);
 extern  import_handle   AskImportHandle(sym_handle);
 extern  void            TellDonePatch(label_handle);
-extern  pointer         AskLblPatch(label_handle);
 extern  void            TellAddress(label_handle,offset);
-extern  sym_handle      AskForLblSym(label_handle);
 extern  void            FatalError(char *);
 extern  void            CloseObj( void );
 extern  void            PatchObj(objhandle,uint,byte*,int);

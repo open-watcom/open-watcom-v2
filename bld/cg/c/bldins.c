@@ -47,6 +47,7 @@
 #include "addrfold.h"
 #include "display.h"
 #include "bldins.h"
+#include "optlbl.h"
 
 
 extern  an              MakeConst(pointer,type_def*);
@@ -58,7 +59,6 @@ extern  void            GenBlock( block_class, int );
 extern  void            AddTarget(label_handle,bool);
 extern  void            Generate(bool);
 extern  void            EnLink(label_handle,bool);
-extern  label_handle    AskForNewLabel( void );
 extern  void            AddIns(instruction*);
 extern  bool            TGIsAddress( void );
 extern  name            *GenIns(an);

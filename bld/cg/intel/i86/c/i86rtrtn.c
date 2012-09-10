@@ -40,6 +40,8 @@
 #include "seldef.h"
 #include "cgaux.h"
 #include "makeins.h"
+#include "optlbl.h"
+#include "rtrtn.h"
 
 
 extern    hw_reg_set      *RegSets[];
@@ -59,7 +61,6 @@ extern  void            DelSeg( instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  name            *AllocRegName( hw_reg_set );
-extern  label_handle    AskRTLabel( sym_handle * );
 extern  conflict_node   *NameConflict( instruction *, name * );
 extern  conflict_node   *InMemory( conflict_node * );
 extern  int             NumOperands( instruction * );
@@ -69,8 +70,6 @@ extern  name            *AllocIndex( name *, name *, type_length, type_class_def
 extern  name            *AddrConst( name *, int, constant_class );
 extern  seg_id          AskCodeSeg( void );
 extern  void            LookupRoutine( instruction * );
-extern  label_handle    RTLabel( rt_class );
-extern  rt_class        FindRTLabel( label_handle );
 extern  hw_reg_set      ReturnReg( type_class_def, bool );
 extern  void            LookupConvertRoutine(instruction*);
 

@@ -38,6 +38,7 @@
 #include "zoiks.h"
 #include "procdef.h"
 #include "stackok.h"
+#include "optlbl.h"
 
 extern    block         *HeadBlock;
 extern    block         *CurrBlock;
@@ -46,7 +47,6 @@ extern    proc_def      *CurrProc;
 
 extern  instruction_id  Renumber( void );
 extern  block           *NewBlock(label_handle,bool);
-extern  label_handle    AskForNewLabel( void );
 extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
 
 static  void            NewInterval( block *blk, int level );

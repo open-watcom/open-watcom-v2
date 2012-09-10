@@ -24,34 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Stub routines for the PowerPC backend.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "standard.h"
-#include "coderep.h"
-#include "cgdefs.h"
-#include "regset.h"
-#include "addrname.h"
-#include "optlbl.h"
-#include "rttable.h"
-#include "zoiks.h"
+extern  void            InitRT( void );
+extern  import_handle   AskRTHandle( rt_class rtindex );
+extern  void            TellRTHandle( rt_class rtindex, import_handle hdl );
+extern  label_handle    RTLabel( rt_class rtindex );
+extern  rt_class        FindRTLabel( label_handle hdl );
 
-void StartBlockProfiling( block *blk ) {
-/**************************************/
-
-    blk = blk;
-}
-
-void EndBlockProfiling() {
-/************************/
-
-}
-
-segment_id GenP5ProfileData( char *fe_name, label_handle *data ) {
-/****************************************************************/
-    fe_name = fe_name;
-    data = data;
-    return( 0 );
-}

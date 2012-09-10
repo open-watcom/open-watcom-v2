@@ -36,8 +36,6 @@
 #include "symdbg.h"
 #include "vergen.h"
 #include "reloc.h"
-#include "offset.h"
-#include "optopts.h"
 #include "optlbl.h"
 #include "zoiks.h"
 #include "model.h"
@@ -62,7 +60,6 @@ extern void             ObjBytes( char *buffer, int size );
 extern uint_8           RegTrans( hw_reg_set );
 extern void             OutLabel( label_handle );
 extern void             OutReloc( label_handle, ppc_reloc, unsigned );
-extern pointer          AskForSymLabel( pointer, cg_class );
 extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );

@@ -36,10 +36,11 @@
 #include "bckdef.h"
 #include "objrep.h"
 #include "ocentry.h"
-#include "optopts.h"
 #include "optq.h"
 #include "optlbl.h"
+#include "optclass.h"
 #include "optsave.h"
 #include "optmac.h"
 #include "optdata.h"
 #include "model.h"
+

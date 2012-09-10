@@ -39,6 +39,7 @@
 #include "opcodes.h"
 #include "cgdefs.h"
 #include "feprotos.h"
+#include "optlbl.h"
 
 extern proc_def             *CurrProc;
 
@@ -52,7 +53,6 @@ extern  bool            AskSegPrivate(segment_id);
 extern  bool            AskSegNear(segment_id);
 extern  segment_id      AskSegID(pointer,cg_class);
 extern  bool            AskNameCode(pointer,cg_class);
-extern  sym_handle      AskForLblSym(label_handle);
 
 extern  bool    IsFarFunc( sym_handle sym ) {
 /*******************************************/

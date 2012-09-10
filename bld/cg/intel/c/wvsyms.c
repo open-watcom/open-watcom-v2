@@ -49,6 +49,7 @@
 #include "wvdbg.h"
 #include "feprotos.h"
 #include "cgprotos.h"
+#include "optlbl.h"
 
 extern  seg_id          AskOP(void);
 extern  bck_info        *BENewBack(sym_handle);
@@ -56,9 +57,7 @@ extern  void            BEFreeBack(bck_info*);
 extern  void            OutLabel(label_handle);
 extern  void            SetUpObj(bool);
 extern  seg_id          SetOP(seg_id);
-extern  sym_handle      AskForLblSym(label_handle);
 extern  offset          AskLocation(void);
-extern  offset          AskAddress(label_handle);
 extern  bool            NeedBaseSet( void );
 extern  void            SetLocation(offset);
 extern  void            DataInt(short_offset);

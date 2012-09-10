@@ -45,6 +45,8 @@
 #include "feprotos.h"
 #include "addrname.h"
 #include "display.h"
+#include "optlbl.h"
+#include "rtrtn.h"
 
 extern  void        OutDLLExport(uint,sym_handle);
 extern  void        GenLeaSP(long);
@@ -75,12 +77,10 @@ extern  void        RelocParms( void );
 extern  type_length AdjustBase( void );
 extern  hw_reg_set  SaveRegs( void );
 extern  void        DoCall(label_handle,bool,bool,oc_class);
-extern  label_handle    RTLabel(rt_class);
 extern  void        GenUnkPush(pointer);
 extern  void        GenPushC(signed_32);
 extern  void        GenUnkMov(hw_reg_set,pointer);
 extern  void        QuickSave(hw_reg_set,opcode_defs);
-extern  sym_handle  AskForLblSym(label_handle);
 extern  void        CodeLabel(label_handle,unsigned);
 extern  void        EmitRtnBeg( void );
 extern  void        CodeLineNum( cg_linenum,bool);
@@ -89,14 +89,11 @@ extern  seg_id      AskCodeSeg( void );
 extern  void        Gpusha( void );
 extern  void        Gpopa( void );
 extern  void        AbsPatch(abspatch_handle,offset);
-extern  label_handle    AskForSymLabel(pointer ,cg_class );
-extern  bool        AskIfRTLabel(label_handle);
 extern  unsigned    DepthAlign( unsigned );
 extern  char        *CopyStr(char*,char*);
 extern  void        EyeCatchBytes(byte*,byte_seq_len);
 extern  void        GenSelEntry(bool);
 extern  void        TellKeepLabel(label_handle);
-extern  label_handle    AskForNewLabel(void);
 extern  void        GenKillLabel(label_handle);
 extern  void        GFstpM(pointer);
 extern  void        GenTouchStack( bool );

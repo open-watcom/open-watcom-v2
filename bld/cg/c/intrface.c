@@ -48,6 +48,8 @@
 #include "types.h"
 #include "feprotos.h"
 #include "cgprotos.h"
+#include "rtclass.h"
+#include "optlbl.h"
 
 #ifndef NDEBUG
 #include "echoapi.h"
@@ -79,9 +81,7 @@ extern  seg_id          SetOP(seg_id);
 extern  void            FlushOP(seg_id);
 extern  bool            AskSegROM(segment_id);
 extern  void            DefSegment(seg_id,seg_attr,char*,uint,bool);
-extern  label_handle    AskForNewLabel(void);
 extern  void            BGFiniLabel(label_handle);
-extern  label_handle    AskForLabel(sym_handle);
 extern  seg_id          AskBackSeg(void);
 extern  bool            AskSegBlank(seg_id);
 extern  void            TellNoSymbol(label_handle);
@@ -135,7 +135,6 @@ extern  void            IncLocation(offset);
 extern  offset          AskLocation(void);
 extern  seg_id          AskCodeSeg(void);
 extern  seg_id          AskAltCodeSeg(void);
-extern  offset          AskAddress(label_handle);
 extern  bool            BGInInline(void);
 extern  void            BGParmInline(sym_handle,type_def*);
 extern  void            BGRetInline(an,type_def*);

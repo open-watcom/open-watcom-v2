@@ -41,6 +41,7 @@
 #include "ppcenc.h"
 #include "ppcparm.h"
 #include "ppcgen.h"
+#include "optlbl.h"
 
 extern  uint_32         CountBits( uint_32 );
 extern  seg_id          SetOP( seg_id );
@@ -51,7 +52,6 @@ extern  hw_reg_set      *GPRegs( void );
 extern  hw_reg_set      *FPRegs( void );
 extern  hw_reg_set      SaveRegs( void );
 extern  hw_reg_set      FrameBaseReg( void );
-extern  sym_handle      AskForLblSym( label_handle );
 extern  fe_attr         FEAttr( sym_handle );
 extern  void            DbgRtnBeg( dbg_rtn *rtn,  offset lc );
 extern  void            DbgProEnd( dbg_rtn *rtn, offset lc );

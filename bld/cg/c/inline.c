@@ -38,10 +38,10 @@
 #include "zoiks.h"
 #include "feprotos.h"
 #include "makeins.h"
+#include "optlbl.h"
 
 extern  name            *GenIns(an);
 extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
-extern  label_handle    AskForNewLabel(void);
 extern  void            EnLink(label_handle,bool);
 extern  void            AddIns(instruction*);
 extern  type_class_def  TypeClass(type_def*);

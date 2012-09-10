@@ -34,9 +34,9 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "zoiks.h"
+#include "optlbl.h"
 
 extern  int             NumOperands(instruction*);
-extern  bool            AskIfRTLabel( pointer );
 
 static  void            MoveSeg( instruction *ins, instruction *new_ins,
                                  name *op, bool save_old );

@@ -40,13 +40,13 @@
 #include "feprotos.h"
 #include <assert.h>
 #include <string.h>
+#include "optlbl.h"
 
 extern  void            ObjBytes( byte *, unsigned );
 extern  constant_defn   *GetFloat( name *, type_class_def );
 extern  seg_id          SetOP( seg_id );
 extern  seg_id          AskBackSeg( void );
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
-extern  label_handle    AskForLabel( sym_handle );
 extern  void            OutLabel( label_handle );
 extern  void            OutReloc( label_handle, owl_reloc_type, unsigned );
 extern  void            OutSegReloc( label_handle *label, seg_id section );

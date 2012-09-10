@@ -32,8 +32,6 @@
 
 #include "standard.h"
 #include "coderep.h"
-#include "offset.h"
-#include "optopts.h"
 #include "optlbl.h"
 #include "ocentry.h"
 #include "dbcue.h"
@@ -47,7 +45,6 @@ extern  void    OutLabel( label_handle );
 extern  void    ObjBytes( const char *, unsigned );
 extern  void    OutReloc( label_handle, owl_reloc_type, unsigned );
 extern  offset  AskLocation( void );
-extern  bool    AskIfUniqueLabel( code_lbl * );
 extern  void    DoAlignment( offset );
 extern  void    DbgSetBase( void );
 extern  void    OutLineNum( cg_linenum, bool );

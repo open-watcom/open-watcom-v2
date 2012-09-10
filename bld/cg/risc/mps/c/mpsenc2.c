@@ -36,8 +36,6 @@
 #include "ocentry.h"
 #include "mipsenc.h"
 #include "reloc.h"
-#include "offset.h"
-#include "optopts.h"
 #include "optlbl.h"
 
 extern void ObjBytes( const char *, unsigned );

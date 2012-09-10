@@ -41,6 +41,7 @@
 #include "procdef.h"
 #include "makeins.h"
 #include <assert.h>
+#include "rtrtn.h"
 
 extern  name            *AllocMemory( pointer, type_length, cg_class, type_class_def );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
@@ -58,7 +59,6 @@ extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            SuffixIns( instruction *, instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            ReplIns( instruction *, instruction * );
-extern  label_handle    RTLabel( rt_class );
 extern  void            ChangeType( instruction *, type_class_def );
 
 extern  instruction     *rSWAPCMP( instruction * );

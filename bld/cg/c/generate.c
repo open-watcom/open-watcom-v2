@@ -46,6 +46,9 @@
 #include "x87.h"
 #include "makeins.h"
 #include "foldins.h"
+#include "rtclass.h"
+#include "optlbl.h"
+#include "rtrtn.h"
 
 
 extern  void            FreeAName( name * );
@@ -81,7 +84,6 @@ extern  void            InitNames( void );
 extern  void            InitMakeAddr( void );
 extern  void            RegTreeInit( void );
 extern  void            InitConflict( void );
-extern  void            InitRT( void );
 extern  void            InitSegment( void );
 extern  void            FiniSegment( void );
 extern  void            PushPostOps( void );
@@ -115,7 +117,6 @@ extern  void            ParmPropagate( void );
 extern  void            InitStackMap( void );
 extern  void            FiniStackMap( void );
 extern  void            ProcMessage( msg_class );
-extern  sym_handle      AskForLblSym( label_handle );
 extern  void            InitQueue( void );
 extern  void            FiniQueue( void );
 extern  void            AbortQueue( void );

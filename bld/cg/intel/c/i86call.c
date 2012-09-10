@@ -46,8 +46,9 @@
 #include "makeins.h"
 #include "display.h"
 #include "cgprotos.h"
+#include "optlbl.h"
+#include "rtrtn.h"
 
-extern  label_handle    AskForNewLabel(void);
 extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
 extern  name            *AddrConst(name*,segment_id,constant_class);
 extern  name            *AllocRegName(hw_reg_set);
@@ -73,7 +74,6 @@ extern  name            *DoParmDecl(sym_handle,type_def*,hw_reg_set);
 extern  hw_reg_set      ReturnReg(type_class_def,bool);
 extern  type_length     PushSize(type_length);
 extern  type_def        *QParmType(sym_handle,sym_handle,type_def*);
-extern  label_handle    RTLabel( rt_class rtindex );
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            ReverseParmNodeList(pn *);
 extern  name            *STempOffset(name*,type_length,type_class_def,type_length);

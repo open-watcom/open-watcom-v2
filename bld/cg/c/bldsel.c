@@ -41,8 +41,8 @@
 #include "types.h"
 #include "bldins.h"
 #include "makeins.h"
+#include "optlbl.h"
 
-extern  label_handle    AskForNewLabel(void);
 extern  void            AddTarget(label_handle,bool);
 extern  signed_32       IfCost(select_node*,int);
 extern  void            EnLink(label_handle,bool);

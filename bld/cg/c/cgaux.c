@@ -38,9 +38,8 @@
 #include "cgaux.h"
 #include "typedef.h"
 #include "feprotos.h"
+#include "optlbl.h"
 
-extern  sym_handle      AskForLblSym(label_handle);
-extern  bool            AskIfRTLabel(label_handle);
 extern  pointer         BEAuxInfo(pointer,aux_class);
 
 extern  pointer FindAuxInfo( name *name, aux_class request ) {

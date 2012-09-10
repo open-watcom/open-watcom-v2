@@ -52,6 +52,7 @@
 #include "cgaux.h"
 #include "p5prof.h"
 #include "feprotos.h"
+#include "optlbl.h"
 
 
 extern  void            RTCall( rt_class rtn, oc_class pop_bit );
@@ -85,11 +86,26 @@ extern  unsigned        UseRepForm( unsigned );
 extern  void            DoNothing( instruction * );
 extern  bool            BaseIsSP( name * );
 extern  seg_id          AskCode16Seg( void );
-extern  sym_handle      AskForLblSym( label_handle );
-extern  label_handle    AskForLabel( sym_handle );
 extern  void            DoLblRef( label_handle, seg_id, offset, escape_class );
 extern  bool            GetEnvVar( char *, char *, int );
 extern  int             CountIns( block *blk );
+
+extern  void            CodeLabel( label_handle, unsigned );
+extern  unsigned        DepthAlign( unsigned );
+extern  void            TellOptimizerByPassed( void );
+extern  void            SetUpObj( bool );
+extern  void            OutDataByte( byte );
+extern  void            OutDataInt( int );
+extern  void            OutDataLong(long);
+extern  void            OutDBytes(unsigned_32,byte*);
+extern  void            OutRTImport( rt_class, fix_class );
+extern  void            TellKeepLabel( label_handle );
+extern  void            OutReloc( seg_id, fix_class, bool );
+extern  void            TellByPassOver( void );
+extern  seg_id          SetOP( seg_id );
+extern  seg_id          AskCodeSeg( void );
+extern  void            OutLblPatch( label_handle, fix_class, offset );
+extern  void            OutLabel( label_handle );
 
 extern  bool            OptForSize;
 extern  template        Temp;   /* template for oc_entries*/
@@ -631,24 +647,6 @@ extern  void    GenLeaSP( long offset )
     EA( HW_EMPTY, HW_BP, 0, offset, NULL, FALSE );
     _Emit;
 }
-
-extern  void            CodeLabel( label_handle, unsigned );
-extern  unsigned        DepthAlign( unsigned );
-extern  label_handle    AskForNewLabel( void );
-extern  void            TellOptimizerByPassed( void );
-extern  void            SetUpObj( bool );
-extern  void            OutDataByte( byte );
-extern  void            OutDataInt( int );
-extern  void            OutDataLong(long);
-extern  void            OutDBytes(unsigned_32,byte*);
-extern  void            OutRTImport( rt_class, fix_class );
-extern  void            TellKeepLabel( label_handle );
-extern  void            OutReloc( seg_id, fix_class, bool );
-extern  void            TellByPassOver( void );
-extern  seg_id          SetOP( seg_id );
-extern  seg_id          AskCodeSeg( void );
-extern  void            OutLblPatch( label_handle, fix_class, offset );
-extern  void            OutLabel( label_handle );
 
 extern  pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remove_parms )
 /***************************************************************************************/

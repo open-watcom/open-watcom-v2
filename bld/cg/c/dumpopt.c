@@ -41,8 +41,6 @@ extern  void            DumpPtr(pointer);
 extern  void            Dump8h(unsigned_32);
 extern  void            DumpInt(int);
 extern  void            DumpByte(byte);
-extern  bool            AskIfRTLabel( label_handle );
-extern  bool            AskIfCommonLabel( label_handle );
 extern  char            *AskRTName( rt_class );
 
 static  void            DoData( oc_entry *instr );

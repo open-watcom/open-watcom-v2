@@ -39,8 +39,6 @@
 #include "ocentry.h"
 #include "axpencod.h"
 #include "reloc.h"
-#include "offset.h"
-#include "optopts.h"
 #include "optlbl.h"
 #include "zoiks.h"
 #include "model.h"
@@ -52,6 +50,7 @@
 #include "feprotos.h"
 #include <assert.h>
 #include <stdio.h>
+#include "rtrtn.h"
 
 extern void DumpInsOnly( instruction * );
 extern void DumpString( char * );
@@ -66,7 +65,6 @@ extern void             ObjBytes( char *buffer, int size );
 extern uint_8           RegTrans( hw_reg_set );
 extern void             OutLabel( label_handle );
 extern void             OutReloc( label_handle, axp_reloc, unsigned );
-extern pointer          AskForSymLabel( pointer, cg_class );
 extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );
@@ -75,11 +73,9 @@ extern  offset          AskLocation();
 extern  void            OutLineNum( unsigned_16 line, bool label_line );
 extern void             EmitDbgInfo(instruction*);
 extern  void            ObjEmitSeq( byte_seq * );
-extern  bool            AskIfRTLabel( code_lbl * );
 extern  void            InputOC( any_oc * );
 extern  opcode_defs     FlipOpcode( opcode_defs );
 extern  void            FactorInt32( signed_32 val, signed_16 *, signed_16 *, signed_16 * );
-extern  label_handle    RTLabel( rt_class );
 
 extern void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
 

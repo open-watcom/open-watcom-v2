@@ -44,14 +44,13 @@
 #include "namelist.h"
 #include "bldins.h"
 #include "makeaddr.h"
-#include "optask.h"
+#include "optlbl.h"
 #include "bgcall.h"
 #include "x87.h"
 #include "makeins.h"
 
 
 
-extern  label_handle    AskForSymLabel(pointer,cg_class);
 extern  type_def        *QParmType(sym_handle,sym_handle,type_def*);
 extern  hw_reg_set      ParmReg(type_class_def,type_length,type_length,call_state*);
 extern  hw_reg_set      CallZap(call_state*);

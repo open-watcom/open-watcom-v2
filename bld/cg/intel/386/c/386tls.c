@@ -42,8 +42,8 @@
 #include "zoiks.h"
 #include "feprotos.h"
 #include "makeins.h"
+#include "rtrtn.h"
 
-extern  label_handle    RTLabel( rt_class );
 extern  name            *AllocRegName( hw_reg_set );
 extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocMemory( pointer, type_length, cg_class, type_class_def );

@@ -37,16 +37,15 @@
 #include "procdef.h"
 #include "dump.h"
 #include "makeins.h"
+#include "optlbl.h"
 
 extern proc_def         *CurrProc;
 extern block            *HeadBlock;
 extern bool             BlockByBlock;
 
-extern  sym_handle      AskForLblSym(label_handle);
 extern  bool            SideEffect(instruction*);
 extern  pointer         SafeRecurse(pointer(*)(),pointer);
 extern  name            *AllocTemp(type_class_def );
-extern  label_handle    AskForNewLabel( void );
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction *,instruction *);
 extern  void            ReplIns(instruction *,instruction *);

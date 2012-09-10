@@ -46,10 +46,10 @@
 #include "zoiks.h"
 #include "addrname.h"
 #include "x87.h"
+#include "optlbl.h"
 
 
 extern  void            ProcMessage(msg_class);
-extern  sym_handle      AskForLblSym(label_handle);
 extern  mem_out_action  SetMemOut(mem_out_action);
 extern  pointer         SafeRecurse(pointer(*)(),pointer);
 extern  bool            ReDefinedBy(instruction *, name *);

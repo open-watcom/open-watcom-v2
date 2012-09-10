@@ -43,6 +43,7 @@
 #include "fppatch.h"
 #include "feprotos.h"
 #include "rtclass.h"
+#include "optlbl.h"
 
 extern  void            DbgSetBase( void );
 extern  void            OutAbsPatch(abspatch*,patch_attr);
@@ -51,8 +52,6 @@ extern  void            OutImport(sym_handle,fix_class,bool);
 extern  void            OutRTImport(rt_class,fix_class);
 extern  void            OutRTImportRel(rt_class,fix_class,bool rel);
 extern  void            OutSelect(bool);
-extern  bool            AskIfRTLabel(label_handle);
-extern  sym_handle      AskForLblSym(label_handle);
 extern  byte            ReverseCondition(byte);
 extern  void            DbgRtnEnd(pointer,offset);
 extern  void            DbgBlkEnd(pointer,offset);
@@ -74,8 +73,6 @@ extern  void            OutLabel(label_handle);
 extern  void            OutDataByte(byte);
 extern  void            OutDBytes(unsigned_32,byte*);
 extern  void            SetUpObj(bool);
-extern  offset          AskAddress(label_handle);
-extern  label_handle    AskForSymLabel(pointer,cg_class);
 extern  segment_id      AskSegID(pointer,cg_class);
 extern  void            EmitOffset(offset);
 extern  void            EmitPtr(pointer);
@@ -86,9 +83,7 @@ extern  void            InsertByte(byte);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 extern bool             IsFarFunc(sym_handle);
 extern  unsigned        SavePendingLine(unsigned);
-extern bool             AskIfUniqueLabel(label_handle);
 extern bool             UseImportForm(fe_attr);
-extern bool             AskIfCommonLabel(label_handle);
 extern void             OutSpecialCommon(import_handle,fix_class,bool);
 
 extern void             DoLblRef( label_handle lbl, seg_id seg, offset val,

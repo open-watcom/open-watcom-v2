@@ -39,7 +39,6 @@
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
-//#include "objrep.h"
 #include "offset.h"
 #include "zoiks.h"
 #include "cgaux.h"
@@ -57,6 +56,7 @@
 #include "dbcue.h"
 #include "cgprotos.h"
 #include "feprotos.h"
+#include "optlbl.h"
 
 extern  void            FEPtr(sym_handle,type_def *,offset);
 extern  void            FEPtrBase(sym_handle);
@@ -70,14 +70,12 @@ extern  name            *DeAlias(name*);
 extern  seg_id          SetOP(seg_id);
 extern  seg_id          AskCodeSeg(void);
 extern  segment_id      AskSegID(pointer,cg_class);
-extern  sym_handle      AskForLblSym(label_handle);
 extern  offset          AskLocation(void);
 extern  void            SetLocation(offset);
 extern  offset          AskMaxSize(void);
 extern  void            SetBigLocation( long_offset loc );
 extern  long_offset     AskBigLocation(void);
 extern  long_offset     AskBigMaxSize(void);
-extern  offset          AskAddress(label_handle);
 extern  bool            NeedBaseSet(void);
 extern  void            DataInt(short_offset);
 extern  void            DataLong( long );

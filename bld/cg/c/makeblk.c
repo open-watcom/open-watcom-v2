@@ -42,16 +42,15 @@
 #include "feprotos.h"
 #include <string.h>
 #include "makeins.h"
+#include "optlbl.h"
 
 extern  void            TellBeginExecutions(void);
 extern  void            FreeNames(void);
 extern  int             AskDisplaySize(int);
 extern  void            ReInitNames(void);
-extern  label_handle    AskForNewLabel(void);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  type_class_def  TypeClass(type_def*);
-extern  sym_handle      AskForLblSym(label_handle);
 extern  byte            *Copy(void*,void*,uint);
 extern  void            NamesCrossBlocks(void);
 extern  void            RemoveInputEdge(block_edge*);

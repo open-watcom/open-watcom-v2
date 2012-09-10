@@ -40,6 +40,8 @@
 #include "seldef.h"
 #include "cgaux.h"
 #include "makeins.h"
+#include "optlbl.h"
+#include "rtrtn.h"
 
 extern  name            *GenFloat( name *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
@@ -53,7 +55,6 @@ extern  void            DelSeg( instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  name            *AllocRegName( hw_reg_set );
-extern  label_handle    AskRTLabel( sym_handle * );
 extern  conflict_node   *NameConflict( instruction *, name * );
 extern  conflict_node   *InMemory( conflict_node * );
 extern  int             NumOperands( instruction * );
@@ -63,8 +64,6 @@ extern  name            *AllocIndex( name *, name *, type_length, type_class_def
 extern  name            *AddrConst( name *, int, constant_class );
 extern  seg_id          AskBackSeg( void );
 extern  void            LookupRoutine( instruction * );
-extern  label_handle    RTLabel( rt_class );
-extern  rt_class        FindRTLabel( label_handle );
 extern  instruction     *rMAKECALL( instruction * );
 extern  hw_reg_set      FirstReg( reg_set_index );
 

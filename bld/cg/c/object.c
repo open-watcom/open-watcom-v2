@@ -38,6 +38,7 @@
 #include "cgaux.h"
 #include "zoiks.h"
 #include "feprotos.h"
+#include "optlbl.h"
 
 extern  seg_id          AskCodeSeg( void );
 extern  seg_id          SetOP(seg_id);
@@ -59,7 +60,6 @@ extern  block           *FindBlockWithLbl( label_handle label );
 extern  void            Zoiks( int );
 extern  void            ClearBlockBits( block_class );
 extern  bool            ReDefinedBy( instruction *, name * );
-extern  pointer         AskForLblSym(pointer);
 extern  pointer         FindAuxInfo( name *, aux_class );
 extern  void            StartBlockProfiling( block *blk );
 extern  void            EndBlockProfiling( void );

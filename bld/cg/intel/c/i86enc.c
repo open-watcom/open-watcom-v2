@@ -55,6 +55,8 @@
 #include "procdef.h"
 #include "addrname.h"
 #include "display.h"
+#include "optlbl.h"
+#include "rtrtn.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
 extern  void            DoFunnyRef(int);
@@ -65,7 +67,6 @@ extern  hw_reg_set      CalcSegment(sym_handle,cg_class);
 extern  void            EmitDbgInfo(instruction*);
 extern  void            DoCall(label_handle,bool,bool,oc_class);
 extern  void            RTCall( rt_class rtn, oc_class pop_bit );
-extern  label_handle    RTLabel(rt_class);
 extern  void            GenMJmp(instruction*);
 extern  void            GenRJmp(instruction*);
 extern  void            GenICall(instruction*);
@@ -104,7 +105,6 @@ extern  seg_id          AskBackSeg( void );
 extern  seg_id          AskCodeSeg( void );
 extern  void            DoLblRef(label_handle,seg_id,offset,escape_class);
 extern  void            AddWData(signed_32,type_class_def );
-extern  label_handle    AskForNewLabel( void );
 extern  name            *LowPart(name *,type_class_def);
 extern  name            *HighPart(name *,type_class_def);
 extern  void            CodeLabel(label_handle, unsigned);

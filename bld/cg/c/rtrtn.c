@@ -36,11 +36,10 @@
 #include "regset.h"
 #include "rttable.h"
 #include "zoiks.h"
+#include "optlbl.h"
 
 static    import_handle RTHdls[RTSIZE];
 static    label_handle  RTLbls[RTSIZE];
-
-extern  label_handle    AskRTLabel(sym_handle);
 
 extern  void    LookupRoutine( instruction *ins ) {
 /*************************************************/

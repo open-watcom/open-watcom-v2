@@ -33,6 +33,7 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "model.h"
+#include "optlbl.h"
 
 typedef struct  edge_list {
         block_edge              *edge;
@@ -43,8 +44,6 @@ typedef struct  edge_list {
 
 extern  block           *NewBlock(label_handle,bool);
 extern  void            RemoveInputEdge(block_edge*);
-extern  bool            AskIfReachedLabel(label_handle);
-extern  label_handle    AskForNewLabel( void );
 extern  bool            FixReturns( void );
 extern  void            FixEdges( void );
 extern  void            UnFixEdges( void );

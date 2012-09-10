@@ -51,6 +51,7 @@
 #include "cypfunc.h"
 #include "encode.h"
 #include "feprotos.h"
+#include "optlbl.h"
 
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            EjectInst( void );
@@ -59,8 +60,6 @@ extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  void            LayOpbyte(opcode);
 extern  void            Format(oc_class);
 extern  void            TellScrapLabel(label_handle);
-extern  offset          AskAddress(label_handle);
-extern  label_handle    AskForSymLabel(pointer,cg_class);
 extern  seg_id          SetOP(seg_id);
 extern  seg_id          AskCodeSeg( void );
 extern  void            LayRegRM(hw_reg_set);
@@ -81,8 +80,6 @@ extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
 extern  void            EmitOffset(offset);
 extern  seg_id          AskCodeSeg( void );
-extern  sym_handle      AskForLblSym(label_handle);
-extern  bool            AskIfRTLabel(label_handle);
 extern  byte            *Copy(void*,void*,uint);
 
 extern  void            CodeBytes( byte *src, byte_seq_len len );

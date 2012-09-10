@@ -39,9 +39,6 @@
 #include "ocentry.h"
 #include "mipsenc.h"
 #include "reloc.h"
-#include "offset.h"
-#include "optopts.h"
-#include "optlbl.h"
 #include "zoiks.h"
 #include "model.h"
 #include "coff.h"
@@ -52,6 +49,8 @@
 #include "feprotos.h"
 #include <assert.h>
 #include <stdio.h>
+#include "optlbl.h"
+#include "rtrtn.h"
 
 extern void DumpInsOnly( instruction * );
 extern void DumpString( char * );
@@ -63,16 +62,13 @@ extern void DumpPtr( void *ptr );
 
 extern void             ObjBytes( char *buffer, int size );
 extern uint_8           RegTrans( hw_reg_set );
-extern pointer          AskForSymLabel( pointer, cg_class );
 extern name             *DeAlias( name * );
 extern void             TryScrapLabel( code_lbl * );
 extern void             EmitDbgInfo( instruction * );
 extern void             ObjEmitSeq( byte_seq * );
-extern bool             AskIfRTLabel( code_lbl * );
 extern void             InputOC( any_oc * );
 extern opcode_defs      FlipOpcode( opcode_defs );
 extern void             FactorInt32( signed_32 val, signed_16 *, signed_16 *, signed_16 * );
-extern label_handle     RTLabel( rt_class );
 extern  void            GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
 
 extern type_class_def   Unsigned[];

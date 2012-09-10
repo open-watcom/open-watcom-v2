@@ -40,6 +40,7 @@
 #include "model.h"
 #include "feprotos.h"
 #include "makeins.h"
+#include "optlbl.h"
 
 extern proc_def             *CurrProc;
 extern  block               *HeadBlock;
@@ -67,7 +68,6 @@ extern  int             NumOperands(instruction*);
 extern  name            *IndexToTemp(instruction*,name*);
 extern  name            *FindIndex(instruction*);
 extern  bool            FPCInCode( void );
-extern  sym_handle      AskForLblSym(label_handle);
 extern  void            ExpandThreadDataRef(instruction*);
 
 static  void            Merge( name **pname, instruction *ins );

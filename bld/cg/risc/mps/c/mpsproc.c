@@ -44,6 +44,8 @@
 #include "zoiks.h"
 #include "mipsenc.h"
 #include "feprotos.h"
+#include "optlbl.h"
+#include "rtrtn.h"
 
 extern  uint_32         CountBits( uint_32 );
 extern  seg_id          SetOP( seg_id );
@@ -58,14 +60,12 @@ extern  void            GenIType( uint_8, uint_8, uint_8, signed_16 );
 extern  void            GenRType( uint_8, uint_8, uint_8, uint_8, uint_8 );
 extern  hw_reg_set      VarargsHomePtr( void );
 extern  void            GenRET( void );
-extern  sym_handle      AskForLblSym( label_handle );
 extern  void            OutFuncStart( label_handle label, offset start, int line );
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
 extern  uint_8          RegTrans( hw_reg_set );
 extern  void            GenCallLabel( label_handle lbl );
 extern  void            GenCallLabelReg( pointer label, uint reg );
-extern  label_handle    RTLabel( rt_class );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            EmitRtnBeg( void );

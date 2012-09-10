@@ -43,12 +43,10 @@
 #include "cgaux.h"
 #include "typedef.h"
 #include "feprotos.h"
+#include "optlbl.h"
 
 extern  constant_defn   *GetFloat(name*,type_class_def);
 extern  void            OutPatch(label_handle,patch_attr);
-extern  offset          AskAddress(label_handle);
-extern  label_handle    AskForSymLabel(pointer,cg_class);
-extern  sym_handle      AskForLblSym(label_handle);
 extern  void            TellKeepLabel(label_handle);
 extern  void            OutReloc(seg_id,fix_class,bool);
 extern  void            OutImport(sym_handle,fix_class,bool);
@@ -56,7 +54,6 @@ extern  void            OutBckImport( char *name, bck_info  *bck, fix_class clas
 extern  void            OutLabel(label_handle);
 extern  void            CodeBytes(byte*,uint);
 extern  void            CodeLabel(label_handle, unsigned);
-extern  label_handle    AskForLabel(sym_handle);
 extern  seg_id          SetOP(seg_id);
 extern  seg_id          AskBackSeg( void );
 extern  void            OutIBytes(byte,offset);

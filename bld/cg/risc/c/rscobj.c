@@ -36,9 +36,6 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cgaux.h"
-#include "offset.h"
-#include "optopts.h"
-#include "optlbl.h"
 #include "ocentry.h"
 #include "cgmem.h"
 #include "reloc.h"
@@ -53,21 +50,18 @@
 #include "procdef.h"
 #include "axpencod.h"
 #include "feprotos.h"
+#include "optlbl.h"
+#include "rtrtn.h"
 
 extern  void            CloseObj( void );
 extern  void            OpenObj( void );
 extern  void            PutObjBytes( const char *, uint );
-extern  sym_handle      AskForLblSym( label_handle );
-extern  label_handle    AskForSymLabel( sym_handle, cg_class );
-extern  label_handle    AskForLabel( sym_handle );
 extern  char            *AskRTName( rt_class );
 extern  void            TryScrapLabel( code_lbl * );
 extern  char            *CopyStr(char*,char*);
 extern  void            DoOutObjectName(sym_handle,void(*)(char*,void*),void*,import_type);
 extern  bool            SymIsExported( sym_handle );
-extern  bool            AskIfRTLabel( code_lbl * );
 extern  code_lbl        *GetWeirdPPCDotDotLabel( code_lbl * );
-extern  code_lbl        *RTLabel( rt_class );
 extern  void            TellAddress( code_lbl *, offset );
 extern  type_length     TempLocation( name * );
 extern  pointer         SymBack( pointer );

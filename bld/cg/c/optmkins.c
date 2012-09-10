@@ -33,7 +33,6 @@
 #include "freelist.h"
 
 extern  void            AddInstr( ins_entry *, ins_entry * );
-extern  label_handle    AskForNewLabel( void );
 extern  ins_entry       *NextIns( ins_entry * );
 extern  oc_class        NextClass( ins_entry * );
 extern  pointer         Copy( pointer, pointer, uint );

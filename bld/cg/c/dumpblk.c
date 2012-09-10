@@ -33,6 +33,7 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "dump.h"
+#include "optlbl.h"
 
 extern  void            DumpNL(void);
 extern  void            DumpPtr(pointer);
@@ -42,7 +43,6 @@ extern  void            DumpInt(int);
 extern  void            DumpInsList(block*);
 extern  void            DumpInstrsOnly(block*);
 extern  char            *AskName(pointer,cg_class);
-extern  sym_handle      AskForLblSym(label_handle);
 extern  void            DumpSymList(name*);
 extern  void            Dump8h(unsigned_32);
 

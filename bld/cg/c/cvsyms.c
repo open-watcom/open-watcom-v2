@@ -53,6 +53,7 @@
 #include "cvdbg.h"
 #include "feprotos.h"
 #include "cgprotos.h"
+#include "optlbl.h"
 
 extern  void            FEPtrBaseOffset(sym_handle,offset);
 extern  seg_id          AskOP(void);
@@ -65,11 +66,9 @@ extern  name            *DeAlias(name*);
 extern  seg_id          SetOP(seg_id);
 extern  seg_id          AskCodeSeg();
 extern  segment_id      AskSegID(pointer,cg_class);
-extern  sym_handle      AskForLblSym(label_handle);
 extern  void            SetBigLocation( long_offset loc );
 extern  long_offset     AskBigLocation(void);
 extern  offset          AskMaxSize(void);
-extern  offset          AskAddress(label_handle);
 extern  void            DataInt(short_offset);
 extern  void            DataLong( long );
 extern  char            GetMemModel( void );

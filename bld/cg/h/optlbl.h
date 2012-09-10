@@ -30,6 +30,8 @@
 
 
 #include "targsys.h"
+#include "optopts.h"
+#include "offset.h"
 #ifndef NDEBUG
 #include "useinfo.h"
 #endif
@@ -88,3 +90,6 @@ typedef struct code_lbl {
 #endif
 
 extern bool ValidLbl( code_lbl *lbl );
+
+#include "optask.h"
+

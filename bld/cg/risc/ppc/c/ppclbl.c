@@ -35,13 +35,8 @@
 #include "cgdefs.h"
 #include "regset.h"
 #include "addrname.h"
-#include "offset.h"
-#include "optopts.h"
 #include "optlbl.h"
 
-extern  bool            AskIfRTLabel( code_lbl * );
-extern  label_handle    AskForLabel( sym_handle );
-extern  label_handle    AskRTLabel( sym_handle );
 
 extern code_lbl *GetWeirdPPCDotDotLabel( code_lbl *lbl ) {
 /********************************************************/

@@ -44,6 +44,8 @@
 #include "zoiks.h"
 #include "axpencod.h"
 #include "feprotos.h"
+#include "optlbl.h"
+#include "rtrtn.h"
 
 extern  uint_32         CountBits( uint_32 );
 extern  seg_id          SetOP( seg_id );
@@ -61,7 +63,6 @@ extern  hw_reg_set      StackReg( void );
 extern  hw_reg_set      ScratchReg( void );
 extern  hw_reg_set      VarargsHomePtr( void );
 extern  void            GenRET( void );
-extern  sym_handle      AskForLblSym( label_handle );
 extern  offset          AskLocation( void );
 extern  void            OutFuncStart( label_handle label, offset start, int line );
 extern  void            OutFileStart( int line );
@@ -70,7 +71,6 @@ extern void             OutPDataRec( label_handle label, uint_32 pro_size, uint_
 extern  hw_reg_set      FrameBaseReg(void);
 extern  uint_8          RegTrans(hw_reg_set);
 extern  void            GenCallLabelReg( label_handle lbl, uint reg );
-extern  label_handle    RTLabel( rt_class );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            FactorInt32( signed_32, signed_16 *, signed_16 *, signed_16 * );
