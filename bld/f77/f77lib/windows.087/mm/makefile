@@ -1,4 +1,4 @@
-#pmake: buildlib os_win cpu_i86
+#pmake: build os_win cpu_i86
 processor  = 087
 system     = windows
 model      = mm

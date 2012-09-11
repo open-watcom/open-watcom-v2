@@ -129,7 +129,8 @@ echo Bootstrapping compiler using GNU tools...
 [ INCLUDE <SRCDIR>/plusplus/builder.ctl ]
 [ INCLUDE <SRCDIR>/fe_misc/builder.ctl ]
 #        FORTRAN 77 compilers must be built after code generators
-[ INCLUDE <SRCDIR>/f77/builder.ctl ]
+[ INCLUDE <SRCDIR>/f77/wfc/builder.ctl ]
+[ INCLUDE <SRCDIR>/f77/wfl/builder.ctl ]
 #        FORTRAN 77 libraries
 [ INCLUDE <SRCDIR>/f77/f77lib/builder.ctl ]
 [ INCLUDE <SRCDIR>/wl/builder.ctl ]

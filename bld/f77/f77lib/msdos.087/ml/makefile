@@ -1,4 +1,4 @@
-#pmake: buildlib os_dos cpu_i86
+#pmake: build os_dos cpu_i86
 processor  = 087
 system     = msdos
 model      = ml

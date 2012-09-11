@@ -1,4 +1,4 @@
-#pmake: nobuildlib os_nt cpu_ppc
+#pmake: nobuild os_nt cpu_ppc
 processor  = ppc
 system     = os2
 model      =

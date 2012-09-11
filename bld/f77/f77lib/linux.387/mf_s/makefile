@@ -1,4 +1,4 @@
-#pmake: buildlib os_linux cpu_386
+#pmake: build os_linux cpu_386
 processor  = 387
 system     = linux
 model      = mf

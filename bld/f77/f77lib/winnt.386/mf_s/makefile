@@ -1,4 +1,4 @@
-#pmake: buildlib os_nt cpu_386
+#pmake: build os_nt cpu_386
 processor  = 386
 system     = winnt
 model      = mf

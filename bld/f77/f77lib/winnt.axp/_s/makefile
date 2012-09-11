@@ -1,4 +1,4 @@
-#pmake: nobuildlib os_nt cpu_axp target_axp
+#pmake: nobuild os_nt cpu_axp target_axp
 
 processor  = axp
 system     = winnt
