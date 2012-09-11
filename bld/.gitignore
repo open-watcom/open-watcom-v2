@@ -159,6 +159,7 @@
 !/wattcp/inc/sys/*.h
 #
 /wcl/*.owc
+/wcl/owcc/*/*.owc
 #
 /win386/asm/dllthk.asm
 /win386/asm/winglue.asm
