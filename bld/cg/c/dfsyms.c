@@ -39,7 +39,6 @@
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
-#include "offset.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "typedef.h"
@@ -56,7 +55,6 @@
 #include "dbcue.h"
 #include "cgprotos.h"
 #include "feprotos.h"
-#include "optlbl.h"
 
 extern  void            FEPtr(sym_handle,type_def *,offset);
 extern  void            FEPtrBase(sym_handle);

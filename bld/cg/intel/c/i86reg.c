@@ -39,7 +39,6 @@
 #include "cgmem.h"
 #include "typedef.h"
 #include "feprotos.h"
-#include "optlbl.h"
 
 extern  type_class_def  ClassPointer;
 extern  proc_def        *CurrProc;

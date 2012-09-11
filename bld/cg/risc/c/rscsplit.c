@@ -44,10 +44,11 @@
 #include "makeins.h"
 #include <assert.h>
 #include "rtrtn.h"
+#include "convins.h"
 
 extern  instruction     *rMOVRESREG(instruction*);
 extern  instruction     *rSWAPOPS(instruction*);
-extern  instruction     *rDOCVT(instruction*);
+//extern  instruction     *rDOCVT(instruction*);
 extern  instruction     *rOP1REG(instruction*);
 extern  instruction     *rOP2REG(instruction*);
 extern  instruction     *rMOVOP1TEMP(instruction*);

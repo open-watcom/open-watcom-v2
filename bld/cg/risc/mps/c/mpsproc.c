@@ -35,7 +35,6 @@
 #include "opcodes.h"
 #include "procdef.h"
 #include "symdbg.h"
-#include "offset.h"
 #include "pattern.h"
 #include "cgmem.h"
 #include "model.h"
@@ -44,7 +43,6 @@
 #include "zoiks.h"
 #include "mipsenc.h"
 #include "feprotos.h"
-#include "optlbl.h"
 #include "rtrtn.h"
 
 extern  uint_32         CountBits( uint_32 );

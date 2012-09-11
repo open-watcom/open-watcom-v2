@@ -42,7 +42,6 @@
 #include "feprotos.h"
 #include <string.h>
 #include "makeins.h"
-#include "optlbl.h"
 
 extern  void            TellBeginExecutions(void);
 extern  void            FreeNames(void);

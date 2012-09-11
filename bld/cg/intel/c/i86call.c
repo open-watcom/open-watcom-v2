@@ -46,7 +46,6 @@
 #include "makeins.h"
 #include "display.h"
 #include "cgprotos.h"
-#include "optlbl.h"
 #include "rtrtn.h"
 
 extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);

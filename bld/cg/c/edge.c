@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "cgmem.h"
-#include "optlbl.h"
 
 extern  block           *MakeBlock(label_handle,block_num);
 extern  void            SuffixIns(instruction *,instruction *);

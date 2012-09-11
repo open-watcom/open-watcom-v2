@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "model.h"
-#include "optlbl.h"
 
 typedef struct  edge_list {
         block_edge              *edge;

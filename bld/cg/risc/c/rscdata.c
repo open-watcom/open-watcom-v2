@@ -32,7 +32,6 @@
 #include "standard.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "offset.h"
 #include "typedef.h"
 #include "zoiks.h"
 #include "reloc.h"
@@ -40,7 +39,6 @@
 #include "feprotos.h"
 #include <assert.h>
 #include <string.h>
-#include "optlbl.h"
 
 extern  void            ObjBytes( byte *, unsigned );
 extern  constant_defn   *GetFloat( name *, type_class_def );

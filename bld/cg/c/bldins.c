@@ -47,7 +47,6 @@
 #include "addrfold.h"
 #include "display.h"
 #include "bldins.h"
-#include "optlbl.h"
 
 
 extern  an              MakeConst(pointer,type_def*);

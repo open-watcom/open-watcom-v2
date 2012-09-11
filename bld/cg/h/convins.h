@@ -30,15 +30,7 @@
 ****************************************************************************/
 
 
-/*       Internal code representation */
+extern  bool        CvtOk( type_class_def fr, type_class_def to );
+extern  instruction *rDOCVT( instruction *ins );
+extern  void        LookupConvertRoutine( instruction *ins );
 
-#include "hwreg.h"
-#include "cg.h"
-#include "bckdef.h"
-#include "typclass.h"
-#include "name.h"
-#include "opcodes.h"
-#include "inslist.h"
-#include "optlbl.h"
-#include "block.h"
-#include "targsys.h"

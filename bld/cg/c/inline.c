@@ -38,7 +38,6 @@
 #include "zoiks.h"
 #include "feprotos.h"
 #include "makeins.h"
-#include "optlbl.h"
 
 extern  name            *GenIns(an);
 extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);

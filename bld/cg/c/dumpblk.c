@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "dump.h"
-#include "optlbl.h"
 
 extern  void            DumpNL(void);
 extern  void            DumpPtr(pointer);

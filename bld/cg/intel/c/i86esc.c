@@ -43,7 +43,6 @@
 #include "fppatch.h"
 #include "feprotos.h"
 #include "rtclass.h"
-#include "optlbl.h"
 
 extern  void            DbgSetBase( void );
 extern  void            OutAbsPatch(abspatch*,patch_attr);

@@ -51,7 +51,6 @@
 #include "cypfunc.h"
 #include "encode.h"
 #include "feprotos.h"
-#include "optlbl.h"
 
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            EjectInst( void );

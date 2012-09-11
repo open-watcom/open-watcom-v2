@@ -39,7 +39,6 @@
 #include "opcodes.h"
 #include "cgdefs.h"
 #include "feprotos.h"
-#include "optlbl.h"
 
 extern proc_def             *CurrProc;
 

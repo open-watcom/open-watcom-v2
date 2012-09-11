@@ -38,7 +38,6 @@
 #include "cgaux.h"
 #include "typedef.h"
 #include "feprotos.h"
-#include "optlbl.h"
 
 extern  pointer         BEAuxInfo(pointer,aux_class);
 

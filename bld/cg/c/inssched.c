@@ -46,7 +46,6 @@
 #include "zoiks.h"
 #include "addrname.h"
 #include "x87.h"
-#include "optlbl.h"
 
 
 extern  void            ProcMessage(msg_class);

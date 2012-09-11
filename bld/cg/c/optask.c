@@ -37,8 +37,8 @@
 
 extern  array_control   *InitPatch( void );
 
-static  label_handle    DoAskForLabel( sym_handle sym )
-/*****************************************************/
+static  code_lbl    *DoAskForLabel( sym_handle sym )
+/**************************************************/
 {
     code_lbl    *new;
 
@@ -68,8 +68,8 @@ static  label_handle    DoAskForLabel( sym_handle sym )
 }
 
 
-extern  label_handle    AskForNewLabel( void )
-/********************************************/
+extern  code_lbl    *AskForNewLabel( void )
+/*****************************************/
 {
     code_lbl    *new;
 
@@ -82,8 +82,8 @@ extern  label_handle    AskForNewLabel( void )
 }
 
 
-extern  label_handle    AskRTLabel( sym_handle *sym )
-/***************************************************/
+extern  code_lbl    *AskRTLabel( sym_handle *sym )
+/************************************************/
 {
     code_lbl    *lbl;
 
@@ -94,8 +94,8 @@ extern  label_handle    AskRTLabel( sym_handle *sym )
 }
 
 
-extern  label_handle    AskForLabel( sym_handle sym )
-/***************************************************/
+extern  code_lbl    *AskForLabel( sym_handle sym )
+/************************************************/
 {
     code_lbl    *new;
     fe_attr     attr;

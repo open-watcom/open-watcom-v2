@@ -39,6 +39,7 @@
 #include "model.h"
 #include "rttable.h"
 #include "makeins.h"
+#include "convins.h"
 
 extern  name            *AllocS32Const( signed_32 );
 extern  name            *AllocTemp(type_class_def);

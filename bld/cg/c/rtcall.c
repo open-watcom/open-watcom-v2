@@ -36,13 +36,12 @@
 #include "rttable.h"
 #include "makeins.h"
 #include "rtrtn.h"
+#include "convins.h"
 
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocIntConst(int);
 extern  hw_reg_set      FirstReg(reg_set_index);
-extern  void            LookupRoutine(instruction*);
-extern  void            LookupConvertRoutine(instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            ReplIns(instruction*,instruction*);
 extern  void            DelSeg(instruction*);

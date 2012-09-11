@@ -49,7 +49,6 @@
 #include "feprotos.h"
 #include <assert.h>
 #include <stdio.h>
-#include "optlbl.h"
 #include "rtrtn.h"
 
 extern void DumpInsOnly( instruction * );

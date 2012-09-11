@@ -35,7 +35,6 @@
 #include "cgdefs.h"
 #include "regset.h"
 #include "addrname.h"
-#include "optlbl.h"
 
 
 extern code_lbl *GetWeirdPPCDotDotLabel( code_lbl *lbl ) {

@@ -49,7 +49,6 @@
 #include "wvdbg.h"
 #include "feprotos.h"
 #include "cgprotos.h"
-#include "optlbl.h"
 
 extern  seg_id          AskOP(void);
 extern  bck_info        *BENewBack(sym_handle);

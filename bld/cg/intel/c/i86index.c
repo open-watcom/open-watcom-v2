@@ -40,7 +40,6 @@
 #include "model.h"
 #include "feprotos.h"
 #include "makeins.h"
-#include "optlbl.h"
 
 extern proc_def             *CurrProc;
 extern  block               *HeadBlock;

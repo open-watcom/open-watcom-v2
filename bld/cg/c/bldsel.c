@@ -41,7 +41,6 @@
 #include "types.h"
 #include "bldins.h"
 #include "makeins.h"
-#include "optlbl.h"
 
 extern  void            AddTarget(label_handle,bool);
 extern  signed_32       IfCost(select_node*,int);

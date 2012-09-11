@@ -45,7 +45,6 @@
 #include "feprotos.h"
 #include "x87.h"
 #include "makeins.h"
-#include "optlbl.h"
 
 
 typedef struct block_list {

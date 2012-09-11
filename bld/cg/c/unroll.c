@@ -44,7 +44,6 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "makeins.h"
-#include "optlbl.h"
 
 extern  block           *MakeBlock(label_handle,block_num);
 extern  instruction     *DupInstrs(instruction*,instruction*,instruction*,induction*,signed_32);

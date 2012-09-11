@@ -39,7 +39,6 @@
 #include "ocentry.h"
 #include "axpencod.h"
 #include "reloc.h"
-#include "optlbl.h"
 #include "zoiks.h"
 #include "model.h"
 #include "coff.h"

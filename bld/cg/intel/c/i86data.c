@@ -43,7 +43,6 @@
 #include "cgaux.h"
 #include "typedef.h"
 #include "feprotos.h"
-#include "optlbl.h"
 
 extern  constant_defn   *GetFloat(name*,type_class_def);
 extern  void            OutPatch(label_handle,patch_attr);

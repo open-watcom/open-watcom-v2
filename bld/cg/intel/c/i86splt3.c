@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "zoiks.h"
-#include "optlbl.h"
 
 extern  int             NumOperands(instruction*);
 

@@ -38,7 +38,6 @@
 #include "cgmem.h"
 #include "typedef.h"
 #include "feprotos.h"
-#include "optlbl.h"
 
 extern  proc_def        *CurrProc;
 

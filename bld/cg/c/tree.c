@@ -61,7 +61,6 @@
 #include "inline.h"
 #include "makeaddr.h"
 #include "namelist.h"
-#include "optlbl.h"
 #include "patch.h"
 #include "rgtbl.h"
 #include "stack.h"

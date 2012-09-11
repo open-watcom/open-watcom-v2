@@ -40,7 +40,6 @@
 #include "seldef.h"
 #include "cgaux.h"
 #include "makeins.h"
-#include "optlbl.h"
 #include "rtrtn.h"
 
 extern  name            *GenFloat( name *, type_class_def );
@@ -63,7 +62,6 @@ extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  seg_id          AskBackSeg( void );
-extern  void            LookupRoutine( instruction * );
 extern  instruction     *rMAKECALL( instruction * );
 extern  hw_reg_set      FirstReg( reg_set_index );
 

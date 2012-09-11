@@ -35,7 +35,6 @@
 #include "cgdefs.h"
 #include "regset.h"
 #include "addrname.h"
-#include "optlbl.h"
 #include "rttable.h"
 #include "zoiks.h"
 

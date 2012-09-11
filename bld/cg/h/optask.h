@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
-extern  label_handle    AskForNewLabel( void );
-extern  label_handle    AskRTLabel( sym_handle *sym );
-extern  label_handle    AskForLabel( sym_handle sym );
+extern  code_lbl        *AskForNewLabel( void );
+extern  code_lbl        *AskRTLabel( sym_handle *sym );
+extern  code_lbl        *AskForLabel( sym_handle sym );
 extern  bool            AskIfReachedLabel( code_lbl *lbl );
 extern  bool            AskIfRTLabel( code_lbl *lbl );
 extern  bool            AskIfUniqueLabel( code_lbl *lbl );
@@ -39,5 +39,4 @@ extern  bool            AskIfCommonLabel( code_lbl *lbl );
 extern  offset          AskAddress( code_lbl *lbl );
 extern  pointer         AskLblPatch( code_lbl *lbl );
 extern  sym_handle      AskForLblSym( code_lbl *lbl );
-extern  label_handle    AskForSymLabel( pointer hdl, cg_class class );
-
+extern  code_lbl        *AskForSymLabel( pointer hdl, cg_class class );

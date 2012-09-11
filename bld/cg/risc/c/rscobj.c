@@ -50,7 +50,6 @@
 #include "procdef.h"
 #include "axpencod.h"
 #include "feprotos.h"
-#include "optlbl.h"
 #include "rtrtn.h"
 
 extern  void            CloseObj( void );

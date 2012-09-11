@@ -40,6 +40,7 @@
 #include "makeins.h"
 #include "zoiks.h"
 #include "rttable.h"
+#include "convins.h"
 
 extern  name            *AllocTemp( type_class_def );
 extern  void            MoveSegOp( instruction *, instruction *, int );

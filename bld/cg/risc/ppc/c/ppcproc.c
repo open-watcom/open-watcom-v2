@@ -34,14 +34,12 @@
 #include "opcodes.h"
 #include "procdef.h"
 #include "symdbg.h"
-#include "offset.h"
 #include "pattern.h"
 #include "cgmem.h"
 #include "model.h"
 #include "ppcenc.h"
 #include "ppcparm.h"
 #include "ppcgen.h"
-#include "optlbl.h"
 
 extern  uint_32         CountBits( uint_32 );
 extern  seg_id          SetOP( seg_id );

@@ -36,10 +36,10 @@
 #include "regset.h"
 #include "rttable.h"
 #include "zoiks.h"
-#include "optlbl.h"
+#include "rtrtn.h"
 
-static    import_handle RTHdls[RTSIZE];
-static    label_handle  RTLbls[RTSIZE];
+static  import_handle   RTHdls[RTSIZE];
+static  code_lbl        *RTLbls[RTSIZE];
 
 extern  void    LookupRoutine( instruction *ins ) {
 /*************************************************/
@@ -48,17 +48,15 @@ extern  void    LookupRoutine( instruction *ins ) {
     rt_class    rtindex;
     opcode_defs opcode;
 
-    rtn = RTInfo;
-    rtindex = 0;
     opcode = ins->head.opcode;
     if( opcode >= FIRST_CONDITION ) {
         opcode = OP_CMP;
     }
-    for(;;) {
-        if( rtn->op == opcode && rtn->operand_class == ins->type_class ) break;
-        ++ rtn;
-        ++ rtindex;
+    rtn = RTInfo;
+    for( rtindex = 0; rtn->op != opcode || rtn->operand_class != ins->type_class; ++rtindex ) {
+        ++rtn;
         if( rtn->op == OP_NOP ) {
+            ++rtindex;
             _Zoiks( ZOIKS_021 );
             break;
         }
@@ -93,10 +91,10 @@ extern  void    TellRTHandle( rt_class rtindex, import_handle hdl ) {
 }
 
 
-extern  label_handle    RTLabel( rt_class rtindex ) {
-/***************************************************/
+extern  code_lbl    *RTLabel( rt_class rtindex ) {
+/************************************************/
 
-    label_handle        lbl;
+    code_lbl    *lbl;
 
     lbl = RTLbls[rtindex];
     if( lbl == NULL ) {
@@ -107,8 +105,8 @@ extern  label_handle    RTLabel( rt_class rtindex ) {
 }
 
 
-extern  rt_class    FindRTLabel( label_handle hdl ) {
-/***************************************************/
+extern  rt_class    FindRTLabel( code_lbl *hdl ) {
+/************************************************/
 
     rt_class    rtindex;
 

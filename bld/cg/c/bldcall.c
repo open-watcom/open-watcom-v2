@@ -39,16 +39,14 @@
 #include "cgdefs.h"
 #include "cgaux.h"
 #include "zoiks.h"
-#include "offset.h"
 #include "feprotos.h"
 #include "namelist.h"
 #include "bldins.h"
 #include "makeaddr.h"
-#include "optlbl.h"
 #include "bgcall.h"
 #include "x87.h"
 #include "makeins.h"
-
+#include "convins.h"
 
 
 extern  type_def        *QParmType(sym_handle,sym_handle,type_def*);
@@ -59,7 +57,6 @@ extern  hw_reg_set      ActualParmReg(hw_reg_set);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  hw_reg_set      ParmInLineReg(parm_state*);
 extern  void            AddIns(instruction*);
-extern  bool            CvtOk(type_class_def,type_class_def);
 extern  type_length     PushSize(type_length);
 extern  type_class_def  ReturnClass(type_def*,call_attributes);
 extern  type_class_def  InitCallState(type_def*);

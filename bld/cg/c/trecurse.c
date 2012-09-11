@@ -37,7 +37,6 @@
 #include "procdef.h"
 #include "dump.h"
 #include "makeins.h"
-#include "optlbl.h"
 
 extern proc_def         *CurrProc;
 extern block            *HeadBlock;

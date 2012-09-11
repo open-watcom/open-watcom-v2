@@ -55,7 +55,6 @@
 #include "procdef.h"
 #include "addrname.h"
 #include "display.h"
-#include "optlbl.h"
 #include "rtrtn.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
@@ -93,7 +92,6 @@ extern  void            LayLeaRegOp(instruction*);
 extern  pointer         Copy(pointer,pointer,uint);
 extern  void            GenUnkLea(pointer);
 extern  name            *IntEquivalent(name*);
-extern  void            LookupRoutine(instruction*);
 extern  void            AdjustStackDepth(instruction*);
 extern  void            AdjustStackDepthDirect(int adjust);
 

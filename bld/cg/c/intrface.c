@@ -41,15 +41,12 @@
 #include "tree.h"
 #include "addrname.h"
 #include "cfloat.h"
-#include "offset.h"
 #include "ptrint.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "types.h"
 #include "feprotos.h"
 #include "cgprotos.h"
-#include "rtclass.h"
-#include "optlbl.h"
 
 #ifndef NDEBUG
 #include "echoapi.h"
@@ -59,6 +56,7 @@
 #endif
 
 #include "bldins.h"
+#include "rtclass.h"
 
 extern  void            FEPtr(sym_handle,type_def*,offset);
 extern  seg_id          AskOP(void);
@@ -1796,16 +1794,16 @@ extern  char    *AskName( pointer hdl, cg_class class )
     }
 }
 
-extern  label_handle    AskForSymLabel( pointer hdl, cg_class class )
-/*******************************************************************/
+extern  code_lbl    *AskForSymLabel( pointer hdl, cg_class class )
+/****************************************************************/
 {
     switch( class ) {
     case CG_FE:
         return( FEBack( hdl )->lbl );
     case CG_LBL:
-        return( (label_handle)hdl );
+        return( (code_lbl *)hdl );
     case CG_CLB:
-        return( (label_handle)hdl );
+        return( (code_lbl *)hdl );
     case CG_BACK:
         return( ((bck_info*)hdl)->lbl );
     case CG_TBL:

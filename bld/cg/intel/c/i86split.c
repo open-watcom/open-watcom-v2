@@ -41,6 +41,7 @@
 #include "system.h"
 #include "zoiks.h"
 #include "makeins.h"
+#include "convins.h"
 
 extern  conflict_node   *GiveRegister(conflict_node*,bool);
 extern  conflict_node   *NameConflict(instruction*,name*);
@@ -106,7 +107,7 @@ extern  instruction             *rCLRHI_BW(instruction*);
 extern  instruction             *rCONVERT_LOW(instruction*);
 extern  instruction             *rCYPHIGH(instruction*);
 extern  instruction             *rCYPLOW(instruction*);
-extern  instruction             *rDOCVT(instruction*);
+//extern  instruction             *rDOCVT(instruction*);
 extern  instruction             *rDOUBLEHALF(instruction*);
 extern  instruction             *rMAKECALL(instruction*);
 extern  instruction             *rOP1MEM(instruction*);

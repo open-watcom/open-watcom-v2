@@ -38,7 +38,6 @@
 #include "cgaux.h"
 #include "zoiks.h"
 #include "feprotos.h"
-#include "optlbl.h"
 
 extern  seg_id          AskCodeSeg( void );
 extern  seg_id          SetOP(seg_id);

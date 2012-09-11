@@ -40,8 +40,8 @@
 #include "seldef.h"
 #include "cgaux.h"
 #include "makeins.h"
-#include "optlbl.h"
 #include "rtrtn.h"
+#include "convins.h"
 
 
 extern    hw_reg_set      *RegSets[];
@@ -69,9 +69,7 @@ extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  seg_id          AskCodeSeg( void );
-extern  void            LookupRoutine( instruction * );
 extern  hw_reg_set      ReturnReg( type_class_def, bool );
-extern  void            LookupConvertRoutine(instruction*);
 
 /*
  * If you add a new routine, let John know as the debugger recognizes

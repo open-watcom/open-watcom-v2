@@ -42,7 +42,6 @@
 #include "cgswitch.h"
 #include "makeins.h"
 #include "cgprotos.h"
-#include "optlbl.h"
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
 #define MIN_LVALUES     5            /* to make it worth while for long sca*/

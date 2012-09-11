@@ -53,7 +53,6 @@
 #include "cvdbg.h"
 #include "feprotos.h"
 #include "cgprotos.h"
-#include "optlbl.h"
 
 extern  void            FEPtrBaseOffset(sym_handle,offset);
 extern  seg_id          AskOP(void);

@@ -45,7 +45,6 @@
 #include "feprotos.h"
 #include "addrname.h"
 #include "display.h"
-#include "optlbl.h"
 #include "rtrtn.h"
 
 extern  void        OutDLLExport(uint,sym_handle);

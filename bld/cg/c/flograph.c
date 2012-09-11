@@ -38,7 +38,6 @@
 #include "zoiks.h"
 #include "procdef.h"
 #include "stackok.h"
-#include "optlbl.h"
 
 extern    block         *HeadBlock;
 extern    block         *CurrBlock;
