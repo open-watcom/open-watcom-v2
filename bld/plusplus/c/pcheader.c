@@ -62,6 +62,11 @@
  #define _FILENAME_CMP  stricmp
 #endif
 
+typedef struct pch_reloc_info {
+    off_t               start;
+    off_t               stop;
+} pch_reloc_info;
+
 static pch_status (*readFunctions[])( void ) = {
 #define PCH_EXEC( s, g )        PCHRead##g,
 #include "pcregdef.h"
@@ -103,7 +108,7 @@ static int amountLeft;
 static char *ioBuffer;
 static char *bufferCursor;
 //static char *bufferEnd;
-static fpos_t bufferPosition;
+static off_t bufferPosition;
 
 #define pch_buff_cur CompInfo.pch_buff_cursor
 #define pch_buff_eob CompInfo.pch_buff_end
@@ -249,9 +254,9 @@ static void dumpCheckData( char *include_file )
     PCHDumpMacroCheck();
 }
 
-static fpos_t cursorWriteFilePosition( void )
+static off_t cursorWriteFilePosition( void )
 {
-    fpos_t posn;
+    off_t   posn;
 
     posn = bufferPosition;
     posn += ( bufferCursor - ioBuffer );
@@ -1084,8 +1089,8 @@ void PCHRelocStop( pch_reloc_index ri )
 void PCHPerformReloc( pch_reloc_index ri )
 /****************************************/
 {
-    fpos_t start_position;
-    fpos_t stop_position;
+    off_t start_position;
+    off_t stop_position;
     size_t reloc_size;
     char * volatile pch_fname;  // must be preserved by setjmp()
     int status;
@@ -1125,7 +1130,7 @@ void PCHPerformReloc( pch_reloc_index ri )
         if( relocFunctions[ri]( ioBuffer, reloc_size ) == PCHCB_ERROR ) {
             fail();
         }
-        if( lseek( pchFile, -(fpos_t)reloc_size, SEEK_CUR ) != start_position ) {
+        if( lseek( pchFile, -(off_t)reloc_size, SEEK_CUR ) != start_position ) {
             fail();
         }
         if( write( pchFile, ioBuffer, reloc_size ) != reloc_size ) {

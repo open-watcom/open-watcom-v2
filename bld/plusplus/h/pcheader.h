@@ -133,11 +133,6 @@ typedef enum {
     PCHCB_ERROR,
 } pch_status;
 
-typedef struct pch_reloc_info {
-    fpos_t              start;
-    fpos_t              stop;
-} pch_reloc_info;
-
 /* R/W function indices */
 typedef enum {
 #define PCH_EXEC( s, g )        PCHRW_##s,
