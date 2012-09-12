@@ -57,7 +57,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/as/builder.ctl ]
 # Now miscellaneous utilities required during build
 [ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/causeway/cwc/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]

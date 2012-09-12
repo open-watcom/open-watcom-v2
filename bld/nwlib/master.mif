@@ -120,12 +120,10 @@ extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE
 # rc flags
 
 # systems where version resources must be added to .DLL
-!ifndef prebuild
 version_res_dll_nt_386 = version.res
-!endif
 
 # systems where version resources must be added to .EXE
-!ifndef prebuild
+!ifndef bootstrap
 version_res_exe_nt_386 = exever.res
 !endif
 

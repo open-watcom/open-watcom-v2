@@ -15,18 +15,18 @@ all : lib $(commands) .symbolic
 lib : .symbolic $(__MAKEFILES__)
 curr_dir_all=$+ $(%CWD) $-
         @cd $(posixlibdir)
-        !@wmake -h release=$(release)
+        !@wmake -h release=$(release) bootstrap=$(bootstrap)
 !ifeq targos dos
         @cd $(altposixlibdir)
-        !@wmake -h release=$(release)
+        !@wmake -h release=$(release) bootstrap=$(bootstrap)
 !else ifeq targos dosos2
         @cd $(altposixlibdir)
-        !@wmake -h release=$(release)
+        !@wmake -h release=$(release) bootstrap=$(bootstrap)
 !endif
         @cd $(curr_dir_all)
 
 $(commands) : .symbolic $(__MAKEFILES__)
-        !@wmake -h targos=$(targos) make_all=1 release=$(release) -f $(posix_dir)/src/$^@/makefile
+        !@wmake -h targos=$(targos) make_all=1 release=$(release) bootstrap=$(bootstrap) -f $(posix_dir)/src/$^@/makefile
 
 clean : .symbolic
 curr_dir_all=$+ $(%CWD) $-
@@ -50,3 +50,4 @@ curr_dir_all=$+ $(%CWD) $-
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
 !endif
 !endif
+

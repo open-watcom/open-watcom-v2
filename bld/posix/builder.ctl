@@ -18,7 +18,7 @@ set PROJNAME=build POSIX tools
     cd <PROJDIR>
     mkdir <PROJDIR>/<OWOBJDIR>
     cd <PROJDIR>/<OWOBJDIR>
-    wmake -h -f ../bootmake clean_build
+    wmake -h -f ../bootmake clean
     cd <PROJDIR>
 
 [ BLOCK . . ]

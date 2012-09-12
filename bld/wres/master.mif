@@ -12,8 +12,10 @@ wres_distrib_lib = 1
 wres_rtdll = 1
 !endif
 
+!ifdef model
 memory_model_i86 = $(model)
 memory_model_386 = $(model)
+!endif
 
 !include cproj.mif
 !include defrule.mif
@@ -23,7 +25,6 @@ memory_model_386 = $(model)
 objs = $(wres_core_objs) $(wres_more_objs)
 
 # options to use
-extra_c_flags = -DMICROSOFT
 !ifdef IS_GUI
 extra_c_flags += -DWIN_GUI
 !endif
