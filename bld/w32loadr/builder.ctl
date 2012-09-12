@@ -6,18 +6,19 @@ set PROJDIR=<CWD>
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
+[ BLOCK <1> boot ]
 #=================
-    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/wasm.exe <OWBINDIR>/bwasm<CMDEXT>
 
-[ BLOCK <1> rel2 cprel2 acprel2 ]
-#================================
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f <OWBINDIR>/bwasm<CMDEXT>
+    rm -f <OWBINDIR>/bwasm<CMDEXT>
+
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (os_dos "") <2*> ]
    <CPCMD> dos386/cwsrun.exe   <OWRELROOT>/binw/w32run.exe
 #   <CPCMD> dos386/x32run.exe   <OWRELROOT>/binw/x32run.exe
@@ -34,11 +35,6 @@ cdsay .
 #    these are now real NT exe's - don't copy the stub
 #    <CPCMD> nt/*.exe           <OWRELROOT>/binnt/
 
-[ BLOCK <1> clean ]
-#=================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

@@ -43,7 +43,7 @@
 
 #include "pragdefn.h"
 
-typedef unsigned char TOKEN;
+//typedef unsigned char TOKEN;
 
 
 #define BUF_SIZE_SHIFT          (9)

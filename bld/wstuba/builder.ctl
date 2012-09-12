@@ -8,16 +8,16 @@ set PROJDIR=<CWD>
 
 cdsay .
 
-[ BLOCK <1> build rel2 ]
-#=======================
+[ BLOCK <1> build rel ]
+#======================
     [ INCLUDE prereq.ctl ]
 
-[ BLOCK <1> rel2 ]
-#=================
+[ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (all build os_dos os_win cpu_i86 cpu_386 "") <2*> ]
     <CPCMD> wstub.exe   <OWRELROOT>/binw/wstub.exe
     <CPCMD> wstubq.exe  <OWRELROOT>/binw/wstubq.exe

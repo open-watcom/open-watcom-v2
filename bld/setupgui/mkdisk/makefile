@@ -4,19 +4,21 @@ proj_name = mkdisk
 
 mkdisk_autodepends = .autodepend
 
-!ifeq %BUILD_PLATFORM dos386
+!ifeq %BOOTSTRAP_CPU 386
+!ifeq %BOOTSTRAP_OS dos
 ziplib = ../ziplib/osi386/ziplib.lib
 zlib   = ../zlib/osi386/zlib.lib
-!else ifeq %BUILD_PLATFORM nt386
+!else ifeq %BOOTSTRAP_OS nt
 ziplib = ../ziplib/osi386/ziplib.lib
 zlib   = ../zlib/osi386/zlib.lib
-!else ifeq %BUILD_PLATFORM os2386
+!else ifeq %BOOTSTRAP_OS os2
 ziplib = ../ziplib/osi386/ziplib.lib
 zlib   = ../zlib/osi386/zlib.lib
-!else ifeq %BUILD_PLATFORM linux386
-ziplib = ../ziplib/osi386/ziplib.lib
+!else ifeq %BOOTSTRAP_OS linux
+ziplib = ../ziplib/linux386/ziplib.lib
 zlib   = ../zlib/osi386/zlib.lib
 !else
+!endif
 !endif
 
 bld_extra_incs = -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(builder_dir)/h"

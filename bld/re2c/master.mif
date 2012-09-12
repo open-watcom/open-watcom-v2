@@ -18,9 +18,14 @@ objs =                  &
        scanner.obj      &
        substr.obj
 
-!ifndef bootstrap
+!ifdef __WATCOM__
 extra_c_flags_scanner = -wcd=118
 extra_c_flags_parser = -pil
 !endif
 
-!include exetarg.mif
+$(proj_name).exe : $(objs) $(cl_objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $<
+!else
+        $(linker) name $@ $(lflags) file {$(objs)}
+!endif

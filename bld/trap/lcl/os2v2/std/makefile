@@ -35,7 +35,7 @@ extra_linker = &
         imp DoReadXMMRegs_ wdsplice                    &
         imp DoWriteXMMRegs_ wdsplice                   &
         imp _XferBuff wdsplice, DoDupFile_ wdsplice    &
-        lib $(lang_root)/lib286/os2/os2.lib
+        lib os2.lib
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

@@ -40,6 +40,9 @@
 #include <setjmp.h>
 #include <string.h>
 #include <ctype.h>
+#ifndef __WATCOMC__
+  #include "clibext.h"
+#endif
 
 /* for testing */
 //#define static

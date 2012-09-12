@@ -135,33 +135,37 @@ version_res_dll_nt_386 = version.res
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 
-!ifdef bootstrap
-
-exe_objs += clibext.obj
-
-!endif
-
 inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs)
 inc_dirs += -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
 .c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
 .h: ../../h;$(watcom_dir)/h
 
-comp_objs_exe = $(common_objs) $(exe_objs)
+comp_objs_exe = $(common_objs) $(exe_objs) $(cl_objs)
 comp_objs_dll = $(common_objs) $(dll_objs)
 
 !ifdef cc_dll
 
-$(exe_name).exe : $(drv_objs) $(dll_name).lib $(version_res_exe_$(host_os)_$(host_cpu)) drv.lnk
+$(exe_name).exe : $(drv_objs) $(dll_name).lib $(version_res_exe_$(host_os)_$(host_cpu))
+        @%write drv.lnk $(lflags)
+        @for %i in ($(drv_objs)) do @%append drv.lnk file %i
+        @%append drv.lnk lib $(dll_name).lib
+!ifeq host_os dos
+        @%append drv.lnk lib cwdll.lib
+!endif
         $(linker) name $@ @drv.lnk
         @%make bind_version_res_exe
 
 !else
 
-$(exe_name).exe: $(depends_exe) exe.lnk $(version_res_exe_$(host_os)_$(host_cpu))
-!ifdef bootstrap
-        $(cc) $(ldflags) -o $@ $(comp_objs_exe) $(xlibs) $(libs)
-!else ifeq host_os osi
+$(exe_name).exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(comp_objs_exe) $(xlibs) $(libs)
+!else
+        @%write exe.lnk $(lflags)
+        @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i
+        @for %i in ($(xlibs)) do @%append exe.lnk lib %i
+!ifeq host_os osi
         $(linker) name $^&.rex @exe.lnk
         $(w32bind) $^&.rex $@ $(os2ldr)
         @rm -f $^&.rex
@@ -172,39 +176,19 @@ $(exe_name).exe: $(depends_exe) exe.lnk $(version_res_exe_$(host_os)_$(host_cpu)
         serialize $@ wcc
 !endif
 !endif
+!endif
 
 !endif
 
-$(dll_name).dll : $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) dll.lnk
+$(dll_name).dll : $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu))
+        @%write dll.lnk $(lflags_dll)
+        @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
+        @for %i in ($(xlibs)) do @%append dll.lnk lib %i
         $(linker) name $@ @dll.lnk
         @%make bind_version_res_dll
 
 $(dll_name).lib : $(dll_name).dll
         $(librarian) $(libflags) +$[@
-
-drv.lnk : $(__MAKEFILES__)
-        @%write $@ $(lflags)
-        @for %i in ($(drv_objs)) do @%append $@ file %i
-        @%append $@ lib $(dll_name).lib
-!ifeq host_os dos
-        @%append $@ lib cwdll.lib
-!endif
-
-exe.lnk : $(__MAKEFILES__)
-        @%write $@ $(lflags)
-!ifdef cc_rtdll
-        @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
-!endif
-        @for %i in ($(comp_objs_exe)) do @%append $@ file %i
-        @for %i in ($(xlibs)) do @%append $@ lib %i
-
-dll.lnk : $(__MAKEFILES__)
-        @%write $@ $(lflags_dll)
-!ifdef cc_rtdll
-        @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
-!endif
-        @for %i in ($(comp_objs_dll)) do @%append $@ file %i
-        @for %i in ($(xlibs)) do @%append $@ lib %i
 
 #
 # done
@@ -231,15 +215,15 @@ code$(target_cpu).gh : xcode$(target_cpu).tmp ./mkcode.exe
         $]@ $[@ $@
 !endif
 
-target_as_axp   = wasaxp -zq -w8
+target_as_axp   = bwasaxp -zq -w8
 target_as_i86   = bwasm -zq -w8
 target_as_386   = bwasm -zq -w8 -3
-target_as_ppc   = wasppc -zq -w8
-target_as_mps   = wasmps -zq -w8
+target_as_ppc   = bwasppc -zq -w8
+target_as_mps   = bwasmps -zq -w8
 
 xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
-        $(target_as_$(target_cpu)) -I"$(watcom_dir)/h" -fo=.obj $[@
-        $(linker) format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
+        *$(target_as_$(target_cpu)) -I"$(watcom_dir)/h" -fo=.obj $[@
+        *bwlink format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
 
 ./mkcode.exe: ../../a/mkcode.c
         $(bld_cl) $[@ $(wcl_util_opts)

@@ -34,11 +34,11 @@ command.exe : $(objs) wlink.res
 !endif
         $(wstrip) -q -a -r command.exe . wlink.res
 
-trmem.obj : $(%OWROOT)/bld/trmem/trmem.c
-        $(compile) -i="$(%OWROOT)/bld/trmem"
+trmem.obj : $(%OWSRCDIR)/trmem/trmem.c
+        $(compile) -i="$(%OWSRCDIR)/trmem"
 
 dmem.obj : mem.c
-        $(compile) -dTRACKER -fo=dmem.obj -of+ -i="$(%OWROOT)/bld/trmem"
+        $(compile) -dTRACKER -fo=dmem.obj -of+ -i="$(%OWSRCDIR)/trmem"
 
 msg.obj : msg.c ../h/msg.h ../h/wlnkmsg.h
         $(compile) -i="$(lib_misc_dir)/h"

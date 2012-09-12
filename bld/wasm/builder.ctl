@@ -1,52 +1,39 @@
-# WASM Builder Control file
-# ==========================
+# wasm Builder Control file
+# =========================
 
 set PROJDIR=<CWD>
+set PROJNAME=wasm
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
+[ BLOCK <1> boot ]
 #=================
-    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/wasm.exe <OWBINDIR>/bwasm<CMDEXT>
 
-[ BLOCK <1> rel2 cprel2 acprel2 ]
-#================================
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dos386/wasm.exe     <OWRELROOT>/binw/wasm.exe
-    <CPCMD> dos386/wasm.sym     <OWRELROOT>/binw/wasm.sym
-    <CPCMD> dosi86/wasm.exe     <OWRELROOT>/binw/wasmr.exe
-    <CPCMD> dosi86/wasm.sym     <OWRELROOT>/binw/wasmr.sym
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f <OWBINDIR>/bwasm<CMDEXT>
+    rm -f <OWBINDIR>/bwasm<CMDEXT>
 
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/wasm.exe     <OWRELROOT>/binp/wasm.exe
-    <CPCMD> os2386/wasm.sym     <OWRELROOT>/binp/wasm.sym
-
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wasm.exe      <OWRELROOT>/binnt/wasm.exe
-    <CPCMD> nt386/wasm.sym      <OWRELROOT>/binnt/wasm.sym
-
-  [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/wasm.exe   <OWRELROOT>/binl/wasm
-    <CPCMD> linux386/wasm.sym   <OWRELROOT>/binl/wasm.sym
-
-  [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wasm.exe      <OWRELROOT>/axpnt/wasm.exe
-    <CPCMD> ntaxp/wasm.sym      <OWRELROOT>/axpnt/wasm.sym
-
-  [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> qnx386/wasm.exe     <OWRELROOT>/qnx/binq/wasm
-    <CPCMD> qnx386/wasm.sym     <OWRELROOT>/qnx/sym/
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+[ BLOCK <1> rel cprel ]
+#======================
+    <CCCMD> dos386/wasm.exe     <OWRELROOT>/binw/wasm.exe
+    <CCCMD> dos386/wasm.sym     <OWRELROOT>/binw/wasm.sym
+    <CCCMD> dosi86/wasm.exe     <OWRELROOT>/binw/wasmr.exe
+    <CCCMD> dosi86/wasm.sym     <OWRELROOT>/binw/wasmr.sym
+    <CCCMD> os2386/wasm.exe     <OWRELROOT>/binp/wasm.exe
+    <CCCMD> os2386/wasm.sym     <OWRELROOT>/binp/wasm.sym
+    <CCCMD> nt386/wasm.exe      <OWRELROOT>/binnt/wasm.exe
+    <CCCMD> nt386/wasm.sym      <OWRELROOT>/binnt/wasm.sym
+    <CCCMD> linux386/wasm.exe   <OWRELROOT>/binl/wasm
+    <CCCMD> linux386/wasm.sym   <OWRELROOT>/binl/wasm.sym
+    <CCCMD> ntaxp/wasm.exe      <OWRELROOT>/axpnt/wasm.exe
+    <CCCMD> ntaxp/wasm.sym      <OWRELROOT>/axpnt/wasm.sym
+    <CCCMD> qnx386/wasm.exe     <OWRELROOT>/qnx/binq/wasm
+    <CCCMD> qnx386/wasm.sym     <OWRELROOT>/qnx/sym/
 
 [ BLOCK . . ]
 #============

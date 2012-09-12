@@ -62,11 +62,6 @@ lflags_dll_qnx_i86     = sys qnx disable 1023
 lflags_dll_qnx_386     = sys pharlap rex disable 1023,1014
 lflags_dll_win_i86     = sys windows op rwr
 
-!ifdef %BUILDMODE
-lflags_dll_linux_386   += libpath $(clib_dir)/library/linux.386/mf_r
-lflags_dll_linux_386   += libpath $(mathlib_dir)/library/linux.386/ms_r
-!endif
-
 extra_l_flags_dll = op map
 
 extra_l_flags_dll_nt_386_javavm   = op offset=0x6e800000

@@ -130,7 +130,11 @@ sysblock        *LinkCommands;
 
 static sysblock         *PrevCommand;
 
+#ifdef BOOTSTRAP
+#define INIT_FILE_NAME  "bwlink.lnk"
+#else
 #define INIT_FILE_NAME  "wlink.lnk"
+#endif
 #define INIT_FILE_ENV   "WLINK_LNK"
 
 void InitCmdFile( void )

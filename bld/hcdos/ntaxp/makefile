@@ -1,4 +1,4 @@
-#pmake: build hcdos os_nt cpu_axp
+#pmake: nobuild hcdos os_nt cpu_axp
 
 host_os  = nt 
 host_cpu = axp

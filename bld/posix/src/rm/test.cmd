@@ -4,7 +4,7 @@
 :: test Open Watcom rm command   on Winxx and OS/2
 ::
 
-set PROG=%OWROOT%\bld\posix\src\rm\rm.exe
+set PROG=%OWSRCDIR%\posix\src\rm\rm.exe
 set FILENAME=dummy
 if not %1.==. set PROG=%1
 if not exist %PROG% for %%C in (echo goto:failure) do %%C rmtest: "%PROG%" is absent

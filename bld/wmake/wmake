@@ -1,0 +1,64 @@
+host_sys = $(%BOOTSTRAP_OS)
+host_arch = $(%BOOTSTRAP_CPU)
+
+!ifdef __UNIX__
+DEFS = -DRC_UNIX
+!else ifdef __MSDOS__
+DEFS = -DRC_DOS
+!else ifdef __NT__
+DEFS = -DRC_NT
+!else ifdef __OS2__
+DEFS = -DRC_OS2
+!endif
+
+!ifdef __UNIX__
+exe =
+!else
+exe = .exe
+!endif
+
+OBJS= macros.obj main.obj massert.obj mautodep.obj mautoomf.obj mautoorl.obj &
+  mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj &
+  mlexprs.obj mparse.obj mpreproc.obj mrcmsg.obj msg.obj mstream.obj &
+  msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj autodept.obj &
+  mcache.obj misc.obj
+
+.c : ../c;$(builder_dir)/c;$(watcom_dir)/c
+
+$(%OWBINDIR)/wmake$(exe): wmake.exe
+!ifdef __UNIX__
+        cp wmake.exe $@
+!else
+        copy wmake.exe $@
+!endif
+
+.c.obj : .AUTODEPEND
+        *wcc386 -zq -bt=$(host_sys) -DBOOTSTRAP -I. -I"../h" -I"../../watcom/h" -I"../../lib_misc/h" $(DEFS) -fo=$@ $<
+
+./wsplice.exe : wsplice.obj
+        wlink name $@ op q sys $(host_sys) file {$<}
+
+./cretype.exe : cretype.obj
+        wlink name $@ op q sys $(host_sys) file {$<}
+
+# Use inline files for wsplice as a way to sidestep the metacharacter hell.
+usage.gh : ../h/usage.sp ./wsplice.exe
+        $]@ @<<usage.tmp
+-kIS_RC -kENGLISH -f "{%+(MSG_USAGE_BASE+%#-1), \"%s\"}," ../h/usage.sp -o "%n%n%n%n" $@
+<<
+
+usageend.gh: usage.gh ./wsplice.exe
+        $]@ usage.gh -o "%n%n%n%n" usage.rcp
+        $]@ @<<usage.tm2
+-f "%+" usage.rcp -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n" $@
+<<
+        rm -f usage.rcp
+
+isarray.gh : ./cretype.exe
+        $]@ > $@
+
+wmake.exe: usageend.gh isarray.gh $(OBJS)
+        wlink name $@ op q sys $(host_sys) file {$(OBJS)}
+
+clean:  .symbolic
+        rm -f *.obj *.gh *.exe *.err

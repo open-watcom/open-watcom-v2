@@ -6,18 +6,12 @@ set PROJDIR=<CWD>
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
+
 cdsay .
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 acprel2 ]
-#================================
+[ BLOCK <1> rel cprel ]
+#======================
     <CCCMD> library/msdos.286/mc/mathc.lib          <OWRELROOT>/lib286/mathc.lib
     <CCCMD> library/msdos.286/mh/mathh.lib          <OWRELROOT>/lib286/mathh.lib
     <CCCMD> library/msdos.286/ml/mathl.lib          <OWRELROOT>/lib286/mathl.lib
@@ -96,11 +90,6 @@ cdsay .
     <CCCMD> rtdll/winnt.387/mf_s/mt*.dll            <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.387/mf_s/mt*.sym            <OWRELROOT>/binnt/
 
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

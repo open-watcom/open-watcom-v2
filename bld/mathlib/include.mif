@@ -2,7 +2,6 @@ include_default = -I"$(mathlib_dir)/h"
 include_watcom  = -I"$(watcom_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
 
 # include_c_(system)
-!ifndef runtime_library_source
 include_c_msdos    = -I"$(hdr_dir)/dos"
 include_c_os2_286  = -I"$(os2api_dir)/os2286/h"
 include_c_os2_287  = -I"$(os2api_dir)/os2286/h"
@@ -15,20 +14,6 @@ include_c_winnt    = -I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
 include_c_linux    = -I"$(hdr_dir)/linux"
 include_c_netware  = -I"$(hdr_dir)/dos"
 include_c_qnx      = -I"$(hdr_dir)/qnx"
-!else
-include_c_msdos    = -I"$(%watcom)/h"
-include_c_os2_286  = -I"$(%watcom)/h/os21x"
-include_c_os2_287  = -I"$(%watcom)/h/os21x"
-include_c_os2_386  = -I"$(%watcom)/h/os2"
-include_c_os2_387  = -I"$(%watcom)/h/os2"
-include_c_os2_ppc  = -I"$(%watcom)/h/os2ppc"
-include_c_os2      = -I"$(%watcom)/h" $(include_c_os2_$(processor))
-include_c_windows  = -I"$(%watcom)/h" -I"$(%watcom)/h/win"
-include_c_winnt    = -I"$(%watcom)/h" -I"$(%watcom)/h/nt"
-include_c_linux    = -I"$(%watcom)/lh"
-include_c_netware  = -I"$(%watcom)/h"
-include_c_qnx      = -I"$(%watcom)/qh"
-!endif
 
 include_c_path = $(include_default) $(include_c_$(system)) $(include_watcom)
 

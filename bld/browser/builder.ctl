@@ -6,27 +6,19 @@ set PROJDIR=<CWD>
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+# pmake priorities are used to build:
+# 1) dlgprs/o
+# 2) gen
+# 3) everywhere else.
+#
+# gen is dependent on dlgprs/o
+# the os_dos dlgprs/o and gen are dependent on windows.h and not selected.
+# brg/* are independent of dlgprs/o and gen
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    # pmake priorities are used to build:
-    # 1) dlgprs/o
-    # 2) gen
-    # 3) everywhere else.
-    #
-    # gen is dependent on dlgprs/o
-    # the os_dos dlgprs/o and gen are dependent on windows.h and not selected.
-    # brg/* are independent of dlgprs/o and gen
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (os_dos "") <2*> ]
     <CPCMD> brg/dos386/wbrg.exe    <OWRELROOT>/binw/wbrg.exe
 
@@ -45,11 +37,6 @@ cdsay .
     <CPCMD> axpnt/wbrw.exe         <OWRELROOT>/axpnt/wbrw.exe
     <CPCMD> brg/ntaxp/wbrg.exe     <OWRELROOT>/axpnt/wbrg.exe
 
-[ BLOCK <1> clean ]
-#==================
-   pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

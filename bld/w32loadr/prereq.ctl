@@ -15,7 +15,7 @@ cdsay .
     rm -f <OWBINDIR>/w32bind<CMDEXT>
     rm -f <OWBINDIR>/os2ldr.exe
 
-[ BLOCK <1> build rel2 ]
+[ BLOCK <1> build rel ]
 #==================
     mkdir <PROJDIR>/<OWPREOBJDIR>
     cdsay <PROJDIR>/<OWPREOBJDIR>

@@ -89,20 +89,24 @@ dep_pdf = $(hbook).pdf
 #
 # There should be settings for supported building platforms
 #
-!ifeq %build_platform dos386
+!ifeq %BOOTSTRAP_CPU 386
+!ifeq %BOOTSTRAP_OS dos
 WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
-!else ifeq %build_platform os2386
+!else ifeq %BOOTSTRAP_OS os2
 WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
-!else ifeq %build_platform nt386
+!else ifeq %BOOTSTRAP_OS nt
 !ifdef %OWDOSBOX
 WGMLCMD = $(%OWDOSBOX) -c "mount c $(%OWROOT)\docs" -c "mount d ." -c "mount e $(%OWROOT)\bld" -c "d:$(dosemu_wgml_batch)" -noconsole
 use_dosemu = dosbox
 !else
 WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
 !endif
-!else ifeq %build_platform linux386
+!else ifeq %BOOTSTRAP_OS linux
 WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) "$(book_src) ( file $(optfile_wgml)"
 use_dosemu = dosemu
+!else
+!error Unsupported building platform !!!!!!
+!endif
 !else
 !error Unsupported building platform !!!!!!
 !endif
@@ -154,7 +158,7 @@ all : $(dep_$(dotarget)) .SYMBOLIC
 .EXTENSIONS: .hlp .hpj .cnt .rtf .cn1
 
 $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh $(hbook).cnt
-!ifeq %build_platform linux386
+!ifeq %BOOTSTRAP_OS linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_nt) -xn $*.hpj
     # this lowercase help file name in wine
@@ -245,7 +249,7 @@ $(hbook).chm $(hbook).chi : $(hbook).htm
     awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc
     awk -f ../makehhk.awk $(hbook).mix >$(hbook)/$(hbook).hhk
     awk -f ../makehhp.awk -v hhcfile=$(hbook).hhc -v hhkfile=$(hbook).hhk $(hbook).htm >$(hbook)/$(hbook).hhp
-!ifeq %build_platform linux386
+!ifeq %BOOTSTRAP_OS linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_hh) $(hbook)/$(hbook).hhp
     @%append $(wine_hc_batch) copy /y $(hbook)\$(hbook).chm $(hbook).chm
@@ -274,7 +278,7 @@ $(hbook).chm $(hbook).chi : $(hbook).htm
 .EXTENSIONS: .pdf
 
 $(hbook).pdf : $(hbook).ps
-!ifeq %build_platform nt386
+!ifeq %BOOTSTRAP_OS nt
 #
 # it is simple workaround for bug in OW 1.9 wmake
 #

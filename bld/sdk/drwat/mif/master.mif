@@ -59,7 +59,7 @@ extra_proj_obj_nt = global.obj param.obj procctl.obj dipcli.obj memory.obj &
 !ifeq drwatcom_95 1
 extra_proj_obj_nt += reg95.obj
 extra_c_flags += -DCHICAGO
-extra_l_flags += lib $(%watcom)/lib386/nt/th32.lib
+extra_l_flags += lib th32.lib
 #$(watcom_dir)/lib/win95/th32.lib why do we need this one?
 !else
 extra_proj_obj_nt += reg.obj

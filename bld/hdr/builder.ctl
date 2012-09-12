@@ -2,22 +2,15 @@
 # ========================
 
 set PROJDIR=<CWD>
+set PROJNAME=Standard header files
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 acprel2 ]
-#================================
+[ BLOCK <1> rel cprel ]
+#======================
     <CPCMD> dos/*.h*           <OWRELROOT>/h/
     <CPCMD> dos/*.cnv          <OWRELROOT>/h/
     <CPCMD> dos/sys/*.h        <OWRELROOT>/h/sys/
@@ -144,15 +137,9 @@ cdsay .
     <CPCMD> linux/arch/mips/*.h       <OWRELROOT>/lh/arch/mips/
     <CPCMD> linux/arch/mips/sys/*.h   <OWRELROOT>/lh/arch/mips/sys/
 
-[ IFDEF (os_qnx) <2*> ]
-    <CPCMD> qnx/*.h*           <OWRELROOT>/qh/
-    <CPCMD> qnx/sys/*.h        <OWRELROOT>/qh/sys/
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+    <CCCMD> qnx/*.h*           <OWRELROOT>/qh/
+    <CCCMD> qnx/sys/*.h        <OWRELROOT>/qh/sys/
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

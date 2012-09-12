@@ -98,7 +98,7 @@ extern void     Fputnl( char *, FILE * );
 extern void     FputnlQuoted( char *, FILE * );
 extern void     MemInit( void );
 extern void     MemFini( void );
-extern void     *MemAlloc( int );
+extern void     *MemAlloc( unsigned );
 extern char     *MemStrDup( const char * );
 extern void     *MemReAlloc( void *, int );
 extern void     MemFree( void * );
@@ -107,8 +107,9 @@ extern char     *GetName( char * );
 extern char     *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars );
 
 enum {
-#undef E
-#define E(msg)  msg
-#define pick(code,msg)  code
-#include "wclmsg.h"
+    #define E(msg)  msg
+    #define pick(code,msg)  code
+    #include "wclmsg.h"
+    #undef pick
+    #undef E
 };

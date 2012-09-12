@@ -8,15 +8,15 @@ set PROJDIR=<CWD>
 
 cdsay .
 
-[ BLOCK <1> build rel2 ]
-#=======================
+[ BLOCK <1> build rel ]
+#======================
 #    cdsay h
 #    wmake -h -i
 #   cdsay ../release
 #   wmake -h -i
 
-[ BLOCK <1> rel2 cprel2 acprel2 ]
-#================================
+[ BLOCK <1> rel cprel ]
+#======================
 #   <CPCMD> womp.exe  <OWRELROOT>/binw/womp.exe
 #   <CPCMD> wompj.exe <OWRELROOT>/binw/japan/womp.exe
 

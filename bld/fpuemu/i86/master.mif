@@ -65,14 +65,14 @@ emu86 : qemu87.obj
 emu86_$(cpu_size): qnxemu87.obj emu8087.obj fpeqnx.obj
     $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,res=../../emu87.u
 
-!else ifeq host_OS stub
+!else ifeq host_os stub
 
 noemu87.lib: emustub.obj
     $(librarian) $(libflags) $<
 
 !else
 
-emu87.lib: $(objs_$(host_OS))
+emu87.lib: $(objs_$(host_os))
     $(librarian) $(libflags) $<
 
 !endif

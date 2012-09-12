@@ -2,24 +2,19 @@
 # ===========================
 
 set PROJDIR=<CWD>
+set PROJNAME=w32api
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
+
 cdsay .
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 acprel2 ]
-#================================
+[ BLOCK <1> rel cprel ]
+#======================
     <CPCMD> readme.txt                    <OWRELROOT>/readme.w32
-  [ IFDEF (os_nt "") <2*> ]
+
     <CPCMD> nt/*.h                        <OWRELROOT>/h/nt/
     <CPCMD> nt/*.rh                       <OWRELROOT>/h/nt/
     <CPCMD> nt/GL/*.h                     <OWRELROOT>/h/nt/GL/
@@ -30,14 +25,8 @@ cdsay .
     <CPCMD> nt386/ddk/*.lib               <OWRELROOT>/lib386/nt/ddk/
     <CPCMD> nt386/directx/*.lib           <OWRELROOT>/lib386/nt/directx/
 
-  [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/*.lib                   <OWRELROOT>/libaxp/nt/
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+#    <CPCMD> ntaxp/*.lib                   <OWRELROOT>/libaxp/nt/
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

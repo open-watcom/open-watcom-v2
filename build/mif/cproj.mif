@@ -1,13 +1,9 @@
-!include preclude.mif
-
-!ifndef lang_root
-lang_root       = $(lang_root_$(host_cpu))
+# Perform basic sanity checks
+!ifeq host_os #nothing
+!error The host_os macro must be defined!
 !endif
-
-!ifeq %BUILDMODE bootstrap
-use_new_headers = 1
-!else ifdef %OWLINUXBUILD
-use_new_headers = 1
+!ifeq host_cpu #nothing
+!error The host_cpu macro must be defined!
 !endif
 
 # define OW build windows version for Win32 platform
@@ -20,45 +16,47 @@ win32ver = $($(proj_name)_win32ver)
 win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
 !endif
 
-cc_386          = *wcc386
-cc_i86          = *wcc
-cc_axp          = *wccaxp
-cc_ppc          = *wccppc
-cc_mps          = *wccmps
+!ifdef bootstrap
+bprfx =
+!else
+bprfx = b
+!endif
 
-cl_386          = *wcl386
-cl_i86          = *wcl
-cl_axp          = *wclaxp
-cl_ppc          = *wclppc
-cl_mps          = *wclmps
+cc_386          = *$(bprfx)wcc386
+cc_i86          = *$(bprfx)wcc
+cc_axp          = *$(bprfx)wccaxp
+cc_ppc          = *$(bprfx)wccppc
+cc_mps          = *$(bprfx)wccmps
 
-cpp_386         = *wpp386
-cpp_i86         = *wpp
-cpp_axp         = *wppaxp
-cpp_ppc         = *wppppc
-cpp_mps         = *wppmps
+cl_386          = *$(bprfx)wcl386
+cl_i86          = *$(bprfx)wcl
+cl_axp          = *$(bprfx)wclaxp
+cl_ppc          = *$(bprfx)wclppc
+cl_mps          = *$(bprfx)wclmps
 
-linker_386      = *wlink
-linker_i86      = *wlink
-linker_axp      = *wlink
-linker_ppc      = *wlink
-linker_mps      = *wlink
+cpp_386         = *$(bprfx)wpp386
+cpp_i86         = *$(bprfx)wpp
+cpp_axp         = *$(bprfx)wppaxp
+cpp_ppc         = *$(bprfx)wppppc
+cpp_mps         = *$(bprfx)wppmps
 
-librarian_386   = *wlib
-librarian_i86   = *wlib
-librarian_axp   = *wlib
-librarian_ppc   = *wlib
-librarian_mps   = *wlib
+linker_386      = *$(bprfx)wlink
+linker_i86      = *$(bprfx)wlink
+linker_axp      = *$(bprfx)wlink
+linker_ppc      = *$(bprfx)wlink
+linker_mps      = *$(bprfx)wlink
 
-as_386          = *wasm
-as_i86          = *wasm
-as_axp          = *wasaxp
-as_ppc          = *wasppc
-as_mps          = *wasmps
+librarian_386   = *$(bprfx)wlib
+librarian_i86   = *$(bprfx)wlib
+librarian_axp   = *$(bprfx)wlib
+librarian_ppc   = *$(bprfx)wlib
+librarian_mps   = *$(bprfx)wlib
 
-rc              = wrc
-rcaui           = wrc
-
+as_386          = *$(bprfx)wasm
+as_i86          = *$(bprfx)wasm
+as_axp          = *$(bprfx)wasaxp
+as_ppc          = *$(bprfx)wasppc
+as_mps          = *$(bprfx)wasmps
 
 !ifdef $(proj_name)_release
 release = $($(proj_name)_release)
@@ -193,8 +191,6 @@ sys_rtdll       = 0
 !endif
 
 !ifeq sys_rtdll 1
-use_new_headers = 1
-
 cflags_nt      += -br
 cflags_win     += -br
 cflags_os2     += -br
@@ -394,27 +390,6 @@ rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu))
 
 !include incdirs.mif
 
-inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
-
-
-rtdll_clib_os2_386     = $(clib_dir)/rtdll/os2.386/mf_r
-rtdll_clib_nt_386      = $(clib_dir)/rtdll/winnt.386/mf_r
-
-rtdll_mathlib_os2_386  = $(mathlib_dir)/rtdll/os2.386/mf_r
-rtdll_mathlib_nt_386   = $(mathlib_dir)/rtdll/winnt.386/mf_r
-
-rtdll_mathlib7_os2_386 = $(mathlib_dir)/rtdll/os2.387/mf_r
-rtdll_mathlib7_nt_386  = $(mathlib_dir)/rtdll/winnt.387/mf_r
-
-rtdll_cpplib_os2_386   = $(cpplib_dir)/rtdll/os2.386/mf_r
-rtdll_cpplib_nt_386    = $(cpplib_dir)/rtdll/winnt.386/mf_r
-
-rtdll_libpath = &
-    $(rtdll_clib_$(host_os)_$(host_cpu)) &
-    $(rtdll_mathlib_$(host_os)_$(host_cpu)) &
-    $(rtdll_mathlib7_$(host_os)_$(host_cpu)) &
-    $(rtdll_cpplib_$(host_os)_$(host_cpu))
-
 cc              = $(cc_$(host_cpu))
 cl              = $(cl_$(host_cpu))
 cpp             = $(cpp_$(host_cpu))
@@ -425,8 +400,11 @@ vi              = vi -q -d -i
 sed             = sed
 awk             = awk
 re2c            = re2c
-wstrip          = wstrip
 yacc            = yacc
+
+rc              = bwrc
+rcaui           = bwrc
+wstrip          = bwstrip
 
 rc_aui          = $(rcaui) -bt=windows -I"$(watcom_dir)/h" -zk0 -r
 

@@ -8,16 +8,16 @@ set PROJDIR=<CWD>
 
 cdsay .
 
-[ BLOCK <1> build rel2 ]
-#=======================
+[ BLOCK <1> build rel ]
+#======================
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
 
-[ BLOCK <1> rel2 ]
-#=================
+[ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel2 cprel2 acprel2 ]
-#================================
+[ BLOCK <1> rel cprel ]
+#======================
 #NT stuff
     <CPCMD> README.w32api                 <OWRELROOT>/readme.w32
   [ IFDEF (os_nt "") <2*> ]

@@ -8,7 +8,7 @@ if exist %temp%.\reslash.cmd     for %%C in (echo false goto:done) do %%C %0: %t
 echo set MSVCDir=%MSVCDir%| sed -e s:/:\\:g -e "s/ *$//" > %temp%.\reslash.cmd 
 for %%C in (call del) do %%C %temp%.\reslash.cmd
 
-set BENCH_REPORT_FILE=%owroot%\bld\bench\msvc.results
+set BENCH_REPORT_FILE=%owsrcdir%\bench\msvc.results
 pmake -d msvc -h clean
 cd support\msvc
 wmake -h

@@ -29,4 +29,9 @@ objs =                  &
         yacc.obj
 # genc.obj, genobj.obj, and recover.obj are unused
 
-!include exetarg.mif
+$(proj_name).exe : $(objs) $(cl_objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $<
+!else
+        $(linker) name $@ $(lflags) file {$(objs)}
+!endif

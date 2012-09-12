@@ -10,25 +10,30 @@ vicomp_autodepends = .autodepend
 
 .c : ../../c
 
-inc_dirs = -I"../../h" -I"$(posix_dir)/h"
+inc_dirs = -I. -I"../../h" -I"$(posix_dir)/h"
 
-srcs = &
-    vicomp.c &
-    addstr.c &
-    srcgen.c &
-    srclabel.c &
-    printf.c &
-    srccs.c &
-    srcdata.c &
-    pdata.c &
-    exdata.c &
-    mapkey.c &
-    dat.c &
-    clset.c &
-    llrtns.c &
-    srcvar.c &
-    parse.c
+extra_c_flags = -DVICOMP
 
-vicomp.exe : $(srcs) $(host_cl_objs)
-    $(bld_cl) $(wcl_util_opts) $(inc_dirs) -DVICOMP $<
+objs = &
+    vicomp.obj &
+    addstr.obj &
+    srcgen.obj &
+    srclabel.obj &
+    printf.obj &
+    srccs.obj &
+    srcdata.obj &
+    pdata.obj &
+    exdata.obj &
+    mapkey.obj &
+    dat.obj &
+    clset.obj &
+    llrtns.obj &
+    srcvar.obj &
+    parse.obj
 
+vicomp.exe : $(objs) $(cl_objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $<
+!else
+        $(linker) name $@ $(lflags) file {$(objs)}
+!endif

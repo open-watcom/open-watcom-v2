@@ -1,22 +1,17 @@
-# Codegen Builder Control file
+# codegen Builder Control file
 # ============================
-
-set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> -h
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> -h clean
+[ INCLUDE intel/386/builder.ctl ]
+[ INCLUDE intel/i86/builder.ctl ]
+[ INCLUDE risc/axp/builder.ctl ]
+[ INCLUDE risc/mps/builder.ctl ]
+[ INCLUDE risc/ppc/builder.ctl ]
 
 [ BLOCK . . ]
 #============
-
-cdsay <PROJDIR>
+cdsay .

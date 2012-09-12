@@ -56,11 +56,8 @@ common_objs =  ytabw.obj ytab2.obj keyword.obj keyword2.obj errors.obj  &
         semraw.obj semsingl.obj semstr.obj dbtable.obj                  &
         preproc.obj ppexpr.obj ppmacro.obj tmpctl.obj autodep.obj       &
         rcldstr.obj rcalloc1.obj rcalloc0.obj sharedio.obj semresfl.obj &
-        semutil.obj leadbyte.obj ideentry.obj idemsgpr.obj rcspawn.obj
-
-!ifdef bootstrap
-common_objs += clibext.obj
-!endif
+        semutil.obj leadbyte.obj ideentry.obj idemsgpr.obj rcspawn.obj  &
+        $(cl_objs)
 
 !ifeq release 0
 !ifeq WRC_USE_TRMEM 1
@@ -137,32 +134,37 @@ depends_msg = rcmsg.gh incltext.gh
 !else
 depends_msg = rcmsg.gh $(name).res
 !endif
-depends_drv = $(objs_drv) $(dll_name).lib drv.lnk
-depends_dll = $(depends_msg) $(objs_dll) $(xlibs) dll.lnk
+depends_drv = $(objs_drv) $(dll_name).lib
+depends_dll = $(depends_msg) $(objs_dll) $(xlibs)
 depends_exe = $(depends_msg) $(objs_exe) $(xlibs)
-!ifndef bootstrap
-depends_exe += exe.lnk
-!endif
 
 # explicit rules
 
 !ifdef wrc_dll
 
 $(name)e.exe : $(depends_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+        @%write drv.lnk $(lflags)
+        @for %i in ($(objs_drv)) do @%append drv.lnk file %i
+        @%append drv.lnk lib $(dll_name).lib
         $(linker) name $@ @drv.lnk
         @%make bind_version_res_exe
 
 !else
 
 $(name)e.exe : $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifdef bootstrap
-        $(cc) -o $@ $(objs_exe) $(xlibs)
-!else ifeq host_os osi
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs_exe) $(xlibs)
+!else
+        @%write exe.lnk $(lflags)
+        @for %i in ($(objs_exe)) do @%append exe.lnk file %i
+        @for %i in ($(xlibs)) do @%append exe.lnk lib %i
+!ifeq host_os osi
         $(linker) name $^&.rex @exe.lnk
         $(w32bind) $^&.rex $@ $(os2ldr)
         @rm -f $^&e.rex
 !else
         $(linker) name $@ @exe.lnk
+!endif
 !endif
         @%make bind_version_res_exe
 !ifndef incl_msgtext
@@ -172,6 +174,9 @@ $(name)e.exe : $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKE
 !endif
 
 $(dll_name)e.dll : $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+        @%write dll.lnk $(lflags_dll)
+        @for %i in ($(objs_dll)) do @%append dll.lnk file %i
+        @for %i in ($(xlibs)) do @%append dll.lnk lib %i
         $(linker) name $@ @dll.lnk
         @%make bind_version_res_dll
 !ifndef incl_msgtext
@@ -181,40 +186,16 @@ $(dll_name)e.dll : $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__
 $(dll_name).lib : $(dll_name)e.dll
         $(librarian) $(libflags) +$[@
 
-drv.lnk : $(__MAKEFILES__)
-        @%write $@ $(lflags)
-!ifdef wrc_rtdll
-        @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
-!endif
-        @for %i in ($(objs_drv)) do @%append $@ file %i
-        @%append $@ lib $(dll_name).lib
-
-exe.lnk : $(__MAKEFILES__)
-        @%write $@ $(lflags)
-!ifdef wrc_rtdll
-        @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
-!endif
-        @for %i in ($(objs_exe)) do @%append $@ file %i
-        @for %i in ($(xlibs)) do @%append $@ lib %i
-
-dll.lnk : $(__MAKEFILES__)
-        @%write $@ $(lflags_dll)
-!ifdef wrc_rtdll
-        @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
-!endif
-        @for %i in ($(objs_dll)) do @%append $@ file %i
-        @for %i in ($(xlibs)) do @%append $@ lib %i
-
 # ytab.c is renamed to ytabw.c to avoid filename conflict
 ytabw.c ytab.gh : rc.y ../y/yydriver.c rcmem.h
-        $(byacc) -d -b $[@ $[:yydriver.c >$(nulldevice)
+        $(yacc) -d -b $[@ $[:yydriver.c >$(nulldevice)
         @cp ytab.c ytabw.c
         @rm -f ytab.c
         @cp ytab.h ytab.gh
         @rm -f ytab.h
 
 ytab2.c ytab2.gh : rcos2.y ../y/yydrivr2.c rcmem.h
-        $(byacc) -d -b $[@ $[:yydrivr2.c >$(nulldevice)
+        $(yacc) -d -b $[@ $[:yydrivr2.c >$(nulldevice)
         @cp ytab.c ytab2.c
         @rm -f ytab.c
         @cp ytab.h ytab2.gh

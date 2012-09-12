@@ -20,4 +20,9 @@ objs =                  &
         ppmacro.obj     &
         ppmem.obj
 
-!include exetarg.mif
+$(proj_name).exe : $(objs) $(cl_objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $<
+!else
+        $(linker) name $@ $(lflags) file {$(objs)}
+!endif

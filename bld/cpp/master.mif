@@ -17,25 +17,24 @@ common_objs     = preproc.obj ppexpr.obj ppmacro.obj ppmem.obj
 mkmk_objs       = mkmk.obj $(common_objs)
 testpp_objs     = testpp.obj $(common_objs)
 dumpmac_objs    = dumpmac.obj $(common_objs)
-wcpp_objs       = wcpp.obj getopt.obj $(common_objs)
-!ifdef bootstrap
-wcpp_objs       += clibext.obj
-!endif
+wcpp_objs       = wcpp.obj getopt.obj $(common_objs) $(cl_objs)
 
 !ifndef bootstrap
-!ifndef prebuild
 all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC
-!endif
 !endif
 
 wcpp.exe : $(wcpp_objs)
+!ifndef __WATCOM__
         $(cl) $(clflags) $(wcpp_objs)
+!else
+        $(linker) name $@ $(lflags) file {$(wcpp_objs)}
+!endif
 
 mkmk.exe : $(mkmk_objs)
-        $(cl) $(clflags) $(mkmk_objs)
+        $(linker) name $@ $(lflags) file {$(mkmk_objs)}
 
 testpp.exe : $(testpp_objs)
-        $(cl) $(clflags) $(testpp_objs)
+        $(linker) name $@ $(lflags) file {$(testpp_objs)}
 
 dumpmac.exe : $(dumpmac_objs)
-        $(cl) $(clflags) $(dumpmac_objs)
+        $(linker) name $@ $(lflags) file {$(dumpmac_objs)}

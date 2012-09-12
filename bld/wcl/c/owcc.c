@@ -43,9 +43,15 @@
 #include <ctype.h>
 #include <unistd.h>
 #include "getopt.h"
+#ifdef __WATCOMC__
 #include <process.h>
 #include <conio.h>
-
+#else
+#include "clibext.h"
+#endif
+#include "misc.h"
+#include "bool.h"
+#include "swchar.h"
 #include "diskos.h"
 #include "clcommon.h"
 #include "banner.h"
@@ -58,20 +64,40 @@
 #define strfcmp stricmp
 #endif
 
-#if defined( _M_I86 )
-#define CC          "wcc"             /* Open Watcom C compiler (16-bit)   */
-#define CCXX        "wpp"             /* Open Watcom C++ compiler (16-bit) */
+#ifdef BOOTSTRAP
+#define BPRFX	"b"
 #else
-#define CC          "wcc386"          /* Open Watcom C compiler (32-bit)   */
-#define CCXX        "wpp386"          /* Open Watcom C++ compiler (32-bit) */
+#define BPRFX	""
 #endif
-#define ASM         "wasm"          /* Open Watcom assembler              */
-#define PACK        "cvpack"        /* Open Watcom executable packer      */
-#define LINK        "wlink"         /* Open Watcom linker                 */
-#define DIS         "wdis"          /* Open Watcom disassembler           */
+
+#if defined( _M_I86 )
+#define CC          BPRFX "wcc"           /* Open Watcom C compiler (16-bit)   */
+#define CCXX        BPRFX "wpp"           /* Open Watcom C++ compiler (16-bit) */
+#define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
+#elif defined( __AXP__ )
+#define CC          BPRFX "wccaxp"        /* Open Watcom C compiler (32-bit)   */
+#define CCXX        BPRFX "wppaxp"        /* Open Watcom C++ compiler (32-bit) */
+#define ASM         BPRFX "wasaxp"        /* Open Watcom assembler             */
+#elif defined( __PPC__ )
+#define CC          BPRFX "wccppc"        /* Open Watcom C compiler (32-bit)   */
+#define CCXX        BPRFX "wppppc"        /* Open Watcom C++ compiler (32-bit) */
+#define ASM         BPRFX "wasppc"        /* Open Watcom assembler             */
+#elif defined( __MIPS__ )
+#define CC          BPRFX "wccmps"        /* Open Watcom C compiler (32-bit)   */
+#define CCXX        BPRFX "wppmps"        /* Open Watcom C++ compiler (32-bit) */
+#define ASM         BPRFX "wasmps"        /* Open Watcom assembler             */
+#else
+#define CC          BPRFX "wcc386"        /* Open Watcom C compiler (32-bit)   */
+#define CCXX        BPRFX "wpp386"        /* Open Watcom C++ compiler (32-bit) */
+#define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
+#endif
+#define PACK              "cvpack"        /* Open Watcom executable packer      */
+#define LINK        BPRFX "wlink"         /* Open Watcom linker                 */
+#define DIS               "wdis"          /* Open Watcom disassembler           */
+#define SPECS_FILE  BPRFX "specs.owc"     /* spec file with target definition   */
 
 #define WCLENV      "OWCC"
-#define _NAME_      "C/C++ "
+#define _NAME_      "C/C++32 "
 
 #define OUTPUTFILE  "a.out"
 #define TEMPFILE    "__owcc__.lnk"  /* temporary linker directive file    */
@@ -90,6 +116,7 @@ static  list    *Files_List;        /* list of filenames from Cmd         */
 static  char    CC_Opts[MAX_CMD];   /* list of compiler options from Cmd  */
 static  char    target_CC[20] = CC; /* name of the wcc variant to use     */
 static  char    target_CCXX[20] = CCXX; /* name of the wpp variant to use     */
+static  char    target_ASM[20] = ASM; /* name of the assembler to use     */
 static  char    PathBuffer[_MAX_PATH];/* buffer for path name of tool     */
 static  char    *Link_Name;         /* Temp_Link copy if /fd specified    */
 static  list    *Directive_List;    /* linked list of directives   */
@@ -111,15 +138,15 @@ static  char    *cpp_linewrap;      /* line length for cpp output         */
 
 static void MakeName( char *, char * );
 
-#undef pick
-#define pick(code,english)      english
 
-extern const char *WclMsgs[] = {
-#include "wclmsg.h"
+const char *WclMsgs[] = {
+    #define pick(code,english)      english
+    #include "wclmsg.h"
+    #undef pick
 };
 
 static const char *EnglishHelp[] = {
-#include "owcchelp.gh"
+    #include "owcchelp.gh"
     NULL
 };
 
@@ -338,6 +365,44 @@ static  void AddDirective( char *directive )
     ListAppend( &Directive_List, itm );
 }
 
+static  FILE *OpenSpecsFile( void )
+/*********************************/
+{
+    FILE    *specs;
+
+    FindPath( SPECS_FILE, PathBuffer );
+    specs = fopen( PathBuffer, "r" );
+    if( specs == NULL ) {
+        fprintf( stderr, "Could not open specs file '%s' for reading!\n", PathBuffer );
+        exit( EXIT_FAILURE );
+    }
+    return( specs );
+}
+
+/*static*/  int  ListSpecsFile( void )
+/********************************/
+{
+    FILE    *specs;
+    char    line[MAX_CMD];
+    int     begin_len;
+    char    *p;
+
+    specs = OpenSpecsFile();
+    begin_len = strlen( "system begin " );
+    while( fgets( line, MAX_CMD, specs ) ) {
+        p = strchr( line, '\n' );
+        if( p ) {
+            *p = '\0';
+        }
+        if( !strncmp( line, "system begin ", begin_len ) ) {
+            printf( "%s\n", line + begin_len);
+        }
+    }
+
+    fclose( specs );
+    return( 0 );
+}
+
 static  int  ConsultSpecsFile( const char *target )
 /*************************************************/
 {
@@ -345,15 +410,10 @@ static  int  ConsultSpecsFile( const char *target )
     char    line[MAX_CMD];
     char    start_line[MAX_CMD] = "system begin ";
     int     in_target = FALSE;
-    char    *p, *blank;
+    char    *p;
+    int     rc = 0;
 
-    FindPath( "specs.owc", PathBuffer );
-    specs = fopen( PathBuffer, "r" );
-    if( specs == NULL ) {
-        fprintf( stderr, "Could not open specs file '%s' for reading!\n",
-                 PathBuffer );
-        exit( EXIT_FAILURE );
-    }
+    specs = OpenSpecsFile();
 
     /* search for a block whose first line is "system begin <target>" ... */
     strcat( start_line, target );
@@ -369,33 +429,33 @@ static  int  ConsultSpecsFile( const char *target )
         } else if( in_target ) {
             for( p = line; isspace( (unsigned char)*p ); p++ )
                 ; /* do nothing else */
-            if( strncmp ( p, "wcc", 3 ) ) {
-                /* wrong format --> don't use this line */
+            p = strtok( p, " \t=" );
+            if( p == NULL )
+                continue;
+            if( strcmp ( p, "CC" ) ) {
+                p = strtok( NULL, " \t" );
+                strcpy( target_CC, p );
+            } else if( strcmp ( p, "CPP" ) ) {
+                p = strtok( NULL, " \t" );
+                strcpy( target_CCXX, p );
+            } else if( strcmp ( p, "AS" ) ) {
+                p = strtok( NULL, " \t" );
+                strcpy( target_ASM, p );
+            } else {
                 continue;
             }
-            blank = strchr( p, ' ' );
-            if( blank == NULL ) {
-                blank = strchr( p, '\t' );
-            }
-            if( blank != NULL ) {
-                *blank = '\0';
-            }
-            strcpy( target_CC, p );
-
-            /* this is a little nasty: transform 'wcc386' into 'wpp386', in-place */
-            p[1] = p[2] = 'p';
-            strcpy( target_CCXX, p );
-            if( blank != NULL ) {
+            p = strtok( NULL, "\n" );
+            if( p != NULL ) {
                 /* if there are further options, copy them */
-                *blank = ' ';
-                strcat( CC_Opts, blank );
+                strcat( CC_Opts, " " );
+                strcat( CC_Opts, p );
             }
-            fclose( specs );
-            return( 1 );
+            rc = 1;
+            break;
         }
     }
     fclose( specs );
-    return( 0 );
+    return( rc );
 }
 
 static void initialize_Flags( void )
@@ -426,15 +486,78 @@ static void initialize_Flags( void )
     Flags.keep_exename = 0;
 }
 
+static unsigned ParseEnvVar( const char *env, char **argv, char *buf )
+/********************************************************************/
+{
+    /*
+     * Returns a count of the "command line" parameters in *env.
+     * Unless argv is NULL, both argv and buf are completed.
+     *
+     * This function ought to be fairly similar to clib(initargv@_SplitParms).
+     * Parameterisation does the same as _SplitParms with historical = 0.
+     */
 
-static  int  Parse( int argc, char **argv )
-/*****************************************/
+    const char  *start;
+    int         switchchar;
+    unsigned    argc;
+    char        *bufend;
+    bool        got_quote;
+
+    switchchar = _dos_switch_char();
+    bufend = buf;
+    argc = 0;
+    for( ; *env != '\0'; ) {
+        got_quote = FALSE;
+        while( isspace( *env ) && *env != '\0' )
+            env++;
+        start = env;
+        if( buf != NULL ) {
+            argv[ argc ] = bufend;
+        }
+        if( *env == switchchar || *env == '-' ) {
+            if( buf != NULL ) {
+                *bufend = *env;
+                bufend++;
+            }
+            env ++;
+        }
+        while( ( got_quote || !isspace( *env ) ) && *env != '\0' ) {
+            if( *env == '\"' ) {
+                got_quote = !got_quote;
+            }
+            if( buf != NULL ) {
+                *bufend = *env;
+                bufend++;
+            }
+            env++;
+        }
+        if( start != env ) {
+            argc++;
+            if( buf != NULL ) {
+                *bufend = '\0';
+                bufend++;
+            }
+        }
+    }
+    return( argc );
+}
+
+typedef struct stack {
+    struct stack    *next;
+    char            *cmdbuf;
+    char            **argv;
+} stack;
+
+static  int  ParseArgs( int argc, char **argv )
+/*********************************************/
 {
     char        *p;
     int         wcc_option;
     int         c;
     int         i;
     list        *new_item;
+    stack       *stk;
+    stack       *s;
 
     initialize_Flags();
     DebugFlag          = 1;
@@ -450,9 +573,15 @@ static  int  Parse( int argc, char **argv )
 
     AltOptChar = '-'; /* Suppress '/' as option herald */
     while( (c = GetOpt( &argc, argv,
+#if 0
                         "b:Cc::D:Ef:g::"
                         "HI:i::k:L:l:M::m:"
                         "O::o:P::QSs::U:vW::wx:yz::",
+#else
+                        "b:CcD:Ef:g::"
+                        "HI:i::k:L:l:M::m:"
+                        "O::o:P::QSs::U:vW::wx::yz::",
+#endif
                         EnglishHelp )) != -1 ) {
 
         char    *Word = "";
@@ -594,7 +723,7 @@ static  int  Parse( int argc, char **argv )
                 Word[1] = '\0';
                 break;
             }
-            if( !strncmp("regparm=", Word, 8 ) ) {
+            if( !strncmp( "regparm=", Word, 8 ) ) {
                 if( !strcmp( Word + 8, "0" ) ) {
                     Conventions[0] =  's';
                 } else {
@@ -603,7 +732,7 @@ static  int  Parse( int argc, char **argv )
                 wcc_option = 0;
                 break;
             }
-            if( !strncmp("tune=i", Word, 6 ) ) {
+            if( !strncmp( "tune=i", Word, 6 ) ) {
                 switch( Word[6] ) {
                 case '0':
                 case '1':
@@ -883,7 +1012,46 @@ static  int  Parse( int argc, char **argv )
         }
     }
     MemFree( cpp_linewrap );
+    while( stk != NULL ) {
+        s = stk->next;
+        MemFree( stk->argv );
+        MemFree( stk->cmdbuf );
+        MemFree( stk );
+        stk = s;
+    }
     return( 0 );
+}
+
+static  int  Parse( int argc, char **argv )
+/*****************************************/
+{
+    int     old_argc;
+    char    **old_argv;
+    char    *cmdbuf;
+    char    *env;
+    int     ret;
+    int     i;
+
+    env = getenv( WCLENV );
+    if( env != NULL ) {
+        old_argc = argc;
+        old_argv = argv;
+        argc = ParseEnvVar( env, NULL, NULL ) + 1;
+        argv = MemAlloc( ( argc + old_argc ) * sizeof( char * ) );
+        cmdbuf = MemAlloc( strlen( env ) + argc );
+        argv[0] = old_argv[0];
+        ParseEnvVar( env, argv + 1, cmdbuf );
+        for( i = 1; i < old_argc; ++i, ++argc ) {
+            argv[argc] = old_argv[i];
+        }
+        argv[argc] = NULL;        // last element of the array must be NULL
+    }
+    ret = ParseArgs( argc, argv );
+    if( env != NULL ) {
+        MemFree( argv );
+        MemFree( cmdbuf );
+    }
+    return( ret );
 }
 
 static int useCPlusPlus( char *p )
@@ -932,6 +1100,8 @@ static int tool_exec( tool_type utl, char *p1, char *p2 )
     fflush( NULL );
     if( utl == TYPE_DIS ) {
         rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, "-s", "-a", p1, p2, NULL );
+    } else if( p2 == NULL ) {
+        rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, NULL );
     } else {
         rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, p2, NULL );
     }
@@ -1175,7 +1345,12 @@ int main( int argc, char **argv )
 {
     int     rc;
 
-    if( argc <= 1 ) {
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
+
+	if( argc <= 1 ) {
         /* no arguments: just tell the user who I am */
         puts( "Usage: owcc [-?] [options] file ..." );
         exit( EXIT_SUCCESS );
@@ -1201,6 +1376,7 @@ int main( int argc, char **argv )
     }
     if( rc == 1 ) {
         fclose( Fp );
+        Fp = NULL;
     }
     if( Link_Name != NULL ) {
         if( strfcmp( Link_Name, TEMPFILE ) != 0 ) {

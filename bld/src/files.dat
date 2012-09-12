@@ -1,16 +1,16 @@
 [ DEFAULT ]
-[ INCLUDE <SRCDIR>/src/clibexam/files.dat ]
-[ INCLUDE <SRCDIR>/src/cplbexam/files.dat ]
-[ INCLUDE <SRCDIR>/src/cppexamp/files.dat ]
-[ INCLUDE <SRCDIR>/src/dll/files.dat ]
-[ INCLUDE <SRCDIR>/src/fortran/files.dat ]
-[ INCLUDE <SRCDIR>/src/ftnexamp/files.dat ]
-[ INCLUDE <SRCDIR>/src/goodies/files.dat ]
-[ INCLUDE <SRCDIR>/src/win/files.dat ]
-[ INCLUDE <SRCDIR>/src/startup/files.dat ]
-[ INCLUDE <SRCDIR>/src/misc/files.dat ]
-[ INCLUDE <SRCDIR>/src/os2/files.dat ]
-[ INCLUDE <SRCDIR>/src/directx/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/clibexam/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/cplbexam/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/cppexamp/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/dll/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/fortran/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/ftnexamp/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/goodies/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/win/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/startup/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/misc/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/os2/files.dat ]
+[ INCLUDE <OWSRCDIR>/src/directx/files.dat ]
 
 # CPPLIB/CONTAIN source code
 [ DEFAULT type="s" dir="src/cpplib/contain" cond="rtsource" where="c f77 ac" ]
@@ -19,4 +19,4 @@ usr="wclist.cpp"
 usr="wcskip.cpp"
 usr="wcexcept.cpp"
 
-#[ INCLUDE <SRCDIR>/src/p16/files.dat ]
+#[ INCLUDE <OWSRCDIR>/src/p16/files.dat ]

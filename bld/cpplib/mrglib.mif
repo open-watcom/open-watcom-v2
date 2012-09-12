@@ -25,7 +25,7 @@ export_name=export.def
 exportx_name=exportx.def
 exp_lib_flags = -z=$(export_name)
 exp_libx_flags = -z=$(exportx_name)
-!else ifeq host_CPU axp
+!else ifeq host_cpu axp
 exp_lib_flags =
 exp_libx_flags =
 !else
@@ -62,10 +62,4 @@ $(target_lib_x) : $(source_libs_x) $(__MAKEFILES__)
     @cp tmp.def $(exportx_name)
     @rm tmp.def
 !endif
-!endif
-
-reference : .symbolic $(target_lib)
-    cp $(target_lib) $(plusplus_dir)/bin
-!ifdef target_lib_x
-    cp $(target_lib_x) $(plusplus_dir)/bin
 !endif

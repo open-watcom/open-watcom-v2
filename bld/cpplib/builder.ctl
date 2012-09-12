@@ -6,22 +6,12 @@ set PROJDIR=<CWD>
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
+
 cdsay .
 
-#
-# Make sure we have the reference compilers
-#
-[ BLOCK <1> build rel2 ]
-#=======================
-    [ INCLUDE prereq.ctl ]
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 acprel2 ]
-#================================
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (os_osi "") <2*> ]
     <CPCMD> generic.086/ms/plibs.lib             <OWRELROOT>/lib286/
     <CPCMD> generic.086/ms/plbxs.lib             <OWRELROOT>/lib286/
@@ -77,8 +67,8 @@ cdsay .
     <CPCMD> generic.086/ms/plbxs.lib             <OWRELROOT>/lib286/
     <CPCMD> generic.086/ms/plibs.lib             <OWRELROOT>/lib286/
 
-[ BLOCK <1> rel2 cprel2 acprel2 ]
-#================================
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (os_osi os_dos os_linux os_nov "") <2*> ]
     <CPCMD> generic.386/mf_r/plib3r.lib          <OWRELROOT>/lib386/
     <CPCMD> generic.386/mf_r/plbx3r.lib          <OWRELROOT>/lib386/
@@ -151,8 +141,8 @@ cdsay .
     <CPCMD> q3smt/plbxmt3s.lib                   <OWRELROOT>/lib386/qnx/
     <CPCMD> q3smt/plibmt3s.lib                   <OWRELROOT>/lib386/qnx/
 
-[ BLOCK <1> rel2 cprel2 acprel2 ]
-#================================
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (cpu_axp) <2*> ]
     <CPCMD> winnt.axp/_s/plib.lib                <OWRELROOT>/libaxp/nt/plib.lib
     <CPCMD> winnt.axp/_s/plbx.lib                <OWRELROOT>/libaxp/nt/plbx.lib
@@ -160,12 +150,6 @@ cdsay .
     <CPCMD> winnt.axp/_smt/plbxmt.lib            <OWRELROOT>/libaxp/nt/plbxmt.lib
     <CPCMD> complex/winnt.axp/_s/cplx.lib        <OWRELROOT>/libaxp/cplx.lib
 
-[ BLOCK <1> clean ]
-#==================
-    [ INCLUDE clean.ctl ]
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

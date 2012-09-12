@@ -1,6 +1,6 @@
-proj_name = bcwc
+proj_name = cwc
 
-bcwc_autodepends = .AUTODEPEND
+cwc_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif
@@ -10,5 +10,11 @@ bcwc_autodepends = .AUTODEPEND
 
 extra_l_flags = op map
 
-bcwc.exe : cwc.obj $(__MAKEFILES__)
-    $(linker) $(lflags) name $@ file $[@
+objs = cwc.obj
+
+$(proj_name).exe : $(objs) $(cl_objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $<
+!else
+        $(linker) name $@ $(lflags) file {$(objs)}
+!endif

@@ -35,13 +35,17 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
-#ifndef __UNIX__
-#include <direct.h>
-#else
+#ifdef __UNIX__
 #include <dirent.h>
+#else
+#include <direct.h>
 #endif
+#ifdef __WATCOMC__
 #include <process.h>
 #include <conio.h>
+#else
+#include "clibext.h"
+#endif
 
 #include "swchar.h"
 #include "diskos.h"
@@ -51,47 +55,64 @@
 #undef  _BANEXTRA
 #define _BANEXTRA _BANEXSHORT
 
+#ifdef BOOTSTRAP
+#define BPRFX	"b"
+#else
+#define BPRFX	""
+#endif
+
 #ifdef WCLAXP
-  #define WCLNAME     "wclaxp"          /* Name of Compile and Link Utility*/
-  #define CC          "wccaxp"          /* Open Watcom C compiler          */
-  #define CCXX        "wppaxp"          /* Open Watcom C++ compiler        */
+  #define WCLNAME     BPRFX "wclaxp"          /* Name of Compile and Link Utility*/
+  #define CC          BPRFX "wccaxp"          /* Open Watcom C compiler          */
+  #define CPP         BPRFX "wppaxp"          /* Open Watcom C++ compiler        */
+  #define AS          BPRFX "wasaxp"          /* Open Watcom assembler           */
+#elif defined( WCLPPC )
+  #define WCLNAME     BPRFX "wclppc"          /* Name of Compile and Link Utility*/
+  #define CC          BPRFX "wccppc"          /* Open Watcom C compiler          */
+  #define CPP         BPRFX "wppppc"          /* Open Watcom C++ compiler        */
+  #define AS          BPRFX "wasppc"          /* Open Watcom assembler           */
+#elif defined( WCLMPS )
+  #define WCLNAME     BPRFX "wclmps"          /* Name of Compile and Link Utility*/
+  #define CC          BPRFX "wccmps"          /* Open Watcom C compiler          */
+  #define CPP         BPRFX "wppmps"          /* Open Watcom C++ compiler        */
+  #define AS          BPRFX "wasmps"          /* Open Watcom assembler           */
+#elif defined( WCL386 )
+  #define WCLNAME     BPRFX "wcl386"          /* Name of Compile and Link Utility*/
+  #define CC          BPRFX "wcc386"          /* Open Watcom C compiler          */
+  #define CPP         BPRFX "wpp386"          /* Open Watcom C++ compiler        */
+  #define AS          BPRFX "wasm"            /* Open Watcom assembler           */
+#else
+  #define WCLNAME     BPRFX "wcl"             /* Name of Compile and Link Utility*/
+  #define CC          BPRFX "wcc"             /* Open Watcom C compiler          */
+  #define CPP         BPRFX "wpp"             /* Open Watcom C++ compiler        */
+  #define AS          BPRFX "wasm"            /* Open Watcom assembler           */
+#endif
+#define PACK                "cvpack"          /* Open Watcom executable packer   */
+#define LINK          BPRFX "wlink"           /* Open Watcom linker              */
+
+#ifdef WCLAXP
   #define WCLENV      "WCLAXP"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
   #define _NAME_      "C/C++ Alpha AXP "
 #elif defined( WCLPPC )
-  #define WCLNAME     "wclppc"          /* Name of Compile and Link Utility*/
-  #define CC          "wccppc"          /* Open Watcom C compiler          */
-  #define CCXX        "wppppc"          /* Open Watcom C++ compiler        */
   #define WCLENV      "WCLPPC"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
   #define _NAME_      "C/C++ PowerPC "
 #elif defined( WCLMPS )
-  #define WCLNAME     "wclmps"          /* Name of Compile and Link Utility*/
-  #define CC          "wccmps"          /* Open Watcom C compiler          */
-  #define CCXX        "wppmps"          /* Open Watcom C++ compiler        */
   #define WCLENV      "WCLMPS"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
   #define _NAME_      "C/C++ MIPS "
 #elif defined( WCL386 )
-  #define WCLNAME     "wcl386"          /* Name of Compile and Link Utility*/
-  #define CC          "wcc386"          /* Open Watcom C compiler          */
-  #define CCXX        "wpp386"          /* Open Watcom C++ compiler        */
   #define WCLENV      "WCL386"          /* name of environment variable    */
   #define STACKSIZE   "8192"            /* default stack size              */
   #define _NAME_      "C/C++32 "
 #else
-  #define WCLNAME     "wcl"             /* Name of Compile and Link Utility*/
-  #define CC          "wcc"             /* Open Watcom C compiler          */
-  #define CCXX        "wpp"             /* Open Watcom C++ compiler        */
   #define WCLENV      "WCL"             /* name of environment variable    */
   #define STACKSIZE   "4096"            /* default stack size              */
   #define _NAME_      "C/C++16 "
 #endif
-#define ASM         "wasm"          /* Open Watcom assembler              */
-#define PACK        "cvpack"        /* Open Watcom executable packer      */
-#define LINK        "wlink"         /* Open Watcom linker                 */
 
-#define TEMPFILE    "__wcl__.lnk"   /* temporary linker directive file    */
+#define TEMPFILE      "__wcl__.lnk"     /* temporary linker directive file */
 
 #ifdef __UNIX__
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR
@@ -120,17 +141,15 @@ static  int     via_environment = FALSE;
  */
 static int     Parse( char *Cmd );
 
-
-#undef pick
-#define pick( code, english )   english
-
-extern const char *WclMsgs[] = {
-#include "wclmsg.h"
+const char *WclMsgs[] = {
+    #define pick( code, english )   english
+    #include "wclmsg.h"
+    #undef pick
 };
 
 static const char *EnglishHelp[] = {
-#include "wclhelp.h"
-NULL
+    #include "wclhelp.h"
+    NULL
 };
 
 
@@ -148,9 +167,9 @@ static struct {
     char *exename;
     char *path;
 } tools[TYPE_MAX] = {
-    { ASM,  ASM EXE_EXT,    NULL },
-    { CC,   CC EXE_EXT,     NULL },
-    { CCXX, CCXX EXE_EXT,   NULL },
+    { AS,   AS   EXE_EXT,   NULL },
+    { CC,   CC   EXE_EXT,   NULL },
+    { CPP,  CPP  EXE_EXT,   NULL },
     { LINK, LINK EXE_EXT,   NULL },
     { PACK, PACK EXE_EXT,   NULL }
 };
@@ -813,7 +832,11 @@ static int tool_exec( tool_type utl, char *p1, char *p2 )
         }
     }
     fflush( NULL );
-    rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, p2, NULL );
+    if( p2 == NULL ) {
+        rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, NULL );
+    } else {
+        rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, p2, NULL );
+    }
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {
             PrintMsg( WclMsgs[UNABLE_TO_INVOKE_EXE], tools[utl].path );
@@ -1040,14 +1063,19 @@ static int ProcMemFini( void )
     return( 0 );
 }
 
-int  main( void )
-/***************/
+int  main( int argc, char **argv )
+/********************************/
 {
     int         rc;
     char        *wcl_env;
     char        *p;
     char        *q;
     char        *Cmd;               /* command line parameters            */
+
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
 
     CC_Opts[0] = '\0';
 

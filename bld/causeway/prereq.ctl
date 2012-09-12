@@ -18,7 +18,7 @@ cdsay .
     rm -f <OWBINDIR>/cwstub.exe
 
 
-[ BLOCK <1> build rel2 ]
+[ BLOCK <1> build rel ]
 #==================
     mkdir <PROJDIR>/cwc/<OWPREOBJDIR>
     cdsay <PROJDIR>/cwc/<OWPREOBJDIR>

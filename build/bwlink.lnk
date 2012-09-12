@@ -1,0 +1,285 @@
+# Linker initialization file for use during builds. Searches for libs in the
+# src tree instead of the usual %WATCOM/libxxx hierarchy.
+
+system begin dos
+    libpath %OWSRCDIR%/clib/library/msdos.086/ms
+    libpath %OWSRCDIR%/clib/library/msdos.086/mc
+    libpath %OWSRCDIR%/clib/library/msdos.086/mm
+    libpath %OWSRCDIR%/clib/library/msdos.086/ml
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/ms
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/ms
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/mc
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/mc
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/mm
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/mm
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/ml
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/ml
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.086/ms
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.086/mc
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.086/mm
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.086/ml
+    libpath %OWSRCDIR%/fpuemu/i86/dosi86
+    libpath %OWSRCDIR%/fpuemu/i86/stubi86
+    format dos ^
+end
+
+system begin windows
+    option osname='Windows 16-bit'
+    libpath %OWSRCDIR%/clib/library/windows.086/ms
+    libpath %OWSRCDIR%/clib/library/windows.086/mc
+    libpath %OWSRCDIR%/clib/library/windows.086/ml
+    libpath %OWSRCDIR%/mathlib/library/windows.286/mc
+    libpath %OWSRCDIR%/mathlib/library/windows.287/mc
+    libpath %OWSRCDIR%/mathlib/library/windows.286/ml
+    libpath %OWSRCDIR%/mathlib/library/windows.287/ml
+    libpath %OWSRCDIR%/fpuemu/i86/wini86
+    libpath %OWSRCDIR%/fpuemu/i86/stubi86
+    libpath %OWSRCDIR%/cpplib/windows.086/ml
+    libpath %OWSRCDIR%/w16api/wini86
+    library windows
+    option nocaseexact
+    option stack=8k, heapsize=1k
+    format windows ^
+end
+
+system begin windows_dll
+    option osname='Windows 16-bit'
+    libpath %OWSRCDIR%/clib/library/windows.086/mc
+    libpath %OWSRCDIR%/clib/library/windows.086/ml
+    libpath %OWSRCDIR%/cpplib/windows.086/ml
+    libpath %OWSRCDIR%/mathlib/library/windows.286/mc
+    libpath %OWSRCDIR%/mathlib/library/windows.287/mc
+    libpath %OWSRCDIR%/mathlib/library/windows.286/ml
+    libpath %OWSRCDIR%/mathlib/library/windows.287/ml
+    libpath %OWSRCDIR%/fpuemu/i86/wini86
+    libpath %OWSRCDIR%/fpuemu/i86/stubi86
+    libpath %OWSRCDIR%/w16api/wini86
+    library windows
+    option nocaseexact
+    option stack=8k, heapsize=1k
+    libfile %OWSRCDIR%/clib/startup/library/windows.086/ml/libentry.obj
+    format windows dll ^
+end
+
+system begin dos4g
+    option osname='DOS/4G'
+    libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/fpuemu/386/dos386
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/cpplib/generic.386/ms_r
+    op stub=%OWSRCDIR%/wstub/wstub.exe
+    format os2 le ^
+end
+
+system begin causeway
+    option osname='CauseWay'
+    libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/fpuemu/386/dos386
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/cpplib/generic.386/ms_r
+    libpath %OWSRCDIR%/causeway/cw32/dos386
+    op stub=%OWSRCDIR%/causeway/cw32/dosi86/cw32.exe
+    format os2 le ^
+end
+
+system begin cwdllr
+    option osname='CauseWay'
+    libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/fpuemu/386/dos386
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/cpplib/generic.386/ms_r
+    libpath %OWSRCDIR%/causeway/cw32/dos386
+    op stub=%OWSRCDIR%/causeway/cw32/dosi86/cw32.exe
+    format os2 le ^
+end
+
+system begin pharlap
+    libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    format phar ^
+end
+
+system begin os2
+    option osname='OS/2 16-bit'
+    library os2.lib
+    libpath %OWSRCDIR%/clib/library/os2.286/ms
+    libpath %OWSRCDIR%/clib/library/os2.286/mc
+    libpath %OWSRCDIR%/clib/library/os2.286/mm
+    libpath %OWSRCDIR%/clib/library/os2.286/ml
+    libpath %OWSRCDIR%/clib/library/os2.286/ml_mt
+    libpath %OWSRCDIR%/clib/library/os2.286/ml_dll
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/ms
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/mc
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/mm
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/ml
+    libpath %OWSRCDIR%/fpuemu/i86/os2i86
+    libpath %OWSRCDIR%/fpuemu/i86/stubi86
+    libpath %OWSRCDIR%/os2api/os2286/lib
+    format os2 ^
+end
+
+system begin os2v2
+    option osname='OS/2 32-bit'
+    libpath %OWSRCDIR%/clib/library/os2.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/cpplib/os2.386/mf_rmt
+    libpath %OWSRCDIR%/cpplib/os2.386/mf_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/os2api/os2386/lib
+    libpath %OWSRCDIR%/os2api/os2286/lib
+    libpath %OWSRCDIR%/rtdll/clib/os2.386/mf_r
+    libpath %OWSRCDIR%/rtdll/mathlib/os2.387/mf_r
+    format os2 lx ^
+end
+
+system begin os2v2_pm
+    option osname='OS/2 32-bit Presentation Manager'
+    libpath %OWSRCDIR%/clib/library/os2.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/cpplib/os2.386/mf_rmt
+    libpath %OWSRCDIR%/cpplib/os2.386/mf_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/os2api/os2386/lib
+    format os2 lx pm ^
+end
+
+system begin nt
+    option osname='Windows NT character-mode'
+    libpath %OWSRCDIR%/clib/library/winnt.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/cpplib/winnt.386/mf_rmt
+    libpath %OWSRCDIR%/cpplib/winnt.386/mf_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/w32api/nt386
+    libpath %OWSRCDIR%/clib/rtdll/winnt.386/mf_r
+    libpath %OWSRCDIR%/mathlib/rtdll/winnt.387/mf_r
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime console=4.0
+end
+
+system begin nt_win
+    option osname='Windows NT windowed'
+    libpath %OWSRCDIR%/clib/library/winnt.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/cpplib/winnt.386/mf_rmt
+    libpath %OWSRCDIR%/cpplib/winnt.386/mf_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/w32api/nt386
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime windows=4.0
+end
+
+system begin nt_dll
+    option osname='Windows NT'
+    libpath %OWSRCDIR%/clib/library/winnt.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/cpplib/winnt.386/mf_rmt
+    libpath %OWSRCDIR%/rtdll/clib/winnt.386/mf_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/w32api/nt386
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt dll ^
+    runtime console=4.0
+end
+
+system begin linux
+    option osname='Linux x86'
+    libpath %OWSRCDIR%/clib/library/linux.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/cpplib/generic.386/ms_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    format elf
+    runtime linux
+    op exportall
+    op norelocs
+end
+
+system begin win386
+    option osname='Windows 32-bit'
+    libpath %OWSRCDIR%/clib/library/windows.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/win386/conv/win386
+    format phar rex ^
+end
+
+system begin win_vxd
+    option osname='Windows VxD'
+    format windows vxd ^ 
+end
+
+system begin osi
+    option osname='OS Independent'
+    libpath %OWSRCDIR%/clib/library/osi.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    format pharlap rex ^
+end
+
+system begin dos16m
+    option osname='DOS/16M'
+    libpath %OWSRCDIR%/clib/library/msdos.086/mc
+    libpath %OWSRCDIR%/clib/library/msdos.086/ms
+    libpath %OWSRCDIR%/clib/library/msdos.086/ml
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/mc
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/mc
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/ms
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/ms
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/ml
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/ml
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.086/mc
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.086/ms
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.086/ml
+    libfile %OWSRCDIR%/clib/startup/library/msdos.086/ms/dos16m.obj
+    libpath %OWSRCDIR%/fpuemu/i86/dosi86
+    libpath %OWSRCDIR%/fpuemu/i86/stubi86
+    format dos16m runtime auto ^
+end
+
+system begin rdos
+    option osname='RDOS'
+    libpath %OWSRCDIR%/clib/library/rdos.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/cpplib/generic.386/ms_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    format windows pe rdos ^
+end
+
+system begin rdos_dll
+    option osname='RDOS'
+    libpath %OWSRCDIR%/clib/library/rdos.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/cpplib/generic.386/ms_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    format windows pe rdos dll ^
+end
+
+system begin rdosdev
+    option osname='RDOSDEV'
+    libpath %OWSRCDIR%/clib/library/rdosdev.386/mc_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/cpplib/generic.386/ms_r
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    format windows pe rdos ^
+end

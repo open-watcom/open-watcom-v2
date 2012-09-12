@@ -88,20 +88,15 @@ sys_x86_rdos = sys rdos_dll &
                export TrapInit_ &
                export TrapFini_ &
                export TrapRequest_ &
-               op offset=0xdb000000 &
-               libpath $(clib_dir)/library/rdos.386/mf_r
+               op offset=0xdb000000
 
 sys_x86_qnx  = sys pharlap rex disable 1014, 1023
 
 # For now Linux is linked as a PE DLL file since we have code to load
 # this under Linux already. Eventually it should be an ELF shared library.
 
-!ifdef __LINUX__
-extra_libpath = libpath $(clib_dir)/library/linux.386/mf_r
-!else
-extra_libpath = libpath $(lang_root)/lib386/linux
-!endif
-sys_x86_linux = form windows nt dll opt dosseg $(extra_libpath) &
+sys_x86_linux = form windows nt dll opt dosseg &
+            libpath $(clib_dir)/library/linux.386/mf_r &
             export TrapLoad_.1 &
             option description $(description)
 

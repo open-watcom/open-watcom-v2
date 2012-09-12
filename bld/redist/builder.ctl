@@ -8,23 +8,21 @@ set PROJDIR=<CWD>
 
 cdsay .
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+[ BLOCK <1> build rel ]
+#======================
 
-[ BLOCK <1> rel2 ]
-#=================
+[ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
     <CPCMD> dos4gw/*                <OWRELROOT>/binw/
     <CPCMD> dos32a/*                <OWRELROOT>/binw/
     <CPCMD> pmodew/*                <OWRELROOT>/binw/
 
 [ BLOCK <1> clean ]
 #==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
 [ BLOCK . . ]
 #============

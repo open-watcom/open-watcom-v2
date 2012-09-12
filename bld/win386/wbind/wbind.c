@@ -226,27 +226,6 @@ void FindExtender( char *extname, char *winext )
     }
 }
 
-#ifndef __WATCOMC__
-#define P_WAIT 0
-int spawnvp( int mode, const char *cmd, const char * const *args )
-{
-    pid_t       pid;
-    int         status;
-
-    pid = fork();
-    if( pid == -1 )
-        return( -1 );
-    if( pid == 0 ) {
-        execvp( cmd, (char * const *)args );
-        _exit( 127 );
-    }
-    if( waitpid( pid, &status, 0 ) == -1 ) {
-        status = -1;
-    }
-    return( status );
-}
-#endif
-
 int main( int argc, char *argv[] )
 {
     int             in, out, i, rcparm = 0, pcnt;

@@ -8,54 +8,54 @@ set PROJDIR=<CWD>
 
 cdsay .
 
-[ BLOCK <1> build rel2 ]
-#=======================
+[ BLOCK <1> build rel ]
+#======================
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
     cdsay <PROJDIR>
 
     cdsay src/os2
-    echo ide2make -r drawos2.tgt -c <SRCDIR>/viper/cfg/ide.cfg
-    ide2make -r drawos2.tgt -c <SRCDIR>/viper/cfg/ide.cfg
-    # <CPCMD> <SRCDIR>\plusplus\bin\rpp38610.exe wpp386.exe
-    wmake -i -h -f drawos2.mk1  <SRCDIR>/viprdemo/src/os2/box.obj
-    wmake -i -h -f drawos2.mk1  <SRCDIR>/viprdemo/src/os2/drawroom.obj
-    wmake -i -h -f drawos2.mk1  <SRCDIR>/viprdemo/src/os2/furnitu.obj
+    echo ide2make -r drawos2.tgt -c <OWSRCDIR>/viper/cfg/ide.cfg
+    ide2make -r drawos2.tgt -c <OWSRCDIR>/viper/cfg/ide.cfg
+    # <CPCMD> <OWSRCDIR>\plusplus\bin\rpp38610.exe wpp386.exe
+    wmake -i -h -f drawos2.mk1  <OWSRCDIR>/viprdemo/src/os2/box.obj
+    wmake -i -h -f drawos2.mk1  <OWSRCDIR>/viprdemo/src/os2/drawroom.obj
+    wmake -i -h -f drawos2.mk1  <OWSRCDIR>/viprdemo/src/os2/furnitu.obj
     # rm -f wpp386.exe
 
     cdsay ../win
-    echo ide2make -r draw16.tgt -c <SRCDIR>/viper/cfg/ide.cfg
-    ide2make -r draw16.tgt -c <SRCDIR>/viper/cfg/ide.cfg
-    # <CPCMD> <SRCDIR>\plusplus\bin\rppi8610.exe wpp.exe
-    wmake -i -h -f draw16.mk1   <SRCDIR>/viprdemo/src/win/box.obj
-    wmake -i -h -f draw16.mk1   <SRCDIR>/viprdemo/src/win/drawroom.obj
-    wmake -i -h -f draw16.mk1   <SRCDIR>/viprdemo/src/win/furnitu.obj
+    echo ide2make -r draw16.tgt -c <OWSRCDIR>/viper/cfg/ide.cfg
+    ide2make -r draw16.tgt -c <OWSRCDIR>/viper/cfg/ide.cfg
+    # <CPCMD> <OWSRCDIR>\plusplus\bin\rppi8610.exe wpp.exe
+    wmake -i -h -f draw16.mk1   <OWSRCDIR>/viprdemo/src/win/box.obj
+    wmake -i -h -f draw16.mk1   <OWSRCDIR>/viprdemo/src/win/drawroom.obj
+    wmake -i -h -f draw16.mk1   <OWSRCDIR>/viprdemo/src/win/furnitu.obj
     # rm -f wpp.exe
 
     cdsay ../win386
-    echo ide2make -r draw.tgt -c <SRCDIR>/viper/cfg/ide.cfg
-    ide2make -r draw.tgt -c <SRCDIR>/viper/cfg/ide.cfg
-    # <CPCMD> <SRCDIR>\plusplus\bin\rpp38610.exe wpp386.exe
-    wmake -i -h -f draw.mk1     <SRCDIR>/viprdemo/src/win386/box.obj
-    wmake -i -h -f draw.mk1     <SRCDIR>/viprdemo/src/win386/drawroom.obj
-    wmake -i -h -f draw.mk1     <SRCDIR>/viprdemo/src/win386/furnitu.obj
+    echo ide2make -r draw.tgt -c <OWSRCDIR>/viper/cfg/ide.cfg
+    ide2make -r draw.tgt -c <OWSRCDIR>/viper/cfg/ide.cfg
+    # <CPCMD> <OWSRCDIR>\plusplus\bin\rpp38610.exe wpp386.exe
+    wmake -i -h -f draw.mk1     <OWSRCDIR>/viprdemo/src/win386/box.obj
+    wmake -i -h -f draw.mk1     <OWSRCDIR>/viprdemo/src/win386/drawroom.obj
+    wmake -i -h -f draw.mk1     <OWSRCDIR>/viprdemo/src/win386/furnitu.obj
     # rm -f wpp386.exe
 
     cdsay ../win32
-    echo ide2make -r draw.tgt -c <SRCDIR>/viper/cfg/ide.cfg
-    ide2make -r draw32.tgt -c <SRCDIR>/viper/cfg/ide.cfg
-    # <CPCMD> <SRCDIR>\plusplus\bin\rpp38610.exe wpp386.exe
-    wmake -i -h -f draw32.mk1   <SRCDIR>/viprdemo/src/win32/box.obj
-    wmake -i -h -f draw32.mk1   <SRCDIR>/viprdemo/src/win32/drawroom.obj
-    wmake -i -h -f draw32.mk1   <SRCDIR>/viprdemo/src/win32/furnitu.obj
+    echo ide2make -r draw.tgt -c <OWSRCDIR>/viper/cfg/ide.cfg
+    ide2make -r draw32.tgt -c <OWSRCDIR>/viper/cfg/ide.cfg
+    # <CPCMD> <OWSRCDIR>\plusplus\bin\rpp38610.exe wpp386.exe
+    wmake -i -h -f draw32.mk1   <OWSRCDIR>/viprdemo/src/win32/box.obj
+    wmake -i -h -f draw32.mk1   <OWSRCDIR>/viprdemo/src/win32/drawroom.obj
+    wmake -i -h -f draw32.mk1   <OWSRCDIR>/viprdemo/src/win32/furnitu.obj
     # rm -f wpp386.exe
     cd <PROJDIR>
 
-[ BLOCK <1> rel2 ]
-#=================
+[ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
     cd src
     <CPCMD> ./*.*                   <OWRELROOT>/samples/ide/
     <CPCMD> fortran/*.*             <OWRELROOT>/samples/ide/fortran/

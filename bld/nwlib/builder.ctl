@@ -1,55 +1,44 @@
-# NWLIB Builder Control file
-# ==========================
+# wlib Builder Control file
+# =========================
 
 set PROJDIR=<CWD>
+set PROJNAME=wlib
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
+[ BLOCK <1> boot ]
 #=================
-    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/wlib.exe    <OWBINDIR>/bwlib<CMDEXT>
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dos386/wlib.exe  <OWRELROOT>/binw/
-    <CPCMD> dos386/wlib.sym  <OWRELROOT>/binw/
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f <OWBINDIR>/bwlib<CMDEXT>
+    rm -f <OWBINDIR>/bwlib<CMDEXT>
 
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/wlib.exe  <OWRELROOT>/binp/
-    <CPCMD> os2386/wlibd.dll <OWRELROOT>/binp/dll/
-    <CPCMD> os2386/wlibd.sym <OWRELROOT>/binp/dll/
-
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wlib.exe   <OWRELROOT>/binnt/
-    <CPCMD> nt386/wlibd.dll  <OWRELROOT>/binnt/
-    <CPCMD> nt386/wlibd.sym  <OWRELROOT>/binnt/
-
-  [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wlib.exe   <OWRELROOT>/axpnt/
-    <CPCMD> ntaxp/wlibd.dll  <OWRELROOT>/axpnt/
-    <CPCMD> ntaxp/wlibd.sym  <OWRELROOT>/axpnt/
-
-  [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> qnx386/wlib.exe  <OWRELROOT>/qnx/binq/wlib
-    <CPCMD> qnx386/wlib.sym  <OWRELROOT>/qnx/sym/wlib.sym
-
-  [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/wlib.exe  <OWRELROOT>/binl/wlib
-    <CPCMD> linux386/wlib.sym  <OWRELROOT>/binl/wlib.sym
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+[ BLOCK <1> rel cprel ]
+#======================
+    <CCCMD> dos386/wlb.exe      <OWRELROOT>/binw/wlib.exe
+    <CCCMD> dos386/wlb.sym      <OWRELROOT>/binw/wlib.sym
+    <CCCMD> os2386/wlb.exe      <OWRELROOT>/binp/wlib.exe
+    <CCCMD> os2386/wlb.sym      <OWRELROOT>/binp/wlib.sym
+    <CCCMD> os2386/wlbd.dll     <OWRELROOT>/binp/dll/wlibd.dll
+    <CCCMD> os2386/wlbd.sym     <OWRELROOT>/binp/dll/wlibd.sym
+    <CCCMD> nt386/wlb.exe       <OWRELROOT>/binnt/wlib.exe
+    <CCCMD> nt386/wlb.sym       <OWRELROOT>/binnt/wlib.sym
+    <CCCMD> nt386/wlbd.dll      <OWRELROOT>/binnt/wlibd.dll
+    <CCCMD> nt386/wlbd.sym      <OWRELROOT>/binnt/wlibd.sym
+    <CCCMD> ntaxp/wlb.exe       <OWRELROOT>/axpnt/wlib.exe
+    <CCCMD> ntaxp/wlb.sym       <OWRELROOT>/axpnt/wlib.sym
+    <CCCMD> ntaxp/wlbd.dll      <OWRELROOT>/axpnt/wlibd.dll
+    <CCCMD> ntaxp/wlbd.sym      <OWRELROOT>/axpnt/wlibd.sym
+    <CCCMD> qnx386/wlb.exe      <OWRELROOT>/qnx/binq/wlib
+    <CCCMD> qnx386/wlb.sym      <OWRELROOT>/qnx/sym/wlib.sym
+    <CCCMD> linux386/wlb.exe    <OWRELROOT>/binl/wlib
+    <CCCMD> linux386/wlb.sym    <OWRELROOT>/binl/wlib.sym
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

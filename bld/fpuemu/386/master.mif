@@ -40,7 +40,7 @@ INCS += win30vxd.inc
 
 !else
 
-emu387.lib: 386stub.obj
+emu387.lib noemu387.lib: 386stub.obj
     $(librarian) $(libflags) $<
 
 !endif

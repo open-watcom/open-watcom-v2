@@ -2,22 +2,15 @@
 # ===========================
 
 set PROJDIR=<CWD>
+set PROJNAME=fmedit
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (os_win "") <2*> ]
     <CPCMD> wini86/fmedit.dll <OWRELROOT>/binw/
   [ IFDEF (os_nt "") <2*> ]
@@ -25,11 +18,6 @@ cdsay .
   [ IFDEF (cpu_axp) <2*> ]
     <CPCMD> ntaxp/fmedit.dll <OWRELROOT>/axpnt/
 
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

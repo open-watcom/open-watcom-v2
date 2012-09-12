@@ -154,19 +154,8 @@ c_inc_dirs_linux   =-I"$(hdr_dir)/linux"
 
 inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_dir)/runtime/h" $(c_inc_dirs_$(host_os)) -I"$(watcom_dir)/h" -I"$(comp_cfg_dir)/h"
 
-reference : .symbolic $(target_lib)
-    cp $(target_lib) $(plusplus_dir)/bin
-
 .EXTENSIONS:
 .EXTENSIONS: .exe .lnk .obj .xbj .c .cpp .asm
-
-!ifdef __LOADDLL__
-comp_cpp = rpp$(host_cpu)
-!else ifdef __UNIX__
-comp_cpp = $(plusplus_dir)/$(host_cpu)/rpp/rpp$(host_cpu).exe
-!else
-comp_cpp = $(plusplus_dir:/=\)\$(host_cpu)\rpp\rpp$(host_cpu).exe
-!endif
 
 .cpp : $(cpp_dirs)
 
@@ -174,18 +163,18 @@ comp_cpp = $(plusplus_dir:/=\)\$(host_cpu)\rpp\rpp$(host_cpu).exe
 
 .cpp.obj : .autodepend
 !ifeq verbose 1
-    *$(comp_cpp) -zq $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
+    $(cpp) -zq $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
 !else
-    @echo ref++ $@
-    @*$(comp_cpp) -zq $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
+    @echo c++ $@
+    @$(cpp) -zq $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
 !endif
 
 .cpp.xbj : .autodepend
 !ifeq verbose 1
-    *$(comp_cpp) -zq -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
+    $(cpp) -zq -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
 !else
-    @echo xref++ $@
-    @*$(comp_cpp) -zq -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
+    @echo xc++ $@
+    @$(cpp) -zq -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
 !endif
 
 .asm.obj : .autodepend

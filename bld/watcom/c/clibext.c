@@ -28,8 +28,14 @@
 *
 ****************************************************************************/
 
+
+#ifdef __WATCOMC__
+    /* We don't need any of this stuff, but being able to build this
+     * module simplifies makefiles.
+     */
+#else
+
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -38,6 +44,7 @@
 #include <ctype.h>
 
 #if defined(__UNIX__)
+    #include <unistd.h>
     #include <dirent.h>
     #include <sys/stat.h>
     #include <fcntl.h>
@@ -45,11 +52,13 @@
     #include <sys/io_msg.h>
 #endif
 #else
+    #include <io.h>
     #include <direct.h>
     #if defined(__OS2__)
         #include <wos2.h>
     #elif defined(__NT__)
         #include <windows.h>
+        #include <mbstring.h>
     #endif
 #endif
 
@@ -1346,6 +1355,52 @@ char *(getcmd)( char *buffer )
 
 /****************************************************************************
 *
+* Description:  Implementation of spawn.. functions for Unix.
+*
+****************************************************************************/
+
+#ifdef __UNIX__
+#include <sys/wait.h>
+
+int spawnvp( int mode, const char *cmd, const char * const *args )
+{
+    pid_t       pid;
+    int         status;
+
+    pid = fork();
+    if( pid == -1 )
+        return( -1 );
+    if( pid == 0 ) {
+        execvp( cmd, (char * const *)args );
+        _exit( 127 );
+    }
+    if( waitpid( pid, &status, 0 ) == -1 ) {
+        status = -1;
+    }
+    return( status );
+}
+
+int spawnlp( int mode, const char *path, const char *cmd, ... )
+{
+    va_list     ap;
+    const char  *arg;
+    const char  *args[8];
+    int         i;
+
+    va_start( ap, cmd );
+    args[0] = cmd;
+    i = 1;
+    while( (arg = va_arg( ap, const char * )) != NULL ) {
+        args[i++] = arg;
+    }
+    args[i] = NULL;
+    va_end( ap );
+    return( spawnvp( mode, cmd, (const char * const *)args ) );
+}
+#endif
+
+/****************************************************************************
+*
 * Description:  This function searches for the specified file in the
 *               1) current directory or, failing that,
 *               2) the paths listed in the specified environment variable
@@ -1525,4 +1580,6 @@ size_t strlcat( char *dst, const char *t, size_t n )
     }
     return( n );
 }
+#endif
+
 #endif

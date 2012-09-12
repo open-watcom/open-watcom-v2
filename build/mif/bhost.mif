@@ -1,7 +1,9 @@
 # build host specific macros - should query WMAKE for details
+host_sys  = $(%BOOTSTRAP_OS)
+host_arch = $(%BOOTSTRAP_CPU)
+
 !ifdef __OS2__
 bld_sys         = os2v2
-bld_incs        = $(bld_extra_incs) -I"$(lang_root)/h" -I"$(watcom_dir)/h"
 lang_bin        = $(lang_root)\binp
 nlang_bin       = $(nlang_root)\binp
 lang_dll        = $(lang_root)\binp\dll
@@ -9,26 +11,30 @@ nlang_dll       = $(nlang_root)\binp\dll
 nulldevice      = nul
 !else ifdef __MSDOS__
 bld_sys         = dos4g
-bld_incs        = $(bld_extra_incs) -I"$(lang_root)/h" -I"$(watcom_dir)/h"
 lang_bin        = $(lang_root)\binw
 nlang_bin       = $(nlang_root)\binw
 nulldevice      = nul
 # DOS should never need the DLL related macros
-!else ifdef __NTAXP__
+!else ifdef __NT__
+!ifdef __NTAXP__
 bld_sys         = ntaxp
-bld_incs        = $(bld_extra_incs) -I"$(lang_root)/h" -I"$(watcom_dir)/h"
 lang_bin        = $(lang_root)\axpnt
 nlang_bin       = $(nlang_root)\axpnt
 lang_dll        = $(lang_root)\axpnt
 nlang_dll       = $(nlang_root)\axpnt
-nulldevice      = nul
 !else ifdef __NT386__
 bld_sys         = nt
-bld_incs        = $(bld_extra_incs) -I"$(lang_root)/h" -I"$(watcom_dir)/h"
 lang_bin        = $(lang_root)\binnt
 nlang_bin       = $(nlang_root)\binnt
 lang_dll        = $(lang_root)\binnt
 nlang_dll       = $(nlang_root)\binnt
+!else
+#
+# This is an old make - really should report an error
+#
+!error Please correct this makefile, see build\mif\bhost.mif for details.
+bld_sys         = nt
+!endif
 nulldevice      = nul
 !else ifdef __LINUX__
 !ifdef __LINUXPPC__
@@ -38,66 +44,37 @@ bld_sys         = linuxmips
 !else
 bld_sys         = linux
 !endif
-!ifdef bootstrap
-bld_incs        = $(bld_extra_incs) -I"$(hdr_dir)/linux" -I"$(watcom_dir)/h"
-!else
-bld_incs        = $(bld_extra_incs) -I"$(lang_root)/lh" -I"$(watcom_dir)/h"
-!endif
 lang_bin        = $(lang_root)/binl
 nlang_bin       = $(nlang_root)/binl
 lang_dll        = $(lang_root)/binl
 nlang_dll       = $(nlang_root)/binl
 nulldevice      = /dev/null
-!else ifdef __NT__
-#
-# This is an old make - really should report an error
-#
-!error Please correct this makefile, see build\mif\bhost.mif for details.
-bld_sys         = nt
-bld_incs        = $(bld_extra_incs) -I"$(lang_root)/h" -I"$(watcom_dir)/h"
-nulldevice      = nul
 !else
 !error HOST OS not set
 !endif
 
-!ifdef __NTAXP__
-bld_cc          = *wccaxp $(bld_incs)
+!ifdef inc_dirs_lang_$(host_sys)
+bld_inc_dirs_lang = $(inc_dirs_lang_$(host_sys))
 !else
-bld_cc          = *wcc386 $(bld_incs)
+bld_inc_dirs_lang = $(inc_dirs_lang_osi)
 !endif
+bld_incs          = $(bld_extra_incs) $(bld_inc_dirs_lang) $(inc_dirs_sys_$(host_sys)) -I"$(watcom_dir)/h"
 
-!ifdef __NTAXP__
-bcl             = *wclaxp
-!else ifdef __LINUXPPC__
-bcl             = *wclppc
-!else ifdef __LINUXMIPS__
-bcl             = *wclmps
-!else
-bcl             = *bwcl386
-!endif
+bcc             = $(cc_$(host_arch))
+bld_cc          = $(bcc) $(bld_incs)
+bcl             = $(cl_$(host_arch))
+bld_cl          = $(bcl) -bcl=$(bld_sys) $(bld_incs)
+blink           = $(linker_$(host_arch))
+bld_link        = $(blink) sys $(bld_sys)
+bas             = $(as_$(host_arch))
+blib            = $(librarian_$(host_arch))
 
-bld_cl          = $(bcl) -l=$(bld_sys) $(bld_incs)
-
-bld_link        = *wlink sys $(bld_sys)
-
-!ifeq host_cpu axp
-bas             = $(as)
-!else ifeq host_cpu ppc
-bas             = $(as)
-!else ifeq host_cpu mps
-bas             = $(as)
-!else
-bas             = *bwasm
-!endif
-
-blib            = *bwlib
 bre2c           = $(re2c)
 w32bind         = w32bind
-byacc           = byacc
-brc             = bwrc
+byacc           = yacc
+brc             = $(rc)
 !ifdef __UNIX__
 os2ldr          = $(%OWBINDIR)/os2ldr.exe
 !else
 os2ldr          = $(%OWBINDIR)\os2ldr.exe
 !endif
-

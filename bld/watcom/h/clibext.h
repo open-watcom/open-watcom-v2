@@ -1,3 +1,5 @@
+#ifndef __WATCOMC__
+
 /* clibext.h:
    This file contains defines and prototypes of functions that are present
    in Watcom's CLIB but not in many other C libraries */
@@ -13,6 +15,10 @@
     #include <strings.h>    /* for str*case* functions */
     #undef _XPG4_2          /* ...but causes trouble */
 #endif
+#ifdef __UNIX__
+#include <sys/wait.h>
+#endif
+#include "clibint.h"
 
 #if defined(__linux__) && !defined(__LINUX__)
 #define __LINUX__
@@ -21,11 +27,16 @@
 #define __UNIX__
 #endif
 
+#define _WCUNALIGNED
+
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
 #ifndef O_TEXT
 #define O_TEXT 0
+#endif
+#ifndef P_WAIT
+#define P_WAIT 0
 #endif
 #define stricmp strcasecmp
 #define strcmpi strcasecmp
@@ -86,33 +97,39 @@
 #define _heapchk(x) _HEAPOK
 #define _expand(x,y) (NULL)
 
-char *itoa( int value, char *buf, int radix );
-char *utoa( unsigned int value, char *buf, int radix );
-char *ltoa( long int value, char *buf, int radix );
-char *ultoa( unsigned long int value, char *buf, int radix );
-void _splitpath2( const char *inp, char *outp, char **drive,
+extern char   *itoa( int value, char *buf, int radix );
+extern char   *utoa( unsigned int value, char *buf, int radix );
+extern char   *ltoa( long int value, char *buf, int radix );
+extern char   *ultoa( unsigned long int value, char *buf, int radix );
+extern void   _splitpath2( const char *inp, char *outp, char **drive,
                   char **dir, char **fn, char **ext );
-void _splitpath( const char *path, char *drive,
+extern void   _splitpath( const char *path, char *drive,
                  char *dir, char *fname, char *ext );
-void _makepath( char *path, const char *drive, const char *dir,
+extern void   _makepath( char *path, const char *drive, const char *dir,
                 const char *fname, const char *ext );
-char *_fullpath( char *buf, const char *path, size_t size );
-char *strlwr( char *string );
-char *strupr( char *string );
-char *strrev( char *string );
-int memicmp(const void *, const void *, size_t);
-off_t tell( int handle );
-long filelength(int handle);
-int eof( int fildes );
-int _bgetcmd( char *buffer, int len );
-char *getcmd( char *buffer );
-char *_cmdname( char *name );
-void _searchenv( const char *name, const char *env_var, char *buf );
-char *strnset( char *string, int c, size_t len );
+extern char   *_fullpath( char *buf, const char *path, size_t size );
+extern char   *strlwr( char *string );
+extern char   *strupr( char *string );
+extern char   *strrev( char *string );
+extern int    memicmp(const void *, const void *, size_t);
+extern off_t  tell( int handle );
+extern long   filelength(int handle);
+extern int    eof( int fildes );
+extern int    _bgetcmd( char *buffer, int len );
+extern char   *getcmd( char *buffer );
+extern char   *_cmdname( char *name );
+extern void   _searchenv( const char *name, const char *env_var, char *buf );
+extern char   *strnset( char *string, int c, size_t len );
 #ifdef __GLIBC__
-size_t strlcpy( char *dst, const char *src, size_t len );
-size_t strlcat( char *dst, const char *t, size_t n );
+extern size_t strlcpy( char *dst, const char *src, size_t len );
+extern size_t strlcat( char *dst, const char *t, size_t n );
+#endif
+#ifdef __UNIX__
+extern int    spawnlp( int mode, const char *path, const char *cmd, ... );
+extern int    spawnvp( int mode, const char *cmd, const char * const *args );
 #endif
 
 extern char **_argv;    /* argument vector */
 extern int  _argc;
+
+#endif

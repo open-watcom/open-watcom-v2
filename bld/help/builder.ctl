@@ -1,35 +1,20 @@
-# WHELP Builder Control file
-# =========================
+# whelp Builder Control file
+# ===========================
 
 set PROJDIR=<CWD>
+set PROJNAME=whelp
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 ]
-#========================
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dos386/whelp.exe    <OWRELROOT>/binw/whelp.exe
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/whelp.exe    <OWRELROOT>/binp/whelp.exe
-  [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/whelp.exe  <OWRELROOT>/binl/whelp
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+[ BLOCK <1> rel cprel ]
+#======================
+    <CCCMD> dos386/whelp.exe    <OWRELROOT>/binw/whelp.exe
+    <CCCMD> os2386/whelp.exe    <OWRELROOT>/binp/whelp.exe
+    <CCCMD> linux386/whelp.exe  <OWRELROOT>/binl/whelp
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

@@ -80,7 +80,7 @@ gendev = dosemu -dumb $(dosemu_wgml_batch)
 #-------------------------------------------------------
 
 .before:
-        set GMLLIB=$(%OWROOT)\bld\wgml\test\testlib
+        set GMLLIB=$(%OWSRCDIR)\wgml\test\testlib
 	set GMLINC=..\testsrc
 
 #-------------------------------------------------------

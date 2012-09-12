@@ -10,16 +10,20 @@ whpcvt_autodepends = .autodepend
 !include deftarg.mif
 !include defrule.mif
 
-inc_dirs = -I"$(whpcvt_dir)/h"
+inc_dirs = -I"../h"
 
 .c: ../c
 
-objs =              &
-        whpcvt.obj  &
+objs =  whpcvt.obj  &
         rtf.obj     &
         ipf.obj     &
         ib.obj      &
-	wiki.obj    &
+        wiki.obj    &
         html.obj
 
-!include exetarg.mif
+$(proj_name).exe : $(objs) $(cl_objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $<
+!else
+        $(linker) name $@ $(lflags) file {$(objs)}
+!endif

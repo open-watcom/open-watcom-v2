@@ -2,7 +2,7 @@
 SET TRMEM_CODE=1
 
 set from=%cd%
-cd %OWROOT%\bld\wmake\regress
+cd %OWSRCDIR%\wmake\regress
 
 if exist error.out del error.out
 if .%1 == . goto usage

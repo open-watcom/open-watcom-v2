@@ -6,18 +6,10 @@ set PROJDIR=<CWD>
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
     <CPCMD> viper.doc            <OWRELROOT>/ide.doc
     <CPCMD> cfg/ide.cfg          <OWRELROOT>/binw/
     <CPCMD> cfg/idedos.cfg       <OWRELROOT>/binw/
@@ -76,10 +68,6 @@ cdsay .
     <CPCMD> cfg/ntaxp/idex.cfg   <OWRELROOT>/axpnt/
     <CPCMD> bviper/ntaxp/ide2make.exe <OWRELROOT>/axpnt/
 
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-
 [ BLOCK . . ]
 
 cdsay <PROJDIR>/bviper
@@ -88,5 +76,4 @@ cdsay <PROJDIR>/bviper
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

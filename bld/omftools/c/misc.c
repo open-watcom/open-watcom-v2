@@ -40,6 +40,9 @@
 #include <assert.h>
 #include "pathgrp.h"
 #include "misc.h"
+#ifndef __WATCOMC__
+  #include "clibext.h"
+#endif
 
 #ifdef __UNIX__
   #define ISVALIDENTRY(x)   ( 1 )

@@ -12,22 +12,11 @@ as         += -q
 rc         += -q
 rcaui      += -q
 
-bld_cl     += -zq
 bcl        += -zq
-bld_cc     += -zq
-bld_link   += op q
+bcc        += -zq
+blink      += op q
 bas        += -q
 blib       += -q
-brc        += -q
-
-# redirect standard tools to pre-build versions
-as = $(bas)
-librarian = $(blib)
-#rc = *$(rc)
-#rcaui = *$(rc)
-rc = *$(brc)
-rcaui = *$(brc)
-brc = *$(brc)
 
 # options used for setup source code Japanese DBCS character set
 c_japan_charset = -zk0
@@ -100,12 +89,15 @@ wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w8 -fe=$^@
 
 # bootstrap overrides
 ######################
+
 !ifdef bootstrap
+
+!ifdef __WATCOM__
 
 #
 # common bootstrap definitions for Linux
 #
-!ifdef __LINUX__
+!else ifdef __LINUX__
 
 cc = gcc
 cpp = gcc
@@ -135,12 +127,11 @@ inc_dirs_lang_osi =
 cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 
 cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__SMALL__ -DUNIX -D__FLAT__ -DBOOTSTRAP &
-$(cppflags_$(host_cpu)) -D_WCUNALIGNED="__attribute__((packed))" &
--funsigned-char -fno-asm -fno-common
+$(cppflags_$(host_cpu)) -funsigned-char -fno-asm -fno-common
 
 #cppflages += -D__LINUX__ -DLINUX
 
-cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
+cflags = $(extra_c_flags) $(cppflags) -gdwarf-2 -c $(cflags_wng) -pipe -O -o $@
 
 # options for single source utility compilations
 wcl_util_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@
@@ -183,9 +174,8 @@ inc_dirs_lang_osi =
 # Warning flags: all enabled except the ones that have no use besides annoy people
 cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 
-cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__QNX__ &
--D__SMALL__ -DUNIX -D__FLAT__ $(cppflags_$(host_cpu)) &
--D_WCUNALIGNED="__attribute__((packed))" -funsigned-char -fno-asm -fno-common
+cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__QNX__ -D__SMALL__ -DUNIX -D__FLAT__ &
+$(cppflags_$(host_cpu)) -funsigned-char -fno-asm -fno-common
 cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 
 !ifdef __QNX__

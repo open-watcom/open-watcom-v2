@@ -18,7 +18,7 @@ all : cwstub.exe cwdstub.exe .symbolic
 
 cwstub.exe : cw32.obj $(__MAKEFILES__)
     $(linker) $(lflags) name cw32.exe disable 1080 file $[@
-    bcwc cw32.exe cwstub.exe
+    cwc cw32.exe cwstub.exe
 
 cwdstub.exe : cwdstub.obj
     $(linker) $(lflags) name $@ disable 1014 file $[@

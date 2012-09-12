@@ -191,7 +191,11 @@ $(asi_lib_j) : $(asi_lib) asmsgj.obj
 version_res_exe_nt_386 = exever.res
 
 $(name).exe : msg.gh $(as_objs) $(cl_objs) $(libs) $(owl_lib) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
         $(cl) $(clflags) $(as_objs) $(cl_objs) $(libs) $(owl_lib) $(cl_libs)
+!else
+        $(linker) name $@ $(lflags) file {$(as_objs)}  lib {$(libs) $(owl_lib)}
+!endif
 !ifeq host_os osi
         $(w32bind) $^&.rex $^@ $(os2ldr)
         @rm -f $^&.rex
@@ -216,10 +220,10 @@ $(yacc_in) : $(yacc_src) $(as_dir)/y/yydriver.c
         wsplice $(splice_opts) $[@ $^@
 
 $(yacc_out_c).c $(yacc_out_h) : $(yacc_in)
-        $(byacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
+        $(yacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
         $(sed) -f $(as_dir)/mif/asyy.sed ytab.c > $(yacc_out_c).c
         $(sed) -f $(as_dir)/mif/asyy.sed ytab.h > $(yacc_out_c).h
-        # $(byacc) $(yacc_flags) $[@
+        # $(yacc) $(yacc_flags) $[@
 
 $(lex_in) : $(lex_src)
         wsplice $(splice_opts) $[@ $^.

@@ -43,6 +43,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#ifndef __WATCOMC__
+#include "clibext.h"
+#endif
 
 #include "diskos.h"
 #include "pathgrp.h"
@@ -57,14 +60,14 @@
 #endif
 
 flags   Flags;
-FILE    *Fp;                /* file pointer for Temp_Link         */
+FILE    *Fp = NULL;         /* file pointer for Temp_Link         */
 list    *Libs_List;         /* list of libraires from Cmd         */
 char    *Map_Name;          /* name of map file                   */
 list    *Obj_List;          /* linked list of object filenames    */
 char    *Obj_Name;          /* object file name pattern           */
 char    Exe_Name[_MAX_PATH];/* name of executable                 */
 
-extern char *DebugOptions[] = {
+char *DebugOptions[] = {
     "",
     "debug dwarf\n",
     "debug dwarf\n",
@@ -88,12 +91,10 @@ void PrintMsg( const char *fmt, ... )
     char        c;
     int         i;
     char        *p;
-    unsigned    value;
     va_list     args;
     int         len;
     char        buf[128];
 
-    value = value;
     va_start( args, fmt );
     len = 0;
     for( ;; ) {
@@ -169,6 +170,7 @@ void BuildLinkFile( void )
         Fputnl( "option caseexact", Fp );
     }
     fclose( Fp );       /* close Temp_Link */
+    Fp = NULL;
 }
 
 void print_line( int * handle, const char * buff, size_t len )
@@ -197,8 +199,8 @@ void  MemFini( void )
 #endif
 }
 
-void  *MemAlloc( int size )
-/*************************/
+void  *MemAlloc( unsigned size )
+/******************************/
 {
     void        *ptr;
 
@@ -297,6 +299,7 @@ void  AddName( char *name, FILE *link_fp )
     PGROUP      pg1;
     PGROUP      pg2;
 
+    last_name = NULL;
     curr_name = Obj_List;
     while( curr_name != NULL ) {
 #ifdef __UNIX__

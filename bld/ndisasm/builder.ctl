@@ -2,22 +2,15 @@
 # ============================
 
 set PROJDIR=<CWD>
+set PROJNAME=wdis
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (os_dos "") <2*> ]
 #    <CPCMD> osi386/wdis.exe   <OWRELROOT>/binw/
 #    <CPCMD> osi386/wdis.sym   <OWRELROOT>/binw/
@@ -43,10 +36,6 @@ cdsay .
   [ IFDEF (os_linux "") <2*> ]
     <CPCMD> linux386/wdis.exe <OWRELROOT>/binl/wdis
     <CPCMD> linux386/wdis.sym <OWRELROOT>/binl/
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
 [ BLOCK . . ]
 #============

@@ -26,9 +26,9 @@ echo Parameters 2+: <2*>
 echo Parameters 3+: <3*>
 
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    echo We're in block (build rel2)
+[ BLOCK <1> build rel ]
+#======================
+    echo We're in block (build rel)
     [ IFDEF os_os2 <2*> ]
         echo os_os2 detected in parms 2+
     [ IFDEF ("") <2*> ]
@@ -40,9 +40,9 @@ echo Parameters 3+: <3*>
     [ IFDEF (os_nt) <2*> ]
         echo Oh no! Not Windows please
 
-[ BLOCK <1> rel2 ]
-#=======================
-    echo We're in block (rel2)
+[ BLOCK <1> rel ]
+#================
+    echo We're in block (rel)
     [ IFDEF os_os2 <2*> ]
         echo os_os2 detected in parms <2*>
     [ IFDEF ("") <2*> ]

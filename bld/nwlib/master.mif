@@ -70,13 +70,11 @@ common_objs = &
     inlib.obj &
     idemsgpr.obj &
     ideentry.obj &
-    $(trmem_objs)
+    $(trmem_objs) &
+    $(cl_objs)
 
 !ifdef no_libs
 common_objs += $(orl_objs)
-!endif
-!ifdef bootstrap
-common_objs += clibext.obj
 !endif
 
 dll_objs_nt = ntdll.obj
@@ -158,30 +156,35 @@ depends_msg = msg.gh incltext.gh
 !else
 depends_msg = msg.gh wlib.res
 !endif
-depends_drv = $(drv_objs) wlibd.lib drv.lnk
+depends_drv = $(drv_objs) wlibd.lib
 depends_exe = $(depends_msg) $(exe_objs) $(xlibs) $(external_dependencies)
-depends_dll = $(depends_msg) $(dll_objs) $(xlibs) $(external_dependencies) dll.lnk
-!ifndef bootstrap
-depends_exe += exe.lnk
-!endif
+depends_dll = $(depends_msg) $(dll_objs) $(xlibs) $(external_dependencies)
 
 !ifdef wlib_dll
 
 wlib.exe: $(depends_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%write drv.lnk $(lflags)
+    @for %i in ($(drv_objs)) do @%append drv.lnk file %i
+    @%append drv.lnk lib wlibd.lib
     $(linker) name $@ @drv.lnk
     @%make bind_version_res_exe
 
 !else
 
 wlib.exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifdef bootstrap
-    $(cc) -g -o $@ $(exe_objs) $(xlibs)
-!else ifeq host_os osi
+!ifndef __WATCOM__
+    $(cl) $(clflags) $(exe_objs) $(xlibs)
+!else 
+    @%write exe.lnk $(lflags)
+    @for %i in ($(exe_objs)) do @%append exe.lnk file %i
+    @for %i in ($(xlibs)) do @%append exe.lnk lib %i
+!ifeq host_os osi
     $(linker) name $^&.rex @exe.lnk
     $(w32bind) $^&.rex $@ $(os2ldr)
     @rm -f $^&.rex
 !else
     $(linker) name $@ @exe.lnk
+!endif
 !endif
     @%make bind_version_res_exe
 !ifndef incl_msgtext
@@ -191,6 +194,9 @@ wlib.exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES
 !endif
 
 wlibd.dll: $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%write dll.lnk $(lflags_dll)
+    @for %i in ($(dll_objs)) do @%append dll.lnk file %i
+    @for %i in ($(xlibs)) do @%append dll.lnk lib %i
     $(linker) name $@ @dll.lnk
     @%make bind_version_res_dll
 !ifndef incl_msgtext
@@ -199,30 +205,6 @@ wlibd.dll: $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILE
 
 wlibd.lib: wlibd.dll
     $(librarian) $(libflags) +$[@
-
-drv.lnk : $(__MAKEFILES__)
-    @%write $@ $(lflags)
-!ifdef wlib_rtdll
-    @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
-!endif
-    @for %i in ($(drv_objs)) do @%append $@ file %i
-    @%append $@ lib wlibd.lib
-
-exe.lnk : $(__MAKEFILES__)
-    @%write $@ $(lflags)
-!ifdef wlib_rtdll
-    @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
-!endif
-    @for %i in ($(exe_objs)) do @%append $@ file %i
-    @for %i in ($(xlibs)) do @%append $@ lib %i
-
-dll.lnk : $(__MAKEFILES__)
-    @%write $@ $(lflags_dll)
-!ifdef wlib_rtdll
-    @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
-!endif
-    @for %i in ($(dll_objs)) do @%append $@ file %i
-    @for %i in ($(xlibs)) do @%append $@ lib %i
 
 msg.gh : wlibmsg.gh
     $(awk) -f $(build_dir)/msgtoh.awk $[@ >$^@

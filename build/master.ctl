@@ -3,8 +3,8 @@
 
 # Set default output directory
 [ BLOCK .<OWRELROOT> . ]
-#=====================
-    set OWRELROOT=<OWROOT>/rel2
+#=======================
+    set OWRELROOT=<OWROOT>/rel
 
 [ BLOCK . . ]
 #============
@@ -14,9 +14,6 @@ set LOGFNAME=build
 set LOGEXT=log
 set CPCMD=acopy
 set CCCMD=accopy
-
-# Set up directories
-set SRCDIR=<OWROOT>/bld
 
 [ BLOCK .<1> . ]
 #===============
@@ -28,11 +25,11 @@ set SRCDIR=<OWROOT>/bld
     # default rule
     set 1=build
 
-[ BLOCK <1> cprel2 ]
+[ BLOCK <1> cprel ]
 #===================
-    set LOGFNAME=cprel2
-    echo **** CPREL2 rule
-    # with 'cprel2', we want to force the copy to occur
+    set LOGFNAME=cprel
+    echo **** CPREL rule
+    # with 'cprel', we want to force the copy to occur
     set CPCMD=copy
     set CCCMD=ccopy
 
@@ -41,10 +38,10 @@ set SRCDIR=<OWROOT>/bld
     set LOGFNAME=build
     echo **** BUILD rule
 
-[ BLOCK <1> rel2 ]
+[ BLOCK <1> rel ]
 #=================
     set LOGFNAME=build
-    echo **** REL2 rule
+    echo **** REL rule
 
 [ BLOCK <1> clean ]
 #==================
@@ -68,14 +65,14 @@ set SRCDIR=<OWROOT>/bld
 [ BLOCK <1> pass1 ]
 #==================
     set LOGFNAME=pass1
-    echo **** REL2 rule
-    set 1=rel2
+    echo **** REL rule
+    set 1=rel
 
 [ BLOCK <1> pass2 ]
 #==================
     set LOGFNAME=pass2
-    echo **** REL2 rule
-    set 1=rel2
+    echo **** REL rule
+    set 1=rel
 
 [ BLOCK <1> test ]
 #==================
@@ -104,10 +101,12 @@ set SRCDIR=<OWROOT>/bld
 [ BLOCK <BLD_HOST> NT OS2 DOS ]
 #==============================
     set CMDEXT=.exe
+    set DYEXT=.dll
 
 [ BLOCK <BLD_HOST> UNIX ]
 #========================
     set CMDEXT=
+    set DYEXT=.so
 
 [ BLOCK . . ]
 #============

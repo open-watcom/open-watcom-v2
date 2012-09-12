@@ -97,6 +97,22 @@ extra_c_flags_dos   += -DCAUSEWAY
 !endif
 
 extra_c_flags_carve    = -Dheader=$(fesupp_hdr) -Dheader2=$(carvecpp_hdr)
+!ifeq release 0
+extra_c_flags_dbgzap   = -Dheader=$(fesupp_hdr)
+!endif
+extra_c_flags_idedrv   = -DSTATIC_LINKAGE
+extra_c_flags_initfini = -Dheader=$(fesupp_hdr) -DSPLIT_REQD
+extra_c_flags_intlload = -D__header=$(fesupp_hdr)
+extra_c_flags_pstk     = -Dheader=$(fesupp_hdr)
+extra_c_flags_ringfns  = -Dheader=$(fesupp_hdr)
+extra_c_flags_vbuf     = -Dheader=$(fesupp_hdr)
+extra_c_flags_vstk     = -Dheader=$(fesupp_hdr)
+!ifdef plusplus_dll
+extra_c_flags_ideentry = -Dwpp_dll
+extra_c_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(dll_name)
+!endif
+
+!ifndef bootstrap
 !ifneq host_os linux
 # Using -os generates ENTER/LEAVE and Linux is too brain damaged
 # to handle ENTER instructions properly. Since GCC doesn't generate
@@ -105,16 +121,9 @@ extra_c_flags_cmdlnany = -os
 !endif
 extra_c_flags_cscan_386 = -4r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
-!ifeq release 0
-extra_c_flags_dbgzap   = -Dheader=$(fesupp_hdr)
-!endif
 !ifdef plusplus_dll
-extra_c_flags_ideentry = -bd -Dwpp_dll
-extra_c_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(dll_name)
+extra_c_flags_ideentry += -bd
 !endif
-extra_c_flags_idedrv   = -DSTATIC_LINKAGE
-extra_c_flags_initfini = -Dheader=$(fesupp_hdr) -DSPLIT_REQD
-extra_c_flags_intlload = -D__header=$(fesupp_hdr)
 !ifeq plusplus_trmem 1
 extra_c_flags_memmgr_axp = -DTRACKER
 extra_c_flags_memmgr_ppc = -DTRACKER
@@ -125,12 +134,9 @@ extra_c_flags_memmgr   = $(extra_c_flags_memmgr_$(host_cpu))
 extra_c_flags_pcheader_386 = -oi
 extra_c_flags_pcheader = $(extra_c_flags_pcheader_$(host_cpu))
 !endif
-extra_c_flags_pstk     = -Dheader=$(fesupp_hdr)
-extra_c_flags_ringfns  = -Dheader=$(fesupp_hdr)
 extra_c_flags_srcfile_386 = -4r
 extra_c_flags_srcfile  = $(extra_c_flags_srcfile_$(host_cpu))
-extra_c_flags_vbuf     = -Dheader=$(fesupp_hdr)
-extra_c_flags_vstk     = -Dheader=$(fesupp_hdr)
+!endif
  
 #
 # wlink .EXE options
@@ -181,7 +187,9 @@ external_dependencies = $(xlibs)
 !ifeq host_os osi
 external_dependencies += $(os2ldr)
 !endif
- 
+
+comp_objs_exe += $(cl_objs)
+
 #
 # Common dependencies
 #
@@ -207,13 +215,25 @@ target : .symbolic $(exe_name).exe
 #
 !ifdef plusplus_dll
  
-$(exe_name).exe : $(version_res_exe_$(host_os)_$(host_cpu)) $(depends_drv) $(dll_name).lib drv.lnk
+$(exe_name).exe : $(version_res_exe_$(host_os)_$(host_cpu)) $(depends_drv) $(dll_name).lib
+    @%write drv.lnk $(lflags)
+    @for %i in ($(drv_objs)) do @%append drv.lnk file %i
+    @%append drv.lnk lib $(dll_name).lib
+!ifeq host_os dos
+    @%append drv.lnk lib cwdll.lib
+!endif
     $(linker) name $@ @drv.lnk
     @%make bind_version_res_exe
  
 !else
  
-$(exe_name).exe : $(version_res_exe_$(host_os)_$(host_cpu)) $(depends_exe) exe.lnk
+$(exe_name).exe : $(version_res_exe_$(host_os)_$(host_cpu)) $(depends_exe)
+!ifndef __WATCOM__
+    $(cl) $(clflags) $(comp_objs_exe) $(xlibs) $(libs)
+!else
+    @%write exe.lnk $(lflags)
+    @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i
+    @for %i in ($(xlibs)) do @%append exe.lnk library %i
 !ifeq host_os osi
     $(linker) name $^&.rex @exe.lnk
     $(w32bind) $^&.rex $@ $(os2ldr)
@@ -227,57 +247,19 @@ $(exe_name).exe : $(version_res_exe_$(host_os)_$(host_cpu)) $(depends_exe) exe.l
 !endif
 !endif
 !endif
+!endif
  
 !endif
  
-$(dll_name).dll : $(version_res_dll_$(host_os)_$(host_cpu)) $(depends_dll) dll.lnk
+$(dll_name).dll : $(version_res_dll_$(host_os)_$(host_cpu)) $(depends_dll)
+    @%write dll.lnk $(lflags_dll)
+    @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
+    @for %i in ($(xlibs)) do @%append dll.lnk library %i
     $(linker) name $@ @dll.lnk
     @%make bind_version_res_dll
  
 $(dll_name).lib : $(dll_name).dll
     $(librarian) $(libflags) +$[@
- 
-# conventions:
-#
-# <xxx>.lnk
-#
-# xxx - exe = standalone compiler executable
-#       drv = stub executable DLL driver
-#       dll = compiler DLL
-#
- 
-#
-# compiler standalone executable
-#
-exe.lnk : $(__MAKEFILES__)
-    @%write $@ $(lflags)
-!ifdef plusplus_rtdll
-    @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
-!endif
-    @for %i in ($(comp_objs_exe)) do @%append $@ file %i
-    @for %i in ($(xlibs)) do @%append $@ library %i
- 
-#
-# compiler .DLL driver
-#
-drv.lnk : $(__MAKEFILES__)
-    @%write $@ $(lflags)
-    @for %i in ($(drv_objs)) do @%append $@ file %i
-    @%append $@ lib $(dll_name).lib
-!ifeq host_os dos
-    @%append $@ lib cwdll.lib
-!endif
- 
-#
-# .DLL version of compiler
-#
-dll.lnk : $(__MAKEFILES__)
-    @%write $@ $(lflags_dll)
-!ifdef plusplus_rtdll
-    @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
-!endif
-    @for %i in ($(comp_objs_dll)) do @%append $@ file %i
-    @for %i in ($(xlibs)) do @%append $@ library %i
  
 #
 # miscellaneous build rules
@@ -313,9 +295,9 @@ xlat.gh : ./mktrans.exe ../../h/ctokens.h keywords.gh ytab.gh
     $[@ $]@ $@
  
 ytab.c ytab.gh : ../../y/plusplus.y ../../c/yydriver.c
-    $(byacc) -b -d -f -t -u $[@ $]@ >y.out
+    $(yacc) -b -d -f -t -u $[@ $]@ >y.out
 # The -p and -s switches are v. useful when debugging parser but gen large file!
-#    $(byacc) -b -d -f -t -u -p -s $[@ $]@ >y.out
+#    $(yacc) -b -d -f -t -u -p -s $[@ $]@ >y.out
 # comment out the next line during testing of grammar changes
     diff y.out ../../y/check.out
     rm -f ytab.gh
@@ -373,14 +355,14 @@ code$(target_cpu).gh : xcode$(target_cpu).tmp ./mkcode.exe
         $]@ $[@ $@
 !endif
  
-target_as_axp = wasmaxp -zq -w8
+target_as_axp = bwasmaxp -zq -w8
 target_as_i86 = bwasm -zq -w8
 target_as_386 = bwasm -zq -3 -w8
-target_as_ppc = wasmppc -zq -w8
+target_as_ppc = bwasmppc -zq -w8
  
 xcode$(target_cpu).tmp: $(cc_dir)/a/code$(target_cpu).asm
-    $(target_as_$(target_cpu)) -fo=.obj -I"$(watcom_dir)/h" $[@
-    $(linker) format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
+    *$(target_as_$(target_cpu)) -fo=.obj -I"$(watcom_dir)/h" $[@
+    *bwlink format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
  
 ./mkcode.exe: $(cc_dir)/a/mkcode.c
     $(bld_cl) $[@ $(wcl_util_opts)

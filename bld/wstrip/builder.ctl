@@ -2,45 +2,31 @@
 # ===========================
 
 set PROJDIR=<CWD>
+set PROJNAME=wstrip
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
+[ BLOCK <1> boot ]
 #=================
-    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/wstripx.exe          <OWBINDIR>/bwstrip<CMDEXT>
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dosi86/wstripx.exe    <OWRELROOT>/binw/wstrip.exe
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f <OWBINDIR>/bwstrip<CMDEXT>
+    rm -f <OWBINDIR>/bwstrip<CMDEXT>
 
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/wstripx.exe    <OWRELROOT>/binp/wstrip.exe
-
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wstripx.exe     <OWRELROOT>/binnt/wstrip.exe
-
-  [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> linux386/wstripx.exe  <OWRELROOT>/binl/wstrip
-
-  [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/wstripx.exe     <OWRELROOT>/axpnt/wstrip.exe
-
-  [ IFDEF (os_qnx) <2*> ]
-    <CPCMD> qnx386/wstripx.exe    <OWRELROOT>/qnx/binq/wstrip.
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+[ BLOCK <1> rel cprel ]
+#======================
+    <CCCMD> <PROJDIR>/dosi86/wstripx.exe    <OWRELROOT>/binw/wstrip.exe
+    <CCCMD> <PROJDIR>/os2386/wstripx.exe    <OWRELROOT>/binp/wstrip.exe
+    <CCCMD> <PROJDIR>/nt386/wstripx.exe     <OWRELROOT>/binnt/wstrip.exe
+    <CCCMD> <PROJDIR>/linux386/wstripx.exe  <OWRELROOT>/binl/wstrip
+    <CCCMD> <PROJDIR>/ntaxp/wstripx.exe     <OWRELROOT>/axpnt/wstrip.exe
+    <CCCMD> <PROJDIR>/qnx386/wstripx.exe    <OWRELROOT>/qnx/binq/wstrip
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

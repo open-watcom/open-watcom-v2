@@ -1,6 +1,6 @@
 CPPFLAGS = -I$(OWOBJDIR) -Ih -I../watcom/h -I../lib_misc/h $(DEFS)
 CFLAGS = -funsigned-char -fno-common -g -O2 -Wall -Wno-switch
-DEFS = -D__LINUX__ -D__UNIX__= -DUNIX -Uunix -DBOOTSTRAP -DWMAKE
+DEFS = -D__LINUX__ -D__UNIX__= -DUNIX -Uunix -DBOOTSTRAP -DWMAKE -DRC_UNIX
 
 $(OWOBJDIR)/%.o : %.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) -I$(OWOBJDIR) -o $@ $<

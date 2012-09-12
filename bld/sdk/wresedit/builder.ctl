@@ -2,22 +2,15 @@
 # =============================
 
 set PROJDIR=<CWD>
+set PROJNAME=wresedit
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (os_win "") <2*> ]
     <CPCMD> waccel/wini86/wacc.dll     <OWRELROOT>/binw/wacc.dll
     <CPCMD> waccel/wini86/wacc.sym     <OWRELROOT>/binw/wacc.sym
@@ -42,11 +35,6 @@ cdsay .
     <CPCMD> wstring/ntaxp/wstring.dll  <OWRELROOT>/axpnt/wstring.dll
     <CPCMD> wstring/ntaxp/wstring.sym  <OWRELROOT>/axpnt/wstring.sym
 
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

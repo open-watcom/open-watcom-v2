@@ -1,50 +1,42 @@
-# WIN386 Builder Control file
+# Win386 Builder Control file
 # ===========================
 
 set PROJDIR=<CWD>
+set PROJNAME=win386
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+[ BLOCK <1> rel cprel ]
+#======================
+    <CCCMD> ext/win386.ext              <OWRELROOT>/binw/win386.ext
+    <CCCMD> dll/w386dll.ext             <OWRELROOT>/binw/w386dll.ext
+    <CCCMD> conv/win386/win386.lib      <OWRELROOT>/lib386/win/win386.lib
+    <CCCMD> vxd/wdebug.386              <OWRELROOT>/binw/wdebug.386
+    <CCCMD> vxd/wemu387.386             <OWRELROOT>/binw/wemu387.386
 
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
+    <CCCMD> wbind/dosi86/wbind.exe      <OWRELROOT>/binw/wbind.exe
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
-  [ IFDEF (os_win "") <2*> ]
-    <CPCMD> ext/win386.ext              <OWRELROOT>/binw/win386.ext
-    <CPCMD> dll/w386dll.ext             <OWRELROOT>/binw/w386dll.ext
-    <CPCMD> conv/win386/win386.lib      <OWRELROOT>/lib386/win/win386.lib
-    <CPCMD> vxd/wdebug.386              <OWRELROOT>/binw/wdebug.386
-    <CPCMD> vxd/wemu387.386             <OWRELROOT>/binw/wemu387.386
+    <CCCMD> wbind/os2i86/wbind.exe      <OWRELROOT>/binp/wbind.exe
 
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> wbind/dosi86/wbind.exe      <OWRELROOT>/binw/wbind.exe
+    <CCCMD> wbind/nt386/wbind.exe       <OWRELROOT>/binnt/wbind.exe
 
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> wbind/os2i86/wbind.exe      <OWRELROOT>/binp/wbind.exe
+    <CCCMD> wbind/linux386/wbind.exe    <OWRELROOT>/binl/wbind
 
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> wbind/nt386/wbind.exe       <OWRELROOT>/binnt/wbind.exe
-
-  [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> wbind/linux386/wbind.exe    <OWRELROOT>/binl/wbind
 
 [ BLOCK <1> clean ]
 #==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-    @rm -f asm/dllthk.asm c/dllthunk.c asm/winglue.asm h/winglue.inc
-    @rm -f ext/win386.ext dll/w386dll.ext
-    @rm -f vxd/wdebug.386 vxd/wemu387.386
+    @rm -f asm/dllthk.asm
+    @rm -f c/dllthunk.c
+    @rm -f asm/winglue.asm
+    @rm -f h/winglue.inc
+    @rm -f ext/win386.ext
+    @rm -f dll/w386dll.ext
+    @rm -f vxd/wdebug.386
+    @rm -f vxd/wemu387.386
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

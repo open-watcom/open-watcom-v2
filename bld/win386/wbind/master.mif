@@ -21,6 +21,12 @@ extra_l_flags_os2 = op stack=12k,heap=8k,newfile
 
 inc_dirs = -I"../../h"
 
-wbind.exe: wbind.obj
-    $(linker) $(lflags) name $^@ file $[@
+objs = wbind.obj
+
+$(proj_name).exe : $(objs) $(cl_objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $<
+!else
+        $(linker) name $@ $(lflags) file {$(objs)}
+!endif
 

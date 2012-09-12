@@ -2,22 +2,15 @@
 # ================================
 
 set PROJDIR=<CWD>
+set PROJNAME=trap
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
-
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (os_dos "") <2*> ]
     <CPCMD> lcl/dos/dosr/dos.std/std.trp              <OWRELROOT>/binw/
     <CPCMD> lcl/dos/dosx/rsi/dos.trp/rsi.trp          <OWRELROOT>/binw/
@@ -65,10 +58,10 @@ cdsay .
 #os2
 #    <CPCMD> nov/os2.trp/nov.dll                      <OWRELROOT>/binp/dll/
 #    <CPCMD> nov/os2.srv/novserv1.exe                 <OWRELROOT>/binp/
-#    <CPCMD> <SRCDIR>/bin/binp/dll/???.dll                          <OWRELROOT>/binp/dll/
-#    <CPCMD> <SRCDIR>/bin/binp/dll/std??.dll                        <OWRELROOT>/binp/dll/
-#    <CPCMD> <SRCDIR>/bin/binp/dll/???serv.exe                      <OWRELROOT>/binp/dll/
-#    <CPCMD> <SRCDIR>/bin/binp/???serv1.exe                         <OWRELROOT>/binp/
+#    <CPCMD> <OWSRCDIR>/bin/binp/dll/???.dll                          <OWRELROOT>/binp/dll/
+#    <CPCMD> <OWSRCDIR>/bin/binp/dll/std??.dll                        <OWRELROOT>/binp/dll/
+#    <CPCMD> <OWSRCDIR>/bin/binp/dll/???serv.exe                      <OWRELROOT>/binp/dll/
+#    <CPCMD> <OWSRCDIR>/bin/binp/???serv1.exe                         <OWRELROOT>/binp/
 
   [ IFDEF (os_win "") <2*> ]
     <CPCMD> lcl/win/std/std.dll                       <OWRELROOT>/binw/
@@ -143,11 +136,6 @@ cdsay .
     <CPCMD> ser/rdos.srv/serserv.exe                  <OWRELROOT>/rdos/
     <CPCMD> ser/rdos.srv/serserv.sym                  <OWRELROOT>/rdos/
 
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

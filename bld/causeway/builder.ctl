@@ -1,34 +1,27 @@
-# Causeway Builder Control file
+# CauseWay Builder Control file
 # =============================
 
 set PROJDIR=<CWD>
+set PROJNAME=CauseWay
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+[ BLOCK <1> rel cprel ]
+#======================
+    <CCCMD> cw32/dos386/cwdll.lib   <OWRELROOT>/lib386/dos/
+    <CCCMD> inc/cwdll.h             <OWRELROOT>/h/
 
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
+    <CCCMD> cw32/dosi86/cw32.exe    <OWRELROOT>/binw/cwstub.exe
+    <CCCMD> cw32/dosi86/cw32.exe    <OWRELROOT>/binl/cwstub.exe
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> cwc.exe                 <OWRELROOT>/binw/
-    <CPCMD> cw32/dosi86/cwstub.exe  <OWRELROOT>/binw/
-    <CPCMD> cw32/dos386/cwdll.lib   <OWRELROOT>/lib386/dos/
-    <CPCMD> inc/cwdllfnc.h          <OWRELROOT>/h/
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+    <CCCMD> cwc/dos386/cwc.exe      <OWRELROOT>/binw/
+    <CCCMD> cwc/nt386/cwc.exe       <OWRELROOT>/binnt/
+    <CCCMD> cwc/os2386/cwc.exe      <OWRELROOT>/binp/
+    <CCCMD> cwc/linux386/cwc.exe    <OWRELROOT>/binl/cwc
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

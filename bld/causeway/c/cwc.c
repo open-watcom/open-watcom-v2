@@ -316,7 +316,7 @@ int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
     unsigned_32 OutStart;
     unsigned_32 RepLength;
     unsigned_32 FoundLen;
-    unsigned_8  *FoundPos;
+    unsigned_8  *FoundPos = NULL;
     unsigned_32 RepMaxLen;
     unsigned_32 RepMaxSize;
     unsigned_16 CodeLast;
@@ -613,7 +613,6 @@ int ProcessEXE( char *fname, char *oname )
     unsigned_32     CompressLen;
     signed_32       mem_req;
     cwc_info        cwc_data;
-    char            temp_fname[ L_tmpnam ];
 
     f = fopen( fname, "rb" );
     if( f == NULL ) {
@@ -642,10 +641,9 @@ int ProcessEXE( char *fname, char *oname )
     fclose( f );
     TotalLen = ImageLen + sizeof( exe_header ) - 1 + exe_header.num_relocs * 4;
     //
-    tmpnam( temp_fname );
-    fo = fopen( temp_fname, "wb" );
+    fo = fopen( oname, "wb" );
     if( fo == NULL ) {
-        printf( "Temporary file %s can not be created.", temp_fname );
+        printf( "Output file %s can not be created.", oname );
         fclose( f );
         return( -1 );
     }
@@ -695,10 +693,6 @@ int ProcessEXE( char *fname, char *oname )
     cwc_data.EntryES = 0;
     fwrite( &cwc_data, sizeof( cwc_data ), 1, fo );
     fclose( fo );
-    if( oname == NULL )
-        oname = fname;
-    remove( oname );
-    rename( temp_fname, oname);
     return( 0 );
 }
 
@@ -706,14 +700,14 @@ int usage( void )
 /***************/
 {
     printf( "Causeway Executable Compressor\n" );
-    printf( "Usage: bcwc <input file name> [<output file name>]\n" );
+    printf( "Usage: bcwc <input file name> <output file name>\n" );
     return( -1 );
 }
 
 int main( int argc, char **argv)
 /******************************/
 {
-    if( argc >= 2 && argc <= 3 ) {
+    if( argc == 3 ) {
         return( ProcessEXE( argv[ 1 ], argv[ 2 ] ) );
     } else {
         return( usage() );

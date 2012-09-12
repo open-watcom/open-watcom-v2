@@ -1,4 +1,4 @@
-# WFL Builder Control file
+# WFC Builder Control file
 # ========================
 
 set PROJDIR=<CWD>
@@ -7,15 +7,7 @@ set PROJNAME=wfl
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
-
-[ BLOCK <1> build rel2 ]
-#=======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel2 ]
-#=================
-    cdsay <PROJDIR>
+[ INCLUDE <OWROOT>/build/deftool.ctl ]
 
 [ BLOCK <1> rel cprel ]
 #======================
@@ -56,10 +48,6 @@ cdsay .
 # axp compilers and link utilities (NT)
   [ IFDEF (cpu_axp) <2*> ]
     <CPCMD> axp/ntaxp/wflaxp.exe        <OWRELROOT>/axpnt/wflaxp.exe
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
 [ BLOCK . . ]
 #==================

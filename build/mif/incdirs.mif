@@ -1,7 +1,22 @@
-!ifdef use_new_headers
-#############################
-# new headers
-#############################
+# For bootstrap builds, include path configuration is compiler specific
+!ifdef bootstrap
+
+inc_dirs_sys_nt    =
+inc_dirs_sys_win   =
+inc_dirs_sys_os2   =
+inc_dirs_sys_dos   =
+inc_dirs_sys_nov   =
+inc_dirs_sys_qnx   =
+inc_dirs_sys_linux =
+inc_dirs_sys_nto   =
+inc_dirs_sys_rdos  =
+inc_dirs_sys_rdosdev =
+inc_dirs_sys_zdos  =
+
+inc_dirs_lang_osi  =
+
+!else
+
 inc_dirs_sys_os2_386 = -I"$(os2api_dir)/os2386/h"
 inc_dirs_sys_os2_i86 = -I"$(os2api_dir)/os2286/h"
 inc_dirs_sys_nt      = -I"$(w32api_dir)/nt"
@@ -21,38 +36,27 @@ inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx"
 inc_dirs_lang_linux   = -I"$(hdr_dir)/linux"
 inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
 inc_dirs_lang_nto     = -I"$(hdr_dir)/nto"
-!ifdef inc_dirs_lang_$(host_os)
-inc_dirs_lang   = $(inc_dirs_lang_$(host_os))
-!else
-inc_dirs_lang   = -I"$(hdr_dir)/dos"
-!endif
-!else
-#############################
-# old headers
-#############################
-inc_dirs_sys_os2_386 = -I"$(lang_root)/h/os2"
-inc_dirs_sys_os2_i86 = -I"$(lang_root)/h/os21x"
-inc_dirs_sys_nt      = -I"$(lang_root)/h/nt"
-inc_dirs_sys_win     = -I"$(lang_root)/h/win"
-inc_dirs_sys_os2     = $(inc_dirs_sys_os2_$(host_cpu))
-inc_dirs_sys_dos     =
-inc_dirs_sys_nov     =
-inc_dirs_sys_qnx     =
-inc_dirs_sys_linux   =
-inc_dirs_sys_nto     =
-inc_dirs_sys_zdos    = -I"$(lang_root)/h/zdos"
-inc_dirs_sys_rdos    =
-inc_dirs_sys_rdosdev =
 
-inc_dirs_lang_qnx     = -I"$(lang_root)/qh"
-inc_dirs_lang_linux   = -I"$(lang_root)/lh"
-inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
-inc_dirs_lang_nto     = -I"$(lang_root)/nto"
+!endif
+
+# Include path macros:
+#
+# $(inc_dirs_sys_$(host_os)) contains OS specific headers typically
+# delivered by OS vendor. This is used for OS/2 and Windows
+#
+# $(inc_dirs_lang) contains headers delivered with the compiler.
+#
+# $(inc_dirs_sys) combines the above two macros.
+#
+# $(inc_path) is used in actual build rules. It adds path to the
+# src/watcom/h directory plus macros $(inc_dirs) and $(inc_dirs_$(host_os))
+# which individual projects are free to define as needed.
+
 !ifdef inc_dirs_lang_$(host_os)
 inc_dirs_lang   = $(inc_dirs_lang_$(host_os))
 !else
-inc_dirs_lang   = -I"$(lang_root)/h"
+inc_dirs_lang   = $(inc_dirs_lang_osi)
 !endif
-!endif
+
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
-
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"

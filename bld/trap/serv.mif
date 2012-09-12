@@ -13,7 +13,7 @@ sys_x86_dos     = sys dos op st=4k
 sys_x86_rsi     = sys dos16m
 sys_x86_cw      = sys causeway op stub=$(cw_dir)/cw32/dosi86/cwdstub.exe
 sys_x86_ads     = sys ads op st=8k lib $(adsdir)/wcads.lib
-sys_x86_rdos    = sys rdos libpath $(clib_dir)/library/rdos.386/mf_r
+sys_x86_rdos    = sys rdos
 !ifndef sys_x86_pls
 sys_x86_pls     = sys pharlap op st=8k
 !endif

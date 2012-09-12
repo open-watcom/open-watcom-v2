@@ -17,4 +17,3 @@ system begin 386
     op exportall
     op norelocs
 end
-@%WATCOM%/binl/wlsystem.lnk
