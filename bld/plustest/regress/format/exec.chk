@@ -1,4 +1,4 @@
---------testi--------
+PASS compiling testi
 Default.
 |Unlimited|
 |1|
@@ -552,7 +552,8 @@ Testing type unsigned int.
 12,345
 Testing type char.
 65
---------testf--------
+PASS executing testi
+PASS compiling testf
 Default.
                     Input    |Unlimited|
                         1 -> |1|
@@ -857,3 +858,4 @@ Width set to 15
                     0.003 -> |          0.003|
                    0.0004 -> |         0.0004|
                  0.0000 5 -> |       0.0000 5|
+PASS executing testf

@@ -1,55 +1,47 @@
 plustest_name = getlong
-!include ../environ.mif
+
+!include testenv.mif
 
 !ifdef test1
-test_cflags = -d2
+test_flags = -d2
 alt_error=01
 !else
-test_cflags = -ox-d1
+test_flags = -ox-d1
 alt_error=00
 !endif
-
-test_cflags += -zq
 
 stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-.cc.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags) -fo=.obj
-
 objs = &
     getlongo.obj &
     readme.obj
 
-test : .symbolic start_test opt.$(exe)
-    diff opt.out opt.chk
-    @%make global
+test : .symbolic clean start_test ./opt.$(exe)
+    diff $(%ERROR_FILE) opt.chk
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
-opt.$(exe) : $(objs) opt.lnk
-    $(linker) @$]@ NAME $@
-    $(run) $(exec_prefix)$@ >>opt.out
-    $(run) $(exec_prefix)$@ -h >>opt.out
-    -$(run) $(exec_prefix)$@ -hopeless >>opt.out
-    $(run) $(exec_prefix)$@ -vers >>opt.out
-    $(run) $(exec_prefix)$@ -v >>opt.out
-    -$(run) $(exec_prefix)$@ -o >>opt.out
-    -$(run) $(exec_prefix)$@ -v=1 >>opt.out
+./opt.$(exe) : $(objs) test.lnk
+    @set ERROR_MSG=failure to link $^*
+    $(linker) @$]@ NAME $@ file {$(objs)}
+    @set ERROR_MSG=failure to run $^*
+    $(run) $@ >>$(%ERROR_FILE)
+    $(run) $@ -h >>$(%ERROR_FILE)
+    -$(run) $@ -hopeless >>$(%ERROR_FILE)
+    $(run) $@ -vers >>$(%ERROR_FILE)
+    $(run) $@ -v >>$(%ERROR_FILE)
+    -$(run) $@ -o >>$(%ERROR_FILE)
+    -$(run) $@ -v=1 >>$(%ERROR_FILE)
 
 start_test : .symbolic
-    %create opt.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
-opt.lnk : makefile
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch))
-    @for %i in ( $(objs) ) do @%append $^@ FILE %i
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
-    @if exist opt.out cp opt.out s$(arch)_$(alt_error).sav
+    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .SYMBOLIC
+clean : .procedure
     @%make common_clean

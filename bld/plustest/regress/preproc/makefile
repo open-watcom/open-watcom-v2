@@ -1,31 +1,27 @@
 # pp11 has incorrect output
 plustest_name = preproc
-!include ../environ.mif
 
-comp = $(wpp_$(arch))
-!ifdef test_cc
-comp = $(cc)
-!endif
+!include testenv.mif
+
 alt_error=00
 
-.extensions:
-.extensions: .pl0 .pl .plc .c
+testcomp =  $(wpp_$(arch))
 
 .c.pl:
     %append exec.out @@@ $^@ @@@
-    $(comp) $[@ -zq-w0 -pl -fo=.pl -na
+    $(testcomp) $[@ -w0 -pl -fo=.pl -na
     cat exec.out $^@ >tmp_exec.out
     cp tmp_exec.out exec.out
 
 .c.plc:
     %append exec.out @@@ $^@ @@@
-    $(comp) $[@ -zq-w0 -plc -fo=.plc -na
+    $(testcomp) $[@ -w0 -plc -fo=.plc -na
     cat exec.out $^@ >tmp_exec.out
     cp tmp_exec.out exec.out
 
 .c.pl0:
     %append exec.out @@@ $^@ @@@
-    $(comp) $[@ -zq-w0 -pl -pw=0 -fo=.pl0 -na
+    $(testcomp) $[@ -w0 -pl -pw=0 -fo=.pl0 -na
     cat exec.out $^@ >tmp_exec.out
     cp tmp_exec.out exec.out
 
@@ -50,14 +46,15 @@ all_tests = &
     pp17.plc &
 
 
-test : .symbolic start_test $(all_tests)
+test : .symbolic clean start_test $(all_tests)
     diff exec.out exec.chk
-    @%make global
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 start_test : .symbolic
-    %create exec.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
     %make gen_input
 
 zap_output : .procedure
@@ -72,11 +69,11 @@ gen_input: .procedure ./geninput.exe
     @rm *.obj
 
 ./geninput.exe : geninput.c
-    $(bld_cl) $< $(wcl_util_opts) -cc++
+    $(bld_cl) $(bcl_cl_opts) -cc++ $<
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .symbolic
+clean : .procedure
     @%make zap_output
     @%make common_clean

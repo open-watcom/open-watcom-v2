@@ -22,6 +22,6 @@ int main() {
     if( o && WCValDListItemSize(two_ints) != sizeof(two_ints)+sizeof(WCDLink) ) fail(__LINE__);
     if( o && WCPtrSListItemSize(two_ints) != sizeof(void*)*2 ) fail(__LINE__);
     if( o && WCPtrDListItemSize(two_ints) != sizeof(void*)*3 ) fail(__LINE__);
-    if( !errors ) cout << "PASS " << __FILE__ << endl;
+    if( !errors ) cout << "PASS" << endl;
     return errors != 0;
 };

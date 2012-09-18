@@ -1,52 +1,37 @@
 plustest_name = sizelist
-!include ../environ.mif
+
+!include testenv.mif
 
 !ifdef test1
-test_cflags = -d2
+test_flags = -d2
 alt_error=01
 !else
-test_cflags = -ox-d1
+test_flags = -ox-d1
 alt_error=00
 !endif
 
-test_cflags += -zq-w0
+test_flags += -w0
 
-test_cflags_386 += $(test_cflags) -zp4-ms
-test_cflags_i86 += $(test_cflags) -zp2-ml
-test_cflags_axp += $(test_cflags) -zp8
+test_flags_386 += $(test_flags) -zp4-ms
+test_flags_i86 += $(test_flags) -zp2-ml
+test_flags_axp += $(test_flags) -zp8
 
 stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-.c.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags_$(arch)) -fo=.obj
-
-objs = &
-    psfistt.obj
-
-test : .symbolic start_test psfistt.$(exe)
-    diff psfistt.out psfistt.chk
-    @%make global
+test : .symbolic clean start_test test.lnk psfistt.$(exe)
+    diff exec.out psfistt.chk
     %append $(log_file) PASS $(%__CWD__)
-
-psfistt.$(exe) : $(objs) psfistt.lnk
-    $(linker) @$]@ NAME $@
-    $(run) $(exec_prefix)$@ >>psfistt.out
+    @%make clean
 
 start_test : .symbolic
-    %create psfistt.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
-psfistt.lnk : makefile
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch))
-    @for %i in ( $(objs) ) do @%append $^@ FILE %i
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
-    @if exist psfistt.out cp psfistt.out s$(arch)_$(alt_error).sav
+    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .SYMBOLIC
+clean : .procedure
     @%make common_clean

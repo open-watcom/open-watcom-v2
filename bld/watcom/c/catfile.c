@@ -29,61 +29,68 @@
 ****************************************************************************/
 
 
-#ifdef __UNIX__
-#include <sys/stat.h>
+#if defined( __UNIX__ )
+    #include <dirent.h>
 #else
-#include "direct.h"
+    #include <direct.h>
 #endif
-#include "malloc.h"
-#include "stdarg.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#include <malloc.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <sys/stat.h>
 
 #define TRUE  1
 #define FALSE 0
 
+typedef struct PathGroup {
+    char    *drive;
+    char    *dir;
+    char    *fname;
+    char    *ext;
+    char    buffer[FILENAME_MAX + 4];
+} PGROUP;
 
 struct {                        // Program switches
     unsigned sort_date  :1;     // - sort by date
     unsigned sort_kluge :1;     // - sort by date (kluged tie-break)
     unsigned sort_alpha :1;     // - sort alphabetically
     unsigned emit_hdr   :1;     // - emit header for file
-} switches =
-{   FALSE
-,   FALSE
-,   FALSE
-,   FALSE
+} switches = {
+    FALSE,
+    FALSE,
+    FALSE,
+    FALSE
 };
 
 typedef struct {                // Text
     void* next;                 // - next in ring
-    unsigned date;              // - date for file
-    unsigned time;              // - time for file
+    time_t time;                // - date/time for file
     char text[1];               // - variable-sized text
 } Text;
-
 
                                 // static data
 static Text* file_patterns;     // - ring of file patterns
 static Text* files;             // - ring of files
 
 
-static char* help_text[] =      // help text
-{   "catfile switches pattern ... pattern >destination"
-,   ""
-,   "Concatenate all files matching the patterns into the destination file."
-,   ""
-,   "File patterns are the usual patterns such as \"*.err\""
-,   ""
-,   "Switches are:"
-,   "   /a -- sort files alphabetically"
-,   "   /d -- sort files by date"
-,   "   /h -- emit header before each file"
-,   "   /k -- sort files by date (break ties by digits in name)"
-,   ""
-,   "Default switch settings are /k"
-,   NULL
+static char* help_text[] = {    // help text
+    "catfile switches pattern ... pattern >destination",
+    "",
+    "Concatenate all files matching the patterns into the destination file.",
+    "",
+    "File patterns are the usual patterns such as \"*.err\"",
+    "",
+    "Switches are:",
+    "   /a -- sort files alphabetically",
+    "   /d -- sort files by date",
+    "   /h -- emit header before each file",
+    "   /k -- sort files by date (break ties by digits in name)",
+    "",
+    "Default switch settings are /k",
+    NULL
 };
 
 
@@ -140,7 +147,6 @@ static int textAlloc            // ALLOCATE TEXT ITEM
         retn = errMsg( "out of memory", NULL );
     } else {
         tp->time = 0;
-        tp->date = 0;
         retn = 0;
     }
     return retn;
@@ -220,74 +226,141 @@ static int processSwitch        // PROCESS SWITCH
     return retn;
 }
 
-
-#ifdef __UNIX__
-static int processFilePattern   // PROCESS FILE PATTERN
-    ( Text* tp                  // - file pattern
-    , void* data )              // - not used
-{
-    char const * pat;           // - file pattern
-    int retn;                   // - return code
-    struct stat st;             // - directory stuff
-
-    data = data;
-    pat = tp->text;
-    if( stat( pat, &st ) ) {
-        retn = errMsg( "opening file:", pat, NULL );
-    } else {
-        Text* tp;           // - current entry
-        retn = textAlloc( strlen( pat ), &tp );
-        if( retn == 0 ) {
-            textInsert( tp, &files );
-            strcpy( files->text, pat );
-            files->time = st.st_mtime;
-        }
-    }
-    return retn;
-}
+#define IS_WILDCARD_CHAR( x ) ((*x == '*') || (*x == '?'))
+#if defined( __UNIX__ )
+#define FNAMECMPCHAR(a,b) (a-b)
 #else
+#define FNAMECMPCHAR(a,b) (tolower(a)-tolower(b))
+#endif
+
+static int __fnmatch( char *pattern, char *string )
+/**************************************************
+ * OS specific compare function FNameCmpChr
+ * must be used for file names
+ */
+{
+    char    *p;
+    int     len;
+    int     star_char;
+    int     i;
+
+    /*
+     * check pattern section with wildcard characters
+     */
+    star_char = 0;
+    while( IS_WILDCARD_CHAR( pattern ) ) {
+        if( *pattern == '?' ) {
+            if( *string == 0 ) {
+                return( 0 );
+            }
+            string++;
+        } else {
+            star_char = 1;
+        }
+        pattern++;
+    }
+    if( *pattern == 0 ) {
+        if( (*string == 0) || star_char ) {
+            return( 1 );
+        } else {
+            return( 0 );
+        }
+    }
+    /*
+     * check pattern section with exact match
+     * ( all characters except wildcards )
+     */
+    p = pattern;
+    len = 0;
+    do {
+        if( star_char ) {
+            if( string[len] == 0 ) {
+                return( 0 );
+            }
+            len++;
+        } else {
+            if( FNAMECMPCHAR( *pattern, *string ) != 0 ) {
+                return( 0 );
+            }
+            string++;
+        }
+        pattern++;
+    } while( *pattern && !IS_WILDCARD_CHAR( pattern ) );
+    if( star_char == 0 ) {
+        /*
+         * match is OK, try next pattern section
+         */
+        return( __fnmatch( pattern, string ) );
+    } else {
+        /*
+         * star pattern section, try locate exact match
+         */
+        while( *string ) {
+            if( FNAMECMPCHAR( *p, *string ) == 0 ) {
+                for( i = 1; i < len; i++ ) {
+                    if( FNAMECMPCHAR( *(p + i), *(string + i) ) != 0 ) {
+                        break;
+                    }
+                }
+                if( i == len ) {
+                    /*
+                     * if rest doesn't match, find next occurence
+                     */
+                    if( __fnmatch( pattern, string + len ) ) {
+                        return( 1 );
+                    }
+                }
+            }
+            string++;
+        }
+        return( 0 );
+    }
+}
+
+
 static int processFilePattern   // PROCESS FILE PATTERN
     ( Text* tp                  // - file pattern
     , void* data )              // - not used
 {
-    char const * pat;           // - file pattern
-    int retn;                   // - return code
-    struct dirent* dp;          // - directory stuff
-    size_t dir_size;            // - size of directory portion
+    int             retn;       // - return code
+    DIR             *dp;        // - directory stuff
+    struct dirent   *entry;
+    struct stat     buf;
+    PGROUP          pg;
+    char            path[ _MAX_PATH ];
+    char            pattern[ _MAX_PATH ]; // - file pattern
 
     data = data;
-    pat = tp->text;
-    dp = opendir( pat );
+    _splitpath2( tp->text, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( path, pg.drive, pg.dir, ".", NULL );
+    _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
+    dp = opendir( path );
     if( dp == NULL ) {
-        retn = errMsg( "opening directory:", pat, NULL );
+        retn = errMsg( "opening directory:", path, NULL );
     } else {
-        for( dir_size = strlen( pat ); dir_size > 0; ) {
-            -- dir_size;
-            if( pat[ dir_size ] == '\\' ) {
-                ++ dir_size;
-                break;
-            }
-            if( pat[ dir_size ] == ':' ) {
-                break;
-            }
-        }
         retn = 0;
-        for( ; ; ) {
-            Text* tp;           // - current entry
-            dp = readdir( dp );
-            if( dp == NULL ) break;
-            retn = textAlloc( dir_size + strlen( dp->d_name ), &tp );
-            if( retn != 0 ) break;
-            textInsert( tp, &files );
-            memcpy( files->text, pat, dir_size );
-            strcpy( &files->text[ dir_size ], dp->d_name );
-            files->date = dp->d_date;
-            files->time = dp->d_time;
+        for( entry = readdir( dp ); entry != NULL; entry = readdir( dp ) ) {
+#if !defined( __UNIX__ )
+            if( ( entry->d_attr & _A_VOLID ) == 0 ) {
+#endif
+                if( __fnmatch( pattern, entry->d_name ) ) {
+                    _makepath( path, pg.drive, pg.dir, entry->d_name, NULL );
+                    if( stat( path, &buf ) == 0 && S_ISREG( buf.st_mode ) ) {
+                        Text* tp;           // - current entry
+                        retn = textAlloc( strlen( path ) + 1, &tp );
+                        if( retn != 0 ) break;
+                        textInsert( tp, &files );
+                        strcpy( files->text, path );
+                        files->time = buf.st_mtime;
+                    }
+                }
+#if !defined( __UNIX__ )
+            }
+#endif
         }
     }
     return retn;
 }
-#endif
 
 
 static void emitHdr             // EMIT HDR LINE
@@ -364,13 +437,7 @@ static int compareFileDates     // COMPARE TWO FILE DATES
     ( Text const *c1            // - comparand[1]
     , Text const *c2 )          // - comparand[2]
 {
-    int retn;                   // - return
-
-    retn = c1->date - c2->date;
-    if( retn == 0 ) {
-        retn = c1->time - c2->time;
-    }
-    return retn;
+    return c1->time - c2->time;
 }
 
 

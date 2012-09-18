@@ -1,103 +1,138 @@
-@@@ accum1.exe @@@
+PASS compiling accum1
 sum = 15
-@@@ accum2.exe @@@
+PASS executing accum1
+PASS compiling accum2
 prod = 120
-@@@ adjdiff0.exe @@@
+PASS executing accum2
+PASS compiling adjdiff0
 1 2 4 8 16 
 1 1 2 4 8 
-@@@ adjdiff1.exe @@@
+PASS executing adjdiff0
+PASS compiling adjdiff1
 0 1 4 9 16 25 36 49 64 81 
 0 1 3 5 7 9 11 13 15 17 
-@@@ adjdiff2.exe @@@
+PASS executing adjdiff1
+PASS compiling adjdiff2
 1 2 3 4 5 6 7 8 9 10 
 1 2 6 12 20 30 42 56 72 90 
-@@@ adjfind0.exe @@@
+PASS executing adjdiff2
+PASS compiling adjfind0
 No adjacent pairs
 Found adjacent pair of: 1 at offset 3
-@@@ adjfind1.exe @@@
+PASS executing adjfind0
+PASS compiling adjfind1
 No adjacent pairs
 Found adjacent pair of: 7
-@@@ adjfind2.exe @@@
+PASS executing adjfind1
+PASS compiling adjfind2
 Found two adjacent strings of equal length: Jack -and- Mike
-@@@ advance.exe @@@
+PASS executing adjfind2
+PASS compiling advance
 At Beginning: 0
 At Beginning + 5: 5
-@@@ alg1.exe @@@
+PASS executing advance
+PASS compiling alg1
 min (4, 7) = 4
 max ('a', 'z') = z
-@@@ alg2.exe @@@
+PASS executing alg1
+PASS compiling alg2
 Count of 2s = 3
-@@@ alg3.exe @@@
+PASS executing alg2
+PASS compiling alg3
 Count of 2s = 3
-@@@ alg4.exe @@@
+PASS executing alg3
+PASS compiling alg4
 1962
 1992
 1999
 2001
-@@@ bcompos1.exe @@@
+PASS executing alg4
+PASS compiling bcompos1
 1 is odd and positive
-@@@ bcompos2.exe @@@
+PASS executing bcompos1
+PASS compiling bcompos2
 1 is odd and positive
-@@@ bind1st1.exe @@@
+PASS executing bcompos2
+PASS compiling bind1st1
 1
 2
-@@@ bind1st2.exe @@@
+PASS executing bind1st1
+PASS compiling bind1st2
 1
 2
-@@@ bind2nd1.exe @@@
+PASS executing bind1st2
+PASS compiling bind2nd1
 1
 2
 4
-@@@ bind2nd2.exe @@@
+PASS executing bind2nd1
+PASS compiling bind2nd2
 1
 2
 4
-@@@ binsert1.exe @@@
+PASS executing bind2nd2
+PASS compiling binsert1
 laurie
 jennifer
 leisa
-@@@ binsert2.exe @@@
+PASS executing binsert1
+PASS compiling binsert2
 laurie
 jennifer
 leisa
-@@@ binsrch1.exe @@@
+PASS executing binsert2
+PASS compiling binsrch1
 found 42
-@@@ binsrch2.exe @@@
+PASS executing binsrch1
+PASS compiling binsrch2
 ff is in labels.
-@@@ bnegate1.exe @@@
+PASS executing binsrch2
+PASS compiling bnegate1
 1
 4
 7
 9
-@@@ bnegate2.exe @@@
+PASS executing bnegate1
+PASS compiling bnegate2
 1
 4
 7
 9
-@@@ bvec1.exe @@@
+PASS executing bnegate2
+PASS compiling bvec1
 000
 101
-@@@ copy1.exe @@@
+PASS executing bvec1
+PASS compiling copy1
  Src: A string to be copied.
 Dest: A string to be copied.
-@@@ copy2.exe @@@
+PASS executing copy1
+PASS compiling copy2
 0 1 2 3 4 5 6 7 8 9 
-@@@ copy3.exe @@@
+PASS executing copy2
+PASS compiling copy3
 0 1 2 3 4 5 6 7 8 9 
-@@@ copy4.exe @@@
+PASS executing copy3
+PASS compiling copy4
 0 1 2 3 4 5 6 7 8 9 
-@@@ copyb.exe @@@
+PASS executing copy4
+PASS compiling copyb
 0 1 2 3 4 5 6 7 8 9 
-@@@ copyb0.exe @@@
+PASS executing copyb
+PASS compiling copyb0
 1 2 3 4 5 
 1 2 3 4 5 
-@@@ count0.exe @@@
+PASS executing copyb0
+PASS compiling count0
 Found 4 1's.
-@@@ count1.exe @@@
+PASS executing count0
+PASS compiling count1
 Found 33 2's.
-@@@ countif1.exe @@@
+PASS executing count1
+PASS compiling countif1
 Found 33 odd elements.
-@@@ deque1.exe @@@
+PASS executing countif1
+PASS compiling deque1
 d[0] = 1
 d[1] = 4
 d[2] = 9
@@ -106,257 +141,335 @@ d[3] = 16
 d[0] = 4
 d[1] = 9
 d[2] = 25
-@@@ divides.exe @@@
+PASS executing deque1
+PASS compiling divides
 result = 2
-@@@ eqlrnge0.exe @@@
+PASS executing divides
+PASS compiling eqlrnge0
 2 can be inserted from before index 4 to before index 8
-@@@ eqlrnge1.exe @@@
+PASS executing eqlrnge0
+PASS compiling eqlrnge1
 Within the collection:
 	0 0 0 1 1 1 2 2 2 3 
 2 can be inserted from before index 6 to before index 9
-@@@ eqlrnge2.exe @@@
+PASS executing eqlrnge1
+PASS compiling eqlrnge2
 Within the collection:
 	aabbccddggghhklllmqqqqssyyzz
 q can be inserted from before index 18 to before index 22
-@@@ equal0.exe @@@
+PASS executing eqlrnge2
+PASS compiling equal0
 numbers1 is not equal to numbers2
 numbers3 is equal to numbers1
-@@@ equal1.exe @@@
+PASS executing equal0
+PASS compiling equal1
 v1 is not equal to v2
 v1 is equal to v2
-@@@ equal2.exe @@@
+PASS executing equal1
+PASS compiling equal2
 v2[i] == v1[i] * v1[i]
-@@@ equalto.exe @@@
+PASS executing equal2
+PASS compiling equalto
 1
 0
 1
 0
-@@@ error1.exe @@@
-@@@ fill1.exe @@@
+PASS executing equalto
+PASS compiling error1
+PASS executing error1
+PASS compiling fill1
 42 42 42 42 42 42 42 42 42 42 
-@@@ filln1.exe @@@
+PASS executing fill1
+PASS compiling filln1
 42 42 42 42 42 42 42 42 42 42 
-@@@ find0.exe @@@
+PASS executing filln1
+PASS compiling find0
 Found 25 at offset 5
-@@@ find1.exe @@@
+PASS executing find0
+PASS compiling find1
 Found 1972 at offset 3
-@@@ findif0.exe @@@
+PASS executing find1
+PASS compiling findif0
 Value 15 at offset 3 is odd
-@@@ findif1.exe @@@
+PASS executing findif0
+PASS compiling findif1
 Value 9 at offset 2 is divisible by 3
-@@@ finsert1.exe @@@
+PASS executing findif1
+PASS compiling finsert1
 leisa
 jennifer
 laurie
-@@@ finsert2.exe @@@
+PASS executing finsert1
+PASS compiling finsert2
 leisa
 jennifer
 laurie
-@@@ foreach0.exe @@@
+PASS executing finsert2
+PASS compiling foreach0
 1 1 2 3 5 8 13 21 34 55 
-@@@ foreach1.exe @@@
+PASS executing foreach0
+PASS compiling foreach1
 0 1 4 9 16 25 36 49 64 81 
-@@@ func1.exe @@@
+PASS executing foreach1
+PASS compiling func1
 Number greater than 3 = 2
-@@@ func2.exe @@@
+PASS executing func1
+PASS compiling func2
 5
 4
 1
-@@@ func3.exe @@@
+PASS executing func2
+PASS compiling func3
 5
 4
 1
-@@@ gener1.exe @@@
+PASS executing func3
+PASS compiling gener1
 16838 5758 10113 17515 31051 5627 23010 7419 16212 4086 
-@@@ gener2.exe @@@
+PASS executing gener1
+PASS compiling gener2
 1 1 2 3 5 8 13 21 34 55 
-@@@ genern1.exe @@@
+PASS executing gener2
+PASS compiling genern1
 16838 5758 10113 17515 31051 5627 23010 7419 16212 4086 
-@@@ genern2.exe @@@
+PASS executing genern1
+PASS compiling genern2
 1 1 2 3 5 8 13 21 34 55 
-@@@ greateq.exe @@@
+PASS executing genern2
+PASS compiling greateq
 4
 3
 2
 1
-@@@ greater.exe @@@
+PASS executing greateq
+PASS compiling greater
 4
 3
 2
 1
-@@@ incl0.exe @@@
+PASS executing greater
+PASS compiling incl0
 numbers1 does not include numbers3
 numbers2 includes numbers3
-@@@ incl1.exe @@@
+PASS executing incl0
+PASS compiling incl1
 v1 does not include v2
 v1 includes v2
-@@@ incl2.exe @@@
+PASS executing incl1
+PASS compiling incl2
 v1 does not include v2
 v1 includes v2
-@@@ inplmrg1.exe @@@
+PASS executing incl2
+PASS compiling inplmrg1
 1 10 42 3 16 32 
 1 3 10 16 32 42 
-@@@ inplmrg2.exe @@@
+PASS executing inplmrg1
+PASS compiling inplmrg2
 4 3 2 1 0 4 3 2 1 0 
 4 4 3 3 2 2 1 1 0 0 
-@@@ inrprod0.exe @@@
+PASS executing inplmrg2
+PASS compiling inrprod0
 Inner product = 55
-@@@ inrprod1.exe @@@
+PASS executing inrprod0
+PASS compiling inrprod1
 Inner product (sum of products) of:
 	1 2 3 
 	3 2 1 
 is: 10
-@@@ inrprod2.exe @@@
+PASS executing inrprod1
+PASS compiling inrprod2
 Inner product (product of sums):
 	1 2 3 
 	3 2 1 
 is: 64
-@@@ insert1.exe @@@
+PASS executing inrprod2
+PASS compiling insert1
 laurie
 jennifer
 amanda
 saskia
 carrie
 leisa
-@@@ insert2.exe @@@
+PASS executing insert1
+PASS compiling insert2
 laurie
 jennifer
 amanda
 saskia
 carrie
 leisa
-@@@ iota1.exe @@@
+PASS executing insert2
+PASS compiling iota1
 42 43 44 45 46 47 48 49 50 51 
-@@@ istmit1.exe @@@
+PASS executing iota1
+PASS compiling istmit1
 Please enter a string: read asdf
-@@@ iter1.exe @@@
+PASS executing istmit1
+PASS compiling iter1
 zippy
 motorboy
-@@@ iter2.exe @@@
+PASS executing iter1
+PASS compiling iter2
 zippy
 motorboy
-@@@ iter3.exe @@@
+PASS executing iter2
+PASS compiling iter3
 motorboy
 zippy
-@@@ iter4.exe @@@
+PASS executing iter3
+PASS compiling iter4
 last element is 3
 first element is 1
-@@@ iterswp0.exe @@@
+PASS executing iter4
+PASS compiling iterswp0
 3 1 2 0 4 5 
-@@@ iterswp1.exe @@@
+PASS executing iterswp0
+PASS compiling iterswp1
 3 1 2 0 4 5 
-@@@ less.exe @@@
+PASS executing iterswp1
+PASS compiling less
 1
 2
 3
 4
-@@@ lesseq.exe @@@
+PASS executing less
+PASS compiling lesseq
 1
 2
 3
 4
-@@@ lexcmp1.exe @@@
+PASS executing lesseq
+PASS compiling lexcmp1
 shine is before shoe
-@@@ lexcmp2.exe @@@
+PASS executing lexcmp1
+PASS compiling lexcmp2
 shoe is after shine
-@@@ list1.exe @@@
+PASS executing lexcmp2
+PASS compiling list1
 1
 4
 9
 16
 36
-@@@ list2.exe @@@
+PASS executing list1
+PASS compiling list2
 1
 4
 9
 16
-@@@ list3.exe @@@
+PASS executing list2
+PASS compiling list3
 original: xlxtss
 reversed: sstxlx
 removed: sstl
 uniqued: stl
 sorted: lst
-@@@ list4.exe @@@
+PASS executing list3
+PASS compiling list4
 123467
-@@@ logicand.exe @@@
+PASS executing list4
+PASS compiling logicand
 0
 1
 0
 0
-@@@ logicnot.exe @@@
+PASS executing logicand
+PASS compiling logicnot
 count = 2
-@@@ logicor.exe @@@
+PASS executing logicnot
+PASS compiling logicor
 1
 1
 0
 1
-@@@ lwrbnd1.exe @@@
+PASS executing logicor
+PASS compiling lwrbnd1
 0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 
 3 can be inserted at index: 12
-@@@ lwrbnd2.exe @@@
+PASS executing lwrbnd1
+PASS compiling lwrbnd2
 d can be inserted at index: 4
-@@@ map1.exe @@@
+PASS executing lwrbnd2
+PASS compiling map1
 m['x'] = 20
 m['x'] = 10
 m['z'] = 0
 m.count ('z') = 1
 First insertion successful
 Existing pair c -> 100
-@@@ max1.exe @@@
+PASS executing map1
+PASS compiling max1
 100
-@@@ max2.exe @@@
+PASS executing max1
+PASS compiling max2
 shoe
-@@@ maxelem1.exe @@@
+PASS executing max2
+PASS compiling maxelem1
 56
-@@@ maxelem2.exe @@@
+PASS executing maxelem1
+PASS compiling maxelem2
 Todd
-@@@ merge0.exe @@@
+PASS executing maxelem2
+PASS compiling merge0
 -5 1 6 13 25 26 36 46 99 101 
-@@@ merge1.exe @@@
+PASS executing merge0
+PASS compiling merge1
 0 1 2 3 4 
 3 4 5 6 7 
 0 1 2 3 3 4 4 5 6 7 
-@@@ merge2.exe @@@
+PASS executing merge1
+PASS compiling merge2
 10 9 8 7 6 
 7 6 5 4 3 
 10 9 8 7 7 6 6 5 4 3 
-@@@ min1.exe @@@
+PASS executing merge2
+PASS compiling min1
 42
-@@@ min2.exe @@@
+PASS executing min1
+PASS compiling min2
 shine
-@@@ minelem1.exe @@@
+PASS executing min2
+PASS compiling minelem1
 -242
-@@@ minelem2.exe @@@
+PASS executing minelem1
+PASS compiling minelem2
 Brett
-@@@ minus.exe @@@
+PASS executing minelem2
+PASS compiling minus
 0
 1
 -1
 5
-@@@ mismtch0.exe @@@
+PASS executing minus
+PASS compiling mismtch0
 n1 and n2 are the same
 Mismatch at offset: 3
-@@@ mismtch1.exe @@@
+PASS executing mismtch0
+PASS compiling mismtch1
 v1 and v2 are the same
 mismatch at index: 5
-@@@ mismtch2.exe @@@
+PASS executing mismtch1
+PASS compiling mismtch2
 n1 and n2 are the same
 mismatch at index: 2
-@@@ mkheap0.exe @@@
+PASS executing mismtch2
+PASS compiling mkheap0
 19
 13
 11
 10
 5
 4
-@@@ mkheap1.exe @@@
+PASS executing mkheap0
+PASS compiling mkheap1
 4
 5
 10
 11
 13
 19
-@@@ mmap1.exe @@@
+PASS executing mkheap1
+PASS compiling mmap1
 count ('X') = 0
 count ('X') = 1
 count ('X') = 2
@@ -364,37 +477,44 @@ X -> 10
 X -> 20
 Y -> 32
 Erased 2 items
-@@@ mmap2.exe @@@
+PASS executing mmap1
+PASS compiling mmap2
 lower bound:
 3 -> c
 upper bound:
 6 -> f
-@@@ modulus.exe @@@
+PASS executing mmap2
+PASS compiling modulus
 2
 0
 10
 2
-@@@ mset1.exe @@@
+PASS executing modulus
+PASS compiling mset1
 count (42) = 0
 count (42) = 1
 count (42) = 2
 40 Not found
 Found 42
 Erased 2 instances
-@@@ mset2.exe @@@
+PASS executing mset1
+PASS compiling mset2
 alf
 bob
 chas
 chas
 dave
 ed
-@@@ mset3.exe @@@
+PASS executing mset2
+PASS compiling mset3
 lower bound = 3
 upper bound = 6
-@@@ mset4.exe @@@
+PASS executing mset3
+PASS compiling mset4
 lower bound = 3
 upper bound = 6
-@@@ mset5.exe @@@
+PASS executing mset4
+PASS compiling mset5
 Using less_than: 
 1
 3
@@ -405,18 +525,22 @@ Using greater_than:
 6
 3
 1
-@@@ negate.exe @@@
+PASS executing mset5
+PASS compiling negate
 -1
 -2
 -3
-@@@ nequal.exe @@@
+PASS executing negate
+PASS compiling nequal
 0
 1
 0
 1
-@@@ nextprm0.exe @@@
+PASS executing nequal
+PASS compiling nextprm0
 0 2 1 
-@@@ nextprm1.exe @@@
+PASS executing nextprm0
+PASS compiling nextprm1
 0 1 2 
 0 2 1 
 1 0 2 
@@ -427,7 +551,8 @@ Using greater_than:
 0 2 1 
 1 0 2 
 1 2 0 
-@@@ nextprm2.exe @@@
+PASS executing nextprm1
+PASS compiling nextprm2
 ABC
 ACB
 BAC
@@ -438,61 +563,83 @@ ABC
 ACB
 BAC
 BCA
-@@@ nthelem0.exe @@@
+PASS executing nextprm2
+PASS compiling nthelem0
 1 0 2 3 4 5 
-@@@ nthelem1.exe @@@
+PASS executing nthelem0
+PASS compiling nthelem1
 8 8 3 5 1 7 0 9 2 6 
 0 2 3 1 5 6 7 9 8 8 
-@@@ nthelem2.exe @@@
+PASS executing nthelem1
+PASS compiling nthelem2
 8 8 3 5 1 7 0 9 2 6 
 8 8 9 7 6 5 3 0 2 1 
-@@@ ostmit.exe @@@
+PASS executing nthelem2
+PASS compiling ostmit
 hello
 1524
-@@@ pair0.exe @@@
+PASS executing ostmit
+PASS compiling pair0
 p.first = 1, p.second = 10
-@@@ pair1.exe @@@
+PASS executing pair0
+PASS compiling pair1
 p.first = 1, p.second = 10
-@@@ pair2.exe @@@
+PASS executing pair1
+PASS compiling pair2
 p.first = 1
 p.second = 10
-@@@ parsrt0.exe @@@
+PASS executing pair2
+PASS compiling parsrt0
 1 2 3 5 4 6 
-@@@ parsrt1.exe @@@
+PASS executing parsrt0
+PASS compiling parsrt1
 8 8 3 5 1 7 0 9 2 6 
 0 1 2 3 5 8 8 9 7 6 
-@@@ parsrt2.exe @@@
+PASS executing parsrt1
+PASS compiling parsrt2
 aa ff dd ee cc bb 
 aa bb cc ff ee dd 
-@@@ parsrtc0.exe @@@
+PASS executing parsrt2
+PASS compiling parsrtc0
 1 2 3 
-@@@ parsrtc1.exe @@@
+PASS executing parsrtc0
+PASS compiling parsrtc1
 8 8 3 5 1 7 0 9 2 6 
 0 1 2 3 5 
-@@@ parsrtc2.exe @@@
+PASS executing parsrtc1
+PASS compiling parsrtc2
 aa ff dd ee cc bb 
 aa ff dd ee cc bb 
-@@@ partsrt0.exe @@@
+PASS executing parsrtc2
+PASS compiling partsrt0
 1 2 3 5 4 6 
-@@@ partsum0.exe @@@
+PASS executing partsrt0
+PASS compiling partsum0
 1 3 6 10 15 21 
-@@@ partsum1.exe @@@
+PASS executing partsum0
+PASS compiling partsum1
 0 1 2 3 4 5 6 7 8 9 
 0 1 3 6 10 15 21 28 36 45 
-@@@ partsum2.exe @@@
+PASS executing partsum1
+PASS compiling partsum2
 1 2 3 4 5 
 1 2 6 24 120 
-@@@ pheap1.exe @@@
+PASS executing partsum2
+PASS compiling pheap1
 1 4 7 20 
-@@@ pheap2.exe @@@
+PASS executing pheap1
+PASS compiling pheap2
 20 7 4 1 
-@@@ plus.exe @@@
+PASS executing pheap2
+PASS compiling plus
 total = 77
-@@@ pqueue1.exe @@@
+PASS executing plus
+PASS compiling pqueue1
 101
 69
 42
-@@@ pqueue2.exe @@@
+PASS executing pqueue1
+PASS compiling pqueue2
 1pe
 3o1
 86LC5YEChyf3Y
@@ -505,9 +652,11 @@ ape
 c1t
 cat
 dog
-@@@ prevprm0.exe @@@
+PASS executing pqueue2
+PASS compiling prevprm0
 2 1 0 
-@@@ prevprm1.exe @@@
+PASS executing prevprm0
+PASS compiling prevprm1
 0 1 2 
 2 1 0 
 2 0 1 
@@ -518,7 +667,8 @@ dog
 2 1 0 
 2 0 1 
 1 2 0 
-@@@ prevprm2.exe @@@
+PASS executing prevprm1
+PASS compiling prevprm2
 0 1 2 
 0 2 1 
 1 0 2 
@@ -529,81 +679,106 @@ dog
 0 2 1 
 1 0 2 
 1 2 0 
-@@@ ptition0.exe @@@
+PASS executing prevprm2
+PASS compiling ptition0
 6 1 3 10 12 20 
-@@@ ptition1.exe @@@
+PASS executing ptition0
+PASS compiling ptition1
 18 18 13 15 11 7 10 19 12 6 
 6 10 7 15 11 13 18 19 12 18 
-@@@ ptrbinf1.exe @@@
+PASS executing ptition1
+PASS compiling ptrbinf1
 8
 7
 8
 13
-@@@ ptrbinf2.exe @@@
+PASS executing ptrbinf1
+PASS compiling ptrbinf2
 8
 7
 8
 13
-@@@ ptrunf1.exe @@@
+PASS executing ptrbinf2
+PASS compiling ptrunf1
 2 is even
-@@@ ptrunf2.exe @@@
+PASS executing ptrunf1
+PASS compiling ptrunf2
 2 is even
-@@@ queue1.exe @@@
+PASS executing ptrunf2
+PASS compiling queue1
 42
 101
 69
-@@@ remcopy1.exe @@@
+PASS executing queue1
+PASS compiling remcopy1
 1 3 1 3 0 0 
-@@@ remcpif1.exe @@@
+PASS executing remcopy1
+PASS compiling remcpif1
 2 2 0 0 0 0 
-@@@ remif1.exe @@@
+PASS executing remcpif1
+PASS compiling remif1
 0 0 2 2 2 2 
-@@@ remove1.exe @@@
+PASS executing remif1
+PASS compiling remove1
 2 3 2 3 2 3 
-@@@ repcpif1.exe @@@
+PASS executing remove1
+PASS compiling repcpif1
 0 1 2 3 4 0 1 2 3 4 
 0 1 2 3 4 0 1 2 3 4 
 0 42 2 42 4 0 42 2 42 4 
-@@@ replace0.exe @@@
+PASS executing repcpif1
+PASS compiling replace0
 0 1 42 0 1 42 
-@@@ replace1.exe @@@
+PASS executing replace0
+PASS compiling replace1
 0 1 2 3 4 0 1 2 3 4 
 0 1 42 3 4 0 1 42 3 4 
-@@@ replcpy1.exe @@@
+PASS executing replace1
+PASS compiling replcpy1
 0 1 42 0 1 42 
-@@@ replif1.exe @@@
+PASS executing replcpy1
+PASS compiling replif1
 0 1 2 3 4 0 1 2 3 4 
 0 42 2 42 4 0 42 2 42 4 
-@@@ revbit2.exe @@@
+PASS executing replif1
+PASS compiling revbit2
 3
 2
 5
 1
-@@@ revcopy1.exe @@@
+PASS executing revbit2
+PASS compiling revcopy1
 0 1 2 3 4 5 
 5 4 3 2 1 0 
-@@@ reverse1.exe @@@
+PASS executing revcopy1
+PASS compiling reverse1
 5 4 3 2 1 0 
-@@@ reviter2.exe @@@
+PASS executing reverse1
+PASS compiling reviter2
 3
 2
 5
 1
-@@@ rndshuf0.exe @@@
+PASS executing reviter2
+PASS compiling rndshuf0
 4 1 6 3 2 5 
-@@@ rndshuf1.exe @@@
+PASS executing rndshuf0
+PASS compiling rndshuf1
 0 1 2 3 4 5 6 7 8 9 
 6 8 9 2 1 4 3 7 0 5 
 6 5 8 2 4 1 0 3 7 9 
 4 2 8 9 6 5 1 0 7 3 
-@@@ rndshuf2.exe @@@
+PASS executing rndshuf1
+PASS compiling rndshuf2
 0 1 2 3 4 5 6 7 8 9 
 4 5 9 8 1 3 6 0 2 7 
 3 9 4 7 6 5 2 0 1 8 
 2 8 7 1 3 5 4 0 6 9 
-@@@ rotate0.exe @@@
+PASS executing rndshuf2
+PASS compiling rotate0
 3 4 5 0 1 2 
-@@@ rotate1.exe @@@
+PASS executing rotate0
+PASS compiling rotate1
 0 1 2 3 4 5 6 7 8 9 
 0 1 2 3 4 5 6 7 8 9 
 1 2 3 4 5 6 7 8 9 0 
@@ -616,9 +791,11 @@ dog
 6 7 8 9 0 1 2 3 4 5 
 5 6 7 8 9 0 1 2 3 4 
 
-@@@ rotcopy0.exe @@@
+PASS executing rotate1
+PASS compiling rotcopy0
 3 4 5 0 1 2 
-@@@ rotcopy1.exe @@@
+PASS executing rotcopy0
+PASS compiling rotcopy1
 0 1 2 3 4 5 6 7 8 9 
 0 1 2 3 4 5 6 7 8 9 
 1 2 3 4 5 6 7 8 9 0 
@@ -631,164 +808,211 @@ dog
 8 9 0 1 2 3 4 5 6 7 
 9 0 1 2 3 4 5 6 7 8 
 
-@@@ search0.exe @@@
+PASS executing rotcopy1
+PASS compiling search0
 v3 not contained in v1
 Found v3 in v2 at offset: 3
-@@@ search1.exe @@@
+PASS executing search0
+PASS compiling search1
 v1: 0 1 2 3 4 5 6 7 8 9 
 v2: 50 51 52 
 v2 not contained in v1
 v1: 0 1 2 3 4 5 6 7 8 9 
 v2: 4 5 6 
 Found v2 in v1 at offset: 4
-@@@ search2.exe @@@
+PASS executing search1
+PASS compiling search2
 grades: A B C D F 
 letters:Q E D 
 letters not found in grades
 grades: A B C D F 
 letters:B C D 
 letters found in grades at offset: 1
-@@@ set1.exe @@@
+PASS executing search2
+PASS compiling set1
 count (42) = 0
 count (42) = 1
 count (42) = 1
 1 elements erased
-@@@ set2.exe @@@
+PASS executing set1
+PASS compiling set2
 Inserted new element 42
 Existing element = 42
-@@@ setdiff0.exe @@@
+PASS executing set2
+PASS compiling setdiff0
 18 0 0 0 
 10 17 23 0 
-@@@ setdiff1.exe @@@
+PASS executing setdiff0
+PASS compiling setdiff1
 v1: 0 1 2 3 4 5 6 7 8 9 
 v2: 7 8 9 10 11 12 13 14 15 16 
 0 1 2 3 4 5 6 
-@@@ setdiff2.exe @@@
+PASS executing setdiff1
+PASS compiling setdiff2
 word1: A B C D E F G H I J K L M N O 
 word2: L M N O P Q R S T U V W X Y Z 
 A B C D E F G H I J K 
-@@@ setintr0.exe @@@
+PASS executing setdiff2
+PASS compiling setintr0
 13 23 0 0 
-@@@ setintr1.exe @@@
+PASS executing setintr0
+PASS compiling setintr1
 v1: 0 1 2 3 4 5 6 7 8 9 
 v2: 7 8 9 10 11 12 13 14 15 16 
 7 8 9 
-@@@ setintr2.exe @@@
+PASS executing setintr1
+PASS compiling setintr2
 word1: A B C D E F G H I J K L M N O 
 word2: L M N O P Q R S T U V W X Y Z 
 L M N O 
-@@@ setsymd0.exe @@@
+PASS executing setintr2
+PASS compiling setsymd0
 10 17 18 0 
-@@@ setsymd1.exe @@@
+PASS executing setsymd0
+PASS compiling setsymd1
 v1: 0 1 2 3 4 5 6 7 8 9 
 v2: 7 8 9 10 11 12 13 14 15 16 
 0 1 2 3 4 5 6 10 11 12 13 14 15 16 
-@@@ setsymd2.exe @@@
+PASS executing setsymd1
+PASS compiling setsymd2
 word1: A B C D E F G H I J K L M N O 
 word2: L M N O P Q R S T U V W X Y Z 
 A B C D E F G H I J K P Q R S T U V W X Y Z 
-@@@ setunon0.exe @@@
+PASS executing setsymd2
+PASS compiling setunon0
 10 13 17 18 23 0 0 
-@@@ setunon1.exe @@@
+PASS executing setunon0
+PASS compiling setunon1
 v1: 0 1 2 3 4 5 6 7 8 9 
 v2: 7 8 9 10 11 12 13 14 15 16 
 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
-@@@ setunon2.exe @@@
+PASS executing setunon1
+PASS compiling setunon2
 word1: A B C D E F G H I J K L M N O 
 word2: L M N O P Q R S T U V W X Y Z 
 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 
-@@@ sort1.exe @@@
+PASS executing setunon2
+PASS compiling sort1
 -10 1 11 19 42 50 
-@@@ sort2.exe @@@
+PASS executing sort1
+PASS compiling sort2
 before: 1 50 -10 11 42 19 
 after: 50 42 19 11 1 -10 
-@@@ stack1.exe @@@
+PASS executing sort2
+PASS compiling stack1
 69
 101
 42
-@@@ stack2.exe @@@
+PASS executing stack1
+PASS compiling stack2
 69
 101
 42
-@@@ stblptn0.exe @@@
+PASS executing stack2
+PASS compiling stblptn0
 5 6 -2 10 11 20 
-@@@ stblptn1.exe @@@
+PASS executing stblptn0
+PASS compiling stblptn1
 18 18 13 15 11 7 10 19 12 6 
 7 10 6 18 18 13 15 11 19 12 
-@@@ stblsrt1.exe @@@
+PASS executing stblptn1
+PASS compiling stblsrt1
 -10 1 11 19 42 50 
-@@@ stblsrt2.exe @@@
+PASS executing stblsrt1
+PASS compiling stblsrt2
 aa bb cc dd ll qq 
-@@@ swap1.exe @@@
+PASS executing stblsrt2
+PASS compiling swap1
 a = 42 b = 19
 a = 19 b = 42
-@@@ swprnge1.exe @@@
+PASS executing swap1
+PASS compiling swprnge1
 World Hello
 Hello World
-@@@ tech01.exe @@@
+PASS executing swprnge1
+PASS compiling tech01
 ..\..\stl.94\examples\tech01.cpp
-@@@ times.exe @@@
+PASS executing tech01
+PASS compiling times
 total = 70
-@@@ trnsfrm1.exe @@@
+PASS executing times
+PASS compiling trnsfrm1
 5 1 0 -1 -6 -11 
-@@@ trnsfrm2.exe @@@
+PASS executing trnsfrm1
+PASS compiling trnsfrm2
 Hello World!
-@@@ ucompos1.exe @@@
+PASS executing trnsfrm2
+PASS compiling ucompos1
 1
 2
 4
-@@@ ucompos2.exe @@@
+PASS executing ucompos1
+PASS compiling ucompos2
 1
 2
 4
-@@@ unegate1.exe @@@
+PASS executing ucompos2
+PASS compiling unegate1
 2
-@@@ unegate2.exe @@@
+PASS executing unegate1
+PASS compiling unegate2
 2
-@@@ uniqcpy1.exe @@@
+PASS executing unegate2
+PASS compiling uniqcpy1
 0 1 2 3 4 0 0 0 
-@@@ uniqcpy2.exe @@@
+PASS executing uniqcpy1
+PASS compiling uniqcpy2
 QQWWEERTTYY
 QQWWEERTTYY
 QWERTY
-@@@ unique1.exe @@@
+PASS executing uniqcpy2
+PASS compiling unique1
 0 1 2 3 4 2 3 4 
-@@@ unique2.exe @@@
+PASS executing unique1
+PASS compiling unique2
 QQWWEERTTYY
 QWERTYRTTYY
-@@@ uprbnd1.exe @@@
+PASS executing unique2
+PASS compiling uprbnd1
 0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 
 3 can be inserted at index: 16
-@@@ uprbnd2.exe @@@
+PASS executing uprbnd1
+PASS compiling uprbnd2
 d can be inserted at index: 4
-@@@ vec1.exe @@@
+PASS executing uprbnd2
+PASS compiling vec1
 empty = 1
 size = 0
 max_size = 1073741823
 size = 1
 v1[0] = 42
-@@@ vec2.exe @@@
+PASS executing vec1
+PASS compiling vec2
 v1 = 32.1 40.5 
 v2 = 3.56 
 v1 = 3.56 
 v2 = 32.1 40.5 
 v2 = 3.56 
-@@@ vec3.exe @@@
+PASS executing vec2
+PASS compiling vec3
 v1 = hi
 v2 = ho
 (v1 == v2) = 0
 (v1 < v2) = 1
-@@@ vec4.exe @@@
+PASS executing vec3
+PASS compiling vec4
 front = 1
 back = 16, size = 4
 back = 25, size = 5
 back = 16, size = 4
-@@@ vec5.exe @@@
+PASS executing vec4
+PASS compiling vec5
 v[0] = 1
 v[1] = 4
 v[2] = 9
 v[3] = 16
-@@@ vec6.exe @@@
+PASS executing vec5
+PASS compiling vec6
 v[0] = 1
 v[1] = 4
 v[2] = 9
@@ -810,7 +1034,8 @@ v[3] = 25
 v[0] = 4
 v[1] = 25
 
-@@@ vec7.exe @@@
+PASS executing vec6
+PASS compiling vec7
 v[0] = 0
 v[1] = 1
 v[2] = 4
@@ -825,7 +1050,9 @@ v[4] = 16
 v[5] = 25
 v[6] = 36
 
-@@@ vec8.exe @@@
+PASS executing vec7
+PASS compiling vec8
 capacity = 0
 capacity = 1024
 capacity = 5000
+PASS executing vec8

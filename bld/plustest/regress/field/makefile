@@ -1,70 +1,57 @@
 plustest_name = field
-!include ../environ.mif
+
+!include testenv.mif
 
 !ifdef test1
-test_cflags_386 = -d2-fpd
-test_cflags_i86 = -d2-fpd
-test_cflags_axp = -d2
+test_flags_386 = -d2-fpd
+test_flags_i86 = -d2-fpd
+test_flags_axp = -d2
 alt_error=01
 !else ifdef test2
-test_cflags_386 = -os-d1-3s-xds
-test_cflags_i86 = -os-d1-xds
-test_cflags_axp = -os-d1-xds
+test_flags_386 = -os-d1-3s-xds
+test_flags_i86 = -os-d1-xds
+test_flags_axp = -os-d1-xds
 alt_error=02
 !else ifdef test3
-test_cflags_386 = -os-d1-3s-xss-fpd
-test_cflags_i86 = -os-d1-xss-fpd
-test_cflags_axp = -os-d1-xss
+test_flags_386 = -os-d1-3s-xss-fpd
+test_flags_i86 = -os-d1-xss-fpd
+test_flags_axp = -os-d1-xss
 alt_error=03
 !else
-test_cflags_386 = -os-d1-xst
-test_cflags_i86 = -os-d1-xst
-test_cflags_axp = -os-d1-xst
+test_flags_386 = -os-d1-xst
+test_flags_i86 = -os-d1-xst
+test_flags_axp = -os-d1-xst
 alt_error=00
 !endif
 
-test_cflags_386 += -zq-fpi87-fp5-mf
-test_cflags_i86 += -zq-fpi87-fp5-ml
-test_cflags_axp += -zq
+test_flags_386 += -fpi87-fp5-mf
+test_flags_i86 += -fpi87-fp5-ml
+test_flags_axp += 
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
-.cpp.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags_$(arch)) -fo=.obj
+extra_run_test3 = 1000 1000
 
 exes = test1.$(exe) test2.$(exe) test3.$(exe)    
 
-test : .symbolic start_test $(exes)
-    diff test.out test.chk
-    @%make global
+test1.$(exe) : test1.obj field.obj
+test2.$(exe) : test2.obj field.obj
+test3.$(exe) : test3.obj field.obj
+
+test : .symbolic clean start_test test.lnk $(exes)
+    diff exec.out test.chk
     %append $(log_file) PASS $(%__CWD__)
-
-test1.$(exe) : field.obj test1.obj field.lnk
-    $(linker) @$]@ NAME $@ FILE test1.obj, field.obj
-    $(run) $(exec_prefix)$@ >>test.out
-
-test2.$(exe) : field.obj test2.obj field.lnk
-    $(linker) @$]@ NAME $@ FILE test2.obj, field.obj
-    $(run) $(exec_prefix)$@ >>test.out
-
-test3.$(exe) : field.obj test3.obj field.lnk
-    $(linker) @$]@ NAME $@ FILE test3.obj, field.obj
-    $(run) $(exec_prefix)$@ 1000 1000 >>test.out
+    @%make clean
 
 start_test : .symbolic
-    %create test.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
-field.lnk : makefile
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch))
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
-    @if exist test.out cp test.out s$(arch)_$(alt_error).sav
+    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .SYMBOLIC
+clean : .procedure
     @%make common_clean

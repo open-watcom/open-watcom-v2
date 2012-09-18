@@ -1,16 +1,27 @@
-----------aaa----------
+PASS compiling aaa
 1, 2, 4, 5
-----------algn01----------
-----------algm01----------
-----------algs01----------
-----------bitset01----------
-----------clib01----------
-----------cmplx01----------
-----------deque01----------
-----------deque02----------
-----------fun01----------
-----------iter01----------
-----------lim01----------
+PASS executing aaa
+PASS compiling algn01
+PASS executing algn01
+PASS compiling algm01
+PASS executing algm01
+PASS compiling algs01
+PASS executing algs01
+PASS compiling bitset01
+PASS executing bitset01
+PASS compiling clib01
+PASS executing clib01
+PASS compiling cmplx01
+PASS executing cmplx01
+PASS compiling deque01
+PASS executing deque01
+PASS compiling deque02
+PASS executing deque02
+PASS compiling fun01
+PASS executing fun01
+PASS compiling iter01
+PASS executing iter01
+PASS compiling lim01
 1
 1
 1
@@ -27,14 +38,22 @@
 1
 1
 1
-----------list01----------
-----------locale01----------
-----------map01----------
-----------map02----------
-----------mem01----------
-----------mmwin16----------
-----------mmwindef----------
-----------numer01----------
+PASS executing lim01
+PASS compiling list01
+PASS executing list01
+PASS compiling locale01
+PASS executing locale01
+PASS compiling map01
+PASS executing map01
+PASS compiling map02
+PASS executing map02
+PASS compiling mem01
+PASS executing mem01
+PASS compiling mmwin16
+PASS executing mmwin16
+PASS compiling mmwindef
+PASS executing mmwindef
+PASS compiling numer01
 a
 ab
 abc
@@ -51,15 +70,28 @@ abcd
 2
 1
 4
-----------queue01----------
-----------stack01----------
-----------set01----------
-----------set02----------
-----------slist01----------
-----------smtptr01----------
-----------string01----------
-----------string02----------
-----------typetr01----------
-----------unoset01----------
-----------util01----------
-----------vector01----------
+PASS executing numer01
+PASS compiling queue01
+PASS executing queue01
+PASS compiling stack01
+PASS executing stack01
+PASS compiling set01
+PASS executing set01
+PASS compiling set02
+PASS executing set02
+PASS compiling slist01
+PASS executing slist01
+PASS compiling smtptr01
+PASS executing smtptr01
+PASS compiling string01
+PASS executing string01
+PASS compiling string02
+PASS executing string02
+PASS compiling typetr01
+PASS executing typetr01
+PASS compiling unoset01
+PASS executing unoset01
+PASS compiling util01
+PASS executing util01
+PASS compiling vector01
+PASS executing vector01

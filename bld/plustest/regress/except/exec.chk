@@ -1,4 +1,4 @@
---------excok--------
+PASS compiling excok
 dtorable CTOR
 EXCOK: start
 try without catch
@@ -6,7 +6,8 @@ dtorable DTOR
 passthru ok
 EXCOK: 59 catches completed
 dtorable DTOR
---------excfancy--------
+PASS executing excok
+PASS compiling excfancy
 
 [1],CTOR V1,throw,caught
 
@@ -143,7 +144,8 @@ dtorable DTOR
 [11],CTOR V2,CTOR V1,CTOR M1,CTOR M2,CTOR V2,CTOR D,CTOR N,deleting,deleted
 [12],CTOR V2,CTOR V1,CTOR M1,CTOR M2,CTOR V2,CTOR D,CTOR N,deleting,deleted
 **** completed ok ****
---------excalloc--------
+PASS executing excfancy
+PASS compiling excalloc
 
 S() 0 1 2 3 4 5 6 7 8 9
 ~S() 9 throw 8 7 6 5 4 3 2 1 0 caught
@@ -168,7 +170,8 @@ S() 0 1 2 3 4 5 6 7 8 9
 S() 0 1 2 3 4 5 6 7 8 9
 ~S() 9 8 7 6 5 4 3 2 1 0
 
---------excdtor--------
+PASS executing excalloc
+PASS compiling excdtor
 BASE1 CTOR 91
 BASE2 CTOR 91
 B12 CTOR 91
@@ -215,16 +218,28 @@ B12 74 DTOR'ed
 BASE2 74 DTOR'ed
 BASE1 74 DTOR'ed
 Line 104 -- caught 1234
---------excrt_01--------
+PASS executing excdtor
+PASS compiling excrt_01
 my_unexp
---------excrt_02--------
+PASS executing excrt_01
+PASS compiling excrt_02
 my_term
---------excrt_03--------
---------excrt_04--------
---------excrt_05--------
---------excrt_06--------
---------excrt_07--------
---------excrt_08--------
---------excrt_09--------
---------excrt_10--------
---------excrt_11--------
+PASS executing excrt_02
+PASS compiling excrt_03
+PASS executing excrt_03
+PASS compiling excrt_04
+PASS executing excrt_04
+PASS compiling excrt_05
+PASS executing excrt_05
+PASS compiling excrt_06
+PASS executing excrt_06
+PASS compiling excrt_07
+PASS executing excrt_07
+PASS compiling excrt_08
+PASS executing excrt_08
+PASS compiling excrt_09
+PASS executing excrt_09
+PASS compiling excrt_10
+PASS executing excrt_10
+PASS compiling excrt_11
+PASS executing excrt_11

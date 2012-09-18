@@ -1,1 +1,3 @@
+PASS compiling nullptr
 PASS nullptr.cpp
+PASS executing nullptr

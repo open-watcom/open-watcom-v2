@@ -1,0 +1,2069 @@
+Open Watcom Make Version 2.0beta1 Limited Availability
+Portions Copyright (c) 1988-2002 Sybase, Inc. All Rights Reserved.
+Source code is available under the Sybase Open Watcom Public License.
+See http://www.openwatcom.org/ for details.
+===== 07:45:57 C:\DEV\OPEN-WATCOM-V2-NEW\BLD\PLUSTEST\REGRESS\POSITIVE ======
+	%append c:\dev\open-watcom-v2-new/bld/plustest/positive.log TEST 386/00
+	rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+	rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+	%create exec.out
+	%create test.lnk
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\access01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME access01.exe FILE {access01.obj}
+	access01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\addr01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME addr01.exe FILE {addr01.obj}
+	addr01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ambig01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ambig01.exe FILE {ambig01.obj}
+	ambig01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ambig02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ambig02.exe FILE {ambig02.obj}
+	ambig02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\array1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME array1.exe FILE {array1.obj}
+	array1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\asm01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME asm01.exe FILE {asm01.obj}
+	asm01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\asm02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME asm02.exe FILE {asm02.obj}
+	asm02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\asm03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME asm03.exe FILE {asm03.obj}
+	asm03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\asm04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME asm04.exe FILE {asm04.obj}
+	asm04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\asm05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME asm05.exe FILE {asm05.obj}
+	asm05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\asm06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME asm06.exe FILE {asm06.obj}
+	asm06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\asm07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME asm07.exe FILE {asm07.obj}
+	asm07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\asm08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME asm08.exe FILE {asm08.obj}
+	asm08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\asm09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME asm09.exe FILE {asm09.obj}
+	asm09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\assert1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -za0x  -fo=.obj
+	wlink @test.lnk   NAME assert1.exe FILE {assert1.obj}
+	assert1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\alttok1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME alttok1.exe FILE {alttok1.obj}
+	alttok1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\based01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME based01.exe FILE {based01.obj}
+	based01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\based02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME based02.exe FILE {based02.obj}
+	based02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\based03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME based03.exe FILE {based03.obj}
+	based03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\bf01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME bf01.exe FILE {bf01.obj}
+	bf01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\bf02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME bf02.exe FILE {bf02.obj}
+	bf02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\bf03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME bf03.exe FILE {bf03.obj}
+	bf03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\bf05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME bf05.exe FILE {bf05.obj}
+	bf05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\bool01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME bool01.exe FILE {bool01.obj}
+	bool01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\bool02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME bool02.exe FILE {bool02.obj}
+	bool02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\bool03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME bool03.exe FILE {bool03.obj}
+	bool03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\bool04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME bool04.exe FILE {bool04.obj}
+	bool04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\bool05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME bool05.exe FILE {bool05.obj}
+	bool05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp1.exe FILE {cdisp1.obj}
+	cdisp1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp2.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp2.exe FILE {cdisp2.obj}
+	cdisp2.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp3.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp3.exe FILE {cdisp3.obj}
+	cdisp3.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp4.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp4.exe FILE {cdisp4.obj}
+	cdisp4.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp5.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp5.exe FILE {cdisp5.obj}
+	cdisp5.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp6.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp6.exe FILE {cdisp6.obj}
+	cdisp6.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp7.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp7.exe FILE {cdisp7.obj}
+	cdisp7.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp8.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp8.exe FILE {cdisp8.obj}
+	cdisp8.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp9.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp9.exe FILE {cdisp9.obj}
+	cdisp9.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp10.exe FILE {cdisp10.obj}
+	cdisp10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp11.exe FILE {cdisp11.obj}
+	cdisp11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cdisp12.exe FILE {cdisp12.obj}
+	cdisp12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cdisp13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -xr  -fo=.obj
+	wlink @test.lnk   NAME cdisp13.exe FILE {cdisp13.obj}
+	cdisp13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp01.exe FILE {cltemp01.obj}
+	cltemp01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp02.exe FILE {cltemp02.obj}
+	cltemp02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp03.exe FILE {cltemp03.obj}
+	cltemp03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp04.exe FILE {cltemp04.obj}
+	cltemp04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp05.exe FILE {cltemp05.obj}
+	cltemp05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp06.exe FILE {cltemp06.obj}
+	cltemp06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp07.exe FILE {cltemp07.obj}
+	cltemp07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp08.exe FILE {cltemp08.obj}
+	cltemp08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp09.exe FILE {cltemp09.obj}
+	cltemp09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp10.exe FILE {cltemp10.obj}
+	cltemp10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp11.exe FILE {cltemp11.obj}
+	cltemp11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp12.exe FILE {cltemp12.obj}
+	cltemp12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp13.exe FILE {cltemp13.obj}
+	cltemp13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp14.exe FILE {cltemp14.obj}
+	cltemp14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp15.exe FILE {cltemp15.obj}
+	cltemp15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp16.exe FILE {cltemp16.obj}
+	cltemp16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -za0x  -fo=.obj
+	wlink @test.lnk   NAME cltemp17.exe FILE {cltemp17.obj}
+	cltemp17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp18.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp18.exe FILE {cltemp18.obj}
+	cltemp18.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp19.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp19.exe FILE {cltemp19.obj}
+	cltemp19.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp20.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp20.exe FILE {cltemp20.obj}
+	cltemp20.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp21.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltmp21b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp21.exe FILE {cltemp21.obj cltmp21b.obj}
+	cltemp21.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp22.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp22.exe FILE {cltemp22.obj}
+	cltemp22.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp23.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp23.exe FILE {cltemp23.obj}
+	cltemp23.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp24.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp24.exe FILE {cltemp24.obj}
+	cltemp24.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp25.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp25.exe FILE {cltemp25.obj}
+	cltemp25.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp26.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp26.exe FILE {cltemp26.obj}
+	cltemp26.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp27.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp27.exe FILE {cltemp27.obj}
+	cltemp27.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp28.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp28.exe FILE {cltemp28.obj}
+	cltemp28.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp29.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp29.exe FILE {cltemp29.obj}
+	cltemp29.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp30.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp30.exe FILE {cltemp30.obj}
+	cltemp30.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp31.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp31.exe FILE {cltemp31.obj}
+	cltemp31.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp32.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp32.exe FILE {cltemp32.obj}
+	cltemp32.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cltemp33.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cltemp33.exe FILE {cltemp33.obj}
+	cltemp33.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cmdln01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -d+XXX=0+1  -fo=.obj
+	wlink @test.lnk   NAME cmdln01.exe FILE {cmdln01.obj}
+	cmdln01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cmdln02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -d+ -dXXX=0+1  -fo=.obj
+	wlink @test.lnk   NAME cmdln02.exe FILE {cmdln02.obj}
+	cmdln02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cmdln03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -dX -DXX -uXX -DXXX -uXXX -UXXX -dXXX -DXXXX -uXXXX -DXXXX -uXXXX  -fo=.obj
+	wlink @test.lnk   NAME cmdln03.exe FILE {cmdln03.obj}
+	cmdln03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cmdln04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -dCMDMAC -DCMD1= -DCMD2#  -fo=.obj
+	wlink @test.lnk   NAME cmdln04.exe FILE {cmdln04.obj}
+	cmdln04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cond1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cond1.exe FILE {cond1.obj}
+	cond1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\conv01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME conv01.exe FILE {conv01.obj}
+	conv01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\conv02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME conv02.exe FILE {conv02.obj}
+	conv02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\conv03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME conv03.exe FILE {conv03.obj}
+	conv03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\conv04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME conv04.exe FILE {conv04.obj}
+	conv04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\conv05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME conv05.exe FILE {conv05.obj}
+	conv05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\conv06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME conv06.exe FILE {conv06.obj}
+	conv06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor01.exe FILE {ctor01.obj}
+	ctor01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor02.exe FILE {ctor02.obj}
+	ctor02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor03.exe FILE {ctor03.obj}
+	ctor03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor04.exe FILE {ctor04.obj}
+	ctor04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor05.exe FILE {ctor05.obj}
+	ctor05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor06.exe FILE {ctor06.obj}
+	ctor06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor07.exe FILE {ctor07.obj}
+	ctor07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor08.exe FILE {ctor08.obj}
+	ctor08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME ctor09.exe FILE {ctor09.obj}
+	ctor09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor10.exe FILE {ctor10.obj}
+	ctor10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor11.exe FILE {ctor11.obj}
+	ctor11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor12.exe FILE {ctor12.obj}
+	ctor12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor13.exe FILE {ctor13.obj}
+	ctor13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor14.exe FILE {ctor14.obj}
+	ctor14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME ctor15.exe FILE {ctor15.obj}
+	ctor15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor16.exe FILE {ctor16.obj}
+	ctor16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor17.exe FILE {ctor17.obj}
+	ctor17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor18.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor18.exe FILE {ctor18.obj}
+	ctor18.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor19.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor19.exe FILE {ctor19.obj}
+	ctor19.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor20.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME ctor20.exe FILE {ctor20.obj}
+	ctor20.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor21.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor21.exe FILE {ctor21.obj}
+	ctor21.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor22.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor22.exe FILE {ctor22.obj}
+	ctor22.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor23.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor23.exe FILE {ctor23.obj}
+	ctor23.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor24.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor24.exe FILE {ctor24.obj}
+	ctor24.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor25.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor25.exe FILE {ctor25.obj}
+	ctor25.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor26.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor26.exe FILE {ctor26.obj}
+	ctor26.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor27.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor27.exe FILE {ctor27.obj}
+	ctor27.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor28.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor28.exe FILE {ctor28.obj}
+	ctor28.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor29.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor29.exe FILE {ctor29.obj}
+	ctor29.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor30.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor30.exe FILE {ctor30.obj}
+	ctor30.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor31.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor31.exe FILE {ctor31.obj}
+	ctor31.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor32.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor32.exe FILE {ctor32.obj}
+	ctor32.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor33.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor33.exe FILE {ctor33.obj}
+	ctor33.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor34.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor34.exe FILE {ctor34.obj}
+	ctor34.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor35.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor35.exe FILE {ctor35.obj}
+	ctor35.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor37.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME ctor37.exe FILE {ctor37.obj}
+	ctor37.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor38.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor38.exe FILE {ctor38.obj}
+	ctor38.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ctor39.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ctor39.exe FILE {ctor39.obj}
+	ctor39.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cv01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cv01.exe FILE {cv01.obj}
+	cv01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\cv02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME cv02.exe FILE {cv02.obj}
+	cv02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\decl01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME decl01.exe FILE {decl01.obj}
+	decl01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\decl02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME decl02.exe FILE {decl02.obj}
+	decl02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\decl03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME decl03.exe FILE {decl03.obj}
+	decl03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\defarg01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME defarg01.exe FILE {defarg01.obj}
+	defarg01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\defarg02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME defarg02.exe FILE {defarg02.obj}
+	defarg02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\defarg03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME defarg03.exe FILE {defarg03.obj}
+	defarg03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\defarg04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME defarg04.exe FILE {defarg04.obj}
+	defarg04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\defarg05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME defarg05.exe FILE {defarg05.obj}
+	defarg05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\defarg06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME defarg06.exe FILE {defarg06.obj}
+	defarg06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\defarg07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME defarg07.exe FILE {defarg07.obj}
+	defarg07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dftemp01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dftemp01.exe FILE {dftemp01.obj}
+	dftemp01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dftemp02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dftemp02.exe FILE {dftemp02.obj}
+	dftemp02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dftemp03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dftemp03.exe FILE {dftemp03.obj}
+	dftemp03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dftemp04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dftemp04.exe FILE {dftemp04.obj}
+	dftemp04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dftemp05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dftemp05.exe FILE {dftemp05.obj}
+	dftemp05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dftemp06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dftemp06.exe FILE {dftemp06.obj}
+	dftemp06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\digraph1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME digraph1.exe FILE {digraph1.obj}
+	digraph1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor01.exe FILE {dtor01.obj}
+	dtor01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor02.exe FILE {dtor02.obj}
+	dtor02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME dtor03.exe FILE {dtor03.obj}
+	dtor03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor04.exe FILE {dtor04.obj}
+	dtor04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor05.exe FILE {dtor05.obj}
+	dtor05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor06.exe FILE {dtor06.obj}
+	dtor06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor07.exe FILE {dtor07.obj}
+	dtor07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME dtor08.exe FILE {dtor08.obj}
+	dtor08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME dtor09.exe FILE {dtor09.obj}
+	dtor09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor10.exe FILE {dtor10.obj}
+	dtor10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor11.exe FILE {dtor11.obj}
+	dtor11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor12.exe FILE {dtor12.obj}
+	dtor12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor13.exe FILE {dtor13.obj}
+	dtor13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor14.exe FILE {dtor14.obj}
+	dtor14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor15.exe FILE {dtor15.obj}
+	dtor15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor16.exe FILE {dtor16.obj}
+	dtor16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor17.exe FILE {dtor17.obj}
+	dtor17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor18.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor18.exe FILE {dtor18.obj}
+	dtor18.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor19.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor19.exe FILE {dtor19.obj}
+	dtor19.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor20.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor20.exe FILE {dtor20.obj}
+	dtor20.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor21.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor21.exe FILE {dtor21.obj}
+	dtor21.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor22.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor22.exe FILE {dtor22.obj}
+	dtor22.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor23.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME dtor23.exe FILE {dtor23.obj}
+	dtor23.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor24.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor24.exe FILE {dtor24.obj}
+	dtor24.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor25.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor25.exe FILE {dtor25.obj}
+	dtor25.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor26.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor26.exe FILE {dtor26.obj}
+	dtor26.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor27.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor27.exe FILE {dtor27.obj}
+	dtor27.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor28.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME dtor28.exe FILE {dtor28.obj}
+	dtor28.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor29.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME dtor29.exe FILE {dtor29.obj}
+	dtor29.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor30.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor30.exe FILE {dtor30.obj}
+	dtor30.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor31.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME dtor31.exe FILE {dtor31.obj}
+	dtor31.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor32.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME dtor32.exe FILE {dtor32.obj}
+	dtor32.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dtor33.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dtor33.exe FILE {dtor33.obj}
+	dtor33.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dwarf01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dwarf01.exe FILE {dwarf01.obj}
+	dwarf01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dwarf02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dwarf02.exe FILE {dwarf02.obj}
+	dwarf02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\dwarf03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME dwarf03.exe FILE {dwarf03.obj}
+	dwarf03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\enum01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME enum01.exe FILE {enum01.obj}
+	enum01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\enum02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME enum02.exe FILE {enum02.obj}
+	enum02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\enum03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME enum03.exe FILE {enum03.obj}
+	enum03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\enum04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME enum04.exe FILE {enum04.obj}
+	enum04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\enum05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME enum05.exe FILE {enum05.obj}
+	enum05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\enum06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME enum06.exe FILE {enum06.obj}
+	enum06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\exc01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\exc01b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME exc01.exe FILE {exc01.obj exc01b.obj}
+	exc01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except01.exe FILE {except01.obj}
+	except01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except02.exe FILE {except02.obj}
+	except02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except03.exe FILE {except03.obj}
+	except03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except04.exe FILE {except04.obj}
+	except04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except05.exe FILE {except05.obj}
+	except05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except06.exe FILE {except06.obj}
+	except06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except07.exe FILE {except07.obj}
+	except07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except08.exe FILE {except08.obj}
+	except08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except09.exe FILE {except09.obj}
+	except09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except10.exe FILE {except10.obj}
+	except10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except11.exe FILE {except11.obj}
+	except11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except12.exe FILE {except12.obj}
+	except12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except13.exe FILE {except13.obj}
+	except13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except14.exe FILE {except14.obj}
+	except14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except15.exe FILE {except15.obj}
+	except15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except16.exe FILE {except16.obj}
+	except16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except17.exe FILE {except17.obj}
+	except17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except18.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except18.exe FILE {except18.obj}
+	except18.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except19.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except19.exe FILE {except19.obj}
+	except19.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except20.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except20.exe FILE {except20.obj}
+	except20.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except21.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except21.exe FILE {except21.obj}
+	except21.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except22.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except22.exe FILE {except22.obj}
+	except22.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except23.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except23.exe FILE {except23.obj}
+	except23.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except24.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except24.exe FILE {except24.obj}
+	except24.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except25.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except25.exe FILE {except25.obj}
+	except25.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except26.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except26.exe FILE {except26.obj}
+	except26.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except27.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except27.exe FILE {except27.obj}
+	except27.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except28.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except28.exe FILE {except28.obj}
+	except28.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except29.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except29.exe FILE {except29.obj}
+	except29.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except30.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except30.exe FILE {except30.obj}
+	except30.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except31.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except31.exe FILE {except31.obj}
+	except31.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except32.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except32.exe FILE {except32.obj}
+	except32.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except33.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except33.exe FILE {except33.obj}
+	except33.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except34.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except34.exe FILE {except34.obj}
+	except34.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except35.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except35.exe FILE {except35.obj}
+	except35.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except36.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except36.exe FILE {except36.obj}
+	except36.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except37.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except37.exe FILE {except37.obj}
+	except37.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except38.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except38.exe FILE {except38.obj}
+	except38.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except39.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except39.exe FILE {except39.obj}
+	except39.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except40.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except40.exe FILE {except40.obj}
+	except40.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except41.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except41.exe FILE {except41.obj}
+	except41.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\except42.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME except42.exe FILE {except42.obj}
+	except42.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\expr01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME expr01.exe FILE {expr01.obj}
+	expr01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\expr02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME expr02.exe FILE {expr02.obj}
+	expr02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\float01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME float01.exe FILE {float01.obj}
+	float01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\float02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME float02.exe FILE {float02.obj}
+	float02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\float03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME float03.exe FILE {float03.obj}
+	float03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\float04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME float04.exe FILE {float04.obj}
+	float04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\float05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME float05.exe FILE {float05.obj}
+	float05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fnstat1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fnstat1b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fnstat1.exe FILE {fnstat1.obj fnstat1b.obj}
+	fnstat1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp01.exe FILE {fntemp01.obj}
+	fntemp01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp02.exe FILE {fntemp02.obj}
+	fntemp02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp03.exe FILE {fntemp03.obj}
+	fntemp03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp04.exe FILE {fntemp04.obj}
+	fntemp04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp05.exe FILE {fntemp05.obj}
+	fntemp05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp06.exe FILE {fntemp06.obj}
+	fntemp06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp07.exe FILE {fntemp07.obj}
+	fntemp07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp08.exe FILE {fntemp08.obj}
+	fntemp08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp09.exe FILE {fntemp09.obj}
+	fntemp09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp10.exe FILE {fntemp10.obj}
+	fntemp10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp11.exe FILE {fntemp11.obj}
+	fntemp11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp12.exe FILE {fntemp12.obj}
+	fntemp12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp13.exe FILE {fntemp13.obj}
+	fntemp13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp14.exe FILE {fntemp14.obj}
+	fntemp14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp15.exe FILE {fntemp15.obj}
+	fntemp15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp16.exe FILE {fntemp16.obj}
+	fntemp16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp17.exe FILE {fntemp17.obj}
+	fntemp17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp18.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp18.exe FILE {fntemp18.obj}
+	fntemp18.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp19.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp19.exe FILE {fntemp19.obj}
+	fntemp19.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp20.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp20.exe FILE {fntemp20.obj}
+	fntemp20.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp21.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp21.exe FILE {fntemp21.obj}
+	fntemp21.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp22.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp22.exe FILE {fntemp22.obj}
+	fntemp22.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp24.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp24.exe FILE {fntemp24.obj}
+	fntemp24.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp25.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp25.exe FILE {fntemp25.obj}
+	fntemp25.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp26.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp26.exe FILE {fntemp26.obj}
+	fntemp26.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp27.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp27.exe FILE {fntemp27.obj}
+	fntemp27.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fntemp28.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fntemp28.exe FILE {fntemp28.obj}
+	fntemp28.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fold01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fold01.exe FILE {fold01.obj}
+	fold01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\fold02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME fold02.exe FILE {fold02.obj}
+	fold02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\for01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME for01.exe FILE {for01.obj}
+	for01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\friend1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME friend1.exe FILE {friend1.obj}
+	friend1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\friend2.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME friend2.exe FILE {friend2.obj}
+	friend2.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\friend3.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME friend3.exe FILE {friend3.obj}
+	friend3.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\friend4.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\friend4b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME friend4.exe FILE {friend4.obj friend4b.obj}
+	friend4.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\friend5.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -za  -fo=.obj
+	wlink @test.lnk   NAME friend5.exe FILE {friend5.obj}
+	friend5.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\friend6.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME friend6.exe FILE {friend6.obj}
+	friend6.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\gpf01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME gpf01.exe FILE {gpf01.obj}
+	gpf01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\hier01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME hier01.exe FILE {hier01.obj}
+	hier01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\hier02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME hier02.exe FILE {hier02.obj}
+	hier02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\hier03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME hier03.exe FILE {hier03.obj}
+	hier03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\hier04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME hier04.exe FILE {hier04.obj}
+	hier04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\huge01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME huge01.exe FILE {huge01.obj}
+	huge01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i6401.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i6401.exe FILE {i6401.obj}
+	i6401.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i6402.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i6402.exe FILE {i6402.obj}
+	i6402.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i6403.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i6403.exe FILE {i6403.obj}
+	i6403.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i6404.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i6404.exe FILE {i6404.obj}
+	i6404.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i6405.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i6405.exe FILE {i6405.obj}
+	i6405.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i6406.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i6406.exe FILE {i6406.obj}
+	i6406.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i6407.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i6407.exe FILE {i6407.obj}
+	i6407.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i6408.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i6408.exe FILE {i6408.obj}
+	i6408.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i6409.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i6409.exe FILE {i6409.obj}
+	i6409.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i64op.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i64op.exe FILE {i64op.obj}
+	i64op.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i64cmp.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i64cmp.exe FILE {i64cmp.obj}
+	i64cmp.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\i64cnv.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME i64cnv.exe FILE {i64cnv.obj}
+	i64cnv.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init01.exe FILE {init01.obj}
+	init01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init02.exe FILE {init02.obj}
+	init02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init03.exe FILE {init03.obj}
+	init03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init04.exe FILE {init04.obj}
+	init04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init05.exe FILE {init05.obj}
+	init05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init06.exe FILE {init06.obj}
+	init06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init07.exe FILE {init07.obj}
+	init07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init08.exe FILE {init08.obj}
+	init08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init09.exe FILE {init09.obj}
+	init09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init10.exe FILE {init10.obj}
+	init10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init11.exe FILE {init11.obj}
+	init11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -mf  -fo=.obj
+	wlink @test.lnk   NAME init12.exe FILE {init12.obj}
+	init12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init13.exe FILE {init13.obj}
+	init13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init14.exe FILE {init14.obj}
+	init14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init15.exe FILE {init15.obj}
+	init15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init16.exe FILE {init16.obj}
+	init16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init17.exe FILE {init17.obj}
+	init17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init18.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init18.exe FILE {init18.obj}
+	init18.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init19.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init19.exe FILE {init19.obj}
+	init19.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init20.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init20.exe FILE {init20.obj}
+	init20.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init21.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init21.exe FILE {init21.obj}
+	init21.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init22.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init22.exe FILE {init22.obj}
+	init22.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init23.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init23.exe FILE {init23.obj}
+	init23.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init24.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init24.exe FILE {init24.obj}
+	init24.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init25.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init25.exe FILE {init25.obj}
+	init25.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init27.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init27.exe FILE {init27.obj}
+	init27.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init28.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME init28.exe FILE {init28.obj}
+	init28.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\init29.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME init29.exe FILE {init29.obj}
+	init29.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\inline01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME inline01.exe FILE {inline01.obj}
+	inline01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\inline02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME inline02.exe FILE {inline02.obj}
+	inline02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\inline03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME inline03.exe FILE {inline03.obj}
+	inline03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\inline04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME inline04.exe FILE {inline04.obj}
+	inline04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\inline05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME inline05.exe FILE {inline05.obj}
+	inline05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\inline06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME inline06.exe FILE {inline06.obj}
+	inline06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\int01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME int01.exe FILE {int01.obj}
+	int01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\intel01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME intel01.exe FILE {intel01.obj}
+	intel01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\io01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME io01.exe FILE {io01.obj}
+	io01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\io02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME io02.exe FILE {io02.obj}
+	io02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\io03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME io03.exe FILE {io03.obj}
+	io03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\io04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME io04.exe FILE {io04.obj}
+	io04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\io05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME io05.exe FILE {io05.obj}
+	io05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\io06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME io06.exe FILE {io06.obj}
+	io06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\io07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME io07.exe FILE {io07.obj}
+	io07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\io08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME io08.exe FILE {io08.obj}
+	io08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\io09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME io09.exe FILE {io09.obj}
+	io09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\iso01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME iso01.exe FILE {iso01.obj}
+	iso01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\iso02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME iso02.exe FILE {iso02.obj}
+	iso02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link1.exe FILE {link1.obj}
+	link1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link2.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link2.exe FILE {link2.obj}
+	link2.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link3.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link3b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link3.exe FILE {link3.obj link3b.obj}
+	link3.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link4.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link4b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link4.exe FILE {link4.obj link4b.obj}
+	link4.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link5.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link5b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link5.exe FILE {link5.obj link5b.obj}
+	link5.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link6.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link6b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME link6.exe FILE {link6.obj link6b.obj}
+	link6.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link7.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link7b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link7.exe FILE {link7.obj link7b.obj}
+	link7.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link8.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link8b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME link8.exe FILE {link8.obj link8b.obj}
+	link8.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link10.exe FILE {link10.obj}
+	link10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link11b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link11.exe FILE {link11.obj link11b.obj}
+	link11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link12.exe FILE {link12.obj}
+	link12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link13.exe FILE {link13.obj}
+	link13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link14b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link14c.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME link14.exe FILE {link14.obj link14b.obj link14c.obj}
+	link14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link15b.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\link15c.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME link15.exe FILE {link15.obj link15b.obj link15c.obj}
+	link15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\main1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME main1.exe FILE {main1.obj}
+	main1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\memtmp01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME memtmp01.exe FILE {memtmp01.obj}
+	memtmp01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\memtmp02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME memtmp02.exe FILE {memtmp02.obj}
+	memtmp02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\memtmp03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME memtmp03.exe FILE {memtmp03.obj}
+	memtmp03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp01.exe FILE {mp01.obj}
+	mp01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp02.exe FILE {mp02.obj}
+	mp02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp03.exe FILE {mp03.obj}
+	mp03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp04.exe FILE {mp04.obj}
+	mp04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME mp05.exe FILE {mp05.obj}
+	mp05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp06.exe FILE {mp06.obj}
+	mp06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp07.exe FILE {mp07.obj}
+	mp07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp08.exe FILE {mp08.obj}
+	mp08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp09.exe FILE {mp09.obj}
+	mp09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp10.exe FILE {mp10.obj}
+	mp10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp11.exe FILE {mp11.obj}
+	mp11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp12.exe FILE {mp12.obj}
+	mp12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mp13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mp13.exe FILE {mp13.obj}
+	mp13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ms01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ms01.exe FILE {ms01.obj}
+	ms01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\mut01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME mut01.exe FILE {mut01.obj}
+	mut01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\name1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME name1.exe FILE {name1.obj}
+	name1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\name2.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME name2.exe FILE {name2.obj}
+	name2.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\name3.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME name3.exe FILE {name3.obj}
+	name3.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new01.exe FILE {new01.obj}
+	new01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new02.exe FILE {new02.obj}
+	new02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new03.exe FILE {new03.obj}
+	new03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new04.exe FILE {new04.obj}
+	new04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new05.exe FILE {new05.obj}
+	new05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new06.exe FILE {new06.obj}
+	new06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME new07.exe FILE {new07.obj}
+	new07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new08.exe FILE {new08.obj}
+	new08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new09.exe FILE {new09.obj}
+	new09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new10.exe FILE {new10.obj}
+	new10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new11.exe FILE {new11.obj}
+	new11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new12.exe FILE {new12.obj}
+	new12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new13.exe FILE {new13.obj}
+	new13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new14.exe FILE {new14.obj}
+	new14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new15.exe FILE {new15.obj}
+	new15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new16.exe FILE {new16.obj}
+	new16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\new17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME new17.exe FILE {new17.obj}
+	new17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\nogen01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME nogen01.exe FILE {nogen01.obj}
+	nogen01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\nogen02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME nogen02.exe FILE {nogen02.obj}
+	nogen02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\nogen03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME nogen03.exe FILE {nogen03.obj}
+	nogen03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns01.exe FILE {ns01.obj}
+	ns01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns02.exe FILE {ns02.obj}
+	ns02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns03.exe FILE {ns03.obj}
+	ns03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns04.exe FILE {ns04.obj}
+	ns04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns05.exe FILE {ns05.obj}
+	ns05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns06.exe FILE {ns06.obj}
+	ns06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns07.exe FILE {ns07.obj}
+	ns07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns08.exe FILE {ns08.obj}
+	ns08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns09.exe FILE {ns09.obj}
+	ns09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns10.exe FILE {ns10.obj}
+	ns10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns11.exe FILE {ns11.obj}
+	ns11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns12.exe FILE {ns12.obj}
+	ns12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns13.exe FILE {ns13.obj}
+	ns13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns14.exe FILE {ns14.obj}
+	ns14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns15.exe FILE {ns15.obj}
+	ns15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns16.exe FILE {ns16.obj}
+	ns16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns17.exe FILE {ns17.obj}
+	ns17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns18.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns18.exe FILE {ns18.obj}
+	ns18.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns19.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns19.exe FILE {ns19.obj}
+	ns19.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns21.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns21.exe FILE {ns21.obj}
+	ns21.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns22.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns22.exe FILE {ns22.obj}
+	ns22.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns23.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns23.exe FILE {ns23.obj}
+	ns23.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns25.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns25.exe FILE {ns25.obj}
+	ns25.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns26.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns26.exe FILE {ns26.obj}
+	ns26.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns27.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns27.exe FILE {ns27.obj}
+	ns27.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns28.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns28.exe FILE {ns28.obj}
+	ns28.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns29.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns29.exe FILE {ns29.obj}
+	ns29.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns30.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns30.exe FILE {ns30.obj}
+	ns30.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns31.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns31.exe FILE {ns31.obj}
+	ns31.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns32.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns32.exe FILE {ns32.obj}
+	ns32.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns33.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns33.exe FILE {ns33.obj}
+	ns33.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns34.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns34.exe FILE {ns34.obj}
+	ns34.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns35.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns35.exe FILE {ns35.obj}
+	ns35.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns36.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns36.exe FILE {ns36.obj}
+	ns36.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns37.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns37.exe FILE {ns37.obj}
+	ns37.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns38.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns38.exe FILE {ns38.obj}
+	ns38.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns39.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns39.exe FILE {ns39.obj}
+	ns39.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns40.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns40.exe FILE {ns40.obj}
+	ns40.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns41.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns41.exe FILE {ns41.obj}
+	ns41.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns42.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns42.exe FILE {ns42.obj}
+	ns42.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns43.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns43.exe FILE {ns43.obj}
+	ns43.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns44.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns44.exe FILE {ns44.obj}
+	ns44.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ns45.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ns45.exe FILE {ns45.obj}
+	ns45.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\offset01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME offset01.exe FILE {offset01.obj}
+	offset01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq01.exe FILE {opeq01.obj}
+	opeq01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq02.exe FILE {opeq02.obj}
+	opeq02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq03.exe FILE {opeq03.obj}
+	opeq03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq04.exe FILE {opeq04.obj}
+	opeq04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq05.exe FILE {opeq05.obj}
+	opeq05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq06.exe FILE {opeq06.obj}
+	opeq06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq07.exe FILE {opeq07.obj}
+	opeq07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq08.exe FILE {opeq08.obj}
+	opeq08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq09.exe FILE {opeq09.obj}
+	opeq09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq10.exe FILE {opeq10.obj}
+	opeq10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq11.exe FILE {opeq11.obj}
+	opeq11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq12.exe FILE {opeq12.obj}
+	opeq12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq13.exe FILE {opeq13.obj}
+	opeq13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opeq14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opeq14.exe FILE {opeq14.obj}
+	opeq14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opov01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opov01.exe FILE {opov01.obj}
+	opov01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opov02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opov02.exe FILE {opov02.obj}
+	opov02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opov03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opov03.exe FILE {opov03.obj}
+	opov03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opov04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opov04.exe FILE {opov04.obj}
+	opov04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opov05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opov05.exe FILE {opov05.obj}
+	opov05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opov06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opov06.exe FILE {opov06.obj}
+	opov06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt01.exe FILE {opt01.obj}
+	opt01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt02.exe FILE {opt02.obj}
+	opt02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt03.exe FILE {opt03.obj}
+	opt03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt04.exe FILE {opt04.obj}
+	opt04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt05.exe FILE {opt05.obj}
+	opt05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt06.exe FILE {opt06.obj}
+	opt06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt07.exe FILE {opt07.obj}
+	opt07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt08.exe FILE {opt08.obj}
+	opt08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -za  -fo=.obj
+	wlink @test.lnk   NAME opt09.exe FILE {opt09.obj}
+	opt09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt10.exe FILE {opt10.obj}
+	opt10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt11.exe FILE {opt11.obj}
+	opt11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt12.exe FILE {opt12.obj}
+	opt12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fpd  -fo=.obj
+	wlink @test.lnk   NAME opt13.exe FILE {opt13.obj}
+	opt13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt14.exe FILE {opt14.obj}
+	opt14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt15.exe FILE {opt15.obj}
+	opt15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt16.exe FILE {opt16.obj}
+	opt16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt17.exe FILE {opt17.obj}
+	opt17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt18.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt18.exe FILE {opt18.obj}
+	opt18.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt19.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt19.exe FILE {opt19.obj}
+	opt19.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt20.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt20.exe FILE {opt20.obj}
+	opt20.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt21.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt21.exe FILE {opt21.obj}
+	opt21.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt22.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt22.exe FILE {opt22.obj}
+	opt22.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt23.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt23.exe FILE {opt23.obj}
+	opt23.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt24.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt24.exe FILE {opt24.obj}
+	opt24.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt25.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt25.exe FILE {opt25.obj}
+	opt25.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt26.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt26.exe FILE {opt26.obj}
+	opt26.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt27.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt27.exe FILE {opt27.obj}
+	opt27.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt28.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt28.exe FILE {opt28.obj}
+	opt28.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt29.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt29.exe FILE {opt29.obj}
+	opt29.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt30.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt30.exe FILE {opt30.obj}
+	opt30.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt31.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt31.exe FILE {opt31.obj}
+	opt31.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt32.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk  option stack=128k NAME opt32.exe FILE {opt32.obj}
+	opt32.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt33.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt33.exe FILE {opt33.obj}
+	opt33.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt34.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt34.exe FILE {opt34.obj}
+	opt34.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt35.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt35.exe FILE {opt35.obj}
+	opt35.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt36.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt36.exe FILE {opt36.obj}
+	opt36.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt37.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt37.exe FILE {opt37.obj}
+	opt37.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt39.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt39.exe FILE {opt39.obj}
+	opt39.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt40.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt40.exe FILE {opt40.obj}
+	opt40.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt41.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt41.exe FILE {opt41.obj}
+	opt41.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt42.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt42.exe FILE {opt42.obj}
+	opt42.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt44.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -os  -fo=.obj
+	wlink @test.lnk   NAME opt44.exe FILE {opt44.obj}
+	opt44.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\opt45.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME opt45.exe FILE {opt45.obj}
+	opt45.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over01.exe FILE {over01.obj}
+	over01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over02.exe FILE {over02.obj}
+	over02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over03.exe FILE {over03.obj}
+	over03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over04.exe FILE {over04.obj}
+	over04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over05.exe FILE {over05.obj}
+	over05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over06.exe FILE {over06.obj}
+	over06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over07.exe FILE {over07.obj}
+	over07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over08.exe FILE {over08.obj}
+	over08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over09.exe FILE {over09.obj}
+	over09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over10.exe FILE {over10.obj}
+	over10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over11.exe FILE {over11.obj}
+	over11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over12.exe FILE {over12.obj}
+	over12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over13.exe FILE {over13.obj}
+	over13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over14.exe FILE {over14.obj}
+	over14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\over15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME over15.exe FILE {over15.obj}
+	over15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pack1.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pack1.exe FILE {pack1.obj}
+	pack1.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pack2.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pack2.exe FILE {pack2.obj}
+	pack2.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pack3.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pack3.exe FILE {pack3.obj}
+	pack3.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pack4.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pack4.exe FILE {pack4.obj}
+	pack4.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pack5.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pack5.exe FILE {pack5.obj}
+	pack5.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pack6.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -ot -zp8  -fo=.obj
+	wlink @test.lnk   NAME pack6.exe FILE {pack6.obj}
+	pack6.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pack7.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -wx  -fo=.obj
+	wlink @test.lnk   NAME pack7.exe FILE {pack7.obj}
+	pack7.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm01.exe FILE {parm01.obj}
+	parm01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm02.exe FILE {parm02.obj}
+	parm02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm03.exe FILE {parm03.obj}
+	parm03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm04.exe FILE {parm04.obj}
+	parm04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm05.exe FILE {parm05.obj}
+	parm05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm06.exe FILE {parm06.obj}
+	parm06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm07.exe FILE {parm07.obj}
+	parm07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm08.exe FILE {parm08.obj}
+	parm08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME parm09.exe FILE {parm09.obj}
+	parm09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm10.exe FILE {parm10.obj}
+	parm10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm11.exe FILE {parm11.obj}
+	parm11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parm12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parm12.exe FILE {parm12.obj}
+	parm12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\parse01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME parse01.exe FILE {parse01.obj}
+	parse01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch01.exe FILE {pch01.obj}
+	pch01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch02.exe FILE {pch02.obj}
+	pch02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch03.exe FILE {pch03.obj}
+	pch03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch04.exe FILE {pch04.obj}
+	pch04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch05.exe FILE {pch05.obj}
+	pch05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch06.exe FILE {pch06.obj}
+	pch06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch07.exe FILE {pch07.obj}
+	pch07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch08.exe FILE {pch08.obj}
+	pch08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch09.exe FILE {pch09.obj}
+	pch09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch10.exe FILE {pch10.obj}
+	pch10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch11.exe FILE {pch11.obj}
+	pch11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch12.exe FILE {pch12.obj}
+	pch12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pch13.exe FILE {pch13.obj}
+	pch13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch14.exe FILE {pch14.obj}
+	pch14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME pch15.exe FILE {pch15.obj}
+	pch15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq -xst -fo=.obj
+	wlink @test.lnk   NAME pch16.exe FILE {pch16.obj}
+	pch16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pch17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq -xst -fo=.obj
+	wlink @test.lnk   NAME pch17.exe FILE {pch17.obj}
+	pch17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp01.exe FILE {pp01.obj}
+	pp01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp02.exe FILE {pp02.obj}
+	pp02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp03.exe FILE {pp03.obj}
+	pp03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp04.exe FILE {pp04.obj}
+	pp04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp05.exe FILE {pp05.obj}
+	pp05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp06.exe FILE {pp06.obj}
+	pp06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp07.exe FILE {pp07.obj}
+	pp07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -w0  -fo=.obj
+	wlink @test.lnk   NAME pp08.exe FILE {pp08.obj}
+	pp08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp09.exe FILE {pp09.obj}
+	pp09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp10.exe FILE {pp10.obj}
+	pp10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp11.exe FILE {pp11.obj}
+	pp11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp12.exe FILE {pp12.obj}
+	pp12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp13.exe FILE {pp13.obj}
+	pp13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp14.exe FILE {pp14.obj}
+	pp14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp15.exe FILE {pp15.obj}
+	pp15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp16.exe FILE {pp16.obj}
+	pp16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME pp17.exe FILE {pp17.obj}
+	pp17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp18.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp18.exe FILE {pp18.obj}
+	pp18.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp19.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp19.exe FILE {pp19.obj}
+	pp19.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp20.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp20.exe FILE {pp20.obj}
+	pp20.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp21.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp21.exe FILE {pp21.obj}
+	pp21.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp22.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp22.exe FILE {pp22.obj}
+	pp22.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp23.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp23.exe FILE {pp23.obj}
+	pp23.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp24.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp24.exe FILE {pp24.obj}
+	pp24.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp25.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp25.exe FILE {pp25.obj}
+	pp25.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp26.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp26.exe FILE {pp26.obj}
+	pp26.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp27.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp27.exe FILE {pp27.obj}
+	pp27.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp28.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp28.exe FILE {pp28.obj}
+	pp28.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp29.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp29.exe FILE {pp29.obj}
+	pp29.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp30.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp30.exe FILE {pp30.obj}
+	pp30.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp31.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp31.exe FILE {pp31.obj}
+	pp31.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp32.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp32.exe FILE {pp32.obj}
+	pp32.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp33.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp33.exe FILE {pp33.obj}
+	pp33.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp34.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp34.exe FILE {pp34.obj}
+	pp34.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp35.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp35.exe FILE {pp35.obj}
+	pp35.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp36.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp36.exe FILE {pp36.obj}
+	pp36.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp37.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp37.exe FILE {pp37.obj}
+	pp37.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\pp38.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME pp38.exe FILE {pp38.obj}
+	pp38.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\prag01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME prag01.exe FILE {prag01.obj}
+	prag01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\prag02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME prag02.exe FILE {prag02.obj}
+	prag02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\prag03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -fhq  -fo=.obj
+	wlink @test.lnk   NAME prag03.exe FILE {prag03.obj}
+	prag03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\prag04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME prag04.exe FILE {prag04.obj}
+	prag04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\quest01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME quest01.exe FILE {quest01.obj}
+	quest01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\quest02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME quest02.exe FILE {quest02.obj}
+	quest02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\quest03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME quest03.exe FILE {quest03.obj}
+	quest03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref01.exe FILE {ref01.obj}
+	ref01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref02.exe FILE {ref02.obj}
+	ref02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref03.exe FILE {ref03.obj}
+	ref03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref04.exe FILE {ref04.obj}
+	ref04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref05.exe FILE {ref05.obj}
+	ref05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref06.exe FILE {ref06.obj}
+	ref06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref07.exe FILE {ref07.obj}
+	ref07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref08.exe FILE {ref08.obj}
+	ref08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref09.exe FILE {ref09.obj}
+	ref09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref10.exe FILE {ref10.obj}
+	ref10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref11.exe FILE {ref11.obj}
+	ref11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref12.exe FILE {ref12.obj}
+	ref12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref13.exe FILE {ref13.obj}
+	ref13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref14.exe FILE {ref14.obj}
+	ref14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref15.exe FILE {ref15.obj}
+	ref15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ref16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ref16.exe FILE {ref16.obj}
+	ref16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\reint00.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME reint00.exe FILE {reint00.obj}
+	reint00.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret01.exe FILE {ret01.obj}
+	ret01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret02.exe FILE {ret02.obj}
+	ret02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret03.exe FILE {ret03.obj}
+	ret03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret04.exe FILE {ret04.obj}
+	ret04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret05.exe FILE {ret05.obj}
+	ret05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret06.exe FILE {ret06.obj}
+	ret06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret07.exe FILE {ret07.obj}
+	ret07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret08.exe FILE {ret08.obj}
+	ret08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret09.exe FILE {ret09.obj}
+	ret09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret10.exe FILE {ret10.obj}
+	ret10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret11.exe FILE {ret11.obj}
+	ret11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\ret12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME ret12.exe FILE {ret12.obj}
+	ret12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\risc01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME risc01.exe FILE {risc01.obj}
+	risc01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\rtti01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME rtti01.exe FILE {rtti01.obj}
+	rtti01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\rtti02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -xr  -fo=.obj
+	wlink @test.lnk   NAME rtti02.exe FILE {rtti02.obj}
+	rtti02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\rtti03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -xr -xst -fo=.obj
+	wlink @test.lnk   NAME rtti03.exe FILE {rtti03.obj}
+	rtti03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\rtti04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -xr  -fo=.obj
+	wlink @test.lnk   NAME rtti04.exe FILE {rtti04.obj}
+	rtti04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\rtti05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -xr  -fo=.obj
+	wlink @test.lnk   NAME rtti05.exe FILE {rtti05.obj}
+	rtti05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\rtti06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -xr -xst -fo=.obj
+	wlink @test.lnk   NAME rtti06.exe FILE {rtti06.obj}
+	rtti06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\rtti07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -xr  -fo=.obj
+	wlink @test.lnk   NAME rtti07.exe FILE {rtti07.obj}
+	rtti07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\rtti08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -xr -xbnm  -fo=.obj
+	wlink @test.lnk   NAME rtti08.exe FILE {rtti08.obj}
+	rtti08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\setjmp01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME setjmp01.exe FILE {setjmp01.obj}
+	setjmp01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\setjmp02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME setjmp02.exe FILE {setjmp02.obj}
+	setjmp02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\setjmp03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME setjmp03.exe FILE {setjmp03.obj}
+	setjmp03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\sizeof01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME sizeof01.exe FILE {sizeof01.obj}
+	sizeof01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\sizeof02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME sizeof02.exe FILE {sizeof02.obj}
+	sizeof02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\sizeof03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME sizeof03.exe FILE {sizeof03.obj}
+	sizeof03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\src01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME src01.exe FILE {src01.obj}
+	src01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\stat01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME stat01.exe FILE {stat01.obj}
+	stat01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\stat02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME stat02.exe FILE {stat02.obj}
+	stat02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\str01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME str01.exe FILE {str01.obj}
+	str01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\str02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME str02.exe FILE {str02.obj}
+	str02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\str03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME str03.exe FILE {str03.obj}
+	str03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\str04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME str04.exe FILE {str04.obj}
+	str04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\switch01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME switch01.exe FILE {switch01.obj}
+	switch01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\thread01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -i"c:\dev\open-watcom-v2-new\rel/h/nt"  -fo=.obj
+	wlink @test.lnk   NAME thread01.exe FILE {thread01.obj}
+	thread01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\thread02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME thread02.exe FILE {thread02.obj}
+	thread02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\udc01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME udc01.exe FILE {udc01.obj}
+	udc01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\udc02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME udc02.exe FILE {udc02.obj}
+	udc02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\union01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME union01.exe FILE {union01.obj}
+	union01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\union02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME union02.exe FILE {union02.obj}
+	union02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\union03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME union03.exe FILE {union03.obj}
+	union03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vb01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vb01.exe FILE {vb01.obj}
+	vb01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vb02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vb02.exe FILE {vb02.obj}
+	vb02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vb03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vb03.exe FILE {vb03.obj}
+	vb03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf01.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf01.exe FILE {vf01.obj}
+	vf01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf02.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf02.exe FILE {vf02.obj}
+	vf02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf03.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf03.exe FILE {vf03.obj}
+	vf03.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf04.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf04.exe FILE {vf04.obj}
+	vf04.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf05.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf05.exe FILE {vf05.obj}
+	vf05.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf06.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf06.exe FILE {vf06.obj}
+	vf06.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf07.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf07.exe FILE {vf07.obj}
+	vf07.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf08.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf08.exe FILE {vf08.obj}
+	vf08.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf09.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf09.exe FILE {vf09.obj}
+	vf09.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf10.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf10.exe FILE {vf10.obj}
+	vf10.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf11.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf11.exe FILE {vf11.obj}
+	vf11.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf12.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf12.exe FILE {vf12.obj}
+	vf12.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf13.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf13.exe FILE {vf13.obj}
+	vf13.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf14.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf14.exe FILE {vf14.obj}
+	vf14.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf15.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf15.exe FILE {vf15.obj}
+	vf15.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf16.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf16.exe FILE {vf16.obj}
+	vf16.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf17.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -zv  -fo=.obj
+	wlink @test.lnk  option vfremoval NAME vf17.exe FILE {vf17.obj}
+	vf17.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf18.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br -za  -fo=.obj
+	wlink @test.lnk   NAME vf18.exe FILE {vf18.obj}
+	vf18.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf19.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf19.exe FILE {vf19.obj}
+	vf19.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf20.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br  -xst -fo=.obj
+	wlink @test.lnk   NAME vf20.exe FILE {vf20.obj}
+	vf20.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" source\vf21.c -we-w0 -Isource -ox-d1-xdt-ms-zfp -br   -fo=.obj
+	wlink @test.lnk   NAME vf21.exe FILE {vf21.obj}
+	vf21.exe  >>exec.out
+	wcl386 -zq -bt=nt -fpc -ox -w8 -fe=.\chk_exec.exe -I"c:\dev\open-watcom-v2-new/bld/watcom/h"  c:\dev\open-watcom-v2-new\bld\watcom\c\chk_exec.c
+	%write error.out OK
+	.\chk_exec.exe exec.out >>error.out
+	diff -b error.out error.chk
+	%append c:\dev\open-watcom-v2-new/bld/plustest/positive.log PASS \dev\open-watcom-v2-new\bld\plustest\regress\positive
+	rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+	rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res

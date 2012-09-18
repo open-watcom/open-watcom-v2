@@ -1,3 +1,5 @@
+PASS compiling tomexe
+PASS executing tomexe
 tomexe: >start
 In __dll_initialize
 In Constructor

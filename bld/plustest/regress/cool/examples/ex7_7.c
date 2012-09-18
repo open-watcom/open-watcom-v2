@@ -20,7 +20,6 @@
 #include <cool/Association.C>
 
 int main (void) {
-    cout << __FILE__ << endl;
   typedef CoolPair<CoolGen_String,int> HackSI; //##
   CoolAssociation<CoolGen_String,int> a1;       // Declare CoolAssociation variable
   CoolGen_String s;                             // Temporary string variable

@@ -70,29 +70,29 @@ EH_except39 = yes
 EH_except40 = yes
 EH_except41 = yes
 EH_except42 = yes
-EH_exc01a = yes
-EH_exc01b = yes
-EH_gpf01 = yes
-EH_init28 = yes
-EH_link6a = yes
-EH_link6b = yes
-EH_link8a = yes
-EH_link8b = yes
-EH_link14a = yes
-EH_link14b = yes
-EH_link14c = yes
-EH_mp05 = yes
-EH_new07 = yes
-EH_parm09 = yes
-EH_pch16 = yes
-EH_pch17 = yes
-EH_pp17 = yes
-EH_rtti03 = yes
-EH_rtti06 = yes
+EH_exc01    = yes
+EH_exc01b   = yes
+EH_gpf01    = yes
+EH_init28   = yes
+EH_link6    = yes
+EH_link6b   = yes
+EH_link8    = yes
+EH_link8b   = yes
+EH_link14   = yes
+EH_link14b  = yes
+EH_link14c  = yes
+EH_mp05     = yes
+EH_new07    = yes
+EH_parm09   = yes
+EH_pch16    = yes
+EH_pch17    = yes
+EH_pp17     = yes
+EH_rtti03   = yes
+EH_rtti06   = yes
 EH_setjmp01 = yes
 EH_setjmp02 = yes
 EH_setjmp03 = yes
-EH_vf20 = yes
+EH_vf20     = yes
 
 !ifdef %plustest_bad_br
 no_br_except30 = no
@@ -149,7 +149,7 @@ opt_rtti05 = -xr
 opt_rtti06 = -xr
 opt_rtti07 = -xr
 opt_rtti08 = -xr -xbnm
-opt_thread01 = -i"$(lang_root)/h/nt"
+opt_thread01 = -i"$(watcom_root)/h/nt"
 opt_vf18 = -za
 
 !ifneq arch i86
@@ -180,7 +180,6 @@ opt_link_vf17 = option vfremoval
 # tests temporarily excluded from alpha
 #
 bad_on_axp = &
-
 
 positive_tests = &
     access01.$(ext) &
@@ -864,9 +863,8 @@ positive_tests = &
     vf20.$(ext) &
     vf21.$(ext) &
 
+ext = $(exe)
 
-
-ext = $(ext_$(arch))
 !ifeq arch axp
 positive_exes = $+ $(positive_tests) $-
 !else

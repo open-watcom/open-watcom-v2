@@ -25,7 +25,6 @@ static CoolGen_String text ("\n\
      can be done.");
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolAVL_Tree<CoolString> avl1;                // Declare tree variable
   CoolGen_String s;                             // Temporary CoolString variable
   text.compile ("[a-zA-Z]+");                   // Match any alphabetical word

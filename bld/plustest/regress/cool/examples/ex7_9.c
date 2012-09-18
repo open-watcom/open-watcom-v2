@@ -18,7 +18,6 @@
 #include <cool/Hash_Table.C>
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolHash_Table<CoolGen_String,int> h1;        // Declare CoolHash_Table variable
   CoolGen_String s;                             // Temporary string variable
   int counter = 0, max_count = 0;               // Initialize word counters

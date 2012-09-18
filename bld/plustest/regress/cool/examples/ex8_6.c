@@ -17,7 +17,6 @@ enum colors { RED=1, YELLOW, PINK, GREEN, ORANGE, PURPLE, BLUE };
 static colors color_table[] = {RED, YELLOW, PINK, GREEN, ORANGE, PURPLE, BLUE};
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolBit_Set a, b;                             // Declare two bit set objects
   for (int i = 0; i < 5; i++) {                 // For each color defined
     a.put (color_table[i]);                     // Add object to first set

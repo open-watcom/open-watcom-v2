@@ -1,5 +1,8 @@
+PASS compiling chkcl
 CHKCL -- passed all tests
 
+PASS executing chkcl
+PASS compiling ctordtor
   1 -- NullClass CTOR
   2 -- NullClass CTOR
   3 -- NullClass CTOR
@@ -72,6 +75,8 @@ CHKCL -- passed all tests
   3 -- NullClass DTOR
   2 -- NullClass DTOR
   1 -- NullClass DTOR
+PASS executing ctordtor
+PASS compiling mp
 
 Safe
 ****
@@ -93,6 +98,8 @@ Unsafe
 110 - a a a a a a a 3 a -
 112 - a a a a a a 3 3 a -
 114 - a a a a 3 a 3 3 a -
+PASS executing mp
+PASS compiling ovldall
  1.operator + ( 100 )
 100  1.operator + ()
  1.operator - ( 101 )
@@ -138,6 +145,8 @@ Unsafe
 139 1.operator->
  1.operator [] ( 140 )
 141  1.operator () ( )
+PASS executing ovldall
+PASS compiling switcher
 S DTOR'd
 foo1 return -- a=1 b=4
 foo1 return -- a=2 b=12
@@ -153,3 +162,4 @@ Miller Time: 3 3 DTOR naked
 Miller Time: 4 4: 4
 Miller Time: 5 1 4: 4
 S DTOR'd
+PASS executing switcher

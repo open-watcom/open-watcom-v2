@@ -1,5 +1,6 @@
 plustest_name = nih
-!include ../environ.mif
+
+!include testenv.mif
 
 objs =  &
     arrayob.obj  &
@@ -45,31 +46,30 @@ objs =  &
     time.obj 
 
 !ifdef test1
-test_cflags = -d2
+test_flags = -d2
 alt_error=01
 !else
-test_cflags = -ox-d1
+test_flags = -ox-d1
 alt_error=00
 !endif
 
-test_cflags += -zq -DNESTED_TYPES -w0 -I. -fi=__ialias.h
+test_flags += -DNESTED_TYPES -w0 -I. -fi=__ialias.h
 
-test_cflags_386 = -mf
-test_cflags_i86 = -ml
-test_cflags_axp =
+test_flags_386 = -mf
+test_flags_i86 = -ml
+test_flags_axp =
 
-.c.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags) $(test_cflags_$(arch)) -fo=.obj
-
-test : .symbolic start_test $(objs)
-    @%make global
+test : .symbolic clean start_test $(objs)
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .symbolic
+clean : .procedure
     @%make common_clean

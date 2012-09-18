@@ -15,9 +15,6 @@ labs_
 sin_
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj21.obj pubdef ****
@@ -37,9 +34,6 @@ labs_
 sin_
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj31.obj pubdef ****
@@ -59,9 +53,6 @@ labs_
 sin_
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj41.obj pubdef ****
@@ -81,9 +72,6 @@ labs_
 sin_
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj51.obj pubdef ****
@@ -103,9 +91,6 @@ labs_
 sin_
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj61.obj pubdef ****
@@ -125,9 +110,6 @@ labs_
 sin_
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj71.obj pubdef ****
@@ -147,9 +129,6 @@ labs_
 sin_
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj81.obj pubdef ****
@@ -169,9 +148,6 @@ labs_
 sin_
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj91.obj pubdef ****
@@ -191,9 +167,6 @@ labs_
 sin_
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj12.obj pubdef ****
@@ -211,9 +184,6 @@ printf_
 abort_
 labs_
 sin_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -232,9 +202,6 @@ printf_
 abort_
 labs_
 sin_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -253,9 +220,6 @@ printf_
 abort_
 labs_
 sin_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -274,9 +238,6 @@ printf_
 abort_
 labs_
 sin_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -295,9 +256,6 @@ printf_
 abort_
 labs_
 sin_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -316,9 +274,6 @@ printf_
 abort_
 labs_
 sin_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -337,9 +292,6 @@ printf_
 abort_
 labs_
 sin_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -358,9 +310,6 @@ printf_
 abort_
 labs_
 sin_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -379,9 +328,6 @@ printf_
 abort_
 labs_
 sin_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -400,9 +346,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj23.obj pubdef ****
@@ -420,9 +363,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj33.obj pubdef ****
@@ -440,9 +380,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj43.obj pubdef ****
@@ -460,9 +397,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj53.obj pubdef ****
@@ -480,9 +414,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj63.obj pubdef ****
@@ -500,9 +431,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj73.obj pubdef ****
@@ -520,9 +448,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj83.obj pubdef ****
@@ -540,9 +465,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj93.obj pubdef ****
@@ -560,9 +482,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 **** obj14.obj pubdef ****
@@ -577,9 +496,6 @@ _errors
 **** obj14.obj extdef ****
 printf_
 abort_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -595,9 +511,6 @@ _errors
 **** obj24.obj extdef ****
 printf_
 abort_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -613,9 +526,6 @@ _errors
 **** obj34.obj extdef ****
 printf_
 abort_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -631,9 +541,6 @@ errors
 **** obj44.obj extdef ****
 printf_
 abort_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -649,9 +556,6 @@ ERRORS
 **** obj54.obj extdef ****
 printf_
 abort_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -667,9 +571,6 @@ errors
 **** obj64.obj extdef ****
 printf_
 abort_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -685,9 +586,6 @@ ERRORS
 **** obj74.obj extdef ****
 printf_
 abort_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -703,9 +601,6 @@ _errors
 **** obj84.obj extdef ****
 printf_
 abort_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -721,9 +616,6 @@ _errors
 **** obj94.obj extdef ****
 printf_
 abort_
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 __8087
@@ -744,9 +636,6 @@ labs
 sin
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj2s1.obj pubdef ****
@@ -766,9 +655,6 @@ labs
 sin
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj3s1.obj pubdef ****
@@ -788,9 +674,6 @@ labs
 sin
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj4s1.obj pubdef ****
@@ -810,9 +693,6 @@ labs
 sin
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj5s1.obj pubdef ****
@@ -832,9 +712,6 @@ labs
 sin
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj6s1.obj pubdef ****
@@ -854,9 +731,6 @@ labs
 sin
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj7s1.obj pubdef ****
@@ -876,9 +750,6 @@ labs
 sin
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj8s1.obj pubdef ****
@@ -898,9 +769,6 @@ labs
 sin
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj9s1.obj pubdef ****
@@ -920,9 +788,6 @@ labs
 sin
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj1s2.obj pubdef ****
@@ -940,9 +805,6 @@ printf
 abort
 labs
 sin
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -961,9 +823,6 @@ printf
 abort
 labs
 sin
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -982,9 +841,6 @@ printf
 abort
 labs
 sin
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1003,9 +859,6 @@ printf
 abort
 labs
 sin
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1024,9 +877,6 @@ printf
 abort
 labs
 sin
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1045,9 +895,6 @@ printf
 abort
 labs
 sin
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1066,9 +913,6 @@ printf
 abort
 labs
 sin
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1087,9 +931,6 @@ printf
 abort
 labs
 sin
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1108,9 +949,6 @@ printf
 abort
 labs
 sin
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1129,9 +967,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj2s3.obj pubdef ****
@@ -1149,9 +984,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj3s3.obj pubdef ****
@@ -1169,9 +1001,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj4s3.obj pubdef ****
@@ -1189,9 +1018,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj5s3.obj pubdef ****
@@ -1209,9 +1035,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj6s3.obj pubdef ****
@@ -1229,9 +1052,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj7s3.obj pubdef ****
@@ -1249,9 +1069,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj8s3.obj pubdef ****
@@ -1269,9 +1086,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj9s3.obj pubdef ****
@@ -1289,9 +1103,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj1s4.obj pubdef ****
@@ -1306,9 +1117,6 @@ _errors
 **** obj1s4.obj extdef ****
 printf
 abort
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1324,9 +1132,6 @@ _errors
 **** obj2s4.obj extdef ****
 printf
 abort
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1342,9 +1147,6 @@ _errors
 **** obj3s4.obj extdef ****
 printf
 abort
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1360,9 +1162,6 @@ errors
 **** obj4s4.obj extdef ****
 printf
 abort
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1378,9 +1177,6 @@ ERRORS
 **** obj5s4.obj extdef ****
 printf
 abort
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1396,9 +1192,6 @@ errors
 **** obj6s4.obj extdef ****
 printf
 abort
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1414,9 +1207,6 @@ ERRORS
 **** obj7s4.obj extdef ****
 printf
 abort
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1432,9 +1222,6 @@ errors
 **** obj8s4.obj extdef ****
 printf
 abort
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1450,9 +1237,6 @@ errors
 **** obj9s4.obj extdef ****
 printf
 abort
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087

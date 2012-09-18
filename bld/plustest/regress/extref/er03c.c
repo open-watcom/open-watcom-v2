@@ -1,8 +1,13 @@
-#include "fail.h"
 #include "er03.h"
 
-D v;
+struct my_class {
+    int v;
+    my_class()
+    {
+	// should never execute this!
+	puts( "fail" );
+	throw D();
+    }
+};
 
-int main() {
-    _PASS;
-}
+my_class v;

@@ -11,7 +11,7 @@ int test() {
 	p = &skip_list[ &temp ];
 	cout << int( p == 0 ) << endl;
     } catch( ... ) {
-	cout << "PASS " << __FILE__ << endl;
+	cout << "PASS" << endl;
     }
     return 0;
 };

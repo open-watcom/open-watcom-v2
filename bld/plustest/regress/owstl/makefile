@@ -1,41 +1,42 @@
 plustest_name = owstl
-!include ../environ.mif
+
+!include testenv.mif
 
 !ifdef test1
-test_cflags_386 = -d2-fpd-xs-za
-test_cflags_i86 = -d2-fpd-xs-za
-test_cflags_axp = -d2-xs-za
+test_flags_386 = -d2-fpd-xs-za
+test_flags_i86 = -d2-fpd-xs-za
+test_flags_axp = -d2-xs-za
 alt_error=01
 !else ifdef test2   # This test was using -xss, but that does not entirely work yet.
-test_cflags_386 = -os-d1-3s-xs $(br_opt)
-test_cflags_i86 = -os-d1-xs
-test_cflags_axp = -os-d1-xs
+test_flags_386 = -os-d1-3s-xs $(br_opt)
+test_flags_i86 = -os-d1-xs
+test_flags_axp = -os-d1-xs
 alt_error=02
 !else ifdef test3   # This test was using -xss, but that does not entirely work yet.
-test_cflags_386 = -ot-d1-3s-xs-xr
-test_cflags_i86 = -ot-d1-xs-xr
-test_cflags_axp = -ot-d1-xs-xr
+test_flags_386 = -ot-d1-3s-xs-xr
+test_flags_i86 = -ot-d1-xs-xr
+test_flags_axp = -ot-d1-xs-xr
 alt_error=03
 !else ifdef test4   # This test was using -oe500 but that does not entirely work yet.
-test_cflags_386 = -ox-3r-fpd-xs
-test_cflags_i86 = -ox-fpd-xs
-test_cflags_axp = -ox-xs
+test_flags_386 = -ox-3r-fpd-xs
+test_flags_i86 = -ox-fpd-xs
+test_flags_axp = -ox-xs
 alt_error=04
 !else ifdef test5
-test_cflags_386 = -d2-xs $(br_opt)
-test_cflags_i86 = -d2-xs
-test_cflags_axp = -d2-xs
+test_flags_386 = -d2-xs $(br_opt)
+test_flags_i86 = -d2-xs
+test_flags_axp = -d2-xs
 alt_error=05
 !else
-test_cflags_386 = -os-d2-xst
-test_cflags_i86 = -os-d2-xst
-test_cflags_axp = -os-d2-xst
+test_flags_386 = -os-d2-xst
+test_flags_i86 = -os-d2-xst
+test_flags_axp = -os-d2-xst
 alt_error=00
 !endif
 
-test_cflags_386 += -zq-wx-wcd433-fpi87-fp5-mf
-test_cflags_i86 += -zq-wx-wcd433-fpi87-fp5-ml-zm
-test_cflags_axp += -zq-wx-wcd433
+test_flags_386 += -wx-wcd433-fpi87-fp5-mf
+test_flags_i86 += -wx-wcd433-fpi87-fp5-ml-zm
+test_flags_axp += -wx-wcd433
 
 stack_386=opt stack=32k
 stack_i86=opt stack=8k
@@ -86,60 +87,45 @@ ext =
 names = $+ $(template) $-
 
 # define flags specific to tests here
-extra_cflags_typetr01 = -za0x
-extra_cflags_mmwin16 = -I"$(%WATCOM)/h/win" -dmmWin16
-extra_cflags_mmwindef = -I"$(%WATCOM)/h/nt"
+opt_typetr01 = -za0x
+opt_mmwin16 = -I"$(%WATCOM)/h/win" -dmmWin16
+opt_mmwindef = -I"$(%WATCOM)/h/nt"
 !ifeq arch i86
-extra_cflags_mmwindef += -3
+opt_mmwindef += -3
 !endif
 
-.cpp.obj :
-    $(wpp_$(arch)) $[@ $(test_cflags_$(arch)) -e1000 $(extra_cflags_$[*) -fo=.obj
+test_flags = -e1000
 
 # this is my laziness bit...
 $(names) : test.lnk .symbolic
     @%make $^*.obj
     $(linker) @test.lnk NAME $^*.exe FILE $^*.obj
-    $(run) $^*.exe
+    $(run) $(exec_prefix)$^*.exe
     @echo PASS
 
 !ifdef __OS2__
 mmwindef.$(exe): .symbolic
-    @%append test.out ----------$^*----------
+    @%append exec.out ----------$^*----------
 !endif
-
-.obj.$(exe):
-    $(linker) @test.lnk NAME $@ FILE $[@
-    @%append test.out ----------$^*----------
-    $(run) $(exec_prefix)$@ >> test.out
 
 # the main target environment.mif calls to run the test suite
 
 !ifeq arch i86
-test : .symbolic start_test
+test : .symbolic clean start_test
 !else
-test : .symbolic start_test test.lnk $(exes)
-    diff test.out test.chk
+test : .symbolic clean start_test test.lnk $(exes)
+    diff exec.out test.chk
 !endif
-    @%make global
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 start_test : .symbolic
-    %create test.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
-test.lnk : makefile
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch))
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
-    @if exist test.out cp test.out s$(arch)_$(alt_error).sav
-
-global : .SYMBOLIC
-    @rm -f mmwin16.cpp mmwindef.cpp
-    @%make common_clean
+    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
 # ensures mmwindef.cpp and mmwin16.cpp are always identical to 
 # nominmax.cpp
@@ -150,3 +136,7 @@ mmwin16.cpp : nominmax.cpp
 mmwindef.cpp : nominmax.cpp
     cp nominmax.cpp mmwindef.cpp
 
+clean : .procedure
+    @if exist mmwin16.cpp rm -f mmwin16.cpp
+    @if exist mmwindef.cpp rm -f mmwindef.cpp
+    @%make common_clean

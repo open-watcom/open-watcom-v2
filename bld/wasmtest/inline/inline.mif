@@ -1,9 +1,5 @@
 .CONTINUE
 
-.extensions:
-.extensions: .exe .ls1 .lst .obj .err .gc .c .cc .cpp .asm .mif
-.mif: $(mif_path)
-
 asm_objs = &
 3dnow.ls1 &
 486.ls1 &
@@ -130,52 +126,11 @@ opt_fixup = -3
 
 extra_sed_filedos = -f $(wasmtest_dir)/fixlst4.sed
 
-!ifndef testcomp
-testcomp=wcc386
-!endif 
-
-test_cflags=-wx -we -s -os -zq
-
-.error
-    @echo $(%error_msg)
-    @%append $(%error_file) $(%error_msg)
+test_flags_386 = -wx -we -s -os -zq
+test_flags_i86 = -wx -we -s -os -zq
 
 .asm.gc:
-    awk -v target=$(init_$^&) -f ../createc.awk $[@ >$@
-
-.gc.obj:
-    @set error_msg=failure to compile $^&
-    @$(testcomp) $[@ $(test_cflags) $(opt_$^*) -fo=.obj
-    @echo PASS $(testcomp) compiling $^&
-    @%append $(%error_file) PASS $(testcomp) compiling $^&
-
-.c.obj:
-    @set error_msg=failure to compile $^&
-    @$(testcomp) $[@ $(test_cflags) $(opt_$^*) -fo=.obj
-    @echo PASS $(testcomp) compiling $^&
-    @%append $(%error_file) PASS $(testcomp) compiling $^&
-
-.obj.ls1:
-    @set error_msg=failure to decode $^&
-    wdis -a $[@ | sed -f ../fixlst2.sed | awk -f ../fixlst3.awk >$@
-    @set CHK_CHECK=diff -i -b $@ $^&.asm
-    @if exist $^&.chk @set CHK_CHECK=diff -i -b $@ $^&.chk
-    @$(%CHK_CHECK)
-    @echo PASS decoding $[@
-    @%append $(%error_file) PASS decoding $[@
-
-.obj.lst:
-    @set error_msg=failure to decode $^&
-    @set ESM_CHECK=%null
-    @if exist $^&.esm @set ESM_CHECK=diff -i -b $^&.dis $^&.esm
-    -wdis -a $[@ | sed -f ../fixlst2.sed $(extra_sed_$^*) >$^&.dis
-    @$(%ESM_CHECK)
-    @set EMP_CHECK=%null
-    @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lst $^&.emp
-    -dmpobj -q -rec=FIXUPP $[@ | sed -f ../fixlst1.sed >$@
-    @$(%EMP_CHECK)
-    @echo PASS decoding $[@
-    @%append $(%error_file) PASS decoding $[@
+    awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk $[@ >$@
 
 !ifndef log_file
 log_file=testcomp.log
@@ -183,7 +138,7 @@ log_file=testcomp.log
 
 .BEFORE
     @%create $(log_file)
-    @set error_file=$(log_file)
+    @set ERROR_FILE=$(log_file)
 
 all : clean $(asm_objs) $(c_objs) .SYMBOLIC
 

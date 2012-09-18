@@ -4,14 +4,19 @@ wasmtest_name = result
 
 all_tests = test1 test2 test3 ideal diag
 
-!include environ.mif
+!include testenv.mif
 
-test : .symbolic start_test $(all_tests) finish_test
+test : .symbolic clean start_test $(all_tests) ./chktest.exe
+    @cdsay >> $(log_file)
+    $]@ $(log_file)
+    %append $(log_file) TEST
+    %append $(log_file) PASS $(%__CWD__)
+    %make clean
 
 start_test: .symbolic
-    set WASMTEST_NAME=$(wasmtest_name)
-    rm -f *.sav
-    @%make global
+    @if exist *.sav rm -f *.sav
+    @if exist $(log_file) rm -f $(log_file)
+    @set WASMTEST_LOG_FILE=$(log_file)
 
 $(all_tests) : .symbolic
     cd $@
@@ -25,14 +30,5 @@ $(all_tests) : .symbolic
 !endif
     cd ..
 
-./chktest.exe : $(watcom_dir)/c/chktest.c
-    $(bld_cl) $< $(wcl_util_opts)
-
-finish_test : .symbolic ./chktest.exe
-    @cdsay >> $(log_file)
-    $]@ $(log_file)
-    %append $(log_file) TEST
-    %append $(log_file) PASS $(%__CWD__)
-
-global : .symbolic
-    %make common_clean
+clean : .procedure
+    @%make common_clean

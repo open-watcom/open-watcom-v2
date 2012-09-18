@@ -1,53 +1,39 @@
 plustest_name = jam
-!include ../environ.mif
+
+!include testenv.mif
 
 !ifdef test1
-test_cflags = -d2
+test_flags = -d2
 alt_error=01
 !else
-test_cflags = -otexan-d1
+test_flags = -otexan-d1
 alt_error=00
 !endif
 
-test_cflags += -zq-w0-I..
+test_flags += -w0-I..
 
-test_cflags_386 += $(test_cflags) -mf
-test_cflags_i86 += $(test_cflags) -mm
-test_cflags_axp += $(test_cflags)
+test_flags_386 += $(test_flags) -mf
+test_flags_i86 += $(test_flags) -mm
+test_flags_axp += $(test_flags)
 
 stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-.cpp.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags_$(arch)) -fo=.obj
+testftor.$(exe) : testftor.obj assert.obj
 
-objs = &
-    assert.obj &
-    testftor.obj
-
-test : .symbolic start_test jam.$(exe)
-    diff jam.out jam.chk
-    @%make global
+test : .symbolic clean start_test test.lnk testftor.$(exe)
+    diff exec.out jam.chk
     %append $(log_file) PASS $(%__CWD__)
-
-jam.$(exe) : $(objs) jam.lnk
-    $(linker) @$]@ NAME $@
-    $(run) $(exec_prefix)$@ >>jam.out
+    @%make clean
 
 start_test : .symbolic
-    %create jam.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
-jam.lnk : makefile
-    %create $^@
-    @%append $^@ DEBUG line
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch))
-    @for %i in ( $(objs) ) do @%append $^@ FILE %i
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
-    @if exist jam.out cp jam.out s$(arch)_$(alt_error).sav
+    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .symbolic
+clean : .procedure
     @%make common_clean

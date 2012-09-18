@@ -1,94 +1,49 @@
 ctest_name = inline
 
-!include ../environ.mif
+!include testenv.mif
 !include inline.mif
 
-inline_dir = $(wasmtest_dir)/inline
-
 !ifdef test1
-test_cflags_386 =
-test_cflags_i86 =
+test_flags_386 =
+test_flags_i86 =
 alt_error = 01
 !else
-test_cflags_386 =
-test_cflags_i86 =
+test_flags_386 =
+test_flags_i86 =
 alt_error = 00
 !endif
 
-!ifdef __LINUX__
-exec_prefix = ./
-!else
-exec_prefix =
-!endif
+test_flags_386 += -s -os -wx -we
+test_flags_i86 += -s -os -wx -we
 
-!ifndef noisy
-run_quietly = -zq
-!endif
-
-test_cflags_386 += -s -os -wx -we $(run_quietly)
-test_cflags_i86 += -s -os -wx -we $(run_quietly)
-
-.error
-    @%append $(%error_file) $(%error_msg)
-
-.c: $(inline_dir)
-.asm: $(inline_dir)
+.c: $(wasmtest_dir)/inline
+.asm: $(wasmtest_dir)/inline
 
 .asm.gc:
-    @$(awk) -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk $[@ >$@
+    @set ERROR_MSG=failure to create $^.
+    @awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk $[@ >$@
 
-.gc.obj:
-    @set error_msg=failure to compile $^&
-    $(wcc_$(arch)) $[@ $(test_cflags_$(arch)) $(opt_$^*) -fo=.obj
-
-.c.obj:
-    @set error_msg=failure to compile $^&
-    $(wcc_$(arch)) $[@ $(test_cflags_$(arch)) $(opt_$^*) -fo=.obj
-
-.obj.ls1:
-    @set error_msg=failure to decode $[@
-    wdis -a $[@ | $(sed) -f $(wasmtest_dir)/fixlst2.sed | $(awk) -f $(wasmtest_dir)/fixlst3.awk >$@
-    @set CHK_CHECK=diff -i -b $@ $(inline_dir)/$^&.asm
-    @if exist $(inline_dir)/$^&.chk @set CHK_CHECK=diff -i -b $@ $(inline_dir)/$^&.chk
-    $(%CHK_CHECK)
-    @%append exec.out PASS decoding $[@
-
-.obj.lst:
-    @set error_msg=failure to decode $[@
-    @set ESM_CHECK=@%null
-    @if exist $(inline_dir)/$^&.esm @set ESM_CHECK=diff -i -b $^&.dis $(inline_dir)/$^&.esm
-    -wdis -a $[@ | $(sed) -f $(wasmtest_dir)/fixlst2.sed $(extra_sed_$^*) >$^&.dis
-    $(%ESM_CHECK)
-    @set EMP_CHECK=@%null
-    @if exist $(inline_dir)/$^&.emp @set EMP_CHECK=diff -i -b $@ $(inline_dir)/$^&.emp
-    -dmpobj -q -rec=FIXUPP $[@ | $(sed) -f $(wasmtest_dir)/fixlst1.sed >$@
-    $(%EMP_CHECK)
-    @%append exec.out PASS decoding $[@
-
-./chk_exec.exe : ../../c/chk_exec.c
-    $(bld_cl) -DINLINETEST $< $(wcl_util_opts)
-
-test : .symbolic start_test $($(arch)_inline_objs) ./chk_exec.exe
-    @set error_file=error.out
-    @set error_msg=failure to complete test stream
-    %write error.out OK
-    $]@ exec.out >>error.out
-    diff -b error.out error.chk
-    %make global
+test : .symbolic clean start_test $($(arch)_inline_objs) ./chk_exec.exe
+    @set ERROR_FILE=error.out
+    @set ERROR_MSG=failure to complete test stream
+    %write $(%ERROR_FILE) OK
+    $]@ exec.out >>$(%ERROR_FILE)
+    diff -b $(%ERROR_FILE) error.chk
     %append $(log_file) PASS $(%__CWD__)
+    %make clean
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-    %create exec.out
-    @set error_file=exec.out
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 !ifndef $(arch)_inline_objs
-    @%append exec.out PASS decoding
+    @%append $(%ERROR_FILE) PASS decoding
 !endif
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .symbolic
+clean : .procedure
     @if exist *.gc rm -f *.gc
     @if exist *.ls1 rm -f *.ls1
     @if exist *.dis rm -f *.dis

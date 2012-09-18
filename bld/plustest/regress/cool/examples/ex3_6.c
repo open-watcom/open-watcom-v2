@@ -36,7 +36,6 @@ inline CoolComplex capacitor (double c) {
 }
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolComplex circuit;
   circuit = in_series (resistor (1.0),
                        in_parallel (in_series (resistor (100.0),

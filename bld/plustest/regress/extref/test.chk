@@ -1,3 +1,6 @@
-PASS er01a.c
-PASS er02a.c
-PASS er03c.c
+PASS compiling .\er01.exe
+PASS executing .\er01.exe
+PASS compiling .\er02.exe
+PASS executing .\er02.exe
+PASS compiling .\er03.exe
+PASS executing .\er03.exe

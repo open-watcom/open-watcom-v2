@@ -15,7 +15,7 @@ int main() {
 	// this is supposed to be a runtime error (alloc failed on index insert)
 	cout << skip_list[ temp ];
     } catch( ... ) {
-	cout << "PASS " << __FILE__ << endl;
+	cout << "PASS" << endl;
     }
     return 0;
 }

@@ -1,4 +1,4 @@
---------bittest--------
+PASS compiling bittest
 SuccessorTest: set is {11, 12, 15, 16, 31, 32, 34, 45, 77}
 Successor of 0 is 11
 Successor of 14 is 15
@@ -68,7 +68,8 @@ set3: smallest 1 largest 111
 
 set1: smallest 1 largest 21
 set5: smallest 5 largest 15
---------btreetst--------
+PASS executing bittest
+PASS compiling btreetst
         ------>A   0
         ------>A   1
         ------>A   2
@@ -9073,11 +9074,13 @@ The rank of 'A   0' is 0
         ------>Q 5
         ------>Q 8
         ------>Z Goodbye, cruel world!
---------bytstrm--------
+PASS executing btreetst
+PASS compiling bytstrm
 Just some string here.
 509
 Yet another class library
---------dkbtrtst--------
+PASS executing bytstrm
+PASS compiling dkbtrtst
     ------>0x12345678 -> Curly Moe: 202
     ------>0x12345678 -> Fly Swatter: 23
     ------>0x12345678 -> John Q. Public: 22
@@ -9087,7 +9090,7 @@ Yet another class library
     ------>0x12345678 -> Patty O'Furniture: 20
     ------>0x12345678 -> Polly C. Maker: 40
     ------>0x12345678 -> Slim Pickens: 44
---------dkbtrtst--------
+PASS executing dkbtrtst
     ------>0x12345678 -> Curly Moe: 202
     ------>0x12345678 -> Fly Swatter: 23
     ------>0x12345678 -> John Q. Public: 22
@@ -9100,7 +9103,8 @@ Yet another class library
 
 
 Fly Swatter: 23
---------format1--------
+PASS executing dkbtrtst
+PASS compiling format1
 
 
 //  A  very  simple  text-formatting  program:  simply  fills  out  each  line with
@@ -9148,12 +9152,14 @@ return                                                                0;
 
 
 
---------gseqtest--------
+PASS executing format1
+PASS compiling gseqtest
 44
 Have a nice day
 Line 1
 Some string
---------holidays--------
+PASS executing gseqtest
+PASS compiling holidays
 01/01/99 (Friday):        New year's day
 01/18/99 (Monday):        M. L. King's birthday
 02/15/99 (Monday):        Washington's birthday
@@ -9164,7 +9170,8 @@ Some string
 11/11/99 (Thursday):      Veteran's day
 11/25/99 (Thursday):      Thanksgiving
 12/25/99 (Saturday):      Christmas day
---------maptest--------
+PASS executing holidays
+PASS compiling maptest
 56: Some entry
 Nonexistent: 0x0
 balanced: 3
@@ -9191,8 +9198,9 @@ Hash --> 1
 balanced --> 3
 half-balanced --> 15
 k-ary --> 1011
---------perstest--------
---------perstest--------
+PASS executing maptest
+PASS compiling perstest
+PASS executing perstest
 Contents of restored sequence:
 String: 0000
 String: 0006
@@ -9273,7 +9281,8 @@ String1
 String2
 String2
 (NULL)
---------seqtest--------
+PASS executing perstest
+PASS compiling seqtest
 'world!'
 'Hello,'
 'this is'
@@ -9701,7 +9710,8 @@ iseq[122] = 480
 iseq[123] = 485
 iseq[124] = 490
 iseq[125] = 495
---------settest--------
+PASS executing seqtest
+PASS compiling settest
 IntegerSet mySet is {17, 18, 19, 20, 21, 26, 27, 28, 29, 35, 36, 37, 38, 39}
 Rank of 13 is 0
 Rank of 17 is 0
@@ -9714,7 +9724,8 @@ Rank of 17 is 0
 Rank of 21 is 4
 Rank of 25 is 5
 Rank of 35 is 9
---------slotftst--------
+PASS executing settest
+PASS compiling slotftst
 Added record 1
 Added record 1001
 Added record 2001
@@ -9778,7 +9789,8 @@ Handle 50000014 data 4119
 Handle 50000015 data 4120
 Handle 50000016 data 4121
 Handle 50000017 data 4122
---------strset--------
+PASS executing slotftst
+PASS compiling strset
 'Hear, hear!'
 'Heaven'
 'Helga'
@@ -9788,7 +9800,8 @@ Handle 50000017 data 4122
 'Help'
 not equal
 includes
---------strtest--------
+PASS executing strset
+PASS compiling strtest
 Line 1
 Line 02
  Line 3
@@ -9823,7 +9836,8 @@ First: 0
 Second: 0
 Third: 1
 Fourth: 1
---------treeprnt--------
+PASS executing strtest
+PASS compiling treeprnt
     |---> |15
 |     |23
     |     |37
@@ -9834,7 +9848,8 @@ Fourth: 1
 |     |75
     |     |81
     |---> |99
---------treetest--------
+PASS executing treeprnt
+PASS compiling treetest
 Node 1 has 3 children
 Node 2 has 0 children
 Node 3 has 2 children
@@ -9887,7 +9902,8 @@ Depth 0 content 'Level 0 (root)' label 1
 Depth 1 content 'Level 2, #1' label 5
 Depth 1 content 'Level 2, #2' label 6
 Depth 0 content 'Level 1, #2' label 3
---------wordcnt--------
+PASS executing treetest
+PASS compiling wordcnt
 " 7
 "Total 1
 "base/base 1
@@ -9959,3 +9975,4 @@ word_map[words[i]]++ 1
 words 3
 words[i] 2
 Total 70 words.
+PASS executing wordcnt

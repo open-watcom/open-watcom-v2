@@ -1,11 +1,9 @@
 plustest_name = diagnose
-!include ../environ.mif
 
-diagnose_dir = source
+!include testenv.mif
+!include source/diagnose.mif
 
-!include $(diagnose_dir)/diagnose.mif
-
-diagnose_opts += -ew -we -wx -e1000 -zq -eq
+diagnose_opts += -ew -we -wx -e1000 -eq
 archdep_opts = -dARCH=$(arch) -fr=.ser
 alt_error=00
 
@@ -23,17 +21,19 @@ diagchk3 = diag0300.chk
 dosystest = testsys
 !endif
 
-.c: $(diagnose_dir)
+.c: source
+
 .c.err:
     -$(wpp_$(arch)) $[@ $(diagnose_opts) -na $(opt_$^&) -fo=.obj
     @if not exist $^&.err %write $^&.err I did not generate errors for $^&
+
 .c.ser:
     -$(wpp_$(arch)) $[@ $(diagnose_opts) -na $(opt_$^&) $(archdep_opts) -fo=.obj
     @if not exist $^&.ser %write $^&.ser I did not generate errors for $^&
 
-test : .symbolic start_test test0000 test0100 test0200 test0300 $(dosystest) test_special
-    @%make global
+test : .symbolic clean start_test test0000 test0100 test0200 test0300 $(dosystest) test_special
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 test0000 : .symbolic diag0000.out
     -diff -b diag0000.out $(diagchk0) >diff0000.out
@@ -60,7 +60,7 @@ testsys : .symbolic diag$(arch).out
     diff -b diff$(arch).out diff$(arch).chk
     @rm diff$(arch).out
 
-diagspec.out : .procedure $(diagnose_dir)/diag0001.c
+diagspec.out : .procedure source/diag0001.c
     -$(wpp_$(arch)) $[@ $(diagnose_opts) $(opt_diag0001) -eq
     @sed -f fixpath.sed diag0001.err >diagspec.out
 
@@ -94,9 +94,6 @@ diagaxp.out : ./catfile.exe $(diags_sys)
     $[@ -a *.ser | sed -f fixpath.sed >diagaxp.out
     @%make diag_clean
 
-./catfile.exe: source/catfile.c
-    $(bld_cl) $< $(wcl_util_opts)
-
 diag_clean : .procedure
     @if exist *.err rm -f *.err
     @if exist *.ser rm -f *.ser
@@ -118,8 +115,6 @@ save : .symbolic
     @if exist diag$(arch).out cp diag$(arch).out s$(arch)_$(arch).sav
     @if exist diagspec.out cp diagspec.out s$(arch)spec.sav
 
-global : .symbolic
+clean : .procedure
     @%make diag_clean
     @%make common_clean
-    @if exist catfile.* rm -f catfile.*
-

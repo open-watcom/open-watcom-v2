@@ -1,13 +1,12 @@
 #include "er03.h"
 
-struct my_class {
-    int v;
-    my_class()
-    {
-	// should never execute this!
-	puts( "fail" );
-	throw D();
-    }
-};
+// typesigs should have weak import for copy ctors (def'd in er03b.c)
 
-my_class v;
+B::B() {
+}
+
+B::~B() {
+}
+
+D::D() {
+}

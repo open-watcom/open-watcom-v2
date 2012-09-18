@@ -1,4 +1,4 @@
---------bench--------
+PASS compiling bench
 modulus = 2cf81c7
 n1 = 8d4783
 n2 = 2bf194b
@@ -74,14 +74,16 @@ n1 = 61b047 1319976 13c3cb5 e87f8c 312375d 3dce8f6 1505a2b 57edc5 4f7ef4 167c83b
 n2 = 1253edf 25d70d6 28e19e9 2c38116 7f023a 393e1c0 960abf 1baa8f 16c66f7 205e17a 54c825 122ae06 2d57761 12d2300 5a70e5
 product = 3a5362e 3c2df94 32dcde6 1f8df3f 1926104 281d7fe 303efb7 d2ee31 25358eb 39cdd1f 2d5dfe4 5afc3e 7ea027 be292f 50975
  lng = 15
---------bitcount--------
+PASS executing bench
+PASS compiling bitcount
 # bits in 17 is 4
 # bits in 1 is 1
 # bits in ffffffff is 32
 # bits in ff is 8
 # bits in aa is 4
 # bits in 55 is 4
---------calc_e--------
+PASS executing bitcount
+PASS compiling calc_e
 2.718281828459045235360287471352662497757247093699959574966967627724076630353
 75 digits
 547594571382178525166427427466391932003059921817413596629043572900334295260
@@ -123,9 +125,11 @@ product = 3a5362e 3c2df94 32dcde6 1f8df3f 1926104 281d7fe 303efb7 d2ee31 25358eb
 785620747083389568359588856001944154903403050166971889252019281794352346728
 1500 digits
 
---------calc_pi--------
+PASS executing calc_e
+PASS compiling calc_pi
 0003141592653589793238462643383279502884197169399375105820974944592307816406
---------calc_pi2--------
+PASS executing calc_pi
+PASS compiling calc_pi2
    0.141592653589793 243F6A8885A3
    0.265482457436692 43F6A8885A30
    1.837401207867644 D65FECF16C24
@@ -142,15 +146,17 @@ product = 3a5362e 3c2df94 32dcde6 1f8df3f 1926104 281d7fe 303efb7 d2ee31 25358eb
    0.730488862021697 BB01516C79B6
    0.494023272365136 7E784F26456A
    0.904372357843693 E784F2645856
---------calc_pi3--------
+PASS executing calc_pi2
+PASS compiling calc_pi3
 31333333333333333333
 31414224664224664224
 31415873903465815230
 31415924575674353818
+PASS executing calc_pi3
 --------dmc--------
 compression ratio: 39% (PKZIP ratio=60%)
 decompression ratio: 39% (PKZIP ratio=60%)
---------mldiv--------
+PASS compiling mldiv
 1/1 = 1 (remainder 0)
 1194/1 = 1194 (remainder 0)
 2387/1 = 2387 (remainder 0)
@@ -205,7 +211,8 @@ decompression ratio: 39% (PKZIP ratio=60%)
 7159/8606 = 0 (remainder 7159)
 8352/8606 = 0 (remainder 8352)
 9545/8606 = 1 (remainder 939)
---------rsa--------
+PASS executing mldiv
+PASS compiling rsa
 t -> t
 h -> h
 i -> i
@@ -237,5 +244,7 @@ r -> r
 y -> y
 p -> p
 t -> t
---------waste--------
+PASS executing rsa
+PASS compiling waste
 PASSED
+PASS executing waste

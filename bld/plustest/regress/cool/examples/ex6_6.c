@@ -15,7 +15,6 @@
 #include <cool/Stack.C>
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolStack<int> s1(10);                        // Declare CoolStack of integers
   s1.push( -1 );
   int i;

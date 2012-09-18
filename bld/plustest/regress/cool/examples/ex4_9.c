@@ -17,7 +17,6 @@
 #include <cool/Timer.h>                         // Includer COOL timer class
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolTimer t1;                                 // Create a CoolTimer object
   volatile long sum = 0;     // use in loop to discourage optimizations
   long check = ( 999999UL * 1000000UL ) / 2;

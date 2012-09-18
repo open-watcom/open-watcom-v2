@@ -3,7 +3,7 @@ plustest_name = except
 #
 # 95/09/14 -- J.W.Welch     -- added batch capability
 
-!include ../environ.mif
+!include testenv.mif
 
 files = &
     excok.$(ext) &
@@ -38,20 +38,20 @@ batch_lnk = except.fcl
 batch_sym = batch_build
 !endif
 
-test_cflags += -I"../positive/source"
+test_flags += -I"../positive/source"
 
 !ifdef test1
-test_cflags += -d2-xst
+test_flags += -d2-xst
 alt_error=01
 !else ifdef test2
-test_cflags += -d2-xss
+test_flags += -d2-xss
 add_br_ = $(br_opt)
 alt_error=02
 !else ifdef test3
-test_cflags += -ox-d1-xss
+test_flags += -ox-d1-xss
 alt_error=03
 !else
-test_cflags += -ox-d1-xst
+test_flags += -ox-d1-xst
 add_br_ = $(br_opt)
 alt_error=00
 !endif
@@ -61,11 +61,11 @@ no_br_excok = no
 !endif
 
 !ifeq arch 386
-test_cflags_386 += $(test_cflags) -mf $(add_br_$(no_br_$^*))
+test_flags_386 += $(test_flags) -mf $(add_br_$(no_br_$^*))
 !else ifeq arch i86
-test_cflags_i86 += $(test_cflags) -mc
+test_flags_i86 += $(test_flags) -mc
 !else ifeq arch axp
-test_cflags_axp += $(test_cflags)
+test_flags_axp += $(test_flags)
 !endif
 
 stack_386=opt stack=32k
@@ -74,31 +74,27 @@ stack_axp=opt stack=32k
 
 !ifneq targ_env_386 cw386
 !ifneq targ_env_386 d4g386
-fatal_error_check_386=| diff - fatalerr.chk
+stderr_check_386 = 2>>stderr.out
 !endif
 !endif
-fatal_error_check_axp=| diff - fatalerr.chk
+stderr_check_axp = 2>>stderr.out
 
-.c.obj:
-    $(wpp_$(arch)) $[* $(test_cflags_$(arch)) -zq -fo=.obj
-
-.obj.$(exe):
-    $(linker) @test.lnk name $@ file $[@
-    @%append exec.out --------$^*--------
-!ifdef fatal_error_check_$(arch)
-    -$(run) $(exec_prefix)$@ >>exec.out 2>&1
-!else
-    -$(run) $(exec_prefix)$@ >>exec.out
+test : .symbolic clean start_test $(batch_sym) test.lnk $(exes)
+    diff exec.out exec.chk
+!ifdef stderr_check_$(arch)
+    diff stderr.out stderr.chk
 !endif
-
-test : .symbolic start_test $(batch_sym) test.lnk $(exes)
-    diff exec.out except.chk $(fatal_error_check_$(arch))
-    @%make global
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 start_test : .symbolic
-    %create exec.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    @if exist x$(arch)_$(alt_error).sav rm x$(arch)_$(alt_error).sav
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
+!ifdef stderr_check_$(arch)
+    %create stderr.out
+!endif
 
 !ifdef BATCH_TEST
 $(batch_lnk) : $(__MAKEFILES__)
@@ -110,22 +106,15 @@ $(batch_cmp) : $(__MAKEFILES__)
     @for %i in ( $(srcs) ) do %append $(batch_cmp) %i
 
 batch_build : .symbolic test.lnk $(batch_lnk) $(batch_cmp)
-    $(wpp_$(arch)) -fc=$(batch_cmp) $(test_cflags_$(arch)) 
+    $(wpp_$(arch)) -fc=$(batch_cmp) $(test_flags_$(arch)) 
     $(linker) @$(batch_lnk)
 !endif
 
-
-test.lnk : $(__MAKEFILES__)
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch))
-    @%append $^@ OPTION undefsok
-
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+    @if exist stderr.out cp stderr.out x$(arch)_$(alt_error).sav
 
-global : .procedure
+clean : .procedure
     @%make common_clean
 !ifdef BATCH_TEST
     @if exist *.fcb rm *.fcb
@@ -134,5 +123,5 @@ global : .procedure
 
 !ifdef BATCH_TEST
 .before
-    @echo test_cflags=$(test_cflags_$(arch))
+    @echo test_flags=$(test_flags_$(arch))
 !endif

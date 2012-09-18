@@ -1,20 +1,30 @@
+PASS compiling oop_v1p5
 Version 1.5               Seconds       Mflops         
 Test       Iterations     C    OOP     C    OOP  Ratio
 ----       ----------  -----------  -----------  -----
 
+PASS executing oop_v1p5
+PASS compiling oop_v1p6
                          Seconds       Mflops         
 Test       Iterations     C    OOP     C    OOP  Ratio
 ----       ----------  -----------  -----------  -----
 
+PASS executing oop_v1p6
+PASS compiling oop_v1p7
                          Seconds       Mflops         
 Test       Iterations     C    OOP     C    OOP  Ratio
 ----       ----------  -----------  -----------  -----
 
+PASS executing oop_v1p7
+PASS compiling ste_v1p1
 
 test      absolute   additions      ratio with
 number    time       per second     test0
 
+PASS executing ste_v1p1
+PASS compiling ste_v1p2
 
 test      absolute   additions      ratio with
 number    time       per second     test0
 
+PASS executing ste_v1p2

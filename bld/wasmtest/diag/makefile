@@ -15,20 +15,20 @@ sizebug2.dis &
 struct1.dis
 
 objs = &
-b.obj &
-diag01.obj &
-diag02.obj &
-diag03.obj &
-diag04.obj &
-diag05.obj &
-diag06.obj &
-diag07.obj &
-diag08.obj &
-error1.obj &
-extern1.obj &
-include.obj &
-irp.obj &
-cpureq.obj
+b.dum &
+diag01.dum &
+diag02.dum &
+diag03.dum &
+diag04.dum &
+diag05.dum &
+diag06.dum &
+diag07.dum &
+diag08.dum &
+error1.dum &
+extern1.dum &
+include.dum &
+irp.dum &
+cpureq.dum
 
 asm_flags_diag01 = -4s
 asm_flags_diag02 = -3

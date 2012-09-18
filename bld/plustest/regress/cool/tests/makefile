@@ -1,5 +1,7 @@
 plustest_name = cool
-!include ../../environ.mif
+
+!include testenv.mif
+!include ../lib.mif
 
 exes = &
     test_as1.$(exe) &
@@ -38,60 +40,51 @@ exes = &
 !endif
 
 !ifdef test1
-test_cflags = -op-d2
+test_flags = -op-d2
 alt_error=01
 !else ifdef test2
-test_cflags = -ot-op-d1-xds
+test_flags = -ot-op-d1-xds
 alt_error=02
 !else ifdef test3
-test_cflags = -op-d2-xds
+test_flags = -op-d2-xds
 alt_error=03
 !else
-test_cflags = -ot-op-d1
+test_flags = -ot-op-d1
 alt_error=00
 !endif
 
-test_cflags += -zq -I"../.." -w0
+test_flags += -I"../.." -w0
 !ifdef __UNIX__
-test_cflags += -fi=../__ialias.h
+test_flags += -fi=../__ialias.h
 !endif
 
-test_cflags_i86 = -ml -zm
+test_flags_i86 = -ml -zm
 
 stack_386=opt stack=32k
 stack_i86=opt stack=24k
 stack_axp=opt stack=32k
 
-.obj.$(exe):
-    $(linker) @ex.lnk name $@ file $[@
-    %append test.out $^&
-    $(run) $(exec_prefix)$@ >>test.out
+opt_link = LIBRARY ../cool.lib
 
-.c.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags) $(test_cflags_$(arch)) -fo=.obj
+.c : .;..
 
-test : .symbolic start_test ex.lnk $(exes)
+test : .symbolic clean start_test ../cool.lib test.lnk $(exes)
 !ifeq arch i86
-    diff test.out testi86.chk
+    diff exec.out testi86.chk
 !else
-    diff test.out test.chk
+    diff exec.out test.chk
 !endif
-    @%make global
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 start_test : .symbolic
-    %create test.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
-ex.lnk : makefile
-    %create $^@
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(stack_$(arch))
-    @%append $^@ LIBRARY ../cool.lib
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
-    @if exist test.out cp test.out s$(arch)_$(alt_error).sav
+    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .procedure
+clean : .procedure
+    @if exist ../cool.lib rm ../cool.lib
     @%make common_clean

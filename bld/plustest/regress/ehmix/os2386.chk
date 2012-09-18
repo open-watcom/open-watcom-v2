@@ -1,3 +1,4 @@
+PASS compiling ehmix
 ---- Test -1 ----
 Caught assertion failure
   ..  Exact type unreachable_code_reached_impl
@@ -291,3 +292,4 @@ Caught exception
   ..  CAST FAILED!
 Test 13 complete, exceptions handled
 
+PASS executing ehmix

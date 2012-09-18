@@ -16,7 +16,6 @@
 #include <cool/Queue.C>
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolQueue<double> q1;                         // CoolQueue of default size
   CoolRandom r (SIMPLE, 1, 3.0, 9.0);           // Simple CoolRandom generator
   for (int i = 0; i < 5; i++)                   // Put five CoolRandom numbers

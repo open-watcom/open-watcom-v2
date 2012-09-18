@@ -15,7 +15,6 @@
 CoolRegexp r1("Hi There");                      // Define simple pattern
 
 int main (void) {
-    cout << __FILE__ << endl;
   char dummy[] = "Garbage Hi There garbage";    // Dummy string to search
   cout << "The pattern `Hi There' ";            // Output start of sentence
   if (r1.find (dummy) == TRUE)                  // Pattern found in string?

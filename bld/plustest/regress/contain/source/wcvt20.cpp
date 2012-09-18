@@ -17,6 +17,5 @@ int main() {
     memchk_fail = 0;
     if( !vect.resize( 5 ) ) cout << "resize returned false\n";
     if( vect.entries() != 5 ) cout << "number of entries should be 5\n";
-    cout << __FILE__ << endl;
     return 0;
 };

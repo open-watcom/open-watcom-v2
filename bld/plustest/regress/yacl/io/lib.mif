@@ -1,0 +1,4 @@
+IO_LIB_OBJECTS =  binfile.obj bytstore.obj dskbtree.obj slotfile.obj 
+
+io.lib : $(IO_LIB_OBJECTS)
+    $(librarian) $@ $(IO_LIB_OBJECTS)

@@ -13,7 +13,6 @@
 #include <cool/Bignum.h>                        // Include Bignum class
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolBignum b1;                                // Create CoolBignum object
   CoolBignum b2 = "0xFFFFFFFF";                 // Create CoolBignum object
   CoolBignum b3 = "12345e30";                   // Create CoolBignum object

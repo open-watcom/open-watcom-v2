@@ -1,4 +1,4 @@
---------splassoc--------
+PASS compiling splassoc
 [0] ((3)"one", 1)
 [1] ((3)"two", 2)
 [2] ((5)"three", 3)
@@ -17,7 +17,8 @@ a.adelete("two") returns: 2, a=
 [0] ((3)"one", 1)
 [1] ((5)"three", 3)
 
---------justify--------
+PASS executing splassoc
+PASS compiling justify
 (13)"/*  *  Simple"
 (13)"program    to"
 (13)"read    STDIN"
@@ -228,7 +229,8 @@ a.adelete("two") returns: 2, a=
 (13)"<<      endl;"
 (13)"return( 0  );"
 (1)"}"
---------spltest--------
+PASS executing justify
+PASS compiling spltest
 x is empty
 x.isempty() is true
 x is not empty
@@ -587,3 +589,4 @@ s1.tr("ac-e", "", "cd") = 5, s1 = (4)"acde"
 (15)"abcdefabcghiabc" s1.s("abc(.)", "X$1abcX$1", "g") = 2, s1= (21)"XdabcXdefXgabcXghiabc"
 (15)"abcdefabcghiabc" s1.s("(.)abc", "$1X$1abcX", "g") = 2, s1= (21)"abcdefXfabcXghiXiabcX"
 (10)"1234567890" s1.s("(.)(.)", "$2$1", "g") = 5, s1= (10)"2143658709"
+PASS executing spltest

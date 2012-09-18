@@ -23,7 +23,6 @@
 #include <cool/N_Tree.C>
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolD_Node<CoolString,3>* president = new CoolD_Node<CoolString,3>(CoolString("President")); // Create president
   CoolN_Tree<CoolD_Node<CoolString,3> > org_chart (president);    // Setup top of tree
   CoolD_Node<CoolString,3>* sales = new CoolD_Node<CoolString,3>(CoolString("Sales"));          // Create sales

@@ -1,5 +1,6 @@
 plustest_name = mscompat
-!include ../environ.mif
+
+!include testenv.mif
 
 files_err = &
 diag0011$(ext) &
@@ -21,35 +22,33 @@ udcnv15$(ext) &
 udcnv16$(ext) &
 udcnv17$(ext)
 
-.extensions:
-.extensions:  .exe .obj .merr .cpp
-
 .cpp.exe :
     e:\cmds\mclauto.cmd $[* 
-    $(run) $[*.exe >> mscompat.out
+    $(run) $(exec_prefix)$[*.exe >> exec.out
     
-.cpp.merr :
+.cpp.mer :
     e:\cmds\mclauto.cmd $[* /c
-    type $[*.merr >> mscompat.out
+    type $[*.mer >> exec.out
 
-ext=.merr
+ext=.mer
 err_out = $+ $(files_err) $-
 
 ext=.exe
 comp_out = $+ $(files_comp) $-
 
-
-test : .symbolic start_test $(comp_out) $(err_out)
-    diff mscompat.out mscompat.chk
-    @%make global
+test : .symbolic clean start_test $(comp_out) $(err_out)
+    diff exec.out mscompat.chk
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
-    @if exist mscompat.out cp mscompat.out s$(arch)_$(alt_error).sav
+    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .symbolic
-    @if exist *.merr rm *.merr
+clean : .procedure
+    @if exist *.mer rm *.mer
     @%make common_clean

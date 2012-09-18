@@ -1,64 +1,56 @@
 plustest_name = stl94
-!include ../../environ.mif
 
-objs = demo.obj tempbuf.obj
+!include testenv.mif
 
 !ifdef test1
-test_cflags = -oxa-d1-hd
+test_flags = -oxa-d1-hd
 alt_error=01
 !else ifdef test2
-test_cflags = -oxa-d1-xs-hd
+test_flags = -oxa-d1-xs-hd
 alt_error=02
 !else ifdef test3
-test_cflags = -d2-xs-hd
+test_flags = -d2-xs-hd
 alt_error=03
 !else
-test_cflags = -d2-hd
+test_flags = -d2-hd
 alt_error=00
 !endif
 
-test_cflags += -w0-zq -I..
+test_flags += -w0 -I..
 
-test_cflags_i86 = -mm -zm
+test_flags_i86 = -mm -zm
 
 stack_386=opt stack=128k
 stack_i86=opt stack=32k
 stack_axp=opt stack=128k
 
+extra_run_demo = <demo.in
+
 .cpp: .;..
-.cpp.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags) $(test_cflags_$(arch)) -fo=.obj
 
 #
 # function code overflow 16-bit segment
 # don't use it for i86 target
 #
-!ifeq arch i86
-test : .symbolic start_test
-!else
-test : .symbolic start_test demo.$(exe)
-    diff demo.out demo.chk
-!endif
-    @%make global
-    %append $(log_file) PASS $(%__CWD__)
 
-demo.$(exe) : $(objs) demo.lnk
-    $(linker) @$]@ NAME $@
-    $(run) $(exec_prefix)$@ <demo.in >>demo.out
+demo.$(exe) : demo.obj tempbuf.obj
+
+!ifeq arch i86
+test : .symbolic clean start_test
+!else
+test : .symbolic clean start_test test.lnk demo.$(exe)
+    diff exec.out demo.chk
+!endif
+    %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 start_test : .symbolic
-    %create demo.out
     @if exist s$(arch)_$(alt_error).sav rm -f s$(arch)_$(alt_error).sav
-
-demo.lnk : $(__MAKEFILES__)
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch))
-    @for %i in ( $(objs) ) do @%append $^@ FILE %i
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
-    @if exist demo.out cp demo.out s$(arch)_$(alt_error).sav
+    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .symbolic
+clean : .procedure
     @%make common_clean

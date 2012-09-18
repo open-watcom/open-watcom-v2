@@ -15,9 +15,6 @@ labs_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -38,9 +35,6 @@ labs_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -61,9 +55,6 @@ labs_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -84,9 +75,6 @@ labs_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -107,9 +95,6 @@ labs_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -130,9 +115,6 @@ labs_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -153,9 +135,6 @@ labs_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -176,9 +155,6 @@ labs_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -199,9 +175,6 @@ labs_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -221,9 +194,6 @@ abort_
 labs_
 IF@DSIN
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -244,9 +214,6 @@ abort_
 labs_
 IF@DSIN
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -267,9 +234,6 @@ abort_
 labs_
 IF@DSIN
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -290,9 +254,6 @@ abort_
 labs_
 IF@DSIN
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -313,9 +274,6 @@ abort_
 labs_
 IF@DSIN
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -336,9 +294,6 @@ abort_
 labs_
 IF@DSIN
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -359,9 +314,6 @@ abort_
 labs_
 IF@DSIN
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -382,9 +334,6 @@ abort_
 labs_
 IF@DSIN
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -405,9 +354,6 @@ abort_
 labs_
 IF@DSIN
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -427,9 +373,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -448,9 +391,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -469,9 +409,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -490,9 +427,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -511,9 +445,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -532,9 +463,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -553,9 +481,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -574,9 +499,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -595,9 +517,6 @@ abort_
 IF@DSIN
 __FSI4
 __FDI4
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -614,9 +533,6 @@ _errors
 printf_
 abort_
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -634,9 +550,6 @@ _errors
 printf_
 abort_
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -654,9 +567,6 @@ _errors
 printf_
 abort_
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -674,9 +584,6 @@ errors
 printf_
 abort_
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -694,9 +601,6 @@ ERRORS
 printf_
 abort_
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -714,9 +618,6 @@ errors
 printf_
 abort_
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -734,9 +635,6 @@ ERRORS
 printf_
 abort_
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -754,9 +652,6 @@ _errors
 printf_
 abort_
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_
@@ -774,9 +669,6 @@ _errors
 printf_
 abort_
 __CHP
-puts_
-___iob
-fflush_
 _cstart_
 _fltused_
 _big_code_

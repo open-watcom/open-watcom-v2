@@ -14,7 +14,6 @@
 #include <iostream.h>
 
 int main (void) {
-    cout << __FILE__ << endl;
 
   CoolRandom r1 (SIMPLE, 1, 3.0, 9.0);          // Simple rand() generator
   CoolRandom r2 (THREE_CONGRUENTIAL, 1, 5.0, 11.5);     // Highly random generator

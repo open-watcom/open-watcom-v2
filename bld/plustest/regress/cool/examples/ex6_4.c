@@ -20,7 +20,6 @@ int my_sort (const CoolString& s1, const CoolString& s2) {
 }
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolVector<CoolString> v1(5);                 // Declare CoolVector of CoolStrings
   v1.push ("Texas");                            // Add "Texas" 
   v1.push ("Alaska");                           // Add "Alaska" 

@@ -23,7 +23,6 @@ static CoolString color_table[] = { "RED", "YELLOW", "PINK", "GREEN",
                                     "ORANGE", "PURPLE", "BLUE" };
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolSet<CoolString> a(5), b(5);               // Declare two CoolSet objects
   a.set_compare (&my_compare);                  // Establish compare function
   for (int i = 0; i < 5; i++) {                 // For each color defined

@@ -36,7 +36,7 @@ int main()
     sv.v2 = V2;
     (goop()).foo();
     if( 0 == errors ) {
-        printf( "PASS " __FILE__ "\n" );
+//        printf( "PASS " __FILE__ "\n" );
     } else {
         printf( "FAILED " __FILE__ "\n" );
     }

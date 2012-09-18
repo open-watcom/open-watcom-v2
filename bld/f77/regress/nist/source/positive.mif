@@ -223,7 +223,7 @@ positive_tests = &
     fm922.$(ext) &
     fm923.$(ext)
 
-ext = $(ext_$(arch))
+ext = $(exe)
 !ifeq arch axp
 positive_exes = $+ $(positive_tests) $-
 !else

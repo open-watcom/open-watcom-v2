@@ -15,9 +15,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj21.obj pubdef ****
@@ -37,9 +34,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj31.obj pubdef ****
@@ -59,9 +53,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj41.obj pubdef ****
@@ -81,9 +72,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj51.obj pubdef ****
@@ -103,9 +91,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj61.obj pubdef ****
@@ -125,9 +110,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj71.obj pubdef ****
@@ -147,9 +129,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj81.obj pubdef ****
@@ -169,9 +148,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj91.obj pubdef ****
@@ -191,9 +167,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj12.obj pubdef ****
@@ -212,9 +185,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -234,9 +204,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -256,9 +223,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -278,9 +242,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -300,9 +261,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -322,9 +280,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -344,9 +299,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -366,9 +318,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -388,9 +337,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -409,9 +355,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj23.obj pubdef ****
@@ -429,9 +372,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj33.obj pubdef ****
@@ -449,9 +389,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj43.obj pubdef ****
@@ -469,9 +406,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj53.obj pubdef ****
@@ -489,9 +423,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj63.obj pubdef ****
@@ -509,9 +440,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj73.obj pubdef ****
@@ -529,9 +457,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj83.obj pubdef ****
@@ -549,9 +474,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj93.obj pubdef ****
@@ -569,9 +491,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj14.obj pubdef ****
@@ -587,9 +506,6 @@ _errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -606,9 +522,6 @@ _errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -625,9 +538,6 @@ _errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -644,9 +554,6 @@ errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -663,9 +570,6 @@ ERRORS
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -682,9 +586,6 @@ errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -701,9 +602,6 @@ ERRORS
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -720,9 +618,6 @@ errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -739,9 +634,6 @@ errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -762,9 +654,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj2s1.obj pubdef ****
@@ -784,9 +673,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj3s1.obj pubdef ****
@@ -806,9 +692,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj4s1.obj pubdef ****
@@ -828,9 +711,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj5s1.obj pubdef ****
@@ -850,9 +730,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj6s1.obj pubdef ****
@@ -872,9 +749,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj7s1.obj pubdef ****
@@ -894,9 +768,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj8s1.obj pubdef ****
@@ -916,9 +787,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj9s1.obj pubdef ****
@@ -938,9 +806,6 @@ labs
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj1s2.obj pubdef ****
@@ -959,9 +824,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -981,9 +843,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1003,9 +862,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1025,9 +881,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1047,9 +900,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1069,9 +919,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1091,9 +938,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1113,9 +957,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1135,9 +976,6 @@ abort
 labs
 IF@DSIN
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1156,9 +994,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj2s3.obj pubdef ****
@@ -1176,9 +1011,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj3s3.obj pubdef ****
@@ -1196,9 +1028,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj4s3.obj pubdef ****
@@ -1216,9 +1045,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj5s3.obj pubdef ****
@@ -1236,9 +1062,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj6s3.obj pubdef ****
@@ -1256,9 +1079,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj7s3.obj pubdef ****
@@ -1276,9 +1096,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj8s3.obj pubdef ****
@@ -1296,9 +1113,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj9s3.obj pubdef ****
@@ -1316,9 +1130,6 @@ abort
 IF@DSIN
 __FSI4
 __FDI4
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 **** obj1s4.obj pubdef ****
@@ -1334,9 +1145,6 @@ _errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1353,9 +1161,6 @@ _errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1372,9 +1177,6 @@ _errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1391,9 +1193,6 @@ errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1410,9 +1209,6 @@ ERRORS
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1429,9 +1225,6 @@ errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1448,9 +1241,6 @@ ERRORS
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1467,9 +1257,6 @@ errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087
@@ -1486,9 +1273,6 @@ errors
 printf
 abort
 __CHP
-puts
-__iob
-fflush
 _cstart_
 _fltused_
 __8087

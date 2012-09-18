@@ -1,4 +1,4 @@
-ex2_4.c
+PASS compiling ex2_4
 s1 reads: Hello
 s1 has 5 characters
 s1 reads: Hello world!
@@ -10,14 +10,16 @@ s1 capitalized: Hello World!
 s1 reads: Oh, Hello World!
 s1 reads: Oh, Goodbye World!
 s1 reads: Oh, World!
-ex2_7.c
+PASS executing ex2_4
+PASS compiling ex2_7
 The pattern `Hi There' is found in `Garbage Hi There garbage'
 The pattern begins at zero-relative index 8 and ends at index 16
 The pattern `[^ab1-9]' is found in `ab123QQ59ba'
 The pattern begins at zero-relative index 5 and ends at index 6
 The pattern `O(.*r)' is found in `That's OK for me. OK for you?'
 The pattern begins at zero-relative index 7 and ends at index 24
-ex2_9.c
+PASS executing ex2_7
+PASS compiling ex2_9
 s1 reads: Hello
 s1 has 5 characters
 s1 reads: Hello world!
@@ -35,7 +37,8 @@ The pattern `[^ab1-9]' is found in `ab123QQ59ba'
 The pattern begins at zero-relative index 5 and ends at index 6
 The pattern `O(.*r)' is found in `That's OK for me. OK for you?'
 The pattern begins at zero-relative index 7 and ends at index 24
-ex3_4.c
+PASS executing ex2_9
+PASS compiling ex3_4
 Simple random number generator:
   Random number 0 is: 6.08313
   Random number 1 is: 4.05432
@@ -59,9 +62,11 @@ Three congruential linear random number generator:
   Random number 7 is: 10.0368
   Random number 8 is: 10.3957
   Random number 9 is: 11.3929
-ex3_6.c
+PASS executing ex3_4
+PASS compiling ex3_6
 Circuit impedence is (2000.6,0.00747744) at frequency 346.87
-ex3_8.c
+PASS executing ex3_6
+PASS compiling ex3_8
 10/3 + -4/27 = 86/27
 10/3 * -4/27 = -40/81
 10/3 / -4/27 = -45/2
@@ -69,7 +74,8 @@ ex3_8.c
 3.33333 + -0.148148 = 3.18519
 3.33333 * -0.148148 = -0.493827
 3.33333 / -0.148148 = -22.5
-ex3_10.c
+PASS executing ex3_8
+PASS compiling ex3_10
 b2 = 4294967295
 b3 = 12345000000000000000000000000000000
 b2 + b3 = 12345000000000000000000004294967295
@@ -77,27 +83,33 @@ b2 - b3 = -12344999999999999999999995705032705
 b2 * b3 = 53021371256775000000000000000000000000000000
 b3 / b2 = 2874294296576244359970149
 b3 % b2 = 2868723045
-ex4_9.c
+PASS executing ex3_10
+PASS compiling ex4_9
 Summation of integers from 0 through 1000000 (1783293664=1783293664) took log10(log10(time in ms)) = 0
-ex5_8.c
+PASS executing ex4_9
+PASS compiling ex5_8
 [ 0 1 2 3 4 5 6 7 8 9 ]
-ex6_4.c
+PASS executing ex5_8
+PASS compiling ex6_4
 [ Texas Alaska New York Alabama North Dakota ]
 Texas
 North Dakota
 New York
 Alaska
 Alabama
-ex6_6.c
+PASS executing ex6_4
+PASS compiling ex6_6
 55555
 4444
 333
 22
 1
-ex6_8.c
+PASS executing ex6_6
+PASS compiling ex6_8
 [ 6.08313 4.05432 4.85175 6.20709 8.68561 ]
 [ 6.08313 4.85175 6.20709 8.68561 ]
-ex6_10.c
+PASS executing ex6_8
+PASS compiling ex6_10
 17 21 25 29 
 23 29 35 41 
 29 37 45 53 
@@ -105,7 +117,8 @@ ex6_10.c
 11 13 15 17 
 14 17 20 23 
 17 21 25 29 
-ex7_4.c
+PASS executing ex6_10
+PASS compiling ex7_4
 
      A programming  language  serves two  related purposes: it  provides a
      vehicle  for the programmer to  specify actions to  be executed and a
@@ -124,7 +137,8 @@ ex7_4.c
 There are 129 words
 There are 71 unique words
 The most common word is `to' and is used 9 times
-ex7_7.c
+PASS executing ex7_4
+PASS compiling ex7_7
 
      A programming  language  serves two  related purposes: it  provides a
      vehicle  for the programmer to  specify actions to  be executed and a
@@ -143,7 +157,8 @@ ex7_7.c
 There are 129 words
 There are 71 unique words
 The most common word is `to' and is used 9 times
-ex7_9.c
+PASS executing ex7_7
+PASS compiling ex7_9
 
      A programming  language  serves two  related purposes: it  provides a
      vehicle  for the programmer to  specify actions to  be executed and a
@@ -162,21 +177,24 @@ ex7_9.c
 There are 129 words
 There are 71 unique words
 The most common word is `to' and is used 9 times
-ex8_4.c
+PASS executing ex7_9
+PASS compiling ex8_4
 Set A contains: [ RED YELLOW ORANGE PINK GREEN ]
 Set B contains: [ BLUE PURPLE ORANGE GREEN PINK ]
 A | B: [ RED YELLOW BLUE PURPLE ORANGE PINK GREEN ]
 A & B: [ ORANGE PINK GREEN ]
 A ^ B: [ RED YELLOW BLUE PURPLE ]
 A - B: [ RED YELLOW ]
-ex8_6.c
+PASS executing ex8_4
+PASS compiling ex8_6
 Set A contains: [ 01111100 ]
 Set B contains: [ 00011111 ]
 A | B: [ 01111111 ]
 A & B: [ 00011100 ]
 A ^ B: [ 01100011 ]
 A - B: [ 01100000 ]
-ex9_5.c
+PASS executing ex8_6
+PASS compiling ex9_5
                          WHEN
                               WHAT
                     VEHICLE
@@ -206,7 +224,8 @@ ex9_5.c
                          ACTIONS
                               ABOUT
 A
-ex9_7.c
+PASS executing ex9_5
+PASS compiling ex9_7
                     WHEN
                          WHAT
                VEHICLE
@@ -236,7 +255,8 @@ PROGRAMMING
           ACTIONS
                     ABOUT
                A
-ex9_11.c
+PASS executing ex9_7
+PASS compiling ex9_11
 President
    Sales
       Domestic
@@ -250,3 +270,4 @@ President
       Long Term
       Collections
    Legal
+PASS executing ex9_11

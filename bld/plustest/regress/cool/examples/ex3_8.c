@@ -13,7 +13,6 @@
 #include <cool/Rational.h>                      // Include COOL Rational class
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolRational r1 (10,3);                       // Create CoolRational object
   CoolRational r2 (-4,27), r3;                  // Create CoolRational objects
   r3 = r1 + r2;                                 // Calculate sum of values

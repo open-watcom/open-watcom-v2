@@ -18,7 +18,6 @@
 #include <cool/List.C>
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolList<CoolGen_String> l1;                          // Declare CoolList variable
   CoolGen_String s;                                     // Temporary string variable
   int max_count = 0;                            // Temporary counting variable

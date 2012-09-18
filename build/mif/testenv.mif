@@ -1,0 +1,1049 @@
+################################################################################################################
+#
+# Setup OW test environment
+#
+
+#
+# configuration flags (default: flag symbol not defined)
+#
+# no_continue = yes     -- continue in the face of errors
+# use_dll = yes         -- use !loaddll
+
+#
+# configuration values:
+#
+# targ_env_386 = wnt386/d4g386/cw386/os2386/linux386 (depends on current OS)
+# targ_env_i86 = os2i86/dosi86 (depends on current OS)
+# targ_env_axp = ntaxp (depends on current OS)
+# targ_env_ppc = linuxppc/ntppc (depends on current OS)
+# targ_env_mps = linuxmips (depends on current OS)
+#
+# nb: above directories can have extensions:
+#   .    - Intel 386 hosted compiler
+#   .axp - Digital AXP hosted compiler
+#   ( more to be defined )
+#
+# was_386 = wasm
+# was_i86 = wasm
+# was_axp = wasmaxp
+# was_ppc = wasmppc
+# was_mps = wasmmps
+#
+# wcc_386 = wcc386
+# wcc_i86 = wcc
+# wcc_axp = wccaxp
+# wcc_ppc = wccppc
+# wcc_mps = wccmps
+#
+# wcc_dll_386 = wcc386.dll
+# wcc_dll_i86 = wcc.dll
+# wcc_dll_axp = wccaxp.dll
+# wcc_dll_ppc = wccppc.dll
+# wcc_dll_mps = wccmps.dll
+#
+# wpp_386 = wpp386
+# wpp_i86 = wpp
+# wpp_axp = wppaxp
+# wpp_ppc = wppppc
+# wpp_mps = wppmps
+#
+# wpp_dll_i86 = wppdi86.dll
+# wpp_dll_386 = wppd386.dll
+# wpp_dll_axp = wppdaxp.dll
+# wpp_dll_ppc = wppdppc.dll
+# wpp_dll_mps = wppdmps.dll
+#
+# wfc_386 = wfc386
+# wfc_i86 = wfc
+# wfc_axp = wfcaxp
+#
+# wfc_dll_i86 = wfcdi86.dll
+# wfc_dll_386 = wfcd386.dll
+# wfc_dll_axp = wfcdaxp.dll
+#
+# arch = 386/axp/ppc/mps (depends on current hardware)
+#
+# linker = wlink
+#
+# uncomment below if you want to see more 
+# !define noisy 1
+#
+
+watcom_root = $(%WATCOM)
+
+.extensions:
+.extensions: .exp .exe .dis .dib .dum .ls1 .lst .obj .ser .mer .err .pl0 .pl .plc .p .gc .c .cc .cpp .for .asm .mif
+.mif: ..;$(mif_path)
+
+!ifndef no_continue
+.continue
+!else ifneq no_continue yes
+.continue
+!endif
+
+.erase
+
+.error
+    @%append $(%ERROR_FILE) $(%ERROR_MSG)
+
+!ifdef __OS2__
+bld_sys     = os2v2
+bld_cl      = wcl386 -zq -bt=os2
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ -I"$(watcom_dir)/h"
+!else ifdef __MSDOS__
+bld_sys     = dos4g
+bld_cl      = wcl386 -zq -bt=dos
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ -I"$(watcom_dir)/h"
+!else ifdef __NTAXP__
+bld_sys     = ntaxp
+bld_cl      = wclaxp -zq -bt=nt
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ -I"$(watcom_dir)/h"
+!else ifdef __NT386__
+bld_sys     = nt
+bld_cl      = wcl386 -zq -bt=nt
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ -I"$(watcom_dir)/h"
+!else ifdef __LINUXPPC__
+bld_sys     = linuxppc
+bld_cl      = wclppc -zq -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ -I"$(watcom_dir)/h"
+!else ifdef __LINUXMIPS__
+bld_sys     = linuxmips
+bld_cl      = wclmps -zq -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ -I"$(watcom_dir)/h"
+!else
+bld_sys     = linux
+bld_cl      = wcl386 -zq -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ -I"$(watcom_dir)/h"
+!endif
+
+!ifdef wasmtest_name
+bld_extra_defines = -DWASM
+!else ifdef ftest_name
+bld_extra_defines = -DF77
+!else ifeq ctest_name inline
+bld_extra_defines = -DINLINETEST
+!else ifeq plustest_name inline
+bld_extra_defines = -DINLINETEST
+!endif
+
+sed = sed
+awk = awk
+
+#
+# architectures -- 386, i86, axp, ppc, mps
+#
+!ifndef arch
+!  ifdef wasmtest_name
+!    ifdef %WASMTEST_ARCH
+!      define arch $+$(%PLUSTEST_ARCH)$-
+!    endif
+!  else ifdef ctest_name
+!    ifdef %PLUSTEST_ARCH
+!      define arch $+$(%PLUSTEST_ARCH)$-
+!    endif
+!  else ifdef ftest_name
+!    ifdef %FTEST_ARCH
+!      define arch $+$(%FTEST_ARCH)$-
+!    endif
+!  else ifdef plustest_name
+!    ifdef %PLUSTEST_ARCH
+!      define arch $+$(%PLUSTEST_ARCH)$-
+!    endif
+!  endif
+!endif
+!ifndef arch
+!  ifdef __NTAXP__
+!    define arch axp
+!  else ifdef __LINUXPPC__
+!    define arch ppc
+!  else ifdef __LINUXMIPS__
+!    define arch mps
+!  else
+!    define arch 386
+!  endif
+!endif
+
+!ifndef use_dll
+!  ifdef wasmtest_name
+!    ifdef %WASMTEST_USE_DLL
+!      define use_dll $+$(%WASMTEST_USE_DLL)$-
+!    endif
+!  else ifdef ctest_name
+!    ifdef %CTEST_USE_DLL
+!      define use_dll $+$(%CTEST_USE_DLL)$-
+!    endif
+!  else ifdef ftest_name
+!    ifdef %FTEST_USE_DLL
+!      define use_dll $+$(%FTEST_USE_DLL)$-
+!    endif
+!  else ifdef plustest_name
+!    ifdef %PLUSTEST_USE_DLL
+!      define use_dll $+$(%PLUSTEST_USE_DLL)$-
+!    endif
+!  endif
+!endif
+!ifndef __LOADDLL__
+# this feature isn't supported
+!  ifdef use_dll
+!    undef use_dll
+!  endif
+!endif
+
+!ifndef log_file
+!  ifdef wasmtest_name
+!    ifdef %WASMTEST_LOG_FILE
+!      define log_file $+$(%WASMTEST_LOG_FILE)$-
+!    else ifdef %WASMTEST_NAME
+!      define log_file $(wasmtest_dir)/$+$(%WASMTEST_NAME)$-.log
+!    else
+!      define log_file $(wasmtest_dir)/$(wasmtest_name).log
+!    endif
+!  else ifdef ctest_name
+!    ifdef %CTEST_LOG_FILE
+!      define log_file $+$(%CTEST_LOG_FILE)$-
+!    else ifdef %CTEST_NAME
+!      define log_file $(ctest_dir)/$+$(%CTEST_NAME)$-.log
+!    else
+!      define log_file $(ctest_dir)/$(ctest_name).log
+!    endif
+!  else ifdef ftest_name
+!    ifdef %FTEST_LOG_FILE
+!      define log_file $+$(%FTEST_LOG_FILE)$-
+!    else ifdef %FTEST_NAME
+!      define log_file $(ftest_dir)/$+$(%FTEST_NAME)$-.log
+!    else
+!      define log_file $(ftest_dir)/$(ftest_name).log
+!    endif
+!  else ifdef plustest_name
+!    ifdef %PLUSTEST_LOG_FILE
+!      define log_file $+$(%PLUSTEST_LOG_FILE)$-
+!    else ifdef %PLUSTEST_NAME
+!      define log_file $(plustest_dir)/$+$(%PLUSTEST_NAME)$-.log
+!    else
+!      define log_file $(plustest_dir)/$(plustest_name).log
+!    endif
+!  endif
+!endif
+
+!ifndef targ_env_386
+!  ifdef wasmtest_name
+!    ifdef %WASMTEST_TARG_ENV_386
+!      define targ_env_386 $(%WASMTEST_TARG_ENV_386)
+!    endif
+!  else ifdef ctest_name
+!    ifdef %CTEST_TARG_ENV_386
+!      define targ_env_386 $(%CTEST_TARG_ENV_386)
+!    endif
+!  else ifdef ftest_name
+!    ifdef %FTEST_TARG_ENV_386
+!      define targ_env_386 $(%FTEST_TARG_ENV_386)
+!    endif
+!  else ifdef plustest_name
+!    ifdef %PLUSTEST_TARG_ENV_386
+!      define targ_env_386 $(%PLUSTEST_TARG_ENV_386)
+!    endif
+!  endif
+!endif
+!ifndef targ_env_386
+!  ifdef __DOS__
+!    define targ_env_386 d4g386
+#!    define targ_env_386 cw386
+!  else ifdef __OS2__
+!    define targ_env_386 os2386
+!  else ifdef __LINUX__
+!    define targ_env_386 lnx386
+!  else ifdef __NT386__
+!    define targ_env_386 wnt386
+!  endif
+!endif
+
+!ifndef targ_env_i86
+!  ifdef wasmtest_name
+!    ifdef %WASMTEST_TARG_ENV_I86
+!      define targ_env_i86 $(%WASMTEST_TARG_ENV_I86)
+!    endif
+!  else ifdef ctest_name
+!    ifdef %CTEST_TARG_ENV_I86
+!      define targ_env_i86 $(%CTEST_TARG_ENV_I86)
+!    endif
+!  else ifdef ftest_name
+!    ifdef %FTEST_TARG_ENV_I86
+!      define targ_env_i86 $(%FTEST_TARG_ENV_I86)
+!    endif
+!  else ifdef plustest_name
+!    ifdef %PLUSTEST_TARG_ENV_I86
+!      define targ_env_i86 $(%PLUSTEST_TARG_ENV_I86)
+!    endif
+!  endif
+!endif
+!ifndef targ_env_i86
+!  ifdef __DOS__
+!    define targ_env_i86 dosi86
+!  else ifdef __OS2__
+!    define targ_env_i86 os2i86
+!  else ifdef __NT__
+!    define targ_env_i86 wnti86
+!  endif
+!endif
+
+!ifndef targ_env_axp
+!  ifdef wasmtest_name
+!    ifdef %WASMTEST_TARG_ENV_AXP
+!      define targ_env_axp $(%WASMTEST_TARG_ENV_AXP)
+!    endif
+!  else ifdef ctest_name
+!    ifdef %CTEST_TARG_ENV_AXP
+!      define targ_env_axp $(%CTEST_TARG_ENV_AXP)
+!    endif
+!  else ifdef ftest_name
+!    ifdef %FTEST_TARG_ENV_AXP
+!      define targ_env_axp $(%FTEST_TARG_ENV_AXP)
+!    endif
+!  else ifdef plustest_name
+!    ifdef %PLUSTEST_TARG_ENV_AXP
+!      define targ_env_axp $(%PLUSTEST_TARG_ENV_AXP)
+!    endif
+!  endif
+!endif
+!ifndef targ_env_axp
+!  ifdef __DOS__
+!    define targ_env_axp dosaxp
+!  else ifdef __OS2__
+!    define targ_env_axp os2axp
+!  else ifdef __NT__
+!    define targ_env_axp wntaxp
+!  endif
+!endif
+
+!ifndef targ_env_ppc
+!  ifdef wasmtest_name
+!    ifdef %WASMTEST_TARG_ENV_PPC
+!      define targ_env_ppc $(%WASMTEST_TARG_ENV_PPC)
+!    endif
+!  else ifdef ctest_name
+!    ifdef %CTEST_TARG_ENV_PPC
+!      define targ_env_ppc $(%CTEST_TARG_ENV_PPC)
+!    endif
+!  else ifdef ftest_name
+!    ifdef %FTEST_TARG_ENV_PPC
+!      define targ_env_ppc $(%FTEST_TARG_ENV_PPC)
+!    endif
+!  else ifdef plustest_name
+!    ifdef %PLUSTEST_TARG_ENV_PPC
+!      define targ_env_ppc $(%PLUSTEST_TARG_ENV_PPC)
+!    endif
+!  endif
+!endif
+!ifndef targ_env_ppc
+!  ifdef __LINUX__
+!    define targ_env_ppc lnxppc
+!  endif
+!endif
+
+
+!ifndef targ_env_mps
+!  ifdef wasmtest_name
+!    ifdef %WASMTEST_TARG_ENV_MPS
+!      define targ_env_mps $(%WASMTEST_TARG_ENV_MPS)
+!    endif
+!  else ifdef ctest_name
+!    ifdef %CTEST_TARG_ENV_MPS
+!      define targ_env_mps $(%CTEST_TARG_ENV_MPS)
+!    endif
+!  else ifdef ftest_name
+!    ifdef %FTEST_TARG_ENV_MPS
+!      define targ_env_mps $(%FTEST_TARG_ENV_MPS)
+!    endif
+!  else ifdef plustest_name
+!    ifdef %PLUSTEST_TARG_ENV_MPS
+!      define targ_env_mps $(%PLUSTEST_TARG_ENV_MPS)
+!    endif
+!  endif
+!endif
+!ifndef targ_env_mps
+!  ifdef __LINUX__
+!    define targ_env_mps lnxmps
+!  endif
+!endif
+
+!ifndef comp_wasm_386
+!  ifdef %WASMTEST_WASM_386
+!    define comp_wasm_386 $(%WASMTEST_WASM_386)
+!  else
+!    define comp_wasm_386 wasm
+!  endif
+!endif
+
+!ifndef comp_wasm_i86
+!  ifdef %WASMTEST_WASM_I86
+!    define comp_wasm_i86 $(%WASMTEST_WASM_I86)
+!  else
+!    define comp_wasm_i86 wasmr
+!  endif
+!endif
+
+!ifndef comp_wasm_axp
+!  ifdef %WASMTEST_WASM_AXP
+!    define comp_wasm_axp $(%WASMTEST_WASM_AXP)
+!  else
+!    define comp_wasm_axp wasmaxp
+!  endif
+!endif
+
+!ifndef comp_wasm_ppc
+!  ifdef %WASMTEST_WASM_PPC
+!    define comp_wasm_ppc $(%WASMTEST_WASM_PPC)
+!  else
+!    define comp_wasm_ppc wasmppc
+!  endif
+!endif
+
+!ifndef comp_wasm_mps
+!  ifdef %WASMTEST_WASM_MPS
+!    define comp_wasm_mps $(%WASMTEST_WASM_MPS)
+!  else
+!    define comp_wasm_mps wasmmps
+!  endif
+!endif
+
+!ifndef comp_wcc_386
+!  ifdef %CTEST_WCC_386
+!    define comp_wcc_386 $(%CTEST_WCC_386)
+!  else
+!    define comp_wcc_386 wcc386
+!  endif
+!endif
+
+!ifndef comp_wcc_i86
+!  ifdef %CTEST_WCC_I86
+!    define comp_wcc_i86 $(%CTEST_WCC_I86)
+!  else
+!    define comp_wcc_i86 wcc
+!  endif
+!endif
+
+!ifndef comp_wcc_axp
+!  ifdef %CTEST_WCC_AXP
+!    define comp_wcc_axp $(%CTEST_WCC_AXP)
+!  else
+!    define comp_wcc_axp wccaxp
+!  endif
+!endif
+
+!ifndef comp_wcc_ppc
+!  ifdef %CTEST_WCC_PPC
+!    define comp_wcc_ppc $(%CTEST_WCC_PPC)
+!  else
+!    define comp_wcc_ppc wccppc
+!  endif
+!endif
+
+!ifndef comp_wcc_mps
+!  ifdef %CTEST_WCC_MPS
+!    define comp_wcc_mps $(%CTEST_WCC_MPS)
+!  else
+!    define comp_wcc_mps wccmps
+!  endif
+!endif
+
+!ifndef comp_wpp_386
+!  ifdef %PLUSTEST_WPP_386
+!    define comp_wpp_386 $(%PLUSTEST_WPP_386)
+!  else
+!    define comp_wpp_386 wpp386
+!  endif
+!endif
+
+!ifndef comp_wpp_i86
+!  ifdef %PLUSTEST_WPP_I86
+!    define comp_wpp_i86 $(%PLUSTEST_WPP_I86)
+!  else
+!    define comp_wpp_i86 wpp
+!  endif
+!endif
+
+!ifndef comp_wpp_axp
+!  ifdef %PLUSTEST_WPP_AXP
+!    define comp_wpp_axp $(%PLUSTEST_WPP_AXP)
+!  else
+!    define comp_wpp_axp wppaxp
+!  endif
+!endif
+
+!ifndef comp_wpp_ppc
+!  ifdef %PLUSTEST_WPP_PPC
+!    define comp_wpp_ppc $(%PLUSTEST_WPP_PPC)
+!  else
+!    define comp_wpp_ppc wppppc
+!  endif
+!endif
+
+!ifndef comp_wpp_mps
+!  ifdef %PLUSTEST_WPP_MPS
+!    define comp_wpp_mps $(%PLUSTEST_WPP_MPS)
+!  else
+!    define comp_wpp_mps wppmps
+!  endif
+!endif
+
+!ifndef dll_wcc_386
+!  ifdef %CTEST_DLL_386
+!    define dll_wcc_386 $(%CTEST_DLL_386)
+!  else
+!    define dll_wcc_386 wccd386.dll
+!  endif
+!endif
+
+!ifndef dll_wcc_i86
+!  ifdef %CTEST_DLL_I86
+!    define dll_wcc_i86 $(%CTEST_DLL_I86)
+!  else
+!    define dll_wcc_i86 wccd.dll
+!  endif
+!endif
+
+!ifndef dll_wcc_axp
+!  ifdef %CTEST_DLL_AXP
+!    define dll_wcc_axp $(%CTEST_DLL_AXP)
+!  else
+!    define dll_wcc_axp wccdaxp.dll
+!  endif
+!endif
+
+!ifndef dll_wpp_386
+!  ifdef %PLUSTEST_DLL_386
+!    define dll_wpp_386 $(%PLUSTEST_DLL_386)
+!  else
+!    define dll_wpp_386 wppd386.dll
+!  endif
+!endif
+
+!ifndef dll_wpp_i86
+!  ifdef %PLUSTEST_DLL_I86
+!    define dll_wpp_i86 $(%PLUSTEST_DLL_I86)
+!  else
+!    define dll_wpp_i86 wppdi86.dll
+!  endif
+!endif
+
+!ifndef dll_wpp_axp
+!  ifdef %PLUSTEST_DLL_AXP
+!    define dll_wpp_axp $(%PLUSTEST_DLL_AXP)
+!  else
+!    define dll_wpp_axp wppdaxp.dll
+!  endif
+!endif
+
+!ifndef comp_wfc_386
+!  ifdef %FTEST_WFC_386
+!    define comp_wfc_386 $(%FTEST_WFC_386)
+!  else
+!    define comp_wfc_386 wfc386
+!  endif
+!endif
+
+!ifndef comp_wfc_i86
+!  ifdef %FTEST_WFC_I86
+!    define comp_wfc_i86 $(%FTEST_WFC_I86)
+!  else
+!    define comp_wfc_i86 wpp
+!  endif
+!endif
+
+!ifndef comp_wfc_axp
+!  ifdef %FTEST_WFC_AXP
+!    define comp_wfc_axp $(%FTEST_WFC_AXP)
+!  else
+!    define comp_wfc_axp wppaxp
+!  endif
+!endif
+
+!ifndef dll_wfc_386
+!  ifdef %FTEST_DLL_386
+!    define dll_wfc_386 $(%FTEST_DLL_386)
+!  else
+!    define dll_wfc_386 wfcd386.dll
+!  endif
+!endif
+
+!ifndef dll_wfc_i86
+!  ifdef %FTEST_DLL_I86
+!    define dll_wfc_i86 $(%FTEST_DLL_I86)
+!  else
+!    define dll_wfc_i86 wfcdi86.dll
+!  endif
+!endif
+
+!ifndef dll_wfc_axp
+!  ifdef %FTEST_DLL_AXP
+!    define dll_wfc_axp $(%FTEST_DLL_AXP)
+!  else
+!    define dll_wfc_axp wfcdaxp.dll
+!  endif
+!endif
+
+!ifdef dll_loaded
+!  undef dll_loaded
+!endif
+
+!ifdef use_dll
+!  define dll_loaded
+!  ifdef wasmtest_name
+!  else ifdef ctest_name
+!    loaddll $(comp_wcc_$(arch)) $(dll_wcc_$(arch))
+!  else ifdef ftest_name
+!    loaddll $(comp_wfc_$(arch)) $(dll_wfc_$(arch))
+!  else ifdef plustest_name
+!    loaddll $(comp_wpp_$(arch)) $(dll_wpp_$(arch))
+!  endif
+!endif
+
+!ifndef linker
+!  ifdef wasmtest_name
+!    ifdef %WASMTEST_LINKER
+!      define linker $+$(%WASMTEST_LINKER)$-
+!    endif
+!  else ifdef ctest_name
+!    ifdef %CTEST_LINKER
+!      define linker $+$(%CTEST_LINKER)$-
+!    endif
+!  else ifdef ftest_name
+!    ifdef %FTEST_LINKER
+!      define linker $+$(%FTEST_LINKER)$-
+!    endif
+!  else ifdef plustest_name
+!    ifdef %PLUSTEST_LINKER
+!      define linker $+$(%PLUSTEST_LINKER)$-
+!    endif
+!  endif
+!endif
+!ifndef linker
+!  define linker wlink
+!  ifdef use_dll
+!    loaddll wlink wlinkd.dll
+!  endif
+!endif
+
+#
+# targ_ext      extension (e.g., exp ) - must have one for default rules to work
+targ_ext_pls386 = exp
+targ_ext_d4g386 = exe
+targ_ext_cw386  = exe
+targ_ext_tnt386 = exe
+targ_ext_os2386 = exe
+targ_ext_wnt386 = exe
+targ_ext_lnx386 = exe
+targ_ext_wnti86 = exe
+targ_ext_dosi86 = exe
+targ_ext_os2i86 = exe
+targ_ext_wntaxp = exe
+targ_ext_dosaxp = exe
+targ_ext_os2axp = exe
+targ_ext_lnxppc = exe
+targ_ext_lnxmps = exe
+
+exe = $(targ_ext_$(targ_env_$(arch)))
+
+# targ_br
+targ_br_pls386 =
+targ_br_d4g386 =
+targ_br_cw386  =
+targ_br_tnt386 =
+targ_br_os2386 = -br
+targ_br_wnt386 = -br
+targ_br_lnx386 =
+targ_br_wnti86 =
+targ_br_dosi86 =
+targ_br_os2i86 = -br
+targ_br_wntaxp = -br
+targ_br_dosaxp =
+targ_br_os2axp =
+targ_br_lnxppc =
+targ_br_lnxmps =
+
+br_opt = $(targ_br_$(targ_env_$(arch)))
+
+#
+# targ_run      name of executable loader (e.g., run386)
+targ_run_pls386 = run386
+targ_run_d4g386 = dos4gw
+targ_run_cw386  =
+targ_run_tnt386 = tntrun
+targ_run_os2386 =
+targ_run_wnt386 =
+targ_run_lnx386 =
+targ_run_wnti86 =
+targ_run_dosi86 =
+targ_run_os2i86 =
+targ_run_wntaxp =
+targ_run_dosaxp =
+targ_run_os2axp =
+targ_run_lnxppc =
+targ_run_lnxmps =
+
+run = $(targ_run_$(targ_env_$(arch)))
+
+!ifdef __UNIX__
+exec_prefix = ./
+!else
+exec_prefix =
+!endif
+
+#
+# targ_bld_was  build options (e.g., -bt=dos)
+#
+targ_bld_was_pls386 = -bt=dos
+targ_bld_was_d4g386 = -bt=dos
+targ_bld_was_cw386  = -bt=dos
+targ_bld_was_tnt386 = -bt=nt
+targ_bld_was_os2386 = -bt=os2
+targ_bld_was_wnt386 = -bt=nt
+targ_bld_was_lnx386 = -bt=linux
+!ifdef __NT386__
+targ_bld_was_wnti86 = -bt=dos
+!else
+targ_bld_was_wnti86 = -bt=nt
+!endif
+targ_bld_was_dosi86 = -bt=dos
+targ_bld_was_os2i86 = -bt=os2
+#
+# these will be empty
+#
+targ_bld_was_wntaxp =
+targ_bld_was_dosaxp =
+targ_bld_was_os2axp =
+targ_bld_was_lnxppc = -bt=linux
+targ_bld_was_lnxmps = -bt=linux
+
+#
+# targ_bld_cxx  build options (e.g., -bt=dos)
+#
+targ_bld_cxx_pls386 = -bt=dos -I"$(watcom_root)/h"
+targ_bld_cxx_d4g386 = -bt=dos -I"$(watcom_root)/h"
+targ_bld_cxx_cw386  = -bt=dos -I"$(watcom_root)/h"
+targ_bld_cxx_tnt386 = -bt=nt -I"$(watcom_root)/h"
+targ_bld_cxx_os2386 = -bt=os2 -I"$(watcom_root)/h" -I"$(watcom_root)/h/os2"
+targ_bld_cxx_wnt386 = -bt=nt -I"$(watcom_root)/h" -I"$(watcom_root)/h/nt"
+targ_bld_cxx_lnx386 = -bt=linux -I"$(watcom_root)/lh"
+!ifdef __NT386__
+targ_bld_cxx_wnti86 = -bt=dos -I"$(watcom_root)/h"
+!else
+targ_bld_cxx_wnti86 = -bt=nt -I"$(watcom_root)/h"
+!endif
+targ_bld_cxx_dosi86 = -bt=dos -I"$(watcom_root)/h"
+targ_bld_cxx_os2i86 = -bt=os2 -I"$(watcom_root)/h" -I"$(watcom_root)/h/os21x"
+#
+# these will be empty
+#
+targ_bld_cxx_wntaxp = -si -I"$(watcom_root)/h" -I"$(watcom_root)/h/nt"
+targ_bld_cxx_dosaxp = -I"$(watcom_root)/h"
+targ_bld_cxx_os2axp = -I"$(watcom_root)/h"
+targ_bld_cxx_lnxppc = -I"$(watcom_root)/lh"
+targ_bld_cxx_lnxmps = -I"$(watcom_root)/lh"
+
+#
+# targ_bld_wfc  build options (e.g., something like -bt=dos)
+#
+targ_bld_wfc_pls386 = #-bt=dos
+targ_bld_wfc_d4g386 = #-bt=dos
+targ_bld_wfc_cw386  = #-bt=dos
+targ_bld_wfc_tnt386 = #-bt=nt
+targ_bld_wfc_os2386 = #-bt=os2
+targ_bld_wfc_wnt386 = #-bt=nt
+targ_bld_wfc_lnx386 = #-bt=linux
+targ_bld_wfc_wnti86 = #-bt=nt
+targ_bld_wfc_dosi86 = #-bt=dos
+targ_bld_wfc_os2i86 = #-bt=os2
+#
+# these will be empty
+#
+targ_bld_wfc_wntaxp = -si
+targ_bld_wfc_dosaxp =
+targ_bld_wfc_os2axp =
+targ_bld_wfc_lnxppc =
+targ_bld_wfc_lnxmps =
+
+wasm_386 = $(comp_wasm_386) $(targ_bld_was_$(targ_env_386))
+wasm_i86 = $(comp_wasm_i86) $(targ_bld_was_$(targ_env_i86))
+wasm_axp = $(comp_wasm_axp) $(targ_bld_was_$(targ_env_axp))
+wasm_ppc = $(comp_wasm_ppc) $(targ_bld_was_$(targ_env_ppc))
+wasm_mps = $(comp_wasm_mps) $(targ_bld_was_$(targ_env_mps))
+
+wcc_386 = $(comp_wcc_386) $(targ_bld_cxx_$(targ_env_386))
+wcc_i86 = $(comp_wcc_i86) $(targ_bld_cxx_$(targ_env_i86))
+wcc_axp = $(comp_wcc_axp) $(targ_bld_cxx_$(targ_env_axp))
+wcc_ppc = $(comp_wcc_ppc) $(targ_bld_cxx_$(targ_env_ppc))
+wcc_mps = $(comp_wcc_mps) $(targ_bld_cxx_$(targ_env_mps))
+
+wpp_386 = $(comp_wpp_386) $(targ_bld_cxx_$(targ_env_386))
+wpp_i86 = $(comp_wpp_i86) $(targ_bld_cxx_$(targ_env_i86))
+wpp_axp = $(comp_wpp_axp) $(targ_bld_cxx_$(targ_env_axp))
+wpp_ppc = $(comp_wpp_ppc) $(targ_bld_cxx_$(targ_env_ppc))
+wpp_mps = $(comp_wpp_mps) $(targ_bld_cxx_$(targ_env_mps))
+
+wfc_386 = $(comp_wfc_386) $(targ_bld_wfc_$(targ_env_386))
+wfc_i86 = $(comp_wfc_i86) $(targ_bld_wfc_$(targ_env_i86))
+wfc_axp = $(comp_wfc_axp) $(targ_bld_wfc_$(targ_env_axp))
+wfc_ppc = $(comp_wfc_ppc) $(targ_bld_wfc_$(targ_env_ppc))
+wfc_mps = $(comp_wfc_mps) $(targ_bld_wfc_$(targ_env_mps))
+
+#
+# targ_ldb      linker debug directive (e.g., DEBUG all)
+#
+targ_ldb_pls386 = debug all
+targ_ldb_d4g386 = debug all
+targ_ldb_cw386  = debug all
+targ_ldb_tnt386 = debug all
+targ_ldb_os2386 = debug all
+targ_ldb_wnt386 = debug all
+targ_ldb_lnx386 = debug all
+targ_ldb_wnti86 = debug all
+targ_ldb_dosi86 = debug all
+targ_ldb_os2i86 = debug all
+targ_ldb_wntaxp = debug codeview
+targ_ldb_dosaxp = debug codeview
+targ_ldb_os2axp = debug codeview
+targ_ldb_lnxppc = debug all
+targ_ldb_lnxmps = debug all
+
+ldebug_386 = $(targ_ldb_$(targ_env_386))
+ldebug_axp = $(targ_ldb_$(targ_env_axp))
+ldebug_i86 = $(targ_ldb_$(targ_env_i86))
+ldebug_mps = $(targ_ldb_$(targ_env_mps))
+ldebug_ppc = $(targ_ldb_$(targ_env_ppc))
+
+#
+# targ_lnk      linker directives (e.g., system pharlap option offset=64k)
+#
+targ_lnk_pls386 = system pharlap option offset=64k
+targ_lnk_d4g386 = system dos4g
+targ_lnk_cw386  = system causeway
+targ_lnk_tnt386 = system nt option offset=64k
+targ_lnk_os2386 = system os2v2 option offset=64k
+targ_lnk_wnt386 = system nt option offset=64k
+targ_lnk_lnx386 = system linux
+!ifdef __NT386__
+targ_lnk_wnti86 = system dos option stack=3k
+!else
+targ_lnk_wnti86 = system os2 pmc
+!endif
+targ_lnk_dosi86 = system dos option stack=3k
+targ_lnk_os2i86 = system os2 pmc
+targ_lnk_wntaxp = system ntaxp
+targ_lnk_dosaxp = system ntaxp
+targ_lnk_os2axp = system ntaxp
+targ_lnk_lnxppc = system linuxppc
+targ_lnk_lnxmps = system linuxmips
+
+!ifndef noisy
+was_any = -zq
+wcc_any = -zq
+wpp_any = -zq
+wfc_any = -Quiet
+lnk_any = option noundefsok, map, quiet
+lib_any = -q
+!else
+lnk_any = option noundefsok, map
+!endif
+
+lnk_386 = $(targ_lnk_$(targ_env_386)) $(lnk_any)
+lnk_axp = $(targ_lnk_$(targ_env_axp)) $(lnk_any)
+lnk_i86 = $(targ_lnk_$(targ_env_i86)) $(lnk_any)
+lnk_mps = $(targ_lnk_$(targ_env_mps)) $(lnk_any)
+lnk_ppc = $(targ_lnk_$(targ_env_ppc)) $(lnk_any)
+
+wcc_386 = wcc386 $(wcc_any) $(targ_bld_cxx_$(targ_env_386))
+wcc_axp = wccaxp $(wcc_any) $(targ_bld_cxx_$(targ_env_axp))
+wcc_i86 = wcci86 $(wcc_any) $(targ_bld_cxx_$(targ_env_i86))
+wcc_mps = wccmps $(wcc_any) $(targ_bld_cxx_$(targ_env_mps))
+wcc_ppc = wccppc $(wcc_any) $(targ_bld_cxx_$(targ_env_ppc))
+
+wpp_386 = wpp386 $(wpp_any) $(targ_bld_cxx_$(targ_env_386))
+wpp_axp = wppaxp $(wpp_any) $(targ_bld_cxx_$(targ_env_axp))
+wpp_i86 = wppi86 $(wpp_any) $(targ_bld_cxx_$(targ_env_i86))
+wpp_mps = wppmps $(wpp_any) $(targ_bld_cxx_$(targ_env_mps))
+wpp_ppc = wppppc $(wpp_any) $(targ_bld_cxx_$(targ_env_ppc))
+
+wasm_386 = wasm   $(was_any) $(targ_bld_was_$(targ_env_386))
+wasm_axp = wasaxp $(was_any) $(targ_bld_was_$(targ_env_axp))
+wasm_i86 = wasm   $(was_any) $(targ_bld_was_$(targ_env_i86))
+wasm_mps = wasmps $(was_any) $(targ_bld_was_$(targ_env_mps))
+wasm_ppc = wasppc $(was_any) $(targ_bld_was_$(targ_env_ppc))
+
+wfc_386 = wfc386 $(wfc_any) $(targ_bld_wfc_$(targ_env_386))
+wfc_axp = wfcaxp $(wfc_any) $(targ_bld_wfc_$(targ_env_axp))
+wfc_i86 = wfc    $(wfc_any) $(targ_bld_wfc_$(targ_env_i86))
+wfc_mps = wfcmps $(wfc_any) $(targ_bld_wfc_$(targ_env_mps))
+wfc_ppc = wfcppc $(wfc_any) $(targ_bld_wfc_$(targ_env_ppc))
+
+librarian = wlib $(lib_any) -n -b
+!ifdef use_dll
+!  loaddll wlib wlibd.dll
+!endif
+
+!ifdef testcomp
+!  define csrc_comp $(testcomp)
+!else
+!  ifdef plustest_name
+!    ifeq plustest_name perl
+!      define csrc_comp $(wcc_$(arch))
+!    else
+!      define csrc_comp $(wpp_$(arch))
+!    endif
+!  else
+!    define csrc_comp $(wcc_$(arch))
+!  endif
+!endif
+
+first_target : .symbolic start test
+    @%null
+
+start : .symbolic
+!ifdef dll_loaded
+!  ifdef wasmtest_name
+!  else ifdef ctest_name
+     @echo using !loaddll $(dll_wcc_$(arch))
+!  else ifdef ftest_name
+     @echo using !loaddll $(dll_wfc_$(arch))
+!  else ifdef plustest_name
+     @echo using !loaddll $(dll_wpp_$(arch))
+!  endif
+!endif
+    @cdsay
+    @cdsay >> $(log_file)
+    %append $(log_file) TEST $(arch)/$(alt_error)
+
+test.lnk : $(__MAKEFILES__)
+    %create $@
+    @%append $@ $(targ_ldb_$(targ_env_$(arch)))
+    @%append $@ $(targ_lnk_$(targ_env_$(arch)))
+    @%append $@ $(lnk_any)
+    @%append $@ $(stack_$(arch))
+
+.c.obj:
+    @set ERROR_MSG=failure to compile $^&
+    $(csrc_comp) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+!ifeq ctest_name inline
+    @%append $(%ERROR_FILE) PASS compiling $^&
+!else ifeq plustest_name inline
+    @%append $(%ERROR_FILE) PASS compiling $^&
+!endif
+
+.cc.obj:
+    @set ERROR_MSG=failure to compile $^@
+    $(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+
+.cpp.obj:
+    @set ERROR_MSG=failure to compile $^@
+    $(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+
+.gc.obj:
+    @set ERROR_MSG=failure to compile $^&
+!ifdef plustest_name
+    $(wpp_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
+!else
+    $(wcc_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
+!endif
+    @%append $(%ERROR_FILE) PASS compiling $^&
+
+.for.obj:
+    @set ERROR_MSG=failure to compile $^@
+    $(wfc_$(arch)) $[@ $(fflags_$(arch)) $(opt_$^*) -FO=.obj
+
+.asm.obj:
+    @set ERROR_MSG=failure to compile $^@
+    %write xxxxxxxx.tmp  -zld -wx -nm=$[@ $(asm_flags_$^&) $[@ -fr=$^&.out -fo=$@
+    -$(wasm_$(arch)) @xxxxxxxx.tmp
+    @%create tmp.tmp
+    @if not exist $^&.out @%create $^&.out
+    @set CHK_CHECK=diff -i -b $^&.out tmp.tmp
+    @if exist $^&.chk @set CHK_CHECK=diff -i -b $^&.out $^&.chk
+    $(%CHK_CHECK)
+    @%append $(%ERROR_FILE) PASS compiling $[@
+    @if not exist $@ @%create $@
+
+# Rule for compiling via preprocessor
+.p.obj:
+    @set ERROR_MSG=failure to preprocess $^@
+    $(wcc_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -pl -fo=.i
+    @set ERROR_MSG=failure to compile $[&.i
+    $(wcc_$(arch)) $[&.i $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+
+.obj.dis:
+    @set ERROR_MSG=failure to decode $[@
+    @wdis -l=$@ -a -ff $[@
+    @set ESM_CHECK=%null
+    @if exist $^&.esm @set ESM_CHECK=diff -i -b $^&.dis $^&.esm
+    $(%ESM_CHECK)
+    @dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$^&.lst
+    @set EMP_CHECK=@%null
+    @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lst $^&.emp
+    $(%EMP_CHECK)
+    @%append $(%ERROR_FILE) PASS decoding $[@
+
+.obj.dib:
+    @set ERROR_MSG=failure to decode $[@
+    @wdis -l=$@ -ff $[@
+    @set ESM_CHECK=%null
+    @if exist $^&.esm @set ESM_CHECK=diff -i -b $^&.dib $^&.esm
+    $(%ESM_CHECK)
+    @dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$^&.lst
+    @set EMP_CHECK=@%null
+    @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lst $^&.emp
+    $(%EMP_CHECK)
+    @%append $(%ERROR_FILE) PASS decoding $[@
+
+.obj.dum: .symbolic
+    @set ERROR_MSG=failure to decode $[@
+    @%append $(%ERROR_FILE) PASS decoding $[@
+
+.obj.ls1:
+    @set ERROR_MSG=failure to decode $[@
+    wdis -a $[@ | sed -f $(wasmtest_dir)/fixlst2.sed | awk -f $(wasmtest_dir)/fixlst3.awk >$@
+    @set CHK_CHECK=diff -i -b $@ $(wasmtest_dir)/inline/$^&.asm
+    @if exist $(wasmtest_dir)/inline/$^&.chk @set CHK_CHECK=diff -i -b $@ $(wasmtest_dir)/inline/$^&.chk
+    $(%CHK_CHECK)
+    @%append $(%ERROR_FILE) PASS decoding $[@
+
+.obj.lst:
+    @set ERROR_MSG=failure to decode $[@
+    @set ESM_CHECK=@%null
+    @if exist $(wasmtest_dir)/inline/$^&.esm @set ESM_CHECK=diff -i -b $^&.dis $(wasmtest_dir)/inline/$^&.esm
+    -wdis -a $[@ | sed -f $(wasmtest_dir)/fixlst2.sed $(extra_sed_$^*) >$^&.dis
+    $(%ESM_CHECK)
+    @set EMP_CHECK=@%null
+    @if exist $(wasmtest_dir)/inline/$^&.emp @set EMP_CHECK=diff -i -b $@ $(wasmtest_dir)/inline/$^&.emp
+    -dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$@
+    $(%EMP_CHECK)
+    @%append $(%ERROR_FILE) PASS decoding $[@
+
+.obj.$(exe):
+    @set ERROR_MSG=*** failure to link $^&
+    $(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $^@ FILE {$<}
+    @%append $(%ERROR_FILE) PASS compiling $^&
+    @set ERROR_MSG=*** failure to execute $^&
+!ifdef ftest_name
+    $(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out $(stderr_check_$(arch))
+!else ifeq plustest_name except
+    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out $(stderr_check_$(arch))
+!else
+    $(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out $(stderr_check_$(arch))
+!endif
+    @%append $(%ERROR_FILE) PASS executing $^&
+!ifdef ftest_name
+    diff $*.out expected/$*.exp >> exec.out
+!endif
+
+./chk_exec.exe : $(watcom_dir)/c/chk_exec.c
+    $(bld_cl) $(bld_cl_opts) $(bld_extra_defines) $<
+
+./chktest.exe : $(watcom_dir)/c/chktest.c
+    $(bld_cl) $(bld_cl_opts) $<
+
+./catfile.exe: $(watcom_dir)/c/catfile.c
+    $(bld_cl) $(bld_cl_opts) $<
+
+common_clean : .procedure
+    rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+    rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+

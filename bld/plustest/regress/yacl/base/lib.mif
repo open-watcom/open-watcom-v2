@@ -1,0 +1,38 @@
+BASE_LIB_OBJECTS =    &
+basicops.obj &
+bitset.obj   &
+bytarray.obj &
+bytestrm.obj &
+bytstrng.obj &
+clntset.obj  &
+date.obj     &
+error.obj    &
+gbtree.obj   &
+genseq.obj   &
+integer.obj  &
+intseq.obj   &
+intset.obj   &
+iofilter.obj &
+map.obj      &
+memory.obj   &
+object.obj   &
+objseq.obj   &
+objset.obj   &
+sequence.obj &
+stream.obj   &
+strgseq.obj  &
+strgset.obj  &
+string.obj   &
+strsplit.obj &
+tbtree.obj   &
+timeofda.obj &
+tree.obj     &
+treewalk.obj
+
+!ifeq arch i86
+# Required to keep code size under 64KB
+opt_map = -zm -oxs
+!endif
+
+base.lib : $(BASE_LIB_OBJECTS)
+    $(librarian) $@ $(BASE_LIB_OBJECTS)

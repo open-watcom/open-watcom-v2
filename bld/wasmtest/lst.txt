@@ -1,0 +1,1379 @@
+Open Watcom Make Version 2.0beta1 Limited Availability
+Portions Copyright (c) 1988-2002 Sybase, Inc. All Rights Reserved.
+Source code is available under the Sybase Open Watcom Public License.
+See http://www.openwatcom.org/ for details.
+============== 14:25:57 C:\DEV\OPEN-WATCOM-V2-NEW\BLD\WASMTEST ==============
+	%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log TEST 386/
+	rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+	rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+	rm -f c:\dev\open-watcom-v2-new/bld/wasmtest/result.log
+	cd test1
+	wmake -h
+=========== 14:25:57 C:\DEV\OPEN-WATCOM-V2-NEW\BLD\WASMTEST\TEST1 ===========
+%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log TEST 386/
+rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+%write xxxxxxxx.tmp  -zld -wx -nm=387.asm  387.asm -fr=387.out -fo=387.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b 387.out tmp.tmp
+diff -i -b 387.dis 387.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=a.asm  a.asm -fr=a.out -fo=a.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b a.out tmp.tmp
+diff -i -b a.dis a.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=alias.asm  alias.asm -fr=alias.out -fo=alias.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b alias.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=alignorg.asm  alignorg.asm -fr=alignorg.out -fo=alignorg.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b alignorg.out tmp.tmp
+diff -i -b alignorg.dis alignorg.esm
+diff -i -b alignorg.lst alignorg.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=anon.asm  anon.asm -fr=anon.out -fo=anon.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b anon.out tmp.tmp
+diff -i -b anon.dis anon.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=anthony.asm  anthony.asm -fr=anthony.out -fo=anthony.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b anthony.out tmp.tmp
+diff -i -b anthony.dis anthony.esm
+diff -i -b anthony.lst anthony.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=atseg.asm  atseg.asm -fr=atseg.out -fo=atseg.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b atseg.out tmp.tmp
+diff -i -b atseg.dis atseg.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=backquot.asm  backquot.asm -fr=backquot.out -fo=backquot.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b backquot.out tmp.tmp
+diff -i -b backquot.dis backquot.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=bar.asm  bar.asm -fr=bar.out -fo=bar.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b bar.out tmp.tmp
+diff -i -b bar.dis bar.esm
+diff -i -b bar.lst bar.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=beep.asm  beep.asm -fr=beep.out -fo=beep.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b beep.out tmp.tmp
+diff -i -b beep.dis beep.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=bigext.asm  bigext.asm -fr=bigext.out -fo=bigext.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b bigext.out tmp.tmp
+diff -i -b bigext.dis bigext.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=bug.asm  bug.asm -fr=bug.out -fo=bug.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b bug.out tmp.tmp
+diff -i -b bug.dis bug.esm
+diff -i -b bug.lst bug.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=c.asm  c.asm -fr=c.out -fo=c.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b c.out tmp.tmp
+diff -i -b c.dis c.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=cmps.asm  cmps.asm -fr=cmps.out -fo=cmps.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b cmps.out tmp.tmp
+diff -i -b cmps.dis cmps.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=comm.asm  comm.asm -fr=comm.out -fo=comm.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b comm.out tmp.tmp
+diff -i -b comm.dis comm.esm
+diff -i -b comm.lst comm.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=current.asm  current.asm -fr=current.out -fo=current.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b current.out tmp.tmp
+diff -i -b current.dis current.esm
+diff -i -b current.lst current.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=data.asm  data.asm -fr=data.out -fo=data.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b data.out tmp.tmp
+diff -i -b data.dis data.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=dos16m.asm  dos16m.asm -fr=dos16m.out -fo=dos16m.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b dos16m.out tmp.tmp
+diff -i -b dos16m.dis dos16m.esm
+diff -i -b dos16m.lst dos16m.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=dosinite.asm  dosinite.asm -fr=dosinite.out -fo=dosinite.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b dosinite.out tmp.tmp
+diff -i -b dosinite.dis dosinite.esm
+diff -i -b dosinite.lst dosinite.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=dosstart.asm  dosstart.asm -fr=dosstart.out -fo=dosstart.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b dosstart.out tmp.tmp
+diff -i -b dosstart.dis dosstart.esm
+diff -i -b dosstart.lst dosstart.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=do_ax.asm  do_ax.asm -fr=do_ax.out -fo=do_ax.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b do_ax.out tmp.tmp
+diff -i -b do_ax.dis do_ax.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=dup.asm  dup.asm -fr=dup.out -fo=dup.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b dup.out tmp.tmp
+diff -i -b dup.dis dup.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=empty.asm  empty.asm -fr=empty.out -fo=empty.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b empty.out tmp.tmp
+diff -i -b empty.dis empty.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=f.asm  f.asm -fr=f.out -fo=f.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b f.out tmp.tmp
+diff -i -b f.dis f.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=farjmp.asm  farjmp.asm -fr=farjmp.out -fo=farjmp.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b farjmp.out tmp.tmp
+diff -i -b farjmp.dis farjmp.esm
+diff -i -b farjmp.lst farjmp.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=fcom.asm  fcom.asm -fr=fcom.out -fo=fcom.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fcom.out tmp.tmp
+diff -i -b fcom.dis fcom.esm
+diff -i -b fcom.lst fcom.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=five.asm  five.asm -fr=five.out -fo=five.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b five.out tmp.tmp
+diff -i -b five.dis five.esm
+diff -i -b five.lst five.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=float.asm  float.asm -fr=float.out -fo=float.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b float.out tmp.tmp
+diff -i -b float.dis float.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=fubar.asm  fubar.asm -fr=fubar.out -fo=fubar.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fubar.out tmp.tmp
+diff -i -b fubar.dis fubar.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=g.asm  g.asm -fr=g.out -fo=g.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b g.out tmp.tmp
+diff -i -b g.dis g.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=getenv.asm -I"c:\dev\open-watcom-v2-new/bld/watcom/h" getenv.asm -fr=getenv.out -fo=getenv.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b getenv.out tmp.tmp
+%null
+diff -i -b getenv.lst getenv.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=hello.asm  hello.asm -fr=hello.out -fo=hello.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b hello.out tmp.tmp
+diff -i -b hello.dis hello.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=ifs.asm  ifs.asm -fr=ifs.out -fo=ifs.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b ifs.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=ins.asm  ins.asm -fr=ins.out -fo=ins.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b ins.out tmp.tmp
+diff -i -b ins.dis ins.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=jmpfword.asm  jmpfword.asm -fr=jmpfword.out -fo=jmpfword.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b jmpfword.out tmp.tmp
+diff -i -b jmpfword.dis jmpfword.esm
+diff -i -b jmpfword.lst jmpfword.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=jmpsize.asm  jmpsize.asm -fr=jmpsize.out -fo=jmpsize.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b jmpsize.out tmp.tmp
+diff -i -b jmpsize.dis jmpsize.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=jmptst.asm  jmptst.asm -fr=jmptst.out -fo=jmptst.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b jmptst.out tmp.tmp
+diff -i -b jmptst.dis jmptst.esm
+diff -i -b jmptst.lst jmptst.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=labelbug.asm  labelbug.asm -fr=labelbug.out -fo=labelbug.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b labelbug.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=loader2.asm -c loader2.asm -fr=loader2.out -fo=loader2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b loader2.out tmp.tmp
+diff -i -b loader2.dis loader2.esm
+diff -i -b loader2.lst loader2.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=lods.asm  lods.asm -fr=lods.out -fo=lods.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b lods.out tmp.tmp
+diff -i -b lods.dis lods.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=maaak.asm  maaak.asm -fr=maaak.out -fo=maaak.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b maaak.out tmp.tmp
+diff -i -b maaak.dis maaak.esm
+diff -i -b maaak.lst maaak.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=macro.asm  macro.asm -fr=macro.out -fo=macro.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b macro.out tmp.tmp
+diff -i -b macro.dis macro.esm
+diff -i -b macro.lst macro.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=macroloc.asm  macroloc.asm -fr=macroloc.out -fo=macroloc.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b macroloc.out tmp.tmp
+diff -i -b macroloc.dis macroloc.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=macrotst.asm  macrotst.asm -fr=macrotst.out -fo=macrotst.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b macrotst.out tmp.tmp
+diff -i -b macrotst.dis macrotst.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=main.asm  main.asm -fr=main.out -fo=main.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b main.out tmp.tmp
+diff -i -b main.dis main.esm
+diff -i -b main.lst main.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=mainnew.asm  mainnew.asm -fr=mainnew.out -fo=mainnew.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b mainnew.out tmp.tmp
+diff -i -b mainnew.dis mainnew.esm
+diff -i -b mainnew.lst mainnew.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=mangle.asm  mangle.asm -fr=mangle.out -fo=mangle.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b mangle.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=masmsuks.asm  masmsuks.asm -fr=masmsuks.out -fo=masmsuks.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b masmsuks.out tmp.tmp
+diff -i -b masmsuks.dis masmsuks.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=masmtest.asm  masmtest.asm -fr=masmtest.out -fo=masmtest.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b masmtest.out tmp.tmp
+diff -i -b masmtest.dis masmtest.esm
+diff -i -b masmtest.lst masmtest.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=movs.asm  movs.asm -fr=movs.out -fo=movs.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b movs.out tmp.tmp
+diff -i -b movs.dis movs.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=new.asm  new.asm -fr=new.out -fo=new.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b new.out tmp.tmp
+diff -i -b new.dis new.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=newbug.asm  newbug.asm -fr=newbug.out -fo=newbug.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b newbug.out tmp.tmp
+diff -i -b newbug.dis newbug.esm
+diff -i -b newbug.lst newbug.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=newproc.asm  newproc.asm -fr=newproc.out -fo=newproc.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b newproc.out tmp.tmp
+diff -i -b newproc.dis newproc.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=notcomm.asm  notcomm.asm -fr=notcomm.out -fo=notcomm.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b notcomm.out tmp.tmp
+diff -i -b notcomm.dis notcomm.esm
+diff -i -b notcomm.lst notcomm.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=offset.asm  offset.asm -fr=offset.out -fo=offset.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b offset.out tmp.tmp
+%null
+diff -i -b offset.lst offset.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=org.asm  org.asm -fr=org.out -fo=org.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b org.out tmp.tmp
+diff -i -b org.dis org.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=orgage.asm  orgage.asm -fr=orgage.out -fo=orgage.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b orgage.out tmp.tmp
+diff -i -b orgage.dis orgage.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=outs.asm  outs.asm -fr=outs.out -fo=outs.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b outs.out tmp.tmp
+diff -i -b outs.dis outs.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=passtest.asm  passtest.asm -fr=passtest.out -fo=passtest.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b passtest.out tmp.tmp
+diff -i -b passtest.dis passtest.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=proc.asm  proc.asm -fr=proc.out -fo=proc.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b proc.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=proc3.asm  proc3.asm -fr=proc3.out -fo=proc3.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b proc3.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=pub.asm  pub.asm -fr=pub.out -fo=pub.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b pub.out tmp.tmp
+diff -i -b pub.dis pub.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=pub2.asm  pub2.asm -fr=pub2.out -fo=pub2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b pub2.out tmp.tmp
+diff -i -b pub2.dis pub2.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=pubdef.asm  pubdef.asm -fr=pubdef.out -fo=pubdef.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b pubdef.out tmp.tmp
+diff -i -b pubdef.dis pubdef.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=q.asm  q.asm -fr=q.out -fo=q.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b q.out tmp.tmp
+diff -i -b q.dis q.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=qnxstrt.asm  qnxstrt.asm -fr=qnxstrt.out -fo=qnxstrt.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b qnxstrt.out tmp.tmp
+diff -i -b qnxstrt.dis qnxstrt.esm
+diff -i -b qnxstrt.lst qnxstrt.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=scas.asm  scas.asm -fr=scas.out -fo=scas.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b scas.out tmp.tmp
+diff -i -b scas.dis scas.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=segoff.asm  segoff.asm -fr=segoff.out -fo=segoff.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b segoff.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=shell.asm  shell.asm -fr=shell.out -fo=shell.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b shell.out tmp.tmp
+diff -i -b shell.dis shell.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=size.asm  size.asm -fr=size.out -fo=size.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b size.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=sizebug.asm  sizebug.asm -fr=sizebug.out -fo=sizebug.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b sizebug.out tmp.tmp
+diff -i -b sizebug.dis sizebug.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=sizlen.asm  sizlen.asm -fr=sizlen.out -fo=sizlen.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b sizlen.out tmp.tmp
+diff -i -b sizlen.dis sizlen.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=stos.asm  stos.asm -fr=stos.out -fo=stos.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b stos.out tmp.tmp
+diff -i -b stos.dis stos.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=strmang.asm  strmang.asm -fr=strmang.out -fo=strmang.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b strmang.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=struct.asm  struct.asm -fr=struct.out -fo=struct.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b struct.out tmp.tmp
+diff -i -b struct.dis struct.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t2.asm  t2.asm -fr=t2.out -fo=t2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t2.out tmp.tmp
+diff -i -b t2.dis t2.esm
+diff -i -b t2.lst t2.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=test.asm  test.asm -fr=test.out -fo=test.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b test.out tmp.tmp
+diff -i -b test.dis test.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=tmp2.asm  tmp2.asm -fr=tmp2.out -fo=tmp2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b tmp2.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=tn.asm  tn.asm -fr=tn.out -fo=tn.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b tn.out tmp.tmp
+diff -i -b tn.dis tn.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=wincall.asm  wincall.asm -fr=wincall.out -fo=wincall.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b wincall.out tmp.tmp
+diff -i -b wincall.dis wincall.esm
+diff -i -b wincall.lst wincall.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=word.asm  word.asm -fr=word.out -fo=word.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b word.out tmp.tmp
+diff -i -b word.dis word.esm
+diff -i -b word.lst word.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=x.asm -c x.asm -fr=x.out -fo=x.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b x.out tmp.tmp
+diff -i -b x.dis x.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=xx.asm  xx.asm -fr=xx.out -fo=xx.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b xx.out tmp.tmp
+diff -i -b xx.dis xx.esm
+wcl386 -zq -bt=nt  -DWASM c:\dev\open-watcom-v2-new\bld\watcom\c\chk_exec.c
+echo OK >error.out
+.\chk_exec.exe exec.out >>error.out
+diff -b error.out ../error.chk
+%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log PASS \dev\open-watcom-v2-new\bld\wasmtest\test1
+%make clean
+rm -f *.dis
+rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+	cd ..
+	cd test2
+	wmake -h
+=========== 14:26:11 C:\DEV\OPEN-WATCOM-V2-NEW\BLD\WASMTEST\TEST2 ===========
+%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log TEST 386/
+rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+%write xxxxxxxx.tmp  -zld -wx -nm=a.asm  a.asm -fr=a.out -fo=a.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b a.out tmp.tmp
+diff -i -b a.dis a.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=adc.asm  adc.asm -fr=adc.out -fo=adc.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b adc.out tmp.tmp
+diff -i -b adc.dis adc.esm
+diff -i -b adc.lst adc.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=arithop.asm  arithop.asm -fr=arithop.out -fo=arithop.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b arithop.out tmp.tmp
+diff -i -b arithop.dis arithop.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=asmbug.asm  asmbug.asm -fr=asmbug.out -fo=asmbug.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b asmbug.out tmp.tmp
+diff -i -b asmbug.dis asmbug.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=asmbug1.asm  asmbug1.asm -fr=asmbug1.out -fo=asmbug1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b asmbug1.out tmp.tmp
+diff -i -b asmbug1.dis asmbug1.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=b.asm  b.asm -fr=b.out -fo=b.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b b.out tmp.tmp
+diff -i -b b.dis b.esm
+diff -i -b b.lst b.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=bar.asm  bar.asm -fr=bar.out -fo=bar.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b bar.out tmp.tmp
+diff -i -b bar.dis bar.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=bitwise.asm  bitwise.asm -fr=bitwise.out -fo=bitwise.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b bitwise.out tmp.tmp
+diff -i -b bitwise.dis bitwise.esm
+diff -i -b bitwise.lst bitwise.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=bunk.asm  bunk.asm -fr=bunk.out -fo=bunk.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b bunk.out tmp.tmp
+diff -i -b bunk.dis bunk.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=c.asm  c.asm -fr=c.out -fo=c.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b c.out tmp.tmp
+diff -i -b c.dis c.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=dasm.asm  dasm.asm -fr=dasm.out -fo=dasm.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b dasm.out tmp.tmp
+diff -i -b dasm.dis dasm.esm
+diff -i -b dasm.lst dasm.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=data.asm  data.asm -fr=data.out -fo=data.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b data.out tmp.tmp
+diff -i -b data.dis data.esm
+diff -i -b data.lst data.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=dup.asm  dup.asm -fr=dup.out -fo=dup.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b dup.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=enter.asm  enter.asm -fr=enter.out -fo=enter.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b enter.out tmp.tmp
+diff -i -b enter.dis enter.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=fadd.asm  fadd.asm -fr=fadd.out -fo=fadd.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fadd.out tmp.tmp
+diff -i -b fadd.dis fadd.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=foo.asm  foo.asm -fr=foo.out -fo=foo.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b foo.out tmp.tmp
+diff -i -b foo.dis foo.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=fubar.asm  fubar.asm -fr=fubar.out -fo=fubar.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fubar.out tmp.tmp
+diff -i -b fubar.dis fubar.esm
+diff -i -b fubar.lst fubar.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=help.asm  help.asm -fr=help.out -fo=help.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b help.out tmp.tmp
+diff -i -b help.dis help.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=imul.asm  imul.asm -fr=imul.out -fo=imul.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b imul.out tmp.tmp
+diff -i -b imul.dis imul.esm
+diff -i -b imul.lst imul.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=j2.asm  j2.asm -fr=j2.out -fo=j2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b j2.out tmp.tmp
+diff -i -b j2.dis j2.esm
+diff -i -b j2.lst j2.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=jmp.asm  jmp.asm -fr=jmp.out -fo=jmp.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b jmp.out tmp.tmp
+diff -i -b jmp.dis jmp.esm
+diff -i -b jmp.lst jmp.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=jmptst.asm  jmptst.asm -fr=jmptst.out -fo=jmptst.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b jmptst.out tmp.tmp
+diff -i -b jmptst.dis jmptst.esm
+diff -i -b jmptst.lst jmptst.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=jnk.asm  jnk.asm -fr=jnk.out -fo=jnk.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b jnk.out tmp.tmp
+diff -i -b jnk.dis jnk.esm
+diff -i -b jnk.lst jnk.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=label.asm  label.asm -fr=label.out -fo=label.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b label.out tmp.tmp
+diff -i -b label.dis label.esm
+diff -i -b label.lst label.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=new.asm  new.asm -fr=new.out -fo=new.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b new.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=old1.asm  old1.asm -fr=old1.out -fo=old1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b old1.out tmp.tmp
+diff -i -b old1.dis old1.esm
+diff -i -b old1.lst old1.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=old2.asm  old2.asm -fr=old2.out -fo=old2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b old2.out tmp.tmp
+diff -i -b old2.dis old2.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=ptrtest.asm  ptrtest.asm -fr=ptrtest.out -fo=ptrtest.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b ptrtest.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=reljmp.asm  reljmp.asm -fr=reljmp.out -fo=reljmp.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b reljmp.out tmp.tmp
+diff -i -b reljmp.dis reljmp.esm
+diff -i -b reljmp.lst reljmp.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=reljmp16.asm  reljmp16.asm -fr=reljmp16.out -fo=reljmp16.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b reljmp16.out tmp.tmp
+diff -i -b reljmp16.dis reljmp16.esm
+diff -i -b reljmp16.lst reljmp16.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=scal.asm  scal.asm -fr=scal.out -fo=scal.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b scal.out tmp.tmp
+diff -i -b scal.dis scal.esm
+diff -i -b scal.lst scal.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=struct.asm  struct.asm -fr=struct.out -fo=struct.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b struct.out tmp.tmp
+%null
+diff -i -b struct.lst struct.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=stupid.asm  stupid.asm -fr=stupid.out -fo=stupid.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b stupid.out tmp.tmp
+diff -i -b stupid.dis stupid.esm
+diff -i -b stupid.lst stupid.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t.asm  t.asm -fr=t.out -fo=t.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t.out tmp.tmp
+diff -i -b t.dis t.esm
+diff -i -b t.lst t.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t01.asm  t01.asm -fr=t01.out -fo=t01.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t01.out tmp.tmp
+diff -i -b t01.dis t01.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t02.asm  t02.asm -fr=t02.out -fo=t02.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t02.out tmp.tmp
+diff -i -b t02.dis t02.esm
+diff -i -b t02.lst t02.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t03.asm  t03.asm -fr=t03.out -fo=t03.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t03.out tmp.tmp
+diff -i -b t03.dis t03.esm
+diff -i -b t03.lst t03.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t04.asm  t04.asm -fr=t04.out -fo=t04.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t04.out tmp.tmp
+diff -i -b t04.dis t04.esm
+diff -i -b t04.lst t04.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t05.asm  t05.asm -fr=t05.out -fo=t05.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t05.out tmp.tmp
+diff -i -b t05.dis t05.esm
+diff -i -b t05.lst t05.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t06.asm  t06.asm -fr=t06.out -fo=t06.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t06.out tmp.tmp
+diff -i -b t06.dis t06.esm
+diff -i -b t06.lst t06.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t07.asm  t07.asm -fr=t07.out -fo=t07.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t07.out tmp.tmp
+diff -i -b t07.dis t07.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t08.asm  t08.asm -fr=t08.out -fo=t08.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t08.out tmp.tmp
+%null
+diff -i -b t08.lst t08.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t09.asm  t09.asm -fr=t09.out -fo=t09.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t09.out tmp.tmp
+diff -i -b t09.dis t09.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t10.asm  t10.asm -fr=t10.out -fo=t10.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t10.out tmp.tmp
+diff -i -b t10.dis t10.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t11.asm  t11.asm -fr=t11.out -fo=t11.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t11.out tmp.tmp
+diff -i -b t11.dis t11.esm
+diff -i -b t11.lst t11.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t12.asm  t12.asm -fr=t12.out -fo=t12.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t12.out tmp.tmp
+diff -i -b t12.dis t12.esm
+diff -i -b t12.lst t12.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t13.asm  t13.asm -fr=t13.out -fo=t13.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t13.out tmp.tmp
+diff -i -b t13.dis t13.esm
+diff -i -b t13.lst t13.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t14.asm  t14.asm -fr=t14.out -fo=t14.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t14.out tmp.tmp
+diff -i -b t14.dis t14.esm
+diff -i -b t14.lst t14.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t15.asm  t15.asm -fr=t15.out -fo=t15.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t15.out tmp.tmp
+diff -i -b t15.dis t15.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t16.asm  t16.asm -fr=t16.out -fo=t16.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t16.out tmp.tmp
+diff -i -b t16.dis t16.esm
+diff -i -b t16.lst t16.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t17.asm  t17.asm -fr=t17.out -fo=t17.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t17.out tmp.tmp
+diff -i -b t17.dis t17.esm
+diff -i -b t17.lst t17.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t18.asm  t18.asm -fr=t18.out -fo=t18.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t18.out tmp.tmp
+diff -i -b t18.dis t18.esm
+diff -i -b t18.lst t18.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t19.asm  t19.asm -fr=t19.out -fo=t19.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t19.out tmp.tmp
+diff -i -b t19.dis t19.esm
+diff -i -b t19.lst t19.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t20.asm  t20.asm -fr=t20.out -fo=t20.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t20.out tmp.tmp
+diff -i -b t20.dis t20.esm
+diff -i -b t20.lst t20.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t21.asm  t21.asm -fr=t21.out -fo=t21.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t21.out tmp.tmp
+diff -i -b t21.dis t21.esm
+diff -i -b t21.lst t21.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t22.asm  t22.asm -fr=t22.out -fo=t22.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t22.out tmp.tmp
+diff -i -b t22.dis t22.esm
+diff -i -b t22.lst t22.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t23.asm  t23.asm -fr=t23.out -fo=t23.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t23.out tmp.tmp
+diff -i -b t23.dis t23.esm
+diff -i -b t23.lst t23.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t24.asm  t24.asm -fr=t24.out -fo=t24.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t24.out tmp.tmp
+diff -i -b t24.dis t24.esm
+diff -i -b t24.lst t24.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t25.asm  t25.asm -fr=t25.out -fo=t25.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t25.out tmp.tmp
+diff -i -b t25.dis t25.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t26.asm  t26.asm -fr=t26.out -fo=t26.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t26.out tmp.tmp
+diff -i -b t26.dis t26.esm
+diff -i -b t26.lst t26.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t27a.asm  t27a.asm -fr=t27a.out -fo=t27a.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t27a.out tmp.tmp
+diff -i -b t27a.dis t27a.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t27b.asm  t27b.asm -fr=t27b.out -fo=t27b.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t27b.out tmp.tmp
+diff -i -b t27b.dis t27b.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t28.asm  t28.asm -fr=t28.out -fo=t28.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t28.out tmp.tmp
+diff -i -b t28.dis t28.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t29.asm  t29.asm -fr=t29.out -fo=t29.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t29.out tmp.tmp
+diff -i -b t29.dis t29.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t30.asm  t30.asm -fr=t30.out -fo=t30.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t30.out tmp.tmp
+diff -i -b t30.dis t30.esm
+diff -i -b t30.lst t30.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t31.asm  t31.asm -fr=t31.out -fo=t31.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t31.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=t32.asm  t32.asm -fr=t32.out -fo=t32.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t32.out tmp.tmp
+diff -i -b t32.dis t32.esm
+diff -i -b t32.lst t32.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t33.asm  t33.asm -fr=t33.out -fo=t33.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t33.out tmp.tmp
+diff -i -b t33.dis t33.esm
+diff -i -b t33.lst t33.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t34.asm  t34.asm -fr=t34.out -fo=t34.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t34.out tmp.tmp
+diff -i -b t34.dis t34.esm
+diff -i -b t34.lst t34.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t35.asm  t35.asm -fr=t35.out -fo=t35.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t35.out tmp.tmp
+diff -i -b t35.dis t35.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t36.asm  t36.asm -fr=t36.out -fo=t36.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t36.out tmp.tmp
+diff -i -b t36.dis t36.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t37.asm  t37.asm -fr=t37.out -fo=t37.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t37.out tmp.tmp
+diff -i -b t37.dis t37.esm
+diff -i -b t37.lst t37.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t38.asm  t38.asm -fr=t38.out -fo=t38.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t38.out tmp.tmp
+diff -i -b t38.dis t38.esm
+diff -i -b t38.lst t38.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=t39.asm  t39.asm -fr=t39.out -fo=t39.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t39.out tmp.tmp
+diff -i -b t39.dis t39.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t40.asm  t40.asm -fr=t40.out -fo=t40.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t40.out tmp.tmp
+diff -i -b t40.dis t40.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=t51.asm  t51.asm -fr=t51.out -fo=t51.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b t51.out tmp.tmp
+diff -i -b t51.dis t51.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=test.asm  test.asm -fr=test.out -fo=test.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b test.out tmp.tmp
+diff -i -b test.dis test.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=timer.asm  timer.asm -fr=timer.out -fo=timer.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b timer.out tmp.tmp
+diff -i -b timer.dis timer.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=tmp1.asm  tmp1.asm -fr=tmp1.out -fo=tmp1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b tmp1.out tmp.tmp
+diff -i -b tmp1.dis tmp1.esm
+diff -i -b tmp1.lst tmp1.emp
+wcl386 -zq -bt=nt  -DWASM c:\dev\open-watcom-v2-new\bld\watcom\c\chk_exec.c
+echo OK >error.out
+.\chk_exec.exe exec.out >>error.out
+diff -b error.out ../error.chk
+%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log PASS \dev\open-watcom-v2-new\bld\wasmtest\test2
+%make clean
+rm -f *.dis
+rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+	cd ..
+	cd test3
+	wmake -h
+=========== 14:26:24 C:\DEV\OPEN-WATCOM-V2-NEW\BLD\WASMTEST\TEST3 ===========
+%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log TEST 386/
+rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+%write xxxxxxxx.tmp  -zld -wx -nm=3dnow.asm  3dnow.asm -fr=3dnow.out -fo=3dnow.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b 3dnow.out tmp.tmp
+diff -i -b 3dnow.dis 3dnow.esm
+diff -i -b 3dnow.lst 3dnow.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=absjumps.asm  absjumps.asm -fr=absjumps.out -fo=absjumps.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b absjumps.out tmp.tmp
+diff -i -b absjumps.dis absjumps.esm
+diff -i -b absjumps.lst absjumps.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=addrmode.asm  addrmode.asm -fr=addrmode.out -fo=addrmode.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b addrmode.out tmp.tmp
+diff -i -b addrmode.dis addrmode.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=allign.asm  allign.asm -fr=allign.out -fo=allign.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b allign.out tmp.tmp
+diff -i -b allign.dis allign.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=callcnv1.asm -zcm callcnv1.asm -fr=callcnv1.out -fo=callcnv1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b callcnv1.out tmp.tmp
+diff -i -b callcnv1.dis callcnv1.esm
+diff -i -b callcnv1.lst callcnv1.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=callcnv2.asm  callcnv2.asm -fr=callcnv2.out -fo=callcnv2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b callcnv2.out tmp.tmp
+diff -i -b callcnv2.dis callcnv2.esm
+diff -i -b callcnv2.lst callcnv2.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=callcnv3.asm -3r callcnv3.asm -fr=callcnv3.out -fo=callcnv3.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b callcnv3.out tmp.tmp
+diff -i -b callcnv3.dis callcnv3.esm
+diff -i -b callcnv3.lst callcnv3.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=callcnv4.asm -3s callcnv4.asm -fr=callcnv4.out -fo=callcnv4.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b callcnv4.out tmp.tmp
+diff -i -b callcnv4.dis callcnv4.esm
+diff -i -b callcnv4.lst callcnv4.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=callcnv5.asm -zcm callcnv5.asm -fr=callcnv5.out -fo=callcnv5.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b callcnv5.out tmp.tmp
+diff -i -b callcnv5.dis callcnv5.esm
+diff -i -b callcnv5.lst callcnv5.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=commdef.asm  commdef.asm -fr=commdef.out -fo=commdef.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b commdef.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=datamix1.asm  datamix1.asm -fr=datamix1.out -fo=datamix1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b datamix1.out tmp.tmp
+diff -i -b datamix1.dis datamix1.esm
+diff -i -b datamix1.lst datamix1.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=datamix2.asm  datamix2.asm -fr=datamix2.out -fo=datamix2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b datamix2.out tmp.tmp
+diff -i -b datamix2.dis datamix2.esm
+diff -i -b datamix2.lst datamix2.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=dgroup.asm  dgroup.asm -fr=dgroup.out -fo=dgroup.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b dgroup.out tmp.tmp
+diff -i -b dgroup.dis dgroup.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=dsxfork.asm  dsxfork.asm -fr=dsxfork.out -fo=dsxfork.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b dsxfork.out tmp.tmp
+diff -i -b dsxfork.dis dsxfork.esm
+diff -i -b dsxfork.lst dsxfork.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=dsxhdlr.asm  dsxhdlr.asm -fr=dsxhdlr.out -fo=dsxhdlr.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b dsxhdlr.out tmp.tmp
+diff -i -b dsxhdlr.dis dsxhdlr.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=expr01.asm  expr01.asm -fr=expr01.out -fo=expr01.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b expr01.out tmp.tmp
+diff -i -b expr01.dis expr01.esm
+diff -i -b expr01.lst expr01.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=extern1.asm  extern1.asm -fr=extern1.out -fo=extern1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b extern1.out tmp.tmp
+diff -i -b extern1.dis extern1.esm
+diff -i -b extern1.lst extern1.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=extern2.asm  extern2.asm -fr=extern2.out -fo=extern2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b extern2.out tmp.tmp
+diff -i -b extern2.dis extern2.esm
+diff -i -b extern2.lst extern2.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=extern3.asm  extern3.asm -fr=extern3.out -fo=extern3.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b extern3.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=extprocf.asm  extprocf.asm -fr=extprocf.out -fo=extprocf.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b extprocf.out tmp.tmp
+diff -i -b extprocf.dis extprocf.esm
+diff -i -b extprocf.lst extprocf.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=extprocn.asm  extprocn.asm -fr=extprocn.out -fo=extprocn.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b extprocn.out tmp.tmp
+diff -i -b extprocn.dis extprocn.esm
+diff -i -b extprocn.lst extprocn.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=fpu1.asm -fpi87 fpu1.asm -fr=fpu1.out -fo=fpu1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fpu1.out tmp.tmp
+diff -i -b fpu1.dib fpu1.esm
+diff -i -b fpu1.lst fpu1.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=fpu2.asm -fpi87 fpu2.asm -fr=fpu2.out -fo=fpu2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fpu2.out tmp.tmp
+diff -i -b fpu2.dib fpu2.esm
+diff -i -b fpu2.lst fpu2.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=fpu3.asm -fpi87 fpu3.asm -fr=fpu3.out -fo=fpu3.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fpu3.out tmp.tmp
+diff -i -b fpu3.dib fpu3.esm
+diff -i -b fpu3.lst fpu3.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=fpu4.asm -fpi87 fpu4.asm -fr=fpu4.out -fo=fpu4.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fpu4.out tmp.tmp
+diff -i -b fpu4.dib fpu4.esm
+diff -i -b fpu4.lst fpu4.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=fpu5.asm -fpi fpu5.asm -fr=fpu5.out -fo=fpu5.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fpu5.out tmp.tmp
+diff -i -b fpu5.dib fpu5.esm
+diff -i -b fpu5.lst fpu5.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=fpu6.asm -fpi fpu6.asm -fr=fpu6.out -fo=fpu6.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fpu6.out tmp.tmp
+diff -i -b fpu6.dib fpu6.esm
+diff -i -b fpu6.lst fpu6.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=fpu7.asm -fpi fpu7.asm -fr=fpu7.out -fo=fpu7.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b fpu7.out tmp.tmp
+diff -i -b fpu7.dib fpu7.esm
+diff -i -b fpu7.lst fpu7.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=indirect.asm  indirect.asm -fr=indirect.out -fo=indirect.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b indirect.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=jmpshrt.asm -zcm jmpshrt.asm -fr=jmpshrt.out -fo=jmpshrt.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b jmpshrt.out tmp.tmp
+diff -i -b jmpshrt.dis jmpshrt.esm
+diff -i -b jmpshrt.lst jmpshrt.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=lsxxx.asm  lsxxx.asm -fr=lsxxx.out -fo=lsxxx.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b lsxxx.out tmp.tmp
+diff -i -b lsxxx.dis lsxxx.esm
+diff -i -b lsxxx.lst lsxxx.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=mmx.asm  mmx.asm -fr=mmx.out -fo=mmx.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b mmx.out tmp.tmp
+diff -i -b mmx.dis mmx.esm
+diff -i -b mmx.lst mmx.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=movx.asm  movx.asm -fr=movx.out -fo=movx.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b movx.out tmp.tmp
+diff -i -b movx.dis movx.esm
+diff -i -b movx.lst movx.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=mseg.asm  mseg.asm -fr=mseg.out -fo=mseg.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b mseg.out tmp.tmp
+diff -i -b mseg.dis mseg.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=opi8u.asm  opi8u.asm -fr=opi8u.out -fo=opi8u.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b opi8u.out tmp.tmp
+diff -i -b opi8u.dis opi8u.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=plsintr.asm  plsintr.asm -fr=plsintr.out -fo=plsintr.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b plsintr.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=push.asm  push.asm -fr=push.out -fo=push.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b push.out tmp.tmp
+diff -i -b push.dis push.esm
+diff -i -b push.lst push.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=retiret.asm -zcm retiret.asm -fr=retiret.out -fo=retiret.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b retiret.out tmp.tmp
+diff -i -b retiret.dis retiret.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=seg16.asm  seg16.asm -fr=seg16.out -fo=seg16.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b seg16.out tmp.tmp
+diff -i -b seg16.dis seg16.esm
+diff -i -b seg16.lst seg16.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=segatrep.asm  segatrep.asm -fr=segatrep.out -fo=segatrep.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b segatrep.out tmp.tmp
+diff -i -b segatrep.dis segatrep.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=segregs.asm  segregs.asm -fr=segregs.out -fo=segregs.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b segregs.out tmp.tmp
+diff -i -b segregs.dis segregs.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=shift.asm  shift.asm -fr=shift.out -fo=shift.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b shift.out tmp.tmp
+diff -i -b shift.dis shift.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=sse2.asm  sse2.asm -fr=sse2.out -fo=sse2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b sse2.out tmp.tmp
+diff -i -b sse2.dis sse2.esm
+diff -i -b sse2.lst sse2.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=sse3.asm  sse3.asm -fr=sse3.out -fo=sse3.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b sse3.out tmp.tmp
+diff -i -b sse3.dis sse3.esm
+diff -i -b sse3.lst sse3.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=structdd.asm  structdd.asm -fr=structdd.out -fo=structdd.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b structdd.out tmp.tmp
+diff -i -b structdd.dis structdd.esm
+diff -i -b structdd.lst structdd.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=support.asm -zcm -Dmemodel=large support.asm -fr=support.out -fo=support.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b support.out tmp.tmp
+diff -i -b support.dis support.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=tbyte.asm  tbyte.asm -fr=tbyte.out -fo=tbyte.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b tbyte.out tmp.tmp
+diff -i -b tbyte.dis tbyte.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=testequ.asm  testequ.asm -fr=testequ.out -fo=testequ.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b testequ.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=tst1.asm  tst1.asm -fr=tst1.out -fo=tst1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b tst1.out tmp.tmp
+diff -i -b tst1.dis tst1.esm
+diff -i -b tst1.lst tst1.emp
+wcl386 -zq -bt=nt  -DWASM c:\dev\open-watcom-v2-new\bld\watcom\c\chk_exec.c
+echo OK >error.out
+.\chk_exec.exe exec.out >>error.out
+diff -b error.out ../error.chk
+%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log PASS \dev\open-watcom-v2-new\bld\wasmtest\test3
+%make clean
+rm -f *.dis
+rm -f *.dib
+rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+	cd ..
+	cd ideal
+	wmake -h
+=========== 14:26:32 C:\DEV\OPEN-WATCOM-V2-NEW\BLD\WASMTEST\IDEAL ===========
+%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log TEST 386/
+rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+%write xxxxxxxx.tmp  -zld -wx -nm=ideal.asm -zcm=tasm ideal.asm -fr=ideal.out -fo=ideal.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b ideal.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=simseg.asm -zcm=tasm simseg.asm -fr=simseg.out -fo=simseg.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b simseg.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=enum.asm -zcm=tasm enum.asm -fr=enum.out -fo=enum.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b enum.out tmp.tmp
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=language.asm -zcm=tasm language.asm -fr=language.out -fo=language.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diff -i -b language.out tmp.tmp
+%null
+wcl386 -zq -bt=nt  -DWASM c:\dev\open-watcom-v2-new\bld\watcom\c\chk_exec.c
+echo OK >error.out
+.\chk_exec.exe exec.out >>error.out
+diff -b error.out ../error.chk
+%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log PASS \dev\open-watcom-v2-new\bld\wasmtest\ideal
+%make clean
+rm -f *.dis
+rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+	cd ..
+	cd diag
+	wmake -h
+=========== 14:26:33 C:\DEV\OPEN-WATCOM-V2-NEW\BLD\WASMTEST\DIAG ============
+%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log TEST 386/
+rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+%write xxxxxxxx.tmp  -zld -wx -nm=callimpl.asm  callimpl.asm -fr=callimpl.out -fo=callimpl.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+callimpl.asm(18): Note! N604: Far call is converted to near call.
+callimpl.asm(58): Note! N604: Far call is converted to near call.
+callimpl.asm(82): Note! N604: Far call is converted to near call.
+callimpl.asm(122): Note! N604: Far call is converted to near call.
+diff -i -b callimpl.out callimpl.chk
+diff -i -b callimpl.dis callimpl.esm
+diff -i -b callimpl.lst callimpl.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=float.asm  float.asm -fr=float.out -fo=float.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+float.asm(15): Warning! W098: Float is used as operand
+float.asm(16): Warning! W098: Float is used as operand
+float.asm(17): Warning! W098: Float is used as operand
+float.asm(17): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(18): Warning! W098: Float is used as operand
+float.asm(18): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(19): Warning! W098: Float is used as operand
+float.asm(20): Warning! W098: Float is used as operand
+float.asm(21): Warning! W098: Float is used as operand
+float.asm(22): Warning! W098: Float is used as operand
+float.asm(23): Warning! W098: Float is used as operand
+float.asm(24): Warning! W098: Float is used as operand
+float.asm(25): Warning! W098: Float is used as operand
+float.asm(25): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(26): Warning! W098: Float is used as operand
+float.asm(26): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(27): Warning! W098: Float is used as operand
+float.asm(28): Warning! W098: Float is used as operand
+float.asm(29): Warning! W098: Float is used as operand
+float.asm(30): Warning! W098: Float is used as operand
+float.asm(54): Warning! W098: Float is used as operand
+float.asm(55): Warning! W098: Float is used as operand
+float.asm(56): Warning! W098: Float is used as operand
+float.asm(56): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(57): Warning! W098: Float is used as operand
+float.asm(57): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(58): Warning! W098: Float is used as operand
+float.asm(59): Warning! W098: Float is used as operand
+float.asm(60): Warning! W098: Float is used as operand
+float.asm(61): Warning! W098: Float is used as operand
+float.asm(62): Warning! W098: Float is used as operand
+float.asm(63): Warning! W098: Float is used as operand
+float.asm(64): Warning! W098: Float is used as operand
+float.asm(64): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(65): Warning! W098: Float is used as operand
+float.asm(65): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(66): Warning! W098: Float is used as operand
+float.asm(67): Warning! W098: Float is used as operand
+float.asm(68): Warning! W098: Float is used as operand
+float.asm(69): Warning! W098: Float is used as operand
+float.asm(15): Warning! W098: Float is used as operand
+float.asm(16): Warning! W098: Float is used as operand
+float.asm(17): Warning! W098: Float is used as operand
+float.asm(18): Warning! W098: Float is used as operand
+float.asm(19): Warning! W098: Float is used as operand
+float.asm(20): Warning! W098: Float is used as operand
+float.asm(21): Warning! W098: Float is used as operand
+float.asm(22): Warning! W098: Float is used as operand
+float.asm(23): Warning! W098: Float is used as operand
+float.asm(24): Warning! W098: Float is used as operand
+float.asm(25): Warning! W098: Float is used as operand
+float.asm(26): Warning! W098: Float is used as operand
+float.asm(27): Warning! W098: Float is used as operand
+float.asm(28): Warning! W098: Float is used as operand
+float.asm(29): Warning! W098: Float is used as operand
+float.asm(30): Warning! W098: Float is used as operand
+float.asm(54): Warning! W098: Float is used as operand
+float.asm(55): Warning! W098: Float is used as operand
+float.asm(56): Warning! W098: Float is used as operand
+float.asm(57): Warning! W098: Float is used as operand
+float.asm(58): Warning! W098: Float is used as operand
+float.asm(59): Warning! W098: Float is used as operand
+float.asm(60): Warning! W098: Float is used as operand
+float.asm(61): Warning! W098: Float is used as operand
+float.asm(62): Warning! W098: Float is used as operand
+float.asm(63): Warning! W098: Float is used as operand
+float.asm(64): Warning! W098: Float is used as operand
+float.asm(65): Warning! W098: Float is used as operand
+float.asm(66): Warning! W098: Float is used as operand
+float.asm(67): Warning! W098: Float is used as operand
+float.asm(68): Warning! W098: Float is used as operand
+float.asm(69): Warning! W098: Float is used as operand
+diff -i -b float.out float.chk
+diff -i -b float.dis float.esm
+diff -i -b float.lst float.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=foo.asm  foo.asm -fr=foo.out -fo=foo.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+foo.asm(8): Warning! W095: size not specified -- BYTE PTR is assumed
+foo.asm(9): Warning! W096: size not specified -- WORD PTR is assumed
+foo.asm(10): Warning! W097: size not specified -- DWORD PTR is assumed
+diff -i -b foo.out foo.chk
+diff -i -b foo.dis foo.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=jmpext.asm  jmpext.asm -fr=jmpext.out -fo=jmpext.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+jmpext.asm(5): Note! N594: Extending jump
+jmpext.asm(6): Note! N594: Extending jump
+jmpext.asm(7): Note! N594: Extending jump
+jmpext.asm(8): Note! N594: Extending jump
+jmpext.asm(9): Note! N594: Extending jump
+jmpext.asm(10): Note! N594: Extending jump
+jmpext.asm(11): Note! N594: Extending jump
+jmpext.asm(14): Note! N594: Extending jump
+jmpext.asm(15): Note! N594: Extending jump
+jmpext.asm(16): Note! N594: Extending jump
+jmpext.asm(17): Note! N594: Extending jump
+jmpext.asm(20): Note! N594: Extending jump
+jmpext.asm(21): Note! N594: Extending jump
+jmpext.asm(22): Note! N594: Extending jump
+jmpext.asm(23): Note! N594: Extending jump
+jmpext.asm(24): Note! N594: Extending jump
+jmpext.asm(25): Note! N594: Extending jump
+jmpext.asm(26): Note! N594: Extending jump
+jmpext.asm(27): Note! N594: Extending jump
+jmpext.asm(28): Note! N594: Extending jump
+jmpext.asm(29): Note! N594: Extending jump
+jmpext.asm(30): Note! N594: Extending jump
+jmpext.asm(31): Note! N594: Extending jump
+jmpext.asm(32): Note! N594: Extending jump
+jmpext.asm(33): Note! N594: Extending jump
+jmpext.asm(34): Note! N594: Extending jump
+jmpext.asm(35): Note! N594: Extending jump
+jmpext.asm(36): Note! N594: Extending jump
+jmpext.asm(37): Note! N594: Extending jump
+jmpext.asm(38): Note! N594: Extending jump
+jmpext.asm(39): Note! N594: Extending jump
+diff -i -b jmpext.out jmpext.chk
+diff -i -b jmpext.dis jmpext.esm
+diff -i -b jmpext.lst jmpext.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=jmpimpl.asm  jmpimpl.asm -fr=jmpimpl.out -fo=jmpimpl.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+jmpimpl.asm(74): Note! N594: Extending jump
+jmpimpl.asm(170): Note! N594: Extending jump
+jmpimpl.asm(42): Note! N594: Extending jump
+jmpimpl.asm(74): Note! N594: Extending jump
+jmpimpl.asm(138): Note! N594: Extending jump
+jmpimpl.asm(170): Note! N594: Extending jump
+jmpimpl.asm(42): Note! N594: Extending jump
+jmpimpl.asm(74): Note! N594: Extending jump
+jmpimpl.asm(138): Note! N594: Extending jump
+jmpimpl.asm(170): Note! N594: Extending jump
+diff -i -b jmpimpl.out jmpimpl.chk
+diff -i -b jmpimpl.dis jmpimpl.esm
+diff -i -b jmpimpl.lst jmpimpl.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=l2.asm  l2.asm -fr=l2.out -fo=l2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+l2.asm(139): Warning! W096: size not specified -- WORD PTR is assumed
+diff -i -b l2.out l2.chk
+diff -i -b l2.dis l2.esm
+diff -i -b l2.lst l2.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=l3.asm  l3.asm -fr=l3.out -fo=l3.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+l3.asm(140): Warning! W096: size not specified -- WORD PTR is assumed
+diff -i -b l3.out l3.chk
+diff -i -b l3.dis l3.esm
+diff -i -b l3.lst l3.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=newmif.asm  newmif.asm -fr=newmif.out -fo=newmif.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+newmif.asm(1): Warning! W595: Ignoring inapplicable directive
+newmif.asm(1): Warning! W595: Ignoring inapplicable directive
+diff -i -b newmif.out newmif.chk
+diff -i -b newmif.dis newmif.esm
+diff -i -b newmif.lst newmif.emp
+%write xxxxxxxx.tmp  -zld -wx -nm=proccall.asm  proccall.asm -fr=proccall.out -fo=proccall.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+proccall.asm(6): Note! N604: Far call is converted to near call.
+diff -i -b proccall.out proccall.chk
+diff -i -b proccall.dis proccall.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=quote.asm  quote.asm -fr=quote.out -fo=quote.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+quote.asm(4): Warning! W096: size not specified -- WORD PTR is assumed
+diff -i -b quote.out quote.chk
+diff -i -b quote.dis quote.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=sizebug2.asm  sizebug2.asm -fr=sizebug2.out -fo=sizebug2.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+sizebug2.asm(5): Warning! W095: size not specified -- BYTE PTR is assumed
+sizebug2.asm(8): Warning! W096: size not specified -- WORD PTR is assumed
+sizebug2.asm(11): Warning! W097: size not specified -- DWORD PTR is assumed
+diff -i -b sizebug2.out sizebug2.chk
+%null
+%write xxxxxxxx.tmp  -zld -wx -nm=struct1.asm  struct1.asm -fr=struct1.out -fo=struct1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+struct1.asm(65): Warning! W095: size not specified -- BYTE PTR is assumed
+struct1.asm(70): Warning! W095: size not specified -- BYTE PTR is assumed
+diff -i -b struct1.out struct1.chk
+diff -i -b struct1.dis struct1.esm
+%write xxxxxxxx.tmp  -zld -wx -nm=b.asm  b.asm -fr=b.out -fo=b.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+b.asm(6): Error! E582: forced error:
+b.asm(6): Note! N592: macro called from file b.asm(12)
+b.asm(6): Note! N592: macro called from file b.asm(21)
+diff -i -b b.out b.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=diag01.asm -4s diag01.asm -fr=diag01.out -fo=diag01.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diag01.asm(9): Error! E551: Symbol hwndMain is not defined
+diff -i -b diag01.out diag01.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=diag02.asm -3 diag02.asm -fr=diag02.out -fo=diag02.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diag02.asm(9): Error! E551: Symbol hwndMain is not defined
+diff -i -b diag02.out diag02.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=diag03.asm -wx diag03.asm -fr=diag03.out -fo=diag03.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diag03.asm(14): Warning! W528: Cannot address with assumed register
+diag03.asm(20): Warning! W528: Cannot address with assumed register
+diag03.asm(25): Warning! W528: Cannot address with assumed register
+diag03.asm(27): Warning! W528: Cannot address with assumed register
+diag03.asm(28): Warning! W528: Cannot address with assumed register
+diff -i -b diag03.out diag03.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=diag04.asm  diag04.asm -fr=diag04.out -fo=diag04.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diag04.asm(3): Error! E607: Label is defined outside segment
+diff -i -b diag04.out diag04.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=diag05.asm -e100 diag05.asm -fr=diag05.out -fo=diag05.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diag05.asm(22): Error! E040: Invalid instruction operands
+diag05.asm(23): Error! E040: Invalid instruction operands
+diag05.asm(24): Error! E040: Invalid instruction operands
+diag05.asm(25): Error! E040: Invalid instruction operands
+diag05.asm(26): Error! E040: Invalid instruction operands
+diag05.asm(27): Error! E040: Invalid instruction operands
+diag05.asm(28): Error! E040: Invalid instruction operands
+diag05.asm(29): Error! E040: Invalid instruction operands
+diag05.asm(30): Error! E040: Invalid instruction operands
+diag05.asm(31): Error! E040: Invalid instruction operands
+diag05.asm(38): Error! E040: Invalid instruction operands
+diag05.asm(39): Error! E040: Invalid instruction operands
+diag05.asm(40): Error! E040: Invalid instruction operands
+diag05.asm(41): Error! E040: Invalid instruction operands
+diag05.asm(42): Error! E040: Invalid instruction operands
+diag05.asm(43): Error! E040: Invalid instruction operands
+diag05.asm(44): Error! E040: Invalid instruction operands
+diag05.asm(45): Error! E040: Invalid instruction operands
+diag05.asm(46): Error! E040: Invalid instruction operands
+diag05.asm(47): Error! E040: Invalid instruction operands
+diag05.asm(57): Error! E040: Invalid instruction operands
+diag05.asm(58): Error! E040: Invalid instruction operands
+diag05.asm(59): Error! E040: Invalid instruction operands
+diag05.asm(60): Error! E040: Invalid instruction operands
+diag05.asm(61): Error! E040: Invalid instruction operands
+diag05.asm(62): Error! E040: Invalid instruction operands
+diag05.asm(63): Error! E040: Invalid instruction operands
+diag05.asm(64): Error! E040: Invalid instruction operands
+diag05.asm(65): Error! E040: Invalid instruction operands
+diag05.asm(66): Error! E040: Invalid instruction operands
+diag05.asm(73): Error! E040: Invalid instruction operands
+diag05.asm(74): Error! E040: Invalid instruction operands
+diag05.asm(75): Error! E040: Invalid instruction operands
+diag05.asm(76): Error! E040: Invalid instruction operands
+diag05.asm(77): Error! E040: Invalid instruction operands
+diag05.asm(78): Error! E040: Invalid instruction operands
+diag05.asm(79): Error! E040: Invalid instruction operands
+diag05.asm(80): Error! E040: Invalid instruction operands
+diag05.asm(81): Error! E040: Invalid instruction operands
+diag05.asm(82): Error! E040: Invalid instruction operands
+diff -i -b diag05.out diag05.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=diag06.asm  diag06.asm -fr=diag06.out -fo=diag06.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diag06.asm(12): Error! E608: Data label is expected
+diag06.asm(14): Error! E608: Data label is expected
+diag06.asm(15): Error! E608: Data label is expected
+diag06.asm(16): Error! E608: Data label is expected
+diag06.asm(22): Error! E608: Data label is expected
+diag06.asm(24): Error! E608: Data label is expected
+diag06.asm(25): Error! E608: Data label is expected
+diag06.asm(26): Error! E608: Data label is expected
+diff -i -b diag06.out diag06.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=diag07.asm  diag07.asm -fr=diag07.out -fo=diag07.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diag07.asm(10): Error! E069: Illegal use of register
+diag07.asm(11): Error! E069: Illegal use of register
+diag07.asm(12): Error! E076: A constant operand is expected in subtraction
+diag07.asm(13): Error! E076: A constant operand is expected in subtraction
+diff -i -b diag07.out diag07.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=diag08.asm  diag08.asm -fr=diag08.out -fo=diag08.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+diag08.asm(7): Error! E032: Syntax error
+diff -i -b diag08.out diag08.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=error1.asm  error1.asm -fr=error1.out -fo=error1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+error1.asm(10): Error! E582: forced error:
+error1.asm(11): Error! E584: forced error: Value equal to 0: 0 
+error1.asm(14): Error! E583: forced error: Value not equal to 0 : 1 
+error1.asm(15): Error! E585: forced error: symbol defined: zero
+error1.asm(18): Error! E586: forced error: symbol not defined: two
+error1.asm(20): Error! E587: forced error: string blank : <>
+error1.asm(22): Error! E588: forced error: string not blank : <zero>
+error1.asm(24): Error! E588: forced error: string not blank : <blank>
+error1.asm(25): Error! E589: forced error: strings not equal : <foo> : <bar>
+error1.asm(28): Error! E590: forced error: strings equal : <hello> : <hello> 
+error1.asm(29): Error! E589: forced error: strings not equal : <foo> : <sam>
+error1.asm(30): Error! E589: forced error: strings not equal : <hello> : <HeLlo>
+error1.asm(33): Error! E589: forced error: strings not equal : <foo> : <sam>
+error1.asm(36): Error! E590: forced error: strings equal : <hello> : <HeLlo> 
+error1.asm(38): Error! E520: Cannot open include file a.inc
+diff -i -b error1.out error1.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=extern1.asm  extern1.asm -fr=extern1.out -fo=extern1.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+extern1.asm(11): Error! E610: Symbol 'var1' type conflict.
+diff -i -b extern1.out extern1.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=include.asm  include.asm -fr=include.out -fo=include.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+do_ax.inc(1): Error! E545: Model declared already
+do_ax.inc(1): Note! N591: included by file include.asm(5)
+include.asm(6): Warning! W549: End directive required at end of file
+diff -i -b include.out include.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=irp.asm  irp.asm -fr=irp.out -fo=irp.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+irp.asm(6): Error! E582: forced error:
+irp.asm(6): Error! E582: forced error:
+diff -i -b irp.out irp.chk
+%write xxxxxxxx.tmp  -zld -wx -nm=cpureq.asm  cpureq.asm -fr=cpureq.out -fo=cpureq.obj
+wasm -zq -bt=nt @xxxxxxxx.tmp
+cpureq.asm(4): Error! E002: Invalid instruction with current CPU setting
+cpureq.asm(5): Error! E102: Cannot use 386 operand size with current CPU setting
+cpureq.asm(6): Error! E006: Cannot use 386 addressing mode with current CPU setting
+diff -i -b cpureq.out cpureq.chk
+wcl386 -zq -bt=nt  -DWASM c:\dev\open-watcom-v2-new\bld\watcom\c\chk_exec.c
+echo OK >error.out
+.\chk_exec.exe exec.out >>error.out
+diff -b error.out ../error.chk
+%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log PASS \dev\open-watcom-v2-new\bld\wasmtest\diag
+%make clean
+rm -f *.dis
+rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+	cd ..
+	wcl386 -zq -bt=nt  c:\dev\open-watcom-v2-new\bld\watcom\c\chktest.c
+	.\chktest.exe c:\dev\open-watcom-v2-new/bld/wasmtest/result.log
+	%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log TEST
+	%append c:\dev\open-watcom-v2-new/bld/wasmtest/result.log PASS \dev\open-watcom-v2-new\bld\wasmtest
+	%make clean
+	rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+	rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res

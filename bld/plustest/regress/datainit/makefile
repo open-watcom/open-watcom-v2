@@ -1,5 +1,6 @@
 plustest_name = datainit
-!include ../environ.mif
+
+!include testenv.mif
 
 exes = &
 idata01.$(exe) &
@@ -45,37 +46,25 @@ idata40.$(exe) &
 idata41.$(exe) &
 idata42.$(exe)
 
-test_cflags += -ox-d1-zq-w0
+test_flags += -ox-d1-w0
 alt_error=00
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
-.cpp.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags) -fo=.obj
-
-.obj.$(exe):
-    $(linker) @idata.lnk name $@ file $[@
-    $(run) $(exec_prefix)$@ >>idata.out
-
-test : .symbolic start_test idata.lnk $(exes)
-    diff idata.out idata.chk
-    @%make global
+test : .symbolic clean start_test test.lnk $(exes)
+    diff exec.out idata.chk
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 start_test : .symbolic
-    %create idata.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
-idata.lnk : $(__MAKEFILES__)
-    %create $^@
-    @%append $^@ DEBUG line
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch))
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
-    @if exist idata.out cp idata.out s$(arch)_$(alt_error).sav
+    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .procedure
+clean : .procedure
     @%make common_clean

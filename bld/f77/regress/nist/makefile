@@ -1,9 +1,7 @@
 ftest_name = positive
-!include ../environ.mif
 
-positive_dir = source
-
-!include $(positive_dir)/positive.mif
+!include testenv.mif
+!include source/positive.mif
 
 !ifdef test1
 fflags_386 = -D2 -MF
@@ -57,75 +55,30 @@ fflags_axp = -ox-d1
 alt_error = 00
 !endif
 
-!ifdef __LINUX__
-exec_prefix = ./
-!else
-exec_prefix =
-!endif
+fflags_386 += -INCPath=source #-we-w0
+fflags_i86 += -INCPath=source #-we-w0
+fflags_axp += -INCPath=source #-we-w0
 
-!ifndef noisy
-run_quietly = -Quiet
-!endif
+.for: source
 
-fflags_386 += -INCPath=$(positive_dir) $(run_quietly) #-we-w0
-fflags_i86 += -INCPath=$(positive_dir) $(run_quietly) #-we-w0
-fflags_axp += -INCPath=$(positive_dir) $(run_quietly) #-we-w0
-
-.error
-    @%append $(%error_file) $(%error_msg)
-
-.for: $(positive_dir)
-.for.obj:
-    @set error_msg=failure to compile $^@
-    $(wfc_$(arch)) $[@ $(fflags_$(arch)) $(opt_$^*) -FO=.obj
-
-.obj.$(exe):
-    @set error_msg=failure to link $^@
-    $(linker) @test.lnk $(opt_link_$^*) FILE $[@ NAME $^@
-    @set error_msg=failure to execute $^@
-    @%append exec.out PASS executing $^@
-    $(run) $(exec_prefix)$^@ >> $*.out
-    diff $*.out expected/$*.exp >> exec.out
-    rm $[@
-    rm $*.out
-#    $(wstrip) -q $^@
-
-test : .symbolic start_test test.lnk $(positive_exes) finish_test
-    
-./chk_exec.exe : ../c/chk_exec.c
-    $(bld_cl) $< $(wcl_util_opts)
-
-finish_test : .symbolic ./chk_exec.exe
-    @set error_file=error.out
-    @set error_msg=failure to complete test stream
+test : .symbolic clean start_test test.lnk $(positive_exes) ./chk_exec.exe
+    @set ERROR_FILE=error.out
+    @set ERROR_MSG=failure to complete test stream
     echo OK > error.out
-    $[@ exec.out >> error.out
+    $]@ exec.out >> error.out
     diff -b error.out error.chk
-    %make global
     %append $(log_file) PASS $(%__CWD__)
-
-fnstat1.$(exe) : fnstat1a.obj fnstat1b.obj
-    @set error_msg=failure to link $^@
-    $(linker) @test.lnk NAME $^@ FILE $[@, $]@
-    @set error_msg=failure to execute $^@
-    @%append exec.out PASS executing $^@
-    $(run) $(exec_prefix)$^@ >>exec.out
+    %make clean
 
 start_test : .symbolic
-    rm -f s$(arch)_$(alt_error).sav
-    %create exec.out
-    @set error_file=exec.out
-
-test.lnk : makefile
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ OPTION noredef
+    @if exist s$(arch)_$(alt_error).sav rm -f s$(arch)_$(alt_error).sav
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .symbolic
+clean : .procedure
     @if exist for007 rm for007
     @if exist for009 rm for009
     @if exist for024 rm for024

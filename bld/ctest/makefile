@@ -24,27 +24,25 @@ callconv_tests = $(gr2)
 diagnose_tests = $(gr1)
 inline_tests   = $(gr3)
 
-!include regress/environ.mif
+!include testenv.mif
 
-test : .symbolic global start_test $(test_grp_list) finish_test global
-
-start_test: .symbolic
-    @if exist *.sav rm -f *.sav
-    @if exist *.log rm -f *.log
-    set CTEST_NAME=$(ctest_name)
-    cd regress
-
-cd_back : .symbolic
-    cd ..
-
-./chktest.exe : $(watcom_dir)/c/chktest.c
-    $(bld_cl) $< $(wcl_util_opts)
-
-finish_test : .symbolic cd_back ./chktest.exe
+test : .symbolic clean start_test cd_regress $(test_grp_list) cd_back ./chktest.exe
     @cdsay >> $(log_file)
     $]@ $(log_file)
     @%append $(log_file) TEST
     %append $(log_file) PASS $(%__CWD__)
+    %make clean
+
+start_test: .symbolic
+    @if exist *.sav rm -f *.sav
+    @if exist $(log_file) rm -f $(log_file)
+    @set CTEST_LOG_FILE=$(log_file)
+
+cd_regress: .symbolic
+    cd regress
+
+cd_back: .symbolic
+    cd ..
 
 $(test_grp_list) : .symbolic
     cd $@
@@ -52,7 +50,6 @@ $(test_grp_list) : .symbolic
     cd ..
 
 $(all) : .procedure
-    -@wmake -h global
 !ifdef %TEST_ARCH
     -wmake -h arch=$(%TEST_ARCH) $@=
     -@wmake -h arch=$(%TEST_ARCH) $@= save
@@ -60,13 +57,11 @@ $(all) : .procedure
     -wmake -h $@=
     -@wmake -h $@= save
 !ifdef %EXTRA_ARCH
-    -@wmake -h global
     -wmake -h arch=$(%EXTRA_ARCH) $@=
     -@wmake -h arch=$(%EXTRA_ARCH) $@= save
 !endif
 !endif
-    -@wmake -h global
 
-global : .procedure
-    @if exist *.obj rm -f *.obj
-    @if exist *.exe rm -f *.exe
+clean : .procedure
+    @%make common_clean
+

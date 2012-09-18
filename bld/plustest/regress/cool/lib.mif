@@ -1,0 +1,16 @@
+lib_objs = &
+   associat.obj base_bnn.obj base_bnt.obj base_has.obj base_lis.obj &
+   base_m_v.obj base_mat.obj base_que.obj base_sta.obj base_vec.obj &
+   bignum.obj binary_n.obj binary_t.obj bit_set.obj bit_tabl.obj &
+   calendar.obj char.obj complex.obj country.obj d_node.obj date_tim.obj &
+   gen_stri.obj hash_tab.obj list.obj m_vector.obj matrix.obj n_node.obj &
+   n_tree.obj nt_state.obj pair.obj property.obj quaterni.obj queue.obj &
+   random.obj rational.obj regexp.obj set.obj stack.obj string.obj &
+   test.obj timer.obj timezone.obj value.obj vector.obj
+
+../cool.lib : $(lib_objs) cool.lbc
+    $(librarian) -p=512 $@ @cool.lbc
+
+cool.lbc : makefile
+    %create $^@
+    @for %i in ($(lib_objs)) do @%append $^@ +%i

@@ -12,7 +12,7 @@ int test() {
 	hash[ &temp ] = &x;
 	cout << *hash[ &temp ] << endl;
     } catch( ... ) {
-	cout << "PASS " << __FILE__ << endl;
+	cout << "PASS" << endl;
     }
     return 0;
 };

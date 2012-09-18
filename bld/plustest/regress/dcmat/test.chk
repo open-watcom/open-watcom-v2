@@ -1,3 +1,4 @@
+PASS compiling test
 identity matrix
 1 0 0
 0 1 0
@@ -36,6 +37,8 @@ inverse * random
 0 1 0
 0 0 1
 
+PASS executing test
+PASS compiling tmatrix
      x 
 (1, 1.73205) (1, -1.73205)
 (1, 1.73205) (-1, -1.73205)
@@ -132,3 +135,4 @@ imag(x)
 1.73205 -1.73205
 1.73205 -1.73205
 
+PASS executing tmatrix

@@ -15,7 +15,6 @@
 #include <cool/Vector.C>
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolVector<int> v1;                           // Declare CoolVector object
   for (int i = 0; i < 10; i++)                  // Copy 10 integers into CoolVector
     v1.push(i);                                 // Add element

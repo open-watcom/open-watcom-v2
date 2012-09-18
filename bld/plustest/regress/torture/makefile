@@ -1,5 +1,6 @@
 plustest_name = torture
-!include ../environ.mif
+
+!include testenv.mif
 
 objs = &
     assert.obj &
@@ -9,64 +10,48 @@ objs = &
     pool.obj
 
 !ifdef test1
-test_cflags = -d2-j
+test_flags = -d2-j
 alt_error=01
 !else
-test_cflags = -ox-d1-j
+test_flags = -ox-d1-j
 alt_error=00
 !endif
 
-test_cflags += -zq-w0-I. -fi=__ialias.h
+test_flags += -w0-I. -fi=__ialias.h
 
-test_cflags_386 = -mf
-test_cflags_i86 = -ml -fi=noinline.h
-test_cflags_axp =
+test_flags_386 = -mf
+test_flags_i86 = -ml -fi=noinline.h
+test_flags_axp =
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
-.cpp.obj:
-    $(wpp_$(arch)) $[* $(test_cflags) $(test_cflags_$(arch)) -fo=.obj
+opt_link = LIB tort.lib
 
-test : .symbolic start_test mdarr.$(exe) diarr.$(exe)
-    diff exec.out exec.chk
-    @%make global
-    %append $(log_file) PASS $(%__CWD__)
+exes = dim2arr.$(exe) mdarrtst.$(exe)
 
-diarr.$(exe) : dim2arr.obj tort.lnk tort.lib
-    $(linker) @tort.lnk NAME $^@ FILE $[@ LIB $]@
-    @%append exec.out --------$^&--------
-    $(run) $(exec_prefix)$@ >>exec.out
-
-mdarr.$(exe) : mdarrtst.obj tort.lnk tort.lib
-    $(linker) @tort.lnk NAME $^@ FILE $[@ LIB $]@
-    @%append exec.out --------$^&--------
-    $(run) $(exec_prefix)$@ >>exec.out
-    @%append exec.out --------output--------
+test : .symbolic clean start_test test.lnk tort.lib $(exes)
     cat output >>exec.out
-    rm output
+    diff exec.out exec.chk
+    %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 start_test : .symbolic
-    %create exec.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 tort.lib : tort.lbc $(objs)
-    $(librarian_$(arch)) -q-n-b @$[@
+    $(librarian) @$[@
 
 tort.lbc : $(__MAKEFILES__)
     %create $^@
     @%append $^@ $^*.lib
     @for %i in ( $(objs) ) do @%append $^@ -+%i
 
-tort.lnk : $(__MAKEFILES__)
-    %create $^@
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch))
-    @%append $^@ $(ldebug_$(arch))
-
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .symbolic
+clean : .procedure
     @%make common_clean

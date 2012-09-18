@@ -1,3 +1,4 @@
+PASS compiling demo
 Testing back_inserter(deque<char>):
 ThisistestinputforthedemoSTLprogram
 Testing set<char>:
@@ -22,3 +23,4 @@ LTTdfhhnpprrrtttt
 Testing stable_partition(vector<char>):
 Saeeegiiimmooosssu
 LTTdfhhnpprrrtttt
+PASS executing demo

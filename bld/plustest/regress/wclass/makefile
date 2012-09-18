@@ -1,36 +1,33 @@
 plustest_name = wclass
 
-!include ../environ.mif
+!include testenv.mif
 
 !ifdef test1
-comp_flags_i86 = -d2-ml
-comp_flags_386 = -d2-mf
-comp_flags_axp = -d2
+test_flags_i86 = -d2-ml
+test_flags_386 = -d2-mf
+test_flags_axp = -d2
 alt_error=01
 !else ifdef test2
-comp_flags_i86 = -ox-d1-xds-mc
-comp_flags_386 = -ox-d1-xds-mf
-comp_flags_axp = -ox-d1-xds
+test_flags_i86 = -ox-d1-xds-mc
+test_flags_386 = -ox-d1-xds-mf
+test_flags_axp = -ox-d1-xds
 alt_error=02
 !else
-comp_flags_i86 = -ox-d1-mc
-comp_flags_386 = -ox-d1-mf
-comp_flags_axp = -ox-d1
+test_flags_i86 = -ox-d1-mc
+test_flags_386 = -ox-d1-mf
+test_flags_axp = -ox-d1
 alt_error=00
 !endif
 
-comp_flags = -zq -I"$(%watcom)/h"
+test_flags = -zq -I"$(%WATCOM)/h"
 
-comp_flags_i86 += -zw -I"$(%watcom)/h/win" -bt=windows -DSTRICT
-comp_flags_386 += -I"$(%watcom)/h/nt"
-comp_flags_axp += -I"$(%watcom)/h/nt"
+test_flags_i86 += -zw -I"$(%WATCOM)/h/win" -bt=windows -DSTRICT
+test_flags_386 += -I"$(%WATCOM)/h/nt"
+test_flags_axp += -I"$(%WATCOM)/h/nt"
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k
 stack_axp=opt stack=16k
-
-.cpp.obj:
-    $(wpp_$(arch)) $[* $(comp_flags) $(comp_flags_$(arch)) $(extra) -fo=.obj
 
 objs = &
 nullfunc.obj &
@@ -71,41 +68,47 @@ wmsgdlg.obj &
 wwinmain.obj
 
 !ifeq arch i86
-test : .symbolic start_test test.exe
+test : .symbolic clean start_test test.$(exe)
 !else ifeq arch 386
 !ifeq targ_env_386 wnt386
-test : .symbolic start_test test.exe
+test : .symbolic clean start_test test.$(exe)
 !else
-test : .symbolic start_test
+test : .symbolic clean start_test
 !endif
 !else
-test : .symbolic start_test
+test : .symbolic clean start_test
 !endif
-    @%make global
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
-test.exe : $(objs) test.lnk
+test.$(exe) : $(objs) test1.lnk
     $(linker) @$]@ NAME $@
 
-test.lnk : makefile $(objs)
-    %create $^@
-!ifeq arch i86
-    @%append $^@ SYSTEM windows
-    @%append $^@ OPTION rwreloccheck
-    @%append $^@ LIBRARY $(%watcom)/lib286/win/ddeml.lib
-    @%append $^@ LIBRARY $(%watcom)/lib286/win/commdlg.lib
-!else
-    @%append $^@ SYSTEM nt_win
+test1.lnk : makefile $(objs)
+    %create $@
+    @%append $@ DEBUG line
+!ifndef noisy
+    @%append $@ opt quiet
 !endif
-    @%append $^@ $(ldebug_$(arch))
-    @for %i in ( $(objs) ) do @%append $^@ FILE %i
+    @%append $@ $(lnk_any)
+    @%append $@ $(stack_$(arch))
+!ifeq arch i86
+    @%append $@ SYSTEM windows
+    @%append $@ OPTION rwreloccheck
+    @%append $@ LIBRARY $(%WATCOM)/lib286/win/ddeml.lib
+    @%append $@ LIBRARY $(%WATCOM)/lib286/win/commdlg.lib
+!else
+    @%append $@ SYSTEM nt_win
+!endif
+    @for %i in ( $(objs) ) do @%append $@ FILE %i
 
 start_test : .symbolic
-    %create exec.out
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .procedure
+clean : .procedure
     @%make common_clean

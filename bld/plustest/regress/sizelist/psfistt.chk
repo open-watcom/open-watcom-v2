@@ -1,3 +1,4 @@
+PASS compiling psfistt
 alloc:   0
 alloc:   0
 1:alpha 10
@@ -16,3 +17,4 @@ free(n): 0
 1
 free():  0
 2
+PASS executing psfistt

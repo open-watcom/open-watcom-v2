@@ -1,4 +1,4 @@
---- start execution of wctype
+PASS compiling wctype
 [1]
 [1]
 [1]
@@ -53,8 +53,8 @@
 [1]
 [1]
 [1]
---- end execution of wctype
---- start execution of wctest
+PASS executing wctype
+PASS compiling wctest
 
 Number of queue 2 entries: 4
 First entry = [7]
@@ -63,8 +63,8 @@ Last entry = [10]
 8
 9
 10
---- end execution of wctest
---- start execution of wctest1
+PASS executing wctest
+PASS compiling wctest1
 Number of entries: 3
 1:data 2
 1:item 1
@@ -101,8 +101,8 @@ Number of entries: 3
 6:item 1
 6:item 1
 6:append data
---- end execution of wctest1
---- start execution of wctest2
+PASS executing wctest1
+PASS compiling wctest2
 Number of queue 1 entries: 3
 First entry = [1:item 1]
 Last entry = [1:append data]
@@ -130,8 +130,8 @@ Top entry = [10]
 9
 8
 7
---- end execution of wctest2
---- start execution of wctest3
+PASS executing wctest2
+PASS compiling wctest3
 Number of entries: 3
 1:data 2
 1:item 1
@@ -180,16 +180,16 @@ Number of entries: 3
 6:append data
 
 done test
---- end execution of wctest3
---- start execution of wctest4
+PASS executing wctest3
+PASS compiling wctest4
 Finished doing a single and double linked list(1)
 I guess no error was set
 
 Finished doing a single and double linked list(2)
 
 ** oh no, the list is not empty **
---- end execution of wctest4
---- start execution of wctest7
+PASS executing wctest4
+PASS compiling wctest7
 5
 1
 2
@@ -202,8 +202,8 @@ Finished doing a single and double linked list(2)
 5
 1
 2
---- end execution of wctest7
---- start execution of wctest8
+PASS executing wctest7
+PASS compiling wctest8
 5
 1
 2
@@ -216,13 +216,13 @@ Finished doing a single and double linked list(2)
 5
 1
 2
---- end execution of wctest8
---- start execution of wctest9
+PASS executing wctest8
+PASS compiling wctest9
 5
 1
 2
---- end execution of wctest9
---- start execution of wctest10
+PASS executing wctest9
+PASS compiling wctest10
 9
 2
 7
@@ -230,8 +230,8 @@ Finished doing a single and double linked list(2)
 9
 2
 7
---- end execution of wctest10
---- start execution of wctest11
+PASS executing wctest10
+PASS compiling wctest11
 9
 2
 7
@@ -239,8 +239,8 @@ Finished doing a single and double linked list(2)
 9
 2
 7
---- end execution of wctest11
---- start execution of wctest12
+PASS executing wctest11
+PASS compiling wctest12
 9
 2
 7
@@ -248,8 +248,8 @@ Finished doing a single and double linked list(2)
 9
 2
 7
---- end execution of wctest12
---- start execution of wctest14
+PASS executing wctest12
+PASS compiling wctest14
 1:1 list
 >ptrdlist<int *>< [1]
 >ptrdlist<int *>< [2]
@@ -261,8 +261,8 @@ Finished doing a single and double linked list(2)
 2:2 list
 >ptrdlist<int *>< [1]
 >ptrdlist<int *>< [2]
---- end execution of wctest14
---- start execution of wctest15
+PASS executing wctest14
+PASS compiling wctest15
 9
 2
 7
@@ -274,8 +274,8 @@ Finished doing a single and double linked list(2)
 9
 2
 7
---- end execution of wctest15
---- start execution of wctest16
+PASS executing wctest15
+PASS compiling wctest16
 str#3
 str#2
 str#1
@@ -287,21 +287,21 @@ str#1
 str#3
 str#2
 str#1
---- end execution of wctest16
---- start execution of wctest17
+PASS executing wctest16
+PASS compiling wctest17
 [str#3]
 [str#2]
 [str#1]
 
---- end execution of wctest17
---- start execution of wctest19
+PASS executing wctest17
+PASS compiling wctest19
 [str#3] - find(0)
 [str#1] - find(2)
 [str#3] - find()
 [str#2] - find(1)
 [str#1] - findLast()
---- end execution of wctest19
---- start execution of wctest20
+PASS executing wctest19
+PASS compiling wctest20
 [str#3] - find(3)
 [str#3] - find(4)
 [str#1] - find(-1)
@@ -311,8 +311,8 @@ str#1
 ** the index value of a find call was out of range **
 
 ** the index value of a find call was out of range **
---- end execution of wctest20
---- start execution of wctest21
+PASS executing wctest20
+PASS compiling wctest21
 Number of queue 1 entries: 3
 1:item 1
 1:data 2
@@ -322,8 +322,8 @@ Number of stack 1 entries: 3
 1:append data
 1:data 2
 1:item 1
---- end execution of wctest21
---- start execution of wctest22
+PASS executing wctest21
+PASS compiling wctest22
 
 Number of entries: 4
 >isvslist< [1:item 1]
@@ -361,8 +361,8 @@ Number of entries: 2
 Number of entries: 1
 >valslist< [1:item 1]
 done test
---- end execution of wctest22
---- start execution of wctest23
+PASS executing wctest22
+PASS compiling wctest23
 [svstr#1]
 [svstr#2]
 [svstr#3]
@@ -393,8 +393,8 @@ done test
 [distr#3]
 [distr#4]
 
---- end execution of wctest23
---- start execution of wctest24
+PASS executing wctest23
+PASS compiling wctest24
 [svstr#1]
 [svstr#2]
 [svstr#3]
@@ -411,8 +411,8 @@ do a reset to list 2
 [svstr#2]
 [svstr#1]
 
---- end execution of wctest24
---- start execution of wctest26
+PASS executing wctest24
+PASS compiling wctest26
 [svstr#1]
 [svstr#2]
 [svstr#3]
@@ -473,12 +473,12 @@ do a reset to list 2
 [distr#2]
 
 
---- end execution of wctest26
---- start execution of wctest27
+PASS executing wctest26
+PASS compiling wctest27
 right
 right
---- end execution of wctest27
---- start execution of wctest28
+PASS executing wctest27
+PASS compiling wctest28
 [str#3]
 []
 []
@@ -492,8 +492,8 @@ right
 Should be here 3
 
 **(1) the iterator value was baaaad **
---- end execution of wctest28
---- start execution of wctest29
+PASS executing wctest28
+PASS compiling wctest29
 [str#2]
 >valdlist<String>< [str#1]
 >valdlist<String>< [str#5]
@@ -512,8 +512,8 @@ Should be here 3
 >isvdlist<str_ddata>< [str#2]
 >isvdlist<str_ddata>< [str#4]
 >isvdlist<str_ddata>< [str#3]
---- end execution of wctest29
---- start execution of wctest30
+PASS executing wctest29
+PASS compiling wctest30
 <intrusive double list for int_ddata>
 [1]
 [2]
@@ -523,8 +523,8 @@ Should be here 3
 <the fourth element>[4]
 <the third element>[3]
 <the first element>[1]
---- end execution of wctest30
---- start execution of wctest31
+PASS executing wctest30
+PASS compiling wctest31
 <value double list for int>
 [1]
 [2]
@@ -534,8 +534,8 @@ Should be here 3
 <the fourth element>[4]
 <the third element>[3]
 <the first element>[1]
---- end execution of wctest31
---- start execution of wctest32
+PASS executing wctest31
+PASS compiling wctest32
 <pointer double list for int>
 [1]
 [2]
@@ -545,8 +545,8 @@ Should be here 3
 <the fourth element>[4]
 <the third element>[3]
 <the first element>[1]
---- end execution of wctest32
---- start execution of wctest33
+PASS executing wctest32
+PASS compiling wctest33
 
 Number of queue 2 entries: 4
 First entry = [7]
@@ -555,8 +555,8 @@ Last entry = [10]
 8
 9
 10
---- end execution of wctest33
---- start execution of wctest34
+PASS executing wctest33
+PASS compiling wctest34
 
 Number of stack 2 entries: 4
 Top entry = [10]
@@ -564,8 +564,8 @@ Top entry = [10]
 9
 8
 7
---- end execution of wctest34
---- start execution of wctest35
+PASS executing wctest34
+PASS compiling wctest35
 
 Number of stack 2 entries: 4
 Top entry = [10]
@@ -573,8 +573,8 @@ Top entry = [10]
 9
 8
 7
---- end execution of wctest35
---- start execution of wctest36
+PASS executing wctest35
+PASS compiling wctest36
 <intrusive double list for int_ddata>
 [1]
 [2]
@@ -583,16 +583,16 @@ Top entry = [10]
 [2]
 [3]
 [2]
---- end execution of wctest36
---- start execution of wctest37
+PASS executing wctest36
+PASS compiling wctest37
 [1]
 [2]
---- end execution of wctest37
---- start execution of wctest38
+PASS executing wctest37
+PASS compiling wctest38
 [2]
 [1]
---- end execution of wctest38
---- start execution of wctest40
+PASS executing wctest38
+PASS compiling wctest40
 0 0
 1 2
 5 6
@@ -618,8 +618,8 @@ sort 15 = 3
 14 15
 5 6
 range for 2-6 is 1 to 4
---- end execution of wctest40
---- start execution of wctest41
+PASS executing wctest40
+PASS compiling wctest41
 [str#3]
 [ NULL ]
 [ NULL ]
@@ -630,8 +630,8 @@ range for 2-6 is 1 to 4
 **(1) the iterator was baaaad **
 
 **(1) the iterator value was baaaad **
---- end execution of wctest41
---- start execution of wctest42
+PASS executing wctest41
+PASS compiling wctest42
 [str#3]
 [str#3]
 
@@ -640,8 +640,8 @@ range for 2-6 is 1 to 4
 **(1) the iterator was baaaad **
 
 **(1) the iterator value was baaaad **
---- end execution of wctest42
---- start execution of wctest43
+PASS executing wctest42
+PASS compiling wctest43
 [str#3]
 [ NULL ]
 [ NULL ]
@@ -652,21 +652,21 @@ range for 2-6 is 1 to 4
 **(1) the iterator was baaaad **
 
 **(1) the iterator value was baaaad **
---- end execution of wctest43
---- start execution of wctest44
+PASS executing wctest43
+PASS compiling wctest44
 OK, we're freeing a chunk we allocated
 OK, we're freeing a chunk we allocated
 OK, we're freeing a chunk we allocated
---- end execution of wctest44
---- start execution of wctest45
+PASS executing wctest44
+PASS compiling wctest45
 append out of mem (supposed to happen)
 OK, we're freeing a chunk we allocated
 OK, we're freeing a chunk we allocated
 OK, we're freeing a chunk we allocated
 2append out of mem (supposed to happen)
 we got caught
---- end execution of wctest45
---- start execution of wctest47
+PASS executing wctest45
+PASS compiling wctest47
 There should be 6 sets of 3 (supposed to happen)
 (supposed to happen 1)
 (supposed to happen  2)
@@ -686,11 +686,11 @@ There should be 6 sets of 3 (supposed to happen)
 (supposed to happen 1)
 (supposed to happen  2)
 (supposed to happen   3)
---- end execution of wctest47
---- start execution of wctest48
+PASS executing wctest47
+PASS compiling wctest48
 Should see no output...
---- end execution of wctest48
---- start execution of wctest49
+PASS executing wctest48
+PASS compiling wctest49
 dd[0].info = 0
 dd[1].info = 1
 dd[2].info = 2
@@ -713,8 +713,8 @@ dd[18].info = 18
 dd[19].info = 19
 
 
---- end execution of wctest49
---- start execution of wctest50
+PASS executing wctest49
+PASS compiling wctest50
 vect[0] = 0
 vect[1] = 1
 vect[2] = 2
@@ -727,17 +727,17 @@ vect[8] = 8
 vect[9] = 9
 
 
---- end execution of wctest50
---- start execution of wctest51
+PASS executing wctest50
+PASS compiling wctest51
 test PtrSlist
 test PtrDlist
 test IsvSlist
 test IsvDlist
---- end execution of wctest51
---- start execution of wctest52
+PASS executing wctest51
+PASS compiling wctest52
 There should be no output
---- end execution of wctest52
---- start execution of wctest53
+PASS executing wctest52
+PASS compiling wctest53
 stack out of mem (supposed to happen)
 OK, we're freeing a chunk we allocated
 OK, we're freeing a chunk we allocated
@@ -746,22 +746,22 @@ Queue out of mem (supposed to happen)
 OK, we're freeing a chunk we allocated
 OK, we're freeing a chunk we allocated
 test 2 (supposed to happen)
---- end execution of wctest53
---- start execution of wctest54
+PASS executing wctest53
+PASS compiling wctest54
 to need not to  values values, for table hash WCValHashTable Ian Class Table Hash Container WATCOM the for Defines wchash.h 
 to need not to  values values, for table hash WCValHashTable Ian Class Table Hash Container WATCOM the for Defines wchash.h 
 to need not to  values values, for table hash WCValHashTable Ian Class Table Hash Container WATCOM the for Defines wchash.h 
 to need not to  values values, for table hash WCValHashTable Ian Class Table Hash Container WATCOM the for Defines wchash.h 
---- end execution of wctest54
---- start execution of wctest55
+PASS executing wctest54
+PASS compiling wctest55
 2 1 0 
 2 1 0 
 2 1 0 
 2 1 0 
 2 1 0 
 2 1 0 
---- end execution of wctest55
---- start execution of wctest56
+PASS executing wctest55
+PASS compiling wctest56
 round 1
 round 2
 round 3
@@ -776,8 +776,8 @@ round 5
 round 6
 test ValSlist
 test ValDlist
---- end execution of wctest56
---- start execution of wctest59
+PASS executing wctest56
+PASS compiling wctest59
 --- test 1
 wchash.h Defines for the WATCOM Container Hash Table Class Ian WCValHashTable hash table for values,  values to not need do 
 --- test 2
@@ -792,15 +792,15 @@ wchash.h Defines for the WATCOM Container Hash Table Class Ian WCValHashTable ha
 --- test 6
 index i==13failed (OK for i==13)
 wchash.h Defines for the WATCOM Container Hash Table Class Ian WCValHashTable hash table for values,  values to not need do 
---- end execution of wctest59
---- start execution of wctest61
+PASS executing wctest59
+PASS compiling wctest61
 5 4 3 2 1 
 1 2 3 4 5 
---- end execution of wctest61
---- start execution of wctest62
-PASS source\wctest62.cpp
---- end execution of wctest62
---- start execution of wcvt1
+PASS executing wctest61
+PASS compiling wctest62
+PASS
+PASS executing wctest62
+PASS compiling wcvt1
 length before indexing: 5
 length after indexing: 5
 50
@@ -815,8 +815,8 @@ length after indexing: 5
 25
 0
 1234
---- end execution of wcvt1
---- start execution of wcvt2
+PASS executing wcvt1
+PASS compiling wcvt2
 There should be 4 supposed to happen exceptions
 
 resize_required exception (supposed to happen)
@@ -832,12 +832,12 @@ resize_required exception (supposed to happen)
 0 0 0 0 0 
 
 resize_required exception (supposed to happen)
---- end execution of wcvt2
---- start execution of wcvt3
+PASS executing wcvt2
+PASS compiling wcvt3
 17 25 0 25 0 1234567 
 25 0 25 0 1234 
---- end execution of wcvt3
---- start execution of wcvt4
+PASS executing wcvt3
+PASS compiling wcvt4
 Found 25 (OK)
 Found 50 (OK)
 25 0 50 0 1234 
@@ -847,8 +847,8 @@ Found 25 (OK)
 Found 50 (OK)
 -1 -1 0 0 1234 25 34143 50 
 
---- end execution of wcvt4
---- start execution of wcvt5
+PASS executing wcvt4
+PASS compiling wcvt5
 Should get 7 supposed to happen exceptions
 
 empty_container exception (supposed to happen)
@@ -866,8 +866,8 @@ empty_container exception (supposed to happen)
 length exception (supposed to happen)
 ptrsort len 5
 The next test should *NOT* cause a run time error
---- end execution of wcvt5
---- start execution of wcvt6
+PASS executing wcvt5
+PASS compiling wcvt6
 There should be 4 supposed to happen exceptions
 
 resize_required exception (supposed to happen)
@@ -879,8 +879,8 @@ vector_length range exception (supposed to happen)
 
 out_of_mem exception (supposed to happen)
 Vector length2
---- end execution of wcvt6
---- start execution of wcvt7
+PASS executing wcvt6
+PASS compiling wcvt7
 Inserting one
 Prepending two
 Appending three
@@ -895,8 +895,8 @@ Inserting four at 1
 prepending five
 Inserting six
 five two four one three six 
---- end execution of wcvt7
---- start execution of wcvt8
+PASS executing wcvt7
+PASS compiling wcvt8
 ValOrdered
 25 0 50 0 1234567 
 vect->removeAll 0
@@ -939,8 +939,8 @@ removing Last
 -1 
 removing First
 
---- end execution of wcvt8
---- start execution of wcvt9
+PASS executing wcvt8
+PASS compiling wcvt9
 Should be 15 supposed to happen exceptions
 ValOrdered
 index 1 (supposed to happen)
@@ -961,16 +961,16 @@ index 1b (supposed to happen)
 index 1c (supposed to happen)
 index 2 (supposed to happen)
 index 3 (supposed to happen)
---- end execution of wcvt9
---- start execution of wcvt10
+PASS executing wcvt9
+PASS compiling wcvt10
 50 0 25 0 1234567 0 
 50 0 25 0 1234 0 
 25 0 50 0 1234567 0 
 25 0 50 0 1234 0 
 -1 0 0 0 1234567 25 34143 50 
 -1 -1 0 0 0 1234 25 34143 50 
---- end execution of wcvt10
---- start execution of wcvt12
+PASS executing wcvt10
+PASS compiling wcvt12
 there should be 6 sets of 5 supposed to happen exceptions
 index 1 (supposed to happen)
 index 2 (supposed to happen)
@@ -1002,51 +1002,50 @@ index 2 (supposed to happen)
 index 3 (supposed to happen)
 index 4 (supposed to happen)
 index 5 (supposed to happen)
---- end execution of wcvt12
---- start execution of wcvt13
+PASS executing wcvt12
+PASS compiling wcvt13
 Should see 1 2 3 4 5
 1 (supposed to happen)
 2 (supposed to happen)
 3 (supposed to happen)
 4 (supposed to happen)
 5 (supposed to happen)
---- end execution of wcvt13
---- start execution of wcvt14
+PASS executing wcvt13
+PASS compiling wcvt14
 test1 (supposed to happen)
 test2 (supposed to happen)
 test3 (supposed to happen)
 test4 (supposed to happen)
 test5 (supposed to happen)
 test6 (supposed to happen)
---- end execution of wcvt14
---- start execution of wcvt15
+PASS executing wcvt14
+PASS compiling wcvt15
 zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen 
 eight eighteen eleven fifteen five four fourteen nine nineteen one seven seventeen six sixteen ten thirteen three twelve two zero 
---- end execution of wcvt15
---- start execution of wcvt16
+PASS executing wcvt15
+PASS compiling wcvt16
 0 1 2 
 0 1 2 
 0 1 2 
 0 1 2 
 0 1 2 
 0 1 2 
---- end execution of wcvt16
---- start execution of wcvt19
---- end execution of wcvt19
---- start execution of wcvt20
-source\wcvt20.cpp
---- end execution of wcvt20
---- start execution of wcvt21
+PASS executing wcvt16
+PASS compiling wcvt19
+PASS executing wcvt19
+PASS compiling wcvt20
+PASS executing wcvt20
+PASS compiling wcvt21
 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 
---- end execution of wcvt21
---- start execution of wcvt22
+PASS executing wcvt21
+PASS compiling wcvt22
 Number of entries 1
 Vector elements (should be "Negative  First  Too high"
 Negative  First  Too high  
 too high (supposed to happen)
 -1 (supposed to happen)
---- end execution of wcvt22
---- start execution of wcht1
+PASS executing wcvt22
+PASS compiling wcht1
 # of elements0
 wchash.h Container table do Defines the WCValHashTable to for hash for  values Ian need Hash values, not WATCOM Table Class 
 
@@ -1103,8 +1102,8 @@ Clearing list
 
 Number of buckets:10
 # of elements0
---- end execution of wcht1
---- start execution of wcht2
+PASS executing wcht1
+PASS compiling wcht2
 0 5 10 15 20 25 30 35 40 45 1 6 11 16 21 26 31 36 41 46 2 7 12 17 22 27 32 37 42 47 3 8 13 18 23 28 33 38 43 48 4 9 14 19 24 29 34 39 44 49 
 Number of buckets:5
 0 5 10 15 20 25 30 35 40 45 1 6 11 16 21 26 31 36 41 46 2 7 12 17 22 27 32 37 42 47 3 8 13 18 23 28 33 38 43 48 4 9 14 19 24 29 34 39 44 49 
@@ -1114,16 +1113,16 @@ test3
 Number of buckets:5
 0 5 10 15 20 25 30 35 40 45 1 6 11 16 21 26 31 36 41 46 2 7 12 17 22 27 32 37 42 47 3 8 13 18 23 28 33 38 43 48 4 9 14 19 24 29 34 39 44 49 
 Number of buckets:5
---- end execution of wcht2
---- start execution of wcht3
+PASS executing wcht2
+PASS compiling wcht3
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 removing 0's
 
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 removing 0's
 
---- end execution of wcht3
---- start execution of wcht4
+PASS executing wcht3
+PASS compiling wcht4
 wchash.h for Container Ian for Defines the Table Class WCValHashTable table  values Hash hash values, not need WATCOM to to 
 
 # of elements14
@@ -1146,8 +1145,8 @@ wchash.h:0 for:13 Container:5 Ian:9 Defines:1 the:3 Table:7 Class:8 WCValHashTab
 wchash.h:0 for:13 Container:5 Ian:9 Defines:1 the:3 Table:7 Class:8 WCValHashTable:10 table:12  values:15 Hash:6 hash:11 values,:14 need:18 WATCOM:4 
 wchash.h:0 for:13 Container:5 Ian:9 Defines:1 the:3 Table:7 Class:8 WCValHashTable:10 table:12  values:15 Hash:6 hash:11 values,:14 not:17 need:18 WATCOM:4 to:19 
 # of elements16
-wchash.h:0 for:13 Container:5 Ian:9 Defines:1 the:3 Table:7 Class:8 WCValHashTable:10 table:12  values:15 Hash:6 hash:11 values,:14 need:18 WATCOM:4 --- end execution of wcht4
---- start execution of wcht5
+wchash.h:0 for:13 Container:5 Ian:9 Defines:1 the:3 Table:7 Class:8 WCValHashTable:10 table:12  values:15 Hash:6 hash:11 values,:14 need:18 WATCOM:4 PASS executing wcht4
+PASS compiling wcht5
 wchash.h for Container Hash Ian hash for values, not need Defines the WATCOM Table Class WCValHashTable table  values do to 
 for hash for values, Table not Defines WATCOM  values to wchash.h Container Hash Ian need the Class WCValHashTable table do 
 for hash for values, Defines WATCOM  values to wchash.h Container Hash Ian need Table not the Class WCValHashTable table do 
@@ -1187,8 +1186,8 @@ wchash.h:0 for:2 Container:5 Hash:6 Ian:9 hash:11 values,:14 not:17 need:18 Defi
 
 for:2 hash:11 values,:14 Table:7 not:17 Defines:1 WATCOM:4  values:15 to:19 wchash.h:0 Container:5 Hash:6 Ian:9 need:18 the:3 Class:8 WCValHashTable:10 table:12 do:16 
 for:2 hash:11 values,:14 Defines:1 WATCOM:4  values:15 to:19 wchash.h:0 Container:5 Hash:6 Ian:9 need:18 Table:7 not:17 the:3 Class:8 WCValHashTable:10 table:12 do:16 
-to:19 Hash:6 Ian:9 need:18 table:12 values,:14 Table:7 Defines:1 WATCOM:4 not:17 Class:8 do:16 for:2 hash:11  values:15 wchash.h:0 Container:5 the:3 WCValHashTable:10 --- end execution of wcht5
---- start execution of wcht6
+to:19 Hash:6 Ian:9 need:18 table:12 values,:14 Table:7 Defines:1 WATCOM:4 not:17 Class:8 do:16 for:2 hash:11  values:15 wchash.h:0 Container:5 the:3 WCValHashTable:10 PASS executing wcht5
+PASS compiling wcht6
 wchash.h Container  values Ian table do need Defines the Hash WCValHashTable values, not to for WATCOM Table Class hash for 
 
  2 X hash:
@@ -1313,12 +1312,12 @@ for not at index 2
 test6 bad index (supposed to happen)
 
  hash2 = hash:
-wchash.h:0 Container:5  values:15 Ian:9 table:12 do:16 need:18 Defines:1 the:3 Hash:6 WCValHashTable:10 values,:14 not:17 to:19 for:13 WATCOM:4 Table:7 Class:8 hash:11 --- end execution of wcht6
---- start execution of wcht7
+wchash.h:0 Container:5  values:15 Ian:9 table:12 do:16 need:18 Defines:1 the:3 Hash:6 WCValHashTable:10 values,:14 not:17 to:19 for:13 WATCOM:4 Table:7 Class:8 hash:11 PASS executing wcht6
+PASS compiling wcht7
 1 (supposed to happen)
 2 (supposed to happen)
---- end execution of wcht7
---- start execution of wcht9
+PASS executing wcht7
+PASS compiling wcht9
 test1 insert (supposed to happen)
 Num Entries: 20
 Num Entries: 17
@@ -1355,13 +1354,13 @@ Num Entries: 17
 ItemSize: 0
 
 number of deallocs: 35
---- end execution of wcht9
---- start execution of wcht10
+PASS executing wcht9
+PASS compiling wcht10
 Table wchash.h Defines table do Container WCValHashTable  values for for hash to Class WATCOM values, the not need Hash Ian 
 Table wchash.h Defines table do Container WCValHashTable  values for for hash to Class WATCOM values, the not need Hash Ian 
 Table wchash.h Defines table do Container WCValHashTable  values for hash to Class WATCOM values, the not need Hash Ian 
-Table wchash.h Defines table do Container WCValHashTable  values for hash to Class WATCOM values, the not need Hash Ian --- end execution of wcht10
---- start execution of wcht11
+Table wchash.h Defines table do Container WCValHashTable  values for hash to Class WATCOM values, the not need Hash Ian PASS executing wcht10
+PASS compiling wcht11
 test1
 ++1 (supposed to happen)
 current1 (supposed to happen)
@@ -1398,24 +1397,24 @@ Table wchash.h Defines table do Container WCValHashTable  values for hash to Cla
 current3 (supposed to happen)
 Table wchash.h Defines table do Container WCValHashTable  values for hash to Class WATCOM values, the not need Hash Ian 
 Table wchash.h Defines table do Container WCValHashTable  values for hash to Class WATCOM values, the not need Hash Ian 
---- end execution of wcht11
---- start execution of wcht12
+PASS executing wcht11
+PASS compiling wcht12
 wchash.h for Container Ian for Defines the Table Class WCValHashTable table  values Hash hash values, not need WATCOM do to 
 
 wchash.h for Container Ian Defines the Table Class WCValHashTable table  values Hash hash values, not need WATCOM do to 
 
 wchash.h:wchash.h for:for Container:Container Ian:Ian Defines:Defines the:the Table:Table Class:Class WCValHashTable:WCValHashTable table:table  values: values Hash:Hash hash:hash values,:values, not:not need:need WATCOM:WATCOM do:do to:to 
 
---- end execution of wcht12
---- start execution of wcht13
+PASS executing wcht12
+PASS compiling wcht13
 test1 (supposed to happen)
 test2 (supposed to happen)
 test3 (supposed to happen)
 test4 (supposed to happen)
 test5 (supposed to happen)
 test6 (supposed to happen)
---- end execution of wcht13
---- start execution of wcht14
+PASS executing wcht13
+PASS compiling wcht14
 
 test4
 ++1 (supposed to happen)
@@ -1463,30 +1462,30 @@ Table:7 wchash.h:0 Defines:1 table:12 do:16 Container:5 WCValHashTable:10  value
 value 4 (supposed to happen)
 
 Table:7 wchash.h:0 Defines:1 table:12 do:16 Container:5 WCValHashTable:10  values:15 for:2 hash:11 to:19 Class:8 WATCOM:4 values,:14 the:3 not:17 need:18 Hash:6 Ian:9 
---- end execution of wcht14
---- start execution of wcht16
-PASS source\wcht16.cpp
---- end execution of wcht16
---- start execution of wcht17
+PASS executing wcht14
+PASS compiling wcht16
+PASS
+PASS executing wcht16
+PASS compiling wcht17
 5
---- end execution of wcht17
---- start execution of wcht18
+PASS executing wcht17
+PASS compiling wcht18
 5 10 1 6 2 7 3 8 4 9 
 5 10 1 6 2 7 3 8 4 9 
 5 10 1 6 2 7 3 8 4 9 
 5 10 1 6 2 7 3 8 4 9 
 5:5 10:10 1:1 6:6 2:2 7:7 3:3 8:8 4:4 9:9 
 5:5 10:10 1:1 6:6 2:2 7:7 3:3 8:8 4:4 9:9 
---- end execution of wcht18
---- start execution of wcst1
+PASS executing wcht18
+PASS compiling wcst1
 No output is good...
 No output is good...
 No output is good...
 No output is good...
 No output is good...
 No output is good...
---- end execution of wcst1
---- start execution of wcst2
+PASS executing wcst1
+PASS compiling wcst2
 # of elements0
  values Class Container Defines Hash Ian Table WATCOM WCValHashTable do for for hash need not table the to values, wchash.h 
 # of elements20
@@ -1521,16 +1520,16 @@ test6
 # of elements19
 Clearing list
 # of elements0
---- end execution of wcst2
---- start execution of wcst3
+PASS executing wcst2
+PASS compiling wcst3
 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
 removing 1 and 0's
 -1 
 
 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
 removing 1 and 0's
--1 --- end execution of wcst3
---- start execution of wcst4
+-1 PASS executing wcst3
+PASS compiling wcst4
  values Class Container Defines Ian Table WATCOM WCValskip_listTable for for need not skip_list skip_list table the to to values, wcskip_list.h 
 # of elements14
  values Class Container Defines Ian Table WCValskip_listTable need skip_list skip_list table the values, wcskip_list.h 
@@ -1558,8 +1557,8 @@ removing 1 and 0's
 # of elements15
  values:15 Class:8 Container:5 Defines:1 Ian:9 Table:7 WATCOM:4 WCValskip_listTable:10 for:13 need:18 skip_list:11 table:12 the:3 values,:14 wcskip_list.h:0 
 
---- end execution of wcst4
---- start execution of wcst5
+PASS executing wcst4
+PASS compiling wcst5
  values Class Container Defines Ian Skip_list Table WATCOM WCValskip_listTable do for for need not skip_list table the to values, wcskip_list.h 
  2 X skip_list:
  values  values Class Class Container Container Defines Defines Ian Ian Skip_list Skip_list Table Table WATCOM WATCOM WCValskip_listTable WCValskip_listTable do do for for for for need need not not skip_list skip_list table table the the to to values, values, wcskip_list.h wcskip_list.h 
@@ -1684,8 +1683,8 @@ test6 bad index (supposed to happen)
  skip_list2 = skip_list:
  values:15 Class:8 Container:5 Defines:1 Ian:9 Skip_list:11 Table:7 WATCOM:4 WCValskip_listTable:10 do:16 for:13 need:18 not:17 skip_list:6 table:12 the:3 to:19 values,:14 wcskip_list.h:0 
 
---- end execution of wcst5
---- start execution of wcst6
+PASS executing wcst5
+PASS compiling wcst6
 test1 insert (supposed to happen)
 Num Entries: 20
 Num Entries: 17
@@ -1726,27 +1725,27 @@ ItemSize (1Ptr): 12
 ItemSize (2Ptrs): 16
 number of deallocs: 33
 
---- end execution of wcst6
---- start execution of wcst7
+PASS executing wcst6
+PASS compiling wcst7
  values Class Container Defines Ian Skip_list Table WATCOM WCValskip_listTable do for for need not skip_list table the to values, wcskip_list.h 
 
  values Class Container Defines Ian Skip_list Table WATCOM WCValskip_listTable do for need not skip_list table the to values, wcskip_list.h 
 
  values: values Class:Class Container:Container Defines:Defines Ian:Ian Skip_list:Skip_list Table:Table WATCOM:WATCOM WCValskip_listTable:WCValskip_listTable do:do for:for need:need not:not skip_list:skip_list table:table the:the to:to values,:values, wcskip_list.h:wcskip_list.h 
 
---- end execution of wcst7
---- start execution of wcst8
+PASS executing wcst7
+PASS compiling wcst8
 1 (supposed to happen)
---- end execution of wcst8
---- start execution of wcst10
+PASS executing wcst8
+PASS compiling wcst10
 test1 (supposed to happen)
 test2 (supposed to happen)
 test3 (supposed to happen)
 test4 (supposed to happen)
 test5 (supposed to happen)
 test6 (supposed to happen)
---- end execution of wcst10
---- start execution of wcst11
+PASS executing wcst10
+PASS compiling wcst11
 test1
 ++1 (supposed to happen)
 current1 (supposed to happen)
@@ -1829,28 +1828,28 @@ value 3 (supposed to happen)
 value 4 (supposed to happen)
 
  values:15 Class:8 Container:5 Defines:1 Ian:9 Skip_list:11 Table:7 WATCOM:4 WCValSkipList:10 do:16 for:2 need:18 not:17 skip_list:6 table:12 the:3 to:19 values,:14 wcskip_list.h:0 
---- end execution of wcst11
---- start execution of wcst12
-PASS source\wcst12.cpp
---- end execution of wcst12
---- start execution of wcst13
+PASS executing wcst11
+PASS compiling wcst12
+PASS
+PASS executing wcst12
+PASS compiling wcst13
 1
---- end execution of wcst13
---- start execution of wcst14
-PASS source\wcst14.cpp
---- end execution of wcst14
---- start execution of wcst15
+PASS executing wcst13
+PASS compiling wcst14
+PASS
+PASS executing wcst14
+PASS compiling wcst15
 1
---- end execution of wcst15
---- start execution of wcst16
+PASS executing wcst15
+PASS compiling wcst16
 1 2 3 4 5 6 7 8 9 10 
 1 2 3 4 5 6 7 8 9 10 
 1 2 3 4 5 6 7 8 9 10 
 1 2 3 4 5 6 7 8 9 10 
 1:1 2:2 3:3 4:4 5:5 6:6 7:7 8:8 9:9 10:10 
 1:1 2:2 3:3 4:4 5:5 6:6 7:7 8:8 9:9 10:10 
---- end execution of wcst16
---- start execution of wcvdli
+PASS executing wcst16
+PASS compiling wcvdli
 List elements in ascending order:
 1
 5
@@ -1861,8 +1860,8 @@ List elements in descending order
 20
 5
 1
---- end execution of wcvdli
---- start execution of alloctor
+PASS executing wcvdli
+PASS compiling alloctor
 61505 20485 
 28657 31381 32289 54437 18129 49717 38401 34629 
 55217 18389 6113 2021 657 43893 58305 63109 
@@ -1947,4 +1946,4 @@ List elements in descending order
 64097 64485 64913 65169 65397 65473 
 
 
---- end execution of alloctor
+PASS executing alloctor

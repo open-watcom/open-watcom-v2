@@ -2,10 +2,7 @@ ctest_name = regress
 
 all : .symbolic test
 
-!include environ.mif
-
-./chktest.exe : $(watcom_dir)/c/chktest.c
-    $(bld_cl) $< $(wcl_util_opts)
+!include testenv.mif
 
 test : .symbolic ./chktest.exe
     @cdsay >> $(log_file)

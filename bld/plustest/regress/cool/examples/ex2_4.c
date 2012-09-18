@@ -13,7 +13,6 @@
 #include <cool/String.h>                        // Include CoolString header file
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolString s1 = "Hello";                      // Create CoolString object
   cout << "s1 reads: " << s1 << "\n";           // Display CoolString value
   cout << "s1 has " << strlen (s1) << " characters\n"; // Display char count

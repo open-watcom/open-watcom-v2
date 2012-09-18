@@ -15,7 +15,7 @@ int main() {
 	// is this supposed to be a runtime error (alloc failed on index insert)
 	cout << hash[ &temp ];
     } catch( ... ) {
-	cout << "PASS " << __FILE__ << endl;
+	cout << "PASS" << endl;
     }
     return 0;
 };

@@ -31,7 +31,6 @@ void test_stream_local( CoolDate_Time &set )
 }
 
 int main (void) {
-    cout << __FILE__ << endl;
   set_default_country (UNITED_STATES);          // Set default country code
   set_default_time_zone (US_CENTRAL);           // Set default time zone
   CoolDate_Time d1;                             // Create CoolDate_Time object

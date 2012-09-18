@@ -1,0 +1,11 @@
+return from "unexpected" function!
+return from "terminate" function!
+no handler active to catch thrown object!
+throw during construction of exception!
+no memory left to handle thrown exception!
+no handler active to catch thrown object!
+no handler active to catch thrown object!
+violation of function exception specification!
+throw while "terminate" function active!
+violation of function exception specification!
+throw while "terminate" function active!

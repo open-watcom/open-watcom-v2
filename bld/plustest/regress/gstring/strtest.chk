@@ -1,3 +1,4 @@
+PASS compiling strtest
 input
 copy
 find2
@@ -14,3 +15,4 @@ assign
 reserve
 constructors
 mixed tests
+PASS executing strtest

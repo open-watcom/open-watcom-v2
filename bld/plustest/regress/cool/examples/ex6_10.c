@@ -15,7 +15,6 @@
 #include <cool/Matrix.C>
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolMatrix<int> mc1(3,4),mc2(3,4);            // Two 3x4 matrices of integer
   for (int i = 0; i < 3; i++)                   // For each row in CoolMatrix
     for (int j = 0; j < 4; j++)                 // For each column in CoolMatrix

@@ -14,7 +14,6 @@
 #include <cool/Regexp.h>                        // Include Regexp header file
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolGen_String s1 = "Hello";                  // Create string object
   cout << "s1 reads: " << s1 << "\n";           // Display string value
   cout << "s1 has " << strlen (s1) << " characters\n"; // Display char count

@@ -1,0 +1,35 @@
+Open Watcom Make Version 2.0beta1 Limited Availability
+Portions Copyright (c) 1988-2002 Sybase, Inc. All Rights Reserved.
+Source code is available under the Sybase Open Watcom Public License.
+See http://www.openwatcom.org/ for details.
+====== 08:00:43 C:\DEV\OPEN-WATCOM-V2-NEW\BLD\PLUSTEST\REGRESS\EXTREF =======
+	%append c:\dev\open-watcom-v2-new/bld/plustest/extref.log TEST 386/00
+	rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+	rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+	%create exec.out
+	%create test.lnk
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" er01b.c -ot-d1 -zv -I"../positive/source"  -xss  -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" er01c.c -ot-d1 -zv -I"../positive/source"  -xss  -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" er01d.c -ot-d1 -zv -I"../positive/source"  -xss  -fo=.obj
+	wlib -q -n -b er01.lib er01b.obj er01c.obj er01d.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" er03a.c -ot-d1 -zv -I"../positive/source"  -xss  -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" er03b.c -ot-d1 -zv -I"../positive/source"  -xss  -fo=.obj
+	wlib -q -n -b er03.lib +er03a.obj +er03b.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" er01.c -ot-d1 -zv -I"../positive/source"  -xss  -fo=.obj
+	wlink @test.lnk  LIB er01.lib NAME er01.exe FILE {er01.obj}
+	er01.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" er02.c -ot-d1 -zv -I"../positive/source"    -fo=.obj
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" er02b.c -ot-d1 -zv -I"../positive/source"    -fo=.obj
+	wlink @test.lnk   NAME er02.exe FILE {er02.obj er02b.obj}
+	er02.exe  >>exec.out
+	wpp386 -zq -bt=nt -I"c:\dev\open-watcom-v2-new\rel/h" -I"c:\dev\open-watcom-v2-new\rel/h/nt" er03.c -ot-d1 -zv -I"../positive/source"  -xss  -fo=.obj
+	wlink @test.lnk  LIB er03.lib NAME er03.exe FILE {er03.obj}
+	er03.exe  >>exec.out
+	wcl386 -zq -bt=nt -fpc -ox -w8 -fe=.\chk_exec.exe -I"c:\dev\open-watcom-v2-new/bld/watcom/h"  c:\dev\open-watcom-v2-new\bld\watcom\c\chk_exec.c
+	%write error.out OK
+	.\chk_exec.exe exec.out >> error.out
+	diff -b error.out error.chk
+	%append c:\dev\open-watcom-v2-new/bld/plustest/extref.log PASS \dev\open-watcom-v2-new\bld\plustest\regress\extref
+	%make clean
+	rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+	rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res

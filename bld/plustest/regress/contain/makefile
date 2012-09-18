@@ -1,50 +1,49 @@
 plustest_name = contain
 # this is a long test so quit if something goes wrong
 no_continue = yes
-!include ../environ.mif
+
+!include testenv.mif
 
 !ifdef test1
 save_out = $(arch)_1
-comp_flags = -d2-j
-EH_yes = -xst
-opt_386 += -ei-zp1
-opt_i86 += -ei-zp2
+test_flags = -d2-j
+opt_EH_yes = -xst
+test_flags_386 += -ei-zp1
+test_flags_i86 += -ei-zp2
 alt_error=01
 !else ifdef test2
 save_out = $(arch)_2
-comp_flags = -oxratl-d1-j
-opt_386 += -ei-zp2
-EH_yes = -xss
+test_flags = -oxratl-d1-j
+test_flags_386 += -ei-zp2
+opt_EH_yes = -xss
 alt_error=02
 !else ifdef test3
 save_out = $(arch)_3
-comp_flags = -oxratl-d1-j
-EH_yes = -xs
-opt_386 += -ei
-opt_i86 += -ei
+test_flags = -oxratl-d1-j
+opt_EH_yes = -xs
+test_flags_386 += -ei
+test_flags_i86 += -ei
 alt_error=03
 !else
 save_out = $(arch)_0
-comp_flags = -d2-j
-EH_yes = -xs
-opt_386 += -ei-zp4
-opt_i86 += -ei-zp2
+test_flags = -d2-j
+opt_EH_yes = -xs
+test_flags_386 += -ei-zp4
+test_flags_i86 += -ei-zp2
 alt_error=00
 !endif
 
-special_memchk = -zl -wcd=887
+opt_memchk = -zl -wcd=887
 
-opt_386 += -3s-mf
-opt_i86 += -3-ml -fi=source/noinline.h
-opt_axp += -si
+test_flags_386 += -3s-mf
+test_flags_i86 += -3-ml -fi="source/noinline.h"
+test_flags_axp += -si
 
-comp_flags += -w4 -we -zq -I=source $(EH_$(EH_$[&)) $(special_$[&) $(opt_$(arch))
+test_flags += -w4 -we -I=source
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k
 stack_axp=opt stack=16k
-
-ext = $(exe)
 
 EH_wctest4 = yes
 EH_wctest20 = yes
@@ -92,6 +91,8 @@ EH_wcst12 = yes
 EH_wcst13 = yes
 EH_wcst14 = yes
 EH_wcst15 = yes
+
+ext = $(exe)
 
 wc_list_template =     &
         wctype.$(ext)   &
@@ -210,47 +211,27 @@ wc_example_template =  &
         wcvdli.$(ext)    &
         alloctor.$(ext)
 
-exes =   $(wc_list_template) $(wc_vect_template) $(wc_hash_template) &
+opt_link = FILE memchk.obj
+
+exes = $(wc_list_template) $(wc_vect_template) $(wc_hash_template) &
                 $(wc_skip_template) $(wc_example_template)
 
-.error
-    %append exec.out $(%msg)
-
 .cpp : source
-.cpp.obj:
-    @set msg=*** failure to compile $[@
-    $(wpp_$(arch)) $[@ $(comp_flags) -fo=.obj
 
-.obj.$(ext):
-    @set msg=*** failure to link $^@
-    $(linker) @cont.lnk name $^@ file $[@
-    @set msg=*** failure to execute $^@
-    @%append exec.out --- start execution of $^&
-    $(run) $(exec_prefix)$@ >>exec.out
-    @%append exec.out --- end execution of $^&
-    @rm $^&.map
-
-test : .symbolic start_test memchk.obj cont.lnk $(exes)
-    @set msg=*** output differences
-    sed -f fixpath.sed exec.out | diff - exec.chk
-    @set msg=*** general failure
-    @%make global
+test : .symbolic clean start_test memchk.obj test.lnk $(exes)
+    @set ERROR_MSG=*** output differences
+    diff $(%ERROR_FILE) exec.chk
     %append $(log_file) PASS $(%__CWD__)
+    @%make clean
 
 start_test : .symbolic
-    %create exec.out
-    @set msg=general error
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
-cont.lnk : $(__MAKEFILES__)
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch)) OPTION noredef
-    @%append $^@ FILE memchk.obj
+    @set ERROR_FILE=exec.out
+    %create $(%ERROR_FILE)
+    @set ERROR_MSG=general error
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
-global : .procedure
+clean : .procedure
     @%make common_clean

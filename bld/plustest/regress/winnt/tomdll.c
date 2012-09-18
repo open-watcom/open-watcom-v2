@@ -20,7 +20,7 @@ In Watcom debugger...
 #include <assert.h>
 
 void log_it( char *m ) {
-    FILE *fp = fopen( "exec.out", "a" );
+    FILE *fp = fopen( "tomexe.out", "a" );
     assert( fp != 0 );
     fputs( m, fp );
     fclose( fp );

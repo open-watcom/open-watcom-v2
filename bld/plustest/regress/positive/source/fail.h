@@ -95,18 +95,10 @@ struct _CD {
 
 
 #define _PASS \
-    if( ! errors ) { \
-        puts( "PASS " __FILE__ ); \
-	fflush( stdout ); \
-    } \
     main_terminated = 1; \
     return( errors != 0 );
 
 #define _PASS_EXIT \
-    if( ! errors ) { \
-        puts( "PASS " __FILE__ ); \
-	fflush( stdout ); \
-    } \
     main_terminated = 1; \
     exit( errors != 0 );
 

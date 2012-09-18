@@ -1,3 +1,4 @@
+PASS compiling idata01
 idata01.cpp
 a01
 non-zero
@@ -67,6 +68,8 @@ non-zero
 idata01.cpp
 a
 non-zero
+PASS executing idata01
+PASS compiling idata02
 idata02.cpp
 a
 non-zero
@@ -91,16 +94,26 @@ non-zero
 idata02.cpp
 *p4
 non-zero
+PASS executing idata02
+PASS compiling idata03
 a:1 b:2 c0:3 c1:4 c2:5 c3:6 c4:7 d.di:1 d.dc:a
+PASS executing idata03
+PASS compiling idata04
 idata04.cpp
 b
 non-zero
+PASS executing idata04
+PASS compiling idata05
 idata05.cpp
 esca
 non-zero
+PASS executing idata05
+PASS compiling idata06
 0
 1
 1
+PASS executing idata06
+PASS compiling idata07
 CTOR2:0
 CTOR3:1
 CTOR1:2
@@ -110,9 +123,13 @@ CTOR1:5
 idata07.cpp
 v
 non-zero
+PASS executing idata07
+PASS compiling idata08
 idata08.cpp
 esca
 non-zero
+PASS executing idata08
+PASS compiling idata09
 idata09.cpp
 esca
 non-zero
@@ -125,10 +142,16 @@ non-zero
 idata09.cpp
 esca[2]
 non-zero
+PASS executing idata09
+PASS compiling idata10
 idata10.cpp
 a
 non-zero
+PASS executing idata10
+PASS compiling idata11
 0...0 1 14 0...0
+PASS executing idata11
+PASS compiling idata12
 PASS line 10
 PASS line 11
 PASS line 12
@@ -178,6 +201,8 @@ PASS line 19
 PASS line 20
 PASS line 21
 SUCCESS
+PASS executing idata12
+PASS compiling idata13
 PASS line 16
 PASS line 16
 PASS line 16
@@ -188,12 +213,16 @@ idata13.cpp
 a
 non-zero
 SUCCESS
+PASS executing idata13
+PASS compiling idata14
 EP:int=1 int=2 A=9 B=4 int=5 C=[6,7,8,9,10]
 ES:int=1 int=2 A=9 B=4 int=5 C=[6,7,8,9,10]
 IA:int=11 int=12 A=182 B=15 int=16 C=[6,7,8,9,10]
 	IA2: int=317
 IS:int=17 int=19 A=400 B=21 int=22 C=[6,7,8,9,10]
 	IS2: int=317 int=[23,24,25]
+PASS executing idata14
+PASS compiling idata15
 idata15.cpp
 CTOR2
 CTOR2:1
@@ -219,28 +248,40 @@ CTOR1:8
 1 2 3
 1 2 3
 1 2 3
+PASS executing idata15
+PASS compiling idata16
 7 7
+PASS executing idata16
+PASS compiling idata17
 idata17.cpp
 a
 non-zero
+PASS executing idata17
+PASS compiling idata18
 idata18.cpp
 u
 non-zero
 idata18.cpp
 v
 non-zero
+PASS executing idata18
+PASS compiling idata19
 idata19.cpp
 a
 all-zero
 idata19.cpp
 a
 non-zero
+PASS executing idata19
+PASS compiling idata20
 idata20.cpp
 a
 non-zero
 idata20.cpp
 b
 non-zero
+PASS executing idata20
+PASS compiling idata21
 idata21.cpp
 b1
 non-zero
@@ -250,6 +291,8 @@ non-zero
 idata21.cpp
 a
 non-zero
+PASS executing idata21
+PASS compiling idata22
 idata22.cpp
 something
 non-zero
@@ -311,6 +354,8 @@ e[3,0] = 97
 e[3,1] = 97
 e[4,0] = 97
 e[4,1] = 97
+PASS executing idata22
+PASS compiling idata23
 idata23.cpp
 a
 non-zero
@@ -335,23 +380,35 @@ non-zero
 idata23.cpp
 a
 non-zero
+PASS executing idata23
+PASS compiling idata24
 0 0
 1 1 1 1
+PASS executing idata24
+PASS compiling idata25
 1.000000
 1.000000
 1.000000
 2.000000
+PASS executing idata25
+PASS compiling idata26
 c
 c
 c
 c
+PASS executing idata26
+PASS compiling idata27
 idata27.cpp
 d
 all-zero
 idata27.cpp
 b
 all-zero
+PASS executing idata27
+PASS compiling idata28
 1 3 5 7
+PASS executing idata28
+PASS compiling idata29
 idata29.cpp
 a
 non-zero
@@ -394,9 +451,13 @@ non-zero
 idata29.cpp
 pa->*pa3
 non-zero
+PASS executing idata29
+PASS compiling idata30
 idata30.cpp
 pa
 non-zero
+PASS executing idata30
+PASS compiling idata31
 ctor 1
 ctor 2
 ctor 3
@@ -408,6 +469,8 @@ main: 1 2
 dtor 4
 dtor 2
 dtor 1
+PASS executing idata31
+PASS compiling idata32
 f1: 3
 dtor 3
 f2: 4
@@ -415,29 +478,45 @@ main: 1 2
 dtor 4
 dtor 2
 dtor 1
+PASS executing idata32
+PASS compiling idata33
 abcd
+PASS executing idata33
+PASS compiling idata34
 idata34.cpp
 p
 non-zero
+PASS executing idata34
+PASS compiling idata35
 idata35.cpp
 p
 non-zero
+PASS executing idata35
+PASS compiling idata36
 abcd
+PASS executing idata36
+PASS compiling idata37
 idata37.cpp
 s
 non-zero
+PASS executing idata37
+PASS compiling idata38
 idata38.cpp
 s1
 non-zero
 idata38.cpp
 s2
 non-zero
+PASS executing idata38
+PASS compiling idata39
 idata39.cpp
 p1
 non-zero
 idata39.cpp
 p2
 non-zero
+PASS executing idata39
+PASS compiling idata40
 abc
 def
 ghi
@@ -459,6 +538,8 @@ non-zero
 idata40.cpp
 a5
 non-zero
+PASS executing idata40
+PASS compiling idata41
 idata41.cpp
 p1
 all-zero
@@ -480,9 +561,12 @@ all-zero
 idata41.cpp
 *a2
 non-zero
+PASS executing idata41
+PASS compiling idata42
 abc
 bc
 bc
 abc
 ef
 i
+PASS executing idata42

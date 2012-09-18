@@ -28,7 +28,6 @@ extern int my_compare (const charP& s1, const charP& s2) {
 }
 
 int main (void) {
-    cout << __FILE__ << endl;
   CoolRange<double,2.5,8.8> r1;                 // CoolRange-checked double
   r1.set(4.3);                                  // Assign value
   cout << "r1 has an inclusive low bound of " << r1.low(); // Output low and
