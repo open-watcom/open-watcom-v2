@@ -422,7 +422,7 @@ static BOOL init_instance( int show )
 BOOL init_app( HAB hab )
 {
     /* Register the window class and return success/failure code. */
-    return( WinRegisterClass( hab, "DrawDemo", (PFNWP) main_proc, NULL, 0 ) );
+    return( WinRegisterClass( hab, "DrawDemo", (PFNWP)main_proc, 0, 0 ) );
 }
 
 int main(
@@ -457,7 +457,7 @@ int main(
 
     /* Acquire and dispatch messages until a WM_QUIT message is received. */
 
-    while( WinGetMsg( Main_hab, &qmsg, NULL, NULL, NULL) ) {
+    while( WinGetMsg( Main_hab, &qmsg, 0, 0, 0) ) {
         WinDispatchMsg( Main_hab, &qmsg );
     }
     finish_room();
