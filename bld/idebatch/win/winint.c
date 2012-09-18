@@ -330,7 +330,7 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg,
             break;
 
         case MENU_ABOUT:
-            fp = MakeProcInstance( AboutDlgProc, ourInstance );
+            fp = MakeProcInstance( (FARPROC)AboutDlgProc, ourInstance );
             DialogBox( ourInstance,"AboutBox", hwnd, (LPVOID) fp );
             FreeProcInstance( fp );
             break;
@@ -447,7 +447,7 @@ static BOOL anyInstance( void )
 } /* anyInstance */
 
 
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline,
                     int cmdshow )
 {
     MSG         msg;

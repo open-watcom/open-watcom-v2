@@ -12,16 +12,16 @@ set PROJNAME=idebatch
 [ BLOCK <1> rel cprel ]
 #======================
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2/batserv.exe  <OWRELROOT>/binp/batserv.exe
+    <CPCMD> os2386/batserv.exe  <OWRELROOT>/binp/batserv.exe
   [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt/batserv.exe   <OWRELROOT>/binnt/batserv.exe
+    <CPCMD> nt386/batserv.exe   <OWRELROOT>/binnt/batserv.exe
   [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dos/int.exe      <OWRELROOT>/binw/dosserv.exe
+    <CPCMD> dosi86/int.exe      <OWRELROOT>/binw/dosserv.exe
 # there is no makefile in the wini86 dir
   [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/batchbox.pif <OWRELROOT>/binw/batchbox.pif
+    <CPCMD> win/batchbox.pif 	<OWRELROOT>/binw/batchbox.pif
   [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> nt/axp/batserv.exe  <OWRELROOT>/axpnt/batserv.exe
+    <CPCMD> ntaxp/batserv.exe  <OWRELROOT>/axpnt/batserv.exe
 
 [ BLOCK . . ]
 #============

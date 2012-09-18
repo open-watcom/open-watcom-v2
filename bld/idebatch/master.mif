@@ -6,25 +6,30 @@ idebatch_autodepend = .AUTODEPEND
 !include deftarg.mif
 !include defrule.mif
 
-!ifeq host_OS os2
+!ifeq host_os os2
 
-all : batserv.exe batcli.obj .symbolic
+.c: ../os2;../c
+
+extra_l_flags = op map
+
+all: batserv.exe tst.exe .symbolic
 
 batserv.exe : batserv.obj
         $(linker) $(lflags) file batserv.obj op stack=16k
 
 batcli.obj : batcli.c
-        *wcc -zq -w8-we -oaxt -fo=.obj -d1 $(inc_dirs_sys) batcli.c
+        $(cc_i86) -zq -w8-we -bt=dos -oaxt -fo=.obj -d1 $(inc_dirs_lang_osi) $<
 
 tst.exe : tst.c batcli.obj
-        *wcl -zq -d2 tst.c batcli.obj -l=dos
+        $(cl_i86) -zq -d2 -fm -bcl=dos $(inc_dirs_lang_osi) $<
 
+!else ifeq host_os nt
 
-!else ifeq host_OS nt
+.c: ../nt;../c
 
-.c: .;../os2
+extra_l_flags = op map
 
-all : batserv.exe batcli.obj batpipe.obj tst.exe .symbolic
+all: batserv.exe tst.exe .symbolic
 
 batserv.exe : batserv.obj batpipe.obj
         $(linker) $(lflags) file batserv.obj,batpipe.obj op stack=32K
@@ -32,60 +37,59 @@ batserv.exe : batserv.obj batpipe.obj
 tst.exe : tst.obj batcli.obj batpipe.obj
         $(linker) $(lflags) file tst.obj,batcli.obj,batpipe.obj
 
-!else ifeq host_OS dos
+!else ifeq host_os dos
+
+.c: ../dos
+.asm: ../dos
 
 name = int
 
-extra_c_flags_link = -3
-extra_c_flags_int  = -3
+extra_l_flags = op map
 
 objs = $(name).obj link.obj int21.obj
 
-$(name).exe : $(OBJS) $(LNK)
+$(name).exe : $(objs)
        $(linker) $(lflags) option stack=1500 name $(name) file {$(objs)}
 
-!else ifeq host_OS win
+!else ifeq host_os win
 
 name = winint
 
-.c: .;../dos
+.c: ../win;../dos
 
 objs = $(name).obj link.obj
 objse = $(name)e.obj link.obj
 lnk = $(name).lnk
 
-#all : $(name).exe $(name)e.exe .SYMBOLIC
-all : $(name).exe .SYMBOLIC
+extra_c_flags = -zW -zu -DSERVER
+
+inc_dirs = -I"../win" -I"../dos"
+
+all : $(name).exe $(name)e.exe .SYMBOLIC
     @%null
 
-$(name).exe : $(OBJS) $(LNK) $(name).res
-    $(linker) $(lflags) name $(name) file { $(objs) } @$(LNK)
+$(name).exe : $(objs) $(lnk) $(name).res
+    $(linker) $(lflags) @$(lnk) op map name $(name) file { $(objs) }
     $(rc) $(name).res $^@
-    @copy /b $(name).exe+$(name).sym
-    @del $(name).sym
 
-$(name)e.exe : $(OBJSE) $(LNK) $(name).res
-    $(linker) $(lflags) name $(name)e file { $(objse) } @$(LNK)
+$(name)e.exe : $(objse) $(lnk) $(name).res
+    $(linker) $(lflags) @$(lnk) op map name $(name)e file { $(objse) }
     $(rc) $(name).res $^@
-    @copy /b $(name)e.exe+$(name)e.sym
-    @del $(name)e.sym
 
 $(name).res : ../$(name).rc
-    $(rc) $(rc_flags) $[@ -fo=$^@
+    $(rc) $(rc_flags) $(inc_dirs) $[@ -fo=$^@
 
-$(LNK) : makefile
-    %create $(LNK)
-    @%append $(LNK) font mem
-    @%append $(LNK) option stack=10k
-    @%append $(LNK) segment CLASS 'CODE' PRELOAD FIXED
-    @%append $(LNK) segment CLASS 'FAR_DATA' PRELOAD FIXED
-    @%append $(LNK) segment CLASS 'BEGDATA' PRELOAD FIXED
-    @%append $(LNK) segment CLASS 'DATA' PRELOAD FIXED
-    @%append $(LNK) segment CLASS 'BSS' PRELOAD FIXED
-
-extra_c_flags = -zW -dSERVER -zu
+$(lnk) : makefile
+    %create $(lnk)
+    @%append $(lnk) font mem
+    @%append $(lnk) option stack=10k
+    @%append $(lnk) segment CLASS 'CODE' PRELOAD FIXED
+    @%append $(lnk) segment CLASS 'FAR_DATA' PRELOAD FIXED
+    @%append $(lnk) segment CLASS 'BEGDATA' PRELOAD FIXED
+    @%append $(lnk) segment CLASS 'DATA' PRELOAD FIXED
+    @%append $(lnk) segment CLASS 'BSS' PRELOAD FIXED
 
 $(name)e.obj : $(name).c
-    $(cc) $(cflags) -d__EDITOR__ $[* -fo=$(name)e.obj
+    $(cc) $(cflags) $(inc_path) -D__EDITOR__ -fo=$@ $[@
 
 !endif
