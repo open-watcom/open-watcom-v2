@@ -56,8 +56,8 @@ set PROJDIR=<CWD>
     <CPCMD> library/os2.286/mc/clibc.lib                    <OWRELROOT>/lib286/os2/clibc.lib
     <CPCMD> library/os2.286/mh/clibh.lib                    <OWRELROOT>/lib286/os2/clibh.lib
     <CPCMD> library/os2.286/ml/clibl.lib                    <OWRELROOT>/lib286/os2/clibl.lib
-    <CPCMD> library/os2.286/ml_dll/clibl.lib                <OWRELROOT>/lib286/os2/clibdll.lib
-    <CPCMD> library/os2.286/ml_mt/clibl.lib                 <OWRELROOT>/lib286/os2/clibmtl.lib
+    <CPCMD> library/os2.286/ml_dll/clibdll.lib              <OWRELROOT>/lib286/os2/clibdll.lib
+    <CPCMD> library/os2.286/ml_mt/clibmtl.lib               <OWRELROOT>/lib286/os2/clibmtl.lib
     <CPCMD> library/os2.286/mm/clibm.lib                    <OWRELROOT>/lib286/os2/clibm.lib
     <CPCMD> library/os2.286/ms/clibs.lib                    <OWRELROOT>/lib286/os2/clibs.lib
     <CPCMD> startup/library/os2.286/ms/binmode.obj          <OWRELROOT>/lib286/os2/binmode.obj
