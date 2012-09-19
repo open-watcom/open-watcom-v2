@@ -53,6 +53,7 @@
 /clib/alias/objs.mif
 /clib/alias/a/*.asm
 /clib/library/*/*/*.def
+/clib/qa/*/*.exp
 /clib/rtdll/*/*/*.dll
 #
 /cmdedit/*/*.dll
@@ -91,6 +92,7 @@
 /mathlib/rtdll/*/*/*.dll
 /mathlib/alias/objs.mif
 /mathlib/alias/a/*.asm
+/mathlib/qa/*/*.exp
 #
 /nwlib/*/*.dll
 #
@@ -120,6 +122,8 @@
 /plustest/regress/owstl/mmwin16.cpp
 /plustest/regress/owstl/mmwindef.cpp
 #
+/posix/systems/*/*.exp
+#
 /rc/rc/*/*.dll
 /rc/rc/*/ytab2.c
 /rc/rc/*/ytabw.c
@@ -131,6 +135,7 @@
 #
 /trap/*/*/*.dll
 /trap/*/*/*/*.dll
+/trap/lcl/dos/dosx/*/*/*.exp
 #
 /vi/*/*.vi
 !/vi/dat/*.vi
@@ -169,6 +174,9 @@
 /win386/vxd/*.386
 #
 /wl/*/*.dll
+/wl/test/dos16m/*.exp
+#
+/wsample/*/*.exp
 #
 /wv/os2/*/*.dlg
 
