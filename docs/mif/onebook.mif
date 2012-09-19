@@ -51,6 +51,10 @@ hc_hh = $(%OWHHC:/=\)
 !endif
 hc_pdf = ps2pdf12
 
+hcdos   = hcdos
+whc     = bwhc
+wipfc   = bwipfc
+bmp2eps = bmp2eps
 
 #
 # define what should be build
@@ -200,7 +204,7 @@ $(hbook).rtf $(hbook).cn1 $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs)
 .EXTENSIONS: .hlp .hpj .rtf
 
 $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh
-    whc $(hbook).hpj
+    $(whc) $(hbook).hpj
 
 $(hbook).hpj : $(proj_objs)
     @%make compile_hpj_win
@@ -218,7 +222,7 @@ $(hbook).rtf $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs)
 .EXTENSIONS: .ihp .ib
 
 $(hbook).ihp : $(hbook).ib
-    hcdos -h 25 -w 80 $(hbook).ib $(hbook).ihp
+    $(hcdos) -h 25 -w 80 $(hbook).ib $(hbook).ihp
 
 $(hbook).ib $(hbook).h : $(book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
@@ -311,14 +315,14 @@ $(hbook).pdf : $(hbook).ps
 $(hbook).inf : $(hbook).ipf
     @set IPFCARTWORK=$(book_incs)
     @set WIPFC=$(wipfc_dir)/helper
-    wipfc -q -inf $(hbook).ipf
+    $(wipfc) -q -inf $(hbook).ipf
     $(LOWERC) $@ $@        # change file name to lower case
 
 !ifdef book_os2_help
 $(hbook).hlp : $(hbook).ipf
     @set IPFCARTWORK=$(book_incs)
     @set WIPFC=$(wipfc_dir)/helper
-    wipfc -q $(hbook).ipf
+    $(wipfc) -q $(hbook).ipf
     $(LOWERC) $@ $@        # change file name to lower case
 !else
 $(hbook).hlp : .symbolic
@@ -348,7 +352,7 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
 
 .bmp.ps:
     @if not exist tmp mkdir tmp
-    bmp2eps -c $< tmp/$^.
+    $(bmp2eps) -c $< tmp/$^.
 
 ####################################################
 #

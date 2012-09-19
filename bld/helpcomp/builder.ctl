@@ -2,12 +2,12 @@
 # ========================
 
 set PROJDIR=<CWD>
-set PROJNAME=whc
+set PROJNAME=bwhc
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/deftool.ctl ]
+[ INCLUDE <OWROOT>/build/bintool.ctl ]
 
 [ BLOCK <1> rel cprel ]
 #======================

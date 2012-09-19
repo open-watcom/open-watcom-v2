@@ -166,16 +166,13 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wsample/builder.ctl ]
 # GUI tools libraries
 [ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/idelib/builder.ctl ]
 # Other GUI tools
 [ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/browser/builder.ctl ]
 # The IDE tools
 [ INCLUDE <OWSRCDIR>/editdll/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/ide/ide2make/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/idebatch/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/ide/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/viper/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/ide/builder.ctl ]
 # The miscelaneous tools
 [ INCLUDE <OWSRCDIR>/cmdedit/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cvpack/builder.ctl ]
@@ -186,8 +183,7 @@ cdsay .
 # Source code samples
 [ INCLUDE <OWSRCDIR>/src/builder.ctl ]
 # IDE samples
-#[ INCLUDE <OWSRCDIR>/idedemo/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/viprdemo/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/idedemo/builder.ctl ]
 # Build help viewer
 #[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/help/builder.ctl ]
@@ -196,6 +192,7 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/hcwin/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/helpcomp/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wipfc/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/bmp2eps/builder.ctl ]
 # Copy the redistributable components
 [ INCLUDE <OWSRCDIR>/redist/builder.ctl ]
 # Build installer tools
@@ -216,6 +213,13 @@ cdsay .
 #        Clean build tools, must be last item (self destructs)
 #
 [ INCLUDE <OWSRCDIR>/builder/clean.ctl ]
+
+[ BLOCK <1> test testclean ]
+#===========================
+[ INCLUDE <OWSRCDIR>/wasmtest/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/f77/regress/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
 
 [ BLOCK . . ]
 #============

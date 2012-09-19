@@ -1,4 +1,5 @@
 proj_name = bmp2eps
+
 bmp2eps_autodepends = .autodepend
 
 !include cproj.mif

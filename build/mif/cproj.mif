@@ -17,46 +17,82 @@ win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
 !endif
 
 !ifdef bootstrap
-bprfx =
+
+cc_386          = *wcc386
+cc_i86          = *wcc
+cc_axp          = *wccaxp
+cc_ppc          = *wccppc
+cc_mps          = *wccmps
+
+cl_386          = *wcl386
+cl_i86          = *wcl
+cl_axp          = *wclaxp
+cl_ppc          = *wclppc
+cl_mps          = *wclmps
+
+cpp_386         = *wpp386
+cpp_i86         = *wpp
+cpp_axp         = *wppaxp
+cpp_ppc         = *wppppc
+cpp_mps         = *wppmps
+
+linker_386      = *wlink
+linker_i86      = *wlink
+linker_axp      = *wlink
+linker_ppc      = *wlink
+linker_mps      = *wlink
+
+librarian_386   = *wlib
+librarian_i86   = *wlib
+librarian_axp   = *wlib
+librarian_ppc   = *wlib
+librarian_mps   = *wlib
+
+as_386          = *wasm
+as_i86          = *wasm
+as_axp          = *wasaxp
+as_ppc          = *wasppc
+as_mps          = *wasmps
+
 !else
-bprfx = b
+
+cc_386          = *bwcc386
+cc_i86          = *bwcc
+cc_axp          = *bwccaxp
+cc_ppc          = *bwccppc
+cc_mps          = *bwccmps
+
+cl_386          = *bwcl386
+cl_i86          = *bwcl
+cl_axp          = *bwclaxp
+cl_ppc          = *bwclppc
+cl_mps          = *bwclmps
+
+cpp_386         = *bwpp386
+cpp_i86         = *bwpp
+cpp_axp         = *bwppaxp
+cpp_ppc         = *bwppppc
+cpp_mps         = *bwppmps
+
+linker_386      = *bwlink
+linker_i86      = *bwlink
+linker_axp      = *bwlink
+linker_ppc      = *bwlink
+linker_mps      = *bwlink
+
+librarian_386   = *bwlib
+librarian_i86   = *bwlib
+librarian_axp   = *bwlib
+librarian_ppc   = *bwlib
+librarian_mps   = *bwlib
+
+as_386          = *bwasm
+as_i86          = *bwasm
+as_axp          = *bwasaxp
+as_ppc          = *bwasppc
+as_mps          = *bwasmps
+
 !endif
-
-cc_386          = *$(bprfx)wcc386
-cc_i86          = *$(bprfx)wcc
-cc_axp          = *$(bprfx)wccaxp
-cc_ppc          = *$(bprfx)wccppc
-cc_mps          = *$(bprfx)wccmps
-
-cl_386          = *$(bprfx)wcl386
-cl_i86          = *$(bprfx)wcl
-cl_axp          = *$(bprfx)wclaxp
-cl_ppc          = *$(bprfx)wclppc
-cl_mps          = *$(bprfx)wclmps
-
-cpp_386         = *$(bprfx)wpp386
-cpp_i86         = *$(bprfx)wpp
-cpp_axp         = *$(bprfx)wppaxp
-cpp_ppc         = *$(bprfx)wppppc
-cpp_mps         = *$(bprfx)wppmps
-
-linker_386      = *$(bprfx)wlink
-linker_i86      = *$(bprfx)wlink
-linker_axp      = *$(bprfx)wlink
-linker_ppc      = *$(bprfx)wlink
-linker_mps      = *$(bprfx)wlink
-
-librarian_386   = *$(bprfx)wlib
-librarian_i86   = *$(bprfx)wlib
-librarian_axp   = *$(bprfx)wlib
-librarian_ppc   = *$(bprfx)wlib
-librarian_mps   = *$(bprfx)wlib
-
-as_386          = *$(bprfx)wasm
-as_i86          = *$(bprfx)wasm
-as_axp          = *$(bprfx)wasaxp
-as_ppc          = *$(bprfx)wasppc
-as_mps          = *$(bprfx)wasmps
 
 !ifdef $(proj_name)_release
 release = $($(proj_name)_release)
@@ -388,7 +424,68 @@ rc_flags_axp    = -D__AXP__
 
 rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu)) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
-!include incdirs.mif
+# For bootstrap builds, include path configuration is compiler specific
+!ifdef bootstrap
+
+inc_dirs_sys_nt    =
+inc_dirs_sys_win   =
+inc_dirs_sys_os2   =
+inc_dirs_sys_dos   =
+inc_dirs_sys_nov   =
+inc_dirs_sys_qnx   =
+inc_dirs_sys_linux =
+inc_dirs_sys_nto   =
+inc_dirs_sys_rdos  =
+inc_dirs_sys_rdosdev =
+inc_dirs_sys_zdos  =
+
+inc_dirs_lang_osi  =
+
+!else
+
+inc_dirs_sys_os2_386 = -I"$(os2api_dir)/os2386/h"
+inc_dirs_sys_os2_i86 = -I"$(os2api_dir)/os2286/h"
+inc_dirs_sys_nt      = -I"$(w32api_dir)/nt"
+inc_dirs_sys_win     = -I"$(w16api_dir)/wini86"
+inc_dirs_sys_os2     = $(inc_dirs_sys_os2_$(host_cpu))
+inc_dirs_sys_dos     =
+inc_dirs_sys_nov     =
+inc_dirs_sys_qnx     =
+inc_dirs_sys_linux   =
+inc_dirs_sys_nto     =
+inc_dirs_sys_zdos    = -I"$(hdr_dir)/dos/zdos"
+inc_dirs_sys_rdos    =
+inc_dirs_sys_rdosdev =
+
+inc_dirs_lang_osi     = -I"$(hdr_dir)/dos"
+inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx"
+inc_dirs_lang_linux   = -I"$(hdr_dir)/linux"
+inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
+inc_dirs_lang_nto     = -I"$(hdr_dir)/nto"
+
+!endif
+
+# Include path macros:
+#
+# $(inc_dirs_sys_$(host_os)) contains OS specific headers typically
+# delivered by OS vendor. This is used for OS/2 and Windows
+#
+# $(inc_dirs_lang) contains headers delivered with the compiler.
+#
+# $(inc_dirs_sys) combines the above two macros.
+#
+# $(inc_path) is used in actual build rules. It adds path to the
+# src/watcom/h directory plus macros $(inc_dirs) and $(inc_dirs_$(host_os))
+# which individual projects are free to define as needed.
+
+!ifdef inc_dirs_lang_$(host_os)
+inc_dirs_lang   = $(inc_dirs_lang_$(host_os))
+!else
+inc_dirs_lang   = $(inc_dirs_lang_osi)
+!endif
+
+inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 
 cc              = $(cc_$(host_cpu))
 cl              = $(cl_$(host_cpu))
@@ -405,6 +502,7 @@ yacc            = yacc
 rc              = bwrc
 rcaui           = bwrc
 wstrip          = bwstrip
+ide2make        = bide2mak
 
 rc_aui          = $(rcaui) -bt=windows -I"$(watcom_dir)/h" -zk0 -r
 

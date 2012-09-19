@@ -1,0 +1,8 @@
+#pmake: bintool
+
+host_os  = $(%BOOTSTRAP_OS)
+host_cpu = $(%BOOTSTRAP_CPU)
+
+name = bide2mak
+
+!include ../master.mif

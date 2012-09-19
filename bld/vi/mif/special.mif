@@ -4,5 +4,5 @@ special = rcstr.gh
 
 !endif
 
-.c : $(viper_dir)/ideact
+.c : $(ideact_dir)
 .c : $(posix_dir)/misc

@@ -1,4 +1,5 @@
 proj_name = hcdos
+
 hcdos_autodepends = .autodepend
 
 !include cproj.mif

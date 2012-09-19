@@ -2,17 +2,12 @@
 # ==========================
 
 set PROJDIR=<CWD>
+set PROJNAME=bwipfc
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
-
-[ INCLUDE prereq.ctl ]
-
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
-
-cdsay .
+[ INCLUDE <OWROOT>/build/bintool.ctl ]
 
 [ BLOCK <1> rel cprel ]
 #======================

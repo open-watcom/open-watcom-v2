@@ -1,0 +1,6 @@
+#pmake: bintool
+
+host_os  = $(%BOOTSTRAP_OS)
+host_cpu = $(%BOOTSTRAP_CPU)
+
+!include ../master.mif

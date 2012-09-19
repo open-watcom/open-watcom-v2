@@ -14,26 +14,14 @@ cdsay <PROJDIR>
 
 [ BLOCK <1> build rel ]
 #======================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-    
-[ BLOCK <1> build rel ]
-#======================
-    mkdir <OWOBJDIR>
-    cdsay <OWOBJDIR>
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
     wmake -h -f ../binmake
-    <CPCMD> <PROJNAME>.exe <OWBINDIR>/<PROJNAME><CMDEXT>
-    cd ..
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -r -f <OWOBJDIR>
-    rm -r -f <OWOBJDIR>
-    rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
-
+    echo rm -r -f <PROJDIR>/<OWOBJDIR>
+    rm -r -f <PROJDIR>/<OWOBJDIR>
+    
 [ BLOCK . . ]
 #============
-cdsay <PROJDIR>

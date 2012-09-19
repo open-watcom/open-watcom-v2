@@ -115,9 +115,6 @@ curses_dir      = $(src_dir)/curses
 !ifndef ncurses_dir
 ncurses_dir     = $(src_dir)/ncurses
 !endif
-!ifndef viper_dir
-viper_dir       = $(src_dir)/viper
-!endif
 !ifndef wlink_dir
 wlink_dir       = $(src_dir)/wl
 !endif
@@ -256,8 +253,17 @@ wipfc_dir       = $(src_dir)/wipfc
 !ifndef builder_dir
 builder_dir     = $(src_dir)/builder
 !endif
-!ifndef ide_dir
-ide_dir         = $(src_dir)/ide
+!ifndef ideact_dir
+ideact_dir      = $(src_dir)/ide/ideact
+!endif
+!ifndef idelib_dir
+idelib_dir      = $(src_dir)/ide/lib
+!endif
+!ifndef idecfg_dir
+idecfg_dir      = $(src_dir)/ide/cfg
+!endif
+!ifndef idedemo_dir
+idedemo_dir     = $(src_dir)/idedemo
 !endif
 !ifndef version_dir
 version_dir     = $(src_dir)/version

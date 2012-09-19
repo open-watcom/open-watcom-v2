@@ -2,10 +2,10 @@
 
 all : pbidex.cfg pbide.cfg .symbolic
 
-pbidex.cfg : ../../../viper/cfg/idex.mfg
+pbidex.cfg : $(idecfg_dir)/idex.mfg
     wsplice -k C_FOR_PB -k FOR_NT $[@ $^@
 
-pbide.cfg : ../../../viper/cfg/ide.mfg
+pbide.cfg : $(idecfg_dir)/ide.mfg
     wsplice -k C_FOR_PB -k FOR_NT $[@ $^@
 
 clean : .symbolic
