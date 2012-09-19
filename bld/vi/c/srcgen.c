@@ -155,7 +155,9 @@ void GenTestCond( void )
 static void genExpr( void )
 {
     char        v1[MAX_SRC_LINE], v2[MAX_SRC_LINE], tmp[MAX_SRC_LINE];
-    expr_oper   oper;
+#ifndef VICOMP
+    expr_oper   oper = EXPR_EQ;
+#endif
 
     /*
      * get expression syntax :
@@ -167,18 +169,22 @@ static void genExpr( void )
     if( NextWord1( CurrentSrcData, tmp ) <= 0 ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
-    oper = EXPR_EQ;
     if( tmp[1] == '=' && tmp[2] == 0 ) {
-        if( tmp[0] == '+' ) {
-            oper = EXPR_PLUSEQ;
-        } else if( tmp[0] == '-' ) {
-            oper = EXPR_MINUSEQ;
-        } else if( tmp[0] == '*' ) {
-            oper = EXPR_TIMESEQ;
-        } else if( tmp[0] == '/' ) {
-            oper = EXPR_DIVIDEEQ;
-        } else {
+        switch( tmp[0] ) {
+#ifndef VICOMP
+        case '+': oper = EXPR_PLUSEQ; break;
+        case '-': oper = EXPR_MINUSEQ; break;
+        case '*': oper = EXPR_TIMESEQ; break;
+        case '/': oper = EXPR_DIVIDEEQ; break;
+#else
+        case '+': break;
+        case '-': break;
+        case '*': break;
+        case '/': break;
+#endif
+        default:
             AbortGen( ERR_SRC_INVALID_EXPR );
+            break;
         }
     } else {
         if( tmp[0] != '=' || tmp[1] != 0 ) {
@@ -232,7 +238,6 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     sfile               *tsf;
     char                tmp[MAX_SRC_LINE], tmp2[MAX_SRC_LINE];
     char                tmp3[MAX_SRC_LINE];
-    vi_rc               rc;
     bool                ret;
 #ifdef VICOMP
     bool                AppendingFlag = FALSE;
@@ -440,6 +445,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                     token = -1;
                 }
             } else {
+                rec = -1;
                 token = -1;
             }
             switch( token ) {
@@ -507,18 +513,20 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 
             case PCL_T_SET:
                 token += SRC_T_NULL + 1;
-#ifndef VICOMP
+#ifdef VICOMP
+                WorkLine->data[0] = 0;
+                Set( tmp );
+                genItem( token, WorkLine->data );
+#else
                 if( EditFlags.CompileScript ) {
-#endif
+                    vi_rc   rc;
+
                     WorkLine->data[0] = 0;
                     rc = Set( tmp );
-#ifndef VICOMP
                     if( rc != ERR_NO_ERR ) {
                         Error( GetErrorMsg( rc ) );
                     }
-#endif
                     genItem( token, WorkLine->data );
-#ifndef VICOMP
                 } else {
                     genItem( token, tmp );
                 }

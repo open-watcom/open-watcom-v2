@@ -1181,6 +1181,7 @@ static bool read_topic_text(
     int                 sect_alloc_size;
 
     section = NULL;
+    sect_alloc_size = 0;
     topic_init();
     for( ;; ) {
         more_to_do = read_line();
@@ -1938,7 +1939,7 @@ static void output_def_file( void )
     int                         len;
     int                         max_len;
 
-    whp_fprintf( Def_file, "\/* This file was created by WHPCVT.EXE. "
+    whp_fprintf( Def_file, "/* This file was created by WHPCVT.EXE. "
                         "DO NOT MODIFY BY HAND! */\n\n" );
 
     max_len = 0;
@@ -1968,8 +1969,8 @@ static void output_hdef_file( void )
 {
     ctx_def                     *ctx;
 
-    whp_fprintf( Hdef_file, "\/* This file was created by WHPCVT.EXE. "
-                                "DO NOT MODIFY BY HAND! *\/\n\n" );
+    whp_fprintf( Hdef_file, "/* This file was created by WHPCVT.EXE. "
+                                "DO NOT MODIFY BY HAND! */\n\n" );
 
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( !ctx->empty ) {
