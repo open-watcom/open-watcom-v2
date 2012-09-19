@@ -5,6 +5,7 @@
 *.lnk
 *.o
 *.[oux]bj
+*.rex
 *.trp
 #
 /as/*/*/as_in.y
@@ -79,6 +80,11 @@
 /graphlib/fix/*/graph.ref
 /graphlib/fix/*/graph.stb
 #
+/ide/cfg/ide.cfg
+/ide/cfg/*/idex.cfg
+#
+/idedemo/*/*/*.dll
+#
 /mad/*/*/*.dll
 #
 /mathlib/library/*/*/*.def
@@ -133,11 +139,6 @@
 !/vi/dat/ed.cfg
 /vi/*/weditor.ini
 !/vi/dat/weditor.ini
-#
-/viper/cfg/ide.cfg
-/viper/cfg/*/idex.cfg
-#
-/viprdemo/*/*/*.dll
 #
 /w16api/wini86/*.h
 #
