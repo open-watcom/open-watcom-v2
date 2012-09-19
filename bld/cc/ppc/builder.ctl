@@ -11,12 +11,14 @@ set PROJNAME=wccppc
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wcppc.exe <OWBINDIR>/bwccppc<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwcppc.exe      <OWBINDIR>/bwccppc<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwccdppc<DYEXT> <OWBINDIR>/bwccdppc<DYEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
     echo rm -f <OWBINDIR>/bwccppc<CMDEXT>
     rm -f <OWBINDIR>/bwccppc<CMDEXT>
+    rm -f <OWBINDIR>/bwccdppc<DYEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

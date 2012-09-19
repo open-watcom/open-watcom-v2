@@ -5,6 +5,24 @@ proj_name       = wlib
 wlib_autodepends = .AUTODEPEND
 !endif
 
+!ifdef bootstrap
+exename     = bwlib
+dllname     = bwlibd
+!else
+exename     = wlb
+dllname     = wlbd
+!endif
+
+# Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
+# internal module name may be required to match file name on some platforms.
+!ifdef bootstrap
+realexename = $(exename)
+realdllname = $(dllname)
+!else
+realexename = wlib
+realdllname = wlibd
+!endif
+
 !ifeq release 0
 wlib_trmem = 1
 !endif
@@ -13,34 +31,16 @@ suppress_bd = 1
 
 wlib_nosymfile = 1
 
-!if defined(bootstrap) || defined(prebuild)
-no_libs = 1
-!endif
-!ifdef no_libs
-incl_msgtext = 1
-!endif
-
-!ifdef no_libs
-!ifdef wlib_dll
-!undef wlib_dll
-!endif
-!ifdef wlib_rtdll
-!undef wlib_rtdll
-!endif
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
 !include trmem.mif
 
-!ifdef no_libs
+!ifdef bootstrap
 !include $(orl_dir)/orlobjs.mif
 !else
-!ifndef incl_msgtext
 !include wres.mif
-!endif
 !include $(orl_dir)/client.mif
 !endif
 
@@ -73,7 +73,7 @@ common_objs = &
     $(trmem_objs) &
     $(cl_objs)
 
-!ifdef no_libs
+!ifdef bootstrap
 common_objs += $(orl_objs)
 !endif
 
@@ -88,7 +88,7 @@ dll_objs = $(common_objs) $(dll_objs_$(host_os))
 # cflags
 
 extra_c_flags =
-!ifdef incl_msgtext
+!ifdef bootstrap
 extra_c_flags += -DINCL_MSGTEXT
 !endif
 !ifndef wlib_dll
@@ -100,6 +100,7 @@ extra_c_flags_os2dll   = -bd
 extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_memfuncs = $(trmem_cover_cflags)
 extra_c_flags_idedrv   = -DSTATIC_LINKAGE
+extra_c_flags_maindrv  = -DDLL_NAME=$(realdllname)
 
 ###################
 # linker flags .EXE
@@ -112,9 +113,8 @@ extra_l_flags_qnx = op offset=64k, stack=60k
 # linker flags .DLL
 
 extra_l_flags_dll = op map, symfile
-
-extra_l_flags_dll_nt = initinstance terminstance op offset=0x6A000000
-extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE
+extra_l_flags_dll_nt = initinstance terminstance op modname='$(realdllname).dll', offset=0x6A000000
+extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op modname='$(realdllname)'
 
 ###################
 # rc flags
@@ -131,45 +131,41 @@ inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
 .c: ../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
 .h: ../h;$(watcom_dir)/h
 
-!ifdef no_libs
+!ifdef bootstrap
 inc_dirs += -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
 .c: $(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c;
 .h: $(orl_dir)/h;$(orl_dir)/elf/h;$(orl_dir)/coff/h;$(orl_dir)/omf/h;
 !endif
 
-!ifndef no_libs
-!ifdef incl_msgtext
-xlibs = $(orl_lib)
-!else
+!ifndef bootstrap
 xlibs = $(wres_lib) $(orl_lib)
-!endif
 !endif
 
 !ifeq host_os osi
 external_dependencies = $(os2ldr)
 !endif
 
-!ifdef incl_msgtext
+!ifdef bootstrap
 depends_msg = msg.gh incltext.gh
 !else
 depends_msg = msg.gh wlib.res
 !endif
-depends_drv = $(drv_objs) wlibd.lib
+depends_drv = $(drv_objs)
 depends_exe = $(depends_msg) $(exe_objs) $(xlibs) $(external_dependencies)
 depends_dll = $(depends_msg) $(dll_objs) $(xlibs) $(external_dependencies)
 
 !ifdef wlib_dll
 
-wlib.exe: $(depends_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe: $(depends_drv) $(realdllname).lib $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%write drv.lnk $(lflags)
     @for %i in ($(drv_objs)) do @%append drv.lnk file %i
-    @%append drv.lnk lib wlibd.lib
+    @%append drv.lnk lib $(realdllname).lib
     $(linker) name $@ @drv.lnk
     @%make bind_version_res_exe
 
 !else
 
-wlib.exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(exe_objs) $(xlibs)
 !else 
@@ -185,24 +181,26 @@ wlib.exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES
 !endif
 !endif
     @%make bind_version_res_exe
-!ifndef incl_msgtext
+!ifndef bootstrap
     $(wstrip) -q -a -r $@ . wlib.res
 !endif
 
 !endif
 
-wlibd.dll: $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(dllname).dll: $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%write dll.lnk $(lflags_dll)
+    @%append dll.lnk op impfile=export.tmp
     @for %i in ($(dll_objs)) do @%append dll.lnk file %i
     @for %i in ($(xlibs)) do @%append dll.lnk lib %i
     $(linker) name $@ @dll.lnk
     @%make bind_version_res_dll
-!ifndef incl_msgtext
+!ifndef bootstrap
     $(wstrip) -q -a -r $@ . wlib.res
 !endif
 
-wlibd.lib: wlibd.dll
-    $(librarian) $(libflags) +$[@
+$(realdllname).lib : $(dllname).dll $(__MAKEFILES__)
+    $(sed) -e s/$(dllname).dll/$(realdllname).dll/g export.tmp > $(realdllname).lbc
+    $(librarian) $(libflags) @$(realdllname).lbc
 
 msg.gh : wlibmsg.gh
     $(awk) -f $(build_dir)/msgtoh.awk $[@ >$^@
@@ -221,5 +219,6 @@ wlibmsg.gh : ../wlib.msg
 wlib.res : ../wlib.rc ../wlib.msg msg.gh
     $(rc_aui) $(rc_defines_$(host_os)) $[@ -fo=$@
 
-verrc_dll = wlibd
+verrc_exe = $(realexename)
+verrc_dll = $(realdllname)
 !include verrc.mif

@@ -70,7 +70,7 @@ system begin dos4g
     libpath %OWSRCDIR%/fpuemu/386/dos386
     libpath %OWSRCDIR%/fpuemu/386/stub386
     libpath %OWSRCDIR%/cpplib/generic.386/ms_r
-    op stub=%OWSRCDIR%/wstub/wstub.exe
+    op stub=%OWSRCDIR%/wstuba/dosi86/wstub.exe
     format os2 le ^
 end
 

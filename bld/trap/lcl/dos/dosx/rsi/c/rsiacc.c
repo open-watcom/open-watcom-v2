@@ -113,7 +113,7 @@ void SetDbgTask( void )
 {
 }
 
-static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void far*,unsigned int), addr48_ptr *addr, byte far *data, unsigned short req ) {
+static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char far*,unsigned int), addr48_ptr *addr, byte far *data, unsigned short req ) {
 
     unsigned short  len;
 

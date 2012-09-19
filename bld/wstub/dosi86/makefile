@@ -1,8 +1,6 @@
-#pmake: os_dos cpu_386 rsi
+#pmake: build os_dos os_win cpu_i86 cpu_386
 
 host_os  = dos
 host_cpu = i86
-
-target = rsi
 
 !include ../master.mif

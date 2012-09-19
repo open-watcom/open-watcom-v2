@@ -76,13 +76,13 @@ apppm.res apppmj.res : ../h/apppm.rc ../h/app.rc $(rcfiles)
 .c: ../c
 
 ./auimkstr.exe: $(aui_dir)/c/mkstr.c
-        $(bld_cl) -I"$(aui_dir)/h" $(wcl_util_opts) $]@
+        $(bld_cl) -I"$(aui_dir)/h" $(bld_cl_opts) $]@
 
 auistr.gh : ./auimkstr.exe $(aui_dir)/h/aui.msg
         $[@ $^@
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+        $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
 
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
         $[@ $^@ $(gui_msg_id_modifier)

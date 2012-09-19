@@ -11,7 +11,7 @@ set PROJNAME=wcl386
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wcl386.exe <OWBINDIR>/bwcl386<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwcl386.exe <OWBINDIR>/bwcl386<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

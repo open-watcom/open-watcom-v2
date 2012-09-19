@@ -86,7 +86,7 @@ ide.res : _guimsgs.gh $(gui_dir)/h/gui.rc ide.rc
         $(rc) $(rc_flags) -I.. $(inc_path) $]@ -fo=$^@
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+        $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
 
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
         $[@ $^@ $(gui_msg_id_modifier)

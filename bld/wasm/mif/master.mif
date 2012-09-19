@@ -1,5 +1,10 @@
 proj_name = wasm
+
+!ifdef bootstrap
+name = bwasm
+!else
 name = wasm
+!endif
 
 !ifndef wasm_autodepends
 wasm_autodepends = .AUTODEPEND
@@ -149,7 +154,7 @@ usagej.gh : usagej.u
         wsplice @$^&.tmp
 
 ./optencod.exe: $(fe_misc_dir)/c/optencod.c
-        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(wcl_util_opts)
+        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(bld_cl_opts)
  
 usage.u : ./optencod.exe ../h/options.gml
         $[@ -q -u $@ $]@ $(nulldevice) $(nulldevice) $(nulldevice) any
@@ -162,13 +167,13 @@ usagej.u : ./optencod.exe ../h/options.gml
 ###################################################################
 
 ./mkopcod1.exe: ../mkopcod1.c ../mkopcode.h $(cl_objs)
-        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(wcl_util_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(bld_cl_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
 
 asmops.gh: ./mkopcod1.exe ../fullops.tok ../inlnops.tok
         $< $@
 
 ./mkopcode.exe: ../mkopcode.c ../mkopcode.h asmops.gh $(cl_objs)
-        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(wcl_util_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(bld_cl_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
 
 asmopsd.gh: ./mkopcode.exe ../fullops.tok ../inlnops.tok
         $< $@

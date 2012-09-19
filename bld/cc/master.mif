@@ -1,5 +1,33 @@
 proj_name = cc
 
+!ifdef bootstrap
+!ifeq target_cpu i86
+exename     = bwcc
+dllname     = bwccd
+!else
+exename     = bwcc$(target_cpu)
+dllname     = bwccd$(target_cpu)
+!endif
+!else
+exename     = wc$(target_cpu)
+dllname     = wcd$(target_cpu)
+!endif
+
+# Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
+# internal module name may be required to match file name on some platforms.
+!ifdef bootstrap
+realexename = $(exename)
+realdllname = $(dllname)
+!else
+!ifeq target_cpu i86
+realexename = wcc
+realdllname = wccd
+!else
+realexename = wcc$(target_cpu)
+realdllname = wccd$(target_cpu)
+!endif
+!endif
+
 cc_autodepends = .autodepend
 
 .extensions: .gh
@@ -21,20 +49,6 @@ cc_nosymfile = 1
 !include trmem.mif
 
 !include ../../ccobjs.mif
-
-# final executable names
-exe_name = wcc$(target_cpu)c
-dll_name = wccd$(target_cpu)c
-
-# Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
-# internal module name may be required to match file name on some platforms.
-!ifeq target_cpu i86
-realdllname = wccd
-realexename = wcc
-!else
-realdllname = wccd$(target_cpu)
-realexename = wcc$(target_cpu)
-!endif
 
 # international data file name
 intname = wcc$(target_cpu)
@@ -75,6 +89,7 @@ extra_c_flags_cscan_386 = -5r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
 !endif
 !endif
+extra_c_flags_cmsg     = -D__msg_file_prefix=$(intname)
 extra_c_flags_ideentry = -bd $(idedlldriver_c_flags_$(host_os))
 extra_c_flags_idedrv   = $(idedlldriver_c_flags_$(host_os))
 !ifdef __LINUX__
@@ -82,7 +97,7 @@ extra_c_flags_intlload = -D__header=\"fesupp.h\"
 !else
 extra_c_flags_intlload = -D__header="fesupp.h"
 !endif
-extra_c_flags_cmsg     = -D__msg_file_prefix=$(intname)
+extra_c_flags_maindrv  = -DDLL_NAME=$(realdllname)
 
 #
 # WLINK .EXE options
@@ -97,16 +112,9 @@ extra_l_flags_dos = option stack=32k
 #
 # WLINK .DLL options
 #
-# the only guaranteed way to find the .sym for a .DLL is for it to be attached
-# to the .DLL binary
-!ifeq release 0
-extra_l_flags_dll     = option map, modname=$(realdllname)
-!else
-extra_l_flags_dll     = option map, modname=$(realdllname), symfile
-!endif
-
-extra_l_flags_dll_nt  = initinstance terminstance option offset=0x69400000
-extra_l_flags_dll_os2 = initinstance terminstance option manyautodata
+extra_l_flags_dll     = option map, symfile
+extra_l_flags_dll_nt  = initinstance terminstance option offset=0x69400000, modname='$(realdllname).dll'
+extra_l_flags_dll_os2 = initinstance terminstance option manyautodata, modname='$(realdllname)'
 
 #
 # external libraries
@@ -133,7 +141,9 @@ depends_drv = $(pre_obj_deps) $(drv_objs)
 version_res_dll_nt_386 = version.res
 
 # systems where version resources must be added to .EXE
+!ifndef bootstrap
 version_res_exe_nt_386 = exever.res
+!endif
 
 inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs)
 inc_dirs += -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
@@ -146,10 +156,10 @@ comp_objs_dll = $(common_objs) $(dll_objs)
 
 !ifdef cc_dll
 
-$(exe_name).exe : $(drv_objs) $(dll_name).lib $(version_res_exe_$(host_os)_$(host_cpu))
+$(exename).exe : $(drv_objs) $(realdllname).lib $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
         @%write drv.lnk $(lflags)
         @for %i in ($(drv_objs)) do @%append drv.lnk file %i
-        @%append drv.lnk lib $(dll_name).lib
+        @%append drv.lnk lib $(realdllname).lib
 !ifeq host_os dos
         @%append drv.lnk lib cwdll.lib
 !endif
@@ -158,7 +168,7 @@ $(exe_name).exe : $(drv_objs) $(dll_name).lib $(version_res_exe_$(host_os)_$(hos
 
 !else
 
-$(exe_name).exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu))
+$(exename).exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(comp_objs_exe) $(xlibs) $(libs)
 !else
@@ -180,15 +190,17 @@ $(exe_name).exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu))
 
 !endif
 
-$(dll_name).dll : $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu))
+$(dllname).dll : $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
         @%write dll.lnk $(lflags_dll)
+        @%append dll.lnk op impfile=export.tmp
         @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
         @for %i in ($(xlibs)) do @%append dll.lnk lib %i
         $(linker) name $@ @dll.lnk
         @%make bind_version_res_dll
 
-$(dll_name).lib : $(dll_name).dll
-        $(librarian) $(libflags) +$[@
+$(realdllname).lib : $(dllname).dll $(__MAKEFILES__)
+        $(sed) -e s/$(dllname).dll/$(realdllname).dll/g export.tmp > $(realdllname).lbc
+        $(librarian) $(libflags) @$(realdllname).lbc
 
 #
 # done
@@ -226,7 +238,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
         *bwlink format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
 
 ./mkcode.exe: ../../a/mkcode.c
-        $(bld_cl) $[@ $(wcl_util_opts)
+        $(bld_cl) $[@ $(bld_cl_opts)
 
 usage.gh: ../../usage.sp
         wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os)  "-f\"%s\0\"" ../../usage.sp usage.gh
@@ -235,38 +247,38 @@ wcc.u: ../../usage.sp msgencod.exe intlbin.exe
         wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os) -u -t8 ../../usage.sp wcc.u
 
 ./usageenc.exe: $(fe_misc_dir)/c/usageenc.c ../../jusage.sp
-        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(wcl_util_opts)
+        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(bld_cl_opts)
 
 usage01.int : ./usageenc.exe ../../jusage.sp
         wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os) ../../jusage.sp usageenc.int
         $[@ usageenc.int usage01.int
 
 verrc_dll = $(realdllname)
-verrc_dll_skel = ../../version.rc
 verrc_exe = $(realexename)
+verrc_dll_skel = ../../version.rc
 verrc_exe_skel = ../../exever.rc
 !include verrc.mif
 
 ./msgencod.exe: $(fe_misc_dir)/c/msgencod.c $(cl_objs)
-        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(wcl_util_opts) $(cl_libs) $(cl_objs)
+        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(bld_cl_opts) $(cl_libs) $(cl_objs)
 
 msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ./msgencod.exe ../../gml/cerrs.gml
         $[@ -s -i -ip -q -g ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
-        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(wcl_util_opts)
+        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(bld_cl_opts)
 
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
         $[@ $(intname)
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h $(cl_objs)
-        $(bld_cl) -I"$(wasm_dir)/h" $[@ $(wcl_util_opts) $(cl_libs) $(cl_objs)
+        $(bld_cl) -I"$(wasm_dir)/h" $[@ $(bld_cl_opts) $(cl_libs) $(cl_objs)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
         $[@ $(wasm_dir)/inlnops.tok $@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh $(cl_objs)
-        $(bld_cl) -I"$(wasm_dir)/h" $[@ $(wcl_util_opts) $(cl_libs) $(cl_objs)
+        $(bld_cl) -I"$(wasm_dir)/h" $[@ $(bld_cl_opts) $(cl_libs) $(cl_objs)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
         $[@ $(wasm_dir)/inlnops.tok $@
@@ -274,7 +286,7 @@ asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
 key_objs = ../../h/c.key ../../h/pc.key ../../h/seh.key
 
 ./findhash.exe : $(fe_misc_dir)/c/findhash.c
-        $(bld_cl) $[@ $(wcl_util_opts)
+        $(bld_cl) $[@ $(bld_cl_opts)
 
 weights.gh keywords.gh : ./findhash.exe $(key_objs)
         $[@ -q $(key_objs)

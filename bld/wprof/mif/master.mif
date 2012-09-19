@@ -110,13 +110,13 @@ wprofui.res : ../h/wprofui.rc .AUTODEPEND
     $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
 
 ./auimkstr.exe : $(aui_dir)/h/aui.msg $(aui_dir)/c/mkstr.c
-    $(bld_cl) -I"$(aui_dir)/h" $(wcl_util_opts) $]@
+    $(bld_cl) -I"$(aui_dir)/h" $(bld_cl_opts) $]@
 
 auistr.gh : $(aui_dir)/h/aui.msg ./auimkstr.exe
     $]@ $^@
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-    $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+    $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
 
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
     $[@ $^@ $(gui_msg_id_modifier)

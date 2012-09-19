@@ -38,9 +38,16 @@
 #endif
 #include "idedrv.h"
 
+#ifndef DLL_NAME
+  #error DLL_NAME must be given with -d switch when DLL Driver
+#else
+  #define quoted( name ) # name
+  #define _str(x) quoted(x)
+  #define DLL_NAME_STR _str(DLL_NAME)
+#endif
 
 static IDEDRV info = {
-    "wrcd.dll"
+    DLL_NAME_STR
 };
 
 int main( int count, char *args[] )

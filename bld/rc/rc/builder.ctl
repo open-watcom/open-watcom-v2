@@ -11,13 +11,15 @@ set PROJNAME=wrc
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wrce.exe <OWBINDIR>/bwrc<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwrc.exe     <OWBINDIR>/bwrc<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwrcd<DYEXT> <OWBINDIR>/bwrcd<DYEXT>
     <CPCMD> kanji.uni <OWBINDIR>/
 
 [ BLOCK <1> bootclean ]
 #======================
     echo rm -f <OWBINDIR>/bwrc<CMDEXT>
     rm -f <OWBINDIR>/bwrc<CMDEXT>
+    rm -f <OWBINDIR>/bwrcd<DYEXT>
     echo rm -f <OWBINDIR>/kanji.uni
     rm -f <OWBINDIR>/kanji.uni
 

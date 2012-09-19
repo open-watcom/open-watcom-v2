@@ -27,7 +27,7 @@ inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)
 .asm: $(asm_path)
 
 ./bitset.exe : $(watcom_dir)/c/bitset.c
-    $(bld_cl) $< $(wcl_util_opts)
+    $(bld_cl) $< $(bld_cl_opts)
 
 gbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     $[@ $(gbit_size) _GBit global_bit_set $@

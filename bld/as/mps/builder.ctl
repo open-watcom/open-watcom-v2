@@ -11,7 +11,7 @@ set PROJNAME=wasmps
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/wasmps.exe   <OWBINDIR>/bwasmps<CMDEXT>
+    <CPCMD> <PROJDIR>/<OWOBJDIR>/bwasmps.exe <OWBINDIR>/bwasmps<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

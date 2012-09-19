@@ -11,7 +11,7 @@ set PROJNAME=wclmps
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wclmps.exe <OWBINDIR>/bwclmps<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwclmps.exe <OWBINDIR>/bwclmps<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

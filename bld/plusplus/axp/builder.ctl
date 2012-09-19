@@ -11,35 +11,37 @@ set PROJNAME=wppaxp
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wcppaxp.exe <OWBINDIR>/bwppaxp<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwppaxp.exe     <OWBINDIR>/bwppaxp<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwppdaxp<DYEXT> <OWBINDIR>/bwppdaxp<DYEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
     echo rm -f <OWBINDIR>/bwppaxp<CMDEXT>
     rm -f <OWBINDIR>/bwppaxp<CMDEXT>
+    rm -f <OWBINDIR>/bwppdaxp<DYEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/wppaxp.exe       <OWRELROOT>/binw/
-    <CCCMD> dos386/wppaxp.sym       <OWRELROOT>/binw/
+    <CCCMD> dos386/wpaxp.exe        <OWRELROOT>/binw/wppaxp.exe
+    <CCCMD> dos386/wpaxp.sym        <OWRELROOT>/binw/wppaxp.sym
     <CCCMD> dos386/wppaxp01.int     <OWRELROOT>/binw/
-    <CCCMD> os2386/wppaxp.exe       <OWRELROOT>/binp/
-    <CCCMD> os2386/wppaxp.sym       <OWRELROOT>/binp/
-    <CCCMD> os2386/wppdaxp.dll      <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/wppdaxp.sym      <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/wpaxp.exe        <OWRELROOT>/binp/wppaxp.exe
+    <CCCMD> os2386/wpaxp.sym        <OWRELROOT>/binp/wppaxp.sym
+    <CCCMD> os2386/wpdaxp.dll       <OWRELROOT>/binp/dll/wppdaxp.dll
+    <CCCMD> os2386/wpdaxp.sym       <OWRELROOT>/binp/dll/wppdaxp.sym
     <CCCMD> os2386/wppaxp01.int     <OWRELROOT>/binp/dll/
-    <CCCMD> nt386/wppaxp.exe        <OWRELROOT>/binnt/
-    <CCCMD> nt386/wppaxp.sym        <OWRELROOT>/binnt/
-    <CCCMD> nt386/wppdaxp.dll       <OWRELROOT>/binnt/
-    <CCCMD> nt386/wppdaxp.sym       <OWRELROOT>/binnt/
+    <CCCMD> nt386/wpaxp.exe         <OWRELROOT>/binnt/wppaxp.exe
+    <CCCMD> nt386/wpaxp.sym         <OWRELROOT>/binnt/wppaxp.sym
+    <CCCMD> nt386/wpdaxp.dll        <OWRELROOT>/binnt/wppdaxp.dll
+    <CCCMD> nt386/wpdaxp.sym        <OWRELROOT>/binnt/wppdaxp.sym
     <CCCMD> nt386/wppaxp01.int      <OWRELROOT>/binnt/
-    <CCCMD> ntaxp/wppaxp.exe        <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wppaxp.sym        <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wppdaxp.dll       <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/wppdaxp.sym       <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wpaxp.exe         <OWRELROOT>/axpnt/wppaxp.exe
+    <CCCMD> ntaxp/wpaxp.sym         <OWRELROOT>/axpnt/wppaxp.sym
+    <CCCMD> ntaxp/wpdaxp.dll        <OWRELROOT>/axpnt/wppdaxp.dll
+    <CCCMD> ntaxp/wpdaxp.sym        <OWRELROOT>/axpnt/wppdaxp.sym
     <CCCMD> ntaxp/wppaxp01.int      <OWRELROOT>/axpnt/
-    <CCCMD> linux386/wppaxp.exe     <OWRELROOT>/binl/wppaxp
-    <CCCMD> linux386/wppaxp.sym     <OWRELROOT>/binl/
+    <CCCMD> linux386/wpaxp.exe      <OWRELROOT>/binl/wppaxp
+    <CCCMD> linux386/wpaxp.sym      <OWRELROOT>/binl/wppaxp.sym
     <CCCMD> linux386/wppaxp01.int   <OWRELROOT>/binl/
 
 [ BLOCK . . ]

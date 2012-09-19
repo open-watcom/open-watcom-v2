@@ -1,73 +1,66 @@
 # build host specific macros - should query WMAKE for details
-host_sys  = $(%BOOTSTRAP_OS)
-host_arch = $(%BOOTSTRAP_CPU)
+bld_os  = $(%BOOTSTRAP_OS)
+bld_cpu = $(%BOOTSTRAP_CPU)
 
 !ifdef __OS2__
-bld_sys         = os2v2
-lang_bin        = $(lang_root)\binp
-nlang_bin       = $(nlang_root)\binp
-lang_dll        = $(lang_root)\binp\dll
-nlang_dll       = $(nlang_root)\binp\dll
+bld_lnk_sys     = os2v2
+bld_sys         = os2
 nulldevice      = nul
 !else ifdef __MSDOS__
-bld_sys         = dos4g
-lang_bin        = $(lang_root)\binw
-nlang_bin       = $(nlang_root)\binw
+bld_lnk_sys     = dos4g
+bld_sys         = dos
 nulldevice      = nul
 # DOS should never need the DLL related macros
 !else ifdef __NT__
 !ifdef __NTAXP__
-bld_sys         = ntaxp
-lang_bin        = $(lang_root)\axpnt
-nlang_bin       = $(nlang_root)\axpnt
-lang_dll        = $(lang_root)\axpnt
-nlang_dll       = $(nlang_root)\axpnt
+bld_lnk_sys     = ntaxp
 !else ifdef __NT386__
-bld_sys         = nt
-lang_bin        = $(lang_root)\binnt
-nlang_bin       = $(nlang_root)\binnt
-lang_dll        = $(lang_root)\binnt
-nlang_dll       = $(nlang_root)\binnt
+bld_lnk_sys     = nt
 !else
 #
 # This is an old make - really should report an error
 #
 !error Please correct this makefile, see build\mif\bhost.mif for details.
-bld_sys         = nt
+bld_lnk_sys     = nt
 !endif
+bld_sys         = nt
 nulldevice      = nul
 !else ifdef __LINUX__
 !ifdef __LINUXPPC__
-bld_sys         = linuxppc
+bld_lnk_sys     = linuxppc
 !else ifdef __LINUXMIPS__
-bld_sys         = linuxmips
+bld_lnk_sys     = linuxmips
 !else
-bld_sys         = linux
+bld_lnk_sys     = linux
 !endif
-lang_bin        = $(lang_root)/binl
-nlang_bin       = $(nlang_root)/binl
-lang_dll        = $(lang_root)/binl
-nlang_dll       = $(nlang_root)/binl
+bld_sys         = linux
 nulldevice      = /dev/null
 !else
 !error HOST OS not set
 !endif
 
-!ifdef inc_dirs_lang_$(host_sys)
-bld_inc_dirs_lang = $(inc_dirs_lang_$(host_sys))
+!ifdef inc_dirs_lang_$(bld_os)
+bld_inc_dirs_lang = $(inc_dirs_lang_$(bld_os))
 !else
 bld_inc_dirs_lang = $(inc_dirs_lang_osi)
 !endif
-bld_incs          = $(bld_extra_incs) $(bld_inc_dirs_lang) $(inc_dirs_sys_$(host_sys)) -I"$(watcom_dir)/h"
+bld_incs          = $(bld_extra_incs) $(bld_inc_dirs_lang) $(inc_dirs_sys_$(bld_os)) -I"$(watcom_dir)/h"
 
-bcc             = $(cc_$(host_arch))
-bld_cc          = $(bcc) $(bld_incs)
-bcl             = $(cl_$(host_arch))
-bld_cl          = $(bcl) -bcl=$(bld_sys) $(bld_incs)
-blink           = $(linker_$(host_arch))
-bld_link        = $(blink) sys $(bld_sys)
-bas             = $(as_$(host_arch))
-blib            = $(librarian_$(host_arch))
+# options for single source utility compilations
+!ifdef __UNIX__
+bld_cl_opts     = $(def_fpu_flags_$(bld_os)_$(bld_cpu)) -ox -w8 -fo=.obj -fe=$^@
+!else
+bld_cl_opts     = $(def_fpu_flags_$(bld_os)_$(bld_cpu)) -ox -w8 -fe=$^@
+!endif
+
+bcc             = $(cc_$(bld_cpu))
+bld_cc          = $(bcc) -bt=$(bld_sys) $(bld_incs)
+bcl             = $(cl_$(bld_cpu))
+bld_cl          = $(bcl) -bt=$(bld_sys) -l=$(bld_lnk_sys) $(bld_incs)
+blink           = $(linker_$(bld_cpu))
+bld_link        = $(blink) sys $(bld_lnk_sys)
+bas             = $(as_$(bld_cpu))
+blib            = $(librarian_$(bld_cpu))
 
 bre2c           = $(re2c)
 w32bind         = w32bind

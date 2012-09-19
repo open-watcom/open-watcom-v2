@@ -94,6 +94,6 @@ inc_dirs = -I"$(posix_dir)/h"
 !ifndef make_lib
 .c: $(posix_dir)/src/$(name);$(posix_dir)/misc
 !else
-.c: $(posix_dir)/misc;$(lang_root)/src/startup
+.c: $(posix_dir)/misc
 !endif
 

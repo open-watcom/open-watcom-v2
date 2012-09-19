@@ -71,16 +71,16 @@ $(bind_compiled) : $(bind_compiled:./=../dat/)
         vicomp ../dat/$^. $^.
 
 ./edbind.exe : ../c/edbind.c $(cl_objs)
-    	$(bld_cl) $(wcl_util_opts) $<
+    	$(bld_cl) $(bld_cl_opts) $<
 
 ./wbind.exe : $(win386_dir)/wbind/wbind.c $(cl_objs)
-        $(bld_cl) $(wcl_util_opts) $<
+        $(bld_cl) $(bld_cl_opts) -DBOOTSTRAP $<
 
 ./parsectl.exe : ../ctl/parsectl.c $(cl_objs)
-    	$(bld_cl) $(wcl_util_opts) $<
+    	$(bld_cl) $(bld_cl_opts) $<
 
 ./parsedyn.exe : ../ctl/parsedyn.c $(cl_objs)
-    	$(bld_cl) $(wcl_util_opts) $<
+    	$(bld_cl) $(bld_cl_opts) $<
 
 setfs.obj : setfs.c setfs.ch setfs.dh
 setgen.obj : setgen.c setgen.ch setgen.dh

@@ -58,7 +58,7 @@ test_cflags_386 += -we -w0 -zq -fh -D_CONSOLE $(inc_dirs_sys) -I"../nt"
     rm $[@
 
 ./chk_exec.exe : chk_exec.c
-    $(bld_cl) $< $(wcl_util_opts)
+    $(bld_cl) $< $(bld_cl_opts)
 
 test : .symbolic start_test $(test_exes) ./chk_exec.exe
     @set error_file=error.out

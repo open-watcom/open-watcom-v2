@@ -1,4 +1,4 @@
-#pmake: serv lcl os_dos dsx cpu_386 x86 rsi
+#pmake: build serv lcl os_dos dsx cpu_386 x86 rsi
 
 host_os  = dos
 host_cpu = i86
@@ -29,28 +29,5 @@ inc_dirs = -I"$(rsilib)"
 
 extra_libs = $(rsilib)/d16libc.lib
 
-!ifndef rsi_wlink
-!define substitute_linker
-!endif
-
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif
-
-!ifndef rsi_wlink
-
-objs += $(lang_root)/lib286/dos/dos16m.obj
-
-libs = $(lang_root)/lib286/dos/clibc.lib $(extra_libs)
-
-$(target) : $(libs) $(objs) $(__MAKEFILES__)
-    @%create tmp.lnk
-    @%append tmp.lnk exp($^@) map($^&) log($^&.err)
-!ifeq release 0
-    @%append tmp.lnk -codeview
-!endif
-    @%append tmp.lnk -mpl -nod -DPMI -map -acg -farcall -auto -quiet -rtnerr 2
-    @for %i in ($(objs)) do @%append tmp.lnk %i
-    @for %i in ($(libs)) do @%append tmp.lnk %i
-    -!$(tools_root)\glu @tmp.lnk
-
-!endif

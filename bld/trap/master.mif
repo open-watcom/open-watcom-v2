@@ -183,19 +183,19 @@ d : .SYMBOLIC $(trperr_h) $(jtrperr_h)
         @%make $(target)
 
 ./mkstr.exe: $(mkstr_c) $(trap_msg)
-        $(bld_cl) $(wcl_util_opts) -I"$(trap_dir)/h" $[@
+        $(bld_cl) $(bld_cl_opts) -I"$(trap_dir)/h" $[@
 
 $(trperr_h) : ./mkstr.exe
         $[@ $^@
 
 ./jmkstr.exe: $(mkstr_c) $(trap_msg)
-        $(bld_cl) $(wcl_util_opts) -I"$(trap_dir)/h" -DJAPANESE_MESSAGES $[@
+        $(bld_cl) $(bld_cl_opts) -I"$(trap_dir)/h" -DJAPANESE_MESSAGES $[@
 
 $(jtrperr_h) : ./jmkstr.exe
         $[@ $^@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
-        $(bld_cl) $(wcl_util_opts) -I"$(watcom_dir)/h" $[@
+        $(bld_cl) $(bld_cl_opts) $[@
 
 nversion.tmp: ./mknver.exe
     	$[@ $^@

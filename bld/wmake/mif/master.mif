@@ -138,7 +138,7 @@ isarray.gh : ./cretype.exe
     $< > $@
 
 ./cretype.exe : cretype.c
-    $(bld_cl) $(wcl_util_opts) $[@
+    $(bld_cl) $(bld_cl_opts) $[@
 
 # dependencies on .h files
 mglob.obj : isarray.gh .AUTODEPEND

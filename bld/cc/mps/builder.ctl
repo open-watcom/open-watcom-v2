@@ -11,12 +11,14 @@ set PROJNAME=wccmps
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wcmps.exe <OWBINDIR>/bwccmps<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwcmps.exe      <OWBINDIR>/bwccmps<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwccdmps<DYEXT> <OWBINDIR>/bwccdmps<DYEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
     echo rm -f <OWBINDIR>/bwccmps<CMDEXT>
     rm -f <OWBINDIR>/bwccmps<CMDEXT>
+    rm -f <OWBINDIR>/bwccdmps<DYEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

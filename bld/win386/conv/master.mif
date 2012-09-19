@@ -36,7 +36,7 @@ extra_a_flags_fldenv = -i"$(watcom_dir)/h"
 all : ./conv.exe win386.lib
 
 ./conv.exe : conv.c makefile
-    $(bld_cl) $(wcl_util_opts) $[@
+    $(bld_cl) $(bld_cl_opts) $[@
 
 win386.lib : ./conv.exe $(def_files) ../def/win386 fldenv.obj _call16.obj
     $[@ ../def/win386 ../def -s -q

@@ -55,7 +55,11 @@
 #define FALSE 0
 #define MAGIC_OFFSET    0x38L
 #define MAX_DESC        80
+#ifdef BOOTSTRAP
+#define RC_STR          "bwrc"
+#else
 #define RC_STR          "wrc"
+#endif
 
 static int quietFlag=FALSE;
 
@@ -419,7 +423,7 @@ int main( int argc, char *argv[] )
                 doError( "Argument list too big. Resource compiler step failed." );
                 break;
             case ENOENT:
-                doError( "Could not find wrc.exe." );
+                doError( "Could not find " RC_STR ".exe." );
                 break;
             case ENOMEM:
                 doError( "Not enough memory. Resource compiler step failed." );

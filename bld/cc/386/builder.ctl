@@ -11,12 +11,14 @@ set PROJNAME=wcc386
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wcc386c.exe <OWBINDIR>/bwcc386<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwcc386.exe     <OWBINDIR>/bwcc386<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwccd386<DYEXT> <OWBINDIR>/bwccd386<DYEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
     echo rm -f <OWBINDIR>/bwcc386<CMDEXT>
     rm -f <OWBINDIR>/bwcc386<CMDEXT>
+    rm -f <OWBINDIR>/bwccd386<DYEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

@@ -2,20 +2,12 @@
 # ===========================
 
 set PROJDIR=<CWD>
+set PROJNAME=w32ldr
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
-
-[ BLOCK <1> boot ]
-#=================
-    <CPCMD> <OWOBJDIR>/wasm.exe <OWBINDIR>/bwasm<CMDEXT>
-
-[ BLOCK <1> bootclean ]
-#======================
-    echo rm -f <OWBINDIR>/bwasm<CMDEXT>
-    rm -f <OWBINDIR>/bwasm<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

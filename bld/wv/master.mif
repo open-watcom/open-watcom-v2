@@ -304,7 +304,7 @@ libs_win_i86        = $(aui_dir)/wini86/aui.lib $(gui_dir)/ui/wini86/gui.lib $(u
 libs_nt_386         = $(aui_dir)/nt386/aui.lib $(gui_dir)/ui/nt386/gui.lib $(ui_dir)/nt/nt386/ui.lib
 libs_os2_i86        = $(aui_dir)/os2i86/aui.lib $(gui_dir)/ui/os2i86/gui.lib $(ui_dir)/os2/os2i86/ui.lib
 libs_os2_386        = $(aui_dir)/os2386/aui.lib $(gui_dir)/ui/os2386/gui.lib $(ui_dir)/os2/os2386/ui.lib
-libs_dos_i86        = $(lang_root)/lib286/dos/clibol.lib $(aui_dir)/dosi86/aui.lib $(gui_dir)/ui/dosi86/gui.lib $(ui_dir)/dos$(dot_machine)/dosi86/ui.lib
+libs_dos_i86        = $(aui_dir)/dosi86/aui.lib $(gui_dir)/ui/dosi86/gui.lib $(ui_dir)/dos$(dot_machine)/dosi86/ui.lib
 libs_dos_386        = $(aui_dir)/dos386/aui.lib $(gui_dir)/ui/dos386/gui.lib $(ui_dir)/dos$(dot_machine)/dos386/ui.lib
 libs_qnx_i86        = $(aui_dir)/qnxi86/aui.lib $(gui_dir)/ui/qnxi86/gui.lib $(ui_dir)/qnx/qnxi86/ui.lib
 libs_qnx_386        = $(aui_dir)/qnx386/aui.lib $(gui_dir)/ui/qnx386/gui.lib $(ui_dir)/qnx/qnx386/ui.lib
@@ -416,7 +416,7 @@ $(lnk) : $(__MAKEFILES__)
 !endif
     @for %i in ($(objs)) do @%append $(lnk) file %i
 
-rcinclude=-I. -I"$(hdir)" -I"$(dig_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)" -I"$(gui_dir)/h" -I"$(lang_root)/h"
+rcinclude=-I. -I"$(hdir)" -I"$(dig_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)" -I"$(gui_dir)/h"
 
 bitmaps = &
         $(wv_dir)/win/zapant.ico &
@@ -650,19 +650,19 @@ verrc_exe = wd
 
 
 ./auimkstr.exe : $(aui_dir)/h/aui.msg $(aui_dir)/c/mkstr.c
-        $(bld_cl) -I"$(aui_dir)/h" $(wcl_util_opts) $]@
+        $(bld_cl) -I"$(aui_dir)/h" $(bld_cl_opts) $]@
 
 auistr.gh : ./auimkstr.exe $(aui_dir)/h/aui.msg
         $[@ $^@
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+        $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
 
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
         $[@ $^@ $(gui_msg_id_modifier)
 
 ./mkstr.exe : $(cdir)/mkstr.c wd.str wdengin.str menu.str $(dig_dir)/h/mad.str
-        $(bld_cl) -I"$(hdir)" -I"$(dig_dir)/h" $(wcl_util_opts) $[@
+        $(bld_cl) -I"$(hdir)" -I"$(dig_dir)/h" $(bld_cl_opts) $[@
 
 litdef.gh : ./mkstr.exe
         $[@ $^@

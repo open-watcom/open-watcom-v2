@@ -115,7 +115,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/causeway/builder.ctl ]
 # Continue with DOS extenders stubs.
 [ INCLUDE <OWSRCDIR>/w32loadr/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wstub/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/wstuba/builder.ctl ]
 # Now we have enough to start cross building everything else
 
 # Start with the libs used by various tools

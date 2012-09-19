@@ -11,7 +11,7 @@ set PROJNAME=wasppc
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/wasppc.exe   <OWBINDIR>/bwasppc<CMDEXT>
+    <CPCMD> <PROJDIR>/<OWOBJDIR>/bwasppc.exe <OWBINDIR>/bwasppc<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

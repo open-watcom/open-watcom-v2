@@ -49,7 +49,7 @@ extra_c_flags = -s -zu -fpc
 extra_c_flags_pmhook = -mc -oais
 extra_c_flags_pmhelp = -ml
 
-inc_dirs = -i"$(watcom_dir)/h;$(lang_root)/h/os21x;$(lang_root)/h/os2;$(trap_dir)/h"
+inc_dirs = -i"$(watcom_dir)/h" -I"$(os2api_dir)/os2286/h" -I"$(os2api_dir)/os2386/h" -I"$(trap_dir)/h"
 
 extra_a_flags = -2 -bt=os2 -fo=.obj -mc
 
@@ -57,7 +57,7 @@ pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 
 ./mkstr.exe: $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
-    $(bld_cl) $(wcl_util_opts) -I"$(trap_dir)/h" $[@
+    $(bld_cl) $(bld_cl_opts) -I"$(trap_dir)/h" $[@
 
 _err.gh : ./mkstr.exe
     $[@ $^@

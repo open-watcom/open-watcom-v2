@@ -11,7 +11,7 @@ set PROJNAME=wasaxp
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/wasaxp.exe   <OWBINDIR>/bwasaxp<CMDEXT>
+    <CPCMD> <PROJDIR>/<OWOBJDIR>/bwasaxp.exe <OWBINDIR>/bwasaxp<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

@@ -25,11 +25,11 @@ OBJS= macros.obj main.obj massert.obj mautodep.obj mautoomf.obj mautoorl.obj &
 
 .c : ../c;$(builder_dir)/c;$(watcom_dir)/c
 
-$(%OWBINDIR)/wmake$(exe): wmake.exe
+$(%OWBINDIR)/wmake$(exe): wmk.exe
 !ifdef __UNIX__
-        cp wmake.exe $@
+        cp wmk.exe $@
 !else
-        copy wmake.exe $@
+        copy wmk.exe $@
 !endif
 
 .c.obj : .AUTODEPEND
@@ -57,7 +57,7 @@ usageend.gh: usage.gh ./wsplice.exe
 isarray.gh : ./cretype.exe
         $]@ > $@
 
-wmake.exe: usageend.gh isarray.gh $(OBJS)
+wmk.exe: usageend.gh isarray.gh $(OBJS)
         wlink name $@ op q sys $(host_sys) file {$(OBJS)}
 
 clean:  .symbolic

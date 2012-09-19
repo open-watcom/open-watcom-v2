@@ -44,11 +44,18 @@ const char  *ImageName;
 #endif
 #include "idedrv.h"
 
-#define DLL_NAME "wlibd.dll"
 #define AR_MODE_ENV "WLIB$AR"
 
+#ifndef DLL_NAME
+  #error DLL_NAME must be given with -d switch when DLL Driver
+#else
+  #define quoted( name ) # name
+  #define _str(x) quoted(x)
+  #define DLL_NAME_STR _str(DLL_NAME)
+#endif
+
 static IDEDRV info =
-{   DLL_NAME
+{   DLL_NAME_STR
 };
 
 int main                        // MAIN-LINE FOR DLL DRIVER

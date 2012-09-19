@@ -132,7 +132,7 @@ $(rcname).res : ../$(rcname).rc ../$(rcname).dlg _guimsgs.gh
 !endif
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -i"$(gui_dir)/h" $(wcl_util_opts) $[@
+        $(bld_cl) -i"$(gui_dir)/h" $(bld_cl_opts) $[@
 
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
         $[@ $^@ $(gui_msg_id_modifier)

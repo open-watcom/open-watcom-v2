@@ -11,7 +11,7 @@ set PROJNAME=wasm
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wasm.exe <OWBINDIR>/bwasm<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwasm.exe <OWBINDIR>/bwasm<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

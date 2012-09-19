@@ -30,61 +30,26 @@ clflags_dos_386 = -l=causeway
 lflags_dos_386  = sys causeway
 !endif
 
-
-!ifdef %open_nlang_root
-lang_root = $(%open_nlang_root)
-!else
-lang_root = $(%DWATCOM)
-!endif
-
 !ifndef __NTAXP__
 
-use_bld_incs    = 0
 !ifeq host_cpu axp
-use_bld_incs    = 1
-!endif
-!ifeq $(proj_name)_rtdll 1
-use_bld_incs    = 1
-!endif
-!ifdef clib_rtdll
-# C runtime library must compile against local headers!!!!
-use_bld_incs    = 0
-!endif
-
-!ifeq use_bld_incs 1
-cc_386          += $(bld_incs)
-cpp_386         += $(bld_incs)
+cc_386      += $(bld_incs)
+cpp_386     += $(bld_incs)
 !endif
 
 !endif
 
 !ifdef __LOADDLL__
-!loaddll wcc    $(nlang_dll)\wccd.dll
-!loaddll wcc386 $(nlang_dll)\wccd386.dll
-!loaddll wccaxp $(nlang_dll)\wccdaxp.dll
-!loaddll wlib   $(nlang_dll)\wlibd.dll
-!loaddll wlink  $(nlang_dll)\wlinkd.dll
-!loaddll wpp    $(nlang_dll)\wppdi86.dll
-!loaddll wpp386 $(nlang_dll)\wppd386.dll
-!loaddll wppaxp $(nlang_dll)\wppdaxp.dll
-# C++ reference compiler
-!loaddll rppi86 $(plusplus_dir)\i86\rpp\rppdi86.dll
-!loaddll rpp386 $(plusplus_dir)\386\rpp\rppd386.dll
-!loaddll rppaxp $(plusplus_dir)\axp\rpp\rppdaxp.dll
+!ifndef bootstrap
+#!loaddll bwcc    bwccd.dll
+#!loaddll bwcc386 bwccd386.dll
+#!loaddll bwccaxp bwccdaxp.dll
+#!loaddll bwlib   bwlibd.dll
+#!loaddll bwlink  bwlinkd.dll
+#!loaddll bwpp    bwppdi86.dll
+#!loaddll bwpp386 bwppd386.dll
+#!loaddll bwppaxp bwppdaxp.dll
 !endif
-
-!ifeq proj_name cc
-extra_l_flags_nt = lib $(watcom_dir)/lib/ld.lib
-!endif
-!ifeq host_cpu axp
-def_targ        = wcc$(target_cpu)c.exe
-!endif
-
-# options for single source utility compilations
-!ifdef __UNIX__
-wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w8 -fo=.obj -fe=$^@
-!else
-wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w8 -fe=$^@
 !endif
 
 # bootstrap overrides
@@ -93,6 +58,17 @@ wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w8 -fe=$^@
 !ifdef bootstrap
 
 !ifdef __WATCOM__
+
+!ifdef __LOADDLL__
+!loaddll wcc    wccd.dll
+!loaddll wcc386 wccd386.dll
+!loaddll wccaxp wccdaxp.dll
+!loaddll wlib   wlibd.dll
+!loaddll wlink  wlinkd.dll
+!loaddll wpp    wppdi86.dll
+!loaddll wpp386 wppd386.dll
+!loaddll wppaxp wppdaxp.dll
+!endif
 
 #
 # common bootstrap definitions for Linux
@@ -134,7 +110,7 @@ $(cppflags_$(host_cpu)) -funsigned-char -fno-asm -fno-common
 cflags = $(extra_c_flags) $(cppflags) -gdwarf-2 -c $(cflags_wng) -pipe -O -o $@
 
 # options for single source utility compilations
-wcl_util_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@
+bld_cl_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@
 
 # options for linking via cc
 clflags = -o $@
@@ -180,7 +156,7 @@ cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 
 !ifdef __QNX__
 # options for single source utility compilations
-wcl_util_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@
+bld_cl_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@
 !endif
 
 # options for linking via cc

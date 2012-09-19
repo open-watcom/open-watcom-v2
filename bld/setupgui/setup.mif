@@ -309,7 +309,7 @@ setup.res : setup.rc $(dep_res1) ../res/generic.bmp
     $(rc) $(rc_flags) $(res_inc_dirs) $[@ -fo=$^@
 
 dosstub.exe : dosstub.c
-    wcl -zq -l=dos -os -d0 -bt=dos $(inc_dirs_sys) $[@
+    $(cl_i86) -zq -bcl=dos -os -d0 $(inc_dirs_lang_osi) $[@
 
 .res.exe :
 !if "$(host_os)" == "win" && "$(host_cpu)" == "386"
@@ -322,7 +322,7 @@ dosstub.exe : dosstub.c
 !endif
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-    $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+    $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
 
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
     $[@ $^@ $(gui_msg_id_modifier)

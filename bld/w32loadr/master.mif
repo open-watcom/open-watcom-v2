@@ -19,7 +19,7 @@ all : w32bind.exe
 extra_c_flags_loader = -D__OS2 -D__CALL21__
 	
 w32bind.exe : w32bind.c
-  $(bld_cl) $(wcl_util_opts) $<
+  $(bld_cl) $(bld_cl_opts) $<
 
 os2ldr.exe : cstrtos2.obj loader.obj int21.obj int21os2.obj tnk.obj os2stub.exe
   $(linker) system os2v2 pmc name os2ldr file cstrtos2.obj,loader.obj,int21.obj,int21os2.obj,tnk.obj lib os2386 opt map,stack=32k,stub=os2stub.exe

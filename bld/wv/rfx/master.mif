@@ -56,7 +56,7 @@ rfx.exe : litdef.gh $(objs)
 .asm: ../$(host_os)i86
 
 ./mkstr.exe : mkstr.c wd.str wdengin.str menu.str $(dig_dir)/h/mad.str
-        $(bld_cl) -I"$(wv_dir)/h" -I"$(dig_dir)/h" $(wcl_util_opts) $[@
+        $(bld_cl) -I"$(wv_dir)/h" -I"$(dig_dir)/h" $(bld_cl_opts) $[@
 
 litdef.gh : ./mkstr.exe
         $[@ $^@

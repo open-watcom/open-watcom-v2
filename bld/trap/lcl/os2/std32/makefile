@@ -11,7 +11,7 @@ cpu     = x86
 name    = std32
 which = TRAP
 
-extra_c_flags =-i"$(lang_root)/h/os21x" -i"$(lang_root)/h/os2"
+extra_c_flags = -I"$(os2api_dir)/os2286/h" -I"$(os2api_dir)/os2386/h"
 
 extra_objs = &
         accmisc.obj &

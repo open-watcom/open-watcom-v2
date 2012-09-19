@@ -21,7 +21,7 @@ lnk = $(name).lnk
 !include deftarg.mif
 !include defrule.mif
 
-.c : ..;$(lang_root)/src/startup
+.c : ..
 
 extra_c_flags = -s $(def_flags)
 

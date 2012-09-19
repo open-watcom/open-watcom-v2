@@ -11,12 +11,14 @@ set PROJNAME=wlib
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wlib.exe    <OWBINDIR>/bwlib<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwlib.exe     <OWBINDIR>/bwlib<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwlibd<DYEXT> <OWBINDIR>/bwlibd<DYEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
     echo rm -f <OWBINDIR>/bwlib<CMDEXT>
     rm -f <OWBINDIR>/bwlib<CMDEXT>
+    rm -f <OWBINDIR>/bwlibd<DYEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

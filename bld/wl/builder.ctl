@@ -11,12 +11,14 @@ set PROJNAME=wlink
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wl.exe <OWBINDIR>/bwlink<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwlink.exe     <OWBINDIR>/bwlink<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwlinkd<DYEXT> <OWBINDIR>/bwlinkd<DYEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
     echo rm -f <OWBINDIR>/bwlink<CMDEXT>
     rm -f <OWBINDIR>/bwlink<CMDEXT>
+    rm -f <OWBINDIR>/bwlinkd<DYEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

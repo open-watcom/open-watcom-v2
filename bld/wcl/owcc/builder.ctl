@@ -11,8 +11,8 @@ set PROJNAME=owcc
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/owcc.exe <OWBINDIR>/bowcc<CMDEXT>
-    <CCCMD> <PROJDIR>/<OWOBJDIR>/specs.owc <OWBINDIR>/bspecs.owc
+    <CPCMD> <OWOBJDIR>/bowcc.exe <OWBINDIR>/bowcc<CMDEXT>
+    <CCCMD> <PROJDIR>/<OWOBJDIR>/bspecs.owc <OWBINDIR>/bspecs.owc
 
 [ BLOCK <1> bootclean ]
 #======================

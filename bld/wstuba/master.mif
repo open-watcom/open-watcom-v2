@@ -1,7 +1,6 @@
-#pmake: build os_dos os_win cpu_i86 cpu_386
+proj_name = wstuba
 
-host_os  = dos
-host_cpu = i86
+wstuba_autodepends = .autodepend
 
 memory_model_i86 = s
 
@@ -11,9 +10,7 @@ memory_model_i86 = s
 
 all : wstub.exe wstubq.exe
 
-!ifeq release 1
-extra_c_flags = -oaxs
-!endif
+.asm : ..
 
 wstub.exe : wstub.obj
         $(linker) $(lflags) file $[@

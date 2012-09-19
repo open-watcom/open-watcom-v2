@@ -15,13 +15,13 @@ all: $(targets) .SYMBOLIC
 	@%null
 	
 mkerr.exe: mkerr.c
-        $(bld_cl) $[@ $(wcl_util_opts)
+        $(bld_cl) $[@ $(bld_cl_opts)
 
 envarg.exe: envarg.c
-        $(bld_cl) $[@ $(wcl_util_opts)
+        $(bld_cl) $[@ $(bld_cl_opts)
 
 ifeq.exe: ifeq.c
-        $(bld_cl) $[@ $(wcl_util_opts)
+        $(bld_cl) $[@ $(bld_cl_opts)
 
 rem: rem.c
-        $(bld_cl) $[@ $(wcl_util_opts)
+        $(bld_cl) $[@ $(bld_cl_opts)

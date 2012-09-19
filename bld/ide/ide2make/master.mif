@@ -1,5 +1,9 @@
 proj_name = ide2make
 
+!ifndef name
+name = $(proj_name)
+!endif
+
 !ifndef ide2make_autodepends
 ide2make_autodepends = .AUTODEPEND
 !endif
@@ -19,5 +23,5 @@ inc_dirs = $(wclass_inc_dirs) -I"$(idelib_dir)"
 LIBS = $(wclass_lib) &
     $(idelib_dir)/$(host_os)$(host_cpu)/ide.lib
 
-$(proj_name).exe : $(objs) $(LIBS)
+$(name).exe : $(objs) $(LIBS)
     $(linker) option quiet $(lflags) option map name $^@ file { $(objs) } lib {$(LIBS)}

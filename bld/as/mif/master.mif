@@ -1,4 +1,8 @@
+!ifdef bootstrap
+name = b$(proj_name)
+!else
 name = $(proj_name)
+!endif
 
 .extensions: .rc .y .re .gh .msg
 
@@ -188,7 +192,9 @@ $(asi_lib_j) : $(asi_lib) asmsgj.obj
 !endif
 
 # systems where version resource must be added to .EXE
+!ifndef bootstrap
 version_res_exe_nt_386 = exever.res
+!endif
 
 $(name).exe : msg.gh $(as_objs) $(cl_objs) $(libs) $(owl_lib) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
@@ -214,7 +220,7 @@ msg.gh : ./mkstrid.exe
         $[@ $^@
 
 ./mkstrid.exe : mkstrid.c as.msg
-        $(bld_cl) $(wcl_util_opts) $(as_extra_defines) $(dbg_extra_defines) $(as_incs) $[@
+        $(bld_cl) $(bld_cl_opts) $(as_extra_defines) $(dbg_extra_defines) $(as_incs) $[@
 
 $(yacc_in) : $(yacc_src) $(as_dir)/y/yydriver.c
         wsplice $(splice_opts) $[@ $^@

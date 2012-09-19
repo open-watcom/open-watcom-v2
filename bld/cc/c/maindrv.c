@@ -36,33 +36,23 @@
 #include <stdlib.h>
 #include "idedrv.h"
 
-static void MakeDllName( char *dst, char const *src ){
-    int i;
-    for( i=3; i > 0; --i ){
-        if( *src == '\0' )break;
-        *dst = *src;
-        ++dst;
-        ++src;
-    }
-    *dst++ = 'd';
-    strcpy( dst, src );
-}
+#ifndef DLL_NAME
+  #error DLL_NAME must be given with -d switch when DLL Driver
+#else
+  #define quoted( name ) # name
+  #define _str(x) quoted(x)
+  #define DLL_NAME_STR _str(DLL_NAME)
+#endif
 
 int main( int count, char* args[] ){
 /**********************************/
     IDEDRV  info;
-    char    fname[_MAX_FNAME];
-    char    dllname[_MAX_FNAME];
     char    *buffer;
     int     len;
     int     retcode;                 // - return code
 
-
     count = count;
-    _splitpath( args[0], NULL, NULL, fname, NULL );  // get fname
-    strlwr( fname );
-    MakeDllName( dllname, fname );
-    IdeDrvInit( &info, dllname, NULL );
+    IdeDrvInit( &info, DLL_NAME_STR, NULL );
     retcode = IDEDRV_ERR_RUN_FATAL;
     len = _bgetcmd( NULL, INT_MAX ) + 1;
     buffer = malloc( len );

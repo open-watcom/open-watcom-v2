@@ -11,12 +11,14 @@ set PROJNAME=wccaxp
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wcaxp.exe <OWBINDIR>/bwccaxp<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwcaxp.exe      <OWBINDIR>/bwccaxp<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwccdaxp<DYEXT> <OWBINDIR>/bwccdaxp<DYEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
     echo rm -f <OWBINDIR>/bwccaxp<CMDEXT>
     rm -f <OWBINDIR>/bwccaxp<CMDEXT>
+    rm -f <OWBINDIR>/bwccdaxp<DYEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

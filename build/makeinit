@@ -1,6 +1,5 @@
 bld_ver      = $(%BLD_VER)
 patch_level  = 0
-lang_root    = $(%WATCOM)
 contrib_dir  = $(%OWROOT)/contrib
 build_dir    = $(%OWROOT)/build
 src_dir      = $(%OWROOT)/bld
@@ -27,7 +26,6 @@ default_windowing = $(%DEFAULT_WINDOWING)
 !ifndef __UNIX__
 
 tools_root      = $(%TOOLDR)\tools
-nlang_root      = $(%DWATCOM)
 
 # The NOVELLNDK environment variable should be added during install. If not, the default location is
 # C:\NOVELL\NDK\NWSDK.
@@ -53,7 +51,6 @@ rsilib=$(tools_root)\rsilib
 !else
 
 tools_root      = $(%TOOLDR)/tools
-nlang_root      = $(%DWATCOM)
 
 # The NOVELLNDK environment variable should be added during install. If not, the default location is
 # C:\NOVELL\NDK\NWSDK.

@@ -55,7 +55,7 @@ _jerr.gh : ./jmkstr.exe
         $[@ $^@
 
 ./mkstr.exe : $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
-        $(bld_cl) $[@ $(wcl_util_opts) -I"$(trap_dir)/h"
+        $(bld_cl) $[@ $(bld_cl_opts) -I"$(trap_dir)/h"
 
 ./jmkstr.exe : $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
-        $(bld_cl) $[@ $(wcl_util_opts) -DJAPANESE_MESSAGES -I"$(trap_dir)/h"
+        $(bld_cl) $[@ $(bld_cl_opts) -DJAPANESE_MESSAGES -I"$(trap_dir)/h"

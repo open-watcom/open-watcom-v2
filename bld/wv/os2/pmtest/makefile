@@ -3,7 +3,7 @@
 .SUFFIXES:
 .SUFFIXES: .res .rc .lst .obj .c .asm .hlp .itl .ipf
 
-CC         = wcc386 -d2 -i"$(lang_root)/h/os2"
+CC         = wcc386 -d2 -I"$(os2api_dir)/os2386/h"
 
 AFLAGS  = -Mx -t -z
 ASM     = ml -c -Zm
@@ -46,7 +46,7 @@ hello.obj: hello.c $(HEADERS)
 dbg.obj: dbg.c $(HEADERS)
 
 try.exe : try.c
-    wcc386 try -bw -d2 -i"$(lang_root)/h/os2"
+    wcc386 try -bw -d2 -I"$(os2api_dir)/os2386/h"
     wlink sys os2v2_pm @try
 
 hello.exe: hello.obj  hello.lnk hello.res

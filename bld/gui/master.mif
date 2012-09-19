@@ -117,7 +117,7 @@ $(name).lib : _guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(libs) $(__MAKEFILES
         $(librarian) $(libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
 
 ./mkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+        $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
 
 _guimsgs.gh: ./mkstr.exe $(gui_dir)/h/gui.msg
         $[@ $^@ $(gui_msg_id_modifier)

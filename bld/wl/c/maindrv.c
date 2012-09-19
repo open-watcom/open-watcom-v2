@@ -37,6 +37,14 @@
 #include "clibext.h"
 #endif
 
+#ifndef DLL_NAME
+  #error DLL_NAME must be given with -d switch when DLL Driver
+#else
+  #define quoted( name ) # name
+  #define _str(x) quoted(x)
+  #define DLL_NAME_STR _str(DLL_NAME)
+#endif
+
 int main( int argc, char **argv )
 {
     IDEDRV          inf;
@@ -47,7 +55,7 @@ int main( int argc, char **argv )
     IDEDRV_STATUS   status;
 
     status = IDEDRV_ERR_LOAD;
-    IdeDrvInit( &inf, "wlinkd.dll", NULL );
+    IdeDrvInit( &inf, DLL_NAME_STR, NULL );
 #ifndef __UNIX__
     cmdline = NULL;
     cmdlen = _bgetcmd( NULL, 0 );

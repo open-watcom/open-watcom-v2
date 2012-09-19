@@ -1,4 +1,5 @@
 proj_name = wdump
+
 wdump_autodepends = .autodepend
 
 !include cproj.mif

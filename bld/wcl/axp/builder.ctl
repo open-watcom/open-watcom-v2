@@ -11,7 +11,7 @@ set PROJNAME=wclaxp
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wclaxp.exe <OWBINDIR>/bwclaxp<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwclaxp.exe <OWBINDIR>/bwclaxp<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

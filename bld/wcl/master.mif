@@ -4,13 +4,19 @@ proj_name = wcl
 wcl_autodepends = .AUTODEPEND
 !endif
 
+owcc_specs = specs.owc
+!ifdef bootstrap
+name       = b$(name)
+owcc_specs = b$(owcc_specs)
+!endif
+
 wcl_trmem = 1
 
 !ifdef target_cpu
 objs = clcommon.obj cmdlhelp.obj wcl.obj
 !else
 objs = clcommon.obj cmdlhelp.obj owcc.obj getopt.obj quit.obj
-extra_deps = owcchelp.gh specs.owc
+extra_deps = owcchelp.gh $(owcc_specs)
 !endif
 objs += $(trmem_objs) $(cl_objs)
 
@@ -41,7 +47,7 @@ inc_dirs = -I. -I.. -I"../../h"
 .c: ../../c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
 
 # systems where version resources must be added to .EXE
-!ifndef prebuild
+!ifndef bootstrap
 version_res_exe_nt_386 = exever.res
 !endif
 
@@ -60,5 +66,10 @@ verrc_exe_skel = ../../exever.rc
 owcchelp.gh: ../../owcchelp.sp
         wsplice "-f\"%s\"," $< $@
 
-specs.owc: $(wlink_dir)/specs.sp
+$(owcc_specs): $(wlink_dir)/specs.sp
+!ifdef bootstrap
+        wsplice -k Pspecs $< sed.tmp
+        sed -f ../../convtool.sed sed.tmp >$@
+!else
         wsplice -k Pspecs $< $@
+!endif
