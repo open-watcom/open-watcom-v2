@@ -31,6 +31,9 @@
 
 #ifndef __DPMI_H
 #define __DPMI_H
+
+#include "watcom.h"
+
 #ifdef __OSI__
  extern  void   __Int31();
  #define _INT_31        "call __Int31"
@@ -38,7 +41,11 @@
  #define _INT_31        "int 0x31"
 #endif
 
-#include "watcom.h"
+#if defined(__386__)
+#define __DX    edx
+#else
+#define __DX    dx
+#endif
 
 #define DOS_SEG( a ) ((unsigned short) (a & 0Xffff))
 #define DOS_SEL( a ) ((unsigned short) (a >> 16L))
@@ -148,6 +155,14 @@ typedef struct {
     unsigned_8          base_24_31;
 } descriptor;
 
+typedef enum {
+    DPMI_WATCH_EXEC,
+    DPMI_WATCH_WRITE,
+    DPMI_WATCH_READWRITE
+} dpmi_watch_type;
+
+typedef long dpmi_watch_handle;
+
 #define DPMISetWatch                            _DPMISetWatch
 #define DPMIClearWatch                          _DPMIClearWatch
 #define DPMITestWatch                           _DPMITestWatch
@@ -185,7 +200,7 @@ typedef struct {
 #define DPMISaveRMStateAddr                     _DPMISaveRMStateAddr
 #define DPMISavePMStateAddr                     _DPMISavePMStateAddr
 #define DPMISaveStateSize                       _DPMISaveStateSize
-#define DPMIGetVenderSpecificAPI                _DPMIGetVenderSpecificAPI
+#define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
 
 #if defined( M_I86SM ) || defined( M_I86MM ) || defined( __386__ )
 #if defined(__386__)
@@ -206,11 +221,11 @@ typedef struct {
 extern void _DPMIFreeRealModeCallBackAddress( void __far * proc );
 extern void __far *_DPMIAllocateRealModeCallBackAddress( void __far * proc, rm_call_struct __far *cs );
 extern void __far *_DPMIGetRealModeInterruptVector( char iv );
-extern void _DPMISetPMInterruptVector( char iv, void __far * ptr );
+extern int  _DPMISetPMInterruptVector( char iv, void __far * ptr );
 extern void _DPMISetPMExceptionVector( char iv, void __far * ptr );
 extern void __far *_DPMIGetPMExceptionVector( char iv );
 extern void __far *_DPMIGetPMInterruptVector( char iv );
-extern void _DPMISetRealModeInterruptVector( char iv, void __far * ptr );
+extern int  _DPMISetRealModeInterruptVector( char iv, void __far * ptr );
 extern short _DPMIModeDetect( void );
 extern void _DPMIIdle( void );
 extern void _DPMIGetVersion( version_info __far * );
@@ -240,20 +255,12 @@ extern int _DPMISimulateRealModeInterrupt( char interrupt, char flags,
                         unsigned short words_to_copy, rm_call_struct __far *call_st );
 extern long _DPMIAllocateDOSMemoryBlock( short para );
 extern void _DPMIFreeDOSMemoryBlock( short sel );
-void __far  *_DPMIRawPMtoRMAddr( void );
-unsigned long    _DPMIRawRMtoPMAddr( void );
-void __far  *_DPMISaveRMStateAddr( void );
-unsigned long     _DPMISavePMStateAddr( void );
-unsigned short      _DPMISaveStateSize( void );
-void __far *_DPMIGetVenderSpecificAPI( char __far * );
-
-typedef enum {
-    DPMI_WATCH_EXEC,
-    DPMI_WATCH_WRITE,
-    DPMI_WATCH_READWRITE
-} dpmi_watch_type;
-
-typedef long dpmi_watch_handle;
+extern void __far  *_DPMIRawPMtoRMAddr( void );
+extern unsigned long    _DPMIRawRMtoPMAddr( void );
+extern void __far  *_DPMISaveRMStateAddr( void );
+extern unsigned long     _DPMISavePMStateAddr( void );
+extern unsigned short      _DPMISaveStateSize( void );
+extern void __far *_DPMIGetVendorSpecificAPI( char __far * );
 
 extern dpmi_watch_handle _DPMISetWatch( unsigned long linear, char len, dpmi_watch_type type );
 extern void _DPMIClearWatch( short handle );
@@ -644,21 +651,26 @@ extern void _DPMIResetWatch( short handle );
       /*0x1B 0xC0*/        " sbb ax,ax "  \
         parm[di] value[ax];
 
-#if defined(__386__)
-#define __DX    edx
-#else
-#define __DX    dx
-#endif
-
 #pragma aux _DPMIGetRealModeInterruptVector = \
         "mov    ax,0200h" \
         _INT_31 \
         parm [bl] value[cx __DX] modify[ax];
 
+#if defined(__386__)
 #pragma aux _DPMISetRealModeInterruptVector = \
         "mov    ax,0201h" \
         _INT_31 \
-        parm [bl] [cx __DX] modify[ax];
+        "sbb    eax,eax" \
+        parm [bl] [cx edx] \
+        value [eax];
+#else
+#pragma aux _DPMISetRealModeInterruptVector = \
+        "mov    ax,0201h" \
+        _INT_31 \
+        "sbb    ax,ax" \
+        parm [bl] [cx dx] \
+        value [ax];
+#endif
 
 #pragma aux _DPMIGetPMExceptionVector = \
         "mov    ax,0202h" \
@@ -675,10 +687,21 @@ extern void _DPMIResetWatch( short handle );
         _INT_31 \
         parm [bl] value[cx __DX] modify[ax];
 
+#if defined(__386__)
 #pragma aux _DPMISetPMInterruptVector = \
         "mov    ax,0205h" \
         _INT_31 \
-        parm [bl] [cx __DX] modify[ax];
+        "sbb    eax,eax" \
+        parm [bl] [cx edx] \
+        value [eax];
+#else
+#pragma aux _DPMISetPMInterruptVector = \
+        "mov    ax,0205h" \
+        _INT_31 \
+        "sbb    ax,ax" \
+        parm [bl] [cx dx] \
+        value [ax];
+#endif
 
 #if defined(__386__)
 #pragma aux _DPMIAllocateRealModeCallBackAddress = \
@@ -782,7 +805,7 @@ extern void _DPMIResetWatch( short handle );
         value           [ax] \
         modify exact    [eax bx cx si edi];
 
-#pragma aux             _DPMIGetVenderSpecificAPI = \
+#pragma aux             _DPMIGetVendorSpecificAPI = \
         "push ds"               \
         "push es"               \
         "push fs"               \

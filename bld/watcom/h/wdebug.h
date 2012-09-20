@@ -90,8 +90,9 @@ extern _word DS( void );
 extern _word CS( void );
 extern void TimeSlice( void );
 extern short CheckWin386Debug( void );                  /* 00 */
+extern short CopyMemory386( _word, _dword, _word, _dword, _word ); /* 01 */
 extern void GetDescriptor( short, void far * );         /* 02 */
-/* CopyMemory - needs assembler helper */               /* 03 */
+extern _dword GetLimit( short );                        /* 03 */
 extern short GetDebugRegister( short, _dword far * );   /* 04 */
 extern short SetDebugRegister( short, _dword far * );   /* 05 */
 extern _word InitSampler( void far *, _word, _word );   /* 06 */
@@ -161,10 +162,28 @@ extern short RaiseInterruptInVM( _dword, _word );       /* 34 */
         "int 2fh" \
         value[ax];
 
+#pragma aux CopyMemory386 = \
+        ".386" \
+        "shl edx,16" \
+        "mov dx,di" \
+        "xchg bx,si" \
+        "shl ebx,16" \
+        "mov bx,si" \
+        "mov si,ax" \
+        "pop di" \
+        "mov ax,0fa01h" \
+        "int 2fh" \
+        parm [cx] [dx di] [ax] [si bx] value[ax];
+
 #pragma aux GetDescriptor = \
         "mov ax,0fa02h" \
         "int 2fh" \
         parm [cx] [es bx];
+
+#pragma aux GetLimit = \
+        "mov ax,0fa03h" \
+        "int 2fh" \
+        parm [bx] value [dx ax];
 
 #pragma aux GetDebugRegister = \
         ".386" \
