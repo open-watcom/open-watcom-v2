@@ -106,7 +106,7 @@ extern void             **ThrdTab;
 
 /* regname.c */
 extern char const       * const ModifierTab[];
-extern char const       * const RegisterName[];
+extern char const       * const X86RegisterName[];
 extern ins_name const        ImmedTable[];
 extern ins_name const        ShiftTable[];
 extern ins_name const        Group1Table[];

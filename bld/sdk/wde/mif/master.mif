@@ -19,6 +19,8 @@ memory_model_i86 = l
 
 WINDOWS=1
 !include wres.mif
+!include $(commonui_dir)/client.mif
+!include $(wpi_dir)/client.mif
 
 extra_c_flags     = -DWIN_GUI -s -fh
 
@@ -66,8 +68,8 @@ extra_c_flags_nt    = -DNOUSE3D
 .c : c;../c;$(cpp_dir)
 
 inc_dirs  = -Ih -I"../h" -I"$(fmedit_dir)/dev" -I"$(wres_dir)/h"
-inc_dirs += -I"$(wr_dir)/h" -I"$(cpp_dir)" -I"$(wpi_dir)/h" -I"$(sdk_misc_dir)"
-inc_dirs += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
+inc_dirs += -I"$(wr_dir)/h" -I"$(cpp_dir)" $(wpi_inc_dirs) -I"$(sdk_misc_dir)"
+inc_dirs += $(commonui_inc_dirs)
 
 extra_l_flags = op map,symfile
 extra_l_flags_nt = op stack=100k, heap=16k commit heap=8k
@@ -76,9 +78,7 @@ extra_l_flags_win += library commdlg, ddeml
 
 xlibs = $(fmedit_dir)/$(host_os)$(host_cpu)/fmedit.lib &
         $(wr_dir)/$(host_os)$(host_cpu)/wr.lib &
-        $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib &
-        $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib &
-        $(wres_lib)
+        $(wpi_lib) $(commonui_lib) $(wres_lib)
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res

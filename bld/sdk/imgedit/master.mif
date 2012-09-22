@@ -17,6 +17,8 @@ memory_model_i86 = l
 
 WINDOWS=1
 !include wres.mif
+!include $(commonui_dir)/client.mif
+!include $(wpi_dir)/client.mif
 
 .JUST_ENOUGH
 
@@ -65,8 +67,7 @@ extra_c_flags += -d_WPI_TEST_
 
 extra_c_flags_win = -zc
 
-libs = $(wres_lib) $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib
-libs += $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+libs = $(wres_lib) $(wpi_lib) $(commonui_lib)
 !ifneq host_os os2
 libs += $(wr_dir)/$(host_os)$(host_cpu)/wr.lib
 !endif
@@ -81,9 +82,8 @@ extra_l_flags_nt += alias '_WinMain'='_WinMain@16'
 extra_l_flags_os2 = option stack=12k option heapsize=2k &
                     option symfile=$(name).sym
 
-inc_dirs  = -Ih -I"$(wimgedit_dir)/h" -I"$(wres_dir)/h" -I"$(wr_dir)/h"
-inc_dirs += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
-inc_dirs += -I"$(sdk_misc_dir)" -I"$(wpi_dir)/h"
+inc_dirs  = -Ih -I"$(wimgedit_dir)/h" -I"$(wres_dir)/h" -I"$(wr_dir)/h" $(commonui_inc_dirs)
+inc_dirs += -I"$(sdk_misc_dir)" $(wpi_inc_dirs)
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res

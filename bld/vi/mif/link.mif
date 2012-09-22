@@ -35,10 +35,9 @@ extra_l_flags_linux = lib $(ncurses_dir)/linux$(host_cpu)/ncurses.lib lib $(ui_d
 !endif
 !endif
 !ifdef sys_windowed
-libs += $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib
-libs += $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
-extra_l_flags += lib $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib
-extra_l_flags += lib $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+libs += $(wpi_lib) $(commonui_lib)
+extra_l_flags += lib $(wpi_lib)
+extra_l_flags += lib $(commonui_lib)
 !endif
 
 extra_l_flags_dos_i86 = op stack=1k

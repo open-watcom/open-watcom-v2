@@ -40,7 +40,6 @@
 #include "descript.h"
 #include "mem.h"
 #include "font.h"
-#include "seginfo.h"
 #include "savelbox.h"
 #include "memwnd.h"
 #include "srchmsg.h"

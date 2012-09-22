@@ -11,6 +11,8 @@ sys_windowed = 1
 !include deftarg.mif
 !include defrule.mif
 
+!include $(commonui_dir)/client.mif
+
 objs =  zoom.obj zmglob.obj zmproc.obj zmscreen.obj zmconfig.obj
 
 extra_c_flags_mem = -DNO_WPI
@@ -19,9 +21,9 @@ extra_l_flags     = option map
 extra_l_flags_nt  = op stack=64k
 extra_l_flags_win = op stack=7k, heapsize=2k
 
-xlibs = $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+xlibs = $(commonui_lib)
 
-inc_dirs = -I.. -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
+inc_dirs = -I.. $(commonui_inc_dirs)
 
 .c: ..
 .h: ..

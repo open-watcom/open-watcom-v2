@@ -79,11 +79,11 @@
 typedef BOOL (*statushook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 
 typedef struct {
-    WORD        separator_width;            /* in pixels */
-    WORD        width;                      /* width of block area */
-    char        width_is_percent    : 1;
-    char        width_is_pixels     : 1;
-    char        spare               : 6;
+    WORD            separator_width;            /* in pixels */
+    WORD            width;                      /* width of block area */
+    unsigned char   width_is_percent    : 1;
+    unsigned char   width_is_pixels     : 1;
+    unsigned char   spare               : 6;
 } status_block_desc;
 
 typedef struct statwnd statwnd;

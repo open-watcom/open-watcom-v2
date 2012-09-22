@@ -112,7 +112,7 @@ static DWORD    CurBase;
 /*
  * GetASelectorLimit
  */
-DWORD far GetASelectorLimit( WORD sel )
+DWORD GetASelectorLimit( WORD sel )
 {
     sel = sel;
     return( CurLimit );

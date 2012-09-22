@@ -30,7 +30,6 @@
 
 
 #include "precomp.h"
-#include <commdlg.h>
 #include <string.h>
 #include <stdio.h>
 #include <io.h>

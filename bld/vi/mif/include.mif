@@ -10,12 +10,11 @@ inc_dirs_linux = $(inc_dirs_unix)
 inc_dirs_bsd   = $(inc_dirs_unix)
 inc_dirs_osx   = $(inc_dirs_unix)
 
-winstuff = -I"$(wpi_dir)/h" -I"$(datactl_dir)" -I"$(sdk_misc_dir)"
-winstuff += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
+winstuff = $(wpi_inc_dirs) -I"$(datactl_dir)" -I"$(sdk_misc_dir)" $(commonui_inc_dirs)
 
 !ifdef sys_windowed
-inc_dirs_nt  = -I"$(vi_dir)/ctl" -I"$(vi_dir)/win" -I"$(sdk_misc_dir)" -I"$(wpi_dir)/h"
-inc_dirs_nt += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
+inc_dirs_nt  = -I"$(vi_dir)/ctl" -I"$(vi_dir)/win" -I"$(sdk_misc_dir)" $(wpi_inc_dirs)
+inc_dirs_nt += $(commonui_inc_dirs)
 inc_dirs_win = -I"$(vi_dir)/ctl" -I"$(vi_dir)/win" $(winstuff)
 inc_dirs_os2 = -I"$(vi_dir)/ctl" -I"$(vi_dir)/pm" $(winstuff)
 !else
@@ -24,7 +23,7 @@ inc_dirs_win = -I"$(vi_dir)/win"
 
 !ifeq host_cpu axp
 ! ifdef sys_windowed
-inc_dirs_nt = -I"$(vi_dir)/ctl" -I"$(vi_dir)/win" -I"$(sdk_misc_dir)" -I"$(wpi_dir)/h"
+inc_dirs_nt = -I"$(vi_dir)/ctl" -I"$(vi_dir)/win" -I"$(sdk_misc_dir)" $(wpi_inc_dirs)
 ! else
 inc_dirs_nt = -I"$(watcom_dir)/h"
 ! endif

@@ -37,9 +37,6 @@
 #include "mem.h"
 #include "loadcc.h"
 
-#ifndef MAX_SECTIONS
-    #define MAX_SECTIONS    20
-#endif
 
 /*
  * The window must always be the first member of this structure so that
@@ -331,7 +328,7 @@ CB StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
         _wpi_fillrect( (WPI_PRES)wparam, &r, colorButtonFace, brushButtonFace );
         break;
     default:
-        return( DefWindowProc( hwnd, msg, wparam, lparam ) );
+        return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
     }
     return( 0 );
 

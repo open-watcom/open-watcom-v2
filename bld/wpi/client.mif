@@ -1,0 +1,4 @@
+!ifeq sys_windowed 1
+wpi_inc_dirs = -I"$(wpi_dir)/h"
+wpi_lib = $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib
+!endif

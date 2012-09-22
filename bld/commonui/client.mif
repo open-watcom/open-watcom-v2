@@ -1,0 +1,6 @@
+!ifeq sys_windowed 1
+commonui_inc_dirs = -I"$(commonui_dir)/$(host_os)$(host_cpu)" -I"$(commonui_dir)/h" -I"$(commonui_dir)/res"
+commonui_lib = $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+commonui_str_def = $(commonui_dir)/$(host_os)$(host_cpu)/uistr.gh
+commonui_str_msg = $(commonui_dir)/$(host_os)$(host_cpu)/uistrmsg.gh
+!endif

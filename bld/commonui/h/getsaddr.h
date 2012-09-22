@@ -32,6 +32,8 @@
 #ifndef _GETSADDR_H_INCLUDED
 #define _GETSADDR_H_INCLUDED
 
-BOOL    GetStartAddress( char *path, void *res );
+#include "machtype.h"
+
+BOOL    GetStartAddress( char *path, addr48_ptr *res );
 
 #endif /* _GETSADDR_H_INCLUDED */

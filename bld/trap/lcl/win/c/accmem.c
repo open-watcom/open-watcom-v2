@@ -24,62 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Segmented memory access via WDebug386 or DPMI.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include <stdio.h>
-#include <string.h>
 #include <dos.h>
-#include "descript.h"
+#include "stdwin.h"
 #include "wdebug.h"
-
-/*
- * WDebug386 must be defined in a program using these procedures
- */
-extern BOOL             near WDebug386;
-
-extern WORD CopySize;
-extern short far _CopyMemory( WORD, DWORD, WORD, DWORD );
-#pragma aux _CopyMemory parm [cx] [dx di] [ax] [si bx] value[ax];
-
-/*
- * GetADescriptor - read descriptor
- */
-void GetADescriptor( WORD seg, descriptor *desc )
-{
-    union REGPACK       r;
-
-    memset( desc, 0, sizeof( descriptor ) );
-    if( WDebug386 ) {
-        GetDescriptor( seg, desc );
-    } else {
-        memset( &r, 0, sizeof( r ) );
-        r.w.ax = 0x0b;
-        r.w.bx = seg;
-        r.w.es = FP_SEG( desc );
-        r.w.di = FP_OFF( desc );
-        intr( 0x31, &r );
-    }
-
-} /* GetADescriptor */
-
-/*
- * IsSeg32 - given a segment, check if it is a BIG one.
- */
-int IsSeg32( WORD seg )
-{
-    descriptor  desc;
-
-    GetADescriptor( seg, &desc );
-    if( desc.big_or_default ) {
-        return( TRUE );
-    }
-    return( FALSE );
-
-} /* IsSeg32 */
 
 void PushAll( void );
 void PopAll( void );
@@ -91,17 +45,14 @@ void PopAll( void );
  */
 DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
 {
-    DWORD       rc;
+    DWORD       rc = 0;
 
-    if( !WDebug386 ) {
-        PushAll();
+    if( WDebug386 ) {
+        rc = CopyMemory386( FP_SEG(buff), FP_OFF(buff), sel, off,  size );
+    } else if( DebugeeTask != NULL ) {
         rc = MemoryRead( sel, off, buff, size );
-        PopAll();
-        return( rc );
-    } else {
-        CopySize = size;
-        return( _CopyMemory( FP_SEG( buff ), FP_OFF( buff ), sel, off  ) );
     }
+    return( rc );
 
 } /* ReadMem */
 
@@ -110,15 +61,73 @@ DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
  */
 DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
 {
-    DWORD       rc;
-    if( !WDebug386 ) {
-        PushAll();
+    DWORD       rc = 0;
+
+    if( WDebug386 ) {
+        rc = CopyMemory386( sel, off, FP_SEG(buff), FP_OFF(buff), size );
+    } else if( DebugeeTask != NULL ) {
         rc = MemoryWrite( sel, off, buff, size );
-        PopAll();
-        return( rc );
-    } else {
-        CopySize = size;
-        return( _CopyMemory( sel, off, FP_SEG( buff ), FP_OFF( buff ) ) );
     }
+    return( rc );
 
 } /* WriteMem */
+
+unsigned ReqRead_mem( void )
+{
+    read_mem_req        *acc;
+    LPVOID              data;
+    unsigned            len;
+
+    acc = GetInPtr(0);
+    data = GetOutPtr(0);
+
+    len = ReadMem( acc->mem_addr.segment, acc->mem_addr.offset, data, acc->len );
+    return( len );
+}
+
+unsigned ReqWrite_mem( void )
+{
+    DWORD               len;
+    LPVOID              data;
+    write_mem_req       *acc;
+    write_mem_ret       *ret;
+
+    acc = GetInPtr(0);
+    data = GetInPtr( sizeof( *acc ) );
+    ret = GetOutPtr(0);
+    len = GetTotalSize() - sizeof( *acc );
+
+    ret->len = WriteMem( acc->mem_addr.segment, acc->mem_addr.offset, data, len );
+    return( sizeof( *ret ) );
+}
+
+unsigned ReqChecksum_mem( void )
+{
+    DWORD       offset;
+    WORD        length,value;
+    DWORD       sum;
+    checksum_mem_req    *acc;
+    checksum_mem_ret    *ret;
+
+    acc = GetInPtr(0);
+    ret = GetOutPtr(0);
+
+    length = acc->len;
+    sum = 0;
+    if( DebugeeTask != NULL ) {
+        offset = acc->in_addr.offset;
+        while( length != 0 ) {
+            ReadMem( acc->in_addr.segment, offset, (LPVOID)&value, 2 );
+            sum += value & 0xff;
+            offset++;
+            length--;
+            if( length != 0 ) {
+                sum += value >> 8;
+                offset++;
+                length--;
+            }
+        }
+    }
+    ret->result = sum;
+    return( sizeof( *ret ) );
+}

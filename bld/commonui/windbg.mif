@@ -1,0 +1,4 @@
+!ifeq host_os win
+windbg_lib = $(commonui_dir)/windbg/windbg.lib
+windbg_inc_dirs = -I"$(commonui_dir)/h"
+!endif

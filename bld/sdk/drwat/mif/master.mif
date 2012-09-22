@@ -17,6 +17,7 @@ all: $(exc_name) .SYMBOLIC
 !include deftarg.mif
 
 !include $(wdisasm_dir)/mif/disasm.mif
+!include $(commonui_dir)/client.mif
 
 !ifndef drwatcom_95
 drwatcom_95 = 0
@@ -65,6 +66,8 @@ extra_l_flags += lib th32.lib
 extra_proj_obj_nt += reg.obj
 !endif
 
+extra_l_flags_win = lib commdlg.lib
+
 extra_proj_obj_win = globals.obj notify.obj winproc.obj debug.obj dump.obj &
             win32app.obj lddips.obj stack.obj &
             $(dis_objs)
@@ -78,13 +81,12 @@ proj_obj =  listbox.obj log.obj stat.obj lognote.obj &
 .asm : .
 .c : ..;$(common_dir);$(dig_srcs);$(mad_srcs);$(dis_srcs)
 
-inc_dirs = -I. -I.. -I"$(common_dir)" -I"$(dig_dir)/h" $(dis_includes)
-inc_dirs += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
+inc_dirs = -I. -I.. -I"$(common_dir)" -I"$(dig_dir)/h" $(dis_includes) $(commonui_inc_dirs)
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 
-xlibs = $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+xlibs = $(commonui_lib)
 
 #explicit rules
 ################

@@ -51,9 +51,7 @@ _InterruptStackSel      dw 0
 _IDTSel                 dw 0
 _DPL                    dw 0
 _OurOwnInt              dw 0
-_CopySize               dw 0
 
-public _CopySize
 public _DPL
 public _IDTSel
 public _OurOwnInt
@@ -208,37 +206,6 @@ PUBLIC ReleaseIDTSel_
 
         ret
 ReleaseIDTSel_ ENDP
-
-;****************************************************************************
-;***                                                                      ***
-;*** _CopyMemory - use WDEBUG.386 to copy memory between an arbitrary     ***
-;***               selector:offset pair.                                  ***
-;***                                                                      ***
-;****************************************************************************
-_CopyMemory_ PROC
-public _CopyMemory_
-
-        ;*
-        ;*** put destination offset into edx
-        ;*
-        shl     edx,16
-        mov     dx,di
-
-        ;*
-        ;*** put source offset into ebx
-        ;*
-        xchg    bx,si           ; no bx=hi, si =lo
-        shl     ebx,16
-        mov     bx,si
-
-        mov     si,ax           ; source selector
-        mov     di,_CopySize
-
-        mov     ax,0fa01h       ; copy the bytes
-        int     02fh            ; returns bytes copied in ax
-        ret
-
-_CopyMemory_ ENDP
 
 _TEXT ends
         end

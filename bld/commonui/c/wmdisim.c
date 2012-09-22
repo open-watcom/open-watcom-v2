@@ -36,10 +36,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "bool.h"
 #include "wmdisim.h"
 #include "mem.h"
 
-typedef char    bool;
 
 #define MAX_STR         256
 #define STATE_NORMAL    0x00

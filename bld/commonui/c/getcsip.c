@@ -30,7 +30,7 @@
 
 
 #include "precomp.h"
-#include <stdio.h>
+#include "getcsip.h"
 
 #define MAKECSIP( cs, ip ) (((DWORD)(cs) << 16L) + (DWORD)(ip))
 

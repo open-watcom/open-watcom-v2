@@ -30,14 +30,8 @@
 
 
 #include "precomp.h"
-#include <stdio.h>
 #include "tinyio.h"
-
-typedef struct {
-    DWORD       offset;
-    WORD        segment;
-} addr48_ptr;
-
+#include "getsaddr.h"
 
 #define EXE_NE  0x454e
 #define EXE_MZ  0x5a4d

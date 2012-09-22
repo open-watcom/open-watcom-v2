@@ -30,14 +30,12 @@
 
 
 #include "precomp.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "mythelp.h"
 
 /*
  * MyModuleFindHandle - wrapper for ModuleFindHandle
  */
-BOOL MyModuleFindHandle( MODULEENTRY FAR* me, HMODULE h )
+BOOL MyModuleFindHandle( MODULEENTRY FAR *me, HMODULE h )
 {
     BOOL        rc;
 
@@ -51,7 +49,7 @@ BOOL MyModuleFindHandle( MODULEENTRY FAR* me, HMODULE h )
 /*
  * MyStackTraceNext - wrapper for StackTraceNext
  */
-BOOL MyStackTraceNext( STACKTRACEENTRY *se )
+BOOL MyStackTraceNext( STACKTRACEENTRY FAR *se )
 {
     se->dwSize = sizeof( STACKTRACEENTRY );
     return( StackTraceNext( se ) );
@@ -61,7 +59,7 @@ BOOL MyStackTraceNext( STACKTRACEENTRY *se )
 /*
  * MyTaskFindHandle - wrapper for TaskFindHandle
  */
-BOOL MyTaskFindHandle( TASKENTRY *te, HTASK h )
+BOOL MyTaskFindHandle( TASKENTRY FAR *te, HTASK h )
 {
     te->dwSize = sizeof( TASKENTRY );
     return( TaskFindHandle( te, h ) );
@@ -71,7 +69,7 @@ BOOL MyTaskFindHandle( TASKENTRY *te, HTASK h )
 /*
  * MyTaskFirst - wrapper for TaskFirst
  */
-BOOL MyTaskFirst( TASKENTRY *te )
+BOOL MyTaskFirst( TASKENTRY FAR *te )
 {
     te->dwSize = sizeof( TASKENTRY );
     return( TaskFirst( te ) );
@@ -81,7 +79,7 @@ BOOL MyTaskFirst( TASKENTRY *te )
 /*
  * MyTaskNext - wrapper for TaskNext
  */
-BOOL MyTaskNext( TASKENTRY *te )
+BOOL MyTaskNext( TASKENTRY FAR *te )
 {
     te->dwSize = sizeof( TASKENTRY );
     return( TaskNext( te ) );
@@ -91,7 +89,7 @@ BOOL MyTaskNext( TASKENTRY *te )
 /*
  * MyStackTraceCSIPFirst - wrapper for StackTraceCSIPFirst
  */
-BOOL MyStackTraceCSIPFirst( STACKTRACEENTRY *se, WORD ss, WORD cs, WORD ip, WORD bp )
+BOOL MyStackTraceCSIPFirst( STACKTRACEENTRY FAR *se, WORD ss, WORD cs, WORD ip, WORD bp )
 {
     se->dwSize = sizeof( STACKTRACEENTRY );
     return( StackTraceCSIPFirst( se, ss, cs, ip, bp ) );
@@ -101,7 +99,7 @@ BOOL MyStackTraceCSIPFirst( STACKTRACEENTRY *se, WORD ss, WORD cs, WORD ip, WORD
 /*
  * MyStackTraceFirst - wrapper for StackTraceFirst
  */
-BOOL MyStackTraceFirst( STACKTRACEENTRY *se, HANDLE h )
+BOOL MyStackTraceFirst( STACKTRACEENTRY FAR *se, HANDLE h )
 {
     se->dwSize = sizeof( STACKTRACEENTRY );
     return( StackTraceFirst( se, h ) );
@@ -111,7 +109,7 @@ BOOL MyStackTraceFirst( STACKTRACEENTRY *se, HANDLE h )
 /*
  * MyGlobalFirst - wrapper for GlobalFirst
  */
-BOOL MyGlobalFirst( GLOBALENTRY *ge, WORD flags )
+BOOL MyGlobalFirst( GLOBALENTRY FAR *ge, WORD flags )
 {
     ge->dwSize = sizeof( GLOBALENTRY );
     return( GlobalFirst( ge, flags ) );
@@ -121,7 +119,7 @@ BOOL MyGlobalFirst( GLOBALENTRY *ge, WORD flags )
 /*
  * MyGlobalNext - wrapper for GlobalNext
  */
-BOOL MyGlobalNext( GLOBALENTRY *ge, WORD flags )
+BOOL MyGlobalNext( GLOBALENTRY FAR *ge, WORD flags )
 {
     ge->dwSize = sizeof( GLOBALENTRY );
     return( GlobalNext( ge, flags ) );
@@ -131,7 +129,7 @@ BOOL MyGlobalNext( GLOBALENTRY *ge, WORD flags )
 /*
  * MyGlobalEntryModule - wrapper for GlobalEntryModule
  */
-BOOL MyGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg )
+BOOL MyGlobalEntryModule( GLOBALENTRY FAR *ge, HMODULE hmod, WORD seg )
 {
     ge->dwSize = sizeof( GLOBALENTRY );
     return( GlobalEntryModule( ge, hmod, seg ) );
@@ -141,7 +139,7 @@ BOOL MyGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg )
 /*
  * MyGlobalEntryHandle - wrapper for GlobalEntryHandle
  */
-BOOL MyGlobalEntryHandle( GLOBALENTRY *ge, HMODULE hmem )
+BOOL MyGlobalEntryHandle( GLOBALENTRY FAR *ge, HMODULE hmem )
 {
     ge->dwSize = sizeof( GLOBALENTRY );
     return( GlobalEntryHandle( ge, hmem ) );

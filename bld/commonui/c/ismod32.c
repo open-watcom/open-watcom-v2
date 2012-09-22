@@ -30,12 +30,9 @@
 
 
 #include "precomp.h"
-#include <ctype.h>
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <dos.h>
 #include "segmem.h"
+#include "ismod32.h"
 
 static WORD win386Sig[2] = { 0xDEAD, 0xBEEF };
 static WORD win386Sig2[2] = { 0xBEEF, 0xDEAD };

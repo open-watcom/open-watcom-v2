@@ -46,7 +46,6 @@
 #include "types.h"
 #include "dlgmod.h"
 #include "font.h"
-#include "seginfo.h"
 #include "segmem.h"
 #include "ismod32.h"
 #include "di386.h"

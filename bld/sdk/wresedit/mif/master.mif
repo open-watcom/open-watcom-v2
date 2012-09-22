@@ -4,6 +4,7 @@ proj_name = wresedit
 wresedit_autodepends = .AUTODEPEND
 !endif
 
+sys_windowed = 1
 sys_dll = 1
 
 suppress_bd = 1
@@ -18,6 +19,8 @@ memory_model_i86 = l
 
 WINDOWS = 1
 !include wres.mif
+!include $(commonui_dir)/client.mif
+!include $(wpi_dir)/client.mif
 
 object = $(sys_object)
 object +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
@@ -41,8 +44,7 @@ wr_lib = $(wr_dir)/$(host_os)$(host_cpu)/wr.lib
 .c: ../c;../../c;$(sdk_misc_dir);$(cpp_dir)
 
 inc_dirs = -I"../h" -I"../../h" -I"$(wr_dir)/h" -I"$(wres_dir)/h" -I"$(cpp_dir)"
-inc_dirs += -I"$(wpi_dir)/h" -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
-inc_dirs += -I"$(sdk_misc_dir)"
+inc_dirs += $(wpi_inc_dirs) $(commonui_inc_dirs) -I"$(sdk_misc_dir)"
 
 extra_l_flags = op map
 extra_l_flags_nt = op stack=16k,heap=16k commit heap=8k
@@ -52,8 +54,7 @@ extra_l_flags_win = library commdlg op stack=8k,rwr &
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
 
-xlibs = $(wres_lib) $(wr_lib) $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib &
-        $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+xlibs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
 
 $(name).lib: $(name).dll
         $(librarian) $(libflags) +$[@

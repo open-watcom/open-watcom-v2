@@ -51,7 +51,7 @@ char const                    * const ModifierTab[] = {
 #undef regpick
 #define regpick( e, n ) reglbl_##e,
 
-char const                    * const RegisterName[] = {
+char const                    * const X86RegisterName[] = {
 #include "regpick.h"
 };
 

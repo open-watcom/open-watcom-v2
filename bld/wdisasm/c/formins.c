@@ -87,7 +87,7 @@ static void FormIndex( operand * op, char * buff )
     const char        *src;
 
     if( op->mode != ADDR_INDEX ) {
-        src = RegisterName[ op->base ];
+        src = X86RegisterName[ op->base ];
 #ifdef O2A
         if( *src  &&  DO_UNIX ) {       /* FORM_ASSMEBLER is implied */
             *buff++ = '%';
@@ -106,7 +106,7 @@ static void FormIndex( operand * op, char * buff )
             if ( op->mode == ADDR_BASE_INDEX ) {
                 *buff++ = '+';
             }
-        src = RegisterName[ op->index ];
+        src = X86RegisterName[ op->index ];
 #ifdef O2A
         if( *src  &&  DO_UNIX ) {       /* FORM_ASSEMBLER is implied */
             *buff++ = '%';
@@ -230,7 +230,7 @@ static char *DumpOverride( char *buff, int seg_override )
         *buff++ = '%';
     }
 #endif
-    strcpy( buff, RegisterName[ seg_override ] );
+    strcpy( buff, X86RegisterName[ seg_override ] );
     buff += strlen( buff );
     *buff++ = ':';
     *buff = '\0';
@@ -367,7 +367,7 @@ void  FormatIns( char *buf, instruction *curr_ins, form_option format )
                 *ptr++ = '%';
             }
 #endif
-            strcpy( ptr, RegisterName[ op->base ] );
+            strcpy( ptr, X86RegisterName[ op->base ] );
             if( format & FORM_REG_UPPER ) ZapUpper( ptr );
             strcat( buf, tmp_buff );
             break;
@@ -448,7 +448,7 @@ void  FormatIns( char *buf, instruction *curr_ins, form_option format )
             ptr = DumpOverride( tmp_buff, ES_REG );
             *ptr++ = START_INDEX;
             strcpy( ptr,
-                RegisterName[ op->mode == ADDR_ES_DI ? DI_REG : EDI_REG ] );
+                X86RegisterName[ op->mode == ADDR_ES_DI ? DI_REG : EDI_REG ] );
             ptr += strlen( ptr );
             *ptr++ = END_INDEX;
             *ptr = '\0';

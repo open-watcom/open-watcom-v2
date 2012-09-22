@@ -30,14 +30,10 @@
 
 
 #include "precomp.h"
-#include <commdlg.h>
 #include <stdio.h>
 #include <string.h>
 #include "font.h"
 #include "win1632.h"
-#ifdef __WINDOWS__
-    #pragma library( "commdlg.lib" )
-#endif
 
 #define MAX_STR 256
 

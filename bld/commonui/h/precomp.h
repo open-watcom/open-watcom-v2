@@ -36,13 +36,18 @@
     #define INCL_GPILCIDS
     #define INCL_GPIPRIMITIVES
     #include <os2.h>
-    #define __FAR
 #else
-    #define INCLUDE_TOOLHELP_H
-    #define WIN32_LEAN_AND_MEAN
+    #ifdef __WINDOWS__
+        #define INCLUDE_TOOLHELP_H
+        #define INCLUDE_COMMDLG_H
+    #endif
     #define OEMRESOURCE
     #include <windows.h>
     #ifdef __NT__
         #include <commctrl.h>
+        #include <commdlg.h>
     #endif
+#endif
+#if !defined( __WINDOWS__ )
+    #define MK_FP32( a )        ( a )
 #endif

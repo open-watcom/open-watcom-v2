@@ -38,7 +38,6 @@
     #define ROUND_CLASSLEN( a )     (((a) + 1) & ~1)
     #define _ISFAR
     #define _FARmemcpy              memcpy
-    #define MK_FP32( a )            a
     #define SLEN( a )               ((a) ? strlen( a ) * 2 + 2 : 2)
     typedef WORD                    INFOTYPE;
 #else
@@ -48,7 +47,6 @@
     #define ROUND_CLASSLEN( a )     a
     #define _ISFAR                  __far
     #define _FARmemcpy              _fmemcpy
-    //#define MK_FP32( a )          a
     typedef BYTE                    INFOTYPE;
 #endif
 

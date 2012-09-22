@@ -17,6 +17,8 @@ memory_model_i86 = l
 
 WINDOWS = 1
 !include wres.mif
+!include $(commonui_dir)/client.mif
+!include $(wpi_dir)/client.mif
 
 # path names used in the script
 wacc_dir        = $(wresedit_dir)/waccel
@@ -57,17 +59,15 @@ OBJS += trmem.tbj trmemcvr.tbj
 .c         : ../c;$(cpp_dir);$(trmem_dir)
 
 inc_dirs  = -Ih -I"../h" -I"$(wstring_dir)/h" -I"$(wmenu_dir)/h" -I"$(wacc_dir)/h"
-inc_dirs += -I"$(wr_dir)/h" -I"$(trmem_dir)" -I"$(wres_dir)/h" -I"$(cpp_dir)" -I"$(sdk_misc_dir)"
-inc_dirs += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)" -I"$(wpi_dir)/h"
+inc_dirs += -I"$(wr_dir)/h" -I"$(trmem_dir)" -I"$(wres_dir)/h" -I"$(cpp_dir)"
+inc_dirs += -I"$(sdk_misc_dir)" $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 
-xlibs = $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib &
-        $(wacc_dir)/$(host_os)$(host_cpu)/wacc.lib &
+xlibs = $(commonui_lib) $(wacc_dir)/$(host_os)$(host_cpu)/wacc.lib &
         $(wmenu_dir)/$(host_os)$(host_cpu)/wmenu.lib &
         $(wstring_dir)/$(host_os)$(host_cpu)/wstring.lib &
         $(wr_dir)/$(host_os)$(host_cpu)/wr.lib &
-        $(wres_lib) &
-        $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib
+        $(wres_lib) $(wpi_lib)
 
 extra_l_flags = op map
 extra_l_flags_nt = op stack=100k,heap=16k commit heap=8k

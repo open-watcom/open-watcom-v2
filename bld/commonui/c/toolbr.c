@@ -79,14 +79,6 @@ typedef struct toolbar {
 
 #define BORDER_WIDTH( bar )     1
 
-#ifndef __OS2_PM__
-    #ifdef __WINDOWS_386__
-        #define MAKEPTR( a ) ((void far *)MK_FP32( (void *)a ))
-    #else
-        #define MAKEPTR( a ) ((LPVOID)a)
-    #endif
-#endif
-
 #define BLANK_SIZE( w ) ((w) / 3)
 
 #define GET_INFO( w )       ((toolbar *)_wpi_getwindowlong( w, 0 ))
@@ -1422,7 +1414,6 @@ BOOL FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lpara
 MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
                                  WPI_PARAM2 lparam )
 {
-    CREATESTRUCT    __FAR   *cs;
     toolbar         *bar;
     tool            *tool;
     WPI_RECT        inter;
@@ -1434,17 +1425,13 @@ MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 
     bar = GET_INFO( hwnd );
     if( msg == WM_CREATE ) {
-#ifndef __OS2_PM__
-        cs = MAKEPTR( lparam );
-        bar = (toolbar *)cs->lpCreateParams;
-#ifdef __WINDOWS_386__
-        bar = MapAliasToFlat( (DWORD) bar );
-#endif
+#if defined( __OS2_PM__ )
+        bar = (toolbar *)PVOIDFROMMP( wparam );
+        WinSetPresParam( hwnd, PP_BACKGROUNDCOLORINDEX, (ULONG)sizeof( LONG ) + 1, (PVOID)&btnColor );
+#elif defined( __WINDOWS_386__ )
+        bar = MapAliasToFlat( (DWORD)((CREATESTRUCT FAR *)MK_FP32( (void *)lparam ))->lpCreateParams );
 #else
-        cs = PVOIDFROMMP( wparam );
-        bar = (toolbar *)cs;
-        WinSetPresParam( hwnd, PP_BACKGROUNDCOLORINDEX, (ULONG)sizeof( LONG ) + 1,
-                         (PVOID)&btnColor );
+        bar = (toolbar *)((CREATESTRUCT *)lparam)->lpCreateParams;
 #endif
         bar->hwnd = hwnd;
         SET_INFO( hwnd, bar );

@@ -31,6 +31,8 @@ additional_cleanup = *.dh *.ch $(bind_compiled)
 !include defrule.mif
 
 !include trmem.mif
+!include $(commonui_dir)/client.mif
+!include $(wpi_dir)/client.mif
 
 !include ../mif/rcsdll.mif
 !include ../mif/include.mif

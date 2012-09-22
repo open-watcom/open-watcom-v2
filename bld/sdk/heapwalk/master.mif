@@ -16,6 +16,7 @@ all: $(name).exe .SYMBOLIC
 !include defrule.mif
 
 !include $(wdisasm_dir)/mif/disasm.mif
+!include $(commonui_dir)/client.mif
 
 extra_c_flags_i86   = -s-zu-zW
 
@@ -25,12 +26,11 @@ extra_c_flags_heapwalk = -3
 extra_c_flags_segmem2  = -3
 
 extra_l_flags = op map
-extra_l_flags_win = op stack=7k, heapsize=2k lib stress.lib
+extra_l_flags_win = op stack=7k, heapsize=2k lib stress.lib, commdlg.lib
 
-xlibs = $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+xlibs = $(commonui_lib)
 
-inc_dirs = -I.. -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
-inc_dirs += $(dis_includes)
+inc_dirs = -I.. $(commonui_inc_dirs) $(dis_includes)
 
 .c   : ..;$(dis_srcs)
 .asm : ..

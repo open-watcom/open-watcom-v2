@@ -91,11 +91,11 @@ IntHandler PROC FAR
 
         mov     ds,ax
 ;       mov     ax,SEG DGROUP
-        mov     ds,ax
+;       mov     ds,ax
 
         ;* Stack frame to function is
         ;*
-                ;*       BP---->|  Old BP  |
+        ;*       BP---->|  Old BP  |
         ;*              |    SS    |
         ;*              |    GS    |
         ;*              |    FS    |
@@ -118,7 +118,7 @@ IntHandler PROC FAR
         ;*              |    IP    |
         ;*              |    CS    |
         ;*              |   Flags  |
-                ;**
+        ;**
         call    _FaultHandler
 
         cmp     ax,0                    ; kill application?

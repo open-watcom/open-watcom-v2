@@ -1,5 +1,8 @@
 proj_name = commonui
+
+!ifndef name
 name = commonui
+!endif
 
 !ifndef commonui_autodepends
 commonui_autodepends = .autodepend
@@ -11,29 +14,44 @@ sys_windowed = 1
 !include deftarg.mif
 !include defrule.mif
 
+!include $(wpi_dir)/client.mif
+
 !include $(wdisasm_dir)/mif/disasm.mif
 
-msgfiles = $(commonui_dir)/h/about.msg $(commonui_dir)/h/alias.msg &
-           $(commonui_dir)/h/hint.msg $(commonui_dir)/h/log.msg &
-           $(commonui_dir)/h/memwnd.msg $(commonui_dir)/h/savelbox.msg
+msgfiles = &
+        ../res/about.msg &
+        ../res/alias.msg &
+        ../res/hint.msg &
+        ../res/log.msg &
+        ../res/memwnd.msg &
+        ../res/savelbox.msg
 
-objs =  ctl3d32.obj  &
+commonui_objs =  mem.obj
+
+# code shared with gui project
+commonui_objs += &
         loadcc.obj   &
-        mem.obj      &
         statwnd.obj  &
         toolbr.obj   &
         wmdisim.obj
 
+# code shared with gui project
+# target specific
+commonui_os2_objs = os2dlg.obj
+commonui_win_objs = fontstr.obj windlg.obj wwinhelp.obj
+commonui_nt_objs = fontstr.obj windlg.obj wwinhelp.obj
+commonui_objs += $(commonui_$(host_os)_objs)
+
 !ifneq host_os os2
-objs += about.obj    &
+commonui_objs += &
+        about.obj    &
         alias.obj    &
         bitmap.obj   &
+        ctl3d32.obj  &
         ctl3dcvr.obj &
         desknt.obj   &
         dlgmod.obj   &
         font.obj     &
-        fontstr.obj  &
-        getsaddr.obj &
         hint.obj     &
         inipath.obj  &
         jdlg.obj     &
@@ -48,42 +66,49 @@ objs += about.obj    &
         sdkasm.obj   &
         srchmsg.obj  &
         strsup.obj   &
-        wwinhelp.obj
 !endif
 
-!ifeq host_os win
-!ifeq host_cpu i86
-objs += dbg386.obj   &
+# windows debug code (16-bit)
+windbg_objs = &
+        dbg386.obj   &
         getcsip.obj  &
+        getsaddr.obj &
         intdata.obj  &
         inth.obj     &
         ismod32.obj  &
         mythelp.obj  &
-        seginfo.obj  &
-        segmem.obj   &
-        segmem2.obj
+        segmem.obj
+
+!ifeq name windbg
+objs = $(windbg_objs)
+!else 
+objs = $(commonui_objs)
+!ifeq host_os win
+!ifeq host_cpu i86
+objs += $(windbg_objs)
+!endif
 !endif
 !endif
 
 extra_c_flags = -fh
-extra_c_flags_nt = -DNOUSE3D
+extra_c_flags_i86 = -zu -zc
+!ifeq host_os win
+extra_c_flags_i86 += -zW
+extra_c_flags_386 += -zw
+!endif
+extra_c_flags_nt  = -DNOUSE3D
 extra_c_flags_os2 = -D__OS2_PM__
-extra_c_flags_win_i86 = -zu -zw -zc
-extra_c_flags_win_386 = -wcd310
 
-inc_dirs = -I"../h" -I"$(wpi_dir)/h" $(dis_includes)
+inc_dirs = -I"../h" $(wpi_inc_dirs) $(dis_includes)
 
 .c: ../c
 .asm: ../asm
 
-all : uistr.gh $(name).lib .symbolic
-    @%null
+$(name).lib : uistr.gh $(objs) $(libs)
+    $(librarian) $(libflags) $(objs) $(libs)
 
 uistr.gh : uistrmsg.gh
-    $(awk) -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_UI_BASE $[@ > $^@
+    $(awk) -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_CUI_BASE $[@ > $^@
 
-uistrmsg.gh : $(commonui_dir)/commonui.msg
-    $(c_pp) -zk0 -I"$(commonui_dir)/h" $[@ >$^@
-
-$(name).lib : $(objs)
-    $(librarian) $(libflags) $<
+uistrmsg.gh : ../res/commonui.msg
+    $(c_pp) -zk0 $(rc_defines_$(host_os)) -I"../h" $[@ >$^@

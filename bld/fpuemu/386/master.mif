@@ -36,8 +36,6 @@ emu387: qnxemu87.obj emu387.obj fpeqnx.obj
 
 !else ifeq host_OS win
 
-INCS += win30vxd.inc
-
 !else
 
 emu387.lib noemu387.lib: 386stub.obj

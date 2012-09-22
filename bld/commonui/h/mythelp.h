@@ -32,16 +32,16 @@
 #ifndef _MYTHELP_H_INCLUDED
 #define _MYTHELP_H_INCLUDED
 
-BOOL    MyModuleFindHandle( MODULEENTRY *me, HMODULE h );
-BOOL    MyStackTraceNext( STACKTRACEENTRY *se );
-BOOL    MyTaskFindHandle( TASKENTRY *te, HTASK h );
-BOOL    MyTaskFirst( TASKENTRY *te );
-BOOL    MyTaskNext( TASKENTRY *te );
-BOOL    MyStackTraceCSIPFirst( STACKTRACEENTRY *se, WORD ss, WORD cs, WORD ip, WORD bp );
-BOOL    MyStackTraceFirst( STACKTRACEENTRY *se, HANDLE h );
-BOOL    MyGlobalFirst( GLOBALENTRY *ge, WORD flags );
-BOOL    MyGlobalNext( GLOBALENTRY *ge, WORD flags );
-BOOL    MyGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg );
-BOOL    MyGlobalEntryHandle( GLOBALENTRY *ge, HMODULE hmem );
+BOOL    MyModuleFindHandle( MODULEENTRY FAR *me, HMODULE h );
+BOOL    MyStackTraceNext( STACKTRACEENTRY FAR *se );
+BOOL    MyTaskFindHandle( TASKENTRY FAR *te, HTASK h );
+BOOL    MyTaskFirst( TASKENTRY FAR *te );
+BOOL    MyTaskNext( TASKENTRY FAR *te );
+BOOL    MyStackTraceCSIPFirst( STACKTRACEENTRY FAR *se, WORD ss, WORD cs, WORD ip, WORD bp );
+BOOL    MyStackTraceFirst( STACKTRACEENTRY FAR *se, HANDLE h );
+BOOL    MyGlobalFirst( GLOBALENTRY FAR *ge, WORD flags );
+BOOL    MyGlobalNext( GLOBALENTRY FAR *ge, WORD flags );
+BOOL    MyGlobalEntryModule( GLOBALENTRY FAR *ge, HMODULE hmod, WORD seg );
+BOOL    MyGlobalEntryHandle( GLOBALENTRY FAR *ge, HMODULE hmem );
 
 #endif /* _MYTHELP_H_INCLUDED */

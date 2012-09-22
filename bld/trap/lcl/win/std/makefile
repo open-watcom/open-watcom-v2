@@ -3,6 +3,8 @@
 host_os  = win
 host_cpu = i86
 
+sys_windowed = 1
+
 #
 # Create the Windows 3.x std.dll
 #
@@ -18,13 +20,11 @@ extra_objs = &
         fault.obj &
         int.obj &
         notify.obj &
-        mem.obj &
-        getsaddr.obj &
         dbgrmsg.obj &
         dbgeemsg.obj &
         dbghook.obj &
         wgod.obj &
-        misc.obj &
+        accmem.obj &
         accload.obj &
         accregs.obj &
         accmap.obj &
@@ -33,8 +33,6 @@ extra_objs = &
         accredir.obj &
         accmisc.obj &
         accgen.obj &
-        ismod32.obj &
-        getcsip.obj &
         out.obj &
         dosfile.obj &
         dosrfx.obj &
@@ -57,13 +55,10 @@ extra_linker = &
         segment CLASS 'BEGDATA' MOVEABLE &
         segment CLASS 'BSS' MOVEABLE
 
-extra_srcs += ;$(trap_dir)/lcl/dos/c;$(sdk_misc_dir)
-inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(sdk_misc_dir)"
-inc_dirs += -I"$(commonui_dir)/h" -I"$(wpi_dir)/h"
+!include $(commonui_dir)/windbg.mif
 
-extra_c_flags_i86 = -3
+inc_dirs = $(windbg_inc_dirs)
+extra_libs = $(windbg_lib)
 
-.c: ../c;$(commonui_dir)/c
-
-!include $(trap_dir)/lcl/lcl.mif
+!include $(trap_dir)/lcl/dos/dos.mif
 !include $(trap_dir)/master.mif

@@ -30,7 +30,6 @@
 
 
 #include "precomp.h"
-#include <stdio.h>
 #include "wdebug.h"
 #include "di386.h"
 
