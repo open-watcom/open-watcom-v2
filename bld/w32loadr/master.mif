@@ -50,7 +50,7 @@ dbgrun.exe : d4grun.obj cmain32.obj int21dos.obj
    $(linker) d a system dos4g name dbgrun file d4grun.obj,cmain32.obj,int21dos.obj option stack=32k,map
 
 cwsrun.exe : cwsrun.obj cmain32.obj int21dos.obj
-   $(linker) system causeway name cwsrun file cwsrun.obj,cmain32.obj,int21dos.obj option stack=32k,map,stub=$(cw_dir)/cw32/dosi86/cwstub.exe
+   $(linker) system causeway name cwsrun file cwsrun.obj,cmain32.obj,int21dos.obj option stack=32k,map,stub=$(causeway_dir)/cw32/dosi86/cwstub.exe
 
 tntrun.exe : tntrun.obj cmain32.obj int21pl.obj
    $(linker) system pharlap ext name tntrun file tntrun.obj,cmain32.obj,int21pl.obj option stack=32k,map

@@ -217,9 +217,6 @@ help_dir        = $(src_dir)/help
 !ifndef wv_dir
 wv_dir          = $(src_dir)/wv
 !endif
-!ifndef cw_dir
-cw_dir          = $(src_dir)/causeway
-!endif
 !ifndef causeway_dir
 causeway_dir    = $(src_dir)/causeway
 !endif

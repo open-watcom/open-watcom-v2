@@ -279,7 +279,7 @@ setup.lnk : ../setup.mif $(__MAKEFILES__)
 !else ifeq host_os dos
     @%append setup.lnk option stack=30K
 !ifeq host_cpu 386
-    @%append setup.lnk option stub=$(cw_dir)/cw32/dosi86/cwstub.exe
+    @%append setup.lnk option stub=$(causeway_dir)/cw32/dosi86/cwstub.exe
 !endif
 !else
 !endif
