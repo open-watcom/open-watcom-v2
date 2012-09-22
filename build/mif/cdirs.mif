@@ -220,6 +220,9 @@ wv_dir          = $(src_dir)/wv
 !ifndef cw_dir
 cw_dir          = $(src_dir)/causeway
 !endif
+!ifndef causeway_dir
+causeway_dir    = $(src_dir)/causeway
+!endif
 !ifndef re2c_dir
 re2c_dir        = $(src_dir)/re2c
 !endif
@@ -292,4 +295,6 @@ setupgui_dir    = $(src_dir)/setupgui
 !ifndef win386_dir
 win386_dir      = $(src_dir)/win386
 !endif
-
+!ifndef d16api_dir
+d16api_dir      = $(src_dir)/d16api
+!endif

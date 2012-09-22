@@ -79,7 +79,7 @@ inc_dirs = -I"../inc"
 .c : ../src
 .asm : ../src
 
-wattcpwl.lib: $(objs) $(__MAKEFILES__)
+wattcpl.lib: $(objs) $(__MAKEFILES__)
     @%create $^&.lbc
     @for %f in ($(objs)) do @%append $^&.lbc +- %f
     $(librarian) $(libflags) @$^&.lbc

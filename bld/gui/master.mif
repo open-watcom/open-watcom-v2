@@ -16,6 +16,8 @@ gui_autodepends = .AUTODEPEND
 !include deftarg.mif
 
 !include trmem.mif
+!include $(commonui_dir)/client.mif
+!include $(wpi_dir)/client.mif
 
 wv_objs = &
        guicreat.obj   &
@@ -62,7 +64,7 @@ mem_objs = &
 objs = $(wv_objs) $(mem_objs)
 
 !ifeq sys_windowed 1
-libs = $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+libs = $(wpi_lib) $(commonui_lib)
 !endif
 
 !ifndef bootstrap
@@ -104,13 +106,13 @@ extra_c_flags_helpio += -fh=gui03.pch
 !endif
 
 !ifeq sys_windowed 1
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" -I"$(wpi_dir)/h" -I"$(commonui_dir)/h"
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" $(wpi_inc_dirs) $(commonui_inc_dirs)
 !else
 inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" -I"$(ui_dir)/h"
 !endif
 
 .c:     ../c;../../c;$(help_dir)/c;$(trmem_dir)
-.h:     ../h;../../h;$(wpi_dir)/h
+.h:     ../h;../../h
 .msg:   ../../h
 
 $(name).lib : _guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(libs) $(__MAKEFILES__)

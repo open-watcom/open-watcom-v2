@@ -1,17 +1,13 @@
-# WATTCP Builder Control file
-# ===========================
+# WATTCP lib Builder Control file
+# ===============================
 
 set PROJDIR=<CWD>
+set PROJNAME=wattcp library
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
-
-cdsay .
-
-[ BLOCK <1> rel cprel ]
-#======================
+[ INCLUDE <OWROOT>/build/deflib.ctl ]
 
 [ BLOCK . . ]
 #============

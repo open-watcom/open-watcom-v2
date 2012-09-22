@@ -58,7 +58,7 @@ typedef unsigned char   u_char;
 typedef unsigned short  u_short;
 typedef unsigned short  ushort;   /* Sys V compatibility */
 typedef unsigned long   u_long;
-typedef unsigned long   caddr_t;
+typedef unsigned char   *caddr_t;
 
 typedef unsigned char   u_int8_t;
 typedef unsigned short  u_int16_t;

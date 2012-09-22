@@ -67,11 +67,6 @@
  * YPPROC_MAPLIST	takes (char *), returns (struct ypmaplist *).
  */
 
-#ifndef BOOL_DEFINED
-typedef u_int bool;
-#define BOOL_DEFINED
-#endif
-
 bool_t	xdr_datum();
 bool_t	xdr_ypdomain_wrap_string();
 bool_t	xdr_ypmap_wrap_string();
