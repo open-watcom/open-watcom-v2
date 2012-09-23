@@ -9,7 +9,7 @@ objs = $(idedemo_dir)/src/$(targ_dir)/box.obj &
 !ifdef targ_file
 src_objs : .SYMBOLIC
     $(ide2make) -r $(targ_file).tgt -c $(idecfg_dir)/ide.cfg
-    sed -f "../../convtool.sed" $(targ_file).mk1 >temp.mk1
+    sed -f "../../convtool.sed" -f "../../conv$(host_os).sed" $(targ_file).mk1 >temp.mk1
     wmake -i -h -f temp.mk1 $(objs)
 !else
 $(host_os)_3d.dll: $(host_os)_3d.mk1
@@ -17,7 +17,7 @@ $(host_os)_3d.dll: $(host_os)_3d.mk1
 
 $(host_os)_3d.mk1: $(host_os)_3d.tgt
     $(ide2make) -r $< -c $(idecfg_dir)/ide.cfg
-    sed -f "../../convtool.sed" $(host_os)_3d.mk1 >temp.mk1
+    sed -f "../../convtool.sed" -f "../../conv$(host_os).sed" $(host_os)_3d.mk1 >temp.mk1
     cp temp.mk1 $(host_os)_3d.mk1
 !endif
 

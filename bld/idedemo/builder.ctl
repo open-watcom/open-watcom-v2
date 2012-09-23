@@ -12,9 +12,7 @@ set PROJNAME=idedemo
 [ BLOCK <1> rel cprel ]
 #======================
   [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/
     <CPCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/os2/
-    <CPCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/fortran/
     <CPCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/fortran/os2/
   [ IFDEF (os_nt "") <2*> ]
     <CPCMD> threed/nt/nt_3d.dll     <OWRELROOT>/samples/ide/win32/
