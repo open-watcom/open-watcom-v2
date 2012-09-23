@@ -9,9 +9,9 @@ sys_x86_os2v2   = sys os2v2 op modname=$^&, desc $(description)
 sys_x86_qnx     = sys qnx386 flat op st=16k, offset=20k, res=$(srv).use
 sys_x86_linux   = sys linux
 sys_x86_win     = sys windows op st=20k, modname=$^&, desc $(description)
-sys_x86_dos     = sys dos op st=4k
-sys_x86_rsi     = sys dos16m
-sys_x86_cw      = sys causeway op stub=$(cw_dir)/cw32/dosi86/cwdstub.exe
+sys_x86_dos     = sys dos op st=4k lib doslfn$(memory_model_i86).lib
+sys_x86_rsi     = sys dos16m lib doslfn$(memory_model_i86).lib
+sys_x86_cw      = sys causeway op stub=$(cw_dir)/cw32/dosi86/cwdstub.exe lib doslfn3r.lib
 sys_x86_ads     = sys ads op st=8k lib $(adsdir)/wcads.lib
 sys_x86_rdos    = sys rdos
 !ifndef sys_x86_pls

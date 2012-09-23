@@ -51,30 +51,17 @@ WORD    IntAccessed = 0;
 
 extern DWORD    SaveEAX;
 extern WORD     DPL;
-extern WORD     CopySize;
 extern WORD     OurOwnInt;
 extern WORD     IDTSel;
 extern WORD     InterruptStackSel;
 extern DWORD    InterruptStackOff;
 
 
-#pragma aux _CopyMemory parm [cx] [dx di] [ax] [si bx] value[ax];
-extern short _CopyMemory( WORD, DWORD, WORD, DWORD );
 extern void GetIDTSel( void );
 extern void ReleaseIDTSel( void );
 extern void InterruptCallback( void );
 
 extern void ReflectInt1Int3( void );
-
-/*
- * CopyMemory - use wgod to copy between two arbitrary selectors
- */
-WORD CopyMemory( WORD dseg, DWORD doff, WORD sseg, DWORD soff, WORD size )
-{
-    CopySize = size;
-    return( _CopyMemory( dseg, doff, sseg, soff ) );
-
-} /* CopyMemory */
 
 /*
  * SetDebugInterrupts32
@@ -149,8 +136,8 @@ void __export FAR PASCAL ResetDebugInterrupts32( void )
 {
     SetCount--;
     if( SetCount == 0 ) {
-        CopyMemory( IDTSel, (DWORD) 1*8, DS(), (DWORD) &IdtInt1, 8 );
-        CopyMemory( IDTSel, (DWORD) 3*8, DS(), (DWORD) &IdtInt3, 8 );
+        CopyMemory386( IDTSel, (DWORD) 1*8, DS(), (DWORD) &IdtInt1, 8 );
+        CopyMemory386( IDTSel, (DWORD) 3*8, DS(), (DWORD) &IdtInt3, 8 );
         IDTFini();
         ReleaseIDTSel();
         UnRegisterInterruptCallback( (LPVOID) InterruptCallback );

@@ -37,16 +37,6 @@
 #include "wdebug.h"
 
 /*
- * CopyMemory
- */
-short CopyMemory( WORD dseg, DWORD doff, WORD sseg, DWORD soff, short size )
-{
-    CopySize = size;
-    return( _CopyMemory( dseg, doff, sseg, soff ) );
-
-} /* CopyMemory */
-
-/*
  * StartWDebug386 - see if wgod is here
  */
 void StartWDebug386( void )

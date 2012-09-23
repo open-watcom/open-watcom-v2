@@ -293,17 +293,22 @@ fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
 
 cl_fpu_flags = $(fpu_flags)
 
-clflags_nt_386     = -l=nt $(win32ver)
-clflags_nt_axp     = -l=ntaxp $(win32ver)
-clflags_win_i86    = -l=windows -DSTRICT
-clflags_win_386    = -l=windows -DSTRICT
+clflags_nt_386     = -l=nt
+clflags_nt_axp     = -l=ntaxp
+clflags_win_i86    = -l=windows
+clflags_win_386    = -l=win386
 clflags_os2_i86    = -l=os2
 clflags_os2_386    = -l=os2v2
 clflags_qnx_i86    = -l=qnx
 clflags_qnx_386    = -l=qnx
 clflags_osi_386    = -l=osi
-clflags_dos_i86    = -l=dos -D__WATCOM_LFN__
-clflags_dos_386    = -l=dos4g -D__WATCOM_LFN__
+!ifdef __UNIX__
+clflags_dos_i86    = -l=dos -\"lib doslfn$(memory_model_i86).lib\"
+clflags_dos_386    = -l=dos4g -\"lib doslfn3r.lib\"
+!else
+clflags_dos_i86    = -l=dos -"lib doslfn$(memory_model_i86).lib"
+clflags_dos_386    = -l=dos4g -"lib doslfn3r.lib"
+!endif
 clflags_zdos_386   = -l=zdos
 clflags_rdos_386   = -l=rdos
 clflags_rdosdev_386= -l=rdosdev
@@ -325,7 +330,7 @@ proj_c_flags     = $(extra_c_flags) $(extra_c_flags_$(host_cpu)) $(extra_c_flags
 cflags           = $(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_$(host_os)_$(host_cpu)) $(proj_c_flags)
 proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os))
 cppflags         = $(cppflags_all) $(proj_cpp_flags)
-clflags          = $(clflags_all) $(clflags_$(host_os)_$(host_cpu)) $(extra_cl_flags) $(clflags_exe) -fm
+clflags          = $(clflags_all) $(clflags_$(host_os)_$(host_cpu)) $(cflags_$(host_os)) $(extra_cl_flags) $(clflags_exe) -fm
 
 !ifdef __UNIX__
 aflags_all      = -we $(mode_aflags) -fo=.obj
@@ -354,12 +359,12 @@ aflags_linux    = -bt=linux
 proj_a_flags     = $(extra_a_flags) $(extra_a_flags_$(host_cpu)) $(extra_a_flags_$(host_os))
 aflags           = $(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(proj_a_flags)
 
-lflags_dos_i86     = sys dos
+lflags_dos_i86     = sys dos lib doslfn$(memory_model_i86).lib
 lflags_nt_axp      = sys ntaxp
 lflags_nt_386      = sys nt
 lflags_os2_386     = sys os2v2
 lflags_os2_i86     = sys os2 pmc
-lflags_dos_386     = sys dos4g
+lflags_dos_386     = sys dos4g lib doslfn3r.lib
 lflags_zdos_386    = sys zdos
 lflags_rdos_386    = sys rdos
 lflags_rdosdev_386 = sys rdos dev32
@@ -373,7 +378,7 @@ lflags_linux_386   = sys linux
 lflags_linux_ppc   = sys linuxppc
 lflags_linux_mps   = sys linuxmips
 
-lflags_dll_dos_386   = sys cwdllr
+lflags_dll_dos_386   = sys cwdllr lib doslfn3r.lib
 lflags_dll_rdos_386  = sys rdos dll
 lflags_dll_nt_axp    = sys ntaxp dll
 lflags_dll_nt_386    = sys nt dll
@@ -390,7 +395,7 @@ lflags_os2_i86  = sys os2_pm
 !endif
 !ifdef sys_dll
 #this is equally bad
-lflags_dos_386  = sys cwdllr
+lflags_dos_386  = sys cwdllr lib doslfn3r.lib
 lflags_nt_386   = sys nt_dll
 lflags_nt_axp   = sys ntaxp_dll
 lflags_win_i86  = sys windows_dll

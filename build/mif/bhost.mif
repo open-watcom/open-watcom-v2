@@ -3,37 +3,42 @@ bld_os  = $(%BOOTSTRAP_OS)
 bld_cpu = $(%BOOTSTRAP_CPU)
 
 !ifdef __OS2__
-bld_lnk_sys     = os2v2
-bld_sys         = os2
+bld_cc_sys      = -bt=os2
+bld_cl_sys      = -l=os2v2
+bld_lnk_sys     = sys os2v2
 nulldevice      = nul
 !else ifdef __MSDOS__
-bld_lnk_sys     = dos4g
-bld_sys         = dos
+bld_cc_sys      = -bt=dos
+bld_cl_sys      = -l=dos4g -"lib doslfn3r.lib"
+bld_lnk_sys     = sys dos4g lib doslfn3r.lib
 nulldevice      = nul
 # DOS should never need the DLL related macros
 !else ifdef __NT__
+bld_cc_sys      = -bt=nt
 !ifdef __NTAXP__
-bld_lnk_sys     = ntaxp
+bld_cl_sys      = -l=ntaxp
+bld_lnk_sys     = sys ntaxp
 !else ifdef __NT386__
-bld_lnk_sys     = nt
+bld_cl_sys      = -l=nt
+bld_lnk_sys     = sys nt
 !else
-#
-# This is an old make - really should report an error
-#
 !error Please correct this makefile, see build\mif\bhost.mif for details.
-bld_lnk_sys     = nt
 !endif
-bld_sys         = nt
 nulldevice      = nul
 !else ifdef __LINUX__
+bld_cc_sys      = -bt=linux
 !ifdef __LINUXPPC__
-bld_lnk_sys     = linuxppc
+bld_cl_sys      = -l=linuxppc
+bld_lnk_sys     = sys linuxppc
 !else ifdef __LINUXMIPS__
-bld_lnk_sys     = linuxmips
+bld_cl_sys      = -l=linuxmips
+bld_lnk_sys     = sys linuxmips
+!else ifdef __LINUX386__
+bld_cl_sys      = -l=linux
+bld_lnk_sys     = sys linux
 !else
-bld_lnk_sys     = linux
+!error Please correct this makefile, see build\mif\bhost.mif for details.
 !endif
-bld_sys         = linux
 nulldevice      = /dev/null
 !else
 !error HOST OS not set
@@ -54,11 +59,11 @@ bld_cl_opts     = $(def_fpu_flags_$(bld_os)_$(bld_cpu)) -ox -w8 -fe=$^@
 !endif
 
 bcc             = $(cc_$(bld_cpu))
-bld_cc          = $(bcc) -bt=$(bld_sys) $(bld_incs)
+bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
 bcl             = $(cl_$(bld_cpu))
-bld_cl          = $(bcl) -bt=$(bld_sys) -l=$(bld_lnk_sys) $(bld_incs)
+bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
 blink           = $(linker_$(bld_cpu))
-bld_link        = $(blink) sys $(bld_lnk_sys)
+bld_link        = $(blink) $(bld_lnk_sys)
 bas             = $(as_$(bld_cpu))
 blib            = $(librarian_$(bld_cpu))
 
