@@ -46,7 +46,6 @@
 #define NOT_OK 1
 #define A_OK 2
 
-extern char  FAR_PTR    *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
 extern int      MsgInit( HANDLE );
 static char     sampleClass[] = "WsamplewClass";
 

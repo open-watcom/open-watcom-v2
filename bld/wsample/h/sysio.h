@@ -24,51 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  System I/O layered on top of POSIX calls.
+* Description:  Operating system specific include file for execution sampler.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <unistd.h>
-#include <malloc.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include "sample.h"
-#include "smpstuff.h"
-#include "sysio.h"
-
-#ifndef O_BINARY
-    #define O_BINARY 0
-#endif
-
-int SysCreate( char *name )
-{
-    return( open( name, O_BINARY | O_WRONLY | O_TRUNC | O_CREAT,
-                S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP | S_IROTH|S_IWOTH ) );
-}
-
-unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len )
-{
-    return( write( handle, buff, len ) );
-}
-
-unsigned long SysSeek( int handle, unsigned long loc )
-{
-    return( lseek( handle, loc, SEEK_SET ) );
-}
-
-int SysClose( int handle )
-{
-    return( close( handle ) );
-}
-
-void FAR_PTR *my_alloc( int size )
-{
-    return( malloc( size ) );
-}
-
-void my_free( void FAR_PTR *chunk )
-{
-    free( chunk );
-}
+extern int              SysCreate( char *name );
+extern unsigned         SysWrite( int handle, void FAR_PTR *buff, unsigned len );
+extern unsigned long    SysSeek( int handle, unsigned long loc );
+extern int              SysClose( int handle );

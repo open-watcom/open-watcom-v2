@@ -513,7 +513,7 @@ char *Parse( char *line, char arg[], char **eoc )
 
 void AllocSamples( unsigned tid )
 {
-    Samples = alloc( sizeof( struct samp_samples )
+    Samples = my_alloc( sizeof( struct samp_samples )
             + Ceiling * sizeof( samp_address ) );
     if( Samples == NULL ) {
         Output( MsgArray[MSG_SAMPLE_BUFF-ERR_FIRST_MESSAGE] );
@@ -523,7 +523,7 @@ void AllocSamples( unsigned tid )
     Samples->pref.kind = SAMP_SAMPLES;
     Samples->d.sample.thread_id = tid;
     if( CallGraphMode ) {       /* allocate callgraph prefix storage */
-        CallGraph = alloc( sizeof( struct samp_block ) );
+        CallGraph = my_alloc( sizeof( struct samp_block ) );
         if( CallGraph == NULL ) {
             Output( MsgArray[MSG_CALLGRAPH_BUFF-ERR_FIRST_MESSAGE] );
             Output( "\r\n" );
@@ -543,12 +543,12 @@ int sample_main( char far *win_cmd )
 int main( int argc, char **argv )
 #endif
 {
-    char            *cmd_line;
-    char            *arg;
-    char            *cmd;
-    char FAR_PTR    *tmp_cmd;
-    char            *eoc;
-    int             cmdlen;
+    char        *cmd_line;
+    char        *arg;
+    char        *cmd;
+    char        *tmp_cmd;
+    char        *eoc;
+    int         cmdlen;
 
 #if !defined( __WINDOWS__ ) && !defined( __WATCOMC__ )
     _argv = argv;

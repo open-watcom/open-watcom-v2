@@ -37,13 +37,9 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"
+#include "sysio.h"
 
 extern int      SysOpen( char *name );
-extern int      SysCreate( char *name );
-extern unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len );
-extern int      SysSeek( int handle, unsigned long loc );
-extern int      SysClose( int handle );
-
 
 int SampWrite( void FAR_PTR *buff, unsigned len )
 {

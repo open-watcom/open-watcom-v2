@@ -48,18 +48,7 @@
 
 extern void StartTimer( void );
 extern void StopTimer( void );
-extern void REPORT_TYPE report( void );
-extern void WriteCodeLoad( seg_offset ovl_tbl, char *name, samp_block_kinds );
-extern void WriteAddrMap( seg map_start,  seg load_start, off load_offset );
-extern int SampWrite( void FAR_PTR *buff, unsigned len );
-extern void StopAndSave(void);
-extern void SetTimerRate( char ** );
 extern void SetRestoreRate( char **);
-extern void fatal( void );
-extern void Output( char FAR_PTR * );
-extern void mfree( void FAR_PTR *chunk );
-extern void FAR_PTR * alloc( int size );
-extern char  FAR_PTR    *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
 extern void ResolveRateDifferences(void);
 
 /* NETWARE HOOKS */
@@ -131,7 +120,7 @@ void RecordCodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds ki
 {
     code_load           *new;
 
-    new = alloc( sizeof( *new ) );
+    new = my_alloc( sizeof( *new ) );
     new->next = LoadedNLMs;
     LoadedNLMs = new;
     memcpy( new->buff, &loaded->LDFileName[1], loaded->LDFileName[0] );
@@ -153,7 +142,7 @@ void WriteRecordedLoads( void )
         next = curr->next;
         WriteCodeLoad( ovl_tbl, curr->buff, curr->kind );
         WriteAddrMap( 1, curr->seg, curr->off );
-        mfree( curr );
+        my_free( curr );
     }
 }
 
@@ -241,8 +230,9 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     UnRegisterEventNotification( events );
     report();
 
-    if( Samples != NULL )
-        mfree( Samples );
+    if( Samples != NULL ) {
+        my_free( Samples );
+	}
 }
 
 
@@ -320,8 +310,10 @@ void GetProg( char *cmd, char *eoc )
 
 void fatal( void )
 {
-    if( Samples != NULL ) mfree( Samples );
-    if( CallGraph != NULL ) mfree( CallGraph );
+    if( Samples != NULL )
+        my_free( Samples );
+    if( CallGraph != NULL )
+        my_free( CallGraph );
     MsgFini();
     exit( 0 );
 }

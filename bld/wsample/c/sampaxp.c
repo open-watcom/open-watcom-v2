@@ -47,19 +47,6 @@
 #include "exepe.h"
 #include "exedos.h"
 
-extern void REPORT_TYPE report();
-extern void             StopAndSave();
-extern void             WriteCodeLoad( seg_offset, char *, samp_block_kinds );
-extern void             WriteAddrMap( seg, seg, off );
-extern void             WriteMark( char FAR_PTR *str, seg_offset where );
-extern unsigned         GetNumber(unsigned,unsigned,char**,unsigned);
-extern void             Output(char*);
-extern void             AllocSamples( unsigned );
-extern void             SetTimerRate( char ** );
-extern void             fatal(void);
-extern void             RecordCGraph( void );
-extern char             *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
-
 typedef struct {
     char        live;
     DWORD       id;

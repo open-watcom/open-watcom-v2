@@ -51,7 +51,6 @@
 
 #define BUFF_SIZE 512
 
-extern char  FAR_PTR    *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
 unsigned short win386sig[] = { 0xDEAD,0xBEEF };
 unsigned short win386sig2[] = { 0xBEEF,0xDEAD };
 

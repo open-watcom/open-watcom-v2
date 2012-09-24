@@ -68,49 +68,38 @@ typedef struct {
     uint_16     sect;
 } ovl_addr;
 
+typedef void __based( __segname( "_CODE" ) ) (*report_fn_ptr)( void );
+
 extern seg_offset far SysCallerAddr;
 extern unsigned char far SysCaught;
 extern unsigned char far SysNoDOS;
-extern char  FAR_PTR    *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
 
-unsigned            OvlSize;
-void FAR_PTR        *OvlStruct;
-ovl_dbg_req_func    *OvlHandler;
-
-
-
-int                             FirstHook = TRUE;
-
-extern unsigned GetNumber( unsigned, unsigned, char **, unsigned );
-extern void Output( char FAR_PTR *str );
-extern void fatal( void );
 extern void StartTimer( void );
 extern void InstallDOSIntercepts( void );
 extern void StopTimer( void );
-extern void REPORT_TYPE report( void );
 extern void RemoveDOSIntercepts( void );
-extern void WriteCodeLoad( seg_offset ovl_tbl, char *name, samp_block_kinds );
-extern void WriteAddrMap( seg map_start,  seg load_start, off load_offset );
-extern int SampWrite( void FAR_PTR *buff, unsigned len );
 extern int AddInterrupt( unsigned );
-extern void Usage( void );
-extern void SetTimerRate( char ** );
-extern void RecordCGraph( void );
 
-extern seg      GetPSP( void );
-extern void     DOSLoadProg( char *, pblock near *, void REPORT_TYPE (*)( void ) );
-extern void     DOSRunProg( seg_offset * );
+extern seg                  GetPSP( void );
+extern void                 DOSLoadProg( char *, pblock *, report_fn_ptr );
+extern void                 DOSRunProg( seg_offset * );
 extern ovl_dbg_hook_func    ovl_handler;
+
+unsigned            OvlSize;
+overlay_record_t 	FAR_PTR *OvlStruct;
+ovl_dbg_req_func    *OvlHandler;
+
+int                 FirstHook = TRUE;
 
 void WriteOvl( unsigned req_ovl, char is_return, unsigned offset, unsigned seg )
 {
-    overlay_record_t FAR_PTR *ovl;
+    overlay_record_t	FAR_PTR *ovl;
     struct {
         struct samp_block_prefix    pref;
         struct samp_remap_sect      remap;
     } remap_blk;
-    ovl_addr    xlat_addr;
-    unsigned    size;
+    ovl_addr            xlat_addr;
+    unsigned            size;
 
     SamplerOff++;
 
@@ -165,8 +154,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     seg_offset          ovl_tbl;
     struct ovl_header   far *ovl;
     pblock              parms;
-    void REPORT_TYPE    (*fn)( void );
-    void                *ovl_struct;
+    overlay_record_t FAR_PTR *ovl_struct;
 
     cmd = cmd;
     InstallDOSIntercepts();
@@ -179,8 +167,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     parms.fcb01.offset  = 0x5c; /* formatted parameter area 1 (FCB) */
     parms.fcb02.segment = parms.fcb01.segment;
     parms.fcb02.offset  = 0x6c; /* formatted parameter area 2 (FCB) */
-    fn = (void REPORT_TYPE (*)( void )) report;
-    DOSLoadProg( prog, (pblock near *) &parms, fn );
+    DOSLoadProg( prog, &parms, (report_fn_ptr)report );
     /* Will load prog to memory ready to DOSRunProg.
        Will also cause prog to chain to report after its execution.
     */
@@ -211,7 +198,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     SysCaught = 0;
     FirstSample = TRUE;
 
-    DOSRunProg( (seg_offset *)&parms.startsssp );
+    DOSRunProg( &parms.startsssp );
 }
 
 void RecordSample( union INTPACK FAR_PTR *r )

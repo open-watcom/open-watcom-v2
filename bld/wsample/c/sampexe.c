@@ -45,9 +45,6 @@
     #include "sampwin.h"
 #endif
 
-extern char  FAR_PTR    *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
-extern void             Output( char FAR_PTR * );
-
 void GetProg( char *cmd, char *eoc )
 {
     char        save;

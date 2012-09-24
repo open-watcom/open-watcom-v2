@@ -29,8 +29,11 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <malloc.h>
+#include <dos.h>
 #include "tinyio.h"
+#include "sysio.h"
 
 
 void SysInit( void )
@@ -39,20 +42,11 @@ void SysInit( void )
 
 int SysCreate( char *name )
 {
-    tiny_ret_t  ret;
+    int     handle;
 
-    ret = TinyCreate( name, TIO_NORMAL );
-    if( ret < 0 ) return( -1 );
-    return( ret );
-}
-
-int SysDelete( char *name )
-{
-    tiny_ret_t  ret;
-
-    ret = TinyDelete( name );
-    if( ret < 0 ) return( -1 );
-    return( 0 );
+    if( _dos_creat( name, _A_NORMAL, &handle ) )
+        return( -1 );
+    return( handle );
 }
 
 unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len )
@@ -60,30 +54,33 @@ unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len )
     tiny_ret_t  ret;
 
     ret = TinyFarWrite( handle, buff, len );
-    if( ret < 0 ) return( (unsigned)-1 );
+    if( ret < 0 )
+        return( (unsigned)-1 );
     return( ret );
 }
 
-int SysSeek( int handle, unsigned long loc )
+unsigned long SysSeek( int handle, unsigned long loc )
 {
-    if( TINY_ERROR( TinySeek( handle, loc, TIO_SEEK_START ) ) ) {
-        return( -1 );
-    }
-    return( 0 );
+    unsigned long   new_loc;
+
+    if( TINY_ERROR( TinyLSeek( handle, loc, TIO_SEEK_START, &new_loc ) ) )
+        return( -1L );
+    return( new_loc );
 }
 
 int SysClose( int handle )
 {
-    if( TinyClose( handle ) < 0 ) return( -1 );
+    if( _dos_close( handle ) )
+        return( -1 );
     return( 0 );
 }
 
-void FAR_PTR * alloc( int size )
+void FAR_PTR *my_alloc( int size )
 {
     return( _fmalloc( size ) );
 }
 
-void mfree( void FAR_PTR *chunk )
+void my_free( void FAR_PTR *chunk )
 {
     _ffree( chunk );
 }

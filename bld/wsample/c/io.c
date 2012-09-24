@@ -36,14 +36,10 @@
 #include "sample.h"
 #include "wmsg.h"
 #include "smpstuff.h"
+#include "sysio.h"
 
 static  long    SampOffset;
 static  int     SampleHandle;
-
-extern int      SysCreate( char *name );
-extern unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len );
-extern int      SysSeek( int handle, unsigned long loc );
-extern int      SysClose( int handle );
 
 int  SampCreate( char *name )
 {
@@ -70,7 +66,8 @@ int SampWrite( void FAR_PTR *buff, unsigned len )
 
 int SampSeek( unsigned long loc )
 {
-    if( SysSeek( SampleHandle, loc ) != loc ) return( -1 );
+    if( SysSeek( SampleHandle, loc ) != loc )
+        return( -1 );
     SampOffset = loc;
     return( 0 );
 }

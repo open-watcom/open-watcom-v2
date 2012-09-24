@@ -34,6 +34,9 @@
 #include <io.h>
 #include <malloc.h>
 #include <fcntl.h>
+#include "sample.h"
+#include "smpstuff.h"
+#include "sysio.h"
 
 extern void *AllocTag;
 extern void *Alloc( int, void* );
@@ -59,12 +62,12 @@ int SysClose( int handle )
     return( close( handle ) );
 }
 
-void FAR_PTR * alloc( int size )
+void FAR_PTR *my_alloc( int size )
 {
     return( Alloc( size, AllocTag ) );
 }
 
-void mfree( void FAR_PTR *chunk )
+void my_free( void FAR_PTR *chunk )
 {
     Free( chunk );
 }

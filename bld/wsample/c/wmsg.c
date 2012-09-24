@@ -39,6 +39,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "sample.h"
+#include "smpstuff.h"
 #ifdef __WATCOMC__
     #include <process.h>
 #else
@@ -73,8 +75,6 @@ extern  long            FileShift;
 
 char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
 extern void             Output( char FAR_PTR * );
-extern void             FAR_PTR *alloc( int size );
-extern void             mfree( void FAR_PTR *chunk );
 
 #if !defined(__WINDOWS__)
 static long res_seek( int handle, long position, int where )
@@ -139,7 +139,7 @@ int MsgInit( void )
                     }
                     buffer[0] = '\0';
                 }
-                MsgArray[i-ERR_FIRST_MESSAGE] = alloc( strlen( buffer ) + 1 );
+                MsgArray[i-ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
 
                 if( MsgArray[i-ERR_FIRST_MESSAGE] == NULL ) break;
 #if defined( __I86__ )
@@ -175,7 +175,7 @@ int MsgInit( HANDLE inst )
             }
             buffer[0] = '\0';
         }
-        MsgArray[i-ERR_FIRST_MESSAGE] = alloc( strlen( buffer ) + 1 );
+        MsgArray[i-ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
         if( MsgArray[i-ERR_FIRST_MESSAGE] == NULL ) return( 0 );
         _fstrcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
     }
@@ -188,7 +188,7 @@ void MsgFini( void )
     int          i;
 
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-        mfree( MsgArray[i-ERR_FIRST_MESSAGE] );
+        my_free( MsgArray[i-ERR_FIRST_MESSAGE] );
     }
 }
 

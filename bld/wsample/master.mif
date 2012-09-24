@@ -8,11 +8,7 @@ wsample_autodepends = .AUTODEPEND
 target = $(host_os)
 !endif
 
-!ifeq target dos
-memory_model_i86 = s
-!else ifeq target rsi
-memory_model_i86 = l
-!else ifeq target win
+!ifndef memory_model_i86
 memory_model_i86 = c
 !endif
 
@@ -35,12 +31,13 @@ xname = $(xname_$(target)_$(host_cpu))
 !include defrule.mif
 
 !include wres.mif
+!include $(commonui_dir)/windbg.mif
 
 objs_nt_axp     = sampaxp.obj sysinit.obj sampexe.obj
 objs_nt_386     = sampnt.obj sysinit.obj sampexe.obj
 objs_os2_386    = sampos22.obj sysinit.obj sampexe.obj
 objs_os2_i86    = sampos2.obj sysinit.obj sampexe.obj
-objs_win_i86    = sampwin.obj sampexe.obj winmain.obj winopts.obj fault.obj notify.obj libload.obj globals.obj getidata.obj segmem2.obj segmem.obj mythelp.obj inth.obj intdata.obj dbg386.obj ismod32.obj
+objs_win_i86    = sampwin.obj sampexe.obj winmain.obj winopts.obj fault.obj notify.obj libload.obj globals.obj getidata.obj
 objs_dos_i86    = sampdos.obj sampexe.obj realmode.obj rmhooks.obj timasm.obj interc.obj settime.obj
 objs_rsi_i86    = samprsi.obj sysinit.obj sampexe.obj sbrk.obj settime.obj dbglib.obj dbgliba.obj rmhdlr.obj magicstr.obj
 objs_pls_386    = samppls.obj sysinit.obj sampexe.obj timer.obj settime.obj
@@ -125,7 +122,7 @@ extra_l_flags_win = option heap=10k, stack=10k segment class 'CODE' preload fixe
 !ifeq target nov
 inc_dirs = -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)"
 !else ifeq target win
-inc_dirs = -I"$(sdk_misc_dir)" -I"$(commonui_dir)/h"
+inc_dirs = $(windbg_inc_dirs)
 !else ifeq target rsi
 inc_dirs = -I"../rsii86" -I"$(rsilib)"
 !else ifeq target pls
@@ -138,7 +135,7 @@ inc_dirs += -I"$(dig_dir)/h" -I"../h"
 !ifeq target dos
 .c: ../dosi86;../c
 !else ifeq target win
-.c: ../c;$(sdk_misc_dir);$(commonui_dir)/c
+.c: ../c
 !else ifeq target rsi
 .c: ../rsii86;../c;$(rsilib)
 !else ifeq target pls
@@ -150,7 +147,7 @@ inc_dirs += -I"$(dig_dir)/h" -I"../h"
 !endif
 
 !ifeq target win
-.asm: ../asm;$(sdk_misc_dir);$(commonui_dir)/asm
+.asm: ../asm
 !else ifeq target rsi
 .asm: ../rsii86;../asm;$(rsilib)
 !else
@@ -222,7 +219,7 @@ $(xname).exp : $(objects) $(xname).res $(libs) $(__MAKEFILES__)
     $(wstrip) -q -a -r $^@ . $(xname).res
 !else
 
-libs = $(wres_lib)
+libs = $(wres_lib) $(windbg_lib)
 
 !ifdef bootstrap
 $(xname).exe : $(objects) $(cl_objs) $(xname).res $(libs) $(__MAKEFILES__)

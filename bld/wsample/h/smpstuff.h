@@ -121,8 +121,8 @@ extern void             GetProg( char *,char * );
 extern int              VersionCheck( void );
 extern void             Usage( void );
 
-extern void             FAR_PTR *alloc( int size );
-extern void             mfree( void FAR_PTR *chunk );
+extern void             FAR_PTR *my_alloc( int size );
+extern void             my_free( void FAR_PTR *chunk );
 
 extern void             InitTimerRate( void );
 extern void             SetTimerRate( char ** );

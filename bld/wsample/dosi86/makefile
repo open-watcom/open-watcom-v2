@@ -3,4 +3,6 @@
 host_os  = dos
 host_cpu = i86
 
+memory_model_i86 = s
+
 !include ../master.mif
