@@ -111,4 +111,4 @@ uistr.gh : uistrmsg.gh
     $(awk) -f $(build_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_CUI_BASE $[@ > $^@
 
 uistrmsg.gh : ../res/commonui.msg
-    $(c_pp) -zk0 $(rc_defines_$(host_os)) -I"../h" $[@ >$^@
+    $(c_pp) $(rc_aui_flags) -I"../h" $[@ >$^@

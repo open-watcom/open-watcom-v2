@@ -50,7 +50,7 @@ msg.gh : wstrip.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 incltext.gh : ../wstrip.msg
-        $(c_pp) -zk0 $(rc_defines_$(host_os)) >$^@ <<
+        $(c_pp) $(rc_aui_flags) >$^@ <<
 $#define pick(c,e,j) e,
 "",
 $#include "$[@"
@@ -58,9 +58,9 @@ $#undef pick
 <<
 
 wstrip.gh : ../wstrip.msg
-        $(c_pp) -zk0 $(rc_defines_$(host_os)) $[@ >$@
+        $(c_pp) $(rc_aui_flags) $[@ >$@
 
 wstrip.res : ../wstrip.rc msg.gh
-        $(rc_aui) -ad $(rc_defines_$(host_os)) $(inc_dirs) $[@ -fo=$^@
+        $(rc_aui) -ad $(inc_dirs) $[@ -fo=$^@
 
 !include verrc.mif

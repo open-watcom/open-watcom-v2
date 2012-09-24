@@ -509,7 +509,8 @@ rcaui           = bwrc
 wstrip          = bwstrip
 ide2make        = bide2mak
 
-rc_aui          = $(rcaui) -bt=windows -I"$(watcom_dir)/h" -zk0 -r
+rc_aui_flags    = -zk0 $(rc_defines_$(host_os)) -I"$(watcom_dir)/h"
+rc_aui          = $(rcaui) -r -bt=windows $(rc_aui_flags)
 
 # simple C preprocessing
 c_pp            = wcpp

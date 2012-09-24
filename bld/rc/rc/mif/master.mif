@@ -78,7 +78,7 @@ parser_defines = -DYYDEBUG -DSCANDEBUG
 # global defines
 ################
 
-rc_defines     = -D_STANDALONE_ $(parser_defines) $(rc_defines_$(host_os))
+rc_defines     = -D_STANDALONE_ $(parser_defines)
 
 # cflags stuff
 ###############
@@ -216,7 +216,7 @@ weights2.gh keyword2.gh : ./findhash.exe ../hash/rcos2.key
         @rm -f weights.gh
 
 incltext.gh : ../h/rc.msg
-        $(c_pp) -zk0 $(rc_defines) >$^@ <<
+        $(c_pp) $(rc_aui_flags) $(rc_defines) >$^@ <<
 $#define pick(c,e,j) e,
 "",
 $#include "$[@"
@@ -224,7 +224,7 @@ $#undef pick
 <<
 
 msg.gh : ../h/rc.msg
-        $(c_pp) -zk0 $(rc_defines) $[@ >$@
+        $(c_pp) $(rc_aui_flags) $(rc_defines) $[@ >$@
 
 rcmsg.gh : msg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@

@@ -55,7 +55,7 @@ extra_c_flags = -s
 extra_c_flags_win = -zu -zw
 extra_c_flags_fmedit = -bd
 
-rc_flags_win += -30
+extra_rc_flags_win = -30
 
 extra_l_flags_win = op rwr
 

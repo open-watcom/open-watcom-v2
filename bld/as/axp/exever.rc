@@ -1,13 +1,7 @@
 #define VERINFO_EXE
 #define VERINFO_FILEVERSION             $j, $n, $h, $l
 #define VERINFO_PRODUCTVERSION          $j, $n, $h, $l
-#if defined( AS_ALPHA )
-    #define VERINFO_FILEDESCRIPTION_STR "Open Watcom Alpha AXP Assembler"
-#elif defined( AS_MIPS )
-    #define VERINFO_FILEDESCRIPTION_STR "Open Watcom MIPS Assembler"
-#elif defined( AS_PPC )
-    #define VERINFO_FILEDESCRIPTION_STR "Open Watcom PowerPC Assembler"
-#endif
+#define VERINFO_FILEDESCRIPTION_STR     "Open Watcom Alpha AXP Assembler"
 #define VERINFO_FILEVERSION_STR         "$j.$n"
 #define VERINFO_INTERNALNAME_STR        "$0"
 #define VERINFO_PRODUCTVERSION_STR      "$j.$n"

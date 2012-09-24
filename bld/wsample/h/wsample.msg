@@ -29,7 +29,7 @@ pick( MSG_USAGE_LN_1,       "g—p•û–@: wsample [options] program [program argume
                 "Usage: wsample [options] program [program arguments]\n" )
 pick( MSG_USAGE_LN_2,       "ƒIƒvƒVƒ‡ƒ“:\n",
                 "Options:\n" )
-#ifndef WIN
+#ifndef RC_WIN
 pick( MSG_USAGE_LN_3,       "    -b=<size> ƒTƒ“ƒvƒŠƒ“ƒO—pƒoƒbƒtƒ@ƒTƒCƒY (ÃŞÌ«ÙÄ: 63KB)\n",
                 "    -b=<size> specify the buffer size for samples (default: 63KB)\n" )
 #endif
@@ -37,7 +37,7 @@ pick( MSG_USAGE_LN_4,       "    -c        ƒR[ƒ‹ƒOƒ‰ƒtî•ñ‚ğƒTƒ“ƒvƒ‹ƒtƒ@ƒCƒ‹‚ÉŠ
                 "    -c        callgraph information is to be included in the sample file\n" )
 pick( MSG_USAGE_LN_5,       "    -f=<file> ƒTƒ“ƒvƒ‹ƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹–¼\n",
                 "    -f=<file> specify the output filename for the sample file\n" )
-#if defined(NLM)
+#if defined(RC_NLM)
 pick( MSG_USAGE_LN_6,
     "    -o=<tmct> Specify a count to be used to reset the timer at unload\n",
     "    -o=<tmct> Specify a count to be used to reset the timer at unload\n" )
@@ -48,24 +48,24 @@ pick( MSG_USAGE_LN_7,
 
 pick( MSG_OPTIONS_1,        "    -r=<rate> ƒTƒ“ƒvƒŠƒ“ƒOŠÔŠu\n",
                 "    -r=<rate> specify the sampling rate\n" )
-#ifdef DOS      /* messages in sampdos */
+#ifdef RC_DOS      /* messages in sampdos */
 pick( MSG_OPTIONS_2,        "    -i=<intr> ƒTƒ“ƒvƒŠƒ“ƒO‚ğs‚¤Š„‚İ”Ô†\n",
                 "    -i=<intr> specify an interrupt number for assigning samples\n" )
 pick( MSG_OPTIONS_3,        "    -d        DOSŠ„‚İ‚ÌŠÄ‹‚Ì‹Ö~\n",
                 "    -d        disable assignment of DOS interrupts to application\n" )
 #endif
 
-#if defined(OS2) || defined(OS22)      /* messages in sampos2 and sampos22 */
+#if defined(RC_OS2)      /* messages in sampos2 and sampos22 */
 pick( MSG_OPTIONS_2,        "    -s        V‚µ‚¢ƒZƒbƒVƒ‡ƒ“‚Å‚ÌƒvƒƒOƒ‰ƒ€‚ÌŠJn\n",
                 "    -s        start the program in a new session\n" )
 #endif
 
-#ifndef WIN
+#ifndef RC_WIN
 pick( MSG_USAGE_LN_8,       "\n    <size>    ‚Í 1 ‚©‚ç 63 ‚Ü‚Å‚Ì”ÍˆÍ‚Å‚· (ÃŞÌ«ÙÄ: 63 KB)\n",
                 "\n    <size>    is a number in the range 1 to 63 (default: 63 KB)\n" )
 #endif
 
-#ifdef DOS      /* messages in sampdos */
+#ifdef RC_DOS      /* messages in sampdos */
 pick( MSG_EXPLAIN_1,        "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu(ĞØ•b’PˆÊ)‚ğ\n",
                 "    <rate>    is a number (range 1 to 55) specifying the approximate\n" )
 pick( MSG_EXPLAIN_2,        "              w’è‚·‚é”’l(”ÍˆÍ:1‚©‚ç55‚Ü‚Å)‚Å‚· (ÃŞÌ«ÙÄ: 55)\n",
@@ -82,21 +82,21 @@ pick( MSG_EXPLAIN_7,        "              (ÃŞÌ«ÙÄ: DOS Š„‚İ 21 ‚ªÓÆÀ°‚³‚ê‚Ä‚¢
                 "              (default: the DOS interrupt 21 is monitored)\n" )
 #endif
 
-#if defined(OS2) || defined(OS22)      /* messages in sampos2 and sampos22 */
+#if defined(RC_OS2)      /* messages in sampos2 and sampos22 */
 pick( MSG_EXPLAIN_1,        "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ\n",
                 "    <rate>    is a number (range 1 to 1000) specifying the approximate\n" )
 pick( MSG_EXPLAIN_2,        "              w’è‚·‚é”’l (”ÍˆÍ:27 ‚©‚ç 1000‚Ü‚Å) ‚Å‚· (ÃŞÌ«ÙÄ: 55)\n",
                 "              time interval (in milliseconds) between samples (default: 55)\n" )
 #endif
 
-#ifdef LINUX      /* messages in samplinux */
+#ifdef RC_LINUX      /* messages in samplinux */
 pick( MSG_EXPLAIN_1,        "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ\n",
                 "    <rate>    is a number (range 1 to 1000) specifying the approximate\n" )
 pick( MSG_EXPLAIN_2,        "              w’è‚·‚é”’l (”ÍˆÍ:27 ‚©‚ç 1000‚Ü‚Å) ‚Å‚· (ÃŞÌ«ÙÄ: 10)\n",
                 "              time interval (in milliseconds) between samples (default: 10)\n" )
 #endif
 
-#if defined(PLS) || defined(NLM)      /* messages in samppls and sampnlm */
+#if defined(RC_PLS) || defined(RC_NLM)      /* messages in samppls and sampnlm */
 pick( MSG_EXPLAIN_1,        "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ\n",
                 "    <rate>    is a number (range 1 to 55) specifying the approximate\n" )
 pick( MSG_EXPLAIN_2,        "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ\n",
@@ -111,14 +111,14 @@ pick( MSG_EXPLAIN_6,        "                  ‚Ìê‡AƒNƒ‰ƒbƒVƒ…‚·‚é‰Â”\«‚ª‚ ‚
                 "                  which are too small, may crash slower systems.\n" )
 #endif
 
-#if defined(RSI)      /* messages in samprsi */
+#if defined(RC_RSI)      /* messages in samprsi */
 pick( MSG_EXPLAIN_1,        "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ\n",
                 "    <rate>    is a number (range 1 to 55) specifying the approximate\n" )
 pick( MSG_EXPLAIN_2,        "              w’è‚·‚é”’l (”ÍˆÍ:1 ‚©‚ç 55‚Ü‚Å) ‚Å‚· (ÃŞÌ«ÙÄ: 55)\n",
                 "              time interval (in milliseconds) between samples (default: 55)\n" )
 #endif
 
-#ifdef WIN      /* messages in sampwin */
+#ifdef RC_WIN      /* messages in sampwin */
 pick( MSG_EXPLAIN_1,        "    <rate>    ‚ÍƒTƒ“ƒvƒŠƒ“ƒOŠÔ‚Ì‚¨‚æ‚»‚ÌŠÔŠÔŠu (’PˆÊ:ĞØ•b) ‚ğ\n",
                 "    <rate>    is a number (range 1 to 1000) specifying the approximate\n" )
 pick( MSG_EXPLAIN_2,        "              w’è‚·‚é”’l (”ÍˆÍ:1 ‚©‚ç 1000‚Ü‚Å) ‚Å‚· (ÃŞÌ«ÙÄ: 55)\n",
@@ -129,7 +129,7 @@ pick( MSG_USAGE_LN_9,
     "\n   ƒIƒvƒVƒ‡ƒ“‚Ì’†‚Å‚Í '=' ‚Ì‘ã‚è‚É '#' ‚ğg‚Á‚Ä‚­‚¾‚³‚¢ (—á -b#10)\n",
     "\n   '#' may be used instead of '=' in options (eg. -b#10)\n" )
 
-#ifdef DOS      /* messages in sampdos */
+#ifdef RC_DOS      /* messages in sampdos */
 pick( MSG_SAMPLE_1,     "ƒvƒƒOƒ‰ƒ€‚Ì’†‚ÌƒZƒNƒVƒ‡ƒ“‚ª‘½‚·‚¬‚Ü‚·",
                 "Too many sections in program" )
 pick( MSG_SAMPLE_2,     "Š„‚İ 34 ‚©‚ç 3d ‚Í 80x87 ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚Ì‚½‚ß‚É—\–ñ‚³‚ê‚Ä‚¨‚èAƒ‚ƒjƒ^[‚Å‚«‚Ü‚¹‚ñ",
@@ -138,7 +138,7 @@ pick( MSG_SAMPLE_3,     "9ŒÂˆÈã‚ÌŠ„‚İ‚Íƒ‚ƒjƒ^[‚Å‚«‚Ü‚¹‚ñ",
                 "Cannot monitor more than eight interrupts" )
 #endif
 
-#ifdef OS2      /* messages in sampos2 */
+#ifdef RC_OS21      /* messages in sampos2 */
 pick( MSG_SAMPLE_1,     "Às’†: ",
                 "Executing: " )
 pick( MSG_SAMPLE_2,     "“à•”ƒGƒ‰[: ",
@@ -159,7 +159,7 @@ pick( MSG_SAMPLE_9,     "OS/2 2.x —pƒTƒ“ƒvƒ‰‚ğŠJn‚Å‚«‚Ü‚¹‚ñ",
                 "Cannot start OS/2 2.x sampler" )
 #endif
 
-#ifdef OS22     /* messages in sampos22 */
+#ifdef RC_OS22     /* messages in sampos22 */
 pick( MSG_SAMPLE_1,     "Às’†: ",
                 "Executing: " )
 pick( MSG_SAMPLE_2,     "“à•”ƒGƒ‰[: ",
@@ -182,7 +182,7 @@ pick( MSG_SAMPLE_10,        "CPU —áŠO‚ª•ñ‚³‚ê‚Ä‚¢‚Ü‚·",
                 "CPU exception reported" )
 #endif
 
-#ifdef LINUX      /* messages in samplnx */
+#ifdef RC_LINUX      /* messages in samplnx */
 pick( MSG_SAMPLE_1,     "Às’†: ",
                 "Executing: " )
 pick( MSG_SAMPLE_2,     "“à•”ƒGƒ‰[: ",
@@ -197,7 +197,7 @@ pick( MSG_SAMPLE_6,     "setitimer() ‚ª¸”s‚µ‚Ü‚µ‚½",
                 "ptrace() failed" )
 #endif
 
-#ifdef PLS      /* messages in samppls */
+#ifdef RC_PLS      /* messages in samppls */
 pick( MSG_SAMPLE_1,     "“à•”ƒGƒ‰[",
                 "Internal error" )
 pick( MSG_SAMPLE_2,     "ƒ[ƒh‚Å‚«‚Ü‚¹‚ñ: ",
@@ -208,19 +208,19 @@ pick( MSG_SAMPLE_4,     "—\Šú‚µ‚È‚¢—áŠO: ",
                 "Unexpected Exception: " )
 #endif
 
-#ifdef NLM      /* messages in sampnlm */
+#ifdef RC_NLM      /* messages in sampnlm */
 pick( MSG_SAMPLE_1,     "ƒGƒ‰[! Às‚Å‚«‚Ü‚¹‚ñ: ",
                 "Error! Cannot execute: " )
 #endif
 
-#ifdef RSI      /* messages in samprsi */
+#ifdef RC_RSI      /* messages in samprsi */
 pick( MSG_SAMPLE_1,     "ƒ^ƒXƒN—áŠO: ",
                 "Task Exception: " )
 pick( MSG_SAMPLE_2,     "ƒ[ƒh‚Å‚«‚Ü‚¹‚ñ: ",
                 "Unable to load: " )
 #endif
 
-#ifdef WIN      /* messages in sampwin */
+#ifdef RC_WIN      /* messages in sampwin */
 pick( MSG_SAMPLE_1,     "ƒ‚ƒWƒ…[ƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ!",
                 "Couldn't find any modules!" )
 pick( MSG_SAMPLE_2,     "Š„‚İ‚ÌƒtƒbƒN‚É¸”s‚µ‚Ü‚µ‚½",
@@ -249,7 +249,7 @@ pick( MSG_SAMPLE_13,        "ƒTƒ“ƒvƒ‰‚ğƒNƒ[ƒY‚Å‚«‚Ü‚¹‚ñ!\n",
                 "Cannot close sampler!\n" )
 #endif
 
-#if defined(RSI) || defined(PLS)
+#if defined(RC_RSI) || defined(RC_PLS)
 pick( MSG_EXCEPT_0,     "", "" )
 pick( MSG_EXCEPT_1,     "œZƒI[ƒo[ƒtƒ[",
                 "divide overflow" )

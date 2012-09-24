@@ -206,7 +206,7 @@ msg.gh : wlibmsg.gh
     $(awk) -f $(build_dir)/msgtoh.awk $[@ >$^@
 
 incltext.gh : ../wlib.msg
-    $(c_pp) -zk0 $(rc_defines_$(host_os)) >$^@ <<
+    $(c_pp) $(rc_aui_flags) >$^@ <<
 $#define pick(c,e,j) e,
 "",
 $#include "$[@"
@@ -214,10 +214,10 @@ $#undef pick
 <<
 
 wlibmsg.gh : ../wlib.msg
-    $(c_pp) -zk0 $(rc_defines_$(host_os)) $[@ >$^@
+    $(c_pp) $(rc_aui_flags) $[@ >$^@
 
 wlib.res : ../wlib.rc ../wlib.msg msg.gh
-    $(rc_aui) $(rc_defines_$(host_os)) $[@ -fo=$@
+    $(rc_aui) $[@ -fo=$@
 
 verrc_exe = $(realexename)
 verrc_dll = $(realdllname)

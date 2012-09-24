@@ -295,3 +295,9 @@ win386_dir      = $(src_dir)/win386
 !ifndef d16api_dir
 d16api_dir      = $(src_dir)/d16api
 !endif
+!ifndef wstub_dir
+wstub_dir       = $(src_dir)/wstuba
+!endif
+!ifndef rsilib_dir
+rsilib_dir      = $(src_dir)/rsilib
+!endif

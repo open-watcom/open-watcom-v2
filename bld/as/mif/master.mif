@@ -84,49 +84,19 @@ asi_test_objs += trmem.obj
 as_extra_defines += -D_STANDALONE_
 !endif
 
+!ifeq release 0
+dbg_extra_defines   = -DYYDEBUG=1
+!ifeq host_cpu 386
+dbg_extra_defines	+= -DTRMEM -of+
+!else
+dbg_extra_defines   += -DTRMEM
+!endif
+!endif
+
 extra_c_flags = $(as_extra_defines)
 
-!ifeq release 0
-!ifeq host_cpu 386
-as_trmem                = -DTRMEM -of+
-!else
-as_trmem                = -DTRMEM
-!endif
-as_yydebug              = -DYYDEBUG=1
-!else
-dbg_extra_defines       = -DNDEBUG
-!endif
-
-extra_c_flags_asitest   = $(as_trmem)
-
 !ifndef bootstrap
-extra_c_flags_asmem     = -fh=asmem.pch $(as_trmem)
-extra_c_flags_trmemcvr  = -fh=trmemcvr.pch $(as_trmem)
-extra_c_flags_trmem     = -fh=trmem.pch $(as_trmem)
-extra_c_flags_asytab    = -fh=asytab.pch $(as_yydebug)
-extra_c_flags_aslexyy   = -fh=aslexyy.pch
-extra_c_flags_preproc   = -fh=preproc.pch
-extra_c_flags_ppexpr    = -fh=preproc.pch
-extra_c_flags_ppmacro   = -fh=preproc.pch
-extra_c_flags_ppmem     = -fh=preproc.pch
-
-extra_c_flags_asexpr    = -fh
-extra_c_flags_asopernd  = -fh
-extra_c_flags_asutils   = -fh
-extra_c_flags_asregs    = -fh
-extra_c_flags_assymbol  = -fh
-extra_c_flags_asdrectv  = -fh
-extra_c_flags_asdirop   = -fh
-extra_c_flags_asnumlab  = -fh
-extra_c_flags_asmsg     = -fh
-extra_c_flags_asmsgj    =
-extra_c_flags_ashash    = -fh
-extra_c_flags_asinline  = -fh
-extra_c_flags_asiobj    = -fh
-extra_c_flags_main      = -fh
-extra_c_flags_obj       = -fh
-extra_c_flags_sections  = -fh
-extra_c_flags_options   = -fh
+extra_c_flags  += -fh $(dbg_extra_defines)
 !endif
 
 # lflags
@@ -138,8 +108,6 @@ libs = $(owl_lib) $(wres_lib)
 
 # rcflags
 ##########
-
-extra_rc_flags = $(as_extra_defines)
 
 # splice options
 ##################

@@ -80,18 +80,14 @@ extra_a_flags_dos     = $(extra_a_flags_dos_$(target))
 
 extra_a_flags_dbgliba = -zcm
 
-extra_rc_flags_nt          = -DNT
-extra_rc_flags_os2_386     = -DOS22
-extra_rc_flags_os2_i86     = -DOS2
-extra_rc_flags_os2         = $(extra_rc_flags_os2_$(host_cpu))
-extra_rc_flags_dos_dos_i86 = -DDOS
-extra_rc_flags_dos_rsi_i86 = -DRSI
-extra_rc_flags_dos_pls_386 = -DPLS
-extra_rc_flags_dos         = $(extra_rc_flags_dos_$(target)_$(host_cpu))
-extra_rc_flags_nov         = -DNLM
-extra_rc_flags_win         = -DWIN -30 $(inc_dirs_sys_win) -I"../h"
-extra_rc_flags_linux       = -DLINUX
-extra_rc_flags             = $(extra_rc_flags_$(host_os))
+rc_defines_dos_rsi_i86 = -DRC_RSI
+rc_defines_dos_pls_386 = -DRC_PLS
+!ifdef rc_defines_dos_$(target)_$(host_cpu)
+rc_defines_dos         = $(rc_defines_dos_$(target)_$(host_cpu))
+!endif
+rc_defines_os2_i86 = -DRC_OS21
+rc_defines_os2_386 = -DRC_OS22
+rc_defines_os2 += $(rc_defines_os2_$(host_cpu))
 
 nlm_imports = &
     FileServerMajorVersionNumber &
@@ -133,11 +129,11 @@ inc_dirs = -I"$(trap_dir)/lcl/linux/h"
 inc_dirs += -I"$(dig_dir)/h" -I"../h"
 
 !ifeq target dos
-.c: ../dosi86;../c
+.c: ../c
 !else ifeq target win
 .c: ../c
 !else ifeq target rsi
-.c: ../rsii86;../c;$(rsilib)
+.c: ../c;$(rsilib)
 !else ifeq target pls
 .c: ../pls386;../c;$(plslib)
 !else ifeq target linux
@@ -149,7 +145,7 @@ inc_dirs += -I"$(dig_dir)/h" -I"../h"
 !ifeq target win
 .asm: ../asm
 !else ifeq target rsi
-.asm: ../rsii86;../asm;$(rsilib)
+.asm: ../asm;$(rsilib)
 !else
 .asm: ../asm
 !endif
@@ -249,9 +245,10 @@ nversion.tmp: ./mknver.exe
 
 !ifeq host_os win
 $(xname).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg
+    $(rc_aui) -30 $(inc_dirs_sys_win) -I"../h" $[@ -fo=$^@
 !else
 $(xname).res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg
+    $(rc_aui) $[@ -fo=$^@
 !endif
-    $(rc_aui) $(extra_rc_flags) $[@ -fo=$^@
 
 !include verrc.mif
