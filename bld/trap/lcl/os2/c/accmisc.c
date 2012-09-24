@@ -31,6 +31,7 @@
 
 
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 #define INCL_BASE
 #define INCL_DOSDEVICES
@@ -321,26 +322,10 @@ unsigned ReqRead_user_keyboard( void )
 
 unsigned ReqGet_err_text( void )
 {
-    static const char * const DosErrMsgs[] = {
-        "",
-        TRP_ERR_invalid_function_number,
-        TRP_ERR_file_not_found,
-        TRP_ERR_path_not_found,
-        TRP_ERR_too_many_open_files,
-        TRP_ERR_access_denied,
-        TRP_ERR_invalid_handle,
-        TRP_ERR_memory_control_blocks_destroyed,
-        TRP_ERR_insufficient_memory,
-        TRP_ERR_invalid_memory_block_address,
-        TRP_ERR_invalid_environment,
-        TRP_ERR_invalid_format,
-        TRP_ERR_invalid_access_code,
-        TRP_ERR_invalid_data,
-        TRP_ERR_reserved_error_code,
-        TRP_ERR_invalid_drive_was_specified,
-        TRP_ERR_attempt_to_remove_current_directory,
-        TRP_ERR_not_same_device,
-        TRP_ERR_no_more_files,
+    static char *DosErrMsgs[] = {
+        #define pick(a,b)   b,
+        #include "dosmsgs.h"
+        #undef pick
     };
     get_err_text_req    *acc;
     char                *err_txt;
@@ -350,8 +335,9 @@ unsigned ReqGet_err_text( void )
     char                ch;
     unsigned            err;
     static char *OS2ErrMsgs[] = {
-        #define ERROR_DEFINE_STRINGS
-        #include "os2err.h"
+        #define pick(a,b)   b,
+        #include "os2msgs.h"
+        #undef pick
     };
 
     err_txt = GetOutPtr( 0 );
@@ -383,10 +369,11 @@ unsigned ReqGet_err_text( void )
         }
         while( d > err_txt && d[-1] == ' ' ) --d;
         *d = '\0';
-    } else if( err > ( (sizeof(DosErrMsgs)/sizeof(char *)-1) ) ) {
-        strcpy( err_txt, TRP_ERR_unknown_system_error );
-    } else {
+    } else if( err < ERR_LAST ) {
         strcpy( err_txt, DosErrMsgs[ err ] );
+    } else {
+        strcpy( err_txt, TRP_ERR_unknown_system_error );
+        ultoa( err, err_txt + strlen( err_txt ), 16 );
     }
     return( strlen( err_txt ) + 1 );
 }

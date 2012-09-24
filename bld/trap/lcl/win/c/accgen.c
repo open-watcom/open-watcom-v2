@@ -34,11 +34,13 @@
 #include "tinyio.h"
 #include "wdebug.h"
 #include "stdwin.h"
-#include "winacc.h"
 #include "trperr.h"
+#include "winerr.h"
 
 #pragma aux set_carry = 0xf9;
 extern void set_carry(void);
+
+extern void FAR PASCAL SetEventHook( void far * );
 
 volatile bool HaveKey;
 int _info;
@@ -82,13 +84,11 @@ unsigned ReqRead_user_keyboard( void )
 
 unsigned ReqGet_err_text( void )
 {
-    static const char * const dosErrMsgs[] = {
-        #undef ERR_CODES
+    static const char * const doswinErrMsgs[] = {
+        #define pick(a,b)   b,
         #include "dosmsgs.h"
-    };
-    static const char * const winErrMsgs[] = {
-        #define pick( a,b ) b,
-        #include "winerr.h"
+        #include "winmsgs.h"
+        #undef pick
     };
     get_err_text_req    *acc;
     char                *err_txt;
@@ -96,14 +96,11 @@ unsigned ReqGet_err_text( void )
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
 
-    if( acc->err >= WINERR_FIRST ) {
-        if( acc->err < WINERR_LAST ) {
-            strcpy( err_txt, winErrMsgs[ acc->err - WINERR_FIRST ] );
-        } else {
-            strcpy( err_txt, TRP_ERR_unknown_system_error );
-        }
+    if( acc->err < ERR_LAST ) {
+        strcpy( err_txt, doswinErrMsgs[ acc->err ] );
     } else {
-        strcpy( err_txt, dosErrMsgs[ acc->err ] );
+        strcpy( err_txt, TRP_ERR_unknown_system_error );
+        ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
     }
     return( strlen( err_txt ) + 1 );
 }

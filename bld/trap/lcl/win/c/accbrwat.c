@@ -36,7 +36,6 @@
 #include <ctype.h>
 #include <dos.h>
 #include "stdwin.h"
-#include "winacc.h"
 #include "dbg386.h"
 #include "wdebug.h"
 

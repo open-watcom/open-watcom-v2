@@ -30,15 +30,7 @@
 ****************************************************************************/
 
 
-#define ERR_CODES
-#include "dosmsgs.h"
-
-enum {
-    WINERR_FIRST = ERR_LAST,
-    #define pick( a, b ) a,
-    #include "winerr.h"
-    WINERR_LAST
-};
+#include "winerr.h"
 
 extern void FAR PASCAL SetEventHook( void far * );
 long FindFilePath( char *pgm, char *buffer, char *ext_list );

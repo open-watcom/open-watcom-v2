@@ -37,7 +37,6 @@
 #include <ctype.h>
 #include <dos.h>
 #include "stdwin.h"
-#include "winacc.h"
 #include "wdebug.h"
 #include "trperr.h"
 #include "madx86.h"

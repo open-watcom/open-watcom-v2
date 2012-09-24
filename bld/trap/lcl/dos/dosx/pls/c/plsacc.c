@@ -996,28 +996,28 @@ unsigned ReqGet_next_alias()
 unsigned ReqGet_err_text()
 {
     static char *DosErrMsgs[] = {
-#include "dosmsgs.h"
+        #define pick(a,b)   b,
+        #include "dosmsgs.h"
+        #undef pick
     };
-    int            err;
+    int                 err;
     get_err_text_req    *acc;
     char                *err_txt;
-
-    #define MAX_CODE (sizeof( DosErrMsgs ) / sizeof( char * ) - 1)
 
     _DBG(("AccErrText\r\n"));
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
-    if( acc->err > MAX_CODE ) {
+    if( acc->err < ERR_LAST ) {
+        strcpy( err_txt, DosErrMsgs[ acc->err ] );
+    } else {
         err = acc->err - DBE_BASE;
         strcpy( err_txt, DBG_ERROR );
         err_txt += sizeof( DBG_ERROR ) - 1;
         if( err < -DBE_MIN && err > -DBE_MAX ) {
             strcpy( err_txt, DBErrors[ err ] );
         } else {
-            utoa( acc->err, (char *)err_txt, 16 );
+            ultoa( acc->err, err_txt, 16 );
         }
-    } else {
-        strcpy( err_txt, DosErrMsgs[ acc->err ] );
     }
     return( strlen( GetOutPtr( 0 ) ) + 1 );
 }

@@ -50,6 +50,7 @@
 #include "x86cpu.h"
 #include "misc7386.h"
 #include "dosredir.h"
+#include "doserr.h"
 
 trap_cpu_regs   Regs;
 int             IntNum;
@@ -849,20 +850,21 @@ static unsigned_16 AccReadUserKey()
 unsigned ReqGet_err_text()
 {
     static char *DosErrMsgs[] = {
-#include "dosmsgs.h"
+        #define pick(a,b)   b,
+        #include "dosmsgs.h"
+        #undef pick
     };
     get_err_text_req    *acc;
     char                *err_txt;
 
-    #define MAX_CODE (sizeof( DosErrMsgs ) / sizeof( char * ) - 1)
-
-                                                                          _DBG1(( "AccErrText" ));
+    _DBG1(( "AccErrText" ));
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
-    if( acc->err > MAX_CODE ) {
-        utoa( acc->err, err_txt, 16 );
-    } else {
+    if( acc->err < ERR_LAST ) {
         strcpy( err_txt, DosErrMsgs[ acc->err ] );
+    } else {
+        strcpy( err_txt, TRP_ERR_unknown_system_error );
+        ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
     }
     return( strlen( err_txt ) + 1 );
 }

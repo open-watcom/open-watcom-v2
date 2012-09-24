@@ -30,10 +30,4 @@
 ****************************************************************************/
 
 
-enum {
-    #define pick(a,b)   a,
-    #include "dosmsgs.h"
-    #include "winmsgs.h"
-    #undef pick
-    ERR_LAST
-};
+pick( ERROR_NOT_IN_WINDOW, TRP_OS2_no_pm_from_vio )

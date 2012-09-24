@@ -45,9 +45,7 @@
 #include "misc7386.h"
 #include "ioports.h"
 #include "dosredir.h"
-#define ERR_CODES
-#include "dosmsgs.h"
-#undef  ERR_CODES
+#include "doserr.h"
 
 #include "tinyio.h"
 #include "exeos2.h"
@@ -234,10 +232,6 @@ static int          NumModHandles = 0;
 static selector     flatCode = FLAT_SEL;
 static selector     flatData = FLAT_SEL;
 
-static char *DosErrMsgs[] = {
-#include "dosmsgs.h"
-};
-#define MAX_ERR_CODE (sizeof( DosErrMsgs ) / sizeof( char * ) - 1)
 
 #ifdef DEBUG_TRAP
 void dos_printf( const char *format, ... )
@@ -991,22 +985,27 @@ unsigned ReqGet_lib_name( void )
 unsigned ReqGet_err_text( void )
 /******************************/
 {
+    static char *DosErrMsgs[] = {
+        #define pick(a,b)   b,
+        #include "dosmsgs.h"
+        #undef pick
+    };
     get_err_text_req    *acc;
     char                *err_txt;
 
     _DBG( "AccErrText\r\n" );
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
-    if( acc->err > MAX_ERR_CODE ) {
-        _DBG( "After acc->error_code > MAX_ERR_CODE" );
-        strcpy( (char *)err_txt, TRP_ERR_unknown_system_error );
-        ultoa( acc->err, (char *)err_txt + strlen( err_txt ), 16 );
-        _DBG( "After utoa()\r\n" );
-    } else {
-        strcpy( (char *)err_txt, DosErrMsgs[ acc->err ] );
+    if( acc->err < ERR_LAST ) {
+        strcpy( err_txt, DosErrMsgs[ acc->err ] );
         _DBG( "After strcpy\r\n" );
+    } else {
+        _DBG( "After acc->error_code > MAX_ERR_CODE" );
+        strcpy( err_txt, TRP_ERR_unknown_system_error );
+        ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
+        _DBG( "After utoa()\r\n" );
     }
-    return( strlen( err_txt ) + 1 );
+    return( strlen( err_txt ) + 1 );	
 }
 
 unsigned ReqGet_message_text( void )

@@ -30,9 +30,11 @@
 
 
 //#define DEBUG_TRAP
+#include <stdlib.h>
 #include <string.h>
 #include "trpimp.h"
 #include "trperr.h"
+#include "doserr.h"
 #include "packet.h"
 #include "tinyio.h"
 #include "trapdbg.h"
@@ -118,7 +120,9 @@ unsigned ReqGet_sys_config( void )
 unsigned ReqGet_err_text( void )
 {
     static char *DosErrMsgs[] = {
-#include "dosmsgs.h"
+        #define pick(a,b)   b,
+        #include "dosmsgs.h"
+        #undef pick
     };
     get_err_text_req    *acc;
     char                *err_txt;
@@ -129,10 +133,11 @@ unsigned ReqGet_err_text( void )
         if( LoadError != NULL ) {
             strcpy( err_txt, LoadError );
             LoadError = NULL;
-        } else if( acc->err > (sizeof(DosErrMsgs) / sizeof(char *) - 1) ) {
-            strcpy( err_txt, TRP_ERR_unknown_system_error );
-        } else {
+        } else if( acc->err < ERR_LAST ) {
             strcpy( err_txt, DosErrMsgs[ acc->err ] );
+        } else {
+            strcpy( err_txt, TRP_ERR_unknown_system_error );
+            ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
         }
         return( strlen( err_txt ) + 1 );
     }

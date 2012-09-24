@@ -41,7 +41,9 @@
 #include <fcntl.h>
 #include "trpimp.h"
 #include "trperr.h"
+#include "doserr.h"
 #include "wdebug.h"
+#include "trapdbg.h"
 
 #include "dos4g.h"
 #include "pmode32.h"
@@ -901,24 +903,24 @@ unsigned ReqGet_next_alias()
 unsigned ReqGet_err_text()
 {
     static char *DosErrMsgs[] = {
-#include "dosmsgs.h"
+        #define pick(a,b)   b,
+        #include "dosmsgs.h"
+        #undef pick
     };
     get_err_text_req    *acc;
     char                *err_txt;
 
-    #define MAX_CODE (sizeof( DosErrMsgs ) / sizeof( char * ) - 1)
-
     _DBG(("AccErrText\r\n"));
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
-    if( acc->err > MAX_CODE ) {
-        _DBG(( "After acc->error_code > MAX_CODE" ));
-        strcpy( (char *)err_txt, TRP_ERR_unknown_system_error );
-        ultoa( acc->err, (char *)err_txt + strlen( err_txt ), 16 );
-        _DBG(("After utoa()\r\n"));
+    if( acc->err < ERR_LAST ) {
+        strcpy( err_txt, DosErrMsgs[ acc->err ] );
+        _DBG_Writeln( "After strcpy" );
     } else {
-        strcpy( (char *)err_txt, DosErrMsgs[ acc->err ] );
-        _DBG(("After strcpy\r\n"));
+        _DBG_Writeln( "After acc->error_code > MAX_ERR_CODE" );
+        strcpy( err_txt, TRP_ERR_unknown_system_error );
+        ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
+        _DBG_Writeln( "After utoa()" );
     }
     return( strlen( err_txt ) + 1 );
 }

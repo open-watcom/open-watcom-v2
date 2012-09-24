@@ -36,8 +36,7 @@
 #include "stdnt.h"
 #include "trperr.h"
 #include "srvcdbg.h"
-#define ERR_CODES
-#include "dosmsgs.h"
+#include "doserr.h"
 
 #ifndef CREATE_SEPARATE_WOW_VDM
 #define CREATE_SEPARATE_WOW_VDM     0x00000800  // new for NT 3.5 (daytona)

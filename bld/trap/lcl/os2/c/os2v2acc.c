@@ -50,7 +50,6 @@
 #include "wdpmhelp.h"
 #include "softmode.h"
 #include "madregs.h"
-#define ERROR_DEFINE_CONSTS
 #include "os2err.h"
 #include "exedos.h"
 #include "exeos2.h"

@@ -37,13 +37,16 @@
 #include <dos.h>
 #include "wdebug.h"
 #include "stdwin.h"
-#include "winacc.h"
 #include "getcsip.h"
+#include "getsaddr.h"
+#include "winerr.h"
 
 #define SIG_OFF         0
 #define SIG_SIZE        4
 
 #define TINY_ERROR(x)  ((signed long)x < 0)
+
+extern long FindFilePath( char *pgm, char *buffer, char *ext_list );
 
 const unsigned short __based(__segname("_CONST")) win386sig[] = { 0xDEAD,0xBEEF };
 const unsigned short __based(__segname("_CONST")) win386sig2[] = { 0xBEEF,0xDEAD };

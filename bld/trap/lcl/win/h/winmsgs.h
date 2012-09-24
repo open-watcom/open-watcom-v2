@@ -30,10 +30,11 @@
 ****************************************************************************/
 
 
-enum {
-    #define pick(a,b)   a,
-    #include "dosmsgs.h"
-    #include "winmsgs.h"
-    #undef pick
-    ERR_LAST
-};
+pick( WINERR_LOADERR,       TRP_WIN_LOADERR )
+pick( WINERR_NODEBUG32,     TRP_WIN_WDEBUG386 )
+pick( WINERR_NOINT1,        TRP_WIN_NOINT1 )
+pick( WINERR_NOINT3,        TRP_WIN_NOINT3 )
+pick( WINERR_NOLOAD,        TRP_WIN_LoadModule_failed )
+pick( WINERR_NOSTART,       TRP_WIN_NOSTART )
+pick( WINERR_NOWINDEBUG,    TRP_WIN_NOWINDEBUG )
+pick( WINERR_STARTNOTFOUND, TRP_WIN_Unexpected_notification )

@@ -31,6 +31,7 @@
 
 //#define DEBUG_ME
 
+#include <stdlib.h>
 #include <string.h>
 #include <i86.h>
 #include "tinyio.h"
@@ -40,9 +41,7 @@
 #include "exeos2.h"
 #include "exephar.h"
 #include "trperr.h"
-#define ERR_CODES
-#include "dosmsgs.h"
-#undef ERR_CODES
+#include "doserr.h"
 #include "trpimp.h"
 #include "ioports.h"
 #include "winchk.h"
@@ -999,17 +998,20 @@ unsigned ReqGet_lib_name( void )
 unsigned ReqGet_err_text( void )
 {
     static const char *const DosErrMsgs[] = {
-#include "dosmsgs.h"
+        #define pick( a, b )    b,
+        #include "dosmsgs.h"
+        #undef pick
     };
     get_err_text_req    *acc;
-    char           *err_txt;
+    char                *err_txt;
 
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
-    if( acc->err > ( (sizeof(DosErrMsgs)/sizeof(char *)-1) ) ) {
-        strcpy( err_txt, TRP_ERR_unknown_system_error );
-    } else {
+    if( acc->err < ERR_LAST ) {
         strcpy( err_txt, DosErrMsgs[ acc->err ] );
+    } else {
+        strcpy( err_txt, TRP_ERR_unknown_system_error );
+        ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
     }
     return( strlen( err_txt ) + 1 );
 }

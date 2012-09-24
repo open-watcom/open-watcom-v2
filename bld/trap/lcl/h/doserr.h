@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include "trperr.h"
-#define ERROR_OS2_TRAP_FILE_OWN 0x100000
-
-#define ERROR_NOT_IN_WINDOW (ERROR_OS2_TRAP_FILE_OWN | 0)
-
-#ifdef ERROR_DEFINE_STRINGS
-    TRP_OS2_no_pm_from_vio,
-#endif
+enum {
+    #define pick( a, b ) a,
+    #include "dosmsgs.h"
+    #undef pick
+    ERR_LAST
+};

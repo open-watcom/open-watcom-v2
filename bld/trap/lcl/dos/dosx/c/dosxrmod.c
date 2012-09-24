@@ -33,7 +33,7 @@
 
 #include <stdio.h>
 #include <dos.h>
-#include "dos16new.h"
+#include "rsi1632.h"
 
 #ifdef DEBUG_TRAP
 #define _DBG( x ) printf x; fflush( stdout )
@@ -62,10 +62,10 @@ static long dummy = 0;
 void far * RMLinToPM( unsigned long linear_addr, int pool )
 /***********************************************************/
 {
-    char        far *pm;
     int         i;
     short       real;
     short       offset;
+	SELECTOR    pm_sel;
 
     real = ( linear_addr >> 4 ) & 0xF000;
     offset = linear_addr;
@@ -76,28 +76,28 @@ void far * RMLinToPM( unsigned long linear_addr, int pool )
             }
         }
     }
-    pm = D16ProtectedPtr( MK_FP( real, 0 ), 0 );
-    if( pm == 0 ) {
+    pm_sel = rsi_sel_new_absolute( linear_addr & 0x000F0000, 0 );
+    if( pm_sel == NULL_SEL ) {
         _DBG(( "Can't get PM pointer for %ld\n", linear_addr ));
-        pm = (char far *)&dummy;
+        pm_sel = FP_SEG( &dummy );
     }
     if( pool ) {
         for( i = 0; i < MAX_MAPPINGS; ++i ) {
             if( Mappings_pool[ i ].real == NONE ) {
                 Mappings_pool[ i ].real = real;
-                Mappings_pool[ i ].prot = FP_SEG( pm );
-                return( pm+offset );
+                Mappings_pool[ i ].prot = pm_sel;
+                return( MK_FP( pm_sel, offset ) );
             }
         }
-        D16SegCancel( MK_FP( Mappings_pool[ Loser ].prot, 0 ) );
+        rsi_sel_free( Mappings_pool[ Loser ].prot );
         Mappings_pool[ Loser ].real = real;
-        Mappings_pool[ Loser ].prot = FP_SEG( pm );
+        Mappings_pool[ Loser ].prot = pm_sel;
         ++Loser;
         if( Loser == MAX_MAPPINGS ) {
             Loser = 0;
         }
     }
-    return( pm+offset );
+    return( MK_FP( pm_sel, offset ) );
 }
 
 void CallRealMode( unsigned long dos_addr )
@@ -106,7 +106,7 @@ void CallRealMode( unsigned long dos_addr )
 
     regs.ds = regs.es = FP_SEG( dos_addr );/* the trap file runs tiny -zu */
     _DBG(( "Calling RealMode\n"));
-    D16rmRCall( regs.ds, FP_OFF( dos_addr ), &regs, &regs );
+    rsi_rm_far_call( (void far *)dos_addr, &regs, &regs );
     _DBG(( "Back from RealMode\n"));
 }
 

@@ -30,14 +30,6 @@
 ****************************************************************************/
 
 
-#include "trperr.h"
-#undef pick
-#ifdef ERR_CODES
-enum {
-#define pick( a, b ) a,
-#else
-#define pick( a, b ) b,
-#endif
 pick( ERR_0,                    "" )
 pick( ERR_INVALID_FUNCTION,     TRP_ERR_invalid_function_number )
 pick( ERR_FILE_NOT_FOUND,       TRP_ERR_file_not_found )
@@ -57,10 +49,7 @@ pick( ERR_INVALID_DRIVE,        TRP_ERR_invalid_drive_was_specified )
 pick( ERR_ATTEMPT_TO_REMOVE_CD, TRP_ERR_attempt_to_remove_current_directory )
 pick( ERR_NOT_SAME_DEVICE,      TRP_ERR_not_same_device )
 pick( ERR_NO_MORE_FILES,        TRP_ERR_no_more_files )
+#ifdef REAL_MODE
 pick( ERR_RATIONAL_EXE,         TRP_ERR_must_use_rsi )
 pick( ERR_PHARLAP_EXE,          TRP_ERR_must_use_pls )
-#undef pick
-#ifdef ERR_CODES
-    ERR_LAST
-};
 #endif
