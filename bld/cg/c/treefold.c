@@ -496,7 +496,7 @@ extern  tn      FoldMinus( tn left, tn rite, type_def *tipe )
             BurnTree( rite );
         }
     } else if( rite->class == TN_UNARY && rite->op == O_UMINUS ) {
-        fold = TGBinary( OP_ADD, left, rite->u.left, tipe );
+        fold = TGBinary( O_PLUS, left, rite->u.left, tipe );
         rite->u.left = NULL;
         BurnTree( rite );
     }
@@ -573,11 +573,11 @@ extern  tn      FoldPlus( tn left, tn rite, type_def *tipe )
             }
         }
     } else if( rite->class == TN_UNARY && rite->op == O_UMINUS ) {
-        fold = TGBinary( OP_SUB, left, rite->u.left, tipe );
+        fold = TGBinary( O_MINUS, left, rite->u.left, tipe );
         rite->u.left = NULL;
         BurnTree( rite );
     } else if( left->class == TN_UNARY && left->op == O_UMINUS ) {
-        fold = TGBinary( OP_SUB, rite, left->u.left, tipe );
+        fold = TGBinary( O_MINUS, rite, left->u.left, tipe );
         left->u.left = NULL;
         BurnTree( left );
     }
@@ -592,7 +592,7 @@ static  tn      Halve( tn left, type_def *tipe )
     char        *value;
 
     value = ONE_HALF;
-    return( TGBinary( OP_MUL, left,
+    return( TGBinary( O_TIMES, left,
                       TGConst( CFCnvSF( value, value + sizeof( ONE_HALF ) - 1 ), tipe ),
                       tipe ) );
 }
@@ -603,16 +603,16 @@ extern  tn      FoldPow( tn left, tn rite, type_def *tipe )
     tn          fold;
 
     fold = NULL;
-    if( left->class == TN_UNARY && left->op == OP_SQRT ) {
+    if( left->class == TN_UNARY && left->op == O_SQRT ) {
         fold = Halve( rite, tipe );
-        fold = TGBinary( OP_POW, left->u.left, fold, tipe );
+        fold = TGBinary( O_POW, left->u.left, fold, tipe );
         left->u.left = NULL;
         BurnTree( left );
-    } else if( left->class == TN_UNARY && left->op == OP_EXP ) {
-        left->u.left = TGBinary( OP_MUL, left->u.left, rite, tipe );
+    } else if( left->class == TN_UNARY && left->op == O_EXP ) {
+        left->u.left = TGBinary( O_TIMES, left->u.left, rite, tipe );
         fold = left;
-    } else if( left->class == TN_BINARY && left->op == OP_POW ) {
-        left->rite = TGBinary( OP_MUL, left->rite, rite, tipe );
+    } else if( left->class == TN_BINARY && left->op == O_POW ) {
+        left->rite = TGBinary( O_TIMES, left->rite, rite, tipe );
         fold = left;
     }
     return( fold );
@@ -939,7 +939,7 @@ extern  tn      FoldDiv( tn left, tn rite, type_def *tipe )
                 if( CFTest( rv ) != 0 ) {
                     tmp = CFInverse( rv );
                     if( tmp != NULL ) {
-                        fold = TGBinary( OP_MUL, left, TGConst( tmp, tipe ), tipe );
+                        fold = TGBinary( O_TIMES, left, TGConst( tmp, tipe ), tipe );
                         BurnTree( rite );
                     }
                 }
@@ -1138,10 +1138,10 @@ extern  tn      FoldSqrt( tn left, type_def *tipe )
     tn          fold;
 
     fold = NULL;
-    if( left->class == TN_UNARY && left->op == OP_EXP ) {
+    if( left->class == TN_UNARY && left->op == O_EXP ) {
         left->u.left = Halve( left->u.left, tipe );
         fold = left;
-    } else if( left->class == TN_BINARY && left->op == OP_POW ) {
+    } else if( left->class == TN_BINARY && left->op == O_POW ) {
         left->rite = Halve( left->rite, tipe );
         fold = left;
     }
@@ -1155,12 +1155,12 @@ extern  tn      FoldLog( cg_op op, tn left, type_def *tipe )
     tn          fold;
 
     fold = NULL;
-    if( left->class == TN_UNARY && left->op == OP_SQRT ) {
+    if( left->class == TN_UNARY && left->op == O_SQRT ) {
         fold = TGUnary( op, left->u.left, tipe );
         fold = Halve( fold, tipe );
         left->u.left = NULL;
         BurnTree( left );
-    } else if( left->class == TN_BINARY && left->op == OP_POW ) {
+    } else if( left->class == TN_BINARY && left->op == O_POW ) {
         fold = TGUnary( op, left->u.left, tipe );
         fold = TGBinary( O_TIMES, left->rite, fold, tipe );
         left->u.left = NULL;
@@ -1563,7 +1563,7 @@ extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe 
     if( op != O_EQ && op != O_NE ) return( NULL );
     if( rite->class == TN_CONS &&
         left->class == TN_POST_GETS &&
-        ( left->op == OP_SUB || left->op == OP_ADD ) ) {
+        ( left->op == O_MINUS || left->op == O_PLUS ) ) {
         if( left->rite->class == TN_CONS && SimpleLeaf( left->u.left ) ) {
             if( tipe == left->tipe ) {
                 rv = rite->u.name->c.value;
@@ -1571,7 +1571,7 @@ extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe 
                 if( !HasBigConst( tipe ) && CFIs32( lv ) && CFIs32( rv ) ) {
                     li = CFConvertByType( lv, tipe );
                     ri = CFConvertByType( rv, tipe );
-                    value = ( left->op == OP_SUB ) ? ( ri - li ) : ( ri + li );
+                    value = ( left->op == O_MINUS ) ? ( ri - li ) : ( ri + li );
                     temp = IntToType( value, tipe );
                     left->class = TN_PRE_GETS;
                     left->optipe = left->tipe;

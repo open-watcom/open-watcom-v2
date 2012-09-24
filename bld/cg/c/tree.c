@@ -2210,7 +2210,7 @@ static  bool    ModifiesSP( tn node )
 /************************************
     see if the given tree can modify SP in any way - for now,
     just see if we make a call to a routine which modifies SP
-    or use an OP_STACK_ALLOC unary expression (might want to check
+    or use an O_STACK_ALLOC unary expression (might want to check
     results of assignments for SP in the future).
 */
 {
@@ -2229,7 +2229,7 @@ static  bool    ModifiesSP( tn node )
         if( node->rite != NULL && ModifiesSP( node->rite ) ) return( TRUE );
         break;
     case TN_UNARY:
-        if( node->op == OP_STACK_ALLOC ) return( TRUE );
+        if( node->op == O_STACK_ALLOC ) return( TRUE );
     /* fall through */
     default:
         if( node->rite != NULL ) {
