@@ -442,8 +442,8 @@ prepare_wgml_opts : .PROCEDURE
 # create DOSEMU batch file to run wgml utility
 #-------------------------------------------------------
     @%create $(dosemu_wgml_batch)
-    @%append $(dosemu_wgml_batch) set GMLLIB=$(%GMLLIB)
-    @%append $(dosemu_wgml_batch) set GMLINC=$(%GMLINC)
+    @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
+    @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
     @%append $(dosemu_wgml_batch) ..\gml\dos\wgml.exe "$(book_src) ( file $(optfile_wgml)"
     @%append $(dosemu_wgml_batch) exitemu
 !else ifeq use_dosemu dosbox
@@ -452,8 +452,8 @@ prepare_wgml_opts : .PROCEDURE
 #-------------------------------------------------------
     @%create $(dosemu_wgml_batch)
     @%append $(dosemu_wgml_batch) d:
-    @%append $(dosemu_wgml_batch) set GMLLIB=$(%GMLLIB)
-    @%append $(dosemu_wgml_batch) set GMLINC=$(%GMLINC)
+    @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
+    @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
     @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe "$(book_src) ( file $(optfile_wgml)"
     @%append $(dosemu_wgml_batch) exit
 !endif
