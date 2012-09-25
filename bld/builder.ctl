@@ -124,7 +124,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/owl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/dwarf/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cfloat/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/rsilib/builder.ctl ]
 # Continue with the assemblers/librarian/linker/make
 [ INCLUDE <OWSRCDIR>/wasm/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/as/builder.ctl ]
@@ -161,8 +160,8 @@ cdsay .
 # Build the debugger and sampler
 [ INCLUDE <OWSRCDIR>/dip/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/mad/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wv/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rsilib/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/wv/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/trap/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wsample/builder.ctl ]
 # GUI tools libraries

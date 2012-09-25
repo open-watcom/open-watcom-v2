@@ -46,7 +46,6 @@ flashtek=$(tools_root)\x32\
 #
 plsdir=$(tools_root)\dilib
 adsdir=$(tools_root)\adslib
-rsilib=$(tools_root)\rsilib
 
 !else
 
@@ -67,6 +66,5 @@ flashtek=$(tools_root)/x32/
 #
 plsdir=$(tools_root)/dilib
 adsdir=$(tools_root)/adslib
-rsilib=$(tools_root)/rsilib
 
 !endif
