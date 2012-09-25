@@ -40,7 +40,6 @@
 #include "wmsg.h"
 #define DEFVARS
 #include "timermod.h"
-
 #include "rsi1632.h"
 
 TSF32   Proc;

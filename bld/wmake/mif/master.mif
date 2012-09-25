@@ -105,7 +105,7 @@ $(xname).$(ext) :: usageend.gh wmake.res $(objs) $(libs) $(version_res_exe_$(hos
         $(wstrip) -q -a -r $(xname).$(ext) . wmake.res
 
 wmake.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh
-        $(rc_aui) $(rc_defines_$(host_os)) $[@ -fo=$^@
+        $(rc_aui) $[@ -fo=$^@
 
 usage.gh : ../h/usage.sp
         @%write usage.tmp -kIS_RC -kENGLISH -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< -o "%n%n%n%n" $^@

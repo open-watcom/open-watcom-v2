@@ -54,7 +54,7 @@ extra_c_flags_dos_dos = -DREPORT_TYPE=__interrupt -DFAR_PTR=__far
 extra_c_flags_dos_rsi = -DREPORT_TYPE= -DFAR_PTR=__far -zu
 extra_c_flags_dos_pls = -DREPORT_TYPE= -DFAR_PTR= -D_PLS
 extra_c_flags_dos     = $(extra_c_flags_dos_$(target))
-extra_c_flags_win     = -DREPORT_TYPE= -DFAR_PTR=__far -zu -zw -orlt -3
+extra_c_flags_win     = -DREPORT_TYPE= -DFAR_PTR=__far -zu -zw -orlt
 extra_c_flags_nov     = -DREPORT_TYPE= -DFAR_PTR= -DNETWARE -3s -zp1
 extra_c_flags_nt      = -DREPORT_TYPE= -DFAR_PTR=
 extra_c_flags_os2     = -DREPORT_TYPE= -DFAR_PTR=
@@ -105,7 +105,11 @@ nlm_imports = &
 extra_l_flags = op symfile,map
 extra_l_flags_os2_i86 = op stack=4k, newfiles
 extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
-extra_l_flags_win = option heap=10k, stack=10k segment class 'CODE' preload fixed segment class 'DATA' preload fixed lib commdlg,toolhelp
+extra_l_flags_win = option heap=10k, stack=10k &
+    option description 'WATCOM Sampler' &
+    segment class 'CODE' preload fixed &
+    segment class 'DATA' preload fixed &
+    lib commdlg, toolhelp
 
 !ifeq target nov
 inc_dirs = -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)"
@@ -161,8 +165,8 @@ $(xname).nlm : $(xname).res $(objects) $(libs) nversion.tmp $(__MAKEFILES__)
 
 libs += $(plsdir)/wdos32.lib &
     $(plsdir)/wdosx32.lib &
-    $(lang_root)/lib386/dos/clib3r.lib &
-    $(lang_root)/lib386/math3r.lib
+    $(clib_dir)/library/msdos.386/ms_r/clib3r.lib &
+    $(mathlib_dir)/library/msdos.386/ms_r/math3r.lib
 
 $(xname).exp : $(objects) $(xname).res $(libs) $(__MAKEFILES__)
     @%write tmp.lnk format phar ext
@@ -178,6 +182,7 @@ $(xname).exp : $(objects) $(xname).res $(libs) $(__MAKEFILES__)
     @for %i in ($(libs)) do @%append tmp.lnk lib %i
     $(linker) @tmp.lnk
     $(wstrip) -q -a -r $^@ . $(xname).res
+
 !else
 
 !ifeq target rsi

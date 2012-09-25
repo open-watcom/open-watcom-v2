@@ -22,12 +22,10 @@
 #define LOADER_GETLOADTABLE(lv) ((lv)->loader_actions[7])
 #define LOADER_GETLOADNAME(lv)  ((lv)->loader_actions[8])
 
-#include "pushpck1.h"
 typedef struct loader_vector {
     PACKAGE far *loader_package;
     ACTION      *loader_actions[9];
 } LOADER_VECTOR;
-#include "poppck.h"
 
 typedef long LoaderCookie;
 
