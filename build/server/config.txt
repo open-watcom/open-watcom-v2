@@ -14,6 +14,9 @@ OW=C:\OW
 # The location of your installed compiler (for doing the build).
 WATCOM=C:\WATCOM
 
+# CVS version
+OWCVS=git
+
 # The location of DOSBOX emulator
 DOSBOX=dosbox.exe
 
@@ -33,7 +36,4 @@ BLDBASED=bldbased.txt
 BLDLAST1=bldlast1.txt
 BLDLAST2=bldlast2.txt
 BLDLASTD=bldlastd.txt
-
-# CVS version
-OWCVS=git
 

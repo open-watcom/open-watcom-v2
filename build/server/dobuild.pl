@@ -33,7 +33,7 @@ use strict;
 use Common;
 use Config;
 
-my(@p4_messages);
+my(@CVS_messages);
 my($OStype);
 my($ext);
 my($setenv);
@@ -53,8 +53,8 @@ if ($#ARGV == -1) {
     exit 1;
 }
 
-my $home           = $Common::config{"HOME"};
-my $OW             = $Common::config{"OW"};
+my $home = $Common::config{"HOME"};
+my $OW   = $Common::config{"OW"};
 
 if ($^O eq "MSWin32") {
     $OStype = "WIN32";
@@ -65,7 +65,6 @@ if ($^O eq "MSWin32") {
     } else {
         $build_platform = "win32-x86";
     }
-    
 } elsif ($^O eq "linux") {
     $OStype = "UNIX";
     $ext    = "sh";
@@ -361,17 +360,18 @@ sub get_datetime
         $now[5] + 1900, $now[4] + 1, $now[3], $now[2], $now[1];
 }
 
-sub display_p4_messages
+sub display_CVS_messages
 {
     my($message);
+    my($cvs_cmd) = $_[0];
 
-    print REPORT "p4 Messages\n";
+    print REPORT $cvs_cmd, " Messages\n";
     print REPORT "-----------\n\n";
 
-    foreach $message (@p4_messages) {
+    foreach $message (@CVS_messages) {
         print REPORT "$message\n";
     }   
-    print REPORT "p4 Messages end\n";
+    print REPORT $cvs_cmd, " Messages end\n";
 }
 
 sub run_tests
@@ -444,29 +444,88 @@ sub run_docs_build
     }
 }
 
-sub p4_sync
+sub CVS_sync
 {
-    #force all files update to head
-    #open(SYNC, "p4 sync -f $OW\/...#head |");
-    
-    #open(SYNC, "p4 sync $OW\/... |"); does'nt work on OS/2 old client?
-    open(SYNC, "p4 sync |");           # this does...
-    while (<SYNC>) {
-        my @fields = split;
-        my $loc = Common::remove_OWloc($fields[-1]);
-        if( $loc ne "" ) {
-            push(@p4_messages, sprintf("%-8s %s", $fields[2], $loc));
-        } else {
-            push(@p4_messages, sprintf("%s", $_));
+    my($cvs_cmd) = $_[0];
+
+    if ($cvs_cmd eq "git") {
+#        system("git --git-dir=$OW/.git --work-tree=$OW checkout master");
+        open(SYNC, "git --git-dir=$OW/.git pull |");
+        while (<SYNC>) {
+            push(@CVS_messages, sprintf("%s", $_));
+        }
+        if (!close(SYNC)) {
+            print REPORT "Git failed!\n";
+            return "fail";
+        }
+    } elsif ($cvs_cmd eq "p4") {
+        open(SYNC, "p4 sync |");           # this does...
+        while (<SYNC>) {
+            my @fields = split;
+            my $loc = Common::remove_OWloc($fields[-1]);
+            if( $loc ne "" ) {
+                push(@CVS_messages, sprintf("%-8s %s", $fields[2], $loc));
+            } else {
+                push(@CVS_messages, sprintf("%s", $_));
+            }
+        }
+        if (!close(SYNC)) {
+            print REPORT "p4 failed!\n";
+            return "fail";
         }
     }
-    if (!close(SYNC)) {
-        print REPORT "p4 failed!\n";
-        close(REPORT);
-        exit 1;
-    }
-    print REPORT "'p4 sync' Successful (messages below).\n";
+    return "success";
+}
 
+sub CVS_check_sync
+{
+    my($cvs_cmd) = $_[0];
+
+    if (CVS_sync($cvs_cmd) eq "fail") {
+        display_CVS_messages($cvs_cmd);
+	return "fail";
+    }
+    get_prev_changeno;
+    
+    if ($prev_changeno ne "") {
+       print REPORT "\tBuilt through change   : $prev_changeno on $prev_report_stamp\n";
+    } else {
+       $prev_changeno = "";
+    }
+    if ($cvs_cmd eq "git") {
+        open(LEVEL, "git --git-dir=$OW/.git rev-parse HEAD|");
+        while (<LEVEL>) {
+            if (/^(.*)/) {
+                if ($prev_changeno eq $1) {
+                    $build_needed = 0;
+                    print REPORT "\tNo source code changes, build not needed\n";
+                } else {
+                    $prev_changeno = $1;
+                    print REPORT "\tBuilding through change: $1\n";
+                }
+            }
+        }
+        close(LEVEL);
+    } elsif ($cvs_cmd eq "p4") {
+        open(LEVEL, "p4 counters|");
+        while (<LEVEL>) {
+            if (/^change = (.*)/) {
+                if ($prev_changeno eq $1) {
+                    $build_needed = 0;
+                    print REPORT "\tNo source code changes, build not needed\n";
+                } else {
+                    $prev_changeno = $1;
+                    print REPORT "\tBuilding through change: $1\n";
+                }
+            }
+        }
+        close(LEVEL);
+    }
+    print REPORT "\n";
+    if (!$build_needed) { # nothing changed, don't waste computer time
+        return "nochange";
+    }
+    return "success";
 }
 
 #######################
@@ -494,38 +553,21 @@ open(REPORT, ">$report_name") || die "Unable to open $report_name file.";
 print REPORT "Open Watcom Build Report (build on ", $build_platform, ")\n";
 print REPORT "================================================\n\n";
 
-# Do a p4 sync to get the latest changes.
+# Do a CVS sync to get the latest changes.
 #########################################
 
-if ($Common::config{'OWCVS'} eq "p4") {
-    p4_sync();
+my $CVS_result = "success";
 
-    get_prev_changeno;
-    
-    if ($prev_changeno > 0) {
-       print REPORT "\tBuilt through change   : $prev_changeno on $prev_report_stamp\n";
-    } else {
-       $prev_changeno = -1; # no previous changeno / build
-    }
-    
-    open(LEVEL, "p4 counters|");
-    while (<LEVEL>) {
-      if (/^change = (.*)/) {
-         if ($prev_changeno eq $1) {
-            $build_needed = 0;
-            print REPORT "\tNo source code changes, build not needed\n";
-         } else {
-            $prev_changeno = $1;
-            print REPORT "\tBuilding through change: $1\n";
-         }
-      }
-    }
-    close(LEVEL);
-    print REPORT "\n";
-    if (!$build_needed) { # nothing changed, don't waste computer time
-        close(REPORT);
-        exit 0;
-    }
+if ($Common::config{'OWCVS'} ne "") {
+    $CVS_result = CVS_check_sync($Common::config{'OWCVS'});
+}
+if ($CVS_result eq "fail") {
+    close(REPORT);
+    exit 2;
+}
+if ($CVS_result eq "nochange") {
+    close(REPORT);
+    exit 0;
 }
 
 ############################################################
@@ -583,14 +625,13 @@ $bldlast   = "$home\/$Common::config{'BLDLASTD'}";
 
 my $docs_result = run_docs_build();
 
-# Display p4 sync messages for reference.
+# Display CVS sync messages for reference.
 ##########################################
 
-if ($Common::config{'OWCVS'} eq "p4") {
-    display_p4_messages();
+if ($Common::config{'OWCVS'} ne "") {
+    display_CVS_messages($Common::config{'OWCVS'});
+    set_prev_changeno( $prev_changeno, $date_stamp );  #remember changeno and date
 }
-
-set_prev_changeno( $prev_changeno, $date_stamp );  #remember changeno and date
 
 # Rotate the freshly built system into position on the web site.
 ################################################################
@@ -608,3 +649,4 @@ if (($pass1_result eq "success") &&
         print REPORT "INSTALLER BUILD COMPLETED: ", get_datetime(), "\n\n";
     }
 }
+close(REPORT);
