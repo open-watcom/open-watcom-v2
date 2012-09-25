@@ -26,6 +26,7 @@
 *.res
 *.rtp
 *.sym
+*.sys
 *.tmp
 *.trk
 *.u
