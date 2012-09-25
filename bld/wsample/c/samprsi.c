@@ -41,10 +41,7 @@
 #define DEFVARS
 #include "timermod.h"
 
-#include "dos4g.h"
-#include "pmode32.h"
-#include "dbglib.h"
-#include "dos16.h"
+#include "rsi1632.h"
 
 TSF32   Proc;
 char    Break;
@@ -161,7 +158,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     D32HookTimer( TimerMult );  /* ask for timer - before D32DebugInit!! */
     D32DebugBreakOp(&Break);    /* Get the 1 byte break op */
 
-    error_num = D32DebugInit( &Proc );
+    error_num = D32DebugInit( &Proc, -1 );
     if( error_num == 0 ) {
         strcpy( buff, full_args );
         error_num = D32DebugLoad( prog, buff, &Proc );
@@ -198,7 +195,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
             where.segment = Proc.edx & 0xffff;
             where.offset = Proc.eax;
             for( ;; ) {
-                if( !D32AddressCheck( where.segment, where.offset, 1, NULL ) ) break;
+                if( !rsi_addr32_check( where.offset, where.segment, 1, NULL ) ) break;
                 D32DebugRead( where.offset, where.segment, 0, &buff[len], 1 );
                 if( len == BSIZE ) break;
                 if( buff[len] == '\0' ) break;

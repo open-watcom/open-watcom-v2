@@ -37,7 +37,7 @@ rsilib_objs = &
     selfree.obj &
     segrealo.obj
 
-extra_c_flags = -zu -s -zp1
+extra_c_flags = -zu -s
 
 extra_a_flags = $(model_switch_$(host_cpu))
 

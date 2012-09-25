@@ -45,10 +45,7 @@
 #include "wdebug.h"
 #include "trapdbg.h"
 
-#include "dos4g.h"
-#include "pmode32.h"
-#include "dbglib.h"
-#include "dos16.h"
+#include "rsi1632.h"
 #include "dpmi.h"
 #include "dbg386.h"
 #include "drset.h"
@@ -62,6 +59,8 @@
 #include "x86cpu.h"
 #include "misc7086.h"
 #include "dosredir.h"
+
+#define INT_PRT_SCRN_KEY	0x05
 
 TSF32   Proc;
 char    Break;
@@ -115,13 +114,13 @@ void SetDbgTask( void )
 {
 }
 
-static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char far*,unsigned int), addr48_ptr *addr, byte far *data, unsigned short req ) {
-
+static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char far*,unsigned int), addr48_ptr *addr, byte far *data, unsigned short req )
+{
     unsigned short  len;
 
     _DBG(("checking %4.4x:%8.8lx for 0x%x bytes -- ",
             addr->segment, addr->offset, req ));
-    if( D32AddressCheck( addr->segment, addr->offset, req, NULL ) &&
+    if( rsi_addr32_check( addr->offset, addr->segment, req, NULL ) &&
             r( addr->offset, addr->segment, 0, data, req ) == 0 ) {
         _DBG(( "OK\n" ));
         addr->offset += req;
@@ -130,7 +129,7 @@ static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char far*,unsign
     _DBG(( "Bad\n" ));
     len = 0;
     while( req > 0 ) {
-        if( !D32AddressCheck( addr->segment, addr->offset, 1, NULL ) ) break;
+        if( !rsi_addr32_check( addr->offset, addr->segment, 1, NULL ) ) break;
         if( r( addr->offset, addr->segment, 0, data, 1 ) != 0 ) break;
         ++addr->offset;
         ++data;
@@ -231,7 +230,7 @@ unsigned ReqAddr_info()
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->is_32 = 0;
-    if( D32AddressCheck( acc->in_addr.segment, 0, 1, NULL ) ) {
+    if( rsi_addr32_check( 0, acc->in_addr.segment, 1, NULL ) ) {
         if( GetLAR( acc->in_addr.segment ) & 0x400000 ) {
             ret->is_32 = 1;
         }
@@ -251,7 +250,7 @@ unsigned ReqMachine_data()
     ret->cache_start = 0;
     ret->cache_end = ~(addr_off)0;
     *data = 0;
-    if( D32AddressCheck( acc->addr.segment, 0, 1, NULL ) ) {
+    if( rsi_addr32_check( 0, acc->addr.segment, 1, NULL ) ) {
         if( GetLAR( acc->addr.segment ) & 0x400000 ) {
             *data = X86AC_BIG;
         }
@@ -958,7 +957,6 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
 {
     trap_version        ver;
     int                 error_num;
-    extern int          hotkey_int;
 
 
     _DBG1(( "TrapInit\n" ));
@@ -971,8 +969,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     RealNPXType = NPXType();
     WatchCount = 0;
     FakeBreak = FALSE;
-    hotkey_int = 5;
-    error_num = D32DebugInit( &Proc );
+    error_num = D32DebugInit( &Proc, INT_PRT_SCRN_KEY );
     if( error_num ) {
         _DBG(("D32DebugInit() failed:\n"));
         exit(1);
