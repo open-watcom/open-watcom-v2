@@ -5,6 +5,13 @@
 
 host_os  = os2
 host_cpu = 386
+
+proj_name = wdsplice
+
+!ifndef wdsplice_autodepends
+wdsplice_autodepends = .AUTODEPEND
+!endif
+
 sys_dll  = 1
 
 !include cproj.mif
@@ -20,4 +27,4 @@ inc_dirs = -I"$(dig_dir)/h"
 .c: ../c
 
 wdsplice.dll : $(objs)
-    $(linker) $(lflags) name $@ file { $< } lib os2386.lib
+    $(linker) $(lflags) name $@ file { $< }

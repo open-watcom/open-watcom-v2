@@ -1,13 +1,13 @@
 #pmake: build trap remote os_nt cpu_386 par
-host_CPU = 386
-host_OS = nt
+host_cpu = 386
+host_os = nt
 
 os = nt
 srv = par
 cpu = x86
 which = TRAP
-type  = remote_link
+remote_link = 1
 
-extra_objs = parnt.obj ntnoth.obj
+extra_objs = parnt.obj
 
 !include $(trap_dir)/master.mif

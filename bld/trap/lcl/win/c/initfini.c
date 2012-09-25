@@ -35,12 +35,13 @@
 #include "wdebug.h"
 #include "stdwin.h"
 #include "trperr.h"
+#include "winctrl.h"
+
+extern  WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
 static FARPROC  faultInstance;
 static FARPROC  notifyInstance;
 static HANDLE   wint32;
-
-extern  WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
 /*
  * InitDebugging:
@@ -127,6 +128,8 @@ void FinishDebugging( void )
         FreeSelector( CSAlias );
     }
     CSAlias = 0;
+    DisableHookEvents();
+    HookRtn = NULL;
 
 } /* FinishDebugging */
 

@@ -39,13 +39,14 @@
 #include <i86.h>
 #include "trpimp.h"
 #include "trperr.h"
+#include "doserr.h"
 #include "madregs.h"
 #include "dpmi.h"
 #include "x86cpu.h"
-#include "misc7386.h"
+#include "miscx87.h"
 #include "ioports.h"
 #include "dosredir.h"
-#include "doserr.h"
+#include "doscomm.h"
 
 #include "tinyio.h"
 #include "exeos2.h"
@@ -211,7 +212,6 @@ extern unsigned     MemoryRead( unsigned_32, unsigned, void *, unsigned );
 extern unsigned     MemoryWrite( unsigned_32, unsigned, void *, unsigned );
 extern unsigned     Execute( bool );
 extern int          DebugLoad( char *prog_name, char *cmdl );
-extern unsigned     ExceptionText( unsigned, char * );
 extern int          GrabVectors( void );
 extern void         ReleaseVectors( void );
 
@@ -231,7 +231,6 @@ static int          NumModHandles = 0;
 
 static selector     flatCode = FLAT_SEL;
 static selector     flatData = FLAT_SEL;
-
 
 #ifdef DEBUG_TRAP
 void dos_printf( const char *format, ... )
@@ -1005,18 +1004,27 @@ unsigned ReqGet_err_text( void )
         ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
         _DBG( "After utoa()\r\n" );
     }
-    return( strlen( err_txt ) + 1 );	
+    return( strlen( err_txt ) + 1 );
 }
 
 unsigned ReqGet_message_text( void )
 /**********************************/
 {
+    static const char * const ExceptionMsgs[] = {
+        #define pick(a,b) b,
+        #include "x86exc.h"
+        #undef pick
+    };
     get_message_text_ret    *ret;
     char                    *err_txt;
 
     ret = GetOutPtr( 0 );
     err_txt = GetOutPtr( sizeof(*ret) );
-    ExceptionText( Exception, err_txt );
+    if( Exception < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
+        strcpy( err_txt, ExceptionMsgs[Exception] );
+    } else {
+        strcpy( err_txt, TRP_EXC_unknown );
+    }
     ret->flags = MSG_NEWLINE | MSG_ERROR;
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }

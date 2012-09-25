@@ -40,10 +40,10 @@
 #include "trapdbg.h"
 #include "winchk.h"
 #include "madregs.h"
+#include "doscomm.h"
 
 extern void             SaveVectors(unsigned long *);
 extern void             RestoreVectors(unsigned long *);
-extern tiny_ret_t       FindFilePath( char *, char *, char * );
 
 static char             LinkParm[256];
 static char             FailMsg[128];

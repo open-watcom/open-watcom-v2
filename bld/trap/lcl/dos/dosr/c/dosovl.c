@@ -33,10 +33,9 @@
 #include <i86.h>
 #include "trpimp.h"
 #include "ovldbg.h"
+#include "doscomm.h"
 
 extern unsigned_8       RunProg( trap_cpu_regs *, trap_cpu_regs * );
-extern void             SetDbgTask( void );
-extern void             SetUsrTask( void );
 extern ovl_dbg_hook_func    OvlTrap;
 
 extern trap_cpu_regs    TaskRegs;

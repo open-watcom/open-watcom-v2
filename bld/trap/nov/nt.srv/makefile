@@ -1,13 +1,13 @@
 #pmake: build serv remote os_nt cpu_386 nov x86
-host_CPU = 386
-host_OS = nt
+host_cpu = 386
+host_os = nt
 
-gui = 1
 os = nt
 srv = nov
 cpu = x86
 which = SERVER
-type  = remote_link
+gui = 1
+remote_link = 1
 
 extra_objs = novnt.obj
 

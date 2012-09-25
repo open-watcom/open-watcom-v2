@@ -37,7 +37,6 @@
 #include <dos.h>
 #include "wdebug.h"
 #include "stdwin.h"
-#include "winacc.h"
 #include "mad.h"
 #include "madregs.h"
 

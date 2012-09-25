@@ -7,7 +7,7 @@ os    = linux
 srv   = tcp
 cpu   = x86
 which = SERVER
-type  = remote_link
+remote_link = 1
 
 !include $(trap_dir)/lcl/linux/trap.mif
 !include $(trap_dir)/master.mif

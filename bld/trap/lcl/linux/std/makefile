@@ -1,6 +1,6 @@
 #pmake: build lcl os_linux cpu_386 trap x86
 #
-# Create the Linux STD.TRP
+# Create the Linux std.trp
 #
 host_cpu = 386
 host_os  = linux

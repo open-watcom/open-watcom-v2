@@ -24,16 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  prototypes for read/write FPU routines
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
-#ifndef _MISC7386_H_INCLUDED
-#define _MISC7386_H_INCLUDED
 
-extern void Read387( void * );
-extern void Write387( void * );
+extern void DisableHookEvents( void );
+extern void EnableHookEvents( void );
+extern char *InitDebugging( void );
+extern void FinishDebugging( void );
 
-extern unsigned_8 NPXType( void );
-
-#endif

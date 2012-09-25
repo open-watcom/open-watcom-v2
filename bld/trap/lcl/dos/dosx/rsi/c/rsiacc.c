@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 //#define DEBUG_TRAP
+#include "trapdbg.h"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -46,7 +47,6 @@
 #include "trapdbg.h"
 
 #include "rsi1632.h"
-#include "dpmi.h"
 #include "dbg386.h"
 #include "drset.h"
 #include "ioports.h"
@@ -57,15 +57,14 @@
 #include "exeflat.h"
 
 #include "x86cpu.h"
-#include "misc7086.h"
+#include "miscx87.h"
 #include "dosredir.h"
+#include "doscomm.h"
 
-#define INT_PRT_SCRN_KEY	0x05
+#define INT_PRT_SCRN_KEY    0x05
 
 TSF32   Proc;
 char    Break;
-
-extern  unsigned        ExceptionText( unsigned, char * );
 
 bool                    FakeBreak;
 bool                    AtEnd;
@@ -95,16 +94,6 @@ watch   WatchPoints[ MAX_WP ];
 int     WatchCount;
 
 
-#ifdef DEBUG_TRAP
-#define _DBG2( x ) printf x ; fflush( stdout )
-#define _DBG1( x ) printf x ; fflush( stdout )
-#define _DBG( x ) printf x ; fflush( stdout )
-#else
-#define _DBG2( x )
-#define _DBG1( x )
-#define _DBG( x )
-#endif
-
 int SetUsrTask( void )
 {
     return( 1 );
@@ -118,15 +107,20 @@ static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char far*,unsign
 {
     unsigned short  len;
 
-    _DBG(("checking %4.4x:%8.8lx for 0x%x bytes -- ",
-            addr->segment, addr->offset, req ));
+    _DBG_Write( "checking " );
+    _DBG_Write16( addr->segment );
+    _DBG_Write( ":" );
+    _DBG_Write32( addr->offset );
+    _DBG_Write( " for 0x" );
+    _DBG_Write16( req );
+    _DBG_Write( " bytes -- " );
     if( rsi_addr32_check( addr->offset, addr->segment, req, NULL ) &&
             r( addr->offset, addr->segment, 0, data, req ) == 0 ) {
-        _DBG(( "OK\n" ));
+        _DBG_Writeln( "OK" );
         addr->offset += req;
         return( req );
     }
-    _DBG(( "Bad\n" ));
+    _DBG_Writeln(( "Bad" ));
     len = 0;
     while( req > 0 ) {
         if( !rsi_addr32_check( addr->offset, addr->segment, 1, NULL ) ) break;
@@ -150,11 +144,11 @@ static unsigned short WriteMemory( addr48_ptr *addr, byte far *data, unsigned sh
 }
 
 
-unsigned ReqGet_sys_config()
+unsigned ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
-    _DBG1(( "AccGetConfig\n" ));
+    _DBG_Writeln( "AccGetConfig" );
 
     ret = GetOutPtr(0);
     ret->sys.os = OS_RATIONAL;
@@ -172,14 +166,14 @@ unsigned ReqGet_sys_config()
 }
 
 
-unsigned ReqMap_addr()
+unsigned ReqMap_addr( void )
 {
     Fptr32              fp;
     map_addr_req        *acc;
     map_addr_ret        *ret;
     unsigned            i;
 
-    _DBG1(( "AccMapAddr\n" ));
+    _DBG_Writeln( "AccMapAddr" );
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
@@ -221,12 +215,12 @@ unsigned ReqMap_addr()
 extern unsigned long GetLAR( unsigned );
 
 //OBSOLETE - use ReqMachine_data
-unsigned ReqAddr_info()
+unsigned ReqAddr_info( void )
 {
     addr_info_req       *acc;
     addr_info_ret       *ret;
 
-    _DBG1(( "AccAddrInfo\n" ));
+    _DBG_Writeln( "AccAddrInfo" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->is_32 = 0;
@@ -238,7 +232,7 @@ unsigned ReqAddr_info()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data()
+unsigned ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -258,7 +252,7 @@ unsigned ReqMachine_data()
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-unsigned ReqChecksum_mem()
+unsigned ReqChecksum_mem( void )
 {
     unsigned short      len;
     int                 i;
@@ -266,7 +260,7 @@ unsigned ReqChecksum_mem()
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
-    _DBG1(( "AccChkSum\n" ));
+    _DBG_Writeln( "AccChkSum" );
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -292,25 +286,25 @@ unsigned ReqChecksum_mem()
 }
 
 
-unsigned ReqRead_mem()
+unsigned ReqRead_mem( void )
 {
     read_mem_req        *acc;
     void                far *buff;
     unsigned short      len;
 
-    _DBG1(( "ReadMem\n" ));
+    _DBG_Writeln( "ReadMem" );
     acc = GetInPtr( 0 );
     buff = GetOutPtr( 0 );
     len = ReadMemory( (addr48_ptr *)&acc->mem_addr, buff, acc->len );
     return( len );
 }
 
-unsigned ReqWrite_mem()
+unsigned ReqWrite_mem( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
 
-    _DBG1(( "WriteMem\n" ));
+    _DBG_Writeln( "WriteMem" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->len = WriteMemory( (addr48_ptr *)&acc->mem_addr,
@@ -319,7 +313,7 @@ unsigned ReqWrite_mem()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_io()
+unsigned ReqRead_io( void )
 {
     read_io_req         *acc;
     void                *data;
@@ -336,7 +330,7 @@ unsigned ReqRead_io()
     return( acc->len );
 }
 
-unsigned ReqWrite_io()
+unsigned ReqWrite_io( void )
 {
     unsigned            len;
     write_io_req        *acc;
@@ -434,7 +428,7 @@ static void WriteFPU( struct x86_fpu *r )
 
 
 //OBSOLETE - use ReqRead_regs
-unsigned ReqRead_cpu()
+unsigned ReqRead_cpu( void )
 {
     trap_cpu_regs       *regs;
 
@@ -444,7 +438,7 @@ unsigned ReqRead_cpu()
 }
 
 //OBSOLETE - use ReqRead_regs
-unsigned ReqRead_fpu()
+unsigned ReqRead_fpu( void )
 {
     trap_fpu_regs       *regs;
 
@@ -454,7 +448,7 @@ unsigned ReqRead_fpu()
 }
 
 //OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_cpu()
+unsigned ReqWrite_cpu( void )
 {
     trap_cpu_regs       *regs;
 
@@ -464,7 +458,7 @@ unsigned ReqWrite_cpu()
 }
 
 //OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_fpu()
+unsigned ReqWrite_fpu( void )
 {
     trap_fpu_regs       *regs;
 
@@ -534,7 +528,7 @@ static void GetObjectInfo( char *name )
     close( handle );
 }
 
-unsigned ReqProg_load()
+unsigned ReqProg_load( void )
 {
     char            *src;
     char            *dst;
@@ -543,7 +537,7 @@ unsigned ReqProg_load()
     prog_load_ret   *ret;
     unsigned        len;
 
-    _DBG1(( "AccLoadProg\r\n" ));
+    _DBG_Writeln( "AccLoadProg" );
     AtEnd = FALSE;
     dst = UtilBuff;
     src = name = GetInPtr( sizeof( prog_load_req ) );
@@ -562,16 +556,16 @@ unsigned ReqProg_load()
         *dst++ = ch;
     }
     *dst = '\0';
-    _DBG1(( "about to debugload\r\n" ));
-    _DBG1(( "Name :" ));
-    _DBG1(( name ));
-    _DBG1(( "\r\n" ));
-    _DBG1(( "UtilBuff :" ));
-    _DBG1(( UtilBuff ));
-    _DBG1(( "\r\n" ));
+    _DBG_Writeln( "about to debugload" );
+    _DBG_Write( "Name : " );
+    _DBG_Writeln( name );
+    _DBG_Write( "UtilBuff : " );
+    _DBG_Writeln( UtilBuff );
     GetObjectInfo( name );
     ret->err = D32DebugLoad( name, UtilBuff, &Proc );
-    _DBG1(( "back from debugload - %d\r\n", ret->err ));
+    _DBG_Write( "back from debugload - " );
+    _DBG_Write16( ret->err );
+    _DBG_NewLine();
     ret->flags = LD_FLAG_IS_32 | LD_FLAG_IS_PROT | LD_FLAG_DISPLAY_DAMAGED;
     if( ret->err == 0 ) {
         ret->task_id = Proc.es;
@@ -580,15 +574,15 @@ unsigned ReqProg_load()
     }
     ret->mod_handle = 0;
     Proc.int_id = -1;
-    _DBG1(( "done AccLoadProg\r\n" ));
+    _DBG_Writeln( "done AccLoadProg" );
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_kill()
+unsigned ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 
-    _DBG1(( "AccKillProg\n" ));
+    _DBG_Writeln( "AccKillProg" );
     ret = GetOutPtr( 0 );
     RedirectFini();
     AtEnd = TRUE;
@@ -597,7 +591,7 @@ unsigned ReqProg_kill()
 }
 
 
-unsigned ReqSet_watch()
+unsigned ReqSet_watch( void )
 {
     watch           *curr;
     set_watch_req   *acc;
@@ -605,7 +599,7 @@ unsigned ReqSet_watch()
     int             i;
     int             needed;
 
-    _DBG1(( "AccSetWatch\n" ));
+    _DBG_Writeln( "AccSetWatch" );
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -631,20 +625,20 @@ unsigned ReqSet_watch()
 }
 
 
-unsigned ReqClear_watch()
+unsigned ReqClear_watch( void )
 {
-    _DBG1(( "AccRestoreWatch\n" ));
+    _DBG_Writeln( "AccRestoreWatch" );
     /* assume all watches removed at same time */
     WatchCount = 0;
     return( 0 );
 }
 
-unsigned ReqSet_break()
+unsigned ReqSet_break( void )
 {
     set_break_req       *acc;
     set_break_ret       *ret;
 
-    _DBG1(( "AccSetBreak\n" ));
+    _DBG_Writeln( "AccSetBreak" );
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -654,13 +648,13 @@ unsigned ReqSet_break()
 }
 
 
-unsigned ReqClear_break()
+unsigned ReqClear_break( void )
 {
     clear_break_req     *acc;
     char        dummy;
 
     acc = GetInPtr( 0 );
-    _DBG1(( "AccRestoreBreak\n" ));
+    _DBG_Writeln( "AccRestoreBreak" );
     /* assume all breaks removed at same time */
     D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment,
                           FALSE, (byte *)&acc->old, &dummy );
@@ -689,7 +683,7 @@ static unsigned long SetDRn( int i, unsigned long linear, long type )
 }
 
 
-void ClearDebugRegs()
+static void ClearDebugRegs( void )
 {
     int         i;
     watch       *wp;
@@ -712,7 +706,7 @@ void ClearDebugRegs()
 }
 
 
-static bool SetDebugRegs()
+static bool SetDebugRegs( void )
 {
     int                 needed;
     int                 i;
@@ -732,15 +726,21 @@ static bool SetDebugRegs()
             wp->handle2 = -1;
         }
         for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
-            _DBG2(( "Setting Watch On %8.8lx\r\n", wp->linear ));
+            _DBG_Write( "Setting Watch On " );
+            _DBG_Write32( wp->linear );
+            _DBG_NewLine();
             success = FALSE;
             rc = DPMISetWatch( wp->linear, wp->len, DPMI_WATCH_WRITE );
-            _DBG2(( "OK 1 = %d\r\n", rc >= 0 ));
+            _DBG_Write( "OK 1 = " );
+            _DBG_Write16( rc >= 0 );
+            _DBG_NewLine();
             if( rc < 0 ) break;
             wp->handle = rc;
             if( wp->dregs == 2 ) {
                 rc = DPMISetWatch( wp->linear+4, wp->len, DPMI_WATCH_WRITE );
-                _DBG2(( "OK 2 = %d\r\n", rc >= 0 ));
+                _DBG_Write( "OK 2 = " );
+                _DBG_Write16( rc >= 0 );
+                _DBG_NewLine();
                 if( rc <= 0 ) break;
                 wp->handle2 = rc;
             }
@@ -769,7 +769,7 @@ static bool SetDebugRegs()
     }
 }
 
-static unsigned DoRun()
+static unsigned DoRun( void )
 {
     D32DebugRun( &Proc );
     switch( Proc.int_id ) {
@@ -792,7 +792,7 @@ static unsigned DoRun()
     }
 }
 
-static bool CheckWatchPoints()
+static bool CheckWatchPoints( void )
 {
     addr48_ptr  addr;
     dword       val;
@@ -818,7 +818,7 @@ static unsigned ProgRun( bool step )
     byte        int_buff[3];
     addr48_ptr  addr;
 
-    _DBG1(( "AccRunProg\n" ));
+    _DBG_Writeln( "AccRunProg" );
 
     ret = GetOutPtr( 0 );
 
@@ -878,17 +878,17 @@ static unsigned ProgRun( bool step )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_go()
+unsigned ReqProg_go( void )
 {
     return( ProgRun( FALSE ) );
 }
 
-unsigned ReqProg_step()
+unsigned ReqProg_step( void )
 {
     return( ProgRun( TRUE ) );
 }
 
-unsigned ReqGet_next_alias()
+unsigned ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -899,7 +899,7 @@ unsigned ReqGet_next_alias()
 }
 
 
-unsigned ReqGet_err_text()
+unsigned ReqGet_err_text( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -909,7 +909,7 @@ unsigned ReqGet_err_text()
     get_err_text_req    *acc;
     char                *err_txt;
 
-    _DBG(("AccErrText\r\n"));
+    _DBG_Writeln( "AccErrText" );
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
     if( acc->err < ERR_LAST ) {
@@ -924,7 +924,7 @@ unsigned ReqGet_err_text()
     return( strlen( err_txt ) + 1 );
 }
 
-unsigned ReqGet_lib_name()
+unsigned ReqGet_lib_name( void )
 {
     char                *ch;
     get_lib_name_ret    *ret;
@@ -936,8 +936,13 @@ unsigned ReqGet_lib_name()
     return( sizeof( *ret ) + 1 );
 }
 
-unsigned ReqGet_message_text()
+unsigned ReqGet_message_text( void )
 {
+    static const char * const ExceptionMsgs[] = {
+        #define pick(a,b) b,
+        #include "x86exc.h"
+        #undef pick
+    };
     get_message_text_ret        *ret;
     char                        *err_txt;
 
@@ -946,7 +951,11 @@ unsigned ReqGet_message_text()
     if( Proc.int_id == -1 ) {
         err_txt[0] = '\0';
     } else {
-        ExceptionText( Proc.int_id, err_txt );
+        if( Proc.int_id < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
+            strcpy( err_txt, ExceptionMsgs[Proc.int_id] );
+        } else {
+            strcpy( err_txt, TRP_EXC_unknown );
+        }
         Proc.int_id = -1;
     }
     ret->flags = MSG_NEWLINE | MSG_ERROR;
@@ -958,8 +967,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     trap_version        ver;
     int                 error_num;
 
-
-    _DBG1(( "TrapInit\n" ));
+    _DBG_Writeln( "TrapInit" );
     remote = remote; parm = parm;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
@@ -971,7 +979,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     FakeBreak = FALSE;
     error_num = D32DebugInit( &Proc, INT_PRT_SCRN_KEY );
     if( error_num ) {
-        _DBG(("D32DebugInit() failed:\n"));
+        _DBG_Writeln( "D32DebugInit() failed:" );
         exit(1);
     }
     Proc.int_id = -1;
@@ -981,6 +989,6 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
 
 void TRAPENTRY TrapFini( void )
 {
-    _DBG1(( "TrapFini\n" ));
+    _DBG_Writeln( "TrapFini" );
     D32DebugTerm();
 }

@@ -15,7 +15,7 @@ suppress_zc = 1
 !include deftarg.mif
 
 extra_c_flags = -zp8 -s -D_X86_=1 -Di386=1 -DWIN32_LEAN_AND_MEAN=1
-inc_dirs = -I. -I"../h" -I"$(lang_root)/h" -I"$(lang_root)/h/nt" -I"$(w32api_dir)/nt/ddk"
+inc_dirs = -I. -I"../h" -I"$(w32api_dir)/nt/ddk"
 
 ddk_dir = $(w32api_dir)/nt386/ddk
 
@@ -37,5 +37,5 @@ dbgport.sys : dbgport.obj $(__MAKEFILES__)
        @%append dbgport.lnk file dbgport.obj
        @%append dbgport.lnk lib $(ddk_dir)/ntoskrnl.lib
        @%append dbgport.lnk lib $(ddk_dir)/hal.lib
-       @%append dbgport.lnk lib $(lang_root)/lib386/nt/clib3r.lib
+       @%append dbgport.lnk lib clib3r.lib
        $(linker) name dbgport.sys @dbgport.lnk

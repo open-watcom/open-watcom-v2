@@ -53,7 +53,7 @@ char *notify_msgs[] = {
 };
 #endif
 
-static HANDLE   TaskAtNotify;
+static HTASK    TaskAtNotify;
 
 /*
  * doLoadSeg:

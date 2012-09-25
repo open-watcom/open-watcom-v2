@@ -5,7 +5,6 @@
 description = 'Open Watcom Debugger Trap File'
 
 !ifdef test
-
 sys_x86_os2   = sys os2
 sys_x86_os2v2 = sys os2v2
 sys_x86_win   = sys windows
@@ -14,7 +13,6 @@ sys_x86_dos   = sys dos
 sys_x86_rdos  = sys rdos_dll
 sys_x86_qnx   = sys qnx
 sys_x86_linux = sys linux
-
 sys_axp_nt    = sys ntaxp
 
 targ_x86_os2   = $(xname)cli1.exe
@@ -26,7 +24,6 @@ targ_x86_dos   = $(xname)cli.exe
 targ_x86_rdos  = $(xname)cli.exe
 targ_x86_nt    = $(xname)cli.exe
 targ_x86_nto   = $(xname)cli.exe
-
 targ_axp_nt    = $(xname)cli.exe
 
 targ_ppc_linux = $(xname)cli.exe
@@ -83,7 +80,6 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
 
 sys_x86_dos  = sys dos
 
-
 sys_x86_rdos = sys rdos_dll &
                export TrapInit_ &
                export TrapFini_ &
@@ -139,18 +135,16 @@ targ_x86_nto    = $(xname).trp
 !endif
 
 targ_axp_nt     = $(xname).dll
-
 targ_ppc_nt     = $(xname).dll
 
 targ_ppc_linux  = $(xname).so
 targ_mips_linux = $(xname).so
 
-!ifeq os linux
-TRAP_common_objs = lnxstrt.obj
-!else ifeq os os2v2
-TRAP_common_objs = os2strt2.obj
-!else
-TRAP_common_objs = $(os)strt.obj
+TRAP_common_objs = $(os_prefix)strt.obj
+!ifeq srv par
+TRAP_common_objs += $(os_prefix)noth.obj
+!else ifeq srv ser
+TRAP_common_objs += $(os_prefix)noth.obj
 !endif
 
 TRAP_remote_objs = remote.obj

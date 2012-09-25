@@ -9,7 +9,7 @@ os  = dos
 srv = tcp
 cpu = x86
 which = SERVER
-type  = remote_link
+remote_link = 1
 
 inc_dirs     = -I"$(wattcp_dir)/inc"
 extra_cflags = -zm

@@ -9,9 +9,9 @@ os    = linux
 srv   = tcp
 cpu   = ppc
 which = SERVER
-type  = remote_link
-
+remote_link = 1
 builtin_trap = 1
+
 
 extra_objs = clibext.obj
 

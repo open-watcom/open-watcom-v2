@@ -31,15 +31,10 @@
 
 #if defined( DOS4G )
 
+//#define DEBUG_TRAP  1
+#include "trapdbg.h"
 #include <stdio.h>
-#include <dos.h>
 #include "rsi1632.h"
-
-#ifdef DEBUG_TRAP
-#define _DBG( x ) printf x; fflush( stdout )
-#else
-#define _DBG( x )
-#endif
 
 typedef struct {
     short   real;
@@ -59,8 +54,8 @@ static map  Mappings_pool[] = {
 static int  Loser = 0;
 static long dummy = 0;
 
-void far * RMLinToPM( unsigned long linear_addr, int pool )
-/***********************************************************/
+void far *RMLinToPM( unsigned long linear_addr, int pool )
+/********************************************************/
 {
     int         i;
     short       real;
@@ -78,7 +73,9 @@ void far * RMLinToPM( unsigned long linear_addr, int pool )
     }
     pm_sel = rsi_sel_new_absolute( linear_addr & 0x000F0000, 0 );
     if( pm_sel == NULL_SEL ) {
-        _DBG(( "Can't get PM pointer for %ld\n", linear_addr ));
+        _DBG_Write( "Can't get PM pointer for " );
+        _DBG_Write32( linear_addr );
+        _DBG_NewLine();
         pm_sel = FP_SEG( &dummy );
     }
     if( pool ) {
@@ -104,10 +101,10 @@ void CallRealMode( unsigned long dos_addr )
 {
     D16REGS     regs;
 
-    regs.ds = regs.es = FP_SEG( dos_addr );/* the trap file runs tiny -zu */
-    _DBG(( "Calling RealMode\n"));
-    rsi_rm_far_call( (void far *)dos_addr, &regs, &regs );
-    _DBG(( "Back from RealMode\n"));
+    regs.ds = regs.es = FP_SEG( dos_addr ); /* the trap file runs tiny -zu */
+    _DBG_Writeln( "Calling RealMode" );
+    rsi_rm_far_call( (void far *)( dos_addr ), &regs, &regs );
+    _DBG_Writeln( "Back from RealMode" );
 }
 
 #elif defined( CAUSEWAY )

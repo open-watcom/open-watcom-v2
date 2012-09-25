@@ -1,12 +1,12 @@
 #pmake: trap remote os_qnx cpu_i86 cpu_386 tcp x86
-host_CPU = 386
-host_OS = qnx
+host_cpu = 386
+host_os = qnx
 
 os = qnx
 srv = tcp
 cpu = x86
 which = TRAP
-type  = remote_link
+remote_link = 1
 
 extra_objs = qtcpsupp.obj
 extra_libs = $(watcom_dir)/lib/qnx/socket3r.lib

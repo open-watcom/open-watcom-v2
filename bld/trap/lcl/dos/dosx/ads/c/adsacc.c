@@ -48,9 +48,10 @@
 #include "adslib.h"
 #include "madregs.h"
 #include "x86cpu.h"
-#include "misc7386.h"
+#include "miscx87.h"
 #include "dosredir.h"
 #include "doserr.h"
+#include "doscomm.h"
 
 trap_cpu_regs   Regs;
 int             IntNum;
@@ -72,7 +73,6 @@ extern  int             DoWriteMem(word,dword,char*);
 extern  dword           GetLinear(word,dword);
 extern  dword           SegLimit(word);
 extern  bool            WriteOk(word);
-extern  unsigned        ExceptionText( unsigned, char * );
 
 bool                    FakeBreak;
 bool                    AtEnd;
@@ -884,6 +884,11 @@ unsigned ReqGet_lib_name()
 
 unsigned ReqGet_message_text()
 {
+    static const char * const ExceptionMsgs[] = {
+        #define pick(a,b) b,
+        #include "x86exc.h"
+        #undef pick
+    };
     get_message_text_ret        *ret;
     char                        *err_txt;
 
@@ -892,7 +897,11 @@ unsigned ReqGet_message_text()
     if( IntNum == -1 ) {
         err_txt[0] = '\0';
     } else {
-        ExceptionText( IntNum, err_txt );
+        if( except < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
+            strcpy( err_txt, ExceptionMsgs[except] );
+        } else {
+            strcpy( err_txt, TRP_EXC_unknown );
+        }
         IntNum = -1;
     }
     ret->flags = MSG_NEWLINE | MSG_ERROR;

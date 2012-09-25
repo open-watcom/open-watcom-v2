@@ -20,7 +20,7 @@ extra_c_flags_dilglue = -3s $(pharlap_c_flags)
 extra_c_flags_dosxlink = $(pharlap_c_flags)
 extra_c_flags_plsacc = $(pharlap_c_flags)
 
-extra_a_flags = -dPHARLAP -ms
+extra_a_flags = -dPHARLAP
 
 inc_dirs = -I"../h"
 

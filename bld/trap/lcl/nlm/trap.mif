@@ -28,7 +28,7 @@ extra_c_flags += -DDEBUG_ME
 extra_c_flags += -D__NETWARE_LIBC__
 !endif
 
-extra_a_flags = -ms -3s
+extra_a_flags = -3s
 
 extra_linker5 = module libc
 extra_linker4 = module clib

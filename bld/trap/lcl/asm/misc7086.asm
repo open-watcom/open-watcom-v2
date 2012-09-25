@@ -30,12 +30,16 @@
 ;****************************************************************************/
 
 
-_TEXT segment byte public 'CODE'
+include mdef.inc
+include struct.inc
+
+        modstart   misc7086
 
 ifndef __WINDOWS__
 
-        public  "C", NPXType
-NPXType proc    near
+        defp    NPXType
+
+xdefp   "C",NPXType
         push    bp                      ; save bp
         sub     ax,ax                   ; set initial control word to 0
         push    ax                      ; push it on stack
@@ -74,12 +78,14 @@ exit:   cbw                             ; zero ah
         pop     bp                      ; throw away control word
         pop     bp                      ; restore bp
         ret                             ; return
-NPXType endp
+
+endproc NPXType
 
 endif
 
-        public  "C", FPUExpand
-FPUExpand  proc    near
+        defp    FPUExpand
+
+xdefp   "C",FPUExpand
         push    ds
         push    es
         push    si
@@ -106,10 +112,11 @@ loop1:  stosw
         pop     es
         pop     ds
         ret
-FPUExpand  endp
+endproc FPUExpand
 
-        public  "C", FPUContract
-FPUContract  proc    near
+        defp    FPUContract
+
+xdefp   "C",FPUContract
         push    ds
         push    es
         push    si
@@ -132,12 +139,13 @@ loop2:  movsw
         pop     es
         pop     ds
         ret
-FPUContract  endp
+endproc FPUContract
 
 ifndef __OS2__
 
-Read8087 PROC
-        public  "C",Read8087
+        defp    Read8087
+
+xdefp   "C",Read8087
         push    ds
         push    bx
         mov     ds,dx
@@ -151,13 +159,14 @@ endif
         fwait
         pop     bx
         pop     ds
-        call    FPUExpand
+        lcall   FPUExpand
         ret
-Read8087 ENDP
+endproc Read8087
 
-Write8087 PROC
-        public  "C",Write8087
-        call    FPUContract
+        defp    Write8087
+
+xdefp   "C",Write8087
+        lcall   FPUContract
         push    ds
         push    bx
         mov     ds,dx
@@ -167,7 +176,7 @@ Write8087 PROC
         pop     bx
         pop     ds
         ret
-Write8087 ENDP
+endproc Write8087
 
 comment ~
     These routines read/write the FPU or emulator state when we're on a 386
@@ -186,45 +195,46 @@ ifndef REAL_MODE
 
         .386
 
-Read387 PROC
-        public  "C",Read387
+        defp    Read387
+
+xdefp   "C",Read387
         push    ds
         push    bx
-	push    edi
+        push    edi
         mov     ds,dx
         mov     bx,ax
-	movzx   edi,bx
+        movzx   edi,bx
         fsaved  ds:[bx]
-	fwait
+        fwait
         frstord ds:[bx]
         fwait
-	pop     edi
+        pop     edi
         pop     bx
         pop     ds
         ret
-Read387 ENDP
+endproc Read387
 
-Write387 PROC
-        public  "C",Write387
+        defp    Write387
+
+xdefp   "C",Write387
         push    ds
         push    bx
-	push    edi
+        push    edi
         mov     ds,dx
         mov     bx,ax
-	movzx   edi,bx
-	fwait
+        movzx   edi,bx
+        fwait
         frstord ds:[bx]
         fwait
-	pop     edi
+        pop     edi
         pop     bx
         pop     ds
         ret
-Write387 endp
+endproc Write387
 
 endif
 
 endif
 
-_TEXT           ENDS
-
-                END
+        endmod
+        end

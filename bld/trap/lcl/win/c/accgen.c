@@ -34,6 +34,7 @@
 #include "tinyio.h"
 #include "wdebug.h"
 #include "stdwin.h"
+#include "winctrl.h"
 #include "trperr.h"
 #include "winerr.h"
 
@@ -80,6 +81,20 @@ unsigned ReqRead_user_keyboard( void )
     ret->key = _info;
     SetEventHook( NULL );
     return( sizeof( *ret ) );
+}
+
+void DisableHookEvents( void )
+{
+    if( HookRtn != NULL ) {
+        SetEventHook( NULL );
+    }
+}
+
+void EnableHookEvents( void )
+{
+    if( HookRtn != NULL ) {
+        SetEventHook( HookRtn );
+    }
 }
 
 unsigned ReqGet_err_text( void )

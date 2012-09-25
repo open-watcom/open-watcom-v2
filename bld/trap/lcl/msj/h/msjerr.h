@@ -35,7 +35,7 @@
 #define ErrIndex( x )      ( (x)&~__ERR_MSJ_USER )
 
 enum {
-#undef pick
 #define pick( a,b,c ) a = ((b) | __ERR_MSJ_USER ),
 #include "msjepick.h"
+#undef pick
 };

@@ -60,7 +60,7 @@ void                    (FAR PASCAL *ResetDebugInterrupts32)( void );
 int                     (FAR PASCAL *SetDebugInterrupts32)( void );
 void                    (FAR PASCAL *DebuggerIsExecuting)( int );
 BOOL                    DebugDebugeeOnly;
-HANDLE                  TaskAtFault;
+HTASK                   TaskAtFault;
 BOOL                    InSoftMode;
 WORD                    CSAlias;
 WORD                    SegmentToAccess;

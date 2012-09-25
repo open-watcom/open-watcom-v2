@@ -1,6 +1,6 @@
 #pmake: serv remote os_nov cpu_386 nov x86
-host_CPU = 386
-host_OS = nov
+host_cpu = 386
+host_os = nov
 
 nlm_ver = 5
 os = nlm
@@ -8,7 +8,8 @@ srv = tcp
 cpu = x86
 which = SERVER
 nwlib = libc
-type  = remote_link
+remote_link = 1
+builtin_trap = 1
 
 extra_objs = $(nlm_objs)
 

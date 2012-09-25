@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal OS/2 trap file routines.
 *
 ****************************************************************************/
 
@@ -35,6 +34,8 @@
 
 #define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
 typedef enum { USER_SCREEN, DEBUG_SCREEN } scrtype;
+
+#ifdef _M_I86
 
 /*
  * from BSEDOS16.H, OS/2 2.0
@@ -62,6 +63,7 @@ typedef struct _NEWSTARTDATA {  /* stdata */
     PSZ     ObjectBuffer;
     ULONG   ObjectBuffLen;
 } NEWSTARTDATA;
+
 #define SSF_TYPE_DEFAULT        0
 #define SSF_TYPE_FULLSCREEN     1
 #define SSF_TYPE_WINDOWABLEVIO  2
@@ -137,12 +139,14 @@ typedef struct __LINFOSEG {      /* lis */
 #define _PT_PM                      3 /* Presentation Manager application      */
 #define _PT_DETACHED                4 /* Detached application                  */
 
-char            *StrCopy( char *, char * );
+#endif
+
+char        *StrCopy( char *, char * );
 long        OpenFile( char *, USHORT, int );
 void        RestoreScreen( void );
 long        TryPath( char *, char *, char * );
 long        FindFilePath( char *, char *, char * );
-char            *AddDriveAndPath( char *, char * );
+char        *AddDriveAndPath( char *, char * );
 void        MergeArgvArray( char *, char *, unsigned );
 long        TaskOpenFile( char *name, int mode, int flags );
 HFILE       TaskDupFile( HFILE old, HFILE new );

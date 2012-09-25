@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-#define __ERR_JVM_USER 0x20000000L
-#define IsUserErr( x )     ( ( (x)&__ERR_JVM_USER ) != 0 )
-#define ErrIndex( x )      ( (x)&~__ERR_JVM_USER )
+#include <stddef.h>
 
-enum {
-#define pick( a,b,c ) a = ((b) | __ERR_JVM_USER ),
-#include "jvmepick.h"
-#undef pick
-};
+#define INCL_DOSPROCESS
+#include "os2.h"
+
+void NothingToDo()
+{
+    DosSleep( 0 );
+}

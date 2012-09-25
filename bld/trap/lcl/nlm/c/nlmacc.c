@@ -59,7 +59,7 @@
 #include "nw3to4.h"
 
 #include "x86cpu.h"
-#include "misc7386.h"
+#include "miscx87.h"
 
 #define NO_DREG     ((byte)-1)
 #define NUM_DREG    4

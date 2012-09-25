@@ -38,7 +38,7 @@
 #include "trpimp.h"
 #include "exeelf.h"
 //#include "lnxcomm.h"
-//#include "misc7386.h"
+//#include "miscx87.h"
 #include "mad.h"
 #include "madregs.h"
 

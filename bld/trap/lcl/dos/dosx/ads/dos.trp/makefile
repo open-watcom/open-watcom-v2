@@ -1,6 +1,6 @@
 #pmake: trap lcl os_dos dsx cpu_386 x86
-host_CPU = i86
-host_OS = dos
+host_cpu = i86
+host_os = dos
 
 os = dos
 cpu = x86

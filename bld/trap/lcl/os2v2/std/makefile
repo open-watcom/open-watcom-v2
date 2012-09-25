@@ -7,10 +7,10 @@ host_cpu = 386
 # Create the 32-bit OS/2 std.dll
 #
 
-os      = os2v2
-srv     = lcl
-cpu     = x86
-name    = std
+os    = os2v2
+srv   = lcl
+cpu   = x86
+name  = std
 which = TRAP
 
 extra_objs =          &
@@ -35,7 +35,7 @@ extra_linker = &
         imp DoReadXMMRegs_ wdsplice                    &
         imp DoWriteXMMRegs_ wdsplice                   &
         imp _XferBuff wdsplice, DoDupFile_ wdsplice    &
-        lib os2.lib
+        lib $(os2api_dir)/os2286/lib/os2.lib
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

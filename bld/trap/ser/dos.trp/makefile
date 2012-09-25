@@ -1,13 +1,14 @@
 #pmake: build trap remote os_dos cpu_i86 cpu_386 ser x86
-host_CPU = i86
-host_OS = dos
+host_cpu = i86
+host_os = dos
 
 os = dos
 srv = ser
 cpu = x86
 which = TRAP
-type  = remote_link
+remote_link = 1
+builtin_trap = 1
 
-extra_objs = serint.obj serdos.obj busywait.obj dosnoth.obj
+extra_objs = serint.obj serdos.obj busywait.obj
 
 !include $(trap_dir)/master.mif

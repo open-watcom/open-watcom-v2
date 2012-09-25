@@ -1,6 +1,6 @@
 #pmake: trap remote os_dos cpu_i86 cpu_386 tcp x86
-host_CPU = i86
-host_OS = dos
+host_cpu = i86
+host_os = dos
 
 memory_model_i86 = l
 
@@ -10,10 +10,10 @@ os = dos
 srv = tcp
 cpu = x86
 which = TRAP
-type  = remote_link
+remote_link = 1
 
-inc_dirs = -I"$(wattcp_dir)/inc"
-extra_libs = $(wattcp_dir)/dosi86/wattcpwl.lib
+inc_dirs   = -I"$(wattcp_dir)/inc"
+extra_libs = $(wattcp_dir)/dosi86/wattcpl.lib
 
 extra_a_flags = -D__LARGE__
 

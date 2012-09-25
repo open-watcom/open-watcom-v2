@@ -1,12 +1,12 @@
 #pmake: trap remote os_nt cpu_386 nov axp
-host_CPU = axp
-host_OS = nt
+host_cpu = axp
+host_os = nt
 
 os = nt
 srv = nov
 cpu = axp
 which = TRAP
-type  = remote_link
+remote_link = 1
 
 extra_objs = novnt.obj
 

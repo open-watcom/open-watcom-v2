@@ -1,12 +1,12 @@
 #pmake: build serv remote os_win cpu_i86 cpu_386 net x86
 host_cpu = i86
-host_OS = win
+host_os = win
 
-gui = 1
 os = win
 srv = net
 cpu = x86
 which = SERVER
-type  = remote_link
+gui = 1
+remote_link = 1
 
 !include $(trap_dir)/master.mif

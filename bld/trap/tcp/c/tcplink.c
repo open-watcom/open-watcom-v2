@@ -322,7 +322,7 @@ char RemoteConnect( void )
     timeout.tv_sec = 0;
     timeout.tv_usec = 10000;
     if( select( control_socket+1, &ready, 0, 0, &timeout ) > 0 ) {
-        data_socket = accept( control_socket, &dummy, (socklen_t *)&dummy_len );
+        data_socket = accept( control_socket, &dummy, &dummy_len );
         if( data_socket != -1 ) {
             nodelay();
             _DBG_NET(("Found a connection\r\n"));
@@ -436,7 +436,7 @@ char *RemoteLink( char *name, char server )
     /* Find out assigned port number and print it out */
     length = sizeof( socket_address );
     if( getsockname( control_socket, (struct sockaddr *)&socket_address,
-                     (socklen_t *)&length ) ) {
+                     &length ) ) {
         return( TRP_ERR_unable_to_get_socket_name );
     }
     sprintf( buff2, "%s%d", TRP_TCP_socket_number, ntohs( socket_address.sin_port ) );
@@ -618,7 +618,7 @@ static struct ifi_info * get_ifi_info( int family, int doaliases )
     for( ; ; ) {
         buf = malloc( len );
         ifc.ifc_len = len;
-        ifc.ifc_buf = (caddr_t)buf;
+        ifc.ifc_buf = buf;
         if( w_ioctl( sockfd, SIOCGIFCONF, (char *)&ifc ) >= 0 ) {
             if( ifc.ifc_len == lastlen )
                 break;      /* success, len has not changed */

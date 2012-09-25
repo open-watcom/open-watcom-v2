@@ -38,7 +38,6 @@
 #include <dos.h>
 #include "stdwin.h"
 #include "wdebug.h"
-#include "winacc.h"
 
 
 /*

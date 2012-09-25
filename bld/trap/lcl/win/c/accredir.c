@@ -38,7 +38,6 @@
 #include <dos.h>
 #include "tinyio.h"
 #include "stdwin.h"
-#include "winacc.h"
 
 static redirect_stdin_ret       *rdRet;
 static BOOL                     isInput;

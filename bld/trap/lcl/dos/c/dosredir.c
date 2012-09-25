@@ -39,6 +39,7 @@
 #include "tinyio.h"
 #endif
 #include "dosredir.h"
+#include "doscomm.h"
 
 #if defined( ACAD ) || defined( PHARLAP )
 #define REDIR_dup       dup
@@ -65,9 +66,6 @@
 #define IsError(x)      TINY_ERROR(x)
 #define Handle(x)       TINY_INFO(x)
 #endif
-
-extern int  SetUsrTask(void);
-extern void SetDbgTask(void);
 
 #define NIL_DOS_HANDLE  (t_handle)-1
 

@@ -127,7 +127,7 @@ extern void _DBG_DumpMultChars( uint_8 ch, uint_16 count, uint_16 fhandle );
     "pop        es      ",                                              \
     "pop        ds      "                                               \
     parm [ al ] [ cx ] [ bx ]                                           \
-    modify exact [ ax dx di ];
+    modify exact [ ax cx dx di ];
 
 extern void _DBG_DumpChar( uint_8 ch, uint_16 fhandle );
 #pragma aux _DBG_DumpChar =                                             \
@@ -142,7 +142,7 @@ extern void _DBG_DumpChar( uint_8 ch, uint_16 fhandle );
     "pop        ax      ",                                              \
     "pop        ds      "                                               \
     parm [ al ] [ bx ]                                                  \
-    modify exact [ dx ];
+    modify exact [ cx dx ];
 
 extern uint_8 _DBG_HexChar( uint_8 digit );
 #pragma aux _DBG_HexChar =                                              \
@@ -167,7 +167,7 @@ extern void _DBG_DumpStr( char far *str, uint_16 len, uint_16 fhandle );
     "int        21h     ",                                              \
     "pop        ds      "                                               \
     parm [ ax dx ] [ cx ] [ bx ]                                        \
-    modify exact [ ax bx cx dx ];
+    modify exact [ ax dx ];
 #endif
 
 
@@ -178,12 +178,13 @@ extern void _DBG_DumpStr( char far *str, uint_16 len, uint_16 fhandle );
 #define _DBG_RingBell()         _DBG_DumpChar( DBG_BELL, DBG_STDOUT_H );
 #define _DBG_DumpHexChar( n )   _DBG_DumpChar( _DBG_HexChar( n ),       \
                                                DBG_STDOUT_H );
-#define _DBG_Write8( n )        { _DBG_DumpHexChar( (uint_8)(n) >> 4 );         \
+#define _DBG_Write8( n )        { _DBG_DumpHexChar( (uint_8)(n) >> 4 ); \
                                   _DBG_DumpHexChar( (uint_8)(n) ); }
-#define _DBG_Write16( n )       { _DBG_Write8( (uint_16)(n) >> 8 );             \
+#define _DBG_Write16( n )       { _DBG_Write8( (uint_16)(n) >> 8 );     \
                                   _DBG_Write8( (uint_8)(n) ); }
-#define _DBG_Write32( n )       { _DBG_Write16( (uint_32)(n) >> 16 );           \
+#define _DBG_Write32( n )       { _DBG_Write16( (uint_32)(n) >> 16 );   \
                                   _DBG_Write16( (uint_16)(n) ); }
+#define _DBG_WriteConstStr( s ) _DBG_DumpStr( s, sizeof( s ) - 1, DBG_STDOUT_H );
 #define _DBG_DumpBytes( p, n )  { uint_16       j;                      \
                                   for( j = 0; j < n; ++j ) {            \
                                       _DBG_Write8( *((uint_8 *)(p) + j) ); \
@@ -191,13 +192,12 @@ extern void _DBG_DumpStr( char far *str, uint_16 len, uint_16 fhandle );
                                   }                                     \
                                   _DBG_NewLine();                       \
                                 }
-#define _DBG_Tab( n )           _DBG_DumpMultChars( DBG_BLANK, n,       \
-                                                    DBG_STDOUT_H );
-#define _DBG_NewLine()          { _DBG_NoTabWrite( DBG_LF DBG_CR );     \
-                                  ++DBG_Lines; }
+#define _DBG_Tab( n )           _DBG_DumpMultChars( DBG_BLANK, n, DBG_STDOUT_H );
+#define _DBG_NewLine()          { _DBG_WriteConstStr( DBG_CR DBG_LF );  \
+                                    ++DBG_Lines; }
 #define _DBG_ChkNewLn()         { _DBG_NewLine();                       \
                                   if( DBG_Lines >= DBG_PAGESIZE ) {     \
-                                      _DBG_NoTabWrite( DBG_PAUSE_MSG ); \
+                                      _DBG_WriteConstStr( DBG_PAUSE_MSG ); \
                                       _DBG_KeyWait();                   \
                                       _DBG_NewLine();                   \
                                       DBG_Lines = 0;                    \
@@ -208,15 +208,18 @@ extern void _DBG_DumpStr( char far *str, uint_16 len, uint_16 fhandle );
                                   _DBG_NoTabWrite( s ); }
 #define _DBG_Writeln( s )       { _DBG_Write( s ); _DBG_NewLine(); }
 #define _DBG_NoTabWriteln( s )  { _DBG_NoTabWrite( s ); _DBG_NewLine(); }
-#define _DBG_EnterFunc( s )     { _DBG_Write( DBG_ENTER_MSG );          \
+#define _DBG_EnterFunc( s )     { _DBG_Tab( DBG_Indent );               \
+                                  _DBG_WriteConstStr( DBG_ENTER_MSG );  \
                                   _DBG_NoTabWriteln( s );               \
                                   DBG_Indent += DBG_SHIFT_WIDTH; }
 #define _DBG_ExitFunc( s )      { DBG_Indent -= DBG_SHIFT_WIDTH;        \
-                                  _DBG_Write( DBG_EXIT_MSG );           \
+                                  _DBG_Tab( DBG_Indent );               \
+                                  _DBG_WriteConstStr( DBG_EXIT_MSG );   \
                                   _DBG_NoTabWriteln( s ); }
-#define _DBG_WriteErr( s )      { _DBG_NoTabWrite( DBG_ERRSTR );        \
+#define _DBG_WriteErr( s )      { _DBG_WriteConstStr( DBG_ERRSTR );     \
                                   _DBG_NoTabWrite( s );                 \
-                                  _DBG_NoTabWriteln( DBG_ERRSTR );      \
+                                  _DBG_WriteConstStr( DBG_ERRSTR );     \
+                                  _DBG_NewLine();                       \
                                   _DBG_RingBell();                      \
                                 }
 

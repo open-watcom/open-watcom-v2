@@ -6,6 +6,11 @@ host_cpu = 386
 #
 # Builds wdpmhelp.exe, wdpmhook.dll
 #
+proj_name = wdpmhelp
+
+!ifndef wdpmhelp_autodepends
+wdpmhelp_autodepends = .AUTODEPEND
+!endif
 
 !include cproj.mif
 !include defrule.mif

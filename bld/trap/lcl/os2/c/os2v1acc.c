@@ -43,7 +43,7 @@
 #include "os2trap.h"
 #include "madregs.h"
 #include "x86cpu.h"
-#include "misc7086.h"
+#include "miscx87.h"
 
 extern  void    BreakPoint( ULONG );
 #pragma aux     BreakPoint = 0xCC parm [ dx ax ] aborts;
@@ -1310,24 +1310,9 @@ unsigned ReqGet_lib_name()
 unsigned ReqGet_message_text()
 {
     static const char * const ExceptionMsgs[] = {
-            TRP_EXC_divide_overflow,
-            "",
-            TRP_EXC_non_maskable_interrupt,
-            "",
-            TRP_EXC_integer_overflow,
-            TRP_EXC_bounds_check,
-            TRP_EXC_invalid_opcode,
-            TRP_EXC_coprocessor_not_available,
-            TRP_EXC_double_fault,
-            TRP_EXC_coprocessor_segment_overrun,
-            TRP_EXC_invalid_TSS,
-            TRP_EXC_segment_not_present,
-            TRP_EXC_stack_exception,
-            TRP_EXC_general_protection_fault,
-            TRP_EXC_page_fault,
-            "",
-            TRP_EXC_coprocessor_error,
-            TRP_EXC_data_type_misalignment,
+        #define pick(a,b) b,
+        #include "x86exc.h"
+        #undef pick
     };
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -1336,10 +1321,10 @@ unsigned ReqGet_message_text()
     err_txt = GetOutPtr( sizeof(*ret) );
     if( ExceptNum == -1 ) {
         err_txt[0] = '\0';
-    } else if( ExceptNum > ( (sizeof(ExceptionMsgs) / sizeof(char *) - 1) ) ) {
-        strcpy( err_txt, TRP_EXC_unknown );
+    } else if( ExceptNum < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
+        strcpy( err_txt, ExceptionMsgs[ExceptNum] );
     } else {
-        strcpy( err_txt, ExceptionMsgs[ ExceptNum ] );
+        strcpy( err_txt, TRP_EXC_unknown );
     }
     ExceptNum = -1;
     ret->flags = MSG_NEWLINE | MSG_ERROR;

@@ -9,9 +9,9 @@ os    = nto
 srv   = tcp
 cpu   = x86
 which = SERVER
-type  = remote_link
-
+remote_link = 1
 builtin_trap = 1
+
 
 extra_objs = clibext.obj
 cl_libs = -lsocket

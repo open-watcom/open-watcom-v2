@@ -30,8 +30,7 @@ extra_objs = &
 
 extra_linker = &
         imp DOS16SELTOFLAT DOSCALLS.424 &
-        exp TellHandles_.4,TellHardMode_.5 &
-        lib os2
+        exp TellHandles_.4,TellHardMode_.5
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

@@ -121,9 +121,9 @@ static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
 }
 
 static char *Errors[] = {
-#undef pick
 #define pick( a,b,c ) c,
 #include "jvmepick.h"
+#undef pick
 };
 
 unsigned ReqGet_err_text( void )

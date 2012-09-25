@@ -34,6 +34,7 @@
 #include "tinyio.h"
 #include "dosver.h"
 #include "trpimp.h"
+#include "doscomm.h"
 
 extern bool             CheckPointMem( unsigned, char * );
 extern void             CheckPointRestore( void );
@@ -192,7 +193,7 @@ static tiny_ret_t TryPath( char *name, char *end, char *ext_list )
     return( rc );
 }
 
-tiny_ret_t FindFilePath( char *pgm, char *buffer, char *ext_list )
+long FindFilePath( char *pgm, char *buffer, char *ext_list )
 {
     const char  far *path;
     char        *p2;

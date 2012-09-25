@@ -28,7 +28,6 @@ dosx_serv_objs = &
         core.obj &
         supp.obj &
         packet.obj &
-        dosexc.obj &
         dosredir.obj &
         x86cpu.obj &
         $(dosx_serv_objs_$(host_cpu))

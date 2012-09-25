@@ -47,8 +47,9 @@
 #include "winchk.h"
 #include "madregs.h"
 #include "x86cpu.h"
-#include "misc7086.h"
+#include "miscx87.h"
 #include "dosredir.h"
+#include "doscomm.h"
 
 typedef enum {
     EXE_UNKNOWN,
@@ -129,8 +130,6 @@ extern void             SetWatch386( unsigned, watch far * );
 extern void             SetWatchPnt(unsigned, watch far *);
 extern void             SetSingleStep(void);
 extern void             SetSingle386(void);
-extern void             SetDbgTask(void);
-extern void             SetUsrTask(void);
 extern void             InitVectors(void);
 extern void             FiniVectors(void);
 extern void             TrapTypeInit(void);
@@ -141,8 +140,6 @@ extern char             Have87Emu(void);
 extern void             Null87Emu( void );
 extern void             Read87EmuState( void far * );
 extern void             Write87EmuState( void far * );
-extern tiny_ret_t       FindFilePath( char *, char *, char * );
-extern unsigned         ExceptionText( unsigned, char * );
 extern unsigned         StringToFullPath( char * );
 extern int              far NoOvlsHdlr( int, void * );
 extern bool             CheckOvl( addr32_ptr );
@@ -1018,6 +1015,11 @@ unsigned ReqGet_err_text( void )
 
 unsigned ReqGet_message_text( void )
 {
+    static const char * const ExceptionMsgs[] = {
+        #define pick(a,b) b,
+        #include "x86exc.h"
+        #undef pick
+    };
     get_message_text_ret        *ret;
     char                        *err_txt;
 
@@ -1026,7 +1028,11 @@ unsigned ReqGet_message_text( void )
     if( ExceptNum == -1 ) {
         err_txt[0] = '\0';
     } else {
-        ExceptionText( ExceptNum, err_txt );
+        if( ExceptNum < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
+            strcpy( err_txt, ExceptionMsgs[ExceptNum] );
+        } else {
+            strcpy( err_txt, TRP_EXC_unknown );
+        }
         ExceptNum = -1;
     }
     ret->flags = MSG_NEWLINE | MSG_ERROR;

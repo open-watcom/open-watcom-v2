@@ -56,7 +56,7 @@
 #include <sys/name.h>
 #include "trpimp.h"
 #include "qnxcomm.h"
-#include "misc7086.h"
+#include "miscx87.h"
 #include "mad.h"
 #include "madregs.h"
 

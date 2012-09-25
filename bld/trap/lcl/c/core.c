@@ -37,7 +37,12 @@
     #define DOSX
 #elif defined(__WINDOWS__) && !defined(__386__)
     #define WIN16
+    #include "winctrl.h"
 #endif
+
+extern unsigned         MaxPacketSize( void );
+extern void             RemoteDisco( void );
+extern char             RemoteConnect( void );
 
 static unsigned (* const CoreRequests[])(void) = {
         ReqConnect,
@@ -81,19 +86,6 @@ static unsigned (* const CoreRequests[])(void) = {
         ReqMachine_data,
 };
 
-
-extern unsigned         MaxPacketSize( void );
-extern void             RemoteDisco( void );
-extern char             RemoteConnect( void );
-
-extern char             *InitDebugging( void );
-extern void             FinishDebugging( void );
-
-#if defined( WIN16 )
-extern void             far pascal SetEventHook( void far * );
-extern void             far *HookRtn;
-#endif
-
 unsigned ReqConnect( void )
 {
     connect_ret *ret;
@@ -122,8 +114,6 @@ unsigned ReqDisconnect( void )
     RemoteDisco();
 #elif defined(WIN16)
     FinishDebugging();
-    if( HookRtn != NULL ) SetEventHook( NULL );
-    HookRtn = NULL;
 #endif
     return( 0 );
 }
@@ -149,12 +139,12 @@ unsigned TRAPENTRY TrapRequest( unsigned num_in_mx, mx_entry *mx_in,
     Out_Mx_Ptr = mx_out;
 
 #if defined(WIN16)
-    if( HookRtn != NULL ) SetEventHook( NULL );
+    DisableHookEvents();
 #endif
     /* The first item must be the request! */
     len = CoreRequests[ *(access_req *)mx_in[0].ptr ]();
 #if defined(WIN16)
-    if( HookRtn != NULL ) SetEventHook( HookRtn );
+    EnableHookEvents();
 #endif
     return( len );
 }

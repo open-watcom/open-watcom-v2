@@ -24,24 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Internal OS/2 2.x trap file routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#define OPEN_CREATE  1
-#define OPEN_PRIVATE 2
+extern long     FindFilePath( char *pgm, char *buffer, char *ext_list );
+extern void     SetDbgTask( void );
+extern int      SetUsrTask( void );
 
-#define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
-typedef enum { USER_SCREEN, DEBUG_SCREEN } scrtype;
-
-char        *StrCopy( char *, char * );
-long        OpenFile( char *, USHORT, int );
-void        RestoreScreen( void );
-long        TryPath( char *, char *, char * );
-long        FindFilePath( char *, char *, char * );
-char        *AddDriveAndPath( char *, char * );
-void        MergeArgvArray( char *, char *, unsigned );
-long        TaskOpenFile( char *name, int mode, int flags );
-HFILE       TaskDupFile( HFILE old, HFILE new );
-long        TaskCloseFile( HFILE hdl );

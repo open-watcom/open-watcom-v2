@@ -122,30 +122,14 @@ unsigned ReqGet_sys_config( void )
 
 unsigned ReqGet_message_text( void )
 {
+    static const char * const ExceptionMsgs[] = {
+        #define pick(a,b) b,
+        #include "x86exc.h"
+        #undef pick
+    };
     char                    *err_txt;
     get_message_text_ret    *ret;
     unsigned                len;
-
-    static const char * const ExceptionMsgs[] = {
-            TRP_EXC_divide_overflow,
-            "",
-            TRP_EXC_non_maskable_interrupt,
-            "",
-            TRP_EXC_integer_overflow,
-            TRP_EXC_bounds_check,
-            TRP_EXC_invalid_opcode,
-            TRP_EXC_coprocessor_not_available,
-            TRP_EXC_double_fault,
-            TRP_EXC_coprocessor_segment_overrun,
-            TRP_EXC_invalid_TSS,
-            TRP_EXC_segment_not_present,
-            TRP_EXC_stack_exception,
-            TRP_EXC_general_protection_fault,
-            TRP_EXC_page_fault,
-            "",
-            TRP_EXC_coprocessor_error,
-            TRP_EXC_data_type_misalignment,
-    };
 
     ret = GetOutPtr( 0 );
     ret->flags = MSG_NEWLINE | MSG_ERROR;
@@ -155,11 +139,13 @@ unsigned ReqGet_message_text( void )
         memcpy( err_txt, OutBuff, len );
         OutPos -= len;
         memmove( &OutBuff[0], &OutBuff[len], OutPos );
-        if( OutPos != 0 ) ret->flags |= MSG_MORE;
-    } else if( IntResult.InterruptNumber > ( (sizeof( ExceptionMsgs ) / sizeof( char * ) - 1) ) ) {
-        strcpy( err_txt, TRP_EXC_unknown );
+        if( OutPos != 0 ) {
+            ret->flags |= MSG_MORE;
+        }
+    } else if( IntResult.InterruptNumber < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
+        strcpy( err_txt, ExceptionMsgs[IntResult.InterruptNumber] );
     } else {
-        strcpy( err_txt, ExceptionMsgs[ IntResult.InterruptNumber ] );
+        strcpy( err_txt, TRP_EXC_unknown );
     }
     return( sizeof( ret ) + strlen( err_txt ) + 1 );
 }

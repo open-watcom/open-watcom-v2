@@ -50,6 +50,7 @@
 #include "wdpmhelp.h"
 #include "softmode.h"
 #include "madregs.h"
+#include "trperr.h"
 #include "os2err.h"
 #include "exedos.h"
 #include "exeos2.h"
@@ -1075,7 +1076,7 @@ unsigned ReqProg_load( void )
     ret->err = 0;
     if( GetEXEFlags( UtilBuff ) == EXE_IS_PM ) {
         if( TypeProcess == SSF_TYPE_WINDOWABLEVIO ) {
-            ret->err = ERROR_NOT_IN_WINDOW;
+            ret->err = ERROR_OS2_TRAP( ERROR_NOT_IN_WINDOW );
         } else {
             start.SessionType = SSF_TYPE_PM;
             if( !IsPMDebugger() ) StartPMHelp();

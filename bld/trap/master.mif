@@ -48,9 +48,19 @@ memory_model_i86 = c
 !endif
 
 !ifdef test
-!ifneq type remote_link
+!ifndef remote_link
 !error test version can be build only for remote link
 !endif
+!endif
+
+!ifeq nwlib libc
+os_prefix = libc
+!else ifeq os linux
+os_prefix = lnx
+!else ifeq os os2v2
+os_prefix = os22
+!else
+os_prefix = $(os)
 !endif
 
 fpu_flags_dos_i86   = -fpc
@@ -101,23 +111,20 @@ xname=d$(name)
 !include $(trap_dir)/trap.mif
 !endif
 
-!ifeq type remote_link
-!include $(trap_dir)/remote.mif
-!endif
-
 # cflags stuff
 ###############
 extra_c_flags += -D$(which) -DMD_$(cpu) $(extra_cflags)
+
 !ifndef bootstrap
 extra_c_flags += -s
-!endif
-
 !ifeq which TRAP
 extra_c_flags += -zlf
 !endif
+!endif
 
-!ifdef builtin_trap
+
 !ifndef test
+!ifdef builtin_trap
 extra_c_flags += -DBUILTIN_TRAP_FILE
 !endif
 !endif
@@ -133,10 +140,8 @@ extra_c_flags_386 += -3s
 !endif
 
 !ifeq which TRAP
+extra_c_flags_i86 += -zu
 !ifeq host_cpu i86
-extra_c_flags_os2 += -zu
-extra_c_flags_win += -zu
-extra_c_flags_dos += -zu
 !ifndef test
 extra_c_flags_win += -bd
 !endif
@@ -146,15 +151,13 @@ extra_c_flags_win += -bd
 # aflags stuff
 ###############
 
+extra_a_flags += $(model_switch_$(host_cpu))
+
 extra_a_flags_misc7086 = -fpi87
 extra_a_flags_misc7386 = -fpi87
 
 # lflags stuff
 ###############
-
-!ifeq host_os dos
-extra_libs += dbgstr.lib
-!endif
 
 !ifeq release 0
 default_targ    = d
@@ -162,8 +165,7 @@ default_targ    = d
 default_targ    = w
 !endif
 
-first : $(default_targ) .SYMBOLIC
-        @%null
+first : $(default_targ)
 
 target = $+$(targ_$(cpu)_$(os))$-
 
@@ -173,7 +175,7 @@ mkstr_c = $(trap_dir)/c/mkstr.c
 trap_msg = $(trap_dir)/h/trap.msg
 
 !ifeq host_os nov
-extra_deps = nversion.tmp
+extra_deps += nversion.tmp
 !endif
 
 w : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
@@ -189,7 +191,7 @@ $(trperr_h) : ./mkstr.exe
         $[@ $^@
 
 ./jmkstr.exe: $(mkstr_c) $(trap_msg)
-        $(bld_cl) $(bld_cl_opts) -I"$(trap_dir)/h" -DJAPANESE_MESSAGES $[@
+        $(bld_cl) $(bld_cl_opts) -DJAPANESE_MESSAGES $[@
 
 $(jtrperr_h) : ./jmkstr.exe
         $[@ $^@
@@ -198,10 +200,21 @@ $(jtrperr_h) : ./jmkstr.exe
         $(bld_cl) $(bld_cl_opts) $[@
 
 nversion.tmp: ./mknver.exe
-    	$[@ $^@
+        $[@ $^@
 
 !ifndef extra_dobjs
 extra_dobjs = $(extra_objs)
+!endif
+
+!ifeq host_os dos
+dbg_libs = dbgstr.lib
+!endif
+
+!ifdef remote_link
+remote_objs = &
+        $($(which)_remote_objs) &
+        packet.obj &
+        $(srv)link.obj &
 !endif
 
 !ifeq release 1
@@ -212,16 +225,17 @@ objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_dobjs)
 
 !ifndef substitute_linker
 
-$(target) : $(objs) $(extra_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
+$(target) : $(objs) $(extra_libs) $(dbg_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
         %create $^&.lnk
         @%append $^&.lnk $(mode_lflags)
-        @%append $^&.lnk op map name $^@
+        @%append $^&.lnk op map, elim
+        @%append $^&.lnk name $^@
         @%append $^&.lnk $(sys_$(cpu)_$(os))
 !ifeq which TRAP
         @%append $^&.lnk op dosseg
 !endif
         @for %i in ($(objs)) do @%append $^&.lnk file %i
-        @for %i in ($(libs_$(cpu)_$(os)) $(extra_libs)) do @%append $^&.lnk library %i
+        @for %i in ($(extra_libs) $(dbg_libs)) do @%append $^&.lnk library %i
         @%append $^&.lnk $(extra_linker)
         $(linker) @$^&.lnk 
 !ifdef resource_file

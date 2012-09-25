@@ -7,6 +7,10 @@ host_cpu = i86
 
 proj_name = wvpmhelp
 
+!ifndef wvpmhelp_autodepends
+wvpmhelp_autodepends = .AUTODEPEND
+!endif
+
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif

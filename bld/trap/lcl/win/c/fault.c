@@ -36,7 +36,7 @@
 #include "stdwin.h"
 #include "mad.h"
 #include "madregs.h"
-#include "misc7086.h"
+#include "miscx87.h"
 
 /*
  * How we get our registers:

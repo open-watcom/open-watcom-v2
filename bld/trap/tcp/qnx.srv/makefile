@@ -7,7 +7,7 @@ os    = qnx
 srv   = tcp
 cpu   = x86
 which = SERVER
-type  = remote_link
+remote_link = 1
 
 extra_libs = $(watcom_dir)/lib/qnx/socket3r.lib
 inc_dirs   = -I"$(watcom_dir)/qnx_h"

@@ -2,18 +2,23 @@
 #
 # Create OS2V2HLP.EXE
 #
-host_CPU = 386
-host_OS = os2
+host_cpu = 386
+host_os = os2
+
+proj_name = os2v2hlp
+
+!ifndef os2v2hlp_autodepends
+os2v2hlp_autodepends = .AUTODEPEND
+!endif
 
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
 
-w : .symbolic os2v2hlp.exe
-        @%null
-
 .asm : ../asm
 
+extra_l_flags = op dosseg, map imp DOS32WRITE DOSCALLS.282,DOS32DEBUG DOSCALLS.317
+
 os2v2hlp.exe : os2v2hlp.obj
-        $(linker) system os2v2 lx op dosseg, map name $^@ f os2v2hlp.obj &
-                imp DOS32WRITE DOSCALLS.282,DOS32DEBUG DOSCALLS.317
+        $(linker) $(lflags) name $^@ file os2v2hlp.obj
+                

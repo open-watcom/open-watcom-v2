@@ -97,7 +97,6 @@ extern BYTE                     DLLLoadSaveByte;
 extern WORD                     DLLLoadCS;
 extern WORD                     DLLLoadIP;
 extern BOOL                     DLLLoadExpectingInt1;
-extern WORD                     CopySize;
 extern unsigned_8               FPUType;
 extern HWND                     DesktopWindow;
 extern HINSTANCE                Instance;
@@ -129,7 +128,7 @@ extern void                     (FAR PASCAL *ResetDebugInterrupts32)( void );
 extern int                      (FAR PASCAL *SetDebugInterrupts32)( void );
 extern void                     (FAR PASCAL *DebuggerIsExecuting)( int );
 extern BOOL                     DebugDebugeeOnly;
-extern HANDLE                   TaskAtFault;
+extern HTASK                    TaskAtFault;
 extern WORD                     Win386Sig[];
 extern WORD                     Win386SigRev[];
 extern FARPROC                  SubClassProcInstance;
@@ -195,13 +194,6 @@ void InitDebugHook( void );
 private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task, WORD dbgeemsg );
 BOOL ToDebugger( private_msg pmsg );
 
-/* getsaddr.c */
-BOOL GetStartAddress( char *path, addr48_ptr *res );
-
-/* initfini.c */
-char *InitDebugging( void );
-void FinishDebugging( void );
-
 /* int.asm */
 void FAR PASCAL IntHandler( void );
 
@@ -209,16 +201,11 @@ void FAR PASCAL IntHandler( void );
 DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
 DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
 
-/* misc.asm */
-#pragma aux _CopyMemory parm [cx] [dx di] [ax] [si bx] value[ax];
-extern short _CopyMemory( WORD, DWORD, WORD, DWORD );
-
 /* notify.c */
 BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
 void FAR PASCAL UnLockInput( void );
 
 /* wgod.c */
-short CopyMemory( WORD dseg, DWORD doff, WORD sseg, DWORD soff, short size );
 void StartWDebug386( void );
 void KillWDebug386( void );
 #ifdef DEBUG

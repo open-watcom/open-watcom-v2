@@ -7,7 +7,7 @@ os  = nt
 srv = net
 cpu = x86
 which = TRAP
-type  = remote_link
+remote_link = 1
 
 reg_dll = 1
 

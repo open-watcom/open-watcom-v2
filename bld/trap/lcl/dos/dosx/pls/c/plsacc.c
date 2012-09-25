@@ -47,8 +47,10 @@
 #include "madregs.h"
 
 #include "x86cpu.h"
-#include "misc7386.h"
+#include "miscx87.h"
 #include "dosredir.h"
+#include "doserr.h"
+#include "doscomm.h"
 
 extern bool     GrabVects( void );
 extern void     ReleVects( void );
@@ -62,8 +64,6 @@ extern short    GetDS( void );
 extern short    GetCS( void );
 
 extern void     SetMSW(unsigned);
-
-extern unsigned ExceptionText( unsigned, char * );
 
 #ifdef DEBUG_TRAP
 #define _DBG( x )  cputs x
@@ -1025,6 +1025,11 @@ unsigned ReqGet_err_text()
 
 unsigned ReqGet_message_text()
 {
+    static const char * const ExceptionMsgs[] = {
+        #define pick(a,b) b,
+        #include "x86exc.h"
+        #undef pick
+    };
     get_message_text_ret        *ret;
     char                        *err_txt;
 
@@ -1033,7 +1038,11 @@ unsigned ReqGet_message_text()
     if( Mach.msb_event == (USHORT)-1 ) {
         err_txt[0] = '\0';
     } else {
-        ExceptionText( Mach.msb_event, err_txt );
+        if( Mach.msb_event < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
+            strcpy( err_txt, ExceptionMsgs[Mach.msb_event] );
+        } else {
+            strcpy( err_txt, TRP_EXC_unknown );
+        }
         Mach.msb_event = -1;
     }
     ret->flags = MSG_NEWLINE | MSG_ERROR;

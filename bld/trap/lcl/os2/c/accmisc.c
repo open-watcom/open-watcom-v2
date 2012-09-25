@@ -43,7 +43,9 @@
 #include "dosdebug.h"
 #include "softmode.h"
 #include "os2trap.h"
+#include "trperr.h"
 #include "os2err.h"
+#include "doserr.h"
 
 /*
  * globals

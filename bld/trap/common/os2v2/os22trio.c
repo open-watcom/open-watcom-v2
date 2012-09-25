@@ -24,22 +24,57 @@
 *
 *  ========================================================================
 *
-* Description:  prototypes for read/write FPU routines
+* Description:  OS/2 2.x system specific trap I/O.
 *
 ****************************************************************************/
 
-#ifndef _MISC7086_H_INCLUDED
-#define _MISC7086_H_INCLUDED
 
-extern void FPUExpand( void far * );
-extern void FPUContract( void far * );
+#include <conio.h>
+#include <stddef.h>
 
-extern void Read8087( void far * );
-extern void Write8087( void far * );
+#define INCL_DOSPROCESS
+#include <os2.h>
 
-extern void Read387( void far * );
-extern void Write387( void far * );
+void Output( char *str )
+{
+    while( *str ) {
+        putch( *str );
+        ++str;
+    }
+}
 
-extern unsigned_8 NPXType( void );
+void SayGNiteGracey( int return_code )
+{
+    DosExit( 1, return_code );
+}
 
-#endif
+void StartupErr( char *err )
+{
+    Output( err );
+    Output( "\r\n" );
+    SayGNiteGracey( 1 );
+}
+
+int KeyPress()
+{
+    return( kbhit() );
+}
+
+int KeyGet()
+{
+    return( getch() );
+}
+
+
+int WantUsage( char *ptr )
+{
+    LONG    lReq = 20;
+    ULONG   ulCurMax;
+
+    /* This is a stupid place to do this, but it's the only system
+       specific hook that I've got. */
+    DosSetRelMaxFH( &lReq, &ulCurMax );
+
+    if( (*ptr == '-') || (*ptr == '/') ) ++ptr;
+    return( *ptr == '?' );
+}

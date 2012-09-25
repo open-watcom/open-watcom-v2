@@ -24,40 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 32-bit trap file startup.
 *
 ****************************************************************************/
 
-
-#include <string.h>
-#include "trperr.h"
-
-unsigned ExceptionText( unsigned except, char *err_txt )
-{
-    static const char * const ExceptionMsgs[] = {
-            TRP_EXC_divide_overflow
-            "",
-            TRP_EXC_non_maskable_interrupt
-            "",
-            TRP_EXC_integer_overflow
-            TRP_EXC_bounds_check
-            TRP_EXC_invalid_opcode
-            TRP_EXC_coprocessor_not_available
-            TRP_EXC_double_fault
-            TRP_EXC_coprocessor_segment_overrun
-            TRP_EXC_invalid_TSS
-            TRP_EXC_segment_not_present
-            TRP_EXC_stack_exception
-            TRP_EXC_general_protection_fault
-            TRP_EXC_page_fault
-            "",
-            TRP_EXC_coprocessor_error
-    };
-    if( except > ( (sizeof(ExceptionMsgs) / sizeof(char *) - 1) ) ) {
-        strcpy( err_txt, TRP_EXC_unknown );
-    } else {
-        strcpy( err_txt, ExceptionMsgs[ except ] );
-    }
-    return( strlen( err_txt ) + 1 );
-}
+// Nothing to do here

@@ -1,6 +1,5 @@
 std_objs = &
         $(dos_objs) &
-        dosexc.obj &
         dosredir.obj &
         dosovl.obj &
         dosacc.obj &

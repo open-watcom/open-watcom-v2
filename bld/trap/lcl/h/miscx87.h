@@ -24,13 +24,28 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  prototypes for read/write FPU routines
 *
 ****************************************************************************/
 
+#ifndef _MISCX87_H_INCLUDED
+#define _MISCX87_H_INCLUDED
 
-#include "winerr.h"
+#ifdef _M_I86
+#define VOIDPTR   void far *
+#else
+#define VOIDPTR   void *
+#endif
 
-extern void FAR PASCAL SetEventHook( void far * );
-long FindFilePath( char *pgm, char *buffer, char *ext_list );
+extern void FPUExpand( VOIDPTR );
+extern void FPUContract( VOIDPTR );
+
+extern void Read8087( VOIDPTR );
+extern void Write8087( VOIDPTR );
+
+extern void Read387( VOIDPTR );
+extern void Write387( VOIDPTR );
+
+extern unsigned_8 NPXType( void );
+
+#endif

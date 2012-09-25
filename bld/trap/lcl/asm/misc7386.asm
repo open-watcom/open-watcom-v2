@@ -32,8 +32,8 @@
 
 _TEXT segment byte public 'CODE'
 
-        public  "C", NPXType
-NPXType proc    near
+
+NPXType proc    "C" public
 ifdef __NETWARE__
         push    ebx
         mov     eax,cr0                 ; get control word
@@ -84,8 +84,7 @@ NPXType endp
 
 ifdef __QNX__
 
-        public  "C", FPUExpand
-FPUExpand  proc    near
+FPUExpand  proc "C" public
         push    es
         push    esi
         push    edi
@@ -111,8 +110,7 @@ loop1:  stosw
         ret
 FPUExpand  endp
 
-        public  "C", FPUContract
-FPUContract  proc    near
+FPUContract  proc   "C" public
         push    es
         push    esi
         push    edi
@@ -136,8 +134,7 @@ FPUContract  endp
 
 else
 
-Read387 PROC
-        public  "C",Read387
+Read387 PROC "C" public
 ifdef __STACK__
         mov     eax,4[esp]              ; get buffer address
 endif
@@ -155,8 +152,7 @@ endif
 Read387 ENDP
 
 
-Write387 PROC
-        public  "C",Write387
+Write387 PROC "C" public
 ifdef __STACK__
         mov     eax,4[esp]              ; get buffer address
 endif

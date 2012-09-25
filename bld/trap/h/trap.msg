@@ -115,6 +115,12 @@ trappick( TRP_EXC_async_process_terminate,
 trappick( TRP_EXC_signal,
     "asynchronous signal",
     "jasynchronous signal" )
+trappick( TRP_EXC_CPU_internal_error,
+    "CPU internal error",
+    "jCPU internal error" )
+trappick( TRP_EXC_SIMD_floating_point_error,
+    "SIMD floating point error",
+    "jSIMD floating point error" )
 trappick( TRP_ERR_invalid_function_number,
     "invalid function number",
     "jinvalid function number" )

@@ -1,12 +1,12 @@
 #pmake: build serv remote os_rdos cpu_i86 cpu_386 ser x86
-host_CPU = 386
-host_OS = rdos
+host_cpu = 386
+host_os = rdos
 
 os = rdos
 srv = ser
 cpu = x86
 which = SERVER
-type  = remote_link
+remote_link = 1
 
 extra_objs = serrdos.obj
 

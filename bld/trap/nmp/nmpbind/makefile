@@ -24,20 +24,17 @@ default_targ    = d
 default_targ    = w
 !endif
 
-first : $(default_targ) .SYMBOLIC
-        @%null
+first : $(default_targ)
 
-w : nmpbind.exe .SYMBOLIC
-        @%null
+w : nmpbind.exe .symbolic
 
-d : dnmpbind.exe .SYMBOLIC
-        @%null
+d : dnmpbind.exe .symbolic
 
 nmpbind.exe : _err.gh _jerr.gh $(objs)
-    $(linker) $(lflags) file {$objs} name $^@
+    $(linker) $(lflags) file { $objs } name $^@
 
 dnmpbind.exe : _err.gh _jerr.gh $(objs)
-    $(linker) $(lflags) file {$objs} name $^@
+    $(linker) $(lflags) file { $objs } name $^@
 
 .c: ../c
 
@@ -50,7 +47,7 @@ _jerr.gh : ./jmkstr.exe
         $[@ $^@
 
 ./mkstr.exe : $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
-        $(bld_cl) $[@ $(bld_cl_opts) -I"$(trap_dir)/h"
+        $(bld_cl) $(bld_cl_opts) -I"$(trap_dir)/h" $[@
 
 ./jmkstr.exe: $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
-        $(bld_cl) $[@ $(bld_cl_opts) -DJAPANESE_MESSAGES -I"$(trap_dir)/h"
+        $(bld_cl) $(bld_cl_opts) -I"$(trap_dir)/h" -DJAPANESE_MESSAGES $[@

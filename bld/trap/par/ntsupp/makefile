@@ -5,6 +5,7 @@ host_cpu = 386
 
 !include cproj.mif
 !include deftarg.mif
+!include defrule.mif
 
 all: dbginst.exe .SYMBOLIC
 
@@ -55,7 +56,11 @@ debug_linker=-debug:none
 # "drvinst -r DbgPort" to remove
 #
 #
-inc_dirs = -I"$(lang_root)/h/nt"
+.c : ../c
 
-dbginst.exe : ../c/dbginst.c
-        $(cl) -zq -w4 -bm-bt=nt-l=nt-D_WIN32-DWIN32 $(inc_path) $<
+inc_dirs = -I"$(w32api_dir)/nt"
+
+extra_c_flags = -D_WIN32 -DWIN32
+
+dbginst.exe : dbginst.obj
+        $(cl) $(clflags) $<

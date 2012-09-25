@@ -1,13 +1,13 @@
 #pmake: build serv remote os_win cpu_i86 cpu_386 par x86
-host_CPU = i86
-host_OS = win
+host_cpu = i86
+host_os = win
 
-gui = 1
 os = win
 srv = par
 cpu = x86
 which = SERVER
-type  = remote_link
+gui = 1
+remote_link = 1
 
 extra_objs = pardos.obj
 

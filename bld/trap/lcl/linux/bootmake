@@ -13,23 +13,23 @@ srv     = lcl
 which   = TRAP
 
 extra_objs = &
-        linuxacc.obj &
-        linuxmap.obj &
-        linuxcomm.obj &
-        linuxfile.obj &
-	linuxutl.obj &
+        lnxacc.obj &
+        lnxmap.obj &
+        lnxcomm.obj &
+        lnxfile.obj &
+        lnxutl.obj &
         supp.obj &
         core.obj
 
 !ifeq host_cpu 386
 cpu     = x86
-extra_objs += linuxx86.obj x86cpu.obj #misc7386.obj
+extra_objs += lnxx86.obj x86cpu.obj #misc7386.obj
 !else ifeq host_cpu ppc
 cpu     = ppc
-extra_objs += linuxppc.obj
+extra_objs += lnxppc.obj
 !else ifeq host_cpu mips
 cpu     = mips
-extra_objs += linuxmips.obj
+extra_objs += lnxmips.obj
 !else
 !error Unknown CPU architecture
 !endif
