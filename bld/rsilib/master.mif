@@ -1,0 +1,47 @@
+proj_name = rsilib
+
+rsilib_autodepends = .autodepend
+
+fpu_flags_dos_i86 = -fpc
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.c: ../c
+.asm: ../asm
+
+rsilib_objs = &
+    tsf32exc.obj &
+    fixtrap.obj &
+    mem32.obj &
+    rmhdlr.obj &
+    package.obj &
+    d32dbgld.obj &
+    d32dbgrd.obj &
+    d32dbgsb.obj &
+    d32dbgwr.obj &
+    dbglib.obj &
+    adr32chk.obj &
+    descript.obj &
+    getselab.obj &
+    intpassd.obj &
+    intpassu.obj &
+    pmabsadr.obj &
+    rmfarcal.obj &
+    rmgetptr.obj &
+    rmgetvec.obj &
+    rminterr.obj &
+    rmsetvec.obj &
+    seldsali.obj &
+    selfree.obj &
+    segrealo.obj
+
+extra_c_flags = -zu -s -zp1
+
+extra_a_flags = $(model_switch_$(host_cpu))
+
+inc_dirs = -I"$(d16api_dir)/include" -I"../h"
+
+rsilib$(memory_model_i86).lib : $(rsilib_objs) $(__MAKEFILES__)
+    $(librarian) $(libflags) $(rsilib_objs)

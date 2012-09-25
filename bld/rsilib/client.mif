@@ -1,0 +1,2 @@
+rsilib_inc_dirs = -I"$(rsilib_dir)/h" -I"$(d16api_dir)/include"
+rsilib_lib = $(rsilib_dir)/dosi86$(memory_model_i86)/rsilib$(memory_model_i86).lib

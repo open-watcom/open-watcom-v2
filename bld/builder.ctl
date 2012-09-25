@@ -162,6 +162,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/dip/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/mad/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wv/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/rsilib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/trap/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wsample/builder.ctl ]
 # GUI tools libraries
