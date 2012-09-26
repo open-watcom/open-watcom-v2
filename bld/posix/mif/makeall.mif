@@ -43,9 +43,7 @@ curr_dir_all=$+ $(%CWD) $-
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
 !endif
         @cd $(curr_dir_all)
-!if defined(bootstrap) || defined(prebuild)
-        @for %i in ($(commands)) do rm -f $(%OWBINDIR)/%i.exe
-!else
+!ifndef bootstrap
         @echo clean $(curr_dir_all)
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
 !endif

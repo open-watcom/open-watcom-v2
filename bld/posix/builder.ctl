@@ -10,16 +10,33 @@ set PROJNAME=build POSIX tools
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> boot ]
+    cdsay <PROJDIR>
+
+[ BLOCK <1> boot ]
 #=================
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/*.exe <OWBINDIR>/
+    <CPCMD> <OWOBJDIR>/cat.exe   <OWBINDIR>/cat<CMDEXT>
+    <CPCMD> <OWOBJDIR>/cp.exe    <OWBINDIR>/cp<CMDEXT>
+    <CPCMD> <OWOBJDIR>/egrep.exe <OWBINDIR>/egrep<CMDEXT>
+    <CPCMD> <OWOBJDIR>/chmod.exe <OWBINDIR>/chmod<CMDEXT>
+    <CPCMD> <OWOBJDIR>/ls.exe    <OWBINDIR>/ls<CMDEXT>
+    <CPCMD> <OWOBJDIR>/mkdir.exe <OWBINDIR>/mkdir<CMDEXT>
+    <CPCMD> <OWOBJDIR>/sed.exe   <OWBINDIR>/sed<CMDEXT>
+    <CPCMD> <OWOBJDIR>/uniq.exe  <OWBINDIR>/uniq<CMDEXT>
+    <CPCMD> <OWOBJDIR>/wc.exe    <OWBINDIR>/wc<CMDEXT>
+    <CPCMD> <OWOBJDIR>/which.exe <OWBINDIR>/which<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
-    cd <PROJDIR>
-    mkdir <PROJDIR>/<OWOBJDIR>
-    cd <PROJDIR>/<OWOBJDIR>
-    wmake -h -f ../bootmake clean
-    cd <PROJDIR>
+    rm -f <OWBINDIR>/cat<CMDEXT>
+    rm -f <OWBINDIR>/cp<CMDEXT>
+    rm -f <OWBINDIR>/egrep<CMDEXT>
+    rm -f <OWBINDIR>/chmod<CMDEXT>
+    rm -f <OWBINDIR>/ls<CMDEXT>
+    rm -f <OWBINDIR>/mkdir<CMDEXT>
+    rm -f <OWBINDIR>/sed<CMDEXT>
+    rm -f <OWBINDIR>/uniq<CMDEXT>
+    rm -f <OWBINDIR>/wc<CMDEXT>
+    rm -f <OWBINDIR>/which<CMDEXT>
 
 [ BLOCK . . ]
 #============

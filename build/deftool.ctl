@@ -24,7 +24,7 @@ cdsay <PROJDIR>
 #=================
     mkdir <PROJDIR>/<OWOBJDIR>
     cdsay <PROJDIR>/<OWOBJDIR>
-    wmake -h -f ../bootmake
+    wmake -h -f ../binmake
     <CPCMD> <PROJNAME>.exe <OWBINDIR>/<PROJNAME><CMDEXT>
 
 [ BLOCK <1> bootclean ]

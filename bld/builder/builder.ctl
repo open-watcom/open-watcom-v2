@@ -7,17 +7,23 @@ set PROJNAME=build utilities
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
+
+[ BLOCK <1> boot ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
-    mkdir <PROJDIR>/<OWOBJDIR>
-    cdsay <PROJDIR>/<OWOBJDIR>
-    wmake -h -f ../bootmake
+    <CPCMD> <OWOBJDIR>/wsplice.exe  <OWBINDIR>/wsplice<CMDEXT>
+    <CPCMD> <OWOBJDIR>/sweep.exe    <OWBINDIR>/sweep<CMDEXT>
+    <CPCMD> <OWOBJDIR>/cdsay.exe    <OWBINDIR>/cdsay<CMDEXT>
+    <CPCMD> <OWOBJDIR>/comstrip.exe <OWBINDIR>/comstrip<CMDEXT>
+    <CPCMD> <OWOBJDIR>/diff.exe     <OWBINDIR>/diff<CMDEXT>
+    <CPCMD> <OWOBJDIR>/aliasgen.exe <OWBINDIR>/aliasgen<CMDEXT>
+    <CPCMD> <OWOBJDIR>/genverrc.exe <OWBINDIR>/genverrc<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
-    cdsay <PROJDIR>
-    echo rm -f -r <PROJDIR>/<OWOBJDIR>
-    rm -f -r <PROJDIR>/<OWOBJDIR>
     echo rm -f <OWBINDIR>/wsplice<CMDEXT>
     rm -f <OWBINDIR>/wsplice<CMDEXT>
     echo rm -f <OWBINDIR>/sweep<CMDEXT>
@@ -30,8 +36,6 @@ set PROJNAME=build utilities
     rm -f <OWBINDIR>/diff<CMDEXT>
     echo rm -f <OWBINDIR>/aliasgen<CMDEXT>
     rm -f <OWBINDIR>/aliasgen<CMDEXT>
-    echo rm -f <OWBINDIR>/wgrep<CMDEXT>
-    rm -f <OWBINDIR>/wgrep<CMDEXT>
     echo rm -f <OWBINDIR>/genverrc<CMDEXT>
     rm -f <OWBINDIR>/genverrc<CMDEXT>
 
