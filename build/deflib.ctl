@@ -20,7 +20,7 @@ cdsay <PROJDIR>
 #=================
     mkdir <PROJDIR>/<OWOBJDIR>
     cdsay <PROJDIR>/<OWOBJDIR>
-    wmake -h -f ../binmake
+    wmake -h -f ../binmake bootstrap=1
 
 [ BLOCK <1> bootclean ]
 #======================
