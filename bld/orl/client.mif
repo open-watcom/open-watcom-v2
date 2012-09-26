@@ -27,7 +27,7 @@ orl_lib_os2_386 = $(__orl_prefix)os2386.dll$(__orl_suffix)
 !endif
 
 #
-!ifdef bootstrap
+!ifeq bootstrap 1
 orl_lib = $(orl_dir)/$(%OWOBJDIR)/orl.lib
 !else ifdef orl_lib_$(host_os)_$(host_cpu)
 orl_lib = $(orl_lib_$(host_os)_$(host_cpu))

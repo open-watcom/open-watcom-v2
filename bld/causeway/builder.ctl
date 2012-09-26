@@ -9,6 +9,9 @@ set PROJNAME=CauseWay
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> cw32/dos386/cwdll.lib   <OWRELROOT>/lib386/dos/

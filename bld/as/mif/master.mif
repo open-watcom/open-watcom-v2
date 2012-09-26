@@ -1,4 +1,4 @@
-!ifdef bootstrap
+!ifeq bootstrap 1
 name = b$(proj_name)
 !else
 name = $(proj_name)
@@ -95,7 +95,7 @@ dbg_extra_defines   += -DTRMEM
 
 extra_c_flags = $(as_extra_defines)
 
-!ifndef bootstrap
+!ifneq bootstrap 1
 extra_c_flags  += -fh $(dbg_extra_defines)
 !endif
 
@@ -160,7 +160,7 @@ $(asi_lib_j) : $(asi_lib) asmsgj.obj
 !endif
 
 # systems where version resource must be added to .EXE
-!ifndef bootstrap
+!ifneq bootstrap 1
 version_res_exe_nt_386 = exever.res
 !endif
 

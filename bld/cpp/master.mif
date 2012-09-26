@@ -19,7 +19,7 @@ testpp_objs     = testpp.obj $(common_objs)
 dumpmac_objs    = dumpmac.obj $(common_objs)
 wcpp_objs       = wcpp.obj getopt.obj $(common_objs) $(cl_objs)
 
-!ifndef bootstrap
+!ifneq bootstrap 1
 all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC
 !endif
 

@@ -198,21 +198,16 @@ cdsay .
 # Build installer tools
 [ INCLUDE <OWSRCDIR>/setupgui/builder.ctl ]
 
+# only test build for now
+[ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
 # Build documentation
 [ IFDEF <OW_DOC_BUILD> 1 ]
 [ INCLUDE <OWROOT>/docs/builder.ctl ]
 [ ENDIF ]
 
-[ BLOCK <1> xx ]
-
-#
-#        Do CDSAY to see end time
-#
-cdsay .
-#
-#        Clean build tools, must be last item (self destructs)
-#
-[ INCLUDE <OWSRCDIR>/builder/clean.ctl ]
+[ BLOCK <1> docs docsclean ]
+#===========================
+[ INCLUDE <OWROOT>/docs/builder.ctl ]
 
 [ BLOCK <1> test testclean ]
 #===========================

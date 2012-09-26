@@ -10,6 +10,9 @@ set PROJNAME=hcdos
 [ INCLUDE <OWROOT>/build/binrule.ctl ]
 
 [ BLOCK <1> build rel ]
+    cdsay <PROJDIR>
+
+[ BLOCK <1> build rel ]
 #======================
     <CPCMD> <OWOBJDIR>/hcdos.exe <OWBINDIR>/hcdos<CMDEXT>
 

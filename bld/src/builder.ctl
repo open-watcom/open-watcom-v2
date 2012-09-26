@@ -9,6 +9,9 @@ set PROJNAME=src
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CPCMD> <OWSRCDIR>/clib/startup/a/cstrt386.asm        <OWRELROOT>/src/startup/386/cstrt386.asm

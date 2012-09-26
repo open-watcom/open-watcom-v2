@@ -9,6 +9,9 @@ set PROJNAME=wpp386
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
     <CPCMD> <OWOBJDIR>/bwpp386.exe     <OWBINDIR>/bwpp386<CMDEXT>

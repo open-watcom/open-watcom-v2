@@ -9,6 +9,9 @@ set PROJNAME=wlink
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
     <CPCMD> <OWOBJDIR>/bwlink.exe     <OWBINDIR>/bwlink<CMDEXT>

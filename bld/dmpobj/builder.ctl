@@ -9,6 +9,9 @@ set PROJNAME=dmpobj
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> dosi86/dmpobj.exe    <OWRELROOT>/binw/dmpobj.exe

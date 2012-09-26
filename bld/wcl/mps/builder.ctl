@@ -9,6 +9,9 @@ set PROJNAME=wclmps
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
     <CPCMD> <OWOBJDIR>/bwclmps.exe <OWBINDIR>/bwclmps<CMDEXT>
@@ -17,10 +20,6 @@ set PROJNAME=wclmps
 #======================
     echo rm -f <OWBINDIR>/bwclmps<CMDEXT>
     rm -f <OWBINDIR>/bwclmps<CMDEXT>
-
-[ BLOCK <1> rel ]
-#=================
-    cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
 #======================

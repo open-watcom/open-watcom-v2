@@ -10,6 +10,9 @@ set PROJNAME=bmp2eps
 [ INCLUDE <OWROOT>/build/binrule.ctl ]
 
 [ BLOCK <1> build rel ]
+    cdsay <PROJDIR>
+
+[ BLOCK <1> build rel ]
 #======================
     <CPCMD> <OWOBJDIR>/bmp2eps.exe <OWBINDIR>/bmp2eps<CMDEXT>
 

@@ -101,5 +101,5 @@ wgmlmsge.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
 
 wgml.res : wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h $(__MAKEFILES__) &
                        ../../h/wgmlerr.msg ../../h/wgml.rc
-    $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$@
+    $(rc_aui) -I"$(wrc_dir)/h" $]@ -fo=$@
 

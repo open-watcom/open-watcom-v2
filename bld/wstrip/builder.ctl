@@ -9,6 +9,9 @@ set PROJNAME=wstrip
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
     <CPCMD> <OWOBJDIR>/wstripx.exe          <OWBINDIR>/bwstrip<CMDEXT>

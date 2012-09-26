@@ -25,8 +25,8 @@ cdsay <PROJDIR>
     mkdir <OWOBJDIR>
     cdsay <OWOBJDIR>
     wmake -h -f ../binmake
-    <CPCMD> <PROJNAME>.exe <OWBINDIR>/<PROJNAME><CMDEXT>
-    cd ..
+    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/<PROJNAME>.exe <OWBINDIR>/<PROJNAME><CMDEXT>
 
 [ BLOCK <1> clean ]
 #==================
@@ -36,4 +36,3 @@ cdsay <PROJDIR>
 
 [ BLOCK . . ]
 #============
-cdsay <PROJDIR>

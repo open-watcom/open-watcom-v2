@@ -43,7 +43,7 @@ curr_dir_all=$+ $(%CWD) $-
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
 !endif
         @cd $(curr_dir_all)
-!ifndef bootstrap
+!ifneq bootstrap 1
         @echo clean $(curr_dir_all)
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
 !endif

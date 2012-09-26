@@ -1,4 +1,4 @@
-!ifndef bootstrap
+!ifneq bootstrap 1
 !define __WATCOM__
 !endif
 
@@ -40,7 +40,7 @@ cpp_386     += $(bld_incs)
 !endif
 
 !ifdef __LOADDLL__
-!ifndef bootstrap
+!ifneq bootstrap 1
 #!loaddll bwcc    bwccd.dll
 #!loaddll bwcc386 bwccd386.dll
 #!loaddll bwccaxp bwccdaxp.dll
@@ -55,7 +55,7 @@ cpp_386     += $(bld_incs)
 # bootstrap overrides
 ######################
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 
 !ifdef __WATCOM__
 

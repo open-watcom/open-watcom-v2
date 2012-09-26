@@ -29,7 +29,7 @@ objs = $(wres_core_objs) $(wres_more_objs)
 extra_c_flags += -DWIN_GUI
 !endif
 
-!ifndef bootstrap
+!ifneq bootstrap 1
 extra_c_flags += -s
 !endif
 

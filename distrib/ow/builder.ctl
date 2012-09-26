@@ -1,7 +1,7 @@
 # Installer builder control file
 # ==============================
 
-set INSTDIR=<CWD>
+set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]

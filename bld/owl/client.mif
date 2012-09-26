@@ -25,7 +25,7 @@ owl_lib_nt_axp = $(__owl_prefix)ntaxp.dll$(__owl_suffix)
 !endif
 
 #
-!ifdef bootstrap
+!ifeq bootstrap 1
 owl_lib = $(__owl_prefix)$(%OWOBJDIR)$(__owl_suffix)
 !else ifdef owl_lib_$(host_os)_$(host_cpu)
 owl_lib = $(owl_lib_$(host_os)_$(host_cpu))

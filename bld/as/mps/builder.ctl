@@ -9,9 +9,12 @@ set PROJNAME=wasmps
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/bwasmps.exe <OWBINDIR>/bwasmps<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwasmps.exe <OWBINDIR>/bwasmps<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

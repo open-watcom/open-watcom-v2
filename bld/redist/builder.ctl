@@ -11,13 +11,10 @@ cdsay .
 [ BLOCK <1> build rel ]
 #======================
 
-[ BLOCK <1> rel ]
-#================
-    cdsay <PROJDIR>
-
 [ BLOCK <1> rel cprel ]
 #======================
-    <CPCMD> dos4gw/*                <OWRELROOT>/binw/
+    <CPCMD> dos4gw/*.exe            <OWRELROOT>/binw/
+    <CPCMD> dos4gw/*.doc            <OWRELROOT>/binw/
     <CPCMD> dos32a/*                <OWRELROOT>/binw/
     <CPCMD> pmodew/*                <OWRELROOT>/binw/
 
@@ -26,5 +23,4 @@ cdsay .
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

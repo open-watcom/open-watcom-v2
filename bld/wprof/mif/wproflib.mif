@@ -15,7 +15,7 @@ aui_dir_linux   = linux386
 aui_dir_bsd     = bsd386
 aui_dir_osx     = osx386
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 aui_lib = $(aui_dir)/$(%OWOBJDIR)/aui.lib
 !else
 aui_lib = $(aui_dir)/$(aui_dir_$(host_os))/aui.lib
@@ -37,7 +37,7 @@ gui_dir_linux   = $(gui_dir)/ui/linux386/gui.lib
 gui_dir_bsd     = $(gui_dir)/ui/bsd386/gui.lib
 gui_dir_osx     = $(gui_dir)/ui/osx386/gui.lib
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 gui_lib = $(gui_dir)/ui/$(%OWOBJDIR)/gui.lib
 !else
 gui_lib = $(gui_dir_$(host_os))
@@ -51,7 +51,7 @@ extra_lib_nt    = $(ui_dir)/nt/nt$(host_cpu)/ui.lib
 extra_lib_os2   = $(ui_dir)/os2/os2386/ui.lib
 !endif
 extra_lib_qnx   = $(ui_dir)/qnx/qnx386/ui.lib
-!ifdef bootstrap
+!ifeq bootstrap 1
 extra_lib_linux = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
 extra_lib_bsd   = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
 extra_lib_osx   = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib

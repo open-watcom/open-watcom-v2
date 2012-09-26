@@ -10,8 +10,8 @@ all : cdsay.exe sweep.exe wsplice.exe comstrip.exe aliasgen.exe genverrc.exe &
 !ifndef __UNIX__
     diff.exe sed.exe &
 !endif
-!ifndef bootstrap
-    wgrep.exe builder.exe &
+!ifneq bootstrap 1
+    builder.exe &
 !ifndef __UNIX__
     rm.exe
 !endif
@@ -38,7 +38,21 @@ wsplice.exe : wsplice.obj $(cl_objs)
 diff.exe : diff.obj $(cl_objs)
 sed.exe : sed.obj sedcomp.obj
 cdsay.exe : cdsay.obj equals.obj
+
 rm.exe: rm.obj getopt.obj quit.obj lineprt.obj alloc.obj filerx.obj regexp.obj fnlower.obj die.obj isdotdot.obj
+!ifndef __WATCOM__
+        $(cl) $(clflags) $<
+!else
+        $(linker) op map name $@ $(lflags) file {$<}
+!endif
+!ifndef __$(host_os)__                  # Don't copy unless host_os=build_os
+!else ifndef %LOGFNAME                  # Don't copy unless build outside builder
+!ifdef __UNIX__
+        cp   $^. $(%OWBINDIR)/$^&       # Remove .exe from working name
+!else
+        copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
+!endif
+!endif
 
 builder.exe : builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals.obj $(cl_objs)
 !ifndef __WATCOM__
@@ -60,10 +74,4 @@ builder.exe : builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals
         $(cl) $(clflags) $<
 !else
         $(linker) op map name $@ $(lflags) file {$<}
-!endif
-!ifndef __$(host_os)__                  # Don't copy unless host_os=build_os
-!else ifdef __UNIX__
-        cp   $^. $(%OWBINDIR)/$^&       # Remove .exe from working name
-!else
-        copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
 !endif

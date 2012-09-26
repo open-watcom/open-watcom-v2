@@ -9,6 +9,9 @@ set PROJNAME=whelp
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> dos386/whelp.exe    <OWRELROOT>/binw/whelp.exe

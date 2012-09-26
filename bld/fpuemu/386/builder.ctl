@@ -9,6 +9,9 @@ set PROJNAME=FPU emu 386
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
   [ IFDEF (os_osi os_dos os_win os_os2 os_nt os_linux os_nov os_rdos "") <2*> ]

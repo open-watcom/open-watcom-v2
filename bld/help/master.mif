@@ -20,7 +20,7 @@ extra_c_flags += -DTRMEM
 objs +=  trmemcvr.obj trmem.obj
 !endif
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 libs = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
 !else
 !ifeq host_os linux

@@ -9,6 +9,9 @@ set PROJNAME=cvpack
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> dos386/cvpack.exe    <OWRELROOT>/binw/

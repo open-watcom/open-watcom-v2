@@ -73,7 +73,7 @@ version_res_exe_nt_386 = exever.res
 
 # explicit rules
 #################
-!ifdef bootstrap
+!ifeq bootstrap 1
 $(proj_name).$(exe) : _guimsgs.gh auistr.gh $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(cl_objs) $(wprof_libs) $(sys_libs) $(resfile)
     @rm -f finger.obj
     @%make finger.obj

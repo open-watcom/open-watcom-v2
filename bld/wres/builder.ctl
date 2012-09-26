@@ -9,6 +9,9 @@ set PROJNAME=wres library
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
 # NT, OS2 32-bit version

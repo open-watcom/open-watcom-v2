@@ -9,6 +9,9 @@ set PROJNAME=win386
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> ext/win386.ext              <OWRELROOT>/binw/win386.ext

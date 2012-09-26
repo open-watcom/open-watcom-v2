@@ -30,7 +30,7 @@ ext_nt_386      = .dll
 ext_nt_axp      = .dll
 ext_rdos_386    = .dll
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 lib_name = $(name).so
 !else
 lib_name = $(name)$(ext_$(host_os)_$(host_cpu))
@@ -45,7 +45,7 @@ objs = dipimp.obj $(imp_objs)
 .c: ../c;../../c;$(extra_srcs)
 
 extra_c_flags   = -s -D__DIP__ $(extra_cflags)
-!ifdef bootstrap
+!ifeq bootstrap 1
 extra_c_flags += -fPIC
 !else
 extra_c_flags += -s
@@ -82,7 +82,7 @@ extra_l_flags_dll_rdos    = export DIPLOAD op modname=$(name) $(lflags_rdos_386_
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 $(lib_name) : $(objs) $(imp_libs) $(cl_libs) $(__MAKEFILES__)
         $(cl) -shared $(clflags) $(objs) $(imp_libs) $(cl_libs)
 !else

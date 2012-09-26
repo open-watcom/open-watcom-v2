@@ -9,9 +9,12 @@ set PROJNAME=wasaxp
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/bwasaxp.exe <OWBINDIR>/bwasaxp<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwasaxp.exe <OWBINDIR>/bwasaxp<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

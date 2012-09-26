@@ -26,7 +26,7 @@ dwarf_dw_lib_nt_axp  = $(__dwarf_dw_prefix)ntaxp.dll$(__dwarf_dw_suffix)
 !endif
 
 #
-!ifdef bootstrap
+!ifeq bootstrap 1
 dwarf_dw_lib = $(__dwarf_dw_prefix)$(%OWOBJDIR)$(__dwarf_dw_suffix)
 !else ifdef dwarf_dw_lib_$(host_os)_$(host_cpu)
 dwarf_dw_lib = $(dwarf_dw_lib_$(host_os)_$(host_cpu))

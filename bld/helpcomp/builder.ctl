@@ -9,6 +9,9 @@ set PROJNAME=bwhc
 
 [ INCLUDE <OWROOT>/build/bintool.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> dos386/whc.exe      <OWRELROOT>/binw/

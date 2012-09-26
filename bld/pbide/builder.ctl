@@ -11,6 +11,9 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
   [ IFDEF (os_dos "") <2*> ]

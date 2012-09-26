@@ -9,6 +9,9 @@ set PROJNAME=owcc
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
     <CPCMD> <OWOBJDIR>/bowcc.exe <OWBINDIR>/bowcc<CMDEXT>
@@ -20,10 +23,6 @@ set PROJNAME=owcc
     rm -f <OWBINDIR>/bowcc<CMDEXT>
     echo rm -f <OWBINDIR>/bspecs.owc
     rm -f <OWBINDIR>/bspecs.owc
-
-[ BLOCK <1> rel ]
-#=================
-    cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
 #======================

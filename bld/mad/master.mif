@@ -29,7 +29,7 @@ ext_nt_386    = .dll
 ext_nt_axp    = .dll
 ext_rdos_386  = .dll
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 lib_name = $(name).so
 !else
 lib_name = $(name)$(ext_$(host_os)_$(host_cpu))
@@ -49,7 +49,7 @@ additional_cleanup = *.d32 *.mad
 ###############
 extra_c_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 extra_c_flags += -fPIC
 !else
 extra_c_flags += -s
@@ -92,7 +92,7 @@ objs =  madimp.obj $(dis_objs) $(imp_objs)
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 $(lib_name) : $(dis_prereq) $(objs) $(cl_libs) $(__MAKEFILES__)
         $(cl) -shared -fPIC $(clflags) $(objs) $(cl_libs)
 !else

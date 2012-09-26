@@ -26,7 +26,7 @@ set CCCMD=accopy
     set 1=build
 
 [ BLOCK <1> cprel ]
-#===================
+#==================
     set LOGFNAME=cprel
     echo **** CPREL rule
     # with 'cprel', we want to force the copy to occur
@@ -38,59 +38,63 @@ set CCCMD=accopy
     set LOGFNAME=build
     echo **** BUILD rule
 
-[ BLOCK <1> rel ]
-#=================
-    set LOGFNAME=build
+[ BLOCK <1> rel pass1 pass2 ]
+#============================
+    set LOGFNAME=<1>
     echo **** REL rule
+    set 1=rel
 
-[ BLOCK <1> clean ]
-#==================
-    set LOGFNAME=clean
+[ BLOCK <1> clean clean1 clean2 ]
+#================================
+    set LOGFNAME=<1>
     echo **** CLEAN rule
+    set 1=clean
 
 [ BLOCK <1> install ]
 #====================
     set LOGFNAME=install
 
-[ BLOCK <1> boot ]
-#==================
-    set LOGFNAME=boot
+[ BLOCK <1> boot boot1 boot2 ]
+#=============================
+    set LOGFNAME=<1>
     echo **** Building the <PROJNAME> bootstrap
+    set 1=boot
 
 [ BLOCK <1> bootclean ]
-#======================
     set LOGFNAME=btclean
+[ BLOCK <1> bootclean1 ]
+    set LOGFNAME=btclean1
+[ BLOCK <1> bootclean2 ]
+    set LOGFNAME=btclean2
+[ BLOCK <1> bootclean bootclean1 bootclean2 ]
+#============================================
     echo **** BOOTCLEAN rule
+    set 1=bootclean
 
-[ BLOCK <1> pass1 ]
-#==================
-    set LOGFNAME=pass1
-    echo **** REL rule
-    set 1=rel
-
-[ BLOCK <1> pass2 ]
-#==================
-    set LOGFNAME=pass2
-    echo **** REL rule
-    set 1=rel
-
-[ BLOCK <1> test ]
-#==================
-    set LOGFNAME=test
+[ BLOCK <1> test test1 test2 ]
+#=============================
+    set LOGFNAME=<1>
     echo **** TEST rule
+    set 1=test
 
 [ BLOCK <1> testclean ]
-#======================
     set LOGFNAME=tstclean
+[ BLOCK <1> testclean1 ]
+    set LOGFNAME=tstclean1
+[ BLOCK <1> testclean2 ]
+    set LOGFNAME=tstclean2
+[ BLOCK <1> testclean testclean1 testclean2 ]
+#============================================
     echo **** TESTCLEAN rule
+    set 1=testclean
 
-[ BLOCK <1> doc ]
-#==================
+[ BLOCK <1> docs ]
+#=================
     set LOGFNAME=doc
     echo **** DOC rule
-    set 1=build
+    set 1=rel
 
-[ BLOCK <1> docclean ]
+[ BLOCK <1> docsclean ]
 #======================
     set LOGFNAME=docclean
     echo **** DOCCLEAN rule

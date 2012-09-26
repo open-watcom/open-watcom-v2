@@ -58,7 +58,7 @@
 !inject which     all     build
 !inject who       all qnx 
 
-!if defined(bootstrap) || defined(prebuild)
+!ifeq bootstrap 1
 commands = $(build)
 !else ifeq targos qnx16
 commands = $(qnx)

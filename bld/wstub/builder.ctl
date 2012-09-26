@@ -9,6 +9,9 @@ set PROJNAME=wstub
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
   [ IFDEF (all build os_dos os_win cpu_i86 cpu_386 "") <2*> ]

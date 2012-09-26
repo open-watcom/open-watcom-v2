@@ -9,6 +9,9 @@ set PROJNAME=ide cfg
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CPCMD> ide.cfg          <OWRELROOT>/binw/

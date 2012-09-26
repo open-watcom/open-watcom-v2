@@ -2,7 +2,7 @@ proj_name = plusplus
  
 plusplus_autodepends = .autodepend
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 !ifeq target_cpu i86
 exename     = bwpp
 !else
@@ -20,7 +20,7 @@ dllname     = wpd$(target_cpu)
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
-!ifdef bootstrap
+!ifeq bootstrap 1
 realexename = $(exename)
 realdllname = $(dllname)
 !else
@@ -130,7 +130,7 @@ extra_c_flags_ideentry = -Dwpp_dll
 extra_c_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(realdllname)
 !endif
 
-!ifndef bootstrap
+!ifneq bootstrap 1
 !ifneq host_os linux
 # Using -os generates ENTER/LEAVE and Linux is too brain damaged
 # to handle ENTER instructions properly. Since GCC doesn't generate
@@ -214,7 +214,7 @@ depends_drv = $(pre_obj_deps) $(drv_objs)
 version_res_dll_nt_386 = version.res
 
 # systems where version resources must be added to .EXE
-!ifndef bootstrap
+!ifneq bootstrap 1
 version_res_exe_nt_386 = exever.res
 !endif
 

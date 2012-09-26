@@ -210,7 +210,7 @@ common_objs += vstk.obj
 common_objs += watcom.obj
 common_objs += ytab.obj
 
-!ifndef bootstrap
+!ifneq bootstrap 1
 # assumes Watcom math library
 common_objs += cmatherr.obj
 !endif

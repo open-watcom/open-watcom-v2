@@ -9,7 +9,8 @@ set PROJNAME=w16api
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-cdsay .
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
 #======================

@@ -21,7 +21,7 @@ cfloat_lib_mps = $(cfloat_dir)\osimps\cf.lib
 !endif
 
 #
-!ifdef bootstrap
+!ifeq bootstrap 1
 cfloat_lib = $(cfloat_dir)/$(%OWOBJDIR)/cf.lib
 !else ifdef cfloat_lib_$(host_os)_$(host_cpu)
 cfloat_lib = $(cfloat_lib_$(host_os)_$(host_cpu))

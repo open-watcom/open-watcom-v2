@@ -9,6 +9,9 @@ set PROJNAME=wclaxp
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
     <CPCMD> <OWOBJDIR>/bwclaxp.exe <OWBINDIR>/bwclaxp<CMDEXT>
@@ -17,10 +20,6 @@ set PROJNAME=wclaxp
 #======================
     echo rm -f <OWBINDIR>/bwclaxp<CMDEXT>
     rm -f <OWBINDIR>/bwclaxp<CMDEXT>
-
-[ BLOCK <1> rel ]
-#=================
-    cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
 #======================

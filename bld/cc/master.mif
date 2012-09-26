@@ -1,6 +1,6 @@
 proj_name = cc
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 !ifeq target_cpu i86
 exename     = bwcc
 dllname     = bwccd
@@ -15,7 +15,7 @@ dllname     = wcd$(target_cpu)
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
-!ifdef bootstrap
+!ifeq bootstrap 1
 realexename = $(exename)
 realdllname = $(dllname)
 !else
@@ -83,7 +83,7 @@ extra_c_flags_386 = -3r
 !ifdef cc_dll
 idedlldriver_c_flags_dos = -DCAUSEWAY
 !endif
-!ifndef bootstrap
+!ifneq bootstrap 1
 !ifeq release 1
 extra_c_flags_cscan_386 = -5r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
@@ -141,7 +141,7 @@ depends_drv = $(pre_obj_deps) $(drv_objs)
 version_res_dll_nt_386 = version.res
 
 # systems where version resources must be added to .EXE
-!ifndef bootstrap
+!ifneq bootstrap 1
 version_res_exe_nt_386 = exever.res
 !endif
 

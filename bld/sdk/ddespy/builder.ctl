@@ -9,6 +9,9 @@ set PROJNAME=ddespy
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> wini86/wddespy.exe <OWRELROOT>/binw/wddespy.exe

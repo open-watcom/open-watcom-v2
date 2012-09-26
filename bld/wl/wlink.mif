@@ -5,7 +5,7 @@
 
 proj_name = wlink
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 exename     = bwlink
 dllname     = bwlinkd
 !else
@@ -15,7 +15,7 @@ dllname     = wld
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
-!ifdef bootstrap
+!ifeq bootstrap 1
 realexename = $(exename)
 realdllname = $(dllname)
 !else
@@ -30,7 +30,7 @@ wlink_autodepends = .AUTODEPEND
 # get rid of the -zc
 suppress_zc = 1
 
-!ifndef bootstrap
+!ifneq bootstrap 1
 !include idedlls.mif
 !endif
 !include cproj.mif
@@ -124,7 +124,7 @@ xlibs = $(wres_lib) $(dwarf_dw_lib) $(orl_lib)
 version_res_dll_nt_386 = version.res
 
 # systems where version resources must be added to .EXE
-!ifndef bootstrap
+!ifneq bootstrap 1
 version_res_exe_nt_386 = exever.res
 !endif
 

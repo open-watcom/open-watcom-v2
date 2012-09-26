@@ -9,6 +9,9 @@ set PROJNAME=wccmps
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
     <CPCMD> <OWOBJDIR>/bwcmps.exe      <OWBINDIR>/bwccmps<CMDEXT>

@@ -9,6 +9,9 @@ set PROJNAME=graphlib
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> fix/dosi86/graph.lib    <OWRELROOT>/lib286/dos/graph.lib

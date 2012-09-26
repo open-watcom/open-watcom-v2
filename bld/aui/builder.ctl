@@ -8,8 +8,6 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-cdsay .
-
 [ BLOCK <1> rel cprel ]
 #======================
 

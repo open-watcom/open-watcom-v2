@@ -5,7 +5,7 @@ wcl_autodepends = .AUTODEPEND
 !endif
 
 owcc_specs = specs.owc
-!ifdef bootstrap
+!ifeq bootstrap 1
 name       = b$(name)
 owcc_specs = b$(owcc_specs)
 !endif
@@ -26,7 +26,7 @@ objs += $(trmem_objs) $(cl_objs)
 
 !include trmem.mif
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 extra_c_flags += -DBOOTSTRAP
 !endif
 
@@ -47,7 +47,7 @@ inc_dirs = -I. -I.. -I"../../h"
 .c: ../../c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
 
 # systems where version resources must be added to .EXE
-!ifndef bootstrap
+!ifneq bootstrap 1
 version_res_exe_nt_386 = exever.res
 !endif
 
@@ -67,7 +67,7 @@ owcchelp.gh: ../../owcchelp.sp
         wsplice "-f\"%s\"," $< $@
 
 $(owcc_specs): $(wlink_dir)/specs.sp
-!ifdef bootstrap
+!ifeq bootstrap 1
         wsplice -k Pspecs $< sed.tmp
         sed -f ../../convtool.sed sed.tmp >$@
 !else

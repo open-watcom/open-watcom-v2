@@ -8,7 +8,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-cdsay .
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
 
     # Make BPATCH.QNX for Database guys. Easier than getting them set up
 #    wmake -h bpatch.qnx

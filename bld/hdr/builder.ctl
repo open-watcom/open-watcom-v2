@@ -9,6 +9,9 @@ set PROJNAME=Standard header files
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CPCMD> dos/*.h*           <OWRELROOT>/h/

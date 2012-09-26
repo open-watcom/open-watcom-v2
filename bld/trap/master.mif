@@ -115,7 +115,7 @@ xname=d$(name)
 ###############
 extra_c_flags += -D$(which) -DMD_$(cpu) $(extra_cflags)
 
-!ifndef bootstrap
+!ifneq bootstrap 1
 extra_c_flags += -s
 !ifeq which TRAP
 extra_c_flags += -zlf

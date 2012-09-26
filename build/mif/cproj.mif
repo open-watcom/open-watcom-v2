@@ -16,7 +16,7 @@ win32ver = $($(proj_name)_win32ver)
 win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
 !endif
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 
 cc_386          = *wcc386
 cc_i86          = *wcc
@@ -430,7 +430,7 @@ rc_flags_axp    = -D__AXP__
 rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu)) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
 # For bootstrap builds, include path configuration is compiler specific
-!ifdef bootstrap
+!ifeq bootstrap 1
 
 inc_dirs_sys_nt    =
 inc_dirs_sys_win   =

@@ -5,7 +5,7 @@
 # 'as' in-line library finder
 #
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 asminline_lib = $(as_dir)/$(host_cpu)/inline/$(%OWOBJDIR)/asinline.lib
 !else
 asminline_axp_lib_386  = $(as_dir)/axp/inline/osi386/asinline.lib

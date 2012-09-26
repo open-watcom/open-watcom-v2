@@ -9,6 +9,9 @@ set PROJNAME=wcl
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
     <CPCMD> <OWOBJDIR>/bwcl.exe <OWBINDIR>/bwcl<CMDEXT>
@@ -17,10 +20,6 @@ set PROJNAME=wcl
 #======================
     echo rm -f <OWBINDIR>/bwcl<CMDEXT>
     rm -f <OWBINDIR>/bwcl<CMDEXT>
-
-[ BLOCK <1> rel ]
-#=================
-    cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
 #======================

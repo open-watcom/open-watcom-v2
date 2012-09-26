@@ -13,6 +13,9 @@ set PROJNAME=dwarf
 [ BLOCK .<WATCOMBOOT>. .. ]
     [ INCLUDE <OWROOT>/build/defdylib.ctl ]
 
+[ BLOCK <1> rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> <PROJDIR>/dos386/dwarf.dip      <OWRELROOT>/binw/

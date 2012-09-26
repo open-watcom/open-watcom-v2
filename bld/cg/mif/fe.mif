@@ -8,7 +8,7 @@
 !include $(cfloat_dir)/client.mif
 !include $(dwarf_dir)/dw/client.mif
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 obj_dir = $(%OWOBJDIR)
 !else ifeq cg_dll 1
 obj_dir = $(host_os)$(host_cpu).dll

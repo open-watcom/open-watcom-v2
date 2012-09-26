@@ -17,7 +17,7 @@ target_as_comm_objs = &
     ppcfmt.obj &
     ppcins.obj
 
-!ifdef bootstrap
+!ifeq bootstrap 1
 asi_dir = $(as_dir)/ppc/inline/$(%OWOBJDIR)
 !else ifdef __UNIX__
 asi_dir = $(as_dir)/ppc/inline/osi$(host_cpu)

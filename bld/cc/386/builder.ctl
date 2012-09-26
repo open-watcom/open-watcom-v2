@@ -9,6 +9,9 @@ set PROJNAME=wcc386
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot rel ]
+    cdsay <PROJDIR>
+
 [ BLOCK <1> boot ]
 #=================
     <CPCMD> <OWOBJDIR>/bwcc386.exe     <OWBINDIR>/bwcc386<CMDEXT>

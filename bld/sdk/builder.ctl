@@ -20,3 +20,7 @@ cdsay .
 [ INCLUDE wre/builder.ctl ]
 [ INCLUDE wde/builder.ctl ]
 [ INCLUDE imgedit/builder.ctl ]
+
+[ BLOCK . . ]
+#============
+cdsay .

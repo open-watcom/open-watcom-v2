@@ -35,7 +35,7 @@ inc_dirs = -I. -I"../h"
 dw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
         $(librarian) $(libflags) $(objs)
 
-!ifndef bootstrap
+!ifneq bootstrap 1
 extra_c_flags = -s
 !endif
 

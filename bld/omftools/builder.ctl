@@ -10,6 +10,9 @@ set PROJNAME=omftools
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> boot ]
+    cdsay <PROJDIR>
+
+[ BLOCK <1> boot ]
 #=================
     <CPCMD> <PROJDIR>/<OWOBJDIR>/objchg.exe   <OWBINDIR>/objchg<CMDEXT>
     <CPCMD> <PROJDIR>/<OWOBJDIR>/objfind.exe  <OWBINDIR>/objfind<CMDEXT>
