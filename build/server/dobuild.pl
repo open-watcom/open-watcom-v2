@@ -91,6 +91,10 @@ my $prev_changeno_name   = "$home\/changeno.txt";
 my $prev_changeno        = "0";
 my $prev_report_stamp    = "";
 my $build_needed         = 1;
+my $pass1_result         = "success";
+my $pass2_result         = "success";
+my $docs_result          = "success";
+my $CVS_result           = "success";
 
 sub get_prev_changeno
 {
@@ -121,54 +125,110 @@ sub get_reldir
     }
 }
 
+sub batch_output_make_change_objdir
+{
+    if ($OStype eq "UNIX") {
+        print BATCH "if [ ! -d \$OWOBJDIR ]; then mkdir \$OWOBJDIR; fi\n";
+        print BATCH "cd \$OWOBJDIR\n";
+    } else {
+        print BATCH "if not exist %OWOBJDIR% mkdir %OWOBJDIR%\n";
+        print BATCH "cd %OWOBJDIR%\n";
+    }
+}
+
+sub batch_output_set_watcom_env
+{
+    print BATCH "$setenv WATCOM=", $WATCOM, "\n";
+    if ($^O eq "MSWin32") {
+        print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\nt\n";
+        print BATCH "$setenv PATH=%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%\n";
+    } elsif ($^O eq "os2") {
+        print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\os2\n";
+        print BATCH "$setenv PATH=%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%\n";
+    } elsif ($^O eq "linux") {
+        print BATCH "$setenv INCLUDE=\$WATCOM/lh\n";
+        print BATCH "$setenv PATH=\$WATCOM/binl;%PATH%\n";
+    }
+}
+
+sub batch_output_build_wmake_builder_rm
+{
+    # Create fresh builder tools, to prevent lockup build server 
+    # if builder tools from previous build are somehow broken
+    print BATCH "cd $OW\ncd bld\ncd wmake\n";
+    batch_output_make_change_objdir();
+    if ($OStype eq "UNIX") {
+        print BATCH "rm -f \$OWBINDIR/wmake\n";
+        print BATCH "wmake -h -f ../wmake clean\n";
+        print BATCH "wmake -h -f ../wmake\n";
+    } else {
+        print BATCH "if exist %OWBINDIR%\\wmake.exe del %OWBINDIR%\\wmake.exe\n";
+        print BATCH "wmake -h -f ..\\wmake clean\n";
+        print BATCH "wmake -h -f ..\\wmake\n";
+    }
+    # Create new builder tools, previous clean removed them.
+    print BATCH "cd $OW\ncd bld\ncd builder\n";
+    batch_output_make_change_objdir();
+    if ($OStype eq "UNIX") {
+        print BATCH "rm -f \$OWBINDIR/builder\n";
+        print BATCH "\$OWBINDIR/wmake -h -f ../binmake bootstrap=1 clean\n";
+        print BATCH "\$OWBINDIR/wmake -h -f ../binmake bootstrap=1 builder\n";
+    } else {
+        print BATCH "if exist %OWBINDIR%\\builder.exe del %OWBINDIR%\\builder.exe\n";
+        print BATCH "%OWBINDIR%\\wmake -h -f ..\\binmake bootstrap=1 clean\n";
+        print BATCH "%OWBINDIR%\\wmake -h -f ..\\binmake bootstrap=1 builder.exe rm.exe\n";
+    }
+}
+
 sub make_build_batch
 {
-    my($pass1) = ($WATCOM eq $Common::config{"WATCOM"});
-
     open(BATCH, ">$build_batch_name") || die "Unable to open $build_batch_name file.";
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
         if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", $WATCOM, "\n"; }
+        elsif (/$setenv WATCOM=/i) { ; }
+        elsif (/$setenv INCLUDE=/i) { ; }
+        elsif (/$setenv PATH=/i) { ; }
         elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
         else                      { print BATCH; }
     }
     close(INPUT);
+    if ($WATCOM ne "") {
+        batch_output_set_watcom_env();
+    }
     # Add additional commands to do the build.
     print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
     print BATCH "$setenv OWDOCBUILD=0\n";
     print BATCH "$setenv OWDOCQUIET=1\n";
-    # Create fresh builder tools, to prevent lockup build server 
+    # Create fresh builder tools, to prevent lockup build server
     # if builder tools from previous build are somehow broken
+    batch_output_build_wmake_builder_rm();
     print BATCH "cd $OW\ncd bld\n";
-    if ($^O eq "MSWin32") {
-        print BATCH "cd builder\ncd nt386\n";
-    } elsif ($^O eq "linux") {
-        print BATCH "cd builder\ncd linux386\n";
-    } elsif ($^O eq "os2") {
-        print BATCH "cd builder\ncd os2386\n";
+    if ($relsubdir eq "pass1") {
+        print BATCH "builder -i bootclean1\n";
+    } else {
+        print BATCH "builder -i bootclean2\n";
     }
-    print BATCH "wmake -h clean\n";
-    print BATCH "wmake -h\n";
+    batch_output_build_wmake_builder_rm();
+    print BATCH "cd $OW\ncd bld\n";
+    if ($relsubdir eq "pass1") {
+        print BATCH "builder boot1\n";
+    } else {
+        print BATCH "builder boot2\n";
+    }
     # Remove release directory.
     print BATCH "rm -rf ", get_reldir(), "\n";
     # Clean previous build.
     print BATCH "cd $OW\ncd bld\n";
-    print BATCH "builder -i clean\n";
-    # Create new builder tools, previous clean removed them.
-    print BATCH "cd $OW\ncd bld\n";
-    if ($^O eq "MSWin32") {
-        print BATCH "cd builder\ncd nt386\n";
-    } elsif ($^O eq "linux") {
-        print BATCH "cd builder\ncd linux386\n";
-    } elsif ($^O eq "os2") {
-        print BATCH "cd builder\ncd os2386\n";
+    if ($relsubdir eq "pass1") {
+        print BATCH "builder -i clean1\n";
+    } else {
+        print BATCH "builder -i clean2\n";
     }
-    print BATCH "wmake -h\n";
     # Start build process.
     print BATCH "cd $OW\ncd bld\n";
-    if ($pass1) {
+    if ($relsubdir eq "pass1") {
         print BATCH "builder -i pass1\n";
     } else {
         print BATCH "builder -i pass2\n";
@@ -185,7 +245,9 @@ sub make_docs_batch
     while (<INPUT>) {
         s/\r?\n/\n/;
         if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", $WATCOM, "\n"; }
+        elsif (/$setenv WATCOM=/i) { ; }
+        elsif (/$setenv INCLUDE=/i) { ; }
+        elsif (/$setenv PATH=/i) { ; }
         elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
         elsif (/$setenv OWGHOSTSCRIPTPATH=/i) { ; }
         elsif (/$setenv OWWIN95HC=/i) { ; }
@@ -207,8 +269,8 @@ sub make_docs_batch
     print BATCH "$setenv OWDOCQUIET=1\n";
     # Start build process.
     print BATCH "cd $OW\ncd docs\n";
-    print BATCH "builder -i clean\n";
-    print BATCH "builder -i pass1\n";
+    print BATCH "builder -i docsclean\n";
+    print BATCH "builder -i docs\n";
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $docs_batch_name;
@@ -221,29 +283,25 @@ sub make_test_batch
     while (<INPUT>) {
         s/\r?\n/\n/;
         if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", get_reldir(), "\n"; }
+        elsif (/$setenv WATCOM=/i) { ; }
+        elsif (/$setenv INCLUDE=/i) { ; }
+        elsif (/$setenv PATH=/i) { ; }
         elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
         else                      { print BATCH; }
     }
     close(INPUT);
-
+    batch_output_set_watcom_env();
     # Add additional commands to do the testing.
     print BATCH "\n";
     if ($^O eq "MSWin32") { 
         print BATCH "if '%OWDOSBOX%' == '' $setenv EXTRA_ARCH=i86\n\n";
     }
-    print BATCH "cd $OW\ncd bld\ncd ctest\n";
-    print BATCH "rm *.log\n";
-    print BATCH "wmake -h targ_env_386=cw386\n";
-    print BATCH "cd $OW\ncd bld\ncd wasmtest\n";
-    print BATCH "rm *.log\n";
-    print BATCH "wmake -h targ_env_386=cw386\n";
-    print BATCH "cd $OW\ncd bld\ncd f77\ncd regress\n";
-    print BATCH "rm *.log\n";
-    print BATCH "wmake -h targ_env_386=cw386\n";
-    print BATCH "cd $OW\ncd bld\ncd plustest\n";
-    print BATCH "rm *.log\n";
-    print BATCH "wmake -h targ_env_386=cw386\n";
+    print BATCH "cd $OW\ncd bld\n";
+    print BATCH "rm -f ctest/*.log\n";
+    print BATCH "rm -f wasmtest/*.log\n";
+    print BATCH "rm -f f77/regress/*.log\n";
+    print BATCH "rm -f plustest/*.log\n";
+    print BATCH "builder -i test\n";
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $test_batch_name;
@@ -256,19 +314,17 @@ sub make_installer_batch
     while (<INPUT>) {
         s/\r?\n/\n/;
         if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM=/i) { print BATCH "$setenv WATCOM=", $Common::config{"WATCOM"}, "\n"; }
+        elsif (/$setenv WATCOM=/i) { ; }
+        elsif (/$setenv INCLUDE=/i) { ; }
+        elsif (/$setenv PATH=/i) { ; }
         else                      { print BATCH; }
     }
     close(INPUT);
     # Add additional commands to do installers.
     print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
-    if ($OStype eq "UNIX") {
-        # set up max open file handle to be enough for uzip
-        print BATCH "ulimit -n 4096\n";
-    }
     print BATCH "cd $OW\ncd distrib\ncd ow\n";
     print BATCH "builder missing\n";
-    print BATCH "builder rel2\n";
+    print BATCH "builder rel\n";
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $build_installer_name;
@@ -276,7 +332,6 @@ sub make_installer_batch
 
 sub process_log
 {
-    my($ehmix)         = "BLD\\PLUSTEST\\REGRESS\\EHMIX";
     my($os2_result)    = "success";
     my($result)        = "success";
     my($project_name)  = "none";
@@ -287,26 +342,16 @@ sub process_log
     open(LOGFILE, $_[0]) || die "Can't open $_[0]";
     while (<LOGFILE>) {
         s/\r?\n/\n/;
-        if (/^[=]+ .* [=]+$/) {        # new project directory
-            if ($project_name ne "none") {     # previous not PASSed
+        if (/^[=]+ .* [=]+$/) {     # new project start
+            if ($project_name ne "none") {
                 if ($first_message eq "yes") {
-                    if (($project_name ne $ehmix) or ($OStype ne "OS2")) {
-                        print REPORT "Failed!\n";
-##                      print REPORT "Failed1! $project_name  $ehmix $OStype\n";
-                        $result = "fail";
-                    }
-                    if ( ($OStype eq "OS2") and ($project_name eq $ehmix) ) {
-                        print REPORT "Failed, but EHMIX errors ignored on OS/2!\n";
-                        $os2_result = "fail";
-                    }
+                    print REPORT "Failed!\n";
+                    $result = "fail";
                     $first_message = "no";
                 }
                 if ($arch_test ne "") {
                     print REPORT "\t\t$project_name\t$arch_test\n";
-                    if (($project_name ne $ehmix) or ($OStype ne "OS2")) {
-##                      print REPORT "Failed2! $project_name  $ehmix $OStype\n";
-                        $result = "fail";      # in case others failed on os2
-                    }
+                    $result = "fail";
                 }
             }                   
             @fields = split;
@@ -323,14 +368,13 @@ sub process_log
 
     # Handle the case where the failed test is the last one.
     if ($project_name ne "none") {
-      if ($arch_test ne "") {          # no TEST seen ignore project
+      if ($arch_test ne "") {
         if ($first_message eq "yes") {
             print REPORT "Failed!\n";
             $first_message = "no";
         }
         print REPORT "\t\t$project_name\t$arch_test\n";
         $result = "fail";
-##      print REPORT "$project_name last one failed\n";# test ++++++++++++
       } 
     }
 
@@ -483,7 +527,7 @@ sub CVS_check_sync
 
     if (CVS_sync($cvs_cmd) eq "fail") {
         display_CVS_messages($cvs_cmd);
-	return "fail";
+        return "fail";
     }
     get_prev_changeno;
     
@@ -556,8 +600,6 @@ print REPORT "================================================\n\n";
 # Do a CVS sync to get the latest changes.
 #########################################
 
-my $CVS_result = "success";
-
 if ($Common::config{'OWCVS'} ne "") {
     $CVS_result = CVS_check_sync($Common::config{'OWCVS'});
 }
@@ -580,13 +622,33 @@ print REPORT "\n";
 print REPORT "Compilers and Tools (pass 1)\n";
 print REPORT "============================\n\n";
 
-$WATCOM    = $Common::config{"WATCOM"};
-$relsubdir = "pass1";
-$buildlog  = "$OW\/bld\/pass1.log";
-$bldbase   = "$home\/$Common::config{'BLDBASE1'}";
-$bldlast   = "$home\/$Common::config{'BLDLAST1'}";
+$WATCOM           = $Common::config{"WATCOM"};
+$relsubdir        = "pass1";
+$build_batch_name = "$home\/build1.$ext";
+$test_batch_name  = "$home\/test1.$ext";
+$buildlog         = "$OW\/bld\/pass1.log";
+$bldbase          = "$home\/$Common::config{'BLDBASE1'}";
+$bldlast          = "$home\/$Common::config{'BLDLAST1'}";
 
-my $pass1_result = run_build();
+$pass1_result  = run_build();
+
+############################################################
+#
+#  Build the Documentation
+#
+############################################################
+
+print REPORT "\n";
+print REPORT "Documentation Build\n";
+print REPORT "===================\n\n";
+
+$WATCOM           = $Common::config{"WATCOM"};
+$relsubdir        = "pass1";
+$buildlog         = "$OW\/docs\/pass1.log";
+$bldbase          = "$home\/$Common::config{'BLDBASED'}";
+$bldlast          = "$home\/$Common::config{'BLDLASTD'}";
+
+$docs_result = run_docs_build();
 
 ############################################################
 #
@@ -599,31 +661,15 @@ print REPORT "\n";
 print REPORT "Compilers and Tools (pass 2)\n";
 print REPORT "============================\n\n";
 
-$WATCOM    = get_reldir();
-$relsubdir = "pass2";
-$buildlog  = "$OW\/bld\/pass2.log";
-$bldbase   = "$home\/$Common::config{'BLDBASE2'}";
-$bldlast   = "$home\/$Common::config{'BLDLAST2'}";
+$WATCOM           = get_reldir();
+$relsubdir        = "pass2";
+$build_batch_name = "$home\/build2.$ext";
+$test_batch_name  = "$home\/test2.$ext";
+$buildlog         = "$OW\/bld\/pass2.log";
+$bldbase          = "$home\/$Common::config{'BLDBASE2'}";
+$bldlast          = "$home\/$Common::config{'BLDLAST2'}";
 
-my $pass2_result = run_build();
-
-############################################################
-#
-#  Build the Documentation
-#
-############################################################
-
-print REPORT "\n";
-print REPORT "Documentation Build\n";
-print REPORT "===================\n\n";
-
-$WATCOM    = $Common::config{"WATCOM"};
-$relsubdir = "pass1";
-$buildlog  = "$OW\/docs\/pass1.log";
-$bldbase   = "$home\/$Common::config{'BLDBASED'}";
-$bldlast   = "$home\/$Common::config{'BLDLASTD'}";
-
-my $docs_result = run_docs_build();
+$pass2_result  = run_build();
 
 # Display CVS sync messages for reference.
 ##########################################
