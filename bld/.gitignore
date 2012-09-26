@@ -167,6 +167,9 @@
 /wcl/*.owc
 /wcl/owcc/*/*.owc
 #
+/wgml/test/testlib/*.bat
+/wgml/test/testlib/*.COP
+#
 /win386/asm/dllthk.asm
 /win386/asm/winglue.asm
 /win386/c/dllthunk.c
