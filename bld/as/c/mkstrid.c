@@ -36,12 +36,11 @@
 #define MSG_LANG_SPACING        1000
 #endif
 
-#undef PICK
 #define PICK( code, e_msg, j_msg ) #code,
-
 char *messages[] = {
     #include "as.msg"
 };
+#undef PICK
 
 int main( int argc, char *argv[] )
 {
@@ -50,14 +49,14 @@ int main( int argc, char *argv[] )
     if( argc <= 1 || freopen( argv[1], "w", stdout ) != stdout ) {
         fprintf( stderr, "Can't open output file\n" );
     }
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     printf( "#define MSG_LANG_SPACING %d\n", MSG_LANG_SPACING );
-    #endif
+#endif
     for( i = 0; i < sizeof( messages ) / sizeof( messages[0] ); ++i ) {
         printf( "#define %s %d\n", messages[i], i+1 );
     }
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     printf( "#define USAGE_LAST %d\n", i );
-    #endif
+#endif
     return( 0 );
 }

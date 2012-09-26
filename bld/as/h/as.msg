@@ -154,7 +154,7 @@ PICK( USAGE_9,          "-q or -zq         operate quietly",
                 "(J)-q or -zq         operate quietly" )
 PICK( USAGE_10,         "-we               treat all warnings as errors",
                 "(J)-we               treat all warnings as errors" )
-#ifndef NDEBUG
+#ifdef RC_DEBUG
 PICK( USAGE_11,         "DEBUG options:",
                 "DEBUG options:" )
 PICK( USAGE_12,         "-v{i,l,p,s,t}     view (instruction,lex buffer,parse,symbols,ins table)",

@@ -39,7 +39,6 @@
 #include "wreslang.h"
 #else
 // No res file to use. Just compile in the messages...
-#undef PICK
 // Use English message unless compiled with "-dJAPANESE_MSG"
 #if !defined( JAPANESE_MSG )
 #define PICK( id, e_msg, j_msg )    e_msg,
@@ -50,6 +49,7 @@ static char *asMessages[] = {
     "IMPOSSIBLE",
     #include "as.msg"
 };
+#undef PICK
 #endif
 
 #ifdef _STANDALONE_

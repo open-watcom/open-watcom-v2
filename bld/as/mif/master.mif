@@ -85,18 +85,21 @@ as_extra_defines += -D_STANDALONE_
 !endif
 
 !ifeq release 0
-dbg_extra_defines   = -DYYDEBUG=1
+dbg_extra_defines   = -DYYDEBUG=1 -DRC_DEBUG
 !ifeq host_cpu 386
 dbg_extra_defines	+= -DTRMEM -of+
 !else
 dbg_extra_defines   += -DTRMEM
 !endif
 !endif
+!ifneq bootstrap 1
+as_extra_defines += $(dbg_extra_defines)
+!endif
 
 extra_c_flags = $(as_extra_defines)
 
 !ifneq bootstrap 1
-extra_c_flags  += -fh $(dbg_extra_defines)
+extra_c_flags  += -fh
 !endif
 
 # lflags
@@ -179,7 +182,7 @@ $(name).exe : msg.gh $(as_objs) $(cl_objs) $(libs) $(owl_lib) $(name).res $(vers
 
 !ifndef inline_as
 $(name).res : as.rc msg.gh
-        $(rc_aui) $(as_extra_defines) $(dbg_extra_defines) $[@ -fo=$^@
+        $(rc_aui) $(as_extra_defines) $[@ -fo=$^@
 !endif
 
 !include verrc.mif
@@ -188,7 +191,7 @@ msg.gh : ./mkstrid.exe
         $[@ $^@
 
 ./mkstrid.exe : mkstrid.c as.msg
-        $(bld_cl) $(bld_cl_opts) $(as_extra_defines) $(dbg_extra_defines) $(as_incs) $[@
+        $(bld_cl) $(bld_cl_opts) $(as_extra_defines) $(as_incs) $[@
 
 $(yacc_in) : $(yacc_src) $(as_dir)/y/yydriver.c
         wsplice $(splice_opts) $[@ $^@
