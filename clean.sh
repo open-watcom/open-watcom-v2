@@ -1,14 +1,15 @@
 #!/bin/sh
-if [ -f setvars ]; then
-    . ./setvars
+if [ ! -f $OWBINDIR/builder ]; then
+    echo Cannot find builder - did you run boot.sh?
 else
-    . ./setvars.sh
+    cd $OWSRCDIR
+    builder -i clean
+    builder -i bootclean
 fi
-if [ ! -f $OWBINDIR/wtouch ]; then
-    cp -p `which touch` $OWBINDIR/wtouch
-fi
-cd bld
-export BUILDMODE=bootstrap
-builder clean
-unset BUILDMODE
-
+# Nuke the builder and wmake bootstrap directories
+if [ -d $OWSRCDIR/builder/$OWOBJDIR ]; then rm -rf $OWSRCDIR/builder/$OWOBJDIR; fi
+if [ -d $OWSRCDIR/wmake/$OWOBJDIR ]; then rm -rf $OWSRCDIR/wmake/$OWOBJDIR; fi
+# Finally delete the builder and wmake executables
+rm -f $OWBINDIR/builder
+rm -f $OWBINDIR/wmake
+cd $OWROOT

@@ -1,23 +1,33 @@
 #!/bin/sh
 #
-# Build script to bootstrap build the Linux version of the compiler
-# using the GNU C/C++ compiler tools. If you already have a working
-# Open Watcom compiler, you do not need to use the bootstrap process
+# Script to build the Open Watcom tools
+# using the host platform's native C/C++ compiler or OW tools.
+#
+# Expects POSIX or OW tools.
 
-if [ -f setvars ]; then
-    . ./setvars
+cd $OWSRCDIR/wmake
+if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
+cd $OWOBJDIR
+rm -f $OWBINDIR/wmake
+if [ -n "$OWBOOTSTRAP" ]; then
+    wmake -f ../wmake clean
+    wmake -f ../wmake
 else
-    . ./setvars.sh
+    make -f ../posmake clean
+    make -f ../posmake
 fi
-if [ ! -f $OWBINDIR/wtouch ]; then
-    cp -p `which touch` $OWBINDIR/wtouch
+cd $OWSRCDIR/builder
+if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
+cd $OWOBJDIR
+rm -f $OWBINDIR/builder
+$OWBINDIR/wmake -f ../binmake clean
+$OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+cd $OWSRCDIR
+builder boot
+RC=$?
+if [ $RC -eq 0 ]; then
+    builder build
+    RC=$?
 fi
-cd bld/wmake
-$MAKE -f gnumake
-mkdir -p ../builder/$OWOBJDIR
-cd ../builder/$OWOBJDIR
-wmake -h -f ../linux386/makefile builder.exe bootstrap=1
-cd ../..
-export BUILDMODE=bootstrap
-builder rel2 os_linux
-unset BUILDMODE
+cd $OWROOT
+return $RC

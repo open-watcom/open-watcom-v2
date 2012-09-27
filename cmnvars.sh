@@ -1,5 +1,6 @@
+#!/bin/sh
 # *****************************************************************
-# CMNVARS.SH - common environment variables
+# cmnvars.sh - common environment variables
 # *****************************************************************
 # NOTE: All scripts to set the environment must call this script at
 #       the end.
@@ -9,21 +10,21 @@ export BLD_VER=20
 export BLD_VER_STR=2.0
 
 # Set up default path information variable
-[ -n "$OWDEFPATH" ] || export OWDEFPATH=$PATH
+if [ -z "$OWDEFPATH" ]; then
+    export OWDEFPATH=$PATH:
+    export OWDEFINCLUDE=$INCLUDE
+    export OWDEFWATCOM=$WATCOM
+fi
 
-# Stuff for the Open Watcom build environment
-export BUILD_PLATFORM=linux386
+# Subdirectory to be used for build binaries
+export OWBINDIR=$OWROOT/build/bin
 
-# Subdirectory to be used for bootstrapping/prebuild binaries
-export OWBINDIR=$OWROOT/bld/build/binl
-export DWATCOM=$WATCOM
-export INCLUDE=$WATCOM/lh
-export EDPATH=$WATCOM/eddat
-export PATH=$OWBINDIR:$OWROOT/build:$WATCOM/binl:$OWDEFPATH
+# Subdirectory containing OW sources
+export OWSRCDIR=$OWROOT/bld
 
-echo Open Watcom compiler build environment
+# Set environment variables
+export PATH=$OWBINDIR:$OWROOT/build:$OWDEFPATH
+export INCLUDE=$OWDEFINCLUDE
+export WATCOM=$OWDEFWATCOM
 
-# OS specifics
-
-export WD_PATH=$WATCOM/binl
-export MAKE=make
+echo Open Watcom build environment
