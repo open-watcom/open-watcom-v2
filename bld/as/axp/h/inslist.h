@@ -151,7 +151,7 @@ extern void AlphaEmit( instruction * );
 #endif
 extern bool AlphaValidate( instruction * );
 #ifdef _STANDALONE_
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 extern void             DumpOperand( ins_operand * );
 extern void             DumpIns( instruction * );
 #endif

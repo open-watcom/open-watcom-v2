@@ -207,7 +207,7 @@ extern ins_operand *OpBI( uint_32 cr, uint_32 bit_offset )
 #endif
 
 #ifdef _STANDALONE_
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 static char *reloc_modifier[] = {
     "",
     "",

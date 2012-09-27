@@ -1366,7 +1366,7 @@ void PPCEmit( instruction *ins ) {
     ObjEmitData( (char *)&result, sizeof( result ), TRUE );
     #endif
 
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
     #ifdef _STANDALONE_
     if( _IsOption( DUMP_INSTRUCTIONS ) ) {
         printf( " [%#010x]\n", result );

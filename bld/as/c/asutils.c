@@ -226,7 +226,7 @@ extern char *MakeAsmFilename( const char *orig_name ) {
     return( ret );
 }
 
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 extern void DebugPrintf( char *fmt, ... ) {
 //*****************************************
 

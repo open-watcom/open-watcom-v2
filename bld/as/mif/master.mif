@@ -85,16 +85,16 @@ as_extra_defines += -D_STANDALONE_
 !endif
 
 !ifeq release 0
-dbg_extra_defines   = -DYYDEBUG=1 -DRC_DEBUG
+dbg_extra_defines   = -DYYDEBUG=1 -DAS_DEBUG_DUMP
+!ifneq bootstrap 1
 !ifeq host_cpu 386
 dbg_extra_defines	+= -DTRMEM -of+
 !else
 dbg_extra_defines   += -DTRMEM
 !endif
 !endif
-!ifneq bootstrap 1
-as_extra_defines += $(dbg_extra_defines)
 !endif
+as_extra_defines += $(dbg_extra_defines)
 
 extra_c_flags = $(as_extra_defines)
 

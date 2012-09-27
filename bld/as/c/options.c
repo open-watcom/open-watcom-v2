@@ -226,7 +226,7 @@ extern bool OptionsInit( int argc, char **argv ) {
                     goto errInvalid;
                 }
                 break;
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
             case 'v':
                 while( *s ) {
                     switch( *s ) {

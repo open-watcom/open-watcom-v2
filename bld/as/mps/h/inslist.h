@@ -156,7 +156,7 @@ extern void MIPSEmit( instruction * );
 #endif
 extern bool MIPSValidate( instruction * );
 #ifdef _STANDALONE_
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 extern void             DumpOperand( ins_operand * );
 extern void             DumpIns( instruction * );
 #endif

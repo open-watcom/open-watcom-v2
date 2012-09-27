@@ -462,7 +462,7 @@ void ObjRelocsFini( void ) {
         SymDestroyReloc( sym, reloc );
         reloc = SymGetReloc( FALSE, &sym );
     }
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
     (void)SymRelocIsClean( TRUE );
 #endif
     ObjFlushLabels();       // In case there're still pending labels

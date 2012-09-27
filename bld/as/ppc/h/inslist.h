@@ -143,7 +143,7 @@ extern void PPCEmit( instruction * );
 extern bool PPCValidate( instruction * );
 
 #ifdef _STANDALONE_
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 extern void             DumpOperand( ins_operand * );
 extern void             DumpIns( instruction * );
 #endif

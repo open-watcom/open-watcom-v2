@@ -37,7 +37,7 @@ YYSTYPE *yyvp, yyval, yylval;
 #define YYACCEPT        return(0)
 #define YYERROR         goto yyerrlab
 
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 static void dump_rule( unsigned rule )
 {
     unsigned i;
@@ -168,7 +168,7 @@ yycheck2:
           };
           *++yysp = yyacttab[yyi];
           ++yyvp;
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
           dump_rule( yypnum );
 #endif
           switch( yypnum ){

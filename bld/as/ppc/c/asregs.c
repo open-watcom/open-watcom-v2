@@ -32,6 +32,8 @@
 
 #include "as.h"
 
+#ifdef AS_DEBUG_DUMP
+
 static char buffer[ 10 ];
 
 extern char *RegName( reg r ) {
@@ -59,6 +61,8 @@ extern char *RegName( reg r ) {
     sprintf( s, "%d", RegIndex( r ) );
     return( buffer );
 }
+
+#endif
 
 extern uint RegCrfToBI( reg r ) {
 

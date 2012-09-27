@@ -32,7 +32,7 @@
 
 #include "as.h"
 
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 static char buffer[ 10 ];
 
 extern char *RegName( reg r ) {

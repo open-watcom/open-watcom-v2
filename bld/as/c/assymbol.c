@@ -374,7 +374,7 @@ extern sym_reloc SymGetReloc( bool is_high, sym_handle *get_hdl ) {
     return( lhdl->hdl->lo_relocs );
 }
 
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 extern bool SymRelocIsClean( bool is_clean ) {
 //********************************************
 // Just a debug tool to see whether I've cleaned up.
@@ -398,7 +398,7 @@ extern void SymFini( void ) {
     int         n;
     sym_reloc   reloc;
 
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
     #ifdef _STANDALONE_
     if( _IsOption( DUMP_SYMBOL_TABLE ) ) DumpSymbolTable();
     #endif
@@ -406,13 +406,17 @@ extern void SymFini( void ) {
 
     reloc = SymGetReloc( TRUE, &sym );
     while( reloc != NULL ) {
+#ifdef AS_DEBUG_DUMP
         assert( SymRelocIsClean( FALSE ) == FALSE );
+#endif
         SymDestroyReloc( sym, reloc );
         reloc = SymGetReloc( TRUE, &sym );
     }
     reloc = SymGetReloc( FALSE, &sym );
     while( reloc != NULL ) {
+#ifdef AS_DEBUG_DUMP
         assert( SymRelocIsClean( FALSE ) == FALSE );
+#endif
         SymDestroyReloc( sym, reloc );
         reloc = SymGetReloc( FALSE, &sym );
     }
@@ -429,7 +433,7 @@ extern void SymFini( void ) {
 }
 
 #ifdef _STANDALONE_
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 
 static char classChar[] = { 'I', 'D', 'L' };
 

@@ -419,7 +419,7 @@ extern void ETFree( expr_tree *tree ) {
 }
 
 #ifdef _STANDALONE_
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 static char *nodeNames[] = {
     "Constant",         /* ET_CONSTANT */
     "FP Constant",      /* ET_FP_CONSTANT */

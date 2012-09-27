@@ -1178,7 +1178,7 @@ void AlphaEmit( instruction *ins ) {
                                   curr_reloc->type, TRUE, FALSE );
                     #endif
                 }
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
                 switch( curr_reloc->type ) {
                 case OWL_RELOC_WORD:
                     _DBGMSG1( "word" ); break;
@@ -1203,7 +1203,7 @@ void AlphaEmit( instruction *ins ) {
         #else
         emitIns( (char *)&result[ctr], sizeof( uint_32 ) );
         #endif
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
         #ifdef _STANDALONE_
         if( _IsOption( DUMP_INSTRUCTIONS ) ) {
             printf( " [%#010x]\n", result[ctr] );

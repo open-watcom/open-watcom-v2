@@ -117,14 +117,14 @@ extern void             AsSymStackReloc( bool is_high, sym_handle, sym_section, 
 extern void             AsSymDestroyReloc( sym_handle, sym_reloc );
 extern sym_reloc        AsSymMatchReloc( bool is_high, sym_handle, sym_section );
 extern sym_reloc        AsSymGetReloc( bool is_high, sym_handle *get_hdl );
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 extern bool             AsSymRelocIsClean( bool is_clean );
 #endif
 extern sym_obj_hdl      AsSymObjHandle( sym_handle );
 extern void             AsSymFini( void );
 
 #ifdef _STANDALONE_
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 extern void             DumpSymbolTable( void );
 #endif
 #endif
@@ -151,7 +151,7 @@ extern void             DumpSymbolTable( void );
 #define SymDestroyReloc                 AsSymDestroyReloc
 #define SymMatchReloc                   AsSymMatchReloc
 #define SymGetReloc                     AsSymGetReloc
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 #define SymRelocIsClean                 AsSymRelocIsClean
 #endif
 #define SymObjHandle                    AsSymObjHandle

@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#if defined( NDEBUG ) || !defined( _STANDALONE_ )
-    #define _DBGMSG1( a )               ((void)0)
-    #define _DBGMSG2( a, b )            ((void)0)
-    #define _DBGMSG3( a, b, c )         ((void)0)
-#else
+#if defined( AS_DEBUG_DUMP ) && defined( _STANDALONE_ )
     #define _DBGMSG1( a )               DebugPrintf( a )
     #define _DBGMSG2( a, b )            DebugPrintf( a, b )
     #define _DBGMSG3( a, b, c )         DebugPrintf( a, b, c )
+#else
+    #define _DBGMSG1( a )               ((void)0)
+    #define _DBGMSG2( a, b )            ((void)0)
+    #define _DBGMSG3( a, b, c )         ((void)0)
 #endif
 
 #define Warning AsWarning
@@ -59,7 +59,7 @@ extern bool WarningsExceeding( unsigned );
 extern void ErrorReport( void );
 extern void ErrorCountsReset( void );
 extern void AbortParse( void );
-#ifndef NDEBUG
+#ifdef AS_DEBUG_DUMP
 extern void DebugPrintf( char *, ... );
 #endif
 extern char *MakeAsmFilename( const char * );

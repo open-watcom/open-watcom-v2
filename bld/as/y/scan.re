@@ -49,7 +49,7 @@ static size_t ppRead( char *buffer, size_t numchar ) {
         buffer[count++] = c = PP_Char();
     }
     if( c == EOF ) count--;
-    #ifndef NDEBUG
+  #ifdef AS_DEBUG_DUMP
     if( _IsOption( DUMP_LEXER_BUFFER ) ) {
 
         int count2;
@@ -58,7 +58,7 @@ static size_t ppRead( char *buffer, size_t numchar ) {
         for( count2 = 0; count2 < count; ++count2 ) putchar( buffer[count2] );
         printf( "**END**\n" );
     }
-    #endif
+  #endif
     return( count );
 }
 
