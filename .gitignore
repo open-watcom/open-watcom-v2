@@ -35,8 +35,7 @@
 stderr.txt
 stdout.txt
 
-bootstrp
-prebuild
+binbuild
 
 /setvars
 
