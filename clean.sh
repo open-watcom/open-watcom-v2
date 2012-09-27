@@ -6,7 +6,7 @@ else
     builder -i clean
     builder -i bootclean
 fi
-# Nuke the builder and wmake bootstrap directories
+# Delete the builder and wmake build directories
 if [ -d $OWSRCDIR/builder/$OWOBJDIR ]; then rm -rf $OWSRCDIR/builder/$OWOBJDIR; fi
 if [ -d $OWSRCDIR/wmake/$OWOBJDIR ]; then rm -rf $OWSRCDIR/wmake/$OWOBJDIR; fi
 # Finally delete the builder and wmake executables

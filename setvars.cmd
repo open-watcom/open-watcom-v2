@@ -5,41 +5,41 @@ REM *****************************************************************
 REM NOTE: Do not use this batch file directly, but copy it and
 REM       modify it as necessary for your own use!!
 
-REM Setup environment variables for CVS repository
+REM Change this to point your Open Watcom source tree
+set OWROOT=c:\ow\ow
 
-REM Change this to point to your Open Watcom source tree
-set OWROOT=d:\ow
+REM Change following entries to point your existing Open Watcom installation
+REM or comment it out to use native compiler tools
+set OWBOOTSTRAP=c:\ow\ow19
+set WATCOM=%OWBOOTSTRAP%
+set INCLUDE=%WATCOM%\lh
+set BEGINLIBPATH=%WATCOM%\binp\dll
+set PATH=%WATCOM%\binp;%WATCOM%\binw;%PATH%
 
-REM Change this to point to your existing Open Watcom installation
-set WATCOM=c:\c\ow10
+REM Adjust to match the host platform
+set BOOTSTRAP_OS=os2
+set BOOTSTRAP_CPU=386
 
-REM Change this to point to your OS/2 Toolkit directory
-set OS2TKROOT=c:\Toolkit
-
-REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
-set OWGHOSTSCRIPTPATH=c:\gs\gs7.04
+REM Subdirectory to be used for building OW build tools
+set OWOBJDIR=binbuild
 
 REM Set this variable to 1 to get debug build
-set DEBUG_BUILD=0
+set OWDEBUGBUILD=0
 
 REM Set this variable to 1 to get default windowing support in clib
-set DEFAULT_WINDOWING=0
+set OWDEFAULT_WINDOWING=0
 
 REM Set this variable to 0 to suppress documentation build
 set OWDOCBUILD=1
 
 REM Documentation related variables
-REM set appropriate variables to blank for help compilers which you haven't installed
-rem set OWWIN95HC=hcrtf
-rem set OWHHC=hhc
 
-REM Subdirectory to be used for bootstrapping
-set OWOBJDIR=bootstrp
+REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
+REM set OWGHOSTSCRIPTPATH=%PATH%
 
-REM Subdirectory to be used for building prerequisite utilities
-set OWPREOBJDIR=prebuild
+REM Change these variables to point Windows help compilers which you have installed
+REM export OWWIN95HC=hcrtf
+REM export OWHHC=hhc
 
 REM Invoke the script for the common environment
 call %OWROOT%\cmnvars.cmd
-
-cd %OWROOT%\bld

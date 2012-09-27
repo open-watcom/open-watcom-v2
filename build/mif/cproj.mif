@@ -96,7 +96,7 @@ as_mps          = *bwasmps
 
 !ifdef $(proj_name)_release
 release = $($(proj_name)_release)
-!else ifeq %DEBUG_BUILD 1
+!else ifeq %OWDEBUGBUILD 1
 release = 0
 !else
 release = 1

@@ -301,7 +301,11 @@ sub make_test_batch
     print BATCH "rm -f wasmtest/*.log\n";
     print BATCH "rm -f f77/regress/*.log\n";
     print BATCH "rm -f plustest/*.log\n";
-    print BATCH "builder -i test\n";
+    if ($relsubdir eq "pass1") {
+        print BATCH "builder -i test1\n";
+    } else {
+        print BATCH "builder -i test2\n";
+    }
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $test_batch_name;

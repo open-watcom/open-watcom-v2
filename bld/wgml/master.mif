@@ -16,8 +16,7 @@ wgml_autodepends = .AUTODEPEND
 
 !ifeq release 0
 wgml_trmem = 1
-debug_build      = 1
-verbose          = 1
+verbose    = 1
 !endif
 
 extra_c_flags      += -zpw

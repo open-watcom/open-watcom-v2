@@ -201,7 +201,7 @@ cdsay .
 # only test build for now
 [ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
 # Build documentation
-[ IFDEF <OW_DOC_BUILD> 1 ]
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWROOT>/docs/builder.ctl ]
 [ ENDIF ]
 

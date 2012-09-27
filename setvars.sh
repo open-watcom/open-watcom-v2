@@ -5,12 +5,12 @@
 # NOTE: Do not use this script directly, but copy it and
 #       modify it as necessary for your own use!!
 
-# root of OW source tree
+# Change this to point your Open Watcom source tree
 export OWROOT=/home/ow
 
-# Change following entries to point to an existing Watcom compiler
+# Change following entries to point your existing Open Watcom installation
 # or comment it out to use native compiler tools
-export $OWBOOTSTRAP=/home/ow19
+export OWBOOTSTRAP=/home/ow19
 export WATCOM=$OWBOOTSTRAP
 export INCLUDE=$WATCOM/lh
 export PATH=$WATCOM/binl:$PATH
@@ -23,18 +23,18 @@ export BOOTSTRAP_CPU=386
 export OWOBJDIR=binbuild
 
 # Set this variable to 1 to get debug build
-export DEBUG_BUILD=0
+export OWDEBUGBUILD=0
 
 # Set this variable to 1 to get default windowing support in clib
-export DEFAULT_WINDOWING=0
+export OWDEFAULT_WINDOWING=0
 
 # Set this variable to 0 to suppress documentation build
-export OWDOCBUILD=0      # Documentation building uses DOS programs.
+export OWDOCBUILD=0
 
 # Documentation related variables
 
 # Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
-export OWGHOSTSCRIPTPATH=$PATH
+# export OWGHOSTSCRIPTPATH=$PATH
 
 # set appropriate variables to point to Windows help compilers which you have installed
 # export OWWIN95HC=hcrtf

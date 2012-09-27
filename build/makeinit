@@ -14,13 +14,9 @@ mif_path     = $(build_dir)/mif
 
 !include cdirs.mif
 
-# if you wish to build debug version
-!ifdef %DEBUG_BUILD
-debug_build = $(%DEBUG_BUILD)
-!endif
 # default windowing support
-!ifdef %DEFAULT_WINDOWING
-default_windowing = $(%DEFAULT_WINDOWING)
+!ifdef %OWDEFAULT_WINDOWING
+default_windowing = $(%OWDEFAULT_WINDOWING)
 !endif
 
 !ifndef __UNIX__

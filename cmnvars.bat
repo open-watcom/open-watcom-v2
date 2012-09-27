@@ -9,25 +9,32 @@ REM Set the version numbers
 set BLD_VER=20
 set BLD_VER_STR=2.0
 
-REM Set up default path information variable
-if "%OWDEFPATH%" == "" set OWDEFPATH=%PATH%
+REM Set up default path information variables
+if not "%OWDEFPATH%" == "" goto defpath_set
+set OWDEFPATH=%PATH%;
+set OWDEFINCLUDE=%INCLUDE%
+set OWDEFWATCOM=%WATCOM%
+:defpath_set
 
-REM Stuff for the Open Watcom build environment
-set BUILD_PLATFORM=nt386
-REM Subdirectory to be used for bootstrapping/prebuild binaries
-set OWBINDIR=%OWROOT%\bld\build\binnt
-set DWATCOM=%WATCOM%
-set INCLUDE=%WATCOM%\h;%WATCOM%\h\nt
-set EDPATH=%WATCOM%\eddat
-set PATH=%OWBINDIR%;%OWROOT%\build;%WATCOM%\binnt;%WATCOM%\binw;%OWDEFPATH%
+REM Subdirectory to be used for build binaries
+set OWBINDIR=%OWROOT%\build\bin
 
-echo Open Watcom compiler build environment
+REM Subdirectory containing OW sources
+set OWSRCDIR=%OWROOT%\bld
+
+REM Set environment variables
+set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%
+set INCLUDE=%OWDEFINCLUDE%
+set WATCOM=%OWDEFWATCOM%
 
 REM OS specifics
 
+REM setup right COMSPEC for non-standard COMSPEC setting on NT based systems
+if not '%OS%' == 'Windows_NT' goto no_windows_nt
+set COMSPEC=%WINDIR%\system32\cmd.exe
+set COPYCMD=/y
+:no_windows_nt
+
 set DOS4G=quiet
 
-REM setup right COMSPEC for non-standard COMSPEC setting on NT based systems
-if '%OS%' == 'Windows_NT' set COMSPEC=%windir%\system32\cmd.exe
-
-set COPYCMD=/y
+echo Open Watcom build environment

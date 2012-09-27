@@ -19,7 +19,6 @@ set PROJNAME=build POSIX tools
     <CPCMD> <OWOBJDIR>/egrep.exe <OWBINDIR>/egrep<CMDEXT>
     <CPCMD> <OWOBJDIR>/chmod.exe <OWBINDIR>/chmod<CMDEXT>
     <CPCMD> <OWOBJDIR>/ls.exe    <OWBINDIR>/ls<CMDEXT>
-    <CPCMD> <OWOBJDIR>/mkdir.exe <OWBINDIR>/mkdir<CMDEXT>
     <CPCMD> <OWOBJDIR>/sed.exe   <OWBINDIR>/sed<CMDEXT>
     <CPCMD> <OWOBJDIR>/uniq.exe  <OWBINDIR>/uniq<CMDEXT>
     <CPCMD> <OWOBJDIR>/wc.exe    <OWBINDIR>/wc<CMDEXT>
@@ -32,7 +31,6 @@ set PROJNAME=build POSIX tools
     rm -f <OWBINDIR>/egrep<CMDEXT>
     rm -f <OWBINDIR>/chmod<CMDEXT>
     rm -f <OWBINDIR>/ls<CMDEXT>
-    rm -f <OWBINDIR>/mkdir<CMDEXT>
     rm -f <OWBINDIR>/sed<CMDEXT>
     rm -f <OWBINDIR>/uniq<CMDEXT>
     rm -f <OWBINDIR>/wc<CMDEXT>
