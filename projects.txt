@@ -3,12 +3,12 @@ each is genrally a subdirectory under <owroot>\bld.
 
 as              - alpha/ppc assembler
 aui             - ui library used by debugger
+awk             - awk utility
 bdiff           - diff and patch utilities
 bench           - benchmarks
 bmp2eps         - BMP-to-EPS conversion utility used for doc build
 brinfo          -
 browser         - c++ class browser
-build           - tools used by the build process and major makefile includes
 builder         - source for builder tool
                   also contains subprojects:
                     cdsay           - cd && prettified pwd
@@ -24,8 +24,10 @@ cfloat          - floating-point support functions
 cg              - code generator
 clib            - C runtime library
 cmdedit         - source code for cmdedit dos shell shortcut program
+commonui        - GUI common dialogs library
 comp_cfg        - compiler config
 cpp             - C-style preprocessor
+cpplib          - C++ class library
 ctest           - C compiler regression tests
 cvpack          - CodeView debug info packing utility
 dig             - used by debugger
@@ -33,20 +35,24 @@ dip             - used by debugger
 dmpobj          - OMF file dump utility
 dwarf           - dwarf reading/writing libraries
 editdll         - DLL to integrate VI and codewright with watcom IDE
-emu             - emulator libraries
-emu86           - emulator libraries
 exedump         - multi-format dump utility
 f77             - fortran 77 compiler
+                  contains subprojects:
+                    f77lib          - F77 run-time library
+                    wfc             - F77 Compiler
+                    wfl             - F77 Compile and link utility
 fe_misc         - misc. compiler front end stuff
 fileext         - Rationale for adding new extentions to Open Watcom
-fmedit          - part of the SDK - fmedit.dll
-graphlib        - graphics library
+fpuemu          - FPU emulator libraries
+graphlib        - graphics library (including pgchart subproject)
 gui             - GUI library
 hcdos           - help compiler for .ihp help files used by whelp
 hdr             - header files
 help            - whelp character mode help utility
 helpcomp        - whc help compiler, used for doc build
+ide             - Watcom IDE
 idebatch        - batch processor for watcom IDE
+idedemo         - three-d demo - IDE demo program
 lib_misc        - shared library
 mad             - machine architecture definition ( used by debugger)
 mathlib         - math library
@@ -55,22 +61,23 @@ mstools         - microsoft clone tools ( cl, link, rc, etc. )
 ncurses         - Linux curses stub for vi and wv projects
 ndisasm         - "new" disassembler
 nwlib           - "new" WLIB librarian
+omftools        - OMF manipulation tools
 online          - online help files
 orl             - object reading library
-os2api          - os/2 api libraries.
 os_supp         - support for Watcom debugging tool NetWare - novell - ports.
+os2api          - os/2 api libraries.
 owl             - object writing library
 parsedlg        - Windows to OS/2 dialog resource convertor
 pbide           - DLL for Powerbuilder IDE (powerbuilder c++ class builder )
-pgchart         - part of graphlib (presentation graphics)
 plusplus        - C++ compiler
-plusplus\cpplib - C++ class library
-plustest        - C++ compiler$ testing
+plustest        - C++ compiler testing
 pmake           - parallel make
 posix           - posix tools
+rc              - Resource compiler and utilities
 rcsdll          - RCS DLL for editor
 re2c            - regexp-to-c lexer generator
 redist          - miscellaneous files from other providers
+rsilib          - DOS4GW library ( used by trap and sampler )
 rtdll           - clib, mathlib, c++ lib. runtime DLLs
 sdk             - dialog editor,image editor,resource compiler,etc.
 setupgui        - installation utility
@@ -82,14 +89,15 @@ trmem           - memory tracker utility
 ui              - UI library
 uiforms         -
 version         - DLL Versioning Support
-vi              - VI editor ( character mode & VIW )
-viper           - Watcom IDE
-viprdemo        - three-d demo - IDE demo program
+vi              - VI editor ( character mode & GUI )
 w16api          - windows 16 bit api
 w32api          - windows 32 bit api
 w32loadr        - 32-bit dos extender stuff
 wasm            - watcom assembler
+wasmtest        - watcom assembler testing
 watcom          - shared source code
+wattcp          - WATTCP library ( used by trap )
+wcl             - C/C++ Compile and link utility
 wclass          - wclass C++ class library - used by IDE, browser
 wdisasm         - old disassembler - source code still used by debugger
 wgml            - reconstruct gendev/wgml source code 
