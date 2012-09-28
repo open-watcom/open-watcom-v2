@@ -71,6 +71,7 @@ gendevcmd = $(%OWROOT)\docs\gml\dos\gendev
 # set up to use dosemu to run gendev under Linux
 #-------------------------------------------------------
 use_dosemu = dosemu
+gendevcmd = $(%OWROOT:/=\)\docs\gml\dos\gendev
 
 !else
 !error Unsupported building platform !!!!!!
@@ -90,11 +91,11 @@ wgmlst.cop : .EXPLICIT
         @%make gencopall
 
 default : wgmlst.cop test01.cop test02.cop pstest.cop psspec.cop tdrv01.cop &
-          tdrv02.cop pstdrv.cop pssdrv.cop pssfon00.cop pssfon01.cop &
-	  pssfon02.cop pssfon03.cop pssfon04.cop pssfon05.cop pssfon06.cop &
-	  pssfon07.cop pssfon08.cop pssfon09.cop tfon00.cop tfon01.cop &
-	  tfon02.cop tfon03.cop tfon04.cop tfon05.cop tfon06.cop tfon07.cop &
-	  tfon08.cop tfon09.cop .SYMBOLIC
+        tdrv02.cop pstdrv.cop pssdrv.cop pssfon00.cop pssfon01.cop &
+        pssfon02.cop pssfon03.cop pssfon04.cop pssfon05.cop pssfon06.cop &
+        pssfon07.cop pssfon08.cop pssfon09.cop tfon00.cop tfon01.cop &
+        tfon02.cop tfon03.cop tfon04.cop tfon05.cop tfon06.cop tfon07.cop &
+        tfon08.cop tfon09.cop .SYMBOLIC
 
 test01.cop : test01.pcd $(dev_common) $(dev_core)
         @%make gencop1
@@ -126,9 +127,9 @@ genall  : .SYMBOLIC
 gencop1 : .procedure
 !ifeq use_dosemu dosemu
         %create $(dosemu_gendev_batch)
-        @%append $(dosemu_gendev_batch) set GMLLIB=$(%OWSRCDIR)\wgml\test\testlib
-        @%append $(dosemu_gendev_batch) set GMLINC=$(%OWSRCDIR)\wgml\test\testsrc
-        @%append $(dosemu_gendev_batch) $(%OWROOT)\docs\gml\dos\gendev.exe $^&
+        @%append $(dosemu_gendev_batch) set GMLLIB=..\testlib
+        @%append $(dosemu_gendev_batch) set GMLINC=..\testsrc
+        @%append $(dosemu_gendev_batch) $(gendevcmd) $^&
         @%append $(dosemu_gendev_batch) exitemu
         dosemu -dumb $(dosemu_gendev_batch)
 !else ifeq use_dosemu dosbox
@@ -142,15 +143,15 @@ gencop1 : .procedure
 !else
         set GMLLIB=$(%OWSRCDIR)\wgml\test\testlib
         set GMLINC=$(%OWSRCDIR)\wgml\test\testsrc
-	$(gendevcmd) $^&
+        $(gendevcmd) $^&
 !endif
 
 gencopall : .procedure
 !ifeq use_dosemu dosemu
         %create $(dosemu_gendev_batch)
-        @%append $(dosemu_gendev_batch) set GMLLIB=$(%OWSRCDIR)\wgml\test\testlib
-        @%append $(dosemu_gendev_batch) set GMLINC=$(%OWSRCDIR)\wgml\test\testsrc
-        @%append $(dosemu_gendev_batch) $(%OWROOT)\docs\gml\dos\gendev.exe genall
+        @%append $(dosemu_gendev_batch) set GMLLIB=..\testlib
+        @%append $(dosemu_gendev_batch) set GMLINC=..\testsrc
+        @%append $(dosemu_gendev_batch) $(gendevcmd) genall
         @%append $(dosemu_gendev_batch) exitemu
         dosemu -dumb $(dosemu_gendev_batch)
 !else ifeq use_dosemu dosbox
@@ -164,7 +165,7 @@ gencopall : .procedure
 !else
         set GMLLIB=$(%OWSRCDIR)\wgml\test\testlib
         set GMLINC=$(%OWSRCDIR)\wgml\test\testsrc
-	$(gendevcmd) genall
+        $(gendevcmd) genall
 !endif
 
 clean   : .SYMBOLIC
