@@ -2,6 +2,7 @@
 # ===========================
 
 set PROJDIR=<CWD>
+set PROJNAME=bdiff
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]

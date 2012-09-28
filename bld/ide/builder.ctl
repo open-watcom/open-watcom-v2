@@ -6,10 +6,10 @@
 
 cdsay .
 
-[ INCLUDE <OWSRCDIR>/ide/lib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/ide/ide2make/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/ide/ide/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/ide/cfg/builder.ctl ]
+[ INCLUDE lib/builder.ctl ]
+[ INCLUDE ide2make/builder.ctl ]
+[ INCLUDE ide/builder.ctl ]
+[ INCLUDE cfg/builder.ctl ]
 
 [ BLOCK . . ]
 #============

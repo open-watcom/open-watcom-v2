@@ -2,6 +2,7 @@
 # ===========================
 
 set PROJDIR=<CWD>
+set PROJNAME=rcsdll
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]

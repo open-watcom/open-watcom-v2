@@ -2,6 +2,7 @@
 # ============================
 
 set PROJDIR=<CWD>
+set PROJNAME=mstools
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]

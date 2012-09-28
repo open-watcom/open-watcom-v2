@@ -2,6 +2,7 @@
 # ===========================
 
 set PROJDIR=<CWD>
+set PROJNAME=ctest
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
