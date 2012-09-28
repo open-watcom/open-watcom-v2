@@ -770,7 +770,7 @@ static void ExecWlib( void )
         PrintIOError( ERR+MSG_CANT_EXECUTE, "12", WLIB_EXE );
     }
     _LnkFree( cmdline );
-#elif !defined( __UNIX__ ) || defined(__WATCOMC__)
+#else
     char        *atfname;
     size_t      namelen;
     int         retval;

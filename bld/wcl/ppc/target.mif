@@ -2,6 +2,6 @@ name = wclppc
 
 target_cpu = ppc
 
-extra_c_flags = -DWCLPPC
+extra_c_flags += -DWCLPPC
 
 !include ../../master.mif

@@ -2,6 +2,6 @@ name = wcl
 
 target_cpu = i86
 
-extra_c_flags = -DWCLI86
+extra_c_flags += -DWCLI86
 
 !include ../../master.mif

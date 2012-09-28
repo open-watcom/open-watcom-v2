@@ -2,6 +2,6 @@ name = wclmps
 
 target_cpu = mps
 
-extra_c_flags = -DWCLMPS
+extra_c_flags += -DWCLMPS
 
 !include ../../master.mif
