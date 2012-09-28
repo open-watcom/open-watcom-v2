@@ -83,23 +83,17 @@ asi_test_objs += trmem.obj
 !ifndef inline_as
 as_extra_defines += -D_STANDALONE_
 !endif
-
 !ifeq release 0
-dbg_extra_defines   = -DYYDEBUG=1 -DAS_DEBUG_DUMP
-!ifneq bootstrap 1
-!ifeq host_cpu 386
-dbg_extra_defines	+= -DTRMEM -of+
-!else
-dbg_extra_defines   += -DTRMEM
+as_extra_defines += -DTRMEM -DYYDEBUG=1 -DAS_DEBUG_DUMP
 !endif
-!endif
-!endif
-as_extra_defines += $(dbg_extra_defines)
 
 extra_c_flags = $(as_extra_defines)
-
 !ifneq bootstrap 1
-extra_c_flags  += -fh
+extra_c_flags += -fh
+!endif
+
+!ifeq release 0
+extra_c_flags_386 = -of+
 !endif
 
 # lflags

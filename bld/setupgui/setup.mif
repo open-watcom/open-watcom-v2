@@ -66,6 +66,12 @@ objs += &
     setupio.obj
 !endif
 
+!ifeq host_os win
+!ifeq host_cpu 386
+win386_bind = ./wbind.exe
+!endif
+!endif
+
 !ifeq sys_windowed 1
 
 libs_nt = $(gui_dir)/win/nt$(host_cpu)/gui.lib
@@ -179,77 +185,32 @@ inc_dirs += -I"$(build_root)/bdiff/h" -I"$(trmem_dir)" -I"$(libzip_dir)/lib"
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 
+!ifeq sys_windowed 1
+
+all : virgin.exe csetup.exe f77setup.exe .SYMBOLIC
+
 !ifeq host_os win
 
-all : virgin.exe setup.exe csetup.exe f77setup.exe .SYMBOLIC
-
-virgin.exe: $(gendeps) dosstub.exe
-!ifeq host_cpu 386
+virgin.exe: $(gendeps) dosstub.exe $(win386_bind)
+!ifdef win386_bind
     $(linker) name virgin.rex @setup.lnk
-    wbind -q -n virgin.rex
+    $]@ -q -n virgin.rex
 !else
     $(linker) name $^@ op stub=dosstub.exe @setup.lnk
 !endif
 
-!else ifeq host_os os2
-
-!ifeq sys_windowed 1
-
-all : virgin.exe setup.exe csetup.exe f77setup.exe .SYMBOLIC
+!else
 
 virgin.exe: $(gendeps)
     $(linker) name $^@ @setup.lnk
 
-!else
-
-setup.exe: $(gendeps) setupui.res
-    $(linker) name $^@ @setup.lnk
-    $(wstrip) -q -a -r setup.exe . setupui.res
-
 !endif
 
-!else ifeq host_os nt
-
-!ifeq sys_windowed 1
-
-all : setup.exe csetup.exe f77setup.exe .SYMBOLIC
-
-setup.exe: virgin.exe $(version_res_exe_$(host_os)_$(host_cpu)) setup.res
-    cp $[@ $^@ > $(nulldevice)
-    cp $[&.sym $^&.sym > $(nulldevice)
-    $(rc_out) $]@ $^@ $(bind_version_res_exe_add)
-
-virgin.exe: $(gendeps)
-    $(linker) name $^@ @setup.lnk
-
-!else
+!else ifneq host_os win
 
 setup.exe: $(gendeps) setupui.res
     $(linker) name $^@ @setup.lnk
     $(wstrip) -q -a -r setup.exe . setupui.res
-
-!endif
-
-!else ifeq host_os dos
-
-all : setup.exe .SYMBOLIC
-
-setup.exe: $(gendeps) setupui.res
-    $(linker) name $^@ @setup.lnk
-    $(wstrip) -q -a -r setup.exe . setupui.res
-
-!else ifeq host_os linux
-
-all : setup.exe .SYMBOLIC
-
-setup.exe: $(gendeps) setupui.res
-    $(linker) name $^@ @setup.lnk
-    $(wstrip) -q -a -r setup.exe . setupui.res
-
-!else
-
-all : .SYMBOLIC
-    %null
 
 !endif
 
@@ -312,15 +273,8 @@ setup.res : setup.rc $(dep_res1) ../res/generic.bmp
 dosstub.exe : dosstub.c
     $(cl_i86) -zq -bcl=dos -os -d0 $(inc_dirs_lang_osi) $[@
 
-.res.exe :
-!if "$(host_os)" == "win" && "$(host_cpu)" == "386"
-    cp virgin.rex $^*.rex
-    wbind -q $*.rex -R -q $]@
-    rm $^*.rex
-!else
-    cp virgin.exe $^@
-    $(rc_out) $]@ $^@ $(bind_version_res_exe_add)
-!endif
+./wbind.exe : $(win386_dir)/wbind/wbind.c $(cl_objs)
+        $(bld_cl) $(bld_cl_opts) -DBUILDTOOLNAMES $<
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
     $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
@@ -328,16 +282,15 @@ dosstub.exe : dosstub.c
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
     $[@ $^@ $(gui_msg_id_modifier)
 
+csetup.exe   : csetup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe
+f77setup.exe : f77setup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe
+jcsetup.exe  : jcsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe
+jfsetup.exe  : jfsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe
+
+csetup.exe f77setup.exe jcsetup.exe jfsetup.exe :
+    cp $]@ $^@
+    cp $]&.sym $^&.sym
+    $(rc_out) $[@ $^@ $(bind_version_res_exe_add)
+
 verrc_exe = setup
 !include verrc.mif
-
-# additional dependencies for implicit rules
-############################################
-
-csetup.exe   : virgin.exe
-
-f77setup.exe : virgin.exe
-
-jcsetup.exe  : virgin.exe
-
-jfsetup.exe  : virgin.exe

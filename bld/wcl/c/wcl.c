@@ -55,7 +55,7 @@
 #undef  _BANEXTRA
 #define _BANEXTRA _BANEXSHORT
 
-#ifdef BOOTSTRAP
+#ifdef BUILDTOOLNAMES
 #define BPRFX	"b"
 #else
 #define BPRFX	""

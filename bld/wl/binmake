@@ -3,4 +3,6 @@
 host_os  = $(%BOOTSTRAP_OS)
 host_cpu = $(%BOOTSTRAP_CPU)
 
+extra_c_flags = -DBUILDTOOLNAMES
+
 !include ../wlink.mif

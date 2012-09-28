@@ -63,10 +63,8 @@ inc_dirs = -I. -I"../h" -I"$(dwarf_dir)/dw/h" -I"$(orl_dir)/h" -I"$(wrc_dir)/h" 
 ################
 # c flags stuff
 
-!ifeq bootstrap 1
-extra_c_flags = -DBOOTSTRAP
-!else
-extra_c_flags = -zp4
+!ifneq bootstrap 1
+extra_c_flags += -zp4
 !endif
 !ifdef DLLS_IMPLEMENTED
 extra_c_flags += -DDLLS_IMPLEMENTED

@@ -26,19 +26,15 @@ objs += $(trmem_objs) $(cl_objs)
 
 !include trmem.mif
 
-!ifeq bootstrap 1
-extra_c_flags += -DBOOTSTRAP
-!endif
-
 !ifdef __WATCOM__
 extra_c_flags += -s
 !endif
 
-extra_c_flags_owcc   = -I"$(posix_dir)/h"
-extra_c_flags_getopt = -I"$(posix_dir)/h"
-extra_c_flags_quit   = -I"$(posix_dir)/h"
+extra_c_flags_owcc     = -I"$(posix_dir)/h"
+extra_c_flags_getopt   = -I"$(posix_dir)/h"
+extra_c_flags_quit     = -I"$(posix_dir)/h"
 extra_c_flags_clcommon = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
 
 extra_l_flags = op map
 

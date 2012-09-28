@@ -55,7 +55,7 @@
 #define FALSE 0
 #define MAGIC_OFFSET    0x38L
 #define MAX_DESC        80
-#ifdef BOOTSTRAP
+#ifdef BUILDTOOLNAMES
 #define RC_STR          "bwrc"
 #else
 #define RC_STR          "wrc"

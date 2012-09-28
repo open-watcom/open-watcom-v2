@@ -38,6 +38,11 @@ sub read_config
     my($filename) = $_[0];
     my(@fields);
 
+    $Common::config{"WATCOM"} = "";
+    $Common::config{"WIN95HC"} = "";
+    $Common::config{"HHC"} = "";
+    $Common::config{"GHOSTSCRIPTPATH"} = "";
+    $Common::config{"DOSBOX"} = "";
     open(CONFIG_FILE, $filename) || die "Unable to open configuration file: $filename.";
     while (<CONFIG_FILE>) {
         s/\r?\n/\n/;
@@ -48,18 +53,6 @@ sub read_config
         $Common::config{$fields[0]} = $fields[1];
     }
     close(CONFIG_FILE);
-    if (!defined($Common::config{"WIN95HC"})) {
-        $Common::config{"WIN95HC"} = "";
-    }
-    if (!defined($Common::config{"HHC"})) {
-        $Common::config{"HHC"} = "";
-    }
-    if (!defined($Common::config{"GHOSTSCRIPTPATH"})) {
-        $Common::config{"GHOSTSCRIPTPATH"} = "";
-    }
-    if (!defined($Common::config{"DOSBOX"})) {
-        $Common::config{"DOSBOX"} = "";
-    }
     if (defined($Common::config{"OW"})) {
         $OWloc = $Common::config{"OW"};
         $OWloc =~ s/\\/\\\\/g;

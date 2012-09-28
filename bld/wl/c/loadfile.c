@@ -719,12 +719,17 @@ void BuildImpLib( void )
     _LnkFree( ImpLib.dllname );
 }
 
-#if defined( DLLS_IMPLEMENTED )
-#define WLIB_EXE "wlibd.dll"
-#elif defined( __UNIX__ )
-#define WLIB_EXE "wlib"
+#ifdef BUILDTOOLNAMES
+#define BPRFX   "b"
 #else
-#define WLIB_EXE "wlib.exe"
+#define BPRFX   ""
+#endif
+#if defined( DLLS_IMPLEMENTED )
+#define WLIB_EXE BPRFX "wlibd.dll"
+#elif defined( __UNIX__ )
+#define WLIB_EXE BPRFX "wlib"
+#else
+#define WLIB_EXE BPRFX "wlib.exe"
 #endif
 
 static void ExecWlib( void )

@@ -53,8 +53,8 @@ if ($#ARGV == -1) {
     exit 1;
 }
 
-my $home = $Common::config{"HOME"};
-my $OW   = $Common::config{"OW"};
+my $home   = $Common::config{"HOME"};
+my $OW     = $Common::config{"OW"};
 
 if ($^O eq "MSWin32") {
     $OStype = "WIN32";
@@ -153,26 +153,33 @@ sub batch_output_set_watcom_env
 
 sub batch_output_build_wmake_builder_rm
 {
-    # Create fresh builder tools, to prevent lockup build server 
+    # Create fresh builder tools to prevent lockup build server 
     # if builder tools from previous build are somehow broken
+    #
+    # Create new wmake tool, previous clean removed it.
     print BATCH "cd $OW\ncd bld\ncd wmake\n";
     batch_output_make_change_objdir();
     if ($OStype eq "UNIX") {
         print BATCH "rm -f \$OWBINDIR/wmake\n";
-        print BATCH "wmake -h -f ../wmake clean\n";
-        print BATCH "wmake -h -f ../wmake\n";
+        if ($WATCOM eq "") {
+            print BATCH "make -f ../posmake clean\n";
+            print BATCH "make -f ../posmake\n";
+        } else {
+            print BATCH "wmake -h -f ../wmake clean\n";
+            print BATCH "wmake -h -f ../wmake\n";
+        }
     } else {
         print BATCH "if exist %OWBINDIR%\\wmake.exe del %OWBINDIR%\\wmake.exe\n";
         print BATCH "wmake -h -f ..\\wmake clean\n";
         print BATCH "wmake -h -f ..\\wmake\n";
     }
-    # Create new builder tools, previous clean removed them.
+    # Create new builder tool, previous clean removed it.
     print BATCH "cd $OW\ncd bld\ncd builder\n";
     batch_output_make_change_objdir();
     if ($OStype eq "UNIX") {
         print BATCH "rm -f \$OWBINDIR/builder\n";
         print BATCH "\$OWBINDIR/wmake -h -f ../binmake bootstrap=1 clean\n";
-        print BATCH "\$OWBINDIR/wmake -h -f ../binmake bootstrap=1 builder\n";
+        print BATCH "\$OWBINDIR/wmake -h -f ../binmake bootstrap=1 builder.exe\n";
     } else {
         print BATCH "if exist %OWBINDIR%\\builder.exe del %OWBINDIR%\\builder.exe\n";
         print BATCH "%OWBINDIR%\\wmake -h -f ..\\binmake bootstrap=1 clean\n";
