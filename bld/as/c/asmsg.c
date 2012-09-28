@@ -36,6 +36,7 @@
 #endif
 #include <fcntl.h>
 #include "wressetr.h"
+#include "wresset2.h"
 #include "wreslang.h"
 #else
 // No res file to use. Just compile in the messages...

@@ -66,5 +66,4 @@ struct WResRoutines {                                       /* defaults */
                     free                            \
                 }
 
-#include "wresset2.h"
 #endif

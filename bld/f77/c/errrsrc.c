@@ -37,6 +37,7 @@
 #include <malloc.h>
 #include "cioconst.h"
 #include "wressetr.h"
+#include "wresset2.h"
 #include "wreslang.h"
 
 static  HANDLE_INFO     hInstance = { 0 };

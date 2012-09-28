@@ -56,7 +56,7 @@ common_objs += $(cl_objs)
 comp_objs_exe = $(common_objs) $(exe_objs)
 comp_objs_dll = $(common_objs) $(dll_objs)
 
-inc_dirs = -I. -I"../h"
+inc_dirs = -I. -I"../h" -I"$(dwarf_dir)/dw/h" -I"$(orl_dir)/h" -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
 
 .c: ../c;$(watcom_dir)/c;$(wrc_dir)/c;$(lib_misc_dir)/c;$(trmem_dir)
 
@@ -64,41 +64,34 @@ inc_dirs = -I. -I"../h"
 # c flags stuff
 
 !ifeq bootstrap 1
-extra_c_flags = -I"$(lib_misc_dir)/h" -DBOOTSTRAP
+extra_c_flags = -DBOOTSTRAP
 !else
 extra_c_flags = -zp4
+!endif
 !ifdef DLLS_IMPLEMENTED
 extra_c_flags += -DDLLS_IMPLEMENTED
 !endif
 !ifeq use_virtmem 1
 extra_c_flags += -DUSE_VIRTMEM
 !endif
-!endif
 !ifndef wlink_dll
 extra_c_flags += -DIDE_PGM
 !endif
-
-
-extra_c_flags_objorl     = -I"$(orl_dir)/h"
-extra_c_flags_orlstubs   = -I"$(orl_dir)/h"
-extra_c_flags_dbgdwarf   = -I"$(dwarf_dir)/dw/h"
 !ifdef wlink_trmem
-extra_c_flags_debug      = -DTRMEM
+extra_c_flags += -DTRMEM
 !endif
-extra_c_flags_loadpe     = -I. -I"../h" -I"$(wrc_dir)/h" -I"$(wres_dir)/h"
-extra_c_flags_loados2    = -I"$(wrc_dir)/h" -I"$(wres_dir)/h"
-extra_c_flags_demangle   = -I"$(lib_misc_dir)/h"
+
 extra_c_flags_idedrv     = -DCHAIN_CALLBACK
 extra_c_flags_ideentry   = -DCHAIN_CALLBACK
 !ifdef wlink_dll
+!ifneq bootstrap 1
 extra_c_flags_ideentry   += -bd
 !endif
+!endif
 extra_c_flags_maindrv    = -DDLL_NAME=$(realdllname)
-extra_c_flags_msg        = -I"$(lib_misc_dir)/h"
-extra_c_flags_rcstr      = -DINSIDE_WLINK -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(watcom_dir)/h"
-extra_c_flags_exerespe   = -DINSIDE_WLINK -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(watcom_dir)/h"
-extra_c_flags_sharedio   = -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(watcom_dir)/h"
-extra_c_flags_stidedrv   = -DSTATIC_LINKAGE -I"$(watcom_dir)/c"
+extra_c_flags_rcstr      = -DINSIDE_WLINK
+extra_c_flags_exerespe   = -DINSIDE_WLINK
+extra_c_flags_stidedrv   = -DSTATIC_LINKAGE
 extra_c_flags_trmem      = $(trmem_cflags)
 extra_c_flags_mem        = $(trmem_cover_cflags)
 

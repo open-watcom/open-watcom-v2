@@ -43,6 +43,7 @@
 #include "mcache.h"
 #include "mrcmsg.h"
 #include "wressetr.h"
+#include "wresset2.h"
 #include "wreslang.h"
 
 #ifdef BOOTSTRAP

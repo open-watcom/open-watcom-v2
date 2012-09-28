@@ -49,6 +49,7 @@
 #include "ideentry.h"
 #include "loadfile.h"
 #include "wressetr.h"
+#include "wresset2.h"
 #include "wreslang.h"
 #include "clibint.h"
 

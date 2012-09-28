@@ -60,6 +60,7 @@ _WCRTLINK extern char *_cmdname( char *__name );
  #include "windows.h"
 #else
  #include "wressetr.h"
+ #include "wresset2.h"
  #include "watcom.h"
 
 #define NIL_HANDLE      ((int)-1)

@@ -67,6 +67,7 @@ int Msg_Fini( void )
 #else
 
 #include "wressetr.h"
+#include "wresset2.h"
 #include "wreslang.h"
 
 #define NIL_HANDLE      ((int)-1)
