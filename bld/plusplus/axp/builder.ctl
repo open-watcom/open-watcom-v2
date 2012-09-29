@@ -9,16 +9,16 @@ set PROJNAME=wppaxp
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> boot rel ]
+[ BLOCK ( <1> <BINTOOL> ) rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
-#=================
+[ BLOCK <BINTOOL> rel ]
+#======================
     <CPCMD> <OWOBJDIR>/bwppaxp.exe     <OWBINDIR>/bwppaxp<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwppdaxp<DYEXT> <OWBINDIR>/bwppdaxp<DYEXT>
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BINTOOL> clean ]
+#========================
     echo rm -f <OWBINDIR>/bwppaxp<CMDEXT>
     rm -f <OWBINDIR>/bwppaxp<CMDEXT>
     rm -f <OWBINDIR>/bwppdaxp<DYEXT>

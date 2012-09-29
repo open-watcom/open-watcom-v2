@@ -18,31 +18,31 @@ set PROJNAME=madx86
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> <PROJDIR>/dos386/madx86.mad     <OWRELROOT>/binw/
-#    <CCCMD> <PROJDIR>/dos386/madx86.sym     <OWRELROOT>/binw/madx86.dsy
+    <CCCMD> dos386/madx86.mad     <OWRELROOT>/binw/
+#    <CCCMD> dos386/madx86.sym     <OWRELROOT>/binw/madx86.dsy
 
-    <CCCMD> <PROJDIR>/wini86/madx86.dll     <OWRELROOT>/binw/
-#    <CCCMD> <PROJDIR>/wini86/madx86.sym     <OWRELROOT>/binw/
+    <CCCMD> wini86/madx86.dll     <OWRELROOT>/binw/
+#    <CCCMD> wini86/madx86.sym     <OWRELROOT>/binw/
 
-#    <CCCMD> <PROJDIR>/os2i86/madx86.dll     <OWRELROOT>/binp/dll/
-#    <CCCMD> <PROJDIR>/os2i86/madx86.sym     <OWRELROOT>/binp/dll/
-    <CCCMD> <PROJDIR>/os2386/madx86.d32     <OWRELROOT>/binp/
-    <CCCMD> <PROJDIR>/os2386/madx86.sym     <OWRELROOT>/binp/
+#    <CCCMD> os2i86/madx86.dll     <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/madx86.sym     <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/madx86.d32     <OWRELROOT>/binp/
+    <CCCMD> os2386/madx86.sym     <OWRELROOT>/binp/
 
-    <CCCMD> <PROJDIR>/nt386/madx86.dll      <OWRELROOT>/binnt/
-    <CCCMD> <PROJDIR>/nt386/madx86.sym      <OWRELROOT>/binnt/
+    <CCCMD> nt386/madx86.dll      <OWRELROOT>/binnt/
+    <CCCMD> nt386/madx86.sym      <OWRELROOT>/binnt/
 
-    <CCCMD> <PROJDIR>/linux386/madx86.mad   <OWRELROOT>/binl/
-    <CCCMD> <PROJDIR>/linux386/madx86.sym   <OWRELROOT>/binl/
+    <CCCMD> linux386/madx86.mad   <OWRELROOT>/binl/
+    <CCCMD> linux386/madx86.sym   <OWRELROOT>/binl/
 
-    <CCCMD> <PROJDIR>/ntaxp/madx86.dll      <OWRELROOT>/axpnt/
-    <CCCMD> <PROJDIR>/ntaxp/madx86.sym      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/madx86.dll      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/madx86.sym      <OWRELROOT>/axpnt/
 
-    <CCCMD> <PROJDIR>/qnx386/madx86.mad     <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> <PROJDIR>/qnx386/madx86.sym     <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/madx86.mad     <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/madx86.sym     <OWRELROOT>/qnx/sym/
 
-    <CCCMD> <PROJDIR>/rdos386/madx86.dll    <OWRELROOT>/rdos/
-    <CCCMD> <PROJDIR>/rdos386/madx86.sym    <OWRELROOT>/rdos/
+    <CCCMD> rdos386/madx86.dll    <OWRELROOT>/rdos/
+    <CCCMD> rdos386/madx86.sym    <OWRELROOT>/rdos/
 
 [ BLOCK . . ]
 #============

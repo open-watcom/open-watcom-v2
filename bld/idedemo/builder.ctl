@@ -14,18 +14,15 @@ set PROJNAME=idedemo
 
 [ BLOCK <1> rel cprel ]
 #======================
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/os2/
-    <CPCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/fortran/os2/
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> threed/nt/nt_3d.dll     <OWRELROOT>/samples/ide/win32/
-    <CPCMD> threed/nt/nt_3d.dll     <OWRELROOT>/samples/ide/fortran/win32/
-  [ IFDEF (os_win "") <2*> ]
-    <CPCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/win/
-    <CPCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/win386/
-    <CPCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/fortran/win/
-    <CPCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/fortran/win386/
-  [ ENDIF ]
+    <CCCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/os2/
+    <CCCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/fortran/os2/
+    <CCCMD> threed/nt/nt_3d.dll     <OWRELROOT>/samples/ide/win32/
+    <CCCMD> threed/nt/nt_3d.dll     <OWRELROOT>/samples/ide/fortran/win32/
+    <CCCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/win/
+    <CCCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/win386/
+    <CCCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/fortran/win/
+    <CCCMD> threed/win/win_3d.dll   <OWRELROOT>/samples/ide/fortran/win386/
+
     <CPCMD> src/*                   <OWRELROOT>/samples/ide/
     <CPCMD> src/fortran/*           <OWRELROOT>/samples/ide/fortran/
     <CPCMD> src/fortran/win32/*     <OWRELROOT>/samples/ide/fortran/win32/

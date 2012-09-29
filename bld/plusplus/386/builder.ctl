@@ -9,16 +9,16 @@ set PROJNAME=wpp386
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> boot rel ]
+[ BLOCK ( <1> <BINTOOL> ) rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
-#=================
+[ BLOCK <BINTOOL> rel ]
+#======================
     <CPCMD> <OWOBJDIR>/bwpp386.exe     <OWBINDIR>/bwpp386<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwppd386<DYEXT> <OWBINDIR>/bwppd386<DYEXT>
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BINTOOL> clean ]
+#========================
     echo rm -f <OWBINDIR>/bwpp386<CMDEXT>
     rm -f <OWBINDIR>/bwpp386<CMDEXT>
     rm -f <OWBINDIR>/bwppd386<DYEXT>

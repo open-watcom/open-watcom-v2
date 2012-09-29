@@ -7,19 +7,11 @@ set PROJNAME=hcdos
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/binrule.ctl ]
+[ INCLUDE <OWROOT>/build/bintool.ctl ]
 
-[ BLOCK <1> build rel ]
-    cdsay <PROJDIR>
-
-[ BLOCK <1> build rel ]
+[ BLOCK <1> rel cprel ]
 #======================
-    <CPCMD> <OWOBJDIR>/hcdos.exe <OWBINDIR>/hcdos<CMDEXT>
-
-[ BLOCK <1> clean ]
-#==================
-    echo rm -f <OWBINDIR>/hcdos<CMDEXT>
-    rm -f <OWBINDIR>/hcdos<CMDEXT>
+    # Currently not built by default
 
 [ BLOCK . . ]
 #============

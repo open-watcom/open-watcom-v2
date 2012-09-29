@@ -9,4 +9,6 @@ set PROJNAME=i86 cg
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
+[ BLOCK . . ]
+#============
 cdsay <PROJDIR>

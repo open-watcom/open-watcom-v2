@@ -9,4 +9,6 @@ set PROJNAME=OWL
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
+[ BLOCK . . ]
+#============
 cdsay <PROJDIR>

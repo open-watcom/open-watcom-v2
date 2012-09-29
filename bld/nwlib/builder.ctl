@@ -9,16 +9,16 @@ set PROJNAME=wlib
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> boot rel ]
+[ BLOCK ( <1> <BINTOOL> ) rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
-#=================
+[ BLOCK <BINTOOL> rel ]
+#======================
     <CPCMD> <OWOBJDIR>/bwlib.exe     <OWBINDIR>/bwlib<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwlibd<DYEXT> <OWBINDIR>/bwlibd<DYEXT>
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BINTOOL> clean ]
+#========================
     echo rm -f <OWBINDIR>/bwlib<CMDEXT>
     rm -f <OWBINDIR>/bwlib<CMDEXT>
     rm -f <OWBINDIR>/bwlibd<DYEXT>

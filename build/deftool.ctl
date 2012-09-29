@@ -7,6 +7,8 @@
 # included this one.
 # NB: PROJNAME must be the tool's base name.
 
+set BINTOOL=0
+
 cdsay <PROJDIR>
 
 [ BLOCK .<PROJNAME> . ]
@@ -22,18 +24,20 @@ cdsay <PROJDIR>
     
 [ BLOCK <1> boot ]
 #=================
-    mkdir <PROJDIR>/<OWOBJDIR>
-    cdsay <PROJDIR>/<OWOBJDIR>
+    mkdir <OWOBJDIR>
+    cdsay <OWOBJDIR>
     wmake -h -f ../binmake bootstrap=1
-    cdsay <PROJDIR>
+    cdsay ..
     <CPCMD> <OWOBJDIR>/<PROJNAME>.exe <OWBINDIR>/<PROJNAME><CMDEXT>
+    set BINTOOL=rel
 
 [ BLOCK <1> bootclean ]
 #======================
-    echo rm -r -f <PROJDIR>/<OWOBJDIR>
-    rm -r -f <PROJDIR>/<OWOBJDIR>
+    echo rm -r -f <OWOBJDIR>
+    rm -r -f <OWOBJDIR>
     echo rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
     rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
+    set BINTOOL=clean
 
 [ BLOCK . . ]
 #============

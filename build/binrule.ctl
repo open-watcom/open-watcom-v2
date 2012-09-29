@@ -7,6 +7,8 @@
 # For a clean, also remove the tool from the binary directory.
 # NB: PROJNAME must be the tool's base name.
 
+set BINTOOL=0
+
 cdsay <PROJDIR>
 
 [ BLOCK .<PROJNAME> . ]
@@ -14,14 +16,16 @@ cdsay <PROJDIR>
 
 [ BLOCK <1> build rel ]
 #======================
-    mkdir <PROJDIR>/<OWOBJDIR>
-    cdsay <PROJDIR>/<OWOBJDIR>
+    mkdir <OWOBJDIR>
+    cdsay <OWOBJDIR>
     wmake -h -f ../binmake
+    set BINTOOL=rel
 
 [ BLOCK <1> clean ]
 #==================
-    echo rm -r -f <PROJDIR>/<OWOBJDIR>
-    rm -r -f <PROJDIR>/<OWOBJDIR>
+    echo rm -r -f <OWOBJDIR>
+    rm -r -f <OWOBJDIR>
+    set BINTOOL=clean
     
 [ BLOCK . . ]
 #============

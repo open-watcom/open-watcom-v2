@@ -14,10 +14,9 @@ set PROJNAME=wstub
 
 [ BLOCK <1> rel cprel ]
 #======================
-  [ IFDEF (all build os_dos os_win cpu_i86 cpu_386 "") <2*> ]
-    <CPCMD> dosi86/wstub.exe    <OWRELROOT>/binw/wstub.exe
-    <CPCMD> dosi86/wstubq.exe   <OWRELROOT>/binw/wstubq.exe
-    <CPCMD> wstub.asm           <OWRELROOT>/src/wstub.asm
+    <CCCMD> dosi86/wstub.exe    <OWRELROOT>/binw/wstub.exe
+    <CCCMD> dosi86/wstubq.exe   <OWRELROOT>/binw/wstubq.exe
+    <CCCMD> wstub.asm           <OWRELROOT>/src/wstub.asm
 
 [ BLOCK . . ]
 #============

@@ -14,8 +14,7 @@ set PROJNAME=whepwlk
 
 [ BLOCK <1> rel cprel ]
 #======================
-  [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/wheapwlk.exe <OWRELROOT>/binw/wheapwlk.exe
+    <CCCMD> wini86/wheapwlk.exe <OWRELROOT>/binw/wheapwlk.exe
 
 [ BLOCK . . ]
 #============

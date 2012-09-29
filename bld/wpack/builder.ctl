@@ -11,6 +11,7 @@ set PROJNAME=wpack
 
 [ BLOCK <1> rel cprel ]
 #======================
+    # Currently not built by default
 
 [ BLOCK . . ]
 #============

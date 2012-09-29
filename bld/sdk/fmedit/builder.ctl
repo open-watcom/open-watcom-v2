@@ -14,12 +14,9 @@ set PROJNAME=fmedit
 
 [ BLOCK <1> rel cprel ]
 #======================
-  [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/fmedit.dll <OWRELROOT>/binw/
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/fmedit.dll <OWRELROOT>/binnt/
-  [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/fmedit.dll <OWRELROOT>/axpnt/
+    <CCCMD> wini86/fmedit.dll <OWRELROOT>/binw/
+    <CCCMD> nt386/fmedit.dll  <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/fmedit.dll  <OWRELROOT>/axpnt/
 
 [ BLOCK . . ]
 #============

@@ -9,4 +9,6 @@ set PROJNAME=DWARF
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
+[ BLOCK . . ]
+#============
 cdsay <PROJDIR>

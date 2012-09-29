@@ -14,21 +14,18 @@ set PROJNAME=w32ldr
 
 [ BLOCK <1> rel cprel ]
 #======================
-  [ IFDEF (os_dos "") <2*> ]
-   <CPCMD> dos386/cwsrun.exe   <OWRELROOT>/binw/w32run.exe
-#   <CPCMD> dos386/x32run.exe   <OWRELROOT>/binw/x32run.exe
-#   <CPCMD> dos386/x32run.exe   <OWRELROOT>/binw/x32run.exe
-#   <CPCMD> dos386/d4grun.exe   <OWRELROOT>/binw/d4grun.exe
-#   <CPCMD> dos386/tntrun.exe   <OWRELROOT>/binw/tntrun.exe
+   <CCCMD> dos386/cwsrun.exe   <OWRELROOT>/binw/w32run.exe
+#   <CCCMD> dos386/x32run.exe   <OWRELROOT>/binw/x32run.exe
+#   <CCCMD> dos386/x32run.exe   <OWRELROOT>/binw/x32run.exe
+#   <CCCMD> dos386/d4grun.exe   <OWRELROOT>/binw/d4grun.exe
+#   <CCCMD> dos386/tntrun.exe   <OWRELROOT>/binw/tntrun.exe
 
-  [ IFDEF (os_os2 "") <2*> ]
-#    <CPCMD> os2386/w32bind.exe  ../build/binp/w32bind.exe
-#    <CPCMD> os2386/os2ldr.exe   ../build/binp/os2ldr.exe
+#   <CCCMD> os2386/w32bind.exe  ../build/binp/w32bind.exe
+#   <CCCMD> os2386/os2ldr.exe   ../build/binp/os2ldr.exe
 
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/w32run.exe  <OWRELROOT>/binnt/w32run.exe
+    <CCCMD> nt386/w32run.exe   <OWRELROOT>/binnt/w32run.exe
 #    these are now real NT exe's - don't copy the stub
-#    <CPCMD> nt/*.exe           <OWRELROOT>/binnt/
+#    <CCCMD> nt/*.exe           <OWRELROOT>/binnt/
 
 [ BLOCK . . ]
 #============

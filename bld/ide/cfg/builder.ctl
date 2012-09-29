@@ -14,51 +14,42 @@ set PROJNAME=ide cfg
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CPCMD> ide.cfg          <OWRELROOT>/binw/
-    <CPCMD> idedos.cfg       <OWRELROOT>/binw/
-    <CPCMD> idedos32.cfg     <OWRELROOT>/binw/
-    <CPCMD> idewin.cfg       <OWRELROOT>/binw/
-    <CPCMD> ideos2.cfg       <OWRELROOT>/binw/
-    <CPCMD> ideos232.cfg     <OWRELROOT>/binw/
-    <CPCMD> idew32.cfg       <OWRELROOT>/binw/
-    <CPCMD> idew386.cfg      <OWRELROOT>/binw/
-#    <CPCMD> ideads.cfg       <OWRELROOT>/binw/
-    <CPCMD> idenlm.cfg       <OWRELROOT>/binw/
-#    <CPCMD> idemfc16.cfg     <OWRELROOT>/binw/
-#    <CPCMD> idemfc32.cfg     <OWRELROOT>/binw/
-#    <CPCMD> idemfca.cfg      <OWRELROOT>/binw/
-    <CPCMD> ideaxp.cfg       <OWRELROOT>/binw/
-    <CPCMD> idelnx.cfg       <OWRELROOT>/binw/
+    <CPCMD> ide.cfg           <OWRELROOT>/binw/
+    <CPCMD> idedos.cfg        <OWRELROOT>/binw/
+    <CPCMD> idedos32.cfg      <OWRELROOT>/binw/
+    <CPCMD> idewin.cfg        <OWRELROOT>/binw/
+    <CPCMD> ideos2.cfg        <OWRELROOT>/binw/
+    <CPCMD> ideos232.cfg      <OWRELROOT>/binw/
+    <CPCMD> idew32.cfg        <OWRELROOT>/binw/
+    <CPCMD> idew386.cfg       <OWRELROOT>/binw/
+#    <CPCMD> ideads.cfg        <OWRELROOT>/binw/
+    <CPCMD> idenlm.cfg        <OWRELROOT>/binw/
+#    <CPCMD> idemfc16.cfg      <OWRELROOT>/binw/
+#    <CPCMD> idemfc32.cfg      <OWRELROOT>/binw/
+#    <CPCMD> idemfca.cfg       <OWRELROOT>/binw/
+    <CPCMD> ideaxp.cfg        <OWRELROOT>/binw/
+    <CPCMD> idelnx.cfg        <OWRELROOT>/binw/
     <CPCMD> iderdos.cfg       <OWRELROOT>/binw/
 
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> wini86/idex.cfg  <OWRELROOT>/binw/
+    <CCCMD> ide.cfg           <OWRELROOT>/binl/
+    <CCCMD> idedos.cfg        <OWRELROOT>/binl/
+    <CCCMD> idedos32.cfg      <OWRELROOT>/binl/
+    <CCCMD> idewin.cfg        <OWRELROOT>/binl/
+    <CCCMD> ideos2.cfg        <OWRELROOT>/binl/
+    <CCCMD> ideos232.cfg      <OWRELROOT>/binl/
+    <CCCMD> idew32.cfg        <OWRELROOT>/binl/
+    <CCCMD> idew386.cfg       <OWRELROOT>/binl/
+    <CCCMD> idenlm.cfg        <OWRELROOT>/binl/
+    <CPCMD> ideaxp.cfg        <OWRELROOT>/binl/
+    <CCCMD> idelnx.cfg        <OWRELROOT>/binl/
+    <CCCMD> iderdos.cfg       <OWRELROOT>/binl/
 
-  [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/idex.cfg  <OWRELROOT>/binw/
+    <CCCMD> wini86/idex.cfg   <OWRELROOT>/binw/
+    <CCCMD> os2386/idex.cfg   <OWRELROOT>/binp/
+    <CCCMD> nt386/idex.cfg    <OWRELROOT>/binnt/
+    <CCCMD> linux386/idex.cfg <OWRELROOT>/binl/
 
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/idex.cfg  <OWRELROOT>/binp/
-
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/idex.cfg   <OWRELROOT>/binnt/
-
-  [ IFDEF (os_linux "") <2*> ]
-    <CPCMD> ide.cfg          <OWRELROOT>/binl/
-    <CPCMD> linux386/idex.cfg <OWRELROOT>/binl/
-    <CPCMD> idedos.cfg       <OWRELROOT>/binl/
-    <CPCMD> idedos32.cfg     <OWRELROOT>/binl/
-    <CPCMD> idewin.cfg       <OWRELROOT>/binl/
-    <CPCMD> ideos2.cfg       <OWRELROOT>/binl/
-    <CPCMD> ideos232.cfg     <OWRELROOT>/binl/
-    <CPCMD> idew32.cfg       <OWRELROOT>/binl/
-    <CPCMD> idew386.cfg      <OWRELROOT>/binl/
-    <CPCMD> idenlm.cfg       <OWRELROOT>/binl/
-    <CPCMD> idelnx.cfg       <OWRELROOT>/binl/
-    <CPCMD> iderdos.cfg      <OWRELROOT>/binl/
-
-  [ IFDEF (cpu_axp) <2*> ] 
-    <CPCMD> ntaxp/idex.cfg   <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/idex.cfg    <OWRELROOT>/axpnt/
 
 [ BLOCK . . ]
 #============

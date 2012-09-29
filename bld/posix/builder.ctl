@@ -9,11 +9,11 @@ set PROJNAME=build POSIX tools
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> boot ]
+[ BLOCK <BINTOOL> rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
-#=================
+[ BLOCK <BINTOOL> rel ]
+#======================
     <CPCMD> <OWOBJDIR>/cat.exe   <OWBINDIR>/cat<CMDEXT>
     <CPCMD> <OWOBJDIR>/cp.exe    <OWBINDIR>/cp<CMDEXT>
     <CPCMD> <OWOBJDIR>/egrep.exe <OWBINDIR>/egrep<CMDEXT>
@@ -24,8 +24,8 @@ set PROJNAME=build POSIX tools
     <CPCMD> <OWOBJDIR>/wc.exe    <OWBINDIR>/wc<CMDEXT>
     <CPCMD> <OWOBJDIR>/which.exe <OWBINDIR>/which<CMDEXT>
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BINTOOL> clean ]
+#========================
     rm -f <OWBINDIR>/cat<CMDEXT>
     rm -f <OWBINDIR>/cp<CMDEXT>
     rm -f <OWBINDIR>/egrep<CMDEXT>
@@ -35,6 +35,10 @@ set PROJNAME=build POSIX tools
     rm -f <OWBINDIR>/uniq<CMDEXT>
     rm -f <OWBINDIR>/wc<CMDEXT>
     rm -f <OWBINDIR>/which<CMDEXT>
+
+[ BLOCK <1> rel cprel ]
+#======================
+    # Currently not built by default
 
 [ BLOCK . . ]
 #============

@@ -15,6 +15,7 @@ set PROJNAME=aui samples
 
 [ BLOCK <1> rel cprel ]
 #======================
+    # Currently not built by default
 
 [ BLOCK . . ]
 #============

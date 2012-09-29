@@ -14,10 +14,8 @@ set PROJNAME=techinfo
 
 [ BLOCK <1> rel cprel ]
 #======================
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dosi86/techinfo.exe <OWRELROOT>/binw/
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2i86/techinfo.exe <OWRELROOT>/binp/
+    <CCCMD> dosi86/techinfo.exe <OWRELROOT>/binw/
+    <CCCMD> os2i86/techinfo.exe <OWRELROOT>/binp/
 
 [ BLOCK . . ]
 #============

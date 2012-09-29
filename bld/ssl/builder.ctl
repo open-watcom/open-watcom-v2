@@ -7,7 +7,7 @@ set PROJNAME=ssl
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/deftool.ctl ]
+[ INCLUDE <OWROOT>/build/bintool.ctl ]
 
 [ BLOCK <1> rel cprel ]
 #======================

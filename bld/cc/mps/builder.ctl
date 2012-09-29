@@ -9,16 +9,16 @@ set PROJNAME=wccmps
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> boot rel ]
+[ BLOCK ( <1> <BINTOOL> ) rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
-#=================
+[ BLOCK <BINTOOL> rel ]
+#======================
     <CPCMD> <OWOBJDIR>/bwcmps.exe      <OWBINDIR>/bwccmps<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwccdmps<DYEXT> <OWBINDIR>/bwccdmps<DYEXT>
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BINTOOL> clean ]
+#========================
     echo rm -f <OWBINDIR>/bwccmps<CMDEXT>
     rm -f <OWBINDIR>/bwccmps<CMDEXT>
     rm -f <OWBINDIR>/bwccdmps<DYEXT>

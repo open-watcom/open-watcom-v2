@@ -14,12 +14,8 @@ set PROJNAME=mkcdpg
 
 [ BLOCK <1> rel cprel ]
 #======================
-
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/mkcdpg.exe   <OWRELROOT>/binnt/mkcdpg.exe
-
-  [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> ntaxp/mkcdpg.exe   <OWRELROOT>/axpnt/mkcdpg.exe
+    <CCCMD> nt386/mkcdpg.exe   <OWRELROOT>/binnt/mkcdpg.exe
+    <CCCMD> ntaxp/mkcdpg.exe   <OWRELROOT>/axpnt/mkcdpg.exe
 
 [ BLOCK . . ]
 #============

@@ -17,23 +17,20 @@ set PROJNAME=pbide
 
 [ BLOCK <1> rel cprel ]
 #======================
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> fscopy/wfscopy.exe                  <OWRELROOT>/binw/wfscopy.exe
-  [ IFDEF (os_win "") <2*> ]
-    <CPCMD> run/wini86/run.exe                  <OWRELROOT>/binw/watrun.exe
-    <CPCMD> dlldbg/wini86/dlldbg.exe            <OWRELROOT>/binw/dlldbg.exe
-    <CPCMD> wig/wini86.dll/pbide.dll            <OWRELROOT>/binw/pbide.dll
-    <CPCMD> cfg/wini86/pbide.cfg                <OWRELROOT>/binw/pbide.cfg
-    <CPCMD> cfg/wini86/pbidex.cfg               <OWRELROOT>/binw/pbidex.cfg
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> run/nt386/run.exe                   <OWRELROOT>/binnt/watrun.exe
-    <CPCMD> dlldbg/nt386/dlldbg.exe             <OWRELROOT>/binnt/dlldbg.exe
-    <CPCMD> wig/nt386.dll/pbide.dll             <OWRELROOT>/binnt/pbide.dll
-    <CPCMD> dlldbg/pbwdnt.dbg                   <OWRELROOT>/binnt/pbwdnt.dbg
-    <CPCMD> cfg/nt386/pbide.cfg                 <OWRELROOT>/binnt/pbide.cfg
-    <CPCMD> cfg/nt386/pbidex.cfg                <OWRELROOT>/binnt/pbidex.cfg
-    <CPCMD> <OWSRCDIR>/ide/cfg/idepbnt.cfg      <OWRELROOT>/binnt/idepbnt.cfg
-  [ ENDIF ]
+    <CCCMD> fscopy/wfscopy.exe                  <OWRELROOT>/binw/wfscopy.exe
+    <CCCMD> run/wini86/run.exe                  <OWRELROOT>/binw/watrun.exe
+    <CCCMD> dlldbg/wini86/dlldbg.exe            <OWRELROOT>/binw/dlldbg.exe
+    <CCCMD> wig/wini86.dll/pbide.dll            <OWRELROOT>/binw/pbide.dll
+    <CCCMD> cfg/wini86/pbide.cfg                <OWRELROOT>/binw/pbide.cfg
+    <CCCMD> cfg/wini86/pbidex.cfg               <OWRELROOT>/binw/pbidex.cfg
+    <CCCMD> run/nt386/run.exe                   <OWRELROOT>/binnt/watrun.exe
+    <CCCMD> dlldbg/nt386/dlldbg.exe             <OWRELROOT>/binnt/dlldbg.exe
+    <CCCMD> wig/nt386.dll/pbide.dll             <OWRELROOT>/binnt/pbide.dll
+    <CCCMD> dlldbg/pbwdnt.dbg                   <OWRELROOT>/binnt/pbwdnt.dbg
+    <CCCMD> cfg/nt386/pbide.cfg                 <OWRELROOT>/binnt/pbide.cfg
+    <CCCMD> cfg/nt386/pbidex.cfg                <OWRELROOT>/binnt/pbidex.cfg
+    <CCCMD> <OWSRCDIR>/ide/cfg/idepbnt.cfg      <OWRELROOT>/binnt/idepbnt.cfg
+
     <CPCMD> dlldbg/pbend.dbg                    <OWRELROOT>/binw/pbend.dbg
     <CPCMD> dlldbg/pbstart.dbg                  <OWRELROOT>/binw/pbstart.dbg
     <CPCMD> dlldbg/pbwd.dbg                     <OWRELROOT>/binw/pbwd.dbg

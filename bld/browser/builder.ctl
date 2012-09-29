@@ -23,23 +23,18 @@ set PROJNAME=browser
 
 [ BLOCK <1> rel cprel ]
 #======================
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> brg/dos386/wbrg.exe    <OWRELROOT>/binw/wbrg.exe
+    <CCCMD> brg/dos386/wbrg.exe    <OWRELROOT>/binw/wbrg.exe
 
-  [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/wbrw.exe        <OWRELROOT>/binw/wbrw.exe
+    <CCCMD> wini86/wbrw.exe        <OWRELROOT>/binw/wbrw.exe
 
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/wbrw.exe        <OWRELROOT>/binp/wbrw.exe
-    <CPCMD> brg/os2386/wbrg.exe    <OWRELROOT>/binp/wbrg.exe
+    <CCCMD> os2386/wbrw.exe        <OWRELROOT>/binp/wbrw.exe
+    <CCCMD> brg/os2386/wbrg.exe    <OWRELROOT>/binp/wbrg.exe
 
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wbrw.exe         <OWRELROOT>/binnt/wbrw.exe
-    <CPCMD> brg/nt386/wbrg.exe     <OWRELROOT>/binnt/wbrg.exe
+    <CCCMD> nt386/wbrw.exe         <OWRELROOT>/binnt/wbrw.exe
+    <CCCMD> brg/nt386/wbrg.exe     <OWRELROOT>/binnt/wbrg.exe
 
-  [ IFDEF (cpu_axp) <2*> ]
-    <CPCMD> axpnt/wbrw.exe         <OWRELROOT>/axpnt/wbrw.exe
-    <CPCMD> brg/ntaxp/wbrg.exe     <OWRELROOT>/axpnt/wbrg.exe
+    <CCCMD> axpnt/wbrw.exe         <OWRELROOT>/axpnt/wbrw.exe
+    <CCCMD> brg/ntaxp/wbrg.exe     <OWRELROOT>/axpnt/wbrg.exe
 
 [ BLOCK . . ]
 #============

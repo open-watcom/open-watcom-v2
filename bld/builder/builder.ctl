@@ -9,11 +9,11 @@ set PROJNAME=build utilities
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> boot ]
+[ BLOCK ( <1> <BINTOOL> ) rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
-#=================
+[ BLOCK <BINTOOL> rel ]
+#======================
     <CPCMD> <OWOBJDIR>/wsplice.exe  <OWBINDIR>/wsplice<CMDEXT>
     <CPCMD> <OWOBJDIR>/sweep.exe    <OWBINDIR>/sweep<CMDEXT>
     <CPCMD> <OWOBJDIR>/cdsay.exe    <OWBINDIR>/cdsay<CMDEXT>
@@ -23,8 +23,8 @@ set PROJNAME=build utilities
     <CCCMD> <OWOBJDIR>/diff.exe     <OWBINDIR>/diff<CMDEXT>
     <CCCMD> <OWOBJDIR>/sed.exe      <OWBINDIR>/sed<CMDEXT>
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BINTOOL> clean ]
+#========================
     echo rm -f <OWBINDIR>/wsplice<CMDEXT>
     rm -f <OWBINDIR>/wsplice<CMDEXT>
     echo rm -f <OWBINDIR>/sweep<CMDEXT>
@@ -41,6 +41,10 @@ set PROJNAME=build utilities
     rm -f <OWBINDIR>/diff<CMDEXT>
     echo rm -f <OWBINDIR>/sed<CMDEXT>
     rm -f <OWBINDIR>/sed<CMDEXT>
+
+[ BLOCK <1> rel cprel ]
+#======================
+    # Currently not built by default
 
 [ BLOCK . . ]
 #============

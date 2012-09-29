@@ -7,21 +7,21 @@ set PROJNAME=omftools
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE <OWROOT>/build/binrule.ctl ]
 
-[ BLOCK <1> boot ]
+[ BLOCK <BINTOOL> rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
-#=================
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/objchg.exe   <OWBINDIR>/objchg<CMDEXT>
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/objfind.exe  <OWBINDIR>/objfind<CMDEXT>
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/objlist.exe  <OWBINDIR>/objlist<CMDEXT>
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/objxdef.exe  <OWBINDIR>/objxdef<CMDEXT>
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/objxref.exe  <OWBINDIR>/objxref<CMDEXT>
+[ BLOCK <BINTOOL> rel ]
+#========================
+    <CPCMD> <OWOBJDIR>/objchg.exe   <OWBINDIR>/objchg<CMDEXT>
+    <CPCMD> <OWOBJDIR>/objfind.exe  <OWBINDIR>/objfind<CMDEXT>
+    <CPCMD> <OWOBJDIR>/objlist.exe  <OWBINDIR>/objlist<CMDEXT>
+    <CPCMD> <OWOBJDIR>/objxdef.exe  <OWBINDIR>/objxdef<CMDEXT>
+    <CPCMD> <OWOBJDIR>/objxref.exe  <OWBINDIR>/objxref<CMDEXT>
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BINTOOL> clean ]
+#========================
     echo rm -f <OWBINDIR>/objchg<CMDEXT>
     rm -f <OWBINDIR>/objchg<CMDEXT>
     echo rm -f <OWBINDIR>/objfind<CMDEXT>
@@ -32,6 +32,10 @@ set PROJNAME=omftools
     rm -f <OWBINDIR>/objxdef<CMDEXT>
     echo rm -f <OWBINDIR>/objxref<CMDEXT>
     rm -f <OWBINDIR>/objxref<CMDEXT>
+
+[ BLOCK <1> rel cprel ]
+#======================
+    # Currently not built by default
 
 [ BLOCK . . ]
 #============

@@ -9,16 +9,16 @@ set PROJNAME=wpp
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> boot rel ]
+[ BLOCK ( <1> <BINTOOL> ) rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
-#=================
-    <CPCMD> <PROJDIR>/<OWOBJDIR>/bwpp.exe     <OWBINDIR>/bwpp<CMDEXT>
-    <CCCMD> <PROJDIR>/<OWOBJDIR>/bwppd<DYEXT> <OWBINDIR>/bwppd<DYEXT>
-
-[ BLOCK <1> bootclean ]
+[ BLOCK <BINTOOL> rel ]
 #======================
+    <CPCMD> <OWOBJDIR>/bwpp.exe     <OWBINDIR>/bwpp<CMDEXT>
+    <CCCMD> <OWOBJDIR>/bwppd<DYEXT> <OWBINDIR>/bwppd<DYEXT>
+
+[ BLOCK <BINTOOL> clean ]
+#========================
     echo rm -f <OWBINDIR>/bwpp<CMDEXT>
     rm -f <OWBINDIR>/bwpp<CMDEXT>
     rm -f <OWBINDIR>/bwppd<DYEXT>

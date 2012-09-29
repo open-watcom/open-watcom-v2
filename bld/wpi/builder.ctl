@@ -9,4 +9,6 @@ set PROJNAME=wpi library
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
+[ BLOCK . . ]
+#============
 cdsay <PROJDIR>

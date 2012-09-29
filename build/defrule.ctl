@@ -1,6 +1,8 @@
 # Default actions Builder Control File 
 # ====================================
 
+set BINTOOL=0
+
 cdsay <PROJDIR>
 
 [ BLOCK .<PROJNAME> . ]
@@ -16,14 +18,16 @@ cdsay <PROJDIR>
     
 [ BLOCK <1> boot ]
 #=================
-    mkdir <PROJDIR>/<OWOBJDIR>
-    cdsay <PROJDIR>/<OWOBJDIR>
+    mkdir <OWOBJDIR>
+    cdsay <OWOBJDIR>
     wmake -h -f ../binmake bootstrap=1
+    set BINTOOL=rel
 
 [ BLOCK <1> bootclean ]
 #======================
-    echo rm -r -f <PROJDIR>/<OWOBJDIR>
-    rm -r -f <PROJDIR>/<OWOBJDIR>
+    echo rm -r -f <OWOBJDIR>
+    rm -r -f <OWOBJDIR>
+    set BINTOOL=clean
 
 [ BLOCK . . ]
 #============

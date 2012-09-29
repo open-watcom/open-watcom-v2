@@ -14,12 +14,9 @@ set PROJNAME=wic
 
 [ BLOCK <1> rel cprel ]
 #========================
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dos386/wic.exe <OWRELROOT>/binw/wic.exe
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/wic.exe <OWRELROOT>/binp/wic.exe
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/wic.exe <OWRELROOT>/binnt/wic.exe
+    <CCCMD> dos386/wic.exe <OWRELROOT>/binw/wic.exe
+    <CCCMD> os2386/wic.exe <OWRELROOT>/binp/wic.exe
+    <CCCMD> nt386/wic.exe  <OWRELROOT>/binnt/wic.exe
 
 [ BLOCK . . ]
 #============

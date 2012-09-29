@@ -18,28 +18,28 @@ set PROJNAME=hllcv
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> <PROJDIR>/dos386/hllcv.dip      <OWRELROOT>/binw/
-#    <CCCMD> <PROJDIR>/dos386/hllcv.sym      <OWRELROOT>/binw/hllcv.dsy
+    <CCCMD> dos386/hllcv.dip      <OWRELROOT>/binw/
+#    <CCCMD> dos386/hllcv.sym      <OWRELROOT>/binw/hllcv.dsy
 
-    <CCCMD> <PROJDIR>/wini86/hllcv.dll      <OWRELROOT>/binw/
-#    <CCCMD> <PROJDIR>/wini86/hllcv.sym      <OWRELROOT>/binw/
+    <CCCMD> wini86/hllcv.dll      <OWRELROOT>/binw/
+#    <CCCMD> wini86/hllcv.sym      <OWRELROOT>/binw/
 
-#    <CCCMD> <PROJDIR>/os2i86/hllcv.dll      <OWRELROOT>/binp/dll/
-#    <CCCMD> <PROJDIR>/os2i86/hllcv.sym      <OWRELROOT>/binp/dll/
-    <CCCMD> <PROJDIR>/os2386/hllcv.d32      <OWRELROOT>/binp/
-    <CCCMD> <PROJDIR>/os2386/hllcv.sym      <OWRELROOT>/binp/
+#    <CCCMD> os2i86/hllcv.dll      <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/hllcv.sym      <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/hllcv.d32      <OWRELROOT>/binp/
+    <CCCMD> os2386/hllcv.sym      <OWRELROOT>/binp/
 
-    <CCCMD> <PROJDIR>/nt386/hllcv.dll       <OWRELROOT>/binnt/
-    <CCCMD> <PROJDIR>/nt386/hllcv.sym       <OWRELROOT>/binnt/
+    <CCCMD> nt386/hllcv.dll       <OWRELROOT>/binnt/
+    <CCCMD> nt386/hllcv.sym       <OWRELROOT>/binnt/
 
-    <CCCMD> <PROJDIR>/linux386/hllcv.dip    <OWRELROOT>/binl/
-    <CCCMD> <PROJDIR>/linux386/hllcv.sym    <OWRELROOT>/binl/
+    <CCCMD> linux386/hllcv.dip    <OWRELROOT>/binl/
+    <CCCMD> linux386/hllcv.sym    <OWRELROOT>/binl/
 
-    <CCCMD> <PROJDIR>/ntaxp/hllcv.dll       <OWRELROOT>/axpnt/
-    <CCCMD> <PROJDIR>/ntaxp/hllcv.sym       <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/hllcv.dll       <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/hllcv.sym       <OWRELROOT>/axpnt/
 
-    <CCCMD> <PROJDIR>/qnx386/hllcv.dip      <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> <PROJDIR>/qnx386/hllcv.sym      <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/hllcv.dip      <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/hllcv.sym      <OWRELROOT>/qnx/sym/
 
 [ BLOCK . . ]
 #============

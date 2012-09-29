@@ -9,4 +9,6 @@ set PROJNAME=MIPS cg
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
+[ BLOCK . . ]
+#============
 cdsay <PROJDIR>

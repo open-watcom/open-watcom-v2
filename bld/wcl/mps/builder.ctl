@@ -9,26 +9,26 @@ set PROJNAME=wclmps
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> boot rel ]
+[ BLOCK ( <1> <BINTOOL> ) rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
-#=================
+[ BLOCK <BINTOOL> rel ]
+#======================
     <CPCMD> <OWOBJDIR>/bwclmps.exe <OWBINDIR>/bwclmps<CMDEXT>
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BINTOOL> clean ]
+#========================
     echo rm -f <OWBINDIR>/bwclmps<CMDEXT>
     rm -f <OWBINDIR>/bwclmps<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> <PROJDIR>/nt386/wclmps.exe      <OWRELROOT>/binnt/wclmps.exe
-    <CCCMD> <PROJDIR>/nt386/wclmps.sym      <OWRELROOT>/binnt/wclmps.sym
-    <CCCMD> <PROJDIR>/os2386/wclmps.exe     <OWRELROOT>/binp/wclmps.exe
-    <CCCMD> <PROJDIR>/os2386/wclmps.sym     <OWRELROOT>/binp/wclmps.sym
-    <CCCMD> <PROJDIR>/linux386/wclmps.exe   <OWRELROOT>/binl/wclmps
-    <CCCMD> <PROJDIR>/linux386/wclmps.sym   <OWRELROOT>/binl/wclmps.sym
+    <CCCMD> nt386/wclmps.exe      <OWRELROOT>/binnt/wclmps.exe
+    <CCCMD> nt386/wclmps.sym      <OWRELROOT>/binnt/wclmps.sym
+    <CCCMD> os2386/wclmps.exe     <OWRELROOT>/binp/wclmps.exe
+    <CCCMD> os2386/wclmps.sym     <OWRELROOT>/binp/wclmps.sym
+    <CCCMD> linux386/wclmps.exe   <OWRELROOT>/binl/wclmps
+    <CCCMD> linux386/wclmps.sym   <OWRELROOT>/binl/wclmps.sym
 
 [ BLOCK . . ]
 #============

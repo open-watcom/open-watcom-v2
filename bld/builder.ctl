@@ -56,12 +56,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/re2c/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/as/builder.ctl ]
 # Now miscellaneous utilities required during build
-[ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/causeway/cwc/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 
 ## The following tools are not required during build
 #[ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
@@ -107,6 +107,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/builder.ctl ]
@@ -148,6 +149,11 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wcl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77/wfl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wstrip/builder.ctl ]
+# Build only command line tools
+[ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 # User interface libs
 [ INCLUDE <OWSRCDIR>/ncurses/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ui/builder.ctl ]

@@ -7,19 +7,11 @@ set PROJNAME=bmp2eps
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/binrule.ctl ]
+[ INCLUDE <OWROOT>/build/bintool.ctl ]
 
-[ BLOCK <1> build rel ]
-    cdsay <PROJDIR>
-
-[ BLOCK <1> build rel ]
+[ BLOCK <1> rel cprel ]
 #======================
-    <CPCMD> <OWOBJDIR>/bmp2eps.exe <OWBINDIR>/bmp2eps<CMDEXT>
-
-[ BLOCK <1> clean ]
-#==================
-    echo rm -f <OWBINDIR>/bmp2eps<CMDEXT>
-    rm -f <OWBINDIR>/bmp2eps<CMDEXT>
+    # Currently not built by default
 
 [ BLOCK . . ]
 #============

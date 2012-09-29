@@ -18,28 +18,28 @@ set PROJNAME=madppc
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> <PROJDIR>/dos386/madppc.mad     <OWRELROOT>/binw/
-#    <CCCMD> <PROJDIR>/dos386/madppc.sym     <OWRELROOT>/binw/madppc.dsy
+    <CCCMD> dos386/madppc.mad     <OWRELROOT>/binw/
+#    <CCCMD> dos386/madppc.sym     <OWRELROOT>/binw/madppc.dsy
 
-    <CCCMD> <PROJDIR>/wini86/madppc.dll     <OWRELROOT>/binw/
-#    <CCCMD> <PROJDIR>/wini86/madppc.sym     <OWRELROOT>/binw/
+    <CCCMD> wini86/madppc.dll     <OWRELROOT>/binw/
+#    <CCCMD> wini86/madppc.sym     <OWRELROOT>/binw/
 
-#    <CCCMD> <PROJDIR>/os2i86/madppc.dll     <OWRELROOT>/binp/dll/
-#    <CCCMD> <PROJDIR>/os2i86/madppc.sym     <OWRELROOT>/binp/dll/
-    <CCCMD> <PROJDIR>/os2386/madppc.d32     <OWRELROOT>/binp/
-    <CCCMD> <PROJDIR>/os2386/madppc.sym     <OWRELROOT>/binp/
+#    <CCCMD> os2i86/madppc.dll     <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/madppc.sym     <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/madppc.d32     <OWRELROOT>/binp/
+    <CCCMD> os2386/madppc.sym     <OWRELROOT>/binp/
 
-    <CCCMD> <PROJDIR>/nt386/madppc.dll      <OWRELROOT>/binnt/
-    <CCCMD> <PROJDIR>/nt386/madppc.sym      <OWRELROOT>/binnt/
+    <CCCMD> nt386/madppc.dll      <OWRELROOT>/binnt/
+    <CCCMD> nt386/madppc.sym      <OWRELROOT>/binnt/
 
-    <CCCMD> <PROJDIR>/linux386/madppc.mad   <OWRELROOT>/binl/
-    <CCCMD> <PROJDIR>/linux386/madppc.sym   <OWRELROOT>/binl/
+    <CCCMD> linux386/madppc.mad   <OWRELROOT>/binl/
+    <CCCMD> linux386/madppc.sym   <OWRELROOT>/binl/
 
-    <CCCMD> <PROJDIR>/ntaxp/madppc.dll      <OWRELROOT>/axpnt/
-    <CCCMD> <PROJDIR>/ntaxp/madppc.sym      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/madppc.dll      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/madppc.sym      <OWRELROOT>/axpnt/
 
-    <CCCMD> <PROJDIR>/qnx386/madppc.mad     <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> <PROJDIR>/qnx386/madppc.sym     <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/madppc.mad     <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/madppc.sym     <OWRELROOT>/qnx/sym/
 
 [ BLOCK . . ]
 #============

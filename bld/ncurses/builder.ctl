@@ -9,4 +9,6 @@ set PROJNAME=ncurses
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
+[ BLOCK . . ]
+#============
 cdsay <PROJDIR>

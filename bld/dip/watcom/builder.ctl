@@ -18,31 +18,31 @@ set PROJNAME=watcom
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> <PROJDIR>/dos386/watcom.dip     <OWRELROOT>/binw/
-#    <CCCMD> <PROJDIR>/dos386/watcom.sym     <OWRELROOT>/binw/watcom.dsy
+    <CCCMD> dos386/watcom.dip     <OWRELROOT>/binw/
+#    <CCCMD> dos386/watcom.sym     <OWRELROOT>/binw/watcom.dsy
 
-    <CCCMD> <PROJDIR>/wini86/watcom.dll     <OWRELROOT>/binw/
-#    <CCCMD> <PROJDIR>/wini86/watcom.sym     <OWRELROOT>/binw/
+    <CCCMD> wini86/watcom.dll     <OWRELROOT>/binw/
+#    <CCCMD> wini86/watcom.sym     <OWRELROOT>/binw/
 
-#    <CCCMD> <PROJDIR>/os2i86/watcom.dll     <OWRELROOT>/binp/dll/
-#    <CCCMD> <PROJDIR>/os2i86/watcom.sym     <OWRELROOT>/binp/dll/
-    <CCCMD> <PROJDIR>/os2386/watcom.d32     <OWRELROOT>/binp/
-    <CCCMD> <PROJDIR>/os2386/watcom.sym     <OWRELROOT>/binp/
+#    <CCCMD> os2i86/watcom.dll     <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/watcom.sym     <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/watcom.d32     <OWRELROOT>/binp/
+    <CCCMD> os2386/watcom.sym     <OWRELROOT>/binp/
 
-    <CCCMD> <PROJDIR>/nt386/watcom.dll      <OWRELROOT>/binnt/
-    <CCCMD> <PROJDIR>/nt386/watcom.sym      <OWRELROOT>/binnt/
+    <CCCMD> nt386/watcom.dll      <OWRELROOT>/binnt/
+    <CCCMD> nt386/watcom.sym      <OWRELROOT>/binnt/
 
-    <CCCMD> <PROJDIR>/linux386/watcom.dip   <OWRELROOT>/binl/
-    <CCCMD> <PROJDIR>/linux386/watcom.sym   <OWRELROOT>/binl/
+    <CCCMD> linux386/watcom.dip   <OWRELROOT>/binl/
+    <CCCMD> linux386/watcom.sym   <OWRELROOT>/binl/
 
-    <CCCMD> <PROJDIR>/ntaxp/watcom.dll      <OWRELROOT>/axpnt/
-    <CCCMD> <PROJDIR>/ntaxp/watcom.sym      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/watcom.dll      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/watcom.sym      <OWRELROOT>/axpnt/
 
-    <CCCMD> <PROJDIR>/qnx386/watcom.dip     <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> <PROJDIR>/qnx386/watcom.sym     <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/watcom.dip     <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/watcom.sym     <OWRELROOT>/qnx/sym/
 
-    <CCCMD> <PROJDIR>/rdos386/watcom.dll    <OWRELROOT>/rdos/
-    <CCCMD> <PROJDIR>/rdos386/watcom.sym    <OWRELROOT>/rdos/
+    <CCCMD> rdos386/watcom.dll    <OWRELROOT>/rdos/
+    <CCCMD> rdos386/watcom.sym    <OWRELROOT>/rdos/
 
 [ BLOCK . . ]
 #============

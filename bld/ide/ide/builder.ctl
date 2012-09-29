@@ -16,19 +16,12 @@ set PROJNAME=ide
 #======================
     <CPCMD> ../ide.doc      <OWRELROOT>/ide.doc
 
-  [ IFDEF (os_win "") <2*> ]
-    <CPCMD> wini86/ide.exe  <OWRELROOT>/binw/
-    <CPCMD> win/wsrv.pif    <OWRELROOT>/binw/
-    <CPCMD> win/wd.pif      <OWRELROOT>/binw/
-
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/ide.exe  <OWRELROOT>/binp/
-
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/ide.exe   <OWRELROOT>/binnt/
-
-  [ IFDEF (cpu_axp) <2*> ] 
-    <CPCMD> ntaxp/ide.exe   <OWRELROOT>/axpnt/
+    <CCCMD> wini86/ide.exe  <OWRELROOT>/binw/
+    <CCCMD> win/wsrv.pif    <OWRELROOT>/binw/
+    <CCCMD> win/wd.pif      <OWRELROOT>/binw/
+    <CCCMD> os2386/ide.exe  <OWRELROOT>/binp/
+    <CCCMD> nt386/ide.exe   <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/ide.exe   <OWRELROOT>/axpnt/
 
 [ BLOCK . . ]
 #============

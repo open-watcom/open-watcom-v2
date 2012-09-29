@@ -9,16 +9,16 @@ set PROJNAME=wcc
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> boot rel ]
+[ BLOCK ( <1> <BINTOOL> ) rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> boot ]
-#=================
+[ BLOCK <BINTOOL> rel ]
+#======================
     <CPCMD> <OWOBJDIR>/bwcc.exe     <OWBINDIR>/bwcc<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwccd<DYEXT> <OWBINDIR>/bwccd<DYEXT>
 
-[ BLOCK <1> bootclean ]
-#======================
+[ BLOCK <BINTOOL> clean ]
+#========================
     echo rm -f <OWBINDIR>/bwcc<CMDEXT>
     rm -f <OWBINDIR>/bwcc<CMDEXT>
     rm -f <OWBINDIR>/bwccd<DYEXT>

@@ -12,10 +12,9 @@ set PROJNAME=uninstal
 [ BLOCK <1> rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> <2> rel cprel ]
-#==========================
-    [ IFDEF (os_nt "") <2*> ]
-      <CPCMD> nt386/uninstal.exe <OWRELROOT>/
+[ BLOCK <1> rel cprel ]
+#======================
+    <CCCMD> nt386/uninstal.exe <OWRELROOT>/
 
 [ BLOCK . . ]
 #============

@@ -17,15 +17,14 @@ set PROJNAME=bdiff
 
 [ BLOCK <1> rel cprel ]
 #======================
-  [ IFDEF (os_dos "") <2*> ]
-    <CPCMD> dos386/bdiff.exe     <OWRELROOT>/binw/bdiff.exe
-    <CPCMD> dos386/bpatch.exe    <OWRELROOT>/binw/bpatch.exe
-  [ IFDEF (os_os2 "") <2*> ]
-    <CPCMD> os2386/bdiff.exe     <OWRELROOT>/binp/bdiff.exe
-    <CPCMD> os2386/bpatch.exe    <OWRELROOT>/binp/bpatch.exe
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> nt386/bdiff.exe      <OWRELROOT>/binnt/bdiff.exe
-    <CPCMD> nt386/bpatch.exe     <OWRELROOT>/binnt/bpatch.exe
+    <CCCMD> dos386/bdiff.exe     <OWRELROOT>/binw/bdiff.exe
+    <CCCMD> dos386/bpatch.exe    <OWRELROOT>/binw/bpatch.exe
+
+    <CCCMD> os2386/bdiff.exe     <OWRELROOT>/binp/bdiff.exe
+    <CCCMD> os2386/bpatch.exe    <OWRELROOT>/binp/bpatch.exe
+
+    <CCCMD> nt386/bdiff.exe      <OWRELROOT>/binnt/bdiff.exe
+    <CCCMD> nt386/bpatch.exe     <OWRELROOT>/binnt/bpatch.exe
 
 [ BLOCK . . ]
 #============

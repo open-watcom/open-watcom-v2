@@ -9,4 +9,6 @@ set PROJNAME=gui library
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
+[ BLOCK . . ]
+#============
 cdsay <PROJDIR>
