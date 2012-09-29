@@ -91,10 +91,10 @@ my $prev_changeno_name   = "$home\/changeno.txt";
 my $prev_changeno        = "0";
 my $prev_report_stamp    = "";
 my $build_needed         = 1;
-my $pass1_result         = "success";
-my $pass2_result         = "success";
-my $docs_result          = "success";
-my $CVS_result           = "success";
+my $pass1_result         = "fail";
+my $pass2_result         = "fail";
+my $docs_result          = "fail";
+my $CVS_result           = "fail";
 
 sub get_prev_changeno
 {
@@ -431,7 +431,10 @@ sub display_CVS_messages
 
 sub run_tests
 {
-    my($result) = "success";
+    my($aresult) = "fail";
+    my($cresult) = "fail";
+    my($fresult) = "fail";
+    my($presult) = "fail";
 
     # Run regression tests for the Fortran, C, C++ compilers and WASM.
 
@@ -441,16 +444,20 @@ sub run_tests
     print REPORT "REGRESSION TESTS COMPLETED: ", get_datetime(), "\n\n";
 
     print REPORT "\tFortran Compiler: ";
-    if (process_log("$OW\/bld\/f77\/regress\/result.log") ne "success") { $result = "fail"; }
+    $fresult = process_log("$OW\/bld\/f77\/regress\/result.log");
     print REPORT "\tC Compiler      : ";
-    if (process_log("$OW\/bld\/ctest\/result.log") ne "success") { $result = "fail"; }
+    $cresult = process_log("$OW\/bld\/ctest\/result.log");
     print REPORT "\tC++ Compiler    : ";
-    if (process_log("$OW\/bld\/plustest\/result.log") ne "success") { $result = "fail"; }
+    $presult = process_log("$OW\/bld\/plustest\/result.log");
     print REPORT "\tWASM            : ";
-    if (process_log("$OW\/bld\/wasmtest\/result.log") ne "success") { $result = "fail"; }
+    $aresult = process_log("$OW\/bld\/wasmtest\/result.log");
     print REPORT "\n";
 
-    return $result;
+    if ($aresult eq "success" && $cresult eq "success" && $fresult eq "success" && $presult eq "success") {
+        return "success";
+    } else {
+        return "fail";
+    }
 }
 
 sub run_build
@@ -613,6 +620,8 @@ print REPORT "================================================\n\n";
 
 if ($Common::config{'OWCVS'} ne "") {
     $CVS_result = CVS_check_sync($Common::config{'OWCVS'});
+} else {
+    $CVS_result = "success";
 }
 if ($CVS_result eq "fail") {
     close(REPORT);
@@ -655,7 +664,7 @@ print REPORT "===================\n\n";
 
 $WATCOM           = $Common::config{"WATCOM"};
 $relsubdir        = "pass1";
-$buildlog         = "$OW\/docs\/pass1.log";
+$buildlog         = "$OW\/docs\/doc.log";
 $bldbase          = "$home\/$Common::config{'BLDBASED'}";
 $bldlast          = "$home\/$Common::config{'BLDLASTD'}";
 

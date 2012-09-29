@@ -110,7 +110,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wattcp/builder.ctl ]
 # Continue with Causeway DOS extender.
 [ INCLUDE <OWSRCDIR>/causeway/builder.ctl ]
 # Continue with DOS extenders stubs.
@@ -161,8 +160,9 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/dip/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/mad/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rsilib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wv/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/wattcp/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/trap/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/wv/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wsample/builder.ctl ]
 # GUI tools libraries
 [ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
