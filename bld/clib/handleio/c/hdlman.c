@@ -46,6 +46,8 @@
  #include <windows.h>
 #elif defined(__DOS__)
  #include "tinyio.h"
+#elif defined(__UNIX__)
+ #include <sys/resource.h>
 #endif
 #include "iomode.h"
 #include "fileacc.h"
@@ -54,26 +56,6 @@
 #include "handleio.h"
 
 #undef __getOSHandle
-
-#if defined(__DOS__)
-    extern tiny_ret_t _Set_File_Handle_Count( unsigned );
-  #if defined(__386__)
-    #pragma aux _Set_File_Handle_Count = \
-        "mov        ah,67h"             \
-        "int        0x21"               \
-        "rcl        eax,1"              \
-        "ror        eax,1"              \
-        value [eax]                     \
-        parm caller [ebx]
-  #else
-    #pragma aux _Set_File_Handle_Count = \
-        "mov        ah,67h"             \
-        "int        0x21"               \
-        "sbb        dx,dx"              \
-        value [dx ax]                   \
-        parm caller [bx]
-  #endif
-#endif
 
 extern  unsigned    __NFiles;       // the size of the iomode array
 extern  void        __grow_iomode( int num );
@@ -258,7 +240,7 @@ _WCRTLINK int _grow_handles( int num )
 
                 /* may allocate a segment of memory! */
                 num = (num+1) & ~1; /* make even */
-                rc = _Set_File_Handle_Count( num );
+                rc = TinySetMaxHandleCount( num );
                 if( TINY_ERROR( rc ) ) {
                     __set_errno_dos( TINY_INFO( rc ) );
                     num = __NHandles;
@@ -338,16 +320,33 @@ _WCRTLINK int _grow_handles( int num )
         {
             #error NO HANDLE MANAGER UNDER NETWARE
         }
-        #elif defined(__UNIX__)
+        #else
         {
             // nothing to do
         }
         #endif
+#if defined(__UNIX__)
+        {
+            struct rlimit   rl;
+            int             old_num;
 
+            if( getrlimit( RLIMIT_NOFILE, &rl ) == 0 ) {
+                old_num = rl.rlim_cur;
+                if( old_num < num ) {
+                    rl.rlim_cur = num;
+                    if( setrlimit( RLIMIT_NOFILE, &rl ) == 0 ) {
+                        old_num = num;
+                    }
+                }
+                __NHandles = old_num;
+            }
+        }
+#else
         if( num > __NFiles ) {
             __grow_iomode( num );   // sets new __NFiles if successful
         }
         __NHandles = num;
+#endif
     }
     return( __NHandles );
 }

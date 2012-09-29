@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS and Windows inplementation of cgets
 *
 ****************************************************************************/
 
@@ -36,37 +35,7 @@
 #include <dos.h>
 #include "defwin.h"
 #include "qread.h"
-
-extern  void    _dos_kb_input( void _WCNEAR *s );
-extern  void    _bd_dos_kb_input( unsigned short seg, unsigned off );
-
-#if defined(__386__)
-#pragma aux     _dos_kb_input =     \
-                                    0xb4 0x0a   /* select keyboard input */\
-                                    0xcd 0x21   /* int 21h */\
-                        parm caller [edx];
-
-#pragma aux     _bd_dos_kb_input =  0x1e        /* push ds */\
-                                    0x8e 0xd8   /* mov ds,ax */\
-                                    0xb4 0x0a   /* select keyboard input */\
-                                    0xcd 0x21   /* int 21h */\
-                                    0x1f        /* pop ds */\
-                        parm caller [ax] [edx];
-#elif defined( _M_I86 )
-#pragma aux     _dos_kb_input =     \
-                                    0xb4 0x0a   /* select keyboard input */\
-                                    0xcd 0x21   /* int 21h */\
-                        parm caller [dx];
-
-#pragma aux     _bd_dos_kb_input =  0x1e        /* push ds */\
-                                    0x8e 0xd8   /* mov ds,ax */\
-                                    0xb4 0x0a   /* select keyboard input */\
-                                    0xcd 0x21   /* int 21h */\
-                                    0x1f        /* pop ds */\
-                        parm caller [ax] [dx];
-#else
-#error platform not supported
-#endif
+#include "tinyio.h"
 
 _WCRTLINK char *cgets( char *s )
 {
@@ -89,11 +58,7 @@ _WCRTLINK char *cgets( char *s )
         return( s + 2 );
     }
 #endif
-#if defined(__SMALL_DATA__)
-    _dos_kb_input( s );
-#else
-    _bd_dos_kb_input( FP_SEG(s), FP_OFF(s) );
-#endif
+	TinyBufferedInput( s );
     len = *s;
     p = s + 2;
     for(;;) {

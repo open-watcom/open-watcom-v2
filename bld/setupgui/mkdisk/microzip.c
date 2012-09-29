@@ -102,13 +102,11 @@ int main( int argc, char **argv )
         return( 2 );
     }
 
-#if defined( __WATCOMC__ ) && !defined( __UNIX__ )
     /* Because libzip keeps all the files in the list open, we'll need
      * a humongous amount of file handles. Not sure if this is intentional
      * or a design defect of the library.
      */
     _grow_handles( 4096 );
-#endif
 
     zname = argv[1];
 

@@ -494,6 +494,7 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyLSeek               _TinyLSeek
 #define TinyTerminateProcess    _TinyTerminateProcess
 #define TinyExit                _TinyTerminateProcess
+#define TinySetMaxHandleCount   _TinySetMaxHandleCount
 #define TinyDPMISetRealVect     _TinyDPMISetRealVect
 #define TinyDPMIGetRealVect     _TinyDPMIGetRealVect
 #define TinyDPMISetProtectVect  _TinyDPMISetProtectVect
@@ -519,6 +520,7 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 /* handle small/large data models */
 #if defined( M_I86SM ) || defined( M_I86MM ) || defined( __386__ )
 #define TinyAccess              _nTinyAccess
+#define TinyBufferedInput       _nTinyBufferedInput
 #define TinyOpen                _nTinyOpen
 #define TinyCreate              _nTinyCreate
 #define TinyCreateEx            _nTinyCreateEx
@@ -555,6 +557,7 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 
 #else
 #define TinyAccess              _fTinyAccess
+#define TinyBufferedInput       _fTinyBufferedInput
 #define TinyOpen                _fTinyOpen
 #define TinyCreate              _fTinyCreate
 #define TinyCreateEx            _fTinyCreateEx
@@ -590,6 +593,8 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
  */
 tiny_ret_t              _fTinyAccess( const char __far *__n, uint __pmode );
 tiny_ret_t  tiny_call   _nTinyAccess( const char __near *__n, uint __pmode );
+void                    _fTinyBufferedInput( char __far *__n );
+void        tiny_call   _nTinyBufferedInput( char __near *__n );
 tiny_ret_t              _fTinyOpen( const char __far *__n, open_attr __ax );
 tiny_ret_t  tiny_call   _nTinyOpen( const char __near *__n, open_attr __ax );
 tiny_ret_t              _fTinyCreate( const char __far *__n, create_attr __a );
@@ -699,6 +704,7 @@ tiny_ret_t  tiny_call   _TinyUnlock(tiny_handle_t,uint_32 __start,uint_32 __l);
 uint        tiny_call   _TinyGetPSP( void );
 void        tiny_call   _TinySetPSP( uint_16 __seg );
 void        tiny_call   _TinyCreatePSP( uint_16 __seg );
+tiny_ret_t  tiny_call   _TinySetMaxHandleCount( unsigned );
 void *      tiny_call   _TinyDPMIAlloc( uint_16 __hiw, uint_16 __low );
 void *      tiny_call   _TinyDPMIRealloc( void *__addr, uint_16 __hiw, uint_16 __low );
 void        tiny_call   _TinyDPMIFree( uint_16 __hiw, uint_16 __low );
@@ -900,7 +906,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux             _TinyCreatePSP = \
         "pushfd"        \
         "mov ah,26h"    \
-        "int 21h"       \
+        _INT_21         \
         "popfd"         \
         parm caller [dx] \
         modify exact [ah];
@@ -908,10 +914,18 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux             _TinySetPSP = \
         "pushfd"        \
         "mov ah,50h"    \
-        "int 21h"       \
+        _INT_21         \
         "popfd"         \
         parm caller [bx] \
         modify exact [ah];
+
+#pragma aux _TinySetMaxHandleCount = \
+        "mov    ah,67h" \
+        _INT_21         \
+        "rcl    eax,1"  \
+        "ror    eax,1"  \
+        value [eax]     \
+        parm caller [ebx]
 
 #pragma aux             _TinyCBAlloc = \
         "mov eax,80004800h" \
@@ -1282,6 +1296,12 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         parm caller     [edx] [bx] \
         value           [eax] \
         modify exact    [eax ecx];
+
+#pragma aux             _nTinyBufferedInput = \
+        _MOV_AH 0x0C    \
+        _INT_21         \
+        parm caller     [edx] \
+        modify exact    [eax];
 
 #pragma aux             _nTinyOpen = \
         "mov ah,3Dh"    \
@@ -1726,6 +1746,20 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         parm caller     [_SREG dx] [bx] \
         value           [dx ax] \
         modify exact    [ax bx cx dx _SREG];
+
+#pragma aux             _nTinyBufferedInput = \
+        _MOV_AH 0x0C    \
+        _INT_21         \
+        parm caller     [dx] \
+        modify exact    [ax];
+
+#pragma aux             _fTinyBufferedInput = \
+        _SET_DS_SREG_SAFE \
+        _MOV_AH 0x0C    \
+        _INT_21         \
+        _RST_DS_SREG    \
+        parm caller     [_SREG dx] \
+        modify exact    [ax];
 
 #pragma aux             _nTinyOpen = \
         _SET_DS_DGROUP_SAFE \
@@ -2512,6 +2546,13 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _POPF           \
         parm caller [bx] \
         modify exact [ah];
+
+#pragma aux _TinySetMaxHandleCount = \
+        "mov    ah,67h" \
+        _INT_21         \
+        "sbb    dx,dx"  \
+        value [dx ax]   \
+        parm caller [bx]
 
 #pragma aux             _TinyDPMIGetRealVect = \
         _MOV_AH 0x02    \
