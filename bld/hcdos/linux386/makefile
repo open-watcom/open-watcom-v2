@@ -1,4 +1,4 @@
-#pmake: build hcdos os_linux cpu_386
+#pmake: nobuild hcdos os_linux cpu_386
 
 host_os  = linux
 host_cpu = 386

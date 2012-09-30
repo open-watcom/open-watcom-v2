@@ -1,4 +1,4 @@
-#pmake: build hcdos os_dos cpu_i86
+#pmake: nobuild hcdos os_dos cpu_i86
 
 host_os  = dos
 host_cpu = i86

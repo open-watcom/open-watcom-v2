@@ -148,7 +148,7 @@ sub batch_output_set_watcom_env
         print BATCH "$setenv PATH=%WATCOM%\\binp;%WATCOM%\\binw;%PATH%\n";
     } elsif ($^O eq "linux") {
         print BATCH "$setenv INCLUDE=\$WATCOM/lh\n";
-        print BATCH "$setenv PATH=\$WATCOM/binl;\$PATH\n";
+        print BATCH "$setenv PATH=\$WATCOM/binl:\$PATH\n";
     }
 }
 

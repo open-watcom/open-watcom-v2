@@ -16,6 +16,14 @@ cdsay <PROJDIR>
 
 [ BLOCK <1> build rel ]
 #======================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+
+[ BLOCK <1> clean ]
+#==================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+    
+[ BLOCK <1> build rel ]
+#======================
     mkdir <OWOBJDIR>
     cdsay <OWOBJDIR>
     wmake -h -f ../binmake
@@ -23,6 +31,7 @@ cdsay <PROJDIR>
 
 [ BLOCK <1> clean ]
 #==================
+    cdsay .
     echo rm -r -f <OWOBJDIR>
     rm -r -f <OWOBJDIR>
     set BINTOOL=clean

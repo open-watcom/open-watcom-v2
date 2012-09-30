@@ -26,14 +26,23 @@ set PROJNAME=build POSIX tools
 
 [ BLOCK <BINTOOL> clean ]
 #========================
+    echo rm -f <OWBINDIR>/cat<CMDEXT>
     rm -f <OWBINDIR>/cat<CMDEXT>
+    echo rm -f <OWBINDIR>/cp<CMDEXT>
     rm -f <OWBINDIR>/cp<CMDEXT>
+    echo rm -f <OWBINDIR>/egrep<CMDEXT>
     rm -f <OWBINDIR>/egrep<CMDEXT>
+    echo rm -f <OWBINDIR>/chmod<CMDEXT>
     rm -f <OWBINDIR>/chmod<CMDEXT>
+    echo rm -f <OWBINDIR>/ls<CMDEXT>
     rm -f <OWBINDIR>/ls<CMDEXT>
+    echo rm -f <OWBINDIR>/sed<CMDEXT>
     rm -f <OWBINDIR>/sed<CMDEXT>
+    echo rm -f <OWBINDIR>/uniq<CMDEXT>
     rm -f <OWBINDIR>/uniq<CMDEXT>
+    echo rm -f <OWBINDIR>/wc<CMDEXT>
     rm -f <OWBINDIR>/wc<CMDEXT>
+    echo rm -f <OWBINDIR>/which<CMDEXT>
     rm -f <OWBINDIR>/which<CMDEXT>
 
 [ BLOCK <1> rel cprel ]

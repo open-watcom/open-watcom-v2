@@ -33,8 +33,10 @@ cdsay <PROJDIR>
 
 [ BLOCK <1> clean ]
 #==================
+    cdsay .
     echo rm -r -f <OWOBJDIR>
     rm -r -f <OWOBJDIR>
+    echo rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
     rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
     set BINTOOL=clean
 

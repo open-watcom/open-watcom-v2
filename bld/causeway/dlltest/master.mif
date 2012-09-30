@@ -29,10 +29,10 @@ dlltst1r.exe : dlltst1r.obj dllr.dll ../../cw32/dosi86/cwstub.exe
     $(linker) $(lflags)
 
 dlls.dll : dlls.obj
-    $(linker) $(lflags_dll) op modname=DLLS
+    $(linker) $(lflags_dll) op modname=DLLS libfile $(clib_dir)/startup/library/msdos.386/ms_s/dllstart.obj
 
 dllr.dll : dllr.obj
-    $(linker) $(lflags_dll) op modname=DLLR
+    $(linker) $(lflags_dll) op modname=DLLR libfile $(clib_dir)/startup/library/msdos.386/ms_r/dllstart.obj
 
 dlls.obj : dll.c $(dlltest_autodepends)
     $(cc) -s -6s -wx -d2 -bd -bt=dos $(inc_path) $< -fo=$@

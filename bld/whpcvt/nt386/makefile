@@ -1,4 +1,4 @@
-#pmake: os_nt cpu_386 whpcvt
+#pmake: nobuild os_nt cpu_386 whpcvt
 
 host_os         = nt
 host_cpu        = 386
