@@ -2,7 +2,7 @@ bld_ver      = $(%BLD_VER)
 patch_level  = 0
 contrib_dir  = $(%OWROOT)/contrib
 build_dir    = $(%OWROOT)/build
-src_dir      = $(%OWROOT)/bld
+src_dir      = $(%OWSRCDIR)
 verbose      = $(%OWVERBOSE)
 
 # don't ask, just nuke the files

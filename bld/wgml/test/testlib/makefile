@@ -135,14 +135,14 @@ gencop1 : .procedure
 !else ifeq use_dosemu dosbox
         %create $(dosemu_gendev_batch)
         @%append $(dosemu_gendev_batch) d:
-        @%append $(dosemu_gendev_batch) set GMLLIB=c:\bld\wgml\test\testlib
-        @%append $(dosemu_gendev_batch) set GMLINC=c:\bld\wgml\test\testsrc
+        @%append $(dosemu_gendev_batch) set GMLLIB=e:\testlib
+        @%append $(dosemu_gendev_batch) set GMLINC=e:\testsrc
         @%append $(dosemu_gendev_batch) c:\docs\gml\dos\gendev.exe $^&
         @%append $(dosemu_gendev_batch) exit
-        $(%OWDOSBOX) -c "mount c $(%OWROOT)" -c "mount d ." -c "d:$(dosemu_gendev_batch)" -noconsole
+        $(%OWDOSBOX) -c "mount c $(%OWROOT)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
 !else
-        set GMLLIB=$(%OWSRCDIR)\wgml\test\testlib
-        set GMLINC=$(%OWSRCDIR)\wgml\test\testsrc
+        set GMLLIB=..\testlib
+        set GMLINC=..\testsrc
         $(gendevcmd) $^&
 !endif
 
@@ -157,14 +157,14 @@ gencopall : .procedure
 !else ifeq use_dosemu dosbox
         %create $(dosemu_gendev_batch)
         @%append $(dosemu_gendev_batch) d:
-        @%append $(dosemu_gendev_batch) set GMLLIB=c:\bld\wgml\test\testlib
-        @%append $(dosemu_gendev_batch) set GMLINC=c:\bld\wgml\test\testsrc
+        @%append $(dosemu_gendev_batch) set GMLLIB=e:\testlib
+        @%append $(dosemu_gendev_batch) set GMLINC=e:\testsrc
         @%append $(dosemu_gendev_batch) c:\docs\gml\dos\gendev.exe genall
         @%append $(dosemu_gendev_batch) exit
-        $(%OWDOSBOX) -c "mount c $(%OWROOT)" -c "mount d ." -c "d:$(dosemu_gendev_batch)" -noconsole
+        $(%OWDOSBOX) -c "mount c $(%OWROOT)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
 !else
-        set GMLLIB=$(%OWSRCDIR)\wgml\test\testlib
-        set GMLINC=$(%OWSRCDIR)\wgml\test\testsrc
+        set GMLLIB=..\testlib
+        set GMLINC=..\testsrc
         $(gendevcmd) genall
 !endif
 
