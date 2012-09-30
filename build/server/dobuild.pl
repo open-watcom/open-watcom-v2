@@ -85,7 +85,8 @@ my $build_batch_name     = "$home\/build.$ext";
 my $docs_batch_name      = "$home\/docsbld.$ext";
 my $build_installer_name = "$home\/instbld.$ext";
 my $test_batch_name      = "$home\/test.$ext";
-my $rotate_batch_name    = "$home\/rotate.$ext";
+my $rotate_batch_name    = "$home\/rotate1.$ext";
+my $rotate               = "$home\/rotate.$ext";
 my $setvars              = "$OW\/setvars.$ext";
 my $prev_changeno_name   = "$home\/changeno.txt";
 my $prev_changeno        = "0";
@@ -341,6 +342,51 @@ sub make_installer_batch
     chmod 0777, $build_installer_name;
 }
 
+sub make_rotate_batch
+{
+    open(BATCH, ">$rotate_batch_name") || die "Unable to open $rotate_batch_name file.";
+    print BATCH "$setenv OWROOT=", $OW, "\n";
+    if ($OStype eq "UNIX") {
+        print BATCH ". \$OWROOT/cmnvars.sh\n";
+    } elsif ($^O eq "os2") {
+        print BATCH "call %OWROOT%\\cmnvars.cmd\n";
+    } else {
+        print BATCH "call %OWROOT%\\cmnvars.bat\n";
+    }
+    print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
+    open(INPUT, "$rotate") || die "Unable to open $rotate file.";
+    while (<INPUT>) {
+        print BATCH;
+    }
+    close(INPUT);
+    close(BATCH);
+    # On Windows it has no efect
+    chmod 0777, $rotate_batch_name;
+}
+
+sub create_all_batches
+{
+    $relsubdir        = "pass1";
+
+    make_rotate_batch();
+    make_docs_batch();
+    make_installer_batch();
+    $WATCOM           = $Common::config{"WATCOM"};
+    $build_batch_name = "$home\/build1.$ext";
+    make_build_batch();
+    $test_batch_name  = "$home\/test1.$ext";
+    $WATCOM           = get_reldir();
+    make_test_batch();
+
+    $relsubdir        = "pass2";
+
+    $build_batch_name = "$home\/build2.$ext";
+    make_build_batch();
+    $test_batch_name  = "$home\/test2.$ext";
+    $WATCOM           = get_reldir();
+    make_test_batch();
+}
+
 sub process_log
 {
     my($os2_result)    = "success";
@@ -438,7 +484,6 @@ sub run_tests
 
     # Run regression tests for the Fortran, C, C++ compilers and WASM.
 
-    make_test_batch();
     print REPORT "REGRESSION TESTS STARTED  : ", get_datetime(), "\n";
     system("$test_batch_name");
     print REPORT "REGRESSION TESTS COMPLETED: ", get_datetime(), "\n\n";
@@ -462,7 +507,6 @@ sub run_tests
 
 sub run_build
 {
-    make_build_batch();
     print REPORT "CLEAN+BUILD STARTED  : ", get_datetime(), "\n";
     if (system($build_batch_name) != 0) {
         print REPORT "clean+build failed!\n";
@@ -480,7 +524,6 @@ sub run_build
 
             # Run regression tests
 
-            $WATCOM = get_reldir();
             return run_tests();
         }
     }
@@ -488,7 +531,6 @@ sub run_build
 
 sub run_docs_build
 {
-    make_docs_batch();
     print REPORT "CLEAN+BUILD STARTED  : ", get_datetime(), "\n";
     if (system($docs_batch_name) != 0) {
         print REPORT "clean+build failed!\n\n";
@@ -632,6 +674,8 @@ if ($CVS_result eq "nochange") {
     exit 0;
 }
 
+create_all_batches();
+
 ############################################################
 #
 #  pass 1  Build and test full Open Watcom
@@ -642,8 +686,6 @@ print REPORT "\n";
 print REPORT "Compilers and Tools (pass 1)\n";
 print REPORT "============================\n\n";
 
-$WATCOM           = $Common::config{"WATCOM"};
-$relsubdir        = "pass1";
 $build_batch_name = "$home\/build1.$ext";
 $test_batch_name  = "$home\/test1.$ext";
 $buildlog         = "$OW\/bld\/pass1.log";
@@ -662,8 +704,6 @@ print REPORT "\n";
 print REPORT "Documentation Build\n";
 print REPORT "===================\n\n";
 
-$WATCOM           = $Common::config{"WATCOM"};
-$relsubdir        = "pass1";
 $buildlog         = "$OW\/docs\/doc.log";
 $bldbase          = "$home\/$Common::config{'BLDBASED'}";
 $bldlast          = "$home\/$Common::config{'BLDLASTD'}";
@@ -681,8 +721,6 @@ print REPORT "\n";
 print REPORT "Compilers and Tools (pass 2)\n";
 print REPORT "============================\n\n";
 
-$WATCOM           = get_reldir();
-$relsubdir        = "pass2";
 $build_batch_name = "$home\/build2.$ext";
 $test_batch_name  = "$home\/test2.$ext";
 $buildlog         = "$OW\/bld\/pass2.log";
@@ -705,9 +743,7 @@ if (($pass1_result eq "success") &&
     ($pass2_result eq "success") &&
     ($docs_result eq "success")) {
 
-    $relsubdir = "pass1";
     print REPORT "\nINSTALLER BUILD STARTED  : ", get_datetime(), "\n";
-    make_installer_batch();
     if (system($build_installer_name) != 0) {
         print REPORT "INSTALLER BUILD FAILED!\n";
     } else {
