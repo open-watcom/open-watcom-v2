@@ -50,7 +50,11 @@ model=$(modelos)
 memory_model_i86=$(model)
 memory_model_386=$(model)
 
-!ifdef __UNIX__
+libmakepath = $(posix_dir)/misc/$(targos)/
+
+!ifeq bootstrap 1
+libpath =
+!else ifdef __UNIX__
 libpath = $(posix_dir)/misc/$(targos)/
 !else
 libpath = $(posix_dir)\misc\$(targos)\

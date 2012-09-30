@@ -9,19 +9,27 @@ clean : .symbolic
 !include $(posix_dir)/mif/targos.mif
 !include $(posix_dir)/mif/common.mif
 
+!ifeq bootstrap 1
+mkfile = -f $(libmakepath)/$(posixlibdir)/makefile
+altmkfile = -f $(libmakepath)/$(altposixlibdir)/makefile
+!endif
+
 all : lib $(commands) .symbolic
         @%null
 
 lib : .symbolic $(__MAKEFILES__)
 curr_dir_all=$+ $(%CWD) $-
+        @if not exist $(posixlibdir) @mkdir $(posixlibdir)
         @cd $(posixlibdir)
-        !@wmake -h release=$(release) bootstrap=$(bootstrap)
+        !@wmake -h release=$(release) bootstrap=$(bootstrap) $(mkfile)
 !ifeq targos dos
+        @if not exist $(altposixlibdir) @mkdir $(altposixlibdir)
         @cd $(altposixlibdir)
-        !@wmake -h release=$(release) bootstrap=$(bootstrap)
+        !@wmake -h release=$(release) bootstrap=$(bootstrap) $(altmkfile)
 !else ifeq targos dosos2
+        @if not exist $(altposixlibdir) @mkdir $(altposixlibdir)
         @cd $(altposixlibdir)
-        !@wmake -h release=$(release) bootstrap=$(bootstrap)
+        !@wmake -h release=$(release) bootstrap=$(bootstrap) $(altmkfile)
 !endif
         @cd $(curr_dir_all)
 
@@ -43,9 +51,7 @@ curr_dir_all=$+ $(%CWD) $-
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
 !endif
         @cd $(curr_dir_all)
-!ifneq bootstrap 1
         @echo clean $(curr_dir_all)
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
-!endif
 !endif
 

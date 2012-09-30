@@ -163,18 +163,18 @@ inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_d
 
 .cpp.obj : .autodepend
 !ifeq verbose 1
-    $(cpp) -zq $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
+    $(cpp) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
 !else
     @echo c++ $@
-    @$(cpp) -zq $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
+    @$(cpp) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
 !endif
 
 .cpp.xbj : .autodepend
 !ifeq verbose 1
-    $(cpp) -zq -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
+    $(cpp) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
 !else
     @echo xc++ $@
-    @$(cpp) -zq -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
+    @$(cpp) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
 !endif
 
 .asm.obj : .autodepend
