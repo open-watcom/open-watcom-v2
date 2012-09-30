@@ -38,6 +38,7 @@ sub read_config
     my($filename) = $_[0];
     my(@fields);
 
+    $Common::config{"OWCVS"} = "";
     $Common::config{"WATCOM"} = "";
     $Common::config{"WIN95HC"} = "";
     $Common::config{"HHC"} = "";

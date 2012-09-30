@@ -33,9 +33,9 @@ same drive as the OW source tree.
 
 2. Review the file config.txt and make any changes as necessary. See the
 comments in the file for more information.
-Create necessary directories: www\installers
+Create necessary directories: www\install
                               www\reports
-                              www\snapshots
+                              www\snaparch
 Create empty files:           owbuild\bldbase1.txt
                               owbuild\bldbase2.txt
                               owbuild\bldbased.txt

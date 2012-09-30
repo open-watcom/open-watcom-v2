@@ -12,10 +12,10 @@ fi
 
 # Build Archives
 # ==============
-rm -f $wwwpath/snapshots/ss.zip
-rm -f $wwwpath/snapshots/ss.7z
-$arch7z a -tzip -r $wwwpath/snapshots/ss.zip $OWRELROOT/*
-$arch7z a -t7z -r $wwwpath/snapshots/ss.7z $OWRELROOT/*
+rm -f $wwwpath/snaparch/ss.zip
+rm -f $wwwpath/snaparch/ss.7z
+$arch7z a -tzip -r $wwwpath/snaparch/ss.zip $OWRELROOT/*
+$arch7z a -t7z -r $wwwpath/snaparch/ss.7z $OWRELROOT/*
 
 # Move pass1 build
 # =================
@@ -29,12 +29,12 @@ mv $OWRELROOT/ $wwwpath/snapshot
 
 # Move Archives
 # =============
-mv -f $wwwpath/snapshots/ss.zip $wwwpath/snapshots/ow-snapshot.zip
-mv -f $wwwpath/snapshots/ss.7z $wwwpath/snapshots/ow-snapshot.7z
+mv -f $wwwpath/snaparch/ss.zip $wwwpath/snaparch/ow-snapshot.zip
+mv -f $wwwpath/snaparch/ss.7z $wwwpath/snaparch/ow-snapshot.7z
 
 # Move installers
 # =============
-mv -f $OWROOT/distrib/ow/open-watcom-* $wwwpath/installers/
+mv -f $OWROOT/distrib/ow/open-watcom-* $wwwpath/install/
 
 # Final Cleanup
 # =============

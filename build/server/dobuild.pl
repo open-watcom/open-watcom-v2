@@ -145,10 +145,10 @@ sub batch_output_set_watcom_env
         print BATCH "$setenv PATH=%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%\n";
     } elsif ($^O eq "os2") {
         print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\os2\n";
-        print BATCH "$setenv PATH=%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%\n";
+        print BATCH "$setenv PATH=%WATCOM%\\binp;%WATCOM%\\binw;%PATH%\n";
     } elsif ($^O eq "linux") {
         print BATCH "$setenv INCLUDE=\$WATCOM/lh\n";
-        print BATCH "$setenv PATH=\$WATCOM/binl;%PATH%\n";
+        print BATCH "$setenv PATH=\$WATCOM/binl;\$PATH\n";
     }
 }
 
@@ -347,11 +347,9 @@ sub make_rotate_batch
     open(BATCH, ">$rotate_batch_name") || die "Unable to open $rotate_batch_name file.";
     print BATCH "$setenv OWROOT=", $OW, "\n";
     if ($OStype eq "UNIX") {
-        print BATCH ". \$OWROOT/cmnvars.sh\n";
-    } elsif ($^O eq "os2") {
-        print BATCH "call %OWROOT%\\cmnvars.cmd\n";
+        print BATCH ". \$OWROOT/cmnvars.$ext\n";
     } else {
-        print BATCH "call %OWROOT%\\cmnvars.bat\n";
+        print BATCH "call %OWROOT%\\cmnvars.$ext\n";
     }
     print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
     open(INPUT, "$rotate") || die "Unable to open $rotate file.";
@@ -657,6 +655,8 @@ open(REPORT, ">$report_name") || die "Unable to open $report_name file.";
 print REPORT "Open Watcom Build Report (build on ", $build_platform, ")\n";
 print REPORT "================================================\n\n";
 
+create_all_batches();
+
 # Do a CVS sync to get the latest changes.
 #########################################
 
@@ -673,8 +673,6 @@ if ($CVS_result eq "nochange") {
     close(REPORT);
     exit 0;
 }
-
-create_all_batches();
 
 ############################################################
 #
