@@ -48,6 +48,8 @@
 /builder/*/proctab.c
 /builder/*/ytab.h
 #
+/causeway/dlltest/*/*.dll
+#
 /cc/*/*/*.dll
 #
 /cg/*/*/*/*.dll

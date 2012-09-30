@@ -49,6 +49,7 @@
 !inject detosinf.obj                                                        q16 q32
 !inject dgroup.obj   d16                                            o16     q16 q32 w16
 !inject dllmno32.obj                                                    o32
+!inject dllstart.obj     d32
 !inject dmaincwd.obj     d32
 !inject dmaino16.obj                                                o16
 !inject dmaino32.obj                                                    o32
@@ -207,7 +208,6 @@
 !inject dinitarg.obj                     nt nta ntp                     o32
 !inject diniwarg.obj                     nt nta ntp                     o32
 !inject dllnmwnt.obj                     nt nta ntp
-!inject dllstart.obj     d32
 !inject dmndo32.obj                                                     o32
 !inject dmndwnt.obj                      nt nta ntp
 !inject dos16m.obj   d16

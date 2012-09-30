@@ -7,14 +7,28 @@ cwc_autodepends = .AUTODEPEND
 !include deftarg.mif
 
 .c : ../../c
+.asm : ../../asm
 
 extra_l_flags = op map
 
 objs = cwc.obj
 
-$(proj_name).exe : $(objs) $(cl_objs)
+$(proj_name).exe : copystub.gh decstub.gh $(objs) $(cl_objs)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $<
+    $(cl) $(clflags) $<
 !else
-        $(linker) name $@ $(lflags) file {$(objs)}
+    $(linker) name $@ $(lflags) file {$(objs)}
 !endif
+
+copystub.gh : copystub.asm ./mkcode.exe
+    *bwasm -zq -fo=$^&.obj $[@
+    *bwlink format dos com op quiet, nodefault file $^&.obj name $^&.tmp disable 1023,1080
+    $]@ $^&.tmp $@
+
+decstub.gh : decstub.asm ./mkcode.exe
+    *bwasm -zq -fo=$^&.obj $[@
+    *bwlink format dos com op quiet, nodefault file $^&.obj name $^&.tmp disable 1023,1080
+    $]@ $^&.tmp $@
+
+./mkcode.exe: mkcode.c
+    $(bld_cl) $[@ $(bld_cl_opts)

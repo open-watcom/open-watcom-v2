@@ -378,7 +378,7 @@ lflags_linux_386   = sys linux
 lflags_linux_ppc   = sys linuxppc
 lflags_linux_mps   = sys linuxmips
 
-lflags_dll_dos_386   = sys cwdllr lib doslfn3r.lib
+lflags_dll_dos_386   = sys causeway dll lib doslfn3r.lib
 lflags_dll_rdos_386  = sys rdos dll
 lflags_dll_nt_axp    = sys ntaxp dll
 lflags_dll_nt_386    = sys nt dll
@@ -395,7 +395,7 @@ lflags_os2_i86  = sys os2_pm
 !endif
 !ifdef sys_dll
 #this is equally bad
-lflags_dos_386  = sys cwdllr lib doslfn3r.lib
+lflags_dos_386  = sys causeway dll lib doslfn3r.lib
 lflags_nt_386   = sys nt_dll
 lflags_nt_axp   = sys ntaxp_dll
 lflags_win_i86  = sys windows_dll

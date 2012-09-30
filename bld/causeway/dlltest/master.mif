@@ -12,17 +12,13 @@ dlltest_autodepends = .AUTODEPEND
 
 .c : ..
 
-# Force uptodate libs to be picked up
-.before
-    @set WATCOM=$(%OWRELROOT)
-
 inc_dirs = -I"../../inc"
 
-lflags_dos_386     = sys causeway opt stub=../../cw32/dosi86/cwstub.exe
-lflags_dll_dos_386 = sys causeway dll opt stub=../../cw32/dosi86/cwdstub.exe
+lflags_dos_386     = sys causeway
+lflags_dll_dos_386 = sys causeway dll opt stub=$(causeway_dir)/cw32/dosi86/cwdstub.exe
 
-extra_l_flags     = op map name $@ file $[@ libpath ../../cw32/dos386
-extra_l_flags_dll = op map name $@ file $[@ libpath ../../cw32/dos386
+extra_l_flags     = op map name $@ file $[@
+extra_l_flags_dll = op map name $@ file $[@
 
 all: dlltst1s.exe dlltst1r.exe
 
@@ -33,10 +29,10 @@ dlltst1r.exe : dlltst1r.obj dllr.dll ../../cw32/dosi86/cwstub.exe
     $(linker) $(lflags)
 
 dlls.dll : dlls.obj
-    $(linker) $(lflags_dll) op modname=DLLS libfile dllstrts.obj
+    $(linker) $(lflags_dll) op modname=DLLS
 
 dllr.dll : dllr.obj
-    $(linker) $(lflags_dll) op modname=DLLR libfile dllstrtr.obj
+    $(linker) $(lflags_dll) op modname=DLLR
 
 dlls.obj : dll.c $(dlltest_autodepends)
     $(cc) -s -6s -wx -d2 -bd -bt=dos $(inc_path) $< -fo=$@

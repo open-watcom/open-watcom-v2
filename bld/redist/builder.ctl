@@ -9,6 +9,15 @@ set PROJNAME=redist
 
 cdsay .
 
+[ BLOCK <1> boot ]
+#=================
+    <CPCMD> dos4gw/dos4gw.exe <OWBINDIR>/dos4gw.exe
+
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -r -f <OWBINDIR>/dos4gw.exe
+    rm -r -f <OWBINDIR>/dos4gw.exe
+
 [ BLOCK <1> build rel ]
 #======================
 

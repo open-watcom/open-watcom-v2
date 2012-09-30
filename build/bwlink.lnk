@@ -77,28 +77,18 @@ end
 system begin causeway
     option osname='CauseWay'
     libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/clib/library/msdos.386/ms_s
     libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_s
     libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_s
     libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_s
     libpath %OWSRCDIR%/fpuemu/386/dos386
     libpath %OWSRCDIR%/fpuemu/386/stub386
     libpath %OWSRCDIR%/cpplib/generic.386/ms_r
     libpath %OWSRCDIR%/causeway/cw32/dos386
-    op stub=%OWSRCDIR%/causeway/cw32/dosi86/cw32.exe
-    format os2 le ^
-end
-
-system begin cwdllr
-    option osname='CauseWay'
-    libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
-    libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
-    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
-    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
-    libpath %OWSRCDIR%/fpuemu/386/dos386
-    libpath %OWSRCDIR%/fpuemu/386/stub386
-    libpath %OWSRCDIR%/cpplib/generic.386/ms_r
-    libpath %OWSRCDIR%/causeway/cw32/dos386
-    op stub=%OWSRCDIR%/causeway/cw32/dosi86/cw32.exe
+    op stub=%OWSRCDIR%/causeway/cw32/dosi86/cwstub.exe
     format os2 le ^
 end
 

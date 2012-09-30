@@ -56,8 +56,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/re2c/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/as/builder.ctl ]
 # Now miscellaneous utilities required during build
+[ IFDEF <BLD_HOST> DOS ]
+# copy DOS4GW extender on build PATH for DOS build host
+[ INCLUDE <OWSRCDIR>/redist/builder.ctl ]
+[ ENDIF ]
 #[ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/causeway/cwc/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/causeway/cwc/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
@@ -111,11 +115,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/builder.ctl ]
+# Start with DOS4GW DOS extender stub.
+[ INCLUDE <OWSRCDIR>/wstuba/builder.ctl ]
 # Continue with Causeway DOS extender.
 [ INCLUDE <OWSRCDIR>/causeway/builder.ctl ]
 # Continue with DOS extenders stubs.
 [ INCLUDE <OWSRCDIR>/w32loadr/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wstuba/builder.ctl ]
 # Now we have enough to start cross building everything else
 
 # Start with the libs used by various tools
