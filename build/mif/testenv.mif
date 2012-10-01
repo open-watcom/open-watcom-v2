@@ -378,7 +378,7 @@ awk = awk
 !  ifdef %WASMTEST_WASM_I86
 !    define comp_wasm_i86 $(%WASMTEST_WASM_I86)
 !  else
-!    define comp_wasm_i86 wasmr
+!    define comp_wasm_i86 wasm
 !  endif
 !endif
 
@@ -763,30 +763,6 @@ targ_bld_wfc_os2axp =
 targ_bld_wfc_lnxppc =
 targ_bld_wfc_lnxmps =
 
-wasm_386 = $(comp_wasm_386) $(targ_bld_was_$(targ_env_386))
-wasm_i86 = $(comp_wasm_i86) $(targ_bld_was_$(targ_env_i86))
-wasm_axp = $(comp_wasm_axp) $(targ_bld_was_$(targ_env_axp))
-wasm_ppc = $(comp_wasm_ppc) $(targ_bld_was_$(targ_env_ppc))
-wasm_mps = $(comp_wasm_mps) $(targ_bld_was_$(targ_env_mps))
-
-wcc_386 = $(comp_wcc_386) $(targ_bld_cxx_$(targ_env_386))
-wcc_i86 = $(comp_wcc_i86) $(targ_bld_cxx_$(targ_env_i86))
-wcc_axp = $(comp_wcc_axp) $(targ_bld_cxx_$(targ_env_axp))
-wcc_ppc = $(comp_wcc_ppc) $(targ_bld_cxx_$(targ_env_ppc))
-wcc_mps = $(comp_wcc_mps) $(targ_bld_cxx_$(targ_env_mps))
-
-wpp_386 = $(comp_wpp_386) $(targ_bld_cxx_$(targ_env_386))
-wpp_i86 = $(comp_wpp_i86) $(targ_bld_cxx_$(targ_env_i86))
-wpp_axp = $(comp_wpp_axp) $(targ_bld_cxx_$(targ_env_axp))
-wpp_ppc = $(comp_wpp_ppc) $(targ_bld_cxx_$(targ_env_ppc))
-wpp_mps = $(comp_wpp_mps) $(targ_bld_cxx_$(targ_env_mps))
-
-wfc_386 = $(comp_wfc_386) $(targ_bld_wfc_$(targ_env_386))
-wfc_i86 = $(comp_wfc_i86) $(targ_bld_wfc_$(targ_env_i86))
-wfc_axp = $(comp_wfc_axp) $(targ_bld_wfc_$(targ_env_axp))
-wfc_ppc = $(comp_wfc_ppc) $(targ_bld_wfc_$(targ_env_ppc))
-wfc_mps = $(comp_wfc_mps) $(targ_bld_wfc_$(targ_env_mps))
-
 #
 # targ_ldb      linker debug directive (e.g., DEBUG all)
 #
@@ -852,29 +828,29 @@ lnk_i86 = $(targ_lnk_$(targ_env_i86)) $(lnk_any)
 lnk_mps = $(targ_lnk_$(targ_env_mps)) $(lnk_any)
 lnk_ppc = $(targ_lnk_$(targ_env_ppc)) $(lnk_any)
 
-wcc_386 = wcc386 $(wcc_any) $(targ_bld_cxx_$(targ_env_386))
-wcc_axp = wccaxp $(wcc_any) $(targ_bld_cxx_$(targ_env_axp))
-wcc_i86 = wcci86 $(wcc_any) $(targ_bld_cxx_$(targ_env_i86))
-wcc_mps = wccmps $(wcc_any) $(targ_bld_cxx_$(targ_env_mps))
-wcc_ppc = wccppc $(wcc_any) $(targ_bld_cxx_$(targ_env_ppc))
+wasm_386 = $(comp_wasm_386) $(was_any) $(targ_bld_was_$(targ_env_386))
+wasm_i86 = $(comp_wasm_i86) $(was_any) $(targ_bld_was_$(targ_env_i86))
+wasm_axp = $(comp_wasm_axp) $(was_any) $(targ_bld_was_$(targ_env_axp))
+wasm_ppc = $(comp_wasm_ppc) $(was_any) $(targ_bld_was_$(targ_env_ppc))
+wasm_mps = $(comp_wasm_mps) $(was_any) $(targ_bld_was_$(targ_env_mps))
 
-wpp_386 = wpp386 $(wpp_any) $(targ_bld_cxx_$(targ_env_386))
-wpp_axp = wppaxp $(wpp_any) $(targ_bld_cxx_$(targ_env_axp))
-wpp_i86 = wppi86 $(wpp_any) $(targ_bld_cxx_$(targ_env_i86))
-wpp_mps = wppmps $(wpp_any) $(targ_bld_cxx_$(targ_env_mps))
-wpp_ppc = wppppc $(wpp_any) $(targ_bld_cxx_$(targ_env_ppc))
+wcc_386 = $(comp_wcc_386) $(wcc_any) $(targ_bld_cxx_$(targ_env_386))
+wcc_i86 = $(comp_wcc_i86) $(wcc_any) $(targ_bld_cxx_$(targ_env_i86))
+wcc_axp = $(comp_wcc_axp) $(wcc_any) $(targ_bld_cxx_$(targ_env_axp))
+wcc_ppc = $(comp_wcc_ppc) $(wcc_any) $(targ_bld_cxx_$(targ_env_ppc))
+wcc_mps = $(comp_wcc_mps) $(wcc_any) $(targ_bld_cxx_$(targ_env_mps))
 
-wasm_386 = wasm   $(was_any) $(targ_bld_was_$(targ_env_386))
-wasm_axp = wasaxp $(was_any) $(targ_bld_was_$(targ_env_axp))
-wasm_i86 = wasm   $(was_any) $(targ_bld_was_$(targ_env_i86))
-wasm_mps = wasmps $(was_any) $(targ_bld_was_$(targ_env_mps))
-wasm_ppc = wasppc $(was_any) $(targ_bld_was_$(targ_env_ppc))
+wpp_386 = $(comp_wpp_386) $(wpp_any) $(targ_bld_cxx_$(targ_env_386))
+wpp_i86 = $(comp_wpp_i86) $(wpp_any) $(targ_bld_cxx_$(targ_env_i86))
+wpp_axp = $(comp_wpp_axp) $(wpp_any) $(targ_bld_cxx_$(targ_env_axp))
+wpp_ppc = $(comp_wpp_ppc) $(wpp_any) $(targ_bld_cxx_$(targ_env_ppc))
+wpp_mps = $(comp_wpp_mps) $(wpp_any) $(targ_bld_cxx_$(targ_env_mps))
 
-wfc_386 = wfc386 $(wfc_any) $(targ_bld_wfc_$(targ_env_386))
-wfc_axp = wfcaxp $(wfc_any) $(targ_bld_wfc_$(targ_env_axp))
-wfc_i86 = wfc    $(wfc_any) $(targ_bld_wfc_$(targ_env_i86))
-wfc_mps = wfcmps $(wfc_any) $(targ_bld_wfc_$(targ_env_mps))
-wfc_ppc = wfcppc $(wfc_any) $(targ_bld_wfc_$(targ_env_ppc))
+wfc_386 = $(comp_wfc_386) $(wfc_any) $(targ_bld_wfc_$(targ_env_386))
+wfc_i86 = $(comp_wfc_i86) $(wfc_any) $(targ_bld_wfc_$(targ_env_i86))
+wfc_axp = $(comp_wfc_axp) $(wfc_any) $(targ_bld_wfc_$(targ_env_axp))
+wfc_ppc = $(comp_wfc_ppc) $(wfc_any) $(targ_bld_wfc_$(targ_env_ppc))
+wfc_mps = $(comp_wfc_mps) $(wfc_any) $(targ_bld_wfc_$(targ_env_mps))
 
 librarian = wlib $(lib_any) -n -b
 !ifdef use_dll
