@@ -25,6 +25,7 @@
 *.prs
 *.res
 *.rtp
+*.sav
 *.sym
 *.sys
 *.tmp

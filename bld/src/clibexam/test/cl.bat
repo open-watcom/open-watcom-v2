@@ -311,7 +311,7 @@ rem call clr readdir
 rem call clr realloc
 rem call clr remove
 rem call clr rename
-rem copy file.sav program.asm
+rem copy file.txt program.asm
 rem call clr rewind
 rem call clr rmdir
 rem call clr sbrk

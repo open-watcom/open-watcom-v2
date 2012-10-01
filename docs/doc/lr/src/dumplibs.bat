@@ -50,7 +50,7 @@ wlib l:\dlang\lib386\kanji3r /l=kanji.lst
 dedit kanji.lst
 wlib l:\dlang\lib386\dos\graph /l=graph.lst
 dedit graph.lst
-copy macro.sav macro.lst
+copy macro.txt macro.lst
 erase wedit.prf
 copy dumplibs.ed2 wedit.prf
 wlib l:\dlang\lib386\NETWARE\clib3s /l=net32.lst

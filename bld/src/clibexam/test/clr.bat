@@ -1,5 +1,5 @@
 @echo off
-copy file.sav file.>nul
+copy file.txt file.>nul
 clog + cl.log
 echo Processing *%1*
 wcl /cc++ ..\%1 /zq /w9
