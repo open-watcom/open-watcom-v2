@@ -146,9 +146,35 @@ sub batch_output_set_watcom_env
     } elsif ($^O eq "os2") {
         print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\os2\n";
         print BATCH "$setenv PATH=%WATCOM%\\binp;%WATCOM%\\binw;%PATH%\n";
+        print BATCH "$setenv BEGINLIBPATH=%WATCOM%\\binp\\dll;%BEGINLIBPATH%\n";
     } elsif ($^O eq "linux") {
         print BATCH "$setenv INCLUDE=\$WATCOM/lh\n";
         print BATCH "$setenv PATH=\$WATCOM/binl:\$PATH\n";
+    }
+}
+
+sub batch_output_set_watcom_bootstrap_env
+{
+    print BATCH "$setenv WATCOM=", $WATCOM, "\n";
+    if ($^O eq "MSWin32") {
+        print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\nt\n";
+        print BATCH "$setenv PATH=%OWBINDIR%;%OWROOT%\\build;%WATCOM%\\binnt;%WATCOM%\\binw;%OWDEFPATH%\n";
+    } elsif ($^O eq "os2") {
+        print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\os2\n";
+        print BATCH "$setenv PATH=%OWBINDIR%;%OWROOT%\\build;%WATCOM%\\binp;%WATCOM%\\binw;%OWDEFPATH%\n";
+        print BATCH "$setenv BEGINLIBPATH=%WATCOM%\\binp\\dll;%OWDEFBEGINLIBPATH%\n";
+    } elsif ($^O eq "linux") {
+        print BATCH "$setenv INCLUDE=\$WATCOM/lh\n";
+        print BATCH "$setenv PATH=\$OWBINDIR:\$OWROOT/build:\$WATCOM/binl:\$OWDEFPATH\n";
+    }
+}
+
+sub batch_output_reset_env
+{
+    if ($OStype eq "UNIX") {
+        print BATCH ". \$OWROOT/cmnvars.$ext\n";
+    } else {
+        print BATCH "call %OWROOT%\\cmnvars.$ext\n";
     }
 }
 
@@ -188,6 +214,21 @@ sub batch_output_build_wmake_builder_rm
     }
 }
 
+sub get_env
+{
+    if ($OStype eq "UNIX") {
+        print BATCH "echo OWDEFPATH=\$OWDEFPATH >>env.txt\n";
+        print BATCH "echo PATH=\$PATH >>env.txt\n";
+        print BATCH "echo WATCOM=\$WATCOM >>env.txt\n";
+        print BATCH "echo INCLUDE=\$INCLUDE >>env.txt\n";
+    } else {
+        print BATCH "echo OWDEFPATH=%OWDEFPATH% >>env.txt\n";
+        print BATCH "echo PATH=%PATH% >>env.txt\n";
+        print BATCH "echo WATCOM=%WATCOM% >>env.txt\n";
+        print BATCH "echo INCLUDE=%INCLUDE% >>env.txt\n";
+    }
+}
+
 sub make_build_batch
 {
     open(BATCH, ">$build_batch_name") || die "Unable to open $build_batch_name file.";
@@ -203,7 +244,7 @@ sub make_build_batch
     }
     close(INPUT);
     if ($WATCOM ne "") {
-        batch_output_set_watcom_env();
+        batch_output_set_watcom_bootstrap_env();
     }
     # Add additional commands to do the build.
     print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
@@ -224,6 +265,10 @@ sub make_build_batch
         print BATCH "builder boot1\n";
     } else {
         print BATCH "builder boot2\n";
+    }
+    # Remove previous OW variables from environment.
+    if ($WATCOM ne "") {
+        batch_output_reset_env();
     }
     # Remove release directory.
     print BATCH "rm -rf ", get_reldir(), "\n";
@@ -706,7 +751,12 @@ $buildlog         = "$OW\/docs\/doc.log";
 $bldbase          = "$home\/$Common::config{'BLDBASED'}";
 $bldlast          = "$home\/$Common::config{'BLDLASTD'}";
 
-$docs_result = run_docs_build();
+if ($ENV{"OWDOCSKIP"} eq "1") {
+    $docs_result = "success";
+    print REPORT "Build skipped.\n\n";
+} else {
+    $docs_result = run_docs_build();
+}
 
 ############################################################
 #
