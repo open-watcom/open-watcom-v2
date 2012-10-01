@@ -1,6 +1,6 @@
 @echo off
 REM *****************************************************************
-REM SETVARS.BAT - Windows NT version
+REM SETVARS.BAT - Windows NT/DOS version
 REM *****************************************************************
 REM NOTE: Do not use this batch file directly, but copy it and
 REM       modify it as necessary for your own use!!
@@ -12,12 +12,16 @@ REM Change following entries to point your existing Open Watcom installation
 REM or comment it out to use native compiler tools
 set OWBOOTSTRAP=c:\ow\ow19
 set WATCOM=%OWBOOTSTRAP%
-set INCLUDE=%WATCOM%\h;%WATCOM%\h\nt
-set PATH=%WATCOM%\binnt;%WATCOM%\binw;%PATH%
-
+set INCLUDE=%WATCOM%\h
+set PATH=%WATCOM%\binw;%PATH%
+if not '%OS%' == 'Windows_NT' host_setup
+set INCLUDE=%INCLUDE%;%WATCOM%\h\nt
+set PATH=%WATCOM%\binnt;%PATH%
+:host_setup
 REM Adjust to match the host platform
-set BOOTSTRAP_OS=nt
 set BOOTSTRAP_CPU=386
+if not '%OS%' == 'Windows_NT' set BOOTSTRAP_OS=dos
+if '%OS%' == 'Windows_NT'     set BOOTSTRAP_OS=nt
 
 REM Subdirectory to be used for building OW build tools
 set OWOBJDIR=binbuild
@@ -51,3 +55,10 @@ set OWDOSBOX=dosbox
 REM Invoke the batch file for the common environment
 call %OWROOT%\cmnvars.bat
 
+if '%OS%' == 'Windows_NT' goto no_dos_setup
+REM Change the default command prompt
+prompt $p$g
+
+REM Make the window bigger
+mode 80,50
+:no_dos_setup

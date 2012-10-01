@@ -12,8 +12,8 @@ REM Change following entries to point your existing Open Watcom installation
 REM or comment it out to use native compiler tools
 set OWBOOTSTRAP=c:\ow\ow19
 set WATCOM=%OWBOOTSTRAP%
-set INCLUDE=%WATCOM%\lh
-set BEGINLIBPATH=%WATCOM%\binp\dll
+set INCLUDE=%WATCOM%\h;%WATCOM%\h\os2
+set BEGINLIBPATH=%WATCOM%\binp\dll;%BEGINLIBPATH%
 set PATH=%WATCOM%\binp;%WATCOM%\binw;%PATH%
 
 REM Adjust to match the host platform
