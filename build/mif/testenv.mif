@@ -546,7 +546,7 @@ awk = awk
 !  ifdef %FTEST_WFC_I86
 !    define comp_wfc_i86 $(%FTEST_WFC_I86)
 !  else
-!    define comp_wfc_i86 wpp
+!    define comp_wfc_i86 wfc
 !  endif
 !endif
 
@@ -554,7 +554,7 @@ awk = awk
 !  ifdef %FTEST_WFC_AXP
 !    define comp_wfc_axp $(%FTEST_WFC_AXP)
 !  else
-!    define comp_wfc_axp wppaxp
+!    define comp_wfc_axp wfcaxp
 !  endif
 !endif
 
