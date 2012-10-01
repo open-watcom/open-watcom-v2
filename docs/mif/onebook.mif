@@ -432,8 +432,6 @@ prepare_wgml_opts : .PROCEDURE
     @set GMLLIB=$(%GMLLIB:..\=c:\)
     @set GMLINC=$(%GMLINC:..\..\bld\=e:\)
     @set GMLINC=$(%GMLINC:..\=c:\)
-!else
-    @set GMLINC=$(%GMLINC:..\..\bld\=$(%OWSRCDIR)\)
 !endif
 !ifeq verbose 1
     @echo GMLLIB=$(%GMLLIB)
