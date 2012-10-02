@@ -14,7 +14,9 @@ set PROJNAME=idedemo
 
 [ BLOCK <1> rel cprel ]
 #======================
+    <CCCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/
     <CCCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/os2/
+    <CCCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/fortran/
     <CCCMD> threed/os2/os2_3d.dll   <OWRELROOT>/samples/ide/fortran/os2/
     <CCCMD> threed/nt/nt_3d.dll     <OWRELROOT>/samples/ide/win32/
     <CCCMD> threed/nt/nt_3d.dll     <OWRELROOT>/samples/ide/fortran/win32/

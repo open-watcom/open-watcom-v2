@@ -89,7 +89,7 @@
         typedef HINSTANCE DLL_HANDLE;
     #elif defined( __DOS__ ) && defined( CAUSEWAY )
         #define DLLS_IMPLEMENTED
-        #include "cwdllfnc.h"
+        #include "cwdll.h"
         #include "bool.h"
         #define IDETOOL_GETVER          "_IDEGetVersion@0"
         #define IDETOOL_INITDLL         "_IDEInitDLL@12"

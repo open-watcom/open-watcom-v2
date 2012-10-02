@@ -37,11 +37,11 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/dwarf/dw/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wl/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/wl/exe2bin/builder.ctl ]
-# Now we also have everything to build wasm and owcc
+# Now we also have everything to build wasm, wcl, owcc
 [ INCLUDE <OWSRCDIR>/wasm/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wcl/386/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wcl/i86/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wcl/owcc/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/wcl/owcc/builder.ctl ]
 # Build the OWL for code generator
 [ INCLUDE <OWSRCDIR>/owl/builder.ctl ]
 # Build the 16-bit and 32-bit x86 compilers
@@ -191,6 +191,8 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/mstools/builder.ctl ]
 # Miscelaneous files
 [ INCLUDE <OWSRCDIR>/misc/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/bdiff/lang.ctl ]
+[ INCLUDE <OWSRCDIR>/techinfo/lang.ctl ]
 # Source code samples
 [ INCLUDE <OWSRCDIR>/src/builder.ctl ]
 # IDE samples
@@ -207,6 +209,7 @@ cdsay .
 # Copy the redistributable components
 [ INCLUDE <OWSRCDIR>/redist/builder.ctl ]
 # Build installer tools
+[ INCLUDE <OWSRCDIR>/uninstal/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/builder.ctl ]
 
 # only test build for now

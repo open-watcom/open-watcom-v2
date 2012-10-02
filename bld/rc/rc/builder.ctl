@@ -44,6 +44,8 @@ set PROJNAME=wrc
     <CCCMD> nt386/wrced.sym     <OWRELROOT>/binnt/wrcd.sym
     <CCCMD> ntaxp/wrce.exe      <OWRELROOT>/axpnt/wrc.exe
     <CCCMD> ntaxp/wrce.sym      <OWRELROOT>/axpnt/wrc.sym
+    <CCCMD> ntaxp/wrced.dll     <OWRELROOT>/axpnt/wrcd.dll
+    <CCCMD> ntaxp/wrced.sym     <OWRELROOT>/axpnt/wrcd.sym
     <CCCMD> linux386/wrce.exe   <OWRELROOT>/binl/wrc
     <CCCMD> linux386/wrce.sym   <OWRELROOT>/binl/wrc.sym
 

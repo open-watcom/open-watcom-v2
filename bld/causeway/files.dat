@@ -1,9 +1,11 @@
 # Causeway Extender redistributable binaries component of install manifest
 
-[ DEFAULT type="e" dir="binw" rel="." cond="dostarg" where="c jc f77 jf77" ]
-# CauseWay
-usr="cwc.exe"
-usr="cwstub.exe"
-usr="cwdll.lib"              dir="lib386/dos"
-usr="cwdllfnc.h"    type="s" dir="h"
-
+[ DEFAULT rel="." where="c jc f77 jf77" ]
+type="e" usr="cwc.exe"    dir="binw"        cond="doshost winhost | dostarg"
+type="e" usr="cwc.exe"    dir="binp"        cond="os2host dostarg"
+type="e" usr="cwc.exe"    dir="binnt"       cond="wnthost dostarg"
+type="e" usr="cwc"        dir="binl"        cond="lnxhost dostarg"
+type="e" usr="cwstub.exe" dir="binw"        cond="doshost winhost wnthost os2host | | | dostarg"
+type="e" usr="cwstub.exe" dir="binl"        cond="lnxhost dostarg"
+type="l" usr="cwdll.lib"  dir="lib386/dos"  cond="dostarg"
+type="s" usr="cwdll.h"    dir="h"           cond="dostarg"

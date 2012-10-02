@@ -1,0 +1,4 @@
+[ DEFAULT desc="WSTUB" where="c jc f77 jf77" ]
+type="e" dir="binw"	usr="wstub.exe"	 cond="dostarg"		old="binb"
+type="e" dir="binw"	usr="wstubq.exe" cond="dostarg"		old="binb"
+type="s" dir="src"	usr="wstub.asm"	 cond="samples"

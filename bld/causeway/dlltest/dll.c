@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "cwdllfnc.h"
+#include "cwdll.h"
 
 extern char *_LpPgmName;
 

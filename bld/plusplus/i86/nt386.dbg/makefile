@@ -1,4 +1,4 @@
-#pmake: nobuild debug flat cpu_386 target_i86 os_nt
+#pmake: debug flat cpu_386 target_i86 os_nt
 
 host_os    = nt
 host_cpu   = 386

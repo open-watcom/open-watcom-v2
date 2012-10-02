@@ -1,6 +1,7 @@
-#pmake: build os_os2 cpu_386
+#pmake: debug os_os2 cpu_386
 host_os  = os2
 host_cpu = 386
-wrc_dll  = 1
+
+wrc_release = 0
 
 !include ../mif/master.mif
