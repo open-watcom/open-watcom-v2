@@ -12,9 +12,6 @@ set PROJNAME=bdiff
 [ BLOCK <1> rel ]
     cdsay <PROJDIR>
 
-    # Make BPATCH.QNX for Database guys. Easier than getting them set up
-#    wmake -h bpatch.qnx
-
 [ BLOCK <1> rel cprel ]
 #======================
     <CCCMD> dos386/bdiff.exe     <OWRELROOT>/binw/bdiff.exe

@@ -214,21 +214,6 @@ sub batch_output_build_wmake_builder_rm
     }
 }
 
-sub get_env
-{
-    if ($OStype eq "UNIX") {
-        print BATCH "echo OWDEFPATH=\$OWDEFPATH >>env.txt\n";
-        print BATCH "echo PATH=\$PATH >>env.txt\n";
-        print BATCH "echo WATCOM=\$WATCOM >>env.txt\n";
-        print BATCH "echo INCLUDE=\$INCLUDE >>env.txt\n";
-    } else {
-        print BATCH "echo OWDEFPATH=%OWDEFPATH% >>env.txt\n";
-        print BATCH "echo PATH=%PATH% >>env.txt\n";
-        print BATCH "echo WATCOM=%WATCOM% >>env.txt\n";
-        print BATCH "echo INCLUDE=%INCLUDE% >>env.txt\n";
-    }
-}
-
 sub make_build_batch
 {
     open(BATCH, ">$build_batch_name") || die "Unable to open $build_batch_name file.";
@@ -381,7 +366,7 @@ sub make_installer_batch
     print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
     print BATCH "cd $OW\ncd distrib\ncd ow\n";
     print BATCH "builder missing\n";
-    print BATCH "builder rel\n";
+    print BATCH "builder build\n";
     close(BATCH);
     # On Windows it has no efect
     chmod 0777, $build_installer_name;
@@ -777,19 +762,15 @@ $bldlast          = "$home\/$Common::config{'BLDLAST2'}";
 
 $pass2_result  = run_build();
 
-# Display CVS sync messages for reference.
-##########################################
-
-if ($Common::config{'OWCVS'} ne "") {
-    display_CVS_messages($Common::config{'OWCVS'});
-    set_prev_changeno( $prev_changeno, $date_stamp );  #remember changeno and date
-}
-
 # Rotate the freshly built system into position on the web site.
 ################################################################
 if (($pass1_result eq "success") &&
     ($pass2_result eq "success") &&
     ($docs_result eq "success")) {
+
+    print REPORT "\n";
+    print REPORT "Installers build\n";
+    print REPORT "================\n\n";
 
     print REPORT "\nINSTALLER BUILD STARTED  : ", get_datetime(), "\n";
     if (system($build_installer_name) != 0) {
@@ -799,4 +780,13 @@ if (($pass1_result eq "success") &&
         print REPORT "INSTALLER BUILD COMPLETED: ", get_datetime(), "\n\n";
     }
 }
+
+# Output CVS sync messages for reference.
+##########################################
+
+if ($Common::config{'OWCVS'} ne "") {
+    display_CVS_messages($Common::config{'OWCVS'});
+    set_prev_changeno( $prev_changeno, $date_stamp );  #remember changeno and date
+}
+
 close(REPORT);

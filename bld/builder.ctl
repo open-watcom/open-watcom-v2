@@ -191,8 +191,8 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/mstools/builder.ctl ]
 # Miscelaneous files
 [ INCLUDE <OWSRCDIR>/misc/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/bdiff/lang.ctl ]
-[ INCLUDE <OWSRCDIR>/techinfo/lang.ctl ]
+[ INCLUDE <OWSRCDIR>/bdiff/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/techinfo/builder.ctl ]
 # Source code samples
 [ INCLUDE <OWSRCDIR>/src/builder.ctl ]
 # IDE samples

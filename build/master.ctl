@@ -50,9 +50,9 @@ set CCCMD=accopy
     echo **** CLEAN rule
     set 1=clean
 
-[ BLOCK <1> install ]
-#====================
-    set LOGFNAME=install
+[ BLOCK <1> install missing ]
+#============================
+    set LOGFNAME=<1>
 
 [ BLOCK <1> boot boot1 boot2 ]
 #=============================
