@@ -43,6 +43,7 @@
 
 #include "bdiff.h"
 #include "wressetr.h"
+#include "wresset2.h"
 #include "wreslang.h"
 #include "watcom.h"
 

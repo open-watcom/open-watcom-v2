@@ -736,7 +736,7 @@ $buildlog         = "$OW\/docs\/doc.log";
 $bldbase          = "$home\/$Common::config{'BLDBASED'}";
 $bldlast          = "$home\/$Common::config{'BLDLASTD'}";
 
-if ($ENV{"OWDOCSKIP"} eq "1") {
+if (defined($ENV{"OWDOCSKIP"}) && ($ENV{"OWDOCSKIP"} eq "1")) {
     $docs_result = "success";
     print REPORT "Build skipped.\n\n";
 } else {
