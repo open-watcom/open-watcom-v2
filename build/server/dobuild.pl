@@ -770,15 +770,16 @@ if (($pass1_result eq "success") &&
 
     print REPORT "\n";
     print REPORT "Installers build\n";
-    print REPORT "================\n\n";
-
-    print REPORT "\nINSTALLER BUILD STARTED  : ", get_datetime(), "\n";
+    print REPORT "================\n";
+    print REPORT "\n";
+    print REPORT "INSTALLER BUILD STARTED  : ", get_datetime(), "\n";
     if (system($build_installer_name) != 0) {
         print REPORT "INSTALLER BUILD FAILED!\n";
     } else {
         system("$rotate_batch_name");
-        print REPORT "INSTALLER BUILD COMPLETED: ", get_datetime(), "\n\n";
+        print REPORT "INSTALLER BUILD COMPLETED: ", get_datetime(), "\n";
     }
+    print REPORT "\n\n";
 }
 
 # Output CVS sync messages for reference.
