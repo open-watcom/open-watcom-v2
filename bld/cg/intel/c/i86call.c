@@ -306,7 +306,7 @@ extern  void    BGProcDecl( sym_handle sym, type_def *tipe ) {
     seg_id              old;
     label_handle        lbl;
 
-    SaveModel = TargetModel;
+    SaveTargetModel = TargetModel;
     class = AddCallBlock( sym, tipe );
     if( tipe != TypeNone ) {
         if( class == XX ) {

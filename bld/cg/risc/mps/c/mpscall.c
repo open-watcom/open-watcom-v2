@@ -131,7 +131,7 @@ extern void BGProcDecl( sym_handle sym, type_def *tipe )
     hw_reg_set          reg;
 
     class = AddCallBlock( sym, tipe );
-    SaveModel = TargetModel;
+    SaveTargetModel = TargetModel;
     if( tipe != TypeNone ) {
         if( class == XX ) {
             // Handle structure returns - we need to "eat up" the first
