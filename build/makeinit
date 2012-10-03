@@ -5,6 +5,9 @@ build_dir    = $(%OWROOT)/build
 src_dir      = $(%OWSRCDIR)
 verbose      = $(%OWVERBOSE)
 
+bld_os       = $(%BOOTSTRAP_OS)
+bld_cpu      = $(%BOOTSTRAP_CPU)
+
 # don't ask, just nuke the files
 .ERASE
 

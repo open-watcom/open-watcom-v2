@@ -375,16 +375,12 @@ sub make_installer_batch
 sub make_rotate_batch
 {
     open(BATCH, ">$rotate_batch_name") || die "Unable to open $rotate_batch_name file.";
-    print BATCH "$setenv OWROOT=", $OW, "\n";
-    if ($OStype eq "UNIX") {
-        print BATCH ". \$OWROOT/cmnvars.$ext\n";
-    } else {
-        print BATCH "call %OWROOT%\\cmnvars.$ext\n";
-    }
-    print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
     open(INPUT, "$rotate") || die "Unable to open $rotate file.";
     while (<INPUT>) {
-        print BATCH;
+        s/\r?\n/\n/;
+        if    (/$setenv OWROOT=/i)    { print BATCH "$setenv OWROOT=", $OW, "\n"; }
+        elsif (/$setenv OWRELROOT=/i) { print BATCH "$setenv OWRELROOT=", get_reldir(), "\n"; }
+        else                          { print BATCH; }
     }
     close(INPUT);
     close(BATCH);

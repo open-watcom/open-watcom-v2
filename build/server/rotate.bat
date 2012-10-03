@@ -4,9 +4,13 @@ rem Path configuration
 rem ==================
 set WWWPATH=\www
 set ARCH7Z=c:\Program Files\7-Zip\7z
+set OWROOT=c:\ow\ow
+set OWRELROOT=c:\ow\ow\pass1
 
 rem Initialization
 rem ==============
+
+call %OWROOT%\cmnvars.bat
 
 if exist %OWRELROOT% goto prerequisite_ok
 echo Missing %OWRELROOT%. Can't continue with rotation.

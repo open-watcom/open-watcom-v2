@@ -1,7 +1,7 @@
 #pmake: build wgml
 
-host_cpu = $(%BOOTSTRAP_CPU)
-host_os  = $(%BOOTSTRAP_OS)
+bld_os  = $(%BOOTSTRAP_OS)
+bld_cpu = $(%BOOTSTRAP_CPU)
 
 #
 # Watcom GML/Script Test Device Library Makefile
@@ -48,14 +48,14 @@ drv_page =	&
 
 dosemu_gendev_batch = gendevb.bat
 
-!ifeq host_cpu 386
-!ifeq host_os dos
+!ifeq bld_cpu 386
+!ifeq bld_os dos
 gendevcmd = $(%OWROOT)\docs\gml\dos\gendev
 
-!else ifeq host_os os2
+!else ifeq bld_os os2
 gendevcmd = $(%OWROOT)\docs\gml\os2\gendev
 
-!else ifeq host_os nt
+!else ifeq bld_os nt
 
 !ifdef %OWDOSBOX
 #--------------------------------------------------------
@@ -66,7 +66,7 @@ use_dosemu = dosbox
 gendevcmd = $(%OWROOT)\docs\gml\dos\gendev
 !endif
 
-!else ifeq host_os linux
+!else ifeq bld_os linux
 #-------------------------------------------------------
 # set up to use dosemu to run gendev under Linux
 #-------------------------------------------------------

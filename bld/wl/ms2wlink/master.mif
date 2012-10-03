@@ -1,5 +1,7 @@
 proj_name = wlink
 
+wlink_autodepends = .AUTODEPEND
+
 memory_model_i86 = c
 
 !include cproj.mif

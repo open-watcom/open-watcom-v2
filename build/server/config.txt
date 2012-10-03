@@ -3,16 +3,16 @@
 #
 
 # The folder where the build system lives. Must be outside the OW source tree.
-HOME=C:\OWBUILD
+HOME=c:\ow\server
 
 # The folder where reports are archived.
-REPORTS=C:\www\reports
+REPORTS=c:\www\reports
 
 # The folder where the OW source tree is located.
-OW=C:\OW
+OW=c:\ow\ow
 
 # The location of your installed compiler (for doing the build).
-WATCOM=C:\WATCOM
+WATCOM=c:\ow\ow19
 
 # CVS version
 OWCVS=git

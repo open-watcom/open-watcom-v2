@@ -3,6 +3,8 @@
 
 proj_name = bdiff
 
+bdiff_autodepend = .AUTODEPENDS
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

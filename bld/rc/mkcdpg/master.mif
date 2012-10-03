@@ -1,4 +1,7 @@
 proj_name       = mkcdpg
+
+mkcdpg_autodepends = .AUTODEPEND
+
 inc_dirs        = -I"$(wrc_dir)/h"
 
 !include cproj.mif

@@ -4,6 +4,8 @@
 
 proj_name = rfx
 
+rfx_autodepends = .AUTODEPEND
+
 dig_os = $(host_os)
 !ifeq host_cpu 386
 !ifeq host_os os2

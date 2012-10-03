@@ -1,4 +1,7 @@
 proj_name       = ncurses
+
+ncurses_autodepends = .AUTODEPEND
+
 inc_dirs        = -I"../h"
 
 !include cproj.mif

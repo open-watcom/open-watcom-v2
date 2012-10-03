@@ -1,10 +1,17 @@
 #!/bin/sh
 #
-# Initialization
-# ==============
+# Path configuration
+# ==================
 wwwpath=/www
 arch7z=7za
-#
+export OWROOT=/home/ow/ow
+export OWRELROOT=/home/ow/ow/pass1
+
+# Initialization
+# ==============
+
+. $OWROOT/cmnvars.sh
+
 if [ ! -d $OWRELROOT ]; then
     echo "Missing $OWRELROOT. Can't continue with rotation."
     exit -1

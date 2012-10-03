@@ -1,5 +1,7 @@
 proj_name = ctags
 
+ctags_autodepends = .AUTODEPEND
+
 !ifndef clib_ctags
 name_os2    = ctags
 name_dos    = ctags

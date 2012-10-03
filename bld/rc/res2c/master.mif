@@ -1,5 +1,7 @@
 proj_name = res2c
 
+res2c_autodepends = .AUTODEPEND
+
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif

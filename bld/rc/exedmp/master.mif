@@ -1,5 +1,7 @@
 proj_name = exedmp
 
+exedmp_autodepends = .AUTODEPEND
+
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif

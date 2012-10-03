@@ -1,5 +1,7 @@
 proj_name = run
 
+run_autodepends = .AUTODEPEND
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

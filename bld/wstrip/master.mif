@@ -1,5 +1,7 @@
 proj_name = wstrip
 
+wstrip_autodepends = .AUTODEPEND
+
 name = wstripx
 
 !include cproj.mif

@@ -1,5 +1,7 @@
 proj_name = fault
 
+fault_autodepends = .AUTODEPEND
+
 fault_release = 0 # always build debug versions of these
 
 !include cproj.mif

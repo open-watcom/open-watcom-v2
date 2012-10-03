@@ -93,19 +93,19 @@ dep_pdf = $(hbook).pdf
 #
 # There should be settings for supported building platforms
 #
-!ifeq %BOOTSTRAP_CPU 386
-!ifeq %BOOTSTRAP_OS dos
+!ifeq bld_cpu 386
+!ifeq bld_os dos
 WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
-!else ifeq %BOOTSTRAP_OS os2
+!else ifeq bld_os os2
 WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
-!else ifeq %BOOTSTRAP_OS nt
+!else ifeq bld_os nt
 !ifdef %OWDOSBOX
 WGMLCMD = $(%OWDOSBOX) -c "mount c $(%OWROOT)\docs" -c "mount d ." -c "mount e $(%OWSRCDIR)" -c "d:$(dosemu_wgml_batch)" -noconsole
 use_dosemu = dosbox
 !else
 WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
 !endif
-!else ifeq %BOOTSTRAP_OS linux
+!else ifeq bld_os linux
 WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) "$(book_src) ( file $(optfile_wgml)"
 use_dosemu = dosemu
 !else
@@ -162,7 +162,7 @@ all : $(dep_$(dotarget)) .SYMBOLIC
 .EXTENSIONS: .hlp .hpj .cnt .rtf .cn1
 
 $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh $(hbook).cnt
-!ifeq %BOOTSTRAP_OS linux
+!ifeq bld_os linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_nt) -xn $*.hpj
     # this lowercase help file name in wine
@@ -253,7 +253,7 @@ $(hbook).chm $(hbook).chi : $(hbook).htm
     awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc
     awk -f ../makehhk.awk $(hbook).mix >$(hbook)/$(hbook).hhk
     awk -f ../makehhp.awk -v hhcfile=$(hbook).hhc -v hhkfile=$(hbook).hhk $(hbook).htm >$(hbook)/$(hbook).hhp
-!ifeq %BOOTSTRAP_OS linux
+!ifeq bld_os linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_hh) $(hbook)/$(hbook).hhp
     @%append $(wine_hc_batch) copy /y $(hbook)\$(hbook).chm $(hbook).chm
@@ -282,7 +282,7 @@ $(hbook).chm $(hbook).chi : $(hbook).htm
 .EXTENSIONS: .pdf
 
 $(hbook).pdf : $(hbook).ps
-!ifeq %BOOTSTRAP_OS nt
+!ifeq bld_os nt
 #
 # it is simple workaround for bug in OW 1.9 wmake
 #

@@ -6,11 +6,11 @@
 #       modify it as necessary for your own use!!
 
 # Change this to point your Open Watcom source tree
-export OWROOT=/home/ow
+export OWROOT=/home/ow/ow
 
 # Change following entries to point your existing Open Watcom installation
 # or comment it out to use native compiler tools
-export OWBOOTSTRAP=/home/ow19
+export OWBOOTSTRAP=/home/ow/ow19
 export WATCOM=$OWBOOTSTRAP
 export INCLUDE=$WATCOM/lh
 export PATH=$WATCOM/binl:$PATH

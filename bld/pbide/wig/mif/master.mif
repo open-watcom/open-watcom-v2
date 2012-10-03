@@ -1,5 +1,7 @@
 proj_name = wig
 
+wig_autodepends = .AUTODEPEND
+
 !ifeq sys_dll 1
 xname = pbide.dll
 !else

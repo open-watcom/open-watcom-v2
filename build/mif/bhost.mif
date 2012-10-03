@@ -1,7 +1,4 @@
 # build host specific macros - should query WMAKE for details
-bld_os  = $(%BOOTSTRAP_OS)
-bld_cpu = $(%BOOTSTRAP_CPU)
-
 !ifdef __OS2__
 bld_cc_sys      = -bt=os2
 bld_cl_sys      = -l=os2v2

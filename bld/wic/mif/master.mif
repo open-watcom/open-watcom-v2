@@ -6,6 +6,8 @@
 proj_name = wic
 name = wic
 
+wic_autodepends = .AUTODEPEND
+
 wic_trmem = 1
 
 .ERASE

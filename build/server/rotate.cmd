@@ -6,9 +6,13 @@ rem ==================
 set WWWPATH=\www
 rem 7z is standard with eCS 2.1
 set ARCH7Z=7z
+set OWROOT=c:\ow\ow
+set OWRELROOT=c:\ow\ow\pass1
 
 rem Initialization
 rem ==============
+
+call %OWROOT%\cmnvars.bat
 
 if exist %OWRELROOT% goto prerequisite_ok
 echo Missing %OWRELROOT%. Can't continue with rotation.
