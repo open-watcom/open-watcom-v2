@@ -681,7 +681,7 @@ static int DoEncode( arccmd *cmd )
 static void InitHeader( arc_header *header, arccmd *cmd )
 /******************************************/
 {
-    header->signature = SIGNATURE;
+    header->signature = WPACK_SIGNATURE;
     header->major_ver = MAJOR_VERSION;
     header->minor_ver = MINOR_VERSION;
     header->num_files = 0;

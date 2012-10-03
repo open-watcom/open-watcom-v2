@@ -91,7 +91,7 @@ extern file_info ** ReadHeader( arccmd *cmd, arc_header *header )
     if( infile < 0 ) return( NULL );
     result = QRead( infile, header, sizeof( arc_header ) );
 
-    if( result == -1 || header->signature != SIGNATURE ) {
+    if( result == -1 || header->signature != WPACK_SIGNATURE ) {
         msg = LookupText( NULL, TXT_INV_ARC );
         Error( TXT_INV_ARC, msg );
     }

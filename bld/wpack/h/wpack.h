@@ -80,7 +80,7 @@ typedef unsigned char   byte;
 
 #define MAJOR_VERSION 1
 #define MINOR_VERSION 1
-#define SIGNATURE 0x2403
+#define WPACK_SIGNATURE 0x2403
 
 typedef struct {
     unsigned_16     signature   _ALIGN(1);
