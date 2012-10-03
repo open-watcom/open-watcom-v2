@@ -1,8 +1,5 @@
 #pmake: build wgml
 
-bld_os  = $(%BOOTSTRAP_OS)
-bld_cpu = $(%BOOTSTRAP_CPU)
-
 #
 # Watcom GML/Script Test Device Library Makefile
 #
@@ -21,26 +18,26 @@ bld_cpu = $(%BOOTSTRAP_CPU)
 .fon: ../testsrc
 .inc: ../testsrc
 
-dev_common =	&
-	dev01.inc	&
-	dev03.inc	&
-	dev07.inc
+dev_common =  &
+    dev01.inc &
+    dev03.inc &
+    dev07.inc
 
-dev_core =	&
-	dev02.inc	&
-	dev04.inc	&
-	dev05.inc	&
-	dev06.inc
+dev_core =    &
+    dev02.inc &
+    dev04.inc &
+    dev05.inc &
+    dev06.inc
 
-drv_common =	&
-	drv01.inc	&
-	drv02.inc
+drv_common =  &
+    drv01.inc &
+    drv02.inc
 
-drv_core =	&
-	drv03.inc
+drv_core =    &
+    drv03.inc
 
-drv_page =	&
-	drv04.inc
+drv_page =    &
+    drv04.inc
 
 #-------------------------------------------------------
 # Set build_platform and define gendev
