@@ -168,16 +168,17 @@ dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc _guimsgs.gh
 # where to find objects
 ########################
 
-.c : ../c;$(build_root)/bdiff;$(build_root)/wpack/c;$(trmem_dir)
+.c : ../c;$(bdiff_dir);$(wpack_dir)/c;$(trmem_dir)
 .rc : ../res;$(res_dir);$(gui_dir)/h
 .ico : $(res_dir)
 
 res_inc_dirs = -I"$(res_dir)" -I"../res" -I"$(gui_dir)/h" $(inc_dirs_sys)
 
-inc_dirs  = -I"../h" -I"$(sdk_misc_dir)" -I"$(build_root)/wpack/h"
-inc_dirs += -I"$(ui_dir)/h" $(wpi_inc_dirs) -I"$(gui_dir)/h" $(commonui_inc_dirs)
-inc_dirs += -I"$(build_root)/bdiff/h" -I"$(trmem_dir)" -I"$(libzip_dir)/lib"
-
+inc_dirs  = -I"../h" -I"$(ui_dir)/h" $(wpi_inc_dirs) -I"$(gui_dir)/h" $(commonui_inc_dirs)
+inc_dirs += -I"$(trmem_dir)" -I"$(libzip_dir)/lib"
+!ifdef patch
+inc_dirs += -I"$(bdiff_dir)/h" -I"$(wpack_dir)/h"
+!endif
 
 # explicit rules
 ##################

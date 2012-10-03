@@ -3767,7 +3767,7 @@ static FILE *LogFileOpen( void )
 {
     gui_message_return guiret;
     FILE               *logfp;
-    char               *patchlog;
+    const char         *patchlog;
 
     patchlog = GetVariableStrVal( "PatchLog" );
     if( patchlog == NULL || patchlog[0] == '\0' ) {
@@ -3847,7 +3847,7 @@ extern bool PatchFiles( void )
     char                srcfullpath[_MAX_PATH];
     gui_message_return  guiret;
     int                 count;  // count successful patches
-    char                *appname;
+    const char          *appname;
     int                 Index;  // used in secondary search during patch
     bool                go_ahead;
     char                exetype[3];
@@ -4029,7 +4029,7 @@ extern bool PatchFiles( void )
 
 void MsgPut( int resourceid, va_list arglist )
 {
-    char        *msgbuf;
+    const char  *msgbuf;
     char        *messageid;
     char        *argbuf[3];
     int         i;
