@@ -738,7 +738,7 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
         _Zoiks( ZOIKS_003 );
     }
     Generate( TRUE );
-    TargetModel = SaveModel;
+    TargetModel = SaveTargetModel;
 }
 
 #if _TARGET & _TARG_RISC

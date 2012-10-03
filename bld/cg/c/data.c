@@ -50,7 +50,7 @@ pointer                 DummyIndex;
 source_line_number      SrcLine;
 cg_switches             Model;
 cg_target_switches      TargetModel;
-cg_switches             SaveModel;
+cg_target_switches      SaveTargetModel;
 //pointer               ObjFile;
 global_bit_set          MemoryBits;
 type_class_def          ClassPointer;

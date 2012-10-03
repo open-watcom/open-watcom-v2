@@ -32,8 +32,9 @@
 
 #include "cgswitch.h"
 
-extern  cg_switches     Model, TargetModel, SaveModel;
-extern  proc_revision   CGProcessorVersion;
+extern  cg_switches         Model;
+extern  cg_target_switches  TargetModel, SaveTargetModel;
+extern  proc_revision       CGProcessorVersion;
 
 #define _IsModel( mdl )         ( ( Model & (mdl) ) != 0 )
 #define _IsntModel( mdl )       ( ( Model & (mdl) ) == 0 )

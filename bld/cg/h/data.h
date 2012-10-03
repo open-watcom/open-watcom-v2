@@ -44,7 +44,7 @@ extern  pointer                 DummyIndex;
 extern  source_line_number      SrcLine;
 extern  cg_switches             Model;
 extern  cg_target_switches      TargetModel;
-extern  cg_switches             SaveModel;
+extern  cg_target_switches      SaveTargetModel;
 extern  global_bit_set          MemoryBits;
 extern  type_class_def          ClassPointer;
 extern  bool                    BlockByBlock;
