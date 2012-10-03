@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-#define SIGNATURE       "WATCOM binary patch file format\r\n\r\n"
-#define LEVEL           "WATCOM patch level .xxx"
-#define LEVEL_HEAD_SIZE (sizeof(LEVEL)-5)       /* w/o ".xxx\0" */
+#define PATCH_SIGNATURE       "WATCOM binary patch file format\r\n\r\n"
+#define PATCH_LEVEL           "WATCOM patch level .xxx"
+#define PATCH_LEVEL_HEAD_SIZE (sizeof(PATCH_LEVEL)-5)       /* w/o ".xxx\0" */

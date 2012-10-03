@@ -38,20 +38,20 @@ extern void PatchError( int, ... );
 extern void FilePatchError( int, ... );
 extern void PatchingFile( char *patchname, char *filename );
 
-static char CurrLevel[ sizeof( LEVEL )  ];
+static char CurrLevel[ sizeof( PATCH_LEVEL )  ];
 
 void GetLevel( char *name )
 {
     int         io;
-    char        buffer[ sizeof( LEVEL ) ];
+    char        buffer[ sizeof( PATCH_LEVEL ) ];
 
     CurrLevel[0] = '\0';
     io = open( name, O_BINARY+O_RDONLY );
     if( io == -1 ) return;
-    if( lseek( io, -(long)sizeof( LEVEL ), SEEK_END ) != -1L &&
-        read( io, buffer, sizeof( LEVEL ) ) == sizeof( LEVEL ) &&
-        memcmp( buffer, LEVEL, LEVEL_HEAD_SIZE ) == 0 ) {
-        strcpy( CurrLevel, buffer + LEVEL_HEAD_SIZE );
+    if( lseek( io, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L &&
+        read( io, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) &&
+        memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
+        strcpy( CurrLevel, buffer + PATCH_LEVEL_HEAD_SIZE );
     }
     close( io );
 }
@@ -230,7 +230,7 @@ PATCH_RET_CODE InitPatch( char **target_given )
     if( ret != PATCH_RET_OKAY ) {
     return( ret );
     }
-    p = SIGNATURE;
+    p = PATCH_SIGNATURE;
     compare_sig = 1;
     for( ;; ) {
         ch = InPatch( char );
@@ -457,7 +457,7 @@ extern PATCH_RET_CODE DoPatch( char *patchname,
                    int printlevel,
                    char *outfilename )
 {
-    char        buffer[ sizeof( LEVEL ) ];
+    char        buffer[ sizeof( PATCH_LEVEL ) ];
 #ifndef _WPATCH
     char        *target = NULL;
 #endif

@@ -102,7 +102,7 @@ void main( int argc, char *argv[] )
         Fatal( "Unable to create output file '*'", outfile );
     }
     /* write new comment */
-    write( fpout, SIGNATURE, sizeof( SIGNATURE ) - 1 );
+    write( fpout, PATCH_SIGNATURE, sizeof( PATCH_SIGNATURE ) - 1 );
     for( ;; ) {
         size = read( fpcmt, Buffer, bufsize );
         if( size == 0 ) break;

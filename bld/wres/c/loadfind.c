@@ -64,16 +64,16 @@ extern int FindResources( PHANDLE_INFO hInstance )
     off_t       offset;
     dbgheader   header;
     int         notfound;
-    char        buffer[ sizeof( LEVEL ) ];
+    char        buffer[ sizeof( PATCH_LEVEL ) ];
 
     #define     __handle        hInstance->handle
     notfound = 1;
     FileShift = 0;
     offset = sizeof( dbgheader );
-    if( WRESSEEK( __handle, -(long)sizeof( LEVEL ), SEEK_END ) != -1L ) {
-        if( WRESREAD( __handle, buffer, sizeof( LEVEL ) ) == sizeof( LEVEL ) ) {
-            if( memcmp( buffer, LEVEL, LEVEL_HEAD_SIZE ) == 0 ) {
-                offset += sizeof( LEVEL );
+    if( WRESSEEK( __handle, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L ) {
+        if( WRESREAD( __handle, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
+            if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
+                offset += sizeof( PATCH_LEVEL );
             }
         }
     }

@@ -47,8 +47,8 @@ void main( int argc, char **argv )
 {
     int             io;
     unsigned long   pos;
-    char            buffer[ sizeof( LEVEL ) ];
-    static char     LevelBuff[] = LEVEL;
+    char            buffer[ sizeof( PATCH_LEVEL ) ];
+    static char     LevelBuff[] = PATCH_LEVEL;
     struct stat     info;
     struct utimbuf  uinfo;
 
@@ -60,17 +60,17 @@ void main( int argc, char **argv )
         printf( "Can not open executable\n" );
         exit( EXIT_FAILURE );
     }
-    pos = lseek( io, -(long)sizeof( LEVEL ), SEEK_END );
+    pos = lseek( io, -(long)sizeof( PATCH_LEVEL ), SEEK_END );
     if( pos == (unsigned long)-1L  ) {
         printf( "Error seeking on executable\n" );
         exit( EXIT_FAILURE );
     }
-    if( read( io, buffer, sizeof( LEVEL ) ) != sizeof( LEVEL ) ||
-        memcmp( buffer, LevelBuff, LEVEL_HEAD_SIZE ) != 0 ) {
-        pos += sizeof( LEVEL );
+    if( read( io, buffer, sizeof( PATCH_LEVEL ) ) != sizeof( PATCH_LEVEL ) ||
+        memcmp( buffer, LevelBuff, PATCH_LEVEL_HEAD_SIZE ) != 0 ) {
+        pos += sizeof( PATCH_LEVEL );
     }
     lseek( io, pos, SEEK_SET );
-    _splitpath( argv[2], NULL, NULL, NULL, LevelBuff+LEVEL_HEAD_SIZE );
+    _splitpath( argv[2], NULL, NULL, NULL, LevelBuff+PATCH_LEVEL_HEAD_SIZE );
     write( io, LevelBuff, sizeof( LevelBuff ) );
     close( io );
     uinfo.actime = info.st_atime;

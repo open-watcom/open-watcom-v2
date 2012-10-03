@@ -262,7 +262,7 @@ foff FileSize( char *name, int *correction )
 {
     foff        size;
     int         fd;
-    char        buff[ sizeof( LEVEL ) ];
+    char        buff[ sizeof( PATCH_LEVEL ) ];
 
     if( access( name, R_OK ) != 0 ) {
         PatchError( ERR_CANT_FIND, name );
@@ -272,14 +272,14 @@ foff FileSize( char *name, int *correction )
         size = lseek( fd, 0, SEEK_END );
         SeekCheck( size, name );
         *correction = 0;
-        if( size > sizeof( LEVEL ) ) {
-            SeekCheck( lseek( fd, -(long)sizeof( LEVEL ), SEEK_END ), name );
-            if( read( fd, buff, sizeof( LEVEL ) ) != sizeof( LEVEL ) ) {
+        if( size > sizeof( PATCH_LEVEL ) ) {
+            SeekCheck( lseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ), name );
+            if( read( fd, buff, sizeof( PATCH_LEVEL ) ) != sizeof( PATCH_LEVEL ) ) {
                 FilePatchError( ERR_CANT_READ, name );
             }
-            if( memcmp( buff, LEVEL, LEVEL_HEAD_SIZE ) == 0 ) {
-                size -= sizeof( LEVEL ); /* lie about size */
-                *correction = sizeof( LEVEL );
+            if( memcmp( buff, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
+                size -= sizeof( PATCH_LEVEL ); /* lie about size */
+                *correction = sizeof( PATCH_LEVEL );
             }
         }
         close( fd );
@@ -1401,9 +1401,9 @@ void WriteDiffs( void )
 
 void AddLevel( char *name )
 {
-    memcpy( LevelBuff, LEVEL, sizeof( LEVEL ) );
-    _splitpath( name, NULL, NULL, NULL, LevelBuff+LEVEL_HEAD_SIZE );
-    memcpy( NewFile + EndNew, LevelBuff, sizeof( LEVEL ) );
+    memcpy( LevelBuff, PATCH_LEVEL, sizeof( PATCH_LEVEL ) );
+    _splitpath( name, NULL, NULL, NULL, LevelBuff+PATCH_LEVEL_HEAD_SIZE );
+    memcpy( NewFile + EndNew, LevelBuff, sizeof( PATCH_LEVEL ) );
 }
 
 
@@ -1414,8 +1414,8 @@ void WriteLevel( void )
 
     OutPatch( CMD_DIFFS, patch_cmd );
     OutPatch( EndNew, foff );
-    OutPatch( sizeof( LEVEL ), foff );
-    size = sizeof( LEVEL );
+    OutPatch( sizeof( PATCH_LEVEL ), foff );
+    size = sizeof( PATCH_LEVEL );
     buff = LevelBuff;
     while( size != 0 ) {
         OutPatch( *buff, char );
@@ -1432,7 +1432,7 @@ foff Sum( void )
 
     sum = 0;
     end = EndNew;
-    if( AppendPatchLevel ) end += sizeof( LEVEL );
+    if( AppendPatchLevel ) end += sizeof( PATCH_LEVEL );
     for( i = 0; i != end; ++i ) {
         sum += NewFile[ i ];
     }
@@ -1476,7 +1476,7 @@ void WritePatchFile( char *name )
 
     if( AppendPatchLevel ) AddLevel( name );
 
-    OutStr( SIGNATURE );
+    OutStr( PATCH_SIGNATURE );
     CopyComment();
 
     OutPatch( EOF_CHAR, byte );
@@ -1484,7 +1484,7 @@ void WritePatchFile( char *name )
     OutPatch( '\0', char );
     OutPatch( EndOld + OldCorrection, foff );
     size = EndNew;
-    if( AppendPatchLevel ) size += sizeof( LEVEL );
+    if( AppendPatchLevel ) size += sizeof( PATCH_LEVEL );
     OutPatch( size, foff );
     OutPatch( Sum(), foff );
 
@@ -1647,7 +1647,7 @@ void main( int argc, char **argv )
     EndNew = FileSize( argv[2], &NewCorrection );
 
     buffsize = ( EndOld > EndNew ) ? ( EndOld ) : ( EndNew );
-    buffsize += sizeof( LEVEL );
+    buffsize += sizeof( PATCH_LEVEL );
     OldFile = ReadIn( argv[1], buffsize, EndOld );
     NewFile = ReadIn( argv[2], buffsize, EndNew );
 

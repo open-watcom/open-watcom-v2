@@ -139,8 +139,8 @@ PATCH_RET_CODE OpenOld( foff len, int prompt, foff new_size, foff new_sum )
     actual_len = lseek( handle, 0, SEEK_END );
     SeekCheck( actual_len, path );
     if( actual_len != len
-    && (actual_len + sizeof( LEVEL )) != len
-    && (actual_len - sizeof( LEVEL )) != len ) {
+    && (actual_len + sizeof( PATCH_LEVEL )) != len
+    && (actual_len - sizeof( PATCH_LEVEL )) != len ) {
         if( actual_len >= new_size ) {
             if( CheckSumOld( new_size ) == new_sum ) {
                 MyClose( &OldFile );
