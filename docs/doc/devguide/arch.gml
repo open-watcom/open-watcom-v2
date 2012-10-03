@@ -552,7 +552,7 @@ We use the (Open) Watcom C/C++ compilers and Watcom
 to build our tools, but at the top level we have a custom tool which oversees
 traversing the build tree, deciding which projects to build for what platforms,
 logging the results to a file, and copying the finished software into the
-release tree (rel2), making fully automated builds a possibility. If nothing
+release tree (rel), making fully automated builds a possibility. If nothing
 goes wrong that is.
 
 .section Builder
@@ -591,8 +591,8 @@ Common commands:
 .begnote
 .note builder build
 &mdash build the software
-.note builder rel2
-&mdash build the software, and copy it into the "rel2" release tree
+.note builder rel
+&mdash build the software, and copy it into the "rel" release tree
 .note builder clean
 &mdash erase object files, executables, etc. so you can build from scratch
 .endnote
@@ -632,7 +632,7 @@ for all target platforms.
 .np
 For example:
 .millust begin
-builder rel2 os_nt
+builder rel os_nt
 .millust end
 will (generally) build only the NT version of the tools.
 .np

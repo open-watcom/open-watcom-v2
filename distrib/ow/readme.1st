@@ -1,6 +1,6 @@
 To try and create a full install from here, try:
 
-builder rel2 os_nt
+builder rel os_nt
   
 use os_os2 for the OS/2 installers or os_dos or os_linux, what is appropriate
 

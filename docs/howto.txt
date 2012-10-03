@@ -68,7 +68,7 @@ printer.
 
 You can run command  
 
-builder rel2 ps
+builder rel ps
 
 from documentation main directory to build all books.
 
@@ -115,11 +115,11 @@ For Microsoft Help format (both old and new help formats):
 
     All help files can be created by command
 
-    builder rel2 os_win (for old win16 format only)
+    builder rel os_win (for old win16 format only)
 
     or by
 
-    builder rel2 os_nt (for new win32 format only).
+    builder rel os_nt (for new win32 format only).
 
 
 
@@ -139,7 +139,7 @@ For Watcom Help format (for Watcom WHELP command):
 
     Run 
 
-    builder rel2 os_dos
+    builder rel os_dos
 
     to create all online help.
 
@@ -151,7 +151,7 @@ For OS/2 Help format:
 
     Run 
 
-    builder rel2 os_os2
+    builder rel os_os2
 
     to create all the IPF files for the OS/2 IPF compiler.
 

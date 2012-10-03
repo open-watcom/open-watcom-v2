@@ -136,7 +136,7 @@ needed to translate the sources into PostScript, HTML or various online
 help formats. The source files of this document are stored under this directory.
 For more information please refer the the chapter entitled Documentation
 later in this manual.
-.note rel2
+.note rel
 is the "release" directory is where the binaries and other files produced
 in the course of the build process end up. The structure of this directory
 mirrors the
