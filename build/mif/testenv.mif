@@ -72,7 +72,7 @@
 watcom_root = $(%WATCOM)
 
 .extensions:
-.extensions: .exp .exe .dis .dib .dum .ls1 .lst .obj .ser .mer .err .pl0 .pl .plc .p .gc .c .cc .cpp .for .asm .mif
+.extensions: .exp .exe .dis .dib .dum .ls1 .lst .obj .ser .mer .err .i .i0 .i1 .p .gc .c .cc .cpp .for .asm .mif
 .mif: ..;$(mif_path)
 
 !ifndef no_continue
