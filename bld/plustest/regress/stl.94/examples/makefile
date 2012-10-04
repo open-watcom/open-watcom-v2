@@ -45,12 +45,6 @@ start_test : .symbolic
     @set ERROR_FILE=exec.out
     %create $(%ERROR_FILE)
 
-test.lnk : $(__MAKEFILES__)
-    %create $^@
-    @%append $^@ $(ldebug_$(arch))
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ $(stack_$(arch))
-
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 

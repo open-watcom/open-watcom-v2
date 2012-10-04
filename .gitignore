@@ -7,6 +7,9 @@
 *.gh
 *.gpp
 *.grc
+*.i
+*.i0
+*.i1
 *.imp
 *.int
 *.lbc

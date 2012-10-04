@@ -69,7 +69,7 @@ gen_input: .procedure ./geninput.exe
     @rm *.obj
 
 ./geninput.exe : geninput.c
-    $(bld_cl) $(bcl_cl_opts) -cc++ $<
+    $(bld_cl) $(bld_cl_opts) -cc++ $<
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
