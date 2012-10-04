@@ -1,20 +1,20 @@
-@@@ pp01.pl @@@
+@@@ pp01.i @@@
 #line 1 "pp01.c"
 1
 #line 5 "pp01.c"
 5
-@@@ pp02.pl @@@
+@@@ pp02.i @@@
 #line 1 "pp02.c"
 1
 
 
 4
-@@@ pp03.pl @@@
+@@@ pp03.i @@@
 #line 1 "pp03.c"
 	1
 	
 	3
-@@@ pp04.pl @@@
+@@@ pp04.i @@@
 #line 1 "pp04.c"
 
 
@@ -23,7 +23,7 @@
 1
  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd 
 3
-@@@ pp04.pl0 @@@
+@@@ pp04.i0 @@@
 #line 1 "pp04.c"
 
 
@@ -32,22 +32,22 @@
 1
  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd 
 3
-@@@ pp05.plc @@@
+@@@ pp05.i1 @@@
 #line 1 "pp05.c"
 int x;
 	int y;// dfdsf 
 int 		z;/* dfgdhjsf */ 
 int w;
-@@@ pp06.plc @@@
+@@@ pp06.i1 @@@
 #line 1 "pp06.c"
 
 int i =  > >1;
-@@@ pp07.plc @@@
+@@@ pp07.i1 @@@
 #line 1 "pp07.c"
 
 #pragma on(blah);
 char a[] = { '\'', '\\', '\0', 'a', 'cd' };'a
-@@@ pp08.plc @@@
+@@@ pp08.i1 @@@
 #line 1 "pp08.c"
 #line 1 "pp08.h"
 int line1_pp08h;
@@ -77,11 +77,11 @@ int line7_pp08h;
 	// line 1 pp08.c
 
 // line 3 pp08.c
-@@@ pp09.plc @@@
+@@@ pp09.i1 @@@
 #line 1 "pp09.c"
 #pragma on\
 (check_stack);
-@@@ pp10.plc @@@
+@@@ pp10.i1 @@@
 #line 1 "pp10.c"
 #line 1 "pp10.c"
  1
@@ -92,7 +92,7 @@ int line7_pp08h;
 #line 4 "b"
  4
  5
-@@@ pp11.plc @@@
+@@@ pp11.i1 @@@
 #line 1 "pp11.c"
 // 3.8.3.5 ANSI C standard
 
@@ -109,7 +109,7 @@ int line7_pp08h;
 
  f(2*(y+1))  +  f(2*(f(2*(z[0]))))  %  f(2*(0)) + t (1);
  f(2*(2+(3,4)-0,1))  |  f(2*(~ 5))  &   f(2*(0,1)) ^ m(0,1) ;
-@@@ pp12.plc @@@
+@@@ pp12.i1 @@@
 #line 1 "pp12.c"
 // -p
 
@@ -119,7 +119,7 @@ extern int get  (enum aba a) ;
 extern int get  
 
 (enum aba a, void *b) ;
-@@@ pp13.pl @@@
+@@@ pp13.i @@@
 #line 1 "pp13.c"
 pp13.c 1
 #line 5 "pp13.c"
@@ -135,11 +135,11 @@ pp13.h 7
 #line 8 "pp13.c"
 
 pp13.c 9
-@@@ pp14.plc @@@
+@@@ pp14.i1 @@@
 #line 1 "pp14.c"
 
  //  int x;
-@@@ pp15.pl0 @@@
+@@@ pp15.i0 @@@
 #line 1 "pp15.c"
 
 
@@ -163,7 +163,7 @@ pp13.c 9
  extern JNINativeMethod java_lang_reflect_Field_Natives[]; extern VMuint Number_java_lang_reflect_Field_Natives; 
  extern JNINativeMethod java_lang_reflect_Method_Natives[]; extern VMuint Number_java_lang_reflect_Method_Natives; 
 
-@@@ pp16.plc @@@
+@@@ pp16.i1 @@@
 #line 1 "pp16.c"
 /**********************************************************************
 **********************************************************************/
@@ -174,7 +174,7 @@ int x;
 
 
 int y;
-@@@ pp17.plc @@@
+@@@ pp17.i1 @@@
 #line 1 "pp17.c"
 /*****
  pp17.c
