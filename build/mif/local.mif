@@ -95,10 +95,6 @@ c_japan_charset = -finput-charset=CP932
 # options for preprocessing source code
 preproc_opts  = -x c -E
 
-# $(inc_dirs_lang_$(host_os)) must be defined to override default OW headers
-inc_dirs_lang_linux =
-inc_dirs_lang_osi =
-
 # Warning flags: all enabled except the ones that have no use besides annoy people
 cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 
@@ -110,7 +106,7 @@ $(cppflags_$(host_cpu)) -funsigned-char -fno-asm -fno-common
 cflags = $(extra_c_flags) $(cppflags) -gdwarf-2 -c $(cflags_wng) -pipe -O -o $@
 
 # options for single source utility compilations
-bld_cl_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@
+bld_cl_opts = $(cflags_wng) $(cppflags) $(ldflags) -o $@
 
 # options for linking via cc
 clflags = -o $@
@@ -143,10 +139,6 @@ c_japan_charset = -finput-charset=CP932
 # options for preprocessing source code
 preproc_opts  = -x c -E
 
-# $(inc_dirs_lang_$(host_os)) must be defined to override default OW headers
-inc_dirs_lang_nto =
-inc_dirs_lang_osi =
-
 # Warning flags: all enabled except the ones that have no use besides annoy people
 cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 
@@ -156,7 +148,7 @@ cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 
 !ifdef __QNX__
 # options for single source utility compilations
-bld_cl_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@
+bld_cl_opts = $(cflags_wng) $(cppflags) $(ldflags) -o $@
 !endif
 
 # options for linking via cc

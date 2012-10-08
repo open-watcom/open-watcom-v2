@@ -272,13 +272,13 @@ $(intname)01.int : ./intlbin.exe errors01.int usage01.int
         $[@ $(intname)
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h $(cl_objs)
-        $(bld_cl) -I"$(wasm_dir)/h" $[@ $(bld_cl_opts) $(cl_libs) $(cl_objs)
+        $(bld_cl) -I. -I"$(wasm_dir)/h" $[@ $(bld_cl_opts) $(cl_libs) $(cl_objs)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
         $[@ $(wasm_dir)/inlnops.tok $@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh $(cl_objs)
-        $(bld_cl) -I"$(wasm_dir)/h" $[@ $(bld_cl_opts) $(cl_libs) $(cl_objs)
+        $(bld_cl) -I. -I"$(wasm_dir)/h" $[@ $(bld_cl_opts) $(cl_libs) $(cl_objs)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
         $[@ $(wasm_dir)/inlnops.tok $@
