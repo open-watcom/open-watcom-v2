@@ -295,7 +295,7 @@ keywords.gh weights.gh : ./findhash.exe ../../hash/plusplus.key ../../hash/pc.ke
     $[@ -q ../../hash/plusplus.key ../../hash/pc.key
  
 ./umktable.exe: ../../c/umktable.c xlat.gh
-    $(bld_cl) $[@ -I"../../h" $(bld_cl_opts)
+    $(bld_cl) $[@ -I. -I"../../h" $(bld_cl_opts)
  
 yylex.gh : ./umktable.exe
     $[@ $@
@@ -329,13 +329,13 @@ ic_mask.gh : ./icmask.exe ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../
     $[@ ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c
  
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
-    $(bld_cl) -I"$(wasm_dir)/h" $[@ $(bld_cl_opts)
+    $(bld_cl) -I. -I"$(wasm_dir)/h" $[@ $(bld_cl_opts)
  
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@
  
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
-    $(bld_cl) -I"$(wasm_dir)/h" $[@ $(bld_cl_opts)
+    $(bld_cl) -I. -I"$(wasm_dir)/h" $[@ $(bld_cl_opts)
  
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@
