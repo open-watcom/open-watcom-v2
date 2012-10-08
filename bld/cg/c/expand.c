@@ -54,7 +54,7 @@ extern  bool            VolatileIns(instruction*);
 
 extern    block         *HeadBlock;
 extern    op_regs       RegList[];
-extern    reg_list      *RegSets[];
+extern    hw_reg_set    *RegSets[];
 
 static  instruction     *DoReduce( instruction *ins, opcode_entry *try,
                                    bool has_index )

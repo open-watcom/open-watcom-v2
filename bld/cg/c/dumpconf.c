@@ -46,7 +46,7 @@ extern  void            DumpGBit(global_bit_set*);
 extern  void            DumpLBit(local_bit_set*);
 
 extern  conflict_node   *ConfList;
-extern  reg_list        *RegSets[];
+extern  hw_reg_set      *RegSets[];
 
 
 static  bool    Check( hw_reg_set *name, hw_reg_set test ) {

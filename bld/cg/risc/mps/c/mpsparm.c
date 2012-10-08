@@ -43,7 +43,7 @@
 
 
 extern  hw_reg_set      InLineParm(hw_reg_set,hw_reg_set);
-extern  reg_list        *ParmChoices(type_class_def);
+extern  hw_reg_set      *ParmChoices(type_class_def);
 extern  hw_reg_set      ParmRegConflicts(hw_reg_set);
 extern  type_class_def  TypeClass( type_def * );
 

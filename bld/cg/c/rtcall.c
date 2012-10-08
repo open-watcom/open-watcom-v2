@@ -59,7 +59,7 @@ extern  hw_reg_set      LNReg( void );
 extern  hw_reg_set      SavedRegs( void );
 #endif
 
-extern    reg_list      *RegSets[];
+extern    hw_reg_set    *RegSets[];
 
 #if _TARGET & _TARG_AXP
     #define _ParmReg( x )       FirstReg( x )

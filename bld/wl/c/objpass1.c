@@ -737,9 +737,6 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
     bool            frame_ok;
     sym_info        sym_type;
 
-    if( seg != NULL ) {
-        frame = 0;
-    }
     name_len = strlen( sym->name );
     if( sym->addr.seg != UNDEFINED && !IS_SYM_COMMUNAL( sym ) ) {
         if( seg != NULL && sym->p.seg != NULL ) {

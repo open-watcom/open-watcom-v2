@@ -294,7 +294,7 @@ static  hw_reg_set      ReturnD[] = {
                 HW_D_1( HW_F0 ),
                 HW_D_1( HW_EMPTY ) };
 
-reg_list        *RegSets[] = {
+hw_reg_set      *RegSets[] = {
         #undef RL
         #define RL(a,b,c,d) a
         #include "rl.h"
@@ -356,7 +356,7 @@ extern  hw_reg_set      InLineParm( hw_reg_set regs, hw_reg_set used ) {
 }
 
 
-extern  reg_list        *ParmChoices( type_class_def class ) {
+extern  hw_reg_set      *ParmChoices( type_class_def class ) {
 /************************************************************/
 
     switch( class ) {
