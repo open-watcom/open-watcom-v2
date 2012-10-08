@@ -118,10 +118,10 @@ int main( int argc, char **argv ) {
             c = fgetc( ifp );
             switch( c ) {
             case 'h':
-                fprintf( ofp, "0x%x", ( gen_time >> 16 ) & 0x0ffff );
+                fprintf( ofp, "0x%x", (unsigned)(( gen_time >> 16 ) & 0x0ffff) );
                 break;
             case 'l':
-                fprintf( ofp, "0x%x", ( gen_time >> 0 ) & 0x0ffff );
+                fprintf( ofp, "0x%x", (unsigned)(( gen_time >> 0 ) & 0x0ffff) );
                 break;
             case 'j':
                 fprintf( ofp, "%d", (_VERSION / 10) );
