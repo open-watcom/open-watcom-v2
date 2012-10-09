@@ -640,7 +640,7 @@ extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 }
 
 
-extern  reg_list        *ParmChoices( type_class_def class )
+extern  hw_reg_set      *ParmChoices( type_class_def class )
 /***********************************************************
     return a list of register which could be used to return type "class"
 */

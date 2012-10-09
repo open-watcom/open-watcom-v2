@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-typedef hw_reg_set      reg_list[ 1 ];
-
 typedef enum {
         #define RL(a,b,c,d) b
         #include "rl.h"

@@ -152,7 +152,7 @@ static  hw_reg_set      DoubleRegs[] = {
                 HW_D_1( HW_D6 ),
                 HW_D_1( HW_EMPTY ) };
 
-reg_list        *RegSets[] = {
+hw_reg_set      *RegSets[] = {
         #undef RL
         #define RL(a,b,c,d) a
         #include "rl.h"
@@ -348,7 +348,7 @@ extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 ) {
 }
 
 
-extern  reg_list        *ParmChoices( type_class_def class ) {
+extern  hw_reg_set      *ParmChoices( type_class_def class ) {
 /************************************************************/
     class=class;
     return( RegSets[ RL_WORD ] );

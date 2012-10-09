@@ -793,6 +793,7 @@ static void ProcPubdef( bool static_sym )
     segidx = GetIdx();
     if( segidx != 0 ) {
         seg = (segnode *) FindNode( SegNodes, segidx );
+        frame = 0;
     } else {
         seg = NULL;
         _TargU16toHost( _GetU16UN( ObjBuff ), frame );

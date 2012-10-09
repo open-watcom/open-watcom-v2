@@ -88,7 +88,7 @@ extern  instruction     *rMAKENEG(instruction*);
 extern  instruction     *rMAKESUB(instruction*);
 extern  instruction     *rMOVOP2(instruction*);
 
-extern    reg_list      *RegSets[];
+extern    hw_reg_set    *RegSets[];
 extern    op_regs       RegList[];
 extern    byte          OptForSize;
 extern    opcode_entry  MVCL[];

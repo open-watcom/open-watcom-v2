@@ -63,7 +63,7 @@ extern  void            SuffixIns(instruction*,instruction*);
 extern  hw_reg_set      HighReg(hw_reg_set);
 extern  bool            CheckIndecies(instruction*,hw_reg_set,hw_reg_set,name*);
 
-extern    reg_list      *RegSets[];
+extern    hw_reg_set    *RegSets[];
 extern    op_regs       RegList[];
 
 
