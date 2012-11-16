@@ -63,9 +63,9 @@ static bool isSymFile( FILE *f )
     if( end_map.zero != 0 ) {
         return( FALSE );
     }
-    /* Check .sym file to make sure it's something reasonable */
-    if( (end_map.major_ver < 3) || (end_map.major_ver > 5)
-        || (end_map.minor_ver > 11) ) {
+    /* Check .sym file version to make sure it's something reasonable */
+    if( (end_map.major_ver < 3) || (end_map.major_ver > 6)
+        || (end_map.minor_ver > 12) ) {
         return( FALSE );
     }
 
@@ -120,10 +120,11 @@ static void dumpSymTable( FILE *f, int count, unsigned_32 base_ofs,
 }
 
 // Dump a number of segments in a chain
-static void dumpLines( FILE *f, unsigned_32 base_ofs )
+static void dumpLines( FILE *f, unsigned_32 base_ofs, bool big_syms )
 {
     sym_linedef     lines;
-    sym_linerec     linerec;
+    sym_linerec     linerec_32;
+    sym_linerec_16  linerec;
     char            name[256];
     int             i;
 
@@ -136,15 +137,27 @@ static void dumpLines( FILE *f, unsigned_32 base_ofs )
                 base_ofs + lines.lines_ofs, lines.lines_num );
         fseek( f, base_ofs + lines.lines_ofs, SEEK_SET );
         for( i = 1; i <= lines.lines_num; ++i ) {
-            fread( &linerec, 1, sizeof( linerec ), f );
-            if( linerec.line_offset == (unsigned_32)-1 ) {
-                printf( "    Line %5d, offset 0x%04x\n",
-                    i, linerec.code_offset );
+            if( big_syms ) {
+                fread( &linerec_32, 1, sizeof( linerec_32 ), f );
+                if( linerec_32.line_offset == (unsigned_32)-1 ) {
+                    printf( "    Line %5d, offset 0x%04x\n",
+                        i, linerec_32.code_offset );
+                } else {
+                    printf( "    Line %5d, offset 0x%04x, file offset 0x%08x\n",
+                        i, linerec_32.code_offset, linerec_32.line_offset );
+                }
             } else {
-                printf( "    Line %5d, offset 0x%04x, file offset 0x%08x\n",
-                    i, linerec.code_offset, linerec.line_offset );
+                fread( &linerec, 1, sizeof( linerec ), f );
+                if( linerec.line_offset == (unsigned_16)-1 ) {
+                    printf( "    Line %5d, offset 0x%04x\n",
+                        i, linerec.code_offset );
+                } else {
+                    printf( "    Line %5d, offset 0x%04x, file offset 0x%04x\n",
+                        i, linerec.code_offset, linerec.line_offset );
+                }
             }
         }
+	fseek( f, SYM_PTR_TO_OFS( lines.next_ptr ), SEEK_SET );
     } while( lines.next_ptr != 0 );
 }
 
@@ -184,7 +197,7 @@ static void dumpSegments( FILE *f, int count )
         dumpSymTable( f, seg.num_syms, seg_start, sym_tab_offset, (seg.sym_type & SYM_FLAG_32BIT) != 0 );
 
         if( seg.linnum_ptr != 0 ) {
-            dumpLines( f, SYM_PTR_TO_OFS( seg.linnum_ptr ) );
+            dumpLines( f, SYM_PTR_TO_OFS( seg.linnum_ptr ), (seg.sym_type & SYM_FLAG_32BIT) != 0 );
         }
         fseek( f, SYM_PTR_TO_OFS( seg.next_ptr ), SEEK_SET );
     };

@@ -47,6 +47,9 @@
 #define SYM_VERSION_MAJOR_OLD   4
 #define SYM_VERSION_MINOR_OLD   0
 
+/* MAPSYM version 6.0 - Microsoft release from circa 1990 */
+#define SYM_VERSION_MAJOR_M32   6
+
 #include "pushpck1.h"
 
 typedef struct {
@@ -126,6 +129,11 @@ typedef struct {
     unsigned_16     code_offset;        /* offset within segment */
     unsigned_32     line_offset;        /* offset within file; may be -1 */
 } sym_linerec;
+
+typedef struct {
+    unsigned_16     code_offset;        /* offset within segment */
+    unsigned_16     line_offset;        /* offset within file; may be -1 */
+} sym_linerec_16;
 
 enum {
     SYM_FLAG_32BIT = 1,                 /* symbols are 32-bit */
