@@ -24,11 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Look for a perfect hash function for language keywords.
 *
 ****************************************************************************/
 
+
+/* NB: This code must correspond to kwhash.h! */
 
 #include <assert.h>
 #include <limits.h>
