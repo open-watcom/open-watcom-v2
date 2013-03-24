@@ -31,14 +31,15 @@
 
 #include "preproc.h"
 #include <ctype.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <time.h>
-
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-    #include "clibext.h"
-    #include "rotate.h"
+#include <fcntl.h>
+#if defined( __WATCOMC__ ) || defined( __UNIX__ )
+#include <unistd.h>
+#else
+#include <io.h>
 #endif
+#include "watcom.h"
+#include "clibext.h"
 
 #ifndef SLASH_CHAR
     #ifdef __UNIX__
@@ -94,7 +95,7 @@ static char MBCharLen[256];         // multi-byte character len table
 static char *doStrDup( const char *str )
 {
     char        *ptr;
-    int         len;
+    size_t      len;
 
     len = strlen( str ) + 1;
     ptr = PP_Malloc( len );
@@ -127,7 +128,7 @@ int PP_Open( char *filename )
     int         handle;
     FILELIST    *prev_file;
 
-    handle = open( filename, O_RDONLY | O_BINARY, 0 );
+    handle = open( filename, O_RDONLY | O_BINARY );
     if( handle != -1 ) {
         prev_file = PP_File;
         PP_File = (FILELIST *)PP_Malloc( sizeof( FILELIST ) );
@@ -406,10 +407,10 @@ int PP_ReadBuf( void )
     return( len );
 }
 
-int PP_ReadLine( char *line_generated )
+size_t PP_ReadLine( char *line_generated )
 {
     FILELIST            *this_file;
-    int                 len;
+    size_t              len;
     unsigned char       c;
 
     if( PP_File == NULL ) {     // if end of main file
@@ -469,9 +470,11 @@ int PP_ReadLine( char *line_generated )
     return( len );
 }
 
+#define _rotl( a, b )   ( ( a << b ) | ( a >> ( 16 - b ) ) )
+
 int PP_Hash( char *name )
 {
-    unsigned int        hash;
+    unsigned    hash;
 
     hash = 0;
     for( ; *name; ++name ) {
@@ -574,7 +577,7 @@ MACRO_ENTRY *PP_AddMacro( char *macro_name )
 {
     MACRO_ENTRY     *me;
     unsigned int    hash;
-    unsigned int    size;
+    size_t          size;
 
     size = sizeof( MACRO_ENTRY ) + strlen( macro_name );
     me = (MACRO_ENTRY *)PP_Malloc( size );
@@ -660,7 +663,7 @@ void PP_Define( char *ptr )
     char        *rep_list;
     char        *p;
     char        *p2;
-    unsigned    len;
+    size_t      len;
     char        c;
     char        white_space;
     char        token;
@@ -727,7 +730,9 @@ MACRO_ENTRY *PP_MacroLookup( char *macro_name )
 
     hash = PP_Hash( macro_name );
     for( me = PPHashTable[ hash ]; me; me = me->next ) {
-        if( strcmp( me->name, macro_name ) == 0 )  break;
+        if( strcmp( me->name, macro_name ) == 0 ) {
+            break;
+        }
     }
     return( me );
 }

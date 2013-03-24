@@ -63,4 +63,3 @@ pick( "XMM\0", WND_XMM, WndXMMOpen, MadRegInfo, WndNormal, WindowXMM )
 pick( "CUrrent\0", WND_CURRENT, WndNoOpen, NoInfo, WndLong, WindowCurrent )
 pick( "SEarch\0", WND_SEARCH, WndNoOpen, SrchInfo, WndLong, WindowSearch )
 pick( "\0", WND_NUM_CLASSES,WndNoOpen, NoInfo, WndNormal, WindowAll )
-#undef pick

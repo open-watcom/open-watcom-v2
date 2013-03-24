@@ -606,7 +606,7 @@ static bool DoOneToggle( mad_window_toggles wt )
     bit = 1;
     toggles = GetMADToggleList( rsd );
     for( ;; ) {
-        if( toggles->on == MSTR_NIL ) return( FALSE );
+        if( toggles->on == MAD_MSTR_NIL ) return( FALSE );
         GetMADNormalizedString( toggles->on, TXT_LEN, TxtBuff );
         if( TxtBuff[0] != NULLCHAR && strnicmp( start, TxtBuff, len ) == 0 ) {
             DoMADToggle( rsd, bit, 0 );
@@ -770,7 +770,7 @@ static walk_result DumpToggles( mad_handle mh, void *d )
     }
     bit = DoMADToggle( rsd, 0, 0 );
     toggles = GetMADToggleList( rsd );
-    while( toggles->menu != MSTR_NIL ) {
+    while( toggles->menu != MAD_MSTR_NIL ) {
         if( bit & 1 ) {
             GetMADNormalizedString( toggles->on, sizeof( buff ), buff );
         } else {

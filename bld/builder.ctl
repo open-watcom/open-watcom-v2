@@ -66,6 +66,7 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
 
 ## The following tools are not required during build
 #[ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]

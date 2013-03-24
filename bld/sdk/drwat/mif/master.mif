@@ -29,9 +29,11 @@ common_dir=../../common
 # cflags stuff
 ###############
 
-!ifneq host_OS win
-extra_c_flags = -DNOUSE3D
+extra_cpp_flags =
+!ifeq drwatcom_95 1
+extra_cpp_flags += -DCHICAGO
 !endif
+extra_cpp_flags_nt = -DNOUSE3D
 
 extra_c_flags_i86 = -zW -zu -3
 extra_c_flags_axp =
@@ -59,7 +61,6 @@ extra_proj_obj_nt = global.obj param.obj procctl.obj dipcli.obj memory.obj &
             $(mad_objs)
 !ifeq drwatcom_95 1
 extra_proj_obj_nt += reg95.obj
-extra_c_flags += -DCHICAGO
 extra_l_flags += lib th32.lib
 #$(watcom_dir)/lib/win95/th32.lib why do we need this one?
 !else
@@ -105,22 +106,13 @@ $(proj_name).res : ../drwatcom.rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk $(inc_path) $[@ -fo=$^@
 !else
 $(proj_name).res : ../drnt.rc .AUTODEPEND
-!ifeq drwatcom_95 1
-        $(rc) $(rc_flags) -ad -zk0 $(inc_path) -DCHICAGO $[@ -fo=$^@
-!else
-        $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
-!endif
+        $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(inc_path) $[@ -fo=$^@
 !endif
 
 rcstr.gh : rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../drwatcom.msg
-!ifeq drwatcom_95 1
-        $(c_pp) -zk0 $(inc_path) -DCHICAGO $[@ >$^@
-!else
-        $(c_pp) -zk0 $(inc_path) $[@ >$^@
-!endif
+        $(c_pp) -zk0 $(cppflags) $(inc_path) $[@ >$^@
 
 !include verrc.mif
-

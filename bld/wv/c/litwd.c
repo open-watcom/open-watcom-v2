@@ -31,24 +31,26 @@
 
 
 #include "litdef.h"
-#include "language.h"
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dui.h"
-#undef LITSTR
-#define LITSTR( x, y ) char *_LIT##x;
+
+#include "language.h"
+#define LITSTR( x, y ) char *LIT( x );
 #include "wd.str"
+#undef LITSTR
 
 void DUIInitLiterals()
 {
-    #undef LITSTR
-    #define LITSTR( x, y ) _LIT##x = DUILoadString( DBG_LITERAL_##x );
+    #define LITSTR( x, y ) LIT( x ) = DUILoadString( DBG_LITERAL_##x );
     #include "wd.str"
+    #undef LITSTR
 }
 
 void DUIFiniLiterals()
 {
-    #undef LITSTR
-    #define LITSTR( x, y ) DbgFree( _LIT##x );
+    #define LITSTR( x, y ) DbgFree( LIT( x ) );
     #include "wd.str"
+    #undef LITSTR
 }
+#undef pick

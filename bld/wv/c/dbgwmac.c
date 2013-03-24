@@ -66,6 +66,7 @@ extern int              WndNumMenus;
 static char **WndDisplayNames[] = {
     #define pick( a,b,c,d,e,f ) LITREF( f ),
     #include "wndnames.h"
+    #undef pick
 };
 
 static char **WhatList[] = {

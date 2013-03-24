@@ -12,7 +12,7 @@ vicomp_autodepends = .autodepend
 
 inc_dirs = -I. -I"../../h" -I"$(posix_dir)/h"
 
-extra_c_flags = -DVICOMP
+extra_cpp_flags = -DVICOMP
 
 objs = &
     vicomp.obj &

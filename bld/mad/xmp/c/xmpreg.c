@@ -90,7 +90,7 @@ walk_result     DIGENTRY MIRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
 mad_string      DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
 {
     //NYI:
-    return( MSTR_NIL );
+    return( MAD_MSTR_NIL );
 }
 
 /*

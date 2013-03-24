@@ -140,12 +140,11 @@ unsigned        DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *
 
 unsigned        DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buff )
 {
-    #undef wdpick
-    #define wdpick( e, es, js ) LITREF( e ),
     static  char ** strings[] = {
+        #define pick( e, es, js ) LITREF( e ),
         #include "mad.str"
+        #undef pick
     };
-    #undef wdpick
 
     unsigned    len;
 

@@ -8,7 +8,7 @@ srv = cw
 cpu = x86
 which = TRAP
 
-extra_c_flags = -DCAUSEWAY
+extra_cpp_flags = -DCAUSEWAY
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif

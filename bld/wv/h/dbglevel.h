@@ -33,4 +33,3 @@
 pick( SOURCE, "Source\0" )
 pick( ASM, "Assembly\0" )
 pick( MIX, "Mixed\0" )
-#undef pick

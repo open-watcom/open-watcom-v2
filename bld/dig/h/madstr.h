@@ -32,12 +32,11 @@
 #ifndef MADSTR_H_INCLUDED
 #define MADSTR_H_INCLUDED
 
-#undef wdpick
-#define wdpick( r, e, j ) r,
-enum {
-#include "mad.str"
-MSTR_LAST_ONE
-};
-#undef wdpick
+typedef enum {
+    #define pick( r, e, j ) MAD_##r,
+    #include "mad.str"
+    #undef pick
+    MAD_MSTR_LAST_ONE
+} mad_msg;
 
 #endif

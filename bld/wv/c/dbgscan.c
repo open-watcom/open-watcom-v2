@@ -274,13 +274,13 @@ mad_string ScanCall( void )
 
     type = MADCallTypeList();
     for( ;; ) {
-        if( *type == MSTR_NIL ) return( MSTR_NIL );
+        if( *type == MAD_MSTR_NIL ) return( MAD_MSTR_NIL );
         MADCliString( *type, sizeof( buff ), buff );
         q = buff;
         p = TokenStart;
         for( ;; ) {
             if( !isalnum( *p ) ) {
-                if( p == TokenStart ) return( MSTR_NIL );
+                if( p == TokenStart ) return( MAD_MSTR_NIL );
                 ReScan( p );
                 return( *type );
             }

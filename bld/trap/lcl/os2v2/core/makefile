@@ -13,7 +13,8 @@ cpu     = x86
 name    = core
 which   = TRAP
 
-extra_cflags = -DELFCORE -bd
+extra_cpp_flags = -DELFCORE
+extra_cflags = -bd
 
 extra_srcs = $(trap_dir)/lcl/linux/c
 

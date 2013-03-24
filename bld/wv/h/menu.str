@@ -1,10 +1,10 @@
 #define MENU_STR( sym, menu, japanese_menu, help, japanese_help ) \
-        wdpick( sym, menu, japanese_menu ) \
-        wdpick( HELP_##sym, help, japanese_help )
+        pick( sym, menu, japanese_menu ) \
+        pick( HELP_##sym, help, japanese_help )
 #define TIP_MENU_STR( sym, menu, japanese_menu, help, japanese_help, tip, japanese_tip ) \
-        wdpick( sym, menu, japanese_menu ) \
-        wdpick( HELP_##sym, help, japanese_help ) \
-        wdpick( TIP_##sym, tip, japanese_tip )
+        pick( sym, menu, japanese_menu ) \
+        pick( HELP_##sym, help, japanese_help ) \
+        pick( TIP_##sym, tip, japanese_tip )
 
 MENU_STR( MainMenuWindow,
         "&Window",

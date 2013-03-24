@@ -165,8 +165,9 @@ gui_menu_struct WndMainMenu[] = {
 int     WndNumMenus = { WndMenuSize( WndMainMenu ) };
 
 wnd_info *WndInfoTab[] = {
-#define pick( a,b,c,d,e,f ) &d,
-#include "wndnames.h"
+    #define pick( a,b,c,d,e,f ) &d,
+    #include "wndnames.h"
+    #undef pick
 };
 
 char MainTab[] = { "MAin\0" };

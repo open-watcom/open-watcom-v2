@@ -259,7 +259,7 @@ static char *RegValueName( void *_possible, int i )
     mad_modify_list    *possible = _possible;
     unsigned    max;
 
-    if( possible[i].name == MSTR_NIL ) {
+    if( possible[i].name == MAD_MSTR_NIL ) {
         max = TXT_LEN;
         MADTypeHandleToString( MADTypePreferredRadix( possible[i].type ),
                 possible[i].type, possible[i].data, &max, TxtBuff );

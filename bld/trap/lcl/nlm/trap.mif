@@ -20,12 +20,12 @@ extra_objs += $(nlm_trap_objs)
 extra_srcs = ;$(trap_dir)/lcl/nlm/c;$(trap_dir)/lcl/nlm/asm
 inc_dirs   = -I"$(trap_dir)/lcl/nlm/h"
 
-extra_c_flags = -D__NW$(nlm_ver)0__
+extra_cpp_flags = -D__NW$(nlm_ver)0__
 !ifeq release 0
-extra_c_flags += -DDEBUG_ME
+extra_cpp_flags += -DDEBUG_ME
 !endif
 !ifeq nwlib libc
-extra_c_flags += -D__NETWARE_LIBC__
+extra_cpp_flags += -D__NETWARE_LIBC__
 !endif
 
 extra_a_flags = -3s

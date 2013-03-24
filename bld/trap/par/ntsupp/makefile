@@ -60,7 +60,7 @@ debug_linker=-debug:none
 
 inc_dirs = -I"$(w32api_dir)/nt"
 
-extra_c_flags = -D_WIN32 -DWIN32
+extra_cpp_flags = -D_WIN32 -DWIN32
 
 dbginst.exe : dbginst.obj
         $(cl) $(clflags) $<

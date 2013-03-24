@@ -36,7 +36,7 @@ extra_objs = &
         core.obj
 
 inc_dirs += -I"$(trap_dir)/lcl/dos/h"
-extra_c_flags += -DWOW
+extra_cpp_flags = -DWOW
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

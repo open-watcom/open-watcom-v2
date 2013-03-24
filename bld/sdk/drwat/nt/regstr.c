@@ -240,7 +240,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
         MADTypeInfo( data->curr_info->type, &cmp );
         max_len = 0;
         for( i = 0; i < data->num_possible; i++ ) {
-            if( data->m_list[i].name == MSTR_NIL ) {
+            if( data->m_list[i].name == MAD_MSTR_NIL ) {
                 len = 255;
                 MADTypeToString( new, &mti, data->m_list[i].data, &len, s );
             } else {

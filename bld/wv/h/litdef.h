@@ -30,4 +30,11 @@
 ****************************************************************************/
 
 
+#define DBG_LITERAL_BASE 30000
+#define DBG_MENU_BASE 31000
+
+#define LIT( x ) _LIT_##x
+#define LITREF( x ) &LIT( x )
+
+#include "wdmsg.h"
 #include "litdef.gh"

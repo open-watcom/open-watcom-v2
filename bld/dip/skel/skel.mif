@@ -30,6 +30,6 @@ extra_srcs = $(lib_misc_dir)/c
 # Set extra_cflags if you have any additional C compiler flags that you
 # want (macro defs most probably). Delete it if you don't have any.
 #
-extra_cflag = -DIM_A_MACRO
+extra_cppflag = -DIM_A_MACRO
 
 !include ../../imp.mif

@@ -68,25 +68,21 @@ $(target_lib_x) : $(target_xbjs) $(__MAKEFILES__)
     $(librarian) $(lib_flags) $^@ @$^&.lbc
 !endif
 
-define_c=-D__OBSCURE_STREAM_INTERNALS
-
+# Include system headers in dependency lists
+extra_cpp_flags=-D_ENABLE_AUTODEPEND -D__OBSCURE_STREAM_INTERNALS
 !ifdef mthreaded
-define_c +=-D__MT__
+extra_cpp_flags += -D__MT__
 !endif
-
 !ifdef fs_registration
-define_c +=-D__USE_FS
+extra_cpp_flags += -D__USE_FS
 !else ifdef pd_registration
-define_c +=-D__USE_PD
+extra_cpp_flags += -D__USE_PD
 !else ifdef sysind_registration
-define_c +=-D__USE_RW
+extra_cpp_flags += -D__USE_RW
 !endif
 
 # -xr has to be on in case the user uses -xr
 extra_c_flags=-zl-xr-fhwe
-
-# Include system headers in dependency lists
-extra_c_flags +=-D_ENABLE_AUTODEPEND
 
 !ifdef mthreaded
 extra_c_flags +=-bm
@@ -119,7 +115,7 @@ extra_c_flags_386 += -r
 
 extra_c_flags_win = -zW
 
-comp_flags = $(cflags) $(define_c)
+comp_flags = $(cflags) $(cppflags)
 
 extra_a_flags  = -we
 !ifdef mthreaded
@@ -163,18 +159,18 @@ inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_d
 
 .cpp.obj : .autodepend
 !ifeq verbose 1
-    $(cpp) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
+    $(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cxx_flags_$[&) $[@
 !else
     @echo c++ $@
-    @$(cpp) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
+    @$(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cxx_flags_$[&) $[@
 !endif
 
 .cpp.xbj : .autodepend
 !ifeq verbose 1
-    $(cpp) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
+    $(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cxx_flags_x_$[&) $[@
 !else
     @echo xc++ $@
-    @$(cpp) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
+    @$(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cxx_flags_x_$[&) $[@
 !endif
 
 .asm.obj : .autodepend

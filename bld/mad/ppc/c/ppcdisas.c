@@ -493,9 +493,9 @@ walk_result             DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEM
 const mad_toggle_strings        *DIGENTRY MIDisasmToggleList( void )
 {
     static const mad_toggle_strings list[] = {
-        { MSTR_MPSEUDOINS, MSTR_PSEUDOINS, MSTR_RAWINS },
-        { MSTR_MUPPER, MSTR_UPPER, MSTR_LOWER },
-        { MSTR_NIL, MSTR_NIL, MSTR_NIL }
+        { MAD_MSTR_MPSEUDOINS, MAD_MSTR_PSEUDOINS, MAD_MSTR_RAWINS },
+        { MAD_MSTR_MUPPER, MAD_MSTR_UPPER, MAD_MSTR_LOWER },
+        { MAD_MSTR_NIL, MAD_MSTR_NIL, MAD_MSTR_NIL }
     };
     return( list );
 }

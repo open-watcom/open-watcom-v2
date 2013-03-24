@@ -39,14 +39,18 @@ inc_dirs = -I"../h" -I"$(trmem_dir)"
 
 lnk = wig.lnk
 
-extra_c_flags =
+extra_cpp_flags =
 !ifeq sys_dll 1
-extra_c_flags += -D__DLL__
+extra_cpp_flags += -D__DLL__
 !endif
 !ifeq release 0
-extra_c_flags += -DTRMEM -of+
+extra_cpp_flags += -DTRMEM
 !endif
 
+extra_c_flags =
+!ifeq release 0
+extra_c_flags += -of+
+!endif
 !ifeq sys_dll 1
 extra_c_flags_win = -zw -zu
 !else
@@ -67,7 +71,7 @@ $(xname) : sruparse.gh ytab.gh $(objs) $(__MAKEFILES__)
 sruparse.gh ytab.gh: sruparse.y ../c/yydriver.c
         @wtouch $^@
         @rm $^@
-        $(byacc) $[@ ../c/yydriver.c > $(nulldevice)
+        $(yacc) $[@ ../c/yydriver.c > $(nulldevice)
         @cp ytab.c $^@
         @cp ytab.h ytab.gh
         @rm ytab.c ytab.h

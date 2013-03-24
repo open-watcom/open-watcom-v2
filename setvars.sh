@@ -15,10 +15,6 @@ export WATCOM=$OWBOOTSTRAP
 export INCLUDE=$WATCOM/lh
 export PATH=$WATCOM/binl:$PATH
 
-# Adjust to match the host platform
-export BOOTSTRAP_OS=linux
-export BOOTSTRAP_CPU=386
-
 # Subdirectory to be used for building OW build tools
 export OWOBJDIR=binbuild
 

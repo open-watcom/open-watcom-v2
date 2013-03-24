@@ -33,8 +33,10 @@
 enum {
     #define pick( a,b,c,d,e,f ) a,
     #include "gadgets.h"
+    #undef pick
     #define pick( a,b,c,d,e,f ) SECONDARY_##a,
     #include "gadgets.h"
+    #undef pick
     GADGET_SPLASH
 };
 extern int              MaxGadgetLength;

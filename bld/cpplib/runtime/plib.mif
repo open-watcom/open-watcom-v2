@@ -147,29 +147,29 @@ objs_cpp =  allocexc.$(obj_ext) &
 
 pch_flags = -fh=pch01.pch
 pch_flags_x = -fh=pch02.pch
-extra_cpp_flags_cppdata = -fh=pch03.pch
-extra_cpp_flags_rttidync = -fh=pch04.pch
-extra_cpp_flags_rttiptr = -fh=pch04.pch
-extra_cpp_flags_rttiref = -fh=pch04.pch
-extra_cpp_flags_rttisupp = -fh=pch04.pch
-extra_cpp_flags_rttitid = -fh=pch04.pch
-extra_cpp_flags_rttivoid = -fh=pch04.pch
-extra_cpp_flags_fsregist = -fh=pch05.pch
-extra_cpp_flags_stabinit = -fh=pch05.pch
-extra_cpp_flags_areaexc = -fh=pch06.pch
-extra_cpp_flags_fsroot = -fh=pch06.pch
-extra_cpp_flags_moddtorr = -fh=pch06.pch
-extra_cpp_flags_stabmod = -fh=pch06.pch
-extra_cpp_flags_stablcl = -fh=pch06.pch
-extra_cpp_flags_undefmbd = -fh=pch06.pch
-extra_cpp_flags_dfsroot = -fh=pch07.pch
-extra_cpp_flags_dstabmod = -fh=pch08.pch
-extra_cpp_flags_x_rttiref = -fh=pch09.pch
-extra_cpp_flags_x_rttitid = -fh=pch09.pch
-extra_cpp_flags_x_stabthrw = -fh=pch10.pch
-extra_cpp_flags_x_fsregist = -fh=pch10.pch
-extra_cpp_flags_prwdata = -fh=pch11.pch
-extra_cpp_flags_rtdbgst = -fh=pch12.pch
+extra_cxx_flags_cppdata = -fh=pch03.pch
+extra_cxx_flags_rttidync = -fh=pch04.pch
+extra_cxx_flags_rttiptr = -fh=pch04.pch
+extra_cxx_flags_rttiref = -fh=pch04.pch
+extra_cxx_flags_rttisupp = -fh=pch04.pch
+extra_cxx_flags_rttitid = -fh=pch04.pch
+extra_cxx_flags_rttivoid = -fh=pch04.pch
+extra_cxx_flags_fsregist = -fh=pch05.pch
+extra_cxx_flags_stabinit = -fh=pch05.pch
+extra_cxx_flags_areaexc = -fh=pch06.pch
+extra_cxx_flags_fsroot = -fh=pch06.pch
+extra_cxx_flags_moddtorr = -fh=pch06.pch
+extra_cxx_flags_stabmod = -fh=pch06.pch
+extra_cxx_flags_stablcl = -fh=pch06.pch
+extra_cxx_flags_undefmbd = -fh=pch06.pch
+extra_cxx_flags_dfsroot = -fh=pch07.pch
+extra_cxx_flags_dstabmod = -fh=pch08.pch
+extra_cxx_flags_x_rttiref = -fh=pch09.pch
+extra_cxx_flags_x_rttitid = -fh=pch09.pch
+extra_cxx_flags_x_stabthrw = -fh=pch10.pch
+extra_cxx_flags_x_fsregist = -fh=pch10.pch
+extra_cxx_flags_prwdata = -fh=pch11.pch
+extra_cxx_flags_rtdbgst = -fh=pch12.pch
 
 !include $(cpplib_dir)/plibname.mif
 

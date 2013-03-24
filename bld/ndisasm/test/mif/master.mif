@@ -1,16 +1,7 @@
 proj_name = wdistest
 
-host_cpu = 386
-
-!ifdef __LINUX__
-host_os = linux
-!else ifdef __DOS__
-host_os = dos
-!else ifdef __NT__
-host_os = nt
-!else ifdef __OS2__
-host_os = os2
-!endif
+host_cpu = $(bld_cpu)
+host_os  = $(bld_os)
 
 name = dis
 

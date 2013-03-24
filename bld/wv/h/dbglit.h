@@ -35,15 +35,12 @@
 #include "dbgname.h"
 
 #include "bool.h"
-#include "litdef.gh"
+#include "litdef.h"
 
-#undef LITSTR
-#define LITSTR( x, y ) extern char *_LIT##x;
+#include "language.h"
+#define LITSTR( x, y ) extern char *LIT( x );
 #include "literals.h"
-
-#undef LIT
-#define LIT( x ) _LIT##x
-#undef LITREF
-#define LITREF( x ) &LIT( x )
+#undef LITSTR
+#undef pick
 
 #endif /* _DBGLIT_H_INCLUDED */

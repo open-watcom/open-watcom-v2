@@ -139,7 +139,7 @@ sample.$(ext) : $(objs) $(guilib) $(uilib) $(sysdep) $(LNK)
         $(linker) @$(LNK)
 !ifeq type win
 !ifeq os w386
-        wbind $* -s $(%watcom)\binw\win386.ext -R -k $(rcopt) $(sysdep)
+        $(wbind) $* -s $(%watcom)\binw\win386.ext -R -k $(rcopt) $(sysdep)
 !else ifeq os pm
         $(lang_root)\binp\rc -p -x $(rcname).res $(name).exe
 !else

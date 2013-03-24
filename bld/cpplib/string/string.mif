@@ -73,8 +73,8 @@ objs_c += strsrch.$(obj_ext)
 
 pch_flags = -fh=pch01.pch
 pch_flags_x = -fh=pch02.pch
-extra_cpp_flags_strsrch = -fh=pch03.pch
-extra_cpp_flags_x_strsrch = -fh=pch04.pch
+extra_cxx_flags_strsrch = -fh=pch03.pch
+extra_cxx_flags_x_strsrch = -fh=pch04.pch
 
 !include $(cpplib_dir)/plibname.mif
 

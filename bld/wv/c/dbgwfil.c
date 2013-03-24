@@ -117,7 +117,6 @@ extern stack_entry      *ExprSP;
 #include "menudef.h"
 
 static gui_menu_struct FileShowMenu[] = {
-    #define pick( a,b,c,d,e,f,g ) MENU_ITEM( a, b )
     #include "mfilshow.h"
 };
 

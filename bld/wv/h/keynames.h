@@ -56,4 +56,3 @@ pick( PAGEUP )
 pick( RIGHT )
 pick( TAB )
 pick( UP )
-#undef pick

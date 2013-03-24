@@ -37,6 +37,10 @@ OBJECTS = &
     util.obj     &
     wtime.obj
 
+!ifdef DBG
+OBJECTS += debuglog.obj
+!endif
+
 !ifeq browse_trmem 1
 OBJECTS += dmem.obj trmem.obj trmemcpp.obj
 !else
@@ -48,15 +52,16 @@ inc_dirs = -I"../h" -I"$(browse_dir)/h" -I"$(dwarf_dir)/dr/h" -I"$(posix_dir)/h"
 !ifneq host_cpu axp
 mem_flags = -of+
 !endif
-    
+
+extra_cpp_flags     = -DSTANDALONE_RX=1 -DSTANDALONE_MERGER
 !ifdef DBG
-extra_cpp_flags     = -xs-ew-DSTANDALONE_MERGER -DDEBUG=1 -DINSTRUMENTS=1
-extra_c_flags_dwmerger = -xs-ew-DSTANDALONE_MERGER -DINSTRUMENTS=1 -DDEBUG=1 -DMINALLOC=0
-OBJECTS += debuglog.obj
+extra_cpp_flags     += -DDEBUG=1 -DINSTRUMENTS=1
 !else
-extra_cpp_flags     = -xs-ew-DSTANDALONE_MERGER -DDEBUG=0 -DINSTRUMENTS=0
+extra_cpp_flags     += -DDEBUG=0 -DINSTRUMENTS=0
 !endif
-extra_c_flags          = -DSTANDALONE_RX=1
+    
+extra_cxx_flags     = -xs-ew
+
 extra_c_flags_trmem    = -I"$(trmem_dir)"
 extra_c_flags_trmemcpp = -I"$(trmem_dir)" -DTRACKER $(mem_flags)
 extra_c_flags_dmem     = $(mem_flags) -I"$(trmem_dir)"

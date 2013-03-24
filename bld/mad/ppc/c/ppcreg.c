@@ -135,15 +135,15 @@ static ppc_reg_info             **RegSubList;
 
 static const mad_toggle_strings CPUToggleList[] =
 {
-    {MSTR_MHEX,MSTR_HEX,MSTR_DECIMAL},
-    {MSTR_MEXTENDED,MSTR_REG_EXTENDED,MSTR_REG_NORMAL},
-    {MSTR_NIL,MSTR_NIL,MSTR_NIL}
+    {MAD_MSTR_MHEX,MAD_MSTR_HEX,MAD_MSTR_DECIMAL},
+    {MAD_MSTR_MEXTENDED,MAD_MSTR_REG_EXTENDED,MAD_MSTR_REG_NORMAL},
+    {MAD_MSTR_NIL,MAD_MSTR_NIL,MAD_MSTR_NIL}
 };
 
 static const mad_toggle_strings FPUToggleList[] =
 {
-    {MSTR_MHEX,MSTR_HEX,MSTR_DECIMAL},
-    {MSTR_NIL,MSTR_NIL,MSTR_NIL}
+    {MAD_MSTR_MHEX,MAD_MSTR_HEX,MAD_MSTR_DECIMAL},
+    {MAD_MSTR_NIL,MAD_MSTR_NIL,MAD_MSTR_NIL}
 };
 
 struct mad_reg_set_data {
@@ -167,8 +167,8 @@ static mad_status       FPUGetPiece( unsigned piece,
                                 unsigned *max_value );
 
 static const mad_reg_set_data RegSet[] = {
-    { CPUGetPiece, CPUToggleList, MSTR_CPU },
-    { FPUGetPiece, FPUToggleList, MSTR_FPU },
+    { CPUGetPiece, CPUToggleList, MAD_MSTR_CPU },
+    { FPUGetPiece, FPUToggleList, MAD_MSTR_FPU },
 };
 
 unsigned        DIGENTRY MIRegistersSize( void )
@@ -458,9 +458,9 @@ mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                         disp_type, max_value ) );
 }
 
-static const mad_modify_list    WordReg = { NULL, PPCT_H_WORD, MSTR_NIL };
-static const mad_modify_list    DWordReg = { NULL, PPCT_H_DWORD, MSTR_NIL };
-static const mad_modify_list    FltReg = { NULL, PPCT_H_DOUBLE, MSTR_NIL };
+static const mad_modify_list    WordReg = { NULL, PPCT_H_WORD, MAD_MSTR_NIL };
+static const mad_modify_list    DWordReg = { NULL, PPCT_H_DWORD, MAD_MSTR_NIL };
+static const mad_modify_list    FltReg = { NULL, PPCT_H_DOUBLE, MAD_MSTR_NIL };
 
 mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, unsigned *num_possible_p )
 {

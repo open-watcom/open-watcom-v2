@@ -7,7 +7,7 @@ std_objs = &
         x86cpu.obj &
         misc7086.obj
 
-extra_c_flags = -DREAL_MODE
+extra_cpp_flags = -DREAL_MODE
 extra_a_flags = -DREAL_MODE
 
 extra_objs  = $(std_objs) realtrap.obj

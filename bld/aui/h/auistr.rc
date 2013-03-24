@@ -1,4 +1,4 @@
-#include "auistr.gh"
+#include "auistr.h"
 STRINGTABLE
 BEGIN
     #undef auimsg

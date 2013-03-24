@@ -2,8 +2,8 @@
 #
 # Create the Linux std.trp
 #
-host_os  = $(%BOOTSTRAP_OS)
-host_cpu = $(%BOOTSTRAP_CPU)
+host_os  = $(bld_os)
+host_cpu = $(bld_cpu)
 
 substitute_linker = 1
 

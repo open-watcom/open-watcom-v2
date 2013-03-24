@@ -10,7 +10,8 @@ which = SERVER
 
 extra_objs = adsacc.obj adsintr.obj
  
-extra_c_flags = -DACAD -I"$(adsdir)"
+extra_cpp_flags = -DACAD
+extra_c_flags = -I"$(adsdir)"
 extra_a_flags = -3s -DACAD
 extra_linker = op nocaseexact
 

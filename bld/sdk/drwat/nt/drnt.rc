@@ -1,3 +1,9 @@
+#ifdef _JAPANESE_
+ #define sp( s1, s2 ) s2
+#else
+ #define sp( s1, s2 ) s1
+#endif
+
 #include "menu.h"
 #include "mark.h"
 #include "procctl.h"
@@ -22,19 +28,6 @@
 #include "dipload.h"
 #include "banner.h"
 
-#undef pick
-#undef wdpick
-#undef sp
-#ifdef _JAPANESE_
- #define pick( a, b, c ) a, c
- #define wdpick( a, b, c ) __##a, c
- #define sp( s1, s2 ) s2
-#else
- #define pick( a, b, c ) a, b
- #define wdpick( a, b, c ) __##a, b
- #define sp( s1, s2 ) s1
-#endif
-
 #ifdef __NT__
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 #endif
@@ -46,8 +39,17 @@ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 
 STRINGTABLE
 BEGIN
+#ifdef _JAPANESE_
+    #define pick( a, b, c ) a, c
+    #define madpick( a, b, c ) __##a, c
+#else
+    #define pick( a, b, c ) a, b
+    #define madpick( a, b, c ) __##a, b
+#endif
     #include "rcstrmsg.gh"
     #include "uistrmsg.gh"
+#undef madpick
+#undef pick
 END
 
 #include "procctl.dlg"
@@ -69,3 +71,5 @@ END
 #include "memwnd.rc"
 #include "memdmp.dlg"
 #include "dipload.dlg"
+
+#undef sp

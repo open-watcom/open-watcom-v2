@@ -17,9 +17,9 @@ sys_windowed = 1
 objs =  dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj ddetrack.obj &
         ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj
 
+extra_cpp_flags_nt = -DNOUSE3D
 
 extra_c_flags     = -fh
-extra_c_flags_nt  = -DNOUSE3D
 
 extra_l_flags     = option map
 extra_l_flags_nt  = option stack=100k

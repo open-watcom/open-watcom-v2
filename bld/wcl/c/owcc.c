@@ -64,7 +64,7 @@
 #define strfcmp stricmp
 #endif
 
-#ifdef BUILDTOOLNAMES
+#ifdef BOOTSTRAP
 #define BPRFX	"b"
 #else
 #define BPRFX	""

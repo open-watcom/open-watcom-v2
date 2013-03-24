@@ -199,17 +199,17 @@ static axp_reg_info             **RegSubList;
 
 static const mad_toggle_strings CPUToggleList[] =
 {
-    {MSTR_MHEX,MSTR_HEX,MSTR_DECIMAL},
-    {MSTR_MEXTENDED,MSTR_REG_EXTENDED,MSTR_REG_NORMAL},
-    {MSTR_MSYMBOLIC,MSTR_REG_SYMBOLIC,MSTR_REG_NUMERIC},
-    {MSTR_NIL,MSTR_NIL,MSTR_NIL}
+    {MAD_MSTR_MHEX,MAD_MSTR_HEX,MAD_MSTR_DECIMAL},
+    {MAD_MSTR_MEXTENDED,MAD_MSTR_REG_EXTENDED,MAD_MSTR_REG_NORMAL},
+    {MAD_MSTR_MSYMBOLIC,MAD_MSTR_REG_SYMBOLIC,MAD_MSTR_REG_NUMERIC},
+    {MAD_MSTR_NIL,MAD_MSTR_NIL,MAD_MSTR_NIL}
 };
 
 static const mad_toggle_strings FPUToggleList[] =
 {
-    {MSTR_MHEX,MSTR_HEX,MSTR_DECIMAL},
-    {MSTR_MVAX,MSTR_VAX,MSTR_IEEE},
-    {MSTR_NIL,MSTR_NIL,MSTR_NIL}
+    {MAD_MSTR_MHEX,MAD_MSTR_HEX,MAD_MSTR_DECIMAL},
+    {MAD_MSTR_MVAX,MAD_MSTR_VAX,MAD_MSTR_IEEE},
+    {MAD_MSTR_NIL,MAD_MSTR_NIL,MAD_MSTR_NIL}
 };
 
 struct mad_reg_set_data {
@@ -233,8 +233,8 @@ static mad_status       FPUGetPiece( unsigned piece,
                                 unsigned *max_value );
 
 static const mad_reg_set_data RegSet[] = {
-    { CPUGetPiece, CPUToggleList, MSTR_CPU },
-    { FPUGetPiece, FPUToggleList, MSTR_FPU },
+    { CPUGetPiece, CPUToggleList, MAD_MSTR_CPU },
+    { FPUGetPiece, FPUToggleList, MAD_MSTR_FPU },
 };
 
 axp_pal CurrPAL;
@@ -468,8 +468,8 @@ mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                         disp_type, max_value ) );
 }
 
-static const mad_modify_list    IntReg = { NULL, REG_TYPE( REG_BITS_INT ), MSTR_NIL };
-static const mad_modify_list    FltReg = { NULL, AXPT_DOUBLE, MSTR_NIL };
+static const mad_modify_list    IntReg = { NULL, REG_TYPE( REG_BITS_INT ), MAD_MSTR_NIL };
+static const mad_modify_list    FltReg = { NULL, AXPT_DOUBLE, MAD_MSTR_NIL };
 
 mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, unsigned *num_possible_p )
 {

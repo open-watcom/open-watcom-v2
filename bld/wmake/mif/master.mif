@@ -40,16 +40,16 @@ echo    = echo
 
 inc_dirs = -I"$(wmake_dir)/h" -I"$(orl_dir)/h" -I"$(trmem_dir)"
 
-extra_c_flags = $(rc_defines_$(host_os))
+extra_cpp_flags = $(rc_defines_$(host_os))
 !ifdef DLLS_IMPLEMENTED
-extra_c_flags += -DDLLS_IMPLEMENTED
+extra_cpp_flags += -DDLLS_IMPLEMENTED
 !endif
 !ifdef cachestat
-extra_c_flags += -DCACHE_STATS
+extra_cpp_flags += -DCACHE_STATS
 !endif
 !ifdef wmake_causeway
 !ifeq host_cpu 386
-extra_c_flags_dos += -DCAUSEWAY
+extra_cpp_flags_dos += -DCAUSEWAY
 !endif
 !endif
 

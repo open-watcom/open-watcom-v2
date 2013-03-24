@@ -9,16 +9,6 @@ wv_autodepends = .AUTODEPEND
 
 wv_trmem = 1
 
-# The dot_machine macro is used to work around the fact that on DOSish
-# filesystems, trailing dot is not significant, but on Unix it is
-!ifdef machine
-all_machine = $(machine)
-dot_machine = .$(machine)
-!else
-all_machine = at
-dot_machine =
-!endif
-
 .EXTENSIONS : .dlg .str
 
 !include cproj.mif
@@ -36,6 +26,10 @@ dig_os = $(dig_os_$(host_os)_$(host_cpu))
 !include $(dig_dir)/mif/dipcli.mif
 !include $(dig_dir)/mif/madcli.mif
 !include $(dig_dir)/mif/trpcli.mif
+
+!include $(aui_dir)/client.mif
+!include $(gui_dir)/client.mif
+!include $(ui_dir)/client.mif
 
 !include wres.mif
 
@@ -244,22 +238,19 @@ exe_name = wv.$(EXE)
 
 # cflags
 #########
-extra_c_flags_at = -D_AT_PC
+!ifeq sys_windowed 1
+extra_cpp_flags = -D__GUI__
+!else
+extra_cpp_flags = -D__CHAR__
+!endif
+!ifeq release 0
+extra_cpp_flags += -DAUI_DBG -DDBG_DBG
+!endif
 
-extra_c_flags += $(extra_c_flags_$(all_machine))
+extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 
 !ifneq bootstrap 1
 extra_c_flags += -s
-!endif
-
-!ifeq sys_windowed 1
-extra_c_flags += -D__GUI__
-!else
-extra_c_flags += -D__CHAR__
-!endif
-
-!ifeq release 0
-extra_c_flags += -DAUI_DBG -DDBG_DBG
 !endif
 
 extra_c_flags_win += -zW -zc
@@ -275,13 +266,11 @@ extra_c_flags_dos += $(extra_c_flags_dos_$(host_cpu))
 extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_dynmem = $(trmem_cover_cflags)
 
-extra_c_flags_nt += -DENABLE_TRAP_LOGGING
-
 # inc_dirs
 ###########
 inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)"
 !ifndef dll
-inc_dirs += -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(ui_dir)/h"
+inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
 inc_dirs += -I"$(gui_dir)/ui/h" -I"$(help_dir)/h"
 !endif
 !if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx"
@@ -293,31 +282,7 @@ dig_srcs +=;$(dig_dir)/c/dsx
 
 # libs
 ###########
-!ifeq sys_windowed 1
-libs_win_i86        = $(aui_dir)/wini86/aui.lib $(gui_dir)/win/wini86/gui.lib
-libs_nt_386         = $(aui_dir)/nt386/aui.lib $(gui_dir)/win/nt386/gui.lib
-libs_os2_i86        = $(aui_dir)/os2i86.pm/aui.lib $(gui_dir)/win/os2i86/gui.lib
-libs_os2_386        = $(aui_dir)/os2386.pm/aui.lib $(gui_dir)/win/os2386/gui.lib
-libs_nt_axp         = $(aui_dir)/ntaxp/aui.lib $(gui_dir)/win/ntaxp/gui.lib
-!else
-libs_win_i86        = $(aui_dir)/wini86/aui.lib $(gui_dir)/ui/wini86/gui.lib $(ui_dir)/win$(dot_machine)/wini86/ui.lib
-libs_nt_386         = $(aui_dir)/nt386/aui.lib $(gui_dir)/ui/nt386/gui.lib $(ui_dir)/nt/nt386/ui.lib
-libs_os2_i86        = $(aui_dir)/os2i86/aui.lib $(gui_dir)/ui/os2i86/gui.lib $(ui_dir)/os2/os2i86/ui.lib
-libs_os2_386        = $(aui_dir)/os2386/aui.lib $(gui_dir)/ui/os2386/gui.lib $(ui_dir)/os2/os2386/ui.lib
-libs_dos_i86        = $(aui_dir)/dosi86/aui.lib $(gui_dir)/ui/dosi86/gui.lib $(ui_dir)/dos$(dot_machine)/dosi86/ui.lib
-libs_dos_386        = $(aui_dir)/dos386/aui.lib $(gui_dir)/ui/dos386/gui.lib $(ui_dir)/dos$(dot_machine)/dos386/ui.lib
-libs_qnx_i86        = $(aui_dir)/qnxi86/aui.lib $(gui_dir)/ui/qnxi86/gui.lib $(ui_dir)/qnx/qnxi86/ui.lib
-libs_qnx_386        = $(aui_dir)/qnx386/aui.lib $(gui_dir)/ui/qnx386/gui.lib $(ui_dir)/qnx/qnx386/ui.lib
-libs_linux_386      = $(aui_dir)/linux386/aui.lib $(gui_dir)/ui/linux386/gui.lib $(ui_dir)/unix/linux386/ui.lib $(ncurses_dir)/linux386/ncurses.lib
-libs_nt_axp         = $(aui_dir)/ntaxp/aui.lib $(gui_dir)/ui/ntaxp/gui.lib $(ui_dir)/nt/ntaxp/ui.lib
-libs_rdos_386       = $(aui_dir)/rdos386/aui.lib $(gui_dir)/ui/rdos386/gui.lib $(ui_dir)/rdos/rdos386/ui.lib
-!endif
-
-!ifeq bootstrap 1
-libs = $(aui_dir)/$(%OWOBJDIR)/aui.lib $(gui_dir)/ui/$(%OWOBJDIR)/gui.lib $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib $(wres_lib)
-!else
-libs = $(libs_$(host_os)_$(host_cpu)) $(wres_lib)
-!endif
+libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
 
 !ifdef ovl_dos
 endsect=end
@@ -416,7 +381,7 @@ $(lnk) : $(__MAKEFILES__)
 !endif
     @for %i in ($(objs)) do @%append $(lnk) file %i
 
-rcinclude=-I. -I"$(hdir)" -I"$(dig_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)" -I"$(gui_dir)/h"
+rcinclude=-I. -I"$(hdir)" -I"$(dig_dir)/h" $(aui_inc_dirs) $(gui_inc_dirs)
 
 bitmaps = &
         $(wv_dir)/win/zapant.ico &
@@ -555,7 +520,7 @@ rcfiles = &
     japstk.dlg &
     japhis.dlg
 
-wvui.res : $(hdir)/wvui.rc auistr.gh _guimsgs.gh $(rcfiles) usage.gh usagej.gh .autodepend
+wvui.res : $(hdir)/wvui.rc $(rcfiles) usage.gh usagej.gh .autodepend
         $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
 
 wvntdll.res : $(hdir)/strings.rc litdef.gh .autodepend
@@ -564,16 +529,16 @@ wvntdll.res : $(hdir)/strings.rc litdef.gh .autodepend
 wvpmdll.res : $(hdir)/strings.rc litdef.gh .autodepend
         $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
 
-wvwin.res : $(hdir)/wvwin.rc auistr.gh _guimsgs.gh $(bitmaps) $(rcfiles) .autodepend
+wvwin.res : $(hdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
         $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
 
-wvnt.res : $(hdir)/wvwin.rc auistr.gh _guimsgs.gh $(bitmaps) $(rcfiles) .autodepend
+wvnt.res : $(hdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
         $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_nt) $[@ -fo=$^@
 
-wvpm.res : $(hdir)/wvpm.rc auistr.gh _guimsgs.gh $(bitmaps) $(rcfiles) .autodepend
+wvpm.res : $(hdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
         $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
 
-wvpmj.res : $(hdir)/wvpm.rc auistr.gh _guimsgs.gh $(bitmaps) $(rcfiles) .autodepend
+wvpmj.res : $(hdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
         $(rc) $(rc_flags) -ad -DJAPANESE_MESSAGES -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
 
 !ifneq sys_windowed 1
@@ -648,24 +613,16 @@ verrc_exe = wd
 
 .asm: $(sysadir)
 
+litdefm.tmp : ../../h/menu.str
+        $(c_pp) -zk0 $< >$@
 
-./auimkstr.exe : $(aui_dir)/h/aui.msg $(aui_dir)/c/mkstr.c
-        $(bld_cl) -I"$(aui_dir)/h" $(bld_cl_opts) $]@
 
-auistr.gh : ./auimkstr.exe $(aui_dir)/h/aui.msg
-        $[@ $^@
+litdefs.tmp : ../../h/wdengin.str ../../h/wd.str
+        $(c_pp) -zk0 -I"$(dig_dir)/h" $< >$@
 
-./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
-
-_guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
-        $[@ $^@ $(gui_msg_id_modifier)
-
-./mkstr.exe : $(cdir)/mkstr.c wd.str wdengin.str menu.str $(dig_dir)/h/mad.str
-        $(bld_cl) -I"$(hdir)" -I"$(dig_dir)/h" $(bld_cl_opts) $[@
-
-litdef.gh : ./mkstr.exe
-        $[@ $^@
+litdef.gh : litdefs.tmp litdefm.tmp
+        $(awk) -v prefix=DBG_LITERAL_ -v base=DBG_LITERAL_BASE -f $(build_dir)/makemsg.awk litdefs.tmp >$^@
+        $(awk) -v prefix=DBG_LITERAL_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg.awk litdefm.tmp >> $^@
 
 !ifeq release 0
 wsplice_keys = -kIS_RC -k$(host_os) -kHIDDEN

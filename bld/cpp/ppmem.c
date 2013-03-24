@@ -36,7 +36,7 @@
 //
 #include "preproc.h"
 
-void *PP_Malloc( unsigned size )
+void *PP_Malloc( size_t size )
 {
     void        *p;
 

@@ -90,14 +90,15 @@ objs += $(windbg_objs)
 !endif
 !endif
 
+extra_cpp_flags_nt  = -DNOUSE3D
+extra_cpp_flags_os2 = -D__OS2_PM__
+
 extra_c_flags = -fh
 extra_c_flags_i86 = -zu -zc
 !ifeq host_os win
 extra_c_flags_i86 += -zW
 extra_c_flags_386 += -zw
 !endif
-extra_c_flags_nt  = -DNOUSE3D
-extra_c_flags_os2 = -D__OS2_PM__
 
 inc_dirs = -I"../h" $(wpi_inc_dirs) $(dis_includes)
 

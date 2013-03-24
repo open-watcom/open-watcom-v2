@@ -719,7 +719,7 @@ void BuildImpLib( void )
     _LnkFree( ImpLib.dllname );
 }
 
-#ifdef BUILDTOOLNAMES
+#ifdef BOOTSTRAP
 #define BPRFX   "b"
 #else
 #define BPRFX   ""

@@ -67,6 +67,10 @@ objs = $(wv_objs) $(mem_objs)
 libs = $(wpi_lib) $(commonui_lib)
 !endif
 
+!ifeq sys_windowed 1
+extra_cpp_flags_os2 = -D__OS2_PM__
+!endif
+
 !ifneq bootstrap 1
 extra_c_flags += -s -fh
 !endif
@@ -78,9 +82,6 @@ extra_c_flags_nov = -4s
 extra_c_flags_win = -zw
 !ifeq host_cpu i86
 extra_c_flags_win += -zW
-!endif
-!ifeq sys_windowed 1
-extra_c_flags_os2 = -D__OS2_PM__
 !endif
 
 !ifneq bootstrap 1

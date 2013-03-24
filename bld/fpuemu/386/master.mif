@@ -20,9 +20,11 @@ extra_a_flags_386inite = -I"$(comp_cfg_dir)/h"
 extra_a_flags_386stub = -ms -I"$(comp_cfg_dir)/h"
 extra_a_flags_emu387 = -I"../inc" -I"../../inc" -I"$(mathlib_dir)/h"
 
+extra_cpp_flags_qnx = -DQNX32
+
 extra_c_flags = -s -fpc
 extra_c_flags_dos = -zl -zls
-extra_c_flags_qnx = -oais-w3 -I"$(new_qnx_h)" -DQNX32
+extra_c_flags_qnx = -oais-w3 -I"$(new_qnx_h)"
 
 !ifeq host_OS dos
 

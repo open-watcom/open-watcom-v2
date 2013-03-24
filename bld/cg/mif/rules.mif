@@ -1,6 +1,6 @@
-extra_c_flags   = -DBY_CG
+extra_cpp_flags   = -DBY_CG
 !ifeq sys_dll 1
-extra_c_flags  += -D_CGDLL
+extra_cpp_flags  += -D_CGDLL
 !endif
 
 extra_c_flags_386 = -zp4

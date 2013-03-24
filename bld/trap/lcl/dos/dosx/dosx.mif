@@ -1,9 +1,9 @@
 !ifeq which SERVER
-extra_c_flags += -DDOSXHELP
-extra_objs    += $(dosx_serv_objs)
+extra_cpp_flags += -DDOSXHELP
+extra_objs      += $(dosx_serv_objs)
 !else
-extra_c_flags += -DDOSXTRAP
-extra_objs    += $(dosx_trap_objs)
+extra_cpp_flags += -DDOSXTRAP
+extra_objs      += $(dosx_trap_objs)
 !endif
 
 !include $(trap_dir)/lcl/dos/dos.mif

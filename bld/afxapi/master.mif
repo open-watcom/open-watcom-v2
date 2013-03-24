@@ -283,16 +283,18 @@ objs =                  &
 static_objs =           &
         winmain.obj
 
+extra_cpp_flags = -D_ENABLE_AUTODEPEND
 !ifeq unicode 1
-extra_c_flags += -D_UNICODE
+extra_cpp_flags += -D_UNICODE
 !endif
 !ifeq debug 1
-extra_c_flags += -D_DEBUG
+extra_cpp_flags += -D_DEBUG
 !endif
 !ifeq what_to_build dlls
-extra_c_flags += -D_AFXDLL
+extra_cpp_flags += -D_AFXDLL
 !endif
-extra_c_flags += -D_ENABLE_AUTODEPEND -fhwe -xs
+
+extra_c_flags += -fhwe -xs
 extra_lib_flags_386 = -io -ii
 
 additional_cleanup = *.h *.inl *.def

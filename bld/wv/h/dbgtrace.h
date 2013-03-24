@@ -34,4 +34,3 @@ pick( TRACE_INTO, "Into\0" )
 pick( TRACE_OVER, "Over\0" )
 pick( TRACE_NEXT, "Next\0" )
 pick( TRACE_NONE, "\0" )
-#undef pick

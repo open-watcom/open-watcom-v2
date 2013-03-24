@@ -1,7 +1,8 @@
 #pmake: binmake
 
-host_os  = $(%BOOTSTRAP_OS)
-host_cpu = $(%BOOTSTRAP_CPU)
+host_os  = $(bld_os)
+host_cpu = $(bld_cpu)
+
 extra_files = $(unix)
 
 inc_dirs = -I"$(ncurses_dir)/h"

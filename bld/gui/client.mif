@@ -1,0 +1,8 @@
+!ifeq sys_windowed 1
+gui_path = $(gui_dir)/win/$(host_os)$(host_cpu)
+gui_inc_dirs = -I"$(gui_path)" -I"$(gui_dir)/h" -I"$(gui_dir)"
+!else
+gui_path = $(gui_dir)/ui/$(host_os)$(host_cpu)
+gui_inc_dirs = -I"$(gui_path)" -I"$(gui_dir)/h" -I"$(gui_dir)"
+!endif
+gui_lib = $(gui_path)/gui.lib

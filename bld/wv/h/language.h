@@ -31,7 +31,7 @@
 
 
 #ifdef JAPANESE_MESSAGES
-#define wdpick( a, b, c ) LITSTR( a, c )
+#define pick( a, b, c ) LITSTR( a, c )
 #else
-#define wdpick( a, b, c ) LITSTR( a, b )
+#define pick( a, b, c ) LITSTR( a, b )
 #endif

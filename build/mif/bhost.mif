@@ -1,73 +1,52 @@
-# build host specific macros - should query WMAKE for details
-!ifdef __OS2__
-bld_cc_sys      = -bt=os2
-bld_cl_sys      = -l=os2v2
-bld_lnk_sys     = sys os2v2
-nulldevice      = nul
-!else ifdef __MSDOS__
-bld_cc_sys      = -bt=dos
-bld_cl_sys      = -l=dos4g -"lib doslfn3r.lib"
-bld_lnk_sys     = sys dos4g lib doslfn3r.lib
-nulldevice      = nul
-# DOS should never need the DLL related macros
-!else ifdef __NT__
-bld_cc_sys      = -bt=nt
-!ifdef __NTAXP__
-bld_cl_sys      = -l=ntaxp
-bld_lnk_sys     = sys ntaxp
-!else ifdef __NT386__
-bld_cl_sys      = -l=nt
-bld_lnk_sys     = sys nt
-!else
-!error Please correct this makefile, see build\mif\bhost.mif for details.
-!endif
-nulldevice      = nul
-!else ifdef __LINUX__
-bld_cc_sys      = -bt=linux
-!ifdef __LINUXPPC__
-bld_cl_sys      = -l=linuxppc
-bld_lnk_sys     = sys linuxppc
-!else ifdef __LINUXMIPS__
-bld_cl_sys      = -l=linuxmips
-bld_lnk_sys     = sys linuxmips
-!else ifdef __LINUX386__
-bld_cl_sys      = -l=linux
-bld_lnk_sys     = sys linux
-!else
-!error Please correct this makefile, see build\mif\bhost.mif for details.
-!endif
-nulldevice      = /dev/null
-!else
-!error HOST OS not set
-!endif
+# build host specific macros
+blib            = *wlib
+bcc             = $(cc_$(bld_cpu))
+bcl             = $(cl_$(bld_cpu))
+bas             = $(as_$(bld_cpu))
+bld_cc_sys      = $(cflags_$(bld_os))
+bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 
 !ifdef inc_dirs_lang_$(bld_os)
 bld_inc_dirs_lang = $(inc_dirs_lang_$(bld_os))
 !else
 bld_inc_dirs_lang = $(inc_dirs_lang_osi)
 !endif
-bld_incs          = $(bld_extra_incs) $(bld_inc_dirs_lang) $(inc_dirs_sys_$(bld_os)) -I"$(watcom_dir)/h"
+bld_inc_dirs_sys  = $(bld_inc_dirs_lang) $(inc_dirs_sys_$(bld_os))
 
-# options for single source utility compilations
-!ifdef __UNIX__
-bld_cl_opts     = $(def_fpu_flags_$(bld_os)_$(bld_cpu)) -ox -w8 -fo=.obj -fe=$^@
-!else
-bld_cl_opts     = $(def_fpu_flags_$(bld_os)_$(bld_cpu)) -ox -w8 -fe=$^@
+bld_incs        = $(bld_extra_incs) $(bld_inc_dirs_sys) -I"$(watcom_dir)/h"
+
+bld_gen_cflags  = -ox -w8 -fo=.obj
+
+# options for source compilations
+bld_cflags      = $(bld_gen_cflags)
+!ifneq bootstrap 1
+#bld_cflags      += -x -xc
 !endif
 
-bcc             = $(cc_$(bld_cpu))
-bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
-bcl             = $(cl_$(bld_cpu))
-bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
-blink           = $(linker_$(bld_cpu))
-bld_link        = $(blink) $(bld_lnk_sys)
-bas             = $(as_$(bld_cpu))
-blib            = $(librarian_$(bld_cpu))
+# options for single source utility compilations
+bld_cl_opts      = $(bld_gen_cflags) -fe=$^@
+!ifneq bootstrap 1
+#bld_cl_opts     += -y -xc
+!endif
 
-bre2c           = $(re2c)
-w32bind         = w32bind
-byacc           = yacc
+# options for linking
+bld_ldflags     =
+
+bld_libflags    = -b-n-pa $^@
+
+bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
+bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
+bld_lib         = $(blib) $(bld_libflags)
+
 brc             = $(rc)
+re2c            = re2c
+w32bind         = w32bind
+wbind           = bwbind
+yacc            = yacc
+sed             = sed
+awk             = awk
+ide2make        = bide2mak
+wstrip          = bwstrip
 !ifdef __UNIX__
 os2ldr          = $(%OWBINDIR)/os2ldr.exe
 !else

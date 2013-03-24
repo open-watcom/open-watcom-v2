@@ -22,7 +22,7 @@ virtmem.obj
 !endif
 
 !ifeq inline_vmem 1
-extra_c_flags += -DINLINE_VMEM
+extra_cpp_flags += -DINLINE_VMEM
 !endif
 
 extra_c_flags_drutils  = -I"$(lib_misc_dir)/h"

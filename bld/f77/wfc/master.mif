@@ -25,12 +25,13 @@ wfc_trmem = 1
 inc_dirs= -I. -I.. -I"../../h" -I"../../../h" $(cg_inc_dirs) -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $(asminline_inc_dirs)
 
 # define _USE_RESOURCES_ so that WASM error messages come from resources
-extra_c_flags = -D_USE_RESOURCES_
+extra_cpp_flags = -D_USE_RESOURCES_
+!ifeq cg_dll 1
+extra_cpp_flags += -D_CGDLL
+!endif
+
 extra_c_flags_i86 = -zp1
 extra_c_flags_386 = -zp1
-!ifeq cg_dll 1
-extra_c_flags += -D_CGDLL
-!endif
 
 .h: ..;../../h;../../../h
 .c: ..;../../c;../../../c;$(asminline_c);$(trmem_dir);

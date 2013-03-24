@@ -153,8 +153,8 @@ static mad_imp_routines DummyRtns;      /* forward reference */
 static mad_entry        Dummy =
         { NULL, "", "Unknown Architecture", &DummyRtns, MAD_NIL, 0 };
 
-static const mad_string EmptyStrList[] = { MSTR_NIL };
-static const mad_toggle_strings EmptyToggleList[] = { { MSTR_NIL }, { MSTR_NIL }, { MSTR_NIL } };
+static const mad_string EmptyStrList[] = { MAD_MSTR_NIL };
+static const mad_toggle_strings EmptyToggleList[] = { { MAD_MSTR_NIL }, { MAD_MSTR_NIL }, { MAD_MSTR_NIL } };
 
 static mad_status MADStatus( mad_status ms )
 {
@@ -595,7 +595,7 @@ walk_result     MADTypeWalk( mad_type_kind tk, MAD_TYPE_WALKER *wk, void *d )
 static mad_string DIGREGISTER DummyTypeName( mad_type_handle th )
 {
     th = th;
-    return( MSTR_NIL );
+    return( MAD_MSTR_NIL );
 }
 
 mad_string      MADTypeName( mad_type_handle th )
@@ -1496,7 +1496,7 @@ walk_result     MADRegSetWalk( mad_type_kind tk, MAD_REG_SET_WALKER *wk, void *d
 static mad_string DIGREGISTER DummyRegSetName( const mad_reg_set_data *rsd )
 {
     rsd = rsd;
-    return( MSTR_NIL );
+    return( MAD_MSTR_NIL );
 }
 
 mad_string      MADRegSetName( const mad_reg_set_data *rsd )

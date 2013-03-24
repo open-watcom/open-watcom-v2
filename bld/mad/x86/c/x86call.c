@@ -45,7 +45,7 @@ mad_string              DIGENTRY MICallStackGrowsUp( void )
 
 const mad_string        *DIGENTRY MICallTypeList( void )
 {
-    static const mad_string list[] = { MSTR_NEAR, MSTR_FAR, MSTR_INTERRUPT, MSTR_NIL };
+    static const mad_string list[] = { MAD_MSTR_NEAR, MAD_MSTR_FAR, MAD_MSTR_INTERRUPT, MAD_MSTR_NIL };
 
     return( list );
 }
@@ -58,23 +58,23 @@ mad_status      DIGENTRY MICallBuildFrame( mad_string call, address ret, address
     address     sp;
 
     dec = BIG_SEG( rtn ) ? 4 : 2;
-    if( call == MSTR_NIL ) {
-        call = (dec == 2) ? MSTR_FAR : MSTR_NEAR;
+    if( call == MAD_MSTR_NIL ) {
+        call = (dec == 2) ? MAD_MSTR_FAR : MAD_MSTR_NEAR;
     }
     out->x86 = in->x86;
     sp = GetRegSP( out );
     switch( call ) {
-    case MSTR_INTERRUPT:
+    case MAD_MSTR_INTERRUPT:
         sp.mach.offset -= dec;
         value = out->x86.cpu.efl;
         MCWriteMem( sp, dec, &value );
         /* fall through */
-    case MSTR_FAR:
+    case MAD_MSTR_FAR:
         sp.mach.offset -= dec;
         value = ret.mach.segment;
         MCWriteMem( sp, dec, &value );
         /* fall through */
-    case MSTR_NEAR:
+    case MAD_MSTR_NEAR:
         sp.mach.offset -= dec;
         value = ret.mach.offset;
         MCWriteMem( sp, dec, &value );

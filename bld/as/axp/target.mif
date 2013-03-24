@@ -1,26 +1,3 @@
-proj_name = wasaxp
-
-!ifndef wasaxp_autodepends
-wasaxp_autodepends = .AUTODEPEND
-!endif
-
-splice_opts = -kAS_ALPHA
-
-as_extra_defines = -DAS_ALPHA
-
-as_cdir = $(as_dir)/axp/c;$(as_dir)/c
-as_hdir = $(as_dir)/axp/h;$(as_dir)/h
-as_ydir = $(as_dir)/axp/y;$(as_dir)/y
-as_incs = -I"$(as_dir)/axp/h" -I"$(as_dir)/h"
-
-target_as_comm_objs = &
-    alphafmt.obj &
-    alphains.obj
-
-!ifdef __UNIX__
-asi_dir = $(as_dir)/axp/inline/osi$(host_cpu)
-!else
-asi_dir = $(as_dir)\axp\inline\osi$(host_cpu)
-!endif
+target_cpu = axp
 
 !include $(as_dir)/mif/master.mif

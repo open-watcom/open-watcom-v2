@@ -33,6 +33,7 @@ c_path_win = $(batch_dir)/dos;$(batch_dir)/os2
 !include deftarg.mif
 
 !include $(wclass_dir)/mif/client.mif
+!include $(gui_dir)/client.mif
 
 WINDOWS = 1
 !include wres.mif
@@ -45,7 +46,7 @@ description = 'Open Watcom IDE'
 extra_c_flags_link      = -3 -dSERVER
 !endif
 
-extra_cpp_flags_i86     = -zc -zm
+extra_cxx_flags_i86     = -zc -zm
 
 extra_l_flags       = op eliminate sort global
 extra_l_flags_nt    = op stack=100k
@@ -60,12 +61,12 @@ prereq_ide_h = $(prereq_inc_$(host_os))/ide.h
 inc_dirs_win = -I"$(batch_dir)/dos"
 
 inc_dirs  = $(wclass_inc_dirs) -I"$(idelib_dir)" -I"$(editdll_dir)" -I"$(rcsdll_dir)" 
-inc_dirs += -I"$(batch_dir)/h" -I"$(gui_dir)/win/h" -I"$(prereq_inc_$(host_os))"
+inc_dirs += -I"$(batch_dir)/h" $(gui_inc_dirs) -I"$(prereq_inc_$(host_os))"
 
 LIBS = &
     $(idelib_dir)/$(host_os)$(host_cpu)/ide.lib &
     $(wclass_lib) &
-    $(gui_dir)/win/$(host_os)$(host_cpu)/gui.lib &
+    $(gui_lib) &
     $(wres_lib)
 
 # systems where version resource must be added to .EXE
@@ -82,14 +83,8 @@ $(name).exe : $(OBJECTS) $(LIBS) ide.res $(version_res_exe_$(host_os)_$(host_cpu
         $(linker) name $(name) @$(name).lnk
         $(rc) -k ide.res $^@ $(bind_version_res_exe_add)
 
-ide.res : _guimsgs.gh $(gui_dir)/h/gui.rc ide.rc
+ide.res : $(gui_dir)/h/gui.rc ide.rc
         $(rc) $(rc_flags) -I.. $(inc_path) $]@ -fo=$^@
-
-./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
-
-_guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
-        $[@ $^@ $(gui_msg_id_modifier)
 
 verrc_exe = $(name)
 !include verrc.mif

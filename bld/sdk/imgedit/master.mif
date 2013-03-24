@@ -60,10 +60,12 @@ extras = wincreat.obj title.obj winutils.obj
 .c : $(wimgedit_dir)/c
 !endif
 
-extra_c_flags = -DWIN_GUI -s -fh
+extra_cpp_flags = -DWIN_GUI
 !ifdef wpitest
-extra_c_flags += -d_WPI_TEST_
+extra_cpp_flags += -D_WPI_TEST_
 !endif
+
+extra_c_flags = -s -fh
 
 extra_c_flags_win = -zc
 

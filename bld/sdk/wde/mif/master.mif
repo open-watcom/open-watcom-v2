@@ -22,7 +22,11 @@ WINDOWS=1
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 
-extra_c_flags     = -DWIN_GUI -s -fh
+extra_cpp_flags   = -DWIN_GUI
+
+extra_cpp_flags_nt = -DNOUSE3D
+
+extra_c_flags     = -s -fh
 
 extra_c_flags_win = -zu-zw-zc
 
@@ -61,8 +65,6 @@ OBJS =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
         wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
         windlg.obj windlg32.obj &
         preproc.obj ppexpr.obj ppmacro.obj
-
-extra_c_flags_nt    = -DNOUSE3D
 
 # where to look for various files
 .c : c;../c;$(cpp_dir)

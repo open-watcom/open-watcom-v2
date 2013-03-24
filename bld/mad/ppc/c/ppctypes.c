@@ -105,7 +105,7 @@ static const mad_type_info_float H_F8 =
 #undef D
 
 #define pick( e, n, h, info )   \
-        { MSTR_##n, h, (mad_type_info_basic *)&info },
+        { MAD_MSTR_##n, h, (mad_type_info_basic *)&info },
 
 const mad_type_data TypeArray[] = {
 #include "ppctypes.h"
@@ -119,7 +119,7 @@ walk_result     DIGENTRY MITypeWalk( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
     if( !(tk & MAS_MEMORY) ) return( WR_CONTINUE );
     for( th = 0; th < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++th ) {
         if( (tk & TypeArray[th].u.info->b.kind)
-         && TypeArray[th].name != MSTR_NIL ) {
+         && TypeArray[th].name != MAD_MSTR_NIL ) {
             wr = wk( th, data );
             if( wr != WR_CONTINUE ) return( wr );
         }

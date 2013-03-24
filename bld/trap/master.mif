@@ -113,25 +113,21 @@ xname=d$(name)
 
 # cflags stuff
 ###############
-extra_c_flags += -D$(which) -DMD_$(cpu) $(extra_cflags)
+extra_cpp_flags += -D$(which) -DMD_$(cpu) $(extra_cppflags)
+!ifndef test
+!ifdef builtin_trap
+extra_cpp_flags += -DBUILTIN_TRAP_FILE
+!endif
+!endif
+!ifdef japanese
+extra_cpp_flags += -DJAPANESE_MESSAGES
+!endif
 
-!ifneq bootstrap 1
-extra_c_flags += -s
+extra_c_flags += -s $(extra_cflags)
 !ifeq which TRAP
 extra_c_flags += -zlf
 !endif
-!endif
 
-
-!ifndef test
-!ifdef builtin_trap
-extra_c_flags += -DBUILTIN_TRAP_FILE
-!endif
-!endif
-
-!ifdef japanese
-extra_c_flags += -DJAPANESE_MESSAGES
-!endif
 
 !ifeq host_os nov
 extra_c_flags_386 += -3s

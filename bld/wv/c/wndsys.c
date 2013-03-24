@@ -107,13 +107,16 @@ char *WndGadgetHint[] =
 {
     #define pick( a,b,c,d,e,f ) f,
     #include "gadgets.h"
+    #undef pick
 };
 
 gui_resource WndGadgetArray[] = {
     #define pick( a,b,c,d,e,f ) { b, d },
     #include "gadgets.h"
+    #undef pick
     #define pick( a,b,c,d,e,f ) { c, e },
     #include "gadgets.h"
+    #undef pick
     { BITMAP_SPLASH, "splash" },
 };
 int WndGadgetArraySize = ArraySize( WndGadgetArray );
@@ -205,6 +208,7 @@ wnd_metrics WndFileMetrics = { 5, 25, 70, 70 };
 wnd_metrics *WndMetrics[] = {
     #define pick(a,b,c,d,e,f) &e,
     #include "wndnames.h"
+    #undef pick
 };
 
 wnd_metrics NoMetrics = { 0, 0, 0, 0 };

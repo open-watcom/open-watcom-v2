@@ -112,7 +112,7 @@ extern  MACRO_TOKEN *NextMToken(void);
 extern  void    DeleteNestedMacro(void);
 extern  void    DoMacroExpansion( MACRO_ENTRY *__me );
 
-extern  void    *PP_Malloc( unsigned __size );
+extern  void    *PP_Malloc( size_t __size );
 extern  void    PP_Free( void *__ptr );
 extern  void    PP_OutOfMemory(void);
 

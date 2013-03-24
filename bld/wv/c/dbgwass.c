@@ -109,7 +109,6 @@ extern unsigned char    CurrRadix;
 #include "menudef.h"
 
 static gui_menu_struct AsmShowMenu[] = {
-    #define pick( a,b,c,d,e,f,g ) MENU_ITEM( a, b )
     #include "masmshow.h"
 };
 

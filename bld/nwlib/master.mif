@@ -87,12 +87,12 @@ dll_objs = $(common_objs) $(dll_objs_$(host_os))
 #########
 # cflags
 
-extra_c_flags =
+extra_cpp_flags =
 !ifeq bootstrap 1
-extra_c_flags += -DINCL_MSGTEXT
+extra_cpp_flags += -DINCL_MSGTEXT
 !endif
 !ifndef wlib_dll
-extra_c_flags += -DIDE_PGM
+extra_cpp_flags += -DIDE_PGM
 !endif
 
 extra_c_flags_ntdll    = -bd

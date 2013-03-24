@@ -8,8 +8,6 @@ RENCMD=ren
 LOWERC=ren
 !endif
 
-!include cproj.mif
-
 !include ../mif/depends.mif
 !include ../mif/books.mif
 
@@ -93,7 +91,6 @@ dep_pdf = $(hbook).pdf
 #
 # There should be settings for supported building platforms
 #
-!ifeq bld_cpu 386
 !ifeq bld_os dos
 WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
 !else ifeq bld_os os2
@@ -108,9 +105,6 @@ WGMLCMD = $(%OWROOT)\docs\gml\dos\wgml "$(book_src) ( file $(optfile_wgml)"
 !else ifeq bld_os linux
 WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) "$(book_src) ( file $(optfile_wgml)"
 use_dosemu = dosemu
-!else
-!error Unsupported building platform !!!!!!
-!endif
 !else
 !error Unsupported building platform !!!!!!
 !endif
@@ -247,7 +241,7 @@ $(hbook).ib $(hbook).h : $(book_objs) $(proj_objs)
 $(hbook).chm $(hbook).chi : $(hbook).htm
     @if not exist $(hbook) mkdir $(hbook)
 !ifdef book_bmroot
-    cp -f $(book_bmroot)/*.bmp $(hbook) > $(nulldevice)
+    cp -f $(book_bmroot)/*.bmp $(hbook)/ > $(nulldevice)
 !endif
     awk -f ../splithtm.awk -v dir=$(hbook) $(hbook).htm
     awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc

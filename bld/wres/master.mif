@@ -26,7 +26,7 @@ objs = $(wres_core_objs) $(wres_more_objs)
 
 # options to use
 !ifdef IS_GUI
-extra_c_flags += -DWIN_GUI
+extra_cpp_flags = -DWIN_GUI
 !endif
 
 !ifneq bootstrap 1

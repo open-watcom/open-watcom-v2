@@ -69,6 +69,7 @@ typedef struct machine_state    machine_state;
 typedef unsigned_8 debug_level; enum {
     #define pick( a,b ) a,
     #include "dbglevel.h"
+    #undef pick
 };
 
 typedef unsigned_8 screen_state; enum {
@@ -139,6 +140,7 @@ typedef unsigned_8 cnvaddr_option; enum {
 typedef unsigned_8 trace_cmd_type; enum {
     #define pick( a,b ) a,
     #include "dbgtrace.h"
+    #undef pick
 };
 
 typedef struct {
@@ -182,6 +184,7 @@ enum {
     CMD_NIL,
     #define pick( a,b,c ) a,
     #include "dbgcmd.h"
+    #undef pick
 };
 
 enum {

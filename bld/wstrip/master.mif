@@ -21,8 +21,10 @@ inc_dirs = -I. -I"$(dip_dir)/watcom/h"
 objs = strip.obj output.obj $(cl_objs)
 
 !ifeq bootstrap 1
-extra_c_flags = -DINCL_MSGTEXT
-!else
+extra_cpp_flags = -DINCL_MSGTEXT
+!endif
+
+!ifneq bootstrap 1
 extra_l_flags = lib $(wres_lib)
 !endif
 

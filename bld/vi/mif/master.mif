@@ -10,7 +10,7 @@ vi_trmem = 1
 
 !ifeq host_os win
 !ifeq host_cpu 386
-win386_bind = ./wbind.exe
+win386_bind = $(wbind)
 !endif
 !endif
 
@@ -56,11 +56,11 @@ vi.exe: $(bind_files) $(name).exe ./edbind.exe
         cp $(name).exe vi.exe
         cp $(name).sym vi.sym
 
-$(name).exe : $(win386_bind) $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(version_res_exe_$(host_os)_$(host_cpu))
+$(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(version_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $(lname) file version.obj file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
 !ifdef sys_windowed
 !ifdef win386_bind
-        $[@ $(lname) -s $(win386_dir)/ext/win386.ext -R -q $(name).res $(name).exe
+        $(win386_bind) $(lname) -s $(win386_dir)/ext/win386.ext -R -q $(name).res $(name).exe
         rm $(lname)
 !else
         $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
@@ -74,9 +74,6 @@ $(bind_compiled) : $(bind_compiled:./=../dat/)
 
 ./edbind.exe : ../c/edbind.c $(cl_objs)
     	$(bld_cl) $(bld_cl_opts) $<
-
-./wbind.exe : $(win386_dir)/wbind/wbind.c $(cl_objs)
-        $(bld_cl) $(bld_cl_opts) -DBUILDTOOLNAMES $<
 
 ./parsectl.exe : ../ctl/parsectl.c $(cl_objs)
     	$(bld_cl) $(bld_cl_opts) $<

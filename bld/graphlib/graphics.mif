@@ -176,14 +176,22 @@ inc_dirs += -I"$(hdr_dir)/dos"
 
 .c: ../c
 
-extra_c_flags = -os -s -zl -D_ENABLE_AUTODEPEND -nm=$[&$(suffix_$(convention)) -D_SUPERVGA -D_FARD= $(extra_c_flags_$(machine)) -fo=$@
+extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_SUPERVGA -D_FARD=
 
-extra_c_flags_i86 = -nt=GRAPH_TEXT -D_CGRAPH=_loadds
+extra_cpp_flags_i86 = -D_CGRAPH=_loadds
+extra_cpp_flags_386 = -D_CGRAPH=
+!ifeq convention stack
+extra_cpp_flags_386 += -D__STACK
+!endif
+
+extra_c_flags = -os -s -zl -nm=$[&$(suffix_$(convention)) $(extra_c_flags_$(machine)) -fo=$@
+
+extra_c_flags_i86 = -nt=GRAPH_TEXT
 extra_c_flags_386_ms_dos = -r
 extra_c_flags_386_ms_qnx = -r
 extra_c_flags_386_register = -3r
-extra_c_flags_386_stack = -3s -d__STACK
-extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os)) -D_CGRAPH=
+extra_c_flags_386_stack = -3s
+extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os))
 
 extra_c_flags_qnx = -bt=dos # ?????
 

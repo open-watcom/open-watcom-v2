@@ -10,9 +10,11 @@ name = $(proj_name)
 !include deftarg.mif
 !include defrule.mif
 
-extra_cpp_flags = -xs -D__STDC_LIMIT_MACROS
+extra_cpp_flags = -D__STDC_LIMIT_MACROS
+
+extra_cxx_flags = -xs
 !ifeq release 0
-extra_cpp_flags += -et
+extra_cxx_flags += -et
 !endif
 
 extra_l_flags = op eliminate,map

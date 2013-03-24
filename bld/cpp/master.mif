@@ -17,15 +17,15 @@ common_objs     = preproc.obj ppexpr.obj ppmacro.obj ppmem.obj
 mkmk_objs       = mkmk.obj $(common_objs)
 testpp_objs     = testpp.obj $(common_objs)
 dumpmac_objs    = dumpmac.obj $(common_objs)
-wcpp_objs       = wcpp.obj getopt.obj $(common_objs) $(cl_objs)
+wcpp_objs       = wcpp.obj getopt.obj $(common_objs)
 
 !ifneq bootstrap 1
 all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC
 !endif
 
-wcpp.exe : $(wcpp_objs)
+wcpp.exe : $(wcpp_objs) $(cl_objs)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(wcpp_objs)
+        $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$(wcpp_objs)}
 !endif

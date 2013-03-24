@@ -167,6 +167,6 @@ bool PerformCall( address start, bool far_rtn, unsigned num_parms )
     const mad_string    *list;
 
     list = MADCallTypeList();
-    if( far_rtn && list[0] != MSTR_NIL ) ++list;
+    if( far_rtn && list[0] != MAD_MSTR_NIL ) ++list;
     return( PerformExplicitCall( start, list[0], num_parms ) );
 }

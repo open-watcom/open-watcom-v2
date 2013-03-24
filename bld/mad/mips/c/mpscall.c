@@ -48,7 +48,7 @@ mad_string              DIGENTRY MICallStackGrowsUp( void )
 
 const mad_string        *DIGENTRY MICallTypeList( void )
 {
-    static const mad_string list[] = { MSTR_NIL };
+    static const mad_string list[] = { MAD_MSTR_NIL };
 
     return( list );
 }

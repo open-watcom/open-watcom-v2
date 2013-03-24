@@ -85,9 +85,9 @@ altposixlibdir=$(libpath)$(alt_model_$(targos)_$(model))
 #       define options for each specific operating system supported
 #
 
-extra_cflags_pharlap = -bt=pharlap
-extra_cflags_ntaxp   = -DWIN32 -D_WIN32
-extra_c_flags = -D__OS_$(targos)__ -DSTANDALONE_RX $(extra_cflags_$(targos)) $(extra_cflags)
+extra_cppflags_pharlap = -bt=pharlap
+extra_cppflags_ntaxp   = -DWIN32 -D_WIN32
+extra_cpp_flags = -D__OS_$(targos)__ -DSTANDALONE_RX $(extra_cppflags_$(targos)) $(extra_cppflags)
 
 !ifndef make_lib
 inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
@@ -100,4 +100,3 @@ inc_dirs = -I"$(posix_dir)/h"
 !else
 .c: $(posix_dir)/misc
 !endif
-

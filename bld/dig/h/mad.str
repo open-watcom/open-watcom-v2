@@ -1,234 +1,234 @@
-wdpick( MSTR_NIL,
+pick( MSTR_NIL,
     "",
     "" )
-wdpick( MSTR_BYTE,
+pick( MSTR_BYTE,
     "&Byte",
     "j&Byte" )
-wdpick( MSTR_WORD,
+pick( MSTR_WORD,
     "&Word",
     "j&Word" )
-wdpick( MSTR_DWORD,
+pick( MSTR_DWORD,
     "&DWord",
     "j&DWord" )
-wdpick( MSTR_LWORD,
+pick( MSTR_LWORD,
     "LWo&rd",
     "jLWo&rd" )
-wdpick( MSTR_QWORD,
+pick( MSTR_QWORD,
     "&QWord",
     "j&QWord" )
-wdpick( MSTR_CHAR,
+pick( MSTR_CHAR,
     "&Char",
     "j&Char" )
-wdpick( MSTR_SHORT,
+pick( MSTR_SHORT,
     "&Short",
     "j&Short" )
-wdpick( MSTR_LONG,
+pick( MSTR_LONG,
     "&Long",
     "j&Llong" )
-wdpick( MSTR_UCHAR,
+pick( MSTR_UCHAR,
     "Unsigned Cha&r",
     "jUnsigned Cha&r" )
-wdpick( MSTR_USHORT,
+pick( MSTR_USHORT,
     "Unsigned Shor&t",
     "jUnsigned Shor&t" )
-wdpick( MSTR_ULONG,
+pick( MSTR_ULONG,
     "Unsigned Lon&g",
     "jUnsigned Lon&g" )
-wdpick( MSTR_N16_PTR,
+pick( MSTR_N16_PTR,
     "&0:16 pointer",
     "j&0:16 pointer" )
-wdpick( MSTR_F16_PTR,
+pick( MSTR_F16_PTR,
     "16:1&6 pointer",
     "j16:1&6 pointer" )
-wdpick( MSTR_N32_PTR,
+pick( MSTR_N32_PTR,
     "0:3&2 pointer",
     "j0:3&2 pointer" )
-wdpick( MSTR_F32_PTR,
+pick( MSTR_F32_PTR,
     "16:&32 pointer",
     "j16:&32 pointer" )
-wdpick( MSTR_FLOAT,
+pick( MSTR_FLOAT,
     "&Float",
     "j&Float" )
-wdpick( MSTR_DOUBLE,
+pick( MSTR_DOUBLE,
     "D&ouble",
     "jD&ouble" )
-wdpick( MSTR_EXTENDED,
+pick( MSTR_EXTENDED,
     "&Extended Float",
     "j&Extended Float" )
-wdpick( MSTR_MUPPER,
+pick( MSTR_MUPPER,
     "&Upper",
     "j&Upper" )
-wdpick( MSTR_MINSIDE,
+pick( MSTR_MINSIDE,
     "&Inside",
     "j&Inside" )
-wdpick( MSTR_UPPER,
+pick( MSTR_UPPER,
     "Upper",
     "Upper" ) // do not translate
-wdpick( MSTR_LOWER,
+pick( MSTR_LOWER,
     "Lower",
     "Lower" ) // do not translate
-wdpick( MSTR_INSIDE,
+pick( MSTR_INSIDE,
     "Inside",
     "Inside" ) // do not translate
-wdpick( MSTR_OUTSIDE,
+pick( MSTR_OUTSIDE,
     "Outside",
     "Outside" ) // do not translate
-wdpick( MSTR_FAR,
+pick( MSTR_FAR,
     "far",
     "jfar" )
-wdpick( MSTR_NEAR,
+pick( MSTR_NEAR,
     "near",
     "jnear" )
-wdpick( MSTR_INTERRUPT,
+pick( MSTR_INTERRUPT,
     "interrupt",
     "jinterrupt" )
-wdpick( MSTR_CPU,
+pick( MSTR_CPU,
     "CPU registers",
     "jCPU registers" )
-wdpick( MSTR_FPU,
+pick( MSTR_FPU,
     "FPU registers",
     "jFPU registers" )
-wdpick( MSTR_NONE,
+pick( MSTR_NONE,
     "none",
     "jnone" )
-wdpick( MSTR_EMULATOR,
+pick( MSTR_EMULATOR,
     "emulator",
     "jemulator" )
-wdpick( MSTR_MHEX,
+pick( MSTR_MHEX,
     "&Hex",
     "j&Hex" )
-wdpick( MSTR_HEX,
+pick( MSTR_HEX,
     "Hexadecimal",
     "Hexadecimal" ) // do not translate
-wdpick( MSTR_DECIMAL,
+pick( MSTR_DECIMAL,
     "Decimal",
     "Decimal" ) // do not translate
-wdpick( MSTR_MEXTENDED,
+pick( MSTR_MEXTENDED,
     "&Extended",
     "j&Extended" )
-wdpick( MSTR_REG_EXTENDED,
+pick( MSTR_REG_EXTENDED,
     "Extended",
     "Extended" ) // do not translate
-wdpick( MSTR_REG_NORMAL,
+pick( MSTR_REG_NORMAL,
     "Normal",
     "Normal" ) // do not translate
-wdpick( MSTR_VALID,
+pick( MSTR_VALID,
     "Valid",
     "jValid" )
-wdpick( MSTR_ZERO,
+pick( MSTR_ZERO,
     "Zero",
     "jZero" )
-wdpick( MSTR_SPECIAL,
+pick( MSTR_SPECIAL,
     "Special",
     "jSpecial" )
-wdpick( MSTR_EMPTY,
+pick( MSTR_EMPTY,
     "Empty",
     "jEmpty" )
-wdpick( MSTR_PCZERO,    //Unused
+pick( MSTR_PCZERO,    //Unused
     "0",
     "0" )
-wdpick( MSTR_PCSINGLE,
+pick( MSTR_PCSINGLE,
     "single",
     "jsingle" )
-wdpick( MSTR_PCDOUBLE,
+pick( MSTR_PCDOUBLE,
     "double",
     "jdouble" )
-wdpick( MSTR_PCEXTENDED,
+pick( MSTR_PCEXTENDED,
     "extended",
     "jextended" )
-wdpick( MSTR_NEAREST,
+pick( MSTR_NEAREST,
     "nearest",
     "jnearest" )
-wdpick( MSTR_DOWN,
+pick( MSTR_DOWN,
     "down",
     "jdown" )
-wdpick( MSTR_UP,
+pick( MSTR_UP,
     "up",
     "jup" )
-wdpick( MSTR_CHOP,
+pick( MSTR_CHOP,
     "chop",
     "jchop" )
-wdpick( MSTR_PROJECTIVE,
+pick( MSTR_PROJECTIVE,
     "projective",
     "jprojective" )
-wdpick( MSTR_AFFINE,
+pick( MSTR_AFFINE,
     "affine",
     "jaffine" )
-wdpick( MSTR_F_FLOAT,
+pick( MSTR_F_FLOAT,
     "F flo&ating",
     "jF flo&ating" )
-wdpick( MSTR_G_FLOAT,
+pick( MSTR_G_FLOAT,
     "G floa&ting",
     "jG floa&ting" )
-wdpick( MSTR_D_FLOAT,
+pick( MSTR_D_FLOAT,
     "&D floating",
     "j&D floating" )
-wdpick( MSTR_MVAX,
+pick( MSTR_MVAX,
     "&Vax",
     "j&Vax" )
-wdpick( MSTR_VAX,
+pick( MSTR_VAX,
     "Vax",
     "Vax" )
-wdpick( MSTR_IEEE,
+pick( MSTR_IEEE,
     "IEEE",
     "IEEE" )
-wdpick( MSTR_MSYMBOLIC,
+pick( MSTR_MSYMBOLIC,
     "&Symbolic names",
     "j&Symbolic names" )
-wdpick( MSTR_REG_SYMBOLIC,
+pick( MSTR_REG_SYMBOLIC,
     "Symbolic",
     "jSymbolic" )
-wdpick( MSTR_REG_NUMERIC,
+pick( MSTR_REG_NUMERIC,
     "Numeric",
     "jNumeric" )
-wdpick( MSTR_UNSIGNED64,
+pick( MSTR_UNSIGNED64,
     "Unsigned __int6&4",
     "Unsigned __int6&4" )
-wdpick( MSTR_INT64,
+pick( MSTR_INT64,
     "&__int64",
     "&__int64" )
-wdpick( MSTR_MPSEUDOINS,
+pick( MSTR_MPSEUDOINS,
     "&Pseudo instructions",
     "j&Pseudo instructions" )
-wdpick( MSTR_PSEUDOINS,
+pick( MSTR_PSEUDOINS,
     "Pseudo_instructions",
     "jPseudo_instructions" )
-wdpick( MSTR_RAWINS,
+pick( MSTR_RAWINS,
     "Raw_instructions",
     "jRaw_instructions" )
-wdpick( MSTR_N64_PTR,
+pick( MSTR_N64_PTR,
     "0:6&4 pointer",
     "j0:6&4 pointer" )
-wdpick( MSTR_MOS,
+pick( MSTR_MOS,
     "&OS",
     "j&OS" )
-wdpick( MSTR_REG_OS,
+pick( MSTR_REG_OS,
     "OS",
     "jOS" )
-wdpick( MSTR_REG_USER,
+pick( MSTR_REG_USER,
     "User",
     "jUser" )
-wdpick( MSTR_HWORD,
+pick( MSTR_HWORD,
     "&HWord",
     "j&HWord" )
-wdpick( MSTR_MMX,
+pick( MSTR_MMX,
     "MMX Registers",
     "jMMX Registers" )
-wdpick( MSTR_XMM,
+pick( MSTR_XMM,
     "XMM Registers",
     "jXMM Registers" )
-wdpick( MSTR_UNSIGNED,
+pick( MSTR_UNSIGNED,
     "&Unsigned",
     "j&Unsigned" )
-wdpick( MSTR_SIGNED,
+pick( MSTR_SIGNED,
     "&Signed",
     "j&Signed" )
-wdpick( MSTR_INT,
+pick( MSTR_INT,
     "&Int",
     "j&Int" )
-wdpick( MSTR_HALF,
+pick( MSTR_HALF,
     "&Halfword",
     "j&Halfword" )
-wdpick( MSTR_DBLW,
+pick( MSTR_DBLW,
     "&Doubleword",
     "j&Doubleword" )

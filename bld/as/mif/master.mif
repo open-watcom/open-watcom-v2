@@ -1,7 +1,13 @@
+proj_name = was
+
 !ifeq bootstrap 1
-name = b$(proj_name)
+name = bwas$(target_cpu)
 !else
-name = $(proj_name)
+name = was$(target_cpu)
+!endif
+
+!ifndef was_autodepends
+was_autodepends = .AUTODEPEND
 !endif
 
 .extensions: .rc .y .re .gh .msg
@@ -34,6 +40,10 @@ lex_out_h       =
 
 # objects
 ##########
+as_comm_objs_axp = alphafmt.obj alphains.obj
+as_comm_objs_mps = mipsfmt.obj mipsins.obj
+as_comm_objs_ppc = ppcfmt.obj ppcins.obj
+
 as_comm_objs = &
     $(yacc_out_c).obj &
     $(lex_out_c).obj &
@@ -46,9 +56,7 @@ as_comm_objs = &
     asdrectv.obj &
     asdirop.obj &
     asnumlab.obj &
-    asmsg.obj &
-    ashash.obj &
-    $(target_as_comm_objs)
+    ashash.obj
 
 as_stand_objs = &
     main.obj &
@@ -68,9 +76,9 @@ as_inline_objs = &
     asinline.obj &
     asiobj.obj
 
-as_objs = $(as_comm_objs) $(as_stand_objs)
+as_objs = $(as_comm_objs) $(as_comm_objs_$(target_cpu)) asmsg.obj $(as_stand_objs)
 
-asi_objs = $(as_comm_objs) $(as_inline_objs)
+asi_objs = $(as_comm_objs) $(as_comm_objs_$(target_cpu)) $(as_inline_objs)
 
 asi_test_objs = asitest.obj trmemcvr.obj
 !ifeq release 0
@@ -79,17 +87,19 @@ asi_test_objs += trmem.obj
 
 # cflags
 #########
-
+extra_cppflags_axp = -DAS_ALPHA
+extra_cppflags_mps = -DAS_MIPS
+extra_cppflags_ppc = -DAS_PPC
+extra_cpp_flags = $(extra_cppflags_$(target_cpu))
 !ifndef inline_as
-as_extra_defines += -D_STANDALONE_
+extra_cpp_flags += -D_STANDALONE_
 !endif
 !ifeq release 0
-as_extra_defines += -DTRMEM -DYYDEBUG=1 -DAS_DEBUG_DUMP
+extra_cpp_flags += -DTRMEM -DYYDEBUG=1 -DAS_DEBUG_DUMP
 !endif
 
-extra_c_flags = $(as_extra_defines)
 !ifneq bootstrap 1
-extra_c_flags += -fh
+extra_c_flags = -fh
 !endif
 
 !ifeq release 0
@@ -108,6 +118,10 @@ libs = $(owl_lib) $(wres_lib)
 
 # splice options
 ##################
+splice_opts_axp = -kAS_ALPHA
+splice_opts_mps = -kAS_MIPS
+splice_opts_ppc = -kAS_PPC
+splice_opts     = $(splice_opts_$(target_cpu))
 !ifndef inline_as
 splice_opts += -k_STANDALONE_
 !endif
@@ -115,18 +129,24 @@ splice_opts += -k_STANDALONE_
 # include directory
 ####################
 
-.c: $(as_cdir);$(trmem_dir);$(cpp_dir)
-.h: $(as_hdir);$(trmem_dir);$(cpp_dir)
-.y: $(as_ydir)
-.re: $(as_ydir)
+.c: $(as_dir)/$(target_cpu)/c;$(as_dir)/c;$(trmem_dir);$(cpp_dir)
+.h: $(as_dir)/$(target_cpu)/h;$(as_dir)/h;$(trmem_dir);$(cpp_dir)
+.y: $(as_dir)/$(target_cpu)/y;$(as_dir)/y
+.re: $(as_dir)/$(target_cpu)/y;$(as_dir)/y
 .rc: $(as_dir)/h
 .gh: .
 .msg: $(as_dir)/h
 
-inc_dirs = -I. $(as_incs) -I"$(owl_dir)/h" -I"$(cpp_dir)" -I"$(trmem_dir)"
+inc_dirs = -I. -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" -I"$(owl_dir)/h" -I"$(cpp_dir)" -I"$(trmem_dir)"
 
 # explicit rules
 #################
+
+!ifeq bootstrap 1
+asi_dir = $(as_dir)/$(target_cpu)/inline/$(%OWOBJDIR)
+!else
+asi_dir = $(as_dir)/$(target_cpu)/inline/osi$(host_cpu)
+!endif
 
 asi_lib     = $(asi_dir)/asinline.lib
 asi_lib_j   = $(asi_dir)/asinlinj.lib
@@ -147,13 +167,11 @@ curr_dir=$+$(%cwd)$-
 !ifdef asi_build_lib
 all_lib : msg.gh $(asi_lib) $(asi_lib_j) .symbolic
 
-$(asi_lib) : $(asi_objs)
-        @rm -f $^&.lbc
-        @for %i in ($<) do @%append $^&.lbc +%i
-        $(librarian) $(libflags) @$^&.lbc
+$(asi_lib) : $(asi_objs) asmsg.obj
+        $(librarian) $(libflags) $<
 
 $(asi_lib_j) : $(asi_lib) asmsgj.obj
-        $(librarian) $(libflags) +$[@ -asmsg.obj +asmsgj.obj
+        $(librarian) $(libflags) $<
 !endif
 
 # systems where version resource must be added to .EXE
@@ -176,7 +194,7 @@ $(name).exe : msg.gh $(as_objs) $(cl_objs) $(libs) $(owl_lib) $(name).res $(vers
 
 !ifndef inline_as
 $(name).res : as.rc msg.gh
-        $(rc_aui) $(as_extra_defines) $[@ -fo=$^@
+        $(rc_aui) $(cppflags) $[@ -fo=$^@
 !endif
 
 !include verrc.mif
@@ -185,7 +203,7 @@ msg.gh : ./mkstrid.exe
         $[@ $^@
 
 ./mkstrid.exe : mkstrid.c as.msg
-        $(bld_cl) $(bld_cl_opts) $(as_extra_defines) $(as_incs) $[@
+        $(bld_cl) $(bld_cl_opts) $(cppflags) -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" $[@
 
 $(yacc_in) : $(yacc_src) $(as_dir)/y/yydriver.c
         wsplice $(splice_opts) $[@ $^@
@@ -201,4 +219,4 @@ $(lex_in) : $(lex_src)
 
 .ERASE
 $(lex_out_c).c $(lex_out_h) : $(lex_in)
-        $(bre2c) $(lex_flags) $[@ > $^.
+        $(re2c) $(lex_flags) $[@ > $^.

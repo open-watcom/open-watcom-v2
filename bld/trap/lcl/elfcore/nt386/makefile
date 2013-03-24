@@ -12,7 +12,7 @@ name    = elf
 which   = TRAP
 reg_dll = 1
 
-extra_cflags = -DELFCORE
+extra_cpp_flags = -DELFCORE
 
 extra_objs = &
         elfcore.obj &

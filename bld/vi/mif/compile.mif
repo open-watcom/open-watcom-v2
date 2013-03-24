@@ -21,35 +21,35 @@ c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/ui;$(watcom_dir)/c
 .c : $(trmem_dir)
 .asm : $(c_dirs)
 
+extra_cpp_flags = -DNOUSE3D
+!ifdef sys_windowed
+extra_cpp_flags_nt = -D__WIN__
+!endif
+!ifdef is286
+extra_cpp_flags_dos_i86 = -D__286__
+!else
+extra_cpp_flags_dos_i86 = -D__86__
+!endif
+!ifdef curses
+extra_cpp_flags_dos_386 = -D__PHAR__ -D__CURSES__
+!else
+extra_cpp_flags_dos_386 = -D__4G__
+!endif
+
+extra_c_flags = $(extra_c_flags_debug) -fh
+
+!ifdef is286
+extra_c_flags_dos_i86 = -2
+!endif
+!ifndef curses
+extra_c_flags_dos_386 = -zff
+!endif
+extra_c_flags_os2_i86 = -2
+extra_c_flags_qnx_i86 = -2
+extra_c_flags_win_i86 = -zW -2 -zc
+extra_c_flags_win_386 = -zw -s
+
 extra_c_flags_getopt = -D__ISVI__
 extra_c_flags_ideactiv = -D__ISVI__
 extra_c_flags_mem = $(trmem_cover_cflags)
 extra_c_flags_trmem = $(trmem_cflags)
-
-!ifdef is286
-extra_c_flags_i86_dos = -D__286__ -2
-!else
-extra_c_flags_i86_dos = -D__86__
-!endif
-
-extra_c_flags_i86_os2 = -2
-extra_c_flags_i86_qnx = -2
-extra_c_flags_i86_win = -zW -2 -zc
-
-extra_c_flags_i86 = $(extra_c_flags_i86_$(host_os))
-
-!ifdef curses
-extra_c_flags_386_dos = -D__PHAR__ -D__CURSES__
-!else
-extra_c_flags_386_dos = -zff -D__4G__
-!endif
-
-!ifdef sys_windowed
-extra_c_flags_386_nt = -D__WIN__
-extra_c_flags_axp = -D__WIN__
-!endif
-extra_c_flags_386_win = -zw -s
-
-extra_c_flags_386 = $(extra_c_flags_386_$(host_os))
-
-extra_c_flags = $(extra_c_flags_debug) -DNOUSE3D=1 -fh

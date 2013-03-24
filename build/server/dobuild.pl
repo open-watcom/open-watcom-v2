@@ -81,21 +81,23 @@ if ($^O eq "MSWin32") {
     exit 1;
 }
 
-my $build_batch_name     = "$home\/build.$ext";
-my $docs_batch_name      = "$home\/docsbld.$ext";
-my $build_installer_name = "$home\/instbld.$ext";
-my $test_batch_name      = "$home\/test.$ext";
-my $rotate_batch_name    = "$home\/rotate1.$ext";
-my $rotate               = "$home\/rotate.$ext";
-my $setvars              = "$OW\/setvars.$ext";
-my $prev_changeno_name   = "$home\/changeno.txt";
-my $prev_changeno        = "0";
-my $prev_report_stamp    = "";
-my $build_needed         = 1;
-my $pass1_result         = "fail";
-my $pass2_result         = "fail";
-my $docs_result          = "fail";
-my $CVS_result           = "fail";
+my $build_boot_batch_name = "$home\/boot.$ext";
+my $build_batch_name      = "$home\/build.$ext";
+my $docs_batch_name       = "$home\/docsbld.$ext";
+my $build_installer_name  = "$home\/instbld.$ext";
+my $test_batch_name       = "$home\/test.$ext";
+my $rotate_batch_name     = "$home\/rotate1.$ext";
+my $rotate                = "$home\/rotate.$ext";
+my $setvars               = "$OW\/setvars.$ext";
+my $prev_changeno_name    = "$home\/changeno.txt";
+my $prev_changeno         = "0";
+my $prev_report_stamp     = "";
+my $build_needed          = 1;
+my $boot_result           = "fail";
+my $pass1_result          = "fail";
+my $pass2_result          = "fail";
+my $docs_result           = "fail";
+my $CVS_result            = "fail";
 
 sub get_prev_changeno
 {
@@ -108,6 +110,9 @@ sub get_prev_changeno
         $prev_report_stamp  = $fields[1];
     }
     close(CHNGNO);
+    if (!defined($prev_report_stamp)) {
+        $prev_report_stamp = "";
+    }
 }
 
 sub set_prev_changeno
@@ -126,6 +131,15 @@ sub get_reldir
     }
 }
 
+#sub write_environ_log
+#{
+#    if ($OStype eq "UNIX") {
+#        print BATCH "echo ", $_[0], " PATH=\$PATH >>$home/env.log\n";
+#    } else {
+#        print BATCH "echo ", $_[0], " PATH=%PATH% >>$home\\env.log\n";
+#    }
+#}
+
 sub batch_output_make_change_objdir
 {
     if ($OStype eq "UNIX") {
@@ -139,7 +153,7 @@ sub batch_output_make_change_objdir
 
 sub batch_output_set_watcom_env
 {
-    print BATCH "$setenv WATCOM=", $WATCOM, "\n";
+    print BATCH "$setenv WATCOM=", get_reldir(), "\n";
     if ($^O eq "MSWin32") {
         print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\nt\n";
         print BATCH "$setenv PATH=%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%\n";
@@ -188,7 +202,7 @@ sub batch_output_build_wmake_builder_rm
     batch_output_make_change_objdir();
     if ($OStype eq "UNIX") {
         print BATCH "rm -f \$OWBINDIR/wmake\n";
-        if ($WATCOM eq "") {
+        if ($Common::config{"WATCOM"} eq "") {
             print BATCH "make -f ../posmake clean\n";
             print BATCH "make -f ../posmake\n";
         } else {
@@ -197,8 +211,13 @@ sub batch_output_build_wmake_builder_rm
         }
     } else {
         print BATCH "if exist %OWBINDIR%\\wmake.exe del %OWBINDIR%\\wmake.exe\n";
-        print BATCH "wmake -h -f ..\\wmake clean\n";
-        print BATCH "wmake -h -f ..\\wmake\n";
+        if ($Common::config{"WATCOM"} eq "") {
+            print BATCH "nmake -nologo -f ..\\nmake clean\n";
+            print BATCH "nmake -nologo -f ..\\nmake\n";
+        } else {
+            print BATCH "wmake -h -f ..\\wmake clean\n";
+            print BATCH "wmake -h -f ..\\wmake\n";
+        }
     }
     # Create new builder tool, previous clean removed it.
     print BATCH "cd $OW\ncd bld\ncd builder\n";
@@ -214,23 +233,24 @@ sub batch_output_build_wmake_builder_rm
     }
 }
 
-sub make_build_batch
+sub make_boot_batch
 {
-    open(BATCH, ">$build_batch_name") || die "Unable to open $build_batch_name file.";
+    open(BATCH, ">$build_boot_batch_name") || die "Unable to open $build_boot_batch_name file.";
+#    write_environ_log("BOOT input");
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
-        if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM=/i) { ; }
+        if    (/$setenv OWROOT=/i)  { print BATCH "$setenv OWROOT=", $OW, "\n"; }
+        elsif (/$setenv WATCOM=/i)  { ; }
         elsif (/$setenv INCLUDE=/i) { ; }
-        elsif (/$setenv PATH=/i) { ; }
-        elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
-        else                      { print BATCH; }
+        elsif (/$setenv PATH=/i)    { ; }
+        else                        { print BATCH; }
     }
     close(INPUT);
     if ($WATCOM ne "") {
         batch_output_set_watcom_bootstrap_env();
     }
+#    write_environ_log("BOOT start");
     # Add additional commands to do the build.
     print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
     print BATCH "$setenv OWDOCBUILD=0\n";
@@ -251,10 +271,32 @@ sub make_build_batch
     } else {
         print BATCH "builder boot2\n";
     }
-    # Remove previous OW variables from environment.
-    if ($WATCOM ne "") {
-        batch_output_reset_env();
+    close(BATCH);
+    # On Windows it has no efect
+    chmod 0777, $build_boot_batch_name;
+}
+
+sub make_build_batch
+{
+    open(BATCH, ">$build_batch_name") || die "Unable to open $build_batch_name file.";
+#    write_environ_log("BUILD input");
+    open(INPUT, "$setvars") || die "Unable to open $setvars file.";
+    while (<INPUT>) {
+        s/\r?\n/\n/;
+        if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW, "\n"; }
+        elsif (/$setenv WATCOM=/i)   { ; }
+        elsif (/$setenv INCLUDE=/i)  { ; }
+        elsif (/$setenv PATH=/i)     { ; }
+        elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
+        else                         { print BATCH; }
     }
+    close(INPUT);
+    # Add additional commands to do the build.
+    print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
+    print BATCH "$setenv OWDOCBUILD=0\n";
+    print BATCH "$setenv OWDOCQUIET=1\n";
+    # start building by bootstrap tools.
+#    write_environ_log("BUILD start");
     # Remove release directory.
     print BATCH "rm -rf ", get_reldir(), "\n";
     # Clean previous build.
@@ -279,20 +321,22 @@ sub make_build_batch
 sub make_docs_batch
 {
     open(BATCH, ">$docs_batch_name") || die "Unable to open $docs_batch_name file.";
+#    write_environ_log("DOCS input");
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
-        if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM=/i) { ; }
-        elsif (/$setenv INCLUDE=/i) { ; }
-        elsif (/$setenv PATH=/i) { ; }
-        elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
+        if    (/$setenv OWROOT=/i)            { print BATCH "$setenv OWROOT=", $OW, "\n"; }
+        elsif (/$setenv WATCOM=/i)            { ; }
+        elsif (/$setenv INCLUDE=/i)           { ; }
+        elsif (/$setenv PATH=/i)              { ; }
+        elsif (/$setenv OWDOSBOX=/i)          { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
         elsif (/$setenv OWGHOSTSCRIPTPATH=/i) { ; }
-        elsif (/$setenv OWWIN95HC=/i) { ; }
-        elsif (/$setenv OWHHC=/i)    { ; }
-        else                      { print BATCH; }
+        elsif (/$setenv OWWIN95HC=/i)         { ; }
+        elsif (/$setenv OWHHC=/i)             { ; }
+        else                                  { print BATCH; }
     }
     close(INPUT);
+#    write_environ_log("DOCS start");
     # Add additional commands to do the build.
     print BATCH "$setenv OWRELROOT=", get_reldir(), "\n";
     if ($Common::config{"GHOSTSCRIPTPATH"} ne "") {
@@ -317,18 +361,20 @@ sub make_docs_batch
 sub make_test_batch
 {
     open(BATCH, ">$test_batch_name") || die "Unable to open $test_batch_name file.";
+#    write_environ_log("TEST input");
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
-        if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM=/i) { ; }
-        elsif (/$setenv INCLUDE=/i) { ; }
-        elsif (/$setenv PATH=/i) { ; }
+        if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW, "\n"; }
+        elsif (/$setenv WATCOM=/i)   { ; }
+        elsif (/$setenv INCLUDE=/i)  { ; }
+        elsif (/$setenv PATH=/i)     { ; }
         elsif (/$setenv OWDOSBOX=/i) { print BATCH "$setenv OWDOSBOX=", $Common::config{"DOSBOX"}, "\n"; }
-        else                      { print BATCH; }
+        else                         { print BATCH; }
     }
     close(INPUT);
     batch_output_set_watcom_env();
+#    write_environ_log("TEST start");
     # Add additional commands to do the testing.
     print BATCH "\n";
     if ($^O eq "MSWin32") { 
@@ -355,11 +401,11 @@ sub make_installer_batch
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n/\n/;
-        if    (/$setenv OWROOT=/i) { print BATCH "$setenv OWROOT=", $OW, "\n"; }
-        elsif (/$setenv WATCOM=/i) { ; }
+        if    (/$setenv OWROOT=/i)  { print BATCH "$setenv OWROOT=", $OW, "\n"; }
+        elsif (/$setenv WATCOM=/i)  { ; }
         elsif (/$setenv INCLUDE=/i) { ; }
-        elsif (/$setenv PATH=/i) { ; }
-        else                      { print BATCH; }
+        elsif (/$setenv PATH=/i)    { ; }
+        else                        { print BATCH; }
     }
     close(INPUT);
     # Add additional commands to do installers.
@@ -390,25 +436,34 @@ sub make_rotate_batch
 
 sub create_all_batches
 {
-    $relsubdir        = "pass1";
+    $relsubdir = "pass1";
+    $WATCOM = $Common::config{"WATCOM"};
 
     make_rotate_batch();
     make_docs_batch();
     make_installer_batch();
-    $WATCOM           = $Common::config{"WATCOM"};
-    $build_batch_name = "$home\/build1.$ext";
-    make_build_batch();
-    $test_batch_name  = "$home\/test1.$ext";
-    $WATCOM           = get_reldir();
-    make_test_batch();
-
-    $relsubdir        = "pass2";
-
-    $build_batch_name = "$home\/build2.$ext";
-    make_build_batch();
-    $test_batch_name  = "$home\/test2.$ext";
-    $WATCOM           = get_reldir();
-    make_test_batch();
+    if ($WATCOM eq "") {
+        make_boot_batch();
+        make_build_batch();
+        make_test_batch();
+    } else {
+        $build_boot_batch_name = "$home\/boot1.$ext";
+        make_boot_batch();
+        $build_batch_name      = "$home\/build1.$ext";
+        make_build_batch();
+        $test_batch_name       = "$home\/test1.$ext";
+        make_test_batch();
+    
+        $WATCOM = get_reldir();
+        $relsubdir = "pass2";
+    
+        $build_boot_batch_name = "$home\/boot2.$ext";
+        make_boot_batch();
+        $build_batch_name      = "$home\/build2.$ext";
+        make_build_batch();
+        $test_batch_name       = "$home\/test2.$ext";
+        make_test_batch();
+    }
 }
 
 sub process_log
@@ -508,9 +563,9 @@ sub run_tests
 
     # Run regression tests for the Fortran, C, C++ compilers and WASM.
 
-    print REPORT "REGRESSION TESTS STARTED  : ", get_datetime(), "\n";
+    print REPORT "REGRESSION TESTS STARTED   : ", get_datetime(), "\n";
     system("$test_batch_name");
-    print REPORT "REGRESSION TESTS COMPLETED: ", get_datetime(), "\n\n";
+    print REPORT "REGRESSION TESTS COMPLETED : ", get_datetime(), "\n\n";
 
     print REPORT "\tFortran Compiler: ";
     $fresult = process_log("$OW\/bld\/f77\/regress\/result.log");
@@ -529,14 +584,23 @@ sub run_tests
     }
 }
 
+sub run_boot_build
+{
+    print REPORT "CLEAN+BOOTSTRAP STARTED    : ", get_datetime(), "\n";
+    if (system($build_boot_batch_name) == 0) {
+        print REPORT "CLEAN+BOOTSTRAP COMPLETED  : ", get_datetime(), "\n\n";
+        return "success";
+    } else {
+        print REPORT "clean+bootstrap failed!\n\n";
+        return "fail";
+    }
+}
+
 sub run_build
 {
-    print REPORT "CLEAN+BUILD STARTED  : ", get_datetime(), "\n";
-    if (system($build_batch_name) != 0) {
-        print REPORT "clean+build failed!\n";
-        return "fail";
-    } else {
-        print REPORT "CLEAN+BUILD COMPLETED: ", get_datetime(), "\n\n";
+    print REPORT "CLEAN+BUILD STARTED        : ", get_datetime(), "\n";
+    if (system($build_batch_name) == 0) {
+        print REPORT "CLEAN+BUILD COMPLETED      : ", get_datetime(), "\n\n";
 
         # Analyze build result.
 
@@ -550,17 +614,20 @@ sub run_build
 
             return run_tests();
         }
+    } else {
+        print REPORT "clean+build failed!\n\n";
+        return "fail";
     }
 }
 
 sub run_docs_build
 {
-    print REPORT "CLEAN+BUILD STARTED  : ", get_datetime(), "\n";
+    print REPORT "CLEAN+BUILD STARTED        : ", get_datetime(), "\n";
     if (system($docs_batch_name) != 0) {
         print REPORT "clean+build failed!\n\n";
         return "fail";
     } else {
-        print REPORT "CLEAN+BUILD COMPLETED: ", get_datetime(), "\n\n";
+        print REPORT "CLEAN+BUILD COMPLETED      : ", get_datetime(), "\n\n";
         # Analyze build result.
         Common::process_summary($buildlog, $bldlast);
         # If 'compare' fails, end now. Don't test if there was a build failure.
@@ -578,7 +645,7 @@ sub CVS_sync
 
     if ($cvs_cmd eq "git") {
 #        system("git --git-dir=$OW/.git --work-tree=$OW checkout master");
-        open(SYNC, "git --git-dir=$OW/.git pull |");
+        open(SYNC, "git --git-dir=$OW/.git --work-tree=$OW pull --no-rebase --ff-only |");
         while (<SYNC>) {
             push(@CVS_messages, sprintf("%s", $_));
         }
@@ -615,10 +682,10 @@ sub CVS_check_sync
     }
     get_prev_changeno;
     
-    if ($prev_changeno ne "") {
-       print REPORT "\tBuilt through change   : $prev_changeno on $prev_report_stamp\n";
+    if ($prev_report_stamp ne "") {
+       	print REPORT "\tBuilt through change   : $prev_changeno on $prev_report_stamp\n";
     } else {
-       $prev_changeno = "";
+       	$prev_changeno = "";
     }
     if ($cvs_cmd eq "git") {
         open(LEVEL, "git --git-dir=$OW/.git rev-parse HEAD|");
@@ -707,16 +774,27 @@ if ($CVS_result eq "nochange") {
 ############################################################
 
 print REPORT "\n";
-print REPORT "Compilers and Tools (pass 1)\n";
-print REPORT "============================\n\n";
+if ($Common::config{"WATCOM"} eq "") {
+    print REPORT "Compilers and Tools\n";
+    print REPORT "===================\n\n";
+} else {
+    print REPORT "Compilers and Tools (pass 1)\n";
+    print REPORT "============================\n\n";
 
-$build_batch_name = "$home\/build1.$ext";
-$test_batch_name  = "$home\/test1.$ext";
+    $build_boot_batch_name  = "$home\/boot1.$ext";
+    $build_batch_name = "$home\/build1.$ext";
+    $test_batch_name  = "$home\/test1.$ext";
+}
+
 $buildlog         = "$OW\/bld\/pass1.log";
 $bldbase          = "$home\/$Common::config{'BLDBASE1'}";
 $bldlast          = "$home\/$Common::config{'BLDLAST1'}";
 
-$pass1_result  = run_build();
+$boot_result = run_boot_build();
+
+if ($boot_result eq "success") {
+
+    $pass1_result = run_build();
 
 ############################################################
 #
@@ -724,20 +802,20 @@ $pass1_result  = run_build();
 #
 ############################################################
 
-print REPORT "\n";
-print REPORT "Documentation Build\n";
-print REPORT "===================\n\n";
+    print REPORT "\n";
+    print REPORT "Documentation Build\n";
+    print REPORT "===================\n\n";
 
-$buildlog         = "$OW\/docs\/doc.log";
-$bldbase          = "$home\/$Common::config{'BLDBASED'}";
-$bldlast          = "$home\/$Common::config{'BLDLASTD'}";
+    $buildlog	  = "$OW\/docs\/doc.log";
+    $bldbase      = "$home\/$Common::config{'BLDBASED'}";
+    $bldlast      = "$home\/$Common::config{'BLDLASTD'}";
 
-if (defined($ENV{"OWDOCSKIP"}) && ($ENV{"OWDOCSKIP"} eq "1")) {
-    $docs_result = "success";
-    print REPORT "Build skipped.\n\n";
-} else {
-    $docs_result = run_docs_build();
-}
+    if (defined($ENV{"OWDOCSKIP"}) && ($ENV{"OWDOCSKIP"} eq "1")) {
+        $docs_result = "success";
+        print REPORT "Build skipped.\n\n";
+    } else {
+        $docs_result = run_docs_build();
+    }
 
 ############################################################
 #
@@ -746,21 +824,33 @@ if (defined($ENV{"OWDOCSKIP"}) && ($ENV{"OWDOCSKIP"} eq "1")) {
 #
 ############################################################
 
-print REPORT "\n";
-print REPORT "Compilers and Tools (pass 2)\n";
-print REPORT "============================\n\n";
+    if ($Common::config{"WATCOM"} eq "") {
+        $pass2_result = "success";
+    } else {
+        print REPORT "\n";
+        print REPORT "Compilers and Tools (pass 2)\n";
+        print REPORT "============================\n\n";
 
-$build_batch_name = "$home\/build2.$ext";
-$test_batch_name  = "$home\/test2.$ext";
-$buildlog         = "$OW\/bld\/pass2.log";
-$bldbase          = "$home\/$Common::config{'BLDBASE2'}";
-$bldlast          = "$home\/$Common::config{'BLDLAST2'}";
+        $build_boot_batch_name  = "$home\/boot2.$ext";
+        $build_batch_name = "$home\/build2.$ext";
+        $test_batch_name  = "$home\/test2.$ext";
+        $buildlog         = "$OW\/bld\/pass2.log";
+        $bldbase          = "$home\/$Common::config{'BLDBASE2'}";
+        $bldlast          = "$home\/$Common::config{'BLDLAST2'}";
 
-$pass2_result  = run_build();
+        $boot_result = run_boot_build();
+
+        if ($boot_result eq "success") {
+            $pass2_result = run_build();
+        }
+    }
+
+}
 
 # Rotate the freshly built system into position on the web site.
 ################################################################
-if (($pass1_result eq "success") &&
+if (($boot_result eq "success") &&
+    ($pass1_result eq "success") &&
     ($pass2_result eq "success") &&
     ($docs_result eq "success")) {
 
@@ -768,14 +858,17 @@ if (($pass1_result eq "success") &&
     print REPORT "Installers build\n";
     print REPORT "================\n";
     print REPORT "\n";
-    print REPORT "INSTALLER BUILD STARTED  : ", get_datetime(), "\n";
+    print REPORT "INSTALLER BUILD STARTED    : ", get_datetime(), "\n";
     if (system($build_installer_name) != 0) {
         print REPORT "INSTALLER BUILD FAILED!\n";
     } else {
         system("$rotate_batch_name");
-        print REPORT "INSTALLER BUILD COMPLETED: ", get_datetime(), "\n";
+        print REPORT "INSTALLER BUILD COMPLETED  : ", get_datetime(), "\n";
     }
     print REPORT "\n\n";
+    if ($Common::config{'OWCVS'} ne "") {
+        set_prev_changeno( $prev_changeno, $date_stamp );  #remember changeno and date
+    }
 }
 
 # Output CVS sync messages for reference.
@@ -783,7 +876,6 @@ if (($pass1_result eq "success") &&
 
 if ($Common::config{'OWCVS'} ne "") {
     display_CVS_messages($Common::config{'OWCVS'});
-    set_prev_changeno( $prev_changeno, $date_stamp );  #remember changeno and date
 }
 
 close(REPORT);

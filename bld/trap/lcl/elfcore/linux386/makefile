@@ -11,7 +11,7 @@ cpu     = x86
 name    = elf
 which   = TRAP
 
-extra_cflags = -DELFCORE
+extra_cpp_flags = -DELFCORE
 
 extra_objs = &
         elfcore.obj &

@@ -61,7 +61,9 @@ objs = $(name).obj link.obj
 objse = $(name)e.obj link.obj
 lnk = $(name).lnk
 
-extra_c_flags = -zW -zu -DSERVER
+extra_cpp_flags = -DSERVER
+
+extra_c_flags = -zW -zu
 
 inc_dirs = -I"../win" -I"../dos"
 

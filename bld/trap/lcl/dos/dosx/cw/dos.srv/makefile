@@ -13,7 +13,7 @@ extra_objs = autolock.obj cwacc.obj cwintr.obj
 extra_deps = $(causeway_dir)/cw32/dosi86/cwdstub.exe
 extra_linker = op stub=$(causeway_dir)/cw32/dosi86/cwdstub.exe
 
-extra_c_flags = -DCAUSEWAY
+extra_cpp_flags = -DCAUSEWAY
 extra_a_flags = -DCAUSEWAY
 
 inc_dirs = -I"$(causeway_dir)/inc" -I"$(comp_cfg_dir)/h"

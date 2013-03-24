@@ -85,7 +85,7 @@ sub process_summary
         if (/^[=]+ .* [=]+$/) {
             @header = split;
             $current_project = remove_OWloc($header[2]);
-        } elsif (/Warning|Error|Can not|ERROR|WARNING/) {
+        } elsif (/Warning!|Error!|\*WARNING\*|\*ERROR\*|Can not| error /) {
             print OUTFILE "\nPROJECT $current_project\n";
             print OUTFILE remove_OWloc($_) . "\n";
         }

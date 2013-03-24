@@ -2,6 +2,6 @@ name = wclaxp
 
 target_cpu = axp
 
-extra_c_flags += -DWCLAXP
+extra_cpp_flags = -DWCLAXP
 
 !include ../../master.mif

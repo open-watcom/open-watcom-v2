@@ -9,7 +9,7 @@
 
 !ifdef optimized
 .cpp.obj : .AUTODEPEND
-    $(cpp_386) $[* -ew-d1-zm-w4-zq-ox
+    $(cxx_386) $[* -ew-d1-zm-w4-zq-ox
 .c.obj : .AUTODEPEND
     $(cc_386) $[* -d1-w4-zq-ox
 .c.dbj : .AUTODEPEND
@@ -17,10 +17,10 @@
 .c.abj : .AUTODEPEND
     $(cc_axp) $[* -ox-d1-w4-zq-fo=*.abj
 .cpp.abj : .AUTODEPEND
-    $(cpp_axp) $[* -ox-ew-d2-w4-zq-fo=*.abj
+    $(cxx_axp) $[* -ox-ew-d2-w4-zq-fo=*.abj
 !else
 .cpp.obj : .AUTODEPEND
-    $(cpp_386) $[* -ew-d2-zm-bt=os2-w4-zq
+    $(cxx_386) $[* -ew-d2-zm-bt=os2-w4-zq
 .c.obj : .AUTODEPEND
     $(cc_386) $[* -d2-w4-zq
 .c.dbj : .AUTODEPEND
@@ -28,7 +28,7 @@
 .c.abj : .AUTODEPEND
     $(cc_axp) $[* -d2-w4-zq-fo=*.abj
 .cpp.abj : .AUTODEPEND
-    $(cpp_axp) $[* -ew-d2-w4-zq-fo=*.abj
+    $(cxx_axp) $[* -ew-d2-w4-zq-fo=*.abj
 !endif
 
 !ifndef busted

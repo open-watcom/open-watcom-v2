@@ -25,8 +25,9 @@ OBJS += mkssi.obj
 inc_dirs = -I..
 
 !ifdef sys_dll
-extra_c_flags = -D_RCSDLL_
+extra_cpp_flags = -D_RCSDLL_
 !endif
+
 extra_c_flags_win = -zw-zu
 
 extra_l_flags = op map

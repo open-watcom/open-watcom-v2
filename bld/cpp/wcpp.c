@@ -42,8 +42,8 @@
 char *OptEnvVar = "";
 
 static const char *usageMsg[] = {
-    "Usage: wcpp [-c] [-d<macro>] [-i<path>] [-l] [-zk0] [-zk1] [-zk2] [-zku8] [input file]\n",
-    "input file\t\tname of input source file\n",
+    "Usage: wcpp [-c] [-d<macro>] [-i<path>] [-l] [-zk0] [-zk1] [-zk2] [-zku8] [input files]\n",
+    "input files\t\tlist of input source file names\n",
     "-c\t\tpreserve comments\n",
     "-d<macro>\t\tdefine macro\n",
     "-i<path>\t\tinclude path\n",
@@ -83,7 +83,7 @@ int main( int argc, char *argv[] )
 {
     int         flags = 0;
     char        *inc_path = NULL;
-    int         len;
+    size_t      len;
     char        **defines = NULL;
     char        **curr_def = NULL;
     int         numdefs = 0;
@@ -95,11 +95,7 @@ int main( int argc, char *argv[] )
     /*
      * get options
      */
-    while( 1 ) {
-        ch = GetOpt( &argc, argv, "cCd:D:i:I:lLz:", usageMsg );
-        if( ch == -1 ) {
-            break;
-        }
+    while( (ch = GetOpt( &argc, argv, "cCd:D:i:I:lLz:", usageMsg )) != -1 ) {
         switch( tolower( ch ) ) {
         case 'c':
             flags |= PPFLAG_KEEP_COMMENTS;
@@ -166,21 +162,23 @@ int main( int argc, char *argv[] )
             Quit( usageMsg, NULL );
         }
     }
-    if( PP_Init( argv[1], flags, inc_path ) != 0 ) {
-        fprintf( stderr, "Unable to open '%s'\n", argv[1] );
-        return( EXIT_FAILURE );
-    }
-    if( defines != NULL ) {
-        for( curr_def = defines; *curr_def != NULL; curr_def++ ) {
-            PP_Define( *curr_def );
+    while( *(++argv) != NULL ) {
+        if( PP_Init( *argv, flags, inc_path ) != 0 ) {
+            fprintf( stderr, "Unable to open '%s'\n", *argv );
+            return( EXIT_FAILURE );
         }
+        if( defines != NULL ) {
+            for( curr_def = defines; *curr_def != NULL; curr_def++ ) {
+                PP_Define( *curr_def );
+            }
+        }
+        for( ;; ) {
+            ch = PP_Char();
+            if( ch == EOF )
+                break;
+            putchar( ch );
+        }
+        PP_Fini();
     }
-    for( ;; ) {
-        ch = PP_Char();
-        if( ch == EOF )
-            break;
-        putchar( ch );
-    }
-    PP_Fini();
     return( EXIT_SUCCESS );
 }

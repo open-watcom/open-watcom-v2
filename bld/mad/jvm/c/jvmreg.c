@@ -65,8 +65,8 @@ const jvm_reg_info RegList[] = {
 
 static const mad_toggle_strings CPUToggleList[] =
 {
-    {MSTR_MHEX,MSTR_HEX,MSTR_DECIMAL},
-    {MSTR_NIL,MSTR_NIL,MSTR_NIL}
+    {MAD_MSTR_MHEX,MAD_MSTR_HEX,MAD_MSTR_DECIMAL},
+    {MAD_MSTR_NIL,MAD_MSTR_NIL,MAD_MSTR_NIL}
 };
 
 struct mad_reg_set_data {
@@ -83,7 +83,7 @@ static mad_status       CPUGetPiece( unsigned piece,
                                 unsigned *max_value );
 
 static const mad_reg_set_data RegSet[] = {
-    { CPUGetPiece, CPUToggleList, MSTR_CPU },
+    { CPUGetPiece, CPUToggleList, MAD_MSTR_CPU },
 };
 
 /*
@@ -193,7 +193,7 @@ mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                         disp_type, max_value ) );
 }
 
-static const mad_modify_list    DWordReg = { NULL, JVMT_N32_PTR, MSTR_NIL };
+static const mad_modify_list    DWordReg = { NULL, JVMT_N32_PTR, MAD_MSTR_NIL };
 
 /*
         A particular register has been selected for modification. Indicate

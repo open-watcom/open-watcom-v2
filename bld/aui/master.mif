@@ -17,11 +17,12 @@ inc_dirs = -I. -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(posix_dir)/h"
 .c: .;$(aui_dir)/c;$(posix_dir)/misc
 .h: .;$(aui_dir)/h
 
-extra_c_flags += -s
+extra_cpp_flags_nov = -DNLM
+
+extra_c_flags = -s
 
 extra_c_flags_i86 = -zc
-
-extra_c_flags_nov = -4s -dNLM -ot
+extra_c_flags_nov = -4s -ot
 !ifeq host_cpu i86
 extra_c_flags_win = -zW
 extra_c_flags_dos = -of
@@ -132,5 +133,5 @@ dlgfiles = dlgrx.h dlgsrch.h dlgrx.dlg dlgsrch.dlg dlgsrcha.dlg auistr.gh auistr
 ./mkstr.exe: $(aui_dir)/c/mkstr.c
         $(bld_cl) $(bld_cl_opts) $]@
 
-auistr.gh : ./mkstr.exe $(aui_dir)/h/aui.msg
-        $[@ $^@
+auistr.gh : $(aui_dir)/h/aui.msg
+        $(awk) -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@

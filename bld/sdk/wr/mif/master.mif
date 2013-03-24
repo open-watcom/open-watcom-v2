@@ -46,7 +46,9 @@ object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
 
 msgfiles = $(wrc_dir)/h/rc.msg ../h/wr.msg
 
-extra_c_flags     = -DWIN_GUI -s
+extra_cpp_flags   = -DWIN_GUI -DWRDLL
+
+extra_c_flags     = -s
 
 extra_c_flags_win = -zu-zw-zc
 
@@ -100,7 +102,7 @@ wrmsg.gh: ../h/master.msg $(msgfiles)
         $(c_pp) -zk0 -I"../h" -I"$(wrc_dir)/h" $[@ >$^@
 
 ytab.gh : $(wrc_dir)/y/rc.y $(wrc_dir)/y/yydriver.c $(wrc_dir)/h/rcmem.h
-        $(byacc) -d -b $[@ $(wrc_dir)/y/yydriver.c >$(nulldevice)
+        $(yacc) -d -b $[@ $(wrc_dir)/y/yydriver.c >$(nulldevice)
         @cp ytab.h ytab.gh
         @rm -f ytab.h
         @rm -f ytab.c # ytab.c isn't used

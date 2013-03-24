@@ -304,7 +304,7 @@ const mad_toggle_strings        *DIGENTRY MIDisasmToggleList( void )
 {
     //NYI:
     static const mad_toggle_strings list[] = {
-        { MSTR_NIL, MSTR_NIL, MSTR_NIL }
+        { MAD_MSTR_NIL, MAD_MSTR_NIL, MAD_MSTR_NIL }
     };
     return( list );
 }

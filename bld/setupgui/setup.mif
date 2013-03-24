@@ -15,6 +15,8 @@ additional_cleanup = *.i *.rex setup.inf
 !include wres.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include $(gui_dir)/client.mif
+!include $(ui_dir)/client.mif
 
 # objects
 ##########
@@ -68,17 +70,15 @@ objs += &
 
 !ifeq host_os win
 !ifeq host_cpu 386
-win386_bind = ./wbind.exe
+win386_bind = $(wbind)
 !endif
 !endif
 
 !ifeq sys_windowed 1
 
-libs_nt = $(gui_dir)/win/nt$(host_cpu)/gui.lib
-
-libs_os2 = $(gui_dir)/win/os2$(host_cpu)/gui.lib
-
-libs_win = $(gui_dir)/win/win$(host_cpu)/gui.lib
+libs_nt  = $(gui_lib)
+libs_os2 = $(gui_lib)
+libs_win = $(gui_lib)
 
 !else
 
@@ -86,48 +86,33 @@ libs_win = $(gui_dir)/win/win$(host_cpu)/gui.lib
 extra_c_flags_loadfind = -I"$(wres_dir)/h"
 objs += loadfind.obj
 
-libs_dos = &
-$(gui_dir)/ui/dos$(host_cpu)/gui.lib &
-$(ui_dir)/dos/dos$(host_cpu)/ui.lib &
-$(wres_lib)
-
-libs_linux = &
-$(gui_dir)/ui/linux$(host_cpu)/gui.lib &
-$(ui_dir)/unix/linux$(host_cpu)/ui.lib &
-$(ncurses_dir)/linux$(host_cpu)/ncurses.lib &
-$(wres_lib)
-
-libs_os2 = &
-$(gui_dir)/ui/os2$(host_cpu)/gui.lib &
-$(ui_dir)/os2/os2$(host_cpu)/ui.lib &
-$(wres_lib)
-
-libs_nt = &
-$(gui_dir)/ui/nt$(host_cpu)/gui.lib &
-$(ui_dir)/nt/nt$(host_cpu)/ui.lib &
-$(wres_lib)
+libs_dos   = $(gui_lib) $(ui_lib) $(wres_lib)
+libs_linux = $(gui_lib) $(ui_lib) $(wres_lib)
+libs_nt    = $(gui_lib) $(ui_lib) $(wres_lib)
+libs_os2   = $(gui_lib) $(ui_lib) $(wres_lib)
 
 !endif
 
-libs_os2    += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
-libs_nt     += ../zlib/osi$(host_cpu)/zlib.lib ../ziplib/osi$(host_cpu)/ziplib.lib
 libs_dos    += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
 libs_linux  += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
+libs_nt     += ../zlib/osi$(host_cpu)/zlib.lib ../ziplib/osi$(host_cpu)/ziplib.lib
+libs_os2    += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
 libs_win386 += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
 
 libs = $(libs_$(host_os)) $(libs_$(host_os)$(host_cpu))
 
-gendeps = _guimsgs.gh $(objs) $(libs) setup.lnk
+gendeps = $(objs) $(libs) setup.lnk
 
 # cflags
 #########
-extra_c_flags = -s
 !ifneq sys_windowed 1
-extra_c_flags += -D_UI
+extra_cpp_flags += -D_UI
 !endif
 !ifdef patch
-extra_c_flags += -DPATCH
+extra_cpp_flags += -DPATCH
 !endif
+
+extra_c_flags = -s
 
 extra_c_flags_i86 = -zc
 
@@ -153,16 +138,16 @@ rc_out = $(rcx_out_$(host_os))
 
 !ifeq host_os os2
 !ifeq sys_windowed 1
-dep_res1 = ../h/setup.h setup.ico gui.rc _guimsgs.gh
+dep_res1 = ../h/setup.h setup.ico gui.rc
 !else
-dep_res1 = ../h/setup.h gui.rc _guimsgs.gh
+dep_res1 = ../h/setup.h gui.rc
 !endif
 !else ifeq host_os dos
-dep_res1 = ../h/setup.h gui.rc _guimsgs.gh
+dep_res1 = ../h/setup.h gui.rc
 !else ifeq host_os linux
-dep_res1 = ../h/setup.h gui.rc _guimsgs.gh
+dep_res1 = ../h/setup.h gui.rc
 !else
-dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc _guimsgs.gh
+dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc
 !endif
 
 # where to find objects
@@ -172,9 +157,9 @@ dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc _guimsgs.gh
 .rc : ../res;$(res_dir);$(gui_dir)/h
 .ico : $(res_dir)
 
-res_inc_dirs = -I"$(res_dir)" -I"../res" -I"$(gui_dir)/h" $(inc_dirs_sys)
+res_inc_dirs = -I"$(res_dir)" -I"../res" $(gui_inc_dirs) $(inc_dirs_sys)
 
-inc_dirs  = -I"../h" -I"$(ui_dir)/h" $(wpi_inc_dirs) -I"$(gui_dir)/h" $(commonui_inc_dirs)
+inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs)
 inc_dirs += -I"$(trmem_dir)" -I"$(libzip_dir)/lib"
 !ifdef patch
 inc_dirs += -I"$(bdiff_dir)/h" -I"$(wpack_dir)/h"
@@ -192,10 +177,10 @@ all : virgin.exe csetup.exe f77setup.exe .SYMBOLIC
 
 !ifeq host_os win
 
-virgin.exe: $(gendeps) dosstub.exe $(win386_bind)
+virgin.exe: $(gendeps) dosstub.exe
 !ifdef win386_bind
     $(linker) name virgin.rex @setup.lnk
-    $]@ -q -n virgin.rex
+    $(win386_bind) -q -n virgin.rex
 !else
     $(linker) name $^@ op stub=dosstub.exe @setup.lnk
 !endif
@@ -254,7 +239,7 @@ setup.lnk : ../setup.mif $(__MAKEFILES__)
 nonibm.obj : $(clib_dir)/startup/c/nonibm.c
 
 setupui.res : setupui.rc $(dep_res1)
-    $(rc_aui) -I"$(gui_dir)/h" $[@ -fo=setupui.res
+    $(rc_aui) $(gui_inc_dirs) $[@ -fo=setupui.res
 
 csetup.res : setup.rc $(dep_res1) ../res/wcc.bmp
     $(rc) $(rc_flags) -DCSETUP $(res_inc_dirs) $[@ -fo=$^@
@@ -273,15 +258,6 @@ setup.res : setup.rc $(dep_res1) ../res/generic.bmp
 
 dosstub.exe : dosstub.c
     $(cl_i86) -zq -bcl=dos -os -d0 $(inc_dirs_lang_osi) $[@
-
-./wbind.exe : $(win386_dir)/wbind/wbind.c $(cl_objs)
-        $(bld_cl) $(bld_cl_opts) -DBUILDTOOLNAMES $<
-
-./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-    $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
-
-_guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
-    $[@ $^@ $(gui_msg_id_modifier)
 
 csetup.exe   : csetup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe
 f77setup.exe : f77setup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe

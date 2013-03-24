@@ -115,7 +115,7 @@ typedef struct mad_type_data {
 } mad_type_data;
 
 #define pick( e, n, h, iol, meml, info )        \
-        { MSTR_##n, h, iol, meml, (mad_type_info_basic *)&info },
+        { MAD_MSTR_##n, h, iol, meml, (mad_type_info_basic *)&info },
 
 static const mad_type_data TypeArray[] = {
 #include "x86types.h"

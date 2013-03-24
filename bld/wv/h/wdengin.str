@@ -1,75 +1,75 @@
 
-wdpick( Empty,
+pick( Empty,
        "",
        "" )
 
 // used to represent an undefined (eg: memory can't be read)
 
-wdpick( Quest_Marks,
+pick( Quest_Marks,
        "????????",
        "j????????" ) // dbgwvar dbgmem dbgbrk
 
 // Warnings
 
-wdpick( WARN_Unable_To_Remap_Tmp,
+pick( WARN_Unable_To_Remap_Tmp,
        "Unable to correct address of temporary breakpoint",
        "jUnable to correct address of temporary breakpoint" )//dbgprog
 
-wdpick( WARN_No_Nxt_Src_Ln,
+pick( WARN_No_Nxt_Src_Ln,
        "No next source line can be found",
        "jNo next source line can be found" )//dbgtrace
 
-wdpick( WARN_ONLY_MAX_EXPAND_ARRAY_ELEMENTS,
+pick( WARN_ONLY_MAX_EXPAND_ARRAY_ELEMENTS,
        "Only %U array elements can be displayed at a time",
        "jOnly %U array elements can be displayed at a time" )
 
 // Startup Errors
 
-wdpick( STARTUP_Invalid_Option,
+pick( STARTUP_Invalid_Option,
     "Invalid option '%t'",
     "jInvalid option '%t'" )
 
-wdpick( STARTUP_Loading_PRS,
+pick( STARTUP_Loading_PRS,
     "Cannot load expression syntax file 'cpp.prs'",
     "jCannot load expression syntax file 'cpp.prs'" )//dbgmain
 
-wdpick( STARTUP_DIP_Not_Init,
+pick( STARTUP_DIP_Not_Init,
        "Cannot initalize symbolic debugging interface",
        "jCannot initalize symbolic debugging interface" ) // dipinter
 
-wdpick( STARTUP_DIP_Not_Register,
+pick( STARTUP_DIP_Not_Register,
        "Cannot create internal symbol table",
        "jCannot create internal symbol table" ) //DIPINTER
 
-wdpick( STARTUP_Expect_Brace,
+pick( STARTUP_Expect_Brace,
        "Unmatched '{' on command line",
        "jUnmatched '{' on command line" )//dbgcmd
 
-wdpick( STARTUP_Expect_End_Env_Str,
+pick( STARTUP_Expect_End_Env_Str,
        "Syntax error in WD environment variable near '%s'",
        "jSyntax error in WD environment variable near '%s'" )//dbgcmd
 
-wdpick( STARTUP_Expect_Eql,
+pick( STARTUP_Expect_Eql,
        "Expecting '=' in command line but found '%s'",
        "jExpecting '=' in command line but found '%s'" )//dbgcmd
 
-wdpick( STARTUP_Invalid_Num,
+pick( STARTUP_Invalid_Num,
        "Expecting number in command line but found '%s'",
        "jExpecting number in command line but found '%s'" )//dbgcmd
 
-wdpick( STARTUP_No_Recog_Optn,
+pick( STARTUP_No_Recog_Optn,
        "Unable to recognize command line option near '%s'",
        "jUnable to recognize command line option near '%s'" )//dbgcmd
 
-wdpick( STARTUP_Num_Too_Big,
+pick( STARTUP_Num_Too_Big,
        "Number too large near '%s'",
        "jNumber too large near '%s'" )//dbgcmd
 
-wdpick( STARTUP_MAD_Not_Init,
+pick( STARTUP_MAD_Not_Init,
     "Machine architecture initialization failed",
     "jMachine architecture initialization failed" )
 
-wdpick( MSG_Unexpected_Break,
+pick( MSG_Unexpected_Break,
        "Hard-coded breakpoint instruction encountered",
        "jHard-coded breakpoint instruction encountered" ) // dbgins
 
@@ -80,19 +80,19 @@ wdpick( MSG_Unexpected_Break,
 
 
 
-wdpick( Break_on_write,
+pick( Break_on_write,
        "Break on write: ",
        "jBreak on write: " ) // dbgbrk
 
-wdpick( Break_on_execute,
+pick( Break_on_execute,
        "Break on execute: ",
        "jBreak on execute: " ) // dbgbrk
 
-wdpick( OldVal,
+pick( OldVal,
        "Old value",
        "jOld value" ) // dbgbrk
 
-wdpick( NewVal,
+pick( NewVal,
        "New value",
        "jNew value" ) // dbgbrk
 
@@ -100,91 +100,91 @@ wdpick( NewVal,
 // - expecting '=' near <end of line>
 
 
-wdpick( End_Of_Line,
+pick( End_Of_Line,
        "<end of line>",
        "j<end of line>" ) //dbgscan
 
-wdpick( Num_Name,
+pick( Num_Name,
        "<number>",
        "j<number>" ) //dbgscan
 
-wdpick( Sym_Name_Name,
+pick( Sym_Name_Name,
        "<name>",
        "j<name>" ) //dbgscan
 
-wdpick( Map_Selector,
+pick( Map_Selector,
        "Enter address of selector %d in %s",
        "jEnter address of selector %d in %s" )//dbgprog
 
-wdpick( Map_Named_Selector,
+pick( Map_Named_Selector,
        "Enter address of %s selector in %s",
        "jEnter address of %s selector in %s" )//dbgprog
 
-wdpick( New_Expression,
+pick( New_Expression,
        "Enter New Expression",
        "jEnter New Expression" ) //dbgwvar dbgprint
 
-wdpick( Internal_Error,
+pick( Internal_Error,
     "*** INTERNAL *** error:",
     "j*** INTERNAL *** error:" )//dbgerr
 
-wdpick( Debugger_Startup_Error,
+pick( Debugger_Startup_Error,
        "Debugger Startup Error",
        "jDebugger Startup Error" )
 
 // program notifications
 
-wdpick( Task_Completed,
+pick( Task_Completed,
        "The task has completed running",
        "jThe task has completed running" ) // dbgexec
 
-wdpick( Task_Exception,
+pick( Task_Exception,
        "A task exception has occurred: ",
        "jA task exception has occurred: " ) // dbgexec
 
-wdpick( Break_on_DLL_Load,
+pick( Break_on_DLL_Load,
        "Breakpoint due to DLL load: ",
        "jBreakpoint due to DLL load: " ) // dbgexec
 
-wdpick( DLL_Loaded,
+pick( DLL_Loaded,
        "A DLL has been loaded: ",
        "jA DLL has been loaded: " ) // dbgexec
 
-wdpick( DLL_UnLoaded,
+pick( DLL_UnLoaded,
        "A DLL has been unloaded: ",
        "jA DLL has been unloaded: " ) // dbgexec
 
-wdpick( User_Interupt,
+pick( User_Interupt,
        "A user interrupt was detected",
        "jA user interrupt was detected" ) // dbgexec
 
-wdpick( New_Task,
+pick( New_Task,
        "A new task has been loaded",
        "jA new task has been loaded" ) // dbgmain
 
-wdpick( No_Task,
+pick( No_Task,
        "No task was loaded",
        "jNo task was loaded" ) // dbgmain
 
-wdpick( Task_Not_Loaded,
+pick( Task_Not_Loaded,
        "The task was not loaded: %e",
        "jThe task was not loaded: %e" ) // dbgmain
 
 // information messaged issued in response to the Undo menu items
 
-wdpick( No_More_Undos,
+pick( No_More_Undos,
        "No more undos",
        "jNo more undos" )//dbgreg
 
-wdpick( Bottom_Of_Stack,
+pick( Bottom_Of_Stack,
        "Bottom of stack reached",
        "jBottom of stack reached" )//dbgreg
 
-wdpick( Top_Of_Stack,
+pick( Top_Of_Stack,
        "Top of stack reached",
        "jTop of stack reached" )//dbgreg
 
-wdpick( Thread_Not_Exist,
+pick( Thread_Not_Exist,
        "Thread no longer exists",
        "jThread no longer exists" ) //dbgreg
 
@@ -192,546 +192,546 @@ wdpick( Thread_Not_Exist,
 // these are possible thread states
 
 
-wdpick( Current,
+pick( Current,
        "current",
        "jcurrent" )//dbgwthrd
 
-wdpick( Dead,
+pick( Dead,
        "dead",
        "jdead" ) //dbgwthrd dbgmisc
 
-wdpick( Frozen,
+pick( Frozen,
        "frozen",
        "jfrozen" ) //dbgwthrd dbgmisc
 
-wdpick( Runnable,
+pick( Runnable,
        "runnable",
        "jrunnable" ) //dbgwthrd dbgmisc
 
-wdpick( Wait,
+pick( Wait,
        "wait",
        "jwait" ) //dbgwthrd dbgmisc
 
-wdpick( Signal,
+pick( Signal,
        "signal",
        "jsignal" ) //dbgwthrd dbgmisc
 
-wdpick( Keyboard,
+pick( Keyboard,
        "keyboard",
        "jkeyboard" ) //dbgwthrd dbgmisc
 
-wdpick( Blocked,
+pick( Blocked,
        "blocked",
        "jblocked" ) //dbgwthrd dbgmisc
 
-wdpick( Executing,
+pick( Executing,
        "executing",
        "jexecuting" ) //dbgwthrd dbgmisc
 
-wdpick( Debug,
+pick( Debug,
        "debug",
        "jdebug" ) //dbgwthrd dbgmisc
 
 
 // strings used by the variable display window
 
-wdpick( No_Visible_Members,
+pick( No_Visible_Members,
        "No members will be displayed using current window options",
        "jNo members will be displayed using current window options" )//dbgwvar
 
-wdpick( Array,
+pick( Array,
        "[ array ]",
        "j[ array ]" ) //dbgwvar
 
-wdpick( field,
+pick( field,
        "field",
        "jfield" ) //dbgwvar
 
-wdpick( Struct,
+pick( Struct,
        "struct",
        "jstruct" ) //dbgwvar
 
-wdpick( inherited_members,
+pick( inherited_members,
        "Ancestor::",
        "jAncestor::" ) //dbgwvar
 
-wdpick( Unknown_type,
+pick( Unknown_type,
        "Unknown type",
        "jUnknown type" ) // dbgvar
 
-wdpick( Image_Not_Loaded,
+pick( Image_Not_Loaded,
     "Image Not Loaded",
     "jImage Not Loaded" ) // dbgwbrk
 
-wdpick( Str_ACTION_EXECUTE,
+pick( Str_ACTION_EXECUTE,
     "Program execution",
     "jProgram execution" ) // dbgreg
 
-wdpick( Str_ACTION_ASSIGNMENT,
+pick( Str_ACTION_ASSIGNMENT,
     "Variable assignment",
     "jVariable assignment" ) // dbgreg
 
-wdpick( Str_ACTION_THREAD_CHANGE,
+pick( Str_ACTION_THREAD_CHANGE,
     "Thread switch",
     "jThread switch" ) // dbgreg
 
-wdpick( Str_ACTION_MODIFY_IP,
+pick( Str_ACTION_MODIFY_IP,
     "Change instruction pointer",
     "jChange instruction pointer" ) // dbgreg
 
-wdpick( Str_ACTION_MODIFY_MEMORY,
+pick( Str_ACTION_MODIFY_MEMORY,
     "Memory modification",
     "jMemory modification" ) // dbgreg
 
-wdpick( Str_ACTION_MODIFY_REGISTER,
+pick( Str_ACTION_MODIFY_REGISTER,
     "Register modification",
     "jRegister modification" ) // dbgreg
 
-wdpick( Str_ACTION_MODIFY_VARIABLE,
+pick( Str_ACTION_MODIFY_VARIABLE,
     "Variable modification",
     "jVariable modification" ) // dbgreg
 
 
-wdpick( LDS_TOO_MANY_DIPS,
+pick( LDS_TOO_MANY_DIPS,
        "Too many DIP files specified",
        "jToo many DIP files specified" )
 
-wdpick( LDS_INVALID_DIP_VERSION,
+pick( LDS_INVALID_DIP_VERSION,
        "Invalid version of DIP file",
        "jInvalid version of DIP file" )
 
-wdpick( LDS_NO_MEM,
+pick( LDS_NO_MEM,
        "Out of memory",
        "jOut of memory" )
 
-wdpick( LDS_FOPEN_FAILED,
+pick( LDS_FOPEN_FAILED,
        "File open failed",
        "jFile open failed" )
 
-wdpick( LDS_FREAD_FAILED,
+pick( LDS_FREAD_FAILED,
        "File read failed",
        "jFile read failed" )
 
-wdpick( LDS_FWRITE_FAILED,
+pick( LDS_FWRITE_FAILED,
        "File write failed",
        "jFile write failed" )
 
-wdpick( LDS_FSEEK_FAILED,
+pick( LDS_FSEEK_FAILED,
        "File seek failed",
        "jFile seek failed" )
 
-wdpick( LDS_INVALID_DIP,
+pick( LDS_INVALID_DIP,
        "Invalid DIP file",
        "jInvalid DIP file" )
 
-wdpick( LDS_INFO_INVALID,
+pick( LDS_INFO_INVALID,
        "Invalid debugging information",
        "jInvalid debugging information" )
 
-wdpick( LDS_INFO_BAD_VERSION,
+pick( LDS_INFO_BAD_VERSION,
        "Incorrect debugging information version",
        "jIncorrect debugging information version" )
 
-wdpick( No_DIPs_Found,
+pick( No_DIPs_Found,
        "Missing Debugging Information Processor files",
        "jMissing Debugging Information Processor files" )
 
-wdpick( DIP_load_failed,
+pick( DIP_load_failed,
        "Debugging Information Processor '%s' load failed: %s",
        "jDebugging Information Processor '%s' load failed: %s" )
 
-wdpick( Sym_Info_Load_Failed,
+pick( Sym_Info_Load_Failed,
        "Symbolic information load for '%s' failed.",
        "jSymbolic information load for '%s' failed." ) // dbgprog
 
-wdpick( IO,
+pick( IO,
     "io",
     "jio" ) //dbgscan
 
 // MAD errors
 
-wdpick( LMS_RECURSIVE_MAD_FAILURE,
+pick( LMS_RECURSIVE_MAD_FAILURE,
     "Recursive MAD failure - exiting",
     "jRecursive MAD failure - exiting" )
 
-wdpick( LMS_UNREGISTERED_MAD,
+pick( LMS_UNREGISTERED_MAD,
     "Unknown machine architecture %d",
     "jUnknown machine architecture %d" )
 
-wdpick( LMS_INVALID_MAD,
+pick( LMS_INVALID_MAD,
     "Invalid machine architecture description file '%s'",
     "jInvalid machine architecture description file '%s'" )
 
-wdpick( LMS_INVALID_MAD_VERSION,
+pick( LMS_INVALID_MAD_VERSION,
     "Incorrect version of machine architecture description file '%s'",
     "jIncorrect version of machine architecture description file '%s'" )
 
-wdpick( LMS_FREAD_FAILED,
+pick( LMS_FREAD_FAILED,
        "Unable to read file '%s'",
        "jUnable to read file '%s'" )
 
 
 // errors loading trap file
 
-wdpick( BAD_TRAP_FILE,
+pick( BAD_TRAP_FILE,
     "Bad trap file",
     "jBad trap file" )
 
-wdpick( OUT_OF_DOS_MEMORY,
+pick( OUT_OF_DOS_MEMORY,
     "Out of DOS Memory",
     "jOut of DOS Memory" )
 
-wdpick( CANT_LOAD_TRAP_FILE,
+pick( CANT_LOAD_TRAP_FILE,
     "Cannot load trap file (%s)",
     "jCannot load trap file (%s)" )
 
-wdpick( INCORRECT_TRAP_FILE_VERSION,
+pick( INCORRECT_TRAP_FILE_VERSION,
     "Incorrect trap file version",
     "jIncorrect trap file version" )
 
 // error messages
 
-wdpick( ERR_GENERIC,
+pick( ERR_GENERIC,
        "%s",
        "j%s" )
 
-wdpick( ERR_BAD_COMMAND,
+pick( ERR_BAD_COMMAND,
        "'%t' is not a valid command",
        "j'%t' is not a valid command" )
 
-wdpick( ERR_BAD_RADIX,
+pick( ERR_BAD_RADIX,
        "%d is an invalid radix",
        "j%d is an invalid radix" )
 
-wdpick( ERR_BAD_SUBCOMMAND,
+pick( ERR_BAD_SUBCOMMAND,
        "Missing or invalid '%s' command",
        "jMissing or invalid '%s' command" )
 
-wdpick( ERR_BAD_OPTION,
+pick( ERR_BAD_OPTION,
        "Missing or invalid '%s' option",
        "jMissing or invalid '%s' option" )
 
-wdpick( ERR_BAD_TYPE_NAME,
+pick( ERR_BAD_TYPE_NAME,
        "Missing or invalid type name",
        "jMissing or invalid type name" )
 
-wdpick( ERR_BAD_CALL_TYPE,
+pick( ERR_BAD_CALL_TYPE,
        "Missing or invalid call type",
        "jMissing or invalid call type" )
 
-wdpick( ERR_LOG_STARTED,
+pick( ERR_LOG_STARTED,
        "Logging already started",
        "jLogging already started" )
 
-wdpick( ERR_LOG_NOT_STARTED,
+pick( ERR_LOG_NOT_STARTED,
        "Logging not started",
        "jLogging not started" )
 
-wdpick( ERR_WANT_TOKEN,
+pick( ERR_WANT_TOKEN,
        "Expecting '%t'",
        "jExpecting '%t'" )
 
-wdpick( ERR_WANT_OPERAND,
+pick( ERR_WANT_OPERAND,
        "Expecting an operand",
        "jExpecting an operand" )
 
-wdpick( ERR_WANT_EOC,
+pick( ERR_WANT_EOC,
        "Expecting end of command",
        "jExpecting end of command" )
 
-wdpick( ERR_WANT_REG_NAME,
+pick( ERR_WANT_REG_NAME,
        "Expecting a register name",
        "jExpecting a register name" )
 
-wdpick( ERR_WANT_FILENAME,
+pick( ERR_WANT_FILENAME,
        "Expecting a file name",
        "jExpecting a file name" )
 
-wdpick( ERR_WANT_LOOKUP_ITEM,
+pick( ERR_WANT_LOOKUP_ITEM,
        "Expecting lookup specifier",
        "jExpecting lookup specifier" )
 
-wdpick( ERR_WANT_NAME,
+pick( ERR_WANT_NAME,
        "Expecting a name",
        "jExpecting a name" )
 
-wdpick( ERR_WANT_ON_OFF,
+pick( ERR_WANT_ON_OFF,
        "Expecting 'on' or 'off'",
        "jExpecting 'on' or 'off'" )
 
-wdpick( ERR_NO_CODE,
+pick( ERR_NO_CODE,
        "There is no executable code at line %u",
        "jThere is no executable code at line %u" )
 
-wdpick( ERR_NO_MEMORY,
+pick( ERR_NO_MEMORY,
        "Out of memory",
        "jOut of memory" )
 
-wdpick( ERR_NO_MEMORY_FOR_WINDOW,
+pick( ERR_NO_MEMORY_FOR_WINDOW,
        "Not enough memory to open window",
        "jNot enough memory to open window" )
 
-wdpick( ERR_NO_MEMORY_FOR_EXPR,
+pick( ERR_NO_MEMORY_FOR_EXPR,
        "Not enough memory to evaluate expression",
        "jNot enough memory to evaluate expression" )
 
-wdpick( ERR_NO_MEMORY_FOR_DEBUG,
+pick( ERR_NO_MEMORY_FOR_DEBUG,
        "Not enough memory for debugging information",
        "jNot enough memory for debugging information" )
 
-wdpick( ERR_NO_SOURCE_INFO,
+pick( ERR_NO_SOURCE_INFO,
        "Cannot trace at the source level in this module.",
        "jCannot trace at the source level in this module." )
 
-wdpick( ERR_NO_SUCH_POINT,
+pick( ERR_NO_SUCH_POINT,
        "Break point at that address does not exist",
        "jBreak point at that address does not exist" )
 
-wdpick( ERR_NO_MODULE,
+pick( ERR_NO_MODULE,
        "'%t' is not a module",
        "j'%t' is not a module" )
 
-wdpick( ERR_NEED_ADDRESS,
+pick( ERR_NEED_ADDRESS,
        "Cannot take the address of the operand",
        "jCannot take the address of the operand" )
 
-wdpick( ERR_TOO_MANY_PARMS,
+pick( ERR_TOO_MANY_PARMS,
        "Maximum number of parameters exceeded in function call",
        "jMaximum number of parameters exceeded in function call" )
 
-wdpick( ERR_TYPE_CONVERSION,
+pick( ERR_TYPE_CONVERSION,
        "Illegal type conversion",
        "jIllegal type conversion" )
 
-wdpick( ERR_UNKNOWN_SYMBOL,
+pick( ERR_UNKNOWN_SYMBOL,
        "Unknown symbol '%t'",
        "jUnknown symbol '%t'" )
 
-wdpick( ERR_ILL_TYPE,
+pick( ERR_ILL_TYPE,
        "Illegal type for operation",
        "jIllegal type for operation" )
 
-wdpick( ERR_DUPLICATE_TYPE_SPEC,
+pick( ERR_DUPLICATE_TYPE_SPEC,
        "Duplicate type specifier",
        "jDuplicate type specifier" )
 
-wdpick( ERR_ILLEGAL_TYPE_SPEC,
+pick( ERR_ILLEGAL_TYPE_SPEC,
        "Invalid type specifier",
        "jInvalid type specifier" )
 
-wdpick( ERR_VOID_BASE,
+pick( ERR_VOID_BASE,
        "Pointer has void base type",
        "jPointer has void base type" )
 
-wdpick( ERR_SYM_NOT_CREATED,
+pick( ERR_SYM_NOT_CREATED,
        "Cannot create symbol '%t'",
        "jCannot create symbol '%t'" )
 
-wdpick( ERR_INCONSISTENT_GO,
+pick( ERR_INCONSISTENT_GO,
        "An address and /keep may not both be specified",
        "jAn address and /keep may not both be specified" )
 
-wdpick( ERR_FILE_NOT_OPEN,
+pick( ERR_FILE_NOT_OPEN,
        "Cannot open file '%s'",
        "jCannot open file '%s'" )
 
-wdpick( ERR_CANNOT_RESTORE_STDIN,
+pick( ERR_CANNOT_RESTORE_STDIN,
        "Unable to restore program's standard input",
        "jUnable to restore program's standard input" )
 
-wdpick( ERR_CANNOT_RESTORE_STDOUT,
+pick( ERR_CANNOT_RESTORE_STDOUT,
     "Unable to restore program's standard output",
     "jUnable to restore program's standard output" )
 
-wdpick( ERR_POINT_EXISTS,
+pick( ERR_POINT_EXISTS,
        "Break point with that address already exists",
        "jBreak point with that address already exists" )
 
-wdpick( ERR_NO_ROUTINE,
+pick( ERR_NO_ROUTINE,
        "No function found at address %a",
        "jNo function found at address %a" )
 
-wdpick( ERR_SYS_FAIL,
+pick( ERR_SYS_FAIL,
        "System command failed - %e",
        "jSystem command failed - %e" )
 
-wdpick( ERR_DBG_INTERRUPT,
+pick( ERR_DBG_INTERRUPT,
        "Debugger interrupted by user",
        "jDebugger interrupted by user" )
 
-wdpick( ERR_NO_LANG,
+pick( ERR_NO_LANG,
        "Cannot load expression language",
        "jCannot load expression language" )
 
-wdpick( ERR_EXPR_STACK_OVER,
+pick( ERR_EXPR_STACK_OVER,
        "Expression too complex to evaluate",
        "jExpression too complex to evaluate" )
 
-wdpick( ERR_ZERO_MOD,
+pick( ERR_ZERO_MOD,
        "Right operand is zero for mod operator",
        "jRight operand is zero for mod operator" )
 
-wdpick( ERR_ZERO_DIV,
+pick( ERR_ZERO_DIV,
        "Divide by zero",
        "jDivide by zero" )
 
-wdpick( ERR_NO_OVL_STATE,
+pick( ERR_NO_OVL_STATE,
        "Not enough memory for overlay state information",
        "jNot enough memory for overlay state information" )
 
-wdpick( ERR_BAD_SUBSTRING_INDEX,
+pick( ERR_BAD_SUBSTRING_INDEX,
        "Character substring index is out of range",
        "jCharacter substring index is out of range" )
 
-wdpick( ERR_WANT_COMMAND_LIST,
+pick( ERR_WANT_COMMAND_LIST,
        "Expecting a command list",
        "jExpecting a command list" )
 
-wdpick( ERR_EXPR_TOO_LONG,
+pick( ERR_EXPR_TOO_LONG,
        "Expression is too long to evaluate",
        "jExpression is too long to evaluate" )
 
-wdpick( ERR_CHAR_STAR_STAR,
+pick( ERR_CHAR_STAR_STAR,
        "character*(*) functions are not supported",
        "jcharacter*(*) functions are not supported" )
 
-wdpick( ERR_WANT_END_STRING,
+pick( ERR_WANT_END_STRING,
        "Expecting closing quote",
        "jExpecting closing quote" )
 
-wdpick( ERR_TOO_MANY_CALLS,
+pick( ERR_TOO_MANY_CALLS,
        "Too many nested subroutine calls",
        "jToo many nested subroutine calls" )
 
-wdpick( ERR_NO_READ_MEM,
+pick( ERR_NO_READ_MEM,
        "Cannot read from location %a",
        "jCannot read from location %a" )
 
-wdpick( ERR_NO_WRITE_MEM,
+pick( ERR_NO_WRITE_MEM,
        "Cannot write to location %a",
        "jCannot write to location %a" )
 
-wdpick( ERR_NO_READ_PORT,
+pick( ERR_NO_READ_PORT,
        "Cannot read from port %p",
        "jCannot read from port %p" )
 
-wdpick( ERR_NO_WRITE_PORT,
+pick( ERR_NO_WRITE_PORT,
        "Cannot write to port %p",
        "jCannot write to port %p" )
 
-wdpick( ERR_CANT_SET_ALL_THREADS,
+pick( ERR_CANT_SET_ALL_THREADS,
        "Cannot set current thread to '*'",
        "jCannot set current thread to '*'" )
 
-wdpick( ERR_NO_MAKE_CURR_THREAD,
+pick( ERR_NO_MAKE_CURR_THREAD,
        "Cannot make %U the current thread - %e",
        "jCannot make %U the current thread - %e" )
 
-wdpick( ERR_NO_SUCH_THREAD,
+pick( ERR_NO_SUCH_THREAD,
        "Thread %U does not exist",
        "jThread %U does not exist" )
 
-wdpick( ERR_CANT_KILL_PROGRAM,
+pick( ERR_CANT_KILL_PROGRAM,
        "Unable to kill program",
        "jUnable to kill program" )
 
-wdpick( ERR_INVALID_OPERATOR,
+pick( ERR_INVALID_OPERATOR,
        "'%t' is not a valid operator",
        "j'%t' is not a valid operator" )
 
-wdpick( ERR_NO_OBJECT_FOR_CALL,
+pick( ERR_NO_OBJECT_FOR_CALL,
        "Cannot call member function without an object",
        "jCannot call member function without an object" )
 
-wdpick( ERR_NOT_PRINTABLE,
+pick( ERR_NOT_PRINTABLE,
        "No printable string found at location %a",
        "jNo printable string found at location %a" )
 
-wdpick( ERR_NOT_WATCH_SIZE,
+pick( ERR_NOT_WATCH_SIZE,
        "Break points may only be set on items which are 1,2 or 4 bytes long (and 8 bytes for trap files that support it)",
        "jBreak points may only be set on items which are 1,2 or 4 bytes long (and 8 bytes for trap files that support it)" )
 
-wdpick( ERR_BAD_HOOK,
+pick( ERR_BAD_HOOK,
        "Missing or invalid hook name",
        "jMissing or invalid hook name" )
 
-wdpick( ERR_NO_ACCESS,
+pick( ERR_NO_ACCESS,
        "Cannot read symbol value",
        "jCannot read symbol value" )
 
-wdpick( ERR_NO_RETURN_ADDRESS,
+pick( ERR_NO_RETURN_ADDRESS,
        "Cannot find return address",
        "jCannot find return address" )
 
-wdpick( ERR_TOO_MANY_SCANSAVE,
+pick( ERR_TOO_MANY_SCANSAVE,
        "Internal error #1",
        "jInternal error #1" )
 
-wdpick( ERR_TOO_MANY_SCANRESTORE,
+pick( ERR_TOO_MANY_SCANRESTORE,
        "Internal error #2",
        "jInternal error #2" )
 
-wdpick( ERR_STK_OVERFL,
+pick( ERR_STK_OVERFL,
        "Internal error #3",
        "jInternal error #3" )
 
-wdpick( ERR_STK_UNDERFL,
+pick( ERR_STK_UNDERFL,
        "Internal error #4",
        "jInternal error #4" )
 
-wdpick( ERR_PARSE_FILE,
+pick( ERR_PARSE_FILE,
        "Internal error in parse file",
        "jInternal error in parse file" )
 
-wdpick( ERR_CALL_NOT_ALLOWED,
+pick( ERR_CALL_NOT_ALLOWED,
        "Function calls are not allowed in this expression",
        "jFunction calls are not allowed in this expression" )
 
-wdpick( ERR_NO_IMAGE,
+pick( ERR_NO_IMAGE,
        "'%t' is not an executable image name",
        "j'%t' is not an executable image name" )
 
-wdpick( ERR_EXECUTING_AT,
+pick( ERR_EXECUTING_AT,
        "Executing at line %u in file '%s'.",
        "jExecuting at line %u in file '%s'." )
 
-wdpick( ERR_CALLED_FROM,
+pick( ERR_CALLED_FROM,
        "Called from line %u in file '%s'.",
        "jCalled from line %u in file '%s'." )
 
-wdpick( ERR_NEAR_END_OF_COMMAND,
+pick( ERR_NEAR_END_OF_COMMAND,
     "Error occurred near end of command.",
     "jError occurred near end of command." )
 
-wdpick( ERR_NEAR_END_OF_LINE,
+pick( ERR_NEAR_END_OF_LINE,
        "Error occurred near end of line.",
        "jError occurred near end of line." )
 
-wdpick( ERR_NEAR_TOKEN,
+pick( ERR_NEAR_TOKEN,
        "Error occurred near '%t'.",
        "jError occurred near '%t'." )
 
-wdpick( ERR_CANT_RESTART,
+pick( ERR_CANT_RESTART,
        "You cannot restart a process which was not started by the debugger",
        "jYou cannot restart a process which was not started by the debugger" )
 
-wdpick( ERR_NO_SRC_FILE,
+pick( ERR_NO_SRC_FILE,
        "'%t' is not a source file name in the module",
        "j'%t' is not a source file name in the module" )
 
-wdpick( ERR_AMBIG_SRC_FILE,
+pick( ERR_AMBIG_SRC_FILE,
        "'%t' is an ambiguous source file name in the module",
        "j'%t' is an ambiguous source file name in the module" )
 
-wdpick( ERR_REMOTE_LINK_BROKEN,
+pick( ERR_REMOTE_LINK_BROKEN,
         "The remote debugging link has been broken.  Your debugging session will now end",
         "jThe remote debugging link has been broken.  Your debugging session will now end" )
 
-wdpick( ERR_WANT_MODULE,
+pick( ERR_WANT_MODULE,
         "Expecting a module name",
         "jExpecting a module name" )
 
-wdpick( ERR_BAD_PARSE_VERSION,
+pick( ERR_BAD_PARSE_VERSION,
        "Incorrect version of parse file",
        "jIncorrect version of parse file" )
 

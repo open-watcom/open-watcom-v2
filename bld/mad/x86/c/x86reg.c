@@ -401,38 +401,38 @@ struct mad_reg_set_data {
 
 static const mad_toggle_strings CPUToggleList[] =
 {
-    {MSTR_MHEX,MSTR_HEX,MSTR_DECIMAL},
-    {MSTR_MEXTENDED,MSTR_REG_EXTENDED,MSTR_REG_NORMAL},
-    {MSTR_MOS,MSTR_REG_OS,MSTR_REG_USER},
-    {MSTR_NIL,MSTR_NIL,MSTR_NIL}
+    {MAD_MSTR_MHEX,MAD_MSTR_HEX,MAD_MSTR_DECIMAL},
+    {MAD_MSTR_MEXTENDED,MAD_MSTR_REG_EXTENDED,MAD_MSTR_REG_NORMAL},
+    {MAD_MSTR_MOS,MAD_MSTR_REG_OS,MAD_MSTR_REG_USER},
+    {MAD_MSTR_NIL,MAD_MSTR_NIL,MAD_MSTR_NIL}
 };
 static const mad_toggle_strings FPUToggleList[] =
 {
-    {MSTR_MHEX,MSTR_HEX,MSTR_DECIMAL},
-    {MSTR_NIL,MSTR_NIL,MSTR_NIL}
+    {MAD_MSTR_MHEX,MAD_MSTR_HEX,MAD_MSTR_DECIMAL},
+    {MAD_MSTR_NIL,MAD_MSTR_NIL,MAD_MSTR_NIL}
 };
 static const mad_toggle_strings MMXToggleList[] =
 {
-    {MSTR_MHEX,MSTR_HEX,MSTR_DECIMAL},
-    {MSTR_SIGNED,MSTR_SIGNED,MSTR_UNSIGNED},
-    {MSTR_BYTE,MSTR_BYTE,MSTR_NIL},
-    {MSTR_WORD,MSTR_WORD,MSTR_NIL},
-    {MSTR_DWORD,MSTR_DWORD,MSTR_NIL},
-    {MSTR_QWORD,MSTR_QWORD,MSTR_NIL},
-    {MSTR_FLOAT,MSTR_FLOAT,MSTR_NIL},
-    {MSTR_NIL,MSTR_NIL,MSTR_NIL}
+    {MAD_MSTR_MHEX,MAD_MSTR_HEX,MAD_MSTR_DECIMAL},
+    {MAD_MSTR_SIGNED,MAD_MSTR_SIGNED,MAD_MSTR_UNSIGNED},
+    {MAD_MSTR_BYTE,MAD_MSTR_BYTE,MAD_MSTR_NIL},
+    {MAD_MSTR_WORD,MAD_MSTR_WORD,MAD_MSTR_NIL},
+    {MAD_MSTR_DWORD,MAD_MSTR_DWORD,MAD_MSTR_NIL},
+    {MAD_MSTR_QWORD,MAD_MSTR_QWORD,MAD_MSTR_NIL},
+    {MAD_MSTR_FLOAT,MAD_MSTR_FLOAT,MAD_MSTR_NIL},
+    {MAD_MSTR_NIL,MAD_MSTR_NIL,MAD_MSTR_NIL}
 };
 static const mad_toggle_strings XMMToggleList[] =
 {
-    {MSTR_MHEX,MSTR_HEX,MSTR_DECIMAL},
-    {MSTR_SIGNED,MSTR_SIGNED,MSTR_UNSIGNED},
-    {MSTR_BYTE,MSTR_BYTE,MSTR_NIL},
-    {MSTR_WORD,MSTR_WORD,MSTR_NIL},
-    {MSTR_DWORD,MSTR_DWORD,MSTR_NIL},
-    {MSTR_QWORD,MSTR_QWORD,MSTR_NIL},
-    {MSTR_FLOAT,MSTR_FLOAT,MSTR_NIL},
-    {MSTR_DOUBLE,MSTR_DOUBLE,MSTR_NIL},
-    {MSTR_NIL,MSTR_NIL,MSTR_NIL}
+    {MAD_MSTR_MHEX,MAD_MSTR_HEX,MAD_MSTR_DECIMAL},
+    {MAD_MSTR_SIGNED,MAD_MSTR_SIGNED,MAD_MSTR_UNSIGNED},
+    {MAD_MSTR_BYTE,MAD_MSTR_BYTE,MAD_MSTR_NIL},
+    {MAD_MSTR_WORD,MAD_MSTR_WORD,MAD_MSTR_NIL},
+    {MAD_MSTR_DWORD,MAD_MSTR_DWORD,MAD_MSTR_NIL},
+    {MAD_MSTR_QWORD,MAD_MSTR_QWORD,MAD_MSTR_NIL},
+    {MAD_MSTR_FLOAT,MAD_MSTR_FLOAT,MAD_MSTR_NIL},
+    {MAD_MSTR_DOUBLE,MAD_MSTR_DOUBLE,MAD_MSTR_NIL},
+    {MAD_MSTR_NIL,MAD_MSTR_NIL,MAD_MSTR_NIL}
 };
 
 #define FPU_GROUPING    6
@@ -443,10 +443,10 @@ static mad_status MMXGetPiece( const mad_registers *, unsigned piece, char **, u
 static mad_status XMMGetPiece( const mad_registers *, unsigned piece, char **, unsigned *, const mad_reg_info **, mad_type_handle *, unsigned * );
 
 static const mad_reg_set_data RegSet[] = {
-    { CPUGetPiece, CPUToggleList, MSTR_CPU, CPURegList, 0 },
-    { FPUGetPiece, FPUToggleList, MSTR_FPU, FPURegList, FPU_GROUPING },
-    { MMXGetPiece, MMXToggleList, MSTR_MMX, MMXRegList, 1 },
-    { XMMGetPiece, XMMToggleList, MSTR_XMM, XMMRegList, 1 } };
+    { CPUGetPiece, CPUToggleList, MAD_MSTR_CPU, CPURegList, 0 },
+    { FPUGetPiece, FPUToggleList, MAD_MSTR_FPU, FPURegList, FPU_GROUPING },
+    { MMXGetPiece, MMXToggleList, MAD_MSTR_MMX, MMXRegList, 1 },
+    { XMMGetPiece, XMMToggleList, MAD_MSTR_XMM, XMMRegList, 1 } };
 
 unsigned DIGENTRY MIRegistersSize( void )
 {
@@ -549,10 +549,10 @@ unsigned DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, unsigned max, char
     case FPU_REG_SET:
         switch( MCSystemConfig()->fpu ) {
         case X86_NO:
-            MCString( MSTR_NONE, sizeof( str ), str );
+            MCString( MAD_MSTR_NONE, sizeof( str ), str );
             break;
         case X86_EMU:
-            MCString( MSTR_EMULATOR, sizeof( str ), str );
+            MCString( MAD_MSTR_EMULATOR, sizeof( str ), str );
             break;
         case X86_87:
             strcpy( str, "8087" );
@@ -719,55 +719,55 @@ static const byte six   = 6;
 static const byte seven = 7;
 
 static const mad_modify_list ModBit[] = {
-    { &zero, X86T_BYTE, MSTR_NIL },
-    { &one,  X86T_BYTE, MSTR_NIL },
+    { &zero, X86T_BYTE, MAD_MSTR_NIL },
+    { &one,  X86T_BYTE, MAD_MSTR_NIL },
 };
 static const mad_modify_list ModByte[] = {
-    { NULL, X86T_BYTE, MSTR_NIL },
+    { NULL, X86T_BYTE, MAD_MSTR_NIL },
 };
 static const mad_modify_list ModWord[] = {
-    { NULL, X86T_WORD, MSTR_NIL },
+    { NULL, X86T_WORD, MAD_MSTR_NIL },
 };
 static const mad_modify_list ModDWord[] = {
-    { NULL, X86T_DWORD, MSTR_NIL },
+    { NULL, X86T_DWORD, MAD_MSTR_NIL },
 };
 static const mad_modify_list ModQWord[] = {
-    { NULL, X86T_QWORD, MSTR_NIL },
+    { NULL, X86T_QWORD, MAD_MSTR_NIL },
 };
 static const mad_modify_list ModFPUTag[] = {
-    { &zero,  X86T_BYTE, MSTR_VALID },
-    { &one,   X86T_BYTE, MSTR_ZERO },
-    { &two,   X86T_BYTE, MSTR_SPECIAL },
-    { &three, X86T_BYTE, MSTR_EMPTY },
+    { &zero,  X86T_BYTE, MAD_MSTR_VALID },
+    { &one,   X86T_BYTE, MAD_MSTR_ZERO },
+    { &two,   X86T_BYTE, MAD_MSTR_SPECIAL },
+    { &three, X86T_BYTE, MAD_MSTR_EMPTY },
 };
 static const mad_modify_list ModFPUStack[] = {
-    { NULL, X86T_EXTENDED, MSTR_NIL },
+    { NULL, X86T_EXTENDED, MAD_MSTR_NIL },
 };
 static const mad_modify_list ModFPUSt[] = {
-    { &zero, X86T_BIT, MSTR_NIL },
-    { &one,  X86T_BIT, MSTR_NIL },
-    { &two,  X86T_BIT, MSTR_NIL },
-    { &three,X86T_BIT, MSTR_NIL },
-    { &four, X86T_BIT, MSTR_NIL },
-    { &five, X86T_BIT, MSTR_NIL },
-    { &six,  X86T_BIT, MSTR_NIL },
-    { &seven,X86T_BIT, MSTR_NIL },
+    { &zero, X86T_BIT, MAD_MSTR_NIL },
+    { &one,  X86T_BIT, MAD_MSTR_NIL },
+    { &two,  X86T_BIT, MAD_MSTR_NIL },
+    { &three,X86T_BIT, MAD_MSTR_NIL },
+    { &four, X86T_BIT, MAD_MSTR_NIL },
+    { &five, X86T_BIT, MAD_MSTR_NIL },
+    { &six,  X86T_BIT, MAD_MSTR_NIL },
+    { &seven,X86T_BIT, MAD_MSTR_NIL },
 };
 static const mad_modify_list ModFPUPc[] = {
-    { &zero,  X86T_BYTE, MSTR_PCSINGLE },
-    { &one,   X86T_BYTE, MSTR_NIL },
-    { &two,   X86T_BYTE, MSTR_PCDOUBLE },
-    { &three, X86T_BYTE, MSTR_PCEXTENDED },
+    { &zero,  X86T_BYTE, MAD_MSTR_PCSINGLE },
+    { &one,   X86T_BYTE, MAD_MSTR_NIL },
+    { &two,   X86T_BYTE, MAD_MSTR_PCDOUBLE },
+    { &three, X86T_BYTE, MAD_MSTR_PCEXTENDED },
 };
 static const mad_modify_list ModFPURc[] = {
-    { &zero,  X86T_BYTE, MSTR_NEAREST },
-    { &one,   X86T_BYTE, MSTR_DOWN },
-    { &two,   X86T_BYTE, MSTR_UP },
-    { &three, X86T_BYTE, MSTR_CHOP },
+    { &zero,  X86T_BYTE, MAD_MSTR_NEAREST },
+    { &one,   X86T_BYTE, MAD_MSTR_DOWN },
+    { &two,   X86T_BYTE, MAD_MSTR_UP },
+    { &three, X86T_BYTE, MAD_MSTR_CHOP },
 };
 static const mad_modify_list ModFPUIc[] = {
-    { &zero,  X86T_BYTE, MSTR_PROJECTIVE },
-    { &one,   X86T_BYTE, MSTR_AFFINE },
+    { &zero,  X86T_BYTE, MAD_MSTR_PROJECTIVE },
+    { &one,   X86T_BYTE, MAD_MSTR_AFFINE },
 };
 
 #define MODLEN( name ) MaxModLen( name, NUM_ELTS( name ) )
@@ -1414,7 +1414,7 @@ unsigned RegDispType( mad_type_handle th, const void *d, unsigned max, char *buf
         fp = d;
         return( FmtPtr( fp->p.segment, fp->p.offset & 0xffff, 4, max, buff ) );
     case X86T_F10SPECIAL:
-        return( MCString( MSTR_SPECIAL, max, buff ) );
+        return( MCString( MAD_MSTR_SPECIAL, max, buff ) );
     case X86T_MMX_TITLE0:
     case X86T_MMX_TITLE1:
     case X86T_MMX_TITLE2:

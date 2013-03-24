@@ -16,4 +16,4 @@ extra_objs = $(nlm_objs)
 !include $(trap_dir)/lcl/nlm/trap.mif
 !include $(trap_dir)/master.mif
 
-extra_c_flags += -d_USE_NEW_KERNEL
+extra_cpp_flags += -D_USE_NEW_KERNEL

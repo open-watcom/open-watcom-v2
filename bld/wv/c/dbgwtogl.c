@@ -52,7 +52,7 @@ gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *
     gui_menu_struct     *menu;
     int                 menu_items;
 
-    for( num_toggles = 0; toggles[num_toggles].menu != MSTR_NIL; ++num_toggles ) ;
+    for( num_toggles = 0; toggles[num_toggles].menu != MAD_MSTR_NIL; ++num_toggles ) ;
     menu_items = num_old + num_toggles;
     popup = WndMustAlloc( menu_items * sizeof( gui_menu_struct ) );
     memcpy( popup, old, num_old * sizeof( gui_menu_struct ) );

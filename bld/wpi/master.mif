@@ -23,8 +23,8 @@ extra_c_flags_win += -zc-zW
 !endif
 
 !ifeq wpitest yes
-extra_c_flags_os2 += -d_WPI_TEST_
-extra_c_flags_win += -d_WPI_TEST_
+extra_cpp_flags_os2 = -D_WPI_TEST_
+extra_cpp_flags_win = -D_WPI_TEST_
 !endif
 
 #-------- INCLUDES

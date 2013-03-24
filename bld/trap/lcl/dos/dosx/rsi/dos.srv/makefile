@@ -14,7 +14,8 @@ which = SERVER
 extra_objs = rsiacc.obj
 extra_libs = $(rsilib_lib)
 
-extra_c_flags = -DDOS4G -zu
+extra_cpp_flags = -DDOS4G
+extra_c_flags = -zu
 inc_dirs = $(rsilib_inc_dirs)
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif

@@ -130,7 +130,7 @@ sysblock        *LinkCommands;
 
 static sysblock         *PrevCommand;
 
-#ifdef BUILDTOOLNAMES
+#ifdef BOOTSTRAP
 #define INIT_FILE_NAME  "bwlink.lnk"
 #else
 #define INIT_FILE_NAME  "wlink.lnk"

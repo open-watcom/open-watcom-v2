@@ -31,35 +31,35 @@ sqrt.obj &
 tan.obj &
 tanh.obj
 
-extra_cpp_flags_abs = -fh=pch01.pch
-extra_cpp_flags_acos = -fh=pch01.pch
-extra_cpp_flags_arg = -fh=pch01.pch
-extra_cpp_flags_asin = -fh=pch01.pch
-extra_cpp_flags_atan = -fh=pch01.pch
-extra_cpp_flags_cos = -fh=pch01.pch
-extra_cpp_flags_cosh = -fh=pch01.pch
-extra_cpp_flags_exp = -fh=pch01.pch
-extra_cpp_flags_log = -fh=pch01.pch
-extra_cpp_flags_sin = -fh=pch01.pch
-extra_cpp_flags_sinh = -fh=pch01.pch
-extra_cpp_flags_sqrt = -fh=pch01.pch
-extra_cpp_flags_tan = -fh=pch01.pch
-extra_cpp_flags_tanh = -fh=pch01.pch
-extra_cpp_flags_acosh = -fh=pch02.pch
-extra_cpp_flags_asinh = -fh=pch02.pch
-extra_cpp_flags_atanh = -fh=pch02.pch
-extra_cpp_flags_dicomcom = -fh=pch02.pch
-extra_cpp_flags_direlcom = -fh=pch02.pch
-extra_cpp_flags_divide = -fh=pch02.pch
-extra_cpp_flags_log10 = -fh=pch02.pch
-extra_cpp_flags_multiply = -fh=pch02.pch
-extra_cpp_flags_opinput = -fh=pch02.pch
-extra_cpp_flags_opoutput = -fh=pch02.pch
-extra_cpp_flags_polar = -fh=pch02.pch
-extra_cpp_flags_powcbcp = -fh=pch02.pch
-extra_cpp_flags_powcbdp = -fh=pch02.pch
-extra_cpp_flags_powccbip = -fh=pch02.pch
-extra_cpp_flags_powdbcp = -fh=pch02.pch
+extra_cxx_flags_abs = -fh=pch01.pch
+extra_cxx_flags_acos = -fh=pch01.pch
+extra_cxx_flags_arg = -fh=pch01.pch
+extra_cxx_flags_asin = -fh=pch01.pch
+extra_cxx_flags_atan = -fh=pch01.pch
+extra_cxx_flags_cos = -fh=pch01.pch
+extra_cxx_flags_cosh = -fh=pch01.pch
+extra_cxx_flags_exp = -fh=pch01.pch
+extra_cxx_flags_log = -fh=pch01.pch
+extra_cxx_flags_sin = -fh=pch01.pch
+extra_cxx_flags_sinh = -fh=pch01.pch
+extra_cxx_flags_sqrt = -fh=pch01.pch
+extra_cxx_flags_tan = -fh=pch01.pch
+extra_cxx_flags_tanh = -fh=pch01.pch
+extra_cxx_flags_acosh = -fh=pch02.pch
+extra_cxx_flags_asinh = -fh=pch02.pch
+extra_cxx_flags_atanh = -fh=pch02.pch
+extra_cxx_flags_dicomcom = -fh=pch02.pch
+extra_cxx_flags_direlcom = -fh=pch02.pch
+extra_cxx_flags_divide = -fh=pch02.pch
+extra_cxx_flags_log10 = -fh=pch02.pch
+extra_cxx_flags_multiply = -fh=pch02.pch
+extra_cxx_flags_opinput = -fh=pch02.pch
+extra_cxx_flags_opoutput = -fh=pch02.pch
+extra_cxx_flags_polar = -fh=pch02.pch
+extra_cxx_flags_powcbcp = -fh=pch02.pch
+extra_cxx_flags_powcbdp = -fh=pch02.pch
+extra_cxx_flags_powccbip = -fh=pch02.pch
+extra_cxx_flags_powdbcp = -fh=pch02.pch
 
 !include $(cpplib_dir)/mklibtgt.mif
 

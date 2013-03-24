@@ -87,7 +87,7 @@ void DeleteNestedMacro( void )
         if( i > 0  &&  macro_parms != NULL ) {
             do {
                 --i;
-                for(; (mtok=macro_parms[i].arg); ) {
+                for(; (mtok=macro_parms[i].arg) != NULL; ) {
                     macro_parms[i].arg = mtok->next;
                     PP_Free( mtok );
                 }
@@ -120,7 +120,7 @@ MACRO_TOKEN *PPNextToken( void )
 MACRO_TOKEN *NextMToken( void )
 {
     MACRO_TOKEN *mtok;
-    unsigned    len;
+    size_t      len;
     char        token;
 
     mtok = PPNextToken();
@@ -300,7 +300,7 @@ MACRO_TOKEN *BuildAToken( char *p )
     return( mtok );
 }
 
-MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, int token, char *data )
+MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, char token, char *data )
 {
     MACRO_TOKEN *tail;
     MACRO_TOKEN *new;
@@ -505,7 +505,7 @@ MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, int rescanning )
 MACRO_TOKEN *Glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
 {
     MACRO_TOKEN *mtok;
-    unsigned    len;
+    size_t      len;
 
     len = 0;
     if( first != NULL )  len += strlen( first->data );  /* 21-apr-93 */

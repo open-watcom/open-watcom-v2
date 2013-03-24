@@ -136,7 +136,7 @@ static void DoCallSet( void )
     if( CurrToken == T_DIV ) {
         Scan();
         ctype = ScanCall();
-        if( ctype == MSTR_NIL ) {
+        if( ctype == MAD_MSTR_NIL ) {
             Error( ERR_LOC, LIT( ERR_BAD_CALL_TYPE ) );
         }
     } else {
@@ -214,7 +214,7 @@ void CallConf( void )
 
     if( _IsOn( SW_HAVE_SET_CALL ) ) {
         ptr = TxtBuff;
-        if( DefCallType != MSTR_NIL ) {
+        if( DefCallType != MAD_MSTR_NIL ) {
             *ptr++ = '/';
             ptr += MADCliString( DefCallType, ~0, ptr );
         }
@@ -272,7 +272,7 @@ void ProcCall( void )
     if( CurrToken == T_DIV ) {
         Scan();
         ctype = ScanCall();
-        if( ctype == MSTR_NIL ) {
+        if( ctype == MAD_MSTR_NIL ) {
             Error( ERR_LOC, LIT( ERR_BAD_CALL_TYPE ) );
         }
     } else {

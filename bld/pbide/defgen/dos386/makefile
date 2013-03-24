@@ -23,6 +23,6 @@ $(xname) : ytab.h ytab.c $(objs) $(__MAKEFILES__)
 .c: ..
 
 ytab.c ytab.h: ../yydriver.c ../defgen.y
-        $(byacc) -d $]@ $[@
+        $(yacc) -d $]@ $[@
 
 additional_cleanup = ytab.h ytab.c

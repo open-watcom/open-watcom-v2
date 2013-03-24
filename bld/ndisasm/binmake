@@ -1,7 +1,7 @@
 #pmake: binmake
 
-host_os  = $(%BOOTSTRAP_OS)
-host_cpu = $(%BOOTSTRAP_CPU)
+host_os  = $(bld_os)
+host_cpu = $(bld_cpu)
 
 target_cpu = all
 

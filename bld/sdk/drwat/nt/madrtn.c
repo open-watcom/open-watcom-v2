@@ -41,15 +41,12 @@
 #include "madsys.h"
 #include "drwatcom.h"
 
-#include "rcstr.gh"
-
-#undef wdpick
-#define wdpick( r, e, j ) r,(char *)__##r,
 msglist MADMsgs[] = {
-#include "mad.str"
-0 , (char *)-1
+    #define pick( r, e, j ) MAD_##r,(char *)r,
+    #include "mad.str"
+    #undef pick
+    0 , (char *)-1
 };
-#undef wdpick
 
 unsigned DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buff )
 {

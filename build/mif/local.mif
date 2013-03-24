@@ -5,7 +5,7 @@
 # global definition which tool is quiet
 cl         += -zq
 cc         += -zq
-cpp        += -zq
+cxx        += -zq
 linker     += op q
 librarian  += -q
 as         += -q
@@ -34,7 +34,7 @@ lflags_dos_386  = sys causeway
 
 !ifeq host_cpu axp
 cc_386      += $(bld_incs)
-cpp_386     += $(bld_incs)
+cxx_386     += $(bld_incs)
 !endif
 
 !endif
@@ -76,7 +76,7 @@ cpp_386     += $(bld_incs)
 !else ifdef __LINUX__
 
 cc = gcc
-cpp = gcc
+cxx = gcc
 cl = $(cc)
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 bld_cl = gcc $(bld_incs)
@@ -119,7 +119,7 @@ cl_objs = clibext.obj
 !else ifeq host_os nto
 
 cc = qcc
-cpp = qcc
+cxx = qcc
 cl = $(cc)
 !ifdef __QNX__
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"

@@ -20,7 +20,7 @@ name = dwarf
 
 extra_incs = -I"$(dwarf_dir)/dr/h" -I"$(lib_misc_dir)/h"
 extra_srcs = $(lib_misc_dir)/c
-extra_cflags =  -DDIP_PRIORITY=DP_DEFAULT
+extra_cppflags =  -DDIP_PRIORITY=DP_DEFAULT
 
 .c: $(dwarf_dir)/dr/c
 

@@ -31,7 +31,7 @@
 
 #include "app.h"
 #include "watcom.h"
-#include "stdui.h"
+//#include "stdui.h"
 
 wnd_update_list WndFlags = 0;
 extern gui_colour_set WndColours[];

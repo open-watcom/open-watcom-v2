@@ -6,7 +6,9 @@ whelp_autodepends = .AUTODEPEND
 !include deftarg.mif
 !include defrule.mif
 
-inc_dirs = -I"$(help_dir)/h" -I"$(ui_dir)/h" -I"$(trmem_dir)"
+!include $(ui_dir)/client.mif
+
+inc_dirs = -I"$(help_dir)/h" $(ui_inc_dirs) -I"$(trmem_dir)"
 
 .c: ../c;$(trmem_dir)
 
@@ -16,18 +18,10 @@ objs =  main.obj filelist.obj
 objs += $(help_objs)
 
 !ifdef whelp_trmem
-extra_c_flags += -DTRMEM
+extra_cpp_flags = -DTRMEM
 objs +=  trmemcvr.obj trmem.obj
 !endif
 
-!ifeq bootstrap 1
-libs = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
-!else
-!ifeq host_os linux
-libs = $(ui_dir)/unix/$(host_os)$(host_cpu)/ui.lib $(ncurses_dir)/$(host_os)$(host_cpu)/ncurses.lib
-!else
-libs = $(ui_dir)/$(host_os)/$(host_os)$(host_cpu)/ui.lib
-!endif
-!endif
+libs = $(ui_lib)
 
 !include exetarg.mif

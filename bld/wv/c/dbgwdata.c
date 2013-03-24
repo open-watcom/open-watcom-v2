@@ -45,10 +45,12 @@ WNDOPEN *WndOpenTab[] =
 {
     #define pick( a,b,c,d,e,f ) c,
     #include "wndnames.h"
+    #undef pick
 };
 
 char            WndNameTab[] = {
     #define pick( a,b,c,d,e,f ) a
     #include "wndnames.h"
+    #undef pick
 };
 wnd_macro               *WndMacroList;

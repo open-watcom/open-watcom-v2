@@ -149,11 +149,13 @@ extern void             ReportMADFailure( mad_status );
 static char LevelTab[] = {
     #define pick( a,b ) b
     #include "dbglevel.h"
+    #undef pick
 };
 
 static char TraceTab2[] = {
     #define pick( a,b ) b
     #include "dbgtrace.h"
+    #undef pick
 };
 
 

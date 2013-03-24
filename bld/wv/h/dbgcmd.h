@@ -71,4 +71,3 @@ pick(   CMD_MODIFY,     ProcModify,      "MOdify\0" )
 #ifdef DBG_DBG
 pick(   CMD_INTERNAL,   ProcInternal,    "XX\0" )
 #endif
-#undef pick

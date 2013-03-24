@@ -56,13 +56,16 @@ typedef enum wnd_controls {
 enum {
     #define pick( a,b,c,d,e,f ) b,
     #include "wndnames.h"
+    #undef pick
 };
 
 #define pick( a,b,c,d,e,f ) extern wnd_info d;
 #include "wndnames.h"
+#undef pick
 
 #define pick( a,b,c,d,e,f ) extern WNDOPEN c;
 #include "wndnames.h"
+#undef pick
 
 typedef enum macro_type {
     MACRO_POPUP_MENU,
@@ -82,6 +85,7 @@ typedef struct wnd_macro {
 
 #define pick( a,b,c,d,e,f ) extern wnd_metrics e;
 #include "wndnames.h"
+#undef pick
 
 extern wnd_metrics *WndMetrics[];
 

@@ -194,10 +194,12 @@ int CapabilitiesSetExactBreakpointSupport( bool status );
 
 #define pick( a, b, c ) extern void b( void );
 #include "dbgcmd.h"
+#undef pick
 
 static char CmdNameTab[] = {
     #define pick( a, b, c ) c
     #include "dbgcmd.h"
+    #undef pick
 };
 
 
@@ -206,6 +208,7 @@ static void ( * const CmdJmpTab[] )( void ) = {
     &ProcNil,
     #define pick( a, b, c ) &b,
     #include "dbgcmd.h"
+    #undef pick
 };
 
 

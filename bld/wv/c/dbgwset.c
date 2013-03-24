@@ -166,11 +166,13 @@ static char     *KeyNamePieces[] =
 {
     #define pick( x ) #x,
     #include "keynames.h"
+    #undef pick
 };
 
 typedef enum {
     #define pick( x ) x,
     #include "keynames.h"
+    #undef pick
     CTRL        = 0x2000,
     SHIFT       = 0x4000,
     ALT         = 0x8000,

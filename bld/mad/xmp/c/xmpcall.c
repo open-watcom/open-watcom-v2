@@ -45,13 +45,13 @@ mad_string              DIGENTRY MICallStackGrowsUp( void )
 }
 
 /*
-        Return an array of strings, terminated by a MSTR_NIL, that
+        Return an array of strings, terminated by a MAD_MSTR_NIL, that
         lists out the different types of calls the architecture supports
         (e.g. near/far/interrupt).
 */
 const mad_string        *DIGENTRY MICallTypeList( void )
 {
-    static const mad_string list[] = { MSTR_NIL };
+    static const mad_string list[] = { MAD_MSTR_NIL };
 
     return( list );
 }

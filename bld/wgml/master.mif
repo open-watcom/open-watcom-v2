@@ -40,7 +40,11 @@ res_depends = wgml.res  wgmlmsgs.gh wgmlmsge.gh
 .c: ../c;../../watcom/c;$(trmem_dir);$(wrc_dir)/c;$(wres_dir)/c
 
 !ifeq wgml_trmem 1
-extra_c_flags += -of+ -dTRMEM
+extra_cpp_flags += -DTRMEM
+!endif
+
+!ifeq wgml_trmem 1
+extra_c_flags += -of+
 objs          += $(trmem_objs)
 inc_dirs      += -I"$(trmem_dir)"
 !endif

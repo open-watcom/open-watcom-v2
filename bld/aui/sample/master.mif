@@ -10,14 +10,12 @@ gui_type = win
 gui_type = ui
 !endif
 
+!include $(aui_dir)/client.mif
+!include $(gui_dir)/client.mif
+!include $(ui_dir)/client.mif
 !include wres.mif
 
-inc_dirs = -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(ui_dir)/h" -I"../h"
-inc_dirs_os2 = -I"$(aui_dir)/os2$(host_cpu).pm" 
-
-auilib = $(aui_dir)/$(host_os)$(host_cpu)/aui.lib
-guilib = $(gui_dir)/$(gui_type)/$(host_os)$(host_cpu)/gui.lib
-uilib  = $(ui_dir)/$(host_os)/$(host_os)$(host_cpu)/ui.lib
+inc_dirs = $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) -I"../h"
 
 rcfiles = &
     $(gui_dir)/h/gui.rc &
@@ -48,10 +46,10 @@ resfile = appui.res
 #resfile = appuij.res
 !endif
 
-aui_prereq = auistr.gh _guimsgs.gh
+libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
 
-app.exe : $(aui_prereq) $(objs) $(auilib) $(guilib) $(uilib) $(wres_lib) $(resfile)
-        $(linker) $(lflags) name $^@ op map,un file { $(objs) } lib $(auilib),$(guilib),$(uilib),$(wres_lib)
+app.exe : $(objs) $(libs) $(resfile)
+        $(linker) $(lflags) name $^@ op map,un file { $(objs) } lib { $(libs) }
 !ifeq sys_windowed 1
         $(rc) -k $(resfile) $^@
 !else
@@ -74,15 +72,3 @@ apppm.res apppmj.res : ../h/apppm.rc ../h/app.rc $(rcfiles)
         $(rc) $(rc_flags) $(inc_dirs_os2) $(inc_path) $[@ -fo=$@
 
 .c: ../c
-
-./auimkstr.exe: $(aui_dir)/c/mkstr.c
-        $(bld_cl) -I"$(aui_dir)/h" $(bld_cl_opts) $]@
-
-auistr.gh : ./auimkstr.exe $(aui_dir)/h/aui.msg
-        $[@ $^@
-
-./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
-
-_guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
-        $[@ $^@ $(gui_msg_id_modifier)

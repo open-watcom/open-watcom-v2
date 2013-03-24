@@ -100,7 +100,7 @@ sample.$(ext) : $(objs) $(guilib) $(uilib) $(rcname).res $(LNK)
         $(linker) @$(LNK)
 !ifeq type win
 !ifeq os w386
-        wbind $* -s $(%watcom)/binw/win386.ext -R -k $(rcopt) $(rcname).res
+        $(wbind) $* -s $(%watcom)/binw/win386.ext -R -k $(rcopt) $(rcname).res
 !else
         $(rc) $(rcname).res $@
 !endif

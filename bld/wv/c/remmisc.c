@@ -34,8 +34,10 @@
 #include "dbgtoggl.h"
 #include "dbgmem.h"
 #include "trpcore.h"
-#include "dbglit.h"
 #include "dbgio.h"
+#if !defined( BUILD_RFX )
+#include "dbglit.h"
+#endif
 
 
 extern void             RestoreHandlers( void );

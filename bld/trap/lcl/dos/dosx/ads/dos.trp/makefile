@@ -7,7 +7,7 @@ cpu = x86
 srv = ads
 which = TRAP
 
-extra_c_flags = -DACAD
+extra_cpp_flags = -DACAD
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif

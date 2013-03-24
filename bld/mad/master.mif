@@ -47,7 +47,7 @@ additional_cleanup = *.d32 *.mad
 
 # cflags stuff
 ###############
-extra_c_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
+extra_cpp_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
 
 !ifeq bootstrap 1
 extra_c_flags += -fPIC

@@ -55,12 +55,20 @@ inc_dirs = -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hd
 
 .c: ../c
 
-extra_c_flags = -os -s -zl -d_FARD= -D_ENABLE_AUTODEPEND -nm=$[&$(suffix_$(convention)) -fo=$@
+extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_FARD=
+
+extra_cpp_flags_i86 = -D_CGRAPH=_loadds
+extra_cpp_flags_386 = -D_CGRAPH=
+!ifeq convention stack
+extra_cpp_flags_386 += -D__STACK
+!endif
+
+extra_c_flags = -os -s -zl -nm=$[&$(suffix_$(convention)) -fo=$@
 
 extra_c_flags_386_register = -3r
-extra_c_flags_386_stack = -3s -d__STACK
-extra_c_flags_386 = $(extra_c_flags_386_$(convention)) -d_CGRAPH=
-extra_c_flags_i86 = -nt=GRAPH_TEXT -d_CGRAPH=_loadds
+extra_c_flags_386_stack = -3s
+extra_c_flags_386 = $(extra_c_flags_386_$(convention))
+extra_c_flags_i86 = -nt=GRAPH_TEXT
 
 extra_c_flags_win = -zW
 

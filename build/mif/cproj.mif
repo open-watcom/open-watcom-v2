@@ -1,3 +1,13 @@
+!ifneq bootstrap 1
+!ifeq host_cpu x64
+!ifdef __WATCOM__
+!undef __WATCOM__
+!endif
+!else
+!define __WATCOM__
+!endif
+!endif
+
 # Perform basic sanity checks
 !ifeq host_os #nothing
 !error The host_os macro must be defined!
@@ -30,11 +40,11 @@ cl_axp          = *wclaxp
 cl_ppc          = *wclppc
 cl_mps          = *wclmps
 
-cpp_386         = *wpp386
-cpp_i86         = *wpp
-cpp_axp         = *wppaxp
-cpp_ppc         = *wppppc
-cpp_mps         = *wppmps
+cxx_386         = *wpp386
+cxx_i86         = *wpp
+cxx_axp         = *wppaxp
+cxx_ppc         = *wppppc
+cxx_mps         = *wppmps
 
 linker_386      = *wlink
 linker_i86      = *wlink
@@ -68,11 +78,11 @@ cl_axp          = *bwclaxp
 cl_ppc          = *bwclppc
 cl_mps          = *bwclmps
 
-cpp_386         = *bwpp386
-cpp_i86         = *bwpp
-cpp_axp         = *bwppaxp
-cpp_ppc         = *bwppppc
-cpp_mps         = *bwppmps
+cxx_386         = *bwpp386
+cxx_i86         = *bwpp
+cxx_axp         = *bwppaxp
+cxx_ppc         = *bwppppc
+cxx_mps         = *bwppmps
 
 linker_386      = *bwlink
 linker_i86      = *bwlink
@@ -126,7 +136,8 @@ cldebug_fmt = -hd
 
 mode_libflags =
 !ifeq release 1
-mode_cflags   = -oaxt -d1-DNDEBUG $(cdebug_fmt)
+mode_cppflags = -DNDEBUG
+mode_cflags   = -oaxt -d1 $(cdebug_fmt)
 mode_aflags   = -d1 -DNDEBUG
 mode_lflags   = $(ldebug_fmt)
 mode_clflags  = $(cldebug_fmt)
@@ -134,6 +145,7 @@ mode_clflags  = $(cldebug_fmt)
 mode_libflags = -s-t-zld
 !endif
 !else
+mode_cppflags =
 mode_cflags   = -od -d2 $(cdebug_fmt)
 mode_aflags   = -d2
 mode_lflags   = $(ldebug_fmt) all
@@ -181,16 +193,19 @@ model_switch_386 = -m$(memory_model_386)
 
 cl_model_switch  = $(model_switch_$(host_cpu))
 
+!ifeq bootstrap 1
+cppflags_all    = $(mode_cppflags) -DBOOTSTRAP
+!else
+cppflags_all    = $(mode_cppflags)
+!endif
 !ifdef __UNIX__
 cflags_all      =-w8 -we $(mode_cflags) -fo=.obj
 !else
 cflags_all      =-w8 -we $(mode_cflags)
 !endif
-!ifdef sys_dll
-!ifndef suppress_bd
-cflags_all     += -bd
-!endif
-!endif
+
+cppflags_win    = -DSTRICT
+cppflags_dos    = -D__WATCOM_LFN__
 
 cflags_386      = $(model_switch_$(host_cpu))
 cflags_i86      = $(model_switch_$(host_cpu))
@@ -203,11 +218,11 @@ cflags_386      += -zc
 !endif
 
 cflags_nt       = -bt=nt $(win32ver)
-cflags_win      = -bt=windows -DSTRICT
+cflags_win      = -bt=windows
 cflags_os2      = -bt=os2
 cflags_qnx      = -bt=qnx
 cflags_osi      = -bt=osi
-cflags_dos      = -bt=dos -D__WATCOM_LFN__
+cflags_dos      = -bt=dos
 cflags_zdos     = -bt=zdos
 cflags_rdos     = -bt=rdos -bm
 cflags_rdosdev  = -bt=rdosdev -bm -zu
@@ -226,11 +241,18 @@ sys_rtdll       = 0
 sys_rtdll       = 0
 !endif
 
-!ifeq sys_rtdll 1
-cflags_nt      += -br
-cflags_win     += -br
-cflags_os2     += -br
+!ifdef sys_dll
+!ifndef suppress_bd
+cflags_dll_all  = -bd
 !endif
+!endif
+!ifeq sys_rtdll 1
+cflags_dll_nt   = -br
+cflags_dll_win  = -br
+cflags_dll_os2	= -br
+!endif
+
+cflags_dll = $(cflags_dll_all) $(cflags_dll_$(host_os))
 
 ######################
 # DEFAULT FPU SETINGS
@@ -326,10 +348,11 @@ clflags_exe = -fe=$@
 
 clflags_all      = $(mode_clflags) $(cl_model_switch) $(cl_fpu_flags)
 
+proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os)) $(extra_cpp_flags_$(host_os)_$(host_cpu))
+cppflags         = $(cppflags_all) $(cppflags_$(host_cpu)) $(cppflags_$(host_os)) $(proj_cpp_flags)
 proj_c_flags     = $(extra_c_flags) $(extra_c_flags_$(host_cpu)) $(extra_c_flags_$(host_os)) $(extra_c_flags_$(host_os)_$(host_cpu))
-cflags           = $(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_$(host_os)_$(host_cpu)) $(proj_c_flags)
-proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os))
-cppflags         = $(cppflags_all) $(proj_cpp_flags)
+cflags           = $(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_$(host_os)_$(host_cpu)) $(cflags_dll) $(proj_c_flags)
+cxxflags         = $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
 clflags          = $(clflags_all) $(clflags_$(host_os)_$(host_cpu)) $(cflags_$(host_os)) $(extra_cl_flags) $(clflags_exe) -fm
 
 !ifdef __UNIX__
@@ -490,23 +513,24 @@ inc_dirs_lang   = $(inc_dirs_lang_osi)
 !endif
 
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
+
+!ifdef __WATCOM__
 inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
+!else
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) -I"$(watcom_dir)/h"
+!endif
+
+rc_inc_path     = $(rc_inc_dirs) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 
 cc              = $(cc_$(host_cpu))
 cl              = $(cl_$(host_cpu))
-cpp             = $(cpp_$(host_cpu))
+cxx             = $(cxx_$(host_cpu))
 linker          = $(linker_$(host_cpu))
 librarian       = $(librarian_$(host_cpu))
 as              = $(as_$(host_cpu))
-sed             = sed
-awk             = awk
-re2c            = re2c
-yacc            = yacc
 
 rc              = bwrc
 rcaui           = bwrc
-wstrip          = bwstrip
-ide2make        = bide2mak
 
 rc_aui_flags    = -zk0 $(rc_defines_$(host_os)) -I"$(watcom_dir)/h"
 rc_aui          = $(rcaui) -r -bt=windows $(rc_aui_flags)

@@ -48,27 +48,34 @@ objs_linux_ppc  = samplnx.obj sysinit.obj sampexe.obj lnxutl.obj
 
 objects = $(objs_$(target)_$(host_cpu)) sample.obj sampdata.obj io.obj sysio.obj wmsg.obj
 
-extra_c_flags =  -s
+!ifneq bootstrap 1
+report_type_dos_dos =__interrupt
+far_ptr_dos_dos =__far
+far_ptr_dos_rsi =__far
+far_ptr_win_win =__far
+!endif
+extra_cpp_flags =-DREPORT_TYPE=$(report_type_$(host_os)_$(target))
+extra_cpp_flags += -DFAR_PTR=$(far_ptr_$(host_os)_$(target))
 
-extra_c_flags_dos_dos = -DREPORT_TYPE=__interrupt -DFAR_PTR=__far
-extra_c_flags_dos_rsi = -DREPORT_TYPE= -DFAR_PTR=__far -zu
-extra_c_flags_dos_pls = -DREPORT_TYPE= -DFAR_PTR= -D_PLS
-extra_c_flags_dos     = $(extra_c_flags_dos_$(target))
-extra_c_flags_win     = -DREPORT_TYPE= -DFAR_PTR=__far -zu -zw -orlt
-extra_c_flags_nov     = -DREPORT_TYPE= -DFAR_PTR= -DNETWARE -3s -zp1
-extra_c_flags_nt      = -DREPORT_TYPE= -DFAR_PTR=
-extra_c_flags_os2     = -DREPORT_TYPE= -DFAR_PTR=
-extra_c_flags_linux   = -DREPORT_TYPE= -DFAR_PTR=
+!ifeq target pls
+extra_cpp_flags_dos =-D_PLS
+!endif
 
 !ifeq target dos
-extra_c_flags_i86     += -DSHORT_OFF
+extra_cpp_flags_i86 =-DSHORT_OFF
 !else ifeq target os2
-extra_c_flags_i86     += -DSHORT_OFF
+extra_cpp_flags_i86 =-DSHORT_OFF
 !endif
 
-!ifeq bootstrap 1
-extra_c_flags = -DREPORT_TYPE= -DFAR_PTR=
-!endif
+extra_c_flags =  -s
+
+extra_c_flags_dos_rsi = -zu
+extra_c_flags_dos     = $(extra_c_flags_dos_$(target))
+extra_c_flags_win     = -zu -zw -orlt
+extra_c_flags_nov     = -3s -zp1
+extra_c_flags_nt      =
+extra_c_flags_os2     =
+extra_c_flags_linux   =
 
 extra_a_flags = $(model_switch_$(host_cpu))
 

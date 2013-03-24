@@ -12,8 +12,6 @@ RENCMD=ren
 LOWERC=ren
 !endif
 
-!include cproj.mif
-
 all: .SYMBOLIC $(books)
     @%null
 

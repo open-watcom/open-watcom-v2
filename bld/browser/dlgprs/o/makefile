@@ -1,21 +1,12 @@
 #pmake/20: build os_nt os_os2 os_osi os_win cpu_axp cpu_i86 cpu_386
 
+host_cpu = $(bld_cpu)
+host_os  = $(bld_os)
+
 proj_name = dlgprs
 
 !ifndef dlgprs_autodepends
 dlgprs_autodepends=.AUTODEPEND
-!endif
-
-host_cpu = 386
-
-!ifdef __LINUX__
-host_os = linux
-!else ifdef __NT__
-host_os = nt
-!else ifdef __OS2__
-host_os = os2
-!else
-host_os = dos
 !endif
 
 .IGNORE
@@ -54,7 +45,7 @@ dlgprs.exe : prsdlg.gh prsbnd.gh $(c_objs) $(browse_objs)
     $(linker) $(lflags) name $^@ file {$(c_objs)}
 
 prsdlg.gh prsdlg_c.gh : ../y/prsdlg.y ../cpp/yydriver.cpp
-    $(byacc) -b $[@ $]@ >$(nulldevice)
+    $(yacc) -b $[@ $]@ >$(nulldevice)
     @rm -f prsdlg.gh
     @cp ytab.h prsdlg.gh >$(nulldevice)
     @rm -f ytab.h
@@ -63,7 +54,7 @@ prsdlg.gh prsdlg_c.gh : ../y/prsdlg.y ../cpp/yydriver.cpp
     @rm -f ytab.c
 
 prsbnd.gh prsbnd_c.gh : ../y/prsbnd.y ../cpp/yydriver.cpp
-    $(byacc) -b $[@ $]@ >$(nulldevice)
+    $(yacc) -b $[@ $]@ >$(nulldevice)
     @rm -f prsbnd.gh
     @cp ytab.h prsbnd.gh >$(nulldevice)
     @rm -f ytab.h
@@ -74,4 +65,4 @@ prsbnd.gh prsbnd_c.gh : ../y/prsbnd.y ../cpp/yydriver.cpp
 .cpp: ../cpp;$(browse_dir)/cpp
 
 .gh.obj: $(dlgprs_autodepends)
-    $(cpp) $(cflags) $(inc_path) $[@
+    $(cxx) $(cflags) $(inc_path) $[@

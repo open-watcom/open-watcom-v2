@@ -16,10 +16,6 @@ set INCLUDE=%WATCOM%\h;%WATCOM%\h\os2
 set BEGINLIBPATH=%WATCOM%\binp\dll;%BEGINLIBPATH%
 set PATH=%WATCOM%\binp;%WATCOM%\binw;%PATH%
 
-REM Adjust to match the host platform
-set BOOTSTRAP_OS=os2
-set BOOTSTRAP_CPU=386
-
 REM Subdirectory to be used for building OW build tools
 set OWOBJDIR=binbuild
 
@@ -38,8 +34,8 @@ REM Change this to the PATH required by GhostScript for PDF creation on used hos
 REM set OWGHOSTSCRIPTPATH=%PATH%
 
 REM Change these variables to point Windows help compilers which you have installed
-REM export OWWIN95HC=hcrtf
-REM export OWHHC=hhc
+REM set OWWIN95HC=hcrtf
+REM set OWHHC=hhc
 
 REM Invoke the script for the common environment
 call %OWROOT%\cmnvars.cmd

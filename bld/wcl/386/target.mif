@@ -2,6 +2,6 @@ name = wcl386
 
 target_cpu = 386
 
-extra_c_flags += -DWCL386
+extra_cpp_flags = -DWCL386
 
 !include ../../master.mif

@@ -34,6 +34,8 @@ objs = $(objs_$(host_os))
 
 dllobjs = spydll.obj
 
+extra_cpp_flags_nt = -DNOUSE3D
+
 extra_c_flags     += -s -fh
 extra_c_flags_i86 += -zu -2 -zW
 extra_c_flags_386 += -4

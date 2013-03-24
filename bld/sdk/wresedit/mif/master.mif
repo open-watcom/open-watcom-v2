@@ -29,10 +29,13 @@ object +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
             widn2str.obj wclip.obj wisedit.obj weditsym.obj &
             preproc.obj ppexpr.obj ppmacro.obj
 
-extra_c_flags     = -DWIN_GUI -s -bd -fh
+extra_cpp_flags     = -DWIN_GUI -DWRESEDLL
+
+extra_cpp_flags_nt  = -DNOUSE3D
+
+extra_c_flags     = -s -bd -fh
 
 extra_c_flags_win = -zu-zw-zc
-extra_c_flags_nt  = -DNOUSE3D
 
 # preprocessor objects
 extra_c_flags_preproc = -zm -fh=preproc.pch

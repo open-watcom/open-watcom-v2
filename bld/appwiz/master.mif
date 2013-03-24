@@ -4,22 +4,20 @@ proj_name = appwiz
 !include defrule.mif
 !include deftarg.mif
 
+!include $(gui_dir)/client.mif
+
 objs = &
     appwiz.obj &
     errmsg.obj &
     projtype.obj
 
-libs_nt = $(gui_dir)/win/nt$(host_cpu)/gui.lib
-libs_os2 = $(gui_dir)/win/os2$(host_cpu)/gui.lib
-libs_win = $(gui_dir)/win/win$(host_cpu)/gui.lib
-
-libs = $(libs_$(host_os)) $(libs_$(host_os)$(host_cpu))
+libs = $(gui_lib)
 
 gendeps = rcstr.gh $(objs) $(libs) appwiz.lnk appwiz.res
 
 .c : ../c
 
-inc_dirs = -I"../h" -I"$(gui_dir)/h"
+inc_dirs = -I"../h" $(gui_inc_dirs)
 
 all : appwiz.exe .SYMBOLIC
 

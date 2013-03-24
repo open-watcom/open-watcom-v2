@@ -24,20 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#undef LITSTR
-#define LITSTR( x, y ) public __LIT##x
-#include "literals.h"
+#define AUI_LITERAL_BASE 400
 
-_DATA segment word public 'data'
-#undef LITSTR
-#define LITSTR( x, y ) __LIT##x dd 0
-#include "literals.h"
-_DATA ends
-
-end
+#include "auistr.gh"
