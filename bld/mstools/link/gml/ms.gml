@@ -48,6 +48,8 @@
 :cmt    where:
 :cmt        <arch>:     i86, 386, axp, any, dbg, qnx
 
+:page. \t(Press return to continue)
+
 :title. Usage: link [options] file [options]
 :target. any
 :title. Options:
@@ -59,7 +61,7 @@
 :argequal. :
 
 
-:option. 10x_
+:option. 10x
 :target. any
 :internal.
 :usage. use 10.x options
@@ -154,9 +156,9 @@
 :special. parse_incremental :yes|no
 :usage. enable or disable incremental linking
 
-:option. internaldllname_
+:option. internaldllname
 :target. any
-:special. parse_internaldllname_
+:special. parse_internaldllname
 :internal.
 :usage. enable or disable incremental linking
 

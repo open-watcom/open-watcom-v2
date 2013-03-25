@@ -298,7 +298,7 @@ static void OutPutHeader( void )
     pch.specialsyms_count = SymGetNumSpecialSyms();
     pch.cwd_len           = PH_cwd_len;
     if( MsgFlags != NULL ) {                            /* 06-jul-94 */
-        pch.msgflags_len  = _RoundUp( ((HIGHEST_MESSAGE_NUMBER + 7) / 8), sizeof( int ) );
+        pch.msgflags_len  = _RoundUp( ((MESSAGE_COUNT + 7) / 8), sizeof( int ) );
     } else {
         pch.msgflags_len  = 0;
     }
@@ -412,7 +412,7 @@ static void OutPutMsgFlags( void )
     int         rc;
 
     if( MsgFlags != NULL ) {                            /* 06-jul-94 */
-        rc = WritePHeader( MsgFlags, (HIGHEST_MESSAGE_NUMBER + 7) / 8 );
+        rc = WritePHeader( MsgFlags, (MESSAGE_COUNT + 7) / 8 );
         if( rc != 0 ) {
             longjmp( PH_jmpbuf, rc );
         }

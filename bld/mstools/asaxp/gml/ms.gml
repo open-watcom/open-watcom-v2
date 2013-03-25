@@ -44,6 +44,8 @@
 :cmt    where:
 :cmt        <arch>:     i86, 386, axp, any, dbg, qnx
 
+:page. \t(Press return to continue)
+
 :title. Usage: asaxp [options] <filename>
 :target. any
 :title. Options:
@@ -51,7 +53,6 @@
 :title. \t    ( /option is also accepted )
 :target. i86 386 axp ppc
 :target. any
-                                                                         
 
 :argequal. :
 

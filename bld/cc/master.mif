@@ -53,9 +53,6 @@ cc_nosymfile = 1
 # international data file name
 intname = wcc$(target_cpu)
 
-#host dependant goop
-pre_deps_qnx = wcc.u
-
 # other goofy stuff
 pre_obj_deps = usage.gh
 pre_obj_deps += msgtxt.gh
@@ -93,7 +90,7 @@ extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
 !endif
 !endif
 extra_c_flags_cmsg     = -D__msg_file_prefix=$(intname)
-extra_c_flags_ideentry = -bd $(idedlldriver_c_flags_$(host_os))
+extra_c_flags_ideentry = $(idedlldriver_c_flags_$(host_os))
 !ifeq cc_dll 1
 extra_c_flags_idedrv   =
 !else
@@ -112,7 +109,7 @@ extra_c_flags_maindrv  = -DDLL_NAME=$(realdllname)
 extra_l_flags     = option map, symfile
 
 # NOTE: "op off=?" must be 8K bigger than the stack size in wlink_sys_qnx_f
-extra_l_flags_qnx = option stack=16k,offset=24k, res=wcc.u, priv=3
+extra_l_flags_qnx = option stack=16k,offset=24k, res=usage.u, priv=3
 extra_l_flags_nt  = option stack=1024k commit stack=32k
 extra_l_flags_dos = option stack=32k
 
@@ -247,30 +244,14 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
 ./mkcode.exe: ../../a/mkcode.c
         $(bld_cl) $[@ $(bld_cl_opts)
 
-usage.gh: ../../usage.sp
-        wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os)  "-f\"%s\0\"" ../../usage.sp usage.gh
-
-wcc.u: ../../usage.sp msgencod.exe intlbin.exe
-        wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os) -u -t8 ../../usage.sp wcc.u
-
-./usageenc.exe: $(fe_misc_dir)/c/usageenc.c ../../jusage.sp
-        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(bld_cl_opts)
-
-usage01.int : ./usageenc.exe ../../jusage.sp
-        wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os) ../../jusage.sp usageenc.int
-        $[@ usageenc.int usage01.int
-
 verrc_dll = $(realdllname)
 verrc_exe = $(realexename)
 verrc_dll_skel = ../../version.rc
 verrc_exe_skel = ../../exever.rc
 !include verrc.mif
 
-./msgencod.exe: $(fe_misc_dir)/c/msgencod.c $(cl_objs)
-        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(bld_cl_opts) $(cl_libs) $(cl_objs)
-
-msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ./msgencod.exe ../../gml/cerrs.gml
-        $[@ -s -i -ip -q -g ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
+msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
+        msgencod -s -i -ip -q -g ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
         $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(bld_cl_opts)
@@ -292,8 +273,18 @@ asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
 
 key_objs = ../../h/c.key ../../h/pc.key ../../h/seh.key
 
-./findhash.exe : $(fe_misc_dir)/c/findhash.c
-        $(bld_cl) $[@ $(bld_cl_opts)
+weights.gh keywords.gh : $(key_objs)
+        findhash -q -e ",OPR_NOP" $(key_objs)
 
-weights.gh keywords.gh : ./findhash.exe $(key_objs)
-        $[@ -q $(key_objs)
+# optencod options and targets for various hosts
+optencod_opt_qnx = -u usage.u
+optencod_targ_bsd   = bsd
+optencod_targ_qnx   = qnx
+optencod_targ_linux = linux
+optencod_targ_osx   = linux
+!ifeq release 0
+optencod_targ_dbg = dbg
+!endif
+
+usage.gh usage01.int : ../../gml/options.gml
+        optencod -i -n -q $(optencod_opt_$(host_os)) $]@ . . usage.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))

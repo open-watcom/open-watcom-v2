@@ -147,7 +147,7 @@ void AppendFmtCmdLine( CmdLine *cmdLine, int section, const char *format, ... )
     /*** Format it, then pass it though to AppendCmdLine ***/
     if( section < 0  ||  section >= cmdLine->numSections )  Zoinks();
     va_start( args, format );
-    _vbprintf( buf, BUFFER_SIZE, format, args );
+    vsnprintf( buf, BUFFER_SIZE, format, args );
     va_end( args );
     AppendCmdLine( cmdLine, section, buf );
 }

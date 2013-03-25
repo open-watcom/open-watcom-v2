@@ -153,15 +153,12 @@ usagej.gh : usagej.u
         @%write $^&.tmp -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $^@
         wsplice @$^&.tmp
 
-./optencod.exe: $(fe_misc_dir)/c/optencod.c
-        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(bld_cl_opts)
- 
-usage.u : ./optencod.exe ../h/options.gml
-        $[@ -q -u $@ $]@ $(nulldevice) $(nulldevice) $(nulldevice) any
+usage.u : ../h/options.gml
+        optencod -q -u $@ $]@ $(nulldevice) $(nulldevice) $(nulldevice) any
         %append $@ .
 
-usagej.u : ./optencod.exe ../h/options.gml
-        $[@ -l 1 -q -u $@ $]@ $(nulldevice) $(nulldevice) $(nulldevice) any
+usagej.u : ../h/options.gml
+        optencod -l 1 -q -u $@ $]@ $(nulldevice) $(nulldevice) $(nulldevice) any
         %append $@ .
 
 ###################################################################

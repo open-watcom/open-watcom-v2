@@ -2353,12 +2353,6 @@ String used in message construction.
 :INFO.
 .np
 String used in message construction.
-:MSGSYM. PHRASE_PRESS_RETURN
-:MSGTXT. (Press return to continue)
-:MSGJTXT. (リターンを押すと，続行します)
-:INFO.
-.np
-String used in message construction.
 :MSGSYM. PHRASE_PARAM
 :MSGTXT. Parameter %d:
 :MSGJTXT. Parameter %d:

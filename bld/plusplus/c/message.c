@@ -233,7 +233,7 @@ static IDEBool IDECALL idePrt // PRINT FOR IDE
 static void ideDisplay          // DISPLAY USING IDE INTERFACE
     ( IDEMsgSeverity severity   // - message severity
     , MSG_NUM msgnum            // - message number
-    , char* msg                 // - message
+    , const char* msg           // - message
     , TOKEN_LOCN* msg_locn )    // - message location or NULL
 {
     IDECallBacks* cbs;          // - pointer to call backs
@@ -424,7 +424,7 @@ void MsgDisplayArgs             // DISPLAY A MESSAGE WITH ARGS
 
 
 void MsgDisplayLine             // DISPLAY A BARE LINE
-    ( char* line )              // - the line
+    ( const char* line )        // - the line
 {
     ideDisplay( IDEMSGSEV_NOTE_MSG, 0, line, NULL );
 }

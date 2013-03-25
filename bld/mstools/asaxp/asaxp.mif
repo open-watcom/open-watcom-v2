@@ -2,7 +2,7 @@ done: asaxp.exe
 
 !include ../../master.mif
 
-extra_c_flags = $(targdef)
+extra_cpp_flags = $(targdef)
 
 common_objs = parse.obj $(mstools_objs)
 asaxp_objs  = asaxp.obj message.obj translat.obj $(common_objs)

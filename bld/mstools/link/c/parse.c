@@ -623,12 +623,12 @@ static int parse_incremental( OPT_STRING **p )
 
 
 /*
- * Parse the undocumented /INTERNALDLLNAME_ option.
+ * Parse the undocumented /INTERNALDLLNAME option.
  */
-static int parse_internaldllname_( OPT_STRING **p )
+static int parse_internaldllname( OPT_STRING **p )
 /*************************************************/
 {
-    return( do_string_parse( p, "INTERNALDLLNAME_", 1, 0 ) );
+    return( do_string_parse( p, "INTERNALDLLNAME", 1, 0 ) );
 }
 
 
@@ -792,7 +792,7 @@ static void handle_debug( OPT_STORAGE *cmdOpts, int x )
 /*****************************************************/
 {
     x = x;
-    cmdOpts->opt_level = OPT_opt_level_optnoref;
+    cmdOpts->opt_level = OPT_opt_level_opt_noref;
 
     if( cmdOpts->debug_value != NULL ) {
         // suppress this diagnostic,

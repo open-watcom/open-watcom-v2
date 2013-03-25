@@ -678,9 +678,9 @@ void EnableDisableMessage( int enable, unsigned msg_num )
 {
     unsigned char       mask;
 
-    if( msg_num <= HIGHEST_MESSAGE_NUMBER ) {
+    if( msg_num <= MESSAGE_COUNT ) {
         if( MsgFlags == NULL ) {
-            MsgFlags = CMemAlloc( ( HIGHEST_MESSAGE_NUMBER + 7 ) / 8 );
+            MsgFlags = CMemAlloc( ( MESSAGE_COUNT + 7 ) / 8 );
         }
         mask = 1 << ( msg_num & 7 );
         msg_num = msg_num >> 3;

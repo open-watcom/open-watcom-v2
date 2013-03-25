@@ -47,6 +47,8 @@
 :cmt    where:
 :cmt        <arch>:     i86, 386, axp, any, dbg, qnx
 
+:page. \t(Press return to continue)
+
 :title. Usage: rc [options] file [options]
 :target. any
 :title. Options:
@@ -71,7 +73,7 @@
 :immediate handle_long_option
 :usage. define <macro>
 
-:option. gotlongoption_
+:option. gotlongoption
 :target. any
 :internal.
 :usage. used internally

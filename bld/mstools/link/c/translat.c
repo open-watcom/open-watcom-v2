@@ -697,10 +697,10 @@ static void linker_opts( struct XlatStatus *status,
         }
     }
 
-    if( cmdOpts->forcemultiple ) {
+    if( cmdOpts->force_multiple ) {
         AppendCmdLine( cmdLine, LINK_OPTS_SECTION, "OPTION redefsok" );
     }
-    if( cmdOpts->forceundefined ) {
+    if( cmdOpts->force_undefined ) {
         AppendCmdLine( cmdLine, LINK_OPTS_SECTION, "OPTION undefsok" );
     }
 
@@ -750,7 +750,7 @@ static void linker_opts( struct XlatStatus *status,
         AppendCmdLine( cmdLine, LINK_OPTS_SECTION, "OPTION nodefaultlibs" );
     }
 
-    if( cmdOpts->opt_level == OPT_opt_level_optref ) {
+    if( cmdOpts->opt_level == OPT_opt_level_opt_ref ) {
         AppendCmdLine( cmdLine, LINK_OPTS_SECTION, "OPTION eliminate" );
     }
 

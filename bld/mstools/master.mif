@@ -25,7 +25,7 @@ mstools_objs        = cmdline.obj cmdscan.obj context.obj error.obj file.obj mem
 .c :  ../c;../../c
 .h :  ../h;../../h
 
-inc_dirs = -I"../h" -I"../../h" -I"../c"
+inc_dirs = -I. -I"../h" -I"../../h" -I"../c"
 
 #
 # Include standard .mif files to do the work.
@@ -34,29 +34,27 @@ inc_dirs = -I"../h" -I"../../h" -I"../c"
 !include deftarg.mif
 !include defrule.mif
 
-optp386c.gh optp386h.gh : ./optencod.exe ../gml/ms.gml
-        $[@ $]@ optp386h.gh optp386c.gh usage386.gh i86
+optp386c.gh optp386h.gh : ../gml/ms.gml
+        optencod -n -q $]@ optp386h.gh optp386c.gh usage386.gh i86
 
-optpaxpc.gh optpaxph.gh :  ./optencod.exe ../gml/ms.gml
-        $[@ $]@ optpaxph.gh optpaxpc.gh usageaxp.gh axp
+optpaxpc.gh optpaxph.gh : ../gml/ms.gml
+        optencod -n -q $]@ optpaxph.gh optpaxpc.gh usageaxp.gh axp
 
-optpppcc.gh optpppch.gh :  ./optencod.exe ../gml/ms.gml
-        $[@ $]@ optpppch.gh optpppcc.gh usageppc.gh ppc
+optpppcc.gh optpppch.gh : ../gml/ms.gml
+        optencod -n -q $]@ optpppch.gh optpppcc.gh usageppc.gh ppc
 
-optparsc.gh optparsh.gh : ./optencod.exe ../gml/ms.gml
-        $[@ $]@ optparsh.gh optparsc.gh usagemsg.gh i86
-
-#
-# Dependencies for source in $(fe_misc_dir).
-#
-./optencod.exe : $(fe_misc_dir)/c/optencod.c
-        $(bld_cl) $(bld_cl_opts) -I"$(fe_misc_dir)/h" $[@
+optparsc.gh optparsh.gh : ../gml/ms.gml
+        optencod -n -q $]@ optparsh.gh optparsc.gh usagemsg.gh i86
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
+version_res_exe_nt_x64 = exever.res
 ver386_res_exe_nt_386 = ver386.res
+ver386_res_exe_nt_x64 = ver386.res
 veraxp_res_exe_nt_386 = veraxp.res
+veraxp_res_exe_nt_x64 = veraxp.res
 verppc_res_exe_nt_386 = verppc.res
+verppc_res_exe_nt_x64 = verppc.res
 
 verrc_exe = $(name)
 verrc386_exe = $(name)386

@@ -30,6 +30,8 @@
 :cmt    where:
 :cmt        <arch>:     i86, 386, axp, any, dbg, qnx
 
+:page. \t(Press return to continue)
+
 :title. Usage: cl [options] file [options]
 :target. any
 :title. Options:
@@ -45,7 +47,7 @@
 :chain. O optimization options
 :chain. Z language options
 
-:option. \1\0\x_
+:option. 10x
 :target. any
 :internal.
 :usage. use 10.x options
@@ -182,19 +184,19 @@
 :internal.
 :usage. generate SBR file without local variables
 
-:option. \G\3
+:option. \G3
 :target. i86
 :immediate. handle_arch_i86
 :enumerate. arch_i86
 :usage. 386 instructions
 
-:option. \G\4
+:option. \G4
 :target. i86
 :immediate. handle_arch_i86
 :enumerate. arch_i86
 :usage. 386 instructions, optimize for 486
 
-:option. \G\5
+:option. \G5
 :target. i86
 :immediate. handle_arch_i86
 :enumerate. arch_i86
@@ -326,13 +328,13 @@
 :target. any
 :usage. operate quietly
 
-:option. \O\1
+:option. \O1
 :target. any
 :immediate. handle_opt_level
 :enumerate. opt_level
 :usage. minimize size
 
-:option. \O\2
+:option. \O2
 :target. any
 :immediate. handle_opt_level
 :enumerate. opt_level
@@ -467,12 +469,12 @@
 :internal.
 :usage. undefine all predefined macros
 
-:option. \v\d\0
+:option. \v\d0
 :target. any
 :internal.
 :usage. disable constructor/destructor displacements
 
-:option. \v\d\1
+:option. \v\d1
 :target. any
 :internal.
 :usage. enable vtordisp constructor/destructor displacements
@@ -558,7 +560,7 @@
 :optional.
 :usage. use pre-compiled header file
 
-:option. \Z\7
+:option. \Z7
 :target. any
 :immediate. handle_debug_info
 :enumerate. debug_info

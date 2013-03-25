@@ -48,6 +48,8 @@
 :cmt    where:
 :cmt        <arch>:     i86, 386, axp, any, dbg, qnx
 
+:page. \t(Press return to continue)
+
 :title. Usage: lib [options] [files] [@commandfile]
 :target. any
 :title. Options:

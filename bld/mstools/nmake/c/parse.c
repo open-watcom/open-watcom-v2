@@ -267,8 +267,8 @@ static int parse_combining( OPT_STORAGE *cmdOpts, int x )
      * Make sure -L is translated correctly to -NOLOGO if it is
      * a first (or the only) parameter
      */
-    if( cmdOpts->L ) {
-        cmdOpts->NOLOGO = 1;
+    if( cmdOpts->l ) {
+        cmdOpts->nologo = 1;
     }
 
     /* scan for combined options */
@@ -277,22 +277,22 @@ static int parse_combining( OPT_STORAGE *cmdOpts, int x )
         ch = toupper( GetCharContext() );
 
         switch( ch ) {
-        case 'A':  cmdOpts->A = 1; break;      /* gml-option: A */
-        case 'B':  cmdOpts->B = 1; break;      /* gml-option: B */
-        case 'C':  cmdOpts->C = 1; break;      /* gml-option: C */
-        case 'D':  cmdOpts->D = 1; break;      /* gml-option: D */
-        case 'E':  cmdOpts->E = 1; break;      /* gml-option: E */
-        case 'I':  cmdOpts->I = 1; break;      /* gml-option: I */
-        case 'K':  cmdOpts->K = 1; break;      /* gml-option: K */
-        case 'L':  cmdOpts->NOLOGO = 1; break; /* gml-option: L */
-        case 'N':  cmdOpts->N = 1; break;      /* gml-option: N */
-        case 'P':  cmdOpts->P = 1; break;      /* gml-option: P */
-        case 'Q':  cmdOpts->Q = 1; break;      /* gml-option: Q */
-        case 'R':  cmdOpts->R = 1; break;      /* gml-option: R */
-        case 'S':  cmdOpts->S = 1; break;      /* gml-option: S */
-        case 'T':  cmdOpts->T = 1; break;      /* gml-option: T */
-        case 'U':  cmdOpts->U = 1; break;      /* gml-option: U */
-        case 'Y':  cmdOpts->Y = 1; break;      /* gml-option: Y */
+        case 'A':  cmdOpts->a = 1; break;      /* gml-option: A */
+        case 'B':  cmdOpts->b = 1; break;      /* gml-option: B */
+        case 'C':  cmdOpts->c = 1; break;      /* gml-option: C */
+        case 'D':  cmdOpts->d = 1; break;      /* gml-option: D */
+        case 'E':  cmdOpts->e = 1; break;      /* gml-option: E */
+        case 'I':  cmdOpts->i = 1; break;      /* gml-option: I */
+        case 'K':  cmdOpts->k = 1; break;      /* gml-option: K */
+        case 'L':  cmdOpts->nologo = 1; break; /* gml-option: L */
+        case 'N':  cmdOpts->n = 1; break;      /* gml-option: N */
+        case 'P':  cmdOpts->p = 1; break;      /* gml-option: P */
+        case 'Q':  cmdOpts->q = 1; break;      /* gml-option: Q */
+        case 'R':  cmdOpts->r = 1; break;      /* gml-option: R */
+        case 'S':  cmdOpts->s = 1; break;      /* gml-option: S */
+        case 'T':  cmdOpts->t = 1; break;      /* gml-option: T */
+        case 'U':  cmdOpts->u = 1; break;      /* gml-option: U */
+        case 'Y':  cmdOpts->y = 1; break;      /* gml-option: Y */
         case '\0': break;
         default:
             /* if character is space, return without an error */

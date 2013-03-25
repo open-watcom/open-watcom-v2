@@ -20,8 +20,11 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/posix/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/awk/builder.ctl ]
 [ ENDIF ]
-# Start with the ORL and librarian - boot build has no other dependencies
+# Build C preprocessing utility
 [ INCLUDE <OWSRCDIR>/cpp/builder.ctl ]
+# Build optencod, msgencod and findhash utilities
+[ INCLUDE <OWSRCDIR>/fe_misc/builder.ctl ]
+# Start with the ORL and librarian - boot build has no other dependencies
 [ INCLUDE <OWSRCDIR>/orl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/nwlib/builder.ctl ]
 # Build our version of yacc

@@ -102,17 +102,17 @@ static int nmake( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     cwd = getcwd( NULL, 0 );
 
     /*** construct MAKEFLAGS field ***/
-    if( cmdOpts->A )      strcat(flagstmp, "A");
-    if( cmdOpts->C )      strcat(flagstmp, "C");
-    if( cmdOpts->D )      strcat(flagstmp, "D");
-    if( cmdOpts->E )      strcat(flagstmp, "E");
-    if( cmdOpts->NOLOGO ) strcat(flagstmp, "L");
-    if( cmdOpts->N )      strcat(flagstmp, "N");
-    if( cmdOpts->P )      strcat(flagstmp, "P");
-    if( cmdOpts->R )      strcat(flagstmp, "R");
-    if( cmdOpts->S )      strcat(flagstmp, "S");
-    if( cmdOpts->U )      strcat(flagstmp, "U");
-    if( cmdOpts->Y )      strcat(flagstmp, "Y");
+    if( cmdOpts->a )      strcat(flagstmp, "A");
+    if( cmdOpts->c )      strcat(flagstmp, "C");
+    if( cmdOpts->d )      strcat(flagstmp, "D");
+    if( cmdOpts->e )      strcat(flagstmp, "E");
+    if( cmdOpts->nologo ) strcat(flagstmp, "L");
+    if( cmdOpts->n )      strcat(flagstmp, "N");
+    if( cmdOpts->p )      strcat(flagstmp, "P");
+    if( cmdOpts->r )      strcat(flagstmp, "R");
+    if( cmdOpts->s )      strcat(flagstmp, "S");
+    if( cmdOpts->u )      strcat(flagstmp, "U");
+    if( cmdOpts->y )      strcat(flagstmp, "Y");
 
     /*** pass builtin macros to wmake, so nmake wrapper gets called in recursive actions ***/
     AppendFmtCmdLine( cmdLine, NMAKE_OPTS_SECTION, "MAKE=\"%s\"", "nmake" );

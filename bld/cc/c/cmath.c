@@ -372,52 +372,9 @@ static enum  conv_types const CnvTable[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 };
 
 static  char    Operator[] = {
-        T_NULL,
-        T_EOF,
-    OPR_COMMA,          // T_COMMA
-    OPR_QUESTION,       // T_QUESTION
-    OPR_COLON,          // T_COLON
-        T_SEMI_COLON,
-        T_LEFT_PAREN,
-        T_RIGHT_PAREN,
-        T_LEFT_BRACKET,
-        T_RIGHT_BRACKET,
-        T_LEFT_BRACE,
-        T_RIGHT_BRACE,
-        T_DOT,
-        T_TILDE,
-    OPR_EQUALS,         // T_EQUAL,
-        T_EQ,
-    OPR_NOT,            // T_EXCLAMATION
-        T_NE,
-    OPR_OR,             /* T_OR,    */
-    OPR_OR_EQUAL,       /* T_OR_EQUAL */
-    OPR_OR_OR,          /* T_OR_OR, */
-    OPR_XOR,            /* T_XOR,   */
-    OPR_XOR_EQUAL,      /* T_XOR_EQUAL, */
-    OPR_AND,            /* T_AND,   */
-    OPR_AND_EQUAL,      /* T_AND_EQUAL, */
-    OPR_AND_AND,        /* T_AND_AND, */
-        T_GT,
-        T_GE,
-    OPR_RSHIFT,         /* T_RSHIFT,*/
-    OPR_RSHIFT_EQUAL,   /* T_RSHIFT_EQUAL, */
-        T_LT,
-        T_LE,
-    OPR_LSHIFT,         /* T_LSHIFT,*/
-    OPR_LSHIFT_EQUAL,   /* T_LSHIFT_EQUAL, */
-    OPR_ADD,            /* T_PLUS,  */
-    OPR_PLUS_EQUAL,     /* T_PLUS_EQUAL, */
-    OPR_POSTINC,        /* T_PLUS_PLUS, */
-    OPR_SUB,            /* T_MINUS, */
-    OPR_MINUS_EQUAL,    /* T_MINUS_EQUAL, */
-    OPR_POSTDEC,        /* T_MINUS_MINUS, */
-    OPR_MUL,            /* T_TIMES, */
-    OPR_TIMES_EQUAL,    /* T_TIMES_EQUAL, */
-    OPR_DIV,            /* T_DIVIDE,*/
-    OPR_DIV_EQUAL,      /* T_DIVIDE_EQUAL, */
-    OPR_MOD,            /* T_PERCENT,*/
-    OPR_MOD_EQUAL,      /* T_PERCENT_EQUAL, */
+    #define pick(token,string,class,oper) oper,
+    #include "_ctokens.h"
+    #undef  pick
 };
 
 opr_code TokenToOperator( TOKEN token )

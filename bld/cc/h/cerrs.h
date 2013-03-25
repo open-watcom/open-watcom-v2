@@ -46,7 +46,7 @@ typedef enum msg_codes {
 #define MSG_DEF( name, group, kind, level, group_index ) name = group##_level+group_index,
     MSG_DEFS
 #undef MSG_DEF
-    HIGHEST_MESSAGE_NUMBER = PHRASE_PRESS_RETURN+1 //masking msg crap
+    MESSAGE_COUNT
 }msg_codes;
 typedef enum msgtype{
 #define MSGTYPES_DEF( name )   msgtype_##name,

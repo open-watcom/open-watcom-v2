@@ -36,12 +36,21 @@
 #include "memory.h"
 
 #define WLIB_DLL_FILENAME       "wlibd.dll"
+#if defined( __NT__ ) && defined( __386__ )
 #define DLL_GETVER              "_IDEGetVersion@0"
 #define DLL_INITDLL             "_IDEInitDLL@12"
 #define DLL_RUNSELF             "_IDERunYourSelf@12"
 #define DLL_FINIDLL             "_IDEFiniDLL@4"
 #define DLL_STOPRUN             "_IDEStopRunning@0"
 #define DLL_INITINFO            "_IDEPassInitInfo@8"
+#else
+#define DLL_GETVER              "IDEGetVersion"
+#define DLL_INITDLL             "IDEInitDLL"
+#define DLL_RUNSELF             "IDERunYourSelf"
+#define DLL_FINIDLL             "IDEFiniDLL"
+#define DLL_STOPRUN             "IDEStopRunning"
+#define DLL_INITINFO            "IDEPassInitInfo"
+#endif
 
 
 /*

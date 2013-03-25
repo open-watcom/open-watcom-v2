@@ -38,9 +38,9 @@
 #include "system.h"
 
 
-static char *           usageMsg[] = {
+static char usageMsg[] = {
     #include "usagemsg.gh"
-    NULL
+    "\0"
 };
 
 static int              quietMode = 0;
@@ -83,28 +83,42 @@ static int get_key( void )
 }
 
 
+static char const *NextUsage( char const *p )
+{
+    while( *p ) {
+        ++p;
+    }
+    return( p + 1 );
+}
+
+#define LINE_COUNT      15
 /*
  * Print a help message.
  */
 void PrintHelpMessage( void )
 /***************************/
 {
-    const int           lineCount = 15;
     int                 count;
     int                 num;
     int                 ch;
+    char const          *p;
+    char const          *page_text;
 
     BannerMessage();
-    for( count=0,num=0; usageMsg[count]!=NULL; count++,num++ ) {
-        if( num == lineCount ) {
-            printf( "\t(Press return to continue)" );
+    p = page_text = usageMsg;
+    num = 0;
+    while( *(p = NextUsage( p )) != '\0' ) {
+        if( num == LINE_COUNT ) {
+            printf( page_text );
             fflush( stdout );
             ch = get_key();
             printf( "\n" );
-            if( ch == 'q' )  break;
-            num = 0;
+            if( ch == 'q' )  
+                break;
+            num = -1;
         }
-        printf( "%s\n", usageMsg[count] );
+        printf( "%s\n", p );
+        ++num;
     }
 }
 

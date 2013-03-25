@@ -94,7 +94,7 @@ typedef enum token_class {
 } token_class;
 
 typedef enum TOKEN {
-    #define pick(token,string,class) token,
+    #define pick(token,string,class,oper) token,
     #include "_ctokens.h"
     #undef pick
 } TOKEN;

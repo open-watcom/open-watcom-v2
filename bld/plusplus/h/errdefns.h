@@ -162,7 +162,7 @@ void MsgDisplayBanner           // DISPLAY A BANNER LINE
     ( char* line )              // - the line
 ;
 void MsgDisplayLine             // DISPLAY A BARE LINE
-    ( char* line )              // - the line
+    ( const char* line )        // - the line
 ;
 void MsgDisplayLineArgs         // DISPLAY A BARE LINE, FROM ARGUMENTS
     ( char* seg                 // - the line segments

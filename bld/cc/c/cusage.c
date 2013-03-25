@@ -31,7 +31,7 @@
 
 #include "cvars.h"
 
-static char const *NextUsage( char const *p )
+static char const *nextUsage( char const *p )
 {
     while( *p ) {
         ++p;
@@ -47,16 +47,14 @@ void CCusage( void )
     char const  *p;
 
     p = UsageText();
-    while( *p != '\0' ) {
+    while( *(p = nextUsage( p )) != '\0' ) {
         ConsMsg( p );
-        p= NextUsage( p );
     }
 }
 
 #else
 
 #include <conio.h>
-#include <unistd.h>
 
 
 #ifdef __OSI__
@@ -64,11 +62,9 @@ void CCusage( void )
 #endif
 
 
-local void Wait_for_return( void )
+local void Wait_for_return( char const *press )
 {
     if( ConTTY() ) {
-        char const *press;
-        press =  CGetMsgStr( PHRASE_PRESS_RETURN );
         ConsMsg( press );
         getch();
     }
@@ -77,6 +73,7 @@ local void Wait_for_return( void )
 
 void CCusage( void )
 {
+    char const  *page_text;
     char const  *p;
     unsigned    count;
 
@@ -88,13 +85,13 @@ void CCusage( void )
     }
 #endif
     p = UsageText();
-    while( *p != '\0' ) {
+    page_text = p;
+    while( *(p = nextUsage( p )) != '\0' ) {
         if( ++count > 21 ) {
-            Wait_for_return();
+            Wait_for_return( page_text );
             count = 0;
         }
         ConsMsg( p );
-        p= NextUsage( p );
     }
 }
 

@@ -67,13 +67,13 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
 
     /*** Build a string listing all unsupported options that were used ***/
     opts[0] = '\0';
-    if( cmdOpts->B )  append_unsupported( opts, "B" );
-    if( cmdOpts->C )  append_unsupported( opts, "C" );
-    if( cmdOpts->E )  append_unsupported( opts, "E" );
-    if( cmdOpts->R )  append_unsupported( opts, "R" );
-    if( cmdOpts->U )  append_unsupported( opts, "U" );
-    if( cmdOpts->Y )  append_unsupported( opts, "Y" );
-    if( cmdOpts->X )  append_unsupported( opts, "X" );
+    if( cmdOpts->b )  append_unsupported( opts, "B" );
+    if( cmdOpts->c )  append_unsupported( opts, "C" );
+    if( cmdOpts->e )  append_unsupported( opts, "E" );
+    if( cmdOpts->r )  append_unsupported( opts, "R" );
+    if( cmdOpts->u )  append_unsupported( opts, "U" );
+    if( cmdOpts->y )  append_unsupported( opts, "Y" );
+    if( cmdOpts->x )  append_unsupported( opts, "X" );
     /*** If an unsupported option was used, give a warning ***/
     if( opts[0] != '\0' ) {
         UnsupportedOptsMessage( opts );
@@ -90,43 +90,43 @@ static void nmake_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 {
     OPT_STRING *        optStr;
 
-    if( cmdOpts->A ) {
+    if( cmdOpts->a ) {
         AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-a" );
     }
 
-    if( cmdOpts->D ) {
+    if( cmdOpts->d ) {
         AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-d" );
     }
 
-    if( cmdOpts->F ) {
-        AppendFmtCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-f %s",cmdOpts->F_value->data );
+    if( cmdOpts->f ) {
+        AppendFmtCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-f %s",cmdOpts->f_value->data );
     }
 
-    if( cmdOpts->I ) {
+    if( cmdOpts->i ) {
         AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-i" );
     }
 
-    if( cmdOpts->K ) {
+    if( cmdOpts->k ) {
         AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-k" );
     }
 
-    if( cmdOpts->N ) {
+    if( cmdOpts->n ) {
         AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-n" );
     }
 
-    if( cmdOpts->P ) {
+    if( cmdOpts->p ) {
         AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-p" );
     }
 
-    if( cmdOpts->Q ) {
+    if( cmdOpts->q ) {
         AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-q" );
     }
 
-    if( cmdOpts->S ) {
+    if( cmdOpts->s ) {
         AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-s" );
     }
 
-    if( cmdOpts->T ) {
+    if( cmdOpts->t ) {
         AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-t" );
     }
 
@@ -186,13 +186,13 @@ void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 /*************************************************************/
 {
     /*** Parse the /nologo switch now so we can print the banner ***/
-    if( cmdOpts->NOLOGO ) {
+    if( cmdOpts->nologo ) {
         QuietModeMessage();
     } else {
         BannerMessage();
     }
 
-    if( cmdOpts->HELP || cmdOpts->_ ) {
+    if( cmdOpts->help || cmdOpts->_ ) {
         PrintHelpMessage();
         exit( EXIT_SUCCESS );
 

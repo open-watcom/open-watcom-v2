@@ -49,12 +49,12 @@ typedef struct msgtxt {
 } msgtxt;
 
 msgtxt txtmsgs[] = {
-#define pick(num,etext,jtext) {num,etext},
-#include "../h/asmshare.msg"
-#include "../h/womp.msg"
-#include "../h/wasm.msg"
-#include "usage.gh"
-#undef pick
+    #define pick(num,etext,jtext) {num,etext},
+    #include "../h/asmshare.msg"
+    #include "../h/womp.msg"
+    #include "../h/wasm.msg"
+    #include "usage.gh"
+    #undef pick
 };
 
 #define MSG_NUM sizeof( txtmsgs ) / sizeof( txtmsgs[0] )
@@ -69,8 +69,8 @@ msgtxt txtmsgs[] = {
 #define NIL_HANDLE      ((int)-1)
 #define STDOUT_HANDLE   ((int)1)
 
-#define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
+#define NO_RES_MESSAGE  "Error: could not open message resource file.\r\n"
+#define NO_RES_SIZE     (sizeof( NO_RES_MESSAGE ) - 1)
 
 extern  long            FileShift;
 
@@ -84,12 +84,26 @@ extern  int             trademark( void );
 extern char             *_Copyright;
 #endif
 
-#ifndef __UNIX__
-static const unsigned char PressReturn[] = {
-"    (Press return to continue)"
-};
+#if defined( __UNIX__ )
 
-static void con_output( const unsigned char *text )
+void PrintfUsage( void )
+{
+    char        msg_buff[MAX_MESSAGE_SIZE];
+    int         first_ln;
+
+    trademark();
+    first_ln = MSG_USAGE_BASE;
+    for( first_ln++; ; first_ln++ ) {
+        MsgGet( first_ln, msg_buff );
+        if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) )
+            break;
+        puts( msg_buff );
+    }
+}
+
+#else
+
+static void con_output( const char *text )
 {
     char c;
 
@@ -101,19 +115,48 @@ static void con_output( const unsigned char *text )
     putchar( '\n' );
 }
 
-static void Wait_for_return( void )
+static void Wait_for_return( const char *page_text )
 {
     if( isatty( fileno(stdout) ) ) {
-        con_output( PressReturn );
+        con_output( page_text );
         fflush( stdout );
         getch();
     }
 }
+
+void PrintfUsage( void )
+{
+    char        msg_buff[MAX_MESSAGE_SIZE];
+    unsigned    count;
+    char        page_text[MAX_MESSAGE_SIZE];
+    int         first_ln;
+
+    count = trademark();
+#ifdef __OSI__
+    if( _Copyright != NULL ) {
+        puts( _Copyright );
+        count += 1;
+    }
+#endif
+    first_ln = MSG_USAGE_BASE;
+    MsgGet( first_ln++, page_text );
+    for( ; ; first_ln++ ) {
+        if( ++count >= 23 ) {
+            Wait_for_return( page_text );
+            count = 0;
+        }
+        MsgGet( first_ln, msg_buff );
+        if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) )
+            break;
+        puts( msg_buff );
+    }
+}
+
 #endif
 
 void MsgPrintf( int resourceid )
 {
-    char        msgbuf[128];
+    char        msgbuf[MAX_MESSAGE_SIZE];
 
     if( !Options.banner_printed ) {
         Options.banner_printed = TRUE;
@@ -125,7 +168,7 @@ void MsgPrintf( int resourceid )
 
 void MsgPrintf1( int resourceid, char *token )
 {
-    char        msgbuf[128];
+    char        msgbuf[MAX_MESSAGE_SIZE];
 
     if( !Options.banner_printed ) {
         Options.banner_printed = TRUE;
@@ -133,32 +176,6 @@ void MsgPrintf1( int resourceid, char *token )
     }
     MsgGet( resourceid, msgbuf );
     printf( msgbuf, token );
-}
-
-void PrintfUsage( int first_ln )
-{
-    char        msg_buff[128];
-    unsigned    count;
-
-    count = trademark();
-#ifdef __OSI__
-    if( _Copyright != NULL ) {
-        puts( _Copyright );
-        count += 1;
-    }
-#endif
-    for( ;; first_ln++ ) {
-#ifndef __UNIX__
-        if( ++count >= 23 ) {
-            Wait_for_return();
-            count = 0;
-        }
-#endif
-        MsgGet( first_ln, msg_buff );
-        if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) )
-            break;
-        puts( msg_buff );
-    }
 }
 
 #if defined( USE_TEXT_MSGS )
@@ -242,11 +259,12 @@ int MsgGet( int id, char *buffer )
     keyx.num = id;
     result = bsearch( &keyx, txtmsgs, MSG_NUM, MSG_SIZE, msg_cmp );
     if( result != NULL ) {
-        strcpy( buffer, result->text );
+        strncpy( buffer, result->text, MAX_MESSAGE_SIZE );
+        buffer[MAX_MESSAGE_SIZE - 1] = '\0';
         return( 1 );
     }
 #else
-    if( LoadString( &hInstance, id+MsgShift, (LPSTR) buffer, 128 ) == 0 ) {
+    if( LoadString( &hInstance, id + MsgShift, (LPSTR)buffer, MAX_MESSAGE_SIZE ) == 0 ) {
         return( 1 );
     }
 #endif

@@ -32,13 +32,13 @@
 #include "ctokens.h"
 
 char            *Tokens[] = {
-    #define pick(token,string,class) string,
+    #define pick(token,string,class,oper) string,
     #include "_ctokens.h"
     #undef  pick
 };
 
 token_class     TokenClass[] = {
-    #define pick(token,string,class) class,
+    #define pick(token,string,class,oper) class,
     #include "_ctokens.h"
     #undef pick
 };

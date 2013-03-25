@@ -70,6 +70,8 @@ extern void             AsmNote( int level, int msgnum, ... );
 
 #if defined( _STANDALONE_ )
 
+    #define MAX_MESSAGE_SIZE    128
+
     #define MSG_SHARE_RC_BASE   1
     #define MSG_WOMP_RC_BASE    200
     #define MSG_WASM_RC_BASE    500
@@ -101,9 +103,6 @@ enum {
     #include "wmpmsg.gh"
     #include "msg.gh"
     #include "wasmmsg.gh"
-
-    #define MAX_RESOURCE_SIZE   128
-
 
     extern void MsgPutUsage( void );
     extern void MsgSubStr( char *, char *, char );

@@ -44,6 +44,8 @@
 :cmt    where:
 :cmt        <arch>:     i86, 386, axp, any, dbg, qnx
 
+:page. \t(Press return to continue)
+
 :title. Usage: cvtres [options] file
 :target. any
 :title. Options:

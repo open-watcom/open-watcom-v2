@@ -45,6 +45,8 @@
 :cmt    where:
 :cmt        <arch>:     i86, 386, axp, any, dbg, qnx
 
+:page. \t(Press return to continue)
+
 :title. Usage: nmake [options] [macros] [targets] [@commandfile]
 :target. any
 :title. Options:

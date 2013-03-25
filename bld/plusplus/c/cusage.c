@@ -37,61 +37,46 @@
 #include "cusage.h"
 #include "errdefns.h"
 
-#define NUM_ROWS        20
+static const char EUsage[] = {
+    #include "cmdlnusg.gh"
+    "\0"
+};
 
-#ifdef __QNX__
+static char const *nextUsage( char const *p )
+{
+    while( *p ) {
+        ++p;
+    }
+    DbgAssert( *p == '\0' );
+    return( p + 1 );
+}
 
-extern char     **_argv;
+#ifdef __UNIX__
 
 void CCusage( void )
 /******************/
 {
-    print_usage( _argv );
+    char const *usage_text;
+
+    usage_text = IntlUsageText();
+    if( usage_text == NULL ) {
+        usage_text = EUsage;
+    }
+    while( *(usage_text = nextUsage( usage_text )) != '\0' ) {
+        MsgDisplayLine( usage_text );
+    }
 }
 
 #else
 
-static const char * const Usage[] = {
-#include "cmdlnusg.gh"
-NULL };
-
-#ifndef __UNIX__
-static const char PressReturn[] = {
-"\n    "
-};
-#endif
-
- #ifdef __OSI__
-   extern       char    *_Copyright;
- #endif
+#define NUM_ROWS        20
 
 #ifdef __OSI__
 #define output(text) puts(text)
+extern       char    *_Copyright;
 #else
 #define output(text) MsgDisplayLine( text )
 #endif
-
-
-static boolean Wait_for_return( char const *page_text )
-/*****************************************************/
-// return TRUE if we should stop printing
-{
-#ifndef __UNIX__        /* No homebrew paging on UNIX */
-    if( CompFlags.ide_console_output ) {
-        int   c;
-        char *p;
-        auto char buff[256];
-
-        p = stpcpy( buff, PressReturn );
-        p = stpcpy( p, page_text );
-        output( buff );
-        fflush( stdout );
-        c = getchar();
-        return c == 'q' || c == 'Q';
-    }
-#endif
-    return FALSE;
-}
 
 typedef struct usage_data {
     unsigned    count;
@@ -99,7 +84,22 @@ typedef struct usage_data {
     char const  *page_text;
 } usage_data;
 
-boolean willPrintALine( usage_data *info )
+static boolean Wait_for_return( char const *page_text )
+/*****************************************************/
+// return TRUE if we should stop printing
+{
+    if( CompFlags.ide_console_output ) {
+        int   c;
+
+        output( page_text );
+        fflush( stdout );
+        c = getchar();
+        return( c == 'q' || c == 'Q' );
+    }
+    return FALSE;
+}
+
+static boolean willPrintALine( usage_data *info )
 {
     boolean     retval;
 
@@ -112,13 +112,6 @@ boolean willPrintALine( usage_data *info )
     return retval;
 }
 
-char const *nextIntlUsage( char const *p ) {
-    while( *p ) {
-        ++p;
-    }
-    DbgAssert( *p == '\0' );
-    return( p + 1 );
-}
 
 void CCusage( void )
 /******************/
@@ -128,28 +121,22 @@ void CCusage( void )
 
     info.nrows = NUM_ROWS-2;
     info.count = 0;
-    #ifdef __OSI__
-        if( _Copyright != NULL ) {
-            output( _Copyright );
-            info.count = 1;
-        }
-    #endif
+#ifdef __OSI__
+    if( _Copyright != NULL ) {
+        output( _Copyright );
+        info.count = 1;
+    }
+#endif
     usage_text = IntlUsageText();
     if( usage_text == NULL ) {
-        char const * const *p = Usage;
-        info.page_text = *p;
-        for( ++p; *p != NULL; ++p ) {
-            if( willPrintALine( &info ) ) break;
-            output( (char*)*p );
-        }
-    } else {
-        info.page_text = usage_text;
-        usage_text = nextIntlUsage( usage_text );
-        while( *usage_text ) {
-            if( willPrintALine( &info ) ) break;
-            output( (char*)usage_text );
-            usage_text = nextIntlUsage( usage_text );
-        }
+        usage_text = EUsage;
+    }
+    info.page_text = usage_text;
+    while( *(usage_text = nextUsage( usage_text )) != '\0' ) {
+        if( willPrintALine( &info ) )
+            break;
+        output( usage_text );
     }
 }
+
 #endif
