@@ -34,139 +34,68 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-
 #include "lsspec.h"
 #include "encodlng.h"
 
 // functions that are supplied by the host environment
-#define FN_UNGET        "OPT_UNGET"         // void ( void )
-#define FN_GET_LOWER    "OPT_GET_LOWER"     // int ( void )
-#define FN_RECOG        "OPT_RECOG"         // int ( int )
-#define FN_RECOG_LOWER  "OPT_RECOG_LOWER"   // int ( int )
-#define FN_END          "OPT_END"           // int ( void )
+#define FN_UNGET            "OPT_UNGET"                 // void ( void )
+#define FN_GET_LOWER        "OPT_GET_LOWER"             // int ( void )
+#define FN_RECOG            "OPT_RECOG"                 // int ( int )
+#define FN_RECOG_LOWER      "OPT_RECOG_LOWER"           // int ( int )
+#define FN_END              "OPT_END"                   // int ( void )
 
-#define FN_NUMBER       "OPT_GET_NUMBER"    // int ( unsigned * )
-#define FN_NUMBER_DEFAULT "OPT_GET_NUMBER_DEFAULT"  // int ( unsigned *, unsigned )
-#define FN_NUMBER_MULTIPLE "OPT_GET_NUMBER_MULTIPLE"    // int ( OPT_NUMBER ** )
-#define FN_CHAR         "OPT_GET_CHAR"      // int ( int * )
-#define FN_CHAR_OPT     "OPT_GET_CHAR_OPT"  // int ( int * )
-#define FN_ID           "OPT_GET_ID"        // int ( OPT_STRING ** )
-#define FN_ID_OPT       "OPT_GET_ID_OPT"    // int ( OPT_STRING ** )
-#define FN_FILE         "OPT_GET_FILE"      // int ( OPT_STRING ** )
-#define FN_FILE_OPT     "OPT_GET_FILE_OPT"  // int ( OPT_STRING ** )
-#define FN_DIR          "OPT_GET_DIR"       // int ( OPT_STRING ** )
-#define FN_DIR_OPT      "OPT_GET_DIR_OPT"   // int ( OPT_STRING ** )
-#define FN_PATH         "OPT_GET_PATH"      // int ( OPT_STRING ** )
-#define FN_PATH_OPT     "OPT_GET_PATH_OPT"  // int ( OPT_STRING ** )
+#define FN_NUMBER           "OPT_GET_NUMBER"            // int ( unsigned * )
+#define FN_NUMBER_DEFAULT   "OPT_GET_NUMBER_DEFAULT"    // int ( unsigned *, unsigned )
+#define FN_NUMBER_MULTIPLE  "OPT_GET_NUMBER_MULTIPLE"   // int ( OPT_NUMBER ** )
+#define FN_CHAR             "OPT_GET_CHAR"              // int ( int * )
+#define FN_CHAR_OPT         "OPT_GET_CHAR_OPT"          // int ( int * )
+#define FN_ID               "OPT_GET_ID"                // int ( OPT_STRING ** )
+#define FN_ID_OPT           "OPT_GET_ID_OPT"            // int ( OPT_STRING ** )
+#define FN_FILE             "OPT_GET_FILE"              // int ( OPT_STRING ** )
+#define FN_FILE_OPT         "OPT_GET_FILE_OPT"          // int ( OPT_STRING ** )
+#define FN_DIR              "OPT_GET_DIR"               // int ( OPT_STRING ** )
+#define FN_DIR_OPT          "OPT_GET_DIR_OPT"           // int ( OPT_STRING ** )
+#define FN_PATH             "OPT_GET_PATH"              // int ( OPT_STRING ** )
+#define FN_PATH_OPT         "OPT_GET_PATH_OPT"          // int ( OPT_STRING ** )
 
-#define FN_CLEAN_STRING "OPT_CLEAN_STRING"    // void ( OPT_STRING ** )
-#define FN_CLEAN_NUMBER "OPT_CLEAN_NUMBER"    // void ( OPT_NUMBER ** )
+#define FN_CLEAN_STRING     "OPT_CLEAN_STRING"          // void ( OPT_STRING ** )
+#define FN_CLEAN_NUMBER     "OPT_CLEAN_NUMBER"          // void ( OPT_NUMBER ** )
 
-#define FN_PROCESS      "OPT_PROCESS"       // int ( OPT_STORAGE * )
-#define FN_INIT         "OPT_INIT"          // void ( OPT_STORAGE * )
-#define FN_FINI         "OPT_FINI"          // void ( OPT_STORAGE * )
+#define FN_PROCESS          "OPT_PROCESS"               // int ( OPT_STORAGE * )
+#define FN_INIT             "OPT_INIT"                  // void ( OPT_STORAGE * )
+#define FN_FINI             "OPT_FINI"                  // void ( OPT_STORAGE * )
 
 #define USE_SWITCH_THRESHOLD    (4)
 #define CONSOLE_WIDTH           (79)
 
-unsigned line;
-FILE *gfp;
-FILE *ofp;
-FILE *pfp;
-FILE *ufp;
-FILE *mfp;
-FILE *bfp;
+#define BUFF_SIZE               1024
 
-#define BUFF_SIZE       1024
-static char ibuff[BUFF_SIZE];
-static char tagbuff[BUFF_SIZE];
-static char tokbuff[BUFF_SIZE];
-static char enumbuff[BUFF_SIZE];
-static char hdrbuff[BUFF_SIZE];
-static char maxusgbuff[BUFF_SIZE];
+#define HAS_OPT_STRING( o )     ( (o)->is_id || (o)->is_file || (o)->is_dir || (o)->is_path || (o)->is_special )
+#define HAS_OPT_NUMBER( o )     ( (o)->is_number && (o)->is_multiple )
 
-typedef struct option OPTION;
-typedef struct codeseq CODESEQ;
+#define NOCHAIN                 ((CHAIN *)~0UL)
 
-#define CHAIN_YES       0x01
-#define CHAIN_USAGE     0x02
-static char alternateEqual;
-static char chainOption[256];
-static char *chainUsage[256][LANG_MAX];
-static unsigned char lastChain;
-static unsigned maxUsageLen;
-static char *pageUsage[LANG_MAX];
-static unsigned targetMask;
-static unsigned targetAnyMask;
-static unsigned targetDbgMask;
-static unsigned nextTargetMask = 1;
+#define SKIP_BEG_MARK(s)        if(*s==':')++s
 
 typedef enum tag_id {
 #define TAG( s )        TAG_##s ,
 #include "opttags.h"
+#undef TAG
     TAG_UNKNOWN,
     TAG_NULL
 } tag_id;
 
-static tag_id getsUsage = TAG_NULL;
+typedef enum flow_control {
+    EC_NULL             = 0,
+    EC_CONTINUE         = 0x01,
+    EC_CHAIN            = 0x02
+} flow_control;
 
-#define TAG( s )        #s ,
-char *tagNames[] = {
-#include "opttags.h"
-    NULL };
-
-#define TAG( s )        static void do##s( char * );
-#include "opttags.h"
-
-#define TAG( s )        do##s ,
-void (*processTag[])( char * ) = {
-#include "opttags.h"
-    NULL };
-
-static char *validTargets[] = {
-    "any",
-    "i86",
-    "386",
-    "axp",
-    "ppc",
-    "dbg",
-    "linux",
-    "qnx",
-    "sparc",
-    NULL
-};
-
-static const char * const langName[] = {
-    #define LANG_DEF( id, dbcs )        #id ,
-    LANG_DEFS
-    #undef LANG_DEF
-};
-
-static uint_8 const langMaxChar[] = {
-    #define LANG_DEF( id, dbcs )        dbcs ,
-    LANG_DEFS
-    #undef LANG_DEF
-};
-
-static char *usageMsg[] = {
-    "optencod [-i] [-l <lang-n>] [-q] [-u <usage-u>] <gml-file> <option-h> <parse-c> <usage-h> <target>*",
-    "where:",
-    "    <gml-file> is the tagged input GML file",
-    "    <parse-h> is the output file for the command line parser",
-    "    <usage-h> is the output file for the usage message",
-    "    <usage-u> is the output file for the QNX usage file",
-    "    <lang> is the language(number) used for output data",
-    "    <target> can be chosen from:",
-    NULL
-};
-
-static struct {
-    unsigned    international : 1;
-    unsigned    quiet : 1;
-    unsigned    no_equal : 1;
-    unsigned    alternate_equal : 1;
-    unsigned    lang : 12;
-} optFlag;
+typedef enum cvt_name {
+    CVT_STRING,
+    CVT_NORMALIZE,
+    CVT_USAGE
+} cvt_name;
 
 typedef struct target TARGET;
 struct target {
@@ -174,7 +103,6 @@ struct target {
     unsigned    mask;
     char        name[1];
 };
-static TARGET *targetList;
 
 typedef struct name NAME;
 struct name {
@@ -183,9 +111,26 @@ struct name {
     char        name[1];
 };
 
-static NAME *enumList;
-static NAME *enumeratorList;
+typedef struct title TITLE;
+struct title {
+    TITLE       *next;
+    unsigned    target;
+    unsigned    ntarget;
+    char        *lang_title[LANG_MAX];
+};
 
+typedef struct chain CHAIN;
+struct chain {
+    CHAIN       *next;
+    char        *Usage[LANG_MAX];
+    int         clen;
+    int         len;
+    unsigned    usage_used : 1;
+    unsigned    code_used : 1;
+    char        name[1];
+};
+
+typedef struct option OPTION;
 struct option {
     OPTION      *next;
     OPTION      *synonym;
@@ -218,39 +163,131 @@ struct option {
     unsigned    is_prefix : 1;
     unsigned    is_timestamp : 1;
     unsigned    is_negate : 1;
-    unsigned    nochain : 1;
+    CHAIN       *chain;
+    int         slen;
+    char        *sname;
     char        name[1];
 };
-static OPTION *optionList;
-static OPTION *uselessOptionList;
 
-#define HAS_OPT_STRING( o ) ( (o)->is_id || (o)->is_file || (o)->is_dir || (o)->is_path || (o)->is_special )
-#define HAS_OPT_NUMBER( o ) ( (o)->is_number && (o)->is_multiple )
-
+typedef struct codeseq CODESEQ;
 struct codeseq {
     CODESEQ     *sibling;
     CODESEQ     *children;
     OPTION      *option;
-    int         c;
+    char        c;
     unsigned    sensitive : 1;
     unsigned    accept : 1;
     unsigned    chain : 1;
+    unsigned    chain_root : 1;
 };
 
-typedef struct title TITLE;
-struct title {
-    TITLE       *next;
-    unsigned    target;
-    unsigned    ntarget;
-    char        *lang_title[LANG_MAX];
-};
-static TITLE *titleList;
-static TITLE *targetTitle;
+static unsigned     line;
+static FILE         *gfp;
+static FILE         *ofp;
+static FILE         *pfp;
+static FILE         *ufp;
+static FILE         *mfp;
+static FILE         *bfp;
 
-enum {
-    EC_CONTINUE         = 0x01,
-    EC_NULL             = 0
+static char         ibuff[BUFF_SIZE];
+static char         tagbuff[BUFF_SIZE];
+static char         tokbuff[BUFF_SIZE];
+static char         enumbuff[BUFF_SIZE];
+static char         hdrbuff[BUFF_SIZE];
+static char         maxusgbuff[BUFF_SIZE];
+
+static char         alternateEqual;
+static CHAIN        *lastChain;
+static unsigned     maxUsageLen;
+static char         *pageUsage[LANG_MAX];
+static unsigned     targetMask;
+static unsigned     targetAnyMask;
+static unsigned     targetDbgMask;
+static unsigned     nextTargetMask = 1;
+
+static tag_id getsUsage = TAG_NULL;
+
+static char *tagNames[] = {
+#define TAG( s )        #s ,
+#include "opttags.h"
+#undef TAG
+    NULL
 };
+
+#define TAG( s )        static void do##s( char * );
+#include "opttags.h"
+#undef TAG
+
+static void (*processTag[])( char * ) = {
+#define TAG( s )        do##s ,
+#include "opttags.h"
+#undef TAG
+    NULL };
+
+static char *validTargets[] = {
+    "any",
+    "dbg",
+    "i86",
+    "386",
+    "axp",
+    "ppc",
+    "mps",
+    "sparc",
+    "bsd",
+    "dos",
+    "linux",
+    "nt",
+    "os2",
+    "osx",
+    "qnx",
+    NULL
+};
+
+static const char * const langName[] = {
+    #define LANG_DEF( id, dbcs )        #id ,
+    LANG_DEFS
+    #undef LANG_DEF
+};
+
+static uint_8 const langMaxChar[] = {
+    #define LANG_DEF( id, dbcs )        dbcs ,
+    LANG_DEFS
+    #undef LANG_DEF
+};
+
+static char *usageMsg[] = {
+    "optencod [-i] [-l <lang-n>] [-n] [-q] [-u <usage-u>] <gml-file> <option-h> <parse-c> <usage-h> <target>*",
+    "where:",
+    "    <gml-file> is the tagged input GML file",
+    "    <parse-c> is the output file for the command line parser code",
+    "    <parse-h> is the output file for the command line parser data declaration",
+    "    <usage-h> is the output file for the usage string file",
+    "    <usage-u> is the output file for the QNX usage file",
+    "    <lang-n> is the language(number) used for output data",
+    "    <target> can be chosen from:",
+    NULL
+};
+
+static struct {
+    unsigned    international : 1;
+    unsigned    quiet : 1;
+    unsigned    no_equal : 1;
+    unsigned    alternate_equal : 1;
+    unsigned    zero_term : 1;
+    unsigned    lang;
+} optFlag;
+
+static TARGET   *targetList;
+static NAME     *enumList;
+static NAME     *enumeratorList;
+static OPTION   *optionList;
+static OPTION   *uselessOptionList;
+static TITLE    *titleList;
+static CHAIN    *chainList;
+
+static TITLE    *targetTitle;
+
+static void emitCode( CODESEQ *h, unsigned depth, flow_control control );
 
 static void fail( char *msg, ... )
 {
@@ -269,14 +306,14 @@ static void dumpUsage( void )
 {
     char **p;
 
-    for( p = usageMsg; *p; ++p ) {
+    for( p = usageMsg; *p != NULL; ++p ) {
         fprintf( stderr, "%s\n", *p );
     }
     fprintf( stderr, "        " );
-    for( p = validTargets; *p; ++p ) {
+    for( p = validTargets; *p != NULL; ++p ) {
         fprintf( stderr, "%s ", *p );
     }
-    fprintf( stderr, "\n", *p );
+    fprintf( stderr, "\n" );
 }
 
 static void emitPrintf( unsigned depth, char *msg, ... )
@@ -284,15 +321,89 @@ static void emitPrintf( unsigned depth, char *msg, ... )
     va_list args;
     unsigned i;
 
-    for( i = ( depth >> 1 ); i != 0; --i ) {
-        fprintf( pfp, "\t" );
+    if( pfp != NULL ) {
+        for( i = ( depth >> 1 ); i != 0; --i ) {
+            fprintf( pfp, "\t" );
+        }
+        if( depth & 1 ) {
+            fprintf( pfp, "    " );
+        }
+        va_start( args, msg );
+        vfprintf( pfp, msg, args );
+        va_end( args );
     }
-    if( depth & 1 ) {
-        fprintf( pfp, "    " );
+}
+
+static void cvtName( char *dst, char *src, cvt_name cvt )
+{
+    char c;
+
+    while( (c = *src++) != '\0' ) {
+        if( c == '\\' ) {
+            if( cvt == CVT_NORMALIZE ) {
+                *dst++ = c;
+            }
+            c = *src++;
+        } else if( cvt != CVT_USAGE ) {
+            c = tolower( (unsigned char)c );
+        }
+        *dst++ = c;
     }
-    va_start( args, msg );
-    vfprintf( pfp, msg, args );
-    va_end( args );
+    *dst = c;
+}
+
+static int cmpOptName( char *n1, char *n2 )
+{
+    char    c1;
+    char    c2;
+
+    for( ;; ) {
+        c1 = *n1++;
+        c2 = *n2++;
+        if( c1 == '\\' ) {
+            if( c2 != '\\' ) {
+                return( 0 );
+            }
+            c1 = *n1++;
+            c2 = *n2++;
+        } else {
+            c1 = tolower( c1 );
+            c2 = tolower( c2 );
+        }
+        if( c1 != c2 ) {
+            return( 0 );
+        }
+        if( c1 == '\0' ) {
+            break;
+        }
+    }
+    return( 1 );
+}
+
+static int cmpChainName( char *n1, char *n2, int len )
+{
+    int     i;
+    char    c1;
+    char    c2;
+
+    for( i = 0; i < len; ++i ) {
+        c1 = *n1++;
+        c2 = *n2++;
+        if( c1 == '\\' ) {
+            if( c2 != '\\' ) {
+                return( 0 );
+            }
+            c1 = *n1++;
+            c2 = *n2++;
+        } else {
+            c1 = tolower( c1 );
+            c2 = tolower( c2 );
+        }
+        if( c1 != c2 ) {
+            return( 0 );
+        }
+    }
+    return( 1 );
 }
 
 static void addTarget( char *t )
@@ -365,6 +476,46 @@ static NAME *addEnumerator( char *enumerate, char *field_name )
     return( n );
 }
 
+static CHAIN *findChain( char *n )
+{
+    CHAIN *cn;
+
+    for( cn = chainList; cn != NULL; cn = cn->next ) {
+        if( cmpChainName( cn->name, n, cn->len ) ) {
+            return( cn );
+        }
+    }
+    return( NULL );
+}
+
+static CHAIN *addChain( char *n, int chain )
+{
+    size_t len;
+    CHAIN *cn;
+
+    cvtName( n, n, CVT_NORMALIZE );
+    for( cn = chainList; cn != NULL; cn = cn->next ) {
+        if( strcmp( n, cn->name ) == 0 ) {
+            if( cn->code_used ) {
+                fail( "CHAIN: option '%s' already defined\n", n );
+            } else {
+                fail( "USAGEGRP: option '%s' already defined\n", n );
+            }
+            return( NULL );
+        }
+    }
+    len = strlen( n );
+    cn = malloc( sizeof( *cn ) + len );
+    cn->len = len;
+    memcpy( cn->name, n, len + 1 );
+    cvtName( n, n, CVT_STRING );
+    cn->clen = strlen( n );
+    cn->code_used = chain;
+    cn->next = chainList;
+    chainList = cn;
+    return( cn );
+}
+
 static void procCmdLine( int argc, char **argv )
 {
     char **t;
@@ -383,6 +534,11 @@ static void procCmdLine( int argc, char **argv )
         optFlag.lang = atoi( argv[2] );
         argc -= 2;
         argv += 2;
+    }
+    if( strcmp( argv[1], "-n" ) == 0 ) {
+        optFlag.zero_term = 1;
+        --argc;
+        ++argv;
     }
     if( strcmp( argv[1], "-q" ) == 0 ) {
         optFlag.quiet = 1;
@@ -403,31 +559,42 @@ static void procCmdLine( int argc, char **argv )
     gfp = fopen( argv[0], "r" );
     if( !gfp ) fail( "cannot open '%s' for input", argv[0] );
     ++argv;
-    ofp = fopen( argv[0], "w" );
-    if( !ofp ) fail( "cannot open '%s' for output", argv[0] );
+    if( strcmp( argv[0], "." ) == 0 ) {
+        ofp = NULL;
+    } else {
+        ofp = fopen( argv[0], "w+" );
+        if( ofp == NULL ) fail( "cannot open '%s' for output", argv[0] );
+    }
     ++argv;
-    pfp = fopen( argv[0], "w" );
-    if( !pfp ) fail( "cannot open '%s' for output", argv[0] );
+    if( strcmp( argv[0], "." ) == 0 ) {
+        pfp = NULL;
+    } else {
+        pfp = fopen( argv[0], "w+" );
+        if( pfp == NULL ) fail( "cannot open '%s' for output", argv[0] );
+    }
     ++argv;
-    ufp = fopen( argv[0], "w" );
-    if( !ufp ) fail( "cannot open '%s' for output", argv[0] );
+    if( strcmp( argv[0], "." ) == 0 ) {
+        ufp = NULL;
+    } else {
+        ufp = fopen( argv[0], "w+" );
+        if( ufp == NULL ) fail( "cannot open '%s' for output", argv[0] );
+    }
     ++argv;
-    for( t = validTargets; *t; ++t ) {
+    for( t = validTargets; *t != NULL; ++t ) {
         addTarget( *t );
     }
     targetAnyMask = findTarget( "any" );
     targetDbgMask = findTarget( "dbg" );
     targetMask |= targetAnyMask;
-    while( *argv ) {
+    for( ; *argv != NULL; ++argv ) {
         mask = findTarget( *argv );
         targetMask |= mask;
-        ++argv;
     }
 }
 
 static char *skipSpace( char *p )
 {
-    while( *p && isspace( *p ) ) {
+    while( *p != '\0' && isspace( *p ) ) {
         ++p;
     }
     return( p );
@@ -435,8 +602,9 @@ static char *skipSpace( char *p )
 
 static char *copyNonSpaceUntil( char *i, char *o, char t )
 {
-    for( ; *i; ++i ) {
-        if( isspace( *i ) ) break;
+    for( ; *i != '\0'; ++i ) {
+        if( isspace( *i ) )
+            break;
         if( *i == t ) {
             ++i;
             break;
@@ -452,7 +620,7 @@ static tag_id findTag( char *t )
 {
     char **c;
 
-    for( c = tagNames; *c; ++c ) {
+    for( c = tagNames; *c != NULL; ++c ) {
         if( stricmp( t, *c ) == 0 ) {
             return( c - tagNames );
         }
@@ -480,19 +648,24 @@ static tag_id isTag( char **eot )
     return( TAG_NULL );
 }
 
-static OPTION *pushNewOption( char *name, OPTION *same )
+static OPTION *pushNewOption( char *name, OPTION *o )
 {
-    size_t len;
-    OPTION *p;
+    size_t  len;
+    OPTION  *newo;
 
     len = strlen( name );
-    p = calloc( 1, sizeof( *p ) + len );
-    p->synonym = same;
-    strcpy( p->name, name );
-    p->is_simple = 1;
-    p->next = optionList;
-    optionList = p;
-    return( p );
+    newo = calloc( 1, sizeof( *newo ) + len );
+    memcpy( newo->name, name, len + 1 );
+    cvtName( name, name, CVT_STRING );
+    len = strlen( name );
+    newo->slen = len;
+    newo->sname = calloc( 1, len + 1 );
+    memcpy( newo->sname, name, len + 1 );
+    newo->synonym = o;
+    newo->is_simple = 1;
+    newo->next = optionList;
+    optionList = newo;
+    return( newo );
 }
 
 static char *pickUpRest( char *p )
@@ -501,8 +674,8 @@ static char *pickUpRest( char *p )
 
     len = strlen( p );
     if( len != 0 ) {
-        if( p[len-1] == '\n' ) {
-            p[len-1] = '\0';
+        if( p[len - 1] == '\n' ) {
+            p[len - 1] = '\0';
         }
     }
     return( strdup( p ) );
@@ -544,9 +717,10 @@ static void doOPTION( char *p )
 
     targetTitle = NULL;
     synonym = NULL;
-    while( *p ) {
+    while( *p != '\0' ) {
         p = skipSpace( p );
-        if( *p == '\0' ) break;
+        if( *p == '\0' )
+            break;
         p = copyNonSpaceUntil( p, tokbuff, '\0' );
         synonym = pushNewOption( tokbuff, synonym );
     }
@@ -559,9 +733,10 @@ static void doTARGET( char *p )
     unsigned mask;
     OPTION *o;
 
-    while( *p ) {
+    while( *p != '\0' ) {
         p = skipSpace( p );
-        if( *p == '\0' ) break;
+        if( *p == '\0' )
+            break;
         p = copyNonSpaceUntil( p, tokbuff, '\0' );
         mask = findTarget( tokbuff );
         if( targetTitle != NULL ) {
@@ -580,9 +755,10 @@ static void doNTARGET( char *p )
     unsigned mask;
     OPTION *o;
 
-    while( *p ) {
+    while( *p != '\0' ) {
         p = skipSpace( p );
-        if( *p == '\0' ) break;
+        if( *p == '\0' )
+            break;
         p = copyNonSpaceUntil( p, tokbuff, '\0' );
         mask = findTarget( tokbuff );
         if( targetTitle != NULL ) {
@@ -639,7 +815,7 @@ static void doNOCHAIN( char *p )
 
     p = p;
     for( o = optionList; o != NULL; o = o->synonym ) {
-        o->nochain = 1;
+        o->chain = NOCHAIN;
     }
 }
 
@@ -760,7 +936,7 @@ static void doNEGATE( char *p )
     p = p;
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_negate = 1;
-        if( o->enumerate ){
+        if( o->enumerate != NULL ){
             fail( "must be non-enumeration switch for negate tag\n" );
         }
     }
@@ -777,6 +953,8 @@ static void doNOEQUAL( char *p )
 // :page. <text>
 static void doPAGE( char *p )
 {
+    // skip leading ':' character used to specify spaces on the beginning
+    SKIP_BEG_MARK( p );
     pageUsage[LANG_English] = pickUpRest( p );
     getsUsage = TAG_PAGE;
 }
@@ -793,28 +971,29 @@ static void doPATH( char *p )
     }
 }
 
-// :chain. <char> <usage>
+// :chain. <option> <usage>
 //
-// mark options that start with <char> as chainable
+// mark options that start with <option> as chainable
 // i.e., -oa -ox == -oax
 static void doCHAIN( char *p )
 {
-    unsigned char c;
+    CHAIN *cn;
 
     p = skipSpace( p );
     if( *p == '\0' ) {
-        fail( "missing <char> in :chain. tag\n" );
+        fail( "missing <option> in :chain. tag\n" );
     }
-    c = *(unsigned char *)p;
-    chainOption[ c ] |= CHAIN_YES;
-    ++p;
+    p = copyNonSpaceUntil( p, tokbuff, '\0' );
+    cn = addChain( tokbuff, 1 );
     p = skipSpace( p );
-    chainUsage[ c ][ LANG_English ] = pickUpRest( p );
-    lastChain = c;
+    // skip leading ':' character used to specify spaces on the beginning
+    SKIP_BEG_MARK( p );
+    cn->Usage[LANG_English] = pickUpRest( p );
+    lastChain = cn;
     getsUsage = TAG_CHAIN;
 }
 
-// :enumerate. <name>
+// :enumerate. <name> <option>
 static void doENUMERATE( char *p )
 {
     NAME *n;
@@ -829,11 +1008,20 @@ static void doENUMERATE( char *p )
     if( n == NULL ) {
         n = addName( &enumList, tokbuff );
     }
-    addEnumerator( tokbuff, "default" );
+    tokbuff[0] = '\0';
+    p = skipSpace( p );
+    if( *p != '\0' ) {
+        p = copyNonSpaceUntil( p, tokbuff, '\0' );
+        addEnumerator( n->name, tokbuff );
+    }
+    addEnumerator( n->name, "default" );
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->enumerate = n;
         if( o->is_timestamp ) {
             o->enumerate->is_timestamp = 1;
+        }
+        if( tokbuff[0] != '\0' ) {
+            o->field_name = strdup( tokbuff );
         }
     }
 }
@@ -881,8 +1069,10 @@ static void doUSAGE( char *p )
 {
     OPTION *o;
 
+    // skip leading ':' character used to specify spaces on the beginning
+    SKIP_BEG_MARK( p );
     for( o = optionList; o != NULL; o = o->synonym ) {
-        o->lang_usage[ LANG_English ] = pickUpRest( p );
+        o->lang_usage[LANG_English] = pickUpRest( p );
     }
 }
 
@@ -892,12 +1082,14 @@ static void doJUSAGE( char *p )
     char *usage;
     OPTION *o;
 
+    // skip leading ':' character used to specify spaces on the beginning
+    SKIP_BEG_MARK( p );
     switch( getsUsage ) {
     case TAG_PAGE:
         pageUsage[LANG_Japanese] = pickUpRest( p );
         break;
     case TAG_CHAIN:
-        chainUsage[lastChain][LANG_Japanese] = pickUpRest( p );
+        lastChain->Usage[LANG_Japanese] = pickUpRest( p );
         break;
     case TAG_OPTION:
         for( o = optionList; o != NULL; o = o->synonym ) {
@@ -928,7 +1120,9 @@ static void doTITLE( char *p )
     *i = t;
     t->target = 0;
     t->ntarget = 0;
-    t->lang_title[ LANG_English ] = pickUpRest( p );
+    // skip leading ':' character used to specify spaces on the beginning
+    SKIP_BEG_MARK( p );
+    t->lang_title[LANG_English] = pickUpRest( p );
     targetTitle = t;
 }
 
@@ -941,7 +1135,9 @@ static void doJTITLE( char *p )
     if( t == NULL ) {
         fail( ":jtitle. must follow a :title.\n" );
     }
-    t->lang_title[ LANG_Japanese ] = pickUpRest( p );
+    // skip leading ':' character used to specify spaces on the beginning
+    SKIP_BEG_MARK( p );
+    t->lang_title[LANG_Japanese] = pickUpRest( p );
 }
 
 // :timestamp.
@@ -957,6 +1153,28 @@ static void doTIMESTAMP( char *p )
             o->enumerate->is_timestamp = 1;
         }
     }
+}
+
+// :usagegrp. <option> <usage>
+//
+// mark options that start with <option> as group in usage text
+// i.e., -fp0 -fp1 ==> -fp{0,1}
+static void doUSAGEGRP( char *p )
+{
+    CHAIN *cn;
+
+    p = skipSpace( p );
+    if( *p == '\0' ) {
+        fail( "missing <option> in :usagegrp. tag\n" );
+    }
+    p = copyNonSpaceUntil( p, tokbuff, '\0' );
+    cn = addChain( tokbuff, 0 );
+    p = skipSpace( p );
+    // skip leading ':' character used to specify spaces on the beginning
+    SKIP_BEG_MARK( p );
+    cn->Usage[LANG_English] = pickUpRest( p );
+    lastChain = cn;
+    getsUsage = TAG_CHAIN;
 }
 
 static void checkForGMLEscape( char *p )
@@ -986,10 +1204,7 @@ static void checkForGMLEscapeSequences( void )
     char c;
     char *p;
 
-    p = ibuff;
-    for(;;) {
-        c = *p++;
-        if( c == '\0' ) break;
+    for( p = ibuff; (c = *p++) != '\0'; ) {
         if( c == '&' ) {
             checkForGMLEscape( p );
         }
@@ -999,18 +1214,16 @@ static void checkForGMLEscapeSequences( void )
 static void readInputFile( void )
 {
     char *eot;
-    char *check;
     tag_id tag;
 
-    for(;;) {
-        check = fgets( ibuff, sizeof(ibuff), gfp );
-        if( check == NULL ) break;
+    for( ; fgets( ibuff, sizeof(ibuff), gfp ) != NULL; ) {
         ++line;
         checkForGMLEscapeSequences();
         tag = isTag( &eot );
-        if( tag == TAG_NULL ) continue;
-        eot = skipSpace( eot );
-        (*processTag[tag])( eot );
+        if( tag != TAG_NULL ) {
+            eot = skipSpace( eot );
+            (*processTag[tag])( eot );
+        }
     }
 }
 
@@ -1021,18 +1234,33 @@ static void checkForMissingUsages( void )
     int end_lang;
     int i;
 
+    if( optFlag.international ) {
+        start_lang = LANG_MIN;
+        end_lang = LANG_MAX;
+    } else {
+        start_lang = LANG_English;
+        end_lang = start_lang + 1;
+    }
     for( o = optionList; o != NULL; o = o->next ) {
-        if( optFlag.international ) {
-            start_lang = LANG_MIN;
-            end_lang = LANG_MAX;
-        } else {
-            start_lang = LANG_English;
-            end_lang = start_lang + 1;
-        }
-        for( i = start_lang; i < end_lang; ++i ) {
-            if( o->lang_usage[i] == NULL ) {
-                fail( "option '%s' has no %s usage\n", o->name, langName[i] );
+        if( o->chain == NULL || cmpOptName( o->name, o->chain->name ) != 0 ) {
+            for( i = start_lang; i < end_lang; ++i ) {
+                if( o->lang_usage[i] == NULL ) {
+                    fail( "option '%s' has no %s usage\n", o->name, langName[i] );
+                }
             }
+        }
+    }
+}
+
+static void assignChainToOptions( void )
+{
+    OPTION *o;
+
+    for( o = optionList; o != NULL; o = o->next ) {
+        if( o->chain == NOCHAIN ) {
+            o->chain = NULL;
+        } else {
+            o->chain = findChain( o->name );
         }
     }
 }
@@ -1041,15 +1269,15 @@ static void stripUselessOptions( void )
 {
     OPTION **h;
     OPTION *o;
-    OPTION *n;
+    OPTION *o_next;
 
     h = &optionList;
-    for( o = *h; o != NULL; o = n ) {
-        n = o->next;
-        if(( o->ntarget & targetMask ) != 0 || ( o->target & targetMask ) == 0 ) {
+    for( o = *h; o != NULL; o = o_next ) {
+        o_next = o->next;
+        if( (o->ntarget & targetMask) || (o->target & targetMask) == 0 ) {
             o->next = uselessOptionList;
             uselessOptionList = o;
-            *h = n;
+            *h = o_next;
         } else {
             h = &(o->next);
         }
@@ -1062,35 +1290,63 @@ static char *strpcpy( char *d, char *s )
 
     len = strlen( s );
     strcpy( d, s );
-    return d + len;
+    return( d + len );
+}
+
+static char *special_char( char *f, int c )
+{
+    if( c == '~' ) {
+        f = strpcpy( f, "_tilde" );
+    } else if( c == '+' ) {
+        f = strpcpy( f, "_plus" );
+    } else if( c == '!' ) {
+        f = strpcpy( f, "_exclamation" );
+    } else if( c == '#' ) {
+        f = strpcpy( f, "_sharp" );
+    } else {
+        *f++ = '_';
+    }
+    return( f );
 }
 
 static void makeFieldName( char *n, char *f )
 {
-    if( *n == '\\' ) {
-        n++;
-    }
-    if( isalpha( *n ) ) {
-        *f++ = *n++;
+    int c;
+    int sensitive;
+    int special;
+
+    c = *(unsigned char *)n++;
+    if( c == '\\' ) {
+        c = *(unsigned char *)n++;
     } else {
-        *f++ = '_';
+        c = tolower( c );
     }
-    for(;;) {
-        if( *n == '\0' ) break;
-        if( isalnum( *n ) ) {
-            *f++ = *n;
-        } else if( *n == '~' ) {
-            f = strpcpy( f, "_tilde" );
-        } else if( *n == '+' ) {
-            f = strpcpy( f, "_plus" );
-        } else if( *n == '!' ) {
-            f = strpcpy( f, "_exclamation" );
-        } else if( *n == '#' ) {
-            f = strpcpy( f, "_sharp" );
-        } else if( *n == '\\' ) {
-            /* skip */
+    if( c != '\0' ) {
+        special = 0;
+        if( isalnum( c ) ) {
+            if( isdigit( c ) )
+                *f++ = '_';
+            *f++ = c;
+        } else {
+            f = special_char( f, c );
+            special = 1;
         }
-        ++n;
+        sensitive = 0;
+        for( ; (c = *(unsigned char *)n++) != '\0'; ) {
+            if( c == '\\' ) {
+                sensitive = 1;
+                continue;
+            } else if( isalnum( c ) ) {
+                if( special && *(f - 1) != '_' )
+                    *f++ = '_';
+                *f++ = ( sensitive ) ? c : tolower( c );
+                special = 0;
+            } else {
+                f = special_char( f, c);
+                special = 1;
+            }
+            sensitive = 0;
+        }
     }
     *f = '\0';
 }
@@ -1100,57 +1356,74 @@ static void startParserH( void )
     OPTION *o;
     NAME *e;
 
-    fprintf( ofp, "typedef struct opt_string OPT_STRING;\n" );
-    fprintf( ofp, "struct opt_string {\n" );
-    fprintf( ofp, "    OPT_STRING *next;\n" );
-    fprintf( ofp, "    char data[1];\n" );
-    fprintf( ofp, "};\n" );
-    fprintf( ofp, "typedef struct opt_number OPT_NUMBER;\n" );
-    fprintf( ofp, "struct opt_number {\n" );
-    fprintf( ofp, "    OPT_NUMBER *next;\n" );
-    fprintf( ofp, "    unsigned number;\n" );
-    fprintf( ofp, "};\n" );
-    fprintf( ofp, "typedef struct opt_storage OPT_STORAGE;\n" );
-    fprintf( ofp, "struct opt_storage {\n" );
-    fprintf( ofp, "    unsigned     timestamp;\n" );
-    for( o = optionList; o != NULL; o = o->next ) {
-        if( o->synonym != NULL ) continue;
-        makeFieldName( o->name, tokbuff );
-        strcat( tokbuff, "_value" );
-        o->value_field_name = strdup( tokbuff );
-        if( o->is_number ) {
-            if( HAS_OPT_NUMBER( o ) ) {
-                fprintf( ofp, "    OPT_NUMBER   *%s;\n", tokbuff );
-            } else {
-                fprintf( ofp, "    unsigned     %s;\n", tokbuff );
-            }
-        } else if( o->is_char ) {
-            fprintf( ofp, "    int          %s;\n", tokbuff );
-        } else if( HAS_OPT_STRING( o ) ) {
-            fprintf( ofp, "    OPT_STRING   *%s;\n", tokbuff );
-        }
-        if( o->is_timestamp ) {
-            if( o->enumerate == NULL ) {
+    if( ofp == NULL ) {
+        for( o = optionList; o != NULL; o = o->next ) {
+            if( o->synonym == NULL ) {
                 makeFieldName( o->name, tokbuff );
-                fprintf( ofp, "    unsigned     %s_timestamp;\n", tokbuff );
+                if( o->field_name == NULL ) {
+                    o->field_name = strdup( tokbuff );
+                }
+                strcat( tokbuff, "_value" );
+                o->value_field_name = strdup( tokbuff );
             }
         }
-    }
-    for( e = enumList; e != NULL; e = e->next ) {
-        fprintf( ofp, "    unsigned     %s;\n", e->name );
-        if( e->is_timestamp ) {
-            fprintf( ofp, "    unsigned     %s_timestamp;\n", e->name );
+    } else {
+        fprintf( ofp, "typedef struct opt_string OPT_STRING;\n" );
+        fprintf( ofp, "struct opt_string {\n" );
+        fprintf( ofp, "    OPT_STRING *next;\n" );
+        fprintf( ofp, "    char data[1];\n" );
+        fprintf( ofp, "};\n" );
+        fprintf( ofp, "typedef struct opt_number OPT_NUMBER;\n" );
+        fprintf( ofp, "struct opt_number {\n" );
+        fprintf( ofp, "    OPT_NUMBER *next;\n" );
+        fprintf( ofp, "    unsigned number;\n" );
+        fprintf( ofp, "};\n" );
+        fprintf( ofp, "typedef struct opt_storage OPT_STORAGE;\n" );
+        fprintf( ofp, "struct opt_storage {\n" );
+        fprintf( ofp, "    unsigned     timestamp;\n" );
+        for( o = optionList; o != NULL; o = o->next ) {
+            if( o->synonym == NULL ) {
+                makeFieldName( o->name, tokbuff );
+                if( o->field_name == NULL ) {
+                    o->field_name = strdup( tokbuff );
+                }
+                strcat( tokbuff, "_value" );
+                o->value_field_name = strdup( tokbuff );
+                if( o->is_number ) {
+                    if( HAS_OPT_NUMBER( o ) ) {
+                        fprintf( ofp, "    OPT_NUMBER   *%s;\n", tokbuff );
+                    } else {
+                        fprintf( ofp, "    unsigned     %s;\n", tokbuff );
+                    }
+                } else if( o->is_char ) {
+                    fprintf( ofp, "    int          %s;\n", tokbuff );
+                } else if( HAS_OPT_STRING( o ) ) {
+                    fprintf( ofp, "    OPT_STRING   *%s;\n", tokbuff );
+                }
+                if( o->is_timestamp ) {
+                    if( o->enumerate == NULL ) {
+                        makeFieldName( o->name, tokbuff );
+                        fprintf( ofp, "    unsigned     %s_timestamp;\n", tokbuff );
+                    }
+                }
+            }
         }
-    }
-    for( o = optionList; o != NULL; o = o->next ) {
-        if( o->synonym != NULL ) continue;
-        makeFieldName( o->name, tokbuff );
-        o->field_name = strdup( tokbuff );
-        if( o->enumerate == NULL ) {
-            fprintf( ofp, "    unsigned     %s : 1;\n", tokbuff );
+        for( e = enumList; e != NULL; e = e->next ) {
+            fprintf( ofp, "    unsigned     %s;\n", e->name );
+            if( e->is_timestamp ) {
+                fprintf( ofp, "    unsigned     %s_timestamp;\n", e->name );
+            }
         }
+        for( o = optionList; o != NULL; o = o->next ) {
+            if( o->synonym == NULL ) {
+                makeFieldName( o->name, tokbuff );
+                if( o->enumerate == NULL ) {
+                    fprintf( ofp, "    unsigned     %s : 1;\n", tokbuff );
+                }
+            }
+        }
+        fprintf( ofp, "};\n" );
     }
-    fprintf( ofp, "};\n" );
 }
 
 static void finishParserH( void )
@@ -1158,14 +1431,16 @@ static void finishParserH( void )
     NAME *e;
     unsigned value;
 
-    value = 0;
-    for( e = enumeratorList; e != NULL; e= e->next ) {
-        ++value;
-        fprintf( ofp, "#define %s %u\n", e->name, value );
+    if( ofp != NULL ) {
+        value = 0;
+        for( e = enumeratorList; e != NULL; e= e->next ) {
+            ++value;
+            fprintf( ofp, "#define %s %u\n", e->name, value );
+        }
     }
 }
 
-static CODESEQ *newCode( OPTION *o, int c, int sensitive )
+static CODESEQ *newCode( OPTION *o, char c, unsigned sensitive )
 {
     CODESEQ *p;
 
@@ -1180,35 +1455,26 @@ static CODESEQ *newCode( OPTION *o, int c, int sensitive )
 
 static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
 {
-    int sensitive;
+    unsigned sensitive;
     char *n;
     char c;
-    size_t len;
     CODESEQ *head;
     CODESEQ **splice;
 
-    len = strlen( o->name );
     head = code;
     splice = &head;
-    n = &(o->name[0]);
-    c = '\0';
-    while( *n ) {
-        c = *n++;
+    for( n = o->name; (c = *n++) != '\0'; ) {
         sensitive = 0;
         if( c == '\\' ) {
             c = *n++;
             sensitive = 1;
+        } else {
+            c = tolower( c );
         }
         for( code = *splice; code != NULL; code = *splice ) {
             if( code->sensitive == sensitive ) {
-                if( sensitive ) {
-                    if( code->c == c ) {
-                        break;
-                    }
-                } else {
-                    if( tolower( code->c ) == tolower( c )) {
-                        break;
-                    }
+                if( code->c == c ) {
+                    break;
                 }
             }
             splice = &(code->sibling);
@@ -1272,16 +1538,27 @@ static CODESEQ *reorderCode( CODESEQ *c )
     return( h );
 }
 
-static CODESEQ *markChainCode( CODESEQ *h )
+static int markChainCode( CODESEQ *h, int level )
 {
     CODESEQ *c;
+    int     rc;
 
+    rc = 0;
     for( c = h; c != NULL; c = c->sibling ) {
-        if( chainOption[ c->c ] & CHAIN_YES ) {
-            c->chain = 1;
+        if( c->option->chain != NULL && c->option->chain->code_used ) {
+            if( c->children != NULL ) {
+                if( level == c->option->chain->clen ) {
+                    if( markChainCode( c->children, level + 1 ) ) {
+                        c->chain_root = 1;
+                    }
+                }
+            } else if( c->option->slen == c->option->chain->clen + 1 ) {
+                c->chain = 1;
+                rc = 1;
+            }
         }
     }
-    return( h );
+    return( rc );
 }
 
 static CODESEQ *genCode( OPTION *o )
@@ -1293,7 +1570,7 @@ static CODESEQ *genCode( OPTION *o )
         head = addOptionCodeSeq( head, o );
     }
     head = reorderCode( head );
-    head = markChainCode( head );
+    markChainCode( head, 1 );
     return( head );
 }
 
@@ -1312,7 +1589,7 @@ static int useSwitchStmt( CODESEQ *h )
     return( count >= USE_SWITCH_THRESHOLD );
 }
 
-static void emitSuccessCode( unsigned depth, unsigned control )
+static void emitSuccessCode( unsigned depth, flow_control control )
 {
     if( control & EC_CONTINUE ) {
         emitPrintf( depth, "continue;\n" );
@@ -1321,7 +1598,7 @@ static void emitSuccessCode( unsigned depth, unsigned control )
     }
 }
 
-static void emitAcceptCode( CODESEQ *c, unsigned depth, unsigned control )
+static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
 {
     NAME *e;
     OPTION *o;
@@ -1330,7 +1607,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, unsigned control )
     } flag;
 
     o = c->option;
-    while( o->synonym ) {
+    while( o->synonym != NULL ) {
         o = o->synonym;
     }
     if( o->is_prefix ) {
@@ -1410,7 +1687,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, unsigned control )
             emitPrintf( depth, "data->%s_timestamp = ++(data->timestamp);\n", o->field_name );
         }
         if( o->is_negate ) {
-            emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, '-' );
+            emitPrintf( depth, "if( %s( '-' ) ) {\n", FN_RECOG );
             emitPrintf( depth+1, "data->%s = 0;\n", o->field_name );
             if( o->is_immediate ) {
                 emitPrintf( depth+1, "%s( data, 0 );\n", o->immediate );
@@ -1435,11 +1712,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, unsigned control )
         --depth;
         emitPrintf( depth, "}\n" );
     }
-    if(( control & EC_CONTINUE ) && o->nochain ) {
-        emitSuccessCode( depth, control & ~ EC_CONTINUE );
-    } else {
-        emitSuccessCode( depth, control );
-    }
+    emitSuccessCode( depth, control );
     if( o->is_prefix ) {
         --depth;
         emitPrintf( depth, "}\n" );
@@ -1447,31 +1720,25 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, unsigned control )
     }
 }
 
-static void emitCode( CODESEQ *h, unsigned depth, unsigned control );
-
-static void emitIfCode( CODESEQ *c, unsigned depth, unsigned control )
+static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
 {
-    if( c->sensitive ) {
-        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, c->c );
-    } else {
-        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG_LOWER, tolower( c->c ) );
-    }
-    ++depth;
     if( c->children ) {
         if( c->chain ) {
-            emitPrintf( depth, "do {\n" );
-            ++depth;
-            emitCode( c->children, depth, control | EC_CONTINUE );
+            emitCode( c->children, depth, ( control & ~EC_CHAIN ) | EC_CONTINUE );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
             } else {
                 emitPrintf( depth, "return( 1 );\n" );
             }
-            --depth;
-            emitPrintf( depth, "} while( ! " FN_END "() );\n" );
-            emitSuccessCode( depth, control );
+        } else if( c->chain_root ) {
+            emitCode( c->children, depth, control | EC_CHAIN | EC_CONTINUE );
+            if( c->accept ) {
+                emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
+            } else {
+                emitSuccessCode( depth, control );
+            }
         } else {
-            emitCode( c->children, depth, control );
+            emitCode( c->children, depth, control & ~EC_CHAIN );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control );
             } else {
@@ -1479,19 +1746,32 @@ static void emitIfCode( CODESEQ *c, unsigned depth, unsigned control )
             }
         }
     } else {
-        emitAcceptCode( c, depth, control );
+        if( c->option->chain != NULL && c->option->chain->code_used ) {
+            emitAcceptCode( c, depth, control );
+        } else {
+            emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
+        }
     }
-    --depth;
+}
+
+static void emitIfCode( CODESEQ *c, unsigned depth, flow_control control )
+{
+    if( c->sensitive ) {
+        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, c->c );
+    } else {
+        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG_LOWER, c->c );
+    }
+    emitCodeTree( c, depth + 1, control );
     emitPrintf( depth, "}\n" );
 }
 
-static void emitCode( CODESEQ *h, unsigned depth, unsigned control )
+static void emitCode( CODESEQ *h, unsigned depth, flow_control control )
 {
     int use_switch;
     CODESEQ *c;
 
     for( c = h; c != NULL; c = c->sibling ) {
-        if( c->sensitive ) {
+        if( c->sensitive || (control & EC_CHAIN) && !c->chain ) {
             emitIfCode( c, depth, control );
         } else {
             break;
@@ -1500,6 +1780,10 @@ static void emitCode( CODESEQ *h, unsigned depth, unsigned control )
     if( c == NULL ) {
         return;
     }
+    if( control & EC_CHAIN ) {
+        emitPrintf( depth, "do {\n" );
+        ++depth;
+    }
     use_switch = useSwitchStmt( c );
     if( use_switch ) {
         emitPrintf( depth, "switch( " FN_GET_LOWER "() ) {\n" );
@@ -1507,31 +1791,8 @@ static void emitCode( CODESEQ *h, unsigned depth, unsigned control )
     }
     for( ; c != NULL; c = c->sibling ) {
         if( use_switch ) {
-            emitPrintf( depth - 1, "case '%c':\n", tolower( c->c ));
-            if( c->children ) {
-                if( c->chain ) {
-                    emitPrintf( depth, "do {\n" );
-                    ++depth;
-                    emitCode( c->children, depth, control | EC_CONTINUE );
-                    if( c->accept ) {
-                        emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
-                    } else {
-                        emitPrintf( depth, "return( 1 );\n" );
-                    }
-                    --depth;
-                    emitPrintf( depth, "} while( ! " FN_END "() );\n" );
-                    emitSuccessCode( depth, control );
-                } else {
-                    emitCode( c->children, depth, control );
-                    if( c->accept ) {
-                        emitAcceptCode( c, depth, control );
-                    } else {
-                        emitPrintf( depth, "return( 1 );\n" );
-                    }
-                }
-            } else {
-                emitAcceptCode( c, depth, control );
-            }
+            emitPrintf( depth - 1, "case '%c':\n", c->c );
+            emitCodeTree( c, depth, control );
         } else {
             emitIfCode( c, depth, control );
         }
@@ -1540,6 +1801,11 @@ static void emitCode( CODESEQ *h, unsigned depth, unsigned control )
         --depth;
         emitPrintf( depth, "}\n" );
         emitPrintf( depth, FN_UNGET "();\n" );
+    }
+    if( control & EC_CHAIN ) {
+        emitPrintf( depth, "break;\n" );
+        --depth;
+        emitPrintf( depth, "} while( ! " FN_END "() );\n" );
     }
 }
 
@@ -1570,11 +1836,8 @@ static void outputFN_INIT( void )
     ++depth;
     emitPrintf( depth, "memset( data, 0, sizeof( *data ) );\n" );
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->synonym != NULL ) continue;
-        if( o->is_number ) {
-            if( o->default_specified ) {
-                emitPrintf( depth, "data->%s = %u;\n", o->value_field_name, o->number_default );
-            }
+        if( o->synonym == NULL && o->is_number && o->default_specified ) {
+            emitPrintf( depth, "data->%s = %u;\n", o->value_field_name, o->number_default );
         }
     }
     for( e = enumList; e != NULL; e = e->next ) {
@@ -1594,11 +1857,12 @@ static void outputFN_FINI( void )
     emitPrintf( depth, "{\n" );
     ++depth;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->synonym != NULL ) continue;
-        if( HAS_OPT_STRING( o ) ) {
-            emitPrintf( depth, FN_CLEAN_STRING "( &(data->%s) );\n", o->value_field_name );
-        } else if( HAS_OPT_NUMBER( o ) ) {
-            emitPrintf( depth, FN_CLEAN_NUMBER "( &(data->%s) );\n", o->value_field_name );
+        if( o->synonym == NULL ) {
+            if( HAS_OPT_STRING( o ) ) {
+                emitPrintf( depth, FN_CLEAN_STRING "( &(data->%s) );\n", o->value_field_name );
+            } else if( HAS_OPT_NUMBER( o ) ) {
+                emitPrintf( depth, FN_CLEAN_NUMBER "( &(data->%s) );\n", o->value_field_name );
+            }
         }
     }
     --depth;
@@ -1608,15 +1872,40 @@ static void outputFN_FINI( void )
 static int usageCmp( const void *v1, const void *v2 )
 {
     int     res;
+    int     clen;
+    OPTION  *o1 = *(OPTION **)v1;
+    OPTION  *o2 = *(OPTION **)v2;
+    char    *n1 = o1->sname;
+    char    *n2 = o2->sname;
 
-    OPTION *o1 = *(OPTION **) v1;
-    OPTION *o2 = *(OPTION **) v2;
-
-    res = tolower( *(o1->field_name) ) - tolower( *(o2->field_name) );
-    if( res == 0 ) {
-        res = o1->nochain - o2->nochain;
+    res = 0;
+    if( o1->chain != o2->chain ) {
+        if( o1->chain == NULL ) {
+            clen = o2->chain->clen;
+        } else if( o2->chain == NULL ) {
+            clen = o1->chain->clen;
+        } else {
+            clen = __max( o1->chain->clen, o2->chain->clen );
+        }
+        res = strnicmp( n1, n2, clen );
         if( res == 0 ) {
-            return( stricmp( o1->field_name, o2->field_name ) );
+            res = strncmp( n1, n2, clen );
+            if( res == 0 ) {
+                if( o1->chain == NULL ) {
+                    return( 1 );
+                }
+                if( o2->chain == NULL ) {
+                    return( -1 );
+                }
+                n1 += clen;
+                n2 += clen;
+            }
+        }
+    }
+    if( res == 0 ) {
+        res = stricmp( n1, n2 );
+        if( res == 0 ) {
+            return( strcmp( n1, n2 ) );
         }
     }
     if( res < 0 ) {
@@ -1632,8 +1921,8 @@ static void catArg( char *arg )
     unsigned len;
 
     len = strlen( tokbuff );
-    p = &tokbuff[ len ];
-    while( *arg ) {
+    p = &tokbuff[len];
+    for( ; *arg != '\0'; ++arg ) {
         if( optFlag.no_equal ) {
             if( *arg != '=' ) {
                 *p++ = *arg;
@@ -1647,24 +1936,23 @@ static void catArg( char *arg )
         } else {
             *p++ = *arg;
         }
-        ++arg;
     }
     *p = '\0';
 }
 
 static size_t genOptionUsageStart( OPTION *o )
 {
-    size_t len;
-    char *p;
-    char *c;
+    size_t  len;
 
-    strcat( tokbuff, "-" );
-    c = &tokbuff[1];
-    for( p = o->name; *p; ++p ) {
-        if( *p == '\\' ) continue;
-        *c++ = *p;
+    if( o->chain != NULL ) {
+        tokbuff[0] = ' ';
+        tokbuff[1] = ' ';
+        tokbuff[2] = '\0';
+        strcat( tokbuff, o->sname + o->chain->clen );
+    } else {
+        strcpy( tokbuff, "-" );
+        cvtName( tokbuff + 1, o->name, CVT_USAGE );
     }
-    *c = '\0';
     if( o->is_number ) {
         if( o->default_specified ) {
             catArg( "[=<num>]" );
@@ -1709,12 +1997,6 @@ static size_t genOptionUsageStart( OPTION *o )
             strcat( tokbuff, o->special_arg_usage );
         }
     }
-    if( chainOption[ (int)o->name[0] ] & CHAIN_YES ) {
-        if( !o->nochain ) {
-            tokbuff[0] = ' ';
-            tokbuff[1] = ' ';
-        }
-    }
     len = strlen( tokbuff );
     return( len );
 }
@@ -1723,7 +2005,7 @@ static void fillOutSpaces( char *buff, int n )
 {
     char *p;
 
-    p = &buff[ strlen( buff ) ];
+    p = &buff[strlen( buff )];
     while( n > 0 ) {
         *p++ = ' ';
         --n;
@@ -1733,16 +2015,19 @@ static void fillOutSpaces( char *buff, int n )
 
 static int usageValid( OPTION *o, unsigned language )
 {
-    if( o->synonym != NULL ) return( 0 );
-    if( o->lang_usage[language] == NULL ) return( 0 );
-    if( o->lang_usage[language][0] == '\0' ) return( 0 );
+    if( o->synonym != NULL )
+        return( 0 );
+    if( o->lang_usage[language] == NULL )
+        return( 0 );
+    if( o->lang_usage[language][0] == '\0' )
+        return( 0 );
     if( o->is_internal && ( targetMask & targetDbgMask ) == 0 ) {
         return( 0 );
     }
     return( 1 );
 }
 
-static void emitUsageH( void )
+static void emitUsageH( int page_flag )
 {
     unsigned len;
     char *q;
@@ -1753,56 +2038,53 @@ static void emitUsageH( void )
         maxUsageLen = len;
         strcpy( maxusgbuff, tokbuff );
     }
-    if( mfp != NULL ) {
+    if( mfp != NULL && page_flag == 0 ) {
         fprintf( mfp, "%s\n", tokbuff );
     }
-    fprintf( ufp, "\"" );
-    s = tokbuff;
-    while( q = strchr( s, '"' ) ) {
-        // replace " with \"
-        *q = '\0';
-        fprintf( ufp, "%s\\\"", s );
-        s = q + 1;
+    if( ufp != NULL ) {
+        fprintf( ufp, "\"" );
+        for( s = tokbuff; (q = strchr( s, '"' )) != NULL; s = q + 1 ) {
+            // replace " with \"
+            *q = '\0';
+            fprintf( ufp, "%s\\\"", s );
+        }
+        fprintf( ufp, "%s%s\"\n", s, ( optFlag.zero_term ) ? "\\0" : "" );
     }
-    fprintf( ufp, "%s\",\n", s );
+    
 }
 
 static void createChainHeader( OPTION **o, unsigned language, int max )
 {
-    int c;
-    char *usage;
+    char    *usage;
+    CHAIN   *cn;
+    int     i;
 
-    c = (*o)->name[0];
+    cn = (*o)->chain;
     hdrbuff[0] = '-';
-    hdrbuff[1] = c;
-    hdrbuff[2] = '{';
-    hdrbuff[3] = '\0';
-    for(;;) {
-        if( (*o)->name[1] != '\0' ) {
+    cvtName( hdrbuff + 1, cn->name, CVT_STRING );
+    strcat( hdrbuff, "{" );
+    i = 0;
+    for( ; *o != NULL && (*o)->chain == cn; ++o ) {
+        if( (*o)->chain != NULL ) {
+            if( i > 0 ) {
+                strcat( hdrbuff, "," );
+            }
             genOptionUsageStart( *o );
             strcat( hdrbuff, &tokbuff[2] );
-            ++o;
-            if(( *o == NULL ) || ( (*o)->name[0] != c ) || ( (*o)->nochain ))
-                break;
-            strcat( hdrbuff, "," );
-        } else {
-            ++o;
-            if(( *o == NULL ) || ( (*o)->name[0] != c ) || ( (*o)->nochain )) {
-                break;
-            }
+            ++i;
         }
     }
     strcat( hdrbuff, "} " );
     fillOutSpaces( hdrbuff, max - strlen( hdrbuff ) );
-    usage = chainUsage[ c ][ language ];
+    usage = cn->Usage[language];
     if( usage == NULL || *usage == '\0' ) {
-        usage = chainUsage[ c ][ LANG_English ];
+        usage = cn->Usage[LANG_English];
     }
     strcat( hdrbuff, usage );
     strcpy( tokbuff, hdrbuff );
 }
 
-static void createUsageHeader( unsigned language, void (*process_line)( void ) )
+static void createUsageHeader( unsigned language, void (*process_line)( int ) )
 {
     char *s;
     char *d;
@@ -1810,42 +2092,43 @@ static void createUsageHeader( unsigned language, void (*process_line)( void ) )
     TITLE *t;
 
     for( t = titleList; t != NULL; t = t->next ) {
-        if( t->ntarget & targetMask ) continue;
-        if(( t->target & targetMask ) == 0 ) continue;
-        title = t->lang_title[language];
-        if( title == NULL || *title == '\0' ) {
-            title = t->lang_title[LANG_English];
-        }
-        d = tokbuff;
-        for( s = title; *s; ++s ) {
-            if( s[0] == '\\' && s[1] == 't' ) {
-                ++s;
-                *d++ = ' ';
-                *d++ = ' ';
-                *d++ = ' ';
-                *d++ = ' ';
-                *d++ = ' ';
-                *d++ = ' ';
-                *d++ = ' ';
-                *d++ = ' ';
-            } else {
-                *d++ = *s;
+        if( (t->target & targetMask) && (t->ntarget & targetMask) == 0 ) {
+            title = t->lang_title[language];
+            if( title == NULL || *title == '\0' ) {
+                title = t->lang_title[LANG_English];
             }
+            d = tokbuff;
+            for( s = title; *s != '\0'; ++s ) {
+                if( s[0] == '\\' && s[1] == 't' ) {
+                    ++s;
+                    *d++ = ' ';
+                    *d++ = ' ';
+                    *d++ = ' ';
+                    *d++ = ' ';
+                    *d++ = ' ';
+                    *d++ = ' ';
+                    *d++ = ' ';
+                    *d++ = ' ';
+                } else {
+                    *d++ = *s;
+                }
+            }
+            *d = '\0';
+            process_line( 0 );
         }
-        *d = '\0';
-        process_line();
     }
 }
 
-static void clearChainUsage( void ) {
-    unsigned i;
+static void clearChainUsage( void )
+{
+    CHAIN   *cn;
 
-    for( i = 0; i < 256; ++i ) {
-        chainOption[i] &= ~CHAIN_USAGE;
+    for( cn = chainList; cn != NULL; cn = cn->next ) {
+        cn->usage_used = 0;
     }
 }
 
-static void processUsage( unsigned language, void (*process_line)( void ) )
+static void processUsage( unsigned language, void (*process_line)( int ) )
 {
     unsigned count;
     unsigned i;
@@ -1854,63 +2137,57 @@ static void processUsage( unsigned language, void (*process_line)( void ) )
     OPTION *o;
     OPTION **t;
     OPTION **c;
+    char *page;
 
     maxUsageLen = 0;
     max = 0;
     count = 0;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( ! usageValid( o, language ) ) continue;
-        ++count;
-        len = genOptionUsageStart( o );
-        if( len > max ) {
-            max = len;
+        if( usageValid( o, language ) ) {
+            ++count;
+            len = genOptionUsageStart( o );
+            if( len > max ) {
+                max = len;
+            }
         }
     }
     ++max;
     t = calloc( count + 1, sizeof( OPTION * ) );
     c = t;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( ! usageValid( o, language ) ) continue;
-        *c = o;
-        ++c;
+        if( usageValid( o, language ) ) {
+            *c++ = o;
+        }
     }
     *c = NULL;
     qsort( t, count, sizeof( OPTION * ), usageCmp );
-    if( optFlag.international ) {
-        char *page = pageUsage[ language ];
-        if( page == NULL || *page == '\0' ) {
-            page = pageUsage[ LANG_English ];
-        }
-        if( page != NULL && *page != '\0' ) {
-            strcpy( tokbuff, page );
-            process_line();
-        }
+    page = pageUsage[language];
+    if( page == NULL || *page == '\0' ) {
+        page = pageUsage[LANG_English];
+    }
+    if( page != NULL && *page != '\0' ) {
+        strcpy( tokbuff, page );
+        process_line( 1 );
     }
     createUsageHeader( language, process_line );
     clearChainUsage();
     for( i = 0; i < count; ++i ) {
         o = t[i];
-        if( chainOption[ (int)o->name[0] ] & CHAIN_YES ) {
-            if(! ( chainOption[ (int)o->name[0] ] & CHAIN_USAGE )) {
-                if( !o->nochain ) {
-                    chainOption[ (int)o->name[0] ] |= CHAIN_USAGE;
-                    createChainHeader( &t[i], language, max );
-                    process_line();
-                }
-            }
+        if( o->chain != NULL && !o->chain->usage_used ) {
+            o->chain->usage_used = 1;
+            createChainHeader( &t[i], language, max );
+            process_line( 0 );
         }
         tokbuff[0] = '\0';
         len = genOptionUsageStart( o );
         fillOutSpaces( tokbuff, max - len );
-        if( chainOption[ (int)o->name[0] ] & CHAIN_YES ) {
-            if( !o->nochain ) {
-                strcat( tokbuff, "-> " );
-            }
+        if( o->chain != NULL ) {
+            strcat( tokbuff, "- " );
         }
         strcat( tokbuff, o->lang_usage[language] );
-        process_line();
+        process_line( 0 );
     }
-    if(( maxUsageLen / langMaxChar[language] ) > CONSOLE_WIDTH ) {
+    if( ( maxUsageLen / langMaxChar[language] ) > CONSOLE_WIDTH ) {
         fail( "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
     }
 }
@@ -1920,10 +2197,11 @@ static void outputUsageH( void )
     processUsage( optFlag.lang, emitUsageH );
 }
 
-static void emitUsageB( void )
+static void emitUsageB( int page_flag )
 {
     unsigned len;
 
+    page_flag = page_flag;
     len = strlen( tokbuff ) + 1;
     fwrite( tokbuff, len, 1, bfp );
     if( len > maxUsageLen ) {
@@ -1932,7 +2210,8 @@ static void emitUsageB( void )
     }
 }
 
-static void dumpInternational( void ) {
+static void dumpInternational( void )
+{
     unsigned lang;
     auto char fname[16];
     auto LocaleUsage usage_header;
@@ -1957,8 +2236,15 @@ static void dumpInternational( void ) {
 static void closeFiles( void )
 {
     fclose( gfp );
-    fclose( pfp );
-    fclose( ufp );
+    if( mfp != NULL )
+        fclose( mfp );
+    if( ofp != NULL )
+        fclose( ofp );
+    if( pfp != NULL )
+        fclose( pfp );
+    if( ufp != NULL ) {
+        fclose( ufp );
+    }
 }
 
 int main( int argc, char **argv )
@@ -1970,6 +2256,7 @@ int main( int argc, char **argv )
     }
     procCmdLine( argc, argv );
     readInputFile();
+    assignChainToOptions();
     checkForMissingUsages();
     stripUselessOptions();
     startParserH();

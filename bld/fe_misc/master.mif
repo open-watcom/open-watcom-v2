@@ -1,0 +1,19 @@
+proj_name = femisc
+femisc_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+all: optencod.exe msgencod.exe findhash.exe .symbolic
+
+inc_dirs = -I"../h"
+
+.c: ../c
+
+.obj.exe :
+!ifndef __WATCOM__
+        $(cl) $(clflags) $< $(ldflags)
+!else
+        $(linker) name $@ $(lflags) file {$<}
+!endif

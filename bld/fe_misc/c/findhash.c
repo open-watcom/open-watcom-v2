@@ -164,6 +164,8 @@ struct {
 
 FILE *outfile;
 
+char *pick_extension = NULL;
+
 void error( char *msg )
 /*********************/
 {
@@ -348,6 +350,11 @@ void init_tokens( char **input_file )
         if( check[0] == '/' || check[0] == '-' ) {
             if( tolower( check[1] ) == 'q' && check[2] == '\0' ) {
                 flags.quiet = TRUE;
+                continue;
+            }
+            if( tolower( check[1] ) == 'e' && check[2] == '\0' ) {
+                ++input_file;
+                pick_extension = strdup( *input_file );
                 continue;
             }
             if( tolower( check[1] ) == 'i' && check[2] == '\0' ) {
@@ -999,23 +1006,27 @@ void dump_hash( void )
         fputs( "pick( T_", outfile );
         if( ord == 0 || ord > num_keywords ) {
             dump_token_name( 0 );
-            fprintf( outfile, ",\"???%02u\",TC_UNKNOWN)\n", extra );
+            fprintf( outfile, ",\"???%02u\",TC_UNKNOWN", extra );
             ++extra;
-            continue;
-        }
-        j = dump_token_name( ord );
-        ++extra;
-        fputc( ',', outfile );
-        dump_n_blanks( 15 - j );
-        if( ord != 0 ) {
-            k = dump_string( tokens[ ord ] ) - 2;
-            fputc( ',', outfile );
         } else {
-            fprintf( outfile, "NULL," );
-            k = 2;
+            j = dump_token_name( ord );
+            ++extra;
+            fputc( ',', outfile );
+            dump_n_blanks( 15 - j );
+            if( ord != 0 ) {
+                k = dump_string( tokens[ ord ] ) - 2;
+                fputc( ',', outfile );
+            } else {
+                fprintf( outfile, "NULL," );
+                k = 2;
+            }
+            dump_n_blanks( 15 - k );
+            fprintf( outfile, "%s", token_class[ ord ] );
         }
-        dump_n_blanks( 15 - k );
-        fprintf( outfile, "%s )\n", token_class[ ord ] );
+        if( pick_extension != NULL ) {
+            fprintf( outfile, " %s", pick_extension );
+        }
+        fprintf( outfile, " )\n" );
     }
     fclose( outfile );
 }
@@ -1127,8 +1138,9 @@ int main( int argc, char **argv )
 /*******************************/
 {
     if( argc == 1 ) {
-        error( "usage: findhash [-a] [-q] [-i] [-m] [-t] <keyword_file> ..." );
+        error( "usage: findhash [-a] [-q] [-i] [-m] [-t] [-e \"text\"] <keyword_file> ..." );
         error( "-a: output aligned strings" );
+        error( "-e \"text\": pick macro extension text" );
         error( "-i: allow imperfect hash functions" );
         error( "-m: force 2^n mask hash function" );
         error( "-q: quiet mode" );
