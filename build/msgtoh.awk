@@ -13,10 +13,3 @@ BEGIN {
    print "#define " $2 " (" basename " + " num ")"  
    num = num + 1   # Increment counter
 }
-
-# Slithglty different for lines beginning with 'wdpick'
-/^ *wdpick/ {
-   gsub( /,/, "" ) # Remove commas
-   print "#define __" $2 " (" basename " + " num ")"  
-   num = num + 1   # Increment counter
-}
