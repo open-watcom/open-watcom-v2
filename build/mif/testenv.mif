@@ -102,6 +102,10 @@ bld_cl_opts = -fpc -ox -w8 -fe=$^@ -I"$(watcom_dir)/h"
 bld_sys     = nt
 bld_cl      = wcl386 -zq -bt=nt
 bld_cl_opts = -fpc -ox -w8 -fe=$^@ -I"$(watcom_dir)/h"
+!else ifdef __NTX64__
+bld_sys     = nt
+bld_cl      = wcl386 -zq -bt=nt
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ -I"$(watcom_dir)/h"
 !else ifdef __LINUXPPC__
 bld_sys     = linuxppc
 bld_cl      = wclppc -zq -bt=linux
@@ -110,7 +114,11 @@ bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ -I"$(watcom_dir)/h"
 bld_sys     = linuxmips
 bld_cl      = wclmps -zq -bt=linux
 bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ -I"$(watcom_dir)/h"
-!else
+!else ifdef __LINUX386__
+bld_sys     = linux
+bld_cl      = wcl386 -zq -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ -I"$(watcom_dir)/h"
+!else ifdef __LINUXX64__
 bld_sys     = linux
 bld_cl      = wcl386 -zq -bt=linux
 bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ -I"$(watcom_dir)/h"
@@ -154,10 +162,18 @@ awk = awk
 !ifndef arch
 !  ifdef __NTAXP__
 !    define arch axp
+!  else ifdef __NT386__
+!    define arch 386
+!  else ifdef __NTX64__
+!    define arch 386
 !  else ifdef __LINUXPPC__
 !    define arch ppc
 !  else ifdef __LINUXMIPS__
 !    define arch mps
+!  else ifdef __LINUX386__
+!    define arch 386
+!  else ifdef __LINUXX64__
+!    define arch 386
 !  else
 !    define arch 386
 !  endif
@@ -250,9 +266,13 @@ awk = awk
 #!    define targ_env_386 cw386
 !  else ifdef __OS2__
 !    define targ_env_386 os2386
-!  else ifdef __LINUX__
+!  else ifdef __LINUX386__
+!    define targ_env_386 lnx386
+!  else ifdef __LINUXX64__
 !    define targ_env_386 lnx386
 !  else ifdef __NT386__
+!    define targ_env_386 wnt386
+!  else ifdef __NTX64__
 !    define targ_env_386 wnt386
 !  endif
 !endif
@@ -885,8 +905,8 @@ start : .symbolic
      @echo using !loaddll $(dll_wpp_$(arch))
 !  endif
 !endif
-    @cdsay
-    @cdsay >> $(log_file)
+    @echo ==== $(%__CTIME__) $(%__CWD__) ====
+    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     %append $(log_file) TEST $(arch)/$(alt_error)
 
 test.lnk : $(__MAKEFILES__)

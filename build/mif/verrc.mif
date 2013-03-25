@@ -50,6 +50,22 @@ verrc386_exe_out = ver386.res
 verrc386_exe = $(proj_name)386
 !endif
 
+!ifndef verrcx64_exe_skel
+verrcx64_exe_skel = ../verx64.rc
+!endif
+
+!ifndef verrcx64_exe_int
+verrcx64_exe_int = verx64.grc
+!endif
+
+!ifndef verrcx64_exe_out
+verrcx64_exe_out = verx64.res
+!endif
+
+!ifndef verrcx64_exe
+verrcx64_exe = $(proj_name)x64
+!endif
+
 !ifndef verrcaxp_exe_skel
 verrcaxp_exe_skel = ../veraxp.rc
 !endif
@@ -106,6 +122,16 @@ $(verrc386_exe_out): $(verrc386_exe_skel)
         @$(rc) $(rc_flags) $(inc_path) $(verrc386_exe_int) -fo=$^@
 !endif
 
+$(verrcx64_exe_out): $(verrcx64_exe_skel)
+!ifeq verbose 1
+        genverrc $]@ $(verrcx64_exe_int) $$ $(verrcx64_exe) $(patch_level)
+        $(rc) $(rc_flags) $(inc_path) $(verrcx64_exe_int) -fo=$^@
+!else
+        @genverrc $]@ $(verrcx64_exe_int) $$ $(verrcx64_exe) $(patch_level)
+        @echo rc $@
+        @$(rc) $(rc_flags) $(inc_path) $(verrcx64_exe_int) -fo=$^@
+!endif
+
 $(verrcaxp_exe_out): $(verrcaxp_exe_skel)
 !ifeq verbose 1
         genverrc $]@ $(verrcaxp_exe_int) $$ $(verrcaxp_exe) $(patch_level)
@@ -160,6 +186,11 @@ bind_version_res_dll: .procedure
 bind_ver386_res_exe: .procedure
 !ifdef ver386_res_exe_$(host_os)_$(host_cpu)
         $(rc) -k $(ver386_res_exe_$(host_os)_$(host_cpu)) $^@
+!endif
+
+bind_verx64_res_exe: .procedure
+!ifdef verx64_res_exe_$(host_os)_$(host_cpu)
+        $(rc) -k $(verx64_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif
 
 bind_veraxp_res_exe: .procedure
