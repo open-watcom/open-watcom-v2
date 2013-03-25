@@ -1034,7 +1034,7 @@ void dump_hash( void )
 void dump_tiny( unsigned first_index, unsigned last_index )
 /*********************************************************/
 {
-    int i;
+    unsigned i;
     int c;
     letter_t letter;
     int min_char;
@@ -1043,9 +1043,9 @@ void dump_tiny( unsigned first_index, unsigned last_index )
 
     min_char = INT_MAX;
     max_char = 0;
-    for( i = LETTER_MIN; i <= LETTER_MAX; ++i ) {
+    for( letter = LETTER_MIN; letter <= LETTER_MAX; ++letter ) {
         if( weights[i] != 0 ) {
-            c = make_char( i );
+            c = make_char( letter );
             if( c < min_char ) {
                 min_char = c;
             }
