@@ -683,9 +683,9 @@ sub CVS_check_sync
     get_prev_changeno;
     
     if ($prev_report_stamp ne "") {
-       	print REPORT "\tBuilt through change   : $prev_changeno on $prev_report_stamp\n";
+        print REPORT "\tBuilt through change   : $prev_changeno on $prev_report_stamp\n";
     } else {
-       	$prev_changeno = "";
+        $prev_changeno = "";
     }
     if ($cvs_cmd eq "git") {
         open(LEVEL, "git --git-dir=$OW/.git rev-parse HEAD|");
