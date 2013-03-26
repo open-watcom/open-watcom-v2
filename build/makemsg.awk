@@ -5,9 +5,9 @@ BEGIN {
 }
 
 # Process all lines beginning with 'pick'
-/^ *pick/ {
+/^[\t ]*pick/ {
     for( i = 2; i <= NF; ++i ) {
-        split( $i, f, "[ ,]+" )
+        split( $i, f, "[\t ,]+" )
         printf( "#define %s%s (%s + %d)\n", prefix, f[2], base, num )
         num = num + 1   # Increment counter
     }

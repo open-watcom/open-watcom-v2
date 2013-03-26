@@ -8,7 +8,7 @@ BEGIN {
 }
 
 # Process all lines beginning with 'pick'
-/^ *pick/ {
+/^[\t ]*pick/ {
    gsub( /,/, "" ) # Remove commas
    print "#define " $2 " (" basename " + " num ")"  
    num = num + 1   # Increment counter
