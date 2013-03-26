@@ -1,12 +1,27 @@
 /*
- *  sys/utime.h compatibility forwarder
+ *  sys/utime.h utimbuf structure and prototypes
  *
 :include crwat.sp
  */
 #ifndef _UTIME_H_INCLUDED
+#define _UTIME_H_INCLUDED
 
 :include readonly.sp
 
-#include "../utime.h"
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+:include pshpackl.sp
+
+:include timet.sp
+
+:include wchar_t.sp
+
+:include utime.sp
+
+:include poppack.sp
+
+:include cplusepi.sp
 
 #endif

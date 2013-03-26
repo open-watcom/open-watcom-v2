@@ -220,10 +220,11 @@ strstrea.h      : $(strstrea_deps)
 sys/locking.h   : ../watcom/locking.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 sys/timeb.h     : ../watcom/timeb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp $(packll)
 sys/types.h     : ../watcom/types.mh ../crqnx.sp ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp ../sizet.sp ../ssizet.sp ../incdir.sp $(extension) ../exactint.sp
+sys/utime.h     : ../watcom/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../utime.sp
 tchar.h         : ../watcom/tchar.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../null.sp $(cplus) $(extension)
 time.h          : $(time_deps)
 typeinfo.h      : $(typeinfo_deps)
-utime.h         : ../watcom/utime.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp
+utime.h         : ../watcom/utime.mh ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../utime.sp
 varargs.h       : ../watcom/varargs.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 wcdefs.h        : ../watcom/wcdefs.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../sizet.sp
 wcexcept.h      : ../watcom/wcexcept.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(packll)

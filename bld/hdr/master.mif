@@ -2,8 +2,6 @@ proj_name=hdr
 
 !include ../hfiles.mif
 
-!include cproj.mif
-
 dos_options   = -kDOS -kUNICODE
 linux_options = -kLINUX -t8 -u
 qnx_options   = -kQNX -t8 -u
