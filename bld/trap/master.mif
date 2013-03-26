@@ -167,8 +167,6 @@ target = $+$(targ_$(cpu)_$(os))$-
 
 trperr_h = _err.gh
 jtrperr_h = _jerr.gh
-mkstr_c = $(trap_dir)/c/mkstr.c
-trap_msg = $(trap_dir)/h/trap.msg
 
 !ifeq host_os nov
 extra_deps += nversion.tmp
@@ -180,17 +178,11 @@ w : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
 d : .SYMBOLIC $(trperr_h) $(jtrperr_h)
         @%make $(target)
 
-./mkstr.exe: $(mkstr_c) $(trap_msg)
-        $(bld_cl) $(bld_cl_opts) -I"$(trap_dir)/h" $[@
+$(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+        $(c_pp) -zk0 -I"$(trap_dir)/h" $[@ >$@
 
-$(trperr_h) : ./mkstr.exe
-        $[@ $^@
-
-./jmkstr.exe: $(mkstr_c) $(trap_msg)
-        $(bld_cl) $(bld_cl_opts) -DJAPANESE_MESSAGES $[@
-
-$(jtrperr_h) : ./jmkstr.exe
-        $[@ $^@
+$(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+        $(c_pp) -zk0 -DJAPANESE_MESSAGES -I"$(trap_dir)/h" $[@ >$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
         $(bld_cl) $(bld_cl_opts) $[@

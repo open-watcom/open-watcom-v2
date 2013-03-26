@@ -199,11 +199,9 @@ $(name).res : as.rc msg.gh
 
 !include verrc.mif
 
-msg.gh : ./mkstrid.exe
-        $[@ $^@
-
-./mkstrid.exe : mkstrid.c as.msg
-        $(bld_cl) $(bld_cl_opts) $(cppflags) -I"$(as_dir)/$(target_cpu)/h" -I"$(as_dir)/h" $[@
+msg.gh : as.msg
+        $(c_pp) -zk0 $(cppflags) $[@ > msg.tmp
+        $(awk) -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk msg.tmp >> $^@
 
 $(yacc_in) : $(yacc_src) $(as_dir)/y/yydriver.c
         wsplice $(splice_opts) $[@ $^@

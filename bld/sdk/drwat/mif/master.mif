@@ -10,8 +10,6 @@ drwatcom_autodepends = .AUTODEPEND
 
 exc_name = $(proj_name).exe
 
-all: $(exc_name) .SYMBOLIC
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

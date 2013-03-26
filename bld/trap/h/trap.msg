@@ -273,22 +273,22 @@ trappick( TRP_QNX_invalid_node_number,
     "jinvalid node number" )
 trappick( TRP_NT_status_user_apc,
     "user apc",
-    "juser apc" );
+    "juser apc" )
 trappick( TRP_NT_status_guard_page_violation,
     "guard page violation",
-    "jguard page violation" );
+    "jguard page violation" )
 trappick( TRP_NT_status_in_page_error,
     "in page error",
-    "jin page error" );
+    "jin page error" )
 trappick( TRP_NT_status_no_memory,
     "no memory",
-    "jno memory" );
+    "jno memory" )
 trappick( TRP_NT_status_invalid_disposition,
     "invalid disposition",
-    "jinvalid disposition" );
+    "jinvalid disposition" )
 trappick( TRP_NT_status_stack_overflow,
     "stack overflow",
-    "jstack overflow" );
+    "jstack overflow" )
 trappick( TRP_NT_invalid_handle,
     "Invalid handle passed to system API",
     "jInvalid handle passed to system API" )
@@ -501,7 +501,7 @@ trappick( TRP_NLM_not_version_3,
     "jMust be running on NetWare version 3" )
 trappick( TRP_MSG_loading_program,
     "Loading program:",
-    "jLoading program:" );
+    "jLoading program:" )
 trappick( TRP_ERR_expect_brace,
     "Invalid parameter: expecting '}'",
     "jInvalid parameter: expecting '}'" )

@@ -29,5 +29,5 @@
 *
 ****************************************************************************/
 
-#define JAPANESE_MSG
+#define JAPANESE_MESSAGES
 #include "asmsg.c"

@@ -45,11 +45,11 @@ typedef enum {
     QF_D        = 0x40
 } qualifier_flags;
 
-#define PICK( a, b ) a,
 typedef enum {
-#include "insenum.inc"
+    #define PICK( a, b ) a,
+    #include "insenum.inc"
+    #undef PICK
 } ins_enum_method;              // All the possible enumeration methods
-#undef PICK
 
 typedef uint_16 ins_opcode;
 typedef uint_16 ins_funccode;
@@ -62,9 +62,9 @@ typedef enum {
 } op_flags;
 
 typedef enum {
-#define PICK( a, b ) OP_##a = b,
-#include "regclass.inc"
-#undef PICK
+    #define PICK( a, b ) OP_##a = b,
+    #include "regclass.inc"
+    #undef PICK
     OP_IMMED            = (1 << REGCLASS_COUNT),        // an immediate constant (could have reloc with it)
     OP_REG_INDIRECT     = (1 << (REGCLASS_COUNT+1)),    // register with an immediate attached
 } op_type;

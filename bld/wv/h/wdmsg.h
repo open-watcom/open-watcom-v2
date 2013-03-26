@@ -36,4 +36,7 @@
 #define MSG_WD_RC_BASE      500
 #define MSG_USAGE_BASE      900
 
+#define DBG_LITERAL_BASE    30000
+#define DBG_MENU_BASE       31000
+
 #define MSG_LANG_SPACING    1000

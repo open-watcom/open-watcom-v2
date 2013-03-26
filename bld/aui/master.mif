@@ -130,8 +130,5 @@ japsrcha.dlg : ../h/japsrcha.dlg
 
 dlgfiles = dlgrx.h dlgsrch.h dlgrx.dlg dlgsrch.dlg dlgsrcha.dlg auistr.gh auistr.rc auigui.rc
 
-./mkstr.exe: $(aui_dir)/c/mkstr.c
-        $(bld_cl) $(bld_cl_opts) $]@
-
 auistr.gh : $(aui_dir)/h/aui.msg
         $(awk) -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@

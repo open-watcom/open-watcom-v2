@@ -33,9 +33,13 @@
 #ifndef WDIS_MSG_INCLUDED
 #define WDIS_MSG_INCLUDED
 
-#include "global.h"
+#include "msg.gh"
 
-#define MAX_RESOURCE_SIZE       128
+#define MSG_LANG_SPACING    1000
+#define MSG_USAGE_BASE      101
+#define WDIS_LITERAL_BASE   1
+
+#define MAX_RESOURCE_SIZE   128
 
 extern int MsgInit( void );
 extern int MsgGet( int, char * );

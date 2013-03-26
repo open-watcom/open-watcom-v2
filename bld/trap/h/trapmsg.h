@@ -30,43 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-
-#undef pick
-
-#ifdef USAGE
-
-    #include "msg.gh"
-    #define pick( code, e_msg, j_msg ) e_msg,
-
+#ifdef JAPANESE_MESSAGES
+#define trappick(a,b,c) #define a  c
 #else
-
-    #define MSG_LANG_SPACING    1000
-
-    #define pick( code, e_msg, j_msg ) #code,
-
+#define trappick(a,b,c) #define a  b
 #endif
-
-char *messages[] = {
-    #include "wdis.msg"
-};
-
-int main( int argc, char *argv[] )
-{
-    int         i;
-
-    if( argc <= 1 || freopen( argv[1], "w", stdout ) != stdout ) {
-        fprintf( stderr, "Can't open output file\n" );
-    }
-    #ifdef USAGE
-        for( i = USAGE_1-1; i < USAGE_LAST; ++i ) {
-            printf( "%s\n", messages[i] );
-        }
-    #else
-        printf( "#define MSG_LANG_SPACING\t%d\n", MSG_LANG_SPACING );
-        for( i = 0; i < sizeof( messages ) / sizeof( messages[0] ); ++i ) {
-            printf( "#define %s %d\n", messages[i], i+1 );
-        }
-    #endif
-    return( 0 );
-}
+#include "trap.msg"
+#undef trappick

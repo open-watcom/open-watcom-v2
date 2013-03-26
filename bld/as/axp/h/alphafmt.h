@@ -31,8 +31,8 @@
 
 
 typedef enum {
-#define PICK( a, b, c, d, e ) a,
-#include "alphafmt.inc"
-#undef PICK
+    #define PICK( a, b, c, d, e ) a,
+    #include "alphafmt.inc"
+    #undef PICK
 } alpha_template;
 

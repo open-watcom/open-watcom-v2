@@ -34,10 +34,11 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+#include "global.h"
+#include "dis.h"
 #include "msg.h"
 #include "buffer.h"
 #include "print.h"
-#include "dis.h"
 #include "formasm.h"
 #include "labproc.h"
 

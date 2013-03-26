@@ -395,11 +395,11 @@ static void enum_IEEE_ADDS_or_CVTTQ( ins_enum_method method, uint_32 mask, uint_
 
 typedef void (*enumFunc_t)( ins_enum_method, uint_32, uint_8, void (*func)( qualifier_flags, ins_table * ), void * );
 
-#define PICK( a, b )    b,
 static enumFunc_t enumFunc[] = {
-#include "insenum.inc"
+    #define PICK( a, b )    b,
+    #include "insenum.inc"
+    #undef PICK
 };
-#undef PICK
 
 static void enumInstructions( ins_enum_method method, void (*func)( qualifier_flags set, ins_table *parm ), void *parm )
 //**********************************************************************************************************************
@@ -413,9 +413,9 @@ static void enumInstructions( ins_enum_method method, void (*func)( qualifier_fl
 #ifdef _STANDALONE_
 #ifdef AS_DEBUG_DUMP
 static char *itStrings[] = {
-#define PICK( a, b, c, d, e ) #a,
-#include "mipsfmt.inc"
-#undef PICK
+    #define PICK( a, b, c, d, e ) #a,
+    #include "mipsfmt.inc"
+    #undef PICK
 };
 
 extern void DumpITString( ins_template template )
@@ -424,9 +424,9 @@ extern void DumpITString( ins_template template )
 }
 
 static char *insEnumStrings[] = {
-#define PICK( a, b ) #a,
-#include "insenum.inc"
-#undef PICK
+    #define PICK( a, b ) #a,
+    #include "insenum.inc"
+    #undef PICK
 };
 
 extern void DumpInsEnumMethod( ins_enum_method method )

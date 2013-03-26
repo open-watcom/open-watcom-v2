@@ -35,8 +35,6 @@ lib_name = $(name).so
 lib_name = $(name)$(ext_$(host_os)_$(host_cpu))
 !endif
 
-all: $(lib_name) .SYMBOLIC
-
 additional_cleanup = *.d32 *.mad
 
 !include cproj.mif
@@ -100,6 +98,12 @@ $(lib_name) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(
         $(linker) name $^@ $(lflags_dll) file {$(objs)}
         @%make bind_version_res_dll
 !endif
+
+distbls.gh : ./disbuild.exe
+    $[@
+
+./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
+    $(bld_cl) -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $[@ $(bld_cl_opts)
 
 verrc_dll = $(name)
 !include verrc.mif

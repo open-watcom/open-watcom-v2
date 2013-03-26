@@ -57,23 +57,18 @@ static char *GUIGetInternalLiteralString( int id )
 
 bool GUIInitInternalStringTable( void )
 {
-    int         i;
+    int         i = GUI_LITERAL_BASE;
 
-#undef guipick
-#define guipick( a, b, c ) __LIT##a = GUIGetInternalLiteralString( i ); i++;
-    i=GUI_LITERAL_Internal_First_Message;
+#define guipick( a, b, c ) LIT( a ) = GUIGetInternalLiteralString( i ); i++;
 #include "gui.msg"
 #undef guipick
-
     return( TRUE );
 }
 
 bool GUIFiniInternalStringTable( void )
 {
-#undef guipick
-#define guipick( a, b, c ) GUIMemFree( __LIT##a );
+#define guipick( a, b, c ) GUIMemFree( LIT( a ) );
 #include "gui.msg"
 #undef guipick
     return( TRUE );
 }
-

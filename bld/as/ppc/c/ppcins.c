@@ -486,9 +486,9 @@ static void bitSetCover( uint_32 subset, void (*func)( ins_flags set, ins_table 
 #ifdef _STANDALONE_
 #ifdef AS_DEBUG_DUMP
 static char *itStrings[] = {
-#define PICK( a, b, c, d, e, f, g ) #a,
-#include "ppcfmt.inc"
-#undef PICK
+    #define PICK( a, b, c, d, e, f, g ) #a,
+    #include "ppcfmt.inc"
+    #undef PICK
 };
 
 extern void DumpITString( ins_template template ) {

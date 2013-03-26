@@ -39,18 +39,18 @@
 #include "wresset2.h"
 #include "wreslang.h"
 #else
-// No res file to use. Just compile in the messages...
-// Use English message unless compiled with "-dJAPANESE_MSG"
-#if !defined( JAPANESE_MSG )
-#define PICK( id, e_msg, j_msg )    e_msg,
-#else
-#define PICK( id, e_msg, j_msg )    j_msg,
-#endif
 static char *asMessages[] = {
     "IMPOSSIBLE",
+    // No res file to use. Just compile in the messages...
+    // Use English message unless compiled with "-DJAPANESE_MESSAGES"
+#if !defined( JAPANESE_MESSAGES )
+    #define pick( id, e_msg, j_msg )    e_msg,
+#else
+    #define pick( id, e_msg, j_msg )    j_msg,
+#endif
     #include "as.msg"
+    #undef pick
 };
-#undef PICK
 #endif
 
 #ifdef _STANDALONE_
@@ -127,8 +127,8 @@ extern int AsMsgGet( int resourceid, char *buffer ) {
 #endif
 }
 
-extern void AsMsgFini() {
-//***********************
+extern void AsMsgFini( void ) {
+//*****************************
 
 #ifdef _STANDALONE_
     if( hInstance.handle != NIL_HANDLE ) {

@@ -24,28 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
+#define MSG_LANG_SPACING    1000
 
-enum {
-    LITERAL_AUI_First = 401,
-    #undef auimsg
-    #define auimsg( a, b ) a,
-    #include "aui.str"
-};
+#define AS_MSG_BASE         1
 
-int main( int argc, char *argv[] )
-{
-    if( argc <= 1 || freopen( argv[1], "w", stdout ) != stdout ) {
-        fprintf( stderr, "Can't open output file\n" );
-    }
-    #undef auimsg
-    #define auimsg( a, b ) printf( "#define %s %d\n", #a, a );
-    #include "aui.str"
-    return( 0 );
-}
+#include "msg.gh"

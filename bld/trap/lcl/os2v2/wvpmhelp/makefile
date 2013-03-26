@@ -53,14 +53,8 @@ wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj pmhelp.res
 pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
         $(rc) $(rc_flags) $(inc_dirs_sys_os2) -fo=./pmhelp.res $[@
 
-_err.gh : ./mkstr.exe
-        $[@ $^@
+_err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+        $(c_pp) -zk0 -I"$(trap_dir)/h" $[@ >$@
 
-_jerr.gh : ./jmkstr.exe
-        $[@ $^@
-
-./mkstr.exe : $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
-        $(bld_cl) $[@ $(bld_cl_opts) -I"$(trap_dir)/h"
-
-./jmkstr.exe : $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
-        $(bld_cl) $[@ $(bld_cl_opts) -DJAPANESE_MESSAGES -I"$(trap_dir)/h"
+_jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+        $(c_pp) -zk0 -DJAPANESE_MESSAGES -I"$(trap_dir)/h" $[@ >$@

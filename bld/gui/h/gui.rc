@@ -1,10 +1,5 @@
-#include "_guimsgs.gh"
+#include "guimsgs.h"
 STRINGTABLE
 BEGIN
-    #ifdef JAPANESE_MESSAGES
-        #define guipick( a, b, c ) GUI_LITERAL_##a, c
-    #else
-        #define guipick( a, b, c ) GUI_LITERAL_##a, b
-    #endif
-    #include "gui.msg"
+    #include "gui.str"
 END

@@ -34,12 +34,13 @@
 
 #ifdef DEFINE_RC_STRINGS
 
-#include "_guimsgs.gh"
+#include "guimsgs.h"
+
 #define LITSTR( sym, val )
-#define LIT( sym )      (__LIT##sym)
+#define LIT( sym )      (_LIT_##sym)
 #define LITREF( sym ) &LIT( sym )
-#undef guipick
-#define guipick( a, b, c ) extern char *__LIT##a;
+
+#define guipick( a, b, c ) extern char *LIT( a );
 #include "gui.msg"
 #undef guipick
 

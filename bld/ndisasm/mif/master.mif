@@ -10,8 +10,6 @@ wdis_trmem = 1
 
 exe_name = $(proj_name).exe
 
-all: $(exe_name) .SYMBOLIC
-
 additional_cleanup = *.u
 
 !include cproj.mif
@@ -28,7 +26,7 @@ xlibs = $(orl_lib) $(wres_lib)
 !include trmem.mif
 
 extra_l_flags = option map
-extra_l_flags_qnx = op res=wdis.u, off=8k
+extra_l_flags_qnx = op res=usage.u, off=8k
 
 extra_c_flags_memfuncs = $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
@@ -38,7 +36,6 @@ inc_dirs += -I"$(disasm_dir)/h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
 inc_dirs += -I"$(comp_cfg_dir)/h"
 
 pre_deps_osi = $(os2ldr)
-pre_deps_qnx = wdis.u
 
 .c: .;$(trmem_dir);$(disasm_dir)/stand/c;$(dis_srcs);$(lib_misc_dir)/c;$(watcom_dir)/c
 .h: $(disasm_dir)/stand/h;$(dis_hdirs);$(lib_misc_dir)/h
@@ -82,19 +79,32 @@ $(exe_name) : $(proj_name).res $(dis_prereq) $(disasm_objs) $(cl_objs) $(pre_dep
         @%make bind_version_res_exe
         $(wstrip) -q -a -r $@ . $^&.res
 
-$(proj_name).res : wdis.rc msg.gh
-        $(rc_aui) $[@ -fo=$@
+distbls.gh : ./disbuild.exe
+    $[@
 
-./mkstr.exe : $(disasm_dir)/stand/mkstr.c wdis.msg
-        $(bld_cl) $(bld_cl_opts) -I"$(disasm_dir)/stand" $[@
+./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
+    $(bld_cl) -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $[@ $(bld_cl_opts)
 
-msg.gh : ./mkstr.exe wdis.msg
-        $[@ $^@
+$(proj_name).res : wdis.rc usage.gh usagej.gh msg.gh
+        $(rc_aui) $[@ -I"../stand/h" -I"../stand" -fo=$@
 
-./mkuse.exe : mkstr.c wdis.msg
-        $(bld_cl) $(bld_cl_opts) -DUSAGE -I"$(disasm_dir)/stand" $[@
+msg.gh : ../stand/wdis.msg
+        $(awk) -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
-wdis.u : ./mkuse.exe wdis.msg
-        $[@ $^@
+optencod_opt_qnx = -u usage.u
+optencod_targ_bsd   = bsd
+optencod_targ_linux = linux
+optencod_targ_osx   = osx
+optencod_targ_qnx   = qnx
+ 
+usage.gh : ../stand/options.gml
+        optencod -q -u usage.u $(optencod_opt_$(host_os)) $]@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
+        %append usage.tmp "."
+        $(awk) -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk usage.tmp > $^@
+
+usagej.gh : ../stand/options.gml
+        optencod -l 1 -q $]@ $(nulldevice) $(nulldevice) usagej.tmp $(optencod_targ_$(host_os))
+        %append usagej.tmp "."
+        $(awk) -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk usagej.tmp > $^@
 
 !include verrc.mif

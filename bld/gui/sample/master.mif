@@ -124,15 +124,9 @@ samp2.$(ext) : samp2.obj $(guilib) $(uilib) $(LNK)
 .c:     $(gui_dir)/sample/c;$(os_source_dir);$(os_extra_dir)
 .h:     ../h
 
-$(rcname).res : ../$(rcname).rc ../$(rcname).dlg _guimsgs.gh
+$(rcname).res : ../$(rcname).rc ../$(rcname).dlg
 !ifeq type win
         $(rc) $(rc_flags) $(rcopt) $[@ -fo=$^@
 !else
         $(rc_aui) $(rcopt) $[@ -fo=$^@
 !endif
-
-./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -i"$(gui_dir)/h" $(bld_cl_opts) $[@
-
-_guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
-        $[@ $^@ $(gui_msg_id_modifier)

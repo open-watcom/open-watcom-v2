@@ -30,7 +30,7 @@
 
 
 typedef enum {
-#define PICK( a, b, c, d, e ) a,
-#include "mipsfmt.inc"
-#undef PICK
+    #define PICK( a, b, c, d, e ) a,
+    #include "mipsfmt.inc"
+    #undef PICK
 } mips_template;

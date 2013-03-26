@@ -7,8 +7,6 @@ wheapwlk_autodepends = .AUTODEPEND
 
 sys_windowed=1
 
-all: $(name).exe .SYMBOLIC
-
 .EXTENSIONS: .res .rc
 
 !include cproj.mif

@@ -34,9 +34,3 @@ x64_disbuild_headers   = $(disasm_dir)/core/h/insx64.h   $(disasm_dir)/core/h/re
 !inject $$(x64_disbuild_headers)                                    hx64 hall htest
 
 disbuild_headers = $+$(h$(target_cpu))$-
-
-distbls.gh : ./disbuild.exe
-    $[@
-
-./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
-    $(bld_cl) -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $[@ $(bld_cl_opts)

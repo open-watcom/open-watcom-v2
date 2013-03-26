@@ -31,9 +31,9 @@
 
 
 typedef enum {
-#define PICK( a, b, c, d, e, f, g ) a,
-#include "ppcfmt.inc"
-#undef PICK
+    #define PICK( a, b, c, d, e, f, g ) a,
+    #include "ppcfmt.inc"
+    #undef PICK
 } ppc_template;
 
 enum {

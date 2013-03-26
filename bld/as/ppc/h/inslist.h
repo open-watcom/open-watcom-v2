@@ -55,9 +55,9 @@ typedef enum {
 } op_flags;
 
 typedef enum {
-#define PICK( a, b ) OP_##a = b,
-#include "regclass.inc"
-#undef PICK
+    #define PICK( a, b ) OP_##a = b,
+    #include "regclass.inc"
+    #undef PICK
     OP_IMMED            = (1 << REGCLASS_COUNT),        // an immediate constant (could have reloc with it)
     OP_REG_INDIRECT     = (1 << (REGCLASS_COUNT + 1)),  // register with an immediate attached
     OP_BI               = (1 << (REGCLASS_COUNT + 2)),  // BI field in branch instructions

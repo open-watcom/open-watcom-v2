@@ -1,10 +1,3 @@
-//Note:	This is a special message that marks the start of GUI msgs
-//	and it MUST be the first message in this file!! (do not translate)
-
-guipick(	Internal_First_Message,
-		"First",
-		"First" )
-		
 // - the change font menu item and hint text
 
 guipick(	Change_XFont_,

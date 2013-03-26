@@ -29,7 +29,7 @@ wdpmhook.dll: pmhook.obj loadstd.obj
     @%append $^&.lnk segment class 'BSS' shared
     $(linker) @$^&.lnk
 
-wdpmhelp.exe: _err.gh pmhelp.res pmhelp.obj
+wdpmhelp.exe: pmhelp.res _err.gh pmhelp.obj
     @%write  $^&.lnk name $^@ system os2 pm
     @%append $^&.lnk debug all op symfile
     @%append $^&.lnk file pmhelp.obj
@@ -60,9 +60,5 @@ extra_a_flags = -2 -bt=os2 -fo=.obj -mc
 pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 
-./mkstr.exe: $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
-    $(bld_cl) $(bld_cl_opts) -I"$(trap_dir)/h" $[@
-
-_err.gh : ./mkstr.exe
-    $[@ $^@
-
+_err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+        $(c_pp) -zk0 -I"$(trap_dir)/h" $[@ >$@

@@ -31,7 +31,8 @@
 
 
 #include "guiwind.h"
+#include "guistr.h"
 
-#undef guipick
-#define guipick( x, y, z ) char *__LIT##x;
+#define guipick( x, y, z ) char *LIT( x );
 #include "gui.msg"
+#undef guipick

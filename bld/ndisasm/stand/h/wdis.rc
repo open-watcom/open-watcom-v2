@@ -1,4 +1,4 @@
-#include "msg.gh"
+#include "msg.h"
 #include "wreslang.h"
 
 STRINGTABLE
@@ -8,12 +8,12 @@ BEGIN
 #define pick( code, string1, string2 )  \
         (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
 
-#include "../wdis.msg"
+#include "wdis.msg"
 
 #undef pick
 #define pick( code, string1, string2 )  \
         (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
 
-#include "../wdis.msg"
+#include "wdis.msg"
 
 END

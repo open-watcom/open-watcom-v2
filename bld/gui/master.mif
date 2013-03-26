@@ -116,11 +116,8 @@ inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" -I"$(ui_dir)/h"
 .h:     ../h;../../h
 .msg:   ../../h
 
-$(name).lib : _guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(libs) $(__MAKEFILES__)
+$(name).lib : guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(libs) $(__MAKEFILES__)
         $(librarian) $(libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
 
-./mkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -I"$(gui_dir)/h" $(bld_cl_opts) $[@
-
-_guimsgs.gh: ./mkstr.exe $(gui_dir)/h/gui.msg
-        $[@ $^@ $(gui_msg_id_modifier)
+guimsgs.gh : ../../h/gui.msg
+        $(awk) -v prefix=GUI_LITERAL_ -v base=GUI_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@

@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+// Include all the string id's.
+#include "msg.h"
+
 extern int AsMsgInit( void );
 extern int AsMsgGet( int resourceid, char *buffer );
 extern void AsMsgFini( void );
-
-// Include all the string id's.
-#include "msg.gh"
