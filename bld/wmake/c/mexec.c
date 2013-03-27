@@ -286,7 +286,7 @@ STATIC char *createTmpFileName( void )
     char    fileName[_MAX_PATH];
 
     tmpPath    = GetMacroValue( TEMPENVVAR );
-    if( tmpPath == NULL && !Glob.microsoft ) {
+    if( tmpPath == NULL && !Glob.compat_nmake ) {
         tmpPath = getenv( TEMPENVVAR );
         if( tmpPath != NULL ) {
             tmpPath = StrDupSafe( tmpPath );
@@ -1874,7 +1874,7 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
     if( !(flags & FLAG_SILENT) ||
         (Glob.noexec && (comnum != COM_FOR || (flags & FLAG_SHELL)) &&
         !percent_cmd) ) {
-        if( !Glob.noheader && !Glob.posix ) {
+        if( !Glob.noheader && !Glob.compat_posix ) {
             PrtMsg( INF | NEOL | JUST_A_TAB );
         }
         dumpCommand( cmd );
@@ -2028,7 +2028,7 @@ STATIC RET_T execLine( char *line )
     assert( !isws( *p ) );
 
     // NMAKE quietly ignores empty commands
-    if( Glob.microsoft && *p == '\0' ) {
+    if( Glob.compat_nmake && *p == '\0' ) {
         return( RET_SUCCESS );
     }
     rc = shellSpawn( p, flags );
@@ -2058,7 +2058,7 @@ int_32 ExecCommand( char *line )
     assert( !isws( *p ) );
 
     // NMAKE quietly ignores empty commands here; should we as well?
-    if( Glob.microsoft && *p == '\0' ) {
+    if( Glob.compat_nmake && *p == '\0' ) {
         return( RET_SUCCESS );
     }
     // Execute command - run it always, always silent, and get real retcode

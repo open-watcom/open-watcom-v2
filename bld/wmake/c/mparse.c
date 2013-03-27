@@ -471,7 +471,7 @@ STATIC void parseExtensions( void )
              * if microsoft option is set we put it in anyway don't
              * care whether or not it exists
              */
-            } else if( Glob.microsoft | Glob.unix ) {
+            } else if( Glob.compat_nmake | Glob.compat_unix ) {
                 FreeSafe( CurAttr.ptr );
             } else {
                 PrtMsg( ERR | LOC | REDEF_OF_SUFFIX, CurAttr.ptr );
@@ -621,7 +621,7 @@ STATIC void linkCList( TLIST *btlist, CLIST *bclist, const char *cur_target_path
         if( curtarg->scolon ) {
             /* check if it's an scolon, and attempt more than one clist */
             if( clisthead != NULL && (*walk)->clist != NULL ) {
-                if( Glob.microsoft | Glob.unix ) {
+                if( Glob.compat_nmake | Glob.compat_unix ) {
                     PrtMsg( WRN | LOC | MORE_THAN_ONE_CLIST, curtarg->node.name );
                 } else {
                     PrtMsg( ERR | LOC | MORE_THAN_ONE_CLIST, curtarg->node.name );
@@ -1040,7 +1040,7 @@ TLIST *Parse( void )
          * when the actual filenames are resolved
          */
         if( btlist != NULL ) {
-            ImplicitDeMacro = (Glob.microsoft | Glob.unix) && btlist->target->sufsuf;
+            ImplicitDeMacro = (Glob.compat_nmake | Glob.compat_unix) && btlist->target->sufsuf;
         }
         t = LexToken( LEX_PARSER );
         ImplicitDeMacro = FALSE;
@@ -1059,7 +1059,7 @@ TLIST *Parse( void )
                 }
                 cur_target_path = NULL;
                 cur_depend_path = NULL;
-                if( (Glob.microsoft | Glob.unix) && token_filename == TRUE ) {
+                if( (Glob.compat_nmake | Glob.compat_unix) && token_filename == TRUE ) {
                     exPop();
                     token_filename = FALSE;
                 }
@@ -1097,7 +1097,7 @@ TLIST *Parse( void )
                      *       rule we must deMacro the text the same
                      *       way as wmake does for microsoft option
                      */
-                    ImplicitDeMacro = (Glob.microsoft | Glob.unix) &&
+                    ImplicitDeMacro = (Glob.compat_nmake | Glob.compat_unix) &&
                         btlist->target->sufsuf;
                     newclist->inlineHead = GetInlineFile( &(newclist->text) );
                     ImplicitDeMacro = FALSE;
@@ -1117,7 +1117,7 @@ TLIST *Parse( void )
             break;
         case TOK_FILENAME:
             parseTargDep( t, &btlist );
-            if( (Glob.microsoft | Glob.unix) && btlist != NULL ) {
+            if( (Glob.compat_nmake | Glob.compat_unix) && btlist != NULL ) {
                 if( btlist->target != NULL && btlist->target->depend != NULL ) {
                     exPush( btlist->target, btlist->target->depend, NULL );
                     token_filename = TRUE;

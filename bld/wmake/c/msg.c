@@ -515,7 +515,7 @@ void PrtMsg( enum MsgClass num, ... )
         logWrite( buff, len );
     }
     write( fh, buff, len );
-    if( !Glob.microsoft && ( num == ( CANNOT_NEST_FURTHER | FTL | LOC ) ||
+    if( !Glob.compat_nmake && ( num == ( CANNOT_NEST_FURTHER | FTL | LOC ) ||
                              num == ( IGNORE_OUT_OF_PLACE_M | ERR | LOC ))) {
         PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
     }

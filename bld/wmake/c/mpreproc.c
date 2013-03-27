@@ -1081,7 +1081,7 @@ STRM_T PreGetCH( void )
             }
             doingPreProc = TRUE;
 
-            if( Glob.microsoft || Glob.posix ) {
+            if( Glob.compat_nmake || Glob.compat_posix ) {
                 /* Check for NMAKE and UNIX compatible 'include' directive */
                 if( t == 'i' && PreTestString( "nclude " ) ) {
                     UnGetCH( eatWhite() );
@@ -1138,7 +1138,7 @@ STRM_T PreGetCH( void )
             }
             return( t );
         } else {
-            if( Glob.microsoft && t == MS_LINECONT ) {
+            if( Glob.compat_nmake && t == MS_LINECONT ) {
                 t = GetCHR();
                 if( t == EOL ) {
                     lastChar = SPACE;
@@ -1163,7 +1163,7 @@ STRM_T PreGetCH( void )
             }
 
             if( t != LINECONT ) {
-                if( t != UNIX_LINECONT || !Glob.unix ) {
+                if( t != UNIX_LINECONT || !Glob.compat_unix ) {
                     lastChar = t;
                     if( skip ) {
                         t = GetCHR();   /* must get next char */

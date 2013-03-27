@@ -211,7 +211,7 @@ BOOLEAN SufBothExist( const char *sufsuf )   /* .src.dest */
     }
 
     if( FindSuffix( ptr ) == NULL ) {
-        if( Glob.microsoft == TRUE ) {
+        if( Glob.compat_nmake == TRUE ) {
             AddFrontSuffix( ptr );
             return( TRUE );
         } else {
@@ -237,7 +237,7 @@ void AddSuffix( char *name )
 
     assert( ( name != NULL && name[0] == DOT && !SufExists( name ) ) ||
             ( name != NULL && name[0] == DOT && SufExists( name ) &&
-            Glob.microsoft ) );
+            Glob.compat_nmake ) );
 
     d = name;                   /* shift left by 1 place */
     s = name + 1;
@@ -350,7 +350,7 @@ void AddCreator( const char *sufsuf )
 
     assert( src != NULL && dest != NULL );
 
-    if( !Glob.microsoft && !Glob.posix && src->id < dest->id ) {
+    if( !Glob.compat_nmake && !Glob.compat_posix && src->id < dest->id ) {
         PrtMsg( ERR | LOC | EXTENSIONS_REVERSED );
     }
     cur = &dest->creator;

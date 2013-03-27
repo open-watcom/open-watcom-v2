@@ -80,8 +80,8 @@ struct Glob {
     BIT     silent      : 1;/* do not print cmds                             */
     BIT     silentno    : 1;/* print cmds - overrules silent                 */
     BIT     touch       : 1;/* just touch the files, don't execute anything  */
-    BIT     hold        : 1;/* on error don't erase (and don't ask)          */
 
+    BIT     hold        : 1;/* on error don't erase (and don't ask)          */
     BIT     shell       : 1;/* execute commands through the shell            */
     BIT     preproc     : 1;/* TRUE - preprocessor on, FALSE - off           */
     BIT     erroryet    : 1;/* has PrtMsg printed an error yet?              */
@@ -89,21 +89,20 @@ struct Glob {
     BIT     nomakeinit  : 1;/* TRUE if we are to suppress parsing makeinit   */
     BIT     macreadonly : 1;/* should macro definitions be read only?        */
     BIT     headerout   : 1;/* has the header been printed out yet?          */
-    BIT     unix        : 1;/* TRUE if UNIX compatibility desired            */
-    BIT     posix       : 1;/* TRUE if POSIX conformance desired             */
 
     BIT     rcs_make    : 1;/* TRUE if new target's date is max of dep dates */
     BIT     fuzzy       : 1;/* TRUE .AUTODEPEND times can be off by 1 minute */
     BIT     keep_spaces : 1;/* TRUE keep spaces in macro defns               */
-
-#ifdef CACHE_STATS
-    BIT     cachestat   : 1;/* cache status report                           */
-#endif
-    BIT     microsoft   : 1;/* Microsoft nmahe Optioning-Compatability switch*/
+    BIT     compat_unix : 1;/* TRUE if UNIX compatibility desired            */
+    BIT     compat_posix: 1;/* TRUE if POSIX conformance desired             */
+    BIT     compat_nmake: 1;/* Microsoft nmake Optioning-Compatability switch*/
     BIT     verbose     : 1;/* Bit to list out the contents of a tmp file    */
     BIT     auto_depends: 1;/* force autodepends info to be used             */
 
     BIT     show_offenders: 1;   /* display the out-of-date file             */
+#ifdef CACHE_STATS
+    BIT     cachestat   : 1;/* cache status report                           */
+#endif
 };
 
 #ifdef DEVELOPMENT

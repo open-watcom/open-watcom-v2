@@ -218,7 +218,7 @@ STATIC TOKEN_T lexDollar( void )
 
     t = PreGetCH();
 
-    if( (Glob.microsoft || Glob.posix) && ismsspecial( t ) ) {
+    if( (Glob.compat_nmake || Glob.compat_posix) && ismsspecial( t ) ) {
         t = LexMSDollar( t );
         GetModifier();
         return( t );

@@ -167,7 +167,7 @@ const char *procPath( const char *fullpath )
 
     case FORM_PATH:
         _makepath( dirBuf, pg.drive, pg.dir, NULL, NULL );
-        if( Glob.microsoft) {
+        if( Glob.compat_nmake) {
             if( dirBuf[0] == NULLCHAR ) {
                 dirBuf[0] = '.';
                 dirBuf[1] = NULLCHAR;
@@ -224,7 +224,7 @@ STATIC void makeMacroName( char *buffer, const char *name )
 {
     assert( IsMacroName( name ) );
 
-    if( Glob.microsoft || Glob.posix ) {
+    if( Glob.compat_nmake || Glob.compat_posix ) {
         strcpy( buffer, name );
     } else {
         while( (*buffer = toupper( *name )) != NULLCHAR ) {
@@ -243,7 +243,7 @@ STATIC MACRO *getMacroNode( const char *name )
 
     assert( name != NULL && *name != ENVVAR );
 
-    if( Glob.microsoft || Glob.posix ) {
+    if( Glob.compat_nmake || Glob.compat_posix ) {
         caseSensitive = TRUE;
     } else {
         caseSensitive = FALSE;
@@ -385,9 +385,9 @@ STATIC const char *GetMacroValueProcess( const char *name )
     }
 
     // If not defined as a macro then get it as a Environment variable
-    if( Glob.microsoft || Glob.posix ) {
+    if( Glob.compat_nmake || Glob.compat_posix ) {
         // Check if macro is all caps in NMAKE mode
-        if( Glob.microsoft ) {
+        if( Glob.compat_nmake ) {
             for( pos = 0; macro[pos] != NULLCHAR; ++pos ) {
                 if( macro[pos] != toupper( macro[pos] ) ) {
                     return( NULL );
@@ -712,7 +712,7 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
          * if there are no parentheses then it takes only first char.
          * after the $
          */
-        if( !Glob.microsoft && !Glob.posix ) {
+        if( !Glob.compat_nmake && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_PUNC );
         } else {
             temp = PreGetCH ();
@@ -743,7 +743,7 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
         return( StrDupSafe( TMP_COMMENT_S ) );  /* write a place holder */
 
     case MAC_OPEN:                      /* recurse, get macro name */
-        if( !Glob.microsoft && !Glob.posix ) {
+        if( !Glob.compat_nmake && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_CLOSE );
             if( IsMacroName( p ) ) {
                 p2 =  WrnGetMacroValue( p );
@@ -963,7 +963,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
             case TMP_COMMENT_C:     *p = COMMENT;   break;
 #if 0
             case SPECIAL_TMP_DOL_C:
-                  if( Glob.microsoft ) {
+                  if( Glob.compat_nmake ) {
                        if( ismsspecial( *(p + 1) ) ) {
                           *p = DOLLAR;
                        }
@@ -1128,7 +1128,7 @@ BOOLEAN ForceDeMacro ( void )
  * For Watcom the default is FALSE
  */
 {
-    return( (Glob.microsoft || Glob.posix) && !ImplicitDeMacro );
+    return( (Glob.compat_nmake || Glob.compat_posix) && !ImplicitDeMacro );
 }
 
 
@@ -1142,7 +1142,7 @@ char *PartDeMacro( BOOLEAN ForcedDeMacro )
     STRM_T  t;
     char    *temp;
 
-    if( Glob.microsoft || Glob.posix ) {
+    if( Glob.compat_nmake || Glob.compat_posix ) {
         IsPartDeMacro = TRUE;
     }
     if( ForcedDeMacro ) {
@@ -1152,12 +1152,12 @@ char *PartDeMacro( BOOLEAN ForcedDeMacro )
         UnGetCH(t);
         temp = DeMacro( EOL );
         t = PreGetCH();
-        if( Glob.microsoft || Glob.posix ) {
+        if( Glob.compat_nmake || Glob.compat_posix ) {
             IsPartDeMacro = FALSE;
         }
         return( temp );
     } else {
-        if( Glob.microsoft || Glob.posix ) {
+        if( Glob.compat_nmake || Glob.compat_posix ) {
             IsPartDeMacro = FALSE;
         }
         return( PartDeMacroProcess() );
@@ -1168,7 +1168,7 @@ char *PartDeMacro( BOOLEAN ForcedDeMacro )
 STATIC int CompareNMacroName( const char *name1, const char *name2, size_t len )
 /******************************************************************************/
 {
-    if( Glob.microsoft || Glob.posix ) {
+    if( Glob.compat_nmake || Glob.compat_posix ) {
         return( strncmp( name1, name2, len ) );
     } else {
         return( strnicmp( name1, name2, len ) );
@@ -1267,7 +1267,7 @@ void DefMacro( const char *name )
     value = DeMacroName( temp, name );
     FreeSafe( temp );
 
-    if( *name == ENVVAR || (Glob.microsoft && getenv( name ) != NULL ) ) {
+    if( *name == ENVVAR || (Glob.compat_nmake && getenv( name ) != NULL ) ) {
         if( *name != ENVVAR ) {
             addMacro( name, value );
         }
@@ -1288,7 +1288,7 @@ void DefMacro( const char *name )
         FreeSafe( value );
         PutEnvSafe( env );
     } else {
-        if( Glob.microsoft ) {
+        if( Glob.compat_nmake ) {
             if( !DoingBuiltIn ) {
                 if( getenv( name ) != NULL ) {
 #ifdef CLEAN_ENVIRONMENT_VAR

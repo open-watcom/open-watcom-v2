@@ -346,7 +346,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, time_t max_time )
         if( clist == NULL ) {
             // No commands in Microsoft and POSIX mode is considered OK
             // and executed
-            if( Glob.microsoft || Glob.posix ) {
+            if( Glob.compat_nmake || Glob.compat_posix ) {
                 targ->cmds_done = TRUE;
                 return( RET_SUCCESS );
             }
@@ -646,7 +646,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
             ++slistCount;
         }
 
-        if( UseDefaultSList && slistCmd  == NULL && !Glob.microsoft ) {
+        if( UseDefaultSList && slistCmd  == NULL && !Glob.compat_nmake ) {
             _makepath( buf, NULL, NULL, fname, cursuf->node.name );
             /* try to find this file on path or in targets */
             ret = TrySufPath( buf, buf, &imptarg, FALSE );
@@ -654,7 +654,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
             case RET_WARN:
                 break;
             case RET_ERROR:
-                if( !Glob.microsoft ) {
+                if( !Glob.compat_nmake ) {
                     slistDef = slistEmptyTargDepPath;
                 }
                 break;
@@ -774,7 +774,7 @@ STATIC void ExpandWildCards( TARGET *targ, DEPEND *depend )
    while( tlist != NULL ) {
        temp = NULL;
        // In Microsoft it is possible to have macros in the dependency.
-       if( Glob.microsoft ) {
+       if( Glob.compat_nmake ) {
            exPush( targ, NULL, NULL );
            NodeName = DeMacroSpecial( tlist->target->node.name );
            exPop();
@@ -941,7 +941,7 @@ RET_T Update( TARGET *targ )
             }
             curdep = curdep->next;
         }
-        if( !Glob.microsoft ) {
+        if( !Glob.compat_nmake ) {
             if( tryImply( targ, FALSE ) == RET_ERROR ) {
                 targ->busy = FALSE;
                 targ->error = TRUE;
@@ -1062,7 +1062,7 @@ char *GetCurDeps( BOOLEAN younger, BOOLEAN isMacInf )
 
     cur = exGetCurVars();
 
-    // This is for Glob.microsoft and Glob.posix
+    // This is for Glob.compat_nmake and Glob.compat_posix
     // $< and $** are different
     if( isMacInf ) {
         cur.dep = cur.impDep;

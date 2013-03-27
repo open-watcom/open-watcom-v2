@@ -90,7 +90,7 @@ STATIC void doBuiltIns( const char *makeopts )
         InsString( cpy, FALSE );
         list = Parse();
         FreeTList( list );
-        if( Glob.microsoft | Glob.unix ) {
+        if( Glob.compat_nmake | Glob.compat_unix ) {
             // suffixes must be parsed before builtins
             const char  *suffices = MSSuffixList;
             const char  *builtins = MSBuiltIn;
@@ -99,10 +99,10 @@ STATIC void doBuiltIns( const char *makeopts )
             InsString( cpy, FALSE );
             list = Parse();
             FreeTList( list );
-            if( Glob.posix ) {
+            if( Glob.compat_posix ) {
                 suffices = POSIXSuffixList;
                 builtins = POSIXBuiltIn;
-            } else if( Glob.unix ) {
+            } else if( Glob.compat_unix ) {
                 suffices = UNIXSuffixList;
                 builtins = UNIXBuiltIn;
             }
@@ -176,7 +176,7 @@ STATIC void handleMacroDefn( const char *buf )
         /* NOP - eat all the characters */
     }
 
-    if( Glob.microsoft ) {
+    if( Glob.compat_nmake ) {
         /* Insert twice because in nmake declaring a macro in the command line */
         /* is equivalent to declaring one as is and one that is all upper case */
         /* Approximately so. we cater for foo meaning FOO but not FoO W.Briscoe 20031114 */
@@ -264,7 +264,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                 case 'r':   Glob.overide   = TRUE;  break;
                 case 's':   Glob.silent    = TRUE;  break;
                 case 't':   Glob.touch     = TRUE;  break;
-                case 'u':   Glob.unix      = TRUE;  break;
+                case 'u':   Glob.compat_unix= TRUE;  break;
                 case 'v':   Glob.verbose   = TRUE;  break;
                 case 'w':   Glob.auto_depends = TRUE;break;
 #ifdef CACHE_STATS
@@ -304,7 +304,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
             }
             if( p[3] == NULLCHAR ) {
                 if( option == 'm'  && tolower( p[2] ) == 's' ) {
-                    Glob.microsoft = TRUE;
+                    Glob.compat_nmake = TRUE;
                     Glob.nocheck   = TRUE;
                     options[(option | 0x20) + 1] = TRUE;
                     continue;
@@ -315,8 +315,8 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                     continue;
                 }
                 if( option == 'u'  && tolower( p[2] ) == 'x' ) {
-                    Glob.unix       = TRUE;
-                    Glob.posix      = TRUE;
+                    Glob.compat_unix = TRUE;
+                    Glob.compat_posix = TRUE;
                     Glob.nomakeinit = TRUE;
                     Glob.nocheck    = TRUE;
                     options[(option | 0x20) + 1] = TRUE;
@@ -331,7 +331,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
         }
     } // while( *++argv != NULL )
 
-    if( Glob.microsoft && Glob.unix ) {
+    if( Glob.compat_nmake && Glob.compat_unix ) {
         PrtMsg( ERR | INCOMPATIBLE__OPTIONS, select, option );
         Usage();
     }
@@ -361,7 +361,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                     if( Glob.nomakeinit ) {
                         strcat( makeopts, *makeopts ? " -m" : "-m" );
                     }
-                    if( Glob.microsoft ) {
+                    if( Glob.compat_nmake ) {
                         strcat( makeopts, *makeopts ? " -ms" : "-ms" );
                     }
                     break;
@@ -417,7 +417,7 @@ STATIC void parseFiles( void )
 
                                     /* process makeinit */
     if( !Glob.nomakeinit ) {
-        if( Glob.microsoft ) {
+        if( Glob.compat_nmake ) {
             ret = InsFile( TOOLSINI_NAME, TRUE );
         } else {
             ret = InsFile( MAKEINIT_NAME, TRUE );
@@ -469,7 +469,7 @@ STATIC void parseFiles( void )
     }
 
     if( !Glob.nomakeinit ) {
-        if( !Glob.microsoft ) {
+        if( !Glob.compat_nmake ) {
             ret = InsFile( MAKEFINI_NAME, TRUE );
             if( ret == RET_SUCCESS ) {
                 setFirstTarget( Parse() );
@@ -511,7 +511,7 @@ STATIC RET_T doMusts( void )
     }
 
     UpdateInit();
-    if( Glob.microsoft || Glob.unix ) {
+    if( Glob.compat_nmake || Glob.compat_unix ) {
         /* For MS/UNIX mode, targets with no commands may be symbolic.
          * We need to check this now, after input files have been processed
          * but before any commands have been executed.
