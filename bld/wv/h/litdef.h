@@ -33,5 +33,5 @@
 #include "wdmsg.h"
 #include "litdef.gh"
 
-#define LIT( x ) _LIT_##x
+#define LIT( x ) _LIT_DBG_##x
 #define LITREF( x ) &LIT( x )

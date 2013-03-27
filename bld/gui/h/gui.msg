@@ -1,305 +1,298 @@
 // - the change font menu item and hint text
 
-guipick(	Change_XFont_,
+pick(	Change_XFont_,
 		"Change &Font ...",
 		"jChange &Font ..." )
 
-guipick(	Change_Font_for_this_window,
+pick(	Change_Font_for_this_window,
 		"Change Font for this window",
 		"jChange Font for this window" )
 
 // title of a floating toolbar in a character mode application
 
-guipick(	Floating_Toolbar,
+pick(	Floating_Toolbar,
 		"Floating Toolbar",
 		"jFloating Toolbar" )
 // - the "Fix Tool Bar" font menu item and hint text
 
-guipick(	XFix_Tool_Bar,
+pick(	XFix_Tool_Bar,
 		"&Fix Tool Bar",
 		"j&Fix Tool Bar" )
 
-guipick(	Make_Tool_Bar_Fixed,
+pick(	Make_Tool_Bar_Fixed,
 		"Make Tool Bar Fixed",
 		"jMake Tool Bar Fixed" )
 
 // - error messages (internal problems)
 
-guipick(	Pen_Failed,
+pick(	Pen_Failed,
 		"Could Not Create Required Pen",
 		"jCould Not Create Required Pen" )
 
-guipick(	Open_Failed,
+pick(	Open_Failed,
 		"Could Not Open Window",
 		"jCould Not Open Window" )
 
 // - these are the strings on the file browser dialog (in character mode apps)
 
-guipick(	File_Name_Colon,
+pick(	File_Name_Colon,
 		"File Name:",
 		"jFile Name:" )
 
-guipick(	Directories_Colon,
+pick(	Directories_Colon,
 		"Directories:",
 		"jDirectories:" )
 
-guipick(	OK,
+pick(	OK,
 		"OK",
 		"OK" )
 
-guipick(	Cancel,
+pick(	Cancel,
 		"Cancel",
                 "ƒLƒƒƒ“ƒZƒ‹" )
 
-guipick(	List_Files_of_Type_Colon,
+pick(	List_Files_of_Type_Colon,
 		"List Files of Type:",
 		"jList Files of Type:" )
 
-guipick(	Drives_Colon,
+pick(	Drives_Colon,
 		"Drives:",
 		"jDrives:" )
 
-guipick(	File_Exists_Replace,
+pick(	File_Exists_Replace,
 		"\nThis file already exists.\n\nReplace existing file?\n",
 		"j\nThis file already exists.\n\nReplace existing file?\n" )
 
-guipick(	FDlg_Save_Text,
+pick(	FDlg_Save_Text,
 		"Save",
 		"jSave" )
 
-guipick(	FDlg_Open_Text,
+pick(	FDlg_Open_Text,
 		"Open",
 		"jOpen" )
 
 // - these are the strings on the system menu (for character mode apps)
 
-guipick(	Restore,
+pick(	Restore,
 		"Restore",
 		"jRestore" )
 
-guipick(	Move,
+pick(	Move,
 		"Move",
 		"jMove" )
 
-guipick(	Size,
+pick(	Size,
 		"Size",
 		"jSize" )
 
-guipick(	Minimize,
+pick(	Minimize,
 		"Minimize",
 		"jMinimize" )
 
-guipick(	Maximize,
+pick(	Maximize,
 		"Maximize",
 		"jMaximize" )
 
-guipick(	Close,
+pick(	Close,
 		"Close",
 		"jClose" )
 
 // these are menu items from the system menu of an MDI child window
 
-guipick(	NexXt,
+pick(	NexXt,
 		"Nex&t",
 		"jNex&t" )
 
-guipick(	XClose,
+pick(	XClose,
 		"&Close",
 		"j&Close" )
 
 // these are elements of the Window menu for character mode apps
 
-guipick(	XCascade,
+pick(	XCascade,
 		"&Cascade",
 		"j&Cascade" )
 
-guipick(	Tile_XHorz,
+pick(	Tile_XHorz,
 		"Tile &Horizontally",
 		"jTile &Horizontally" )
 
-guipick(	Tile_XVert,
+pick(	Tile_XVert,
 		"Tile &Vertically",
 		"jTile &Vertically" )
 
-guipick(	XArrange_Icons,
+pick(	XArrange_Icons,
 		"&Arrange Icons",
 		"j&Arrange Icons" )
 
-guipick(	XMore_Windows,
+pick(	XMore_Windows,
 		"&More Windows ...",
 		"j&More Windows ..." )
 
-guipick(	Cascade_Hint,
+pick(	Cascade_Hint,
 		"Arrange all windows in a cascaded fashion",
 		"jArrange all windows in a cascaded fashion" )
 
-guipick(	Tile_Horz_Hint,
+pick(	Tile_Horz_Hint,
 		"Arrange all windows in a horizontally tiled fashion",
 		"jArrange all windows in a horizontally tiled fashion" )
 
-guipick(	Tile_Vert_Hint,
+pick(	Tile_Vert_Hint,
 		"Arrange all windows in a vertically tiled fashion",
 		"jArrange all windows in a vertically tiled fashion" )
 
-guipick(	Arrange_Icons_Hint,
+pick(	Arrange_Icons_Hint,
 		"Arrange all icons in rows",
 		"jArrange all icons in rows" )
 
-guipick(	More_Windows_Hint,
+pick(	More_Windows_Hint,
 		"Show a list of all windows",
 		"jShow a list of all windows" )
 
-guipick(	Window_Name_Hint,
+pick(	Window_Name_Hint,
 		"Go to Window ",
 		"jGo to Window " )
 
-guipick(	Select_Window,
+pick(	Select_Window,
 		"Select Window",
 		"jSelect Window" )
 
 // - this is a menu item on a floating toolbar window in a character mode app
 
-guipick(	XFix_Toolbar,
+pick(	XFix_Toolbar,
 		"&Fix Toolbar",
 		"j&Fix Toolbar" )
 
-guipick(	Fix_Toolbar_Hint,
+pick(	Fix_Toolbar_Hint,
 		"Make toolbar buttons into menus",
 		"jMake toolbar buttons into menus" )
 
 // - These are strings for character mode message boxes
 
-guipick(	XAbort,
+pick(	XAbort,
 		"&Abort",
 		"j&Abort" )
 
-guipick(	XIgnore,
+pick(	XIgnore,
 		"&Ignore",
 		"j&Ignore" )
 
-guipick(	XNo,
+pick(	XNo,
 		"&No",
 		"j&No" )
 
-guipick(	XRetry,
+pick(	XRetry,
 		"&Retry",
 		"j&Retry" )
 
-guipick(	XYes,
+pick(	XYes,
 		"&Yes",
 		"j&Yes" )
 
-guipick(	Stop_Bang,
+pick(	Stop_Bang,
 		"Stop!",
 		"jStop!" )
 
-guipick(	Exclamation,
+pick(	Exclamation,
 		"!",
 		"!" )
 
 
 // - these are elements of the get colour dialog for character mode apps
 
-guipick(	Colour,
+pick(	Colour,
 		"Colour",
 		"jColour" )
 
-guipick(	Black,
+pick(	Black,
 		"Black",
 		"jBlack" )
 
-guipick(	Blue,
+pick(	Blue,
 		"Blue",
 		"jBlue" )
 
-guipick(	Green,
+pick(	Green,
 		"Green",
 		"jGreen" )
 
-guipick(	Cyan,
+pick(	Cyan,
 		"Cyan",
 		"jCyan" )
 
-guipick(	Red,
+pick(	Red,
 		"Red",
 		"jRed" )
 
-guipick(	Magenta,
+pick(	Magenta,
 		"Magenta",
 		"jMagenta" )
 
-guipick(	Brown,
+pick(	Brown,
 		"Brown",
 		"jBrown" )
 
-guipick(	White,
+pick(	White,
 		"White",
 		"jWhite" )
 
-guipick(	Grey,
+pick(	Grey,
 		"Grey",
 		"jGrey" )
 
-guipick(	BrightBlue,
+pick(	BrightBlue,
 		"Bright Blue",
 		"jBright Blue" )
 
-guipick(	BrightGreen,
+pick(	BrightGreen,
 		"Bright Green",
 		"jBright Green" )
 
-guipick(	BrightCyan,
+pick(	BrightCyan,
 		"Bright Cyan",
 		"jBright Cyan" )
 
-guipick(	BrightRed,
+pick(	BrightRed,
 		"Bright Red",
 		"jBright Red" )
 
-guipick(	BrightMagenta,
+pick(	BrightMagenta,
 		"Bright Magenta",
 		"jBright Magenta" )
 
-guipick(	BrightYellow,
+pick(	BrightYellow,
 		"Bright Yellow",
 		"jBright Yellow" )
 
-guipick(	BrightWhite,
+pick(	BrightWhite,
 		"Bright White",
 		"jBright White" )
 
-guipick(	Table_of_Contents,
+pick(	Table_of_Contents,
 		"table of contents",
 		"jtable of contents" )
 		
 
 // - DO NOT TRANSLATE anything from here on down.
 
-guipick(	ApplIcon,
+pick(	ApplIcon,
 		"ApplIcon",
 		"jApplIcon" )
 		
 
-guipick(	Empty,
+pick(	Empty,
 		"",
 		"" )
 
 
-guipick(	Blank,
+pick(	Blank,
 		" ",
 		" " )
 
-guipick(	Windows_Dialog_Font,
+pick(	Windows_Dialog_Font,
 		"Helv.8",
 		"‚l‚r –¾’©.10" )
 
-guipick(	OS2_Dialog_Font,
+pick(	OS2_Dialog_Font,
 		"System Proportional.10",
 		"" )
-		
-//Note:	This is a special msg that marks the end of GUI msgs
-//	and it MUST be the last message in this file!!
-
-guipick(	Internal_Last_Message,
-		"Last",
-		"Last" )

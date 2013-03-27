@@ -59,16 +59,16 @@ bool GUIInitInternalStringTable( void )
 {
     int         i = GUI_LITERAL_BASE;
 
-#define guipick( a, b, c ) LIT( a ) = GUIGetInternalLiteralString( i ); i++;
+#define pick( a, b, c ) LIT( a ) = GUIGetInternalLiteralString( i ); i++;
 #include "gui.msg"
-#undef guipick
+#undef pick
     return( TRUE );
 }
 
 bool GUIFiniInternalStringTable( void )
 {
-#define guipick( a, b, c ) GUIMemFree( LIT( a ) );
+#define pick( a, b, c ) GUIMemFree( LIT( a ) );
 #include "gui.msg"
-#undef guipick
+#undef pick
     return( TRUE );
 }

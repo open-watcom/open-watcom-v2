@@ -37,12 +37,12 @@
 #include "guimsgs.h"
 
 #define LITSTR( sym, val )
-#define LIT( sym )      (_LIT_##sym)
+#define LIT( sym )      (_LIT_GUI_##sym)
 #define LITREF( sym ) &LIT( sym )
 
-#define guipick( a, b, c ) extern char *LIT( a );
+#define pick( a, b, c ) extern char *LIT( a );
 #include "gui.msg"
-#undef guipick
+#undef pick
 
 extern bool GUIInitInternalStringTable( void );
 extern bool GUIFiniInternalStringTable( void );
@@ -65,11 +65,12 @@ extern bool GUIFiniInternalStringTable( void );
 #endif
 #define LIT( sym )      (_Literal_##sym)
 
-#undef guipick
 #ifdef JAPANESE_MESSAGES
-#define guipick( a,b,c ) LITSTR( a,c )
+#define pick( a,b,c ) LITSTR( a,c )
 #else
-#define guipick( a,b,c ) LITSTR( a,b )
+#define pick( a,b,c ) LITSTR( a,b )
 #endif
 #include "gui.msg"
+#undef pick
+
 #endif

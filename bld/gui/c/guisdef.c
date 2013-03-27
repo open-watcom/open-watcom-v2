@@ -33,6 +33,6 @@
 #include "guiwind.h"
 #include "guistr.h"
 
-#define guipick( x, y, z ) char *LIT( x );
+#define pick( x, y, z ) char *LIT( x );
 #include "gui.msg"
-#undef guipick
+#undef pick
