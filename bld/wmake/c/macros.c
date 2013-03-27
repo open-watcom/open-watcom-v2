@@ -333,6 +333,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
     char    *env;
     BOOLEAN cdrive;
     BOOLEAN cwd;
+    BOOLEAN ctime;
     char    *p;
     int     pos;
 
@@ -347,6 +348,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
                  strcmp( macro + 1, "__CDRIVE__" ) == 0;
         cwd    = strcmp( macro + 1, "CWD" ) == 0 ||
                  strcmp( macro + 1, "__CWD__" ) == 0;
+        ctime  = strcmp( macro + 1, "__CTIME__" ) == 0;
         if( cdrive || cwd ) {
             if( getcwd( getDirBuf(), _MAX_PATH ) == NULL ) {
                 return( NULL );
@@ -365,6 +367,14 @@ STATIC const char *GetMacroValueProcess( const char *name )
                 }
                 return( dirBuf );
             }
+        } else if( ctime ) {
+            time_t      timex;
+            struct tm   *tm;
+
+            time( &timex );
+            tm = localtime( &timex );
+            FmtStr( getDirBuf(), "%D:%D:%D", tm->tm_hour, tm->tm_min, tm->tm_sec );
+            return( dirBuf );
         }
         return( NULL );
     }
