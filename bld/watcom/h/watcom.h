@@ -203,4 +203,35 @@ typedef unsigned_64     signed_64;
     #define SWAP_64     CONV_BE_64
 #endif
 
+/*
+ * MACROS to unify use of posix file stuff
+ *
+ */
+
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+    #define sopen3          sopen
+    #define sopen4          sopen
+#else
+    #define sopen3(a,b,c)   open(a,b)
+    #define sopen4(a,b,c,d) open(a,b,d)
+    #ifndef O_BINARY
+    #define O_BINARY 0
+    #endif
+    #ifndef O_TEXT
+    #define O_TEXT 0
+    #endif
+#endif
+
+#if defined( __UNIX__ )
+    #define PMODE_R         (S_IRUSR | S_IRGRP | S_IROTH)
+    #define PMODE_W         (S_IWUSR | S_IWGRP | S_IWOTH)
+    #define PMODE_X         (S_IXUSR | S_IXGRP | S_IXOTH)
+#else
+    #define PMODE_R         (S_IREAD)
+    #define PMODE_W         (S_IWRITE)
+    #define PMODE_X         (S_IEXEC)
+#endif
+#define PMODE_RW            (PMODE_R | PMODE_W)
+#define PMODE_RWX           (PMODE_R | PMODE_W | PMODE_X)
+
 #endif

@@ -29,12 +29,6 @@
 
 #define _WCUNALIGNED
 
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-#ifndef O_TEXT
-#define O_TEXT 0
-#endif
 #ifndef P_WAIT
 #define P_WAIT 0
 #endif
