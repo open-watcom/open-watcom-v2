@@ -8,13 +8,8 @@ REM       modify it as necessary for your own use!!
 REM Change this to point your Open Watcom source tree
 set OWROOT=c:\ow\ow
 
-REM Change following entries to point your existing Open Watcom installation
-REM or comment it out to use native compiler tools
-set OWBOOTSTRAP=c:\ow\ow19
-set WATCOM=%OWBOOTSTRAP%
-set INCLUDE=%WATCOM%\h;%WATCOM%\h\os2
-set BEGINLIBPATH=%WATCOM%\binp\dll;%BEGINLIBPATH%
-set PATH=%WATCOM%\binp;%WATCOM%\binw;%PATH%
+REM Set this entry to use native compiler tools
+set OWUSENATIVE=0
 
 REM Subdirectory to be used for building OW build tools
 set OWOBJDIR=binbuild
@@ -25,10 +20,18 @@ set OWDEBUGBUILD=0
 REM Set this variable to 1 to get default windowing support in clib
 set OWDEFAULT_WINDOWING=0
 
-REM Set this variable to 0 to suppress documentation build
-set OWDOCBUILD=1
+REM Change following entries to point your existing Open Watcom installation
+if '%OWUSENATIVETOOLS%' == '1' goto host_setup
+set WATCOM=c:\ow\ow19
+set INCLUDE=%WATCOM%\h;%WATCOM%\h\os2
+set BEGINLIBPATH=%WATCOM%\binp\dll;%BEGINLIBPATH%
+set PATH=%WATCOM%\binp;%WATCOM%\binw;%PATH%
+:host_setup
 
 REM Documentation related variables
+
+REM Set this variable to 0 to suppress documentation build
+set OWDOCBUILD=1
 
 REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
 REM set OWGHOSTSCRIPTPATH=%PATH%
@@ -39,3 +42,5 @@ REM set OWHHC=hhc
 
 REM Invoke the script for the common environment
 call %OWROOT%\cmnvars.cmd
+
+cd %OWROOT%
