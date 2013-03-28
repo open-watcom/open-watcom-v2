@@ -36,9 +36,9 @@
 
 #include "guimsgs.h"
 
-#define LITSTR( sym, val )
 #define LIT( sym )      (_LIT_GUI_##sym)
-#define LITREF( sym ) &LIT( sym )
+
+#define LITSTR( sym, val )
 
 #define pick( a, b, c ) extern char *LIT( a );
 #include "gui.msg"
@@ -49,8 +49,10 @@ extern bool GUIFiniInternalStringTable( void );
 
 #else
 
+#define LIT( sym )      (_Literal_##sym)
+
 #ifdef DEFINE_STRINGS
-#define LITSTR( sym, val ) const char _Literal_##sym[] = val;
+#define LITSTR( sym, val ) const char LIT( sym )[] = val;
 #else
 #ifdef __386__
     #define MAKEFAR
@@ -61,9 +63,8 @@ extern bool GUIFiniInternalStringTable( void );
         #define MAKEFAR far
     #endif
 #endif
-#define LITSTR( sym, val ) extern char MAKEFAR _Literal_##sym[sizeof( val )];
+#define LITSTR( sym, val ) extern char MAKEFAR LIT( sym )[sizeof( val )];
 #endif
-#define LIT( sym )      (_Literal_##sym)
 
 #ifdef JAPANESE_MESSAGES
 #define pick( a,b,c ) LITSTR( a,c )

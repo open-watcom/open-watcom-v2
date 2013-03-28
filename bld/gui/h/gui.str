@@ -1,7 +1,0 @@
-#ifdef JAPANESE_MESSAGES
-#define pick( a, b, c ) GUI_LITERAL_##a, c
-#else
-#define pick( a, b, c ) GUI_LITERAL_##a, b
-#endif
-#include "gui.msg"
-#undef pick
