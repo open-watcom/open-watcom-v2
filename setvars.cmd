@@ -9,7 +9,7 @@ REM Change this to point your Open Watcom source tree
 set OWROOT=c:\ow\ow
 
 REM Set this entry to use native compiler tools
-set OWUSENATIVE=0
+set OWUSENATIVETOOLS=0
 
 REM Subdirectory to be used for building OW build tools
 set OWOBJDIR=binbuild

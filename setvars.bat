@@ -58,7 +58,4 @@ call %OWROOT%\cmnvars.bat
 REM Change the default command prompt
 if not '%OS%' == 'Windows_NT' prompt $p$g
 
-REM Make the window bigger
-if '%OS%' == 'Windows_NT' mode 80,50
-
 cd %OWROOT%

@@ -5,7 +5,7 @@ cd %OWSRCDIR%\wmake
 if not exist %OWOBJDIR% mkdir %OWOBJDIR%
 cd %OWOBJDIR%
 if exist %OWBINDIR%\wmake.exe del %OWBINDIR%\wmake.exe
-if '%OWUSENATIVE%' == '1' goto native_tools
+if '%OWUSENATIVETOOLS%' == '1' goto native_tools
 wmake -f ..\wmake clean %OWBUILDER_OUTPUT%
 wmake -f ..\wmake %OWBUILDER_OUTPUT%
 if errorlevel == 1 goto error_exit
