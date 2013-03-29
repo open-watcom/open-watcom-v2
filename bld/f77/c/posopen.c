@@ -174,7 +174,7 @@ b_file  *Openf( char *f, f_attrs attrs ) {
             retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC, share, PERMS );
         }
     } else if( attrs & RDONLY ) {
-        retc = sopen4( f, O_RDONLY | O_BINARY, share, 0 );
+        retc = sopen3( f, O_RDONLY | O_BINARY, share );
     } else { // if( attrs & RDWR ) {
         retc = sopen4( f, O_RDWR | O_BINARY | O_CREAT, share, PERMS );
     }
