@@ -35,10 +35,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __WATCOMC__
-    #include <share.h>
-#endif
-
+#include "sopen.h"
 #include "macros.h"
 #include "make.h"
 #include "massert.h"
@@ -248,7 +245,7 @@ RET_T InsFile( const char *name, BOOLEAN envsearch )
     if( TrySufPath( path, name, NULL, envsearch ) == RET_SUCCESS ) {
         PrtMsg( DBG | INF |LOC | ENTERING_FILE, path );
 
-        fh = sopen( path, O_RDONLY | O_BINARY, SH_DENYWR );    // 04-jan-94 AFS, 13-sep-03 BEO
+        fh = sopen3( path, O_RDONLY | O_BINARY, SH_DENYWR );
         if( fh == -1 ) {
             return( RET_ERROR );
         }

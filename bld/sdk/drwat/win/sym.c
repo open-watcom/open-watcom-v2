@@ -38,8 +38,8 @@
 #include <fcntl.h>
 #include <dos.h>
 #include <malloc.h>
-#include <share.h>
 #include <io.h>
+#include "sopen.h"
 #include "drwatcom.h"
 #include "dip.h"
 #include "dipcli.h"
@@ -447,10 +447,9 @@ dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode ) {
     if( mode & DIG_TRUNC ) flags |= O_TRUNC;
     if( mode & DIG_CREATE ) {
         flags |= O_CREAT;
-        ret = (dig_fhandle)sopen( path, flags, SH_DENYWR,
-                                  S_IRWXU | S_IRWXG | S_IRWXO );
+        ret = (dig_fhandle)sopen4( path, flags, SH_DENYWR, S_IRWXU | S_IRWXG | S_IRWXO );
     } else {
-        ret = (dig_fhandle)sopen( path, flags, SH_DENYWR );
+        ret = (dig_fhandle)sopen3( path, flags, SH_DENYWR );
     }
     return( ret );
 }

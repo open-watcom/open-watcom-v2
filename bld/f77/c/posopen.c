@@ -32,6 +32,7 @@
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "posio.h"
+#include "sopen.h"
 
 #if defined( __RT__ )
 #include "rmemmgr.h"
@@ -168,14 +169,14 @@ b_file  *Openf( char *f, f_attrs attrs ) {
     if( attrs & WRONLY ) {
         attrs |= WRITE_ONLY;
         if( attrs & APPEND ) {
-            retc = sopen( f, O_WRONLY | O_BINARY | O_CREAT, share, PERMS );
+            retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT, share, PERMS );
         } else {
-            retc = sopen( f, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC, share, PERMS );
+            retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC, share, PERMS );
         }
     } else if( attrs & RDONLY ) {
-        retc = sopen( f, O_RDONLY | O_BINARY, share, 0 );
+        retc = sopen4( f, O_RDONLY | O_BINARY, share, 0 );
     } else { // if( attrs & RDWR ) {
-        retc = sopen( f, O_RDWR | O_BINARY | O_CREAT, share, PERMS );
+        retc = sopen4( f, O_RDWR | O_BINARY | O_CREAT, share, PERMS );
     }
     if( retc < 0 ) {
         FSetSysErr( NULL );

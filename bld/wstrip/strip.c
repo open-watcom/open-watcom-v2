@@ -41,11 +41,7 @@
 #include <utime.h>
 #include <unistd.h>
 #include <fcntl.h>
-#if defined( __WATCOMC__ )
-    #include <share.h>
-#else
-    #include "clibext.h"
-#endif
+#include "sopen.h"
 #include "watcom.h"
 #include "machtype.h"
 #include "dbginfo.h"

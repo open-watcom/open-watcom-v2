@@ -32,14 +32,7 @@
 #include "vi.h"
 #include "posix.h"
 #include <fcntl.h>
-#ifdef __WATCOMC__
-  #include <share.h>
-  #define sopen3 sopen
-  #define sopen4 sopen
-#else
-  #define sopen3( a, b, c )     open( a, b )
-  #define sopen4( a, b, c, d )  open( a, b, d )
-#endif
+#include "sopen.h"
 #include "bnddata.h"
 #include "specio.h"
 

@@ -35,12 +35,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#ifdef __WATCOMC__
-#ifndef  __UNIX__
+#if defined( __WATCOMC__ ) && !defined( __UNIX__ )
     #include <direct.h>
 #endif
-    #include <share.h>
-#endif
+#include "sopen.h"
+
 #ifdef __UNIX__
     #define PMODE       S_IRUSR+S_IWUSR+S_IRGRP+S_IWGRP+S_IROTH+S_IWOTH
 #else
@@ -48,12 +47,6 @@
 #endif
 #ifndef O_BINARY
     #define O_BINARY  0
-#endif
-#if defined( SH_DENYWR ) && !defined( SOPEN_DEFINED )
-    #define sopen4 sopen
-#else
-    #define sopen4(a,b,c,d) open((a),(b),(d))
-//    #define sopen(a,b,c) open((a),(b))
 #endif
 
 extern  TAGPTR  TagHash[TAG_HASH_SIZE + 1];
@@ -1825,7 +1818,7 @@ int UsePreCompiledHeader( const char *filename )
     char                *p;
     struct pheader      pch;
 
-    handle = sopen( PCH_FileName, O_RDONLY | O_BINARY, SH_DENYWR );
+    handle = sopen3( PCH_FileName, O_RDONLY | O_BINARY, SH_DENYWR );
     if( handle == -1 ) {
         CompFlags.make_precompiled_header = 1;
         return( -1 );

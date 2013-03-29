@@ -38,20 +38,9 @@
 #include <limits.h>
 #ifdef __WATCOMC__
 #include <process.h>
-#include <share.h>
 #endif
-#ifndef _MAX_PATH
-#define _MAX_PATH PATH_MAX+1
-#endif
-#ifndef _MAX_PATH2
-#define _MAX_PATH2 PATH_MAX+4
-#endif
-#ifndef SH_DENYWR
-#define sopen(x,y,z) open((x),(y))
-#endif
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
+#include "sopen.h"
+#include "watcom.h"
 
 #ifdef __header
 #   include __header
@@ -220,7 +209,7 @@ IntlData *LoadInternationalData(
     base[len++] = '0' + language;
     base[len] = '\0';
     _makepath( cmd_name, drive, dir, base, "." LOCALE_DATA_EXT );
-    fh = sopen( cmd_name, O_RDONLY|O_BINARY, SH_DENYWR );
+    fh = sopen3( cmd_name, O_RDONLY|O_BINARY, SH_DENYWR );
     if( fh == -1 ) {
         return( NULL );
     }

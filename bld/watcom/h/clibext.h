@@ -44,10 +44,8 @@
 #define __based(x)
 #define _snprintf snprintf
 #define _vsnprintf vsnprintf
-#define  __va_list  va_list
+#define __va_list  va_list
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))
-#define SOPEN_DEFINED
-#define sopen(x,y,z) open((x),(y))
 #define _fsopen(x,y,z) fopen(x,y)
 #define _fmemcpy memcpy
 #ifndef PATH_MAX
@@ -74,6 +72,12 @@
 #endif
 #ifndef SH_DENYWR
 #define SH_DENYWR 0
+#endif
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+#ifndef O_TEXT
+#define O_TEXT 0
 #endif
 
 #ifndef max 

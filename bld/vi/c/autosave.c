@@ -34,15 +34,10 @@
 #include <errno.h>
 #ifdef __WATCOMC__
   #include <process.h>
-  #include <share.h>
-  #define sopen3 sopen
-  #define sopen4 sopen
-#else
-  #define sopen3( a, b, c )     open( a, b )
-  #define sopen4( a, b, c, d )  open( a, b, d )
 #endif
 #include <fcntl.h>
 #include <sys/stat.h>
+#include "sopen.h"
 #include "posix.h"
 #include "win.h"
 #include "source.h"
@@ -392,8 +387,7 @@ void AutoSaveInit( void )
     off = len + CHAR_OFF;
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
         path[off] = ch;
-        lockFileHandle = sopen4( path, O_CREAT | O_TRUNC | O_RDWR |O_TEXT,
-                                        SH_DENYRW, S_IREAD | S_IWRITE );
+        lockFileHandle = sopen4( path, O_CREAT | O_TRUNC | O_RDWR |O_TEXT, SH_DENYRW, S_IREAD | S_IWRITE );
         if( lockFileHandle > 0 ) {
             break;
         }

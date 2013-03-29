@@ -37,10 +37,7 @@
 #include <fcntl.h>
 #include <setjmp.h>
 #include <limits.h>
-#ifdef __WATCOMC__
-#include <share.h>
-#endif
-
+#include "sopen.h"
 #include "errdefns.h"
 #include "memmgr.h"
 #include "carve.h"
@@ -487,11 +484,7 @@ void PCHeaderCreate( char *include_file )
         return;
     }
     pch_fname = PCHFileName();
-#ifdef __WATCOMC__
-    pchFile = sopen( pch_fname, O_RDWR|O_BINARY|O_CREAT|O_TRUNC, SH_DENYRW, S_IREAD|S_IWRITE );
-#else
-    pchFile = open( pch_fname, O_RDWR|O_BINARY|O_CREAT|O_TRUNC, S_IREAD|S_IWRITE );
-#endif
+    pchFile = sopen4( pch_fname, O_RDWR|O_BINARY|O_CREAT|O_TRUNC, SH_DENYRW, S_IREAD|S_IWRITE );
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_CREATE_ERROR, pch_fname );
         return;
@@ -802,7 +795,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     if( CompFlags.fhw_switch_used ) {
         return( PCHA_IGNORE );
     }
-    pchFile = sopen( PCHFileName(), O_RDONLY|O_BINARY, SH_DENYWR );
+    pchFile = sopen3( PCHFileName(), O_RDONLY|O_BINARY, SH_DENYWR );
     if( pchFile == -1 ) {
         return( PCHA_NOT_PRESENT );
     }
@@ -1110,7 +1103,7 @@ void PCHPerformReloc( pch_reloc_index ri )
     }
     stop_position = relocInfo[ ri ].stop;
     pch_fname = PCHFileName();
-    pchFile = sopen( pch_fname, O_RDWR|O_BINARY|O_EXCL, SH_DENYRW );
+    pchFile = sopen3( pch_fname, O_RDWR|O_BINARY|O_EXCL, SH_DENYRW );
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_OPEN_ERROR, pch_fname );
         return;
