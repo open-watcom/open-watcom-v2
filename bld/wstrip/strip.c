@@ -140,10 +140,6 @@ int nodebug_ok;
 int res = 0;
 unsigned bufsize;
 
-#ifndef __WATCOMC__
-    #undef sopen
-    #define sopen(w,x,y,z) open(w,x,z)
-#endif
 
 int main( int argc, char *argv[] )
 {
@@ -240,14 +236,13 @@ int main( int argc, char *argv[] )
     finfo.h = -1;
 
     /* initialize input file */
-    fin.h = sopen( fin.name, O_RDONLY | O_BINARY, SH_DENYNO, 0 );
+    fin.h = sopen3( fin.name, O_RDONLY | O_BINARY, SH_DENYNO, 0 );
     if( fin.h == -1 ) {
         Fatal( MSG_CANT_OPEN, fin.name );
     }
 
     /* initialize output file -- note: don't truncate */
-    fout.h = sopen( fout.name, O_WRONLY | O_CREAT | O_BINARY,
-                SH_DENYNO, S_IRWXU | S_IRWXG | S_IRWXO );
+    fout.h = sopen4( fout.name, O_WRONLY | O_CREAT | O_BINARY, SH_DENYNO, S_IRWXU | S_IRWXG | S_IRWXO );
     if( fout.h == -1 ) {
         Fatal( MSG_CANT_CREATE_OUTPUT, fout.name );
     }
@@ -312,7 +307,7 @@ static void AddInfo()
     }
 
     /* initialize symbol or resource file */
-    finfo.h = sopen( finfo.name, O_RDONLY | O_BINARY, SH_DENYWR, 0 );
+    finfo.h = sopen3( finfo.name, O_RDONLY | O_BINARY, SH_DENYWR, 0 );
     if( finfo.h == -1 ) {
         FatalDelTmp( MSG_CANT_OPEN, finfo.name );
     }
@@ -362,8 +357,7 @@ static void StripInfo()
             strcat( finfo.name, (res ? ResExt : SymExt) );
         }
 #endif
-        finfo.h = sopen( finfo.name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
-              SH_DENYRW, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP| S_IROTH|S_IWOTH );
+        finfo.h = sopen4( finfo.name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP| S_IROTH|S_IWOTH );
         if( finfo.h == -1 ) {
             FatalDelTmp( MSG_CANT_CREATE_0 + res, finfo.name );
         }
