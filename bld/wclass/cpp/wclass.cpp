@@ -58,7 +58,10 @@ bool WEXPORT WClassMapItem::isEqual( const WObject* obj ) const
         return streq( _name, ((WClassMapItem*)obj)->_name );
 }
 
+#ifdef __WATCOMC__
 #pragma initialize before program
+#endif
+
 static WClassList _classMap;
 
 bool WEXPORT WClass::addClass( const char* name, ctor ctor, int csize )

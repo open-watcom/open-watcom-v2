@@ -148,9 +148,11 @@ int WEXPORT WPickDialog::pickOne( const char *prompt ) {
 }
 
 
+#ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
 // definition only for warning levels above 8 
 #pragma warning 656 9
+#endif
 
 WEXPORT WPickDialog::~WPickDialog() {
 /***********************************/

@@ -225,10 +225,12 @@ void * WEXPORT WCombo::tagPtr( int index ) {
     return( GUIGetListItemData( parent()->handle(), controlId(), index ) );
 }
 
+#ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
 // definition only for warning levels above 8 
 #pragma warning 656 9
 #pragma warning 657 9
+#endif
 
 WEXPORT WComboBox::~WComboBox() {
 /*******************************/

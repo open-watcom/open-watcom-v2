@@ -619,9 +619,11 @@ bool WEXPORT WFileName::renameFile( const char* newname ) const
 }
 
 
+#ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
 // definition only for warning levels above 8 
 #pragma warning 657 9
+#endif
 
 WEXPORT WFileName::~WFileName()
 {
