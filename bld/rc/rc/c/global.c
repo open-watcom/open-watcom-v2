@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "rctypes.h"
-
 #define RCEXTERN            /* nothing */
 #include "global.h"
 

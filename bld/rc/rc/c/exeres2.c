@@ -29,15 +29,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include "watcom.h"
-#include "exeos2.h"
-#include "wresall.h"
 #include "global.h"
 #include "errors.h"
 #include "rcmem.h"
 #include "exeutil.h"
 #include "iortns.h"
+#include "os2res.h"
 
 
 /* Note: IBM's OS/2 RC accepts string resource IDs/types but quietly

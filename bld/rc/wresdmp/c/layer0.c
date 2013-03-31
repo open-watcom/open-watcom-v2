@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <io.h>
+#include "wio.h"
 #include "trmemcvr.h"
 #include "layer0.h"
 
@@ -38,8 +38,8 @@
 struct WResRoutines WResRtns = {
     open,       /* from io.h */
     close,
-    write,
     read,
+    write,
     lseek,
     tell,
     TRMemAlloc, /* from trmemcvr.h */

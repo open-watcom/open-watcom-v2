@@ -32,8 +32,6 @@
 #ifndef SEMMENU_INCLUDED
 #define SEMMENU_INCLUDED
 
-#include "scan.h"
-
 #include "os2res.h"
 
 /**** Constant Definitions ****/

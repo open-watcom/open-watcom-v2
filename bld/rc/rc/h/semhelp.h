@@ -33,7 +33,6 @@
 #define SEMHELP_INCLUDED
 
 #include "wresall.h"
-#include "watcom.h"
 #include "os2res.h"
 
 /**** Semantic structures ****/

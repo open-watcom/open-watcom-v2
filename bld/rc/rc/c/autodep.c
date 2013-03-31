@@ -29,18 +29,13 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/stat.h>
-#include "wresall.h"
-#include "watcom.h"
+#include "wio.h"
 #include "global.h"
 #include "errors.h"
 #include "tmpctl.h"
 #include "rcmem.h"
 #include "autodep.h"
+#include "semantic.h"
 
 typedef struct DepNode {
     struct DepNode      *next;

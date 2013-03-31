@@ -28,14 +28,9 @@
 *
 ****************************************************************************/
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
-#include "errors.h"
+#include "wio.h"
 #include "global.h"
-#include "param.h"
-#include "rctypes.h"
+#include "errors.h"
 #include "rcmem.h"
 #include "swchar.h"
 #include "dbtable.h"

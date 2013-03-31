@@ -30,26 +30,6 @@
 ****************************************************************************/
 
 
-#ifndef TYPES_INCLUDED
-#define TYPES_INCLUDED
-
-#include <stddef.h>
-#include "bool.h"
-
-typedef enum {
-    RS_OK = 0,                  /* this must be 0 because it is sometimes
-                                 * checked like this:
-                                 *      if( ret ) { do stuff }
-                                 */
-    RS_PARAM_ERROR,
-    RS_INVALID_RESOURCE,
-    RS_READ_ERROR,
-    RS_READ_INCMPLT,
-    RS_WRITE_ERROR,
-    RS_NO_MEM,
-    RS_BAD_FILE_FMT,
-    RS_WRONG_VER,
-    RS_OPEN_ERROR,
-    RS_FILE_NOT_FOUND
-} RcStatus;
-#endif
+#define pick(c,e,j) e,
+#include "rc.msg"
+#undef pick

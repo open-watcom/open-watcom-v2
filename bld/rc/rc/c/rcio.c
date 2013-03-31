@@ -30,28 +30,17 @@
 
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdarg.h>
-#include <errno.h>
 #include <assert.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <time.h>
 #ifndef __UNIX__
     #include <process.h>
 #endif
-#include "watcom.h"
-#include "wresall.h"
+#include "wio.h"
 #include "global.h"
-#include "pass2.h"
-#include "semstr.h"
 #include "rcmem.h"
-#include "rctypes.h"
 #include "errors.h"
 #include "exeutil.h"
-#include "rcio.h"
 #include "preproc.h"
 #include "reserr.h"
 #include "tmpctl.h"
@@ -60,6 +49,7 @@
 #include "util.h"
 #include "rcldstr.h"
 #include "iortns.h"
+#include "semantic.h"
 
 #ifdef __UNIX__
 #define PATH_SEP '/'
@@ -553,8 +543,7 @@ static int openExeFileInfoRO( char * filename, ExeFileInfo * info )
 static int openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
-    info->Handle = RcOpen( filename, O_RDWR|O_CREAT|O_TRUNC|O_BINARY,
-                S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+    info->Handle = RcOpen( filename, O_RDWR|O_CREAT|O_TRUNC|O_BINARY, PMODE_RW );
     if( info->Handle == -1 ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( FALSE );

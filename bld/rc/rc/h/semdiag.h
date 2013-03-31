@@ -32,13 +32,8 @@
 #ifndef SEMDIAG_INCLUDED
 #define SEMDIAG_INCLUDED
 
-#include "watcom.h"
 #include "wresall.h"
 #include "semraw.h"
-
-#ifndef SEMSTRUCT_INCLUDED
-    #include "semantic.h"
-#endif
 
 typedef struct FullDialogOptions {
     uint_8      token;

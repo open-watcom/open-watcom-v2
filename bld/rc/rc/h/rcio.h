@@ -34,16 +34,22 @@
 #define RCIO_INCLUDED
 
 #include <stdio.h>
-#include <stdlib.h>
-#include "watcom.h"
 #include "wresall.h"
 #include "rctypes.h"
 #include "semstr.h"
-#include "semsingl.h"
 #include "sharedio.h"
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-    #include "clibext.h"
-#endif
+
+typedef struct FullFontDirEntry {
+    struct FullFontDirEntry *   Next;
+    struct FullFontDirEntry *   Prev;
+    FontDirEntry                Entry;
+} FullFontDirEntry;
+
+typedef struct FullFontDir {
+    FullFontDirEntry *      Head;
+    FullFontDirEntry *      Tail;
+    uint_16                 NumOfFonts;
+} FullFontDir;
 
 typedef struct RcResFileID {
     char                *filename;

@@ -31,8 +31,8 @@
 
 #ifndef SCAN2_H_INCLUDED
 #define SCAN2_H_INCLUDED
+
 #include "varstr.h"
-#include "param.h"
 
 extern void  ScanInitOS2( void );
 extern int   ScanOS2( ScanValue * value );

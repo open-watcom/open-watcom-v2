@@ -31,15 +31,7 @@
 #ifndef PARAM_INCLUDED
 #define PARAM_INCLUDED
 
-#include <stdlib.h>
 #include "rctypes.h"
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-    #include "clibext.h"
-#endif
-#ifndef _MAX_PATH
-#include <limits.h>
-#define _MAX_PATH PATH_MAX+1
-#endif
 
 #define DB_CHAR                 1
 
@@ -125,5 +117,6 @@ extern void ScanParamShutdown( void );
 extern unsigned ParseEnvVar( const char *env, char **argv, char *buf );
 extern void AddNewIncludeDirs( const char * arg );
 extern void SetMBRange( unsigned from, unsigned to, char data );
+extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings );
 
 #endif

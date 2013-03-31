@@ -30,16 +30,11 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include "watcom.h"
-#include "wresall.h"
-#include "pass2.h"
+#include "global.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "param.h"
 #include "autodep.h"
 #include "reserr.h"
-#include "sharedio.h"
 
 #define MAX_OPEN_RESFILES       6
 

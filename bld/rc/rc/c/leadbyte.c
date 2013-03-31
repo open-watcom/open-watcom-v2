@@ -30,8 +30,10 @@
 ****************************************************************************/
 
 
-#include "leadbyte.h"
+#include <stdlib.h>
+#include "watcom.h"
 #include "param.h"
+#include "leadbyte.h"
 
 #ifdef __NT__
 #include <windows.h>

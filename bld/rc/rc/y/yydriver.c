@@ -30,17 +30,13 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include "watcom.h"
-
+#include "global.h"
 #include "rctypes.h"
 #include "semantic.h"
 #include "rcmem.h"
-#include "global.h"
 #include "errors.h"
 #include "ytab.gh"
 #include "yydriver.h"
-#include "scan.h"
 #include "errprt.h"
 
 typedef uint_16         YYCHKTYPE;
@@ -91,12 +87,10 @@ typedef union {
 
 #ifdef _I86FAR
 #define YYFAR           _I86FAR
-#else
-#if defined( __386__ ) || defined( __PPC__ ) || defined( __AXP__ )
-#define YYFAR
-#else
+#elif defined( _M_I86 )
 #define YYFAR           __far
-#endif
+#else
+#define YYFAR
 #endif
 
 #define STACK_MAX       100
@@ -216,7 +210,7 @@ int yylex( void )
 
 static p_action doAction( YYCHKTYPE t, parse_stack *state )
 {
-    YYSTYPE yyval;
+    YYSTYPE yyval = { 0 };
     YYSTYPE *yyvp;
     YYACTTYPE yyk;
     YYACTTYPE yyi;

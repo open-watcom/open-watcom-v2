@@ -29,17 +29,11 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <fcntl.h>
 #include <limits.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include "watcom.h"
-#include "wresall.h"
+#include "wio.h"
+#include "global.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "global.h"
 #include "semantic.h"
 #include "semraw.h"
 #include "depend.h"

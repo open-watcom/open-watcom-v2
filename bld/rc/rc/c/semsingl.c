@@ -30,20 +30,14 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <errno.h>
-#include "wresall.h"
+#include "wio.h"
+#include "global.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "global.h"
 #include "ytab.gh"
 #include "semantic.h"
-#include "semsingl.h"
 #include "reserr.h"
 #include "depend.h"
-#include "scan.h"
 #include "iortns.h"
 
 /**** forward references ****/

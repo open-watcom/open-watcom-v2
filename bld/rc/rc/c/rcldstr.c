@@ -29,16 +29,15 @@
 *
 ****************************************************************************/
 
-#include <string.h>
-#include "wresall.h"
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#include <process.h>
+#endif
+#include <fcntl.h>
+#include "global.h"
 #include "layer0.h"
 #include "errors.h"
-#include "global.h"
-#include "fcntl.h"
 #include "rcldstr.h"
-#if !defined( __UNIX__ ) || defined( __WATCOMC__ )
-#include "process.h"
-#endif
+#include "wresset2.h"
 #include "iortns.h"
 
 #if defined( INCL_MSGTEXT )
@@ -74,14 +73,12 @@ int InitRcMsgs( char *fname )
 
     error = FALSE;
 
-    Instance.filename = fname;
-
     /* swap open functions so this file handle is not buffered.
         * This makes it easier for layer0 to fool WRES into thinking
         * that the resource information starts at offset 0 */
     oldopen = WResRtns.open;
     WResRtns.open = open;
-    OpenResFile( &Instance );
+    OpenResFile( &Instance, fname );
     WResRtns.open = oldopen;
 
     if( Instance.handle == -1 )

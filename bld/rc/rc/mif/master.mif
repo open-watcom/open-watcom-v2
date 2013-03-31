@@ -152,7 +152,7 @@ $(exename).exe : $(depends_drv) $(realdllname).lib $(version_res_exe_$(host_os)_
 
 $(exename).exe : $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(objs_exe) $(xlibs)
+        $(cl) $(clflags) $(objs_exe) $(xlibs) $(ldflags)
 !else
         @%write exe.lnk $(lflags)
         @for %i in ($(objs_exe)) do @%append exe.lnk file %i
@@ -212,13 +212,8 @@ weights2.gh keyword2.gh : ../hash/rcos2.key
         @cp weights.gh weights2.gh
         @rm -f weights.gh
 
-incltext.gh : ../h/rc.msg
-        $(c_pp) $(rc_aui_flags) $(rc_defines) >$^@ <<
-$#define pick(c,e,j) e,
-"",
-$#include "$[@"
-$#undef pick
-<<
+incltext.gh : ../h/incltext.h ../h/rc.msg
+        $(c_pp) $(rc_aui_flags) -I.. $(rc_defines) $[@ >$^@
 
 msg.gh : ../h/rc.msg
         $(c_pp) $(rc_aui_flags) $(rc_defines) $[@ >$@

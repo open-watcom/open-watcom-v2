@@ -30,20 +30,12 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#include "watcom.h"
-#include "rctypes.h"
+#include "wio.h"
+#include "global.h"
 #include "dbtable.h"
 #include "rcmem.h"
-#include <fcntl.h>
-#include <unistd.h>
 #include "write.h"
 #include "iortns.h"
-
-#if defined(__UNIX__) && !defined(__WATCOMC__)
-    #include "clibext.h"
-#endif
 
 typedef struct {
     DBTableHeader       header;

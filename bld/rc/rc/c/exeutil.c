@@ -29,10 +29,7 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include "watcom.h"
+#include "wio.h"
 #include "global.h"
 #include "exeutil.h"
 #include "iortns.h"

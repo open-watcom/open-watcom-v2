@@ -33,7 +33,6 @@
 #ifndef EXERESPE_H_INCLUDED
 #define EXERESPE_H_INCLUDED
 
-#include "watcom.h"
 #include "exepe.h"
 #include "wresall.h"
 #include "rcstr.h"

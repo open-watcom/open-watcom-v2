@@ -30,14 +30,13 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdarg.h>
-#include <string.h>
+#include "wio.h"
+#include "global.h"
 #include "rcmem.h"
 #include "layer0.h"
-#include "global.h"
 #include "iortns.h"
+#include "wresset2.h"
 
 #define MAX_OPEN_FILES          100
 
@@ -82,8 +81,6 @@ typedef struct RcFileEntry {
     int         FileHandle;      // If 0, entry is unused
     RcBuffer *  Buffer;          // If NULL, entry is a normal file (not used yet)
 } RcFileEntry;
-
-extern  long            FileShift;
 
 static int              openFileList[ MAX_OPEN_FILES ];
 static RcFileEntry      RcFileList[ RC_MAX_FILES ];

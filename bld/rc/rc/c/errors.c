@@ -32,12 +32,8 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <string.h>
-#include <errno.h>
-#include <ctype.h>
-#include "errors.h"
-#include "rcio.h"
 #include "global.h"
+#include "errors.h"
 #include "reserr.h"
 #include "tmpctl.h"
 #include "errprt.h"

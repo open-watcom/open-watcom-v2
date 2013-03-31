@@ -32,7 +32,6 @@
 #ifndef EXERESLX_H_INCLUDED
 #define EXERESLX_H_INCLUDED
 
-#include "watcom.h"
 #include "exeflat.h"
 #include "wresall.h"
 #include "rcstr.h"

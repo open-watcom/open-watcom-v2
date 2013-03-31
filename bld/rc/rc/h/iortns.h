@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
-int  RcOpen( const char *, int, ... );
-int  RcClose( int );
-int  RcWrite( int, const void *, size_t );
-int  RcRead( int, void *, size_t );
-off_t RcSeek( int, off_t, int );
-off_t RcTell( int );
+extern int      RcOpen( const char *, int, ... );
+extern int      RcClose( int );
+extern int      RcWrite( int, const void *, unsigned );
+extern int      RcRead( int, void *, unsigned );
+extern long     RcSeek( int, long, int );
+extern long     RcTell( int );
 
-void CloseAllFiles( void );
-void RegisterOpenFile( int fhdl );
+extern void     CloseAllFiles( void );
+extern void     RegisterOpenFile( int fhdl );

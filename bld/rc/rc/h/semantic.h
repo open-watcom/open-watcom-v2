@@ -33,7 +33,6 @@
 #define SEMSTRUCT_INCLUDED
 
 #include "wresall.h"
-#include "watcom.h"
 
 /**** Semantic structures ****/
 typedef struct FullMemFlags {
@@ -94,8 +93,7 @@ extern uint_32          SemOS2DefaultCodepage( void );
 extern void             SemOS2SetCodepage( uint_32 codepage );
 extern void             SetDefLang( void );
 extern void             SemSetGlobalLanguage( WResLangType *newlang );
-extern void             SemSetResourceLanguage( WResLangType *newlang,
-                                int from_parser );
+extern void             SemSetResourceLanguage( WResLangType *newlang, int from_parser );
 extern WResLangType     GetResourceLanguage( void );
 extern void             ClearResourceLanguage( void );
 extern void             SemUnsupported( uint_8 token );
@@ -104,6 +102,8 @@ extern void             SemanticInitStatics( void );
 
 /**** include all the semantic structures and routine prototypes for each ****/
 /**** type of structure ****/
+#include "scan.h"
+
 #include "semaccel.h"
 #include "semmenu.h"
 #include "semdiag.h"

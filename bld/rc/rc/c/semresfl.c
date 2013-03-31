@@ -31,14 +31,12 @@
 
 
 #include <fcntl.h>
-#include <string.h>
-#include "wresall.h"
+#include "global.h"
+#include "iortns.h"
 #include "semantic.h"
-#include "sharedio.h"
 #include "errors.h"
 #include "rcmem.h"
 #include "reserr.h"
-#include "global.h"
 #include "depend.h"
 
 #define BUFFER_SIZE     1024

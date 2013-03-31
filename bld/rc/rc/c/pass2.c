@@ -29,8 +29,7 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <string.h>
+#include "wio.h"
 #include "global.h"
 #include "errors.h"
 #include "rcmem.h"
@@ -39,7 +38,6 @@
 #include "exelxobj.h"
 #include "exeutil.h"
 #include "iortns.h"
-#include "pass2.h"
 
 /*
  * copyStubFile - copy from the begining of the file to the start of

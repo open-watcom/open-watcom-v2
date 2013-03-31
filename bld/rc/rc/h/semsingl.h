@@ -32,17 +32,16 @@
 #ifndef SEMSINGL_INCLUDED
 #define SEMSINGL_INCLUDED
 
-#include "watcom.h"
 #include "wresall.h"
-#include "semantic.h"
 #include "rctypes.h"
 
+#include "pushpck1.h"
 typedef struct IcoFileDirEntry {
     IconDirInfo     Info;
     uint_32         Offset;
 } IcoFileDirEntry;
+#include "poppck.h"
 
-#pragma pack(1)
 typedef struct FullIconDirEntry {
     struct FullIconDirEntry *   Next;
     struct FullIconDirEntry *   Prev;
@@ -52,7 +51,6 @@ typedef struct FullIconDirEntry {
         IconDirEntry            Res;
     } Entry;
 } FullIconDirEntry;
-#pragma pack()
 
 typedef struct FullIconDir {
     FullIconDirEntry *  Head;
@@ -60,7 +58,7 @@ typedef struct FullIconDir {
     IconCurDirHeader    Header;
 } FullIconDir;
 
-#pragma pack(1)
+#include "pushpck1.h"
 typedef struct CurFileDirEntry {
     uint_8      Width;
     uint_8      Height;
@@ -71,7 +69,7 @@ typedef struct CurFileDirEntry {
     uint_32     Length;
     uint_32     Offset;
 } CurFileDirEntry;
-#pragma pack()
+#include "poppck.h"
 
 typedef struct FullCurDirEntry {
     struct FullCurDirEntry *    Next;
@@ -89,7 +87,7 @@ typedef struct FullCurDir {
     IconCurDirHeader    Header;
 } FullCurDir;
 
-#pragma pack(1)
+#include "pushpck1.h"
 typedef struct BitmapFileHeader {
     uint_16     Type;       /* must be BITMAP_MAGIC */
     uint_32     Size;
@@ -97,23 +95,10 @@ typedef struct BitmapFileHeader {
     uint_16     Reserved2;
     uint_32     Offset;     /* of the bits of the bitmap itself */
 } BitmapFileHeader;
-#pragma pack()
+#include "poppck.h"
 
 #define BITMAP_MAGIC    0x4d42      /* the letters BM */
 #define BMARRAY_MAGIC   0x4142      /* the letters BA */
-
-typedef struct FullFontDirEntry {
-    struct FullFontDirEntry *   Next;
-    struct FullFontDirEntry *   Prev;
-    FontDirEntry                Entry;
-} FullFontDirEntry;
-
-typedef struct FullFontDir {
-    FullFontDirEntry *      Head;
-    FullFontDirEntry *      Tail;
-    uint_16                 NumOfFonts;
-} FullFontDir;
-
 
 extern void SemAddSingleLineResource( WResID * name, uint_8 type,
                     FullMemFlags * fullflags, char * filename );

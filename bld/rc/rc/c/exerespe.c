@@ -30,22 +30,15 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
 #include <time.h>
-#include <string.h>
-#include <errno.h>
-#include "watcom.h"
-#include "exepe.h"
-#include "wresall.h"
+#include "wio.h"
+#include "global.h"
 #include "wrmergdi.h"
 #include "rcmem.h"
-#include "pass2.h"
 #include "rcstr.h"
 #include "exeutil.h"
 #include "exeobj.h"
-#include "global.h"
 #include "errors.h"
-#include "exerespe.h"
 #include "iortns.h"
 
 #define RESOURCE_OBJECT_NAME ".rsrc"

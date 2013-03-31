@@ -34,10 +34,6 @@
 #define TYPES_INCLUDED
 
 #include <stddef.h>
-
-typedef enum {
-    false,
-    true
-} bool;
+#include "bool.h"
 
 #endif

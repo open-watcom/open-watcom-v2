@@ -30,23 +30,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-
-#include "rctypes.h"
-
-#include "wresall.h"
+#include "wio.h"
 #include "global.h"
 #include "rcmem.h"
-#include "pass2.h"
 #include "errors.h"
-#include "rcio.h"
 #include "yydriver.h"
 #include "yydrivr2.h"
-#include "param.h"
 #include "depend.h"
 #include "rcldstr.h"
 #include "preproc.h"
@@ -56,7 +45,8 @@
 #include "loadstr.h"
 #include "rcspawn.h"
 #include "iortns.h"
-
+#include "wresset2.h"
+#include "semantic.h"
 
 WResSetRtns(RcOpen,RcClose,RcRead,RcWrite,RcSeek,RcTell,RcMemMalloc,RcMemFree);
 
@@ -101,12 +91,9 @@ static bool CreatePreprocFile( void )
     int         len;
 
     error = FALSE;
-    hdl = RcOpen( CmdLineParms.OutResFileName,
-                O_WRONLY | O_TEXT | O_CREAT | O_TRUNC,
-                S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
+    hdl = RcOpen( CmdLineParms.OutResFileName, O_WRONLY | O_TEXT | O_CREAT | O_TRUNC, PMODE_RW );
     if( hdl == -1 ) {
-        RcError( ERR_CANT_OPEN_FILE, CmdLineParms.OutResFileName,
-                        strerror( errno ) );
+        RcError( ERR_CANT_OPEN_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
         error = TRUE;
     } else {
         ch = RcIoGetChar();
@@ -114,8 +101,7 @@ static bool CreatePreprocFile( void )
             ch1 = (char) ch;
             len = RcWrite( hdl, &ch1, 1 );
             if( len != 1 ) {
-                RcError( ERR_WRITTING_FILE, CmdLineParms.OutResFileName,
-                                strerror( errno ) );
+                RcError( ERR_WRITTING_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
                 error = TRUE;
             }
             ch = RcIoGetChar();
@@ -191,7 +177,7 @@ void RCmain( void )
 {
     int     noerror = TRUE;
 
-#if !defined(__UNIX__) && !defined(__OSI__) /* _grow_handles doesn't work yet */
+#if defined( __WATCOMC__ ) && !defined(__OSI__) /* _grow_handles doesn't work yet */
     _grow_handles(100);
 #endif
     if ( !CmdLineParms.Pass2Only) {

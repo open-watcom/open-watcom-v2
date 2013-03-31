@@ -32,8 +32,6 @@
 #ifndef EXEFMT_INCLUDED
 #define EXEFMT_INCLUDED
 
-#include <stdlib.h>
-#include "watcom.h"
 #include "wres.h"
 #include "exeos2.h"
 #include "exepe.h"
@@ -42,9 +40,6 @@
 #include "exereslx.h"
 #include "exeseg.h"
 #include "exeres.h"
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-    #include "clibext.h"
-#endif
 
 typedef enum {
     EXE_TYPE_UNKNOWN,

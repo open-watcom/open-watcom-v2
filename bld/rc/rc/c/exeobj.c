@@ -30,16 +30,11 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include "watcom.h"
-#include "exepe.h"
+#include "wio.h"
+#include "global.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "pass2.h"
 #include "exeutil.h"
-#include "global.h"
 #include "exeobj.h"
 #include "iortns.h"
 

@@ -32,23 +32,19 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <string.h>
 #include <malloc.h>
 #ifdef __WATCOMC__
 #include <process.h>
-#else
-#include "clibext.h"
 #endif
 #include "global.h"
-#include "bool.h"
 #include "errprt.h"
 #include "idedll.h"
-#include "rcmem.h"
 #include "clibint.h"
+#include "rcmem.h"
 #include "rcspawn.h"
 #include "rcldstr.h"
 #include "errors.h"
-#include <banner.h>
+#include "banner.h"
 
 #ifdef _BANEXTRA
 #undef  _BANEXTRA

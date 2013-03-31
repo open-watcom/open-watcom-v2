@@ -31,8 +31,8 @@
 
 #ifndef SCAN_H_INCLUDED
 #define SCAN_H_INCLUDED
+
 #include "varstr.h"
-#include "param.h"
 
 typedef struct ScanString {
     int         lstring;        /* was string prefixed by L like this L"bob" */
@@ -47,7 +47,7 @@ typedef enum {
 } ScanIntType;
 
 typedef struct {
-    ScanIntType		type;   /* non-default int type - long/unsigned */
+    ScanIntType         type;   /* non-default int type - long/unsigned */
     unsigned long       val;
     char                *str;
 } ScanInt;
@@ -61,6 +61,5 @@ typedef union {
 extern void  ScanInit( void );
 extern int   Scan( ScanValue * value );
 extern void  ScanInitStatics( void );
-extern char  *FindAndReplace( char *stringFromFile, FRStrings *frStrings );
 extern void  PrependToString( ScanValue *value, char *stringFromFile );
 #endif

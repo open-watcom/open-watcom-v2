@@ -29,19 +29,12 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <string.h>
-#include <ctype.h>
-#include "watcom.h"
-#include "exeos2.h"
-#include "wresall.h"
+#include "wio.h"
 #include "global.h"
 #include "errors.h"
-#include "rctypes.h"
 #include "rcmem.h"
 #include "rcstr.h"
 #include "exeutil.h"
-#include "exeres.h"
 #include "iortns.h"
 
 

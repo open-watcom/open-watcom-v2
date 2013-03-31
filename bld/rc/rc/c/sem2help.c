@@ -29,13 +29,11 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
-#include <string.h>
-#include "wresall.h"
-#include "errors.h"
 #include "global.h"
+#include "errors.h"
 #include "rcmem.h"
 #include "ytab2.gh"
+#include "semantic.h"
 #include "semhelp.h"
 
 #include "reserr.h"

@@ -30,13 +30,9 @@
 
 
 #include <stdio.h>      /* remove call for MS format stuff */
-#include <string.h>
-#include <ctype.h>
-#include "wresall.h"
+#include "global.h"
 #include "errors.h"
 #include "rcmem.h"
-#include "rcio.h"       /* semantic.c uses the RcTmpFileName function */
-#include "global.h"
 #include "ytab.gh"
 #include "semantic.h"
 #include "tmpctl.h"

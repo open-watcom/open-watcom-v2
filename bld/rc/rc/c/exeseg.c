@@ -29,16 +29,11 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <string.h>
-#include "watcom.h"
-#include "exeos2.h"
-#include "rcmem.h"
+#include "wio.h"
 #include "global.h"
+#include "rcmem.h"
 #include "errors.h"
-#include "pass2.h"
 #include "exeutil.h"
-#include "exeseg.h"
 #include "iortns.h"
 
 static RcStatus allocSegTable( SegTable *seg, int *err_code )

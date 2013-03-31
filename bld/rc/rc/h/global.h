@@ -37,10 +37,14 @@
 #define RCEXTERN extern
 #endif
 
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include "watcom.h"
+#include "pass2.h"
 #include "param.h"
 #include "rcio.h"
-#include "pass2.h"
-#include "wresset2.h"
+#include "phandle.h"
 
 /****** constants describing global data ******/
 /* this is the size of the text input buffer for pass 1 and the data trasfer */

@@ -30,23 +30,17 @@
 
 
 #include <assert.h>
-#include <unistd.h>
 #include <time.h>
-#include <string.h>
-#include <errno.h>
-#include "watcom.h"
-#include "exepe.h"
-#include "wresall.h"
+#include "wio.h"
+#include "global.h"
 #include "wrmergdi.h"
 #include "rcmem.h"
-#include "pass2.h"
 #include "rcstr.h"
 #include "exeutil.h"
 #include "exeobj.h"
-#include "global.h"
 #include "errors.h"
-#include "exereslx.h"
 #include "iortns.h"
+#include "os2res.h"
 
 extern int RcPadFile( int, long );
 
