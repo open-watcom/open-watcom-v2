@@ -6,73 +6,87 @@ builder_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-all : cdsay.exe sweep.exe wsplice.exe comstrip.exe aliasgen.exe genverrc.exe &
-!ifndef __UNIX__
-    diff.exe sed.exe &
-!endif
+all_commands         = sweep.exe wsplice.exe comstrip.exe genverrc.exe
+posix_commands_dos   = diff.exe
+posix_commands_os2   = diff.exe
+posix_commands_nt    = diff.exe
+
 !ifneq bootstrap 1
-    builder.exe &
-!ifndef __UNIX__
-    rm.exe
+all_commands         += builder.exe
+posix_commands_dos   += rm.exe
+posix_commands_os2   += rm.exe
+posix_commands_nt    += rm.exe
+!endif
+
+!ifeq bootstrap 1
+!ifndef %LOGFNAME
+cl_libs =
+cl_objs = clibext.obj
 !endif
 !endif
+
+all : $(all_commands) $(posix_commands_$(host_os))
 
 inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
 
-.c : ../c;$(pmake_dir);$(posix_dir)/src/rm;$(posix_dir)/src/sed;$(posix_dir)/misc;$(lib_misc_dir)/c;
+.c : ../c;$(pmake_dir);$(posix_dir)/src/rm;$(posix_dir)/misc;$(watcom_dir)/c
 
 sys_dos   = sys.obj sysdos.obj sysdoscd.obj
 sys_os2   = sys.obj sysos2.obj sysdoscd.obj
-sys_nt    = sys.obj sysnt.obj  sysdoscd.obj
+sys_nt    = sysnt.obj sysdoscd.obj
 sys_linux = sys.obj sysposix.obj
 
-extra_cpp_flags = -D__OS_$(host_os)__ -DSTANDALONE_RX
+rm_objs      = rm.obj getopt.obj quit.obj lineprt.obj alloc.obj filerx.obj regexp.obj fnlower.obj die.obj isdotdot.obj $(cl_objs)
+builder_objs = builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals.obj $(cl_objs)
+sweep_objs   = sweep.obj $(cl_objs)
+wsplice_objs = wsplice.obj $(cl_objs)
+diff_objs    = diff.obj $(cl_objs)
+cdsay_objs   = cdsay.obj equals.obj
+
+extra_cpp_flags = -DSTANDALONE_RX
 
 extra_c_flags_genverrc = -D_VERSION=$(bld_ver)
 
-!ifdef __MSDOS__
-__DOS__=1
-!endif
+sweep.exe :   $(sweep_objs)
+wsplice.exe : $(wsplice_objs)
+diff.exe :    $(diff_objs)
+cdsay.exe :   $(cdsay_objs)
 
-sweep.exe : sweep.obj $(cl_objs)
-wsplice.exe : wsplice.obj $(cl_objs)
-diff.exe : diff.obj $(cl_objs)
-sed.exe : sed.obj sedcomp.obj
-cdsay.exe : cdsay.obj equals.obj
-
-rm.exe: rm.obj getopt.obj quit.obj lineprt.obj alloc.obj filerx.obj regexp.obj fnlower.obj die.obj isdotdot.obj
+rm.exe: $(rm_objs)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $(rm_objs) $(ldflags)
 !else
-        $(linker) op map name $@ $(lflags) file {$<}
+        $(linker) op map name $@ $(lflags) file {$(rm_objs)}
 !endif
-!ifndef __$(host_os)__                  # Don't copy unless host_os=build_os
-!else ifndef %LOGFNAME                  # Don't copy unless build outside builder
+!if "$(host_os)" == "$(bld_os)"         # Don't copy unless host_os=build_os
+!ifndef %LOGFNAME                       # Don't copy unless build outside builder
 !ifdef __UNIX__
         cp   $^. $(%OWBINDIR)/$^&       # Remove .exe from working name
 !else
         copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
 !endif
 !endif
-
-builder.exe : builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals.obj $(cl_objs)
-!ifndef __WATCOM__
-        $(cl) $(clflags) $<
-!else
-        $(linker) op map name $@ $(lflags) file {$<}
 !endif
-!ifndef __$(host_os)__                  # Don't copy unless host_os=build_os
-!else ifndef %LOGFNAME                  # Don't copy unless build outside builder
+
+builder.exe : $(builder_objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(builder_objs) $(ldflags)
+!else
+        $(linker) op map name $@ $(lflags) file {$(builder_objs)}
+!endif
+!if "$(host_os)" == "$(bld_os)"         # Don't copy unless host_os=build_os
+!ifndef %LOGFNAME                       # Don't copy unless build outside builder
 !ifdef __UNIX__
         cp   $^. $(%OWBINDIR)/$^&       # Remove .exe from working name
 !else
         copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
+!endif
 !endif
 !endif
 
 .obj.exe :
 !ifndef __WATCOM__
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) op map name $@ $(lflags) file {$<}
 !endif

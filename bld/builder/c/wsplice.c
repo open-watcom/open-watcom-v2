@@ -71,7 +71,11 @@
 #include <ctype.h>
 #include <limits.h>
 #include <sys/stat.h>
+#ifdef __UNIX__
 #include <utime.h>
+#else
+#include <sys/utime.h>
+#endif
 #include "watcom.h"
 
 //#define local static
@@ -160,17 +164,17 @@ local void      AddText( void );                      // - add text to a ring
 local TEXTENT   *AddTextEntry( void );                // - add text entry
 local void      CmdAdd( void );                       // - execute or add a command
 local void      CmdExecute( void );                   // - execute a command
-local FILE      *OpenFileTruncate( char *, char * ); // - open a file, truncate if necessary
-local void      OpenFile( char *, char * );         // - open a file
+local FILE      *OpenFileTruncate( char *, char * );  // - open a file, truncate if necessary
+local void      OpenFileNormal( char *, char * );     // - open a file
 local void      CloseFile( void );                    // - close a file
-local unsigned  ReadInput( void );                   // - read input record
-local SEGMENT   *SegmentLookUp( char *seg_name );    // - look up a segment
-local SEGSTK    *PushSegStack( void );               // - push the segment stack
-local void      PopSegStack( void );                 // - pop the segment stack
-local void      Error( char*, ... );                // - write an error
+local unsigned  ReadInput( void );                    // - read input record
+local SEGMENT   *SegmentLookUp( char *seg_name );     // - look up a segment
+local SEGSTK    *PushSegStack( void );                // - push the segment stack
+local void      PopSegStack( void );                  // - pop the segment stack
+local void      Error( char*, ... );                  // - write an error
 local int       ScanString( void );                   // - scan a string
-local void      *GetMem( unsigned size );            // - get a block of memory
-local unsigned  RecordInitialize( char *record );    // - initialize for record processing
+local void      *GetMem( size_t size );               // - get a block of memory
+local unsigned  RecordInitialize( char *record );     // - initialize for record processing
 local void      OutputString( char *p, char *record );// - send string to output file
 local void      PutNL( void );                        // - output a newline
 local void      AddIncludePathList( char *path );     // - add to list of include paths
@@ -258,7 +262,7 @@ int main(               // MAIN-LINE
             FILE        *f;
             char        st[512], separator;
             int         i, j, k;
-            int         len;
+            size_t      len;
 
             f = fopen( argv[count] + 1, "r" );
             if( f == NULL ) {
@@ -412,7 +416,7 @@ local void ProcessSource( char *src_file ) // - starting file
     SegStk = NULL;
     SourceText = NULL;
     Files = NULL;
-    OpenFile( src_file, "r" );
+    OpenFileNormal( src_file, "r" );
     while( Files != NULL ) {
         kw = ReadInput();
         if( kw == KW_EOF ) {
@@ -482,7 +486,7 @@ local void ProcessRecord( // PROCESS A RECORD OF INPUT
         switch( ProcessMode ) {
         case MODE_OUTPUT:
             if( ScanString() ) {
-                OpenFile( Token, "r" );
+                OpenFileNormal( Token, "r" );
             } else {
                 Error( "Missing or invalid inclusion file" );
             }
@@ -695,7 +699,7 @@ local SEGMENT *ScanSegment( void )// SCAN A SEGMENT
 local SEGMENT *SegmentLookUp( char *seg_name )
 {
     SEGMENT     *sptr;          // - points to current segment
-    unsigned    size;           // - size of name
+    size_t      size;           // - size of name
 
     sptr = Segments;
     for( ;; ) {
@@ -707,7 +711,7 @@ local SEGMENT *SegmentLookUp( char *seg_name )
     }
 
     size = strlen( seg_name );
-    sptr = ( SEGMENT *) GetMem( sizeof( SEGMENT ) + size );
+    sptr = ( SEGMENT *)GetMem( sizeof( SEGMENT ) + size );
     if( sptr != NULL ) {
         memcpy( sptr->name, seg_name, size + 1 );
         sptr->seg_type = ' ';
@@ -723,7 +727,7 @@ local void AddIncludePathList( char *path )
 {
     IPATHLST    *lptr;          // - point to new path entry
     IPATHLST    *p;             // - point to list
-    unsigned    size;           // - size of path
+    size_t      size;           // - size of path
 
     size = strlen( path );
     lptr = GetMem( sizeof( IPATHLST ) + size + 1 );
@@ -804,14 +808,14 @@ local FILE *OpenFilePathList( //OPEN FILE, TRY EACH LOCATION IN PATH LIST
 
 
 // OPEN FILE
-local void OpenFile( 
+local void OpenFileNormal( 
     char *file_name, // - file to be opened
     char *mode )// - file mode
 {
     FILE        *new;           // - new file ptr.
     FILESTK     *stk;           // - new stack entry
 
-    stk = ( FILESTK * ) GetMem( sizeof( FILESTK ) + strlen( file_name ) );
+    stk = ( FILESTK * )GetMem( sizeof( FILESTK ) + strlen( file_name ) );
     if( stk != NULL ) {
         strcpy( stk->name, file_name );
         stk->rec_count = 0;
@@ -973,7 +977,7 @@ local void Error( // ERROR MESSAGE
 }
 
 // GET MEMORY BLOCK
-local void *GetMem( unsigned size )
+local void *GetMem( size_t size )
 {
     void        *block;                         // - new memory
     static int  FirstMemoryError = { TRUE };    // - indicates first "out of memory" error

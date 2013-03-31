@@ -36,13 +36,12 @@
 #include <dos.h>
 #include <process.h>
 #include <fcntl.h>
-#include <unistd.h>
+#include <io.h>
 #include "builder.h"
-
 #include <windows.h>
 
-char    *CmdProc;
 #define TITLESIZE 256
+
 char    Title[TITLESIZE];
 
 void SysInitTitle( int argc, char *argv[] )
@@ -52,12 +51,12 @@ void SysInitTitle( int argc, char *argv[] )
     strcpy( Title, "Builder " );
     for( i = 1; i < argc; i++ ) {
         if( strlen( Title ) + strlen( argv[i] ) > TITLESIZE - 3 )
-	    break;
+            break;
         strcat( Title, argv[i] );
         strcat( Title, " " );
     }
     strcat( Title, "[" );
-    getcwd( Title + strlen( Title ), TITLESIZE - strlen( Title ) - 2 );
+    getcwd( Title + strlen( Title ), (int)( TITLESIZE - strlen( Title ) - 2 ) );
     strcat( Title, "]" );
     SetConsoleTitle( Title );
 }
@@ -66,16 +65,15 @@ void SysSetTitle( char *title )
 {
     char        *end;
 
+    title = title;
     end = strchr( Title, ']' );
     *( end + 1 ) = '\0';
 
     strcat( Title, " (" );
-    getcwd( Title + strlen( Title ), TITLESIZE - strlen( Title ) - 2 );
+    getcwd( Title + strlen( Title ), (int)( TITLESIZE - strlen( Title ) - 2 ) );
     strcat( Title, ")" );
     SetConsoleTitle( Title );
 }
-
-static  PROCESS_INFORMATION pinfo;
 
 // CreateProcessA does not return process id as result
 // but fills pinfo on success
@@ -84,34 +82,15 @@ static  PROCESS_INFORMATION pinfo;
 //    != 0 means success
 // save pinfo for closing child
 
-int RunChildProcessCmdl( const char *cmdl )
+static DWORD RunChildProcessCmdl( const char *cmdl, PROCESS_INFORMATION *pinfo, HANDLE *readpipe )
 {
-    STARTUPINFO     sinfo;
-
-    memset( &sinfo, 0, sizeof( sinfo ) );
-    sinfo.cb = sizeof( sinfo );
-    memset( &pinfo, 0, sizeof( pinfo ) );
-
-    return( CreateProcess( NULL, ( LPSTR ) cmdl, NULL, NULL, TRUE, 0, NULL, NULL, &sinfo, &pinfo ) );
-}
-
-void SysInit( int argc, char *argv[] )
-{
-    SysInitTitle( argc, argv );
-    CmdProc = getenv( "ComSpec" );
-    if( CmdProc == NULL ) {
-        Fatal( "Can not find command processor" );
-    }
-    setenv( "BLD_HOST", "NT", 1 );
-}
-
-int SysRunCommandPipe( const char *cmd, int *readpipe )
-{
-    int                 rc;
+    HANDLE              cp;
+    HANDLE              parent_std_output;
+    HANDLE              parent_std_error;
     HANDLE              pipe_input;
     HANDLE              pipe_output;
-    HANDLE              pipe_input_dup;
     SECURITY_ATTRIBUTES sa;
+    DWORD               rc = 0;
 
     sa.nLength = sizeof( sa );
     sa.lpSecurityDescriptor = NULL;
@@ -119,16 +98,35 @@ int SysRunCommandPipe( const char *cmd, int *readpipe )
     if( !CreatePipe( &pipe_input, &pipe_output, &sa, 0 ) ) {
         return( GetLastError() );
     }
+    cp = GetCurrentProcess();
+    DuplicateHandle( cp, GetStdHandle( STD_OUTPUT_HANDLE ), cp, &parent_std_output, 0, TRUE, DUPLICATE_SAME_ACCESS );
+    DuplicateHandle( cp, GetStdHandle( STD_ERROR_HANDLE ), cp, &parent_std_error, 0, TRUE, DUPLICATE_SAME_ACCESS );
     SetStdHandle( STD_OUTPUT_HANDLE, pipe_output );
     SetStdHandle( STD_ERROR_HANDLE, pipe_output );
-    DuplicateHandle( GetCurrentProcess(), pipe_input,
-                GetCurrentProcess(), &pipe_input_dup, 0, FALSE,
-                DUPLICATE_SAME_ACCESS );
+    if( !DuplicateHandle( cp, pipe_input, cp, readpipe, 0, FALSE, DUPLICATE_SAME_ACCESS ) ) {
+        rc = GetLastError();
+    }
     CloseHandle( pipe_input );
-    rc = RunChildProcessCmdl( cmd );
+    if( rc == 0 ) {
+        STARTUPINFO     sinfo;
+        memset( &sinfo, 0, sizeof( sinfo ) );
+        sinfo.cb = sizeof( sinfo );
+        if( !CreateProcess( NULL, (LPSTR)cmdl, NULL, NULL, TRUE, 0, NULL, NULL, &sinfo, pinfo ) ) {
+            rc = GetLastError();
+        }
+    }
     CloseHandle( pipe_output );
-    *readpipe = _hdopen( ( int ) pipe_input_dup, O_RDONLY );
+    SetStdHandle( STD_OUTPUT_HANDLE, parent_std_output );
+    SetStdHandle( STD_ERROR_HANDLE, parent_std_error );
+    CloseHandle( parent_std_output );
+    CloseHandle( parent_std_error );
     return( rc );
+}
+
+void SysInit( int argc, char *argv[] )
+{
+    SysInitTitle( argc, argv );
+    setenv( "BLD_HOST", "NT", 1 );
 }
 
 int SysChdir( char *dir )
@@ -136,25 +134,49 @@ int SysChdir( char *dir )
     int     retval;
 
     retval = SysDosChdir( dir );
-
     SysSetTitle( Title );
-
     return( retval );
 }
 
-int wait( int *status )
+int SysRunCommand( const char *cmd )
 {
-    DWORD       rc;
+    DWORD               rc;
+    DWORD               bytes_read;
+    char                buff[256 + 1];
+    HANDLE              readpipe;
+    PROCESS_INFORMATION pinfo;
 
-    // *status != 0 means the process was created successfully
-    if( *status ) {
-        WaitForSingleObject( pinfo.hProcess, INFINITE );
-        GetExitCodeProcess( pinfo.hProcess, &rc );	
-        CloseHandle( pinfo.hProcess );
-        CloseHandle( pinfo.hThread );
-        *status = rc;
-    } else {    // there was no child process, indicate failure
-        *status = -1;
+    memset( &pinfo, 0, sizeof( pinfo ) );
+    readpipe = (HANDLE)0;
+    rc = RunChildProcessCmdl( cmd, &pinfo, &readpipe );
+    if( rc != 0 ) {
+        if( readpipe != (HANDLE)0 ) {
+            CloseHandle( readpipe );
+        }
+        return( rc );
     }
-    return( 0 );
+    if( readpipe != (HANDLE)0 ) {
+        for( ;; ) {
+            char    *dst;
+            DWORD   i;
+
+            ReadFile( readpipe, buff, sizeof( buff ) - 1, &bytes_read, NULL );
+            if( bytes_read == 0 )
+                break;
+            dst = buff;
+            for( i = 0; i < bytes_read; ++i ) {
+                if( buff[i] != '\r' ) {
+                    *dst++ = buff[i];
+                }
+            }
+            *dst = '\0';
+            Log( Quiet, "%s", buff );
+        }
+        CloseHandle( readpipe );
+    }
+    WaitForSingleObject( pinfo.hProcess, INFINITE );
+    GetExitCodeProcess( pinfo.hProcess, &rc );      
+    CloseHandle( pinfo.hProcess );
+    CloseHandle( pinfo.hThread );
+    return( rc );
 }

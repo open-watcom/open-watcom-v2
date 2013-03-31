@@ -33,15 +33,11 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <ctype.h>
 #include <limits.h>
-#include <sys/stat.h>
+#include "wio.h"
+#include "watcom.h"
 #include "diff.h"
-
-#ifdef UNIX
-    #include "clibext.h"
-#endif
 
 typedef unsigned long ULONG;
 typedef signed long SLONG;
@@ -200,7 +196,7 @@ INT main( int argc, char **argv )
             case 'd':
                 Dflag = ap;
                 while( *ap != EOS )
-		    ++ap;
+                    ++ap;
                 break;
 
             case 'H':
@@ -474,7 +470,7 @@ void sort( LINE *vector, SLONG vecsize )
             for( ai = &vector[j]; ai > vector; ai -= mid ) {
                 aim = &ai[mid];
                 if( aim < ai )
-		    break;      /* ?? Why ??     */
+                    break;      /* ?? Why ??     */
                 if( aim->hash > ai->hash ||
                     ( aim->hash == ai->hash &&
                      aim->serial > ai->serial ) ) break;
@@ -658,14 +654,13 @@ SLONG subseq( void )
          * For each non-zero element in fileA ...
          */
         if( ( i = class[a] ) == 0 )
-	    continue;
+            continue;
         cand = klist[0];        /* No candidate now  */
         r = 0;                  /* Current r-candidate  */
         do {
 #ifdef DEBUG
             printf( "a = %d, i = %d, b = %d\n", a, i, member[i] );
 #endif
-
             /*
              * Perform the merge algorithm
              */
@@ -946,7 +941,7 @@ void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
         fetch( newseek, bstart, bend, lenB, infd[1],
                cflag ? ( c == 'a' ? "+ " : "! " ) : ( eflag ? "" : "> " ) );
         if( eflag )
-	    printf( ".\n" );
+            printf( ".\n" );
     }
 }
 
@@ -1294,7 +1289,7 @@ INT streq( char *s1, char *s2 )
 {
     while( *s1++ == *s2 ) {
         if( *s2++ == EOS )
-	    return( TRUE );
+            return( TRUE );
     }
     return( FALSE );
 }
@@ -1355,8 +1350,8 @@ void fputss( char *s, FILE *iop )
 
 char *fgetss( char *s, SLONG n, FILE *iop )
 {
-    char  *cs;
-    int    len;
+    char    *cs;
+    size_t  len;
 
     if( fgets( s, n, iop ) == NULL )
         return( ( char *) NULL );

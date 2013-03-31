@@ -37,7 +37,7 @@
 int SysDosChdir( char *dir )
 {
     char        *end;
-    unsigned    len;
+    size_t      len;
     unsigned    total;
 
     if( dir[0] == '\0' )

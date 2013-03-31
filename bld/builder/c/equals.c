@@ -43,8 +43,8 @@ static char        logdirbuff[BSIZE];
 const char *LogDirEquals( char *dir )
 {
     char        tbuff[BSIZE];
-    int         equals;
-    int         bufflen;
+    size_t      equals;
+    size_t      bufflen;
     const char  *eq;
     struct tm   *tm;
     time_t      ttime;
@@ -54,8 +54,9 @@ const char *LogDirEquals( char *dir )
     strftime( tbuff, BSIZE, "%H:%M:%S", tm );
     strcat( tbuff, " " );
     strcat( tbuff, dir );
-    equals = ( SCREEN - ( bufflen = strlen( tbuff ) ) ) / 2 - 2;
-    if( equals < 1 ) {
+    bufflen = strlen( tbuff );
+    equals = ( SCREEN - bufflen ) / 2 - 2;
+    if( bufflen > SCREEN - 6 ) {
         equals = 1;
     }
     eq = &Equals[ ( sizeof( Equals ) - 1 ) - equals];

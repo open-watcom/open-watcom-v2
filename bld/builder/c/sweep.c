@@ -31,10 +31,7 @@
 #include <ctype.h>
 #ifdef __WATCOMC__
     #include <process.h>
-#else
-    #include "clibext.h"
 #endif
-#include <unistd.h>
 #include <signal.h>
 #include <limits.h>
 #include <stdio.h>
@@ -42,11 +39,11 @@
 #include <stdlib.h>
 #ifdef __UNIX__
     #include <dirent.h>
-    #include <sys/stat.h>
 #else
     #include <direct.h>
     #include <dos.h>
 #endif
+#include "wio.h"
 #include "watcom.h"
 
 char    *Help[] = {
@@ -98,7 +95,7 @@ typedef struct dirstack {
     struct dirstack     *prev;
     char                name_len;
     char                name[_MAX_FNAME + _MAX_EXT];
-}       dirstack;
+} dirstack;
 
 dirstack        *Stack = NULL;
 int             DoneFlag = 0;
@@ -106,6 +103,7 @@ int             DoneFlag = 0;
 
 void SetDoneFlag( int dummy )
 {
+    dummy = dummy;
     DoneFlag = 1;
 }
 
@@ -138,7 +136,7 @@ char *CurrPath( void )
         memcpy( p, stack->name, stack->name_len );
         stack = stack->prev;
         if( stack->prev == NULL )
-	    break;
+            break;
         *--p = '\\';
     }
     return( p );
@@ -147,7 +145,7 @@ char *CurrPath( void )
 
 char *StringCopy( char *dst, char *src )
 {
-    while( ( *dst = *src ) ) {
+    while( ( *dst = *src ) != '\0' ) {
         ++dst;
         ++src;
     }
@@ -178,8 +176,8 @@ void Compare( char *buff )
     char        *two;
     FILE        *fp1;
     FILE        *fp2;
-    unsigned    len1;
-    unsigned    len2;
+    size_t      len1;
+    size_t      len2;
     static char *buff1;
     static char *buff2;
     int         inQuote;
@@ -187,7 +185,7 @@ void Compare( char *buff )
     if( buff1 == NULL ) {
         buff1 = SafeMalloc( 2*BUFF_SIZE );
         if( buff1 == NULL )
-	    return;
+            return;
         buff2 = &buff1[BUFF_SIZE];
     }
     while( isspace( *buff ) )
@@ -196,9 +194,9 @@ void Compare( char *buff )
     inQuote = 0;
     for( ;; ) {
         if( isspace( *buff ) && !inQuote )
-	    break;
+            break;
         if( *buff == '"' )
-	    inQuote = !inQuote;
+            inQuote = !inQuote;
         ++buff;
     }
     *buff++ = '\0';
@@ -228,7 +226,7 @@ void Compare( char *buff )
             break;
         }
         if( len1 == 0 )
-	    break;
+            break;
         if( memcmp( buff1, buff2, len1 ) != 0 ) {
             printf( " '%s' differs from '%s'\n", one, two );
             break;
@@ -330,20 +328,20 @@ void ExecuteCommands( void )
     if( dirh != NULL ) {
         for( ;; ) {
             if( DoneFlag )
-	        return;
+                return;
             dp = readdir( dirh );
             if( dp == NULL )
-	        break;
+                break;
 #ifdef __UNIX__
             {
                 struct stat buf;
                 stat( dp->d_name, &buf );
                 if( S_ISDIR( buf.st_mode ) )
-		    continue;
+                    continue;
             }
 #else
             if( dp->d_attr & _A_SUBDIR )
-	        continue;
+                continue;
 #endif
             SubstituteAndRun( dp->d_name );
         }
@@ -367,28 +365,28 @@ void ProcessCurrentDirectory( void )
             --Options.levels;
             for( ;; ) {
                 if( DoneFlag )
-		    return;
+                    return;
                 dp = readdir( dirh );
                 if( dp == NULL )
-		    break;
+                    break;
 #ifdef __UNIX__
                 {
                     struct stat buf;
                     stat( dp->d_name, &buf );
                     if( !S_ISDIR( buf.st_mode ) )
-		        continue;
+                        continue;
                 }
 #else
                 if( !( dp->d_attr & _A_SUBDIR ) )
-		    continue;
+                    continue;
 #endif
                 if( dp->d_name[0] == '.' ) {
                     if( dp->d_name[1] == '.' || dp->d_name[1] == '\0' )
-		        continue;
+                        continue;
                 }
                 stack = SafeMalloc( sizeof( *stack ) );
                 if( DoneFlag )
-		    return;
+                    return;
                 stack->name_len = strlen( dp->d_name );
                 memcpy( stack->name, dp->d_name, stack->name_len + 1 );
                 stack->prev = Stack;
@@ -428,7 +426,7 @@ int GetNumber( int default_num )
     number = 0;
     for( ;; ) {
         if( !isdigit( CmdLine[1] ) )
-	    return( number );
+            return( number );
         number *= 10;
         number += CmdLine[1] - '0';
         ++CmdLine;
@@ -453,7 +451,7 @@ int main( void ) {
         PrintHelp();
     for( ;; ) {
         if( *CmdLine != '-' && *CmdLine != '/' )
-	    break;
+            break;
         ++CmdLine;
         switch( *CmdLine ) {
         case 'a':
@@ -480,7 +478,7 @@ int main( void ) {
         }
         ++CmdLine;
         while( *CmdLine == ' ' )
-	    ++CmdLine;
+            ++CmdLine;
     }
     Stack = SafeMalloc( sizeof( *Stack ) );
     Stack->name_len = 1;

@@ -33,13 +33,11 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <string.h>
 #include <process.h>
 #include <signal.h>
 #include <limits.h>
+#include "wio.h"
 #if defined( __UNIX__ )
     #include <dirent.h>
 #else
@@ -62,13 +60,13 @@ typedef int wbool;
     #define FALSE 0
 #endif
 
-#if defined(__WATCOMC__)
-    #define READABLE (S_IRUSR|S_IRGRP|S_IROTH)
-    #define WRITABLE (S_IWUSR|S_IWGRP|S_IWOTH)
+#if defined(__UNIX__)
+    #define READABLE   (S_IRUSR|S_IRGRP|S_IROTH)
+    #define WRITABLE   (S_IWUSR|S_IWGRP|S_IWOTH)
     #define EXECUTABLE (S_IXUSR|S_IXGRP|S_IXOTH)
 #else
-    #define READABLE (S_IREAD)
-    #define WRITABLE (S_IWRITE)
+    #define READABLE   (S_IREAD)
+    #define WRITABLE   (S_IWRITE)
     #define EXECUTABLE (S_IEXEC)
 #endif
 
@@ -618,7 +616,7 @@ static void performSearch( char *fn )
                 }
             }
         }
-        io = open( fn, O_RDONLY + O_BINARY );
+        io = open( fn, O_RDONLY | O_BINARY );
         if( io == -1 ) {
             Warning( "Unable to open", fn );
             return;
@@ -751,7 +749,7 @@ static void executeWgrep( void )
                     char tmp_path[_MAX_PATH+1];
                     strcpy( tmp_path, PathBuff );
                     extendPath( tmp_path, dp->d_name );
-                    if( stat( tmp_path, &sblk ) == 0  && S_ISDIR( sblk.st_mode ) ) {
+                    if( stat( tmp_path, &sblk ) == 0 && S_ISDIR( sblk.st_mode ) ) {
                         continue;
                     }
                 }
@@ -797,7 +795,7 @@ static void processDirectory( void )
                     char tmp_path[_MAX_PATH+1];
                     strcpy( tmp_path, PathBuff );
                     extendPath( tmp_path, dp->d_name );
-                    if( stat( tmp_path, &sblk ) == 0  && !(sblk.st_mode & _S_IFDIR) ) {
+                    if( stat( tmp_path, &sblk ) == 0 && !S_ISDIR( sblk.st_mode ) ) {
                         continue;
                     }
                 }
@@ -850,7 +848,7 @@ static void nextWgrep( char **paths )
     Stack = (dirstack *) SafeMalloc( sizeof( dirstack ) );
 
     while( *paths != NULL ) {
-        if( stat( *paths, &sblk ) == 0  && S_ISDIR( sblk.st_mode ) ) {
+        if( stat( *paths, &sblk ) == 0 && S_ISDIR( sblk.st_mode ) ) {
             strcpy( Stack->name, *paths );
             strcpy( CurrPattern, "*.*" );
         } else {

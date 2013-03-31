@@ -41,10 +41,6 @@
 #include <limits.h>
 #include "builder.h"
 
-#ifndef _MAX_PATH
-#define _MAX_PATH PATH_MAX
-#endif
-
 void LogDir( char *dir )
 {
     printf( "%s", LogDirEquals( dir ) );
@@ -53,7 +49,7 @@ void LogDir( char *dir )
 static unsigned ChgDir( char *dir )
 {
     char        *end;
-    unsigned    len;
+    size_t      len;
 #ifndef __UNIX__
     unsigned    total;
 #endif
@@ -62,17 +58,16 @@ static unsigned ChgDir( char *dir )
         return( 0 );
     len = strlen( dir );
     end = &dir[len - 1];
-    switch( *end ) {
-    case '\\':
-    case '/':
-        if( end > dir && end[ -1] != ':' ) {
-            *end = '\0';
-            --len;
-        }
-        break;
+#ifdef __UNIX__
+    if( len > 1 && ( *end == '\\' || *end == '/' ) ) {
+        *end = '\0';
     }
-#ifndef __UNIX__
-    if( len > 2 && dir[1] == ':' ) {
+#else
+    if( len > 1 && ( *end == '\\' || *end == '/' ) && *(end - 1) != ':' ) {
+        *end = '\0';
+        --len;
+    }
+    if( len > 1 && dir[1] == ':' ) {
         _dos_setdrive( toupper( dir[0] ) - 'A' + 1, &total );
     }
 #endif

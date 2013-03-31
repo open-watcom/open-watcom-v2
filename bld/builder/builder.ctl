@@ -16,12 +16,9 @@ set PROJNAME=build utilities
 #======================
     <CPCMD> <OWOBJDIR>/wsplice.exe  <OWBINDIR>/wsplice<CMDEXT>
     <CPCMD> <OWOBJDIR>/sweep.exe    <OWBINDIR>/sweep<CMDEXT>
-    <CPCMD> <OWOBJDIR>/cdsay.exe    <OWBINDIR>/cdsay<CMDEXT>
     <CPCMD> <OWOBJDIR>/comstrip.exe <OWBINDIR>/comstrip<CMDEXT>
-    <CPCMD> <OWOBJDIR>/aliasgen.exe <OWBINDIR>/aliasgen<CMDEXT>
     <CPCMD> <OWOBJDIR>/genverrc.exe <OWBINDIR>/genverrc<CMDEXT>
     <CCCMD> <OWOBJDIR>/diff.exe     <OWBINDIR>/diff<CMDEXT>
-    <CCCMD> <OWOBJDIR>/sed.exe      <OWBINDIR>/sed<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
@@ -29,18 +26,12 @@ set PROJNAME=build utilities
     rm -f <OWBINDIR>/wsplice<CMDEXT>
     echo rm -f <OWBINDIR>/sweep<CMDEXT>
     rm -f <OWBINDIR>/sweep<CMDEXT>
-    echo rm -f <OWBINDIR>/cdsay<CMDEXT>
-    rm -f <OWBINDIR>/cdsay<CMDEXT>
     echo rm -f <OWBINDIR>/comstrip<CMDEXT>
     rm -f <OWBINDIR>/comstrip<CMDEXT>
-    echo rm -f <OWBINDIR>/aliasgen<CMDEXT>
-    rm -f <OWBINDIR>/aliasgen<CMDEXT>
     echo rm -f <OWBINDIR>/genverrc<CMDEXT>
     rm -f <OWBINDIR>/genverrc<CMDEXT>
     echo rm -f <OWBINDIR>/diff<CMDEXT>
     rm -f <OWBINDIR>/diff<CMDEXT>
-    echo rm -f <OWBINDIR>/sed<CMDEXT>
-    rm -f <OWBINDIR>/sed<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================
