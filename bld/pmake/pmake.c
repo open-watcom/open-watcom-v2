@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 #include <ctype.h>
-#include <unistd.h>
 #include <signal.h>
 #include <limits.h>
 #include <stdio.h>
@@ -39,10 +38,12 @@
 #define IS_PATH_SEP(x) ( (x) == '/')
 #include <dirent.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #else
 #define IS_PATH_SEP(x) ( ( (x) == '\\') || (x) == '/')
 #include <direct.h>
 #include <dos.h>
+#include <io.h>
 #endif
 #include <assert.h>
 #include <setjmp.h>
@@ -66,7 +67,7 @@
 
 typedef struct dirqueue {
     struct dirqueue     *next;
-    int                 depth;
+    unsigned            depth;
     char                name[_MAX_PATH];
 }                       dirqueue;
 
@@ -85,7 +86,7 @@ char                    *SaveDir = saveDirBuff;
 
 static char *StringCopy( char *dst, char *src )
 {
-    while( ( *dst = *src ) ) {
+    while( ( *dst = *src ) != '\0' ) {
         ++dst;
         ++src;
     }
@@ -183,7 +184,7 @@ static unsigned CompareTargets( char *line )
     while( *line != '\0' ) {
         for( curr = Options.targ_list; curr != NULL; curr = curr->next ) {
             if( curr->used == TARGET_NOT_USED ) {
-                int len = strlen( curr->string );
+                size_t len = strlen( curr->string );
                 if( strnicmp( line, curr->string, len ) == 0 ) {
                     if( line[len] == '\0' || isspace( line[len] ) ) {
                         line += len;
@@ -269,7 +270,7 @@ static void DeQueue( void )
     }
 }
 
-static int CountDepth( char *path, int slashcount )
+static unsigned CountDepth( char *path, unsigned slashcount )
 {
     while( *path != '\0' ) {
         if( IS_PATH_SEP( *path ) ) {
@@ -296,8 +297,8 @@ static char *RelativePath( char *oldpath, char *newpath )
 {
     int         ofs = 0;
     char        *tp;
-    int         newdepth;
-    int         olddepth;
+    unsigned    newdepth;
+    unsigned    olddepth;
 
     if( oldpath == NULL )
         return( newpath );
@@ -381,7 +382,7 @@ static void TestDirectory( dirqueue *head, char *makefile )
 {
     unsigned    prio;
     pmake_list  *new;
-    unsigned    len;
+    size_t      len;
 
     if( Options.verbose ) {
         sprintf( Buff, ">>> PMAKE >>> %s/%s", head->name, makefile );
@@ -403,6 +404,7 @@ static void TestDirectory( dirqueue *head, char *makefile )
 
 static void SetDoneFlag( int sig_no )
 {
+    sig_no = sig_no;
     DoneFlag = 1;
 }
 
@@ -488,7 +490,7 @@ static int GetNumber( int default_num )
 static char *GetString( void )
 {
     char        *p;
-    unsigned    len;
+    size_t      len;
     char        *new;
 
     while( isspace( CmdLine[0] ) )

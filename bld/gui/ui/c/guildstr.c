@@ -67,7 +67,7 @@ static  HANDLE_INFO     hInstance = { 0 };
 static  bool            GUIMsgInitFlag = FALSE;
 extern  long            FileShift;
 
-static off_t GUIResSeek( int handle, off_t position, int where )
+static off_t res_seek( int handle, off_t position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {
@@ -78,25 +78,7 @@ static off_t GUIResSeek( int handle, off_t position, int where )
     }
 }
 
-#ifdef __WATCOMC__
-WResSetRtns( open,
-             close,
-             read,
-             write,
-             GUIResSeek,
-             tell,
-             GUIMemAlloc,
-             GUIMemFree );
-#else
-WResSetRtns( open,
-             close,
-             ( int (*) (WResFileID, void *, int) )read,
-             ( int (*) (WResFileID, const void *, int) )write,
-             GUIResSeek,
-             tell,
-             ( void* (*)(unsigned long) )GUIMemAlloc,
-             GUIMemFree );
-#endif
+WResSetRtns( open, close, read, write, res_seek, tell, GUIMemAlloc, GUIMemFree );
 
 bool GUIIsLoadStrInitialized( void )
 {
@@ -107,8 +89,7 @@ bool GUILoadStrInit( char * fname )
 {
     bool        error;
 
-    hInstance.filename = fname;
-    error = OpenResFile( &hInstance ) == NIL_HANDLE;
+    error = OpenResFile( &hInstance, fname ) == NIL_HANDLE;
     if( !error ) {
         if( GUIGetExtName() != NULL ) {
             // we are using an external resource file so we don't have to

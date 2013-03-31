@@ -89,11 +89,7 @@ static long res_seek( int handle, long position, int where )
     }
 }
 
-#ifndef __NETWARE__
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
-#else
-WResSetRtns( open, close, ( int (*)( WResFileID, void *, size_t)) read, ( int (*)( WResFileID, const void *, size_t)) write, res_seek, tell, malloc, free );
-#endif
 
 int MsgInit( void )
 {
@@ -109,16 +105,14 @@ int MsgInit( void )
     if( _cmdname( buffer ) == NULL ) {
         initerror = 1;
     } else {
-        hInstance.filename = buffer;
-        OpenResFile( &hInstance );
+        OpenResFile( &hInstance, buffer );
 #if defined(_PLS)
         if( hInstance.handle == NIL_HANDLE ) {
             _splitpath2( buffer, fullpath, NULL, NULL, &fname, NULL );
             _makepath( buffer, NULL, NULL, fname, ".exp" );
             _searchenv( buffer, "PATH", fullpath );
             if( fullpath[0] != '\0' ) {
-                hInstance.filename = fullpath;
-                OpenResFile( &hInstance );
+                OpenResFile( &hInstance, fullpath );
             }
         }
 #endif

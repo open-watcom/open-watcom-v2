@@ -80,8 +80,7 @@ int MsgInit()
     if( _cmdname( name ) == NULL ) {
         initerror = 1;
     } else {
-        hInstance.filename = name;
-        OpenResFile( &hInstance );
+        OpenResFile( &hInstance, name );
         if( hInstance.handle == NIL_HANDLE ) {
             initerror = 1;
         } else {

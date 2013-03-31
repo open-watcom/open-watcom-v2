@@ -54,14 +54,14 @@ extern bool GUIFiniInternalStringTable( void );
 #ifdef DEFINE_STRINGS
 #define LITSTR( sym, val ) const char LIT( sym )[] = val;
 #else
-#ifdef __386__
-    #define MAKEFAR
-#else
+#ifdef _M_I86
     #ifdef __MEDIUM__
         #define MAKEFAR
     #else
         #define MAKEFAR far
     #endif
+#else
+    #define MAKEFAR
 #endif
 #define LITSTR( sym, val ) extern char MAKEFAR LIT( sym )[sizeof( val )];
 #endif

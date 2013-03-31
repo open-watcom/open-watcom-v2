@@ -72,8 +72,7 @@ extern int MsgInit( char *fname )
 {
     int initerror;
 
-    hInstance.filename = fname;
-    OpenResFile( &hInstance );
+    OpenResFile( &hInstance, fname );
     if( hInstance.handle == NIL_HANDLE ) {
         initerror = 1;
     } else {

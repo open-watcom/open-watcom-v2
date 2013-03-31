@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-#ifndef WALLOCA_H_INCLUDED
-#define WALLOCA_H_INCLUDED
+#ifndef _WALLOCA_H_INCLUDED
+#define _WALLOCA_H_INCLUDED
 
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <malloc.h>
 #else
     #include <stdlib.h>

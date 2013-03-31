@@ -31,23 +31,34 @@
 
 #ifndef WRESSET2_INCLUDED
 #define WRESSET2_INCLUDED
+
 #ifdef WIN_GUI
-#include "windows.h"
+  #include <windows.h>
+#else
+  #define LoadString2( Dir, hInstance, idResource, lpszBuffer, nBufferMax ) \
+            WResLoadString2( Dir, hInstance, idResource, lpszBuffer, nBufferMax )
+  #define LoadString( hInstance, idResource, lpszBuffer, nBufferMax ) \
+            WResLoadString( hInstance, idResource, lpszBuffer, nBufferMax )
+  #ifndef WINAPI
+    #define WINAPI
+  #endif
+  #ifndef _WCI86FAR
+    #define _WCI86FAR   // Is there a cleaner way?
+  #endif
 #endif
-#include "phandle.h"
+
+#define NIL_HANDLE      ((int)-1)
+
+typedef struct handle_info {
+    WResFileID  handle;
+#ifdef WIN_GUI
+    HINSTANCE   inst;
+#endif
+} HANDLE_INFO, *PHANDLE_INFO;
 
 #ifndef WIN_GUI
-#define LoadString2( Dir, hInstance, idResource, lpszBuffer, nBufferMax ) \
-            WResLoadString2( Dir, hInstance, idResource, lpszBuffer, nBufferMax )
-#define LoadString( hInstance, idResource, lpszBuffer, nBufferMax ) \
-            WResLoadString( hInstance, idResource, lpszBuffer, nBufferMax )
-#ifndef WINAPI
-#define WINAPI
-#endif
+typedef PHANDLE_INFO HINSTANCE;
 typedef unsigned int UINT;
-#ifndef _WCI86FAR
-    #define _WCI86FAR   // Is there a cleaner way?
-#endif
 typedef char _WCI86FAR * LPSTR;
 #endif
 
@@ -55,36 +66,34 @@ typedef char _WCI86FAR * LPSTR;
 extern "C" {
 #endif
 
-/* This is a global variable exported by function FindResources */
-extern long FileShift;
-
 struct WResDirHead;
-int OpenResFile( PHANDLE_INFO hInstance );
-int FindResources( PHANDLE_INFO hInstance );
-int InitResources( PHANDLE_INFO hInstance );
-int InitResources2( struct WResDirHead **, PHANDLE_INFO hInstance );
-int WINAPI WResLoadString( PHANDLE_INFO hInstance,
+
+extern int OpenResFile( PHANDLE_INFO hInstance, const char *filename );
+extern int FindResources( PHANDLE_INFO hInstance );
+extern int InitResources( PHANDLE_INFO hInstance );
+extern int InitResources2( struct WResDirHead **, PHANDLE_INFO hInstance );
+extern int WINAPI WResLoadString( PHANDLE_INFO hInstance,
                            UINT idResource,
                            LPSTR lpszBuffer,
                            int nBufferMax );
-int WINAPI WResLoadString2( struct WResDirHead *,
+extern int WINAPI WResLoadString2( struct WResDirHead *,
                             PHANDLE_INFO hInstance,
                             UINT idResource,
                             LPSTR lpszBuffer,
                             int nBufferMax );
-int WINAPI WResLoadResource( PHANDLE_INFO       hInstance,
+extern int WINAPI WResLoadResource( PHANDLE_INFO       hInstance,
                              UINT               idType,
                              UINT               idResource,
                              LPSTR              *lpszBuffer,
                              int                *bufferSize );
-int WINAPI WResLoadResource2( struct WResDirHead *,
+extern int WINAPI WResLoadResource2( struct WResDirHead *,
                               PHANDLE_INFO      hInstance,
                               UINT              idType,
                               UINT              idResource,
                               LPSTR             *lpszBuffer,
                               int               *bufferSize );
-int CloseResFile( PHANDLE_INFO hInstance );
-int CloseResFile2( struct WResDirHead *, PHANDLE_INFO hInstance );
+extern int CloseResFile( PHANDLE_INFO hInstance );
+extern int CloseResFile2( struct WResDirHead *, PHANDLE_INFO hInstance );
 
 #if defined( __cplusplus )
 }

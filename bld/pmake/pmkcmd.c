@@ -29,26 +29,20 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-#ifdef __UNIX__
-    #include <sys/stat.h>
-  #ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
-  #endif
-#else
+#endif
+#ifndef __UNIX__
     #include <direct.h>
-    #include <process.h>
     #include <dos.h>
 #endif
+#include "wio.h"
 #include "watcom.h"
 #include "pmake.h"
-#if !defined( __WATCOMC__ )
-    #include "clibext.h"
-#endif
 
 #if defined( __OS2__ )
 #define TMPBAT "tmp.cmd"
@@ -225,14 +219,16 @@ char    CmdBuff[512];
 #if !defined( __WATCOMC__ )
 int main( int argc, char **argv )
 {
-    _argv = argv;
-    _argc = argc;
 #else
 int main( void )
 {
 #endif
     pmake_data  *data;
 
+#if !defined( __WATCOMC__ )
+    _argv = argv;
+    _argc = argc;
+#endif
     getcmd( CmdBuff );
     data = PMakeBuild( CmdBuff );
     if( data == NULL ) {

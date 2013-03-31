@@ -30,7 +30,6 @@
 
 
 #ifndef AR_H
-
 #define AR_H
 
 #define AR_IDENT        "!<arch>\n"
@@ -73,5 +72,41 @@ typedef struct ar_header ar_header;
 
 #define AR_LONG_NAME_END_STRING     "/\n"
 #define AR_LONG_NAME_END_STRING_LEN 2
+
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+
+#define AR_S_IFREG S_IFREG
+
+#define AR_S_ISUID S_ISUID
+#define AR_S_ISGID S_ISGID
+
+#define AR_S_IRUSR S_IRUSR
+#define AR_S_IWUSR S_IWUSR
+#define AR_S_IXUSR S_IXUSR
+#define AR_S_IRGRP S_IRGRP
+#define AR_S_IWGRP S_IWGRP
+#define AR_S_IXGRP S_IXGRP
+#define AR_S_IROTH S_IROTH
+#define AR_S_IWOTH S_IWOTH
+#define AR_S_IXOTH S_IXOTH
+
+#else
+
+#define AR_S_IFREG 0100000
+
+#define AR_S_ISUID 0004000
+#define AR_S_ISGID 0002000
+
+#define AR_S_IRUSR 0000400
+#define AR_S_IWUSR 0000200
+#define AR_S_IXUSR 0000100
+#define AR_S_IRGRP 0000040
+#define AR_S_IWGRP 0000020
+#define AR_S_IXGRP 0000010
+#define AR_S_IROTH 0000004
+#define AR_S_IWOTH 0000002
+#define AR_S_IXOTH 0000001
+
+#endif
 
 #endif

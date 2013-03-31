@@ -33,16 +33,20 @@
 #ifndef _WRESLANG_H
 #define _WRESLANG_H
 
-#ifndef _WCRTLINK
- #define _WCRTLINK
-#endif
-
 /* must be done as #defines so WRC has access to them */
 #define RLE_ENGLISH     0
 #define RLE_JAPANESE    1
 typedef unsigned char res_language_enumeration;
 
+#ifdef __WATCOMC__
+#ifndef _COMDEF_H_INCLUDED
+ #include <_comdef.h>
+#endif
 _WCRTLINK res_language_enumeration _WResLanguage(void);
+#else
+res_language_enumeration _WResLanguage(void);
+#endif
+
 /* for ease of migration to new name */
 #define WResLanguage _WResLanguage
 

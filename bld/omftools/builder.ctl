@@ -7,7 +7,7 @@ set PROJNAME=omftools
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/binrule.ctl ]
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <BINTOOL> rel ]
     cdsay <PROJDIR>

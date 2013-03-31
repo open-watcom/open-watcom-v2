@@ -30,10 +30,6 @@
 
 
 #include "bool.h"
-#ifndef __WATCOMC__
-    #include "clibext.h"
-#endif
-
 #include "guimem.h"
 
 typedef int gui_ord;

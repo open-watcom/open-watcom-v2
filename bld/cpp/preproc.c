@@ -32,14 +32,8 @@
 #include "preproc.h"
 #include <ctype.h>
 #include <time.h>
-#include <fcntl.h>
-#if defined( __WATCOMC__ ) || defined( __UNIX__ )
-#include <unistd.h>
-#else
-#include <io.h>
-#endif
+#include "wio.h"
 #include "watcom.h"
-#include "clibext.h"
 
 #ifndef SLASH_CHAR
     #ifdef __UNIX__

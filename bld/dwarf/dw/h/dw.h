@@ -337,9 +337,9 @@ void            DWENTRY DWLocSym( dw_client, dw_loc_id,
 void            DWENTRY DWLocSegment( dw_client, dw_loc_id __loc,
                             dw_sym_handle __sym );
 void            DWENTRY DWLocConstU( dw_client, dw_loc_id __loc,
-                            dw_uconst __value );
+                            dw_uconst __constant_value );
 void            DWENTRY DWLocConstS( dw_client, dw_loc_id __loc,
-                            dw_sconst __value );
+                            dw_sconst __constant_value );
 void            DWENTRY DWLocOp0( dw_client, dw_loc_id __loc,
                             uint __op );
 void            DWENTRY DWLocOp( dw_client, dw_loc_id __loc,
@@ -443,7 +443,7 @@ void            DWENTRY DWEndStruct( dw_client );
 dw_handle       DWENTRY DWBeginEnumeration( dw_client, dw_size_t __byte_size,
                             char const *__name, dw_addr_offset __scope,
                             uint __flags );
-void            DWENTRY DWAddConstant( dw_client, dw_uconst __value,
+void            DWENTRY DWAddConstant( dw_client, dw_uconst __constant_value,
                             char const *__name );
 void            DWENTRY DWEndEnumeration( dw_client );
 
@@ -533,7 +533,7 @@ dw_handle       DWENTRY DWVariable( dw_client, dw_handle __type,
                             dw_loc_handle __aseg, char const *__name,
                             dw_addr_offset __start_scope, uint __flags );
 dw_handle       DWENTRY DWConstant( dw_client, dw_handle __type,
-                            const void *__value, dw_size_t __len,
+                            const void *__constant_value, dw_size_t __len,
                             dw_handle __member_of, char const * __name,
                             dw_addr_offset __start_scope, uint __flags );
 /* name list      */

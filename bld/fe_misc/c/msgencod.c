@@ -36,18 +36,14 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stddef.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#ifndef __UNIX__
-#include <sys/utime.h>
-#else
+#if defined( __WATCOMC__ ) || defined( __UNIX__ )
 #include <sys/types.h>
 #include <utime.h>
+#else
+#include <sys/utime.h>
 #endif
-#ifdef __USE_BSD
-#define stricmp strcasecmp
-#endif
-
+#include "wio.h"
+#include "watcom.h"
 #include "lsspec.h"
 #include "encodlng.h"
 

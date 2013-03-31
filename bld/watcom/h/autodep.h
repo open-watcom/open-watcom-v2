@@ -47,7 +47,7 @@ typedef struct {
 
 #include "poppck.h"
 
-DepInfo *WResGetAutoDep( char *fname );
+DepInfo *WResGetAutoDep( const char *fname );
 void WResFreeAutoDep( DepInfo *ptr );
 
 #ifdef __cplusplus

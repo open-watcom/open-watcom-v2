@@ -81,13 +81,11 @@ int init_msgs( void )
     if( _cmdname( fname ) == NULL ) {
         error = TRUE;
     } else {
-        Instance.filename = fname;
-
         WResRtns.seek = WGMLResSeek;
         WResRtns.alloc = mem_alloc;
         WResRtns.free = mem_free;
 
-        OpenResFile( &Instance );
+        OpenResFile( &Instance, fname );
         WGMLItself = Instance.handle;
         if( Instance.handle == -1 ) error = TRUE;
         if( !error ) {

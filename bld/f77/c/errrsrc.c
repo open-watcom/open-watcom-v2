@@ -77,9 +77,10 @@ static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
     }
 }
 
-static  void    ErrorInit( char *pgm_name ) {
-    hInstance.filename = pgm_name;
-    if( OpenResFile( &hInstance ) == -1 ) return;
+static  void    ErrorInit( char *pgm_name )
+{
+    if( OpenResFile( &hInstance, pgm_name ) == -1 )
+        return;
     ResFlags |= RF_OPENED;
     if( FindResources( &hInstance ) ) return;
     if( InitResources( &hInstance ) ) return;

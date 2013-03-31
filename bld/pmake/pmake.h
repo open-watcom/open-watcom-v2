@@ -31,8 +31,8 @@
 typedef struct pmake_list       pmake_list;
 struct pmake_list {
     pmake_list          *next;
-    unsigned short      priority;
-    unsigned char       depth;
+    unsigned            priority;
+    unsigned            depth;
     char                dir_name[1];    /* variable sized */
 };
 

@@ -29,12 +29,11 @@
 ****************************************************************************/
 
 
-#include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include <signal.h>
+#include "wio.h"
 #include "idedll.h"
 #include "idedrv.h"
 #include "walloca.h"
@@ -67,30 +66,21 @@
 
         #define INCL_DOS
         #include "os2.h"
-        #define IDETOOL_GETVER          "_IDEGetVersion@0"
-        #define IDETOOL_INITDLL         "_IDEInitDLL@12"
-        #define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
-        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelfArgv@16"
-        #define IDETOOL_FINIDLL         "_IDEFiniDLL@4"
-        #define IDETOOL_STOPRUN         "_IDEStopRunning@0"
-        #define IDETOOL_INITINFO        "_IDEPassInitInfo@8"
         #undef  ERR
         typedef HMODULE DLL_HANDLE;
     #elif defined( __NT__ )
         #define DLLS_IMPLEMENTED
         #include <windows.h>
-        #define IDETOOL_GETVER          "_IDEGetVersion@0"
-        #define IDETOOL_INITDLL         "_IDEInitDLL@12"
-        #define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
-        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelfArgv@16"
-        #define IDETOOL_FINIDLL         "_IDEFiniDLL@4"
-        #define IDETOOL_STOPRUN         "_IDEStopRunning@0"
-        #define IDETOOL_INITINFO        "_IDEPassInitInfo@8"
         typedef HINSTANCE DLL_HANDLE;
     #elif defined( __DOS__ ) && defined( CAUSEWAY )
         #define DLLS_IMPLEMENTED
         #include "cwdll.h"
         #include "bool.h"
+    #else
+        #include "bool.h"
+    #endif
+
+    #if defined( __WATCOMC__ ) && defined( __386__ )
         #define IDETOOL_GETVER          "_IDEGetVersion@0"
         #define IDETOOL_INITDLL         "_IDEInitDLL@12"
         #define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
@@ -99,7 +89,13 @@
         #define IDETOOL_STOPRUN         "_IDEStopRunning@0"
         #define IDETOOL_INITINFO        "_IDEPassInitInfo@8"
     #else
-        #include "bool.h"
+        #define IDETOOL_GETVER          "IDEGetVersion"
+        #define IDETOOL_INITDLL         "IDEInitDLL"
+        #define IDETOOL_RUNSELF         "IDERunYourSelf"
+        #define IDETOOL_RUNSELF_ARGV    "IDERunYourSelfArgv"
+        #define IDETOOL_FINIDLL         "IDEFiniDLL"
+        #define IDETOOL_STOPRUN         "IDEStopRunning"
+        #define IDETOOL_INITINFO        "IDEPassInitInfo"
     #endif
 
     #ifdef DLLS_IMPLEMENTED
@@ -116,8 +112,7 @@
                                                   , IDEBool *fatalerr );
         typedef void IDEDLL_EXPORT (*FiniDllFn)( IDEDllHdl hdl );
         typedef void IDEDLL_EXPORT (*StopRunFn)( void );
-        typedef IDEBool IDEDLL_EXPORT (*PassInitInfo)( IDEDllHdl hdl
-                                                     , IDEInitInfo *info );
+        typedef IDEBool IDEDLL_EXPORT (*PassInitInfo)( IDEDllHdl hdl, IDEInitInfo *info );
     #endif
 
 #else
@@ -320,10 +315,9 @@ static IDEBool IDECALL printWithCrLf( IDECBHdl hdl, const char *message )
     return( FALSE );
 }
 
-static IDEBool IDECALL getInfoCB( IDECBHdl hdl, IDEInfoType type,
-                                  unsigned long extra, unsigned long lparam )
+static IDEBool IDECALL getInfoCB( IDECBHdl hdl, IDEInfoType type, IDEGetInfoWParam extra, IDEGetInfoLParam lparam )
 {
-    int retn;
+    IDEBool retn;
 
     extra = extra;
     hdl = hdl;
@@ -333,12 +327,13 @@ static IDEBool IDECALL getInfoCB( IDECBHdl hdl, IDEInfoType type,
         break;
     case IDE_GET_ENV_VAR:
         {
-            char const* env_var;
-            char const* env_val;
-            char const * * p_env_val;
-            env_var = (char const*)extra;
+            char const  *env_var;
+            char const  *env_val;
+            char const  **p_env_val;
+
+            env_var = (char const *)extra;
             env_val = getenv( env_var );
-            p_env_val = (char const * *)lparam;
+            p_env_val = (char const **)lparam;
             *p_env_val = env_val;
             retn = ( env_val == NULL );
         }
@@ -461,7 +456,7 @@ static int ensureLoaded( IDEDRV *inf, int *p_runcode )
             if( 0 == runcode ) {
                 if( NULL == InfoPtr ) {
                     InfoPtr = &info;
-                    info.console_output = isatty( fileno( stdout ) );
+                    info.console_output = ( isatty( fileno( stdout ) ) != 0 );
                 }
                 _SET_PROGRESS;
                 runcode = IDEPassInitInfo( inf->ide_handle, InfoPtr );
