@@ -73,8 +73,7 @@ void InitMsg( void )
 {
     int initerror;
 
-    hInstance.filename = ImageName;
-    initerror = OpenResFile( &hInstance ) == NIL_HANDLE;
+    initerror = OpenResFile( &hInstance, ImageName ) == NIL_HANDLE;
     if( !initerror ) {
         initerror = FindResources( &hInstance );
         if( initerror ) {

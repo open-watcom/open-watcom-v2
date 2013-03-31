@@ -24,69 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  Master include for librarian.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-#include <limits.h>
-#include <errno.h>
-#include <stdlib.h>
-#ifdef __WATCOMC__
-#include <process.h>
-#include <conio.h>
-#endif
-
-#include "wio.h"
-#include "watcom.h"
-#include "orl.h"
-#include "ar.h"
-#include "lib.h"
-#include "watcom.h"
-#include "bool.h"
-#include "wressetr.h"
-#include "wreslang.h"
-#include "demangle.h"
-
-#include "wlibio.h"
-#include "types.h"
-#include "optdef.h"
-#include "ops.h"
-#include "memfuncs.h"
-#include "objfile.h"
-#include "inlib.h"
-
-#include "exeelf.h"
-#include "convert.h"
-#include "wlibutil.h"
-#include "libwalk.h"
-#include "liblist.h"
-#include "cmdline.h"
-#include "orlrtns.h"
-#include "error.h"
-#include "errnum.h"
-#include "ext.h"
-#include "proclib.h"
-#include "filetab.h"
-#include "implib.h"
-#include "symlist.h"
-#include "writelib.h"
-#include "coff.h"
-#include "coffwrt.h"
-#include "pcobj.h"
-#include "omfutil.h"
-#include "omfproc.h"
-#include "exedos.h"
-#include "exeos2.h"
-#include "exeflat.h"
-#include "exepe.h"
-#include "exenov.h"
-#include "main.h"
-#include "wresset2.h"
+#define pick(c,e,j) e,
+#include "wlib.msg"
+#undef pick

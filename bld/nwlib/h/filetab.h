@@ -119,7 +119,7 @@ extern void AddObjectSymbols( arch_header *arch, libfile io, long offset );
 extern bool RemoveObjectSymbols( char *name );
 extern void SymCalcNewOffsets( void );
 extern void WriteFileTable( void );
-extern void WriteFile( sym_file *sfile );
+extern void WriteFileBody( sym_file *sfile );
 extern void AddSym( char *name, symbol_strength strength, unsigned char info );
 
 #ifndef NDEBUG

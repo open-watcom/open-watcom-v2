@@ -304,7 +304,7 @@ void WriteOmfFile( sym_file *sfile )
         charCount += ( strlen( sfile->import->u.sym.symName ) + 1 ) | 1;
 #endif
     }
-    WriteFile( sfile );
+    WriteFileBody( sfile );
     PadOmf( FALSE );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;

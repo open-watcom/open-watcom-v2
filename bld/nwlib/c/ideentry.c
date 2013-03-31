@@ -41,9 +41,9 @@
 #define _BANEXTRA _BANEXSHORT
 #endif
 
-static IDECBHdl   ideHdl;
-static IDECallBacks  *ideCb;
-static IDEInitInfo *ideInfo;
+static IDECBHdl     ideHdl;
+static IDECallBacks *ideCb;
+static IDEInitInfo  *ideInfo;
 
 unsigned IDEDLL_EXPORT IDEGetVersion( void )
 {
@@ -60,6 +60,7 @@ IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *inf
 
 IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
+    hdl = hdl;
     ideInfo = info;
     return( FALSE );
 }
@@ -68,6 +69,7 @@ IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *
 {
     char        *argv[ 3 ];
 
+    hdl = hdl;
     *fatalerr = FALSE;
     argv[ 0 ] = "";
     argv[ 1 ] = (char *)opts;
@@ -81,6 +83,7 @@ IDEBool IDEDLL_EXPORT IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     char **argv,                // - argument vector
     IDEBool* fatal_error )      // - addr[ fatality indication ]
 {
+    hdl = hdl;
     *fatal_error = FALSE;
     return( WlibMainLine( argv ) );
 }
@@ -103,25 +106,27 @@ void IDEDLL_EXPORT IDEFreeHeap( void )
 
 void IDEDLL_EXPORT IDEFiniDLL( IDEDllHdl hdl )
 {
+    hdl = hdl;
     FiniSubSystems();
 }
 
-char *WlibGetEnv( char *name)
+char *WlibGetEnv( char *name )
 {
     char *env;
-    if( ideInfo->ignore_env == FALSE && ideCb) {
-        if( ideCb->GetInfo( ideHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam) name, (IDEGetInfoLParam) &env ) == FALSE ) {
+
+    if( ideInfo->ignore_env == FALSE && ideCb != NULL ) {
+        if( ideCb->GetInfo( ideHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) == FALSE ) {
             return( env );
         }
     }
     return( NULL );
 
 }
-void FatalResError()
+void FatalResError( void )
 {
     IDEMsgInfo          msg_info;
 
-    if( ideCb ) {
+    if( ideCb != NULL ) {
         msg_info.severity = IDEMSGSEV_ERROR;
         msg_info.flags = 0;
         msg_info.helpfile = NULL;
@@ -141,8 +146,8 @@ void FatalError( int str, ... )
 
     va_start( arglist, str );
     MsgGet( str, buff );
-    _vbprintf( msg, 512, buff, arglist );
-    if( ideCb ) {
+    vsnprintf( msg, 512, buff, arglist );
+    if( ideCb != NULL ) {
         IdeMsgInit( &msg_info, IDEMSGSEV_ERROR, msg );
         ideCb->PrintWithInfo( ideHdl, &msg_info );
     }
@@ -161,8 +166,8 @@ void Warning( int str, ... )
         return;
     MsgGet( str, buff );
     va_start( arglist, str );
-    _vbprintf( msg, 512, buff, arglist );
-    if( ideCb ) {
+    vsnprintf( msg, 512, buff, arglist );
+    if( ideCb != NULL ) {
         IdeMsgInit( &msg_info, IDEMSGSEV_WARNING, msg );
         ideCb->PrintWithInfo( ideHdl, &msg_info );
     }
@@ -178,8 +183,8 @@ void Message( char *buff, ... )
     if( Options.quiet )
         return;
     va_start( arglist, buff );
-    _vbprintf( msg, 512, buff, arglist );
-    if( ideCb ) {
+    vsnprintf( msg, 512, buff, arglist );
+    if( ideCb != NULL ) {
         IdeMsgInit( &msg_info, IDEMSGSEV_NOTE_MSG, msg );
         ideCb->PrintWithInfo( ideHdl, &msg_info );
     }
@@ -194,7 +199,7 @@ void Usage( void )
     int                 str_last;
     IDEMsgInfo          msg_info;
     int                 count;
-    if( ideCb ) {
+    if( ideCb != NULL ) {
         msg_info.severity = IDEMSGSEV_BANNER;
         count = 3;
         msg_info.flags = 0;
@@ -230,7 +235,7 @@ void Usage( void )
     longjmp( Env, 1 );
 }
 
-void Banner()
+void Banner( void )
 {
     IDEMsgInfo          msg_info;
     static char *bannerText[] = {
@@ -251,7 +256,7 @@ banner3a,
         return;
 
     alreadyDone = 1;
-    if( ideCb ) {
+    if( ideCb != NULL ) {
         msg_info.severity = IDEMSGSEV_BANNER;
         msg_info.flags = 0;
         msg_info.helpfile = NULL;

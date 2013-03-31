@@ -335,7 +335,7 @@ static void SortSymbols( void )
     }
 }
 
-void WriteFile( sym_file *sfile )
+void WriteFileBody( sym_file *sfile )
 /*******************************/
 {
     libfile     io;
@@ -699,7 +699,7 @@ static void WriteArMlibFileTable( void )
         if( append_name ) {
             WriteNew( sfile->arch.name, sfile->name_length );
         }
-        WriteFile( sfile );
+        WriteFileBody( sfile );
         WritePad( arch.size );
     }
 }
@@ -1054,7 +1054,7 @@ static void listPrint( FILE *fp, char *str, ... )
 {
     va_list             arglist;
     va_start( arglist, str );
-    msgLength += _vbprintf( listMsg + msgLength, MAX_MESSAGE_LEN - msgLength, str, arglist );
+    msgLength += vsnprintf( listMsg + msgLength, MAX_MESSAGE_LEN - msgLength, str, arglist );
     va_end( arglist );
 }
 
@@ -1093,55 +1093,55 @@ static void printVerboseTableEntry( arch_header *arch )
 
     member_mode[ 10 ] = '\0';
     member_mode[ 9 ] = ' ';
-    if( arch->mode & S_IRUSR ) {
+    if( arch->mode & AR_S_IRUSR ) {
         member_mode[ 0 ] = 'r';
     } else {
         member_mode[ 0 ] = '-';
     }
-    if( arch->mode & S_IWUSR ) {
+    if( arch->mode & AR_S_IWUSR ) {
         member_mode[ 1 ] = 'w';
     } else {
         member_mode[ 1 ] = '-';
     }
-    if( !( arch->mode & S_IXUSR ) && (arch->mode & S_ISUID ) ) {
+    if( !( arch->mode & AR_S_IXUSR ) && (arch->mode & AR_S_ISUID ) ) {
         member_mode[ 2 ] = 'S';
-    } else if( ( arch->mode & S_IXUSR ) && ( arch->mode & S_ISUID ) ) {
+    } else if( ( arch->mode & AR_S_IXUSR ) && ( arch->mode & AR_S_ISUID ) ) {
         member_mode[ 2 ] = 's';
-    } else if( arch->mode & S_IXUSR ) {
+    } else if( arch->mode & AR_S_IXUSR ) {
         member_mode[ 2 ] = 'x';
     } else {
         member_mode[ 2 ] = '-';
     }
-    if( arch->mode & S_IRGRP ) {
+    if( arch->mode & AR_S_IRGRP ) {
         member_mode[ 3 ] = 'r';
     } else {
         member_mode[ 3 ] = '-';
     }
-    if( arch->mode & S_IWGRP ) {
+    if( arch->mode & AR_S_IWGRP ) {
         member_mode[ 4 ] = 'w';
     } else {
         member_mode[ 4 ] = '-';
     }
-    if( !( arch->mode & S_IXGRP ) && (arch->mode & S_ISGID ) ) {
+    if( !( arch->mode & AR_S_IXGRP ) && (arch->mode & AR_S_ISGID ) ) {
         member_mode[ 5 ] = 'S';
-    } else if( ( arch->mode & S_IXGRP ) && ( arch->mode & S_ISGID ) ) {
+    } else if( ( arch->mode & AR_S_IXGRP ) && ( arch->mode & AR_S_ISGID ) ) {
         member_mode[ 5 ] = 's';
-    } else if( arch->mode & S_IXGRP ) {
+    } else if( arch->mode & AR_S_IXGRP ) {
         member_mode[ 5 ] = 'x';
     } else {
         member_mode[ 5 ] = '-';
     }
-    if( arch->mode & S_IROTH ) {
+    if( arch->mode & AR_S_IROTH ) {
         member_mode[ 6 ] = 'r';
     } else {
         member_mode[ 6 ] = '-';
     }
-    if( arch->mode & S_IWOTH ) {
+    if( arch->mode & AR_S_IWOTH ) {
         member_mode[ 7 ] = 'w';
     } else {
         member_mode[ 7 ] = '-';
     }
-    if( arch->mode & S_IXOTH ) {
+    if( arch->mode & AR_S_IXOTH ) {
         member_mode[ 8 ] = 'x';
     } else {
         member_mode[ 8 ] = '-';

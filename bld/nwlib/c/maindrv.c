@@ -37,7 +37,7 @@
 #include "clibext.h"
 #endif
 #ifdef IDE_PGM
-#include <stdlib.h>
+#include <stdio.h>
 #include <limits.h>
 #include "main.h"
 const char  *ImageName;

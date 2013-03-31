@@ -539,7 +539,7 @@ void ProcessImport( char *name )
     arch->date = time( NULL );
     arch->uid = 0;
     arch->gid = 0;
-    arch->mode = 0x100666;
+    arch->mode = AR_S_IFREG | (AR_S_IRUSR | AR_S_IWUSR | AR_S_IRGRP | AR_S_IWGRP | AR_S_IROTH | AR_S_IWOTH);
     arch->size = 0;
     arch->fnametab = NULL;
     arch->ffnametab = NULL;
