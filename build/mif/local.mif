@@ -1,28 +1,38 @@
-!ifneq bootstrap 1
-!define __WATCOM__
-!endif
-
 # global definition which tool is quiet
-cl         += -zq
 cc         += -zq
+cl         += -zq
 cxx        += -zq
+as         += -q
 linker     += op q
 librarian  += -q
-as         += -q
 rc         += -q
 rcaui      += -q
 
-bcl        += -zq
 bcc        += -zq
-blink      += op q
+bcl        += -zq
 bas        += -q
+blink      += op q
 blib       += -q
 
-# options used for setup source code Japanese DBCS character set
-c_japan_charset = -zk0
-
-# options for preprocessing source code
-preproc_opts    = -p
+# use native tools for x64 cpu
+# skip build for unsupported platforms
+!ifneq bootstrap 1
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip_build: .symbolic
+!else ifeq host_os nt
+!ifneq bld_os nt
+skip_build: .symbolic
+!endif
+!else ifeq host_os linux
+!ifneq bld_os linux
+skip_build: .symbolic
+!endif
+!else ifneq host_os osi
+skip_build: .symbolic
+!endif
+!endif
+!endif
 
 # enable to switch to causeway extender
 !ifdef $(proj_name)_causeway
@@ -39,24 +49,10 @@ cxx_386     += $(bld_incs)
 
 !endif
 
-!ifdef __LOADDLL__
-!ifneq bootstrap 1
-#!loaddll bwcc    bwccd.dll
-#!loaddll bwcc386 bwccd386.dll
-#!loaddll bwccaxp bwccdaxp.dll
-#!loaddll bwlib   bwlibd.dll
-#!loaddll bwlink  bwlinkd.dll
-#!loaddll bwpp    bwppdi86.dll
-#!loaddll bwpp386 bwppd386.dll
-#!loaddll bwppaxp bwppdaxp.dll
-!endif
-!endif
-
 # bootstrap overrides
 ######################
 
 !ifeq bootstrap 1
-
 !ifdef __WATCOM__
 
 !ifdef __LOADDLL__
@@ -70,24 +66,123 @@ cxx_386     += $(bld_incs)
 !loaddll wppaxp wppdaxp.dll
 !endif
 
-#
-# common bootstrap definitions for Linux
-#
-!else ifdef __LINUX__
+!endif
+!endif
 
-cc = gcc
-cxx = gcc
-cl = $(cc)
+##############################################################################
+#
+# definitions for Linux native compiler
+#
+##############################################################################
+!ifdef __LINUX__
+
+!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64"
+
+cppflags_common_linux = -D__LINUX__ -D__UNIX__ -D__SMALL__ -D__FLAT__
+cppflags_common_386  = -D_M_IX86 -D__386__ -D__LINUX_386__
+cppflags_common_x64  = -D_M_X64 -D__LINUX_X64__
+cppflags_common_ppc  = -D__PPC__
+cppflags_common_mips = -D__MIPS__ -Umips
+
+# common release/debug flags
+flags_common_rel = -O
+flags_common_dbg = -g
+!ifeq release 1
+flags_common = $(flags_common_rel)
+!else
+flags_common = $(flags_common_dbg)
+!endif
+
+# Warning flags: all enabled except the ones that have no use besides annoy people
+cflags_common_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+cflags_common = $(cflags_common_wng)
+
+ldflags_common_rel =
+ldflags_common_dbg =
+!ifeq release 1
+ldflags_common = $(ldflags_common_rel)
+!else
+ldflags_common = $(ldflags_common_dbg)
+!endif
+
+
+bcc = gcc -pipe -c
+bcl = gcc -pipe
+bcxx = gcc -pipe -c
+
+bld_cc_sys = -funsigned-char -fno-asm -fno-common
+bld_cl_sys =
+
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
-bld_cl = gcc $(bld_incs)
-bld_cc = gcc $(bld_incs)
-bld_link = gcc
+
+bld_cppflags = $(cppflags_common_linux) $(cppflags_common_$(bld_cpu))
+
+bld_cflags   = $(cflags_common) $(flags_common) -o $@
+
+bld_cxxflags =
+
+# options for linking
+bld_ldflags1 = $(ldflags_common) -Wl,-Map,$^&.map
+
+bld_ldflags  = $(bld_extra_ldflags)
+
+# options for linking via cl
+bld_clflags  = $(bld_cppflags) $(cflags_common) $(flags_common) -o $@ $(%OWBINDIR)/clibext.lib $(bld_ldflags1)
+bld_cl_opts = $(bld_clflags)
+
+blib = ar
+bld_libflags = crs $^@
+
+!ifndef __WATCOM__
+
+cc = $(bcc)
+cxx = $(bcxx)
+cl = $(bcl)
+
+cppflags_linux = $(cppflags_common_linux)
+cppflags_osi   = $(cppflags_common_linux)
+cppflags_386   = $(cppflags_common_386)
+cppflags_ppc   = $(cppflags_common_ppc)
+cppflags_mips  = $(cppflags_common_mips)
+cppflags_x64   = $(cppflags_common_x64)
+
+cxxflags =
+
+!ifdef sys_dll
+cflags_dll = $(cflags_lib_$(lib_type))
+!endif
+
+cflags   = $(bld_cc_sys) $(cflags_common) $(flags_common) $(cflags_dll) -o $@
+
+# options for linking
+ldflags1 = $(ldflags_common) -Wl,-Map,$^&.map
+
+ldflags  = $(cl_libs) $(extra_ldflags)
+
+# options for single source utility compilations
+clflags  = $(clflags_lib_$(lib_type)) $(bld_cl_sys) $(flags_common) -o $@ $(ldflags1)
+
 librarian = ar
 libflags = crs $^@
 
-cppflags_386  = -D_M_IX86 -D__386__
-cppflags_ppc  = -D__PPC__
-cppflags_mips = -D__MIPS__ -Umips
+# extra objects for linking via cl
+cl_objs_       =
+cl_objs_shared = clibext.obj
+cl_libs_       = $(%OWBINDIR)/clibext.lib
+cl_libs_shared =
+
+# objects for linking via cl
+cl_objs = $(cl_objs_$(lib_type))
+cl_libs = $(cl_libs_$(lib_type))
+
+!ifeq lib_type shared
+.c : $(watcom_dir)/c
+!endif
+
+# Flags for building DLLs
+cflags_lib_shared  = -fPIC
+clflags_lib_shared = -shared
+ext_lib_shared     = .so
 
 # options used for setup source code Japanese DBCS character set
 c_japan_charset = -finput-charset=CP932
@@ -95,68 +190,146 @@ c_japan_charset = -finput-charset=CP932
 # options for preprocessing source code
 preproc_opts  = -x c -E
 
-# Warning flags: all enabled except the ones that have no use besides annoy people
-cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+# options for include source code file
+incl_file_opts = -include
 
-cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__SMALL__ -DUNIX -D__FLAT__ -DBOOTSTRAP &
-$(cppflags_$(host_cpu)) -funsigned-char -fno-asm -fno-common
+!endif
+!endif
 
-#cppflages += -D__LINUX__ -DLINUX
-
-cflags = $(extra_c_flags) $(cppflags) -gdwarf-2 -c $(cflags_wng) -pipe -O -o $@
-
-# options for single source utility compilations
-bld_cl_opts = $(cflags_wng) $(cppflags) $(ldflags) -o $@
-
-# options for linking via cc
-clflags = -o $@
-cl_objs = clibext.obj
-.c : $(watcom_dir)/c
-
+##############################################################################
 #
-# common definitions for targeting QNX Neutrino
+# definitions for NT native compiler
 #
-!else ifeq host_os nto
+##############################################################################
+!else ifdef __NT__
 
-cc = qcc
-cxx = qcc
-cl = $(cc)
-!ifdef __QNX__
+!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64"
+
+cppflags_common_nt = -D__NT__ -D__SMALL__ -D__FLAT__
+cppflags_common_386  = -D__386__ -D__NT_386__
+cppflags_common_x64  = -D__NT_X64__
+
+# common release/debug flags
+flags_common_rel = -Ox -Zi
+flags_common_dbg = -Zi
+!ifeq release 1
+flags_common = $(flags_common_rel)
+!else
+flags_common = $(flags_common_dbg)
+!endif
+
+# -wd4068 "unknown pragma"
+# -wd4102 "unreferenced label"
+# -wd4127 "conditional expression is constant"
+# -wd4214 "bit field types other than int"
+# -wd4244 "conversion ....., possible loss of data"
+# -wd4306 "type cast: conversion ...... of greater size"
+# -wd4702 "unreachable code"
+#cflags_common_wng = -wd4068 -wd4102 -wd4127 -wd4214 -wd4244 -wd4306 -wd4702
+cflags_common_wng = -W4 -wd4214
+cflags_common = $(cflags_common_wng) -MT -D_STATIC_CPPLIB
+
+ldflags_common_rel =
+ldflags_common_dbg =
+!ifeq release 1
+ldflags_common = $(ldflags_common_rel)
+!else
+ldflags_common = $(ldflags_common_dbg)
+!endif
+
+
+bcc = cl -nologo -c
+bcl = cl -nologo
+bcxx = cl -nologo -c
+
+bld_cc_sys = -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
+bld_cl_sys =
+
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
-bld_cl = $(cc) $(bld_incs)
-bld_cc = $(cc) $(bld_incs)
-bld_link = $(cc)
-!endif
-librarian += -fa
 
-cppflags_386  = -D_M_IX86 -D__386__
-cppflags_ppc  = -D__PPC__
-cppflags_mips = -D__MIPS__ -Umips
+bld_cppflags = $(cppflags_common_nt) $(cppflags_common_$(bld_cpu))
+
+bld_cflags   = $(cflags_common) $(flags_common) -Fo$@
+
+bld_cxxflags = -EHsc
+
+bld_ldflags1 = $(ldflags_common) -Fm
+
+bld_ldflags  =  -link -nologo &
+    -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
+    -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib $(bld_extra_ldflags)
+
+# options for linking via cl
+bld_clflags  = $(bld_cppflags) $(cflags_common) $(flags_common) -Fe$@ $(%OWBINDIR)/clibext.lib $(bld_ldflags1)
+bld_cl_opts = $(bld_clflags)
+
+blib = lib -nologo
+bld_libflags = -out:$^@
+
+!ifndef __WATCOM__
+
+cc = $(bcc)
+cxx = $(bcxx)
+cl = $(bcl)
+
+cppflags_nt = $(cppflags_common_nt)
+cppflags_osi = $(cppflags_common_nt)
+cppflags_386 = $(cppflags_common_386)
+cppflags_x64 = $(cppflags_common_x64)
+
+cxxflags = -EHsc
+
+!ifdef sys_dll
+cflags_dll = $(cflags_lib_$(lib_type))
+!endif
+
+cflags   = $(bld_cc_sys) $(cflags_common) $(flags_common) $(cflags_dll) -Fo$@
+
+# options for linking
+ldflags1 = $(ldflags_common) -Fm
+
+ldflags  = $(cl_libs) -link -nologo &
+    -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
+    -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib $(extra_ldflags)
+
+# options for linking by cl
+clflags  = $(clflags_lib_$(lib_type)) $(bld_cl_sys) $(flags_common) -Fe$@ $(ldflags1)
+
+#!ifeq bootstrap 1
+librarian = lib -nologo
+libflags = -out:$^@
+#!endif
+
+# extra objects for linking via cl
+cl_objs_       =
+cl_objs_shared = clibext.obj
+cl_libs_       = $(%OWBINDIR)/clibext.lib
+cl_libs_shared =
+
+# objects for linking via cl
+cl_objs = $(cl_objs_$(lib_type))
+cl_libs = $(cl_libs_$(lib_type))
+
+!ifeq lib_type shared
+.c : $(watcom_dir)/c
+!endif
+
+# Flags for building DLLs
+cflags_lib_shared  = -LD
+clflags_lib_shared = -MT -LD
+ext_lib_shared     = .dll
 
 # options used for setup source code Japanese DBCS character set
-c_japan_charset = -finput-charset=CP932
+c_japan_charset =
 
 # options for preprocessing source code
-preproc_opts  = -x c -E
+preproc_opts  = -E
 
-# Warning flags: all enabled except the ones that have no use besides annoy people
-cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+# options for include source code file
+incl_file_opts = -FI
 
-cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__QNX__ -D__SMALL__ -DUNIX -D__FLAT__ &
-$(cppflags_$(host_cpu)) -funsigned-char -fno-asm -fno-common
-cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
-
-!ifdef __QNX__
-# options for single source utility compilations
-bld_cl_opts = $(cflags_wng) $(cppflags) $(ldflags) -o $@
 !endif
-
-# options for linking via cc
-clflags = -o $@
-cl_objs = clibext.obj
-.c : $(watcom_dir)/c
-
 !endif
 
 !endif
-######################
+##############################################################################
