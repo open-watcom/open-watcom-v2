@@ -163,7 +163,7 @@ bool VRcsClient::Init( void ) {
     if( _batchcb == NULL ) {
         rc = 0;
     } else {
-        rc = _regbatchcb( _dllcookie, (BatchCallbackFP)_batchcb,
+        rc = _regbatchcb( _dllcookie, (BatchCallback *)_batchcb,
                                 (void *)_parent );
     }
 #else
@@ -179,7 +179,7 @@ bool VRcsClient::Init( void ) {
     if( _msgcb == NULL ) {
         rc = 0;
     } else {
-        rc = _regmsgboxcb( _dllcookie, (MessageBoxCallbackFP)_msgcb,
+        rc = _regmsgboxcb( _dllcookie, (MessageBoxCallback *)_msgcb,
                             (void *)_parent );
     }
 #else

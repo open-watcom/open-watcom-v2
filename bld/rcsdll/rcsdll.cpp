@@ -189,16 +189,14 @@ int RCSAPI RCSQuerySystem( rcsdata data )
     return( 0 );
 }
 
-int RCSAPI RCSRegisterBatchCallback( rcsdata data,
-                                     BatchCallbackFP fp, void *cookie )
+int RCSAPI RCSRegisterBatchCallback( rcsdata data, BatchCallback *fp, void *cookie )
 {
     userData *d = (userData*)data;
     if( d==NULL ) return( 0 );
     return( d->regBatcher( fp, cookie ) );
 }
 
-int RCSAPI RCSRegisterMessageBoxCallback( rcsdata data,
-                                  MessageBoxCallbackFP fp, void *cookie )
+int RCSAPI RCSRegisterMessageBoxCallback( rcsdata data, MessageBoxCallback *fp, void *cookie )
 {
     userData *d = (userData*)data;
     if( d==NULL ) return( 0 );

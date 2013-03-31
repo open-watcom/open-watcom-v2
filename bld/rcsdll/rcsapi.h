@@ -74,8 +74,8 @@ extern "C" {
 #endif
 
 
-typedef int RCSAPI (*BatchCallbackFP)( rcsstring str, void *cookie );
-typedef int RCSAPI (*MessageBoxCallbackFP)( rcsstring text, rcsstring title, char *buffer, int len, void *cookie );
+typedef int RCSAPI      BatchCallback( rcsstring str, void *cookie );
+typedef int RCSAPI      MessageBoxCallback( rcsstring text, rcsstring title, char *buffer, int len, void *cookie );
 
 typedef int RCSAPI      RCSGetVersionFn( void );
 typedef rcsdata RCSAPI  RCSInitFn( unsigned long, char *cfg_dir );
@@ -85,8 +85,8 @@ typedef int RCSAPI      RCSHasShellFn( rcsdata );
 typedef int RCSAPI      RCSRunShellFn( rcsdata );
 typedef int RCSAPI      RCSSetSystemFn( rcsdata, int );
 typedef int RCSAPI      RCSQuerySystemFn( rcsdata );
-typedef int RCSAPI      RCSRegBatchCbFn( rcsdata, BatchCallbackFP, void * );
-typedef int RCSAPI      RCSRegMsgBoxCbFn( rcsdata, MessageBoxCallbackFP, void * );
+typedef int RCSAPI      RCSRegBatchCbFn( rcsdata, BatchCallback *, void * );
+typedef int RCSAPI      RCSRegMsgBoxCbFn( rcsdata, MessageBoxCallback *, void * );
 typedef void RCSAPI     RCSSetPauseFn( rcsdata, int );
 typedef void RCSAPI     RCSFiniFn( rcsdata );
 

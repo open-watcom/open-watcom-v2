@@ -77,8 +77,8 @@ extern RCSSetPauseFn    RCSSetPause;
 
 HINSTANCE hInst;
 
-BatchCallbackFP         BatchProc;
-MessageBoxCallbackFP    MsgProc;
+BatchCallback           *BatchProc;
+MessageBoxCallback      *MsgProc;
 rcsdata                 Cookie;
 
 HANDLE hAccTable;                                /* handle to accelerator table */
@@ -151,8 +151,8 @@ BOOL InitApplication(HANDLE hInstance)
     wc.lpszClassName = "WEditCntlWClass";
 
     Cookie = RCSInit( (unsigned long)hwnd, getenv( "WATCOM" ) );
-    BatchProc = (BatchCallbackFP)MakeProcInstance( (FARPROC)&Batcher, hInst );
-    MsgProc = (MessageBoxCallbackFP)MakeProcInstance( (FARPROC)&Messager, hInst );
+    BatchProc = (BatchCallback *)MakeProcInstance( (FARPROC)&Batcher, hInst );
+    MsgProc = (MessageBoxCallback *)MakeProcInstance( (FARPROC)&Messager, hInst );
     RCSRegisterBatchCallback( Cookie, BatchProc, NULL );
     RCSRegisterMessageBoxCallback( Cookie, MsgProc, NULL );
 

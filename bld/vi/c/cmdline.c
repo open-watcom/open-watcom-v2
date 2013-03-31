@@ -887,10 +887,10 @@ vi_rc RunCommandLine( char *cl )
             FARPROC fp;
             r = RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
             fp = MakeProcInstance( (FARPROC)(&Batcher), InstanceHandle );
-            RCSRegisterBatchCallback( r, (BatchCallbackFP)fp, NULL );
+            RCSRegisterBatchCallback( r, (BatchCallback *)fp, NULL );
 #else
             r = RCSInit( 0, getenv( "WATCOM" ) );
-            RCSRegisterBatchCallback( r, (BatchCallbackFP)&Batcher, NULL );
+            RCSRegisterBatchCallback( r, (BatchCallback *)&Batcher, NULL );
 #endif
             if( RCSQuerySystem( r ) != 0 ) {
                 if( GenericQueryBool( "File is read only, check out?" ) ) {
@@ -929,10 +929,10 @@ vi_rc RunCommandLine( char *cl )
             FARPROC fp;
             r = RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
             fp = MakeProcInstance( (FARPROC)(&Batcher), InstanceHandle );
-            RCSRegisterBatchCallback( r, (BatchCallbackFP)fp, NULL );
+            RCSRegisterBatchCallback( r, (BatchCallback *)fp, NULL );
 #else
             r = RCSInit( 0, getenv( "WATCOM" ) );
-            RCSRegisterBatchCallback( r, (BatchCallbackFP)&Batcher, NULL );
+            RCSRegisterBatchCallback( r, (BatchCallback *)&Batcher, NULL );
 #endif
             RCSSetPause( r, TRUE );
             if( CurrentFile->modified ) {

@@ -165,9 +165,9 @@ public:
     userData( long win, rcsstring cfg ) :
         batcher(NULL),msgBox(NULL), pause(0),
         cfgDir(cfg),window(win),currentSystem(NULL) {};
-    int regBatcher( BatchCallbackFP fp, void *c )
+    int regBatcher( BatchCallback *fp, void *c )
         { batcher = fp; batch_cookie=c; return( 1 ); };
-    int regMessager( MessageBoxCallbackFP fp, void *c )
+    int regMessager( MessageBoxCallback *fp, void *c )
         { msgBox = fp; msg_cookie=c; return( 1 ); };
     int setSystem( int rcs_type );
     rcsstring getCfgDir() { return( cfgDir ); };
@@ -175,8 +175,8 @@ public:
     void setPause( int on ) { if( on ) { pause=1; } else { pause = 1; } };
     int getPause() { return( pause ); };
     long window;
-    BatchCallbackFP             batcher;
-    MessageBoxCallbackFP        msgBox;
+    BatchCallback               *batcher;
+    MessageBoxCallback          *msgBox;
     void                        *batch_cookie;
     void                        *msg_cookie;
 private:
