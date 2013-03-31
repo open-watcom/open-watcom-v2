@@ -1,10 +1,18 @@
-# CLIB Builder Control file
-# =========================
+# LIBMISC Builder Control file
+# ============================
 
 set PROJDIR=<CWD>
-set PROJNAME=lib_misc
+set PROJNAME=aliasgen
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
+[ INCLUDE <OWROOT>/build/deftool.ctl ]
+
+[ BLOCK <1> rel cprel ]
+#======================
+    # Currently not built by default
+
+[ BLOCK . . ]
+#============
+cdsay <PROJDIR>

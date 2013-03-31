@@ -15,6 +15,8 @@ cdsay .
 #
 # NB: The ordering of the following inclusions is significant!
 # At the beginning, we only have wmake and builder/pmake
+# If necessary, build clibext library
+[ INCLUDE <OWSRCDIR>/watcom/builder.ctl ]
 # If necessary, build POSIX tools (awk, sed, cp, ...)
 [ IFDEF <BLD_HOST> OS2 NT DOS ]
 [ INCLUDE <OWSRCDIR>/posix/builder.ctl ]
@@ -58,17 +60,18 @@ cdsay .
 # Build RISC assemblers
 [ INCLUDE <OWSRCDIR>/re2c/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/as/builder.ctl ]
-# Now miscellaneous utilities required during build
-[ IFDEF <BLD_HOST> DOS ]
 # copy DOS4GW extender on build PATH for DOS build host
+[ IFDEF <BLD_HOST> DOS ]
 [ INCLUDE <OWSRCDIR>/redist/builder.ctl ]
 [ ENDIF ]
-#[ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/causeway/cwc/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
+# Now miscellaneous utilities required during build
+[ INCLUDE <OWSRCDIR>/lib_misc/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/causeway/cwc/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
 
 ## The following tools are not required during build
@@ -158,11 +161,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wcl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77/wfl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wstrip/builder.ctl ]
-# Build only command line tools
-[ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 # User interface libs
 [ INCLUDE <OWSRCDIR>/ncurses/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ui/builder.ctl ]

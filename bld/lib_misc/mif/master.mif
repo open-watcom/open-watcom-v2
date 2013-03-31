@@ -1,0 +1,16 @@
+proj_name = libmisc
+
+libmisc_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.c: ../c
+
+aliasgen.exe : aliasgen.obj
+!ifndef __WATCOM__
+        $(cl) $(clflags) $< $(ldflags)
+!else
+        $(linker) name $@ $(lflags) file {$<}
+!endif
