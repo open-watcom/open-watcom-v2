@@ -35,40 +35,32 @@
      */
 #else
 
-#include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <limits.h>
-#include <sys/types.h>
 #include <ctype.h>
-
 #if defined(__UNIX__)
-    #include <unistd.h>
     #include <dirent.h>
-    #include <sys/stat.h>
-    #include <fcntl.h>
-#if defined(__QNX__)
+  #if defined(__QNX__)
     #include <sys/io_msg.h>
-#endif
+  #endif
 #else
-    #include <io.h>
     #include <direct.h>
-    #if defined(__OS2__)
-        #include <wos2.h>
-    #elif defined(__NT__)
-        #include <windows.h>
-        #include <mbstring.h>
-    #endif
+  #if defined(__OS2__)
+    #include <wos2.h>
+  #elif defined(__NT__)
+    #include <windows.h>
+    #include <mbstring.h>
+  #endif
 #endif
-
-#include "clibext.h"
+#include "wio.h"
 #include "wreslang.h"
+#include "clibext.h"
 
 #define __set_errno( err ) errno = (err)
 
 char **_argv;
 int  _argc;
+
+#ifndef _MSC_VER
 
 /****************************************************************************
 *
@@ -191,7 +183,7 @@ char *ltoa( long value, char *buffer, int radix )
 #endif
 
 
-static void copypart( char *buf, const char *p, int len, int maxlen )
+static void copypart( char *buf, const char *p, size_t len, size_t maxlen )
 {
     if( buf != NULL ) {
         if( len > maxlen ) len = maxlen;
@@ -199,9 +191,9 @@ static void copypart( char *buf, const char *p, int len, int maxlen )
                 memcpy( buf, p, len );
                 buf[len] = '\0';
             #else
-                len = _mbsnccnt( p, len );          /* # chars in len bytes */
-                _mbsncpy( buf, p, len );            /* copy the chars */
-                buf[ _mbsnbcnt(buf,len) ] = '\0';
+                len = _mbsnccnt( (const unsigned char *)p, len );          /* # chars in len bytes */
+                _mbsncpy( (unsigned char *)buf, (const unsigned char *)p, len );            /* copy the chars */
+                buf[ _mbsnbcnt((const unsigned char *)buf,len) ] = '\0';
             #endif
     }
 }
@@ -300,7 +292,7 @@ void _splitpath( const char *path,
             #ifdef __UNIX__
                 ch = *path;
             #else
-                ch = _mbsnextc( path );
+                ch = _mbsnextc( (const unsigned char *)path );
             #endif
         if( ch == '.' ) {
             dotp = path;
@@ -310,7 +302,7 @@ void _splitpath( const char *path,
             #ifdef __UNIX__
                 path++;
             #else
-                path = _mbsinc( path );
+                path = (const char *)_mbsinc( (const unsigned char *)path );
             #endif
 #if defined(__UNIX__)
         if( ch == PC ) {
@@ -326,6 +318,8 @@ void _splitpath( const char *path,
     copypart( fname, fnamep, dotp - fnamep, _MAX_FNAME - 1 );
     copypart( ext,   dotp,   path - dotp,   _MAX_EXT - 1);
 }
+
+#endif /* !_MSC_VER */
 
 /****************************************************************************
 *
@@ -352,7 +346,7 @@ void _splitpath( const char *path,
 static char *pcopy( char **pdst, char *dst, const char *b_src, const char *e_src ) {
 /*========================================================================*/
 
-    unsigned    len;
+    size_t      len;
 
     if( pdst == NULL ) return( dst );
     *pdst = dst;
@@ -366,10 +360,10 @@ static char *pcopy( char **pdst, char *dst, const char *b_src, const char *e_src
             dst[len] = '\0';
             return( dst + len + 1 );
         #else
-            len = _mbsnccnt( b_src, len );          /* # chars in len bytes */
-            _mbsncpy( dst, b_src, len );            /* copy the chars */
-            dst[ _mbsnbcnt(dst,len) ] = '\0';
-            return( dst + _mbsnbcnt(dst,len) + 1 );
+            len = _mbsnccnt( (const unsigned char *)b_src, len );          /* # chars in len bytes */
+            _mbsncpy( (unsigned char *)dst, (const unsigned char *)b_src, len );            /* copy the chars */
+            dst[ _mbsnbcnt((const unsigned char *)dst,len) ] = '\0';
+            return( dst + _mbsnbcnt((const unsigned char *)dst,len) + 1 );
         #endif
 }
 
@@ -411,7 +405,7 @@ void  _splitpath2( char const *inp, char *outp,
                 #ifdef __UNIX__
                     inp++;
                 #else
-                    inp = _mbsinc( inp );
+                    inp = (const char *)_mbsinc( (const unsigned char *)inp );
                 #endif
         }
         outp = pcopy( drive, outp, startp, inp );
@@ -450,7 +444,7 @@ void  _splitpath2( char const *inp, char *outp,
             #ifdef __UNIX__
                 ch = *inp;
             #else
-                ch = _mbsnextc( inp );
+                ch = _mbsnextc( (const unsigned char *)inp );
             #endif
         if( ch == 0 )
             break;
@@ -463,7 +457,7 @@ void  _splitpath2( char const *inp, char *outp,
             #ifdef __UNIX__
                 inp++;
             #else
-                inp = _mbsinc( inp );
+                inp = (const char *)_mbsinc( (const unsigned char *)inp );
             #endif
 #if defined(__UNIX__)
         if( ch == PC )
@@ -482,6 +476,8 @@ void  _splitpath2( char const *inp, char *outp,
     outp = pcopy( fn, outp, fnamep, dotp );
     outp = pcopy( ext, outp, dotp, inp );
 }
+
+#ifndef _MSC_VER
 
 /****************************************************************************
 *
@@ -666,7 +662,7 @@ void _makepath( char *path, const char *drive,
     if( dir != NULL ) {
         if( *dir != '\0' ) {
             do {
-                    ch = pickup( _mbsnextc(dir), &first_pc );
+                    ch = pickup( _mbsnextc((const unsigned char *)dir), &first_pc );
                     _mbvtop( ch, path );
                     path[_mbclen(path)] = '\0';
                     path = _mbsinc( path );
@@ -1242,6 +1238,8 @@ int eof( int handle )         /* determine if at EOF */
     return( 0 );
 }
 
+#endif /* !_MSC_VER */
+
 /****************************************************************************
 *
 * Description:  Implementation of _cmdname().
@@ -1285,6 +1283,16 @@ char *_cmdname( char *name )
     return( name );
 }
 
+#elif defined( _MSC_VER )
+
+char *_cmdname( char *name )
+{
+    char    *pgm;
+
+    _get_pgmptr( &pgm );
+    return( strcpy( name, pgm ) );
+}
+
 #else
 
 char *_cmdname( char *name )
@@ -1299,6 +1307,62 @@ char *_cmdname( char *name )
 * Description:  Implementation of getcmd() and _bgetcmd() for Unix.
 *
 ****************************************************************************/
+
+#if defined( _MSC_VER )
+
+int _bgetcmd( char *buffer, int len )
+{
+    int         cmdlen;
+    char        *cmd;
+    char        *tmp;
+
+    if( ( buffer != NULL ) && ( len > 0 ) )
+        *buffer = '\0';
+
+    cmd = GetCommandLine();
+    if( *cmd == '"' ) {
+        cmd++;
+        while( *cmd && *cmd != '"' ) {
+            cmd++;
+        }
+        if( *cmd ) {
+            cmd++;
+        }
+    } else {
+        while( *cmd && *cmd != ' ' && *cmd != '\t' ) {
+            ++cmd;
+        }
+    }
+
+    while( *cmd == ' ' || *cmd == '\t' )
+        ++cmd;
+
+    for( cmdlen = 0, tmp = cmd; *tmp; ++tmp, ++cmdlen )
+        ;
+
+    if( !buffer || (len <= 0) )
+        return( cmdlen );
+
+    len--;
+    len = (len < cmdlen) ? len : cmdlen;
+
+    while( len ) {
+        *buffer++ = *cmd++;
+        --len;
+    }
+    buffer[len] = '\0';
+
+    return( cmdlen );
+}
+
+
+char *getcmd( char *buffer )
+{
+    _bgetcmd( buffer, INT_MAX );
+    return( buffer );
+}
+
+#else
 
 int (_bgetcmd)( char *buffer, int len )
 {
@@ -1352,6 +1416,8 @@ char *(getcmd)( char *buffer )
     _bgetcmd( buffer, INT_MAX );
     return( buffer );
 }
+
+#endif
 
 /****************************************************************************
 *
@@ -1407,6 +1473,8 @@ int spawnlp( int mode, const char *path, const char *cmd, ... )
 *               until it finds the first occurrence of the file.
 *
 ****************************************************************************/
+
+#ifndef _MSC_VER
 
 #if defined(__UNIX__)
         #define PATH_SEPARATOR '/'
@@ -1495,6 +1563,9 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
     buffer[0] = '\0';
 }
 
+#endif /* ! _MSC_VER */
+
+
 /****************************************************************************
 *
 * Description:  Determine resource language from system environment.
@@ -1506,80 +1577,674 @@ res_language_enumeration _WResLanguage(void)
     return( RLE_ENGLISH );
 }
 
-#ifdef __GLIBC__
-/****************************************************************************
-*
-* Description:  Implementation of BSD style strlcpy().
-*
-****************************************************************************/
+#ifdef _MSC_VER
 
-size_t strlcpy( char *dst, const char *src, size_t len )
+int setenv( const char *name, const char *newvalue, int overwrite )
+/*****************************************************************/
 {
-    const char     *s;
-    size_t              count;
+    char    *buff;
+    size_t  len;
 
-    count = len;
-    if( len ) {
-        --len;                  // leave space for terminating null
-        for( ; len; --len ) {
-            if( *src == '\0' ) {
+    len = strlen( name ) + strlen( newvalue ) + 16;
+    buff = malloc( len );
+    overwrite = overwrite;
+    sprintf( buff, "%s=%s", name, newvalue );
+    putenv( buff );
+    free( buff );
+    return( 0 );
+}
+
+void unsetenv( const char *name )
+/*******************************/
+{
+    char    *buff;
+    size_t  len;
+
+    len = strlen( name ) + 16;
+    buff = malloc( len );
+    sprintf( buff, "%s=", name );
+    putenv( buff );
+    free( buff );
+}
+
+void _dos_getdrive( unsigned *drive )
+{
+    char        buff[MAX_PATH];
+
+    GetCurrentDirectory( sizeof( buff ), buff );
+    *drive = tolower( buff[0] ) - 'a'+1;
+}
+
+void _dos_setdrive( unsigned drivenum, unsigned *drives )
+{
+    char        dir[4];
+
+    dir[0] = (char)drivenum + 'a' - 1;
+    dir[1] = ':';
+    dir[2] = '.';
+    dir[3] = 0;
+
+    SetCurrentDirectory( dir );
+    *drives = (unsigned)-1;
+}
+
+unsigned _dos_getfileattr( const char *path, unsigned *attribute )
+{
+    HANDLE              h;
+    WIN32_FIND_DATA     ffb;
+
+    h = FindFirstFile( (LPTSTR)path, &ffb );
+    if( h == INVALID_HANDLE_VALUE ) {
+        return( __set_errno( ENOENT ) );
+    }
+    *attribute = ffb.dwFileAttributes;
+    FindClose( h );
+    return( 0 );
+}
+
+unsigned _dos_setfileattr( const char *path, unsigned attribute )
+{
+    if( attribute == 0 )
+        attribute = FILE_ATTRIBUTE_NORMAL;
+
+    if( !SetFileAttributes( (LPTSTR) path, attribute ) ) {
+        __set_errno( ENOENT );
+    }
+    return( 0 );
+}
+
+
+#define HANDLE_OF(dirp) (*(HANDLE *)((char *)(dirp)+0))
+#define BAD_HANDLE      INVALID_HANDLE_VALUE
+#define ATTR_OF(dirp)   (*(DWORD *)( &(((char *)(dirp))[sizeof( HANDLE )]) ))
+
+#define GET_CHAR(p)       _mbsnextc((const unsigned char *)p)
+#define NEXT_CHAR_PTR(p)  _mbsinc((const unsigned char *)p)
+
+#define _DIR_ISFIRST            0
+#define _DIR_NOTFIRST           1
+#define _DIR_INVALID            2
+#define _DIR_CLOSED             3
+
+#define OPENMODE_ACCESS_MASK    0x0007
+#define OPENMODE_SHARE_MASK     0x0070
+
+#define OPENMODE_ACCESS_RDONLY  0x0000
+
+#define OPENMODE_DENY_COMPAT    0x0000
+#define OPENMODE_DENY_ALL       0x0010
+#define OPENMODE_DENY_WRITE     0x0020
+#define OPENMODE_DENY_READ      0x0030
+#define OPENMODE_DENY_NONE      0x0040
+
+static void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr )
+{
+    if( mode & _A_RDONLY ) {
+        *desired_access = GENERIC_READ;
+        *attr = FILE_ATTRIBUTE_READONLY;
+    } else {
+        *desired_access = GENERIC_READ | GENERIC_WRITE;
+        *attr = FILE_ATTRIBUTE_NORMAL;
+    }
+    if( mode & _A_HIDDEN ) {
+        *attr |= FILE_ATTRIBUTE_HIDDEN;
+    }
+    if( mode & _A_SYSTEM ) {
+        *attr |= FILE_ATTRIBUTE_SYSTEM;
+    }
+}
+
+static void __GetNTAccessAttr( int rwmode, LPDWORD desired_access, LPDWORD attr )
+{
+    if( rwmode == O_RDWR ) {
+        *desired_access = GENERIC_READ | GENERIC_WRITE;
+        *attr = FILE_ATTRIBUTE_NORMAL;
+    } else if( rwmode == O_WRONLY ) {
+        *desired_access = GENERIC_WRITE;
+        *attr = FILE_ATTRIBUTE_NORMAL;
+    } else {
+        *desired_access = GENERIC_READ;
+        *attr = FILE_ATTRIBUTE_READONLY;
+    }
+}
+
+static void __GetNTShareAttr( int mode, LPDWORD share_mode )
+{
+    int share;
+    int rwmode;
+
+    share  = mode & OPENMODE_SHARE_MASK;
+    rwmode = mode & OPENMODE_ACCESS_MASK;
+
+    switch( share ) {
+    case OPENMODE_DENY_COMPAT:
+        /*
+         * Always allow reopening for read.  Since we don't want the same
+         * file opened twice for writing, only allow the file to be opened
+         * for writing hereafter if we're opening it now in read-only mode.
+         *                      -- M. Hildebrand, 14-jun-96
+         */
+        *share_mode = FILE_SHARE_READ;  /* can always open again for read */
+        if( rwmode == OPENMODE_ACCESS_RDONLY ) {
+            *share_mode |= FILE_SHARE_WRITE;    /* can open again for write */
+        }
+        break;
+    case OPENMODE_DENY_ALL:
+        *share_mode = 0;
+        break;
+    case OPENMODE_DENY_READ:
+        *share_mode = FILE_SHARE_WRITE;
+        break;
+    case OPENMODE_DENY_WRITE:
+        *share_mode = FILE_SHARE_READ;
+        break;
+    case OPENMODE_DENY_NONE:
+        *share_mode = FILE_SHARE_READ|FILE_SHARE_WRITE;
+        break;
+    }
+}
+
+static void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
+/*******************************************************************************/
+{
+    FILETIME local_ft;
+
+    DosDateTimeToFileTime( d, t, &local_ft );
+    LocalFileTimeToFileTime( &local_ft, NT_stamp );
+}
+
+static void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
+/*********************************************************************************/
+{
+    FILETIME local_ft;
+
+    FileTimeToLocalFileTime( NT_stamp, &local_ft );
+    FileTimeToDosDateTime( &local_ft, d, t );
+}
+
+static int is_directory( const char *name )
+/*****************************************/
+{
+    unsigned    curr_ch;
+    unsigned    prev_ch;
+
+    curr_ch = '\0';
+    for( ;; ) {
+        prev_ch = curr_ch;
+        curr_ch = GET_CHAR( name );
+        if( curr_ch == '\0' )
+            break;
+        if( prev_ch == '*' )
+            break;
+        if( prev_ch == '?' ) {
+            break;
+        }
+        name = (const char *)NEXT_CHAR_PTR( name );
+    }
+    if( curr_ch == '\0' ) {
+        if( prev_ch == '\\' || prev_ch == '/' || prev_ch == '.' ){
+            return( 1 );
+        }
+    }
+    return( 0 );
+}
+
+static void get_nt_dir_info( DIR *dirp, LPWIN32_FIND_DATA ffd )
+/*************************************************************/
+{
+    __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
+    dirp->d_attr = (char)ffd->dwFileAttributes;
+    dirp->d_size = ffd->nFileSizeLow;
+    strncpy( dirp->d_name, ffd->cFileName, NAME_MAX );
+    dirp->d_name[NAME_MAX] = 0;
+}
+
+static BOOL __find_close( DIR *dirp )
+/***********************************/
+{
+    if( HANDLE_OF( dirp ) )
+        return( FindClose( HANDLE_OF( dirp ) ) );
+    return( TRUE );
+}
+
+
+static DIR *__opendir( const char *dirname, DIR *dirp )
+/*****************************************************/
+{
+    WIN32_FIND_DATA     ffd;
+    HANDLE              h;
+
+    __find_close( dirp );
+    h = FindFirstFileA( dirname, &ffd );
+    if( h == (HANDLE)-1LL ) {
+        __set_errno( ENOENT );
+        return( NULL );
+    }
+    HANDLE_OF( dirp ) = h;
+    get_nt_dir_info( dirp, &ffd );
+    dirp->d_first = _DIR_ISFIRST;
+    return( dirp );
+}
+
+DIR *opendir( const char *dirname )
+/*********************************/
+{
+    DIR         tmp;
+    DIR         *dirp;
+    int         i;
+    char        pathname[MAX_PATH+6];
+    const char  *p;
+    unsigned    curr_ch;
+    unsigned    prev_ch;
+
+    HANDLE_OF( &tmp ) = 0;
+    tmp.d_attr = _A_SUBDIR;               /* assume sub-directory */
+    if( !is_directory( dirname ) ) {
+        if( __opendir( dirname, &tmp ) == NULL ) {
+            return( NULL );
+        }
+    }
+    if( tmp.d_attr & _A_SUBDIR ) {
+        prev_ch = '\0';
+        p = dirname;
+        for( i = 0; i < MAX_PATH; i++ ) {
+            pathname[i] = *p;
+            curr_ch = GET_CHAR( p );
+            if( curr_ch == '\0' ) {
+                if( i != 0  &&  prev_ch != '\\' && prev_ch != '/' ){
+                    pathname[i++] = '\\';
+                }
+                strcpy( &pathname[i], "*.*" );
+                if( __opendir( pathname, &tmp ) == NULL ) {
+                    return( NULL );
+                }
                 break;
             }
-            *dst++ = *src++;
-        }
-        *dst = '\0';            // terminate 'dst'
-    } else {
-        ++count;                // account for not decrementing 'len'
-    }
-
-    if( !len ) {                // source string was truncated
-        s = src;
-        while( *s != '\0' ) {
-            ++s;
-        }
-        count += s - src;       // find out how long 'src' really is
-    }
-    return( count - len - 1 );  // final null doesn't count
-}
-
-/****************************************************************************
-*
-* Description:  Implementation of BSD style strlcat().
-*
-****************************************************************************/
-
-size_t strlcat( char *dst, const char *t, size_t n )
-{
-    char   *s;
-    size_t      len;
-
-    s = dst;
-    // Find end of string in destination buffer but don't overrun
-    for( len = n; len; --len ) {
-        if( *s == '\0' ) break;
-        ++s;
-    }
-    // If no null char was found in dst, the buffer is messed up; don't
-    // touch it
-    if( *s == '\0' ) {
-        --len;      // Decrement len to leave space for terminating null
-        while( len != 0 ) {
-            *s = *t;
-            if( *s == '\0' ) {
-                return( n - len - 1 );
+            if( curr_ch == '*' )
+                break;
+            if( curr_ch == '?' )
+                break;
+            if( curr_ch > 255 ) {
+                ++i;
+                pathname[i] = *(p + 1);
             }
-            ++s;
-            ++t;
-            --len;
+            prev_ch = curr_ch;
+            p = (const char *)NEXT_CHAR_PTR( p );
         }
-        // Buffer not large enough. Terminate and figure out desired length
-        *s = '\0';
-        while( *t++ != '\0' )
-            ++n;
-        --n;
     }
-    return( n );
+    dirp = malloc( sizeof( DIR ) );
+    if( dirp == NULL ) {
+        __find_close( &tmp );
+        __set_errno( ENOMEM );
+        return( NULL );
+    }
+    tmp.d_openpath = strdup( dirname );
+    *dirp = tmp;
+    return( dirp );
 }
+
+struct dirent *readdir( DIR *dirp )
+/*********************************/
+{
+    WIN32_FIND_DATA     ffd;
+    HANDLE              h;
+
+    if( dirp == NULL || dirp->d_first >= _DIR_INVALID )
+        return( NULL );
+    if( dirp->d_first == _DIR_ISFIRST ) {
+        dirp->d_first = _DIR_NOTFIRST;
+    } else {
+        h = HANDLE_OF( dirp );
+        if( !FindNextFileA( h, &ffd ) ) {
+            __set_errno( ENOENT );
+            return( NULL );
+        }
+        get_nt_dir_info( dirp, &ffd );
+    }
+    return( dirp );
+}
+
+int closedir( DIR *dirp )
+/***********************/
+{
+    if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
+        return( __set_errno( ERANGE ) );
+    }
+    if( __find_close( dirp ) == FALSE ) {
+        return( -1 );
+    }
+    dirp->d_first = _DIR_CLOSED;
+    if( dirp->d_openpath != NULL )
+        free( dirp->d_openpath );
+    free( dirp );
+    return( 0 );
+}
+
+unsigned _dos_open( const char *name, unsigned mode, HANDLE *h )
+{
+    HANDLE      handle;
+    DWORD       rwmode, share_mode;
+    DWORD       desired_access, attr;
+
+    rwmode = mode & OPENMODE_ACCESS_MASK;
+
+    __GetNTAccessAttr( rwmode, &desired_access, &attr );
+    __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK|OPENMODE_ACCESS_MASK), &share_mode );
+    handle = CreateFile( (LPTSTR) name, desired_access, share_mode, 0, OPEN_EXISTING, attr, NULL );
+    if( handle == INVALID_HANDLE_VALUE ) {
+        __set_errno( ENOENT );
+        return( (unsigned)-1 );
+    }
+    *h = handle;
+    return( 0 );
+}
+
+unsigned _dos_creat( const char *name, unsigned mode, HANDLE *h )
+{
+    HANDLE      handle;
+    DWORD       desired_access;
+    DWORD       attr;
+
+    __GetNTCreateAttr( mode, &desired_access, &attr );
+    handle = CreateFile( (LPTSTR) name, desired_access, 0, 0, CREATE_ALWAYS, attr, NULL );
+    if( handle == INVALID_HANDLE_VALUE ) {
+        __set_errno( ENOENT );
+        return( (unsigned)-1 );
+    }
+    *h = handle;
+    return( 0 );
+}
+
+unsigned _dos_close( HANDLE h )
+{
+    if( !CloseHandle( h ) ) {
+        __set_errno( ENOENT );
+        return( (unsigned)-1 );
+    }
+    return( 0 );
+}
+
+unsigned _dos_getftime( HANDLE h, unsigned *date, unsigned *time )
+{
+    FILETIME        ctime, atime, wtime;
+    unsigned short  d, t;
+
+    if( GetFileTime( h, &ctime, &atime, &wtime ) ) {
+        __MakeDOSDT( &wtime, &d, &t );
+        *date = d;
+        *time = t;
+        return( 0 );
+    }
+    __set_errno( ENOENT );
+    return( (unsigned)-1 );
+}
+
+unsigned _dos_setftime( HANDLE h, unsigned date, unsigned time )
+{
+    FILETIME    ctime, atime, wtime;
+
+    if( GetFileTime( h, &ctime, &atime, &wtime ) ) {
+        __FromDOSDT( (unsigned short)date, (unsigned short)time, &wtime );
+        if( SetFileTime( h, &ctime, &wtime, &wtime ) ) {
+            return( 0 );
+        }
+    }
+    __set_errno( ENOENT );
+    return( (unsigned)-1 );
+}
+
+unsigned _dos_read( HANDLE h, void *buffer, unsigned count, unsigned *bytes )
+{
+    if( !ReadFile( h, buffer, count, (LPDWORD)bytes, NULL ) ) {
+        __set_errno( ENOENT );
+        return( (unsigned)-1 );
+    }
+    return( 0 );
+}
+
+unsigned _dos_write( HANDLE h, void const *buffer, unsigned count, unsigned *bytes )
+{
+    if( !WriteFile( h, buffer, count, (LPDWORD)bytes, NULL ) ) {
+        __set_errno( ENOENT );
+        return( (unsigned)-1 );
+    }
+    return( 0 );
+}
+
+static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb )
+{
+    for(;;) {
+        if( ffb->dwFileAttributes == 0 ) {
+            // Win95 seems to return 0 for the attributes sometimes?
+            // In that case, treat as a normal file
+            ffb->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
+        }
+        // JBS 07-jun-99
+        if( ((attr & _A_HIDDEN) == 0 ) && (ffb->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) ) goto skip_file;
+        if( ((attr & _A_SYSTEM) == 0 ) && (ffb->dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) ) goto skip_file;
+        if( ((attr & _A_SUBDIR) == 0 ) && (ffb->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) goto skip_file;
+            return ( TRUE );
+skip_file:
+        if( !FindNextFileA( h, ffb ) ) {
+            return( FALSE );
+        }
+    }
+}
+
+static void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffb )
+{
+    __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
+    dirp->d_attr = (char)ffb->dwFileAttributes;
+    dirp->d_size = ffb->nFileSizeLow;
+    strncpy( dirp->d_name, ffb->cFileName, NAME_MAX );
+    dirp->d_name[NAME_MAX] = 0;
+}
+
+unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
+{
+    HANDLE              h;
+    int                 error;
+    WIN32_FIND_DATA     ffb;
+
+    h = FindFirstFile( (LPTSTR)path, &ffb );
+    if( h == INVALID_HANDLE_VALUE ) {
+        HANDLE_OF( buf ) = BAD_HANDLE;
+        __set_errno( ENOENT );
+        return( (unsigned)-1 );
+    }
+    if( !__NTFindNextFileWithAttr( h, attr, &ffb ) ) {
+        error = GetLastError();
+        HANDLE_OF( buf ) = BAD_HANDLE;
+        FindClose( h );
+        __set_errno( ENOENT );
+        return( (unsigned)-1 );
+    }
+    HANDLE_OF( buf ) = h;
+    ATTR_OF( buf ) = attr;
+    __GetNTDirInfo( (struct dirent *)buf, &ffb );
+    return( 0 );
+}
+
+unsigned _dos_findclose( struct find_t *buf )
+{
+    if( HANDLE_OF( buf ) != BAD_HANDLE ) {
+        if( !FindClose( HANDLE_OF( buf ) ) ) {
+            __set_errno( ENOENT );
+            return( (unsigned)-1 );
+        }
+    }
+    return( 0 );
+}
+
+char        *optarg;            // pointer to option argument
+int         optind = 1;         // current argv[] index
+int         optopt;             // currently processed chracter
+int         opterr = 1;         // error output control flag
+
+char        __altoptchar = '/'; // alternate option character
+char        __optchar;          // matched option char ('-' or altoptchar)
+
+static int  opt_offset = 0;     // position in currently parsed argument
+
+// Error messages suggested by Single UNIX Specification
+#define NO_ARG_MSG      "%s: option requires an argument -- %c\n"
+#define BAD_OPT_MSG     "%s: illegal option -- %c\n"
+
+int getopt( int argc, char * const argv[], const char *optstring )
+/****************************************************************/
+{
+    char        *ptr;
+    char        *curr_arg;
+
+    argc = argc;
+    optarg = NULL;
+    curr_arg = argv[optind];
+    if( curr_arg == NULL ) {
+        return( -1 );
+    }
+    for( ;; ) {
+        optopt = curr_arg[opt_offset];
+        if( isspace( optopt ) ) {
+            opt_offset++;
+            continue;
+        }
+        break;
+    }
+    if( opt_offset > 1 || optopt == '-' || optopt == __altoptchar ) {
+        if( opt_offset > 1 ) {
+            optopt = curr_arg[opt_offset];
+            if( optopt == '-' || optopt == __altoptchar ) {
+                __optchar = (char)optopt;
+                opt_offset++;
+                optopt = curr_arg[opt_offset];
+            }
+        } else {
+            __optchar = (char)optopt;
+            opt_offset++;
+            optopt = curr_arg[opt_offset];
+        }
+        if( optopt == '\0' ) {  // option char by itself should be
+            return( -1 );       // left alone
+        }
+        if( optopt == '-' && curr_arg[opt_offset + 1] == '\0' ) {
+            opt_offset = 0;
+            ++optind;
+            return( -1 );   // "--" POSIX end of options delimiter
+        }
+        ptr = strchr( optstring, optopt );
+        if( ptr == NULL ) {
+            if( opterr && *optstring != ':' ) {
+                fprintf( stderr, BAD_OPT_MSG, argv[0], optopt );
+            }
+            return( '?' );  // unrecognized option
+        }
+        if( *(ptr + 1) == ':' ) {   // check if option requires argument
+            if( curr_arg[opt_offset + 1] == '\0' ) {
+                if( argv[optind + 1] == NULL ) {
+                    if( *optstring == ':' ) {
+                        return( ':' );
+                    } else {
+                        if( opterr ) {
+                            fprintf( stderr, NO_ARG_MSG, argv[0], optopt );
+                        }
+                        return( '?' );
+                    }
+                }
+                optarg = argv[optind + 1];
+                ++optind;
+            } else {
+                optarg = &curr_arg[opt_offset + 1];
+            }
+            opt_offset = 0;
+            ++optind;
+        } else {
+            opt_offset++;
+            if( curr_arg[opt_offset] == '\0' ) {    // last char in argv element
+                opt_offset = 0;
+                ++optind;
+            }
+        }
+        return( optopt );   // return recognized option char
+    } else {
+        return( -1 );       // no more options
+    }
+}
+
+static int is_valid_template( char *template, char **xs )
+{
+    size_t              len;
+    char                *p;
+
+    /*** Ensure the last 6 characters form the string "XXXXXX" ***/
+    len = strlen( template );
+    if( len < 6 ) {
+        return( 0 );        /* need room for six exes */
+    }
+    p = template + len - 6;
+    if( strcmp( p, "XXXXXX" ) ) {
+        return( 0 );
+    }
+    *xs = p;
+
+    return( 1 );
+}
+
+int mkstemp( char *template )
+{
+    char                letter;
+    unsigned            pid;
+    char                *xs;
+    int                 fh;
+
+    /*** Ensure the template is valid ***/
+    if( !is_valid_template( template, &xs ) ) {
+        return( -1 );
+    }
+
+    /*** Get the process/thread ID ***/
+    pid = GetCurrentProcessId();
+    pid %= 100000;      /* first few digits could be repeated */
+
+    /*** Try to build a unique filename ***/
+    for( letter = 'a'; letter <= 'z'; letter++ ) {
+        sprintf( xs, "%c%05u", letter, pid );
+        if( access( template, F_OK ) != 0 ) {
+            fh = open( template, O_RDWR | O_CREAT | O_TRUNC | O_EXCL | O_BINARY, S_IREAD | S_IWRITE );
+            if( fh != -1 ) {
+                return( fh );       /* file successfully created */
+            }
+            /* EEXIST may occur in case of a race condition or if we simply
+             * created that temp file earlier, and we'll try again. If however
+             * the creation failed for some other reason, it will almost
+             * certainly fail again no matter how many times we try. So don't.
+             */
+            if( errno != EEXIST ) {
+                return( -1 );
+            }
+        }
+    }
+    return( -1 );
+}
+
+int _vbprintf( char *s, size_t bufsize, const char *format, __va_list arg )
+{
+    int rc;
+
+    --bufsize;
+    rc = vsnprintf( s, bufsize, format, arg );
+    if( rc < 0 ) {
+        rc = (int)bufsize;
+    }
+    s[bufsize] = '\0';
+    return( rc );
+}
+
+unsigned sleep( unsigned time )
+{
+    Sleep( time * 1000UL );
+    return( 0 );
+}
+
 #endif
 
 #endif

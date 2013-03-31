@@ -1,0 +1,20 @@
+proj_name = watcom
+
+watcom_autodepends = .autodepend
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c: ../c
+
+inc_dirs = -I"../h"
+
+!ifdef __WATCOM__
+all : .symbolic
+!else
+all : clibext.lib .symbolic
+!endif
+
+clibext.lib : clibext.obj
+        $(librarian) $(libflags) $<
