@@ -168,6 +168,7 @@ int main( int argc, char **argv )
     int     i;
     FILE    *skeleton, *temp, *save;
     int     ch;
+    char    tempfname[10];
 
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] != '-' ) break;
@@ -208,7 +209,13 @@ int main( int argc, char **argv )
     tokout = openw( "ytab.h" );
 
     defs();
-    if( !(temp = tmpfile()) ) {
+    for( i = 0; i < 1000; ++i ) {
+        sprintf( tempfname, "ytab.%3d", i );
+        if( (temp = fopen( tempfname, "w+" )) != NULL ) {
+            break;
+        }
+    }
+    if( temp == NULL ) {
         msg( "Cannot create temporary file\n" );
     }
     save = actout;
@@ -279,5 +286,7 @@ int main( int argc, char **argv )
         fputc( ch, actout );
     }
     tail();
+    fclose( temp );
+    remove( tempfname );
     return( 0 );
 }
