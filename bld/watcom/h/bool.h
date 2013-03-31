@@ -30,9 +30,16 @@
 ****************************************************************************/
 
 
-#if !defined( BOOL_DEFINED )  &&  !defined( bool ) && !(__WATCOMC__ >= 1070 && defined(__cplusplus))
+#if !defined( BOOL_DEFINED )  &&  !defined( bool ) && !defined(__cplusplus)
     #define BOOL_DEFINED
     typedef unsigned char bool;
+
+  #ifndef true
+    #define true 1
+  #endif
+  #ifndef false
+    #define false 0
+  #endif
 #endif
 #ifndef TRUE
     #define TRUE 1

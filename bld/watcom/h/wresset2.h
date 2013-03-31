@@ -49,15 +49,9 @@
 
 #define NIL_HANDLE      ((int)-1)
 
-typedef struct handle_info {
-    WResFileID  handle;
-#ifdef WIN_GUI
-    HINSTANCE   inst;
-#endif
-} HANDLE_INFO, *PHANDLE_INFO;
+#include "phandle.h"
 
 #ifndef WIN_GUI
-typedef PHANDLE_INFO HINSTANCE;
 typedef unsigned int UINT;
 typedef char _WCI86FAR * LPSTR;
 #endif

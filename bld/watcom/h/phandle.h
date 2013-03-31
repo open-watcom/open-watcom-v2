@@ -34,14 +34,12 @@
 #define _PHANDLE_H
 
 typedef struct handle_info {
-    int         handle;
-    const char  *filename;
+    WResFileID  handle;
 #ifdef WIN_GUI
     HINSTANCE   inst;
 #endif
-} HANDLE_INFO;
+} HANDLE_INFO, *PHANDLE_INFO;
 
-typedef struct handle_info * PHANDLE_INFO;
 #ifndef WIN_GUI
 typedef PHANDLE_INFO HINSTANCE;
 #endif
