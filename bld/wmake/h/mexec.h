@@ -31,13 +31,13 @@
 
 #ifndef _MEXEC_H
 #define _MEXEC_H    1
-#include "make.h"
+
 #include "mtarget.h"
 
 #define BACKSLASH_S "\\"
 
 extern RET_T    ExecCList( CLIST *clist );
-extern int_32   ExecCommand( char *line );
+extern INT32    ExecCommand( char *line );
 extern void     ExecInit( void );
 extern void     ExecFini( void );
 

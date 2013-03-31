@@ -30,16 +30,13 @@
 
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include <fcntl.h>
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
 
-#include "mtypes.h"
-#include "msysdep.h"
+#include "make.h"
 #include "mcache.h"
 #include "mrcmsg.h"
 #include "wressetr.h"
@@ -92,8 +89,8 @@ static  unsigned    MsgShift;
 #define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
 
 
-static long resSeek( int handle, off_t position, int where )
-/***********************************************************
+static long res_seek( int handle, off_t position, int where )
+/************************************************************
  * fool the resource compiler into thinking that the resource information
  * starts at offset 0
  */
@@ -106,7 +103,7 @@ static long resSeek( int handle, off_t position, int where )
 }
 
 
-WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
+WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 #endif
 
@@ -121,8 +118,7 @@ int MsgInit( void )
     if( _cmdname( name ) == NULL ) {
         initerror = 1;
     } else {
-        hInstance.filename = name;
-        OpenResFile( &hInstance );
+        OpenResFile( &hInstance, name );
         if( hInstance.handle == NIL_HANDLE ) {
             initerror = 1;
         } else {

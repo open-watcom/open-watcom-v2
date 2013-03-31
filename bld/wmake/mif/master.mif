@@ -38,7 +38,7 @@ echo    = echo
 
 # Compiler Flags
 
-inc_dirs = -I"$(wmake_dir)/h" -I"$(orl_dir)/h" -I"$(trmem_dir)"
+inc_dirs = -I. -I"$(wmake_dir)/h" -I"$(orl_dir)/h" -I"$(trmem_dir)"
 
 extra_cpp_flags = $(rc_defines_$(host_os))
 !ifdef DLLS_IMPLEMENTED
@@ -48,9 +48,7 @@ extra_cpp_flags += -DDLLS_IMPLEMENTED
 extra_cpp_flags += -DCACHE_STATS
 !endif
 !ifdef wmake_causeway
-!ifeq host_cpu 386
-extra_cpp_flags_dos += -DCAUSEWAY
-!endif
+extra_cpp_flags_dos_386 = -DCAUSEWAY
 !endif
 
 extra_c_flags_i86 = -zt32
@@ -59,17 +57,9 @@ extra_c_flags_i86 = -zt32
 
 ##############################################################################
 
-ext_qnx = qnx
-ext_linux = elf
-!ifdef ext_$(host_os)
-ext = $(ext_$(host_os))
-!else
-ext = exe
-!endif
-
 # LINKER FLAGS
 
-extra_l_flags = NAME $(xname).$(ext) OPTION MAP,statics sort
+extra_l_flags = NAME $(xname).exe OPTION MAP,statics sort
 extra_l_flags += LIBRARY {$(libs)}
 
 # large stacks are necessary for !loaddll support
@@ -96,13 +86,13 @@ libs = $(wres_lib) $(orl_lib)
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 
-$(xname).$(ext) :: usageend.gh wmake.res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(xname).exe :: usageend.gh wmake.res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
         $(linker) $(lflags) FILE {$(objs)}
         @%make bind_version_res_exe
 #
 # If the linker files were different (i.e. if we needed a QNX version),
 # the copy would be replaced by a separate link. CSK
-        $(wstrip) -q -a -r $(xname).$(ext) . wmake.res
+        $(wstrip) -q -a -r $(xname).exe . wmake.res
 
 wmake.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh
         $(rc_aui) $[@ -fo=$^@
@@ -156,8 +146,8 @@ chkmsg :
     rm chkmsg.?
 
 strip : .symbolic
-    $(wstrip) /q wmk.$(ext) wmks.$(ext) >nul
-    ls -l *.$(ext)
+    $(wstrip) /q wmk.exe wmks.exe >nul
+    ls -l *.exe
 
 deps : .symbolic
     cd ../c
@@ -167,7 +157,7 @@ do : .symbolic
     wmake -h -n | sed -f ../mif/mkdo.sed >do.bat
 
 # In NT, failure of ..\regress\test does not set a failure return code.
-test : $(xname).$(ext) .always .symbolic
-    ..\regress\test $(%cwd)\$(xname).$(ext) # Works in NT, will fail in Linux
-    # ../regress/test $(%cwd)\$(xname).$(ext) # Fails in NT
+test : $(xname).exe .always .symbolic
+    ..\regress\test $(%cwd)\$(xname).exe # Works in NT, will fail in Linux
+    # ../regress/test $(%cwd)\$(xname).exe # Fails in NT
     # No Linux ../regress/test has been ported. W.Briscoe 2004-01-17

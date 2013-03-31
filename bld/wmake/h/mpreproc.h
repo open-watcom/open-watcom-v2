@@ -31,13 +31,18 @@
 
 #ifndef _MPREPROC_H
 #define _MPREPROC_H     1
+
 #include "mstream.h"
 
-extern void     PreProcInit( void );
-extern void     PreProcFini( void );
-extern STRM_T   PreGetCH( void );
-extern BOOLEAN  existFile(char const *inPath );
-extern size_t   GetNestLevel( void );
+#define LEVEL_UNDEFINED ((nest_level)-1)
+
+typedef int         nest_level;
+
+extern void         PreProcInit( void );
+extern void         PreProcFini( void );
+extern STRM_T       PreGetCH( void );
+extern BOOLEAN      existFile(char const *inPath );
+extern nest_level   GetNestLevel( void );
 
 #endif /* !_MPREPROC_H */
 

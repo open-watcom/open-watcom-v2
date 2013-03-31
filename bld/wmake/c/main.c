@@ -30,22 +30,16 @@
 
 
 #include <string.h>
-#include <stdlib.h>
 #if defined(__OS2__) || defined(__DOS__)
    #include <stdio.h>
 #endif
-#if defined( __WATCOMC__ )
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
-#else
-    #include "clibext.h"
 #endif
 
-#include "massert.h"
-#include "mtypes.h"
-#include "mtarget.h"
-#include "msysdep.h"
-#include "macros.h"
 #include "make.h"
+#include "mtarget.h"
+#include "macros.h"
 #include "mcache.h"
 #include "mmemory.h"
 #include "mexec.h"
@@ -560,7 +554,7 @@ STATIC void init( char const * const *argv )
     ExecInit();
     AutoDepInit();
 
-#ifdef __NT__
+#if defined( __WATCOMC__ ) && defined( __NT__ )
     _fileinfo = 0;      /* C Library Kludge -------------------------- */
 #endif
 #ifdef __OS2__

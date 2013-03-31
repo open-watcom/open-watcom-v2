@@ -31,20 +31,10 @@
 
 #ifndef _MSYSDEP_H
 #define _MSYSDEP_H  1
-#include <limits.h>
+
 #include <stdlib.h>
 #include <signal.h>
-#ifdef _MSC_VER
-  #include <io.h>        /* io.h was a really dumb idea */
-#else
-  #include <unistd.h>
-#endif
-
-#ifndef __WATCOMC__
-    #include "clibext.h"
-#endif
-
-#include "mtypes.h"
+#include "wio.h"
 
 #ifdef DLLS_IMPLEMENTED
     #include "idedrv.h"
@@ -71,7 +61,7 @@
 # define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
 # define MAX_TOK_SIZE       130     /* Maximum token size                   */
 # define LINE_BUFF          80      /* length of one-line user input buffer */
-#if !defined( __386__ )
+#if defined( _M_I86 )
 # define USE_FAR            1       /* use far memory for some things       */
 # define USE_SCARCE         1       /* use scarce memory management         */
 # define FAR                _far

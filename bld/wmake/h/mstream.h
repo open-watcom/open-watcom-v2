@@ -31,7 +31,6 @@
 
 #ifndef _MSTREAM_H
 #define _MSTREAM_H  1
-#include "mtypes.h"
 
 /*
  * This is the type which GetCHR returns - this is the stream's data type.

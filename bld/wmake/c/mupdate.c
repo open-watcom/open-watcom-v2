@@ -29,15 +29,16 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#if defined( __WATCOMC__ ) || defined( __UNIX__ )
 #include <utime.h>
+#else
+#include <sys/utime.h>
+#endif
 
 #include "make.h"
 #include "macros.h"
-#include "massert.h"
 #include "mcache.h"
 #include "mmemory.h"
 #include "mexec.h"
@@ -49,7 +50,6 @@
 #include "msg.h"
 #include "msuffix.h"
 #include "mtarget.h"
-#include "mtypes.h"
 #include "mupdate.h"
 #include "mvecstr.h"
 #include "mautodep.h"
@@ -263,7 +263,6 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     if( Glob.cont ) {
         return( RET_WARN );
     }
-    exit( ExitSafe( EXIT_ERROR ) );
     return( RET_ERROR );
 }
 #ifdef __WATCOMC__
@@ -381,6 +380,9 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, time_t max_time )
     exPop();
     if( dep->slistCmd != NULL ) {
         FreeCList(clist);
+    }
+    if( ret == RET_ERROR ) {
+        exit( ExitSafe( EXIT_ERROR ) );
     }
     return( ret );
 }
@@ -573,7 +575,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
     SUFFIX      *srcsuf;
     CREATOR     *cur;
     SUFFIX      *cursuf;
-    TARGET      *imptarg;
+    TARGET      *imptarg = NULL;
     RET_T       ret;
     BOOLEAN     newtarg;
     UINT32      startcount;

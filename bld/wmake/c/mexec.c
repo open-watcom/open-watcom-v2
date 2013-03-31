@@ -33,10 +33,7 @@
 #if !defined( __UNIX__ )
     #include <direct.h>
     #include <dos.h>
-#else
-    #include <unistd.h>
 #endif
-#include <fcntl.h>
 #include <sys/stat.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
@@ -45,19 +42,15 @@
     #include <sys/wait.h>
 #endif
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #ifdef DLLS_IMPLEMENTED
     #include <idedrv.h>
 #endif
 
-#include "massert.h"
-#include "mtypes.h"
+#include "make.h"
 #include "mtarget.h"
 #include "macros.h"
-#include "msysdep.h"
-#include "make.h"
 #include "mcache.h"
 #include "mmemory.h"
 #include "mexec.h"
@@ -369,9 +362,9 @@ STATIC RET_T processInlineFile( int handle, const char *body,
             DeMacroBody = ignoreWSDeMacro( FALSE, ForceDeMacro() );
             currentSent = index + 1;
             if( writeToFile ) {
-                size_t  bytes = strlen( DeMacroBody );
+                size_t bytes = strlen( DeMacroBody );
 
-                if( bytes != write( handle, DeMacroBody, bytes ) ) {
+                if( (int)bytes != write( handle, DeMacroBody, (unsigned)bytes ) ) {
                     ret = RET_ERROR;
                 }
                 if( 1 != write( handle, "\n", 1 ) ) {
@@ -486,8 +479,7 @@ STATIC RET_T createFile( const FLIST *head )
 
     if( ret != RET_ERROR ) {
         tmpFileName = RemoveBackSlash( fileName );
-        handle = open( tmpFileName, O_TEXT | O_WRONLY | O_CREAT | O_TRUNC,
-                       S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
+        handle = open( tmpFileName, O_TEXT | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
         if( handle != -1 ) {
             if( writeLineByLine( handle, head->body ) == RET_ERROR ) {
                 PrtMsg( ERR | ERROR_WRITING_FILE, tmpFileName );
@@ -623,7 +615,7 @@ STATIC int findInternal( const char *cmd )
         }
         return( -1 );
     }
-    return( key - (char **)dosInternals );
+    return( (int)( key - (char **)dosInternals ) );
 }
 
 
@@ -696,6 +688,7 @@ STATIC void closeCurrentFile( void )
 {
     if( currentFileHandle != -1 ) {
         close( currentFileHandle );
+        currentFileHandle = -1;
     }
     if( currentFileName != NULL ) {
         FreeSafe( currentFileName );
@@ -784,7 +777,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
             open_flags |= O_TRUNC;
         }
 
-        currentFileHandle = open( fn, open_flags, S_IWRITE | S_IREAD );
+        currentFileHandle = open( fn, open_flags, PMODE_RW );
         if( currentFileHandle == -1 ) {
             PrtMsg( ERR | OPENING_FOR_WRITE, fn );
             closeCurrentFile();
@@ -795,7 +788,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( type != WR_CREATE ) {
         *p = '\n';          /* replace null terminator with newline */
         len = (p - text) + 1;
-        if( write( currentFileHandle, text, len ) != len ) {
+        if( write( currentFileHandle, text, (unsigned)len ) != (int)len ) {
             PrtMsg( ERR | DOING_THE_WRITE );
             closeCurrentFile();
             return( RET_ERROR );
@@ -907,7 +900,7 @@ STATIC RET_T percentCmd( const char *cmdname, char *arg )
         closeCurrentFile();
         return( RET_ERROR );
     } else {
-        num = key - (char const **)percentCmds;
+        num = (int)( key - (char const **)percentCmds );
     }
 
     if( Glob.noexec && num != PER_MAKE ) {
@@ -2042,8 +2035,8 @@ STATIC RET_T execLine( char *line )
     return( RET_SUCCESS );
 }
 
-int_32 ExecCommand( char *line )
-/*******************************
+INT32 ExecCommand( char *line )
+/******************************
  * Execute an '!if [cmd]' style command
  */
 {

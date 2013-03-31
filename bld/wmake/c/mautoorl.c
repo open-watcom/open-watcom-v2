@@ -40,13 +40,10 @@
 #include "orl.h"
 #include "autodep.h"
 
-#include <unistd.h>
-#include <fcntl.h>
-
 typedef struct orl_info {
     int                 handle;
     orl_file_handle     file;
-    uint_8              *buffer;
+    UINT8               *buffer;
     DepInfo             *curr;
 }                       orl_info;
 
@@ -157,10 +154,10 @@ static orl_return findDependInfo( orl_sec_handle section )
 }
 
 
-static uint_8 *orlGetDependsInfo( orl_file_handle file )
-/******************************************************/
+static UINT8 *orlGetDependsInfo( orl_file_handle file )
+/*****************************************************/
 {
-    uint_8  *buffer;
+    UINT8   *buffer;
 
     orlDependsInfo = NULL;
     buffer = NULL;
@@ -178,7 +175,7 @@ static handle AutoORLFileInit( const char *name )
     orl_file_format type;
     orl_file_handle file;
     int             file_handle;
-    uint_8          *buffer;
+    UINT8           *buffer;
 
     bufferInit();
     file_handle = open( name, O_RDONLY | O_BINARY );

@@ -46,7 +46,7 @@ extern void         DoWildCardClose( void );
 extern int          KWCompare( const char **p1, const char **p2 );
 extern char         *SkipWS( char *p );
 extern char         *FindNextWS( char *str );
-extern char         *RemoveDoubleQuotes( char *dst, int maxlen, const char *src );
+extern char         *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src );
 extern int          PutEnvSafe( ENV_TRACKER *env );
 #if !defined(NDEBUG) || defined(DEVELOPMENT)
 extern void         PutEnvFini( void );

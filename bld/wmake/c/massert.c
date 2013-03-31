@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 #include "make.h"
-#include "massert.h"
 #include "mrcmsg.h"
 #include "msg.h"
 

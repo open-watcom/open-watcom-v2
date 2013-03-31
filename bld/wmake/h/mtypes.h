@@ -31,20 +31,17 @@
 
 #ifndef _MTYPES_H
 #define _MTYPES_H   1
+
 #include <limits.h>
 #include <stddef.h>     /* for things like size_t and such */
-
-#ifndef NDEBUG
-#include "massert.h"
-#endif
 
 
 /*
  * provide machine independant definitions for different quantities
  */
 #ifndef _WINDOWS_H
-typedef   signed long   INT32;
-typedef unsigned long   UINT32;
+typedef int_32          INT32;
+typedef uint_32         UINT32;
 
 enum {
     FALSE = (0==1),
@@ -52,10 +49,10 @@ enum {
 };
 #endif
 
-typedef   signed short  INT16;
-typedef unsigned short  UINT16;
-typedef   signed char   INT8;
-typedef unsigned char   UINT8;
+typedef int_16          INT16;
+typedef uint_16         UINT16;
+typedef int_8           INT8;
+typedef uint_8          UINT8;
 
 typedef unsigned        BIT;        /* for bit fields in structures */
 

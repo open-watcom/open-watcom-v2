@@ -31,8 +31,7 @@
 
 #ifndef _MLEX_H
 #define _MLEX_H     1
-#include "watcom.h"
-#include "mtypes.h"
+
 #include "mstream.h"
 
 extern char *targ_path;   /* Current sufsuf target path    */
@@ -197,7 +196,7 @@ enum Tokens {
 typedef struct  TOKEN_OP {
     enum Tokens type;    // Type of Token
     union {
-        int_32  number;        // string value
+        INT32   number;        // string value
         char    string[MAX_STRING];
     }   data;
 }   TOKEN_TYPE;
@@ -237,7 +236,6 @@ enum DotNames {                 /* must be in alpha order! */
 #define MAX_DOT_NAME    16      /* maximum characters needed for dot-name */
 
 #if defined( DEVELOPMENT ) || defined( INTERNAL_VERSION )
-#include "msysdep.h"
 #if MAX_DOT_NAME > MAX_SUFFIX
 #error "MAX_DOT_NAME must be at smaller than or equal to MAX_SUFFIX"
 #endif

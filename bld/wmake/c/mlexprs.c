@@ -30,13 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-
-#include "massert.h"
-#include "mtypes.h"
+#include "make.h"
 #include "mlex.h"
 #include "macros.h"
-#include "make.h"
 #include "mmemory.h"
 #include "mmisc.h"
 #include "mpreproc.h"
@@ -291,7 +287,7 @@ STATIC BOOLEAN checkDotName( const char *str )
         return( FALSE );
     }
 
-    CurAttr.num = (const char **)key - DotNames;
+    CurAttr.num = (TOKEN_T)( (const char **)key - DotNames );
 
     assert( DOT_MIN < CurAttr.num && CurAttr.num < DOT_MAX );
 

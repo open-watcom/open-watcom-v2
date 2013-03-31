@@ -31,13 +31,11 @@
 
 #include <string.h>
 
-#include "massert.h"
-#include "mtypes.h"
+#include "make.h"
 #include "mstream.h"
 #include "mlex.h"
 #include "mtarget.h"
 #include "macros.h"
-#include "make.h"
 #include "mmemory.h"
 #include "mparse.h"
 #include "mpreproc.h"

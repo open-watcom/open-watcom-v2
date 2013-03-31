@@ -36,17 +36,12 @@
 #endif
 #include <stdlib.h>
 #include <string.h>
-#ifdef __WATCOMC__
-    #include <env.h>        // For setenv()
-#endif
 
-#include "massert.h"
-#include "mtypes.h"
+#include "make.h"
 #include "mstream.h"
 #include "mlex.h"
 #include "mhash.h"
 #include "macros.h"
-#include "make.h"
 #include "mmemory.h"
 
 #include "mmisc.h"
@@ -360,13 +355,12 @@ STATIC const char *GetMacroValueProcess( const char *name )
                 } else {
                     dirBuf[0] = NULLCHAR;
                 }
-                return( dirBuf );
             } else {    /* cwd */
                 if( p != NULL ) {
                     return( p + 1 );
                 }
-                return( dirBuf );
             }
+            return( dirBuf );
         } else if( ctime ) {
             time_t      timex;
             struct tm   *tm;

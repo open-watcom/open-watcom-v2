@@ -29,24 +29,19 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include "make.h"
 #include "mcache.h"
 #include "mmemory.h"
 #include "mrcmsg.h"
 #include "msg.h"
-#include "msysdep.h"
 #include "mupdate.h"
-
-#include <unistd.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <stdio.h>
 #if defined( __DOS__ )
     #include <dos.h>
-    #include <limits.h>
     #include "tinyio.h"
 #endif
 #include "pcobj.h"
+#include "msysdep.h"
 
 #if defined( __DOS__ )
 
@@ -94,7 +89,7 @@ int SwitchChar( void )
 #endif
 }
 
-#if defined( __DOS__ ) && !defined ( __386__ )
+#if defined( __DOS__ ) && defined ( _M_I86 )
 /* see page 90-91 of "Undocumented DOS" */
 
 //extern void far *       _DOS_list_of_lists( void );
@@ -110,13 +105,13 @@ int OSCorrupted( void )
 /****************************/
 {
     _Packed struct mcb {
-        uint_8  id;
-        uint_16 owner;
-        uint_16 len;
+        UINT8   id;
+        UINT16  owner;
+        UINT16  len;
     } far *chain;
-    uint_16 far *first_MCB;
-    uint_16 chain_seg;
-    uint_16 new_chain_seg;
+    UINT16 far  *first_MCB;
+    UINT16      chain_seg;
+    UINT16      new_chain_seg;
 
     first_MCB = _DOS_list_of_lists();
     if( FP_OFF( first_MCB ) == 1 ) {    /* next instr will hang! */
@@ -198,7 +193,7 @@ RET_T TouchFile( const char *name )
     int     fh;
 
     if( utime( name, 0 ) < 0 ) {
-        fh = creat( name, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
+        fh = creat( name, PMODE_RW );
         if( fh < 0 ) {
             return( RET_ERROR );
         }
@@ -363,6 +358,7 @@ static void passOnBreak( void )
 
 static void breakHandler( int sig_number )
 {
+    sig_number = sig_number;
     sig_count = 1;
     passOnBreak();
 }

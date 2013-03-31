@@ -30,20 +30,15 @@
 
 
 #include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 
 #include "make.h"
-#include "massert.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mstream.h"
-#include "mtypes.h"
+
 
 STATIC const char   *logName;
 STATIC int          logFH;
@@ -125,7 +120,7 @@ STATIC char *strApp( char *dest, const char *src )
 {
     assert( dest != NULL && src != NULL );
 
-    while( (*dest = *src) ) {
+    while( (*dest = *src) != '\0' ) {
         ++dest;
         ++src;
     }
@@ -259,8 +254,8 @@ STATIC char *strDec5( char *dest, UINT16 num )
 }
 
 
-STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
-/**********************************************************************
+STATIC unsigned doFmtStr( char *buff, const char FAR *src, va_list args )
+/************************************************************************
  * quick vsprintf routine
  * assumptions - format string does not end in '%'
  *             - only use of '%' is as follows:
@@ -376,11 +371,11 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
         }
     }
     *dest = NULLCHAR;
-    return( dest - buff );
+    return( (unsigned)(dest - buff) );
 }
 
 
-size_t FmtStr( char *buff, const char *fmt, ... )
+unsigned FmtStr( char *buff, const char *fmt, ... )
 /*******************************************************
  * quick sprintf routine... see doFmtStr
  */
@@ -398,7 +393,7 @@ STATIC void logWrite( const char *buff, size_t len )
 /**************************************************/
 {
     if( logFH != -1 ) {
-        write( logFH, buff, len );
+        write( logFH, buff, (unsigned)len );
     }
 }
 
@@ -493,7 +488,7 @@ void PrtMsg( enum MsgClass num, ... )
         if( fh == STDERR ) {
             logWrite( str, strlen( str ) );
         }
-        write( fh, str, strlen( str ) );
+        write( fh, str, (unsigned)strlen( str ) );
         len = 0;
     } else {                    /* print a formatted string */
         if( ( num & NUM_MSK ) >= END_OF_RESOURCE_MSG ) {
@@ -578,8 +573,7 @@ void LogInit( const char *name )
     logName = name;
     logFH = -1;
     if( name != NULL ) {
-        logFH = open( logName, O_WRONLY | O_APPEND | O_CREAT | O_TEXT,
-                  S_IWRITE | S_IREAD );
+        logFH = open( logName, O_WRONLY | O_APPEND | O_CREAT | O_TEXT, PMODE_RW );
     }
     return;
 }

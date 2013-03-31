@@ -29,17 +29,12 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <stdlib.h>
 #include <string.h>
 #include "sopen.h"
-#include "macros.h"
 #include "make.h"
-#include "massert.h"
-#include "mtypes.h"
+#include "macros.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mstream.h"
@@ -74,29 +69,29 @@ typedef enum {                  /* the different stream types           */
 
 /* the most used items are at the top each union member */
 typedef struct streamEntry {
-    union {                     /* data required for each stream type   */
+    union {                         /* data required for each stream type   */
         struct {
-            char    *cur;       /* next character to be read            */
-            char    *max;       /* maximum position in buffer           */
-            int     fh;         /* Posix i/o handle                     */
-            char    *buf;       /* beginning of buffer                  */
-            UINT16  line;       /* current line number                  */
-            const char *name;   /* file name                            */
-            size_t nestLevel;   /* nest level of the file beginning     */
-        } file;                 /* for SENT_FILE                        */
+            char        *cur;       /* next character to be read            */
+            char        *max;       /* maximum position in buffer           */
+            int         fh;         /* Posix i/o handle                     */
+            char        *buf;       /* beginning of buffer                  */
+            UINT16      line;       /* current line number                  */
+            const char  *name;      /* file name                            */
+            nest_level  nestLevel;  /* nest level of the file beginning     */
+        } file;                     /* for SENT_FILE                        */
 
         struct {
-            const char    *cur; /* current position in string           */
-            const char    *str; /* beginning of string                  */
-        } str;                  /* for SENT_STR                         */
+            const char    *cur;     /* current position in string           */
+            const char    *str;     /* beginning of string                  */
+        } str;                      /* for SENT_STR                         */
 
-        STRM_T ch;              /* for SENT_CHAR                        */
+        STRM_T ch;                  /* for SENT_CHAR                        */
     } data;
 
-    struct streamEntry *next;   /* linked list representation of stack  */
+    struct streamEntry *next;       /* linked list representation of stack  */
 
-    BIT     type : 2;           /* must hold an STYPE_T                 */
-    BIT     free : 1;           /* should we free resources?            */
+    BIT     type : 2;               /* must hold an STYPE_T                 */
+    BIT     free : 1;               /* should we free resources?            */
 
 } SENT;
 

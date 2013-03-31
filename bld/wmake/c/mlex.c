@@ -28,7 +28,6 @@
 *
 ****************************************************************************/
 
-#include <stdlib.h>
 
 #include "make.h"
 #include "mmemory.h"
@@ -37,7 +36,6 @@
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mstream.h"
-#include "mtypes.h"
 
 
 union CurAttrUnion  CurAttr;    /* Attribute for last LexToken call */

@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <string.h>
 
 #include "make.h"
-#include "massert.h"
 #include "macros.h"
 #include "mmemory.h"
 #include "mlex.h"
@@ -42,7 +40,6 @@
 #include "mupdate.h"
 #include "mrcmsg.h"
 #include "msg.h"
-#include "mtypes.h"
 #include "mvecstr.h"
 
 

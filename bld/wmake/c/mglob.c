@@ -29,13 +29,12 @@
 ****************************************************************************/
 
 
+#include "make.h"
 #if defined( DEVELOPMENT ) || defined( INTERNAL_VERSION )
     /* just because this is compiled with -d2 - we get all the debugging
      * info we'll ever need this way :)
      */
 #   include "macros.h"
-#   include "make.h"
-#   include "massert.h"
 #   include "mcache.h"
 #   include "mmemory.h"
 #   include "mexec.h"
@@ -49,16 +48,11 @@
 #   include "msuffix.h"
 #   include "mlex.h"
 #   include "mtarget.h"
-#   include "mtypes.h"
 #   include "mupdate.h"
 #   include "mvecstr.h"
-#   include "msysdep.h"
 #if defined( _M_IX86 )
 #   include "tinyio.h"
 #endif
-#else
-#   include "mtypes.h"
-#   include "make.h"
 #endif
 #include "banner.h"
 
@@ -85,7 +79,9 @@ const char FAR *BuiltIns = {
 
 #elif defined( __NT__ )
     "__NT__=\n"
-    #if defined(__386__)
+    #if defined( _M_X64 ) || defined( __AMD64__ ) || defined( __amd64 )
+        "__NTX64__=\n"
+    #elif defined(_M_IX86)
         "__NT386__=\n"
     #elif defined(__AXP__)
         "__NTAXP__=\n"
@@ -111,11 +107,13 @@ const char FAR *BuiltIns = {
 #elif defined( __LINUX__ ) || defined( __linux__ )
     "__LINUX__=\n"
     "__UNIX__=\n"
-    #if defined(__386__) || defined(__i386__) || defined(__i386)
+    #if defined( _M_X64 ) || defined( __AMD64__ ) || defined( __amd64 )
+        "__LINUXX64__=\n"
+    #elif defined(_M_IX86) || defined(__i386__) || defined(__i386)
         "__LINUX386__=\n"
     #elif defined(__PPC__) || defined(__ppc__) || defined(__powerpc__)
         "__LINUXPPC__=\n"
-    #elif defined(__MIPS__)  || defined(__mips__)
+    #elif defined(__MIPS__) || defined(__mips__)
         "__LINUXMIPS__=\n"
     #else
         #error Unknown CPU architecture

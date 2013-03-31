@@ -31,8 +31,11 @@
 
 #ifndef _MAKE_H
 #define _MAKE_H     1
-#include "msysdep.h"
+
+#include "watcom.h"
 #include "mtypes.h"
+#include "msysdep.h"
+#include "massert.h"
 
 #define DOLLAR          '$'     /* macro introducer                          */
 // #define DOLLAR_S        "$"

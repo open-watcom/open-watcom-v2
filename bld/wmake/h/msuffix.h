@@ -31,10 +31,9 @@
 
 #ifndef _MSUFFIX_H
 #define _MSUFFIX_H  1
-#include "make.h"
+
 #include "mhash.h"
 #include "mtarget.h"
-#include "mtypes.h"
 
 typedef struct Suffix   SUFFIX;
 typedef struct Creator  CREATOR;

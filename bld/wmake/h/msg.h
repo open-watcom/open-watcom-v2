@@ -58,7 +58,7 @@ enum {
     #undef pick
 };
 
-extern size_t   FmtStr( char *buf, const char *fmt, ... );
+extern unsigned FmtStr( char *buf, const char *fmt, ... );
 extern void     PrtMsg( enum MsgClass num, ... );
 extern void     Usage( void );
 extern BOOLEAN  GetYes( enum MsgClass querymsg );

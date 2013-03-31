@@ -31,8 +31,6 @@
 
 #include <string.h>
 
-#include "massert.h"
-#include "mtypes.h"
 #include "make.h"
 #include "mmemory.h"
 #include "mhash.h"

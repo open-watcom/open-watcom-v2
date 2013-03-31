@@ -29,21 +29,20 @@
 ****************************************************************************/
 
 
-#include "watcom.h"
-#include "mtypes.h"
+#include "make.h"
 #include "mcache.h"
-#include "msysdep.h"
 #include "mautodep.h"
 
 #ifndef BOOTSTRAP
-#include "autodep.h"
 
+#include "autodep.h"
+#include "wressetr.h"
 #include "wresset2.h"
 
 typedef struct res_info {
     DepInfo *first;
     DepInfo *curr;
-}           res_info;
+} res_info;
 
 static res_info ResInfo;
 

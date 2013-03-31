@@ -37,28 +37,25 @@
 #include "mupdate.h"
 #include "mautodep.h"
 #include "autodept.h"
-
-#include <fcntl.h>
-
 #include "pcobj.h"
 
 typedef struct {
     int     handle;         // file handle of open obj file
     time_t  time_stamp;     // time stamp of next dependancy comment
     char    *name;          // point to nameBuffer - name of next dependancy comment
-}           omf_info;
+} omf_info;
 
 static omf_info fileHandle;
 static char     nameBuffer[_MAX_PATH2 + 1];
 
 #include "pushpck1.h"
 typedef struct {
-    uint_8  bits;
-    uint_8  type;
-    uint_16 dos_time;
-    uint_16 dos_date;
-    uint_8  name_len;
-}           obj_comment;
+    UINT8   bits;
+    UINT8   type;
+    UINT16  dos_time;
+    UINT16  dos_date;
+    UINT8   name_len;
+} obj_comment;
 #include "poppck.h"
 
 static BOOLEAN verifyObjFile( int fh )
@@ -117,7 +114,7 @@ static BOOLEAN getOMFCommentRecord( omf_info *info )
     unsigned    len;
 
     hdl = info->handle;
-    while( read( hdl, &header, sizeof header ) == sizeof header ) {
+    while( read( hdl, &header, sizeof( header ) ) == sizeof( header ) ) {
         if( header.command != CMD_COMENT ) {
             // first LNAMES record means objfile has no dependency info
             if( header.command == CMD_LNAMES ) {
@@ -130,7 +127,7 @@ static BOOLEAN getOMFCommentRecord( omf_info *info )
             break;
         }
         if( comment.type != CMT_DEPENDENCY ) {
-            lseek( hdl, header.length - sizeof comment, SEEK_CUR );
+            lseek( hdl, header.length - sizeof( comment ), SEEK_CUR );
             continue;
         }
         // NULL dependency means end of dependency info
@@ -139,7 +136,7 @@ static BOOLEAN getOMFCommentRecord( omf_info *info )
         }
         // we have a dependency comment! hooray!
         len = comment.name_len + 1;
-        if( read( hdl, nameBuffer, len ) != len ) {
+        if( (unsigned)read( hdl, nameBuffer, len ) != len ) {
             break;  // darn, it's broke
         }
         nameBuffer[len - 1] = '\0';

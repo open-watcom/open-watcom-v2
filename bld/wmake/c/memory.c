@@ -29,18 +29,14 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <string.h>
-#ifdef __WATCOMC__
-    #include <malloc.h>
-#endif
-
 #include "make.h"
-#include "massert.h"
-#include "mtypes.h"
 #include "mmemory.h"
 #include "mrcmsg.h"
 #include "msg.h"
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+    #include <malloc.h>
+#endif
 
 
 #ifdef USE_FAR
@@ -85,8 +81,7 @@ STATIC void printLine( int *h, const char *buf, unsigned size )
 {
     h = h;
     if( trkfile == -1 ) {
-        trkfile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC,
-               S_IREAD | S_IWRITE );
+        trkfile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
     }
     if( trkfile != -1 ) {
         write( trkfile, buf, size );
@@ -103,6 +98,7 @@ STATIC void MemCheck( void )
 {
     static int  busy = FALSE;   /* protect against recursion thru PrtMsg */
 
+#if defined( __WATCOMC__ )
     if( !busy ) {
         busy = TRUE;
 #ifdef USE_FAR
@@ -137,6 +133,7 @@ STATIC void MemCheck( void )
 #endif
         busy = FALSE;
     }
+#endif
 }
 #endif  /* TRACK */
 
@@ -238,6 +235,7 @@ void MemFini( void )
 STATIC void memGrow( void )
 /*************************/
 {
+#if defined( __WATCOMC__ )
 #ifdef USE_FAR
     _nheapgrow();
     _fheapgrow();
@@ -245,6 +243,7 @@ STATIC void memGrow( void )
 #else
 #if !defined( __NT__ ) && !defined( __UNIX__ )
     _heapgrow();
+#endif
 #endif
 #endif
 }
@@ -255,7 +254,7 @@ void MemInit( void )
 {
     memGrow();
 #ifdef TRACK
-    Handle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _expand,
+    Handle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, NULL,
                           NULL, printLine, _TRMEM_CLOSE_CHECK_FREE );
     if( Handle == NULL ) {
         PrtMsg( FTL | UNABLE_TO_TRACK );
@@ -408,6 +407,7 @@ char *StrDupSafe( const char *str )
 void MemShrink( void )
 /***************************/
 {
+#if defined( __WATCOMC__ )
 #ifdef USE_FAR
     _nheapshrink();
     _fheapshrink();
@@ -415,16 +415,6 @@ void MemShrink( void )
 #elif !defined( __UNIX__ )
     _heapshrink();
 #endif
-}
-
-
-void MemDecreaseSize( void *ptr, size_t new_size )
-/*******************************************************/
-{
-#ifdef TRACK
-    _trmem_expand( ptr, new_size, _trmem_guess_who(), Handle );
-#else
-    _expand( ptr, new_size );
 #endif
 }
 

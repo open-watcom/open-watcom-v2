@@ -34,7 +34,6 @@
 #define _IN_MVECSTR
 
 #include "make.h"
-#include "massert.h"
 #include "mmemory.h"
 #include "mrcmsg.h"
 #include "msg.h"
@@ -208,7 +207,7 @@ STATIC char *expandVec( VECSTR vec )
     }
     *d = NULLCHAR;
 
-    assert( d - result == ((OURPTR)vec)->d.totlen );
+    assert( (size_t)( d - result ) == ((OURPTR)vec)->d.totlen );
 
     return( result );
 }

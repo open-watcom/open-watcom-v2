@@ -29,15 +29,12 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <string.h>
 
-#include "massert.h"
-#include "mtypes.h"
+#include "make.h"
 #include "mstream.h"
 #include "mlex.h"
 #include "macros.h"
-#include "make.h"
 #include "mexec.h"
 #include "mmemory.h"
 #include "mmisc.h"
@@ -154,9 +151,9 @@ struct nestIf {
 
 #define MAX_NEST    32                  // maximum depth of if nesting
 
-STATIC struct nestIf nest[MAX_NEST];    // stack for nesting
-STATIC size_t nestLevel;                // items on stack
-STATIC struct nestIf curNest;           // current skip info
+STATIC struct nestIf    nest[MAX_NEST]; // stack for nesting
+STATIC nest_level       nestLevel;      // items on stack
+STATIC struct nestIf    curNest;        // current skip info
 
 
 void PreProcInit( void )
@@ -274,7 +271,7 @@ STATIC int getPreTok( void )
     assert( ( key - (char **)directives >= 0 ) &&
             ( key - (char **)directives <= D_MAX ) );
 
-    return( key - (char **)directives );
+    return( (int)( key - (char **)directives ) );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);
@@ -1249,10 +1246,10 @@ STATIC void makeToken( enum Tokens type, TOKEN_TYPE *current, int *index )
 }
 
 
-STATIC int_32 makeHexNumber( char *inString, int *stringLength )
-/**************************************************************/
+STATIC INT32 makeHexNumber( char *inString, int *stringLength )
+/*************************************************************/
 {
-    int_32  value;
+    INT32   value;
     char    c;
     char    *currentChar;
 
@@ -1272,7 +1269,7 @@ STATIC int_32 makeHexNumber( char *inString, int *stringLength )
         value = value * 16 + c;
         ++currentChar;
     }
-    *stringLength = currentChar - inString;
+    *stringLength = (int)( currentChar - inString );
     return( value );
 }
 
@@ -1280,7 +1277,7 @@ STATIC int_32 makeHexNumber( char *inString, int *stringLength )
 STATIC void makeNumberToken( char *inString, TOKEN_TYPE *current, int *index )
 /****************************************************************************/
 {
-    int_32  value;
+    INT32   value;
     char    *currentChar;
     char    c;
     int     hexLength;
@@ -1313,7 +1310,7 @@ STATIC void makeNumberToken( char *inString, TOKEN_TYPE *current, int *index )
     current->data.number = value;
     current->type = OP_INTEGER;
 
-    *index = currentChar - inString;
+    *index = (int)( currentChar - inString );
 }
 
 
@@ -1382,7 +1379,7 @@ STATIC void makeAlphaToken( char *inString, TOKEN_TYPE *current, int *index )
     }
 
     *pwrite = NULLCHAR;
-    *index = r - inString;
+    *index = (int)( r - inString );
 }
 
 
@@ -1463,7 +1460,7 @@ STATIC void makeFuncToken( char *inString, TOKEN_TYPE *current, int *index )
                     current->type          = OP_INTEGER;
                     current->data.number   = is( current->data.string );
                     ++probe;    // Swallow OP_PAREN_RIGHT
-                    *index = probe - currentPtr;
+                    *index = (int)( probe - currentPtr );
                 }
             }
         } else {
@@ -1640,7 +1637,7 @@ STATIC void ScanToken( char *inString, TOKEN_TYPE *current, int *tokenLength )
         makeToken( OP_ENDOFSTRING, current, &index );
     }
 
-    *tokenLength = index + (currentString - inString);
+    *tokenLength = index + (int)( currentString - inString );
 }
 
 
@@ -2103,8 +2100,8 @@ STATIC void unaryExpr( DATAVALUE *leftValue )
 }
 
 
-size_t GetNestLevel( void )
-/*************************/
+nest_level GetNestLevel( void )
+/*****************************/
 {
     return( nestLevel );
 }

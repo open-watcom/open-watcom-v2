@@ -31,11 +31,8 @@
 
 #ifndef _MEMORY_H
 #define _MEMORY_H   1
-#include <stdlib.h>
-#include <string.h>
 
-#include "make.h"
-#include "mtypes.h"
+#include <string.h>
 
 #ifdef TRACK
 #define TRMEM_ENV_VAR   "TRMEM_CODE"
@@ -54,7 +51,6 @@ extern char *StrDupSafe( const char *str );
 extern void MemInit( void );
 extern void MemFini( void );
 extern void MemShrink( void );
-extern void MemDecreaseSize( void *ptr, size_t new_size );
 
 #ifdef USE_FAR
 

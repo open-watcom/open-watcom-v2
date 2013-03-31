@@ -31,9 +31,8 @@
 
 #ifndef _MCACHE_H
 #define _MCACHE_H   1
-#include <time.h>
 
-#include "make.h"
+#include <time.h>
 
 extern void     CacheInit( void );
 extern void     CacheFini( void );

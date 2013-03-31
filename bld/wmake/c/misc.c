@@ -34,16 +34,13 @@
 #else
     #include <direct.h>
 #endif
-#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 
 #include "make.h"
-#include "massert.h"
 #include "mmemory.h"
 #include "mmisc.h"
 #include "pathgrp.h"
-#include "mtypes.h"
 #include "mlex.h"
 
 static ENV_TRACKER  *envList;
@@ -98,7 +95,7 @@ char *FindNextWS( char *str )
     return( str );
 }
 
-char *RemoveDoubleQuotes( char *dst, int maxlen, const char *src )
+char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
 /************************************************************************
  * Removes doublequote characters from string and copies other content
  * from src to dst. Only maxlen number of characters are copied to dst
@@ -107,7 +104,7 @@ char *RemoveDoubleQuotes( char *dst, int maxlen, const char *src )
 {
     char    *orgdst = dst;
     char    string_open = 0;
-    int     pos = 0;
+    size_t  pos = 0;
     int     t;
 
     assert( maxlen );
@@ -412,8 +409,7 @@ const char *DoWildCard( const char *base )
 
     assert( path != NULL && parent != NULL );
 
-    entry = readdir( parent );
-    while( entry != NULL ) {
+    while( (entry = readdir( parent )) != NULL ) {
 #ifndef __UNIX__
         if( ( entry->d_attr & IGNORE_MASK ) == 0 ) {
 #endif
@@ -423,7 +419,6 @@ const char *DoWildCard( const char *base )
 #ifndef __UNIX__
         }
 #endif
-        entry = readdir( parent );
     }
     if( entry == NULL ) {
         DoWildCardClose();

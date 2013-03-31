@@ -31,11 +31,11 @@
 
 #ifndef _MTARGET_H
 #define _MTARGET_H  1
+
 #include <time.h>
 
 #include "mhash.h"
 #include "mlex.h"
-#include "mtypes.h"
 
 typedef struct TargAttr     TATTR;
 typedef struct Target       TARGET;

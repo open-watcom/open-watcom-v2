@@ -31,7 +31,6 @@
 
 #ifndef _MHASH_H
 #define _MHASH_H    1
-#include "mtypes.h"
 
 typedef UINT16  HASH_T;
 
