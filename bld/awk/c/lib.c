@@ -55,7 +55,7 @@ extern	Awkfloat *ARGC;
 static Cell dollar0 = { OCELL, CFLD, NULL, "", 0.0, REC|STR|DONTFREE };
 static Cell dollar1 = { OCELL, CFLD, NULL, "", 0.0, FLD|STR|DONTFREE };
 
-void recinit(unsigned int n)
+void recinit(int n)
 {
 	if ( (record = (char *) malloc(n)) == NULL
 	  || (fields = (char *) malloc(n+1)) == NULL
@@ -399,7 +399,7 @@ Cell *fieldadr(int n)	/* get nth field */
 void growfldtab(int n)	/* make new fields up to at least $n */
 {
 	int nf = 2 * nfields;
-	size_t s;
+	int s;
 
 	if (n > nf)
 		nf = n;

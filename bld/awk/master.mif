@@ -24,7 +24,9 @@ objs =              &
         ytab.obj    &
         missin95.obj
 
+!ifdef __WATCOM__
 extra_c_flags_ytab = -wcd=118 -wcd=202
+!endif
 
 !include exetarg.mif
 
