@@ -31,7 +31,7 @@
 
 
 #include <stdio.h>
-#include "rcio.h"
+#include "global.h"
 
 char *RcGetEnv( const char *name )
 /********************************/

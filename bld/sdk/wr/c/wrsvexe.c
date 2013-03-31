@@ -64,8 +64,6 @@
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
-// this is a global eternal variable from the resource compiler
-extern HANDLE_INFO           Instance;
 
 /****************************************************************************/
 /* static function prototypes                                               */

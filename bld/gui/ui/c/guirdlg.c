@@ -38,6 +38,7 @@
 #include "guixscal.h"
 #include "guildstr.h"
 #include "watcom.h"
+#include "wressetr.h"
 #include "resdiag.h"
 
 #define DLG_X_MULT      4

@@ -28,25 +28,27 @@
 *               adapted from wlink file (bld\wl\c\wlnkmsg.c)
 *
 ****************************************************************************/
+
+#ifdef __WATCOMC__
 #pragma disable_message( 128 );
+#endif
+
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
 
-#include <unistd.h>
-#include "wresall.h"
-#include "layer0.h"
-#include "global.h"
-#include "iortns.h"
-
 #include "wgml.h"
-
-
+#include "bool.h"
+#include "wio.h"
+#include "wressetr.h"
+#include "wresset2.h"
 #include "wreslang.h"
-#include "rcmem.h"
+
+#ifdef __WATCOMC__
 #pragma enable_message( 128 );
+#endif
 
 HANDLE_INFO Instance;
-static int WGMLItself;
 
+static int WGMLItself;
 static unsigned MsgShift;               // 0 = english, 1000 for japanese
 
 
@@ -55,9 +57,8 @@ static unsigned MsgShift;               // 0 = english, 1000 for japanese
 /*  of wgml.exe                                                            */
 /***************************************************************************/
 
-static off_t WGMLResSeek( int handle, off_t position, int where )
-/***********************************************************/
-/* Workaround wres bug */
+static long res_seeek( WResFileID handle, long position, int where )
+/******************************************************************/
 {
     if( ( where == SEEK_SET ) && ( handle == WGMLItself ) ) {
         return( lseek( handle, position + FileShift, where ) - FileShift );
@@ -66,7 +67,7 @@ static off_t WGMLResSeek( int handle, off_t position, int where )
     }
 }
 
-
+WResSetRtns( open, close, read, write, res_seeek, tell, mem_alloc, mem_free );
 
 /***************************************************************************/
 /*  initialize messages from resource file                                 */
@@ -81,10 +82,6 @@ int init_msgs( void )
     if( _cmdname( fname ) == NULL ) {
         error = TRUE;
     } else {
-        WResRtns.seek = WGMLResSeek;
-        WResRtns.alloc = mem_alloc;
-        WResRtns.free = mem_free;
-
         OpenResFile( &Instance, fname );
         WGMLItself = Instance.handle;
         if( Instance.handle == -1 ) error = TRUE;

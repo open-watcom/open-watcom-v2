@@ -176,9 +176,6 @@ static  char           *CurrScan[MAX_SCANSAVE_PTRS];
         int             ScanSavePtr;
 
 
-enum { false=0, true=1 };  /* values for bools from the parse table */
-
-
 //NYI: begin temp until SSL files can be updated
 typedef enum {
     STK_VOID     = 0x0000,
