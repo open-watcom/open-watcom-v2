@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
-#include <io.h>
-#include <fcntl.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "wio.h"
 #include "regexp.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+#include "clibext.h"
                                         // Search flags:
 #define  M_SEARCH_INVERT        0x01    //      - invert sense of search
 #define  M_SEARCH_EXACT         0x02    //      - pattern must match entire line
@@ -145,12 +145,12 @@ static  unsigned char    CharTrans[ ALPHA_SIZE ] = {
     0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff
 };
 
-static  regexp     *ePatterns[ MAX_SEARCH_STR ];
-static  char       *fPatterns[ MAX_SEARCH_STR ];
+static  regexp      *ePatterns[ MAX_SEARCH_STR ];
+static  char        *fPatterns[ MAX_SEARCH_STR ];
 static  unsigned    PatCount = 0;
 
-static  size_t      IObsize  = 0;
-static  char       *IObuffer = NULL;
+static  unsigned    IObsize   = IOBUF_MIN;
+static  char        *IObuffer = NULL;
 
 static  int         Flags = 0;              // search flags
 static  outmode     Omode = OUT_LINES;      // output mode
@@ -238,9 +238,9 @@ static int searchBuffer( char *buf )
 static char *getNextLine( int in, int newfile, const char *filename, unsigned lineno )
 {
     static int          rd;
-    static char *       offset;
-    static char *       start;
-    static char *       endbuf;
+    static char         *offset;
+    static char         *start;
+    static char         *endbuf;
     static int          finalread;
     static int          done = 0;
 
@@ -249,15 +249,17 @@ static char *getNextLine( int in, int newfile, const char *filename, unsigned li
         return( NULL );
     }
     if( newfile ) {
-        if( -1 == ( rd = read( in, IObuffer, IObsize ) ) ) errorExit( "I/O error" );
+        rd = read( in, IObuffer, IObsize );
+        if( -1 == rd )
+            errorExit( "I/O error" );
         start = offset = IObuffer;
         endbuf = IObuffer + rd;
-        finalread = ( (size_t) rd < IObsize );
+        finalread = ( rd != IObsize );
     }
     for( ; ; ) {
-        size_t const    len = (unsigned int) ( ( endbuf - start ) - ( offset - start ) );
-        char * const    lf = memchr( offset, '\n', len );
-        char * const    line = start;
+        unsigned const      len = ( ( endbuf - start ) - ( offset - start ) );
+        char * const        lf = memchr( offset, '\n', len );
+        char * const        line = start;
 
         if( lf != NULL ) {
             if( lf > IObuffer && lf[-1] == '\r' ) lf[-1] = '\0';
@@ -272,17 +274,20 @@ static char *getNextLine( int in, int newfile, const char *filename, unsigned li
         }
         if( len >= IObsize ) {
             free( IObuffer );
-            if( ( IObuffer = malloc( IObsize += IObsize >> 1 ) ) == 0
-            ||  -1 == lseek( in, -rd, SEEK_CUR ) )
+            IObsize += IObsize >> 1;
+            IObuffer = malloc( IObsize );
+            if( IObuffer == NULL || -1 == lseek( in, -rd, SEEK_CUR ) )
                 errorExit( "line too long: len (%lu) >= IObsize (%lu) at \"%s\":%u",
-                    (unsigned long) len, (unsigned long) IObsize, filename, lineno );
+                    (unsigned long)len, (unsigned long)IObsize, filename, lineno );
             return getNextLine( in, newfile, filename, lineno );
         }
         memmove( IObuffer, offset, len );
         start = IObuffer;
         offset = IObuffer + len;
-        if( -1 == ( rd = read( in, offset, IObsize - len ) ) ) errorExit( "I/O error" );
-        finalread = ( (size_t) rd < IObsize - len );
+        rd = read( in, offset, IObsize - len );
+        if( -1 == rd )
+            errorExit( "I/O error" );
+        finalread = ( rd != IObsize - len );
         endbuf = offset + rd;
     }
 }
@@ -426,7 +431,8 @@ int main( int argc, char **argv )
     int         rematch = 0;    // regexp file matching is OFF
     unsigned    matches = 0;    // number of matches
 
-    if( ( IObuffer = malloc( IObsize = IOBUF_MIN ) ) == NULL )
+    IObuffer = malloc( IObsize );
+    if( IObuffer == NULL )
         errorExit( "insufficient memory for file buffer" );
     CaseIgnore  = FALSE;        // case sensitive match by default
     argv = ExpandEnv( &argc, argv );

@@ -31,15 +31,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined( __OS_qnx__ ) || defined( __OS_qnx16__ )
+#if defined( __QNX__ )
  #include <dir.h>
 #else
  #include <direct.h>
 #endif
+#include "wio.h"
+#include "watcom.h"
 #include "misc.h"
-#include "filerx.h"
 #include "argvrx.h"
 #include "fnutils.h"
+#include "filerx.h"
 
 char **ExpandArgv( int *oargc, char *oargv[], int isrx )
 {
@@ -55,7 +57,7 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
     char                *name;
     char                *extin;
     char                path[_MAX_PATH];
-    void                *crx;
+    void                *crx = NULL;
 
     argc = 1;
     argv = MemAlloc( 2 * sizeof( char * ) );
@@ -92,7 +94,7 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
                     continue;
                 }
             }
-#if defined( __OS_qnx__ ) || defined( __OS_qnx16__ )
+#if defined( __QNX__ )
             if( S_ISREG( nextdirentry->d_stat.st_mode ) ) {
 #else
             if( !( nextdirentry->d_attr & _A_SUBDIR ) ) {

@@ -40,7 +40,7 @@ struct cmd_t {                          /* compiled-command representation */
         char            *lhs;           /* s command lhs */
         sedcmd          *link;          /* label link */
     }                   u;
-    char                command;        /* command code */
+    unsigned char       command;        /* command code */
     char                *rhs;           /* s command replacement string */
     FILE                *fout;          /* associated output file descriptor */
     struct {
@@ -52,9 +52,8 @@ struct cmd_t {                          /* compiled-command representation */
     }                   flags;
 };
 
-#define BAD     ((char *) -1)           /* guaranteed not a string ptr */
+#define BAD     ((char *)-1LL)          /* guaranteed not a string ptr */
 
-
 /* address and regular expression compiled-form markers */
 #define STAR    1       /* marker for Kleene star */
 #define CCHR    2       /* non-newline character to be matched follows */

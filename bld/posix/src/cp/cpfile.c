@@ -41,20 +41,20 @@
 #include <errno.h>
 #include <dos.h>
 #include <direct.h>
-#if defined(__OS_os2386__)
+#if defined( __OS2__ ) && defined( __386__ )
 #define  INCL_DOSFILEMGR
 #define  INCL_DOSERRORS
 #define  INCL_DOSMISC
 #include <os2.h>
-#endif
-#if defined(__OS_nt386__) || defined( __OS_ntaxp__ )
+#elif defined( __NT__ )
 #include <windows.h>
 #endif
+#include "watcom.h"
 #include "cp.h"
-#include "filerx.h"
 #include "fnutils.h"
+#include "filerx.h"
 
-#if defined(__OS_dosos2__) || defined(__OS_dos__) || defined(__OS_pharlap__)
+#if defined( __OS2__ ) && defined( _M_I86 ) || defined( __DOS__ )
 extern long DosGetFullPath( char __FAR *org, char __FAR *real );
 #pragma aux DosGetFullPath = \
         "push   ds" \
@@ -99,7 +99,7 @@ static int osSameFile( char *dest, char *src )
 
 } /* osSameFile */
 
-#elif defined(__OS_nt386__) || defined(__OS_ntaxp__)
+#elif defined( __NT__ )
 /*
  * osSameFile - NT specific same file test
  */
@@ -120,7 +120,7 @@ static int osSameFile( char *dest, char *src )
 
 #endif
 
-#if !defined(__OS_os2386__)
+#if !( defined( __OS2__ ) && defined( __386__ ) )
 /*
  * sameFile - test if two files are the same
  */
@@ -180,7 +180,7 @@ static void recursiveCp( char *source_head, char *source_tail,
 
     DIR                 *directory;
     struct dirent       *nextdirentry;
-    void                *crx;
+    void                *crx = NULL;
     char                *new_source_tail;
     char                *new_dest_tail;
 
@@ -271,13 +271,15 @@ void DoCP( char *f, char *dir )
     char                *source_tail;
     char                dest_buf[ _MAX_PATH ];
     char                *dest_tail;
-    int                 i = strlen( f );
+    unsigned            i;
 
     /*
      * get file path prefix
      */
     source_tail = source_buf;
-    while( --i >= 0 ) {
+    i = strlen( f );
+    while( i > 0 ) {
+        --i;
         if( f[i] == ':' || isFILESEP( f[i] ) ) {
             source_tail = (char *)memcpy( source_buf, f, i + 1 ) + i + 1;
             break;
@@ -325,7 +327,7 @@ void CopyOneFile( char *dest, char *src )
      */
     if( stat( dest,&stat_d ) != -1 ) {
 
-#if !defined(__OS_os2386__)
+#if !( defined( __OS2__ ) && defined( __386__ ) )
         if( sameFile( dest, &stat_d, src, &stat_s ) ) {
             DropPrintALine( "%s and %s the same file, copy failed",src,dest );
             return;
@@ -379,7 +381,7 @@ void IOError( int error )
 
 } /* IOError */
 
-#if defined(__OS_os2386__)
+#if defined( __OS2__ ) && defined( __386__ )
 /*
  * OS2Error - fatal I/O error encountered
  */

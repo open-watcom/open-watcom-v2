@@ -30,18 +30,19 @@
 ****************************************************************************/
 
 #include <stdio.h>
-#include <io.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <dos.h>
 #include <direct.h>
 #include <conio.h>
+#include "wio.h"
+#include "watcom.h"
 #include "lineprt.h"
 #include "misc.h"
 #include "getopt.h"
-#include "filerx.h"
 #include "fnutils.h"
+#include "filerx.h"
 
 char                    *OptEnvVar = "rm";
 
@@ -249,7 +250,7 @@ void DoRM( const char *f )
     }
     while( tmp != NULL ) {
         if( tmp->attr & _A_RDONLY )
-            chmod( tmp->name, S_IWRITE | S_IREAD );
+            chmod( tmp->name, PMODE_RW );
 
         if( iflag ) {
             PrintALine( "Delete %s (y\\n)", tmp->name );

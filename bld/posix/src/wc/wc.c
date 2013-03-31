@@ -121,11 +121,7 @@ void main( int argc, char **argv )
     int         rxflag;
 
     rxflag = 0;
-    while( 1 ) {
-        ch = GetOpt( &argc, argv, "Xwlc", usageMsg );
-        if( ch == -1 ) {
-            break;
-        }
+    while( (ch = GetOpt( &argc, argv, "Xwlc", usageMsg )) != -1 ) {
         switch( ch ) {
         case 'w':
             word_flag = 1;

@@ -1,9 +1,10 @@
 NAME = more
 OBJS =  more.obj
 
-!include $(posix_dir)/mif/targos.mif
-!ifeq targos os2v2
+!ifeq host_os os2
+!ifeq host_cpu 386
 extra_lnk = xlnk
+!endif
 !endif
 
 !include $(posix_dir)/mif/makeone.mif

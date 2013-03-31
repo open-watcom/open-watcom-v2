@@ -1,5 +1,6 @@
 #pmake: os_nt cpu_axp
 
-targos = ntaxp
+host_os  = nt
+host_cpu = axp
 
 !include $(posix_dir)/mif/makeall.mif

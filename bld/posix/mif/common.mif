@@ -7,9 +7,6 @@
 #
 #   posix_dir   Must point to the root of the posix project.
 #
-#   targos      Must be a valid targos.
-#               i.e. include $(posix_dir)/mif/targos.mif before this file.
-#
 #   cflags      If defined, these options to the compiler override the
 #               defaults selected by this file.
 #
@@ -24,54 +21,52 @@
 #
 #       some people don't have the linker variable in their makeinit
 #
+proj_name = posix
 
 posix_autodepends = .AUTODEPEND
 
-!ifeq           targos  dosos2
+!ifeq host_cpu i86
 modelos=c
-!else ifeq      targos  dos
-modelos=c
-!else ifeq      targos  qnx
+!else ifeq host_cpu 386
+!ifeq host_os qnx
 modelos=s
-!else ifeq      targos  qnx16
-modelos=c
-!else ifeq      targos  os2386
+!else
 modelos=f
-!else ifeq      targos  pharlap
+!endif
+!else ifeq host_cpu x64
 modelos=f
-!else ifeq      targos  nt386
-modelos=f
-!else ifeq      targos  ntaxp
+!else ifeq host_cpu axp
 modelos=
 !endif
+
 !ifndef model
 model=$(modelos)
 !endif
 memory_model_i86=$(model)
 memory_model_386=$(model)
 
-libmakepath = $(posix_dir)/misc/$(targos)/
+libmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/
 
 !ifeq bootstrap 1
 libpath =
 !else ifdef __UNIX__
-libpath = $(posix_dir)/misc/$(targos)/
+libpath = $(posix_dir)/misc/$(host_os)$(host_cpu)/
 !else
-libpath = $(posix_dir)\misc\$(targos)\
+libpath = $(posix_dir)\misc\$(host_os)$(host_cpu)\
 !endif
 
-alt_model_dos_s    = mc
-alt_model_dosos2_s = mc
-alt_model_dos_c    = ms
-alt_model_dosos2_c = ms
+alt_model_dosi86_s = mc
+alt_model_os2i86_s = mc
+alt_model_dosi86_c = ms
+alt_model_os2i86_c = ms
 
-!ifeq targos ntaxp
+!ifeq host_cpu axp
 posixlibdir=$(libpath)_s
 !else 
 posixlibdir=$(libpath)m$(model)
 !endif
-!ifdef alt_model_$(targos)_$(model)
-altposixlibdir=$(libpath)$(alt_model_$(targos)_$(model))
+!ifdef alt_model_$(host_os)$(host_cpu)_$(model)
+altposixlibdir=$(libpath)$(alt_model_$(host_os)$(host_cpu)_$(model))
 !endif
 
 !include cproj.mif
@@ -85,9 +80,8 @@ altposixlibdir=$(libpath)$(alt_model_$(targos)_$(model))
 #       define options for each specific operating system supported
 #
 
-extra_cppflags_pharlap = -bt=pharlap
-extra_cppflags_ntaxp   = -DWIN32 -D_WIN32
-extra_cpp_flags = -D__OS_$(targos)__ -DSTANDALONE_RX $(extra_cppflags_$(targos)) $(extra_cppflags)
+extra_cppflags_ntaxp = -DWIN32 -D_WIN32
+extra_cpp_flags      += -DSTANDALONE_RX $(extra_cppflags_$(host_os)$(host_cpu))
 
 !ifndef make_lib
 inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"

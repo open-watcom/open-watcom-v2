@@ -50,7 +50,7 @@ static int      testedOptEnvVar;
 #ifndef __ISVI__
 static int      testedPosixrx;
 #endif
-static char     *envVar;
+static char     *envVar = NULL;
 
 static void eatArg( int *argc, char *argv[], int num )
 {
@@ -92,89 +92,86 @@ int GetOpt( int *argc, char *argv[], char *optstr, const char *usage[] )
         envVar = getenv( OptEnvVar );
     }
 
-    while( 1 ) {
+    currarg = NULL;
+    ch = '\0';
+    while( envVar != NULL || argv[OptInd] != NULL ) {
         if( envVar != NULL ) {
             currarg = envVar;
+            while( isspace( ch = currarg[optOff] ) ) {
+                optOff++;
+            }
         } else {
             currarg = argv[OptInd];
-            if( currarg == NULL ) {
-                return( -1 );
-            }
-        }
-        while( 1 ) {
             ch = currarg[optOff];
-            if( isspace( ch ) && envVar != NULL ) {
-                optOff++;
-                continue;
-            }
-            break;
         }
         if( optOff > 1 || ch == '-' || ch == AltOptChar ) {
-            if( optOff > 1 ) {
-                ch = currarg[optOff];
-                if( ch == '-' || ch == AltOptChar ) {
-                    OptChar = ch;
-                    optOff++;
-                    ch = currarg[optOff];
-                }
-            } 
-            else {
-                OptChar = ch;
-                optOff++;
-                ch = currarg[optOff];
-            }
-            if( ch == '\0' ) { // option char by itself should be
-                return( -1 );           // left alone
-            }
-            if( ch == '-' && currarg[optOff+1] == '\0' ) {
-                eatArg( argc, argv, 1 );
-                return( -1 );  // "--" PoSIX end of options delimiter.
-            }
-            if( ch == '?' ) {
-                Quit( usage, NULL );
-            }
-            if( optstr[0] == '#' && isdigit( ch ) ) {
-                OptArg = &currarg[optOff];
-                eatArg( argc, argv, 1 );
-                return( '#' );
-            }
-            ptr = strchr( optstr, ch );
-            if( ptr == NULL || *ptr == ':' ) {
-                Quit( usage, "Invalid option '%c'\n", ch );
-            }
-            if( *( ptr + 1 ) == ':' ) {
-#ifndef __ISVI__
-                if( *( ptr + 2 ) == ':' ) {
-                    if( currarg[optOff + 1] != 0 ) {
-                        OptArg = &currarg[optOff + 1];
-                    }
-                    eatArg( argc, argv, 1 );
-                    return( ch );
-                }
-#endif
-                if( currarg[optOff + 1] == 0 ) {
-                    if( argv[OptInd + 1] == NULL ) {
-                        Quit( usage, "Option '%c' requires a parameter\n", ch );
-                    }
-                    OptArg = argv[OptInd + 1];
-                    eatArg( argc, argv, 2 );
-                    return( ch );
-                }
-                OptArg = &currarg[optOff + 1];
-                eatArg( argc, argv, 1 );
-                return( ch );
-            }
-            optOff++;
-            if( currarg[optOff] == 0 ) {
-                eatArg( argc, argv, 1 );
-            }
-            return( ch );
+            break;
+        }
+        if( envVar != NULL ) {
+            envVar = NULL;
         } else {
-            if( envVar != NULL ) {
-                envVar = NULL;
-            } else {
-                OptInd++;
-            }
+            OptInd++;
         }
     }
+    if( envVar == NULL && argv[OptInd] == NULL ) {
+        return( -1 );
+    }
+    if( optOff > 1 ) {
+        ch = currarg[optOff];
+        if( ch == '-' || ch == AltOptChar ) {
+            OptChar = ch;
+            optOff++;
+            ch = currarg[optOff];
+        }
+    } else {
+        OptChar = ch;
+        optOff++;
+        ch = currarg[optOff];
+    }
+    if( ch == '\0' ) {  // option char by itself should be
+        return( -1 );   // left alone
+    }
+    if( ch == '-' && currarg[optOff + 1] == '\0' ) {
+        eatArg( argc, argv, 1 );
+        return( -1 );   // "--" PoSIX end of options delimiter.
+    }
+    if( ch == '?' ) {
+        Quit( usage, NULL );
+    }
+    if( optstr[0] == '#' && isdigit( ch ) ) {
+        OptArg = &currarg[optOff];
+        eatArg( argc, argv, 1 );
+        return( '#' );
+    }
+    ptr = strchr( optstr, ch );
+    if( ptr == NULL || *ptr == ':' ) {
+        Quit( usage, "Invalid option '%c'\n", ch );
+    }
+    if( *( ptr + 1 ) == ':' ) {
+#ifndef __ISVI__
+        if( *( ptr + 2 ) == ':' ) {
+            if( currarg[optOff + 1] != 0 ) {
+                OptArg = &currarg[optOff + 1];
+            }
+            eatArg( argc, argv, 1 );
+            return( ch );
+        }
+#endif
+        if( currarg[optOff + 1] == 0 ) {
+            if( argv[OptInd + 1] == NULL ) {
+                Quit( usage, "Option '%c' requires a parameter\n", ch );
+            }
+            OptArg = argv[OptInd + 1];
+            eatArg( argc, argv, 2 );
+            return( ch );
+        }
+        OptArg = &currarg[optOff + 1];
+        eatArg( argc, argv, 1 );
+        return( ch );
+    }
+    optOff++;
+    if( currarg[optOff] == 0 ) {
+        eatArg( argc, argv, 1 );
+    }
+    return( ch );
 }

@@ -65,9 +65,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#ifdef UNIX
-    #include "clibext.h"
-#endif
+#include "clibext.h"
 #include "../h/regexp.h"
 
 
@@ -284,7 +282,8 @@ regexp *RegComp( char *instr )
     regexp      *r;
     char        *scan, *longest, *exp;
     char        buff[MAX_STR*2];
-    int         len, flags, i, j, ignmag = FALSE, k;
+    int         flags, ignmag = FALSE;
+    unsigned    i, j, k, len;
 
 #ifdef WANT_EXCLAMATION
     if( instr[0] == '!' ) {
@@ -400,7 +399,8 @@ regexp *RegComp( char *instr )
 static char *reg( int paren, int *flagp )
 {
     char        *ret, *br, *ender;
-    int         parno, flags;
+    int         flags;
+    int         parno = 0;
 
     *flagp = HASWIDTH;      /* Tentatively. */
 
@@ -681,12 +681,12 @@ static char *regatom( int *flagp )
         break;
     default:
         {
-            int len;
+            unsigned len;
             char ender;
 
             regparse--;
             len = strcspn( regparse, META );
-            if( len <= 0 ) {
+            if( len == 0 ) {
                 FAIL( ERR_RE_INTERNAL_FOULUP );
             }
             ender = *( regparse + len );
@@ -823,7 +823,7 @@ static char     **regendp;          /* Ditto for endp. */
 /* Forwards.  */
 static int      regtry( regexp *prog, char *string );
 static int      regmatch( char *prog );
-static int      regrepeat( char *p );
+static unsigned regrepeat( char *p );
 
 /* RegExec2 - match a regexp against a string */
 static int RegExec2( regexp *prog, char *string, bool anchflag )
@@ -958,7 +958,7 @@ static int regmatch( char *prog )
             break;
         case EXACTLY:
             {
-                int len;
+                unsigned len;
                 char *opnd;
 
                 opnd = OPERAND( scan );
@@ -1169,9 +1169,9 @@ static int regmatch( char *prog )
         case PLUS:
             {
                 char nextch;
-                int no;
+                unsigned no;
                 char *save;
-                int min;
+                unsigned min;
 
                 /*
                  * Lookahead to avoid useless match attempts
@@ -1233,9 +1233,9 @@ static int regmatch( char *prog )
 }
 
 /* regrepeat - repeatedly match something simple, report how many */
-static int regrepeat( char *p )
+static unsigned regrepeat( char *p )
 {
-    int         count = 0;
+    unsigned    count = 0;
     char        *scan, *opnd;
 
     scan = reginput;
@@ -1276,7 +1276,6 @@ static int regrepeat( char *p )
         break;
     }
     reginput = scan;
-
     return( count );
 }
 

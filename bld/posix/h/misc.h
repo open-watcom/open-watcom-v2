@@ -35,15 +35,15 @@
 
 void    Quit( const char *usage_msg[], const char *msg, ... );
 void    Die( const char *str, ... );
-#ifndef __ALPHA__
+#if defined( __WATCOMC__ ) && !defined( __ALPHA__ )
 #pragma aux Quit aborts;
 #pragma aux Die aborts;
 #endif
 
 long    GetClusterSize( unsigned drive );
 
-void    *MemAlloc( unsigned size );
-void    *MemRealloc( void *orig, unsigned size );
+void    *MemAlloc( size_t size );
+void    *MemRealloc( void *orig, size_t size );
 void    MemFree( void *ptr );
 
 #endif

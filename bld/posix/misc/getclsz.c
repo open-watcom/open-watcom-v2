@@ -36,23 +36,24 @@
    28-jan-92    Craig Eisler    split from ls.c
    25-mar-92    Craig Eisler    NT port
  */
-#if !( defined( __OS_qnx__ ) || defined( __OS_qnx16__ ) )
+#if !defined( __QNX__ )
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
-#if defined( __OS_dosos2__ ) || defined( __OS_os2v2__ )
+#if defined( __OS2__ )
 #define INCL_DOS
 #include <os2.h>
 #endif
-#if defined( __OS_nt__ )
+#if defined( __NT__ )
 #include <windows.h>
 #endif
+#include "clibext.h"
 
 long GetClusterSize( unsigned drive )
 {
     if( drive == 0 )
         _dos_getdrive( &drive );
-#if defined( __OS_nt__ )
+#if defined( __NT__ )
     {
         char    root[4];
         char    *proot;
@@ -70,7 +71,7 @@ long GetClusterSize( unsigned drive )
         GetDiskFreeSpace( root, &spc, &bps, &nofc, &tnoc );
         return( spc * bps );
     }
-#elif defined( __OS_dosos2__ ) || defined( __OS_os2v2__ )
+#elif defined( __OS2__ )
     {
         FSALLOCATE      fs;
         DosQFSInfo( drive, 1, ( void *) & fs, sizeof( FSALLOCATE ) );

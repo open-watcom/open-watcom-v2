@@ -40,37 +40,43 @@
 #include <sys/stat.h>
 #include <sys/utime.h>
 #include <dos.h>
-#if defined(__OS_os2386__)
+#if defined( __OS2__ ) && defined( __386__ )
 #define  INCL_DOSFILEMGR
 #define  INCL_DOSERRORS
 #define  INCL_DOSMISC
 #include <os2.h>
 #endif
 #include "cp.h"
+#include "clibext.h"
+
+#if !defined( __WATCOMC__ ) && defined( __NT__ )
+#else
+#define INVALID_HANDLE_VALUE -1
+#endif
 
 /* forward declarations */
 static int readABuffer( void );
 static void freeCB( ctrl_block *cb, int freecb );
-
 
 /*
  * GrabFile - read in a specified file, dump it to destination
  */
 int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
 {
-#if defined(__OS_os2386__)
+#if defined( __OS2__ ) && defined( __386__ )
     int                 result;
 #else
     ctrl_block          *cb;
 #endif
+#if !defined(__WATCOMC__) && ( defined( __NT__ ) )
+    HANDLE              handle;
+#else
     int                 handle;
+#endif
     int                 okay=TRUE;
     timedate            td;
-#if __WATCOMC__ >= 1280
-    unsigned            t,d;
-#else
-    unsigned short      t,d;
-#endif
+    unsigned            t = 0;
+    unsigned            d = 0;
 
     /*
      * file handle
@@ -158,7 +164,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
         }
     }
 
-#if defined(__OS_os2386__)
+#if defined( __OS2__ ) && defined( __386__ )
     if( !sflag ) {
         PrintALineThenDrop( "Copying file %s to %s", src, dest );
     }
@@ -206,7 +212,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
     strcpy( cb->outname, dest );
     cb->bytes_pending = stat_s->st_size;
     cb->head = cb->curr = NULL;
-    cb->outhandle = -1;
+    cb->outhandle = INVALID_HANDLE_VALUE;
     cb->inhandle = handle;
     cb->prev = cb->next = NULL;
     cb->srcattr = srcattr;
@@ -248,7 +254,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
 
 } /* GrabFile */
 
-#if !defined(__OS_os2386__)
+#if !( defined( __OS2__ ) && defined( __386__ ) )
 /*
  * readABuffer - read a data buffer
  */
@@ -272,11 +278,7 @@ static int readABuffer( void )
     /*
      * get buffer
      */
-    while( TRUE ) {
-        buff = FarAlloc( buffsize );
-        if( buff != NULL ) {
-            break;
-        }
+    while( (buff = FarAlloc( buffsize )) == NULL ) {
         if( flushed ) {
             Die( "Out of FAR memory!\n" );
         }
@@ -290,8 +292,7 @@ static int readABuffer( void )
     /*
      * read data
      */
-    if( _dos_read( CBTail->inhandle, buff, buffsize, &bytes ) ||
-                bytes != buffsize ) {
+    if( _dos_read( CBTail->inhandle, buff, buffsize, &bytes ) || bytes != buffsize ) {
         DropPrintALine( "Read error on file %s", CBTail->inname );
         IOError( errno );
     }
@@ -368,7 +369,7 @@ static void freeCB( ctrl_block *cb, int freecb )
 void FlushMemoryBlocks()
 {
     ctrl_block          *curr,*tmp;
-    char                __FAR *buff;
+    char                __FAR *buff = NULL;
     mem_block           *mb;
     long                total=0;
     unsigned            bytes;
@@ -383,10 +384,8 @@ void FlushMemoryBlocks()
         /*
          * open file if we have to
          */
-        if( curr->outhandle < 0 ) {
-//          if( _dos_creat( curr->outname, _A_NORMAL, &curr->outhandle ) ) {
-            curr->outhandle = creat( curr->outname, S_IRWXU  );
-            if( curr->outhandle < 0 ) {
+        if( curr->outhandle == INVALID_HANDLE_VALUE ) {
+            if( _dos_creat( curr->outname, _A_NORMAL, &curr->outhandle ) ) {
                 DropPrintALine( "Error opening destination file %s",curr->outname );
                 IOError( errno );
             }
@@ -408,8 +407,7 @@ void FlushMemoryBlocks()
                 buff = mb->where.buffer;
             }
             total += (long) mb->buffsize;
-            if( _dos_write( curr->outhandle, buff, mb->buffsize, &bytes ) ||
-                        bytes != mb->buffsize ) {
+            if( _dos_write( curr->outhandle, buff, mb->buffsize, &bytes ) || bytes != mb->buffsize ) {
                 DropPrintALine( "Error writing destination file %s",curr->outname );
                 IOError( errno );
             }
@@ -419,7 +417,7 @@ void FlushMemoryBlocks()
             if( npflag ) {
                 _dos_setftime( curr->outhandle, curr->d, curr->t  );
             }
-            close( curr->outhandle );
+            _dos_close( curr->outhandle );
             if( pattrflag ) {
                 _dos_setfileattr( curr->outname, curr->srcattr );
             }

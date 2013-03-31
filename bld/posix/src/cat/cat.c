@@ -31,15 +31,15 @@
 
 
 #include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "wio.h"
 #include "misc.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+#include "clibext.h"
 
 #define  BUFSIZE    16384
 
@@ -78,7 +78,7 @@ void main( int argc, char **argv ) {
     argv = ExpandEnv( &argc, argv );
 
     rxflag = 0;
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "X", usageMsg );
         if( ch == -1 ) {
             break;

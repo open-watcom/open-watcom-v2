@@ -30,11 +30,11 @@
 
 
 #include <stdio.h>
-#if defined(__OS_nt386__) || defined(__OS_ntaxp__)
+#if defined( __NT__ )
 void main( void ) { printf( "Not implemented for NT\n" ); }
-#elif defined(__OS_os2__) || defined(__OS_os2386__)
+#elif defined( __OS2__ )
 void main( void ) { printf( "Not implemented for OS/2\n" ); }
-#elif defined(__OS_qnx__) || defined(__OS_qnx16__)
+#elif defined( __QNX__ )
 void main( void ) { printf( "Not implemented for QNX\n" ); }
 #else
 #include <stdlib.h>
@@ -80,19 +80,19 @@ struct device {
 };
 
 void far *__first_pid( void );
-#ifdef __386__
+#ifdef _M_I86
+#pragma aux __first_pid = \
+        /* 0xb4 0x52    */ "mov ah,52h" \
+        /* 0xcd 0x21    */ "int 21h"  \
+                           "mov ax,es" \
+        value [ax bx];
+#else
 #pragma aux __first_pid = \
                            "xor ebx,ebx" \
         /* 0xb4 0x52    */ "mov ah,52h" \
         /* 0xcd 0x21    */ "int 21h"  \
                            "mov ax,es" \
         value [ax ebx];
-#else
-#pragma aux __first_pid = \
-        /* 0xb4 0x52    */ "mov ah,52h" \
-        /* 0xcd 0x21    */ "int 21h"  \
-                           "mov ax,es" \
-        value [ax bx];
 #endif
 
 static void do_dev( void )

@@ -16,10 +16,10 @@ resolves references at the end.
 
 #include <assert.h>
 #include <ctype.h>                      /* isdigit(), isspace() */
-#include <unistd.h>                     /* isatty() */
 #include <stdio.h>                      /* uses getc, fprintf, fopen, fclose */
 #include <stdlib.h>                     /* uses exit */
 #include <string.h>                     /* imported string functions */
+#include "wio.h"
 #include "sed.h"                        /* command type struct & name defines */
 
 #define MAXCMDS         400             /* max number of compiled commands */
@@ -241,9 +241,13 @@ int main( int argc, char *argv[] )
 
     lablst->link = cmdp;        /* set up header of label linked list */
     resolve();                  /* resolve label table indirections */
+#ifndef _MSC_VER
     (void)setvbuf( stdout, NULL, _IOLBF, 0 ); /* Improve reactivity in a pipe */
+#endif
     if( eargc <= 0 ) {           /* if there are no files specified */
+#ifndef _MSC_VER
         (void)setvbuf( stdin, NULL, _IOLBF, 0 ); /* Improve reactivity in a pipe */
+#endif
         execute( NULL );        /*   execute commands on stdin only */
     } else while( --eargc >= 0 )  /* else do commands on each file specified */
         execute( *eargv++ );
@@ -269,7 +273,7 @@ static void compile( void )
         XCMD,  H+YCMD, 0,      H+BCMD, 0,       H,       0,           0, /* xyz{|}~  */
     };
 
-    char                ccode;
+    unsigned char   ccode = 0;
 
     for( ;; ) {                         /* main compilation loop */
         if( !cp ) {
@@ -292,7 +296,9 @@ static void compile( void )
                                         /* compile first address */
         if( fp >= poolend )
             ABORT( TMTXT );             /* Not exercised by sedtest.mak */
-        if( ( fp = getaddress( cmdp->addr1 = fp ) ) == BAD )
+        cmdp->addr1 = fp;
+        fp = getaddress( fp );
+        if( fp == BAD )
             ABORT( AGMSG );
 
         if( fp == cmdp->addr1 ) {       /* if empty RE was found */
@@ -304,7 +310,8 @@ static void compile( void )
                 cp++;
                 if( fp >= poolend )
                     ABORT( TMTXT );     /* Not exercised by sedtest.mak */
-                fp = getaddress( cmdp->addr2 = fp );
+                cmdp->addr2 = fp;
+                fp = getaddress( fp );
                 if( fp == BAD || fp == NULL )
                     ABORT( AGMSG );
             } else
@@ -318,8 +325,7 @@ static void compile( void )
             cmdp->flags.allbut = 1;
 
         SKIPWS( cp );                   /* get cmd char, range-check it */
-        if( ( *cp < LOWCMD ) || ( *cp > '~' )
-                 || ( ( ccode = cmdmask[*cp - LOWCMD] ) == 0 ) )
+        if( ( *cp < LOWCMD ) || ( *cp > '~' ) || ( ( ccode = cmdmask[*cp - LOWCMD] ) == 0 ) )
             ABORT( NSCAX );
 
         cmdp->command = ccode & ~H;     /* fill in command value */

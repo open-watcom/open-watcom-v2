@@ -87,7 +87,7 @@ static long     BufferPos;
 static long     FilePos;        // actually BUFF_HIGH(current file position)
 static long     FileSize;
 
-#if defined(__OS_dos__)||defined(__OS_dosos2__)
+#if defined( __DOS__ ) || defined( __OS2__ ) && defined( _M_I86 )
 char GetRawChar( void );
 #pragma aux GetRawChar = \
         "mov    ah,00h" \
@@ -100,10 +100,10 @@ char GetRawChar( void );
  */
 static int getChar( void )
 {
-#if defined(__OS_dos__)
+#if defined( __DOS__ )
     return( GetRawChar() );
 #else
-#if defined(__OS_dosos2__)
+#if defined( __OS2__ ) && defined( _M_I86 )
     if( _osmode == DOS_MODE ) {
         return GetRawChar();
     }

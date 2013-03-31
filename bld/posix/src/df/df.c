@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#if defined( __OS_os2386__ ) || defined( __OS_dosos2__ )
+#if defined( __OS2__ )
 #include <os2.h>
-#elif defined( __OS_nt386__ ) || defined( __OS_ntaxp__ )
+#elif defined( __NT__ )
 #include <windows.h>
 #endif
 #include <stdio.h>
@@ -64,7 +64,7 @@ static const char *usageMsg[] = {
     NULL
 };
 
-#if defined( __OS_dos__ ) || defined( __OS_dosos2__ ) || defined( __OS_pharlap__ )
+#if defined( __DOS__ ) || defined( __OS2__ ) && defined( _M_I86 )
 extern short CheckRemovable( char );
 #pragma aux CheckRemovable = \
         "mov    ax,04408h" \
@@ -93,7 +93,7 @@ extern short CheckRemote( char );
 /*
  * doGetDriveType - get the type of drive A-Z
  */
-#ifdef __OS_dos__
+#ifdef __DOS__
 static drive_type doGetDriveType( int drv )
 #else
 static drive_type dosDoGetDriveType( int drv )
@@ -114,12 +114,12 @@ static drive_type dosDoGetDriveType( int drv )
 } /* doGetDriveType */
 #endif
 
-#if defined( __OS_os2386__ ) || defined( __OS_dosos2__ )
+#if defined( __OS2__ )
 
-#ifdef __OS_os2386__
-#define STUPID_UINT     unsigned long
-#else
+#ifdef _M_I86
 #define STUPID_UINT     unsigned short
+#else
+#define STUPID_UINT     unsigned long
 #endif
 /*
  * doGetDriveType - get the type of drive A-Z
@@ -135,7 +135,7 @@ static drive_type doGetDriveType( int drv )
     STUPID_UINT type;
     int         rc;
 
-#ifdef __OS_dosos2__
+#ifdef _M_I86
     if( _osmode == 0 ) {
         return( dosDoGetDriveType( drv ) );
     } else {
@@ -169,7 +169,7 @@ static drive_type doGetDriveType( int drv )
             map >>= 1;
         }
         return( DRIVE_NONE );
-#ifdef __OS_dosos2__
+#ifdef _M_I86
     }
 #endif
 
@@ -191,7 +191,7 @@ unsigned _dos_getdiskfree( unsigned dnum, struct diskfree_t *df )
     return( 0 );
 }
 
-#elif defined( __OS_nt386__ ) || defined( __OS_ntaxp__ )
+#elif defined( __NT__ )
 
 /*
  * doGetDriveType - get the type of drive A-Z

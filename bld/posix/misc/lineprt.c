@@ -47,7 +47,7 @@
 extern void Die( char *str );
 
 static int      _dropped = TRUE;
-static int      _lastlinelen = 0;
+static unsigned _lastlinelen = 0;
 //                           12345678 1 2345678 2 2345678 3 2345678 4 2345678 5 2345678 6 23456
 static char     _spaces[] = "                                                                  ";
 char            *buffer;
@@ -57,15 +57,16 @@ void PrintALine( char *str, ... )
 {
     va_list     al;
     char        bob[256];
-    int         len, i;
+    unsigned    len;
+    unsigned    i = 0;
 
     va_start( al, str );
     vsprintf( bob, str, al );
     va_end( al );
     len = strlen( bob );
-    i = _lastlinelen - len;
-    if( i < 0 )
-        i = 0;
+    if( _lastlinelen > len ) {
+        i = _lastlinelen - len;
+    }
     _spaces[i] = 0;
     printf( "%c%s%s", ( char ) 13, bob, _spaces );
     _spaces[i] = ' ';
@@ -78,15 +79,16 @@ void PrintALineThenDrop( char *str, ... )
 {
     va_list     al;
     char        bob[256];
-    int         len, i;
+    unsigned    len;
+    unsigned    i = 0;
 
     va_start( al, str );
     vsprintf( bob, str, al );
     va_end( al );
     len = strlen( bob );
-    i = _lastlinelen - len;
-    if( i < 0 )
-        i = 0;
+    if( _lastlinelen > len ) {
+        i = _lastlinelen - len;
+    }
     _spaces[i] = 0;
     printf( "%c%s%s\n", 13, bob, _spaces );
     _spaces[i] = ' ';

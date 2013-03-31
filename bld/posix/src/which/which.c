@@ -31,13 +31,14 @@
 
 
 #include <direct.h>
-#include <io.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "wio.h"
 #include "getopt.h"
 #include "misc.h"
 #include "fnutils.h"
+#include "clibext.h"
 
 static int foundAFile;
 static int findAll;

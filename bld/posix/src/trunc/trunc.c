@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#if defined(__OS_qnx__) || defined(__OS_qnx16__)
+#if defined(__QNX__)
  #include <utime.h>
 #else
  #include <sys/utime.h>

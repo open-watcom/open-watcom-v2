@@ -18,10 +18,10 @@ readout() and memeql() are output and string-comparison utilities.
 */
 
 #include <assert.h>
-#include <unistd.h>                     /* isatty() */
 #include <stdio.h>                      /* {f}puts, {f}printf, etc. */
 #include <ctype.h>                      /* isprint(), isdigit(), toascii() */
 #include <stdlib.h>                     /* for exit() */
+#include "wio.h"
 #include "sed.h"                        /* command structures & constants */
 
 #define MAXHOLD         MAXBUF          /* size of the hold space */
@@ -68,8 +68,7 @@ static int      match( char *expbuf, int gf, int is_cnt );
 static int      advance( register char *lp, register char *ep );
 static int      substitute( sedcmd const *ipc );
 static void     dosub( char const *rhsbuf );
-static char     *place( register char *asp, register char const *al1,
-    register char const *al2 );
+static char     *place( register char *asp, register char const *al1, register char const *al2 );
 static void     listto( register char const *p1, FILE *fp );
 static void     command( sedcmd *ipc );
 static char     *getline( register char *buf );
@@ -99,7 +98,7 @@ void execute( const char *file )        /* name of text source file to filter */
     for( ;; ) {
                                         /* get next line to filter */
                                         /* jump is set but not cleared by D */
-        if( ( execp = getline( jump ? spend : linebuf ) ) == BAD ) {
+        if( ( execp = getline( jump ? spend : linebuf ) ) == NULL ) {
             if( jump ) {
                 for( p1 = linebuf; p1 < spend; p1++ )
                     putc( *p1, stdout );
@@ -110,7 +109,7 @@ void execute( const char *file )        /* name of text source file to filter */
         jump = FALSE;
         spend = execp;
                                         /* compiled commands execute loop */
-        for( ipc = cmds; ipc->command; ipc++ ) {
+        for( ipc = cmds; ipc->command != 0; ipc++ ) {
             if( !selected( ipc ) )
                 continue;
         doit:
@@ -734,7 +733,7 @@ static void command( sedcmd *ipc )
         if( !nflag )
             puts( linebuf );            /* flush out the current line */
         readout();                      /* do any pending a, r commands */
-        if( ( execp = getline( linebuf ) ) == BAD ) {
+        if( ( execp = getline( linebuf ) ) == NULL ) {
             pending = ipc;
             delete = TRUE;
             break;
@@ -745,7 +744,7 @@ static void command( sedcmd *ipc )
     case CNCMD:                         /* append next line to pattern space */
         readout();                      /* do any pending a, r commands */
         *spend++ = '\n';                /* seperate lines with '\n' */
-        if( ( execp = getline( spend ) ) == BAD ) {
+        if( ( execp = getline( spend ) ) == NULL ) {
             *--spend = '\0';            /* Remove '\n' added for new line */
             pending = ipc;
             delete = TRUE;
@@ -777,7 +776,8 @@ static void command( sedcmd *ipc )
         break;
 
     case SCMD:                          /* substitute RE */
-        if( ( didsub = substitute( ipc ) ) != 0 ) {
+        didsub = substitute( ipc );
+        if( didsub ) {
             switch( ipc->flags.print ) {
             case 1:
                 puts( linebuf );
@@ -795,7 +795,7 @@ static void command( sedcmd *ipc )
 
     case TCMD:                          /* branch on last s successful */
     case CTCMD:                         /* branch on last s failed */
-        if( didsub == (int)( ipc->command == CTCMD ) )
+        if( didsub == ( ipc->command == CTCMD ) )
             break;                      /* no branch if last s failed, else */
         didsub = FALSE;
         jump = TRUE;                    /*  set up to jump to assoc'd label */
@@ -866,7 +866,7 @@ static char *getline( register char *buf )  /* where to send the input */
     } else {
         if( eargc == 0 )                /* if no more args */
             lastline = TRUE;            /*    set a flag */
-        return( BAD );
+        return( NULL );
     }
 }
 

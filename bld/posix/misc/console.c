@@ -28,7 +28,7 @@
 *
 ****************************************************************************/
 
-#if defined( __OS_dosos2__ ) || defined( __OS_os2v2__ )
+#if defined( __OS2__ )
 #define INCL_SUB
 #include <os2.h>
 
@@ -53,7 +53,7 @@ int GetConsoleHeight()
     }
     return( vio_mode.row );
 }
-#elif defined( __OS_nt__ )
+#elif defined( __NT__ )
     #include <windows.h>
 
 int GetConsoleWidth()
@@ -75,7 +75,7 @@ int GetConsoleHeight()
     GetConsoleScreenBufferInfo( output_handle, &buffer_info );
     return( buffer_info.dwMaximumWindowSize.Y );
 }
-#elif defined( __OS_dos__ ) || defined( __OS_pharlap__ )
+#elif defined( __DOS__ )
 unsigned char getVideoMode( void );
     #pragma aux getVideoMode = \
             "mov ah, 0fh" \

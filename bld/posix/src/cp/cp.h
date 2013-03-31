@@ -34,10 +34,13 @@
 
 #include <sys/stat.h>
 
-#if defined(__OS_nt386__) || defined(__OS_os2386__) || defined(__OS_ntaxp__)
-#define __FAR
-#else
+#ifdef _M_I86
 #define __FAR   far
+#else
+#define __FAR
+#if !defined(__WATCOMC__) && ( defined(__NT__) )
+#include <windows.h>
+#endif
 #endif
 
 #include "lineprt.h"
@@ -71,15 +74,19 @@ typedef struct mem_block {
             long xmemaddr;
     } where;
     unsigned buffsize;
-    unsigned char in_memory:1;
-    unsigned char in_xmemory:1;
+    unsigned in_memory:1;
+    unsigned in_xmemory:1;
 } mem_block;
 
 typedef struct ctrl_block {
     struct ctrl_block *next,*prev;
     char *inname,*outname;
     long bytes_pending;
+#if !defined(__WATCOMC__) && ( defined(__NT__) )
+    HANDLE  inhandle,outhandle;
+#else
     int  inhandle,outhandle;
+#endif
     mem_block *head,*curr;
     unsigned short t,d;
     char srcattr;
@@ -110,13 +117,13 @@ void DoCP( char *, char * );
 void CopyOneFile( char *, char *);
 int GrabFile( char *, struct stat *, char *, char );
 void FlushMemoryBlocks( void );
-void __FAR *FarAlloc( unsigned );
-void *NearAlloc( unsigned );
+void __FAR *FarAlloc( size_t );
+void *NearAlloc( size_t );
 void FarFree( void __FAR *ptr );
 void NearFree( void *ptr );
 void MemFini( void );
 void IOError( int );
-#if defined(__OS_os2386__)
+#if defined( __OS2__ ) && defined( __386__ )
 void OS2Error( int );
 #endif
 

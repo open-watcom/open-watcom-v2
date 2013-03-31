@@ -37,6 +37,7 @@
 #include <time.h>
 #include <dos.h>
 #include <direct.h>
+#include "watcom.h"
 #include "cp.h"
 #include "getopt.h"
 #include "filerx.h"
@@ -91,11 +92,7 @@ int main( int argc, char *argv[] )
     /*
      * get options
      */
-    while( 1 ) {
-        ch = GetOpt( &argc, argv, "Xsaifpnrt:T:d:D:", usageMsg );
-        if( ch == -1 ) {
-            break;
-        }
+    while( (ch = GetOpt( &argc, argv, "Xsaifpnrt:T:d:D:", usageMsg )) != -1 ) {
         switch( ch ) {
         case 'X':
             rxflag = TRUE;
@@ -166,8 +163,7 @@ int main( int argc, char *argv[] )
     } else {
         strcpy( destination, argv[ argc-1 ] );
     }
-    rc = _dos_findfirst( destination, _A_NORMAL | _A_RDONLY | _A_HIDDEN |
-                        _A_SYSTEM | _A_SUBDIR | _A_ARCH, &ft );
+    rc = _dos_findfirst( destination, _A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_ARCH, &ft );
 
     StartTime = clock();
 
@@ -175,7 +171,7 @@ int main( int argc, char *argv[] )
      * see if destination is a directory
      */
     c = destination[ strlen(destination)-1 ];
-    if( ( !rc && ft.attrib & _A_SUBDIR) || c=='.' || c==':' || c=='\\' ) {
+    if( ( !rc && (ft.attrib & _A_SUBDIR) ) || c=='.' || c==':' || c=='\\' ) {
         if( !(c==':' || c=='\\') ) {
             strcat(destination,"\\");
         }
@@ -183,6 +179,7 @@ int main( int argc, char *argv[] )
             DoCP( argv[i] , destination );
         }
         doneCP();
+        return( 0 );
     }
 
     /*
@@ -204,7 +201,7 @@ int main( int argc, char *argv[] )
  */
 static void parseTD( char *arg, char pc, unsigned *a, unsigned *b, unsigned *c  )
 {
-    int         len;
+    unsigned    len;
     char        tmp[3];
 
     len = strlen( arg );
@@ -261,6 +258,5 @@ static void doneCP( void )
         PrintALineThenDrop( "Total time taken:          %ld.%02ld seconds",secs,hunds );
     }
     MemFini();
-    exit( 0 );
 
 } /* doneCP */

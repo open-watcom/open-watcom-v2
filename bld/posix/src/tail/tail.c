@@ -139,7 +139,7 @@ void tailFile( char *fname )
     int amt_read;
     long pos;
 
-    h = open( fname, O_BINARY | O_RDONLY, 0 );
+    h = open( fname, O_BINARY | O_RDONLY );
     if( h == -1 ) {
         Die( "Could not open file \"%s\"\n", fname );
     }

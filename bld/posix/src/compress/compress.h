@@ -270,7 +270,7 @@ char *malloc();
 #define CONST const
 #include <unistd.h>
 #include <stdlib.h>
-#if defined(__OS_qnx__) || defined(__OS_qnx16__)
+#if defined( __QNX__ )
  #include <utime.h>
 #else
  #include <sys/utime.h>

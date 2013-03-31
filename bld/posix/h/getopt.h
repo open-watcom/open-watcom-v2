@@ -66,10 +66,11 @@ enum {
     _USAGE_BRIEF
 };
 
-#ifndef __ALPHA__
+#if defined( __WATCOMC__ ) && !defined( __ALPHA__ )
 #pragma aux ExitWithUsage aborts;
 #endif
 extern void     ExitWithUsage( const char *__usage[], int __type );
+
 /*
  * __usage:     same as the usage parameter for GetOpt
  * __type:      _USAGE_ALL: print entire usage text

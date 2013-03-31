@@ -34,7 +34,7 @@
 #include <string.h>
 #include "misc.h"
 
-void *MemAlloc( unsigned size )
+void *MemAlloc( size_t size )
 {
     void        *tmp;
 
@@ -46,7 +46,7 @@ void *MemAlloc( unsigned size )
     return( tmp );
 }
 
-void *MemRealloc( void *orig, unsigned size )
+void *MemRealloc( void *orig, size_t size )
 {
     void        *tmp;
 

@@ -60,9 +60,7 @@
 
 !ifeq bootstrap 1
 commands = $(build)
-!else ifeq targos qnx16
-commands = $(qnx)
-!else ifeq targos qnx
+!else ifeq host_os qnx
 commands = $(qnx)
 !else
 commands = $(all)

@@ -57,11 +57,10 @@ char **ExpandEnv( int *oargc, char *oargv[] )
 
                 // environment variables can't be null
 
-                while( 1 ) {
-                    for( ; *varptr && isspace( *varptr ); varptr++ )
-                        ;
-                    if( *varptr == '\0' ) {
-                        break;
+                while( *varptr != '\0' ) {
+                    if( isspace( *varptr ) ) {
+                        ++varptr;
+                        continue;
                     }
                     argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
                     if( *varptr == '"' ) {
@@ -75,8 +74,9 @@ char **ExpandEnv( int *oargc, char *oargv[] )
                             continue;
                         }
                     }
-                    for( p = varptr; *p && !isspace( *p ); p++ )
-                        ;
+                    p = varptr;
+                    while( *p != '\0' && !isspace( *p ) )
+                        ++p;
                     argv[argc] = varptr;
                     argc++;
                     if( *p == '\0' ) {

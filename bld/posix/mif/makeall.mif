@@ -6,7 +6,6 @@ clean : .symbolic
 !else
 
 !include $(posix_dir)/mif/commands.mif
-!include $(posix_dir)/mif/targos.mif
 !include $(posix_dir)/mif/common.mif
 
 !ifeq bootstrap 1
@@ -22,33 +21,37 @@ curr_dir_all=$+ $(%CWD) $-
         @if not exist $(posixlibdir) @mkdir $(posixlibdir)
         @cd $(posixlibdir)
         !@wmake -h release=$(release) bootstrap=$(bootstrap) $(mkfile)
-!ifeq targos dos
+!ifeq host_cpu i86
+!ifeq host_os dos
         @if not exist $(altposixlibdir) @mkdir $(altposixlibdir)
         @cd $(altposixlibdir)
         !@wmake -h release=$(release) bootstrap=$(bootstrap) $(altmkfile)
-!else ifeq targos dosos2
+!else ifeq host_os os2
         @if not exist $(altposixlibdir) @mkdir $(altposixlibdir)
         @cd $(altposixlibdir)
         !@wmake -h release=$(release) bootstrap=$(bootstrap) $(altmkfile)
 !endif
+!endif
         @cd $(curr_dir_all)
 
 $(commands) : .symbolic $(__MAKEFILES__)
-        !@wmake -h targos=$(targos) make_all=1 release=$(release) bootstrap=$(bootstrap) -f $(posix_dir)/src/$^@/makefile
+        !@wmake -h host_os=$(host_os) host_cpu=$(host_cpu) make_all=1 release=$(release) bootstrap=$(bootstrap) -f $(posix_dir)/src/$^@/makefile
 
 clean : .symbolic
 curr_dir_all=$+ $(%CWD) $-
         @echo clean $(posixlibdir)
         @cd $(posixlibdir)
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
-!ifeq targos dos
+!ifeq host_cpu i86
+!ifeq host_os dos
         @echo clean $(altposixlibdir)
         @cd $(altposixlibdir)
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
-!else ifeq targos dosos2
+!else ifeq host_os os2
         @echo clean $(altposixlibdir)
         @cd $(altposixlibdir)
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+!endif
 !endif
         @cd $(curr_dir_all)
         @echo clean $(curr_dir_all)

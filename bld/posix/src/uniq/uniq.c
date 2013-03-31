@@ -82,25 +82,20 @@ static int getNextLine( FILE *fp, line *l )
         l->buff = (char *) malloc( l->size );
     }
 
-    while( 1 ) {
-        if( os >= l->size - 1 ) {                   // Buffer getting small.
-            l->size += MIN_LINE_LEN * sizeof( char );
-            l->buff  = (char *) realloc( l->buff, l->size );
+    while( (ch = fgetc( fp )) != EOF ) {
+        if( (char)ch == '\n' ) {
+            break;
         }
-        ch = fgetc( fp );
-
-        if( ch == EOF ) {
-            break;
-        } else if( (char) ch == '\n' ) {
-            break;
-        } else {
-            *(l->buff + os) = (char) ch;
-            os++;
+        *(l->buff + os) = (char)ch;
+        os++;
+        if( os >= l->size ) {       // Buffer getting small.
+            l->size += MIN_LINE_LEN * sizeof( char );
+            l->buff = (char *)realloc( l->buff, l->size );
         }
     }
     *(l->buff + os) = '\0';
 
-    return( (ch == EOF)  &&  (os == 0) );
+    return( (ch == EOF) && (os == 0) );
 }
 
 static int  compareLines( line *ln1, line *ln2, int fld, int chr )
@@ -210,29 +205,25 @@ void main( int argc, char **argv )
 
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
-        ch = GetOpt( &argc, argv, "#udc", usageMsg );
-        if( ch == -1 ) {
-            break;
-        }
+    while( (ch = GetOpt( &argc, argv, "#udc", usageMsg )) != -1 ) {
         switch( ch ) {
-            case 'u':
-                mode &= ~MODE_COUNT;            // turn off counting mode
-                mode |= MODE_UNIQUE;
-                break;
-            case 'd':
-                mode &= ~MODE_COUNT;            // turn off counting mode
-                mode |= MODE_REPEAT;
-                break;
-            case 'c':
-                mode  = MODE_COUNT;
-                break;
-            case '#':
-                if( !isNumber( OptArg ) ) {
-                    Die( "uniq: invalid field offset\n" );
-                }
-                fld_os = atoi( OptArg );
-                break;
+        case 'u':
+            mode &= ~MODE_COUNT;            // turn off counting mode
+            mode |= MODE_UNIQUE;
+            break;
+        case 'd':
+            mode &= ~MODE_COUNT;            // turn off counting mode
+            mode |= MODE_REPEAT;
+            break;
+        case 'c':
+            mode  = MODE_COUNT;
+            break;
+        case '#':
+            if( !isNumber( OptArg ) ) {
+                Die( "uniq: invalid field offset\n" );
+            }
+            fld_os = atoi( OptArg );
+            break;
         }
     }
     if( mode == 0 ) {

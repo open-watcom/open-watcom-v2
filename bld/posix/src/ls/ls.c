@@ -36,14 +36,15 @@
 #include <direct.h>
 #include <io.h>
 #include <dos.h>
-#if defined(__OS_dosos2__) || defined(__OS_os2386__)
+#if defined( __OS2__ )
 #include <os2.h>
 #endif
+#include "watcom.h"
 #include "misc.h"
 #include "getopt.h"
-#include "filerx.h"
 #include "fnutils.h"
 #include "console.h"
+#include "filerx.h"
 
 #define LINE_WIDTH      80
 #define GUTTER_WIDTH    2
@@ -62,21 +63,21 @@ typedef struct {
     unsigned    year:7;
 } dosdate;
 
-int  line_width;
-long clsize;
-int  fileperlinecnt;
-int  maxfileperline;
-size_t columnwidth;
-int  N1flag=FALSE,
-     Fflag=FALSE,
-     pflag=FALSE,
-     rxflag=FALSE,
-     Rflag=FALSE,
-     lflag=FALSE,
-     hflag=FALSE,
-     rflag=FALSE,
-     sflag=FALSE,
-     tflag=FALSE;
+unsigned line_width;
+long    clsize;
+unsigned fileperlinecnt;
+unsigned maxfileperline;
+unsigned columnwidth;
+int     N1flag=FALSE,
+        Fflag=FALSE,
+        pflag=FALSE,
+        rxflag=FALSE,
+        Rflag=FALSE,
+        lflag=FALSE,
+        hflag=FALSE,
+        rflag=FALSE,
+        sflag=FALSE,
+        tflag=FALSE;
 
 static const char *usageMsg[] = {
     "Usage: ls [-?1CFRlhprstX] [files]",
@@ -129,11 +130,7 @@ int main( int argc, char *argv[] )
     /*
      * process options
      */
-    while( 1 ) {
-        ch = GetOpt( &argc, argv, "XRphrtsFl1C", usageMsg );
-        if( ch == -1 ) {
-            break;
-        }
+    while( (ch = GetOpt( &argc, argv, "XRphrtsFl1C", usageMsg )) != -1 ) {
         switch( ch ) {
         case 'R':
             Rflag=TRUE;
@@ -308,9 +305,9 @@ static void DoLS( char *path, char *name )
     int                 i;
     char                wild[_MAX_PATH];
     char                *err;
-    void                *crx;
-    size_t              fname_len;
-    size_t              max_fname_len = 0;
+    void                *crx = NULL;
+    unsigned            fname_len;
+    unsigned            max_fname_len = 0;
 
     /*
      * initialize for file scan
@@ -478,7 +475,7 @@ static void PrintFile( char *drive, char *dir, DIR *file )
     char name[_MAX_PATH + 1];
     char buff[80 + _MAX_PATH];
     long size;
-    size_t      len;
+    unsigned    len;
     int         extra_char;
 
     strcpy( name, file->d_name );
@@ -582,7 +579,7 @@ static int IsX( char *file )
     if( !FNameCompare( f, ".com" )
       ||!FNameCompare( f, ".bat" )
       ||!FNameCompare( f, ".exe" )
-#if defined( __OS_os2386__ ) || defined( __OS_dosos2__ )
+#if defined( __OS2__ )
       ||!FNameCompare( f, ".cmd" )
 #endif
        ) {

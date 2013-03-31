@@ -9,7 +9,6 @@
 #
 
 make_lib = 1
-!include $(posix_dir)/mif/targos.mif
 !include $(posix_dir)/mif/common.mif
 !include $(posix_dir)/mif/lib.mif
 

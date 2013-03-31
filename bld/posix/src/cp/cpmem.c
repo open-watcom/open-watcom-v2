@@ -33,7 +33,6 @@
 #include <stddef.h>
 #include <malloc.h>
 #include <dos.h>
-#include <dosfunc.h>
 #include "cp.h"
 
 long near_allocs,far_allocs;
@@ -42,7 +41,7 @@ long near_allocs,far_allocs;
  */
 void MemInit( void )
 {
-#if !defined(__OS_nt386__) && !defined(__OS_os2386__) && !defined(__OS_pharlap__) && !defined(__OS_ntaxp__)
+#if defined( _M_I86 )
     _nheapgrow();
 #endif
     near_allocs=0L;
@@ -65,11 +64,11 @@ void MemFini( void )
 
 } /* MemFini */
 
-#if defined(__OS_nt386__) || defined(__OS_os2386__) || defined(__OS_pharlap__) || defined(__OS_ntaxp__)
+#if !defined( _M_I86 )
 /*
  * FarAlloc - allocate from far heap
  */
-void *FarAlloc( unsigned size )
+void *FarAlloc( size_t size )
 {
     void        *ptr;
 
@@ -94,7 +93,7 @@ void FarFree( void *ptr )
 /*
  * FarAlloc - allocate from far heap
  */
-void far *FarAlloc( unsigned size )
+void far *FarAlloc( size_t size )
 {
     void        far *tmp;
 
@@ -127,7 +126,7 @@ void FarFree( void far *ptr )
 /*
  * NearAlloc - allocation of memory; flush mem if we run out
  */
-void *NearAlloc( unsigned size )
+void *NearAlloc( size_t size )
 {
     void        *tmp;
 

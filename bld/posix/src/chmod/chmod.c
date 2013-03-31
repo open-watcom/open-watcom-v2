@@ -40,6 +40,7 @@
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"
+#include "clibext.h"
 
 char *OptEnvVar = "chmod";
 
@@ -75,11 +76,8 @@ void main( int argc, char *argv[] )
 
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
-        ch = GetOpt( &argc, argv, "Xarhs", usageMsg );
-        if( ch == -1 ) {
-            break;
-        }
+    while( (ch = GetOpt( &argc, argv, "Xarhs", usageMsg )) != -1 ) {
+        attr = 0;
         switch( ch ) {
         case 'a':
             attr = _A_ARCH;
@@ -102,7 +100,6 @@ void main( int argc, char *argv[] )
         } else {
             attrToAdd |= attr;
         }
-
     }
     argv = ExpandArgv( &argc, argv, rxflag );
 
