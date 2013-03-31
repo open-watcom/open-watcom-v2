@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "resutil.h"
 #include "read.h"
 #include "reserr.h"
 
-extern off_t ResSeek( WResFileID handle, off_t offset, int origin )
-/*****************************************************************/
+extern long ResSeek( WResFileID handle, long offset, int origin )
+/***************************************************************/
 /* cover function for seek */
 {
-    off_t               posn;
+    long    posn;
 
     posn = WRESSEEK( handle, offset, origin );
     if( posn == -1L ) {
@@ -52,9 +52,9 @@ extern int ResPadDWord( WResFileID handle )
 /*****************************************/
 /* advances in the file to the next DWORD boundry */
 {
-    off_t   curr_pos;
-    off_t   padding;
-    int     error;
+    long        curr_pos;
+    long        padding;
+    int         error;
 
     error = FALSE;
     curr_pos = WRESTELL( handle );

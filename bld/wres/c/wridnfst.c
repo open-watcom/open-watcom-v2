@@ -32,15 +32,15 @@
 
 #include <string.h>
 #include <limits.h>
-#include "wresrtns.h"
+#include "layer0.h"
 #include "util.h"
 #include "reserr.h"
 
 WResIDName * WResIDNameFromStr( char * string )
 /*********************************************/
 {
-    WResIDName *        newstring;
-    unsigned            stringlen;
+    WResIDName  *newstring;
+    size_t      stringlen;
 
     stringlen = strlen( string );
     if( stringlen >= USHRT_MAX ) {

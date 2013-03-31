@@ -31,16 +31,15 @@
 
 
 #include <string.h>
-#include "watcom.h"
-#include "wresrtns.h"
+#include "layer0.h"
 #include "resnamor.h"
 #include "reserr.h"
 
 extern ResNameOrOrdinal * ResStrToNameOrOrd( char * string )
 /**********************************************************/
 {
-    ResNameOrOrdinal *  newname;
-    int                 stringlen;
+    ResNameOrOrdinal    *newname;
+    size_t              stringlen;
 
     if( string == NULL || *(unsigned char *)string == 0xff ) {
         /* the first character of a ResNameOrOrdinal can't be 0xff */

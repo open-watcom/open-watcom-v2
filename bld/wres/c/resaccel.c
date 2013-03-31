@@ -32,16 +32,15 @@
 
 #include "layer0.h"
 #include "filefmt.h"
-#include "wresrtns.h"
 #include "resaccel.h"
 #include "reserr.h"
 
-int ResWriteAccelEntry( AccelTableEntry * currentry, WResFileID handle )
-/**********************************************************************/
+int ResWriteAccelEntry( AccelTableEntry *currentry, WResFileID handle )
+/*********************************************************************/
 {
     int     numwrote;
 
-    numwrote = WRESWRITE( handle, currentry, sizeof(AccelTableEntry) );
+    numwrote = WRESWRITE( handle, currentry, sizeof( AccelTableEntry ) );
     if( numwrote != sizeof( AccelTableEntry ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
@@ -49,12 +48,12 @@ int ResWriteAccelEntry( AccelTableEntry * currentry, WResFileID handle )
     return( FALSE );
 }
 
-int ResWriteAccelEntry32( AccelTableEntry32 * currentry, WResFileID handle )
-/**************************************************************************/
+int ResWriteAccelEntry32( AccelTableEntry32 *currentry, WResFileID handle )
+/*************************************************************************/
 {
     int     numwrote;
 
-    numwrote = WRESWRITE( handle, currentry, sizeof(AccelTableEntry32) );
+    numwrote = WRESWRITE( handle, currentry, sizeof( AccelTableEntry32 ) );
     if( numwrote != sizeof( AccelTableEntry32 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );

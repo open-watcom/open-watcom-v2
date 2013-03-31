@@ -33,8 +33,6 @@
 #ifndef RESICCU_INCLUDED
 #define RESICCU_INCLUDED
 
-#include "watcom.h"
-
 #include "pushpck1.h"
 typedef struct IconCurDirHeader {
     uint_16     Reserved;       /* must be 0 */
@@ -73,8 +71,8 @@ typedef struct CurHotspot {
 } CurHotspot;
 #include "poppck.h"
 
-extern int ResWriteIconCurDirHeader( const IconCurDirHeader *, WResFileID );
-extern int ResWriteIconDirEntry( const IconDirEntry *, WResFileID );
+extern int ResWriteIconCurDirHeader( const IconCurDirHeader *, WResFileID handle );
+extern int ResWriteIconDirEntry( const IconDirEntry *, WResFileID handle );
 extern int ResWriteCurHotspot( const CurHotspot * hotspot, WResFileID handle );
 extern int ResWriteCurDirEntry( const CurDirEntry * entry, WResFileID handle );
 extern int ResReadIconCurDirHeader( IconCurDirHeader *, WResFileID handle );

@@ -30,23 +30,22 @@
 ****************************************************************************/
 
 
-#include "watcom.h"
-#include "autodep.h"
 #include "wresall.h"
+#include "autodep.h"
 #include "reserr.h"
 
-DepInfo *WResGetAutoDep( char *fname ) {
+DepInfo *WResGetAutoDep( const char *fname ) {
 
-    WResFileID          fhdl;
-    WResDir             dir;
-    int                 dup_discarded;
-    WResID              *name;
-    WResID              *type;
-    WResDirWindow       window;
-    WResLangInfo        *info;
-    off_t               offset;
-    DepInfo             *ret;
-    int                 rc;
+    int             fhdl;
+    WResDir         dir;
+    int             dup_discarded;
+    WResID          *name;
+    WResID          *type;
+    WResDirWindow   window;
+    WResLangInfo    *info;
+    long            offset;
+    DepInfo         *ret;
+    int             rc;
 
     fhdl = ResOpenFileRO( fname );
     if( fhdl == -1 ) return( NULL );

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "layer0.h"
 #include "util.h"
 
 extern WResHelpID * WResHelpIDFromNameOrOrd( ResNameOrOrdinal * name )

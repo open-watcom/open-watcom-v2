@@ -30,21 +30,21 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
 extern int ResReadUint32( uint_32 * newint, WResFileID handle )
 /*************************************************************/
 {
-    int numread;
+    int     numread;
 
-    numread = (* WRESREAD) ( handle, newint, sizeof(uint_32) );
-    if( numread == sizeof(uint_32) ) {
+    numread = WRESREAD( handle, newint, sizeof( uint_32 ) );
+    if( numread == sizeof( uint_32 ) ) {
         return( FALSE );
     } else if( numread == -1 ) {
         WRES_ERROR( WRS_READ_FAILED );
-    } else if( numread != sizeof(uint_32) ) {
+    } else if( numread != sizeof( uint_32 ) ) {
         WRES_ERROR( WRS_READ_INCOMPLETE );
     }
     return( TRUE );

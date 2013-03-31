@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
@@ -38,12 +38,12 @@
  * WResReadFixedResRecord - reads the fixed part of a Res info record for
  *                          the current version
  */
-int WResReadFixedResRecord( WResResInfo * newres, WResFileID handle )
-/*******************************************************************/
+int WResReadFixedResRecord( WResResInfo *newres, WResFileID handle )
+/******************************************************************/
 {
-    int             numread;
+    int     numread;
 
-    numread = (* WRESREAD) ( handle, newres, sizeof(WResResInfo) );
+    numread = WRESREAD( handle, newres, sizeof(WResResInfo) );
     if( numread != sizeof(WResResInfo) ) {
         WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
         return( TRUE );
@@ -59,9 +59,9 @@ int WResReadFixedResRecord( WResResInfo * newres, WResFileID handle )
 int WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID handle )
 /********************************************************************/
 {
-    int             numread;
+    int     numread;
 
-    numread = (* WRESREAD) ( handle, newres, sizeof(WResResInfo1) );
+    numread = WRESREAD( handle, newres, sizeof(WResResInfo1) );
     if( numread != sizeof(WResResInfo1) ) {
         WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
         return( TRUE );
@@ -75,12 +75,12 @@ int WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID handle )
  *                           version 2
  */
 int WResReadFixedResRecord2( WResResInfo *newres, WResFileID handle )
-/********************************************************************/
+/*******************************************************************/
 {
     int             numread;
     WResResInfo2    info;
 
-    numread = (* WRESREAD) ( handle, &info, sizeof(WResResInfo2) );
+    numread = WRESREAD( handle, &info, sizeof(WResResInfo2) );
     if( numread != sizeof( WResResInfo2 ) ) {
         WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
         return( TRUE );

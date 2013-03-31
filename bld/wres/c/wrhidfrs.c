@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <string.h>
 #include "layer0.h"
-#include "wresrtns.h"
 #include "util.h"
 #include "reserr.h"
 
@@ -42,7 +40,7 @@ WResHelpID * WResHelpIDFromStr( const char * newstr )
 /* allocate a Help ID and fill it in */
 {
     WResHelpID *newid;
-    unsigned    strsize;
+    size_t     strsize;
 
     strsize = strlen( newstr );
     /* check the size of the string:  can it fit in one byte? */

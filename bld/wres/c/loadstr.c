@@ -34,27 +34,11 @@
 #include <string.h>
 #include <limits.h>
 #include <stdlib.h>
-#include "walloca.h"
-
-#ifndef __WATCOMC__
-    #define _WCI86FAR
-#endif
-   
-#ifdef WIN_GUI
-#include <windows.h>
-#else
-#define WINAPI
-typedef unsigned int UINT;
-typedef char _WCI86FAR *   LPSTR;
-#endif
-
-#include <unistd.h>
 #include "wresall.h"
+#include "wresset2.h"
 #include "loadstr.h"
 
 #define GET_STR_BUF_LEN 128
-
-#include "phandle.h"
 
 WResDir    MainDir;
 
@@ -67,22 +51,18 @@ static int GetString(   WResLangInfo    *res,
                         int             nBufferMax )
 /*************************************************/
 {
-    off_t               prevpos;
+    long                prevpos;
     int                 length;
-    int                 stringbufflen;
-    char *              stringbuff;
     int                 stringnum;
     int                 stringlen;
     int                 numread;
     int                 ix1, ix2;
+    char                stringbuff[GET_STR_BUF_LEN];
 
     prevpos = WRESSEEK( hInstance->handle, res->Offset, SEEK_SET );
-    if ( prevpos == -1L ) return( -1 );
+    if ( prevpos == -1L )
+        return( -1 );
     length = res->Length;
-    stringbufflen = min( GET_STR_BUF_LEN, length );
-//  stringbuff = (char *) WRESALLOC( stringbufflen );       JBS 92/10/02
-    stringbuff = (char *) alloca( stringbufflen );
-    if ( stringbuff == NULL ) return( -1 );
     stringnum = idResource & 0x0f;
 
     numread = 0;
@@ -91,13 +71,14 @@ static int GetString(   WResLangInfo    *res,
     ix1 = 0;
     do {
         if ( numread == 0 ) {
-            if ( length > stringbufflen ) {
-                length -= stringbufflen;
+            if ( length > GET_STR_BUF_LEN ) {
+                numread = GET_STR_BUF_LEN;
+                length -= GET_STR_BUF_LEN;
             } else {
-                stringbufflen = length;
+                numread = length;
                 length = 0;
             }
-            numread = WRESREAD( hInstance->handle, stringbuff, stringbufflen );
+            numread = WRESREAD( hInstance->handle, stringbuff, numread );
             if( numread == 0 ) return( -1 );    // 15-sep-93 AFS
             if( numread == -1 ) return( -1 );
             ix1 = 0;
@@ -121,8 +102,6 @@ static int GetString(   WResLangInfo    *res,
         }
     } while( !( (stringlen == 0) && (stringnum < 0) ) );
     lpszBuffer[ ix2 ] = '\0';
-
-//  WRESFREE( stringbuff );     JBS 92/10/02
 
     return( 0 );
 }
@@ -158,8 +137,7 @@ extern int WINAPI WResLoadString2(  WResDir             dir,
         retcode = -1;
     } else {
         res = WResGetLangInfo( wind );
-        retcode = GetString( res, hInstance, idResource,
-                             lpszBuffer, nBufferMax );
+        retcode = GetString( res, hInstance, idResource, lpszBuffer, nBufferMax );
     }
     return( retcode );
 }
@@ -173,14 +151,14 @@ extern int WINAPI WResLoadString(   PHANDLE_INFO        hInstance,
     return( WResLoadString2( MainDir, hInstance, idResource, lpszBuffer, nBufferMax ) );
 }
 
-extern int OpenResFile( PHANDLE_INFO hInstance )
-/*******************************************/
+extern int OpenResFile( PHANDLE_INFO hInstance, const char *filename )
+/********************************************************************/
 {
-    return( hInstance->handle = ResOpenFileRO( hInstance->filename ) );
+    return( hInstance->handle = ResOpenFileRO( filename ) );
 }
 
 extern int InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
-/*********************************************/
+/***************************************************************/
 {
     *dir = WResInitDir();
     if( *dir == NULL ) return( -1 );
@@ -188,7 +166,7 @@ extern int InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
 }
 
 extern int InitResources( PHANDLE_INFO hInstance )
-/*********************************************/
+/************************************************/
 {
     return( InitResources2( &MainDir, hInstance ) );
 }

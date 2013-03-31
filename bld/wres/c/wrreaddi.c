@@ -31,17 +31,12 @@
 
 
 #include <string.h>
-#include "wresrtns.h"
-#include "wres.h"
-#include "layer1.h"
-#include "mem2.h"
-#include "util.h"
+#include "wresall.h"
 #include "reserr.h"
 
 
-static int readLangInfoList( WResFileID handle, WResResNode *res,
-                             void *fileinfo ) {
-
+static int readLangInfoList( WResFileID handle, WResResNode *res, void *fileinfo )
+{
     unsigned            i;
     WResLangNode        *langnode;
     int                 error;
@@ -55,8 +50,7 @@ static int readLangInfoList( WResFileID handle, WResResNode *res,
             WRES_ERROR( WRS_MALLOC_FAILED );
         }
         if( error ) break;
-        numread = (* WRESREAD) ( handle, &(langnode->Info),
-                                 sizeof( WResLangInfo ) );
+        numread = WRESREAD( handle, &(langnode->Info), sizeof( WResLangInfo ) );
         if( numread != sizeof( WResLangInfo ) ) {
             error = TRUE;
             WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
@@ -70,19 +64,19 @@ static int readLangInfoList( WResFileID handle, WResResNode *res,
     return( error );
 }
 
-static int readResList( WResFileID handle, WResTypeNode * currtype,
-                        uint_16 ver, void *fileinfo )
+static int readResList( WResFileID handle, WResTypeNode *currtype, uint_16 ver, void *fileinfo )
 {
-    WResResNode    *newnode;
+    WResResNode     *newnode = NULL;
     WResResInfo     newres;
-    WResResInfo1    newres1;
-    WResLangNode   *langnode;
-    WResID         *resid;
+    WResResInfo1    newres1 = { 0 };
+    WResLangNode    *langnode;
+    WResID          *resid;
     WResID          tmpresid;
     int             error;
     int             resnum;
     int             extrabytes;
 
+    extrabytes = 0;
     /* loop through the list of resources of this type */
     for (resnum = 0, error = FALSE; resnum < currtype->Info.NumResources &&
             !error; resnum++) {
@@ -163,18 +157,18 @@ static int readResList( WResFileID handle, WResTypeNode * currtype,
 
 } /* readResList */
 
-static int readTypeList( WResFileID handle, WResDirHead * currdir,
-                         uint_16 ver, void *fileinfo )
+static int readTypeList( WResFileID handle, WResDirHead *currdir,uint_16 ver, void *fileinfo )
 {
-    WResTypeNode *  newnode;
+    WResTypeNode    *newnode;
     WResTypeInfo    newtype;
     int             error;
     int             typenum;
     int             extrabytes;
 
+    newnode = NULL;
+    extrabytes = 0;
     /* loop through the list of types */
-    for (error = FALSE, typenum = 0; typenum < currdir->NumTypes && !error;
-                    typenum++) {
+    for (error = FALSE, typenum = 0; typenum < currdir->NumTypes && !error; typenum++) {
         /* read a type record from disk */
         if( ver < 3 ) {
             error = WResReadFixedTypeRecord2( &newtype, handle );
@@ -199,8 +193,7 @@ static int readTypeList( WResFileID handle, WResDirHead * currdir,
 
             /* read the extra bytes (if any) */
             if( extrabytes > 0 ) {
-                error = WResReadExtraWResID( &(newnode->Info.TypeName),
-                        handle );
+                error = WResReadExtraWResID( &(newnode->Info.TypeName), handle );
             }
         }
         if( !error ) {
@@ -220,8 +213,9 @@ static int readWResDir( WResFileID handle, WResDir currdir, void *fileinfo )
     WResHeader      head;
     WResExtHeader   ext_head;
     int             error;
-    off_t           seekpos;
+    long            seekpos;
 
+    ext_head.TargetOS = WRES_OS_WIN16;
     /* read the header and check that it is valid */
     error = WResReadHeaderRecord( &head, handle );
     if( !error ) {
@@ -248,8 +242,6 @@ static int readWResDir( WResFileID handle, WResDir currdir, void *fileinfo )
             } else {
                 error = WResReadExtHeader( &ext_head, handle );
             }
-        } else {
-            ext_head.TargetOS = WRES_OS_WIN16;
         }
     }
 
@@ -258,7 +250,7 @@ static int readWResDir( WResFileID handle, WResDir currdir, void *fileinfo )
         currdir->NumResources = head.NumResources;
         currdir->NumTypes = head.NumTypes;
         currdir->TargetOS = ext_head.TargetOS;
-        seekpos = (* WRESSEEK) ( handle, head.DirOffset, SEEK_SET );
+        seekpos = WRESSEEK( handle, head.DirOffset, SEEK_SET );
         if( seekpos == -1L ) {
             error = TRUE;
             WRES_ERROR( WRS_SEEK_FAILED );
@@ -277,13 +269,13 @@ static int readMResDir( WResFileID handle, WResDir currdir, int *dup_discarded,
                         char iswin32, void *fileinfo )
 /******************************************************************************/
 {
-    MResResourceHeader     *head = NULL;
-    M32ResResourceHeader   *head32 = NULL;
+    MResResourceHeader      *head = NULL;
+    M32ResResourceHeader    *head32 = NULL;
     WResDirWindow           dup;
     int                     error;
-    off_t                   seek_rc;
-    WResID                 *name;
-    WResID                 *type;
+    long                    seek_rc;
+    WResID                  *name;
+    WResID                  *type;
 
     error = FALSE;
     if( iswin32 ) {
@@ -376,18 +368,16 @@ static int readMResDir( WResFileID handle, WResDir currdir, int *dup_discarded,
 
 } /* readMResDir */
 
-int WResReadDir( WResFileID handle, WResDir currdir,
-                 int * dup_discarded )
+int WResReadDir( WResFileID handle, WResDir currdir,int *dup_discarded )
 {
     return( WResReadDir2( handle, currdir, dup_discarded, NULL ) );
 }
 
-int WResReadDir2( WResFileID handle, WResDir currdir,
-                 int *dup_discarded, void *fileinfo )
+int WResReadDir2( WResFileID handle, WResDir currdir, int *dup_discarded, void *fileinfo )
 {
-    int           error;
-    off_t         seekpos;
-    ResTypeInfo   restype;
+    int             error;
+    long            seekpos;
+    ResTypeInfo     restype;
 
     /* var representing whether or not a duplicate dir entry was
      * discarded is set to FALSE.

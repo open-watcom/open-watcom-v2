@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "filefmt.h"
 #include "write.h"
 #include "opcl.h"
@@ -43,7 +43,7 @@ int WResFileInit( WResFileID handle )
 {
     WResHeader  head;
     int         error;
-    off_t       seek_rc;
+    long        seek_rc;
 
     head.Magic[0] = WRESMAGIC0;
     head.Magic[1] = WRESMAGIC1;

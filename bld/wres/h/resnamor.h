@@ -33,8 +33,6 @@
 #ifndef RESNAMORD_INCLUDED
 #define RESNAMORD_INCLUDED
 
-#include "watcom.h"
-
 #include "pushpck1.h"
 typedef union ResNameOrOrdinal {
     struct Ordinal {

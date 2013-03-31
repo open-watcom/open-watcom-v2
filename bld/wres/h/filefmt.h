@@ -32,8 +32,6 @@
 #ifndef FILEFMT_INCLUDED
 #define FILEFMT_INCLUDED
 
-#include "watcom.h"
-
 #include "pushpck1.h"
 typedef struct WResHeader {
     uint_32     Magic[ 2 ];     /* must be WRESMAGIC0 and WRESMAGIC1 */
@@ -143,6 +141,7 @@ typedef struct WResLangInfo {
 } _WCUNALIGNED WResLangInfo;
 #include "poppck.h"
 
+#if 0
 /* Wes uses this stuff in the resource editors - not really file formats, don't have to be packed */
 #define WRESMAXCHUNK  ( 31 * 1024 )
 
@@ -151,5 +150,6 @@ typedef struct WResDataChunk {
     void                 *data;
     struct WResDataChunk *next;
 }WResDataChunk;
+#endif
 
 #endif

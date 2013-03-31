@@ -33,7 +33,6 @@
 #ifndef WRESUTIL_INCLUDED
 #define WRESUTIL_INCLUDED
 
-#include <stddef.h>
 #include "filefmt.h"
 #include "resnamor.h"
 

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "layer0.h"
 #include "wres.h"
 #include "layer1.h"
 #include "util.h"

@@ -30,17 +30,17 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
-int WResReadFixedWResID( WResID * name, WResFileID handle )
-/*********************************************************/
+int WResReadFixedWResID( WResID *name, WResFileID handle )
+/********************************************************/
 /* reads the fixed part of a WResID */
 {
-    int         numread;
+    int     numread;
 
-    numread = (* WRESREAD) ( handle, name, sizeof(WResID) );
+    numread = WRESREAD( handle, name, sizeof(WResID) );
     if( numread == sizeof(WResID) ) {
         return( FALSE );
     } else if( numread == -1 ) {

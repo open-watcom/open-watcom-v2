@@ -33,7 +33,7 @@ extern int ResReadUint8( uint_8 * newint, WResFileID handle )
 {
     int numread;
 
-    numread = (* WRESREAD) ( handle, newint, sizeof(uint_8) );
+    numread = WRESREAD( handle, newint, sizeof(uint_8) );
     return( numread != sizeof(uint_8) );
 }
 
@@ -42,7 +42,7 @@ extern int ResReadUint16( uint_16 * newint, WResFileID handle )
 {
     int numread;
 
-    numread = (* WRESREAD) ( handle, newint, sizeof(uint_16) );
+    numread = WRESREAD( handle, newint, sizeof(uint_16) );
     return( numread != sizeof(uint_16) );
 }
 
@@ -51,7 +51,7 @@ extern int ResReadUint32( uint_32 * newint, WResFileID handle )
 {
     int numread;
 
-    numread = (* WRESREAD) ( handle, newint, sizeof(uint_32) );
+    numread = WRESREAD( handle, newint, sizeof(uint_32) );
     return( numread != sizeof(uint_32) );
 }
 
@@ -76,7 +76,7 @@ WResIDName * WResReadWResIDName( WResFileID handle )
     /* read in the characters */
     if (newptr != NULL) {
 	newptr->NumChars = newname.NumChars;
-	numread = (* WRESREAD) ( handle, newptr->Name, newptr->NumChars );
+	numread = WRESREAD( handle, newptr->Name, newptr->NumChars );
 	if (numread != newptr->NumChars) {
 	    WRESFREE( newptr );
 	    newptr = NULL;
@@ -98,7 +98,7 @@ int WResReadExtraWResID( WResID * name, WResFileID handle )
     if (name->IsName) {
 	extrabytes = name->ID.Name.NumChars - 1;
 	if (extrabytes > 0) {
-	    numread = (* WRESREAD) ( handle, &(name->ID.Name.Name[1]),
+	    numread = WRESREAD( handle, &(name->ID.Name.Name[1]),
 			extrabytes );
 	    return( numread != extrabytes );
 	} else {
@@ -115,7 +115,7 @@ int WResReadFixedWResID( WResID * name, WResFileID handle )
 {
     int 	numread;
 
-    numread = (* WRESREAD) ( handle, name, sizeof(WResID) );
+    numread = WRESREAD( handle, name, sizeof(WResID) );
     return( numread != sizeof(WResID) );
 } /* WResReadFixedWResID */
 
@@ -144,7 +144,7 @@ WResID * WResReadWResID( WResFileID handle )
     if (newidptr != NULL) {
 	memcpy( newidptr, &newid, sizeof(WResID) );
 	if (extrabytes != 0) {
-	    numread = (* WRESREAD) ( handle, &(newidptr->ID.Name.Name[1]),
+	    numread = WRESREAD( handle, &(newidptr->ID.Name.Name[1]),
 				extrabytes );
 	    if (numread != extrabytes) {
 		WRESFREE( newidptr );
@@ -162,7 +162,7 @@ int WResReadFixedTypeRecord( WResTypeInfo * newtype, WResFileID handle )
 {
     int 		numread;
 
-    numread = (* WRESREAD) ( handle, newtype, sizeof(WResTypeInfo) );
+    numread = WRESREAD( handle, newtype, sizeof(WResTypeInfo) );
     return( numread != sizeof(WResTypeInfo) );
 } /* WResReadFixedTypeRecord */
 
@@ -191,8 +191,7 @@ WResTypeInfo * WResReadTypeRecord( WResFileID handle )
     if (newptr != NULL) {
 	memcpy( newptr, &newtype, sizeof(WResTypeInfo) );
 	if (numcharsleft != 0) {
-	    numread = (* WRESREAD) ( handle,
-		    &(newptr->TypeName.ID.Name.Name[1]), numcharsleft );
+	    numread = WRESREAD( handle, &(newptr->TypeName.ID.Name.Name[1]), numcharsleft );
 	    if (numread != numcharsleft) {
 		WRESFREE( newptr );
 		newptr = NULL;
@@ -209,8 +208,7 @@ int WResReadFixedResRecord( WResResInfo * newres, WResFileID handle )
 {
     int 	    numread;
 
-    numread = (* WRESREAD) ( handle, (uint_8 *)newres + sizeof(void *),
-			     sizeof(WResResInfo) - sizeof(void *) );
+    numread = WRESREAD( handle, (uint_8 *)newres + sizeof(void *), sizeof(WResResInfo) - sizeof(void *) );
     newres->ResData = NULL;
     return( numread != ( sizeof(WResResInfo) - sizeof (void *) ) );
 } /* WResReadFixedResRecord */
@@ -240,8 +238,7 @@ WResResInfo * WResReadResRecord( WResFileID handle )
     if (newptr != NULL) {
 	memcpy( newptr, &newres, sizeof(WResResInfo) );
 	if (numcharsleft != 0) {
-	    numread = (* WRESREAD) ( handle,
-		    &(newptr->ResName.ID.Name.Name[1]), numcharsleft );
+	    numread = WRESREAD( handle, &(newptr->ResName.ID.Name.Name[1]), numcharsleft );
 	    if (numread != numcharsleft) {
 		WRESFREE( newptr );
 		newptr = NULL;

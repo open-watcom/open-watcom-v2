@@ -33,8 +33,8 @@
 #ifndef WRES_INCLUDED
 #define WRES_INCLUDED
 
-#include "layer0.h"
 #include "filefmt.h"
+#include "wressetr.h"
 
 /***** Exported types *****/
 typedef struct WResDirHead      *WResDir;
@@ -102,10 +102,10 @@ int             WResReadDir( WResFileID, WResDir, int * );
 int             WResReadDir2( WResFileID handle, WResDir currdir,
                               int *dup_discarded, void *fileinfo );
 int             WResAddResource( const WResID * type, const WResID * name,
-                        uint_16 memflags, off_t offset, uint_32 length,
+                        uint_16 memflags, long offset, uint_32 length,
                         WResDir, WResLangType *lang, int * duplicate );
 int             WResAddResource2( const WResID *type, const WResID *name,
-                        uint_16 memflags, off_t offset, uint_32 length,
+                        uint_16 memflags, long offset, uint_32 length,
                         WResDir currdir, WResLangType *lang,
                         WResDirWindow *duplicate, void *fileinfo );
 WResDirWindow   WResFindResource( const WResID * type, const WResID * name,

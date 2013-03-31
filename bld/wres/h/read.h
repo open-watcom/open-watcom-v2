@@ -33,7 +33,6 @@
 #ifndef WRESREAD_INCLUDED
 #define WRESREAD_INCLUDED
 
-#include "layer0.h"
 #include "mresfmt.h"
 
 typedef enum ResTypeInfo {
@@ -42,7 +41,7 @@ typedef enum ResTypeInfo {
     RT_WIN32
 } ResTypeInfo;
 
-int WResReadFixedResRecord( WResResInfo * newres, WResFileID handle );
+int WResReadFixedResRecord( WResResInfo *newres, WResFileID handle );
 int WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID handle );
 int WResReadFixedResRecord2( WResResInfo *newres, WResFileID handle );
 
@@ -57,7 +56,7 @@ int WResReadExtraWResID( WResID * name, WResFileID handle );
 WResIDName * WResReadWResIDName( WResFileID handle );
 int WResReadHeaderRecord( WResHeader * header, WResFileID handle );
 int WResReadExtHeader( WResExtHeader * head, WResFileID handle );
-int WResIsWResFile( WResFileID fp );
+int WResIsWResFile( WResFileID handle );
 extern ResTypeInfo WResFindResType( WResFileID handle );
 MResResourceHeader * MResReadResourceHeader( WResFileID handle );
 ResNameOrOrdinal * ResReadNameOrOrdinal( WResFileID handle );
@@ -67,8 +66,8 @@ extern char * ResRead32String( WResFileID handle, int * strlen );
 extern int ResReadUint32( uint_32 * newint, WResFileID handle );
 extern int ResReadUint16( uint_16 * newint, WResFileID handle );
 extern int ResReadUint8( uint_8 * newint, WResFileID handle );
-extern off_t ResTell( WResFileID handle );
-extern off_t ResSeek( WResFileID handle, off_t offset, int origin );
+extern long ResTell( WResFileID handle );
+extern long ResSeek( WResFileID handle, long offset, int origin );
 extern int ResPadDWord( WResFileID handle );
 extern M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle );
 

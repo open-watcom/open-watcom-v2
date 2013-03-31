@@ -33,9 +33,6 @@
 #ifndef RESACCEL_INCLUDED
 #define RESACCEL_INCLUDED
 
-#include "watcom.h"
-#include "layer0.h"
-
 #include "pushpck1.h"
 typedef struct AccelTableEntry32 {
     uint_16     Flags;
@@ -61,6 +58,6 @@ typedef uint_8  AccelFlags;
 #define ACCEL_LAST      0x80
 
 int ResWriteAccelEntry( AccelTableEntry * currentry, WResFileID handle );
-int ResWriteAccelEntry32( AccelTableEntry32 *, WResFileID );
+int ResWriteAccelEntry32( AccelTableEntry32 *, WResFileID handle );
 
 #endif

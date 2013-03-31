@@ -33,8 +33,6 @@
 #ifndef RESFONT_INCLUDED
 #define RESFONT_INCLUDED
 
-#include "watcom.h"
-
 #include "pushpck1.h"
 typedef struct FontInfo {
     uint_16         dfVersion;

@@ -30,14 +30,12 @@
 ****************************************************************************/
 
 
-#include "watcom.h"
 #include "layer0.h"
-#include "wresrtns.h"
 #include "resfont.h"
 #include "reserr.h"
 
-extern int ResWriteFontInfo( FontInfo * info, WResFileID handle )
-/***************************************************************/
+extern int ResWriteFontInfo( FontInfo *info, WResFileID handle )
+/**************************************************************/
 {
     int     numwrote;
 
@@ -50,8 +48,8 @@ extern int ResWriteFontInfo( FontInfo * info, WResFileID handle )
     }
 }
 
-extern int ResWriteFontDirEntry( FontDirEntry * entry, WResFileID handle )
-/************************************************************************/
+extern int ResWriteFontDirEntry( FontDirEntry *entry, WResFileID handle )
+/***********************************************************************/
 {
     int     numwrote;
 

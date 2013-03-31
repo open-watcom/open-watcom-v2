@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "opcl.h"
 #include "reserr.h"
 
 int ResCloseFile( WResFileID handle )
-/************************************/
+/***********************************/
 {
     int         ret;
 
-    ret = (* WRESCLOSE)( handle );
+    ret = WRESCLOSE( handle );
     if( ret == -1 ) {
         WRES_ERROR( WRS_CLOSE_FAILED );
     }

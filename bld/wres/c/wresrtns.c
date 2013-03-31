@@ -29,14 +29,8 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#if defined( __UNIX__ )
-    #include <fcntl.h>
-#endif
 #include <stdlib.h>
+#include "wio.h"
 #include "wressetr.h"
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-    #include "clibext.h"
-#endif
 
 WResSetRtns( open, close, read, write, lseek, tell, malloc, free );

@@ -31,12 +31,9 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "wresrtns.h"
+#include "layer0.h"
 #include "util.h"
 #include "reserr.h"
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-#include "clibext.h"
-#endif
 
 #define UINT16_MAXDIGITS    5
 #define UINT32_MAXDIGITS    9

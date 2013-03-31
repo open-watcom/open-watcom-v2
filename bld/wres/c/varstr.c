@@ -32,7 +32,6 @@
 
 #include <string.h>
 #include "layer0.h"
-#include "wresrtns.h"
 #include "varstr.h"
 #include "reserr.h"
 

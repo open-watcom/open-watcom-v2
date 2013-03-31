@@ -30,15 +30,15 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
-WResIDName * WResReadWResIDName( WResFileID handle )
-/**************************************************/
+WResIDName *WResReadWResIDName( WResFileID handle )
+/*************************************************/
 {
     WResIDName      newname;
-    WResIDName *    newptr;
+    WResIDName      *newptr;
     int             numread;
     int             error;
 
@@ -58,7 +58,7 @@ WResIDName * WResReadWResIDName( WResFileID handle )
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         newptr->NumChars = newname.NumChars;
-        numread = (* WRESREAD) ( handle, newptr->Name, newptr->NumChars );
+        numread = WRESREAD( handle, newptr->Name, newptr->NumChars );
         if (numread != newptr->NumChars) {
             WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
             WRESFREE( newptr );

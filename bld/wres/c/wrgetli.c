@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+#include "layer0.h"
 #include "wres.h"
 
 WResLangInfo * WResGetLangInfo( WResDirWindow currwind )

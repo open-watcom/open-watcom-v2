@@ -33,8 +33,6 @@
 #ifndef RESBITMP_INCLUDED
 #define RESBITMP_INCLUDED
 
-#include "watcom.h"
-
 #include "pushpck1.h"
 typedef struct BitmapInfoHeader {
     uint_32     Size;
@@ -50,6 +48,6 @@ typedef struct BitmapInfoHeader {
 } BitmapInfoHeader;
 #include "poppck.h"
 
-extern int ResWriteBitmapInfoHeader( BitmapInfoHeader *, WResFileID );
+extern int ResWriteBitmapInfoHeader( BitmapInfoHeader *, WResFileID handle );
 
 #endif

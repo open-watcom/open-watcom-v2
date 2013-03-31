@@ -30,17 +30,13 @@
 ****************************************************************************/
 
 
+#include "layer0.h"
 #include "wres.h"
 
-#ifdef __WATCOMC__
-#pragma off (unreferenced);
-#endif
 WResDirWindow WResNextResource( WResDirWindow currwind, WResDir currdir )
-#ifdef __WATCOMC__
-#pragma on (unreferenced);
-#endif
 /***********************************************************************/
 {
+    currdir = currdir;
     if( !WResIsEmptyWindow( currwind ) ) {
         if( currwind.CurrLang->Next != NULL ) {
             currwind.CurrLang = currwind.CurrLang->Next;

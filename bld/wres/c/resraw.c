@@ -32,11 +32,10 @@
 
 #include "layer0.h"
 #include "filefmt.h"
-#include "wresrtns.h"
 #include "reserr.h"
 
-extern int ResWrite( void * buffer, int len, WResFileID handle )
-/**************************************************************/
+extern int ResWrite( void *buffer, int len, WResFileID handle )
+/*************************************************************/
 {
     int     numwrote;
 

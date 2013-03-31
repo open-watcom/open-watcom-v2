@@ -30,15 +30,15 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
-extern off_t ResTell( WResFileID handle )
-/***************************************/
+long ResTell( WResFileID handle )
+/*******************************/
 /* cover function for tell */
 {
-    off_t       posn;
+    long    posn;
 
     posn = WRESTELL( handle );
     if( posn == -1L ) {

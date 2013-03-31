@@ -31,8 +31,17 @@
 
 #include <string.h>
 #include "wresall.h"
-#include "phandle.h"
+#include "wresset2.h"
 
+/* Include patch signature header shared with BPATCH */
+#include "patchsig.h"
+
+#define VALID_SIGNATURE 0x8386
+#define FOX_SIGNATURE1  0x8300
+#define FOX_SIGNATURE2  0x8301
+#define WAT_RES_SIG     0x8302
+
+#define WRESHANDLE  hInstance->handle
 
 #include "pushpck1.h"
 typedef struct dbgheader {
@@ -47,39 +56,30 @@ typedef struct dbgheader {
 } dbgheader;
 #include "poppck.h"
 
-#define VALID_SIGNATURE 0x8386
-#define FOX_SIGNATURE1  0x8300
-#define FOX_SIGNATURE2  0x8301
-#define WAT_RES_SIG     0x8302
-
-/* Include patch signature header shared with BPATCH */
-#include "patchsig.h"
-
-long                    FileShift = 0;
+long    FileShift = 0;
 
 extern int FindResources( PHANDLE_INFO hInstance )
 /* look for the resource information in a debugger record at the end of file */
 {
-    off_t       currpos;
-    off_t       offset;
+    long        currpos;
+    long        offset;
     dbgheader   header;
     int         notfound;
     char        buffer[ sizeof( PATCH_LEVEL ) ];
 
-    #define     __handle        hInstance->handle
     notfound = 1;
     FileShift = 0;
     offset = sizeof( dbgheader );
-    if( WRESSEEK( __handle, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L ) {
-        if( WRESREAD( __handle, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
+    if( WRESSEEK( WRESHANDLE, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L ) {
+        if( WRESREAD( WRESHANDLE, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
             if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
                 offset += sizeof( PATCH_LEVEL );
             }
         }
     }
-    currpos = WRESSEEK( __handle, - offset, SEEK_END );
+    currpos = WRESSEEK( WRESHANDLE, -offset, SEEK_END );
     for( ;; ) {
-        WRESREAD( __handle, &header, sizeof( dbgheader ) );
+        WRESREAD( WRESHANDLE, &header, sizeof( dbgheader ) );
         if( header.signature == WAT_RES_SIG ) {
             notfound = 0;
             FileShift = currpos - header.debug_size + sizeof( dbgheader );
@@ -88,11 +88,10 @@ extern int FindResources( PHANDLE_INFO hInstance )
                    header.signature == FOX_SIGNATURE1 ||
                    header.signature == FOX_SIGNATURE2 ) {
             currpos -= header.debug_size;
-            WRESSEEK( __handle, currpos, SEEK_SET );
+            WRESSEEK( WRESHANDLE, currpos, SEEK_SET );
         } else {        /* did not find the resource information */
             break;
         }
     }
     return( notfound );
-    #undef __handle
 }

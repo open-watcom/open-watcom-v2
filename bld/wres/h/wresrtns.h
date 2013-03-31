@@ -33,9 +33,6 @@
 #ifndef WRESRTNS_INLCUDED
 #define WRESRTNS_INLCUDED
 
-#include "layer0.h"
-#include "wressetr.h"
-
 #define WRESOPEN        WResRtns.open
 #define WRESCLOSE       WResRtns.close
 #define WRESWRITE       WResRtns.write

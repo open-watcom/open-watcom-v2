@@ -33,16 +33,10 @@
 #ifndef WRESALL_INCLUDED
 #define WRESALL_INCLUDED
 
+#include "layer0.h"
 #include "layer1.h"
-
 #include "wres.h"
 #include "mem2.h"
 #include "util.h"
-#include "wresrtns.h"
-
-
-#if !defined( min )
-    #define min( x, y ) (((x) > (y)) ? (y) : (x))
-#endif
 
 #endif

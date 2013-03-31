@@ -33,8 +33,6 @@
 #ifndef WRESLAYER1_INCLUDED
 #define WRESLAYER1_INCLUDED
 
-#include "layer0.h"
-
 #include "filefmt.h"
 #include "resfmt.h"
 #include "opcl.h"

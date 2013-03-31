@@ -31,13 +31,13 @@
 
 
 #include <string.h>
+#include "layer0.h"
 #include "layer1.h"
-#include "wresrtns.h"
 #include "wres.h"
 #include "reserr.h"
 
-static int writeLangList( WResFileID handle, WResLangNode *curlang ) {
-
+static int writeLangList( WResFileID handle, WResLangNode *curlang )
+{
     int         error;
 
     for( error = FALSE; curlang != NULL && !error; curlang = curlang->Next ) {
@@ -80,11 +80,11 @@ int WResWriteDir( WResFileID handle, WResDir currdir )
     WResHeader      head;
     WResExtHeader   ext_head;
     int             error;
-    off_t           diroffset;
-    off_t           seekpos;
+    long            diroffset;
+    long            seekpos;
 
     /* get the offset of the start of the directory */
-    diroffset = (* WRESTELL) ( handle );
+    diroffset = WRESTELL( handle );
     error = (diroffset == -1L);
 
     if( error ) {
@@ -110,7 +110,7 @@ int WResWriteDir( WResFileID handle, WResDir currdir )
 
     /* leave the handle at the start of the file */
     if( !error ) {
-        seekpos = (* WRESSEEK) ( handle, 0L, SEEK_SET );
+        seekpos = WRESSEEK( handle, 0L, SEEK_SET );
         if( seekpos == -1L ) {
             error = TRUE;
             WRES_ERROR( WRS_SEEK_FAILED );

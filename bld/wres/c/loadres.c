@@ -34,26 +34,10 @@
 #include <string.h>
 #include <limits.h>
 #include <stdlib.h>
-#include "walloca.h"
-
-#ifndef __WATCOMC__
-    #define _WCI86FAR
-#endif
-
-
-#ifdef WIN_GUI
-#include <windows.h>
-#else
-#define WINAPI
-typedef unsigned int UINT;
-typedef char _WCI86FAR *   LPSTR;
-#endif
-
-#include <unistd.h>
 #include "wresall.h"
+#include "walloca.h"
+#include "wresset2.h"
 #include "loadstr.h"
-
-#include "phandle.h"
 
 extern WResDir    MainDir;
 
@@ -62,12 +46,12 @@ static int GetResource( WResLangInfo    *res,
                         char            *res_buffer )
 /***************************************************/
 {
-    off_t               prevpos;
-    unsigned            numread;
+    long        prevpos;
+    int         numread;
 
     prevpos = WRESSEEK( hInstance->handle, res->Offset, SEEK_SET );
     if ( prevpos == -1L ) return( -1 );
-    numread = WRESREAD( hInstance->handle, res_buffer, (int)res->Length );
+    numread = WRESREAD( hInstance->handle, res_buffer, res->Length );
 
     return( 0 );
 }
@@ -107,8 +91,8 @@ extern int WINAPI WResLoadResource2( WResDir            dir,
         if( res->Length >= INT_MAX ) {
             return( -1 );
         }
-	res_buffer  = WRESALLOC( res->Length );
-	*lpszBuffer = res_buffer;
+        res_buffer  = WRESALLOC( res->Length );
+        *lpszBuffer = res_buffer;
         if( *lpszBuffer == NULL ) {
             return( -1 );
         }

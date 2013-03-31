@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
-int WResReadHeaderRecord( WResHeader * header, WResFileID handle )
-/****************************************************************/
+int WResReadHeaderRecord( WResHeader *header, WResFileID handle )
+/***************************************************************/
 {
-    off_t   currpos;
-    int     error;
-    int     numread;
+    long            currpos;
+    int             error;
+    int             numread;
 
     error = TRUE;
     currpos = WRESSEEK( handle, 0, SEEK_SET );
@@ -61,8 +61,8 @@ int WResReadHeaderRecord( WResHeader * header, WResFileID handle )
     return( error );
 }
 
-int WResReadExtHeader( WResExtHeader * head, WResFileID handle )
-/**************************************************************/
+int WResReadExtHeader( WResExtHeader *head, WResFileID handle )
+/*************************************************************/
 {
     int     numread;
 

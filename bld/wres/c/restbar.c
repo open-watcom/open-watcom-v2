@@ -30,14 +30,13 @@
 ****************************************************************************/
 
 
+#include "layer0.h"
 #include "write.h"
 #include "restbar.h"
 #include "reserr.h"
-#include "wresrtns.h"
 
-int ResWriteToolBarHeader( WResFileID handle, uint_16 item1, uint_16 item2,
-                           uint_16 cnt )
-/************************************************************************/
+int ResWriteToolBarHeader( WResFileID handle, uint_16 item1, uint_16 item2, uint_16 cnt )
+/***************************************************************************************/
 {
     uint_16     tmp;
     int         ret;
@@ -58,14 +57,14 @@ int ResWriteToolBarHeader( WResFileID handle, uint_16 item1, uint_16 item2,
     return( ret );
 }
 
-int ResWriteToolBarItems( WResFileID handle, uint_16 *items, unsigned cnt ) {
-/****************************************************************************/
-
-    int         numwrite;
-    unsigned    size;
+int ResWriteToolBarItems( WResFileID handle, uint_16 *items, unsigned cnt )
+/*************************************************************************/
+{
+    int             numwrite;
+    unsigned        size;
 
     size = cnt * sizeof( uint_16 );
-    numwrite = (* WRESWRITE) ( handle, items, size );
+    numwrite = WRESWRITE( handle, items, size );
     if( numwrite != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );

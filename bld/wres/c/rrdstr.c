@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "varstr.h"
 #include "read.h"
 
-char * ResReadString( WResFileID handle, int * strlen )
-/*****************************************************/
+char *ResReadString( WResFileID handle, int *strlen )
+/***************************************************/
 {
     VarString *         newstring;
     int                 error;
@@ -59,8 +59,8 @@ char * ResReadString( WResFileID handle, int * strlen )
     return( retstring );
 } /* ResReadString */
 
-char * ResRead32String( WResFileID handle, int * strlen )
-/*******************************************************/
+char *ResRead32String( WResFileID handle, int *strlen )
+/*****************************************************/
 {
     VarString *         newstring;
     int                 error;

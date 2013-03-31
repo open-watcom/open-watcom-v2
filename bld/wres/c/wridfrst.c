@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <string.h>
 #include "layer0.h"
-#include "wresrtns.h"
 #include "util.h"
 #include "reserr.h"
 
@@ -41,8 +39,8 @@ WResID * WResIDFromStr( const char * newstr )
 /*******************************************/
 /* allocate an ID and fill it in */
 {
-    WResID *    newid;
-    unsigned    strsize;
+    WResID  *newid;
+    size_t  strsize;
 
     strsize = strlen( newstr );
     /* check the size of the string:  can it fit in two bytes? */

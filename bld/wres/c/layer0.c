@@ -40,15 +40,6 @@
 #include "layer0.h"
 
 
-struct WResRoutines WResRtns = {
-    open,       /* from io.h */
-    close,
-    write,
-    read,
-    lseek,
-    tell,
-    malloc,     /* from malloc.h */
-    free
-};
+WResSetRtns( open, close, read, write, lseek, tell, malloc, free );
 
 #endif

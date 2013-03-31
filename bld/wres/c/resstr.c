@@ -32,7 +32,6 @@
 
 #include <limits.h>
 #include "layer0.h"
-#include "wresrtns.h"
 #include "write.h"
 #include "resstr.h"
 
@@ -58,9 +57,9 @@ extern void ResFreeStringTableBlock( StringTableBlock * currblock )
     }
 } /* ResFreeStringTableBlock */
 
-extern int ResWriteStringTableBlock( StringTableBlock * currblock,
-                            uint_8 use_unicode, WResFileID handle )
-/*****************************************************************/
+extern int ResWriteStringTableBlock( StringTableBlock *currblock,
+                            uint_8 use_unicode, int handle )
+/***************************************************************/
 {
     int     stringid;
     int     error;

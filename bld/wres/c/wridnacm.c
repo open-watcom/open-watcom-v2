@@ -32,12 +32,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "util.h"
 #if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-#include "clibext.h"
-#include "strings.h"
+#include <strings.h>
 #endif
 #include "wresall.h"
+#include "util.h"
 
 static int wresMemicmp( const void *p1, const void *p2, unsigned len )
 /********************************************************
@@ -68,7 +67,7 @@ extern int WResIDNameCmp( const WResIDName * name1, const WResIDName * name2 )
     int     cmp_rc;
 
     cmp_rc = wresMemicmp( name1->Name, name2->Name,
-                        min( name1->NumChars, name2->NumChars) );
+                        __min( name1->NumChars, name2->NumChars) );
     if (cmp_rc == 0) {
         if (name1->NumChars == name2->NumChars) {
             return( 0 );

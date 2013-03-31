@@ -30,24 +30,23 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
-int WResReadExtraWResID( WResID * name, WResFileID handle )
-/*********************************************************/
+int WResReadExtraWResID( WResID *name, WResFileID handle )
+/********************************************************/
 /* reads the extra bytes into the end of the structure */
 /* assumes that the fixed portion has just been read in and is in name and */
 /* that name is big enough to hold the extra bytes */
 {
-    int         numread;
-    uint_16     extrabytes;
+    int             numread;
+    uint_16         extrabytes;
 
     if (name->IsName) {
         extrabytes = name->ID.Name.NumChars - 1;
         if (extrabytes > 0) {
-            numread = (* WRESREAD) ( handle, &(name->ID.Name.Name[1]),
-                        extrabytes );
+            numread = WRESREAD( handle, &(name->ID.Name.Name[1]), extrabytes );
             if( numread == -1 ) {
                 WRES_ERROR( WRS_READ_FAILED );
                 return( TRUE );

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+#include "layer0.h"
 #include "util.h"
 
 long WResIDToNum( const WResID * num )

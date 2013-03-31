@@ -31,17 +31,16 @@
 
 
 #include "layer0.h"
-#include "wresrtns.h"
 #include "resbitmp.h"
 #include "reserr.h"
 
-extern int ResWriteBitmapInfoHeader( BitmapInfoHeader * head, WResFileID handle)
+extern int ResWriteBitmapInfoHeader( BitmapInfoHeader *head, WResFileID handle )
 /******************************************************************************/
 {
     int     numwrote;
 
-    numwrote = WRESWRITE( handle, head, sizeof(BitmapInfoHeader) );
-    if( numwrote != sizeof(BitmapInfoHeader) ) {
+    numwrote = WRESWRITE( handle, head, sizeof( BitmapInfoHeader ) );
+    if( numwrote != sizeof( BitmapInfoHeader ) ) {
         WRES_ERROR( WRS_WRITE_FAILED )
         return( TRUE );
     }

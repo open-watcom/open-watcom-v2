@@ -33,8 +33,6 @@
 #ifndef RESMENU_INCLUDED
 #define RESMENU_INCLUDED
 
-#include "watcom.h"
-
 typedef uint_16             MenuFlags;
 #define MENU_GRAYED         0x0001
 #define MENU_INACTIVE       0x0002
@@ -109,27 +107,20 @@ typedef struct MenuExItem {
 } MenuExItem;
 #include "poppck.h"
 
-int ResWriteMenuItemNormal( const MenuItemNormal * curritem, uint_8 use_unicode,
-                                                    WResFileID handle );
-int ResWriteMenuItemPopup( const MenuItemPopup * curritem, uint_8 use_unicode,
-                                            WResFileID handle );
-int ResWriteMenuItem( const MenuItem * curritem, uint_8 use_unicode,
-                                             WResFileID handle );
+int ResWriteMenuItemNormal( const MenuItemNormal * curritem, uint_8 use_unicode, WResFileID handle );
+int ResWriteMenuItemPopup( const MenuItemPopup * curritem, uint_8 use_unicode, WResFileID handle );
+int ResWriteMenuItem( const MenuItem * curritem, uint_8 use_unicode, WResFileID handle );
 int ResWriteMenuHeader( MenuHeader * currhead, WResFileID handle );
 int ResReadMenuHeader( MenuHeader * currhead, WResFileID handle );
 int ResReadMenuItem( MenuItem * curritem, WResFileID handle );
 int ResReadMenuItem32( MenuItem * curritem, WResFileID handle );
 MenuItem * ResNewMenuItem( void );
 void ResFreeMenuItem( MenuItem * olditem );
-int ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle,
-                           char *buf );
-
+int ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle, char *buf );
 
 int ResWriteMenuExHeader( MenuHeader *currhead, WResFileID handle, uint_8 *data );
-int ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPopup *exdata,
-                             uint_8 use_unicode, WResFileID handle );
-int ResWriteMenuExItemNormal( const MenuItemNormal *, const MenuExItemNormal *,
-                              uint_8, WResFileID );
+int ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPopup *exdata, uint_8 use_unicode, WResFileID handle );
+int ResWriteMenuExItemNormal( const MenuItemNormal *, const MenuExItemNormal *, uint_8, WResFileID handle );
 int ResReadMenuExItem( MenuExItem *curritem, WResFileID handle );
 int ResIsMenuEx( WResFileID handle );
 int ResIsHeaderMenuEx( MenuHeader *hdr );

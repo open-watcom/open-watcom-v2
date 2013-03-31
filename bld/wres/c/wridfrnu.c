@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <limits.h>
-#include "wresrtns.h"
+#include "layer0.h"
 #include "util.h"
 #include "reserr.h"
 

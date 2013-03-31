@@ -36,41 +36,12 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <sys/types.h>
+#include "wressetr.h"
+#include "bool.h"
+#include "watcom.h"
 
-#ifndef TRUE
-    #define FALSE               0
-    #define TRUE                1
-#endif
-
-#ifndef SEEK_SET
-    #define SEEK_SET        0
-    #define SEEK_CUR        1
-    #define SEEK_END        2
-#endif
-
-/* The low level I/O routines named below will be passed a WResFileID by the */
-/* higher level I/O routines and which must be the WResFileID returned by one */
-/* of the file opening functions which will get it from the low level open */
-/* function */
-
-typedef int             WResFileID;
-
-struct WResRoutines {                                       /* defaults */
-    /* I/O routines */
-    WResFileID (*   open) (const char *, int, ...);         /* open */
-    int (*          close) (WResFileID);                    /* close */
-    int (*          write) (WResFileID, const void *, size_t); /* write */
-    int (*          read) (WResFileID, void *, size_t);        /* read */
-    off_t (*        seek) (WResFileID, off_t, int );        /* lseek */
-    off_t (*        tell) (WResFileID);                     /* tell */
-    /* memory routines */
-    void * (*       alloc) (size_t);                        /* malloc */
-    void (*         free) (void *);                         /* free */
-};
+#include "wresrtns.h"
 
 extern struct WResRoutines WResRtns;
-extern int RcWrite( int fileno, const void * out_buff, size_t size );
-extern int RcOpen ( const char * file_name, int access, ... );
-extern int RcClose( int fileno );
 
 #endif

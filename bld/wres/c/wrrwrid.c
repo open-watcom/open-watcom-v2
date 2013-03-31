@@ -31,18 +31,18 @@
 
 
 #include <string.h>
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
-WResID * WResReadWResID( WResFileID handle )
-/******************************************/
+WResID *WResReadWResID( WResFileID handle )
+/*****************************************/
 {
-    WResID      newid;
-    WResID *    newidptr;
-    int         numread;
-    int         extrabytes;     /* chars to be read beyond the fixed size */
-    int         error;
+    WResID          newid;
+    WResID          *newidptr;
+    int             numread;
+    int             extrabytes;     /* chars to be read beyond the fixed size */
+    int             error;
 
     /* read in the fixed part of the record */
     error = WResReadFixedWResID( &newid, handle );
@@ -62,8 +62,7 @@ WResID * WResReadWResID( WResFileID handle )
     } else {
         memcpy( newidptr, &newid, sizeof(WResID) );
         if (extrabytes != 0) {
-            numread = (* WRESREAD) ( handle, &(newidptr->ID.Name.Name[1]),
-                                extrabytes );
+            numread = WRESREAD( handle, &(newidptr->ID.Name.Name[1]), extrabytes );
             if (numread != extrabytes) {
                 WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
                 WRESFREE( newidptr );

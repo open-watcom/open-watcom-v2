@@ -31,13 +31,11 @@
 
 
 #include "layer0.h"
-#include "wresrtns.h"
 #include "resiccu.h"
 #include "reserr.h"
 
-extern int ResWriteIconCurDirHeader( const IconCurDirHeader * head,
-                        WResFileID handle )
-/***********************************************************/
+extern int ResWriteIconCurDirHeader( const IconCurDirHeader *head, WResFileID handle )
+/************************************************************************************/
 {
     int     numwrote;
 
@@ -50,9 +48,8 @@ extern int ResWriteIconCurDirHeader( const IconCurDirHeader * head,
     }
 }
 
-extern int ResReadIconCurDirHeader( IconCurDirHeader * head,
-                        WResFileID handle )
-/***********************************************************/
+extern int ResReadIconCurDirHeader( IconCurDirHeader *head, WResFileID handle )
+/*****************************************************************************/
 {
     int     numread;
 
@@ -65,8 +62,8 @@ extern int ResReadIconCurDirHeader( IconCurDirHeader * head,
     }
 }
 
-extern int ResWriteIconDirEntry( const IconDirEntry * entry, WResFileID handle )
-/******************************************************************************/
+extern int ResWriteIconDirEntry( const IconDirEntry *entry, WResFileID handle )
+/*****************************************************************************/
 {
     int     numwrote;
 
@@ -79,8 +76,8 @@ extern int ResWriteIconDirEntry( const IconDirEntry * entry, WResFileID handle )
     }
 }
 
-extern int ResReadIconDirEntry( IconDirEntry * entry, WResFileID handle )
-/******************************************************************************/
+extern int ResReadIconDirEntry( IconDirEntry *entry, WResFileID handle )
+/**********************************************************************/
 {
     int     numread;
 
@@ -93,8 +90,8 @@ extern int ResReadIconDirEntry( IconDirEntry * entry, WResFileID handle )
     }
 }
 
-extern int ResWriteCurDirEntry( const CurDirEntry * entry, WResFileID handle )
-/****************************************************************************/
+extern int ResWriteCurDirEntry( const CurDirEntry *entry, WResFileID handle )
+/***************************************************************************/
 {
     int     numwrote;
 
@@ -107,8 +104,8 @@ extern int ResWriteCurDirEntry( const CurDirEntry * entry, WResFileID handle )
     }
 }
 
-extern int ResReadCurDirEntry( CurDirEntry * entry, WResFileID handle )
-/****************************************************************************/
+extern int ResReadCurDirEntry( CurDirEntry *entry, WResFileID handle )
+/********************************************************************/
 {
     int     numread;
 
@@ -121,8 +118,8 @@ extern int ResReadCurDirEntry( CurDirEntry * entry, WResFileID handle )
     }
 }
 
-extern int ResWriteCurHotspot( const CurHotspot * hotspot, WResFileID handle )
-/****************************************************************************/
+extern int ResWriteCurHotspot( const CurHotspot *hotspot, WResFileID handle )
+/***************************************************************************/
 {
     int     numwrote;
 

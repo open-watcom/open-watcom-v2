@@ -34,7 +34,6 @@
 #include <time.h>
 #include "layer0.h"
 #include "filefmt.h"
-#include "wresrtns.h"
 #include "write.h"
 #include "resver.h"
 #include "read.h"
@@ -69,7 +68,7 @@ extern int ResWriteVerBlockHeader( VerBlockHeader * head, uint_8 use_unicode,
 }
 
 extern uint_16 ResSizeVerBlockHeader( VerBlockHeader * head,
-                                            uint_8 use_unicode, uint_8 os )
+                                 uint_8 use_unicode, uint_8 os )
 /**************************************************************/
 {
     uint_16     key_size;
@@ -93,11 +92,11 @@ extern int ResWriteVerValueItem( VerValueItem * item, uint_8 use_unicode,
                                             WResFileID handle )
 /***********************************************************************/
 {
-    int         error;
-    char        *convbuf;
-    int         len;
-    long        numwrite;
-    uint_16     tmp16;
+    int             error;
+    char            *convbuf;
+    int             len;
+    int             numwrite;
+    uint_16         tmp16;
 
     error = FALSE;
     if( item->IsNum ) {
@@ -115,7 +114,7 @@ extern int ResWriteVerValueItem( VerValueItem * item, uint_8 use_unicode,
                 len = item->strlen;
                 convbuf = item->Value.String;
             }
-            numwrite = (* WRESWRITE) ( handle, convbuf, len );
+            numwrite = WRESWRITE( handle, convbuf, len );
             if( numwrite != len ) {
                 error = TRUE;
                 WRES_ERROR( WRS_WRITE_FAILED );
@@ -146,8 +145,8 @@ extern uint_16 ResSizeVerValueItem( VerValueItem * item, uint_8 use_unicode )
     return( size );
 }
 
-extern int ResWriteVerFixedInfo( VerFixedInfo * fixed, WResFileID handle )
-/************************************************************************/
+extern int ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID handle )
+/***********************************************************************/
 {
     int     num_wrote;
 

@@ -33,14 +33,12 @@
 #ifndef WRESOPEN_INCLUDED
 #define WRESOPEN_INCLUDED
 
-#include "layer0.h"
-
-WResFileID  WResOpenNewFile( const char * filename );
-WResFileID  MResOpenNewFile( const char * filename );
-WResFileID  ResOpenFileRO( const char * filename );
-WResFileID  ResOpenFileRW( const char * filename );
-int         WResFileInit( WResFileID );
-int         ResCloseFile( WResFileID );
-int         WResCheckWResFile( const char * filename );
+extern WResFileID WResOpenNewFile( const char *filename );
+extern WResFileID MResOpenNewFile( const char * filename );
+extern WResFileID ResOpenFileRO( const char * filename );
+extern WResFileID ResOpenFileRW( const char * filename );
+extern int  WResFileInit( int );
+extern int  ResCloseFile( WResFileID );
+extern int  WResCheckWResFile( const char * filename );
 
 #endif

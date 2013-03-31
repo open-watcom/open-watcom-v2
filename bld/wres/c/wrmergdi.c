@@ -31,11 +31,7 @@
 
 
 #include <string.h>
-#include "wresrtns.h"
-#include "wres.h"
-#include "layer1.h"
-#include "mem2.h"
-#include "util.h"
+#include "wresall.h"
 #include "reserr.h"
 
 typedef struct WResMergeError {

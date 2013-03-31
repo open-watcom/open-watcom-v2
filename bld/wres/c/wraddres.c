@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "layer1.h"
-#include "wresrtns.h"
-#include "wres.h"
-#include "mem2.h"
-#include "util.h"
 #include <string.h>
+#include "wresall.h"
 #include "reserr.h"
 
 
@@ -115,7 +111,7 @@ static WResResNode *newResNode( const WResID *name )
  *                   occured (including duplicate entry)
  */
 int WResAddResource( const WResID *type, const WResID *name,
-                        uint_16 memflags, off_t offset, uint_32 length,
+                        uint_16 memflags, long offset, uint_32 length,
                         WResDir currdir, WResLangType *lang, int *duplicate )
 /************************************************************/
 {
@@ -131,7 +127,7 @@ int WResAddResource( const WResID *type, const WResID *name,
 }
 
 int WResAddResource2( const WResID *type, const WResID *name,
-                        uint_16 memflags, off_t offset, uint_32 length,
+                        uint_16 memflags, long offset, uint_32 length,
                         WResDir currdir, WResLangType *lang,
                         WResDirWindow *duplicate, void *fileinfo )
 /************************************************************/

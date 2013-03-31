@@ -29,22 +29,17 @@
 *
 ****************************************************************************/
 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include "wresrtns.h"
+#include "wio.h"
+#include "layer0.h"
 #include "opcl.h"
 #include "reserr.h"
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-#include "clibext.h"
-#endif
 
-WResFileID WResOpenNewFile( const char * filename )
-/*************************************************/
+WResFileID WResOpenNewFile( const char *filename )
+/************************************************/
 {
-    WResFileID      newhandle;
+    WResFileID  newhandle;
 
-    newhandle = (* WRESOPEN) ( filename, O_CREAT | O_WRONLY | O_TRUNC
-                        | O_BINARY, S_IWRITE | S_IREAD );
+    newhandle = WRESOPEN( filename, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY, PMODE_RW );
     if (newhandle == -1) {
         WRES_ERROR( WRS_OPEN_FAILED );
     } else {

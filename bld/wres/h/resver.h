@@ -73,13 +73,10 @@ typedef struct VerFixedInfo {
 #define VER_FIXED_SIGNATURE     0xfeef04bd
 #define VER_FIXED_STRUCT_VER    0x00010000
 
-extern int ResWriteVerBlockHeader( VerBlockHeader * head, uint_8 use_unicode,
-                                        uint_8 os, WResFileID handle );
-extern int ResWriteVerValueItem( VerValueItem * item, uint_8 use_unicode,
-                                        WResFileID handle );
-extern int ResWriteVerFixedInfo( VerFixedInfo *, WResFileID );
-extern uint_16 ResSizeVerBlockHeader( VerBlockHeader *, uint_8 use_unicode,
-                                        uint_8 os );
+extern int ResWriteVerBlockHeader( VerBlockHeader * head, uint_8 use_unicode, uint_8 os, WResFileID handle );
+extern int ResWriteVerValueItem( VerValueItem * item, uint_8 use_unicode, WResFileID handle );
+extern int ResWriteVerFixedInfo( VerFixedInfo *, WResFileID handle );
+extern uint_16 ResSizeVerBlockHeader( VerBlockHeader *, uint_8 use_unicode, uint_8 os );
 extern uint_16 ResSizeVerValueItem( VerValueItem * item, uint_8 use_unicode );
 
 #endif

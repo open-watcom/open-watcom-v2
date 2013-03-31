@@ -33,7 +33,6 @@
 #ifndef RESDIAG_INCLUDED
 #define RESDIAG_INCLUDED
 
-#include "watcom.h"
 #ifdef WIN_GUI
 // the following is a temporary measure to get around the fact
 // that winreg.h defines a type called ppvalue
@@ -43,7 +42,6 @@
 #endif
 
 #include "resnamor.h"
-#include "layer0.h"
 
 typedef uint_32     DialogStyle;
 typedef uint_32     DialogExstyle;
@@ -199,12 +197,10 @@ typedef struct DialogBoxExControl32 {
 #define CLASS_SCROLLBAR 0x84
 #define CLASS_COMBOBOX  0x85
 
-extern int ResWriteDialogBoxHeader( DialogBoxHeader *, WResFileID );
-extern int ResWriteDialogBoxHeader32( DialogBoxHeader32 * head,
-                                            WResFileID handle );
-extern int ResWriteDialogBoxControl( DialogBoxControl *, WResFileID );
-extern int ResWriteDialogBoxControl32( DialogBoxControl32 * control,
-                WResFileID handle );
+extern int ResWriteDialogBoxHeader( DialogBoxHeader *, WResFileID handle );
+extern int ResWriteDialogBoxHeader32( DialogBoxHeader32 * head, WResFileID handle );
+extern int ResWriteDialogBoxControl( DialogBoxControl *, WResFileID handle );
+extern int ResWriteDialogBoxControl32( DialogBoxControl32 * control, WResFileID handle );
 extern ControlClass * ResNameOrOrdToControlClass( const ResNameOrOrdinal *);
 extern ControlClass * ResNumToControlClass( uint_16 classnum );
 extern void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader * head );
@@ -212,14 +208,13 @@ extern void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 * head );
 extern int ResIsDialogEx( WResFileID handle );
 extern int ResReadDialogBoxHeader( DialogBoxHeader * head, WResFileID handle );
 extern int ResReadDialogBoxHeader32( DialogBoxHeader32 * head, WResFileID handle );
-extern int ResReadDialogExHeader32( DialogBoxHeader32 *, DialogExHeader32 *, WResFileID );
-extern int ResReadDialogBoxControl( DialogBoxControl *, WResFileID );
-extern int ResReadDialogBoxControl32( DialogBoxControl32 *, WResFileID );
-extern int ResReadDialogExControl32( DialogBoxExControl32 *, WResFileID );
+extern int ResReadDialogExHeader32( DialogBoxHeader32 *, DialogExHeader32 *, WResFileID handle );
+extern int ResReadDialogBoxControl( DialogBoxControl *, WResFileID handle );
+extern int ResReadDialogBoxControl32( DialogBoxControl32 *, WResFileID handle );
+extern int ResReadDialogExControl32( DialogBoxExControl32 *, WResFileID handle );
 
 extern int ResWriteDialogExHeader32( DialogBoxHeader32 *head,
                  DialogExHeader32 *exhead, WResFileID handle );
-extern int ResWriteDialogExControl32( DialogBoxExControl32 *control,
-                                        WResFileID );
+extern int ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle );
 
 #endif

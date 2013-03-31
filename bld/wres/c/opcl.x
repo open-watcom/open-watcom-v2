@@ -31,10 +31,10 @@ WResFileID WResOpenNewFile( const char * filename )
 {
     WResFileID	    newhandle;
 
-    newhandle = (* WRESOPEN) ( filename, O_CREAT | O_WRONLY | O_TRUNC
+    newhandle = WRESOPEN( filename, O_CREAT | O_WRONLY | O_TRUNC
 			| O_BINARY, S_IWRITE | S_IREAD );
     if (newhandle != -1) {
-	WResFileInit( newhandle );
+        WResFileInit( newhandle );
     }
 
     return( newhandle );
@@ -43,8 +43,7 @@ WResFileID WResOpenNewFile( const char * filename )
 WResFileID MResOpenNewFile( const char * filename )
 /*************************************************/
 {
-    return( (* WRESOPEN) ( filename, O_CREAT | O_WRONLY | O_TRUNC
-			| O_BINARY, S_IWRITE | S_IREAD ) );
+    return( WRESOPEN( filename, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY, S_IWRITE | S_IREAD ) );
 }
 
 int WResFileInit( WResFileID handle )
@@ -63,9 +62,9 @@ int WResFileInit( WResFileID handle )
     head.WResVer = WRESVERSION;
 
     /* write the empty record out at the begining of the file */
-    error = (*WRESSEEK) ( handle, 0, SEEK_SET );
+    error = WRESSEEK( handle, 0, SEEK_SET );
     if (!error) {
-	error = WResWriteHeaderRecord( &head, handle );
+        error = WResWriteHeaderRecord( &head, handle );
     }
 
     return( error );
@@ -75,20 +74,19 @@ WResFileID  ResOpenFileRO( const char * filename )
 /*************************************************/
 /* use this function to open Microsoft .RES files also */
 {
-    return( (* WRESOPEN) ( filename, O_RDONLY | O_BINARY ) );
+    return( WRESOPEN( filename, O_RDONLY | O_BINARY ) );
 }
 
 WResFileID  ResOpenFileRW( const char * filename )
 /*************************************************/
 {
-    return( (* WRESOPEN) ( filename, O_CREAT | O_RDWR | O_BINARY,
-			S_IWRITE | S_IREAD ) );
+    return( WRESOPEN( filename, O_CREAT | O_RDWR | O_BINARY, S_IWRITE | S_IREAD ) );
 }
 
 int ResCloseFile( WResFileID handle )
 /************************************/
 {
-    return( (* WRESCLOSE) ( handle ) );
+    return( WRESCLOSE( handle ) );
 }
 
 int WResCheckWResFile( const char * filename )

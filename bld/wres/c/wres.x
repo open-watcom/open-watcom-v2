@@ -308,7 +308,7 @@ int WResWriteDir( WResFileID handle, WResDir currdir )
     uint_32	seekpos;
 
     /* get the offset of the start of the directory */
-    diroffset = (* WRESTELL) ( handle );
+    diroffset = WRESTELL( handle );
     error = (diroffset == -1);
 
     if (!error) {
@@ -326,7 +326,7 @@ int WResWriteDir( WResFileID handle, WResDir currdir )
     }
     /* leave the handle at the start of the file */
     if (!error) {
-	seekpos = (* WRESSEEK) ( handle, 0L, SEEK_SET );
+	seekpos = WRESSEEK( handle, 0L, SEEK_SET );
 	error = (seekpos == -1);
     }
 
@@ -429,7 +429,7 @@ static int ReadWResDir( WResFileID handle, WResDir currdir )
     if (!error) {
 	currdir->NumResources = head.NumResources;
 	currdir->NumTypes = head.NumTypes;
-	seekpos = (* WRESSEEK) ( handle, head.DirOffset, SEEK_SET );
+	seekpos = WRESSEEK( handle, head.DirOffset, SEEK_SET );
 	error = (seekpos == -1);
     }
     /* read in the list of types (and the resources) */

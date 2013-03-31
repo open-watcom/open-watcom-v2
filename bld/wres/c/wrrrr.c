@@ -31,17 +31,17 @@
 
 
 #include <string.h>
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
-WResResInfo * WResReadResRecord( WResFileID handle )
-/****************************************************************/
+WResResInfo *WResReadResRecord( WResFileID handle )
+/*************************************************/
 /* reads in the fields of a res info record from the current position in */
 /* the file identified by fp */
 {
     WResResInfo     newres;
-    WResResInfo *   newptr;
+    WResResInfo     *newptr;
     int             numread;
     int             numcharsleft;
     int             error;
@@ -62,8 +62,7 @@ WResResInfo * WResReadResRecord( WResFileID handle )
     } else {
         memcpy( newptr, &newres, sizeof(WResResInfo) );
         if (numcharsleft != 0) {
-            numread = (* WRESREAD) ( handle,
-                    &(newptr->ResName.ID.Name.Name[1]), numcharsleft );
+            numread = WRESREAD( handle, &(newptr->ResName.ID.Name.Name[1]), numcharsleft );
             if (numread != numcharsleft) {
                 WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
                 WRESFREE( newptr );

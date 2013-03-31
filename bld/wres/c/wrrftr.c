@@ -30,17 +30,17 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
-int WResReadFixedTypeRecord( WResTypeInfo * newtype, WResFileID handle )
-/**********************************************************************/
+int WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID handle )
+/*********************************************************************/
 /* read the fixed part of a Type info record */
 {
-    int                 numread;
+    int     numread;
 
-    numread = (* WRESREAD) ( handle, newtype, sizeof(WResTypeInfo) );
+    numread = WRESREAD( handle, newtype, sizeof(WResTypeInfo) );
     if( numread == sizeof(WResTypeInfo) ) {
         return( FALSE );
     } else if( numread == -1 ) {
@@ -51,14 +51,14 @@ int WResReadFixedTypeRecord( WResTypeInfo * newtype, WResFileID handle )
     return( TRUE );
 } /* WResReadFixedTypeRecord */
 
-int WResReadFixedTypeRecord2( WResTypeInfo * newtype, WResFileID handle )
+int WResReadFixedTypeRecord2( WResTypeInfo *newtype, WResFileID handle )
 /**********************************************************************/
 /* read the fixed part of a Type info record for version 2 or before */
 {
-    int                 numread;
-    WResTypeInfo2       info;
+    int             numread;
+    WResTypeInfo2   info;
 
-    numread = (* WRESREAD) ( handle, &info, sizeof( WResTypeInfo2 ) );
+    numread = WRESREAD( handle, &info, sizeof( WResTypeInfo2 ) );
 
     if( numread == sizeof( WResTypeInfo2 ) ) {
         newtype->NumResources = info.NumResources;

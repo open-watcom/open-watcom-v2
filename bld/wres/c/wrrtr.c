@@ -31,17 +31,17 @@
 
 
 #include <string.h>
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
-WResTypeInfo * WResReadTypeRecord( WResFileID handle )
-/****************************************************/
+WResTypeInfo *WResReadTypeRecord( WResFileID handle )
+/***************************************************/
 /* reads in the fields of a type info record from the current position in */
 /* the file identified by fp */
 {
     WResTypeInfo        newtype;
-    WResTypeInfo *      newptr;
+    WResTypeInfo        *newptr;
     int                 numread;
     int                 numcharsleft;
     int                 error;
@@ -62,8 +62,7 @@ WResTypeInfo * WResReadTypeRecord( WResFileID handle )
     } else {
         memcpy( newptr, &newtype, sizeof(WResTypeInfo) );
         if (numcharsleft != 0) {
-            numread = (* WRESREAD) ( handle,
-                    &(newptr->TypeName.ID.Name.Name[1]), numcharsleft );
+            numread = WRESREAD( handle, &(newptr->TypeName.ID.Name.Name[1]), numcharsleft );
             if (numread != numcharsleft) {
                 WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
                 WRESFREE( newptr );

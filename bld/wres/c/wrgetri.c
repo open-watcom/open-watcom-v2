@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "layer0.h"
 #include "wres.h"
 
 WResResInfo * WResGetResInfo( WResDirWindow currwind )

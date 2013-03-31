@@ -30,25 +30,29 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <fcntl.h>
-#include "wresrtns.h"
+#include "wio.h"
+#include "layer0.h"
 #include "opcl.h"
 #include "reserr.h"
 
-WResFileID  ResOpenFileRO( const char * filename )
-/*************************************************/
+WResFileID ResOpenFileRO( const char *filename )
+/**********************************************/
 /* use this function to open Microsoft .RES files also */
 {
-    WResFileID          ret;
+    WResFileID  ret;
 
-    ret = (* WRESOPEN)( filename, O_RDONLY );
+#if defined( __WATCOMC__ ) && defined( __QNX__ )
+    /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
+    ret = WRESOPEN( filename, O_RDONLY );
     if( ret == -1 ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     }
-#if defined( __WATCOMC__ )
-    /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
     setmode( ret, O_BINARY );
+#else
+    ret = WRESOPEN( filename, O_RDONLY | O_BINARY );
+    if( ret == -1 ) {
+        WRES_ERROR( WRS_OPEN_FAILED );
+    }
 #endif
     return( ret );
 }

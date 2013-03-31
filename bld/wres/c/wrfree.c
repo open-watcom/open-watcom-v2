@@ -31,11 +31,10 @@
 
 
 #include <string.h>
+#include "layer0.h"
 #include "filefmt.h"
 #include "resfmt.h"
 #include "mresfmt.h"
-#include "wresrtns.h"
-#include "layer0.h"
 #include "write.h"
 #include "reserr.h"
 #include "read.h"

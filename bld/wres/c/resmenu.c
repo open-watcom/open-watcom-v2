@@ -35,12 +35,11 @@
 #include "filefmt.h"
 #include "write.h"
 #include "read.h"
-#include "wresrtns.h"
 #include "resmenu.h"
 #include "reserr.h"
 
 int ResWriteMenuHeader( MenuHeader *currhead, WResFileID handle )
-/**********************************************************************/
+/***************************************************************/
 {
     int     numwrote;
 
@@ -53,13 +52,12 @@ int ResWriteMenuHeader( MenuHeader *currhead, WResFileID handle )
     }
 }
 
-int ResWriteMenuExHeader( MenuHeader *currhead, WResFileID handle,
-                          uint_8 *headerdata )
-/************************************************************************/
+int ResWriteMenuExHeader( MenuHeader *currhead, WResFileID handle, uint_8 *headerdata )
+/*************************************************************************************/
 {
-    int     numwrote;
-    int     error;
-    int     i;
+    int             numwrote;
+    int             error;
+    int             i;
 
     numwrote = WRESWRITE( handle, currhead, sizeof( MenuHeader ) );
     if( numwrote != sizeof( MenuHeader ) ) {
@@ -79,9 +77,8 @@ int ResWriteMenuExHeader( MenuHeader *currhead, WResFileID handle,
     }
 }
 
-int ResWriteMenuItemPopup( const MenuItemPopup * curritem, uint_8 use_unicode,
-                                            WResFileID handle )
-/****************************************************************************/
+int ResWriteMenuItemPopup( const MenuItemPopup * curritem, uint_8 use_unicode, WResFileID handle )
+/************************************************************************************************/
 {
     int         error;
     uint_16     tmp16;
@@ -214,8 +211,8 @@ int ResWriteMenuItem( const MenuItem * curritem, uint_8 use_unicode,
     return( error );
 }
 
-int ResReadMenuHeader( MenuHeader * currhead, WResFileID handle )
-/***************************************************************/
+int ResReadMenuHeader( MenuHeader *currhead, WResFileID handle )
+/**************************************************************/
 {
     int     numread;
 
@@ -228,12 +225,12 @@ int ResReadMenuHeader( MenuHeader * currhead, WResFileID handle )
     }
 }
 
-int ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle,
-                           char *buf )
-/***************************************************************/
+int ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle, char *buf )
+/***************************************************************************/
 {
-    int                      error;
-    int                      numread, size;
+    int             error;
+    int             numread;
+    int             size;
 
     error = FALSE;
     numread = 0;
@@ -282,6 +279,10 @@ int ResReadMenuExItem( MenuExItem *curritem, WResFileID handle )
     uint_32            type, state, id, helpId;
     uint_16            resInfo;
 
+    state = 0;
+    id = 0;
+    resInfo = 0;
+
     // Store first structure members in temporary variables until
     // we know whether or not the item is a MenuExItemNormal or a
     // MenuExItemPopup
@@ -326,8 +327,8 @@ int ResReadMenuExItem( MenuExItem *curritem, WResFileID handle )
     return( error );
 }
 
-int ResReadMenuItem( MenuItem * curritem, WResFileID handle )
-/***********************************************************/
+int ResReadMenuItem( MenuItem *curritem, WResFileID handle )
+/**********************************************************/
 {
     int     error;
     uint_16 tmp16;
@@ -353,8 +354,8 @@ int ResReadMenuItem( MenuItem * curritem, WResFileID handle )
     return( error );
 }
 
-int ResReadMenuItem32( MenuItem * curritem, WResFileID handle )
-/*************************************************************/
+int ResReadMenuItem32( MenuItem *curritem, WResFileID handle )
+/************************************************************/
 {
     int     error;
     uint_16 tmp16;

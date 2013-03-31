@@ -30,17 +30,17 @@
 ****************************************************************************/
 
 
-#include "wresrtns.h"
+#include "layer0.h"
 #include "read.h"
 #include "reserr.h"
 
 extern ResTypeInfo WResFindResType( WResFileID handle )
 /*****************************************************/
 {
-    ResTypeInfo    type;
-    off_t          savepos;
-    uint_32        magic[ 2 ];
-    int            error;
+    ResTypeInfo     type;
+    long            savepos;
+    uint_32         magic[ 2 ];
+    int             error;
 
     savepos = WRESSEEK( handle, 0, SEEK_SET );
     if( savepos == -1L ) {

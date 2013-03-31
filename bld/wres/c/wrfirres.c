@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "layer0.h"
 #include "wres.h"
 
 WResDirWindow WResFirstResource( WResDir currdir )
