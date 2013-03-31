@@ -135,7 +135,7 @@ void CacheClose( file_list *list, unsigned pass )
     if( list == NULL )
         return;
     file = list->file;
-//    if( file->handle == NIL_HANDLE ) return;
+//    if( file->handle == NIL_FHANDLE ) return;
     file->flags &= ~INSTAT_IN_USE;
     switch( pass ) {
     case 1: /* first pass */
@@ -150,9 +150,9 @@ void CacheClose( file_list *list, unsigned pass )
         break;
     case 3: /* freeing structure */
         FreeObjCache( list );
-        if( file->handle != NIL_HANDLE ) {
+        if( file->handle != NIL_FHANDLE ) {
             QClose( file->handle, file->name );
-            file->handle = NIL_HANDLE;
+            file->handle = NIL_FHANDLE;
         }
         break;
     }

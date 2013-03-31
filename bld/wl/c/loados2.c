@@ -1078,7 +1078,7 @@ unsigned_32 GetStubSize( void )
     stub_len = sizeof( DosStub ) + DoExeName();
     if( name != NULL && stricmp( name, Root->outfile->fname ) != 0 ) {
         the_file = SearchPath( name );
-        if( the_file != NIL_HANDLE ) {
+        if( the_file != NIL_FHANDLE ) {
             QRead( the_file, &dosheader, sizeof( dos_exe_header ), name );
             if( dosheader.signature == DOS_SIGNATURE ) {
                 if( dosheader.mod_size == 0 ) {
@@ -1141,7 +1141,7 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
         stub_len = WriteDefStub( stub_align );
     } else {
         the_file = SearchPath( name );
-        if( the_file == NIL_HANDLE ) {
+        if( the_file == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", name );
             return( WriteDefStub( stub_align ) );   // NOTE: <== a return here.
         }

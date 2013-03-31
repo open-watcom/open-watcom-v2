@@ -846,7 +846,7 @@ static void ReadBinary( char **buf, unsigned_32 nameidx, time_t modtime )
 
     fname = MapString( (char *) nameidx );
     hdl = QObjOpen( fname );
-    if( hdl == NIL_HANDLE ) {
+    if( hdl == NIL_FHANDLE ) {
         return;
     }
     if( QFModTime(hdl) != modtime ) {
@@ -885,7 +885,7 @@ void ReadPermData( void )
     inc_file_header     *hdr;
 
     info.incfhdl = QObjOpen( IncFileName );
-    if( info.incfhdl == NIL_HANDLE )
+    if( info.incfhdl == NIL_FHANDLE )
         return;
     _ChkAlloc( info.buffer, SECTOR_SIZE );
     QRead( info.incfhdl, info.buffer, SECTOR_SIZE, IncFileName );

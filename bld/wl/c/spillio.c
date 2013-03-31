@@ -47,7 +47,7 @@ static unsigned long    TmpFSize;
 void InitSpillFile( void )
 /*******************************/
 {
-    TempFile = NIL_HANDLE;
+    TempFile = NIL_FHANDLE;
     TFileName = NULL;
     TmpFSize = 0;
     SetBreak();
@@ -98,7 +98,7 @@ f_handle OpenTempFile( char **fname )
         }
         *ptr += 1;                          // change temp file extension
         fhdl = TempFileOpen( *fname );
-        if( fhdl == NIL_HANDLE ) break;
+        if( fhdl == NIL_FHANDLE ) break;
         QClose( fhdl, *fname );
         ++tlen;
     }
@@ -110,7 +110,7 @@ unsigned long SpillAlloc( unsigned amt )
 {
     unsigned long           stg;
 
-    if( TempFile == NIL_HANDLE ) {
+    if( TempFile == NIL_FHANDLE ) {
         TempFile = OpenTempFile( &TFileName );
         LnkMsg( INF+MSG_USING_SPILL, NULL );
     }
@@ -149,13 +149,13 @@ void CloseSpillFile( void )
 /********************************/
 /*  Close temporary file.  */
 {
-    if( TempFile != NIL_HANDLE ) {
+    if( TempFile != NIL_FHANDLE ) {
         RestoreBreak();
         QClose( TempFile, TFileName );
         QDelete( TFileName );
         _LnkFree( TFileName );
         TFileName = NULL;
-        TempFile = NIL_HANDLE;
+        TempFile = NIL_FHANDLE;
     }
 }
 

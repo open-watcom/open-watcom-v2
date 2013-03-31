@@ -341,7 +341,7 @@ static void WriteQNXResource( void )
         memset( &resource, 0, sizeof( lmf_resource ) );
         if( FmtData.res_name_only ) {
             file = QObjOpen( FmtData.resource );
-            if( file == NIL_HANDLE ) {
+            if( file == NIL_FHANDLE ) {
                 PrintIOError( WRN+MSG_CANT_OPEN_NO_REASON, "s",
                                         FmtData.resource );
                 return;

@@ -426,7 +426,7 @@ static void MessageFini( unsigned num, char *buff, unsigned len )
             WriteInfoStdOut( buff, num, CurrSymName );
         }
     }
-    if( (num & OUT_MAP) && (MapFile != NIL_HANDLE) ) {
+    if( (num & OUT_MAP) && (MapFile != NIL_FHANDLE) ) {
         prefixlen = GetMsgPrefix( prefix, MAX_MSG_SIZE, num );
         BufWrite( prefix, prefixlen );
         BufWrite( buff, len );

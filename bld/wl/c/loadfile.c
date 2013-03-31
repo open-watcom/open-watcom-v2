@@ -673,7 +673,7 @@ static void SetupImpLib( void )
     unsigned    namelen;
 
     ImpLib.bufsize = 0;
-    ImpLib.handle = NIL_HANDLE;
+    ImpLib.handle = NIL_FHANDLE;
     ImpLib.buffer = NULL;
     ImpLib.dllname = NULL;
     ImpLib.didone = FALSE;
@@ -700,7 +700,7 @@ static void SetupImpLib( void )
 void BuildImpLib( void )
 /*****************************/
 {
-    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_HANDLE
+    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_FHANDLE
                                 || !FmtData.make_implib )
         return;
     if( ImpLib.bufsize > 0 ) {
@@ -804,7 +804,7 @@ void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
     char        *buff;
     char        *currpos;
 
-    if( ImpLib.handle == NIL_HANDLE )
+    if( ImpLib.handle == NIL_FHANDLE )
         return;
     ImpLib.didone = TRUE;
     intlen = strlen( intname );
@@ -1048,7 +1048,7 @@ static void CloseOutFiles( void )
     outfilelist     *fnode;
 
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
-        if( fnode->handle != NIL_HANDLE ) {
+        if( fnode->handle != NIL_FHANDLE ) {
             CloseBuffFile( fnode );
         }
     }
@@ -1174,7 +1174,7 @@ void InitBuffFile( outfilelist *outfile, char *filename, bool executable )
 /*******************************************************************************/
 {
     outfile->fname    = filename;
-    outfile->handle   = NIL_HANDLE;
+    outfile->handle   = NIL_FHANDLE;
     outfile->file_loc = 0;
     outfile->bufpos   = 0;
     outfile->buffer   = NULL;
@@ -1196,7 +1196,7 @@ void OpenBuffFile( outfilelist *outfile )
         outfile->handle = ExeCreate( outfile->fname );
     else
         outfile->handle = QOpenRW( outfile->fname );
-    if( outfile->handle == NIL_HANDLE ) {
+    if( outfile->handle == NIL_FHANDLE ) {
         PrintIOError( FTL+MSG_CANT_OPEN_NO_REASON, "s", outfile->fname );
     }
     _ChkAlloc( outfile->buffer, BUFF_BLOCK_SIZE );
@@ -1222,7 +1222,7 @@ void CloseBuffFile( outfilelist *outfile )
         FlushBuffFile( outfile );
     }
     QClose( outfile->handle, outfile->fname );
-    outfile->handle = NIL_HANDLE;
+    outfile->handle = NIL_FHANDLE;
 }
 
 static void WriteBuffer( char *info, unsigned long len, outfilelist *outfile,

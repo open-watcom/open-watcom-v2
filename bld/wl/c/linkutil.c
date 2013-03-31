@@ -466,7 +466,7 @@ f_handle SearchPath( char *name )
     char        fullpath[PATH_MAX];
 
     file = QObjOpen( name );
-    if( file != NIL_HANDLE ) {
+    if( file != NIL_FHANDLE ) {
         return( file );
     }
 #if defined( __QNX__ )
@@ -477,12 +477,12 @@ f_handle SearchPath( char *name )
     if( path != NULL ) {
         while( QMakeFileName( &path, name, fullpath ) ) {
             file = QObjOpen( fullpath );
-            if( file != NIL_HANDLE ) {
+            if( file != NIL_FHANDLE ) {
                 return( file );
             }
         }
     }
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 group_entry *FindGroup( segment seg )

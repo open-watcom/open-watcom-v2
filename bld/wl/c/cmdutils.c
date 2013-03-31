@@ -760,7 +760,7 @@ static void StartNewFile( void )
 
     fname = FileName( Token.this, Token.len, E_COMMAND, FALSE );
     file = QObjOpen( fname );
-    if( file == NIL_HANDLE ) {
+    if( file == NIL_FHANDLE ) {
         _LnkFree( fname );
         fname = tostring();
         envstring = GetEnvString( fname );

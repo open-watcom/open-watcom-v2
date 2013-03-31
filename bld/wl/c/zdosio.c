@@ -117,7 +117,7 @@ extern f_handle QOpenR( char *name )
     if( h > 0 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( -h ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 extern f_handle QOpenRW( char *name )
@@ -129,7 +129,7 @@ extern f_handle QOpenRW( char *name )
     if( h > 0 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( -h ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 extern unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
@@ -302,7 +302,7 @@ extern f_handle ExeCreate( char *name )
     LastResult = h & 0x7fffffff;
     if( h > 0 )
         return( h );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 static f_handle NSOpen( char *name, unsigned mode )
@@ -314,7 +314,7 @@ static f_handle NSOpen( char *name, unsigned mode )
     LastResult = h & 0x7fffffff;
     if( h > 0 )
         return( h );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 extern f_handle ExeOpen( char *name )

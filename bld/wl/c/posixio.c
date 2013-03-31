@@ -108,7 +108,7 @@ f_handle QOpenR( char *name )
     h = DoOpen( name, O_RDONLY, FALSE );
     if( h != -1 ) return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno )  );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 f_handle QOpenRW( char *name )
@@ -119,7 +119,7 @@ f_handle QOpenRW( char *name )
     h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, FALSE );
     if( h != -1 ) return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 f_handle ExeCreate( char *name )
@@ -130,7 +130,7 @@ f_handle ExeCreate( char *name )
     h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, TRUE );
     if( h != -1 ) return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 f_handle ExeOpen( char *name )
@@ -141,7 +141,7 @@ f_handle ExeOpen( char *name )
     h = DoOpen( name, O_RDWR, TRUE );
     if( h != -1 ) return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 #if defined( __QNX__ )
@@ -336,7 +336,7 @@ static f_handle NSOpen( char *name, unsigned mode )
     h = DoOpen( name, mode, FALSE );
     LastResult = h;
     if( h != -1 ) return( h );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 f_handle QObjOpen( char *name )

@@ -134,7 +134,7 @@ f_handle QOpenR( char *name )
     h = DoOpen( name, FALSE, TIO_READ );
     if( TINY_OK( h ) ) return( (f_handle)TINY_INFO( h ) );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( TINY_INFO( h ) ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 
@@ -146,7 +146,7 @@ f_handle QOpenRW( char *name )
     h = DoOpen( name, TRUE, TIO_NORMAL );
     if( TINY_OK( h ) ) return( (f_handle)TINY_INFO( h ) );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( TINY_INFO( h ) ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
@@ -325,7 +325,7 @@ f_handle ExeCreate( char *name )
     h = DoOpen( name, TRUE, TIO_NORMAL );
     LastResult = TINY_INFO( h );
     if( TINY_OK( h ) ) return( TINY_INFO( h ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 static f_handle NSOpen( char *name, unsigned mode )
@@ -336,7 +336,7 @@ static f_handle NSOpen( char *name, unsigned mode )
     h = DoOpen( name, FALSE, mode );
     LastResult = TINY_INFO( h );
     if( TINY_OK( h ) ) return( TINY_INFO( h ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 f_handle ExeOpen( char *name )

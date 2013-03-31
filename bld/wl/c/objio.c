@@ -71,7 +71,7 @@ static infilelist * AllocEntry( char *name, path_entry *path )
     entry->name = AddStringStringTable( &PermStrings, name );
     entry->path_list = path;
     entry->prefix = NULL;
-    entry->handle = NIL_HANDLE;
+    entry->handle = NIL_FHANDLE;
     entry->cache = NULL;
     entry->len = 0;
     entry->flags = 0;
@@ -115,11 +115,11 @@ bool CleanCachedHandles( void )
     infilelist *list;
 
     for( list = CachedFiles; list != NULL; list = list->next ) {
-        if( !(list->flags & INSTAT_IN_USE) && list->handle != NIL_HANDLE )break;
+        if( !(list->flags & INSTAT_IN_USE) && list->handle != NIL_FHANDLE )break;
     }
     if( list == NULL ) return( FALSE );
     QClose( list->handle, list->name );
-    list->handle = NIL_HANDLE;
+    list->handle = NIL_FHANDLE;
     return( TRUE );
 }
 
@@ -131,13 +131,13 @@ static f_handle PathObjOpen( char * path_ptr, char *name, char *new_name,
 {
     f_handle    fp;
 
-    fp = NIL_HANDLE;
+    fp = NIL_FHANDLE;
     for(;;) {
         list->prefix = path_ptr;
         if( !QMakeFileName( &path_ptr, name, new_name ) )
             break;
         fp = QObjOpen( new_name );
-        if( fp != NIL_HANDLE ) {
+        if( fp != NIL_FHANDLE ) {
             break;
         }
     }
@@ -156,7 +156,7 @@ bool DoObjOpen( infilelist *list )
     bool        haspath;
 
     name = list->name;
-    if( list->handle != NIL_HANDLE )
+    if( list->handle != NIL_FHANDLE )
         return( TRUE );
     list->currpos = 0;
     haspath = QHavePath( name );
@@ -168,24 +168,24 @@ bool DoObjOpen( infilelist *list )
         QMakeFileName( &path_ptr, name, new_name );
         fp = QObjOpen( new_name );
     } else {                                // new, no searched path
-        fp = NIL_HANDLE;
+        fp = NIL_FHANDLE;
         if( (list->flags & LIB_SEARCH) || list->path_list == NULL ) {
             /* try in current directory */
             fp = QObjOpen( name );
         }
-        if( fp == NIL_HANDLE ) {
+        if( fp == NIL_FHANDLE ) {
             for( searchpath = list->path_list; searchpath != NULL; searchpath = searchpath->next ) {
                 fp = PathObjOpen( searchpath->name, name, new_name, list );
-                if( fp != NIL_HANDLE ) {
+                if( fp != NIL_FHANDLE ) {
                     break;
                 }
             }
-            if( fp == NIL_HANDLE && (list->flags & INSTAT_USE_LIBPATH) ) {
+            if( fp == NIL_FHANDLE && (list->flags & INSTAT_USE_LIBPATH) ) {
                 fp = PathObjOpen( GetEnvString("LIB"), name, new_name, list );
             }
         }
     }
-    if( fp != NIL_HANDLE ) {
+    if( fp != NIL_FHANDLE ) {
         if( !(list->flags & INSTAT_GOT_MODTIME) ) {
             list->modtime = QFModTime( fp );
         }
@@ -196,7 +196,7 @@ bool DoObjOpen( infilelist *list )
                                         WRN+MSG_CANT_OPEN : ERR+MSG_CANT_OPEN;
         PrintIOError( err, "12", name );
         list->prefix = NULL;
-        list->handle = NIL_HANDLE;
+        list->handle = NIL_FHANDLE;
     }
     return( FALSE );
 }

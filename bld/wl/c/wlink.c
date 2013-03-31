@@ -179,9 +179,9 @@ static void ResetSubSystems( void )
 static void CleanSubSystems( void )
 /*********************************/
 {
-    if( MapFile != NIL_HANDLE ) {
+    if( MapFile != NIL_FHANDLE ) {
         QClose( MapFile, MapFName );
-        MapFile = NIL_HANDLE;
+        MapFile = NIL_FHANDLE;
     }
     FreeOutFiles();
     _LnkFree( MapFName );
@@ -341,7 +341,7 @@ static void ResetMisc( void )
     AbsGroups = NULL;
     DataGroup = NULL;
     IDataGroup = NULL;
-    MapFile = NIL_HANDLE;
+    MapFile = NIL_FHANDLE;
     MapFName = NULL;
     OutFiles = NULL;
     ObjLibFiles = NULL;

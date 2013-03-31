@@ -264,7 +264,7 @@ static unsigned_32 WriteStubProg( void )
         size = 0;
     } else {
         fhandle = SearchPath( name );
-        if( fhandle == NIL_HANDLE ) {
+        if( fhandle == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", name );
             size = 0;
         } else {

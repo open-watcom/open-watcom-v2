@@ -136,7 +136,7 @@ f_handle QOpenR( char *name )
     if( h != -1 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno )  );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 f_handle QOpenRW( char *name )
@@ -148,7 +148,7 @@ f_handle QOpenRW( char *name )
     if( h != -1 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 int ResOpen( const char *path, int access, ... )
@@ -170,7 +170,7 @@ f_handle ExeCreate( char *name )
     if( h != -1 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 f_handle ExeOpen( char *name )
@@ -182,7 +182,7 @@ f_handle ExeOpen( char *name )
     if( h != -1 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
     #define doread( f, b, l )  read( f, b, l )
@@ -348,7 +348,7 @@ static f_handle NSOpen( char *name, unsigned mode )
     LastResult = h;
     if( h != -1 )
         return( h );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 f_handle QObjOpen( char *name )

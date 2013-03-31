@@ -121,8 +121,7 @@ int InitMsg( void )
     Res_Flag = EXIT_SUCCESS;
     BannerPrinted = FALSE;
     if( !initerror ) {
-        hInstance.filename = fname;
-        OpenResFile( &hInstance );
+        OpenResFile( &hInstance, fname );
         if( hInstance.handle == NIL_HANDLE ) {
             initerror = TRUE;
         } else {
