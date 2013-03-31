@@ -29,13 +29,12 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
 #include <string.h>
-#include <fcntl.h>
 #include <stdlib.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
+#include "wio.h"
 #include "watcom.h"
 #include "wstrip.h"
 #include "banner.h"
@@ -114,8 +113,7 @@ int Msg_Init( void )
     if( _cmdname( name ) == NULL ) {
         initerror = 1;
     } else {
-        hInstance.filename = name;
-        OpenResFile( &hInstance );
+        OpenResFile( &hInstance, name );
         if( hInstance.handle == NIL_HANDLE ) {
             initerror = 1;
         } else {

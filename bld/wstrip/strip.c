@@ -34,24 +34,23 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/stat.h>
+#if defined( __UNIX__ )
 #include <utime.h>
-#include <unistd.h>
-#include <fcntl.h>
+#else
+#include <sys/utime.h>
+#endif
+#include "wio.h"
 #include "sopen.h"
-#include "watcom.h"
 #include "machtype.h"
 #include "dbginfo.h"
 #include "cv4.h"
 #include "tistrail.h"
-
 #include "wstrip.h"
+#include "wressetr.h"
 
-#pragma pack (1)
-
+#include "pushpck1.h"
 typedef struct WResHeader {
     uint_32     Magic[ 2 ]; /* must be WRESMAGIC0 and WRESMAGIC1 */
     uint_32     DirOffset;  /* offset to the start of the directory */
@@ -59,6 +58,7 @@ typedef struct WResHeader {
     uint_16     NumTypes;   /* number of different types of resources in file */
     uint_16     WResVer;    /* WRESVERSION */
 } WResHeader;
+#include "poppck.h"
 
 #define MXFNAME         130
 #define BUFSIZE         0x4000
@@ -236,13 +236,13 @@ int main( int argc, char *argv[] )
     finfo.h = -1;
 
     /* initialize input file */
-    fin.h = sopen3( fin.name, O_RDONLY | O_BINARY, SH_DENYNO, 0 );
+    fin.h = sopen3( fin.name, O_RDONLY | O_BINARY, SH_DENYNO );
     if( fin.h == -1 ) {
         Fatal( MSG_CANT_OPEN, fin.name );
     }
 
     /* initialize output file -- note: don't truncate */
-    fout.h = sopen4( fout.name, O_WRONLY | O_CREAT | O_BINARY, SH_DENYNO, S_IRWXU | S_IRWXG | S_IRWXO );
+    fout.h = sopen4( fout.name, O_WRONLY | O_CREAT | O_BINARY, SH_DENYNO, PMODE_RWX );
     if( fout.h == -1 ) {
         Fatal( MSG_CANT_CREATE_OUTPUT, fout.name );
     }
@@ -253,7 +253,7 @@ int main( int argc, char *argv[] )
         StripInfo();
     }
     /* make sure that size of output file is correct */
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     chsize( fout.h, lseek( fout.h, 0L, SEEK_CUR ) );
 #else
     ftruncate( fout.h, lseek( fout.h, 0L, SEEK_CUR ) );
@@ -307,7 +307,7 @@ static void AddInfo()
     }
 
     /* initialize symbol or resource file */
-    finfo.h = sopen3( finfo.name, O_RDONLY | O_BINARY, SH_DENYWR, 0 );
+    finfo.h = sopen3( finfo.name, O_RDONLY | O_BINARY, SH_DENYWR );
     if( finfo.h == -1 ) {
         FatalDelTmp( MSG_CANT_OPEN, finfo.name );
     }
@@ -357,7 +357,7 @@ static void StripInfo()
             strcat( finfo.name, (res ? ResExt : SymExt) );
         }
 #endif
-        finfo.h = sopen4( finfo.name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP| S_IROTH|S_IWOTH );
+        finfo.h = sopen4( finfo.name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, PMODE_RW );
         if( finfo.h == -1 ) {
             FatalDelTmp( MSG_CANT_CREATE_0 + res, finfo.name );
         }
