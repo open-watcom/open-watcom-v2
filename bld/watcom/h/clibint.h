@@ -34,8 +34,20 @@
 #define _CLIBINT_H_E9806518_31C7_4441_BCA4_93A19CDE39C4
 
 /*
- * From $(CLIB)/h/initarg.h
+ * From CLIB
  */
-extern char   *_LpDllName;    /* pointer to dll name */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern char     *_LpDllName;    /* pointer to dll name */
+
+extern char     **_argv;        /* argument vector */
+extern int      _argc;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _CLIBINT_H_E9806518_31C7_4441_BCA4_93A19CDE39C4 */
