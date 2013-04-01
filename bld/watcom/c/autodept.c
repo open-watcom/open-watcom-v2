@@ -42,10 +42,8 @@
 
 #include <stdlib.h>
 #include <sys/stat.h>
+#include "watcom.h"
 #include "autodept.h"
-#ifndef  __WATCOMC__
-#include "clibext.h"
-#endif
 
 enum {
     TIME_SEC_B  = 0,
@@ -65,82 +63,44 @@ enum {
     DATE_YEAR_F = 0xfe00
 };
 
-typedef union {
-    struct {
-        unsigned short time;
-        unsigned short date;
-    } dos;
-    time_t timet;
-} DOS_DATETIME;
-
 time_t _timet2dos(time_t x)
 /******************************************************************/
 {
     struct tm *    ltime;
-    DOS_DATETIME   dt;
+    unsigned short dos_time;
+    unsigned short dos_date;
 
     ltime = localtime( &x );
-    dt.dos.date = (( ltime->tm_year - 80 ) << DATE_YEAR_B )
+    dos_date = (( ltime->tm_year - 80 ) << DATE_YEAR_B )
              | (( ltime->tm_mon + 1 ) << DATE_MON_B )
              | (( ltime->tm_mday ) << DATE_DAY_B );
-    dt.dos.time = (( ltime->tm_hour ) << TIME_HOUR_B )
+    dos_time = (( ltime->tm_hour ) << TIME_HOUR_B )
              | (( ltime->tm_min ) << TIME_MIN_B )
              | (( ltime->tm_sec / 2 ) << TIME_SEC_B );
-    return dt.timet;
+    return( dos_date * 0x10000L + dos_time );
 }
 
 time_t _dos2timet(time_t x)
 /******************************************************************/
 {
     struct tm      ltime;
-    DOS_DATETIME   dt;
+    unsigned short dos_time;
+    unsigned short dos_date;
 
-    dt.timet = x;
+    dos_date = x / 0x10000L;
+    dos_time = x;
 
-    ltime.tm_year = ( ( dt.dos.date & DATE_YEAR_F ) >> DATE_YEAR_B ) + 80;
-    ltime.tm_mon  = ( ( dt.dos.date & DATE_MON_F ) >> DATE_MON_B ) - 1;
-    ltime.tm_mday = ( dt.dos.date & DATE_DAY_F ) >> DATE_DAY_B;
+    ltime.tm_year = ( ( dos_date & DATE_YEAR_F ) >> DATE_YEAR_B ) + 80;
+    ltime.tm_mon  = ( ( dos_date & DATE_MON_F ) >> DATE_MON_B ) - 1;
+    ltime.tm_mday = ( dos_date & DATE_DAY_F ) >> DATE_DAY_B;
 
-    ltime.tm_hour = ( dt.dos.time & TIME_HOUR_F ) >> TIME_HOUR_B;
-    ltime.tm_min  = ( dt.dos.time & TIME_MIN_F ) >> TIME_MIN_B;
-    ltime.tm_sec  = ( ( dt.dos.time & TIME_SEC_F ) >> TIME_SEC_B ) * 2;
+    ltime.tm_hour = ( dos_time & TIME_HOUR_F ) >> TIME_HOUR_B;
+    ltime.tm_min  = ( dos_time & TIME_MIN_F ) >> TIME_MIN_B;
+    ltime.tm_sec  = ( ( dos_time & TIME_SEC_F ) >> TIME_SEC_B ) * 2;
 
     ltime.tm_isdst= -1;
 
-    return mktime( &ltime );
-}
-
-time_t _DOSStampToTime( unsigned short date, unsigned short time )
-/******************************************************************/
-{
-    struct tm tmbuf;
-
-    tmbuf.tm_year = ( ( date & DATE_YEAR_F ) >> DATE_YEAR_B ) + 80;
-    tmbuf.tm_mon  = ( ( date & DATE_MON_F ) >> DATE_MON_B ) - 1;
-    tmbuf.tm_mday = ( date & DATE_DAY_F ) >> DATE_DAY_B;
-
-    tmbuf.tm_hour = ( time & TIME_HOUR_F ) >> TIME_HOUR_B;
-    tmbuf.tm_min  = ( time & TIME_MIN_F ) >> TIME_MIN_B;
-    tmbuf.tm_sec  = ( ( time & TIME_SEC_F ) >> TIME_SEC_B ) * 2;
-
-    tmbuf.tm_isdst= -1;
-
-    return( mktime( &tmbuf ) );
-}
-
-void _TimeToDOSStamp( time_t x, unsigned short *date, unsigned short *time )
-/***************************************************************************/
-{
-    struct tm *    ltime;
-
-    ltime = localtime( &x );
-    *date = (( ltime->tm_year - 80 ) << DATE_YEAR_B )
-             | (( ltime->tm_mon + 1 ) << DATE_MON_B )
-             | (( ltime->tm_mday ) << DATE_DAY_B );
-    *time = (( ltime->tm_hour ) << TIME_HOUR_B )
-             | (( ltime->tm_min ) << TIME_MIN_B )
-             | (( ltime->tm_sec / 2 ) << TIME_SEC_B );
-    return;
+    return( mktime( &ltime ) );
 }
 
 #if !defined( WMAKE ) || !defined( BOOTSTRAP )
@@ -178,4 +138,3 @@ time_t _getFilenameTimeStamp( char const *filename )
         return( statbuf.st_mtime );
     }
 }
-

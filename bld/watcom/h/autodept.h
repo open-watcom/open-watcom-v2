@@ -35,8 +35,6 @@
 
 time_t _timet2dos(time_t x);
 time_t _dos2timet(time_t x);
-time_t _DOSStampToTime( unsigned short date, unsigned short time );
-void _TimeToDOSStamp( time_t datetime, unsigned short *date, unsigned short *time );
 char *_getFilenameFullPath( char *buff, char const *name, size_t max );
 time_t _getFilenameTimeStamp( char const *filename );
 
