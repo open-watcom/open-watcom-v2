@@ -55,8 +55,8 @@ const char *LogDirEquals( char *dir )
     strcat( tbuff, " " );
     strcat( tbuff, dir );
     bufflen = strlen( tbuff );
-    equals = ( SCREEN - bufflen ) / 2 - 2;
-    if( bufflen > SCREEN - 6 ) {
+    equals = ( SCREEN - 2 - bufflen ) / 2;
+    if( bufflen > SCREEN - 4 ) {
         equals = 1;
     }
     eq = &Equals[ ( sizeof( Equals ) - 1 ) - equals];

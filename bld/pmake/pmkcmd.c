@@ -128,11 +128,13 @@ static int DoPMake( pmake_data *data )
     pmake_list  *curr;
     int         res;
     char        cmd[256];
+    int         rc;
 
     res = 0;
     for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
-        res = chdir( curr->dir_name );
-        if( res != 0 ) {
+        rc = chdir( curr->dir_name );
+        if( rc != 0 ) {
+            res = rc;
             break;
         }
         if( data->display ) {
@@ -140,9 +142,12 @@ static int DoPMake( pmake_data *data )
             puts( curr->dir_name );
         }
         PMakeCommand( data, cmd );
-        res = RunCommand( cmd );
-        if( data->ignore_err == 0 && res != 0 ) {
-            break;
+        rc = RunCommand( cmd );
+        if( rc != 0 ) {
+            res = rc;
+            if( data->ignore_err == 0 ) {
+                break;
+            }
         }
     }
     return( res );
