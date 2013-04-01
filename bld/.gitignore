@@ -173,10 +173,10 @@
 #
 /wgml/test/testlib/*.bat
 #
-/win386/asm/dllthk.asm
-/win386/asm/winglue.asm
-/win386/c/dllthunk.c
-/win386/h/winglue.inc
+/win386/conv/win386/dllthk.asm
+/win386/conv/win386/winglue.asm
+/win386/conv/win386/dllthunk.c
+/win386/conv/win386/winglue.inc
 /win386/vxd/*.386
 #
 /wl/*/*.dll

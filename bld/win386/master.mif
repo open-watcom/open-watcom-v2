@@ -51,8 +51,8 @@ OBJS_vxd = wdebug.obj &
         $(fpuemu_dir)/386/win386/emu387.obj
 
 
-.asm : ../asm
-.c : ../c
+.asm : ../conv/win386;../asm
+.c : ../conv/win386;../c
 
 # cflags stuff
 ###############
@@ -73,11 +73,11 @@ extra_c_flags_toolhelp = -DDLL32 -zu
 # aflags stuff
 ###############
 extra_a_flags_wdebug   = -mf
-extra_a_flags_winglue  = -I"../h"
+extra_a_flags_winglue  = -I"../conv/win386"
 extra_a_flags_wincb    = -I"../h"
-extra_a_flags_call16   = -I"../../watcom/h"
-extra_a_flags_dllpatch = -I"../../watcom/h"
-extra_a_flags_int21win = -I"../../watcom/h"
+extra_a_flags_call16   = -I"$(watcom_dir)/h"
+extra_a_flags_dllpatch = -I"$(watcom_dir)/h"
+extra_a_flags_int21win = -I"$(watcom_dir)/h"
 !ifeq fmt dll
 extra_a_flags_wincall  = -DDLL32
 extra_a_flags_dllthunk = -DDLL32

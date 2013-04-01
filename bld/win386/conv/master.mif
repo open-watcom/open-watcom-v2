@@ -3,6 +3,8 @@ proj_name = conv
 conv_autodepends = .AUTODEPEND
 conv_distrib_lib = 1
 
+additional_cleanup = *.asm *.c *.inc
+
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
@@ -39,14 +41,5 @@ all : ./conv.exe win386.lib
     $(bld_cl) -fd $(bld_cl_opts) $[@
 
 win386.lib : ./conv.exe $(def_files) ../def/win386 fldenv.obj _call16.obj
-    $[@ ../def/win386 ../def -s -q
-    ls -1 win*.obj >tmp.lbc
-    $(librarian) $(libflags) +fldenv.obj +_call16.obj @tmp.lbc
-    @cp winglue.asm ../../asm >$(nulldevice)
-    @cp dllthunk.c ../../c >$(nulldevice)
-    @cp dllthk.asm ../../asm >$(nulldevice)
-    @cp winglue.inc ../../h >$(nulldevice)
-    @rm -f winglue.asm
-    @rm -f dllthk.asm
-    @rm -f dllthunk.c
-    @rm -f winglue.inc
+    $[@ ../def/win386 ../def -l -s -q
+    $(librarian) $(libflags) +fldenv.obj +_call16.obj @winobjs.lst

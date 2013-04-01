@@ -40,13 +40,11 @@
 #include <string.h>
 #include <strings.h>
 #include <ctype.h>
+#include "watcom.h"
 
 #define MAX_BUFF 256
 
-/* Might be better to use stream I/O instead... */
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
+static FILE *lstfile = NULL;
 
 /* Local strupr() implementation */
 char *strupr( char *string )
@@ -1148,6 +1146,12 @@ void GenerateCStubs( void )
         tmpf = tmpf->next;
         ii++;
     }
+    if( lstfile != NULL ) {
+        for( i = 0; i < ii; ++i ) {
+            fprintf( lstfile, "win%d.obj\n", i );
+        }
+        fclose( lstfile );
+    }
 
 } /* GenerateCStubs */
 
@@ -1752,6 +1756,9 @@ int main( int argc, char *argv[] )
         if( argv[j][0] == '-' ) {
             for(i=1;i<strlen(argv[j]);i++) {
                 switch( argv[j][i] ) {
+                case 'l':
+                    lstfile = fopen( "winobjs.lst", "w" );
+                    break;
                 case 'q': quiet = 1; break;
                 case 's': genstubs=1; break;
                 case '?':
