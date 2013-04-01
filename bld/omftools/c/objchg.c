@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "watcom.h"
 #include "pcobj.h"
 #include "hashtab.h"
 #include "misc.h"
@@ -63,7 +64,6 @@ static void usage( void )
     printf( "  <options> -l=<old>=<new>  rename LNAMES item\n" );
     printf( "            -m=....         symbol name pattern\n" );
     printf( "            -s=<file>       file with symbols\n" );
-    exit( -1 );
 }
 
 static int EndRec( void )
@@ -573,6 +573,7 @@ int main( int argc, char *argv[] )
                     process_lnames( argv[i] + 3 );
                 } else {
                     usage();
+                    return( 1 );
                 }
                 break;
             case 's':
@@ -580,6 +581,7 @@ int main( int argc, char *argv[] )
                     process_symbol_file( argv[i] + 3 );
                 } else {
                     usage();
+                    return( 1 );
                 }
                 break;
             case 'm':
@@ -587,17 +589,21 @@ int main( int argc, char *argv[] )
                     symbol_name_change = argv[i] + 3;
                 } else {
                     usage();
+                    return( 1 );
                 }
                 break;
             default:
                 usage();
+                return( 1 );
             }
         } else {
             break;
         }
     }
-    if( i == argc )
+    if( i == argc ) {
         usage();
+        return( 1 );
+    }
     for( ; i < argc; ++i ) {
         fn = DoWildCard( argv[i] );
         while( fn != NULL ) {

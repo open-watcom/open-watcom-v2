@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "watcom.h"
 #include "pcobj.h"
 #include "misc.h"
 
@@ -50,7 +51,6 @@ static void usage( void )
 /***********************/
 {
     printf( "Usage: objxdef <list of object or library files>\n" );
-    exit( -1 );
 }
 
 static int EndRec( void )
@@ -215,8 +215,10 @@ int main( int argc, char *argv[] )
     int     i;
     char    *fn;
 
-    if( argc == 1 )
+    if( argc == 1 ) {
         usage();
+        return( 1 );
+    }
     for( i = 1; i < argc; ++i ) {
         fn = DoWildCard( argv[i] );
         while( fn != NULL ) {

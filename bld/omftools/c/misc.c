@@ -34,15 +34,15 @@
 #else
   #include <direct.h>
 #endif
-#include <fnmatch.h>
+#if defined( __WATCOMC__ ) || defined( __UNIX__ )
+  #include <fnmatch.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include "watcom.h"
 #include "pathgrp.h"
 #include "misc.h"
-#ifndef __WATCOMC__
-  #include "clibext.h"
-#endif
 
 #ifdef __UNIX__
   #define ISVALIDENTRY(x)   ( 1 )

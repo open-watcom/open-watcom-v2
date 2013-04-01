@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "watcom.h"
 #include "pcobj.h"
 #include "hashtab.h"
 #include "misc.h"
@@ -58,7 +59,6 @@ static void usage( void )
     SymbolFini( pubdef_tab );
     printf( "Usage: objxref <options> <list of object or library files>\n" );
     printf( "  <options> -e=<file>   file with excluded symbols\n" );
-    exit( -1 );
 }
 
 static int EndRec( void )
@@ -336,13 +336,16 @@ int main( int argc, char *argv[] )
                 }
             default:
                 usage();
+                return( 1 );
             }
         } else {
             break;
         }
     }
-    if( i == argc )
+    if( i == argc ) {
         usage();
+        return( 1 );
+    }
     x = i;
     for( i = x; i < argc; ++i ) {
         fn = DoWildCard( argv[i] );
