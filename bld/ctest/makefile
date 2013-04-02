@@ -27,7 +27,7 @@ inline_tests   = $(gr3)
 !include testenv.mif
 
 test : .symbolic clean start_test cd_regress $(test_grp_list) cd_back ./chktest.exe
-    @cdsay >> $(log_file)
+    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     @%append $(log_file) TEST
     %append $(log_file) PASS $(%__CWD__)

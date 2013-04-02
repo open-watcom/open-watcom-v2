@@ -5,7 +5,7 @@ all : .symbolic test
 !include testenv.mif
 
 test : .symbolic ./chktest.exe
-    @cdsay >> $(log_file)
+    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     @%make global
     %append $(log_file) TEST

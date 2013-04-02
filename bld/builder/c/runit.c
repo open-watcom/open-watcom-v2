@@ -611,26 +611,6 @@ static int ProcPMake( char *cmd, bool ignore_errors )
     return( res );
 }
 
-static int ProcCDSay( char *path )
-{
-    int     res;
-    char    cwd[_MAX_PATH];
-
-    res = SysChdir( path );
-
-    if( res == 0 ) {
-        getcwd( cwd, sizeof( cwd ) );
-#ifdef __UNIX__
-        LogDir( cwd );
-#else
-        LogDir( strupr( cwd ) );
-#endif
-    } else {
-        printf( "Error! CDSAY: invalid directory\n" );
-    }
-    return( res );
-}
-
 int RunIt( char *cmd, bool ignore_errors )
 {
     int     res;
@@ -668,8 +648,6 @@ int RunIt( char *cmd, bool ignore_errors )
         res = ProcMkdir( SkipBlanks( cmd + sizeof( "MKDIR" ) ) );
     } else if( BUILTIN( "PMAKE" ) ) {
         res = ProcPMake( SkipBlanks( cmd + sizeof( "PMAKE" ) ), ignore_errors );
-    } else if( BUILTIN( "CDSAY" ) ) {
-        res = ProcCDSay( SkipBlanks( cmd + sizeof( "CDSAY" ) ) );
     } else {
         res = SysRunCommand( cmd );
     }

@@ -7,7 +7,7 @@ all_tests = test1 test2 test3 ideal diag
 !include testenv.mif
 
 test : .symbolic clean start_test $(all_tests) ./chktest.exe
-    @cdsay >> $(log_file)
+    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     %append $(log_file) TEST
     %append $(log_file) PASS $(%__CWD__)

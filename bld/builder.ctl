@@ -104,8 +104,8 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
 #[ ENDIF ]
 
-[ BLOCK <1> build rel clean ]
-#============================
+[ BLOCK <1> build rel clean cprel ]
+#==================================
 # Build all of Open Watcom using freshly built tools.
 #
 # NB: Again, the order is significant.

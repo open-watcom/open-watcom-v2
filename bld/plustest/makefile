@@ -128,7 +128,7 @@ stl95_dir          = stl.95\examples
 !endif
 
 test : .symbolic clean start_test cd_regress $(test_grp_list) $(test_grp2_list) cd_back ./chktest.exe
-    @cdsay >> $(log_file)
+    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     %append $(log_file) TEST
     %append $(log_file) PASS $(%__CWD__)

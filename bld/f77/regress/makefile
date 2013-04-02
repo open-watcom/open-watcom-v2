@@ -7,7 +7,7 @@ all_tests = test0 test1 test2 test3 test4 test5 test6 test7 test8 test9
 !include testenv.mif
 
 test : .symbolic clean start_test cd_nist $(all_tests) cd_back ./chktest.exe
-    @cdsay >> $(log_file)
+    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     %append $(log_file) TEST
     %append $(log_file) PASS $(%__CWD__)
