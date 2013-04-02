@@ -71,6 +71,16 @@
 #define STDOUT_FILENO _fileno( stdout )
 #define STDERR_FILENO _fileno( stderr )
 #define __alloca _alloca
+#define fseeko fseek
+#define strcasecmp stricmp
+#define _grow_handles _setmaxstdio
+#define snprintf _snprintf
+#define FNM_NOMATCH     1
+#define FNM_NOESCAPE    0x01
+#define FNM_PATHNAME    0x02
+#define FNM_PERIOD      0x04
+#define FNM_IGNORECASE  0x08
+#define FNM_LEADING_DIR 0x10
 
 #endif
 
@@ -125,7 +135,7 @@ typedef __int64 ssize_t;
 #else
 typedef long    ssize_t;
 #endif
-//typedef int     mode_t;
+typedef int     mode_t;
 
 extern void     _dos_getdrive( unsigned *drive );
 extern void     _dos_setdrive( unsigned drivenum, unsigned *drives );

@@ -49,11 +49,11 @@ typedef enum __rs {
     ADR_STOP,
 } rtn_status;
 
-walk_status WalkOBJAutoDep( char *file_name
+walk_status WalkOBJAutoDep( const char *file_name
                           , rtn_status (*rtn)( time_t, char *, void * )
                           , void *data );
 
-walk_status WalkRESAutoDep( char *file_name
+walk_status WalkRESAutoDep( const char *file_name
                           , rtn_status (*rtn)( time_t, char *, void * )
                           , void *data );
 

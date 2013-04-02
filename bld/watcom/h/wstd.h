@@ -165,6 +165,7 @@ typedef unsigned_8      sbit;
 #define PR_SH3                  0
 #define PR_SH4                  0
 #define PR_ARM                  0
+#define PR_X64                  0
 
 #if defined( _M_I86 )
     #undef  PR_i86
@@ -206,6 +207,9 @@ typedef unsigned_8      sbit;
     #define PR_i86              1
     #undef  PR_386
     #define PR_386              1
+#elif defined( _M_X64 )
+    #undef  PR_X64
+    #define PR_X64              1
 #elif defined( THINK_C )        \
  ||   defined( __SC__ )         \
  ||   defined( __MWERKS__ ) && !defined( __powerc )
@@ -357,6 +361,7 @@ typedef unsigned_8      sbit;
 ||    PR_SH3    \
 ||    PR_SH4    \
 ||    PR_ARM    \
+||    PR_X64    \
 ||    defined( UNIX )
     #undef  CS_ASCII_PLUS
     #undef  CS_ASCII

@@ -61,7 +61,7 @@ typedef struct {
         unsigned_32     size;
 } pe_hdr_table_entry;
 
-/* PE header structure */
+/* PE32 header structure */
 typedef struct {
     unsigned_32         signature;
     unsigned_16         cpu_type;
@@ -104,6 +104,58 @@ typedef struct {
     pe_hdr_table_entry  table[PE_TBL_NUMBER];
 } pe_header;
 
+/* PE32+ header structure */
+typedef struct {
+    unsigned_32         signature;
+    unsigned_16         cpu_type;
+    unsigned_16         num_objects;
+    unsigned_32         time_stamp;
+    unsigned_32         sym_table;
+    unsigned_32         num_syms;
+    unsigned_16         nt_hdr_size;    /* # of bytes after the flags field */
+    unsigned_16         flags;
+    unsigned_16         magic;          /* currently 0x20b */
+    unsigned_8          lnk_major;
+    unsigned_8          lnk_minor;
+    unsigned_32         code_size;
+    unsigned_32         init_data_size;
+    unsigned_32         uninit_data_size;
+    pe_va               entry_rva;
+    unsigned_32         code_base;
+    unsigned_64         image_base;
+    unsigned_32         object_align;
+    unsigned_32         file_align;
+    unsigned_16         os_major;
+    unsigned_16         os_minor;
+    unsigned_16         user_major;
+    unsigned_16         user_minor;
+    unsigned_16         subsys_major;
+    unsigned_16         subsys_minor;
+    unsigned_32         rsvd1;
+    unsigned_32         image_size;
+    unsigned_32         header_size;  //size of dos hdr, nt hdr, obj table & pad
+    unsigned_32         file_checksum;
+    unsigned_16         subsystem;
+    unsigned_16         dll_flags;
+    unsigned_64         stack_reserve_size;
+    unsigned_64         stack_commit_size;
+    unsigned_64         heap_reserve_size;
+    unsigned_64         heap_commit_size;
+    unsigned_32         tls_idx_addr;
+    unsigned_32         num_tables;
+    pe_hdr_table_entry  table[PE_TBL_NUMBER];
+} pe_header64;
+
+typedef union {
+    pe_header   pe32;
+    pe_header64 pe64;
+} exe_pe_header;
+
+#define PE32(x) (x).pe32
+#define PE64(x) (x).pe64
+
+#define IS_PE64(x)  (PE32(x).magic == 0x20b)
+
 #define OLD_PE_TBL_SIZE (sizeof(pe_header) - 2 * (16 - 9) * sizeof(pe_va))
 
 #define PE_SIGNATURE 0x4550
@@ -118,26 +170,28 @@ enum {
     PE_CPU_MIPS_R3000       = 0x0162,
     PE_CPU_MIPS_R4000       = 0x0166,
     PE_CPU_ALPHA            = 0x184,
-    PE_CPU_POWERPC          = 0x1F0
+    PE_CPU_POWERPC          = 0x1F0,
+    PE_CPU_AMD64            = 0x8664
 };
 
 /* FLAG field bit values */
 enum {
-    PE_FLG_PROGRAM          = 0x0000,
-    PE_FLG_RELOCS_STRIPPED  = 0x0001,
-    PE_FLG_IS_EXECUTABLE    = 0x0002,
-    PE_FLG_LINNUM_STRIPPED  = 0x0004,
-    PE_FLG_LOCALS_STRIPPED  = 0x0008,
-    PE_FLG_MINIMAL_OBJ      = 0x0010,
-    PE_FLG_UPDATE_OBJ       = 0x0020,
-    PE_FLG_16BIT_MACHINE    = 0x0040,
-    PE_FLG_REVERSE_BYTE_LO  = 0x0080,       // bytes are reversed.
-    PE_FLG_32BIT_MACHINE    = 0x0100,
-    PE_FLG_FIXED            = 0x0200,
-    PE_FLG_FILE_PATCH       = 0x0400,
-    PE_FLG_FILE_SYSTEM      = 0x1000,
-    PE_FLG_LIBRARY          = 0x2000,
-    PE_FLG_REVERSE_BYTE_HI  = 0x8000
+    PE_FLG_PROGRAM              = 0x0000,
+    PE_FLG_RELOCS_STRIPPED      = 0x0001,
+    PE_FLG_IS_EXECUTABLE        = 0x0002,
+    PE_FLG_LINNUM_STRIPPED      = 0x0004,
+    PE_FLG_LOCALS_STRIPPED      = 0x0008,
+    PE_FLG_MINIMAL_OBJ          = 0x0010,
+    PE_FLG_UPDATE_OBJ           = 0x0020,
+    PE_FLG_LARGE_ADDRESS_AWARE  = 0x0020,
+    PE_FLG_16BIT_MACHINE        = 0x0040,
+    PE_FLG_REVERSE_BYTE_LO      = 0x0080,       // bytes are reversed.
+    PE_FLG_32BIT_MACHINE        = 0x0100,
+    PE_FLG_FIXED                = 0x0200,
+    PE_FLG_FILE_PATCH           = 0x0400,
+    PE_FLG_FILE_SYSTEM          = 0x1000,
+    PE_FLG_LIBRARY              = 0x2000,
+    PE_FLG_REVERSE_BYTE_HI      = 0x8000
 };
 
 

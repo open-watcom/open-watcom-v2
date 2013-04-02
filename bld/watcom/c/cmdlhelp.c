@@ -39,25 +39,26 @@
   #include "clibext.h"
 #endif
 
-int BuildQuotedFName( char *dst, int maxlen, const char *path, const char *filename, const char *quote_char )
+int BuildQuotedFName( char *dst, size_t maxlen, const char *path, const char *filename, const char *quote_char )
 /*****************************************************************************************************************/
 {
     int has_space = 0;
 
+    maxlen = maxlen;
     if( strchr( path, ' ' ) != NULL )
         has_space = 1;
     if( strchr( filename, ' ' ) != NULL )
         has_space = 1;
 
-    strlcpy( dst, has_space ? quote_char : "", maxlen );
-    strlcat( dst, path, maxlen );
-    strlcat( dst, filename, maxlen );
-    strlcat( dst, has_space ? quote_char : "", maxlen );
+    strcpy( dst, has_space ? quote_char : "" );
+    strcat( dst, path );
+    strcat( dst, filename );
+    strcat( dst, has_space ? quote_char : "" );
 
     return( has_space );
 }
 
-int UnquoteFName( char *dst, int maxlen, const char *src )
+int UnquoteFName( char *dst, size_t maxlen, const char *src )
 /***********************************************************************
  * Removes doublequote characters from filename and copies other content
  * from src to dst. Only maxlen number of characters are copied to dst
@@ -66,7 +67,7 @@ int UnquoteFName( char *dst, int maxlen, const char *src )
  */
 {
     char    string_open = 0;
-    int     pos = 0;
+    size_t  pos = 0;
     int     t;
     int     un_quoted = 0;
 
@@ -105,7 +106,7 @@ int UnquoteFName( char *dst, int maxlen, const char *src )
                     *dst++ = t;
                     pos++;
                 } else
-                if( isblank( t ) ) {
+                if( t == ' ' || t == '\t' ) {
                     break;
                 } else {
                     *dst++ = t;
@@ -132,7 +133,7 @@ char *FindNextWS( char *str )
         if( *str == '\\' ) {
             str++;
             if( *str != '\0' ) {
-                if( !string_open && isblank( *str ) ) {
+                if( !string_open && ( *str == ' ' || *str == '\t' ) ) {
                     break;
                 }
                 str++;
@@ -142,7 +143,7 @@ char *FindNextWS( char *str )
                 string_open = !string_open;
                 str++;
             } else {
-                if( !string_open && isblank( *str ) ) {
+                if( !string_open && ( *str == ' ' || *str == '\t' ) ) {
                     break;
                 }
                 str++;

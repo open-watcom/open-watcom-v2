@@ -70,8 +70,8 @@ static char const * const text_msg_no[] =
 
 typedef struct {                // CONSTRUCTION ELEMENT
     char* buffer;               // - buffer
-    unsigned bsize;             // - buffer size
-    unsigned used;              // - amount used
+    size_t bsize;               // - buffer size
+    size_t used;                // - amount used
 } CONSTRUCTION;
 
 
@@ -79,8 +79,8 @@ static void concatText          // CONCATENATE TEXT
     ( CONSTRUCTION* ct          // - construction info
     , char const *text )        // - text to be appended
 {
-    unsigned size = strlen( text ) + 1;
-    unsigned left = ct->bsize - ct->used;
+    size_t size = strlen( text ) + 1;
+    size_t left = ct->bsize - ct->used;
     if( size > left ) {
         size = left;
     }
@@ -181,7 +181,7 @@ void IdeMsgFormat               // FORMAT A MESSAGE
     ( IDECBHdl handle           // - handle for requestor
     , IDEMsgInfo const * info   // - message information
     , char * buffer             // - buffer
-    , unsigned bsize            // - buffer size
+    , size_t bsize              // - buffer size
     , IDEMsgInfoFn displayer )  // - display function
 {
     CONSTRUCTION ct;            // - construction info

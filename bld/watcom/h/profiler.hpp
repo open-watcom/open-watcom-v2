@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#pragma pack(push,4)
+#include "pushpck4.h"
 typedef struct new_P5_timing_info {
     char        flag[4]; // the flag field MUST be first
     int lo_count;
@@ -45,8 +45,7 @@ typedef struct new_P5_timing_info {
     int call_ins;
     int callee;
 } new_P5_timing_info;
-
-#pragma pack(pop)
+#include "poppck.h"
 
 extern "C" {
     extern void __PON( new_P5_timing_info * );

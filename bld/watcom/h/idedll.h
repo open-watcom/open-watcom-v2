@@ -41,16 +41,16 @@ extern "C" {
 
 #pragma pack( 4 )
 
-#if defined( __WATCOMC__ )
+#if defined( __WATCOMC__ ) && defined( __386__ )
 #define IDECALL                 __stdcall
 #else
 #define IDECALL
 #endif
 
-#ifdef IDE_PGM
-#define IDEDLL_EXPORT
-#else
+#if defined( __WATCOMC__ ) && !defined( IDE_PGM )
 #define IDEDLL_EXPORT           __export IDECALL
+#else
+#define IDEDLL_EXPORT           IDECALL
 #endif
 
 #define IDE_CUR_DLL_VER         3
@@ -199,7 +199,7 @@ typedef struct IDEMsgInfo2 {
         FileErr         file;
         SymbolFileErr   sym_file;
         SymbolErr       symbol;
-    };
+    } u;
 } IDEMsgInfo2;
 
 
@@ -235,8 +235,13 @@ typedef unsigned        IDEInfoType;
 #define IDE_DEP_FILETYPE_DEP_CLS        'C'
 #define IDE_DEP_FILETYPE_DEP_ZIP        'Z'
 
+#if defined( _WIN64 )
+typedef unsigned __int64 IDEGetInfoWParam;
+typedef unsigned __int64 IDEGetInfoLParam;
+#else
 typedef unsigned long IDEGetInfoWParam;
 typedef unsigned long IDEGetInfoLParam;
+#endif
 
 typedef IDEBool IDECALL (*IDERunBatchFn)( IDECBHdl hdl, const char *cmdline,
                                 BatchFilter cb, void *cookie );
@@ -377,7 +382,7 @@ void IdeMsgFormat               // FORMAT A MESSAGE
     ( IDECBHdl handle           // - handle for requestor
     , IDEMsgInfo const *info    // - message information
     , char *buffer              // - buffer
-    , unsigned bsize            // - buffer size
+    , size_t bsize              // - buffer size
     , IDEMsgInfoFn displayer )  // - display function
 ;
 void IdeMsgStartDll             // START OF FORMATING FOR A DLL (EACH TIME)

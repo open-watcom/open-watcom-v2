@@ -32,11 +32,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <time.h>
-
+#include "wio.h"
+#include "watcom.h"
 #include "pcobj.h"
 #include "objautod.h"
 
@@ -101,8 +99,8 @@ static time_t dosStampToTime( unsigned short date, unsigned short time )
     return( mktime( &tmbuf ) );
 }
 
-walk_status WalkOBJAutoDep( char *file_name, rtn_status (*rtn)( time_t, char *, void * ), void *data )
-/****************************************************************************************************/
+walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, char *, void * ), void *data )
+/**********************************************************************************************************/
 {
     walk_status wstatus;
     rtn_status rstatus;

@@ -30,19 +30,12 @@
 
 
 #ifndef PCOBJ_H
-#include <watcom.h>
+#define PCOBJ_H
 
 #include "pushpck1.h"
 /*
  * Library stuff
  */
-typedef struct hash_entry {
-    uint_16     minor_class;
-    uint_16     minor_inc;
-    uint_16     major_class;
-    uint_16     major_inc;
-} hash_entry;
-
 typedef struct lib_header {
     uint_8      cmd;
     uint_16     length;
@@ -432,5 +425,4 @@ enum {
 
 #include "poppck.h"
 
-#define PCOBJ_H 1
 #endif

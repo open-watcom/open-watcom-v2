@@ -32,10 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef __UNIX__
-    #include <env.h>
-#endif
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ )
     #include <process.h>
 #else
     #include "clibext.h"
@@ -212,7 +209,7 @@ int watcom_setup_env( void )
     watcom = getenv( "WATCOM" );
     /* If WATCOM env var isn't set, try to construct it */
     if( watcom == NULL ) {
-        int     len;
+//        int     len;
         char    *p;
         char    *path_sep = NULL;
         char    *prev_path_sep = NULL;
@@ -222,7 +219,7 @@ int watcom_setup_env( void )
             return( -1 );
         }
         /* Set WATCOM to a directory one level up from the executable */
-        len = strlen( buf );
+//        len = strlen( buf );
         p = buf;
         while( *p != '\0' ) {
             if( *p == DIR_SEP_CHAR ) {

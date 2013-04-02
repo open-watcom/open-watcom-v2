@@ -33,13 +33,19 @@
 #ifndef _WATCOM_H_INCLUDED_
 #define _WATCOM_H_INCLUDED_
 
+#ifndef LONG_IS_64BITS
+  #ifdef __LP64__
+    #define LONG_IS_64BITS
+  #endif
+#endif
+
 #include <errno.h>
 #ifndef __WATCOMC__
 #include "clibext.h"
 #endif
 
 #if !defined(__sun__) && !defined(sun) && !defined(__sgi) && !defined(__hppa) && !defined(_AIX) && !defined(__alpha) && !defined(_TYPES_H_) && !defined(_SYS_TYPES_H)
-    typedef unsigned        uint;
+typedef unsigned        uint;
 #endif
 
 typedef unsigned char   uint_8;
@@ -72,6 +78,16 @@ typedef signed int      signed_32;
 typedef signed long     signed_32;
 #endif
 
+#if _INTEGRAL_MAX_BITS >= 64
+#if defined( _MSC_VER )
+typedef unsigned __int64    uint_64;
+typedef __int64             int_64;
+#else
+typedef unsigned long long  uint_64;
+typedef long long           int_64;
+#endif
+#endif
+
 typedef struct {
     union {
         unsigned_32     _32[2];
@@ -92,12 +108,18 @@ typedef struct {
             unsigned    v       : 1;
 #endif
         }       sign;
-#if defined(__WATCOM_INT64__) || defined(__GNUC__)
-        unsigned long long   _64[1];
+#if _INTEGRAL_MAX_BITS >= 64
+        uint_64         _64[1];
 #endif
     } u;
 } unsigned_64;
 typedef unsigned_64     signed_64;
+
+#if defined( _WIN64 )
+typedef unsigned __int64    pointer_int;
+#else
+typedef unsigned long       pointer_int;
+#endif
 
 /* Macros for low/high end access on little and big endian machines */
 
@@ -201,6 +223,23 @@ typedef unsigned_64     signed_64;
     #define SWAP_16     CONV_BE_16
     #define SWAP_32     CONV_BE_32
     #define SWAP_64     CONV_BE_64
+#endif
+
+/* Macros to swap byte order in 64-bit structure */
+#if defined( __BIG_ENDIAN__ )
+  #if _INTEGRAL_MAX_BITS >= 64
+    #define SCONV_LE_64(w)   (w).u._64[0] = SWAPNC_64((w).u._64[0])
+  #else
+    #define SCONV_LE_64(w)   {unsigned_32 x = SWAPNC_32(w.u._32[I64LO32]);w.u._32[I64LO32]=SWAPNC_32(w.u._32[I64HI32]);w.u._32[I64HI32] = x;}
+  #endif
+    #define SCONV_BE_64(w)
+#else
+    #define SCONV_LE_64(w)
+  #if _INTEGRAL_MAX_BITS >= 64
+    #define SCONV_BE_64(w)   (w).u._64[0] = SWAPNC_64((w).u._64[0])
+  #else
+    #define SCONV_BE_64(w)   {unsigned_32 x = SWAPNC_32(w.u._32[I64LO32]);w.u._32[I64LO32]=SWAPNC_32(w.u._32[I64HI32]);w.u._32[I64HI32] = x;}
+  #endif
 #endif
 
 #endif

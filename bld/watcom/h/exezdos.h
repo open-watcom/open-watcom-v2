@@ -32,8 +32,7 @@
 #ifndef _EXEZDOS_H
 #define _EXEZDOS_H
 
-#pragma pack(push,1)
-
+#include "pushpck1.h"
 typedef struct _zdos_exe_header {
     unsigned_32     signature;      /* signature to mark valid EXE file */
     unsigned_32     EIP;            /* initial EIP value                */
@@ -49,9 +48,8 @@ typedef struct _zdos_exe_header {
     unsigned_32     debug_offset;   /* offset of debug information      */
     unsigned_32     reserved[4];    /* reserved for future use          */
 } zdos_exe_header;
+#include "poppck.h"
 
 #define ZDOS_SIGNATURE  0x20cd545a  /* 'ZT' followed by INT 20h         */
-
-#pragma pack(pop)
 
 #endif

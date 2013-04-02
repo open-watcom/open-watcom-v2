@@ -32,8 +32,8 @@
 #ifndef _CMDLHELP_H
 #define _CMDLHELP_H
 
-int BuildQuotedFName( char *buffer, int bufferlen, const char *path, const char *filename, const char *quote_char );
-int UnquoteFName( char *dst, int maxlen, const char *src );
+int BuildQuotedFName( char *buffer, size_t bufferlen, const char *path, const char *filename, const char *quote_char );
+int UnquoteFName( char *dst, size_t maxlen, const char *src );
 char *FindNextWS( char *str );
 
 #endif

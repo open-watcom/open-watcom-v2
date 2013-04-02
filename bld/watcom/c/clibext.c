@@ -1568,6 +1568,249 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
 
 /****************************************************************************
 *
+* Description:  POSIX fnmatch.
+*
+****************************************************************************/
+
+#ifdef _MSC_VER
+
+/* Implementation note: On non-UNIX systems, backslashes in the string
+ * (but not in the pattern) are considered to be path separators and
+ * identical to forward slashes when FNM_PATHNAME is set.
+ */
+
+#ifdef __UNIX__
+  #define IS_PATH_SEP(c)   (c == '/')
+#else
+  #define IS_PATH_SEP(c)   (c == '/' || c == '\\')
+#endif
+
+static const struct my_wctypes {
+    const char  *name;
+    int         mask;
+} my_wctypes[] = {
+    { "alnum", _ALPHA | _DIGIT },
+    { "alpha", _ALPHA },
+    { "cntrl", _CONTROL },
+    { "digit", _DIGIT },
+    { "graph", _PUNCT | _ALPHA | _DIGIT },
+    { "lower", _LOWER },
+    { "print", _BLANK | _PUNCT | _ALPHA | _DIGIT },
+    { "punct", _PUNCT },
+    { "space", _SPACE },
+    { "upper", _UPPER },
+    { "xdigit", _HEX }
+};
+
+#define WCTYPES_SIZE (sizeof( my_wctypes ) / sizeof( my_wctypes[0] ))
+
+static int my_wctype( const char *name )
+{
+    int i;
+
+    for( i = 0; i < WCTYPES_SIZE; ++i ) {
+        if( strcmp( my_wctypes[i].name, name ) == 0 ) {
+            return( my_wctypes[i].mask );
+        }
+    }
+    return( 0 );
+}
+
+static int icase( int ch, int flags )
+{
+    if( flags & FNM_IGNORECASE ) {
+        return( tolower( ch ) );
+    } else {
+        return( ch );
+    }
+}
+
+/* Maximum length of character class name. 
+ * The longest is currently 'xdigit' (6 chars).
+ */
+#define CCL_NAME_MAX    8
+
+/* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid 
+ * hardcoded character class lists.
+ */
+static int sub_bracket( const char *p, int c )
+{
+    const char      *s = p;
+    char            sname[CCL_NAME_MAX + 1];
+    int             i;
+    int             type;
+
+    switch( *++p ) {
+    case ':':
+        ++p;
+        for( i = 0; i < CCL_NAME_MAX; i++ ) {
+            if( !isalpha(*p ) )
+                break;
+            sname[i] = *p++;
+        }
+        sname[i] = '\0';
+        if( *p++ != ':' )
+            return( 0 );
+        if( *p++ != ']' )
+            return( 0 );
+        type = my_wctype( sname );
+        if( type ) {
+            return( iswctype( (wint_t)c, (wctype_t)type ) ? (int)( p - s ) : (int)( s - p ) );
+        }
+        return( 0 );
+    case '=':
+        return( 0 );
+    case '.':
+        return( 0 );
+    default:
+        return( 0 );
+    }
+}
+
+static const char *cclass_match( const char *patt, int c )
+{
+    int         ok = 0;
+    int         lc = 0;
+    int         state = 0;
+    int         invert = 0;
+    int         sb;
+
+    /* Meaning of '^' is unspecified in POSIX - consider it equal to '!' */
+    if( *patt == '!' || *patt == '^' ) {
+        invert = 1;
+        ++patt;
+    }
+    while( *patt ) {
+        if( *patt == ']' )
+            return( ok ^ invert ? patt + 1 : NULL );
+
+        if( *patt == '[' ) {
+             sb = sub_bracket( patt, c );
+             if( sb < 0 ) {
+                 patt -= sb;
+                 ok = 0;
+                 continue;
+             } else if( sb > 0 ) {
+                 patt += sb;
+                 ok = 1;
+                 continue;
+             }
+        }
+
+        switch( state ) {
+        case 0:
+            if( *patt == '\\' )
+                ++patt;
+            if( *patt == c )
+                ok = 1;
+            lc = (int)*patt++;
+            state = 1;
+            break;
+        case 1:
+            if( *patt == '-' ) {
+                state = 2;
+                ++patt;
+                break;
+            }
+            state = 0;
+            break;
+        case 2: 
+            if( *patt == '\\' )
+                ++patt;
+            if( lc <= c && c <= *patt )
+                ok = 1;
+            ++patt;     
+            state = 0;
+            break;
+        default:
+            return( NULL );
+        }
+    }
+    return( NULL );
+}
+
+int   fnmatch( const char *patt, const char *s, int flags )
+/*********************************************************/
+{
+    int         c, cl;
+    const char  *start = s;
+
+    while( (c = icase( *patt++, flags )) != '\0' ) {
+        switch( c ) {
+        case '?':
+            if( flags & FNM_PATHNAME && IS_PATH_SEP( *s ) )
+                return( FNM_NOMATCH );
+            if( flags & FNM_PERIOD && *s == '.' && s == start )
+                return( FNM_NOMATCH );
+            ++s;
+            break;
+        case '[':
+            if( flags & FNM_PATHNAME && IS_PATH_SEP( *s ) )
+                return( FNM_NOMATCH );
+            if( flags & FNM_PERIOD && *s == '.' && s == start )
+                return( FNM_NOMATCH );
+            patt = cclass_match( patt, *s );
+            if( patt == NULL )
+                return( FNM_NOMATCH );
+            ++s;
+            break;
+        case '*':
+            if( *s == '\0' )
+                return( 0 );
+            if( flags & FNM_PATHNAME && ( *patt == '/' ) ) {
+                while( *s && !IS_PATH_SEP( *s ) )
+                    ++s;
+                break;
+            }
+            if( flags & FNM_PERIOD && *s == '.' && s == start )
+                return( FNM_NOMATCH );
+            if( *patt == '\0' ) {
+                /* Shortcut - don't examine every remaining character. */
+                if( flags & FNM_PATHNAME ) {
+                    if( flags & FNM_LEADING_DIR || !strchr( s, '/' ) )
+                        return( 0 );
+                    else
+                        return( FNM_NOMATCH );
+                } else {
+                    return( 0 );
+                }
+            }
+            while( (cl = icase( *s, flags )) != '\0' ) {
+                if( !fnmatch( patt, s, flags & ~FNM_PERIOD ) )
+                    return( 0 );
+                if( flags & FNM_PATHNAME && IS_PATH_SEP( cl ) ) {
+                    start = s + 1;
+                    break;
+                }
+                ++s;
+            }
+            return( FNM_NOMATCH );
+        case '\\':
+            if( !( flags & FNM_NOESCAPE ) ) {
+                c = icase( *patt++, flags );
+            }
+            /* Fall through */
+        default:
+            if( IS_PATH_SEP( *s ) )
+                start = s + 1;
+            cl = icase( *s++, flags );
+#ifndef __UNIX__
+            if( flags & FNM_PATHNAME && cl == '\\' )
+                cl = '/';
+#endif
+            if( c != cl )
+                return( FNM_NOMATCH );
+        }
+    }
+    if( flags & FNM_LEADING_DIR && IS_PATH_SEP( *s ) )
+        return( 0 );
+    return( *s ? FNM_NOMATCH : 0 );
+}
+
+#endif /* _MSC_VER */
+
+/****************************************************************************
+*
 * Description:  Determine resource language from system environment.
 *
 ****************************************************************************/

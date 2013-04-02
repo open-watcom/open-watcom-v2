@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <unistd.h>
+#include "wio.h"
 #include "walloca.h"
 
 #define _NLONGS( x )    ( ( (x) + 31 ) / 32 )
@@ -65,6 +65,7 @@ static void emitAssign( FILE *fp, int size, char *prefix, char *type_name )
 {
     int         i;
 
+    type_name = type_name;
     fprintf( fp, "#define %sAssign( dst, src ) { \\\n", prefix );
     // fprintf( fp, "\t\t\t%s *srcp = &(src); \\\n\t\t\t%s *dstp = &(dst); \\\n", type_name, type_name );
     for( i = 0; i < _NLONGS( size ); i++ ) {
@@ -93,6 +94,7 @@ static void emitSet( FILE *fp, int size, char *prefix, char *type_name )
     int         i;
     char        c;
 
+    type_name = type_name;
     fprintf( fp, "#define %sSet( dst, ", prefix );
     c = 'a';
     for( i = 0; i < _NLONGS( size ); i++ ) {
@@ -119,6 +121,7 @@ static void emitIter( FILE *fp, int size, char *prefix, char *type_name )
 {
     int         i;
 
+    type_name = type_name;
     fprintf( fp, "#define %sIter( routine, set ) { \\\n", prefix );
     for( i = 0; i < _NLONGS( size ); i++ ) {
         fprintf( fp, "\t\t\t(routine)( (set)._%d ); \\\n", i );
@@ -131,6 +134,7 @@ static void emitOverlap( FILE *fp, int size, char *prefix, char *type_name )
 {
     int         i;
 
+    type_name = type_name;
     fprintf( fp, "#define %sOverlap( a, b ) ( \\\n", prefix );
     for( i = 0; i < _NLONGS( size ) - 1; i++ ) {
         fprintf( fp, "\t\t\t( (a)._%d & (b)._%d ) || \\\n", i, i );
@@ -143,6 +147,7 @@ static void emitSame( FILE *fp, int size, char *prefix, char *type_name )
 {
     int         i;
 
+    type_name = type_name;
     fprintf( fp, "#define %sSame( a, b ) ( \\\n", prefix );
     for( i = 0; i < _NLONGS( size ) - 1; i++ ) {
         fprintf( fp, "\t\t\t( (a)._%d == (b)._%d ) && \\\n", i, i );
@@ -155,6 +160,7 @@ static void emitIntersect( FILE *fp, int size, char *prefix, char *type_name )
 {
     int         i;
 
+    type_name = type_name;
     fprintf( fp, "#define %sIntersect( a, b ) { \\\n", prefix );
     for( i = 0; i < _NLONGS( size ); i++ ) {
         fprintf( fp, "\t\t\t(a)._%d &= (b)._%d; \\\n", i, i );
@@ -167,6 +173,7 @@ static void emitTurnOff( FILE *fp, int size, char *prefix, char *type_name )
 {
     int         i;
 
+    type_name = type_name;
     fprintf( fp, "#define %sTurnOff( a, b ) { \\\n", prefix );
     for( i = 0; i < _NLONGS( size ); i++ ) {
         fprintf( fp, "\t\t\t(a)._%d &= ~(b)._%d; \\\n", i, i );
@@ -179,6 +186,7 @@ static void emitTurnOn( FILE *fp, int size, char *prefix, char *type_name )
 {
     int         i;
 
+    type_name = type_name;
     fprintf( fp, "#define %sTurnOn( a, b ) { \\\n", prefix );
     for( i = 0; i < _NLONGS( size ); i++ ) {
         fprintf( fp, "\t\t\t(a)._%d |= (b)._%d; \\\n", i, i );
@@ -189,6 +197,7 @@ static void emitTurnOn( FILE *fp, int size, char *prefix, char *type_name )
 static void emitScalar( FILE *fp, int size, char *prefix, char *type_name )
 //*************************************************************************
 {
+    size = size; type_name = type_name;
     fprintf( fp, "#define %sScalar( a ) ( (a)._0 )\n\n", prefix );
 }
 

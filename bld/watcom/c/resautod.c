@@ -32,17 +32,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <time.h>
-
+#include "wio.h"
+#include "watcom.h"
 #include "pcobj.h"
 #include "objautod.h"
 #include "autodep.h"    //for res files
 
-walk_status WalkRESAutoDep( char *file_name, rtn_status (*rtn)( time_t, char *, void * ), void *data )
-/****************************************************************************************************/
+walk_status WalkRESAutoDep( const char *file_name, rtn_status (*rtn)( time_t, char *, void * ), void *data )
+/**********************************************************************************************************/
 {
     DepInfo* depends;
     DepInfo* p;

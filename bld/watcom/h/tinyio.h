@@ -36,8 +36,7 @@
 #endif
 
 #include <dosfunc.h>
-#include <errno.h>
-#include <watcom.h>
+#include "watcom.h"
 
 #pragma pack( 1 )
 

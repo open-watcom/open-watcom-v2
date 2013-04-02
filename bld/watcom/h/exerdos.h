@@ -30,7 +30,7 @@
 
 #ifndef _EXERDOS_H
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 /* 16-bit RDOS .rdv device file header */
 /* =================== */
@@ -62,6 +62,6 @@ typedef struct rdos_dev32_header {
 
 #define _EXERDOS_H
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #endif

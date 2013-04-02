@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
-#include <watcom.h>
-#include "pushpck1.h"
+#include "watcom.h"
 
+#include "pushpck1.h"
 typedef struct {
     uint_16     cpu_type;
     uint_16     num_sections;
@@ -543,6 +543,50 @@ typedef struct {
 
 #define COFF_OPT_HDR_SIZE sizeof( coff_opt_hdr )
 
+typedef struct {
+    uint_16     magic;                  //standard fields
+    uint_8      l_major;
+    uint_8      l_minor;
+    uint_32     code_size;
+    uint_32     init_data;
+    uint_32     uninit_data;
+    uint_32     entry_point;
+    uint_32     base_code;
+    unsigned_64 image_base;             //nt specific fields
+    uint_32     section_align;
+    uint_32     file_align;
+    uint_16     os_major;
+    uint_16     os_minor;
+    uint_16     user_major;
+    uint_16     user_minor;
+    uint_16     subsys_major;
+    uint_16     subsys_minor;
+    uint_32     reserved1;
+    uint_32     image_size;
+    uint_32     header_size;
+    uint_32     file_checksum;
+    uint_16     sub_system;
+    uint_16     dll_flags;
+    unsigned_64 stack_reserve;
+    unsigned_64 stack_commit;
+    unsigned_64 heap_reserve;
+    unsigned_64 heap_commit;
+    uint_32     loader_flags;
+    uint_32     data_directories;
+    coff_image_data_directory   export_table;
+    coff_image_data_directory   import_table;
+    coff_image_data_directory   resource_table;
+    coff_image_data_directory   exception_table;
+    coff_image_data_directory   security_table;
+    coff_image_data_directory   base_reloc_table;
+    coff_image_data_directory   debug;
+    coff_image_data_directory   copyright;
+    coff_image_data_directory   machine_value;
+    coff_image_data_directory   tls_table;
+    coff_image_data_directory   load_config_table;
+    uint_8      reserved2[40];
+} coff_opt_hdr64;
+
 // The following structure defines the new import object. Note the
 // values of the first two fields, which must be set as stated in
 // order to differentiate old and new import members. Following this
@@ -587,5 +631,4 @@ typedef enum
     IMPORT_OBJECT_NAME_UNDECORATE = 3,  // Import name == public symbol name skipping leading ?, @, or optionally _
                                         // and truncating at first @
 } coff_import_object_name_type;
-
 #include "poppck.h"
