@@ -21,7 +21,7 @@ cdsay <PROJDIR>
     mkdir <OWOBJDIR>
     cdsay <OWOBJDIR>
     wmake -h -f ../binmake bootstrap=1
-    set BINTOOL=rel
+    set BINTOOL=build
 
 [ BLOCK <1> bootclean ]
 #======================

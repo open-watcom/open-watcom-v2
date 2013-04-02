@@ -127,7 +127,7 @@ bld_ldflags1 = $(ldflags_common) -Wl,-Map,$^&.map
 bld_ldflags  = $(bld_extra_ldflags)
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(cflags_common) $(flags_common) -o $@ $(%OWBINDIR)/clibext.lib $(bld_ldflags1)
+bld_clflags  = $(bld_cppflags) $(cflags_common) $(flags_common) -o $@ $(watcom_dir)/$(%OWOBJDIR)/clibext.lib $(bld_ldflags1)
 bld_cl_opts = $(bld_clflags)
 
 blib = ar
@@ -168,7 +168,7 @@ libflags = crs $^@
 # extra objects for linking via cl
 cl_objs_       =
 cl_objs_shared = clibext.obj
-cl_libs_       = $(%OWBINDIR)/clibext.lib
+cl_libs_       = $(watcom_dir)/$(%OWOBJDIR)/clibext.lib
 cl_libs_shared =
 
 # objects for linking via cl
@@ -260,7 +260,7 @@ bld_ldflags  =  -link -nologo &
     -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib $(bld_extra_ldflags)
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(cflags_common) $(flags_common) -Fe$@ $(%OWBINDIR)/clibext.lib $(bld_ldflags1)
+bld_clflags  = $(bld_cppflags) $(cflags_common) $(flags_common) -Fe$@ $(watcom_dir)/$(%OWOBJDIR)/clibext.lib $(bld_ldflags1)
 bld_cl_opts = $(bld_clflags)
 
 blib = lib -nologo
@@ -303,7 +303,7 @@ libflags = -out:$^@
 # extra objects for linking via cl
 cl_objs_       =
 cl_objs_shared = clibext.obj
-cl_libs_       = $(%OWBINDIR)/clibext.lib
+cl_libs_       = $(watcom_dir)/$(%OWOBJDIR)/clibext.lib
 cl_libs_shared =
 
 # objects for linking via cl

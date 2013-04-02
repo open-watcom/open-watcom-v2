@@ -536,7 +536,17 @@ rc_aui_flags    = -zk0 $(rc_defines_$(host_os)) -I"$(watcom_dir)/h"
 rc_aui          = $(rcaui) -r -bt=windows $(rc_aui_flags)
 
 # simple C preprocessing
+cpp             = wcpp
 c_pp            = wcpp
+
+# options used for setup source code Japanese DBCS character set
+c_japan_charset = -zk0
+
+# options for preprocessing source code
+preproc_opts    = -p
+
+# options for include source code file
+incl_file_opts  = -fi
 
 !include bhost.mif
 !include local.mif

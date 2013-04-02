@@ -29,7 +29,7 @@ cdsay <PROJDIR>
     wmake -h -f ../binmake bootstrap=1
     cdsay ..
     <CPCMD> <OWOBJDIR>/<PROJNAME>.exe <OWBINDIR>/<PROJNAME><CMDEXT>
-    set BINTOOL=rel
+    set BINTOOL=build
 
 [ BLOCK <1> bootclean ]
 #======================
