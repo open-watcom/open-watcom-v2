@@ -38,21 +38,17 @@
 *****************************************************************************/
 #include "cvars.h"
 #include <ctype.h>
+#include "wio.h"
+#include "watcom.h"
 #include "pragdefn.h"
 #include "pdefn2.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
 #include "iopath.h"
-#include <unistd.h>
-#include <fcntl.h>
 #ifdef __OSI__
  #include "ostype.h"
 #endif
 #include "feprotos.h"
-
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
 
 enum encoding {
     ENC_ZK = 1,

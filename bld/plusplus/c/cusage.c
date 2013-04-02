@@ -31,8 +31,7 @@
 
 
 #include "plusplus.h"
-
-#include <unistd.h>
+#include "wio.h"
 
 #include "cusage.h"
 #include "errdefns.h"
@@ -51,7 +50,7 @@ static char const *nextUsage( char const *p )
     return( p + 1 );
 }
 
-#ifdef __UNIX__
+#if defined( __UNIX__ )
 
 void CCusage( void )
 /******************/
@@ -72,10 +71,10 @@ void CCusage( void )
 #define NUM_ROWS        20
 
 #ifdef __OSI__
-#define output(text) puts(text)
-extern       char    *_Copyright;
+#define output(text)    puts(text)
+extern  char            *_Copyright;
 #else
-#define output(text) MsgDisplayLine( text )
+#define output(text)    MsgDisplayLine( text )
 #endif
 
 typedef struct usage_data {
@@ -111,7 +110,6 @@ static boolean willPrintALine( usage_data *info )
     }
     return retval;
 }
-
 
 void CCusage( void )
 /******************/

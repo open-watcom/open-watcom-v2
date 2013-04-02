@@ -29,11 +29,9 @@
 ****************************************************************************/
 
 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <stdio.h>      /* for SEEK_SET, SEEK_CUR, SEEK_END */
 #include <string.h>
+#include "wio.h"
 #include "womp.h"
 #include "genutil.h"
 #include "memutil.h"

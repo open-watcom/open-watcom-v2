@@ -30,15 +30,11 @@
 
 
 #include "asmglob.h"
-#include <fcntl.h>
-#include <unistd.h>
+#include <ctype.h>
 #ifdef __WATCOMC__
     #include <process.h>
-#else
-    #include "clibext.h"
 #endif
-#include <ctype.h>
-
+#include "wio.h"
 #include "asmalloc.h"
 #include "fatal.h"
 #include "asmexpnd.h"

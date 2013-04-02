@@ -61,8 +61,7 @@ typedef struct {
     orl_return  (*export_fn)( char *, void * );
     orl_return  (*deflib_fn)( char *, void * );
     orl_return  (*entry_fn)( char *, void * );
-    orl_return  (*scantab_fn)( orl_sec_handle, orl_sec_offset, orl_sec_offset,
-                                void * );
+    orl_return  (*scantab_fn)( orl_sec_handle, orl_sec_offset, orl_sec_offset, void * );
 } orl_note_callbacks;
 
 #endif

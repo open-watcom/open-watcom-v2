@@ -53,13 +53,10 @@ extern  bool            AskSegNear(segment_id);
 extern  segment_id      AskSegID(pointer,cg_class);
 extern  bool            AskNameCode(pointer,cg_class);
 
-extern  bool    IsFarFunc( sym_handle sym ) {
+extern  bool    IsFarFunc( sym_handle sym )
 /*******************************************/
-
-    call_class  *pclass;
-
-    pclass = FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS );
-    return( ( *pclass & FAR_CALL ) != EMPTY );
+{
+    return( (*(call_class *)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & FAR_CALL) != 0 );
 }
 
 

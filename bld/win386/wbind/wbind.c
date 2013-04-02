@@ -30,19 +30,16 @@
 
 
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <fcntl.h>
-#include <errno.h>
 #include <string.h>
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
 #include <sys/types.h>
-#include <sys/stat.h>
-#include "banner.h"
+#include "wio.h"
 #include "watcom.h"
+#include "banner.h"
 #include "exedos.h"
 #include "exeos2.h"
 #include "exephar.h"
@@ -338,7 +335,7 @@ int main( int argc, char *argv[] )
         if( in < 0 ) {
             doError( "Could not open %s", path );
         }
-        out = open( rex, O_CREAT | O_TRUNC|O_WRONLY | O_BINARY, S_IRWXU );
+        out = open( rex, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, PMODE_RWX );
         if( out < 0 ) {
             doError( "Could not open %s", rex );
         }
@@ -379,7 +376,7 @@ int main( int argc, char *argv[] )
     if( in < 0 )  {
         doError( "Could not open %s", winext );
     }
-    out = open( exe, O_CREAT | O_TRUNC|O_WRONLY | O_BINARY, S_IRWXU );
+    out = open( exe, O_CREAT | O_TRUNC|O_WRONLY | O_BINARY, PMODE_RWX );
     if( out < 0 )  {
         doError( "Could not open %s", exe );
     }

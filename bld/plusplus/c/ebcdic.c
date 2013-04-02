@@ -33,6 +33,7 @@
 #include "plusplus.h"
 #include "scan.h"
 #include "ctokens.h"
+#include "weights.gh"
 
 /* The following table is EBCDIC dependent. */
 

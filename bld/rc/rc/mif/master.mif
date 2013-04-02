@@ -213,10 +213,10 @@ weights2.gh keyword2.gh : ../hash/rcos2.key
         @rm -f weights.gh
 
 incltext.gh : ../h/incltext.h ../h/rc.msg
-        $(c_pp) $(rc_aui_flags) -I.. $(rc_defines) $[@ >$^@
+        $(cpp) $(rc_aui_flags) -I.. $(rc_defines) $[@ >$^@
 
 msg.gh : ../h/rc.msg
-        $(c_pp) $(rc_aui_flags) $(rc_defines) $[@ >$@
+        $(cpp) $(rc_aui_flags) $(rc_defines) $[@ >$@
 
 rcmsg.gh : msg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@

@@ -179,10 +179,10 @@ d : .SYMBOLIC $(trperr_h) $(jtrperr_h)
         @%make $(target)
 
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(c_pp) -zk0 -I"$(trap_dir)/h" $[@ >$@
+        $(cpp) -zk0 -I"$(trap_dir)/h" $[@ >$@
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(c_pp) -zk0 -DJAPANESE_MESSAGES -I"$(trap_dir)/h" $[@ >$@
+        $(cpp) -zk0 -DJAPANESE_MESSAGES -I"$(trap_dir)/h" $[@ >$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
         $(bld_cl) $(bld_cl_opts) $[@

@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 
+#ifdef __WATCOMC__
 #pragma enum minimum;
+#endif
 
 typedef enum {
         INS_INPUT,
@@ -53,4 +55,6 @@ typedef enum {
         INS_LONG        = 0x80
 } op_code;
 
+#ifdef __WATCOMC__
 #pragma enum pop;
+#endif

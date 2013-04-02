@@ -36,7 +36,6 @@
 #include "addrname.h"
 #include "zoiks.h"
 #include "typedef.h"
-#include "hostsys.h"
 #include "model.h"
 #include "cgdefs.h"
 #include "tree.h"

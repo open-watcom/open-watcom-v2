@@ -31,13 +31,11 @@
 
 
 #include "standard.h"
-#include "hostsys.h"
 #include "coderep.h"
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
 #include "objrep.h"
@@ -94,7 +92,6 @@ typedef struct block_patch {
     dbg_patch_handle    handle;
 } block_patch;
 
-#define CurrProc_debug ((dbg_rtn *)CurrProc->targ.debug)
 
 extern  void    WVInitDbgInfo( void ) {
 /******************************/
@@ -103,7 +100,6 @@ extern  void    WVInitDbgInfo( void ) {
     DbgLocals = 0;
     DbgTypes  = 0;
 }
-
 
 extern  void    WVObjInitInfo( void ) {
 /******************************/
@@ -115,7 +111,6 @@ extern  void    WVFiniDbgInfo( void ) {
 /******************************/
 
 }
-
 
 extern  void    WVGenStatic( sym_handle sym, dbg_loc loc ) {
 /*******************************************************************/
@@ -161,10 +156,10 @@ extern  void    WVObjectPtr(  cg_type ptr_type ) {
     switch( TypeAddress( ptr_type )->refno ) {
     case TY_NEAR_POINTER:
     case TY_NEAR_CODE_PTR:
-        CurrProc_debug->obj_ptr_type = POINTER_NEAR;
+        CurrProc->targ.debug->obj_ptr_type = POINTER_NEAR;
         break;
     default:
-        CurrProc_debug->obj_ptr_type = POINTER_FAR;
+        CurrProc->targ.debug->obj_ptr_type = POINTER_FAR;
         break;
     }
 }
@@ -201,7 +196,6 @@ extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) {
     uint                count;
     dbg_local           *parm;
     dbg_local           *junk;
-    call_class          *class_ptr;
     temp_buff           temp;
     sym_handle          sym;
     dbg_type            tipe;
@@ -225,10 +219,9 @@ extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) {
     }
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgType( sym );
-    class_ptr = FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS );
-    if( *class_ptr & FAR_CALL ) {
+    if( *(call_class *)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & FAR_CALL ) {
         BuffStart( &temp, SYM_CODE + CODE_FAR_RTN );
-   } else {
+    } else {
         BuffStart( &temp, SYM_CODE + CODE_NEAR_RTN );
     }
     DumpDbgBlkStart( rtn->blk, lc );

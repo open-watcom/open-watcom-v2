@@ -96,11 +96,7 @@ extra_c_flags_idedrv   =
 !else
 extra_c_flags_idedrv   = -DSTATIC_LINKAGE
 !endif
-!ifdef __LINUX__
-extra_c_flags_intlload = -D__header=\"fesupp.h\"
-!else
-extra_c_flags_intlload = -D__header="fesupp.h"
-!endif
+extra_c_flags_intlload = $(incl_file_opts)fesupp.h
 extra_c_flags_maindrv  = -DDLL_NAME=$(realdllname)
 
 #
@@ -174,7 +170,7 @@ $(exename).exe : $(drv_objs) $(realdllname).lib $(version_res_exe_$(host_os)_$(h
 
 $(exename).exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(comp_objs_exe) $(xlibs) $(libs)
+        $(cl) $(clflags) $(comp_objs_exe) $(xlibs) $(libs) $(ldflags)
 !else
         @%write exe.lnk $(lflags)
         @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i

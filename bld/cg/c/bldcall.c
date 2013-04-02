@@ -187,7 +187,7 @@ extern  void    BGAddParm( cn call, an parm ) {
 
     new = CGAlloc( sizeof( parm_node ) );
     new->name = AddrToIns( parm );
-    new->name->flags |= ADDR_OK_ACROSS_BLOCKS; /* always taken care of by BGCall*/
+    new->name->flags |= FL_ADDR_OK_ACROSS_BLOCKS; /* always taken care of by BGCall*/
     new->next = call->parms;
     call->parms = new;
 }
@@ -265,7 +265,7 @@ static  name    *DoAlphaParmDecl( hw_reg_set reg, sym_handle sym, type_def *tipe
     offset = 0;
     len = _RoundUp( tipe->length, BASE_SIZE );
     t2->n.size = len;
-    while( 1 ) {
+    for( ;; ) {
         if( HW_CEqual( reg, HW_EMPTY ) ) {
             // put the rest of the structure on the stack
             t1 = AllocTemp( XX );
@@ -436,9 +436,6 @@ extern  void    AddCallIns( instruction *ins, cn call ) {
     type_class_def      addr_type;
     name                *temp;
     instruction         *new_ins;
-#if _TARGET & (_TARG_80386|_TARG_IAPX86)
-    call_class          class;
-#endif
 
     PreCall( call );
     if( ins->head.opcode == OP_CALL ) {
@@ -464,8 +461,7 @@ extern  void    AddCallIns( instruction *ins, cn call ) {
             // screws up the back end
             addr_type = WD;
         #if _TARGET & (_TARG_80386|_TARG_IAPX86)
-            class = *(call_class *)FindAuxInfo( call_name, CALL_CLASS );
-            if( class & FAR_CALL ) {
+            if( *(call_class *)FindAuxInfo( call_name, CALL_CLASS ) & FAR_CALL ) {
                 addr_type = CP;
             }
         #endif
@@ -532,7 +528,7 @@ extern  void            PushParms( pn parm, call_state *state ) {
             ins = addr->u.ins;
             PushInSameBlock( ins );
             if( ins->head.opcode == OP_MOV && !IsVolatile( ins->operands[0] ) &&
-               !( addr->flags & VOLATILE ) ) {
+               !( addr->flags & FL_VOLATILE ) ) {
                 push_ins = PushOneParm( ins, ins->operands[0],
                                    ins->type_class, parm->offset, state );
                 // ins->result = ins->operands[0]; -- was this useful? BBB
@@ -540,7 +536,7 @@ extern  void            PushParms( pn parm, call_state *state ) {
             } else {
                 ins->result = BGNewTemp( addr->tipe );
                 FPNotStack( ins->result );
-                if( addr->flags & ADDR_CROSSED_BLOCKS ) {
+                if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
                     ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
                 }
                 push_ins = PushOneParm( ins, ins->result,
@@ -610,7 +606,7 @@ extern  void    ParmIns( pn parm, call_state *state ) {
         reg = AllocRegName( ActualParmReg( parm->regs ) );
         ins = addr->u.ins;
         ins->result = BGNewTemp( addr->tipe );
-        if( addr->flags & ADDR_CROSSED_BLOCKS ) {
+        if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
             ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
         }
         curr = ins->result;

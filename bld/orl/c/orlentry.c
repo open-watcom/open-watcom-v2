@@ -38,6 +38,7 @@
 #include "pcobj.h"
 
 orl_handle ORLENTRY ORLInit( orl_funcs * funcs )
+/**********************************************/
 {
     orl_handle                  orl_hnd;
 
@@ -64,11 +65,15 @@ orl_handle ORLENTRY ORLInit( orl_funcs * funcs )
     return( orl_hnd );
 }
 
-orl_return ORLENTRY ORLGetError( orl_handle orl_hnd ) {
+orl_return ORLENTRY ORLGetError( orl_handle orl_hnd )
+/***************************************************/
+{
     return( orl_hnd->error );
 }
 
-orl_return ORLENTRY ORLFini( orl_handle orl_hnd ) {
+orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
+/***********************************************/
+{
     orl_return                  error;
 
     if( ( error = ElfFini( orl_hnd->elf_hnd ) ) != ORL_OKAY ) return( error );
@@ -198,54 +203,41 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, void * file )
     return ORL_UNRECOGNIZED_FORMAT;
 }
 
-orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, void * file, orl_file_format type )
+orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, void *file, orl_file_format type )
 {
-    orl_file_handle             orl_file_hnd;
+    orl_file_handle     orl_file_hnd;
 
     switch( type ) {
     case( ORL_ELF ):
-        orl_file_hnd = (orl_file_handle) orl_hnd->funcs->alloc( sizeof( orl_file_handle_struct ) );
-        if( !orl_file_hnd ) {
-            orl_hnd->error = ORL_OUT_OF_MEMORY;
-            return( NULL );
-        }
-        orl_file_hnd->type = ORL_ELF;
-        orl_file_hnd->file_hnd.elf = ElfFileInit( orl_hnd->elf_hnd, file );
-        if( orl_file_hnd->file_hnd.elf == NULL ) {
-            orl_hnd->error = ORL_OUT_OF_MEMORY;
-            orl_hnd->funcs->free( orl_file_hnd );
-            return( NULL );
-        }
-        ORLAddFileLinks( orl_hnd, orl_file_hnd );
-        return( orl_file_hnd );
     case( ORL_COFF ):
-        orl_file_hnd = (orl_file_handle) orl_hnd->funcs->alloc( sizeof( orl_file_handle_struct ) );
-        if( !orl_file_hnd ) return( NULL );
-        orl_file_hnd->type = ORL_COFF;
-        orl_file_hnd->file_hnd.coff = CoffFileInit( orl_hnd->coff_hnd, file );
-        if( orl_file_hnd->file_hnd.coff == NULL ) {
-            orl_hnd->error = ORL_OUT_OF_MEMORY;
-            orl_hnd->funcs->free( orl_file_hnd );
-            return( NULL );
-        }
-        ORLAddFileLinks( orl_hnd, orl_file_hnd );
-        return( orl_file_hnd );
     case( ORL_OMF ):
-        orl_file_hnd = (orl_file_handle) orl_hnd->funcs->alloc( sizeof( orl_file_handle_struct ) );
-        if( !orl_file_hnd ) {
+        orl_file_hnd = (orl_file_handle)orl_hnd->funcs->alloc( sizeof( orl_file_handle_struct ) );
+        if( orl_file_hnd == NULL ) {
             orl_hnd->error = ORL_OUT_OF_MEMORY;
-            return( NULL );
+            break;
         }
-        orl_file_hnd->type = ORL_OMF;
-        orl_file_hnd->file_hnd.omf = OmfFileInit( orl_hnd->omf_hnd, file );
-        if( orl_file_hnd->file_hnd.omf == NULL ) {
-            orl_hnd->error = ORL_OUT_OF_MEMORY;
+        orl_file_hnd->type = type;
+        switch( type ) {
+        case ORL_ELF:
+            orl_hnd->error = ElfFileInit( orl_hnd->elf_hnd, file, &orl_file_hnd->file_hnd.elf );
+            break;
+        case ORL_COFF:
+            orl_hnd->error = CoffFileInit( orl_hnd->coff_hnd, file, &orl_file_hnd->file_hnd.coff );
+            break;
+        case ORL_OMF:
+            orl_hnd->error = OmfFileInit( orl_hnd->omf_hnd, file, &orl_file_hnd->file_hnd.omf );
+            break;
+        default:
+            break;
+        }
+        if( orl_hnd->error != ORL_OKAY ) {
             orl_hnd->funcs->free( orl_file_hnd );
-            return( NULL );
+            break;
         }
         ORLAddFileLinks( orl_hnd, orl_file_hnd );
         return( orl_file_hnd );
-    default: break;//ORL_UNRECOGNIZED_FORMAT
+    default:    //ORL_UNRECOGNIZED_FORMAT
+        break;
     }
     return( NULL );
 }
@@ -574,15 +566,15 @@ orl_group_handle ORLENTRY ORLSecGetGroup( orl_sec_handle orl_sec_hnd )
     return NULL;
 }
 
-orl_return ORLENTRY ORLSecGetContents( orl_sec_handle orl_sec_hnd, char **buffer )
+orl_return ORLENTRY ORLSecGetContents( orl_sec_handle orl_sec_hnd, unsigned char **buffer )
 {
     switch( orl_sec_hnd->type ) {
     case( ORL_ELF ):
-        return( ElfSecGetContents( (elf_sec_handle) orl_sec_hnd, buffer ) );
+        return( ElfSecGetContents( (elf_sec_handle)orl_sec_hnd, buffer ) );
     case( ORL_COFF ):
-        return( CoffSecGetContents( (coff_sec_handle) orl_sec_hnd, buffer ) );
+        return( CoffSecGetContents( (coff_sec_handle)orl_sec_hnd, buffer ) );
     case( ORL_OMF ):
-        return( OmfSecGetContents( (omf_sec_handle) orl_sec_hnd, buffer ) );
+        return( OmfSecGetContents( (omf_sec_handle)orl_sec_hnd, buffer ) );
     default: break;//ORL_UNRECOGNIZED_FORMAT
     }
     return( ORL_ERROR );
@@ -716,9 +708,11 @@ orl_symbol_value ORLENTRY ORLSymbolGetValue( orl_symbol_handle orl_symbol_hnd )
         return( CoffSymbolGetValue( (coff_symbol_handle) orl_symbol_hnd ) );
     case( ORL_OMF ):
         return( OmfSymbolGetValue( (omf_symbol_handle) orl_symbol_hnd ) );
-    default: break;//ORL_UNRECOGNIZED_FORMAT
+    default: {   //ORL_UNRECOGNIZED_FORMAT
+        unsigned_64 val64 = { 0, 0 };
+        return( val64 );
+        }
     }
-    return( 0 );
 }
 
 orl_symbol_binding ORLENTRY ORLSymbolGetBinding( orl_symbol_handle orl_symbol_hnd )

@@ -31,6 +31,7 @@
 
 
 #include "elfflhn.h"
+#include "elforl.h"
 #include "orlhash.h"
 
 static void free_elf_file_hnd( elf_file_handle elf_file_hnd )

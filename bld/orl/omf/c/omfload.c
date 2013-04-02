@@ -34,9 +34,10 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "pcobj.h"
+#include "watcom.h"
 #include "omfload.h"
 #include "omfmunge.h"
+#include "omforl.h"
 
 /* Local definitions
  */
@@ -59,7 +60,7 @@ static void             setInitialData( omf_file_handle ofh )
 }
 
 
-int                     OmfGetWordSize( int is32 )
+omf_rec_size            OmfGetWordSize( int is32 )
 {
     if( is32 ) {
         return( 4 );
@@ -127,41 +128,42 @@ static orl_sec_alignment getAlignment( int val )
 
 static orl_return       loadRecord( omf_file_handle ofh )
 {
-    long                len;
+    unsigned short      len;
     omf_bytes           buff;
-    uint_8              record_chksum;
     uint_8              chksum;
 
     assert( ofh );
 
     buff = _ClientRead( ofh, 2 );
-    if( !buff ) return( ORL_ERROR );
+    if( !buff )
+        return( ORL_ERROR );
     len = getUWord( buff, 2 );
-    if( len <= 0 ) return( ORL_ERROR );
+    if( len == 0 )
+        return( ORL_ERROR );
     ofh->parsebuf = _ClientRead( ofh, len );
-    if( !ofh->parsebuf ) return( ORL_ERROR );
+    if( !ofh->parsebuf )
+        return( ORL_ERROR );
     ofh->parselen = len - 1;
 
-    record_chksum = ofh->parsebuf[ ofh->parselen ];
-    // some slob compilers put out 0 for all chksum's, so
-    // only check if it is non-zero
-    if( record_chksum != 0 ) {
-        chksum = ofh->last_rec + buff[0] + buff[1];
-        while( len ) {
-            len--;
-            chksum += ofh->parsebuf[len];
-        }
-
-        if( chksum ) return( ORL_ERROR );
+    // some slob compilers put out 0 for all chksum's or wrong value
+    // so only setup file flag ORL_FILE_CHKSUM_ERROR
+    // if any check sum is incorrect
+    chksum = ofh->last_rec + buff[0] + buff[1];
+    buff = ofh->parsebuf;
+    while( len-- ) {
+        chksum += *buff++;
+    }
+    if( chksum ) {
+        ofh->flags |= ORL_FILE_CHKSUM_ERROR;
     }
     return( ORL_OKAY );
 }
 
 
-omf_idx loadIndex( omf_bytes *buffer, long *len )
+static omf_idx loadIndex( omf_bytes *buffer, omf_rec_size *len )
 {
     omf_bytes           deref;
-    long                pos;
+    omf_rec_size        pos;
     omf_idx             idx;
 
     assert( buffer );
@@ -186,11 +188,10 @@ omf_idx loadIndex( omf_bytes *buffer, long *len )
 }
 
 
-static orl_return       processExplicitFixup( omf_file_handle ofh, int is32,
-                                            omf_bytes *buffer, long *cur )
+static orl_return       processExplicitFixup( omf_file_handle ofh, int is32, omf_bytes *buffer, omf_rec_size *cur )
 {
     omf_bytes           buf;
-    long                len;
+    omf_rec_size        len;
     int                 m;
     int                 location;
     int                 offset;
@@ -200,7 +201,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, int is32,
     int                 tmethod;
     omf_idx             tidx;
     uint_8              datum;
-    int                 wordsize;
+    omf_rec_size        wordsize;
     orl_sec_offset      displacement;
 
     assert( ofh );
@@ -269,16 +270,14 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, int is32,
 
     *buffer = buf;
     *cur = len;
-    return( OmfAddFixupp( ofh, is32, m, location, offset, fmethod, fidx,
-                          tmethod, tidx, displacement ) );
+    return( OmfAddFixupp( ofh, is32, m, location, offset, fmethod, fidx, tmethod, tidx, displacement ) );
 }
 
 
-static orl_return       processThreadFixup( omf_file_handle ofh,
-                                            omf_bytes *buffer, long *cur )
+static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buffer, omf_rec_size *cur )
 {
     omf_bytes           buf;
-    long                len;
+    omf_rec_size        len;
     int                 d;
     int                 method;
     int                 thred;
@@ -341,30 +340,34 @@ static orl_return       doCOMENT( omf_file_handle ofh )
     uint_8              class;
     uint_8              flags;
     omf_bytes           buffer;
-    unsigned int        len;
+    omf_rec_size        len;
 
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
 
-    buffer = ofh->parsebuf;
     len = ofh->parselen;
+    if( len < 2 )
+        return( ORL_ERROR );
+    buffer = ofh->parsebuf;
     flags = buffer[0];
     class = buffer[1];
     buffer += 2;
-    if( len < 2 ) return( ORL_ERROR );
     len -= 2;
 
     err = OmfAddComment( ofh, class, flags, buffer, len );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
 
     switch( class ) {
     case( CMT_WAT_PROC_MODEL ):
     case( CMT_MS_PROC_MODEL ):
         /* Determine CPU
          */
-        if( !len ) break;
+        if( !len )
+            break;
         switch( *buffer ) {
         case( '2' ):
         case( '0' ):
@@ -436,24 +439,31 @@ static orl_return       doEXTDEF( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
     omf_bytes           buffer;
-    long                len;
-    int                 slen;
+    omf_rec_size        len;
+    omf_string_len      slen;
 
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
 
     while( len ) {
-        slen = buffer[0];
-        buffer++;
+        slen = *buffer++;
         len--;
-        if( slen > len ) return( ORL_ERROR );
+        if( slen > len )
+            return( ORL_ERROR );
         if( slen > 0 ) {
-            err = OmfAddExtDef( ofh, buffer, slen, typ );
-            if( err != ORL_OKAY ) break;
+            err = OmfAddExtName( ofh, (char *)buffer, slen, typ );
+            if( err != ORL_OKAY ) {
+                break;
+            }
+            err = OmfAddExtDef( ofh, OmfGetLastExtName( ofh ), typ );
+            if( err != ORL_OKAY ) {
+                break;
+            }
         }
         len -= slen;
         buffer += slen;
@@ -468,26 +478,30 @@ static orl_return       doCEXTDEF( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
     omf_bytes           buffer;
-    long                len;
-    int                 slen;
+    omf_rec_size        len;
+    omf_string_struct   *extname;
     omf_idx             idx;
-    char                name[257];
 
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
 
     while( len ) {
-        if( len < 2 ) return( ORL_ERROR );
+        if( len < 2 )
+            return( ORL_ERROR );
         idx = loadIndex( &buffer, &len );
         loadIndex( &buffer, &len );
-        slen = OmfGetLName( ofh->lnames, idx, name );
-        if( slen < 0 ) return( ORL_ERROR );
-        err = OmfAddExtDef( ofh, (omf_bytes)name, slen, typ );
-        if( err != ORL_OKAY ) break;
+        extname = OmfGetLName( ofh->lnames, idx );
+        if( extname == NULL )
+            return( ORL_ERROR );
+        err = OmfAddExtDef( ofh, extname, typ );
+        if( err != ORL_OKAY ) {
+            break;
+        }
     }
     return( err );
 }
@@ -497,25 +511,32 @@ static orl_return       doCOMDEF( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
     omf_bytes           buffer;
-    long                len;
-    int                 slen;
+    omf_rec_size        len;
+    omf_string_len      slen;
     int                 dec;
 
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
 
     while( len ) {
-        slen = buffer[0];
-        buffer++;
+        slen = *buffer++;
         len--;
-        if( slen > len ) return( ORL_ERROR );
+        if( slen > len )
+            return( ORL_ERROR );
         if( slen > 0 ) {
-            err = OmfAddExtDef( ofh, buffer, slen, typ );
-            if( err != ORL_OKAY ) break;
+            err = OmfAddExtName( ofh, (char *)buffer, slen, typ );
+            if( err != ORL_OKAY ) {
+                break;
+            }
+            err = OmfAddExtDef( ofh, OmfGetLastExtName( ofh ), typ );
+            if( err != ORL_OKAY ) {
+                break;
+            }
         }
         len -= slen;
         buffer += slen;
@@ -534,7 +555,8 @@ static orl_return       doCOMDEF( omf_file_handle ofh, omf_rectyp typ )
         len--;
         while( slen > 0 ) {
             dec = 1;
-            if( len < 1 ) return( ORL_ERROR );
+            if( len < 1 )
+                return( ORL_ERROR );
             if( buffer[0] & COMDEF_LEAF_SIZE ) {
                 switch( buffer[0] ) {
                 case( COMDEF_LEAF_4 ):  dec++;
@@ -558,7 +580,7 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
     omf_bytes           buffer;
-    long                len;
+    omf_rec_size        len;
     omf_idx             seg = 0;
     omf_idx             name = 0;
     unsigned_16         line;
@@ -569,7 +591,8 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
 
@@ -579,7 +602,8 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
         buffer++;
         len--;
         name = loadIndex( &buffer, &len );
-        if( !name ) return( ORL_ERROR );
+        if( !name )
+            return( ORL_ERROR );
         seg = 0;
         break;
     case( CMD_LINNUM ):
@@ -589,8 +613,8 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
             // We have MS style line numbers.
             loadIndex( &buffer, &len );
             seg = loadIndex( &buffer, &len );
-            if( !seg ) return( ORL_OKAY );
-            name = 0;
+            if( !seg )
+                return( ORL_OKAY );
             break;
         case( OMF_DBG_STYLE_HLL ):
             // We have IBM HLL style line numbers.
@@ -633,12 +657,12 @@ static orl_return       doPUBDEF( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
     omf_bytes           buffer;
-    long                len;
-    int                 slen;
+    omf_rec_size        len;
+    omf_string_len      slen;
     omf_idx             seg;
     omf_idx             group;
     omf_frame           frame = 0;
-    char                *name;
+    char                *pubname;
     orl_sec_offset      offset;
     int                 is32;
     int                 wordsize;
@@ -646,40 +670,44 @@ static orl_return       doPUBDEF( omf_file_handle ofh, omf_rectyp typ )
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
 
     is32 = check32Bit( ofh, typ );
     wordsize = OmfGetWordSize( is32 );
 
     len = ofh->parselen;
     buffer = ofh->parsebuf;
-    if( len < 2 ) return( ORL_ERROR );
+    if( len < 2 )
+        return( ORL_ERROR );
 
     group = loadIndex( &buffer, &len );
     seg = loadIndex( &buffer, &len );
 
     if( !seg ) {
-        if( len < 2 ) return( ORL_ERROR );
+        if( len < 2 )
+            return( ORL_ERROR );
         frame = getUWord( buffer, 2 );
         buffer += 2;
         len -= 2;
     }
 
     while( len ) {
-        slen = buffer[0];
-        buffer++;
+        slen = *buffer++;
         len--;
-        if( ( slen + 1 + wordsize ) > len ) return( ORL_ERROR );
-        name = (char *)buffer;
+        if( ( slen + 1 + wordsize ) > len )
+            return( ORL_ERROR );
+        pubname = (char *)buffer;
         buffer += slen;
         len -= slen;
         offset = getUWord( buffer, wordsize );
         buffer += wordsize;
         len -= wordsize;
         loadIndex( &buffer, &len );
-        err = OmfAddPubDef( ofh, is32, group, seg, frame, name, slen, offset,
-                            typ );
-        if( err != ORL_OKAY ) break;
+        err = OmfAddPubDef( ofh, is32, group, seg, frame, pubname, slen, offset, typ );
+        if( err != ORL_OKAY ) {
+            break;
+        }
     }
     return( err );
 }
@@ -689,23 +717,25 @@ static orl_return       doLNAMES( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
     omf_bytes           buffer;
-    long                len;
-    int                 slen;
+    omf_rec_size        len;
+    omf_string_len      slen;
 
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
 
     while( len ) {
-        slen = buffer[0];
-        buffer++;
+        slen = *buffer++;
         len--;
-        if( slen > len ) return( ORL_ERROR );
-        err = OmfAddLName( ofh, buffer, slen, typ );
-        if( err != ORL_OKAY ) break;
+        if( slen > len )
+            return( ORL_ERROR );
+        err = OmfAddLName( ofh, (char *)buffer, slen, typ );
+        if( err != ORL_OKAY )
+            break;
         len -= slen;
         buffer += slen;
     }
@@ -717,7 +747,7 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
     omf_bytes           buffer;
-    long                len;
+    omf_rec_size        len;
     omf_idx             name;
     omf_idx             class;
     uint_8              datum;
@@ -733,21 +763,21 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
 
     is32 = check32Bit( ofh, typ );
     wordsize = OmfGetWordSize( is32 );
 
     len = ofh->parselen;
     buffer = ofh->parsebuf;
-    if( len < ( 4 + wordsize ) ) return( ORL_ERROR );
-    datum = buffer[0];
+    if( len < ( 4 + wordsize ) )
+        return( ORL_ERROR );
+    datum = *buffer++;
+    len--;
 
     align = getAlignment( datum >> 5 );
     combine = ( datum >> 2 ) & 7;
-    buffer++;
-    len--;
-
     if( ( datum >> 5 ) == ALIGN_ABS ) {
         if( ofh->status & OMF_STATUS_EASY_OMF ) {
             // FIXME !!! it looks bugy, frame should be 16-bit and offset ? 
@@ -798,8 +828,7 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
         ofh->status |= OMF_STATUS_ARCH_SET;
     }
 
-    return( OmfAddSegDef( ofh, is32, align, combine, use32, max, frame, size,
-                          name, class ) );
+    return( OmfAddSegDef( ofh, is32, align, combine, use32, max, frame, size, name, class ) );
 }
 
 
@@ -807,7 +836,7 @@ static orl_return       doGRPDEF( omf_file_handle ofh )
 {
     orl_return          err;
     omf_bytes           buffer;
-    long                len;
+    omf_rec_size        len;
     omf_idx             name;
     omf_idx             *segs;
     orl_sec_size        size;
@@ -815,24 +844,29 @@ static orl_return       doGRPDEF( omf_file_handle ofh )
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
-    if( ( len < 1 ) || !( len & 1 ) ) return( ORL_ERROR );
+    if( ( len < 1 ) || !( len & 1 ) )
+        return( ORL_ERROR );
     name = loadIndex( &buffer, &len );
 
     /* assume maximum possible group size of len / 2, max number of
      * segs is about 32768.
      */
-    if( len > 65536 ) return( ORL_ERROR );
+    if( len > 65536 )
+        return( ORL_ERROR );
     size = ( ( len / 2 ) + 1 ) * sizeof( omf_idx );
     segs = _ClientAlloc( ofh, size );
-    if( !segs ) return( ORL_OUT_OF_MEMORY );
+    if( !segs )
+        return( ORL_OUT_OF_MEMORY );
     memset( segs, 0, size );
 
     size = 0;
     while( len ) {
-        if( buffer[0] != 0xff ) return( ORL_ERROR );
+        if( buffer[0] != 0xff )
+            return( ORL_ERROR );
         buffer++;
         len--;
         segs[size] = loadIndex( &buffer, &len );
@@ -847,7 +881,7 @@ static orl_return       doFIXUPP( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
     omf_bytes           buffer;
-    long                len;
+    omf_rec_size        len;
     uint_8              datum;
     int                 is32;
     int                 wordsize;
@@ -855,14 +889,16 @@ static orl_return       doFIXUPP( omf_file_handle ofh, omf_rectyp typ )
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
 
     is32 = check32Bit( ofh, typ );
     wordsize = OmfGetWordSize( is32 );
 
     len = ofh->parselen;
     buffer = ofh->parsebuf;
-    if( len < 0 ) return( ORL_ERROR );
+    if( len < 0 )
+        return( ORL_ERROR );
 
     while( len ) {
         /* determine if it is a thread or fixupp subrecord
@@ -874,7 +910,9 @@ static orl_return       doFIXUPP( omf_file_handle ofh, omf_rectyp typ )
         } else {
             err = processThreadFixup( ofh, &buffer, &len );
         }
-        if( err != ORL_OKAY ) break;
+        if( err != ORL_OKAY ) {
+            break;
+        }
     }
     return( err );
 }
@@ -884,7 +922,7 @@ static orl_return       doBAKPAT( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
     omf_bytes           buffer;
-    long                len;
+    omf_rec_size        len;
     uint_8              loctype;
     int                 is32;
     int                 wordsize;
@@ -919,16 +957,17 @@ static orl_return       doBAKPAT( omf_file_handle ofh, omf_rectyp typ )
         if( !segidx )
             return( ORL_ERROR );
 
-        loctype = buffer[0];
-        --len; ++buffer;
+        loctype = *buffer++;
+        --len;
     } else {
         assert( typ == CMD_NBKPAT || typ == CMD_NBKPAT32 );
         /* Location first, then symbol index. */
-        loctype = buffer[0];
-        --len; ++buffer;
+        loctype = *buffer++;
+        --len;
         symidx = loadIndex( &buffer, &len );
-        if( !symidx )
+        if( !symidx ) {
             return( ORL_ERROR );
+        }
     }
 
     while( len ) {
@@ -941,8 +980,9 @@ static orl_return       doBAKPAT( omf_file_handle ofh, omf_rectyp typ )
         len -= wordsize;
 
         err = OmfAddBakpat( ofh, loctype, offset, segidx, symidx, displacement );
-        if( err != ORL_OKAY )
+        if( err != ORL_OKAY ) {
             break;
+        }
     }
     return( err );
 }
@@ -953,7 +993,7 @@ static orl_return       doLEDATA( omf_file_handle ofh, omf_rectyp typ )
     orl_return          err;
     int                 is32;
     omf_bytes           buffer;
-    long                len;
+    omf_rec_size        len;
     int                 wordsize;
     omf_idx             seg;
     orl_sec_offset      offset;
@@ -963,17 +1003,21 @@ static orl_return       doLEDATA( omf_file_handle ofh, omf_rectyp typ )
     is32 = check32Bit( ofh, typ );
     wordsize = OmfGetWordSize( is32 );
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
-    if( len < ( wordsize + 1 ) ) return( ORL_ERROR );
+    if( len < ( wordsize + 1 ) )
+        return( ORL_ERROR );
 
     seg = loadIndex( &buffer, &len );
-    if( !seg ) return( ORL_ERROR );
+    if( !seg )
+        return( ORL_ERROR );
     offset = getUWord( buffer, wordsize );
     buffer += wordsize;
     len -= wordsize;
-    if( len < 0 ) return( ORL_ERROR );
+    if( len < 0 )
+        return( ORL_ERROR );
 
     return( OmfAddLEData( ofh, is32, seg, offset, buffer, len, 0 ) );
 }
@@ -984,7 +1028,7 @@ static orl_return       doLIDATA( omf_file_handle ofh, omf_rectyp typ )
     orl_return          err;
     int                 is32;
     omf_bytes           buffer;
-    long                len;
+    omf_rec_size        len;
     int                 wordsize;
     omf_idx             seg;
     orl_sec_offset      offset;
@@ -994,17 +1038,21 @@ static orl_return       doLIDATA( omf_file_handle ofh, omf_rectyp typ )
     is32 = check32Bit( ofh, typ );
     wordsize = OmfGetWordSize( is32 );
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
-    if( len < ( wordsize + 1 ) ) return( ORL_ERROR );
+    if( len < ( wordsize + 1 ) )
+        return( ORL_ERROR );
 
     seg = loadIndex( &buffer, &len );
-    if( !seg ) return( ORL_ERROR );
+    if( !seg )
+        return( ORL_ERROR );
     offset = getUWord( buffer, wordsize );
     buffer += wordsize;
     len -= wordsize;
-    if( len < 0 ) return( ORL_ERROR );
+    if( len < 0 )
+        return( ORL_ERROR );
 
     /* LIData must be processed after the fixups have been read in,  in order
      * to clone them appropriately, evil but necessary, we have no choice in
@@ -1020,7 +1068,7 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
     orl_return          err;
     int                 is32;
     omf_bytes           buffer;
-    long                len;
+    omf_rec_size        len;
     int                 wordsize;
     omf_idx             seg = 0;
     omf_idx             group = 0;
@@ -1036,10 +1084,12 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
     is32 = check32Bit( ofh, typ );
     wordsize = OmfGetWordSize( is32 );
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
-    if( len < ( wordsize + 3 ) ) return( ORL_ERROR );
+    if( len < ( wordsize + 3 ) )
+        return( ORL_ERROR );
 
     flags = buffer[0];
     attr = buffer[1];
@@ -1070,8 +1120,7 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
 
     name = loadIndex( &buffer, &len );
 
-    return( OmfAddComDat( ofh, is32, flags, attr, align, offset, seg, group,
-                        frame, name, buffer, len, typ ) );
+    return( OmfAddComDat( ofh, is32, flags, attr, align, offset, seg, group, frame, name, buffer, len, typ ) );
 }
 
 
@@ -1206,7 +1255,7 @@ orl_return OmfLoadFileStructure( omf_file_handle ofh )
     return( err );
 }
 
-orl_return      OmfParseScanTab( omf_bytes buffer, long len,
+orl_return      OmfParseScanTab( omf_bytes buffer, omf_rec_size len,
                                  omf_scan_tab_struct *entry )
 {
     int         wordsize;

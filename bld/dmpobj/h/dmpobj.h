@@ -31,7 +31,7 @@
 
 #include <stdio.h>
 #include <setjmp.h>
-
+#include "watcom.h"
 #include "pcobj.h"
 
 typedef unsigned_8          byte;

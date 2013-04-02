@@ -32,12 +32,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #if !defined( __UNIX__ )
 #include <direct.h>
 #endif
+#include "wio.h"
 #include "setupio.h"
 #include "zip.h"
 
@@ -67,7 +65,7 @@ int add_files( struct zip *archive, const char *list_fname, char *dir )
     /* Loop over list, add individual files */
     retval = 0;
     while( fgets( srcname, sizeof( srcname ), f ) != NULL ) {
-        int     len;
+        size_t  len;
 
         /* Strip terminating newline */
         len = strlen( srcname );
@@ -106,7 +104,9 @@ int main( int argc, char **argv )
      * a humongous amount of file handles. Not sure if this is intentional
      * or a design defect of the library.
      */
+#if defined( __WATCOMC__ ) || defined( __NT__ )
     _grow_handles( 4096 );
+#endif
 
     zname = argv[1];
 

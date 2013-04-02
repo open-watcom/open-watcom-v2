@@ -125,6 +125,7 @@ typedef struct dbg_block {
 typedef struct dbg_rtn {
         dbg_loc                 reeturn;
         struct dbg_rtn          *parent;
+        struct dbg_block        *rtn_blk;
         struct dbg_block        *blk;
         struct dbg_local        *parms;
         dbg_loc                 obj_loc;        /* for member functions */

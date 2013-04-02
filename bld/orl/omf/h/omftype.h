@@ -89,6 +89,9 @@ typedef uint_16                         omf_reloc_type;
 typedef uint_16                         omf_idx;
 typedef uint_16                         omf_frame;
 
+typedef int_32                          omf_rec_size;
+typedef uint_8                          omf_string_len;
+
 typedef int_32                          omf_quantity;
 
 typedef uint_8                          *omf_bytes;
@@ -128,8 +131,8 @@ typedef omf_tmp_bkfix_struct           *omf_tmp_bkfix;
 typedef struct omf_thred_fixup_struct   omf_thred_fixup;
 
 struct omf_tmp_lidata_struct {
-    uint_32             size;
-    uint_32             used;
+    omf_rec_size        size;
+    omf_rec_size        used;
     uint_32             offset;
     int                 is32;
     omf_tmp_fixup       first_fixup;
@@ -166,12 +169,12 @@ struct omf_tmp_bkfix_struct {
 };
 
 struct omf_handle_struct {
-    orl_funcs *         funcs;
+    orl_funcs           *funcs;
     omf_file_handle     first_file_hnd;
 };
 
 struct omf_thred_fixup_struct {
-    unsigned int        idx;
+    omf_idx             idx;
     unsigned char       method;
 };
 
@@ -193,16 +196,16 @@ struct omf_file_handle_struct {
 
     omf_sec_handle      first_sec;
     omf_sec_handle      last_sec;
-    omf_quantity        next_idx;
+    orl_table_index     next_idx;
 
     omf_sec_handle      *segs;
-    omf_quantity        num_segs;
+    omf_idx             num_segs;
 
     omf_sec_handle      *comdats;
-    omf_quantity        num_comdats;
+    omf_idx             num_comdats;
 
     omf_grp_handle      *groups;
-    omf_quantity        num_groups;
+    omf_idx             num_groups;
 
     orl_machine_type    machine_type;
     orl_file_type       type;
@@ -261,19 +264,19 @@ struct omf_sym_assoc_struct {
 };
 
 typedef struct omf_string_struct {
-    unsigned char       len;
+    omf_string_len      len;
     char                string[1];
 } omf_string_struct;
 
 struct omf_string_assoc_struct {
-    omf_quantity        num;
+    omf_idx             num;
     omf_string_struct   **strings;
 };
 
 typedef struct omf_comment_struct {
     uint_8              class;
     uint_8              flags;
-    omf_sec_offset      len;
+    omf_rec_size        len;
     unsigned char       data[1];
 } omf_comment_struct;
 
@@ -313,8 +316,7 @@ struct omf_symbol_handle_struct {
     omf_sym_flags       flags;
     omf_sec_handle      section;
     orl_symbol_binding  binding;
-    int                 namelen;
-    char                name[1];
+    omf_string_struct   name;
 };
 
 struct omf_grp_handle_struct {

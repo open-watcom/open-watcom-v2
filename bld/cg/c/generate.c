@@ -39,7 +39,6 @@
 #include "opcodes.h"
 #include "typedef.h"
 #include "types.h"
-#include "ptrint.h"
 #include "feprotos.h"
 #include "addrcnst.h"
 #include "addrname.h"

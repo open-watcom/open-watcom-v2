@@ -1885,7 +1885,7 @@ static int usageCmp( const void *v1, const void *v2 )
         } else if( o2->chain == NULL ) {
             clen = o1->chain->clen;
         } else {
-            clen = __max( o1->chain->clen, o2->chain->clen );
+            clen = max( o1->chain->clen, o2->chain->clen );
         }
         res = strnicmp( n1, n2, clen );
         if( res == 0 ) {

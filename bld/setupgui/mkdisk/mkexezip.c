@@ -33,52 +33,51 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include "watcom.h"
 
 #include "zipint.h"
 
 #define BUFFER_SIZE 65536
 
-#pragma pack(1)
-
+#include "pushpck1.h"
 typedef struct {
     char        signature[4];
-    uint16_t    disk_number;            // not supported by libzip
-    uint16_t    disk_having_cd;         // not supported by libzip
-    uint16_t    num_entries_on_disk;    // not supported by libzip
-    uint16_t    total_num_entries;
-    uint32_t    cd_size;
-    uint32_t    cd_offset;
-    uint16_t    comment_length;
+    unsigned_16    disk_number;            // not supported by libzip
+    unsigned_16    disk_having_cd;         // not supported by libzip
+    unsigned_16    num_entries_on_disk;    // not supported by libzip
+    unsigned_16    total_num_entries;
+    unsigned_32    cd_size;
+    unsigned_32    cd_offset;
+    unsigned_16    comment_length;
 } ZIP_END_OF_CENTRAL_DIRECTORY;
 
 typedef struct {
     char        signature[4];
-    uint16_t    version_made_by;
-    uint16_t    version_needed;
-    uint16_t    flags;
-    uint16_t    method;
-    uint16_t    mod_time;
-    uint16_t    mod_date;
-    uint32_t    crc32;
-    uint32_t    compressed_size;
-    uint32_t    uncompressed_size;
-    uint16_t    file_name_length;
-    uint16_t    extra_field_length;
-    uint16_t    file_comment_length;
-    uint16_t    disk;                   // not supported by libzip
-    uint16_t    int_attrib;
-    uint32_t    ext_attrib;
-    uint32_t    offset;
+    unsigned_16    version_made_by;
+    unsigned_16    version_needed;
+    unsigned_16    flags;
+    unsigned_16    method;
+    unsigned_16    mod_time;
+    unsigned_16    mod_date;
+    unsigned_32    crc32;
+    unsigned_32    compressed_size;
+    unsigned_32    uncompressed_size;
+    unsigned_16    file_name_length;
+    unsigned_16    extra_field_length;
+    unsigned_16    file_comment_length;
+    unsigned_16    disk;                   // not supported by libzip
+    unsigned_16    int_attrib;
+    unsigned_32    ext_attrib;
+    unsigned_32    offset;
 } ZIP_CENTRAL_DIRECTORY_FILE_HEADER;
-
-#pragma pack()
+#include "poppck.h"
 
 static const char   usage[] = "%s <target exe> <source zip> <source exe>\n";
 
-static int find( char *buffer, uint32_t buffer_len, char *match, uint32_t match_len )
+static long find( char *buffer, size_t buffer_len, char *match, size_t match_len )
 {
     char    *ptr = buffer;
-    int     i;
+    size_t  i;
 
     while( ptr != NULL ) {
         // find startup character
@@ -92,30 +91,32 @@ static int find( char *buffer, uint32_t buffer_len, char *match, uint32_t match_
 
         // check for match
         for( i = 1; i < match_len; i++ ) {
-            if( ptr[i] != match[i] )
+            if( ptr[i] != match[i] ) {
                 break;
+            }
         }
 
         // if match found, return its position in buffer
         if( i == match_len ) {
-            return( ptr - buffer );
+            return( (long)( ptr - buffer ) );
         }
 
         // skip to next occurance
         ptr++;
     }
 
-    return( -1 );
+    return( -1L );
 }
 
 
-static int fix_cd( FILE *f, void *buffer, uint32_t buffer_len, uint32_t offset )
+static size_t fix_cd( FILE *f, void *buffer, size_t buffer_len, long offset )
 {
     ZIP_END_OF_CENTRAL_DIRECTORY        *eocd;
     ZIP_CENTRAL_DIRECTORY_FILE_HEADER   fileheader;
-    uint32_t                            header_pos;
-    uint32_t                            i;
+    long                                header_pos;
+    unsigned_32                         i;
 
+    buffer_len = buffer_len;
     eocd = buffer;
 
     header_pos = offset + eocd->cd_offset;
@@ -157,10 +158,10 @@ int main( int argc, char *argv[] )
     char        *target;
     char        *source_zip;
     char        *source_exe;
-    uint32_t    offset;
-    uint32_t    length;
+    long        offset;
+    long        length;
     size_t      n;
-    int         pos;
+    long        pos;
 
     prg = argv[0];
 
@@ -252,9 +253,9 @@ int main( int argc, char *argv[] )
     }
 
     pos = 0;
-    while( pos != -1 ) {
+    while( pos != -1L ) {
         pos = find( buffer + pos, n - pos, EOCD_MAGIC, strlen( EOCD_MAGIC ) );
-        if( pos == -1 ) {
+        if( pos == -1L ) {
             fprintf( stderr, "error: no ZIP magic found in '%s'\n", target );
             fclose( ftarget );
             free( buffer );
@@ -264,7 +265,7 @@ int main( int argc, char *argv[] )
         if( fix_cd( ftarget, buffer + pos, n - pos, offset ) ) {
             // fixup also eocd
             ZIP_END_OF_CENTRAL_DIRECTORY    eocd;
-            uint32_t                        off;
+            long                            off;
 
             off  = -((length < BUFFER_SIZE) ? length : BUFFER_SIZE);
             off += pos;

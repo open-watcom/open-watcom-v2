@@ -30,13 +30,11 @@
 
 
 #include "standard.h"
-#include "hostsys.h"
 #include "coderep.h"
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
 #include "objrep.h"
@@ -87,7 +85,7 @@ extern  void    DFTypedef( char *nm, dbg_type tipe );
 extern  void    DFProEnd( dbg_rtn *rtn, offset lc );
 extern  void    DFBlkBeg( dbg_block *blk, offset lc );
 extern  void    DFBlkEnd( dbg_block *blk, offset lc );
-extern  void    DFEpiBeg( dbg_rtn *blk, offset lc );
+extern  void    DFEpiBeg( dbg_rtn *rtn, offset lc );
 extern  void    DFRtnEnd( dbg_rtn *rtn, offset lc );
 
 /* CV interface */
@@ -102,23 +100,19 @@ extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc );
 extern  void    CVProEnd( dbg_rtn *rtn, offset lc );
 extern  void    CVBlkBeg( dbg_block *blk, offset lc );
 extern  void    CVBlkEnd( dbg_block *blk, offset lc );
-extern  void    CVEpiBeg( dbg_rtn *blk, offset lc );
+extern  void    CVEpiBeg( dbg_rtn *rtn, offset lc );
 extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc );
 
 extern    source_line_number    SrcLine;
 extern    proc_def              *CurrProc;
 extern    struct opcode_entry   DbgInfo[];
 
-static  void    EmitDbg( byte class, pointer ptr );
-static  void    MkBlock( void );
-static  void    AddBlockInfo( dbg_block *blk, bool start );
+static  void        EmitDbg( byte class, pointer ptr );
+static  dbg_block   *MkBlock( void );
+static  void        AddBlockInfo( dbg_block *blk, bool start );
 
 cue_ctl     LineInfo;
 fname_ctl   DBFiles;
-
-
-
-#define CurrProc_debug ((dbg_rtn *)CurrProc->targ.debug)
 
 
 static  void    SrcFileNoInit( void ){
@@ -442,8 +436,8 @@ extern  void    InitDbgInfo() {
         DFInitDbgInfo();
     }else if( _IsModel( DBG_CV ) ) {
         CVInitDbgInfo();
-    }else{
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+    }else{
         WVInitDbgInfo();
 #endif
     }
@@ -459,8 +453,8 @@ extern  void    FiniDbgInfo() {
         DFFiniDbgInfo();
     }else if( _IsModel( DBG_CV ) ) {
         CVFiniDbgInfo();
-    }else{
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+    }else{
         WVFiniDbgInfo();
 #endif
     }
@@ -510,7 +504,7 @@ extern  void _CGAPI DBGenStMem( sym_handle sym, dbg_loc loc ) {
     }
 }
 
-static  void    AddLocal( dbg_local **owner, dbg_local *new  ){
+static  void    AddLocal( dbg_local **owner, dbg_local *lcl ){
 /************************************************************/
 
     dbg_local *curr;
@@ -518,16 +512,15 @@ static  void    AddLocal( dbg_local **owner, dbg_local *new  ){
     while( (curr = *owner) != NULL ) {
         owner = &curr->link;
     }
-    new->link = NULL;
-    *owner = new;
+    lcl->link = NULL;
+    *owner = lcl;
 }
 
 extern  void _CGAPI DBGenSym( sym_handle sym, dbg_loc loc, int scoped ) {
 /***********************************************************************/
 
     fe_attr     attr;
-    dbg_block   *blk;
-    dbg_local   *new;
+    dbg_local   *lcl;
 
 #ifndef NDEBUG
     EchoAPI( "DBGenSym( %s, %i, %i )\n", sym, loc, scoped );
@@ -538,29 +531,26 @@ extern  void _CGAPI DBGenSym( sym_handle sym, dbg_loc loc, int scoped ) {
             if( attr & FE_PROC ) {
                 CurrProc->state.attr |= ROUTINE_WANTS_DEBUGGING;
                 CurrProc->targ.debug = CGAlloc( sizeof( dbg_rtn ) );
-                CurrProc_debug->blk = NULL;
-                CurrProc_debug->parms = NULL;
-                CurrProc_debug->reeturn = LocDupl( loc );
-                CurrProc_debug->obj_type = DBG_NIL_TYPE;
-                CurrProc_debug->obj_loc = NULL;
-                MkBlock();
+                CurrProc->targ.debug->parms = NULL;
+                CurrProc->targ.debug->reeturn = LocDupl( loc );
+                CurrProc->targ.debug->obj_type = DBG_NIL_TYPE;
+                CurrProc->targ.debug->obj_loc = NULL;
+                CurrProc->targ.debug->rtn_blk = MkBlock();
             } else if( scoped ) {
-                blk = CurrProc_debug->blk;
-                new = CGAlloc( sizeof( dbg_local ) );
-                new->sym = sym;
-                new->loc = LocDupl( loc );
-                new->kind = DBG_SYM_VAR;
-                AddLocal( &blk->locals, new );
+                lcl = CGAlloc( sizeof( dbg_local ) );
+                lcl->sym = sym;
+                lcl->loc = LocDupl( loc );
+                lcl->kind = DBG_SYM_VAR;
+                AddLocal( &CurrProc->targ.debug->blk->locals, lcl );
             } else {
                 if( _IsModel( DBG_DF ) ) {
                     DFGenStatic( sym, loc );
                 }else if( _IsModel( DBG_CV ) ) {
                     CVGenStatic( sym, loc, FALSE );
+#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
                 }else{
-
-                 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
                     WVGenStatic( sym , loc );
-                 #endif
+#endif
                 }
             }
         }
@@ -601,14 +591,14 @@ extern  void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type ) {
 #ifndef NDEBUG
     EchoAPI( "DBObject( %i, %i, %t )\n", tipe, loc, ptr_type );
 #endif
-    CurrProc_debug->obj_type = tipe;
-    CurrProc_debug->obj_loc = LocDupl( loc );
+    CurrProc->targ.debug->obj_type = tipe;
+    CurrProc->targ.debug->obj_loc = LocDupl( loc );
     if( _IsModel( DBG_DF ) ) {
        //
     }else if( _IsModel( DBG_CV ) ) {
       //
-    }else{
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+    }else{
         WVObjectPtr( ptr_type );
 #endif
     }
@@ -660,38 +650,38 @@ extern  void    _CGAPI DBLocalSym( sym_handle sym, cg_type indirect ) {
 
 extern  void    _CGAPI DBLocalType( sym_handle sym, char kind ) {
 /***************************************************************/
-    dbg_block   *blk;
-    dbg_local   *new;
+    dbg_local   *lcl;
 
 #ifndef NDEBUG
     EchoAPI( "DBLocalType( %s, %i)\n", sym, kind );
 #endif
     if( _IsModel( DBG_LOCALS ) ) {
         if( _IsModel( DBG_CV | DBG_DF ) ) {
-            blk = CurrProc_debug->blk;
-            new = CGAlloc( sizeof( dbg_local ) );
-            new->sym = sym;
-            new->loc = NULL;
-            AddLocal( &blk->locals, new );
+            lcl = CGAlloc( sizeof( dbg_local ) );
+            lcl->sym = sym;
+            lcl->loc = NULL;
             if( kind ){
-               new->kind = DBG_SYM_TYPE;
+                lcl->kind = DBG_SYM_TYPE;
             }else{
-                new->kind = DBG_SYM_TYPEDEF;
-           }
+                lcl->kind = DBG_SYM_TYPEDEF;
+            }
+            AddLocal( &CurrProc->targ.debug->blk->locals, lcl );
         }
     }
 }
 
-extern  dbg_block *DoDBBegBlock( int fast_codegen ) {
-/***************************************************/
+extern  dbg_block *DoDBBegBlock( int fast_codegen )
+/*************************************************/
+{
+    dbg_block   *blk;
 
     if( CurrProc->targ.debug == NULL ) return( NULL );
-    MkBlock();
+    blk = MkBlock();
     if( !fast_codegen ) {
         /*%%%% stick a NOP in the instruction stream, point it at block*/
-        AddBlockInfo( CurrProc_debug->blk, TRUE );
+        AddBlockInfo( blk, TRUE );
     }
-    return( CurrProc_debug->blk );
+    return( blk );
 }
 
 extern  void _CGAPI     DBBegBlock() {
@@ -703,17 +693,18 @@ extern  void _CGAPI     DBBegBlock() {
 }
 
 
-static  void    MkBlock( void ) {
+static  dbg_block *MkBlock( void ) {
 /********************************/
 
 
-    dbg_block   *new;
+    dbg_block   *blk;
 
-    new = CGAlloc( sizeof( dbg_block ) );
-    new->parent = CurrProc_debug->blk;
-    CurrProc_debug->blk = new;
-    new->locals = NULL;
-    new->patches = NULL;
+    blk = CGAlloc( sizeof( dbg_block ) );
+    blk->parent = CurrProc->targ.debug->blk;
+    CurrProc->targ.debug->blk = blk;
+    blk->locals = NULL;
+    blk->patches = NULL;
+    return( blk );
 }
 
 
@@ -726,11 +717,11 @@ extern  void    DoDBEndBlock( int fast_codegen ) {
     EchoAPI( "DBEndBlock()\n" );
 #endif
     if( CurrProc->targ.debug != NULL ) {
-        blk = CurrProc_debug->blk;
+        blk = CurrProc->targ.debug->blk;
         if( !fast_codegen ) {
             AddBlockInfo( blk, FALSE );
         }
-        CurrProc_debug->blk = blk->parent;
+        CurrProc->targ.debug->blk = blk->parent;
     }
 }
 
@@ -751,7 +742,8 @@ static  void    AddBlockInfo( dbg_block *blk, bool start ) {
     ins->table = DbgInfo;
     ins->u.gen_table = ins->table;
     ins->flags.nop_flags = NOP_DBGINFO;
-    if( start ) ins->flags.nop_flags |= NOP_DBGINFO_START;
+    if( start )
+        ins->flags.nop_flags |= NOP_DBGINFO_START;
     ins->operands[ 0 ] = (name *)blk;
     AddIns( ins );
 }
@@ -764,19 +756,19 @@ extern  void    DbgSetBase() {
     /* nothing */
     }else if( _IsModel( DBG_CV ) ) {
         CVSetBase();
-    }else{
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+    }else{
         WVSetBase();
 #endif
     }
 }
 
 
-extern  void    DbgParmLoc( name_def *parm, sym_handle sym ) {
-/********************************************/
+extern  void    DbgParmLoc( name_def *parm, sym_handle sym )
+/**********************************************************/
 // sym is NULL if no front end sym
-
-    dbg_local           *new;
+{
+    dbg_local           *lcl;
     dbg_loc             loc;
 
     if( _IsntModel( DBG_DF ) ){
@@ -784,13 +776,13 @@ extern  void    DbgParmLoc( name_def *parm, sym_handle sym ) {
             return;
         }
     }
-    new = CGAlloc( sizeof( dbg_local ) );
+    lcl = CGAlloc( sizeof( dbg_local ) );
     loc = DBLocInit();
-    loc = LocParm( loc, (name *) parm );
-    new->loc = loc;
-    new->sym = sym;
-    new->kind = DBG_SYM_VAR;
-    AddLocal( &CurrProc_debug->parms, new );
+    loc = LocParm( loc, (name *)parm );
+    lcl->loc = loc;
+    lcl->sym = sym;
+    lcl->kind = DBG_SYM_VAR;
+    AddLocal( &CurrProc->targ.debug->parms, lcl );
 }
 
 
@@ -800,7 +792,7 @@ extern  void    DbgRetLoc() {
 
     dbg_loc     loc;
 
-    if( CurrProc_debug->reeturn == NULL ) {
+    if( CurrProc->targ.debug->reeturn == NULL ) {
         loc = DBLocInit();
         loc = LocReg( loc, AllocRegName( CurrProc->state.return_reg ) );
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
@@ -812,7 +804,7 @@ extern  void    DbgRetLoc() {
             loc->class = LOC_IND_REG + IND_CALLOC_NEAR;
         }
 #endif
-        CurrProc_debug->reeturn = loc;
+        CurrProc->targ.debug->reeturn = loc;
     }
 }
 
@@ -826,7 +818,7 @@ extern  void    DbgRetOffset( type_length offset ) {
 /*******************************************/
 
 
-    CurrProc_debug->ret_offset = offset;
+    CurrProc->targ.debug->ret_offset = offset;
 }
 
 
@@ -901,7 +893,7 @@ static  void    EmitDbg( byte class, pointer ptr ) {
 extern  void    DbgRtnBeg( dbg_rtn *rtn,  offset lc ) {
 /***************************************************/
 
-    rtn->blk->start = lc;
+    rtn->rtn_blk->start = lc;
     if( _IsModel( DBG_CV ) ) {
         CVRtnBeg( rtn, lc );
     }
@@ -911,7 +903,7 @@ extern  void    DbgRtnBeg( dbg_rtn *rtn,  offset lc ) {
 extern  void    DbgProEnd( dbg_rtn *rtn, offset lc ) {
 /**************************************************/
 
-    rtn->pro_size = lc - rtn->blk->start;
+    rtn->pro_size = lc - rtn->rtn_blk->start;
     if( _IsModel( DBG_DF ) ) {
         DFProEnd( rtn, lc );
     }else if( _IsModel( DBG_CV ) ) {
@@ -940,8 +932,8 @@ extern  void    DbgBlkEnd( dbg_block *blk, offset lc ) {
         DFBlkEnd( blk, lc );
     }else if( _IsModel( DBG_CV ) ) {
         CVBlkEnd( blk, lc );
-    }else{
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+    }else{
         WVBlkEnd( blk, lc );
 #endif
     }
@@ -949,15 +941,15 @@ extern  void    DbgBlkEnd( dbg_block *blk, offset lc ) {
 }
 
 
-extern  void    DbgEpiBeg( dbg_rtn *blk, offset lc ) {
+extern  void    DbgEpiBeg( dbg_rtn *rtn, offset lc ) {
 /****************************************************/
 
 
-    blk->epi_start = lc;
+    rtn->epi_start = lc;
     if( _IsModel( DBG_DF ) ) {
-        DFEpiBeg( blk, lc );
+        DFEpiBeg( rtn, lc );
     }else if( _IsModel( DBG_CV ) ) {
-        CVEpiBeg( blk, lc );
+        CVEpiBeg( rtn, lc );
     }
 }
 
@@ -970,8 +962,8 @@ extern  void    DbgRtnEnd( dbg_rtn *rtn, offset lc ) {
         DFRtnEnd( rtn, lc );
     }else if( _IsModel( DBG_CV ) ) {
         CVRtnEnd( rtn, lc );
-    }else{
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
+    }else{
         WVRtnEnd( rtn, lc );
 #endif
     }

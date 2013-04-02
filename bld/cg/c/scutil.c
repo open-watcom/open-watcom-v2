@@ -55,6 +55,7 @@ extern  pointer ScAlloc( int size )
 extern  void    ScFree( pointer chunk, int size )
 /***********************************************/
 {
+    size = size;
     if( chunk != NULL ) {
         CGFree( chunk );
     }

@@ -99,7 +99,6 @@ extern  type_class_def  CallState( aux_handle aux,
     hw_reg_set          *parm_src;
     hw_reg_set          *parm_dst;
     call_class          cclass;
-    call_class          *pcclass;
 
     state->unalterable = FixedRegs();
     if( FEAttr( AskForLblSym( CurrProc->label ) ) & FE_VARARGS ) {
@@ -110,8 +109,7 @@ extern  type_class_def  CallState( aux_handle aux,
     HW_CTurnOff( state->modify, HW_UNUSED );
     state->used = state->modify;     /* anything not saved is used*/
     state->attr = 0;
-    pcclass = FEAuxInfo( aux, CALL_CLASS );
-    cclass = *pcclass;
+    cclass = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
     if( cclass & SETJMP_KLUGE ) {
         state->attr |= ROUTINE_IS_SETJMP;
     }

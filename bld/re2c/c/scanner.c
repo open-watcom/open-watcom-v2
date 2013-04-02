@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <unistd.h>
+#include "wio.h"
 #include "scanner.h"
 #include "parser.h"
 #include "ytab.h"

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include "ptrint.h"
 #include "typedef.h"
 
 extern  block                   *HeadBlock;

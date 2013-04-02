@@ -37,6 +37,7 @@
 #include "opcodes.h"
 #include "vergen.h"
 #include "pccode.h"
+#include "symdbg.h"
 #include "ocentry.h"
 #include "pcencode.h"
 

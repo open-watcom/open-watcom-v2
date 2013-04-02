@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "hostsys.h"
-#if _HOST_MEMORY & _HIGH_FIRST
+#if defined( __BIG_ENDIAN__ )
+
 extern int              TargetInt(int);
 extern signed_32        TargetBigInt(signed_32);
 extern void             TargAddW();
@@ -48,7 +48,7 @@ extern void             TargAddW();
 #define _TargetAddW( targetw, value ) TargAddW( &targetw, value )
 #define _TargetAddB( targetw, value ) targetw += value
 
-#elif _HOST_MEMORY & _LOW_FIRST
+#else
 
 #define _IntToByte( value )  ( value & 0xff )
 #define _IntToWord( value )  ( value )

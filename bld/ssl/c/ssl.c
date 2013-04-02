@@ -59,7 +59,7 @@ int             SavedChar;
 
 void OutByte( unsigned char byte )
 {
-    static char Digs[16] = "0123456789abcdef";
+    static char Digs[] = "0123456789abcdef";
 
     if( Language ) {
         if( Offset > 70 ) {

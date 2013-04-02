@@ -64,7 +64,7 @@ typedef struct stack_map {
 
 typedef struct target_proc_def {
         type_length             max_stack;
-        pointer                 debug;
+        dbg_rtn                 *debug;
         name                    *return_points;
         stack_map               stack_map;
         uint_32                 gpr_mask;

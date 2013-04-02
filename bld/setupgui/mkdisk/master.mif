@@ -2,15 +2,8 @@ proj_name = mkdisk
 
 mkdisk_autodepends = .autodepend
 
-!ifeq host_cpu 386
-ziplib_linux = ../../ziplib/linux386/ziplib.lib
-!ifdef ziplib_$(host_os)
-ziplib = $(ziplib_$(host_os))
-!else
-ziplib = ../../ziplib/osi386/ziplib.lib
-!endif
-zlib   = ../../zlib/osi386/zlib.lib
-!endif
+ziplib = $(setupgui_dir)/ziplib/$(%OWOBJDIR)/ziplib.lib
+zlib   = $(setupgui_dir)/zlib/$(%OWOBJDIR)/zlib.lib
 
 bld_extra_incs = -I"../../h" -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(builder_dir)/h"
 
@@ -25,7 +18,7 @@ commands = mkexezip.exe uzip.exe splitfil.exe packsize.exe genmkfil.exe langdat.
 all : $(commands) .SYMBOLIC
 
 .c.exe:
-    $(bld_cl) -fe=$@ $< $(bld_cl_opts)
+    $(bld_cl) $< $(bld_cl_opts) $(bld_ldflags)
 
 langdat.exe : langdat.c $(builder_dir)/c/utils.c
 uzip.exe: uzip.c $(ziplib) $(zlib)

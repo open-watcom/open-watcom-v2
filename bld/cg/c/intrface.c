@@ -32,7 +32,6 @@
 #include <ctype.h>
 #include "standard.h"
 #include "coderep.h"
-#include "hostsys.h"
 #include "cgdefs.h"
 #include "model.h"
 #include "seldef.h"
@@ -41,7 +40,6 @@
 #include "tree.h"
 #include "addrname.h"
 #include "cfloat.h"
-#include "ptrint.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "types.h"
@@ -572,9 +570,10 @@ extern  back_handle _CGAPI      BENewBack( sym_handle sym )
     BckInfoHead = BckInfoHead->link;
     bck->lbl = AskForLabel( sym );
     bck->imp = NOT_IMPORTED;
+    bck->imp_alt = NOT_IMPORTED;
     if( sym == 0 ) {
         bck->seg = AskBackSeg();
-   } else {
+    } else {
         bck->seg = FESegID( sym );
     }
     if( !REAL_BACK( bck ) ) _Zoiks( ZOIKS_067 );
@@ -1569,7 +1568,7 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
     byte        *form;
 
     i = 0;
-#if !( _TARG_MEMORY & _TARG_LOW_FIRST) == !(_HOST_MEMORY & _LOW_FIRST)
+#if !( _TARG_MEMORY & _TARG_LOW_FIRST) == defined( __BIG_ENDIAN__ )
     data.val = value;
 #else
     {  // reverse them
@@ -1579,7 +1578,7 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
         }temp;
         temp.val = value;
         while( i <= 7 ) {
-            data.buf[i] = temp.buff[7-i];
+            data.buff[i] = temp.buff[7-i];
             ++i;
         }
     }
@@ -1939,6 +1938,7 @@ extern  void _CGAPI     DBEndBlock( void );
 extern  int _CGAPI              BEDLLLoad( char *name )
 /*****************************************************/
 {
+    name = name;
     return( TRUE );
 }
 

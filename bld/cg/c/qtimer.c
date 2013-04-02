@@ -38,7 +38,7 @@ void ReleTimer()
 {
 }
 
-unsigned GetTickCount()
+unsigned GetTickCnt()
 {
     return( 0 );
 }

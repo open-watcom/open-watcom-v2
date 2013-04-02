@@ -33,11 +33,10 @@
 #include "weights.gh"
 
 typedef enum TOKEN {
-    #define prec( value )
-    #define pick(token,string,class) token,
+    #define pick(token,string,class,prec) token,
     #include "_ctokens.h"
     #undef pick
-    #undef prec
+    T_LAST_TOKEN
 } TOKEN;
 
 extern  char    *Tokens[];

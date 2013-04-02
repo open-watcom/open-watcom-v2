@@ -40,13 +40,10 @@
 #else
 #include <dirent.h>
 #endif
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include "wio.h"
 #ifndef __WATCOMC__
 #include "clibext.h"
 #endif
-
 #include "diskos.h"
 #include "pathgrp.h"
 #include "cmdlhelp.h"
@@ -423,7 +420,7 @@ void FindPath( char *name, char *buf )
 
 int iswsOrOpt( char ch, char opt, char *Switch_Chars )
 {
-    if( isblank( ch ) )
+    if( ch == ' ' || ch == '\t' )
         return( 1 );
 
     if( opt == '-'  ||  opt == Switch_Chars[1] ) {

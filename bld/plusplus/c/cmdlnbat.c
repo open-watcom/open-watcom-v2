@@ -31,12 +31,8 @@
 
 
 #include "plusplus.h"
-
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-
+#include "wio.h"
 #include "errdefns.h"
 #include "macro.h"
 #include "cmdline.h"
@@ -135,7 +131,7 @@ static void cmdLnBatchFlushCrap(// FLUSH CARRIAGE-RETURNS, ETC
 void CmdLnBatchOpen(            // OPEN CMD-LN BATCH FILE
     char const * fname )        // - file name
 {
-    int retn = open( fname, O_RDONLY | O_BINARY, S_IREAD );
+    int retn = open( fname, O_RDONLY | O_BINARY );
     if( retn == -1 ) {
         CompFlags.batch_file_eof = TRUE;
         BadCmdLine( ERR_FC_OPEN );

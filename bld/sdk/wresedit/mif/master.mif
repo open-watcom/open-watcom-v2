@@ -77,6 +77,6 @@ rcstr.gh: rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh: ../h/$(name).msg
-        $(c_pp) -zk0 -I"$(sdk_misc_dir)" $(inc_path) $[@ >$^@
+        $(cpp) -zk0 -I"$(sdk_misc_dir)" $(inc_path) $[@ >$^@
 
 !include verrc.mif

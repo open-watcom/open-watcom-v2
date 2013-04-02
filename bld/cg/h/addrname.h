@@ -49,15 +49,15 @@ typedef enum {
 
 
 typedef enum {
-        NORMALIZED              = 0x0001,
-        STACKABLE               = 0x0002,
-        VOLATILE                = 0x0004,
-        ADDR_OK_ACROSS_BLOCKS   = 0x0008,
-        ADDR_CROSSED_BLOCKS     = 0x0010,
-        ADDR_DEMOTED            = 0x0020,
-        NEVER_STACK             = 0x0040,
-        CONSTANT                = 0x0080,
-        UNALIGNED               = 0x0100,
+        FL_NORMALIZED               = 0x0001,
+        FL_STACKABLE                = 0x0002,
+        FL_VOLATILE                 = 0x0004,
+        FL_ADDR_OK_ACROSS_BLOCKS    = 0x0008,
+        FL_ADDR_CROSSED_BLOCKS      = 0x0010,
+        FL_ADDR_DEMOTED             = 0x0020,
+        FL_NEVER_STACK              = 0x0040,
+        FL_CONSTANT                 = 0x0080,
+        FL_UNALIGNED                = 0x0100,
 } addr_flags;
 
 

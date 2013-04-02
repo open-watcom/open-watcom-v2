@@ -30,9 +30,11 @@
 ****************************************************************************/
 
 
+#ifdef __header1
+#include __header1
+#endif
 #include <string.h>
 #include <ctype.h>
-#include header
 #include "vbuf.h"
 
 #ifdef fe_cfg

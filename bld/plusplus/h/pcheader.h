@@ -33,6 +33,7 @@
 #define _PCHEADER_H
 
 #include <stdio.h>
+#include "carve.h"
 
 // constants used for non-carve pointer indices (similar to CARVE_* in carve.h)
 enum {
@@ -54,7 +55,7 @@ enum {
 #endif
 
 #define PHH_MAJOR               0x03
-#define PHH_MINOR               0x2e
+#define PHH_MINOR               0x2f
 
 #define TEXT_HEADER_SIZE        40
 #ifdef __UNIX__
@@ -79,6 +80,7 @@ enum {
 #define PHH_ARCHITECTURE_386    0x02
 #define PHH_ARCHITECTURE_AXP    0x03
 #define PHH_ARCHITECTURE_PPC    0x04
+#define PHH_ARCHITECTURE_X64    0x05
 
 #if _CPU == 386
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_386
@@ -99,10 +101,12 @@ enum {
 #define PHH_HOST_SYSTEM         PHH_SYSTEM_DOS
 #endif
 
-#if defined(__I86__)
+#if defined( _M_I86 )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_286
-#elif defined(__386__)
+#elif defined( _M_IX86 )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_386
+#elif defined( _M_X64 )
+#define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_X64
 #elif defined(__AXP__)
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_AXP
 #else

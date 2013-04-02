@@ -352,7 +352,7 @@ int SpecialMacro( MEPTR mentry )
     CompFlags.wide_char_string = 0;                     /* 16-dec-91 */
     switch( mentry->parm_count ) {
     case MACRO_LINE:
-        utoa( TokenLoc.line, Buffer, 10 );
+        ultoa( TokenLoc.line, Buffer, 10 );
         Constant = TokenLoc.line;
         ConstType = TYPE_INT;
         return( T_CONSTANT );

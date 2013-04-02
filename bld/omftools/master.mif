@@ -1,5 +1,5 @@
-proj_name = fixtools
-fixtools_autodepends = .autodepend
+proj_name = omftools
+omftools_autodepends = .autodepend
 
 !include cproj.mif
 !include defrule.mif
@@ -13,7 +13,7 @@ inc_dirs = -I"../h"
 
 .obj.exe :
 !ifndef __WATCOM__
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$<}
 !endif

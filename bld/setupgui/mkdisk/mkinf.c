@@ -33,14 +33,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <sys/stat.h>
-#include "diskos.h"
-#ifdef __UNIX__
-    #include <unistd.h>
-#else
+#ifndef __UNIX__
     #include <direct.h>
     #include <dos.h>
 #endif
+#include "wio.h"
+#include "diskos.h"
+#include "clibext.h"
 
 #define RoundUp( size, limit )  ( ( ( size + limit - 1 ) / limit ) * limit )
 
@@ -62,7 +61,7 @@ typedef struct size_list size_list;
 struct size_list {
     size_list   *next;
     long        size;
-    long        stamp;
+    time_t      stamp;
     char        type;
     char        redist;
     char        *dst_var;
@@ -133,12 +132,12 @@ static LIST                 *Include = NULL;
 static const char           MksetupInf[] = "mksetup.inf";
 
 
-static char *mygets( char *buf, unsigned len, FILE *fp )
-/******************************************************/
+static char *mygets( char *buf, int len, FILE *fp )
+/*************************************************/
 {
     char        *p,*q,*start;
     int         lang;
-    unsigned    got;
+    int         got;
 
     /* syntax is //nstring//mstring//0 */
 
@@ -151,7 +150,7 @@ static char *mygets( char *buf, unsigned len, FILE *fp )
         got = strlen( p );
         if( got <= 1 ) break;
         got-=2;
-        if( p[got] != '\\' || p[got+1] != '\n' ) break;
+        if( p[got] != '\\' || p[got + 1] != '\n' ) break;
         p += got;
         len -= got;
     }
@@ -324,26 +323,26 @@ int AddTarget( char *target )
 }
 
 
-static char *GetBracketedString( const char *src, char **end )
-/************************************************************/
+static char *GetBracketedString( const char *src, const char **end )
+/******************************************************************/
 {
-    const char      *s = src;
+    const char      *p1;
     char            *ret;
-    int             len;
+    size_t          len;
 
-    if( *s++ != '<' ) {
+    if( *src++ != '<' ) {
         return( NULL );
     }
-    ret = strchr( s, '>' );
-    if( ret == NULL ) {
+    p1 = strchr( src, '>' );
+    if( p1 == NULL ) {
         return( NULL );
     }
-    len = ret - s;
-    *end = (char *)src + len + 2;
+    len = p1 - src;
+    *end = src + len + 2;
     if( (ret = malloc( len + 1 )) == NULL ) {
         return( NULL );
     }
-    strncpy( ret, s, len );
+    strncpy( ret, src, len );
     ret[len] = '\0';
     return( ret );
 }
@@ -484,7 +483,7 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
     int                 path_dir, old_path_dir, target;
     FILE_INFO           *new, *curr;
     long                act_size;
-    long                time;
+    time_t              time;
     struct stat         stat_buf;
     char                *p;
     char                *root_file;
@@ -718,7 +717,8 @@ int AddFile( char *path, char *old_path, char type, char redist, char *file, cha
 int ReadList( FILE *fp )
 /**********************/
 {
-    char        *p, *s;
+    const char  *p;
+    char        *s;
     char        *path;
     char        *old_path;
     char        *file;
@@ -1067,7 +1067,7 @@ void DumpSizes( FILE *fp, FILE_INFO *curr )
         fput36( fp, csize->size/512 );
         fprintf( fp, "!" );
         if( csize->redist != '\0' ) {
-            fput36( fp, csize->stamp );
+            fput36( fp, (long)( csize->stamp ) );
         }
         fprintf( fp, "!" );
         if( csize->dst_var != NULL ) {
@@ -1123,7 +1123,7 @@ void DumpFile( FILE *out, char *fname )
 {
     FILE                *in;
     char                *buf;
-    int                 len;
+    size_t              len;
 
     in = PathOpen( fname );
     if( in == NULL ) {
@@ -1141,8 +1141,9 @@ void DumpFile( FILE *out, char *fname )
         }
         if( strnicmp( buf, "include=", 8 ) == 0 ) {
             len = strlen( buf );
-            if( buf[len-1] == '\n' ) buf[len-1] = '\0';
-            DumpFile( out, buf+8 );
+            if( buf[len - 1] == '\n' )
+                buf[len - 1] = '\0';
+            DumpFile( out, buf + 8 );
         } else {
             fputs( buf, out );
         }
@@ -1164,6 +1165,7 @@ int CreateScript( long init_size, unsigned padding )
     unsigned            nfiles;
     int                 i;
 
+    init_size = init_size;
     fp = fopen( "setup.inf", "w" );
     if( fp == NULL ) {
         printf( "Cannot create file 'setup.inf'\n" );

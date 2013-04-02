@@ -148,13 +148,13 @@ static char     *ycomp( register char *ep, char delim );
 static void     myexit( int status );
 static void     usage( void );
 
-#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L
-#ifndef isblank // OW defines isblank without defining __STDC_VERSION__ W.Briscoe 20041008
-static int isblank( int c )
+#if defined( __WATCOMC__ ) || defined( __STDC_VERSION__ ) && ( __STDC_VERSION__ >= 199901L )
+#define my_isblank  isblank
+#else
+static int my_isblank( int c )
 {
     return( c == ' ' || c == '\t' );
 }
-#endif
 #endif
 
 /* main sequence of the stream editor */
@@ -753,7 +753,7 @@ static char *recomp(
                             } t[] = {
                                 { "alnum:]", isalnum },
                                 { "alpha:]", isalpha },
-                                { "blank:]", isblank },
+                                { "blank:]", my_isblank },
                                 { "cntrl:]", iscntrl },
                                 { "digit:]", isdigit },
                                 { "graph:]", isgraph },

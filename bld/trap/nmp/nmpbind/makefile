@@ -41,7 +41,7 @@ dnmpbind.exe : _err.gh _jerr.gh $(objs)
 inc_dirs = -I"$(trap_dir)/h"
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(c_pp) -zk0 -I"$(trap_dir)/h" $[@ >$@
+        $(cpp) -zk0 -I"$(trap_dir)/h" $[@ >$@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(c_pp) -zk0 -DJAPANESE_MESSAGES -I"$(trap_dir)/h" $[@ >$@
+        $(cpp) -zk0 -DJAPANESE_MESSAGES -I"$(trap_dir)/h" $[@ >$@

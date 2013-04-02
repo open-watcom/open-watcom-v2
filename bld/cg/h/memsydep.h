@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include "hostsys.h"
-
 extern pointer  MemAlloc( uint );
 extern void     MemFree( pointer );
 extern void     MemInit( void );

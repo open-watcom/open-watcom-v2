@@ -31,17 +31,14 @@
 
 #include "vi.h"
 #include <stdarg.h>
-
 #ifdef _M_I86
   #include <i86.h>
 #endif
 #include <errno.h>
 #ifdef __WATCOMC__
-  #include <env.h>
   #include <process.h>
 #endif
-#include <fcntl.h>
-#include <sys/stat.h>
+#include "watcom.h"
 #include "source.h"
 #include "posix.h"
 #include "win.h"

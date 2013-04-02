@@ -32,7 +32,6 @@ cg_objs = &
     display.obj &
     dominate.obj &
     edge.obj &
-    encode.obj &
     expand.obj &
     fixindex.obj &
     flograph.obj &

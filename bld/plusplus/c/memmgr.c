@@ -35,7 +35,7 @@
 #include "plusplus.h"
 
 #include <stddef.h>
-#include <unistd.h>
+#include "wio.h"
 
 #include "errdefns.h"
 #include "memmgr.h"
@@ -44,6 +44,9 @@
 #include "initdefs.h"
 #include "pragdefn.h"
 #include "codegen.h"
+#ifndef NDEBUG
+#include "trap.h"
+#endif
 #ifdef TRACKER
 #include "trmem.h"
 #endif
@@ -65,12 +68,12 @@ struct cleanup {
 };
 
 typedef struct perm_blk *PERMPTR;
-struct perm_blk {
+typedef struct perm_blk {
     PERMPTR             next;
     size_t              amt_left;
     size_t              size;
     char                mem[1];
-};
+} perm_blk;
 #define PERM_MAX_ALLOC  (1024)
 #define PERM_MIN_ALLOC  (128)
 
@@ -127,8 +130,7 @@ void CMemRegisterCleanup( void (*cleanup)( void ) )
 {
     CLEANPTR new_cleanup;
 
-    new_cleanup = (CLEANPTR) RingAlloc( &cleanupList
-                                      , sizeof( *new_cleanup ) );
+    new_cleanup = (CLEANPTR)RingAlloc( &cleanupList, sizeof( *new_cleanup ) );
     new_cleanup->rtn = cleanup;
 }
 
@@ -220,18 +222,18 @@ static void addPerm( size_t size )
     size_t amt;
 
     if( size > PERM_MAX_ALLOC ) {
-        p = CMemAlloc( ( sizeof( *p ) - sizeof( char ) ) + size );
+        p = CMemAlloc( offsetof( perm_blk, mem ) + size );
         linkPerm( p, size );
         return;
     }
     amt = PERM_MAX_ALLOC;
     for(;;) {
-        p = alloc_mem( ( sizeof( *p ) - sizeof( char ) ) + amt );
+        p = alloc_mem( offsetof( perm_blk, mem ) + amt );
         if( p != NULL ) {
             linkPerm( p, amt );
             return;
         }
-        p = alloc_from_cleanup( ( sizeof( *p ) - sizeof( char ) ) + amt );
+        p = alloc_from_cleanup( offsetof( perm_blk, mem ) + amt );
         if( p != NULL ) {
             linkPerm( p, amt );
             return;
@@ -259,8 +261,7 @@ void *CPermAlloc( size_t size )
     void *p;
     PERMPTR find;
 
-    size += sizeof( int ) - 1;
-    size &= ~( sizeof( int ) - 1 );
+    size = _RoundUp( size, sizeof( int ) );
     RingIterBeg( permList, find ) {
         p = cutPerm( find, size );
         if( p != NULL ) {

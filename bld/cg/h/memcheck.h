@@ -30,7 +30,7 @@
 
 
 extern bool     MemCritical( void );
-extern bool     MemCheck( int );
+extern bool     MemCheck( size_t );
 extern bool     MemLow( void );
 
 #define _MemLow                 MemLow()

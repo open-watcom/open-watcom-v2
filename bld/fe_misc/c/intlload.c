@@ -30,25 +30,23 @@
 ****************************************************************************/
 
 
+#ifdef __header1
+#   include __header1
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <limits.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
+#include "wio.h"
 #include "sopen.h"
-#include "watcom.h"
-
-#ifdef __header
-#   include __header
-#endif
 #include "wreslang.h"
 #include "lsspec.h"
 #include "encodlng.h"
 #include "intlload.h"
+
 
 static uint_16 const sigCheck[] = {
     #define LS_DEF( name, sig ) sig ,
@@ -168,6 +166,7 @@ IntlData *getData( int fh ) {
 
 static char *imageName( char *buff )
 {
+#if defined( __SW_BD )
 #if defined(__NT__) || ( defined(__OS2__) && ! defined(__OSI__) )
     {
         extern _crtn char *_LpDllName;
@@ -175,6 +174,7 @@ static char *imageName( char *buff )
             return( strcpy( buff, _LpDllName ) );
         }
     }
+#endif
 #endif
     return( _cmdname( buff ) );
 }
@@ -209,7 +209,7 @@ IntlData *LoadInternationalData(
     base[len++] = '0' + language;
     base[len] = '\0';
     _makepath( cmd_name, drive, dir, base, "." LOCALE_DATA_EXT );
-    fh = sopen3( cmd_name, O_RDONLY|O_BINARY, SH_DENYWR );
+    fh = sopen3( cmd_name, O_RDONLY | O_BINARY, SH_DENYWR );
     if( fh == -1 ) {
         return( NULL );
     }

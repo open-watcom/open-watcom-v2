@@ -32,9 +32,8 @@
 
 #include "plusplus.h"
 
-#include <unistd.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include "wio.h"
 
 #include "memmgr.h"
 #include "errdefns.h"

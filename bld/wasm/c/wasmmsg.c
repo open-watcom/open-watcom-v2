@@ -31,15 +31,11 @@
 
 
 #include "asmglob.h"
-
-#include <fcntl.h>
-#include <unistd.h>
-
 #ifdef __WATCOMC__
   #include <conio.h>
   #include <process.h>
 #endif
-
+#include "wio.h"
 
 #if defined( USE_TEXT_MSGS )
 

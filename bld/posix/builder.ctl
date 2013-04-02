@@ -9,11 +9,9 @@ set PROJNAME=build POSIX tools
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <BINTOOL> rel ]
+[ BLOCK <BINTOOL> build ]
+#========================
     cdsay <PROJDIR>
-
-[ BLOCK <BINTOOL> rel ]
-#======================
     <CPCMD> <OWOBJDIR>/cat.exe   <OWBINDIR>/cat<CMDEXT>
     <CPCMD> <OWOBJDIR>/cp.exe    <OWBINDIR>/cp<CMDEXT>
     <CPCMD> <OWOBJDIR>/egrep.exe <OWBINDIR>/egrep<CMDEXT>

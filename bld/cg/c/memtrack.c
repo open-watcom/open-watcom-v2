@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include <stdarg.h>
 
 #define ALLOC_BYTE      0xA5    /* the fill value for allocated memory */
@@ -49,9 +50,9 @@ typedef struct track_entry FAR * TRPTR;
 
 typedef struct tracker {
         TRPTR           allocated_list;
-        unsigned long   memory_in_use;
-        unsigned long   max_memory_used;
-        void            *(*alloc)(int);
+        size_t          memory_in_use;
+        size_t          max_memory_used;
+        void            *(*alloc)(size_t);
         void            (*free)(void*);
         void            (*print_line)(char*,unsigned);
         char            name[1];
@@ -110,43 +111,27 @@ static TRPTR    TrkBeg;
 
 #endif
 
-#if defined(__MEDIUM__) || defined (__LARGE__) || defined(__HUGE__)
-
-#define _POINTER_ADD( p, i )    ((void *)((char huge *)(p) + i))
-#define _POINTER( p )           ((void huge *) p)
-
-#else
-
 #define _POINTER_ADD( p, i )    ((void *)((char *)(p) + i))
 #define _POINTER( p )           ((void *) p)
 
+#define CODE_PTR_TYPE           void *
 
-#endif
+#define TR_NO_ROUTINE           ((void (*)())0)
 
-#if defined(__COMPACT__) /* no near needed for "__SMALL__" */
-    #define CODE_PTR_TYPE   void near *
-#elif defined(__MEDIUM__) || defined (__LARGE__) || defined(__HUGE__)
-    #define CODE_PTR_TYPE   void far *
-#else
-    #define CODE_PTR_TYPE   void *
-#endif
-
-#define TR_NO_ROUTINE       ((void (*)())0)
-
-extern  int     TrValidate( void *, void (*ra)( void ), tracker * );
+extern  int     TrValidate( void *, void (*ra)(), tracker * );
 extern  int     TrFree( void *, tracker * );
 extern  int     TrFreeSize( void *, unsigned, tracker * );
 
 static char *CopyStr( char *src, char *dest )
 {
-    while( *dest = *src ) {
+    while( (*dest = *src) != '\0' ) {
         ++src;
         ++dest;
     }
     return( dest );
 }
 
-static char *FormHex( char *ptr, unsigned long data, unsigned size )
+static char *FormHex( char *ptr, size_t data, unsigned size )
 {
     char            *str;
 
@@ -162,14 +147,14 @@ static char *FormHex( char *ptr, unsigned long data, unsigned size )
 
 void TrPrt( tracker *trk, char *fmt, ... )
 {
-    va_list     args;
-    char        buff[80];
-    char        *ptr;
-    char        ch;
-    unsigned    ui;
-    unsigned long ul;
-    void        *dp;
-    CODE_PTR_TYPE cp;
+    va_list         args;
+    char            buff[80];
+    char            *ptr;
+    char            ch;
+    unsigned        ui;
+    size_t          ul;
+    void            *dp;
+    CODE_PTR_TYPE   cp;
 
     va_start( args, fmt );
     ptr = buff;
@@ -188,26 +173,26 @@ void TrPrt( tracker *trk, char *fmt, ... )
                 cp = va_arg( args, CODE_PTR_TYPE );
                 if( cp != TR_NO_ROUTINE ) {
                     *ptr++ = '(';
-                    ptr = FormHex( ptr, (unsigned long)cp, sizeof( cp ) );
+                    ptr = FormHex( ptr, (size_t)cp, sizeof( cp ) );
                     *ptr++ = ')';
                 }
                 *ptr++ = ':';
                 break;
             case 'C':   /* code pointer */
                 cp = va_arg( args, CODE_PTR_TYPE );
-                ptr = FormHex( ptr, (unsigned long)cp, sizeof( cp ) );
+                ptr = FormHex( ptr, (size_t)cp, sizeof( cp ) );
                 break;
             case 'D':   /* data pointer */
                 dp = va_arg( args, void * );
-                ptr = FormHex( ptr, (unsigned long)dp, sizeof( dp ) );
+                ptr = FormHex( ptr, (size_t)dp, sizeof( dp ) );
                 break;
             case 'U':   /* unsigned integer */
                 ui = va_arg( args, unsigned );
                 ptr = FormHex( ptr, (unsigned long)ui, sizeof( ui ) );
                 break;
-            case 'L':   /* unsigned long */
-                ul = va_arg( args, unsigned long );
-                ptr = FormHex( ptr, (unsigned long)ul, sizeof( ul ) );
+            case 'L':   /* size_t */
+                ul = va_arg( args, size_t );
+                ptr = FormHex( ptr, ul, sizeof( ul ) );
                 break;
             default:
                 *ptr++ = ch;
@@ -223,13 +208,12 @@ void TrPrt( tracker *trk, char *fmt, ... )
 }
 
 
-#pragma off(unreferenced);
-static TRPTR   AllocTrk( tracker *trk ) {
-#pragma on(unreferenced);
-/***********************************/
-
+static TRPTR   AllocTrk( tracker *trk )
+/*************************************/
+{
     TRPTR       entry;
 
+    trk = trk;
 #ifdef _EXTRA_MEM
     if( TrkFrl != 0 ) {
         entry = TrkFrl;
@@ -243,10 +227,9 @@ static TRPTR   AllocTrk( tracker *trk ) {
     return( entry );
 }
 
-#pragma off(unreferenced);
-static  void    FreeTrk( TRPTR  entry, tracker *trk ) {
-#pragma on(unreferenced);
-
+static  void    FreeTrk( TRPTR  entry, tracker *trk )
+{
+    trk = trk;
 #ifdef _EXTRA_MEM
     entry->next = TrkFrl;
     TrkFrl = entry;
@@ -268,7 +251,7 @@ static  void    Fill( void *start, unsigned len, unsigned char filler )
 }
 
 extern  tracker *TrMemInit( char *name,
-                            void *(*alloc)(int),
+                            void *(*alloc)(size_t),
                             void (*free)(void *),
                             void (*print_line)(char *, unsigned) )
 {
@@ -293,7 +276,7 @@ extern  tracker *TrMemInit( char *name,
     if( trk == 0 ) return( 0 );
     trk->allocated_list = 0;
     trk->memory_in_use   = 0;
-    trk->max_memory_used    = 0;
+    trk->max_memory_used = 0;
     trk->alloc      = alloc;
     trk->free       = free;
     trk->print_line   = print_line;
@@ -343,8 +326,7 @@ extern  void    TrMemFini( tracker *trk )
         alloc = alloc->next;
     }
     if( chunks != 0 ) {
-        TrPrt( trk, "%NMemFini: %U chunks (%L bytes) unfreed",
-             chunks, trk->memory_in_use );
+        TrPrt( trk, "%NMemFini: %U chunks (%L bytes) unfreed", chunks, trk->memory_in_use );
     }
     while( trk->allocated_list != 0 ) {
         TrValidate( trk->allocated_list->mem, TR_NO_ROUTINE, trk );
@@ -425,8 +407,7 @@ static int ValidChunk( TRPTR entry, char *who, void (*ra)(), tracker *trk )
     return( TRUE );
 }
 
-extern  int TrChkRange( void *start, unsigned len,
-                          void (*ra)(), tracker *trk )
+extern  int TrChkRange( void *start, unsigned len, void (*ra)(), tracker *trk )
 {
 
     TRPTR       ptr;

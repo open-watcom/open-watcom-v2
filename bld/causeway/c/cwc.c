@@ -74,7 +74,7 @@ typedef struct s1 {
     s2 *tail;
 } s1;
 
-static cwc_dec_info  cwc_dec = { "CWC", 12, 0, 0 };
+static cwc_dec_info  cwc_dec = { {'C','W','C'}, 12, 0, 0 };
 
 static unsigned_32   EncodeLit = 0;
 
@@ -99,6 +99,7 @@ static char padding[ 16 ] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 bool InitOutFileBuffer( FILE *fo )
 /********************************/
 {
+    fo = fo;
     OutTotal = 0;
     OutCtrl = 0;
     OutBitCount = 0;

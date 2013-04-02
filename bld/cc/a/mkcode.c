@@ -44,11 +44,8 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
+#include "wio.h"
+#include "watcom.h"
 
 struct bursts {
     unsigned short defs;

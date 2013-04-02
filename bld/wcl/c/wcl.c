@@ -34,19 +34,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#include <process.h>
+#include <conio.h>
+#endif
 #ifdef __UNIX__
 #include <dirent.h>
 #else
 #include <direct.h>
 #endif
-#ifdef __WATCOMC__
-#include <process.h>
-#include <conio.h>
-#else
-#include "clibext.h"
-#endif
-
+#include "wio.h"
+#include "watcom.h"
 #include "swchar.h"
 #include "diskos.h"
 #include "cmdlhelp.h"
@@ -56,9 +54,9 @@
 #define _BANEXTRA _BANEXSHORT
 
 #ifdef BOOTSTRAP
-#define BPRFX	"b"
+#define BPRFX   "b"
 #else
-#define BPRFX	""
+#define BPRFX   ""
 #endif
 
 #ifdef WCLAXP

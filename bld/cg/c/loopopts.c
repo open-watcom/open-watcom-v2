@@ -2689,13 +2689,16 @@ static  bool    FinalValue( instruction *ins, block *blk, induction *var ) {
 static  bool    PointerOk( name *op ) {
 /***************************************/
 
-    if( _POINTER_GETS_NEAR_BOUNDS != 0 ) return( FALSE );
+#ifdef _POINTER_GETS_NEAR_BOUNDS
+    return( FALSE );
+#else
     if( op->n.name_class == PT ) return( TRUE );
     if( op->n.name_class == CP ) return( TRUE );
     if( op->n.name_class != U2 ) return( FALSE );
     if( op->n.class != N_TEMP ) return( FALSE );
     if( ( op->t.temp_flags & INDEXED ) == EMPTY ) return( FALSE );
     return( TRUE );
+#endif
 }
 
 

@@ -30,11 +30,11 @@
 
 
 #include "cvars.h"
-#include <unistd.h>
 #include <limits.h>
 #if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ )
   #include <process.h>
 #endif
+#include "wio.h"
 #include "errout.h"
 #ifdef __OSI__
   #include "ostype.h"

@@ -9,13 +9,15 @@ cwc_autodepends = .AUTODEPEND
 .c : ../../c
 .asm : ../../asm
 
+inc_dirs = -I.
+
 extra_l_flags = op map
 
 objs = cwc.obj
 
 $(proj_name).exe : copystub.gh decstub.gh $(objs) $(cl_objs)
 !ifndef __WATCOM__
-    $(cl) $(clflags) $<
+    $(cl) $(clflags) $(objs) $(cl_objs) $(ldflags)
 !else
     $(linker) name $@ $(lflags) file {$(objs)}
 !endif
@@ -31,4 +33,4 @@ decstub.gh : decstub.asm ./mkcode.exe
     $]@ $^&.tmp $@
 
 ./mkcode.exe: mkcode.c
-    $(bld_cl) $[@ $(bld_cl_opts)
+    $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)

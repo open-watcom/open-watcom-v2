@@ -126,6 +126,8 @@ union cgvalue {                     // CGVALUE: one of
     void                *pvalue;    // - pointer
 };
 
+#include "icodes.h"
+
 /* Target System types */
 enum {
     TS_OTHER,

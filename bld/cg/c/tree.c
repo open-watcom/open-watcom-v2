@@ -36,7 +36,6 @@
 #include "cgdefs.h"
 #include "procdef.h"
 #include "tree.h"
-#include "hostsys.h"
 #include "zoiks.h"
 #include "opcodes.h"
 #include "freelist.h"
@@ -853,12 +852,10 @@ extern  tn  TGInitCall( tn left, type_def *tipe, sym_handle aux )
 */
 {
     tn          node;
-    call_class  *pclass;
 
     node = TGNode( TN_PARM, O_NOP, left, aux, NULL );
     node = TGNode( TN_CALL, O_NOP, node, NULL, tipe );
-    pclass = FEAuxInfo( (pointer *)aux, CALL_CLASS );
-    if( *pclass & REVERSE_PARMS ) {
+    if( *(call_class *)FEAuxInfo( (pointer)aux, CALL_CLASS ) & REVERSE_PARMS ) {
         node->flags |= TF_REVERSE;
     }
 #if ( _TARGET & _TARG_370 )
@@ -1021,7 +1018,7 @@ extern  tn  TGReLeaf( an addr )
 {
     tn      node;
 
-    addr->flags |= NEVER_STACK;
+    addr->flags |= FL_NEVER_STACK;
     node = TGLeaf( addr );
     node->base = addr->base;
     return( node );
@@ -1500,8 +1497,7 @@ static  pointer  TNFindBase( pointer nod )
         if( op == NULL ) return( NULL );
         if( op->n.class == N_TEMP ) {
             if( op->v.symbol == NULL ) return( NULL );
-            op = SAllocUserTemp( FEAuxInfo( (pointer *)op->v.symbol,
-                            SHADOW_SYMBOL ),
+            op = SAllocUserTemp( FEAuxInfo( (pointer)op->v.symbol, SHADOW_SYMBOL ),
                             op->n.name_class, op->n.size );
         }
         return( op );
@@ -1524,7 +1520,7 @@ extern  an  TGen( tn node, type_def *tipe )
     node = TGConvert( node, tipe );
     retv = TreeGen( node );
     if( retv->format != NF_BOOL ) {
-        retv->flags &= ~STACKABLE;
+        retv->flags &= ~FL_STACKABLE;
         retv->base = base;
     }
     return( retv );
@@ -1539,7 +1535,7 @@ extern  an  TGReturn( tn node, type_def *tipe )
     an  retv;
 
     retv = TGen( node, tipe );
-    retv->flags |= STACKABLE;
+    retv->flags |= FL_STACKABLE;
     return( retv );
 }
 
@@ -1571,7 +1567,7 @@ static  an  AddrGen( tn node )
     retv = TreeGen( node );
     if( flags & TF_VOLATILE ) {
         if( retv->format != NF_BOOL )
-            retv->flags |= VOLATILE;
+            retv->flags |= FL_VOLATILE;
     }
     if( alignment != 0 ) {
         if( retv->format != NF_BOOL )
@@ -1900,7 +1896,7 @@ an  TNPreGets( tn node )
             retv = left;
         }
     }
-    retv->flags |= STACKABLE;
+    retv->flags |= FL_STACKABLE;
     return( retv );
 }
 
@@ -1968,7 +1964,7 @@ an  TNAssign( tn node )
         }
         BGDone( left );
     }
-    retv->flags |= STACKABLE;
+    retv->flags |= FL_STACKABLE;
     return( retv );
 }
 
@@ -2022,7 +2018,7 @@ an  TNUnary( tn node )
     if( retv == NULL ) {
         retv = BGUnary( node->op, left, node->tipe );
     }
-    retv->flags |= STACKABLE;
+    retv->flags |= FL_STACKABLE;
     if( node->flags & TF_DEMOTED ) {
         AddrDemote( retv );
     }
@@ -2072,7 +2068,7 @@ static an   MakeBased( an left, an rite, type_def *tipe )
         }
     }
     temp = BGUnary( O_POINTS, temp, tipe );
-    temp->flags |= STACKABLE;
+    temp->flags |= FL_STACKABLE;
     return( temp );
 }
 #endif
@@ -2126,7 +2122,7 @@ an  TNBinary( tn node )
     } else {
         retv = BGBinary( node->op, left, rite, node->tipe, TRUE );
     }
-    retv->flags |= STACKABLE;
+    retv->flags |= FL_STACKABLE;
     return( retv );
 }
 
@@ -2158,30 +2154,30 @@ static  an  TNQuestion( tn node )
     its result field filled in yet.
 */
 {
-    label_handle    false;
-    label_handle    around;
+    label_handle    false_lbl;
+    label_handle    around_lbl;
     an              retv;
     an              temp;
     name            *temp_var;
 
-    false = AskForNewLabel();
-    around = AskForNewLabel();
-    Control( O_IF_FALSE, node->u.left, false, FALSE );
+    false_lbl = AskForNewLabel();
+    around_lbl = AskForNewLabel();
+    Control( O_IF_FALSE, node->u.left, false_lbl, FALSE );
     temp_var = BGNewTemp( node->tipe );
     temp_var->v.usage |= USE_IN_ANOTHER_BLOCK;
     temp = MakeTempAddr( temp_var, node->tipe );
     retv = TreeGen( node->rite->u.left );
     BGDone( BGAssign( AddrCopy( temp ), retv, node->tipe ) );
-    BGControl( O_GOTO, NULL, around );
-    BGControl( O_LABEL, NULL, false );
-    BGFiniLabel( false );
+    BGControl( O_GOTO, NULL, around_lbl );
+    BGControl( O_LABEL, NULL, false_lbl );
+    BGFiniLabel( false_lbl );
     retv = TreeGen( node->rite->rite );
     BGDone( BGAssign( AddrCopy( temp ), retv, node->tipe ) );
-    BGControl( O_LABEL, NULL, around );
-    BGFiniLabel( around );
+    BGControl( O_LABEL, NULL, around_lbl );
+    BGFiniLabel( around_lbl );
     temp = BGUnary( O_POINTS, temp, node->tipe );
     FreeTreeNode( node->rite );
-    temp->flags |= STACKABLE;
+    temp->flags |= FL_STACKABLE;
     return( temp );
 }
 
@@ -2283,13 +2279,13 @@ static  an  TNCall( tn what, bool ignore_return )
     type_def    *tipe;
     bool        in_line;
     name        *base;
-    call_class  rtn_class;
+    call_class  cclass;
 
     ignore_return=ignore_return;
     addr = what->u.left; /* address to call*/
-    in_line = ( FEAuxInfo( (pointer *)addr->rite, CALL_BYTES ) != NULL );
-    rtn_class = *(call_class *)FEAuxInfo( (pointer *)addr->rite, CALL_CLASS );
-    if( rtn_class & MAKE_CALL_INLINE ) {
+    in_line = ( FEAuxInfo( (pointer)addr->rite, CALL_BYTES ) != NULL );
+    cclass = *(call_class *)FEAuxInfo( (pointer)addr->rite, CALL_CLASS );
+    if( cclass & MAKE_CALL_INLINE ) {
         BGDone( TreeGen( addr->u.left ) );
         BGStartInline( (sym_handle)addr->rite );
     } else {
@@ -2301,7 +2297,7 @@ static  an  TNCall( tn what, bool ignore_return )
         base = TNFindBase( scan->u.left );
         parmtn = scan->u.left;
         scan->u.name = base;
-        if( rtn_class & PARMS_BY_ADDRESS ) {
+        if( cclass & PARMS_BY_ADDRESS ) {
             if( parmtn->class == TN_UNARY && parmtn->op == O_POINTS ) {
                 parman = AddrGen( parmtn->u.left );
                 parmtn->u.left = NULL;
@@ -2328,7 +2324,7 @@ static  an  TNCall( tn what, bool ignore_return )
                 parman = retv;
             }
         } else {
-            if( in_line || ( rtn_class & MAKE_CALL_INLINE ) ) {
+            if( in_line || ( cclass & MAKE_CALL_INLINE ) ) {
                 parman = BGConvert( parman, tipe );
             } else {
 #if _TARGET & _TARG_AXP
@@ -2339,11 +2335,11 @@ static  an  TNCall( tn what, bool ignore_return )
                     parman = BGConvert( parman, TypeAddress( TY_INT_4 ) );
                 }
 #endif
-                parman = BGConvert( parman, PassParmType( (pointer *)addr->rite, tipe, rtn_class ) );
+                parman = BGConvert( parman, PassParmType( (pointer *)addr->rite, tipe, cclass ) );
             }
         }
-        parman->flags |= STACKABLE;
-        if( rtn_class & MAKE_CALL_INLINE ) {
+        parman->flags |= FL_STACKABLE;
+        if( cclass & MAKE_CALL_INLINE ) {
             BGAddInlineParm( parman );
         } else {
             BGAddParm( call, parman );
@@ -2351,14 +2347,15 @@ static  an  TNCall( tn what, bool ignore_return )
         scan = scan->rite;
     }
     FreeTreeNode( addr );
-    if( rtn_class & MAKE_CALL_INLINE ) {
+    if( cclass & MAKE_CALL_INLINE ) {
         retv = BGStopInline( what, what->tipe );
         NodesToZap = what->rite;
         TNZapParms();
     } else {
         NodesToZap = what->rite;
         retv = BGCall( call, ( what->flags & TF_USED ) != 0, in_line );
-        retv->flags |= STACKABLE;
+        retv->flags |= FL_STACKABLE;
+        FreeCallNode( call );
     }
     return( retv );
 }

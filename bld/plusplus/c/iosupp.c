@@ -32,10 +32,14 @@
 #include "plusplus.h"
 
 #include <stdio.h>
-#include <fcntl.h>
 #include <stdarg.h>
-#include <unistd.h>
+#if defined(__UNIX__)
+ #include <dirent.h>
+#else
+ #include <direct.h>
+#endif
 
+#include "wio.h"
 #include "preproc.h"
 #include "errdefns.h"
 #include "memmgr.h"
@@ -49,12 +53,6 @@
 #include "ring.h"
 #include "brinfo.h"
 #include "autodept.h"
-
-#if defined(__UNIX__)
- #include <dirent.h>
-#else
- #include <direct.h>
-#endif
 
 typedef struct buf_alloc BUF_ALLOC;
 struct buf_alloc {              // BUF_ALLOC -- allocated buffer
@@ -779,7 +777,7 @@ static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
             }
         }
         #else
-            temphandle = open( fname, mode, S_IRUSR | S_IWUSR );
+            temphandle = open( fname, mode, PMODE_RW );
         #endif
         if( temphandle != -1 ) break;
         if( workFile[5] == 'Z' ) {

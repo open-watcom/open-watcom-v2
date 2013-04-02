@@ -34,7 +34,6 @@
 #include "opcodes.h"
 #include "zoiks.h"
 #include "typedef.h"
-#include "hostsys.h"
 #include "model.h"
 #include "cgdefs.h"
 #include "tree.h"
@@ -305,7 +304,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     if( fold != NULL ) {
         fold_tipe = fold->tipe;
         result = TGetName( fold );
-        if( result != NULL & !NeedConvert( fold_tipe, tipe ) ) {
+        if( result != NULL && !NeedConvert( fold_tipe, tipe ) ) {
             ins->table = NULL;
             // look out for scary DIV U4 EDX:EAX, c1 -> t1 type instructions
             if( result->n.class != N_CONSTANT &&

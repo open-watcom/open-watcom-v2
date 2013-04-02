@@ -1,13 +1,13 @@
-# setupgui Builder Control file
-# =============================
+# ziplib Builder Control file
+# ===========================
  
 set PROJDIR=<CWD>
-set PROJNAME=setupgui
+set PROJNAME=ziplib
  
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
  
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE <OWROOT>/build/deflib.ctl ]
 
 [ BLOCK . . ]
 #============

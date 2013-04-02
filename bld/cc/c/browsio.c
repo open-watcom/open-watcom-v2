@@ -31,10 +31,10 @@
 
 
 #include "cvars.h"
+#include <stdarg.h>
+#include "wio.h"
 #include "exeelf.h"
 #include "iopath.h"
-#include <stdarg.h>
-#include <unistd.h>
 
 static uint_32          relocValues[ DW_W_MAX ];
 

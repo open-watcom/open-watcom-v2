@@ -37,12 +37,6 @@
 #include <assert.h>
 #include "cgapi.h"
 
-#if INT_MAX == SHRT_MAX
-    #define _HOST_INTEGER       16
-#else
-    #define _HOST_INTEGER       32
-#endif
-
 typedef char *char_ptr;
 
 #if !defined(BY_FORTRAN_FRONT_END)
@@ -68,7 +62,7 @@ typedef char *char_ptr;
 #endif
 
 #define _RoundUp( size, word )        ( ((size)+((word)-1)) & ~((word)-1) )
-#define _IsPowerOfTwo( x )              ( ( (x) & ( -(x) + 1 ) ) == (x) )
+#define _IsPowerOfTwo( x )              ( ( (x) & ( 1 - (x) ) ) == (x) )
 
 #ifdef __AXP__
 #define _AlignmentCheck( ptr, size )  assert( (((unsigned)ptr) & ((size)-1)) == 0 )

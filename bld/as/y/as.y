@@ -11,11 +11,13 @@
     typedef uint_16         YYPLHSTYPE;
     
     typedef unsigned        YYTOKENTYPE;
-    
+
+#ifdef __WATCOMC__    
 #pragma disable_message( 118 ); // no more unreferenced label warning
 #pragma warning 17 5    // shut off the unreferenced goto warning
 #pragma warning 389 5   // shut off the integral truncated warning
 #pragma warning 373 5   // get rid of defined but not referenced warning
+#endif
 
     instruction             *AsCurrIns;
     directive_t             *AsCurrDir;

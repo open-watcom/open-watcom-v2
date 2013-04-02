@@ -34,6 +34,7 @@
 #include "elfload.h"
 #include "elfflhn.h"
 #include "elflwlv.h"
+#include "elforl.h"
 #include "orlhash.h"
 
 elf_handle ELFENTRY ElfInit( orl_funcs * funcs )
@@ -49,7 +50,7 @@ elf_handle ELFENTRY ElfInit( orl_funcs * funcs )
 
 orl_return ELFENTRY ElfFini( elf_handle elf_hnd )
 {
-    orl_return                                  error;
+    orl_return          error;
 
     while( elf_hnd->first_file_hnd != NULL ) {
         error = ElfRemoveFileLinks( elf_hnd->first_file_hnd );
@@ -59,23 +60,26 @@ orl_return ELFENTRY ElfFini( elf_handle elf_hnd )
     return( ORL_OKAY );
 }
 
-elf_file_handle ELFENTRY ElfFileInit( elf_handle elf_hnd, void *file )
+orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, void *file, elf_file_handle *pefh )
 {
-    elf_file_handle                             elf_file_hnd;
+    elf_file_handle     elf_file_hnd;
+    orl_return          error;
 
-    elf_file_hnd = (elf_file_handle) elf_hnd->funcs->alloc( sizeof( elf_file_handle_struct ) );
-    if( !elf_file_hnd ) {
-        return( NULL );
+    elf_file_hnd = (elf_file_handle)elf_hnd->funcs->alloc( sizeof( elf_file_handle_struct ) );
+    if( elf_file_hnd == NULL ) {
+        return( ORL_OUT_OF_MEMORY );
     }
     elf_file_hnd->elf_sec_hnd = NULL;
     elf_file_hnd->file = file;
     elf_file_hnd->sec_name_hash_table = NULL;
     ElfAddFileLinks( elf_hnd, elf_file_hnd );
-    if( ElfLoadFileStructure( elf_file_hnd ) != ORL_OKAY ) {
+    error = ElfLoadFileStructure( elf_file_hnd );
+    if( error != ORL_OKAY ) {
         ElfRemoveFileLinks( elf_file_hnd );
-        return( NULL );
+        elf_file_hnd = NULL;
     }
-    return( elf_file_hnd );
+    *pefh = elf_file_hnd;
+    return( error );
 }
 
 orl_return ELFENTRY ElfFileFini( elf_file_handle elf_file_hnd )
@@ -100,7 +104,7 @@ orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, char *desired, or
             error = ElfBuildSecNameHashTable( elf_file_hnd );
             if( error != ORL_OKAY ) return( error );
         }
-        data_struct = ORLHashTableQuery( elf_file_hnd->sec_name_hash_table, (orl_hash_value) desired );
+        data_struct = ORLHashTableQuery( elf_file_hnd->sec_name_hash_table, desired );
         while( data_struct != NULL ) {
             error = return_func( (orl_sec_handle) data_struct->data );
             if( error != ORL_OKAY ) return( error );
@@ -206,7 +210,7 @@ elf_sec_handle ELFENTRY ElfSecGetRelocTable( elf_sec_handle elf_sec_hnd )
     }
 }
 
-orl_return ELFENTRY ElfSecGetContents( elf_sec_handle elf_sec_hnd, char **buffer )
+orl_return ELFENTRY ElfSecGetContents( elf_sec_handle elf_sec_hnd, unsigned char **buffer )
 {
     if( elf_sec_hnd->contents != NULL ) {
         *buffer = elf_sec_hnd->contents;
@@ -348,14 +352,13 @@ orl_return ELFENTRY ElfSymbolSecScan( elf_sec_handle elf_sec_hnd, orl_symbol_ret
     return( ORL_OKAY );
 }
 
-orl_return ELFENTRY ElfNoteSecScan( elf_sec_handle hnd,
-                                    orl_note_callbacks *cb, void *cookie )
-/**************************************************************************/
+orl_return ELFENTRY ElfNoteSecScan( elf_sec_handle hnd, orl_note_callbacks *cb, void *cookie )
+/********************************************************************************************/
 {
     if( hnd->type != ORL_SEC_TYPE_NOTE ) return ORL_ERROR;
     if( strcmp( hnd->name, ".drectve" ) != 0 ) return ORL_OKAY;
     if( hnd->size == 0 ) return ORL_OKAY;
-    return( ElfParseDrectve( hnd->contents, hnd->size, cb, cookie ) );
+    return( ElfParseDrectve( (char *)hnd->contents, hnd->size, cb, cookie ) );
 }
 
 char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )

@@ -72,7 +72,7 @@ typedef struct target_proc_def {
         type_length             base_adjust;
         type_length             push_local_size;
         union name              *return_points;
-        pointer                 debug;
+        dbg_rtn                 *debug;
         pointer                 routine_profile_data;
         pointer                 block_profile_data;
         abspatch_handle         prolog_loc;

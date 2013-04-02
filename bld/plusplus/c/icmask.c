@@ -40,7 +40,18 @@
 
 #include "wcpp.h"
 #include "icodes.h"
-#include "inames.h"
+
+static char *ic_names[] = {
+    #define IC( code, type, mask ) __STR( code )
+    #include "ic.h"
+    #undef IC
+};
+
+static char *ic_masks[] = {
+    #define IC( code, type, mask ) mask
+    #include "ic.h"
+    #undef IC
+};
 
 static char *usageMsg[] = {
     "icmask <ic-h> <use-ic-source> <use-ic-source> ...",
@@ -64,8 +75,8 @@ struct name {
     NAME        *next;
     char        name[1];
 };
-static NAME *icMaskTable[IC_END+1];
-static NAME *icPreProcTable[IC_END+1];
+static NAME *icMaskTable[IC_END + 1];
+static NAME *icPreProcTable[IC_END + 1];
 
 static void addName( NAME **t, unsigned ic, char *name )
 {
@@ -136,8 +147,8 @@ static char *skipSpace( char *p )
 static unsigned whatICAmI( char *p )
 {
     char *s;
-    char **f;
     char c;
+    int i;
 
     s = p;
     while( *p && ( isalnum( *p ) || *p == '_' ) ) {
@@ -145,36 +156,14 @@ static unsigned whatICAmI( char *p )
     }
     c = *p;
     *p = '\0';
-    for( f = ic_names; f <= &ic_names[ IC_END ]; ++f ) {
-        if( strcmp( *f, s ) == 0 ) {
+    for( i = 0; i <= IC_END; ++i ) {
+        if( strcmp( ic_names[i], s ) == 0 ) {
             *p = c;
-            return( f - ic_names );
+            return( i );
         }
     }
     fail( "cannot find IC '%s'\n", s );
     return( -1 );
-}
-
-static void addICMasks( unsigned ic )
-{
-    char *p;
-    char *s;
-    char c;
-
-    p = buff;
-    p = skipNonSpace( p );
-    for(;;) {
-        p = skipSpace( p );
-        if( *p == '\0' ) break;
-        s = p;
-        while( *p && ( isalnum( *p ) || *p == '_' ) ) {
-            ++p;
-        }
-        c = *p;
-        *p = '\0';
-        addName( icMaskTable, ic, s );
-        *p = c;
-    }
 }
 
 static void processIC_H( char *fname )
@@ -193,9 +182,7 @@ static void processIC_H( char *fname )
         ++line;
         p = skipSpace( buff );
         if( memcmp( p, "//", 2 ) == 0 ) {
-            if( p[2] != '|' ) {
-                continue;
-            }
+            continue;
         }
         ic_start = strstr( p, "IC(" );
         if( ic_start != NULL ) {
@@ -205,9 +192,6 @@ static void processIC_H( char *fname )
             continue;
         }
         if( ic_idx != -1 ) {
-            if( memcmp( p, "//| ", 4 ) == 0 ) {
-                addICMasks( ic_idx );
-            }
             if( buff[0] == '#' ) {
                 addName( icPreProcTable, ic_idx, buff );
             }
@@ -227,29 +211,38 @@ static void dumpHeader( char **argv )
 
 static void outputIMASK_H( char **argv )
 {
-    NAME **h;
     NAME *m;
     NAME *n;
+    int i;
 
     // output name cannot match icmask.* because makefile execs del icmask.*
     out_h = fopen( "ic_mask.gh", "w" );
     if( out_h == NULL ) fail( "cannot open 'icmask.gh' for output\n" );
     dumpHeader( argv );
-    for( h = &icMaskTable; h <= &icMaskTable[IC_END]; ++h ) {
-        if( *h != NULL ) {
-            for( m = *h; m != NULL; m = n ) {
-                n = m->next;
-                if( n != NULL ) {
-                    fprintf( out_h, "ICOPM_%s|", m->name );
-                } else {
-                    fprintf( out_h, "ICOPM_%s, /* %s */\n", m->name, ic_names[ h - icMaskTable ] );
-                }
+    for( i = 0; i <= IC_END; ++i ) {
+        m = icMaskTable[i];
+        if( m == NULL ) {
+            if( ic_masks[i] == NULL ) {
+                fprintf( out_h, "0, /* %s */\n", ic_names[i] );
+            } else {
+                fprintf( out_h, "0|%s, /* %s */\n", ic_masks[i], ic_names[i] );
             }
         } else {
-            fprintf( out_h, "0, /* %s */\n", ic_names[ h - icMaskTable ] );
+            for( ; m != NULL; m = n ) {
+                n = m->next;
+                if( n == NULL ) {
+                    break;
+                }
+                fprintf( out_h, "ICOPM_%s|", m->name );
+            }
+            if( ic_masks[i] == NULL ) {
+                fprintf( out_h, "ICOPM_%s, /* %s */\n", m->name, ic_names[i] );
+            } else {
+                fprintf( out_h, "ICOPM_%s|%s, /* %s */\n", m->name, ic_masks[i], ic_names[i] );
+            }
         }
-        if( icPreProcTable[ h - icMaskTable ] != NULL ) {
-            fprintf( out_h, "%s\n", icPreProcTable[ h - icMaskTable ]->name );
+        for( m = icPreProcTable[i]; m != NULL; m = m->next ) {
+            fprintf( out_h, "%s", m->name );
         }
     }
     fclose( out_h );

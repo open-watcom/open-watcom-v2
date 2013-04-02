@@ -51,7 +51,6 @@ extern  name            *AllocIndex( name *, name *, type_length, type_class_def
 extern  void            AddCallIns( instruction *, cn );
 extern  void            AddIns( instruction * );
 extern  an              MakeTempAddr( name *, type_def * );
-extern  void            FreeCallNode( cn );
 extern  type_def        *QParmType( sym_handle, sym_handle, type_def * );
 extern  name            *AllocRegName( hw_reg_set );
 extern  name            *AllocS32Const( signed_32 );
@@ -77,7 +76,6 @@ extern an BGCall( cn call, bool use_return, bool in_line )
     instruction         *conv_ins;
     call_state          *state;
     name                *result;
-    an                  retv;
     hw_reg_set          ret_addr;
     instruction         *ins;
 
@@ -117,9 +115,7 @@ extern an BGCall( cn call, bool use_return, bool in_line )
             // conv_ins = MakeMove( call_result, result, XX );
         }
     }
-    retv = MakeTempAddr( result, call->tipe );
-    FreeCallNode( call );
-    return( retv );
+    return( MakeTempAddr( result, call->tipe ) );
 }
 
 

@@ -506,65 +506,23 @@ void hdlAllUsed          // VERIFY ALL HANDLES IN RING HAVE BEEN USED
     hdltype = hdltype;
 }
 
-// Callback stuff
-
-typedef struct cb_name CB_NAME;
-struct cb_name                  // CB_NAME -- call back name
-{   CB_NAME* next;              // - next in ring
-    char const* name;           // - name
-    void (*rtn)( void* );       // - rtn address
-};
-static CB_NAME* callback_names; // call-back names
-
-// CALL-BACK NAMES
-
-void CgEchoAPICbName                // REGISTER A CALL-BACK NAME
-    ( void (*rtn)( void* )      // - rtn address
-    , char const* name )        // - rtn name
-{
-    CB_NAME* cbn;
-
-    cbn = CGAlloc( sizeof( CB_NAME ) ); // Free'd in DbgFini
-    cbn->rtn = rtn;
-    cbn->name = name;
-    // insert
-    cbn->next = callback_names;
-    callback_names = cbn;
-}
-
 void EchoAPIInit( void )
 {
-    callback_names = NULL;
     EchoAPIRedirect();
 }
 
-// remove callback name from list
-
 void EchoAPIFini( void )
 {
-    CB_NAME *cbn, *next;               // - call back name
-
-    for( cbn = callback_names; cbn; cbn = next ) {
-        next = cbn->next;
-        CGFree( cbn );
-    }
-    callback_names = NULL;
     EchoAPIUnredirect();
 }
 
 static char* callBackName       // MAKE CALL-BACK NAME FOR PRINTING
     ( void (*rtn)( void* )      // - rtn address
-    , char * buffer )           // - buffer
+    , char *buffer )            // - buffer
 {
-    CB_NAME* cbn;               // - call back name
-    char const* name = NULL;    // - name to be used
+    char *name;                 // - name to be used
 
-    for( cbn = callback_names; cbn; cbn = cbn->next ) {
-        if( rtn == cbn->rtn ) {
-            name = cbn->name;
-            break;
-        }
-    }
+    name = FEExtName( rtn, EXTN_CALLBACKNAME );
     if( name == NULL ) {
         sprintf( buffer, "%p", rtn );
     } else {

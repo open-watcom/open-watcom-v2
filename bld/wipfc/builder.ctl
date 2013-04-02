@@ -2,24 +2,29 @@
 # ==========================
 
 set PROJDIR=<CWD>
-set PROJNAME=bwipfc
+set PROJNAME=wipfc
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/bintool.ctl ]
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
     cdsay <PROJDIR>
+
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/wipfc.exe <OWBINDIR>/bwipfc<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================
     <CPCMD> helper/*.nls          <OWRELROOT>/wipfc/
     <CPCMD> helper/*.txt          <OWRELROOT>/wipfc/
 
-    <CCCMD> dos386/wipfc.exe      <OWRELROOT>/binw/wipfc.exe
-    <CCCMD> os2386/wipfc.exe      <OWRELROOT>/binp/wipfc.exe
-    <CCCMD> nt386/wipfc.exe       <OWRELROOT>/binnt/wipfc.exe
+    <CCCMD> dos386/wipfc.exe      <OWRELROOT>/binw/
+    <CCCMD> os2386/wipfc.exe      <OWRELROOT>/binp/
+    <CCCMD> nt386/wipfc.exe       <OWRELROOT>/binnt/
     <CCCMD> linux386/wipfc.exe    <OWRELROOT>/binl/wipfc
 
 [ BLOCK . . ]

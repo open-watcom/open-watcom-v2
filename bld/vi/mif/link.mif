@@ -1,5 +1,16 @@
 extra_l_flags = option map, symfile
 
+libs = $(commonui_lib) $(wpi_lib) $(ui_lib)
+!ifdef commonui_lib
+extra_l_flags += lib {$(commonui_lib)}
+!endif
+!ifdef wpi_lib
+extra_l_flags += lib {$(wpi_lib)}
+!endif
+!ifdef ui_lib
+extra_l_flags += lib {$(ui_lib)}
+!endif
+
 extra_l_flags_os2_386 = op newfiles,stack=20k
 extra_l_flags_os2_i86 = op newfiles,stack=1k
 extra_l_flags_os2 = $(extra_l_flags_$(host_cpu))
@@ -9,7 +20,7 @@ extra_l_flags_win_i86 = op nocache,symfile,rwr lib windows,commdlg,toolhelp,ddem
 extra_l_flags_win_386 = lib win386$(BETA),clib3r op stack=40k
 extra_l_flags_win = $(extra_l_flags_win_$(host_cpu))
 
-!ifdef sys_windowed
+!ifeq sys_windowed 1
 ! ifeq host_cpu 386
 extra_l_flags_nt = op stack=100k,heap=8k commit heap=4k
 !ifdef __LINUX__
@@ -25,20 +36,6 @@ extra_l_flags_nt = runtime console op stack=20k
 !endif
 
 extra_l_flags_qnx = op stack=2k,priv=3
-
-!ifeq bootstrap 1
-libs = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
-!else
-!ifeq host_os linux
-libs = $(ncurses_dir)/linux$(host_cpu)/ncurses.lib $(ui_dir)/unix/linux$(host_cpu)/ui.lib
-extra_l_flags_linux = lib $(ncurses_dir)/linux$(host_cpu)/ncurses.lib lib $(ui_dir)/unix/linux$(host_cpu)/ui.lib
-!endif
-!endif
-!ifdef sys_windowed
-libs += $(wpi_lib) $(commonui_lib)
-extra_l_flags += lib $(wpi_lib)
-extra_l_flags += lib $(commonui_lib)
-!endif
 
 extra_l_flags_dos_i86 = op stack=1k
 

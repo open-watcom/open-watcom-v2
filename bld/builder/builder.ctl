@@ -9,11 +9,12 @@ set PROJNAME=build utilities
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK ( <1> <BINTOOL> ) rel ]
+[ BLOCK <1> rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <BINTOOL> rel ]
-#======================
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/wsplice.exe  <OWBINDIR>/wsplice<CMDEXT>
     <CPCMD> <OWOBJDIR>/sweep.exe    <OWBINDIR>/sweep<CMDEXT>
     <CPCMD> <OWOBJDIR>/comstrip.exe <OWBINDIR>/comstrip<CMDEXT>

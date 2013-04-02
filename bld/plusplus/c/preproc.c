@@ -238,7 +238,7 @@ static void printMangledId( IDMANGLE *id )
     auto char buff[32];
 
     prt_cpp_char( '_' );
-    utoa( id->index, buff, 10 );
+    ultoa( id->index, buff, 10 );
     PrtString( buff );
     prt_cpp_char( '_' );
 }

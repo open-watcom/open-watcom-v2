@@ -45,7 +45,6 @@
 #include "cfloat.h"
 #include "cgaux.h"
 #include "model.h"
-#include "hostsys.h"
 #include "cgstub.h"
 #include "dbcue.h"
 #include "feprotos.h"

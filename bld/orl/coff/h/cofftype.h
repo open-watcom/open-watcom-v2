@@ -85,13 +85,13 @@ struct coff_handle_struct {
 struct coff_file_handle_struct {
     coff_handle         coff_hnd;
     coff_file_handle    next;
-    coff_sec_handle *   coff_sec_hnd;
-    coff_sec_handle *   orig_sec_hnd;
-    void *              file;
+    coff_sec_handle     *coff_sec_hnd;
+    coff_sec_handle     *orig_sec_hnd;
+    void                *file;
     coff_quantity       initial_size;
-    coff_file_header *  f_hdr_buffer;
-    char *              s_hdr_table_buffer;
-    char *              rest_of_file_buffer;
+    coff_file_header    *f_hdr_buffer;
+    char                *s_hdr_table_buffer;
+    unsigned char       *rest_of_file_buffer;
     orl_machine_type    machine_type;
     orl_file_type       type;
     orl_file_size       size;
@@ -103,7 +103,7 @@ struct coff_file_handle_struct {
     coff_sec_handle     string_table;
     orl_hash_table      sec_name_hash_table;
     unsigned long       export_table_rva;
-    char *              implib_data;
+    char                *implib_data;
 };
 
 #define SEC_NAME_HASH_TABLE_SIZE 53
@@ -122,13 +122,13 @@ struct coff_sec_handle_struct {
     orl_file_format     file_format;
     coff_file_handle    coff_file_hnd;
     coff_sec_handle     next;
-    char *              name;
+    char                *name;
     orl_sec_size        size;
     orl_file_offset     offset;
     orl_sec_type        type;
     orl_sec_flags       flags;
     orl_sec_alignment   align;
-    char *              contents;
+    unsigned char       *contents;
     coff_section_header *hdr;
     orl_sec_offset      base;
     union {

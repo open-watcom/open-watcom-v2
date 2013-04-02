@@ -29,5 +29,5 @@
 ****************************************************************************/
 
 
-extern  pointer         CGAlloc( unsigned );
+extern  pointer         CGAlloc( size_t );
 extern  void            CGFree( pointer );

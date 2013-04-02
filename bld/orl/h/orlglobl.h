@@ -32,7 +32,7 @@
 #ifndef ORL_GLOBAL_INCLUDED
 #define ORL_GLOBAL_INCLUDED
 
-#include <watcom.h>
+#include "watcom.h"
 
 #define ORLENTRY
 
@@ -46,7 +46,7 @@ typedef long                            orl_sec_frame;
 
 typedef uint_32                         orl_reloc_addend;
 
-typedef uint_32                         orl_symbol_value;
+typedef unsigned_64                     orl_symbol_value;
 
 typedef uint_32                         orl_table_index;
 
@@ -121,6 +121,7 @@ typedef enum {
     ORL_FILE_FLAG_LITTLE_ENDIAN         = 0x0100,// LSB precedes MSB in memory
     ORL_FILE_FLAG_BIG_ENDIAN            = 0x0200,// MSB precedes LSB in memory
     ORL_FILE_FLAG_SYSTEM                = 0x1000,// system file
+    ORL_FILE_CHKSUM_ERROR               = 0x2000,// check sum error
 } orl_file_flags;
 
 typedef enum {
@@ -270,7 +271,7 @@ typedef enum {
     ORL_RELOC_TYPE_WORD_32_SEG, // 32-bit offset and segment
     ORL_RELOC_TYPE_REL_32_SEG,  // relative reference 32 bit offset and segment
 
-    // special relications for x64 coff files, there are only used in ndisasm yet!
+    // special relocations for x64 coff files, there are only used in ndisasm yet!
     // for more information see watcom/h/coff.h in amd64 section
     ORL_RELOC_TYPE_REL_32_ADJ1, // relative ref to a 32-bit address, need special adjustment
     ORL_RELOC_TYPE_REL_32_ADJ2, // relative ref to a 32-bit address, need special adjustment

@@ -16,9 +16,9 @@ extra_l_flags = op map, verbose, statics
 
 all : cwstub.exe cwdstub.exe .symbolic
 
-cwstub.exe : ./cwc.exe cw32.obj
+cwstub.exe : cw32.obj
     $(linker) $(lflags) name cw32.exe disable 1080 file cw32.obj
-    $[@ cw32.exe cwstub.exe
+    $(cwc) cw32.exe cwstub.exe
 
 cwdstub.exe : cwdstub.obj
     $(linker) $(lflags) name $@ disable 1014 file $[@
@@ -35,20 +35,3 @@ cwdll.lib : $(objs) ../../inc/cwapi.lbc
     $(librarian) $(libflags) $(objs) @$]@
 
 !endif
-
-./cwc.exe : copystub.gh decstub.gh $(cl_objs) ../../c/cwc.c
-    $(bld_cl) $]@ $(bld_cl_opts)
-
-copystub.gh : copystub.asm ./mkcode.exe
-    *bwasm -zq -fo=$^&.obj $[@
-    *bwlink format dos com op quiet, nodefault file $^&.obj name $^&.tmp disable 1023,1080
-    $]@ $^&.tmp $@
-
-decstub.gh : decstub.asm ./mkcode.exe
-    *bwasm -zq -fo=$^&.obj $[@
-    *bwlink format dos com op quiet, nodefault file $^&.obj name $^&.tmp disable 1023,1080
-    $]@ $^&.tmp $@
-
-./mkcode.exe: ../../c/mkcode.c
-    $(bld_cl) $[@ $(bld_cl_opts)
-

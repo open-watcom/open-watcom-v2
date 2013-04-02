@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "procdef.h"
-#include "symdbg.h"
 #include "pattern.h"
 #include "cgmem.h"
 #include "model.h"

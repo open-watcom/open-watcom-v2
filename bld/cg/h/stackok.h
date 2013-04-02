@@ -29,39 +29,21 @@
 ****************************************************************************/
 
 
-#include "hostsys.h"
-
-
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
 
-#if defined(__386__)
-    #define __AX eax
-    #define __BX ebx
-    #define __CX ecx
-    #define __DX edx
-    #define __SP esp
-#else
-    #define __AX ax
-    #define __BX bx
-    #define __CX cx
-    #define __DX dx
-    #define __SP sp
-#endif
-
-
 extern byte near        *bp( void );
-#pragma aux bp = 0x89 0xe8 value [ __AX ];
+#pragma aux bp = 0x89 0xe8 value [ eax ];
 
 extern byte near        *sp( void );
-#pragma aux sp = value [ __SP ];
+#pragma aux sp = value [ esp ];
 
 extern void             setsp( byte near * );
-#pragma aux setsp = 0x89 0xc4 parm [ __AX ] modify [ __SP ];
+#pragma aux setsp = 0x89 0xc4 parm [ eax ] modify [ esp ];
 
 extern void             setbp( byte near * );
-#pragma aux setbp = 0x89 0xc5 parm [ __AX ];
+#pragma aux setbp = 0x89 0xc5 parm [ eax ];
 
-#pragma aux SafeRecurse parm caller [ __AX __BX __CX __DX ]; /* just to be sure! */
+#pragma aux SafeRecurse parm caller [ eax ebx ecx edx ]; /* just to be sure! */
 
 #else
 

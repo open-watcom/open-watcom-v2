@@ -29,13 +29,14 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
+#include "wio.h"
 #include <assert.h>
 #include <string.h>
 #include "standard.h"
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cgaux.h"
+#include "procdef.h"
 #include "ocentry.h"
 #include "cgmem.h"
 #include "reloc.h"
@@ -47,10 +48,12 @@
 #include "rtclass.h"
 #include "rscobj.h"
 #include "autodep.h"
-#include "procdef.h"
 #include "axpencod.h"
 #include "feprotos.h"
 #include "rtrtn.h"
+
+#define HANDLE_TO_OWL(x)    ((owl_file_handle)(x + 1))
+#define OWL_TO_HANDLE2(x)   ((pointer_int)x - 1)
 
 extern  void            CloseObj( void );
 extern  void            OpenObj( void );
@@ -380,19 +383,17 @@ extern  void    ObjFini( void )
 //    FEMessage( MSG_DATA_SIZE, (pointer)data_size );
 }
 
-// FIXME: This sucks - but time runneth out
-#define MAGIC_FLAG      0
 
-static  int     PutBytes( void *handle, const char *buffer, uint len )
+static  int PutBytes( void *handle, const char *buffer, unsigned len )
 /********************************************************************/
 {
     handle = handle;
 #ifndef NDEBUG
     // enable OWL logging
-    if( handle == MAGIC_FLAG ) {
+    if( handle == NULL ) {
         PutObjBytes( buffer, len );
     } else {
-        write( (int)handle, buffer, len );
+        write( OWL_TO_HANDLE( handle ), buffer, len );
     }
 #else
     PutObjBytes( buffer, len );
@@ -486,9 +487,9 @@ extern  void    InitSegDefs( void )
         format = OWL_FORMAT_COFF;
     }
 
-    owlFile = OWLFileInit( owlHandle, FEAuxInfo( NULL, SOURCE_NAME ), (owl_client_file)MAGIC_FLAG, format, OWL_FILE_OBJECT );
+    owlFile = OWLFileInit( owlHandle, FEAuxInfo( NULL, SOURCE_NAME ), NULL, format, OWL_FILE_OBJECT );
     if( _IsTargetModel( OWL_LOGGING ) ) {
-        OWLLogEnable( owlFile, (void *)STDOUT_FILENO );
+        OWLLogEnable( owlFile, HANDLE_TO_OWL( STDOUT_FILENO ) );
     }
 
     codeSection = BACKSEGS;
@@ -684,14 +685,14 @@ extern  seg_id  AskOP( void )
 static  bool            InlineFunction( pointer hdl )
 /***************************************************/
 {
-    call_class          rtn_class;
     aux_handle          aux;
 
-    if( ( FEAttr( hdl ) & FE_PROC ) == 0 ) return( FALSE );
+    if( (FEAttr( hdl ) & FE_PROC) == 0 )
+        return( FALSE );
     aux = FEAuxInfo( hdl, AUX_LOOKUP );
-    if( FEAuxInfo( aux, CALL_BYTES ) != NULL ) return( TRUE );
-    rtn_class = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
-    return( rtn_class & MAKE_CALL_INLINE );
+    if( FEAuxInfo( aux, CALL_BYTES ) != NULL )
+        return( TRUE );
+    return( (*(call_class *)FEAuxInfo( aux, CALL_CLASS ) & MAKE_CALL_INLINE) != 0 );
 }
 
 extern  seg_id      AskSegID( pointer hdl, cg_class class )

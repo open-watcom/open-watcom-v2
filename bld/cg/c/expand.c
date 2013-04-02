@@ -36,7 +36,6 @@
 #include "opcodes.h"
 #include "vergen.h"
 #include "memcheck.h"
-#include "hostsys.h"
 #include "zoiks.h"
 
 extern  void            EXBlip(void);

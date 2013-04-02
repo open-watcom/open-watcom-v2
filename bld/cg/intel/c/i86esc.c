@@ -33,6 +33,7 @@
 #include "standard.h"
 #include "cgdefs.h"
 #include "coderep.h"
+#include "symdbg.h"
 #include "ocentry.h"
 #include "escape.h"
 #include "objrep.h"
@@ -43,6 +44,7 @@
 #include "fppatch.h"
 #include "feprotos.h"
 #include "rtclass.h"
+#include "i86obj.h"
 
 extern  void            DbgSetBase( void );
 extern  void            OutAbsPatch(abspatch*,patch_attr);
@@ -52,12 +54,12 @@ extern  void            OutRTImport(rt_class,fix_class);
 extern  void            OutRTImportRel(rt_class,fix_class,bool rel);
 extern  void            OutSelect(bool);
 extern  byte            ReverseCondition(byte);
-extern  void            DbgRtnEnd(pointer,offset);
-extern  void            DbgBlkEnd(pointer,offset);
-extern  void            DbgEpiBeg(pointer,offset);
-extern  void            DbgProEnd(pointer,offset);
-extern  void            DbgBlkBeg(pointer,offset);
-extern  void            DbgRtnBeg(pointer,offset);
+extern  void            DbgRtnEnd(dbg_rtn *,offset);
+extern  void            DbgBlkEnd(dbg_block *,offset);
+extern  void            DbgEpiBeg(dbg_rtn *,offset);
+extern  void            DbgProEnd(dbg_rtn *,offset);
+extern  void            DbgBlkBeg(dbg_block *,offset);
+extern  void            DbgRtnBeg(dbg_rtn *,offset);
 extern  offset          AskLocation( void );
 extern  void            TellScrapLabel(label_handle);
 extern  void            OutLineNum( cg_linenum,bool);

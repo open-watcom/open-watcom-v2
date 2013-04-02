@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#ifdef __header1
+#   include __header1
+#endif
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
@@ -45,10 +48,6 @@
 #include "carve.h"
 #else
 
-#include header
-#ifdef header2
-#   include header2
-#endif
 #include "ringcarv.h"
 
 #endif

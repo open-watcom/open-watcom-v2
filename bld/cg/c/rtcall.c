@@ -57,9 +57,12 @@ extern  hw_reg_set      LNReg( void );
 #endif
 #if _TARGET == _TARG_AXP
 extern  hw_reg_set      SavedRegs( void );
+extern  hw_reg_set      ReturnAddrReg( void );
+#elif _TARGET == _TARG_80386
+extern  hw_reg_set      ReturnReg(type_class_def,bool);
 #endif
 
-extern    hw_reg_set    *RegSets[];
+extern  hw_reg_set      *RegSets[];
 
 #if _TARGET & _TARG_AXP
     #define _ParmReg( x )       FirstReg( x )
@@ -114,7 +117,6 @@ extern  instruction     *rMAKECALL( instruction *ins )
     HW_TurnOn( all_regs, tmp );
 #elif _TARGET == _TARG_80386
     {
-    extern hw_reg_set ReturnReg(type_class_def,bool);
     tmp = ReturnReg( WD, FALSE );
     HW_TurnOn( all_regs, tmp );
     }
@@ -132,7 +134,6 @@ extern  instruction     *rMAKECALL( instruction *ins )
     new_ins->num_operands = 2;         /* special case for OP_CALL*/
 #if _TARGET == _TARG_AXP
     {
-    extern hw_reg_set ReturnAddrReg( void );
     HW_CTurnOn( all_regs, HW_FULL );
     HW_TurnOff( all_regs, SavedRegs() );
     HW_CTurnOff( all_regs, HW_UNUSED );

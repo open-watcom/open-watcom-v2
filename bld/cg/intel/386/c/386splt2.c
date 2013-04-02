@@ -713,7 +713,7 @@ extern  instruction     *rCYP_SEX( instruction *ins )
     name            *op;
     name            *new_op;
     instruction     *shft;
-    unsigned        size;
+    int             size;
 
     op = ins->operands[0];
     size = WORD_SIZE - op->n.size;
@@ -722,7 +722,7 @@ extern  instruction     *rCYP_SEX( instruction *ins )
     ins->operands[0] = new_op;
     ins->head.opcode = OP_MOV;
     op = ins->result;
-    shft = MakeBinary( OP_RSHIFT, op, AllocIntConst( size*8 ), op, SW );
+    shft = MakeBinary( OP_RSHIFT, op, AllocIntConst( size * 8 ), op, SW );
     DupSeg( ins, shft );
     SuffixIns( ins, shft );
     return( ins );

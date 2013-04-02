@@ -33,6 +33,7 @@
 #include "plusplus.h"
 #include "scan.h"
 #include "ctokens.h"
+#include "weights.gh"
 
 #define C_XW    ( C_WS | C_EX )
 

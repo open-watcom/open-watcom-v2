@@ -32,7 +32,6 @@
 #include <stdio.h>
 #include <stddef.h>
 #include "standard.h"
-#include "hostsys.h"
 #include "memsydep.h"
 #include "memcheck.h"
 #include "zoiks.h"
@@ -40,8 +39,16 @@
 #include "spawn.h"
 #include "memout.h"
 #include "cgmem.h"
-#if _HOST_MEMORY & _FULL_TRACKING
-    #include "trmem.h"
+
+/*  memory tracking levels */
+#define   _NO_TRACKING     0
+#define   _CHUNK_TRACKING  1
+#define   _FULL_TRACKING   2
+
+#ifdef _TRACK
+    #define _MEMORY_TRACKING _FULL_TRACKING
+#else
+    #define _MEMORY_TRACKING _CHUNK_TRACKING
 #endif
 
 extern    int   InOptimizer;
@@ -53,7 +60,9 @@ extern  bool            GetEnvVar(char*,char*,int);
 
 static          mem_out_action  MemOut;
 
-#if _HOST_MEMORY & _FULL_TRACKING
+#if _MEMORY_TRACKING & _FULL_TRACKING
+
+#include "trmem.h"
 
 extern  void            DumpChar(char);
 extern  void            DumpNL(void);
@@ -68,7 +77,7 @@ static void Prt( int * handle, const char * buff, size_t len )
     for( i = 0; i < len; ++i ) fputc( *buff++, stderr );
 }
 
-#elif _HOST_MEMORY & _CHUNK_TRACKING
+#elif _MEMORY_TRACKING & _CHUNK_TRACKING
 static          uint    Chunks;
 #endif
 
@@ -77,34 +86,32 @@ extern  void    CGMemInit( void )
 {
     _SysReInit();
     MemOut = MO_FATAL;
-    #if _HOST_MEMORY & _FULL_TRACKING
-        Handle = _trmem_open( &_SysAlloc, &_SysFree, NULL, NULL, NULL, &Prt,
+#if _MEMORY_TRACKING & _FULL_TRACKING
+    Handle = _trmem_open( &_SysAlloc, &_SysFree, NULL, NULL, NULL, &Prt,
                                 _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
                                 _TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL |
                                 _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
-    #elif _HOST_MEMORY & _CHUNK_TRACKING
-        Chunks = 0;
-    #endif
+#elif _MEMORY_TRACKING & _CHUNK_TRACKING
+    Chunks = 0;
+#endif
     CalcMemLimit();
 }
 
 extern  void    CGMemFini( void )
 /*******************************/
 {
-    #if _HOST_MEMORY & _FULL_TRACKING
-        {
-            char        buff[80];
+#if _MEMORY_TRACKING & _FULL_TRACKING
+    char        buff[80];
 
-            if( !GetEnvVar( "TRQUIET", buff, 7 ) ) {
-                _trmem_prt_list( Handle );
-            }
-            _trmem_close( Handle );
-        }
-    #elif _HOST_MEMORY & _CHUNK_TRACKING
-        if( Chunks != 0 ) {
-            _Zoiks( ZOIKS_002 );
-        }
-    #endif
+    if( !GetEnvVar( "TRQUIET", buff, 7 ) ) {
+        _trmem_prt_list( Handle );
+    }
+    _trmem_close( Handle );
+#elif _MEMORY_TRACKING & _CHUNK_TRACKING
+    if( Chunks != 0 ) {
+        _Zoiks( ZOIKS_002 );
+    }
+#endif
     MemFini();
 }
 
@@ -119,22 +126,22 @@ extern  mem_out_action    SetMemOut( mem_out_action what )
     return( old );
 }
 
-extern  pointer CGAlloc( unsigned size )
-/**************************************/
+extern  pointer CGAlloc( size_t size )
+/************************************/
 {
     pointer     chunk;
 
     _MemLow;
     for( ;; ) {
-        #if _HOST_MEMORY & _FULL_TRACKING
-            chunk = _trmem_alloc( size, _trmem_guess_who(), Handle );
-        #else
-            chunk = _SysAlloc( size );
-        #endif
+#if _MEMORY_TRACKING & _FULL_TRACKING
+        chunk = _trmem_alloc( size, _trmem_guess_who(), Handle );
+#else
+        chunk = _SysAlloc( size );
+#endif
         if( chunk != NULL ) {
-            #if _HOST_MEMORY & _CHUNK_TRACKING
-                ++Chunks;
-            #endif
+#if _MEMORY_TRACKING & _CHUNK_TRACKING
+            ++Chunks;
+#endif
             _AlignmentCheck( chunk, 8 );
             return( chunk );
         }
@@ -152,18 +159,18 @@ extern  pointer CGAlloc( unsigned size )
 extern  void    CGFree( pointer chunk )
 /*************************************/
 {
-    #if _HOST_MEMORY & _FULL_TRACKING
-        _trmem_free( chunk, _trmem_guess_who(), Handle );
-    #else
-        #if _HOST_MEMORY & _CHUNK_TRACKING
-            --Chunks;
-        #endif
-        _SysFree( chunk );
-    #endif
+#if _MEMORY_TRACKING & _CHUNK_TRACKING
+    --Chunks;
+#endif
+#if _MEMORY_TRACKING & _FULL_TRACKING
+    _trmem_free( chunk, _trmem_guess_who(), Handle );
+#else
+    _SysFree( chunk );
+#endif
 }
 
 
-#if _HOST_MEMORY & _FULL_TRACKING
+#if _MEMORY_TRACKING & _FULL_TRACKING
 extern  void    DumpMem( void )
 /*****************************/
 {

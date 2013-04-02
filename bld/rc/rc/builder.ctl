@@ -9,11 +9,12 @@ set PROJNAME=wrc
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK ( <1> <BINTOOL> ) rel ]
+[ BLOCK <1> rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <BINTOOL> rel ]
-#======================
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/bwrc.exe     <OWBINDIR>/bwrc<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwrcd<DYEXT> <OWBINDIR>/bwrcd<DYEXT>
     <CPCMD> kanji.uni <OWBINDIR>/

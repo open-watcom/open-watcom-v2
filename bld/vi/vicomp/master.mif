@@ -8,13 +8,15 @@ vicomp_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-.c : ../../c
+.c : ../../c;../../ctl
 
-inc_dirs = -I. -I"../../h" -I"$(posix_dir)/h"
+all : vicomp.exe parsectl.exe parsedyn.exe edbind.exe
+
+inc_dirs = -I. -I"../../h" -I"../../ctl" -I"$(posix_dir)/h"
 
 extra_cpp_flags = -DVICOMP
 
-objs = &
+vicomp_objs = &
     vicomp.obj &
     addstr.obj &
     srcgen.obj &
@@ -31,9 +33,23 @@ objs = &
     srcvar.obj &
     parse.obj
 
-vicomp.exe : $(objs) $(cl_objs)
+.obj.exe :
 !ifndef __WATCOM__
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {$(objs)}
+        $(linker) name $@ $(lflags) file {$<}
+!endif
+
+edbind.exe : edbind.obj $(cl_objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $< $(ldflags)
+!else
+        $(linker) name $@ $(lflags) file {$<}
+!endif
+
+vicomp.exe : $(vicomp_objs) $(cl_objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $< $(ldflags)
+!else
+        $(linker) name $@ $(lflags) file {$<}
 !endif

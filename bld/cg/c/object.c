@@ -291,6 +291,7 @@ static block    *BQFirst( block_queue *q ) {
 static block    *BQNext( block_queue *q, block *curr ) {
 /******************************************************/
 
+    q = q;
     return( curr->next_block );
 }
 
@@ -835,7 +836,7 @@ extern  void    SortBlocks( void )
     while( !BQEmpty( &unplaced ) ) {
         curr = BQRemove( &unplaced, NULL );
         if( _Placed( curr ) ) continue;
-        while( 1 ) {
+        for( ;; ) {
             BQAdd( &placed, curr );
             _MarkPlaced( curr );
             curr = BestFollower( &unplaced, curr );

@@ -33,8 +33,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include <unistd.h>
-#include <conio.h>
+#include "wio.h"
+#include "clibext.h"
 
 
 #define BUFFER_SIZE     512
@@ -42,16 +42,16 @@
 #if !defined( SPLITZIP )
 void SplitFile( long size, long max_size, char * file );
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 //=================================
 
 {
-
     if( argc != 4 ) {
         printf( "Usage: SPLITFIL filename size max-size\n" );
         exit( 1 );
     }
     SplitFile( atol( argv[ 2 ] ), atol( argv[ 3 ] ), argv[ 1 ] );
+    return( 0 );
 }
 #endif
 
@@ -68,13 +68,11 @@ void SplitFile( long size, long max_size, char * input_file )
     bigfile = fopen( input_file, "rb" );
     if( bigfile == NULL ) {
         printf( "Unable to open '%s'\n", input_file );
-        getch();
         exit( 2 );
     }
     buffer = malloc( BUFFER_SIZE );
     if( buffer == NULL ) {
         printf( "Unable to allocate buffer\n" );
-        getch();
         exit( 3 );
     }
 
@@ -89,12 +87,13 @@ void SplitFile( long size, long max_size, char * input_file )
             printf( "Unable to create '%s'\n", fullname );
             exit( 4 );
         }
+        len_read = 0;
         while( size > 0 ) {
             len_read = read( fileno( bigfile ), buffer, BUFFER_SIZE );
             if( len_read == 0 ) break;
             if( write( fileno( smallfile ), buffer, len_read ) != len_read ) {
                 printf( "Error writing '%s'\n", fullname );
-                getch();
+                exit( 5 );
             }
             size -= len_read;
         }

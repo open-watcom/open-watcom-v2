@@ -2,15 +2,20 @@
 # =============================
 
 set PROJDIR=<CWD>
-set PROJNAME=bide2mak
+set PROJNAME=ide2make
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/bintool.ctl ]
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
     cdsay <PROJDIR>
+
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/ide2make.exe <OWBINDIR>/bide2mak<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

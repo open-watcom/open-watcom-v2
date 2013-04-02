@@ -2063,7 +2063,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_DATA_PTR_SYM :            // GENERATE POINTER FOR SYMBOL
             if( curr_seg != SEG_BSS ) {
-                DGFEPtr( ins_value.uvalue, exprn_type, ptr_offset );
+                DGFEPtr( (cg_sym_handle)ins_value.pvalue, exprn_type, ptr_offset );
             }
             break;
 

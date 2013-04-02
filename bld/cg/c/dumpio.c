@@ -32,7 +32,6 @@
 
 #include <stdio.h>
 #include "standard.h"
-#include "hostsys.h"
 #include "dump.h"
 
 extern  void    DumpChar(char);

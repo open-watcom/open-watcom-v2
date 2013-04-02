@@ -33,6 +33,7 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
+#include "symdbg.h"
 #include "ocentry.h"
 #include "cgmem.h"
 #include "vergen.h"
@@ -281,10 +282,10 @@ static  void    CodeSequence( byte *p, byte_seq_len len ) {
                 case FIX_SYM_SEGMENT:
                 case FIX_SYM_RELOFF:
                     p += 2;
-                    sym = (sym_handle)*(unsigned long *)p;
-                    p += sizeof( unsigned long );
-                    off = (offset)*(unsigned long *)p;
-                    p += sizeof( unsigned long );
+                    sym = (sym_handle)*(void **)p;
+                    p += sizeof( void * );
+                    off = (offset)*(unsigned_32 *)p;
+                    p += sizeof( unsigned_32 );
                     attr = FEAttr( sym );
                     switch( type ) {
                     case FIX_SYM_SEGMENT:
@@ -357,7 +358,7 @@ extern  void    GenCall( instruction *ins ) {
     sym_handle          sym;
     bool                big;
     oc_class            pop_bit;
-    call_class          class;
+    call_class          cclass;
     byte_seq            *code;
     label_handle        lbl;
 
@@ -365,7 +366,7 @@ extern  void    GenCall( instruction *ins ) {
         Pushf();
     }
     op = ins->operands[CALL_OP_ADDR];
-    class = *(call_class *)FindAuxInfo( op, CALL_CLASS );
+    cclass = *(call_class *)FindAuxInfo( op, CALL_CLASS );
     code = FindAuxInfo( op, CALL_BYTES );
     if( code != NULL ) {
         _Emit;
@@ -374,12 +375,11 @@ extern  void    GenCall( instruction *ins ) {
         } else {
             CodeBytes( code->data, code->length );
         }
-    } else if( ( class & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    } else if( ( cclass & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
-        if( ( class & FAR_CALL ) != EMPTY && ( FEAttr( sym ) & FE_IMPORT ) ) {
-            CodeHandle( OC_JMP | ATTR_FAR,
-                        OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
+        if( (cclass & FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {
+            CodeHandle( OC_JMP | ATTR_FAR, OptInsSize( OC_JMP, OC_DEST_FAR ), lbl );
         } else {
             CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), lbl );
         }
@@ -389,7 +389,7 @@ extern  void    GenCall( instruction *ins ) {
         } else {
             pop_bit = 0;
         }
-        if( class & FAR_CALL ) {
+        if( cclass & FAR_CALL ) {
             big = TRUE;
         } else {
             big = FALSE;

@@ -95,20 +95,3 @@ typedef struct object {
         unsigned                pending_label_line      : 1;
         cg_linenum              pending_line_number;
 } object;
-
-typedef enum {
-        F_LOBYTE        = 0,    /* not used */
-        F_OFFSET        = 1,
-        F_BASE          = 2,
-        F_PTR           = 3,
-        F_HIBYTE        = 4,    /* not used */
-        F_PHAR_OFFSET   = 5,
-        F_LDR_OFFSET    = 5,
-        F_PHAR_PTR      = 6,
-        F_MS_OFFSET_32  = 9,
-        F_MS_PTR        = 11,
-        F_MS_LDR_OFFSET_32  = 13,
-        F_MASK          = 0x3f,
-        F_TLS           = 0x40, /* special trigger value */
-        F_FAR16         = 0x80 /* special trigger value */
-} fix_class;

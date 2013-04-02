@@ -64,13 +64,11 @@ essentially no worst case performance scenario.
 #include <string.h>
 
 #include "standard.h"
-#include "ptrint.h"
-#include "hostsys.h"
 #include "cg.h"
 #if defined( _M_IX86 ) && defined( __WATCOMC__ )
     #include <i86.h>
 #endif
-#include <unistd.h>
+#include "wio.h"
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OSI__ )
@@ -121,7 +119,7 @@ extern      short   __psp;
 
 #endif
 
-typedef unsigned_32     tag;
+typedef pointer_int     tag;
 
 extern bool     GetEnvVar( char*, char*, int );
 extern char     *CopyStr( char *src, char *dst );
@@ -136,7 +134,7 @@ extern void     FatalError( char* );
 #define _4M             (4*_1M)
 #define _16M            (16*_1M)
 
-static  char    *MemFromSys( tag );
+static  pointer     MemFromSys( size_t );
 
 static pointer_int  AllocSize = { 0 };
 static pointer_int  MemorySize;
@@ -150,7 +148,11 @@ static pointer_int  PeakAlloc    = 0;
 
 #define MAX_SIZE        14 /* 16384 */
 #define MIN_SIZE        4  /* 16 */
+#if defined( LONG_IS_64BITS ) || defined( _WIN64 )
+#define WORD_SIZE       8  /* Needed to keep alignment. */
+#else
 #define WORD_SIZE       4
+#endif
 #define MAX_CLASS       (MAX_SIZE-MIN_SIZE)
 
 /* Free list structure - length holds the size of memory block, which
@@ -186,13 +188,13 @@ typedef struct blk_hdr {
 
 #define TAG_SIZE        sizeof( tag )
 
-#define MIN_ALLOC ((sizeof(frl)+(WORD_SIZE-1))&~(WORD_SIZE-1))
+#define MIN_ALLOC _RoundUp( sizeof( frl ), WORD_SIZE )
 #define MAX_ALLOC (1 << MAX_SIZE)
 #define _WALKTAG( free ) ((frl *)((char *)(free) + (free)->length ))
 
 static mem_blk  *_Blks;
 static frl      *_FreeList[ MAX_CLASS + 1 ];
-static tag      _ClassSizes[ MAX_CLASS + 1 ];
+static unsigned _ClassSizes[ MAX_CLASS + 1 ];
 
 #if  defined( __DOS__ ) || defined( __QNX__ )
 
@@ -241,8 +243,8 @@ static  void    CalcMemSize( void )
 {
     bool        max_size_queried;
     bool        size_queried;
-    unsigned_32 size_requested;
-    unsigned_32 memory_available;
+    pointer_int size_requested;
+    pointer_int memory_available;
     char        buff[80];
 
     Initialized = 2;
@@ -258,7 +260,7 @@ static  void    CalcMemSize( void )
             size_requested = myatoi( buff ) * _1K;
         }
     }
-    #if defined( __DOS__ )
+#if defined( __DOS__ )
     {
         char        *memstart;
 
@@ -288,9 +290,7 @@ static  void    CalcMemSize( void )
                     }
                 }
             } else {
-                #ifdef __DOS__
-                    memory_available = *(char * far *)MK_FP( __psp, 0x60 ) - memstart;
-                #endif
+                memory_available = *(char * far *)MK_FP( __psp, 0x60 ) - memstart;
             }
             if( memory_available < _1M ) memory_available = _1M;
         }
@@ -303,7 +303,7 @@ static  void    CalcMemSize( void )
             MemorySize = memory_available;
         }
     }
-    #elif defined( __NT__ )
+#elif defined( __NT__ )
     {
         MEMORYSTATUS    info;
 
@@ -315,14 +315,14 @@ static  void    CalcMemSize( void )
             MemorySize = memory_available;
         }
     }
-    #elif defined( __OS2__ ) || defined( __OSI__ )
-        if( size_requested != 0 ) {
-            MemorySize = size_requested;
-        } else {
-            MemorySize = _16M;
-        }
-        memory_available = _16M;
-    #elif defined( __QNX__ )
+#elif defined( __OS2__ ) || defined( __OSI__ )
+    if( size_requested != 0 ) {
+        MemorySize = size_requested;
+    } else {
+        MemorySize = _16M;
+    }
+    memory_available = _16M;
+#elif defined( __QNX__ )
     {
         struct _osinfo  data;
 
@@ -337,14 +337,14 @@ static  void    CalcMemSize( void )
             MemorySize = memory_available;
         }
     }
-    #else
-        if( size_requested != 0 ) {
-            MemorySize = size_requested;
-        } else {
-            MemorySize = _16M;
-        }
-        memory_available = _16M;
-    #endif
+#else
+    if( size_requested != 0 ) {
+        MemorySize = size_requested;
+    } else {
+        MemorySize = _16M;
+    }
+    memory_available = _16M;
+#endif
     if( max_size_queried || size_queried ) {
         myitoa( (int)(memory_available/_1K), CopyStr( "Maximum WCGMEMORY=", buff ) );
         write( 1, buff, Length( buff ) );
@@ -373,8 +373,8 @@ static  void    MemInit( void )
 }
 
 
-static int SizeToClass( tag amount )
-/**********************************/
+static int SizeToClass( size_t amount )
+/*************************************/
 {
     int mem_class;
 
@@ -397,18 +397,19 @@ static int SizeToClass( tag amount )
 }
 
 
-static tag ClassToSize( int mem_class )
-/*************************************/
+static unsigned ClassToSize( int mem_class )
+/******************************************/
 {
     return( _ClassSizes[mem_class] );
 }
 
 
-static pointer  GetFromFrl( tag amount, int frl_class )
-/*****************************************************/
+static pointer  GetFromFrl( size_t amount, int frl_class )
+/********************************************************/
 {
     frl     *free;
 
+    amount = amount;
     free = _FreeList[ frl_class ];
     if( free != NULL ) {
         assert( !( free->length & ALLOCATED ) );
@@ -420,8 +421,8 @@ static pointer  GetFromFrl( tag amount, int frl_class )
 }
 
 
-static pointer  GetFromBlk( tag amount )
-/**************************************/
+static pointer  GetFromBlk( size_t amount )
+/*****************************************/
 {
     mem_blk     *block;
     tag         *alloc;
@@ -443,8 +444,8 @@ static pointer  GetFromBlk( tag amount )
 }
 
 
-extern pointer  MemAlloc( tag amount )
-/************************************/
+extern pointer  MemAlloc( size_t amount )
+/***************************************/
 {
     char        *chunk;
     int         mem_class;
@@ -453,9 +454,9 @@ extern pointer  MemAlloc( tag amount )
         MemInit();
     if( amount == 0 )
         return( NULL );
-    amount = ( amount + TAG_SIZE + (WORD_SIZE-1) ) & ~(WORD_SIZE-1);
+    amount = _RoundUp( amount + TAG_SIZE, WORD_SIZE );
     if( amount > MAX_ALLOC ) {
-        return( (pointer)MemFromSys( amount ) );
+        return( MemFromSys( amount ) );
     }
 
     if( amount < MIN_ALLOC )
@@ -532,17 +533,16 @@ extern pointer_int      MemSize( void )
 }
 
 
-static  char    *MemFromSys( tag amount )
-/***************************************/
+static  pointer MemFromSys( size_t amount )
+/*****************************************/
 {
-    char        *ptr;
-    char        *chunk;
+    pointer     ptr;
     blk_hdr     *allocated;
     mem_blk     *blk;
-    unsigned    size;
+    size_t      size;
 
     // round up size to multiple of 64K
-    size = (amount + sizeof( mem_blk ) + sizeof( blk_hdr ) + (_64K - 1)) & - _64K;
+    size = _RoundUp( amount + sizeof( mem_blk ) + sizeof( blk_hdr ), _64K );
 #ifdef NDEBUG
     ptr = malloc( size );
 #else
@@ -554,7 +554,7 @@ static  char    *MemFromSys( tag amount )
         if( AllocSize > PeakAlloc )
             PeakAlloc = AllocSize;
 #endif
-        blk = (void *)ptr;
+        blk = ptr;
         // If amount was zero, this block will be chopped up into
         // small chunks immediately. If nonzero, return pointer
         // to memory at the end of the block and use the rest for
@@ -570,11 +570,11 @@ static  char    *MemFromSys( tag amount )
             allocated = (blk_hdr*)((char*)blk + sizeof( mem_blk ) + blk->free);
             allocated->block = blk;
             allocated->size  = amount | ALLOCATED;
-            chunk = (char*)allocated + sizeof( blk_hdr );
+            ptr = (char*)allocated + sizeof( blk_hdr );
         } else {
-            chunk = (char*)blk + sizeof( mem_blk );
+            ptr = (char*)blk + sizeof( mem_blk );
         }
-        return( chunk );
+        return( ptr );
     }
     return( NULL );
 }

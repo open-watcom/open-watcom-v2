@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if _HOST_INTEGER == 16
+#if INT_MAX == SHRT_MAX
 #error 16-bit bitsets not supported
 #endif
 

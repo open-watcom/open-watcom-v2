@@ -99,7 +99,7 @@ rcmsg.gh: wrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 wrmsg.gh: ../h/master.msg $(msgfiles)
-        $(c_pp) -zk0 -I"../h" -I"$(wrc_dir)/h" $[@ >$^@
+        $(cpp) -zk0 -I"../h" -I"$(wrc_dir)/h" $[@ >$^@
 
 ytab.gh : $(wrc_dir)/y/rc.y $(wrc_dir)/y/yydriver.c $(wrc_dir)/h/rcmem.h
         $(yacc) -d -b $[@ $(wrc_dir)/y/yydriver.c >$(nulldevice)

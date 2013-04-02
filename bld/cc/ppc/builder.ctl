@@ -9,11 +9,12 @@ set PROJNAME=wccppc
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK ( <1> <BINTOOL> ) rel ]
+[ BLOCK <1> rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <BINTOOL> rel ]
-#======================
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/bwcppc.exe      <OWBINDIR>/bwccppc<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwccdppc<DYEXT> <OWBINDIR>/bwccdppc<DYEXT>
 

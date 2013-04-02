@@ -30,13 +30,11 @@
 
 
 #include "standard.h"
-#include "hostsys.h"
 #include "coderep.h"
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
 #include "zoiks.h"
@@ -98,8 +96,6 @@ extern    struct opcode_entry   DbgInfo[];
 
 extern  void            DFBlkBeg( dbg_block *blk, offset lc );
 static  void            DumpLocals( dbg_local *local );
-
-#define CurrProc_debug ((dbg_rtn *)CurrProc->targ.debug)
 
 dw_client                  Client;
 static short               CurrFNo;
@@ -897,8 +893,8 @@ static  dbg_local *UnLinkLoc( dbg_local **owner, sym_handle sym ) {
 }
 
 
-static  void GenParmLoc( dbg_local   *parm,
-                    dbg_local   **locals ){
+static  void GenParmLoc( dbg_local *parm, dbg_local **locals )
+{
     dbg_local      *alt;
     dw_loc_handle   dw_loc;
     dw_loc_handle   dw_entry;
@@ -951,7 +947,6 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     dbg_type            tipe;
     fe_attr             attr;
     char               *name;
-    call_class          *class_ptr;
     uint                flags;
     dw_loc_handle       dw_retloc;
     dw_loc_handle       dw_frameloc;
@@ -965,10 +960,9 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     lc = lc;
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgRetType( sym );
-    class_ptr = FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS );
     flags = 0;
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-    if( *class_ptr & FAR_CALL ) {
+    if( *(call_class *)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & FAR_CALL ) {
         flags |= DW_PTR_TYPE_FAR;
     }
 #endif
@@ -1034,7 +1028,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     parm = rtn->parms;
     while( parm != NULL ) {  /* flush these suckers */
         if( parm->sym != NULL ){
-            GenParmLoc( parm, &rtn->blk->locals );
+            GenParmLoc( parm, &rtn->rtn_blk->locals );
         }
         DBLocFini( parm->loc );
         junk = parm;
@@ -1045,7 +1039,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
         GenRetSym( rtn->reeturn, tipe );
         DBLocFini( rtn->reeturn );
     }
-    DFBlkBeg( rtn->blk, lc );
+    DFBlkBeg( rtn->rtn_blk, lc );
 //   DumpLocals( rtn->blk->locals );
 }
 
@@ -1075,13 +1069,15 @@ extern  void    DFBlkEnd( dbg_block *blk, offset lc ) {
     DWEndLexicalBlock( Client );
 }
 
-extern  void    DFEpiBeg( dbg_rtn *rtn, offset lc ) {
-/****************************************************/
-    DFBlkEnd( rtn->blk, lc );
+extern  void    DFEpiBeg( dbg_rtn *rtn, offset lc )
+/*************************************************/
+{
+    DFBlkEnd( rtn->rtn_blk, lc );
 }
 
-extern  void    DFRtnEnd( dbg_rtn *rtn, offset lc ) {
-/****************************************************/
+extern  void    DFRtnEnd( dbg_rtn *rtn, offset lc )
+/*************************************************/
+{
     bck_info            *bck;
 
     lc = 0;

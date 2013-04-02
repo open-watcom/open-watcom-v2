@@ -89,19 +89,19 @@ static void basePrintf( const char *in, va_list al )
                 break;
             case 'u':
                 i = va_arg( al, int );
-                utoa( i, buff, 10 );
+                ultoa( (unsigned)i, buff, 10 );
                 goto copyloop1;
             case 'd':
                 i = va_arg( al, int );
-                itoa( (unsigned int) i, buff, 10 );
+                itoa( (unsigned int)i, buff, 10 );
                 goto copyloop1;
             case 'U':
                 l = va_arg( al, long );
-                ultoa( (unsigned long) l, buff, 10 );
+                ultoa( (unsigned long)l, buff, 10 );
                 goto copyloop1;
             case 'l':
                 l = va_arg( al, long );
-                ltoa( (long) l, buff, 10 );
+                ltoa( (long)l, buff, 10 );
                 goto copyloop1;
             case 's':
                 tmp = va_arg( al, char * );

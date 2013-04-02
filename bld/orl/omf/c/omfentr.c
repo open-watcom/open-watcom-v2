@@ -36,8 +36,9 @@
 #include "omfload.h"
 #include "omfmunge.h"
 #include "omfflhn.h"
-#include "orlhash.h"
+#include "omforl.h"
 #include "omfdrctv.h"
+#include "orlhash.h"
 
 #define _IsSegType( t )         ( ( t == ORL_SEC_TYPE_PROG_BITS ) || \
                                   ( t == ORL_SEC_TYPE_NO_BITS ) )
@@ -58,7 +59,7 @@ omf_handle OMFENTRY OmfInit( orl_funcs * funcs )
 
 orl_return OMFENTRY OmfFini( omf_handle oh )
 {
-    orl_return                                  err;
+    orl_return          err;
 
     assert( oh );
 
@@ -71,24 +72,28 @@ orl_return OMFENTRY OmfFini( omf_handle oh )
 }
 
 
-omf_file_handle OMFENTRY OmfFileInit( omf_handle oh, void *file )
+orl_return OMFENTRY OmfFileInit( omf_handle oh, void *file, omf_file_handle *pofh )
 {
-    omf_file_handle                             ofh;
+    omf_file_handle     ofh;
+    orl_return          err;
 
     assert( oh );
 
     ofh = oh->funcs->alloc( sizeof( omf_file_handle_struct ) );
-    if( !ofh ) return( NULL );
+    if( ofh == NULL )
+        return( ORL_OUT_OF_MEMORY );
 
     memset( ofh, 0, sizeof( omf_file_handle_struct ) );
     ofh->file = file;
 
     OmfAddFileLinks( oh, ofh );
-    if( OmfLoadFileStructure( ofh ) != ORL_OKAY ) {
+    err = OmfLoadFileStructure( ofh );
+    if( err != ORL_OKAY ) {
         OmfRemoveFileLinks( ofh );
-        return( NULL );
+        ofh = NULL;
     }
-    return( ofh );
+    *pofh = ofh;
+    return( err );
 }
 
 
@@ -125,8 +130,7 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, char *desired,
         }
     } else if( ofh->symbol_table ) {
         assert( ofh->symbol_table->assoc.sym.hash_tab );
-        ds = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab,
-                                (orl_hash_value) desired );
+        ds = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, desired );
         while( ds != NULL ) {
             sym = ds->data;
             if( ( sym->typ == ORL_SYM_TYPE_SECTION ) &&
@@ -187,7 +191,7 @@ char * OMFENTRY OmfSecGetName( omf_sec_handle sh )
 
     if( _IsSegType( sh->type ) ) {
         assert( sh->assoc.seg.sym );
-        return( sh->assoc.seg.sym->name );
+        return( sh->assoc.seg.sym->name.string );
     }
     return( NULL );
 }
@@ -240,10 +244,15 @@ orl_sec_alignment OMFENTRY OmfSecGetAlignment( omf_sec_handle sh )
 
 char * OMFENTRY OmfSecGetClassName( omf_sec_handle sh )
 {
+    omf_string_struct   *class;
+
     assert( sh );
 
     if( _IsSegType( sh->type ) ) {
-        return( OmfGetPtrToLName( sh->omf_file_hnd, sh->assoc.seg.class ) );
+        class = OmfGetLName( sh->omf_file_hnd->lnames, sh->assoc.seg.class );
+        if( class != NULL ) {
+            return( class->string );
+        }
     }
     return( NULL );
 }
@@ -494,15 +503,18 @@ char * OMFENTRY OmfSymbolGetName( omf_symbol_handle sym )
 {
     assert( sym );
 
-    return( sym->name );
+    return( sym->name.string );
 }
 
 
 orl_symbol_value OMFENTRY OmfSymbolGetValue( omf_symbol_handle sym )
 {
-    assert( sym );
+    orl_symbol_value    val64;
 
-    return( sym->offset );
+    assert( sym );
+    val64.u._32[I64LO32] = sym->offset;
+    val64.u._32[I64HI32] = 0;
+    return( val64 );
 }
 
 
@@ -575,7 +587,7 @@ char *                  OMFENTRY OmfGroupName( omf_grp_handle hnd )
     assert( hnd );
     assert( hnd->sym );
 
-    return( hnd->sym->name );
+    return( hnd->sym->name.string );
 }
 
 
@@ -600,7 +612,7 @@ char *                  OMFENTRY OmfGroupMember( omf_grp_handle hnd,
             sh = OmfFindSegOrComdat( hnd->omf_file_hnd, hnd->segs[idx], 0 );
             if( sh ) {
                 assert( sh->assoc.seg.sym );
-                return( sh->assoc.seg.sym->name );
+                return( sh->assoc.seg.sym->name.string );
             }
         }
     }

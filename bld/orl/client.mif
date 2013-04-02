@@ -16,6 +16,7 @@ orl_lib_386 = $(__orl_prefix)osi386$(__orl_suffix)
 orl_lib_axp = $(__orl_prefix)osiaxp$(__orl_suffix)
 orl_lib_ppc = $(__orl_prefix)osippc$(__orl_suffix)
 orl_lib_mps = $(__orl_prefix)osimps$(__orl_suffix)
+orl_lib_x64 = $(__orl_prefix)osix64$(__orl_suffix)
 
 #
 # ORL run-time DLL used

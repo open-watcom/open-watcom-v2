@@ -31,6 +31,7 @@
 
 
 #include "coffflhn.h"
+#include "cofforl.h"
 #include "orlhash.h"
 
 static void free_coff_file_hnd( coff_file_handle coff_file_hnd )

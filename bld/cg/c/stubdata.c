@@ -41,7 +41,6 @@
 #include "cfloat.h"
 #include "cgaux.h"
 #include "model.h"
-#include "hostsys.h"
 #include "cgstub.h"
 #define extern
 #include "stubdata.h"

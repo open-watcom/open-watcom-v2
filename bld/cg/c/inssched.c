@@ -725,8 +725,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
         }
         if( chk == adj ) break;
         if( chk->head.opcode == OP_BLOCK ) break;
-        if( !(chk->ins_flags && INS_INDEX_ADJUST)
-                && ReDefinedBy( chk, adj->result ) ) break;
+        if( !(chk->ins_flags & INS_INDEX_ADJUST) && ReDefinedBy( chk, adj->result ) ) break;
         if( forward ) {
             if( chk->id > adj->id ) continue;
         } else {

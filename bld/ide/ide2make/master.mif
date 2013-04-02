@@ -1,8 +1,6 @@
 proj_name = ide2make
 
-!ifndef name
 name = $(proj_name)
-!endif
 
 !ifndef ide2make_autodepends
 ide2make_autodepends = .AUTODEPEND

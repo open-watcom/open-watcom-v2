@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "pattern.h"
-#include "symdbg.h"
 #include "vergen.h"
 #include "reloc.h"
 #include "zoiks.h"

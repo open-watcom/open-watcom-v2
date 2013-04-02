@@ -30,6 +30,7 @@
 
 
 #include "cofflwlv.h"
+#include "cofforl.h"
 #include "orlhash.h"
 #include "walloca.h"
 #ifdef _BSD_SOURCE
@@ -60,7 +61,7 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
         current->coff_file_hnd = file_hnd;
         current->symbol = (coff_symbol *) &(file_hnd->symbol_table->contents[sizeof( coff_symbol ) * loop]);
         if( current->symbol->name.non_name.zeros == 0 ) {
-            current->name = file_hnd->string_table->contents + current->symbol->name.non_name.offset - sizeof( coff_sec_size );
+            current->name = (char *)( file_hnd->string_table->contents + current->symbol->name.non_name.offset - sizeof( coff_sec_size ) );
             current->name_alloced = COFF_FALSE;
         } else {
             len = strlen( current->symbol->name.name_string );
@@ -203,13 +204,14 @@ orl_return CoffBuildSecNameHashTable( coff_file_handle coff_file_hnd )
         return( ORL_OUT_OF_MEMORY );
     }
     for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-        error = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, (orl_hash_value) coff_file_hnd->coff_sec_hnd[loop]->name, coff_file_hnd->coff_sec_hnd[loop] );
+        error = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, coff_file_hnd->coff_sec_hnd[loop]->name, coff_file_hnd->coff_sec_hnd[loop] );
         if( error != ORL_OKAY ) return( error );
     }
     return( ORL_OKAY );
 }
 
-orl_reloc_type CoffConvertRelocType( coff_file_handle coff_file_hnd, coff_reloc_type coff_type ) {
+orl_reloc_type CoffConvertRelocType( coff_file_handle coff_file_hnd, coff_reloc_type coff_type )
+{
     if( coff_file_hnd->machine_type == ORL_MACHINE_TYPE_ALPHA ) {
         switch( coff_type ) {
             case IMAGE_REL_ALPHA_ABSOLUTE:

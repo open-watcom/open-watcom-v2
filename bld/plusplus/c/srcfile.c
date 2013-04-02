@@ -32,9 +32,9 @@
 #include "plusplus.h"
 
 #include <stdio.h>
-#include <unistd.h>
 #include <errno.h>
 
+#include "wio.h"
 #include "memmgr.h"
 #include "fname.h"
 #include "ring.h"

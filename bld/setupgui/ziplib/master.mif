@@ -47,12 +47,9 @@ objs = &
     zsrczip.obj &
     zstat.obj &
     zstatind.obj &
-    zstrerr.obj &
     zuchg.obj &
     zuchgall.obj &
     zuchgdat.obj
 
 $(proj_name).lib : $(objs)
-        @%create $^&.lbc
-        @for %i in ($(objs)) do @%append $^&.lbc +%i
-        $(librarian) $(libflags) @$^&.lbc
+        $(librarian) $(libflags) $(objs)

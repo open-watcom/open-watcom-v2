@@ -49,7 +49,7 @@ extern void DumpInvariants();
 extern void DumpOpt();
 extern void DumpDataDag();
 
-extern void (*__DmpRef[])(void) = {
+extern void (*__DmpRef[])() = {
         &DumpFPUIns,
         &Dumpan,
         &DumpBlk,

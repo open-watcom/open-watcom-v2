@@ -34,6 +34,7 @@
 #include "coffflhn.h"
 #include "cofflwlv.h"
 #include "coffload.h"
+#include "cofforl.h"
 #include "orlhash.h"
 
 coff_handle COFFENTRY CoffInit( orl_funcs * funcs )
@@ -59,13 +60,14 @@ orl_return COFFENTRY CoffFini( coff_handle coff_hnd )
     return( ORL_OKAY );
 }
 
-coff_file_handle COFFENTRY CoffFileInit( coff_handle coff_hnd, void *file )
+orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, void *file, coff_file_handle *pcfh )
 {
     coff_file_handle    coff_file_hnd;
-    orl_return          return_val;
+    orl_return          error;
 
-    coff_file_hnd = (coff_file_handle) coff_hnd->funcs->alloc( sizeof( coff_file_handle_struct ) );
-    if( !coff_file_hnd ) return( NULL );
+    coff_file_hnd = (coff_file_handle)coff_hnd->funcs->alloc( sizeof( coff_file_handle_struct ) );
+    if( coff_file_hnd == NULL )
+        return( ORL_OUT_OF_MEMORY );
     coff_file_hnd->coff_sec_hnd = NULL;
     coff_file_hnd->orig_sec_hnd = NULL;
     coff_file_hnd->file = file;
@@ -73,12 +75,13 @@ coff_file_handle COFFENTRY CoffFileInit( coff_handle coff_hnd, void *file )
     coff_file_hnd->symbol_handles = NULL;
     coff_file_hnd->implib_data = NULL;
     CoffAddFileLinks( coff_hnd, coff_file_hnd );
-    return_val = CoffLoadFileStructure( coff_file_hnd );
-    if( return_val != ORL_OKAY ) {
+    error = CoffLoadFileStructure( coff_file_hnd );
+    if( error != ORL_OKAY ) {
         CoffRemoveFileLinks( coff_file_hnd );
-        return( NULL );
+        coff_file_hnd = NULL;
     }
-    return( coff_file_hnd );
+    *pcfh = coff_file_hnd;
+    return( error );
 }
 
 orl_return COFFENTRY CoffFileFini( coff_file_handle coff_file_hnd )
@@ -95,7 +98,7 @@ orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, char *desired
     if( !desired ) {
         /* global request */
         for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-            error = return_func( (orl_sec_handle) coff_file_hnd->coff_sec_hnd[loop] );
+            error = return_func( (orl_sec_handle)coff_file_hnd->coff_sec_hnd[loop] );
             if( error != ORL_OKAY ) return( error );
         }
     } else {
@@ -103,9 +106,9 @@ orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, char *desired
             error = CoffBuildSecNameHashTable( coff_file_hnd );
             if( error != ORL_OKAY ) return( error );
         }
-        data_struct = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, (orl_hash_value) desired );
+        data_struct = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, desired );
         while( data_struct != NULL ) {
-            error = return_func( (orl_sec_handle) data_struct->data );
+            error = return_func( (orl_sec_handle)data_struct->data );
             if( error != ORL_OKAY ) return( error );
             data_struct = data_struct->next;
         }
@@ -219,7 +222,7 @@ orl_sec_offset COFFENTRY CoffSecGetOffset( coff_sec_handle coff_sec_hnd )
     return( 0 );
 }
 
-orl_return COFFENTRY CoffSecGetContents( coff_sec_handle coff_sec_hnd, char **buffer )
+orl_return COFFENTRY CoffSecGetContents( coff_sec_handle coff_sec_hnd, unsigned char **buffer )
 {
     if( coff_sec_hnd->contents != NULL ) {
         *buffer = coff_sec_hnd->contents;
@@ -342,14 +345,16 @@ orl_return COFFENTRY CoffSymbolSecScan( coff_sec_handle coff_sec_hnd, orl_symbol
     return( ORL_OKAY );
 }
 
-orl_return COFFENTRY CoffNoteSecScan( coff_sec_handle hnd,
-                                      orl_note_callbacks *cb, void *cookie )
-/**************************************************************************/
+orl_return COFFENTRY CoffNoteSecScan( coff_sec_handle hnd, orl_note_callbacks *cb, void *cookie )
+/***********************************************************************************************/
 {
-    if( hnd->type != ORL_SEC_TYPE_NOTE ) return ORL_ERROR;
-    if( strcmp( hnd->name, ".drectve" ) != 0 ) return ORL_OKAY;
-    if( hnd->size == 0 ) return ORL_OKAY;
-    return CoffParseDrectve( hnd->contents, hnd->size, cb, cookie );
+    if( hnd->type != ORL_SEC_TYPE_NOTE )
+        return ORL_ERROR;
+    if( strcmp( hnd->name, ".drectve" ) != 0 )
+        return ORL_OKAY;
+    if( hnd->size == 0 )
+        return ORL_OKAY;
+    return CoffParseDrectve( (char *)hnd->contents, hnd->size, cb, cookie );
 }
 
 char * COFFENTRY CoffSymbolGetName( coff_symbol_handle coff_symbol_hnd )
@@ -362,7 +367,11 @@ char * COFFENTRY CoffSymbolGetName( coff_symbol_handle coff_symbol_hnd )
 
 orl_symbol_value COFFENTRY CoffSymbolGetValue( coff_symbol_handle coff_symbol_hnd )
 {
-    return( coff_symbol_hnd->symbol->value );
+    unsigned_64 val64;
+
+    val64.u._32[I64LO32] = coff_symbol_hnd->symbol->value;
+    val64.u._32[I64HI32] = 0;
+    return( val64 );
 }
 
 orl_symbol_binding COFFENTRY CoffSymbolGetBinding( coff_symbol_handle coff_symbol_hnd )

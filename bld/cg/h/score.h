@@ -30,7 +30,6 @@
 
 
 /* aligned */
-#include "hostsys.h"
 
 #define    NO_INDEX     (-1)
 

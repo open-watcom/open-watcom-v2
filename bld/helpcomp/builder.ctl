@@ -2,15 +2,20 @@
 # ========================
 
 set PROJDIR=<CWD>
-set PROJNAME=bwhc
+set PROJNAME=whc
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/bintool.ctl ]
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
     cdsay <PROJDIR>
+
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/whc.exe <OWBINDIR>/bwhc<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

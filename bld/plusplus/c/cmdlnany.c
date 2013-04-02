@@ -34,8 +34,7 @@
 #include "compcfg.h"
 
 #include <ctype.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "wio.h"
 
 #include "memmgr.h"
 #include "errdefns.h"
@@ -100,8 +99,7 @@ static void checkOENumber( unsigned *p )
 
 static void checkPrologSize( unsigned *p )
 {
-    *p += TARGET_UINT - 1;
-    *p &= ~( TARGET_UINT - 1 );
+    *p = _RoundUp( *p, TARGET_UINT );
 }
 
 static void checkErrorLimit( unsigned *p )
@@ -527,7 +525,7 @@ void ConcatBase10( char *buff, unsigned num )
 
     len = strlen( buff );
     dest = &buff[len];
-    utoa( num, dest, 10 );
+    ultoa( num, dest, 10 );
 }
 
 static void setTarget( char **n, char *t )

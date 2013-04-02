@@ -9,11 +9,9 @@ set PROJNAME=omftools
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <BINTOOL> rel ]
-    cdsay <PROJDIR>
-
-[ BLOCK <BINTOOL> rel ]
+[ BLOCK <BINTOOL> build ]
 #========================
+    cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/objchg.exe   <OWBINDIR>/objchg<CMDEXT>
     <CPCMD> <OWOBJDIR>/objfind.exe  <OWBINDIR>/objfind<CMDEXT>
     <CPCMD> <OWOBJDIR>/objlist.exe  <OWBINDIR>/objlist<CMDEXT>

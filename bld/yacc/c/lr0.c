@@ -94,7 +94,7 @@ static void Sort( void **vec, int n, bool (*lt)( void *, void * ) )
 
     if( n > 1 ){
         l = n/2;  r = n - 1;
-        while( TRUE ) {
+        for( ;; ) {
             if( l > 0 )
                 k = vec[ --l ];
             else {
@@ -106,7 +106,7 @@ static void Sort( void **vec, int n, bool (*lt)( void *, void * ) )
                 }
             }
             j = l;
-            while( TRUE ) {
+            for( ;; ) {
                 i = j;  j = 2 * j + 1;
                 if( j > r )
                     break;

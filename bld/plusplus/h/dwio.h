@@ -37,8 +37,7 @@
 //
 // 92/09/21 -- Greg Bentz       -- cloned from cgio.h
 
-#include <unistd.h>
-
+#include "wio.h"
 #include "dwiobuff.h"
 
 // STRUCTURES:

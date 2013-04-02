@@ -67,7 +67,7 @@ extern int WResIDNameCmp( const WResIDName * name1, const WResIDName * name2 )
     int     cmp_rc;
 
     cmp_rc = wresMemicmp( name1->Name, name2->Name,
-                        __min( name1->NumChars, name2->NumChars) );
+                        min( name1->NumChars, name2->NumChars) );
     if (cmp_rc == 0) {
         if (name1->NumChars == name2->NumChars) {
             return( 0 );

@@ -31,13 +31,11 @@
 
 #include "standard.h"
 #include <string.h>
-#include "hostsys.h"
 #include "coderep.h"
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
 #include "objrep.h"
@@ -101,9 +99,6 @@ typedef struct block_patch {
     struct block_patch  *link;
     dbg_patch_handle    handle;
 } block_patch;
-
-#define CurrProc_debug ((dbg_rtn *)CurrProc->targ.debug)
-
 
 struct sf_info {
     char       size;
@@ -635,14 +630,12 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     dbg_type            tipe;
     fe_attr             attr;
     char               *name;
-    call_class         *class_ptr;
     cs_gproc           *ptr;
     sg_index            kind;
     cv_out              out[1];
 
     lc = lc;
     sym = AskForLblSym( CurrProc->label );
-    class_ptr = FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS );
     attr = FEAttr( sym );
     if( attr & FE_GLOBAL ){
         kind = SG_GPROC;
@@ -663,7 +656,7 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     ptr->proctype = tipe;
     ptr->flags.s = 0;
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-    if( *class_ptr & FAR_CALL ) {
+    if( *(call_class *)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & FAR_CALL ) {
         ptr->flags.f.far_ret = TRUE;
     }
 #endif
@@ -682,9 +675,9 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     DBLocFini( rtn->reeturn );
     DBLocFini( rtn->obj_loc );
     if( rtn->parms != NULL ){
-        DumpParms( rtn->parms, &rtn->blk->locals );
+        DumpParms( rtn->parms, &rtn->rtn_blk->locals );
     }
-    DumpLocals( rtn->blk->locals );
+    DumpLocals( rtn->rtn_blk->locals );
 }
 
 extern  void    CVBlkBeg( dbg_block *blk, offset lc )
@@ -715,7 +708,7 @@ extern  void    CVBlkBeg( dbg_block *blk, offset lc )
     BuffPatchSet( CVSyms, handle );
     BuffWrite( out, &ptr->offset );
     sym = AskForLblSym( CurrProc->label );
-    start = lc - CurrProc_debug->blk->start;
+    start = lc - CurrProc->targ.debug->blk->start;
     SymReloc( CVSyms, sym, start );
     BuffSkip( out, nm );      /* skip addr */
     BuffEnd( out );
@@ -746,10 +739,10 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc )
    CGFree( blk->patches );
 }
 
-extern  void    CVEpiBeg( dbg_rtn *blk, offset lc )
+extern  void    CVEpiBeg( dbg_rtn *rtn, offset lc )
 /*************************************************/
 {
-    blk = blk;
+    rtn = rtn;
     lc  = lc;
 }
 
@@ -767,10 +760,10 @@ extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc )
     old = SetOP( handle->segment );
     here = AskBigLocation();
     SetBigLocation( handle->offset + offsetof( s_gproc, f.proc_length ) );
-    proc_length = lc - rtn->blk->start;
+    proc_length = lc - rtn->rtn_blk->start;
     DataBytes( sizeof( fsize ), (byte *)&proc_length );
     SetBigLocation( handle->offset+ offsetof( s_gproc, f.debug_end ) );
-    debug_end   = rtn->epi_start - rtn->blk->start;
+    debug_end   = rtn->epi_start - rtn->rtn_blk->start;
     DataBytes( sizeof( fsize ), (byte *)&debug_end );
     SetBigLocation( here );
     SetOP( old );

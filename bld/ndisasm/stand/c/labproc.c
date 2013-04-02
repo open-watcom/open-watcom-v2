@@ -181,6 +181,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     orl_sec_handle      sec;
     char *              SourceName;
     char *              LabName;
+    unsigned_64         val64;
 
     type = ORLSymbolGetType( sym_hnd );
     primary_type = type & 0xFF;
@@ -189,16 +190,17 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
 //      case ORL_SYM_TYPE_NONE:
 //      case ORL_SYM_TYPE_FUNC_INFO:
 //          return( ORL_OKAY );
-        case ORL_SYM_TYPE_FILE:
-            SourceName = ORLSymbolGetName( sym_hnd );
-            if( (SourceName != NULL) && (SourceFileInObject == NULL) ) {
-                SourceFileInObject = SourceName;
-            }
-            return( ORL_OKAY );
+    case ORL_SYM_TYPE_FILE:
+        SourceName = ORLSymbolGetName( sym_hnd );
+        if( (SourceName != NULL) && (SourceFileInObject == NULL) ) {
+            SourceFileInObject = SourceName;
+        }
+        return( ORL_OKAY );
     }
     entry = MemAlloc( sizeof( label_entry_struct ) );
     if( !entry ) return( ORL_OUT_OF_MEMORY );
-    entry->offset = (orl_sec_offset) ORLSymbolGetValue( sym_hnd );
+    val64 = ORLSymbolGetValue( sym_hnd );
+    entry->offset = val64.u._32[I64LO32];
     // all symbols from the object file will have names
     entry->shnd = ORLSymbolGetSecHandle( sym_hnd );
     if( primary_type == ORL_SYM_TYPE_SECTION ) {

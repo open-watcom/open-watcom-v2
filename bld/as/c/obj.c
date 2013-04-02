@@ -135,8 +135,7 @@ bool ObjInit( char *fname ) {
     }
     objectDefined = FALSE;      // so that the /fo applies only to the 1st obj
     _makepath( errorFilename, NULL, NULL, name, ".err" );
-    objFile = open( objName, O_CREAT | O_TRUNC | O_BINARY | O_WRONLY,
-                    S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
+    objFile = open( objName, O_CREAT | O_TRUNC | O_BINARY | O_WRONLY, PMODE_RW );
     if( objFile == -1 ) {
         AsOutMessage( stderr, UNABLE_TO_CREATE, objName );
         fputc( '\n', stderr );

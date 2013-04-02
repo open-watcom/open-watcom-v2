@@ -89,7 +89,7 @@ orl_return PrintSymbolInfo( orl_symbol_handle symbol )
     name = ORLSymbolGetName( symbol );
     //printf( "handle = %x", symbol );
     printf( "%-25s:", name ? name : "" );
-    printf( " %4.4x ", ORLSymbolGetValue( symbol ) );
+    printf( " %8.8llx ", ORLSymbolGetValue( symbol ) );
     switch( ORLSymbolGetBinding( symbol ) ) {
         case ORL_SYM_BINDING_NONE:
             printf( "n/a " );

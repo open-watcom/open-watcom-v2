@@ -14,11 +14,11 @@ set PROJNAME=wtouch
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dosi86/wtouch.exe    <OWRELROOT>/binw/wtouch.exe
-    <CCCMD> os2386/wtouch.exe    <OWRELROOT>/binp/wtouch.exe
-    <CCCMD> nt386/wtouch.exe     <OWRELROOT>/binnt/wtouch.exe
+    <CCCMD> dosi86/wtouch.exe    <OWRELROOT>/binw/
+    <CCCMD> os2386/wtouch.exe    <OWRELROOT>/binp/
+    <CCCMD> nt386/wtouch.exe     <OWRELROOT>/binnt/
     <CCCMD> linux386/wtouch.exe  <OWRELROOT>/binl/wtouch
-    <CCCMD> ntaxp/wtouch.exe     <OWRELROOT>/axpnt/wtouch.exe
+    <CCCMD> ntaxp/wtouch.exe     <OWRELROOT>/axpnt/
 
 [ BLOCK . . ]
 #============

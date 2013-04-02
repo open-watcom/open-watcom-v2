@@ -35,10 +35,7 @@
 */
 
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-
+#include "wio.h"
 #include "asmalloc.h"
 #include "fatal.h"
 

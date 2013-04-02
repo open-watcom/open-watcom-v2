@@ -34,7 +34,6 @@
 #include "score.h"
 #include "opcodes.h"
 #include "zerobits.h"
-#include "hostsys.h"
 #include "makeins.h"
 
 extern  bool            UnChangeable(instruction*);

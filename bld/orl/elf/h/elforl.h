@@ -38,7 +38,7 @@
 elf_handle              ELFENTRY ElfInit( orl_funcs * );
 orl_return              ELFENTRY ElfFini( elf_handle );
 
-elf_file_handle         ELFENTRY ElfFileInit( elf_handle, void * );
+orl_return              ELFENTRY ElfFileInit( elf_handle, void *, elf_file_handle * );
 orl_return              ELFENTRY ElfFileFini( elf_file_handle );
 orl_return              ELFENTRY ElfFileScan( elf_file_handle, char *, orl_sec_return_func );
 orl_machine_type        ELFENTRY ElfFileGetMachineType( elf_file_handle );
@@ -57,7 +57,7 @@ elf_sec_handle          ELFENTRY ElfSecGetStringTable( elf_sec_handle );
 elf_sec_handle          ELFENTRY ElfSecGetSymbolTable( elf_sec_handle );
 elf_sec_handle          ELFENTRY ElfSecGetRelocTable( elf_sec_handle );
 orl_sec_offset          ELFENTRY ElfSecGetNonLocalSymbolLoc( elf_sec_handle );
-orl_return              ELFENTRY ElfSecGetContents( elf_sec_handle, char ** );
+orl_return              ELFENTRY ElfSecGetContents( elf_sec_handle, unsigned char ** );
 orl_return              ELFENTRY ElfSecQueryReloc( elf_sec_handle, elf_sec_offset, orl_reloc_return_func );
 orl_return              ELFENTRY ElfSecScanReloc( elf_sec_handle, orl_reloc_return_func );
 

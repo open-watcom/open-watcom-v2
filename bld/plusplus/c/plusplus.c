@@ -33,9 +33,9 @@
 #include <signal.h>
 #include <ctype.h>
 #include <setjmp.h>
-#include <unistd.h>
 #include <limits.h>
 
+#include "wio.h"
 #include "walloca.h"
 #include "scan.h"
 #include "memmgr.h"

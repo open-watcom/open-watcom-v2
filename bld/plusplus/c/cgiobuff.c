@@ -31,11 +31,8 @@
 
 
 #include "plusplus.h"
-
-#include <unistd.h>
-#include <sys/stat.h>
 #include <sys/types.h>
-
+#include "wio.h"
 #include "memmgr.h"
 #include "errdefns.h"
 #include "cgiobuff.h"
@@ -44,7 +41,6 @@
 #include "fname.h"
 #include "toggle.h"
 #include "dbg.h"
-#include "icodes.h"
 #include "stats.h"
 #include "cgdata.h"
 #include "icopmask.h"
@@ -84,8 +80,11 @@ static icop_mask icMaskTable[] = {
     #include "ic_mask.gh"
 };
 
-// defines ic_op_type ICOpTypes[]
-#include "itypvec.h"
+ic_op_type ICOpTypes[] = {
+    #define IC( code, type, mask )    ICOT_##type
+    #include "ic.h"
+    #undef IC
+};
 
 #define doReadOpNUL     NULL
 #define doReadOpBIN     NULL

@@ -9,7 +9,7 @@ set PROJNAME=femisc
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <BINTOOL> rel ]
+[ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/optencod.exe  <OWBINDIR>/optencod<CMDEXT>

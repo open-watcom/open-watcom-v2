@@ -200,7 +200,7 @@ $(name).res : as.rc msg.gh
 !include verrc.mif
 
 msg.gh : as.msg
-        $(c_pp) -zk0 $(cppflags) $[@ > msg.tmp
+        $(cpp) -zk0 $(cppflags) $[@ > msg.tmp
         $(awk) -v base=AS_MSG_BASE -f $(build_dir)/makemsg.awk msg.tmp >> $^@
 
 $(yacc_in) : $(yacc_src) $(as_dir)/y/yydriver.c

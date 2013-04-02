@@ -34,11 +34,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "watcom.h"
 #include "alloc.h"
 #include "yacc.h"
-#if defined( UNIX )
-#include "clibext.h"
-#endif
 
 typedef enum {
     IDENTIFIER = 256,   /* includes identifiers and literals */

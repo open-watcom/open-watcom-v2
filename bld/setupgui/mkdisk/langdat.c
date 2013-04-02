@@ -33,13 +33,10 @@
 #include <ctype.h>
 #ifdef __UNIX__
 #include <stdlib.h>
-#include <unistd.h>
 #else
 #include <direct.h>
 #endif
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <env.h>
-#endif
+#include "wio.h"
 #include "watcom.h"
 #include "builder.h"
 
@@ -167,7 +164,7 @@ static void PushInclude( const char *name )
     char        *fn;
     char        *ext;
     char        dir_name[_MAX_PATH];
-    int         len;
+    size_t      len;
 
     new = Alloc( sizeof( *new ) );
     new->prev = IncludeStk;
@@ -687,6 +684,7 @@ int main( int argc, char *argv[] )
     ctl_file    *next;
     char        *p;
 
+    argc = argc;
     ProcessOptions( argv + 1 );
     if( Product == NULL ) {
         printf( "langdat warning: no product specified, processing all entries\n" );

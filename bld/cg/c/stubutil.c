@@ -32,8 +32,7 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "wio.h"
 #include "standard.h"
 #include "cg.h"
 #include "bckdef.h"
@@ -44,7 +43,6 @@
 #include "cfloat.h"
 #include "cgaux.h"
 #include "model.h"
-#include "hostsys.h"
 #include "cgstub.h"
 #include "feprotos.h"
 #include "cgmem.h"
@@ -164,23 +162,7 @@ extern  void    PutFmt( int out, char * str, va_list list ) {
                     FPut( out, str2++, 1 );
                 }
                 break;
-#ifndef __386__
             case 'p':
-                {
-                    unsigned            offset, segment;
-
-                    offset = va_arg( list, unsigned );
-                    segment = va_arg( list, unsigned );
-                    str2 = DoIToHS( buff, 79, segment );
-                    while( *str2 ) FPut( out, str2++, 1 );
-                    FPut( out, ":", 1 );
-                    str2 = DoIToHS( buff, 79, offset );
-                    while( *str2 ) FPut( out, str2++, 1 );
-                    break;
-                }
-#else
-            case 'p':
-#endif
             case 'h':
                 str2 = DoIToHS( buff, 79, va_arg( list, int ) );
                 while( *str2 ) {
@@ -313,15 +295,8 @@ extern  char    *Name( pointer sym ) {
     char        *end,*hex;
 
     end = CopyStr( "[", CopyStr( FEName( sym ), buff ) );
-    #ifdef __386__
-        hex = DoIToHS( hexbuf, 20, (int)sym );
-        end = CopyStr( "]", CopyStr( hex, end ) );
-    #else
-        hex = DoIToHS( hexbuf, 20, (unsigned long)sym >> 16 );
-        end = CopyStr( ":", CopyStr( hex, end ) );
-        hex = DoIToHS( hexbuf, 20, (unsigned long)sym & 0xFFFF );
-        end = CopyStr( "]", CopyStr( hex, end ) );
-    #endif
+    hex = DoIToHS( hexbuf, 20, (int)sym );
+    end = CopyStr( "]", CopyStr( hex, end ) );
     return( buff );
 }
 
@@ -644,7 +619,7 @@ extern  bool    CheckInLine( n * t ) {
     n   *parm;
     b   *bk;
 
-    if( !( *(call_class*)FEAuxInfo( t->h, CALL_CLASS ) & MAKE_CALL_INLINE ) ) {
+    if( (*(call_class*)FEAuxInfo( t->h, CALL_CLASS ) & MAKE_CALL_INLINE) == 0 ) {
         return( FALSE );
     }
     icall = CGAlloc( sizeof( ic ) );

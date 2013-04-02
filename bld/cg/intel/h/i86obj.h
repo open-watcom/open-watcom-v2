@@ -152,3 +152,18 @@ typedef struct index_rec {
         void                    *virt_func_refs;
         omf_idx                 comdat_prefix_import;
 } index_rec;
+
+typedef enum {
+    F_OFFSET        = 0,
+    F_BIG_OFFSET    = 1,
+    F_LDR_OFFSET    = 2,
+    F_BASE          = 3,
+    F_PTR           = 4,
+    F_MASK          = 0x0f,
+    F_TLS           = 0x10, /* special trigger value */
+    F_FAR16         = 0x20, /* special trigger value */
+    F_ALT_DLLIMP    = 0x40, /* special trigger value */
+} fix_class;
+
+#define F_CLASS(c)  (c & F_MASK)
+

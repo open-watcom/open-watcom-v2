@@ -29,6 +29,5 @@
 ****************************************************************************/
 
 
-#include "hostsys.h"
 extern  void            Suicide( void );
 extern  int             Spawn(void (*)( void ));

@@ -35,7 +35,6 @@
 
 #include "standard.h"
 #include "cgmem.h"
-#include "ptrint.h"
 
 extern    pointer_int   FrlSize;
 
@@ -47,7 +46,7 @@ extern  void    InitFrl( pointer **head ) {
 }
 
 
-extern  pointer AllocFrl( pointer **head, int size ) {
+extern  pointer AllocFrl( pointer **head, size_t size ) {
 /****************************************************/
 
     pointer     new;
@@ -67,7 +66,7 @@ extern  pointer AllocFrl( pointer **head, int size ) {
 }
 
 
-extern  void    FrlFreeSize( pointer **head, pointer *what, int size ) {
+extern  void    FrlFreeSize( pointer **head, pointer *what, size_t size ) {
 /**********************************************************************/
 
 #ifndef NDEBUG
@@ -79,7 +78,7 @@ extern  void    FrlFreeSize( pointer **head, pointer *what, int size ) {
 }
 
 
-extern  bool    FrlFreeAll( pointer **head, int size ) {
+extern  bool    FrlFreeAll( pointer **head, size_t size ) {
 /******************************************************/
 
     pointer     junk;

@@ -226,7 +226,7 @@ static  instruction     *PushDelayed( instruction *ins, an addr, call_state *sta
 */
 
     ins->result = BGNewTemp( addr->tipe );
-    if( addr->flags & ADDR_CROSSED_BLOCKS ) {
+    if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
         ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
     }
     ins = MakeMove( ins->result, AllocRegName( HW_ST0 ),
@@ -350,7 +350,7 @@ static  int     FPPushDelay( pn parm, call_state *state ) {
             if( PushDelayedIfStackOperand( ins, parm, state ) ) continue;
             if( PushDelayedIfRedefinition( ins, parm, state ) ) continue;
             /* we can push it just before the CALL */
-            if( addr->flags & ADDR_CROSSED_BLOCKS ) {
+            if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
                 UseInOther( ins->operands[0] );
                 if( ins->num_operands > 1 ) UseInOther( ins->operands[1] );
             }

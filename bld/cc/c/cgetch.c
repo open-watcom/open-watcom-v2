@@ -31,7 +31,7 @@
 
 #include "cvars.h"
 #include <errno.h>
-#include <unistd.h>
+#include "wio.h"
 #include "scan.h"
 
 

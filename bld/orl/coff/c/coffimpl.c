@@ -37,6 +37,7 @@
 #include "walloca.h"
 
 #include "coffimpl.h"
+#include "cofforl.h"
 
 /* note before you use this for anything make sure that the values below
 are large enough for your purposes (particularly the num sections and symbols.

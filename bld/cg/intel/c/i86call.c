@@ -38,7 +38,6 @@
 #include "cgmem.h"
 #include "addrname.h"
 #include "cgdefs.h"
-#include "hostsys.h"
 #include "cgaux.h"
 #include "regset.h"
 #include "rtclass.h"
@@ -66,7 +65,6 @@ extern  an              MakeTempAddr(name*,type_def*);
 extern  bool            AssgnParms(cn,bool);
 extern  type_class_def  AddCallBlock(sym_handle,type_def*);
 extern  void            AddCallIns(instruction*,cn);
-extern  void            FreeCallNode(cn);
 extern  name            *SegmentPart(name*);
 extern  name            *OffsetPart(name*);
 extern  name            *DoParmDecl(sym_handle,type_def*,hw_reg_set);
@@ -292,7 +290,6 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
         AddIns( MakeBinary( OP_ADD, reg_name,
                 AllocS32Const( state->parm.offset ), reg_name, WD ) );
     }
-    FreeCallNode( call );
     return( MakeTempAddr( result, call->tipe ) );
 }
 

@@ -2,7 +2,7 @@
 !include $(cg_dir)/risc/mif/risc.mif
 !include $(cg_dir)/mif/master.mif
 
-target_objs     = $(mips_objs) $(risc_objs) $(cg_objs)
+target_objs     = $(mips_objs) $(risc_objs) $(cg_objs) encode.obj
 target_name     = mps
 
 !include $(cg_dir)/mif/target.mif

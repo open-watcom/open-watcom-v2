@@ -88,6 +88,21 @@
 #define _ARRAYOF( what, type )  ((type *)(what)->array)
 #define _CHGTYPE( what, type )  (*(type *)&(what))
 
+
+typedef enum {
+    OFC_LOBYTE              = 0,    /* not used */
+    OFC_OFFSET              = 1,
+    OFC_BASE                = 2,
+    OFC_PTR                 = 3,
+    OFC_HIBYTE              = 4,    /* not used */
+    OFC_PHAR_OFFSET         = 5,
+    OFC_LDR_OFFSET          = 5,
+    OFC_PHAR_PTR            = 6,
+    OFC_MS_OFFSET_32        = 9,
+    OFC_MS_PTR              = 11,
+    OFC_MS_LDR_OFFSET_32    = 13,
+} omf_fix_class;
+
 #include "pushpck1.h"
 typedef struct line_num_entry {
     unsigned_16     line;
@@ -681,7 +696,7 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
     rec->comdat_size = 0;
     rec->virt_func_refs = NULL;
     rec->data_prefix_size = 0;
-    rec->comdat_prefix_import = 0;
+    rec->comdat_prefix_import = NOT_IMPORTED;
     rec->sidx = ++SegmentIndex;
     rec->seg = seg->id;
     rec->attr = SegmentAttr( seg->align, seg->attr, use_16 );
@@ -939,7 +954,7 @@ extern seg_id DbgSegDef( char *seg_name, char *seg_class, int seg_modifier )
     rec->seg = --BackSegIdx;
     rec->attr = SEG_ALGN_BYTE | seg_modifier;
     rec->data_prefix_size = 0;
-    rec->comdat_prefix_import = 0;
+    rec->comdat_prefix_import = NOT_IMPORTED;
     rec->base = rec->sidx;
     rec->btype = BASE_SEG;
     DoASegDef( rec, TRUE );
@@ -2130,40 +2145,70 @@ static  void    CheckImportSwitch( bool next_is_static )
 }
 
 
-static  omf_idx     GenImport( sym_handle sym, import_type kind )
-/***************************************************************/
+static void _TellImportHandle( sym_handle sym, import_handle imp_idx, bool alt_dllimp )
+/*************************************************************************************/
 {
-    omf_idx         idx;
-    fe_attr         attr;
+    if( alt_dllimp ) {
+        FEBack( sym )->imp_alt = imp_idx;
+    } else {
+        TellImportHandle( sym, imp_idx );
+    }
+}
 
-    idx = AskImportHandle( sym );
-    if( idx == NOT_IMPORTED || kind == SPECIAL ) {
-        idx = ImportHdl++;
+static import_handle _AskImportHandle( sym_handle sym, bool alt_dllimp )
+/**********************************************************************/
+{
+    if( alt_dllimp ) {
+        return( FEBack( sym )->imp_alt );
+    } else {
+        return( AskImportHandle( sym ) );
+    }
+}
+
+static  omf_idx     GenImport( sym_handle sym, bool alt_dllimp )
+/**************************************************************/
+{
+    omf_idx         imp_idx;
+    fe_attr         attr;
+    import_type     kind;
+
+    imp_idx = _AskImportHandle( sym, alt_dllimp );
+    if( imp_idx == NOT_IMPORTED ) {
+        attr = FEAttr( sym );
+        imp_idx = ImportHdl++;
         if( Imports == NULL ) {
             Imports = InitArray( sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
         }
-        attr = FEAttr( sym );
-        CheckImportSwitch( !( attr & FE_GLOBAL) );
-        if( kind != SPECIAL )
-            TellImportHandle( sym, idx );
-        if( kind == NORMAL ) {
-             if( (attr & FE_DLLIMPORT) ) {
-                 kind = DLLIMPORT;
-             } else if( _IsModel( POSITION_INDEPENDANT ) ) {
-                 if( ( attr & FE_THREAD_DATA ) != 0 ) {
-                     kind = PIC_RW;
-                 }
-             }
+        CheckImportSwitch( !(attr & FE_GLOBAL) );
+        _TellImportHandle( sym, imp_idx, alt_dllimp );
+        kind = NORMAL;
+        if( attr & FE_DLLIMPORT ) {
+            if( !alt_dllimp ) {
+                kind = DLLIMPORT;
+            }
+        } else if( _IsModel( POSITION_INDEPENDANT ) ) {
+            if( ( attr & FE_THREAD_DATA ) != 0 ) {
+                kind = PIC_RW;
+            }
         }
         DoOutObjectName( sym, OutName, Imports, kind );
         OutIdx( 0, Imports );           /* type index*/
-        if( kind != SPECIAL ) {
-            DumpImportResolve( sym, idx );
-        }
+        DumpImportResolve( sym, imp_idx );
     }
-    return( idx );
+    return( imp_idx );
 }
 
+static  omf_idx     GenImportComdat( void )
+/*****************************************/
+{
+    if( Imports == NULL ) {
+        Imports = InitArray( sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
+    }
+    CheckImportSwitch( !( FEAttr( CurrSeg->comdat_symbol ) & FE_GLOBAL) );
+    DoOutObjectName( CurrSeg->comdat_symbol, OutName, Imports, SPECIAL );
+    OutIdx( 0, Imports );           /* type index*/
+    return( ImportHdl++ );
+}
 
 static  void    ComdatData( label_handle lbl, sym_handle sym )
 /************************************************************/
@@ -2178,7 +2223,7 @@ static  void    ComdatData( label_handle lbl, sym_handle sym )
         CurrSeg->comdat_symbol = sym;
     } else {
         NeedComdatNidx( SPECIAL );
-        CurrSeg->comdat_prefix_import = GenImport( CurrSeg->comdat_symbol, SPECIAL );
+        CurrSeg->comdat_prefix_import = GenImportComdat();
         TellCommonLabel( lbl, CurrSeg->comdat_prefix_import );
     }
     CurrSeg->need_base_set = TRUE;
@@ -2193,9 +2238,9 @@ static void     OutVirtFuncRef( sym_handle virt )
     omf_idx     extdef;
 
     if( virt == NULL ) {
-        extdef = 0;
+        extdef = NOT_IMPORTED;
     } else {
-        extdef = GenImport( virt, NORMAL );
+        extdef = GenImport( virt, FALSE );
     }
     EjectLEData();
     obj = CurrSeg->obj;
@@ -2219,6 +2264,7 @@ extern  void    OutDLLExport( uint words, sym_handle sym )
 {
     object      *obj;
 
+    words = words;
     SetUpObj( FALSE );
     EjectLEData();
     obj = CurrSeg->obj;
@@ -2367,6 +2413,56 @@ extern  array_control   *InitPatch( void )
 }
 
 
+static omf_fix_class getOMFFixClass( fix_class class )
+/****************************************************/
+{
+#if _TARGET & _TARG_80386
+    if( class & F_FAR16 ) {
+        /* want a 16:16 fixup for a __far16 call */
+        return( OFC_PTR );
+    }
+#endif
+    switch( F_CLASS( class ) ) {
+    case F_BASE:
+        return( OFC_BASE );
+#if _TARGET & _TARG_IAPX86
+    case F_OFFSET:
+        return( OFC_OFFSET );
+    case F_BIG_OFFSET:
+        return( OFC_MS_OFFSET_32 );
+    case F_LDR_OFFSET:
+        return( OFC_LDR_OFFSET );
+    case F_PTR:
+        return( OFC_PTR );
+#else
+    case F_OFFSET:
+    case F_BIG_OFFSET:
+        if( _IsTargetModel( EZ_OMF ) ) {
+            return( OFC_PHAR_OFFSET );
+        } else {
+            return( OFC_MS_OFFSET_32 );
+        }
+    case F_LDR_OFFSET:
+        if( _IsTargetModel( EZ_OMF ) ) {
+            return( OFC_PHAR_OFFSET );
+        } else {
+            return( OFC_MS_LDR_OFFSET_32 );
+        }
+    case F_PTR:
+        if( _IsTargetModel( EZ_OMF ) ) {
+            return( OFC_PHAR_PTR );
+        } else {
+            return( OFC_MS_PTR );
+        }
+#endif
+    default:
+        break;
+    }
+    // error
+    return( 0 );
+}
+
+
 static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_idx sidx )
 /***************************************************************************************/
 {
@@ -2375,47 +2471,12 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
     object      *obj;
     index_rec   *rec;
     byte        b;
-    fix_class   class_flags;
     int         need;
 
     b = rel ? LOCAT_REL : LOCAT_ABS;
-    if( (class & F_MASK) == F_PTR && CurrSeg->data_in_code ) {
+    if( F_CLASS( class ) == F_PTR && CurrSeg->data_in_code ) {
         CurrSeg->data_ptr_in_code = TRUE;
     }
-    class_flags = (class & ~F_MASK);
-    class &= F_MASK;
-#if  _TARGET & _TARG_80386
-    if( class_flags & F_FAR16 ) {
-        /* want a 16:16 fixup for a __far16 call */
-        class = F_PTR;
-    } else if( _IsTargetModel( EZ_OMF ) ) {
-        switch( class ) {
-        case F_OFFSET:
-        case F_LDR_OFFSET:
-            class = F_PHAR_OFFSET;
-            break;
-        case F_PTR:
-            class = F_PHAR_PTR;
-            break;
-        default:
-            break;
-        }
-    } else {
-        switch( class ) {
-        case F_OFFSET:
-            class = F_MS_OFFSET_32;
-            break;
-        case F_LDR_OFFSET:
-            class = F_MS_LDR_OFFSET_32;
-            break;
-        case F_PTR:
-            class = F_MS_PTR;
-            break;
-        default:
-            break;
-        }
-    }
-#endif
     obj = CurrSeg->obj;
     need = obj->fixes.used + sizeof( fixup );
     if( need > obj->fixes.alloc ) {
@@ -2424,7 +2485,7 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
     cursor = &_ARRAY( &obj->fixes, fixup );
     obj->fixes.used = need;
     where = CurrSeg->location - obj->start;
-    cursor->locatof = b + ( class << S_LOCAT_LOC ) + ( where >> 8 );
+    cursor->locatof = b + ( getOMFFixClass( class ) << S_LOCAT_LOC ) + ( where >> 8 );
     cursor->fset = where;
     if( base != BASE_IMP ) {
         rec = AskIndexRec( sidx );
@@ -2433,17 +2494,17 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
            done as imports relative to the comdat symbol.
         */
         if( rec->exec && rec->comdat_symbol != NULL ) {
-            idx = GenImport( rec->comdat_symbol, NORMAL );
+            idx = GenImport( rec->comdat_symbol, FALSE );
             base = BASE_IMP;
         }
     }
 #ifdef _OMF_32
-    if( _IsTargetModel( FLAT_MODEL ) && _IsntTargetModel( EZ_OMF ) && (class != F_PTR) ) {
+    if( _IsTargetModel( FLAT_MODEL ) && _IsntTargetModel( EZ_OMF ) && ( F_CLASS( class ) != F_PTR) ) {
         omf_idx     grp_idx;
 
   #if 0
         /* only generate a normal style fixup for now */
-        if( class_flags & F_TLS ) {
+        if( class & F_TLS ) {
             grp_idx = TLSGIndex;
         } else {
             grp_idx = FlatGIndex;
@@ -2804,14 +2865,14 @@ static void DumpImportResolve( sym_handle sym, omf_idx idx )
     array_control       *cmt;
     omf_idx             nidx;
     pointer             cond;
-    int                 type;
+    import_type         type;
 
     def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
     if( def_resolve != NULL && def_resolve != sym ) {
-        def_idx = GenImport( def_resolve, NORMAL );
+        def_idx = GenImport( def_resolve, FALSE );
         EjectImports();
         cmt = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
-        type = (int)FEAuxInfo( sym, IMPORT_TYPE );
+        type = (pointer_int)FEAuxInfo( sym, IMPORT_TYPE );
         switch( type ) {
         case IMPORT_IS_LAZY:
             OutInt( LAZY_EXTRN_COMMENT, cmt );
@@ -2861,7 +2922,7 @@ extern  void    OutReloc( seg_id seg, fix_class class, bool rel )
     index_rec   *rec;
 
     rec = AskSegIndex( seg );
-    if( class == F_MS_OFFSET_32 ) {
+    if( F_CLASS( class ) == F_BIG_OFFSET ) {
         CheckLEDataSize( 3 * sizeof( long_offset ), TRUE );
     } else {
         CheckLEDataSize( 3 * sizeof( offset ), TRUE );
@@ -2870,8 +2931,8 @@ extern  void    OutReloc( seg_id seg, fix_class class, bool rel )
 }
 
 
-extern  void    OutSpecialCommon( import_handle imp_idx, fix_class class, bool rel )
-/**********************************************************************************/
+extern void OutSpecialCommon( import_handle imp_idx, fix_class class, bool rel )
+/******************************************************************************/
 {
     CheckLEDataSize( 3 * sizeof( offset ), TRUE );
     DoFix( imp_idx, rel, BASE_IMP, class, 0 );
@@ -2885,22 +2946,15 @@ extern  void    OutImport( sym_handle sym, fix_class class, bool rel )
 
     attr = FEAttr( sym );
 #if  _TARGET & _TARG_80386
-    {
-        aux_handle              aux;
-        call_class              *pcclass;
-
-        if( !rel && class == F_OFFSET && (attr & FE_PROC) ) {
-            aux = FEAuxInfo( sym, AUX_LOOKUP );
-            pcclass = FEAuxInfo( aux, CALL_CLASS );
-            if( *pcclass & FAR16_CALL ) {
-                class |= F_FAR16;
-            }
+    if( !rel && F_CLASS( class ) == F_OFFSET && (attr & FE_PROC) ) {
+        if( *(call_class *)FEAuxInfo( FEAuxInfo( sym, AUX_LOOKUP ), CALL_CLASS ) & FAR16_CALL ) {
+            class |= F_FAR16;
         }
     }
 #endif
     if( attr & FE_THREAD_DATA )
         class |= F_TLS;
-    OutSpecialCommon( GenImport( sym, NORMAL ), class, rel );
+    OutSpecialCommon( GenImport( sym, (class & F_ALT_DLLIMP) != 0 ), class, rel );
 }
 
 
@@ -2927,7 +2981,7 @@ extern  void    OutRTImportRel( rt_class rtindex, fix_class class, bool rel )
 extern  void    OutRTImport( rt_class rtindex, fix_class class )
 /**************************************************************/
 {
-    OutRTImportRel( rtindex, class, (class == F_OFFSET)||(class == F_LDR_OFFSET) );
+    OutRTImportRel( rtindex, class, ( F_CLASS( class ) == F_OFFSET || F_CLASS( class ) == F_LDR_OFFSET ) );
 }
 
 extern  void    OutBckExport( char *name, bool is_export )
@@ -3263,16 +3317,15 @@ extern void     TellObjVirtFuncRef( void *cookie )
 static  bool            InlineFunction( pointer hdl )
 /***************************************************/
 {
-    call_class          rtn_class;
     aux_handle          aux;
 
-    if( ( FEAttr( hdl ) & FE_PROC ) == 0 )
-        return( FALSE );
-    aux = FEAuxInfo( hdl, AUX_LOOKUP );
-    if( FEAuxInfo( aux, CALL_BYTES ) != NULL )
-        return( TRUE );
-    rtn_class = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
-    return( (rtn_class & MAKE_CALL_INLINE) != 0 );
+    if( FEAttr( hdl ) & FE_PROC ) {
+        aux = FEAuxInfo( hdl, AUX_LOOKUP );
+        if( FEAuxInfo( aux, CALL_BYTES ) != NULL || (*(call_class *)FEAuxInfo( aux, CALL_CLASS ) & MAKE_CALL_INLINE) ) {
+            return( TRUE );
+        }
+    }
+    return( FALSE );
 }
 
 extern  segment_id      AskSegID( pointer hdl, cg_class class )

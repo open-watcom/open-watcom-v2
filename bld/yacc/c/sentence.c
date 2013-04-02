@@ -399,6 +399,7 @@ static unsigned symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
     char        *check_min;
     an_item     *p;
 
+    sym = sym;
     for( p = pro->item; p->p.sym != NULL; ++p ) {
         if( p->p.sym == disallow_error ) {
             // derivations using the error sym are not desirable

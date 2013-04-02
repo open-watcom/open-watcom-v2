@@ -7,13 +7,11 @@ set PROJNAME=mkdisk
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
  
-[ INCLUDE <OWROOT>/build/binrule.ctl ]
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <BINTOOL> rel ]
+[ BLOCK <BINTOOL> build ]
+#========================
     cdsay <PROJDIR>
-
-[ BLOCK <BINTOOL> rel ]
-#======================
     <CPCMD> <OWOBJDIR>/mkexezip.exe <OWBINDIR>/mkexezip<CMDEXT>
     <CPCMD> <OWOBJDIR>/uzip.exe <OWBINDIR>/uzip<CMDEXT>
     <CPCMD> <OWOBJDIR>/langdat.exe <OWBINDIR>/langdat<CMDEXT>

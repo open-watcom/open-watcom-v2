@@ -33,6 +33,7 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
+#include "symdbg.h"
 #include "ocentry.h"
 #include "system.h"
 #include "cgaux.h"

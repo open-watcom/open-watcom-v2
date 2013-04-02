@@ -33,6 +33,7 @@ additional_cleanup = *.dh *.ch $(bind_compiled)
 !include trmem.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include $(ui_dir)/client.mif
 
 !include ../mif/rcsdll.mif
 !include ../mif/include.mif
@@ -47,18 +48,26 @@ additional_cleanup = *.dh *.ch $(bind_compiled)
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
+version_res_exe_nt_x64 = exever.res
 
-vi.exe: $(bind_files) $(name).exe ./edbind.exe
+vi.exe: $(bind_files) $(name).exe
         @set edpath=../dat
         %create edbind.tmp
         @for %i in ($(bind_files:./=)) do @%append edbind.tmp %i
-        $]@ -dedbind.tmp -q $(name).exe
+        $(edbind) -dedbind.tmp -q $(name).exe
         cp $(name).exe vi.exe
+!ifdef __WATCOM__
         cp $(name).sym vi.sym
+!endif
 
+!ifndef __WATCOM__
+$(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(cl_objs) $(other) $(videps) $(mifdep) version.obj $(version_res_exe_$(host_os)_$(host_cpu))
+        $(cl) $(clflags) version.obj $(objsroot) $(start_flags) $(objinit) $(more_flags) $(objs) $(cl_objs) $(libs) $(final_flags) $(rcsdll) $(ldflags)
+!else
 $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(version_res_exe_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $(lname) file version.obj file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
-!ifdef sys_windowed
+!endif
+!ifeq sys_windowed 1
 !ifdef win386_bind
         $(win386_bind) $(lname) -s $(win386_dir)/ext/win386.ext -R -q $(name).res $(name).exe
         rm $(lname)
@@ -72,15 +81,6 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
 $(bind_compiled) : $(bind_compiled:./=../dat/)
         vicomp ../dat/$^. $^.
 
-./edbind.exe : ../c/edbind.c $(cl_objs)
-    	$(bld_cl) $(bld_cl_opts) $<
-
-./parsectl.exe : ../ctl/parsectl.c $(cl_objs)
-    	$(bld_cl) $(bld_cl_opts) $<
-
-./parsedyn.exe : ../ctl/parsedyn.c $(cl_objs)
-    	$(bld_cl) $(bld_cl_opts) $<
-
 setfs.obj : setfs.c setfs.ch setfs.dh
 setgen.obj : setgen.c setgen.ch setgen.dh
 setscr.obj : setscr.c setscr.ch
@@ -89,14 +89,14 @@ setfs.ch : ../ctl/setfs.ctl
 setscr.ch : ../ctl/setscr.ctl
 setgen.ch : ../ctl/setgen.ctl
 
-setfs.ch setscr.ch setgen.ch : ./parsectl.exe
-        $]@ $[@ $@ Ctl_$^&
+setfs.ch setscr.ch setgen.ch :
+        parsectl $[@ $@ Ctl_$^&
 
 setfs.dh : ../ctl/setfs.dyn
 setgen.dh : ../ctl/setgen.dyn
 
-setfs.dh setgen.dh: ./parsedyn.exe
-        $]@ $[@ $@ Dyn_$^&
+setfs.dh setgen.dh:
+        parsedyn $[@ $@ Dyn_$^&
 
 $(name).res : $(vi_dir)/win/viw.rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
@@ -105,7 +105,7 @@ rcstr.gh : rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(vi_dir)/vi.msg $(vi_dir)/tooltips.msg ../h/langdef.h $(msgfiles)
-        $(c_pp) -zk0 -I"$(sdk_misc_dir)" $[@ >$^@
+        $(cpp) -zk0 -I"$(sdk_misc_dir)" $[@ >$^@
 
 verrc_exe_skel = ../win/exever.rc
 !include verrc.mif

@@ -9,11 +9,12 @@ set PROJNAME=wcc386
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK ( <1> <BINTOOL> ) rel ]
+[ BLOCK <1> rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <BINTOOL> rel ]
-#======================
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/bwcc386.exe     <OWBINDIR>/bwcc386<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwccd386<DYEXT> <OWBINDIR>/bwccd386<DYEXT>
 

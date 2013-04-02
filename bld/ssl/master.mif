@@ -22,7 +22,7 @@ objs =                  &
 
 $(proj_name).exe : $(objs) $(cl_objs)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$(objs)}
 !endif

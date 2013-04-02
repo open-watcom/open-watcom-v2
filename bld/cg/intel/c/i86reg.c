@@ -73,7 +73,6 @@ extern  type_class_def  CallState( aux_handle aux,
     hw_reg_set          *parm_src;
     hw_reg_set          *parm_dst;
     hw_reg_set          *pregs;
-    call_class          *pcclass;
     hw_reg_set          tmp;
 
     state->unalterable = FixedRegs();
@@ -89,8 +88,7 @@ extern  type_class_def  CallState( aux_handle aux,
         FEMessage( MSG_BAD_SAVE, aux );
     }
     state->attr = ROUTINE_REMOVES_PARMS;
-    pcclass = FEAuxInfo( aux, CALL_CLASS );
-    cclass = *pcclass;
+    cclass = *(call_class *)FEAuxInfo( aux, CALL_CLASS );
     if( cclass & INTERRUPT ) {
         state->attr |= ROUTINE_INTERRUPT;
     } else if( cclass & FAR_CALL ) {

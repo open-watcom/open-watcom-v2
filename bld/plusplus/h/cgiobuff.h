@@ -54,14 +54,6 @@ struct cgiobuff {               // CGIOBUFF -- buffer in memory
 #endif
 };
 
-#if _INTEL_CPU
-typedef uint_8                  CGINTEROP;  // opcode size
-#elif _CPU == _AXP
-typedef unsigned                CGINTEROP;  // opcode size
-#else
-#error bad _CPU
-#endif
-
 typedef struct cgfile_ins CGFILE_INS;
 struct cgfile_ins               // CGFILE_INS -- location of instruction
 {   DISK_ADDR block;            // - file block

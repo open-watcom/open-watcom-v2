@@ -33,6 +33,7 @@
 #include <assert.h>
 
 #include "omfflhn.h"
+#include "omforl.h"
 #include "orlhash.h"
 
 static orl_return       freeFileHandle( omf_file_handle ofh )

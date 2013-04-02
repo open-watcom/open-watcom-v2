@@ -35,9 +35,7 @@
 #include "cgaux.h"
 #include "bckdef.h"
 #include "model.h"
-#include "hostsys.h"
 #include "targsys.h"
-#include "ptrint.h"
 #include "feprotos.h"
 #include "cfloat.h"
 
@@ -147,7 +145,7 @@ extern  void    BlowAwayFreeLists( void )
 }
 
 
-extern  bool    MemCheck( int size )
+extern  bool    MemCheck( size_t size )
 /**********************************/
 {
     if( FEMoreMem( size ) ) return( TRUE );

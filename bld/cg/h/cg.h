@@ -66,20 +66,15 @@ typedef enum {
 
 typedef enum {
 /*  request values for FEExtName() */
-        EXTN_BASENAME,   /* return symbol base name */
-        EXTN_PATTERN,    /* return symbol name pattern */
-        EXTN_PRMSIZE     /* return symbol parameters size */
+        EXTN_BASENAME,      /* return symbol base name */
+        EXTN_PATTERN,       /* return symbol name pattern */
+        EXTN_PRMSIZE,       /* return symbol parameters size */
+        EXTN_CALLBACKNAME,  /* return callback function name */
 } extn_request;
 
 typedef void *          cg_name;        /* retval for CGName(),CGUnary()*/
 typedef void *          call_handle;    /* retval for CGInitCall(), etc. */
-
-#ifdef BY_CPP_FRONT_END
-typedef unsigned        cg_sym_handle;
-#else
 typedef void *          cg_sym_handle;
-#endif
-
 typedef void *          label_handle;   /*  2nd parm to CGName for CG_LBL */
 typedef void *          sel_handle;     /*  return value for CGSelInit() */
 typedef struct bck_info *back_handle;    /*  return value for BENewBack() */
@@ -93,7 +88,7 @@ typedef void            (*cg_callback)( callback_handle );
 
 typedef int             segment_id;     /*  parm to BESetSeg() */
 
-typedef unsigned long   dbg_type;       /*  symbolic debugging type handle */
+typedef unsigned_32     dbg_type;       /*  symbolic debugging type handle */
 typedef void            *dbg_struct;
 typedef void            *dbg_array;
 typedef void            *dbg_enum;
@@ -205,7 +200,7 @@ enum {
         II_TARG_370,
         II_TARG_AXP,
         II_TARG_PPC,
-	II_TARG_MIPS
+        II_TARG_MIPS
 };
 
 #define II_REVISION     9

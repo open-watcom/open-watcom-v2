@@ -34,15 +34,14 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "pattern.h"
-#include "symdbg.h"
 #include "vergen.h"
+#include "procdef.h"
 #include "ocentry.h"
 #include "mipsenc.h"
 #include "reloc.h"
 #include "zoiks.h"
 #include "model.h"
 #include "coff.h"
-#include "procdef.h"
 #include "encode.h"
 #include "cgaux.h"
 #include "rtclass.h"
@@ -229,7 +228,7 @@ extern  void GenLOADS32( signed_32 value, uint_8 reg )
     if( (value < 32768) && (value > -32769) ) {
         // Only need sign extended low 16 bits - 'addiu rt,$zero,value'
         GenIType( 0x09, reg, MIPS_ZERO_SINK, (unsigned_16)value );
-    } else if( (value & 0xffff == 0) ) {
+    } else if( (value & 0xffff) == 0 ) {
         // Only need high 16 bits - 'lui rt,$zero,(value >> 16)'
         GenIType( 0x0f, reg, MIPS_ZERO_SINK, (unsigned_16)(value >> 16) );
     } else {

@@ -32,9 +32,6 @@
 #include "as.h"
 #include <setjmp.h>
 #include "preproc.h"
-#if !defined( __WATCOMC__ )
-    #include "clibext.h"
-#endif
 
 extern bool     OptionsInit( int argc, char *argv[] );
 extern void     OptionsFini( void );

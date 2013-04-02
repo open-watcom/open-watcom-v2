@@ -29,9 +29,10 @@
 ****************************************************************************/
 
 
+#ifdef __header1
+#include __header1
+#endif
 #include <stddef.h>
-
-#include header
 #include "vstk.h"
 
 #ifndef TRUE

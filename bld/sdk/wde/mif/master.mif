@@ -104,7 +104,7 @@ rcstr.gh: rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../h/wde.msg
-        $(c_pp) -zk0 $(inc_path) $[@ >$^@
+        $(cpp) -zk0 $(inc_path) $[@ >$^@
 
 $(name).res: ../h/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@

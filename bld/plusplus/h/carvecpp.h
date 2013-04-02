@@ -33,6 +33,8 @@
 // CARVECPP.H -- customization of carve for C++
 //
 //
+#include "fesupp.h"
+
 #include "errdefns.h"
 #include "stats.h"
 #include "ring.h"

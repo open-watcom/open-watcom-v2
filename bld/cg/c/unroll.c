@@ -1022,7 +1022,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
                 PointEdge( &blk->edge[ 0 ], Head->edge[ 0 ].destination );
                 PointEdge( &blk->edge[ 1 ], Head->edge[ 1 ].destination );
                 blk->u.loop = loop;
-                while( 1 ) {
+                for( ;; ) {
                     if( loop->u.loop == Head ) {
                         loop->u.loop = NULL;
                         loop->class |= LOOP_HEADER;

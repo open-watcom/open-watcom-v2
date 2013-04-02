@@ -29,6 +29,4 @@ objs = adler32.obj  &
        zutil.obj 
 
 $(proj_name).lib : $(objs)
-        @%create $^&.lbc
-        @for %i in ($(objs)) do @%append $^&.lbc +%i
-        $(librarian) $(libflags) @$^&.lbc
+        $(librarian) $(libflags) $(objs)

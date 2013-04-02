@@ -34,29 +34,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <string.h>
-#include <strings.h>
 #include <ctype.h>
 #include "watcom.h"
 
 #define MAX_BUFF 256
-
-static FILE *lstfile = NULL;
-
-/* Local strupr() implementation */
-char *strupr( char *string )
-{
-      char    *s;
-
-      if( string ) {
-            for( s = string; *s; ++s )
-                  *s = toupper( *s );
-      }
-      return( string );
-} 
 
 /*
  * depth into stack from which to get parms: 3 dwords pushed
@@ -70,6 +52,7 @@ char GlueInc[] = "winglue.inc";
 
 int genstubs = 0;
 int quiet = 0;
+int listfile = 0;
 
 typedef enum {
     PARM_PTR,
@@ -135,6 +118,19 @@ fcn     *VoidHead, *VoidCurr;    /* list of all prototypes */
 FILE    *stubs,*stubsinc;
 FILE    *dllthunk;
 
+/* Local strupr() implementation */
+char *mystrupr( char *string )
+{
+    char    *s;
+
+    if( string ) {
+        for( s = string; *s != '\0'; ++s ) {
+            *s = toupper( *s );
+        }
+    }
+    return( string );
+} 
+
 void *myalloc( size_t size )
 {
     void        *tmp;
@@ -176,13 +172,13 @@ void *_fmyrealloc( void *ptr, size_t size )
 
 int IsWord( char *str )
 {
-    if( !strcasecmp( str,"int" ) ||
-        !strcasecmp( str,"char" ) ||
-        !strcasecmp( str,"unsigned char" ) ||
-        !strcasecmp( str,"short" ) ||
-        !strcasecmp( str,"unsigned" ) ||
-        !strcasecmp( str,"unsigned short" ) ||
-        !strcasecmp( str,"unsigned int" ) ) {
+    if( !stricmp( str,"int" ) ||
+        !stricmp( str,"char" ) ||
+        !stricmp( str,"unsigned char" ) ||
+        !stricmp( str,"short" ) ||
+        !stricmp( str,"unsigned" ) ||
+        !stricmp( str,"unsigned short" ) ||
+        !stricmp( str,"unsigned int" ) ) {
         return( 1 );
     }
     return( 0 );
@@ -194,13 +190,14 @@ int IsWord( char *str )
  */
 static char *StripSpaces( char *buff )
 {
-    int         i;
+    size_t  i;
 
     i = strlen( buff ) - 1;
     while( buff[i] == ' ' ) {
         buff[i--] = '\0';
     }
-    while( *buff == ' ' )  ++buff;
+    while( *buff == ' ' )
+        ++buff;
     return( buff );
 
 } /* StripSpaces */
@@ -215,7 +212,7 @@ parm_types ClassifyParm( char *buff )
         return( PARM_WORD );
     } else if( strchr( buff, '*' ) != NULL ) {
         return( PARM_PTR );
-    } else if( strcasecmp( buff, "void" ) == 0 ) {
+    } else if( stricmp( buff, "void" ) == 0 ) {
         return( PARM_VOID );
     } else {
         return( PARM_DWORD );
@@ -229,11 +226,11 @@ parm_types ClassifyParm( char *buff )
 return_types ClassifyReturnType( char *buff )
 {
     buff = StripSpaces( buff );
-    if( strcasecmp( buff, "int" ) == 0  ||  strcasecmp( buff, "short" ) == 0 ) {
+    if( stricmp( buff, "int" ) == 0  ||  stricmp( buff, "short" ) == 0 ) {
         return( RETURN_INT );
-    } else if( strcasecmp( buff, "void" ) == 0 ) {
+    } else if( stricmp( buff, "void" ) == 0 ) {
         return( RETURN_VOID );
-    } else if( strcasecmp( buff, "char" ) == 0 ) {
+    } else if( stricmp( buff, "char" ) == 0 ) {
         return( RETURN_CHAR );
     } else if( strchr( buff, '*' ) != NULL ) {
         return( RETURN_PTR );
@@ -329,7 +326,7 @@ void ClassifyParmList( char *plist, fcn *tmpf )
 void ProcessDefFile( FILE *f )
 {
     char        buff[MAX_BUFF];
-    int         i,j,k;
+    size_t      i,j,k;
     char        *fn;            // function name
     char        *type;          // return type
     char        *plist;         // parameter list
@@ -570,14 +567,14 @@ void GenerateThunkC( void )
 } /* GenerateThunkC */
 
 #define OBJBUF_SIZE     512
-static int objFile;
+static FILE *objFile = NULL;
 static int objBufIndex;
 static char objBuf[OBJBUF_SIZE];
 
 static void writeObjBuf()
 {
     if( objBufIndex != 0 ) {
-        write( objFile, objBuf, objBufIndex );
+        fwrite( objBuf, 1, objBufIndex, objFile );
         objBufIndex = 0;
     }
 }
@@ -620,6 +617,7 @@ static void emitDWORD( long dword )
 static void emitSTRING( char *data )
 {
     char        len;
+
     len = strlen( data );
     writeObj( &len, 1 );
     writeObj( data, len );
@@ -931,6 +929,7 @@ static void emitspecialThunk( char *proc, fcn *tmpf, int index )
     case 3:     segsize = 32+7; break;
     case 4:     segsize = 36+7; break;
     case 5:     segsize = 40+7; break;
+    default:    segsize = 0;    break;
     }
     size = sizeofThunkName( tmpf );
     segsize += size;
@@ -1064,24 +1063,14 @@ static void emitOBJECT( int modindex, char *proc, fcn *tmpf, int index )
     emitMODEND();
 }
 
-static void startOBJECT( int modindex )
+static void startOBJECT( void )
 {
-    char        fname[20];
-
-    sprintf( fname, "win%d.obj", modindex );
-    objFile = open( fname, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
-        S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
-    if( objFile == - 1 ) {
-        fprintf( stderr, "error opening %s\n", fname );
-        exit( 1 );
-    }
     objBufIndex = 0;
 }
 
 static void endOBJECT( void )
 {
     writeObjBuf();
-    close( objFile );
 }
 
 
@@ -1093,6 +1082,8 @@ void GenerateCStubs( void )
     fcn         *tmpf, *tmpf2;
     short       i=0,index,ii=0;
     char        fn2[128];
+    FILE        *fp;
+    char        fname[20];
 
     if( !genstubs ) {
         return;
@@ -1139,18 +1130,26 @@ void GenerateCStubs( void )
             index = i++;
         }
 
-        startOBJECT( ii );
-        strupr( fn2 );                                  /* 23-sep-92 AFS */
+        sprintf( fname, "win%d.obj", ii );
+        objFile = fopen( fname, "wb" );
+        if( objFile == NULL ) {
+            fprintf( stderr, "error opening %s\n", fname );
+            exit( 1 );
+        }
+        startOBJECT();
+        mystrupr( fn2 );                                  /* 23-sep-92 AFS */
         emitOBJECT( ii, fn2, tmpf, 4*index );
         endOBJECT();
+        fclose( objFile );
         tmpf = tmpf->next;
         ii++;
     }
-    if( lstfile != NULL ) {
+    if( listfile ) {
+        fp = fopen( "winobjs.lst", "w" );
         for( i = 0; i < ii; ++i ) {
-            fprintf( lstfile, "win%d.obj\n", i );
+            fprintf( fp, "win%d.obj\n", i );
         }
-        fclose( lstfile );
+        fclose( fp );
     }
 
 } /* GenerateCStubs */
@@ -1751,16 +1750,14 @@ int main( int argc, char *argv[] )
     char        fname[50];
     int         i,j;
 
-    j=argc-1;
+    j = argc - 1;
     while( j > 0 ) {
         if( argv[j][0] == '-' ) {
             for(i=1;i<strlen(argv[j]);i++) {
                 switch( argv[j][i] ) {
-                case 'l':
-                    lstfile = fopen( "winobjs.lst", "w" );
-                    break;
-                case 'q': quiet = 1; break;
-                case 's': genstubs=1; break;
+                case 'l': listfile = 1; break;
+                case 'q': quiet = 1;    break;
+                case 's': genstubs=1;   break;
                 case '?':
                     printf("conv -s (gen stubs)\n");
                     exit(1);

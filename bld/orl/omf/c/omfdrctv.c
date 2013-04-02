@@ -37,8 +37,8 @@
 #include "omfdrctv.h"
 #include "omfmunge.h"
 #include "omfload.h"
+#include "omforl.h"
 #include "orlhash.h"
-#include "pcobj.h"
 
 
 orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cb,

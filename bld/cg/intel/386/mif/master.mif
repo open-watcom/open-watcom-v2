@@ -2,7 +2,7 @@
 !include $(cg_dir)/intel/mif/intel.mif
 !include $(cg_dir)/mif/master.mif
 
-target_objs     = $(386_objs) $(intel_objs) $(cg_objs)
+target_objs     = $(386_objs) $(intel_objs) $(cg_objs) encode.obj
 target_name     = 386
 
 !include $(cg_dir)/mif/target.mif

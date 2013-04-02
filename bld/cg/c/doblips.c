@@ -31,7 +31,6 @@
 
 #include "standard.h"
 #include "cgdefs.h"
-#include "hostsys.h"
 #include "coderep.h"
 #include "feprotos.h"
 
@@ -51,7 +50,7 @@ extern  void            Blip(unsigned_16,char);
 extern  void            BlipInit( void );
 extern  bool            GetEnvVar(char*,char*,int);
 extern  bool            TBreak( void );
-extern  uint            GetTickCount( void );
+extern  uint            GetTickCnt( void );
 
 static uint             LastBlipCount;
 static uint             NextTickCount;
@@ -126,7 +125,7 @@ static  void    CheckEvents( void )
 {
     uint        ticks;
 
-    ticks = GetTickCount();
+    ticks = GetTickCnt();
     if( ticks < LastBlipCount || ticks >= NextTickCount ) {
         OSCall();       /* force a DOS call to get version number */
         if( ticks < LastBlipCount || ticks >= NextBlipCount ) {
@@ -152,7 +151,7 @@ extern  void    InitBlip( void )
 {
     char        buff[80];
 
-    LastBlipCount = GetTickCount();
+    LastBlipCount = GetTickCnt();
     NextTickCount = LastBlipCount;
     SetNextTickCount();
     SetNextBlipCount();

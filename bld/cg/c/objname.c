@@ -40,7 +40,7 @@
 #include "objrep.h"
 #include "system.h"
 #include "model.h"
-#include "hostsys.h"
+#include "symdbg.h"
 #include "ocentry.h"
 #include "import.h"
 #include "feprotos.h"
@@ -217,7 +217,7 @@ static int GetExtName( sym_handle sym, char *buffer, int max_len )
     p = dst;
     for( src = sufix; *src != '\0'; ++src ) {
         if( *src == '#' ) {
-            int     size = (int)FEExtName( sym, EXTN_PRMSIZE );
+            int     size = (pointer_int)FEExtName( sym, EXTN_PRMSIZE );
 
             if( !(size < 0) ) {
                 *(p++) = '@';

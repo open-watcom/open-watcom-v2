@@ -36,12 +36,12 @@ FIRST_MEG_SEL   equ     60H
 BIOS_CLOCK      equ     46CH            ; 40:6C
 
 ;
-;       uint    GetTickCount(void)
+;       uint    GetTickCnt(void)
 ;       - return the BIOS time of day counter
 ;
 
-public  GetTickCount_
-GetTickCount_ proc near
+public  GetTickCnt_
+GetTickCnt_ proc near
         cmp     ds:_Extender,1         ; rational?
         jne     pharlap
         mov     eax,BIOS_CLOCK
@@ -70,7 +70,7 @@ havesel:
         mov     eax,[eax]
         pop     ds
         ret
-GetTickCount_ endp
+GetTickCnt_ endp
 
 _text ends
 

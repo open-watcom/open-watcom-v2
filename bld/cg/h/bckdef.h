@@ -43,6 +43,7 @@ typedef unsigned_16     seg_id;
 
 typedef struct bck_info {
         import_handle   imp;
+        import_handle   imp_alt;
         label_handle    lbl;
         int             seg;
 } bck_info;

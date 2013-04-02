@@ -1500,11 +1500,11 @@ static int  MkFlist( struct_list *st )
                     fld.a_bclass->attr.f.access = CV_PUBLIC;
                     CVPutINum( out, disp );
                     break;
-                    if( 0 ){
                 case INHERIT_VBASE:
-                        fld.a_vbclass = StartType( out, LFG_VBCLASS );
-                    }else{
                 case INHERIT_IVBASE:
+                    if( field->bclass.kind == INHERIT_VBASE ){
+                        fld.a_vbclass = StartType( out, LFG_VBCLASS );
+                    } else {
                         fld.a_vbclass = StartType( out, LFG_IVBCLASS );
                     }
                     fld.a_vbclass->btype = field->bclass.base;

@@ -299,7 +299,7 @@ unsigned ReqFuncProxy( unsigned num_in_mx, mx_entry * mx_in, unsigned num_out_mx
             fwrite( &length, sizeof( length ), 1, TrapTraceFileHandle );
 
             for( ix = 0 ; ix < num_out_mx ; ix++ ) {
-                unsigned to_write = __min( mx_out[ix].len, length );
+                unsigned to_write = min( mx_out[ix].len, length );
                 fwrite( mx_out[ix].ptr, to_write, 1, TrapTraceFileHandle );
                 length -= to_write;
                 if( 0 == length ) {

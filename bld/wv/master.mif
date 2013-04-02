@@ -614,11 +614,11 @@ verrc_exe = wd
 .asm: $(sysadir)
 
 litdefm.tmp : ../../h/menu.str
-        $(c_pp) -zk0 $< >$@
+        $(cpp) -zk0 $< >$@
 
 
 litdefs.tmp : ../../h/wdengin.str ../../h/wd.str
-        $(c_pp) -zk0 -I"$(dig_dir)/h" $< >$@
+        $(cpp) -zk0 -I"$(dig_dir)/h" $< >$@
 
 litdef.gh : litdefs.tmp litdefm.tmp
         $(awk) -v prefix=DBG_LITERAL_ -v base=DBG_LITERAL_BASE -f $(build_dir)/makemsg.awk litdefs.tmp >$^@

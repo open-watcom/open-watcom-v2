@@ -39,8 +39,7 @@
 // 92/05/29 -- J.W.Welch        -- introduced CGFILE_GEN
 // 95/05/01 -- A.F.Scian        -- changed size of DISK_OFFSET
 
-#include <unistd.h>
-
+#include "wio.h"
 #include "cgiobuff.h"
 #include "cgdata.h"
 #include "toknlocn.h"

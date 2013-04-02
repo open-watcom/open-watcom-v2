@@ -35,6 +35,7 @@
 #include "cg.h"
 #include "bckdef.h"
 #include "optlbl.h"
+#include "symdbg.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "optq.h"

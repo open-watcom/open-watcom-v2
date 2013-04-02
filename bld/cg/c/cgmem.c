@@ -35,12 +35,10 @@
 #include "bckdef.h"
 #include "feprotos.h"
 #include "cgmem.h"
+#include "memsydep.h"
 
-extern  pointer         MemAlloc(int);
-extern  void            MemFree(pointer);
-
-extern  pointer CGAlloc( unsigned size ) {
-/***********************************/
+extern  pointer CGAlloc( size_t size ) {
+/**************************************/
 
     pointer     chunk;
 

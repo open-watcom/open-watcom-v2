@@ -38,7 +38,7 @@
 coff_handle             COFFENTRY CoffInit( orl_funcs * );
 orl_return              COFFENTRY CoffFini( coff_handle );
 
-coff_file_handle        COFFENTRY CoffFileInit( coff_handle, void * );
+orl_return              COFFENTRY CoffFileInit( coff_handle, void *, coff_file_handle * );
 orl_return              COFFENTRY CoffFileFini( coff_file_handle );
 orl_return              COFFENTRY CoffFileScan( coff_file_handle, char *, orl_sec_return_func );
 orl_machine_type        COFFENTRY CoffFileGetMachineType( coff_file_handle );
@@ -59,7 +59,7 @@ coff_sec_handle         COFFENTRY CoffSecGetRelocTable( coff_sec_handle );
 orl_linnum *            COFFENTRY CoffSecGetLines( coff_sec_handle );
 orl_table_index         COFFENTRY CoffSecGetNumLines( coff_sec_handle );
 orl_sec_offset          COFFENTRY CoffSecGetOffset( coff_sec_handle );
-orl_return              COFFENTRY CoffSecGetContents( coff_sec_handle, char ** );
+orl_return              COFFENTRY CoffSecGetContents( coff_sec_handle, unsigned char ** );
 orl_return              COFFENTRY CoffSecQueryReloc( coff_sec_handle, coff_sec_offset, orl_reloc_return_func );
 orl_return              COFFENTRY CoffSecScanReloc( coff_sec_handle, orl_reloc_return_func );
 

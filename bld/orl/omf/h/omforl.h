@@ -34,11 +34,12 @@
 #define OMF_ORL_INCLUDED
 
 #include "omftype.h"
+#include "pcobj.h"
 
 omf_handle              OMFENTRY OmfInit( orl_funcs * );
 orl_return              OMFENTRY OmfFini( omf_handle );
 
-omf_file_handle         OMFENTRY OmfFileInit( omf_handle, void * );
+orl_return              OMFENTRY OmfFileInit( omf_handle, void *, omf_file_handle * );
 orl_return              OMFENTRY OmfFileFini( omf_file_handle );
 orl_return              OMFENTRY OmfFileScan( omf_file_handle, char *, orl_sec_return_func );
 orl_machine_type        OMFENTRY OmfFileGetMachineType( omf_file_handle );
@@ -57,7 +58,7 @@ omf_sec_handle          OMFENTRY OmfSecGetStringTable( omf_sec_handle );
 omf_sec_handle          OMFENTRY OmfSecGetSymbolTable( omf_sec_handle );
 omf_sec_handle          OMFENTRY OmfSecGetRelocTable( omf_sec_handle );
 orl_sec_offset          OMFENTRY OmfSecGetNonLocalSymbolLoc( omf_sec_handle );
-orl_return              OMFENTRY OmfSecGetContents( omf_sec_handle, char ** );
+orl_return              OMFENTRY OmfSecGetContents( omf_sec_handle, unsigned char ** );
 orl_return              OMFENTRY OmfSecQueryReloc( omf_sec_handle, omf_sec_offset, orl_reloc_return_func );
 orl_return              OMFENTRY OmfSecScanReloc( omf_sec_handle, orl_reloc_return_func );
 char *                  OMFENTRY OmfSecGetClassName( omf_sec_handle );

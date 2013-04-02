@@ -32,12 +32,10 @@
 
 #include "standard.h"
 #include <string.h>
-#include "hostsys.h"
 #include "coderep.h"
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
 #include "zoiks.h"

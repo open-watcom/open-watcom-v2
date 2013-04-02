@@ -32,6 +32,7 @@
 #include <assert.h>
 #include "walloca.h"
 #include "elflwlv.h"
+#include "elforl.h"
 #include "orlhash.h"
 #ifdef _BSD_SOURCE
 #define stricmp strcasecmp
@@ -61,13 +62,13 @@ static void fix_sym64_byte_order( elf_file_handle elf_file_hnd, Elf64_Sym *e_sym
     // depending on host endianness
     if( elf_file_hnd->flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
         CONV_BE_32( e_sym->st_name );
-        CONV_BE_64( e_sym->st_value );
-        CONV_BE_64( e_sym->st_size );
+        SCONV_BE_64( e_sym->st_value );
+        SCONV_BE_64( e_sym->st_size );
         CONV_BE_16( e_sym->st_shndx );
     } else {
         CONV_LE_32( e_sym->st_name );
-        CONV_LE_64( e_sym->st_value );
-        CONV_LE_64( e_sym->st_size );
+        SCONV_LE_64( e_sym->st_value );
+        SCONV_LE_64( e_sym->st_size );
         CONV_LE_16( e_sym->st_shndx );
     }
 }
@@ -108,11 +109,11 @@ static void fix_rel64_byte_order( elf_file_handle elf_file_hnd, Elf64_Rel *e_rel
     // note that one of the branches will always get compiled out,
     // depending on host endianness
     if( elf_file_hnd->flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
-        CONV_BE_64( e_rel->r_offset );
-        CONV_BE_64( e_rel->r_info );
+        SCONV_BE_64( e_rel->r_offset );
+        SCONV_BE_64( e_rel->r_info );
     } else {
-        CONV_LE_64( e_rel->r_offset );
-        CONV_LE_64( e_rel->r_info );
+        SCONV_LE_64( e_rel->r_offset );
+        SCONV_LE_64( e_rel->r_info );
     }
 }
 
@@ -122,13 +123,13 @@ static void fix_rela64_byte_order( elf_file_handle elf_file_hnd, Elf64_Rela *e_r
     // note that one of the branches will always get compiled out,
     // depending on host endianness
     if( elf_file_hnd->flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
-        CONV_BE_64( e_rela->r_offset );
-        CONV_BE_64( e_rela->r_info );
-        CONV_BE_64( e_rela->r_addend );
+        SCONV_BE_64( e_rela->r_offset );
+        SCONV_BE_64( e_rela->r_info );
+        SCONV_BE_64( e_rela->r_addend );
     } else {
-        CONV_LE_64( e_rela->r_offset );
-        CONV_LE_64( e_rela->r_info );
-        CONV_LE_64( e_rela->r_addend );
+        SCONV_LE_64( e_rela->r_offset );
+        SCONV_LE_64( e_rela->r_info );
+        SCONV_LE_64( e_rela->r_addend );
     }
 }
 
@@ -138,7 +139,7 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
     int                 loop;
     int                 num_syms;
     elf_symbol_handle   current;
-    char                *current_sym;
+    unsigned char       *current_sym;
     Elf32_Sym           *current_sym32;
     Elf64_Sym           *current_sym64;
     int                 st_name;
@@ -154,21 +155,23 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
             current_sym64 = (Elf64_Sym *)current_sym;
             fix_sym64_byte_order( elf_sec_hnd->elf_file_hnd, current_sym64 );
             st_name = current_sym64->st_name;
-            current->value = current_sym64->st_value;
+            current->value.u._32[I64LO32] = current_sym64->st_value.u._32[I64LO32];
+            current->value.u._32[I64HI32] = current_sym64->st_value.u._32[I64HI32];
             current->info = current_sym64->st_info;
             current->shndx = current_sym64->st_shndx;
         } else {
             current_sym32 = (Elf32_Sym *)current_sym;
             fix_sym_byte_order( elf_sec_hnd->elf_file_hnd, current_sym32 );
             st_name = current_sym32->st_name;
-            current->value = current_sym32->st_value;
+            current->value.u._32[I64LO32] = current_sym32->st_value;
+            current->value.u._32[I64HI32] = 0;
             current->info = current_sym32->st_info;
             current->shndx = current_sym32->st_shndx;
         }
         if( st_name == 0 ) {
             current->name = NULL;
         } else {
-            current->name = &(elf_sec_hnd->assoc.sym.string_table->contents[st_name]);
+            current->name = (char *)&(elf_sec_hnd->assoc.sym.string_table->contents[st_name]);
         }
         current->file_format = ORL_ELF;
         current->elf_file_hnd = elf_sec_hnd->elf_file_hnd;
@@ -231,9 +234,10 @@ orl_return ElfBuildSecNameHashTable( elf_file_handle elf_file_hnd )
         return( ORL_OUT_OF_MEMORY );
     }
     for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-        error = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, (orl_hash_value) elf_file_hnd->elf_sec_hnd[loop]->name, elf_file_hnd->elf_sec_hnd[loop] );
-        if( error != ORL_OKAY )
+        error = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, elf_file_hnd->elf_sec_hnd[loop]->name, elf_file_hnd->elf_sec_hnd[loop] );
+        if( error != ORL_OKAY ) {
             return( error );
+        }
     }
     return( ORL_OKAY );
 }
@@ -469,7 +473,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
     orl_return          return_val;
     int                 num_relocs;
     int                 loop;
-    char                *rel;
+    unsigned char       *rel;
     Elf32_Rel           *rel32;
     Elf32_Rela          *rela32;
     Elf64_Rel           *rel64;
@@ -492,13 +496,13 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
         for( loop = 0; loop < num_relocs; loop++ ) {
             o_rel->section = (orl_sec_handle) orig_sec;
             if( reloc_sec->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
-                rel64 = (Elf64_Rel *) rel;
+                rel64 = (Elf64_Rel *)rel;
                 fix_rel64_byte_order( reloc_sec->elf_file_hnd, rel64 );
-                o_rel->symbol = (orl_symbol_handle) &(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF64_R_SYM( rel64->r_info )]);
-                o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF64_R_TYPE( rel64->r_info ) );
-                o_rel->offset = rel64->r_offset;
+                o_rel->symbol = (orl_symbol_handle)&(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[rel64->r_info.u._32[I64HI32]]);
+                o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, (elf_reloc_type)rel64->r_info.u._32[I64LO32] );
+                o_rel->offset = (orl_sec_offset)rel64->r_offset.u._32[I64LO32];
             } else {
-                rel32 = (Elf32_Rel *) rel;
+                rel32 = (Elf32_Rel *)rel;
                 fix_rel_byte_order( reloc_sec->elf_file_hnd, rel32 );
                 o_rel->symbol = (orl_symbol_handle) &(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF32_R_SYM( rel32->r_info )]);
                 o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF32_R_TYPE( rel32->r_info ) );
@@ -516,20 +520,20 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
         if( reloc_sec->assoc.reloc.relocs == NULL )
             return( ORL_OUT_OF_MEMORY );
         rel = reloc_sec->contents;
-        o_rel = (orl_reloc *) reloc_sec->assoc.reloc.relocs;
+        o_rel = (orl_reloc *)reloc_sec->assoc.reloc.relocs;
         for( loop = 0; loop < num_relocs; loop++ ) {
             o_rel->section = (orl_sec_handle) orig_sec;
             if( reloc_sec->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
-                rela64 = (Elf64_Rela *) rel;
+                rela64 = (Elf64_Rela *)rel;
                 fix_rela64_byte_order( reloc_sec->elf_file_hnd, rela64 );
-                o_rel->symbol = (orl_symbol_handle) &(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF64_R_SYM( rela64->r_info )]);
-                o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF64_R_TYPE( rela64->r_info ) );
-                o_rel->offset = rela64->r_offset;
-                o_rel->addend = rela64->r_addend;
+                o_rel->symbol = (orl_symbol_handle)&(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[rela64->r_info.u._32[I64HI32]]);
+                o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, (elf_reloc_type)rela64->r_info.u._32[I64LO32] );
+                o_rel->offset = (orl_sec_offset)rela64->r_offset.u._32[I64LO32];
+                o_rel->addend = (orl_reloc_addend)rela64->r_addend.u._32[I64LO32];
             } else {
-                rela32 = (Elf32_Rela *) rel;
+                rela32 = (Elf32_Rela *)rel;
                 fix_rela_byte_order( reloc_sec->elf_file_hnd, rela32 );
-                o_rel->symbol = (orl_symbol_handle) &(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF32_R_SYM( rela32->r_info )]);
+                o_rel->symbol = (orl_symbol_handle)&(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF32_R_SYM( rela32->r_info )]);
                 o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF32_R_TYPE( rela32->r_info ) );
                 o_rel->offset = rela32->r_offset;
                 o_rel->addend = rela32->r_addend;
@@ -545,10 +549,10 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
     return( ORL_OKAY );
 }
 
-static size_t strncspn( char *s, char *charset, int len)
+static size_t strncspn( char *s, char *charset, orl_sec_size len )
 {
     char            chartable[32];
-    int             i;
+    orl_sec_size    i;
     unsigned char   ch;
 
     memset( chartable, 0, sizeof( chartable ) );
@@ -558,14 +562,14 @@ static size_t strncspn( char *s, char *charset, int len)
     }
     for (i = 0; i < len; i++) {
         ch = s[i];
-        if( chartable[ch/8] & (1 << ch % 8) ) {
+        if( chartable[ch / 8] & (1 << ch % 8) ) {
             break;
         }
     }
     return( i );
 }
 
-static char *pstrncspn( char *s, char *charset, int *len )
+static char *pstrncspn( char *s, char *charset, orl_sec_size *len )
 {
     int     l = strncspn( s, charset, *len );
 
@@ -573,8 +577,8 @@ static char *pstrncspn( char *s, char *charset, int *len )
     return( s + l );
 }
 
-static void EatWhite( char **contents, int *len )
-/***********************************************/
+static void EatWhite( char **contents, orl_sec_size *len )
+/********************************************************/
 {
     char    ch = **contents;
 
@@ -585,9 +589,8 @@ static void EatWhite( char **contents, int *len )
     }
 }
 
-static orl_return ParseExport( char **contents, int *len,
-                               orl_note_callbacks *cb, void *cookie )
-/********************************************************************/
+static orl_return ParseExport( char **contents, orl_sec_size *len, orl_note_callbacks *cb, void *cookie )
+/*******************************************************************************************************/
 {
     char        *arg;
     int         l;
@@ -602,7 +605,7 @@ static orl_return ParseExport( char **contents, int *len,
 }
 
 
-static orl_return ParseDefLibEntry( char **contents, int *len,
+static orl_return ParseDefLibEntry( char **contents, orl_sec_size *len,
     orl_return  (*deflibentry_fn)( char *, void * ), void *cookie )
 /*****************************************************************/
 {
@@ -626,9 +629,8 @@ static orl_return ParseDefLibEntry( char **contents, int *len,
     return( retval );
 }
 
-orl_return ElfParseDrectve( char *contents, int len, orl_note_callbacks *cb,
-                            void *cookie)
-/**************************************************************************/
+orl_return ElfParseDrectve( char *contents, orl_sec_size len, orl_note_callbacks *cb, void *cookie )
+/**************************************************************************************************/
 {
     char        *cmd;
 

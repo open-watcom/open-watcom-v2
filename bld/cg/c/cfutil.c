@@ -33,7 +33,7 @@
 #include "standard.h"
 #include "typclass.h"
 #include "cfloat.h"
-#include "hostsys.h"
+
 
 extern  reallong        CFToF(cfloat*);
 

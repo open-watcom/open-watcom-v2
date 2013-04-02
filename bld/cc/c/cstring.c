@@ -30,19 +30,12 @@
 
 
 #include "cvars.h"
+#include "wio.h"
+#include "watcom.h"
 #include "cgswitch.h"
 #include "scan.h"
 #include "asciiout.h"
 #include "unicode.h"                                    /* 05-jun-91 */
-#include <unistd.h>
-#include <fcntl.h>
-
-#ifndef _MAX_PATH
-    #define _MAX_PATH (PATH_MAX+1)
-#endif
-#ifndef O_BINARY
-    #define O_BINARY 0
-#endif
 
 extern TREEPTR         CurFuncNode;
 

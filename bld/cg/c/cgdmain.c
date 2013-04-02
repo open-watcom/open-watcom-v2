@@ -32,7 +32,6 @@
 
 #include "standard.h"
 #include "coderep.h"
-#include "hostsys.h"
 #include "cgdefs.h"
 #include "model.h"
 #include "cfloat.h"

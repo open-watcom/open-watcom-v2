@@ -130,7 +130,7 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
     prefix_len = 0;
     if( parmno ) {
         msgstr = CGetMsgStr( PHRASE_PARAM );
-        prefix_len = snprintf( info->msgtxt, MAX_MSG_LEN, msgstr, parmno );
+        prefix_len = sprintf( info->msgtxt, msgstr, parmno );
         info->msgtxt[prefix_len++] = ' ';
     }
     msgstr = CGetMsgStr( msgnum );

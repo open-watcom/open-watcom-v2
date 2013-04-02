@@ -186,10 +186,10 @@ extern  name    *Points( an addr, type_def *tipe ) {
     } else {
         flags = EMPTY;
     }
-    if( addr->flags & VOLATILE ) {
+    if( addr->flags & FL_VOLATILE ) {
         flags |= X_VOLATILE;
     }
-    if( addr->flags & CONSTANT ) {
+    if( addr->flags & FL_CONSTANT ) {
         flags |= X_CONSTANT;
     }
     if( addr->alignment != 0 ) {
@@ -251,12 +251,12 @@ extern  name    *Points( an addr, type_def *tipe ) {
                              class, size, 0, flags );
         break;
     }
-    if( addr->flags & VOLATILE ) {
+    if( addr->flags & FL_VOLATILE ) {
         if( result->n.class != N_INDEXED ) {
             result->v.usage |= ( VAR_VOLATILE | USE_MEMORY | NEEDS_MEMORY );
         }
     }
-    if( addr->flags & CONSTANT ) {
+    if( addr->flags & FL_CONSTANT ) {
         if( result->n.class != N_INDEXED ) {
             result->v.usage |= VAR_CONSTANT;
         }
@@ -609,7 +609,7 @@ extern  name    *GetValue( an addr, name *suggest ) {
                 ins = MakeBinary( OP_ADD, addr->u.name,
                                     AllocS32Const( addr->offset ),
                                     op, TypeClass( addr->tipe ) );
-                if( addr->flags & ADDR_DEMOTED ) ins->ins_flags |= INS_DEMOTED;
+                if( addr->flags & FL_ADDR_DEMOTED ) ins->ins_flags |= INS_DEMOTED;
                 AddIns( ins );
             } else {
                 op = addr->u.name;
@@ -643,8 +643,8 @@ extern  name    *GetValue( an addr, name *suggest ) {
     }
     if( op->n.class == N_TEMP
      && op->v.symbol == NULL
-     && ( addr->flags & STACKABLE )
-     && !( addr->flags & NEVER_STACK ) ) {
+     && ( addr->flags & FL_STACKABLE )
+     && !( addr->flags & FL_NEVER_STACK ) ) {
         FPSetStack( op );
     }
     return( op );

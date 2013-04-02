@@ -188,8 +188,8 @@ extern  void    NamesCrossBlocks( void )
     addr = AddrList;
     while( addr != NULL ) { /* Careful. The list shifts under our feet.*/
         next = addr->link;
-        if( addr->flags & ADDR_OK_ACROSS_BLOCKS ) {
-            addr->flags |= ADDR_CROSSED_BLOCKS;
+        if( addr->flags & FL_ADDR_OK_ACROSS_BLOCKS ) {
+            addr->flags |= FL_ADDR_CROSSED_BLOCKS;
         } else if( addr->format == NF_INS ) {
             InsToAddr( addr );
             addr->u.name->v.usage |= USE_IN_ANOTHER_BLOCK;
@@ -459,7 +459,7 @@ extern  an      AddrSave( an node )
 extern  void    AddrDemote( an node )
 /***********************************/
 {
-    node->flags |= ADDR_DEMOTED;
+    node->flags |= FL_ADDR_DEMOTED;
     if( node->format == NF_INS ) {
         node->u.ins->ins_flags |= INS_DEMOTED;
     }

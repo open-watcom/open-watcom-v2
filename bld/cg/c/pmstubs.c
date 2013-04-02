@@ -39,7 +39,7 @@ void Blip(unsigned_16 loc,char ch )
 void BlipInit( void )
 {
 }
-uint GetTickCount()
+uint GetTickCnt()
 {
     return( 0 );
 }

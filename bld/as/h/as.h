@@ -33,8 +33,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include <unistd.h>
-
+#include "wio.h"
 #include "watcom.h"
 #include "bool.h"
 #include "asmem.h"

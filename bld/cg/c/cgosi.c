@@ -66,7 +66,7 @@ void FatalError( char * str )
      FEMessage( MSG_FATAL, str );
 }
 
-unsigned GetTickCount( void )
+unsigned GetTickCnt( void )
 {
     return( TicCount );
 }

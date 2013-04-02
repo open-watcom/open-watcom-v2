@@ -31,11 +31,9 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
+#include "wio.h"
 #include "standard.h"
 #include "cgdefs.h"
 #include "cgmem.h"
@@ -49,27 +47,6 @@
 #include "banner.h"
 #include "feprotos.h"
 
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-
-/*
- *
- * START KLUDGE TO GET UNIX WORKING FOR NOW.
- *
- */
-
-#if defined(__UNIX__)
-    #define PMODE       S_IRUSR+S_IWUSR+S_IRGRP+S_IWGRP+S_IROTH+S_IWOTH
-#else
-    #define PMODE       S_IRWXU
-#endif
-
-/*
- *
- * END KLUDGE TO GET UNIX WORKING FOR NOW
- *
- */
 
 typedef int handle;
 
@@ -155,7 +132,7 @@ static  handle  CreateStream( char *name )
 {
     int         retc;
 
-    retc = open( name, O_CREAT+O_TRUNC+O_RDWR+O_BINARY, PMODE );
+    retc = open( name, O_CREAT | O_TRUNC | O_RDWR | O_BINARY, PMODE_RW );
     if( retc == -1 ) {
         ObjError( errno );
     }

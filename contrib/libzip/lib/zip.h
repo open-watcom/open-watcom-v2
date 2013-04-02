@@ -46,6 +46,8 @@ extern "C" {
 #include <stdio.h>
 #include <time.h>
 
+#include "watcom.h"
+
 /* flags for zip_open */
 
 #define ZIP_CREATE           1

@@ -37,6 +37,8 @@
 
 #include <string.h>
 
+#include "wio.h"
+
 #include "zip.h"
 #include "zipint.h"
 

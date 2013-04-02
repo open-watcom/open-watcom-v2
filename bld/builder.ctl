@@ -73,6 +73,10 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
+# Miscellaneous libraries/utilities required during installers build
+[ INCLUDE <OWSRCDIR>/setupgui/ziplib/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/setupgui/zlib/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/setupgui/mkdisk/builder.ctl ]
 
 ## The following tools are not required during build
 #[ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]

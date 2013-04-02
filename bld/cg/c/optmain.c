@@ -30,8 +30,6 @@
 
 
 #include "optwif.h"
-#include "hostsys.h"
-#include "ptrint.h"
 #include "freelist.h"
 
 extern  seg_id          SetOP( seg_id );
@@ -180,10 +178,10 @@ extern  void    InputOC( any_oc *oc )
 
 
 extern  bool    ShrinkQueue( pointer_int size )
-/*********************************************/
+/**********************************************/
 {
-    signed_32   freed;
-    signed_32   need;
+    pointer_int freed;
+    pointer_int need;
 
   optbegin
     need = size;

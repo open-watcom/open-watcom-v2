@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "symdbg.h"
 #include "targproc.h"
 
 #define ROUTINE_LOADS_DS                  0x8000

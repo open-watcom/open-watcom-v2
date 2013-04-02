@@ -39,7 +39,7 @@
 
 #if defined( __NT__ )
 #define _CGDLLEXPORT    __stdcall __export
-#elif defined( __OS2V2__ ) || defined( __OS2__ ) && !defined(__I86__)
+#elif defined( __OS2__ )
 #define _CGDLLEXPORT    __syscall __export
 #else
 #error Unsupported OS

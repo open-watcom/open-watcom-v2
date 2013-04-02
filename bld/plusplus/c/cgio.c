@@ -41,7 +41,6 @@
 #include "stringl.h"
 #include "conpool.h"
 #include "pcheader.h"
-#include "icodes.h"
 #include "ioptypes.h"
 #include "stats.h"
 #include "module.h"

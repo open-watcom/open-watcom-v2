@@ -71,7 +71,7 @@ void SetDBChar( int character_set )
 
             _setmbcp( _MB_CP_ANSI );
             for( i = 0x80; i <= 0x0ff; ++i ) {
-                if( _mbislead( i ) ) {
+                if( _ismbblead( i ) ) {
                     CharSet[i] = LEAD_BYTE_INIT;
                 }
             }

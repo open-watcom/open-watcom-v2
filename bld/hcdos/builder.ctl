@@ -7,7 +7,7 @@ set PROJNAME=hcdos
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/bintool.ctl ]
+[ INCLUDE <OWROOT>/build/deftool.ctl ]
 
 [ BLOCK <1> rel cprel ]
 #======================

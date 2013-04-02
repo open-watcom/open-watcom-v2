@@ -30,15 +30,13 @@
 ****************************************************************************/
 
 
-#include "hostsys.h"
-
 extern  byte            *CypCopy(byte*,byte*,uint);
 extern  char            *CypFill(byte*,uint,byte);
 extern  uint            CypLength(char*);
 extern  bool            CypEqual(byte*,byte*,uint);
 
-#if !defined( _M_IX86 ) || !defined(__WATCOMC__)
-#else
+#if defined(__WATCOMC__) && defined( _M_IX86 )
+
 #if defined(__FLAT__) || defined(__SMALL__) || defined(__MEDIUM__)
     #define _SAVES          0x06            /*      push    es */
     #define _RESES          0x07            /*      pop     es */
@@ -53,17 +51,6 @@ extern  bool            CypEqual(byte*,byte*,uint);
     #define __ES es
     #define __DS ds
 #endif
-#if defined( _M_I86 )
-    #define __AX ax
-    #define __CX cx
-    #define __SI si
-    #define __DI di
-#elif defined(__386__)
-    #define __AX eax
-    #define __CX ecx
-    #define __SI esi
-    #define __DI edi
-#endif
 
 #pragma aux CypCopy = \
         _SAVES \
@@ -71,8 +58,8 @@ extern  bool            CypEqual(byte*,byte*,uint);
         0xF3            /*      rep     */ \
         0xA4            /*      movsb   */ \
         _RESES \
-        parm routine [ __DS __SI ] [ __ES __DI ] [ __CX ] \
-        value [ __ES __DI ] \
+        parm routine [ __DS esi ] [ __ES edi ] [ ecx ] \
+        value [ __ES edi ] \
         ;
 
 #pragma aux CypFill = \
@@ -81,8 +68,8 @@ extern  bool            CypEqual(byte*,byte*,uint);
         0xF3            /*      rep     */ \
         0xAA            /*      stosb   */ \
         _RESES \
-        parm routine [ __ES __DI ] [ __CX ] [ al ] \
-        value [ __ES __DI ] \
+        parm routine [ __ES edi ] [ ecx ] [ al ] \
+        value [ __ES edi ] \
         ;
 
 #pragma aux CypLength = \
@@ -96,9 +83,9 @@ extern  bool            CypEqual(byte*,byte*,uint);
         0xF7 0xD1       /*      not     cx */ \
         0x49            /*      inc     cx */ \
         _RESES \
-        parm routine [ __ES __DI ] \
-        value        [ __CX ]  \
-        modify[ __AX ] \
+        parm routine [ __ES edi ] \
+        value        [ ecx ]  \
+        modify[ eax ] \
         ;
 
 #pragma aux CypEqual = \
@@ -111,7 +98,7 @@ extern  bool            CypEqual(byte*,byte*,uint);
         0x48            /*      dec     ax */ \
                         /*L1:   */ \
         _RESES \
-        parm routine [ __DS __SI ] [ __ES __DI ] [ __CX ] \
+        parm routine [ __DS esi ] [ __ES edi ] [ ecx ] \
         value [ al ] \
         ;
 #endif

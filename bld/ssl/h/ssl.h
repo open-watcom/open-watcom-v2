@@ -31,7 +31,7 @@
 
 #include "sslops.h"
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 #define MAX_TOKEN_LEN   256
 
@@ -125,4 +125,4 @@ typedef struct symbol {
         class           typ;
 } symbol;
 
-#pragma pack( pop )
+#include "poppck.h"

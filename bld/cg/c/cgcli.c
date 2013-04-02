@@ -53,6 +53,14 @@
 #include "cgprotos.h"
 #include "feprotos.h"
 
+#if defined( __NT__ ) && defined( __386__ )
+#define BEDLLINIT   "_BEDLLInit@4"
+#define BEDLLFINI   "_BEDLLFini@4"
+#else
+#define BEDLLINIT   "BEDLLInit"
+#define BEDLLFINI   "BEDLLFini"
+#endif
+
 static fe_interface FERtnTable = {
     #define CGCALLBACKDEF( a, b, c )    a,
     #include "cgfertns.h"
@@ -105,9 +113,9 @@ bool _CGAPI BELoad( char *dll_name )
     if( retval == 0 ) {
         cg_interface * _CGDLLEXPORT (*func_ptr)( fe_interface * );
 #ifdef __OS2__
-        retval = DosQueryProcAddr( dllHandle, 0, (PSZ)"BEDLLInit", (PFN*)&func_ptr );
+        retval = DosQueryProcAddr( dllHandle, 0, (PSZ)BEDLLINIT, (PFN*)&func_ptr );
 #else
-        func_ptr = (cg_interface * _CGDLLEXPORT(*)( fe_interface * ))GetProcAddress( dllHandle, "_BEDLLInit@4" );
+        func_ptr = (cg_interface * _CGDLLEXPORT(*)( fe_interface * ))GetProcAddress( dllHandle, BEDLLINIT );
         retval = ( func_ptr == 0 );
 #endif
         if( retval == 0 ) {
@@ -125,9 +133,9 @@ void _CGAPI BEUnload( void )
     void _CGDLLEXPORT (*func_ptr)( cg_interface * );
 
 #ifdef __OS2__
-    retval = DosQueryProcAddr( dllHandle, 0, (PSZ)"BEDLLFini", (PFN*)&func_ptr );
+    retval = DosQueryProcAddr( dllHandle, 0, (PSZ)BEDLLFINI, (PFN*)&func_ptr );
 #else
-    func_ptr = (void _CGDLLEXPORT(*)( cg_interface * ))GetProcAddress( dllHandle, "_BEDLLFini@4" );
+    func_ptr = (void _CGDLLEXPORT(*)( cg_interface * ))GetProcAddress( dllHandle, BEDLLFINI );
     retval = ( func_ptr == 0 );
 #endif
     if( retval == 0 ) {
@@ -148,6 +156,7 @@ void _CGAPI BEUnload( void )
 bool _CGAPI BELoad( char *name )
 /******************************/
 {
+    name = name;
     return( TRUE );
 }
 

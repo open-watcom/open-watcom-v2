@@ -2,7 +2,7 @@
 !include $(cg_dir)/risc/mif/risc.mif
 !include $(cg_dir)/mif/master.mif
 
-target_objs     = $(axp_objs) $(risc_objs) $(cg_objs)
+target_objs     = $(axp_objs) $(risc_objs) $(cg_objs) encode.obj
 target_name     = axp
 
 !include $(cg_dir)/mif/target.mif

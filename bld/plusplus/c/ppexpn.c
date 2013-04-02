@@ -77,32 +77,28 @@
 
 /* include _ctokens.h for the precedence values */
 static  int    Prec[] = {     // table of token precedences
-    #define prec(value) value,
-    #define pick(token,string,class)
-    #define no_keywords
+    #define pick(token,string,class,prec) prec,
+    #define define_precedence
     #include "_ctokens.h"
-    #undef no_keywords
+    #undef define_precedence
     #undef pick
-    #undef prec
 };
 
 #ifndef NDEBUG
 static char * TokenNames[] = {
-    #define prec(value)
-    #define pick(token,string,class) string,
-    #define no_keywords
+    #define pick(token,string,class,prec) string,
+    #define define_precedence
     #include "_ctokens.h"
-    #undef no_keywords
+    #undef define_precedence
     #undef pick
-    #undef prec
 };
 #endif
 
 #define NUM_PREC (sizeof(Prec) / sizeof(int))
 
 #define IS_OPERAND( token ) ( ( token == T_ID ) || ( token == T_CONSTANT ) \
-                           || ( ( token > T_BEFORE_KEYWORDS ) \
-                             && ( token < T_AFTER_KEYWORDS ) ) )
+                           || ( ( token >= FIRST_KEYWORD ) \
+                             && ( token <= LAST_KEYWORD ) ) )
 
 typedef struct ppvalue {
     union {

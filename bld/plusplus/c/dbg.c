@@ -261,7 +261,11 @@ char *DbgIcOpcode(              // GET IC OPCODE
     unsigned opcode )           // - opcode
 {
     char *name;                 // - name for opcode
-    #include "inames.h"         // - defined opcodes
+    static char *ic_names[] = {
+        #define IC( code, type, mask ) # code
+        #include "ic.h"
+        #undef IC
+    };
 
     if( opcode >= IC_END ) {
         name = "BAD OPCODE";
@@ -282,10 +286,11 @@ enum                            // types of opcodes
 ,   DBG_OPCODE_SRC              // - source file
 };
 
-#define IC( code, type ) DBG_OPCODE_##type
-static uint_8 optypes[] =
+static uint_8 optypes[] = {
+    #define IC( code, type, mask ) DBG_OPCODE_##type
     #include "ic.h"
-
+    #undef IC
+};
 
 void DumpCgFront(               // DUMP GENERATED CODE
     const char *prefix,         // - name added to print line

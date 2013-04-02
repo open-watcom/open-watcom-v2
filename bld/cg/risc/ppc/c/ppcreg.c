@@ -109,7 +109,6 @@ extern  type_class_def  CallState( aux_handle aux,
     hw_reg_set          parms[ 24 ];
     hw_reg_set          *parm_src;
     hw_reg_set          *parm_dst;
-    call_class          *pclass;
 
     state->unalterable = FixedRegs();
     HW_CAsgn( state->modify, HW_FULL );
@@ -139,8 +138,7 @@ extern  type_class_def  CallState( aux_handle aux,
     state->parm.offset  = 0;
     InitPPCParmState( state );
     class = ReturnClass( tipe, state->attr );
-    pclass = FEAuxInfo( (pointer *)aux, CALL_CLASS );
-    if( *pclass & HAS_VARARGS ) {
+    if( *(call_class *)FEAuxInfo( aux, CALL_CLASS ) & HAS_VARARGS ) {
         state->attr |= ROUTINE_HAS_VARARGS;
     }
     UpdateReturn( state, tipe, class, aux );

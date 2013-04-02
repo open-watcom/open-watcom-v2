@@ -452,7 +452,7 @@ static void DoStackCheck( void ) {
 
     if( CurrProc->prolog_state & ( GENERATE_THUNK_PROLOG | GENERATE_RDOSDEV_PROLOG ) )
         return;
-    #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
     if( CurrProc->prolog_state & GENERATE_GROW_STACK ) {
         if( BlockByBlock || CurrProc->locals.size >= 4*1024 ) {
             GenUnkPush( &CurrProc->targ.stack_check );
@@ -460,12 +460,12 @@ static void DoStackCheck( void ) {
         }
         return;
     }
-    #endif
+#endif
     if( NeedStackCheck() ) {
-    #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
         GenUnkPush( &CurrProc->targ.stack_check );
         RTCall( RT_CHK, ATTR_POP );
-    #else
+#else
         if( HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
             QuickSave( HW_STACK_CHECK, OP_PUSH );
         }
@@ -474,7 +474,7 @@ static void DoStackCheck( void ) {
         if( HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
             QuickSave( HW_STACK_CHECK, OP_POP );
         }
-    #endif
+#endif
     }
 }
 
@@ -507,9 +507,7 @@ static  int ProEpiDataSize( void )
 /***************************
 */
 {
-
-    return( ( (int)(pointer)FEAuxInfo( NULL, PROEPI_DATA_SIZE )
-        + (WORD_SIZE-1) ) & ~(WORD_SIZE-1) );
+    return( _RoundUp( (pointer_int)FEAuxInfo( NULL, PROEPI_DATA_SIZE ), WORD_SIZE ) );
 }
 
 
@@ -526,12 +524,12 @@ static  void    PrologHook( void )
         GenRegSub( HW_SP, size );
         CurrProc->targ.base_adjust += size;
     }
-    #if _TARGET & _TARG_80386
-//        GenPushC( CurrProc->parms.size );
-        RTCall( RT_PROHOOK, EMPTY );
-    #else
-        RTCall( RT_PROHOOK, EMPTY );
-    #endif
+#if _TARGET & _TARG_80386
+//    GenPushC( CurrProc->parms.size );
+    RTCall( RT_PROHOOK, EMPTY );
+#else
+    RTCall( RT_PROHOOK, EMPTY );
+#endif
 }
 
 
@@ -552,11 +550,11 @@ static  void    EpilogHook( void )
 
 static  void    DoLoadDS( void )
 {
-    #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
     if( _IsntTargetModel( LOAD_DS_DIRECTLY ) ) {
         RTCall( RT_GETDS, EMPTY );
     } else
-    #endif
+#endif
     {
         if( HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
             QuickSave( HW_STACK_CHECK, OP_PUSH );
@@ -630,13 +628,13 @@ extern  void    GenProlog( void ) {
 
     origlabel = label = CurrProc->label;
 
-    #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
     if( _RoutineIsFar16( CurrProc->state.attr ) ) {
         label = GenFar16Thunk( CurrProc->label, CurrProc->parms.size,
                     CurrProc->state.attr & ROUTINE_REMOVES_PARMS );
         // CurrProc->label = label; - ugly mess if following are combined
     }
-    #endif
+#endif
 
     CodeLabel( label, DepthAlign( PROC_ALIGN ) );
 
@@ -646,7 +644,7 @@ extern  void    GenProlog( void ) {
         GenRdosdevProlog();
     }
 
-    #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
     if( ( attr & FE_NAKED ) == EMPTY ) {
         if( _IsTargetModel( NEW_P5_PROFILING|P5_PROFILING ) ) {
             GenP5ProfilingProlog( label );
@@ -663,7 +661,7 @@ extern  void    GenProlog( void ) {
         CurrProc->parms.base += WORD_SIZE;
         }
     }
-    #endif
+#endif
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ||
         ( CurrProc->state.attr & ROUTINE_NEVER_RETURNS ) ) {
@@ -701,7 +699,7 @@ extern  void    GenProlog( void ) {
                     if( CHEAP_FRAME ) {
                         GenCypWindowsProlog();
                     } else {
-                        #if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
                         // Windows prologs zap AX, so warn idiot user if we
                         // generate one for a routine in which AX is live
                         // upon entry to routine, or unalterable.
@@ -710,7 +708,7 @@ extern  void    GenProlog( void ) {
                             FEMessage( MSG_ERROR,
                             "exported routine with AX live on entry" );
                         }
-                        #endif
+#endif
                         GenWindowsProlog();
                         CurrProc->targ.base_adjust += 2; /* the extra push DS */
                     }
@@ -749,15 +747,13 @@ extern  void    GenProlog( void ) {
     CurrProc->prolog_state |= GENERATED_PROLOG;
 
     if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
-        DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust
-                - ret_size );
+        DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust - ret_size );
         EmitProEnd();
     }
     SetOP( old );
 
     if( CurrProc->prolog_state & GENERATE_EXPORT ) {
-        OutDLLExport( ( CurrProc->parms.size+WORD_SIZE-1 ) / WORD_SIZE,
-                     AskForLblSym( CurrProc->label ) );
+        OutDLLExport( ( CurrProc->parms.size+WORD_SIZE-1 ) / WORD_SIZE, AskForLblSym( CurrProc->label ) );
     }
 }
 
@@ -827,7 +823,7 @@ extern  void        AdjustStackDepth( instruction *ins ) {
         if( ins->flags.call_flags & CALL_POPS_PARMS ) {
             op = ins->operands[ CALL_OP_POPS ];
             if( op->n.class == N_CONSTANT ) {
-               StackDepth -= op->c.int_value;
+                StackDepth -= op->c.int_value;
             }
         }
     default:
@@ -881,8 +877,8 @@ static  int PushAll( void )
         QuickSave( HW_SI, OP_PUSH );
         QuickSave( HW_DI, OP_PUSH );
     }
-        QuickSave( HW_DS, OP_PUSH );
-        QuickSave( HW_ES, OP_PUSH );
+    QuickSave( HW_DS, OP_PUSH );
+    QuickSave( HW_ES, OP_PUSH );
     if( _CPULevel( CPU_386 ) ) {
         QuickSave( HW_FS, OP_PUSH );
         QuickSave( HW_GS, OP_PUSH );
@@ -919,8 +915,8 @@ static  void    PopAll( void ) {
         QuickSave( HW_AX, OP_POP );
         QuickSave( HW_AX, OP_POP );
     }
-        QuickSave( HW_ES, OP_POP );
-        QuickSave( HW_DS, OP_POP );
+    QuickSave( HW_ES, OP_POP );
+    QuickSave( HW_DS, OP_POP );
     if( _CPULevel( CPU_186 ) ) {
         Gpopa();
     } else {
@@ -944,10 +940,10 @@ static  void    Enter( void ) {
 
     lex_level = CurrProc->lex_level;
     if( !CurrProc->targ.sp_frame && _CPULevel( CPU_186 ) &&
-    #if _TARGET & _TARG_80386
-     CurrProc->locals.size <= 65535 &&
-    #endif
-     ( lex_level != 0 || ( CurrProc->locals.size != 0 && OptForSize > 50 ) ) ) {
+#if _TARGET & _TARG_80386
+    CurrProc->locals.size <= 65535 &&
+#endif
+    ( lex_level != 0 || ( CurrProc->locals.size != 0 && OptForSize > 50 ) ) ) {
         DoEnter( lex_level );
         HW_CTurnOn( CurrProc->state.used, HW_BP );
         CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;

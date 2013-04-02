@@ -15,11 +15,6 @@ extra_c_flags_memwrap   = $(track_flags_$(host_cpu))
 extra_c_flags_trmem     = $(track_flags_$(host_cpu))
 !endif
 
-!ifeq release 0
-!else
-std_defines = -DNDEBUG
-!endif
-
 inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)
 
 .c: $(src_path);$(trmem_dir)
@@ -27,7 +22,7 @@ inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)
 .asm: $(asm_path)
 
 ./bitset.exe : $(watcom_dir)/c/bitset.c
-    $(bld_cl) $< $(bld_cl_opts)
+    $(bld_cl) $< $(bld_cl_opts) $(bld_ldflags)
 
 gbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     $[@ $(gbit_size) _GBit global_bit_set $@
@@ -39,7 +34,7 @@ dbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     $[@ $(dbit_size) _DBit dom_bit_set $@
 
 cgprotos.gh : $(cg_dir)/h/cgapicvr.h $(cg_dir)/h/cgfuntab.h
-    $(c_pp) -I"$(cg_dir)/h" $[@ >$@
+    $(cpp) -I"$(cg_dir)/h" $[@ >$@
 
 feprotos.gh : $(cg_dir)/h/cgfecvr.h $(cg_dir)/h/cgfertns.h
-    $(c_pp) -I"$(cg_dir)/h" $[@ >$@
+    $(cpp) -I"$(cg_dir)/h" $[@ >$@

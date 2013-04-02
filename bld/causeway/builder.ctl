@@ -17,10 +17,10 @@ set PROJNAME=CauseWay
     <CCCMD> cw32/dos386/cwdll.lib   <OWRELROOT>/lib386/dos/
     <CCCMD> inc/cwdll.h             <OWRELROOT>/h/
 
-    <CCCMD> cw32/dosi86/cwstub.exe  <OWRELROOT>/binw/cwstub.exe
-    <CCCMD> cw32/dosi86/cwdstub.exe <OWRELROOT>/binw/cwdstub.exe
-    <CCCMD> cw32/dosi86/cwstub.exe  <OWRELROOT>/binl/cwstub.exe
-    <CCCMD> cw32/dosi86/cwdstub.exe <OWRELROOT>/binl/cwdstub.exe
+    <CCCMD> cw32/dosi86/cwstub.exe  <OWRELROOT>/binw/
+    <CCCMD> cw32/dosi86/cwdstub.exe <OWRELROOT>/binw/
+    <CCCMD> cw32/dosi86/cwstub.exe  <OWRELROOT>/binl/
+    <CCCMD> cw32/dosi86/cwdstub.exe <OWRELROOT>/binl/
 
     <CCCMD> cwc/dosi86/cwc.exe      <OWRELROOT>/binw/
     <CCCMD> cwc/nt386/cwc.exe       <OWRELROOT>/binnt/

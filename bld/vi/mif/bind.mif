@@ -1,4 +1,4 @@
-!ifdef sys_windowed
+!ifeq sys_windowed 1
 bind_conf = ./weditor.ini
 bind_compiled_extra = ./untitled.vi ./writewin.vi ./writeall.vi ./qall.vi ./proc.vi ./err.vi ./chkout.vi ./forceout.vi ./unlock.vi ./fin.vi ./toggle.vi
 bind_compiled = $(bind_conf) ./wrme.vi ./rdmewin.vi ./rcs.vi ./menuwin.vi ./mlselw.vi ./mcselw.vi $(bind_compiled_extra)

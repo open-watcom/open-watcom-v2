@@ -34,9 +34,8 @@
 //
 // 91/06/11 -- J.W.Welch        -- defined
 
-#define IC( code, type ) code
-
-enum
-#include "ic.h"
-
-#undef IC
+typedef enum {
+    #define IC( code, type, mask ) code
+    #include "ic.h"
+    #undef IC
+} CGINTEROP;

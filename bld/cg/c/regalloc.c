@@ -36,7 +36,6 @@
 #include "regset.h"
 #include "pattern.h"
 #include "procdef.h"
-#include "hostsys.h"
 #include "zoiks.h"
 #include "model.h"
 #include "makeins.h"

@@ -32,11 +32,14 @@
 #include "plusplus.h"
 
 #include <stddef.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <setjmp.h>
 #include <limits.h>
+#if defined(__UNIX__)
+ #include <dirent.h>
+#else
+ #include <direct.h>
+#endif
+#include "wio.h"
 #include "sopen.h"
 #include "errdefns.h"
 #include "memmgr.h"
@@ -52,10 +55,8 @@
 #include "brinfo.h"
 
 #if defined(__UNIX__)
- #include <dirent.h>
  #define _FILENAME_CMP  strcmp
 #else
- #include <direct.h>
  #define _FILENAME_CMP  stricmp
 #endif
 

@@ -30,24 +30,14 @@
 
 
 #include "cvars.h"
-#include "pragdefn.h"
-#include "autodept.h"
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
     #include <direct.h>
 #endif
+#include "wio.h"
+#include "watcom.h"
+#include "pragdefn.h"
+#include "autodept.h"
 #include "sopen.h"
-
-#ifdef __UNIX__
-    #define PMODE       S_IRUSR+S_IWUSR+S_IRGRP+S_IWGRP+S_IROTH+S_IWOTH
-#else
-    #define PMODE       S_IRWXU
-#endif
-#ifndef O_BINARY
-    #define O_BINARY  0
-#endif
 
 extern  TAGPTR  TagHash[TAG_HASH_SIZE + 1];
 
@@ -191,7 +181,7 @@ static void InitPHVars( void )
 
 static void CreatePHeader( const char *filename )
 {
-    PH_handle = sopen4( filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, PMODE );
+    PH_handle = sopen4( filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, PMODE_RW );
     if( PH_handle == -1 ) {
         longjmp( PH_jmpbuf, 1 );
     }

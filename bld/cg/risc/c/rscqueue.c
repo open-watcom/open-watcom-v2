@@ -32,13 +32,12 @@
 
 #include "standard.h"
 #include "coderep.h"
+#include "procdef.h"
 #include "ocentry.h"
 #include "dbcue.h"
-#include "symdbg.h"
 #include "owl.h"
 #include "model.h"
 #include "zoiks.h"
-#include "procdef.h"
 
 extern  void    OutLabel( label_handle );
 extern  void    ObjBytes( const char *, unsigned );
@@ -60,8 +59,8 @@ extern  void    EncodeCond( oc_jcond * );
 
 extern  void    DbgRtnBeg( dbg_rtn *, offset );
 extern  void    DbgProEnd( dbg_rtn *, offset );
-extern  void    DbgBlkBeg( dbg_rtn *, offset );
-extern  void    DbgBlkEnd( dbg_rtn *, offset );
+extern  void    DbgBlkBeg( dbg_block *, offset );
+extern  void    DbgBlkEnd( dbg_block *, offset );
 extern  void    DbgEpiBeg( dbg_rtn *, offset );
 extern  void    DbgRtnEnd( dbg_rtn *, offset );
 

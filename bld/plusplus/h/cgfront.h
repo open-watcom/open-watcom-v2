@@ -38,7 +38,6 @@
 #include "cgdata.h"
 #include "cgiobuff.h"
 #include "cgio.h"
-#include "icodes.h"
 #include "segment.h"
 #include "ptree.h"
 #include "module.h"

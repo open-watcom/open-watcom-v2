@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <watcom.h>
+#include "watcom.h"
 #include "trmem.h"
 #include "trmemcvr.h"
 #include "asinline.h"

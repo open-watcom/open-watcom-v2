@@ -34,10 +34,9 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <malloc.h>
-#include <sys/stat.h>
+#include "wio.h"
+#include "watcom.h"
 #include "banner.h"
 #include "bnddata.h"
 
@@ -62,7 +61,7 @@ void Banner( void )
     if( qflag ) {
         return;
     }
-    printf( "%s\n", banner1w( "Editor Bind Utility",_EDBIND_VERSION_ ) );
+    printf( "%s\n", banner1w( "Editor Bind Utility", _EDBIND_VERSION_ ) );
     printf( "%s\n", banner2a() );
     printf( "%s\n", banner3 );
     printf( "%s\n", banner3a );
@@ -124,8 +123,7 @@ void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
     }
     _splitpath( exe, drive, dir, NULL, NULL );
     _makepath( foo, drive, dir, "__cge__", ".exe" );
-    newh = open( foo, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
-                 S_IRWXU | S_IRWXG | S_IRWXO );
+    newh = open( foo, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, PMODE_RWX );
     if( newh == -1 ) {
         Abort( "Fatal error opening \"%s\"", foo );
     }
@@ -241,7 +239,7 @@ FILE *GetFromEnvAndOpen( char *inpath )
 /*
  * Usage - dump the usage message
  */
-#ifndef __ALPHA__
+#if defined( __WATCOMC__ ) && !defined( __ALPHA__ )
     #pragma aux Usage aborts;
 #endif
 
@@ -376,6 +374,7 @@ int main( int argc, char *argv[] )
         Abort( "Could not find executable \"%s\"", path );
     }
 
+    cnt = 0;
     if( !sflag ) {
 
         buff = MyAlloc( 65000 );
@@ -414,7 +413,6 @@ int main( int argc, char *argv[] )
         entries = MyAlloc( FileCount * sizeof( bind_size ) );
 
         buffn = buff;
-        cnt = 0;
 
         *(bind_size *)buffn = FileCount;
         buffn += sizeof( bind_size );

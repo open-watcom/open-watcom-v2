@@ -7,13 +7,14 @@ set PROJNAME=cwc
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/deftool.ctl ]
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK ( <1> <BINTOOL> ) rel ]
+[ BLOCK <1> rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <BINTOOL> rel ]
-#======================
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/cwc.exe <OWBINDIR>/bcwc<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]

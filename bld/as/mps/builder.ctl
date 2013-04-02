@@ -9,11 +9,12 @@ set PROJNAME=wasmps
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK ( <1> <BINTOOL> ) rel ]
+[ BLOCK <1> rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <BINTOOL> rel ]
-#======================
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/bwasmps.exe <OWBINDIR>/bwasmps<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]

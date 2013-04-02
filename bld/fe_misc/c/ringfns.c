@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 
-#include header
+#ifdef __header1
+#include __header1
+#endif
 #include "ringfns.h"
 
 typedef struct ring RING;
