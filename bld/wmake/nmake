@@ -1,0 +1,55 @@
+CPPFLAGS = -I. -I..\h -I..\..\watcom\h -I..\..\lib_misc\h $(DEFS)
+CFLAGS = -nologo -Zi -W4 -WX -MT -Fm -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -wd4244
+DEFS = -DBOOTSTRAP -D__NT__ -DRC_NT
+LFLAGS = -link -INCREMENTAL:NO -DEBUG
+
+{..\c}.c.obj :
+        $(CC) -c $(CFLAGS) $(CPPFLAGS) -I. -Fo$@ $<
+
+{..\..\builder\c}.c.obj :
+        $(CC) -c $(CFLAGS) $(CPPFLAGS) -I. -Fo$@ $<
+
+{..\..\watcom\c}.c.obj :
+        $(CC) -c $(CFLAGS) $(CPPFLAGS) -I. -Fo$@ $<
+
+all: $(OWBINDIR)\wmake.exe
+
+OBJS= macros.obj main.obj massert.obj mautodep.obj mautoomf.obj \
+  mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj \
+  mlexprs.obj mparse.obj mpreproc.obj mrcmsg.obj msg.obj mstream.obj \
+  msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj autodept.obj \
+  mcache.obj misc.obj clibext.obj
+
+wsplice.exe: wsplice.obj clibext.obj
+        $(CC) $(CFLAGS) -Fe$@ $** $(LFLAGS)
+
+#idedrv.obj : ..\..\watcom\c\idedrv.c
+#        $(CC) -c $(CFLAGS) $(CPPFLAGS) -P -I. -Fo$@ $**
+
+# Use inline files for wsplice as a way to sidestep the metacharacter hell.
+usage.gh : ..\h\usage.sp wsplice.exe
+        wsplice @<<usage.tmp
+-kIS_RC -kENGLISH -f "{%+(MSG_USAGE_BASE+%#-1), \"%s\"}," ..\h\usage.sp -o "%n%n%n%n" $@
+<<
+
+usageend.gh: usage.gh wsplice.exe
+        wsplice usage.gh -o "%n%n%n%n" usage.rcp
+        wsplice @<<usage.tm2
+-f "%+" usage.rcp -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n" $@
+<<
+        del usage.rcp
+
+cretype.exe : ..\c\cretype.c
+        $(CC) -nologo -Fe$@ $** $(LFLAGS)
+
+isarray.gh : cretype.exe
+        cretype.exe > $@
+
+$(OWBINDIR)\wmake.exe: wmake.exe
+        copy wmake.exe $@
+
+wmake.exe: usageend.gh isarray.gh $(OBJS)
+        $(CC) $(CFLAGS) -Fe$@ $(OBJS) $(LFLAGS)
+
+clean:
+        -erase *.obj *.gh *.exe
