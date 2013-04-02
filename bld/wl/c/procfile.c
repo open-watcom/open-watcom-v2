@@ -35,7 +35,7 @@
 #include "wlnkmsg.h"
 #include "pcobj.h"
 #include "library.h"
-#include <ar.h>
+#include "ar.h"
 #include "objnode.h"
 #include "obj2supp.h"
 #include "fileio.h"
@@ -64,7 +64,7 @@
 static bool             EndOfLib( file_list *, unsigned long );
 static void             IncLoadObjFiles( void );
 static void             DoPass1( mod_entry *next, file_list *list );
-static void             SkipFile( file_list *list, unsigned long *loc );
+static void             SkipFile( file_list *list, long *loc );
 
 void ProcObjFiles( void )
 /******************************/
@@ -497,7 +497,7 @@ static void DoPass1( mod_entry *next, file_list *list )
 {
     member_list         *member;
     char                *membname;
-    unsigned long       loc;
+    long                loc;
     unsigned long       size;
     unsigned            reclength;
     bool                lastmod;
@@ -579,13 +579,12 @@ static void DoPass1( mod_entry *next, file_list *list )
     CheckStop();
 }
 
-char *IdentifyObject( file_list *list, unsigned long *loc,
-                              unsigned long *size )
-/*****************************************************************/
+char *IdentifyObject( file_list *list, long *loc, unsigned long *size )
+/*********************************************************************/
 {
     ar_header       *ar_hdr;
     char            *name;
-    unsigned long   ar_loc;
+    long            ar_loc;
 
     name = NULL;
     *size = 0;
@@ -609,15 +608,15 @@ char *IdentifyObject( file_list *list, unsigned long *loc,
     return( name );
 }
 
-static void BadSkip( file_list *list, unsigned long *loc )
-/********************************************************/
+static void BadSkip( file_list *list, long *loc )
+/***********************************************/
 {
     list = list;
     loc = loc;
     BadObjFormat();
 }
 
-static void (*SkipObjFile[])( file_list *, unsigned long * ) = {
+static void (*SkipObjFile[])( file_list *, long * ) = {
     BadSkip,
     OMFSkipObj,
     ORLSkipObj,
@@ -628,8 +627,8 @@ static void (*SkipObjFile[])( file_list *, unsigned long * ) = {
     BadSkip
 };
 
-static void SkipFile( file_list *list, unsigned long *loc )
-/*********************************************************/
+static void SkipFile( file_list *list, long *loc )
+/************************************************/
 {
     SkipObjFile[ GET_FMT_IDX( ObjFormat ) ]( list, loc );
 }

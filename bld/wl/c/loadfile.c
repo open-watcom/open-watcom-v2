@@ -834,7 +834,7 @@ void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
         currpos += otherlen;
         *currpos++ = '\'';
     } else {
-        utoa( ordinal, currpos, 10 );
+        ultoa( ordinal, currpos, 10 );
         currpos += strlen( currpos );
     }
 #if !defined( __UNIX__ )

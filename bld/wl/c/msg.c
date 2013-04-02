@@ -215,7 +215,7 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 } else {
                     num = va_arg( *args, unsigned int );
                 }
-                utoa( num, dest, 10 );
+                ultoa( num, dest, 10 );
                 size = strlen( dest );
                 dest += size;
                 len -= size;

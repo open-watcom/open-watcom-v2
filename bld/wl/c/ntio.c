@@ -35,9 +35,6 @@
 #include <process.h>
 #include <conio.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
 #include "linkstd.h"
 #include "msg.h"
 #include "alloc.h"
@@ -113,7 +110,7 @@ static int DoOpen( char *name, unsigned mode, bool isexe )
     for( ;; ) {
         if( OpenFiles >= MAX_OPEN_FILES )
             CleanCachedHandles();
-        h = open( name, mode, S_IRUSR | S_IWUSR );
+        h = open( name, mode, PMODE_RW );
         if( h != -1 ) {
             OpenFiles++;
             break;

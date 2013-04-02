@@ -138,7 +138,7 @@ $(exename).exe : $(drv_objs) $(realdllname).lib $(version_res_exe_$(host_os)_$(h
 
 $(exename).exe : wlink.res $(comp_objs_exe) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
-    $(cl) $(clflags) $(comp_objs_exe) $(xlibs)
+    $(cl) $(clflags) $(comp_objs_exe) $(xlibs) $(ldflags)
 !else
     @%write exe.lnk $(lflags)
     @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i
@@ -177,4 +177,4 @@ rcmsg.gh : wrcmsg.gh
     $(awk) -v rcbase=800 -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 wrcmsg.gh : $(wrc_dir)/h/rc.msg
-    $(c_pp) $(rc_aui_flags) $[@ >$@
+    $(cpp) $(rc_aui_flags) $[@ >$@

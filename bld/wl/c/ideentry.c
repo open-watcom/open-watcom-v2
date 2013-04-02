@@ -28,15 +28,12 @@
 *
 ****************************************************************************/
 
-#include "linkstd.h"
-#include "msg.h"
-#include "fileio.h"
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "linkstd.h"
+#include "msg.h"
+#include "fileio.h"
 #include "idedll.h"
 #include "idedrv.h"
 #include "ideentry.h"

@@ -57,6 +57,7 @@ typedef struct order_class      ORDER_CLASS;
 typedef struct order_segment    ORDER_SEGMENT;
 
 #include "hash.h"
+#include "wio.h"
 
 typedef struct section {
     SECTION             *next_sect;

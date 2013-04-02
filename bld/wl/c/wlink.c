@@ -33,6 +33,9 @@
 #include <signal.h>
 #include <string.h>
 #include <stdlib.h>
+#if defined( __WATCOMC__ )
+    #include <malloc.h>
+#endif
 #include "linkstd.h"
 #include "msg.h"
 #include "alloc.h"
@@ -64,9 +67,6 @@
 #include "carve.h"
 #include "permdata.h"
 #include "toc.h"
-#if defined( __WATCOMC__ )
-    #include <malloc.h>
-#endif
 #include "dbgall.h"
 #include "objpass1.h"
 #include "obj2supp.h"
@@ -80,9 +80,6 @@
 #include "wcomdef.h"
 #include "objomf.h"
 #include "wlink.h"
-#ifndef __WATCOMC__
-    #include "clibext.h"
-#endif
 
 static void     PreAddrCalcFormatSpec( void );
 static void     PostAddrCalcFormatSpec( void );

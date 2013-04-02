@@ -83,6 +83,7 @@ common_objs = &
     objpass1.obj &
     objpass2.obj &
     objstrip.obj &
+    omfhash.obj &
     omfreloc.obj &
     overlays.obj &
     ovlsupp.obj &

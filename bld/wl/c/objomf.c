@@ -34,7 +34,7 @@
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "alloc.h"
-#include <pcobj.h>
+#include "pcobj.h"
 #include "obj2supp.h"
 #include "objnode.h"
 #include "objcalc.h"
@@ -300,8 +300,8 @@ static void Pass1Cmd( byte cmd )
     }
 }
 
-bool IsOMF( file_list *list, unsigned long loc )
-/******************************************************/
+bool IsOMF( file_list *list, long loc )
+/*************************************/
 {
     byte        *rec;
 
@@ -309,8 +309,8 @@ bool IsOMF( file_list *list, unsigned long loc )
     return( rec != NULL && *rec == CMD_THEADR );
 }
 
-char *GetOMFName( file_list *list, unsigned long *loc )
-/**************************************************************/
+char *GetOMFName( file_list *list, long *loc )
+/********************************************/
 {
     obj_record  *rec;
     char        *name;
@@ -329,8 +329,8 @@ char *GetOMFName( file_list *list, unsigned long *loc )
     return( ChkToString( name + 1, len ) );
 }
 
-void OMFSkipObj( file_list *list, unsigned long *loc )
-/***********************************************************/
+void OMFSkipObj( file_list *list, long *loc )
+/*******************************************/
 {
     *loc = ProcObj( list, *loc, NULL );
 }

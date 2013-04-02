@@ -37,8 +37,6 @@
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
-#include <unistd.h>
-
 #include "linkstd.h"
 #include "dbginfo.h"
 #include "alloc.h"

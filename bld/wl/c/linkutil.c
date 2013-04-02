@@ -33,10 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
-#include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include "linkstd.h"
 #include "pcobj.h"
 #include "newmem.h"

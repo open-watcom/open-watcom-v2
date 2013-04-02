@@ -31,11 +31,11 @@
 
 #include "ar.h"
 
-extern int              CheckLibraryType( file_list *, unsigned long *, bool );
+extern int              CheckLibraryType( file_list *, long *, bool );
 extern mod_entry        *SearchLib( file_list *, char * );
 extern bool             DiscardDicts( void );
 extern void             BurnLibs( void );
-extern char             *GetARName( ar_header *, file_list *, unsigned long * );
+extern char             *GetARName( ar_header *, file_list *, long * );
 extern unsigned long    GetARValue( char *, unsigned );
 extern bool             LibFind( char *, bool );
 extern bool             ModNameCompare( char *, char * );
