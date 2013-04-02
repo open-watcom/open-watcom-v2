@@ -71,6 +71,12 @@ static void ProcessOneObject( arch_header *arch, libfile io )
     bool      deleted;
 
     if( Options.explode ) {
+        if( Options.explode_count ) {
+            char number[10];
+            sprintf( number, "%8.8d", Options.explode_count );
+            memcpy( Options.explode_ext, number, 8 );
+            Options.explode_count++;
+        }
         ExtractObj( io, arch->name, arch, Options.explode_ext );
     }
     deleted = FALSE;

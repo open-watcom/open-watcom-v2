@@ -34,11 +34,8 @@
 #include "clibint.h"
 #include "main.h"
 
-const char  *ImageName;
-
 unsigned __dll_initialize()
 {
-    ImageName = _LpDllName;
     return( 1 );
 }
 

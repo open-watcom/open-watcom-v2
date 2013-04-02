@@ -103,6 +103,6 @@ extern void CoffMKImport( arch_header *, importType, long, char *, char *, char 
 extern void ElfMKImport( arch_header *, importType, long, char *, char *, Elf32_Export *, Elf32_Sym *, processor_type );
 extern int  CoffImportSize( import_sym * );
 extern int  ElfImportSize( import_sym * );
-extern void CoffWriteImport( libfile, sym_file * );
+extern void CoffWriteImport( libfile, sym_file *, int );
 extern void ElfWriteImport( libfile, sym_file * );
 extern void ProcessImport( char * );

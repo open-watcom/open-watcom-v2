@@ -31,6 +31,8 @@
 
 //#define IMP_MODULENAME_DLL
 
+#include "omfhash.h"
+
 /*
  * Structs
  */
@@ -68,7 +70,6 @@ typedef struct {
 } OmfLibHeader;
 
 #define INIT_OMF_REC_SIZE 1024
-#define NUM_BUCKETS 37
 #define BLOCK_NAME_LEN ( DIC_REC_SIZE - NUM_BUCKETS - 1 )
 
 typedef struct{

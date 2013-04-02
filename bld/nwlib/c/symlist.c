@@ -50,8 +50,13 @@ static orl_return CheckSymbol( orl_symbol_handle orl_sym_hnd )
             } else {
                 AddSym( name,  SYM_STRONG, info );
             }
-        } else if( ORLSymbolGetValue( orl_sym_hnd ) != 0 ) {
-            AddSym( name,  SYM_WEAK, info );
+        } else {
+            unsigned_64 val64;
+
+            val64 = ORLSymbolGetValue( orl_sym_hnd );
+            if( val64.u._32[I64LO32] != 0 || val64.u._32[I64HI32] != 0 ) {
+                AddSym( name,  SYM_WEAK, info );
+            }
         }
     } else if( binding == ORL_SYM_BINDING_ALIAS ) {
         AddSym( name, SYM_WEAK, 0 );

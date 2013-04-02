@@ -30,6 +30,9 @@
 
 
 #include "wlib.h"
+#ifndef IDE_PGM
+#include "clibint.h"
+#endif
 
 #define AR_MODE_ENV "WLIB$AR"
 
@@ -194,6 +197,12 @@ static char *ParseOption( char *c, char *buff )
             }
             Options.processor = WL_PROC_X86;
             break;
+        case '6':
+            if( Options.processor != WL_PROC_NONE ) {
+                DuplicateOption( start );
+            }
+            Options.processor = WL_PROC_X64;
+            break;
         case 'e':
             if( Options.filetype != WL_FTYPE_NONE ) {
                 DuplicateOption( start );
@@ -201,6 +210,10 @@ static char *ParseOption( char *c, char *buff )
             Options.filetype = WL_FTYPE_ELF;
             break;
         case 'c':
+            if( ( my_tolower( *c ) == 'l' ) ) {
+                Options.coff_import_long = 1;
+                ++c;
+            }
             if( Options.filetype != WL_FTYPE_NONE ) {
                 DuplicateOption( start );
             }
@@ -240,14 +253,30 @@ static char *ParseOption( char *c, char *buff )
     case 'q': //                       (don't print header)
         Options.quiet = 1;
         break;
+
+
     case 'v': //                       (don't print header)
         Options.quiet = 0;
         break;
     case 'x': //                       (explode all objects in library)
         Options.explode = 1;
+#ifndef NDEBUG
+        Options.explode_count = 0;
+        if( ( my_tolower( *c ) == 'n' ) ) {
+            Options.explode_count = 1;
+            ++c;
+        }
         c = GetEqual( c, buff, NULL, &Options.explode_ext );
         if( Options.explode_ext == NULL )
             Options.explode_ext = EXT_OBJ;
+        if( Options.explode_count ) {
+            char  cn[20] = "00000000";
+            strcat( cn, Options.explode_ext );
+            Options.explode_ext = DupStr( cn );
+        }
+#else
+        c = GetEqual( c, buff, NULL, &Options.explode_ext );
+#endif
         break;
     case 'z':
         if( ( my_tolower( *c ) == 'l' ) && ( my_tolower( *(c + 1) ) == 'd' ) ) {
@@ -501,6 +530,8 @@ static void ParseOneLine( char *c )
             c = GetString( c, buff, TRUE, FALSE );
             {
                 char *env = WlibGetEnv( buff );
+
+
                 if( env != NULL ) {
                     ParseOneLine(env);
                 } else {
@@ -657,8 +688,16 @@ void ProcessCmdLine( char *argv[] )
     char        *parse;
     char        *env;
     lib_cmd     *cmd;
+    char        *fname;
+#ifdef IDE_PGM
+    char buffer[ PATH_MAX ];
 
-    if( FNCMP( MakeFName( ImageName ), "ar" ) == 0 || WlibGetEnv( AR_MODE_ENV ) != NULL ) {
+    _cmdname( buffer );
+    fname = MakeFName( buffer );
+#else
+    fname = MakeFName( _LpDllName );
+#endif
+    if( FNCMP( fname, "ar" ) == 0 || WlibGetEnv( AR_MODE_ENV ) != NULL ) {
         Options.ar = TRUE;
     }
     if( Options.ar ) {

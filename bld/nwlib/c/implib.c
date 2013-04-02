@@ -364,6 +364,10 @@ static void peAddImport( arch_header *arch, libfile io )
         Options.coff_found = TRUE;
         coff_obj = TRUE;
         break;
+    case ORL_MACHINE_TYPE_AMD64:
+        processor = WL_PROC_X64;
+        coff_obj = TRUE;
+        break;
     case ORL_MACHINE_TYPE_I386:
         processor = WL_PROC_X86;
         break;
@@ -602,6 +606,17 @@ void ProcessImport( char *name )
                 Options.filetype = WL_FTYPE_OMF;
                 Warning( ERR_NO_TYPE, "OMF" );
                 break;
+            case WL_PROC_X64:
+#ifdef __NT__
+                Options.libtype = WL_LTYPE_AR;
+                Options.filetype = WL_FTYPE_COFF;
+                Warning( ERR_NO_TYPE, "COFF" );
+#else
+                Options.libtype = WL_LTYPE_MLIB;
+                Options.filetype = WL_FTYPE_ELF;
+                Warning( ERR_NO_TYPE, "ELF" );
+#endif
+                break;
             case WL_PROC_AXP:
                 Options.libtype = WL_LTYPE_AR;
                 Options.filetype = WL_FTYPE_COFF;
@@ -759,13 +774,31 @@ int CoffImportSize( import_sym *import )
     int ret;
     int sym_len;
     int exp_len;
+    int opt_hdr_len;
 
     dll_len = strlen( import->DLLName );
     mod_len = strlen( MakeFName( import->DLLName ) );
 
     switch( import->type ) {
     case IMPORT_DESCRIPTOR:
-        return( COFF_FILE_HEADER_SIZE + 0xe0            // header
+        opt_hdr_len = 0;
+        switch( import->processor ) {
+        case WL_PROC_X64:
+            if( Options.coff_import_long ) {
+                opt_hdr_len = sizeof( coff_opt_hdr64 );
+            }
+            break;
+        case WL_PROC_AXP:
+        case WL_PROC_PPC:
+        case WL_PROC_X86:
+        default:
+            if( Options.coff_import_long ) {
+                opt_hdr_len = sizeof( coff_opt_hdr );
+            }
+            break;
+        }
+        return( COFF_FILE_HEADER_SIZE                   // header
+            + opt_hdr_len                               // optional header
             + 2 * COFF_SECTION_HEADER_SIZE +            // section table (headers)
             + 0x14 + 3 * COFF_RELOC_SIZE                // section data
             + (dll_len | 1) + 1                         // section data
@@ -786,61 +819,74 @@ int CoffImportSize( import_sym *import )
     case ORDINAL:
     case NAMED:
         sym_len = strlen( import->u.sym.symName );
-        if( import->type == NAMED ) {
-            if( import->u.sym.exportedName == NULL ) {
-                exp_len = sym_len;
+        if( Options.coff_import_long ) {
+            if( import->type == NAMED ) {
+                if( import->u.sym.exportedName == NULL ) {
+                    exp_len = sym_len;
+                } else {
+                    exp_len = strlen( import->u.sym.exportedName );
+                }
+                ret = COFF_FILE_HEADER_SIZE
+                    + 4 * COFF_SECTION_HEADER_SIZE
+                    + 4 + COFF_RELOC_SIZE       // idata$5
+                    + 4 + COFF_RELOC_SIZE       // idata$4
+                    + ( exp_len | 1 ) + 1 + 2   // idata$6
+                    + 11 * COFF_SYM_SIZE
+                    + 4 + mod_len + 21;         // 21 = strlen("__IMPORT_DESCRIPTOR_") + 1
             } else {
-                exp_len = strlen( import->u.sym.exportedName );
+                ret = COFF_FILE_HEADER_SIZE
+                    + 3 * COFF_SECTION_HEADER_SIZE
+                    + 4 + 4
+                    + 9 * COFF_SYM_SIZE
+                    + 4 + mod_len + 21;
             }
-            ret = COFF_FILE_HEADER_SIZE
-                + 4 * COFF_SECTION_HEADER_SIZE
-                + 4 + COFF_RELOC_SIZE       // idata$5
-                + 4 + COFF_RELOC_SIZE       // idata$4
-                + ( exp_len | 1 ) + 1 + 2   // idata$6
-                + 11 * COFF_SYM_SIZE
-                + 4 + mod_len + 21;         // 21 = strlen("__IMPORT_DESCRIPTOR_") + 1
+            switch( import->processor ) {
+            case WL_PROC_AXP:
+                if( sym_len > 8 ) {
+                    // Everything goes to symbol table
+                    ret += sym_len + 1 + sym_len + 7;
+                } else if( sym_len > 2 ) {
+                    // Undecorated symbol can be stored directly, but the
+                    // version with "__imp_" prepended goes to symbol table
+                    ret += 7 + sym_len;
+                }
+                ret += 0xc + 3 * COFF_RELOC_SIZE;   // .text
+                break;
+            case WL_PROC_PPC:
+                if( sym_len > 8 ) {
+                    ret += sym_len + 1 + sym_len + 3 + sym_len + 7;
+                } else if( sym_len > 6 ) {
+                    ret += sym_len + 3 + sym_len + 7;
+                } else if( sym_len > 2 ) {
+                    ret += sym_len + 7;
+                }
+                ret += 6 * COFF_SYM_SIZE
+                    + 2 * COFF_SECTION_HEADER_SIZE
+                    + 0x18 + COFF_RELOC_SIZE
+                    + 0x14 + 4 * COFF_RELOC_SIZE    // .pdata
+                    + 0x8  + 2 * COFF_RELOC_SIZE;   // .reldata
+                break;
+            case WL_PROC_X64:
+                // See comment for AXP above
+                if( sym_len > 8 ) {
+                    ret += sym_len + 1 + sym_len + 7;
+                } else if( sym_len > 2 ) {
+                    ret += 7 + sym_len;
+                }
+                ret += 6 + COFF_RELOC_SIZE;     // .text
+                break;
+            case WL_PROC_X86:
+                // See comment for AXP above
+                if( sym_len > 8 ) {
+                    ret += sym_len + 1 + sym_len + 7;
+                } else if( sym_len > 2 ) {
+                    ret += 7 + sym_len;
+                }
+                ret += 6 + COFF_RELOC_SIZE;     // .text
+                break;
+            }
         } else {
-            ret = COFF_FILE_HEADER_SIZE
-                + 3 * COFF_SECTION_HEADER_SIZE
-                + 4 + 4
-                + 9 * COFF_SYM_SIZE
-                + 4 + mod_len + 21;
-        }
-        switch( import->processor ) {
-        case WL_PROC_AXP:
-            if( sym_len > 8 ) {
-                // Everything goes to symbol table
-                ret += sym_len + 1 + sym_len + 7;
-            } else if( sym_len > 2 ) {
-                // Undecorated symbol can be stored directly, but the
-                // version with "__imp_" prepended goes to symbol table
-                ret += 7 + sym_len;
-            }
-            ret += 0xc + 3 * COFF_RELOC_SIZE;   // .text
-            break;
-        case WL_PROC_PPC:
-            if( sym_len > 8 ) {
-                ret += sym_len + 1 + sym_len + 3 + sym_len + 7;
-            } else if( sym_len > 6 ) {
-                ret += sym_len + 3 + sym_len + 7;
-            } else if( sym_len > 2 ) {
-                ret += sym_len + 7;
-            }
-            ret += 6 * COFF_SYM_SIZE
-                + 2 * COFF_SECTION_HEADER_SIZE
-                + 0x18 + COFF_RELOC_SIZE
-                + 0x14 + 4 * COFF_RELOC_SIZE    // .pdata
-                + 0x8  + 2 * COFF_RELOC_SIZE;   // .reldata
-            break;
-        case WL_PROC_X86:
-            // See comment for AXP above
-            if( sym_len > 8 ) {
-                ret += sym_len + 1 + sym_len + 7;
-            } else if( sym_len > 2 ) {
-                ret += 7 + sym_len;
-            }
-            ret += 6 + COFF_RELOC_SIZE;     // .text
-            break;
+            ret = sizeof( coff_import_object_header ) + dll_len + 1 + sym_len + 1;
         }
         return( ret );
     default:

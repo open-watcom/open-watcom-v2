@@ -48,15 +48,18 @@ void FiniMsg( void ) {}
 
 #else
 
-#include <wresset2.h>   /* for FileShift */
-
-#define NIL_HANDLE      ((int)-1)
+#include "wressetr.h"
+#include "wresset2.h"
+#include "wreslang.h"
+#ifndef IDE_PGM
+#include "clibint.h"
+#endif
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  int             Res_Flag;
 static  unsigned        MsgShift;
 
-static off_t res_seek( WResFileID handle, off_t position, int where )
+static long res_seek( WResFileID handle, long position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {
@@ -72,8 +75,14 @@ WResSetRtns( open, close, read, write, res_seek, tell, MemAllocGlobal, MemFreeGl
 void InitMsg( void )
 {
     int initerror;
+#if defined( IDE_PGM )
+    char        fname[_MAX_PATH];
 
-    initerror = OpenResFile( &hInstance, ImageName ) == NIL_HANDLE;
+    _cmdname( fname );
+    initerror = OpenResFile( &hInstance, fname ) == NIL_HANDLE;
+#else
+    initerror = OpenResFile( &hInstance, _LpDllName ) == NIL_HANDLE;
+#endif
     if( !initerror ) {
         initerror = FindResources( &hInstance );
         if( initerror ) {

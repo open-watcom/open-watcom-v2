@@ -34,7 +34,8 @@ typedef enum {
     WL_PROC_NONE,
     WL_PROC_AXP,
     WL_PROC_PPC,
-    WL_PROC_X86
+    WL_PROC_X86,
+    WL_PROC_X64
 } processor_type;
 
 typedef enum {
@@ -85,6 +86,7 @@ typedef struct {
     unsigned        update           :1; //update older files only
     unsigned        no_c_warn        :1; //no create lib warning
     unsigned        ar               :1;
+    unsigned        coff_import_long :1; // generate old long format of coff import library
     // flags
     unsigned        modified         :1;
     unsigned        omf_found        :1; // if omf objects found
@@ -97,6 +99,7 @@ typedef struct {
     file_type       filetype;
     lib_type        libtype;
     ar_format       ar_libformat;
+    int             explode_count;
 } options_def;
 
 

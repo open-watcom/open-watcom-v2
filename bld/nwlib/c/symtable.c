@@ -336,7 +336,7 @@ static void SortSymbols( void )
 }
 
 void WriteFileBody( sym_file *sfile )
-/*******************************/
+/***********************************/
 {
     libfile     io;
 
@@ -361,7 +361,7 @@ void WriteFileBody( sym_file *sfile )
             ElfWriteImport( NewLibrary, sfile );
             break;
         case WL_FTYPE_COFF:
-            CoffWriteImport( NewLibrary, sfile );
+            CoffWriteImport( NewLibrary, sfile, Options.coff_import_long );
             break;
         case WL_FTYPE_OMF:
             OmfWriteImport( sfile );
@@ -409,6 +409,7 @@ static unsigned OptimalPageSize( void )
     file_offset offset;
     unsigned    page_size;
 
+    page_size = 0;
     for( i = 4; i < 16; i++ ) {
         page_size = 1 << i;
         offset = page_size;
@@ -737,7 +738,7 @@ static int Hash( char *string, unsigned *plen )
     *plen = 0;
     while( *string != 0 ) {
         h = ( h << 4 ) + *string;
-        if( (g = h & 0xf0000000) ) {
+        if( (g = h & 0xf0000000) != 0 ) {
             h = h ^ ( g >> 24 );
             h = h ^ g;
         }
@@ -1053,6 +1054,8 @@ static unsigned         msgLength = 0;
 static void listPrint( FILE *fp, char *str, ... )
 {
     va_list             arglist;
+
+    fp = fp;
     va_start( arglist, str );
     msgLength += vsnprintf( listMsg + msgLength, MAX_MESSAGE_LEN - msgLength, str, arglist );
     va_end( arglist );
@@ -1076,6 +1079,7 @@ static void listNewLine( FILE *fp )
 
 static void fpadch( FILE *fp, char ch, int len )
 {
+    fp = fp;
     if( len <= 0 ) {
         return;
     }

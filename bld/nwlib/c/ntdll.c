@@ -34,10 +34,7 @@
 #include "clibint.h"
 #include "main.h"
 
-const char  *ImageName;
-
-BOOL __export __stdcall LibMain( HINSTANCE hinst, DWORD dw, LPVOID *ptr )
+BOOL WINAPI DllMain( HINSTANCE hinst, DWORD dw, LPVOID *ptr )
 {
-    ImageName = _LpDllName;
     return( TRUE );
 }

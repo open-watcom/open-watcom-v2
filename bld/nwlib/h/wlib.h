@@ -37,22 +37,16 @@
 #include <ctype.h>
 #include <time.h>
 #include <limits.h>
-#include <errno.h>
-#include <stdlib.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #include <conio.h>
 #endif
-
 #include "wio.h"
 #include "watcom.h"
+#include "bool.h"
 #include "orl.h"
 #include "ar.h"
 #include "lib.h"
-#include "watcom.h"
-#include "bool.h"
-#include "wressetr.h"
-#include "wreslang.h"
 #include "demangle.h"
 
 #include "wlibio.h"
@@ -89,4 +83,3 @@
 #include "exepe.h"
 #include "exenov.h"
 #include "main.h"
-#include "wresset2.h"

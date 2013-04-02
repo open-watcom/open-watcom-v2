@@ -123,83 +123,43 @@ static unsigned NextPrime( unsigned maj )
     return( maj );
 }
 
-#define _rotl( a, b )   ( ( a << b ) | ( a >> ( 16 - b ) ) )
-#define _rotr( a, b )   ( ( a << ( 16 - b ) ) | ( a  >> b ) )
-
-static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks,
-    char *sym, unsigned len, unsigned_16 offset )
+static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sym, unsigned len, unsigned_16 offset )
 {
-    char            *leftptr;
-    char            *rightptr;
-    unsigned_16     curr;
-    unsigned_16     block;
-    unsigned_16     bucket;
-    unsigned_16     dblock;
-    unsigned_16     dbucket;
-    unsigned        count;
     unsigned int    loc;
     unsigned int    entry_len;
     unsigned int    i;
     unsigned int    j;
+    hash_entry      h;
 
-    count = len;
-    leftptr = sym;
-    rightptr = leftptr + count;
-    block = count | 0x20;
-    dblock = 0;
-    bucket = 0;
-    dbucket = count | 0x20;
-    for( ;; ) {
-        --rightptr;
-        /* zap to lower case (sort of) */
-        curr = *rightptr | 0x20;
-        dblock = curr ^ _rotl( dblock, 2 );
-        bucket = curr ^ _rotr( bucket, 2 );
-        if( --count == 0 ) {
-            break;
-        }
-        curr = *leftptr | 0x20;
-        ++leftptr;
-        block = curr ^ _rotl( block, 2 );
-        dbucket = curr ^ _rotr( dbucket, 2 );
-    }
-    bucket %= NUM_BUCKETS;
-    dbucket %= NUM_BUCKETS;
-    if( dbucket == 0 ) {
-        dbucket = 1;
-    }
-    block %= num_blocks;
-    dblock %= num_blocks;
-    if( dblock == 0 ) {
-        dblock = 1;
-    }
+    omflib_hash( sym, len, &h, num_blocks );
+    
     entry_len = (len | 1) + 3;
     for( i = 0; i < num_blocks; i++ ) {
-        loc = lib_block[ block ].fflag * 2;
+        loc = lib_block[h.block].fflag * 2;
         for( j = 0; j < NUM_BUCKETS; j++ ) {
-            if( lib_block[ block ].htab[ bucket ] == 0 ) {
+            if( lib_block[h.block].htab[h.bucket] == 0 ) {
                 if( ( DIC_REC_SIZE - loc - 2 ) < entry_len ) {
-                    lib_block[ block ].fflag = LIB_FULL_PAGE;
+                    lib_block[h.block].fflag = LIB_FULL_PAGE;
                     break;
                 }
-                lib_block[ block ].htab[ bucket ] = lib_block[ block ].fflag;
-                lib_block[ block ].fflag += entry_len / 2;
+                lib_block[h.block].htab[h.bucket] = lib_block[h.block].fflag;
+                lib_block[h.block].fflag += entry_len / 2;
                 loc -= NUM_BUCKETS + 1;
-                lib_block[ block ].name[ loc ] = len;
-                loc ++;
-                memcpy( &(lib_block[ block ].name[ loc ]), sym, len );
+                lib_block[h.block].name[loc] = len;
+                loc++;
+                memcpy( &(lib_block[h.block].name[loc]), sym, len );
                 loc += len;
-                *( (unsigned_16 *)&(lib_block[ block ].name[ loc ]) ) = offset;
+                *( (unsigned_16 *)&(lib_block[h.block].name[loc]) ) = offset;
                 return( TRUE );
             }
-            bucket += dbucket;
-            if( bucket >= NUM_BUCKETS ) {
-                bucket -= NUM_BUCKETS;
+            h.bucket += h.bucketd;
+            if( h.bucket >= NUM_BUCKETS ) {
+                h.bucket -= NUM_BUCKETS;
             }
         }
-        block += dblock;
-        if( block >= num_blocks ) {
-            block -= num_blocks;
+        h.block += h.blockd;
+        if( h.block >= num_blocks ) {
+            h.block -= num_blocks;
         }
    }
    return( FALSE );

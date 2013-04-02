@@ -40,7 +40,6 @@
 #include <stdio.h>
 #include <limits.h>
 #include "main.h"
-const char  *ImageName;
 #endif
 #include "idedrv.h"
 
@@ -59,44 +58,38 @@ static IDEDRV info =
 };
 
 int main                        // MAIN-LINE FOR DLL DRIVER
-    ( int count                 // - # args
-    , char *args[] )            // - arguments
+    ( int argc                  // - # args
+    , char *argv[] )            // - arguments
 {
     int retcode;                // - return code
 #ifndef __UNIX__
     int len;
     char *cmd_line;
+    char *p;
 #endif
 
 #ifndef __WATCOMC__
-    _argv = args;
-#endif
-#ifdef IDE_PGM
-#ifdef __UNIX__
-    static char buffer[ PATH_MAX ];
-    _cmdname( buffer );
-    ImageName = buffer;
-#else
-    ImageName = args[ 0 ];
-#endif
-#endif
-#ifndef __WATCOMC__
-    _argv = args;
+    _argv = argv;
+    _argc = argc;
 #endif
 #ifndef __UNIX__
-    count = count;
-    args = args;
     len = _bgetcmd( NULL, 0 ) + 1;
     cmd_line = malloc( len );
     _bgetcmd( cmd_line, len );
     /* Turn on 'ar' mode by setting WLIB$AR env var */
-    if( stricmp( strrchr( args[ 0 ], '\\' ) + 1, "ar.exe" ) == 0 ) {
+    p = strrchr( argv[ 0 ], '\\' );
+    if( p == NULL ) {
+        p = argv[ 0 ];
+    } else {
+        ++p;
+    }
+    if( stricmp( p, "ar.exe" ) == 0 ) {
         putenv( AR_MODE_ENV "=ON" );
     }
     retcode = IdeDrvExecDLL( &info, cmd_line );
     free( cmd_line );
 #else
-    retcode = IdeDrvExecDLLArgv( &info, count, args );
+    retcode = IdeDrvExecDLLArgv( &info, argc, argv );
 #endif
     if( retcode != IDEDRV_ERR_INIT_EXEC ) {
         IdeDrvUnloadDLL( &info );               // UNLOAD THE DLL

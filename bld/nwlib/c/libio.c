@@ -32,6 +32,7 @@
 
 #include "wlib.h"
 
+
 static libfile fileList;
 
 void InitLibIo( void )
@@ -56,12 +57,12 @@ libfile LibOpen( char *name, int access )
 {
     int io;
     libfile lio;
+
     if( access & O_CREAT ) {
         io = open( name, access, PMODE_RW );
     } else {
         io = open( name, access );
     }
-
 
     if( io == -1 && errno == EMFILE ) {
         CloseOneInputLib();

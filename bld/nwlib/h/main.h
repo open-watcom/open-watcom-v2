@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-extern const char   *ImageName;
 extern int          InitSubSystems( void );
 extern int          WlibMainLine( char *argv[] );
 extern void         FiniSubSystems( void );
