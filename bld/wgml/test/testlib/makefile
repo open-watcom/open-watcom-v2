@@ -45,7 +45,6 @@ drv_page =    &
 
 dosemu_gendev_batch = gendevb.bat
 
-!ifeq bld_cpu 386
 !ifeq bld_os dos
 gendevcmd = $(%OWROOT)\docs\gml\dos\gendev
 
@@ -72,9 +71,6 @@ gendevcmd = $(%OWROOT:/=\)\docs\gml\dos\gendev
 
 !else
 !error Unsupported building platform !!!!!!
-!endif
-!else
-!error Unsupported building CPU architecture !!!!!!
 !endif
 
 #-------------------------------------------------------
