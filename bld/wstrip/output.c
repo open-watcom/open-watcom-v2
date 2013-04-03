@@ -44,7 +44,8 @@
 #if defined( INCL_MSGTEXT )
 
 static char *StringTable[] = {
-#include "incltext.gh"
+    "",
+    #include "incltext.gh"
 };
 
 int Msg_Init( void )

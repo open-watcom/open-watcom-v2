@@ -34,6 +34,7 @@
 #if defined( INCL_MSGTEXT )
 
 static char *msg_text_array[] = {
+    "",
     #include "incltext.gh"
 };
 
@@ -41,7 +42,7 @@ void InitMsg( void ) {}
 
 void MsgGet( int resourceid, char *buffer )
 {
-    strcpy( buffer, msg_text_array[ resourceid ] );
+    strcpy( buffer, msg_text_array[resourceid] );
 }
 
 void FiniMsg( void ) {}
