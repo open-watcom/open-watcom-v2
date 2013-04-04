@@ -16,7 +16,7 @@
     #undef _XPG4_2          /* ...but causes trouble */
 #endif
 #ifdef __UNIX__
-#include <sys/wait.h>
+    #include <sys/wait.h>
 #endif
 #include "clibint.h"
 
@@ -24,6 +24,9 @@
 #define _INTEGRAL_MAX_BITS  64
 #endif
 
+/* An equivalent of the __unaligned keyword may be necessary on RISC
+ * architectures, but on x86/x64 it's useless
+ */
 #define _WCUNALIGNED
 
 #define _WCRTLINK
@@ -31,8 +34,9 @@
 #define _WCNEAR
 #define __near
 #define near
+#define __based(x)
 
-#ifdef __UNIX__
+#if defined( __UNIX__ )
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -65,6 +69,12 @@
 #define X_OK 1
 #define W_OK 2
 #define R_OK 4
+#define FNM_NOMATCH     1
+#define FNM_NOESCAPE    0x01
+#define FNM_PATHNAME    0x02
+#define FNM_PERIOD      0x04
+#define FNM_IGNORECASE  0x08
+#define FNM_LEADING_DIR 0x10
 #define NAME_MAX FILENAME_MAX
 #define PATH_MAX FILENAME_MAX
 #define STDIN_FILENO  _fileno( stdin )
@@ -75,23 +85,14 @@
 #define strcasecmp stricmp
 #define _grow_handles _setmaxstdio
 #define snprintf _snprintf
-#define FNM_NOMATCH     1
-#define FNM_NOESCAPE    0x01
-#define FNM_PATHNAME    0x02
-#define FNM_PERIOD      0x04
-#define FNM_IGNORECASE  0x08
-#define FNM_LEADING_DIR 0x10
 
 #endif
 
-#ifndef _MAX_PATH2
-#define _MAX_PATH2 (_MAX_PATH+3)
-#endif
+#define _MAX_PATH2 (_MAX_PATH + 3)
 
 #ifndef getch
 #define getch getchar
 #endif
-#define __based(x)
 #define _vsnprintf vsnprintf
 #define __va_list  va_list
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))
@@ -107,7 +108,28 @@
 extern "C" {
 #endif
 
-#if defined( _MSC_VER )
+#if defined( __UNIX__ )
+
+extern char   *itoa( int value, char *buf, int radix );
+extern char   *utoa( unsigned int value, char *buf, int radix );
+extern char   *ltoa( long int value, char *buf, int radix );
+extern char   *ultoa( unsigned long int value, char *buf, int radix );
+extern void   _splitpath( const char *path, char *drive, char *dir, char *fname, char *ext );
+extern void   _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );
+extern char   *_fullpath( char *buf, const char *path, size_t size );
+extern char   *strlwr( char *string );
+extern char   *strupr( char *string );
+extern char   *strrev( char *string );
+extern int    memicmp(const void *, const void *, size_t);
+extern off_t  tell( int handle );
+extern long   filelength(int handle);
+extern int    eof( int fildes );
+extern void   _searchenv( const char *name, const char *env_var, char *buf );
+extern char   *strnset( char *string, int c, size_t len );
+extern int    spawnlp( int mode, const char *path, const char *cmd, ... );
+extern int    spawnvp( int mode, const char *cmd, const char * const *args );
+
+#elif defined( _MSC_VER )
 
 typedef struct find_t {
     char            reserved[21];       /* reserved for use by DOS    */
@@ -146,7 +168,6 @@ extern void     unsetenv( const char *name );
 extern DIR      *opendir( const char *dirname );
 extern struct dirent *readdir( DIR *dirp );
 extern int      closedir( DIR *dirp );
-
 extern unsigned _dos_open( const char *name, unsigned mode, void **h );
 extern unsigned _dos_creat( const char *name, unsigned mode, void **h );
 extern unsigned _dos_close( void *h );
@@ -168,33 +189,12 @@ extern int    optopt;
 
 extern int fnmatch( const char *__pattern, const char *__string, int __flags );
 
-#else
-
-extern char   *itoa( int value, char *buf, int radix );
-extern char   *utoa( unsigned int value, char *buf, int radix );
-extern char   *ltoa( long int value, char *buf, int radix );
-extern char   *ultoa( unsigned long int value, char *buf, int radix );
-extern void   _splitpath( const char *path, char *drive, char *dir, char *fname, char *ext );
-extern void   _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );
-extern char   *_fullpath( char *buf, const char *path, size_t size );
-extern char   *strlwr( char *string );
-extern char   *strupr( char *string );
-extern char   *strrev( char *string );
-extern int    memicmp(const void *, const void *, size_t);
-extern off_t  tell( int handle );
-extern long   filelength(int handle);
-extern int    eof( int fildes );
-extern void   _searchenv( const char *name, const char *env_var, char *buf );
-extern char   *strnset( char *string, int c, size_t len );
-extern int    spawnlp( int mode, const char *path, const char *cmd, ... );
-extern int    spawnvp( int mode, const char *cmd, const char * const *args );
-
 #endif
 
-extern void     _splitpath2( const char *inp, char *outp, char **drive, char **dir, char **fn, char **ext );
-extern int      _bgetcmd( char *buffer, int len );
-extern char     *getcmd( char *buffer );
-extern char     *_cmdname( char *name );
+extern void   _splitpath2( const char *inp, char *outp, char **drive, char **dir, char **fn, char **ext );
+extern int    _bgetcmd( char *buffer, int len );
+extern char   *getcmd( char *buffer );
+extern char   *_cmdname( char *name );
 
 #ifdef __cplusplus
 }

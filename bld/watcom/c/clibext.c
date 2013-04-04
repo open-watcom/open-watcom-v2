@@ -60,13 +60,13 @@
 char **_argv;
 int  _argc;
 
-#ifndef _MSC_VER
-
 /****************************************************************************
 *
 * Description:  Shared alphabet array for conversion of integers to ASCII.
 *
 ****************************************************************************/
+
+#ifndef _MSC_VER
 
 static const char __Alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
@@ -183,7 +183,7 @@ char *ltoa( long value, char *buffer, int radix )
 #endif
 
 
-static void copypart( char *buf, const char *p, size_t len, size_t maxlen )
+static void copypart( char *buf, const char *p, int len, int maxlen )
 {
     if( buf != NULL ) {
         if( len > maxlen ) len = maxlen;
@@ -191,9 +191,9 @@ static void copypart( char *buf, const char *p, size_t len, size_t maxlen )
                 memcpy( buf, p, len );
                 buf[len] = '\0';
             #else
-                len = _mbsnccnt( (const unsigned char *)p, len );          /* # chars in len bytes */
-                _mbsncpy( (unsigned char *)buf, (const unsigned char *)p, len );            /* copy the chars */
-                buf[ _mbsnbcnt((const unsigned char *)buf,len) ] = '\0';
+                len = _mbsnccnt( p, len );          /* # chars in len bytes */
+                _mbsncpy( buf, p, len );            /* copy the chars */
+                buf[ _mbsnbcnt(buf,len) ] = '\0';
             #endif
     }
 }
@@ -292,7 +292,7 @@ void _splitpath( const char *path,
             #ifdef __UNIX__
                 ch = *path;
             #else
-                ch = _mbsnextc( (const unsigned char *)path );
+                ch = _mbsnextc( path );
             #endif
         if( ch == '.' ) {
             dotp = path;
@@ -302,7 +302,7 @@ void _splitpath( const char *path,
             #ifdef __UNIX__
                 path++;
             #else
-                path = (const char *)_mbsinc( (const unsigned char *)path );
+                path = _mbsinc( path );
             #endif
 #if defined(__UNIX__)
         if( ch == PC ) {
@@ -343,10 +343,10 @@ void _splitpath( const char *path,
  */
 
 
-static char *pcopy( char **pdst, char *dst, const char *b_src, const char *e_src ) {
+static unsigned char *pcopy( unsigned char **pdst, unsigned char *dst, const unsigned char *b_src, const unsigned char *e_src ) {
 /*========================================================================*/
 
-    size_t      len;
+    size_t    len;
 
     if( pdst == NULL ) return( dst );
     *pdst = dst;
@@ -355,25 +355,24 @@ static char *pcopy( char **pdst, char *dst, const char *b_src, const char *e_src
     {
         len = _MAX_PATH2 - 1;
     }
-        #ifdef __UNIX__
-            memcpy( dst, b_src, len );
-            dst[len] = '\0';
-            return( dst + len + 1 );
-        #else
-            len = _mbsnccnt( (const unsigned char *)b_src, len );          /* # chars in len bytes */
-            _mbsncpy( (unsigned char *)dst, (const unsigned char *)b_src, len );            /* copy the chars */
-            dst[ _mbsnbcnt((const unsigned char *)dst,len) ] = '\0';
-            return( dst + _mbsnbcnt((const unsigned char *)dst,len) + 1 );
-        #endif
+#ifdef __UNIX__
+    memcpy( dst, b_src, len );
+    dst[len] = '\0';
+    return( dst + len + 1 );
+#else
+    len = _mbsnccnt( b_src, len );          /* # chars in len bytes */
+    _mbsncpy( dst, b_src, len );            /* copy the chars */
+    dst[ _mbsnbcnt(dst,len) ] = '\0';
+    return( dst + _mbsnbcnt(dst,len) + 1 );
+#endif
 }
 
-void  _splitpath2( char const *inp, char *outp,
-                     char **drive, char **path, char **fn, char **ext ) {
-/*=====================================================================*/
-
-    char const *dotp;
-    char const *fnamep;
-    char const *startp;
+void  _splitpath2( char const *inp, char *outp, char **drive, char **path, char **fn, char **ext )
+/*==============================================================================================*/
+{
+    unsigned char const *dotp;
+    unsigned char const *fnamep;
+    unsigned char const *startp;
     unsigned        ch;
 
     /* take apart specification like -> //0/hd/user/fred/filename.ext for QNX */
@@ -381,7 +380,7 @@ void  _splitpath2( char const *inp, char *outp,
     /* take apart specification like -> c:\fred\filename.ext for DOS, OS/2 */
 
     /* process node/drive/UNC specification */
-    startp = inp;
+    startp = (const unsigned char *)inp;
     #ifdef __UNIX__
         if( inp[0] == PC  &&  inp[1] == PC )
     #else
@@ -408,7 +407,7 @@ void  _splitpath2( char const *inp, char *outp,
                     inp = (const char *)_mbsinc( (const unsigned char *)inp );
                 #endif
         }
-        outp = pcopy( drive, outp, startp, inp );
+        outp = (char *)pcopy( (unsigned char **)drive, (unsigned char *)outp, startp, (const unsigned char *)inp );
 #if !defined(__UNIX__)
     /* process drive specification */
     }
@@ -436,8 +435,8 @@ void  _splitpath2( char const *inp, char *outp,
     /* process \fred\filename.ext for DOS, OS/2 */
     /* process /fred/filename.ext for DOS, OS/2 */
     dotp = NULL;
-    fnamep = inp;
-    startp = inp;
+    fnamep = (const unsigned char *)inp;
+    startp = (const unsigned char *)inp;
 
     for(;;)
     {
@@ -450,7 +449,7 @@ void  _splitpath2( char const *inp, char *outp,
             break;
         if( ch == '.' )
         {
-            dotp = inp;
+            dotp = (const unsigned char *)inp;
             ++inp;
             continue;
         }
@@ -466,15 +465,15 @@ void  _splitpath2( char const *inp, char *outp,
         if( ch == PC  ||  ch == ALT_PC )
         {
 #endif
-            fnamep = inp;
+            fnamep = (const unsigned char *)inp;
             dotp = NULL;
         }
     }
-    outp = pcopy( path, outp, startp, fnamep );
+    outp = (char *)pcopy( (unsigned char **)path, (unsigned char *)outp, startp, fnamep );
     if( dotp == NULL )
-        dotp = inp;
-    outp = pcopy( fn, outp, fnamep, dotp );
-    outp = pcopy( ext, outp, dotp, inp );
+        dotp = (const unsigned char *)inp;
+    outp = (char *)pcopy( (unsigned char **)fn, (unsigned char *)outp, fnamep, dotp );
+    outp = (char *)pcopy( (unsigned char **)ext, (unsigned char *)outp, dotp, (const unsigned char *)inp );
 }
 
 #ifndef _MSC_VER
@@ -662,7 +661,7 @@ void _makepath( char *path, const char *drive,
     if( dir != NULL ) {
         if( *dir != '\0' ) {
             do {
-                    ch = pickup( _mbsnextc((const unsigned char *)dir), &first_pc );
+                    ch = pickup( _mbsnextc(dir), &first_pc );
                     _mbvtop( ch, path );
                     path[_mbclen(path)] = '\0';
                     path = _mbsinc( path );
@@ -705,6 +704,7 @@ void _makepath( char *path, const char *drive,
     }
     *path = '\0';
 }
+
 #endif
 
 /****************************************************************************
@@ -764,19 +764,19 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
     char *         filepart;
     DWORD               rc;
 
-    if( stricmp( path, __F_NAME("con",L"con") ) == 0 ) {
+    if( stricmp( path, "con" ) == 0 ) {
         _WILL_FIT( 3 );
-        return( strcpy( buff, __F_NAME("con",L"con") ) );
+        return( strcpy( buff, "con" ) );
     }
 
     /*** Get the full pathname ***/
-    rc = GetFullPathNameA( path, size, buff, &filepart );
+    rc = GetFullPathNameA( path, (DWORD)size, buff, &filepart );
     // If the buffer is too small, the return value is the size of
     // the buffer, in TCHARs, required to hold the path.
     // If the function fails, the return value is zero. To get extended error
     // information, call GetLastError.
-    if( (rc == 0) || (rc > size) ) {
-        __set_errno_nt();
+    if( (rc == 0) || (rc > (DWORD)size) ) {
+        __set_errno( ERANGE );
         return( NULL );
     }
 
@@ -1045,7 +1045,7 @@ char *_fullpath( char *buff, const char *path, size_t size )
     if( buff != NULL ) {
         buff[0] = '\0';
         if( path == NULL || path[0] == '\0' ) {
-            buff = getcwd( buff, size );
+            buff = getcwd( buff, (int)size );
         } else {
             buff = _sys_fullpath( buff, path, size );
         }
@@ -1135,22 +1135,6 @@ off_t tell( int handle )
 {
     return( lseek( handle, 0L, SEEK_CUR ) );
 }
-/****************************************************************************
-*
-* Description:  Implementation of _rotl().
-*
-****************************************************************************/
-
-unsigned int _rotl( unsigned int value, unsigned int shift )
-{
-    unsigned int    tmp;
-
-    tmp = value;
-    value = value << shift;
-    tmp = tmp >> ((sizeof( tmp ) * CHAR_BIT) - shift);
-    value = value | tmp;
-    return( value );
-}
 
 /****************************************************************************
 *
@@ -1159,13 +1143,13 @@ unsigned int _rotl( unsigned int value, unsigned int shift )
 *
 ****************************************************************************/
 
- char *strnset( char *str, int c, size_t len )
+char *strnset( char *str, int c, size_t len )
     {
         char *p;
 
         for( p = str; len; --len ) {
             if( *p == '\0' ) break;
-            *p++ = c;
+            *p++ = (char)c;
         }
         return( str );
     }
@@ -1304,7 +1288,7 @@ char *_cmdname( char *name )
 
 /****************************************************************************
 *
-* Description:  Implementation of getcmd() and _bgetcmd() for Unix.
+* Description:  Implementation of getcmd() and _bgetcmd().
 *
 ****************************************************************************/
 
@@ -1372,19 +1356,18 @@ int (_bgetcmd)( char *buffer, int len )
     char    *p     = NULL;
     char    **argv = &_argv[1];
 
-    --len; // reserve space for NULL byte
-
-    if( buffer && (len > 0) ) {
+    if( ( buffer != NULL ) && ( len > 0 ) ) {
         p  = buffer;
         *p = '\0';
+        --len;          // reserve space for NULL byte
     }
 
     /* create approximation of original command line */
-    for( word = *argv++, i = 0, total = 0; word; word = *argv++ ) {
-        i      = strlen( word );
+    for( word = *argv++, i = 0, total = 0; word != '\0'; word = *argv++ ) {
+        i      = (int)strlen( word );
         total += i;
 
-        if( p ) {
+        if( p != NULL ) {
             if( i >= len ) {
                 strncpy( p, word, len );
                 p[len] = '\0';
@@ -1398,18 +1381,16 @@ int (_bgetcmd)( char *buffer, int len )
         }
 
         /* account for at least one space separating arguments */
-        if( *argv ) {
-            if( p ) {
+        if( *argv != NULL ) {
+            if( p != NULL ) {
                 *p++ = ' ';
                 --len;
             }
             ++total;
         }
     }
-
     return( total );
 }
-
 
 char *(getcmd)( char *buffer )
 {
@@ -1426,7 +1407,6 @@ char *(getcmd)( char *buffer )
 ****************************************************************************/
 
 #ifdef __UNIX__
-#include <sys/wait.h>
 
 int spawnvp( int mode, const char *cmd, const char * const *args )
 {
@@ -1563,8 +1543,7 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
     buffer[0] = '\0';
 }
 
-#endif /* ! _MSC_VER */
-
+#endif /* !_MSC_VER */
 
 /****************************************************************************
 *
@@ -1807,7 +1786,7 @@ int   fnmatch( const char *patt, const char *s, int flags )
     return( *s ? FNM_NOMATCH : 0 );
 }
 
-#endif /* _MSC_VER */
+#endif
 
 /****************************************************************************
 *
@@ -1819,6 +1798,7 @@ res_language_enumeration _WResLanguage(void)
 {
     return( RLE_ENGLISH );
 }
+
 
 #ifdef _MSC_VER
 
@@ -1895,7 +1875,6 @@ unsigned _dos_setfileattr( const char *path, unsigned attribute )
     }
     return( 0 );
 }
-
 
 #define HANDLE_OF(dirp) (*(HANDLE *)((char *)(dirp)+0))
 #define BAD_HANDLE      INVALID_HANDLE_VALUE
@@ -2488,6 +2467,6 @@ unsigned sleep( unsigned time )
     return( 0 );
 }
 
-#endif
+#endif /* _MSC_VER */
 
-#endif
+#endif /* ! __WATCOMC__ */
