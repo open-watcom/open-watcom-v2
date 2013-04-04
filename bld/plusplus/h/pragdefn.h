@@ -94,8 +94,11 @@ struct aux_entry *AuxLookup(    // LOOK UP AUX ENTRY
 char *AuxRetrieve(              // RETRIEVE NAME OF AUX ENTRY
     AUX_INFO *pragma )
 ;
-void CgInfoAddPragmaExtref(     // ADD EXTREF FOR PRAGMA'D NAME
+void CgInfoAddPragmaExtrefS(    // ADD EXTREF FOR PRAGMA'D SYMBOL
     SYMBOL sym )
+;
+void CgInfoAddPragmaExtrefN(    // ADD EXTREF FOR PRAGMA'D NAME
+    char *name )
 ;
 void CreateAux(                 // CREATE AUX ID
     char *id )                  // - id

@@ -905,7 +905,7 @@ static void addDefaultLibs( void )
 {
     if( CompFlags.emit_library_names ) {
         if( _HAS_ANY_MAIN || CompFlags.extern_C_defn_found
-            || CompFlags.pragma_library || CompFlags.emit_default_libs ) {
+            || CompFlags.pragma_library || CompFlags.emit_all_default_libs ) {
 #if _CPU == 386
             if( CompFlags.br_switch_used ) {
                 CgInfoAddCompLib( CDLL_Name );
@@ -936,11 +936,18 @@ static void addDefaultLibs( void )
     }
 }
 
-void CgInfoAddPragmaExtref(     // ADD EXTREF FOR PRAGMA'D NAME
+void CgInfoAddPragmaExtrefS(    // ADD EXTREF FOR PRAGMA'D NAME
     SYMBOL sym )
 {
-    DbgVerify( NULL != sym, "CgInfoAddPragmaExtref -- null symbol" );
+    DbgVerify( NULL != sym, "CgInfoAddPragmaExtrefS -- null symbol" );
     CgInfoAddImportS( sym );
+}
+
+void CgInfoAddPragmaExtrefN(    // ADD EXTREF FOR PRAGMA'D NAME
+    char *name )
+{
+    DbgVerify( NULL != name, "CgInfoAddPragmaExtrefN -- null name" );
+    CgInfoAddImport( name );
 }
 
 static void addDefaultImports( void )

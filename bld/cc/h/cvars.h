@@ -276,13 +276,15 @@ global  int     LoopDepth;      /* current nesting of loop constructs */
 global  char    CLIB_Name[10];   /* "1CLIBMT3x" */
 global  char    MATHLIB_Name[10];/* "5MATHx" or "8MATH87x" */
 global  char    *EmuLib_Name;   /* "9emu87" for -fpi, "9noemu87" for -fpi */
+
 #define USER_LIB_PRIO '9'
 
-global  struct library_list {
-    struct  library_list    *next;
-    char                    prio;
-    char                    name[1];
-} *HeadLibs;
+typedef struct library_list {
+    struct  library_list    *next;      // used by precompiled header
+    char                    libname[2]; // first char is priority '1'-'9' followed by library name
+} library_list;
+
+global library_list     *HeadLibs;
 
 global  struct alias_list {
     struct  alias_list      *next;
@@ -353,14 +355,17 @@ typedef enum {
     SEGTYPE_INITFINITR = 5,     /* thread data */
 } seg_type;
 
+typedef struct extref_info {
+    struct extref_info  *next;
+    SYM_HANDLE          symbol;
+    char                name[1];
+} extref_info;
+
 struct user_seg;
 
 global struct user_seg  *UserSegments;
 
-global  struct extref_info {
-    struct  extref_info *next;
-    SYM_HANDLE          symbol;
-} *ExtrefInfo;
+global extref_info      *ExtrefInfo;
 
 #if defined(__386__) && defined(__FLAT__) && defined(__WATCOMC__)
 
@@ -731,6 +736,9 @@ extern  void    CreateAux(char *);              /* cpragma */
 extern  void    SetCurrInfo(char *);            /* cpragma */
 extern  void    XferPragInfo(char*,char*);      /* cpragma */
 extern  void    EnableDisableMessage(int,unsigned);/* cpragma */
+extern  void    AddLibraryName( char *, char ); /* cpragma */
+extern  void    AddExtRefN( char * );           /* cpragma */
+extern  void    AddExtRefS( SYM_HANDLE );       /* cpragma */
 
 extern  void    AsmStmt(void);                  /* cprag??? */
 extern  void    PragAux(void);                  /* cprag??? */

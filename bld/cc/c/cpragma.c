@@ -202,24 +202,52 @@ local void PragFlag( int value )
     MustRecog( T_RIGHT_PAREN );
 }
 
+void AddLibraryName( char *name, char priority )
+/**********************************************/
+{
+    library_list    **next_owner;
+    library_list    **new_owner;
+    library_list    **old_owner;
+    library_list    *lib;
+    int             len;
+
+    new_owner = &HeadLibs;
+    old_owner = NULL;
+    for( next_owner = &HeadLibs; (lib = *next_owner) != NULL; next_owner = &lib->next ) {
+        if( lib->libname[0] < priority ) {
+            if( old_owner == NULL && strcmp( lib->libname + 1, name ) == 0 ) {
+                old_owner = next_owner;
+            }
+        } else {
+            new_owner = &lib->next;
+            if( strcmp( lib->libname + 1, name ) == 0 ) {
+                new_owner = NULL;
+                break;
+            }
+        }
+    }
+    if( old_owner != NULL ) {
+        lib = *old_owner;
+        *old_owner = lib->next;
+    } else if( new_owner != NULL ) {
+        len = strlen( name );
+        lib = (library_list *)CMemAlloc( sizeof( library_list ) + len );
+        memcpy( lib->libname + 1, name, len + 1 );
+    }
+    if( new_owner != NULL ) {
+        lib->libname[0] = priority;
+        lib->next = *new_owner;
+        *new_owner = lib;
+    }
+}
+
 local void GetLibraryNames( void )
 /********************************/
 {
-    struct library_list **owner;
-    struct library_list *new;
-
-    for( owner = &HeadLibs; *owner != NULL; owner = &(*owner)->next )
-            ; /* nothing to do */
-    while( CurToken == T_ID  ||  CurToken == T_STRING ) {
-        new = (void *)CMemAlloc( sizeof( struct library_list ) + TokenLen );
-        new->next = NULL;
-        new->prio = USER_LIB_PRIO;
-        strcpy( new->name, Buffer );
-        *owner = new;
-        owner  = &new->next;
+    while( CurToken == T_ID || CurToken == T_STRING ) {
+        AddLibraryName( Buffer, USER_LIB_PRIO );
         NextToken();
     }
-    MustRecog( T_RIGHT_PAREN );
 }
 
 static void PragLibs( void )
@@ -228,6 +256,9 @@ static void PragLibs( void )
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
         GetLibraryNames();
+        MustRecog( T_RIGHT_PAREN );
+    } else {
+        CompFlags.pragma_library = 1;
     }
 }
 
@@ -240,6 +271,7 @@ local void PragComment( void )
             MustRecog( T_COMMA );
             GetLibraryNames();
         }
+        MustRecog( T_RIGHT_PAREN );
     }
 }
 
@@ -1042,28 +1074,55 @@ static void PragSTDC( void )
     }
 }
 
-static int parseExtRef ( void )
-/*****************************/
+void AddExtRefN ( char *name )
+/****************************/
 {
-    SYM_HANDLE          extref_sym;
-    struct extref_info  **extref;
-    struct extref_info  *new_extref;
+    extref_info  **extref;
+    extref_info  *new_extref;
 
-    extref_sym = SymLook( HashValue, Buffer );
-    if( extref_sym == 0 ) {
-       CErr2p( ERR_UNDECLARED_SYM, Buffer );
-       return( 1 );
-    }
     for( extref = &ExtrefInfo; *extref != NULL; extref = &(*extref)->next )
         ; /* nothing to do */
-    new_extref = CMemAlloc( sizeof( struct extref_info ) );
+    new_extref = CMemAlloc( sizeof( extref_info ) + strlen( name ) );
+    strcpy( new_extref->name, name );
+    new_extref->symbol = NULL;
     new_extref->next = NULL;
-    new_extref->symbol = extref_sym;
     *extref = new_extref;
-    return( 0 );
 }
 
-// #pragma extref symbolname
+void AddExtRefS ( SYM_HANDLE sym )
+/********************************/
+{
+    extref_info  **extref;
+    extref_info  *new_extref;
+
+    for( extref = &ExtrefInfo; *extref != NULL; extref = &(*extref)->next )
+        ; /* nothing to do */
+    new_extref = CMemAlloc( sizeof( extref_info ) );
+    new_extref->symbol = sym;
+    new_extref->name[0] = '\0';
+    new_extref->next = NULL;
+    *extref = new_extref;
+}
+
+static void parseExtRef ( void )
+/******************************/
+{
+    SYM_HANDLE   extref_sym;
+
+    if( CurToken == T_STRING ) {
+        AddExtRefN( Buffer );
+    } else {
+        extref_sym = SymLook( HashValue, Buffer );
+        if( extref_sym != NULL ) {
+            AddExtRefS( extref_sym );
+        } else {
+            CErr2p( ERR_UNDECLARED_SYM, Buffer );
+        }
+    }
+}
+
+// #pragma extref ( symbolid [, ...] )
+// #pragma extref ( "symbolname" [, ...] )
 //
 static void PragExtRef( void )
 /****************************/
@@ -1073,21 +1132,15 @@ static void PragExtRef( void )
             CompFlags.pre_processing = 1;
             NextToken();
             CompFlags.pre_processing = 2;
-            if( CurToken != T_ID )
+            if( CurToken != T_ID && CurToken != T_STRING )
                 break;
-            if( parseExtRef() )
-                break;
+            parseExtRef();
             NextToken();
         } while( CurToken == T_COMMA );
         MustRecog( T_RIGHT_PAREN );
-    } else {
-        do {
-            if( CurToken != T_ID )
-                break;
-            if( parseExtRef() )
-                break;
-            NextToken();
-        } while( CurToken == T_COMMA );
+    } else if( CurToken == T_ID || CurToken == T_STRING ) {
+        parseExtRef();
+        NextToken();
     }
 }
 

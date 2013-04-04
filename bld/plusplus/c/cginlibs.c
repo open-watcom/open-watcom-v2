@@ -40,25 +40,50 @@ enum {
     LIB_USER_PRIORITY   = '9',
 };
 
-typedef struct lib_list LIB_LIST;
-struct lib_list {
-    LIB_LIST    *next;
-    char        name[1];        // first char is priority, rest is name
-};
+typedef struct lib_list {
+    struct lib_list *next;
+    char            libname[1];         // first char is priority, rest is name
+} lib_list;
 
-static LIB_LIST *libRing;
+static lib_list *libHead;
 
-static LIB_LIST *addNewLib( char *name, char priority )
+static void addNewLib( char *name, char priority )
+/************************************************/
 {
-    size_t len;
-    LIB_LIST *new_lib;
+    lib_list    **next_owner;
+    lib_list    **new_owner;
+    lib_list    **old_owner;
+    lib_list    *lib;
+    int         len;
 
-    len = strlen( name );
-    new_lib = CMemAlloc( sizeof( *new_lib ) + 1 + len );
-    new_lib->name[0] = priority;
-    strcpy( &(new_lib->name[1]), name );
-    RingAppend( &libRing, new_lib );
-    return( new_lib );
+    new_owner = &libHead;
+    old_owner = NULL;
+    for( next_owner = &libHead; (lib = *next_owner) != NULL; next_owner = &lib->next ) {
+        if( lib->libname[0] < priority ) {
+            if( old_owner == NULL && strcmp( lib->libname + 1, name ) == 0 ) {
+                old_owner = next_owner;
+            }
+        } else {
+            new_owner = &lib->next;
+            if( strcmp( lib->libname + 1, name ) == 0 ) {
+                new_owner = NULL;
+                break;
+            }
+        }
+    }
+    if( old_owner != NULL ) {
+        lib = *old_owner;
+        *old_owner = lib->next;
+    } else if( new_owner != NULL ) {
+        len = strlen( name );
+        lib = CMemAlloc( offsetof( lib_list, libname ) + len + 2 );
+        memcpy( lib->libname + 1, name, len + 1 );
+    }
+    if( new_owner != NULL ) {
+        lib->libname[0] = priority;
+        lib->next = *new_owner;
+        *new_owner = lib;
+    }
 }
 
 void CgInfoAddUserLib( char *name )
@@ -77,34 +102,47 @@ void CgInfoAddCompLib( char *name )
 void *CgInfoLibNext( void *h )
 /****************************/
 {
-    return( RingStep( libRing, h ) );
+    if( h == NULL ) {
+        return( libHead );
+    } else {
+        return( ((lib_list *)h)->next );
+    }
 }
 
 char *CgInfoLibName( void *h )
 /****************************/
 {
-    return( ((LIB_LIST *)h)->name );
+    return( ((lib_list *)h)->libname );
 }
 
 void CgInfoFreeLibs( void )
 /*************************/
 {
-    RingFree( &libRing );
+    lib_list    *lib;
+    lib_list    *next_lib;
+
+    for( lib = libHead; lib != NULL; lib = next_lib ) {
+        next_lib = lib->next;
+        CMemFree( lib );
+    }
+    libHead = NULL;
 }
 
 void CgInfoLibPCHRead( void )
 /***************************/
 {
-    size_t len;
-    LIB_LIST *lib_entry;
+    unsigned    len;
+    lib_list    *lib;
+    lib_list    **owner;
 
     CgInfoFreeLibs();
-    for(;;) {
-        len = PCHReadUInt();
-        if( len == 0 ) break;
-        lib_entry = CMemAlloc( len );
-        PCHRead( lib_entry, len );
-        RingAppend( &libRing, lib_entry );
+    owner = &libHead;
+    for( ; (len = PCHReadUInt()) != 0; ) {
+        lib = CMemAlloc( len );
+        *owner = lib;
+        PCHRead( lib, len );
+        lib->next = NULL;
+        owner = &lib->next;
     }
 }
 
@@ -112,13 +150,13 @@ void CgInfoLibPCHWrite( void )
 /****************************/
 {
     size_t len;
-    LIB_LIST *lib;
+    lib_list *lib;
 
-    RingIterBeg( libRing, lib ) {
-        len = sizeof( *lib ) + strlen( lib->name );
+    for( lib = libHead; lib != NULL; lib = lib->next ) {
+        len = sizeof( *lib ) + strlen( lib->libname );
         PCHWriteUInt( len );
         PCHWrite( lib, len );
-    } RingIterEnd( lib )
+    }
     len = 0;
     PCHWriteUInt( len );
 }

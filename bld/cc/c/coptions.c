@@ -1293,8 +1293,8 @@ static void Set_ZKU( void )
 }
 static void Set_ZK0U( void )        { character_encoding = ENC_ZK0U; }
 
-static void Set_ZL( void )          { CompFlags.emit_library_with_main = 0; }
-static void Set_ZLF( void )         { CompFlags.emit_library_any  = 1; }
+static void Set_ZL( void )          { CompFlags.emit_library_names = 0; }
+static void Set_ZLF( void )         { CompFlags.emit_all_default_libs  = 1; }
 static void Set_ZLD( void )         { CompFlags.emit_dependencies = 0; }
 static void Set_ZLS( void )         { CompFlags.emit_targimp_symbols = 0; }
 static void Set_ZEV( void )         { CompFlags.unix_ext = 1; }

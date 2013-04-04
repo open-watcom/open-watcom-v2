@@ -47,6 +47,10 @@
 #define TRUNC_SYMBOL_HASH_LEN        4
 #define TRUNC_SYMBOL_LEN_WARN        120
 
+#define _HAS_EXE_MAIN   (CompFlags.has_main || CompFlags.has_winmain)
+#define _HAS_DLL_MAIN   (CompFlags.bd_switch_used || CompFlags.has_libmain)
+#define _HAS_ANY_MAIN   (_HAS_EXE_MAIN || _HAS_DLL_MAIN)
+
 static unsigned char VarFuncWeights[] = {
 //a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y,z
   0, 0,13, 0, 2, 1, 0, 0, 0, 0, 0,12, 0,14, 4,10, 0, 0, 6, 0, 0, 0, 0, 0, 0,0
@@ -587,76 +591,45 @@ static time_t *getFileDepTimeStamp( FNAMEPTR flist )
 //                returns the requested name.
 //
 */
+static void addDefaultLibs( void )
+{
+    if( CompFlags.emit_library_names ) {
+        if( _HAS_ANY_MAIN || CompFlags.pragma_library || CompFlags.emit_all_default_libs ) {
+            AddLibraryName( CLIB_Name + 1, CLIB_Name[0] );
+        }
+        AddLibraryName( MATHLIB_Name + 1, MATHLIB_Name[0] );
+        if( EmuLib_Name != NULL ) {
+            AddLibraryName( EmuLib_Name + 1, EmuLib_Name[0] );
+        }
+    }
+}
+
 static VOIDPTR NextLibrary( int index, aux_class request )
 {
-    struct library_list *liblist;
-    char                *name = NULL;
-    int                 i;
+    library_list    *lib;
+    char            *name;
+    int             i;
 
-    i = 0;
+    name = NULL;
+    if( index == 0 ) {
+        addDefaultLibs();
+    }
     if( request == NEXT_LIBRARY )
         ++index;
-
-    for( liblist = HeadLibs; liblist; liblist = liblist->next ) {
-        name = &liblist->prio;
-        ++i;
-        if( i == index ) {
-            break;
-        }
-    }
-    if( liblist == NULL ) {
-        switch( index - i ) {
-        case 1: /* return 1 for CLIB */
-            name = CLIB_Name;
-            if( CompFlags.emit_library_any )
+    if( index > 0 ) {
+        for( i = 1, lib = HeadLibs; lib != NULL; lib = lib->next ) {
+            if( i == index ) {
+                name = lib->libname;
                 break;
-            if( CompFlags.emit_library_with_main ) {
-                if( CompFlags.has_main )
-                    break;
-                if( CompFlags.has_winmain )
-                    break;
-                if( CompFlags.bd_switch_used )
-                    break;
-                if( CompFlags.has_libmain )
-                    break;
-                if( CompFlags.bm_switch_used )
-                    break;  /* JBS */
-                ++index;
-            } else {
-                name = NULL;
-                index = 0;              // indicate all done
             }
-            break;
-        /*
-        //    MATHLIB is always referenced as a default library because
-        //    the linker wont include anything without a 'real' referenced
-        //    symbol
-        */
-        case 2: /* return 2 for MATHLIB */
-            name = MATHLIB_Name;
-            break;
-        case 3: /* return 3 for EMULIB */
-            name = EmuLib_Name;
-            if( EmuLib_Name != NULL )
-                break;
-            // fall through
-        case 4: /* used to be PCODE */
-            name = NULL;
-            index = 0;                  // indicate all done
-            break;
-        default:
-            break;
+            ++i;
         }
     }
-    /*
-    //    return library name, or
-    */
-    if( request == LIBRARY_NAME )
+    /* return library name, or */
+    if( request == LIBRARY_NAME || name == NULL )
         return( name );
-    /*
-    //    library index
-    */
-    return( (char *)index );
+    /* library index */
+    return( (VOIDPTR)index );
 }
 
 //    NextAlias
@@ -824,7 +797,157 @@ char *FEExtName( CGSYM_HANDLE sym_handle, int request )
     }
 }
 
+static void addDefaultImports( void )
+{
+    typedef enum {
+        CM_DLLMAIN      = 0x01,
+        CM_WINMAIN      = 0x02,
+        CM_MAIN         = 0x04,
+        CM_NULL         = 0x00
+    } check_mask;
+
+    if( _HAS_ANY_MAIN ) {
+        check_mask control;
+
+        if( CompFlags.bd_switch_used ) {
+            control = CM_DLLMAIN;
+        } else if( CompFlags.bw_switch_used ) {
+            control = CM_WINMAIN | CM_MAIN;
+        } else if( CompFlags.bg_switch_used ) {
+            control = CM_WINMAIN;
+        } else if( CompFlags.bc_switch_used ) {
+            control = CM_MAIN;
+        } else {
+            control = CM_DLLMAIN | CM_WINMAIN | CM_MAIN;
+        }
+        if( (control & CM_DLLMAIN) && _HAS_DLL_MAIN ) {
+            if( CompFlags.has_wchar_entry ) {
+                AddExtRefN( "__DLLstartw_" );
+            } else {
+                AddExtRefN( "__DLLstart_" );
+            }
+            control = CM_NULL;
+        }
+#if _CPU == 8086
+        if( (control & CM_WINMAIN) && CompFlags.has_winmain || (TargetSwitches & WINDOWS) && CompFlags.has_main ) {
+#else
+        if( (control & CM_WINMAIN) && CompFlags.has_winmain ) {
+#endif
+            if( CompFlags.has_wchar_entry ) {
+                AddExtRefN( "_wstartw_" );
+            } else {
+                AddExtRefN( "_wstart_" );
+            }
+            control = CM_NULL;
+        }
+        if( control & CM_MAIN ) {
+            assert( CompFlags.has_main );
+            if( CompFlags.has_wchar_entry ) {
+                AddExtRefN( "_cstartw_" );
+            } else {
+                AddExtRefN( "_cstart_" );
+            }
+            control = CM_NULL;
+        }
+    }
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
+    if( CompFlags.emit_library_names ) {
+        if( CompFlags.float_used ) {
+            if( CompFlags.use_long_double ) {
+                AddExtRefN( "_fltused_80bit_" );
+            } else {
+                AddExtRefN( "_fltused_" );
+            }
+        }
+  #if _CPU == 8086
+        if( FirstStmt != 0 ) {
+            if( TargetSwitches & BIG_CODE ) {
+                AddExtRefN( "_big_code_" );
+            } else {
+                AddExtRefN( "_small_code_" );
+            }
+        }
+  #endif
+        if( CompFlags.pgm_used_8087 || CompFlags.float_used ) {
+            if( GET_FPU( ProcRevision ) & FPU_EMU ) {
+  #if _CPU == 8086
+                AddExtRefN( "__init_87_emulator" );
+  #else
+                AddExtRefN( "__init_387_emulator" );
+  #endif
+            }
+            if( GET_FPU( ProcRevision ) > FPU_NONE ) {
+                if( Stack87 == 4 ) {
+                    AddExtRefN( "__old_8087" );
+                } else {
+                    AddExtRefN( "__8087" );
+                }
+            }
+        }
+    }
+#else
+    if( CompFlags.emit_library_names ) {
+        /* handle floating-point support */
+        if( CompFlags.float_used ) {
+            AddExtRefN( "_fltused_" );
+        }
+    }
+#endif
+#if ( _CPU == 8086 ) || ( _CPU == 386 )
+    if( CompFlags.main_has_parms ) {
+  #if _CPU == 8086
+        if( CompFlags.has_wchar_entry ) {
+            AddExtRefN( "__wargc" );
+        } else {
+            AddExtRefN( "__argc" );
+        }
+  #else
+        if( CompFlags.register_conventions ) {
+            if( CompFlags.has_wchar_entry ) {
+                AddExtRefN( "__wargc" );
+            } else {
+                AddExtRefN( "__argc" );
+            }
+        } else {
+            if( CompFlags.has_wchar_entry ) {
+                AddExtRefN( "_wargc" );
+            } else {
+                AddExtRefN( "_argc" );
+            }
+        }
+  #endif
+    }
+#else
+    if( CompFlags.main_has_parms ) {
+        AddExtRefN( "_argc" );
+    }
+#endif
+    /* handle default windowing app */
+    if( CompFlags.bw_switch_used ) {
+        AddExtRefN( "__init_default_win" );
+    }
+#if ( _CPU == 8086 ) || ( _CPU == 386 )
+    /* handle NetWare */
+    if( TargSys == TS_NETWARE || TargSys == TS_NETWARE5 ) {
+        /* is target NETWARE or NETWARE5? */
+        AddExtRefN( "__WATCOM_Prelude" );
+    }
+
+    /* handle 'old' profiling */
+    if( TargetSwitches & P5_PROFILING ) {
+        /* is profiling enabled (-et)? */
+        AddExtRefN( "__p5_profile" );
+    }
+
+    /* handle 'new' profiling */
+    if( TargetSwitches & NEW_P5_PROFILING ) {
+        /* is profiling enabled (-etp)? */
+        AddExtRefN( "__new_p5_profile" );
+    }
+#endif
+}
+
+
 /*
 //    NextImport
 //        Called (indirectly) from the code generator to inject automagically defined symbols.
@@ -843,235 +966,79 @@ char *FEExtName( CGSYM_HANDLE sym_handle, int request )
 //                good practise.
 //
 */
+
 static VOIDPTR NextImport( int index, aux_class request )
+/*******************************************************/
 {
     char        *name;
+    int         i;
+    extref_info *e;
 
-    if(!CompFlags.emit_targimp_symbols)
+    if( !CompFlags.emit_targimp_symbols )
         return (NULL);
 
+    name = NULL;
+    if( index == 0 ) {
+        addDefaultImports();
+    }
     if( request == NEXT_IMPORT )
         ++index;
-
-    switch( index ) {
-    /* handle entry points */
-    case 1:
-        /* wide char or MBCS entry */
-        if( CompFlags.has_wchar_entry ) {
-            name = "__DLLstartw_";
-        } else {
-            name = "__DLLstart_";
-        }
-        if( CompFlags.bd_switch_used ) /* build target == DLL ? */
-            break;
-        if( CompFlags.has_libmain ) {  /* object has defined symbol (w)LibMain/(w)DllMain */
-            /* build target == console or gui application ? */
-            if( !(CompFlags.bc_switch_used || CompFlags.bg_switch_used ) ) {
+    if( index > 0 ) {
+        for( i = 1, e = ExtrefInfo; e != NULL; e = e->next ) {
+            if( e->symbol != NULL )
+                continue;
+            if( i == index ) {
+                name = e->name;
                 break;
             }
+            ++i;
         }
-        /* wide char or MBCS entry */
-        if( CompFlags.has_wchar_entry ) {
-            name = "_wstartw_";
-        } else {
-            name = "_wstart_";
-        }
-        /* symbol (w)WinMain defined */
-        if( CompFlags.has_winmain ) {
-            /* gui application */
-            if( CompFlags.bg_switch_used )
-                break;
-            /* target == DLL or target == console*/
-            if( !(CompFlags.bd_switch_used || CompFlags.bc_switch_used ) ) {
-                break;
-            }
-        }
-  #if _CPU == 8086
-        /* is target windows AND symbol (w)main is defined */
-        if(( TargetSwitches & WINDOWS ) && CompFlags.has_main )
-            break;
-  #endif
-        /* wide char or MBCS entry */
-        if( CompFlags.has_wchar_entry ) {
-            name = "_cstartw_";
-        } else {
-            name = "_cstart_";
-        }
-        /* is symbol (w)main is defined ? */
-        if( CompFlags.has_main ) {
-            /* build target == console ? */
-            if( CompFlags.bc_switch_used  )
-                break;
-            /* target == DLL or target = GUI app ? */
-            if( !(CompFlags.bd_switch_used || CompFlags.bg_switch_used ) ) {
-                break;
-            }
-        }
-        ++index;
-
-    /* handle floating point support */
-    case 2:
-        /* floating point used */
-        name = "_fltused_";
-        if( CompFlags.use_long_double ) {
-            name = "_fltused_80bit_";
-        }
-        if( CompFlags.emit_library_with_main    /* emit default library info? */
-          || CompFlags.emit_library_any ) {     /* -zlf emit all library info? */
-                    /* 12-mar-90 */
-            if( CompFlags.float_used ) {        /* has this object used any floating point code? */
-                break;
-            }
-        }
-        ++index;
-
-    /* handle code model library support */
-    case 3:
-  #if _CPU == 8086
-        name = "_small_code_";
-        if( TargetSwitches & BIG_CODE ) {       /* big code model ? */
-            name = "_big_code_";
-        }
-        if( CompFlags.emit_library_with_main    /* emit default library info? */
-          || CompFlags.emit_library_any ) {     /* -zlf emit all library info? */
-                    /* 12-mar-90 */
-            if( FirstStmt != 0 ) {
-                break;
-            }
-        }
-  #endif
-        ++index;
-
-    /* handle floating point emulator */
-    case 4:
-        /* generating FPU instructions OR this object used floats ?*/
-        if( CompFlags.pgm_used_8087  || CompFlags.float_used ) {
-  #if _CPU == 386
-            name = "__init_387_emulator";
-  #else
-            name = "__init_87_emulator";
-  #endif
-            if( GET_FPU( ProcRevision ) & FPU_EMU ) {   /* using emulated FPU code? */
-                break;
-            }
-        }
-        ++index;
-
-    /*-----------------------------------------------------------------------
-    //    handle FPU requirement
-    -----------------------------------------------------------------------*/
-    case 5:
-        /* (emit default library info OR -zlf emit all library info) AND use backward compatible FPU code? */
-        if( (CompFlags.emit_library_with_main || CompFlags.emit_library_any )
-          &&  Stack87 == 4 ) {
-            name = "__old_8087";
-        } else {
-            name = "__8087";
-        }
-        /* generating FPU instructions OR this object used floats? */
-        if( CompFlags.pgm_used_8087 || CompFlags.float_used ) {
-            if( GET_FPU(ProcRevision) > FPU_NONE ) {
-                break;
-            }
-        }
-        ++index;
-
-    /* handle entry point arg passing */
-    case 6:
-        /* wide char or MBCS entry */
-        if( CompFlags.has_wchar_entry ) {
-            name = "__wargc";
-        } else {
-            name = "__argc";
-        }
-  #if _CPU == 386
-        /* NOT using register convention arg passing? */
-        if( ! CompFlags.register_conventions ) {
-            ++name;  // change from __wargc , __argc to _wargc..
-        }
-  #endif
-        /* does (w)main have any arguments (NOT int main(void)) */
-        if( CompFlags.main_has_parms )
-            break;
-        ++index;
-
-    /* handle default windowing app */
-    case 7:
-        /* is target default windowing application? */
-        name = "__init_default_win";
-        if( CompFlags.bw_switch_used )
-            break;
-        ++index;
-
-    /* handle NetWare */
-    case 8:
-        /* is target NETWARE or NETWARE5? */
-        name = "__WATCOM_Prelude";
-        if( TargSys == TS_NETWARE )
-            break;
-        if( TargSys == TS_NETWARE5 )
-            break;
-        ++index;
-
-    /* handle 'old' profiling */
-    case 9:
-        /* is profiling enabled (-et)? */
-        name = "__p5_profile";
-        if( TargetSwitches & P5_PROFILING ) {
-            break;
-        }
-        ++index;
-
-    /* handle 'new' profiling */
-    case 10:
-        /* is profiling enabled (-etp)? */
-        name = "__new_p5_profile";
-        if( TargetSwitches & NEW_P5_PROFILING ) {
-            break;
-        }
-
-    /* unknown / fallthrough */
-    default:
-        index = 0;                              // indicate no more
-        name = NULL;
-        break;
     }
-
     /* return the import name, or */
-    if( request == IMPORT_NAME )
+    if( request == IMPORT_NAME || name == NULL )
         return( name );
-
     /* return the index */
     return( (char *)index );
 }
 
 static VOIDPTR NextImportS( int index, aux_class request )
+/********************************************************/
 {
-    void                *symbol;
-    int                 i;
-    struct extref_info  *extref;
+    void        *symbol;
+    int         i;
+    extref_info *e;
 
     if(!CompFlags.emit_targimp_symbols)
         return (NULL);
 
+    symbol = NULL;
     if( request == NEXT_IMPORT_S )
         ++index;
-
-    symbol = NULL;
-    for( i = 1, extref = ExtrefInfo; extref != NULL; extref = extref->next, ++i ) {
-        if( i == index ) {
-            symbol = extref->symbol;
-            break;
+    if( index > 0 ) {
+        for( i = 1, e = ExtrefInfo; e != NULL; e = e->next ) {
+            if( e->symbol == NULL )
+                continue;
+            if( i == index ) {
+                symbol = e->symbol;
+                break;
+            }
+            ++i;
         }
     }
-    if( request == IMPORT_NAME_S || symbol == NULL ) {
+    /* return the import symbol, or */
+    if( request == IMPORT_NAME_S || symbol == NULL )
         return( symbol );
-    } else {
-        return( (char *)index );
-    }
+    /* return the index */
+    return( (char *)index );
 }
 
+
+#if ( _CPU == 8086 ) || ( _CPU == 386 )
 /*
+//    This section is for
+//        8086
+//        386
+//
 //    pass auxiliary information to back end
 */
 VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
@@ -1227,130 +1194,6 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
 //        _PPC
 //        _MIPS
 //
-//    NextImport
-//        Called (indirectly) from the code generator to inject automagically defined symbols.
-//    Inputs:
-//        index    (n-1)
-//            Usually called from a loop until we return 0/NULL to show no more symbols
-//            are required.
-//        request
-//            NEXT_IMPORT
-//                examines the current flags to see if any symbols should be
-//                automagically inserted and returns the relevant index if so.
-//            IMPORT_NAME
-//                returns the requested name. if we have returned an index for
-//                the current compiler settings we should be called with a valid
-//                index but we still perform exactly the same checks as this is
-//                good practise.
-//
-*/
-static VOIDPTR NextImport( int index, aux_class request )
-{
-    char        *name;
-
-    if( request == NEXT_IMPORT )
-        ++index;
-    /*-----------------------------------------------------------------------
-    //    handle entry points
-    -----------------------------------------------------------------------*/
-    switch( index ) {
-    case 1:
-        /* wide char or MBCS entry */
-        if( CompFlags.has_wchar_entry ) {
-            name = "__DLLstartw_";
-        } else {
-            name = "__DLLstart_";
-        }
-        /* object has defined symbol (w)LibMain/(w)DllMain  OR buildtarget == DLL*/
-        if( CompFlags.has_libmain || CompFlags.bd_switch_used )
-            break;
-
-        /* wide char or MBCS entry */
-        if( CompFlags.has_wchar_entry ) {
-            name = "_wstartw_";
-        } else {
-            name = "_wstart_";
-        }
-        /* symbol (w)WinMain defined */
-        if( CompFlags.has_winmain )
-            break;
-        /* wide char or MBCS entry */
-        if( CompFlags.has_wchar_entry ) {
-            name = "_cstartw_";
-        } else {
-            name = "_cstart_";
-        }
-        /* symbol (w)main defined */
-        if( CompFlags.has_main )
-            break;
-        ++index;
-
-    /* handle floating-point support */
-    case 2:
-        name = "_fltused_";
-        /* emit default library info OR -zlf emit all library info */
-        if( CompFlags.emit_library_with_main
-          || CompFlags.emit_library_any ) {     /* 12-mar-90 */
-            if( CompFlags.float_used ) {
-                break;
-            }
-        }
-        ++index;
-
-    /* handle entry point arg passing */
-    case 3:
-        name = "_argc";
-        /* does (w)main have any arguments (NOT int main(void)) */
-        if( CompFlags.main_has_parms )
-            break;
-        ++index;
-
-    /* handle default windowing app */
-    case 4:
-        /* is target default windowing application? */
-        name = "__init_default_win";
-        if( CompFlags.bw_switch_used )
-            break;
-        ++index;
-
-    /* unknown / fallthrough */
-    default:
-        index = 0;                              // indicate no more
-        name = NULL;
-        break;
-    }
-    /* return the import name, or */
-    if( request == IMPORT_NAME )
-        return( name );
-
-    /* return the index */
-    return( (char *)index );
-}
-
-static VOIDPTR NextImportS( int index, aux_class request )
-{
-    void                *symbol;
-    int                 i;
-    struct extref_info  *extref;
-
-    symbol = NULL;
-    if( request == NEXT_IMPORT_S )
-        ++index;
-
-    for( i = 1, extref = ExtrefInfo; extref != NULL; extref = extref->next, ++i ) {
-        if( i == index ) {
-            symbol = extref->symbol;
-            break;
-        }
-    }
-    if( request == IMPORT_NAME_S || symbol == NULL ) {
-        return( symbol );
-    } else {
-        return( (char *)index );
-    }
-}
-
-/*
 //    pass auxiliary information to back end
 */
 VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )

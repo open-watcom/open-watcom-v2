@@ -1330,7 +1330,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.emit_dependencies = 0;
     }
     if( data->zlf ) {
-        CompFlags.emit_default_libs = 1;
+        CompFlags.emit_all_default_libs = 1;
     }
     if( data->zls ) {
         CompFlags.emit_targimp_symbols = 0;

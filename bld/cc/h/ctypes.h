@@ -575,7 +575,7 @@ struct comp_flags {
 
     unsigned bc_switch_used         : 1;    /* build charater mode */
     unsigned bg_switch_used         : 1;    /* build gui      mode */
-    unsigned emit_library_any       : 1;
+    unsigned emit_all_default_libs  : 1;
     unsigned emit_targimp_symbols   : 1;    /* emit per target auto symbols */
     unsigned low_on_memory_printed  : 1;
     unsigned extra_stats_wanted     : 1;
@@ -601,7 +601,7 @@ struct comp_flags {
 
     unsigned register_conventions   : 1;    /* on for -3r, off for -3s */
     unsigned pgm_used_8087          : 1;    /* on => 8087 ins. generated */
-    unsigned emit_library_with_main : 1;    /* on => put LIB name in obj */
+    unsigned emit_library_names     : 1;    /* on => put LIB name in obj */
     unsigned strings_in_code_segment: 1;    /* on => put strings in CODE */
     unsigned ok_to_use_precompiled_hdr: 1;  /* on => ok to use PCH */
     unsigned strict_ANSI            : 1;    /* on => strict ANSI C (-zA)*/
@@ -686,6 +686,7 @@ struct comp_flags {
     unsigned ignore_fnf             : 1;    /* ignore file not found errors */
     unsigned disable_ialias         : 1;    /* supress inclusion of _ialias.h */
     unsigned cpp_ignore_env         : 1;    /* ignore *INCLUDE env var(s) */
+    unsigned pragma_library         : 1;    /* pragma library simulate -zlf option */
 };
 
 struct global_comp_flags {  // things that live across compiles

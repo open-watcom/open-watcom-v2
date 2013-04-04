@@ -336,7 +336,7 @@ static void OutPutLibraries( void )
     struct library_list *lib;
 
     for( lib = HeadLibs; lib != NULL; lib = lib->next ) {
-        len = sizeof( struct library_list ) + strlen( lib->name );
+        len = sizeof( struct library_list ) + strlen( lib->libname );
         len = _RoundUp( len, sizeof( int ) );
         rc = WritePHeader( lib, len );
         if( rc != 0 ) {
@@ -1180,7 +1180,7 @@ static char *FixupLibraries( char *p, unsigned library_count )
         lib = (struct library_list *)p;
         HeadLibs = lib;
         for( ;; ) {
-            len = sizeof( struct library_list ) + strlen( lib->name );
+            len = sizeof( struct library_list ) + strlen( lib->libname );
             len = _RoundUp( len, sizeof( int ) );
             p += len;
             lib->next = (struct library_list *)p;

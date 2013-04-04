@@ -55,8 +55,9 @@
 
 
 typedef struct {                // PRAG_EXT_REF -- extref's pragma'd
-    void* next;                 // - next in ring
-    SYMBOL extref;              // - extref symbol
+    void    *next;              // - next in ring
+    SYMBOL  symbol;             // - extref symbol
+    char    name[1];            // - extref name
 } PRAG_EXT_REF;
 
 static PRAG_EXT_REF* pragmaExtrefs; // ring of pragma'd extref symbols
@@ -674,26 +675,23 @@ static void pragInitSeg(     // #pragma init_seg ...
 }
 
 
-// forms: #pragma extref symbol
-//        #pragma extref ( symbol, ..., symbol )
+// forms: #pragma extref( symbol [, ...] )
+//        #pragma extref( "name" [, ...] )
 //
-// causes a external reference to be emitted for the symbol
+// causes a external reference to be emitted for the symbol or "name"
 //
-static void newPRAG_EXT_REF( SYMBOL sym )
-{
-    PRAG_EXT_REF* entry = RingAlloc( &pragmaExtrefs, sizeof( PRAG_EXT_REF ) );
-    entry->extref = sym;
-}
-
-static int parseExtRef(     // PARSE SYMBOL NAME
+static void parseExtRef(     // PARSE SYMBOL NAME
     void )
 {
-    int err;                // TRUE ==> syntax error
+    PRAG_EXT_REF *entry;
 
-    if( PragIdCurToken() ) {
+    if( CurToken == T_STRING ) {
+        entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + TokenLen + 1 );
+        memcpy( entry->name, Buffer, TokenLen + 1 );
+        entry->symbol = NULL;
+    } else if( PragIdCurToken() ) {
         SEARCH_RESULT* result;
-        result = ScopeFindNaked( GetCurrScope()
-                               , NameCreateLen( Buffer, TokenLen ) );
+        result = ScopeFindNaked( GetCurrScope(), NameCreateLen( Buffer, TokenLen ) );
         if( result == NULL ) {
             CErr2p( ERR_PRAG_EXTREF_NONE, Buffer );
         } else {
@@ -714,38 +712,32 @@ static int parseExtRef(     // PARSE SYMBOL NAME
                 sym = NULL;
             }
             if( sym != NULL ) {
-                newPRAG_EXT_REF( sym );
+                entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + 1 );
+                entry->symbol = sym;
+                entry->name[0] = '\0';
             }
         }
-        NextToken();
-        err = 0;
-    } else {
-        err = 1;
     }
-    return err;
 }
 
 
 static void pragExtRef(     // #pragma extref ...
     void )
 {
-    int err;                // - TRUE ==> error occurred
-
     if( CurToken == T_LEFT_PAREN ) {
         PPState = PPS_EOL;
         NextToken();
-        for( ; ; ) {
-            err = parseExtRef();
-            if( err ) break;
+        for( ; PragIdCurToken() || CurToken == T_STRING; ) {
+            parseExtRef();
+            NextToken();
             if( CurToken != T_COMMA )  break;
             NextToken();
         }
         PPState = PPS_EOL | PPS_NO_EXPAND;
-        if( ! err ) {
-            MustRecog( T_RIGHT_PAREN );
-        }
-    } else {
+        MustRecog( T_RIGHT_PAREN );
+    } else if( PragIdCurToken() || CurToken == T_STRING ) {
         parseExtRef();
+        NextToken();
     }
 }
 
@@ -756,15 +748,17 @@ void PragmaExtrefsValidate      // VALIDATE EXTREFS FOR PRAGMAS
     PRAG_EXT_REF* entry;        // - current entry
 
     RingIterBeg( pragmaExtrefs, entry ) {
-        SYMBOL sym = entry->extref;
-        if( SymIsExtern( sym ) ) {
-            if( IsOverloadedFunc( sym ) ) {
-                CErr2p( ERR_PRAG_EXTREF_OVERLOADED, sym );
-                entry->extref = NULL;
+        if( entry->symbol != NULL ) {
+            SYMBOL symbol = entry->symbol;
+            if( SymIsExtern( symbol ) ) {
+                if( IsOverloadedFunc( symbol ) ) {
+                    CErr2p( ERR_PRAG_EXTREF_OVERLOADED, symbol );
+                    entry->symbol = NULL;
+                }
+            } else {
+                CErr2p( ERR_PRAG_EXTREF_EXTERN, symbol );
+                entry->symbol = NULL;
             }
-        } else {
-            CErr2p( ERR_PRAG_EXTREF_EXTERN, sym );
-            entry->extref = NULL;
         }
     } RingIterEnd( entry );
 }
@@ -776,9 +770,10 @@ void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
     PRAG_EXT_REF* entry;        // - current entry
 
     RingIterBeg( pragmaExtrefs, entry ) {
-        SYMBOL sym = entry->extref;
-        if( NULL != sym ) {
-            CgInfoAddPragmaExtref( sym );
+        if( entry->symbol != NULL ) {
+            CgInfoAddPragmaExtrefS( entry->symbol );
+        } else {
+            CgInfoAddPragmaExtrefN( entry->name );
         }
     } RingIterEnd( entry );
 }
@@ -1660,28 +1655,41 @@ static void readEnums( void )
 
 static void writeExtrefs( void )
 {
-    SYMBOL s;
-    PRAG_EXT_REF *e;
+    unsigned        len;
+    PRAG_EXT_REF    *e;
 
     RingIterBeg( pragmaExtrefs, e ) {
-        s = SymbolGetIndex( e->extref );
-        DbgAssert( s != NULL );
-        PCHWrite( &s, sizeof( s ) );
+        if( e->symbol != NULL ) {
+            PCHWriteCVIndex( (cv_index)SymbolGetIndex( e->symbol ) );
+        }
     } RingIterEnd( e )
-    s = NULL;
-    PCHWrite( &s, sizeof( s ) );
+    PCHWriteCVIndex( CARVE_NULL_INDEX );
+    RingIterBeg( pragmaExtrefs, e ) {
+        if( e->symbol == NULL ) {
+            len = strlen( e->name );
+            PCHWriteUInt( len );
+            PCHWrite( e->name, len + 1 );
+        }
+    } RingIterEnd( e )
+    PCHWriteUInt( 0 );
 }
 
 static void readExtrefs( void )
 {
-    SYMBOL s;
+    cv_index     i;
+    unsigned     len;
+    PRAG_EXT_REF *entry;
 
     RingFree( &pragmaExtrefs );
-    for( ; ; ) {
-        PCHRead( &s, sizeof( s ) );
-        s = SymbolMapIndex( s );
-        if( s == NULL ) break;
-        newPRAG_EXT_REF( s );
+    for( ; (i = PCHReadCVIndex()) != CARVE_NULL_INDEX; ) {
+        entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + 1 );
+        entry->symbol = SymbolMapIndex( (SYMBOL)i );
+        entry->name[0] = '\0';
+    }
+    for( ; (len = PCHReadUInt()) != 0; ) {
+        entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + len + 1 );
+        PCHRead( entry->name, len + 1 );
+        entry->symbol = NULL;
     }
 }
 

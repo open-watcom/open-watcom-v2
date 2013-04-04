@@ -219,7 +219,7 @@ typedef struct comp_flags {
     unsigned no_error_sym_injection : 1;    // don't insert error symbols
     unsigned error_use_full         : 1;    // use full path names in error msgs
     unsigned vc_alloca_parm         : 1;    // allow alloca to occur in parms
-    unsigned emit_default_libs      : 1;    // emit default libs in .OBJ file
+    unsigned emit_all_default_libs  : 1;    // emit default libs in .OBJ file
     unsigned bc_switch_used         : 1;    // building a console app
     unsigned bg_switch_used         : 1;    // building a GUI app
     unsigned optbr_v                : 1;    // browse: variables
