@@ -88,13 +88,13 @@ errmsg.res : ../../c/errmsg.rc ../../h/errmsgi.rc ../../h/errmsg3.rc ../../h/err
     $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
-    $(bld_cl) -I"$(wasm_dir)/h" $[@ $(bld_cl_opts)
+    $(bld_cl) -I. -I"$(wasm_dir)/h" $[@ $(bld_cl_opts)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
-    $(bld_cl) -I"$(wasm_dir)/h" $[@ $(bld_cl_opts)
+    $(bld_cl) -I. -I"$(wasm_dir)/h" $[@ $(bld_cl_opts)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@

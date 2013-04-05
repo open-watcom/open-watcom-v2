@@ -164,13 +164,13 @@ usagej.u : ../h/options.gml
 ###################################################################
 
 ./mkopcod1.exe: ../mkopcod1.c ../mkopcode.h $(cl_objs)
-        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(bld_cl_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+        $(bld_cl) -D_STANDALONE_ -I. -I"../h" $[@ $(bld_cl_opts) $(bld_ldflags) # order is important for gcc (linux bootstrap)
 
 asmops.gh: ./mkopcod1.exe ../fullops.tok ../inlnops.tok
         $< $@
 
 ./mkopcode.exe: ../mkopcode.c ../mkopcode.h asmops.gh $(cl_objs)
-        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(bld_cl_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+        $(bld_cl) -D_STANDALONE_ -I. -I"../h" $[@ $(bld_cl_opts) $(bld_ldflags) # order is important for gcc (linux bootstrap)
 
 asmopsd.gh: ./mkopcode.exe ../fullops.tok ../inlnops.tok
         $< $@
