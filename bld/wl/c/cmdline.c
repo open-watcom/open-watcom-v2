@@ -594,13 +594,13 @@ static void PressKey( void )
 /**************************/
 {
     char        msg_buffer[RESOURCE_MAX_SIZE];
-    char        result;
+    int         result;
 
     Msg_Get( MSG_PRESS_KEY, msg_buffer );
     WriteStdOut( msg_buffer );
     result = WaitForKey();
     WriteNLStdOut();
-    if( tolower(result) == 'q' ) {
+    if( result == 'q' || result == 'Q' ) {
         Ignite();
         Suicide();
     }

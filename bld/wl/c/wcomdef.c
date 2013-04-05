@@ -163,8 +163,7 @@ static unsigned_32 GetLeaf( void )
     } else if( leaf == COMDEF_LEAF_3 ) {
         value = GET_U16_UN(ObjBuff);
         ObjBuff += sizeof( unsigned_16 );
-        value += (unsigned_32)GET_U8_UN(ObjBuff) << 16;
-        ObjBuff += sizeof( char );
+        value += ( (unsigned_32)*ObjBuff++ ) << 16;
     } else if( leaf == COMDEF_LEAF_4 ) {
         value = GET_U32_UN(ObjBuff);
         ObjBuff += sizeof( unsigned_32 );
@@ -207,9 +206,9 @@ void ProcComdef( bool isstatic )
         flags |= ST_STATIC;
     }
     while( ObjBuff < EOObjRec ) {
-        sym_name = ( ( obj_name UNALIGN * ) ObjBuff )->name;
-        sym_len = ( ( obj_name UNALIGN * ) ObjBuff )->len;
-        ObjBuff += sym_len + sizeof( byte );
+        sym_len = *ObjBuff++;
+        sym_name = (char *)ObjBuff;
+        ObjBuff += sym_len;
         SkipIdx();
         kind = *ObjBuff++;
         size = GetLeaf();
@@ -328,7 +327,7 @@ static void AddToLinkerComdat( symbol *sym )
         }
     }
     AddSegment( sdata, class );
-    sdata->data = AllocStg( sdata->length );
+    sdata->u1.vm_ptr = AllocStg( sdata->length );
     CDatSegments[alloc] = sdata->u.leader;
     sym->p.seg = sdata;
 }

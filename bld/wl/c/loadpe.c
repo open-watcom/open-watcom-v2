@@ -307,14 +307,14 @@ static void GenPETransferTable( void )
                 PPCJump[0] = (PPCJump[0] & 0xffff0000) | (FindSymPosInTocv( sym ) & 0x0000ffff);
             }
             off = sym->addr.off - base;
-            PutInfo( XFerSegData->data + off, data, datalen );
+            PutInfo( XFerSegData->u1.vm_ptr + off, data, datalen );
         }
     }
     /* dump the local addresses table */
     for( loc_imp = PELocalImpList; loc_imp != NULL; loc_imp = loc_imp->next ) {
         off = loc_imp->iatsym->addr.off - base;
         addr = FindLinearAddr( &loc_imp->locsym->addr ) + FmtData.base;
-        PutInfo( XFerSegData->data + off, &addr, sizeof( addr ) );
+        PutInfo( XFerSegData->u1.vm_ptr + off, &addr, sizeof( addr ) );
     }
     if( LinkState & MAKE_RELOCS ) {
         for( loc_imp = PELocalImpList; loc_imp != NULL; loc_imp = loc_imp->next ) {
@@ -478,7 +478,7 @@ static void WriteImportInfo( void )
     group = IDataGroup;
     linear = group->linear;
     group->size = IData.total_size;
-    buf = IData.sdata->data;
+    buf = IData.sdata->u1.vm_ptr;
     pos = 0;
     dir.time_stamp = 0;
     dir.major = 0;
@@ -495,7 +495,7 @@ static void WriteImportInfo( void )
         PutInfo( buf+pos, &dir, sizeof( dir ) );
         pos += sizeof( dir );
     }
-    PutNulls( buf + pos, sizeof( dir ) );    /* NULL entry marks end of table */
+    PutInfoNulls( buf + pos, sizeof( dir ) );    /* NULL entry marks end of table */
     pos += sizeof( dir );
     WriteIAT( buf + IData.ilt_off, linear ); // Import Lookup table
     WriteToc( buf + IData.eof_ilt_off );
@@ -514,14 +514,14 @@ static void WriteImportInfo( void )
         hint = 1;
         for( imp = mod->imports; imp != NULL; imp = imp->next ) {
             if( imp->imp != NULL ) {
-                PutNulls( buf + pos, pos & 1 );
+                PutInfoNulls( buf + pos, pos & 1 );
                 pos += pos & 1;/* round up */
                 PutInfo( buf + pos, &hint, sizeof( hint ) );
                 pos += sizeof( hint );
                 size = imp->imp->len;
                 PutInfo( buf + pos, imp->imp->name, size );
                 pos += size;
-                PutNulls( buf + pos, 1);
+                PutInfoNulls( buf + pos, 1);
                 pos++;
                 hint++;
             }
@@ -553,8 +553,8 @@ static void WriteExportInfo( pe_header *header, pe_object *object )
     unsigned            i;
     unsigned_16         ord;
     pe_va               eat;
-    unsigned            next_ord;
-    unsigned            high_ord = 0;
+    ordinal_t           next_ord;
+    ordinal_t           high_ord = 0;
     unsigned            num_entries;
 
     strncpy( object->name, ".edata", PE_OBJ_NAME_LEN );
@@ -972,7 +972,7 @@ static bool SetPDataArray( void *_sdata, void *_array )
 
     if( !sdata->isdead ) {
         size = sdata->length;
-        data = sdata->data;
+        data = sdata->u1.vm_ptr;
         while( size >= sizeof( procedure_descriptor ) ) {
             **array = data;
             *array += 1;
@@ -1264,7 +1264,7 @@ unsigned long GetPEHeaderSize( void )
 
 static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
                          unsigned_32 ordstart, unsigned numords,
-                         unsigned ord_base, f_handle file, char *fname )
+                         ordinal_t ord_base, f_handle file, char *fname )
 /***********************************************************************/
 {
     unsigned_16         *ordbuf;
@@ -1352,7 +1352,7 @@ static void CreateIDataSection( void )
         sdata->is32bit = TRUE;
         sdata->isabs = FALSE;
         AddSegment( sdata, class );
-        sdata->data = AllocStg( sdata->length );
+        sdata->u1.vm_ptr = AllocStg( sdata->length );
         IData.sdata = sdata;
         AddToGroup( IDataGroup, sdata->u.leader );
     }
@@ -1440,7 +1440,7 @@ static void CreateTransferSegment( class_entry *class )
         sdata->is32bit = TRUE;
         sdata->isabs = FALSE;
         AddSegment( sdata, class );
-        sdata->data = AllocStg( sdata->length );
+        sdata->u1.vm_ptr = AllocStg( sdata->length );
         XFerSegData = sdata;
     }
 }

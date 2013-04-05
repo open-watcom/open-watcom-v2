@@ -81,8 +81,8 @@ typedef struct groupdef {
 
 typedef struct liblist {
     struct liblist      *next;
-    unsigned            namelen;
-    char                name[1];
+    lib_priority        priority;
+    char                *name;
 } libnamelist;
 
 struct perm_read_info_struct {
@@ -133,6 +133,6 @@ extern void     PermEndMod( mod_entry * );
 extern void     WritePermFile( perm_write_info *, void *, unsigned );
 extern void     ReadPermFile( perm_read_info *, void *, unsigned );
 extern void     IterateModRelocs( unsigned,unsigned,unsigned (*)(void *));
-extern void     *GetSegContents( segdata *, virt_mem );
+extern void     *GetSegContents( segdata *, virt_mem_size );
 extern void     *GetAltdefContents( segdata * );
 extern void     FreeSavedRelocs( void );

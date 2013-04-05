@@ -143,8 +143,8 @@ static void *ORLRead( void *_list, size_t len )
     return( result );
 }
 
-bool IsORL( file_list *list, unsigned loc )
-/*************************************************/
+bool IsORL( file_list *list, unsigned long loc )
+/**********************************************/
 // return TRUE if this is can be handled by ORL
 {
     orl_file_format     type;
@@ -207,8 +207,8 @@ static void FiniFile( orl_file_handle filehdl, file_list *list )
     }
 }
 
-void ORLSkipObj( file_list *list, long *loc )
-/*******************************************/
+void ORLSkipObj( file_list *list, unsigned long *loc )
+/****************************************************/
 // skip the object file.
 // NYI: add an entry point in ORL for a more efficient way of doing this.
 {
@@ -308,7 +308,7 @@ static orl_return DeflibCallback( char *name, void *dummy )
 /*********************************************************/
 {
     dummy = dummy;
-    AddCommentLib( name, strlen(name), LIB_PRIORITY_MAX - 1 );
+    AddCommentLib( name, strlen(name), LIB_PRIORITY_MAX - 2 );
     return( ORL_OKAY );
 }
 
@@ -407,7 +407,7 @@ static void AllocSeg( void *_snode, void *dummy )
         if( !sdata->isdead ) {
             ORLSecGetContents( snode->handle, &snode->contents );
             if( !sdata->iscdat && ( snode->contents != NULL )) {
-                PutInfo( sdata->data, snode->contents, sdata->length );
+                PutInfo( sdata->u1.vm_ptr, snode->contents, sdata->length );
             }
         }
     }
@@ -424,8 +424,8 @@ static void DefNosymComdats( void *_snode, void *dummy )
     if( sdata == NULL || snode->info & SEG_DEAD )
         return;
     if( sdata->iscdat && !sdata->hascdatsym && ( snode->contents != NULL )) {
-        sdata->data = AllocStg( sdata->length );
-        PutInfo( sdata->data, snode->contents, sdata->length );
+        sdata->u1.vm_ptr = AllocStg( sdata->length );
+        PutInfo( sdata->u1.vm_ptr, snode->contents, sdata->length );
     }
 }
 
@@ -436,7 +436,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     segdata             *sdata;
     segnode             *snode;
     char                *name;
-    unsigned_32 UNALIGN *contents;
+    unsigned_32 _WCUNALIGNED *contents;
     size_t              len;
     orl_sec_flags       flags;
     orl_sec_type        type;

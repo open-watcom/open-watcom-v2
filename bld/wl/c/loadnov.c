@@ -503,7 +503,7 @@ void FiniNovellLoadFile( void )
     unsigned_8          len;
     struct tm *         currtime;
     time_t              thetime;
-    char *                pPeriod = NULL;
+    char *              pPeriod = NULL;
     char                module_name[NOV_MAX_MODNAME_LEN+1];
 
 /* find module name (output file name without the path.) */
@@ -580,8 +580,7 @@ void FiniNovellLoadFile( void )
     nov_header.customDataSize = temp;
     file_size += temp;
     memset( &ext_header, 0, sizeof( ext_header ) );
-    memcpy( ext_header.stamp, EXTENDED_NLM_SIGNATURE,
-                              EXTENDED_NLM_SIGNATURE_LENGTH );
+    memcpy( ext_header.stamp, EXTENDED_NLM_SIGNATURE, EXTENDED_NLM_SIGNATURE_LENGTH );
     ext_header.messageFileOffset = file_size;
     file_size += WriteMessages( &ext_header );
     ext_header.helpFileOffset = file_size;
@@ -620,8 +619,7 @@ void FiniNovellLoadFile( void )
         NovNameWrite( module_name );      // use module name as a default
     }
     if( ( FmtData.major != 0 ) || ( FmtData.minor != 0 ) ) {
-        memcpy( second_header.versionSignature, VERSION_SIGNATURE,
-                                              VERSION_SIGNATURE_LENGTH );
+        memcpy( second_header.versionSignature, VERSION_SIGNATURE, VERSION_SIGNATURE_LENGTH );
         second_header.majorVersion = FmtData.major;
         second_header.minorVersion = FmtData.minor;
         second_header.revision = FmtData.revision;
@@ -634,17 +632,15 @@ void FiniNovellLoadFile( void )
     }
 
     if( FmtData.u.nov.copyright != NULL ) {
-        memcpy( third_header.copyrightSignature, COPYRIGHT_SIGNATURE,
-                                              COPYRIGHT_SIGNATURE_LENGTH);
+        memcpy( third_header.copyrightSignature, COPYRIGHT_SIGNATURE, COPYRIGHT_SIGNATURE_LENGTH);
         WriteLoad( &third_header, sizeof( third_header ) );
         NovNameWrite( FmtData.u.nov.copyright );
     }
     WriteLoad( &ext_header, sizeof( ext_header ) );
 }
 
-void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
-                                                                 bool isdata )
-/****************************************************************************/
+void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isdata )
+/**********************************************************************************/
 // add a relocation to the import record.
 {
     nov_import *    imp;
@@ -667,8 +663,7 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
         imp->num_relocs = offset;
     } else if( imp->contents < MAX_IMP_INTERNAL ) {
         if( imp->contents == 2 ) {
-            _ChkAlloc( new, ( MAX_IMP_INTERNAL - 2 ) * sizeof( unsigned_32 )
-                                                     + sizeof( nov_import ) );
+            _ChkAlloc( new, ( MAX_IMP_INTERNAL - 2 ) * sizeof( unsigned_32 ) + sizeof( nov_import ) );
             memcpy( new, imp, sizeof( nov_import ) );
             _LnkFree( imp );
             imp = new;
@@ -678,10 +673,8 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
         imp->contents++;
     } else if( imp->contents == MAX_IMP_INTERNAL ) { // set up virt.mem
         vmem_ptr = AllocStg( IMP_VIRT_ALLOC_SIZE );
-        PutInfo( vmem_ptr, &imp->num_relocs,
-                                 MAX_IMP_INTERNAL * sizeof( unsigned_32 ) );
-        PutInfo( vmem_ptr + MAX_IMP_INTERNAL * sizeof( unsigned_32 ), &offset,
-                                                       sizeof( unsigned_32 ) );
+        PutInfo( vmem_ptr, &imp->num_relocs, MAX_IMP_INTERNAL * sizeof( unsigned_32 ) );
+        PutInfo( vmem_ptr + MAX_IMP_INTERNAL * sizeof( unsigned_32 ), &offset, sizeof( unsigned_32 ) );
         imp->contents++;
         imp->num_relocs = imp->contents;
         imp->addr[ 0 ] = vmem_ptr;
@@ -690,10 +683,8 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
         voff = imp->num_relocs % IMP_NUM_VIRT;
         if( voff == 0 ) {
             if( vblock >= (imp->contents - MAX_IMP_INTERNAL) * MAX_IMP_VIRT ) {
-                _ChkAlloc( new, sizeof( nov_import ) - sizeof( unsigned_32 ) +
-                                            vblock * sizeof( unsigned_32 ) * 2 );
-                memcpy( new, imp, sizeof( nov_import ) - sizeof( unsigned_32 ) +
-                                            vblock * sizeof( unsigned_32 ) );
+                _ChkAlloc( new, sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) * 2 );
+                memcpy( new, imp, sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) );
                 _LnkFree( imp );
                 imp = new;
                 imp->contents++;
@@ -701,8 +692,7 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
             }
             imp->addr[ vblock ] = AllocStg( IMP_VIRT_ALLOC_SIZE );
         }
-        PutInfo( imp->addr[ vblock ] + voff * sizeof( unsigned_32 ), &offset,
-                                                        sizeof( unsigned_32 ) );
+        PutInfo( imp->addr[ vblock ] + voff * sizeof( unsigned_32 ), &offset, sizeof( unsigned_32 ) );
         imp->num_relocs++;
     }
 }
@@ -720,7 +710,7 @@ void FindExportedSyms( void )
         while( export != NULL ) {
             sym = SymOp( ST_FIND, export->name, export->len );
             if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
-                dinfo->global.curr += strlen( sym->name ) + sizeof( gblinfo );
+                dinfo->global.curr.u.vm_ptr += strlen( sym->name ) + sizeof( gblinfo );
             }
             export = export->next;
         }

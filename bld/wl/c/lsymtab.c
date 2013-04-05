@@ -1258,7 +1258,7 @@ static void SetDataSymInfo( symbol *sym, symbol *old )
 /****************************************************/
 {
     sym->u.datasym = NULL;
-    sym->p.seg->data = old->p.seg->data;
+    sym->p.seg->u1.vm_ptr = old->p.seg->u1.vm_ptr;
     sym->info |= SYM_HAS_DATA;
     old->info &= ~SYM_HAS_DATA;
     old->u.datasym = sym;

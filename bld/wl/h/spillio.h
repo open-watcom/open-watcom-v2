@@ -30,10 +30,15 @@
 ****************************************************************************/
 
 
+typedef union {
+    virt_mem_size   spill;
+    char            *addr;
+} spilladdr;
+
 extern void             InitSpillFile( void );
-extern unsigned long    SpillAlloc( unsigned );
-extern void             SpillNull( unsigned long, unsigned, unsigned  );
-extern void             SpillWrite( unsigned long, unsigned, void *, unsigned );
-extern void             SpillRead( unsigned long, unsigned, void *, unsigned );
+extern virt_mem_size    SpillAlloc( unsigned );
+extern void             SpillNull( virt_mem_size, unsigned, unsigned  );
+extern void             SpillWrite( virt_mem_size, unsigned, void *, unsigned );
+extern void             SpillRead( virt_mem_size, unsigned, void *, unsigned );
 extern void             CloseSpillFile( void );
 extern f_handle         OpenTempFile( char **name );

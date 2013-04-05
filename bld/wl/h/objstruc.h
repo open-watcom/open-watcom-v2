@@ -147,10 +147,17 @@ enum file_status {
     STAT_USER_SPECD     = 0x00010000
 };
 
+/*
+ * overlay manager library priority         0
+ * default library priority                 1-8 (OMF)
+ * default library priority                 8   (coff/elf)
+ * compiler user specified library priority 9
+ * WLINK user specified library priority    10
+ */
 typedef enum lib_priorities {
     LIB_PRIORITY_MIN    = 0,
-    LIB_PRIORITY_MID    = 128,
-    LIB_PRIORITY_MAX    = 255
+    LIB_PRIORITY_MID    = 5,
+    LIB_PRIORITY_MAX    = 10
 } lib_priority;
 
 typedef struct file_list {
@@ -434,7 +441,7 @@ typedef struct segdata {
     SEGDATA         *next;
     SEGDATA         *mod_next;      // next segdata in module list.
     offset          length;         // length of segment in current module.
-    virt_mem        data;           // data for this segment
+    virt_mem_ptr    u1;             // virtual memory pointer to data for this segment
     union {
         char        *name;          // name of the segment
         seg_leader  *leader;        // leader for the segment.
@@ -480,6 +487,10 @@ typedef struct node {
     void                *entry;
 } node;
 
+#define NOT_IMP_BY_ORDINAL (-1)
+
+typedef signed_32       ordinal_t;
+
 typedef struct dll_sym_info {
     union {
         name_list       *modnum;        /* # of DLL in imported names table */
@@ -488,7 +499,7 @@ typedef struct dll_sym_info {
     union {
         name_list       *entry;         /* # of entry in DLL */
         char            *entname;
-        unsigned        ordinal;
+        ordinal_t       ordinal;
     } u;
     unsigned            isordinal : 1;
     unsigned            isfree : 1;

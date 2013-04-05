@@ -34,9 +34,9 @@ extern list_of_names    *FindName( unsigned_16 );
 extern unsigned_16      GetIdx( void );
 extern void             SkipIdx( void );
 extern unsigned long    OMFPass1( void );
-extern bool             IsOMF( file_list *, long );
-extern char             *GetOMFName( file_list *, long * );
-extern void             OMFSkipObj( file_list *, long * );
+extern bool             IsOMF( file_list *, unsigned long );
+extern char             *GetOMFName( file_list *, unsigned long * );
+extern void             OMFSkipObj( file_list *, unsigned long * );
 extern void             ResetObjOMF( void );
 
 extern byte             OMFAlignTab[];

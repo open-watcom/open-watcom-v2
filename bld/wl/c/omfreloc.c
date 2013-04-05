@@ -104,8 +104,7 @@ void DoRelocs( void )
         return;
     }
     do {
-        typ = GET_U8_UN( ObjBuff );
-        ++ObjBuff;
+        typ = *ObjBuff++;
         omftype = (typ >> 2) & 7;
         if( (typ & 0x80) == 0 ) {   /*  thread */
             if( typ & 0x40 ) {      /*  frame */
@@ -132,10 +131,8 @@ void DoRelocs( void )
             if( !(typ & 0x40) ) {
                 fixtype |= FIX_REL;
             }
-            place_to_fix = ((typ & 3) << 8) + GET_U8_UN( ObjBuff );
-            ++ObjBuff;
-            typ = GET_U8_UN( ObjBuff );
-            ++ObjBuff;
+            place_to_fix = ((typ & 3) << 8) + *ObjBuff++;
+            typ = *ObjBuff++;
             loc = typ >> 4 & 7;
             if( typ & 0x80 ) {
                 fthread = FrameThreads[loc & 3];
@@ -265,8 +262,7 @@ void ProcBakpat( void )
     seg = (segnode *) FindNode( SegNodes, GetIdx() );
     if( seg->info & SEG_DEAD )
         return;
-    loctype = GET_U8_UN( ObjBuff );
-    ++ObjBuff;
+    loctype = *ObjBuff++;
     StoreBakPat( seg->entry, loctype );
 }
 
@@ -305,7 +301,7 @@ void DoBakPats( void )
                 bkptr->len -= 2 * sizeof(unsigned_16);
             }
             /* Now the sdata->data pointer should be valid. */
-            vmemloc = bkptr->sdata->data + off;
+            vmemloc = bkptr->sdata->u1.vm_ptr + off;
             switch( bkptr->loctype ) {
             case 0:
                 ReadInfo( vmemloc, &value8, sizeof(unsigned_8) );
@@ -338,8 +334,7 @@ void ProcNbkpat( void )
     symbol              *sym;
     byte                loctype;
 
-    loctype = GET_U8_UN( ObjBuff );
-    ++ObjBuff;
+    loctype = *ObjBuff++;
     symname = FindName( GetIdx() );
     sym = RefISymbol( symname->name );
     if( !IS_SYM_COMDAT(sym) )           /* can't handle these otherwise */

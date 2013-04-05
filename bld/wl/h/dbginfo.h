@@ -45,8 +45,12 @@ typedef struct sectheader {
 } sectheader;
 
 typedef struct {
-    virt_mem        init;
-    virt_mem        curr;
+    struct {
+        virt_mem_ptr    u;
+    }               init;
+    struct {
+        virt_mem_ptr    u;
+    }               curr;
     unsigned_32     size;
     unsigned_32     start;
 } dbi_section;

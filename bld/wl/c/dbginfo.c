@@ -194,7 +194,7 @@ static void DoAddLocal( dbi_section *dbi, offset length )
 /********************************************************/
 {
     if( ( dbi->size == 0 ) || ( dbi->size + length > DEMAND_INFO_SPLIT ) ) {
-        dbi->curr += sizeof( unsigned_32 );
+        dbi->curr.u.vm_offs += sizeof( unsigned_32 );
         dbi->size = 0;
     }
     dbi->size += length;
@@ -232,25 +232,23 @@ void ODBIP1ModuleScanned( void )
     dinfo->locallinks.size = 0;
 }
 
-static void DoGenLocal( dbi_section *dsect, dbi_section *dlink,
-                        demanddata *dmod, offset length )
-/**************************************************************/
+static void DoGenLocal( dbi_section *dsect, dbi_section *dlink, demanddata *dmod, offset length )
+/***********************************************************************************************/
 {
     unsigned_32 spot;
 
-    if( ( dmod->size == 0 )
-        || ( dmod->size + length > DEMAND_INFO_SPLIT ) ) {
-        spot = dsect->start + ( dsect->curr - dsect->init );
-        PutInfo( dlink->curr, &spot, sizeof( unsigned_32 ) );
+    if( ( dmod->size == 0 ) || ( dmod->size + length > DEMAND_INFO_SPLIT ) ) {
+        spot = dsect->start + ( dsect->curr.u.vm_offs - dsect->init.u.vm_offs );
+        PutInfo( dlink->curr.u.vm_ptr, &spot, sizeof( unsigned_32 ) );
         dmod->num++;
         if( dmod->size == 0 ) {
-            dmod->offset = dlink->start + ( dlink->curr - dlink->init );
+            dmod->offset = dlink->start + ( dlink->curr.u.vm_ptr - dlink->init.u.vm_ptr );
         } else {
             dmod->size = 0;
         }
-        dlink->curr += sizeof( unsigned_32 );
+        dlink->curr.u.vm_ptr += sizeof( unsigned_32 );
     }
-    dsect->curr += length;
+    dsect->curr.u.vm_ptr += length;
     dmod->size += length;
 #ifdef _INT_DEBUG
     TraceInfo.sizegenned += length;
@@ -271,12 +269,10 @@ void ODBIGenLocal( segdata *sdata )
     minfo = CurrMod->d.o;
     if( sdata->u.leader->dbgtype == MS_TYPE ) {
         DEBUG(( DBG_DBGINFO, "genning type info %h", sdata->length ));
-        DoGenLocal( &dinfo->type, &dinfo->typelinks, &minfo->types,
-                    sdata->length );
+        DoGenLocal( &dinfo->type, &dinfo->typelinks, &minfo->types, sdata->length );
     } else if( sdata->u.leader->dbgtype == MS_LOCAL ) {
         DEBUG(( DBG_DBGINFO, "genning local info %h", sdata->length ));
-        DoGenLocal( &dinfo->local, &dinfo->locallinks, &minfo->locals,
-                    sdata->length );
+        DoGenLocal( &dinfo->local, &dinfo->locallinks, &minfo->locals, sdata->length );
     }
 }
 
@@ -290,7 +286,7 @@ static void ODBIAddLines( lineinfo *info )
     dinfo = CurrSect->dbg_info;
     lineqty = DBICalcLineQty( info );
     linesize = lineqty * sizeof( ln_off_386 ) + sizeof( lineseg );
-    dinfo->line.curr += linesize;
+    dinfo->line.curr.u.vm_offs += linesize;
     DoAddLocal( &dinfo->linelinks, linesize );
 }
 
@@ -309,7 +305,7 @@ void ODBIP1ModuleFinished( mod_entry *obj )
         DBILineWalk( obj->lines, ODBIAddLines );
     }
     Ring2Walk( obj->publist, DBIModGlobal );
-    dinfo->mod.curr += strlen( obj->name ) + sizeof( modinfo );
+    dinfo->mod.curr.u.vm_offs += strlen( obj->name ) + sizeof( modinfo );
     dinfo->linelinks.size = 0;
 }
 
@@ -322,10 +318,10 @@ void ODBIDefClass( class_entry *cl, unsigned_32 size )
     if( dinfo == NULL )
         return;
     if( cl->flags & CLASS_MS_TYPE ) {
-        dinfo->type.curr += size;
+        dinfo->type.curr.u.vm_offs += size;
         dinfo->TypeClass = cl;
     } else if( cl->flags & CLASS_MS_LOCAL ) {
-        dinfo->local.curr += size;
+        dinfo->local.curr.u.vm_offs += size;
         dinfo->LocalClass = cl;
     }
 }
@@ -333,8 +329,7 @@ void ODBIDefClass( class_entry *cl, unsigned_32 size )
 static int ODBISymIsForGlobalDebugging( symbol *sym, mod_entry *currMod )
 /***********************************************************************/
 {
-    return( !( CurrMod->modinfo & DBI_ONLY_EXPORTS )
-        && ( ( CurrMod->modinfo & DBI_STATICS ) || !( sym->info & SYM_STATIC ) ) );
+    return( !( currMod->modinfo & DBI_ONLY_EXPORTS ) && ( ( currMod->modinfo & DBI_STATICS ) || !( sym->info & SYM_STATIC ) ) );
 }
 
 void ODBIAddGlobal( symbol *sym )
@@ -352,7 +347,7 @@ void ODBIAddGlobal( symbol *sym )
             LnkMsg( WRN+MSG_SYMBOL_NAME_TOO_LONG, "s", sym->name );
             add = 255;
         }
-        dinfo->global.curr += add + sizeof( gblinfo );
+        dinfo->global.curr.u.vm_offs += add + sizeof( gblinfo );
     }
 }
 
@@ -386,54 +381,52 @@ void ODBIAddrSectStart( section *sect )
     dptr = sect->dbg_info;
     if( dptr == NULL )
         return;
-    if( ( dptr->local.curr > 0 )
-        || ( dptr->type.curr > 0 )
-        || ( dptr->line.curr > 0 ) ) {
-        dptr->linelinks.curr += sizeof( unsigned_32 );
+    if( ( dptr->local.curr.u.vm_offs > 0 ) || ( dptr->type.curr.u.vm_offs > 0 ) || ( dptr->line.curr.u.vm_offs > 0 ) ) {
+        dptr->linelinks.curr.u.vm_offs += sizeof( unsigned_32 );
     }
     dptr->locallinks.start = sizeof( sectheader );
-    dptr->locallinks.size = dptr->locallinks.curr;
-    dptr->locallinks.curr = DBIAlloc( dptr->locallinks.curr );
-    dptr->locallinks.init = dptr->locallinks.curr;
+    dptr->locallinks.size = dptr->locallinks.curr.u.vm_offs;
+    dptr->locallinks.curr.u.vm_ptr = DBIAlloc( dptr->locallinks.curr.u.vm_offs );
+    dptr->locallinks.init.u.vm_ptr = dptr->locallinks.curr.u.vm_ptr;
 
     dptr->typelinks.start = dptr->locallinks.start + dptr->locallinks.size;
-    dptr->typelinks.size = dptr->typelinks.curr;
-    dptr->typelinks.curr = DBIAlloc( dptr->typelinks.curr );
-    dptr->typelinks.init = dptr->typelinks.curr;
+    dptr->typelinks.size = dptr->typelinks.curr.u.vm_offs;
+    dptr->typelinks.curr.u.vm_ptr = DBIAlloc( dptr->typelinks.curr.u.vm_offs );
+    dptr->typelinks.init.u.vm_ptr = dptr->typelinks.curr.u.vm_ptr;
 
     dptr->linelinks.start = dptr->typelinks.start + dptr->typelinks.size;
-    dptr->linelinks.size = dptr->linelinks.curr;
-    dptr->linelinks.curr = DBIAlloc( dptr->linelinks.curr );
-    dptr->linelinks.init = dptr->linelinks.curr;
+    dptr->linelinks.size = dptr->linelinks.curr.u.vm_offs;
+    dptr->linelinks.curr.u.vm_ptr = DBIAlloc( dptr->linelinks.curr.u.vm_offs );
+    dptr->linelinks.init.u.vm_ptr = dptr->linelinks.curr.u.vm_ptr;
 
     dptr->local.start = dptr->linelinks.start + dptr->linelinks.size;
-    dptr->local.size = dptr->local.curr;
-    dptr->local.init = dptr->local.curr;
+    dptr->local.size = dptr->local.curr.u.vm_offs;
+    dptr->local.init.u.vm_offs = dptr->local.curr.u.vm_offs;
 
     dptr->type.start = dptr->local.start + dptr->local.size;
-    dptr->type.size = dptr->type.curr;
-    dptr->type.init = dptr->type.curr;
+    dptr->type.size = dptr->type.curr.u.vm_offs;
+    dptr->type.init.u.vm_offs = dptr->type.curr.u.vm_offs;
 
     dptr->line.start = dptr->type.start + dptr->type.size;
-    dptr->line.size = dptr->line.curr;
-    dptr->line.curr = DBIAlloc( dptr->line.curr );
-    dptr->line.init = dptr->line.curr;
+    dptr->line.size = dptr->line.curr.u.vm_offs;
+    dptr->line.curr.u.vm_ptr = DBIAlloc( dptr->line.curr.u.vm_offs );
+    dptr->line.init.u.vm_ptr = dptr->line.curr.u.vm_ptr;
 
     dptr->mod.start = dptr->line.start + dptr->line.size;
-    dptr->mod.size = dptr->mod.curr;
-    dptr->mod.curr = DBIAlloc( dptr->mod.curr );
-    dptr->mod.init = dptr->mod.curr;
+    dptr->mod.size = dptr->mod.curr.u.vm_offs;
+    dptr->mod.curr.u.vm_ptr = DBIAlloc( dptr->mod.curr.u.vm_offs );
+    dptr->mod.init.u.vm_ptr = dptr->mod.curr.u.vm_ptr;
 
     dptr->global.start = dptr->mod.start + dptr->mod.size;
-    dptr->addr.start = dptr->global.start + dptr->global.curr;
+    dptr->addr.start = dptr->global.start + dptr->global.curr.u.vm_offs;
     dptr->global.size = 0;
-    dptr->global.curr = DBIAlloc( dptr->global.curr );
-    dptr->global.init = dptr->global.curr;
+    dptr->global.curr.u.vm_ptr = DBIAlloc( dptr->global.curr.u.vm_offs );
+    dptr->global.init.u.vm_ptr = dptr->global.curr.u.vm_ptr;
 
-    dptr->addr.curr = DBIAlloc( dptr->addr.size );
-    dptr->addr.init = dptr->addr.curr;
+    dptr->addr.curr.u.vm_ptr = DBIAlloc( dptr->addr.size );
+    dptr->addr.init.u.vm_ptr = dptr->addr.curr.u.vm_ptr;
 
-    dptr->dump_addr = dptr->global.curr;
+    dptr->dump_addr = dptr->global.curr.u.vm_ptr;
     dptr->modnum = -1;
 
     AllocDBIClasses( sect->classlist );
@@ -510,20 +503,18 @@ static void ODBIGenAddrInit( segdata *sdata, void *_dinfo )
         seghdr.off = seg->seg_addr.off;
         seghdr.seg = seg->seg_addr.seg;
     } else {
-        seghdr.off = seg->group->grp_addr.off
-                     + SUB_ADDR( seg->seg_addr, seg->group->grp_addr );
+        seghdr.off = seg->group->grp_addr.off + SUB_ADDR( seg->seg_addr, seg->group->grp_addr );
         seghdr.seg = seg->group->grp_addr.seg;
     }
     seghdr.num = seg->num;
     if( CurrSect == NonSect )
         seghdr.num |= NON_SECT_INFO;
     DumpInfo( dptr, &seghdr, sizeof( segheader ) );
-    dptr->addr.curr += sizeof( segheader );
+    dptr->addr.curr.u.vm_ptr += sizeof( segheader );
 }
 
-static void ODBIGenAddrAdd( segdata *sdata, offset delta, offset size,
-                            void *_dinfo, bool isnewmod )
-/********************************************************************/
+static void ODBIGenAddrAdd( segdata *sdata, offset delta, offset size, void *_dinfo, bool isnewmod )
+/**************************************************************************************************/
 {
     addrinfo    addr;
     debug_info  *dptr = _dinfo;
@@ -533,10 +524,10 @@ static void ODBIGenAddrAdd( segdata *sdata, offset delta, offset size,
         addr.size = size;
         addr.mod_idx = sdata->o.mod->d.o->modnum;
         DumpInfo( dptr, &addr, sizeof( addrinfo ) );
-        sdata->addrinfo = dptr->addr.curr - dptr->addr.init;
-        dptr->addr.curr += sizeof( addrinfo );
+        sdata->addrinfo = dptr->addr.curr.u.vm_ptr - dptr->addr.init.u.vm_ptr;
+        dptr->addr.curr.u.vm_ptr += sizeof( addrinfo );
     } else {
-        sdata->addrinfo = dptr->addr.curr - dptr->addr.init;
+        sdata->addrinfo = dptr->addr.curr.u.vm_ptr - dptr->addr.init.u.vm_ptr;
     }
 }
 
@@ -562,18 +553,18 @@ static void WriteBogusAddrInfo( debug_info *dptr )
     segheader   header;
 
     dptr->addr.size = sizeof( segheader ) + sizeof( addrinfo );
-    dptr->addr.curr = DBIAlloc( dptr->addr.size );
-    dptr->addr.init = dptr->addr.curr;
-    dptr->dump_addr = dptr->addr.curr;
+    dptr->addr.curr.u.vm_ptr = DBIAlloc( dptr->addr.size );
+    dptr->addr.init.u.vm_ptr = dptr->addr.curr.u.vm_ptr;
+    dptr->dump_addr = dptr->addr.curr.u.vm_ptr;
     header.off = 0;
     header.seg = 0;
     header.num = 1;
     DumpInfo( dptr, &header, sizeof( segheader ) );
-    dptr->addr.curr += sizeof( segheader );
+    dptr->addr.curr.u.vm_ptr += sizeof( segheader );
     info.size = 0;
     info.mod_idx = 0;
     DumpInfo( dptr, &info, sizeof( addrinfo ) );
-    dptr->addr.curr += sizeof( addrinfo );
+    dptr->addr.curr.u.vm_ptr += sizeof( addrinfo );
 }
 
 void ODBIP2Start( section *sect )
@@ -590,13 +581,13 @@ void ODBIP2Start( section *sect )
     }
     if( dptr != NULL ) {
         // if section has no info then write bogus address info
-        if( dptr->addr.curr == 0 ) {
+        if( dptr->addr.curr.u.vm_ptr == 0 ) {
             WriteBogusAddrInfo( dptr );
         } else {
-            dptr->dump_addr = dptr->addr.curr;
+            dptr->dump_addr = dptr->addr.curr.u.vm_ptr;
             SectWalkClass( sect, ODBIGenAddrInfo );
         }
-        dptr->dump_addr = dptr->line.curr;
+        dptr->dump_addr = dptr->line.curr.u.vm_ptr;
         dptr->modnum = 0;
     }
 }
@@ -604,7 +595,7 @@ void ODBIP2Start( section *sect )
 static int CmpLn386( const void *a, const void *b )
 /*************************************************/
 {
-    return( ((ln_off_386 UNALIGN *)a)->off - ((ln_off_386 UNALIGN *)b)->off );
+    return( ((ln_off_386 _WCUNALIGNED *)a)->off - ((ln_off_386 _WCUNALIGNED *)b)->off );
 }
 
 static int CmpLn286( const void *a, const void *b )
@@ -630,7 +621,7 @@ void ODBIGenLines( lineinfo *info )
 /*********************************/
 {
     unsigned            linelen;
-    ln_off_pair UNALIGN *pair;
+    ln_off_pair _WCUNALIGNED *pair;
     ln_off_386          tmp_ln;
     unsigned_32         temp;
     unsigned            lineqty;
@@ -651,8 +642,7 @@ void ODBIGenLines( lineinfo *info )
         return;
     linelen = size;
     lineqty = DBICalcLineQty( info );
-    DoGenLocal( &dinfo->line, &dinfo->linelinks, &CurrMod->d.o->lines,
-                lineqty * sizeof( ln_off_386 ) + sizeof( lineseg ) );
+    DoGenLocal( &dinfo->line, &dinfo->linelinks, &CurrMod->d.o->lines, lineqty * sizeof( ln_off_386 ) + sizeof( lineseg ) );
     lseg.segment = seg->addrinfo;
     lseg.num = lineqty;
     DumpInfo( dinfo, &lseg, sizeof( lineseg ) );
@@ -759,11 +749,9 @@ void ODBIFini( section *sect )
         dptr = sect->dbg_info;
     }
     if( dptr != NULL ) {
-        if( ( dptr->local.size > 0 )
-            || ( dptr->type.size > 0 )
-            || ( dptr->line.size > 0 ) ) {
-            spot = dptr->line.start + ( dptr->line.curr - dptr->line.init );
-            PutInfo( dptr->linelinks.curr, &spot, sizeof( unsigned_32 ) );
+        if( ( dptr->local.size > 0 ) || ( dptr->type.size > 0 ) || ( dptr->line.size > 0 ) ) {
+            spot = dptr->line.start + ( dptr->line.curr.u.vm_ptr - dptr->line.init.u.vm_ptr );
+            PutInfo( dptr->linelinks.curr.u.vm_ptr, &spot, sizeof( unsigned_32 ) );
         }
     }
 }
@@ -792,8 +780,8 @@ void ODBIGenModule( void )
     _HostU32toTarg( rec->lines.offset, info->lines.off );
     DoName( name, info->name, len );
     info->language = rec->dbisourceoffset;
-    PutInfo( dptr->mod.curr, (char *)info, len + sizeof( modinfo ) );
-    dptr->mod.curr += len + sizeof( modinfo );
+    PutInfo( dptr->mod.curr.u.vm_ptr, (char *)info, len + sizeof( modinfo ) );
+    dptr->mod.curr.u.vm_ptr += len + sizeof( modinfo );
     dptr->modnum++;
 }
 
@@ -867,9 +855,9 @@ void WriteDBISecs( section *sec )
         header.addr_offset = dptr->addr.start;
         header.section_id = sec->ovl_num;
         DBIWriteLocal( &header, sizeof( sectheader ) );
-        DBIWriteInfo( dptr->locallinks.init, dptr->locallinks.size );
-        DBIWriteInfo( dptr->typelinks.init, dptr->typelinks.size );
-        DBIWriteInfo( dptr->linelinks.init, dptr->linelinks.size );
+        DBIWriteInfo( dptr->locallinks.init.u.vm_ptr, dptr->locallinks.size );
+        DBIWriteInfo( dptr->typelinks.init.u.vm_ptr, dptr->typelinks.size );
+        DBIWriteInfo( dptr->linelinks.init.u.vm_ptr, dptr->linelinks.size );
         pos = PosLoad();
         if( dptr->LocalClass != NULL ) {
             RingWalk( dptr->LocalClass->segs, WriteLeaderLoad );
@@ -878,10 +866,10 @@ void WriteDBISecs( section *sec )
             RingWalk( dptr->TypeClass->segs, WriteLeaderLoad );
         }
         DBISize += PosLoad() - pos;
-        DBIWriteInfo( dptr->line.init, dptr->line.size );
-        DBIWriteInfo( dptr->mod.init, dptr->mod.size );
-        DBIWriteInfo( dptr->global.init, dptr->global.size );
-        DBIWriteInfo( dptr->addr.init, dptr->addr.size );
+        DBIWriteInfo( dptr->line.init.u.vm_ptr, dptr->line.size );
+        DBIWriteInfo( dptr->mod.init.u.vm_ptr, dptr->mod.size );
+        DBIWriteInfo( dptr->global.init.u.vm_ptr, dptr->global.size );
+        DBIWriteInfo( dptr->addr.init.u.vm_ptr, dptr->addr.size );
     }
 }
 

@@ -314,7 +314,7 @@ void CalcOvl( void )
     OvlSeg->seg_addr = OvltabAddr;
     OvlSeg->size = OvltabSize;
 
-    OvlSegData->data = AllocStg( OvltabSize );
+    OvlSegData->u1.vm_ptr = AllocStg( OvltabSize );
     OvlSegData->length = OvltabSize;
     RingAppend( &OvlSegData->u.leader->pieces, OvlSegData );
 }
@@ -805,7 +805,7 @@ void PadOvlFiles( void )
 static void PutOvlInfo( unsigned off, void *src, unsigned len )
 /*************************************************************/
 {
-   PutInfo( OvlSegData->data + off - OvlGroup->grp_addr.off, src, len );
+   PutInfo( OvlSegData->u1.vm_ptr + off - OvlGroup->grp_addr.off, src, len );
 }
 
 void SetOvlTableLoc( group_entry *group, unsigned long loc )

@@ -227,17 +227,19 @@ static bool getexport( void )
 /***************************/
 {
     entry_export    *exp;
-    unsigned_16     value;
+    unsigned_16     val16;
+    unsigned_32     val32;
 
     exp = AllocExport( Token.this, Token.len );
     exp->isanonymous = (CmdFlags & CF_ANON_EXPORT) != 0;
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
-        if( getatol( &exp->ordinal ) != ST_IS_ORDINAL ) {
+        if( getatol( &val32 ) != ST_IS_ORDINAL ) {
             LnkMsg( LOC+LINE+ERR + MSG_EXPORT_ORD_INVALID, NULL );
             _LnkFree( exp );
             GetToken( SEP_EQUALS, TOK_INCLUDE_DOT );
             return( TRUE );
         }
+        exp->ordinal = val32;
     }
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         exp->sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
@@ -257,11 +259,11 @@ static bool getexport( void )
     FmtData.u.os2.exports = exp->next;       // take it off the list
     exp->iopl_words = 0;
     if(!(FmtData.type & (MK_WINDOWS|MK_PE)) &&GetToken(SEP_NO,TOK_INCLUDE_DOT)) {
-        if( getatoi( &value ) == ST_IS_ORDINAL ) {
-            if( value > 63 ) {
+        if( getatoi( &val16 ) == ST_IS_ORDINAL ) {
+            if( val16 > 63 ) {
                 LnkMsg( LOC+LINE+MSG_TOO_MANY_IOPL_WORDS+ ERR, NULL );
             } else {
-                exp->iopl_words = value;
+                exp->iopl_words = val16;
             }
         } else {
             Token.thumb = REJECT;    // reprocess the token.

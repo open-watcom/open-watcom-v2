@@ -30,12 +30,10 @@
 ****************************************************************************/
 
 
-#define NOT_IMP_BY_ORDINAL 0xFFFFFFFF
-
 typedef struct entry_export {
     struct entry_export *   next;
     char *                  name;
-    unsigned_32             ordinal;
+    ordinal_t               ordinal;
     unsigned_16             iopl_words;
     unsigned_16             isresident : 1;
     unsigned_16             isexported : 1;
@@ -48,13 +46,11 @@ typedef struct entry_export {
     targ_addr               addr;
 } entry_export;
 
-extern unsigned_16      FindEntryOrdinal( targ_addr, group_entry * );
+extern ordinal_t        FindEntryOrdinal( targ_addr, group_entry * );
 extern void             FreeExportList( void );
 extern void             AddToExportList( entry_export * );
-extern void             MSExportKeyword( length_name *, length_name *,
-                                         unsigned, unsigned );
-extern void             MSImportKeyword( symbol *, length_name *,
-                                         length_name *, unsigned long );
+extern void             MSExportKeyword( length_name *, length_name *, unsigned, ordinal_t );
+extern void             MSImportKeyword( symbol *, length_name *, length_name *, ordinal_t );
 extern dll_sym_info *   AllocDLLInfo( void );
 extern void             FreeImport( dll_sym_info * );
 extern entry_export *   AllocExport( char *, unsigned );

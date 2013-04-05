@@ -35,7 +35,7 @@ extern void ReadInfo( virt_mem, void *, unsigned );
 extern void PutInfo( virt_mem, void *, unsigned );
 extern void CopyInfo( virt_mem, virt_mem, unsigned );
 extern void WriteInfo( virt_mem, unsigned long );
-extern void PutNulls( virt_mem, unsigned long );
+extern void PutInfoNulls( virt_mem, unsigned long );
 extern bool CompareInfo( virt_mem, void *, unsigned );
 
 #define GET32INFO( v, b ) ReadInfo( v, &(b), sizeof(unsigned_32) )
@@ -47,12 +47,12 @@ extern bool CompareInfo( virt_mem, void *, unsigned );
 
 extern void WriteLoad( void *, unsigned long );
 
-#define ReadInfo( v, b, l ) memcpy( b, (void *)(v), l )
-#define PutInfo( v, b, l ) memcpy( (void *)(v), b, l )
-#define CopyInfo( v1, v2, l ) memcpy( (void *)(v1), (void *)(v2), l )
-#define WriteInfo( v, l ) WriteLoad( (void *)(v), l )
-#define PutNulls( v, l ) memset( (void *)(v), 0, l )
-#define CompareInfo( v, b, l ) (memcmp( (void *)(v), b, l ) == 0)
+#define ReadInfo( v, b, l ) memcpy( b, v, l )
+#define PutInfo( v, b, l ) memcpy( v, b, l )
+#define CopyInfo( v1, v2, l ) memcpy( v1, v2, l )
+#define WriteInfo( v, l ) WriteLoad( v, l )
+#define PutInfoNulls( v, l ) memset( v, 0, l )
+#define CompareInfo( v, b, l ) (memcmp( v, b, l ) == 0)
 
 #define GET32INFO( v, b ) b = *((unsigned_32 *)(v))
 #define GET16INFO( v, b ) b = *((unsigned_16 *)(v))
@@ -62,7 +62,7 @@ extern void WriteLoad( void *, unsigned long );
 #endif
 
 extern void     VirtMemInit( void );
-extern virt_mem AllocStg( unsigned long );
+extern virt_mem AllocStg( virt_mem_size );
 extern void     ReleaseInfo( virt_mem );
 extern bool     SwapOutVirt( void );
 extern void     FreeVirtMem( void );

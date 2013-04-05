@@ -60,7 +60,7 @@ typedef struct lineinfo {
 } lineinfo;
 
 
-extern virt_mem DBIAlloc( unsigned long );
+extern virt_mem DBIAlloc( virt_mem_size );
 extern void     DBIModGlobal( void * );
 extern void     DBIAddrInfoScan( seg_leader *,
                       void (*)(segdata *, void *),

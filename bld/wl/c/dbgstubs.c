@@ -206,8 +206,8 @@ void DBIGenAddrInfo( seg_leader *seg, offset oldsize, unsigned_32 pad,
     sect = sect;
 }
 
-virt_mem DBIAlloc( unsigned long size )
-/********************************************/
+virt_mem DBIAlloc( virt_mem_size size )
+/*************************************/
 {
     size = size;
     return( 0 );

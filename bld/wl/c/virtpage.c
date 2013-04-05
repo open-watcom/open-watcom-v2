@@ -51,7 +51,7 @@ void VirtMemInit( void )
     VMemBlocks = NULL;
 }
 
-virt_mem AllocStg( unsigned long size )
+virt_mem AllocStg( virt_mem_size size )
 /********************************************/
 {
     vmemblock * ptr;

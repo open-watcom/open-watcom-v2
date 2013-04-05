@@ -226,7 +226,7 @@ static bool WriteHexData( void *_sdata, void *_addr )
             if( piece > len ) {         // Handle not enough to fill buffer
                 piece = len;
             }
-            ReadInfo( sdata->data + offset, lineBuf + bufOfs, piece );
+            ReadInfo( sdata->u1.vm_ptr + offset, lineBuf + bufOfs, piece );
             bufOfs += piece;
             if( bufOfs == HEXLEN ) {
                 WriteHexLine();         // Only write full buffers
@@ -376,7 +376,7 @@ void HexOutput( void )
                     sect = group->section;
                     CurrSect = sect;
 #ifdef _INT_DEBUG
-					finfo = sect->outfile;
+                    finfo = sect->outfile;
 #endif
                     info.addr = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
                     DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",

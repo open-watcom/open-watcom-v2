@@ -59,48 +59,17 @@ static  int             Res_Flag;
 
 static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args );
 
-
-static ssize_t ResWrite( int dummy, const void *buff, size_t size )
+static long res_seek( WResFileID handle, long position, int where )
 /*****************************************************************/
-/* redirect wres write to writeload */
-{
-    dummy = dummy;
-    DbgAssert( dummy == Root->outfile->handle );
-    WriteLoad( (void *) buff, size );
-    return( size );
-}
-
-static off_t ResSeek( int handle, off_t position, int where )
-/***********************************************************/
-/* Workaround wres bug */
 {
     if( ( where == SEEK_SET ) && ( handle == hInstance.handle ) ) {
-        return( QLSeek( handle, position + FileShift, where, NULL ) - FileShift );
+        return( lseek( handle, position + FileShift, where ) - FileShift );
     } else {
-        return( QLSeek( handle, position, where, NULL ) );
+        return( lseek( handle, position, where ) );
     }
 }
 
-static int ResClose( int handle )
-/*******************************/
-{
-    return( close( handle ) );
-}
-
-static ssize_t ResRead( int handle, void *buffer, size_t len )
-/************************************************************/
-{
-    return( QRead( handle, buffer, len, NULL ) );
-}
-
-static off_t ResPos( int handle )
-/*******************************/
-{
-    return( QPos( handle ) );
-}
-
-WResSetRtns( ResOpen, ResClose, ResRead, ResWrite, ResSeek, ResPos, ChkLAlloc, LFree );
-
+WResSetRtns( open, close, read, write, res_seek, tell, ChkLAlloc, LFree );
 
 int InitMsg( void )
 {

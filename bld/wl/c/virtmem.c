@@ -49,11 +49,6 @@ typedef enum {
     VIRT_HUGE  = 0x02       // virtual memory block is a huge block
 } virt_flags;
 
-typedef union {
-    unsigned long   spill;
-    void *          addr;
-} spilladdr;
-
 /* this is for allocating very large memory requests (i.e. > 1 megabyte).
    virtual memory locations 0x80000000 and above are split into 1 megabyte
    pages.
@@ -657,7 +652,7 @@ static bool NullInfo( void *dummy, spilladdr loc, unsigned off, unsigned len,
     return TRUE;
 }
 
-void PutNulls( virt_mem stg, unsigned long len )
+void PutInfoNulls( virt_mem stg, unsigned long len )
 /*****************************************************/
 /* copy NULLS in memory or spillfile referenced by stg */
 {

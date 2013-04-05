@@ -204,7 +204,7 @@ void *CarveZeroAlloc( carve_t cv )
 /********************************/
 {
     void *v;
-    unsigned *p;
+    void **p;
 
     if( cv->free_list == NULL ) {
         MakeFreeList( cv, newBlk( cv ), 0 );

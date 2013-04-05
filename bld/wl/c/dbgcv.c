@@ -54,7 +54,8 @@ typedef struct cvmodinfo {
     unsigned_16 numsegs;
 } cvmodinfo;
 
-#pragma pack( 1 )
+
+#include "pushpck1.h"
 
 // Cheesy implementation of sstSrcModule structures.
 // Only allow one file and one segment.
@@ -87,7 +88,7 @@ typedef struct {
 //  unsigned_32         linenumber[];
 } cheesy_mapping_table;
 
-#pragma pack()
+#include "poppck.h"
 
 // global information needed to keep track of line number information
 
@@ -104,18 +105,20 @@ typedef struct {
 // split codeview up into a number of different "sections" to keep track
 // of where we write bits of the information.
 
-enum {
+typedef enum {
     CVSECT_MODULE,
     CVSECT_MISC,
     CVSECT_MODDIR,
     CVSECT_DIRECTORY,
     NUM_CV_SECTS
-};
+} sect_number;
 
 // keeps track of where to write bits of information.  Also used in pass 1
 // to collect sizes of different blocks.
 
-static virt_mem SectAddrs[NUM_CV_SECTS];
+static struct {
+    virt_mem_ptr    u;
+} SectAddrs[NUM_CV_SECTS];
 
 // the codeview information is just one big memory block.  This is the start
 // of it, and the length of it
@@ -132,7 +135,7 @@ void CVInit( void )
 /************************/
 // called just after command file parsing
 {
-    memset( SectAddrs, 0, sizeof( virt_mem ) * NUM_CV_SECTS );
+    memset( SectAddrs, 0, sizeof( SectAddrs ) );
     memset( &LineInfo, 0, sizeof( cvlineinfo ) );
     TempIndex = 0;
 }
@@ -145,28 +148,27 @@ void CVInitModule( mod_entry *obj )
     memset( obj->d.cv, 0, sizeof( cvmodinfo ) );
 }
 
-static void DumpInfo( unsigned sect, void *data, unsigned_32 len )
+static void DumpInfo( sect_number sect, void *data, unsigned len )
 /****************************************************************/
 {
-    PutInfo( SectAddrs[sect], data, len );
-    SectAddrs[sect] += len;
+    PutInfo( SectAddrs[sect].u.vm_ptr, data, len );
+    SectAddrs[sect].u.vm_ptr += len;
 }
 
-static segment GetCVSegment( seg_leader *seg )
-/********************************************/
+static unsigned_16 GetCVSegment( seg_leader *seg )
+/************************************************/
 {
-    int                 index;
-    group_entry *       group;
+    unsigned_16     index;
+    group_entry     *group;
 
     if( ( seg == NULL ) || ( seg->group == NULL ) ) {
         return( 0 );
     }
     if( FmtData.type & ( MK_REAL_MODE | MK_FLAT | MK_ID_SPLIT ) ) {
-        index = 1;
-        for( group = Groups; group != NULL; group = group->next_group ) {
-            if( group == seg->group )
+        for( index = 1, group = Groups; group != NULL; group = group->next_group, ++index ) {
+            if( group == seg->group ) {
                 return( index );
-            index++;
+            }
         }
     } else if( FmtData.type & MK_QNX ) {
         return( ToQNXIndex( seg->seg_addr.seg ) );
@@ -179,14 +181,14 @@ static segment GetCVSegment( seg_leader *seg )
 static void AddSubSection( bool ismodule )
 /****************************************/
 {
-    unsigned    sect;
+    sect_number sect;
 
     if( ismodule ) {
         sect = CVSECT_MODDIR;
     } else {
         sect = CVSECT_DIRECTORY;
     }
-    SectAddrs[sect] += sizeof( cv_directory_entry );
+    SectAddrs[sect].u.vm_offs += sizeof( cv_directory_entry );
 }
 
 static void GenSubSection( sst sect, unsigned_32 size )
@@ -203,10 +205,10 @@ static void GenSubSection( sst sect, unsigned_32 size )
     }
     entry.cb = size;
     if( sect == sstModule ) {
-        entry.lfo = SectAddrs[CVSECT_MODULE] - CVBase;
+        entry.lfo = SectAddrs[CVSECT_MODULE].u.vm_ptr - CVBase;
         DumpInfo( CVSECT_MODDIR, &entry, sizeof( cv_directory_entry ) );
     } else {
-        entry.lfo = SectAddrs[CVSECT_MISC] - CVBase;
+        entry.lfo = SectAddrs[CVSECT_MISC].u.vm_ptr - CVBase;
         DumpInfo( CVSECT_DIRECTORY, &entry, sizeof( cv_directory_entry ) );
     }
 }
@@ -244,12 +246,12 @@ void CVP1ModuleFinished( mod_entry *obj )
     //  required alignment ???
     size = sizeof( cv_sst_module ) + namelen + 1 - sizeof( cv_seginfo );
     size = ROUND_UP( size, 4 );
-    SectAddrs[CVSECT_MODULE] += size;
+    SectAddrs[CVSECT_MODULE].u.vm_offs += size;
     //  required alignment ???
     AddSubSection( TRUE );
     if( obj->d.cv->pubsize > 0 ) {
         AddSubSection( FALSE );
-        SectAddrs[CVSECT_MISC] += sizeof( unsigned_32 );
+        SectAddrs[CVSECT_MISC].u.vm_offs += sizeof( unsigned_32 );
         obj->d.cv->pubsize += sizeof( unsigned_32 );
     }
     if( obj->d.cv->numlines > 0 ) {
@@ -257,9 +259,8 @@ void CVP1ModuleFinished( mod_entry *obj )
         temp = sizeof( cheesy_module_header );
         temp += ROUND_UP( sizeof( cheesy_file_table ) + namelen, 4 );
         temp += sizeof( cheesy_mapping_table );
-        temp += ROUND_UP( obj->d.cv->numlines
-                    * ( sizeof( unsigned_32 ) + sizeof( unsigned_16 ) ), 4 );
-        SectAddrs[CVSECT_MISC] += temp;
+        temp += ROUND_UP( obj->d.cv->numlines * ( sizeof( unsigned_32 ) + sizeof( unsigned_16 ) ), 4 );
+        SectAddrs[CVSECT_MISC].u.vm_offs += temp;
     }
 }
 
@@ -279,8 +280,7 @@ void CVAddModule( mod_entry *obj, section *sect )
         DumpInfo( CVSECT_MISC, &sig, sizeof( unsigned_32 ) );
     }
     namelen = strlen( obj->name );
-    size = sizeof( cv_sst_module ) + namelen + 1
-                + ( obj->d.cv->numsegs - 1 ) * sizeof( cv_seginfo );
+    size = sizeof( cv_sst_module ) + namelen + 1 + ( obj->d.cv->numsegs - 1 ) * sizeof( cv_seginfo );
     //  begin padding required ???
     size = ROUND_UP( size, 4 );
     //  end padding required ???
@@ -290,8 +290,8 @@ void CVAddModule( mod_entry *obj, section *sect )
     mod.cSeg = obj->d.cv->numsegs;
     mod.Style = CV_DEBUG_STYLE;
     DumpInfo( CVSECT_MODULE, &mod, sizeof( cv_sst_module ) - sizeof( cv_seginfo ) );
-    obj->d.cv->segloc = SectAddrs[CVSECT_MODULE];
-    SectAddrs[CVSECT_MODULE] += sizeof( cv_seginfo ) * obj->d.cv->numsegs;
+    obj->d.cv->segloc = SectAddrs[CVSECT_MODULE].u.vm_ptr;
+    SectAddrs[CVSECT_MODULE].u.vm_ptr += sizeof( cv_seginfo ) * obj->d.cv->numsegs;
     DumpInfo( CVSECT_MODULE, &namelen, 1 );
     DumpInfo( CVSECT_MODULE, obj->name, namelen );
 }
@@ -310,8 +310,8 @@ static int RelocCompare( virt_mem a, virt_mem b )
 static void SwapRelocs( virt_mem a, virt_mem b )
 /**********************************************/
 {
-    unsigned    diffa;
-    unsigned    diffb;
+    virt_mem    diffa;
+    virt_mem    diffb;
     unsigned_16 a16;
     unsigned_16 b16;
     unsigned_32 a32;
@@ -321,12 +321,8 @@ static void SwapRelocs( virt_mem a, virt_mem b )
     GET32INFO( b, b32 );
     PUT32INFO( a, b32 );
     PUT32INFO( b, a32 );
-    diffa = ( a - LineInfo.offbase ) / sizeof( unsigned_32 );
-    diffa *= sizeof( unsigned_16 );
-    diffa += LineInfo.numbase;
-    diffb = ( b - LineInfo.offbase ) / sizeof( unsigned_32 );
-    diffb *= sizeof( unsigned_16 );
-    diffb += LineInfo.numbase;
+    diffa = LineInfo.numbase + ( unsigned_32 )( ( ( a - LineInfo.offbase ) / sizeof( unsigned_32 ) ) * sizeof( unsigned_16 ) );
+    diffb = LineInfo.numbase + ( unsigned_32 )( ( ( b - LineInfo.offbase ) / sizeof( unsigned_32 ) ) * sizeof( unsigned_16 ) );
     GET16INFO( diffa, a16 );
     GET16INFO( diffb, b16 );
     PUT16INFO( diffa, b16 );
@@ -338,8 +334,7 @@ static void SortRelocs( void )
 {
     LineInfo.offbase -= CurrMod->d.cv->numlines * sizeof( unsigned_32 );
     LineInfo.numbase -= CurrMod->d.cv->numlines * sizeof( unsigned_16 );
-    VMemQSort( LineInfo.offbase, CurrMod->d.cv->numlines, sizeof( unsigned_32 ),
-                SwapRelocs, RelocCompare );
+    VMemQSort( LineInfo.offbase, CurrMod->d.cv->numlines, sizeof( unsigned_32 ), SwapRelocs, RelocCompare );
 }
 
 static void GenSrcModHeader( void )
@@ -401,6 +396,7 @@ void CVAddLocal( seg_leader *seg, offset length )
 /*******************************************************/
 // called during pass 1 final segment processing.
 {
+    length = length;
     if( IS_DBG_INFO( seg ) ) {
         AddSubSection( FALSE );
     }
@@ -422,7 +418,7 @@ void CVAddGlobal( symbol *sym )
         }
         size = ROUND_UP( size + strlen( sym->name ) + 1, 4 );
         CurrMod->d.cv->pubsize += size;
-        SectAddrs[CVSECT_MISC] += size;
+        SectAddrs[CVSECT_MISC].u.vm_offs += size;
     }
 }
 
@@ -479,13 +475,13 @@ void CVGenLines( lineinfo *info )
 /*******************************/
 // called during pass 2 linnum processing
 {
-    ln_off_pair UNALIGN *pair;
-    unsigned_32         temp_off;
-    unsigned_16         temp_num;
-    offset              adjust;
-    unsigned long       cvsize;
-    unsigned            size;
-    segdata             *seg;
+    ln_off_pair _WCUNALIGNED    *pair;
+    unsigned_32                 temp_off;
+    unsigned_16                 temp_num;
+    offset                      adjust;
+    unsigned long               cvsize;
+    unsigned                    size;
+    segdata                     *seg;
 
     seg = info->seg;
     size = info->size & ~LINE_IS_32BIT;
@@ -495,16 +491,15 @@ void CVGenLines( lineinfo *info )
     adjust = seg->a.delta + seg->u.leader->seg_addr.off;
     if( LineInfo.offbase == 0 ) { // this is our first time through.
         LineInfo.seg = GetCVSegment( seg->u.leader );
-        LineInfo.linestart = SectAddrs[CVSECT_MISC];
+        LineInfo.linestart = SectAddrs[CVSECT_MISC].u.vm_ptr;
         cvsize = sizeof( cheesy_module_header ) + sizeof( cheesy_mapping_table )
             + ROUND_UP( sizeof( cheesy_file_table ) + strlen( CurrMod->name ), 4 );
-        LineInfo.offbase = SectAddrs[CVSECT_MISC] + cvsize;
-        LineInfo.numbase = LineInfo.offbase
-                                + CurrMod->d.cv->numlines * sizeof( unsigned_32 );
+        LineInfo.offbase = SectAddrs[CVSECT_MISC].u.vm_ptr + cvsize;
+        LineInfo.numbase = LineInfo.offbase + CurrMod->d.cv->numlines * sizeof( unsigned_32 );
         cvsize += CurrMod->d.cv->numlines * sizeof( unsigned_32 );
         cvsize += ROUND_UP( CurrMod->d.cv->numlines * sizeof( unsigned_16 ), 4 );
         GenSubSection( sstSrcModule, cvsize );
-        SectAddrs[CVSECT_MISC] += cvsize;
+        SectAddrs[CVSECT_MISC].u.vm_ptr += cvsize;
         LineInfo.range.start = adjust;
         LineInfo.range.end = adjust + seg->length;
     } else {
@@ -558,9 +553,8 @@ static void CVAddAddrInit( segdata *sdata, void *cookie )
     cookie = cookie;
 }
 
-static void CVAddAddrAdd( segdata *sdata, offset delta, offset size,
-                          void *cookie, bool isnewmod )
-/******************************************************************/
+static void CVAddAddrAdd( segdata *sdata, offset delta, offset size, void *cookie, bool isnewmod )
+/************************************************************************************************/
 {
     delta = delta;
     size = size;
@@ -568,7 +562,7 @@ static void CVAddAddrAdd( segdata *sdata, offset delta, offset size,
     if( !isnewmod )
         return;
     sdata->o.mod->d.cv->numsegs++;
-    SectAddrs[CVSECT_MODULE] += sizeof( cv_seginfo );
+    SectAddrs[CVSECT_MODULE].u.vm_offs += sizeof( cv_seginfo );
 }
 
 void CVAddAddrInfo( seg_leader *seg )
@@ -588,9 +582,8 @@ static void CVGenAddrInit( segdata *sdata, void *_info )
     info->offset = sdata->u.leader->seg_addr.off + sdata->a.delta;
 }
 
-static void CVGenAddrAdd( segdata *sdata, offset delta, offset size,
-                          void *_info, bool isnewmod )
-/******************************************************************/
+static void CVGenAddrAdd( segdata *sdata, offset delta, offset size, void *_info, bool isnewmod )
+/***********************************************************************************************/
 {
     cv_seginfo *info = _info;
     if( !isnewmod )
@@ -618,7 +611,7 @@ void CVDefClass( class_entry *class, unsigned_32 size )
 
     if( ( class->flags & CLASS_DEBUG_INFO ) == CLASS_DWARF )
         return;
-    SectAddrs[CVSECT_MISC] += size;
+    SectAddrs[CVSECT_MISC].u.vm_offs += size;
     group = AllocGroup( AutoGrpName, &DBIGroups );
     group->g.class = class;
     group->grp_addr.seg = 0;
@@ -641,9 +634,9 @@ static void DefLocal( void *_sdata )
         }
         CurrMod = sdata->o.mod;
         GenSubSection( sect, sdata->length );
-        CopyInfo( SectAddrs[CVSECT_MISC], sdata->data, sdata->length );
-        sdata->data = SectAddrs[CVSECT_MISC];   // FIXME: inefficient
-        SectAddrs[CVSECT_MISC] += sdata->length;
+        CopyInfo( SectAddrs[CVSECT_MISC].u.vm_ptr, sdata->u1.vm_ptr, sdata->length );
+        sdata->u1.vm_ptr = SectAddrs[CVSECT_MISC].u.vm_ptr;   // FIXME: inefficient
+        SectAddrs[CVSECT_MISC].u.vm_ptr += sdata->length;
     }
 }
 
@@ -669,24 +662,22 @@ void CVAddrStart( void )
     group_entry *group;
 
     AddSubSection( FALSE );     // for sstSegMap
-    numentries = ( SectAddrs[CVSECT_MODDIR] + SectAddrs[CVSECT_DIRECTORY] )
-                        / sizeof( cv_directory_entry );
-    SectAddrs[CVSECT_MISC] += sizeof( cv_sst_seg_map )
-                            + ( NumGroups - 1 ) * sizeof( seg_desc );
-    SectAddrs[CVSECT_MODDIR] += sizeof( cv_subsection_directory );
+    numentries = ( SectAddrs[CVSECT_MODDIR].u.vm_offs + SectAddrs[CVSECT_DIRECTORY].u.vm_offs ) / sizeof( cv_directory_entry );
+    SectAddrs[CVSECT_MISC].u.vm_offs += sizeof( cv_sst_seg_map ) + ( NumGroups - 1 ) * sizeof( seg_desc );
+    SectAddrs[CVSECT_MODDIR].u.vm_offs += sizeof( cv_subsection_directory );
     CVSize = 2 * sizeof( cv_trailer );
     for( index = 0; index < NUM_CV_SECTS; index++ ) {
-        CVSize += SectAddrs[index];
+        CVSize += SectAddrs[index].u.vm_offs;
     }
     CVBase = DBIAlloc( CVSize );
     currpos = CVBase + sizeof( cv_trailer );
     for( index = 0; index < NUM_CV_SECTS; index++ ) {
-        size = SectAddrs[index];
-        SectAddrs[index] = currpos;
+        size = SectAddrs[index].u.vm_offs;
+        SectAddrs[index].u.vm_ptr = currpos;
         currpos += size;
     }
     memcpy( start.sig, CV4_NB05, CV_SIG_SIZE );
-    start.offset = SectAddrs[CVSECT_MODDIR] - CVBase;
+    start.offset = SectAddrs[CVSECT_MODDIR].u.vm_ptr - CVBase;
     PutInfo( CVBase, &start, sizeof( cv_trailer ) );
     start.offset = CVSize;
     PutInfo( CVBase + CVSize - sizeof( cv_trailer ), &start, sizeof( cv_trailer ) );
@@ -714,8 +705,7 @@ void CVFini( section *sect )
     if( sect != Root )
         return;
     CurrMod = NULL;
-    GenSubSection( sstSegMap, sizeof( cv_sst_seg_map )
-                            + ( NumGroups - 1 ) * sizeof( seg_desc ) );
+    GenSubSection( sstSegMap, sizeof( cv_sst_seg_map ) + ( NumGroups - 1 ) * sizeof( seg_desc ) );
     map.cSeg = NumGroups;
     map.cSegLog = NumGroups;
     DumpInfo( CVSECT_MISC, &map, sizeof( cv_sst_seg_map ) - sizeof( seg_desc ) );

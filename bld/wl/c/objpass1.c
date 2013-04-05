@@ -132,8 +132,8 @@ void StoreInfoData( comdat_info *info )
 {
     virt_mem    temp;
 
-    info->sdata->data = AllocStg( info->sdata->length );
-    temp = info->sdata->data;
+    info->sdata->u1.vm_ptr = AllocStg( info->sdata->length );
+    temp = info->sdata->u1.vm_ptr;
     RingLookup( info->pieces, StoreCDatData, &temp );
 }
 
@@ -164,15 +164,15 @@ static bool CheckMemPieceDiff( void *_piece, void *_loc )
 static bool CheckSameData( symbol *sym, comdat_info *info )
 /*********************************************************/
 {
-    virt_mem        temp;
+    virt_mem        vmem;
     char            *data;
     comdat_piece    *piece;
 
-    temp = sym->p.seg->data;
     if( sym->mod->modinfo & MOD_DONE_PASS_1 ) {
-        piece = RingLookup( info->pieces, CheckVMemPieceDiff, &temp );
+        vmem = sym->p.seg->u1.vm_ptr;
+        piece = RingLookup( info->pieces, CheckVMemPieceDiff, &vmem );
     } else {
-        data = GetSegContents( sym->p.seg, temp );
+        data = GetSegContents( sym->p.seg, sym->p.seg->u1.vm_offs );
         piece = RingLookup( info->pieces, CheckMemPieceDiff, &data );
     }
     if( piece == NULL ) {       // found a match
@@ -247,18 +247,15 @@ static void DoIncSymbol( void *_sym )
         }
         mainsym = SymOp( flags, sym->name, strlen( sym->name ) );
         if( IS_SYM_NICOMDEF( sym ) ) {
-            MakeCommunalSym( mainsym, sym->p.cdefsize,
-                                (sym->info & SYM_FAR_COMMUNAL) != 0,
-                                IS_SYM_COMM32( sym ) );
+            MakeCommunalSym( mainsym, sym->p.cdefsize, (sym->info & SYM_FAR_COMMUNAL) != 0, IS_SYM_COMM32( sym ) );
         } else if( IS_SYM_COMDAT( sym ) ) {
             if( sym->info & SYM_HAS_DATA ) {
                 data = GetAltdefContents( sym->p.seg );
             } else {
-                data = GetSegContents( sym->p.seg, sym->p.seg->data );
+                data = GetSegContents( sym->p.seg, sym->p.seg->u1.vm_offs );
             }
             sym->p.seg->isdead = FALSE;
-            DefineComdat( sym->p.seg, mainsym, sym->addr.off,
-                          sym->info & SYM_CDAT_SEL_MASK, data );
+            DefineComdat( sym->p.seg, mainsym, sym->addr.off, sym->info & SYM_CDAT_SEL_MASK, data );
         } else if( !(mainsym->info & SYM_DEFINED) )  {
             DoSavedImport( sym );       // FIXME can lose defs here.
         }
@@ -272,9 +269,7 @@ static void DoIncSymbol( void *_sym )
         if( IS_SYM_IMPORTED( sym ) ) {
             DoSavedImport( sym );
         } else if( IS_SYM_COMDAT( sym ) ) {
-            DefineComdat( sym->p.seg, sym, sym->addr.off,
-                          sym->info & SYM_CDAT_SEL_MASK,
-                          GetSegContents(sym->p.seg, sym->p.seg->data) );
+            DefineComdat( sym->p.seg, sym, sym->addr.off, sym->info & SYM_CDAT_SEL_MASK, GetSegContents(sym->p.seg, sym->p.seg->u1.vm_offs) );
         }
         if( sym->info & SYM_EXPORTED ) {
             DoSavedExport( sym );
@@ -285,11 +280,11 @@ static void DoIncSymbol( void *_sym )
 unsigned long IncPass1( void )
 /***********************************/
 {
-    segdata     *seglist;
-    segdata     *seg;
-    symbol      *publist;
-    virt_mem    dataoff;
-    unsigned    relocs;
+    segdata         *seglist;
+    segdata         *seg;
+    symbol          *publist;
+    virt_mem_size   dataoff;
+    unsigned        relocs;
 
     seglist = CurrMod->segs;
     CurrMod->segs = NULL;
@@ -298,11 +293,11 @@ unsigned long IncPass1( void )
         seg = Ring2Pop( &seglist );
         if( seg == NULL )
             break;
-        dataoff = seg->data;
+        dataoff = seg->u1.vm_offs;
         DoAllocateSegment( seg, seg->o.clname );
         seg->o.mod = CurrMod;
         if( !seg->isuninit && !seg->isdead && !seg->iscdat ) {
-            PutInfo( seg->data, GetSegContents(seg, dataoff), seg->length );
+            PutInfo( seg->u1.vm_ptr, GetSegContents( seg, dataoff ), seg->length );
             seg->u.leader->info |= SEG_LXDATA_SEEN;
         }
     }
@@ -378,9 +373,25 @@ void DoIncGroupDefs( void )
     IncGroupDefs = NULL;
 }
 
+#if 0
+void Set64BitMode( void )
+/******************************/
+// make sure that the executable format is a 64-bit format.
+{
+    LinkState |= FMT_SEEN_64_BIT;
+    if( !HintFormat( MK_ALLOW_64 ) ) {
+        if( !(ObjFormat & FMT_TOLD_XXBIT) ) {
+            ObjFormat |= FMT_TOLD_XXBIT;
+            LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
+                        CurrMod->f.source->file->name, 64 );
+        }
+    }
+}
+#endif
+
 void Set32BitMode( void )
 /******************************/
-// make sure that the executable format is a 386 format.
+// make sure that the executable format is a 32-bit format.
 {
     LinkState |= FMT_SEEN_32_BIT;
     if( !HintFormat( MK_ALLOW_32 ) ) {
@@ -442,7 +453,7 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
         sdata->u.leader->info |= SEG_OVERLAYED;
     }
     if( !sdata->isdead && !sdata->isuninit && !sdata->iscdat ) {
-        sdata->data = AllocStg( sdata->length );
+        sdata->u1.vm_ptr = AllocStg( sdata->length );
     }
 }
 
@@ -737,6 +748,9 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
     bool            frame_ok;
     sym_info        sym_type;
 
+    if( seg != NULL ) {
+        frame = 0;
+    }
     name_len = strlen( sym->name );
     if( sym->addr.seg != UNDEFINED && !IS_SYM_COMMUNAL( sym ) ) {
         if( seg != NULL && sym->p.seg != NULL ) {
@@ -972,12 +986,12 @@ void DefineComdat( segdata *sdata, symbol *sym, offset value,
         sym->info |= select;
         SetComdatSym( sym, sdata );
         sym->addr.off += value;
-        sdata->data = AllocStg( sdata->length );
+        sdata->u1.vm_ptr = AllocStg( sdata->length );
 
         if(NULL == data)
-            PutNulls(sdata->data, sdata->length);
+            PutInfoNulls( sdata->u1.vm_ptr, sdata->length );
         else
-            PutInfo( sdata->data, data, sdata->length );
+            PutInfo( sdata->u1.vm_ptr, data, sdata->length );
     }
 }
 
@@ -1211,9 +1225,8 @@ bool SeenDLLRecord( void )
     }
 }
 
-void HandleImport( length_name *intname, length_name *modname,
-                          length_name *extname, unsigned long ordinal )
-/*********************************************************************/
+void HandleImport( length_name *intname, length_name *modname, length_name *extname, ordinal_t ordinal )
+/******************************************************************************************************/
 // handle the import coment record
 {
     symbol      *sym;
@@ -1248,9 +1261,8 @@ static void ExportSymbol( length_name *expname )
     AddNameTable( expname->name, expname->len, TRUE, &FmtData.u.nov.exp.export );
 }
 
-void HandleExport( length_name *expname, length_name *intname,
-                          unsigned flags, unsigned ordinal )
-/*******************************************************************/
+void HandleExport( length_name *expname, length_name *intname, unsigned flags, ordinal_t ordinal )
+/************************************************************************************************/
 {
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
         MSExportKeyword( expname, intname, flags, ordinal );

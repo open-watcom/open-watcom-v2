@@ -41,8 +41,8 @@
 #include "ideentry.h"
 #include "spillio.h"
 
-static char *           TFileName;
-static unsigned long    TmpFSize;
+static char             *TFileName;
+static virt_mem_size    TmpFSize;
 
 void InitSpillFile( void )
 /*******************************/
@@ -105,10 +105,10 @@ f_handle OpenTempFile( char **fname )
     return QOpenRW( *fname );
 }
 
-unsigned long SpillAlloc( unsigned amt )
-/*********************************************/
+virt_mem_size SpillAlloc( unsigned amt )
+/**************************************/
 {
-    unsigned long           stg;
+    virt_mem_size           stg;
 
     if( TempFile == NIL_FHANDLE ) {
         TempFile = OpenTempFile( &TFileName );
@@ -122,24 +122,22 @@ unsigned long SpillAlloc( unsigned amt )
     return( stg + 1 );  /* add 1 to prevent a NULL handle */
 }
 
-void SpillNull( unsigned long base, unsigned off, unsigned size )
-/**********************************************************************/
+void SpillNull( virt_mem_size base, unsigned off, unsigned size )
+/***************************************************************/
 {
     QSeek( TempFile, base + off - 1, TFileName );
     WriteNulls( TempFile, size, TFileName );
 }
 
-void SpillWrite( unsigned long base, unsigned off, void *mem,
-                                                          unsigned size )
-/***********************************************************************/
+void SpillWrite( virt_mem_size base, unsigned off, void *mem, unsigned size )
+/***************************************************************************/
 {
     QSeek( TempFile, base + off - 1, TFileName );
     QWrite( TempFile, mem, size, TFileName );
 }
 
-void SpillRead( unsigned long base, unsigned off, void *mem,
-                                                         unsigned size )
-/**********************************************************************/
+void SpillRead( virt_mem_size base, unsigned off, void *mem, unsigned size )
+/**************************************************************************/
 {
     QSeek( TempFile, base + off - 1, TFileName );
     QRead( TempFile, mem, size, TFileName );
@@ -158,4 +156,3 @@ void CloseSpillFile( void )
         TempFile = NIL_FHANDLE;
     }
 }
-

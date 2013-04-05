@@ -561,7 +561,7 @@ void StoreFixup( offset off, fix_type type, frame_spec *frame,
     if( CurrRec.data != NULL ) {
         memcpy( buff, CurrRec.data + off, size );
     } else {
-        ReadInfo( CurrRec.seg->data + save.u.fixup.off, buff, size );
+        ReadInfo( CurrRec.seg->u1.vm_ptr + save.u.fixup.off, buff, size );
     }
     fix.type = type;
     fix.data = buff;
@@ -585,7 +585,7 @@ void StoreFixup( offset off, fix_type type, frame_spec *frame,
     if( CurrRec.data != NULL ) {
         memcpy( CurrRec.data + off, buff, size );
     } else {
-        PutInfo( CurrRec.seg->data + save.u.fixup.off, buff, size );
+        PutInfo( CurrRec.seg->u1.vm_ptr + save.u.fixup.off, buff, size );
     }
 }
 
@@ -613,14 +613,14 @@ unsigned IncSaveRelocs( void *_save )
         targ.u.ptr = save->u.fixup.target;
         datasize = CalcFixupSize( fixtype );
         if( fixtype & FIX_ADDEND_ZERO ) {
-            PutNulls( LastSegData->data + save->u.fixup.off, datasize  );
+            PutInfoNulls( LastSegData->u1.vm_ptr + save->u.fixup.off, datasize  );
         } else {
             if( FRAME_HAS_DATA( FIX_GET_FRAME( fixtype ) ) ) {
                 data = (char *)save + sizeof( fixupf_t );
             } else {
                 data = (char *)save + sizeof( fixup_t );
             }
-            PutInfo( LastSegData->data + save->u.fixup.off, data, datasize  );
+            PutInfo( LastSegData->u1.vm_ptr + save->u.fixup.off, data, datasize  );
         }
         TraceFixup( fixtype, &targ );
     }
@@ -1684,7 +1684,7 @@ static void Relocate( offset off, fix_data *fix, frame_spec *targ )
         datasize += shift;
         fix->data += 2;
     }
-    ReadInfo( CurrRec.seg->data + off - shift, fix->data - shift, datasize );
+    ReadInfo( CurrRec.seg->u1.vm_ptr + off - shift, fix->data - shift, datasize );
 
     if( !CheckSpecials( fix, targ ) ) {
         PatchData( fix );
@@ -1692,5 +1692,5 @@ static void Relocate( offset off, fix_data *fix, frame_spec *targ )
             FarCallOpt( fix );
         FmtReloc( fix, targ );
     }
-    PutInfo( CurrRec.seg->data + off - shift, fix->data - shift, datasize );
+    PutInfo( CurrRec.seg->u1.vm_ptr + off - shift, fix->data - shift, datasize );
 }

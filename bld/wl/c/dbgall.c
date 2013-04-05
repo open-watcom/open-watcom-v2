@@ -467,8 +467,8 @@ void DBILineWalk( lineinfo *lines, void (*cbfn)( lineinfo * ) )
     RingLookup( lines, (int(*)(void *,void *))DoLineWalk, cbfn );
 }
 
-virt_mem DBIAlloc( unsigned long size )
-/********************************************/
+virt_mem DBIAlloc( virt_mem_size size )
+/*************************************/
 // handy virtual memory allocation routine used inside the debug info generators
 {
     if( size == 0 )

@@ -351,16 +351,6 @@ f_handle TempFileOpen( char *name )
     return( NSOpen( name, O_RDWR ) );
 }
 
-int ResOpen( const char *path, int access, ... )
-/*****************************************************/
-/* a simple open cover routine for wres stuff */
-{
-    int     perm;
-
-    perm = 0666;
-    return( open( path, access, perm ) );
-}
-
 int QMakeFileName( char **pos, char *name, char *fname )
 /*************************************************************/
 {
@@ -444,12 +434,12 @@ time_t QFModTime( int handle )
     return buf.st_mtime;
 }
 
-char WaitForKey( void )
+int WaitForKey( void )
 /****************************/
 {
     struct termios  old;
     struct termios  new;
-    char            result;
+    unsigned char   result;
 
     tcgetattr( 0, &old );
     new = old;
@@ -459,7 +449,7 @@ char WaitForKey( void )
     tcsetattr( 0, TCSANOW, &new );
     read( 0, &result, 1 );
     tcsetattr( 0, TCSANOW, &old );
-    return result;
+    return( result );
 }
 
 void GetCmdLine( char *buff )

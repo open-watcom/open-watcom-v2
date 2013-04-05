@@ -80,8 +80,8 @@ static char             *IncStrTab;
 #define SYM_CARVE_SIZE          (32*1024)
 
 static void BufWritePermFile( perm_write_info *info, void *data, unsigned len );
-static void DoWritePermFile( perm_write_info *info, char *data, unsigned len,
-                             bool isvmem );
+static void U32WritePermFile( perm_write_info *info, unsigned_32 data );
+static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bool isvmem );
 
 void ResetPermData( void )
 /******************************/
@@ -143,7 +143,7 @@ static void MarkSymbol( void *sym )
 static void *GetString( perm_write_info *info, char *str )
 /*********************************************************/
 {
-    unsigned idx;
+    unsigned    idx;
 
     idx = GetStringTableSize( &info->strtab );
     AddStringStringTable( &info->strtab, str );
@@ -155,8 +155,8 @@ static bool WriteLeaderName( void *_leader, void *info )
 {
     seg_leader *leader = _leader;
 
-    BufWritePermFile( info, &leader->class->name, sizeof(unsigned_32) );
-    BufWritePermFile( info, &leader->segname, sizeof(unsigned_32) );
+    U32WritePermFile( info, (unsigned_32)leader->class->name );
+    U32WritePermFile( info, (unsigned_32)leader->segname );
     return( FALSE );
 }
 
@@ -165,16 +165,15 @@ static unsigned WriteGroups( perm_write_info *info )
 {
     group_entry *group;
     unsigned    num;
-    unsigned_32 count;
+//    unsigned_32 count;
 
     num = 0;
     for( group = Groups; group != NULL; group = group->next_group ) {
         if( !group->isautogrp && group->leaders != NULL ) {
             num++;
-            count = Ring2Count( group->leaders );
-            BufWritePermFile( info, &count, sizeof(unsigned_32) );
+            U32WritePermFile( info, (unsigned_32)Ring2Count( group->leaders ) );
             group->sym->name = GetString( info, group->sym->name );
-            BufWritePermFile( info, &group->sym->name, sizeof(unsigned_32) );
+            U32WritePermFile( info, (unsigned_32)group->sym->name );
             Ring2Lookup( group->leaders, WriteLeaderName, info );
         }
     }
@@ -184,11 +183,8 @@ static unsigned WriteGroups( perm_write_info *info )
 static bool CheckFree( bool isfree, perm_write_info *info )
 /*********************************************************/
 {
-    unsigned_32 dummy;
-
     if( isfree ) {
-        dummy = CARVE_INVALID_INDEX;
-        BufWritePermFile( info, &dummy, sizeof(unsigned_32) );
+        U32WritePermFile( info, CARVE_INVALID_INDEX );
     }
     return( isfree );
 }
@@ -226,8 +222,7 @@ static void FixSymAddr( void *_sym )
 {
     symbol *sym = _sym;
 
-    if( !IS_SYM_IMPORTED(sym) && !(sym->info & SYM_DEAD) && sym->addr.off > 0
-                                                     && sym->p.seg != NULL ) {
+    if( !IS_SYM_IMPORTED(sym) && !(sym->info & SYM_DEAD) && sym->addr.off > 0 && sym->p.seg != NULL ) {
         sym->addr.off -= sym->p.seg->u.leader->seg_addr.off;
         sym->addr.off -= sym->p.seg->a.delta;
     }
@@ -324,7 +319,7 @@ static void PrepNameTable( name_list *list, perm_write_info *info )
 
     while( list != NULL ) {
         savename = list->name;
-        list->name = (char *) GetStringTableSize( &info->strtab );
+        list->name = (char *)GetStringTableSize( &info->strtab );
         AddBufferStringTable( &info->strtab, savename, list->len + 1 );
         list = list->next;
     }
@@ -370,11 +365,16 @@ static void PrepClasses( perm_write_info *info )
     }
 }
 
-static void VMemWritePermFile( perm_write_info *info, virt_mem data,
-                               unsigned len )
-/******************************************************************/
+static void VMemWritePermFile( perm_write_info *info, virt_mem data, unsigned len )
+/*********************************************************************************/
 {
-    DoWritePermFile( info, (void *) data, len, TRUE );
+    DoWritePermFile( info, (void *)data, len, TRUE );
+}
+
+static void U32WritePermFile( perm_write_info *info, unsigned_32 data )
+/*********************************************************************/
+{
+    DoWritePermFile( info, (char *)&data, sizeof( data ), FALSE );
 }
 
 static void BufWritePermFile( perm_write_info *info, void *data, unsigned len )
@@ -383,9 +383,8 @@ static void BufWritePermFile( perm_write_info *info, void *data, unsigned len )
     DoWritePermFile( info, data, len, FALSE );
 }
 
-static void DoWritePermFile( perm_write_info *info, char *data, unsigned len,
-                             bool isvmem )
-/***************************************************************************/
+static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bool isvmem )
+/*****************************************************************************************/
 {
     unsigned modpos;
     unsigned adjust;
@@ -492,16 +491,13 @@ static void PrepStartValue( inc_file_header *hdr )
 /************************************************/
 {
     if( StartInfo.mod != NULL && !StartInfo.user_specd ) {
-        hdr->startmodidx = (unsigned_32) CarveGetIndex( CarveModEntry,
-                                                        StartInfo.mod );
+        hdr->startmodidx = (unsigned_32) CarveGetIndex( CarveModEntry, StartInfo.mod );
         if( StartInfo.type == START_IS_SDATA ) {
             hdr->flags |= INC_FLAG_START_SEG;
-            hdr->startidx = (unsigned_32) CarveGetIndex( CarveSegData,
-                                                        StartInfo.targ.sdata );
+            hdr->startidx = (unsigned_32) CarveGetIndex( CarveSegData, StartInfo.targ.sdata );
         } else {
             DbgAssert( StartInfo.type == START_IS_SYM );
-            hdr->startidx = (unsigned_32) CarveGetIndex( CarveSymbol,
-                                                        StartInfo.targ.sym );
+            hdr->startidx = (unsigned_32) CarveGetIndex( CarveSymbol, StartInfo.targ.sym );
         }
         hdr->startoff = StartInfo.off;
     } else {
@@ -519,8 +515,8 @@ static void WriteAltData( perm_write_info *info )
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
         if( sym->info & SYM_IS_ALTDEF && sym->info & SYM_HAS_DATA ) {
             savepos = info->currpos;
-            VMemWritePermFile( info, sym->p.seg->data, sym->p.seg->length );
-            sym->p.seg->data = savepos;
+            VMemWritePermFile( info, sym->p.seg->u1.vm_ptr, sym->p.seg->length );
+            sym->p.seg->u1.vm_offs = savepos;
         }
     }
     FlushPermBuf( info );
@@ -531,13 +527,12 @@ static unsigned_32 WriteLibList( perm_write_info *info, bool douser )
 {
     unsigned_32 numlibs;
     file_list   *file;
-    void        *data;
 
     numlibs = 0;
     for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
         if( !(((file->status & STAT_USER_SPECD) != 0) ^ douser) ) {
-            data = GetString( info, file->file->name );
-            BufWritePermFile( info, &data, sizeof(void *) );
+            U32WritePermFile( info, (unsigned_32)GetString( info, file->file->name ) );
+            BufWritePermFile( info, &file->priority, sizeof( file->priority ) );
             numlibs++;
         }
     }
@@ -573,10 +568,8 @@ void WritePermData( void )
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
         PrepNameTable( FmtData.u.os2.mod_ref_list, &info );
         PrepNameTable( FmtData.u.os2.imp_tab_list, &info );
-        hdr.numdllsyms = WriteSmallCarve( CarveDLLInfo, MarkDLLInfo,
-                                          WriteDLLInfo, &info );
-        hdr.numexports = WriteSmallCarve( CarveExportInfo, MarkExportInfo,
-                                          WriteExportInfo, &info );
+        hdr.numdllsyms = WriteSmallCarve( CarveDLLInfo, MarkDLLInfo, WriteDLLInfo, &info );
+        hdr.numexports = WriteSmallCarve( CarveExportInfo, MarkExportInfo, WriteExportInfo, &info );
     }
     FlushPermBuf( &info );
     WriteHashPointers( &info );
@@ -662,22 +655,15 @@ static void ReadGroups( unsigned count, perm_read_info *info )
     }
 }
 
-static void ReadLibList( unsigned count, libnamelist **head,
-                         perm_read_info *info )
-/**********************************************************/
+static void ReadLibList( unsigned count, libnamelist **head, perm_read_info *info )
+/*********************************************************************************/
 {
     libnamelist         *list;
-    char                *name;
-    unsigned            namelen;
-    unsigned_32         nameidx;
 
     while( count > 0 ) {
-        nameidx = BufReadU32( info );
-        name = MapString( (char *) nameidx );
-        namelen = strlen( name );
-        _ChkAlloc( list, sizeof(libnamelist) + namelen );
-        memcpy( list->name, name, namelen + 1 );
-        list->namelen = namelen;
+        _ChkAlloc( list, sizeof( libnamelist ) );
+        list->name = MapString( (char *)BufReadU32( info ) );
+        BufRead( info, &list->priority, sizeof( lib_priority ) );
         LinkList( head, list );
         count--;
     }
@@ -779,8 +765,7 @@ static void RebuildSymbol( void *_sym, void *info )
 static void ReadBlockInfo( carve_t cv, void *blk, void *info )
 /************************************************************/
 {
-    QRead( ((perm_read_info *)info)->incfhdl, CarveBlockData(blk),
-           CarveBlockSize(cv), IncFileName);
+    QRead( ((perm_read_info *)info)->incfhdl, CarveBlockData(blk), CarveBlockSize(cv), IncFileName);
 }
 
 static void SmallFreeCheck( void *data, void *_info )
@@ -844,7 +829,7 @@ static void ReadBinary( char **buf, unsigned_32 nameidx, time_t modtime )
     f_handle            hdl;
     unsigned long       size;
 
-    fname = MapString( (char *) nameidx );
+    fname = MapString( (char *)nameidx );
     hdl = QObjOpen( fname );
     if( hdl == NIL_FHANDLE ) {
         return;
@@ -867,12 +852,10 @@ static void ReadStartInfo( inc_file_header *hdr )
         StartInfo.mod = CarveMapIndex( CarveModEntry, (void *)hdr->startmodidx);
         if( hdr->flags & INC_FLAG_START_SEG ) {
             StartInfo.type = START_IS_SDATA;
-            StartInfo.targ.sdata = CarveMapIndex( CarveSegData,
-                                                    (void *)hdr->startidx );
+            StartInfo.targ.sdata = CarveMapIndex( CarveSegData, (void *)hdr->startidx );
         } else {
             StartInfo.type = START_IS_SYM;
-            StartInfo.targ.sym = CarveMapIndex( CarveSymbol,
-                                                    (void *)hdr->startidx );
+            StartInfo.targ.sym = CarveMapIndex( CarveSymbol, (void *)hdr->startidx );
         }
         StartInfo.off = hdr->startoff;
     }
@@ -899,8 +882,7 @@ void ReadPermData( void )
     if( hdr->hdrsize > SECTOR_SIZE ) {
         _LnkReAlloc( info.buffer, info.buffer, hdr->hdrsize );
         hdr = (inc_file_header *) info.buffer;  /* in case realloc moved it*/
-        QRead( info.incfhdl, info.buffer + SECTOR_SIZE,
-                        hdr->hdrsize - SECTOR_SIZE, IncFileName );
+        QRead( info.incfhdl, info.buffer + SECTOR_SIZE, hdr->hdrsize - SECTOR_SIZE, IncFileName );
     }
     info.currpos = sizeof(inc_file_header);
     CarveRestart( CarveModEntry, hdr->mods.num );
@@ -940,8 +922,7 @@ void ReadPermData( void )
     ReadLibList( hdr->numdeflibs, &SavedDefLibs, &info );
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
         RebuildSmallCarve(CarveDLLInfo, hdr->numdllsyms, RebuildDLLInfo, &info);
-        RebuildSmallCarve( CarveExportInfo, hdr->numexports, RebuildExportInfo,
-                                &info );
+        RebuildSmallCarve( CarveExportInfo, hdr->numexports, RebuildExportInfo, &info );
     }
     CarveWalkAll( CarveModEntry, RebuildModEntry, &info );
     CarveWalkAll( CarveSegData, RebuildSegData, &info );
@@ -1016,7 +997,7 @@ void PermEndMod( mod_entry *mod )
     mod->sizerelocs = GetStringTableSize( &StoredRelocs ) - mod->relocs;
 }
 
-void *GetSegContents( segdata *sdata, virt_mem off )
+void *GetSegContents( segdata *sdata, virt_mem_size off )
 /**********************************************************/
 {
     if( OldSymFile != NULL && IS_DBG_INFO( sdata->u.leader ) ) {
@@ -1028,7 +1009,7 @@ void *GetSegContents( segdata *sdata, virt_mem off )
 void *GetAltdefContents( segdata *sdata )
 /***********************************************/
 {
-    return( (char *)AltDefData + sdata->data );
+    return( (char *)AltDefData + sdata->u1.vm_offs );
 }
 
 void FreeSavedRelocs( void )

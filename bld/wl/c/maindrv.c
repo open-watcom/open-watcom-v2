@@ -48,15 +48,23 @@
 int main( int argc, char **argv )
 {
     IDEDRV          inf;
-#ifndef __UNIX__
+#if !defined( __UNIX__ )
     char            *cmdline;
     int             cmdlen;
 #endif
     IDEDRV_STATUS   status;
 
+#if !defined( __UNIX__ )
+    argc = argc;
+    argv = argv;
+#if !defined( __WATCOMC__ )
+    _argv = argv;
+    _argc = argc;
+#endif
+#endif
     status = IDEDRV_ERR_LOAD;
     IdeDrvInit( &inf, DLL_NAME_STR, NULL );
-#ifndef __UNIX__
+#if !defined( __UNIX__ )
     cmdline = NULL;
     cmdlen = _bgetcmd( NULL, 0 );
     if( cmdlen != 0 ) {
@@ -70,9 +78,14 @@ int main( int argc, char **argv )
 #else
     status = IdeDrvExecDLLArgv( &inf, argc, argv );
 #endif
-    if( status != IDEDRV_SUCCESS && status != IDEDRV_ERR_RUN_EXEC
-                                 && status != IDEDRV_ERR_RUN_FATAL ) {
+    switch( status ) {
+    case IDEDRV_SUCCESS:
+    case IDEDRV_ERR_RUN_EXEC:
+    case IDEDRV_ERR_RUN_FATAL:
+        break;
+    default:
         IdeDrvPrintError( &inf );
+        break;
     }
     IdeDrvUnloadDLL( &inf );
     return( status != IDEDRV_SUCCESS );

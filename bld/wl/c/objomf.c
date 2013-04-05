@@ -54,6 +54,8 @@
 #include "impexp.h"
 #include "objomf.h"
 
+enum dll_entry_type { DLL_RELOC_NAME, DLL_RELOC_ORDINAL };
+
 /* forward declarations */
 
 static void     Pass1Cmd( byte );
@@ -76,7 +78,7 @@ static void     GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata );
 
 byte            OMFAlignTab[] = {0,0,1,4,8,2,12};
 
-enum dll_entry_type { DLL_RELOC_NAME, DLL_RELOC_ORDINAL };
+static lib_priority DefLibPriority;
 
 
 void ResetObjOMF( void )
@@ -86,15 +88,15 @@ void ResetObjOMF( void )
     EOObjRec = NULL;
 }
 
-static unsigned long ProcObj( file_list *file, unsigned long loc,
-                              void (*procrtn)( byte ) )
-/****************************************************************/
+static unsigned long ProcObj( file_list *file, unsigned long loc, void (*procrtn)( byte ) )
+/*****************************************************************************************/
 /* Process an object file. */
 {
     obj_record          *rec;
     byte                cmd;
     unsigned_16         len;
 
+    DefLibPriority = -1;
     RecNum = 0;
     do {
         ObjFormat &= ~FMT_MS_386;   // assume not a Microsoft 386 .obj file
@@ -133,9 +135,9 @@ static void CheckUninit( void *_seg, void *dummy )
     dummy = dummy;
     if( !(seg->info & SEG_LXDATA_SEEN) ) {
         seg->entry->isuninit = TRUE;
-        if( seg->entry->data ) {
-            ReleaseInfo( seg->entry->data );
-            seg->entry->data = 0;
+        if( seg->entry->u1.vm_ptr ) {
+            ReleaseInfo( seg->entry->u1.vm_ptr );
+            seg->entry->u1.vm_ptr = 0;
         }
     }
 }
@@ -300,8 +302,8 @@ static void Pass1Cmd( byte cmd )
     }
 }
 
-bool IsOMF( file_list *list, long loc )
-/*************************************/
+bool IsOMF( file_list *list, unsigned long loc )
+/**********************************************/
 {
     byte        *rec;
 
@@ -309,8 +311,8 @@ bool IsOMF( file_list *list, long loc )
     return( rec != NULL && *rec == CMD_THEADR );
 }
 
-char *GetOMFName( file_list *list, long *loc )
-/********************************************/
+char *GetOMFName( file_list *list, unsigned long *loc )
+/*****************************************************/
 {
     obj_record  *rec;
     char        *name;
@@ -329,8 +331,8 @@ char *GetOMFName( file_list *list, long *loc )
     return( ChkToString( name + 1, len ) );
 }
 
-void OMFSkipObj( file_list *list, long *loc )
-/*******************************************/
+void OMFSkipObj( file_list *list, unsigned long *loc )
+/****************************************************/
 {
     *loc = ProcObj( list, *loc, NULL );
 }
@@ -339,16 +341,14 @@ static void ProcTHEADR( void )
 /****************************/
 {
     char    name[256];
-    char    *sym_name;
     int     sym_len;
 
     if( CurrMod->omfdbg == OMF_DBG_CODEVIEW ) {
-        sym_name = ( (obj_name UNALIGN *) ObjBuff )->name;
-        sym_len = ( (obj_name UNALIGN *) ObjBuff )->len;
+        sym_len = *ObjBuff++;
         if( sym_len == 0 ) {
             BadObject();
         }
-        memcpy( name, sym_name, sym_len );
+        memcpy( name, ObjBuff, sym_len );
         name[sym_len] = '\0';
     }
 }
@@ -356,18 +356,18 @@ static void ProcTHEADR( void )
 static void LinkDirective( void )
 /*******************************/
 {
-    char            directive;
-    lib_priority    priority;
+    unsigned        directive;
     segnode         *seg;
 
-    directive = *(char *)ObjBuff;
-    ObjBuff++;
+    directive = *ObjBuff++;
     switch( directive ) {
     case LDIR_DEFAULT_LIBRARY:
-        if( ObjBuff + 1 < EOObjRec ) {
-            priority = *ObjBuff;
-            ObjBuff++;
-            AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, priority );
+        if( ObjBuff < EOObjRec ) {
+            DefLibPriority = *ObjBuff++ - '0';
+            if( ObjBuff < EOObjRec ) {
+                AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, DefLibPriority );
+                DefLibPriority = -1;
+            }
         }
         break;
     case LDIR_SOURCE_LANGUAGE:
@@ -402,15 +402,6 @@ static void LinkDirective( void )
     }
 }
 
-static void ReadName( length_name *ln_name )
-/******************************************/
-{
-    ln_name->len = *(unsigned_8 *)ObjBuff;
-    ObjBuff += sizeof( unsigned_8 );
-    ln_name->name = (char *)ObjBuff;
-    ObjBuff += ln_name->len;
-}
-
 #define EXPDEF_ORDINAL  0x80
 
 static void ProcExportKeyword( void )
@@ -419,11 +410,15 @@ static void ProcExportKeyword( void )
     unsigned_8  flags;
     length_name intname;
     length_name expname;
-    unsigned    ordinal;
+    ordinal_t   ordinal;
 
     flags = *ObjBuff++;
-    ReadName( &expname );
-    ReadName( &intname );
+    expname.len = *ObjBuff++;
+    expname.name = (char *)ObjBuff;
+    ObjBuff += expname.len;
+    intname.len = *ObjBuff++;
+    intname.name = (char *)ObjBuff;
+    ObjBuff += intname.len;
     ordinal = 0;
     if( flags & EXPDEF_ORDINAL ) {
         ordinal = GET_U16_UN(ObjBuff);
@@ -439,15 +434,20 @@ static void ProcImportKeyword( void )
     length_name extname;
     unsigned_8  info;
 
-    info = *(unsigned char *)ObjBuff;
-    ObjBuff += sizeof( unsigned char );
-    ReadName( &intname );
-    ReadName( &modname );
+    info = *ObjBuff++;
+    intname.len = *ObjBuff++;
+    intname.name = (char *)ObjBuff;
+    ObjBuff += intname.len;
+    modname.len = *ObjBuff++;
+    modname.name = (char *)ObjBuff;
+    ObjBuff += modname.len;
     if( info == DLL_RELOC_NAME ) {
         if( *ObjBuff == 0 ) {   /* use internal name */
             HandleImport( &intname, &modname, &intname, NOT_IMP_BY_ORDINAL );
         } else {
-            ReadName( &extname );
+            extname.len = *ObjBuff++;
+            extname.name = (char *)ObjBuff;
+            ObjBuff += extname.len;
             HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
         }
     } else {
@@ -464,14 +464,11 @@ static void DoMSOMF( void )
         CurrMod->omfdbg = OMF_DBG_CODEVIEW;    /* Assume MS style */
     else {
         unsigned_8  version;
-        char        *dbgtype;
 
         version = *ObjBuff++;
-        dbgtype = (char *)ObjBuff;
-        ObjBuff += 2;
-        if( strncmp( dbgtype, "CV", 2 ) == 0 ) {
+        if( ObjBuff[0] == 'C' && ObjBuff[1] == 'V' ) {
             CurrMod->omfdbg = OMF_DBG_CODEVIEW;
-        } else if( strncmp( dbgtype, "HL", 2 ) == 0 ) {
+        } else if( ObjBuff[0] == 'H' && ObjBuff[1] == 'L' ) {
             CurrMod->omfdbg = OMF_DBG_HLL;
         } else {
             CurrMod->omfdbg = OMF_DBG_UNKNOWN;
@@ -488,15 +485,12 @@ static void Comment( void )
     int                 proc;
     unsigned char       which;
 
-    attribute = *(unsigned char *)ObjBuff;
-    ObjBuff += sizeof( unsigned char );
-    class = *(unsigned char *)ObjBuff;
-    ObjBuff += sizeof( unsigned char );
+    attribute = *ObjBuff++;
+    class = *ObjBuff++;
 
     switch( class ) {
     case CMT_DLL_ENTRY:
-        which = *ObjBuff;
-        ObjBuff += sizeof( unsigned char );
+        which = *ObjBuff++;
         switch( which ) {
         case MOMF_IMPDEF:
         case MOMF_EXPDEF:
@@ -517,7 +511,7 @@ static void Comment( void )
         break;
     case CMT_WAT_PROC_MODEL:
     case CMT_MS_PROC_MODEL:
-        proc = GET_U8_UN( ObjBuff ) - '0';
+        proc = *ObjBuff - '0';
         if( proc > FmtData.cpu_type )
             FmtData.cpu_type = proc;
         break;
@@ -525,7 +519,11 @@ static void Comment( void )
         LinkState |= DOSSEG_FLAG;
         break;
     case CMT_DEFAULT_LIBRARY:
-        AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, LIB_PRIORITY_MAX - 1 );
+        if( DefLibPriority == -1 ) {
+            DefLibPriority = LIB_PRIORITY_MAX - 2;
+        }
+        AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, DefLibPriority );
+        DefLibPriority = -1;
         break;
     case CMT_LINKER_DIRECTIVE:
         LinkDirective();
@@ -567,12 +565,10 @@ static void ProcAlias( void )
     symbol      *sym;
 
     while( ObjBuff < EOObjRec ) {
-        aliaslen = *ObjBuff;
-        ObjBuff++;
+        aliaslen = *ObjBuff++;
         alias = (char *)ObjBuff;
         ObjBuff += aliaslen;
-        targetlen = *ObjBuff;
-        ObjBuff++;
+        targetlen = *ObjBuff++;
         sym = SymOp( ST_FIND | ST_NOALIAS, alias, aliaslen );
         if( !sym || !(sym->info & SYM_DEFINED) ) {
             MakeSymAlias( alias, aliaslen, (char *)ObjBuff, targetlen );
@@ -593,14 +589,14 @@ static void ProcModuleEnd( void )
 
     if( StartInfo.user_specd )
         return;
-    if( *ObjBuff & 0x40 ) {
-        ObjBuff++;
-        if( ObjBuff == EOObjRec )               /* CSet/2 stupidity */
+    target = *ObjBuff++;
+    if( target & 0x40 ) {
+        if( ObjBuff >= EOObjRec )               /* CSet/2 stupidity */
             return;
-        frame = (*ObjBuff >> 4) & 0x7;
-        target = *ObjBuff & 0x3;
-        hasdisp = (*ObjBuff & 0x4) == 0;
-        ObjBuff++;
+        target = *ObjBuff++;
+        frame = (target >> 4) & 0x7;
+        hasdisp = (target & 0x4) == 0;
+        target &= 0x3;
         if( frame <= 2 ) {              /* frame requires an index */
             SkipIdx();
         }
@@ -608,19 +604,19 @@ static void ProcModuleEnd( void )
         switch( target ) {
         case TARGET_SEGWD:
             if( StartInfo.type != START_UNDEFED ) {
-                LnkMsg( LOC+ERR+MSG_MULT_START_ADDRS, NULL );
+                LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->file->name, StartInfo.mod->name );
                 return;                 // <-------- NOTE: premature return
             }
             seg = (segnode *)FindNode( SegNodes, targetidx );
             StartInfo.type = START_IS_SDATA;
             StartInfo.targ.sdata= seg->entry;
             if( seg->info & SEG_CODE && LinkFlags & STRIP_CODE ) {
-                RefSeg( (segdata *) seg->entry );
+                RefSeg( (segdata *)seg->entry );
             }
             StartInfo.mod = CurrMod;
             break;
         case TARGET_EXTWD:
-            ext = (extnode *) FindNode( ExtNodes, targetidx );
+            ext = (extnode *)FindNode( ExtNodes, targetidx );
             SetStartSym( ext->entry->name );
             break;
         case TARGET_ABSWD:
@@ -647,10 +643,10 @@ static void AddNames( void )
 
     DEBUG(( DBG_OLD, "AddNames()" ));
     while( ObjBuff < EOObjRec ) {
-        name_len = ( (obj_name UNALIGN *) ObjBuff )->len;
+        name_len = *ObjBuff++;
         entry = AllocNode( NameNodes );
-        *entry = MakeListName( ((obj_name UNALIGN *)ObjBuff)->name, name_len );
-        ObjBuff += name_len + sizeof( byte );
+        *entry = MakeListName( (char *)ObjBuff, name_len );
+        ObjBuff += name_len;
     }
 }
 
@@ -667,8 +663,7 @@ static void ProcSegDef( void )
 
     DEBUG(( DBG_OLD, "ProcSegDef()" ));
     sdata = AllocSegData();
-    acbp = *ObjBuff;
-    ++ObjBuff;
+    acbp = *ObjBuff++;
     comb = (acbp >> 2) & 7;
     if( comb == COMB_INVALID || comb == COMB_BAD ) {
         sdata->combine = COMBINE_INVALID;
@@ -685,10 +680,9 @@ static void ProcSegDef( void )
     }
     switch( acbp >> 5 ) {
     case ALIGN_ABS:
-        _TargU16toHost( _GetU16UN( ObjBuff ), sdata->frame );
         sdata->isabs = TRUE;
-        ObjBuff += sizeof( unsigned_16 );
-        ObjBuff += sizeof( byte );
+        _TargU16toHost( _GetU16UN( ObjBuff ), sdata->frame );
+        ObjBuff += sizeof( unsigned_16 ) + 1;
         break;
     case ALIGN_LTRELOC:
 // in 32 bit object files, ALIGN_LTRELOC is actually ALIGN_4KPAGE
@@ -717,9 +711,9 @@ static void ProcSegDef( void )
     sdata->u.name = name->name;
     clname = FindName( GetIdx() );
     if( ObjFormat & FMT_EASY_OMF ) {
-        SkipIdx();        // skip overlay name index
-        if( ObjBuff < EOObjRec ) {      // the optional attribute field present
-            if( !(*ObjBuff & 0x4) ) {      // if USE32 bit not set;
+        SkipIdx();                          // skip overlay name index
+        if( ObjBuff < EOObjRec ) {          // the optional attribute field present
+            if( !(*ObjBuff & 0x4) ) {       // if USE32 bit not set;
                 sdata->is32bit = FALSE;
             }
         }
@@ -745,14 +739,11 @@ static void DefineGroup( void )
     DEBUG(( DBG_OLD, "DefineGroup() - %s", grp_name->name ));
     anchor = ObjBuff;
     num_segs = 0;
-    for( ;; ) {
-        if( ObjBuff >= EOObjRec )
-            break;
-        if( *ObjBuff != GRP_SEGIDX ) {
+    while( ObjBuff < EOObjRec ) {
+        if( *ObjBuff++ != GRP_SEGIDX ) {
             BadObject();
             return;
         }
-        ++ObjBuff;
         SkipIdx();/*  skip segment index */
         ++num_segs;
     }
@@ -767,10 +758,8 @@ static void DefineGroup( void )
     }
     newnode->entry = group;
     ObjBuff = anchor;
-    for( ;; ) {
-        if( ObjBuff >= EOObjRec )
-            break;
-        ++ObjBuff;
+    while( ObjBuff < EOObjRec ) {
+        ObjBuff++;
         seg = (segnode *)FindNode( SegNodes, GetIdx() );
         AddToGroup( group, seg->entry->u.leader );
     }
@@ -801,12 +790,12 @@ static void ProcPubdef( bool static_sym )
     }
     DEBUG(( DBG_OLD, "segidx = %d", segidx ));
     while( ObjBuff < EOObjRec ) {
-        sym_name = ( (obj_name UNALIGN *) ObjBuff )->name;
-        sym_len = ( (obj_name UNALIGN *) ObjBuff )->len;
+        sym_len = *ObjBuff++;
         if( sym_len == 0 ) {
             BadObject();
         }
-        ObjBuff += sym_len + sizeof( byte );
+        sym_name = (char *)ObjBuff;
+        ObjBuff += sym_len;
         if( ObjFormat & FMT_32BIT_REC ) {
             _TargU32toHost( _GetU32UN( ObjBuff ), off );
             ObjBuff += sizeof( unsigned_32 );
@@ -932,7 +921,6 @@ static void UseSymbols( bool static_sym, bool iscextdef )
 /* Define all external references. */
 {
     list_of_names       *lnptr;
-    char                *sym_name;
     unsigned            sym_len;
     extnode             *newnode;
     symbol              *sym;
@@ -948,13 +936,12 @@ static void UseSymbols( bool static_sym, bool iscextdef )
             lnptr = FindName( GetIdx() );
             sym = RefISymbol( lnptr->name );
         } else {
-            sym_len = ( (obj_name *) ObjBuff )->len;
-            sym_name = ( (obj_name *) ObjBuff )->name;
+            sym_len = *ObjBuff++;
             if( sym_len == 0 ) {
                 BadObject();
             }
-            ObjBuff += sym_len + sizeof( byte );
-            sym = SymOp( flags, sym_name, sym_len );
+            sym = SymOp( flags, (char *)ObjBuff, sym_len );
+            ObjBuff += sym_len;
         }
         newnode = AllocNode( ExtNodes );
         newnode->entry = sym;
@@ -981,8 +968,7 @@ unsigned_16 GetIdx( void )
 
     index = *ObjBuff++;
     if (index & IS_2_BYTES) {
-        index = (index & 0x7f) * 256 + *ObjBuff;
-        ++ObjBuff;
+        index = (index & 0x7f) * 256 + *ObjBuff++;
     }
     return( index );
 }
@@ -1121,7 +1107,7 @@ static void GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata )
     }
     if( ObjBuff != EOObjRec ) {
         size = EOObjRec - ObjBuff;
-        start = seg->data + obj_offset;
+        start = seg->u1.vm_ptr + obj_offset;
         if( lidata ) {
             DoLIData( start, ObjBuff, size );
         } else {

@@ -167,9 +167,9 @@ static bool WriteSegData( void *_sdata, void *_start )
             WriteQNXInfo( ZeroLoad, 0, pad );
         }
         if( InVerifySegment ) {
-            SetVerifyInfo( CopyVerify, sdata->data, sdata->length );
+            SetVerifyInfo( CopyVerify, sdata->u1.vm_ptr, sdata->length );
         }
-        WriteQNXInfo( CopyLoad, sdata->data, sdata->length );
+        WriteQNXInfo( CopyLoad, sdata->u1.vm_ptr, sdata->length );
     }
     return FALSE;
 }

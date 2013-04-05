@@ -32,7 +32,7 @@
 
 extern void             InitObjORL( void );
 extern void             ObjORLFini( void );
-extern bool             IsORL( file_list *, unsigned );
-extern void             ORLSkipObj( file_list *, long * );
+extern bool             IsORL( file_list *, unsigned long );
+extern void             ORLSkipObj( file_list *, unsigned long * );
 extern unsigned long    ORLPass1( void );
 extern void             ORLPass2( void );

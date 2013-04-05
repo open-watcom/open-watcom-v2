@@ -95,14 +95,19 @@
 typedef int bool;
 #endif
 typedef unsigned char   byte;
-typedef unsigned long   virt_mem;
 typedef unsigned        f_handle;
 
-#ifndef __386__
-#define UNALIGN _WCUNALIGNED
+#if defined( USE_VIRTMEM )
+typedef unsigned_32     virt_mem;
 #else
-#define UNALIGN
+typedef char            *virt_mem;
 #endif
+typedef unsigned_32     virt_mem_size;
+
+typedef union {
+    virt_mem        vm_ptr;
+    virt_mem_size   vm_offs;
+} virt_mem_ptr;
 
 #if defined( __QNX__ )
     #define _EXE       0

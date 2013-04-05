@@ -829,9 +829,11 @@ void CalcAddresses( void )
                 }
             } else if( FmtData.type & MK_QNX ) {
                 FmtData.objalign = QNX_GROUP_ALIGN;
-            } else if( IS_PPC_OS2 ) {
+#if 0
+            } else if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
                 // Development temporarly on hold:
                 // FmtData.objalign = 1024;
+#endif
             } else if( FmtData.type & MK_ELF ) {
                 FmtData.objalign = 4*1024;
             } else if( FmtData.type & MK_WIN_VXD ) {

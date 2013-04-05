@@ -67,8 +67,8 @@ typedef union dict_entry {
 
 #define PAGES_IN_CACHE      0x40U
 
-static  bool            OMFSearchExtLib( file_list *, char *, long * );
-static  bool            ARSearchExtLib( file_list *, char *, long * );
+static  bool            OMFSearchExtLib( file_list *, char *, unsigned long * );
+static  bool            ARSearchExtLib( file_list *, char *, unsigned long * );
 static  unsigned        OMFCompName( const char *, const unsigned_8 *, unsigned );
 static  void            **AllocDict( unsigned, unsigned );
 static  void            SetDict( file_list *, unsigned );
@@ -198,8 +198,8 @@ static void SortARDict( ar_dict_entry *ar_dict )
     _LnkFree( index_tab );
 }
 
-static void ReadARDictData( file_list *list, long *loc, unsigned size, int numdicts )
-/************************************************************************************/
+static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, int numdicts )
+/********************************************************************************************/
 {
     ar_dict_entry   *dict;
     char            *data;
@@ -275,8 +275,8 @@ static void ReadARDictData( file_list *list, long *loc, unsigned size, int numdi
     }
 }
 
-static void ReadARStringTable( file_list *list, long *loc, unsigned size )
-/*****************************************************************************/
+static void ReadARStringTable( file_list *list, unsigned long *loc, unsigned size )
+/*********************************************************************************/
 {
     char            *data;
     unsigned        i;
@@ -292,11 +292,11 @@ static void ReadARStringTable( file_list *list, long *loc, unsigned size )
     }
 }
 
-static bool ReadARDict( file_list *list, long *loc, bool makedict )
-/**********************************************************************/
+static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
+/**************************************************************************/
 {
     ar_header       *ar_hdr;
-    long            size;
+    unsigned long   size;
     int             numdicts;
 
     numdicts = 0;
@@ -337,8 +337,8 @@ static bool ReadARDict( file_list *list, long *loc, bool makedict )
     return( TRUE );
 }
 
-int CheckLibraryType( file_list *list, long *loc, bool makedict )
-/********************************************************************/
+int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
+/************************************************************************/
 {
     unsigned_8          *header;
     int                 reclength;
@@ -370,7 +370,7 @@ mod_entry *SearchLib( file_list *lib, char *name )
 /* Search the specified library file for the specified name & make a module */
 {
     mod_entry           *obj;
-    long                pos;
+    unsigned long       pos;
     unsigned long       dummy;
     bool                retval;
 
@@ -404,8 +404,8 @@ mod_entry *SearchLib( file_list *lib, char *name )
 }
 
 
-static bool OMFSearchExtLib( file_list *lib, char *name, long *off )
-/***********************************************************************/
+static bool OMFSearchExtLib( file_list *lib, char *name, unsigned long *off )
+/***************************************************************************/
 /* Search library for specified member. */
 {
     unsigned        num_blocks;
@@ -430,7 +430,7 @@ static bool OMFSearchExtLib( file_list *lib, char *name, long *off )
             }
             sector = OMFCompName( name, dict->buffer, h.bucket );
             if( sector != 0 ) {
-                *off = (long)dict->rec_length * sector;
+                *off = dict->rec_length * sector;
                 return( TRUE );
             }
             h.bucket += h.bucketd;
@@ -454,8 +454,8 @@ static void SetDict( file_list *lib, unsigned dict_page )
     unsigned        num_buckets;
     unsigned        residue;
     unsigned        bucket;
-    long            off;
-    long            dictoff;
+    long   off;
+    long   dictoff;
     omf_dict_entry  *dict;
 
     dict = &lib->u.dict->o;
@@ -624,8 +624,8 @@ static int ARCompIName( const void *key, const void *vbase )
     return( stricmp( key, *base ) );
 }
 
-static bool ARSearchExtLib( file_list *lib, char *name, long *off )
-/**********************************************************************/
+static bool ARSearchExtLib( file_list *lib, char *name, unsigned long *off )
+/**************************************************************************/
 /* Search AR format library for specified member. */
 {
     char                **result;
@@ -650,8 +650,8 @@ static bool ARSearchExtLib( file_list *lib, char *name, long *off )
     return( FALSE );
 }
 
-char *GetARName( ar_header *header, file_list *list, long *loc )
-/*******************************************************************/
+char *GetARName( ar_header *header, file_list *list, unsigned long *loc )
+/***********************************************************************/
 {
     char            *buf;
     char            *name;

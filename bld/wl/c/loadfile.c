@@ -139,9 +139,11 @@ void FiniLoadFile( void )
     } else if( FmtData.type & MK_DOS ) {
         FiniDOSLoadFile();
 #ifdef _OS2
-    } else if( IS_PPC_OS2 ) {
+#if 0
+    } else if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
         // development temporarly on hold:
         // FiniELFLoadFile();
+#endif
     } else if( FmtData.type & MK_OS2_FLAT ) {
         FiniOS2FlatLoadFile();
     } else if( FmtData.type & MK_PE ) {
@@ -720,16 +722,16 @@ void BuildImpLib( void )
 }
 
 #ifdef BOOTSTRAP
-#define BPRFX   "b"
+#define WLIB_NAME   "bwlib"
 #else
-#define BPRFX   ""
+#define WLIB_NAME   "wlib"
 #endif
 #if defined( DLLS_IMPLEMENTED )
-#define WLIB_EXE BPRFX "wlibd.dll"
+#define WLIB_EXE WLIB_NAME "d.dll"
 #elif defined( __UNIX__ )
-#define WLIB_EXE BPRFX "wlib"
+#define WLIB_EXE WLIB_NAME
 #else
-#define WLIB_EXE BPRFX "wlib.exe"
+#define WLIB_EXE WLIB_NAME ".exe"
 #endif
 
 static void ExecWlib( void )
@@ -930,8 +932,7 @@ static bool WriteSegData( void *_sdata, void *_info )
     unsigned long   newpos;
     signed long     pad;
 
-    if( !sdata->isuninit && !sdata->isdead 
-      && ( ( sdata->length > 0 ) || (FmtData.type & MK_END_PAD) ) ) {
+    if( !sdata->isuninit && !sdata->isdead && ( ( sdata->length > 0 ) || (FmtData.type & MK_END_PAD) ) ) {
         newpos = info->seg_start + sdata->a.delta;
         if( info->repos ) {
             SeekLoad( newpos );
@@ -940,8 +941,8 @@ static bool WriteSegData( void *_sdata, void *_info )
             DbgAssert( pad >= 0 );
             PadLoad( pad );
         }
-        WriteInfo( sdata->data, sdata->length );
-        sdata->data = newpos;   // for incremental linking
+        WriteInfo( sdata->u1.vm_ptr, sdata->length );
+        sdata->u1.vm_offs = newpos;   // for incremental linking
     }
     return( FALSE );
 }

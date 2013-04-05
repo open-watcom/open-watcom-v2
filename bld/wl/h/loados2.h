@@ -97,8 +97,7 @@ extern bool             FindOS2ExportSym( symbol *, dll_sym_info ** );
 
 extern unsigned long    ImportProcTable( unsigned long * );
 extern unsigned long    ImportModTable( unsigned long * );
-extern void             CheckExport( char *, unsigned_16,
-                                     int (*)(const char *,const char *));
+extern void             CheckExport( char *, ordinal_t, int (*)(const char *,const char *));
 extern unsigned long    ResNonResNameTable( bool );
 extern void             ChkOS2Data( void );
 extern void             ChkOS2Exports( void );

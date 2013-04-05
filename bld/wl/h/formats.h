@@ -79,9 +79,6 @@ typedef enum exe_format {       // there is a corresp. table in MSG.C
 #define MK_END_PAD   (MK_DOS)
 #define MK_ALL       (0x001FFFFF)
 
-#define IS_PPC_PE   ( LinkState & HAVE_PPC_CODE && FmtData.type & MK_PE )
-#define IS_PPC_OS2   0//( LinkState & HAVE_PPC_CODE && FmtData.type & MK_OS2 )
-
 // linker specific phar lap data
 
 struct fmt_dos_data {

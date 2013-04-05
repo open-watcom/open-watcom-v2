@@ -366,12 +366,12 @@ void FiniELFLoadFile( void )
     ElfHdr      hdr;
 
     SetHeaders( &hdr );
-    #if 0
-    if( IS_PPC_OS2 ) {
+#if 0
+    if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
         // Development temporarly on hold
         // BuildOS2Imports(); // Build .got section
     }
-    #endif
+#endif
 
     WriteELFGroups( &hdr ); // Write out all groups
     WriteRelocsSections( &hdr );        // Relocations

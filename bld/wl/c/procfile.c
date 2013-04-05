@@ -64,7 +64,7 @@
 static bool             EndOfLib( file_list *, unsigned long );
 static void             IncLoadObjFiles( void );
 static void             DoPass1( mod_entry *next, file_list *list );
-static void             SkipFile( file_list *list, long *loc );
+static void             SkipFile( file_list *list, unsigned long *loc );
 
 void ProcObjFiles( void )
 /******************************/
@@ -177,7 +177,7 @@ static void DoIncLibDefs( void )
     libnamelist         *lib;
 
     for( lib = SavedDefLibs; lib != NULL; lib = lib->next ) {
-        AddObjLib( lib->name, LIB_PRIORITY_MIN + 1 );
+        AddObjLib( lib->name, lib->priority );
     }
 }
 
@@ -194,7 +194,7 @@ static libnamelist *CalcLibBlacklist( void )
     while( oldlibs != NULL ) {
         if( userlibs == NULL )
             return( oldlibs );
-        if( FNAMECMPSTR(userlibs->name, oldlibs->name) != 0 )
+        if( FNAMECMPSTR( userlibs->name, oldlibs->name ) != 0 )
             return( oldlibs );
         oldlibs = oldlibs->next;
         userlibs = userlibs->next;
@@ -206,15 +206,17 @@ static void CheckBlacklist( file_list *list, libnamelist *blacklist )
 /*******************************************************************/
 {
     unsigned    length;
+    unsigned    length_b;
     unsigned    delta;
 
     if( list->status & STAT_HAS_CHANGED )
         return;
     length = strlen( list->file->name );
     while( blacklist != NULL ) {
-        if( length >= blacklist->namelen ) {
-            delta = length - blacklist->namelen;
-            if( FNAMECMPSTR(blacklist->name,list->file->name + delta) == 0 ) {
+        length_b = strlen( blacklist->name );
+        if( length >= length_b ) {
+            delta = length - length_b;
+            if( FNAMECMPSTR( blacklist->name,list->file->name + delta ) == 0 ) {
                 list->status |= STAT_HAS_CHANGED;
                 return;
             }
@@ -314,9 +316,8 @@ static void SetAltDefData( void *_sym )
 {
     symbol *sym = _sym;
 
-    if( (sym->info & SYM_IS_ALTDEF) && (sym->info & SYM_COMDAT)
-                                  && !(sym->info & SYM_HAS_DATA) ) {
-        sym->p.seg->data = sym->e.mainsym->p.seg->data;
+    if( (sym->info & SYM_IS_ALTDEF) && (sym->info & SYM_COMDAT) && !(sym->info & SYM_HAS_DATA) ) {
+        sym->p.seg->u1.vm_ptr = sym->e.mainsym->p.seg->u1.vm_ptr;
     }
 }
 
@@ -333,8 +334,7 @@ static void IncIterateMods( mod_entry *mod, void (*proc_fn)(mod_entry *),
     bool haschanged;
 
     while( mod != NULL ) {
-        haschanged = mod->modinfo & MOD_KILL
-                        || mod->f.source->status & STAT_HAS_CHANGED;
+        haschanged = mod->modinfo & MOD_KILL || mod->f.source->status & STAT_HAS_CHANGED;
         if( haschanged == dochanged ) {
             proc_fn( mod );
         }
@@ -497,7 +497,7 @@ static void DoPass1( mod_entry *next, file_list *list )
 {
     member_list         *member;
     char                *membname;
-    long                loc;
+    unsigned long       loc;
     unsigned long       size;
     unsigned            reclength;
     bool                lastmod;
@@ -579,12 +579,12 @@ static void DoPass1( mod_entry *next, file_list *list )
     CheckStop();
 }
 
-char *IdentifyObject( file_list *list, long *loc, unsigned long *size )
-/*********************************************************************/
+char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
+/******************************************************************************/
 {
     ar_header       *ar_hdr;
     char            *name;
-    long            ar_loc;
+    unsigned long   ar_loc;
 
     name = NULL;
     *size = 0;
@@ -608,15 +608,15 @@ char *IdentifyObject( file_list *list, long *loc, unsigned long *size )
     return( name );
 }
 
-static void BadSkip( file_list *list, long *loc )
-/***********************************************/
+static void BadSkip( file_list *list, unsigned long *loc )
+/********************************************************/
 {
     list = list;
     loc = loc;
     BadObjFormat();
 }
 
-static void (*SkipObjFile[])( file_list *, long * ) = {
+static void (*SkipObjFile[])( file_list *, unsigned long * ) = {
     BadSkip,
     OMFSkipObj,
     ORLSkipObj,
@@ -627,8 +627,8 @@ static void (*SkipObjFile[])( file_list *, long * ) = {
     BadSkip
 };
 
-static void SkipFile( file_list *list, long *loc )
-/************************************************/
+static void SkipFile( file_list *list, unsigned long *loc )
+/*********************************************************/
 {
     SkipObjFile[ GET_FMT_IDX( ObjFormat ) ]( list, loc );
 }
@@ -658,7 +658,7 @@ static unsigned long (*CallPass1[])( void ) = {
 };
 
 unsigned long ObjPass1( void )
-/***********************************/
+/****************************/
 /* Pass 1 of 8086 linker. */
 {
     unsigned long loc;

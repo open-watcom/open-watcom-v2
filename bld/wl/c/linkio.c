@@ -430,19 +430,10 @@ time_t QFModTime( int handle )
     return buf.st_mtime;
 }
 
-int ResOpen( const char *name, int access, ... )
-/******************************************/
-/* this just ignores the access parameter, and assumes it knows what the
- * resource stuff really wants to do */
-{
-    access = access;  /* to avoid a warning */
-    return( NSOpen( (char *) name, TIO_READ ) );
-}
-
-char WaitForKey( void )
+int WaitForKey( void )
 /****************************/
 {
-    return getch();
+    return( getch() );
 }
 
 void GetCmdLine( char *buff )

@@ -105,7 +105,7 @@ void InitToc( void )
 {
     Toc = CreateHTable( 1024, TocEntryHashFunc, TocEntryCmp, ChkLAlloc, LFree );
     TocSize = 0;
-    if( IS_PPC_PE ) {
+    if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_PE) ) {
         TocName = TocSymName;
         TocShift = 0x8000;
     } else {
@@ -217,15 +217,15 @@ void PrepareToc( void )
         return;
     WalkHTable( Toc, ConvertTocEntry );
     RehashHTable( Toc );
-    if( IS_PPC_OS2 ) {
+#if 0
+    if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
         // Development temporarly on hold
-        #if 0
         offset middle = ( TocSize / 2 ) & ~0x3;
         WalkHTableCookie( Toc, AdjustGotEntry, &middle );
         TocShift = middle + GOT_RESERVED_NEG_SIZE;
         TocSize += GOT_RESERVED_SIZE;
-        #endif
     }
+#endif
     if( TocSym != NULL )  {
         TocSym->info |= SYM_DCE_REF | SYM_DEFINED;
         SetAddPubSym( TocSym, SYM_REGULAR, FakeModule, 0, 0 );
@@ -319,9 +319,9 @@ void WriteToc( virt_mem buf )
     if( Toc == NULL )
         return;
     WalkHTableCookie( Toc, WriteOutTokElem, &buf );
-    if( IS_PPC_OS2 ) {
+#if 0
+    if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
         // Development temporarly on hold
-        #if 0
         offset res[GOT_RESERVED_SIZE / sizeof( offset )] = { 0 };
         enum { zero = GOT_RESERVED_NEG_SIZE / sizeof( offset ) };
         enum { blrl_opcode = 0x4E800021 };
@@ -331,6 +331,6 @@ void WriteToc( virt_mem buf )
         res[zero - 1] = blrl_opcode;
         res[zero] = IDataGroup->linear + FmtData.base;
         PutInfo( buf + TocShift - GOT_RESERVED_NEG_SIZE, res, GOT_RESERVED_SIZE );
-        #endif
     }
+#endif
 }

@@ -39,11 +39,6 @@
 #include "loadfile.h"
 #include "overlays.h"
 
-typedef union {
-    unsigned long   spill;
-    void            *addr;
-} spilladdr;
-
 /* note: if either of these two structures get any bigger, the magic constants
  * in the RLIDX_* macros will have to change to ensure that no allocation > 64k
  * occurs. */
@@ -157,7 +152,7 @@ static void DoWriteReloc( void *lst, void *reloc, unsigned size )
     if( info->sizeleft & RELOC_SPILLED ) {
         SpillWrite( info->loc.spill, offset, reloc, size );
     } else {
-        memcpy( (char *)( info->loc.addr ) + offset, reloc, size );
+        memcpy( info->loc.addr + offset, reloc, size );
     }
     info->sizeleft -= size;
 }
@@ -451,13 +446,12 @@ static bool SpillRelocList( reloc_info *list )
 /*********************************************/
 /* spill any reloc blocks pointed to by list */
 {
-    virt_mem    spill;
+    virt_mem_size   spill;
 
     while( list != NULL ) {
         if( !( list->sizeleft & RELOC_SPILLED ) ) {
             spill = SpillAlloc( RELOC_PAGE_SIZE );
-            SpillWrite( spill, 0, list->loc.addr,
-                        RELOC_PAGE_SIZE - list->sizeleft );
+            SpillWrite( spill, 0, list->loc.addr, RELOC_PAGE_SIZE - list->sizeleft );
             _LnkFree( list->loc.addr );
             list->loc.spill = spill;
             list->sizeleft |= RELOC_SPILLED;

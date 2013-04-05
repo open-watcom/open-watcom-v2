@@ -283,12 +283,16 @@ static void PreAddrCalcFormatSpec( void )
     if( FmtData.type & MK_PE ) {
         ChkPEData();
     } else if( FmtData.type & (MK_OS2|MK_WIN_VXD) ) {
-        if( IS_PPC_OS2) {
+#if 0
+        if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
             // Development temporarly on hold:
             // ChkOS2ElfData();
         } else {
             ChkOS2Data();
         }
+#else
+        ChkOS2Data();
+#endif
     }
 #endif
 #ifdef _NOVELL
@@ -314,12 +318,16 @@ static void PostAddrCalcFormatSpec( void )
     } else if( FmtData.type & MK_ELF ) {
         ChkElfData();
     } else if( FmtData.type & (MK_OS2|MK_WIN_VXD) ) {
-        if( IS_PPC_OS2) {
+#if 0
+        if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_OS2) ) {
             // Development temporarly on hold:
             //PrepareOS2Elf();
         } else {
             ChkOS2Exports();
         }
+#else
+        ChkOS2Exports();
+#endif
     }
 #endif
 #ifdef _QNXLOAD

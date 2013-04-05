@@ -63,7 +63,7 @@ static entry_export * FindPlace( entry_export *exp )
     entry_export *  ret;
 
     ret = NULL;
-	prev = NULL;
+        prev = NULL;
     place = exp->next;
     if( place != NULL && place->ordinal <= exp->ordinal ) {
         for(;;) {
@@ -222,9 +222,8 @@ entry_export * AllocExport( char *name, unsigned len )
 #define EXPDEF_RESIDENT 0x40
 #define EXPDEF_IOPLMASK 0x1F
 
-void MSExportKeyword( length_name *expname, length_name *intname,
-                             unsigned flags, unsigned ordinal )
-/**********************************************************************/
+void MSExportKeyword( length_name *expname, length_name *intname, unsigned flags, ordinal_t ordinal )
+/***************************************************************************************************/
 // Process the Microsoft Export keyword.
 {
     entry_export *  exp;
@@ -288,9 +287,8 @@ static symbol * GetIATSym( symbol *sym )
     return( SymOp( ST_CREATE, iatname, prefixlen ) );
 }
 
-void MSImportKeyword( symbol *sym, length_name *modname,
-                             length_name *extname, unsigned long ordinal )
-/************************************************************************/
+void MSImportKeyword( symbol *sym, length_name *modname, length_name *extname, ordinal_t ordinal )
+/************************************************************************************************/
 /* process the MS import keyword definition */
 {
     dll_sym_info *      dll;
@@ -437,9 +435,8 @@ static void ReadOldLib( void )
     FmtData.u.os2.old_lib_name = NULL;
 }
 
-void CheckExport( char * name, unsigned_16 ordinal,
-                         int (*compare_rtn)(const char *,const char *))
-/*********************************************************************/
+void CheckExport( char * name, ordinal_t ordinal, int (*compare_rtn)(const char *,const char *))
+/**********************************************************************************************/
 /* check if the name is exported and hasn't been assigned a value, and if so,
  * give it the specified value */
 {
@@ -497,12 +494,12 @@ static void ReadNameTable( f_handle the_file )
     }
 }
 
-unsigned_16 FindEntryOrdinal( targ_addr addr, group_entry *grp )
-/*********************************************************************/
+ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *grp )
+/************************************************************/
 {
-    unsigned_16     max_ord;
-    entry_export ** owner;
-    entry_export *  exp;
+    ordinal_t       max_ord;
+    entry_export    **owner;
+    entry_export    *exp;
 
     max_ord = 0;
     owner = &FmtData.u.os2.exports;
