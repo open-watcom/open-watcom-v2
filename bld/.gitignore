@@ -1,12 +1,15 @@
+*.$$$
 *.cop
 *.COP
 *.d32
 *.err
 *.exe
+*.exp
 *.lib
 *.lnk
 *.o
 *.[oux]bj
+*.pdb
 *.rex
 *.trp
 #
@@ -27,6 +30,10 @@
 #
 /aui/os2*/*.dlg
 #
+/awk/*/awk.c
+/awk/*/proctab.c
+/awk/*/ytab.h
+#
 /build/axpnt/*
 !/build/axpnt/readme
 !/build/axpnt/wlink.lnk
@@ -44,10 +51,6 @@
 !/build/binp/readme
 !/build/binp/wlink.lnk
 #
-/builder/*/awk.c
-/builder/*/proctab.c
-/builder/*/ytab.h
-#
 /causeway/dlltest/*/*.dll
 #
 /cc/*/*/*.dll
@@ -57,7 +60,6 @@
 /clib/alias/objs.mif
 /clib/alias/a/*.asm
 /clib/library/*/*/*.def
-/clib/qa/*/*.exp
 /clib/rtdll/*/*/*.dll
 #
 /cmdedit/*/*.dll
@@ -79,6 +81,8 @@
 /f77/regress/nist/FOR*
 /f77/regress/nist/FM*.DAT
 /f77/regress/nist/fm*.dat
+/f77/regress/nist/expected/*
+!/f77/regress/nist/expected/*.exp
 #
 /graphlib/fix/*/clib.mod
 /graphlib/fix/*/graph.mod
@@ -96,7 +100,6 @@
 /mathlib/rtdll/*/*/*.dll
 /mathlib/alias/objs.mif
 /mathlib/alias/a/*.asm
-/mathlib/qa/*/*.exp
 #
 /nwlib/*/*.dll
 #
@@ -126,7 +129,19 @@
 /plustest/regress/owstl/mmwin16.cpp
 /plustest/regress/owstl/mmwindef.cpp
 #
-/posix/systems/*/*.exp
+#/posix/
+#
+/redist/*/*
+!/redist/dos4gw/*.doc
+!/redist/dos4gw/*.exe
+!/redist/dos4gw/*.exp
+!/redist/dos4gw/*.trp
+!/redist/dos32a/*.d32
+!/redist/dos32a/*.exe
+!/redist/pmodew/*.com
+!/redist/pmodew/*.doc
+!/redist/pmodew/*.exe
+!/redist/pmodew/*.faq
 #
 /rc/rc/*/*.dll
 /rc/rc/*/ytab2.c
@@ -139,7 +154,6 @@
 #
 /trap/*/*/*.dll
 /trap/*/*/*/*.dll
-/trap/lcl/dos/dosx/*/*/*.exp
 #
 /vi/*/*.vi
 !/vi/dat/*.vi
@@ -180,9 +194,8 @@
 /win386/vxd/*.386
 #
 /wl/*/*.dll
-/wl/test/dos16m/*.exp
 #
-/wsample/*/*.exp
+#/wsample/
 #
 /wv/os2/*/*.dlg
 
