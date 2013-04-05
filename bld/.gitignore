@@ -5,6 +5,7 @@
 *.err
 *.exe
 *.exp
+*.ilk
 *.lib
 *.lnk
 *.o
