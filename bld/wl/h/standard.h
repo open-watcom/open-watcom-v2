@@ -32,7 +32,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <time.h>
-#include <watcom.h>
+#include "watcom.h"
 
 #define NLCHAR         '\n'
 #define CTRLZ          '\32'

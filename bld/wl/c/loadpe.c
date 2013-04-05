@@ -430,11 +430,11 @@ static void WalkImportsMods( void (*action)(dll_sym_info *, offset *),
 static void WriteIAT( virt_mem buf, offset linear )
 /*************************************************/
 {
-    struct module_import        *mod;
-    struct import_name          *imp;
-    pe_va       iat;
-    offset      pos;
-    offset      hint_rva ;
+    struct module_import    *mod;
+    struct import_name      *imp;
+    pe_va                   iat;
+    offset                  pos;
+    offset                  hint_rva ;
 
     pos = 0;
     hint_rva = IData.hint_off + linear;
@@ -443,17 +443,15 @@ static void WriteIAT( virt_mem buf, offset linear )
             if( imp->imp != NULL ) {
                 hint_rva += (hint_rva & 1); /* round up */
                 iat = PE_IMPORT_BY_NAME | hint_rva;
-                hint_rva += imp->imp->len +
-                        (sizeof( unsigned_16 ) + sizeof( unsigned_8 ));
+                hint_rva += imp->imp->len + ( sizeof( unsigned_16 ) + sizeof( unsigned_8 ) );
             } else {
                 iat = PE_IMPORT_BY_ORDINAL | imp->dll->u.ordinal;
             }
-            PutInfo( buf+pos, &iat, sizeof( iat ) );
+            PutInfo( buf + pos, &iat, sizeof( iat ) );
             pos += sizeof( iat );
         }
         /* NULL entry marks end of list */
-        iat = 0;
-        PutInfo( buf+pos, &iat, sizeof( iat ) );
+        PutInfoNulls( buf + pos, sizeof( iat ) );
         pos += sizeof( iat );
     }
 }
@@ -495,7 +493,8 @@ static void WriteImportInfo( void )
         PutInfo( buf+pos, &dir, sizeof( dir ) );
         pos += sizeof( dir );
     }
-    PutInfoNulls( buf + pos, sizeof( dir ) );    /* NULL entry marks end of table */
+    /* NULL entry marks end of table */
+    PutInfoNulls( buf + pos, sizeof( dir ) );
     pos += sizeof( dir );
     WriteIAT( buf + IData.ilt_off, linear ); // Import Lookup table
     WriteToc( buf + IData.eof_ilt_off );

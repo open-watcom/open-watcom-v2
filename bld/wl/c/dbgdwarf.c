@@ -51,11 +51,11 @@
 #include "loadelf.h"
 #include "specials.h"
 
-static class_entry *    DBIClass;       // Assume there is only one!
+static class_entry  *DBIClass;       // Assume there is only one!
 
 typedef struct {
     virt_mem_ptr    u;
-    unsigned_32     size;
+    virt_mem_size   size;
 } dwarfsect;
 
 typedef struct dwarfmodinfo {
@@ -67,10 +67,10 @@ typedef struct dwarfmodinfo {
 // this used to hold information about linker generated debugging information.
 
 typedef struct {
-    virt_mem    addr;   // virt. mem. block containing genned info.
-    unsigned_32 size;   // size of linker generated info.
-    unsigned_32 start;  // start of linker generated info - compiler stuff 1st
-    char *      name;
+    virt_mem        vm_ptr; // virt. mem. block containing genned info.
+    virt_mem_size   size;   // size of linker generated info.
+    virt_mem_size   start;  // start of linker generated info - compiler stuff 1st
+    char            *name;
 } sectioninfo;
 
 static sectioninfo SectionTable[] = {
@@ -192,7 +192,7 @@ void DwarfInit( void )
 
     DBIClass = NULL;
     for( index = 0; index < SECT_NUM_SECTIONS; index++ ) {
-        SectionTable[index].addr = 0;
+        SectionTable[index].vm_ptr = 0;
         SectionTable[index].size = 0;
         SectionTable[index].start = 0;
     }
@@ -205,15 +205,15 @@ void DwarfInitModule( mod_entry *mod )
     memset( mod->d.d, 0, sizeof( dwarfmodinfo ) );
 }
 
-void *DwarfGetLineInfo( unsigned_32 *size )
-/*******************************************/
+virt_mem DwarfGetLineInfo( virt_mem_size *size )
+/**********************************************/
 {
     if( SectionTable[SECT_DEBUG_LINE].size ) {
         *size = SectionTable[SECT_DEBUG_LINE].size;
-        return( (void *)SectionTable[SECT_DEBUG_LINE].addr );
+        return( SectionTable[SECT_DEBUG_LINE].vm_ptr );
     } else {
         *size = 0;
-        return( NULL );
+        return( 0 );
     }
 }
 
@@ -329,12 +329,11 @@ void DwarfAddModule( mod_entry *mod, section *sect )
     size_t              namelen;
     char *              buff;
     unsigned_32         stmt_list;
-    int                 zero;
 
     sect = sect;
     if( !( mod->modinfo & MOD_DBI_SEEN ) ) {
         if( mod->d.d->arange.size > 0 ) {
-            mod->d.d->arange.u.vm_ptr = SectionTable[SECT_DEBUG_ARANGE].addr + mod->d.d->arange.u.vm_offs;
+            mod->d.d->arange.u.vm_ptr = SectionTable[SECT_DEBUG_ARANGE].vm_ptr + mod->d.d->arange.u.vm_offs;
             arange_hdr.length = mod->d.d->arange.size - sizeof( unsigned_32 );
             arange_hdr.version = 2;
             arange_hdr.debug_offset = mod->d.d->pubsym.u.vm_offs + SectionTable[SECT_DEBUG_INFO].start;
@@ -348,7 +347,7 @@ void DwarfAddModule( mod_entry *mod, section *sect )
             PutInfo( mod->d.d->arange.u.vm_ptr, (void *)&arange_hdr, sizeof( arange_prologue ) );
             mod->d.d->arange.u.vm_ptr += sizeof( arange_prologue );
         }
-        mod->d.d->pubsym.u.vm_ptr = SectionTable[SECT_DEBUG_INFO].addr + mod->d.d->pubsym.u.vm_offs;
+        mod->d.d->pubsym.u.vm_ptr = SectionTable[SECT_DEBUG_INFO].vm_ptr + mod->d.d->pubsym.u.vm_offs;
         compuhdr.length = mod->d.d->pubsym.size - sizeof( unsigned_32 );
         compuhdr.version = 2;
         compuhdr.abbrev_offset = SectionTable[SECT_DEBUG_ABBREV].start;
@@ -371,7 +370,7 @@ void DwarfAddModule( mod_entry *mod, section *sect )
         PutInfo( mod->d.d->pubsym.u.vm_ptr, mod->name, namelen );
         mod->d.d->pubsym.u.vm_ptr += namelen;
         if( mod->d.d->dasi.size > 0 ) {
-            mod->d.d->dasi.u.vm_ptr = SectionTable[SECT_DEBUG_LINE].addr + mod->d.d->dasi.u.vm_offs;
+            mod->d.d->dasi.u.vm_ptr = SectionTable[SECT_DEBUG_LINE].vm_ptr + mod->d.d->dasi.u.vm_offs;
             stmt_hdr.total_length = mod->d.d->dasi.size - sizeof( unsigned_32 );
             stmt_hdr.version = 2;
             stmt_hdr.prologue_length = GetStmtHeaderSize( mod ) - offsetof( stmt_prologue, minimum_instruction_length );
@@ -389,10 +388,9 @@ void DwarfAddModule( mod_entry *mod, section *sect )
             stmt_hdr.standard_opcode_lengths[6] = 0;
             stmt_hdr.standard_opcode_lengths[7] = 0;
             stmt_hdr.standard_opcode_lengths[8] = 0;
-            PutInfo( mod->d.d->dasi.u.vm_ptr, (void *) &stmt_hdr, sizeof( stmt_prologue ) );
+            PutInfo( mod->d.d->dasi.u.vm_ptr, (void *)&stmt_hdr, sizeof( stmt_prologue ) );
             mod->d.d->dasi.u.vm_ptr += sizeof( stmt_prologue );
-            zero = 0;                       // no include directories;
-            PutInfo( mod->d.d->dasi.u.vm_ptr, &zero, 1 );
+            PutInfoNulls( mod->d.d->dasi.u.vm_ptr, 1 );  // no include directories;
             mod->d.d->dasi.u.vm_ptr += 1;
             buff = alloca( namelen + 3 );
             memcpy( &buff[0], mod->name, namelen );
@@ -401,8 +399,7 @@ void DwarfAddModule( mod_entry *mod, section *sect )
             buff[namelen + 2] = 0;          // no length
             PutInfo( mod->d.d->dasi.u.vm_ptr, buff, namelen + 3 );
             mod->d.d->dasi.u.vm_ptr += namelen + 3;
-            zero = 0;                       // no more file names
-            PutInfo( mod->d.d->dasi.u.vm_ptr, &zero, 1 );
+            PutInfoNulls( mod->d.d->dasi.u.vm_ptr, 1 );  // no more file names
             mod->d.d->dasi.u.vm_ptr += 1;
         }
     }
@@ -412,23 +409,21 @@ void DwarfGenModule( void )
 /********************************/
 // write out the addr info, and write out the null die at the end of .debug_info
 {
-    arange_tuple        tuple;
     unsigned            size;
-    unsigned_8          nulldie;
 
     if( CurrMod->modinfo & MOD_DBI_SEEN )
         return;
-    if( CurrMod->d.d->arange.size > 0 ) {       // write out terminator arange
+    if( CurrMod->d.d->arange.size > 0 ) {
+        // write out terminator arange
         if( FmtData.type & MK_SEGMENTED ) {
             size = sizeof( segmented_arange_tuple );
         } else {
             size = sizeof( flat_arange_tuple );
         }
-        memset( &tuple, 0, size );
-        PutInfo( CurrMod->d.d->arange.u.vm_ptr, &tuple, size );
+        PutInfoNulls( CurrMod->d.d->arange.u.vm_ptr, size );
     }
-    nulldie = 0;
-    PutInfo( CurrMod->d.d->pubsym.u.vm_ptr, &nulldie, sizeof( unsigned_8 ) );
+    // write out terminator pubsym
+    PutInfoNulls( CurrMod->d.d->pubsym.u.vm_ptr, 1 );
 }
 
 static void DefAClass( void *_seg )
@@ -710,7 +705,7 @@ void DwarfAddrSectStart( section *sect )
     if( ( sect == Root ) && ( SectionTable[SECT_DEBUG_ABBREV].size > 0 ) ) {
         for( index = 0; index < SECT_NUM_SECTIONS; index++ ) {
             if( index != SECT_DEBUG_ABBREV ) {
-                SectionTable[index].addr = DBIAlloc( SectionTable[index].size );
+                SectionTable[index].vm_ptr = DBIAlloc( SectionTable[index].size );
             }
         }
     }
@@ -742,7 +737,7 @@ static void WriteDwarfSect( unsigned addidx, unsigned_32 size )
             WriteLoad( FlatStandardAbbrevs, size );
         }
     } else {
-        WriteInfo( SectionTable[addidx].addr, size );
+        WriteInfo( SectionTable[addidx].vm_ptr, size );
     }
 }
 

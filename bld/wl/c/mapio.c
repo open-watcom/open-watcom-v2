@@ -48,9 +48,11 @@
 #include "ring.h"
 #include "mapio.h"
 
+#include "virtmem.h"
+#include "exeelf.h"
+#include "dbgcomm.h"
 #include "dwarf.h"
-
-extern void *   DwarfGetLineInfo( unsigned_32 *size );
+#include "dbgdwarf.h"
 
 typedef struct {
     uint_32                     address;
@@ -525,7 +527,8 @@ uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value )
 void WriteMapLines( void )
 {
     uint_8                      *input;
-    unsigned_32                 length;
+    virt_mem                    input_vm;
+    virt_mem_size               length;
     uint_8                      *p;
     uint                        opcode_base;
     uint                        *opcode_lengths;
@@ -546,12 +549,15 @@ void WriteMapLines( void )
     uint_32                     unit_length;
     uint_8                      *unit_base;
 
-    input = (uint_8 *)DwarfGetLineInfo( &length );
+    input_vm = DwarfGetLineInfo( &length );
 
-    if( input == NULL || length == 0 )
+    if( input_vm == 0 || length == 0 )
        return;
 
+    _ChkAlloc( input, length );
     p = input;
+
+    ReadInfo( input_vm, input, length );
 
     while( p - input < length ) {
         state.col = 0;
@@ -578,7 +584,7 @@ void WriteMapLines( void )
         opcode_base = *p;
         p += 1;
 
-        opcode_lengths = malloc( sizeof( uint ) * opcode_base );
+        _ChkAlloc( opcode_lengths, sizeof( uint ) * opcode_base );
         for( u = 0; u < opcode_base - 1; ++u ) {
             opcode_lengths[ u ] = *p;
             ++p;
@@ -705,9 +711,10 @@ void WriteMapLines( void )
                 state.basic_block = 0;
             }
         }
-        free( opcode_lengths  );
+        _LnkFree( opcode_lengths  );
         WriteMapNL( 1 );
     }    
+    _LnkFree( input );
 }
 
 static bool CheckSymRecList( void *_info, void *sym )

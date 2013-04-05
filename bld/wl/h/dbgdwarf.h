@@ -48,7 +48,6 @@ extern void     DwarfGenAddrInfo( seg_leader * );
 extern void     DwarfAddrSectStart( section * );
 extern void     DwarfWrite( void );
 extern int      DwarfCountDebugSections( void );
-extern offset   DwarfWriteElf( offset curr_off, stringtable *strtab,
-                                Elf32_Shdr *dbgsecbegin );
+extern offset   DwarfWriteElf( offset curr_off, stringtable *strtab, Elf32_Shdr *dbgsecbegin );
 extern offset   DwarfWriteTrailer(offset);
-extern void *   DwarfGetLineInfo( unsigned_32 *size );
+extern virt_mem DwarfGetLineInfo( virt_mem_size *size );

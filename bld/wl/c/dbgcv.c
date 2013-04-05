@@ -346,7 +346,6 @@ static void GenSrcModHeader( void )
     cheesy_file_table           file_tbl;
     cheesy_mapping_table        map_tbl;
     unsigned                    adjust;
-    unsigned_32                 buff;
 
     if( LineInfo.linestart == 0 )
         return;
@@ -363,17 +362,14 @@ static void GenSrcModHeader( void )
     file_tbl.pad = 0;
     file_tbl.range[0] = LineInfo.range;
     file_tbl.name[0] = strlen( CurrMod->name );
-    file_tbl.baseSrcLn[0] = sizeof( mod_hdr ) +
-                    ROUND_UP( sizeof( file_tbl ) + file_tbl.name[0], 4 );
+    file_tbl.baseSrcLn[0] = sizeof( mod_hdr ) + ROUND_UP( sizeof( file_tbl ) + file_tbl.name[0], 4 );
     PutInfo( LineInfo.linestart, &file_tbl, sizeof( file_tbl ) );
     LineInfo.linestart += sizeof( file_tbl );
     PutInfo( LineInfo.linestart, CurrMod->name, file_tbl.name[0] );
     LineInfo.linestart += file_tbl.name[0];
-    adjust = file_tbl.baseSrcLn[0] - sizeof( mod_hdr ) - sizeof( file_tbl )
-                - file_tbl.name[0];
+    adjust = file_tbl.baseSrcLn[0] - sizeof( mod_hdr ) - sizeof( file_tbl ) - file_tbl.name[0];
     if( adjust != 0 ) {
-        buff = 0;
-        PutInfo( LineInfo.linestart, &buff, adjust );
+        PutInfoNulls( LineInfo.linestart, adjust );
         LineInfo.linestart += adjust;
     }
     map_tbl.Seg = mod_hdr.seg[0];
