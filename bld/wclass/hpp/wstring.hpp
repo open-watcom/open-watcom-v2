@@ -56,14 +56,14 @@ WCLASS WString : public WObject
                 virtual WString& self() { return *this; }
 #endif
                 virtual bool WEXPORT isEqual( const WObject* ) const;
-                virtual bool WEXPORT operator==( char* cstring ) const;
+                virtual bool WEXPORT operator==( const char* cstring ) const;
                 virtual bool operator==( WObject const & obj ) const
                         { return( isEqual( &obj ) ); }
                 virtual int WEXPORT compare( const WObject * ) const;
                 const char& operator[]( int index ) const { return _value[ index ]; }
                 void setChar( int index, char ch ) { _value[index] = ch; }
                 void WEXPORT deleteChar( int index, int count=1 );
-                int WEXPORT size() const { return (_value==NULL) ? 0 : strlen( _value ); }
+                int WEXPORT size() const { return (_value==NULL) ? 0 : (int)strlen( _value ); }
                 const char* WEXPORT gets() const;
                 WEXPORT operator const char*() const { return gets(); }
                 WEXPORT operator int() const;

@@ -7,9 +7,18 @@ wclass_autodepends = .autodepend
 !include deftarg.mif
 !include defrule.mif
 
-.cpp : ../cpp;../../cpp
+inc_dir_dos  = -I"$(wclass_dir)/dos/hpp" 
+inc_dir_nt   = -I"$(wclass_dir)/win/hpp" 
+inc_dir_os2  = -I"$(wclass_dir)/pm/hpp" 
+inc_dir_win  = -I"$(wclass_dir)/win/hpp" 
 
-inc_dirs = -I"../hpp" -I"../../hpp" -I"$(gui_dir)/h"
+cpp_dir_nt   = $(wclass_dir)/win/cpp
+cpp_dir_os2  = $(wclass_dir)/pm/cpp
+cpp_dir_win  = $(wclass_dir)/win/cpp
+
+.cpp : $(cpp_dir_$(host_os));$(wclass_dir)/cpp
+
+inc_dirs = $(inc_dir_$(host_os)) -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
 
 extra_c_flags = -s
 
@@ -85,15 +94,16 @@ win_objs = &
         wserver.obj &
         wsystem.obj &
         wflashp.obj &
-        wtimer.obj &
+        wtimer.obj
 
 extra_objlib_nt_386     = $(win_objs) $(ndos_objs)
 extra_objlib_nt_axp     = $(win_objs) $(ndos_objs)
+extra_objlib_nt_x64     = $(win_objs) $(ndos_objs)
 extra_objlib_win_i86    = $(win_objs) $(ndos_objs)
 extra_objlib_dos_386    = $(ndos_objs)
 extra_objlib_os2_386    = $(win_objs) $(ndos_objs) wddeobj.obj
 
-extra_objlib = $(extra_objlib_$(host_OS)_$(host_CPU))
+extra_objlib = $(extra_objlib_$(host_os)_$(host_cpu))
 
 $(name).lib : $(WCLASS_OBJS) $(extra_objlib)
         $(librarian) $(libflags) $<

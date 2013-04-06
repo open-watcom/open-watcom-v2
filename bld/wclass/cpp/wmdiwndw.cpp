@@ -106,3 +106,4 @@ WRect WEXPORT WMdiWindow::defaultRectangle() {
 WEXPORT WMdiWindow::~WMdiWindow() {
 /*********************************/
 }
+

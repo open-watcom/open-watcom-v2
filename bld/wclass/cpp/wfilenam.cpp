@@ -32,17 +32,14 @@
 
 #include "wfilenam.hpp"
 #include "wobjfile.hpp"
-#include "diskos.h"
 
 extern "C" {
     #include <stdio.h>
     #include <stdlib.h>
-    #include <unistd.h>
 #ifndef __UNIX__
     #include <direct.h>
     #include <dos.h>
 #endif
-    #include <fcntl.h>
     #include <time.h>
 #ifdef __UNIX__
     #include <sys/types.h>
@@ -50,7 +47,12 @@ extern "C" {
 #else
     #include <sys/utime.h>
 #endif
+    #include "wio.h"
 };
+
+#define PATHSEP_CHAR    (_pathsep[2])
+#define PATHSEP_STR     (_pathsep + 2)
+#define PARENTSEP_STR   (_pathsep)
 
 typedef struct fullName {
     char        path[ _MAX_PATH + 1 ];
@@ -84,30 +86,30 @@ static void makepath( char* path, const char* drive, const char* dir, const char
     _makepath( path, drive, dir, fname, ext );
 }
 
-static void splitpath( const char* path, char* drive, char* dir, char* fname, char* ext )
+static void splitpath( const char* path, char* drive, char* dir, char* fname, char* ext, const char* pathsep )
 {
     _splitpath( path, drive, dir, fname, ext );
     if( dir != NULL ) {
-        int dirlen = strlen( dir );
-        if( dirlen > 1 && dir[ dirlen-1 ] == '\\' ) {
+        size_t dirlen = strlen( dir );
+        if( dirlen > 1 && dir[ dirlen-1 ] == pathsep[0] ) {
             dir[ dirlen-1 ] = '\0';
         }
     }
 }
 
-static void splitref( FullName& s, const char* f )
+static void splitref( FullName& s, const char* f, const char *pathsep )
 {
     if( f != NULL ) {
         _splitpath( f, s.drive, s.dir, s.fname, s.ext );
     } else {
         char cwd[ _MAX_PATH + 1 ];
         getcwd( cwd, sizeof( cwd ) );
-        int icount = strlen( cwd );
+        size_t icount = strlen( cwd );
 //        for( int i=0; i<icount; i++ ) {
 //            cwd[i] = (char)tolower( cwd[i] );
 //        }
-        if( cwd[ icount-1 ] != SYS_DIR_SEP_CHAR ) {
-            strcat( cwd, SYS_DIR_SEP_STR );
+        if( cwd[ icount-1 ] != pathsep[0] ) {
+            strcat( cwd, pathsep );
         }
         _splitpath( cwd, s.drive, s.dir, s.fname, s.ext );
     }
@@ -117,9 +119,13 @@ static FullName _x;
 
 Define( WFileName )
 
-WEXPORT WFileName::WFileName( const char* name )
+WEXPORT WFileName::WFileName( const char* name, char pathsep )
     : WString( name )
 {
+    _pathsep[0] = '.';
+    _pathsep[1] = '.';
+    _pathsep[2] = pathsep;
+    _pathsep[3] = '\0';
 }
 
 #ifndef NOPERSIST
@@ -130,11 +136,33 @@ WFileName* WEXPORT WFileName::createSelf( WObjectFile& )
 
 void WEXPORT WFileName::readSelf( WObjectFile& p )
 {
+    const char *x;
+    char from;
+
     WString::readSelf( p );
+    if( PATHSEP_CHAR == '/' ) {
+        from = '\\';
+    } else {
+        from = '/';
+    }
+    for( x = *this; (x = strchr( x, from )) != NULL; ++x ) {
+        *(char *)x = PATHSEP_CHAR;
+    }
 }
 
 void WEXPORT WFileName::writeSelf( WObjectFile& p )
 {
+    const char *x;
+    char    from;
+
+    if( PATHSEP_CHAR == '/' ) {
+        from = '\\';
+    } else {
+        from = '/';
+    }
+    for( x = *this; (x = strchr( x, from )) != NULL; ++x ) {
+        *(char *)x = PATHSEP_CHAR;
+    }
     WString::writeSelf( p );
 }
 #endif
@@ -165,27 +193,27 @@ void WEXPORT WFileName::relativeTo( const char* f )
     int     i;
 
     _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
-    if( _x.dir[0] == SYS_DIR_SEP_CHAR ) {
+    if( _x.dir[0] == PATHSEP_CHAR ) {
         FullName        s;
-        splitref( s, f );
-        if( s.dir[0] == SYS_DIR_SEP_CHAR && strieq( s.drive, _x.drive ) ) {
+        splitref( s, f, PATHSEP_STR );
+        if( s.dir[0] == PATHSEP_CHAR && strieq( s.drive, _x.drive ) ) {
             _x.drive[0] = '\0';
             int b = 0;
             for( i=1; _x.dir[i] != '\0' && s.dir[i] != '\0'; i++ ) {
                 if( tolower( _x.dir[i] ) != tolower( s.dir[i] ) ) break;
-                if( s.dir[i] == SYS_DIR_SEP_CHAR ) b = i;
+                if( s.dir[i] == PATHSEP_CHAR ) b = i;
             }
             if( b == 0 ) {
                 strcpy( s.dir, _x.dir );
             } else {
                 int n = 0;
                 for( ; s.dir[i] != '\0'; i++ ) {
-                    if( s.dir[i] == SYS_DIR_SEP_CHAR )  n++;
+                    if( s.dir[i] == PATHSEP_CHAR )  n++;
                 }
                 s.dir[0] = '\0';
                 if( n > 0 ) {
                     for( int j=0; j<n; j++ ) {
-                        strcpy( &s.dir[3*j], ".." SYS_DIR_SEP_STR );
+                        strcpy( &s.dir[3*j], PARENTSEP_STR );
                     }
                 }
                 strcpy( &s.dir[3*n], &_x.dir[ b+1 ] );
@@ -200,9 +228,10 @@ void WEXPORT WFileName::absoluteTo( const char* f )
 {
 //
     int icount = size();
-    int i, j, k;
+    int i, j;
+    size_t k;
 
-    for( i=0; i<icount; i++ ) {
+    for( i = 0; i < icount; i++ ) {
         if( strncmp( &(*this)[i], "$(", 2 ) == 0 ) {
             return;
         }
@@ -210,26 +239,26 @@ void WEXPORT WFileName::absoluteTo( const char* f )
 //
     relativeTo( f );
     FullName    s;
-    splitref( s, f );
+    splitref( s, f, PATHSEP_STR );
     _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
     if( _x.drive[0] == '\0' ) {
         strcpy( _x.drive, s.drive );
     }
-    if( _x.dir[0] == SYS_DIR_SEP_CHAR ) {
+    if( _x.dir[0] == PATHSEP_CHAR ) {
         strcpy( s.dir, _x.dir );
     } else if( _x.dir[0] == '.' ) {
-        for( i=0; strnicmp( &_x.dir[i], ".." SYS_DIR_SEP_STR, 3 )==0; i += 3 );
-        int slen = strlen( s.dir );
-        if( slen > 0 && s.dir[ slen-1 ] == SYS_DIR_SEP_CHAR ) {
+        for( i = 0; strnicmp( &_x.dir[i], PARENTSEP_STR, 3 ) == 0; i += 3 );
+        size_t slen = strlen( s.dir );
+        if( slen > 0 && s.dir[ slen-1 ] == PATHSEP_CHAR ) {
             s.dir[ slen-1 ] = '\0';
         }
-        for( j=0; j < i; j += 3 ) {
-            for( k=strlen( s.dir ); k>0; k-- ) {
-                if( s.dir[k] == SYS_DIR_SEP_CHAR ) break;
+        for( j = 0; j < i; j += 3 ) {
+            for( k = strlen( s.dir ); k > 0; k-- ) {
+                if( s.dir[k] == PATHSEP_CHAR ) break;
             }
             s.dir[k] = '\0';
         }
-        strcat( s.dir, SYS_DIR_SEP_STR );
+        strcat( s.dir, PATHSEP_STR );
         strcat( s.dir, &_x.dir[i] );
     } else {
         strcat( s.dir, _x.dir );
@@ -241,7 +270,7 @@ void WEXPORT WFileName::absoluteTo( const char* f )
 #ifdef __UNIX__
 bool WEXPORT WFileName::setCWD() const
 {
-    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
+    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
     if( strlen( _x.dir ) > 0 ) {
         return( chdir( _x.dir ) == 0 );
     }
@@ -250,7 +279,7 @@ bool WEXPORT WFileName::setCWD() const
 #else
 bool WEXPORT WFileName::setCWD() const
 {
-    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
+    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
     unsigned olddrive;
     if( setdrive( _x.drive, &olddrive ) ) {
         if( strlen( _x.dir ) > 0 ) {
@@ -276,7 +305,7 @@ void WEXPORT WFileName::getCWD( bool slash )
 //        _x.path[i] = (char)tolower( _x.path[i] );
 //    }
     if( slash ) {
-        strcat( _x.path, SYS_DIR_SEP_STR );
+        strcat( _x.path, PATHSEP_STR );
     }
     *this = _x.path;
 }
@@ -284,7 +313,7 @@ void WEXPORT WFileName::getCWD( bool slash )
 #ifdef __UNIX__
 bool WEXPORT WFileName::makeDir() const
 {
-    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
+    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
     if( strlen( _x.dir ) > 0 ) {
         return mkdir( _x.dir, 0755 ) == 0;
     }
@@ -293,7 +322,7 @@ bool WEXPORT WFileName::makeDir() const
 #else
 bool WEXPORT WFileName::makeDir() const
 {
-    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
+    splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext, PATHSEP_STR );
     if( strlen( _x.dir ) > 0 ) {
         unsigned olddrive;
         if( setdrive( _x.drive, &olddrive ) ) {
@@ -394,7 +423,7 @@ const char* WEXPORT WFileName::dir( bool slash ) const
     if( slash ) {
         _splitpath( *this, NULL, _x.dir, NULL, NULL );
     } else {
-        splitpath( *this, NULL, _x.dir, NULL, NULL );
+        splitpath( *this, NULL, _x.dir, NULL, NULL, PATHSEP_STR );
     }
     return _x.dir;
 }
@@ -437,7 +466,7 @@ static bool isSpecialChar( char ch ) {
     return( FALSE );
 }
 
-static const char illegalChars[] = { "\/:*?\"<>|" };
+static const char illegalChars[] = { "\\/:*?\"<>|" };
 static bool isIllegalChar( char ch ) {
     char const        *ptr;
 
@@ -451,9 +480,9 @@ static bool isIllegalChar( char ch ) {
 
 static bool isLongName( char* fname )
 {
-    int len = strlen( fname );
+    size_t len = strlen( fname );
     if( len > 0 ) {
-        for( int i=0; i<len; i++ ) {
+        for( size_t i = 0; i < len; i++ ) {
             char ch = fname[i];
             if( !isalnum( ch ) && !isSpecialChar( ch ) ) {
                return TRUE;
@@ -464,22 +493,22 @@ static bool isLongName( char* fname )
     return FALSE;
 }
 
-static bool isLongDirName( char* dirNames )
+static bool isLongDirName( char* dirNames, const char *pathsep )
 {
     char* cpDirNames;
     char* aDirName;
-    char* delims = { "\\/" };
+    bool rc = FALSE;
 
     cpDirNames = strdup( dirNames );
-    aDirName = strtok( cpDirNames, delims );
+    aDirName = strtok( cpDirNames, pathsep );
     while( aDirName != NULL ) {
         if( isLongName( aDirName ) ) {
-            return TRUE;
-        } else {
-            aDirName = strtok( NULL, delims );
+            rc = TRUE;
+            break;
         }
+        aDirName = strtok( NULL, pathsep );
     }
-    return FALSE;
+    return rc;
 }
 
 bool WEXPORT WFileName::needQuotes( char ch ) const
@@ -488,7 +517,7 @@ bool WEXPORT WFileName::needQuotes( char ch ) const
         int len = size();
         if( len > 0 && ( (*this)[0] != ch || (*this)[ len-1 ] != ch ) ) {
             _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
-            if( isLongDirName( _x.dir ) || isLongName( _x.fname ) ) {
+            if( isLongDirName( _x.dir, PATHSEP_STR ) || isLongName( _x.fname ) ) {
                 return TRUE;
             }
         }
@@ -524,9 +553,9 @@ bool WEXPORT WFileName::legal() const
     if( !isMask() ) {
         _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
         bool isLong = needQuotes();
-        int len = strlen( _x.fname );
+        size_t len = strlen( _x.fname );
         if( len > 0 ) {
-            for( int i=0; i<len; i++ ) {
+            for( size_t i = 0; i < len; i++ ) {
                 char ch = _x.fname[i];
                 if( isLong ) {
                     if( isIllegalChar( ch ) ) {
@@ -597,8 +626,8 @@ void WEXPORT WFileName::path( WFileName& f, bool slash ) const
     _splitpath( *this, _x.drive, _x.dir, NULL, NULL );
     makepath( _x.path, _x.drive, _x.dir, NULL, NULL );
     if( !slash ) {
-        int len = strlen( _x.path );
-        if( len > 0 && _x.path[ len-1 ] == '\\' ) {
+        size_t len = strlen( _x.path );
+        if( len > 0 && _x.path[ len-1 ] == PATHSEP_CHAR ) {
             _x.path[ len-1 ] = '\0';
         }
     }
@@ -618,6 +647,29 @@ bool WEXPORT WFileName::renameFile( const char* newname ) const
     return FALSE;
 }
 
+
+char WEXPORT WFileName::getPathSep()
+{
+    return PATHSEP_CHAR;
+}
+
+char WEXPORT WFileName::setPathSep( char pathsep )
+{
+    char    old_pathsep;
+
+    old_pathsep = PATHSEP_CHAR;
+    PATHSEP_CHAR = pathsep;
+    return old_pathsep;
+}
+
+void WEXPORT WFileName::normalize()
+{
+    if( PATHSEP_CHAR == '/' ) {
+        
+    } else {
+
+    }
+}
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class

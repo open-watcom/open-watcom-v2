@@ -62,8 +62,8 @@ const char * GetParm( char idxChar, va_list args ) {
     return ret;
 }
 
-static char * WEXPORT WResStr::formats( char * buf, unsigned len, unsigned id, ... ) {
-/************************************************************************************/
+char * WEXPORT WResStr::formats( char * buf, unsigned len, unsigned id, ... ) {
+/*****************************************************************************/
 
     WResStr         format( id );
     const char *    fmts = format;

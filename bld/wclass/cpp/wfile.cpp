@@ -39,9 +39,9 @@
 extern "C" {
     #include <string.h>
     #include <stdio.h>
-    #include <unistd.h>
     #include <stdlib.h>
     #include <stdarg.h>
+    #include "wio.h"
 };
 
 #define MAX_FORMATTED 500
@@ -68,10 +68,7 @@ WEXPORT WFile::~WFile()
 
 bool WEXPORT WFile::open( const char* name, OpenStyle style )
 {
-// Why should execute permission be set?
-//    #define PERM S_IRWXU | S_IRWXG | S_IRWXO
-    #define PERM S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH
-    _handle = ::open( name, style, PERM );
+    _handle = ::open( name, style, PMODE_RW );
     _style = style;
     _ok = (bool)( _handle != FILE_ERROR );
     _eof = !_ok;

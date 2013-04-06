@@ -37,11 +37,12 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include "diskos.h"
 
 WCLASS WFileName : public WString {
     Declare( WFileName )
     public:
-        WEXPORT WFileName( const char* name=NULL );
+        WEXPORT WFileName( const char* name=NULL, char pathsep=SYS_DIR_SEP_CHAR );
         WEXPORT ~WFileName();
         WFileName& WEXPORT operator=( const WFileName& f );
 
@@ -83,6 +84,11 @@ WCLASS WFileName : public WString {
         void WEXPORT path( WFileName& f, bool slash=TRUE ) const;
         bool WEXPORT removeFile() const;
         bool WEXPORT renameFile( const char* newname ) const;
+        char WEXPORT setPathSep( char );
+        char WEXPORT getPathSep();
+        void WEXPORT normalize();
+    private:
+        char _pathsep[4];
 };
 
 #endif

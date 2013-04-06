@@ -36,12 +36,12 @@
 
 #include "wstd.h"
 
-#ifdef __386__
-    #define WFAR
-    #define _WEXPORT
-#else
+#ifdef _M_I86
     #define WFAR        __far
     #define _WEXPORT    __export
+#else
+    #define WFAR
+    #define _WEXPORT
 #endif
 
 #define WEXPORT

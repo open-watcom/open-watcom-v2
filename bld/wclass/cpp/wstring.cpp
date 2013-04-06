@@ -148,7 +148,7 @@ bool WEXPORT WString::isEqual( const WObject* str ) const
     return strcmp( _value, ((WString*)str)->_value ) == 0;
 }
 
-bool WEXPORT WString::operator==( char* cstring ) const
+bool WEXPORT WString::operator==( const char* cstring ) const
 {
     if( _value == NULL ) {
         if( cstring == NULL ) return TRUE;

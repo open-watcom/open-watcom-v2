@@ -291,7 +291,7 @@ public:
         return( GUIGetExtentX( _handle, (char *)text, len ) );
     }
     virtual int WEXPORT getTextExtentX( const char *text ) {
-        return( GUIGetExtentX( _handle, (char *)text, strlen( text ) ) );
+        return( GUIGetExtentX( _handle, (char *)text, (int)strlen( text ) ) );
     }
     virtual int WEXPORT getTextExtentY( const char *text ) {
         return( GUIGetExtentY( _handle, (char *)text ) );

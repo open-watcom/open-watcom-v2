@@ -60,7 +60,6 @@ WString& WCommandList::getCommand( WString& command ) {
     return command;
 }
 
-
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
 // definition only for warning levels above 8 

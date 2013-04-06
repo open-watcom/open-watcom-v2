@@ -100,7 +100,7 @@ void WAutoDialog::initialize() {
     for( i = 0; i < icount; i++ ) {
         WString s( _prompts->cStringAt( i ) );
         bool bro = FALSE;
-        char* p = strchr( s, '=' );
+        char* p = strchr( (char *)s.gets(), '=' );
         if( p != NULL ) { // this code depends on internals of WString!
             *p = '\0';
             p++;

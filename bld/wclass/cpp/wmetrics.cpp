@@ -33,12 +33,11 @@
 #include "wmetrics.hpp"
 #include "wrect.hpp"
 
-static WRect                    WSystemMetrics::_initDefRect;
-static WRect                    WSystemMetrics::_defRect;
-static WRect                    WSystemMetrics::_screenCoords;
-static gui_system_metrics       WSystemMetrics::_metrics;
-static gui_rect                 WSystemMetrics::_screen;
-
+WRect                    WSystemMetrics::_initDefRect;
+WRect                    WSystemMetrics::_defRect;
+WRect                    WSystemMetrics::_screenCoords;
+gui_system_metrics       WSystemMetrics::_metrics;
+gui_rect                 WSystemMetrics::_screen;
 
 void    InitWClass( gui_rect *screen ) {
 /**************************************/

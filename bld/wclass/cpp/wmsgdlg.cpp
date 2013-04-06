@@ -42,7 +42,7 @@ extern "C" {
 #define MAX_MESSAGE 500
 
 
-static MsgRetType WMessageDialog::domessage( WWindow *parent,
+MsgRetType WMessageDialog::domessage( WWindow *parent,
                                              const char *text,
                                              const char *caption,
                                              unsigned type ) {
@@ -98,6 +98,7 @@ MsgRetType WEXPORT WMessageDialog::message( WWindow* parent, MsgLevel level,
     type = (unsigned)level | (unsigned)button;
     return( domessage( parent, text, caption, type ) );
 }
+
 MsgRetType WEXPORT WMessageDialog::messager( WWindow* parent, MsgLevel level,
                                              MsgButtons button,
                                              uint text_id,
