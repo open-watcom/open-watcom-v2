@@ -51,8 +51,8 @@ typedef struct {
     struct {
         virt_mem_ptr    u;
     }               curr;
-    unsigned_32     size;
-    unsigned_32     start;
+    virt_mem_size   size;
+    virt_mem_size   start;
 } dbi_section;
 
 
@@ -110,8 +110,8 @@ typedef struct modinfo {
 } modinfo;
 
 typedef struct lineseg {
-    unsigned_32 segment;
-    unsigned_16 num;
+    unsigned_32         segment;
+    unsigned_16         num;
 } lineseg;
 
 typedef struct segheader {

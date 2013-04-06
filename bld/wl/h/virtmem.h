@@ -31,12 +31,12 @@
 
 #if defined( USE_VIRTMEM )
 
-extern void ReadInfo( virt_mem, void *, unsigned );
-extern void PutInfo( virt_mem, void *, unsigned );
+extern void ReadInfo( virt_mem, void *, virt_mem_size );
+extern void PutInfo( virt_mem, void *, virt_mem_size );
 extern void CopyInfo( virt_mem, virt_mem, unsigned );
-extern void WriteInfo( virt_mem, unsigned long );
-extern void PutInfoNulls( virt_mem, unsigned long );
-extern bool CompareInfo( virt_mem, void *, unsigned );
+extern void WriteInfo( virt_mem, virt_mem_size );
+extern void PutInfoNulls( virt_mem, virt_mem_size );
+extern bool CompareInfo( virt_mem, void *, virt_mem_size );
 
 #define GET32INFO( v, b ) ReadInfo( v, &(b), sizeof(unsigned_32) )
 #define GET16INFO( v, b ) ReadInfo( v, &(b), sizeof(unsigned_16) )
@@ -44,8 +44,6 @@ extern bool CompareInfo( virt_mem, void *, unsigned );
 #define PUT16INFO( v, b ) PutInfo( v, &(b), sizeof(unsigned_16) )
 
 #else
-
-extern void WriteLoad( void *, unsigned long );
 
 #define ReadInfo( v, b, l ) memcpy( b, v, l )
 #define PutInfo( v, b, l ) memcpy( v, b, l )

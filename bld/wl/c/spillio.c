@@ -105,8 +105,8 @@ f_handle OpenTempFile( char **fname )
     return QOpenRW( *fname );
 }
 
-virt_mem_size SpillAlloc( unsigned amt )
-/**************************************/
+virt_mem_size SpillAlloc( virt_mem_size amt )
+/*******************************************/
 {
     virt_mem_size           stg;
 

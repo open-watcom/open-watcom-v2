@@ -36,7 +36,7 @@ typedef union {
 } spilladdr;
 
 extern void             InitSpillFile( void );
-extern virt_mem_size    SpillAlloc( unsigned );
+extern virt_mem_size    SpillAlloc( virt_mem_size );
 extern void             SpillNull( virt_mem_size, unsigned, unsigned  );
 extern void             SpillWrite( virt_mem_size, unsigned, void *, unsigned );
 extern void             SpillRead( virt_mem_size, unsigned, void *, unsigned );

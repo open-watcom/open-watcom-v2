@@ -48,10 +48,10 @@
 #include "ring.h"
 #include "mapio.h"
 
+#include "dwarf.h"
 #include "virtmem.h"
 #include "exeelf.h"
 #include "dbgcomm.h"
-#include "dwarf.h"
 #include "dbgdwarf.h"
 
 typedef struct {
@@ -555,10 +555,9 @@ void WriteMapLines( void )
        return;
 
     _ChkAlloc( input, length );
-    p = input;
-
     ReadInfo( input_vm, input, length );
 
+    p = input;
     while( p - input < length ) {
         state.col = 0;
         state.is_32 = 0;
@@ -590,11 +589,19 @@ void WriteMapLines( void )
             ++p;
         }
 
-        if( p - input >= length ) return;
+        if( p - input >= length ) {
+            _LnkFree( opcode_lengths  );
+            _LnkFree( input );
+            return;
+        }
 
         while( *p != 0 ) {
             p += strlen( (char *)p ) + 1;
-            if( p - input >= length ) return;
+            if( p - input >= length ) {
+                _LnkFree( opcode_lengths  );
+                _LnkFree( input );
+                return;
+            }
         }
         p++;
         while( *p != 0 ) {
@@ -605,7 +612,11 @@ void WriteMapLines( void )
             p = DecodeULEB128( p, &directory );
             p = DecodeULEB128( p, &mod_time );
             p = DecodeULEB128( p, &file_length );
-            if( p - input >= length ) return;
+            if( p - input >= length ) {
+                _LnkFree( opcode_lengths  );
+                _LnkFree( input );
+                return;
+            }
         }
         
         p++;
@@ -711,8 +722,8 @@ void WriteMapLines( void )
                 state.basic_block = 0;
             }
         }
-        _LnkFree( opcode_lengths  );
         WriteMapNL( 1 );
+        _LnkFree( opcode_lengths  );
     }    
     _LnkFree( input );
 }
