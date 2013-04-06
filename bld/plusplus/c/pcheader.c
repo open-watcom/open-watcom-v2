@@ -54,12 +54,6 @@
 #include "cgiobuff.h"
 #include "brinfo.h"
 
-#if defined(__UNIX__)
- #define _FILENAME_CMP  strcmp
-#else
- #define _FILENAME_CMP  stricmp
-#endif
-
 typedef struct pch_reloc_info {
     off_t               start;
     off_t               stop;
@@ -653,7 +647,7 @@ static void transferCompFlags( COMP_FLAGS *testflags )
 static boolean stringIsDifferent( const char *from_pch, const char *curr, unsigned msg )
 {
     if( ! CompFlags.pch_min_check ) {
-        if( _FILENAME_CMP( from_pch, curr ) != 0 ) {
+        if( FNAMECMPSTR( from_pch, curr ) != 0 ) {
             pchWarn( msg );
             return( TRUE );
         }
@@ -709,7 +703,7 @@ static boolean stalePCH( char *include_file )
         return( TRUE );
     }
     pbuff1 = readFileStringLocate( buff1 );
-    if( _FILENAME_CMP( pbuff1, WholeFName ) == 0 ) {
+    if( FNAMECMPSTR( pbuff1, WholeFName ) == 0 ) {
         if( CompFlags.pch_debug_info_opt ) {
             // this source file created the PCH but it is being recompiled
             // so we have to recreate the PCH along with the debug info
@@ -719,7 +713,7 @@ static boolean stalePCH( char *include_file )
     }
     pbuff1 = readFileStringLocate( buff1 );
     include_file = IoSuppFullPath( include_file, buff2, sizeof( buff2 ) );
-    if( _FILENAME_CMP( pbuff1, include_file ) != 0 ) {
+    if( FNAMECMPSTR( pbuff1, include_file ) != 0 ) {
         pchWarn( WARN_PCH_CONTENTS_INCFILE );
         return( TRUE );
     }

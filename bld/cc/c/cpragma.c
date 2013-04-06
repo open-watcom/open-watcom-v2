@@ -34,6 +34,12 @@
 #include "pragdefn.h"
 #include "pdefn2.h"
 
+#ifdef __UNIX__
+    #define FNAMECMPSTR      strcmp      /* for case sensitive file systems */
+#else
+    #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
+#endif
+
 struct  pack_info {
     struct pack_info *next;
     int         pack_amount;
@@ -205,40 +211,34 @@ local void PragFlag( int value )
 void AddLibraryName( char *name, char priority )
 /**********************************************/
 {
-    library_list    **next_owner;
     library_list    **new_owner;
-    library_list    **old_owner;
+    library_list    **owner;
     library_list    *lib;
     int             len;
 
-    new_owner = &HeadLibs;
-    old_owner = NULL;
-    for( next_owner = &HeadLibs; (lib = *next_owner) != NULL; next_owner = &lib->next ) {
+    for( owner = &HeadLibs; (lib = *owner) != NULL; owner = &lib->next ) {
         if( lib->libname[0] < priority ) {
-            if( old_owner == NULL && strcmp( lib->libname + 1, name ) == 0 ) {
-                old_owner = next_owner;
-            }
-        } else {
-            new_owner = &lib->next;
-            if( strcmp( lib->libname + 1, name ) == 0 ) {
-                new_owner = NULL;
-                break;
-            }
+            break;
+        }
+        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
+            return;
         }
     }
-    if( old_owner != NULL ) {
-        lib = *old_owner;
-        *old_owner = lib->next;
-    } else if( new_owner != NULL ) {
+    new_owner = owner;
+    for( ; (lib = *owner) != NULL; owner = &lib->next ) {
+        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
+            *owner = lib->next;
+            break;
+        }
+    }
+    if( lib == NULL ) {
         len = strlen( name );
-        lib = (library_list *)CMemAlloc( sizeof( library_list ) + len );
+        lib = CMemAlloc( offsetof( library_list, libname ) + len + 2 );
         memcpy( lib->libname + 1, name, len + 1 );
     }
-    if( new_owner != NULL ) {
-        lib->libname[0] = priority;
-        lib->next = *new_owner;
-        *new_owner = lib;
-    }
+    lib->libname[0] = priority;
+    lib->next = *new_owner;
+    *new_owner = lib;
 }
 
 local void GetLibraryNames( void )

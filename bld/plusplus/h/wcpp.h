@@ -164,4 +164,10 @@ struct ts_hdr                           // TYPE-SIG HEADER
 #define CPPDATA( name ) __wcpp_4_data_##name##_ // name of data
 #define CPPDATA_LIB( name ) ___wcpp_4_data_##name##_ // name of data
 
+#ifdef __UNIX__
+    #define FNAMECMPSTR      strcmp      /* for case sensitive file systems */
+#else
+    #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
+#endif
+
 #endif

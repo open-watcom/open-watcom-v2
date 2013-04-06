@@ -354,53 +354,42 @@ file_list *AddObjLib( char *name, lib_priority priority )
 /***************************************************************/
 
  {
-    file_list   **next_owner;
-    file_list   **proc_owner;
-    file_list   *proc_curr;
-    file_list   *newproc;
-    bool        added;
+    file_list   **owner;
+    file_list   **new_owner;
+    file_list   *lib;
 
     DEBUG(( DBG_OLD, "Adding Object library name %s", name ));
-    proc_owner = &ObjLibFiles;
-    for(;;) {
-        proc_curr = *proc_owner;
-        if( proc_curr == NULL )
+    /* search for new library position in linked list */
+    for( owner = &ObjLibFiles; (lib = *owner) != NULL; owner = &lib->next_file ) {
+        if( lib->priority < priority )
             break;
-        if( proc_curr->priority < priority )
-            break;
-        /* if library already exists with a higher priority */
-        if( FNAMECMPSTR( proc_curr->file->name, name ) == 0 )
-            return(proc_curr);
-        proc_owner = &proc_curr->next_file;
+        /* end search if library already exists with same or a higher priority */
+        if( FNAMECMPSTR( lib->file->name, name ) == 0 ) {
+            return( lib );
+        }
     }
-
-    added = TRUE;
-    next_owner = proc_owner;            /* replace library if it exists */
-    for(;;) {                           /* with a lower priority       */
-        if( proc_curr == NULL )
-            break;
-        if( FNAMECMPSTR( proc_curr->file->name, name ) == 0 ) {
-            *next_owner = proc_curr->next_file;    /* move entry up */
-            proc_curr->next_file = *proc_owner;
-            *proc_owner = proc_curr;
-            proc_curr->priority = priority;
-            newproc = proc_curr;
-            added = FALSE;
+    new_owner = owner;
+    /* search for library definition with a lower priority */
+    for( ; (lib = *owner) != NULL; owner = &lib->next_file ) {
+        if( FNAMECMPSTR( lib->file->name, name ) == 0 ) {
+            /* remove library entry from linked list */
+            *owner = lib->next_file;
             break;
         }
-        next_owner = &proc_curr->next_file;
-        proc_curr = *next_owner;
     }
-    if( added ) {   /* if we need to add one */
-        newproc = AllocNewFile( NULL );
-        newproc->file = AllocUniqueFileEntry( name, LibPath );
-        newproc->file->flags |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
-        newproc->priority = priority;
-        newproc->next_file = *proc_owner;
-        *proc_owner = newproc;
+    /* if we need to add one */
+    if( lib == NULL ) {
+        lib = AllocNewFile( NULL );
+        lib->file = AllocUniqueFileEntry( name, LibPath );
+        lib->file->flags |= INSTAT_LIBRARY | INSTAT_OPEN_WARNING;
         LinkState |= LIBRARIES_ADDED;
     }
-    return( newproc );
+    /* put it to new position and setup priority */
+    lib->next_file = *new_owner;
+    *new_owner = lib;
+    lib->priority = priority;
+
+    return( lib );
 }
 
 static bool AddLibFile( void )

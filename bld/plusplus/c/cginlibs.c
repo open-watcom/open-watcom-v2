@@ -50,40 +50,34 @@ static lib_list *libHead;
 static void addNewLib( char *name, char priority )
 /************************************************/
 {
-    lib_list    **next_owner;
     lib_list    **new_owner;
-    lib_list    **old_owner;
+    lib_list    **owner;
     lib_list    *lib;
     int         len;
 
-    new_owner = &libHead;
-    old_owner = NULL;
-    for( next_owner = &libHead; (lib = *next_owner) != NULL; next_owner = &lib->next ) {
+    for( owner = &libHead; (lib = *owner) != NULL; owner = &lib->next ) {
         if( lib->libname[0] < priority ) {
-            if( old_owner == NULL && strcmp( lib->libname + 1, name ) == 0 ) {
-                old_owner = next_owner;
-            }
-        } else {
-            new_owner = &lib->next;
-            if( strcmp( lib->libname + 1, name ) == 0 ) {
-                new_owner = NULL;
-                break;
-            }
+            break;
+        }
+        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
+            return;
         }
     }
-    if( old_owner != NULL ) {
-        lib = *old_owner;
-        *old_owner = lib->next;
-    } else if( new_owner != NULL ) {
+    new_owner = owner;
+    for( ; (lib = *owner) != NULL; owner = &lib->next ) {
+        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
+            *owner = lib->next;
+            break;
+        }
+    }
+    if( lib == NULL ) {
         len = strlen( name );
         lib = CMemAlloc( offsetof( lib_list, libname ) + len + 2 );
         memcpy( lib->libname + 1, name, len + 1 );
     }
-    if( new_owner != NULL ) {
-        lib->libname[0] = priority;
-        lib->next = *new_owner;
-        *new_owner = lib;
-    }
+    lib->libname[0] = priority;
+    lib->next = *new_owner;
+    *new_owner = lib;
 }
 
 void CgInfoAddUserLib( char *name )
