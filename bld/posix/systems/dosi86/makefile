@@ -1,5 +1,6 @@
 #pmake: build os_dos cpu_i86
 
-targos = dos
+host_os  = dos
+host_cpu = i86
 
 !include $(posix_dir)/mif/makeall.mif
