@@ -3,9 +3,11 @@ proj_name = docs
 !ifdef __UNIX__
 RENCMD=mv
 LOWERC=$#
+to_os_path=\=/
 !else
 RENCMD=ren
 LOWERC=ren
+to_os_path=/=\
 !endif
 
 !include ../mif/depends.mif
@@ -40,13 +42,8 @@ wine_hc_batch=winehc.bat
 #
 # define target and platform help compilers
 #
-!ifdef __UNIX__
-hc_nt = $(%OWWIN95HC:\=/)
-hc_hh = $(%OWHHC:\=/)
-!else
-hc_nt = $(%OWWIN95HC:/=\)
-hc_hh = $(%OWHHC:/=\)
-!endif
+hc_nt = $(%OWWIN95HC:$(to_os_path))
+hc_hh = $(%OWHHC:$(to_os_path))
 hc_pdf = ps2pdf12
 
 hcdos   = hcdos

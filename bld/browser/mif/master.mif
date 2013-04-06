@@ -7,14 +7,26 @@ browse_autodepends = .AUTODEPEND
 
 docs_root = $(%OWROOT)/docs
 
-additional_cleanup = &
-    $(docs_root)/os2/wbrw.h &
-    $(docs_root)/win/wbrw.h &
-    $(docs_root)/nt/wbrw.h
+doc_path_nt  = $(docs_root)/nt
+doc_path_os2 = $(docs_root)/os2
+doc_path_win = $(docs_root)/win
+
+wbrw_h_dos = $(doc_path_os2)/wbrw.h
+wbrw_h_os2 = $(doc_path_os2)/wbrw.h
+wbrw_h_win = $(doc_path_win)/wbrw.h
+wbrw_h_nt  = $(doc_path_nt)/wbrw.h
+
+additional_cleanup = $(wbrw_h_os2) $(wbrw_h_win) $(wbrw_h_nt)
 
 .extensions: .gpp .res .rc
 
 sys_windowed = 1
+
+!ifdef __UNIX__
+to_os_path=\=/
+!else
+to_os_path=/=\
+!endif
 
 !include cproj.mif
 !include defrule.mif
@@ -25,12 +37,12 @@ sys_windowed = 1
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
 
+!include ../mif/template.mif
+
 .c: ../cpp;../merge/c;$(posix_dir)/misc;$(lib_misc_dir)/c
 .cpp: ../cpp;../brg/cpp
 .gpp: ../gen
 .rc: ../res
-
-!include ../mif/template.mif
 
 ext = obj
 OBJECTS = $+$(template)$-
@@ -49,12 +61,13 @@ ext = mbr
 mbr_files = $+$(template)$-
 !endif
 
-inc_dirs_nt  = -I"$(docs_root)/nt"
-inc_dirs_win = -I"$(docs_root)/win"
-inc_dirs_dos = -I"$(docs_root)/os2"
-inc_dirs_os2 = -I"$(docs_root)/os2"
+doc_inc_dirs_dos    = -I"$(doc_path_os2)"
+doc_inc_dirs_nt     = -I"$(doc_path_nt)"
+doc_inc_dirs_os2    = -I"$(doc_path_os2)"
+doc_inc_dirs_win    = -I"$(doc_path_win)"
 
-inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) -I"$(dwarf_dir)/dr/h" -I"$(posix_dir)/h" -I"$(editdll_dir)"
+inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) $(doc_inc_dirs_$(host_os))
+inc_dirs += -I"$(dwarf_dir)/dr/h" -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
 extra_cpp_flags = -DSTANDALONE_RX=1 -DNOPERSIST=1
 !ifeq release 0
@@ -119,15 +132,11 @@ exe_ext = $(exe_ext_$(host_os))
 exe_ext = exe
 !endif
 
-prereq_nt  = $(docs_root)/nt/wbrw.h
-prereq_win = $(docs_root)/win/wbrw.h
-prereq_os2 = $(docs_root)/os2/wbrw.h
-prereq_dos = $(docs_root)/os2/wbrw.h
-
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
+version_res_exe_nt_x64 = exever.res
 
-all: $(prereq_$(host_os)) $(name).exe .SYMBOLIC
+all: $(wbrw_h_$(host_os)) $(name).exe .SYMBOLIC
 
 $(name).exe : $(OBJECTS) $(LIBS) $(res_file) $(version_res_exe_$(host_os)_$(host_cpu))
     $(linker) $(lflags) name $(name).$(exe_ext) file {$(OBJECTS)} lib {$(LIBS)}
@@ -142,14 +151,10 @@ $(name).exe : $(OBJECTS) $(LIBS) $(res_file) $(version_res_exe_$(host_os)_$(host
 
 dmem.obj : mem.cpp
 
-!ifdef prereq_$(host_os)
-$(prereq_$(host_os)): .ALWAYS
+!ifdef wbrw_h_$(host_os)
+$(wbrw_h_$(host_os)): .ALWAYS
 curr_dir=$+$(%cwd)$-
-!ifdef __UNIX__
-    @cd $(docs_root:\=/)/$(host_os)
-!else
-    @cd $(docs_root:/=\)\$(host_os)
-!endif
+    @cd $(doc_path_$(host_os):$(to_os_path))
     @wmake -h hbook=wbrw header=1
     @cd $(curr_dir)
 !endif
