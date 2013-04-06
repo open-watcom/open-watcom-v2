@@ -24,10 +24,6 @@
 #include "bmepsoe.h"
 
 #include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <process.h>
 
 #include "bmpeps.h"
 #ifdef HAVE_PNG_H

@@ -133,9 +133,10 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
+#include <wio.h>
 
 #endif
 /* ifndef BMEPSCO_INC */

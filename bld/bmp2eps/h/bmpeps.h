@@ -7,7 +7,8 @@
 extern "C" {
 #endif
 
-typedef _Packed struct bmp_file_header {
+#include "pushpck1.h"
+typedef struct bmp_file_header {
     unsigned short  type;
     unsigned long   size;
     unsigned short  reserved1;
@@ -15,7 +16,7 @@ typedef _Packed struct bmp_file_header {
     unsigned long   off_bits;
 } bmp_file_header;
 
-typedef _Packed struct bmp_info_header {
+typedef struct bmp_info_header {
     unsigned long   size;
     long            width;
     long            height;
@@ -28,6 +29,7 @@ typedef _Packed struct bmp_info_header {
     unsigned long   clr_used;
     unsigned long   clr_important;
 } bmp_info_header;
+#include "poppck.h"
 
 typedef struct bmp_rgb_quad {
     unsigned char   blue;
