@@ -238,10 +238,10 @@ char *HPJScanner::endTok()
 }
 
 
-static HPJReader::StrNode   *HPJReader::_topFile    = NULL;
-static HPJReader::StrNode   *HPJReader::_curFile    = NULL;
-static HPJReader::StrNode   *HPJReader::_firstDir   = NULL;
-static char const       *HPJReader::_startDir   = NULL;
+HPJReader::StrNode  *HPJReader::_topFile    = NULL;
+HPJReader::StrNode  *HPJReader::_curFile    = NULL;
+HPJReader::StrNode  *HPJReader::_firstDir   = NULL;
+char const          *HPJReader::_startDir   = NULL;
 
 
 //  HPJReader::HPJReader
@@ -298,7 +298,7 @@ HPJReader::~HPJReader()
 
 //  HPJReader::firstFile    --Callback function for the phrase handler.
 
-static InFile *HPJReader::firstFile()
+InFile *HPJReader::firstFile()
 {
     _curFile = _topFile;
     return nextFile();
@@ -307,7 +307,7 @@ static InFile *HPJReader::firstFile()
 
 //  HPJReader::nextFile --Callback function for the phrase handler.
 
-static InFile *HPJReader::nextFile()
+InFile *HPJReader::nextFile()
 {
     static InFile   result;
     StrNode     *curdir;

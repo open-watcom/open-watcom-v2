@@ -79,7 +79,7 @@ class Pool
     const size_t    _size;
 
     // Assignment of Pool's is not permitted.
-    Pool( Pool const & ){};
+    Pool( Pool const & ) : _size( 0 ), _block( 0 ) {};
     Pool &  operator=( Pool const & ) { return *this; };
 
 protected:

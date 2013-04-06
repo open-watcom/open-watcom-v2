@@ -39,7 +39,7 @@
 
 #include "myfile.h"
 
-class BtreePage;    // forward declaration.
+struct BtreePage;    // forward declaration.
 
 
 //

@@ -31,9 +31,10 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <unistd.h>
+#include "wio.h"
 #include "hcerrors.h"
 #include "errstrs.h"
+#include "clibext.h"
 
 typedef const char *ErrString;
 

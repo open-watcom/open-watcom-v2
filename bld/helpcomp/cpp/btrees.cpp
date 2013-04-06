@@ -166,7 +166,7 @@ BtreePage::~BtreePage()
 
 //  BtreePage::dump             --Dump the page to an output file.
 
-BtreePage::dump( OutFile *dest )
+int BtreePage::dump( OutFile *dest )
 {
     uint_32     amount_left = _maxSize;
     uint_16     nil_16 = (uint_16) ~0;

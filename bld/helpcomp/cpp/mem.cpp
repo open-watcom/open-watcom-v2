@@ -133,7 +133,7 @@ void operator delete( void *p )
 // Pool::Pool   --Default constructor.
 //
 
-static const unsigned Pool::BLOCK_SIZE = 1024;
+const unsigned Pool::BLOCK_SIZE = 1024;
 
 Pool::Pool( size_t size, unsigned b_size )
     : _size( size > sizeof(void*) ? size : sizeof(void*) ),

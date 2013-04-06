@@ -80,7 +80,7 @@ struct Phrase
     int     operator>( Phrase const &p );
 };
 
-static Pool *Phrase::_pool = NULL;
+Pool *Phrase::_pool = NULL;
 
 
 //  Phrase::Phrase  --default constructor.

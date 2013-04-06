@@ -45,7 +45,9 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
 
 
 // Extension of a .HLP file.

@@ -1,7 +1,4 @@
 proj_name = whc
-!ifdef name
-proj_name = $(name)
-!endif
 
 whc_autodepends = .autodepend
 

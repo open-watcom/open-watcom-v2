@@ -33,10 +33,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <stdarg.h>
+#include "wio.h"
 #include "uidef.h"
 #include "stdui.h"
 #include "help.h"
@@ -69,7 +67,7 @@ static int      Height = 0;
 
 #define BUFFER_SIZE     400
 
-static char far UsageText[] = {
+static char     UsageText[] = {
         "Usage: hcdos [flags] <infile> <outfile>\n"
     "\n"
     "\tflags:\n"
@@ -239,8 +237,7 @@ int main( int argc, char **argv )
         return( -1 );
     }
 
-    fout = open( argv[2], O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
-             S_IRWXU | S_IRWXG | S_IRWXO );
+    fout = open( argv[2], O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, PMODE_RW );
     if( fout == -1 ) {
         PrintError( "Unable to open '%s' for output\n", argv[2] );
         return( -1 );
