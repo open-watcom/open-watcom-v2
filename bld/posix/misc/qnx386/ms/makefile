@@ -1,6 +1,6 @@
-host_os  = nt
+host_os  = qnx
 host_cpu = 386
 
-model=f
+model=s
 
 !include $(posix_dir)/mif/makelib.mif

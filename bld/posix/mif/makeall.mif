@@ -9,8 +9,8 @@ clean : .symbolic
 !include $(posix_dir)/mif/common.mif
 
 !ifeq bootstrap 1
-mkfile = -f $(libmakepath)/$(posixlibdir)/makefile
-altmkfile = -f $(libmakepath)/$(altposixlibdir)/makefile
+mkfile = -f $(libmakepath)/makefile
+altmkfile = -f $(altlibmakepath)/makefile
 !endif
 
 all : lib $(commands) .symbolic

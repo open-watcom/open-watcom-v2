@@ -1,5 +1,6 @@
-targos = dosos2
+host_os  = os2
+host_cpu = i86
 
-model=c
+model=s
 
 !include $(posix_dir)/mif/makelib.mif

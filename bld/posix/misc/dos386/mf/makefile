@@ -1,6 +1,5 @@
-
-host_os  = nt
-host_cpu = x64
+host_os  = dos
+host_cpu = 386
 
 model=f
 

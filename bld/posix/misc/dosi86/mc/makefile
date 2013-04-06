@@ -1,5 +1,6 @@
-targos = pharlap
+host_os  = dos
+host_cpu = i86
 
-model=f
+model=c
 
 !include $(posix_dir)/mif/makelib.mif

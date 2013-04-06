@@ -1,5 +1,4 @@
-targos = dosos2
-
-model=s
+host_os  = nt
+host_cpu = x64
 
 !include $(posix_dir)/mif/makelib.mif

@@ -25,52 +25,52 @@ proj_name = posix
 
 posix_autodepends = .AUTODEPEND
 
+!ifndef model
 !ifeq host_cpu i86
-modelos=c
+model=c
 !else ifeq host_cpu 386
 !ifeq host_os qnx
-modelos=s
+model=s
 !else
-modelos=f
+model=f
 !endif
-!else ifeq host_cpu x64
-modelos=f
-!else ifeq host_cpu axp
-modelos=
+!endif
 !endif
 
-!ifndef model
-model=$(modelos)
-!endif
 memory_model_i86=$(model)
 memory_model_386=$(model)
 
-libmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/
-
-!ifeq bootstrap 1
-libpath =
-!else ifdef __UNIX__
-libpath = $(posix_dir)/misc/$(host_os)$(host_cpu)/
+!ifdef __UNIX__
+to_os_path=\=/
 !else
-libpath = $(posix_dir)\misc\$(host_os)$(host_cpu)\
-!endif
-
-alt_model_dosi86_s = mc
-alt_model_os2i86_s = mc
-alt_model_dosi86_c = ms
-alt_model_os2i86_c = ms
-
-!ifeq host_cpu axp
-posixlibdir=$(libpath)_s
-!else 
-posixlibdir=$(libpath)m$(model)
-!endif
-!ifdef alt_model_$(host_os)$(host_cpu)_$(model)
-altposixlibdir=$(libpath)$(alt_model_$(host_os)$(host_cpu)_$(model))
+to_os_path=/=\
 !endif
 
 !include cproj.mif
 !include defrule.mif
+
+subdir_i86 = m$(model)
+subdir_386 = m$(model)
+subdir_x64 = _s
+subdir_axp = _s
+subdir_mps = _s
+subdir_ppc = _s
+
+alt_subdir_dosi86_s = mc
+alt_subdir_os2i86_s = mc
+alt_subdir_dosi86_c = ms
+alt_subdir_os2i86_c = ms
+
+libmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
+altlibmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))/$(alt_subdir_$(host_os)$(host_cpu)_$(model))
+
+!ifeq bootstrap 1
+posixlibdir=$(subdir_$(host_cpu))
+altposixlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
+!else
+posixlibdir=$(libmakepath:$(to_os_path))
+altposixlibdir=$(altlibmakepath:$(to_os_path))
+!endif
 
 #
 #       compiler options
