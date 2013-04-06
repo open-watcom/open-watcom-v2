@@ -1201,8 +1201,7 @@ static bool read_topic_text(
     }
 
     if( section != NULL ) {
-        for( ins_section = &ctx->section_list; *ins_section != NULL;
-                                ins_section = &((*ins_section)->next) ) {
+        for( ins_section = &ctx->section_list; *ins_section != NULL; ins_section = &((*ins_section)->next) ) {
             if( is_blank && !(*ins_section)->blank_order ) {
                 break;
             } else if( order_num < (*ins_section)->order_num ) {
@@ -1307,10 +1306,8 @@ static browse_def *add_browse(
     _new( b_ctx, 1 );
     b_ctx->ctx = ctx;
 
-    for( b_ctx_list = &browse->ctx_list; *b_ctx_list != NULL;
-                                        b_ctx_list = &((*b_ctx_list)->next) ) {
-        if( Browse_sort && stricmp( skip_prep( ctx->title ),
-                        skip_prep( (*b_ctx_list)->ctx->title ) ) < 0 ) {
+    for( b_ctx_list = &browse->ctx_list; *b_ctx_list != NULL; b_ctx_list = &((*b_ctx_list)->next) ) {
+        if( Browse_sort && stricmp( skip_prep( ctx->title ), skip_prep( (*b_ctx_list)->ctx->title ) ) < 0 ) {
             break;
         }
     }
@@ -1340,8 +1337,7 @@ static void add_ctx(
         _new( ctx->title, strlen( title ) + 1 );
         strcpy( ctx->title, title );
     }
-    if( keywords != NULL && ctx->keylist == NULL &&
-                                        *skip_blank( keywords ) != '\0' ) {
+    if( keywords != NULL && ctx->keylist == NULL && *skip_blank( keywords ) != '\0' ) {
         for( ptr = keywords;; ) {
             for( end = ptr; *end != ',' && *end != ';' && *end != '\0'; ++end );
             ch = *end;
@@ -1468,9 +1464,7 @@ static ctx_def *define_ctx( void )
     ctx->title_fmt = title_fmt;
     add_ctx( ctx, title, keywords, browse_name, head_level );
 
-    if(( old_ctx != NULL )
-      && ( old_ctx != ctx )
-      && ( old_ctx->head_level == 0 )) {
+    if(( old_ctx != NULL ) && ( old_ctx != ctx ) && ( old_ctx->head_level == 0 )) {
         ptr = old_ctx->ctx_name;
         old_ctx->ctx_name = ctx->ctx_name;
         ctx->ctx_name = ptr;
@@ -1514,7 +1508,7 @@ static bool read_ctx_topic( void )
 static bool read_topic( void )
 /****************************/
 {
-    switch( Line_buf[0] ) {
+    switch( *(unsigned char *)Line_buf ) {
 
     case CH_CTX_DEF:
         return( read_ctx_def() );
@@ -1582,14 +1576,11 @@ static void sort_ctx_list( void )
         next_ctx = ctx->next;
         if( ctx->title == NULL ) {
             /* ctx item without a definition */
-            sprintf( buf, "The context id '%s' is used but not defined",
-                                                            ctx->ctx_name );
+            sprintf( buf, "The context id '%s' is used but not defined", ctx->ctx_name );
             error_str( buf );
         }
-        for( sort_spot = &sort_list; *sort_spot != NULL;
-                                        sort_spot = &((*sort_spot)->next) ) {
-            if( stricmp( skip_prep( ctx->title ),
-                                skip_prep( (*sort_spot)->title ) ) < 0 ) {
+        for( sort_spot = &sort_list; *sort_spot != NULL; sort_spot = &((*sort_spot)->next) ) {
+            if( stricmp( skip_prep( ctx->title ), skip_prep( (*sort_spot)->title ) ) < 0 ) {
                 break;
             }
         }
@@ -1638,8 +1629,7 @@ static void output_idx_file( void )
     }
     new_topic = FALSE;
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
-        if( ctx->empty ||
-                ( Dump_popup_i && ctx->title_fmt == TITLE_FMT_NOLINE ) ) {
+        if( ctx->empty || ( Dump_popup_i && ctx->title_fmt == TITLE_FMT_NOLINE ) ) {
             continue;
         }
         sort_title = skip_prep( ctx->title );
@@ -1939,8 +1929,7 @@ static void output_def_file( void )
     int                         len;
     int                         max_len;
 
-    whp_fprintf( Def_file, "/* This file was created by WHPCVT.EXE. "
-                        "DO NOT MODIFY BY HAND! */\n\n" );
+    whp_fprintf( Def_file, "/* This file was created by WHPCVT.EXE. DO NOT MODIFY BY HAND! */\n\n" );
 
     max_len = 0;
     buf = NULL;
@@ -1958,8 +1947,7 @@ static void output_def_file( void )
         }
         strcpy( buf, ctx->ctx_name );
         strupr( buf );
-        whp_fprintf( Def_file, "#define %s%-50s\t%d\n", HELP_PREFIX, buf,
-                                                            ctx->ctx_id );
+        whp_fprintf( Def_file, "#define %s%-50s\t%d\n", HELP_PREFIX, buf, ctx->ctx_id );
     }
     free( buf );
 }
@@ -1969,13 +1957,11 @@ static void output_hdef_file( void )
 {
     ctx_def                     *ctx;
 
-    whp_fprintf( Hdef_file, "/* This file was created by WHPCVT.EXE. "
-                                "DO NOT MODIFY BY HAND! */\n\n" );
+    whp_fprintf( Hdef_file, "/* This file was created by WHPCVT.EXE. DO NOT MODIFY BY HAND! */\n\n" );
 
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( !ctx->empty ) {
-            whp_fprintf( Hdef_file, "#define %-50s\t%d\n", ctx->ctx_name,
-                                                            ctx->ctx_id );
+            whp_fprintf( Hdef_file, "#define %-50s\t%d\n", ctx->ctx_name, ctx->ctx_id );
         }
     }
 }
@@ -1999,8 +1985,7 @@ static void read_ctx_ids( void )
             }
 
             for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
-                if( stricmp( ptr + strlen( HELP_PREFIX ),
-                                                ctx->ctx_name ) == 0 ) {
+                if( stricmp( ptr + strlen( HELP_PREFIX ), ctx->ctx_name ) == 0 ) {
                     ptr = strtok( NULL, Delim );
                     if( ptr != NULL ) {
                         ctx->ctx_id = atoi( ptr );

@@ -40,20 +40,11 @@
 #include <setjmp.h>
 #include <string.h>
 #include <ctype.h>
-#ifndef __WATCOMC__
-  #include "clibext.h"
-#endif
+#include "bool.h"
+#include "clibext.h"
 
 /* for testing */
 //#define static
-
-/**** Useful Macros and base types ****/
-typedef unsigned char bool;
-
-#ifndef TRUE
-#define TRUE    1
-#define FALSE   0
-#endif
 
 #define _min( a, b ) ( a > b ) b ? a
 #define _max( a, b ) ( a > b ) a ? b
