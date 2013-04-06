@@ -46,7 +46,7 @@
 //these are used for indexing by MConfig::zapTargetMasks()
 typedef enum HostType {
     #undef pick
-    #define pick(enum,type,batchserv,editor,DLL,parms,descr) enum,
+    #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) enum,
     #include "hosttype.h"
     HOST_UNDEFINED
 } HostType;
@@ -103,6 +103,7 @@ WCLASS MConfig : public WObject
         WVList& targetOSs() { return _targetOSs; }
         bool editorIsDLL() { return _editorIsDLL; }
         WFileName& editorParms() { return _editorParms; }
+        char getPathSep() { return _pathsep; }
     private:
         bool            _ok;
         WString         _errMsg;
@@ -144,6 +145,7 @@ WCLASS MConfig : public WObject
         bool            _editorIsDLL;
         WFileName       _editorParms;
         void expandMacroes( WString &str );
+        char            _pathsep;
 };
 
 #define _config MConfig::_configPtr

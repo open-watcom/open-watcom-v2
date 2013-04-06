@@ -38,7 +38,7 @@
 #include "mswitch.hpp"
 #include "wobjfile.hpp"
 #include "mtarget.hpp"
-#include <unistd.h>
+#include "wio.h"
 
 extern "C" {
 #ifdef __UNIX__
@@ -219,7 +219,7 @@ void MComponent::updateItemList( bool update )
 
     if( !_batchMode ) {
         _target->updateAttribs();
-        MRule* nilRule = _config->nilRule();
+//        MRule* nilRule = _config->nilRule();
         _items.setUpdates( FALSE );
         for( i=0; i<_items.count(); i++ ) {
             MItem* item = (MItem*)_items[i];
@@ -304,7 +304,7 @@ bool MComponent::renameComponent( WFileName& fn, MRule* rule, WString& mask )
         _filename = filename;
         _relFilename = relname;
         _mask = mask;
-        MRule* nilRule = _config->nilRule();
+//        MRule* nilRule = _config->nilRule();
         for( int i=0; i<_items.count(); i++ ) {
             MItem* m = (MItem*)_items[i];
             MRule* r = _config->findMatchingRule( *m, _target->rule(), _mask );

@@ -1,5 +1,4 @@
 proj_name = ide
-name      = ide
 
 sys_windowed = 1
 
@@ -9,29 +8,29 @@ ide_autodepends = .autodepend
 
 docs_root = $(%OWROOT)/docs
 
-additional_cleanup = &
-    $(docs_root)/os2/ide.h &
-    $(docs_root)/win/ide.h &
-    $(docs_root)/nt/ide.h
+doc_path_nt     = $(docs_root)/nt
+doc_path_os2    = $(docs_root)/os2
+doc_path_win    = $(docs_root)/win
+
+ide_h_os2   = $(doc_path_os2)/ide.h
+ide_h_win   = $(doc_path_win)/ide.h
+ide_h_nt    = $(doc_path_nt)/ide.h
+
+additional_cleanup = $(ide_h_os2) $(ide_h_win) $(ide_h_nt)
 
 .SUFFIXES : .rc
 
-c_path_os2 = $(batch_dir)/os2
-c_path_nt  = $(batch_dir)/nt
-c_path_win = $(batch_dir)/dos;$(batch_dir)/os2
-
-.c : $(c_path_$(host_os));$(watcom_dir)/c
-.cpp : ..
-!ifeq host_os os2
-.rc : ../os2
+!ifdef __UNIX__
+to_os_path=\=/
 !else
-.rc : ../win
+to_os_path=/=\
 !endif
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
+!include $(idelib_dir)/mif/client.mif
 !include $(wclass_dir)/mif/client.mif
 !include $(gui_dir)/client.mif
 
@@ -42,61 +41,72 @@ WINDOWS = 1
 
 description = 'Open Watcom IDE'
 
+c_path_os2 = $(batch_dir)/os2
+c_path_nt  = $(batch_dir)/nt
+c_path_win = $(batch_dir)/dos;$(batch_dir)/os2
+
+rc_path_os2 = ../os2
+rc_path_nt  = ../win
+rc_path_win = ../win
+
+.c : $(c_path_$(host_os));$(watcom_dir)/c
+.cpp : ..
+.rc : $(rc_path_$(host_os))
+
 !ifeq host_os win
-extra_c_flags_link      = -3 -dSERVER
+extra_c_flags_link  = -DSERVER
+!ifdef __WATCOM__
+extra_c_flags_link  += -3
+!endif
 !endif
 
-extra_cxx_flags_i86     = -zc -zm
+!ifdef __WATCOM__
+extra_cxx_flags_i86 = -zc -zm
+!endif
 
 extra_l_flags       = op eliminate sort global
 extra_l_flags_nt    = op stack=100k
 
-prereq_inc_os2 = $(docs_root)/os2
-prereq_inc_win = $(docs_root)/win
-prereq_inc_nt  = $(docs_root)/nt
-!ifdef prereq_inc_$(host_os)
-prereq_ide_h = $(prereq_inc_$(host_os))/ide.h
-!endif
+doc_inc_dirs_nt     = -I"$(doc_path_nt)"
+doc_inc_dirs_os2    = -I"$(doc_path_os2)"
+doc_inc_dirs_win    = -I"$(doc_path_win)"
 
 inc_dirs_win = -I"$(batch_dir)/dos"
 
-inc_dirs  = $(wclass_inc_dirs) -I"$(idelib_dir)" -I"$(editdll_dir)" -I"$(rcsdll_dir)" 
-inc_dirs += -I"$(batch_dir)/h" $(gui_inc_dirs) -I"$(prereq_inc_$(host_os))"
+inc_dirs = $(wclass_inc_dirs) $(idelib_inc_dirs) $(gui_inc_dirs) $(doc_inc_dirs_$(host_os))
+inc_dirs += -I"$(editdll_dir)" -I"$(rcsdll_dir)" -I"$(batch_dir)/h"
 
-LIBS = &
-    $(idelib_dir)/$(host_os)$(host_cpu)/ide.lib &
-    $(wclass_lib) &
-    $(gui_lib) &
-    $(wres_lib)
+libs = $(idelib_lib) $(wclass_lib) $(gui_lib) $(wres_lib)
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
+version_res_exe_nt_x64 = exever.res
 
-all: $(prereq_ide_h) $(name).exe
+all: $(ide_h_$(host_os)) $(proj_name).exe
 
-$(name).exe : $(OBJECTS) $(LIBS) ide.res $(version_res_exe_$(host_os)_$(host_cpu))
-        %create $(name).lnk
-        %append $(name).lnk $(lflags)
-        %append $(name).lnk op map, de $(description)
-        %append $(name).lnk f {$(OBJECTS)}
-        %append $(name).lnk lib {$(LIBS)}	
-        $(linker) name $(name) @$(name).lnk
+$(proj_name).exe : $(OBJECTS) $(libs) ide.res $(version_res_exe_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(OBJECTS) $(libs) $(ldflags)
+!else
+        %create $^&.lnk
+        %append $^&.lnk $(lflags)
+        %append $^&.lnk op map, de $(description)
+        %append $^&.lnk f {$(OBJECTS)}
+        %append $^&.lnk lib {$(libs)}   
+        $(linker) name $^& @$^&.lnk
+!endif
         $(rc) -k ide.res $^@ $(bind_version_res_exe_add)
 
 ide.res : $(gui_dir)/h/gui.rc ide.rc
-        $(rc) $(rc_flags) -I.. $(inc_path) $]@ -fo=$^@
+        $(rc) $(rc_flags) -I.. $(inc_dirs) $]@ -fo=$^@
 
-verrc_exe = $(name)
+verrc_exe = $(proj_name)
 !include verrc.mif
 
-!ifdef prereq_ide_h
-$(prereq_ide_h): .ALWAYS
+!ifdef ide_h_$(host_os)
+$(ide_h_$(host_os)): .ALWAYS
 curr_dir=$+$(%cwd)$-
-!ifdef __UNIX__
-        @cd $(docs_root:\=/)/$(host_os)
-!else
-        @cd $(docs_root:/=\)\$(host_os)
-!endif
+        @cd $(docs_path_$(host_os):$(to_os_path))
         @wmake -h hbook=ide header=1
         @cd $(curr_dir)
 !endif

@@ -25,6 +25,9 @@ set PROJNAME=ide2make
     <CCCMD> linux386/ide2make.exe <OWRELROOT>/binl/ide2make
     <CCCMD> ntaxp/ide2make.exe    <OWRELROOT>/axpnt/
 
+    <CCCMD> ntx64/ide2make.exe    <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/ide2make.exe <OWRELROOT>/binl64/ide2make
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

@@ -38,13 +38,13 @@ objects =       contfile.obj &
                 mvswitch.obj &
                 mworkfil.obj
 
-extra_c_flags_i86       = -zc -zm
+!ifdef __WATCOM__
+extra_c_flags_i86 = -zc -zm
+!endif
 
-inc_dirs = $(wclass_inc_dirs) -I"$(lib_misc_dir)/h"
+inc_dirs = -I. $(wclass_inc_dirs) -I"$(lib_misc_dir)/h"
 
 .cpp : ..
 
 $(name).lib : $(objects)
-        @%create $^&.lbc
-        @for %f in ($(objects)) do @%append $^&.lbc +%f
-        $(librarian) $(libflags) @$^&.lbc
+        $(librarian) $(libflags) $(objects)

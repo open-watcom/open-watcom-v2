@@ -36,10 +36,6 @@
 #include "wobjfile.hpp"
 #include "mcommand.hpp"
 
-extern "C" {
-    #include <env.h>
-};
-
 static char _targetIdent[] = { "targetIdent" };
 
 Define( MProject )

@@ -1,7 +1,5 @@
 proj_name = ide2make
 
-name = $(proj_name)
-
 !ifndef ide2make_autodepends
 ide2make_autodepends = .AUTODEPEND
 !endif
@@ -10,16 +8,20 @@ ide2make_autodepends = .AUTODEPEND
 !include deftarg.mif
 !include defrule.mif
 
+!include $(idelib_dir)/mif/client.mif
 !include $(wclass_dir)/mif/client.mif
 
 objs = bviper.obj
 
-inc_dirs = $(wclass_inc_dirs) -I"$(idelib_dir)"
+inc_dirs = $(idelib_inc_dirs) $(wclass_inc_dirs)
 
 .cpp: ..
 
-LIBS = $(wclass_lib) &
-    $(idelib_dir)/$(host_os)$(host_cpu)/ide.lib
+libs = $(idelib_lib) $(wclass_lib)
 
-$(name).exe : $(objs) $(LIBS)
-    $(linker) option quiet $(lflags) option map name $^@ file { $(objs) } lib {$(LIBS)}
+$(proj_name).exe : $(objs) $(libs)
+!ifndef __WATCOM__
+    $(cl) $(clflags) $< $(ldflags)
+!else
+    $(linker) option quiet $(lflags) option map name $^@ file { $(objs) } lib {$(libs)}
+!endif

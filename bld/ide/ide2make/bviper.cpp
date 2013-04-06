@@ -86,7 +86,7 @@ static char* usage[] = {
 
 static char* usage_hosts[] = {
     #undef pick
-    #define pick(enum,type,batchserv,editor,DLL,parms,descr) descr,
+    #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) descr,
     #include "hosttype.h"
     NULL
 };

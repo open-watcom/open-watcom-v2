@@ -76,9 +76,10 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host )
         char    *editor;
         bool    editorIsDLL;
         char    *editorParms;
+        char    pathsep;
     } host_info[] = {
         #undef pick
-        #define pick(enum,type,batchserv,editor,DLL,parms,descr) { batchserv, editor, DLL, parms },
+        #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) { batchserv, editor, DLL, parms, pathsep },
         #include "hosttype.h"
     };
 
@@ -139,6 +140,7 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host )
     _editor = host_info[ _hostType ].editor;
     _editorIsDLL = host_info[ _hostType ].editorIsDLL;
     _editorParms = host_info[ _hostType ].editorParms;
+    _pathsep = host_info[ _hostType ].pathsep;
 
     if( _filename.size() == 0 ) {
         _filename = "ide.cfg";
@@ -174,7 +176,7 @@ void MConfig::zapTargetMasks()
 {
     static char hostChars[] = {
         #undef pick
-        #define pick(enum,type,batchserv,editor,DLL,parms,descr) type,
+        #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) type,
         #include "hosttype.h"
     };
     int     i;

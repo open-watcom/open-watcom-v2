@@ -58,7 +58,7 @@ MC2Switch* WEXPORT MC2Switch::createSelf( WObjectFile& )
 
 void WEXPORT MC2Switch::readSelf( WObjectFile& p )
 {
-    MC2Switch::readSelf( p );
+    MSwitch::readSelf( p );
     p.readObject( &_on );
     if( p.version() > 28 ) {
         for( int i=0; i<SWMODE_COUNT; i++ ) {

@@ -49,7 +49,7 @@ extern "C" {
 Define( MItem )
 
 WEXPORT MItem::MItem( const char* name, MComponent* comp, MRule* rule, bool isTarget )
-    : WFileName( name )
+    : WFileName( name, _config->getPathSep() )
     , _component( comp )
     , _rule( rule )
     , _ruleTag( rule->tag() )
