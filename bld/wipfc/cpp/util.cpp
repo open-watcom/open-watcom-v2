@@ -41,6 +41,7 @@
     #include <direct.h>
 #endif
 #include "errors.hpp"
+#include "clibext.h"
 
 void killQuotes( char * text )
 {
@@ -165,7 +166,7 @@ std::string canonicalPath( char* arg )
 void wtombstring( const std::wstring& input, std::string& output )
 {
     for( size_t index = 0; index < input.size(); ++index ) {
-        char ch[ MB_CUR_MAX + 1 ];
+        char ch[ MB_LEN_MAX + 1 ];
         int  bytes( std::wctomb( &ch[ 0 ], input[ index ] ) );
         if( bytes == -1 )
             throw FatalError( ERR_T_CONV );

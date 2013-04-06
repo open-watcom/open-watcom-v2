@@ -38,6 +38,7 @@
 #include <cstdlib>
 #include <numeric>
 #include <string>
+#include <cwctype>
 #include "table.hpp"
 #include "brcmd.hpp"
 #include "cell.hpp"

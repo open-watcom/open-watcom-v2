@@ -90,13 +90,13 @@ void IpfFile::unget( wchar_t ch )
 #ifndef __UNIX__
 std::wint_t IpfFile::readMBChar()
 {
-    std::wint_t ch( 0 );
+    wchar_t ch = 0;
     if( ungotten ) {
         ch = ungottenChar;
         ungotten = false;
     }
     else {
-        char    mbc[ MB_CUR_MAX ];
+        char    mbc[ MB_LEN_MAX ];
         if( std::fread( &mbc[0], sizeof( char ), 1, stream ) != 1 )
             return WEOF;
         else if( _ismbblead( mbc[0] ) ) {

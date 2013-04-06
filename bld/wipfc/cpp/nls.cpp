@@ -70,8 +70,8 @@ void Nls::setCodePage( int cp )
     if( cp == 850 || cp == 437)
         path += "ty";
     else {
-        char code[ 5 ];
-        std::snprintf( code, 5, "%04.4d", cp );
+        char code[ 6 ];
+        std::sprintf( code, "%04.4d", cp );
         path.append( code, 4 );
     }
     path += ".txt";
@@ -228,8 +228,12 @@ void Nls::processGrammer( wchar_t *buffer )
     if( grammerChars.empty() ) {
         grammerChars.reserve( 26 + 26 + 10 );
     }
+#if defined( _MSC_VER )
+    wchar_t* tok( std::wcstok( buffer, L"+" ) );
+#else
     wchar_t* p;
     wchar_t* tok( std::wcstok( buffer, L"+", &p ) );
+#endif
     while( tok ) {
         if( std::wcslen( tok ) > 1 ) {
             //change this loop if we use RegExp
@@ -247,7 +251,11 @@ void Nls::processGrammer( wchar_t *buffer )
             if( *tok > 255 )
                 useDBCS = true;
         }
+#if defined( _MSC_VER )
+        tok = std::wcstok( 0, L"+" );
+#else
         tok = std::wcstok( 0, L"+", &p );
+#endif
     }
 }
 /*****************************************************************************/

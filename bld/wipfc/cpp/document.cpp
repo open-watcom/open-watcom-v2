@@ -180,6 +180,7 @@
 #include "synonym.hpp"
 #include "title.hpp"
 #include "util.hpp"
+#include "clibext.h"
 
 extern Env Environment;
 
