@@ -93,6 +93,7 @@ sys_x86_qnx  = sys pharlap rex disable 1014, 1023
 
 sys_x86_linux = form windows nt dll opt dosseg &
             libpath $(clib_dir)/library/linux.386/mf_r &
+            libpath $(mathlib_dir)/library/msdos.386/ms_r &
             export TrapLoad_.1 &
             option description $(description)
 
