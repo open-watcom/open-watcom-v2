@@ -1,5 +1,5 @@
 # build host specific macros
-blib            = *wlib
+blib            = $(librarian_$(bld_cpu))
 bcc             = $(cc_$(bld_cpu))
 bcl             = $(cl_$(bld_cpu))
 bas             = $(as_$(bld_cpu))
@@ -19,14 +19,13 @@ bld_gen_cflags  = -ox -w8 -fo=.obj
 
 # options for source compilations
 bld_cflags      = $(bld_gen_cflags)
-!ifneq bootstrap 1
-#bld_cflags      += -x -xc
-!endif
 
 # options for single source utility compilations
-bld_cl_opts      = $(bld_gen_cflags) -fe=$^@
+bld_clflags      = $(bld_gen_cflags) -fe=$^@
+
 !ifneq bootstrap 1
-#bld_cl_opts     += -y -xc
+#bld_cflags      += -x -xc
+#bld_clflags     += -y -xc
 !endif
 
 # options for linking
@@ -38,17 +37,17 @@ bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
 bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
 bld_lib         = $(blib) $(bld_libflags)
 
-brc             = $(rc)
+awk             = awk
+cwc             = bcwc
+edbind          = bedbind
+ide2make        = bide2mak
 re2c            = re2c
+sed             = sed
 w32bind         = w32bind
 wbind           = bwbind
-edbind          = bedbind
-cwc             = bcwc
-yacc            = yacc
-sed             = sed
-awk             = awk
-ide2make        = bide2mak
 wstrip          = bwstrip
+yacc            = yacc
+
 !ifdef __UNIX__
 os2ldr          = $(%OWBINDIR)/os2ldr.exe
 !else

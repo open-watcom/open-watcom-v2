@@ -42,7 +42,7 @@ extra_c_flags = -s
 extra_l_flags = op map
 
 ./dwmakeab.exe : dwmakeab.c
-        $(bld_cl) -I"../h" $(bld_cl_opts) $[@
+        $(bld_cl) -I"../h" $(bld_clflags) $[@ $(bld_ldflags)
 
 dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
         $[@

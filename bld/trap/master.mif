@@ -185,7 +185,7 @@ $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
         $(cpp) -zk0 -DJAPANESE_MESSAGES -I"$(trap_dir)/h" $[@ >$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
-        $(bld_cl) $(bld_cl_opts) $[@
+        $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
 
 nversion.tmp: ./mknver.exe
         $[@ $^@

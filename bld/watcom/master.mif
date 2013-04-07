@@ -17,4 +17,4 @@ all : clibext.lib .symbolic
 !endif
 
 clibext.lib : clibext.obj
-        $(librarian) $(libflags) $<
+    $(bld_lib) $<

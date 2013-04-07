@@ -4,5 +4,5 @@
 ctkeyb.obj : ctkeyb.c conesc.gh
 
 conesc.gh : ../c/buildesc.c ../tix/qnx.tix
-        $(bld_cl) ../c/buildesc -I"$(lang_root)/qh"
+        $(bld_cl) -I"$(lang_root)/qh" $(bld_clflags) $[@ $(bld_ldflags)
         buildesc ../tix/qnx.tix conesc.gh

@@ -6,4 +6,4 @@ host_cpu = 386
 !include defrule.mif
 
 smpdump.exe : smpdump.c
-    $(bld_cl) $[@ $(bld_cl_opts) -i"$(dig_dir)/h"
+    $(bld_cl) -I"$(dig_dir)/h" $(bld_clflags) $[@ $(bld_ldflags)

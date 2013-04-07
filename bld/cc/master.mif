@@ -139,11 +139,11 @@ depends_drv = $(pre_obj_deps) $(drv_objs)
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
+version_res_dll_nt_x64 = version.res
 
 # systems where version resources must be added to .EXE
-!ifneq bootstrap 1
 version_res_exe_nt_386 = exever.res
-!endif
+version_res_exe_nt_x64 = exever.res
 
 inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs)
 inc_dirs += -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
@@ -181,12 +181,9 @@ $(exename).exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAK
         @rm -f $^&.rex
 !else   
         $(linker) name $@ @exe.lnk
+!endif
+!endif
         @%make bind_version_res_exe
-!ifeq host_os qnx
-        serialize $@ wcc
-!endif
-!endif
-!endif
 
 !endif
 
@@ -238,7 +235,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
         *bwlink format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
 
 ./mkcode.exe: ../../a/mkcode.c
-        $(bld_cl) $[@ $(bld_cl_opts)
+        $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
 
 verrc_dll = $(realdllname)
 verrc_exe = $(realexename)
@@ -250,19 +247,19 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
         msgencod -s -i -ip -q -g ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
-        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(bld_cl_opts)
+        $(bld_cl) -I"$(fe_misc_dir)/h" $(bld_clflags) $[@ $(bld_ldflags)
 
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
         $[@ $(intname)
 
-./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h $(cl_objs)
-        $(bld_cl) -I. -I"$(wasm_dir)/h" $[@ $(bld_cl_opts) $(cl_libs) $(cl_objs)
+./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
+        $(bld_cl) -I. -I"$(wasm_dir)/h" $(bld_clflags) $[@ $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
         $[@ $(wasm_dir)/inlnops.tok $@
 
-./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh $(cl_objs)
-        $(bld_cl) -I. -I"$(wasm_dir)/h" $[@ $(bld_cl_opts) $(cl_libs) $(cl_objs)
+./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
+        $(bld_cl) -I. -I"$(wasm_dir)/h" $(bld_clflags) $[@ $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
         $[@ $(wasm_dir)/inlnops.tok $@

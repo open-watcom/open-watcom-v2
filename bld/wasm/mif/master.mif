@@ -100,9 +100,8 @@ depend_objs = asmops.gh asmopsd.gh wmpmsg.gh
 res_objs = $(name).res
 
 # systems where version resources must be added to .EXE
-!ifneq bootstrap 1
 version_res_exe_nt_386 = exever.res
-!endif
+version_res_exe_nt_x64 = exever.res
 
 #explicit rules
 ######
@@ -163,14 +162,14 @@ usagej.u : ../h/options.gml
 
 ###################################################################
 
-./mkopcod1.exe: ../mkopcod1.c ../mkopcode.h $(cl_objs)
-        $(bld_cl) -D_STANDALONE_ -I. -I"../h" $[@ $(bld_cl_opts) $(bld_ldflags) # order is important for gcc (linux bootstrap)
+./mkopcod1.exe: ../mkopcod1.c ../mkopcode.h
+        $(bld_cl) -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $[@ $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe ../fullops.tok ../inlnops.tok
         $< $@
 
-./mkopcode.exe: ../mkopcode.c ../mkopcode.h asmops.gh $(cl_objs)
-        $(bld_cl) -D_STANDALONE_ -I. -I"../h" $[@ $(bld_cl_opts) $(bld_ldflags) # order is important for gcc (linux bootstrap)
+./mkopcode.exe: ../mkopcode.c ../mkopcode.h asmops.gh
+        $(bld_cl) -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $[@ $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe ../fullops.tok ../inlnops.tok
         $< $@

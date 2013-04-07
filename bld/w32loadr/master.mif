@@ -17,9 +17,9 @@ additional_cleanup = mkdginfo.bat
 all : w32bind.exe
 
 extra_c_flags_loader = -D__OS2 -D__CALL21__
-	
+        
 w32bind.exe : w32bind.c
-  $(bld_cl) $(bld_cl_opts) $<
+  $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
 
 os2ldr.exe : cstrtos2.obj loader.obj int21.obj int21os2.obj tnk.obj os2stub.exe
   $(linker) system os2v2 pmc name os2ldr file cstrtos2.obj,loader.obj,int21.obj,int21os2.obj,tnk.obj lib os2386 opt map,stack=32k,stub=os2stub.exe
@@ -33,7 +33,7 @@ extra_c_flags_tntrun = -D__DOS -D__CALL21__ -D__TNT -fo=$@
 extra_c_flags_x32run = -D__DOS -D__CALL21__ -D__X32 -fo=$@
 extra_c_flags_d4grun = -D__DOS -D__CALL21__ -D__DOS4G -fo=$@
 extra_c_flags_cwsrun = -D__DOS -D__CALL21__ -D__CAUSEWAY -fo=$@
-	
+        
 all: .SYMBOLIC cwsrun.exe #d4grun.exe x32run.exe tntrun.exe
 
 dpmi_ldr.exe : loader16.obj dpmi_ldr.obj int21win.obj
@@ -69,7 +69,7 @@ d4grun.obj : loader.c loader.h dginfo.gh
         $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
 cwsrun.obj : loader.c loader.h
         $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
-	
+        
 dginfo.gh : $(rsi_root)/bin/dos4g.exe
         @%write mkdginfo.bat $(rsi_root)\bin\dos4g $(rsi_root)\bin\dginfo >dginfo.gh
         -mkdginfo

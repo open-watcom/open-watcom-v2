@@ -12,16 +12,16 @@ additional_cleanup = rem
 !endif
 
 all: $(targets) .SYMBOLIC
-	@%null
-	
+        @%null
+        
 mkerr.exe: mkerr.c
-        $(bld_cl) $[@ $(bld_cl_opts)
+        $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
 
 envarg.exe: envarg.c
-        $(bld_cl) $[@ $(bld_cl_opts)
+        $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
 
 ifeq.exe: ifeq.c
-        $(bld_cl) $[@ $(bld_cl_opts)
+        $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
 
 rem: rem.c
-        $(bld_cl) $[@ $(bld_cl_opts)
+        $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)

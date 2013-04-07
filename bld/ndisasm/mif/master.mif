@@ -63,7 +63,7 @@ stand_objs      = args.obj &
                 publics.obj &
                 srcmix.obj &
                 refproc.obj &
-		cmdlhelp.obj
+                cmdlhelp.obj
 
 disasm_objs = $(stand_objs) $(dis_objs) demangle.obj $(trmem_objs)
 
@@ -83,7 +83,7 @@ distbls.gh : ./disbuild.exe
     $[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
-    $(bld_cl) -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $[@ $(bld_cl_opts)
+    $(bld_cl) -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $[@ $(bld_ldflags)
 
 $(proj_name).res : wdis.rc usage.gh usagej.gh msg.gh
         $(rc_aui) $[@ -I"../stand/h" -I"../stand" -fo=$@
