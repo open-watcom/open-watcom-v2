@@ -41,6 +41,8 @@
 #include "exeseg.h"
 #include "exeres.h"
 
+#define PEHDR(h)    (*(h)->WinHead)
+
 typedef enum {
     EXE_TYPE_UNKNOWN,
     EXE_TYPE_PE,        // PE format, Win32
@@ -65,10 +67,10 @@ typedef struct NEExeInfo {
 } NEExeInfo;
 
 typedef struct PEExeInfo {
-    pe_header       *WinHead;
+    exe_pe_header   *WinHead;
     pe_object       *Objects;   /* array of objects. wlink no initialize */
     PEResDir        Res;        /* non-initialized */
-    pe_header       WinHeadData; // never access this value directly.  Use
+    exe_pe_header   WinHeadData; // never access this value directly.  Use
                                  // WinHead to get at it instead
 } PEExeInfo;
 

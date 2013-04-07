@@ -50,6 +50,7 @@
 #include "bitmap.h"
 #include "wrbitmap.h"
 #include "wricon.h"
+#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -63,7 +64,7 @@
 int WRLoadBitmapFile( WRInfo *info )
 {
     int                 ok;
-    int                 file_handle;
+    WResFileID          file_handle;
     long int            file_length;
     char                fn[_MAX_FNAME];
     WResID              *type;

@@ -44,7 +44,6 @@
 #include "pass2.h"
 #include "param.h"
 #include "rcio.h"
-#include "phandle.h"
 
 /****** constants describing global data ******/
 /* this is the size of the text input buffer for pass 1 and the data trasfer */
@@ -56,13 +55,14 @@
 #endif
 
 /****** uninitialized global data ******/
-RCEXTERN struct RCParams     CmdLineParms;
-RCEXTERN RcResFileID         CurrResFile;
-RCEXTERN RcPass2Info         Pass2Info;
+RCEXTERN struct RCParams    CmdLineParms;
+RCEXTERN RcResFileID        CurrResFile;
+RCEXTERN RcPass2Info        Pass2Info;
 RCEXTERN char               *NewIncludeDirs;
-RCEXTERN char                CharSetLen[256];
-RCEXTERN HANDLE_INFO         Instance;
-RCEXTERN bool                StopInvoked;
+RCEXTERN char               CharSetLen[256];
+RCEXTERN bool               StopInvoked;
+RCEXTERN bool               IgnoreINCLUDE;
+RCEXTERN bool               IgnoreCWD;
 
 /****** initialized global data ******/
 extern int                  ErrorHasOccured;

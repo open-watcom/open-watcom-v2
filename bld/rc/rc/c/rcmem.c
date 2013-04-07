@@ -40,7 +40,7 @@
 #include "rcalloc1.h"
 
 #ifdef RC_USE_TRMEM
-    #include <unistd.h>
+    #include "wio.h"
     #include "trmem.h"
     _trmem_hdl RcMemHandle = NULL;
 

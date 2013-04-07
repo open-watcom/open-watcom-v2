@@ -33,7 +33,7 @@
 #include "rcspawn.h"
 
 
-static  jmp_buf *RCSpawnStack = jmpbuf_RCFatalError;
+static  jmp_buf *RCSpawnStack = &jmpbuf_RCFatalError;
 
 
 int     RCSpawn( void (*fn)( void ) )

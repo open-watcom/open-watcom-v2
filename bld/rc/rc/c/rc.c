@@ -48,6 +48,8 @@
 #include "wresset2.h"
 #include "semantic.h"
 
+extern HANDLE_INFO  Instance;
+
 WResSetRtns(RcOpen,RcClose,RcRead,RcWrite,RcSeek,RcTell,RcMemMalloc,RcMemFree);
 
 void InitGlobs( void )

@@ -42,6 +42,7 @@
 #include <direct.h>
 #include <errno.h>
 #include "watcom.h"
+#include "wressetr.h"
 #include "wrglbl.h"
 #include "wrtmpfil.h"
 #include "wrmem.h"
@@ -65,7 +66,7 @@ int WR_EXPORT WRGetLastError( void )
     return( LastError );
 }
 
-int WR_EXPORT WRReadEntireFile( int file, BYTE **data, uint_32 *size )
+int WR_EXPORT WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size )
 {
     long int    s;
     int         ok;

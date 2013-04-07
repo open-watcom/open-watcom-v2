@@ -40,7 +40,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int      WR_EXPORT WRReadEntireFile( int file, BYTE **data, uint_32 *size );
+extern int      WR_EXPORT WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size );
 extern int      WR_EXPORT WRDeleteFile( const char * );
 extern int      WR_EXPORT WRFileExists( const char * );
 extern int      WR_EXPORT WRRenameFile( const char *, const char * );

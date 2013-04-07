@@ -124,11 +124,12 @@ int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
     va_list         args;
     char            *start;
     char            *end;
-    unsigned        len;
+    size_t          len;
     IDEMsgInfo      msginfo;
 
+    fp = fp;
     va_start( args, format );
-    err = _vbprintf( curBufPos, PRINTF_BUF_SIZE - ( curBufPos - formatBuffer), format, args );
+    err = vsnprintf( curBufPos, PRINTF_BUF_SIZE - ( curBufPos - formatBuffer), format, args );
     va_end( args );
     start = formatBuffer;
     end = curBufPos;
@@ -231,7 +232,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     ImageName = _LpDllName;
 #endif
     InitGlobs();
-    rc = setjmp( &jmpbuf_RCFatalError );
+    rc = setjmp( jmpbuf_RCFatalError );
     if( rc == 0 ) {
         InitRcMsgs( ImageName );
         if( opts != NULL ) {
@@ -241,19 +242,19 @@ static int RCMainLine( const char *opts, int argc, char **argv )
             cmdbuf = RcMemMalloc( strlen( str ) + argc + 1 );
             ParseEnvVar( str, argv, cmdbuf );
             pass1 = FALSE;
-            for( i=0; i < argc; i++ ) {
+            for( i = 0; i < argc; i++ ) {
                 if( argv[i] != NULL && !stricmp( argv[i], "-r" ) ) {
                     pass1 = TRUE;
                     break;
                 }
             }
             if( initInfo != NULL && initInfo->ver > 1 && initInfo->cmd_line_has_files ) {
-                if( !ideCb->GetInfo( cbHandle, IDE_GET_SOURCE_FILE, 0, (unsigned long)(infile + 1) ) ) {
+                if( !ideCb->GetInfo( cbHandle, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)( infile + 1 ) ) ) {
                     infile[0] = '\"';
                     strcat( infile, "\"" );
                     argv[argc++] = infile;
                 }
-                if( !ideCb->GetInfo( cbHandle, IDE_GET_TARGET_FILE, 0, (unsigned long)outfile + 5 ) ) {
+                if( !ideCb->GetInfo( cbHandle, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)( outfile + 5 ) ) ) {
                     if( pass1 ) {
                         strcpy( outfile, "-fo=\"" );
                     } else {
@@ -262,9 +263,6 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                     strcat( outfile, "\"" );
                     argv[argc++] = outfile;
                 }
-            }
-            if( initInfo != NULL && initInfo->ignore_env ) {
-                argv[argc++] = "-x";
             }
             argv[argc] = NULL;        // last element of the array must be NULL
         }
@@ -305,31 +303,32 @@ IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *inf
     *info = 0;
     initInfo = NULL;
     // init wrc
+    IgnoreINCLUDE = FALSE;
+    IgnoreCWD = FALSE;
     return( FALSE );
 }
 
 IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 /***********************************************************************/
 {
-    if( info->ver < 2 ) {
+    hdl = hdl;
+    if( info == NULL || info->ver < 2 ) {
         return( TRUE );
     }
     if( info->ignore_env ) {
-//        CompFlags.ignore_environment = TRUE;
-//        CompFlags.ignore_current_dir = TRUE;
+        IgnoreINCLUDE = TRUE;
+        IgnoreCWD = TRUE;
     }
-    if( info->ver >= 2 ) {
-        if( info->cmd_line_has_files ) {
-//            CompFlags.ide_cmd_line = TRUE;
+    if( info->cmd_line_has_files ) {
+//        CompFlags.ide_cmd_line = TRUE;
+    }
+    if( info->ver >= 3 ) {
+        if( info->console_output ) {
+//            CompFlags.ide_console_output = TRUE;
         }
-        if( info->ver >= 3 ) {
-            if( info->console_output ) {
-//                CompFlags.ide_console_output = TRUE;
-            }
-            if( info->ver >= 4 ) {
-                if( info->progress_messages ) {
-//                    CompFlags.progress_messages = TRUE;
-                }
+        if( info->ver >= 4 ) {
+            if( info->progress_messages ) {
+//                CompFlags.progress_messages = TRUE;
             }
         }
     }
@@ -348,6 +347,7 @@ IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *
 {
     int         rc;
 
+    hdl = hdl;
     StopInvoked = FALSE;
     if( fatalerr != NULL )
         *fatalerr = FALSE;
@@ -366,6 +366,7 @@ IDEBool IDEDLL_EXPORT IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, 
     _argc = argc;
     _argv = argv;
 #endif
+    hdl = hdl;
     StopInvoked = FALSE;
     if( fatalerr != NULL )
         *fatalerr = FALSE;
@@ -387,4 +388,5 @@ void IDEDLL_EXPORT IDEFiniDLL( IDEDllHdl hdl )
 /********************************************/
 {
     // fini wrc
+    hdl = hdl;
 }

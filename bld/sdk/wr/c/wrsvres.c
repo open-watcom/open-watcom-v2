@@ -46,6 +46,7 @@
 #include "wrinfoi.h"
 #include "wrselft.h"
 #include "wresall.h"
+#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

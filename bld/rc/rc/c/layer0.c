@@ -79,8 +79,10 @@ typedef struct RcBuffer {
 typedef struct RcFileEntry {
     int         HasRcBuffer;
     int         FileHandle;      // If 0, entry is unused
-    RcBuffer *  Buffer;          // If NULL, entry is a normal file (not used yet)
+    RcBuffer    *Buffer;         // If NULL, entry is a normal file (not used yet)
 } RcFileEntry;
+
+HANDLE_INFO     Instance;
 
 static int              openFileList[ MAX_OPEN_FILES ];
 static RcFileEntry      RcFileList[ RC_MAX_FILES ];
@@ -136,13 +138,13 @@ void CloseAllFiles( void ) {
     }
 }
 
-extern int RcOpen( const char * file_name, int access, ... )
-/***********************************************************/
+extern WResFileID RcOpen( const char * file_name, int access, ... )
+/*****************************************************************/
 {
-    int     perms;
-    va_list args;
-    int     fileno,
-            i;
+    int         perms;
+    va_list     args;
+    int         fileno;
+    int         i;
 
     if (access & O_CREAT) {
         va_start( args, access );
@@ -153,13 +155,8 @@ extern int RcOpen( const char * file_name, int access, ... )
     }
 
     fileno = open( file_name, access, perms );
-
     if( fileno != -1 ) {
         RegisterOpenFile( fileno );
-    }
-    if (fileno == -1) {
-        return( fileno );
-    } else {
         for( i=0; i < RC_MAX_FILES; i++ ) {
             if( RcFileList[i].HasRcBuffer == FALSE) {
                 RcFileList[i].HasRcBuffer = TRUE;
@@ -168,11 +165,12 @@ extern int RcOpen( const char * file_name, int access, ... )
                 break;
             }
         }
-        return( fileno );
     }
+    return( fileno );
+
 } /* RcOpen */
 
-static int FlushRcBuffer( int file_no, RcBuffer * buff )
+static int FlushRcBuffer( int fileno, RcBuffer * buff )
 /******************************************************/
 {
     int     num_wrote;
@@ -180,7 +178,7 @@ static int FlushRcBuffer( int file_no, RcBuffer * buff )
 
     error = FALSE;
     if (buff->IsDirty) {
-        num_wrote = write( file_no, buff->Buffer, buff->Count );
+        num_wrote = write( fileno, buff->Buffer, buff->Count );
         error = (num_wrote != buff->Count);
         memset( buff->Buffer, 0, RC_BUFFER_SIZE );
     }
@@ -189,18 +187,18 @@ static int FlushRcBuffer( int file_no, RcBuffer * buff )
     buff->Count = 0;
     buff->BytesRead = 0;
     buff->NextChar = buff->Buffer;
-
     return( error );
+
 } /* FlushRcBuffer */
 
-extern int RcClose( int fileno )
-/******************************/
+extern int RcClose( WResFileID fileno )
+/*************************************/
 {
     RcBuffer    *buff;
     int         error,
                 i;
 
-    if ((i = RcFindIndex(fileno), i < RC_MAX_FILES)
+    if ((i = RcFindIndex( fileno ), i < RC_MAX_FILES)
      && RcFileList[i].HasRcBuffer ) {
         buff = RcFileList[i].Buffer;
         if (buff->IsDirty) {
@@ -213,18 +211,18 @@ extern int RcClose( int fileno )
         RcFileList[i].Buffer = NULL;
     }
     UnRegisterOpenFile( fileno );
-
     return( close( fileno ) );
+
 } /* RcClose */
 
-extern int RcWrite( int fileno, const void * out_buff, size_t size )
-/***************************************************************/
+extern int RcWrite( WResFileID fileno, const void *out_buff, unsigned size )
+/**************************************************************************/
 {
-    RcBuffer *  buff;
+    RcBuffer    *buff;
     int         copy_bytes;
     int         total_wrote;
-    int         error,
-                i;
+    int         error;
+    int         i;
 
     if ((i = RcFindIndex(fileno), i >= RC_MAX_FILES)
      || !RcFileList[i].HasRcBuffer ) {
@@ -279,14 +277,14 @@ static int FillRcBuffer( int fileno, RcBuffer * buff )
     return( buff->Count );
 } /* FillRcBuffer */
 
-int RcRead( int fileno, void * in_buff, size_t size )
-/*******************************************************/
+int RcRead( WResFileID fileno, void * in_buff, unsigned size )
+/************************************************************/
 {
-    RcBuffer *  buff;
+    RcBuffer    *buff;
     int         copy_bytes;
     int         total_read;
-    int         error,
-                i;
+    int         error;
+    int         i;
     int         bytes_added;        /* return value of FillRcBuffer */
 
     if ((i = RcFindIndex(fileno), i >= RC_MAX_FILES)
@@ -328,22 +326,22 @@ int RcRead( int fileno, void * in_buff, size_t size )
     return( total_read );
 } /* RcRead */
 
-off_t RcSeek( int fileno, off_t amount, int where )
-/*************************************************/
+long RcSeek( WResFileID fileno, long amount, int where )
+/******************************************************/
 /* Note: Don't seek backwards in a buffer that has been writen to without */
 /* flushing the buffer and doing an lseek since moving the NextChar pointer */
 /* back will make it look like less data has been writen */
 {
-    RcBuffer *  buff;
-    off_t       currpos;
-    off_t       seek_rc;
+    RcBuffer    *buff;
+    long        currpos;
+    long        seek_rc;
     int         diff;
     int         error,
                 i;
 
     if ((i = RcFindIndex(fileno), i >= RC_MAX_FILES)
      || !RcFileList[i].HasRcBuffer ) {
-        if(  fileno == Instance.handle && where == SEEK_SET ) {
+        if( fileno == Instance.handle && where == SEEK_SET ) {
             return( lseek( fileno, amount + FileShift, where ) - FileShift );
         } else {
             return( lseek( fileno, amount, where ) );
@@ -424,14 +422,13 @@ off_t RcSeek( int fileno, off_t amount, int where )
     return( currpos );
 } /* RcSeek */
 
-off_t RcTell( int fileno )
-/************************/
+long RcTell( WResFileID fileno )
+/******************************/
 {
     RcBuffer *  buff;
     int         i;
 
-    if ((i = RcFindIndex(fileno), i >= RC_MAX_FILES)
-     || !RcFileList[i].HasRcBuffer ) {
+    if ((i = RcFindIndex(fileno), i >= RC_MAX_FILES) || !RcFileList[i].HasRcBuffer ) {
         return( tell( fileno ) );
     }
 
@@ -454,8 +451,8 @@ extern void Layer0InitStatics( void )
 /* Find index in RcFileList table of given filehandle.
 *  Return: RC_MAX_FILES if not found, else index
 */
-static int RcFindIndex(int fileno )
-/******************************/
+static int RcFindIndex( int fileno )
+/**********************************/
 {
     int         i;
 

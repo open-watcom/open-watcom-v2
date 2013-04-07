@@ -78,7 +78,6 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
 /***************************************************************************/
 {
     const LogicalFileInfo       *currfile;
-    int                         len;
     OutPutInfo                   errinfo;
 
 
@@ -125,12 +124,12 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
         /* don't print the filename & line number before these errors */
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );
         vsprintf( rcStrBuf, errBuffer, arglist );
-        sprintf( errBuffer, "%n%s", &len, rcStrBuf );
+        sprintf( errBuffer, "%s", rcStrBuf );
         break;
     case ERR_RCSTR_NOT_FOUND:
         /* this message means the error strings cannot be obtained from
          * the exe so its text is hard coded */
-        sprintf( errBuffer, "%nResource strings not found", &len );
+        sprintf( errBuffer, "Resource strings not found" );
         break;
     case ERR_NO_MSG:
         /* dont print anything */
@@ -144,7 +143,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
             errinfo.file = currfile->Filename;
             errinfo.lineno = currfile->LineNum;
         }
-        sprintf( errBuffer, "%n%s", &len, rcStrBuf );
+        sprintf( errBuffer, "%s", rcStrBuf );
         break;
     }
     RcMsgFprintf( stdout, &errinfo, "%s\n", errBuffer );

@@ -42,40 +42,29 @@ extern RcStatus CopyExeData( int inhandle, int outhandle, uint_32 length )
 /************************************************************************/
 {
     uint    numio;      /* number of bytes read or wrote */
+    uint_32 bufflen;
 
     if (length == 0) {
         return( RS_PARAM_ERROR );
     }
-
-    while (length > IO_BUFFER_SIZE) {
-        numio = RcRead( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
-        if (numio != IO_BUFFER_SIZE) {
+    bufflen = IO_BUFFER_SIZE;
+    while( length > 0 ) {
+        if( length < bufflen ) {
+            bufflen = length;
+        }
+        numio = RcRead( inhandle, Pass2Info.IoBuffer, bufflen );
+        if( numio != bufflen ) {
             if( numio == -1 ) {
                 return( RS_READ_ERROR );
             } else {
                 return( RS_READ_INCMPLT );
             }
         }
-        length -= IO_BUFFER_SIZE;
-        numio = RcWrite( outhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
-        if (numio != IO_BUFFER_SIZE) {
+        if( RcWrite( outhandle, Pass2Info.IoBuffer, bufflen ) != bufflen ) {
             return( RS_WRITE_ERROR );
         }
+        length -= bufflen;
     }
-
-    numio = RcRead( inhandle, Pass2Info.IoBuffer, length );
-    if (numio != length) {
-        if( numio == -1 ) {
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
-    }
-    numio = RcWrite( outhandle, Pass2Info.IoBuffer, length );
-    if (numio != length) {
-        return( RS_WRITE_ERROR );
-    }
-
     return( RS_OK );
 } /* CopyExeData */
 
@@ -87,7 +76,6 @@ extern RcStatus CopyExeDataTilEOF( int inhandle, int outhandle )
 /***************************************************************/
 {
     uint    numread;
-    uint    numwrote;
 
     numread = RcRead( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
     if (numread == -1) {
@@ -95,8 +83,7 @@ extern RcStatus CopyExeDataTilEOF( int inhandle, int outhandle )
     }
 
     while (numread > 0) {
-        numwrote = RcWrite( outhandle, Pass2Info.IoBuffer, numread );
-        if (numwrote != numread) {
+        if (RcWrite( outhandle, Pass2Info.IoBuffer, numread ) != numread) {
             return( RS_WRITE_ERROR );
         }
 
@@ -172,23 +159,19 @@ extern uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
  * NB When an error occurs the function MUST return without altering errno
  */
 extern RcStatus PadExeData( int handle, uint_32 length )
-/*************************************************/
+/******************************************************/
 {
-    uint    numio;      /* number of bytes read or wrote */
-
     memset( Pass2Info.IoBuffer, 0, IO_BUFFER_SIZE );
 
     while (length > IO_BUFFER_SIZE) {
         length -= IO_BUFFER_SIZE;
-        numio = RcWrite( handle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
-        if (numio != IO_BUFFER_SIZE) {
+        if (RcWrite( handle, Pass2Info.IoBuffer, IO_BUFFER_SIZE ) != IO_BUFFER_SIZE) {
             return( RS_WRITE_ERROR );
         }
     }
 
     if (length > 0) {
-        numio = RcWrite( handle, Pass2Info.IoBuffer, length );
-        if (numio != length) {
+        if (RcWrite( handle, Pass2Info.IoBuffer, length ) != length) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -196,26 +179,32 @@ extern RcStatus PadExeData( int handle, uint_32 length )
     return( FALSE );
 } /* PadExeData */
 
-extern void CheckDebugOffset( ExeFileInfo * info )
-/************************************************/
+extern void CheckDebugOffset( ExeFileInfo * exe )
+/***********************************************/
 {
     uint_32     curroffset;
 
-    curroffset = RcTell( info->Handle );
-    if (curroffset > info->DebugOffset) {
-        info->DebugOffset = curroffset;
+    curroffset = RcTell( exe->Handle );
+    if (curroffset > exe->DebugOffset) {
+        exe->DebugOffset = curroffset;
     }
 } /* CheckDebugOffset */
 
-extern unsigned_32 OffsetFromRVA( ExeFileInfo *info, pe_va rva ) {
-/*****************************************************************/
-
+extern unsigned_32 OffsetFromRVA( ExeFileInfo *exe, pe_va rva )
+/*************************************************************/
+{
     pe_object           *objects;
     unsigned_16         obj_cnt;
     unsigned            i;
+    exe_pe_header       *pehdr;
 
-    obj_cnt = info->u.PEInfo.WinHead->num_objects;
-    objects = info->u.PEInfo.Objects;
+    pehdr = exe->u.PEInfo.WinHead;
+    if( IS_PE64( *pehdr ) ) {
+        obj_cnt = PE64( *pehdr ).num_objects;
+    } else {
+        obj_cnt = PE32( *pehdr ).num_objects;
+    }
+    objects = exe->u.PEInfo.Objects;
     for( i = 0; i < obj_cnt; i++ ) {
         if( objects[i].rva == rva ) break;
         if( objects[i].rva > rva ) {
@@ -232,16 +221,14 @@ extern unsigned_32 OffsetFromRVA( ExeFileInfo *info, pe_va rva ) {
  * SeekRead
  * NB When an error occurs the function MUST return without altering errno
  */
-RcStatus SeekRead( int handle, unsigned_32 newpos, void *buff,
-                   unsigned_16 size )
-/**************************************************************************/
+RcStatus SeekRead( int handle, long newpos, void *buff, unsigned size )
+/*********************************************************************/
 /* seek to a specified spot in the file, and read some data */
 {
-    long        rc;
-    int         bytes_read;
+    unsigned   bytes_read;
 
-    rc = RcSeek( handle, newpos, SEEK_SET );
-    if( rc == -1 ) return( RS_READ_ERROR );
+    if( RcSeek( handle, newpos, SEEK_SET ) == -1 ) 
+        return( RS_READ_ERROR );
     bytes_read = RcRead( handle, buff, size );
     if( bytes_read != size ) {
         if( bytes_read == -1 ) {
@@ -272,7 +259,7 @@ ExeType FindNEPELXHeader( int handle, unsigned_32 *nh_offset )
     unsigned_16     data;
     RcStatus        rc;
 
-    rc = SeekRead( handle, 0x00, &data, sizeof( data ) );
+    rc = SeekRead( handle, 0, &data, sizeof( data ) );
     if( rc != RS_OK ) return( FALSE );
     if( data != DOS_EXE_SIGNATURE ) return( EXE_TYPE_UNKNOWN );
 

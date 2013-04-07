@@ -46,6 +46,7 @@
 #include "wrinfo.h"
 #include "wrdata.h"
 #include "wrdatai.h"
+#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

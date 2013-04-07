@@ -53,9 +53,9 @@ static bool scanEnvVar( const char *varname, int *nofilenames );
 extern void RcAddCPPArg( char * newarg )
 /***************************************/
 {
-    int     numargs;        /* number of args in list at end of this function */
-    char ** arg;
-    char ** cppargs;
+    size_t  numargs;    /* number of args in list at end of this function */
+    char    **arg;
+    char    **cppargs;
 
     cppargs = CmdLineParms.CPPArgs;
 
@@ -72,7 +72,7 @@ extern void RcAddCPPArg( char * newarg )
             arg++;
         }
         /* + 2 for the NULL arg and the new arg */
-        numargs = arg - CmdLineParms.CPPArgs + 2;
+        numargs = ( arg - CmdLineParms.CPPArgs ) + 2;
         cppargs = RcMemRealloc( cppargs, numargs * sizeof(char *) );
     }
 
@@ -186,8 +186,8 @@ static bool ScanOptionsArg( const char * arg )
     char        *temp=NULL;
     char        *p;
     char        *delims = ",";
-    int         findlen = 0;
-    int         replen = 0;
+    size_t      findlen = 0;
+    size_t      replen = 0;
 
     contok = true;
 
@@ -651,8 +651,8 @@ static void defaultParms( void )
     CmdLineParms.Pass1Only = FALSE;
     CmdLineParms.Pass2Only = FALSE;
     CmdLineParms.NoResFile = FALSE;
-    CmdLineParms.IgnoreINCLUDE = FALSE;
-    CmdLineParms.IgnoreCWD = FALSE;
+    CmdLineParms.IgnoreCWD = IgnoreCWD;
+    CmdLineParms.IgnoreINCLUDE = IgnoreINCLUDE;
     CmdLineParms.PrivateDLL = FALSE;
     CmdLineParms.GlobalMemEMS = FALSE;
     CmdLineParms.EMSInstance = FALSE;
@@ -727,7 +727,7 @@ int UTF8StringToUnicode( int len, const char *str, char *buf )
 /************************************************************/
 {
     int             ret;
-    unsigned        outlen;
+    int             outlen;
     uint_32         unicode;
     int             i;
 
@@ -909,8 +909,8 @@ static bool scanEnvVar( const char *varname, int *nofilenames )
     unsigned            argc;
     EnvVarInfo          *info;
     static EnvVarInfo   *stack = 0; // Needed to detect recursion.
-    unsigned            argvsize;
-    unsigned            argbufsize;
+    size_t              argvsize;
+    size_t              argbufsize;
     char                *env;
     size_t              varlen;     // size to hold varname copy.
     bool                result;     // doScanParams Result.
@@ -933,7 +933,7 @@ static bool scanEnvVar( const char *varname, int *nofilenames )
     argbufsize = strlen( env ) + 1 + argc;  // inter-parameter spaces map to 0
     argvsize = ( argc + 1 ) * sizeof( char * ); // sizeof argv[argc+1]
     varlen = strlen( varname ) + 1;         // Copy taken to detect recursion.
-    info = RcMemMalloc( sizeof *info + argbufsize + argvsize + varlen );
+    info = RcMemMalloc( sizeof( *info ) + argbufsize + argvsize + varlen );
     info->next = stack;
     stack = info;                           // push info on stack
     info->argv = (char **)info->buf;
@@ -996,3 +996,80 @@ extern void ScanParamShutdown( void )
         RcMemFree( strings );
     }
 } /* ScanParamShutdown */
+
+extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
+/***********************************************************************/
+{
+    char                *replacedString = NULL;
+    char                *foundString;
+    size_t              lenOfStringFromFile;
+    size_t              lenOfFindString;
+    size_t              lenOfReplaceString;
+    size_t              diffInLen;
+    size_t              newMemSize;
+    size_t              i, j, k;
+    int                 noOfInstances; //this is the number of instances
+                                       //of the find string in the string
+                                       //from the file
+
+    while( frStrings != NULL ) {
+        i = 0;
+        j = 0;
+        k = 0;
+        noOfInstances = 0;
+        newMemSize = 0;
+        foundString = NULL;
+        replacedString =  NULL;
+        lenOfFindString = strlen( frStrings->findString );
+        lenOfReplaceString = strlen( frStrings->replaceString );
+        lenOfStringFromFile = strlen( stringFromFile );
+        diffInLen = lenOfReplaceString - lenOfFindString; //used for reallocation
+        if( strstr( stringFromFile, frStrings->findString ) != NULL ) {
+            //checking if a replacement is to be done, then allocating memory
+            replacedString = RcMemMalloc( lenOfStringFromFile+1 );
+            for( k=0; k < lenOfStringFromFile; k++) {
+                replacedString[k] = '\0';
+            }
+            while( i <= lenOfStringFromFile ) {
+                foundString = strstr( stringFromFile+i, frStrings->findString );
+                if( foundString != NULL ) {
+                    while( foundString != &stringFromFile[i] ) {
+                    //while the ptr is not where the replacment string is, copy.
+                        replacedString[j] = stringFromFile[i];
+                        i++;
+                        j++;
+                    }//end of while
+                    if( diffInLen > 0 ) {
+                        //allocating more memory if the string to replace is
+                        //bigger than the string to find
+                        newMemSize = lenOfStringFromFile + 1 + diffInLen * ( noOfInstances + 1 );
+                        replacedString = RcMemRealloc( replacedString, newMemSize );
+                    }
+                    strcpy( &replacedString[j], frStrings->replaceString );
+                    j = j + lenOfReplaceString;
+                    i = i + lenOfFindString-1;
+                    noOfInstances++;
+                } else {
+                    strcpy( &replacedString[j], &stringFromFile[i] );
+                    break;
+                }//end of if-else
+                i++;
+            }//end of while
+        }
+        if( replacedString != NULL && frStrings->next != NULL ) {
+            stringFromFile = RcMemRealloc( stringFromFile, strlen( replacedString ) + 1 );
+            strcpy( stringFromFile, replacedString );
+            RcMemFree( replacedString );
+            replacedString = NULL;
+        }
+        frStrings =  frStrings->next;
+    }
+
+    if( replacedString != NULL ) {
+        RcMemFree( stringFromFile );
+        return( replacedString );
+    } else {
+        RcMemFree( replacedString );
+        return( stringFromFile );
+    }
+}

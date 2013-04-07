@@ -40,20 +40,24 @@
 #include "wresset2.h"
 #include "iortns.h"
 
+extern HANDLE_INFO  Instance;
+
 #if defined( INCL_MSGTEXT )
 
 static char *StringTable[] = {
-    "",
+    "",                             // message ID's start at 1
     #include "incltext.gh"
 };
 
 int InitRcMsgs( char *fname )
 {
+    fname = fname;
     return( 1 );
 }
 
 int GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
 {
+    buff_len = buff_len;
     strcpy( buff, StringTable[resid] );
     return( 1 );
 }
@@ -66,10 +70,10 @@ void FiniRcMsgs( void ) {}
 
 static unsigned MsgShift;
 
-int InitRcMsgs( char *fname )
+int InitRcMsgs( const char *fname )
 {
     int         error;
-    WResFileID  (*oldopen) (const char *, int, ...);
+    WResFileID  (* oldopen)(const char *, int, ...);
     char        testbuf[1];
 
     error = FALSE;

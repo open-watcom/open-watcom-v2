@@ -39,6 +39,7 @@
 #include "wrfindt.h"
 #include "wrmem.h"
 #include "wrmsg.h"
+#include "wressetr.h"
 
 /****************************************************************************/
 /* external function prototypes                                             */

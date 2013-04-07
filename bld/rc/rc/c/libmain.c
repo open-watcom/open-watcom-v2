@@ -38,7 +38,7 @@
 
 #ifdef __NT__
 
-BOOL WINAPI LibMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
+BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
 /**************************************************************/
 {
     inst = inst;

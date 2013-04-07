@@ -466,7 +466,6 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
 {
     CopyResInfo         *copy_info = _copy_info;
     WResLangInfo        *res_info;
-    long                seek_rc;
     uint_32             diff;
     RcStatus            status;
     ResFileInfo         *info;
@@ -477,10 +476,9 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
         info = WResGetFileInfo( entry->u.Data.Wind );
         if( copy_info->curres == NULL || copy_info->curres == info ) {
             res_info = WResGetLangInfo( entry->u.Data.Wind );
-            seek_rc = RcSeek( info->Handle, res_info->Offset, SEEK_SET );
-            if( seek_rc == -1 ) return( RS_READ_ERROR );
-            status = CopyExeData( info->Handle, copy_info->to_handle,
-                                  res_info->Length );
+            if( RcSeek( info->Handle, res_info->Offset, SEEK_SET ) == -1 )
+                return( RS_READ_ERROR );
+            status = CopyExeData( info->Handle, copy_info->to_handle, res_info->Length );
             if( status != RS_OK ) {
                 copy_info->errres = info;
                 return( status );
@@ -488,10 +486,9 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
             diff = ALIGN_VALUE( res_info->Length, sizeof(uint_32) );
             if( diff != res_info->Length ) {
                 /* add the padding */
-//              seek_rc = RcSeek( copy_info->to_handle, diff - res_info->Length,
-//                                  SEEK_CUR );
-                RcPadFile( copy_info->to_handle, diff - res_info->Length );
-                if( seek_rc == -1 ) return( RS_WRITE_ERROR );
+                if( RcPadFile( copy_info->to_handle, diff - res_info->Length ) ) {
+                    return( RS_WRITE_ERROR );
+                }
             }
             CheckDebugOffset( copy_info->file );
         }
@@ -504,36 +501,30 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
  * copyPEResources
  * NB when an error occurs this function MUST return without altering errno
  */
-static RcStatus copyPEResources( ExeFileInfo * tmp, ResFileInfo *resfiles,
+static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
                                 int to_handle, int writebyfile,
                                 ResFileInfo **errres )
 /****************************************************************/
 {
     CopyResInfo     copy_info;
-    PEExeInfo *     info;
     pe_va           start_rva;
     uint_32         start_off;
-    long            seek_rc;
     RcStatus        ret;
     int             tmpopened;
 
-    info = &tmp->u.PEInfo;
-
-    start_rva = info->Res.ResRVA + info->Res.DirSize +
-                    info->Res.String.StringBlockSize;
-    start_off = info->Res.ResOffset + info->Res.DirSize +
-                    info->Res.String.StringBlockSize;
+    start_rva = tmp->u.PEInfo.Res.ResRVA + tmp->u.PEInfo.Res.DirSize + tmp->u.PEInfo.Res.String.StringBlockSize;
+    start_off = tmp->u.PEInfo.Res.ResOffset + tmp->u.PEInfo.Res.DirSize + tmp->u.PEInfo.Res.String.StringBlockSize;
 
     copy_info.to_handle = to_handle;
     copy_info.errres = NULL;
     copy_info.file = tmp;       /* for tracking debugging info offset */
     start_off = ALIGN_VALUE( start_off, sizeof(uint_32) );
 
-    seek_rc = RcSeek( to_handle, start_off, SEEK_SET );
-    if( seek_rc == -1 ) return( RS_WRITE_ERROR );
+    if( RcSeek( to_handle, start_off, SEEK_SET ) == -1 )
+        return( RS_WRITE_ERROR );
     if( !writebyfile ) {
         copy_info.curres = NULL;
-        ret = traverseTree( &info->Res, &copy_info, copyDataEntry );
+        ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
         *errres = copy_info.errres;
     } else {
         ret = RS_OK;
@@ -551,7 +542,7 @@ static RcStatus copyPEResources( ExeFileInfo * tmp, ResFileInfo *resfiles,
                 resfiles->IsOpen = TRUE;
                 tmpopened = TRUE;
             }
-            ret = traverseTree( &info->Res, &copy_info, copyDataEntry );
+            ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
             if( tmpopened ) {
                 ResCloseFile( resfiles->Handle );
                 resfiles->Handle = -1;
@@ -574,17 +565,16 @@ static RcStatus copyPEResources( ExeFileInfo * tmp, ResFileInfo *resfiles,
 static RcStatus writeDirEntry( PEResDirEntry *entry, int handle )
 /***************************************************************/
 {
-    int     num_wrote;
     int     child_num;
 
-    num_wrote = RcWrite( handle, &entry->Head, sizeof(resource_dir_header) );
-    if( num_wrote != sizeof(resource_dir_header) ) return( RS_WRITE_ERROR );
+    if( RcWrite( handle, &entry->Head, sizeof(resource_dir_header) ) != sizeof(resource_dir_header) )
+        return( RS_WRITE_ERROR );
 
     for( child_num = 0; child_num < entry->Head.num_name_entries +
                     entry->Head.num_id_entries; child_num++ ) {
-        num_wrote = RcWrite( handle, entry->Children + child_num,
-                        sizeof(resource_dir_entry) );
-        if( num_wrote != sizeof(resource_dir_entry) ) return( RS_WRITE_ERROR );
+        if( RcWrite( handle, entry->Children + child_num, sizeof(resource_dir_entry) ) != sizeof(resource_dir_entry) ) {
+            return( RS_WRITE_ERROR );
+        }
     }
 
     return( RS_OK );
@@ -597,10 +587,8 @@ static RcStatus writeDirEntry( PEResDirEntry *entry, int handle )
 static int writeDataEntry( PEResDataEntry * entry, int handle )
 /*************************************************************/
 {
-    int     num_wrote;
-
-    num_wrote = RcWrite( handle, &entry->Entry, sizeof(resource_entry) );
-    if( num_wrote != sizeof(resource_entry) ) return( RS_WRITE_ERROR );
+    if( RcWrite( handle, &entry->Entry, sizeof(resource_entry) ) != sizeof(resource_entry) )
+        return( RS_WRITE_ERROR );
     return( RS_OK );
 } /* writeDataEntry */
 
@@ -657,12 +645,10 @@ static RcStatus writeEntry( PEResEntry * entry, void * _handle )
 static RcStatus writeDirectory( PEResDir * dir, int handle )
 /********************************************************************/
 {
-    long        seek_rc;
-    int         num_wrote;
     RcStatus    ret;
 
-    seek_rc = RcSeek( handle, dir->ResOffset, SEEK_SET );
-    if( seek_rc == -1 ) return( RS_WRITE_ERROR );
+    if( RcSeek( handle, dir->ResOffset, SEEK_SET ) == -1 )
+        return( RS_WRITE_ERROR );
 
     /* write the root entry header */
     ret = writeDirEntry( &dir->Root, handle );
@@ -672,9 +658,7 @@ static RcStatus writeDirectory( PEResDir * dir, int handle )
     if( ret != RS_OK ) return( ret );
 
     if( dir->String.StringBlock != 0 ) {
-        num_wrote = RcWrite( handle, dir->String.StringBlock,
-                                dir->String.StringBlockSize );
-        if( num_wrote != dir->String.StringBlockSize ) {
+        if( RcWrite( handle, dir->String.StringBlock, dir->String.StringBlockSize ) != dir->String.StringBlockSize ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -738,7 +722,8 @@ static int padObject( PEResDir *dir, ExeFileInfo *tmp, long size )
     long        pad;
 
     pos = RcTell( tmp->Handle );
-    if( pos == -1 ) return( TRUE );
+    if( pos == -1 )
+        return( TRUE );
     pad = dir->ResOffset + size - pos;
     if( pad > 0 ) {
         RcPadFile( tmp->Handle, pad );
@@ -746,14 +731,14 @@ static int padObject( PEResDir *dir, ExeFileInfo *tmp, long size )
     CheckDebugOffset( tmp );
     return( FALSE );
 #if(0)
-    long        seek_rc;
     char        zero=0;
 
-    seek_rc = RcSeek( tmp->Handle, dir->ResOffset, SEEK_SET );
-    if( seek_rc == -1 ) return( TRUE );
-    seek_rc = RcSeek( tmp->Handle, size-1, SEEK_CUR );
-    if( seek_rc == -1 ) return( TRUE );
-    if( RcWrite( tmp->Handle, &zero, 1 ) != 1 ) return( TRUE );
+    if( RcSeek( tmp->Handle, dir->ResOffset, SEEK_SET ) == -1 )
+        return( TRUE );
+    if( RcSeek( tmp->Handle, size-1, SEEK_CUR ) == -1 )
+        return( TRUE );
+    if( RcWrite( tmp->Handle, &zero, 1 ) != 1 )
+        return( TRUE );
     CheckDebugOffset( tmp );
     return( FALSE );
 #endif
@@ -835,18 +820,21 @@ static void reportDuplicateResources( WResMergeError *errs )
     }
 }
 
-extern int BuildResourceObject( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
+extern int BuildResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
                                 pe_object *res_obj, unsigned_32 rva,
                                 unsigned_32 offset, int writebyfile )
 /**************************************************************************/
 {
-    PEResDir *      dir;
-    RcStatus        status;
-    unsigned_32     curr_rva;
-    WResMergeError  *errs;
-    ResFileInfo     *errres;
+    PEResDir            *dir;
+    RcStatus            status;
+    unsigned_32         curr_rva;
+    WResMergeError      *errs;
+    ResFileInfo         *errres;
+    unsigned_32         file_align;
+    exe_pe_header       *pehdr;
+    pe_hdr_table_entry  *table;
 
-    dir = &exeinfo->u.PEInfo.Res;
+    dir = &exe->u.PEInfo.Res;
 
     mergeDirectory( resinfo, &errs );
     if( errs != NULL ) {
@@ -859,26 +847,24 @@ extern int BuildResourceObject( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
         return( TRUE );
     }
     CompleteTree( dir );
-    exeinfo->u.PEInfo.Res.ResOffset = offset;
-    exeinfo->u.PEInfo.Res.ResRVA = rva;
-    curr_rva = rva + exeinfo->u.PEInfo.Res.DirSize
-               + exeinfo->u.PEInfo.Res.String.StringBlockSize;
+    exe->u.PEInfo.Res.ResOffset = offset;
+    exe->u.PEInfo.Res.ResRVA = rva;
+    curr_rva = rva + exe->u.PEInfo.Res.DirSize + exe->u.PEInfo.Res.String.StringBlockSize;
     curr_rva = ALIGN_VALUE( curr_rva, sizeof( uint_32 ) );
     setDataOffsets( dir, &curr_rva, resinfo, writebyfile );
-    status = writeDirectory( dir, exeinfo->Handle );
+    status = writeDirectory( dir, exe->Handle );
     if( status != RS_OK ) {
-        RcError( ERR_WRITTING_FILE, exeinfo->name, strerror( errno ) );
+        RcError( ERR_WRITTING_FILE, exe->name, strerror( errno ) );
         return( TRUE );
     }
 
-    status = copyPEResources( exeinfo, resinfo, exeinfo->Handle,
-                              writebyfile, &errres );
+    status = copyPEResources( exe, resinfo, exe->Handle, writebyfile, &errres );
     // warning - the file names output in these messages could be
     //          incorrect if the -fr switch is in use
     if( status != RS_OK  ) {
         switch( status ) {
         case RS_WRITE_ERROR:
-            RcError( ERR_WRITTING_FILE, exeinfo->name, strerror( errno ) );
+            RcError( ERR_WRITTING_FILE, exe->name, strerror( errno ) );
             break;
         case RS_READ_ERROR:
             RcError( ERR_READING_RES, errres->name, strerror( errno )  );
@@ -894,18 +880,25 @@ extern int BuildResourceObject( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
         }
         return( TRUE );
     }
+    exe->u.PEInfo.Res.ResSize = curr_rva - rva;
 
-    exeinfo->u.PEInfo.Res.ResSize = curr_rva - rva;
-    fillResourceObj( res_obj, dir, exeinfo->u.PEInfo.WinHead->file_align );
-    if( padObject( dir, exeinfo, res_obj->physical_size ) ) {
-        RcError( ERR_WRITTING_FILE, exeinfo->name, strerror( errno ) );
+    pehdr = exe->u.PEInfo.WinHead;
+    if( IS_PE64( *pehdr ) ) {
+        file_align = PE64( *pehdr ).file_align;
+        table = PE64( *pehdr ).table;
+    } else {
+        file_align = PE32( *pehdr ).file_align;
+        table = PE32( *pehdr ).table;
+    }
+    fillResourceObj( res_obj, dir, file_align );
+    if( padObject( dir, exe, res_obj->physical_size ) ) {
+        RcError( ERR_WRITTING_FILE, exe->name, strerror( errno ) );
         return( TRUE );
     }
 
     /* set the resource element of the table in the header */
-    exeinfo->u.PEInfo.WinHead->table[ PE_TBL_RESOURCE ].rva = res_obj->rva;
-    exeinfo->u.PEInfo.WinHead->table[ PE_TBL_RESOURCE ].size =
-                                        res_obj->physical_size;
+    table[ PE_TBL_RESOURCE ].rva = res_obj->rva;
+    table[ PE_TBL_RESOURCE ].size = res_obj->physical_size;
 
     FreePEResDir( dir );
 
@@ -921,28 +914,36 @@ int RcBuildResourceObject( void ) {
     unsigned_32         rva;
     unsigned_32         offset;
     RcStatus            error;
-    ExeFileInfo         *exeinfo;
+    ExeFileInfo         *exe;
+    exe_pe_header       *pehdr;
+    pe_hdr_table_entry  *table;
 
-    exeinfo = &Pass2Info.TmpFile;
+    exe = &Pass2Info.TmpFile;
+    pehdr = exe->u.PEInfo.WinHead;
     if( CmdLineParms.NoResFile ) {
-        exeinfo->u.PEInfo.WinHead->table[ PE_TBL_RESOURCE ].rva = 0;
-        exeinfo->u.PEInfo.WinHead->table[ PE_TBL_RESOURCE ].size = 0;
+        if( IS_PE64( *pehdr ) ) {
+            table = PE64( *pehdr ).table;
+        } else {
+            table = PE32( *pehdr ).table;
+        }
+        table[ PE_TBL_RESOURCE ].rva = 0;
+        table[ PE_TBL_RESOURCE ].size = 0;
         error = RS_OK;
     } else {
-        res_obj = exeinfo->u.PEInfo.Objects
-                  + exeinfo->u.PEInfo.WinHead->num_objects - 1;
-        rva = GetNextObjRVA( &exeinfo->u.PEInfo );
-        offset = GetNextObjPhysOffset( &exeinfo->u.PEInfo );
-        error = BuildResourceObject( exeinfo, Pass2Info.ResFiles,
-                                     res_obj, rva, offset,
-                                     !Pass2Info.AllResFilesOpen );
+        if( IS_PE64( *pehdr ) ) {
+            res_obj = exe->u.PEInfo.Objects + PE64( *pehdr ).num_objects - 1;
+        } else {
+            res_obj = exe->u.PEInfo.Objects + PE32( *pehdr ).num_objects - 1;
+        }
+        rva = GetNextObjRVA( &exe->u.PEInfo );
+        offset = GetNextObjPhysOffset( &exe->u.PEInfo );
+        error = BuildResourceObject( exe, Pass2Info.ResFiles, res_obj, rva, offset, !Pass2Info.AllResFilesOpen );
 // use of CmdLineParms.WritableRes has been commented out in param.c
 // removed here too as it wasn't initialised anymore (Ernest ter Kuile 31 aug 2003)
 //        if( CmdLineParms.WritableRes ) {
 //            res_obj->flags |= PE_OBJ_WRITABLE;
 //        }
     }
-
     return( error );
 }
 #endif

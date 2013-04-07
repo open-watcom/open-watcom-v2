@@ -40,6 +40,7 @@
 #include "wrstrdup.h"
 #include "wrinfoi.h"
 #include "wridfile.h"
+#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

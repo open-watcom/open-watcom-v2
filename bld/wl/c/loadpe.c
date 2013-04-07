@@ -828,8 +828,8 @@ void DoAddResource( char *name )
     FmtData.u.pe.resources = info;
 }
 
-static void WritePEResources( pe_header *header, pe_object *object )
-/******************************************************************/
+static void WritePEResources( exe_pe_header *h, pe_object *object )
+/*****************************************************************/
 {
     ExeFileInfo einfo;
     ResFileInfo *rinfo;
@@ -842,19 +842,17 @@ static void WritePEResources( pe_header *header, pe_object *object )
         DoAddResource( FmtData.resource );
         FmtData.resource = NULL;
     }
-    status = OpenResFiles( (ExtraRes *) FmtData.u.pe.resources, &rinfo,
-                           &allopen, RC_TARGET_OS_WIN32, Root->outfile->fname );
+    status = OpenResFiles( (ExtraRes *)FmtData.u.pe.resources, &rinfo, &allopen, RC_TARGET_OS_WIN32, Root->outfile->fname );
     if( !status )               // we had a problem opening
         return;
     einfo.IsOpen = TRUE;
     einfo.Handle = Root->outfile->handle;
     einfo.name = Root->outfile->fname;
-    einfo.u.PEInfo.WinHead = header;
+    einfo.u.PEInfo.WinHead = h;
     einfo.Type = EXE_TYPE_PE;
-    status = BuildResourceObject( &einfo, rinfo, object, header->image_size,
-                                  NullAlign( header->file_align ), !allopen );
+    status = BuildResourceObject( &einfo, rinfo, object, h->pe32.image_size, NullAlign( h->pe32.file_align ), !allopen );
     CloseResFiles( rinfo );
-    header->image_size += ROUND_UP(object->physical_size, header->object_align);
+    h->pe32.image_size += ROUND_UP(object->physical_size, h->pe32.object_align);
 }
 
 static void WriteDebugTable( pe_header *header, pe_object *object, const char *symfilename )
@@ -1050,64 +1048,64 @@ void FiniPELoadFile( void )
 /********************************/
 /* make a PE executable file */
 {
-    pe_header   exe_head;
-    unsigned_32 stub_len;
-    pe_object   *object;
-    unsigned    num_objects;
-    pe_object   *tbl_obj;
-    unsigned    head_size;
+    exe_pe_header   h;
+    unsigned_32     stub_len;
+    pe_object       *object;
+    unsigned        num_objects;
+    pe_object       *tbl_obj;
+    unsigned        head_size;
 
     CheckNumRelocs();
     num_objects = FindNumObjects();
     head_size = sizeof( pe_header );
-    memset( &exe_head, 0, head_size ); /* zero all header fields */
+    memset( &h.pe32, 0, head_size ); /* zero all header fields */
     if( FmtData.u.pe.signature != 0 ) {
-        exe_head.signature = FmtData.u.pe.signature;
+        h.pe32.signature = FmtData.u.pe.signature;
     } else {
-        exe_head.signature = PE_SIGNATURE;
+        h.pe32.signature = PE_SIGNATURE;
     }
     if( LinkState & HAVE_I86_CODE ) {
-        exe_head.cpu_type = PE_CPU_386;
+        h.pe32.cpu_type = PE_CPU_386;
     } else if( LinkState & HAVE_ALPHA_CODE ) {
-        exe_head.cpu_type = PE_CPU_ALPHA;
+        h.pe32.cpu_type = PE_CPU_ALPHA;
     } else {
-        exe_head.cpu_type = PE_CPU_POWERPC;
+        h.pe32.cpu_type = PE_CPU_POWERPC;
     }
-    exe_head.magic = 0x10b;
-    exe_head.num_objects = num_objects;
-    exe_head.time_stamp = time( NULL );
-    exe_head.nt_hdr_size = head_size - offsetof( pe_header, flags )
-                                             - sizeof( exe_head.flags );
-    exe_head.flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE;
+    h.pe32.magic = 0x10b;
+    h.pe32.num_objects = num_objects;
+    h.pe32.time_stamp = time( NULL );
+    h.pe32.nt_hdr_size = head_size - offsetof( pe_header, flags )
+                                             - sizeof( h.pe32.flags );
+    h.pe32.flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE;
     if( !(LinkState & MAKE_RELOCS) ) {
-        exe_head.flags |= PE_FLG_RELOCS_STRIPPED;
+        h.pe32.flags |= PE_FLG_RELOCS_STRIPPED;
     }
     if( !(LinkState & LINK_ERROR) ) {
-        exe_head.flags |= PE_FLG_IS_EXECUTABLE;
+        h.pe32.flags |= PE_FLG_IS_EXECUTABLE;
     }
     if( FmtData.dll ) {
-        exe_head.flags |= PE_FLG_LIBRARY;
+        h.pe32.flags |= PE_FLG_LIBRARY;
         if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
-            exe_head.dll_flags |= PE_DLL_PERPROC_INIT;
+            h.pe32.dll_flags |= PE_DLL_PERPROC_INIT;
         } else if( FmtData.u.os2.flags & INIT_THREAD_FLAG ) {
-            exe_head.dll_flags |= PE_DLL_PERTHRD_INIT;
+            h.pe32.dll_flags |= PE_DLL_PERTHRD_INIT;
         }
         if( FmtData.u.os2.flags & TERM_INSTANCE_FLAG ) {
-            exe_head.dll_flags |= PE_DLL_PERPROC_TERM;
+            h.pe32.dll_flags |= PE_DLL_PERPROC_TERM;
         } else if( FmtData.u.os2.flags & TERM_THREAD_FLAG ) {
-            exe_head.dll_flags |= PE_DLL_PERTHRD_TERM;
+            h.pe32.dll_flags |= PE_DLL_PERTHRD_TERM;
         }
     }
 
     if( FmtData.u.pe.lnk_specd ) {
-        exe_head.lnk_major = FmtData.u.pe.linkmajor;
-        exe_head.lnk_minor = FmtData.u.pe.linkminor;
+        h.pe32.lnk_major = FmtData.u.pe.linkmajor;
+        h.pe32.lnk_minor = FmtData.u.pe.linkminor;
     } else {
-        exe_head.lnk_major = PE_LNK_MAJOR;
-        exe_head.lnk_minor = PE_LNK_MINOR;
+        h.pe32.lnk_major = PE_LNK_MAJOR;
+        h.pe32.lnk_minor = PE_LNK_MINOR;
     }
-    exe_head.image_base = FmtData.base;
-    exe_head.object_align = FmtData.objalign;
+    h.pe32.image_base = FmtData.base;
+    h.pe32.object_align = FmtData.objalign;
 
     /*
      *  I have changed this to allow programmers to control this shift. MS has 0x20 byte segments
@@ -1118,48 +1116,48 @@ void FiniPELoadFile( void )
         FmtData.u.os2.segment_shift = DEFAULT_SEG_SHIFT;
     }
 
-    exe_head.file_align = 1UL << FmtData.u.os2.segment_shift;
+    h.pe32.file_align = 1UL << FmtData.u.os2.segment_shift;
 
     if( FmtData.u.pe.osv_specd ) {
-        exe_head.os_major = FmtData.u.pe.osmajor;
-        exe_head.os_minor = FmtData.u.pe.osminor;
+        h.pe32.os_major = FmtData.u.pe.osmajor;
+        h.pe32.os_minor = FmtData.u.pe.osminor;
     } else {
-        exe_head.os_major = PE_OS_MAJOR;
-        exe_head.os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
+        h.pe32.os_major = PE_OS_MAJOR;
+        h.pe32.os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
     }
 
-    exe_head.user_major = FmtData.major;
-    exe_head.user_minor = FmtData.minor;
+    h.pe32.user_major = FmtData.major;
+    h.pe32.user_minor = FmtData.minor;
     if( FmtData.u.pe.sub_specd ) {
-        exe_head.subsys_major = FmtData.u.pe.submajor;
-        exe_head.subsys_minor = FmtData.u.pe.subminor;
+        h.pe32.subsys_major = FmtData.u.pe.submajor;
+        h.pe32.subsys_minor = FmtData.u.pe.subminor;
     } else {
-        exe_head.subsys_major = 3;
-        exe_head.subsys_minor = 0xa;
+        h.pe32.subsys_major = 3;
+        h.pe32.subsys_minor = 0xa;
     }
     if( FmtData.u.pe.subsystem != PE_SS_UNKNOWN ) {
-        exe_head.subsystem = FmtData.u.pe.subsystem;
+        h.pe32.subsystem = FmtData.u.pe.subsystem;
     } else {
-        exe_head.subsystem = PE_SS_WINDOWS_GUI;
+        h.pe32.subsystem = PE_SS_WINDOWS_GUI;
     }
-    exe_head.stack_reserve_size = StackSize;
+    h.pe32.stack_reserve_size = StackSize;
     if( FmtData.u.pe.stackcommit == PE_DEF_STACK_COMMIT ) {
-        exe_head.stack_commit_size = StackSize;
-        if( exe_head.stack_commit_size > (64*1024UL) ) {
-            exe_head.stack_commit_size = 64*1024UL;
+        h.pe32.stack_commit_size = StackSize;
+        if( h.pe32.stack_commit_size > (64*1024UL) ) {
+            h.pe32.stack_commit_size = 64*1024UL;
         }
     } else if( FmtData.u.pe.stackcommit > StackSize ) {
-        exe_head.stack_commit_size = StackSize;
+        h.pe32.stack_commit_size = StackSize;
     } else {
-        exe_head.stack_commit_size = FmtData.u.pe.stackcommit;
+        h.pe32.stack_commit_size = FmtData.u.pe.stackcommit;
     }
-    exe_head.heap_reserve_size = FmtData.u.os2.heapsize;
+    h.pe32.heap_reserve_size = FmtData.u.os2.heapsize;
     if( FmtData.u.pe.heapcommit > FmtData.u.os2.heapsize ) {
-        exe_head.heap_commit_size = FmtData.u.os2.heapsize;
+        h.pe32.heap_commit_size = FmtData.u.os2.heapsize;
     } else {
-        exe_head.heap_commit_size = FmtData.u.pe.heapcommit;
+        h.pe32.heap_commit_size = FmtData.u.pe.heapcommit;
     }
-    exe_head.num_tables = PE_TBL_NUMBER;
+    h.pe32.num_tables = PE_TBL_NUMBER;
     CurrSect = Root;
     SeekLoad( 0 );
     stub_len = Write_Stub_File( STUB_ALIGN );
@@ -1169,39 +1167,39 @@ void FiniPELoadFile( void )
     PadLoad( head_size + num_objects * sizeof( pe_object ) );
     GenPETransferTable();
     WriteImportInfo();
-    SetMiscTableEntries( &exe_head );
-    WriteDataPages( &exe_head, object );
+    SetMiscTableEntries( &h.pe32 );
+    WriteDataPages( &h.pe32, object );
     tbl_obj = &object[NumGroups];
     if( FmtData.u.os2.exports != NULL ) {
-        WriteExportInfo( &exe_head, tbl_obj );
+        WriteExportInfo( &h.pe32, tbl_obj );
         ++tbl_obj;
     }
     if( LinkState & MAKE_RELOCS ) {
-        WriteFixupInfo( &exe_head, tbl_obj );
+        WriteFixupInfo( &h.pe32, tbl_obj );
         ++tbl_obj;
     }
     if( FmtData.u.os2.description != NULL ) {
-        WriteDescription( &exe_head, tbl_obj );
+        WriteDescription( &h.pe32, tbl_obj );
         ++tbl_obj;
     }
     if( FmtData.resource || FmtData.u.pe.resources != NULL ) {
-        WritePEResources( &exe_head, tbl_obj );
+        WritePEResources( &h, tbl_obj );
         ++tbl_obj;
     }
     if( LinkFlags & CV_DBI_FLAG ) {
-        WriteDebugTable( &exe_head, tbl_obj, SymFileName );
+        WriteDebugTable( &h.pe32, tbl_obj, SymFileName );
         ++tbl_obj;
     }
-    NullAlign( exe_head.file_align ); /* pad out last page */
-    exe_head.header_size = object->physical_offset;
+    NullAlign( h.pe32.file_align ); /* pad out last page */
+    h.pe32.header_size = object->physical_offset;
     DBIWrite();
     SeekLoad( stub_len );
 
     if( FmtData.u.pe.checksumfile ) {
-        exe_head.file_checksum = 0L;    /* Ensure checksum is 0 before we calculate it */
+        h.pe32.file_checksum = 0L;    /* Ensure checksum is 0 before we calculate it */
     }
 
-    WriteLoad( &exe_head, head_size );
+    WriteLoad( &h.pe32, head_size );
     WriteLoad( object, num_objects * sizeof( pe_object ) );
 
     if( FmtData.u.pe.checksumfile ) {
@@ -1240,9 +1238,9 @@ void FiniPELoadFile( void )
             _LnkFree( buffer );
             crc += totalsize;
 
-            exe_head.file_checksum = crc;
+            h.pe32.file_checksum = crc;
             SeekLoad( stub_len );
-            WriteLoad( &exe_head, head_size );
+            WriteLoad( &h.pe32, head_size );
         }
     }
 

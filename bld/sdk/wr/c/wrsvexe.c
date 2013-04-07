@@ -36,10 +36,13 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "watcom.h"
 #include "global.h"    /* this is a WRC header file */
 #include "rcio.h"      /* this is a WRC header file */
 #include "pass2.h"     /* this is a WRC header file */
 #include "rcspawn.h"   /* this is a WRC header file */
+
+#include "wresset2.h"
 
 #include "wrglbl.h"
 #include "wrmain.h"
@@ -64,6 +67,8 @@
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
+// this is a global eternal variable from the resource compiler
+extern HANDLE_INFO           Instance;
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -106,7 +111,7 @@ int WRExecRCPass2( void )
     int ret;
     int ok;
 
-    ret = setjmp( &jmpbuf_RCFatalError );
+    ret = setjmp( jmpbuf_RCFatalError );
 
     if( ret ) {
         ok = FALSE;

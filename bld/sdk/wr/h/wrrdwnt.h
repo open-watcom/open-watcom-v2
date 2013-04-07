@@ -33,7 +33,6 @@
 #ifndef WRRDWNT_INCLUDED
 #define WRRDWNT_INCLUDED
 
-#include "watcom.h"
 #include "exepe.h"
 #include "wrinfo.h"
 #include "wresall.h"
@@ -50,6 +49,6 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern int      WRLoadResourceFromWinNTEXE( WRInfo * );
-extern long int WRReadWinNTExeHeader( WResFileID, pe_header * );
+extern long int WRReadWinNTExeHeader( WResFileID, exe_pe_header * );
 
 #endif

@@ -51,6 +51,7 @@
 #include "iortns.h"
 #include "semantic.h"
 
+
 #ifdef __UNIX__
 #define PATH_SEP '/'
 #define PATH_SPLIT ':'
@@ -242,8 +243,6 @@ static int PreprocessInputFile( void )
         PP_Define( rcdefine );
     } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
         strcpy( rcdefine, "__NT__" );
-        PP_Define( rcdefine );
-        strcpy( rcdefine, "_WIN32" );
         PP_Define( rcdefine );
     } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
         strcpy( rcdefine, "__OS2__" );
@@ -484,10 +483,11 @@ static int OpenResFileInfo( ExeType type )
 } /* OpenResFileInfo */
 
 
-static int openExeFileInfoRO( char * filename, ExeFileInfo * info )
-/*****************************************************************/
+static int openExeFileInfoRO( char *filename, ExeFileInfo *info )
+/***************************************************************/
 {
-    RcStatus            status;
+    RcStatus        status;
+    exe_pe_header   *pehdr;
 
     info->Handle = RcOpen( filename, O_RDONLY|O_BINARY );
     if( info->Handle == -1 ) {
@@ -500,34 +500,40 @@ static int openExeFileInfoRO( char * filename, ExeFileInfo * info )
     switch( info->Type ) {
     case EXE_TYPE_NE_WIN:
     case EXE_TYPE_NE_OS2:
-        status = SeekRead( info->Handle, info->WinHeadOffset,
-                            &info->u.NEInfo.WinHead, sizeof(os2_exe_header) );
+        status = SeekRead( info->Handle, info->WinHeadOffset, &info->u.NEInfo.WinHead, sizeof( os2_exe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( FALSE );
         } else {
-            info->DebugOffset = info->WinHeadOffset + sizeof(os2_exe_header);
+            info->DebugOffset = info->WinHeadOffset + sizeof( os2_exe_header );
         }
         break;
     case EXE_TYPE_PE:
-        info->u.PEInfo.WinHead = &info->u.PEInfo.WinHeadData;
-        status = SeekRead( info->Handle, info->WinHeadOffset,
-                           info->u.PEInfo.WinHead, sizeof(pe_header) );
+        pehdr = &info->u.PEInfo.WinHeadData;
+        info->u.PEInfo.WinHead = pehdr;
+        status = SeekRead( info->Handle, info->WinHeadOffset, &PE32( *pehdr ), sizeof( pe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( FALSE );
+        }
+        if( IS_PE64( *pehdr ) ) {
+            status = SeekRead( info->Handle, info->WinHeadOffset, &PE64( *pehdr ), sizeof( pe_header64 ) );
+            if( status != RS_OK ) {
+                RcError( ERR_NOT_VALID_EXE, filename );
+                return( FALSE );
+            }
+            info->DebugOffset = info->WinHeadOffset + sizeof( pe_header64 );
         } else {
-            info->DebugOffset = info->WinHeadOffset + sizeof(pe_header);
+            info->DebugOffset = info->WinHeadOffset + sizeof( pe_header );
         }
         break;
     case EXE_TYPE_LX:
-        status = SeekRead( info->Handle, info->WinHeadOffset,
-                           &info->u.LXInfo.OS2Head, sizeof(os2_flat_header) );
+        status = SeekRead( info->Handle, info->WinHeadOffset, &info->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( FALSE );
         } else {
-            info->DebugOffset = info->WinHeadOffset + sizeof(os2_flat_header);
+            info->DebugOffset = info->WinHeadOffset + sizeof( os2_flat_header );
         }
         break;
     default:
@@ -652,7 +658,7 @@ extern int RcPass2IoInit( void )
     int     noerror;
     int     tmpexe_exists;
 
-    memset( &Pass2Info, '\0', sizeof(RcPass2Info) );
+    memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RcMemMalloc( IO_BUFFER_SIZE );
     MakeTmpInSameDir( CmdLineParms.OutExeFileName, Pass2Info.TmpFileName,
                             "tmp" );
@@ -662,19 +668,16 @@ extern int RcPass2IoInit( void )
         noerror = openNewExeFileInfo( Pass2Info.TmpFileName,
                                       &(Pass2Info.TmpFile) );
     }
-        tmpexe_exists = noerror;
+    tmpexe_exists = noerror;
 
     if( noerror ) {
         Pass2Info.TmpFile.Type = Pass2Info.OldFile.Type;
         Pass2Info.TmpFile.WinHeadOffset = Pass2Info.OldFile.WinHeadOffset;
         if( Pass2Info.OldFile.Type == EXE_TYPE_PE ) {
-            Pass2Info.TmpFile.u.PEInfo.WinHead =
-                                        &Pass2Info.TmpFile.u.PEInfo.WinHeadData;
-            *Pass2Info.TmpFile.u.PEInfo.WinHead =
-                                        *Pass2Info.OldFile.u.PEInfo.WinHead;
+            Pass2Info.TmpFile.u.PEInfo.WinHead = &Pass2Info.TmpFile.u.PEInfo.WinHeadData;
+            *Pass2Info.TmpFile.u.PEInfo.WinHead = *Pass2Info.OldFile.u.PEInfo.WinHead;
         }
-        if( (Pass2Info.OldFile.Type == EXE_TYPE_NE_WIN
-            || Pass2Info.OldFile.Type == EXE_TYPE_NE_OS2)
+        if( (Pass2Info.OldFile.Type == EXE_TYPE_NE_WIN || Pass2Info.OldFile.Type == EXE_TYPE_NE_OS2)
             && CmdLineParms.ExtraResFiles != NULL ) {
             RcError( ERR_FR_NOT_VALID_FOR_WIN );
             noerror = FALSE;
@@ -784,8 +787,6 @@ extern int RcIoTextInputShutdown( void )
 static int OpenPhysicalFile( PhysFileInfo * phys )
 /************************************************/
 {
-    int     seekrc;
-
     if( !phys->IsOpen ) {
         phys->Handle = RcIoOpenInput( phys->Filename, O_RDONLY | O_TEXT );
         if( phys->Handle == -1 ) {
@@ -793,8 +794,7 @@ static int OpenPhysicalFile( PhysFileInfo * phys )
             return( TRUE );
         }
         phys->IsOpen = TRUE;
-        seekrc = RcSeek( phys->Handle, phys->Offset, SEEK_SET );
-        if( seekrc == -1 ) {
+        if( RcSeek( phys->Handle, phys->Offset, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_FILE, phys->Filename, strerror( errno ) );
             return( TRUE );
         }
@@ -828,7 +828,7 @@ static void SetPhysFileOffset( FileStack * stack )
 static int ReadBuffer( FileStack * stack )
 /****************************************/
 {
-    PhysFileInfo   *phys;
+    PhysFileInfo    *phys;
     int             numread;
     int             error;
     int             inchar;
@@ -1041,7 +1041,7 @@ extern int RcIoOpenInput( char * filename, int flags, ... )
     int                 handle;
     int                 perms;
     va_list             args;
-    FileStackEntry *    currfile;
+    FileStackEntry      *currfile;
 
     if( flags & O_CREAT ) {
         va_start( args, flags );
@@ -1066,8 +1066,8 @@ extern int RcIoOpenInput( char * filename, int flags, ... )
             currfile++;
        }
     }
-
     return( handle );
+
 } /* RcIoOpenInput */
 
 extern void RcIoInitStatics( void )

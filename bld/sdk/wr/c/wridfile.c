@@ -34,11 +34,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "watcom.h"
+#include "wrglbl.h"
 #include "wrrdres.h"
 #include "wrrdw16.h"
 #include "wrrdwnt.h"
-#include "wrinfo.h"
-#include "wridfile.h"
+#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -70,7 +71,7 @@ WRFileType WR_EXPORT WRIdentifyFile( const char *file )
 {
     WRFileType  ftype;
     char        ext[_MAX_EXT];
-    int         fh;
+    WResFileID  fh;
     int         ok;
 
     fh = -1;
@@ -172,7 +173,7 @@ WRFileType WRIdentifyRESFile( const char *file )
 WRFileType WRIdentifyEXEFile( int fh, int is_dll )
 {
     os2_exe_header  os2_hdr;
-    pe_header       pe_hdr;
+    exe_pe_header   pe_hdr;
     WRFileType      ftype;
 
     ftype = WR_INVALID_FILE;
