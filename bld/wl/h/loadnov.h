@@ -91,7 +91,7 @@ typedef struct {
 typedef struct nov_import {
     byte        contents;       // # of relocs || # of virtmem blocks + 10
     unsigned_32 num_relocs;     // number of relocs allocated.
-    virt_mem    addr[1];        // variable # of pointers virtual mem. hunks
+    virt_mem    vm_ptr[1];      // variable # of pointers virtual mem. hunks
 } nov_import;
 
 // values for upper bits of the relocation offsets.

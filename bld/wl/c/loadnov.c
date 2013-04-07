@@ -118,7 +118,7 @@ static unsigned_32 WriteNovImports( fixed_header *header )
             } else {        // imports are in virtual memory.
                 refs = import->num_relocs;
                 WriteLoad( &refs, sizeof( unsigned_32 ) );
-                vmem_array = import->addr;
+                vmem_array = import->vm_ptr;
                 while( refs > IMP_NUM_VIRT ) {
                     WriteInfoLoad( *vmem_array, IMP_VIRT_ALLOC_SIZE );
                     vmem_array++;
@@ -159,7 +159,7 @@ static unsigned_32 WriteNovExports( fixed_header *header )
             */
             if( sym->prefix ) {
 
-                char        full_name[255+1];
+                char        full_name[255 + 1];
 
                 strcpy(full_name, sym->prefix);
                 strcat(full_name, "@");
@@ -504,7 +504,7 @@ void FiniNovellLoadFile( void )
     struct tm *         currtime;
     time_t              thetime;
     char *              pPeriod = NULL;
-    char                module_name[NOV_MAX_MODNAME_LEN+1];
+    char                module_name[NOV_MAX_MODNAME_LEN + 1];
 
 /* find module name (output file name without the path.) */
 
@@ -599,7 +599,7 @@ void FiniNovellLoadFile( void )
     nov_header.version = NLM_VERSION;
     nov_header.moduleName[0] = (char)len;
     memcpy( &nov_header.moduleName[1], module_name, len );
-    memset( &nov_header.moduleName[ len + 1 ], 0, NOV_MAX_MODNAME_LEN-len ); // zero rest.
+    memset( &nov_header.moduleName[len + 1], 0, NOV_MAX_MODNAME_LEN-len ); // zero rest.
     nov_header.uninitializedDataSize = 0; // MemorySize() - image_size;
     GetProcOffsets( &nov_header );
     nov_header.moduleType = FmtData.u.nov.moduletype;
@@ -677,7 +677,7 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
         PutInfo( vmem_ptr + MAX_IMP_INTERNAL * sizeof( unsigned_32 ), &offset, sizeof( unsigned_32 ) );
         imp->contents++;
         imp->num_relocs = imp->contents;
-        imp->addr[ 0 ] = vmem_ptr;
+        imp->vm_ptr[0] = vmem_ptr;
     } else {
         vblock = imp->num_relocs / IMP_NUM_VIRT;
         voff = imp->num_relocs % IMP_NUM_VIRT;
@@ -690,9 +690,9 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
                 imp->contents++;
                 sym->p.import = imp;
             }
-            imp->addr[ vblock ] = AllocStg( IMP_VIRT_ALLOC_SIZE );
+            imp->vm_ptr[vblock] = AllocStg( IMP_VIRT_ALLOC_SIZE );
         }
-        PutInfo( imp->addr[ vblock ] + voff * sizeof( unsigned_32 ), &offset, sizeof( unsigned_32 ) );
+        PutInfo( imp->vm_ptr[vblock] + voff * sizeof( unsigned_32 ), &offset, sizeof( unsigned_32 ) );
         imp->num_relocs++;
     }
 }
