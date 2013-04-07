@@ -737,7 +737,7 @@ static void WriteDwarfSect( unsigned addidx, unsigned_32 size )
             WriteLoad( FlatStandardAbbrevs, size );
         }
     } else {
-        WriteInfo( SectionTable[addidx].vm_ptr, size );
+        WriteInfoLoad( SectionTable[addidx].vm_ptr, size );
     }
 }
 

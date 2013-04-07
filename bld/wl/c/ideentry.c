@@ -107,7 +107,7 @@ void WriteStdOut( char *str )
     }
 }
 
-void WriteNLStdOut( void )
+void WriteStdOutNL( void )
 /*******************************/
 {
     if( IdeCB != NULL ) {
@@ -115,7 +115,7 @@ void WriteNLStdOut( void )
     }
 }
 
-void WriteInfoStdOut( char *str, unsigned level, char *symbol )
+void WriteStdOutInfo( char *str, unsigned level, char *symbol )
 /********************************************************************/
 {
     IDEMsgInfo  info;

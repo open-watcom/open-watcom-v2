@@ -421,9 +421,9 @@ static void MessageFini( unsigned num, char *buff, unsigned len )
     if( num & OUT_TERM ) {
         if( !(LinkFlags & QUIET_FLAG) ) {
             WLPrtBanner();
-            WriteInfoStdOut( buff, num, CurrSymName );
+            WriteStdOutInfo( buff, num, CurrSymName );
         } else if( class != (INF & CLASS_MSK)) {
-            WriteInfoStdOut( buff, num, CurrSymName );
+            WriteStdOutInfo( buff, num, CurrSymName );
         }
     }
     if( (num & OUT_MAP) && (MapFile != NIL_FHANDLE) ) {
@@ -579,13 +579,13 @@ void WLPrtBanner( void )
 
     if( !BannerPrinted ) {
         msg = MsgStrings[ PRODUCT ];
-        WriteInfoStdOut( msg, BANNER, NULL );
+        WriteStdOutInfo( msg, BANNER, NULL );
         msg = MsgStrings[ COPYRIGHT ];
-        WriteInfoStdOut( msg, BANNER, NULL );
+        WriteStdOutInfo( msg, BANNER, NULL );
         msg = MsgStrings[ TRADEMARK ];
-        WriteInfoStdOut( msg, BANNER, NULL );
+        WriteStdOutInfo( msg, BANNER, NULL );
         msg = MsgStrings[ TRADEMARK2 ];
-        WriteInfoStdOut( msg, BANNER, NULL );
+        WriteStdOutInfo( msg, BANNER, NULL );
         BannerPrinted = TRUE;
     }
 }

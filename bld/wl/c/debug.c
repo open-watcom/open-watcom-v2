@@ -99,7 +99,7 @@ void _Debug( unsigned int mask, char *str, ... )
         len = DoFmtStr( buff, 128, str, &arglist );
         WriteStdOut( buff );
         if( !(mask & DBG_NOCRLF) ) {
-            WriteNLStdOut();
+            WriteStdOutNL();
         }
     }
 }
@@ -141,7 +141,7 @@ void Trec(char *str, ...) {
         for (i = currBuff, j = 0;   j < max;   j++, i = (i+1)%max) {
             if (buff[i] != NULL) {
                 WriteStdOut(buff[i]);
-                WriteNLStdOut();
+                WriteStdOutNL();
             }
         }
         LnkFatal("trec sucess of failure");

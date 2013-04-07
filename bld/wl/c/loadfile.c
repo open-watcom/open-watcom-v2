@@ -941,7 +941,7 @@ static bool WriteSegData( void *_sdata, void *_info )
             DbgAssert( pad >= 0 );
             PadLoad( pad );
         }
-        WriteInfo( sdata->u1.vm_ptr, sdata->length );
+        WriteInfoLoad( sdata->u1.vm_ptr, sdata->length );
         sdata->u1.vm_offs = newpos;   // for incremental linking
     }
     return( FALSE );

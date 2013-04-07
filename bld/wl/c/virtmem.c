@@ -626,7 +626,7 @@ static bool OutInfo( void * dummy, spilladdr loc, unsigned off, unsigned len, bo
     return TRUE;
 }
 
-void WriteInfo( virt_mem stg, virt_mem_size len )
+void WriteInfoLoad( virt_mem stg, virt_mem_size len )
 /******************************************************/
 /* copy data in memory or spillfile referenced by stg to LoadFile */
 {

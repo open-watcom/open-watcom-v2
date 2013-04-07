@@ -30,8 +30,8 @@
 
 
 extern void     WriteStdOut( char * );
-extern void     WriteNLStdOut( void );
-extern void     WriteInfoStdOut( char *, unsigned, char * );
+extern void     WriteStdOutNL( void );
+extern void     WriteStdOutInfo( char *, unsigned, char * );
 extern char     *GetEnvString( char * );
 extern void     GetExtraCommands( void );
 extern bool     IsStdOutConsole( void );

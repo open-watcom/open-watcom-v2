@@ -84,7 +84,7 @@ static void ZeroLoad( virt_mem dummy, unsigned long length )
 static void CopyLoad( virt_mem data, unsigned long length )
 /*********************************************************/
 {
-    WriteInfo( data, length );
+    WriteInfoLoad( data, length );
 }
 
 static void WriteQNXInfo( void (*wrfn)(virt_mem, unsigned long), virt_mem data,

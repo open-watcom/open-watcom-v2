@@ -798,7 +798,7 @@ static void DBIWriteInfo( virt_mem stg, unsigned long len )
     if( len == 0 )
         return;
     DBISize += len;
-    WriteInfo( stg, len );
+    WriteInfoLoad( stg, len );
 }
 
 static void DBIWriteLocal( void *buff, unsigned len )

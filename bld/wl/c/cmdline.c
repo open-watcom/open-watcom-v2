@@ -599,7 +599,7 @@ static void PressKey( void )
     Msg_Get( MSG_PRESS_KEY, msg_buffer );
     WriteStdOut( msg_buffer );
     result = WaitForKey();
-    WriteNLStdOut();
+    WriteStdOutNL();
     if( result == 'q' || result == 'Q' ) {
         Ignite();
         Suicide();
@@ -610,7 +610,7 @@ static void WriteMsg( char msg_buffer[] )
 /***************************************/
 {
     WriteStdOut( msg_buffer );
-    WriteNLStdOut();
+    WriteStdOutNL();
 }
 
 void FreePaths( void )

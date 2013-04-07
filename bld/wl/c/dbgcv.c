@@ -766,5 +766,5 @@ void CVWrite( void )
 // positioned to the right spot.
 {
     // write DEBUG_TYPE_CODEVIEW data: CodeView NB05 data
-    WriteInfo( CVBase, CVSize );
+    WriteInfoLoad( CVBase, CVSize );
 }

@@ -120,11 +120,11 @@ static unsigned_32 WriteNovImports( fixed_header *header )
                 WriteLoad( &refs, sizeof( unsigned_32 ) );
                 vmem_array = import->addr;
                 while( refs > IMP_NUM_VIRT ) {
-                    WriteInfo( *vmem_array, IMP_VIRT_ALLOC_SIZE );
+                    WriteInfoLoad( *vmem_array, IMP_VIRT_ALLOC_SIZE );
                     vmem_array++;
                     refs -= IMP_NUM_VIRT;
                 }
-                WriteInfo( *vmem_array, refs * sizeof( unsigned_32 ) );
+                WriteInfoLoad( *vmem_array, refs * sizeof( unsigned_32 ) );
                 refs = import->num_relocs * sizeof( unsigned_32 );
             }
             wrote += refs;
@@ -269,7 +269,7 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
     nov_dbg_info    info;
 
     if( DbgInfoLen > 0 ) {
-        WriteInfo( NovDbgInfo, CurrDbgLoc - NovDbgInfo );
+        WriteInfoLoad( NovDbgInfo, CurrDbgLoc - NovDbgInfo );
         header->numberOfDebugRecords = DbgInfoCount;
         return( CurrDbgLoc - NovDbgInfo );
     } else if( FmtData.u.nov.flags & DO_NOV_EXPORTS ) {

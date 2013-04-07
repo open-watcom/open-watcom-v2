@@ -34,7 +34,7 @@
 extern void ReadInfo( virt_mem, void *, virt_mem_size );
 extern void PutInfo( virt_mem, void *, virt_mem_size );
 extern void CopyInfo( virt_mem, virt_mem, unsigned );
-extern void WriteInfo( virt_mem, virt_mem_size );
+extern void WriteInfoLoad( virt_mem, virt_mem_size );
 extern void PutInfoNulls( virt_mem, virt_mem_size );
 extern bool CompareInfo( virt_mem, void *, virt_mem_size );
 
@@ -48,7 +48,7 @@ extern bool CompareInfo( virt_mem, void *, virt_mem_size );
 #define ReadInfo( v, b, l ) memcpy( b, v, l )
 #define PutInfo( v, b, l ) memcpy( v, b, l )
 #define CopyInfo( v1, v2, l ) memcpy( v1, v2, l )
-#define WriteInfo( v, l ) WriteLoad( v, l )
+#define WriteInfoLoad( v, l ) WriteLoad( v, l )
 #define PutInfoNulls( v, l ) memset( v, 0, l )
 #define CompareInfo( v, b, l ) (memcmp( v, b, l ) == 0)
 

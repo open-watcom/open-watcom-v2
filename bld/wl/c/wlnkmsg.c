@@ -104,7 +104,7 @@ int InitMsg( void )
     }
     if( initerror ) {
         Res_Flag = EXIT_FAILURE;
-        WriteInfoStdOut( NO_RES_MESSAGE, ERR, NULL );
+        WriteStdOutInfo( NO_RES_MESSAGE, ERR, NULL );
     } else {
         Res_Flag = EXIT_SUCCESS;
     }

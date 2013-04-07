@@ -162,7 +162,7 @@ void CarveVerifyAllGone( carve_t cv, char *node_name )
         } while( compare != block->data );
     }
     if( some_unfreed ) {
-        WriteNLStdOut();
+        WriteStdOutNL();
     }
 }
 #endif
