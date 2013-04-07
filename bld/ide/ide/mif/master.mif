@@ -106,7 +106,7 @@ verrc_exe = $(proj_name)
 !ifdef ide_h_$(host_os)
 $(ide_h_$(host_os)): .ALWAYS
 curr_dir=$+$(%cwd)$-
-        @cd $(docs_path_$(host_os):$(to_os_path))
+        @cd $(doc_path_$(host_os):$(to_os_path))
         @wmake -h hbook=ide header=1
         @cd $(curr_dir)
 !endif
