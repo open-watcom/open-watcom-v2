@@ -44,7 +44,7 @@
 #if defined( INCL_MSGTEXT )
 
 static char *StringTable[] = {
-    "",
+    "",                             // message ID's start at 1
     #include "incltext.gh"
 };
 
@@ -70,17 +70,14 @@ int Msg_Fini( void )
 #include "wresset2.h"
 #include "wreslang.h"
 
-#define NIL_HANDLE      ((int)-1)
-
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  int             Res_Flag;
 static  unsigned        MsgShift;
-extern  long            FileShift;
 
-static off_t res_seek( WResFileID handle, off_t position, int where )
+static long res_seek( WResFileID handle, long position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {

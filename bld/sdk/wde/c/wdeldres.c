@@ -44,6 +44,7 @@
 #include "wdetfile.h"
 #include "wdewait.h"
 #include "wdeldres.h"
+#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

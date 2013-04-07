@@ -42,4 +42,6 @@
 #define WRESALLOC       WResRtns.alloc
 #define WRESFREE        WResRtns.free
 
+#define WRESHANDLE      hInstance->handle
+
 #endif

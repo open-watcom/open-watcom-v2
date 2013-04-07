@@ -52,11 +52,11 @@
 
 #include "pushpck1.h"
 typedef struct WResHeader {
-    uint_32     Magic[ 2 ]; /* must be WRESMAGIC0 and WRESMAGIC1 */
-    uint_32     DirOffset;  /* offset to the start of the directory */
-    uint_16     NumResources; /* number of resourses in the file */
-    uint_16     NumTypes;   /* number of different types of resources in file */
-    uint_16     WResVer;    /* WRESVERSION */
+    uint_32     Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
+    uint_32     DirOffset;      /* offset to the start of the directory */
+    uint_16     NumResources;   /* number of resourses in the file */
+    uint_16     NumTypes;       /* number of different types of resources in file */
+    uint_16     WResVer;        /* WRESVERSION */
 } WResHeader;
 #include "poppck.h"
 
@@ -88,9 +88,9 @@ typedef enum {
 } wrapper_type;
 
 typedef struct {
-    wrapper_type        type;
-    unsigned long       start;
-    unsigned long       len;
+    wrapper_type    type;
+    unsigned long   start;
+    unsigned long   len;
 } info_info;
 
 static void FindInfoInfo( int, info_info *, int );
@@ -204,11 +204,11 @@ int main( int argc, char *argv[] )
     }
     finfo.name[0] = '\0';
     for( i = 0;; ++i ) {
-        if( ExtLst[ i ] == NULL ) {
+        if( ExtLst[i] == NULL ) {
             Fatal( MSG_CANT_FIND, argv[1] );
         }
-        strcpy( fin.name, argv[ 1 ] );
-        has_ext = Suffix( fin.name, ExtLst[ i ] );
+        strcpy( fin.name, argv[1] );
+        has_ext = Suffix( fin.name, ExtLst[i] );
         if( stat( fin.name, &in_stat ) == 0 ) break;
         if( has_ext ) break;
     }
@@ -328,12 +328,12 @@ static void AddInfo()
 
     /* add header (trailer), if required */
     if( res ) {
-        info.len = lseek( finfo.h, -(int)sizeof( header ), SEEK_END ) + sizeof( header );
-        read( finfo.h, (void*)&header, sizeof(header) );
+        info.len = lseek( finfo.h, -(long)sizeof( header ), SEEK_END ) + sizeof( header );
+        read( finfo.h, (void *)&header, sizeof( header ) );
         if( header.signature != WAT_RES_SIG || header.debug_size != info.len ) {
             header.signature = WAT_RES_SIG;
-            header.debug_size = info.len + sizeof(header);
-            if( write( fout.h, (void*)&header, sizeof(header) ) != sizeof(header) ) {
+            header.debug_size = info.len + sizeof( header );
+            if( write( fout.h, (void *)&header, sizeof( header ) ) != sizeof( header ) ) {
                 FatalDelTmp( MSG_ADD_HEADER_ERROR, NULL );
             }
         }
@@ -392,7 +392,7 @@ static int Suffix( char *fname, char *suff )
     char *scan;
     char *end;
 
-    end = &fname[ strlen( fname ) ];
+    end = &fname[strlen( fname )];
     scan = end;
     for( ;; ) {
         --scan;
@@ -413,8 +413,8 @@ static int IsSymResFile( int handle, int resfile )
     master_dbg_header   header;
     info_info           info;
 
-    lseek( handle, -(int)sizeof( header ), SEEK_END );
-    if( read( handle, (void*)&header, sizeof(header) ) != sizeof(header) ) return(0);
+    lseek( handle, -(long)sizeof( header ), SEEK_END );
+    if( read( handle, (void *)&header, sizeof( header ) ) != sizeof( header ) ) return(0);
     if( header.signature == (resfile ? WAT_RES_SIG : VALID_SIGNATURE) &&
          lseek( handle, 0L, SEEK_END ) == header.debug_size ) return(1);
     if( resfile ) return( 0 );
@@ -429,11 +429,12 @@ static int IsResMagic( int handle, int resfile )
 
     if( resfile ){
         lseek( handle, 0L, SEEK_SET );
-        if(read(handle,&wheader,sizeof(wheader)) != sizeof(wheader)) return(0);
-        if( (wheader.Magic[0] == WRESMAGIC0)
-                                || (wheader.Magic[0] == WRESMICRO0) ) {
-            if( (wheader.Magic[1] == WRESMAGIC1) ||
-                        (wheader.Magic[1] >> 16 == WRESMICRO1) ) return (1);
+        if( read( handle, &wheader, sizeof( wheader ) ) != sizeof( wheader ) )
+            return(0);
+        if( (wheader.Magic[0] == WRESMAGIC0) || (wheader.Magic[0] == WRESMICRO0) ) {
+            if( (wheader.Magic[1] == WRESMAGIC1) || (wheader.Magic[1] >> 16 == WRESMICRO1) ) {
+                return (1);
+            }
         }
     }
     return (0);
@@ -444,9 +445,10 @@ static int TryWATCOM( int h, info_info *info, int resfile )
     master_dbg_header   header;
     unsigned long       end;
 
-    end = lseek( h, -(int)sizeof( header ), SEEK_END );
+    end = lseek( h, -(long)sizeof( header ), SEEK_END );
     for( ;; ) {
-        if( read( h, (void*)&header, sizeof(header) ) != sizeof(header) ) return(0);
+        if( read( h, (void *)&header, sizeof( header ) ) != sizeof( header ) )
+            return(0);
         if( header.signature != FOX_SIGNATURE1
             && header.signature != FOX_SIGNATURE2
             && header.signature != (resfile ? VALID_SIGNATURE : WAT_RES_SIG) ) break;
@@ -465,20 +467,20 @@ static int TryWATCOM( int h, info_info *info, int resfile )
 
 static int TryTIS( int h, info_info *info )
 {
-    TISTrailer          head;
-    unsigned long       end;
+    TISTrailer      head;
+    long            end;
 
-    end = lseek( h, -(int)sizeof( head ), SEEK_END );
+    end = lseek( h, -(long)sizeof( head ), SEEK_END );
     for(;;){
-        if( read( h, &head, sizeof(head)) != sizeof(head) ) {
+        if( read( h, &head, sizeof( head ) ) != sizeof( head ) ) {
             return( 0 );
         }
         if( head.signature != TIS_TRAILER_SIGNATURE ) {
             return( 0 );
         }
         end -= head.size - sizeof( head );
-        if( head.vendor == TIS_TRAILER_VENDOR_TIS
-         && head.type == TIS_TRAILER_TYPE_TIS_DWARF ) break;
+        if( head.vendor == TIS_TRAILER_VENDOR_TIS && head.type == TIS_TRAILER_TYPE_TIS_DWARF )
+            break;
         lseek( h, end, SEEK_SET );
     }
     info->start = end;

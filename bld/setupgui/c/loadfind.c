@@ -31,8 +31,7 @@
 
 #include <string.h>
 #include "wresall.h"
-#include "phandle.h"
-
+#include "wresset2.h"
 
 #include "pushpck1.h"
 typedef struct dbgheader {
@@ -95,17 +94,16 @@ extern int FindResources( PHANDLE_INFO hInstance )
     zip_cdfh    cdfh;
     int         notfound;
 
-#define __handle        hInstance->handle
     notfound = 1;
     FileShift = 0;
     offset = sizeof( dbgheader );
 
     /* Look for a PKZIP header and skip archive if present */
-    if( WRESSEEK( __handle, -(long)sizeof( eocd ), SEEK_END ) != -1L ) {
-        if( WRESREAD( __handle, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
+    if( WRESSEEK( WRESHANDLE, -(long)sizeof( eocd ), SEEK_END ) != -1L ) {
+        if( WRESREAD( WRESHANDLE, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
             if( memcmp( &eocd.signature, "PK\005\006", 4 ) == 0 ) {
-                if( WRESSEEK( __handle, eocd.cd_offset, SEEK_SET ) != -1L ) {
-                    if( WRESREAD( __handle, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
+                if( WRESSEEK( WRESHANDLE, eocd.cd_offset, SEEK_SET ) != -1L ) {
+                    if( WRESREAD( WRESHANDLE, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
                         if( memcmp( &cdfh.signature, "PK\001\002", 4 ) == 0 ) {
                             offset += eocd.cd_offset + eocd.cd_size - cdfh.offset +
                                       sizeof( eocd );
@@ -115,9 +113,9 @@ extern int FindResources( PHANDLE_INFO hInstance )
             }
         }
     }
-    currpos = WRESSEEK( __handle, -offset, SEEK_END );
+    currpos = WRESSEEK( WRESHANDLE, -offset, SEEK_END );
     for( ;; ) {
-        WRESREAD( __handle, &header, sizeof( dbgheader ) );
+        WRESREAD( WRESHANDLE, &header, sizeof( dbgheader ) );
         if( header.signature == WAT_RES_SIG ) {
             notfound = 0;
             FileShift = currpos - header.debug_size + sizeof( dbgheader );
@@ -126,11 +124,10 @@ extern int FindResources( PHANDLE_INFO hInstance )
                    header.signature == FOX_SIGNATURE1 ||
                    header.signature == FOX_SIGNATURE2 ) {
             currpos -= header.debug_size;
-            WRESSEEK( __handle, currpos, SEEK_SET );
+            WRESSEEK( WRESHANDLE, currpos, SEEK_SET );
         } else {        /* did not find the resource information */
             break;
         }
     }
     return( notfound );
-#undef __handle
 }

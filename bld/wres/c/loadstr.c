@@ -59,7 +59,7 @@ static int GetString(   WResLangInfo    *res,
     int                 ix1, ix2;
     char                stringbuff[GET_STR_BUF_LEN];
 
-    prevpos = WRESSEEK( hInstance->handle, res->Offset, SEEK_SET );
+    prevpos = WRESSEEK( WRESHANDLE, res->Offset, SEEK_SET );
     if ( prevpos == -1L )
         return( -1 );
     length = res->Length;
@@ -78,7 +78,7 @@ static int GetString(   WResLangInfo    *res,
                 numread = length;
                 length = 0;
             }
-            numread = WRESREAD( hInstance->handle, stringbuff, numread );
+            numread = WRESREAD( WRESHANDLE, stringbuff, numread );
             if( numread == 0 ) return( -1 );    // 15-sep-93 AFS
             if( numread == -1 ) return( -1 );
             ix1 = 0;
@@ -154,7 +154,7 @@ extern int WINAPI WResLoadString(   PHANDLE_INFO        hInstance,
 extern int OpenResFile( PHANDLE_INFO hInstance, const char *filename )
 /********************************************************************/
 {
-    return( hInstance->handle = ResOpenFileRO( filename ) );
+    return( WRESHANDLE = ResOpenFileRO( filename ) );
 }
 
 extern int InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
@@ -162,7 +162,7 @@ extern int InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
 {
     *dir = WResInitDir();
     if( *dir == NULL ) return( -1 );
-    return( WResReadDir( hInstance->handle, *dir, NULL ) );
+    return( WResReadDir( WRESHANDLE, *dir, NULL ) );
 }
 
 extern int InitResources( PHANDLE_INFO hInstance )
@@ -175,7 +175,7 @@ extern int CloseResFile2( WResDir dir, PHANDLE_INFO hInstance )
 /**************************************************************/
 {
     WResFreeDir( dir );
-    return( ResCloseFile( hInstance->handle ) );
+    return( ResCloseFile( WRESHANDLE ) );
 }
 
 extern int CloseResFile( PHANDLE_INFO hInstance )

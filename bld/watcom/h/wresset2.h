@@ -49,11 +49,17 @@
 
 #define NIL_HANDLE      ((int)-1)
 
-#include "phandle.h"
+typedef struct handle_info {
+    WResFileID  handle;
+#ifdef WIN_GUI
+    HINSTANCE   inst;
+#endif
+} HANDLE_INFO, *PHANDLE_INFO;
 
 #ifndef WIN_GUI
+typedef PHANDLE_INFO HINSTANCE;
 typedef unsigned int UINT;
-typedef char _WCI86FAR * LPSTR;
+typedef char _WCI86FAR *LPSTR;
 #endif
 
 #if defined( __cplusplus )

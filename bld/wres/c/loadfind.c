@@ -41,8 +41,6 @@
 #define FOX_SIGNATURE2  0x8301
 #define WAT_RES_SIG     0x8302
 
-#define WRESHANDLE  hInstance->handle
-
 #include "pushpck1.h"
 typedef struct dbgheader {
     uint_16     signature;

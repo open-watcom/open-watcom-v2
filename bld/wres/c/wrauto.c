@@ -36,7 +36,7 @@
 
 DepInfo *WResGetAutoDep( const char *fname ) {
 
-    int             fhdl;
+    WResFileID      fhdl;
     WResDir         dir;
     int             dup_discarded;
     WResID          *name;

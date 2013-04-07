@@ -37,7 +37,7 @@
 /* of the file opening functions which will get it from the low level open */
 /* function */
 
-typedef int      WResFileID;
+typedef int     WResFileID;
 
 typedef struct WResRoutines {                                   /* defaults */
     /* I/O routines */
