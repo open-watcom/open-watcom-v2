@@ -40,7 +40,7 @@ echo    = echo
 
 inc_dirs = -I. -I"$(wmake_dir)/h" -I"$(orl_dir)/h" -I"$(trmem_dir)"
 
-extra_cpp_flags = $(rc_defines_$(host_os))
+extra_cpp_flags =
 !ifdef DLLS_IMPLEMENTED
 extra_cpp_flags += -DDLLS_IMPLEMENTED
 !endif

@@ -450,9 +450,9 @@ rc_cpp_mps      = -D__MIPS__
 rc_cpp_ppc      = -D__PPC__
 rc_cpp_x64      = -D_M_X64
 
-rc_cpp          = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
+rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
 
-rc_flags_all    = -r $(rc_cpp)
+rc_flags_all    = -r $(rc_cppflags)
 
 rc_flags_nt     = -bt=nt $(win32ver)
 rc_flags_win    = -bt=windows
@@ -540,7 +540,7 @@ as              = $(as_$(host_cpu))
 rc              = bwrc
 rcaui           = bwrc
 
-rc_aui_flags    = -zk0 $(rc_cpp) -I"$(watcom_dir)/h"
+rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
 rc_aui          = $(rcaui) -r -bt=windows $(rc_aui_flags)
 
 # simple C preprocessing
