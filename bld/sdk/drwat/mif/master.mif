@@ -112,6 +112,6 @@ rcstr.gh : rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../drwatcom.msg
-        $(cpp) -zk0 $(cppflags) $(inc_path) $[@ >$^@
+        $(cpp) $(rc_aui_flags) $(cppflags) $(inc_path) $[@ >$^@
 
 !include verrc.mif

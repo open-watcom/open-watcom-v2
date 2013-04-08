@@ -4,7 +4,7 @@
 
 #undef pick
 #undef sp
-#ifdef _JAPANESE_
+#ifdef JAPANESE
  #define pick( a, b, c ) a, c
  #define sp( s1, s2 ) s2
 #else

@@ -150,7 +150,7 @@ pick( MICROSOFT_MAKEFILE,       "Makefile may be Microsoft; try /ms switch",
 pick( ERROR_STRING_OPEN,    "Expecting double quote character to end open string.",
                 "Expecting double quote character to end open string.")
 
-#if defined( RC_DOS )
+#if defined( __DOS__ )
 pick( OS_CORRUPTED,                "DOS memory inconsistency detected! System may halt ...",
                                 "DOSﾒﾓﾘ管理に矛盾が見つかりました！ｼｽﾃﾑがﾎｰﾙﾄするかもしれません･･･" )
 #else
@@ -321,7 +321,7 @@ pick( SYS_ERR_15,                "Resource deadlock would occur",
                                 "リソース・デッド・ロックが起こります" )
 
 /* common signals that cause abnormal termination (cf. sys_siglist) */
-#if defined( RC_UNIX )
+#if defined( __UNIX__ )
 pick( SIG_ERR_0,                 "Abnormal termination by signal %d", "" )
 pick( SIG_ERR_1,                 "Hangup detected", "" )
 pick( SIG_ERR_2,                 "Keyboard interrupt", "" )

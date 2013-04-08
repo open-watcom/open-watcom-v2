@@ -79,14 +79,11 @@ extra_c_flags_linux   =
 
 extra_a_flags = $(model_switch_$(host_cpu))
 
-rc_defines_dos_rsi_i86 = -DRC_RSI
-rc_defines_dos_pls_386 = -DRC_PLS
-!ifdef rc_defines_dos_$(target)_$(host_cpu)
-rc_defines_dos         = $(rc_defines_dos_$(target)_$(host_cpu))
+rc_cpp_dos_rsi_i86 = -D__RSI__
+rc_cpp_dos_pls_386 = -D__PLS__
+!ifdef rc_cpp_dos_$(target)_$(host_cpu)
+rc_cpp_dos = $(rc_cpp_dos_$(target)_$(host_cpu))
 !endif
-rc_defines_os2_i86 = -DRC_OS21
-rc_defines_os2_386 = -DRC_OS22
-rc_defines_os2 += $(rc_defines_os2_$(host_cpu))
 
 nlm_imports = &
     FileServerMajorVersionNumber &

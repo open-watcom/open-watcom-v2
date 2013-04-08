@@ -1,6 +1,6 @@
 CPPFLAGS = -I. -I..\h -I..\..\watcom\h -I..\..\lib_misc\h $(DEFS)
 CFLAGS = -nologo -Zi -W4 -WX -MT -Fm -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -wd4244
-DEFS = -DBOOTSTRAP -D__NT__ -DRC_NT
+DEFS = -DBOOTSTRAP -D__NT__
 LFLAGS = -link -INCREMENTAL:NO -DEBUG
 
 {..\c}.c.obj :

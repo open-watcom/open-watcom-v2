@@ -41,7 +41,7 @@ rcstr.gh : rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(uninstal_dir)/uninstal.msg
-        $(cpp) -zk0 $(inc_path) $[@ >$^@
+        $(cpp) $(rc_aui_flags) $(inc_path) $[@ >$^@
 
 $(name).res: ../$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@

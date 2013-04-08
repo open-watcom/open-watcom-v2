@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#ifdef JAPANESE_MESSAGES
+#ifdef JAPANESE
 #define trappick(a,b,c) #define a  c
 #else
 #define trappick(a,b,c) #define a  b

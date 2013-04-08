@@ -3,7 +3,7 @@
 #include "dlgsrch.h"
 #include "auistr.gh"
 #include "auistr.rc"
-#ifdef JAPANESE_MESSAGES
+#ifdef JAPANESE
 #include <japrx.dlg>
 #include <japsrch.dlg>
 #include <japsrcha.dlg>

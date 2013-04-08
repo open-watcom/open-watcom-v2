@@ -77,7 +77,7 @@ parser_defines = -DYYDEBUG -DSCANDEBUG
 # global defines
 ################
 
-rc_defines     = -D_STANDALONE_ $(parser_defines)
+rc_defines    = -D_STANDALONE_ $(parser_defines)
 
 # cflags stuff
 ###############

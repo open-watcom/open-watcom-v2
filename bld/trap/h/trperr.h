@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#ifdef JAPANESE_MESSAGES
+#ifdef JAPANESE
 #include "_jerr.gh"
 #else
 #include "_err.gh"

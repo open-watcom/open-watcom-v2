@@ -66,7 +66,7 @@ extern bool GUIFiniInternalStringTable( void );
 #define LITSTR( sym, val ) extern char MAKEFAR LIT( sym )[sizeof( val )];
 #endif
 
-#ifdef JAPANESE_MESSAGES
+#ifdef JAPANESE
 #define pick( a,b,c ) LITSTR( a,c )
 #else
 #define pick( a,b,c ) LITSTR( a,b )

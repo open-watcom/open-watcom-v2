@@ -1,17 +1,13 @@
 !ifdef __UNIX__
-DEFS = -DRC_UNIX
 host_os = linux
 link_sys = linux
 !else ifdef __MSDOS__
-DEFS = -DRC_DOS
 host_os = dos
 link_sys = dos4g
 !else ifdef __NT__
-DEFS = -DRC_NT
 host_os = nt
 link_sys = nt
 !else ifdef __OS2__
-DEFS = -DRC_OS2
 host_os = os2
 link_sys = os2v2
 !endif
@@ -38,7 +34,7 @@ $(%OWBINDIR)/wmake$(exe): wmk.exe
 !endif
 
 .c.obj : .AUTODEPEND
-        *wcc386 -zq -bt=$(host_os) -DBOOTSTRAP -I. -I"../h" -I"../../watcom/h" -I"../../lib_misc/h" $(DEFS) -fo=$@ $<
+        *wcc386 -zq -bt=$(host_os) -DBOOTSTRAP -I. -I"../h" -I"../../watcom/h" -I"../../lib_misc/h" -fo=$@ $<
 
 ./wsplice.exe : wsplice.obj
         wlink name $@ op q sys $(link_sys) file {$<}

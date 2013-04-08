@@ -41,7 +41,7 @@ dnmpbind.exe : _err.gh _jerr.gh $(objs)
 inc_dirs = -I"$(trap_dir)/h"
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(cpp) -zk0 -I"$(trap_dir)/h" $[@ >$@
+        $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" $[@ >$@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(cpp) -zk0 -DJAPANESE_MESSAGES -I"$(trap_dir)/h" $[@ >$@
+        $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ >$@

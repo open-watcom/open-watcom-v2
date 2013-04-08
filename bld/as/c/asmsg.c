@@ -42,8 +42,8 @@
 static char *asMessages[] = {
     "IMPOSSIBLE",
     // No res file to use. Just compile in the messages...
-    // Use English message unless compiled with "-DJAPANESE_MESSAGES"
-#if !defined( JAPANESE_MESSAGES )
+    // Use English message unless compiled with "-DJAPANESE"
+#if !defined( JAPANESE )
     #define pick( id, e_msg, j_msg )    e_msg,
 #else
     #define pick( id, e_msg, j_msg )    j_msg,

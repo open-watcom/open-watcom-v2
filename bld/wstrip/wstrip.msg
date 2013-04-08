@@ -48,7 +48,7 @@ pick( MSG_CANT_CREATE_1,	"Unable to create resource file '%s'" ,
 				"リソースファイルを作れません '%s'" )
 pick( MSG_USAGE_FIRST,		"Usage: wstrip [options] input_file [output_file] [info_file]" ,
 				"使用方法: wstrip [options] input_file [output_file] [info_file]" )
-#ifdef RC_UNIX
+#ifdef __UNIX__
 pick( MSG_USAGE_1,		"options:" ,
 				"オプション:" )
 #else

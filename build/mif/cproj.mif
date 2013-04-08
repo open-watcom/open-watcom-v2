@@ -249,7 +249,7 @@ cflags_dll_all  = -bd
 !ifeq sys_rtdll 1
 cflags_dll_nt   = -br
 cflags_dll_win  = -br
-cflags_dll_os2	= -br
+cflags_dll_os2  = -br
 !endif
 
 cflags_dll = $(cflags_dll_all) $(cflags_dll_$(host_os))
@@ -432,23 +432,31 @@ lflags_dll      = $(mode_lflags) $(lflags_dll_$(host_os)_$(host_cpu)) $(extra_l_
 libflags_all    = -b-n-pa $(mode_libflags)
 libflags        =  $(libflags_all) $(libflags_$(host_os)_$(host_cpu)) $(extra_lib_flags) $(extra_lib_flags_$(host_cpu)) $^@
 
-rc_defines_dos   = -DRC_DOS
-rc_defines_nt    = -DRC_NT
-rc_defines_os2   = -DRC_OS2
-rc_defines_osi   = -DRC_OSI
-rc_defines_win   = -DRC_WIN
-rc_defines_linux = -DRC_UNIX -DRC_LINUX
-rc_defines_qnx   = -DRC_UNIX -DRC_QNX
-rc_defines_bsd   = -DRC_UNIX -DRC_BSD
-rc_defines_osx   = -DRC_UNIX -DRC_OSX
+rc_cpp_bsd      = -D__UNIX__ -D__BSD__
+rc_cpp_dos      = -D__DOS__
+rc_cpp_linux    = -D__UNIX__ -D__LINUX__
+rc_cpp_nov      = -D__NETWARE__
+rc_cpp_nt       = -D__NT__ -D_WIN32
+rc_cpp_os2      = -D__OS2__
+rc_cpp_osi      = -D__OSI__
+rc_cpp_osx      = -D__UNIX__ -D__OSX__
+rc_cpp_qnx      = -D__UNIX__ -D__QNX__
+rc_cpp_win      = -D__WINDOWS__
 
-rc_flags_all    = -r $(rc_defines_$(host_os))
+rc_cpp_386      = -D_M_IX86
+rc_cpp_axp      = -D__AXP__
+rc_cpp_i86      = -D_M_I86
+rc_cpp_mps      = -D__MIPS__
+rc_cpp_ppc      = -D__PPC__
+rc_cpp_x64      = -D_M_X64
+
+rc_cpp          = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
+
+rc_flags_all    = -r $(rc_cpp)
 
 rc_flags_nt     = -bt=nt $(win32ver)
 rc_flags_win    = -bt=windows
 rc_flags_os2    = -bt=os2
-
-rc_flags_axp    = -D__AXP__
 
 rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu)) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
@@ -532,12 +540,11 @@ as              = $(as_$(host_cpu))
 rc              = bwrc
 rcaui           = bwrc
 
-rc_aui_flags    = -zk0 $(rc_defines_$(host_os)) -I"$(watcom_dir)/h"
+rc_aui_flags    = -zk0 $(rc_cpp) -I"$(watcom_dir)/h"
 rc_aui          = $(rcaui) -r -bt=windows $(rc_aui_flags)
 
 # simple C preprocessing
 cpp             = wcpp
-c_pp            = wcpp
 
 # options used for setup source code Japanese DBCS character set
 c_japan_charset = -zk0

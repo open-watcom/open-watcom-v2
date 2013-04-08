@@ -9,7 +9,7 @@
 #include "dlgwind.h"
 #include "dlgstk.h"
 #include "dlgasync.h"
-#ifdef JAPANESE_MESSAGES
+#ifdef JAPANESE
     #include "japayn.dlg"
     #include "japbrk.dlg"
     #include "japcmd.dlg"

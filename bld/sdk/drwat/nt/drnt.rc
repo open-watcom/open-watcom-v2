@@ -1,4 +1,4 @@
-#ifdef _JAPANESE_
+#ifdef JAPANESE
  #define sp( s1, s2 ) s2
 #else
  #define sp( s1, s2 ) s1
@@ -39,7 +39,7 @@ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 
 STRINGTABLE
 BEGIN
-#ifdef _JAPANESE_
+#ifdef JAPANESE
     #define pick( a, b, c ) a, c
     #define madpick( a, b, c ) __##a, c
 #else

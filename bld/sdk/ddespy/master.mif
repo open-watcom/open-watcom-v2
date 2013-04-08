@@ -56,7 +56,7 @@ rcstr.gh : rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../ddespy.msg
-        $(cpp) -zk0 $(inc_path) $[@ >$^@
+        $(cpp) $(rc_aui_flags) $(inc_path) $[@ >$^@
 
 $(name).res : ../$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 -I"../res" $(inc_path) $[@ -fo=$^@

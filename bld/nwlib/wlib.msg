@@ -152,21 +152,21 @@ pick( USAGE_WLIB_45,        "                | -+<object_file_name>     (replace
                 "                | -+<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (入れ替え)" )
 pick( USAGE_WLIB_46,        "                | +-<object_file_name>     (replace)" ,
                 "                | +-<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (入れ替え)" )
-#ifdef RC_UNIX
+#ifdef __UNIX__
 pick( USAGE_WLIB_47,        "                | :<module_name>[=<object_file_name>]  (extract)" ,
                 "                | *<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>       (取り出し)" )
 #else
 pick( USAGE_WLIB_47,        "                | *<module_name>[=<object_file_name>]  (extract)" ,
                 "                | *<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>       (取り出し)" )
 #endif
-#ifdef RC_UNIX
+#ifdef __UNIX__
 pick( USAGE_WLIB_48,        "                | -:<module_name>[=<object_file_name>] (extract and delete)" ,
                 "                | -*<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (取り出しと削除)" )
 #else
 pick( USAGE_WLIB_48,        "                | -*<module_name>[=<object_file_name>] (extract and delete)" ,
                 "                | -*<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (取り出しと削除)" )
 #endif
-#ifdef RC_UNIX
+#ifdef __UNIX__
 pick( USAGE_WLIB_49,        "                | :-<module_name>[=<object_file_name>] (extract and delete)" ,
                 "                | *-<ｵﾌﾞｼﾞｪｸﾄ･ﾌｧｲﾙ名>      (取り出しと削除)" )
 #else
@@ -175,7 +175,7 @@ pick( USAGE_WLIB_49,        "                | *-<module_name>[=<object_file_nam
 #endif
 pick( USAGE_WLIB_50,        "" ,
                 "" )
-#ifdef RC_UNIX
+#ifdef __UNIX__
 pick( USAGE_WLIB_51,        "The default filename extensions are lib, bak, lst, o and lbc." ,
                 "デフォルトのファイル拡張子は、lib, bak, lst, obj, lbcです。" )
 #else

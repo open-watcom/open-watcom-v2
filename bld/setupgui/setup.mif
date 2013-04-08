@@ -246,13 +246,13 @@ csetup.res : setup.rc $(dep_res1) ../res/wcc.bmp
     $(rc) $(rc_flags) -DCSETUP $(res_inc_dirs) $[@ -fo=$^@
 
 jcsetup.res : setup.rc $(dep_res1) ../res/wcc.bmp
-    $(rc) $(rc_flags) -DJCSETUP -DJAPANESE_MESSAGES -zk0 $(res_inc_dirs) $[@ -fo=$^@
+    $(rc) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$^@
 
 f77setup.res : setup.rc $(dep_res1) ../res/f77.bmp
     $(rc) $(rc_flags) -DF77SETUP $(res_inc_dirs) $[@ -fo=$^@
 
 jfsetup.res : setup.rc $(dep_res1) ../res/f77.bmp
-    $(rc) $(rc_flags) -DJFSETUP -DJAPANESE_MESSAGES -zk0 $(res_inc_dirs) $[@ -fo=$^@
+    $(rc) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$^@
 
 setup.res : setup.rc $(dep_res1) ../res/generic.bmp
     $(rc) $(rc_flags) $(res_inc_dirs) $[@ -fo=$^@

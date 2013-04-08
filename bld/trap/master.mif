@@ -120,7 +120,7 @@ extra_cpp_flags += -DBUILTIN_TRAP_FILE
 !endif
 !endif
 !ifdef japanese
-extra_cpp_flags += -DJAPANESE_MESSAGES
+extra_cpp_flags += -DJAPANESE
 !endif
 
 extra_c_flags += -s $(extra_cflags)
@@ -177,10 +177,10 @@ d : .SYMBOLIC $(trperr_h) $(jtrperr_h)
         @%make $(target)
 
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(cpp) -zk0 -I"$(trap_dir)/h" $[@ >$@
+        $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" $[@ >$@
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(cpp) -zk0 -DJAPANESE_MESSAGES -I"$(trap_dir)/h" $[@ >$@
+        $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ >$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
         $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)

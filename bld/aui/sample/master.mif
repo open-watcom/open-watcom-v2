@@ -60,13 +60,13 @@ app.res : ../h/app.rc $(rcfiles)
         $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 
 appj.res : ../h/app.rc $(rcfiles)
-        $(rc) $(rc_flags) $(inc_path) -DJAPANESE_MESSAGES $[@ -fo=$@
+        $(rc) $(rc_flags) $(inc_path) -DJAPANESE $[@ -fo=$@
 
 appui.res : ../h/appui.rc ../h/app.rc $(rcfiles)
         $(rc_aui) $(inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
 
 appuij.res : ../h/appui.rc ../h/app.rc $(rcfiles)
-        $(rc_aui) $(inc_path) $(inc_dirs_sys_win) -DJAPANESE_MESSAGES $[@ -fo=$@
+        $(rc_aui) $(inc_path) $(inc_dirs_sys_win) -DJAPANESE $[@ -fo=$@
 
 apppm.res apppmj.res : ../h/apppm.rc ../h/app.rc $(rcfiles)
         $(rc) $(rc_flags) $(inc_dirs_os2) $(inc_path) $[@ -fo=$@

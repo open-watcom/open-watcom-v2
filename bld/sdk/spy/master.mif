@@ -118,7 +118,7 @@ rcstr.gh : rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(wspy_dir)/spy.msg
-        $(cpp) -zk0 $(inc_path) $[@ >$^@
+        $(cpp) $(rc_aui_flags) $(inc_path) $[@ >$^@
 
 $(dllname).lib : $(dllname).dll
         $(librarian) $(libflags) +$[@

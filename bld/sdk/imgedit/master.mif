@@ -121,7 +121,7 @@ rcstr.gh : rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(wimgedit_dir)/h/wimgedit.msg
-        $(cpp) -zk0 $(inc_path) $[@ >$^@
+        $(cpp) $(rc_aui_flags) $(inc_path) $[@ >$^@
 
 $(name).res : ../res/$(name).rc rcstr.gh
         $(rc) $(rc_flags) -ad -zk0 -I"$(wimgedit_dir)/res" $(inc_path) $[@ -fo=$^@

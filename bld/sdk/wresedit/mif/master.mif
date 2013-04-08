@@ -82,6 +82,6 @@ rcstr.gh: rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh: ../h/$(name).msg
-        $(cpp) -zk0 -I"$(sdk_misc_dir)" $(inc_path) $[@ >$^@
+        $(cpp) $(rc_aui_flags) -I"$(sdk_misc_dir)" $(inc_path) $[@ >$^@
 
 !include verrc.mif
