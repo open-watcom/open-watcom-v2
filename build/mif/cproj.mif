@@ -452,13 +452,13 @@ rc_cpp_x64      = -D_M_X64
 
 rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
 
-rc_flags_all    = -xb -r $(rc_cppflags)
+rc_flags_all    = -xb -r
 
 rc_flags_nt     = -bt=nt $(win32ver)
 rc_flags_win    = -bt=windows
 rc_flags_os2    = -bt=os2
 
-rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu)) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
+rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
 # For bootstrap builds, include path configuration is compiler specific
 !ifeq bootstrap 1
