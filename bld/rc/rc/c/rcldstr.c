@@ -49,7 +49,7 @@ static char *StringTable[] = {
     #include "incltext.gh"
 };
 
-int InitRcMsgs( char *fname )
+int InitRcMsgs( const char *fname )
 {
     fname = fname;
     return( 1 );
