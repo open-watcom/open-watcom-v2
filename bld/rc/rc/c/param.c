@@ -261,7 +261,7 @@ static bool ScanOptionsArg( const char * arg )
         /* temporary until preprocessing done inline */
         /* -1 to get the '-' or '/' as well */
         /* the cast is so the argument won't be const */
-        RcAddCPPArg( (char *) arg - 1 );
+        RcAddCPPArg( (char *)arg - 1 );
         break;
     case 'f':
         arg++;
@@ -387,8 +387,10 @@ static bool ScanOptionsArg( const char * arg )
 #endif
     case 'x':
         arg++;
-        if( tolower( *arg ) == 'c' ) {
-            CmdLineParms.IgnoreCWD= TRUE;
+        if( tolower( *arg ) == 'b' ) {
+            CmdLineParms.NoTargetDefine = TRUE;
+        } else if( tolower( *arg ) == 'c' ) {
+            CmdLineParms.IgnoreCWD = TRUE;
         } else {
             CmdLineParms.IgnoreINCLUDE = TRUE;
         }
@@ -653,6 +655,7 @@ static void defaultParms( void )
     CmdLineParms.NoResFile = FALSE;
     CmdLineParms.IgnoreCWD = IgnoreCWD;
     CmdLineParms.IgnoreINCLUDE = IgnoreINCLUDE;
+    CmdLineParms.NoTargetDefine = FALSE;
     CmdLineParms.PrivateDLL = FALSE;
     CmdLineParms.GlobalMemEMS = FALSE;
     CmdLineParms.EMSInstance = FALSE;

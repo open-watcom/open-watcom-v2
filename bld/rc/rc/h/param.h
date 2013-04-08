@@ -68,6 +68,7 @@ struct RCParams {
     unsigned    NoResFile       : 1;    /* no RES file to merge in pass2 */
     unsigned    IgnoreINCLUDE   : 1;
     unsigned    IgnoreCWD       : 1;
+    unsigned    NoTargetDefine  : 1;
     unsigned    MSResFormat     : 1;
     unsigned    PrivateDLL      : 1;    /* the next 5 option are use to set bits */
     unsigned    GlobalMemEMS    : 1;    /* in the os2_exe_header.info field */

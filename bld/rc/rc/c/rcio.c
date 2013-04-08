@@ -238,15 +238,17 @@ static int PreprocessInputFile( void )
     }
     strcpy( rcdefine, "RC_INVOKED 1" );
     PP_Define( rcdefine );
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-        strcpy( rcdefine, "__WINDOWS__" );
-        PP_Define( rcdefine );
-    } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        strcpy( rcdefine, "__NT__" );
-        PP_Define( rcdefine );
-    } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
-        strcpy( rcdefine, "__OS2__" );
-        PP_Define( rcdefine );
+    if( !CmdLineParms.NoTargetDefine ) {
+        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
+            strcpy( rcdefine, "__WINDOWS__" );
+            PP_Define( rcdefine );
+        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+            strcpy( rcdefine, "__NT__" );
+            PP_Define( rcdefine );
+        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
+            strcpy( rcdefine, "__OS2__" );
+            PP_Define( rcdefine );
+        }
     }
     cppargs = CmdLineParms.CPPArgs;
     if( cppargs != NULL ) {
