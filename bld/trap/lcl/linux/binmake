@@ -5,8 +5,6 @@
 host_os  = $(bld_os)
 host_cpu = $(bld_cpu)
 
-substitute_linker = 1
-
 os      = linux
 srv     = lcl
 which   = TRAP
@@ -33,10 +31,5 @@ extra_objs += lnxmips.obj
 !error Unknown CPU architecture
 !endif
 
-extra_c_flags = -fPIC
-
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
-
-$(target) : $(objs) $(extra_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__) $(nversion_tmp)
-        $(cl) -shared $(clflags) $(objs) $(extra_libs) $(cl_libs)

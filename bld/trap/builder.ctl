@@ -111,17 +111,17 @@ set PROJNAME=trap
     <CCCMD> lcl/qnx/pmd/pmd.trp                       <OWRELROOT>/qnx/watcom/wd/
     <CCCMD> lcl/qnx/std/std.trp                       <OWRELROOT>/qnx/watcom/wd/
     <CCCMD> par/qnx.trp/par.trp                       <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> par/qnx.srv/parserv.qnx                   <OWRELROOT>/qnx/binq/parserv
+    <CCCMD> par/qnx.srv/parserv.exe                   <OWRELROOT>/qnx/binq/parserv
     <CCCMD> ser/qnx.trp/ser.trp                       <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> ser/qnx.srv/serserv.qnx                   <OWRELROOT>/qnx/binq/serserv
+    <CCCMD> ser/qnx.srv/serserv.exe                   <OWRELROOT>/qnx/binq/serserv
     <CCCMD> tcp/qnx.trp/tcp.trp                       <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> tcp/qnx.srv/tcpserv.qnx                   <OWRELROOT>/qnx/binq/tcpserv
+    <CCCMD> tcp/qnx.srv/tcpserv.exe                   <OWRELROOT>/qnx/binq/tcpserv
 
     <CCCMD> lcl/linux/std/std.trp                     <OWRELROOT>/binl/
     <CCCMD> par/linux.trp/par.trp                     <OWRELROOT>/binl/
-    <CCCMD> par/linux.srv/parserv.elf                 <OWRELROOT>/binl/parserv
+    <CCCMD> par/linux.srv/parserv.exe                 <OWRELROOT>/binl/parserv
     <CCCMD> tcp/linux.trp/tcp.trp                     <OWRELROOT>/binl/
-    <CCCMD> tcp/linux.srv/tcpserv.elf                 <OWRELROOT>/binl/tcpserv
+    <CCCMD> tcp/linux.srv/tcpserv.exe                 <OWRELROOT>/binl/tcpserv
 
     <CCCMD> lcl/rdos/std/std.dll                      <OWRELROOT>/rdos/
     <CCCMD> lcl/rdos/std/std.sym                      <OWRELROOT>/rdos/
