@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "font.h"
-#include "win1632.h"
+#include "wi163264.h"
 
 #define MAX_STR 256
 

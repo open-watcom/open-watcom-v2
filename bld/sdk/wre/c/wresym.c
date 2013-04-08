@@ -31,7 +31,7 @@
 
 
 #include "precomp.h"
-#include "win1632.h"
+#include "wi163264.h"
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>

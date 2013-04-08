@@ -44,7 +44,7 @@
 #endif
 #include "getfile.h"
 #include "malloc.h"
-#include "win1632.h"
+#include "wi163264.h"
 #include "wstring.hpp"
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"

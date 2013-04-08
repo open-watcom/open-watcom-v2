@@ -44,7 +44,7 @@
 #include "dbgwind.h"
 #include "dbgtoggl.h"
 #include "dbgmem.h"
-#include "win1632.h"
+#include "wi163264.h"
 #include "autoenv.h"
 
 extern int _8087;

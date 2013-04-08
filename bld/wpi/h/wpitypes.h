@@ -40,13 +40,13 @@
 
 #include <setjmp.h>
 /*
- * For developers concerned about NT issues, win1632.h is included here
+ * For developers concerned about NT issues, wi163264.h is included here
  * to macro from windows to nt.
  */
 #if defined( __OS2_PM__ ) || defined( __OS2__ )
 #include "pm1632.h"
 #else
-#include "win1632.h"
+#include "wi163264.h"
 #endif
 
 #ifdef __WINDOWS_386__

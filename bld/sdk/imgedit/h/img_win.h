@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "win1632.h"
+#include "wi163264.h"
 
 #define SELECTIMAGE             "SELECTIMAGE"
 #define ICONTYPE                "ICONTYPE"

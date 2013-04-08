@@ -54,7 +54,7 @@
     #define UINT_STR_LEN           4
 #endif
 
-#include "win1632.h"
+#include "wi163264.h"
 #include "spydll.h"
 #include "jdlg.h"
 #include "font.h"

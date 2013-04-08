@@ -34,7 +34,7 @@
 #include <string.h>
 #include <mbstring.h>
 #include <stdlib.h>
-#include "win1632.h"
+#include "wi163264.h"
 
 #include "wdeglbl.h"
 #include "wdemem.h"

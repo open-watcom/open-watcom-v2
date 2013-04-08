@@ -40,7 +40,7 @@ extern  unsigned        __WinSetWindowPos(unsigned);
         __WinSetWindowPos(WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7))
 #else
 #include <windows.h>
-#include <win1632.h>
+#include "wi163264.h"
 #endif
 #include <stdarg.h>
 #include "_defwin.h"

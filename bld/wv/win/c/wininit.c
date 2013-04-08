@@ -46,7 +46,7 @@
 #endif
 
 #include "windows.h"
-#include "win1632.h"
+#include "wi163264.h"
 #include "dbgmem.h"
 #include "autoenv.h"
 

@@ -33,7 +33,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "win1632.h"
+#include "wi163264.h"
 
 /* imports */
 

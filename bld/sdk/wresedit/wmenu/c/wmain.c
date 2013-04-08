@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <io.h>
-#include "win1632.h"
+#include "wi163264.h"
 
 #include "wresall.h"
 #include "wglbl.h"

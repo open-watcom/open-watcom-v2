@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <windows.h>
-#include "win1632.h"
+#include "wi163264.h"
 
 #include "fmedit.def"
 #include "state.def"

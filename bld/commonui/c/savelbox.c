@@ -38,7 +38,7 @@
 #include <direct.h>
 #include <stdlib.h>
 #include "savelbox.h"
-#include "win1632.h"
+#include "wi163264.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif

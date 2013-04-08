@@ -31,7 +31,7 @@
 
 
 #include <windows.h>
-#include "win1632.h"
+#include "wi163264.h"
 #include "watcom.h"
 #include "mem.h"
 #include "config.h"

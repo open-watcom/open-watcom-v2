@@ -33,7 +33,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
-#include "win1632.h"
+#include "wi163264.h"
 #include "wrglbl.h"
 #include "wrinfo.h"
 #include "wrmem.h"

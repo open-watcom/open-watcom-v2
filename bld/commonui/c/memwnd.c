@@ -51,7 +51,7 @@
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
-#include "win1632.h"
+#include "wi163264.h"
 #include "wpi.h"
 #include "ldstr.h"
 #include "uistr.gh"

@@ -53,7 +53,7 @@
     #include <commdlg.h>
     #include <ddeml.h>
     #include <shellapi.h>
-    #include "win1632.h"
+    #include "wi163264.h"
 #endif
 
 #if 0

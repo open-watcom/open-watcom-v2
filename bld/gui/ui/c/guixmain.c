@@ -58,7 +58,7 @@ bool GUIMainTouched = FALSE;
 #ifdef __WINDOWS__
 #include "swap.h"
 #include <windows.h>
-#include "win1632.h"
+#include "wi163264.h"
 #include <dos.h>
 
 extern char **_argv;

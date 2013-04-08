@@ -45,7 +45,7 @@
 #include "uiswap.h"
 
 #include <windows.h>
-#include "win1632.h"
+#include "wi163264.h"
 
 extern void ToCharacter();
 extern void ToGraphical();

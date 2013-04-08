@@ -33,7 +33,7 @@
 #include "precomp.h"
 #include <string.h>
 
-#include "win1632.h"
+#include "wi163264.h"
 
 #include "wdeglbl.h"
 #include "wdemem.h"

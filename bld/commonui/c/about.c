@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include "about.h"
 #include "aboutdlg.h"
-#include "win1632.h"
+#include "wi163264.h"
 #ifndef NOUSE3D
   #ifdef WRCTL3D
     #include "wrctl3d.h"

@@ -32,7 +32,7 @@
 
 #include "precomp.h"
 #include <stdio.h>
-#include "win1632.h"
+#include "wi163264.h"
 #include "wglbl.h"
 #include "w_menu.h"
 #include "wmain.h"

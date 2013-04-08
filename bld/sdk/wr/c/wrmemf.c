@@ -31,7 +31,7 @@
 
 
 #include <windows.h>
-#include "win1632.h"
+#include "wi163264.h"
 #include "wrglbl.h"
 #include "wrinfo.h"
 #include "wrctl3d.h"

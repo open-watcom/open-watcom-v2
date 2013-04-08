@@ -28,7 +28,7 @@
 *
 ****************************************************************************/
 
-#include "win1632.h"
+#include "wi163264.h"
 #include <stdlib.h>
 #define DDEMLDB
 #include <ddeml.h>

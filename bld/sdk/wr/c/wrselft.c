@@ -33,7 +33,7 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
-#include "win1632.h"
+#include "wi163264.h"
 #include "wrglbl.h"
 #include "wrinfo.h"
 #include "wrmsg.h"

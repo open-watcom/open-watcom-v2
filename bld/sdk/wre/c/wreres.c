@@ -66,7 +66,7 @@
 #include "wrdll.h"
 #include "wrutil.h"
 #include "jdlg.h"
-#include "win1632.h"
+#include "wi163264.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

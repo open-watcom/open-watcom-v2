@@ -31,7 +31,7 @@
 
 
 #include <windows.h>
-#include "win1632.h"
+#include "wi163264.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
