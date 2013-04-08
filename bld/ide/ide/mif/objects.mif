@@ -1,4 +1,4 @@
-OBJECTS = &
+objs = &
         inifile.obj &
         vabout.obj &
         vcompdlg.obj &
@@ -20,10 +20,10 @@ OBJECTS = &
         autoenv.obj
 
 !ifneq host_os os2
-OBJECTS += vfilelst.obj resautod.obj
+objs += vfilelst.obj resautod.obj
 ! ifeq host_os win
-OBJECTS += link.obj
+objs += link.obj
 ! else
-OBJECTS += batpipe.obj
+objs += batpipe.obj
 ! endif
 !endif

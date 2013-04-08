@@ -18,7 +18,7 @@ objs = clcommon.obj cmdlhelp.obj wcl.obj
 objs = clcommon.obj cmdlhelp.obj owcc.obj getopt.obj quit.obj
 extra_deps = owcchelp.gh $(owcc_specs)
 !endif
-objs += $(trmem_objs) $(cl_objs)
+objs += $(trmem_objs)
 
 !include cproj.mif
 !include deftarg.mif
@@ -26,9 +26,7 @@ objs += $(trmem_objs) $(cl_objs)
 
 !include trmem.mif
 
-!ifdef __WATCOM__
 extra_c_flags += -s
-!endif
 
 extra_c_flags_owcc     = -I"$(posix_dir)/h"
 extra_c_flags_getopt   = -I"$(posix_dir)/h"

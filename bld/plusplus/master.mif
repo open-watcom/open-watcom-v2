@@ -184,7 +184,6 @@ external_dependencies = $(xlibs)
 external_dependencies += $(os2ldr)
 !endif
 
-comp_objs_exe += $(cl_objs)
 !ifeq plusplus_trmem 1
 comp_objs_exe += trmem.obj
 !endif

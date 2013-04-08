@@ -19,8 +19,8 @@ inc_dirs = -I"../h"
 !endif
 
 
-objchg.exe: objchg.obj hashtab.obj misc.obj $(cl_objs)
-objfind.exe: objfind.obj hashtab.obj misc.obj $(cl_objs)
-objlist.exe: objlist.obj misc.obj $(cl_objs)
-objxdef.exe: objxdef.obj misc.obj $(cl_objs)
-objxref.exe: objxref.obj hashtab.obj misc.obj $(cl_objs)
+objchg.exe: objchg.obj hashtab.obj misc.obj
+objfind.exe: objfind.obj hashtab.obj misc.obj
+objlist.exe: objlist.obj misc.obj
+objxdef.exe: objxdef.obj misc.obj
+objxref.exe: objxref.obj hashtab.obj misc.obj

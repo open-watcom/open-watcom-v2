@@ -31,6 +31,7 @@ host_OS=$(rtdll_host_os_$(system))
 !include ../objs.mif
 
 version_res_dll_nt_386 = version.res
+version_res_dll_nt_x64 = version.res
 
 !ifdef profile
 rtdll_nosymfile = 1
@@ -59,6 +60,7 @@ extra_l_flags_dll_nt = initinstance terminstance
 libflags_nt_386 = -io -ii
 libflags_nt_axp = -ic -ia
 libflags_nt_ppc = -ic -ip
+libflags_nt_x64 = -ic -i6
 
 extra_lib_flags = -irn
 !ifeq release 1

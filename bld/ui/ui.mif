@@ -22,8 +22,7 @@ extra_c_flags_trmem = $(trmem_cflags)
 # memory tracker cover routines
 extra_c_flags_uialloc = $(trmem_cover_cflags)
 
-objfiles = &
-        uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
+objs =  uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
         uiballoc.obj uiband.obj   uibarf.obj   uibattr.obj  &
         uibcopy.obj  uibfake.obj  uibfill.obj  uibgnd.obj   &
         uibios.obj   uiblank.obj  uibox.obj    uibpix.obj   &
@@ -76,18 +75,16 @@ objfiles = &
 !error $$(extra_files) unset. Must be $$(dos), $$(nlm), $$(nt), $$(os2), $$(qnx), $$(unix) or $$(win)
 !endif
 
-# $(trmem_objs) appended to objfiles = ... is ineffective W.Briscoe 2004-11-25
-objfiles += $(trmem_objs) $(extra_files)
+# $(trmem_objs) appended to objs = ... is ineffective W.Briscoe 2004-11-25
+objs += $(trmem_objs) $(extra_files)
 
 !ifeq release 1
-!ifneq bootstrap 1
 extra_c_flags += -os-s
-!endif
 !endif
 
 !include trmem.mif
 
-$(name).lib: $(objfiles)
+$(name).lib: $(objs)
         $(librarian) $(libflags) $<
 
 !ifeq SAMPLE_MODE WIN_C_M_J

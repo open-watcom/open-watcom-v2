@@ -18,7 +18,7 @@ inc_dirs = -I. -I.. -I"$(dip_dir)/watcom/h"
 
 .c : $(watcom_dir)/c
 
-objs = strip.obj output.obj $(cl_objs)
+objs = strip.obj output.obj
 
 !ifeq bootstrap 1
 extra_cpp_flags = -DINCL_MSGTEXT

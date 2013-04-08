@@ -71,8 +71,7 @@ common_objs = &
     inlib.obj &
     idemsgpr.obj &
     ideentry.obj &
-    $(trmem_objs) &
-    $(cl_objs)
+    $(trmem_objs)
 
 !ifeq bootstrap 1
 common_objs += $(orl_objs)
@@ -96,8 +95,10 @@ extra_cpp_flags += -DINCL_MSGTEXT
 extra_cpp_flags += -DIDE_PGM
 !endif
 
+!ifneq bootstrap 1
 extra_c_flags_ntdll    = -bd
 extra_c_flags_os2dll   = -bd
+!endif
 extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_memfuncs = $(trmem_cover_cflags)
 extra_c_flags_idedrv   = -DSTATIC_LINKAGE
@@ -168,9 +169,9 @@ $(exename).exe: $(depends_drv) $(realdllname).lib $(version_res_exe_$(host_os)_$
 
 !else
 
-$(exename).exe: $(depends_exe) $(cl_objs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
-    $(cl) $(clflags) $(exe_objs) $(cl_objs) $(xlibs) $(ldflags)
+    $(cl) $(clflags) $(exe_objs) $(xlibs) $(ldflags)
 !else 
     @%write exe.lnk $(lflags)
     @for %i in ($(exe_objs)) do @%append exe.lnk file %i

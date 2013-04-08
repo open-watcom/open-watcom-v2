@@ -163,8 +163,6 @@ default_targ    = w
 
 first : $(default_targ)
 
-target = $+$(targ_$(cpu)_$(os))$-
-
 trperr_h = _err.gh
 jtrperr_h = _jerr.gh
 
@@ -211,9 +209,10 @@ objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_objs)
 objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_dobjs)
 !endif
 
-!ifndef substitute_linker
-
 $(target) : $(objs) $(extra_libs) $(dbg_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(extra_libs) $(dbg_libs) $(ldflags)
+!else
         %create $^&.lnk
         @%append $^&.lnk $(mode_lflags)
         @%append $^&.lnk op map, elim
@@ -226,13 +225,12 @@ $(target) : $(objs) $(extra_libs) $(dbg_libs) $(resource_file) $(extra_deps) $(_
         @for %i in ($(extra_libs) $(dbg_libs)) do @%append $^&.lnk library %i
         @%append $^&.lnk $(extra_linker)
         $(linker) @$^&.lnk 
+!endif
 !ifdef resource_file
         $(rc) $(resource_file) $^@
 !endif
 !ifdef extra_cmds
         $(extra_cmds)
-!endif
-
 !endif
 
 dbgstr.lib : dbgstr.obj

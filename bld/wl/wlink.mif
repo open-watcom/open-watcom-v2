@@ -51,8 +51,6 @@ common_objs += orlstubs.obj
 orl_lib = 
 !endif
 
-common_objs += $(cl_objs)
-
 comp_objs_exe = $(common_objs) $(exe_objs)
 comp_objs_dll = $(common_objs) $(dll_objs)
 
@@ -77,15 +75,12 @@ extra_cpp_flags += -DIDE_PGM
 extra_cpp_flags += -DTRMEM
 !endif
 
-extra_c_flags =
-!ifneq bootstrap 1
-extra_c_flags += -zp4
-!endif
+extra_c_flags = -zp4
 
 extra_c_flags_idedrv     = -DCHAIN_CALLBACK
 extra_c_flags_ideentry   = -DCHAIN_CALLBACK
-!ifdef wlink_dll
 !ifneq bootstrap 1
+!ifdef wlink_dll
 extra_c_flags_ideentry   += -bd
 !endif
 !endif

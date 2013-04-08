@@ -34,6 +34,7 @@ target_exe  = $(exename_$(target_cpu))
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
+version_res_exe_nt_x64 = exever.res
 
 $(target_exe).exe : $(files) $(wres_lib) errmsg.res $(version_res_exe_$(host_os)_$(host_cpu))
     $(linker) $(lflags) name $^@ file { $(files) } lib $(wres_lib)

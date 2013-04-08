@@ -15,19 +15,16 @@ sys_x86_qnx   = sys qnx
 sys_x86_linux = sys linux
 sys_axp_nt    = sys ntaxp
 
-targ_x86_os2   = $(xname)cli1.exe
-targ_x86_os2v2 = $(xname)cli.exe
-targ_x86_qnx   = $(xname)cli.qnx
-targ_x86_linux = $(xname)cli.exe
-targ_x86_win   = $(xname)cliw.exe
-targ_x86_dos   = $(xname)cli.exe
-targ_x86_rdos  = $(xname)cli.exe
-targ_x86_nt    = $(xname)cli.exe
-targ_x86_nto   = $(xname)cli.exe
-targ_axp_nt    = $(xname)cli.exe
+trap_ext_os2_i86     = cli1.exe
+trap_ext_qnx_i86     = cli.qnx
+trap_ext_qnx_386     = cli.qnx
+trap_ext_win_i86     = cliw.exe
 
-targ_ppc_linux = $(xname)cli.exe
-targ_mips_linux = $(xname)cli.exe
+!ifdef trap_ext_$(host_os)_$(host_cpu)
+target = $(xname)$(trap_ext_$(host_os)_$(host_cpu))
+!else
+target = $(xname)cli.exe
+!endif
 
 TRAP_common_objs = testcli.obj
 TRAP_remote_objs =
@@ -117,29 +114,27 @@ sys_ppc_nt   = sys ntppc_dll initinstance &
             option description $(description) &
             op modname=$^&
 
-targ_x86_os2    = $(xname).dll
-targ_x86_os2v2  = $(xname).d32
-targ_x86_qnx    = $(xname).trp
 !ifeq bootstrap 1
-targ_x86_linux  = $(xname).so
-!else
-targ_x86_linux  = $(xname).trp
+!ifndef __WATCOM__
+lib_type = shared
 !endif
-targ_x86_win    = $(xname).dll
-targ_x86_dos    = $(xname).trp
-targ_x86_rdos   = $(xname).dll
-targ_x86_nt     = $(xname).dll
-!ifeq bootstrap 1
-targ_x86_nto    = $(xname).so
-!else
-targ_x86_nto    = $(xname).trp
 !endif
 
-targ_axp_nt     = $(xname).dll
-targ_ppc_nt     = $(xname).dll
+trap_ext_nt          = .dll
+trap_ext_os2_os2     = .dll
+trap_ext_os2_os2v2   = .d32
+trap_ext_rdos        = .dll
+trap_ext_win         = .dll
 
-targ_ppc_linux  = $(xname).so
-targ_mips_linux = $(xname).so
+!ifdef ext_lib_$(lib_type)
+target = $(xname)$(ext_lib_$(lib_type))
+!else ifdef trap_ext_$(host_os)_$(os)
+target = $(xname)$(trap_ext_$(host_os)_$(os))
+!else ifdef trap_ext_$(host_os)
+target = $(xname)$(trap_ext_$(host_os))
+!else
+target = $(xname).trp
+!endif
 
 TRAP_common_objs = $(os_prefix)strt.obj
 !ifeq srv par

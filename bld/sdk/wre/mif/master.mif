@@ -44,7 +44,7 @@ extra_c_flags_preproc = -zm -fh=preproc.pch
 extra_c_flags_ppexpr  = -zm -fh=preproc.pch
 extra_c_flags_ppmacro = -zm -fh=preproc.pch
 
-OBJS =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
+objs =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
         wregetfn.obj wrestrdp.obj wreselft.obj wreres.obj wrehints.obj &
         wrelist.obj wrenames.obj wreopts.obj wretoolb.obj wreribbn.obj &
         wreseted.obj wreftype.obj wregcres.obj wrerenam.obj wrefres.obj &
@@ -55,7 +55,7 @@ OBJS =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
         preproc.obj ppexpr.obj ppmacro.obj
 
 !ifeq wre_trmem 1
-OBJS += trmem.tbj trmemcvr.tbj
+objs += trmem.tbj trmemcvr.tbj
 !endif
 
 # where to look for various files
@@ -78,15 +78,20 @@ extra_l_flags_win = op stack=32k,rwr library commdlg,ddeml
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
+version_res_exe_nt_x64 = exever.res
 
 # explicit rules
 #################
-$(name).exe: rcstr.gh $(OBJS) $(name).res $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu))
+$(name).exe: rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(xlibs) $(ldflags)
+!else
         @%create tmp.lnk
         @%append tmp.lnk $(lflags)
-        @for %i in ($(OBJS)) do @%append tmp.lnk file %i
+        @for %i in ($(objs)) do @%append tmp.lnk file %i
         @for %i in ($(xlibs)) do @%append tmp.lnk lib %i
         $(linker) name $^@ @tmp.lnk
+!endif
         $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
 
 rcstr.gh: rcstrmsg.gh

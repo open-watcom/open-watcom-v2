@@ -18,7 +18,6 @@ fpu_flags_qnx_386   = -fpc
 fpu_flags_linux_386 = -fpc
 fpu_flags_rdos_386  = -fpc
 
-name = mad$(target_cpu)
 ext_os2_i86   = .dll
 ext_os2_386   = .d32
 ext_qnx_386   = .mad
@@ -27,12 +26,13 @@ ext_win_i86   = .dll
 ext_dos_386   = .mad
 ext_nt_386    = .dll
 ext_nt_axp    = .dll
+ext_nt_x64    = .dll
 ext_rdos_386  = .dll
 
 !ifeq bootstrap 1
-lib_name = $(name).so
-!else
-lib_name = $(name)$(ext_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+lib_type = shared
+!endif
 !endif
 
 additional_cleanup = *.d32 *.mad
@@ -47,13 +47,11 @@ additional_cleanup = *.d32 *.mad
 ###############
 extra_cpp_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
 
-!ifeq bootstrap 1
-extra_c_flags += -fPIC
-!else
 extra_c_flags += -s
 extra_c_flags_i86 = -zu
 extra_c_flags_win = -zc
 
+!ifneq bootstrap 1
 extra_c_flags_madimp = -zlf
 !endif
 
@@ -71,10 +69,10 @@ extra_l_flags_dll_nt_axp   = op dosseg
 
 extra_l_flags_dll_rdos_386 = op offset=0xd9000000
 
-extra_l_flags_dll_os2  = export MADLOAD op modname=$(name)
-extra_l_flags_dll_nt   = export MADLOAD op modname=$(name) $(extra_l_flags_dll_nt_$(host_cpu))
-extra_l_flags_dll_win  = op modname=$(name)
-extra_l_flags_dll_rdos = export MADLOAD op modname=$(name) $(extra_l_flags_dll_rdos_386)
+extra_l_flags_dll_nt   = export MADLOAD $(extra_l_flags_dll_nt_$(host_cpu))
+extra_l_flags_dll_os2  = export MADLOAD
+extra_l_flags_dll_rdos = export MADLOAD $(extra_l_flags_dll_rdos_386)
+extra_l_flags_dll_win  = 
 
 ##################
 
@@ -89,15 +87,21 @@ objs =  madimp.obj $(dis_objs) $(imp_objs)
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
+version_res_dll_nt_x64 = version.res
 
-!ifeq bootstrap 1
-$(lib_name) : $(dis_prereq) $(objs) $(cl_libs) $(__MAKEFILES__)
-        $(cl) -shared -fPIC $(clflags) $(objs) $(cl_libs)
+!ifdef ext_lib_$(lib_type)
+xname = mad$(target_cpu)$(ext_lib_$(lib_type))
 !else
-$(lib_name) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-        $(linker) name $^@ $(lflags_dll) file {$(objs)}
-        @%make bind_version_res_dll
+xname = mad$(target_cpu)$(ext_$(host_os)_$(host_cpu))
 !endif
+
+$(xname) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(ldflags)
+!else
+        $(linker) name $^@ $(lflags_dll) file {$(objs)}
+!endif
+        @%make bind_version_res_dll
 
 distbls.gh : ./disbuild.exe
     $[@

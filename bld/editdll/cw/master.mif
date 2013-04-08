@@ -25,6 +25,7 @@ extra_l_flags_win += export WEP RESIDENT
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
+version_res_dll_nt_x64 = version.res
 
 all: weditcw.dll wedit.lib .SYMBOLIC
 

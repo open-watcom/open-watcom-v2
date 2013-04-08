@@ -15,8 +15,8 @@ inc_dirs = -I"../../os2286/h"
 
 extra_cpp_flags = -D_ENABLE_AUTODEPEND
 
-testc.exe : testc.obj $(libs) $(cl_objs)
-    $(cl) $(clflags) $< $(cl_libs)
+testc.exe : testc.obj $(libs)
+    $(cl) $(clflags) $< $(ldflags)
 
-testpp.exe : testpp.obj $(libs) $(cl_objs)
-    $(cl) $(clflags) $< $(cl_libs)
+testpp.exe : testpp.obj $(libs)
+    $(cl) $(clflags) $< $(ldflags)

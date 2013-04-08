@@ -40,14 +40,14 @@ vicomp_objs = &
         $(linker) name $@ $(lflags) file {$<}
 !endif
 
-edbind.exe : edbind.obj $(cl_objs)
+edbind.exe : edbind.obj
 !ifndef __WATCOM__
         $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$<}
 !endif
 
-vicomp.exe : $(vicomp_objs) $(cl_objs)
+vicomp.exe : $(vicomp_objs)
 !ifndef __WATCOM__
         $(cl) $(clflags) $< $(ldflags)
 !else

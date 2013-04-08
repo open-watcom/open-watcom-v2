@@ -35,8 +35,6 @@ inc_dirs  = -I. $(dis_includes) -I"$(disasm_dir)/stand/h"
 inc_dirs += -I"$(disasm_dir)/h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" 
 inc_dirs += -I"$(comp_cfg_dir)/h"
 
-pre_deps_osi = $(os2ldr)
-
 .c: .;$(trmem_dir);$(disasm_dir)/stand/c;$(dis_srcs);$(lib_misc_dir)/c;$(watcom_dir)/c
 .h: $(disasm_dir)/stand/h;$(dis_hdirs);$(lib_misc_dir)/h
 .rc : $(disasm_dir)/stand/h
@@ -69,12 +67,19 @@ disasm_objs = $(stand_objs) $(dis_objs) demangle.obj $(trmem_objs)
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
+version_res_exe_nt_x64 = exever.res
 
-$(exe_name) : $(proj_name).res $(dis_prereq) $(disasm_objs) $(cl_objs) $(pre_deps_$(host_os)) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu))
-        $(cl) $(clflags) $(disasm_objs) $(cl_objs) $(xlibs) $(cl_libs)
+$(exe_name) : msg.gh $(dis_prereq) $(disasm_objs) $(xlibs) $(proj_name).res $(version_res_exe_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(disasm_objs) $(xlibs) $(ldflags)
+!else
 !ifeq host_os osi
+        $(linker) name $^&.rex $(lflags) file {$(disasm_objs)} lib {$(xlibs)}
         $(w32bind) $^&.rex $@ $(os2ldr)
         rm -f $^&.rex
+!else
+        $(linker) name $@ $(lflags) file {$(disasm_objs)} lib {$(xlibs)}
+!endif
 !endif
         @%make bind_version_res_exe
         $(wstrip) -q -a -r $@ . $^&.res

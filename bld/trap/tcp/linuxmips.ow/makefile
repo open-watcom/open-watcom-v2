@@ -10,11 +10,5 @@ which = SERVER
 remote_link = 1
 builtin_trap = 1
 
-
-!define substitute_linker
-
 !include $(trap_dir)/lcl/linux/trap.mif
 !include $(trap_dir)/master.mif
-
-$(target) : $(libs) $(objs) $(__MAKEFILES__)
-    $(cl) $(clflags) $(objs) $(cl_libs)

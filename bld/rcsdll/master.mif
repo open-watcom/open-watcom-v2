@@ -10,14 +10,14 @@ suppress_zc = 1
 !include defrule.mif
 !include deftarg.mif
 
-OBJS = rcsdll.obj inifile.obj $(extra_objs)
+objs = rcsdll.obj inifile.obj $(extra_objs)
 !ifeq host_os nt
-OBJS += mkssi.obj
+objs += mkssi.obj
 !ifeq host_cpu 386
-OBJS += objcycle.obj
+objs += objcycle.obj
 !endif
 !else ifeq host_os win
-OBJS += mkssi.obj
+objs += mkssi.obj
 !endif
 
 .cpp : ..;../mkssi;../ocycle
@@ -40,17 +40,22 @@ extra_l_flags_os2 = initinstance terminstance pm op manyautodata
 rcsdll.lib: rcsdll.dll
     $(librarian) $(libflags) +$[@
 !else
-rcsdll.lib: $(OBJS)
+rcsdll.lib: $(objs)
     @%create $^&.lbc
-    @for %f in ($(OBJS)) do @%append $^&.lbc +%f
+    @for %f in ($(objs)) do @%append $^&.lbc +%f
     $(librarian) $(libflags) @$^&.lbc
 !endif
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
+version_res_dll_nt_x64 = version.res
 
-rcsdll.dll : $(OBJS) $(version_res_dll_$(host_os)_$(host_cpu))
-    $(linker) name $@ $(lflags) file {$(OBJS)}
+rcsdll.dll : $(objs) $(version_res_dll_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+    $(cl) $(clflags) $(objs) $(ldflags)
+!else
+    $(linker) name $@ $(lflags) file {$(objs)}
+!endif
     @%make bind_version_res_dll
 
 !include verrc.mif

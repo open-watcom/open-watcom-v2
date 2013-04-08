@@ -20,8 +20,7 @@ suppress_bd = 1
 
 .ERASE
 
-object =                &
-        align.obj       &
+objs =  align.obj       &
         space.obj       &
         fmedit.obj      &
         grid.obj        &
@@ -67,9 +66,14 @@ $(name).lib: $(name).dll
 
 # systems where version resource must be added to .DLL
 version_res_dll_nt_386 = version.res
+version_res_dll_nt_x64 = version.res
 
-$(name).dll: $(object) verimp.obj $(library_files) $(name).res $(version_res_dll_$(host_os)_$(host_cpu))
-    $(linker) $(lflags) name $^@ file {$(object) verimp.obj}
+$(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+    $(cl) $(clflags) $(objs) verimp.obj $(library_files) $(ldflags)
+!else
+    $(linker) $(lflags) name $^@ file {$(objs) verimp.obj}
+!endif
     $(rc) -k $(name).res $(name).dll $(bind_version_res_dll_add)
 
 $(name).res: $(name).rc .AUTODEPEND

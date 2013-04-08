@@ -56,36 +56,23 @@ sys_axp_nt      = sys ntaxp op st=16k, modname=$^&, desc $(description)
 
 sys_ppc_nt      = sys ntppc op st=16k, modname=$^&, desc $(description)
 
-targ_x86_os2    = $(xname)1.exe
-targ_x86_os2v2  = $(xname).exe
-targ_x86_qnx    = $(xname).qnx
-targ_x86_linux  = $(xname).elf
-targ_x86_win    = $(xname).exe
-targ_x86_dos    = $(xname).exe
-targ_x86_rsi    = $(xname).exp
-targ_x86_cw     = $(xname).exe
-targ_x86_ads    = $(xname).exp
-targ_x86_rdos   = $(xname).exe
-!ifndef targ_pls
-targ_x86_pls    = $(name).exp
-!endif
+server_ext_os2_os2   = 1.exe
+server_ext_dos_rsi   = .exp
+server_ext_dos_ads   = .exp
+server_ext_dos_pls   = .exp
+server_ext_nov       = .nlm
+
 !ifeq srv jvm
-targ_x86_nt     = jvmhlp_g.dll
-!endif
-!ifeq srv msj
-targ_x86_nt     = msjhlp.dll
+target          = jvmhlp_g.dll
+!else ifeq srv msj
+target          = msjhlp.dll
+!else ifdef server_ext_$(host_os)_$(os)
+target          = $(xname)$(server_ext_$(host_os)_$(os))
+!else ifdef server_ext_$(host_os)
+target          = $(xname)$(server_ext_$(host_os))
 !else
-targ_x86_nt     = $(name).exe
+target          = $(xname).exe
 !endif
-targ_x86_nlm    = $(name).nlm
-targ_x86_nto    = $(name).elf
-
-targ_axp_nt     = $(name).exe
-
-targ_ppc_nt     = $(name).exe
-
-targ_ppc_linux  = $(name).elf
-targ_mips_linux = $(name).elf
 
 dig_os = $(os)
 !include $(dig_dir)/mif/trpcli.mif

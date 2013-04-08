@@ -63,4 +63,4 @@ inc_dirs = -I"$(w32api_dir)/nt"
 extra_cpp_flags = -D_WIN32 -DWIN32
 
 dbginst.exe : dbginst.obj
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)

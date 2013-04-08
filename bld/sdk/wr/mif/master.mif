@@ -78,9 +78,14 @@ extra_l_flags_win = op rwr,stack=16k export WEP RESIDENT
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
+version_res_dll_nt_x64 = version.res
 
 $(name).dll: ytab.gh rcmsg.gh $(object) $(xlibs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(object) $(xlibs) $(ldflags)
+!else
         $(linker) $(lflags) name $^@ file {$(object)} lib {$(xlibs)}
+!endif
         $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
 
 #---------- TEST

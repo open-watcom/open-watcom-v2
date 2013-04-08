@@ -98,9 +98,7 @@ extra_cpp_flags += -D_STANDALONE_
 extra_cpp_flags += -DTRMEM -DYYDEBUG=1 -DAS_DEBUG_DUMP
 !endif
 
-!ifneq bootstrap 1
 extra_c_flags = -fh
-!endif
 
 !ifeq release 0
 extra_c_flags_386 = -of+
@@ -108,10 +106,7 @@ extra_c_flags_386 = -of+
 
 # lflags
 #########
-
-!ifndef inline_as
 libs = $(owl_lib) $(wres_lib)
-!endif
 
 # rcflags
 ##########
@@ -154,8 +149,8 @@ asi_lib_j   = $(asi_dir)/asinlinj.lib
 !ifdef test_inline_as
 asi_test_name = asinline
 
-$(asi_test_name).exe : $(asi_test_objs) $(cl_objs) $(asi_lib)
-        $(cl) $(clflags)  $(asi_test_objs) $(cl_objs) $(asi_lib) $(cl_libs)
+$(asi_test_name).exe : $(asi_test_objs) $(asi_lib)
+        $(cl) $(clflags) $(asi_test_objs) $(asi_lib) $(ldflags)
 
 $(asi_lib) :
 curr_dir=$+$(%cwd)$-
@@ -178,11 +173,11 @@ $(asi_lib_j) : $(asi_lib) asmsgj.obj
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 
-$(name).exe : msg.gh $(as_objs) $(cl_objs) $(libs) $(owl_lib) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
+$(name).exe : msg.gh $(as_objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(as_objs) $(cl_objs) $(libs) $(owl_lib) $(cl_libs)
+        $(cl) $(clflags) $(as_objs) $(libs) $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {$(as_objs)}  lib {$(libs) $(owl_lib)}
+        $(linker) name $@ $(lflags) file {$(as_objs)} lib {$(libs)}
 !ifeq host_os osi
         $(w32bind) $^&.rex $^@ $(os2ldr)
         @rm -f $^&.rex

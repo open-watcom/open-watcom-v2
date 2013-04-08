@@ -22,28 +22,28 @@ all : cat.exe      &
       which.exe
 
 cat.exe : cat.obj $(util_lib)
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 
 cmp.exe : cmp.obj $(util_lib)
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 
 compress.exe : compress.obj $(util_lib)
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 
 true.exe : true.obj
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 
 false.exe : false.obj
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 
 sleep.exe : sleep.obj $(util_lib)
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 
 tee.exe : tee.obj $(util_lib)
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 
 wc.exe : wc.obj $(util_lib)
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)
 
 which.exe : which.obj $(util_lib)
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)

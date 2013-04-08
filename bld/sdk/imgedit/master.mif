@@ -89,6 +89,7 @@ inc_dirs += -I"$(sdk_misc_dir)" $(wpi_inc_dirs)
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
+version_res_exe_nt_x64 = exever.res
 
 !ifeq host_OS os2
 
@@ -106,10 +107,14 @@ $(name).res : $(wimgedit_dir)/objos2/res/$(name).rc $(rcdeps)
 !else
 
 $(name).exe : $(name).res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+!else
         %create $^&.lnk
         @%append $^&.lnk $(lflags)
         @%append $^&.lnk file { $(objs) }
         $(linker)  name $^@ @$^&.lnk
+!endif
         $(rc) -k $^&.res $^@ $(bind_version_res_exe_add)
 
 rcstr.gh : rcstrmsg.gh

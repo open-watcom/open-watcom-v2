@@ -22,8 +22,8 @@ WINDOWS = 1
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 
-object = $(sys_object)
-object +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
+objs = $(sys_object)
+objs +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
             winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
             wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
             widn2str.obj wclip.obj wisedit.obj weditsym.obj &
@@ -56,18 +56,23 @@ extra_l_flags_win = library commdlg op stack=8k,rwr &
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
+version_res_dll_nt_x64 = version.res
 
 xlibs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
 
 $(name).lib: $(name).dll
         $(librarian) $(libflags) +$[@
 
-$(name).dll: rcstr.gh $(object) $(name).res $(xlibs) $(version_res_dll_$(host_os)_$(host_cpu))
+$(name).dll: rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(xlibs) $(ldflags)
+!else
         @%create tmp.lnk
         @%append tmp.lnk $(lflags)
-        @for %i in ($(object)) do @%append tmp.lnk file %i
+        @for %i in ($(objs)) do @%append tmp.lnk file %i
         @for %i in ($(xlibs)) do @%append tmp.lnk lib %i
         $(linker) name $^@ @tmp.lnk
+!endif
         $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
 
 $(name).res: ../h/$(name).rc .AUTODEPEND

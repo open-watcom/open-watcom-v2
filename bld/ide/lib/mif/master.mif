@@ -11,32 +11,33 @@ idelib_autodepends = .AUTODEPEND
 
 !include $(wclass_dir)/mif/client.mif
 
-objects =       contfile.obj &
-                maccel.obj &
-                maction.obj &
-                mactset.obj &
-                mc2swtch.obj &
-                mcommand.obj &
-                mcompon.obj &
-                mconfig.obj &
-                mcstate.obj &
-                mcswitch.obj &
-                mfamily.obj &
-                mitem.obj &
-                mproject.obj &
-                mrstate.obj &
-                mrswitch.obj &
-                mrule.obj &
-                mstate.obj &
-                mswitch.obj &
-                msymbol.obj &
-                mtarget.obj &
-                mtool.obj &
-                mtoolitm.obj &
-                mtypo.obj &
-                mvstate.obj &
-                mvswitch.obj &
-                mworkfil.obj
+objs = &
+    contfile.obj &
+    maccel.obj &
+    maction.obj &
+    mactset.obj &
+    mc2swtch.obj &
+    mcommand.obj &
+    mcompon.obj &
+    mconfig.obj &
+    mcstate.obj &
+    mcswitch.obj &
+    mfamily.obj &
+    mitem.obj &
+    mproject.obj &
+    mrstate.obj &
+    mrswitch.obj &
+    mrule.obj &
+    mstate.obj &
+    mswitch.obj &
+    msymbol.obj &
+    mtarget.obj &
+    mtool.obj &
+    mtoolitm.obj &
+    mtypo.obj &
+    mvstate.obj &
+    mvswitch.obj &
+    mworkfil.obj
 
 !ifdef __WATCOM__
 extra_c_flags_i86 = -zc -zm
@@ -46,5 +47,5 @@ inc_dirs = -I. $(wclass_inc_dirs) -I"$(lib_misc_dir)/h"
 
 .cpp : ..
 
-$(name).lib : $(objects)
-        $(librarian) $(libflags) $(objects)
+$(name).lib : $(objs)
+        $(librarian) $(libflags) $(objs)

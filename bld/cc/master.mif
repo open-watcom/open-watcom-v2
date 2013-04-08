@@ -151,7 +151,7 @@ inc_dirs += -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 .c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
 .h: ../../h;$(watcom_dir)/h
 
-comp_objs_exe = $(common_objs) $(exe_objs) $(cl_objs)
+comp_objs_exe = $(common_objs) $(exe_objs)
 comp_objs_dll = $(common_objs) $(dll_objs)
 
 !ifdef cc_dll

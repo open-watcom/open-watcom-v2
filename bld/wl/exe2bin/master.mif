@@ -13,4 +13,4 @@ objs = exe2bin.obj
 .c: ..
 
 $(proj_name).exe : $(objs)
-        $(cl) $(clflags) $<
+        $(cl) $(clflags) $< $(ldflags)

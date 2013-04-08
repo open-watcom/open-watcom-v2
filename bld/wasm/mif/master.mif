@@ -93,7 +93,7 @@ proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
     queues.obj          &
     finger.obj
 
-proj_obj += $(trmem_objs) $(cl_objs)
+proj_obj += $(trmem_objs)
 
 depend_objs = asmops.gh asmopsd.gh wmpmsg.gh
 

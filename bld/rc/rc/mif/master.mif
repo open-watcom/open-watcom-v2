@@ -56,8 +56,7 @@ common_objs =  ytabw.obj ytab2.obj keyword.obj keyword2.obj errors.obj  &
         semraw.obj semsingl.obj semstr.obj dbtable.obj                  &
         preproc.obj ppexpr.obj ppmacro.obj tmpctl.obj autodep.obj       &
         rcldstr.obj rcalloc1.obj rcalloc0.obj sharedio.obj semresfl.obj &
-        semutil.obj leadbyte.obj ideentry.obj idemsgpr.obj rcspawn.obj  &
-        $(cl_objs)
+        semutil.obj leadbyte.obj ideentry.obj idemsgpr.obj rcspawn.obj
 
 !ifeq release 0
 !ifeq WRC_USE_TRMEM 1
@@ -90,8 +89,10 @@ extra_cpp_flags   += -DINCL_MSGTEXT
 extra_cpp_flags   += -DIDE_PGM
 !endif
 
+!ifneq bootstrap 1
 !ifdef wrc_dll
 extra_c_flags_ideentry = -bd
+!endif
 !endif
 extra_c_flags_rcalloc0 = $(TRACK_MEM_OPTS)
 extra_c_flags_rcalloc1 = $(TRACK_MEM_OPTS)

@@ -21,7 +21,7 @@ objs =  whpcvt.obj  &
         wiki.obj    &
         html.obj
 
-$(proj_name).exe : $(objs) $(cl_objs)
+$(proj_name).exe : $(objs)
 !ifndef __WATCOM__
         $(cl) $(clflags) $< $(ldflags)
 !else

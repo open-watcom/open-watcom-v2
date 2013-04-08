@@ -15,9 +15,9 @@ extra_l_flags = op map
 
 objs = cwc.obj
 
-$(proj_name).exe : copystub.gh decstub.gh $(objs) $(cl_objs)
+$(proj_name).exe : copystub.gh decstub.gh $(objs)
 !ifndef __WATCOM__
-    $(cl) $(clflags) $(objs) $(cl_objs) $(ldflags)
+    $(cl) $(clflags) $(objs) $(ldflags)
 !else
     $(linker) name $@ $(lflags) file {$(objs)}
 !endif
