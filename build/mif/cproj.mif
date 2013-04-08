@@ -452,7 +452,7 @@ rc_cpp_x64      = -D_M_X64
 
 rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
 
-rc_flags_all    = -r $(rc_cppflags)
+rc_flags_all    = -xb -r $(rc_cppflags)
 
 rc_flags_nt     = -bt=nt $(win32ver)
 rc_flags_win    = -bt=windows
@@ -541,7 +541,7 @@ rc              = bwrc
 rcaui           = bwrc
 
 rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
-rc_aui          = $(rcaui) -r -bt=windows $(rc_aui_flags)
+rc_aui          = $(rcaui) -xb -r -bt=windows $(rc_aui_flags)
 
 # simple C preprocessing
 cpp             = wcpp
