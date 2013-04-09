@@ -1,5 +1,5 @@
 #include <os2.h>
-#include "appcomm.rc"
+#include "appcomm2.rc"
 #include "rcdefs.h"
 ICON 1 "../dui2.ico"
 BITMAP BITMAP_ONE "../one.bmp"

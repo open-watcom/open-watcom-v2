@@ -41,7 +41,7 @@
 #ifdef PLAT_OS2
 #include <pm1632.h>
 #else
-#include <win1632.h>
+#include <wi163264.h>
 #endif
 
 #ifndef WINEXP
