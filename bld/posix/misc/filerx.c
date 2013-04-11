@@ -172,24 +172,20 @@ DIR *OpenDirAll( char *filename, char *wild )
     int         ch;
 
     len = strlen( filename );
-    for( i = len; i > 0; ) {
-        --i;
-        if( filename[i] == '/' || filename[i] == '\\' || filename[i] == ':' ) {
+    for( i = len; i > 0; --i ) {
+        ch = filename[i - 1];
+        if( ch == '/' || ch == '\\' || ch == ':' ) {
             break;
         }
     }
-    for( j = 0; j < i + 1; j++ ) {
+    for( j = 0; j < i; j++ ) {
         npath[j] = filename[j];
     }
-    npath[i + 1] = 0;
-    ch = npath[i];
-    for( j = i + 1; j <= len; j++ ) {
-        wild[j - i - 1] = filename[j];
+    npath[i] = 0;
+    for( j = i; j <= len; j++ ) {
+        wild[j - i] = filename[j];
     }
 
-    if( !isFILESEP( ch ) && ch != ':' && ch != 0 ) {
-        strcat( npath, FILESEPSTR );
-    }
     strcat( npath, "*.*" );
 
     return( opendir( npath ) );
