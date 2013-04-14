@@ -32,11 +32,13 @@
 
 #ifndef __DIALOG_H__
 
+#ifdef __WATCOMC__
 // ignore "temporary object used to initialize non-constant reference" warning
 #pragma warning 665 9
+#endif
 
 #include <wstd.h>
-#include <wcskip.h>
+#include <vector>
 
 #define YYPARSER DialogParser
 #include "yydriver.h"
@@ -44,9 +46,6 @@
 
 #include "rect.h"
 #include "control.h"
-
-template <class Type> class WCValOrderedVector;
-template <class Type> class WCPtrSkipList;
 
 class Dialog {
 
@@ -72,10 +71,11 @@ private:
 
             uint_32                     _style;
 
-            WCValOrderedVector<Rect> *  _rectangles;
-            WCPtrSkipList<Control> *    _controls;
+            std::vector<Rect>           *_rectangles;
+            std::vector<Control>        *_controls;
 };
 
 
 #define __DIALOG_H__
 #endif
+

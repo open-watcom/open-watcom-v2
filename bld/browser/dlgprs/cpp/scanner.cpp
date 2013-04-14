@@ -31,7 +31,6 @@
 
 
 #include <assert.h>
-#include <wcvector.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>  // error reporting via printf
@@ -42,7 +41,7 @@
 #include "prsbnd.gh"
 #include "prsdlg.gh"
 
-static const char * const   Scanner::_SpecialCharacters = ",{}|:()@#;";
+const char * const   Scanner::_SpecialCharacters = ",{}|:()@#;";
 
 struct TokenStruct {
     const char * name;
@@ -60,10 +59,10 @@ Scanner::Scanner( const char * fileName )
 //---------------------------------------
 {
     _file = new CheckedBufferedFile( fileName );
-    _strings = new WCPtrOrderedVector<char>;
-    _identifiers = new WCPtrOrderedVector<char>;
+    _strings = new std::vector<char *>;
+    _identifiers = new std::vector<char *>;
 
-    _file->open( CheckedFile::ReadText, CheckedFile::UserReadWrite );
+    _file->open( CheckedFile::ReadBinary, CheckedFile::UserReadWrite );
 
     _current = ' ';
 }
@@ -139,7 +138,7 @@ bool Scanner::isSpecial()
 bool Scanner::isSpace()
 //---------------------
 {
-    return (bool) isspace( _current );
+    return (bool)isspace( _current );
 }
 
 bool Scanner::isQuote()
@@ -233,8 +232,8 @@ void Scanner::readQuotedString( YYSTYPE & lval )
     dupStr = new char[ strlen( buffer ) + 1 ];
     strcpy( dupStr, buffer );
 
-    lval =  (YYSTYPE) _strings->entries();
-    _strings->append( dupStr );
+    lval =  (YYSTYPE) _strings->size();
+    _strings->push_back( dupStr );
 }
 
 short Scanner::getToken( YYSTYPE & lval )
@@ -320,9 +319,10 @@ short Scanner::tokenValue( const char * tok, YYSTYPE & lval )
         dupStr = new char[ strlen( tok ) + 1 ];
         strcpy( dupStr, tok );
 
-        lval =  (YYSTYPE) _identifiers->entries();
-        _identifiers->append( dupStr );
+        lval =  (YYSTYPE) _identifiers->size();
+        _identifiers->push_back( dupStr );
 
         return T_Ident;
     }
 }
+

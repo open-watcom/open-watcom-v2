@@ -32,8 +32,10 @@
 
 #ifndef __CHBFFILE_H__
 
+#ifdef __WATCOMC__
 // disable "integral value may be truncated" warning
 #pragma warning 389 9
+#endif
 
 #include <wstd.h>
 #include "chfile.h"

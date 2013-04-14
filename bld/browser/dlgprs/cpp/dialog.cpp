@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <wcvector.h>
 #include <stdio.h>      // printf debugging
 
 #include "dialog.h"
@@ -44,23 +43,23 @@ Dialog::Dialog( const char * name, Rect rect )
                 , _fontName( NULL )
 //--------------------------------------------
 {
-    _rectangles = new WCValOrderedVector<Rect>;
-    _controls = new WCPtrSkipList<Control>;
+    _rectangles = new std::vector<Rect>;
+    _controls = new std::vector<Control>;
 }
 
 Dialog::~Dialog()
 //---------------
 {
     delete _rectangles;
-    _controls->clearAndDestroy();
+    _controls->clear();
     delete _controls;
 }
 
 int Dialog::addRect( const Rect & r )
 //-----------------------------------
 {
-    _rectangles->append( r );
-    return( _rectangles->entries() - 1 );
+    _rectangles->push_back( r );
+    return( _rectangles->size() - 1 );
 }
 
 void Dialog::setCaption( const char * text )
@@ -86,9 +85,7 @@ void Dialog::addControl( const char * text, const char * id, const char *, long,
 //-----------------------------------------------------------------------------------------
 {
     Rect &       r( (*_rectangles)[ rect ] );
-    Control * ctrl;
 
-    ctrl = new Control( text, id, r );
-    _controls->insert( ctrl );
+    _controls->push_back( Control( text, id, r ) );
 }
 

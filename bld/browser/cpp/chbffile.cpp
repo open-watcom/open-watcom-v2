@@ -41,7 +41,7 @@
 #define BUFFERSIZE  ( 0x1 << OFFSET_SHIFT )     // 4K
 #define BUFFMASK    ( BUFFERSIZE - 1 )
 
-static MemoryPool CheckedBufferedFile::_bufferPool( BUFFERSIZE, "CheckedBufferedFile", 1 );
+MemoryPool CheckedBufferedFile::_bufferPool( BUFFERSIZE, "CheckedBufferedFile", 1 );
 
 inline int BuffOffset( int off ) {
     return( (int)(off & BUFFMASK) );
@@ -260,3 +260,4 @@ void CheckedBufferedFile::flushBuffer()
     _buffOffset = 0;
     _startOffset = _currOffset;
 }
+

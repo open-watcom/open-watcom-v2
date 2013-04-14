@@ -33,9 +33,8 @@
 #include <assert.h>
 #include <string.h>
 #include <errno.h>
-#include <wcvector.h>
 #include <stdio.h>      // need for seek-whence defines
-#include <string.hpp>
+#include <algorithm>
 
 #include "chfile.h"
 #include "wbrdefs.h"
@@ -76,8 +75,9 @@ FileExcept::~FileExcept()
 // initialized, but to avoid including <wcvector.h> in "chfile.h", the
 // class only stores a pointer to the static instance.
 
-static WCPtrOrderedVector<CheckedFile> OpenFiles;
-static WCPtrOrderedVector<CheckedFile> * CheckedFile::_openFiles = &OpenFiles;
+static std::vector<CheckedFile *> OpenFiles;
+
+std::vector<CheckedFile *> *CheckedFile::_openFiles = &OpenFiles;
 
 CheckedFile::CheckedFile( const char * fileName )
                 : _openAccess( 0 )
@@ -122,6 +122,23 @@ void CheckedFile::setFileName( const char * fileName )
     memcpy( _fileName, fileName, len );
 }
 
+void CheckedFile::removeOpenFile( CheckedFile *ent )
+//---------------------------------------------------
+{
+    std::vector<CheckedFile *>::iterator it;
+
+    it = std::find( _openFiles->begin(), _openFiles->end(), ent );
+    if( it != _openFiles->end() ) {
+        _openFiles->erase( it );
+    }
+}
+
+void CheckedFile::addOpenFile( CheckedFile *ent )
+//------------------------------------------------
+{
+    _openFiles->push_back( ent );
+}
+
 
 void CheckedFile::open( int access, int permission )
 //--------------------------------------------------
@@ -132,21 +149,23 @@ void CheckedFile::open( int access, int permission )
         _openAccess = access;
         _openPermission = permission;
 
-        while( _openFiles->entries() >= MaxOpenReadFiles ) {
-            closeIt = _openFiles->removeLast();
+        while( _openFiles->size() >= MaxOpenReadFiles ) {
+            closeIt = _openFiles->back();
             closeIt->privClose();
+            removeOpenFile( closeIt );
         }
 
         _handle = ::open( _fileName, _openAccess, _openPermission );
 
         while( _handle == -1 && errno == EMFILE ) {
-            if( _openFiles->entries() == 0 ) {
+            if( _openFiles->size() == 0 ) {
                 FileExcept oops( FileExcept::Open, errno, _fileName );
                 throw( oops );
             }
 
-            closeIt = _openFiles->removeLast();
+            closeIt = _openFiles->back();
             closeIt->privClose();
+            removeOpenFile( closeIt );
 
             _handle = ::open( _fileName, _openAccess, _openPermission );
         }
@@ -160,7 +179,7 @@ void CheckedFile::open( int access, int permission )
         _logOpen = TRUE;
         _currOffset = 0;
         if( !( _openAccess & O_WRONLY ) ) {
-            _openFiles->append( this );
+            addOpenFile( this );
         }
     }
 }
@@ -205,7 +224,7 @@ void CheckedFile::privClose()
         assert( retVal == 0 );
 
         if( _openAccess & O_RDONLY ) {
-            _openFiles->remove( this );
+            removeOpenFile( this );
         }
     }
 
@@ -253,7 +272,7 @@ void CheckedFile::write( const void * buffer, int len )
     _currOffset += numWritten;
 }
 
-int CheckedFile::readNString( String & str )
+int CheckedFile::readNString( std::string & str )
 //------------------------------------------
 // read in a string in the form <uint_16>{<byte>}*
 {
@@ -278,7 +297,7 @@ int CheckedFile::readNString( String & str )
     return strLen;
 }
 
-int CheckedFile::writeNString( String & str )
+int CheckedFile::writeNString( std::string & str )
 //-------------------------------------------
 // write out a string in the form <uint_16>{<byte>}*
 {
@@ -286,7 +305,7 @@ int CheckedFile::writeNString( String & str )
 
     strLen = (uint_16) str.length();
     write( &strLen, sizeof( uint_16 ) );
-    write( (const char *) str, strLen );
+    write( str.c_str(), strLen );
 
     return strLen;
 }
@@ -391,4 +410,5 @@ off_t CheckedFile::st_size()
 
     return buf.st_size;
 }
+
 

@@ -4,8 +4,10 @@
     
     #include "dialog.h"
     #include "styles.h"
-    
+
+#ifdef __WATCOMC__    
     #pragma warning 17 5	// shut off the unreferenced goto warning
+#endif
 
     #define YYPARSER DialogParser
     

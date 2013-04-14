@@ -3,8 +3,10 @@
     #include <assert.h>
     
     #include "bind.h"
-    
+
+#ifdef __WATCOMC__    
     #pragma warning 17 5	// shut off the unreferenced goto warning
+#endif
     
     extern Binding *	CurrBinding;
     

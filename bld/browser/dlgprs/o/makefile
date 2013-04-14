@@ -17,14 +17,16 @@ dlgprs_autodepends=.AUTODEPEND
 !include deftarg.mif
 !include defrule.mif
 
+.cpp: .;../cpp;$(browse_dir)/cpp
+
 scan_files = &
 bind.obj &
 dialog.obj &
 main.obj &
 scanner.obj &
 styles.obj &
-prsbnd_c.obj &
-prsdlg_c.obj
+prsbnd.obj &
+prsdlg.obj
 
 browse_files = &
 chfile.obj  &
@@ -36,33 +38,39 @@ c_objs = $+$(scan_files) $(browse_files)$-
 lnk = dlgprs.lnk
 
 extra_c_flags=-xs
+
 extra_l_flags=op map
 
-#Note that this project includes windows.h on every platform
-inc_dirs = -I"$(browse_dir)/h" -I"../h" $(inc_dirs_sys_win)
+#Note that this project need to include windows.h for styles.cpp on every platform
+extra_c_flags_styles_dos   = $(inc_dirs_sys_win)
+extra_c_flags_styles_os2   = $(inc_dirs_sys_win)
+extra_c_flags_styles_linux = $(inc_dirs_sys_win)
+!ifdef extra_c_flags_styles_$(host_os)
+extra_c_flags_styles = $(extra_c_flags_styles_$(host_os))
+!endif
 
-dlgprs.exe : prsdlg.gh prsbnd.gh $(c_objs) $(browse_objs)
+inc_dirs = -I. -I"../h" -I"$(browse_dir)/h"
+
+dlgprs.exe : prsdlg.gh prsbnd.gh $(c_objs)
+!ifndef __WATCOM__
+    $(cl) $(clflags) $(c_objs) $(ldflags)
+!else
     $(linker) $(lflags) name $^@ file {$(c_objs)}
+!endif
 
-prsdlg.gh prsdlg_c.gh : ../y/prsdlg.y ../cpp/yydriver.cpp
+prsdlg.gh prsdlg.gc : ../y/prsdlg.y ../cpp/yydriver.cpp
     $(yacc) -b $[@ $]@ >$(nulldevice)
     @rm -f prsdlg.gh
     @cp ytab.h prsdlg.gh >$(nulldevice)
     @rm -f ytab.h
-    @rm -f prsdlg_c.gh
-    @cp ytab.c prsdlg_c.gh >$(nulldevice)
+    @sed -e "s/^static //" ytab.c >prsdlg.cpp
     @rm -f ytab.c
 
-prsbnd.gh prsbnd_c.gh : ../y/prsbnd.y ../cpp/yydriver.cpp
+prsbnd.gh prsbnd.gc : ../y/prsbnd.y ../cpp/yydriver.cpp
     $(yacc) -b $[@ $]@ >$(nulldevice)
     @rm -f prsbnd.gh
     @cp ytab.h prsbnd.gh >$(nulldevice)
     @rm -f ytab.h
-    @rm -f prsbnd_c.gh
-    @cp ytab.c prsbnd_c.gh >$(nulldevice)
+    @sed -e "s/^static //" ytab.c >prsbnd.cpp
     @rm -f ytab.c
 
-.cpp: ../cpp;$(browse_dir)/cpp
-
-.gh.obj: $(dlgprs_autodepends)
-    $(cxx) $(cflags) $(inc_path) $[@

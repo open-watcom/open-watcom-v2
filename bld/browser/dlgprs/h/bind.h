@@ -32,10 +32,13 @@
 
 #ifndef __BIND_H__
 
+#ifdef __WATCOMC__
 // ignore "temporary object used to initialize non-constant reference" warning
 #pragma warning 665 9
+#endif
 
 #include <wstd.h>
+#include <vector>
 
 #define YYPARSER BindingParser
 #include "yydriver.h"
@@ -52,9 +55,6 @@ enum RectCoords {
 class Dialog;
 class CheckedBufferedFile;
 
-template <class Type> class WCValOrderedVector;
-template <class Type> class WCPtrOrderedVector;
-
 class Binding {
 public:
                                         Binding( const char * name );
@@ -69,10 +69,11 @@ private:
             void                        bindHeader( const char * header );
             void                        bindSource( Dialog * dlg, const char * cpp, const char * header );
 
-            const char *                _name;
-            WCValOrderedVector<Rect> *  _rectangles;
-            WCPtrOrderedVector<Control>*_controls;
+            const char                  *_name;
+            std::vector<Rect>           *_rectangles;
+            std::vector<Control>        *_controls;
 };
 
 #define __BIND_H__
 #endif
+

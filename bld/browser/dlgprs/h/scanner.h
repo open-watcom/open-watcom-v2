@@ -33,11 +33,10 @@
 #ifndef __SCANNER_H__
 
 #include <wstd.h>
-
+#include <vector>
 #include "scancm.h"
 
 class CheckedBufferedFile;
-template <class Type> class WCPtrOrderedVector;
 
 class Scanner {
 public:
@@ -69,9 +68,9 @@ private:
 
             /* ------- data ----------- */
 
-            CheckedBufferedFile *       _file;
-            WCPtrOrderedVector<char> *  _identifiers;
-            WCPtrOrderedVector<char> *  _strings;
+            CheckedBufferedFile         *_file;
+            std::vector<char *>         *_identifiers;
+            std::vector<char *>         *_strings;
 
             int                         _current;       // this character
 
@@ -80,3 +79,4 @@ private:
 
 #define __SCANNER_H__
 #endif
+

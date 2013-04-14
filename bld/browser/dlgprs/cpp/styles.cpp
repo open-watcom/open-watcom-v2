@@ -34,6 +34,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+// Note that this file needs to include windows.h on every platforms
 #include <windows.h>
 
 #include "styles.h"

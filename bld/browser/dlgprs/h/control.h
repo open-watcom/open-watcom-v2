@@ -40,6 +40,10 @@ public:
                                                 : _text( text )
                                                 , _id( id )
                                                 , _rect( r ) {}
+                                Control::Control( const Control & o )
+                                                : _text( o._text )
+                                                , _id( o._id )
+                                                , _rect( o._rect ) {}
                                 ~Control(){}
 
     bool                        operator <( const Control & o ) const {
@@ -47,6 +51,13 @@ public:
                                 }
     bool                        operator ==( const Control & o ) const {
                                     return( strcmp( _id, o._id ) == 0 );
+                                }
+
+    Control &                   operator = ( const Control & o ) {
+                                                _text = o._text;
+                                                _id = o._id;
+                                                _rect = o._rect;
+                                    return *this;
                                 }
 
     const char *                getText() const { return _text; }
@@ -61,3 +72,4 @@ private:
 
 #define __CONTROL_H__
 #endif
+

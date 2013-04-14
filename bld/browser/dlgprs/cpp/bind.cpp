@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <wcvector.h>
+#include <algorithm>
 #include <stdio.h>      // printf debugging
 #include <stdlib.h>
 #include <stdarg.h>
@@ -44,8 +44,8 @@ Binding::Binding( const char * name )
             : _name( name )
 //-----------------------------------
 {
-    _rectangles = new WCValOrderedVector<Rect>;
-    _controls = new WCPtrOrderedVector<Control>;
+    _rectangles = new std::vector<Rect>;
+    _controls = new std::vector<Control>;
 }
 
 Binding::~Binding()
@@ -54,25 +54,23 @@ Binding::~Binding()
     _rectangles->clear();
     delete _rectangles;
 
-    _controls->clearAndDestroy();
+    _controls->clear();
     delete _controls;
 }
 
 int Binding::addAbsRelRect( const Rect & r )
 //------------------------------------------
 {
-    _rectangles->append( r );
-    return( _rectangles->entries() - 1 );
+    _rectangles->push_back( r );
+    return( _rectangles->size() - 1 );
 }
 
 void Binding::addControl( const char * text, const char * id, int absrelrect )
 //----------------------------------------------------------------------------
 {
     Rect r( (*_rectangles)[ absrelrect ] );
-    Control * ctrl;
 
-    ctrl = new Control( text, id, r );
-    _controls->insert( ctrl );
+    _controls->push_back( Control( text, id, r ) );
 }
 
 static int cprintf( CheckedBufferedFile & file, const char * fmt, ... )
@@ -109,7 +107,6 @@ void Binding::bindHeader( const char * hdr )
 //------------------------------------------
 {
     CheckedBufferedFile header( hdr );
-    Control *           ctrl;
     int                 i;
 
     header.open( CheckedFile::WriteText | O_CREAT, CheckedFile::UserReadWrite );
@@ -131,9 +128,8 @@ void Binding::bindHeader( const char * hdr )
     cprintf( header, "        WWindow *     __window;\n" );
     cprintf( header, "        ControlRect   __frame;\n\n" );
 
-    for( i = 0; i < _controls->entries(); i += 1 ) {
-        ctrl = (*_controls)[ i ];
-        cprintf( header, "        ControlRect   %s;\n", ctrl->getText() );
+    for( i = 0; i < _controls->size(); i += 1 ) {
+        cprintf( header, "        ControlRect   %s;\n", (*_controls)[ i ].getText() );
     }
 
     cprintf( header, "};\n" );
@@ -175,13 +171,13 @@ void Binding::bindSource( Dialog * dlg, const char * cpp, const char * hdr )
 //--------------------------------------------------------------------------
 {
     CheckedBufferedFile source( cpp );
-    Control *           dlgControl;
-    Control *           ctrl;
+    Control             *dlgControl;
+    Control             *ctrl;
     int                 i;
     int                 len;
     int                 trl;
     static char *       dashes = "//------------------------------------------------------------------------------------------";
-
+    std::vector<Control>::iterator it;
 
     source.open( CheckedFile::WriteText | O_CREAT, CheckedFile::UserReadWrite );
 
@@ -202,11 +198,11 @@ void Binding::bindSource( Dialog * dlg, const char * cpp, const char * hdr )
     trl = cprintf( source, "    , __frame( WRect(0,0,0,0), \"%s\" )\n", dlg->_caption );
     len = (trl > len) ? trl : len;
 
-    for( i = 0; i < _controls->entries(); i += 1 ) {
-        ctrl = (*_controls)[ i ];
-        dlgControl = dlg->_controls->find( ctrl );
-
-        if( dlgControl ) {
+    for( i = 0; i < _controls->size(); i += 1 ) {
+        ctrl = &((*_controls)[ i ]);
+        it = std::find( dlg->_controls->begin(), dlg->_controls->end(), *ctrl );
+        if( it != dlg->_controls->end() ) {
+            dlgControl = &(*it);
             Rect r( dlgControl->getRect() );
 
             trl = cprintf( source, "    , %s( WRect(0,0,0,0), \"%s\" )\n",
@@ -236,11 +232,11 @@ void Binding::bindSource( Dialog * dlg, const char * cpp, const char * hdr )
     cprintf( source, "    __frame.r.h( __frame.r.h() + 2 * WSystemMetrics::dialogFrameHeight() \n" );
     cprintf( source, "                + WSystemMetrics::captionSize() );\n" );
 
-    for( i = 0; i < _controls->entries(); i += 1 ) {
-        ctrl = (*_controls)[ i ];
-        dlgControl = dlg->_controls->find( ctrl );
-
-        if( dlgControl ) {
+    for( i = 0; i < _controls->size(); i += 1 ) {
+        ctrl = &((*_controls)[ i ]);
+        it = std::find( dlg->_controls->begin(), dlg->_controls->end(), *ctrl );
+        if( it != dlg->_controls->end() ) {
+            dlgControl = &(*it);
             Rect r( dlgControl->getRect() );
             cprintf( source, "    %s.r = scl.scale( ", ctrl->getText() );
             WriteAbsRel( source, dlg->_rect, r, ctrl->getRect() );
@@ -262,3 +258,4 @@ void Binding::bind( Dialog * dlg, const char * hdr, const char * cpp )
     bindHeader( hdr );
     bindSource( dlg, cpp, hdr );
 }
+
