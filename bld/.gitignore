@@ -35,6 +35,8 @@
 /awk/*/proctab.c
 /awk/*/ytab.h
 #
+/browser/dlgprs/o/*.cpp
+#
 /build/axpnt/*
 !/build/axpnt/readme
 !/build/axpnt/wlink.lnk
