@@ -31,6 +31,7 @@
 
 
 #include <stdio.h>      // printf debugging
+#include <algorithm>
 
 #include "dialog.h"
 #include "control.h"
@@ -81,11 +82,25 @@ void Dialog::setStyle( long style )
     _style = style;
 }
 
-void Dialog::addControl( const char * text, const char * id, const char *, long, int rect )
-//-----------------------------------------------------------------------------------------
+void Dialog::addControl( const char * text, const char * id, const char *cls, long style, int rect )
+//--------------------------------------------------------------------------------------------------
 {
     Rect &       r( (*_rectangles)[ rect ] );
 
+    cls = cls;
+    style = style;
     _controls->push_back( Control( text, id, r ) );
 }
 
+Control *Dialog::findControl( Control & ctrl )
+//--------------------------------------------
+{
+    std::vector<Control>::iterator it;
+
+    it = std::find( _controls->begin(), _controls->end(), ctrl );
+    if( it == _controls->end() ) {
+        return( NULL );
+    } else {
+        return( &(*it) );
+    }
+}

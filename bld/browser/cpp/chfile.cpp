@@ -62,14 +62,12 @@ FileExcept::FileExcept( Action act, int error, const char * fn,
     memcpy( _message, storeMsg, len + 1 );
 }
 
-#if 0   // avoid compiler error 28
 FileExcept::~FileExcept()
 //-----------------------
 {
     delete [] _fileName;
     delete [] _message;
 }
-#endif
 
 // OpenFiles is a list of all of the opened CheckedFiles.  It is statically
 // initialized, but to avoid including <wcvector.h> in "chfile.h", the

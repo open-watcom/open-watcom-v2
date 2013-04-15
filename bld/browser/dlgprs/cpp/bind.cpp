@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include <algorithm>
 #include <stdio.h>      // printf debugging
 #include <stdlib.h>
 #include <stdarg.h>
 #include <time.h>
+#include <algorithm>
 
 #include "chbffile.h"
 #include "bind.h"
@@ -68,9 +68,7 @@ int Binding::addAbsRelRect( const Rect & r )
 void Binding::addControl( const char * text, const char * id, int absrelrect )
 //----------------------------------------------------------------------------
 {
-    Rect r( (*_rectangles)[ absrelrect ] );
-
-    _controls->push_back( Control( text, id, r ) );
+    _controls->push_back( Control( text, id, (*_rectangles)[ absrelrect ] ) );
 }
 
 static int cprintf( CheckedBufferedFile & file, const char * fmt, ... )
@@ -177,7 +175,6 @@ void Binding::bindSource( Dialog * dlg, const char * cpp, const char * hdr )
     int                 len;
     int                 trl;
     static char *       dashes = "//------------------------------------------------------------------------------------------";
-    std::vector<Control>::iterator it;
 
     source.open( CheckedFile::WriteText | O_CREAT, CheckedFile::UserReadWrite );
 
@@ -195,20 +192,15 @@ void Binding::bindSource( Dialog * dlg, const char * cpp, const char * hdr )
     trl = cprintf( source, "    : __window( prnt )\n" );
     len = (trl > len) ? trl : len;
 
-    trl = cprintf( source, "    , __frame( WRect(0,0,0,0), \"%s\" )\n", dlg->_caption );
+    trl = cprintf( source, "    , __frame( WRect(0,0,0,0), \"%s\" )\n", dlg->getCaption() );
     len = (trl > len) ? trl : len;
 
     for( i = 0; i < _controls->size(); i += 1 ) {
         ctrl = &((*_controls)[ i ]);
-        it = std::find( dlg->_controls->begin(), dlg->_controls->end(), *ctrl );
-        if( it != dlg->_controls->end() ) {
-            dlgControl = &(*it);
-            Rect r( dlgControl->getRect() );
-
-            trl = cprintf( source, "    , %s( WRect(0,0,0,0), \"%s\" )\n",
-                            ctrl->getText(), dlgControl->getText() );
+        dlgControl = dlg->findControl( *ctrl );
+        if( dlgControl ) {
+            trl = cprintf( source, "    , %s( WRect(0,0,0,0), \"%s\" )\n", ctrl->getText(), dlgControl->getText() );
             len = (trl > len) ? trl : len;
-
         } else {
             printf( "Error: couldn't find dialog control for %s\n", ctrl->getText() );
             exit( EXIT_FAILURE );
@@ -226,20 +218,19 @@ void Binding::bindSource( Dialog * dlg, const char * cpp, const char * hdr )
     cprintf( source, "{\n" );
     cprintf( source, "    DialogScaler scl( __window );\n\n" );
 
-    cprintf( source, "    __frame.r = scl.scale( WRect( %d, %d, %d, %d ) );\n",
-            dlg->_rect._x, dlg->_rect._y, dlg->_rect._w, dlg->_rect._h );
+    Rect rd( dlg->getRect() );
+    cprintf( source, "    __frame.r = scl.scale( WRect( %d, %d, %d, %d ) );\n", rd._x, rd._y, rd._w, rd._h );
     cprintf( source, "    __frame.r.w( __frame.r.w() + 2 * WSystemMetrics::dialogFrameWidth() );\n" );
     cprintf( source, "    __frame.r.h( __frame.r.h() + 2 * WSystemMetrics::dialogFrameHeight() \n" );
     cprintf( source, "                + WSystemMetrics::captionSize() );\n" );
 
     for( i = 0; i < _controls->size(); i += 1 ) {
         ctrl = &((*_controls)[ i ]);
-        it = std::find( dlg->_controls->begin(), dlg->_controls->end(), *ctrl );
-        if( it != dlg->_controls->end() ) {
-            dlgControl = &(*it);
+        dlgControl = dlg->findControl( *ctrl );
+        if( dlgControl ) {
             Rect r( dlgControl->getRect() );
             cprintf( source, "    %s.r = scl.scale( ", ctrl->getText() );
-            WriteAbsRel( source, dlg->_rect, r, ctrl->getRect() );
+            WriteAbsRel( source, dlg->getRect(), r, ctrl->getRect() );
             cprintf( source, " );\n" );
         } else {
             printf( "Error: couldn't find dialog control for %s\n", ctrl->getText() );

@@ -36,14 +36,18 @@
 
 class Control {
 public:
-                                Control::Control( const char * text, const char * id, Rect& r )
+                                Control( const char * text, const char * id, Rect& r )
                                                 : _text( text )
                                                 , _id( id )
                                                 , _rect( r ) {}
-                                Control::Control( const Control & o )
+                                Control( const Control & o )
                                                 : _text( o._text )
                                                 , _id( o._id )
                                                 , _rect( o._rect ) {}
+                                Control()
+                                                : _text( NULL )
+                                                , _id( NULL )
+                                                , _rect( Rect( 0, 0, 0, 0 ) ) {}
                                 ~Control(){}
 
     bool                        operator <( const Control & o ) const {
@@ -53,7 +57,7 @@ public:
                                     return( strcmp( _id, o._id ) == 0 );
                                 }
 
-    Control &                   operator = ( const Control & o ) {
+    Control &                   operator =( const Control & o ) {
                                                 _text = o._text;
                                                 _id = o._id;
                                                 _rect = o._rect;

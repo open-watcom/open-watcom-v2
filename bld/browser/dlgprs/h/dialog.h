@@ -49,8 +49,6 @@
 
 class Dialog {
 
-friend class Binding;
-
 public:
                                         Dialog( const char * name, Rect rect );
                                         ~Dialog();
@@ -60,6 +58,9 @@ public:
             void                        setFont( int ptsize, const char * text );
             void                        setStyle( long style );
             void                        addControl( const char * text, const char * id, const char * cls, long style, int rect );
+            Control *                   findControl( Control & ctrl );
+            Rect &                      getRect() { return( _rect ); };
+            const char *                getCaption() { return( _caption ); };
 
 private:
             const char *                _name;

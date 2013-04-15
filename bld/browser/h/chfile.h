@@ -52,11 +52,8 @@ public:
         Stat,
     };
 
-                    FileExcept( Action act, int error, const char * fn,
-                                const char * msg = NULL );
-                    #if 0   // avoid compiler error 28
+                    FileExcept( Action act, int error, const char * fn, const char * msg = NULL );
                     ~FileExcept();
-                    #endif
 
     Action          _action;
     int             _error;     // errno
@@ -99,7 +96,7 @@ public:
             int     readNString( std::string & );
             int     writeNString( std::string & );
 
-            bool    operator== ( const CheckedFile& other ) const {  // for WCvector
+            bool    operator== ( const CheckedFile& other ) const {  // for vector
                         return( this == &other );
                     }
 
