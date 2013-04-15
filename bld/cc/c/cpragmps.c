@@ -58,21 +58,26 @@ void AsmWarning( char *msg )
 }
 
 
-uint_32 AsmQuerySPOffsetOf( char *name )
-/**************************************/
+void *AsmQuerySymbol( char *name )
+/********************************/
+{
+    return( SymLook( CalcHash( name, strlen( name ) ), name ) );
+}
+
+uint_32 AsmQuerySPOffsetOf( void *handle )
+/****************************************/
 {
 // CC provides this
     return( 0 );
 }
 
 
-enum sym_state AsmQueryExternal( char *name )
-/*******************************************/
+enum sym_state AsmQueryState( void *handle )
+/******************************************/
 {
-    SYM_HANDLE sym_handle;
+    SYM_HANDLE sym_handle = (SYM_HANDLE)handle;
     auto SYM_ENTRY sym;
 
-    sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
     if( sym_handle == 0 )
         return( SYM_UNDEFINED );
     SymGet( &sym, sym_handle );

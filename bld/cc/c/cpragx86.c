@@ -277,13 +277,18 @@ local fix_words FixupKeyword( void )
 }
 
 
-enum sym_state AsmQueryExternal( char *name )
-/*******************************************/
+void *AsmQuerySymbol( char *name )
+/********************************/
 {
-    SYM_HANDLE  sym_handle;
+    return( SymLook( CalcHash( name, strlen( name ) ), name ) );
+}
+
+enum sym_state AsmQueryState( void *handle )
+/******************************************/
+{
+    SYM_HANDLE  sym_handle = (SYM_HANDLE)handle;
     SYM_ENTRY   sym;
 
-    sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
     if( sym_handle == 0 )
         return( SYM_UNDEFINED );
     SymGet( &sym, sym_handle );
@@ -378,14 +383,14 @@ local int AsmType( TYPEPTR typ, type_modifiers flags )
     }
 }
 
-enum sym_type AsmQueryType( char *name )
-/**************************************/
+enum sym_type AsmQueryType( void *handle )
+/****************************************/
 {
-    SYM_HANDLE  sym_handle;
+    SYM_HANDLE  sym_handle = (SYM_HANDLE)handle;
     SYM_ENTRY   sym;
 
-    sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
-    if( sym_handle == 0 ) return( SYM_INT1 );
+    if( sym_handle == 0 )
+        return( SYM_INT1 );
     SymGet( &sym, sym_handle );
     return( AsmType( sym.sym_type, sym.attrib ) );
 }
@@ -538,10 +543,10 @@ static int InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code 
                 }
                 if( skip != 0 ) {
                     *dst++ = cg_fix;
-                    *((CGSYM_HANDLE *)dst) = sym_handle;
-                    dst += sizeof( CGSYM_HANDLE );
-                    *((unsigned long *)dst) = fix->offset;
-                    dst += sizeof( long );
+                    *(void **)dst = (void *)sym_handle;
+                    dst += sizeof( void * );
+                    *((unsigned_32 *)dst) = fix->offset;
+                    dst += sizeof( unsigned_32 );
                     src += skip;
                 }
 #if _CPU == 8086

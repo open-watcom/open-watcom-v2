@@ -167,7 +167,7 @@ boolean AsmSysInsertFixups( VBUF *code )
     uses_auto = FALSE;
     for( curr = AsmRelocs; curr != NULL; curr = next ) {
         next = curr->next;
-        sym = ScopeASMUseSymbol( curr->name, &uses_auto );
+        sym = ScopeASMUseSymbol( NameCreateNoLen( curr->name ), &uses_auto );
         if( sym != NULL ) {
             new_reloc = CMemAlloc( sizeof( *new_reloc ) );
             new_reloc->off = curr->offset;
@@ -195,10 +195,10 @@ static void AuxCopy(           // COPY AUX STRUCTURE
     to->code = AuxCodeDup( from->code );
 }
 
-AUX_INFO *AsmSysCreateAux( char *name )
-/*************************************/
+AUX_INFO *AsmSysCreateAux( NAME name )
+/************************************/
 {
-    CreateAux( name );
+    CreateAux( NameStr( name ) );
     AuxCopy( CurrInfo, &WatcallInfo );
     CurrInfo->use = 1;
     CurrEntry->info = CurrInfo;
@@ -235,14 +235,18 @@ void AsmSysDone( void )
     PragEnding( FALSE );
 }
 
-enum sym_state AsmQueryExternal( char *name )
-/*******************************************/
+void *AsmQuerySymbol( char *name )
 {
-    SYMBOL sym;
+    return( ScopeASMLookup( NameCreateNoLen( name ) ) );
+}
+
+enum sym_state AsmQueryState( void *handle )
+/******************************************/
+{
+    SYMBOL sym = handle;
     enum sym_state state;
 
     state = SYM_UNDEFINED;
-    sym = ScopeASMLookup( name );
     if( sym != NULL ) {
         if( SymIsAutomatic( sym ) ) {
             state = SYM_STACK;
@@ -256,7 +260,6 @@ enum sym_state AsmQueryExternal( char *name )
 void AsmSysPCHWriteCode( AUX_INFO *info )
 /***************************************/
 {
-    SYMBOL sym;
     byte_seq_reloc *reloc;
     byte_seq *code;
     unsigned code_size;
@@ -271,19 +274,17 @@ void AsmSysPCHWriteCode( AUX_INFO *info )
     PCHWriteUInt( code_size );
     PCHWrite( code, code_size );
     for( reloc = code->relocs; reloc != NULL; reloc = reloc->next ) {
-        sym = SymbolGetIndex( reloc->sym );
-        PCHWrite( &sym, sizeof( sym ) );
-        PCHWrite( &reloc->off, sizeof( reloc->off ) );
-        PCHWrite( &reloc->type, sizeof( reloc->type ) );
+        PCHWriteCVIndex( (cv_index)SymbolGetIndex( reloc->sym ) );
+        PCHWriteVar( reloc->off );
+        PCHWriteVar( reloc->type );
     }
-    sym = SymbolGetIndex( NULL );
-    PCHWrite( &sym, sizeof( sym ) );
+    PCHWriteCVIndexTerm();
 }
 
 void AsmSysPCHReadCode( AUX_INFO *info )
 /**************************************/
 {
-    cv_index si;
+    SYMBOL sym;
     byte_seq_reloc *reloc;
     byte_seq_reloc **head;
     byte_seq *code;
@@ -299,16 +300,14 @@ void AsmSysPCHReadCode( AUX_INFO *info )
     PCHRead( code, code_size );
     code->relocs = NULL;
     head = &(code->relocs);
-    for(;;) {
-        PCHLocateCVIndex( si );
-        if( si == CARVE_NULL_INDEX ) break;
+    for( ; (sym = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() )) != NULL; ) {
         reloc = CMemAlloc( sizeof( *reloc ) );
         reloc->next = NULL;
         *head = reloc;
         head = &(reloc->next);
-        reloc->sym = SymbolMapIndex( (SYMBOL) si );
-        PCHRead( &reloc->off, sizeof( reloc->off ) );
-        PCHRead( &reloc->type, sizeof( reloc->type ) );
+        reloc->sym = sym;
+        PCHReadVar( reloc->off );
+        PCHReadVar( reloc->type );
     }
 }
 

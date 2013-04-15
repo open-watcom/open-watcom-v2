@@ -104,6 +104,9 @@ enum prefix_reg {
 };
 
 #if !defined( _STANDALONE_ )
+
+extern void             *AsmQuerySymbol( char *name );
+
 /*
    The following function is supplied by the user of the mini-assembler.
    It returns either:
@@ -113,14 +116,14 @@ enum prefix_reg {
         SYM_STACK       - the symbol is an auto symbol in the user's
                                 symbol table
 */
-extern enum sym_state           AsmQueryExternal( char *name );
+extern enum sym_state   AsmQueryState( void *handle );
 
 /*
    The following function is supplied by the user of the mini-assembler.
    It returns the type of the symbol via one of the 'enum sym_type'
    constants.
 */
-extern enum sym_type            AsmQueryType( char *name );
+extern enum sym_type    AsmQueryType( void *handle );
 
 #endif
 

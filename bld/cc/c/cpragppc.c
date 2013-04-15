@@ -51,8 +51,14 @@ void AsmWarning( char *msg )
     CWarn2p( WARN_ASSEMBLER_WARNING, ERR_ASSEMBLER_WARNING, msg );
 }
 
-uint_32 AsmQuerySPOffsetOf( char *name )
-/**************************************/
+void *AsmQuerySymbol( char *name )
+/********************************/
+{
+    return( SymLook( CalcHash( name, strlen( name ) ), name ) );
+}
+
+uint_32 AsmQuerySPOffsetOf( void *handle )
+/****************************************/
 {
 // CC provides this
     return( 0 );
@@ -93,7 +99,7 @@ static void CopyAuxInfo( void )
     if( CurrEntry == NULL ) {
         // Redefining a built-in calling convention
     } else {
-        CurrInfo = (struct aux_info *)CMemAlloc( sizeof( struct aux_info ) );
+        CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
         *CurrInfo = *CurrAlias;
     }
     if( AuxInfo.code != NULL ) {
@@ -147,13 +153,12 @@ static int GetAliasInfo( void )
     }
 }
 
-enum sym_state AsmQueryExternal( char *name )
-/*******************************************/
+enum sym_state AsmQueryState( void *handle )
+/************************************************/
 {
-    SYM_HANDLE sym_handle;
+    SYM_HANDLE sym_handle = (SYM_HANDLE)handle;
     auto SYM_ENTRY sym;
 
-    sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
     if( sym_handle == 0 )
         return( SYM_UNDEFINED );
     SymGet( &sym, sym_handle );

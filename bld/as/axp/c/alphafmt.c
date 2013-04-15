@@ -435,6 +435,7 @@ static void ITLoadAddress( ins_table *table, instruction *ins, uint_32 *buffer, 
     op_const            val;
     uint_8              s_reg;
 
+    table = table;
     assert( ins->num_operands == 2 );
     assert( table->opcode == OPCODE_LDA );
     op = ins->operands[1];
@@ -459,7 +460,7 @@ static void ITLoadAddress( ins_table *table, instruction *ins, uint_32 *buffer, 
             char        *name;
 
             name = SymName( op->reloc.target.ptr );
-            if( AsmQueryExternal( name ) == SYM_STACK ) {
+            if( AsmQueryState( AsmQuerySymbol( name ) ) == SYM_STACK ) {
                 doAutoVar( reloc, op->reloc.target, buffer, table, ins );
                 return;
             }
@@ -522,7 +523,7 @@ static void ITMemAll( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
         char    *name;
 
         name = SymName( op->reloc.target.ptr );
-        if( AsmQueryExternal( name ) == SYM_STACK ) {
+        if( AsmQueryState( AsmQuerySymbol( name ) ) == SYM_STACK ) {
             doAutoVar( reloc, op->reloc.target, buffer, table, ins );
             return;
         }
@@ -802,6 +803,7 @@ static void ITRet( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
 static void ITMemNone( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
 //**********************************************************************************************
 
+    ins = ins;
     assert( ins->num_operands == 0 );
     reloc = reloc;
     doOpcodeRaRb( buffer, table->opcode, 31, 31, _Mem_Func( table->funccode ) );

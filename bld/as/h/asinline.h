@@ -57,6 +57,8 @@ extern int  AsmLine( char * );  // return 1 if parsed  ok
 extern void AsmFini( void );    // Call after giving all the input and
                                 // before using the AsmCodeBuffer
 
+extern void             *AsmQuerySymbol( char *name );
+
 /*
    The following function is supplied by the user of the mini-assembler.
    It returns either:
@@ -66,7 +68,7 @@ extern void AsmFini( void );    // Call after giving all the input and
         SYM_STACK       - the symbol is an auto symbol in the user's
                                 symbol table
 */
-extern enum sym_state   AsmQueryExternal( char *name );
+extern enum sym_state   AsmQueryState( void *handle );
 
 // This function finds out how far away is the auto variable from $sp
-extern uint_32          AsmQuerySPOffsetOf( char *name );
+extern uint_32          AsmQuerySPOffsetOf( void *handle );

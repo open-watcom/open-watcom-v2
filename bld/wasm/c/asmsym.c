@@ -79,6 +79,10 @@ static unsigned short CvtTable[] = {
 static char *InitAsmSym( struct asm_sym *sym, const char *name )
 /**************************************************************/
 {
+#if !defined( _STANDALONE_ )
+    void    *handle;
+#endif
+
     sym->name = AsmAlloc( strlen( name ) + 1 );
     if( sym->name != NULL ) {
         strcpy( sym->name, name );
@@ -100,11 +104,12 @@ static char *InitAsmSym( struct asm_sym *sym, const char *name )
         sym->mem_type = MT_EMPTY;
 #else
         sym->addr = 0;
-        sym->state = AsmQueryExternal( sym->name );
+        handle = AsmQuerySymbol( sym->name );
+        sym->state = AsmQueryState( handle );
         if( sym->state == SYM_UNDEFINED ) {
             sym->mem_type = MT_EMPTY;
         } else {
-            sym->mem_type = CvtTable[ AsmQueryType( sym->name ) ];
+            sym->mem_type = CvtTable[ AsmQueryType( handle ) ];
         }
 #endif
     }

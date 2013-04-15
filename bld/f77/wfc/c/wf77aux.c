@@ -1099,7 +1099,7 @@ static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
     byte_seq_len    seq_len;
 
     seq_len = src->code->length;
-    new_seq = FMemAlloc( sizeof( byte_seq ) + seq_len );
+    new_seq = FMemAlloc( offsetof( byte_seq, data ) + seq_len );
     memcpy( new_seq->data, src->code->data, seq_len );
     dst->code = new_seq;
     dst->code->length = src->code->length;
@@ -1228,19 +1228,26 @@ static  void            ObjectName( void ) {
 }
 
 
-enum    sym_state       AsmQueryExternal( char *name ) {
-//======================================================
+void                    *AsmQuerySymbol( char *name ) {
+//=====================================================
 
-    name = name;
+    return( name );
+}
+
+
+enum    sym_state       AsmQueryState( void *handle ) {
+//=====================================================
+
+    handle = handle;
     return( SYM_UNDEFINED );
 }
 
 
 #if _INTEL_CPU
-enum    sym_type        AsmQueryType( char *name ) {
-//==================================================
+enum    sym_type        AsmQueryType( void *handle ) {
+//====================================================
 
-    name = name;
+    handle = handle;
     return( SYM_INT1 );
 }
 
@@ -1353,7 +1360,7 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
         i = dst - temp;
         perform_fixups = TRUE;
     }
-    seq = FMemAlloc( sizeof( byte_seq ) + i );
+    seq = FMemAlloc( offsetof( byte_seq, data ) + i );
     seq->relocs = perform_fixups;
     seq->length = i;
     memcpy( &seq->data, buff, i );
@@ -1365,9 +1372,10 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
 
 #elif _CPU == _AXP || _CPU == _PPC
 
-uint_32 AsmQuerySPOffsetOf( char *name ) {
-//========================================
+uint_32 AsmQuerySPOffsetOf( void *handle ) {
+//==========================================
 
+    handle = handle;
     return( 0 );
 }
 
@@ -1393,7 +1401,7 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len len ) {
         lnk = &new->next;
     }
 
-    seq = FMemAlloc( sizeof( byte_seq ) + len );
+    seq = FMemAlloc( offsetof( byte_seq, data ) + len );
     seq->relocs = head;
     seq->length = len;
     memcpy( &seq->data, buff, len );

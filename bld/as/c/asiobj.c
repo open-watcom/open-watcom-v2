@@ -209,7 +209,7 @@ static void resolveRelativeRelocs( void ) {
             }
         } else {
             // See if it's defined outside.
-            state = AsmQueryExternal( curr_reloc->name );
+            state = AsmQueryState( AsmQuerySymbol( curr_reloc->name ) );
             if( state == SYM_UNDEFINED ) {
                 Error( SYMBOL_NOT_DECLARED, curr_reloc->name );
             } else {
@@ -343,7 +343,7 @@ extern bool ObjLabelDefined( sym_handle sym ) {
     if( sym && SymLocationKnown( sym ) ) return( TRUE );
     // See if it's defined outside
     sym_name = SymName( sym );
-    state = AsmQueryExternal( sym_name );
+    state = AsmQueryState( AsmQuerySymbol( sym_name ) );
     if( state != SYM_UNDEFINED ) {
         return( TRUE );
     }
