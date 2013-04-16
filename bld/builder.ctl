@@ -73,6 +73,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/browser/dlgprs/builder.ctl ]
 # Miscellaneous libraries/utilities required during installers build
 [ INCLUDE <OWSRCDIR>/setupgui/ziplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/zlib/builder.ctl ]

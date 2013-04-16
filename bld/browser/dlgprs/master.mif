@@ -1,8 +1,3 @@
-#pmake/20: build os_nt os_os2 os_osi os_win cpu_axp cpu_i86 cpu_386
-
-host_cpu = $(bld_cpu)
-host_os  = $(bld_os)
-
 proj_name = dlgprs
 
 !ifndef dlgprs_autodepends
@@ -39,6 +34,8 @@ lnk = dlgprs.lnk
 
 extra_c_flags=-xs
 
+extra_c_flags_mempool = -I"$(browse_dir)/h"
+
 extra_l_flags=op map
 
 #Note that this project need to include windows.h for styles.cpp on every platform
@@ -49,7 +46,7 @@ extra_c_flags_styles_linux = $(inc_dirs_sys_win)
 extra_c_flags_styles = $(extra_c_flags_styles_$(host_os))
 !endif
 
-inc_dirs = -I. -I"../h" -I"$(browse_dir)/h"
+inc_dirs = -I. -I"../h"
 
 dlgprs.exe : prsdlg.gh prsbnd.gh $(c_objs)
 !ifndef __WATCOM__
@@ -73,4 +70,3 @@ prsbnd.gh prsbnd.gc : ../y/prsbnd.y ../cpp/yydriver.cpp
     @rm -f ytab.h
     @sed -e "s/^static //" ytab.c >prsbnd.cpp
     @rm -f ytab.c
-

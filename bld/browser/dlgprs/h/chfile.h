@@ -32,7 +32,8 @@
 
 #ifndef __CHFILE_H__
 
-#include <string.hpp>
+#include <string>
+#include <vector>
 #include <sys/types.h>
 #include <wstd.h>
 #include "wio.h"
@@ -67,8 +68,6 @@ public:
 //              handles, an open file is closed and open tries again.
 //
 
-template <class Type> class WCPtrOrderedVector;
-
 class CheckedFile {
 public:
     enum Access {
@@ -94,10 +93,10 @@ public:
     virtual long    seek( long offset, int whence );
     virtual long    tell() const;
 
-            int     readNString( String & );
-            int     writeNString( String & );
+            int     readNString( std::string & );
+            int     writeNString( std::string & );
 
-            bool    operator== ( const CheckedFile& other ) const {  // for WCvector
+            bool    operator== ( const CheckedFile& other ) const {  // for vector
                         return( this == &other );
                     }
 
@@ -107,7 +106,6 @@ public:
 
     const   char *  getFileName() const { return _fileName; }
             void    setFileName( const char * fn );
-
 
 protected:
     virtual void    reOpen();
@@ -123,10 +121,15 @@ protected:
             bool    _isOpen;                // true if file physically open
             bool    _logOpen;               // true if logically open (user didn't close)
 
-    static  WCPtrOrderedVector<CheckedFile> *   _openFiles;
+    static  std::vector<CheckedFile *>  *_openFiles;
+
+private:
+            void    addOpenFile( CheckedFile * );
+            void    removeOpenFile( CheckedFile * );
 };
 
 extern char * BadWhenceMessage;
 
 #define __CHFILE_H__
 #endif
+
