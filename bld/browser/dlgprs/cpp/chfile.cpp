@@ -284,7 +284,10 @@ int CheckedFile::readNString( std::string & str )
     read( &strLen, sizeof( uint_16 ) );
 
     while( amtRead < strLen ) {
-        maxRead = min( BufLen, strLen - amtRead );
+        maxRead = strLen - amtRead;
+        if( BufLen < maxRead ) {
+            maxRead = BufLen;
+        }
         read( buffer, maxRead );
         buffer[ maxRead ] = '\0';
         str += buffer;
