@@ -50,7 +50,9 @@
 
 #define _func_name( func ) _xglue( DLL_PREFIX, func )
 
+#ifdef __WATCOMC__
 #pragma off (unreferenced);
+#endif
 
 static char VersionDllProc[] = _xstr( _func_name( version_dll_num ) );
 static char VersionStr[] = "Version Verification: "
@@ -58,17 +60,15 @@ static char VersionStr[] = "Version Verification: "
                             " expected version "
                             _xstr( DLL_VERSION );
 
-extern unsigned _func_name( version_import ) (
-/********************************************/
-    void
-) {
+extern unsigned _func_name( version_import )( void )
+/**************************************************/
+{
     return( DLL_VERSION );
 }
 
-extern unsigned _func_name( version_dll ) (
-/*****************************************/
-    void
-) {
+extern unsigned _func_name( version_dll )( void )
+/***********************************************/
+{
     HANDLE      lib;
     FARPROC     ver_dll_num;
     unsigned    ver;
@@ -76,7 +76,11 @@ extern unsigned _func_name( version_dll ) (
     strupr( VersionDllProc );
 
     lib = LoadLibrary( _xstr( DLL_FILE_NAME ) );
+#if defined( __WINDOWS__ )
     if( lib < (HANDLE)32 ) {
+#else
+    if( lib == NULL ) {
+#endif
         /* couldn't load the dll so the version is 0 */
         ver = 0;
     } else {
@@ -84,7 +88,7 @@ extern unsigned _func_name( version_dll ) (
         if( ver_dll_num == NULL ) {
             ver = 0;
         } else {
-            ver = ((unsigned(*)(void))(*ver_dll_num)) ();
+            ver = ((unsigned(*)(void))(*ver_dll_num))();
         }
         FreeLibrary( lib );
     }
@@ -92,9 +96,8 @@ extern unsigned _func_name( version_dll ) (
     return( ver );
 }
 
-extern int _func_name( version_check ) (
-/**************************************/
-    void
-) {
+extern int _func_name( version_check )( void )
+/********************************************/
+{
     return( _func_name( version_dll )() == _func_name( version_import )() );
 }

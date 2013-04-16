@@ -41,8 +41,6 @@
 #include <windows.h>
 #include "version.h"
 
-#define WINIEXP __export far PASCAL     // use with in-obj export rtns
-
 #define _glue( a, b ) a ## b
 #define _xglue( a, b ) _glue( a, b )
 #define _str(a) # a
@@ -50,16 +48,17 @@
 
 #define _func_name( func ) _xglue( DLL_PREFIX, func )
 
+#ifdef __WATCOMC__
 #pragma off (unreferenced);
+#endif
 
 static char VersionStr[] = "Version Verification: "
                             _xstr( DLL_FILE_NAME )
                             " actual version "
                             _xstr( DLL_VERSION );
 
-unsigned WINIEXP _func_name( version_dll_num ) (
-/**********************************************/
-    void
-) {
+__declspec(dllexport) unsigned WINAPI _func_name( version_dll_num )( void ) 
+/*************************************************************************/
+{
     return( DLL_VERSION );
 }
