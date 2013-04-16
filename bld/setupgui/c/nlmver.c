@@ -34,10 +34,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
 
+#include "wio.h"
 #include "gui.h"
 #include "guiutil.h"
 #include "setup.h"
@@ -45,6 +43,7 @@
 #include "genvbl.h"
 #include "gendlg.h"
 #include "utils.h"
+#include "clibext.h"
 
 #include "nlmver.h"
 
@@ -64,7 +63,7 @@ int ReturnNLMVersionInfoFromFile( char *__pathName, LONG *majorVersion,
     NLMHDR      *nlmHeader;
     BYTE        buffer[READ_SIZE];
 
-    handle = open( __pathName, O_BINARY | O_RDONLY, 0 );
+    handle = open( __pathName, O_BINARY | O_RDONLY );
     if( handle != EFAILURE ) {
         bytes = read( handle, buffer, READ_SIZE );
         close( handle );
@@ -185,7 +184,7 @@ gui_message_return CheckInstallNLM( char *name, vhandle var_handle )
     if( CheckNewer( unpacked_as, name ) ) {
         _makepath( temp, NULL, sysPath, fname, ext );
         if( CheckNewer( unpacked_as, temp ) ) {
-            chmod( name, S_IRWXU | S_IRWXG | S_IRWXO );
+            chmod( name, PMODE_RWX );
             DoCopyFile( unpacked_as, name, FALSE );
             strcpy( temp, fname );
             strcat( temp, "_NLM_installed" );

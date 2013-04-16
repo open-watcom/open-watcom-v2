@@ -43,6 +43,7 @@
 #include "guidlg.h"
 #include "dlgbutn.h"
 #include "genvbl.h"
+#include "clibext.h"
 
 extern gui_colour_set   StatusColours[];
 extern gui_colour_set   StatusBackground;

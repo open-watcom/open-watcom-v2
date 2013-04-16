@@ -338,7 +338,7 @@ static char *GetBracketedString( const char *src, const char **end )
         return( NULL );
     }
     len = p1 - src;
-    *end = src + len + 2;
+    *end = src + len + 1;
     if( (ret = malloc( len + 1 )) == NULL ) {
         return( NULL );
     }

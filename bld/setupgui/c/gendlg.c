@@ -37,10 +37,10 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdarg.h>
 #include <stdio.h>
+
+#include "wio.h"
 #include "gui.h"
 #include "guiutil.h"
 #include "setupinf.h"
@@ -52,6 +52,7 @@
 #include "utils.h"
 #include "gendlg.h"
 #include "dlggen.h"
+#include "clibext.h"
 
 
 static a_dialog_header *FirstDialog = NULL;

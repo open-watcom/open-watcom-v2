@@ -85,10 +85,10 @@ extern void *bdiff_realloc( void * chunk, size_t size )
 extern void GUIMemOpen()
 {
 #if DMEM_OVERRUNS
-#ifdef __386__
-    MaxAllocSize = 0xfffffff8;
-#else
+#ifdef _M_I86
     MaxAllocSize = 0xfff8;
+#else
+    MaxAllocSize = 0xfffffff8;
 #endif
 #endif
 }

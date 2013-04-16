@@ -31,10 +31,9 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdarg.h>
 
+#include "wio.h"
 #include "gui.h"
 #include "guistr.h"
 #include "guiutil.h"
@@ -45,6 +44,7 @@
 #include "setupinf.h"
 #include "genvbl.h"
 #include "dynarray.h"
+#include "clibext.h"
 
 extern void set_dlg_textwindow( gui_control_info *gui_controls,
                                 int num_controls, char *s,

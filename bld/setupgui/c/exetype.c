@@ -99,7 +99,7 @@ int ExeType( char *fname, char *exe_type )
     dos_exe_header      exe_header;
     char                local_type[3];
 
-    fp = open( fname, O_RDONLY + O_BINARY, 0 );
+    fp = open( fname, O_RDONLY | O_BINARY );
     if( fp == -1 ) {
         return( FALSE );
     }

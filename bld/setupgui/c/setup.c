@@ -31,9 +31,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
 #include <string.h>
-#include <unistd.h>
+#include "wio.h"
 #include "gui.h"
 #include "setup.h"
 #include "setupinf.h"
@@ -41,6 +43,7 @@
 #include "gendlg.h"
 #include "genvbl.h"
 #include "utils.h"
+#include "clibext.h"
 
 extern void DoSpawn( when_time );
 extern void SetupTitle();

@@ -45,10 +45,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <unistd.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "wio.h"
+#include "watcom.h"
 #define INCL_WINSHELLDATA
 #include "gui.h"
 #include "setup.h"

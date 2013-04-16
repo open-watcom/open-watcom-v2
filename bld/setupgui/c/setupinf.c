@@ -34,21 +34,20 @@
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdarg.h>
 #include <ctype.h>
-#include <utime.h>
-#if !defined( __UNIX__ )
-    #include <direct.h>
+#ifdef __UNIX__
+    #include <utime.h>
 #else
-    #include <sys/stat.h>
+    #include <sys/utime.h>
+    #include <direct.h>
 #endif
 
 #if defined( __WINDOWS__ ) || defined( __NT__ )
     #include "windows.h"
 #endif
-
+#include "wio.h"
+#include "watcom.h"
 #include "gui.h"
 #include "guistr.h"
 #include "guidlg.h"

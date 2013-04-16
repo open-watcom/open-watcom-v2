@@ -30,6 +30,7 @@
 
 
 #include <string.h>
+#include "watcom.h"
 #include "wresall.h"
 #include "wresset2.h"
 
@@ -85,10 +86,10 @@ typedef struct {
 long                    FileShift = 0;
 
 /* look for the resource information in a debugger record at the end of file */
-extern int FindResources( PHANDLE_INFO hInstance )
+int FindResources( PHANDLE_INFO hInstance )
 {
-    off_t       currpos;
-    off_t       offset;
+    long        currpos;
+    long        offset;
     dbgheader   header;
     zip_eocd    eocd;
     zip_cdfh    cdfh;

@@ -32,23 +32,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <unistd.h>
 #include <string.h>
 #include <malloc.h>
-#include <utime.h>
-#include <fcntl.h>
 #include <ctype.h>
 #include <setjmp.h>
 #include <limits.h>
+#ifdef __WATCOMC__
 #include <process.h>
-#if defined( __UNIX__ )
+#endif
+#ifdef __UNIX__
+  #include <utime.h>
   #include <dirent.h>
-  #include <sys/stat.h>
 #else
+  #include <sys/utime.h>
   #include <dos.h>
   #include <direct.h>
 #endif
 
+#include "wio.h"
+#include "watcom.h"
 #include "gui.h"
 #include "setupinf.h"
 #include "setup.h"
@@ -72,12 +74,12 @@
 #define TEST_UNC(x) (x[0] == '\\' && x[1] == '\\')
 
 #ifdef __UNIX__
-    #define DEF_ACCESS  (S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR)
-    #define DEF_EXEC    (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)
+    #define PMODE_W_USR (S_IWUSR)
 #else
-    #define DEF_ACCESS  (S_IRUSR | S_IWUSR)
-    #define DEF_EXEC    (S_IRUSR | S_IWUSR | S_IXUSR)
+    #define PMODE_W_USR (S_IWRITE)
 #endif
+#define DEF_ACCESS      (PMODE_R | PMODE_W_USR)
+#define DEF_EXEC        (DEF_ACCESS | PMODE_X)
 
 typedef struct def_var {
     char                *variable;
@@ -216,9 +218,9 @@ int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned fa
     return( _HARDERR_FAIL );
 }
 
-#endif
-
 typedef __far (HANDLER)( unsigned deverr, unsigned errcode, unsigned far *devhdr );
+
+#endif
 
 #if !defined( __UNIX__ )
 static void NoHardErrors( void )
@@ -662,10 +664,10 @@ static int GetDriveInfo( char drive, bool removable )
             char        path[_MAX_PATH];
 
             GetTmpFileNameInTarget( drive, path );
-            io = open( path, O_RDWR + O_CREAT + O_TRUNC, S_IREAD + S_IWRITE );
+            io = open( path, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
             if( io == -1 ) {
                 GetTmpFileName( drive, path );
-                io = open( path, O_RDWR + O_CREAT + O_TRUNC, S_IREAD + S_IWRITE );
+                io = open( path, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
                 info->use_target_for_tmp_file = FALSE;
             } else {
                 info->use_target_for_tmp_file = TRUE;
@@ -844,7 +846,7 @@ bool IsDriveWritable( char *path )
 
     GetTmpFileNameUNC( root, tempfile );
 
-    io = open( tempfile, O_RDWR + O_CREAT + O_TRUNC, S_IREAD + S_IWRITE );
+    io = open( tempfile, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
     if( io == -1 ) {
         return( FALSE );
     } else {
@@ -1340,14 +1342,7 @@ static void SameFileDate( const char *src_path, const char *dst_path )
 extern bool DoDeleteFile( char *Path )
 /************************************/
 {
-    int         returnvalue;
-
-    returnvalue = unlink( Path );
-    if( returnvalue == 0 ) {
-        return( TRUE );
-    } else {
-        return( FALSE );
-    }
+    return( remove( Path ) == 0 );
 }
 
 // ******************* Functions for Copying Files ***************************
@@ -1362,7 +1357,7 @@ extern COPYFILE_ERROR DoCopyFile( const char *src_path, char *dst_path, int appe
     int                 bytes_read, bytes_written, style;
     char                *pbuff;
 
-    src_files = FileOpen( src_path, O_RDONLY + O_BINARY );
+    src_files = FileOpen( src_path, O_RDONLY | O_BINARY );
     if( src_files == NULL ) {
         return( CFE_CANTOPENSRC );
     }
@@ -1380,9 +1375,9 @@ extern COPYFILE_ERROR DoCopyFile( const char *src_path, char *dst_path, int appe
     }
 
     if( append ) {
-        style = O_RDWR + O_BINARY;
+        style = O_RDWR | O_BINARY;
     } else {
-        style = O_CREAT + O_TRUNC + O_WRONLY + O_BINARY;
+        style = O_CREAT | O_TRUNC | O_WRONLY | O_BINARY;
     }
     dst_files = open( dst_path, style, DEF_ACCESS );
     if( dst_files == -1 ) {
@@ -1704,25 +1699,22 @@ static bool DoCopyFiles( void )
                 if( SimSubFileReadOnly( filenum, subfilenum ) ) {
                     SimSubFileName( filenum, subfilenum, file_desc );
                     _makepath( tmp_path, NULL, dir, file_desc, NULL );
-                    if( !PromptUser( tmp_path, "ReadOnlyFile", "RO_Skip_Dialog",
-                                     "RO_Replace_Old", &value ) ) {
+                    if( !PromptUser( tmp_path, "ReadOnlyFile", "RO_Skip_Dialog", "RO_Replace_Old", &value ) ) {
                         return( FALSE );
                     }
                     if( value ) {
-                        chmod( tmp_path, S_IWRITE );
+                        chmod( tmp_path, PMODE_W_USR );
                     }
                 }
                 if( SimSubFileNewer( filenum, subfilenum ) ) {
                     SimSubFileName( filenum, subfilenum, file_desc );
 //                  _splitpath( file_desc, NULL, NULL, NULL, file_ext );
                     _makepath( tmp_path, NULL, dir, file_desc, NULL );
-                    if( !PromptUser( tmp_path, "NewerFile", "Newer_Skip_Dialog",
-                                     "Newer_Replace_Old", &value ) ) {
+                    if( !PromptUser( tmp_path, "NewerFile", "Newer_Skip_Dialog", "Newer_Replace_Old", &value ) ) {
                         return( FALSE );
                     }
                     if( value ) {
-                        SetFileDate( tmp_path,
-                                     SimSubFileDate( filenum, subfilenum ) - 1 );
+                        SetFileDate( tmp_path, SimSubFileDate( filenum, subfilenum ) - 1 );
                     }
                 }
             }
@@ -1734,12 +1726,11 @@ static bool DoCopyFiles( void )
                 if( SimSubFileReadOnly( filenum, subfilenum ) ) {
                     SimSubFileName( filenum, subfilenum, file_desc );
                     _makepath( tmp_path, NULL, dir, file_desc, NULL );
-                    if( !PromptUser( tmp_path, "DeleteReadOnlyFile", "RO_Skip_Remove",
-                                     "RO_Remove_Old", &value ) ) {
+                    if( !PromptUser( tmp_path, "DeleteReadOnlyFile", "RO_Skip_Remove", "RO_Remove_Old", &value ) ) {
                         return( FALSE );
                     }
                     if( value ) {
-                        chmod( tmp_path, S_IWRITE );
+                        chmod( tmp_path, PMODE_W_USR );
                         num_total_install += OVERHEAD_SIZE;
                     }
                 } else {
@@ -1774,7 +1765,9 @@ static bool DoCopyFiles( void )
                     remove( tmp_path );
                 }
                 StatusAmount( num_installed, num_total_install );
-                if( StatusCancelled() ) return( FALSE );
+                if( StatusCancelled() ) {
+                    return( FALSE );
+                }
             }
         }
     }
@@ -2016,11 +2009,11 @@ static bool NukePath( char *path, int status )
             }
         } else {
 #if defined( __UNIX__ )
-            if( (statbuf.st_mode & S_IFMT) == S_IREAD || !S_ISREG( statbuf.st_mode ) ) {
+            if( (statbuf.st_mode & S_IWUSR) == 0 || !S_ISREG( statbuf.st_mode ) ) {
 #else
             if( info->d_attr & (_A_RDONLY | _A_SYSTEM | _A_HIDDEN) ) {
 #endif
-                chmod( path, S_IWRITE );
+                chmod( path, PMODE_W_USR );
             }
             if( remove( path ) != 0 ) {
                 return( FALSE );
@@ -2104,7 +2097,8 @@ extern char *GetInstallName( void )
 
     if( name[0] == '\0' ) {
         if( GetVariableByName( "InstallerName" ) != NO_VAR ) {
-            strlcpy( name, GetVariableStrVal( "InstallerName" ), sizeof( name ) );
+            strncpy( name, GetVariableStrVal( "InstallerName" ), sizeof( name ) );
+            name[sizeof( name ) - 1] = '\0';
             return( name );
         }
 
@@ -2599,6 +2593,7 @@ extern void CloseDownProgram( void )
 extern void CheckHeap( void )
 /***************************/
 {
+#ifdef __WATCOMC__
     switch( _heapchk() ) {
     case _HEAPOK:
         SetupError( "IDS_HEAPOK" );
@@ -2619,6 +2614,7 @@ extern void CheckHeap( void )
         SetupError( "IDS_HEAPBADNODE" );
         break;
     }
+#endif
 }
 #endif
 

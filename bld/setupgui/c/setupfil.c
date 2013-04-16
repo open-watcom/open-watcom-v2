@@ -32,11 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <ctype.h>
-#include <fcntl.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <time.h>
 #if defined( __DOS__ )
     #include <dos.h>
@@ -46,6 +43,8 @@
     #define INCL_DOSMISC
     #include <os2.h>
 #endif
+#include "wio.h"
+#include "watcom.h"
 #include "gui.h"
 #include "guiutil.h"
 #include "setup.h"
@@ -99,8 +98,6 @@ static struct reg_location {
 
 #if !defined( __UNIX__ )
 
-#if defined( _M_IX86 )
-
 #if !defined( __OS2__ )
 static char     *WinDotCom = NULL;
 #endif
@@ -132,8 +129,6 @@ static short GetBootDrive( void )
 #endif
 }
 
-#endif  // _M_IX86
-
 
 static bool GetOldConfigFileDir( char *newauto, const char *drive_path, bool uninstall )
 /**************************************************************************************/
@@ -154,7 +149,6 @@ static bool GetOldConfigFileDir( char *newauto, const char *drive_path, bool uni
     return( TRUE );
 }
 
-#if defined( _M_IX86 )
 static char *StrNDup( char *str, size_t len )
 /*******************************************/
 {
@@ -167,7 +161,6 @@ static char *StrNDup( char *str, size_t len )
     }
     return( new );
 }
-#endif
 
 #endif  // !__UNIX__
 
@@ -284,7 +277,7 @@ static void modify_value_libpath( char *val_before, char *val_after, char *new_v
     }
 }
 
-#if !defined( __UNIX__ ) && defined( _M_IX86 )
+#if !defined( __UNIX__ )
 static var_type parse_line( char *line, char *name, char **value, var_type vt_setenv )
 /************************************************************************************/
 {
@@ -358,7 +351,7 @@ static var_type getEnvironVarType( const char *new_var )
     return( vt );
 }
 
-#if !defined( __UNIX__ ) && defined( _M_IX86 )
+#if !defined( __UNIX__ )
 static void CheckEnvironmentLine( char *line, int num, bool *Found, bool uninstall )
 /**********************************************************************************/
 {
@@ -482,8 +475,6 @@ static void FinishEnvironmentLines( FILE *fp, char *line, int num, bool *Found, 
 
 
 #if !defined( __UNIX__ )
-
-#if defined( _M_IX86 )
 
 static bool ModFile( char *orig, char *new,
                      void (*func)( char *, int, bool *, bool ),
@@ -1038,8 +1029,6 @@ extern bool ModifyAutoExec( bool uninstall )
     return( TRUE );
 }
 
-#endif   // _M_IX86
-
 #endif   // !__UNIX__
 
 static char *ReplaceVarsInplace( char *buff, bool dorealloc )
@@ -1204,7 +1193,7 @@ static void CheckVersion( char *path, char *drive, char *dir )
     struct stat         statbuf;
     struct tm           *timeptr;
 
-    fp = open( path, O_RDONLY + O_BINARY, 0 );
+    fp = open( path, O_RDONLY | O_BINARY );
     if( fp == -1 ) {
         return;     // shouldn't happen
     }

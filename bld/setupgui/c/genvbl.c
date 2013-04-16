@@ -33,11 +33,10 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "wio.h"
 #include "gui.h"
 #include "guiutil.h"
 #include "setupinf.h"
@@ -47,6 +46,7 @@
 #include "dynarray.h"
 #include "hash.h"
 #include "genvbl.h"
+#include "clibext.h"
 
 #ifdef __NT__
     #include <windows.h>
