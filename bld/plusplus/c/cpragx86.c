@@ -521,16 +521,18 @@ static fix_words FixupKeyword(
     return( retn );
 }
 
+void *AsmQuerySymbol( char *id )
+{
+    return( ScopeASMLookup( NameCreateNoLen( id ) ) );
+}
 
-enum sym_state AsmQueryExternal(
-    char *name )
+enum sym_state AsmQueryState( void *handle )
 {
 #if 1
-    SYMBOL sym;
+    SYMBOL sym = handle;
     enum sym_state state;
 
     state = SYM_UNDEFINED;
-    sym = ScopeASMLookup( name );
     if( sym != NULL ) {
         if( SymIsAutomatic( sym ) ) {
             state = SYM_STACK;
@@ -540,7 +542,7 @@ enum sym_state AsmQueryExternal(
     }
     return( state );
 #else
-    name = name;
+    handle = handle;
     return( SYM_UNDEFINED );
 #endif
 }
@@ -669,13 +671,12 @@ static enum sym_type AsmType(
 #endif
 
 
-enum sym_type AsmQueryType( char *name )
+enum sym_type AsmQueryType( void *handle )
 {
 #if 1
-    SYMBOL sym;
+    SYMBOL sym = handle;
     enum sym_type type;
 
-    sym = ScopeASMLookup( name );
     if( sym != NULL ) {
         type = AsmType( sym->sym_type );
     } else {
@@ -683,7 +684,7 @@ enum sym_type AsmQueryType( char *name )
     }
     return( type );
 #else
-    name = name;
+    handle = handle;
     return( SYM_INT1 );
 #endif
 }
@@ -828,10 +829,10 @@ static int insertFixups( VBUF *src_code )
                 }
                 if( skip != 0 ) {
                     dst[len++] = cg_fix;
-                    *((unsigned long *)&dst[len]) = (unsigned long)sym;
-                    len += sizeof( long );
-                    *((unsigned long *)&dst[len]) = fix->offset;
-                    len += sizeof( long );
+                    *((void **)&dst[len]) = (void *)sym;
+                    len += sizeof( void * );
+                    *((unsigned_32 *)&dst[len]) = fix->offset;
+                    len += sizeof( unsigned_32 );
                     src += skip;
                 }
 #if _CPU == 8086
