@@ -32,6 +32,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "watcom.h"
 #include "helpmem.h"
 #include "helpchar.h"
 #include "uidef.h"

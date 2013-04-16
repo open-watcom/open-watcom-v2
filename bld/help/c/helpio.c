@@ -31,14 +31,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include "helpio.h"
-
-#ifndef __WATCOMC__
-    #include "clibext.h"
+#if !defined(__UNIX__)
+    #include <direct.h>
 #endif
+#include "wio.h"
+#include "watcom.h"
+#include "helpio.h"
 
 #if defined(__NETWARE__)
     /* Symbolic constants for the access() function */
@@ -47,9 +45,6 @@
     #define W_OK    2       /*  Test for write permission   */
     #define X_OK    1       /*  Test for execute permission */
     #define F_OK    0       /*  Test for existence of file  */
-#endif
-#if !defined(__UNIX__)
-    #include <direct.h>
 #endif
 
 static int seekTypeConvTable[] = { SEEK_SET, SEEK_CUR, SEEK_END };
@@ -111,7 +106,7 @@ HELPIO HelpFp HelpOpen( char *path, unsigned long mode )
         access |= O_CREAT;
     }
     if( access & O_CREAT ) {
-        return( (HelpFp)open( path, access, S_IRWXU | S_IRWXG | S_IRWXO ) );
+        return( (HelpFp)open( path, access, PMODE_RW ) );
     } else {
         return( (HelpFp)open( path, access ) );
     }

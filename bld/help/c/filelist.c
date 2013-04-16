@@ -37,6 +37,7 @@
     #include <direct.h>
 #endif
 #include <string.h>
+#include "watcom.h"
 #include "uidef.h"
 #include "help.h"
 #include "helpmem.h"

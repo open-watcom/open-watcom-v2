@@ -31,14 +31,12 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
+#include "wio.h"
+#include "watcom.h"
 #include "index.h"
 #include "helpmem.h"
 #include "helpio.h"
 #include "search.h"
-#ifndef __WATCOMC__
-    #include "clibext.h"
-#endif
 
 #define DEFAULTTOPIC "TABLE OF CONTENTS"
 

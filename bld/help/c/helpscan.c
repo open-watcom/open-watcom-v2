@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "watcom.h"
 #include "uidef.h"
 #include "help.h"
 #include "helpscan.h"
@@ -137,7 +138,7 @@ static unsigned scanHyperLink( char *line, TokenType *type,
                 chkhfname = TRUE;
             }
             while( (*(unsigned char *)cur != endchar)
-	      && (*(unsigned char *)cur != HYPER_TOPIC) ) {
+              && (*(unsigned char *)cur != HYPER_TOPIC) ) {
                 if( *cur == HELP_ESCAPE ) cur++;
                 cur++;
             }

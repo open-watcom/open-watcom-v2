@@ -33,6 +33,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "wio.h"
+#include "watcom.h"
+#include "bool.h"
 #include "sorthelp.h"
 #include "index.h"
 
@@ -73,7 +75,8 @@ static unsigned pagesInNextLevel( unsigned pages_in_this_level )
     unsigned            ret;
 
     ret = pages_in_this_level / INDEX_ENTRIES_PER_PAGE;
-    if( pages_in_this_level % INDEX_ENTRIES_PER_PAGE != 0 ) ret++;
+    if( pages_in_this_level % INDEX_ENTRIES_PER_PAGE != 0 )
+        ret++;
     return( ret );
 }
 

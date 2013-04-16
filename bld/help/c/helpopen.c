@@ -30,25 +30,19 @@
 
 
 #include <stdlib.h>
-#include <unistd.h>
-
-#define PATH_SEPARATOR '/'
-
 #include <string.h>
-
 #ifndef __UNIX__
     #include <direct.h>
 #endif
-
+#include "wio.h"
+#include "watcom.h"
 #include "uidef.h"
 #include "stdui.h"
 #include "help.h"
 #include "helpmem.h"
 
-#ifndef __WATCOMC__
-    #include "clibext.h"
-#endif
 
+#define PATH_SEPARATOR '/'
 
 help_file HelpFiles[MAX_HELP_FILES] = {
     {NULL, 0 }

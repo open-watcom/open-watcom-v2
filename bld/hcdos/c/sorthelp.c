@@ -35,6 +35,8 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include "wio.h"
+#include "watcom.h"
+#include "bool.h"
 #include "uidef.h"
 #include "stdui.h"
 #include "help.h"
@@ -67,7 +69,7 @@ static int      Height = 0;
 
 #define BUFFER_SIZE     400
 
-static char     UsageText[] = {
+static char UsageText[] = {
         "Usage: hcdos [flags] <infile> <outfile>\n"
     "\n"
     "\tflags:\n"
@@ -90,7 +92,7 @@ static char errBuffer[512];
 
 void Usage( void )
 {
-    fprintf( stderr, "%Ws", UsageText );
+    fprintf( stderr, "%s", UsageText );
     exit( -1 );
 }
 
@@ -358,6 +360,7 @@ static bool pass1( FILE *fin, char **helpstr )
     desc_len = strlen( DESCRIPTION );
 
     printf( "Pass One:\n" );
+    fpos = 0;
     while( !feof( fin ) ) {
         fpos = ftell( fin );
         fgetstring( buffer, BUFFER_SIZE, fin );

@@ -47,7 +47,7 @@ typedef enum {
     TT_END_OF_LINE
 } TextType;
 
-#pragma pack(push, 1)
+#include "pushpck1.h"
 
 typedef struct {
     TextType    type;
@@ -76,7 +76,7 @@ typedef struct Info {
     } u;
 } Info;
 
-#pragma pack(pop)
+#include "poppck.h"
 
 typedef void ScanCBfunc(TokenType, Info *, void *);
 

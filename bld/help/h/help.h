@@ -71,7 +71,7 @@ typedef struct {
     int         line;
 } ScanInfo;
 
-#pragma pack(push, 1)
+#include "pushpck1.h"
 
 typedef struct helpsrch {
     HelpSrchItemType    type;
@@ -84,7 +84,7 @@ typedef struct help_file {
     HelpHdl             searchhdl;
 }help_file;
 
-#pragma pack(pop)
+#include "poppck.h"
 
 #define MAX_HELP_FILES  10
 extern help_file HelpFiles[];

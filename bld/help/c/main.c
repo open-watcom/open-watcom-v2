@@ -37,14 +37,14 @@
 #else
     #include <direct.h>
 #endif
-#include <uidef.h>
+#include "wio.h"
+#include "watcom.h"
+#include "uidef.h"
 #include "stdui.h"
 #include "help.h"
 #include "helpmem.h"
 #include "trmemcvr.h"
 #include "filelist.h"
-#include <unistd.h>
-#include <fcntl.h>
 
 #define DEF_EXTENSION   ".ihp"
 #define FIRST_SRCH_PATH "./"
@@ -62,8 +62,7 @@ static int      memFHdl;
 static void memInit( void )
 {
 #ifdef TRMEM
-    memFHdl= open( "MEMERR", O_WRONLY | O_TRUNC | O_CREAT | O_TEXT,
-                    S_IRWXO | S_IRWXG | S_IRWXU );
+    memFHdl= open( "MEMERR", O_WRONLY | O_TRUNC | O_CREAT | O_TEXT, PMODE_RW );
     TRMemOpen();
     TRMemRedirect( memFHdl );
 #else

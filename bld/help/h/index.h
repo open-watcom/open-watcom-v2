@@ -32,7 +32,6 @@
 
 #ifndef __INDEX_H_INCLUDED__
 #define __INDEX_H_INCLUDED__
-#include "watcom.h"
 
 /* FILE format
  *
@@ -78,7 +77,7 @@
 #define HELP_MAJ_VER            2
 #define HELP_MIN_VER            0
 
-#pragma pack(push, 1)
+#include "pushpck1.h"
 
 typedef struct {
     uint_32     sig[2];
@@ -123,7 +122,7 @@ typedef struct {
     uint_32     entry_offset;
 } PageIndexEntry;
 
-#pragma pack(pop)
+#include "poppck.h"
 
 // this is a temporary kludge
 #if !defined( bool )
