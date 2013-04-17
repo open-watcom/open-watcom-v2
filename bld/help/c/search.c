@@ -33,6 +33,7 @@
 #include <string.h>
 #include "wio.h"
 #include "watcom.h"
+#include "bool.h"
 #include "index.h"
 #include "helpmem.h"
 #include "helpio.h"

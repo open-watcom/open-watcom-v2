@@ -124,11 +124,7 @@ typedef struct {
 
 #include "poppck.h"
 
-// this is a temporary kludge
-#if !defined( bool )
-    #define bool unsigned char
-#endif
-
 unsigned long CalcIndexSize( char **str, bool gen_str );
 int WriteIndex( int fout, char *str[2], bool gen_str );
+
 #endif

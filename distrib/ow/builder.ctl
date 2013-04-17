@@ -24,7 +24,7 @@ echo Installer Build: <1> <2> <3> <4> <5>
     mkinf -x -i../include c filelist <OWRELROOT>
     langdat f77
     mkinf -x -i../include f77 filelist <OWRELROOT>
-    rm filelist
+    rm -rf filelist
 
 [ BLOCK . . ]
 cdsay .

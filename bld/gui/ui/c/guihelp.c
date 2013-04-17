@@ -32,7 +32,8 @@
 
 #include "guiwind.h"
 #include "guicolor.h"
-#define FILE void
+#include "watcom.h"
+#include "bool.h"
 #include "help.h"
 #include "guistr.h"
 
