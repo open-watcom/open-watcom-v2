@@ -37,7 +37,7 @@
 
 #else
 
-struct aux_info {
+typedef struct aux_info {
         call_class      cclass;
         union {
             byte_seq   *code;
@@ -65,20 +65,20 @@ struct aux_info {
         char           *except_rtn;
     #endif
   #endif
-};
+} aux_info;
 
-global struct aux_info          DefaultInfo;
-global struct aux_info          WatcallInfo;
-global struct aux_info          CdeclInfo;
-global struct aux_info          PascalInfo;
-global struct aux_info          FortranInfo;
-global struct aux_info          SyscallInfo;
-global struct aux_info          OptlinkInfo;
-global struct aux_info          StdcallInfo;
-global struct aux_info          FastcallInfo;
+global aux_info DefaultInfo;
+global aux_info WatcallInfo;
+global aux_info CdeclInfo;
+global aux_info PascalInfo;
+global aux_info FortranInfo;
+global aux_info SyscallInfo;
+global aux_info OptlinkInfo;
+global aux_info StdcallInfo;
+global aux_info FastcallInfo;
 #if _CPU == 386
-global struct aux_info          Far16CdeclInfo;
-global struct aux_info          Far16PascalInfo;
+global aux_info Far16CdeclInfo;
+global aux_info Far16PascalInfo;
 #endif
 
 extern  void    PragmaAuxInfoInit( int );
@@ -86,8 +86,8 @@ extern  void    SetAuxStackConventions( void );
 extern  void    SetAuxWatcallInfo( void );
 extern  void    SetAuxDefaultInfo( void );
 extern  int     IsAuxParmsBuiltIn( hw_reg_set *parms );
-extern  int     IsAuxInfoBuiltIn( struct aux_info *info );
-extern  char    *VarNamePattern( struct aux_info *inf );
+extern  int     IsAuxInfoBuiltIn( aux_info *info );
+extern  char    *VarNamePattern( aux_info *inf );
 
 #endif
 
