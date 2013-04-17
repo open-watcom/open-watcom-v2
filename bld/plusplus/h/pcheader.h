@@ -185,7 +185,19 @@ typedef enum {
 
 // MACROS
 
-#define _pch_align_size( x )    (((x)+(sizeof(unsigned)-1))&~(sizeof(unsigned)-1))
+#define PCH_ALIGN               sizeof( unsigned )
+
+#define _pch_align_size( x )    _RoundUp(x, PCH_ALIGN)
+
+#define PCHReadVar(m)           PCHRead( &(m), sizeof( m ) )
+#define PCHWriteVar(m)          PCHWrite( &(m), sizeof( m ) )
+
+#define PCHGetUInt(p)           ((unsigned)(pointer_int)(p))
+#define PCHSetUInt(v)           ((void *)(pointer_int)(unsigned)(v))
+
+#define PCHReadCVIndex()        PCHReadUInt()
+#define PCHWriteCVIndex( x )    PCHWriteUInt( x )
+#define PCHWriteCVIndexTerm()   PCHWriteUInt( CARVE_NULL_INDEX )
 
 
 #define PCHReadLocSize( tgt, src, size )        \
@@ -282,9 +294,6 @@ extern void PCHVerifyFile( int handle );
 #else
 #define  PCHVerifyHandle( handle ) handle = handle
 #endif
-
-#define PCHWriteCVIndex( x )    PCHWriteUInt( x )
-#define PCHReadCVIndex()        PCHReadUInt()
 
 #ifndef NDEBUG
 extern void PCHTrashAlreadyRead( void );
