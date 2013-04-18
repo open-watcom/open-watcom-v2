@@ -47,26 +47,26 @@ STATIC TOKEN_T lexFormQualifier( TOKEN_T tok )
 /*********************************************
  * pre:     $<file_specifier> read already; passed in tok
  * post:    1 character of input may be read
- * returns: tok; CurAttr.num contains enum FormQualifiers
+ * returns: tok; CurAttr.u.form contains enum FormQualifiers
  * errors:  If next character of input is not a form-qual. it is pushed back
- *          and CurAttr.num == FORM_FULL
+ *          and CurAttr.u.form == FORM_FULL
  */
 {
-    STRM_T  t;
+    STRM_T  s;
 
-    t = PreGetCH();
+    s = PreGetCH();
 
-    switch( t ) {
-        case '@':   CurAttr.num = FORM_FULL;            break;
-        case '*':   CurAttr.num = FORM_NOEXT;           break;
-        case '&':   CurAttr.num = FORM_NOEXT_NOPATH;    break;
-        case '.':   CurAttr.num = FORM_NOPATH;          break;
-        case ':':   CurAttr.num = FORM_PATH;            break;
-        case '!':   CurAttr.num = FORM_EXT;             break;
+    switch( s ) {
+        case '@':   CurAttr.u.form = FORM_FULL;            break;
+        case '*':   CurAttr.u.form = FORM_NOEXT;           break;
+        case '&':   CurAttr.u.form = FORM_NOEXT_NOPATH;    break;
+        case '.':   CurAttr.u.form = FORM_NOPATH;          break;
+        case ':':   CurAttr.u.form = FORM_PATH;            break;
+        case '!':   CurAttr.u.form = FORM_EXT;             break;
         default:
             PrtMsg( ERR | LOC | EXPECTING_M, M_FORM_QUALIFIER );
-            UnGetCH( t );               /* put character back */
-            CurAttr.num = FORM_FULL;    /* assume full name */
+            UnGetCH( s );               /* put character back */
+            CurAttr.u.form = FORM_FULL;   /* assume full name */
     }
 
     return( tok );
@@ -76,30 +76,30 @@ STATIC TOKEN_T lexFormQualifier( TOKEN_T tok )
 void GetModifier( void )
 /*****************************/
 {
-    STRM_T  t;
+    STRM_T  s;
 
     // Modifier already eaten by CatModifier
     if( !IsPartDeMacro ) {
-        t = PreGetCH();
-        switch( t ) {
+        s = PreGetCH();
+        switch( s ) {
         case 'D':
         case 'd':
-             CurAttr.num = FORM_PATH;
+             CurAttr.u.form = FORM_PATH;
              break;
         case 'B':
         case 'b':
-             CurAttr.num = FORM_NOEXT_NOPATH;
+             CurAttr.u.form = FORM_NOEXT_NOPATH;
              break;
         case 'F':
         case 'f':
-             CurAttr.num = FORM_NOPATH;
+             CurAttr.u.form = FORM_NOPATH;
              break;
         case 'R':
         case 'r':
-             CurAttr.num = FORM_NOEXT;
+             CurAttr.u.form = FORM_NOEXT;
              break;
         default:
-             UnGetCH( t );
+             UnGetCH( s );
         }
     }
 }
@@ -111,17 +111,17 @@ STATIC char *CatModifier( char *inString, BOOLEAN destroy )
  *  it then returns the modified string with the right format
  */
 {
-    STRM_T  t;
+    STRM_T  s;
     VECSTR  output;
     char    buffer[2];
     char    *ret;
 
     assert( inString != NULL );
 
-    t = PreGetCH();
+    s = PreGetCH();
 
-    if( ismsmodifier( t ) ) {
-        buffer[0] = t;
+    if( ismsmodifier( s ) ) {
+        buffer[0] = s;
         buffer[1] = NULLCHAR;
         output = StartVec();
         WriteVec( output, "" );
@@ -132,7 +132,7 @@ STATIC char *CatModifier( char *inString, BOOLEAN destroy )
         }
         return( FinishVec( output ) );
     } else {
-        UnGetCH( t );
+        UnGetCH( s );
         ret = StrDupSafe( inString );
         if( destroy ) {
             FreeSafe( inString );
@@ -141,7 +141,7 @@ STATIC char *CatModifier( char *inString, BOOLEAN destroy )
     }
 }
 
-TOKEN_T LexMSDollar( STRM_T t )
+TOKEN_T LexMSDollar( STRM_T s )
 /*************************************
  *  If it is PartDeMacro then we have to put back the tokens as if it were a
  *  MAC_NAME so that it can be DeMacroed fully later
@@ -150,21 +150,21 @@ TOKEN_T LexMSDollar( STRM_T t )
 {
     char    temp[8];
 
-    assert( ismsspecial( t ) );
+    assert( ismsspecial( s ) );
 
     if( IsPartDeMacro || !DoingUpdate ) {
         /* we need to use SPECIAL_TMP_DOL_C to prevent recursion
            from kicking in because recursion occurs when there are
            still dollars remaining */
         temp[0] = SPECIAL_TMP_DOL_C;
-        temp[1] = t;
-        if( t == '*' ) {
-            t  = PreGetCH();
-            if( t == '*' ) {
-                temp[2] = t;
+        temp[1] = s;
+        if( s == '*' ) {
+            s = PreGetCH();
+            if( s == '*' ) {
+                temp[2] = s;
                 temp[3] = NULLCHAR;
             } else {
-                UnGetCH( t );
+                UnGetCH( s );
                 temp[2] = NULLCHAR;
             }
         } else {
@@ -175,29 +175,29 @@ TOKEN_T LexMSDollar( STRM_T t )
         return( MAC_NAME );
 
     } else {
-        switch( t ) {
+        switch( s ) {
         case '<':
-            CurAttr.num = FORM_FULL;
+            CurAttr.u.form = FORM_FULL;
             return( MAC_INF_DEP );
         case '*':
-            t = PreGetCH();
-            if( t == '*' ) {
-                CurAttr.num = FORM_FULL;
+            s = PreGetCH();
+            if( s == '*' ) {
+                CurAttr.u.form = FORM_FULL;
                 return( MAC_ALL_DEP );
             } else {
-                CurAttr.num = FORM_NOEXT;
-                UnGetCH( t );
+                CurAttr.u.form = FORM_NOEXT;
+                UnGetCH( s );
                 return( MAC_CUR );
             }
         case '?':
-            CurAttr.num = FORM_FULL;
+            CurAttr.u.form = FORM_FULL;
             return( MAC_YOUNG_DEP );
         case '@':
-            CurAttr.num = FORM_FULL;
+            CurAttr.u.form = FORM_FULL;
             return( MAC_CUR );
 
         default:
-            UnGetCH( t );
+            UnGetCH( s );
             return( MAC_START );
         }
     }
@@ -211,16 +211,17 @@ STATIC TOKEN_T lexDollar( void )
  * returns: MAC token type
  */
 {
-    STRM_T  t;
+    STRM_T  s;
+    TOKEN_T t;
 
-    t = PreGetCH();
+    s = PreGetCH();
 
-    if( (Glob.compat_nmake || Glob.compat_posix) && ismsspecial( t ) ) {
-        t = LexMSDollar( t );
+    if( (Glob.compat_nmake || Glob.compat_posix) && ismsspecial( s ) ) {
+        t = LexMSDollar( s );
         GetModifier();
         return( t );
     }
-    switch( t ) {
+    switch( s ) {
     case DOLLAR:                        return( MAC_DOLLAR );
     case COMMENT:                       return( MAC_COMMENT );
     case '(':                           return( MAC_OPEN );
@@ -229,12 +230,12 @@ STATIC TOKEN_T lexDollar( void )
     case '^':                           return( lexFormQualifier( MAC_CUR ) );
     case '[':                           return( lexFormQualifier( MAC_FIRST ) );
     case ']':                           return( lexFormQualifier( MAC_LAST ) );
-    case '@': CurAttr.num = FORM_FULL;  return( MAC_CUR );       /* UNIX */
-    case '*': CurAttr.num = FORM_NOEXT; return( MAC_CUR );       /* UNIX */
-    case '<': CurAttr.num = FORM_FULL;  return( MAC_ALL_DEP );   /* UNIX */
-    case '?': CurAttr.num = FORM_FULL;  return( MAC_YOUNG_DEP ); /* UNIX */
+    case '@': CurAttr.u.form = FORM_FULL;  return( MAC_CUR );       /* UNIX */
+    case '*': CurAttr.u.form = FORM_NOEXT; return( MAC_CUR );       /* UNIX */
+    case '<': CurAttr.u.form = FORM_FULL;  return( MAC_ALL_DEP );   /* UNIX */
+    case '?': CurAttr.u.form = FORM_FULL;  return( MAC_YOUNG_DEP ); /* UNIX */
     default:
-        UnGetCH( t );
+        UnGetCH( s );
         return( MAC_START );
     }
 }
@@ -243,7 +244,7 @@ STATIC TOKEN_T lexDollar( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC TOKEN_T lexSubString( TOKEN_T t )
+STATIC TOKEN_T lexSubString( STRM_T s )
 /**************************************/
 {
     char        text[MAX_TOK_SIZE];     /* temporary storage                */
@@ -252,13 +253,13 @@ STATIC TOKEN_T lexSubString( TOKEN_T t )
     BOOLEAN     done;                   /* are we done collecting ?         */
     VECSTR      vec;                    /* build string here                */
 
-    assert( isascii( t ) );
+    assert( isascii( s ) );
 
     vec = StartVec();
 
-    if( ismacc( t ) ) {
+    if( ismacc( s ) ) {
         state = MAC_NAME;
-    } else if( isws( t ) ) {
+    } else if( isws( s ) ) {
         state = MAC_WS;
     } else {
         state = MAC_PUNC;
@@ -267,15 +268,15 @@ STATIC TOKEN_T lexSubString( TOKEN_T t )
     pos = 0;
     done = FALSE;
     while( !done ) {
-        text[pos++] = t;
+        text[pos++] = s;
         if( pos == MAX_TOK_SIZE - 1 ) {
             text[pos] = NULLCHAR;
             WriteVec( vec, text );
             pos = 0;
         }
 
-        t = PreGetCH();
-        switch( t ) {
+        s = PreGetCH();
+        switch( s ) {
         case EOL:               /* always stop on these characters */
         case STRM_END:
         case STRM_MAGIC:
@@ -285,13 +286,13 @@ STATIC TOKEN_T lexSubString( TOKEN_T t )
             break;
         default:
             switch( state ) {
-            case MAC_NAME:  done = !ismacc( t );                break;
-            case MAC_WS:    done = !isws( t );                  break;
-            case MAC_PUNC:  done = ismacc( t ) || isws( t );    break;
+            case MAC_NAME:  done = !ismacc( s );                break;
+            case MAC_WS:    done = !isws( s );                  break;
+            case MAC_PUNC:  done = ismacc( s ) || isws( s );    break;
             }
         }
     }
-    UnGetCH( t );
+    UnGetCH( s );
     text[pos] = NULLCHAR;
     WriteVec( vec, text );
 
@@ -303,23 +304,25 @@ STATIC TOKEN_T lexSubString( TOKEN_T t )
 #endif
 
 
-TOKEN_T LexMacSubst( TOKEN_T t )
+TOKEN_T LexMacSubst( STRM_T s )
 /**************************************
  * returns: next macro substitution type token of input
  */
 {
-    switch( t ) {
+    switch( s ) {
     case SPECIAL_TMP_DOL_C:
     case DOLLAR:
         return( lexDollar() );
     case ')':
         return( MAC_CLOSE );
     case EOL:
+        return( TOK_EOL );
     case STRM_END:
+        return( TOK_END );
     case STRM_MAGIC:
-        return( t );
+        return( TOK_MAGIC );
     default:
-        return( lexSubString( t ) );
+        return( lexSubString( s ) );
     }
 }
 
@@ -327,7 +330,7 @@ TOKEN_T LexMacSubst( TOKEN_T t )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-TOKEN_T LexMacDef( TOKEN_T t )
+TOKEN_T LexMacDef( STRM_T s )
 /************************************
  * returns: MAC_TEXT, or MAC_WS up to EOL or $+
  */
@@ -336,42 +339,46 @@ TOKEN_T LexMacDef( TOKEN_T t )
     BOOLEAN onlyws;                 /* are we collecting ws?    */
     char    text[MAX_TOK_SIZE];     /* store stuff here temp.   */
 
-    if( t == STRM_END || t == STRM_MAGIC ) {
-        return( t );
+    if( s == STRM_END ) {
+        return( TOK_END );
+    }
+    if( s == STRM_MAGIC ) {
+        return( TOK_MAGIC );
+    }
+    if( s == EOL ) {
+        return( TOK_EOL );
     }
 
-    assert( isascii( t ) );
+    assert( isascii( s ) );
 
     cur = text;
 
-    if( t == DOLLAR ) {
+    if( s == DOLLAR ) {
         *cur++ = DOLLAR;
-        t = PreGetCH();
-        if( t == '+' ) {
+        s = PreGetCH();
+        if( s == '+' ) {
             return( MAC_EXPAND_ON );
         }
-    } else if( t == EOL ) {
-        return( EOL );
     }
 
-    onlyws = isws( t );
+    onlyws = isws( s );
 
     while( cur - text < MAX_TOK_SIZE - 1 ) {
-        *cur++ = t;
+        *cur++ = s;
 
-        t = PreGetCH();
+        s = PreGetCH();
 
-        if(    t == STRM_END
-            || t == STRM_MAGIC
-            || t == EOL
-            || t == DOLLAR
-            || (onlyws && !isws( t ))
-            || (!onlyws && isws( t )) ) {
+        if(    s == STRM_END
+            || s == STRM_MAGIC
+            || s == EOL
+            || s == DOLLAR
+            || (onlyws && !isws( s ))
+            || (!onlyws && isws( s )) ) {
             break;
         }
     }
 
-    UnGetCH( t );
+    UnGetCH( s );
 
     *cur = NULLCHAR;
     CurAttr.ptr = StrDupSafe( text );

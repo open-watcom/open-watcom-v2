@@ -166,7 +166,7 @@ STATIC void handleMacroDefn( const char *buf )
     *p = '=';                   /* lex doesn't recognize '#' */
 
     InsString( q, FALSE );     /* put arg into stream */
-    while( LexToken( LEX_PARSER ) != STRM_END ) {
+    while( LexToken( LEX_PARSER ) != TOK_END ) {
         /* NOP - eat all the characters */
     }
 
@@ -180,7 +180,7 @@ STATIC void handleMacroDefn( const char *buf )
         }
 
         InsString( q, FALSE );     /* put arg into stream */
-        while( LexToken( LEX_PARSER ) != STRM_END ) {
+        while( LexToken( LEX_PARSER ) != TOK_END ) {
             /* NOP - eat the characters. Needs own eater. W.Briscoe 20041014 */
         }
     }

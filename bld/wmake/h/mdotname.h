@@ -24,48 +24,36 @@
 *
 *  ========================================================================
 *
-* Description:  mstream.c interfaces
+* Description:  wmake dot directives definition
 *
 ****************************************************************************/
 
 
-#ifndef _MSTREAM_H
-#define _MSTREAM_H  1
+/* this must be in alpha order!   */
 
-/*
- * This is the type which GetCHR returns - this is the stream's data type.
- */
-
-typedef enum {
-/*
- * special stream 'characters'
- */
-    STRM_TMP_LEX_START = -4,    /* temporary place holder for lexParser*/
-    STRM_TMP_EOL       = -3,    /* temporary place holder for microsoft eol */
-                                /* to see whether or not we should check for */
-                                /* bang                                      */
-    STRM_MAGIC         = -2,    /* this value is never placed in the stream by
-                                 * the stream routines - someone must do an
-                                 * UnGetCH( STRM_MAGIC )
-                                 */
-    STRM_END           = -1,    /* no more data in waiting */
-
-    STRM_ASCII_MIN     = 0x00,  /* all base and extended ASCII characters */
-    STRM_ASCII_MAX     = 0xFF,
-
-} STRM_T;
-
-/*
- * prototypes
- */
-extern RET_T    InsFile( const char *namem, BOOLEAN envsearch );
-extern void     InsOpenFile( int fh );
-extern void     InsString( const char *str, BOOLEAN weFree );
-extern void     UnGetCH( STRM_T s );
-extern STRM_T   GetCHR( void );
-extern void     StreamInit( void );
-extern void     StreamFini( void );
-extern RET_T    GetFileLine( const char **pname, UINT16 *pline );
-extern int      IsStreamEOF( void );
-
-#endif /* !_MSTREAM_H */
+/*      text            enum      */
+pick( "AFTER",          DOT_AFTER )
+pick( "ALWAYS",         DOT_ALWAYS )
+pick( "AUTODEPEND",     DOT_AUTO_DEPEND )
+pick( "BEFORE",         DOT_BEFORE )
+pick( "BLOCK",          DOT_BLOCK )
+pick( "CONTINUE",       DOT_CONTINUE )
+pick( "DEFAULT",        DOT_DEFAULT )
+pick( "ERASE",          DOT_ERASE )
+pick( "ERROR",          DOT_ERROR )
+pick( "EXISTSONLY",     DOT_EXISTSONLY )
+pick( "EXPLICIT",       DOT_EXPLICIT )
+pick( "EXTENSIONS",     DOT_EXTENSIONS )
+pick( "FUZZY",          DOT_FUZZY )
+pick( "HOLD",           DOT_HOLD )
+pick( "IGNORE",         DOT_IGNORE )
+pick( "JUST_ENOUGH",    DOT_RCS_MAKE )
+pick( "MULTIPLE",       DOT_MULTIPLE )
+pick( "NOCHECK",        DOT_NOCHECK )
+pick( "OPTIMIZE",       DOT_OPTIMIZE )
+pick( "PRECIOUS",       DOT_PRECIOUS )
+pick( "PROCEDURE",      DOT_PROCEDURE )
+pick( "RECHECK",        DOT_RECHECK )
+pick( "SILENT",         DOT_SILENT )
+pick( "SUFFIXES",       DOT_SUFFIXES )
+pick( "SYMBOLIC",       DOT_SYMBOLIC )

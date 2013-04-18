@@ -78,7 +78,7 @@ STATIC void ignoring( TOKEN_T t, BOOLEAN freelex )
     PrtMsg( ERR | LOC | IGNORE_OUT_OF_PLACE_M, y );
 
     if( freelex ) {
-        LexMaybeFree( (TOKEN_T)y );
+        LexMaybeFree( t );
     }
 }
 
@@ -87,7 +87,7 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
 /***************************************************
  * Parse the input, building a TLIST on dest.  Accept TOK_FILENAME,
  * TOK_SUFSUF and TOK_DOTNAME( if IsDotWithCmds() ).  Terminate on
- * EOL, STRM_END, TOK_SCOLON, or TOK_DCOLON.  Ignore all other tokens.
+ * TOK_EOL, TOK_END, TOK_SCOLON, or TOK_DCOLON.  Ignore all other tokens.
  * returns: token it terminates on
  */
 {
@@ -99,8 +99,8 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
         switch( t ) {
         case TOK_SCOLON:            /* fall through */
         case TOK_DCOLON:
-        case EOL:
-        case STRM_END:
+        case TOK_EOL:
+        case TOK_END:
             return( t );
         case TOK_SUFSUF:
             if( !SufBothExist( CurAttr.ptr ) ) {
@@ -112,10 +112,10 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
             FreeSafe( CurAttr.ptr );
             break;
         case TOK_DOTNAME:
-            if( !IsDotWithCmds( CurAttr.num ) ) {
+            if( !IsDotWithCmds( CurAttr.u.dotname ) ) {
                 ignoring( TOK_DOTNAME, TRUE );
             } else {
-                FmtStr( dotname, ".%s", DotNames[CurAttr.num] );
+                FmtStr( dotname, ".%s", DotNames[CurAttr.u.dotname] );
                 WildTList( dest, dotname, TRUE, TRUE);
             }
             break;
@@ -260,13 +260,13 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
     for( ;; ) {
         t = LexToken( LEX_PARSER );
 
-        if( t == EOL || t == STRM_END ) {
+        if( t == TOK_EOL || t == TOK_END ) {
             break;
         }
 
         switch( t ) {
         case TOK_DOTNAME:
-            switch( CurAttr.num ) {
+            switch( CurAttr.u.dotname ) {
             case DOT_ALWAYS:
                 pattr->always = TRUE;
                 break;
@@ -411,7 +411,7 @@ STATIC void parseTargDep( TOKEN_T t, TLIST **btlist )
         return;
     }
 
-    nodep = t == EOL || t == STRM_END;  /* check if there wasn't a colon */
+    nodep = t == TOK_EOL || t == TOK_END;  /* check if there wasn't a colon */
 
     /* set the scolon attribute for each of these targets */
     setSColon( *btlist, (int)(t == TOK_SCOLON || nodep) );
@@ -446,20 +446,20 @@ STATIC void parseExtensions( void )
 
     for( ;; ) {
         t = LexToken( LEX_PARSER );
-        if( t == EOL || t == STRM_END || t == TOK_SCOLON ) {
+        if( t == TOK_EOL || t == TOK_END || t == TOK_SCOLON ) {
             break;
         }
         PrtMsg( ERR | LOC | EXPECTING_M, M_SCOLON );
         LexMaybeFree( t );
     }
-    if( t == EOL || t == STRM_END ) {
+    if( t == TOK_EOL || t == TOK_END ) {
         ClearSuffixes();
         return;
     }
     any = FALSE;
     for( ;; ) {
         t = LexToken( LEX_PARSER );
-        if( t == EOL || t == STRM_END ) {
+        if( t == TOK_EOL || t == TOK_END ) {
             break;
         }
         if( t == TOK_SUF ) {
@@ -491,16 +491,16 @@ STATIC void parseDotName( TOKEN_T t, TLIST **btlist )
  * parse any of the dotnames
  */
 {
-    if( IsDotWithCmds( CurAttr.num ) ) {
+    if( IsDotWithCmds( CurAttr.u.dotname ) ) {
             parseTargDep( TOK_DOTNAME, btlist );
             return;
     }
-    if( CurAttr.num == DOT_EXTENSIONS || CurAttr.num == DOT_SUFFIXES ) {
+    if( CurAttr.u.dotname == DOT_EXTENSIONS || CurAttr.u.dotname == DOT_SUFFIXES ) {
         parseExtensions();
         return;
     }
     for( ;; ) {
-        switch( CurAttr.num ) {
+        switch( CurAttr.u.dotname ) {
         case DOT_BLOCK:         Glob.block = TRUE;              break;
         case DOT_CONTINUE:      Glob.cont = TRUE;               break;
         case DOT_ERASE:         Glob.erase = TRUE;              break;
@@ -517,7 +517,7 @@ STATIC void parseDotName( TOKEN_T t, TLIST **btlist )
         }
         for( ;; ) {
             t = LexToken( LEX_PARSER );
-            if( t == EOL || t == STRM_END ) {
+            if( t == TOK_EOL || t == TOK_END ) {
                 return;
             }
             if( t != TOK_DOTNAME ) {
@@ -683,7 +683,7 @@ STATIC void parseSuf( void )
     t = TOK_SUF;
 
     for( ;; ) {
-        if( t == EOL || t == STRM_END || t == TOK_SCOLON ) {
+        if( t == TOK_EOL || t == TOK_END || t == TOK_SCOLON ) {
             break;
         }
         if( t == TOK_SUF ) {
@@ -703,12 +703,12 @@ STATIC void parseSuf( void )
     }
 
                 /* note that we use mode LEX_PATH here NOT LEX_PARSER! */
-    if( t == STRM_END || t == EOL ) {
+    if( t == TOK_END || t == TOK_EOL ) {
         path = NULL;
     } else {
         t = LexToken( LEX_PATH );
-        assert( t == TOK_PATH || t == STRM_END || t == EOL );
-        if( t == STRM_END || t == EOL ) {
+        assert( t == TOK_PATH || t == TOK_END || t == TOK_EOL );
+        if( t == TOK_END || t == TOK_EOL ) {
             path = NULL;
         } else {
             path = CurAttr.ptr;
@@ -717,7 +717,7 @@ STATIC void parseSuf( void )
     }
 
     for( ;; ) {
-        if( t == STRM_END || t == EOL ) {
+        if( t == TOK_END || t == TOK_EOL ) {
             break;
         }
         ignoring( t, TRUE );
@@ -814,7 +814,7 @@ STATIC void getBody( FLIST *head )
  */
 {
     FLIST       *current;
-    TOKEN_T     t;
+    STRM_T      s;
     VECSTR      buf;
     VECSTR      bufTemp;
     char        *temp;
@@ -830,13 +830,13 @@ STATIC void getBody( FLIST *head )
         buf = StartVec();
         WriteVec( buf, "" );
         for( ;; ) {
-            t = PreGetCH();
-            if( t == STRM_END ) {
-                UnGetCH( t );
+            s = PreGetCH();
+            if( s == STRM_END ) {
+                UnGetCH( s );
                 PrtMsg( ERR | LOC | UNEXPECTED_EOF );
                 return;
             }
-            UnGetCH( t );
+            UnGetCH( s );
             temp = ignoreWSDeMacro( TRUE, ForceDeMacro() );
             if( temp[0] == LESSTHAN ) {
                 if( temp[1] == LESSTHAN ) {
@@ -1043,7 +1043,7 @@ TLIST *Parse( void )
         t = LexToken( LEX_PARSER );
         ImplicitDeMacro = FALSE;
 
-        if( t != TOK_CMD && t != EOL ) {
+        if( t != TOK_CMD && t != TOK_EOL ) {
             if( btlist != NULL ) {
                 /* link the commands to the targets */
                 linkCList( btlist, bclist, cur_target_path, cur_depend_path );
@@ -1065,12 +1065,12 @@ TLIST *Parse( void )
             clist_warning_given = FALSE;
         }
 
-        if( t == STRM_END ) {
+        if( t == TOK_END ) {
             break;
         }
 
         switch( t ) {
-        case EOL:
+        case TOK_EOL:
             break;
         case TOK_CMD:
             if( *CurAttr.ptr == NULLCHAR ) {
@@ -1107,8 +1107,8 @@ TLIST *Parse( void )
             parseSuf();
             break;
         case TOK_SUFSUF:
-            parseTargDep( t, &btlist );
             getCurTargDepPath( &cur_target_path, &cur_depend_path );
+            parseTargDep( t, &btlist );
             if( btlist != NULL ) {
                 btlist->target->sufsuf = TRUE;
             }

@@ -471,7 +471,7 @@ STATIC RET_T createFile( const FLIST *head )
          */
         UnGetCH( STRM_MAGIC );
         InsString( head->fileName, FALSE );
-        fileName = DeMacro( STRM_MAGIC );
+        fileName = DeMacro( TOK_MAGIC );
         GetCHR();           /* eat STRM_MAGIC */
     } else {
         ret = RET_ERROR;
@@ -2084,7 +2084,7 @@ RET_T ExecCList( CLIST *clist )
         if( ret == RET_SUCCESS ) {
             UnGetCH( STRM_MAGIC );
             InsString( clist->text, FALSE );
-            line = DeMacro( STRM_MAGIC );
+            line = DeMacro( TOK_MAGIC );
             GetCHR();        /* eat STRM_MAGIC */
             if( Glob.verbose ) {
                  ret = VerbosePrintTempFile( currentFlist );

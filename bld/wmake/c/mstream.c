@@ -85,7 +85,7 @@ typedef struct streamEntry {
             const char    *str;     /* beginning of string                  */
         } str;                      /* for SENT_STR                         */
 
-        STRM_T ch;                  /* for SENT_CHAR                        */
+        STRM_T s;                   /* for SENT_CHAR                        */
     } data;
 
     struct streamEntry *next;       /* linked list representation of stack  */
@@ -303,18 +303,17 @@ void InsString( const char *str, BOOLEAN weFree )
 }
 
 
-void UnGetCH( STRM_T c )
+void UnGetCH( STRM_T s )
 /******************************
  * Push back a single character
  */
 {
     SENT    *tmp;
 
-    assert( isascii( c ) || c == STRM_END || c == STRM_MAGIC ||
-            c == TMP_EOL || c == TMP_LEX_START);
+    assert( isascii( s ) || s == STRM_END || s == STRM_MAGIC || s == STRM_TMP_EOL || s == STRM_TMP_LEX_START);
 
     tmp = getSENT( SENT_CHAR );
-    tmp->data.ch = c;
+    tmp->data.s = s;
 }
 
 
@@ -376,7 +375,7 @@ STRM_T GetCHR( void )
             }
             return( result );
         case SENT_CHAR:
-            result = head->data.ch;
+            result = head->data.s;
             popSENT();
             return( result );
         }

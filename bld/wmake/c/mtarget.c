@@ -167,7 +167,7 @@ TARGET *FindTarget( const char *name )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-CLIST *DotCList( enum DotNames dot )
+CLIST *DotCList( DotName dot )
 /***********************************
  * find clist associated with dotname
  */
@@ -676,7 +676,7 @@ STATIC BOOLEAN printTarg( void *node, void *ptr )
 }
 
 
-STATIC void printDot( enum DotNames dot )
+STATIC void printDot( DotName dot )
 /***************************************/
 {
     char                buf[MAX_DOT_NAME];
@@ -696,7 +696,7 @@ STATIC void printDot( enum DotNames dot )
 void PrintTargets( void )
 /***********************/
 {
-    enum DotNames   i;
+    DotName i;
 
     for( i = DOT_MIN; i < DOT_MAX; ++i ) {
         if( IsDotWithCmds( i ) ) {

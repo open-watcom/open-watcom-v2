@@ -54,46 +54,20 @@
 #define INCLUDE      "INCLUDE"  // include directory for include file search
 
 
-enum directiveTok {             // must be kept in sync with directives
+typedef enum {                  // must be kept in sync with directives
     D_BLANK = -1,               // a blank line
-    D_DEFINE,
-    D_ELSE,
-    D_ENDIF,
-    D_ERROR,
-    D_IF,   // MS Compatibility Directive.  NMAKE binary and string operations.
-    D_IFDEF,
-    D_IFEQ,
-    D_IFEQI,
-    D_IFNDEF,
-    D_IFNEQ,
-    D_IFNEQI,
-    D_INCLUDE,
-    D_INJECT,
-    D_LOADDLL,
-    D_MESSAGE,
-    D_UNDEF,
+    #define pick(text,enum) enum,
+    #include "mdirectiv.h"
+    #undef pick
     D_MAX
-};
+} directiveTok;
 
 STATIC const char * const directives[] = {   // table must be lexically sorted.
-    "define",
-    "else",
-    "endif",
-    "error",
-    "if",
-    "ifdef",
-    "ifeq",
-    "ifeqi",
-    "ifndef",
-    "ifneq",
-    "ifneqi",
-    "include",
-    "inject",
-    "loaddll",
-    "message",
-    "undef"
+    #define pick(text,enum) text,
+    #include "mdirectiv.h"
+    #undef pick
 };
-#define NUM_DIRECT      (sizeof( directives ) / sizeof( char * ))
+#define NUM_DIRECT      D_MAX
 
 #define MAX_DIR_LEN     8       // num chars incl null-terminator
 
@@ -108,7 +82,7 @@ STATIC BOOLEAN  doingPreProc;   // are we doing some preprocessing?
  * MS Compatability extension to add the if (expression) functionality
  */
 
-STATIC void doElIf( BOOLEAN (*logical)(void), enum directiveTok tok );
+STATIC void doElIf( BOOLEAN (*logical)(void), directiveTok tok );
 
 // local functions
 STATIC void parseExpr ( DATAVALUE *leftVal, char *inString );
@@ -186,14 +160,14 @@ STATIC STRM_T eatWhite( void )
  * returns: the first non-whitespace character is returned
  */
 {
-    STRM_T  t;
+    STRM_T  s;
 
-    t = PreGetCH();
-    while( isws( t ) ) {
-        t = PreGetCH();
+    s = PreGetCH();
+    while( isws( s ) ) {
+        s = PreGetCH();
     }
 
-    return( t );
+    return( s );
 }
 
 
@@ -204,45 +178,45 @@ STATIC STRM_T eatToEOL( void )
  * returns: first ( EOL || STRM_END )
  */
 {
-    STRM_T  t;
+    STRM_T  s;
 
-    t = PreGetCH();
-    while( t != EOL && t != STRM_END ) {
-        t = PreGetCH();
+    s = PreGetCH();
+    while( s != EOL && s != STRM_END ) {
+        s = PreGetCH();
     }
 
-    return( t );
+    return( s );
 }
 
 
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC int getPreTok( void )
-/***************************
+STATIC directiveTok getPreTok( void )
+/************************************
  * pre:     the '!' has been eaten by caller
  * post:    first character following token is next char of input
  * returns: D_BLANK if no tokens on line, or token unrecognized,
  *          otherwise the D_ number of the token
  */
 {
-    TOKEN_T t;
+    STRM_T  s;
     char    tok[MAX_PRE_TOK];
     int     pos;
     char    **key;
     char    *tmp;               /* to pass tok buf to bsearch */
 
-    t = eatWhite();
+    s = eatWhite();
 
-    if( t == EOL ) {
-        UnGetCH( t );
+    if( s == EOL ) {
+        UnGetCH( s );
         return( D_BLANK );
     }
 
     pos = 0;
-    while( isalpha( t ) && ( pos < MAX_PRE_TOK - 1 ) ) {
-        tok[pos++] = t;
-        t = PreGetCH();
+    while( isalpha( s ) && ( pos < MAX_PRE_TOK - 1 ) ) {
+        tok[pos++] = s;
+        s = PreGetCH();
         // MS Compatability ELSE IFEQ can also be defined as ELSEIFEQ
         // similar for other types of if preprocessor directives
         if( pos == 4 ) {
@@ -254,7 +228,7 @@ STATIC int getPreTok( void )
     }
     tok[pos] = NULLCHAR;
 
-    UnGetCH( t );
+    UnGetCH( s );
     UnGetCH( eatWhite() );
 
     tmp = tok;
@@ -342,7 +316,7 @@ STATIC BOOLEAN ifOp( void )
 
     assert( !curNest.skip2endif );
 
-    test = DeMacro( EOL );
+    test = DeMacro( TOK_EOL );
     (void)eatToEOL();
 
     parseExpr( &temp, test );
@@ -370,7 +344,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     *v2 = NULL;
 
     name = DeMacro( MAC_PUNC );
-    test = DeMacro( EOL );
+    test = DeMacro( TOK_EOL );
     (void)eatToEOL();
 
     if( !IsMacroName( name ) ) {
@@ -390,7 +364,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
 
     UnGetCH( EOL );
     InsString( value, TRUE );
-    value = DeMacro( EOL );
+    value = DeMacro( TOK_EOL );
     (void)eatToEOL();
 
     chopTrailWS( test );            /* chop trailing ws */
@@ -465,7 +439,7 @@ STATIC BOOLEAN ifNEqi( void )
 }
 
 
-STATIC void bangIf( BOOLEAN (*logical)(void), enum directiveTok tok )
+STATIC void bangIf( BOOLEAN (*logical)(void), directiveTok tok )
 /********************************************************************
  * pre:
  * post:    nestLevel > old(nestLevel); skip if false logical, or currently
@@ -563,7 +537,7 @@ STATIC void doElse( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC void doElIf( BOOLEAN (*logical)(void), enum directiveTok tok )
+STATIC void doElIf( BOOLEAN (*logical)(void), directiveTok tok )
 /********************************************************************
  * post:    skip if !logical || skip2endif
  * aborts:  if not nested
@@ -620,7 +594,7 @@ STATIC void bangElse( void )
  * aborts:  if illegal directive
  */
 {
-    enum directiveTok   tok;
+    directiveTok   tok;
 
     tok = getPreTok();
     switch( tok ) {
@@ -699,7 +673,7 @@ STATIC void bangInject( void )
     char    *value;
 
     assert( !curNest.skip );
-    text = DeMacro( EOL );
+    text = DeMacro( TOK_EOL );
     (void)eatToEOL();
     contents = skipWhileWS( text );
     if( *contents == '\0' ) {
@@ -754,7 +728,7 @@ STATIC void bangLoadDLL( void )
     char    *end_ent_name;
 
     assert( !curNest.skip );
-    text = DeMacro( EOL );
+    text = DeMacro( TOK_EOL );
     (void)eatToEOL();
     cmd_name = skipWhileWS( text );
     if( *cmd_name == '\0' ) {
@@ -882,7 +856,7 @@ STATIC void bangInclude( void )
 
     assert( !curNest.skip );
 
-    text = DeMacro( EOL );
+    text = DeMacro( TOK_EOL );
     (void)eatToEOL();
 
     chopTrailWS( text );    /* get rid of trailing ws */
@@ -951,7 +925,7 @@ STATIC void bangMessage( void )
 
     assert( !curNest.skip );
 
-    text = DeMacro( EOL );
+    text = DeMacro( TOK_EOL );
     (void)eatToEOL();
 
     chopTrailWS( text );
@@ -970,7 +944,7 @@ STATIC void bangError( void )
 
     assert( !curNest.skip );
 
-    text = DeMacro( EOL );
+    text = DeMacro( TOK_EOL );
     (void)eatToEOL();
 
     chopTrailWS( text );
@@ -986,7 +960,7 @@ STATIC void handleBang( void )
  * post:    atStartOfLine == EOL
  */
 {
-    enum directiveTok   tok;
+    directiveTok   tok;
 
     tok = getPreTok();
     /* these are executed regardless of skip */
@@ -1028,21 +1002,21 @@ static int PreTestString( const char *str )
  * If not, push back any characters read.
  */
 {
-    const char  *s = str;
-    STRM_T      t;
+    const char  *p = str;
+    STRM_T      s;
     int         rc = FALSE;
 
     for( ;; ) {
-        t = GetCHR();
-        if( t != *s ) {
-            UnGetCH( t );
-            while( s-- > str ) {
-                UnGetCH( *s );
+        s = GetCHR();
+        if( s != *p ) {
+            UnGetCH( s );
+            while( p-- > str ) {
+                UnGetCH( *p );
             }
             break;
         }
-        ++s;
-        if( *s == '\0' ) {
+        ++p;
+        if( *p == '\0' ) {
             rc = TRUE;
             break;
         }
@@ -1057,157 +1031,157 @@ STRM_T PreGetCH( void )
  * errors:  if an EOF occurs while nested
  */
 {
-    STRM_T  t;
+    STRM_T  s;
     STRM_T  temp;
     BOOLEAN skip;
 
-    t = GetCHR();
+    s = GetCHR();
     if( !Glob.preproc ) {
-        return( t );
+        return( s );
     }
 
     for( ;; ) {
-        if( !doingPreProc && (atStartOfLine == EOL || t == TMP_EOL) ) {
-            if( t == TMP_EOL ) {
+        if( !doingPreProc && (atStartOfLine == EOL || s == STRM_TMP_EOL) ) {
+            if( s == STRM_TMP_EOL ) {
                 // Throw away the unwanted TMP character
-                t = GetCHR();
-                if( t != BANG ) {
-                    UnGetCH( t );
-                    t = TMP_EOL;
+                s = GetCHR();
+                if( s != BANG ) {
+                    UnGetCH( s );
+                    s = STRM_TMP_EOL;
                 }
             }
             doingPreProc = TRUE;
 
             if( Glob.compat_nmake || Glob.compat_posix ) {
                 /* Check for NMAKE and UNIX compatible 'include' directive */
-                if( t == 'i' && PreTestString( "nclude " ) ) {
+                if( s == 'i' && PreTestString( "nclude " ) ) {
                     UnGetCH( eatWhite() );
                     bangInclude();
-                    t = GetCHR();
+                    s = GetCHR();
                 }
             }
-            while( t == BANG ) {
+            while( s == BANG ) {
                 handleBang();
 
                 assert( atStartOfLine == EOL );
 
-                t = GetCHR();
+                s = GetCHR();
             }
             doingPreProc = FALSE;
         }
 
         /* now we have a character of input */
 
-        atStartOfLine = t;
-        temp          = t;
+        atStartOfLine = s;
+        temp          = s;
 
         skip = curNest.skip && !doingPreProc;
 
-        if( t == TMP_EOL ) {
-            t = GetCHR();
+        if( s == STRM_TMP_EOL ) {
+            s = GetCHR();
         }
-        if( t == COMMENT && lastChar != DOLLAR && inlineLevel == 0 ) {
-            t = GetCHR();
-            while( t != EOL && t != STRM_END ) {
-                t = GetCHR();
+        if( s == COMMENT && lastChar != DOLLAR && inlineLevel == 0 ) {
+            s = GetCHR();
+            while( s != EOL && s != STRM_END ) {
+                s = GetCHR();
             }
-            if( temp == TMP_EOL ) {
-                t = TMP_EOL;
+            if( temp == STRM_TMP_EOL ) {
+                s = STRM_TMP_EOL;
             }
             /* we already have next char in t */
             continue;
         }
 
-        if( t == STRM_END ) {
+        if( s == STRM_END ) {
             curNest.skip = FALSE;       /* so we don't skip a later file */
             curNest.skip2endif = FALSE;
 
-            atStartOfLine = EOL;        /* reset preprocessor */
+            atStartOfLine = EOL;   /* reset preprocessor */
             lastChar = STRM_END;
-            return( t );
+            return( s );
         }
 
         if( inlineLevel > 0 ) {   // We are currently defining an inline file
-            lastChar = t;         // ignore all special characters ie {nl}
+            lastChar = s;         // ignore all special characters ie {nl}
             if( skip ) {
-                t = GetCHR();
+                s = GetCHR();
                 continue;
             }
-            return( t );
+            return( s );
         } else {
-            if( Glob.compat_nmake && t == MS_LINECONT ) {
-                t = GetCHR();
-                if( t == EOL ) {
+            if( Glob.compat_nmake && s == MS_LINECONT ) {
+                s = GetCHR();
+                if( s == EOL ) {
                     lastChar = SPACE;
                     if( skip ) {
-                        t = TMP_EOL;
+                        s = STRM_TMP_EOL;
                         continue;
                     }
                     // place holder for temporary EOL
                     // this is to be able to implement the
                     // bang statements after line continues
-                    UnGetCH( TMP_EOL );
+                    UnGetCH( STRM_TMP_EOL );
                     return( SPACE );
                 } else {
                     lastChar = MS_LINECONT;
                     if( skip ) {
-                        t = GetCHR();
+                        s = GetCHR();
                         continue;
                     }
-                    UnGetCH( t );
+                    UnGetCH( s );
                     return( MS_LINECONT );
                 }
             }
 
-            if( t != LINECONT ) {
-                if( t != UNIX_LINECONT || !Glob.compat_unix ) {
-                    lastChar = t;
+            if( s != LINECONT ) {
+                if( s != UNIX_LINECONT || !Glob.compat_unix ) {
+                    lastChar = s;
                     if( skip ) {
-                        t = GetCHR();   /* must get next char */
+                        s = GetCHR();   /* must get next char */
                         continue;
                     }
-                    return( t );
+                    return( s );
                 }
-                t = GetCHR();
-                if( t != EOL ) {
+                s = GetCHR();
+                if( s != EOL ) {
                     lastChar = UNIX_LINECONT;
                     if( skip ) {
                         continue;       /* already have next char */
                     }
-                    UnGetCH( t );
+                    UnGetCH( s );
                     return( UNIX_LINECONT );
                 } else {
                     if( skip ) {
                         continue;       /* already have next char */
                     }
-                    UnGetCH( TMP_EOL );
+                    UnGetCH( STRM_TMP_EOL );
                 }
             } else {
-                t = GetCHR();           /* check if '&' followed by {nl} */
-                if( t != EOL || lastChar == '^' ||
+                s = GetCHR();           /* check if '&' followed by {nl} */
+                if( s != EOL || lastChar == '^' ||
                     lastChar == '[' || lastChar == ']' ) {
                            /* nope... restore state */
                     lastChar = LINECONT;
                     if( skip ) {
                         continue;       /* already have next char */
                     }
-                    UnGetCH( t );
+                    UnGetCH( s );
                     return( LINECONT );
                 } else {
                     if( skip ) {
                         continue;       /* already have next char */
                     }
-                    UnGetCH( TMP_EOL );
+                    UnGetCH( STRM_TMP_EOL );
                 }
             }
         }
-        t = GetCHR();
+        s = GetCHR();
     }
 }
 
 
-STATIC void makeToken( enum Tokens type, TOKEN_TYPE *current, int *index )
-/************************************************************************/
+STATIC void makeToken( TOKEN_O type, TOKEN_TYPE *current, int *index )
+/********************************************************************/
 {
     switch( type ) {
         case OP_COMPLEMENT:

@@ -83,19 +83,20 @@ extern char *dep_path;    /* Current sufsuf dependent path */
                          || (__c) == 'r' )
 
 /*
- * The tokens which Scan() will use - it may not return each and every one
- * of these (notably the preprocessor tokens - they are handled internally)
+ * The tokens which Scan() will use
  */
 
-#define TOK_MIN     400
-#define MAC_MIN     500
+typedef enum {
 
-enum Tokens {
+    TOK_NULL = 0,
+    TOK_MAGIC,
+    TOK_END,
+    TOK_EOL,
 
     /*
      * dependency & rule parser tokens
      */
-    TOK_SCOLON = TOK_MIN,           /* ":"                  */
+    TOK_SCOLON,                     /* ":"                  */
     TOK_DCOLON,                     /* "::"                 */
     TOK_FILENAME,                   /* "{filec}+"           */
     TOK_DOTNAME,                    /* special dot name     */
@@ -104,12 +105,10 @@ enum Tokens {
     TOK_SUFSUF,                     /* .{extc}+.{extc}+     */
     TOK_PATH,                       /* {filec}+(;{filec}*)+ */
 
-    TOK_MAX,
-
     /*
      * macro parser tokens
      */
-    MAC_START = MAC_MIN,            /* "$"              */
+    MAC_START,                      /* "$"              */
     MAC_DOLLAR,                     /* "$$"             */
     MAC_COMMENT,                    /* "$#"             */
     MAC_OPEN,                       /* "$("             */
@@ -129,7 +128,9 @@ enum Tokens {
                                        inference rules there are two types
                                        of dependent files*/
 
-    MAC_MAX,
+} TOKEN_T;
+
+typedef enum {
 
     // These token types are for MS Compatability which allows the
     // use of if (constantExpression) in its preprocessing
@@ -163,10 +164,7 @@ enum Tokens {
     OP_ENDOFSTRING,                /* End of string Character */
     OP_ERROR,                      /* Token returned has error */
 
-    OP_MAX,
-
-    TOKENS_MAX
-};
+} TOKEN_O;
 
 #define COMPLEMENT      '~'
 #define LOG_NEGATION    '!'
@@ -194,44 +192,22 @@ enum Tokens {
 
 // Node Definition for the tokens
 typedef struct  TOKEN_OP {
-    enum Tokens type;    // Type of Token
+    TOKEN_O     type;       // Type of Token
     union {
-        INT32   number;        // string value
+        INT32   number;     // string value
         char    string[MAX_STRING];
     }   data;
 }   TOKEN_TYPE;
 
 typedef TOKEN_TYPE DATAVALUE;
 
-enum DotNames {                 /* must be in alpha order! */
+typedef enum {
     DOT_MIN = -1,
-    DOT_AFTER,                      /* ".AFTER"         */
-    DOT_ALWAYS,                     /* ".ALWAYS"        */
-    DOT_AUTO_DEPEND,                /* ".AUTODEPEND"    */
-    DOT_BEFORE,                     /* ".BEFORE"        */
-    DOT_BLOCK,                      /* ".BLOCK"         */
-    DOT_CONTINUE,                   /* ".CONTINUE"      */
-    DOT_DEFAULT,                    /* ".DEFAULT"       */
-    DOT_ERASE,                      /* ".ERASE"         */
-    DOT_ERROR,                      /* ".ERROR"         */
-    DOT_EXISTSONLY,                 /* ".EXISTSONLY"    */
-    DOT_EXPLICIT,                   /* ".EXPLICIT"      */
-    DOT_EXTENSIONS,                 /* ".EXTENSIONS"    */
-    DOT_FUZZY,                      /* ".FUZZY"         */
-    DOT_HOLD,                       /* ".HOLD"          */
-    DOT_IGNORE,                     /* ".IGNORE"        */
-    DOT_RCS_MAKE,                   /* ".JUST_ENOUGH"   */
-    DOT_MULTIPLE,                   /* ".MULTIPLE"      */
-    DOT_NOCHECK,                    /* ".NOCHECK"       */
-    DOT_OPTIMIZE,                   /* ".OPTIMIZE"      */
-    DOT_PRECIOUS,                   /* ".PRECIOUS"      */
-    DOT_PROCEDURE,                  /* ".PROCEDURE"     */
-    DOT_RECHECK,                    /* ".RECHECK"       */
-    DOT_SILENT,                     /* ".SILENT"        */
-    DOT_SUFFIXES,                   /* ".SUFFIXES"      */
-    DOT_SYMBOLIC,                   /* ".SYMBOLIC"      */
-    DOT_MAX                         /* must always be last */
-};
+    #define pick(text,enum) enum,
+    #include "mdotname.h"
+    #undef pick
+    DOT_MAX
+} DotName;
 
 #define MAX_DOT_NAME    16      /* maximum characters needed for dot-name */
 
@@ -247,13 +223,11 @@ enum DotNames {                 /* must be in alpha order! */
     || (i) == DOT_DEFAULT   \
     || (i) == DOT_ERROR )
 
-typedef STRM_T  TOKEN_T;
-
 /*
  * These are the values returned in CurAttr.num with the MAC_CUR,
  * MAC_FIRST, and MAC_LAST tokens.
  */
-enum FormQualifiers {
+typedef enum {
     FORM_MIN = 0,
     FORM_FULL,                  /* '@' */
     FORM_NOEXT,                 /* '*' */
@@ -262,7 +236,7 @@ enum FormQualifiers {
     FORM_PATH,                  /* ':' */
     FORM_EXT,                   /* '!' */
     FORM_MAX
-};
+} FormQualifiers;
 
 
 /*
@@ -271,7 +245,10 @@ enum FormQualifiers {
 extern const char * const   DotNames[];
 extern union CurAttrUnion {
     char    *ptr;
-    INT16   num;
+    union {
+        FormQualifiers  form;
+        DotName         dotname;
+    } u;
 } CurAttr;                          /* attribute of last return value */
 
 /* NOTE: If you get a pointer in CurAttr.ptr, it is yours to play with. */

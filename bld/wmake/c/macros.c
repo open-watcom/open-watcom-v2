@@ -143,7 +143,7 @@ const char *procPath( const char *fullpath )
 
     _splitpath2( fullpath, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-    switch( CurAttr.num ) {
+    switch( CurAttr.u.form ) {
     case FORM_FULL:
         _makepath( dirBuf, pg.drive, pg.dir, pg.fname, pg.ext );
         break;
@@ -199,7 +199,7 @@ STATIC const char *specialValue( TOKEN_T t )
     char const  *dirBufGot = NULL;
 
     assert( t == MAC_CUR || t == MAC_FIRST || t == MAC_LAST );
-    assert( FORM_MIN < CurAttr.num && CurAttr.num < FORM_MAX );
+    assert( FORM_MIN < CurAttr.u.form && CurAttr.u.form < FORM_MAX );
 
     switch( t ) {
     case MAC_CUR:       dirBufGot = GetCurTarg();  break;
@@ -437,7 +437,7 @@ char *GetMacroValue( const char *name )
             if( strchr( beforeSub, DOLLAR ) != NULL ) {
                 UnGetCH( STRM_MAGIC );
                 InsString( beforeSub, FALSE );
-                beforeSub = line = DeMacro( STRM_MAGIC );
+                beforeSub = line = DeMacro( TOK_MAGIC );
                 GetCHR();   // eat STRM_MAGIC
             }
             if( beforeSub == NULL ) {
@@ -647,7 +647,7 @@ char *DeMacroSpecial( char *InString)
             old = current;
             buffer[pos] = NULLCHAR;
             InsString( buffer, FALSE );
-            tempString = DeMacro( STRM_MAGIC );
+            tempString = DeMacro( TOK_MAGIC );
             PreGetCH();   // eat STRM_MAGIC
             CatStrToVec( outString, tempString );
             FreeSafe( tempString);
@@ -690,7 +690,7 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
  * Processes the tokens returned from lexToken in deMacroToEnd
  */
 {
-    STRM_T      temp;
+    STRM_T      s;
     char        temp_str[2];
     char        macname[MAX_TOK_SIZE];
     int         pos;
@@ -709,10 +709,10 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
         if( !Glob.compat_nmake && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_PUNC );
         } else {
-            temp = PreGetCH ();
-            if( ismacc( temp ) ) {
+            s = PreGetCH ();
+            if( ismacc( s ) ) {
                 temp_str[1] = NULLCHAR;
-                temp_str[0] = temp;
+                temp_str[0] = s;
                 p = StrDupSafe( temp_str );
             } else {
                 p = StrDupSafe( "" );
@@ -750,34 +750,34 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
             FreeSafe( p );
         } else {
             pos = 0;
-            temp   = PreGetCH();
-            if( ismsspecial( temp ) ) {
-                UnGetCH( temp );
+            s = PreGetCH();
+            if( ismsspecial( s ) ) {
+                UnGetCH( s );
                 // This is to invoke LexDollar
                 t = LexToken( LEX_MS_MAC );
                 // This is the only time to get the modifier
                 GetModifier();
                 p = ProcessToken( depth, end1, end2, t );
-                temp = PreGetCH();
-                if( temp != ')' ) {
-                    PrtMsg( ERR | LOC | ILLEGAL_CHARACTER_IN_MAC, temp );
+                s = PreGetCH();
+                if( s != ')' ) {
+                    PrtMsg( ERR | LOC | ILLEGAL_CHARACTER_IN_MAC, s );
                     break;
                 }
                 return( p );
             } else {
                 for( ;; ) {
-                    if( temp == ')' ) {
+                    if( s == ')' ) {
                         break;
-                    } else if( temp == STRM_MAGIC ||
-                               temp == STRM_END   ||
-                               temp == EOL ) {
-                        UnGetCH( temp );
+                    } else if( s == STRM_MAGIC ||
+                               s == STRM_END   ||
+                               s == EOL ) {
+                        UnGetCH( s );
                         break;
                     }
                     if( pos < MAX_TOK_SIZE -1 ) {
-                        macname[pos++] = temp;
+                        macname[pos++] = s;
                     }
-                    temp = PreGetCH();
+                    s = PreGetCH();
                 }
                 macname[pos] = NULLCHAR;
                 if( IsMacroName( macname ) ) {
@@ -852,17 +852,17 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
     VECSTR  vec;            /* we build expansion here  */
     char    *p;             /* temp str */
 
-    assert(     end1 == EOL
+    assert(     end1 == TOK_EOL
             ||  end1 == MAC_PUNC
-            ||  end1 == STRM_MAGIC
-            ||  end1 == STRM_END
+            ||  end1 == TOK_MAGIC
+            ||  end1 == TOK_END
             ||  end1 == MAC_WS
     );
 
-    assert(     end2 == EOL
+    assert(     end2 == TOK_EOL
             ||  end2 == MAC_PUNC
-            ||  end2 == STRM_MAGIC
-            ||  end2 == STRM_END
+            ||  end2 == TOK_MAGIC
+            ||  end2 == TOK_END
             ||  end2 == MAC_EXPAND_OFF
             ||  end2 == MAC_CLOSE
     );
@@ -879,9 +879,9 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
             CurAttr.ptr = StrDupSafe( ")" );
         }
 
-        if(     t == STRM_END               /* always stops at these */
-            ||  t == STRM_MAGIC
-            ||  t == EOL
+        if(     t == TOK_END               /* always stops at these */
+            ||  t == TOK_MAGIC
+            ||  t == TOK_EOL
             ||  t == end2
             ||  t == end1
             ||  ( t == MAC_WS && ( end2 == MAC_PUNC || end1 == MAC_PUNC ) )
@@ -902,10 +902,14 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
     case MAC_WS:
         InsString( CurAttr.ptr, TRUE );
         break;
-    case EOL:               /* fall through */
-    case STRM_END:
-    case STRM_MAGIC:
-        UnGetCH( t );
+    case TOK_EOL:       /* fall through */
+        UnGetCH( EOL );
+        break;
+    case TOK_END:
+        UnGetCH( STRM_END );
+        break;
+    case TOK_MAGIC:
+        UnGetCH( STRM_MAGIC );
         break;
     }
 
@@ -942,7 +946,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
          * with it.
          */
 
-        result = deMacroToEnd( depth, STRM_MAGIC, STRM_MAGIC );
+        result = deMacroToEnd( depth, TOK_MAGIC, TOK_MAGIC );
         (void)LexToken( LEX_MAC_SUBST );      /* eat STRM_MAGIC */
     }
 
@@ -992,31 +996,31 @@ char *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN ForcedDeMacro )
     char    *DeMacroStr;
     char    *current;
     char    *current_max;
-    TOKEN_T t;
+    STRM_T  s;
     char    *result;
 
     // Set leadingSpace - leave t set to first non-whitespace byte
     current = leadingSpace;
     current_max = current + MAX_COMMANDLINE - 1;
-    for( ; isws( t = PreGetCH() ) && current < current_max; ++current ) {
-        *current = t;
+    for( ; isws( s = PreGetCH() ) && current < current_max; ++current ) {
+        *current = s;
     }
     *current = NULLCHAR;
 
     // set text to non-whitespace string and TrailSpace to next character.
     current_max = text + MAX_COMMANDLINE - 1;
     for( TrailSpace = current = text; current < current_max; ++current ) {
-        if( t == STRM_END || t == STRM_MAGIC || t == EOL ) {
+        if( s == STRM_END || s == STRM_MAGIC || s == EOL ) {
             break;
         }
-        if( !isws( t ) ) {
+        if( !isws( s ) ) {
             TrailSpace = current + 1;
         }
-        *current = t;
-        t = PreGetCH();
+        *current = s;
+        s = PreGetCH();
     }
     *current = NULLCHAR;
-    UnGetCH( t );                           // Put back last byte read
+    UnGetCH( s );                           // Put back last byte read
 
     DeMacroText = StartVec();
     WriteNVec( DeMacroText, text, TrailSpace - text );
@@ -1026,7 +1030,7 @@ char *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN ForcedDeMacro )
     if( partDeMacro ) {                     // Expand as far as EOL
         DeMacroStr = PartDeMacro( ForcedDeMacro );
     } else {
-        DeMacroStr = DeMacro( EOL );
+        DeMacroStr = DeMacro( TOK_EOL );
     }
 
     DeMacroText = StartVec();
@@ -1049,7 +1053,7 @@ char *DeMacro( TOKEN_T end1 )
  * same as deMacroText
  */
 {
-    return( deMacroText( 0, end1, STRM_END ) );
+    return( deMacroText( 0, end1, TOK_END ) );
 }
 
 
@@ -1069,12 +1073,12 @@ STATIC char *PartDeMacroProcess( void )
 
     leadingws = TRUE;
 
-    while( ( t = LexToken( LEX_MAC_DEF ) ) != STRM_END && t != EOL ) {
+    while( ( t = LexToken( LEX_MAC_DEF ) ) != TOK_END && t != TOK_EOL ) {
         switch( t ) {
-        case STRM_MAGIC:        /* we ignore these */
+        case TOK_MAGIC:        /* we ignore these */
             break;
         case MAC_EXPAND_ON:
-            text = deMacroText( 0, EOL, MAC_EXPAND_OFF );
+            text = deMacroText( 0, TOK_EOL, MAC_EXPAND_OFF );
             InsString( text, TRUE );
             break;
         case MAC_WS:
@@ -1133,7 +1137,7 @@ char *PartDeMacro( BOOLEAN ForcedDeMacro )
  * ForcedDeMacro if set true will force full Demacro
  */
 {
-    STRM_T  t;
+    STRM_T  s;
     char    *temp;
 
     if( Glob.compat_nmake || Glob.compat_posix ) {
@@ -1141,11 +1145,11 @@ char *PartDeMacro( BOOLEAN ForcedDeMacro )
     }
     if( ForcedDeMacro ) {
         //remove white spaces at the beginning
-        while( isws( t = PreGetCH() ) ) {
+        while( isws( s = PreGetCH() ) ) {
         }
-        UnGetCH(t);
-        temp = DeMacro( EOL );
-        t = PreGetCH();
+        UnGetCH( s );
+        temp = DeMacro( TOK_EOL );
+        s = PreGetCH();
         if( Glob.compat_nmake || Glob.compat_posix ) {
             IsPartDeMacro = FALSE;
         }
@@ -1267,7 +1271,7 @@ void DefMacro( const char *name )
         }
         UnGetCH( EOL );
         InsString( value, FALSE );
-        EnvVarValue = DeMacro( EOL );
+        EnvVarValue = DeMacro( TOK_EOL );
         PreGetCH();  // eat EOL token (used to avoid assertion failure)
     }
 

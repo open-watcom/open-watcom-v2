@@ -24,48 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  mstream.c interfaces
+* Description:  wmake preprocessor directive definition
 *
 ****************************************************************************/
 
 
-#ifndef _MSTREAM_H
-#define _MSTREAM_H  1
+/* this must be lexically sorted */
 
-/*
- * This is the type which GetCHR returns - this is the stream's data type.
- */
-
-typedef enum {
-/*
- * special stream 'characters'
- */
-    STRM_TMP_LEX_START = -4,    /* temporary place holder for lexParser*/
-    STRM_TMP_EOL       = -3,    /* temporary place holder for microsoft eol */
-                                /* to see whether or not we should check for */
-                                /* bang                                      */
-    STRM_MAGIC         = -2,    /* this value is never placed in the stream by
-                                 * the stream routines - someone must do an
-                                 * UnGetCH( STRM_MAGIC )
-                                 */
-    STRM_END           = -1,    /* no more data in waiting */
-
-    STRM_ASCII_MIN     = 0x00,  /* all base and extended ASCII characters */
-    STRM_ASCII_MAX     = 0xFF,
-
-} STRM_T;
-
-/*
- * prototypes
- */
-extern RET_T    InsFile( const char *namem, BOOLEAN envsearch );
-extern void     InsOpenFile( int fh );
-extern void     InsString( const char *str, BOOLEAN weFree );
-extern void     UnGetCH( STRM_T s );
-extern STRM_T   GetCHR( void );
-extern void     StreamInit( void );
-extern void     StreamFini( void );
-extern RET_T    GetFileLine( const char **pname, UINT16 *pline );
-extern int      IsStreamEOF( void );
-
-#endif /* !_MSTREAM_H */
+/*      text        enum         */
+pick( "define",     D_DEFINE )
+pick( "else",       D_ELSE )
+pick( "endif",      D_ENDIF )
+pick( "error",      D_ERROR )
+pick( "if",         D_IF )      // MS Compatibility Directive.  NMAKE binary and string operations.
+pick( "ifdef",      D_IFDEF )
+pick( "ifeq",       D_IFEQ )
+pick( "ifeqi",      D_IFEQI )
+pick( "ifndef",     D_IFNDEF )
+pick( "ifneq",      D_IFNEQ )
+pick( "ifneqi",     D_IFNEQI )
+pick( "include",    D_INCLUDE )
+pick( "inject",     D_INJECT )
+pick( "loaddll",    D_LOADDLL )
+pick( "message",    D_MESSAGE )
+pick( "undef",      D_UNDEF )

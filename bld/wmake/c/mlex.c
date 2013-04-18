@@ -40,32 +40,10 @@
 
 union CurAttrUnion  CurAttr;    /* Attribute for last LexToken call */
 
-const char * const DotNames[] = {    /* must be in alpha order! */
-    "AFTER",
-    "ALWAYS",
-    "AUTODEPEND",
-    "BEFORE",
-    "BLOCK",
-    "CONTINUE",
-    "DEFAULT",
-    "ERASE",
-    "ERROR",
-    "EXISTSONLY",
-    "EXPLICIT",
-    "EXTENSIONS",
-    "FUZZY",
-    "HOLD",
-    "IGNORE",
-    "JUST_ENOUGH",
-    "MULTIPLE",
-    "NOCHECK",
-    "OPTIMIZE",
-    "PRECIOUS",
-    "PROCEDURE",
-    "RECHECK",
-    "SILENT",
-    "SUFFIXES",
-    "SYMBOLIC"
+const char * const DotNames[] = {
+    #define pick(text,enum) text,
+    #include "mdotname.h"
+    #undef pick
 };
 
 
@@ -91,16 +69,17 @@ TOKEN_T LexToken( enum LexMode mode )
  * returns: next token of input
  */
 {
-    STRM_T t;
+    STRM_T s;
+    TOKEN_T t;
 
-    t = PreGetCH();
+    s = PreGetCH();
 
     switch( mode ) {
-    case LEX_MAC_DEF:   t = LexMacDef( t );     break;
-    case LEX_MAC_SUBST: t = LexMacSubst( t );   break;
-    case LEX_PARSER:    t = LexParser( t );     break;
-    case LEX_PATH:      t = LexPath( t );       break;
-    case LEX_MS_MAC:    t = LexMSDollar ( t );  break;
+    case LEX_MAC_DEF:   t = LexMacDef( s );     break;
+    case LEX_MAC_SUBST: t = LexMacSubst( s );   break;
+    case LEX_PARSER:    t = LexParser( s );     break;
+    case LEX_PATH:      t = LexPath( s );       break;
+    case LEX_MS_MAC:    t = LexMSDollar ( s );  break;
     }
 
     return( t );
