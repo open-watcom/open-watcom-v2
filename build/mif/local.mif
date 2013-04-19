@@ -69,8 +69,6 @@ cxx_386     += $(bld_incs)
 !endif
 !endif
 
-!ifndef __WATCOM__
-
 ##############################################################################
 #
 # definitions for Linux native compiler
@@ -78,30 +76,10 @@ cxx_386     += $(bld_incs)
 ##############################################################################
 !ifdef __LINUX__
 
-cc   = gcc -pipe -c
-cxx  = gcc -pipe -c
-cl   = gcc -pipe
-bcc  = gcc -pipe -c
-bcxx = gcc -pipe -c
-bcl  = gcc -pipe
+!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64"
 
-librarian = ar
-blib      = ar
-
-# extra objects for linking via cl
-cl_objs_gen =
-cl_objs_dll =
-cl_libs_gen = $(watcom_dir)/$(%OWOBJDIR)/clibext.lib
-cl_libs_dll = $(watcom_dir)/$(%OWOBJDIR)/clibexts.lib
-
-!ifeq sys_dll 1
-cl_objs = $(cl_objs_dll)
-cl_libs = $(cl_libs_dll)
-!else
-cl_objs = $(cl_objs_gen)
-cl_libs = $(cl_libs_gen)
-!endif
-
+# common settings
+############################
 common_cppflags_linux = -D__LINUX__ -D__UNIX__ -D__SMALL__ -D__FLAT__
 
 common_cppflags_386   = -D_M_IX86 -D__386__ -D__LINUX_386__
@@ -130,6 +108,35 @@ common_ldflags = $(common_ldflags_rel)
 common_ldflags = $(common_ldflags_dbg)
 !endif
 
+# Flags for building DLLs
+common_cflags_lib_shared  = -fPIC
+common_clflags_lib_shared = -shared
+
+# DLL/shared library file extension
+ext_lib_shared = .so
+
+# extra objects for linking via cl
+cl_objs_gen =
+cl_objs_dll =
+cl_libs_gen = $(watcom_dir)/$(%OWOBJDIR)/clibext.lib
+cl_libs_dll = $(watcom_dir)/$(%OWOBJDIR)/clibexts.lib
+
+!ifeq sys_dll 1
+cl_objs = $(cl_objs_dll)
+cl_libs = $(cl_libs_dll)
+!else
+cl_objs = $(cl_objs_gen)
+cl_libs = $(cl_libs_gen)
+!endif
+
+# bld settings
+############################
+bcc  = gcc -pipe -c
+bcxx = gcc -pipe -c
+bcl  = gcc -pipe
+
+blib      = ar
+
 bld_cc_sys = -funsigned-char -fno-asm -fno-common
 bld_cl_sys =
 
@@ -151,10 +158,15 @@ bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_
 
 bld_libflags = crs $^@
 
-# Flags for building DLLs
-cflags_lib_shared  = -fPIC
-clflags_lib_shared = -shared
-ext_lib_shared     = .so
+!ifndef __WATCOM__
+
+# standard settings
+############################
+cc   = gcc -pipe -c
+cxx  = gcc -pipe -c
+cl   = gcc -pipe
+
+librarian = ar
 
 cppflags_linux = $(common_cppflags_linux)
 cppflags_osi   = $(common_cppflags_linux)
@@ -166,7 +178,7 @@ cppflags_x64   = $(common_cppflags_x64)
 cxxflags =
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -o $@
-cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(cflags_lib_shared) -o $@
+cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -o $@
 cflags_wind = $(cflags_gen)
 
 # options for linking
@@ -186,7 +198,7 @@ ldflags = $(ldflags_gen)
 
 # options for single source utility compilations
 clflags_gen  = $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
-clflags_dll  = $(clflags_lib_shared) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
+clflags_dll  = $(common_clflags_lib_shared) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_wind = $(clflags_gen)
 
 libflags = crs $^@
@@ -200,6 +212,9 @@ preproc_opts  = -x c -E
 # options for include source code file
 incl_file_opts = -include
 
+!endif
+!endif
+
 ##############################################################################
 #
 # definitions for NT native compiler
@@ -207,30 +222,10 @@ incl_file_opts = -include
 ##############################################################################
 !else ifdef __NT__
 
-cc   = cl -nologo -c
-cxx  = cl -nologo -c
-cl   = cl -nologo
-bcc  = cl -nologo -c
-bcxx = cl -nologo -c
-bcl  = cl -nologo
+!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64"
 
-librarian = lib -nologo
-blib      = lib -nologo
-
-# extra objects for linking via cl
-cl_objs_gen =
-cl_objs_dll =
-cl_libs_gen = $(watcom_dir)/$(%OWOBJDIR)/clibext.lib
-cl_libs_dll = $(watcom_dir)/$(%OWOBJDIR)/clibexts.lib
-
-!ifeq sys_dll 1
-cl_objs = $(cl_objs_dll)
-cl_libs = $(cl_libs_dll)
-!else
-cl_objs = $(cl_objs_gen)
-cl_libs = $(cl_libs_gen)
-!endif
-
+# common settings
+############################
 common_cppflags_nt = -D__NT__ -D__SMALL__ -D__FLAT__
 
 common_cppflags_386  = -D__386__ -D__NT_386__
@@ -264,6 +259,35 @@ common_ldflags = $(common_ldflags_rel)
 common_ldflags = $(common_ldflags_dbg)
 !endif
 
+# Flags for building DLLs
+common_cflags_lib_shared  = -LD
+common_clflags_lib_shared = -MT -LD
+
+# DLL/shared library file extension
+ext_lib_shared = .dll
+
+# extra objects for linking via cl
+cl_objs_gen =
+cl_objs_dll =
+cl_libs_gen = $(watcom_dir)/$(%OWOBJDIR)/clibext.lib
+cl_libs_dll = $(watcom_dir)/$(%OWOBJDIR)/clibexts.lib
+
+!ifeq sys_dll 1
+cl_objs = $(cl_objs_dll)
+cl_libs = $(cl_libs_dll)
+!else
+cl_objs = $(cl_objs_gen)
+cl_libs = $(cl_libs_gen)
+!endif
+
+# bld settings
+############################
+bcc  = cl -nologo -c
+bcxx = cl -nologo -c
+bcl  = cl -nologo
+
+blib = lib -nologo
+
 bld_cc_sys = -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
 bld_cl_sys =
 
@@ -286,11 +310,15 @@ bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_libs_
 
 bld_libflags = -out:$^@
 
+!ifndef __WATCOM__
 
-# Flags for building DLLs
-cflags_lib_shared  = -LD
-clflags_lib_shared = -MT -LD
-ext_lib_shared     = .dll
+# standard settings
+############################
+cc   = cl -nologo -c
+cxx  = cl -nologo -c
+cl   = cl -nologo
+
+librarian = lib -nologo
 
 cppflags_nt  = $(common_cppflags_nt)
 cppflags_osi = $(common_cppflags_nt)
@@ -300,7 +328,7 @@ cppflags_x64 = $(common_cppflags_x64)
 cxxflags = -EHsc
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -Fo$@
-cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(cflags_lib_shared) -Fo$@
+cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -Fo$@
 cflags_wind = $(cflags_gen)
 
 # options for linking
@@ -324,7 +352,7 @@ ldflags = $(ldflags_gen)
 
 # options for linking by cl
 clflags_gen  = $(bld_cl_sys) $(common_flags) -Fe$@ $(ldflags1)
-clflags_dll  = $(bld_cl_sys) $(common_flags) $(clflags_lib_shared) -Fe$@ $(ldflags1)
+clflags_dll  = $(bld_cl_sys) $(common_flags) $(common_clflags_lib_shared) -Fe$@ $(ldflags1)
 clflags_wind = $(clflags_gen)
 
 libflags = -out:$^@
@@ -339,6 +367,7 @@ preproc_opts  = -E
 incl_file_opts = -FI
 
 !endif
-##############################################################################
+!endif
 
 !endif
+##############################################################################

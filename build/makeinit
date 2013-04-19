@@ -17,14 +17,6 @@ mif_path     = $(build_dir)/mif
 
 .mif: $(mif_path)
 
-!ifdef nulldevice_$(bld_os)
-nulldevice = $(nulldevice_$(bld_os))
-!else ifdef __UNIX__
-nulldevice = /dev/null
-!else
-nulldevice = nul
-!endif
-
 !ifdef %BOOTSTRAP_CPU
 bld_cpu = $(%BOOTSTRAP_CPU)
 bld_os = $(%BOOTSTRAP_OS)
@@ -55,6 +47,14 @@ bld_os = linux
 !else ifdef __LINUXPPC__
 bld_cpu = ppc
 bld_os = linux
+!endif
+
+!ifdef nulldevice_$(bld_os)
+nulldevice = $(nulldevice_$(bld_os))
+!else ifdef __UNIX__
+nulldevice = /dev/null
+!else
+nulldevice = nul
 !endif
 
 !include cdirs.mif
