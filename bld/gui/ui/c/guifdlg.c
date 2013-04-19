@@ -65,12 +65,12 @@
     #else
         #include <fnmatch.h>    // fnmatch is found in the standard library
     #endif
-    #include "clibext.h"
 #else
     #include <direct.h>
     #include <dos.h>
 #endif
 #include "walloca.h"
+#include "clibext.h"
 #include "guifdlg.h"
 #include "guidlg.h"
 #include "guistr.h"
@@ -207,7 +207,7 @@ static void splitPath( char *path, char *drive, char *dir, char *fname,
     startp = path;
     if( path[0] == FILE_SEP_CHAR && path[1] == FILE_SEP_CHAR ) {
         path += 2;
-        while( 1 ) {
+        for( ;; ) {
             ch = *path;
             if( ch == NULLCHAR || ch == FILE_SEP_CHAR || ch == '.' ) {
                 break;
@@ -234,7 +234,7 @@ static void splitPath( char *path, char *drive, char *dir, char *fname,
     fnamep = path;
     startp = path;
 
-    while( 1 ) {
+   for( ;; ) {
         ch = *path;
         if( ch == 0 ) {
             break;
@@ -468,7 +468,7 @@ static void *buildFileTypes( dlg_info *dlg, char *data )
     if( data == NULL ) {
         return( NULL );
     }
-    while( 1 ) {
+    for( ;; ) {
         len = strlen( data );
         if( len == 0 ) {
             break;

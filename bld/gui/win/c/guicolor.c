@@ -223,7 +223,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     }
     memset( &choose, 0, sizeof( CHOOSECOLOR ) );
     choose.Flags = CC_PREVENTFULLOPEN;
-    choose.hInstance = GUIMainHInst;
+    choose.hInstance = (HWND)GUIMainHInst;
     choose.Flags |= CC_RGBINIT;
     choose.rgbResult = GETRGB( init_rgb );
 #ifndef __WINDOWS_386__

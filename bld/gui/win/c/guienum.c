@@ -52,7 +52,7 @@ typedef struct {
 #if defined( __UNIX__ )
 int EnumFunc( HWND hwnd, LONG lparam )
 #else
-BOOL CALLBACK EnumFunc( HWND hwnd, LONG lparam )
+BOOL CALLBACK EnumFunc( HWND hwnd, LPARAM lparam )
 #endif
 {
     gui_window  *wnd;

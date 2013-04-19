@@ -707,7 +707,7 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
         data = new;
     }
     data = DoneAddingControls( data );
-    DynamicDialogBox( (LPVOID) GUIDialogFunc, GUIMainHInst, parent_hwnd, data, (LONG)wnd );
+    DynamicDialogBox( (LPVOID)GUIDialogFunc, GUIMainHInst, parent_hwnd, data, (WPI_PARAM2)wnd );
     return( TRUE );
 }
 

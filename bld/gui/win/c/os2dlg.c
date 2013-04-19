@@ -402,7 +402,7 @@ TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
 }
 
 int DynamicDialogBox( PVOID fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data,
-                      LONG lparam )
+                      LPARAM lparam )
 {
     inst = inst;
     return( PMDynamicDialogBox( (PFNWP) fn, hwnd, data, (PVOID)lparam ) );

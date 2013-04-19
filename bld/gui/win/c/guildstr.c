@@ -45,7 +45,7 @@ bool GUIIsLoadStrInitialized( void )
     return( GUIMsgInitFlag );
 }
 
-bool GUILoadStrInit( char * fname )
+bool GUILoadStrInit( const char * fname )
 {
 #ifndef __OS2_PM__
     WPI_INST    library;

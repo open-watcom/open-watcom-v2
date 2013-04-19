@@ -7,9 +7,9 @@ BEGIN
     STRMSG2, "this is msg 2"
 END
 
-#include "..\sample.dlg"
+#include "../sample.dlg"
 
-#include "..\sample.men"
+#include "../sample.men"
 
 #include "win.rc"
 

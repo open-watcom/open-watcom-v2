@@ -32,14 +32,13 @@
 #include "guiwind.h"
 #include <string.h>
 #include <stdlib.h>
-
+#include "watcom.h"
 #include "layer0.h"
 #include "resmenu.h"
 #include "resmenu.h"
 #include "guiutil.h"
 #include "guildstr.h"
 #include "guirmenu.h"
-#include "watcom.h"
 
 
 typedef struct GUIRMenuEntry {

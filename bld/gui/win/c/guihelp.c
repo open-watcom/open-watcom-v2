@@ -136,7 +136,7 @@ static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, char *title, char *
 static void FiniHelp( gui_help_instance inst, HWND hwnd, char *file )
 {
     inst=inst;
-    WWinHelp( hwnd, file, (UINT)HELP_QUIT, (DWORD)0 );
+    WWinHelp( hwnd, file, (UINT)HELP_QUIT, 0 );
 }
 
 bool DisplayContents( gui_help_instance inst, HWND hwnd, char *file )
@@ -163,7 +163,7 @@ bool DisplayHelpSearch( gui_help_instance inst, HWND hwnd, char *file, char *top
     if( topic == NULL ) {
         topic = "";
     }
-    return( WWinHelp( hwnd, file, (UINT)HELP_PARTIALKEY, (DWORD)(LPCSTR)topic ) );
+    return( WWinHelp( hwnd, file, (UINT)HELP_PARTIALKEY, (HELP_DATA)topic ) );
 }
 
 bool DisplayHelpSearchHH( gui_help_instance inst, HWND hwnd, char *file, char *topic )
@@ -172,25 +172,25 @@ bool DisplayHelpSearchHH( gui_help_instance inst, HWND hwnd, char *file, char *t
     if( topic == NULL ) {
         topic = "";
     }
-    return( WHtmlHelp( hwnd, file, (UINT)HELP_PARTIALKEY, (DWORD)(LPCSTR)topic ) );
+    return( WHtmlHelp( hwnd, file, (UINT)HELP_PARTIALKEY, (HELP_DATA)topic ) );
 }
 
 bool DisplayHelpContext( gui_help_instance inst, HWND hwnd, char *file, char *topic )
 {
     inst=inst;
-    return( WWinHelp( hwnd, file, (UINT)HELP_CONTEXT, (DWORD)topic ) );
+    return( WWinHelp( hwnd, file, (UINT)HELP_CONTEXT, (HELP_DATA)topic ) );
 }
 
 bool DisplayHelpKey( gui_help_instance inst, HWND hwnd, char *file, char *topic )
 {
     inst=inst;
-    return( WWinHelp( hwnd, file, (UINT)HELP_KEY, (DWORD)topic ) );
+    return( WWinHelp( hwnd, file, (UINT)HELP_KEY, (HELP_DATA)topic ) );
 }
 
 bool DisplayHelpKeyHH( gui_help_instance inst, HWND hwnd, char *file, char *topic )
 {
     inst = inst;
-    return( WHtmlHelp( hwnd, file, (UINT)HELP_KEY, (DWORD)topic ) );
+    return( WHtmlHelp( hwnd, file, (UINT)HELP_KEY, (HELP_DATA)topic ) );
 }
 
 #endif
@@ -234,8 +234,7 @@ bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
     return( ret );
 }
 
-bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
-                      char *file, char *topic )
+bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, char *topic )
 {
     bool        ret;
 
@@ -267,9 +266,9 @@ bool GUIDisplayHelp( gui_window *wnd, char *file, char *topic )
     return( FALSE );
 #else
     if( topic == NULL ) {
-        return( WWinHelp( wnd->hwnd, file, (UINT)HELP_INDEX, (DWORD)NULL ) );
+        return( WWinHelp( wnd->hwnd, file, (UINT)HELP_INDEX, 0 ) );
     } else {
-        return( WWinHelp( wnd->hwnd, file, (UINT)HELP_KEY, (DWORD)topic ) );
+        return( WWinHelp( wnd->hwnd, file, (UINT)HELP_KEY, (HELP_DATA)topic ) );
     }
 #endif
 }
@@ -290,12 +289,12 @@ bool GUIDisplayHelpWin4( gui_window *wnd, char *file, char *topic )
             version = 100 * LOBYTE(LOWORD(version)) + HIBYTE(LOWORD(version));
             if( version >= 351 ) {
                 // NT 3.51 or higher
-                return( WWinHelp( wnd->hwnd, file, (UINT)HELP_FINDER, (DWORD)NULL ) );
+                return( WWinHelp( wnd->hwnd, file, (UINT)HELP_FINDER, 0 ) );
             }
         #endif
-        return( WWinHelp( wnd->hwnd, file, (UINT)HELP_INDEX, (DWORD)NULL ) );
+        return( WWinHelp( wnd->hwnd, file, (UINT)HELP_INDEX, 0 ) );
     } else {
-        return( WWinHelp( wnd->hwnd, file, (UINT)HELP_KEY, (DWORD)topic ) );
+        return( WWinHelp( wnd->hwnd, file, (UINT)HELP_KEY, (HELP_DATA)topic ) );
     }
 #endif
 }
@@ -308,6 +307,6 @@ bool GUIDisplayHelpId( gui_window *wnd, char *file, int id )
     id = id;
     return( FALSE );
 #else
-    return( WWinHelp( wnd->hwnd, file, (UINT)HELP_CONTEXT, (DWORD)id ) );
+    return( WWinHelp( wnd->hwnd, file, (UINT)HELP_CONTEXT, (HELP_DATA)id ) );
 #endif
 }

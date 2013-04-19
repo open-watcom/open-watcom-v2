@@ -30,10 +30,8 @@
 
 
 #include "guiwind.h"
-#include <unistd.h>
+#include "wio.h"
 #include <stdlib.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -83,7 +81,7 @@ extern void GUIMemOpen( void )
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
-            GUIMemFileHandle = open( tmpdir, O_RDWR+O_CREAT+O_TRUNC+O_BINARY, S_IWUSR+S_IRUSR );
+            GUIMemFileHandle = open( tmpdir, O_RDWR | O_CREAT | O_TRUNC | O_BINARY, PMODE_RW );
         }
         GUIMemOpened = 1;
     }

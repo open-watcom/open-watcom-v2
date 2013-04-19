@@ -32,69 +32,31 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
-#if defined( __UNIX__ )
-    #include "unsoasyc.h"
-    #include "stdtypes.h"
+#ifdef __WATCOMC__
+#include "clibint.h"
+#else
+#include "clibext.h"
 #endif
-
 
 // This makes sure that the main routine is actially linked in
 bool    GUIMainTouched = FALSE;
 
 #if defined( __OS2_PM__ )
-extern int          GUIXMain( int argc, char *argv[] );
+
+extern int      GUIXMain( int argc, char *argv[] );
+
 /*
  * main - main entry point for PM
  */
 
-int main( SHORT sArgc,CHAR  *ppArgv[] )
+int main( SHORT sArgc, CHAR *ppArgv[] )
 {
     return( GUIXMain( sArgc, ppArgv ) );
 }
 
 #else
 
-#if defined( __UNIX__ )
-
-a_bool In_raw_mode = FALSE;
-struct termios Saved_terminal_configuration;
-
-#define _started_from_dblib()   ( 0 )
-
-char **         SaveArgv = NULL;
-char **         _argv = NULL;
-int             _argc = 0;
-
-#if !defined( TWIN )
-
-int wu_main( int, char *[] );
-
-
-int main( int argc, char *argv[] )
-{
-    int         stdin_isatty;
-
-    stdin_isatty = isatty( 0 );
-
-    _argv = argv;
-    _argc = argc;
-
-#if 0
-    if( !_started_from_dblib() && stdin_isatty ) {
-        startup_msg( "Press 'q' to quit\n" );
-        unix_setup_async_io( 0 );
-        unix_set_raw_mode( 0, &Saved_terminal_configuration );
-        In_raw_mode = TRUE;
-    }
-#endif
-
-    return( wu_main( argc, argv ) );
-}
-#endif
-
-#endif
-
-extern int          GUIXMain( int argc, char *argv[],
+extern int  GUIXMain( int argc, char *argv[],
                     WPI_INST inst, WPI_INST hPrevInstance, LPSTR lpCmdLine,
                     int nShowCmd );
 /*
@@ -104,11 +66,10 @@ extern int          GUIXMain( int argc, char *argv[],
 int PASCAL WinMain( HINSTANCE inst, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
                     int nShowCmd )
 {
-#if !defined( __UNIX__ )
-    extern char **_argv;
-    extern int  _argc;
+#if !defined( __WATCOMC__ ) && defined( __NT__ )
+    _argc = __argc;
+    _argv = __argv;
 #endif
-
     return( GUIXMain( _argc, _argv, inst, hPrevInstance, lpCmdLine, nShowCmd ) );
 }
 

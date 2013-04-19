@@ -18,6 +18,7 @@ gui_autodepends = .AUTODEPEND
 !include trmem.mif
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include $(ui_dir)/client.mif
 
 wv_objs = &
        guicreat.obj   &
@@ -63,52 +64,30 @@ mem_objs = &
 
 objs = $(wv_objs) $(mem_objs)
 
-!ifeq sys_windowed 1
 libs = $(wpi_lib) $(commonui_lib)
-!endif
 
 !ifeq sys_windowed 1
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
-extra_c_flags += -s -fh
+extra_c_flags = -s -fh
 
 extra_c_flags_axp = -ai -aq
 extra_c_flags_i86 = -zu
 
 extra_c_flags_nov = -4s
 extra_c_flags_win = -zw
-!ifeq host_cpu i86
-extra_c_flags_win += -zW
-!endif
+extra_c_flags_win_i86 = -zW
 
 !ifneq bootstrap 1
 # memory tracker routines
-extra_c_flags_trmem = $(trmem_cflags) -fh=$^&.pch
+extra_c_flags_trmem = $(trmem_cflags)
 
 # memory tracker cover routines
-extra_c_flags_guimem = $(trmem_cover_cflags) -fh=guimem.pch
-
-extra_c_flags_help += -fh=$^&.pch
-extra_c_flags_vvscroll += -fh=$^&.pch
-extra_c_flags_helpmenu += -fh=$^&.pch
-extra_c_flags_dlg += -fh=$^&.pch
-extra_c_flags_guiclean += -fh=$^&.pch
-extra_c_flags_fontstr += -fh=$^&.pch
-extra_c_flags_msgbox += -fh=gui01.pch
-extra_c_flags_dialcb += -fh=gui01.pch
-extra_c_flags_helpscan += -fh=gui02.pch
-extra_c_flags_search += -fh=gui02.pch
-extra_c_flags_guiextnm += -fh=gui03.pch
-extra_c_flags_helpopen += -fh=gui03.pch
-extra_c_flags_helpio += -fh=gui03.pch
+extra_c_flags_guimem = $(trmem_cover_cflags)
 !endif
 
-!ifeq sys_windowed 1
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" $(wpi_inc_dirs) $(commonui_inc_dirs)
-!else
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" -I"$(ui_dir)/h"
-!endif
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" $(commonui_inc_dirs) $(wpi_inc_dirs) $(ui_inc_dirs) -I"$(wres_dir)/h"
 
 .c:     ../c;../../c;$(help_dir)/c;$(trmem_dir)
 .h:     ../h;../../h

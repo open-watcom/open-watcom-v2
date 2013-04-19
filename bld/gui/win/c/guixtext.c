@@ -326,7 +326,7 @@ bool GUISetListItemData( gui_window *wnd, unsigned id, unsigned choice, void *da
     WPI_MRESULT ret;
 
     ret = GUIToComboList( wnd, id, LB_SETITEMDATA, CB_SETITEMDATA, (WPI_PARAM1)choice,
-                          (WPI_PARAM2)(long)data, (WPI_MRESULT)FALSE );
+                          (WPI_PARAM2)data, (WPI_MRESULT)FALSE );
 #ifndef __OS2_PM__
     if( ( ret == LB_ERR ) || ( ret == CB_ERR ) ) {
         return( FALSE );

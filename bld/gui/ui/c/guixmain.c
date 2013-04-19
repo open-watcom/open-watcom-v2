@@ -49,6 +49,11 @@
 #ifdef __UNIX__
     #include <termios.h>
 #endif
+#if defined(__WATCOMC__)
+    #include "clibint.h"
+#else
+    #include "clibext.h"
+#endif
 
 extern int GUIXMain( int argc, char * argv[] );
 
@@ -56,13 +61,11 @@ extern int GUIXMain( int argc, char * argv[] );
 bool GUIMainTouched = FALSE;
 
 #ifdef __WINDOWS__
+
 #include "swap.h"
 #include <windows.h>
 #include "wi163264.h"
 #include <dos.h>
-
-extern char **_argv;
-extern int  _argc;
 
 int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPSTR lpCmdLine, int nShowCmd )
@@ -74,11 +77,8 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     return( GUIXMain( _argc, _argv ) );
 }
-#else
 
-#if !defined(__WATCOMC__)
-    #include "clibext.h"
-#endif
+#else
 
 #ifdef __UNIX__
     bool                In_raw_mode = FALSE;
@@ -93,5 +93,5 @@ int main( int argc, char *argv[] )
 #endif
     return( GUIXMain( argc, argv ) );
 }
-#endif
 
+#endif

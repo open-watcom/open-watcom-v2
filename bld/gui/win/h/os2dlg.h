@@ -74,5 +74,5 @@ extern TEMPLATE_HANDLE AddControl     ( TEMPLATE_HANDLE data, int dtilx,
                                         char *text, BYTE infolen,
                                         char *infodata );
 extern int DynamicDialogBox           ( PVOID fn, WPI_INST inst, HWND hwnd,
-                                        TEMPLATE_HANDLE data, LONG lparam );
+                                        TEMPLATE_HANDLE data, LPARAM lparam );
 

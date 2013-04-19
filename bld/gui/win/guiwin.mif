@@ -99,8 +99,8 @@ sysobjs +=             &
 !endif
 
 # memory tracker cover routines
-extra_c_flags_mem    = $(trmem_cover_cflags) -fh=guimem.pch
-extra_c_flags_os2mem = $(trmem_cover_cflags) -fh=guimem.pch
-extra_c_flags_wpimem = $(trmem_cover_cflags) -fh=guimem.pch
+extra_c_flags_mem    = $(trmem_cover_cflags)
+extra_c_flags_os2mem = $(trmem_cover_cflags)
+extra_c_flags_wpimem = $(trmem_cover_cflags)
 
 !include ../../master.mif

@@ -279,7 +279,7 @@ TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
  * DynamicDialogBox - create a dynamic dialog box
  */
 int DynamicDialogBox( LPVOID fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data,
-                      LONG lparam )
+                      LPARAM lparam )
 {
     WPI_PROC    fp;
     int         rc;
@@ -293,11 +293,11 @@ int DynamicDialogBox( LPVOID fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data,
     {
         LPCSTR  ptr;
         ptr = GlobalLock( data );
-        rc = DialogBoxIndirectParam( (HINSTANCE)inst, (LPCDLGTEMPLATE)ptr, hwnd, (DLGPROC) fp, (LPARAM)lparam );
+        rc = DialogBoxIndirectParam( (HINSTANCE)inst, (LPCDLGTEMPLATE)ptr, hwnd, (DLGPROC)fp, lparam );
         GlobalUnlock( data );
     }
 #else
-    rc = DialogBoxIndirectParam( inst, data, hwnd, (LPVOID) fp, lparam );
+    rc = DialogBoxIndirectParam( inst, data, hwnd, (LPVOID)fp, lparam );
 #endif
     FreeProcInstance( fp );
     GlobalFree( data );

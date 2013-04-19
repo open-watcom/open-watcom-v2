@@ -29,4 +29,4 @@ ICON    WIN3            "../res/pm/win3.ico"
 ICON    MAIN            "../res/pm/main.ico"
 ICON    DLG             "../res/pm/dlg.ico"
 
-#include "..\samplepm.dlg"
+#include "../samplepm.dlg"

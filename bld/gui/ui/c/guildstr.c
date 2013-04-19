@@ -37,15 +37,12 @@
 #include "guiextnm.h"
 #include <string.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <stdio.h>
-#include <unistd.h>
+#include "wio.h"
+#include "clibext.h"
 
 #include "wressetr.h"
 #include "wresset2.h"
-
-#define NIL_HANDLE      ((int)-1)
 
 #if defined( __QNX__ ) || defined( __UNIX__ )
     #define _newline "\n"
@@ -65,9 +62,8 @@
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  bool            GUIMsgInitFlag = FALSE;
-extern  long            FileShift;
 
-static off_t res_seek( int handle, off_t position, int where )
+static long res_seek( WResFileID handle, long position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {
@@ -85,7 +81,7 @@ bool GUIIsLoadStrInitialized( void )
     return( GUIMsgInitFlag );
 }
 
-bool GUILoadStrInit( char * fname )
+bool GUILoadStrInit( const char *fname )
 {
     bool        error;
 

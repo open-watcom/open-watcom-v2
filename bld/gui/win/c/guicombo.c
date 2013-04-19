@@ -47,7 +47,7 @@ typedef struct {
 #if defined( __UNIX__ )
 BOOL GUIEnumFunc( HWND hwnd, LONG lparam )
 #else
-BOOL CALLBACK GUIEnumFunc( HWND hwnd, LONG lparam )
+BOOL CALLBACK GUIEnumFunc( HWND hwnd, LPARAM lparam )
 #endif
 {
     char        buff[5];

@@ -53,6 +53,7 @@
     #include <process.h>
 #endif
 #include <stdlib.h>
+#include "clibext.h"
 
 extern bool GUIFirstCrack( void );
 

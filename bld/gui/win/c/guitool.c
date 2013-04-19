@@ -359,7 +359,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     GUIResizeBackground( wnd, TRUE );
 
     for( i = 0; i < num_toolbar_items; i++ ) {
-        info.bmp = toolbar->bitmaps[i];
+        info.u.bmp = toolbar->bitmaps[i];
         info.id = toolinfo[i].id;
         info.flags = 0;
         if( use_tips && toolinfo[i].tip != NULL ) {

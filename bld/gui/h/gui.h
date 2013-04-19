@@ -30,6 +30,7 @@
 
 
 #include "bool.h"
+
 #include "guimem.h"
 
 typedef int gui_ord;
@@ -962,7 +963,7 @@ extern void GUISpawnStart( void );
 extern void GUISpawnEnd( void );
 
 /* Resource String Functions */
-extern bool GUILoadStrInit( char * fname );
+extern bool GUILoadStrInit( const char *fname );
 extern bool GUILoadStrFini( void );
 extern bool GUILoadString( int string_id, char *buffer, int buffer_length );
 extern bool GUIIsLoadStrInitialized( void );

@@ -192,7 +192,7 @@ gui_control_styles GUIGetControlStylesFromHWND( HWND cntl,
 #if defined( __UNIX__ )
 int InsertResDlgCntlFunc( HWND hwnd, LONG lparam )
 #else
-BOOL CALLBACK InsertResDlgCntlFunc( HWND hwnd, LONG lparam )
+BOOL CALLBACK InsertResDlgCntlFunc( HWND hwnd, LPARAM lparam )
 #endif
 {
     GUIControlInsertByHWND( hwnd, (gui_window *)lparam );

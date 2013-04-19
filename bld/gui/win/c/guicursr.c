@@ -56,6 +56,6 @@ void *GUISetMouseCursor( gui_mouse_cursor type )
 void GUIResetMouseCursor( void *old )
 {
     if( old != NULL ) {
-            _wpi_setcursor( (HCURSOR)(UINT)old );
+            _wpi_setcursor( (HCURSOR)old );
     }
 }

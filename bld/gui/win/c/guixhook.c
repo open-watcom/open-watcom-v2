@@ -47,11 +47,11 @@ static  void    (*MDIMaximize)(bool, gui_window *)      = NULL;
 static  bool    (*IsMDIChildWindow)(gui_window *)       = NULL;
 static  void    (*SetMDIRestoredSize)(HWND, WPI_RECT *) = NULL;
 #if defined( __WINDOWS__ ) || defined( __NT__ )
-static  BOOL _DLLFAR PASCAL (*Ctl3dUnregister)(HANDLE)  = NULL;
-static  BOOL _DLLFAR PASCAL (*Ctl3dSubclassDlg)(HWND, WORD) = NULL;
-static  BOOL _DLLFAR PASCAL (*Ctl3dColorChange)(void)   = NULL;
-static  BOOL _DLLFAR PASCAL (*Ctl3dSubclassCtl)(HWND)   = NULL;
-static  HBRUSH _DLLFAR PASCAL (*Ctl3dCtlColorEx)(UINT, WPARAM, LPARAM)  = NULL;
+static  BOOL (_DLLFAR PASCAL *Ctl3dUnregister)(HANDLE)  = NULL;
+static  BOOL (_DLLFAR PASCAL *Ctl3dSubclassDlg)(HWND, WORD) = NULL;
+static  BOOL (_DLLFAR PASCAL *Ctl3dColorChange)(void)   = NULL;
+static  BOOL (_DLLFAR PASCAL *Ctl3dSubclassCtl)(HWND)   = NULL;
+static  HBRUSH (_DLLFAR PASCAL *Ctl3dCtlColorEx)(UINT, WPARAM, LPARAM)  = NULL;
 #endif
 
 extern  WPI_INST        GUIMainHInst;
@@ -173,7 +173,7 @@ void GUISetMDIRestoredSize( HWND hwnd, WPI_RECT *rect )
 }
 
 #if defined( __WINDOWS__ ) || defined( __NT__ )
-void GUISetCtl3dUnregister( BOOL _DLLFAR PASCAL (*func)(HANDLE) )
+void GUISetCtl3dUnregister( BOOL (_DLLFAR PASCAL *func)(HANDLE) )
 {
     Ctl3dUnregister = func;
 }
@@ -186,7 +186,7 @@ BOOL GUICtl3dUnregister( void )
     return( FALSE );
 }
 
-void GUISetCtl3dSubclassDlg( BOOL _DLLFAR PASCAL (*func)( HWND, WORD ) )
+void GUISetCtl3dSubclassDlg( BOOL (_DLLFAR PASCAL *func)( HWND, WORD ) )
 {
     Ctl3dSubclassDlg = func;
 }
@@ -199,17 +199,17 @@ BOOL GUICtl3dSubclassDlg( HWND hwnd, WORD word )
     return( FALSE );
 }
 
-void GUISetCtl3dColorChange( BOOL _DLLFAR PASCAL (*func)(void) )
+void GUISetCtl3dColorChange( BOOL (_DLLFAR PASCAL *func)(void) )
 {
     Ctl3dColorChange = func;
 }
 
-void GUISetCtl3dSubclassCtl( BOOL _DLLFAR PASCAL (*func)(HWND) )
+void GUISetCtl3dSubclassCtl( BOOL (_DLLFAR PASCAL *func)(HWND) )
 {
     Ctl3dSubclassCtl = func;
 }
 
-void GUISetCtl3dCtlColorEx( HBRUSH _DLLFAR PASCAL (*func)(UINT, WPARAM, LPARAM) )
+void GUISetCtl3dCtlColorEx( HBRUSH (_DLLFAR PASCAL *func)(UINT, WPARAM, LPARAM) )
 {
     Ctl3dCtlColorEx = func;
 }

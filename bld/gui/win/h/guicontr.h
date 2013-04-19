@@ -60,7 +60,7 @@ typedef struct {
     // on where CALLBACK word is. (SteveMcD)
     void *              call_back;
 #else
-    WPI_MRESULT CALLBACK (* call_back)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+    WPI_MRESULT (CALLBACK * call_back)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 #endif
 } controls_struct;
 

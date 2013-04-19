@@ -184,7 +184,7 @@ typedef struct gui_window {
 #define AVGYCHAR( tm ) ( _wpi_metricheight(tm) + _wpi_metricexleading(tm) )
 #define MAXXCHAR( tm ) ( _wpi_metricmaxcharwidth(tm) + _wpi_metricoverhang(tm) )
 #define MAXYCHAR( tm ) ( _wpi_metricheight(tm) + _wpi_metricexleading(tm) )
-#define EXTRA_SIZE              4
+#define EXTRA_SIZE              sizeof( LONG_PTR )
 #define GUI_CONTAINER_WORD1     0
 #if defined(__NT__)
 #define GUI_CONTAINER_WORD2     1       // NT needs 2 longs for MDI

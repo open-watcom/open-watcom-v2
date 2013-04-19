@@ -61,11 +61,11 @@ extern void GUISetFreeStatus( void (*func)( void ) );
 
 /* 3D control functions */
 #if defined( __WINDOWS__ ) || defined( __NT__ )
-extern void GUISetCtl3dUnregister( BOOL _DLLFAR PASCAL (*func)(HANDLE) );
-extern void GUISetCtl3dSubclassDlg( BOOL _DLLFAR PASCAL (*func)( HWND ,WORD ) );
-extern void GUISetCtl3dColorChange( BOOL _DLLFAR PASCAL (*func)(void));
-extern void GUISetCtl3dSubclassCtl( BOOL _DLLFAR PASCAL (*func)(HWND) );
-extern void GUISetCtl3dCtlColorEx( HBRUSH _DLLFAR PASCAL (*func)(UINT, WPARAM, LPARAM) );
+extern void GUISetCtl3dUnregister( BOOL (_DLLFAR PASCAL *func)(HANDLE) );
+extern void GUISetCtl3dSubclassDlg( BOOL (_DLLFAR PASCAL *func)( HWND ,WORD ) );
+extern void GUISetCtl3dColorChange( BOOL (_DLLFAR PASCAL *func)(void));
+extern void GUISetCtl3dSubclassCtl( BOOL (_DLLFAR PASCAL *func)(HWND) );
+extern void GUISetCtl3dCtlColorEx( HBRUSH (_DLLFAR PASCAL *func)(UINT, WPARAM, LPARAM) );
 #endif
 extern BOOL GUICtl3dUnregister( void );
 extern BOOL GUICtl3dSubclassDlg( HWND hwnd, WORD word );

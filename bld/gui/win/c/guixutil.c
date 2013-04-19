@@ -354,9 +354,9 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     GUIControlDeleteAll( wnd );
     //GUICloseToolBar( wnd );
     GUIFreeHint( wnd );
-    _wpi_setwindowlong( wnd->hwnd, GUI_EXTRA_WORD * EXTRA_SIZE, 0 );
+    _wpi_setwindowlongptr( wnd->hwnd, GUI_EXTRA_WORD * EXTRA_SIZE, 0 );
     if( wnd->root != NULLHANDLE ) {
-        _wpi_setwindowlong( wnd->root, GUI_EXTRA_WORD * EXTRA_SIZE, 0 );
+        _wpi_setwindowlongptr( wnd->root, GUI_EXTRA_WORD * EXTRA_SIZE, 0 );
     }
     if( !dialog ) {
         GUIMDIDelete( wnd );
@@ -652,8 +652,7 @@ gui_window *GUIGetWindow( HWND hwnd )
     gui_window  *wnd;
 
     if( ( hwnd != NULLHANDLE ) && ( hwnd != HWND_DESKTOP ) ) {
-        wnd = (gui_window *)
-            _wpi_getwindowlong( hwnd, GUI_EXTRA_WORD * EXTRA_SIZE );
+        wnd = (gui_window *)_wpi_getwindowlongptr( hwnd, GUI_EXTRA_WORD * EXTRA_SIZE );
         return( wnd );
     }
 

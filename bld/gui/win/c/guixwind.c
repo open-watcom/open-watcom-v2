@@ -437,11 +437,11 @@ static bool CreateBackgroundWnd( gui_window *wnd, gui_create_info *info )
     return( wnd->hwnd != NULLHANDLE );
 }
 
-static void DoSetWindowLong( HWND hwnd, gui_window *wnd )
+static void DoSetWindowLongPtr( HWND hwnd, gui_window *wnd )
 {
-    _wpi_setwindowlong( hwnd, GUI_CONTAINER_WORD1 * EXTRA_SIZE, 0L );
-    _wpi_setwindowlong( hwnd, GUI_CONTAINER_WORD2 * EXTRA_SIZE, 0L );
-    _wpi_setwindowlong( hwnd, GUI_EXTRA_WORD * EXTRA_SIZE, (LONG)wnd );
+    _wpi_setwindowlongptr( hwnd, GUI_CONTAINER_WORD1 * EXTRA_SIZE, 0L );
+    _wpi_setwindowlongptr( hwnd, GUI_CONTAINER_WORD2 * EXTRA_SIZE, 0L );
+    _wpi_setwindowlongptr( hwnd, GUI_EXTRA_WORD * EXTRA_SIZE, (LONG_PTR)wnd );
 }
 
 /*
@@ -889,7 +889,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
                 }
 #endif
             }
-            DoSetWindowLong( hwnd, wnd );
+            DoSetWindowLongPtr( hwnd, wnd );
         }
     }
     wnd = GUIGetWindow( hwnd );
