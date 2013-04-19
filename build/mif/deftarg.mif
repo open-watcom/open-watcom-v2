@@ -1,5 +1,8 @@
 clean: .SYMBOLIC .EXPLICIT
         rm -f *.?bj *.o $(additional_cleanup)
+        @if exist $(dll_subdir) rm -f $(dll_subdir)/*.obj
+        @if exist $(dll_subdir) rm -f $(dll_subdir)/*.o
+        @if exist $(dll_subdir) rmdir $(dll_subdir)
         @%make killnonobj
 
 killnonobj: .SYMBOLIC .EXPLICIT
