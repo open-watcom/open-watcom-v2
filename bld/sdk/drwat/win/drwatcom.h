@@ -57,6 +57,8 @@
 #include "rvalue.h"
 
 
+#define INT_PTR int
+
 #define MAX_SYM_NAME    128
 #define MAX_FILE_NAME   144
 typedef struct {

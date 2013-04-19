@@ -58,6 +58,8 @@
 #include "freen.h"
 #include "code.h"
 
+#define INT_PTR int
+
 #define RCSTR_MAX_LEN                   128
 
 #define HEAPMENU_DISPLAY_ENTIRE         300

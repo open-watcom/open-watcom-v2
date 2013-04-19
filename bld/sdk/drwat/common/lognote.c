@@ -31,6 +31,7 @@
 
 
 #include <windows.h>
+#include "drwatcom.h"
 #include "notelog.h"
 #include "jdlg.h"
 #define BUF_SIZE        100
