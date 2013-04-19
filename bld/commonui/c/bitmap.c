@@ -241,13 +241,13 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, BOOL core,
     }
     if( core ) {
         if( info != NULL ) {
-            info->bm_core = bm_core;
+            info->u.bm_core = bm_core;
         } else {
             MemFree( bm_core );
         }
     } else {
         if( info != NULL ) {
-            info->bm_info = bm_info;
+            info->u.bm_info = bm_info;
         } else {
             MemFree( bm_info );
         }

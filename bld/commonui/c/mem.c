@@ -47,12 +47,10 @@
  */
 void MemStart( void )
 {
+#ifdef _M_I86
 #ifndef __OS2_PM__
-#ifndef __386__
-#ifndef __AXP__
     __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-#endif
 #endif
 #endif
 

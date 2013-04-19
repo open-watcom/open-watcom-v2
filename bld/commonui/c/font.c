@@ -47,7 +47,7 @@ static char     *fontKey = "Font";
 /*
  * EnumFunc - enumerate fonts
  */
-int CALLBACK EnumFunc( LPLOGFONT lf, LPTEXTMETRIC tm, UINT ftype, LPSTR data )
+WINEXPORT int CALLBACK EnumFunc( LPLOGFONT lf, LPTEXTMETRIC tm, UINT ftype, LPSTR data )
 {
     tm = tm;
     ftype = ftype;

@@ -38,6 +38,8 @@
 #include <io.h>
 #include <fcntl.h>
 #include <time.h>
+#include "watcom.h"
+#include "wi163264.h"
 #include "log.h"
 #include "mem.h"
 #ifndef NOUSE3D
@@ -45,6 +47,7 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
+
 
 static LogInfo          LogCurInfo;
 static char             *BufLines[NO_BUF_LINES];
@@ -64,7 +67,7 @@ static void writeCRLF( int f )
 /*
  * LogSaveHook - hook used called by common dialog - for 3D controls
  */
-BOOL CALLBACK LogSaveHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK LogSaveHook( HWND hwnd, int msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -136,7 +139,7 @@ static void flushLog( BOOL free )
     WORD        i;
     int         f;
 
-    f = open( LogCurInfo.config.curname, O_TEXT | O_WRONLY | O_CREAT | O_APPEND, 0 );
+    f = open( LogCurInfo.config.curname, O_TEXT | O_WRONLY | O_CREAT | O_APPEND, S_IREAD | S_IWRITE );
     if( f < 0 ) {
         return;
     }
@@ -157,8 +160,7 @@ static void flushLog( BOOL free )
 /*
  * LogExistsDlgProc - handle the log exists dialog
  */
-BOOL __export FAR PASCAL LogExistsDlgProc( HWND hwnd, UINT msg,
-                                           WPARAM wparam, LPARAM lparam )
+WINEXPORT BOOL CALLBACK LogExistsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -183,8 +185,7 @@ BOOL __export FAR PASCAL LogExistsDlgProc( HWND hwnd, UINT msg,
 /*
  * ConfigLogDlgProc - handle the configure log dialog
  */
-BOOL __export FAR PASCAL ConfigLogDlgProc( HWND hwnd, UINT msg,
-                                           WPARAM wparam, LPARAM lparam )
+WINEXPORT BOOL CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *buf;
 
@@ -437,8 +438,7 @@ BOOL SpyLogOpen( void )
         }
         break;
     }
-    f = open( LogCurInfo.config.curname, O_TEXT | O_WRONLY | O_CREAT | flags,
-              S_IREAD | S_IWRITE );
+    f = open( LogCurInfo.config.curname, O_TEXT | O_WRONLY | O_CREAT | flags, S_IREAD | S_IWRITE );
     if( f < 0 ) {
         msgtitle = AllocRCString( LOG_LOG_ERROR );
         RCMessageBox( LogCurInfo.hwnd, LOG_CANT_OPEN_LOG, msgtitle,

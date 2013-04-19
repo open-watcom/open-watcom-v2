@@ -31,24 +31,29 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "wpi.h"
 #include "mem.h"
 #include "pushwin.h"
+
+
+#define WPI_GET_WNDINFO( w )    ((PushWinInfo *)_wpi_getwindowlongptr( w, 0 ))
+#define WPI_SET_WNDINFO( w, d ) (_wpi_setwindowlongptr( w, 0, d ))
 
 /*
  * PushWinProc - push window procedure
  */
-BOOL __export FAR PASCAL PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT BOOL CALLBACK PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PushWinInfo         *info;
     PAINTSTRUCT         paint;
     HFONT               old_font;
     RECT                area;
 
-    info = (PushWinInfo *)GetWindowLong( hwnd, 0 );
+    info = WPI_GET_WNDINFO( hwnd );
     switch( msg ) {
     case WM_CREATE:
         info = (PushWinInfo *)((CREATESTRUCT *)lparam)->lpCreateParams;
-        SetWindowLong( hwnd, 0, (DWORD)info );
+        WPI_SET_WNDINFO( hwnd, (LONG_PTR)info );
         break;
     case WM_PAINT:
         BeginPaint( hwnd, &paint );
@@ -85,7 +90,7 @@ BOOL RegPushWin( HANDLE instance )
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = (LPVOID)PushWinProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = 4;
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;
     wc.hIcon = NULL;
     wc.hCursor = LoadCursor( NULL, IDC_ARROW );

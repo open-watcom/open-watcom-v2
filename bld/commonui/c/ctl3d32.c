@@ -29,8 +29,9 @@
 ****************************************************************************/
 
 
-#ifdef __WINDOWS_386__
 #include "precomp.h"
+
+#ifdef __WINDOWS_386__
 
 static HANDLE   dllCtl3d;
 

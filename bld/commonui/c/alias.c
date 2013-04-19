@@ -205,8 +205,7 @@ static AnAlias *findAliasFromText( AliasHdl hdl, char *alias )
 /*
  * AliasDlgProc - alias list dialog procedure
  */
-BOOL __export FAR PASCAL AliasDlgProc( HWND hwnd, UINT msg,
-                                       WPARAM wparam, LPARAM lparam )
+WINEXPORT BOOL CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     AnAlias     *cur;
     unsigned    len;
@@ -228,7 +227,7 @@ BOOL __export FAR PASCAL AliasDlgProc( HWND hwnd, UINT msg,
         SendDlgItemMessage( hwnd, ALIAS_TEXT, EM_LIMITTEXT, 20, 0 );
         while( cur != NULL ) {
             sprintf( buf, "0x%08X", cur->id );
-            SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_ADDSTRING, 0, (DWORD)buf );
+            SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_ADDSTRING, 0, (LPARAM)buf );
             cur = cur->next;
         }
         break;
@@ -242,8 +241,7 @@ BOOL __export FAR PASCAL AliasDlgProc( HWND hwnd, UINT msg,
         switch( cmd ) {
             case IDOK:
             case ALIAS_DO_MORE:
-                SendDlgItemMessage( hwnd, ALIAS_CUR_ID,
-                                    WM_GETTEXT, CONST_LEN, (DWORD)buf );
+                SendDlgItemMessage( hwnd, ALIAS_CUR_ID, WM_GETTEXT, CONST_LEN, (LPARAM)buf );
                 realend = buf;
                 while( *realend != '\0' ) {
                     realend++;
@@ -260,8 +258,7 @@ BOOL __export FAR PASCAL AliasDlgProc( HWND hwnd, UINT msg,
                 }
                 len = SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_GETTEXTLENGTH, 0, 0 );
                 alias = MemAlloc( len + 1 );
-                len = SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_GETTEXT,
-                                          len + 1, (DWORD)alias );
+                len = SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_GETTEXT, len + 1, (LPARAM)alias );
                 /* check for spaces */
                 endptr = alias;
                 while( !isspace( *endptr ) && *endptr != '\0' ) {
@@ -295,10 +292,10 @@ BOOL __export FAR PASCAL AliasDlgProc( HWND hwnd, UINT msg,
             case ALIAS_ID_LIST:
                 if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_SELCHANGE ) {
                     sel = SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_GETCURSEL, 0, 0L );
-                    SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_GETTEXT, sel, (DWORD)buf );
-                    SendDlgItemMessage( hwnd, ALIAS_CUR_ID, WM_SETTEXT, 0, (DWORD)buf );
+                    SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_GETTEXT, sel, (LPARAM)buf );
+                    SendDlgItemMessage( hwnd, ALIAS_CUR_ID, WM_SETTEXT, 0, (LPARAM)buf );
                     cur = getIthAlias( CurHdl, sel );
-                    SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_SETTEXT, 0, (DWORD)cur->name );
+                    SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_SETTEXT, 0, (LPARAM)cur->name );
                 }
                 break;
             default:
@@ -321,7 +318,7 @@ void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
     CurHdl = hdl;
     fp = MakeProcInstance( (FARPROC)AliasDlgProc, instance );
     for( ;; ) {
-        ret = DialogBoxParam( instance, "ALIAS_DLG", hwnd, (DLGPROC)fp, (DWORD)title );
+        ret = DialogBoxParam( instance, "ALIAS_DLG", hwnd, (DLGPROC)fp, (LPARAM)title );
         if( ret != ALIAS_DO_MORE ) {
             break;
         }
@@ -334,8 +331,7 @@ void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
 /*
  * EnumAliases - enumerate all aliases in a given alias list
  */
-void EnumAliases( AliasHdl hdl, void (*enumfn)( unsigned long, char *, void * ),
-                  void *userdata )
+void EnumAliases( AliasHdl hdl, void (*enumfn)( unsigned long, char *, void * ), void *userdata )
 {
     AnAlias     *cur;
 

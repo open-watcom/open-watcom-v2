@@ -43,10 +43,10 @@ typedef struct {
     LPSTR       first_cr_year;
 } about_info;
 
-#ifdef __386__
-typedef about_info *LPABOUTINFO;
-#else
+#ifdef _M_I86
 typedef about_info __far *LPABOUTINFO;
+#else
+typedef about_info *LPABOUTINFO;
 #endif
 
 extern void DoAbout( LPABOUTINFO ai );

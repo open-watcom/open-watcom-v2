@@ -69,6 +69,7 @@ static BOOL                     classRegistered;
 static WPI_INST                 classHandle;
 static statwnd                  *currentStatWnd;
 
+#if 0
 #if defined( __WINDOWS_386__ )
     #define CB      LONG FAR PASCAL
 #elif defined( __WINDOWS__ )
@@ -79,6 +80,7 @@ static statwnd                  *currentStatWnd;
     #define CB      MRESULT EXPENTRY
 #else
     #error CB return type not configured
+#endif
 #endif
 
 /*
@@ -201,6 +203,7 @@ static void outlineRect( statwnd *sw, WPI_PRES pres, WPI_RECT *r )
     WPI_RECTDIM bottom;
     HPEN        oldpen;
 
+    sw = sw;
     _wpi_getrectvalues( *r, &left, &top, &right, &bottom );
 
     _wpi_setpoint( &pt, left, bottom - 1 );
@@ -227,7 +230,7 @@ static void outlineRect( statwnd *sw, WPI_PRES pres, WPI_RECT *r )
 /*
  * StatusWndCallback - handle messages for the status window
  */
-CB StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WINEXPORT WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     PAINTSTRUCT ps;
     WPI_RECT    r;
@@ -235,7 +238,7 @@ CB StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     WPI_PRES    pres;
     statwnd     *sw;
 
-    sw = (statwnd *)_wpi_getwindowlong( hwnd, classWinExtra );
+    sw = (statwnd *)_wpi_getwindowlongptr( hwnd, classWinExtra );
 
     if( statusWndHookFunc != NULL ) {
         if( statusWndHookFunc( hwnd, msg, wparam, lparam ) ) {
@@ -249,7 +252,7 @@ CB StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
 
     switch( msg ) {
     case WM_CREATE:
-        _wpi_setwindowlong( hwnd, classWinExtra, (LONG)currentStatWnd );
+        _wpi_setwindowlongptr( hwnd, classWinExtra, (LONG_PTR)currentStatWnd );
         return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
     case WM_SIZE:
         GetClientRect( hwnd, &sw->statusRect );
@@ -280,7 +283,7 @@ CB StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
             penShade = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNSHADOW ) );
             hasGDIObjects = TRUE;
             GetClientRect( hwnd, &rs );
-            FillRect( hwnd, &rs, brushButtonFace );
+            FillRect( pres, &rs, brushButtonFace );
         }
 #endif
         StatusWndDraw3DBox( sw, pres );
@@ -289,8 +292,7 @@ CB StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
                 if( sw->sectionData[i] != NULL ) {
                     getRect( sw, &r, i );
                     makeInsideRect( &r );
-                    _wpi_drawtext( pres, sw->sectionData[i], -1, &r,
-                                   sw->sectionDataFlags[i] );
+                    _wpi_drawtext( pres, sw->sectionData[i], -1, &r, sw->sectionDataFlags[i] );
                 }
             }
             finiPRES( pres );
@@ -685,6 +687,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
 
     curr_block = 0;
 #ifdef __NT__
+    hfont = hfont;
     sw->sectionDataFont = systemDataFont;
 #else
     sw->sectionDataFont = hfont;

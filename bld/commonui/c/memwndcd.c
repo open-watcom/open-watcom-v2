@@ -48,7 +48,7 @@ extern WORD             FontHeight;
 static DWORD            _Offset;    // conflicts with extern in wdisasm/h/global.h
 static WORD             Sel;
 static DWORD            Limit;
-static BOOL             Is32Bit;
+static char             Is32Bit;
 static char             StatBuf[50];
 static DisAsmRtns       DisasmInfo;
 static BOOL             DisasmRegistered;
@@ -58,7 +58,7 @@ static void gotoIns( MemWndInfo *info, DWORD ins_cnt );
 /*
  * MemWndGetDataByte
  */
-int_16 MemWndGetDataByte()
+int_16 MemWndGetDataByte( void )
 {
     char        buf;
 
@@ -71,7 +71,7 @@ int_16 MemWndGetDataByte()
 /*
  * MemWndGetDataWord
  */
-int_16 MemWndGetDataWord()
+int_16 MemWndGetDataWord( void )
 {
     int_16      buf;
 
@@ -84,7 +84,7 @@ int_16 MemWndGetDataWord()
 /*
  * MemWndGetNextByte
  */
-int_16 MemWndGetNextByte()
+int_16 MemWndGetNextByte( void )
 {
     char        buf;
 
@@ -96,7 +96,7 @@ int_16 MemWndGetNextByte()
 /*
  * MemWndGetDataLong
  */
-long MemWndGetDataLong()
+long MemWndGetDataLong( void )
 {
     long        buf;
 
@@ -109,7 +109,7 @@ long MemWndGetDataLong()
 /*
  * MemWndEndOfSegment
  */
-char MemWndEndOfSegment()
+char MemWndEndOfSegment( void )
 {
     return( _Offset > Limit );
 
@@ -118,7 +118,7 @@ char MemWndEndOfSegment()
 /*
  * MemWndGetOffset
  */
-DWORD MemWndGetOffset()
+DWORD MemWndGetOffset( void )
 {
     return( _Offset );
 
@@ -236,7 +236,7 @@ int MemWndIsWtk( void )
 void DumpMemAsm( MemWndInfo *info, int hdl )
 {
     char                buf[80];
-    WORD                len;
+    unsigned            len;
     instruction         ins;
 
     _Offset = 0;
@@ -261,7 +261,7 @@ BOOL NeedScrollBar( MemWndInfo *info )
 {
     WORD                line;
     instruction         ins;
-    BOOL                is_32;
+    char                is_32;
 
     _Offset = 0;
     Limit = info->limit;
@@ -300,7 +300,7 @@ static DWORD genAsmLine( MemWndInfo *info, DWORD ins_cnt, char *buf )
  */
 static void genBackup( AsmInfo *asm )
 {
-    WORD        cnt;
+    DWORD       cnt;
     WORD        *wptr;
     instruction ins;
 

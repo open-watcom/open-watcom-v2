@@ -37,6 +37,7 @@
 #include <ctype.h>
 #include <direct.h>
 #include <stdlib.h>
+#include "watcom.h"
 #include "savelbox.h"
 #include "wi163264.h"
 #ifndef NOUSE3D
@@ -68,7 +69,7 @@ static BOOL writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
         return( FALSE );
     }
     for( i = 0; i < count; i++ ) {
-        SendMessage( listbox, LB_GETTEXT, i, (LONG)(LPVOID)str );
+        SendMessage( listbox, LB_GETTEXT, i, (LPARAM)str );
         fprintf( f, "%s\n", str );
     }
     fclose( f );
@@ -81,7 +82,7 @@ static BOOL writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
 /*
  * LBSaveHook - hook used called by common dialog - for 3D controls
  */
-BOOL CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT BOOL CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;

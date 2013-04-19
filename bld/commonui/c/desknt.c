@@ -33,13 +33,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "wi163264.h"
+#include "desknt.h"
 
 static HBITMAP  deskTopBitmap;
 static short    screenWidth;
 static short    screenHeight;
 static HANDLE   thisInstance;
 
-typedef BOOL (*deskNThook)( HWND, UINT, UINT, LONG );
 static deskNThook deskTopHook = NULL;
 
 void SetDeskTopHook( deskNThook hook )
@@ -50,7 +51,7 @@ void SetDeskTopHook( deskNThook hook )
 /*
  * DesktopProc - creates and displays the bitmap for the desktop (NT version).
  */
-LONG CALLBACK DesktopProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT LRESULT CALLBACK DesktopProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static HBITMAP      oldbmp;
     PAINTSTRUCT         ps;
@@ -103,7 +104,11 @@ BOOL RegisterSnapClass( HANDLE instance )
 
     thisInstance = instance;
     wc.style = 0L;
+#if defined( __WINDOWS_386__ )
     wc.lpfnWndProc = (LPVOID)DesktopProc;
+#else
+    wc.lpfnWndProc = DesktopProc;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = thisInstance;
@@ -184,8 +189,7 @@ HWND DisplayDesktop( HWND hparent )
 
     RedrawWindow( desktopwindow, NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN );
     SetCursor( prevcursor );
-    SetWindowPos( desktopwindow, HWND_TOPMOST, 0, 0, 0, 0,
-                  SWP_NOMOVE | SWP_NOSIZE );
+    SetWindowPos( desktopwindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
     return( desktopwindow );
 
 } /* DisplayDesktop */

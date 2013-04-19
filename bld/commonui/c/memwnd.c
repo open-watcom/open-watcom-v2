@@ -51,13 +51,15 @@
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
-#include "wi163264.h"
 #include "wpi.h"
 #include "ldstr.h"
 #include "uistr.gh"
 
 #define ISCODE( x )     ((x)->disp_type == MEMINFO_CODE_16 || \
                         (x)->disp_type == MEMINFO_CODE_32)
+
+#define WPI_GET_WNDINFO( w )    ((MemWndInfo *)_wpi_getwindowlongptr( w, 0 ))
+#define WPI_SET_WNDINFO( w, d ) (_wpi_setwindowlongptr( w, 0, d ))
 
 #define MAX_BYTES       50
 
@@ -89,7 +91,7 @@ static DWORD Disp_Types[] = {
 };
 
 /* forward declarations */
-BOOL __export FAR PASCAL MemDisplayProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK MemDisplayProc( HWND, UINT, WPARAM, LPARAM );
 static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info );
 static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info );
 static void positionSegInfo( HWND hwnd );
@@ -124,14 +126,14 @@ DWORD GetASelectorLimit( WORD sel )
  */
 DWORD ReadMem( WORD sel, DWORD off, void *buff, DWORD size )
 {
-    DWORD       bytesread;
+    SIZE_T  bytesread;
 
     sel = sel;
     bytesread = 0;
     size++;
     while( bytesread != size && size != 0 ) {
         size--;
-        ReadProcessMemory( ProcessHdl, (void *)off, buff, size, &bytesread );
+        ReadProcessMemory( ProcessHdl, (LPCSTR)off, buff, size, &bytesread );
     }
     return( bytesread );
 
@@ -255,7 +257,7 @@ static void MemSave( MemWndInfo *info, HWND hwnd, BOOL gen_name )
     DWORD       offset;
     DWORD       limit;
     int         hdl;
-    size_t      len;
+    unsigned    len;
     BOOL        ret;
     HCURSOR     hourglass;
     HCURSOR     oldcursor;
@@ -311,7 +313,7 @@ BOOL RegMemWndClass( HANDLE instance )
     wc.style = 0L;
     wc.lpfnWndProc = (LPVOID)MemDisplayProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = 4;
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;
     wc.hIcon = NULLHANDLE;
     wc.hCursor = LoadCursor( NULLHANDLE, IDC_ARROW );
@@ -553,7 +555,7 @@ static void redrawMemWnd( HWND hwnd, HDC dc, MemWndInfo *info )
     RECT        fill;
     HBRUSH      wbrush;
     HFONT       old_font;
-    POINT       txtsize;
+    SIZE        txtsize;
     BOOL        rc;
 
     if( CurFont != GetMonoFont() ) {
@@ -580,7 +582,7 @@ static void redrawMemWnd( HWND hwnd, HDC dc, MemWndInfo *info )
         fill.top = area.top;
         fill.bottom = area.bottom;
         GetTextExtentPoint( dc, Buffer, strlen( Buffer ), &txtsize );
-        fill.left = area.left + txtsize.x;
+        fill.left = area.left + txtsize.cx;
         FillRect( dc, &fill, wbrush );
         area.top += FontHeight;
         area.bottom += FontHeight;
@@ -650,7 +652,7 @@ static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info )
     unsigned    lines;
     BOOL        need_scrlbar;
     unsigned    scrl_width;
-    POINT       fontsize;
+    SIZE        fontsize;
 
     if( dc == NULL ) {
         dc = GetDC( hwnd );
@@ -662,8 +664,8 @@ static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info )
     CurFont = GetMonoFont();
     old_font = SelectObject( dc, GetMonoFont() );
     GetTextExtentPoint( dc, "0000000000", 10, &fontsize );
-    FontWidth = fontsize.x / 10;
-    FontHeight = fontsize.y;
+    FontWidth = fontsize.cx / 10;
+    FontHeight = fontsize.cy;
 
     GetClientRect( hwnd, &rect );
     width = rect.right - rect.left;
@@ -815,7 +817,7 @@ static void scrollData( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info )
 /*
  * OffsetProc
  */
-BOOL __export FAR PASCAL OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT BOOL CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char                buf[41];
     unsigned long       offset;
@@ -851,7 +853,7 @@ BOOL __export FAR PASCAL OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             }
             /* set the offset */
             parent = GetParent( hwnd );
-            info = (MemWndInfo *)GetWindowLong( parent, 0 );
+            info = WPI_GET_WNDINFO( parent );
             if( offset > info->limit ) {
                 RCMessageBox( hwnd, MWND_OFFSET_TOO_BIG, MemConfigInfo.appname,
                               MB_OK | MB_ICONEXCLAMATION );
@@ -893,7 +895,7 @@ BOOL __export FAR PASCAL OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 /*
  * MemDisplayProc
  */
-BOOL __export FAR PASCAL MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HDC                 dc;
     MemWndInfo          *info;
@@ -907,12 +909,12 @@ BOOL __export FAR PASCAL MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
     FARPROC             fp;
     WORD                cmd;
 
-    info = (MemWndInfo *)GetWindowLong( hwnd, 0 );
+    info = WPI_GET_WNDINFO( hwnd );
     switch( msg ) {
     case WM_CREATE:
         RegDisasmRtns();
         info = (MemWndInfo *)((CREATESTRUCT *)lparam)->lpCreateParams;
-        SetWindowLong( hwnd, 0, (DWORD)info );
+        WPI_SET_WNDINFO( hwnd, (LONG_PTR)info );
         menu = GetMenu( hwnd );
         CheckMenuItem( menu, info->disp_type, MF_CHECKED );
         if( info->autopos ) {
@@ -1154,7 +1156,7 @@ static void positionSegInfo( HWND hwnd )
 /*
  * SegInfoProc
  */
-BOOL __export FAR PASCAL SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT BOOL CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND        parent;
     HMENU       mh;

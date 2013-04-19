@@ -48,7 +48,7 @@ static PFNHH    pfnHtmlHelp = NULL;
 /*
  * WWinHelp - open an WinHelp file
  */
-BOOL WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, DWORD data )
+BOOL WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data )
 {
     char        buff[_MAX_PATH];
     static char open = FALSE;
@@ -59,6 +59,7 @@ BOOL WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, DWORD data )
     open = TRUE;
 
     if( helpFile != NULL ) {
+#if !defined( _WIN64 )
         if( __IsDBCS ) {
             /* Look for Japanese version of help file first */
             char        drive[_MAX_DRIVE];
@@ -88,6 +89,7 @@ BOOL WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, DWORD data )
                 }
             }
         }
+#endif
 
         /* Can't find the Japanese version, just look for the english one */
         _searchenv( helpFile, "WWINHELP", buff );
@@ -102,7 +104,7 @@ BOOL WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, DWORD data )
 /*
  * WHtmlHelp - open an HTML Help file
  */
-BOOL WHtmlHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, DWORD data )
+BOOL WHtmlHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data )
 {
 #ifdef __NT__
     char    buff[_MAX_PATH];

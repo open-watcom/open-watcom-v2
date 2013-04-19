@@ -31,8 +31,8 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "wi163264.h"
 #include "mark.h"
-
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
@@ -42,7 +42,7 @@ static void             (*WriteFn)( char * );
 /*
  * MarkDlgProc - handle messages from the mark dialog
  */
-BOOL __export FAR PASCAL MarkDlgProc( HWND hwnd, WORD msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT BOOL CALLBACK MarkDlgProc( HWND hwnd, WORD msg, WPARAM wparam, LPARAM lparam )
 {
     char        buf[MARK_LEN];
     char        boxbuf[MARK_LEN];
@@ -57,7 +57,7 @@ BOOL __export FAR PASCAL MarkDlgProc( HWND hwnd, WORD msg, WPARAM wparam, LPARAM
         SetFocus( hdl );
         return( 0 );
 //      strcpy( buf, "---------" );
-//      SendDlgItemMessage( hwnd, MARK_EDIT, WM_SETTEXT, 0, (DWORD)buf );
+//      SendDlgItemMessage( hwnd, MARK_EDIT, WM_SETTEXT, 0, (LPARAM)buf );
         break;
 #ifndef NOUSE3D
     case WM_SYSCOLORCHANGE:

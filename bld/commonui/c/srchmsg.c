@@ -71,10 +71,10 @@ BOOL InitSrchTable( HANDLE inst, msglist *tbl )
     curmsg = tbl;
     inst = inst;
     for( ;; ) {
-        if( (DWORD)curmsg->msg == (DWORD)-1 ) {
+        if( curmsg->msg == (char *)-1L ) {
             break;
         }
-        curmsg->msg = AllocRCString( (DWORD)curmsg->msg );
+        curmsg->msg = AllocRCString( (unsigned)curmsg->msg );
         if( curmsg->msg == NULL ) {
             return( FALSE );
         }

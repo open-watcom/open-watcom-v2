@@ -46,14 +46,14 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
-#if defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
+#if defined( __WATCOMC__ ) && defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
     #pragma library( "toolhelp.lib" )   /* For SystemHeapInfo */
 #endif
 
 /*
  * AboutProc - callback routine for settings dialog
  */
-BOOL CALLBACK AboutProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buff[256];
     LPABOUTINFO pai;
@@ -62,7 +62,7 @@ BOOL CALLBACK AboutProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 
     switch( msg ) {
     case WM_INITDIALOG:
-        pai = (LPABOUTINFO) lparam;
+        pai = (LPABOUTINFO)lparam;
         if( pai->title != NULL ) {
             SetWindowText( hwnd, pai->title );
         }
@@ -74,10 +74,10 @@ BOOL CALLBACK AboutProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             SetDlgItemText( hwnd, ABOUT_VERSION, pai->version );
         }
         if( pai->first_cr_year != NULL ) {
-#if defined( __AXP__ )
-            if( strcmp( pai->first_cr_year, CURR_YEAR ) ) {
-#else
+#if defined( __WATCOMC__) && !defined( __ALPHA__ )
             if( _fstrcmp( pai->first_cr_year, CURR_YEAR ) ) {
+#else
+            if( strcmp( pai->first_cr_year, CURR_YEAR ) ) {
 #endif
                 sprintf( buff, banner2( "%s" ), pai->first_cr_year );
             } else {
@@ -103,7 +103,7 @@ BOOL CALLBACK AboutProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             SetDlgItemText( hwnd, ABOUT_INFO1, info );
             kfree = GetFreeSpace( 0 ) / 1024L;
             ltoa( kfree, work, 10 );
-            RCsprintf( buff, ABT_MEM_X_KB_FREE, (LPSTR) work );
+            RCsprintf( buff, ABT_MEM_X_KB_FREE, (LPSTR)work );
             SetDlgItemText( hwnd, ABOUT_INFO2, buff );
 
             shi.dwSize = sizeof( shi );
@@ -177,8 +177,8 @@ void DoAbout( LPABOUTINFO ai )
 {
     DLGPROC     proc;
 
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) AboutProc, ai->inst );
-    DialogBoxParam( ai->inst, "About", ai->owner, proc, (LONG) ai );
-    FreeProcInstance( (FARPROC) proc );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)AboutProc, ai->inst );
+    DialogBoxParam( ai->inst, "About", ai->owner, proc, (LPARAM)ai );
+    FreeProcInstance( (FARPROC)proc );
 
 } /* DoAbout */

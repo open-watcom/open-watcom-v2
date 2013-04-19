@@ -49,7 +49,7 @@ typedef struct {
     union {
         BITMAPCOREINFO  *bm_core;
         BITMAPINFO      *bm_info;
-    };
+    } u;
 } bitmap_info;
 
 extern HBITMAP  ReadBitmapFile( HWND, char *, bitmap_info * );

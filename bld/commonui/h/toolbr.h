@@ -67,7 +67,7 @@ typedef struct TOOLITEMINFO {
     union {
         HBITMAP bmp;            /* handle to bitmap to display */
         WORD    blank_space;    /* space if item is blank */
-    };
+    } u;
     WORD        id;             /* should be unique for each item */
     WORD        flags;          /* see list of flags above */
     HBITMAP     depressed;      /* bitmap to show when button is depressed */

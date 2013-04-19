@@ -55,6 +55,16 @@ typedef struct mdi_data {
     char                curr_state;
 } mdi_data;
 
+#if defined( __WINDOWS__ )
+typedef int (WINAPI *TILECHILDPROC)( HWND parent, WORD action );
+typedef int (WINAPI *CASCADECHILDPROC)( HWND parent, WORD action );
+#endif
+
+#if defined( __NT__ )
+extern int WINAPI TileChildWindows( HWND parent, WORD action );
+extern int WINAPI CascadeChildWindows( HWND parent, WORD action );
+#endif
+
 static mdi_info mdiInfo;
 static char     childrenMaximized;
 static char     updatedMenu;
@@ -68,7 +78,8 @@ static HWND     currentWindow;
 //static WPI_RECT       minChildRect;
 //static char   haveMinChildRect;
 
-#define MDI_DATA_FROM_HWND( hwnd ) ((mdi_data *)_wpi_getwindowlong( hwnd, mdiInfo.data_off ))
+#define GET_WND_MDI_DATA( hwnd ) ((mdi_data *)_wpi_getwindowlongptr( hwnd, mdiInfo.data_off ))
+#define SET_WND_MDI_DATA( hwnd, data ) ((mdi_data *)_wpi_setwindowlongptr( hwnd, mdiInfo.data_off, data ))
 
 static void deleteMaximizedMenuConfig( void );
 static void setMaximizedMenuConfig( HWND hwnd );
@@ -109,7 +120,7 @@ void MDISetOrigSize( HWND hwnd, WPI_RECT *rect )
 {
     mdi_data    *md;
 
-    md = MDI_DATA_FROM_HWND( hwnd );
+    md = GET_WND_MDI_DATA( hwnd );
 
     CopyRect( &md->orig_size, rect );
 
@@ -131,7 +142,7 @@ static void doMaximize( HWND hwnd )
 
     setMaximizedMenuConfig( hwnd );
 
-    md = MDI_DATA_FROM_HWND( hwnd );
+    md = GET_WND_MDI_DATA( hwnd );
 
     if( mdiInfo.start_max_restore != NULL ) {
         mdiInfo.start_max_restore( hwnd );
@@ -193,7 +204,7 @@ static void doRestore( HWND hwnd )
     WPI_RECTDIM right;
     WPI_RECTDIM bottom;
 
-    md = MDI_DATA_FROM_HWND( hwnd );
+    md = GET_WND_MDI_DATA( hwnd );
 
     if( md->curr_state == STATE_NORMAL ) {
         return;
@@ -328,6 +339,7 @@ static HMENU duplicateMenu( HMENU orig )
     HMENU               copy;
     HMENU               sub;
 
+    copy = NULLHANDLE;
     if( orig != NULLHANDLE ) {
         copy = _wpi_createpopupmenu();
         if( copy == NULLHANDLE ) {
@@ -411,10 +423,9 @@ void SetSystemMenu( HWND hwnd )
 #ifndef __OS2_PM__
     if( sys_menu != NULL ) {
         ModifyMenu( menu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP,
-                    (UINT)sys_menu, (LPVOID)closeBitmap );
+                    (UINT_PTR)sys_menu, (LPVOID)closeBitmap );
     } else {
-        ModifyMenu( menu, 0, MF_BYPOSITION | MF_BITMAP, -1,
-                    (LPVOID)closeBitmap );
+        ModifyMenu( menu, 0, MF_BYPOSITION | MF_BITMAP, -1, (LPVOID)closeBitmap );
     }
 #else
     if( sys_menu != NULLHANDLE ) {
@@ -522,7 +533,7 @@ static void setMaximizedMenuConfig( HWND hwnd )
         sys_menu = generateSystemMenu( hwnd );
         if( sys_menu != NULL ) {
             InsertMenu( menu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP,
-                        (UINT)sys_menu, (LPVOID)closeBitmap );
+                        (UINT_PTR)sys_menu, (LPVOID)closeBitmap );
         } else {
             InsertMenu( menu, 0, MF_BYPOSITION | MF_BITMAP, -1, (LPVOID)closeBitmap );
         }
@@ -607,7 +618,7 @@ int MDIIsWndMaximized( HWND hwnd )
 {
     mdi_data    *md;
 
-    md = MDI_DATA_FROM_HWND( hwnd );
+    md = GET_WND_MDI_DATA( hwnd );
     return( md->curr_state == STATE_MAX );
 
 } /* MDIIsWndMaximized */
@@ -646,10 +657,8 @@ void MDITile( int is_horz )
     LPVOID      TileChildWindows;
     HINDIR      hindir;
 #else
-    int (FAR PASCAL *TileChildWindows)( HWND parent, WORD action );
+    TILECHILDPROC TileChildWindows;
 #endif
-#else
-    extern int FAR PASCAL TileChildWindows( HWND parent, WORD action );
 #endif
 
     if( childrenMaximized ) {
@@ -672,8 +681,7 @@ void MDITile( int is_horz )
         return;
     }
 #if defined( __WINDOWS_386__ )
-    hindir = GetIndirectFunctionHandle( TileChildWindows, INDIR_WORD,
-                                        INDIR_WORD, INDIR_ENDLIST );
+    hindir = GetIndirectFunctionHandle( TileChildWindows, INDIR_WORD, INDIR_WORD, INDIR_ENDLIST );
     InvokeIndirectFunction( hindir, mdiInfo.container, tile_how );
     free( hindir );
 #else
@@ -705,10 +713,8 @@ void MDICascade( void )
     LPVOID      CascadeChildWindows;
     HINDIR      hindir;
 #else
-    int (FAR PASCAL *CascadeChildWindows)( HWND parent, WORD action );
+    CASCADECHILDPROC CascadeChildWindows;
 #endif
-#else
-    extern int FAR PASCAL CascadeChildWindows( HWND parent, WORD action );
 #endif
 
     if( childrenMaximized ) {
@@ -725,8 +731,7 @@ void MDICascade( void )
         return;
     }
 #if defined( __WINDOWS_386__ )
-    hindir = GetIndirectFunctionHandle( CascadeChildWindows, INDIR_WORD,
-                                        INDIR_WORD, INDIR_ENDLIST );
+    hindir = GetIndirectFunctionHandle( CascadeChildWindows, INDIR_WORD, INDIR_WORD, INDIR_ENDLIST );
     InvokeIndirectFunction( hindir, mdiInfo.container, 0 );
     free( hindir );
 #else
@@ -753,7 +758,7 @@ int MDINewWindow( HWND hwnd )
         return( FALSE );
     }
     md->hwnd = hwnd;
-    _wpi_setwindowlong( hwnd, mdiInfo.data_off, (LONG)md );
+    SET_WND_MDI_DATA( hwnd, (LONG_PTR)md );
     if( mdiHead == NULL ) {
         mdiHead = mdiTail = md;
     } else {
@@ -812,7 +817,7 @@ static int processSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 {
     mdi_data    *md;
 
-    md = MDI_DATA_FROM_HWND( hwnd );
+    md = GET_WND_MDI_DATA( hwnd );
     switch( LOWORD( wparam ) & 0xfff0 ) {
     case SC_RESTORE:
         *lrc = _wpi_defwindowproc( hwnd, msg, wparam, lparam );

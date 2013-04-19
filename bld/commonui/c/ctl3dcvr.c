@@ -142,6 +142,7 @@ int C3D_EXPORT CvrCtl3DInit( HINSTANCE inst )
     DWORD       ver;
     BYTE        vm;
 
+    inst = inst;
     ver = GetVersion();
     vm = (BYTE)(ver & 0x000000FF);
     if( vm >= 0x04 ) {
@@ -159,6 +160,7 @@ int C3D_EXPORT CvrCtl3DInit( HINSTANCE inst )
  */
 void C3D_EXPORT CvrCtl3DFini( HINSTANCE inst )
 {
+    inst = inst;
     CvrCtl3DDLLFini();
 
 } /* CvrCtl3DFini */

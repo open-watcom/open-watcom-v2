@@ -32,7 +32,7 @@
 #include "precomp.h"
 #include <string.h>
 #include <stdlib.h>
-
+#include "wpi.h"
 #include "jdlg.h"
 #include "mem.h"
 
@@ -47,7 +47,7 @@
 #endif
 
 #if defined( __NT__ )
-    #pragma pack( 2 );
+    #include "pushpck2.h"
 #endif
 
 typedef struct {
@@ -71,6 +71,10 @@ typedef struct {
     short       PointSize;
     //char      szTypeFace[];
 } FONTINFO;
+
+#if defined( __NT__ )
+    #include "poppck.h"
+#endif
 
 static BYTE     *JFontInfo = NULL;
 static int      JFontInfoLen = 0;
@@ -303,7 +307,7 @@ static HGLOBAL loadDialogTemplate( HINSTANCE hinst, LPCSTR lpszDlgTemp,
 static HGLOBAL createJTemplate( HGLOBAL htemplate, DWORD size )
 {
     HGLOBAL     newHTemplate;
-    DWORD       newSize;
+    size_t      newSize;
     BYTE        *newTemplate;
     BYTE        *template;
     BYTE        *fontinfo;
@@ -486,11 +490,11 @@ CDIP_DEFAULT_ACTION:
 /*
  * dbIndirect - helper for JDialogBoxIndirect
  */
-static int dbIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
+static INT_PTR dbIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
                        HWND hwndOwner, DLGPROC dlgproc, DWORD size )
 {
     HGLOBAL     newtemplate;
-    int         ret;
+    INT_PTR     ret;
 
     if( JFontInfo == NULL ) {
         goto DBI_DEFAULT_ACTION;
@@ -520,12 +524,12 @@ DBI_DEFAULT_ACTION:
 /*
  * dbIndirectParam - helper for JDialogBoxIndirectParam
  */
-static int dbIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
+static INT_PTR dbIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
                             HWND hwndOwner, DLGPROC dlgproc,
                             LPARAM lParamInit, DWORD size )
 {
     HGLOBAL     newtemplate;
-    int         ret;
+    INT_PTR     ret;
 
     if( JFontInfo == NULL ) {
         goto DBIP_DEFAULT_ACTION;
@@ -556,7 +560,7 @@ DBIP_DEFAULT_ACTION:
 /*
  * JDialogBoxIndirect - Japanese version of DialogBoxIndirect
  */
-int JDialogBoxIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
+INT_PTR JDialogBoxIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
                         HWND hwndOwner, DLGPROC dlgproc )
 {
     return( dbIndirect( hinst, hglblDlgTemp, hwndOwner, dlgproc, -1 ) );
@@ -566,7 +570,7 @@ int JDialogBoxIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
 /*
  * JDialogBoxIndirectParam - Japanese version of DialogBoxIndirectParam
  */
-int JDialogBoxIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
+INT_PTR JDialogBoxIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
                              HWND hwndOwner, DLGPROC dlgproc,
                              LPARAM lParamInit )
 {
@@ -598,11 +602,11 @@ HWND JCreateDialogIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
 /*
  * JDialogBox - Japanese version of DialogBox
  */
-int JDialogBox( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC dlgproc )
+INT_PTR JDialogBox( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC dlgproc )
 {
     HGLOBAL     template;
     DWORD       size;
-    int         ret;
+    INT_PTR     ret;
 
     if( JFontInfo == NULL ) {
         goto JDB_DEFAULT_ACTION;
@@ -627,12 +631,12 @@ JDB_DEFAULT_ACTION:
 /*
  * JDialogBoxParam - Japanese version of DialogBoxParam
  */
-int JDialogBoxParam( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner,
+INT_PTR JDialogBoxParam( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner,
                      DLGPROC dlgproc, LPARAM lParamInit )
 {
     HGLOBAL     template;
     DWORD       size;
-    int         ret;
+    INT_PTR     ret;
 
     if( JFontInfo == NULL ) {
         goto JDBP_DEFAULT_ACTION;
