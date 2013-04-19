@@ -32,68 +32,48 @@ objs_nt =  spy.obj spyglob.obj spybox.obj spyproc.obj spymsgs.obj &
 
 objs = $(objs_$(host_os))
 
-dllobjs = spydll.obj
+dllobjs = $(dll_subdir)/spydll.obj
 
 extra_cpp_flags_nt = -DNOUSE3D
 
-extra_c_flags     += -s -fh
-extra_c_flags_i86 += -zu -2 -zW
-extra_c_flags_386 += -4
+extra_c_flags     = -s -fh
+extra_c_flags_i86 = -zu -2 -zW
+extra_c_flags_386 = -4
+extra_c_flags_spydll = -DSPYDLL
+!ifdef __WATCOM__
 !ifeq host_os win
-extra_c_flags_spydll = -bd -mc -fh=spydll.pch
-!else ifeq host_os nt
-extra_c_flags_spydll = -bd -fh=spydll.pch
+extra_c_flags_spydll += -mc
 !endif
-
-!ifeq release 0
-wspy_non_release_option = option rwr
-dll_debug_all           = debug all
-dll_debug_axp           = debug codeview
 !endif
-
-extra_l_flags_win = option stack=9k, heapsize=2k lib $(dllname).lib, commdlg.lib
-
-extra_l_flags_nt  = option stack=100k option heapsize=2k lib $(dllname).lib
 
 extra_l_flags     = option map
+
+extra_l_flags_win = option stack=9k, heapsize=2k lib $(dllname).lib, commdlg.lib
+extra_l_flags_nt  = option stack=100k option heapsize=2k lib $(dllname).lib
 !ifeq host_cpu  386
 # To maintain cross-version linkability
 extra_l_flags_nt  += alias '_WinMain'='_WinMain@16'
 !endif
 
-wspy_dll_lflags_wini86 = $(dll_debug_$(host_cpu)) &
-                         system windows_dll font mem name $(dllname).dll &
-                         $(wspy_non_release_option) &
-                         lib windows.lib &
-                         option map, rwr &
-                         segment CLASS 'CODE' PRELOAD FIXED &
-                         export WEP RESIDENT &
-                         file { $(dllobjs) }
+extra_l_flags_dll = option map, implib
 
-wspy_dll_lflags_nt386  = $(dll_debug_$(host_cpu)) &
-                         system nt_dll initglobal name $(dllname).dll &
-                         option map &
-                         file { $(dllobjs) }
-
-wspy_dll_lflags_ntaxp  = $(dll_debug_$(host_cpu)) &
-                         system ntaxp_dll initglobal name $(dllname).dll &
-                         option map &
-                         file { $(dllobjs) }
+extra_l_flags_dll_win = font mem option rwr segment CLASS 'CODE' PRELOAD FIXED export WEP RESIDENT
+extra_l_flags_dll_nt  = initglobal
 
 .c: $(wspy_dir);$(sdk_misc_dir)
 .h: $(wspy_dir);$(sdk_misc_dir)
 
-inc_dirs = -I"$(wspy_dir)" $(commonui_inc_dirs) $(wpi_inc_dirs)
+inc_dirs = -I. -I"$(wspy_dir)" $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 
-xlibs = $(wpi_lib) $(commonui_lib)
+xlibs = $(dllname).lib $(wpi_lib) $(commonui_lib)
 
-$(name).exe : rcstr.gh $(objs) $(dllname).lib $(xlibs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
+$(name).exe : rcstr.gh $(dllname).dll $(objs) $(xlibs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(objs) $(dllname).lib $(xlibs) $(ldflags)
+        $(cl) $(clflags) $(objs) $(xlibs) $(ldflags)
 !else
         %create $^&.lnk
         @%append $^&.lnk $(lflags)
@@ -101,32 +81,24 @@ $(name).exe : rcstr.gh $(objs) $(dllname).lib $(xlibs) $(name).res $(version_res
         @%append $^&.lnk lib { $(xlibs) }
         $(linker) name $^@ @$^&.lnk
 !endif
-!ifeq host_cpu axp
-!ifeq release 0
-        cvpack $(name).exe
-        $(wstrip) -q $(name).exe $(name).exe $(name).sym
-!endif
-!endif
         $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
-!ifeq host_cpu axp
-!ifeq release 0
-        $(wstrip) -q -a wspy.exe . wspy.sym
+
+$(dllname).dll : $(dllobjs)
+!ifdef __WATCOM__
+        $(linker) name $@ $(lflags_dll) file {$(dllobjs)}
+!else
+        $(cl) $(clflags_dll) $< $(ldflags_dll) $(extra_ldflags_dll)
 !endif
-!endif
+
+rc_inc_dirs = $(inc_dirs)
 
 rcstr.gh : rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(wspy_dir)/spy.msg
-        $(cpp) $(rc_aui_flags) $(inc_path) $[@ >$^@
-
-$(dllname).lib : $(dllname).dll
-        $(librarian) $(libflags) +$[@
-
-$(dllname).dll : $(dllobjs)
-        $(linker) $(wspy_dll_lflags_$(host_os)$(host_cpu))
+        $(cpp) $(rc_aui_flags) $(rc_inc_path) $[@ >$^@
 
 $(name).res: ../$(name).rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
 !include verrc.mif
