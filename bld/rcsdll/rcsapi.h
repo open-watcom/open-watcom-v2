@@ -36,21 +36,23 @@ extern "C" {
 #endif
 
 #if defined( _RCSDLL_ )
-    #define RCSDLLEXPORT    __export
+    #define RCSDLLENTRY    __declspec(dllexport)
+#elif defined( __NT__ )
+    #define RCSDLLENTRY    __declspec(dllimport)
 #else
-    #define RCSDLLEXPORT
+    #define RCSDLLENTRY
 #endif
 
 #if defined( __NT__ )
     #include <windows.h>
     typedef const char *rcsstring;
     typedef void *rcsdata;
-    #define RCSAPI  RCSDLLEXPORT WINAPI
+    #define RCSAPI  WINAPI
 #elif defined( __WINDOWS__ )
     #include <windows.h>
     typedef const char far *rcsstring;
     typedef void far *rcsdata;
-    #define RCSAPI  RCSDLLEXPORT WINAPI
+    #define RCSAPI WINAPI
 #elif defined( __OS2__ )
     #include <os2.h>
     typedef const char *rcsstring;
@@ -58,7 +60,7 @@ extern "C" {
   #if !defined( __WATCOMC__ )
     #define RCSAPI
   #else
-    #define RCSAPI  RCSDLLEXPORT APIENTRY
+    #define RCSAPI APIENTRY
   #endif
 #elif defined( __DOS__ )
     typedef const char *rcsstring;
@@ -73,6 +75,18 @@ extern "C" {
     #define RCSAPI
 #endif
 
+/* parms to RCSSetSystem, retvals from RCSQuerySystem */
+#define NO_RCS   0
+#define MKS_RCS  1
+#define MKS_SI   2
+#define PVCS     3
+#define GENERIC  4
+#define O_CYCLE  5
+#define PERFORCE 6
+#define WPROJ    7
+#define MAX_RCS_TYPE    7
+
+#define RCS_DLL_VER     1
 
 typedef int RCSAPI      BatchCallback( rcsstring str, void *cookie );
 typedef int RCSAPI      MessageBoxCallback( rcsstring text, rcsstring title, char *buffer, int len, void *cookie );
@@ -90,18 +104,6 @@ typedef int RCSAPI      RCSRegMsgBoxCbFn( rcsdata, MessageBoxCallback *, void * 
 typedef void RCSAPI     RCSSetPauseFn( rcsdata, int );
 typedef void RCSAPI     RCSFiniFn( rcsdata );
 
-/* parms to RCSSetSystem, retvals from RCSQuerySystem */
-#define NO_RCS   0
-#define MKS_RCS  1
-#define MKS_SI   2
-#define PVCS     3
-#define GENERIC  4
-#define O_CYCLE  5
-#define PERFORCE 6
-#define WPROJ    7
-#define MAX_RCS_TYPE    7
-
-#define RCS_DLL_VER     1
 #ifdef __cplusplus
 };
 #endif

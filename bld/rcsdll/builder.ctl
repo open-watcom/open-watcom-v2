@@ -21,6 +21,8 @@ set PROJNAME=rcsdll
     <CCCMD> nt386/rcsdll.dll   <OWRELROOT>/binnt/rcsdll.dll
     <CCCMD> ntaxp/rcsdll.dll   <OWRELROOT>/axpnt/rcsdll.dll
 
+    <CCCMD> ntx64/rcsdll.dll   <OWRELROOT>/binnt64/rcsdll.dll
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

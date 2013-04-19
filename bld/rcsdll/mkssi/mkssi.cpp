@@ -38,13 +38,11 @@
 
 mksSISystem MksSI;
 
-typedef int WINAPI (*WSICHECKIN)(HWND main_window_handle,
-                          int files, char const FAR * FAR flist[] );
-typedef int WINAPI (*WSICHECKOUT)(HWND main_window_handle,
-                          int files, char const FAR * FAR flist[] );
-typedef int WINAPI (*WSILAUNCH)(LPSTR filelist);
-typedef int WINAPI (*WSIINIT)(void);
-typedef int WINAPI (*WSICLEANUP)(void);
+typedef int (WINAPI *WSICHECKIN)(HWND main_window_handle, int files, char const FAR * FAR flist[] );
+typedef int (WINAPI *WSICHECKOUT)(HWND main_window_handle, int files, char const FAR * FAR flist[] );
+typedef int (WINAPI *WSILAUNCH)(LPSTR filelist);
+typedef int (WINAPI *WSIINIT)(void);
+typedef int (WINAPI *WSICLEANUP)(void);
 
 static WSICHECKIN       ci_fp = NULL;
 static WSICHECKOUT      co_fp = NULL;
@@ -110,10 +108,11 @@ int mksSISystem::runShell()
     return( (*rs_fp)( NULL ) );
 };
 
-
+#ifdef __WATCOMC__
 // Complain about defining trivial constructor inside class
 // definition only for warning levels above 8 
 #pragma warning 657 9
+#endif
 
 mksSISystem::~mksSISystem() {
 };

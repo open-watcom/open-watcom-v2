@@ -15,6 +15,8 @@ objs = rcsdll.obj inifile.obj $(extra_objs)
 objs += mkssi.obj
 !ifeq host_cpu 386
 objs += objcycle.obj
+!else ifeq host_cpu x64
+objs += objcycle.obj
 !endif
 !else ifeq host_os win
 objs += mkssi.obj
@@ -31,14 +33,16 @@ extra_cpp_flags = -D_RCSDLL_
 extra_c_flags_win = -zw-zu
 
 extra_l_flags = op map
-!ifdef sys_dll
-extra_l_flags_win = op rwr
-!endif
-extra_l_flags_os2 = initinstance terminstance pm op manyautodata
+
+extra_l_flags_dll = op map
+extra_l_flags_dll_win = op rwr
+extra_l_flags_dll_os2 = initinstance terminstance pm op manyautodata
 
 !ifdef sys_dll
+!ifdef __WATCOM__
 rcsdll.lib: rcsdll.dll
     $(librarian) $(libflags) +$[@
+!endif
 !else
 rcsdll.lib: $(objs)
     @%create $^&.lbc

@@ -36,13 +36,33 @@
 #include <windows.h>
 #include "rcsdll.hpp"
 
+#ifdef __WINDOWS__
+#define ENTRY_OCCHECKIN     "OCCHECKIN"
+#define ENTRY_OCCHECKOUT    "OCCHECKOUT"
+#define ENTRY_OCRUNOCM      "OCRUNOCM"
+#define ENTRY_OCINIT        "OCINIT"
+#define ENTRY_OCFINI        "OCFINI"
+#elif defined( __NT__ ) && defined( __386__ )
+#define ENTRY_OCCHECKIN     "_OCCheckin@8"
+#define ENTRY_OCCHECKOUT    "_OCCheckout@8"
+#define ENTRY_OCRUNOCM      "_OCRunOCM@0"
+#define ENTRY_OCINIT        "_OCInit@8"
+#define ENTRY_OCFINI        "_OCFini@0"
+#else
+#define ENTRY_OCCHECKIN     "OCCheckin"
+#define ENTRY_OCCHECKOUT    "OCCheckout"
+#define ENTRY_OCRUNOCM      "OCRunOCM"
+#define ENTRY_OCINIT        "OCInit"
+#define ENTRY_OCFINI        "OCFini"
+#endif
+
 objectCycleSystem ObjCycle;
 
-typedef int WINAPI (*OCINIT)( long instance, HWND window );
-typedef int WINAPI (*OCFINI)( void );
-typedef int WINAPI (*OCCHECKIN)( const char *fname, const char *objname );
-typedef int WINAPI (*OCCHECKOUT)( const char *fname, const char *objname );
-typedef int WINAPI (*OCRUNOCM)( void );
+typedef int (WINAPI *OCINIT)( long instance, HWND window );
+typedef int (WINAPI *OCFINI)( void );
+typedef int (WINAPI *OCCHECKIN)( const char *fname, const char *objname );
+typedef int (WINAPI *OCCHECKOUT)( const char *fname, const char *objname );
+typedef int (WINAPI *OCRUNOCM)( void );
 
 static OCCHECKIN        ci_fp = NULL;
 static OCCHECKOUT       co_fp = NULL;
@@ -57,20 +77,16 @@ int objectCycleSystem::init( userData *d )
     dll = LoadLibrary( "OCHOOK.DLL" );
 
 #ifdef __WINDOWS__
-    if( (UINT)dll < 32 ) return( FALSE );
-    ci_fp = (OCCHECKIN)GetProcAddress( dll, "OCCHECKIN" );
-    co_fp = (OCCHECKOUT)GetProcAddress( dll, "OCCHECKOUT" );
-    rs_fp = (OCRUNOCM)GetProcAddress( dll, "OCRUNOCM" );
-    in_fp = (OCINIT)GetProcAddress( dll, "OCINIT" );
-    cl_fp = (OCFINI)GetProcAddress( dll, "OCFINI" );
-#else
     if( dll == NULL ) return( FALSE );
-    ci_fp = (OCCHECKIN)GetProcAddress( dll, "_OCCheckin@8" );
-    co_fp = (OCCHECKOUT)GetProcAddress( dll, "_OCCheckout@8" );
-    rs_fp = (OCRUNOCM)GetProcAddress( dll, "_OCRunOCM@0" );
-    in_fp = (OCINIT)GetProcAddress( dll, "_OCInit@8" );
-    cl_fp = (OCFINI)GetProcAddress( dll, "_OCFini@0" );
+#else
+    if( (UINT)dll < 32 ) return( FALSE );
 #endif
+    ci_fp = (OCCHECKIN)GetProcAddress( dll, ENTRY_OCCHECKIN );
+    co_fp = (OCCHECKOUT)GetProcAddress( dll, ENTRY_OCCHECKOUT );
+    rs_fp = (OCRUNOCM)GetProcAddress( dll, ENTRY_OCRUNOCM );
+    in_fp = (OCINIT)GetProcAddress( dll, ENTRY_OCINIT );
+    cl_fp = (OCFINI)GetProcAddress( dll, ENTRY_OCFINI );
+
     dllId = (long)dll;
 
     if( in_fp == NULL ) return( FALSE );
@@ -108,9 +124,11 @@ int objectCycleSystem::runShell()
     return( (*rs_fp)() );
 };
 
+#ifdef __WATCOMC__
 // Complain about defining trivial constructor inside class
 // definition only for warning levels above 8 
 #pragma warning 657 9
+#endif
 
 objectCycleSystem::~objectCycleSystem() {
 };

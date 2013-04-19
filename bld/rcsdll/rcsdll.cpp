@@ -32,7 +32,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#include "wio.h"
+#include "bool.h"
 #if defined( __WINDOWS__ ) || defined( __NT__ )
     #include <windows.h>
     static      HINSTANCE   hInstance = 0;
@@ -42,12 +43,28 @@
     #include <os2.h>
     }
 #endif
-#ifndef TRUE
-    #define TRUE 1
-    #define FALSE 0
-#endif
 #include "rcsdll.hpp"
 #include "inifile.hpp"
+#include "clibext.h"
+
+extern "C" {
+
+/* common functions */
+RCSDLLENTRY extern RCSGetVersionFn  RCSGetVersion;
+RCSDLLENTRY extern RCSSetSystemFn   RCSSetSystem;
+RCSDLLENTRY extern RCSQuerySystemFn RCSQuerySystem;
+RCSDLLENTRY extern RCSRegBatchCbFn  RCSRegisterBatchCallback;
+RCSDLLENTRY extern RCSRegMsgBoxCbFn RCSRegisterMessageBoxCallback;
+/* system specific functions -- mapped to function for appropriate system */
+RCSDLLENTRY extern RCSInitFn        RCSInit;
+RCSDLLENTRY extern RCSCheckoutFn    RCSCheckout;
+RCSDLLENTRY extern RCSCheckinFn     RCSCheckin;
+RCSDLLENTRY extern RCSHasShellFn    RCSHasShell;
+RCSDLLENTRY extern RCSRunShellFn    RCSRunShell;
+RCSDLLENTRY extern RCSFiniFn        RCSFini;
+RCSDLLENTRY extern RCSSetPauseFn    RCSSetPause;
+
+};  // extern "C"
 
 mksRcsSystem    MksRcs;
 pvcsSystem      Pvcs;
@@ -56,20 +73,6 @@ p4System        Perforce;
 wprojRcs        Wproj;
 
 extern "C" {
-/* common functions */
-extern RCSGetVersionFn  RCSGetVersion;
-extern RCSSetSystemFn   RCSSetSystem;
-extern RCSQuerySystemFn RCSQuerySystem;
-extern RCSRegBatchCbFn  RCSRegisterBatchCallback;
-extern RCSRegMsgBoxCbFn RCSRegisterMessageBoxCallback;
-/* system specific functions -- mapped to function for appropriate system */
-extern RCSInitFn        RCSInit;
-extern RCSCheckoutFn    RCSCheckout;
-extern RCSCheckinFn     RCSCheckin;
-extern RCSHasShellFn    RCSHasShell;
-extern RCSRunShellFn    RCSRunShell;
-extern RCSFiniFn        RCSFini;
-extern RCSSetPauseFn    RCSSetPause;
 
 static char *rcs_type_strings[] = {
     "no_rcs",
@@ -205,7 +208,7 @@ int RCSAPI RCSRegisterMessageBoxCallback( rcsdata data, MessageBoxCallback *fp, 
 
 #ifdef __NT__
 
-int WINAPI LibMain( HINSTANCE hDll, DWORD reason, LPVOID res )
+BOOL WINAPI DllMain( HINSTANCE hDll, DWORD reason, LPVOID res )
 {
     res = res;
     reason = reason;
