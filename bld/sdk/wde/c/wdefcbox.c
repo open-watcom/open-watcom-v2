@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderes.h"
@@ -62,8 +59,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeCBoxDispatcher( ACTION, WdeCBoxObject *, void *, void * );
-extern LRESULT WINEXPORT WdeCBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeCBoxDispatcher( ACTION, WdeCBoxObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeCBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -92,18 +89,18 @@ static WNDPROC                  WdeOriginalCBoxProc;
 //static WNDPROC                WdeCBoxProc;
 
 static DISPATCH_ITEM WdeCBoxActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeCBoxDestroy              },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeCBoxCopyObject           },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeCBoxValidateAction       },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeCBoxIdentify             },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeCBoxGetWindowClass       },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeCBoxDefine               },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeCBoxGetWndProc           }
+    { DESTROY,          (DISPATCH_RTN *)WdeCBoxDestroy              },
+    { COPY,             (DISPATCH_RTN *)WdeCBoxCopyObject           },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeCBoxValidateAction       },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeCBoxIdentify             },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeCBoxGetWindowClass       },
+    { DEFINE,           (DISPATCH_RTN *)WdeCBoxDefine               },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeCBoxGetWndProc           }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeCBoxActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeCBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeCBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeCBox( parent, obj_rect, handle,
@@ -187,7 +184,7 @@ OBJPTR WdeCBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeCBoxDispatcher( ACTION act, WdeCBoxObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeCBoxDispatcher( ACTION act, WdeCBoxObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -247,8 +244,7 @@ Bool WdeCBoxInit( Bool first )
     SETCTL_TEXT( WdeDefaultCBox, NULL );
     SETCTL_CLASSID( WdeDefaultCBox, ResNumToControlClass( CLASS_COMBOBOX ) );
 
-    WdeCBoxDispatch = MakeProcInstance( (FARPROC)WdeCBoxDispatcher,
-                                        WdeGetAppInstance());
+    WdeCBoxDispatch = MakeProcInstance( (FARPROC)WdeCBoxDispatcher, WdeGetAppInstance());
     return( TRUE );
 }
 
@@ -603,8 +599,7 @@ BOOL WdeCBoxDefineHook ( HWND hDlg, UINT message,
 }
 
 
-LRESULT WINEXPORT WdeCBoxSuperClassProc( HWND hWnd, UINT message, WPARAM wParam,
-                                         volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeCBoxSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     LRESULT            ret;
 

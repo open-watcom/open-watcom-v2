@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -61,8 +58,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeHtKyDispatcher( ACTION, WdeHtKyObject *, void *, void * );
-extern LRESULT WINEXPORT WdeHtKySuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeHtKyDispatcher( ACTION, WdeHtKyObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeHtKySuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -93,18 +90,18 @@ static WNDPROC                  WdeOriginalHtKyProc;
 #define WHOTKEY_CLASS    HOTKEY_CLASS
 
 static DISPATCH_ITEM WdeHtKyActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeHtKyDestroy              },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeHtKyCopyObject           },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeHtKyValidateAction       },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeHtKyIdentify             },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeHtKyGetWindowClass       },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeHtKyDefine               },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeHtKyGetWndProc           }
+    { DESTROY,          (DISPATCH_RTN *)WdeHtKyDestroy              },
+    { COPY,             (DISPATCH_RTN *)WdeHtKyCopyObject           },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeHtKyValidateAction       },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeHtKyIdentify             },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeHtKyGetWindowClass       },
+    { DEFINE,           (DISPATCH_RTN *)WdeHtKyDefine               },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeHtKyGetWndProc           }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeHtKyActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeHtKyCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeHtKyCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeHtKy( parent, obj_rect, handle, 0, "", HOTKEY_OBJ ) );
@@ -114,8 +111,7 @@ OBJPTR WINEXPORT WdeHtKyCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 }
 
-OBJPTR WdeMakeHtKy( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeHtKy( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -188,7 +184,7 @@ OBJPTR WdeHKCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeHtKyDispatcher( ACTION act, WdeHtKyObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeHtKyDispatcher( ACTION act, WdeHtKyObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -388,8 +384,7 @@ void WdeHtKyGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeEXGetDefineInfo( o_info, hDlg );
 }
 
-BOOL WdeHtKyDefineHook( HWND hDlg, UINT message,
-                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
+BOOL WdeHtKyDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );
@@ -401,8 +396,7 @@ BOOL WdeHtKyDefineHook( HWND hDlg, UINT message,
     return( FALSE );
 }
 
-LRESULT WINEXPORT WdeHtKySuperClassProc( HWND hWnd, UINT message,
-                                         WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeHtKySuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalHtKyProc, hWnd, message, wParam, lParam ) );

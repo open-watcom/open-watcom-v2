@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <mbstring.h>
-#include <stdlib.h>
-
 #include "wdeglbl.h"
+#include <mbstring.h>
 #include "statwnd.h"
 #include "wdemsgbx.h"
 #include "wdestat.h"
@@ -57,7 +53,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WdeStatusWndProc( HWND, unsigned, UINT, LONG );
+BOOL WdeStatusHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -144,7 +140,7 @@ Bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
     WdeStatusDepth = tm.tmHeight + STATUS_LINE_PAD + VERT_BORDER * 2;
     rect.top = rect.bottom - WdeStatusDepth;
 
-    if( !StatusWndInit( inst, WdeStatusWndProc, 0, (HCURSOR)NULL ) ) {
+    if( !StatusWndInit( inst, WdeStatusHookProc, 0, (HCURSOR)NULL ) ) {
         return( FALSE );
     }
     WdeStatusBar = StatusWndStart();
@@ -286,7 +282,7 @@ Bool WdeDisplayStatusText( char *str )
     return( TRUE );
 }
 
-BOOL WdeStatusWndProc( HWND hWnd, unsigned msg, UINT wParam, LONG lParam )
+BOOL WdeStatusHookProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( hWnd );

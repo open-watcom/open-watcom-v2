@@ -33,12 +33,10 @@
 #ifndef WDEFLVW_INCLUDED
 #define WDEFLVW_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeLViewCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeLViewCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeLViewInit( Bool );
 extern void              WdeLViewFini( void );
 

@@ -33,12 +33,10 @@
 #ifndef WDEFHTKY_INCLUDED
 #define WDEFHTKY_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeHtKyCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeHtKyCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeHtKyInit( Bool );
 extern void              WdeHtKyFini( void );
 

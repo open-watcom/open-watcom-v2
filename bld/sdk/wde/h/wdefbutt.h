@@ -33,16 +33,14 @@
 #ifndef WDEFBUFF_INCLUDED
 #define WDEFBUFF_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdePButtonCreate( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeTButtonCreate( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeCButtonCreate( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeRButtonCreate( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeGButtonCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdePButtonCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeTButtonCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeCButtonCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeRButtonCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeGButtonCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeButtonInit( Bool );
 extern void              WdeButtonFini( void );
 

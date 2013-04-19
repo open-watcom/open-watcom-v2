@@ -33,14 +33,12 @@
 #ifndef WDEFSCRL_INCLUDED
 #define WDEFSCRL_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeHScrollCreate( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeVScrollCreate( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeSizeBoxCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeHScrollCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeVScrollCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeSizeBoxCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeScrollInit( Bool );
 extern void              WdeScrollFini( void );
 

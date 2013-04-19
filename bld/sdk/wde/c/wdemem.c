@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <stdlib.h>
-#include <string.h>
+#include "wdeglbl.h"
 #include "wrdll.h"
 
 /****************************************************************************/
@@ -94,7 +92,7 @@ int WdeMemPrtList( void )
 
 void MemStart( void )
 {
-#if !defined( __386__ ) && !defined( __ALPHA__ )
+#ifdef _M_I86
     __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif

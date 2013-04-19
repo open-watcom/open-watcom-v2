@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <mbstring.h>
-#include <stdlib.h>
-
 #include "wdeglbl.h"
+#include <mbstring.h>
 #include "wdemain.h"
 #include "wderes.h"
 #include "wdedebug.h"
@@ -50,8 +46,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WdeEditWndProc( HWND, UINT, WPARAM, LPARAM );
-extern LRESULT WINEXPORT WdeFormsWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WdeFormsWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -164,7 +160,7 @@ Bool WdeRegisterEditClass( HINSTANCE app_inst )
     wc.style = CS_DBLCLKS | CS_VREDRAW | CS_HREDRAW;
     wc.lpfnWndProc = WdeEditWndProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( WdeResInfo * );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = app_inst;
     wc.hIcon = NULL;
     wc.hCursor = NULL;
@@ -182,7 +178,7 @@ Bool WdeRegisterEditClass( HINSTANCE app_inst )
     wc.style = CS_DBLCLKS | CS_VREDRAW | CS_HREDRAW;
     wc.lpfnWndProc = WdeFormsWndProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( WdeResInfo * );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = app_inst;
     wc.hIcon = NULL;
     wc.hCursor = NULL;
@@ -251,8 +247,8 @@ Bool WdeCreateEditWindows( WdeResInfo *info )
         return( FALSE );
     }
 
-    SetWindowLong( info->edit_win, 0, (LONG)info );
-    SetWindowLong( info->forms_win, 0, (LONG)info );
+    SET_WNDINFO( info->edit_win, (LONG_PTR)info );
+    SET_WNDINFO( info->forms_win, (LONG_PTR)info );
 
     SetWindowPos( info->forms_win, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 
@@ -301,7 +297,7 @@ LRESULT WdePassToEdit( UINT message, WPARAM wParam, LPARAM lParam )
     return( FALSE );
 }
 
-LRESULT WINEXPORT WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HWND        hwin;
     uint_32     styles;
@@ -362,12 +358,12 @@ LRESULT WINEXPORT WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM
     return( DefWindowProc( hWnd, message, wParam, lParam ) );
 }
 
-LRESULT WINEXPORT WdeFormsWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeFormsWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeResInfo *info;
     LRESULT     result;
 
-    info = (WdeResInfo *)GetWindowLong( hWnd, 0 );
+    info = (WdeResInfo *)GET_WNDINFO( hWnd );
     result = FALSE;
 
     if( info != NULL && info->editting && info->forms_win != (HWND)NULL ) {

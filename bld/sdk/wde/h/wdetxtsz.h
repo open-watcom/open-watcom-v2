@@ -33,7 +33,6 @@
 #ifndef WDETXTSZ_INCLUDED
 #define WDETXTSZ_INCLUDED
 
-#include "fmedit.def"
 #include "wresall.h"
 
 /****************************************************************************/

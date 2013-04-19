@@ -33,12 +33,10 @@
 #ifndef WDEFEDIT_INCLUDED
 #define WDEFEDIT_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeEditCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeEditCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeEditInit( Bool );
 extern void              WdeEditFini( void );
 

@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <stdlib.h>
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wdemsgbx.h"
@@ -55,7 +52,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WdeGenericDefineProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -280,8 +277,7 @@ void WdeGetObjectStyle( HWND hDlg, DialogStyle *style )
     *style = (uint_16)WdeGetUINT32FromEdit( hDlg, IDB_STYLES, NULL );
 }
 
-BOOL WINEXPORT WdeGenericDefineProc ( HWND hDlg, UINT message,
-                                      WPARAM wParam, volatile LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo  *info = NULL;
     BOOL                        ret;

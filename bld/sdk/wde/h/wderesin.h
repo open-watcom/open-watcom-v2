@@ -36,7 +36,6 @@
 #include "wrdll.h"
 #include "wresall.h"
 #include "wdehash.h"
-#include "fmedit.def"
 
 /****************************************************************************/
 /* macro definitions                                                        */

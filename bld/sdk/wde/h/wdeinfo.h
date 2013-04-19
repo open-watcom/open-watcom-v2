@@ -33,7 +33,6 @@
 #ifndef WDEINFO_INCLUDED
 #define WDEINFO_INCLUDED
 
-#include "fmedit.def"
 #include "wresall.h"
 
 /****************************************************************************/

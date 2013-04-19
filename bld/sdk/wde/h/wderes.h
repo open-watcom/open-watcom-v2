@@ -34,7 +34,6 @@
 #define WDERES_INCLUDED
 
 #include "wderesin.h"
-#include "fmedit.def"
 
 /****************************************************************************/
 /* macro definitions                                                        */

@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <ddeml.h>
-#include <string.h>
-
 #include "wdeglbl.h"
+#include <ddeml.h>
 #include "wrdll.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
@@ -72,9 +69,9 @@ void WdeInt3( void );
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern HDDEDATA WINEXPORT DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
+WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
                                        HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
-                                       DWORD lData1, DWORD lData2 );
+                                       ULONG_PTR lData1, ULONG_PTR lData2 );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -585,9 +582,9 @@ void WdeHandlePokedData( HDDEDATA hdata )
     WdeMemFree( cmd );
 }
 
-HDDEDATA WINEXPORT DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
+WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
                                 HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
-                                DWORD lData1, DWORD lData2 )
+                                ULONG_PTR lData1, ULONG_PTR lData2 )
 {
     HWND                hmain;
     HSZPAIR             hszpair[2];

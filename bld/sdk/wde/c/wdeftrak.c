@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -61,8 +58,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeTrakDispatcher( ACTION, WdeTrakObject *, void *, void * );
-extern LRESULT WINEXPORT WdeTrakSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeTrakDispatcher( ACTION, WdeTrakObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -93,18 +90,18 @@ static WNDPROC                  WdeOriginalTrakProc;
 #define WTRACKBAR_CLASS  TRACKBAR_CLASS
 
 static DISPATCH_ITEM WdeTrakActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeTrakDestroy          },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeTrakCopyObject       },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeTrakValidateAction   },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeTrakIdentify         },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeTrakGetWindowClass   },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeTrakDefine           },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeTrakGetWndProc       }
+    { DESTROY,          (DISPATCH_RTN *)WdeTrakDestroy          },
+    { COPY,             (DISPATCH_RTN *)WdeTrakCopyObject       },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeTrakValidateAction   },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeTrakIdentify         },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeTrakGetWindowClass   },
+    { DEFINE,           (DISPATCH_RTN *)WdeTrakDefine           },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeTrakGetWndProc       }
 };
 
 #define MAX_ACTIONS     (sizeof( WdeTrakActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeTrakCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeTrakCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeTrak( parent, obj_rect, handle, 0, "", TRACKBAR_OBJ ) );
@@ -187,7 +184,7 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -247,8 +244,7 @@ Bool WdeTrakInit( Bool first )
     SETCTL_TEXT( WdeDefaultTrak, NULL );
     SETCTL_CLASSID( WdeDefaultTrak, WdeStrToControlClass( WTRACKBAR_CLASS ) );
 
-    WdeTrakDispatch = MakeProcInstance( (FARPROC)WdeTrakDispatcher,
-                                        WdeGetAppInstance() );
+    WdeTrakDispatch = MakeProcInstance( (FARPROC)WdeTrakDispatcher, WdeGetAppInstance() );
     return( TRUE );
 }
 
@@ -481,8 +477,7 @@ void WdeTrakGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeTrakDefineHook( HWND hDlg, UINT message,
-                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
+BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
 #ifdef __NT__XX
     BOOL    processed;
@@ -568,8 +563,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message,
 #endif
 }
 
-LRESULT WINEXPORT WdeTrakSuperClassProc( HWND hWnd, UINT message,
-                                         WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalTrakProc, hWnd, message, wParam, lParam ) );

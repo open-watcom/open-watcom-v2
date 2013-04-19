@@ -30,11 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wdeactn.h"
@@ -71,7 +66,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WdeSelectDialogProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -307,7 +302,7 @@ Bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         }
 
         /* add the name to the list box */
-        index = SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)name );
+        index = SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)name );
         SendMessage( win, LB_SETITEMDATA, index, (LPARAM)count );
 
         WdeMemFree( name );
@@ -633,8 +628,7 @@ OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl *control )
     return( id );
 }
 
-BOOL WINEXPORT WdeSelectDialogProc( HWND hDlg, UINT message,
-                                    WPARAM wParam, volatile LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeDialogSelectInfo *si;
     BOOL                ret;
@@ -648,7 +642,7 @@ BOOL WINEXPORT WdeSelectDialogProc( HWND hDlg, UINT message,
 
     case WM_INITDIALOG:
         si = (WdeDialogSelectInfo *)lParam;
-        SetWindowLong( hDlg, DWL_USER, (LONG)si );
+        SET_DLGDATA( hDlg, (LONG_PTR)si );
         if( !WdeSetSelectInfo( hDlg, si ) ) {
             EndDialog( hDlg, FALSE );
         }
@@ -656,7 +650,7 @@ BOOL WINEXPORT WdeSelectDialogProc( HWND hDlg, UINT message,
         break;
 
     case WM_COMMAND:
-        si = (WdeDialogSelectInfo *)GetWindowLong( hDlg, DWL_USER );
+        si = (WdeDialogSelectInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDB_HELP:
             WdeHelpRoutine();

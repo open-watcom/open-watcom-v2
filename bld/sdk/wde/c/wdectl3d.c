@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "wdeglbl.h"
 #include "wdectl3d.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
-#include "wrctl3d.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

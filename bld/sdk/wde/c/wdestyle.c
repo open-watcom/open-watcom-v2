@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-
 #include "wdeglbl.h"
 #include "wde_rc.h"
 #include "wdestyle.h"

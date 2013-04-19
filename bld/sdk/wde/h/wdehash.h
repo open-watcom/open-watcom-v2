@@ -34,7 +34,6 @@
 #define WDEHASH_INCLUDED
 
 #include "wrdll.h"
-#include "wrhash.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

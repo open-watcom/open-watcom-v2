@@ -30,13 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <mbstring.h>
-#include <stdlib.h>
-#include "wi163264.h"
-
 #include "wdeglbl.h"
+#include <mbstring.h>
 #include "wdemem.h"
 #include "wderes.h"
 #include "wdeopts.h"
@@ -150,9 +145,9 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern Bool WINEXPORT       WdeDialogDispatcher( ACTION, WdeDialogObject *, void *, void * );
-extern LRESULT WINEXPORT    WdeDialogProc( HWND, UINT, WPARAM, LPARAM );
-extern Bool WINEXPORT       WdeDialogDefineProc( HWND, WORD, WPARAM, LPARAM );
+WINEXPORT BOOL       CALLBACK WdeDialogDispatcher( ACTION, WdeDialogObject *, void *, void * );
+WINEXPORT BOOL       CALLBACK WdeDialogProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL       CALLBACK WdeDialogDefineProc( HWND, WORD, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -235,49 +230,49 @@ static WdeDialogBoxHeader       *WdeDefaultDialog;
 static HFONT             WdeLastFont;
 
 static DISPATCH_ITEM WdeDialogActions[] = {
-    { MOVE,                 (BOOL (*)( OBJPTR, void *, void * ))WdeDialogMove               },
-    { DESTROY,              (BOOL (*)( OBJPTR, void *, void * ))WdeDialogDestroy            },
-    { RESIZE,               (BOOL (*)( OBJPTR, void *, void * ))WdeDialogResize             },
-    { DRAW,                 (BOOL (*)( OBJPTR, void *, void * ))WdeDialogDraw               },
-    { VALIDATE_ACTION,      (BOOL (*)( OBJPTR, void *, void * ))WdeDialogValidateAction     },
-    { GET_WINDOW_HANDLE,    (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetWindowHandle    },
-    { CREATE_WINDOW,        (BOOL (*)( OBJPTR, void *, void * ))WdeDialogCreateWindow       },
-    { DESTROY_WINDOW,       (BOOL (*)( OBJPTR, void *, void * ))WdeDialogDestroyWindow      },
-    { SHOW_WIN,             (BOOL (*)( OBJPTR, void *, void * ))WdeDialogShowWindow         },
-    { RESIZE_INFO,          (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetResizeInfo      },
-    { NOTIFY,               (BOOL (*)( OBJPTR, void *, void * ))WdeDialogNotify             },
-    { PASTE,                (BOOL (*)( OBJPTR, void *, void * ))WdeDialogPasteObject        },
-    { COPY,                 (BOOL (*)( OBJPTR, void *, void * ))WdeDialogCopyObject         },
-    { CUT,                  (BOOL (*)( OBJPTR, void *, void * ))WdeDialogCutObject          },
-    { GET_OBJECT_INFO,      (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetObjectInfo      },
-    { SET_OBJECT_INFO,      (BOOL (*)( OBJPTR, void *, void * ))WdeDialogSetObjectInfo      },
-    { GET_OBJECT_HELPINFO,  (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetObjectHelpInfo  },
-    { ADD_SUBOBJECT,        (BOOL (*)( OBJPTR, void *, void * ))WdeDialogAddSubObject       },
-    { FIND_SUBOBJECTS,      (BOOL (*)( OBJPTR, void *, void * ))WdeDialogFindSubObjects     },
-    { FIND_OBJECTS_PT,      (BOOL (*)( OBJPTR, void *, void * ))WdeDialogFindObjectsPt      },
-    { REMOVE_SUBOBJECT,     (BOOL (*)( OBJPTR, void *, void * ))WdeDialogRemoveSubObject    },
-    { GET_SUBOBJ_LIST,      (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetSubObjectList   },
-    { IDENTIFY,             (BOOL (*)( OBJPTR, void *, void * ))WdeDialogIdentify           },
-    { DEFINE,               (BOOL (*)( OBJPTR, void *, void * ))WdeDialogDefine             },
-    { SET_FONT,             (BOOL (*)( OBJPTR, void *, void * ))WdeDialogSetFont            },
-    { GET_FONT,             (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetFont            },
-    { GET_RESIZER,          (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetResizer         },
-    { GET_NC_SIZE,          (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetNCSize          },
-    { SAVE_OBJECT,          (BOOL (*)( OBJPTR, void *, void * ))WdeDialogSaveObject         },
-    { ON_TOP,               (BOOL (*)( OBJPTR, void *, void * ))WdeDialogOnTop              },
-    { TEST,                 (BOOL (*)( OBJPTR, void *, void * ))WdeDialogTest               },
-    { BECOME_FIRST_CHILD,   (BOOL (*)( OBJPTR, void *, void * ))WdeDialogFirstChild         },
-    { PUT_ME_FIRST,         (BOOL (*)( OBJPTR, void *, void * ))WdeDialogPutChildFirst      },
-    { GET_RESIZE_INC,       (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetResizeInc       },
-    { GET_SCROLL_RECT,      (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetScrollRect      },
-    { IS_MARK_VALID,        (BOOL (*)( OBJPTR, void *, void * ))WdeDialogIsMarkValid        },
-    { RESTORE_OBJECT,       (BOOL (*)( OBJPTR, void *, void * ))WdeDialogRestore            },
-    { RESOLVE_SYMBOL,       (BOOL (*)( OBJPTR, void *, void * ))WdeDialogResolveSymbol      },
-    { RESOLVE_HELPSYMBOL,   (BOOL (*)( OBJPTR, void *, void * ))WdeDialogResolveHelpSymbol  },
-    { MODIFY_INFO,          (BOOL (*)( OBJPTR, void *, void * ))WdeDialogModifyInfo         },
-    { GET_NEXT_CHILD,       (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetNextChild       },
-    { SET_ORDER_MODE,       (BOOL (*)( OBJPTR, void *, void * ))WdeDialogSetOrderMode       },
-    { GET_ORDER_MODE,       (BOOL (*)( OBJPTR, void *, void * ))WdeDialogGetOrderMode       }
+    { MOVE,                 (DISPATCH_RTN *)WdeDialogMove               },
+    { DESTROY,              (DISPATCH_RTN *)WdeDialogDestroy            },
+    { RESIZE,               (DISPATCH_RTN *)WdeDialogResize             },
+    { DRAW,                 (DISPATCH_RTN *)WdeDialogDraw               },
+    { VALIDATE_ACTION,      (DISPATCH_RTN *)WdeDialogValidateAction     },
+    { GET_WINDOW_HANDLE,    (DISPATCH_RTN *)WdeDialogGetWindowHandle    },
+    { CREATE_WINDOW,        (DISPATCH_RTN *)WdeDialogCreateWindow       },
+    { DESTROY_WINDOW,       (DISPATCH_RTN *)WdeDialogDestroyWindow      },
+    { SHOW_WIN,             (DISPATCH_RTN *)WdeDialogShowWindow         },
+    { RESIZE_INFO,          (DISPATCH_RTN *)WdeDialogGetResizeInfo      },
+    { NOTIFY,               (DISPATCH_RTN *)WdeDialogNotify             },
+    { PASTE,                (DISPATCH_RTN *)WdeDialogPasteObject        },
+    { COPY,                 (DISPATCH_RTN *)WdeDialogCopyObject         },
+    { CUT,                  (DISPATCH_RTN *)WdeDialogCutObject          },
+    { GET_OBJECT_INFO,      (DISPATCH_RTN *)WdeDialogGetObjectInfo      },
+    { SET_OBJECT_INFO,      (DISPATCH_RTN *)WdeDialogSetObjectInfo      },
+    { GET_OBJECT_HELPINFO,  (DISPATCH_RTN *)WdeDialogGetObjectHelpInfo  },
+    { ADD_SUBOBJECT,        (DISPATCH_RTN *)WdeDialogAddSubObject       },
+    { FIND_SUBOBJECTS,      (DISPATCH_RTN *)WdeDialogFindSubObjects     },
+    { FIND_OBJECTS_PT,      (DISPATCH_RTN *)WdeDialogFindObjectsPt      },
+    { REMOVE_SUBOBJECT,     (DISPATCH_RTN *)WdeDialogRemoveSubObject    },
+    { GET_SUBOBJ_LIST,      (DISPATCH_RTN *)WdeDialogGetSubObjectList   },
+    { IDENTIFY,             (DISPATCH_RTN *)WdeDialogIdentify           },
+    { DEFINE,               (DISPATCH_RTN *)WdeDialogDefine             },
+    { SET_FONT,             (DISPATCH_RTN *)WdeDialogSetFont            },
+    { GET_FONT,             (DISPATCH_RTN *)WdeDialogGetFont            },
+    { GET_RESIZER,          (DISPATCH_RTN *)WdeDialogGetResizer         },
+    { GET_NC_SIZE,          (DISPATCH_RTN *)WdeDialogGetNCSize          },
+    { SAVE_OBJECT,          (DISPATCH_RTN *)WdeDialogSaveObject         },
+    { ON_TOP,               (DISPATCH_RTN *)WdeDialogOnTop              },
+    { TEST,                 (DISPATCH_RTN *)WdeDialogTest               },
+    { BECOME_FIRST_CHILD,   (DISPATCH_RTN *)WdeDialogFirstChild         },
+    { PUT_ME_FIRST,         (DISPATCH_RTN *)WdeDialogPutChildFirst      },
+    { GET_RESIZE_INC,       (DISPATCH_RTN *)WdeDialogGetResizeInc       },
+    { GET_SCROLL_RECT,      (DISPATCH_RTN *)WdeDialogGetScrollRect      },
+    { IS_MARK_VALID,        (DISPATCH_RTN *)WdeDialogIsMarkValid        },
+    { RESTORE_OBJECT,       (DISPATCH_RTN *)WdeDialogRestore            },
+    { RESOLVE_SYMBOL,       (DISPATCH_RTN *)WdeDialogResolveSymbol      },
+    { RESOLVE_HELPSYMBOL,   (DISPATCH_RTN *)WdeDialogResolveHelpSymbol  },
+    { MODIFY_INFO,          (DISPATCH_RTN *)WdeDialogModifyInfo         },
+    { GET_NEXT_CHILD,       (DISPATCH_RTN *)WdeDialogGetNextChild       },
+    { SET_ORDER_MODE,       (DISPATCH_RTN *)WdeDialogSetOrderMode       },
+    { GET_ORDER_MODE,       (DISPATCH_RTN *)WdeDialogGetOrderMode       }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeDialogActions ) / sizeof( DISPATCH_ITEM ))
@@ -655,7 +650,7 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
     return( new );
 }
 
-OBJPTR WINEXPORT WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     WdeDialogObject *new;
     RECT            *def_nc_size;
@@ -816,7 +811,7 @@ OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     return( new );
 }
 
-Bool WINEXPORT WdeDialogDispatcher( ACTION act, WdeDialogObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeDialogDispatcher( ACTION act, WdeDialogObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -1021,8 +1016,7 @@ BOOL WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
         }
         SETHDR_CAPTION( obj->dialog_info, in->d.caption );
         if( GETHDR_CAPTION( obj->dialog_info ) ) {
-            SendMessage( obj->window_handle, WM_SETTEXT, 0,
-                         (LPARAM)(LPCSTR)GETHDR_CAPTION( obj->dialog_info ) );
+            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPSTR)GETHDR_CAPTION( obj->dialog_info ) );
         } else {
             SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)"" );
         }
@@ -2708,7 +2702,7 @@ Bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
     return( ok );
 }
 
-LRESULT WINEXPORT WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     LPARAM  new_lparam;
     int     msg_processed;
@@ -2773,8 +2767,7 @@ LRESULT WINEXPORT WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
     return( msg_processed );
 }
 
-Bool WINEXPORT WdeDialogDefineProc( HWND hDlg, WORD message, WPARAM wParam,
-                                    volatile LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo *o_info;
     static uint_8              init_done;
@@ -3328,14 +3321,14 @@ void WdeDialogSetDialogPntInfo( HWND hDlg, int index )
         for( i = WDE_TT_FONT_MIN; i <= WDE_TT_FONT_MAX; i += 2 ) {
             ultoa( i, temp, 10 );
             SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_ADDSTRING, 0,
-                                (LPARAM)(LPCSTR)temp );
+                                (LPARAM)(LPSTR)temp );
         }
     } else {
         for( olist = font_name->family_list; olist != NULL; olist = ListNext( olist ) ) {
             font_data = (WdeFontData *)ListElement( olist );
             ultoa( font_data->pointsize, temp, 10 );
             SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_ADDSTRING, 0,
-                                (LPARAM)(LPCSTR)temp );
+                                (LPARAM)(LPSTR)temp );
         }
     }
 }
@@ -3355,7 +3348,7 @@ void WdeDialogSetDialogFontInfo( HWND hDlg, WdeDialogObject *obj )
     for( olist = font_list; olist != NULL; olist = ListNext( olist ) ) {
         font_name = (WdeFontNames *)ListElement( olist );
         SendDlgItemMessage( hDlg, IDB_FONTNAME, CB_ADDSTRING, 0,
-                            (LPARAM)(LPCSTR)font_name->name );
+                            (LPARAM)(LPSTR)font_name->name );
         /* if the dialog has font info then find the index of
          * the font in the list
          */

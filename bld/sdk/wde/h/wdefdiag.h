@@ -33,8 +33,6 @@
 #ifndef WDEFDIAG_INCLUDED
 #define WDEFDIAG_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
@@ -50,7 +48,7 @@
 extern WdeDialogBoxInfo *WdeDBIFromObject( void * );
 extern OBJPTR           WdeCreateNewDialog( WResID *, Bool is32bit );
 extern OBJPTR           WdeCreateDialogFromRes( WdeResInfo *, WdeResDlgItem * );
-extern OBJPTR WINEXPORT WdeDialogCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR CALLBACK WdeDialogCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool             WdeDialogInit( Bool );
 extern void             WdeDialogFini( void );
 extern Bool             WdeIsDialogRestorable( void * );

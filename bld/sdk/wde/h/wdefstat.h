@@ -33,14 +33,12 @@
 #ifndef WDEFSTAT_INCLUDED
 #define WDEFSTAT_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeFrameCreate( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeTextCreate( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeIconCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeFrameCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeTextCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeIconCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeStaticInit( Bool );
 extern void              WdeStaticFini( void );
 

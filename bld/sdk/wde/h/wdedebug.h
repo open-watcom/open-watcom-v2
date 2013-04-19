@@ -44,7 +44,6 @@
 #define WDE_DEBUG_CREATE
 #endif
 
-#include "fmedit.def"
 #include "wdeactn.h"
 
 /****************************************************************************/

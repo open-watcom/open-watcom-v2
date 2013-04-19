@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <stdlib.h>
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wdemsgbx.h"
@@ -84,7 +80,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WdeOptionsProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WdeOptionsProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -522,7 +518,7 @@ static void WdeGetOptInfo( HWND hDlg )
     }
 }
 
-BOOL WINEXPORT WdeOptionsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeOptionsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     BOOL ret;
 

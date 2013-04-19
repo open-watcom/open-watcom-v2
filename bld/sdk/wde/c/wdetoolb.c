@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <limits.h>
 #include "wdeglbl.h"
+#include <limits.h>
 #include "wdestat.h"
 #include "wdemain.h"
 #include "wdemem.h"
@@ -53,7 +51,6 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WdeToolBarHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -98,7 +95,7 @@ WdeToolBar *WdeCreateToolBar( WdeToolBarInfo *info, HWND parent )
     ToolBarDisplay( tbar->tbar, &info->dinfo );
 
     for( i = 0; i < info->num_items; i++ ) {
-        if( info->items[i].bmp != (HBITMAP)NULL ) {
+        if( info->items[i].u.bmp != (HBITMAP)NULL ) {
             ToolBarAddItem( tbar->tbar, &info->items[i] );
         }
     }

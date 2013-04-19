@@ -33,12 +33,10 @@
 #ifndef WDEFANI_INCLUDED
 #define WDEFANI_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeAniCCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeAniCCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeAniCInit( Bool );
 extern void              WdeAniCFini( void );
 

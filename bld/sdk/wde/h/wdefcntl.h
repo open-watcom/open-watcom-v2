@@ -33,7 +33,6 @@
 #ifndef WDEFCNTL_INCLUDE
 #define WDEFCNTL_INCLUDE
 
-#include "fmedit.def"
 #include "wderesiz.h"
 
 /****************************************************************************/
@@ -47,7 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeControlCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR CALLBACK WdeControlCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeControlInit( Bool );
 extern void              WdeControlFini( void );
 

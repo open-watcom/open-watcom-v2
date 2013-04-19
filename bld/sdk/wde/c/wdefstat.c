@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -59,8 +57,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WdeStaticSuperClassProc( HWND, UINT, WPARAM, LPARAM );
-extern BOOL    WINEXPORT WdeStaticDispatcher( ACTION, WdeStaticObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeStaticSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeStaticDispatcher( ACTION, WdeStaticObject *, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -88,18 +86,18 @@ static WNDPROC                  WdeOriginalStaticProc;
 //static WNDPROC                WdeStaticProc;
 
 static DISPATCH_ITEM WdeStaticActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeStaticDestroy        },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeStaticCopyObject     },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeStaticValidateAction },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeStaticIdentify       },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeStaticGetWindowClass },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeStaticDefine         },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeStaticGetWndProc     }
+    { DESTROY,          (DISPATCH_RTN *)WdeStaticDestroy        },
+    { COPY,             (DISPATCH_RTN *)WdeStaticCopyObject     },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeStaticValidateAction },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeStaticIdentify       },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeStaticGetWindowClass },
+    { DEFINE,           (DISPATCH_RTN *)WdeStaticDefine         },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeStaticGetWndProc     }
 };
 
 #define MAX_ACTIONS     (sizeof( WdeStaticActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeFrameCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeFrameCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeStatic( parent, obj_rect, handle,
@@ -110,7 +108,7 @@ OBJPTR WINEXPORT WdeFrameCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 }
 
-OBJPTR WINEXPORT WdeTextCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeTextCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeStatic( parent, obj_rect, handle,
@@ -121,7 +119,7 @@ OBJPTR WINEXPORT WdeTextCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 }
 
-OBJPTR WINEXPORT WdeIconCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeIconCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeStatic( parent, obj_rect, handle,
@@ -203,7 +201,7 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeStaticDispatcher( ACTION act, WdeStaticObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeStaticDispatcher( ACTION act, WdeStaticObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -642,8 +640,7 @@ void WdeStaticGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeEXSetDefineInfo( o_info, hDlg );
 }
 
-LRESULT WINEXPORT WdeStaticSuperClassProc( HWND hWnd, UINT message, WPARAM wParam,
-                                           volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeStaticSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalStaticProc, hWnd, message, wParam, lParam ) );

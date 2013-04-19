@@ -33,7 +33,6 @@
 #ifndef WDEFORDR_INCLUDED
 #define WDEFORDR_INCLUDED
 
-#include "fmedit.def"
 #include "wderesin.h"
 
 /****************************************************************************/

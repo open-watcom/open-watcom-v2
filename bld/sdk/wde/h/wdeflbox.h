@@ -33,12 +33,10 @@
 #ifndef WDEFLBOX_INCLUDED
 #define WDEFLBOX_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeLBoxCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeLBoxCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeLBoxInit( Bool );
 extern void              WdeLBoxFini( void );
 

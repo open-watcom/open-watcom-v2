@@ -33,8 +33,6 @@
 #ifndef WDEFBASE_INCLUDE
 #define WDEFBASE_INCLUDE
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
@@ -46,7 +44,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeBaseCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR CALLBACK WdeBaseCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeBaseInit( Bool );
 extern void              WdeBaseFini( void );
 

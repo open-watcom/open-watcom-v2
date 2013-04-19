@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-
 #include "wdeglbl.h"
 #include "wderesiz.h"
 #include "wdeobjid.h"

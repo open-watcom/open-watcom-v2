@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "wdeglbl.h"
 #include "wderesin.h"
 #include "wderes.h"

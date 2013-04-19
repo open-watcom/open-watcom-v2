@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -60,8 +57,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeEditDispatcher( ACTION, WdeEditObject *, void *, void * );
-extern LRESULT WINEXPORT WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeEditDispatcher( ACTION, WdeEditObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -90,18 +87,18 @@ static WNDPROC                  WdeOriginalEditProc;
 //static WNDPROC                WdeEditProc;
 
 static DISPATCH_ITEM WdeEditActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeEditDestroy              },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeEditCopyObject           },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeEditValidateAction       },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeEditIdentify             },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeEditGetWindowClass       },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeEditDefine               },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeEditGetWndProc           }
+    { DESTROY,          (DISPATCH_RTN *)WdeEditDestroy              },
+    { COPY,             (DISPATCH_RTN *)WdeEditCopyObject           },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeEditValidateAction       },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeEditIdentify             },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeEditGetWindowClass       },
+    { DEFINE,           (DISPATCH_RTN *)WdeEditDefine               },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeEditGetWndProc           }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeEditActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeEditCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeEditCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeEdit( parent, obj_rect, handle,
@@ -186,7 +183,7 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeEditDispatcher( ACTION act, WdeEditObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -246,8 +243,7 @@ Bool WdeEditInit( Bool first )
     SETCTL_TEXT( WdeDefaultEdit, NULL );
     SETCTL_CLASSID( WdeDefaultEdit, ResNumToControlClass( CLASS_EDIT ) );
 
-    WdeEditDispatch = MakeProcInstance( (FARPROC)WdeEditDispatcher,
-                                        WdeGetAppInstance() );
+    WdeEditDispatch = MakeProcInstance( (FARPROC)WdeEditDispatcher, WdeGetAppInstance() );
 
     return( TRUE );
 }
@@ -552,8 +548,7 @@ void WdeEditGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
-                        DialogStyle mask )
+BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     BOOL processed;
 
@@ -631,8 +626,7 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
     return( processed );
 }
 
-LRESULT WINEXPORT WdeEditSuperClassProc( HWND hWnd, UINT message, WPARAM wParam,
-                                         volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalEditProc, hWnd, message, wParam, lParam ) );

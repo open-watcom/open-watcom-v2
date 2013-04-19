@@ -33,12 +33,10 @@
 #ifndef WDEFTRAK_INCLUDED
 #define WDEFTRAK_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeTrakCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeTrakCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeTrakInit( Bool );
 extern void              WdeTrakFini( void );
 

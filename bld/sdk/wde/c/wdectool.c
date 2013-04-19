@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <limits.h>
 
 #include "wdeglbl.h"
+#include <limits.h>
 #include "wdeobjid.h"
 #include "wdemain.h"
 #include "wdeopts.h"
@@ -69,8 +67,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WdeControlsHook( HWND, UINT, WPARAM, LPARAM );
-extern void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
+BOOL WdeControlsHook( HWND, UINT, WPARAM, LPARAM );
+void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -180,7 +178,7 @@ Bool WdeInitControls( HINSTANCE inst )
                 continue;
             }
         }
-        WdeControlsInfo->items[i].bmp = LoadBitmap( inst, WdeControlBits[i].up );
+        WdeControlsInfo->items[i].u.bmp = LoadBitmap( inst, WdeControlBits[i].up );
         WdeControlsInfo->items[i].id = WdeControlBits[i].id;
         WdeControlsInfo->items[i].flags = ITEM_DOWNBMP | ITEM_STICKY;
         WdeControlsInfo->items[i].depressed = LoadBitmap( inst, WdeControlBits[i].down );
@@ -211,11 +209,11 @@ void WdeShutdownControls( void )
     }
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
-        if( WdeControlsInfo->items[i].bmp == WdeControlsInfo->items[i].depressed ) {
+        if( WdeControlsInfo->items[i].u.bmp == WdeControlsInfo->items[i].depressed ) {
             WdeControlsInfo->items[i].depressed = (HBITMAP)NULL;
         }
-        if( WdeControlsInfo->items[i].bmp != NULL ) {
-            DeleteObject( WdeControlsInfo->items[i].bmp );
+        if( WdeControlsInfo->items[i].u.bmp != NULL ) {
+            DeleteObject( WdeControlsInfo->items[i].u.bmp );
         }
         if( WdeControlsInfo->items[i].depressed != NULL ) {
             DeleteObject( WdeControlsInfo->items[i].depressed );
@@ -392,7 +390,7 @@ Bool WdeCreateControlsToolBar( void )
     }
 
     text = WdeAllocRCString( WDE_TOOLBOXCAPTION );
-    SendMessage( WdeControls->win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)text );
+    SendMessage( WdeControls->win, WM_SETTEXT, 0, (LPARAM)(LPSTR)text );
     if( text != NULL ) {
         WdeFreeRCString( text );
     }

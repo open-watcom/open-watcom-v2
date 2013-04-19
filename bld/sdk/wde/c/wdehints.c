@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-#include <stdio.h>
-#include <string.h>
-
 #include "wdeglbl.h"
+#include <stdio.h>
 #include "wdemem.h"
 #include "wdestat.h"
 #include "wdemain.h"
@@ -43,7 +39,6 @@
 #include "wdehints.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
-#include "list.def"
 
 /****************************************************************************/
 /* macro definitions                                                        */

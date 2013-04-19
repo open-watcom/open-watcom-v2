@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-
 #include "wdeglbl.h"
 #include "wdemain.h"
 #include "wdetoolb.h"
@@ -58,8 +56,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WdeRibbonHook( HWND, UINT, WPARAM, LPARAM );
-extern void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
+BOOL WdeRibbonHook( HWND, UINT, WPARAM, LPARAM );
+void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -154,14 +152,14 @@ Bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
 
     for( i = 0; i < num_tools; i++ ) {
         if( tools[i].up ) {
-            WdeRibbonInfo->items[i].bmp = LoadBitmap( inst, tools[i].up );
+            WdeRibbonInfo->items[i].u.bmp = LoadBitmap( inst, tools[i].up );
             WdeRibbonInfo->items[i].id = tools[i].menu_id;
             WdeRibbonInfo->items[i].flags = tools[i].flags;
             WdeRibbonInfo->items[i].flags |= ITEM_DOWNBMP;
             if( tools[i].down ) {
                 WdeRibbonInfo->items[i].depressed = LoadBitmap( inst, tools[i].down );
             } else {
-                WdeRibbonInfo->items[i].depressed = WdeRibbonInfo->items[i].bmp;
+                WdeRibbonInfo->items[i].depressed = WdeRibbonInfo->items[i].u.bmp;
             }
             if( tools[i].tip_id >= 0 ) {
                 LoadString( inst, tools[i].tip_id, WdeRibbonInfo->items[i].tip,
@@ -171,7 +169,7 @@ Bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
             }
         } else {
             WdeRibbonInfo->items[i].flags = ITEM_BLANK;
-            WdeRibbonInfo->items[i].blank_space = tools[i].menu_id;
+            WdeRibbonInfo->items[i].u.blank_space = tools[i].menu_id;
         }
     }
 
@@ -202,11 +200,11 @@ void WdeShutdownRibbon( void )
 
     for( i = 0; i < WdeNumRibbonTools; i++ ) {
         if( WdeRibbonInfo->items[i].flags != ITEM_BLANK ) {
-            if( WdeRibbonInfo->items[i].bmp == WdeRibbonInfo->items[i].depressed ) {
+            if( WdeRibbonInfo->items[i].u.bmp == WdeRibbonInfo->items[i].depressed ) {
                 WdeRibbonInfo->items[i].depressed = (HBITMAP)NULL;
             }
-            if( WdeRibbonInfo->items[i].bmp != NULL ) {
-                DeleteObject( WdeRibbonInfo->items[i].bmp );
+            if( WdeRibbonInfo->items[i].u.bmp != NULL ) {
+                DeleteObject( WdeRibbonInfo->items[i].u.bmp );
             }
             if( WdeRibbonInfo->items[i].depressed != NULL ) {
                 DeleteObject( WdeRibbonInfo->items[i].depressed );

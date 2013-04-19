@@ -33,12 +33,10 @@
 #ifndef WDEFUPDN_INCLUDED
 #define WDEFUPDN_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeUpDnCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeUpDnCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeUpDnInit( Bool );
 extern void              WdeUpDnFini( void );
 

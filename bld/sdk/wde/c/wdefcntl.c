@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <stdlib.h>
-
 #include "wdeglbl.h"
 #include "wdeactn.h"
 #include "wde_wres.h"
@@ -97,7 +93,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WdeControlDispatcher( ACTION, WdeControlObject *, void *, void * );
+WINEXPORT BOOL CALLBACK WdeControlDispatcher( ACTION, WdeControlObject *, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -148,45 +144,45 @@ static FARPROC           WdeControlDispatch;
 static HINSTANCE         WdeAppInst;
 
 static DISPATCH_ITEM WdeControlActions[] = {
-    { MOVE,                 (BOOL (*)( OBJPTR, void *, void * ))WdeControlMove              },
-    { NOTIFY,               (BOOL (*)( OBJPTR, void *, void * ))WdeControlNotify            },
-    { RESIZE,               (BOOL (*)( OBJPTR, void *, void * ))WdeControlResize            },
-    { DRAW,                 (BOOL (*)( OBJPTR, void *, void * ))WdeControlDraw              },
-    { ADD_SUBOBJECT,        (BOOL (*)( OBJPTR, void *, void * ))NULL                        },
-    { DESTROY,              (BOOL (*)( OBJPTR, void *, void * ))WdeControlDestroy           },
-    { COPY,                 (BOOL (*)( OBJPTR, void *, void * ))WdeControlCopyObject        },
-    { CUT,                  (BOOL (*)( OBJPTR, void *, void * ))WdeControlCutObject         },
-    { PASTE,                (BOOL (*)( OBJPTR, void *, void * ))WdeControlPasteObject       },
-    { VALIDATE_ACTION,      (BOOL (*)( OBJPTR, void *, void * ))WdeControlValidateAction    },
-    { RESIZE_INFO,          (BOOL (*)( OBJPTR, void *, void * ))WdeControlGetResizeInfo     },
-    { GET_WINDOW_HANDLE,    (BOOL (*)( OBJPTR, void *, void * ))WdeControlGetWindowHandle   },
-    { CREATE_WINDOW,        (BOOL (*)( OBJPTR, void *, void * ))WdeControlCreateWindow      },
-    { DESTROY_WINDOW,       (BOOL (*)( OBJPTR, void *, void * ))WdeControlDestroyWindow     },
-    { SHOW_WIN,             (BOOL (*)( OBJPTR, void *, void * ))WdeControlShowWindow        },
-    { GET_OBJECT_INFO,      (BOOL (*)( OBJPTR, void *, void * ))WdeControlGetObjectInfo     },
-    { SET_OBJECT_INFO,      (BOOL (*)( OBJPTR, void *, void * ))WdeControlSetObjectInfo     },
-    { GET_OBJECT_HELPINFO,  (BOOL (*)( OBJPTR, void *, void * ))WdeControlGetObjectHelpInfo },
-    { SET_OBJECT_HELPINFO,  (BOOL (*)( OBJPTR, void *, void * ))WdeControlSetObjectHelpInfo },
-    { SET_FONT,             (BOOL (*)( OBJPTR, void *, void * ))WdeControlSetFont           },
-    { GET_FONT,             (BOOL (*)( OBJPTR, void *, void * ))NULL                        },
-    { GET_NC_SIZE,          (BOOL (*)( OBJPTR, void *, void * ))NULL                        },
-    { GET_NC_SIZE,          (BOOL (*)( OBJPTR, void *, void * ))NULL                        },
-    { ON_TOP,               (BOOL (*)( OBJPTR, void *, void * ))WdeControlOnTop             },
-    { TEST,                 (BOOL (*)( OBJPTR, void *, void * ))WdeControlTest              },
-    { TESTEX,               (BOOL (*)( OBJPTR, void *, void * ))WdeControlTestEX            },
-    { BECOME_FIRST_CHILD,   (BOOL (*)( OBJPTR, void *, void * ))WdeControlFirstChild        },
-    { GET_RESIZE_INC,       (BOOL (*)( OBJPTR, void *, void * ))NULL                        },
-    { GET_SCROLL_RECT,      (BOOL (*)( OBJPTR, void *, void * ))NULL                        },
-    { SET_CLEAR_INT,        (BOOL (*)( OBJPTR, void *, void * ))WdeControlSetClearInt       },
-    { IS_OBJECT_CLEAR,      (BOOL (*)( OBJPTR, void *, void * ))WdeControlGetClearInt       },
-    { IS_MARK_VALID,        (BOOL (*)( OBJPTR, void *, void * ))WdeControlIsMarkValid       },
-    { RESOLVE_SYMBOL,       (BOOL (*)( OBJPTR, void *, void * ))WdeControlResolveSymbol     },
-    { RESOLVE_HELPSYMBOL,   (BOOL (*)( OBJPTR, void *, void * ))WdeControlResolveHelpSymbol },
-    { MODIFY_INFO,          (BOOL (*)( OBJPTR, void *, void * ))WdeControlModifyInfo        },
-    { SET_ORDER_MODE,       (BOOL (*)( OBJPTR, void *, void * ))WdeControlSetOrderMode      },
-    { GET_ORDER_MODE,       (BOOL (*)( OBJPTR, void *, void * ))WdeControlGetOrderMode      },
-    { SIZE_TO_TEXT,         (BOOL (*)( OBJPTR, void *, void * ))WdeControlSizeToText        },
-    { GET_RESIZER,          (BOOL (*)( OBJPTR, void *, void * ))NULL                        }
+    { MOVE,                 (DISPATCH_RTN *)WdeControlMove              },
+    { NOTIFY,               (DISPATCH_RTN *)WdeControlNotify            },
+    { RESIZE,               (DISPATCH_RTN *)WdeControlResize            },
+    { DRAW,                 (DISPATCH_RTN *)WdeControlDraw              },
+    { ADD_SUBOBJECT,        (DISPATCH_RTN *)NULL                        },
+    { DESTROY,              (DISPATCH_RTN *)WdeControlDestroy           },
+    { COPY,                 (DISPATCH_RTN *)WdeControlCopyObject        },
+    { CUT,                  (DISPATCH_RTN *)WdeControlCutObject         },
+    { PASTE,                (DISPATCH_RTN *)WdeControlPasteObject       },
+    { VALIDATE_ACTION,      (DISPATCH_RTN *)WdeControlValidateAction    },
+    { RESIZE_INFO,          (DISPATCH_RTN *)WdeControlGetResizeInfo     },
+    { GET_WINDOW_HANDLE,    (DISPATCH_RTN *)WdeControlGetWindowHandle   },
+    { CREATE_WINDOW,        (DISPATCH_RTN *)WdeControlCreateWindow      },
+    { DESTROY_WINDOW,       (DISPATCH_RTN *)WdeControlDestroyWindow     },
+    { SHOW_WIN,             (DISPATCH_RTN *)WdeControlShowWindow        },
+    { GET_OBJECT_INFO,      (DISPATCH_RTN *)WdeControlGetObjectInfo     },
+    { SET_OBJECT_INFO,      (DISPATCH_RTN *)WdeControlSetObjectInfo     },
+    { GET_OBJECT_HELPINFO,  (DISPATCH_RTN *)WdeControlGetObjectHelpInfo },
+    { SET_OBJECT_HELPINFO,  (DISPATCH_RTN *)WdeControlSetObjectHelpInfo },
+    { SET_FONT,             (DISPATCH_RTN *)WdeControlSetFont           },
+    { GET_FONT,             (DISPATCH_RTN *)NULL                        },
+    { GET_NC_SIZE,          (DISPATCH_RTN *)NULL                        },
+    { GET_NC_SIZE,          (DISPATCH_RTN *)NULL                        },
+    { ON_TOP,               (DISPATCH_RTN *)WdeControlOnTop             },
+    { TEST,                 (DISPATCH_RTN *)WdeControlTest              },
+    { TESTEX,               (DISPATCH_RTN *)WdeControlTestEX            },
+    { BECOME_FIRST_CHILD,   (DISPATCH_RTN *)WdeControlFirstChild        },
+    { GET_RESIZE_INC,       (DISPATCH_RTN *)NULL                        },
+    { GET_SCROLL_RECT,      (DISPATCH_RTN *)NULL                        },
+    { SET_CLEAR_INT,        (DISPATCH_RTN *)WdeControlSetClearInt       },
+    { IS_OBJECT_CLEAR,      (DISPATCH_RTN *)WdeControlGetClearInt       },
+    { IS_MARK_VALID,        (DISPATCH_RTN *)WdeControlIsMarkValid       },
+    { RESOLVE_SYMBOL,       (DISPATCH_RTN *)WdeControlResolveSymbol     },
+    { RESOLVE_HELPSYMBOL,   (DISPATCH_RTN *)WdeControlResolveHelpSymbol },
+    { MODIFY_INFO,          (DISPATCH_RTN *)WdeControlModifyInfo        },
+    { SET_ORDER_MODE,       (DISPATCH_RTN *)WdeControlSetOrderMode      },
+    { GET_ORDER_MODE,       (DISPATCH_RTN *)WdeControlGetOrderMode      },
+    { SIZE_TO_TEXT,         (DISPATCH_RTN *)WdeControlSizeToText        },
+    { GET_RESIZER,          (DISPATCH_RTN *)NULL                        }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeControlActions ) / sizeof( DISPATCH_ITEM ))
@@ -210,7 +206,7 @@ void WdeSetClearObjectPos( WdeControlObject *obj )
     //WdeSOP( obj, obj->parent );
 }
 
-OBJPTR WINEXPORT WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     OBJPTR              ancestor;
     OBJ_ID              id;
@@ -310,7 +306,7 @@ OBJPTR WINEXPORT WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     return( new );
 }
 
-BOOL WINEXPORT WdeControlDispatcher( ACTION act, WdeControlObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeControlDispatcher( ACTION act, WdeControlObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -833,13 +829,13 @@ BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
     }
 
     // subclass the control
-    obj->old_proc = (WNDPROC)GetWindowLong( obj->window_handle, GWL_WNDPROC );
+    obj->old_proc = (WNDPROC)GET_WNDPROC( obj->window_handle );
     if( obj->old_proc == (WNDPROC)NULL ) {
         DestroyWindow( obj->window_handle );
         obj->window_handle = NULL;
         return( FALSE );
     }
-    SetWindowLong( obj->window_handle, GWL_WNDPROC, (LONG)new_proc );
+    SET_WNDPROC( obj->window_handle, (LONG_PTR)new_proc );
 
     if( set_font ) {
         SendMessage( obj->window_handle, WM_SETFONT, (WPARAM)obj->font, (LPARAM)TRUE );

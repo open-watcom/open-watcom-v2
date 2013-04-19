@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -65,7 +62,7 @@ Bool WdeFreeResInfo( WdeResInfo *res_info )
             WdeFreeResItemList( &res_info->dlg_item_list );
         }
         if( res_info->res_win != (HWND)NULL ) {
-            SetWindowLong( res_info->res_win, 0, 0 );
+            SET_WNDINFO( res_info->res_win, (LONG_PTR)NULL );
             WdeDestroyEditWindows( res_info );
             if( IsWindow( res_info->res_win ) ) {
                 WdeDestroyMDIWindow( res_info->res_win );

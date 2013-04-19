@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-
 #include "wdeglbl.h"
 #include "wdemain.h"
 #include "wdestat.h"

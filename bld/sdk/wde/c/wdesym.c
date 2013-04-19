@@ -30,11 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-#include <stdlib.h>
-#include <string.h>
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"

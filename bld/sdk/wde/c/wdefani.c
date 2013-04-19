@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -61,8 +58,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeAniCDispatcher( ACTION, WdeAniCObject *, void *, void * );
-extern LRESULT WINEXPORT WdeAniCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeAniCDispatcher( ACTION, WdeAniCObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeAniCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -88,29 +85,27 @@ static FARPROC                  WdeAniCDispatch;
 static WdeDialogBoxControl      *WdeDefaultAniC = NULL;
 static int                      WdeAniCWndExtra;
 static WNDPROC                  WdeOriginalAniCProc;
-//static WNDPROC                WdeAniCProc;
 
 #define WANIMATE_CLASS   ANIMATE_CLASS
 
 static DISPATCH_ITEM WdeAniCActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeAniCDestroy          },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeAniCCopyObject       },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeAniCValidateAction   },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeAniCIdentify         },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeAniCGetWindowClass   },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeAniCDefine           },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeAniCGetWndProc       }
+    { DESTROY,          (DISPATCH_RTN *)WdeAniCDestroy          },
+    { COPY,             (DISPATCH_RTN *)WdeAniCCopyObject       },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeAniCValidateAction   },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeAniCIdentify         },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeAniCGetWindowClass   },
+    { DEFINE,           (DISPATCH_RTN *)WdeAniCDefine           },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeAniCGetWndProc       }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeAniCActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeAniCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeAniCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeAniC( parent, obj_rect, handle, 0, "", ANIMATE_OBJ ) );
     } else {
-        return( WdeAniCreate( parent, obj_rect, NULL, ANIMATE_OBJ,
-                              (WdeDialogBoxControl *)handle ) );
+        return( WdeAniCreate( parent, obj_rect, NULL, ANIMATE_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
@@ -188,7 +183,7 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeAniCDispatcher( ACTION act, WdeAniCObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeAniCDispatcher( ACTION act, WdeAniCObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -437,8 +432,7 @@ BOOL WdeAniCDefineHook( HWND hDlg, UINT message,
     return( FALSE );
 }
 
-LRESULT WINEXPORT WdeAniCSuperClassProc( HWND hWnd, UINT message,
-                                         WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeAniCSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalAniCProc, hWnd, message, wParam, lParam ) );

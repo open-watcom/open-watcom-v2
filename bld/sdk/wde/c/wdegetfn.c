@@ -30,14 +30,10 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "wdeglbl.h"
 #include <commdlg.h>
 #include <dlgs.h>
-#include <string.h>
-#include <stdlib.h>
 #include <direct.h>
-
-#include "wdeglbl.h"
 #include "wdedebug.h"
 #include "wdemain.h"
 #include "wdemsgbx.h"
@@ -50,7 +46,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern UINT WINEXPORT WdeOpenHookProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT UINT CALLBACK WdeOpenHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -326,7 +322,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     return( WdeStrDup( wde_file_name ) );
 }
 
-UINT WINEXPORT WdeOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT UINT CALLBACK WdeOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *title;
 

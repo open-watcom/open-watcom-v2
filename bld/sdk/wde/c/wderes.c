@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-#include <string.h>
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderes.h"
@@ -65,13 +61,14 @@
 #include "wdedde.h"
 #include "wdefont.h"
 #include "wde_rc.h"
-#include "wrutil.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WdeResWndProc( HWND, UINT, WPARAM, LPARAM );
-extern void    WINEXPORT WdeMouseRtn( HWND, RECT * );
+WINEXPORT LRESULT CALLBACK WdeResWndProc( HWND, UINT, WPARAM, LPARAM );
+
+void    WdeMouseRtn( HWND, RECT * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -312,7 +309,7 @@ Bool WdeRegisterResClass( HINSTANCE app_inst )
     wc.style = CS_DBLCLKS | CS_VREDRAW | CS_HREDRAW;
     wc.lpfnWndProc = WdeResWndProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( WdeResInfo * );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = app_inst;
     wc.hIcon = LoadIcon( app_inst, "ResIcon" );
     wc.hCursor = NULL;
@@ -958,7 +955,7 @@ Bool WdeSaveResource( WdeResInfo *res_info, Bool get_name )
 
     if( ok ) {
         //fn_offset = WRFindFnOffset( fn );
-        SendMessage( res_info->res_win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)&fn[fn_offset] );
+        SendMessage( res_info->res_win, WM_SETTEXT, 0, (LPARAM)(LPVOID)&fn[fn_offset] );
     }
 
     return( ok );
@@ -1060,8 +1057,7 @@ Bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
     return( TRUE );
 }
 
-LRESULT WINEXPORT WdeResWndProc( HWND hWnd, UINT message,
-                                 WPARAM wParam, volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeResInfo  *res_info;
     int         msg_processed;
@@ -1073,10 +1069,9 @@ LRESULT WINEXPORT WdeResWndProc( HWND hWnd, UINT message,
 
     switch( message ) {
     case WM_CREATE:
-        res_info = (WdeResInfo *)
-            ((MDICREATESTRUCT *)((CREATESTRUCT *)lParam)->lpCreateParams)->lParam;
+        res_info = (WdeResInfo *)((MDICREATESTRUCT *)((CREATESTRUCT *)lParam)->lpCreateParams)->lParam;
         res_info->res_win = hWnd;
-        SetWindowLong( hWnd, 0, (LONG)res_info );
+        SET_WNDINFO( hWnd, (LONG_PTR)res_info );
         break;
     //case WM_COMMAND:
     //case WM_KEYUP:
@@ -1084,10 +1079,10 @@ LRESULT WINEXPORT WdeResWndProc( HWND hWnd, UINT message,
     case WM_SIZE:
     case WM_MDIACTIVATE:
     case WM_CLOSE:
-        res_info = (WdeResInfo *)GetWindowLong( hWnd, 0 );
+        res_info = (WdeResInfo *)GET_WNDINFO( hWnd );
         break;
     case WM_DESTROY:
-        SetWindowLong( hWnd, 0, (LONG)NULL );
+        SET_WNDINFO( hWnd, (LONG_PTR)NULL );
         break;
     }
 
@@ -1386,7 +1381,7 @@ Bool WdeMouseRtnResize( HWND win, RECT *r )
     return( TRUE );
 }
 
-void WINEXPORT WdeMouseRtn( HWND win, RECT *r )
+void WdeMouseRtn( HWND win, RECT *r )
 {
     if( GetBaseObjType() == EDIT_SELECT ) {
         WdeMouseRtnResize( win, r );

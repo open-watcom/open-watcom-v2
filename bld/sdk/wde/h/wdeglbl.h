@@ -33,23 +33,20 @@
 #ifndef WDEGLOBAL_INCLUDED
 #define WDEGLOBAL_INCLUDED
 
+#include <stdlib.h>
+#include <string.h>
+#include "precomp.h"
 #include "watcom.h"
+#include "bool.h"
+#include "wi163264.h"
+#include "fmedit.def"
 
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
 #define WDE_VERSION  0x0100
 
-#ifndef TRUE
-    #define TRUE 1
-#endif
-#ifndef FALSE
-    #define FALSE 0
-#endif
-
 #define _wde_touch( unused_var )    (unused_var = unused_var)
-
-#define WINEXPORT   __export CALLBACK
 
 #define MAXFILENAME (_MAX_PATH * 2)
 #define MAX_NAME    MAXFILENAME

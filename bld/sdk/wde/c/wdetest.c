@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "wdeglbl.h"
+#include <stdio.h>
 #include "wderes.h"
 #include "wdemain.h"
 #include "wdefmenu.h"
@@ -54,7 +50,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern Bool WINEXPORT WdeSetControlEnumProc( HWND, LPARAM );
+WINEXPORT Bool CALLBACK WdeSetControlEnumProc( HWND, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -165,7 +161,7 @@ Bool WdeSetTestControlDefaults( HWND dialog )
     return( ret );
 }
 
-Bool WINEXPORT WdeSetControlEnumProc( HWND win, LPARAM ret )
+WINEXPORT Bool CALLBACK WdeSetControlEnumProc( HWND win, LPARAM ret )
 {
     /* touch unused var to get rid of warning */
     _wde_touch( ret );
@@ -207,9 +203,9 @@ static Bool WdeSetDefaultTestControlEntries( HWND win )
         for( index = 1; index <= TEST_DEFAULT_ENTRIES; index++ ) {
             sprintf( str, text, index );
             if( class == CLASS_LISTBOX ) {
-                SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+                SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
             } else {
-                SendMessage( win, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+                SendMessage( win, CB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
             }
         }
         SendMessage( win, WM_SETREDRAW, TRUE, 0 );
@@ -221,7 +217,7 @@ static Bool WdeSetDefaultTestControlEntries( HWND win )
     return( TRUE );
 }
 
-LRESULT WINEXPORT WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     int msg_processed;
 

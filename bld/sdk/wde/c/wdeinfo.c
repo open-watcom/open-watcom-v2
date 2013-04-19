@@ -30,13 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-#include <string.h>
-#include <mbstring.h>
-#include <stdlib.h>
-
 #include "wdeglbl.h"
+#include <mbstring.h>
 #include "wdemem.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
@@ -51,13 +46,13 @@
 #include "wdectl3d.h"
 #include "wde_rc.h"
 #include "wdeinfo.h"
-#include "wrutil.h"
+#include "wrdll.h"
 #include "jdlg.h"
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WdeInfoWndProc ( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -127,9 +122,9 @@ void WdeAddUniqueStringToCombo( HWND hdlg, int id, char *str )
     if( cbox == (HWND)NULL ) {
         return;
     }
-    pos = SendMessage( cbox, CB_FINDSTRINGEXACT, 0, (LPARAM)(LPCSTR)str );
+    pos = SendMessage( cbox, CB_FINDSTRINGEXACT, 0, (LPARAM)(LPSTR)str );
     if( pos == CB_ERR ) {
-        SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+        SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
     }
 }
 
@@ -683,7 +678,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     WdeMemFree( str );
 }
 
-LRESULT WINEXPORT WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WORD    w;
     RECT    r;
@@ -711,20 +706,20 @@ LRESULT WINEXPORT WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM
     case WM_CTLCOLORSTATIC:
         dc = (HDC)wParam;
         SetBkColor( dc, WdeInfoColor );
-        return ( (LRESULT)WdeInfoBrush );
+        return( (BOOL)WdeInfoBrush );
 
     case WM_CTLCOLORMSGBOX:
     case WM_CTLCOLOREDIT:
-        return( (LRESULT)NULL );
+        return( (BOOL)NULL );
 #else
     case WM_CTLCOLOR:
         w = HIWORD( lParam );
         if( w != CTLCOLOR_MSGBOX && w != CTLCOLOR_EDIT ) {
             dc = (HDC)wParam;
             SetBkColor( dc, WdeInfoColor );
-            return( (LRESULT)WdeInfoBrush );
+            return( (BOOL)WdeInfoBrush );
         } else {
-            return( (LRESULT)NULL );
+            return( (BOOL)NULL );
         }
 #endif
 
@@ -765,6 +760,5 @@ LRESULT WINEXPORT WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM
         }
         break;
     }
-
     return( FALSE );
 }

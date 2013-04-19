@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesiz.h"
@@ -67,8 +65,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeButtonDispatcher( ACTION, WdeButtonObject *, void *, void * );
-extern LRESULT WINEXPORT WdeButtonSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeButtonDispatcher( ACTION, WdeButtonObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeButtonSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -96,18 +94,18 @@ static WNDPROC                  WdeOriginalButtonProc;
 //static WNDPROC                WdeButtonProc;
 
 static DISPATCH_ITEM WdeButtonActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeButtonDestroy            },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeButtonCopyObject         },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeButtonValidateAction     },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeButtonIdentify           },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeButtonGetWindowClass     },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeButtonDefine             },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeButtonGetWndProc         }
+    { DESTROY,          (DISPATCH_RTN *)WdeButtonDestroy            },
+    { COPY,             (DISPATCH_RTN *)WdeButtonCopyObject         },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeButtonValidateAction     },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeButtonIdentify           },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeButtonGetWindowClass     },
+    { DEFINE,           (DISPATCH_RTN *)WdeButtonDefine             },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeButtonGetWndProc         }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeButtonActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdePButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdePButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeButton( parent, obj_rect, handle,
@@ -118,7 +116,7 @@ OBJPTR WINEXPORT WdePButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     }
 }
 
-OBJPTR WINEXPORT WdeCButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeCButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeButton( parent, obj_rect, handle,
@@ -129,7 +127,7 @@ OBJPTR WINEXPORT WdeCButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     }
 }
 
-OBJPTR WINEXPORT WdeRButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeRButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeButton( parent, obj_rect, handle,
@@ -140,7 +138,7 @@ OBJPTR WINEXPORT WdeRButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     }
 }
 
-OBJPTR WINEXPORT WdeGButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeGButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeButton( parent, obj_rect, handle,
@@ -238,7 +236,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeButtonDispatcher( ACTION act, WdeButtonObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeButtonDispatcher( ACTION act, WdeButtonObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -298,8 +296,7 @@ Bool WdeButtonInit( Bool first )
     SETCTL_TEXT( WdeDefaultButton, NULL );
     SETCTL_CLASSID( WdeDefaultButton, ResNumToControlClass( CLASS_BUTTON ) );
 
-    WdeButtonDispatch = MakeProcInstance( (FARPROC)WdeButtonDispatcher,
-                                          WdeGetAppInstance() );
+    WdeButtonDispatch = MakeProcInstance( (FARPROC)WdeButtonDispatcher, WdeGetAppInstance() );
     return( TRUE );
 }
 
@@ -889,8 +886,7 @@ void WdeButtonGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeEXGetDefineInfo( o_info, hDlg );
 }
 
-LRESULT WINEXPORT WdeButtonSuperClassProc( HWND hWnd, UINT message, WPARAM wParam,
-                                           volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeButtonSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalButtonProc, hWnd, message, wParam, lParam ) );

@@ -30,18 +30,12 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-
-#include "list.def"
-#include "wrdll.h"
-#include "wrutil.h"
 #include "wdeglbl.h"
+#include "wrdll.h"
 #include "wdemem.h"
 #include "wderesin.h"
 #include "wdecsize.h"
 #include "wde_wres.h"
-#include "wrutil.h"
 #include "wdei2mem.h"
 
 /****************************************************************************/

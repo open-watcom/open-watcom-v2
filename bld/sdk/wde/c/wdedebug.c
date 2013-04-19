@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "wdeglbl.h"
 #include <ctype.h>
 #include <stdio.h>
-
-#include "wdeglbl.h"
 #include "wdestat.h"
 #include "wdemain.h"
 #include "wdedebug.h"

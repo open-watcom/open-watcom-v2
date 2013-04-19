@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <mbstring.h>
-#include <stdlib.h>
-
 #include "wdeglbl.h"
+#include <mbstring.h>
 #include "wdeactn.h"
 #include "wderes.h"
 #include "wdefordr.h"
@@ -88,7 +84,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT    WdeBaseDispatcher( ACTION, WdeBaseObject *, void *, void * );
+WINEXPORT BOOL   CALLBACK WdeBaseDispatcher( ACTION, WdeBaseObject *, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -125,36 +121,36 @@ static BOOL WdeBaseResolveHelpSymbol( WdeBaseObject *, Bool *, Bool * );
 static FARPROC WdeBaseDispatch;
 
 static DISPATCH_ITEM WdeBaseActions[] = {
-    { DRAW,                 (BOOL (*)( OBJPTR, void *, void * ))WdeBaseDraw              },
-    { LOCATE,               (BOOL (*)( OBJPTR, void *, void * ))WdeBaseLocation          },
-    { DESTROY,              (BOOL (*)( OBJPTR, void *, void * ))WdeBaseDestroy           },
-    { VALIDATE_ACTION,      (BOOL (*)( OBJPTR, void *, void * ))WdeBaseValidateAction    },
-    { NOTIFY,               (BOOL (*)( OBJPTR, void *, void * ))WdeBaseNotify            },
-    { RESIZE_INFO,          (BOOL (*)( OBJPTR, void *, void * ))WdeBaseGetResizeInfo     },
-    { FIND_SUBOBJECTS,      (BOOL (*)( OBJPTR, void *, void * ))WdeBaseFindSubObjects    },
-    { FIND_OBJECTS_PT,      (BOOL (*)( OBJPTR, void *, void * ))WdeBaseFindObjectsPt     },
-    { ADD_SUBOBJECT,        (BOOL (*)( OBJPTR, void *, void * ))WdeBaseAddSubObject      },
-    { REMOVE_SUBOBJECT,     (BOOL (*)( OBJPTR, void *, void * ))WdeBaseRemoveSubObject   },
-    { GET_WINDOW_HANDLE,    (BOOL (*)( OBJPTR, void *, void * ))WdeBaseGetWindowHandle   },
-    { GET_SUBOBJ_LIST,      (BOOL (*)( OBJPTR, void *, void * ))WdeBaseGetSubObjectList  },
-    { IDENTIFY,             (BOOL (*)( OBJPTR, void *, void * ))WdeBaseIdentify          },
-    { GET_FONT,             (BOOL (*)( OBJPTR, void *, void * ))WdeBaseGetFont           },
-    { GET_RESIZER,          (BOOL (*)( OBJPTR, void *, void * ))WdeBaseGetResizer        },
-    { GET_NC_SIZE,          (BOOL (*)( OBJPTR, void *, void * ))WdeBaseGetNCSize         },
-    { BECOME_FIRST_CHILD,   (BOOL (*)( OBJPTR, void *, void * ))WdeBaseFirstChild        },
-    { GET_FIRST_CHILD,      (BOOL (*)( OBJPTR, void *, void * ))WdeBaseGetFirstChild     },
-    { PUT_ME_FIRST,         (BOOL (*)( OBJPTR, void *, void * ))WdeBasePutChildFirst     },
-    { GET_SCROLL_RECT,      (BOOL (*)( OBJPTR, void *, void * ))WdeBaseGetScrollRect     },
-    { GET_RESIZE_INC,       (BOOL (*)( OBJPTR, void *, void * ))WdeBaseGetResizeInc      },
-    { IS_MARK_VALID,        (BOOL (*)( OBJPTR, void *, void * ))WdeBaseIsMarkValid       },
-    { RESOLVE_SYMBOL,       (BOOL (*)( OBJPTR, void *, void * ))WdeBaseResolveSymbol     },
-    { RESOLVE_HELPSYMBOL,   (BOOL (*)( OBJPTR, void *, void * ))WdeBaseResolveHelpSymbol },
-    { GET_NEXT_CHILD,       (BOOL (*)( OBJPTR, void *, void * ))WdeBaseGetNextChild      }
+    { DRAW,                 (DISPATCH_RTN *)WdeBaseDraw              },
+    { LOCATE,               (DISPATCH_RTN *)WdeBaseLocation          },
+    { DESTROY,              (DISPATCH_RTN *)WdeBaseDestroy           },
+    { VALIDATE_ACTION,      (DISPATCH_RTN *)WdeBaseValidateAction    },
+    { NOTIFY,               (DISPATCH_RTN *)WdeBaseNotify            },
+    { RESIZE_INFO,          (DISPATCH_RTN *)WdeBaseGetResizeInfo     },
+    { FIND_SUBOBJECTS,      (DISPATCH_RTN *)WdeBaseFindSubObjects    },
+    { FIND_OBJECTS_PT,      (DISPATCH_RTN *)WdeBaseFindObjectsPt     },
+    { ADD_SUBOBJECT,        (DISPATCH_RTN *)WdeBaseAddSubObject      },
+    { REMOVE_SUBOBJECT,     (DISPATCH_RTN *)WdeBaseRemoveSubObject   },
+    { GET_WINDOW_HANDLE,    (DISPATCH_RTN *)WdeBaseGetWindowHandle   },
+    { GET_SUBOBJ_LIST,      (DISPATCH_RTN *)WdeBaseGetSubObjectList  },
+    { IDENTIFY,             (DISPATCH_RTN *)WdeBaseIdentify          },
+    { GET_FONT,             (DISPATCH_RTN *)WdeBaseGetFont           },
+    { GET_RESIZER,          (DISPATCH_RTN *)WdeBaseGetResizer        },
+    { GET_NC_SIZE,          (DISPATCH_RTN *)WdeBaseGetNCSize         },
+    { BECOME_FIRST_CHILD,   (DISPATCH_RTN *)WdeBaseFirstChild        },
+    { GET_FIRST_CHILD,      (DISPATCH_RTN *)WdeBaseGetFirstChild     },
+    { PUT_ME_FIRST,         (DISPATCH_RTN *)WdeBasePutChildFirst     },
+    { GET_SCROLL_RECT,      (DISPATCH_RTN *)WdeBaseGetScrollRect     },
+    { GET_RESIZE_INC,       (DISPATCH_RTN *)WdeBaseGetResizeInc      },
+    { IS_MARK_VALID,        (DISPATCH_RTN *)WdeBaseIsMarkValid       },
+    { RESOLVE_SYMBOL,       (DISPATCH_RTN *)WdeBaseResolveSymbol     },
+    { RESOLVE_HELPSYMBOL,   (DISPATCH_RTN *)WdeBaseResolveHelpSymbol },
+    { GET_NEXT_CHILD,       (DISPATCH_RTN *)WdeBaseGetNextChild      }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeBaseActions ) / sizeof ( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     RECT                rect;
     WdeBaseObject       *new;
@@ -226,7 +222,7 @@ OBJPTR WINEXPORT WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     return( new );
 }
 
-BOOL WINEXPORT WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void *p1, void *p2 )
 {
     int i;
 

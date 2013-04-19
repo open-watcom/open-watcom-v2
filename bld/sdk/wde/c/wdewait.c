@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "wdeglbl.h"
 #include "wdemain.h"
 #include "wdewait.h"
@@ -63,7 +62,7 @@ void WdeSetWaitCursor( Bool on )
     HWND            main;
 
     if( wait_cursor == (HCURSOR)NULL ) {
-        wait_cursor = LoadCursor( (HWND)NULL, IDC_WAIT );
+        wait_cursor = LoadCursor( (HINSTANCE)0, IDC_WAIT );
     }
 
     main = WdeGetMainWindowHandle();

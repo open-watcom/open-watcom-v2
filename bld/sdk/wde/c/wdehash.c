@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-
 #include "wdeglbl.h"
+#include <ctype.h>
 #include "wdemem.h"
 #include "wdedebug.h"
 #include "wdesdup.h"

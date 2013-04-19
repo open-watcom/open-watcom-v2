@@ -33,12 +33,10 @@
 #ifndef WDEFSBAR_INCLUDED
 #define WDEFSBAR_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeSBarCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeSBarCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeSBarInit( Bool );
 extern void              WdeSBarFini( void );
 

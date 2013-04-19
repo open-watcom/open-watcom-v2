@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <stdio.h>
-#include <string.h>
-
 #include "wdeglbl.h"
+#include <stdio.h>
 #include "wderesin.h"
 #include "wdeobjid.h"
 #include "wdefbase.h"
@@ -67,7 +64,7 @@
 typedef struct {
     Bool    (*init)( Bool );
     void    (*fini)( void );
-    OBJPTR  (WINEXPORT *create)( OBJPTR , RECT *, OBJPTR );
+    OBJPTR  (CALLBACK *create)( OBJPTR , RECT *, OBJPTR );
 } WdeObjectRoutinesType;
 
 /****************************************************************************/
@@ -128,8 +125,7 @@ Bool WdeInitCreateTable( void )
                     return( FALSE );
                 }
             }
-            (*WdeCreateTable)[i] = (CREATE_RTN)MakeProcInstance(
-                (FARPROC)WdeObjectRoutines[i].create, inst );
+            (*WdeCreateTable)[i] = (CREATE_RTN)MakeProcInstance( (FARPROC)WdeObjectRoutines[i].create, inst );
         }
     }
 

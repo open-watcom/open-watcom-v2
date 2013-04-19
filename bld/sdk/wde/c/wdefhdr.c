@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -61,8 +58,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeHdrDispatcher( ACTION, WdeHdrObject *, void *, void * );
-extern LRESULT WINEXPORT WdeHdrSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeHdrDispatcher( ACTION, WdeHdrObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeHdrSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -93,18 +90,18 @@ static WNDPROC                  WdeOriginalHdrProc;
 #define WWC_HEADER       WC_HEADER
 
 static DISPATCH_ITEM WdeHdrActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeHdrDestroy        },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeHdrCopyObject     },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeHdrValidateAction },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeHdrIdentify       },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeHdrGetWindowClass },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeHdrDefine         },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeHdrGetWndProc     }
+    { DESTROY,          (DISPATCH_RTN *)WdeHdrDestroy        },
+    { COPY,             (DISPATCH_RTN *)WdeHdrCopyObject     },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeHdrValidateAction },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeHdrIdentify       },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeHdrGetWindowClass },
+    { DEFINE,           (DISPATCH_RTN *)WdeHdrDefine         },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeHdrGetWndProc     }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeHdrActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeHdrCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeHdrCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeHdr( parent, obj_rect, handle, 0, "", HEADER_OBJ ) );
@@ -188,7 +185,7 @@ OBJPTR WdeHCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeHdrDispatcher ( ACTION act, WdeHdrObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeHdrDispatcher( ACTION act, WdeHdrObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -428,8 +425,7 @@ BOOL WdeHdrDefineHook( HWND hDlg, UINT message,
     return( processed );
 }
 
-LRESULT WINEXPORT WdeHdrSuperClassProc( HWND hWnd, UINT message,
-                                        WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeHdrSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalHdrProc, hWnd, message, wParam, lParam ) );

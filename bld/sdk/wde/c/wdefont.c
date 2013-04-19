@@ -29,9 +29,6 @@
 *
 ****************************************************************************/
 
-#include "precomp.h"
-#include <string.h>
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -55,13 +52,13 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WdeDummyProc( HWND, UINT, WPARAM, LPARAM );
-extern int     WINEXPORT WdeEnumFontsProc( ENUMLOGFONT *, TEXTMETRIC *, int, LPARAM );
+WINEXPORT BOOL CALLBACK WdeDummyProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT int  CALLBACK WdeEnumFontsProc( ENUMLOGFONT *, TEXTMETRIC *, int, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool     WdeAddFontFamilyMember( WdeFontNames *, ENUMLOGFONT *, TEXTMETRIC *, int );
+static BOOL     WdeAddFontFamilyMember( WdeFontNames *, ENUMLOGFONT *, TEXTMETRIC *, int );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -189,7 +186,7 @@ void WdeSetFontList( HWND main )
     FreeProcInstance( (FARPROC)enum_callback );
 }
 
-Bool WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf,
+BOOL WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf,
                              TEXTMETRIC *lpntm, int fonttype )
 {
     uint_32     mod10;
@@ -232,8 +229,7 @@ Bool WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf,
     return( TRUE );
 }
 
-int WINEXPORT WdeEnumFontsProc( ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm,
-                                int fonttype, volatile LPARAM lParam )
+WINEXPORT int CALLBACK WdeEnumFontsProc( ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, int fonttype, LPARAM lParam )
 {
     LIST            *olist;
     LIST            **list;
@@ -363,7 +359,7 @@ HFONT WdeGetFont( char *face, int pointsize, int weight )
     return( (HFONT)NULL );
 }
 
-Bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
+BOOL WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
 {
     GLOBALHANDLE    dialog_template;
     uint_8          *ldlg;
@@ -371,7 +367,7 @@ Bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
     HINSTANCE       inst;
     DLGPROC         proc;
     RECT            rect;
-    Bool            ok;
+    BOOL            ok;
 
     if( r == NULL ) {
         return( FALSE );
@@ -403,7 +399,7 @@ Bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
     return( ok );
 }
 
-LRESULT WINEXPORT WdeDummyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeDummyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );

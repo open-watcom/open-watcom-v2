@@ -33,8 +33,6 @@
 #ifndef WDE_RC_INCLUDED
 #define WDE_RC_INCLUDED
 
-#include "constant.def"
-
 #include "symbols.h"
 #include "loadcust.h"
 #include "selcust.h"
@@ -42,6 +40,8 @@
 #include "info.h"
 #include "opts.h"
 #include "define.h"
+
+#include "constant.def"
 
 /****************************************************************************/
 /* Misc. Constants                                                          */

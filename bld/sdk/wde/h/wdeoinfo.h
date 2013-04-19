@@ -33,7 +33,6 @@
 #ifndef WDEOINFO_INCLUDED
 #define WDEOINFO_INCLUDED
 
-#include "fmedit.def"
 #include "wresall.h"
 #include "wdehash.h"
 #include "wdefordr.h"

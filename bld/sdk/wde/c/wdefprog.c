@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -61,8 +58,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeProgDispatcher( ACTION, WdeProgObject *, void *, void * );
-extern LRESULT WINEXPORT WdeProgSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeProgDispatcher( ACTION, WdeProgObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeProgSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -93,18 +90,18 @@ static WNDPROC                  WdeOriginalProgProc;
 #define WPROGRESS_CLASS  PROGRESS_CLASS
 
 static DISPATCH_ITEM WdeProgActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeProgDestroy          },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeProgCopyObject       },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeProgValidateAction   },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeProgIdentify         },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeProgGetWindowClass   },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeProgDefine           },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeProgGetWndProc       }
+    { DESTROY,          (DISPATCH_RTN *)WdeProgDestroy          },
+    { COPY,             (DISPATCH_RTN *)WdeProgCopyObject       },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeProgValidateAction   },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeProgIdentify         },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeProgGetWindowClass   },
+    { DEFINE,           (DISPATCH_RTN *)WdeProgDefine           },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeProgGetWndProc       }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeProgActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeProgCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeProgCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeProg( parent, obj_rect, handle, 0, "", PROGRESS_OBJ ) );
@@ -186,7 +183,7 @@ OBJPTR WdeProgressCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeProgDispatcher( ACTION act, WdeProgObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeProgDispatcher( ACTION act, WdeProgObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -387,8 +384,7 @@ void WdeProgGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeEXGetDefineInfo ( o_info, hDlg );
 }
 
-BOOL WdeProgDefineHook( HWND hDlg, UINT message,
-                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
+BOOL WdeProgDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );
@@ -400,8 +396,7 @@ BOOL WdeProgDefineHook( HWND hDlg, UINT message,
     return( FALSE );
 }
 
-LRESULT WINEXPORT WdeProgSuperClassProc( HWND hWnd, UINT message,
-                                         WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeProgSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalProgProc, hWnd, message, wParam, lParam ) );

@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-
-#include "fmedit.def"
-
 #include "wdeglbl.h"
 #include "wdeactn.h"
 #include "wdeobjid.h"

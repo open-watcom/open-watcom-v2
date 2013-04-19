@@ -52,6 +52,6 @@ extern BOOL WdeIsTestMessage( MSG * );
 extern Bool WdeGetTestMode( void );
 extern Bool WdeHandleTestModeMenu( WdeResInfo * );
 extern Bool WdeSetTestControlDefaults( HWND );
-extern LRESULT WINEXPORT WdeTestDlgProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern BOOL CALLBACK WdeTestDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 #endif

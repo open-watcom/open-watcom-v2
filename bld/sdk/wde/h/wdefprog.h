@@ -33,12 +33,10 @@
 #ifndef WDEFPROG_INCLUDED
 #define WDEFPROG_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeProgCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeProgCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeProgInit( Bool );
 extern void              WdeProgFini( void );
 

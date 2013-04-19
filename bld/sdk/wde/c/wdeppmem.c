@@ -29,11 +29,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <stdlib.h>
-
-#include "wrdll.h"
 #include "wdeglbl.h"
+#include "wrdll.h"
 #include "wdemem.h"
 #include "wdestken.h"
 #include "wdedebug.h"

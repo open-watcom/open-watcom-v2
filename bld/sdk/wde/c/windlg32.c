@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <stdlib.h>
+#include "wdeglbl.h"
 #include "windlg.h"
 #include "windlg32.h"
 

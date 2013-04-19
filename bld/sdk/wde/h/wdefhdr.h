@@ -33,12 +33,10 @@
 #ifndef WDEFHDR_INCLUDED
 #define WDEFHDR_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeHdrCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeHdrCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeHdrInit( Bool );
 extern void              WdeHdrFini( void );
 

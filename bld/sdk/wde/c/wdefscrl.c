@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -61,8 +58,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeScrollDispatcher( ACTION, WdeScrollObject *, void *, void * );
-extern LRESULT WINEXPORT WdeScrollSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeScrollDispatcher( ACTION, WdeScrollObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeScrollSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -93,20 +90,20 @@ static WNDPROC                  WdeOriginalScrollProc;
 //static WNDPROC                WdeScrollProc;
 
 static DISPATCH_ITEM WdeScrollActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeScrollDestroy        },
-    { MOVE,             (BOOL (*)( OBJPTR, void *, void * ))WdeScrollMove           },
-    { RESIZE,           (BOOL (*)( OBJPTR, void *, void * ))WdeScrollResize         },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeScrollCopyObject     },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeScrollValidateAction },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeScrollIdentify       },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeScrollGetWindowClass },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeScrollDefine         },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeScrollGetWndProc     }
+    { DESTROY,          (DISPATCH_RTN *)WdeScrollDestroy        },
+    { MOVE,             (DISPATCH_RTN *)WdeScrollMove           },
+    { RESIZE,           (DISPATCH_RTN *)WdeScrollResize         },
+    { COPY,             (DISPATCH_RTN *)WdeScrollCopyObject     },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeScrollValidateAction },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeScrollIdentify       },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeScrollGetWindowClass },
+    { DEFINE,           (DISPATCH_RTN *)WdeScrollDefine         },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeScrollGetWndProc     }
 };
 
 #define MAX_ACTIONS     (sizeof( WdeScrollActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeHScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeHScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeScroll( parent, obj_rect, handle, SBS_HORZ, "", HSCROLL_OBJ ) );
@@ -116,7 +113,7 @@ OBJPTR WINEXPORT WdeHScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     }
 }
 
-OBJPTR WINEXPORT WdeVScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeVScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeScroll( parent, obj_rect, handle, SBS_VERT, "", VSCROLL_OBJ ) );
@@ -126,7 +123,7 @@ OBJPTR WINEXPORT WdeVScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     }
 }
 
-OBJPTR WINEXPORT WdeSizeBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeSizeBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeScroll( parent, obj_rect, handle, SBS_SIZEBOX, "", SIZEBOX_OBJ ) );
@@ -207,7 +204,7 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeScrollDispatcher( ACTION act, WdeScrollObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeScrollDispatcher( ACTION act, WdeScrollObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -267,8 +264,7 @@ Bool WdeScrollInit( Bool first )
     SETCTL_TEXT( WdeDefaultScroll, NULL );
     SETCTL_CLASSID( WdeDefaultScroll, ResNumToControlClass( CLASS_SCROLLBAR ) );
 
-    WdeScrollDispatch = MakeProcInstance( (FARPROC)WdeScrollDispatcher,
-                                          WdeGetAppInstance() );
+    WdeScrollDispatch = MakeProcInstance( (FARPROC)WdeScrollDispatcher, WdeGetAppInstance() );
     return( TRUE );
 }
 
@@ -587,8 +583,7 @@ void WdeScrollGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeScrollDefineHook( HWND hDlg, UINT message,
-                          WPARAM wParam, LPARAM lParam, DialogStyle mask )
+BOOL WdeScrollDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     BOOL    processed;
     WORD    wp;
@@ -649,8 +644,7 @@ BOOL WdeScrollDefineHook( HWND hDlg, UINT message,
     return( processed );
 }
 
-LRESULT WINEXPORT WdeScrollSuperClassProc( HWND hWnd, UINT message, WPARAM wParam,
-                                           volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeScrollSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalScrollProc, hWnd, message, wParam, lParam ) );

@@ -34,7 +34,6 @@
 #define WDEFONT_INCLUDED
 
 #include "wresall.h"
-#include "list.def"
 #include "wderesiz.h"
 
 /****************************************************************************/

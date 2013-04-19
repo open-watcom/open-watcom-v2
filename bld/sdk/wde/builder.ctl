@@ -14,12 +14,14 @@ set PROJNAME=wde
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> wini86/wde.exe      <OWRELROOT>/binw/wde.exe
-    <CCCMD> wini86/wde.sym      <OWRELROOT>/binw/wde.sym
-    <CCCMD> nt386/wde.exe       <OWRELROOT>/binnt/wde.exe
-    <CCCMD> nt386/wde.sym       <OWRELROOT>/binnt/wde.sym
-    <CCCMD> ntaxp/wde.exe       <OWRELROOT>/axpnt/wde.exe
-    <CCCMD> ntaxp/wde.sym       <OWRELROOT>/axpnt/wde.sym
+    <CCCMD> wini86/wde.exe      <OWRELROOT>/binw/
+    <CCCMD> wini86/wde.sym      <OWRELROOT>/binw/
+    <CCCMD> nt386/wde.exe       <OWRELROOT>/binnt/
+    <CCCMD> nt386/wde.sym       <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/wde.exe       <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wde.sym       <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/wde.exe       <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

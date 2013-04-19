@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -61,8 +58,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeTabCDispatcher( ACTION, WdeTabCObject *, void *, void * );
-extern LRESULT WINEXPORT WdeTabCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeTabCDispatcher( ACTION, WdeTabCObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeTabCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -93,18 +90,18 @@ static WNDPROC                  WdeOriginalTabCProc;
 #define WWC_TABCONTROL   WC_TABCONTROL
 
 static DISPATCH_ITEM WdeTabCActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeTabCDestroy          },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeTabCCopyObject       },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeTabCValidateAction   },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeTabCIdentify         },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeTabCGetWindowClass   },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeTabCDefine           },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeTabCGetWndProc       }
+    { DESTROY,          (DISPATCH_RTN *)WdeTabCDestroy          },
+    { COPY,             (DISPATCH_RTN *)WdeTabCCopyObject       },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeTabCValidateAction   },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeTabCIdentify         },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeTabCGetWindowClass   },
+    { DEFINE,           (DISPATCH_RTN *)WdeTabCDefine           },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeTabCGetWndProc       }
 };
 
 #define MAX_ACTIONS     (sizeof( WdeTabCActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeTabCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeTabCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeTabC( parent, obj_rect, handle, 0, "", TABCNTL_OBJ ) );
@@ -186,7 +183,7 @@ OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -246,8 +243,7 @@ Bool WdeTabCInit( Bool first )
     SETCTL_TEXT( WdeDefaultTabC, NULL );
     SETCTL_CLASSID( WdeDefaultTabC, WdeStrToControlClass( WWC_TABCONTROL ) );
 
-    WdeTabCDispatch = MakeProcInstance( (FARPROC)WdeTabCDispatcher,
-                                        WdeGetAppInstance() );
+    WdeTabCDispatch = MakeProcInstance( (FARPROC)WdeTabCDispatcher, WdeGetAppInstance() );
     return( TRUE );
 }
 
@@ -491,8 +487,7 @@ void WdeTabCGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeTabCDefineHook( HWND hDlg, UINT message,
-                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
+BOOL WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
 #ifdef __NT__XX
     BOOL processed;
@@ -573,8 +568,7 @@ BOOL WdeTabCDefineHook( HWND hDlg, UINT message,
 #endif
 }
 
-LRESULT WINEXPORT WdeTabCSuperClassProc( HWND hWnd, UINT message,
-                                         WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeTabCSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalTabCProc, hWnd, message, wParam, lParam ) );

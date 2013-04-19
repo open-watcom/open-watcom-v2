@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -63,8 +60,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeSBarDispatcher( ACTION, WdeSBarObject *, void *, void * );
-extern LRESULT WINEXPORT WdeSBarSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeSBarDispatcher( ACTION, WdeSBarObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeSBarSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -95,13 +92,13 @@ static WNDPROC                  WdeOriginalSBarProc;
 #define WSTATUSCLASSNAME        STATUSCLASSNAME
 
 static DISPATCH_ITEM WdeSBarActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeSBarDestroy          },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeSBarCopyObject       },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeSBarValidateAction   },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeSBarIdentify         },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeSBarGetWindowClass   },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeSBarDefine           },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeSBarGetWndProc       }
+    { DESTROY,          (DISPATCH_RTN *)WdeSBarDestroy          },
+    { COPY,             (DISPATCH_RTN *)WdeSBarCopyObject       },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeSBarValidateAction   },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeSBarIdentify         },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeSBarGetWindowClass   },
+    { DEFINE,           (DISPATCH_RTN *)WdeSBarDefine           },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeSBarGetWndProc       }
 };
 
 #define MAX_ACTIONS     (sizeof( WdeSBarActions ) / sizeof( DISPATCH_ITEM ))
@@ -139,7 +136,7 @@ Bool WdeSBNoodleSize( OBJPTR obj, Bool recreate )
     return( TRUE );
 }
 
-OBJPTR WINEXPORT WdeSBarCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeSBarCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeSBar( parent, obj_rect, handle, 0, "", SBAR_OBJ ) );
@@ -225,7 +222,7 @@ OBJPTR WdeSBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeSBarDispatcher ( ACTION act, WdeSBarObject *obj, void *p1, void *p2 )
+BOOL CALLBACK WdeSBarDispatcher( ACTION act, WdeSBarObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -285,8 +282,7 @@ Bool WdeSBarInit( Bool first )
     SETCTL_TEXT( WdeDefaultSBar, NULL );
     SETCTL_CLASSID( WdeDefaultSBar, WdeStrToControlClass( WSTATUSCLASSNAME ) );
 
-    WdeSBarDispatch = MakeProcInstance( (FARPROC)WdeSBarDispatcher,
-                                        WdeGetAppInstance() );
+    WdeSBarDispatch = MakeProcInstance( (FARPROC)WdeSBarDispatcher, WdeGetAppInstance() );
     return( TRUE );
 }
 
@@ -472,8 +468,7 @@ void WdeSBarGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeSBarDefineHook( HWND hDlg, UINT message,
-                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
+BOOL WdeSBarDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     BOOL processed;
 
@@ -489,8 +484,7 @@ BOOL WdeSBarDefineHook( HWND hDlg, UINT message,
     return( processed );
 }
 
-LRESULT WINEXPORT WdeSBarSuperClassProc( HWND hWnd, UINT message,
-                                         WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeSBarSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalSBarProc, hWnd, message, wParam, lParam ) );

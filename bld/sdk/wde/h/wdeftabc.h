@@ -33,12 +33,10 @@
 #ifndef WDEFTABC_INCLUDED
 #define WDEFTABC_INCLUDED
 
-#include "fmedit.def"
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeTabCCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern OBJPTR  CALLBACK WdeTabCCreate( OBJPTR, RECT *, OBJPTR );
 extern Bool              WdeTabCInit( Bool );
 extern void              WdeTabCFini( void );
 

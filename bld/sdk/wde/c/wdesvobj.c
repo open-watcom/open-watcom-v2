@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <stdlib.h>
 #include "wdeglbl.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"

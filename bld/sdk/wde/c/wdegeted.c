@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-#include <stdlib.h>
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wde_wres.h"
@@ -86,7 +82,7 @@ char *WdeGetStrFromEdit( HWND hDlg, int id, Bool *mod )
     }
 
     text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length + 1,
-                                      (LPARAM)(LPCSTR)cp );
+                                      (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
         WdeMemFree( cp );
@@ -120,7 +116,7 @@ char *WdeGetStrFromListBox( HWND hDlg, int id, int index )
     }
 
     text_copied = SendDlgItemMessage( hDlg, id, LB_GETTEXT, index,
-                                      (LPARAM)(LPCSTR)cp );
+                                      (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
         WdeMemFree( cp );
@@ -154,7 +150,7 @@ char *WdeGetStrFromComboLBox( HWND hDlg, int id, int index )
     }
 
     text_copied = SendDlgItemMessage( hDlg, id, CB_GETLBTEXT, index,
-                                      (LPARAM)(LPCSTR)cp );
+                                      (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
         WdeMemFree( cp );
@@ -216,7 +212,7 @@ void WdeSetComboWithStr( char *cp, HWND hDlg, int id )
 void WdeSetEditWithStr( char *cp, HWND hDlg, int id )
 {
     if( cp != NULL ) {
-        SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM)(LPCSTR)cp );
+        SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM)(LPSTR)cp );
     }
 }
 

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
 #include "wdeglbl.h"
 #include "wrdll.h"
 #include "wrselft.h"

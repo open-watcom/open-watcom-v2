@@ -30,11 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-#include <stdlib.h>
-#include <string.h>
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -58,7 +53,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WdeTagProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WdeTagProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -121,7 +116,7 @@ static void WdeSetTagText( WdeOrderedEntry *oe )
             }
             break;
         }
-        SendMessage( oe->tag, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
+        SendMessage( oe->tag, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
     }
 }
 
@@ -368,7 +363,7 @@ Bool WdeRegisterTagClass( HINSTANCE inst )
     wc.lpszClassName = WdeTagClass;
 
     WdeTagExtra = wc.cbWndExtra;
-    wc.cbWndExtra += sizeof( WdeSetOrderStruct * );
+    wc.cbWndExtra += sizeof( LONG_PTR );
 
     WdeOriginalButtonProc = wc.lpfnWndProc;
     wc.lpfnWndProc = WdeTagProc;
@@ -495,13 +490,12 @@ void WdeTagPressed( WdeSetOrderStruct *o )
 WdeSetOrderStruct *WdeGetTagInfo( HWND tag )
 {
     if( tag != (HWND)NULL && IsWindow( tag ) ) {
-        return( (WdeSetOrderStruct *)GetWindowLong ( tag, WdeTagExtra ) );
+        return( (WdeSetOrderStruct *)GET_WNDLONGPTR( tag, WdeTagExtra ) );
     }
     return( NULL );
 }
 
-LRESULT WINEXPORT WdeTagProc( HWND hWnd, UINT message, WPARAM wParam,
-                              volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeSetOrderStruct   *o;
     Bool                pass_to_def;
@@ -509,13 +503,13 @@ LRESULT WINEXPORT WdeTagProc( HWND hWnd, UINT message, WPARAM wParam,
 
     pass_to_def = TRUE;
     ret = FALSE;
-    o = (WdeSetOrderStruct *)GetWindowLong( hWnd, WdeTagExtra );
+    o = (WdeSetOrderStruct *)GET_WNDLONGPTR( hWnd, WdeTagExtra );
 
     switch( message ) {
     case WM_CREATE:
         o = (WdeSetOrderStruct *)((CREATESTRUCT *)lParam)->lpCreateParams;
         o->old_oe->tag = hWnd;
-        SetWindowLong( hWnd, WdeTagExtra, (LONG)o );
+        SET_WNDLONGPTR( hWnd, WdeTagExtra, (LONG_PTR)o );
         break;
 
     case WM_ERASEBKGND:

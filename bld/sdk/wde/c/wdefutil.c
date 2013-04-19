@@ -30,15 +30,11 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-#include <stdio.h>
-#include <string.h>
-#include <mbstring.h>
-#include <stdlib.h>
-#include <ctype.h>
-
 #include "wdeglbl.h"
+#include <stdio.h>
+#include <mbstring.h>
+#include <ctype.h>
+#include "wrdll.h"
 #include "wdelist.h"
 #include "wdemem.h"
 #include "wderes.h"
@@ -62,7 +58,6 @@
 #include "wdecctl.h"
 #include "wdefutil.h"
 #include "wrstrdup.h"
-#include "wrutil.h"
 #include "jdlg.h"
 
 /****************************************************************************/
@@ -73,7 +68,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WdeControlDefineProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -1051,7 +1046,7 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
     return( TRUE );
 }
 
-BOOL WINEXPORT WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo  *o_info = NULL;
     static BOOL                 init_done = FALSE;

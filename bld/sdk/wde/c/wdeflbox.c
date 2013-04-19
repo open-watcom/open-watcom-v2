@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -60,8 +57,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeLBoxDispatcher( ACTION, WdeLBoxObject *, void *, void * );
-extern LRESULT WINEXPORT WdeLBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeLBoxDispatcher( ACTION, WdeLBoxObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeLBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -90,18 +87,18 @@ static WNDPROC                  WdeOriginalLBoxProc;
 //static WNDPROC                WdeLBoxProc;
 
 static DISPATCH_ITEM WdeLBoxActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeLBoxDestroy          },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeLBoxCopyObject       },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeLBoxValidateAction   },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeLBoxIdentify         },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeLBoxGetWindowClass   },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeLBoxDefine           },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeLBoxGetWndProc       }
+    { DESTROY,          (DISPATCH_RTN *)WdeLBoxDestroy          },
+    { COPY,             (DISPATCH_RTN *)WdeLBoxCopyObject       },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeLBoxValidateAction   },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeLBoxIdentify         },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeLBoxGetWindowClass   },
+    { DEFINE,           (DISPATCH_RTN *)WdeLBoxDefine           },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeLBoxGetWndProc       }
 };
 
 #define MAX_ACTIONS      (sizeof( WdeLBoxActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeLBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeLBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeLBox( parent, obj_rect, handle,
@@ -185,7 +182,7 @@ OBJPTR WdeLBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeLBoxDispatcher( ACTION act, WdeLBoxObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeLBoxDispatcher( ACTION act, WdeLBoxObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -578,8 +575,7 @@ void WdeLBoxGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeLBoxDefineHook ( HWND hDlg, UINT message,
-                         WPARAM wParam, LPARAM lParam, DialogStyle mask )
+BOOL WdeLBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     BOOL processed;
 
@@ -641,8 +637,7 @@ BOOL WdeLBoxDefineHook ( HWND hDlg, UINT message,
     return( processed );
 }
 
-LRESULT WINEXPORT WdeLBoxSuperClassProc( HWND hWnd, UINT message, WPARAM wParam,
-                                         volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeLBoxSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalLBoxProc, hWnd, message, wParam, lParam ) );

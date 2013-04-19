@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -61,8 +58,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeTViewDispatcher( ACTION, WdeTViewObject *, void *, void * );
-extern LRESULT WINEXPORT WdeTViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeTViewDispatcher( ACTION, WdeTViewObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeTViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -93,18 +90,18 @@ static WNDPROC                  WdeOriginalTViewProc;
 #define WWC_TREEVIEW     WC_TREEVIEW
 
 static DISPATCH_ITEM WdeTViewActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeTViewDestroy         },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeTViewCopyObject      },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeTViewValidateAction  },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeTViewIdentify        },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeTViewGetWindowClass  },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeTViewDefine          },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeTViewGetWndProc      }
+    { DESTROY,          (DISPATCH_RTN *)WdeTViewDestroy         },
+    { COPY,             (DISPATCH_RTN *)WdeTViewCopyObject      },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeTViewValidateAction  },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeTViewIdentify        },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeTViewGetWindowClass  },
+    { DEFINE,           (DISPATCH_RTN *)WdeTViewDefine          },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeTViewGetWndProc      }
 };
 
 #define MAX_ACTIONS     (sizeof( WdeTViewActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeTViewCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeTViewCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeTView( parent, obj_rect, handle, 0, "", TVIEW_OBJ ) );
@@ -186,7 +183,7 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeTViewDispatcher( ACTION act, WdeTViewObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeTViewDispatcher( ACTION act, WdeTViewObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -440,8 +437,7 @@ void WdeTViewGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeTViewDefineHook( HWND hDlg, UINT message,
-                         WPARAM wParam, LPARAM lParam, DialogStyle mask )
+BOOL WdeTViewDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     BOOL processed;
 
@@ -457,8 +453,7 @@ BOOL WdeTViewDefineHook( HWND hDlg, UINT message,
     return( processed );
 }
 
-LRESULT WINEXPORT WdeTViewSuperClassProc( HWND hWnd, UINT message,
-                                          WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeTViewSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalTViewProc, hWnd, message, wParam, lParam ) );

@@ -30,14 +30,10 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <stdlib.h>
-#include <string.h>
+#include "wdeglbl.h"
 #include <stdio.h>
 #include <io.h>
-
 #include "wresall.h"
-#include "wdeglbl.h"
 #include "wderesin.h"
 #include "wdeactn.h"
 #include "wdemem.h"

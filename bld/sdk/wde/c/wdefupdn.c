@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "wi163264.h"
-
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -61,8 +58,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeUpDnDispatcher( ACTION, WdeUpDnObject *, void *, void * );
-extern LRESULT WINEXPORT WdeUpDnSuperClassProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeUpDnDispatcher( ACTION, WdeUpDnObject *, void *, void * );
+WINEXPORT LRESULT CALLBACK WdeUpDnSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -93,18 +90,18 @@ static WNDPROC                  WdeOriginalUpDnProc;
 #define WUPDOWN_CLASS    UPDOWN_CLASS
 
 static DISPATCH_ITEM WdeUpDnActions[] = {
-    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeUpDnDestroy          },
-    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeUpDnCopyObject       },
-    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeUpDnValidateAction   },
-    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeUpDnIdentify         },
-    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeUpDnGetWindowClass   },
-    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeUpDnDefine           },
-    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeUpDnGetWndProc       }
+    { DESTROY,          (DISPATCH_RTN *)WdeUpDnDestroy          },
+    { COPY,             (DISPATCH_RTN *)WdeUpDnCopyObject       },
+    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeUpDnValidateAction   },
+    { IDENTIFY,         (DISPATCH_RTN *)WdeUpDnIdentify         },
+    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeUpDnGetWindowClass   },
+    { DEFINE,           (DISPATCH_RTN *)WdeUpDnDefine           },
+    { GET_WND_PROC,     (DISPATCH_RTN *)WdeUpDnGetWndProc       }
 };
 
 #define MAX_ACTIONS     (sizeof( WdeUpDnActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeUpDnCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WINEXPORT OBJPTR CALLBACK WdeUpDnCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeUpDn( parent, obj_rect, handle, 0, "", UPDOWN_OBJ ) );
@@ -186,7 +183,7 @@ OBJPTR WdeUDCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeUpDnDispatcher( ACTION act, WdeUpDnObject *obj, void *p1, void *p2 )
+WINEXPORT BOOL CALLBACK WdeUpDnDispatcher( ACTION act, WdeUpDnObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -450,8 +447,7 @@ void WdeUpDnGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeUpDnDefineHook( HWND hDlg, UINT message,
-                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
+BOOL WdeUpDnDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     BOOL processed;
 
@@ -467,8 +463,7 @@ BOOL WdeUpDnDefineHook( HWND hDlg, UINT message,
     return( processed );
 }
 
-LRESULT WINEXPORT WdeUpDnSuperClassProc( HWND hWnd, UINT message,
-                                         WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeUpDnSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalUpDnProc, hWnd, message, wParam, lParam ) );

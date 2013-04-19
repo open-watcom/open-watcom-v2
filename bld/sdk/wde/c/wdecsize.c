@@ -30,14 +30,11 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
-
 #include "wdeglbl.h"
 #include "wderesin.h"
 #include "wdecsize.h"
+#include "wrdll.h"
 #include "wresall.h"
-#include "wrutil.h"
 
 static uint_32 WdeCalcStrlen( char *str, Bool is32bit )
 {

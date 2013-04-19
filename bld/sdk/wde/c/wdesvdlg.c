@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <string.h>
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderesin.h"
@@ -44,7 +42,7 @@
 #include "wdecctl.h"
 #include "wde_rc.h"
 #include "wde_wres.h"
-#include "wrutil.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

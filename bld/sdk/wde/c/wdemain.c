@@ -30,13 +30,9 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "wdeglbl.h"
 #include <io.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "wdeglbl.h"
 #include "wdemem.h"
 #include "wderes.h"
 #include "wdetest.h"
@@ -81,6 +77,9 @@
 #include "wwinhelp.h"
 #include "aboutdlg.h"
 #include "ldstr.h"
+#ifdef __WATCOMC__
+#include "clibint.h"
+#endif
 
 /* set the WRES library to use compatible functions */
 WResSetRtns( open, close, read, write, lseek, tell, WdeMemAlloc, WdeMemFree );
@@ -102,9 +101,8 @@ void WdeInt3( void );
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern int PASCAL        WinMain( HINSTANCE, HINSTANCE, LPSTR, int);
-extern LRESULT WINEXPORT WdeMainWndProc( HWND, UINT, WPARAM, LPARAM );
-extern Bool WINEXPORT    WdeSplash( HWND, WORD, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WdeSplash( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -159,8 +157,6 @@ Bool WdeCreateNewFiles  = FALSE;
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine,  int nCmdShow )
 {
-    extern char **_argv;
-    extern int  _argc;
     MSG         msg;
 #ifndef __NT__
 #if 0
@@ -174,6 +170,10 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     _wde_touch( nCmdShow );
 #ifdef __NT__
     _wde_touch( hinstPrevious );
+#endif
+#if defined( __NT__ ) && !defined( __WATCOMC__ )
+    _argc = __argc;
+    _argv = __argv;
 #endif
 
     WRInit();
@@ -619,7 +619,7 @@ static void handleInitMenu( HMENU menu )
     }
 }
 
-LRESULT WINEXPORT WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HMENU       menu;
     LRESULT     ret;
@@ -1330,7 +1330,7 @@ void WdeDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
     FreeProcInstance( lpProcAbout );
 }
 
-Bool WINEXPORT WdeSplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, timer, start;
     HDC         dc, tdc;
@@ -1367,7 +1367,7 @@ Bool WINEXPORT WdeSplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam 
         if( msecs ) {
             timer = SetTimer( hDlg, ABOUT_TIMER, msecs, NULL );
             if( timer ) {
-                SetWindowLong( hDlg, DWL_USER, (LONG)timer );
+                SET_DLGDATA( hDlg, (LONG)timer );
             }
         }
 
@@ -1443,7 +1443,7 @@ Bool WINEXPORT WdeSplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam 
         break;
 
     case WM_TIMER:
-        timer = (UINT)GetWindowLong ( hDlg, DWL_USER );
+        timer = (UINT)GET_DLGDATA( hDlg );
         if( timer ) {
             KillTimer( hDlg, timer );
         }
@@ -1454,21 +1454,21 @@ Bool WINEXPORT WdeSplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam 
     return( FALSE );
 }
 
-void CALLBACK WdeHelpRoutine( void )
+WINEXPORT void CALLBACK WdeHelpRoutine( void )
 {
     if( !WHtmlHelp( hWinWdeMain, "resdlg.chm", HELP_CONTENTS, 0 ) ) {
         WWinHelp( hWinWdeMain, "resdlg.hlp", HELP_CONTENTS, 0 );
     }
 }
 
-void CALLBACK WdeHelpSearchRoutine( void )
+WINEXPORT void CALLBACK WdeHelpSearchRoutine( void )
 {
-    if( !WHtmlHelp( hWinWdeMain, "resdlg.chm", HELP_PARTIALKEY, (DWORD)"" ) ) {
-        WWinHelp( hWinWdeMain, "resdlg.hlp", HELP_PARTIALKEY, (DWORD)"" );
+    if( !WHtmlHelp( hWinWdeMain, "resdlg.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+        WWinHelp( hWinWdeMain, "resdlg.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
     }
 }
 
-void CALLBACK WdeHelpOnHelpRoutine( void )
+WINEXPORT void CALLBACK WdeHelpOnHelpRoutine( void )
 {
     WWinHelp( hWinWdeMain, "winhelp.hlp", HELP_HELPONHELP, 0 );
 }
