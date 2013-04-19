@@ -149,22 +149,7 @@ intern void cdecl farfill( LPPIXEL start, PIXEL fill, int len, int snow )
 
 intern void cdecl farcopy( LPPIXEL src, LPPIXEL dst, int len, int snow )
 {
-#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    _unused( snow );
-    memmove( dst, src, len*sizeof(PIXEL) );
-#elif defined( __386__ ) || defined( __UNIX__ )
-    _unused( snow );
-    #if defined( __UNIX__ )
-        memmove( dst, src, len*sizeof(PIXEL) );
-    #elif defined( __NETWARE__ )
-        // Netware compiled with "far" defined, but pointers aren't really
-        // far, and there is no _fmemmove function, and we were getting
-        // "pointer truncated" warnings before, so just cast. (SteveM)
-        memmove( (PIXEL *) dst, (PIXEL *) src, len*sizeof(PIXEL) );
-    #else
-        _fmemmove( dst, src, len*sizeof(PIXEL) );
-    #endif
-#elif defined( _M_I86 )
+#if defined( _M_I86 )
     if( snow ) {
         if( FP_SEG(src) == FP_SEG(dst) && FP_OFF(src) < FP_OFF(dst) ) {
             src += len - 1;
@@ -176,8 +161,19 @@ intern void cdecl farcopy( LPPIXEL src, LPPIXEL dst, int len, int snow )
     } else {
         _fmemmove( dst, src, len*sizeof(PIXEL) );
     }
+#elif defined( __386__ ) && !defined( __UNIX__ )
+    _unused( snow );
+    #if defined( __NETWARE__ )
+        // Netware compiled with "far" defined, but pointers aren't really
+        // far, and there is no _fmemmove function, and we were getting
+        // "pointer truncated" warnings before, so just cast. (SteveM)
+        memmove( (PIXEL *) dst, (PIXEL *) src, len*sizeof(PIXEL) );
+    #else
+        _fmemmove( dst, src, len*sizeof(PIXEL) );
+    #endif
 #else
-    #error farcopy not configured for system
+    _unused( snow );
+    memmove( dst, src, len*sizeof(PIXEL) );
 #endif
 }
 

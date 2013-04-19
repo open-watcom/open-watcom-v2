@@ -29,12 +29,6 @@ ext_nt_axp    = .dll
 ext_nt_x64    = .dll
 ext_rdos_386  = .dll
 
-!ifeq bootstrap 1
-!ifndef __WATCOM__
-lib_type = shared
-!endif
-!endif
-
 additional_cleanup = *.d32 *.mad
 
 !include cproj.mif
@@ -89,10 +83,13 @@ objs =  madimp.obj $(dis_objs) $(imp_objs)
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
 
-!ifdef ext_lib_$(lib_type)
-xname = mad$(target_cpu)$(ext_lib_$(lib_type))
-!else
 xname = mad$(target_cpu)$(ext_$(host_os)_$(host_cpu))
+!ifeq bootstrap 1
+!ifndef __WATCOM__
+!ifdef ext_lib_shared
+xname = mad$(target_cpu)$(ext_lib_shared)
+!endif
+!endif
 !endif
 
 $(xname) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)

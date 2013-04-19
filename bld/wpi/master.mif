@@ -9,23 +9,19 @@ wpi_autodepends = .AUTODEPEND
 !include defrule.mif
 
 #-------- CFLAGS
-extra_c_flags = -s
-
-extra_c_flags_i86 = -zu
-
-!ifeq host_cpu 386
-extra_c_flags_os2 = -3r
-!endif
-
-extra_c_flags_win = -zw
-!ifeq host_cpu i86
-extra_c_flags_win += -zc-zW
-!endif
-
 !ifeq wpitest yes
 extra_cpp_flags_os2 = -D_WPI_TEST_
 extra_cpp_flags_win = -D_WPI_TEST_
 !endif
+
+extra_c_flags = -s
+
+extra_c_flags_i86 = -zu
+
+extra_c_flags_os2_386 = -3r
+
+extra_c_flags_win = -zw
+extra_c_flags_win_i86 = -zc-zW
 
 #-------- INCLUDES
 
@@ -43,12 +39,12 @@ extra_objs_win = new_win.obj
 extra_objs_os2 = new_os2.obj
 !endif
 
+inc_dirs = -I"../h"
+
 objs = $(objs_$(host_OS)) $(extra_objs_$(host_OS))
 
 wpi.lib: $(objs)
-        @%create tmp.lbc
-        @for %i in ($(objs)) do @%append tmp.lbc +%i
-        $(librarian) $(libflags) @tmp.lbc
+        $(librarian) $(libflags) $(objs)
 
 wpi_win.obj : wpi_win.c wpi_win.h wpitypes.h wpi.h
 wpi_os2.obj : wpi_os2.c wpi_os2.h wpitypes.h wpi.h

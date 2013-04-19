@@ -1,4 +1,2 @@
 
-extra_cpp_flags += -DCHARMAP
-
 !include ../../ui.mif

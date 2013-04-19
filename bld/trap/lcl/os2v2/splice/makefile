@@ -20,7 +20,7 @@ sys_dll  = 1
 
 objs = splice.obj
 
-extra_l_flags = op oneautodata, map
+extra_l_flags_dll = op oneautodata, map
 
 inc_dirs = -I"$(dig_dir)/h"
 

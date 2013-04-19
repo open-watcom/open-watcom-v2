@@ -95,12 +95,10 @@ extra_cpp_flags_os2 = -D__OS2_PM__
 
 extra_c_flags = -fh
 extra_c_flags_i86 = -zu -zc
-!ifeq host_os win
-extra_c_flags_i86 += -zW
-extra_c_flags_386 += -zw
-!endif
+extra_c_flags_win_i86 = -zW
+extra_c_flags_win_386 = -zw
 
-inc_dirs = -I"../h" $(wpi_inc_dirs) $(dis_includes)
+inc_dirs = -I. -I"../h" $(wpi_inc_dirs) $(dis_includes)
 
 .c: ../c
 .asm: ../asm

@@ -322,8 +322,8 @@ void intern waitforevent( void )
     DWORD               rd;
     INPUT_RECORD        ir;
 
-    while( 1 ) {
-        while( 1 ) {
+    for( ;; ) {
+        for( ;; ) {
             PeekConsoleInput( InputHandle, &ir, 1, &rd );
             if( rd > 0 ) {
                 if( eventWeWant( &ir ) ) {

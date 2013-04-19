@@ -2,7 +2,6 @@
 
 host_os  = qnx
 host_cpu = i86
-extra_files = $(qnx)
 
 memory_model_i86 = l
 

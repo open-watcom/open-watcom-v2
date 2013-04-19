@@ -69,14 +69,14 @@ void intern blowup( register BUFFER     *bptr,
                     register ATTR       attr )
 /********************************************/
 {
-    register    ORD                     rows;
-    register    ORD                     cols;
+//    register    ORD                     rows;
+//    register    ORD                     cols;
     register    int                     inccol;
     register    int                     incrow;
     auto        SAREA                   grow;
 
-    rows = area.height - 2;
-    cols = area.width - 2;
+//    rows = area.height - 2;
+//    cols = area.width - 2;
     incrow = 1;
     inccol = 3;
     grow.row = area.row + area.height/2 - 1;
@@ -84,10 +84,10 @@ void intern blowup( register BUFFER     *bptr,
     grow.height = 2;
     grow.width = 2;
     while( ( grow.height < area.height ) || ( grow.width < area.width ) ) {
-        grow.row = (ORD) max( area.row, grow.row - incrow );
-        grow.col = (ORD) max( area.col, grow.col - inccol );
-        grow.height = (ORD) min( area.height, grow.height + 2*incrow );
-        grow.width = (ORD) min( area.width, grow.width + 2*inccol );
+        grow.row = (ORD)max( area.row, grow.row - incrow );
+        grow.col = (ORD)max( area.col, grow.col - inccol );
+        grow.height = (ORD)min( area.height, grow.height + 2*incrow );
+        grow.width = (ORD)min( area.width, grow.width + 2*inccol );
         drawbox( bptr, grow, box, attr, TRUE );
         if( ( grow.height == area.height ) &&
             ( grow.width == area.width ) ) {

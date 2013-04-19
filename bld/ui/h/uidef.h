@@ -32,6 +32,7 @@
 #ifndef _UIDEF_H_
 #define _UIDEF_H_
 #include <stddef.h>
+#include <stdlib.h>
 #include "bool.h"
 
 #if defined( __WATCOMC__ )
@@ -51,13 +52,6 @@
 #define         P_MENU                  2
 #define         P_VSCREEN               3
 #define         P_BACKGROUND            4
-
-#ifndef min
-    #define         min( a,b )              ( a < b ? a : b )
-#endif
-#ifndef max
-    #define         max( a,b )              ( a > b ? a : b )
-#endif
 
 #ifdef _unused
    #undef _unused

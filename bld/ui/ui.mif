@@ -1,8 +1,6 @@
 proj_name = ui
 name = ui
 
-target: $(name).lib
-
 ui_trmem = 1
 
 ui_autodepends = .autodepend
@@ -11,10 +9,24 @@ ui_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
+!include ../../client.mif       # define ui_os macro
+
+!include trmem.mif
+
 .c: ../c;../../c;$(extra_cdir);$(trmem_dir)
 .h: ../h;../../h;$(extra_hdir)
 
-inc_dirs += -I"../h" -I"../../h"
+inc_dirs = -I"../h" $(ui_inc_dirs)
+
+extra_cpp_flags_dos = -DCHARMAP
+
+!ifeq release 1
+extra_c_flags = -os-s
+!endif
+
+extra_c_flags_nov     = -ot -4s
+extra_c_flags_win     = -zu
+extra_c_flags_qnx_386 = -4r
 
 # memory tracker routines
 extra_c_flags_trmem = $(trmem_cflags)
@@ -69,20 +81,12 @@ objs =  uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
 !inject uiutil.obj    dos
 !inject uivirt.obj                        qnx  unix
 
-# This check is partial! A full check is tedious. W.Briscoe 2004-11-26
-# extra_files must be set in including makefile as mapping of other data is not 1 to 1.
-!ifndef extra_files
-!error $$(extra_files) unset. Must be $$(dos), $$(nlm), $$(nt), $$(os2), $$(qnx), $$(unix) or $$(win)
+# host os specific files definition check
+!ifndef $(ui_os)
+!error Host OS $$($(ui_os)) is unset. Review and correct ui/client.mif make file!
 !endif
 
-# $(trmem_objs) appended to objs = ... is ineffective W.Briscoe 2004-11-25
-objs += $(trmem_objs) $(extra_files)
-
-!ifeq release 1
-extra_c_flags += -os-s
-!endif
-
-!include trmem.mif
+objs += $(trmem_objs) $($(ui_os))
 
 $(name).lib: $(objs)
         $(librarian) $(libflags) $<

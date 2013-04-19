@@ -88,8 +88,6 @@ libs = $(libs386)
 libdir = lib386
 !endif
 
-extra_lib_flags = -io -ii
-
 all : $(libs) .SYMBOLIC
 
 .def .asm: ../../$(libdir)

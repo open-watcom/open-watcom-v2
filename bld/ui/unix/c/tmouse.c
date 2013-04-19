@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#if defined( UNIX )
+#if defined( __UNIX__ )
 
 #ifndef HP
     #include <curses.h>

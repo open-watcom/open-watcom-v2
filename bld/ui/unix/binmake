@@ -1,10 +1,6 @@
 #pmake: binmake
 
-host_os  = $(bld_os)
+host_os = $(bld_os)
 host_cpu = $(bld_cpu)
-
-extra_files = $(unix)
-
-inc_dirs = -I"$(ncurses_dir)/h"
 
 !include ../../ui.mif

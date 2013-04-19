@@ -57,11 +57,6 @@ extra_l_flags_dll += option map,mangle,artificial,verbose
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
 extra_l_flags_dll_nt = initinstance terminstance
 
-libflags_nt_386 = -io -ii
-libflags_nt_axp = -ic -ia
-libflags_nt_ppc = -ic -ip
-libflags_nt_x64 = -ic -i6
-
 extra_lib_flags = -irn
 !ifeq release 1
 extra_lib_flags += -s-t-zld

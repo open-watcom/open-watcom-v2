@@ -31,12 +31,6 @@ ext_nt_axp      = .dll
 ext_nt_x64      = .dll
 ext_rdos_386    = .dll
 
-!ifeq bootstrap 1
-!ifndef __WATCOM__
-lib_type = shared
-!endif
-!endif
-
 objs = dipimp.obj $(imp_objs)
 
 !include cproj.mif
@@ -84,10 +78,13 @@ extra_l_flags_dll_win     =
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
 
-!ifdef ext_lib_$(lib_type)
-xname = $(name)$(ext_lib_$(lib_type))
-!else
 xname = $(name)$(ext_$(host_os)_$(host_cpu))
+!ifeq bootstrap 1
+!ifndef __WATCOM__
+!ifdef ext_lib_shared
+xname = $(name)$(ext_lib_shared)
+!endif
+!endif
 !endif
 
 $(xname) : $(objs) $(imp_libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)

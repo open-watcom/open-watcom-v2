@@ -114,27 +114,27 @@ sys_ppc_nt   = sys ntppc_dll initinstance &
             option description $(description) &
             op modname=$^&
 
-!ifeq bootstrap 1
-!ifndef __WATCOM__
-lib_type = shared
-!endif
-!endif
-
 trap_ext_nt          = .dll
 trap_ext_os2_os2     = .dll
 trap_ext_os2_os2v2   = .d32
 trap_ext_rdos        = .dll
 trap_ext_win         = .dll
 
-!ifdef ext_lib_$(lib_type)
-target = $(xname)$(ext_lib_$(lib_type))
-!else ifdef trap_ext_$(host_os)_$(os)
+!ifdef trap_ext_$(host_os)_$(os)
 target = $(xname)$(trap_ext_$(host_os)_$(os))
 !else ifdef trap_ext_$(host_os)
 target = $(xname)$(trap_ext_$(host_os))
 !else
 target = $(xname).trp
 !endif
+!ifeq bootstrap 1
+!ifndef __WATCOM__
+!ifdef ext_lib_shared
+target = $(xname)$(ext_lib_shared)
+!endif
+!endif
+!endif
+
 
 TRAP_common_objs = $(os_prefix)strt.obj
 !ifeq srv par

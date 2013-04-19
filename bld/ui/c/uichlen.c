@@ -33,7 +33,7 @@
 
 #if !defined( __NETWARE_386__ )
 
-#if defined( __UNIX__ )
+#if defined( __UNIX__ ) || !defined( __WATCOMC__ )
 
 int global uicharlen( int ch )
 /****************************/

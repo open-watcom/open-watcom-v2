@@ -1,7 +1,6 @@
 #pmake: cpu_386 os_nov
 host_CPU = 386
 host_OS = nov
-extra_files = $(nlm)
 
 !include ../nov.mif
 
@@ -26,4 +25,3 @@ sample2.$(EXE) : sample.obj sampdial.obj ui.lib
     set lib=$(watcomlib);$(%lib)
 
     wlink @sample.lnk
-

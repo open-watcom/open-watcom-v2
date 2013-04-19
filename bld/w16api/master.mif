@@ -76,8 +76,6 @@ winlibs =            &
         user.lbc     &
         win87em.lbc
 
-extra_lib_flags = -io -ii
-
 all : $(headers) $(libs) .SYMBOLIC
 
 .def: ../lib

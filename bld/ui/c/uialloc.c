@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "wio.h"
 
 #ifdef TRMEM
 #include "trmem.h"
@@ -46,11 +44,6 @@ static void UIMemPrintLine( int *, const char * buff, size_t len );
 
 static int  UIMemOpened = 0;
 
-#endif
-
-#ifdef NLM
-/* There is no equivalent expand function in NetWare. */
-#define _expand NULL
 #endif
 
 void UIMemRedirect( int handle )
@@ -74,14 +67,14 @@ extern void UIMemOpen( void )
 #else
         UIMemFileHandle = STDERR_FILENO;
 #endif
-        UIMemHandle = _trmem_open( malloc, free, realloc, _expand,
+        UIMemHandle = _trmem_open( malloc, free, realloc, NULL,
             &UIMemFileHandle, UIMemPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
-            UIMemFileHandle = open( tmpdir, O_RDWR+O_CREAT+O_TRUNC+O_BINARY, S_IWUSR+S_IRUSR );
+            UIMemFileHandle = open( tmpdir, O_RDWR | O_CREAT | O_TRUNC | O_BINARY, PMODE_RW );
         }
         UIMemOpened = 1;
     }
