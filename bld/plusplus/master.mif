@@ -33,7 +33,7 @@ realdllname = wppd$(target_cpu)
 !endif
 
 # Important! The C++ compiler modifies string literals
-suppress_zc = 1
+#suppress_zc = 1
  
 plusplus_nosymfile = 1
  
@@ -78,9 +78,6 @@ inc_dirs += -I"$(cc_dir)/h"
 inc_dirs += -I"$(comp_cfg_dir)/h"
 inc_dirs += -I"$(fe_misc_dir)/h"
 inc_dirs += -I"$(brinfo_dir)/h"
- 
-comp_objs_exe = $(common_objs) $(exe_objs)
-comp_objs_dll = $(common_objs) $(dll_objs)
  
 extra_cpp_flags =
 !ifndef plusplus_dll
@@ -128,9 +125,6 @@ extra_c_flags_cmdlnany = -os
 !endif
 extra_c_flags_cscan_386 = -4r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
-!ifdef plusplus_dll
-extra_c_flags_ideentry += -bd
-!endif
 !ifeq release 1
 extra_c_flags_pcheader_386 = -oi
 extra_c_flags_pcheader = $(extra_c_flags_pcheader_$(host_cpu))
@@ -184,17 +178,13 @@ external_dependencies = $(xlibs)
 external_dependencies += $(os2ldr)
 !endif
 
-!ifeq plusplus_trmem 1
-comp_objs_exe += trmem.obj
-!endif
-
 #
 # Common dependencies
 #
  
-depends_exe = $(pre_obj_deps) $(comp_objs_exe) $(external_dependencies)
-depends_dll = $(pre_obj_deps) $(comp_objs_dll) $(external_dependencies)
-depends_drv = $(pre_obj_deps) $(drv_objs)
+depends_exe = $(pre_obj_deps) $(external_dependencies)
+depends_dll = $(pre_obj_deps) $(external_dependencies)
+depends_drv = $(pre_obj_deps)
  
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
@@ -210,9 +200,9 @@ version_res_exe_nt_x64 = exever.res
 
 !ifdef plusplus_dll
  
-$(exename).exe : $(depends_drv) $(realdllname).lib $(version_res_exe_$(host_os)_$(host_cpu))
+$(exename).exe : $(depends_drv) $(realdllname).lib $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu))
     @%write drv.lnk $(lflags)
-    @for %i in ($(drv_objs)) do @%append drv.lnk file %i
+    @for %i in ($(comp_objs_drv)) do @%append drv.lnk file %i
     @%append drv.lnk lib $(realdllname).lib
 !ifeq host_os dos
     @%append drv.lnk lib cwdll.lib
@@ -222,7 +212,7 @@ $(exename).exe : $(depends_drv) $(realdllname).lib $(version_res_exe_$(host_os)_
  
 !else
  
-$(exename).exe : $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe : $(depends_exe) $(comp_objs_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(comp_objs_exe) $(xlibs) $(libs) $(ldflags)
 !else
@@ -241,7 +231,7 @@ $(exename).exe : $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MA
  
 !endif
  
-$(dllname).dll : $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%write dll.lnk $(lflags_dll)
     @%append dll.lnk op impfile=export.tmp
     @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
@@ -286,6 +276,9 @@ ytab.c ytab.gh : ../../y/plusplus.y ../../c/yydriver.c
 #    $(yacc) -b -d -f -t -u -p -s $[@ $]@ >y.out
 # comment out the next line during testing of grammar changes
 #    diff y.out ../../y/check.out
+!ifdef __WATCOM__
+    diff y.out ../../y/check.out
+!endif
     rm -f ytab.gh
     cp ytab.h ytab.gh
     rm -f ytab.h

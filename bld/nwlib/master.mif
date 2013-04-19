@@ -27,8 +27,6 @@ realdllname = wlibd
 wlib_trmem = 1
 !endif
 
-suppress_bd = 1
-
 wlib_nosymfile = 1
 
 !include cproj.mif
@@ -48,41 +46,45 @@ wlib_nosymfile = 1
 # objects
 
 common_objs = &
-    wlib.obj &
-    libio.obj &
-    symtable.obj &
-    omfproc.obj &
-    writelib.obj &
-    convert.obj &
-    wlibutil.obj &
-    libwalk.obj &
-    symlist.obj &
-    proclib.obj &
-    cmdline.obj &
-    error.obj &
-    implib.obj &
-    elfobjs.obj &
-    orlrtns.obj &
-    memfuncs.obj &
-    demangle.obj &
-    omfhash.obj &
-    omfutil.obj &
-    coffwrt.obj &
-    inlib.obj &
-    idemsgpr.obj &
-    ideentry.obj &
+    $(_subdir_)wlib.obj &
+    $(_subdir_)libio.obj &
+    $(_subdir_)symtable.obj &
+    $(_subdir_)omfproc.obj &
+    $(_subdir_)writelib.obj &
+    $(_subdir_)convert.obj &
+    $(_subdir_)wlibutil.obj &
+    $(_subdir_)libwalk.obj &
+    $(_subdir_)symlist.obj &
+    $(_subdir_)proclib.obj &
+    $(_subdir_)cmdline.obj &
+    $(_subdir_)error.obj &
+    $(_subdir_)implib.obj &
+    $(_subdir_)elfobjs.obj &
+    $(_subdir_)orlrtns.obj &
+    $(_subdir_)memfuncs.obj &
+    $(_subdir_)demangle.obj &
+    $(_subdir_)omfhash.obj &
+    $(_subdir_)omfutil.obj &
+    $(_subdir_)coffwrt.obj &
+    $(_subdir_)inlib.obj &
+    $(_subdir_)idemsgpr.obj &
+    $(_subdir_)ideentry.obj &
     $(trmem_objs)
 
 !ifeq bootstrap 1
-common_objs += $(orl_objs)
+wlib_orl_objs = $(orl_objs)
 !endif
 
-dll_objs_nt = ntdll.obj
-dll_objs_os2 = os2dll.obj
+dll_objs_nt  = $(dll_subdir)/ntdll.obj
+dll_objs_os2 = $(dll_subdir)/os2dll.obj
+
+wlib_template = $(common_objs) $(wlib_orl_objs)
 
 drv_objs = maindrv.obj idedrv.obj idemsgfm.obj
-exe_objs = $(common_objs) $(drv_objs)
-dll_objs = $(common_objs) $(dll_objs_$(host_os))
+_subdir_ =
+exe_objs = $+$(wlib_template)$- $(drv_objs)
+_subdir_ = $(dll_subdir)/
+dll_objs = $+$(wlib_template)$- $(dll_objs_$(host_os))
 
 #########
 # cflags
@@ -95,10 +97,6 @@ extra_cpp_flags += -DINCL_MSGTEXT
 extra_cpp_flags += -DIDE_PGM
 !endif
 
-!ifneq bootstrap 1
-extra_c_flags_ntdll    = -bd
-extra_c_flags_os2dll   = -bd
-!endif
 extra_c_flags_trmem    = $(trmem_cflags)
 extra_c_flags_memfuncs = $(trmem_cover_cflags)
 extra_c_flags_idedrv   = -DSTATIC_LINKAGE
@@ -150,17 +148,17 @@ external_dependencies = $(os2ldr)
 !endif
 
 !ifeq bootstrap 1
-depends_msg = msg.gh incltext.gh
+depends_msg = msg.gh incltext.gh $(external_dependencies)
 !else
-depends_msg = msg.gh wlib.res
+depends_msg = msg.gh wlib.res $(external_dependencies)
 !endif
-depends_drv = $(drv_objs)
-depends_exe = $(depends_msg) $(exe_objs) $(xlibs) $(external_dependencies)
-depends_dll = $(depends_msg) $(dll_objs) $(xlibs) $(external_dependencies)
+depends_drv =
+depends_exe = $(depends_msg)
+depends_dll = $(depends_msg)
 
 !ifdef wlib_dll
 
-$(exename).exe: $(depends_drv) $(realdllname).lib $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe: $(depends_drv) $(realdllname).lib $(drv_objs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%write drv.lnk $(lflags)
     @for %i in ($(drv_objs)) do @%append drv.lnk file %i
     @%append drv.lnk lib $(realdllname).lib
@@ -169,7 +167,7 @@ $(exename).exe: $(depends_drv) $(realdllname).lib $(version_res_exe_$(host_os)_$
 
 !else
 
-$(exename).exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe: $(depends_exe) $(xlibs) $(exe_objs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(exe_objs) $(xlibs) $(ldflags)
 !else 
@@ -191,7 +189,7 @@ $(exename).exe: $(depends_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAK
 
 !endif
 
-$(dllname).dll: $(depends_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(dllname).dll: $(depends_dll) $(xlibs) $(dll_objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%write dll.lnk $(lflags_dll)
     @%append dll.lnk op impfile=export.tmp
     @for %i in ($(dll_objs)) do @%append dll.lnk file %i

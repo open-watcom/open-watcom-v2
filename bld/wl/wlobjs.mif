@@ -23,109 +23,121 @@ dll_objs =
 # common files
 #
 common_objs = &
-    autogrp.obj &
-    carve.obj &
-    wcomdef.obj &
-    cmd16m.obj &
-    cmdall.obj &
-    cmddos.obj &
-    cmdelf.obj &
-    cmdline.obj &
-    cmdnov.obj &
-    cmdos2.obj &
-    cmdphar.obj &
-    cmdzdos.obj &
-    cmdrdv.obj &
-    cmdraw.obj &
-    cmdtable.obj &
-    cmdutils.obj &
-    cmdqnx.obj &
-    dbgall.obj &
-    dbgcv.obj &
-    dbgdwarf.obj &
-    dbginfo.obj &
-    debug.obj &
-    distrib.obj &
-    global.obj &
-    hash.obj &
-    ideentry.obj &
-    idemsgpr.obj &
-    impexp.obj &
-    libr.obj &
-    libsupp.obj &
-    linkutil.obj &
-    load16m.obj &
-    loaddos.obj &
-    loadelf.obj &
-    loadelf2.obj &
-    loadfile.obj &
-    loadflat.obj &
-    loadnov.obj &
-    loados2.obj &
-    loadpe.obj &
-    loadphar.obj &
-    loadqnx.obj &
-    loadraw.obj &
-    loadzdos.obj &
-    loadrdv.obj &
-    lsymtab.obj &
-    mapio.obj &
-    mem.obj &
-    mixcache.obj &
-    msg.obj &
-    objio.obj &
-    obj2supp.obj &
-    objcalc.obj &
-    objfree.obj &
-    objnode.obj &
-    objomf.obj &
-    objorl.obj &
-    objpass1.obj &
-    objpass2.obj &
-    objstrip.obj &
-    omfhash.obj &
-    omfreloc.obj &
-    overlays.obj &
-    ovlsupp.obj &
-    permdata.obj &
-    procfile.obj &
-    reloc.obj &
-    ring.obj &
-    ring2.obj &
-    salloc.obj &
-    spillio.obj &
-    strtab.obj &
-    symmem.obj &
-    symtrace.obj &
-    toc.obj &
-    wlink.obj &
-    wlnkmsg.obj &
-    demangle.obj &
-    exerespe.obj &
-    sharedio.obj &
-    rcstr.obj &
+    $(_subdir_)autogrp.obj &
+    $(_subdir_)carve.obj &
+    $(_subdir_)wcomdef.obj &
+    $(_subdir_)cmd16m.obj &
+    $(_subdir_)cmdall.obj &
+    $(_subdir_)cmddos.obj &
+    $(_subdir_)cmdelf.obj &
+    $(_subdir_)cmdline.obj &
+    $(_subdir_)cmdnov.obj &
+    $(_subdir_)cmdos2.obj &
+    $(_subdir_)cmdphar.obj &
+    $(_subdir_)cmdzdos.obj &
+    $(_subdir_)cmdrdv.obj &
+    $(_subdir_)cmdraw.obj &
+    $(_subdir_)cmdtable.obj &
+    $(_subdir_)cmdutils.obj &
+    $(_subdir_)cmdqnx.obj &
+    $(_subdir_)dbgall.obj &
+    $(_subdir_)dbgcv.obj &
+    $(_subdir_)dbgdwarf.obj &
+    $(_subdir_)dbginfo.obj &
+    $(_subdir_)debug.obj &
+    $(_subdir_)distrib.obj &
+    $(_subdir_)global.obj &
+    $(_subdir_)hash.obj &
+    $(_subdir_)ideentry.obj &
+    $(_subdir_)idemsgpr.obj &
+    $(_subdir_)impexp.obj &
+    $(_subdir_)libr.obj &
+    $(_subdir_)libsupp.obj &
+    $(_subdir_)linkutil.obj &
+    $(_subdir_)load16m.obj &
+    $(_subdir_)loaddos.obj &
+    $(_subdir_)loadelf.obj &
+    $(_subdir_)loadelf2.obj &
+    $(_subdir_)loadfile.obj &
+    $(_subdir_)loadflat.obj &
+    $(_subdir_)loadnov.obj &
+    $(_subdir_)loados2.obj &
+    $(_subdir_)loadpe.obj &
+    $(_subdir_)loadphar.obj &
+    $(_subdir_)loadqnx.obj &
+    $(_subdir_)loadraw.obj &
+    $(_subdir_)loadzdos.obj &
+    $(_subdir_)loadrdv.obj &
+    $(_subdir_)lsymtab.obj &
+    $(_subdir_)mapio.obj &
+    $(_subdir_)mem.obj &
+    $(_subdir_)mixcache.obj &
+    $(_subdir_)msg.obj &
+    $(_subdir_)objio.obj &
+    $(_subdir_)obj2supp.obj &
+    $(_subdir_)objcalc.obj &
+    $(_subdir_)objfree.obj &
+    $(_subdir_)objnode.obj &
+    $(_subdir_)objomf.obj &
+    $(_subdir_)objorl.obj &
+    $(_subdir_)objpass1.obj &
+    $(_subdir_)objpass2.obj &
+    $(_subdir_)objstrip.obj &
+    $(_subdir_)omfhash.obj &
+    $(_subdir_)omfreloc.obj &
+    $(_subdir_)overlays.obj &
+    $(_subdir_)ovlsupp.obj &
+    $(_subdir_)permdata.obj &
+    $(_subdir_)procfile.obj &
+    $(_subdir_)reloc.obj &
+    $(_subdir_)ring.obj &
+    $(_subdir_)ring2.obj &
+    $(_subdir_)salloc.obj &
+    $(_subdir_)spillio.obj &
+    $(_subdir_)strtab.obj &
+    $(_subdir_)symmem.obj &
+    $(_subdir_)symtrace.obj &
+    $(_subdir_)toc.obj &
+    $(_subdir_)wlink.obj &
+    $(_subdir_)wlnkmsg.obj &
+    $(_subdir_)demangle.obj &
+    $(_subdir_)exerespe.obj &
+    $(_subdir_)sharedio.obj &
+    $(_subdir_)rcstr.obj &
     $(trmem_objs)
 
 !ifeq use_virtmem 1
-common_objs += virtmem.obj
+wlink_virtmem_objs = $(_subdir_)virtmem.obj
 !else
-common_objs += virtpage.obj
+wlink_virtmem_objs = $(_subdir_)virtpage.obj
 !endif
 
 !ifdef DLLS_IMPLEMENTED
-common_objs += idedrv.obj
+wlink_ide_objs = $(_subdir_)idedrv.obj
 !endif
 
 #
 # target OS dependent files
 #
-wlink_objs_dos   = linkio.obj
-wlink_objs_qnx   = posixio.obj
-wlink_objs_linux = posixio.obj
-wlink_objs_osx   = posixio.obj
-wlink_objs_bsd   = posixio.obj
-wlink_objs_nt    = ntio.obj
-wlink_objs_os2   = ntio.obj
-wlink_objs_zdos  = zdosio.obj
+wlink_objs_dos   = $(_subdir_)linkio.obj
+wlink_objs_qnx   = $(_subdir_)posixio.obj
+wlink_objs_linux = $(_subdir_)posixio.obj
+wlink_objs_osx   = $(_subdir_)posixio.obj
+wlink_objs_bsd   = $(_subdir_)posixio.obj
+wlink_objs_nt    = $(_subdir_)ntio.obj
+wlink_objs_os2   = $(_subdir_)ntio.obj
+wlink_objs_zdos  = $(_subdir_)zdosio.obj
 
-common_objs += $(wlink_objs_$(host_os))
+!ifdef no_orl
+# do not link against ORL
+wlink_orl_objs = $(_subdir_)orlstubs.obj
+!endif
+
+wlink_template = $(common_objs) $(wlink_virtmem_objs) $(wlink_ide_objs) $(wlink_objs_$(host_os)) $(wlink_orl_objs)
+
+comp_objs_drv = $(drv_objs)
+_subdir_ =
+comp_objs_exe = $+$(wlink_template)$- $(exe_objs)
+_subdir_ = $(dll_subdir)/
+comp_objs_dll = $+$(wlink_template)$- $(dll_objs)
+

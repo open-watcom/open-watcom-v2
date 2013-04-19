@@ -10,18 +10,18 @@ asminline_c = $(wasm_dir)/c
 asminline_h = $(wasm_dir)/h
 asminline_inc_dirs = -I"$(wasm_dir)/h"
 asminline_objs = &
-    asmins.obj &
-    asmscan.obj &
-    asmline.obj &
-    asmsym.obj &
-    tbyte.obj &
-    asmlabel.obj &
-    asmfixup.obj &
-    asmmatch.obj &
-    asmdata.obj &
-    asmjump.obj &
-    asmexpnd.obj &
-    asmeval.obj
+    $(_subdir_)asmins.obj &
+    $(_subdir_)asmscan.obj &
+    $(_subdir_)asmline.obj &
+    $(_subdir_)asmsym.obj &
+    $(_subdir_)tbyte.obj &
+    $(_subdir_)asmlabel.obj &
+    $(_subdir_)asmfixup.obj &
+    $(_subdir_)asmmatch.obj &
+    $(_subdir_)asmdata.obj &
+    $(_subdir_)asmjump.obj &
+    $(_subdir_)asmexpnd.obj &
+    $(_subdir_)asmeval.obj
 
 !ifeq proj_name wfc
 asminline_deps = asmops.gh asmopsd.gh msg.gh

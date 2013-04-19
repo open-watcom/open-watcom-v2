@@ -1,15 +1,15 @@
 # driver for dll
 
-drv_objs =
-drv_objs += idedrv.obj
-drv_objs += idemsgfm.obj
-drv_objs += maindrv.obj
+drv_objs = &
+    idedrv.obj &
+    idemsgfm.obj &
+    maindrv.obj
 
 # stand-alone executable
 
-exe_objs =
-exe_objs += idedrv.obj
-exe_objs += maindrv.obj
+exe_objs = &
+    idedrv.obj &
+    maindrv.obj
 
 # DLL stuff
 
@@ -18,234 +18,237 @@ dll_objs =
 
 # C Files
 
-common_objs =
-common_objs += analcall.obj
-common_objs += analcast.obj
-common_objs += analclss.obj
-common_objs += analconv.obj
-common_objs += analctor.obj
-common_objs += anallval.obj
-common_objs += analnew.obj
-common_objs += analnode.obj
-common_objs += analpcnv.obj
-common_objs += analretn.obj
-common_objs += analtyid.obj
-common_objs += analtype.obj
-common_objs += analudc.obj
-common_objs += analyse.obj
-common_objs += arglist.obj
-common_objs += ascii.obj
-common_objs += asmstmt.obj
-common_objs += autodep.obj
-
-!ifeq release 0
-common_objs += b_write.obj
-common_objs += brinfdep.obj
-common_objs += brinfmac.obj
-common_objs += brinfo.obj
-common_objs += brinfsrc.obj
-common_objs += brmwrite.obj
-!endif
-
-common_objs += browsio.obj
-common_objs += calldiag.obj
-common_objs += callgrph.obj
-common_objs += callopt.obj
-common_objs += carve.obj
-common_objs += casian.obj
-common_objs += caux.obj
-common_objs += cdopt.obj
-common_objs += cgbackhn.obj
-common_objs += cgbkarel.obj
-common_objs += cgbkbpos.obj
-common_objs += cgbkcdpm.obj
-common_objs += cgbkcbak.obj
-common_objs += cgbkcgrf.obj
-common_objs += cgbkclab.obj
-common_objs += cgbkcmds.obj
-common_objs += cgbkcond.obj
-common_objs += cgbkcstb.obj
-common_objs += cgbkcstk.obj
-common_objs += cgbkdecl.obj
-common_objs += cgbkexpr.obj
-common_objs += cgbkfctl.obj
-common_objs += cgbkftab.obj
-common_objs += cgbkibrp.obj
-common_objs += cgbklabs.obj
-common_objs += cgbkmain.obj
-common_objs += cgbkobin.obj
-common_objs += cgbkretn.obj
-common_objs += cgbkrreg.obj
-common_objs += cgbkrtti.obj
-common_objs += cgbkrvar.obj
-common_objs += cgbkscop.obj
-common_objs += cgbkstab.obj
-common_objs += cgbkstrn.obj
-common_objs += cgbksvar.obj
-common_objs += cgbkswit.obj
-common_objs += cgbkthrw.obj
-common_objs += cgbktsig.obj
-common_objs += cgbkutil.obj
-common_objs += cgfront.obj
-common_objs += cginfo.obj
-common_objs += cginimps.obj
-common_objs += cginlibs.obj
-common_objs += cginmisc.obj
-common_objs += cgio.obj
-common_objs += cgiobuff.obj
-common_objs += cgsegid.obj
-common_objs += cgtype.obj
-common_objs += class.obj
-common_objs += cmac1.obj
-common_objs += cmac2.obj
-common_objs += cmacsupp.obj
-common_objs += cmacadd.obj
-common_objs += cmdln.obj
-common_objs += cmdlnany.obj
-common_objs += cmdlnbat.obj
-common_objs += cmdlnctx.obj
-common_objs += cmdscan.obj
-common_objs += conpool.obj
-common_objs += context.obj
-common_objs += convctl.obj
-common_objs += convdiag.obj
-common_objs += cppexit.obj
-common_objs += cpragma.obj
-common_objs += cscan.obj
-common_objs += ctimepc.obj
-common_objs += cusage.obj
-common_objs += datadtor.obj
-common_objs += datainit.obj
-common_objs += dbgsupp.obj
-common_objs += decl.obj
-common_objs += defarg.obj
-common_objs += dgfront.obj
-common_objs += dirgraph.obj
-common_objs += dmpobjmd.obj
-common_objs += dupnode.obj
-common_objs += dwio.obj
-common_objs += dwiobuff.obj
-common_objs += dwarf.obj
-common_objs += dyncast.obj
-common_objs += enum.obj
-common_objs += except.obj
-common_objs += extrf86.obj
-common_objs += floatsup.obj
-common_objs += fmtmsg.obj
-common_objs += fmttype.obj
-common_objs += fmtsym.obj
-common_objs += fname.obj
-common_objs += fnbody.obj
-common_objs += fnname.obj
-common_objs += fnovload.obj
-common_objs += fnovrank.obj
-common_objs += typerank.obj
-common_objs += fold.obj
-common_objs += globdata.obj
-common_objs += gstack.obj
-common_objs += hfile.obj
-common_objs += hashtab.obj
-common_objs += i64supp.obj
-common_objs += ialias.obj
-common_objs += icemit.obj
-common_objs += ideentry.obj
-common_objs += idemsgfm.obj
-common_objs += idemsgpr.obj
-common_objs += initfini.obj
-common_objs += initref.obj
-common_objs += iosupp.obj
-common_objs += jis2unic.obj
-common_objs += keyword.obj
-common_objs += label.obj
-common_objs += linkage.obj
-common_objs += mainproc.obj
-common_objs += membptr.obj
-common_objs += memmgr.obj
-common_objs += message.obj
-common_objs += mngless.obj
-common_objs += module.obj
-common_objs += name.obj
-common_objs += namspace.obj
-common_objs += objmodel.obj
-common_objs += opovload.obj
-common_objs += pcheader.obj
-common_objs += plusplus.obj
-common_objs += ppexpn.obj
-common_objs += preproc.obj
-common_objs += pstk.obj
-common_objs += ptree.obj
-common_objs += ptreedec.obj
-common_objs += reposit.obj
-common_objs += rewrite.obj
-common_objs += ring.obj
-common_objs += ringcarv.obj
-common_objs += ringfns.obj
-common_objs += ringname.obj
-common_objs += rtfun.obj
-common_objs += rtngen.obj
-common_objs += rtti.obj
-common_objs += scope.obj
-common_objs += segment.obj
-common_objs += srcfile.obj
-common_objs += specfuns.obj
-common_objs += stack.obj
-common_objs += stats.obj
-common_objs += stringl.obj
-common_objs += symbol.obj
-common_objs += symdbg.obj
-common_objs += symlocn.obj
-common_objs += sysdep.obj
-common_objs += template.obj
-common_objs += tempor.obj
-common_objs += thunk.obj
-common_objs += tokenbuf.obj
-common_objs += tokens.obj
-common_objs += type.obj
-common_objs += typecomp.obj
-common_objs += typesig.obj
-common_objs += utility.obj
-common_objs += vbuf.obj
-common_objs += vfun.obj
-common_objs += vstk.obj
-common_objs += watcom.obj
-common_objs += ytab.obj
-
-!ifneq bootstrap 1
-# assumes Watcom math library
-common_objs += cmatherr.obj
-!endif
-
+common_objs = &
+    $(_subdir_)analcall.obj &
+    $(_subdir_)analcast.obj &
+    $(_subdir_)analclss.obj &
+    $(_subdir_)analconv.obj &
+    $(_subdir_)analctor.obj &
+    $(_subdir_)anallval.obj &
+    $(_subdir_)analnew.obj &
+    $(_subdir_)analnode.obj &
+    $(_subdir_)analpcnv.obj &
+    $(_subdir_)analretn.obj &
+    $(_subdir_)analtyid.obj &
+    $(_subdir_)analtype.obj &
+    $(_subdir_)analudc.obj &
+    $(_subdir_)analyse.obj &
+    $(_subdir_)arglist.obj &
+    $(_subdir_)ascii.obj &
+    $(_subdir_)asmstmt.obj &
+    $(_subdir_)autodep.obj &
+    $(_subdir_)browsio.obj &
+    $(_subdir_)calldiag.obj &
+    $(_subdir_)callgrph.obj &
+    $(_subdir_)callopt.obj &
+    $(_subdir_)carve.obj &
+    $(_subdir_)casian.obj &
+    $(_subdir_)caux.obj &
+    $(_subdir_)cdopt.obj &
+    $(_subdir_)cgbackhn.obj &
+    $(_subdir_)cgbkarel.obj &
+    $(_subdir_)cgbkbpos.obj &
+    $(_subdir_)cgbkcdpm.obj &
+    $(_subdir_)cgbkcbak.obj &
+    $(_subdir_)cgbkcgrf.obj &
+    $(_subdir_)cgbkclab.obj &
+    $(_subdir_)cgbkcmds.obj &
+    $(_subdir_)cgbkcond.obj &
+    $(_subdir_)cgbkcstb.obj &
+    $(_subdir_)cgbkcstk.obj &
+    $(_subdir_)cgbkdecl.obj &
+    $(_subdir_)cgbkexpr.obj &
+    $(_subdir_)cgbkfctl.obj &
+    $(_subdir_)cgbkftab.obj &
+    $(_subdir_)cgbkibrp.obj &
+    $(_subdir_)cgbklabs.obj &
+    $(_subdir_)cgbkmain.obj &
+    $(_subdir_)cgbkobin.obj &
+    $(_subdir_)cgbkretn.obj &
+    $(_subdir_)cgbkrreg.obj &
+    $(_subdir_)cgbkrtti.obj &
+    $(_subdir_)cgbkrvar.obj &
+    $(_subdir_)cgbkscop.obj &
+    $(_subdir_)cgbkstab.obj &
+    $(_subdir_)cgbkstrn.obj &
+    $(_subdir_)cgbksvar.obj &
+    $(_subdir_)cgbkswit.obj &
+    $(_subdir_)cgbkthrw.obj &
+    $(_subdir_)cgbktsig.obj &
+    $(_subdir_)cgbkutil.obj &
+    $(_subdir_)cgfront.obj &
+    $(_subdir_)cginfo.obj &
+    $(_subdir_)cginimps.obj &
+    $(_subdir_)cginlibs.obj &
+    $(_subdir_)cginmisc.obj &
+    $(_subdir_)cgio.obj &
+    $(_subdir_)cgiobuff.obj &
+    $(_subdir_)cgsegid.obj &
+    $(_subdir_)cgtype.obj &
+    $(_subdir_)class.obj &
+    $(_subdir_)cmac1.obj &
+    $(_subdir_)cmac2.obj &
+    $(_subdir_)cmacsupp.obj &
+    $(_subdir_)cmacadd.obj &
+    $(_subdir_)cmdln.obj &
+    $(_subdir_)cmdlnany.obj &
+    $(_subdir_)cmdlnbat.obj &
+    $(_subdir_)cmdlnctx.obj &
+    $(_subdir_)cmdscan.obj &
+    $(_subdir_)conpool.obj &
+    $(_subdir_)context.obj &
+    $(_subdir_)convctl.obj &
+    $(_subdir_)convdiag.obj &
+    $(_subdir_)cppexit.obj &
+    $(_subdir_)cpragma.obj &
+    $(_subdir_)cscan.obj &
+    $(_subdir_)ctimepc.obj &
+    $(_subdir_)cusage.obj &
+    $(_subdir_)datadtor.obj &
+    $(_subdir_)datainit.obj &
+    $(_subdir_)dbgsupp.obj &
+    $(_subdir_)decl.obj &
+    $(_subdir_)defarg.obj &
+    $(_subdir_)dgfront.obj &
+    $(_subdir_)dirgraph.obj &
+    $(_subdir_)dmpobjmd.obj &
+    $(_subdir_)dupnode.obj &
+    $(_subdir_)dwio.obj &
+    $(_subdir_)dwiobuff.obj &
+    $(_subdir_)dwarf.obj &
+    $(_subdir_)dyncast.obj &
+    $(_subdir_)enum.obj &
+    $(_subdir_)except.obj &
+    $(_subdir_)extrf86.obj &
+    $(_subdir_)floatsup.obj &
+    $(_subdir_)fmtmsg.obj &
+    $(_subdir_)fmttype.obj &
+    $(_subdir_)fmtsym.obj &
+    $(_subdir_)fname.obj &
+    $(_subdir_)fnbody.obj &
+    $(_subdir_)fnname.obj &
+    $(_subdir_)fnovload.obj &
+    $(_subdir_)fnovrank.obj &
+    $(_subdir_)typerank.obj &
+    $(_subdir_)fold.obj &
+    $(_subdir_)globdata.obj &
+    $(_subdir_)gstack.obj &
+    $(_subdir_)hfile.obj &
+    $(_subdir_)hashtab.obj &
+    $(_subdir_)i64supp.obj &
+    $(_subdir_)ialias.obj &
+    $(_subdir_)icemit.obj &
+    $(_subdir_)ideentry.obj &
+    $(_subdir_)idemsgfm.obj &
+    $(_subdir_)idemsgpr.obj &
+    $(_subdir_)initfini.obj &
+    $(_subdir_)initref.obj &
+    $(_subdir_)iosupp.obj &
+    $(_subdir_)jis2unic.obj &
+    $(_subdir_)keyword.obj &
+    $(_subdir_)label.obj &
+    $(_subdir_)linkage.obj &
+    $(_subdir_)mainproc.obj &
+    $(_subdir_)membptr.obj &
+    $(_subdir_)memmgr.obj &
+    $(_subdir_)message.obj &
+    $(_subdir_)mngless.obj &
+    $(_subdir_)module.obj &
+    $(_subdir_)name.obj &
+    $(_subdir_)namspace.obj &
+    $(_subdir_)objmodel.obj &
+    $(_subdir_)opovload.obj &
+    $(_subdir_)pcheader.obj &
+    $(_subdir_)plusplus.obj &
+    $(_subdir_)ppexpn.obj &
+    $(_subdir_)preproc.obj &
+    $(_subdir_)pstk.obj &
+    $(_subdir_)ptree.obj &
+    $(_subdir_)ptreedec.obj &
+    $(_subdir_)reposit.obj &
+    $(_subdir_)rewrite.obj &
+    $(_subdir_)ring.obj &
+    $(_subdir_)ringcarv.obj &
+    $(_subdir_)ringfns.obj &
+    $(_subdir_)ringname.obj &
+    $(_subdir_)rtfun.obj &
+    $(_subdir_)rtngen.obj &
+    $(_subdir_)rtti.obj &
+    $(_subdir_)scope.obj &
+    $(_subdir_)segment.obj &
+    $(_subdir_)srcfile.obj &
+    $(_subdir_)specfuns.obj &
+    $(_subdir_)stack.obj &
+    $(_subdir_)stats.obj &
+    $(_subdir_)stringl.obj &
+    $(_subdir_)symbol.obj &
+    $(_subdir_)symdbg.obj &
+    $(_subdir_)symlocn.obj &
+    $(_subdir_)sysdep.obj &
+    $(_subdir_)template.obj &
+    $(_subdir_)tempor.obj &
+    $(_subdir_)thunk.obj &
+    $(_subdir_)tokenbuf.obj &
+    $(_subdir_)tokens.obj &
+    $(_subdir_)type.obj &
+    $(_subdir_)typecomp.obj &
+    $(_subdir_)typesig.obj &
+    $(_subdir_)utility.obj &
+    $(_subdir_)vbuf.obj &
+    $(_subdir_)vfun.obj &
+    $(_subdir_)vstk.obj &
+    $(_subdir_)watcom.obj &
+    $(_subdir_)ytab.obj &
 # watcom files
-common_objs += autodept.obj
-
+    $(_subdir_)autodept.obj &
 # fe_misc files
-common_objs += intlload.obj
+    $(_subdir_)intlload.obj &
+# in-line assembler files
+    $(_subdir_)asmalloc.obj &
+# in-line assembler files
+    $(_subdir_)asmmsg.obj
+
+!ifeq plusplus_trmem 1
+plusplus_trmem_objs = $(_subdir_)trmem.obj
+!endif
+
+!ifdef __WATCOM__
+# assumes Watcom math library
+plusplus_matherr_objs = cmatherr.obj
+!endif
 
 # debugging objects
 !ifeq release 0
-common_objs += dbg.obj
-common_objs += dbgcomma.obj
-common_objs += dbgheap.obj
-common_objs += dbgio.obj
-common_objs += dbgptree.obj
-common_objs += dbgzap.obj
-common_objs += fnovprt.obj
+debug_objs = &
+    $(_subdir_)dbg.obj &
+    $(_subdir_)dbgcomma.obj &
+    $(_subdir_)dbgheap.obj &
+    $(_subdir_)dbgio.obj &
+    $(_subdir_)dbgptree.obj &
+    $(_subdir_)dbgzap.obj &
+    $(_subdir_)fnovprt.obj &
+!if 0
+    $(_subdir_)b_write.obj &
+    $(_subdir_)brinfdep.obj &
+    $(_subdir_)brinfmac.obj &
+    $(_subdir_)brinfo.obj &
+    $(_subdir_)brinfsrc.obj &
+    $(_subdir_)brmwrite.obj &
 !endif
-
-# in-line assembler files
-common_objs += $(asminline_objs)
-common_objs += asmalloc.obj
-common_objs += asmmsg.obj
-
-# code generator extra files
-common_objs += $(cg_objs)
+!endif
 
 # target processor-dependent objects
 
-cpp_objs_i86 = cmdlnx86.obj cpragx86.obj pragi86.obj
-cpp_objs_386 = cmdlnx86.obj cpragx86.obj prag386.obj
-cpp_objs_axp = cmdlnaxp.obj cpragaxp.obj pragaxp.obj
-#cpp_objs_ppc = cmdlnppc.obj cpragppc.obj pragppc.obj
-#cpp_objs_mps = cmdlnmps.obj cpragmps.obj pragmps.obj
+cpp_objs_i86 = $(_subdir_)cmdlnx86.obj $(_subdir_)cpragx86.obj $(_subdir_)pragi86.obj
+cpp_objs_386 = $(_subdir_)cmdlnx86.obj $(_subdir_)cpragx86.obj $(_subdir_)prag386.obj
+cpp_objs_axp = $(_subdir_)cmdlnaxp.obj $(_subdir_)cpragaxp.obj $(_subdir_)pragaxp.obj
+#cpp_objs_ppc = $(_subdir_)cmdlnppc.obj $(_subdir_)cpragppc.obj $(_subdir_)pragppc.obj
+#cpp_objs_mps = $(_subdir_)cmdlnmps.obj $(_subdir_)cpragmps.obj $(_subdir_)pragmps.obj
 
-common_objs += $(cpp_objs_$(target_cpu))
+plusplus_template = $(common_objs) $(plusplus_matherr_objs) $(debug_objs) $(asminline_objs) $(cg_objs) $(cpp_objs_$(target_cpu)) $(plusplus_trmem_objs)
+
+comp_objs_drv = $(drv_objs)
+_subdir_ =
+comp_objs_exe = $+$(plusplus_template)$- $(exe_objs)
+_subdir_ = $(dll_subdir)/
+comp_objs_dll = $+$(plusplus_template)$- $(dll_objs)

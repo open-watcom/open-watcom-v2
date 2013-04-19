@@ -45,15 +45,6 @@ suppress_zc = 1
 
 !include ../wlobjs.mif
 
-!ifdef no_orl
-# do not link against ORL
-common_objs += orlstubs.obj
-orl_lib = 
-!endif
-
-comp_objs_exe = $(common_objs) $(exe_objs)
-comp_objs_dll = $(common_objs) $(dll_objs)
-
 inc_dirs = -I. -I"../h" -I"$(dwarf_dir)/dw/h" -I"$(orl_dir)/h" -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
 
 .c: ../c;$(watcom_dir)/c;$(wrc_dir)/c;$(lib_misc_dir)/c;$(trmem_dir)
@@ -79,11 +70,6 @@ extra_c_flags = -zp4
 
 extra_c_flags_idedrv     = -DCHAIN_CALLBACK
 extra_c_flags_ideentry   = -DCHAIN_CALLBACK
-!ifneq bootstrap 1
-!ifdef wlink_dll
-extra_c_flags_ideentry   += -bd
-!endif
-!endif
 extra_c_flags_maindrv    = -DDLL_NAME=$(realdllname)
 extra_c_flags_rcstr      = -DINSIDE_WLINK
 extra_c_flags_exerespe   = -DINSIDE_WLINK
@@ -104,6 +90,11 @@ extra_l_flags_dll     = op map, noredefs
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(realdllname).dll', offset=0x69c00000
 extra_l_flags_dll_os2 = initinstance terminstance op modname='$(realdllname)'
 
+!ifdef no_orl
+# do not link against ORL
+orl_lib = 
+!endif
+
 xlibs = $(wres_lib) $(dwarf_dw_lib) $(orl_lib)
 
 ###########
@@ -122,9 +113,9 @@ version_res_exe_nt_x64 = exever.res
 
 !ifdef wlink_dll
 
-$(exename).exe : $(drv_objs) $(realdllname).lib $(version_res_exe_$(host_os)_$(host_cpu))
+$(exename).exe : $(realdllname).lib $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu))
     @%write drv.lnk $(lflags)
-    @for %i in ($(drv_objs)) do @%append drv.lnk file %i
+    @for %i in ($(comp_objs_drv)) do @%append drv.lnk file %i
     @%append drv.lnk lib $(realdllname).lib
     $(linker) name $@ @drv.lnk
     @%make bind_version_res_exe

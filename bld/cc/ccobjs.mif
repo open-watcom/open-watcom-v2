@@ -16,90 +16,91 @@ exe_objs = &
 # DLL stuff
 #
 dll_objs = &
-    ideentry.obj &
-    idemsgpr.obj
+    $(dll_subdir)/ideentry.obj &
+    $(dll_subdir)/idemsgpr.obj
 
 #
 # common files
 #
 common_objs = &
-    ascii.obj &
-    asmstmt.obj &
-    casian.obj &
-    ccheck.obj &
-    ccmain.obj &
-    cdata.obj &
-    cdebug.obj &
-    cdecl1.obj &
-    cdecl2.obj &
-    cdinit.obj &
-    cdump.obj &
-    cems.obj &
-    cenum.obj &
-    cerror.obj &
-    cfeinfo.obj &
-    cinfo.obj &
-    cmac1.obj &
-    cmac2.obj &
-    cmemmgr.obj &
-    cmodel.obj &
-    cmsg.obj &
-    cname.obj &
-    coptions.obj &
-    caux.obj &
-    cpragma.obj &
-    cpurge.obj &
-    cscan.obj &
-    csizeof.obj &
-    cstats.obj &
-    cstring.obj &
-    csym.obj &
-    ctimepc.obj &
-    ctoken.obj &
-    ctype.obj &
-    cusage.obj &
-    cutil.obj &
-    ftoa.obj &
-    strsave.obj &
-    watcom.obj &
-    cgetch.obj &
-    cmacadd.obj &
-    asmalloc.obj &
-    asmmsg.obj &
-    jis2unic.obj &
-    pchdr.obj  &
-    dwarf.obj  &
-    browsio.obj  &
-    intlload.obj  &
-    autodept.obj  &
-    cexpr.obj &
-    cfold.obj &
-    cmath.obj &
-    cstmt.obj &
-    cgen.obj &
-    cgendata.obj &
-    exprtree.obj &
-    treewalk.obj &
-    mngless.obj
+    $(_subdir_)ascii.obj &
+    $(_subdir_)asmstmt.obj &
+    $(_subdir_)casian.obj &
+    $(_subdir_)ccheck.obj &
+    $(_subdir_)ccmain.obj &
+    $(_subdir_)cdata.obj &
+    $(_subdir_)cdebug.obj &
+    $(_subdir_)cdecl1.obj &
+    $(_subdir_)cdecl2.obj &
+    $(_subdir_)cdinit.obj &
+    $(_subdir_)cdump.obj &
+    $(_subdir_)cems.obj &
+    $(_subdir_)cenum.obj &
+    $(_subdir_)cerror.obj &
+    $(_subdir_)cfeinfo.obj &
+    $(_subdir_)cinfo.obj &
+    $(_subdir_)cmac1.obj &
+    $(_subdir_)cmac2.obj &
+    $(_subdir_)cmemmgr.obj &
+    $(_subdir_)cmodel.obj &
+    $(_subdir_)cmsg.obj &
+    $(_subdir_)cname.obj &
+    $(_subdir_)coptions.obj &
+    $(_subdir_)caux.obj &
+    $(_subdir_)cpragma.obj &
+    $(_subdir_)cpurge.obj &
+    $(_subdir_)cscan.obj &
+    $(_subdir_)csizeof.obj &
+    $(_subdir_)cstats.obj &
+    $(_subdir_)cstring.obj &
+    $(_subdir_)csym.obj &
+    $(_subdir_)ctimepc.obj &
+    $(_subdir_)ctoken.obj &
+    $(_subdir_)ctype.obj &
+    $(_subdir_)cusage.obj &
+    $(_subdir_)cutil.obj &
+    $(_subdir_)ftoa.obj &
+    $(_subdir_)strsave.obj &
+    $(_subdir_)watcom.obj &
+    $(_subdir_)cgetch.obj &
+    $(_subdir_)cmacadd.obj &
+    $(_subdir_)asmalloc.obj &
+    $(_subdir_)asmmsg.obj &
+    $(_subdir_)jis2unic.obj &
+    $(_subdir_)pchdr.obj  &
+    $(_subdir_)dwarf.obj  &
+    $(_subdir_)browsio.obj  &
+    $(_subdir_)intlload.obj  &
+    $(_subdir_)autodept.obj  &
+    $(_subdir_)cexpr.obj &
+    $(_subdir_)cfold.obj &
+    $(_subdir_)cmath.obj &
+    $(_subdir_)cstmt.obj &
+    $(_subdir_)cgen.obj &
+    $(_subdir_)cgendata.obj &
+    $(_subdir_)exprtree.obj &
+    $(_subdir_)treewalk.obj &
+    $(_subdir_)mngless.obj
 
 !ifeq release 0
-common_objs += cfedump.obj
+cc_debug_objs = $(_subdir_)cfedump.obj
 !endif
-
-# in-line assembler files
-common_objs += $(asminline_objs)
-
-# code generator extra files
-common_objs += $(cg_objs)
 
 #
 # target specific files
 #
-cc_objs_i86   = cpragx86.obj pragi86.obj
-cc_objs_386   = cpragx86.obj prag386.obj
-cc_objs_axp   = cpragaxp.obj pragaxp.obj
-cc_objs_ppc   = cpragppc.obj pragppc.obj
-cc_objs_mps   = cpragmps.obj pragmips.obj
-cc_objs_sparc = cpragspc.obj pragspc.obj stubspc.obj
+cc_objs_i86   = $(_subdir_)cpragx86.obj $(_subdir_)pragi86.obj
+cc_objs_386   = $(_subdir_)cpragx86.obj $(_subdir_)prag386.obj
+cc_objs_axp   = $(_subdir_)cpragaxp.obj $(_subdir_)pragaxp.obj
+cc_objs_ppc   = $(_subdir_)cpragppc.obj $(_subdir_)pragppc.obj
+cc_objs_mps   = $(_subdir_)cpragmps.obj $(_subdir_)pragmips.obj
+cc_objs_sparc = $(_subdir_)cpragspc.obj $(_subdir_)pragspc.obj $(_subdir_)stubspc.obj
 
-common_objs += $(cc_objs_$(target_cpu))
+cc_template = $(common_objs) $(cc_debug_objs) $(asminline_objs) $(cg_objs) $(cc_objs_$(target_cpu))
+
+comp_objs_drv = $(drv_objs)
+_subdir_ =
+comp_objs_exe = $+$(cc_template)$- $(exe_objs)
+_subdir_ = $(dll_subdir)/
+comp_objs_dll = $+$(cc_template)$- $(dll_objs)
+

@@ -2,26 +2,26 @@
 #  List of orl library object files
 #
 
-omf_objs =  omfload.obj &
-            omfmunge.obj &
-            omfentr.obj &
-            omfflhn.obj &
-            omfdrctv.obj
+omf_objs =  $(_subdir_)omfload.obj &
+            $(_subdir_)omfmunge.obj &
+            $(_subdir_)omfentr.obj &
+            $(_subdir_)omfflhn.obj &
+            $(_subdir_)omfdrctv.obj
 
-elf_objs  = elfentr.obj &
-            elflwlv.obj &
-            elfflhn.obj &
-            elfload.obj
+elf_objs  = $(_subdir_)elfentr.obj &
+            $(_subdir_)elflwlv.obj &
+            $(_subdir_)elfflhn.obj &
+            $(_subdir_)elfload.obj
 
-coff_objs = coffentr.obj &
-            cofflwlv.obj &
-            coffflhn.obj &
-            coffload.obj &
-            coffimpl.obj
+coff_objs = $(_subdir_)coffentr.obj &
+            $(_subdir_)cofflwlv.obj &
+            $(_subdir_)coffflhn.obj &
+            $(_subdir_)coffload.obj &
+            $(_subdir_)coffimpl.obj
 
-orl_objs  = orlentry.obj &
-            orlflhnd.obj &
-            orlhash.obj &
+orl_objs  = $(_subdir_)orlentry.obj &
+            $(_subdir_)orlflhnd.obj &
+            $(_subdir_)orlhash.obj &
             $(omf_objs) &
             $(elf_objs) &
             $(coff_objs)
