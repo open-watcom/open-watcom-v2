@@ -30,12 +30,10 @@
 
 
 #include <windows.h>
-
 #include "fmedit.def"
 #include "memory.def"
 
 #include "dlist.def"
-#include "global.h"
 
 extern void DListAddElt( DLIST **head, DLIST_ELT obj )
 /****************************************************/

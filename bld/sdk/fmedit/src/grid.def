@@ -1,8 +1,5 @@
-#ifndef FM_EXPORT
-    #define FM_EXPORT   __export PASCAL
-#endif
-
 extern BOOL SnapRectToGrid( RECT * );
 extern void SnapPointToGrid( POINT * );
 extern void SnapPointToResizeGrid( POINT * );
-extern BOOL FM_EXPORT FMGrid( HWND, unsigned, WPARAM, LPARAM );
+
+WINEXPORT extern BOOL CALLBACK FMGrid( HWND, UINT, WPARAM, LPARAM );

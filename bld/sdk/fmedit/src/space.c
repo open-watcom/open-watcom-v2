@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "windows.h"
+#include <windows.h>
 #include "fmedit.def"
 #include "state.def"
 #include "space.def"

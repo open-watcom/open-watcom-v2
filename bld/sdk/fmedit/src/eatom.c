@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 #include <windows.h>
-
+#include "global.h"
 #include "fmedit.def"
 #include "memory.def"
 #include "paint.def"
@@ -37,7 +37,6 @@
 #include "state.def"
 #include "currobj.def"
 #include "scroll.def"
-#include "global.h"
 #include "grid.def"
 
 #include "eatom.h"
@@ -46,9 +45,11 @@
 /* use the app window. */
 #define USE_OWN_WINDOW 1
 
+WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND, UINT, WPARAM, LPARAM );
+
 /* forward references */
 
-static BOOL PASCAL EAtomDispatch( ACTION, EATOM *, void *, void * );
+static BOOL CALLBACK EAtomDispatch( ACTION, EATOM *, void *, void * );
 static BOOL EAtomLocation( OBJPTR, void *, void * );
 static BOOL EAtomMove( OBJPTR, void *, void * );
 static BOOL EAtomResize( OBJPTR, void *, void * );
@@ -85,9 +86,8 @@ static DISPATCH_ITEM EAtomActions[] = {
 
 #define MAX_ACTIONS (sizeof( EAtomActions ) / sizeof( DISPATCH_ITEM ))
 
-extern BOOL PASCAL EAtomDispatch( ACTION id, EATOM *obj,
-                                  void *p1, void *p2 )
-/****************************************************/
+static BOOL CALLBACK EAtomDispatch( ACTION id, EATOM *obj, void *p1, void *p2 )
+/*****************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
@@ -127,8 +127,8 @@ static BOOL EAtomValidateAction( OBJPTR _obj, void *_idptr, void *p2 )
 }
 
 
-extern OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
-/******************************************************************/
+OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
+/***********************************************************/
 {
     /* create an EATOM object */
     EATOM       *new;
@@ -601,9 +601,8 @@ static BOOL EAtomNotify( OBJPTR _obj, void *_id, void *p2 )
 }
 
 
-long WINIEXP EAtomWndProc( HWND wnd, unsigned message,
-                           WPARAM wparam, LPARAM lparam )
-/*******************************************************/
+WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
+/*********************************************************************************************/
 {
     /* processes messages */
     PAINTSTRUCT    ps;

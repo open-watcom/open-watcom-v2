@@ -31,7 +31,6 @@
 
 
 #include <windows.h>
-#include "global.h"
 
 /* imports */
 
@@ -83,23 +82,23 @@ static void OutlineRect( LPRECT rect, BOOL dbl, HDC hdc )
 }
 
 
-void WINEXP OutlineDoubleRect( LPRECT rect, HDC hdc )
-/***************************************************/
+void FMEDITAPI OutlineDoubleRect( LPRECT rect, HDC hdc )
+/******************************************************/
 {
     /* draw a double outline around the passed rect */
     OutlineRect( rect, TRUE, hdc );
 }
 
 
-void WINEXP OutlineSingleRect( LPRECT rect, HDC hdc )
-/***************************************************/
+void FMEDITAPI OutlineSingleRect( LPRECT rect, HDC hdc )
+/******************************************************/
 {
     /* draw a double outline around the passed rect */
     OutlineRect( rect, FALSE, hdc );
 }
 
-void WINEXP DarkGreyRect( LPRECT rect, LPSTR label, HDC hdc )
-/***********************************************************/
+void FMEDITAPI DarkGreyRect( LPRECT rect, LPSTR label, HDC hdc )
+/**************************************************************/
 {
     /* draw a framed grey rectangle with the given label */
     DWORD savebg;
@@ -114,8 +113,8 @@ void WINEXP DarkGreyRect( LPRECT rect, LPSTR label, HDC hdc )
 }
 
 
-void WINEXP DrawConstText( LPRECT rect, LPSTR value, HDC hdc )
-/************************************************************/
+void FMEDITAPI DrawConstText( LPRECT rect, LPSTR value, HDC hdc )
+/***************************************************************/
 {
     /*  draw a constant text value. Adjust the size of the rect
      *  so that no partial text lines appear.
@@ -129,8 +128,8 @@ void WINEXP DrawConstText( LPRECT rect, LPSTR value, HDC hdc )
 
 #define CTL3D_BORDER        2
 
-void WINEXP MarkInvalid( LPRECT rect )
-/************************************/
+void FMEDITAPI MarkInvalid( LPRECT rect )
+/***************************************/
 {
     /* mark a rectangular region invalid */
     POINT   offset;

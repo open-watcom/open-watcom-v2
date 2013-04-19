@@ -31,7 +31,6 @@
 
 #include <string.h>
 #include <windows.h>
-
 #include "fmedit.def"
 #include "state.def"
 #include "memory.def"

@@ -3,7 +3,15 @@
 #ifndef _FMEDIT_INCLUDE
 #define _FMEDIT_INCLUDE
 
-#define FM_EXPORT   __export PASCAL
+#define FMEDITAPI   WINAPI
+
+#if defined( FMEDITDLL )
+    #define FMEDLLENTRY    __declspec(dllexport)
+#elif defined( __NT__ )
+    #define FMEDLLENTRY    __declspec(dllimport)
+#else
+    #define FMEDLLENTRY
+#endif
 
 typedef int OBJ_ID;
 typedef int ACTION;
@@ -19,102 +27,106 @@ typedef enum {
 typedef void                *OBJPTR;
 typedef union object_defn   *OBJHANDLE;
 typedef union object_defn   OBJECT_DEFN;
-typedef OBJPTR (PASCAL *CREATE_RTN)( OBJPTR, RECT *, OBJPTR );
+typedef OBJPTR (CALLBACK *CREATE_RTN)( OBJPTR, RECT *, OBJPTR );
 typedef CREATE_RTN          CREATE_TABLE[];
 typedef unsigned            STATE_HDL;
-typedef BOOL (PASCAL *OBJECT)( ACTION, OBJPTR, void *, void * );
+typedef BOOL (CALLBACK *OBJECT)( ACTION, OBJPTR, void *, void * );
+
+typedef void MOUSEACTION( HWND, RECT * );
 
 #include "constant.def"
 #include "list.def"
 #include "actions.def"
-#include <subreq.def>
+#include "subreq.def"
 
 extern unsigned     fmedit_version_check( void );
 
-extern void   FM_EXPORT OpenFormEdit( HWND, CREATE_TABLE, int, SCR_CONFIG );
-extern void   FM_EXPORT CloseFormEdit( HWND );
-extern void   FM_EXPORT CloseFormEditID( STATE_HDL );
-extern BOOL   FM_EXPORT FMEditWndProc( HWND, unsigned, WPARAM, LPARAM );
-extern void   FM_EXPORT ResetFormEdit( HWND );
-extern int    FM_EXPORT FMTranslateAccelerator( HWND, LPMSG );
-extern void   FM_EXPORT AddFMEditMenus( HMENU, int );
-extern STATE_HDL FM_EXPORT InitFormEdit( CREATE_TABLE );
-extern void   FM_EXPORT SetFormEditWnd( STATE_HDL, HWND, int, SCR_CONFIG  );
+FMEDLLENTRY extern BOOL   CALLBACK FMEditWndProc( HWND, UINT, WPARAM, LPARAM );
+
+FMEDLLENTRY extern void   FMEDITAPI OpenFormEdit( HWND, CREATE_TABLE, int, SCR_CONFIG );
+FMEDLLENTRY extern void   FMEDITAPI CloseFormEdit( HWND );
+FMEDLLENTRY extern void   FMEDITAPI CloseFormEditID( STATE_HDL );
+FMEDLLENTRY extern void   FMEDITAPI ResetFormEdit( HWND );
+FMEDLLENTRY extern int    FMEDITAPI FMTranslateAccelerator( HWND, LPMSG );
+FMEDLLENTRY extern void   FMEDITAPI AddFMEditMenus( HMENU, int );
+FMEDLLENTRY extern STATE_HDL FMEDITAPI InitFormEdit( CREATE_TABLE );
+FMEDLLENTRY extern void   FMEDITAPI SetFormEditWnd( STATE_HDL, HWND, int, SCR_CONFIG  );
 
 /* paint exports */
 
-extern void FM_EXPORT MarkInvalid( LPRECT );
-extern void FM_EXPORT DarkGreyRect( LPRECT, LPSTR, HDC );
-extern void FM_EXPORT OutlineDoubleRect( LPRECT, HDC );
-extern void FM_EXPORT OutlineSingleRect( LPRECT, HDC );
-extern void FM_EXPORT DrawConstText( LPRECT, LPSTR, HDC );
+FMEDLLENTRY extern void FMEDITAPI MarkInvalid( LPRECT );
+FMEDLLENTRY extern void FMEDITAPI DarkGreyRect( LPRECT, LPSTR, HDC );
+FMEDLLENTRY extern void FMEDITAPI OutlineDoubleRect( LPRECT, HDC );
+FMEDLLENTRY extern void FMEDITAPI OutlineSingleRect( LPRECT, HDC );
+FMEDLLENTRY extern void FMEDITAPI DrawConstText( LPRECT, LPSTR, HDC );
 
 /* object.def exports */
 
-extern OBJPTR FM_EXPORT Create( OBJ_ID, OBJPTR, RECT *, OBJPTR );
-extern BOOL   FM_EXPORT Register( OBJECT * );
-extern BOOL   FM_EXPORT Move( OBJECT *, POINT *, BOOL );
-extern BOOL   FM_EXPORT Resize( OBJECT *, RECT *, BOOL );
-extern BOOL   FM_EXPORT Location( OBJECT *, RECT * );
-extern BOOL   FM_EXPORT FindObjList( OBJECT *, SUBOBJ_REQUEST *, LIST ** );
-extern BOOL   FM_EXPORT Draw( OBJECT *, RECT *, HDC );
-extern BOOL   FM_EXPORT Destroy( OBJECT *, BOOL );
-extern BOOL   FM_EXPORT Define( OBJECT *, POINT *, void * );
-extern BOOL   FM_EXPORT Notify( OBJECT *, NOTE_ID, void * );
-extern BOOL   FM_EXPORT Forward( OBJECT *, ACTION, void *, void * );
-extern BOOL   FM_EXPORT ValidateAction( OBJECT *, ACTION, void * );
-extern OBJPTR FM_EXPORT FindObject( SUBOBJ_REQUEST * );
-extern BOOL   FM_EXPORT FindObjectsPt( POINT, LIST ** );
-extern OBJPTR FM_EXPORT FindOneObjPt( POINT pt );
-extern BOOL   FM_EXPORT AddObject( OBJPTR, OBJPTR );
-extern BOOL   FM_EXPORT RemoveObject( OBJPTR, OBJPTR );
-extern BOOL   FM_EXPORT ExecuteCurrObject( ACTION, void *, void * );
-extern BOOL   FM_EXPORT GetResizeInfo( OBJECT *, RESIZE_ID * );
-extern BOOL   FM_EXPORT CutObject( OBJECT *, OBJPTR * );
-extern BOOL   FM_EXPORT CopyObject( OBJECT *, OBJPTR *, OBJPTR );
-extern BOOL   FM_EXPORT PasteObject( OBJECT *, OBJPTR, POINT );
-extern BOOL   FM_EXPORT GetObjectParent( OBJECT *, OBJPTR * );
-extern BOOL   FM_EXPORT GetPriority( OBJECT *, int * );
-extern void   FM_EXPORT MakeObjectCurrent( OBJPTR );
-extern void   FM_EXPORT AddCurrentObject( OBJPTR );
-extern void   FM_EXPORT ResetCurrObject( BOOL );
-extern BOOL   FM_EXPORT ResizeIncrements( OBJECT *, POINT * );
-extern void   FM_EXPORT NewOffset( POINT );
+FMEDLLENTRY extern OBJPTR FMEDITAPI Create( OBJ_ID, OBJPTR, RECT *, OBJPTR );
+FMEDLLENTRY extern BOOL   FMEDITAPI Register( OBJECT * );
+FMEDLLENTRY extern BOOL   FMEDITAPI Move( OBJECT *, POINT *, BOOL );
+FMEDLLENTRY extern BOOL   FMEDITAPI Resize( OBJECT *, RECT *, BOOL );
+FMEDLLENTRY extern BOOL   FMEDITAPI Location( OBJECT *, RECT * );
+FMEDLLENTRY extern BOOL   FMEDITAPI FindObjList( OBJECT *, SUBOBJ_REQUEST *, LIST ** );
+FMEDLLENTRY extern BOOL   FMEDITAPI Recreate( OBJECT *, POINT * );
+FMEDLLENTRY extern BOOL   FMEDITAPI Draw( OBJECT *, RECT *, HDC );
+FMEDLLENTRY extern BOOL   FMEDITAPI Destroy( OBJECT *, BOOL );
+FMEDLLENTRY extern BOOL   FMEDITAPI Define( OBJECT *, POINT *, void * );
+FMEDLLENTRY extern BOOL   FMEDITAPI Notify( OBJECT *, NOTE_ID, void * );
+FMEDLLENTRY extern BOOL   FMEDITAPI Forward( OBJECT *, ACTION, void *, void * );
+FMEDLLENTRY extern BOOL   FMEDITAPI ValidateAction( OBJECT *, ACTION, void * );
+FMEDLLENTRY extern OBJPTR FMEDITAPI FindObject( SUBOBJ_REQUEST * );
+FMEDLLENTRY extern BOOL   FMEDITAPI FindObjectsPt( POINT, LIST ** );
+FMEDLLENTRY extern OBJPTR FMEDITAPI FindOneObjPt( POINT pt );
+FMEDLLENTRY extern BOOL   FMEDITAPI AddObject( OBJPTR, OBJPTR );
+FMEDLLENTRY extern BOOL   FMEDITAPI RemoveObject( OBJPTR, OBJPTR );
+FMEDLLENTRY extern BOOL   FMEDITAPI ExecuteCurrObject( ACTION, void *, void * );
+FMEDLLENTRY extern BOOL   FMEDITAPI GetResizeInfo( OBJECT *, RESIZE_ID * );
+FMEDLLENTRY extern BOOL   FMEDITAPI CutObject( OBJECT *, OBJPTR * );
+FMEDLLENTRY extern BOOL   FMEDITAPI CopyObject( OBJECT *, OBJPTR *, OBJPTR );
+FMEDLLENTRY extern BOOL   FMEDITAPI PasteObject( OBJECT *, OBJPTR, POINT );
+FMEDLLENTRY extern BOOL   FMEDITAPI GetObjectParent( OBJECT *, OBJPTR * );
+FMEDLLENTRY extern BOOL   FMEDITAPI GetPriority( OBJECT *, int * );
+FMEDLLENTRY extern void   FMEDITAPI MakeObjectCurrent( OBJPTR );
+FMEDLLENTRY extern void   FMEDITAPI AddCurrentObject( OBJPTR );
+FMEDLLENTRY extern void   FMEDITAPI ResetCurrObject( BOOL );
+FMEDLLENTRY extern BOOL   FMEDITAPI ResizeIncrements( OBJECT *, POINT * );
+FMEDLLENTRY extern void   FMEDITAPI NewOffset( POINT );
 
 /* state.def exports */
 
-extern OBJ_ID     FM_EXPORT GetBaseObjType( void );
-extern void       FM_EXPORT SetBaseObjType( OBJ_ID );
-extern BOOL       FM_EXPORT InitState( HWND );
-extern OBJPTR     FM_EXPORT GetMainObject( void );
-extern OBJPTR     FM_EXPORT GetCurrObject( void );
-extern LIST *     FM_EXPORT GetCurrObjectList( void );
-extern void       FM_EXPORT GetOffset( POINT * );
-extern void       FM_EXPORT SetHorizontalInc( unsigned );
-extern void       FM_EXPORT SetVerticalInc( unsigned );
-extern unsigned   FM_EXPORT GetHorizontalInc( void );
-extern unsigned   FM_EXPORT GetVerticalInc( void );
-extern BOOL       FM_EXPORT FMClipObjExists( OBJPTR );
-extern void       FM_EXPORT FMAddClipboard( OBJPTR, OBJPTR );
-extern BOOL       FM_EXPORT FMPasteValid( void );
-extern void       FM_EXPORT FMResetClipboard( void );
-extern void       FM_EXPORT FMNewClipboard( void );
-extern void       FM_EXPORT DisplayError( char * );
-extern BOOL       FM_EXPORT IsEditting( HWND );
-extern void       FM_EXPORT SetShowError( BOOL );
-extern void       FM_EXPORT ClearError( void );
-extern void       FM_EXPORT SetMouseRtn( HWND, void (FM_EXPORT *)( HWND, RECT * ));
-extern STATE_HDL  FM_EXPORT GetCurrFormID( void );
-extern BOOL       FM_EXPORT InitStateFormID( STATE_HDL );
-extern void       FM_EXPORT HideSelectBoxes( void );
-extern void       FM_EXPORT ShowSelectBoxes( void );
+FMEDLLENTRY extern OBJ_ID     FMEDITAPI GetBaseObjType( void );
+FMEDLLENTRY extern void       FMEDITAPI SetBaseObjType( OBJ_ID );
+FMEDLLENTRY extern BOOL       FMEDITAPI InitState( HWND );
+FMEDLLENTRY extern OBJPTR     FMEDITAPI GetMainObject( void );
+FMEDLLENTRY extern OBJPTR     FMEDITAPI GetCurrObject( void );
+FMEDLLENTRY extern LIST *     FMEDITAPI GetCurrObjectList( void );
+FMEDLLENTRY extern void       FMEDITAPI GetOffset( POINT * );
+FMEDLLENTRY extern void       FMEDITAPI SetHorizontalInc( unsigned );
+FMEDLLENTRY extern void       FMEDITAPI SetVerticalInc( unsigned );
+FMEDLLENTRY extern unsigned   FMEDITAPI GetHorizontalInc( void );
+FMEDLLENTRY extern unsigned   FMEDITAPI GetVerticalInc( void );
+FMEDLLENTRY extern BOOL       FMEDITAPI FMClipObjExists( OBJPTR );
+FMEDLLENTRY extern void       FMEDITAPI FMAddClipboard( OBJPTR, OBJPTR );
+FMEDLLENTRY extern BOOL       FMEDITAPI FMPasteValid( void );
+FMEDLLENTRY extern void       FMEDITAPI FMResetClipboard( void );
+FMEDLLENTRY extern void       FMEDITAPI FMNewClipboard( void );
+FMEDLLENTRY extern void       FMEDITAPI DisplayError( char * );
+FMEDLLENTRY extern BOOL       FMEDITAPI IsEditting( HWND );
+FMEDLLENTRY extern void       FMEDITAPI SetShowError( BOOL );
+FMEDLLENTRY extern void       FMEDITAPI ClearError( void );
+FMEDLLENTRY extern void       FMEDITAPI SetMouseRtn( HWND, MOUSEACTION *);
+FMEDLLENTRY extern STATE_HDL  FMEDITAPI GetCurrFormID( void );
+FMEDLLENTRY extern BOOL       FMEDITAPI InitStateFormID( STATE_HDL );
+FMEDLLENTRY extern void       FMEDITAPI HideSelectBoxes( void );
+FMEDLLENTRY extern void       FMEDITAPI ShowSelectBoxes( void );
 
 /* scroll.def exports */
-extern void FM_EXPORT UpdateScroll( void );
+FMEDLLENTRY extern void     FMEDITAPI UpdateScroll( void );
 
 /* application input functions */
 
-extern BOOL FM_EXPORT ObjectPress( OBJPTR, POINT *, WORD, HWND );
-extern void FM_EXPORT ObjectDestroyed( OBJPTR );
+FMEDLLENTRY extern BOOL     FMEDITAPI ObjectPress( OBJPTR, POINT *, WORD, HWND );
+FMEDLLENTRY extern void     FMEDITAPI ObjectDestroyed( OBJPTR );
 
 #endif

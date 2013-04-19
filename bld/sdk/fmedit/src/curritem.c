@@ -30,7 +30,6 @@
 
 
 #include <windows.h>
-
 #include "global.h"
 #include "fmedit.def"
 #include "curritem.h"
@@ -40,9 +39,11 @@
 
 #define _eq_bool( b1, b2 )  (((b1) ? TRUE : FALSE) == ((b2) ? TRUE : FALSE))
 
+WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND, UINT, WPARAM, LPARAM );
+
 /* forward references */
 
-static BOOL PASCAL CurrItemDispatch( ACTION, CURRITEM *, void *, void * );
+static BOOL CALLBACK CurrItemDispatch( ACTION, CURRITEM *, void *, void * );
 static BOOL CurrItemDelete( OBJPTR, void *, void * );
 static BOOL CurrItemDestroy( OBJPTR, void *, void * );
 static BOOL CurrItemValidateAction( OBJPTR, void *, void * );
@@ -65,9 +66,8 @@ static DISPATCH_ITEM CurrItemActions[] = {
     #define MOVE_TO( hdc, x, y, lppoint ) MoveTo( (hdc), (x), (y) );
 #endif
 
-extern BOOL PASCAL CurrItemDispatch( ACTION id, CURRITEM *ci,
-                                     void *p1, void *p2 )
-/*******************************************************/
+static BOOL CALLBACK CurrItemDispatch( ACTION id, CURRITEM *ci, void *p1, void *p2 )
+/**********************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
@@ -145,8 +145,8 @@ static BOOL CurrItemShowSelBoxes( OBJPTR _ci, void *_show, void *p2 )
     return( TRUE );
 }
 
-extern OBJPTR CurrItemCreate( OBJPTR parent, RECT *loc, OBJPTR obj )
-/******************************************************************/
+OBJPTR CurrItemCreate( OBJPTR parent, RECT *loc, OBJPTR obj )
+/***********************************************************/
 {
     /* Create a CURRITEM object */
     CURRITEM *new;
@@ -172,7 +172,7 @@ extern OBJPTR CurrItemCreate( OBJPTR parent, RECT *loc, OBJPTR obj )
                                   GetInst(),
                                   NULL );
         BringWindowToTop( new->hwnd );
-        SetWindowLong( new->hwnd, 0, (long)new );
+        SET_WNDINFO( new->hwnd, (LONG_PTR)new );
     } else {
         new->hwnd = NULL;
     }
@@ -476,9 +476,8 @@ static void MarkBoxes( LPRECT currect, HDC hdc, RESIZE_ID sizeid )
     }
 }
 
-long WINIEXP CurrItemWndProc( HWND wnd, unsigned message,
-                              WPARAM wparam, LPARAM lparam )
-/**********************************************************/
+WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
+/**************************************************************************************/
 {
     /* processes messages */
     HDC             hdc;
@@ -490,7 +489,7 @@ long WINIEXP CurrItemWndProc( HWND wnd, unsigned message,
 
     switch( message ) {
     case WM_PAINT :
-        ci = (CURRITEM *)GetWindowLong( wnd, 0 );
+        ci = (CURRITEM *)GET_WNDINFO( wnd );
         if( !InitStateFormID( ci->fmstate ) ) {
             /* the correct state can't be found so just ignore */
             /* this WM_PAINT */
@@ -556,7 +555,7 @@ long WINIEXP CurrItemWndProc( HWND wnd, unsigned message,
         EndPaint( wnd, &ps );
         break;
     case WM_DESTROY:
-        ci = (CURRITEM *)GetWindowLong( wnd, 0 );
+        ci = (CURRITEM *)GET_WNDINFO( wnd );
         ci->hwnd = NULL;
         break;
     default :
@@ -575,7 +574,7 @@ extern void InitCurrItem( void )
     wc.lpfnWndProc = CurrItemWndProc;       /* Function to retrieve messages for*/
                                             /* windows of this class.           */
     wc.cbClsExtra = 0;                      /* No per-class extra data.         */
-    wc.cbWndExtra = sizeof( CURROBJPTR );   /* Extra data for each window       */
+    wc.cbWndExtra = sizeof( LONG_PTR );     /* Extra data for each window       */
                                             /* This stores the OBJPTR           */
                                             /* associated with each curritem    */
     wc.hInstance = GetInst();               /* Application that owns the class. */

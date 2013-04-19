@@ -31,8 +31,6 @@
 
 #include <string.h>
 #include <windows.h>
-
-#include "global.h"
 #include "fmedit.def"
 #include "memory.def"
 #include "oitem.h"
@@ -41,7 +39,7 @@
 
 /* forward references */
 
-static BOOL WINAPI OItemDispatch( ACTION, OITEM *, void *, void * );
+static BOOL CALLBACK OItemDispatch( ACTION, OITEM *, void *, void * );
 static BOOL OItemRegister( OBJPTR, void *, void * );
 static BOOL OItemLocation( OBJPTR, void *, void * );
 static BOOL OItemMove( OBJPTR, void *, void * );
@@ -75,10 +73,8 @@ static DISPATCH_ITEM OItemActions[] = {
 
 #define MAX_ACTIONS (sizeof( OItemActions ) / sizeof( DISPATCH_ITEM ))
 
-static FARPROC DispatchRtn = NULL;
-
-BOOL WINAPI OItemDispatch( ACTION id, OITEM *obj, void *p1, void *p2 )
-/********************************************************************/
+static BOOL CALLBACK OItemDispatch( ACTION id, OITEM *obj, void *p1, void *p2 )
+/*****************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
@@ -164,14 +160,14 @@ static BOOL OItemNotify( OBJPTR _oitem, void *p1, void *p2 )
 }
 
 
-extern OBJPTR OItemCreate( OBJPTR parent, RECT *rect, OBJPTR handle )
-/*******************************************************************/
+OBJPTR OItemCreate( OBJPTR parent, RECT *rect, OBJPTR handle )
+/************************************************************/
 {
     /* create an OITEM object */
     OITEM *new;
 
     new = EdAlloc( sizeof( OITEM ) );
-    new->invoke = DispatchRtn;
+    new->invoke = (FARPROC)&OItemDispatch;
     new->parent = parent;
     if( parent != NULL ) {
         GetPriority( parent, &new->priority );
@@ -373,8 +369,4 @@ static BOOL OItemFindObjectPt( OBJPTR _oitem, void *_pt, void *_list )
 extern void InitOItem( void )
 /***************************/
 {
-    /*  set up the dispatch routine address for the OITEM since this may
-     *  be called from the application
-     */
-    DispatchRtn = MakeProcInstance( (FARPROC) OItemDispatch, GetInst() );
 }

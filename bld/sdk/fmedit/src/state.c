@@ -32,11 +32,9 @@
 #include <string.h>
 #include <dos.h>
 #include <windows.h>
-
 #include "fmedit.def"
 #include "object.def"
 #include "cursor.def"
-#include "global.h"
 #include "memory.def"
 
 #include "state.h"
@@ -131,7 +129,7 @@ extern HWND InheritState( HWND newwnd )
     return( old );
 }
 
-BOOL WINEXP InitState( HWND wnd )
+BOOL FMEDITAPI InitState( HWND wnd )
 {
     /* initialize the state from the window */
     STATE *s;
@@ -247,61 +245,61 @@ extern void DestroyCurrObject( void )
     Destroy( State->currobj, FALSE );
 }
 
-OBJPTR WINEXP GetMainObject( void )
+OBJPTR FMEDITAPI GetMainObject( void )
 {
     /* create the main object */
     return( State->mainobject );
 }
 
-void WINEXP SetBaseObjType( OBJ_ID id )
+void FMEDITAPI SetBaseObjType( OBJ_ID id )
 {
     /* save the type of object to create */
     State->objtype = id;
 }
 
-OBJ_ID WINEXP GetBaseObjType( void )
+OBJ_ID FMEDITAPI GetBaseObjType( void )
 {
     /* return the type of object to build */
     return( State->objtype );
 }
 
-unsigned WINEXP GetVerticalInc( void )
+unsigned FMEDITAPI GetVerticalInc( void )
 {
     /* return the vertical grid increment value */
     return( State->gridvinc );
 }
 
-void WINEXP SetVerticalInc( unsigned inc )
+void FMEDITAPI SetVerticalInc( unsigned inc )
 {
     /* set the vertical grid increment value */
     State->gridvinc = inc;
 }
 
-unsigned WINEXP GetHorizontalInc( void )
+unsigned FMEDITAPI GetHorizontalInc( void )
 {
     /* return the vertical grid increment value */
     return( State->gridhinc );
 }
 
-void WINEXP SetHorizontalInc( unsigned inc )
+void FMEDITAPI SetHorizontalInc( unsigned inc )
 {
     /* set the vertical grid increment value */
     State->gridhinc = inc;
 }
 
-extern void SetObjects( void * objs )
+void SetObjects( void * objs )
 {
     /* save a pointer to the object table */
     State->objects = objs;
 }
 
-extern void *GetObjects( void )
+void *GetObjects( void )
 {
     /* get the object table pointer */
     return( State->objects );
 }
 
-extern void SaveObject( void )
+void SaveObject( void )
 {
     /* remember the previous object */
     CURROBJPTR currobj;
@@ -312,7 +310,7 @@ extern void SaveObject( void )
     }
 }
 
-extern void RestorePrevObject( void )
+void RestorePrevObject( void )
 {
     /* reset the currobject from the previous object */
     AddCurrObject( State->prevobject );
@@ -328,7 +326,7 @@ extern OBJPTR GetCurrObj( void )
     }
 }
 
-extern void WINEXP GetOffset( POINT *point )
+extern void FMEDITAPI GetOffset( POINT *point )
 {
     /* return the offset point */
     *point = State->offset;
@@ -387,7 +385,7 @@ extern BOOL GetShowEatoms( void )
 }
 
 
-int WINEXP FMTranslateAccelerator( HWND wnd, LPMSG message )
+int FMEDITAPI FMTranslateAccelerator( HWND wnd, LPMSG message )
 {
     int ret;
     int i;
@@ -440,7 +438,7 @@ extern void SetKeyState( WORD keystate )
     State->keystate = keystate;
 }
 
-void WINEXP DisplayError( char * msg )
+void FMEDITAPI DisplayError( char * msg )
 {
     /* report an error message */
     if( msg != NULL ) {
@@ -464,7 +462,7 @@ extern void ReportPending( void )
     }
 }
 
-void WINEXP ClearError( void )
+void FMEDITAPI ClearError( void )
 {
     if( State->error != NULL ) {
         EdFree( State->error );
@@ -473,30 +471,30 @@ void WINEXP ClearError( void )
 }
 
 
-extern BOOL ShowError( void )
+BOOL ShowError( void )
 {
     return( State->showerror );
 }
 
-void WINEXP SetShowError( BOOL show )
+void FMEDITAPI SetShowError( BOOL show )
 {
     State->showerror = show;
 }
 
-BOOL WINEXP IsEditting( HWND wnd )
+BOOL FMEDITAPI IsEditting( HWND wnd )
 {
     InitState( wnd );
     return( State->currstate == EDITING );
 }
 
-void WINEXP SetMouseRtn( HWND wnd, void (FM_EXPORT *rtn)( HWND, RECT * ) )
+void FMEDITAPI SetMouseRtn( HWND wnd, MOUSEACTION *rtn )
 {
     InitState( wnd );
     State->mouseaction = rtn;
 }
 
 
-extern void MouseAction( RECT *r )
+void MouseAction( RECT *r )
 {
     RECT safe;
 
@@ -507,24 +505,24 @@ extern void MouseAction( RECT *r )
 }
 
 
-extern void SetResizeGrid( unsigned horz, unsigned vert )
+void SetResizeGrid( unsigned horz, unsigned vert )
 {
     State->hresizegrid = horz;
     State->vresizegrid = vert;
 }
 
-extern unsigned GetResizeHInc( void )
+unsigned GetResizeHInc( void )
 {
     return( State->hresizegrid );
 }
 
 
-extern unsigned GetResizeVInc( void )
+unsigned GetResizeVInc( void )
 {
     return( State->vresizegrid );
 }
 
-BOOL WINEXP InitStateFormID( STATE_HDL st )
+BOOL FMEDITAPI InitStateFormID( STATE_HDL st )
 {
     STATE *s;
 
@@ -537,7 +535,7 @@ BOOL WINEXP InitStateFormID( STATE_HDL st )
     return( State != NULL );
 }
 
-STATE_HDL WINEXP GetCurrFormID( void )
+STATE_HDL FMEDITAPI GetCurrFormID( void )
 {
     if( State != NULL ) {
         return( State->id );
@@ -545,7 +543,7 @@ STATE_HDL WINEXP GetCurrFormID( void )
     return( 0 );
 }
 
-void WINEXP HideSelectBoxes( void )
+void FMEDITAPI HideSelectBoxes( void )
 {
     OBJECT      *currobj;
     BOOL        show;
@@ -555,7 +553,7 @@ void WINEXP HideSelectBoxes( void )
     (*currobj)( SHOW_SEL_BOXES, currobj, &show, NULL );
 }
 
-void WINEXP ShowSelectBoxes( void )
+void FMEDITAPI ShowSelectBoxes( void )
 {
     OBJECT      *currobj;
     BOOL        show;

@@ -36,4 +36,4 @@ typedef struct oitem {
     OBJPTR  handle;
     RECT    rect;
     int     priority;
-};
+} OITEM;

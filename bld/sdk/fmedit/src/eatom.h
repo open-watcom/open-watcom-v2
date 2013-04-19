@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "eatom.def"
-
 typedef struct eatom {
     FARPROC         invoke;
     RECT            rect;
@@ -43,4 +41,4 @@ typedef struct eatom {
     HWND            hwnd;
     BOOL            displayed;
     BOOL            show;           // show the outline for this eatom
-};
+} EATOM;

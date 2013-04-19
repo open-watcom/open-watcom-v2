@@ -31,8 +31,6 @@
 
 #include <string.h>
 #include <windows.h>
-
-#include "global.h"
 #include "fmedit.def"
 #include "state.def"
 #include "object.h"
@@ -56,8 +54,8 @@ static OBJPTR  (*InternalCreate[])(OBJPTR, RECT *, OBJPTR) = {
     NULL                        /* O_UNUSED_6 */
 };
 
-void WINEXP AddFMEditMenus( HMENU submenu, int bitmap )
-/*****************************************************/
+void FMEDITAPI AddFMEditMenus( HMENU submenu, int bitmap )
+/********************************************************/
 {
     /* insert the editor specific things into the edit menu */
     HBITMAP     hbitmap;
@@ -177,8 +175,8 @@ extern void InitializeObjects( CREATE_TABLE objtable )
 }
 
 
-OBJPTR WINEXP Create( OBJ_ID id, OBJPTR parent, RECT *rect, OBJPTR handle )
-/*************************************************************************/
+OBJPTR FMEDITAPI Create( OBJ_ID id, OBJPTR parent, RECT *rect, OBJPTR handle )
+/****************************************************************************/
 {
     /*  Create an object of the desired type at the passed location.  If
      *  there is a parent, remember it
@@ -194,72 +192,72 @@ OBJPTR WINEXP Create( OBJ_ID id, OBJPTR parent, RECT *rect, OBJPTR handle )
 }
 
 
-BOOL WINEXP Move( OBJECT *obj, POINT *p, BOOL user_action )
-/*********************************************************/
+BOOL FMEDITAPI Move( OBJECT *obj, POINT *p, BOOL user_action )
+/************************************************************/
 {
     /* perform a move operation on the object */
     return( (*obj)( MOVE, obj, p, &user_action ) );
 }
 
 
-BOOL WINEXP Location( OBJECT *obj, RECT *rect )
-/*********************************************/
+BOOL FMEDITAPI Location( OBJECT *obj, RECT *rect )
+/************************************************/
 {
     /* return the location of the object */
     return( (*obj)( LOCATE, obj, rect, NULL ) );
 }
 
 
-BOOL WINEXP Resize( OBJECT *obj, RECT *r, BOOL user_action )
-/**********************************************************/
+BOOL FMEDITAPI Resize( OBJECT *obj, RECT *r, BOOL user_action )
+/*************************************************************/
 {
     /* perform a resize operation on the object */
     return( (*obj)( RESIZE, obj, r, &user_action ) );
 }
 
 
-BOOL WINEXP Register( OBJECT *obj )
-/*********************************/
+BOOL FMEDITAPI Register( OBJECT *obj )
+/************************************/
 {
     /* perform a register operation on the object */
     return( (*obj)( REGISTER, obj, NULL, NULL ) );
 }
 
 
-BOOL WINEXP Recreate( OBJECT *obj, POINT *pt )
-/********************************************/
+BOOL FMEDITAPI Recreate( OBJECT *obj, POINT *pt )
+/***********************************************/
 {
     /* perform a register operation on the object */
     return( (*obj)( RECREATE, obj, pt, NULL ) );
 }
 
 
-BOOL WINEXP Draw( OBJECT *obj, RECT *rect, HDC hdc )
-/**************************************************/
+BOOL FMEDITAPI Draw( OBJECT *obj, RECT *rect, HDC hdc )
+/*****************************************************/
 {
     /* perform a draw operation on the object */
     return( (*obj)( DRAW, obj, rect, &hdc ) );
 }
 
 
-BOOL WINEXP Destroy( OBJECT *obj, BOOL first )
-/********************************************/
+BOOL FMEDITAPI Destroy( OBJECT *obj, BOOL first )
+/***********************************************/
 {
     /* destroy the object */
     ObjectDestroyed( obj );
     return( (*obj)( DESTROY, obj, &first, NULL ) );
 }
 
-BOOL WINEXP Notify( OBJECT *obj, NOTE_ID n, void *p )
-/***************************************************/
+BOOL FMEDITAPI Notify( OBJECT *obj, NOTE_ID n, void *p )
+/******************************************************/
 {
     /* notify an object about it's new parent */
     return( (*obj)( NOTIFY, obj, &n, p ) );
 }
 
 
-BOOL WINEXP Define( OBJECT *obj, POINT *pt, void *init )
-/******************************************************/
+BOOL FMEDITAPI Define( OBJECT *obj, POINT *pt, void *init )
+/*********************************************************/
 {
     /* define the characeristics of the object */
     SetState( EDITING );
@@ -269,8 +267,8 @@ BOOL WINEXP Define( OBJECT *obj, POINT *pt, void *init )
 
 
 
-BOOL WINEXP FindObjList( OBJECT *obj, SUBOBJ_REQUEST *req, LIST **lst )
-/*********************************************************************/
+BOOL FMEDITAPI FindObjList( OBJECT *obj, SUBOBJ_REQUEST *req, LIST **lst )
+/************************************************************************/
 {
     /*  Find the list of objects within the parent object contained within the
      *  passed rect.
@@ -279,23 +277,23 @@ BOOL WINEXP FindObjList( OBJECT *obj, SUBOBJ_REQUEST *req, LIST **lst )
 }
 
 
-BOOL WINEXP Forward( OBJECT *obj, ACTION id, void *p1, void *p2 )
-/***************************************************************/
+BOOL FMEDITAPI Forward( OBJECT *obj, ACTION id, void *p1, void *p2 )
+/******************************************************************/
 {
     /* foward the specified action to the specified object */
     return( (*obj)( id, obj, p1, p2 ) );
 }
 
 
-BOOL WINEXP ValidateAction( OBJECT *obj, ACTION id, void *p2 )
-/************************************************************/
+BOOL FMEDITAPI ValidateAction( OBJECT *obj, ACTION id, void *p2 )
+/***************************************************************/
 {
     /* find out if action id is valid for object obj */
     return( (*obj)( VALIDATE_ACTION, obj, &id, p2 ) );
 }
 
-extern BOOL WINEXP AddObject( OBJPTR obj, OBJPTR member )
-/*******************************************************/
+BOOL FMEDITAPI AddObject( OBJPTR obj, OBJPTR member )
+/***************************************************/
 {
     /*  Update the position of the passed member with in the given object. */
     BOOL ret;
@@ -306,8 +304,8 @@ extern BOOL WINEXP AddObject( OBJPTR obj, OBJPTR member )
 }
 
 
-extern BOOL WINEXP RemoveObject( OBJPTR obj, OBJPTR member )
-/**********************************************************/
+BOOL FMEDITAPI RemoveObject( OBJPTR obj, OBJPTR member )
+/******************************************************/
 {
     /*  Update the position of the passed member with in the given object. */
     BOOL ret;
@@ -317,36 +315,36 @@ extern BOOL WINEXP RemoveObject( OBJPTR obj, OBJPTR member )
     return( ret );
 }
 
-extern BOOL WINEXP GetResizeInfo( OBJECT *obj, RESIZE_ID *info )
-/**************************************************************/
+BOOL FMEDITAPI GetResizeInfo( OBJECT *obj, RESIZE_ID *info )
+/**********************************************************/
 {
     /* Get information about what types of resizing are valid for the object */
     return( (*obj)( RESIZE_INFO, obj, info, NULL ) );
 }
 
-extern BOOL WINEXP CutObject( OBJECT *obj, OBJPTR *copy )
-/*******************************************************/
+BOOL FMEDITAPI CutObject( OBJECT *obj, OBJPTR *copy )
+/***************************************************/
 {
     /* Ask the application to cut obj and supply a copy of obj at address copy */
     return( (*obj)( CUT, obj, copy, NULL ) );
 }
 
-extern BOOL WINEXP CopyObject( OBJECT *obj, OBJPTR *copy, OBJPTR handle )
-/***********************************************************************/
+BOOL FMEDITAPI CopyObject( OBJECT *obj, OBJPTR *copy, OBJPTR handle )
+/*******************************************************************/
 {
     /* Ask the application to supply a copy of obj at address copy */
     return( (*obj)( COPY, obj, copy, handle ) );
 }
 
-extern BOOL WINEXP PasteObject( OBJECT *obj, OBJPTR parent, POINT pt )
-/********************************************************************/
+BOOL FMEDITAPI PasteObject( OBJECT *obj, OBJPTR parent, POINT pt )
+/****************************************************************/
 {
     /* Paste object obj with parent parent */
     return( (*obj)( PASTE, obj, parent, &pt ) );
 }
 
-OBJPTR WINEXP FindObject( SUBOBJ_REQUEST *req )
-/*********************************************/
+OBJPTR FMEDITAPI FindObject( SUBOBJ_REQUEST *req )
+/************************************************/
 {
     /*  Find an object at the specified point.  This is done by asking for the
      *  component item in the highest level object.
@@ -368,8 +366,8 @@ OBJPTR WINEXP FindObject( SUBOBJ_REQUEST *req )
     return( obj );
 }
 
-BOOL WINEXP FindObjectsPt( POINT pt, LIST **list )
-/************************************************/
+BOOL FMEDITAPI FindObjectsPt( POINT pt, LIST **list )
+/***************************************************/
 {
     OBJECT *obj;
 
@@ -378,8 +376,8 @@ BOOL WINEXP FindObjectsPt( POINT pt, LIST **list )
     return( (*obj)( FIND_OBJECTS_PT, obj, &pt, list ) );
 }
 
-OBJPTR WINEXP FindOneObjPt( POINT pt )
-/************************************/
+OBJPTR FMEDITAPI FindOneObjPt( POINT pt )
+/***************************************/
 {
     LIST *list;
     if( FindObjectsPt( pt, &list ) ) {
@@ -389,8 +387,8 @@ OBJPTR WINEXP FindOneObjPt( POINT pt )
     }
 }
 
-OBJPTR WINEXP GetCurrObject( void )
-/*********************************/
+OBJPTR FMEDITAPI GetCurrObject( void )
+/************************************/
 {
     /* return pointer to the current object */
     OBJECT  *obj;
@@ -404,8 +402,8 @@ OBJPTR WINEXP GetCurrObject( void )
     return( userobj );
 }
 
-LIST * WINEXP GetCurrObjectList( void )
-/*************************************/
+LIST *FMEDITAPI GetCurrObjectList( void )
+/***************************************/
 {
     /* return pointer to the current object */
     OBJECT  *currobj;
@@ -425,8 +423,8 @@ LIST * WINEXP GetCurrObjectList( void )
 }
 
 
-extern CURROBJPTR GetECurrObject( void )
-/**************************************/
+CURROBJPTR GetECurrObject( void )
+/*******************************/
 {
     /* return pointer to the current object */
     OBJPTR  obj;
@@ -438,8 +436,8 @@ extern CURROBJPTR GetECurrObject( void )
 }
 
 
-extern CURROBJPTR GetNextECurrObject( CURROBJPTR obj )
-/****************************************************/
+CURROBJPTR GetNextECurrObject( CURROBJPTR obj )
+/*********************************************/
 {
     /* return pointer to the next current object in the list, after obj */
     CURROBJPTR  newobj;
@@ -450,7 +448,7 @@ extern CURROBJPTR GetNextECurrObject( CURROBJPTR obj )
     return( newobj );
 }
 
-extern void SetCurrObject( OBJPTR obj )
+void SetCurrObject( OBJPTR obj )
 /*************************************/
 {
     /* make obj the only current object */
@@ -604,8 +602,8 @@ static BOOL CurrObjExist( CURROBJPTR findobj )
     return( FALSE );
 }
 
-BOOL WINEXP ExecuteCurrObject( ACTION id, void *p1, void *p2 )
-/************************************************************/
+BOOL FMEDITAPI ExecuteCurrObject( ACTION id, void *p1, void *p2 )
+/***************************************************************/
 {
     /* Perform action id on each of the objects in the current object list.
      * Always ensure that each object about to have the action performed
@@ -655,8 +653,8 @@ extern void ObjMark( CURROBJPTR obj )
     DeleteObject( little );
 }
 
-void WINEXP ResetCurrObject( BOOL draw )
-/**************************************/
+void FMEDITAPI ResetCurrObject( BOOL draw )
+/*****************************************/
 {
     /* reset the current object */
     CURROBJPTR currobj;
@@ -690,14 +688,14 @@ extern void MarkCurrObject( void )
     }
 }
 
-void WINEXP ObjectDestroyed( OBJPTR obj )
-/***************************************/
+void FMEDITAPI ObjectDestroyed( OBJPTR obj )
+/******************************************/
 {
     DeleteCurrObjptr( obj );
 }
 
-BOOL WINEXP GetObjectParent( OBJECT *obj, OBJPTR *parent )
-/********************************************************/
+BOOL FMEDITAPI GetObjectParent( OBJECT *obj, OBJPTR *parent )
+/***********************************************************/
 {
     return( (*obj)( GET_PARENT, obj, parent, NULL ) );
 }
@@ -714,14 +712,14 @@ extern void RemoveFromParent( OBJECT *obj )
     (*obj)( REMOVE_FROM_PARENT, obj, NULL, NULL );
 }
 
-BOOL WINEXP GetPriority( OBJECT *obj, int *pri )
-/**********************************************/
+BOOL FMEDITAPI GetPriority( OBJECT *obj, int *pri )
+/*************************************************/
 {
     return( (*obj)( GET_PRIORITY, obj, pri, NULL ) );
 }
 
-BOOL WINEXP ResizeIncrements( OBJECT *obj, POINT *pt )
-/****************************************************/
+BOOL FMEDITAPI ResizeIncrements( OBJECT *obj, POINT *pt )
+/*******************************************************/
 {
     if( ValidateAction( obj,  GET_RESIZE_INC, pt ) ) {
         return( (*obj)( GET_RESIZE_INC, obj, pt, NULL ) );
@@ -730,8 +728,8 @@ BOOL WINEXP ResizeIncrements( OBJECT *obj, POINT *pt )
 }
 
 
-void WINEXP MakeObjectCurrent( OBJPTR obj )
-/*****************************************/
+void FMEDITAPI MakeObjectCurrent( OBJPTR obj )
+/********************************************/
 {
     /* make the passes object current */
     ResetCurrObject( FALSE );
@@ -739,8 +737,8 @@ void WINEXP MakeObjectCurrent( OBJPTR obj )
 }
 
 
-void WINEXP AddCurrentObject( OBJPTR obj )
-/****************************************/
+void FMEDITAPI AddCurrentObject( OBJPTR obj )
+/*******************************************/
 {
     /* make the passes object current */
     AddCurrObject( obj );
@@ -775,8 +773,8 @@ extern BOOL IsMarkValid( OBJECT *obj )
     return( isvalid );
 }
 
-extern void WINEXP NewOffset( POINT point )
-/*****************************************/
+void FMEDITAPI NewOffset( POINT point )
+/*************************************/
 {
     // Set the offset to 'point' and reset the scrolling stuff
     SetOffset( point );

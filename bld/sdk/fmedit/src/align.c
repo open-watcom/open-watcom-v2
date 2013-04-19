@@ -30,6 +30,7 @@
 
 
 #include <windows.h>
+#include "global.h"
 #include "fmedit.def"
 #include "state.def"
 #include "align.def"

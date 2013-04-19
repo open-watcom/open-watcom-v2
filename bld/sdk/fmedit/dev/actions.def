@@ -49,9 +49,11 @@ typedef enum {
     R_ALL       = 15
 } RESIZE_ID;    
 
+typedef BOOL DISPATCH_RTN( OBJPTR, void *, void * );
+
 typedef struct {
-   ACTION id;
-   BOOL   (*rtn)( OBJPTR, void *, void * );
+   ACTION       id;
+   DISPATCH_RTN *rtn;
 } DISPATCH_ITEM;
 
 #endif

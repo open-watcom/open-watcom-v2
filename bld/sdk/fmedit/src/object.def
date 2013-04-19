@@ -13,11 +13,9 @@ enum {
     O_CURRITEM,
 };
 
-typedef BOOL (PASCAL *OBJECT)( ACTION, OBJPTR, void *, void * );
 typedef void *CURROBJPTR;
 
 extern void         InitializeObjects( CREATE_TABLE );
-extern BOOL FM_EXPORT Recreate( OBJECT *, POINT * );
 extern void         SetCurrObject( OBJPTR );
 extern void         AddCurrObject( OBJPTR );
 extern void         DeleteCurrObject( OBJPTR );

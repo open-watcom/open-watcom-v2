@@ -33,6 +33,7 @@
 #include "global.h"
 #include "fmedit.def"
 #include "state.def"
+#include "grid.def"
 #include "fmdlgs.h"
 
 extern BOOL SnapRectToGrid( RECT *rec )
@@ -91,9 +92,8 @@ extern void SnapPointToResizeGrid( POINT *pt )
 }
 
 
-BOOL WINIEXP FMGrid( HWND hdlg, unsigned message,
-                     WPARAM wParam, LPARAM lParam )
-/*************************************************/
+WINEXPORT BOOL CALLBACK FMGrid( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
+/*************************************************************************************/
 {
     /* Processes messages for "Grid" dialog box */
     RECT        rect;

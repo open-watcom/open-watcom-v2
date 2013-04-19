@@ -30,5 +30,4 @@
 ****************************************************************************/
 
 
-#define WINEXP  __export PASCAL
-#define WINIEXP __export PASCAL
+#include "wi163264.h"

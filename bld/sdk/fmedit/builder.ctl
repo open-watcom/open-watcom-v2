@@ -18,6 +18,8 @@ set PROJNAME=fmedit
     <CCCMD> nt386/fmedit.dll  <OWRELROOT>/binnt/
     <CCCMD> ntaxp/fmedit.dll  <OWRELROOT>/axpnt/
 
+    <CCCMD> ntx64/fmedit.dll  <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

@@ -30,16 +30,14 @@
 
 
 #include <windows.h>
-
 #include "fmedit.def"
 #include "memory.def"
 #include "object.def"
 
 #include "list.h"
-#include "global.h"
 
-void WINEXP ListAddElt( LIST **head, OBJPTR obj )
-/***********************************************/
+void FMEDITAPI ListAddElt( LIST **head, OBJPTR obj )
+/**************************************************/
 {
     /* add a new element to the list */
     LIST    *new;
@@ -55,8 +53,8 @@ void WINEXP ListAddElt( LIST **head, OBJPTR obj )
 }
 
 
-void WINEXP ListFree( LIST *lst )
-/*******************************/
+void FMEDITAPI ListFree( LIST *lst )
+/**********************************/
 {
     /* free the passed list */
     LIST    *next;
@@ -69,32 +67,32 @@ void WINEXP ListFree( LIST *lst )
 }
 
 
-OBJPTR WINEXP ListElement( LIST *lst )
-/************************************/
+OBJPTR FMEDITAPI ListElement( LIST *lst )
+/***************************************/
 {
     /* return the first elt of the list */
     return( lst->elt );
 }
 
 
-LIST * WINEXP ListNext( LIST *curr )
-/**********************************/
+LIST *FMEDITAPI ListNext( LIST *curr )
+/************************************/
 {
     /* return the next element of the list */
     return( curr->next );
 }
 
 
-LIST * WINEXP ListPrev( LIST *curr )
-/**********************************/
+LIST *FMEDITAPI ListPrev( LIST *curr )
+/************************************/
 {
     /* return the next element of the list */
     return( curr->prev );
 }
 
 
-void WINEXP ListRemoveElt( LIST **lst, OBJPTR obj )
-/*************************************************/
+void FMEDITAPI ListRemoveElt( LIST **lst, OBJPTR obj )
+/****************************************************/
 {
     /* delete the object from the list */
     LIST *node;
@@ -115,8 +113,8 @@ void WINEXP ListRemoveElt( LIST **lst, OBJPTR obj )
     }
 }
 
-LIST * WINEXP ListConsume( LIST *curr )
-/*************************************/
+LIST *FMEDITAPI ListConsume( LIST *curr )
+/***************************************/
 {
     /* free the current element and return the next element */
     LIST *next;
@@ -127,8 +125,8 @@ LIST * WINEXP ListConsume( LIST *curr )
 }
 
 
-LIST * WINEXP ListFindElt( LIST *l, OBJPTR elt )
-/**********************************************/
+LIST *FMEDITAPI ListFindElt( LIST *l, OBJPTR elt )
+/************************************************/
 {
     /* find the given element in the list */
     while( l != NULL ) {
@@ -141,8 +139,8 @@ LIST * WINEXP ListFindElt( LIST *l, OBJPTR elt )
 }
 
 
-LIST * WINEXP ListCopy( LIST *l )
-/*******************************/
+LIST *FMEDITAPI ListCopy( LIST *l )
+/*********************************/
 {
     /* make a copy of the passed list */
     LIST *head;
@@ -154,8 +152,8 @@ LIST * WINEXP ListCopy( LIST *l )
     return( head );
 }
 
-int WINEXP ListCount( LIST *l )
-/*****************************/
+int FMEDITAPI ListCount( LIST *l )
+/********************************/
 {
     /* count the number of elements in the list */
     int count;
@@ -167,8 +165,8 @@ int WINEXP ListCount( LIST *l )
     return( count );
 }
 
-void WINEXP ListInsertElt( LIST *prev, OBJPTR obj )
-/*************************************************/
+void FMEDITAPI ListInsertElt( LIST *prev, OBJPTR obj )
+/****************************************************/
 {
     /* add a new element to the list */
     LIST *new;
@@ -184,8 +182,8 @@ void WINEXP ListInsertElt( LIST *prev, OBJPTR obj )
 }
 
 
-void WINEXP ListMerge( LIST **destlist, LIST *src )
-/*************************************************/
+void FMEDITAPI ListMerge( LIST **destlist, LIST *src )
+/**************¨*************************************/
 {
     LIST *curr;
     LIST *last;

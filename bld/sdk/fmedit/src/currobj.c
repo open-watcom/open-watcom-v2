@@ -30,16 +30,14 @@
 
 
 #include <windows.h>
-
 #include "fmedit.def"
 #include "object.def"
 #include "currobj.h"
-#include "global.h"
 #include "memory.def"
 
 /* forward references */
 
-static BOOL PASCAL CurrObjDispatch( ACTION, CURROBJ *, void *, void * );
+static BOOL CALLBACK CurrObjDispatch( ACTION, CURROBJ *, void *, void * );
 static BOOL CurrObjDestroy( OBJPTR, void *, void * );
 static BOOL CurrObjValidateAction( OBJPTR, void *, void * );
 static BOOL CurrObjGetObject( OBJPTR, void *, void * );
@@ -62,9 +60,8 @@ static DISPATCH_ITEM CurrObjActions[] = {
 
 #define MAX_ACTIONS (sizeof( CurrObjActions ) / sizeof( DISPATCH_ITEM ))
 
-extern BOOL PASCAL CurrObjDispatch( ACTION id, CURROBJ *c,
-                                    void *p1, void *p2 )
-/******************************************************/
+static BOOL CALLBACK CurrObjDispatch( ACTION id, CURROBJ *c, void *p1, void *p2 )
+/*******************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
@@ -102,8 +99,8 @@ static BOOL CurrObjValidateAction( OBJPTR _c, void *_idptr, void *p2 )
     return( FALSE );
 }
 
-extern OBJPTR CurrObjCreate( OBJPTR obj, RECT *loc, OBJPTR handle )
-/*****************************************************************/
+OBJPTR CurrObjCreate( OBJPTR obj, RECT *loc, OBJPTR handle )
+/**********************************************************/
 {
     /* create an CURROBJ object */
     CURROBJ *new;

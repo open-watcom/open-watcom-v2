@@ -30,7 +30,6 @@
 
 
 #include <windows.h>
-
 #include "fmedit.def"
 #include "cursor.def"
 

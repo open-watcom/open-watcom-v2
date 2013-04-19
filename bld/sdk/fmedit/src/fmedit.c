@@ -33,11 +33,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "wi163264.h"
+#include "global.h"
 
 /* imports */
 
-#include "global.h"
 #include "fmedit.def"
 #include "fmdlgs.h"
 #include "state.def"
@@ -56,8 +55,10 @@
 #include "space.def"
 #include "clip.def"
 
-void WINEXP CloseFormEdit( HWND wnd )
-/***********************************/
+WINEXPORT BOOL CALLBACK FMEditWndProc( HWND, UINT, WPARAM, LPARAM );
+
+void FMEDITAPI CloseFormEdit( HWND wnd )
+/**************************************/
 {
     /* close the editing window */
     if( InitState( wnd ) ) {
@@ -66,8 +67,8 @@ void WINEXP CloseFormEdit( HWND wnd )
     }
 }
 
-void WINEXP CloseFormEditID( STATE_HDL hdl )
-/******************************************/
+void FMEDITAPI CloseFormEditID( STATE_HDL hdl )
+/*********************************************/
 {
     /* close the editing window given a state handle */
     if( InitStateFormID( hdl ) ) {
@@ -76,8 +77,8 @@ void WINEXP CloseFormEditID( STATE_HDL hdl )
     }
 }
 
-void WINEXP ResetFormEdit( HWND wnd )
-/***********************************/
+void FMEDITAPI ResetFormEdit( HWND wnd )
+/**************************************/
 {
     /* close the editing window */
     if( InitState( wnd ) ) {
@@ -90,8 +91,8 @@ void WINEXP ResetFormEdit( HWND wnd )
     }
 }
 
-STATE_HDL WINEXP InitFormEdit( CREATE_TABLE objtable )
-/****************************************************/
+STATE_HDL FMEDITAPI InitFormEdit( CREATE_TABLE objtable )
+/*******************************************************/
 {
     NewState();
     CreateCurrObject();
@@ -99,9 +100,8 @@ STATE_HDL WINEXP InitFormEdit( CREATE_TABLE objtable )
     return( GetCurrFormID() );
 }
 
-void WINEXP SetFormEditWnd( STATE_HDL st, HWND wnd, int bitmap,
-                            SCR_CONFIG scroll )
-/*********************************************/
+void FMEDITAPI SetFormEditWnd( STATE_HDL st, HWND wnd, int bitmap, SCR_CONFIG scroll )
+/************************************************************************************/
 {
     InitStateFormID( st );
     SetStateWnd( wnd );
@@ -114,9 +114,8 @@ void WINEXP SetFormEditWnd( STATE_HDL st, HWND wnd, int bitmap,
 }
 
 
-void WINEXP OpenFormEdit( HWND wnd, CREATE_TABLE objtable,
-                          int bitmap, SCR_CONFIG scroll )
-/*******************************************************/
+void FMEDITAPI OpenFormEdit( HWND wnd, CREATE_TABLE objtable, int bitmap, SCR_CONFIG scroll )
+/*******************************************************************************************/
 {
     /* Saves instance handle and creates main window */
     NewState();
@@ -193,9 +192,8 @@ static void CopyObjects( void )
 }
 
 
-BOOL WINEXP FMEditWndProc( HWND wnd, unsigned message,
-                           WPARAM wparam, LPARAM lparam )
-/*******************************************************/
+WINEXPORT BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
+/*******************************************************************************************/
 {
     /* processes messages */
     FARPROC        procaddr;
@@ -330,7 +328,7 @@ BOOL WINEXP FMEditWndProc( HWND wnd, unsigned message,
 
 #ifdef __NT__
 
-int WINAPI LibMain ( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
+BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 {
     /* Initializes window data and registers window class */
     lpReserved = lpReserved;     /* avoid warning */
@@ -356,9 +354,8 @@ int WINAPI LibMain ( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
 
 #else
 
-int WINAPI LibMain( HINSTANCE inst, WORD dataseg,
-                    WORD heapsize, LPSTR cmdline )
-/************************************************/
+int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
+/******************************************************************************/
 {
     /* Initializes window data and registers window class */
     dataseg = dataseg;              /* ref'd to avoid warnings */
@@ -386,8 +383,8 @@ int WINAPI WEP( int parm )
 
 #endif
 
-BOOL WINEXP ObjectPress( OBJPTR obj, POINT *pt, WORD wparam, HWND wnd )
-/*********************************************************************/
+BOOL FMEDITAPI ObjectPress( OBJPTR obj, POINT *pt, WORD wparam, HWND wnd )
+/************************************************************************/
 {
     /* The application is telling us that the object obj got a button down
      * on it.

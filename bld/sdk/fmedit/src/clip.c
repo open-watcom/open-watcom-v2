@@ -33,10 +33,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-
 #include "fmedit.def"
 #include "object.def"
-#include "global.h"
 #include "state.def"
 #include "dlist.def"
 #include "fmerror.def"
@@ -72,8 +70,8 @@ static void FreeClipboard( void )
 }
 
 
-void WINEXP FMResetClipboard( void )
-/**********************************/
+void FMEDITAPI FMResetClipboard( void )
+/*************************************/
 {
     /* Reset the list of copy objects */
     if( ClipBoard.task == GET_CURRENT_TASK() ) {
@@ -81,8 +79,8 @@ void WINEXP FMResetClipboard( void )
     }
 }
 
-void WINEXP FMNewClipboard( void )
-/********************************/
+void FMEDITAPI FMNewClipboard( void )
+/***********************************/
 {
     FreeClipboard();
     ClipBoard.task = GET_CURRENT_TASK();
@@ -138,8 +136,8 @@ static DLIST *FindInsertPoint( OBJPTR original )
 }
 
 
-void WINEXP FMAddClipboard( OBJPTR original, OBJPTR copy )
-/********************************************************/
+void FMEDITAPI FMAddClipboard( OBJPTR original, OBJPTR copy )
+/***********************************************************/
 {
     /* Add obj to the list of copy objects */
     DLIST_ELT   elt;
@@ -158,8 +156,8 @@ void WINEXP FMAddClipboard( OBJPTR original, OBJPTR copy )
 }
 
 
-BOOL WINEXP FMClipObjExists( OBJPTR obj )
-/***************************************/
+BOOL FMEDITAPI FMClipObjExists( OBJPTR obj )
+/******************************************/
 {
     /* See if obj is already in the list of copy objects */
     DLIST_ELT elt;
@@ -176,8 +174,8 @@ BOOL WINEXP FMClipObjExists( OBJPTR obj )
 }
 
 
-BOOL WINEXP FMPasteValid( void )
-/******************************/
+BOOL FMEDITAPI FMPasteValid( void )
+/*********************************/
 {
     return( ClipBoard.task == GET_CURRENT_TASK() );
 }

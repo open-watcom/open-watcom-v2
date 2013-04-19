@@ -32,12 +32,10 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <windows.h>
-#include "wi163264.h"
-
+#include "global.h"
 #include "fmedit.def"
 #include "state.def"
 #include "object.def"
-#include "global.h"
 
 #define PG_SC_PERCENT           80
 #define LN_SC_AMOUNT            10
@@ -348,8 +346,8 @@ static void DoScroll( HWND wnd, int dx, int dy, BOOL lock )
 }
 
 
-void WINEXP UpdateScroll( void )
-/******************************/
+void FMEDITAPI UpdateScroll( void )
+/*********************************/
 {
     RECT  newrect;
     RECT  clrect;
