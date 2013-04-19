@@ -37,7 +37,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 
-#pragma pack( 1 );
+#include "pushpck1.h"
 
 typedef struct ICONDIRENTRY {
     BYTE        bWidth;
@@ -118,29 +118,29 @@ typedef struct RESCURSORHEADER {
     RESCURSORDIRENTRY   cdEntries[1];
 } RESCURSORHEADER;
 
-#pragma pack();
+#include "poppck.h"
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern uint_32  WR_EXPORT WRSizeOfImage( BITMAPINFOHEADER *bih );
-extern WORD     WR_EXPORT WRCountIconImages( BYTE *data, uint_32 size );
-extern int      WR_EXPORT WRCreateIconHeader( BYTE *data, uint_32 size, WORD type, ICONHEADER **ih, uint_32 *ihsize );
-extern int      WR_EXPORT WRCreateCursorResHeader( RESCURSORHEADER **rch, uint_32 *rchsize, BYTE *data, uint_32 data_size );
-extern int      WR_EXPORT WRCreateIconResHeader( RESICONHEADER **rih, uint_32 *rihsize, BYTE *data, uint_32 data_size );
-extern int      WR_EXPORT WRAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *hs );
-extern int      WR_EXPORT WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int ord );
-extern int      WR_EXPORT WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord );
-extern int      WR_EXPORT WRFindImageId( WRInfo *info, WResTypeNode **otnode, WResResNode **ornode, WResLangNode **lnode, uint_16 type, uint_16 id, WResLangType *ltype );
+WRDLLENTRY extern uint_32  WRAPI WRSizeOfImage( BITMAPINFOHEADER *bih );
+WRDLLENTRY extern WORD     WRAPI WRCountIconImages( BYTE *data, uint_32 size );
+WRDLLENTRY extern int      WRAPI WRCreateIconHeader( BYTE *data, uint_32 size, WORD type, ICONHEADER **ih, uint_32 *ihsize );
+WRDLLENTRY extern int      WRAPI WRCreateCursorResHeader( RESCURSORHEADER **rch, uint_32 *rchsize, BYTE *data, uint_32 data_size );
+WRDLLENTRY extern int      WRAPI WRCreateIconResHeader( RESICONHEADER **rih, uint_32 *rihsize, BYTE *data, uint_32 data_size );
+WRDLLENTRY extern int      WRAPI WRAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *hs );
+WRDLLENTRY extern int      WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int ord );
+WRDLLENTRY extern int      WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord );
+WRDLLENTRY extern int      WRAPI WRFindImageId( WRInfo *info, WResTypeNode **otnode, WResResNode **ornode, WResLangNode **lnode, uint_16 type, uint_16 id, WResLangType *ltype );
 
-extern int      WR_EXPORT WRAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 d2size );
-extern int      WR_EXPORT WRAddCursorImageToData( WRInfo *info, WResLangNode*lnode, BYTE **data, uint_32 *size, CURSORHOTSPOT *hotspot );
-extern int      WR_EXPORT WRAddIconImageToData( WRInfo *info, WResLangNode *lnode, BYTE **data, uint_32 *size );
-extern int      WR_EXPORT WRCreateCursorData( WRInfo *info, WResLangNode *lnode, BYTE **data, uint_32 *size );
-extern int      WR_EXPORT WRCreateIconData( WRInfo *info, WResLangNode *lnode, BYTE **data, uint_32 *size );
-extern uint_16  WR_EXPORT WRFindUnusedImageId( WRInfo *info, uint_16 start );
-extern int      WR_EXPORT WRCreateCursorEntries( WRInfo *info, WResLangNode *lnode, void *data, uint_32 size );
-extern int      WR_EXPORT WRCreateIconEntries( WRInfo *info, WResLangNode *lnode, void *data, uint_32 size );
-extern int      WR_EXPORT WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type );
+WRDLLENTRY extern int      WRAPI WRAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 d2size );
+WRDLLENTRY extern int      WRAPI WRAddCursorImageToData( WRInfo *info, WResLangNode*lnode, BYTE **data, uint_32 *size, CURSORHOTSPOT *hotspot );
+WRDLLENTRY extern int      WRAPI WRAddIconImageToData( WRInfo *info, WResLangNode *lnode, BYTE **data, uint_32 *size );
+WRDLLENTRY extern int      WRAPI WRCreateCursorData( WRInfo *info, WResLangNode *lnode, BYTE **data, uint_32 *size );
+WRDLLENTRY extern int      WRAPI WRCreateIconData( WRInfo *info, WResLangNode *lnode, BYTE **data, uint_32 *size );
+WRDLLENTRY extern uint_16  WRAPI WRFindUnusedImageId( WRInfo *info, uint_16 start );
+WRDLLENTRY extern int      WRAPI WRCreateCursorEntries( WRInfo *info, WResLangNode *lnode, void *data, uint_32 size );
+WRDLLENTRY extern int      WRAPI WRCreateIconEntries( WRInfo *info, WResLangNode *lnode, void *data, uint_32 size );
+WRDLLENTRY extern int      WRAPI WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type );
 
 #endif

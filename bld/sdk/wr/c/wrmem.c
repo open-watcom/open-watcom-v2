@@ -31,12 +31,11 @@
 
 #include <windows.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <malloc.h>
+#include "wio.h"
 #include "wrglbl.h"
 #include "wrmemi.h"
-#include "wrmem.h"
 
 #ifdef TRMEM
 
@@ -92,7 +91,7 @@ void WRWResMemFree( void *ptr )
 #endif
 }
 
-void * WR_EXPORT WRMemAlloc( size_t size )
+void *WRAPI WRMemAlloc( unsigned size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
@@ -101,7 +100,7 @@ void * WR_EXPORT WRMemAlloc( size_t size )
 #endif
 }
 
-void WR_EXPORT WRMemFree( void *ptr )
+void WRAPI WRMemFree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
@@ -110,7 +109,7 @@ void WR_EXPORT WRMemFree( void *ptr )
 #endif
 }
 
-void * WR_EXPORT WRMemRealloc( void *ptr, size_t size )
+void *WRAPI WRMemRealloc( void *ptr, unsigned size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle ) );
@@ -119,7 +118,7 @@ void * WR_EXPORT WRMemRealloc( void *ptr, size_t size )
 #endif
 }
 
-int WR_EXPORT WRMemValidate( void *ptr )
+int WRAPI WRMemValidate( void *ptr )
 {
 #ifdef TRMEM
     return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
@@ -129,7 +128,7 @@ int WR_EXPORT WRMemValidate( void *ptr )
 #endif
 }
 
-int WR_EXPORT WRMemChkRange( void *start, size_t len )
+int WRAPI WRMemChkRange( void *start, unsigned len )
 {
 #ifdef TRMEM
     return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
@@ -140,14 +139,14 @@ int WR_EXPORT WRMemChkRange( void *start, size_t len )
 #endif
 }
 
-void WR_EXPORT WRMemPrtUsage( void )
+void WRAPI WRMemPrtUsage( void )
 {
 #ifdef TRMEM
     _trmem_prt_usage( TRMemHandle );
 #endif
 }
 
-unsigned WR_EXPORT WRMemPrtList( void )
+unsigned WRAPI WRMemPrtList( void )
 {
 #ifdef TRMEM
     return( _trmem_prt_list( TRMemHandle ) );
@@ -160,15 +159,13 @@ unsigned WR_EXPORT WRMemPrtList( void )
 
 void MemStart( void )
 {
-#ifndef __386__
-#ifndef __ALPHA__
+#ifdef _M_I86
     __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif
-#endif
 }
 
-void *MemAlloc( size_t size )
+void *MemAlloc( unsigned size )
 {
     void *p;
 
@@ -185,7 +182,7 @@ void *MemAlloc( size_t size )
     return( p );
 }
 
-void *MemReAlloc( void *ptr, size_t size )
+void *MemReAlloc( void *ptr, unsigned size )
 {
     void *p;
 

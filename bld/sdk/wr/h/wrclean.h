@@ -33,6 +33,6 @@
 #ifndef WRCLEAN_INCLUDED
 #define WRCLEAN_INCLUDED
 
-extern void WR_EXPORT WRCleanDir( WResDir dir );
+WRDLLENTRY extern void WRAPI WRCleanDir( WResDir dir );
 
 #endif

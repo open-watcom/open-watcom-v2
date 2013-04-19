@@ -35,13 +35,11 @@
 #include <string.h>
 #include <malloc.h>
 #include <dos.h>
+#include <stdlib.h>
 #include "wrglbl.h"
 #include "wrmemi.h"
-#include "wrmem.h"
 #include "wr_wres.h"
-#include "bitmap.h"
 #include "palette.h"
-#include "wrbitmap.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -49,7 +47,7 @@
 #define START_OF_HEADER         sizeof( BITMAPFILEHEADER )
 #define HUGE_SHIFT              8
 #define CHUNK_SIZE              (48 * 1024)
-#define RGBQ_SIZE( bc )         (sizeof( RGBQUAD ) * (1 << (bc)))
+#define RGBQ_SIZE( bc )         (sizeof( RGBQUAD ) * (1L << (bc)))
 #define SCANLINE_SIZE           32
 #define MAX_CHUNK               32768
 
@@ -73,7 +71,7 @@ static HBITMAP          WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap
 /****************************************************************************/
 static WResID   *BitmapName = NULL;
 
-#if !defined( __386__ ) && !defined( __ALPHA__ )
+#if defined( _M_I86 )
 
 #define _HUGE __huge
 #define __halloc halloc
@@ -246,13 +244,13 @@ static HBITMAP WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *in
     }
     if( core ) {
         if( info != NULL ) {
-            info->bm_core = bm_core;
+            info->u.bm_core = bm_core;
         } else {
             WRMemFree( bm_core );
         }
     } else {
         if( info != NULL ) {
-            info->bm_info = bm_info;
+            info->u.bm_info = bm_info;
         } else {
             WRMemFree( bm_info );
         }
@@ -264,7 +262,7 @@ static HBITMAP WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *in
  * Creates a device independant bitmap from the data <data> and
  * returns a handle to a newly created BITMAP.
  */
-HBITMAP WR_EXPORT WRBitmapFromData( BYTE *data, bitmap_info *info )
+HBITMAP WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info )
 {
     HBITMAP             bitmap_handle;
     BITMAPFILEHEADER    *file_header;
@@ -441,7 +439,7 @@ int WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size,
     return( TRUE );
 }
 
-int WR_EXPORT WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, uint_32 *size )
+int WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, uint_32 *size )
 {
     BITMAPFILEHEADER    bmfh;
     BITMAPINFO          *bmi;
@@ -508,7 +506,7 @@ int WR_EXPORT WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, uint_32 *size )
     return( TRUE );
 }
 
-int WR_EXPORT WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
+int WRAPI WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
 {
     BITMAPFILEHEADER    *bmfh;
     BITMAPINFO          *bmi;
@@ -547,7 +545,7 @@ int WR_EXPORT WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
     return( TRUE );
 }
 
-int WR_EXPORT WRStripBitmapFileHeader( BYTE **data, uint_32 *size )
+int WRAPI WRStripBitmapFileHeader( BYTE **data, uint_32 *size )
 {
     int         bfhsize;
     if( data != NULL && size != NULL ) {
@@ -560,7 +558,7 @@ int WR_EXPORT WRStripBitmapFileHeader( BYTE **data, uint_32 *size )
     return( FALSE );
 }
 
-void WR_EXPORT WRForgetBitmapName( void )
+void WRAPI WRForgetBitmapName( void )
 {
     if( BitmapName != NULL ) {
         WRMemFree( BitmapName );
@@ -568,13 +566,13 @@ void WR_EXPORT WRForgetBitmapName( void )
     }
 }
 
-void WR_EXPORT WRRememberBitmapName( WResID *name )
+void WRAPI WRRememberBitmapName( WResID *name )
 {
     WRForgetBitmapName();
     BitmapName = WRCopyWResID( name );
 }
 
-WResID * WR_EXPORT WRRecallBitmapName( void )
+WResID * WRAPI WRRecallBitmapName( void )
 {
     return( WRCopyWResID( BitmapName ) );
 }

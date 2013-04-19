@@ -31,10 +31,9 @@
 
 
 #include <windows.h>
+#include "watcom.h"
 #include "wrglbl.h"
-#include "wrmem.h"
 #include "wresall.h"
-#include "wrdel.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -58,7 +57,7 @@ static int      WRFreeLangNodes( WResResNode *rnode );
 /* static variables                                                         */
 /****************************************************************************/
 
-int WR_EXPORT WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
+int WRAPI WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
                                        WResResNode **rnode, WResLangNode **lnode )
 {
     if( dir == NULL || tnode == NULL || *tnode == NULL || rnode == NULL ||
@@ -136,7 +135,7 @@ int WR_EXPORT WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
     return( TRUE );
 }
 
-int WR_EXPORT WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
+int WRAPI WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
 {
     if( dir == NULL || tnode == NULL ) {
         return( FALSE );

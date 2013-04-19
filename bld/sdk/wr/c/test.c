@@ -32,16 +32,13 @@
 
 #include <windows.h>
 #include <stdlib.h>
-#include "wrdll.h"
-#include "wrselft.h"
-#include "wrmemf.h"
-#include "wrselimg.h"
+#include "watcom.h"
+#include "wrglbl.h"
+#include "clibint.h"
 
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine, int nCmdShow )
 {
-    extern char         **_argv;
-    extern int          _argc;
     int                 ret;
     int                 i;
     int                 ltype;

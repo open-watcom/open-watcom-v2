@@ -32,13 +32,10 @@
 
 #include <windows.h>
 #include <string.h>
+#include "watcom.h"
 #include "wrglbl.h"
 #include "wresall.h"
-#include "wrmem.h"
 #include "wrstrdup.h"
-#include "wrnamoor.h"
-#include "wrutil.h"
-#include "wrstr.h"
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -172,7 +169,7 @@ static int WRInitDataFromBlock( StringTableBlock *block, void *data, int size, i
     return( dsize == size );
 }
 
-int WR_EXPORT WRIsBlockEmpty( StringTableBlock *block )
+int WRAPI WRIsBlockEmpty( StringTableBlock *block )
 {
     int         i;
 
@@ -187,7 +184,7 @@ int WR_EXPORT WRIsBlockEmpty( StringTableBlock *block )
     return( TRUE );
 }
 
-int WR_EXPORT WRMakeDataFromStringBlock( StringTableBlock *block, void **data,
+int WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data,
                                          int *size, int is32bit )
 {
     if( data != NULL && size != NULL ) {
@@ -213,7 +210,7 @@ int WR_EXPORT WRMakeDataFromStringBlock( StringTableBlock *block, void **data,
     return( FALSE );
 }
 
-int WR_EXPORT WRMakeStringBlockFromData( StringTableBlock *block, void *data,
+int WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data,
                                          int size, int is32bit )
 {
     char        *text;
@@ -283,7 +280,7 @@ int WR_EXPORT WRMakeStringBlockFromData( StringTableBlock *block, void *data,
 }
 
 // copy strings in b2 into b1
-int WR_EXPORT WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, int replace )
+int WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, int replace )
 {
     int         i;
     int         size;
@@ -315,7 +312,7 @@ int WR_EXPORT WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, in
     return( TRUE );
 }
 
-int WR_EXPORT WRMergeStringData( void **s1, int *sz1, void *s2, int sz2,
+int WRAPI WRMergeStringData( void **s1, int *sz1, void *s2, int sz2,
                                  int is32bit, int replace )
 {
     StringTableBlock    b1;

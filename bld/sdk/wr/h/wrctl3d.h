@@ -34,7 +34,6 @@
 #define WRCTL3D_INCLUDED
 
 #include "ctl3d.h"
-#include "wrglbl.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -47,21 +46,21 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int      WR_EXPORT    WRCtl3DInit( HINSTANCE );
-extern void     WR_EXPORT   WRCtl3DFini( HINSTANCE );
+WRDLLENTRY extern int      WRAPI WRCtl3DInit( HINSTANCE );
+WRDLLENTRY extern void     WRAPI WRCtl3DFini( HINSTANCE );
 
-extern BOOL     WR_EXPORT WRCtl3dSubclassDlg( HWND, WORD );
-extern BOOL     WR_EXPORT WRCtl3dSubclassDlgEx( HWND, DWORD );
-extern WORD     WR_EXPORT WRCtl3dGetVer( void );
-extern BOOL     WR_EXPORT WRCtl3dEnabled( void );
-extern HBRUSH   WR_EXPORT WRCtl3dCtlColor( HDC, LONG );
-extern HBRUSH   WR_EXPORT WRCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam );
-extern BOOL     WR_EXPORT WRCtl3dColorChange( void );
-extern BOOL     WR_EXPORT WRCtl3dSubclassCtl( HWND );
-extern LONG     WR_EXPORT WRCtl3dDlgFramePaint( HWND, UINT, WPARAM, LPARAM );
-extern BOOL     WR_EXPORT WRCtl3dAutoSubclass( HANDLE );
-extern BOOL     WR_EXPORT WRCtl3dRegister( HANDLE );
-extern BOOL     WR_EXPORT WRCtl3dUnregister( HANDLE );
-extern VOID     WR_EXPORT WRCtl3dWinIniChange( void );
+WRDLLENTRY extern BOOL     WRAPI WRCtl3dSubclassDlg( HWND, WORD );
+WRDLLENTRY extern BOOL     WRAPI WRCtl3dSubclassDlgEx( HWND, DWORD );
+WRDLLENTRY extern WORD     WRAPI WRCtl3dGetVer( void );
+WRDLLENTRY extern BOOL     WRAPI WRCtl3dEnabled( void );
+WRDLLENTRY extern HBRUSH   WRAPI WRCtl3dCtlColor( HDC, LONG );
+WRDLLENTRY extern HBRUSH   WRAPI WRCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam );
+WRDLLENTRY extern BOOL     WRAPI WRCtl3dColorChange( void );
+WRDLLENTRY extern BOOL     WRAPI WRCtl3dSubclassCtl( HWND );
+WRDLLENTRY extern LONG     WRAPI WRCtl3dDlgFramePaint( HWND, UINT, WPARAM, LPARAM );
+WRDLLENTRY extern BOOL     WRAPI WRCtl3dAutoSubclass( HANDLE );
+WRDLLENTRY extern BOOL     WRAPI WRCtl3dRegister( HANDLE );
+WRDLLENTRY extern BOOL     WRAPI WRCtl3dUnregister( HANDLE );
+WRDLLENTRY extern VOID     WRAPI WRCtl3dWinIniChange( void );
 
 #endif

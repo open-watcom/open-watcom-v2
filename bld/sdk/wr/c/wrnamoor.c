@@ -32,12 +32,9 @@
 
 #include <windows.h>
 #include <string.h>
-
+#include <stdlib.h>
 #include "wrglbl.h"
-#include "wrmem.h"
 #include "wresall.h"
-#include "wrutil.h"
-#include "wrnamoor.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -187,7 +184,7 @@ int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, int *size )
     return( TRUE );
 }
 
-ResNameOrOrdinal * WR_EXPORT WRMem2NameOrOrdinal( void *data, int is32bit )
+ResNameOrOrdinal * WRAPI WRMem2NameOrOrdinal( void *data, int is32bit )
 {
     ResNameOrOrdinal    *n;
 
@@ -200,7 +197,7 @@ ResNameOrOrdinal * WR_EXPORT WRMem2NameOrOrdinal( void *data, int is32bit )
     return( n );
 }
 
-int WR_EXPORT WRNameOrOrd2Mem( ResNameOrOrdinal *name, int is32bit, void **data, int *size )
+int WRAPI WRNameOrOrd2Mem( ResNameOrOrdinal *name, int is32bit, void **data, int *size )
 {
     if( is32bit ) {
         return( WRNameOrOrd2Mem32( name, data, size ) );

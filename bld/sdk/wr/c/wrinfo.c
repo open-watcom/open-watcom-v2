@@ -34,12 +34,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "wrinfo.h"
+#include "watcom.h"
+#include "wrglbl.h"
 #include "wrinfoi.h"
-#include "wrmain.h"
-#include "wrtmpfil.h"
-#include "wrfindt.h"
-#include "wrmem.h"
 #include "wrmsg.h"
 
 /****************************************************************************/
@@ -76,7 +73,7 @@ int WRCopyFileToTemp( WRInfo *info, char *filename )
     return( TRUE );
 }
 
-WRInfo * WR_EXPORT WRAllocWRInfo( void )
+WRInfo * WRAPI WRAllocWRInfo( void )
 {
     WRInfo  *info;
 
@@ -87,7 +84,7 @@ WRInfo * WR_EXPORT WRAllocWRInfo( void )
     return( info );
 }
 
-void WR_EXPORT WRFreeWRInfo( WRInfo *info )
+void WRAPI WRFreeWRInfo( WRInfo *info )
 {
     if( info != NULL ) {
         if( info->file_name != NULL ) {
@@ -113,7 +110,7 @@ void WR_EXPORT WRFreeWRInfo( WRInfo *info )
     }
 }
 
-void WR_EXPORT WRFreeWResDirData( WResDir dir )
+void WRAPI WRFreeWResDirData( WResDir dir )
 {
     WResTypeNode  *tnode;
     WResResNode   *rnode;
@@ -141,7 +138,7 @@ void WR_EXPORT WRFreeWResDirData( WResDir dir )
     }
 }
 
-int WR_EXPORT WRCountZeroLengthResources( WResDir dir )
+int WRAPI WRCountZeroLengthResources( WResDir dir )
 {
     WResTypeNode        *tnode;
     WResResNode         *rnode;
@@ -267,7 +264,7 @@ int WRRelinkInfo( WRInfo *info )
     return( ok );
 }
 
-int WR_EXPORT WRGetInternalRESName( char *filename, char *newname )
+int WRAPI WRGetInternalRESName( char *filename, char *newname )
 {
     char                fn_drive[_MAX_DRIVE];
     char                fn_dir[_MAX_DIR];

@@ -14,12 +14,14 @@ set PROJNAME=wr
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> wini86/wr.dll        <OWRELROOT>/binw/wr.dll
-    <CCCMD> wini86/wr.sym        <OWRELROOT>/binw/wr.sym
-    <CCCMD> nt386/wr.dll         <OWRELROOT>/binnt/wr.dll
-    <CCCMD> nt386/wr.sym         <OWRELROOT>/binnt/wr.sym
-    <CCCMD> ntaxp/wr.dll         <OWRELROOT>/axpnt/wr.dll
-    <CCCMD> ntaxp/wr.sym         <OWRELROOT>/axpnt/wr.sym
+    <CCCMD> wini86/wr.dll        <OWRELROOT>/binw/
+    <CCCMD> wini86/wr.sym        <OWRELROOT>/binw/
+    <CCCMD> nt386/wr.dll         <OWRELROOT>/binnt/
+    <CCCMD> nt386/wr.sym         <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/wr.dll         <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wr.sym         <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/wr.dll         <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

@@ -30,9 +30,9 @@
 
 
 #include <windows.h>
+#include "watcom.h"
 #include "wrglbl.h"
 #include "wrlist.h"
-#include "wrdmsg.h"
 #include "wrdmsgi.h"
 
 /****************************************************************************/
@@ -81,13 +81,13 @@ void WRUnregisterDialog( HWND hdlg )
     ListRemoveElt( &WRDialogList, (void *)hdlg );
 }
 
-int WR_EXPORT WRIsWRDialogMsg( MSG *msg )
+int WRAPI WRIsWRDialogMsg( MSG *msg )
 {
     HWND        hdlg;
     LIST        *item;
 
     for( item = WRDialogList; item != NULL ; item = ListNext( item ) ) {
-        hdlg = (HWND)(DWORD)ListElement( item );
+        hdlg = (HWND)ListElement( item );
         if( hdlg != (HWND)NULL && IsDialogMessage( hdlg, msg ) ) {
             return( TRUE );
         }

@@ -37,20 +37,11 @@
 #include <io.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "watcom.h"
 #include "wrglbl.h"
 #include "wrimg.h"
-#include "wrmain.h"
-#include "wrmem.h"
 #include "wrmsg.h"
 #include "wrsvres.h"
-#include "wrtmpfil.h"
-#include "wrfindt.h"
-#include "wrdata.h"
-#include "bitmap.h"
-#include "wrbitmap.h"
-#include "wricon.h"
-#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

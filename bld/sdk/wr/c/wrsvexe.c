@@ -45,10 +45,7 @@
 #include "wresset2.h"
 
 #include "wrglbl.h"
-#include "wrmain.h"
-#include "wrmem.h"
 #include "wrsvres.h"
-#include "wrtmpfil.h"
 #include "wrmsg.h"
 #include "wrsvexe.h"
 

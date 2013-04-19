@@ -36,12 +36,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void *   WR_EXPORT WRMemAlloc( unsigned );
-extern void     WR_EXPORT WRMemFree( void * );
-extern void *   WR_EXPORT WRMemRealloc( void *, unsigned );
-extern int      WR_EXPORT WRMemValidate( void * );
-extern int      WR_EXPORT WRMemChkRange( void *, unsigned );
-extern void     WR_EXPORT WRMemPrtUsage( void );
-extern unsigned WR_EXPORT WRMemPrtList( void );
+WRDLLENTRY extern void *   WRAPI WRMemAlloc( unsigned );
+WRDLLENTRY extern void     WRAPI WRMemFree( void * );
+WRDLLENTRY extern void *   WRAPI WRMemRealloc( void *, unsigned );
+WRDLLENTRY extern int      WRAPI WRMemValidate( void * );
+WRDLLENTRY extern int      WRAPI WRMemChkRange( void *, unsigned );
+WRDLLENTRY extern void     WRAPI WRMemPrtUsage( void );
+WRDLLENTRY extern unsigned WRAPI WRMemPrtList( void );
 
 #endif

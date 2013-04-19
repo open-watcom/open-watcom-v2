@@ -35,9 +35,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <io.h>
+#include "watcom.h"
 #include "wrglbl.h"
 #include "wrmemi.h"
-#include "wrmem.h"
 #include "wrimg.h"
 #include "wrrdw16.h"
 #include "wrrdwnt.h"
@@ -47,20 +47,12 @@
 #include "wridfile.h"
 #include "wrtmpfil.h"
 #include "wrstrdup.h"
-#include "wrfindt.h"
 #include "wrfindti.h"
-#include "wrdel.h"
 #include "wrmsg.h"
 #include "wrclean.h"
-#include "wrdata.h"
-#include "wrstr.h"
 #include "wrinfoi.h"
-#include "wrmain.h"
 #include "wrmaini.h"
 #include "wrdmsgi.h"
-#include "bitmap.h"
-#include "wricon.h"
-#include "wrctl3d.h"
 #include "jdlg.h"
 
 /****************************************************************************/
@@ -98,7 +90,7 @@ WResSetRtns( open, close, read, write, lseek, tell, WRWResMemAlloc, WRWResMemFre
 
 #ifdef __NT__
 
-int WINAPI LibMain( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
+BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 {
     _wtouch( lpReserved );
 
@@ -152,7 +144,7 @@ HINSTANCE WRGetInstance( void )
     return( WRInstance );
 }
 
-void WR_EXPORT WRInit( void )
+void WRAPI WRInit( void )
 {
     if( ref_count == 0 ) {
         WRDialogMsgInit();
@@ -164,7 +156,7 @@ void WR_EXPORT WRInit( void )
     ref_count++;
 }
 
-void WR_EXPORT WRFini( void )
+void WRAPI WRFini( void )
 {
     ref_count--;
     if( ref_count == 0 ) {
@@ -176,7 +168,7 @@ void WR_EXPORT WRFini( void )
     }
 }
 
-WRInfo * WR_EXPORT WRLoadResource( const char *name, WRFileType type )
+WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
 {
     WRInfo  *info;
     int     ret;
@@ -270,7 +262,7 @@ WRInfo * WR_EXPORT WRLoadResource( const char *name, WRFileType type )
     return( info );
 }
 
-int WR_EXPORT WRSaveResource( WRInfo *info, int backup )
+int WRAPI WRSaveResource( WRInfo *info, int backup )
 {
     int     ret;
     char    *tmp;
@@ -353,12 +345,12 @@ int WR_EXPORT WRSaveResource( WRInfo *info, int backup )
         break;
     }
 
-    if( ret != NULL && info->dir != NULL ) {
+    if( ret && info->dir != NULL ) {
         ret = WRRelinkInfo( info );
     }
 
     if( tmp != NULL ) {
-        ret = ret && WRRenameFile( tmp, info->save_name );
+        ret = ( ret && WRRenameFile( tmp, info->save_name ) );
         WRMemFree( info->save_name );
         info->save_name = tmp;
     }
@@ -366,7 +358,7 @@ int WR_EXPORT WRSaveResource( WRInfo *info, int backup )
     return( ret );
 }
 
-int WR_EXPORT WRUpdateTmp( WRInfo *info )
+int WRAPI WRUpdateTmp( WRInfo *info )
 {
     int         ret;
     char        *tsave;
@@ -468,7 +460,7 @@ int WR_EXPORT WRUpdateTmp( WRInfo *info )
     return( ret );
 }
 
-int WR_EXPORT WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData *idata )
+int WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData *idata )
 {
     WRInfo      *info;
     long        type;
@@ -524,7 +516,7 @@ int WR_EXPORT WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveInto
     return( ok );
 }
 
-int WR_EXPORT WRSaveObjectInto( const char *file, WRSaveIntoData *idata, int *dup )
+int WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, int *dup )
 {
     WRInfo      *info;
     char        *tmp_file;
@@ -586,7 +578,7 @@ int WR_EXPORT WRSaveObjectInto( const char *file, WRSaveIntoData *idata, int *du
     return( ok );
 }
 
-int WR_EXPORT WRFindAndSetData( WResDir dir, WResID *type, WResID *name,
+int WRAPI WRFindAndSetData( WResDir dir, WResID *type, WResID *name,
                                 WResLangType *lang, void *data )
 {
     WResLangNode    *lnode;
@@ -594,6 +586,7 @@ int WR_EXPORT WRFindAndSetData( WResDir dir, WResID *type, WResID *name,
 
     ok = (dir != NULL && type != NULL && name != NULL && lang != NULL && data != NULL);
 
+    lnode = NULL;
     if( ok ) {
         lnode = WRFindLangNode( dir, type, name, lang );
         ok = (lnode != NULL);
@@ -606,7 +599,7 @@ int WR_EXPORT WRFindAndSetData( WResDir dir, WResID *type, WResID *name,
     return( ok );
 }
 
-WResLangNode * WR_EXPORT WRFindLangNode( WResDir dir, WResID *type,
+WResLangNode *WRAPI WRFindLangNode( WResDir dir, WResID *type,
                                          WResID *name, WResLangType *lang )
 {
     WResTypeNode    *tnode;
@@ -616,23 +609,22 @@ WResLangNode * WR_EXPORT WRFindLangNode( WResDir dir, WResID *type,
 
     ok = (dir != NULL && type != NULL && name != NULL && lang != NULL);
 
+    tnode = NULL;
     if( ok ) {
         tnode = WRFindTypeNodeFromWResID( dir, type );
         ok = (tnode != NULL);
     }
 
+    rnode = NULL;
     if( ok ) {
         rnode = WRFindResNodeFromWResID( tnode, name );
         ok = (rnode != NULL);
     }
 
+    lnode = NULL;
     if( ok ) {
         lnode = WRFindLangNodeFromLangType( rnode, lang );
         ok = (lnode != NULL);
-    }
-
-    if( !ok ) {
-        lnode = NULL;
     }
 
     return( lnode );
@@ -669,11 +661,13 @@ int WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, int is_icon )
     ok = (info != NULL && info->dir != NULL && idata != NULL && idata->type != NULL &&
           idata->name != NULL && idata->data != NULL && idata->info != NULL);
 
+    lnode = NULL;
     if( ok ) {
         lnode = WRFindLangNode( idata->info->dir, idata->type, idata->name, &idata->lang );
         ok = (lnode != NULL);
     }
 
+    size = 0;
     if( ok ) {
         if( is_icon ) {
             ok = WRCreateIconData( idata->info, lnode, &data, &size );
@@ -758,11 +752,13 @@ int WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, int *dup, int is_ic
         replace_nixed = !ok;
     }
 
+    lnode = NULL;
     if( ok ) {
         lnode = WRFindLangNode( idata->info->dir, idata->type, idata->name, &idata->lang );
         ok = (lnode != NULL);
     }
 
+    size = 0;
     if( ok ) {
         if( is_icon ) {
             ok = WRCreateIconData( idata->info, lnode, &data, &size );

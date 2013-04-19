@@ -36,7 +36,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern ResNameOrOrdinal *   WR_EXPORT WRMem2NameOrOrdinal( void *data, int is32bit );
-extern int                  WR_EXPORT WRNameOrOrd2Mem( ResNameOrOrdinal *name, int is32bit, void **data, int *size );
+WRDLLENTRY extern ResNameOrOrdinal *   WRAPI WRMem2NameOrOrdinal( void *data, int is32bit );
+WRDLLENTRY extern int                  WRAPI WRNameOrOrd2Mem( ResNameOrOrdinal *name, int is32bit, void **data, int *size );
 
 #endif

@@ -33,14 +33,11 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
-#include "wi163264.h"
+#include "watcom.h"
 #include "wrglbl.h"
-#include "wrinfo.h"
 #include "wrmsg.h"
-#include "wrctl3d.h"
 #include "wrmaini.h"
 #include "wrdmsgi.h"
-#include "wrselft.h"
 #include "selft.h"
 #include "jdlg.h"
 
@@ -62,7 +59,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WR_EXPORT WRSelectFileTypeProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern BOOL CALLBACK WRSelectFileTypeProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -123,7 +120,7 @@ static WRFileType educatedGuess( char *name, BOOL is32bit, BOOL use_wres )
     return( guess );
 }
 
-WRFileType WR_EXPORT WRSelectFileType( HWND parent, char *name, BOOL is32bit,
+WRFileType WRAPI WRSelectFileType( HWND parent, char *name, BOOL is32bit,
                                        BOOL use_wres, FARPROC hcb )
 {
     DLGPROC     proc;
@@ -162,7 +159,7 @@ WRFileType WR_EXPORT WRSelectFileType( HWND parent, char *name, BOOL is32bit,
     return( sft.file_type );
 }
 
-WRFileType WR_EXPORT WRGuessFileType( char *name )
+WRFileType WRAPI WRGuessFileType( char *name )
 {
     char        ext[_MAX_EXT];
     WRFileType  guess;
@@ -209,7 +206,7 @@ void WRSetWinInfo( HWND hDlg, WRSFT *sft )
 
     if( sft->file_name != NULL ) {
         SendDlgItemMessage( hDlg, IDM_FILENAME, WM_SETTEXT, 0,
-                            (LPARAM)(LPCSTR)sft->file_name );
+                            (LPARAM)(LPSTR)sft->file_name );
         _splitpath( sft->file_name, NULL, NULL, NULL, ext );
         if( !stricmp( ext, ".res" ) ) {
             CheckDlgButton( hDlg, IDM_FTRES, 1 );
@@ -296,8 +293,7 @@ BOOL WRGetWinInfo( HWND hDlg, WRSFT *sft )
     return( TRUE );
 }
 
-BOOL WR_EXPORT WRSelectFileTypeProc( HWND hDlg, UINT message,
-                                     WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRSFT       *sft;
     BOOL        ret;
@@ -311,7 +307,7 @@ BOOL WR_EXPORT WRSelectFileTypeProc( HWND hDlg, UINT message,
 
     case WM_INITDIALOG:
         sft = (WRSFT *)lParam;
-        SetWindowLong( hDlg, DWL_USER, (LONG)sft );
+        SET_DLGDATA( hDlg, (LONG_PTR)sft );
         WRRegisterDialog( hDlg );
         WRSetWinInfo( hDlg, sft );
         ret = TRUE;
@@ -324,14 +320,14 @@ BOOL WR_EXPORT WRSelectFileTypeProc( HWND hDlg, UINT message,
     case WM_COMMAND:
         switch( LOWORD( wParam ) ) {
         case IDM_SFTHELP:
-            sft = (WRSFT *)GetWindowLong( hDlg, DWL_USER );
+            sft = (WRSFT *)GET_DLGDATA( hDlg );
             if( sft != NULL && sft->hcb != NULL ) {
                 (*(void (*)(void))sft->hcb)();
             }
             break;
 
         case IDOK:
-            sft = (WRSFT *)GetWindowLong( hDlg, DWL_USER );
+            sft = (WRSFT *)GET_DLGDATA( hDlg );
             if( sft == NULL ) {
                 EndDialog( hDlg, FALSE );
                 ret = TRUE;

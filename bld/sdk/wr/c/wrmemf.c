@@ -31,13 +31,10 @@
 
 
 #include <windows.h>
-#include "wi163264.h"
+#include "watcom.h"
 #include "wrglbl.h"
-#include "wrinfo.h"
-#include "wrctl3d.h"
 #include "wrmaini.h"
 #include "wrdmsgi.h"
-#include "wrmemf.h"
 #include "memflags.h"
 #include "jdlg.h"
 
@@ -57,7 +54,7 @@ typedef struct WRMFInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WR_EXPORT WRMemFlagsProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern BOOL CALLBACK WRMemFlagsProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -69,7 +66,7 @@ static void         WRGetWinInfo( HWND, WRMFInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-int WR_EXPORT WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hcb )
+int WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hcb )
 {
     WRMFInfo    info;
     DLGPROC     proc;
@@ -101,7 +98,7 @@ int WR_EXPORT WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPRO
 void WRSetWinInfo( HWND hDlg, WRMFInfo *info )
 {
     if( info != NULL ) {
-        SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)info->name );
+        SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0, (LPARAM)(LPSTR)info->name );
 
         if( info->mflags & MEMFLAG_MOVEABLE ) {
             CheckDlgButton( hDlg, IDM_MFMV, 1 );
@@ -147,7 +144,7 @@ void WRGetWinInfo( HWND hDlg, WRMFInfo *info )
     }
 }
 
-BOOL WR_EXPORT WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRMFInfo    *info;
     BOOL        ret;
@@ -161,7 +158,7 @@ BOOL WR_EXPORT WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 
     case WM_INITDIALOG:
         info = (WRMFInfo *)lParam;
-        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        SET_DLGDATA( hDlg, (LONG_PTR)info );
         WRRegisterDialog( hDlg );
         WRSetWinInfo( hDlg, info );
         ret = TRUE;
@@ -174,14 +171,14 @@ BOOL WR_EXPORT WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
     case WM_COMMAND:
         switch( LOWORD( wParam ) ) {
         case IDM_MFHELP:
-            info = (WRMFInfo *)GetWindowLong( hDlg, DWL_USER );
+            info = (WRMFInfo *)GET_DLGDATA( hDlg );
             if( info != NULL && info->hcb != NULL ) {
                 (*info->hcb)();
             }
             break;
 
         case IDOK:
-            info = (WRMFInfo *)GetWindowLong( hDlg, DWL_USER );
+            info = (WRMFInfo *)GET_DLGDATA( hDlg );
             if( info != NULL ) {
                 WRGetWinInfo( hDlg, info );
                 EndDialog( hDlg, TRUE );

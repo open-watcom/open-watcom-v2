@@ -30,8 +30,11 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include "global.h"
+#include <stdlib.h>
+#include "watcom.h"
+#include "pass2.h"
+#include "param.h"
+#include "rcio.h"
 
 char *RcGetEnv( const char *name )
 /********************************/

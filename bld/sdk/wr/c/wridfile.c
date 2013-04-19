@@ -39,7 +39,6 @@
 #include "wrrdres.h"
 #include "wrrdw16.h"
 #include "wrrdwnt.h"
-#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -58,7 +57,7 @@ static WRFileType WRIdentifyWinICOFile( const char * );
 static WRFileType IDIconOrCursor( FILE * );
 static WRFileType WRIdentifyWinRCFile( const char * );
 
-int WR_EXPORT WRIs32Bit( WRFileType ftype )
+int WRAPI WRIs32Bit( WRFileType ftype )
 {
     if( ftype == WR_WINNTM_RES || ftype == WR_WINNTW_RES ||
         ftype == WR_WINNT_EXE || ftype == WR_WINNT_DLL ) {
@@ -67,7 +66,7 @@ int WR_EXPORT WRIs32Bit( WRFileType ftype )
     return( FALSE );
 }
 
-WRFileType WR_EXPORT WRIdentifyFile( const char *file )
+WRFileType WRAPI WRIdentifyFile( const char *file )
 {
     WRFileType  ftype;
     char        ext[_MAX_EXT];

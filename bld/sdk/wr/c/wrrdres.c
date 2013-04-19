@@ -33,14 +33,12 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "watcom.h"
 #include "wrglbl.h"
 #include "wrrdres.h"
 #include "wrmsg.h"
 #include "wrstrdup.h"
 #include "wrinfoi.h"
-#include "wridfile.h"
-#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

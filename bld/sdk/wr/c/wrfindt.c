@@ -32,9 +32,8 @@
 
 #include <windows.h>
 #include <string.h>
+#include "watcom.h"
 #include "wrglbl.h"
-#include "wrfindt.h"
-#include "wrmem.h"
 
 /* forward declaration */
 int WRIsCorrectNode( WResID *node, uint_16 id, char *name );
@@ -43,7 +42,7 @@ int WRIsCorrectNode( WResID *node, uint_16 id, char *name );
 /* static function prototypes                                               */
 /****************************************************************************/
 
-int WR_EXPORT WRDoesNameExist( WResDir dir, WResID *type, WResID *res )
+int WRAPI WRDoesNameExist( WResDir dir, WResID *type, WResID *res )
 {
     WResTypeNode        *type_node;
     WResResNode         *res_node;
@@ -59,7 +58,7 @@ int WR_EXPORT WRDoesNameExist( WResDir dir, WResID *type, WResID *res )
     return( FALSE );
 }
 
-WResTypeNode * WR_EXPORT WRFindTypeNodeFromWResID( WResDir dir, WResID *type )
+WResTypeNode * WRAPI WRFindTypeNodeFromWResID( WResDir dir, WResID *type )
 {
     WResTypeNode *type_node;
     char         *type_name;
@@ -81,7 +80,7 @@ WResTypeNode * WR_EXPORT WRFindTypeNodeFromWResID( WResDir dir, WResID *type )
     return( type_node );
 }
 
-WResResNode * WR_EXPORT WRFindResNodeFromWResID( WResTypeNode *type, WResID *res )
+WResResNode * WRAPI WRFindResNodeFromWResID( WResTypeNode *type, WResID *res )
 {
     WResResNode *res_node;
     char        *res_name;
@@ -103,7 +102,7 @@ WResResNode * WR_EXPORT WRFindResNodeFromWResID( WResTypeNode *type, WResID *res
     return( res_node );
 }
 
-WResLangNode * WR_EXPORT WRFindLangNodeFromLangType( WResResNode *rnode, WResLangType *lang )
+WResLangNode *WRAPI WRFindLangNodeFromLangType( WResResNode *rnode, WResLangType *lang )
 {
     WResLangNode *lnode;
 
@@ -124,7 +123,7 @@ WResLangNode * WR_EXPORT WRFindLangNodeFromLangType( WResResNode *rnode, WResLan
     return( NULL );
 }
 
-WResTypeNode * WR_EXPORT WRFindTypeNode( WResDir dir, uint_16 type, char *type_name )
+WResTypeNode * WRAPI WRFindTypeNode( WResDir dir, uint_16 type, char *type_name )
 {
     WResTypeNode *type_node;
 
@@ -150,7 +149,7 @@ WResTypeNode * WR_EXPORT WRFindTypeNode( WResDir dir, uint_16 type, char *type_n
 
 }
 
-WResResNode * WR_EXPORT WRFindResNode( WResTypeNode *type, uint_16 res, char *res_name )
+WResResNode * WRAPI WRFindResNode( WResTypeNode *type, uint_16 res, char *res_name )
 {
     WResResNode *res_node;
 

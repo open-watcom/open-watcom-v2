@@ -33,9 +33,8 @@
 #include <windows.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include "watcom.h"
 #include "wrglbl.h"
-#include "wrmem.h"
 #include "wredit.h"
 
 /****************************************************************************/
@@ -53,7 +52,7 @@
 void WRSetEditWithStr( char *cp, HWND hDlg, int id )
 {
     if( cp != NULL ) {
-        SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM)(LPCSTR)cp );
+        SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM)(LPSTR)cp );
     }
 }
 
@@ -81,8 +80,7 @@ char *WRGetStrFromEdit( HWND hDlg, int id, BOOL *mod )
         return( NULL );
     }
 
-    text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length + 1,
-                                      (LPARAM)(LPCSTR)cp );
+    text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length + 1, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
         WRMemFree( cp );
@@ -136,7 +134,7 @@ char *WRGetStrFromListBox( HWND hDlg, int id, int index )
         return( NULL );
     }
 
-    text_copied = SendDlgItemMessage( hDlg, id, LB_GETTEXT, index, (LPARAM)(LPCSTR)cp );
+    text_copied = SendDlgItemMessage( hDlg, id, LB_GETTEXT, index, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
         WRMemFree( cp );

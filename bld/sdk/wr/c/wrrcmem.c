@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "wrglbl.h"
-#include "wrmem.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

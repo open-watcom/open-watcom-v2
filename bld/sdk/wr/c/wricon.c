@@ -33,12 +33,8 @@
 #include <string.h>
 #include <limits.h>
 
-#include "wrdll.h"
-#include "wrinfo.h"
-#include "wrmem.h"
-#include "wrdata.h"
-#include "bitmap.h"
-#include "wricon.h"
+#include "watcom.h"
+#include "wrglbl.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -61,7 +57,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-uint_32 WR_EXPORT WRSizeOfImage( BITMAPINFOHEADER *bih )
+uint_32 WRAPI WRSizeOfImage( BITMAPINFOHEADER *bih )
 {
     uint_32     size;
 
@@ -72,7 +68,7 @@ uint_32 WR_EXPORT WRSizeOfImage( BITMAPINFOHEADER *bih )
 
 // This function assumes that the data represents icon data WITHOUT
 // an icon directory
-WORD WR_EXPORT WRCountIconImages( BYTE *data, uint_32 size )
+WORD WRAPI WRCountIconImages( BYTE *data, uint_32 size )
 {
     BITMAPINFOHEADER    *bih;
     WORD                count;
@@ -93,7 +89,7 @@ WORD WR_EXPORT WRCountIconImages( BYTE *data, uint_32 size )
     return( count );
 }
 
-int WR_EXPORT WRCreateIconHeader( BYTE *data, uint_32 size, WORD type,
+int WRAPI WRCreateIconHeader( BYTE *data, uint_32 size, WORD type,
                                   ICONHEADER **ih, uint_32 *ihsize )
 {
     BITMAPINFOHEADER    *bih;
@@ -145,7 +141,7 @@ int WR_EXPORT WRCreateIconHeader( BYTE *data, uint_32 size, WORD type,
     return( TRUE );
 }
 
-int WR_EXPORT WRCreateCursorResHeader( RESCURSORHEADER **rch, uint_32 *rchsize,
+int WRAPI WRCreateCursorResHeader( RESCURSORHEADER **rch, uint_32 *rchsize,
                                        BYTE *data, uint_32 data_size )
 {
     CURSORHEADER        *ch;
@@ -194,7 +190,7 @@ int WR_EXPORT WRCreateCursorResHeader( RESCURSORHEADER **rch, uint_32 *rchsize,
     return( ok );
 }
 
-int WR_EXPORT WRCreateIconResHeader( RESICONHEADER **rih, uint_32 *rihsize,
+int WRAPI WRCreateIconResHeader( RESICONHEADER **rih, uint_32 *rihsize,
                                      BYTE *data, uint_32 data_size )
 {
     ICONHEADER          *pih;
@@ -243,7 +239,7 @@ int WR_EXPORT WRCreateIconResHeader( RESICONHEADER **rih, uint_32 *rihsize,
     return( ok );
 }
 
-int WR_EXPORT WRAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *hs )
+int WRAPI WRAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *hs )
 {
     int hs_size;
 
@@ -264,7 +260,7 @@ int WR_EXPORT WRAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *h
     return( TRUE );
 }
 
-int WR_EXPORT WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int ord )
+int WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int ord )
 {
     BYTE                *cursor;
     int                 dup;
@@ -331,7 +327,7 @@ int WR_EXPORT WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *c
     return( ok );
 }
 
-int WR_EXPORT WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord )
+int WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord )
 {
     BYTE                *icon;
     int                 dup;
@@ -390,7 +386,7 @@ int WR_EXPORT WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, i
     return( ok );
 }
 
-int WR_EXPORT WRFindImageId( WRInfo *info, WResTypeNode **otnode,
+int WRAPI WRFindImageId( WRInfo *info, WResTypeNode **otnode,
                              WResResNode **ornode, WResLangNode **lnode,
                              uint_16 type, uint_16 id, WResLangType *ltype )
 {
@@ -436,7 +432,7 @@ int WR_EXPORT WRFindImageId( WRInfo *info, WResTypeNode **otnode,
     return( ok );
 }
 
-int WR_EXPORT WRAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 d2size )
+int WRAPI WRAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 d2size )
 {
     if( d1 == NULL || d1size == NULL || d2 == NULL || d2size == 0 ) {
         return( FALSE );
@@ -457,7 +453,7 @@ int WR_EXPORT WRAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 
     return( TRUE );
 }
 
-int WR_EXPORT WRAddCursorImageToData( WRInfo *info, WResLangNode *lnode,
+int WRAPI WRAddCursorImageToData( WRInfo *info, WResLangNode *lnode,
                                       BYTE **data, uint_32 *size, CURSORHOTSPOT *hotspot )
 {
     BYTE        *ldata;
@@ -486,7 +482,7 @@ int WR_EXPORT WRAddCursorImageToData( WRInfo *info, WResLangNode *lnode,
     return( ok );
 }
 
-int WR_EXPORT WRAddIconImageToData( WRInfo *info, WResLangNode *lnode,
+int WRAPI WRAddIconImageToData( WRInfo *info, WResLangNode *lnode,
                                     BYTE **data, uint_32 *size )
 {
     BYTE        *ldata;
@@ -512,7 +508,7 @@ int WR_EXPORT WRAddIconImageToData( WRInfo *info, WResLangNode *lnode,
     return( ok );
 }
 
-int WR_EXPORT WRCreateCursorData( WRInfo *info, WResLangNode *lnode,
+int WRAPI WRCreateCursorData( WRInfo *info, WResLangNode *lnode,
                                   BYTE **data, uint_32 *size )
 {
     WResLangNode        *ilnode;
@@ -580,7 +576,7 @@ int WR_EXPORT WRCreateCursorData( WRInfo *info, WResLangNode *lnode,
     return( ok );
 }
 
-int WR_EXPORT WRCreateIconData( WRInfo *info, WResLangNode *lnode,
+int WRAPI WRCreateIconData( WRInfo *info, WResLangNode *lnode,
                                 BYTE **data, uint_32 *size )
 {
     WResLangNode        *ilnode;
@@ -649,7 +645,7 @@ int WR_EXPORT WRCreateIconData( WRInfo *info, WResLangNode *lnode,
     return( ok );
 }
 
-uint_16 WR_EXPORT WRFindUnusedImageId( WRInfo *info, uint_16 start )
+uint_16 WRAPI WRFindUnusedImageId( WRInfo *info, uint_16 start )
 {
     WResLangNode        *lnode;
     int                 found;
@@ -690,7 +686,7 @@ uint_16 WR_EXPORT WRFindUnusedImageId( WRInfo *info, uint_16 start )
     return( start );
 }
 
-int WR_EXPORT WRCreateCursorEntries( WRInfo *info, WResLangNode *lnode,
+int WRAPI WRCreateCursorEntries( WRInfo *info, WResLangNode *lnode,
                                      void *data, uint_32 size )
 {
     RESCURSORHEADER     *rch;
@@ -729,7 +725,7 @@ int WR_EXPORT WRCreateCursorEntries( WRInfo *info, WResLangNode *lnode,
     return( ok );
 }
 
-int WR_EXPORT WRCreateIconEntries( WRInfo *info, WResLangNode *lnode,
+int WRAPI WRCreateIconEntries( WRInfo *info, WResLangNode *lnode,
                                    void *data, uint_32 size )
 {
     RESICONHEADER       *rih;
@@ -768,7 +764,7 @@ int WR_EXPORT WRCreateIconEntries( WRInfo *info, WResLangNode *lnode,
     return( ok );
 }
 
-int WR_EXPORT WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type )
+int WRAPI WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type )
 {
     WResLangType        lt;
     WResTypeNode        *itnode;

@@ -33,17 +33,11 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
-#include "wi163264.h"
+#include "watcom.h"
 #include "wrglbl.h"
-#include "wrinfo.h"
 #include "wrmsg.h"
-#include "wrctl3d.h"
 #include "wrmaini.h"
 #include "wrdmsgi.h"
-#include "wrmem.h"
-#include "wrfindt.h"
-#include "wrrnames.h"
-#include "wrselimg.h"
 #include "selimage.h"
 #include "jdlg.h"
 
@@ -54,7 +48,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WR_EXPORT WRSelectImageProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern BOOL CALLBACK WRSelectImageProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -71,14 +65,14 @@ static BOOL WRGetWinInfo( HWND, WRSelectImageInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-void WR_EXPORT WRFreeSelectImageInfo( WRSelectImageInfo *info )
+void WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *info )
 {
     if( info != NULL ) {
         WRMemFree( info );
     }
 }
 
-WRSelectImageInfo * WR_EXPORT WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb )
+WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb )
 {
     DLGPROC             proc;
     HINSTANCE           inst;
@@ -223,7 +217,7 @@ BOOL WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     return( TRUE );
 }
 
-BOOL WR_EXPORT WRSelectImageProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRSelectImageInfo   *info;
     BOOL                ret;
@@ -240,7 +234,7 @@ BOOL WR_EXPORT WRSelectImageProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM
         if( info == NULL ) {
             EndDialog( hDlg, FALSE );
         }
-        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        SET_DLGDATA( hDlg, (LONG_PTR)info );
         WRRegisterDialog( hDlg );
         if( !WRSetWinInfo( hDlg, info ) ) {
             EndDialog( hDlg, FALSE );
@@ -253,7 +247,7 @@ BOOL WR_EXPORT WRSelectImageProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM
         break;
 
     case WM_COMMAND:
-        info = (WRSelectImageInfo *)GetWindowLong( hDlg, DWL_USER );
+        info = (WRSelectImageInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDM_SELIMGHELP:
             if( info != NULL && info->hcb != NULL ) {

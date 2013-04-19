@@ -33,8 +33,6 @@
 #ifndef WRMAIN_INCLUDED
 #define WRMAIN_INCLUDED
 
-#include "wrinfo.h"
-
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -52,14 +50,14 @@ typedef struct WRSaveIntoData {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void             WR_EXPORT WRInit( void );
-extern void             WR_EXPORT WRFini( void );
-extern WRInfo *         WR_EXPORT WRLoadResource( const char *, WRFileType );
-extern int              WR_EXPORT WRUpdateTmp( WRInfo *info );
-extern int              WR_EXPORT WRSaveResource( WRInfo *, int );
-extern int              WR_EXPORT WRSaveObjectAs( const char *, WRFileType, WRSaveIntoData * );
-extern int              WR_EXPORT WRSaveObjectInto( const char *, WRSaveIntoData *, int * );
-extern int              WR_EXPORT WRFindAndSetData( WResDir dir, WResID *type, WResID *name, WResLangType *lang, void *data );
-extern WResLangNode *   WR_EXPORT WRFindLangNode( WResDir dir, WResID *type, WResID *name, WResLangType *lang );
+WRDLLENTRY extern void             WRAPI WRInit( void );
+WRDLLENTRY extern void             WRAPI WRFini( void );
+WRDLLENTRY extern WRInfo *         WRAPI WRLoadResource( const char *, WRFileType );
+WRDLLENTRY extern int              WRAPI WRUpdateTmp( WRInfo *info );
+WRDLLENTRY extern int              WRAPI WRSaveResource( WRInfo *, int );
+WRDLLENTRY extern int              WRAPI WRSaveObjectAs( const char *, WRFileType, WRSaveIntoData * );
+WRDLLENTRY extern int              WRAPI WRSaveObjectInto( const char *, WRSaveIntoData *, int * );
+WRDLLENTRY extern int              WRAPI WRFindAndSetData( WResDir dir, WResID *type, WResID *name, WResLangType *lang, void *data );
+WRDLLENTRY extern WResLangNode *   WRAPI WRFindLangNode( WResDir dir, WResID *type, WResID *name, WResLangType *lang );
 
 #endif

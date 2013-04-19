@@ -33,8 +33,8 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
+#include "watcom.h"
 #include "wrglbl.h"
-#include "wrmem.h"
 #include "wrlist.h"
 
 void WRInsertObject( LIST **list, void *obj )

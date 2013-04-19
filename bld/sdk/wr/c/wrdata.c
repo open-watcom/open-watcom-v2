@@ -38,15 +38,11 @@
 #include <io.h>
 #include <limits.h>
 #include <string.h>
-
+#include "watcom.h"
 #include "wrglbl.h"
-#include "wrmem.h"
 #include "wrmsg.h"
 #include "wresall.h"
-#include "wrinfo.h"
-#include "wrdata.h"
 #include "wrdatai.h"
-#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -121,7 +117,7 @@ void *WRCopyExistingData( WResLangNode *lnode )
     return( rdata );
 }
 
-void * WR_EXPORT WRCopyResData( WRInfo *info, WResLangNode *lnode )
+void * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
 {
     void        *rdata;
     int         ok;
@@ -156,7 +152,7 @@ void * WR_EXPORT WRCopyResData( WRInfo *info, WResLangNode *lnode )
     return( rdata );
 }
 
-void * WR_EXPORT WRLoadResData( char *file, uint_32 offset, uint_32 length )
+void * WRAPI WRLoadResData( char *file, uint_32 offset, uint_32 length )
 {
     void        *data;
     WResFileID  handle;
@@ -197,7 +193,7 @@ void * WR_EXPORT WRLoadResData( char *file, uint_32 offset, uint_32 length )
     return( data );
 }
 
-int WR_EXPORT WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length )
+int WRAPI WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length )
 {
     WResFileID  file;
     int         ok;

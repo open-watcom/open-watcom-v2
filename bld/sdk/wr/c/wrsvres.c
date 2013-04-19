@@ -35,18 +35,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <io.h>
-
+#include "watcom.h"
 #include "wrglbl.h"
 #include "wrsvres.h"
-#include "wrmem.h"
 #include "wrmsg.h"
-#include "wridfile.h"
-#include "wrtmpfil.h"
 #include "wrdatai.h"
 #include "wrinfoi.h"
-#include "wrselft.h"
 #include "wresall.h"
-#include "wressetr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -432,8 +427,7 @@ int WRSaveResourceToRES( WRInfo *info, int backup )
     return( saveResourceToRES( info, backup, info->save_name, info->file_name ) );
 }
 
-int WRCopyResFromFileToFile( WResFileID src, uint_32 offset,
-                             uint_32 length, WResFileID dest )
+int WRCopyResFromFileToFile( WResFileID src, uint_32 offset, uint_32 length, WResFileID dest )
 {
     uint_32     size;
     uint_8      *buf;

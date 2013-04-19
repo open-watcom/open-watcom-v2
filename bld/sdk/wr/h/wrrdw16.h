@@ -33,9 +33,7 @@
 #ifndef WRRDW16_INCLUDED
 #define WRRDW16_INCLUDED
 
-#include "watcom.h"
 #include "exeos2.h"
-#include "wrinfo.h"
 #include "wresall.h"
 
 /****************************************************************************/

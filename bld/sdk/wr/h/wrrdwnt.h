@@ -34,7 +34,6 @@
 #define WRRDWNT_INCLUDED
 
 #include "exepe.h"
-#include "wrinfo.h"
 #include "wresall.h"
 
 /****************************************************************************/

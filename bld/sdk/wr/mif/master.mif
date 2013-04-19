@@ -9,7 +9,7 @@ memory_model_i86 = l
 
 sys_windowed = 1
 sys_dll = 1
-suppress_bd = 1
+#suppress_bd = 1
 
 wr_trmem = 1
 
@@ -53,7 +53,7 @@ extra_c_flags     = -s
 extra_c_flags_win = -zu-zw-zc
 
 # wr objects
-extra_c_flags_wrmem = -bd $(trmem_cover_cflags)
+extra_c_flags_wrmem = $(trmem_cover_cflags)
 
 extra_c_flags_trmem = $(trmem_cflags)
 
@@ -64,17 +64,19 @@ inc_dirs = -I. -I"../h" -I"$(cpp_dir)" -I"$(wres_dir)/h" -I"$(wrc_dir)/h" $(comm
 xlibs = $(wres_lib) $(commonui_lib)
 
 #------------- LIB
+!ifdef __WATCOM__
 $(name).lib: $(name).dll $(__MAKEFILES__)
         $(librarian) $(libflags) +$[@
+!endif
 
 #------------- LINK
-extra_l_flags = libpath $(sdk_misc_dir) op map
-extra_l_flags_nt = op stack=32k,heap=16k commit heap=8k
-extra_l_flags_nt += option offset=0x69900000
-extra_l_flags_win = op rwr,stack=16k export WEP RESIDENT
-#extra_l_flags_win += segment  _TEXT PRELOAD FIXED
-#extra_l_flags_win += segment  CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
-#extra_l_flags_win += segment  CLASS 'CODE' PRELOAD
+extra_l_flags_dll = libpath $(sdk_misc_dir) op map
+extra_l_flags_dll_nt = op stack=32k,heap=16k commit heap=8k
+extra_l_flags_dll_nt += option offset=0x69900000
+extra_l_flags_dll_win = op rwr,stack=16k export WEP RESIDENT
+#extra_l_flags_dll_win += segment  _TEXT PRELOAD FIXED
+#extra_l_flags_dll_win += segment  CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
+#extra_l_flags_dll_win += segment  CLASS 'CODE' PRELOAD
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res

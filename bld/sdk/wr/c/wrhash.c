@@ -31,25 +31,18 @@
 
 
 #include <windows.h>
-#include "wi163264.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-
+#include "watcom.h"
 #include "wrglbl.h"
 #include "wrmaini.h"
-#include "wrmain.h"
-#include "wrmem.h"
 #include "wrstrdup.h"
 #include "wrmsg.h"
 #include "wredit.h"
-#include "wrdel.h"
-#include "wrfindt.h"
-#include "wrctl3d.h"
 #include "wrlist.h"
-#include "wrhash.h"
 #include "editsym.h"
 #include "addsym.h"
 #include "jdlg.h"
@@ -89,8 +82,8 @@ typedef struct WRAddSymInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-BOOL WR_EXPORT WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
-BOOL WR_EXPORT WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -166,7 +159,7 @@ static int WRCompareHashEntry( void const *_e1, void const *_e2 )
     return( 0 );
 }
 
-BOOL WR_EXPORT WRIsDefaultHashTable( WRHashTable *table )
+BOOL WRAPI WRIsDefaultHashTable( WRHashTable *table )
 {
     if( table != NULL ) {
         return( table->count == NUM_INIT_ENTRIES );
@@ -174,7 +167,7 @@ BOOL WR_EXPORT WRIsDefaultHashTable( WRHashTable *table )
     return( TRUE );
 }
 
-unsigned long WR_EXPORT WRNumInHashTable( WRHashTable *table )
+unsigned long WRAPI WRNumInHashTable( WRHashTable *table )
 {
     if( table != NULL ) {
         return( table->count );
@@ -182,19 +175,19 @@ unsigned long WR_EXPORT WRNumInHashTable( WRHashTable *table )
     return( 0 );
 }
 
-BOOL WR_EXPORT WRIsHashTableDirty( WRHashTable *table )
+BOOL WRAPI WRIsHashTableDirty( WRHashTable *table )
 {
     return( table != NULL && (table->flags & WR_HASH_DIRTY) );
 }
 
-void WR_EXPORT WRMakeHashTableClean( WRHashTable *table )
+void WRAPI WRMakeHashTableClean( WRHashTable *table )
 {
     if( table != NULL ) {
         table->flags &= ~WR_HASH_DIRTY;
     }
 }
 
-BOOL WR_EXPORT WRDeleteDLGInclude( WResDir dir )
+BOOL WRAPI WRDeleteDLGInclude( WResDir dir )
 {
     WResTypeNode        *tnode;
     WResResNode         *rnode;
@@ -228,7 +221,7 @@ BOOL WR_EXPORT WRDeleteDLGInclude( WResDir dir )
     return( ok );
 }
 
-BOOL WR_EXPORT WRCreateDLGInclude( WResDir *dir, char *include )
+BOOL WRAPI WRCreateDLGInclude( WResDir *dir, char *include )
 {
     WResID              *type;
     WResID              *res;
@@ -313,7 +306,7 @@ static void WRAddSymInitInfo( WRHashTable *table )
     WRMakeHashTableClean( table );
 }
 
-WRHashTable * WR_EXPORT WRInitHashTable( void )
+WRHashTable * WRAPI WRInitHashTable( void )
 {
     WRHashTable         *table;
 
@@ -331,7 +324,7 @@ WRHashTable * WR_EXPORT WRInitHashTable( void )
     return( table );
 }
 
-void WR_EXPORT WRFreeHashTable( WRHashTable *table )
+void WRAPI WRFreeHashTable( WRHashTable *table )
 {
     unsigned int        nhash;
     WRHashEntry         *entry;
@@ -350,7 +343,7 @@ void WR_EXPORT WRFreeHashTable( WRHashTable *table )
     WRMemFree( table );
 }
 
-BOOL WR_EXPORT WRMergeHashTable( WRHashTable **dest, WRHashTable *src )
+BOOL WRAPI WRMergeHashTable( WRHashTable **dest, WRHashTable *src )
 {
     WRHashEntry         *entry;
     WRHashEntry         *new;
@@ -385,7 +378,7 @@ BOOL WR_EXPORT WRMergeHashTable( WRHashTable **dest, WRHashTable *src )
     return( ok );
 }
 
-BOOL WR_EXPORT WRCopyHashTable( WRHashTable **dest, WRHashTable *src )
+BOOL WRAPI WRCopyHashTable( WRHashTable **dest, WRHashTable *src )
 {
     WRHashEntry         *entry;
     WRHashEntry         *new;
@@ -454,11 +447,11 @@ static unsigned WRAddSymbolsToLorCBox( WRHashTable *table, HWND hDlg, int id,
     for( nhash = 0; nhash < NAME_SIZE; nhash++ ) {
         for( entry = table->names[nhash]; entry != NULL; entry = entry->name_next ) {
             if( entry->flags & flags ) {
-                ret = SendMessage( box, add_string_msg, 0, (LPARAM)(LPCSTR)entry->name );
+                ret = SendMessage( box, add_string_msg, 0, (LPARAM)(LPSTR)entry->name );
                 if( ret == err || ret == errspace ) {
                     break;
                 }
-                SendMessage( box, add_data_msg, (WPARAM)ret, (LPARAM)entry );
+                SendMessage( box, add_data_msg, (WPARAM)ret, (LPARAM)(LPVOID)entry );
                 count++;
             }
         }
@@ -470,21 +463,21 @@ static unsigned WRAddSymbolsToLorCBox( WRHashTable *table, HWND hDlg, int id,
     return( count );
 }
 
-unsigned WR_EXPORT WRAddSymbolsToListBox( WRHashTable *table, HWND hDlg,
+unsigned WRAPI WRAPI WRAddSymbolsToListBox( WRHashTable *table, HWND hDlg,
                                           int id, WRHashEntryFlags flags )
 {
     return( WRAddSymbolsToLorCBox( table, hDlg, id, flags, LB_ADDSTRING, LB_SETITEMDATA,
                                    LB_RESETCONTENT, LB_ERR, LB_ERRSPACE ) );
 }
 
-unsigned WR_EXPORT WRAddSymbolsToComboBox( WRHashTable *table, HWND hDlg,
+unsigned WRAPI WRAddSymbolsToComboBox( WRHashTable *table, HWND hDlg,
                                            int id, WRHashEntryFlags flags )
 {
     return( WRAddSymbolsToLorCBox( table, hDlg, id, flags, CB_ADDSTRING, CB_SETITEMDATA,
                                    CB_RESETCONTENT, CB_ERR, CB_ERRSPACE ) );
 }
 
-BOOL WR_EXPORT WRWriteSymbolsToFile( WRHashTable *table, char *filename )
+BOOL WRAPI WRWriteSymbolsToFile( WRHashTable *table, char *filename )
 {
     WRHashEntry         *entry;
     WRHashEntry         **tbl;
@@ -601,7 +594,7 @@ static BOOL WRForceAddQuery( void )
     return( ret == IDYES );
 }
 
-BOOL WR_EXPORT WRFindUnusedHashValue( WRHashTable *table, WRHashValue *value,
+BOOL WRAPI WRFindUnusedHashValue( WRHashTable *table, WRHashValue *value,
                                       WRHashValue start )
 {
     WRHashValue val;
@@ -635,7 +628,7 @@ BOOL WR_EXPORT WRFindUnusedHashValue( WRHashTable *table, WRHashValue *value,
     return( found );
 }
 
-WRHashEntry * WR_EXPORT WRAddDefHashEntry( WRHashTable *table, char *name, BOOL *dup )
+WRHashEntry *WRAPI WRAddDefHashEntry( WRHashTable *table, char *name, BOOL *dup )
 {
     WRHashEntry *entry;
     WRHashValue value;
@@ -664,7 +657,7 @@ WRHashEntry * WR_EXPORT WRAddDefHashEntry( WRHashTable *table, char *name, BOOL 
     return( entry );
 }
 
-WRHashEntry * WR_EXPORT WRAddHashEntry( WRHashTable *table, char *name, WRHashValue value,
+WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, char *name, WRHashValue value,
                                         BOOL *dup, BOOL check_unique, BOOL query_force )
 {
     WRHashEntry         *entry;
@@ -748,7 +741,7 @@ WRHashEntry * WR_EXPORT WRAddHashEntry( WRHashTable *table, char *name, WRHashVa
     return( entry );
 }
 
-BOOL WR_EXPORT WRRemoveName( WRHashTable *table, char *name )
+BOOL WRAPI WRRemoveName( WRHashTable *table, char *name )
 {
     WRHashEntry         *entry;
     unsigned int        nhash;
@@ -791,7 +784,7 @@ BOOL WR_EXPORT WRRemoveName( WRHashTable *table, char *name )
     return( TRUE );
 }
 
-void WR_EXPORT WRHashIncRefCount( WRHashEntry *entry )
+void WRAPI WRHashIncRefCount( WRHashEntry *entry )
 {
     if( entry != NULL ) {
         entry->ref_count++;
@@ -801,7 +794,7 @@ void WR_EXPORT WRHashIncRefCount( WRHashEntry *entry )
     }
 }
 
-void WR_EXPORT WRHashDecRefCount( WRHashEntry *entry )
+void WRAPI WRHashDecRefCount( WRHashEntry *entry )
 {
     if( entry != NULL ) {
         if( entry->ref_count != 0 ) {
@@ -815,7 +808,7 @@ void WR_EXPORT WRHashDecRefCount( WRHashEntry *entry )
     }
 }
 
-BOOL WR_EXPORT WRLookupName( WRHashTable *table, char *name, WRHashValue *value )
+BOOL WRAPI WRLookupName( WRHashTable *table, char *name, WRHashValue *value )
 {
     WRHashEntry *entry;
 
@@ -831,7 +824,7 @@ BOOL WR_EXPORT WRLookupName( WRHashTable *table, char *name, WRHashValue *value 
     return( FALSE );
 }
 
-int WR_EXPORT WRModifyName( WRHashTable *table, char *name, WRHashValue value,
+int WRAPI WRModifyName( WRHashTable *table, char *name, WRHashValue value,
                             BOOL check_unique )
 {
     WRHashEntry *entry;
@@ -849,7 +842,7 @@ int WR_EXPORT WRModifyName( WRHashTable *table, char *name, WRHashValue value,
     return( FALSE );
 }
 
-char * WR_EXPORT WRResolveValue( WRHashTable *table, WRHashValue value )
+char * WRAPI WRResolveValue( WRHashTable *table, WRHashValue value )
 {
     char                *name;
     WRHashValueList     *vlist;
@@ -886,7 +879,7 @@ static BOOL WRValueListInsert( WRHashValueList **list, WRHashEntry *entry )
     return( TRUE );
 }
 
-void WR_EXPORT WRValueListFree( WRHashValueList *list )
+void WRAPI WRValueListFree( WRHashValueList *list )
 {
     WRHashValueList     *next;
 
@@ -897,7 +890,7 @@ void WR_EXPORT WRValueListFree( WRHashValueList *list )
     }
 }
 
-WRHashValueList * WR_EXPORT WRLookupValue( WRHashTable *table, WRHashValue value )
+WRHashValueList * WRAPI WRLookupValue( WRHashTable *table, WRHashValue value )
 {
     WRHashValueList     *list;
     WRHashEntry         *entry;
@@ -921,7 +914,7 @@ WRHashValueList * WR_EXPORT WRLookupValue( WRHashTable *table, WRHashValue value
     return( list );
 }
 
-int WR_EXPORT WRValueExists( WRHashTable *table, WRHashValue value )
+int WRAPI WRValueExists( WRHashTable *table, WRHashValue value )
 {
     WRHashEntry         *entry;
     unsigned int        hash;
@@ -942,12 +935,12 @@ int WR_EXPORT WRValueExists( WRHashTable *table, WRHashValue value )
     return( count );
 }
 
-void WR_EXPORT WRStripSymbol( char *symbol )
+void WRAPI WRStripSymbol( char *symbol )
 {
     WRStripStr( symbol );
 }
 
-BOOL WR_EXPORT WRIsValidSymbol( char *symbol )
+BOOL WRAPI WRIsValidSymbol( char *symbol )
 {
     if( symbol == NULL ) {
         return( FALSE );
@@ -969,7 +962,7 @@ BOOL WR_EXPORT WRIsValidSymbol( char *symbol )
     return( TRUE );
 }
 
-BOOL WR_EXPORT WREditSym( HWND parent, WRHashTable **table,
+BOOL WRAPI WREditSym( HWND parent, WRHashTable **table,
                           WRHashEntryFlags *flags, FARPROC help_callback )
 {
     WREditSymInfo       info;
@@ -998,7 +991,7 @@ BOOL WR_EXPORT WREditSym( HWND parent, WRHashTable **table,
         info.table = tmp;
         info.modified = FALSE;
         info.flags = *flags;
-        ret = JDialogBoxParam( inst, "WRSymbols", parent, (DLGPROC)proc, (LPARAM)&info );
+        ret = JDialogBoxParam( inst, "WRSymbols", parent, (DLGPROC)proc, (LPARAM)(LPVOID)&info );
         FreeProcInstance( proc );
         ok = FALSE;
         if( ret ) {
@@ -1096,12 +1089,12 @@ static BOOL WRAddSymbol( HWND hDlg, WRHashTable *table, BOOL force,
         if( dup ) {
             // this is neccessary if the value of the string was moified
             index = SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_FINDSTRINGEXACT, 0,
-                                        (LPARAM)(LPCSTR)symbol );
+                                        (LPARAM)(LPSTR)symbol );
         } else {
             index = SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_ADDSTRING, 0,
-                                        (LPARAM)(LPCSTR)symbol );
+                                        (LPARAM)(LPSTR)symbol );
             SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETITEMDATA,
-                                (WPARAM)index, (LPARAM)entry );
+                                (WPARAM)index, (LPARAM)(LPVOID)entry );
         }
         SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETCURSEL, index, 0 );
         WRShowSelectedSymbol( hDlg, table );
@@ -1163,7 +1156,7 @@ static BOOL WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, BOOL mod
 
     inst = WRGetInstance();
     proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WRAddSymProc, inst );
-    modified = JDialogBoxParam( inst, "WRAddSymbol", hDlg, proc_inst, (LPARAM)&info );
+    modified = JDialogBoxParam( inst, "WRAddSymbol", hDlg, proc_inst, (LPARAM)(LPVOID)&info );
     FreeProcInstance( (FARPROC)proc_inst );
 
     if( modified == IDOK ) {
@@ -1371,7 +1364,7 @@ static BOOL WRHandleDELKey( HWND hDlg, WREditSymInfo *info )
     return( FALSE );
 }
 
-BOOL WR_EXPORT WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREditSymInfo       *info;
     BOOL                ret;
@@ -1386,7 +1379,7 @@ BOOL WR_EXPORT WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
     case WM_INITDIALOG:
         info = (WREditSymInfo *)lParam;
-        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        SET_DLGDATA( hDlg, (LONG_PTR)info );
         if( info == NULL ) {
             EndDialog( hDlg, FALSE );
             break;
@@ -1402,7 +1395,7 @@ BOOL WR_EXPORT WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
     case WM_VKEYTOITEM:
         ret = -1;
-        info = (WREditSymInfo *)GetWindowLong( hDlg, DWL_USER );
+        info = (WREditSymInfo *)GET_DLGDATA( hDlg );
         if( info != NULL && LOWORD( wParam ) == VK_DELETE ) {
             if( WRHandleDELKey( hDlg, info ) ) {
                 ret = -2;
@@ -1411,7 +1404,7 @@ BOOL WR_EXPORT WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM
         break;
 
     case WM_COMMAND:
-        info = (WREditSymInfo *)GetWindowLong( hDlg, DWL_USER );
+        info = (WREditSymInfo *)GET_DLGDATA( hDlg );
         wp = LOWORD( wParam );
         cmd = GET_WM_COMMAND_CMD( wParam, lParam );
         switch( wp ) {
@@ -1491,7 +1484,7 @@ static void WRSetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
         if( info->modify ) {
             str = WRAllocRCString( WR_MODIFYSYMBOLTITLE );
             if( str != NULL ) {
-                SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
+                SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
                 WRFreeRCString( str );
             }
             if( info->symbol != NULL ) {
@@ -1555,7 +1548,7 @@ static void WRSetAddSymOK( HWND hDlg )
     EnableWindow( GetDlgItem( hDlg, IDOK ), enable );
 }
 
-BOOL WR_EXPORT WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRAddSymInfo        *info;
     WORD                cmd;
@@ -1566,7 +1559,7 @@ BOOL WR_EXPORT WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
     switch( message ) {
     case WM_INITDIALOG:
         info = (WRAddSymInfo *)lParam;
-        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        SET_DLGDATA( hDlg, (LONG_PTR)info );
         WRSetAddSymInfo( hDlg, info );
         WRSetAddSymOK( hDlg );
         ret = TRUE;
@@ -1577,7 +1570,7 @@ BOOL WR_EXPORT WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
         break;
 
     case WM_COMMAND:
-        info = (WRAddSymInfo *)GetWindowLong( hDlg, DWL_USER );
+        info = (WRAddSymInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDB_ADDSYM_HELP:
             if( info != NULL && info->hcb != NULL ) {

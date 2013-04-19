@@ -32,10 +32,11 @@
 
 #include <windows.h>
 
+#include "watcom.h"
 #include "wrglbl.h"
 #include "wresall.h"
 
-void WR_EXPORT WRCleanDir( WResDir dir )
+void WRAPI WRCleanDir( WResDir dir )
 {
     WResTypeNode        *tnode;
     WResResNode         *rnode;

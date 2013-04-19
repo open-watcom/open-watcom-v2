@@ -33,13 +33,10 @@
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
-#include "wi163264.h"
+#include "watcom.h"
 #include "wrglbl.h"
-#include "wrinfo.h"
-#include "wrmem.h"
 #include "wrstrdup.h"
 #include "wrmsg.h"
-#include "wrrnames.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -61,7 +58,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-int WR_EXPORT WRSetLBoxWithStr( HWND lbox, char *str, void *data )
+int WRAPI WRSetLBoxWithStr( HWND lbox, char *str, void *data )
 {
     int         ok;
     LRESULT     index;
@@ -69,7 +66,7 @@ int WR_EXPORT WRSetLBoxWithStr( HWND lbox, char *str, void *data )
     ok = (lbox != (HWND)NULL && str != NULL);
 
     if( ok ) {
-        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
         ok = (index != LB_ERR && index != LB_ERRSPACE);
     }
 
@@ -124,7 +121,7 @@ static int WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, int type )
     return( ok );
 }
 
-int WR_EXPORT WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
+int WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
 {
     WResResNode *rnode;
     char        *str;
@@ -170,7 +167,7 @@ int WR_EXPORT WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
     return( ok );
 }
 
-char * WR_EXPORT WRGetResName( WResResNode *rnode, uint_16 type )
+char * WRAPI WRGetResName( WResResNode *rnode, uint_16 type )
 {
     WResID  *id;
     int     num;

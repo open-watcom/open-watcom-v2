@@ -74,10 +74,10 @@ typedef struct WRInfoStruct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WRInfo * WR_EXPORT WRAllocWRInfo( void );
-extern void     WR_EXPORT WRFreeWRInfo( WRInfo * );
-extern void     WR_EXPORT WRFreeWResDirData( WResDir );
-extern int      WR_EXPORT WRCountZeroLengthResources( WResDir dir );
-extern int      WR_EXPORT WRGetInternalRESName( char *filename, char *newname );
+WRDLLENTRY extern WRInfo * WRAPI WRAllocWRInfo( void );
+WRDLLENTRY extern void     WRAPI WRFreeWRInfo( WRInfo * );
+WRDLLENTRY extern void     WRAPI WRFreeWResDirData( WResDir );
+WRDLLENTRY extern int      WRAPI WRCountZeroLengthResources( WResDir dir );
+WRDLLENTRY extern int      WRAPI WRGetInternalRESName( char *filename, char *newname );
 
 #endif

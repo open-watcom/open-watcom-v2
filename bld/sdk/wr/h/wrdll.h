@@ -33,6 +33,19 @@
 #ifndef WRDLL_INCLUDED
 #define WRDLL_INCLUDED
 
+#define WRAPI   WINAPI
+
+#ifdef WRDLL
+    #define WRDLLENTRY    __declspec(dllexport)
+#elif defined( __NT__ )
+    #define WRDLLENTRY    __declspec(dllimport)
+#else
+    #define WRDLLENTRY
+#endif
+
+typedef void (CALLBACK HELP_CALLBACK)( void );
+
+#include "wrinfo.h"
 #include "wrmain.h"
 #include "wridfile.h"
 #include "wrtmpfil.h"
@@ -45,5 +58,16 @@
 #include "wrfindt.h"
 #include "wrnamoor.h"
 #include "wrwresid.h"
+#include "wrhash.h"
+#include "wrbitmap.h"
+#include "wrdmsg.h"
+#include "wricon.h"
+#include "wrmemf.h"
+#include "wrrnames.h"
+#include "wrselft.h"
+#include "wrselimg.h"
+#include "wrwresid.h"
+#include "wrutil.h"
+#include "wrctl3d.h"
 
 #endif

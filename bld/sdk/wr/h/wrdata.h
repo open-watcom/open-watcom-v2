@@ -44,8 +44,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void *   WR_EXPORT WRCopyResData( WRInfo *info, WResLangNode *lnode );
-extern void *   WR_EXPORT WRLoadResData( char *file, uint_32 offset, uint_32 length );
-extern int      WR_EXPORT WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length );
+WRDLLENTRY extern void *   WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode );
+WRDLLENTRY extern void *   WRAPI WRLoadResData( char *file, uint_32 offset, uint_32 length );
+WRDLLENTRY extern int      WRAPI WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length );
 
 #endif

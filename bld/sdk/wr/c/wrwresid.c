@@ -33,12 +33,9 @@
 #include <windows.h>
 #include <string.h>
 
+#include "watcom.h"
 #include "wrglbl.h"
-#include "wrmem.h"
 #include "wresall.h"
-#include "wrnamoor.h"
-#include "wrutil.h"
-#include "wrwresid.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -247,7 +244,7 @@ static int WRWResID2Mem32( WResID *name, void **data, uint_32 *size )
     return( TRUE );
 }
 
-int WR_EXPORT WRWResID2Mem( WResID *name, void **data, uint_32 *size, int is32bit )
+int WRAPI WRWResID2Mem( WResID *name, void **data, uint_32 *size, int is32bit )
 {
     if( is32bit ) {
         return( WRWResID2Mem32( name, data, size ) );
@@ -256,7 +253,7 @@ int WR_EXPORT WRWResID2Mem( WResID *name, void **data, uint_32 *size, int is32bi
     }
 }
 
-WResID * WR_EXPORT WRMem2WResID( void *data, int is32bit )
+WResID * WRAPI WRMem2WResID( void *data, int is32bit )
 {
     WResID      *r_id;
 

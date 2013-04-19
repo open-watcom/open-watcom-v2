@@ -33,6 +33,8 @@
 #ifndef WRBITMAP_INCLUDED
 #define WRBITMAP_INCLUDED
 
+#include "bitmap.h"
+
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
@@ -44,12 +46,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void     WR_EXPORT WRForgetBitmapName( void );
-extern void     WR_EXPORT WRRememberBitmapName( WResID *name );
-extern WResID * WR_EXPORT WRRecallBitmapName( void );
-extern int      WR_EXPORT WRAddBitmapFileHeader( BYTE **data, uint_32 *size );
-extern int      WR_EXPORT WRStripBitmapFileHeader( BYTE **data, uint_32 *size );
-extern HBITMAP  WR_EXPORT WRBitmapFromData( BYTE *data, bitmap_info *info );
-extern int      WR_EXPORT WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, uint_32 *size );
+WRDLLENTRY extern void     WRAPI WRForgetBitmapName( void );
+WRDLLENTRY extern void     WRAPI WRRememberBitmapName( WResID *name );
+WRDLLENTRY extern WResID * WRAPI WRRecallBitmapName( void );
+WRDLLENTRY extern int      WRAPI WRAddBitmapFileHeader( BYTE **data, uint_32 *size );
+WRDLLENTRY extern int      WRAPI WRStripBitmapFileHeader( BYTE **data, uint_32 *size );
+WRDLLENTRY extern HBITMAP  WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info );
+WRDLLENTRY extern int      WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, uint_32 *size );
 
 #endif

@@ -34,10 +34,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mbstring.h>
+#include "watcom.h"
 #include "wrglbl.h"
 #include "wresall.h"
-#include "wrmem.h"
-#include "wrutil.h"
 
 static int WRCountChars( unsigned char *str, char c )
 {
@@ -75,7 +74,7 @@ static int WRCountCharsString( unsigned char *str, unsigned char *s )
 }
 
 // changes all occurrences of chars in 'from' to '\to' in str
-char *WR_EXPORT WRConvertStringFrom( char *_str, char *_from, char *to )
+char *WRAPI WRConvertStringFrom( char *_str, char *_from, char *to )
 {
     char            *new;
     unsigned char   *s;
@@ -112,7 +111,7 @@ char *WR_EXPORT WRConvertStringFrom( char *_str, char *_from, char *to )
 }
 
 // changes all occurrences of 'from' to '\to' in str
-char *WR_EXPORT WRConvertFrom( char *_str, char from, char to )
+char *WRAPI WRConvertFrom( char *_str, char from, char to )
 {
     char            *new;
     int             len;
@@ -147,7 +146,7 @@ char *WR_EXPORT WRConvertFrom( char *_str, char from, char to )
 }
 
 // changes all occurrences of '\from' to 'to' in str
-char *WR_EXPORT WRConvertTo( char *_str, char to, char from )
+char *WRAPI WRConvertTo( char *_str, char to, char from )
 {
     char            *new;
     int             len;
@@ -183,7 +182,7 @@ char *WR_EXPORT WRConvertTo( char *_str, char to, char from )
 }
 
 // changes all occurrences of the \chars in 'from' to 'to' in str
-char * WR_EXPORT WRConvertStringTo( char *_str, char *to, char *_from )
+char * WRAPI WRConvertStringTo( char *_str, char *to, char *_from )
 {
     char            *new;
     unsigned char   *s;
@@ -220,7 +219,7 @@ char * WR_EXPORT WRConvertStringTo( char *_str, char *to, char *_from )
     return( new );
 }
 
-void WR_EXPORT WRMassageFilter( char *_filter )
+void WRAPI WRMassageFilter( char *_filter )
 {
     char            sep;
     unsigned char   *filter = (unsigned char *)_filter;
@@ -244,7 +243,7 @@ void WR_EXPORT WRMassageFilter( char *_filter )
 
 #if defined( __NT__ )
 
-int WR_EXPORT WRmbcs2unicodeBuf( char *src, char *dest, int len )
+int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
 {
     uint_16     *new;
     int         len1, len2;
@@ -286,7 +285,7 @@ int WR_EXPORT WRmbcs2unicodeBuf( char *src, char *dest, int len )
     return( TRUE );
 }
 
-int WR_EXPORT WRunicode2mbcsBuf( char *src, char *dest, int len )
+int WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len )
 {
     int         len1, len2;
 
@@ -322,7 +321,7 @@ int WR_EXPORT WRunicode2mbcsBuf( char *src, char *dest, int len )
     return( TRUE );
 }
 
-int WR_EXPORT WRmbcs2unicode( char *src, char **dest, int *len )
+int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
 {
     uint_16     *new;
     int         len1, len2;
@@ -368,7 +367,7 @@ int WR_EXPORT WRmbcs2unicode( char *src, char **dest, int *len )
     return( TRUE );
 }
 
-int WR_EXPORT WRunicode2mbcs( char *src, char **dest, int *len )
+int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
 {
     char        *new;
     int         len1, len2;
@@ -416,7 +415,7 @@ int WR_EXPORT WRunicode2mbcs( char *src, char **dest, int *len )
 
 #else
 
-int WR_EXPORT WRmbcs2unicodeBuf( char *src, char *dest, int len )
+int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
 {
     uint_16     *new;
     int         len1, len2;
@@ -450,7 +449,7 @@ int WR_EXPORT WRmbcs2unicodeBuf( char *src, char *dest, int len )
     return( TRUE );
 }
 
-int WR_EXPORT WRunicode2mbcsBuf( char *src, char *dest, int len )
+int WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len )
 {
     uint_16     *uni_str;
     int         len1, len2;
@@ -483,7 +482,7 @@ int WR_EXPORT WRunicode2mbcsBuf( char *src, char *dest, int len )
     return( TRUE );
 }
 
-int WR_EXPORT WRmbcs2unicode( char *src, char **dest, int *len )
+int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
 {
     uint_16     *new;
     int         len1;
@@ -520,7 +519,7 @@ int WR_EXPORT WRmbcs2unicode( char *src, char **dest, int *len )
     return( TRUE );
 }
 
-int WR_EXPORT WRunicode2mbcs( char *src, char **dest, int *len )
+int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
 {
     char        *new;
     uint_16     *uni_str;
@@ -564,7 +563,7 @@ int WR_EXPORT WRunicode2mbcs( char *src, char **dest, int *len )
 
 #endif
 
-char * WR_EXPORT WRWResIDNameToStr( WResIDName *name )
+char * WRAPI WRWResIDNameToStr( WResIDName *name )
 {
     char        *string;
 
@@ -583,7 +582,7 @@ char * WR_EXPORT WRWResIDNameToStr( WResIDName *name )
     return( string );
 }
 
-int WR_EXPORT WRStrlen32( char *str )
+int WRAPI WRStrlen32( char *str )
 {
     int         len;
     uint_16     *word;
@@ -602,7 +601,7 @@ int WR_EXPORT WRStrlen32( char *str )
     return( len );
 }
 
-int WR_EXPORT WRStrlen( char *str, int is32bit )
+int WRAPI WRStrlen( char *str, int is32bit )
 {
     int         len;
 
@@ -618,7 +617,7 @@ int WR_EXPORT WRStrlen( char *str, int is32bit )
     return( len );
 }
 
-int WR_EXPORT WRFindFnOffset( char *_name )
+int WRAPI WRFindFnOffset( char *_name )
 {
     int             offset;
     unsigned char   *cp;
@@ -631,7 +630,7 @@ int WR_EXPORT WRFindFnOffset( char *_name )
 
     cp = name;
     last = name;
-    while( *cp != NULL ) {
+    while( *cp != 0 ) {
         if( !_mbislead( *cp ) && (*cp == ':' || *cp == '\\') ) {
             last = cp + 1;
         }

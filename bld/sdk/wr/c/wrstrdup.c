@@ -36,7 +36,6 @@
 #include <mbstring.h>
 #include "watcom.h"
 #include "wrglbl.h"
-#include "wrmem.h"
 #include "wrstrdup.h"
 
 /****************************************************************************/

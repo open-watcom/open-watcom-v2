@@ -30,21 +30,21 @@
 ****************************************************************************/
 
 
-extern char *   WR_EXPORT WRConvertStringFrom( char *str, char *from, char *to );
-extern char *   WR_EXPORT WRConvertFrom( char *str, char from, char to );
-extern char *   WR_EXPORT WRConvertTo( char *str, char to, char from );
-extern char *   WR_EXPORT WRConvertStringTo( char *str, char *to, char *from );
+WRDLLENTRY extern char *   WRAPI WRConvertStringFrom( char *str, char *from, char *to );
+WRDLLENTRY extern char *   WRAPI WRConvertFrom( char *str, char from, char to );
+WRDLLENTRY extern char *   WRAPI WRConvertTo( char *str, char to, char from );
+WRDLLENTRY extern char *   WRAPI WRConvertStringTo( char *str, char *to, char *from );
 
-extern void     WR_EXPORT WRMassageFilter( char *filter );
+WRDLLENTRY extern void     WRAPI WRMassageFilter( char *filter );
 
-extern int      WR_EXPORT WRmbcs2unicode( char *src, char **dest, int *len );
-extern int      WR_EXPORT WRmbcs2unicodeBuf( char *src, char *dest, int len );
-extern int      WR_EXPORT WRunicode2mbcs( char *src, char **dest, int *len );
-extern int      WR_EXPORT WRunicode2mbcsBuf( char *src, char *dest, int len );
+WRDLLENTRY extern int      WRAPI WRmbcs2unicode( char *src, char **dest, int *len );
+WRDLLENTRY extern int      WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len );
+WRDLLENTRY extern int      WRAPI WRunicode2mbcs( char *src, char **dest, int *len );
+WRDLLENTRY extern int      WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len );
 
-extern int      WR_EXPORT WRStrlen( char *str, int is32Bit );
-extern int      WR_EXPORT WRStrlen32( char *str );
+WRDLLENTRY extern int      WRAPI WRStrlen( char *str, int is32Bit );
+WRDLLENTRY extern int      WRAPI WRStrlen32( char *str );
 
-extern char *   WR_EXPORT WRWResIDNameToStr( WResIDName *name );
+WRDLLENTRY extern char *   WRAPI WRWResIDNameToStr( WResIDName *name );
 
-extern int      WR_EXPORT WRFindFnOffset( char *name );
+WRDLLENTRY extern int      WRAPI WRFindFnOffset( char *name );

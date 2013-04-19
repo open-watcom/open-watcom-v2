@@ -33,13 +33,11 @@
 #include <windows.h>
 #include <string.h>
 #include <io.h>
-
+#include <stdlib.h>
+#include "watcom.h"
 #include "wrglbl.h"
 #include "wrrdw16.h"
-#include "wrfindt.h"
-#include "wrmem.h"
 #include "wrmsg.h"
-#include "wressetr.h"
 
 /****************************************************************************/
 /* external function prototypes                                             */

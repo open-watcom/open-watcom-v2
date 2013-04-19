@@ -36,6 +36,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int WR_EXPORT    WRIsWRDialogMsg( MSG *msg );
+WRDLLENTRY extern int    WRAPI WRIsWRDialogMsg( MSG *msg );
 
 #endif

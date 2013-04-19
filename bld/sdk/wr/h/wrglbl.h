@@ -33,26 +33,18 @@
 #ifndef WRGLBL_INCLUDED
 #define WRGLBL_INCLUDED
 
+#include "wrdll.h"
+#include "wi163264.h"
+
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
 #define WRD_VERSION  0x0100
-
-#ifndef TRUE
-    #define TRUE 1
-#endif
-#ifndef FALSE
-    #define FALSE 0
-#endif
 
 #define UINT32STRLEN 10
 #define UINT16STRLEN 5
 #define UINT8STRLEN  3
 
 #define _wtouch( unused_var )   (unused_var = unused_var)
-
-#define WR_EXPORT   __export pascal
-
-typedef void (CALLBACK HELP_CALLBACK)( void );
 
 #endif

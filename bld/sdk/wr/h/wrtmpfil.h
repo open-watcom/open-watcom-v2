@@ -40,14 +40,14 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int      WR_EXPORT WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size );
-extern int      WR_EXPORT WRDeleteFile( const char * );
-extern int      WR_EXPORT WRFileExists( const char * );
-extern int      WR_EXPORT WRRenameFile( const char *, const char * );
-extern int      WR_EXPORT WRBackupFile( const char *, int  );
-extern void     WR_EXPORT WRFreeTempFileName( char * );
-extern char *   WR_EXPORT WRGetTempFileName( const char * );
-extern int      WR_EXPORT WRCopyFile( const char *, const char *);
-extern int      WR_EXPORT WRGetLastError( void );
+WRDLLENTRY extern int      WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size );
+WRDLLENTRY extern int      WRAPI WRDeleteFile( const char * );
+WRDLLENTRY extern int      WRAPI WRFileExists( const char * );
+WRDLLENTRY extern int      WRAPI WRRenameFile( const char *, const char * );
+WRDLLENTRY extern int      WRAPI WRBackupFile( const char *, int  );
+WRDLLENTRY extern void     WRAPI WRFreeTempFileName( char * );
+WRDLLENTRY extern char *   WRAPI WRGetTempFileName( const char * );
+WRDLLENTRY extern int      WRAPI WRCopyFile( const char *, const char *);
+WRDLLENTRY extern int      WRAPI WRGetLastError( void );
 
 #endif

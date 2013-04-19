@@ -31,7 +31,6 @@
 
 #include <windows.h>
 #include "wrglbl.h"
-#include "wrctl3d.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -146,7 +145,7 @@ static int WRCtl3DDLLInit( void )
     return( TRUE );
 }
 
-int WR_EXPORT WRCtl3DInit( HINSTANCE inst )
+int WRAPI WRCtl3DInit( HINSTANCE inst )
 {
     DWORD       ver;
     BYTE        vm;
@@ -174,7 +173,7 @@ int WR_EXPORT WRCtl3DInit( HINSTANCE inst )
     return( TRUE );
 }
 
-void WR_EXPORT WRCtl3DFini( HINSTANCE inst )
+void WRAPI WRCtl3DFini( HINSTANCE inst )
 {
     _wtouch( inst );
 #if defined( WR_USE_3D )
@@ -183,7 +182,7 @@ void WR_EXPORT WRCtl3DFini( HINSTANCE inst )
     WRCtl3DDLLFini();
 }
 
-BOOL WR_EXPORT WRCtl3dSubclassDlg( HWND hwnd, WORD w )
+BOOL WRAPI WRCtl3dSubclassDlg( HWND hwnd, WORD w )
 {
     if( wrCtl3dSubclassDlg != NULL ) {
         return( wrCtl3dSubclassDlg( hwnd, w ) );
@@ -191,7 +190,7 @@ BOOL WR_EXPORT WRCtl3dSubclassDlg( HWND hwnd, WORD w )
     return( FALSE );
 }
 
-BOOL WR_EXPORT WRCtl3dSubclassDlgEx( HWND hwnd, DWORD dw )
+BOOL WRAPI WRCtl3dSubclassDlgEx( HWND hwnd, DWORD dw )
 {
     if( wrCtl3dSubclassDlgEx != NULL ) {
         return( wrCtl3dSubclassDlgEx( hwnd, dw ) );
@@ -199,7 +198,7 @@ BOOL WR_EXPORT WRCtl3dSubclassDlgEx( HWND hwnd, DWORD dw )
     return( FALSE );
 }
 
-WORD WR_EXPORT WRCtl3dGetVer( void )
+WORD WRAPI WRCtl3dGetVer( void )
 {
     if( wrCtl3dGetVer != NULL ) {
         return( wrCtl3dGetVer() );
@@ -207,7 +206,7 @@ WORD WR_EXPORT WRCtl3dGetVer( void )
     return( 0 );
 }
 
-BOOL WR_EXPORT WRCtl3dEnabled( void )
+BOOL WRAPI WRCtl3dEnabled( void )
 {
     if( wrCtl3dEnabled != NULL ) {
         return( wrCtl3dEnabled() );
@@ -215,7 +214,7 @@ BOOL WR_EXPORT WRCtl3dEnabled( void )
     return( FALSE );
 }
 
-HBRUSH WR_EXPORT WRCtl3dCtlColor( HDC dc, LONG l )
+HBRUSH WRAPI WRCtl3dCtlColor( HDC dc, LONG l )
 {
     if( wrCtl3dCtlColor != NULL ) {
         return( wrCtl3dCtlColor( dc, l ) );
@@ -223,7 +222,7 @@ HBRUSH WR_EXPORT WRCtl3dCtlColor( HDC dc, LONG l )
     return( (HBRUSH)NULL );
 }
 
-HBRUSH WR_EXPORT WRCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam )
+HBRUSH WRAPI WRCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam )
 {
     if( wrCtl3dCtlColorEx != NULL ) {
         return( wrCtl3dCtlColorEx( wm, wParam, lParam ) );
@@ -231,7 +230,7 @@ HBRUSH WR_EXPORT WRCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam )
     return( (HBRUSH)NULL );
 }
 
-BOOL WR_EXPORT WRCtl3dColorChange( void )
+BOOL WRAPI WRCtl3dColorChange( void )
 {
     if( wrCtl3dColorChange != NULL ) {
         return( wrCtl3dColorChange() );
@@ -239,7 +238,7 @@ BOOL WR_EXPORT WRCtl3dColorChange( void )
     return( FALSE );
 }
 
-BOOL WR_EXPORT WRCtl3dSubclassCtl( HWND hwnd )
+BOOL WRAPI WRCtl3dSubclassCtl( HWND hwnd )
 {
     if( wrCtl3dSubclassCtl != NULL ) {
         return( wrCtl3dSubclassCtl( hwnd ) );
@@ -247,7 +246,7 @@ BOOL WR_EXPORT WRCtl3dSubclassCtl( HWND hwnd )
     return( FALSE );
 }
 
-LONG WR_EXPORT WRCtl3dDlgFramePaint( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
+LONG WRAPI WRCtl3dDlgFramePaint( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
 {
     if( wrCtl3dDlgFramePaint != NULL ) {
         return( wrCtl3dDlgFramePaint( hwnd, msg, wp, lp ) );
@@ -255,7 +254,7 @@ LONG WR_EXPORT WRCtl3dDlgFramePaint( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
     return( 0L );
 }
 
-BOOL WR_EXPORT WRCtl3dAutoSubclass(HANDLE hndl )
+BOOL WRAPI WRCtl3dAutoSubclass(HANDLE hndl )
 {
     if( wrCtl3dAutoSubclass != NULL ) {
         return( wrCtl3dAutoSubclass( hndl ) );
@@ -263,7 +262,7 @@ BOOL WR_EXPORT WRCtl3dAutoSubclass(HANDLE hndl )
     return( FALSE );
 }
 
-BOOL WR_EXPORT WRCtl3dRegister( HANDLE hndl )
+BOOL WRAPI WRCtl3dRegister( HANDLE hndl )
 {
     if( wrCtl3dRegister != NULL ) {
         return( wrCtl3dRegister( hndl ) );
@@ -271,7 +270,7 @@ BOOL WR_EXPORT WRCtl3dRegister( HANDLE hndl )
     return( FALSE );
 }
 
-BOOL WR_EXPORT WRCtl3dUnregister( HANDLE inst )
+BOOL WRAPI WRCtl3dUnregister( HANDLE inst )
 {
     if( wrCtl3dUnregister != NULL ) {
         return( wrCtl3dUnregister( inst ) );
@@ -279,7 +278,7 @@ BOOL WR_EXPORT WRCtl3dUnregister( HANDLE inst )
     return( FALSE );
 }
 
-void WR_EXPORT WRCtl3dWinIniChange( void )
+void WRAPI WRCtl3dWinIniChange( void )
 {
     if( wrCtl3dWinIniChange != NULL ) {
         wrCtl3dWinIniChange();

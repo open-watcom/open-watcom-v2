@@ -2,4 +2,6 @@
 host_os  = nt
 host_cpu = x64
 
+lib_type = shared
+
 !include ../mif/master.mif

@@ -42,10 +42,7 @@
 #include <direct.h>
 #include <errno.h>
 #include "watcom.h"
-#include "wressetr.h"
 #include "wrglbl.h"
-#include "wrtmpfil.h"
-#include "wrmem.h"
 #include "wrmsg.h"
 
 /****************************************************************************/
@@ -61,12 +58,12 @@ static int  WRCopyBinFile( int, int );
 
 static int  LastError = 0;
 
-int WR_EXPORT WRGetLastError( void )
+int WRAPI WRGetLastError( void )
 {
     return( LastError );
 }
 
-int WR_EXPORT WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size )
+int WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size )
 {
     long int    s;
     int         ok;
@@ -103,7 +100,7 @@ int WR_EXPORT WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size )
     return( ok );
 }
 
-int WR_EXPORT WRDeleteFile( const char *name )
+int WRAPI WRDeleteFile( const char *name )
 {
     if( name != NULL && WRFileExists( name ) ) {
         return( !remove( name ) );
@@ -111,12 +108,12 @@ int WR_EXPORT WRDeleteFile( const char *name )
     return( FALSE );
 }
 
-int WR_EXPORT WRFileExists( const char *name )
+int WRAPI WRFileExists( const char *name )
 {
     return( name != NULL && access( name, R_OK ) == 0 );
 }
 
-int WR_EXPORT WRRenameFile( const char *new, const char *old )
+int WRAPI WRRenameFile( const char *new, const char *old )
 {
     char     new_drive[_MAX_DRIVE];
     char     old_drive[_MAX_DRIVE];
@@ -143,14 +140,14 @@ int WR_EXPORT WRRenameFile( const char *new, const char *old )
     }
 }
 
-int WR_EXPORT WRBackupFile( const char *name, int use_rename )
+int WRAPI WRBackupFile( const char *name, int use_rename )
 {
     char     fn_path[_MAX_PATH];
     char     fn_drive[_MAX_DRIVE];
     char     fn_dir[_MAX_DIR];
     char     fn_name[_MAX_FNAME];
     char     fn_ext[_MAX_EXT + 1];
-    int      len;
+    size_t   len;
     int      ret;
 
     if( name == NULL ) {
@@ -185,17 +182,17 @@ int WR_EXPORT WRBackupFile( const char *name, int use_rename )
     return( ret );
 }
 
-void WR_EXPORT WRFreeTempFileName( char *name )
+void WRAPI WRFreeTempFileName( char *name )
 {
     WRMemFree( name );
 }
 
-char * WR_EXPORT WRGetTempFileName( const char *ext )
+char * WRAPI WRGetTempFileName( const char *ext )
 {
     char    *buf;
     char    tname[L_tmpnam];
     char    *dir;
-    int     len;
+    size_t  len;
     char    fn_path[_MAX_PATH + 1];
     char    fn_drive[_MAX_DRIVE];
     char    fn_dir[_MAX_DIR];
@@ -222,8 +219,8 @@ char * WR_EXPORT WRGetTempFileName( const char *ext )
         _splitpath( fn_path, fn_drive, fn_dir, NULL, NULL );
         if( no_tmp ) {
             fn_dir[0] = '\0';
+            free( dir );
         }
-        free( dir );
     } else {
         fn_drive[0] = '\0';
         fn_dir[0] = '\0';
@@ -249,7 +246,7 @@ char * WR_EXPORT WRGetTempFileName( const char *ext )
     return( buf );
 }
 
-int WR_EXPORT WRCopyFile( const char *dest, const char *src )
+int WRAPI WRCopyFile( const char *dest, const char *src )
 {
     uint_8     ret;
     int        dest_handle;
@@ -261,8 +258,7 @@ int WR_EXPORT WRCopyFile( const char *dest, const char *src )
         return( FALSE );
     }
 
-    dest_handle = open( dest, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY,
-                        S_IWRITE | S_IREAD );
+    dest_handle = open( dest, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY, S_IWRITE | S_IREAD );
     if( dest_handle == -1 ) {
         LastError = errno;
         return( FALSE );

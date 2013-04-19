@@ -34,11 +34,9 @@
 #include <string.h>
 #include <io.h>
 #include "watcom.h"
-#include "wressetr.h"
 #include "wrglbl.h"
 #include "wrrdwnt.h"
 #include "wrmsg.h"
-#include "wrmem.h"
 
 /* forward declarations */
 int WRReadResourceEntry( WResFileID file, uint_32 offset, resource_entry *res_entry );
