@@ -37,15 +37,15 @@
 #include "errdefns.h"
 #include "carve.h"
 #include "name.h"
-#include "hashtab.h"
 #include "initdefs.h"
 #include "stats.h"
 #include "pcheader.h"
+#include "hashtab.h"
 
 #define BLOCK_HASHTAB           (32) // number of HASTAB struct pre-allocated
 
 #define MIN_CARVE_SIZE          (1024) // minimum size to carve
-#define CARVE_TABLE_SIZE        ((MAX_HASHTAB_SIZE - MIN_HASHTAB_SIZE)+1)
+#define CARVE_TABLE_SIZE        ((MAX_HASHTAB_SIZE - MIN_HASHTAB_SIZE) + 1)
 
 static carve_t carveHASHTAB;
 static carve_t carveTable[CARVE_TABLE_SIZE];
@@ -130,9 +130,7 @@ static void hashInit( INITFINI* defn )
     ExtraRptRegisterCtr( &hash_lookups, "hash table lookups" );
     ExtraRptRegisterCtr( &hash_lookup_fail, "hash table lookup failures (includes early exits)" );
     ExtraRptRegisterCtr( &hash_lookup_cost, NULL );
-    ExtraRptRegisterAvg( &hash_lookup_cost
-                       , &hash_lookups
-                       , "average # comparisons per search" );
+    ExtraRptRegisterAvg( &hash_lookup_cost, &hash_lookups, "average # comparisons per search" );
     ExtraRptRegisterCtr( &hash_inserts, "hash table inserts" );
 }
 
@@ -185,7 +183,7 @@ HASHTAB HashCreate( unsigned init_table_size )
     hash->half = half;
     hash->expand_next = expand_next;
     DbgAssert( half != 0 );
-    table = CarveAlloc( carveTable[init_table_size-MIN_HASHTAB_SIZE] );
+    table = CarveAlloc( carveTable[init_table_size - MIN_HASHTAB_SIZE] );
     hash->table = table;
     buckets = half + expand_next;
     init_name = listSentinel;
@@ -372,12 +370,13 @@ void expandHASHTAB( HASHTAB hash )
             hash->expand_next = expand_next;
             half <<= 1;
             old_size = base2( half );
+            DbgAssert( old_size + 1 <= MAX_HASHTAB_SIZE );
             hash->half = half;
             old_table = hash->table;
-            table = CarveAlloc( carveTable[ old_size+1-MIN_HASHTAB_SIZE] );
+            table = CarveAlloc( carveTable[old_size + 1 - MIN_HASHTAB_SIZE] );
             hash->table = table;
-            memcpy( table, old_table, half * sizeof(SYMBOL_NAME) );
-            CarveFree( carveTable[ old_size-MIN_HASHTAB_SIZE ], old_table );
+            memcpy( table, old_table, half * sizeof( SYMBOL_NAME ) );
+            CarveFree( carveTable[old_size - MIN_HASHTAB_SIZE], old_table );
         }
         buckets = expand_next + half;
         num_keys = hash->avg * buckets + hash->remainder;

@@ -33,12 +33,18 @@
 #ifndef _HASHTAB_H
 #define _HASHTAB_H
 
+#if defined( LONG_IS_64BIT ) || defined( _WIN64 )
+#define SYMBOL_NAME_SHIFT	5
+#else
+#define SYMBOL_NAME_SHIFT	4
+#endif
+
 #ifndef NDEBUG
 #define MIN_HASHTAB_SIZE        (1)
 #else
 #define MIN_HASHTAB_SIZE        (5)
 #endif
-#define MAX_HASHTAB_SIZE        (12)
+#define MAX_HASHTAB_SIZE        (CV_SHIFT - SYMBOL_NAME_SHIFT)
 
 typedef struct hash_tab *HASHTAB;
 

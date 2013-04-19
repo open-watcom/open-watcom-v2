@@ -91,7 +91,7 @@ struct free_t {
 #ifndef NDEBUG
 boolean restoreFromZapped( cv_t *cv )
 {
-    size_t elm_size;
+    unsigned elm_size;
     free_t *free_list;
     free_t *curr_zapped;
     free_t *next_zapped;
@@ -123,7 +123,7 @@ boolean restoreFromZapped( cv_t *cv )
 
 static void newBlk( cv_t *cv )
 {
-    size_t elm_size;
+    unsigned elm_size;
     char *top_elm;
     char *bottom_elm;
     char *free_elm;
@@ -149,8 +149,8 @@ static void newBlk( cv_t *cv )
     cv->free_list = free_list;
 }
 
-carve_t CarveCreate( size_t elm_size, size_t elm_count )
-/******************************************************/
+carve_t CarveCreate( unsigned elm_size, unsigned elm_count )
+/**********************************************************/
 {
     cv_t *cv;
 
@@ -265,7 +265,7 @@ void CarveDebugFree( carve_t cv, void *elm )
     blk_t *block;
     char *compare;
     char *start;
-    size_t esize;
+    unsigned esize;
     int i;
     boolean do_search;
 
@@ -417,7 +417,7 @@ carve_t CarveRestart( carve_t cv )
     blk_t *next;
     char *free_elm;
     char *stop;
-    size_t esize;
+    unsigned esize;
     free_t *free_list;
 
 #ifdef DUMP_MEMORY
@@ -550,7 +550,7 @@ void CarveWalkAll( carve_t cv, void (*rtn)( void *, carve_walk_base * ), carve_w
     blk_t *block;
     char *compare;
     char *start;
-    size_t esize;
+    unsigned esize;
     unsigned block_index;
     unsigned block_offset;
 
@@ -575,7 +575,7 @@ void CarveMapOptimize( carve_t cv, cv_index last_valid_index )
 {
     blk_t *block;
     blk_t **init;
-    size_t nmaps;
+    unsigned nmaps;
     unsigned mindex;
 
     if( last_valid_index == CARVE_NULL_INDEX ) {
