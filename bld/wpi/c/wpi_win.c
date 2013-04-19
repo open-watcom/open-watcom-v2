@@ -74,8 +74,9 @@ void _wpi_setpoint( WPI_POINT *pt, int x, int y )
 WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC new )
 {
     WPI_PROC    old;
-    old = ( WPI_PROC ) _wpi_getwindowlong( hwnd, GWL_WNDPROC );
-    _wpi_setwindowlong( hwnd, GWL_WNDPROC, (LONG)new );
+
+    old = (WPI_PROC)GET_WNDPROC( hwnd );
+    SET_WNDPROC( hwnd, (LONG_PTR)new );
     return( old );
 }
 
@@ -90,7 +91,7 @@ BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
     menu_flags |= ( by_position ? MF_BYPOSITION : MF_BYCOMMAND );
 
     return( InsertMenu( hmenu, pos, menu_flags | attr_flags,
-                        ( (menu_flags & MF_POPUP) ? (UINT)popup : (UINT)id ),
+                        ( (menu_flags & MF_POPUP) ? (UINT_PTR)popup : (UINT_PTR)id ),
                         text ) );
 }
 
@@ -99,7 +100,7 @@ BOOL _wpi_appendmenu( HMENU hmenu, unsigned menu_flags,
                       HMENU popup, const char *text )
 {
     return( AppendMenu( hmenu, menu_flags | attr_flags | MF_BYPOSITION,
-                        ( (menu_flags & MF_POPUP) ? (UINT)popup : (UINT)id ),
+                        ( (menu_flags & MF_POPUP) ? (UINT_PTR)popup : (UINT_PTR)id ),
                         text ) );
 }
 
@@ -131,7 +132,7 @@ BOOL _wpi_modifymenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
     menu_flags |= (by_position ? MF_BYPOSITION : MF_BYCOMMAND);
 
     return( ModifyMenu( hmenu, pos, menu_flags | attr_flags,
-                        ( (menu_flags & MF_POPUP) ? (UINT)new_popup : (UINT)new_id ),
+                        ( (menu_flags & MF_POPUP) ? (UINT_PTR)new_popup : (UINT_PTR)new_id ),
                         new_text ) );
 }
 
@@ -156,7 +157,7 @@ BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, const char *text, BOOL by_posit
     }
     return(
         ModifyMenu( hmenu, id, state,
-                    (popup != (HMENU)NULLHANDLE) ? (UINT)popup : (UINT)id,
+                    (popup != (HMENU)NULLHANDLE) ? (UINT_PTR)popup : (UINT_PTR)id,
                     text ) );
 }
 

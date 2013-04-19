@@ -281,6 +281,16 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
 
     #define _wpi_setwindowlong( hwnd, id, data ) SetWindowLong( hwnd, id, data )
 
+#ifdef _WIN64
+    #define _wpi_getwindowlongptr( hwnd, id ) GetWindowLongPtr( hwnd, id )
+
+    #define _wpi_setwindowlongptr( hwnd, id, data ) SetWindowLongPtr( hwnd, id, data )
+#else
+    #define _wpi_getwindowlongptr( hwnd, id ) GetWindowLong( hwnd, id )
+
+    #define _wpi_setwindowlongptr( hwnd, id, data ) SetWindowLong( hwnd, id, (LONG)data )
+#endif
+
     #define _wpi_registerclass( class ) RegisterClass( class )
 
     #define _wpi_unregisterclass( name, inst ) UnregisterClass( name, inst )
@@ -1099,7 +1109,7 @@ extern void _wpi_setrestoredrect( HWND hwnd, WPI_RECT *prect );
 
     #define _wpi_getupdaterect( hwnd, prect ) GetUpdateRect(hwnd, prect, FALSE)
 
-extern WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC newcursor );
+extern WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC newproc );
 
 extern BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                              unsigned attr_flags, unsigned id,

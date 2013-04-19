@@ -123,7 +123,7 @@
 #else
     #define WPI_ERROR_ON_CREATE         -1
     #define WPI_ERRORID                 int
-    #define WPI_MRESULT                 LONG
+    #define WPI_MRESULT                 LRESULT
     #define WPI_MINMAXINFO              MINMAXINFO
     #define WPI_CLASSPROC               WNDPROC
     #define WPI_HICON                   HICON
@@ -212,11 +212,12 @@
 
 #if defined( __OS2_PM__ ) || defined( __OS2__ )
     #ifndef NULLHANDLE
-    #define NULLHANDLE                  (LHANDLE) 0
+    #define NULLHANDLE                  (LHANDLE)0
     #endif
     #define HINSTANCE                   HAB
     #define HPALETTE                    HPAL
     #define GMEM_SHARE                  0
+    #define LONG_PTR                    LONG
     #define WA_ACTIVE                   TRUE
     #define WA_INACTIVE                 FALSE
     #define STARTDOC                    DEVESC_STARTDOC
@@ -750,7 +751,6 @@ typedef struct {
     #define LIT_SELECT                  0
     #define LIT_UNSELECT                0
     #define HINI                        short
-    #define MRESULT                     LONG
     #define WM_DLGCOMMAND               WM_COMMAND
     #define KEY_ASYNC_DOWN              0x8000
     #define KEY_ASYNC_PRESSED           0x0001

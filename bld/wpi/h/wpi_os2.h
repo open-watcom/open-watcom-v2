@@ -503,8 +503,11 @@ extern HWND _wpi_createobjwindow( LPSTR class, LPSTR name, ULONG style, int x,
 
     #define _wpi_getwindowlong( hwnd, id ) WinQueryWindowULong( hwnd, id )
 
-    #define _wpi_setwindowlong( hwnd, id, data ) \
-                                            WinSetWindowULong( hwnd, id, data )
+    #define _wpi_setwindowlong( hwnd, id, data ) WinSetWindowULong( hwnd, id, data )
+
+    #define _wpi_getwindowlongptr( hwnd, id ) WinQueryWindowULong( hwnd, id )
+
+    #define _wpi_setwindowlongptr( hwnd, id, data ) WinSetWindowULong( hwnd, id, (LONG)data )
 
     #define _wpi_makeprocinstance( proc, inst ) ( (WPI_PROC) proc )
 

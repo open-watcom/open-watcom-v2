@@ -125,7 +125,7 @@ static BOOL _wpi_getmenuparentoffset( HMENU hmenu, unsigned id,
     int         i;
     unsigned    item_id;
     MENUITEM    mi;
-    WPI_MRESULT result;
+    MRESULT     result;
 
     if( hmenu == NULLHANDLE ) {
         return( FALSE );
