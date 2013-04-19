@@ -18,10 +18,12 @@ posix_commands_os2   += rm.exe
 posix_commands_nt    += rm.exe
 !endif
 
+!ifndef __WATCOM__
 !ifeq bootstrap 1
 !ifndef %LOGFNAME
-cl_libs =
-cl_objs = clibext.obj
+cl_libs_gen =
+cl_objs_gen = clibext.obj
+!endif
 !endif
 !endif
 
@@ -36,11 +38,11 @@ sys_os2   = sys.obj sysos2.obj sysdoscd.obj
 sys_nt    = sysnt.obj sysdoscd.obj
 sys_linux = sys.obj sysposix.obj
 
-rm_objs      = rm.obj getopt.obj quit.obj lineprt.obj alloc.obj filerx.obj regexp.obj fnlower.obj die.obj isdotdot.obj $(cl_objs)
-builder_objs = builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals.obj $(cl_objs)
-sweep_objs   = sweep.obj $(cl_objs)
-wsplice_objs = wsplice.obj $(cl_objs)
-diff_objs    = diff.obj $(cl_objs)
+rm_objs      = rm.obj getopt.obj quit.obj lineprt.obj alloc.obj filerx.obj regexp.obj fnlower.obj die.obj isdotdot.obj $(cl_objs_gen)
+builder_objs = builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals.obj $(cl_objs_gen)
+sweep_objs   = sweep.obj $(cl_objs_gen)
+wsplice_objs = wsplice.obj $(cl_objs_gen)
+diff_objs    = diff.obj $(cl_objs_gen)
 cdsay_objs   = cdsay.obj equals.obj
 
 extra_cpp_flags = -DSTANDALONE_RX
