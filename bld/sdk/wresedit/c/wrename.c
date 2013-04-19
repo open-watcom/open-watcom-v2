@@ -35,8 +35,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "watcom.h"
 #include "wglbl.h"
-#include "wrglbl.h"
+#include "wrdll.h"
 #include "wmem.h"
 #include "wmsg.h"
 #include "winst.h"
@@ -63,7 +64,7 @@ typedef struct WResRenameInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WResRenameProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WResRenameProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -137,7 +138,7 @@ void WGetWinInfo( HWND hDlg, WResRenameInfo *info )
     }
 }
 
-BOOL WINEXPORT WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WResRenameInfo  *info;
     BOOL            ret;
@@ -151,13 +152,13 @@ BOOL WINEXPORT WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 
     case WM_INITDIALOG:
         info = (WResRenameInfo *)lParam;
-        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        SET_DLGDATA( hDlg, (LONG_PTR)info );
         WSetWinInfo( hDlg, info );
         ret = TRUE;
         break;
 
     case WM_COMMAND:
-        info = (WResRenameInfo *)GetWindowLong( hDlg, DWL_USER );
+        info = (WResRenameInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDM_HELP:
             if( info != NULL && info->hcb != NULL ) {

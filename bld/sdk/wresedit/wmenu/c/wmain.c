@@ -34,12 +34,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <io.h>
-#include "wi163264.h"
-
+#include "wio.h"
+#include "watcom.h"
 #include "wresall.h"
 #include "wglbl.h"
-#include "wrglbl.h"
 #include "wmenu.h"
 #include "winst.h"
 #include "wmem.h"
@@ -65,7 +63,6 @@
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "wrdll.h"
-#include "wrutil.h"
 
 #include "wwinhelp.h"
 #include "jdlg.h"
@@ -86,7 +83,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WMainWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WMainWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -135,7 +132,8 @@ extern int  appHeight;
 WResSetRtns( open, close, read, write, lseek, tell, WMemAlloc, WMemFree );
 
 #ifdef __NT__
-int WINAPI LibMain( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
+
+BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 {
     int ret;
 
@@ -183,7 +181,7 @@ int WINAPI WEP( int parm )
 }
 #endif
 
-void WINEXPORT WMenuInit( void )
+void WRESEAPI WMenuInit( void )
 {
     HINSTANCE   inst;
 
@@ -212,7 +210,7 @@ void WINEXPORT WMenuInit( void )
     ref_count++;
 }
 
-void WINEXPORT WMenuFini( void )
+void WRESEAPI WMenuFini( void )
 {
     ref_count--;
     if( ref_count == 0 ) {
@@ -222,7 +220,7 @@ void WINEXPORT WMenuFini( void )
     }
 }
 
-WMenuHandle WINEXPORT WRMenuStartEdit( WMenuInfo *info )
+WMenuHandle WRESEAPI WRMenuStartEdit( WMenuInfo *info )
 {
     int             ok;
     WMenuEditInfo   *einfo;
@@ -278,7 +276,7 @@ WMenuHandle WINEXPORT WRMenuStartEdit( WMenuInfo *info )
     return( einfo->hndl );
 }
 
-int WINEXPORT WMenuIsModified( WMenuHandle hndl )
+int WRESEAPI WMenuIsModified( WMenuHandle hndl )
 {
     WMenuEditInfo *einfo;
 
@@ -287,7 +285,7 @@ int WINEXPORT WMenuIsModified( WMenuHandle hndl )
     return( einfo->info->modified );
 }
 
-void WINEXPORT WMenuShowWindow( WMenuHandle hndl, int show )
+void WRESEAPI WMenuShowWindow( WMenuHandle hndl, int show )
 {
     WMenuEditInfo *einfo;
 
@@ -302,7 +300,7 @@ void WINEXPORT WMenuShowWindow( WMenuHandle hndl, int show )
     }
 }
 
-void WINEXPORT WMenuBringToFront( WMenuHandle hndl )
+void WRESEAPI WMenuBringToFront( WMenuHandle hndl )
 {
     WMenuEditInfo *einfo;
 
@@ -314,22 +312,22 @@ void WINEXPORT WMenuBringToFront( WMenuHandle hndl )
     }
 }
 
-int WINEXPORT WMenuIsDlgMsg( MSG *msg )
+int WRESEAPI WMenuIsDlgMsg( MSG *msg )
 {
     return( WIsMenuDialogMessage( msg, AccelTable ) );
 }
 
-WMenuInfo * WINEXPORT WMenuEndEdit( WMenuHandle hndl )
+WMenuInfo *WRESEAPI WMenuEndEdit( WMenuHandle hndl )
 {
     return( WMenuGetEInfo( hndl, FALSE ) );
 }
 
-WMenuInfo * WINEXPORT WMenuGetEditInfo( WMenuHandle hndl )
+WMenuInfo *WRESEAPI WMenuGetEditInfo( WMenuHandle hndl )
 {
     return( WMenuGetEInfo( hndl, TRUE ) );
 }
 
-int WINEXPORT WMenuCloseSession( WMenuHandle hndl, int force_exit )
+int WRESEAPI WMenuCloseSession( WMenuHandle hndl, int force_exit )
 {
     WMenuEditInfo *einfo;
 
@@ -465,7 +463,7 @@ Bool WRegisterMainClass( HINSTANCE inst )
     wc.style = CS_DBLCLKS | CS_GLOBALCLASS;
     wc.lpfnWndProc = WMainWndProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( WMenuEditInfo * );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = inst;
     wc.hIcon = LoadIcon( inst, "APPLICON" );
     wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
@@ -713,8 +711,7 @@ static void handleLoadSymbols( WMenuEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, TRUE );
 }
 
-LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
-                                WPARAM wParam, volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HMENU               menu;
 #if 0
@@ -729,7 +726,7 @@ LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
 
     pass_to_def = TRUE;
     ret = FALSE;
-    einfo = (WMenuEditInfo *)GetWindowLong( hWnd, 0 );
+    einfo = (WMenuEditInfo *)GET_WNDLONGPTR( hWnd, 0 );
     WSetCurrentEditInfo( einfo );
 
     switch( message ) {
@@ -769,7 +766,7 @@ LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
 
     case WM_CREATE:
         einfo = ((CREATESTRUCT *)lParam)->lpCreateParams;
-        SetWindowLong( hWnd, 0, (LONG)einfo );
+        SET_WNDLONGPTR( hWnd, 0, (LONG_PTR)einfo );
         break;
 
     case WM_MENUSELECT:
@@ -836,7 +833,7 @@ LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
     case WM_ACTIVATE:
         if( GET_WM_ACTIVATE_FACTIVE( wParam, lParam ) != WA_INACTIVE ) {
             win = GET_WM_ACTIVATE_HWND( wParam, lParam );
-            einfo = (WMenuEditInfo *)GetWindowLong( win, 0 );
+            einfo = (WMenuEditInfo *)GET_WNDLONGPTR( win, 0 );
             WSetCurrentEditInfo( einfo );
         } else {
             WSetCurrentEditInfo( NULL );
@@ -1310,7 +1307,7 @@ Bool WCleanup( WMenuEditInfo *einfo )
     return( ok );
 }
 
-void CALLBACK WMenuHelpRoutine( void )
+WINEXPORT void CALLBACK WMenuHelpRoutine( void )
 {
     WMenuEditInfo       *einfo;
 
@@ -1322,19 +1319,19 @@ void CALLBACK WMenuHelpRoutine( void )
     }
 }
 
-void CALLBACK WMenuHelpSearchRoutine( void )
+WINEXPORT void CALLBACK WMenuHelpSearchRoutine( void )
 {
     WMenuEditInfo       *einfo;
 
     einfo = WGetCurrentEditInfo();
     if( einfo != NULL ) {
-        if( !WHtmlHelp( einfo->win, "resmnu.chm", HELP_PARTIALKEY, (DWORD)"" ) ) {
-            WWinHelp( einfo->win, "resmnu.hlp", HELP_PARTIALKEY, (DWORD)"" );
+        if( !WHtmlHelp( einfo->win, "resmnu.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+            WWinHelp( einfo->win, "resmnu.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
         }
     }
 }
 
-void CALLBACK WMenuHelpOnHelpRoutine( void )
+WINEXPORT void CALLBACK WMenuHelpOnHelpRoutine( void )
 {
     WMenuEditInfo       *einfo;
 

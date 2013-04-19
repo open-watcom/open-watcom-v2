@@ -33,9 +33,6 @@
 #ifndef WEDITSYM_INCLUDED
 #define WEDITSYM_INCLUDED
 
-#include "wrdll.h"
-#include "wrhash.h"
-
 extern char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, Bool prompt );
 extern Bool WEditSymbols( HWND parent, WRHashTable **symbol_table, HINSTANCE inst, HELP_CALLBACK hcb );
 extern char *WCreateSymName( char *fname );

@@ -34,6 +34,7 @@
 #include <string.h>
 #include <mbstring.h>
 #include <stdio.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wmsg.h"
@@ -56,7 +57,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WStatusWndProc( HWND, unsigned, UINT, LONG );
+BOOL WStatusWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -282,7 +283,7 @@ Bool WSetStatusText( WStatBar *wsb, const char *s1, const char *s2 )
     return( TRUE );
 }
 
-BOOL WStatusWndProc( HWND hWnd, unsigned msg, UINT wParam, LONG lParam )
+BOOL WStatusWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     /* touch unused vars to get rid of warning */
     _wtouch( hWnd );

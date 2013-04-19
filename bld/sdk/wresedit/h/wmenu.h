@@ -30,31 +30,27 @@
 ****************************************************************************/
 
 
-#ifndef WACCEL_INCLUDED
-#define WACCEL_INCLUDED
-
-#ifndef WINEXPORT
-    #define WINEXPORT   __export PASCAL
-#endif
+#ifndef WMENU_INCLUDED
+#define WMENU_INCLUDED
 
 #include "wresall.h"
 #include "wrdll.h"
-#include "wrhash.h"
+#include "wreseapi.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
 
-#define ACCEL_I_HAVE_CLOSED  (WM_USER + 666 + 00 + 0)
-#define ACCEL_PLEASE_SAVEME  (WM_USER + 666 + 00 + 1)
-#define ACCEL_PLEASE_OPENME  (WM_USER + 666 + 00 + 2)
+#define MENU_I_HAVE_CLOSED  (WM_USER + 666 + 10 + 0)
+#define MENU_PLEASE_SAVEME  (WM_USER + 666 + 10 + 1)
+#define MENU_PLEASE_OPENME  (WM_USER + 666 + 10 + 2)
 
 /****************************************************************************/
 /* data types                                                               */
 /****************************************************************************/
-typedef int WAccelHandle;
+typedef int WMenuHandle;
 
-typedef struct WAccelInfo {
+typedef struct WMenuInfo {
     HWND                parent;
     HINSTANCE           inst;
     char                *file_name;
@@ -69,23 +65,23 @@ typedef struct WAccelInfo {
     int                 edit_active;
     int                 modified;
     int                 stand_alone;
-} WAccelInfo;
+} WMenuInfo;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WAccelInfo *        WINEXPORT WAccAllocAccelInfo( void );
-void                WINEXPORT WAccFreeAccelInfo( WAccelInfo * );
+WRESEDLLENTRY WMenuInfo *         WRESEAPI WMenuAllocMenuInfo( void );
+WRESEDLLENTRY void                WRESEAPI WMenuFreeMenuInfo( WMenuInfo * );
 
-extern void         WINEXPORT WAccelInit( void );
-extern void         WINEXPORT WAccelFini( void );
-extern int          WINEXPORT WAccelCloseSession( WAccelHandle, int );
-extern WAccelHandle WINEXPORT WAccelStartEdit( WAccelInfo * );
-extern WAccelInfo * WINEXPORT WAccelEndEdit( WAccelHandle );
-extern WAccelInfo * WINEXPORT WAccelGetEditInfo( WAccelHandle );
-extern int          WINEXPORT WAccelIsModified( WAccelHandle );
-extern int          WINEXPORT WAccelIsDlgMsg( MSG *msg );
-extern void         WINEXPORT WAccelShowWindow( WAccelHandle hndl, int show );
-extern void         WINEXPORT WAccelBringToFront( WAccelHandle hndl );
+WRESEDLLENTRY extern void         WRESEAPI WMenuInit( void );
+WRESEDLLENTRY extern void         WRESEAPI WMenuFini( void );
+WRESEDLLENTRY extern int          WRESEAPI WMenuCloseSession( WMenuHandle, int );
+WRESEDLLENTRY extern WMenuHandle  WRESEAPI WRMenuStartEdit( WMenuInfo * );
+WRESEDLLENTRY extern WMenuInfo *  WRESEAPI WMenuEndEdit( WMenuHandle );
+WRESEDLLENTRY extern WMenuInfo *  WRESEAPI WMenuGetEditInfo( WMenuHandle );
+WRESEDLLENTRY extern int          WRESEAPI WMenuIsModified( WMenuHandle );
+WRESEDLLENTRY extern int          WRESEAPI WMenuIsDlgMsg( MSG *msg );
+WRESEDLLENTRY extern void         WRESEAPI WMenuShowWindow( WMenuHandle hndl, int show );
+WRESEDLLENTRY extern void         WRESEAPI WMenuBringToFront( WMenuHandle hndl );
 
 #endif

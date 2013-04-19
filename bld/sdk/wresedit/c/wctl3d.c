@@ -33,7 +33,7 @@
 #include "precomp.h"
 #include "wglbl.h"
 #include "wctl3d.h"
-#include "wrctl3d.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

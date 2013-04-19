@@ -53,8 +53,8 @@ extern void             WResizeWindows( WStringEditInfo * );
 extern char             *WCreateEditTitle( WStringEditInfo * );
 extern void             WSetEditTitle( WStringEditInfo * );
 extern void             WHandleRename( WStringEditInfo *einfo );
-extern void CALLBACK    WStrHelpRoutine( void );
-extern void CALLBACK    WStrHelpSearchRoutine( void );
-extern void CALLBACK    WStrHelpOnHelpRoutine( void );
+WINEXPORT extern void   CALLBACK WStrHelpRoutine( void );
+WINEXPORT extern void   CALLBACK WStrHelpSearchRoutine( void );
+WINEXPORT extern void   CALLBACK WStrHelpOnHelpRoutine( void );
 
 #endif

@@ -32,6 +32,7 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wstring.h"

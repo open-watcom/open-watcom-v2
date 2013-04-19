@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <string.h>
 #include <limits.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wstat.h"
 #include "wmain.h"

@@ -34,6 +34,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wvk2str.h"

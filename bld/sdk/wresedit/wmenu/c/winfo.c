@@ -32,6 +32,7 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wmenu.h"
@@ -57,7 +58,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-WMenuInfo * WINEXPORT WMenuAllocMenuInfo( void )
+WMenuInfo *WRESEAPI WMenuAllocMenuInfo( void )
 {
     WMenuInfo *info;
 
@@ -68,7 +69,7 @@ WMenuInfo * WINEXPORT WMenuAllocMenuInfo( void )
     return( info );
 }
 
-void WINEXPORT WMenuFreeMenuInfo( WMenuInfo *info )
+void WRESEAPI WMenuFreeMenuInfo( WMenuInfo *info )
 {
     if( info != NULL ) {
         if( info->res_name != NULL ) {

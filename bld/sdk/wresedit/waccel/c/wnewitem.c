@@ -32,7 +32,7 @@
 
 #include "precomp.h"
 #include <string.h>
-#include "wi163264.h"
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wstat.h"

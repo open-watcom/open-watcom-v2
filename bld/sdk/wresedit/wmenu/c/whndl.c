@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <string.h>
 #include <limits.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "w_menu.h"
@@ -74,7 +75,7 @@ WMenuHandle WRegisterEditSession( WMenuEditInfo *info )
 {
     WHndlInfo   *hinfo;
 
-    if( info == NULL || WNextHndl == INT_MAX || (hinfo = WAllocHndlInfo()) == NULL ) {
+    if( info == NULL || WNextHndl == INT_MAX || (hinfo = WAllocHndlInfo()) == (WHndlInfo *)NULL ) {
         return( 0 );
     }
 
@@ -92,7 +93,7 @@ int WUnRegisterEditSession( WMenuHandle hndl )
 {
     WHndlInfo *hinfo;
 
-    if( hndl == 0 || (hinfo = WFindHndlInfo( hndl )) == NULL ) {
+    if( hndl == 0 || (hinfo = WFindHndlInfo( hndl )) == (WHndlInfo *)NULL ) {
         return( FALSE );
     }
 
@@ -107,7 +108,7 @@ WMenuEditInfo *WGetEditSessionInfo( WMenuHandle hndl )
 {
     WHndlInfo *hinfo;
 
-    if( hndl == 0 || (hinfo = WFindHndlInfo( hndl )) == NULL ) {
+    if( hndl == 0 || (hinfo = WFindHndlInfo( hndl )) == (WHndlInfo *)NULL ) {
         return( NULL );
     }
 
@@ -118,7 +119,7 @@ WMenuHandle WGetEditSessionHandle( WMenuEditInfo *info )
 {
     WHndlInfo *hinfo;
 
-    if( info == NULL || (hinfo = WFindHndlInfoR( info )) == NULL ) {
+    if( info == NULL || (hinfo = WFindHndlInfoR( info )) == (WHndlInfo *)NULL ) {
         return( 0 );
     }
 

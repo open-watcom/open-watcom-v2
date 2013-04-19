@@ -35,11 +35,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <io.h>
-#include "wi163264.h"
-
+#include "watcom.h"
 #include "wresall.h"
 #include "wglbl.h"
-#include "wrglbl.h"
 #include "wstring.h"
 #include "winst.h"
 #include "wmem.h"
@@ -64,7 +62,6 @@
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "wrdll.h"
-#include "wrutil.h"
 
 #include "wwinhelp.h"
 #include "jdlg.h"
@@ -85,7 +82,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WMainWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WMainWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -129,7 +126,7 @@ WResSetRtns( open, close, read, write, lseek, tell, WMemAlloc, WMemFree );
 
 #ifdef __NT__
 
-int WINAPI LibMain( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
+BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 {
     int ret;
 
@@ -177,7 +174,7 @@ int WINAPI WEP( int parm )
 }
 #endif
 
-void WINEXPORT WStringInit( void )
+void WRESEAPI WStringInit( void )
 {
     HINSTANCE   inst;
 
@@ -193,7 +190,7 @@ void WINEXPORT WStringInit( void )
     ref_count++;
 }
 
-void WINEXPORT WStringFini( void )
+void WRESEAPI WStringFini( void )
 {
     ref_count--;
     if( ref_count == 0 ) {
@@ -202,7 +199,7 @@ void WINEXPORT WStringFini( void )
     }
 }
 
-WStringHandle WINEXPORT WRStringStartEdit( WStringInfo *info )
+WStringHandle WRESEAPI WRStringStartEdit( WStringInfo *info )
 {
     int             ok;
     WStringEditInfo *einfo;
@@ -258,7 +255,7 @@ WStringHandle WINEXPORT WRStringStartEdit( WStringInfo *info )
     return( einfo->hndl );
 }
 
-int WINEXPORT WStringIsModified( WStringHandle hndl )
+int WRESEAPI WStringIsModified( WStringHandle hndl )
 {
     WStringEditInfo *einfo;
 
@@ -267,7 +264,7 @@ int WINEXPORT WStringIsModified( WStringHandle hndl )
     return( einfo->info->modified );
 }
 
-void WINEXPORT WStringShowWindow( WStringHandle hndl, int show )
+void WRESEAPI WStringShowWindow( WStringHandle hndl, int show )
 {
     WStringEditInfo *einfo;
 
@@ -282,7 +279,7 @@ void WINEXPORT WStringShowWindow( WStringHandle hndl, int show )
     }
 }
 
-void WINEXPORT WStringBringToFront( WStringHandle hndl )
+void WRESEAPI WStringBringToFront( WStringHandle hndl )
 {
     WStringEditInfo *einfo;
 
@@ -294,22 +291,22 @@ void WINEXPORT WStringBringToFront( WStringHandle hndl )
     }
 }
 
-int WINEXPORT WStringIsDlgMsg( MSG *msg )
+int WRESEAPI WStringIsDlgMsg( MSG *msg )
 {
     return( WIsStringDialogMessage( msg, AccelTable ) );
 }
 
-WStringInfo * WINEXPORT WStringEndEdit( WStringHandle hndl )
+WStringInfo *WRESEAPI WStringEndEdit( WStringHandle hndl )
 {
     return( WStringGetEInfo( hndl, FALSE ) );
 }
 
-WStringInfo * WINEXPORT WStringGetEditInfo( WStringHandle hndl )
+WStringInfo *WRESEAPI WStringGetEditInfo( WStringHandle hndl )
 {
     return( WStringGetEInfo( hndl, TRUE ) );
 }
 
-int WINEXPORT WStringCloseSession( WStringHandle hndl, int force_exit )
+int WRESEAPI WStringCloseSession( WStringHandle hndl, int force_exit )
 {
     WStringEditInfo *einfo;
 
@@ -419,7 +416,7 @@ Bool WRegisterMainClass( HINSTANCE inst )
     wc.style = CS_DBLCLKS | CS_GLOBALCLASS;
     wc.lpfnWndProc = WMainWndProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( WStringEditInfo * );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = inst;
     wc.hIcon = LoadIcon( inst, "APPLICON" );
     wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
@@ -662,8 +659,7 @@ static void handleLoadSymbols( WStringEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, TRUE );
 }
 
-LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
-                                WPARAM wParam, volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HMENU           menu;
 #if 0
@@ -678,7 +674,7 @@ LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
 
     pass_to_def = TRUE;
     ret = FALSE;
-    einfo = (WStringEditInfo *)GetWindowLong( hWnd, 0 );
+    einfo = (WStringEditInfo *)GET_WNDLONGPTR( hWnd, 0 );
     WSetCurrentEditInfo( einfo );
 
     switch( message ) {
@@ -720,7 +716,7 @@ LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
 
     case WM_CREATE:
         einfo = ((CREATESTRUCT *)lParam)->lpCreateParams;
-        SetWindowLong( hWnd, 0, (LONG)einfo );
+        SET_WNDLONGPTR( hWnd, 0, (LONG_PTR)einfo );
         break;
 
     case WM_MENUSELECT:
@@ -1146,7 +1142,7 @@ Bool WCleanup( WStringEditInfo *einfo )
     return( ok );
 }
 
-void CALLBACK WStrHelpRoutine( void )
+WINEXPORT void CALLBACK WStrHelpRoutine( void )
 {
     WStringEditInfo     *einfo;
 
@@ -1158,19 +1154,19 @@ void CALLBACK WStrHelpRoutine( void )
     }
 }
 
-void CALLBACK WStrHelpSearchRoutine( void )
+WINEXPORT void CALLBACK WStrHelpSearchRoutine( void )
 {
     WStringEditInfo     *einfo;
 
     einfo = WGetCurrentEditInfo();
     if( einfo != NULL ) {
-        if( !WHtmlHelp( einfo->win, "resstr.chm", HELP_PARTIALKEY, (DWORD)"" ) ) {
-            WWinHelp( einfo->win, "resstr.hlp", HELP_PARTIALKEY, (DWORD)"" );
+        if( !WHtmlHelp( einfo->win, "resstr.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+            WWinHelp( einfo->win, "resstr.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
         }
     }
 }
 
-void CALLBACK WStrHelpOnHelpRoutine( void )
+WINEXPORT void CALLBACK WStrHelpOnHelpRoutine( void )
 {
     WStringEditInfo     *einfo;
 

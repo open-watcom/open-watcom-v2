@@ -53,8 +53,8 @@ extern void             WResizeWindows( WMenuEditInfo * );
 extern char             *WCreateEditTitle( WMenuEditInfo * );
 extern void             WSetEditTitle( WMenuEditInfo * );
 extern void             WHandleRename( WMenuEditInfo *einfo );
-extern void CALLBACK    WMenuHelpRoutine( void );
-extern void CALLBACK    WMenuHelpSearchRoutine( void );
-extern void CALLBACK    WMenuHelpOnHelpRoutine( void );
+WINEXPORT extern void   CALLBACK WMenuHelpRoutine( void );
+WINEXPORT extern void   CALLBACK WMenuHelpSearchRoutine( void );
+WINEXPORT extern void   CALLBACK WMenuHelpOnHelpRoutine( void );
 
 #endif

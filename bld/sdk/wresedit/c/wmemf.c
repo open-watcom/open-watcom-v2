@@ -31,12 +31,12 @@
 
 
 #include "precomp.h"
+#include "watcom.h"
 #include "wresall.h"
 #include "wglbl.h"
-#include "wrglbl.h"
+#include "wrdll.h"
 #include "wmem.h"
 #include "wmemf.h"
-#include "wrdll.h"
 #include "wrmemf.h"
 
 /****************************************************************************/
@@ -60,7 +60,7 @@
 /****************************************************************************/
 
 Bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
-                      HINSTANCE inst, HELP_CALLBACK hcb )
+                      HINSTANCE inst, HELP_CALLBACK *hcb )
 {
     char        *name;
     Bool        ok;

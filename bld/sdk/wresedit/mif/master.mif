@@ -7,7 +7,7 @@ wresedit_autodepends = .AUTODEPEND
 sys_windowed = 1
 sys_dll = 1
 
-suppress_bd = 1
+#suppress_bd = 1
 
 .EXTENSIONS: .res .rc
 
@@ -33,26 +33,27 @@ extra_cpp_flags     = -DWIN_GUI -DWRESEDLL
 
 extra_cpp_flags_nt  = -DNOUSE3D
 
-extra_c_flags     = -s -bd -fh
+extra_c_flags     = -s
 
 extra_c_flags_win = -zu-zw-zc
 
 # preprocessor objects
-extra_c_flags_preproc = -zm -fh=preproc.pch
-extra_c_flags_ppexpr = -zm -fh=preproc.pch
-extra_c_flags_ppmacro = -zm -fh=preproc.pch
+!ifdef __WATCOM__
+extra_c_flags_preproc = -zm
+extra_c_flags_ppexpr = -zm
+extra_c_flags_ppmacro = -zm
+!endif
 
 wr_lib = $(wr_dir)/$(host_os)$(host_cpu)/wr.lib
 
 .c: ../c;../../c;$(sdk_misc_dir);$(cpp_dir)
 
-inc_dirs = -I"../h" -I"../../h" -I"$(wr_dir)/h" -I"$(wres_dir)/h" -I"$(cpp_dir)"
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(wr_dir)/h" -I"$(wres_dir)/h" -I"$(cpp_dir)"
 inc_dirs += $(wpi_inc_dirs) $(commonui_inc_dirs) -I"$(sdk_misc_dir)"
 
-extra_l_flags = op map
-extra_l_flags_nt = op stack=16k,heap=16k commit heap=8k
-extra_l_flags_win = library commdlg op stack=8k,rwr &
-                    export WEP RESIDENT
+extra_l_flags_dll = op map
+extra_l_flags_dll_nt = op stack=16k,heap=16k commit heap=8k
+extra_l_flags_dll_win = library commdlg op stack=8k,rwr export WEP RESIDENT
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
@@ -60,8 +61,10 @@ version_res_dll_nt_x64 = version.res
 
 xlibs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
 
+!ifdef __WATCOM__
 $(name).lib: $(name).dll
         $(librarian) $(libflags) +$[@
+!endif
 
 $(name).dll: rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__

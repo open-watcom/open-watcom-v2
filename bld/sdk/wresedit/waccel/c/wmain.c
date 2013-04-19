@@ -34,12 +34,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <io.h>
-#include "wi163264.h"
-
+#include "wio.h"
+#include "watcom.h"
 #include "wresall.h"
 #include "wglbl.h"
-#include "wrglbl.h"
 #include "waccel.h"
 #include "winst.h"
 #include "wmem.h"
@@ -65,7 +63,6 @@
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "wrdll.h"
-#include "wrutil.h"
 
 #include "wwinhelp.h"
 #include "jdlg.h"
@@ -86,7 +83,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WMainWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WMainWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -129,7 +126,7 @@ WResSetRtns( open, close, read, write, lseek, tell, WMemAlloc, WMemFree );
 
 #ifdef __NT__
 
-int WINAPI LibMain( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
+BOOL WINAPI DllMain( HINSTANCE inst, DWORD dwReason, LPVOID lpReserved )
 {
     int ret;
 
@@ -177,7 +174,7 @@ int WINAPI WEP( int parm )
 }
 #endif
 
-void WINEXPORT WAccelInit( void )
+void WRESEAPI WAccelInit( void )
 {
     HINSTANCE   inst;
 
@@ -193,7 +190,7 @@ void WINEXPORT WAccelInit( void )
     ref_count++;
 }
 
-void WINEXPORT WAccelFini( void )
+void WRESEAPI WAccelFini( void )
 {
     ref_count--;
     if( ref_count == 0 ) {
@@ -202,7 +199,7 @@ void WINEXPORT WAccelFini( void )
     }
 }
 
-WAccelHandle WINEXPORT WAccelStartEdit( WAccelInfo *info )
+WAccelHandle WRESEAPI WAccelStartEdit( WAccelInfo *info )
 {
     int             ok;
     WAccelEditInfo  *einfo;
@@ -258,7 +255,7 @@ WAccelHandle WINEXPORT WAccelStartEdit( WAccelInfo *info )
     return( einfo->hndl );
 }
 
-void WINEXPORT WAccelShowWindow( WAccelHandle hndl, int show )
+void WRESEAPI WAccelShowWindow( WAccelHandle hndl, int show )
 {
     WAccelEditInfo *einfo;
 
@@ -273,7 +270,7 @@ void WINEXPORT WAccelShowWindow( WAccelHandle hndl, int show )
     }
 }
 
-void WINEXPORT WAccelBringToFront( WAccelHandle hndl )
+void WRESEAPI WAccelBringToFront( WAccelHandle hndl )
 {
     WAccelEditInfo *einfo;
 
@@ -285,22 +282,22 @@ void WINEXPORT WAccelBringToFront( WAccelHandle hndl )
     }
 }
 
-int WINEXPORT WAccelIsDlgMsg( MSG *msg )
+int WRESEAPI WAccelIsDlgMsg( MSG *msg )
 {
     return( WIsAccelDialogMessage( msg, AccelTable ) );
 }
 
-WAccelInfo * WINEXPORT WAccelEndEdit( WAccelHandle hndl )
+WAccelInfo *WRESEAPI WAccelEndEdit( WAccelHandle hndl )
 {
     return( WAccelGetEInfo( hndl, FALSE ) );
 }
 
-WAccelInfo * WINEXPORT WAccelGetEditInfo( WAccelHandle hndl )
+WAccelInfo *WRESEAPI WAccelGetEditInfo( WAccelHandle hndl )
 {
     return( WAccelGetEInfo( hndl, TRUE ) );
 }
 
-int WINEXPORT WAccelCloseSession( WAccelHandle hndl, int force_exit )
+int WRESEAPI WAccelCloseSession( WAccelHandle hndl, int force_exit )
 {
     WAccelEditInfo *einfo;
 
@@ -414,7 +411,7 @@ Bool WRegisterMainClass( HINSTANCE inst )
     wc.style = CS_DBLCLKS | CS_GLOBALCLASS;
     wc.lpfnWndProc = WMainWndProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( WAccelEditInfo * );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = inst;
     wc.hIcon = LoadIcon( inst, "APPLICON" );
     wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
@@ -677,8 +674,7 @@ void setLastMenuSelect( WAccelEditInfo *einfo, WPARAM wParam, LPARAM lParam )
     }
 }
 
-LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
-                                WPARAM wParam, volatile LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HMENU           menu;
 #if 0
@@ -693,7 +689,7 @@ LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
 
     pass_to_def = TRUE;
     ret = FALSE;
-    einfo = (WAccelEditInfo *)GetWindowLong( hWnd, 0 );
+    einfo = (WAccelEditInfo *)GET_WNDLONGPTR( hWnd, 0 );
     WSetCurrentEditInfo( einfo );
 
     if( einfo != NULL && einfo->getting_key ) {
@@ -743,7 +739,7 @@ LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
 
     case WM_CREATE:
         einfo = ((CREATESTRUCT *)lParam)->lpCreateParams;
-        SetWindowLong( hWnd, 0, (LONG)einfo );
+        SET_WNDLONGPTR( hWnd, 0, (LONG_PTR)einfo );
         break;
 
     case WM_MENUSELECT:
@@ -786,7 +782,7 @@ LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
 #if 0
     case WM_ACTIVATE:
         if( GET_WM_ACTIVATE_FACTIVE( wParam, lParam ) != WA_INACTIVE ) {
-            einfo = (WAccelEditInfo *)GetWindowLong( hWnd, 0 );
+            einfo = (WAccelEditInfo *)GET_WNDLONGPTR( hWnd, 0 );
             if( einfo != NULL && einfo->edit_dlg != (HWND)NULL ) {
                 SetFocus( einfo->edit_dlg );
             }
@@ -1183,7 +1179,7 @@ Bool WCleanup( WAccelEditInfo *einfo )
     return( ok );
 }
 
-void CALLBACK WAccHelpRoutine( void )
+WINEXPORT void CALLBACK WAccHelpRoutine( void )
 {
     WAccelEditInfo      *einfo;
 
@@ -1195,19 +1191,19 @@ void CALLBACK WAccHelpRoutine( void )
     }
 }
 
-void CALLBACK WAccHelpSearchRoutine( void )
+WINEXPORT void CALLBACK WAccHelpSearchRoutine( void )
 {
     WAccelEditInfo      *einfo;
 
     einfo = WGetCurrentEditInfo();
     if( einfo != NULL ) {
-        if( !WHtmlHelp( einfo->win, "resacc.chm", HELP_PARTIALKEY, (DWORD)"" ) ) {
-            WWinHelp( einfo->win, "resacc.hlp", HELP_PARTIALKEY, (DWORD)"" );
+        if( !WHtmlHelp( einfo->win, "resacc.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+            WWinHelp( einfo->win, "resacc.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
         }
     }
 }
 
-void CALLBACK WAccHelpOnHelpRoutine( void )
+WINEXPORT void CALLBACK WAccHelpOnHelpRoutine( void )
 {
     WAccelEditInfo      *einfo;
 

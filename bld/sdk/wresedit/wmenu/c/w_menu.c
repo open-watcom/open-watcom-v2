@@ -32,6 +32,7 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wmenu.h"
@@ -42,7 +43,7 @@
 #include "wresall.h"
 #include "wmsg.h"
 #include "rcstr.gh"
-#include "wrutil.h"
+#include "wrdll.h"
 #include "w_menu.h"
 
 /****************************************************************************/

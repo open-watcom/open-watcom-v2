@@ -53,8 +53,8 @@ extern void             WResizeWindows( WAccelEditInfo * );
 extern char             *WCreateEditTitle( WAccelEditInfo * );
 extern void             WSetEditTitle( WAccelEditInfo * );
 extern void             WHandleRename( WAccelEditInfo *einfo );
-extern void CALLBACK    WAccHelpRoutine( void );
-extern void CALLBACK    WAccHelpSearchRoutine( void );
-extern void CALLBACK    WAccHelpOnHelpRoutine( void );
+WINEXPORT extern void   CALLBACK WAccHelpRoutine( void );
+WINEXPORT extern void   CALLBACK WAccHelpSearchRoutine( void );
+WINEXPORT extern void   CALLBACK WAccHelpOnHelpRoutine( void );
 
 #endif

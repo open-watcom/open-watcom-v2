@@ -31,8 +31,7 @@
 
 
 #include "precomp.h"
-#include "wi163264.h"
-
+#include "watcom.h"
 #include "wglbl.h"
 #include "sys_rc.h"
 #include "wedit.h"
@@ -47,7 +46,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WPrevWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WPrevWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -67,7 +66,7 @@ Bool WRegisterPrevClass( HINSTANCE inst )
     wc.style = CS_DBLCLKS | CS_GLOBALCLASS;
     wc.lpfnWndProc = WPrevWndProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( WMenuEditInfo * );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = inst;
     wc.hIcon = NULL;
     wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
@@ -230,7 +229,7 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
     }
 }
 
-LRESULT WINEXPORT WPrevWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT LRESULT CALLBACK WPrevWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     LRESULT             ret;
     Bool                pass_to_def;
@@ -238,7 +237,7 @@ LRESULT WINEXPORT WPrevWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 
     pass_to_def = TRUE;
     ret = FALSE;
-    einfo = (WMenuEditInfo *)GetWindowLong( hWnd, 0 );
+    einfo = (WMenuEditInfo *)GET_WNDLONGPTR( hWnd, 0 );
 
     switch ( message ) {
     case WM_SETFOCUS:
@@ -255,7 +254,7 @@ LRESULT WINEXPORT WPrevWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 
     case WM_CREATE:
         einfo = ((CREATESTRUCT *)lParam)->lpCreateParams;
-        SetWindowLong( hWnd, 0, (LONG)einfo );
+        SET_WNDLONGPTR( hWnd, 0, (LONG_PTR)einfo );
         break;
 
     case WM_CLOSE:

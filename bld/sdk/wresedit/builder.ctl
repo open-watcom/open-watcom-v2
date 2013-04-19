@@ -14,24 +14,28 @@ set PROJNAME=wresedit
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> waccel/wini86/wacc.dll     <OWRELROOT>/binw/wacc.dll
-    <CCCMD> waccel/wini86/wacc.sym     <OWRELROOT>/binw/wacc.sym
-    <CCCMD> wmenu/wini86/wmenu.dll     <OWRELROOT>/binw/wmenu.dll
-    <CCCMD> wmenu/wini86/wmenu.sym     <OWRELROOT>/binw/wmenu.sym
-    <CCCMD> wstring/wini86/wstring.dll <OWRELROOT>/binw/wstring.dll
-    <CCCMD> wstring/wini86/wstring.sym <OWRELROOT>/binw/wstring.sym
-    <CCCMD> waccel/nt386/wacc.dll      <OWRELROOT>/binnt/wacc.dll
-    <CCCMD> waccel/nt386/wacc.sym      <OWRELROOT>/binnt/wacc.sym
-    <CCCMD> wmenu/nt386/wmenu.dll      <OWRELROOT>/binnt/wmenu.dll
-    <CCCMD> wmenu/nt386/wmenu.sym      <OWRELROOT>/binnt/wmenu.sym
-    <CCCMD> wstring/nt386/wstring.dll  <OWRELROOT>/binnt/wstring.dll
-    <CCCMD> wstring/nt386/wstring.sym  <OWRELROOT>/binnt/wstring.sym
-    <CCCMD> waccel/ntaxp/wacc.dll      <OWRELROOT>/axpnt/wacc.dll
-    <CCCMD> waccel/ntaxp/wacc.sym      <OWRELROOT>/axpnt/wacc.sym
-    <CCCMD> wmenu/ntaxp/wmenu.dll      <OWRELROOT>/axpnt/wmenu.dll
-    <CCCMD> wmenu/ntaxp/wmenu.sym      <OWRELROOT>/axpnt/wmenu.sym
-    <CCCMD> wstring/ntaxp/wstring.dll  <OWRELROOT>/axpnt/wstring.dll
-    <CCCMD> wstring/ntaxp/wstring.sym  <OWRELROOT>/axpnt/wstring.sym
+    <CCCMD> waccel/wini86/wacc.dll     <OWRELROOT>/binw/
+    <CCCMD> waccel/wini86/wacc.sym     <OWRELROOT>/binw/
+    <CCCMD> wmenu/wini86/wmenu.dll     <OWRELROOT>/binw/
+    <CCCMD> wmenu/wini86/wmenu.sym     <OWRELROOT>/binw/
+    <CCCMD> wstring/wini86/wstring.dll <OWRELROOT>/binw/
+    <CCCMD> wstring/wini86/wstring.sym <OWRELROOT>/binw/
+    <CCCMD> waccel/nt386/wacc.dll      <OWRELROOT>/binnt/
+    <CCCMD> waccel/nt386/wacc.sym      <OWRELROOT>/binnt/
+    <CCCMD> wmenu/nt386/wmenu.dll      <OWRELROOT>/binnt/
+    <CCCMD> wmenu/nt386/wmenu.sym      <OWRELROOT>/binnt/
+    <CCCMD> wstring/nt386/wstring.dll  <OWRELROOT>/binnt/
+    <CCCMD> wstring/nt386/wstring.sym  <OWRELROOT>/binnt/
+    <CCCMD> waccel/ntaxp/wacc.dll      <OWRELROOT>/axpnt/
+    <CCCMD> waccel/ntaxp/wacc.sym      <OWRELROOT>/axpnt/
+    <CCCMD> wmenu/ntaxp/wmenu.dll      <OWRELROOT>/axpnt/
+    <CCCMD> wmenu/ntaxp/wmenu.sym      <OWRELROOT>/axpnt/
+    <CCCMD> wstring/ntaxp/wstring.dll  <OWRELROOT>/axpnt/
+    <CCCMD> wstring/ntaxp/wstring.sym  <OWRELROOT>/axpnt/
+
+    <CCCMD> waccel/ntx64/wacc.dll      <OWRELROOT>/binnt64/
+    <CCCMD> wmenu/ntx64/wmenu.dll      <OWRELROOT>/binnt64/
+    <CCCMD> wstring/ntx64/wstring.dll  <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

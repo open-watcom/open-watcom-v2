@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <stdio.h>
 
+#include "watcom.h"
 #include "wglbl.h"
 #include "wsetedit.h"
 #include "wmem.h"

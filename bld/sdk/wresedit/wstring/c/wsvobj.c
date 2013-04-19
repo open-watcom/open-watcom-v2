@@ -34,6 +34,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wwait.h"

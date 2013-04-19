@@ -30,20 +30,17 @@
 ****************************************************************************/
 
 
-#ifndef WMEMF_INCLUDED
-#define WMEMF_INCLUDED
+#ifndef WRESEAPI_INCLUDED
+#define WRESEAPI_INCLUDED
 
-/****************************************************************************/
-/* macro definitions                                                        */
-/****************************************************************************/
+#define WRESEAPI    WINAPI
 
-/****************************************************************************/
-/* type definitions                                                         */
-/****************************************************************************/
-
-/****************************************************************************/
-/* function prototypes                                                      */
-/****************************************************************************/
-extern Bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name, HINSTANCE, HELP_CALLBACK * );
+#ifdef WRESEDLL
+    #define WRESEDLLENTRY    __declspec(dllexport)
+#elif defined( __NT__ )
+    #define WRESEDLLENTRY    __declspec(dllimport)
+#else
+    #define WRESEDLLENTRY
+#endif
 
 #endif

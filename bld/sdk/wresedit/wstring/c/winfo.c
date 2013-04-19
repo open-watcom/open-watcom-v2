@@ -32,6 +32,7 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wstring.h"
@@ -57,7 +58,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-WStringInfo * WINEXPORT WStrAllocStringInfo( void )
+WStringInfo *WRESEAPI WStrAllocStringInfo( void )
 {
     WStringInfo *info;
 
@@ -68,7 +69,7 @@ WStringInfo * WINEXPORT WStrAllocStringInfo( void )
     return( info );
 }
 
-void WINEXPORT WStrFreeStringInfo( WStringInfo *info )
+void WRESEAPI WStrFreeStringInfo( WStringInfo *info )
 {
     WStringNode *node;
 

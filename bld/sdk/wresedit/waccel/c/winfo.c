@@ -32,6 +32,7 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "waccel.h"
@@ -57,7 +58,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-WAccelInfo * WINEXPORT WAccAllocAccelInfo( void )
+WAccelInfo *WRESEAPI WAccAllocAccelInfo( void )
 {
     WAccelInfo *info;
 
@@ -68,7 +69,7 @@ WAccelInfo * WINEXPORT WAccAllocAccelInfo( void )
     return( info );
 }
 
-void WINEXPORT WAccFreeAccelInfo( WAccelInfo *info )
+void WRESEAPI WAccFreeAccelInfo( WAccelInfo *info )
 {
     if( info != NULL ) {
         if( info->res_name != NULL ) {

@@ -30,67 +30,58 @@
 ****************************************************************************/
 
 
-#ifndef WSTRING_INCLUDED
-#define WSTRING_INCLUDED
-
-#ifndef WINEXPORT
-    #define WINEXPORT   __export PASCAL
-#endif
+#ifndef WACCEL_INCLUDED
+#define WACCEL_INCLUDED
 
 #include "wresall.h"
 #include "wrdll.h"
-#include "wrhash.h"
+#include "wreseapi.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
 
-#define STRING_I_HAVE_CLOSED  (WM_USER + 666 + 20 + 0)
-#define STRING_PLEASE_SAVEME  (WM_USER + 666 + 20 + 1)
-#define STRING_PLEASE_OPENME  (WM_USER + 666 + 20 + 2)
+#define ACCEL_I_HAVE_CLOSED  (WM_USER + 666 + 00 + 0)
+#define ACCEL_PLEASE_SAVEME  (WM_USER + 666 + 00 + 1)
+#define ACCEL_PLEASE_OPENME  (WM_USER + 666 + 00 + 2)
 
 /****************************************************************************/
 /* data types                                                               */
 /****************************************************************************/
-typedef int WStringHandle;
+typedef int WAccelHandle;
 
-typedef struct WStringNode {
-    WResID              *block_name;
-    WResLangType        lang;
-    int                 data_size;
-    void                *data;
-    uint_16             MemFlags;
-    struct WStringNode  *next;
-} WStringNode;
-
-typedef struct WStringInfo {
+typedef struct WAccelInfo {
     HWND                parent;
     HINSTANCE           inst;
     char                *file_name;
     WRHashTable         *symbol_table;
     char                *symbol_file;
+    WResID              *res_name;
+    WResLangType        lang;
+    uint_16             MemFlags;
     int                 is32bit;
+    int                 data_size;
+    void                *data;
     int                 edit_active;
     int                 modified;
     int                 stand_alone;
-    WStringNode         *tables;
-} WStringInfo;
+} WAccelInfo;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WStringInfo *           WINEXPORT WStrAllocStringInfo( void );
-void                    WINEXPORT WStrFreeStringInfo( WStringInfo * );
+WRESEDLLENTRY extern WAccelInfo  *WRESEAPI WAccAllocAccelInfo( void );
+WRESEDLLENTRY extern void        WRESEAPI WAccFreeAccelInfo( WAccelInfo * );
 
-extern void             WINEXPORT WStringInit( void );
-extern void             WINEXPORT WStringFini( void );
-extern int              WINEXPORT WStringCloseSession( WStringHandle, int );
-extern WStringHandle    WINEXPORT WRStringStartEdit( WStringInfo * );
-extern WStringInfo *    WINEXPORT WStringEndEdit( WStringHandle );
-extern WStringInfo *    WINEXPORT WStringGetEditInfo( WStringHandle );
-extern int              WINEXPORT WStringIsModified( WStringHandle );
-extern int              WINEXPORT WStringIsDlgMsg( MSG *msg );
-extern void             WINEXPORT WStringShowWindow( WStringHandle hndl, int show );
-extern void             WINEXPORT WStringBringToFront( WStringHandle hndl );
+WRESEDLLENTRY extern void        WRESEAPI WAccelInit( void );
+WRESEDLLENTRY extern void        WRESEAPI WAccelFini( void );
+WRESEDLLENTRY extern int         WRESEAPI WAccelCloseSession( WAccelHandle, int );
+WRESEDLLENTRY extern WAccelHandle WRESEAPI WAccelStartEdit( WAccelInfo * );
+WRESEDLLENTRY extern WAccelInfo  *WRESEAPI WAccelEndEdit( WAccelHandle );
+WRESEDLLENTRY extern WAccelInfo  *WRESEAPI WAccelGetEditInfo( WAccelHandle );
+WRESEDLLENTRY extern int         WRESEAPI WAccelIsModified( WAccelHandle );
+WRESEDLLENTRY extern int         WRESEAPI WAccelIsDlgMsg( MSG *msg );
+WRESEDLLENTRY extern void        WRESEAPI WAccelShowWindow( WAccelHandle hndl, int show );
+WRESEDLLENTRY extern void        WRESEAPI WAccelBringToFront( WAccelHandle hndl );
 
 #endif

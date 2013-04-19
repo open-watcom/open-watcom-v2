@@ -33,8 +33,8 @@
 #include "precomp.h"
 #include <ctype.h>
 #include <string.h>
-#include "wi163264.h"
 
+#include "watcom.h"
 #include "wglbl.h"
 #include "wribbon.h"
 #include "wmain.h"
@@ -64,7 +64,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-LRESULT WINEXPORT WAcccelEditProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WAcccelEditProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -173,7 +174,7 @@ Bool WResizeAccelEditWindow( WAccelEditInfo *einfo, RECT *prect )
     return( TRUE );
 }
 
-void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect )
+static void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect )
 {
     HWND    win;
     RECT    crect, t;
@@ -327,7 +328,7 @@ Bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry,
     return( ok );
 }
 
-Bool WSetEditWindowKey( HWND dlg, uint_16 key, uint_16 flags )
+static Bool WSetEditWindowKey( HWND dlg, uint_16 key, uint_16 flags )
 {
     char        *text;
     HWND        edit;
@@ -441,7 +442,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 *id = (uint_16)new_entry->value;
                 if( !dup ) {
                     SendDlgItemMessage( dlg, IDM_ACCEDCMDID, CB_ADDSTRING,
-                                        0, (LPARAM)(LPCSTR)new_entry->name );
+                                        0, (LPARAM)(LPSTR)new_entry->name );
                     SendDlgItemMessage( dlg, IDM_ACCEDCMDID, CB_SETITEMDATA,
                                         0, (LPARAM)new_entry );
                 }
@@ -584,7 +585,7 @@ Bool WInitEditWindowListBox( WAccelEditInfo *einfo )
     return( ok );
 }
 
-Bool WInitEditWindow( WAccelEditInfo *einfo )
+static Bool WInitEditWindow( WAccelEditInfo *einfo )
 {
     HWND    lbox;
     Bool    ok;
@@ -795,7 +796,7 @@ void WHandleSelChange( WAccelEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, FALSE );
 }
 
-LRESULT WINEXPORT WAcccelEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WAcccelEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WAccelEditInfo      *einfo;
     HWND                win;
@@ -806,13 +807,13 @@ LRESULT WINEXPORT WAcccelEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
     WORD                cmd;
 
     ret = FALSE;
-    einfo = (WAccelEditInfo *)GetWindowLong( hDlg, DWL_USER );
+    einfo = (WAccelEditInfo *)GET_DLGDATA( hDlg );
 
     switch( message ) {
     case WM_INITDIALOG:
         einfo = (WAccelEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
-        SetWindowLong( hDlg, DWL_USER, (LONG)einfo );
+        SET_DLGDATA( hDlg, (LONG_PTR)einfo );
         WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
                                 IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
         ret = TRUE;
@@ -916,7 +917,7 @@ LRESULT WINEXPORT WAcccelEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
     return( ret );
 }
 
-LRESULT WINEXPORT WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     RECT        r;
 

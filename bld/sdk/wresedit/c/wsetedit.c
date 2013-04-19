@@ -33,11 +33,11 @@
 #include "precomp.h"
 #include <stdlib.h>
 #include <string.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wsetedit.h"
 #include "wrdll.h"
-#include "wrutil.h"
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -118,7 +118,7 @@ Bool WSetEditWithStr( HWND edit, char *str )
     Bool      ok;
 
     if( ok = (edit != (HWND)NULL && str != NULL) ) {
-        SendMessage( edit, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
+        SendMessage( edit, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
     }
 
     return( ok );
@@ -132,12 +132,12 @@ Bool WSetLBoxWithStr( HWND lbox, char *str, void *data )
     ok = (lbox != (HWND)NULL && str != NULL);
 
     if( ok ) {
-        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
         ok = (index != LB_ERR && index != LB_ERRSPACE);
     }
 
     if( ok ) {
-        SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)data );
+        SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)(LPVOID)data );
         ok = (index != LB_ERR);
     }
 
@@ -152,12 +152,12 @@ Bool WInsertLBoxWithStr( HWND lbox, int pos, char *str, void *data )
     ok = (lbox != (HWND)NULL && str != NULL);
 
     if( ok ) {
-        index = SendMessage( lbox, LB_INSERTSTRING, (WPARAM)pos, (LPARAM)(LPCSTR)str );
+        index = SendMessage( lbox, LB_INSERTSTRING, (WPARAM)pos, (LPARAM)(LPSTR)str );
         ok = (index != LB_ERR && index != LB_ERRSPACE);
     }
 
     if( ok ) {
-        SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)data );
+        SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)(LPVOID)data );
         ok = (index != LB_ERR);
     }
 
@@ -208,7 +208,7 @@ char *WGetStrFromEdit( HWND edit, Bool *mod )
         return( NULL );
     }
 
-    text_copied = SendMessage ( edit, WM_GETTEXT, text_length + 1, (LPARAM)cp );
+    text_copied = SendMessage ( edit, WM_GETTEXT, text_length + 1, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
         WMemFree( cp );
@@ -285,9 +285,9 @@ int_32 WGetSINT32FromEdit( HWND edit, Bool *mod )
 char *WGetStrFromComboLBox( HWND combo, int index )
 {
     char        *cp;
-    LRESULT     text_length;
-    LRESULT     text_copied;
-    LRESULT     count;
+    unsigned    text_length;
+    unsigned    text_copied;
+    int         count;
 
     if( index == -1 ) {
         index = (int)SendMessage( combo, CB_GETCURSEL, 0, 0 );
@@ -310,7 +310,7 @@ char *WGetStrFromComboLBox( HWND combo, int index )
         return( NULL );
     }
 
-    text_copied = SendMessage( combo, CB_GETLBTEXT, index, (LPARAM)cp );
+    text_copied = SendMessage( combo, CB_GETLBTEXT, index, (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
         WMemFree( cp );

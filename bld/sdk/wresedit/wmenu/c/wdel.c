@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <ctype.h>
 #include <string.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wedit.h"

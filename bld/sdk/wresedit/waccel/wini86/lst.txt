@@ -1,0 +1,878 @@
+Open Watcom Make Version 2.0beta1 Limited Availability
+Portions Copyright (c) 1988-2002 Sybase, Inc. All Rights Reserved.
+Source code is available under the Sybase Open Watcom Public License.
+See http://www.openwatcom.org/ for details.
+$(INC_DIRS) has the value (-I. -I"../h" -I"../../h" -I"c:\dev\open-watcom-v2\bld/sdk/wr/h" -I"c:\dev\open-watcom-v2\bld/wres/h" -I"c:\dev\open-watcom-v2\bld/cpp" $(wpi_inc_dirs) $(commonui_inc_dirs) -I"$(sdk_misc_dir)")
+$(CPPFLAGS_COMMON_X64) has the value (-D__NT_X64__)
+$(DEFAULT_MEMORY_MODEL_386_WIN) has the value (f)
+$(LINKER_MPS) has the value (*bwlink)
+$(LINKER_I86) has the value (*bwlink)
+$(PMAKE_DIR) has the value ($(src_dir)/pmake)
+$(AWK_DIR) has the value ($(src_dir)/awk)
+$(WHPCVT_DIR) has the value ($(src_dir)/whpcvt)
+$(POSIX_DIR) has the value ($(src_dir)/posix)
+$(BDIFF_DIR) has the value ($(src_dir)/bdiff)
+$(WTOUCH_DIR) has the value ($(src_dir)/wtouch)
+$(CG_DIR) has the value ($(src_dir)/cg)
+$(EXTRA_C_FLAGS_WIN) has the value (-zu-zw-zc)
+$(BLD_LDFLAGS1) has the value ($(ldflags_common) -Fm)
+$(LDFLAGS_COMMON) has the value ($(ldflags_common_rel))
+$(CPPFLAGS_COMMON_386) has the value (-D__386__ -D__NT_386__)
+$(SED) has the value (sed)
+$(CPP) has the value (wcpp)
+$(RC_AUI) has the value ($(rcaui) -x -xb -r -bt=windows $(rc_aui_flags))
+$(LIBFLAGS_LINUX_386) has the value (-io)
+$(CLFLAGS_RDOSDEV_386) has the value (-l=rdosdev)
+$(CXX_MPS) has the value (*bwppmps)
+$(CL_PPC) has the value (*bwclppc)
+$(W16API_DIR) has the value ($(src_dir)/w16api)
+$(IDELIB_DIR) has the value ($(src_dir)/ide/lib)
+$(FTEST_DIR) has the value ($(src_dir)/f77/regress)
+$(WLIB_DIR) has the value ($(src_dir)/nwlib)
+$(NAME_386) has the value ($(name_386_$(host_os)))
+$(YACC) has the value (yacc)
+$(RC) has the value (bwrc -q)
+$(INC_DIRS_SYS_OS2) has the value ($(inc_dirs_sys_os2_$(host_cpu)))
+$(LIBFLAGS) has the value ($(libflags_all) $(libflags_$(host_cpu)) $(libflags_$(host_os)) $(libflags_$(host_os)_$(host_cpu)) $(extra_lib_flags) $(extra_lib_flags_$(host_cpu)) $^@)
+$(LFLAGS_NOV_386) has the value (sys novell)
+$(AFLAGS_386) has the value (-3-w8)
+$(CLFLAGS_DLL_DOS_386) has the value (-l=causeway_dll -"lib doslfn3r.lib")
+$(CLFLAGS_QNX_386) has the value (-l=qnx)
+$(DEF_FPU_FLAGS_OS2_386) has the value (-fpi)
+$(DEFAULT_MEMORY_MODEL_386_ZDOS) has the value (s)
+$(CLDEBUG_FMT) has the value (-hd)
+$(LIBRARIAN_386) has the value (*bwlib)
+$(LINKER_PPC) has the value (*bwlink)
+$(WRES_DIR) has the value ($(src_dir)/wres)
+$(WATCOM_DIR) has the value ($(src_dir)/watcom)
+$(__MAKEFILES__) has the value (c:\dev\open-watcom-v2\build\makeinit c:\dev\open-watcom-v2\build\mif\cdirs.mif makefile ..\mif\waccel.mif ..\..\mif\master.mif c:\dev\open-watcom-v2\build\mif\cproj.mif c:\dev\open-watcom-v2\build\mif\bhost.mif c:\dev\open-watcom-v2\build\mif\local.mif c:\dev\open-watcom-v2\build\mif\deftarg.mif c:\dev\open-watcom-v2\build\mif\defrule.mif c:\dev\open-watcom-v2\build\mif\wres.mif c:\dev\open-watcom-v2\bld\commonui\client.mif c:\dev\open-watcom-v2\bld\wpi\client.mif c:\dev\open-watcom-v2\build\mif\verrc.mif)
+$(VERRCX64_EXE_INT) has the value (verx64.grc)
+$(VERSION_RES_DLL_NT_X64) has the value (version.res)
+$(COMMONUI_INC_DIRS) has the value (-I"$(commonui_dir)/$(host_os)$(host_cpu)" -I"$(commonui_dir)/h" -I"$(commonui_dir)/res")
+$(NAME_I86_C) has the value ($(wres_dir)/dosi86/mc/wres.lib)
+$(INC_DIRS_SYS_QNX) has the value ()
+$(LFLAGS_RDOS_386) has the value (sys rdos)
+$(AFLAGS_WIN) has the value (-bt=windows)
+$(CLFLAGS_WIND) has the value ($(clflags_all) $(cl_fpu_flags) $(cflags_$(host_os)) $(clflags_$(host_os)_$(host_cpu)) $(extra_cl_flags) $(clflags_exe) -fm)
+$(FPU_FLAGS) has the value ($(def_fpu_flags_$(host_os)_$(host_cpu)))
+$(CPPFLAGS_WIN) has the value (-DSTRICT)
+$(CC_386) has the value (*bwcc386)
+$(BUILD_DIR) has the value ($(%OWROOT)/build)
+$(VERRC_EXE) has the value ($(proj_name))
+$(NAME_386_NT) has the value ($(wres_dir)/flat386/$(name_model_conv))
+$(BLINK) has the value (op q)
+$(CWC) has the value (bcwc)
+$(BLD_LIBFLAGS) has the value (-out:$^@)
+$(INC_DIRS_SYS_OS2_I86) has the value (-I"$(os2api_dir)/os2286/h")
+$(RC_CPP_X64) has the value (-D_M_X64)
+$(LFLAGS_DOS_386) has the value (sys dos4g lib doslfn3r.lib)
+$(AFLAGS_OS2) has the value (-bt=os2)
+$(AFLAGS_AXP) has the value ()
+$(AFLAGS_ALL) has the value (-we $(mode_aflags))
+$(CFLAGS_386) has the value (-ml -zc)
+$(CPPFLAGS_ALL) has the value ($(mode_cppflags))
+$(DEFAULT_MEMORY_MODEL_386_RDOSDEV) has the value (c)
+$(MODE_CPPFLAGS) has the value (-DNDEBUG)
+$(AS_I86) has the value (*bwasm)
+$(OS2API_DIR) has the value ($(src_dir)/os2api)
+$(WATTCP_DIR) has the value ($(src_dir)/wattcp)
+$(ZLIB_DIR) has the value ($(contrib_dir)/zlib)
+$(AUI_DIR) has the value ($(src_dir)/aui)
+$(DIG_DIR) has the value ($(src_dir)/dig)
+$(BROWSE_DIR) has the value ($(src_dir)/browser)
+$(TRAP_DIR) has the value ($(src_dir)/trap)
+$(WPI_DIR) has the value ($(src_dir)/wpi)
+$(VERRCPPC_EXE_SKEL) has the value (../verppc.rc)
+$(EXTRA_L_FLAGS) has the value (op map)
+$(COMMONUI_STR_MSG) has the value ($(commonui_dir)/$(host_os)$(host_cpu)/uistrmsg.gh)
+$(BCXX) has the value (cl -nologo -c)
+$(PREPROC_OPTS) has the value (-p)
+$(LFLAGS_OSI_386) has the value (sys osi)
+$(LFLAGS_LINUX_386) has the value (sys linux)
+$(AFLAGS_ZDOS) has the value (-bt=zdos)
+$(CLFLAGS_DLL_NT_AXP) has the value (-l=ntaxp_dll)
+$(CLFLAGS_LINUX_PPC) has the value (-l=linuxppc)
+$(DEF_FPU_FLAGS_RDOSDEV_386) has the value (-fpi)
+$(CFLAGS_WIN) has the value (-bt=windows)
+$(CC_AXP) has the value (*bwccaxp)
+$(SYS_DLL) has the value (1)
+$(IDEDEMO_DIR) has the value ($(src_dir)/idedemo)
+$(HELP_DIR) has the value ($(src_dir)/help)
+$(DISASM_DIR) has the value ($(src_dir)/ndisasm)
+$(INC_DIRS_LANG_QNX) has the value (-I"$(hdr_dir)/qnx")
+$(LIBFLAGS_PPC) has the value (-ip)
+$(LFLAGS_DLL) has the value ($(mode_lflags) $(lflags_dll_$(host_os)_$(host_cpu)) $(extra_l_flags_dll_$(host_os)) $(extra_l_flags_dll))
+$(CLFLAGS_OS2_I86) has the value (-l=os2)
+$(DEF_FPU_FLAGS_LINUX_386) has the value (-fpi)
+$(DEF_FPU_FLAGS_WIN_I86) has the value (-fpi)
+$(CFLAGS_OS2) has the value (-bt=os2)
+$(CFLAGS_AXP) has the value ()
+$(CFLAGS_ALL) has the value (-w8 -we $(mode_cflags))
+$(MODE_CFLAGS) has the value (-oaxt -d1 $(cdebug_fmt))
+$(SYS_WINDOWED) has the value (1)
+$(RSILIB_DIR) has the value ($(src_dir)/rsilib)
+$(UNINSTAL_DIR) has the value ($(src_dir)/uninstal)
+$(VERRCPPC_EXE_OUT) has the value (verppc.res)
+$(WINDOWS) has the value (1)
+$(LDFLAGS_COMMON_REL) has the value ()
+$(CLFLAGS_OSI_386) has the value (-l=osi)
+$(CXXFLAGS) has the value ($(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os)))
+$(DEF_FPU_FLAGS_NOV_386) has the value (-fpc)
+$(CFLAGS_ZDOS) has the value (-bt=zdos)
+$(PLUSTEST_DIR) has the value ($(src_dir)/plustest)
+$(WMAKE_DIR) has the value ($(src_dir)/wmake)
+$(CPPLIB_DIR) has the value ($(src_dir)/cpplib)
+$(VERRC386_EXE_SKEL) has the value (../ver386.rc)
+$(VERRC_EXE_OUT) has the value (exever.res)
+$(EXTRA_CPP_FLAGS_NT) has the value (-DNOUSE3D)
+$(NAME_386_RDOS) has the value ($(wres_dir)/flat386/$(name_model_conv))
+$(RE2C) has the value (re2c)
+$(RC_INC_PATH) has the value ($(rc_inc_dirs) $(inc_dirs_sys) -I"$(watcom_dir)/h")
+$(INC_DIRS_SYS_NTO) has the value ()
+$(RC_CPP_MPS) has the value (-D__MIPS__)
+$(RC_CPP_I86) has the value (-D_M_I86)
+$(RC_CPP_NT) has the value (-D__NT__ -D_WIN32)
+$(LIBFLAGS_RDOS) has the value (-io)
+$(LFLAGS_OS2_I86) has the value (sys os2 pmc)
+$(HOST_CPU) has the value (i86)
+$(HOST_OS) has the value (win)
+$(PHARLAP) has the value ($(tools_root)\)
+$(BLD_CPU) has the value (x64)
+$(VERRCPPC_EXE) has the value ($(proj_name)ppc)
+$(VERRC_DLL) has the value ($(proj_name))
+$(BLD_CXXFLAGS) has the value (-EHsc)
+$(LIBFLAGS_NT_AXP) has the value (-ic)
+$(LIBFLAGS_386) has the value (-ii)
+$(LFLAGS_QNX_I86) has the value (sys qnx)
+$(CFLAGS_WIND) has the value ($(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_wind_$(host_os)) $(cflags_rtdll_$(host_os)) $(proj_c_flags))
+$(DEFAULT_MEMORY_MODEL_386_NOV) has the value (s)
+$(NWOSS_DIR) has the value ($(src_dir)/os_supp/novell)
+$(FE_MISC_DIR) has the value ($(src_dir)/fe_misc)
+$(EXTRA_L_FLAGS_WIN) has the value (library commdlg op stack=8k,rwr export WEP RESIDENT)
+$(NAME_I86_M) has the value ($(wres_dir)/dosi86/mm/wres.lib)
+$(W32BIND) has the value (w32bind)
+$(AWK) has the value (awk)
+$(INC_DIRS_SYS_WIN) has the value (-I"$(w16api_dir)/wini86")
+$(RC_CPP_PPC) has the value (-D__PPC__)
+$(CLFLAGS_DLL_OS2_386) has the value (-l=os2v2_dll)
+$(CLFLAGS_WIND_NT_AXP) has the value (-l=ntaxp_win)
+$(IDECFG_DIR) has the value ($(src_dir)/ide/cfg)
+$(WIPFC_DIR) has the value ($(src_dir)/wipfc)
+$(GUI_DIR) has the value ($(src_dir)/gui)
+$(__NTX64__) has the value ()
+$(WR_LIB) has the value ($(wr_dir)/$(host_os)$(host_cpu)/wr.lib)
+$(EXTRA_C_FLAGS_PREPROC) has the value (-zm)
+$(BLD_CL_OPTS) has the value ($(bld_clflags))
+$(WSTRIP) has the value (bwstrip)
+$(WBIND) has the value (bwbind)
+$(BAS) has the value (-q)
+$(AS) has the value (*bwasm -q)
+$(LIBRARIAN) has the value (*bwlib -q)
+$(INC_DIRS_LANG_OSI) has the value (-I"$(hdr_dir)/dos")
+$(RC_FLAGS_NT) has the value (-bt=nt $(win32ver))
+$(LIBFLAGS_OS2) has the value (-io)
+$(DEF_FPU_FLAGS_DOS_I86) has the value (-fpi)
+$(DEFAULT_MEMORY_MODEL_386_DOS) has the value (s)
+$(IDEACT_DIR) has the value ($(src_dir)/ide/ideact)
+$(WASM_DIR) has the value ($(src_dir)/wasm)
+$(__MAKEOPTS__) has the value (-p)
+$(VERRC386_EXE) has the value ($(proj_name)386)
+$(VERRC_EXE_SKEL) has the value (../exever.rc)
+$(NAME_386_QNX) has the value ($(wres_dir)/qnx386/$(name_model_conv))
+$(CFLAGS_COMMON) has the value ($(cflags_common_wng) -MT -D_STATIC_CPPLIB)
+$(BLD_INCS) has the value ($(bld_extra_incs) -I"$(watcom_dir)/h")
+$(INC_DIRS_LANG) has the value ($(inc_dirs_lang_osi))
+$(INC_DIRS_SYS_ZDOS) has the value (-I"$(hdr_dir)/dos/zdos")
+$(LIBFLAGS_QNX) has the value (-io)
+$(LFLAGS_DLL_RDOS_386) has the value (sys rdos_dll)
+$(AFLAGS_NOV) has the value (-bt=netware)
+$(CFLAGS_GEN) has the value ($(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_$(host_os)_$(host_cpu)) $(cflags_rtdll_$(host_os)) $(proj_c_flags))
+$(DEFAULT_MEMORY_MODEL_386_LINUX) has the value (f)
+$(DEFAULT_MEMORY_MODEL_386_OSI) has the value (s)
+$(MODE_AFLAGS) has the value (-d1 -DNDEBUG)
+$(MODE_LIBFLAGS) has the value ()
+$(WSTUB_DIR) has the value ($(src_dir)/wstuba)
+$(SETUPGUI_DIR) has the value ($(src_dir)/setupgui)
+$(WV_DIR) has the value ($(src_dir)/wv)
+$(UI_DIR) has the value ($(src_dir)/ui)
+$(DWARF_DIR) has the value ($(src_dir)/dwarf)
+$(CC_DIR) has the value ($(src_dir)/cc)
+$(VERRC_DLL_OUT) has the value (version.res)
+$(NAME_AXP) has the value ($(wres_dir)/$(host_os)axp/_s/wres.lib)
+$(NAME_I86_L) has the value ($(wres_dir)/wini86.gui/ml/wres.lib)
+$(INC_DIRS_LANG_NTO) has the value (-I"$(hdr_dir)/nto")
+$(INC_DIRS_SYS_LINUX) has the value ()
+$(LFLAGS_DLL_DOS_386) has the value (sys causeway_dll lib doslfn3r.lib)
+$(LFLAGS_NT_AXP) has the value (sys ntaxp)
+$(CLFLAGS_RDOS_386) has the value (-l=rdos)
+$(CLFLAGS_WIN_386) has the value (-l=win386)
+$(DEFAULT_MEMORY_MODEL_386_NT) has the value (f)
+$(AS_MPS) has the value (*bwasmps)
+$(CXX_386) has the value (*bwpp386)
+$(CL_386) has the value (*bwcl386)
+$(WIN386_DIR) has the value ($(src_dir)/win386)
+$(LIBZIP_DIR) has the value ($(contrib_dir)/libzip)
+$(DIP_DIR) has the value ($(src_dir)/dip)
+$(VI_DIR) has the value ($(src_dir)/vi)
+$(DIFF_DIR) has the value ($(src_dir)/diff)
+$(BENCH_DIR) has the value ($(src_dir)/bench)
+$(CONTRIB_DIR) has the value ($(%OWROOT)/contrib)
+$(PATCH_LEVEL) has the value (0)
+$(FLAGS_COMMON_REL) has the value (-Ox -Zi)
+$(EDBIND) has the value (bedbind)
+$(BLD_INC_DIRS_LANG) has the value ($(inc_dirs_lang_osi))
+$(INC_DIRS_SYS_RDOSDEV) has the value ()
+$(AFLAGS_DOS) has the value (-bt=dos)
+$(CLFLAGS_DLL_WIN_I86) has the value (-l=windows_dll)
+$(CLFLAGS_WIND_OS2_I86) has the value (-l=os2_pm)
+$(CLFLAGS_EXE_OSI_386) has the value (-fe=$^&.rex)
+$(CFLAGS_WIND_WIN) has the value (-bg)
+$(CFLAGS_NOV) has the value (-bt=netware)
+$(CPPFLAGS_DOS) has the value (-D__WATCOM_LFN__)
+$(MEMORY_MODEL_386) has the value ($(default_memory_model_386_$(host_os)))
+$(DEFAULT_MEMORY_MODEL_386_) has the value (f)
+$(LIBRARIAN_PPC) has the value (*bwlib)
+$(LINKER_386) has the value (*bwlink)
+$(PROJ_NAME) has the value (wresedit)
+$(TOOLS_ROOT) has the value ($(%TOOLDR)\tools)
+$(BLD_LDFLAGS) has the value (-link -nologo -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib $(bld_extra_ldflags))
+$(AFLAGS_LINUX) has the value (-bt=linux)
+$(AFLAGS_OSI) has the value (-bt=osi)
+$(DEF_FPU_FLAGS_QNX_386) has the value (-fpi)
+$(CFLAGS_DLL_OS2) has the value (-bd)
+$(AS_PPC) has the value (*bwasppc)
+$(CL_AXP) has the value (*bwclaxp)
+$(__WATCOM__) has the value ()
+$(FMEDIT_DIR) has the value ($(src_dir)/sdk/fmedit)
+$(WLINK_DIR) has the value ($(src_dir)/wl)
+$(OWL_DIR) has the value ($(src_dir)/owl)
+$(WZOOM_DIR) has the value ($(src_dir)/sdk/zoom)
+$(EXTRA_C_FLAGS_PPEXPR) has the value (-zm)
+$(WPI_INC_DIRS) has the value (-I"$(wpi_dir)/h")
+$(RCAUI) has the value (bwrc -q)
+$(RC_CPP_QNX) has the value (-D__UNIX__ -D__QNX__)
+$(LFLAGS_WIND_OS2_I86) has the value (sys os2_pm)
+$(LFLAGS_ZDOS_386) has the value (sys zdos)
+$(LFLAGS_WIN_I86) has the value (sys windows)
+$(AFLAGS_RDOSDEV) has the value (-bt=rdosdev)
+$(CFLAGS_DOS) has the value (-bt=dos)
+$(MODE_LFLAGS) has the value (debug dwarf op nored op symfile)
+$(LINKER_AXP) has the value (*bwlink)
+$(VERRC_DLL_SKEL) has the value (../version.rc)
+$(FLAGS_COMMON) has the value ($(flags_common_rel))
+$(RC_AUI_FLAGS) has the value (-zk0 $(rc_cppflags) -I"$(watcom_dir)/h")
+$(LFLAGS_DLL_OS2_I86) has the value (sys os2_dll)
+$(CLFLAGS) has the value ($(clflags_dll))
+$(CFLAGS_LINUX) has the value (-bt=linux)
+$(CFLAGS_OSI) has the value (-bt=osi)
+$(CC_I86) has the value (*bwcc)
+$(VERSION_DIR) has the value ($(src_dir)/version)
+$(GRAPHLIB_DIR) has the value ($(src_dir)/graphlib)
+$(WCLASS_DIR) has the value ($(src_dir)/wclass)
+$(VERRCPPC_EXE_INT) has the value (verppc.grc)
+$(OS2LDR) has the value ($(%OWBINDIR)\os2ldr.exe)
+$(INC_DIRS_SYS_OS2_386) has the value (-I"$(os2api_dir)/os2386/h")
+$(RC_FLAGS) has the value ($(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(extra_rc_flags) $(extra_rc_flags_$(host_os)))
+$(LFLAGS_WIND) has the value ($(mode_lflags) $(lflags_$(host_os)_$(host_cpu)) $(extra_l_flags_$(host_os)) $(extra_l_flags))
+$(CLFLAGS_GEN) has the value ($(clflags_all) $(cl_fpu_flags) $(cflags_$(host_os)) $(clflags_$(host_os)_$(host_cpu)) $(extra_cl_flags) $(clflags_exe) -fm)
+$(CLFLAGS_LINUX_MPS) has the value (-l=linuxmips)
+$(CLFLAGS_DOS_386) has the value (-l=dos4g -"lib doslfn3r.lib")
+$(CFLAGS_RDOSDEV) has the value (-bt=rdosdev -bm -zu)
+$(DEBUGFMT) has the value (dwarf)
+$(WEDIT_DIR) has the value ($(src_dir)/wedit)
+$(CLIB_DIR) has the value ($(src_dir)/clib)
+$(VERRCAXP_EXE_SKEL) has the value (../veraxp.rc)
+$(VERRC386_EXE_OUT) has the value (ver386.res)
+$(NAME_386_WIN) has the value ($(wres_dir)/flat386/$(name_model_conv))
+$(BLD_LIB) has the value ($(blib) $(bld_libflags))
+$(BLD_CLFLAGS) has the value ($(bld_cppflags) $(cflags_common) $(flags_common) -Fe$@ $(watcom_dir)/$(%OWOBJDIR)/clibext.lib $(bld_ldflags1))
+$(BLD_CC_SYS) has the value (-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
+$(INCL_FILE_OPTS) has the value (-fi)
+$(INC_DIRS_SYS_NOV) has the value ()
+$(LIBFLAGS_WIN) has the value (-io)
+$(CLFLAGS_QNX_I86) has the value (-l=qnx)
+$(CLFLAGS_NT_386) has the value (-l=nt)
+$(DEF_FPU_FLAGS_OS2_I86) has the value (-fpi)
+$(LIBRARIAN_I86) has the value (*bwlib)
+$(WRESEDIT_AUTODEPENDS) has the value (.AUTODEPEND)
+$(FLASHTEK) has the value ($(tools_root)\x32\)
+$(D16API_DIR) has the value ($(src_dir)/d16api)
+$(BRINFO_DIR) has the value ($(src_dir)/brinfo)
+$(MIF_PATH) has the value ($(build_dir)/mif)
+$(NAME_386_OS2) has the value ($(wres_dir)/flat386/$(name_model_conv))
+$(LIBFLAGS_ALL) has the value (-b-n-pa $(mode_libflags))
+$(LIBFLAGS_LINUX_X64) has the value (-ie)
+$(LIBFLAGS_AXP) has the value (-ia)
+$(LFLAGS_WIND_NT_386) has the value (sys nt_win)
+$(DEF_FPU_FLAGS_OSI_386) has the value (-fpi)
+$(MODEL_SWITCH_I86) has the value (-m$(memory_model_i86))
+$(MODE_CLFLAGS) has the value (-hd -"op nored" -"op symf")
+$(FPUEMU_DIR) has the value ($(src_dir)/fpuemu)
+$(LEXLIB_DIR) has the value ($(src_dir)/lexlib)
+$(SDK_MISC_DIR) has the value ($(src_dir)/sdk/misc)
+$(BLD_VER) has the value ($(%BLD_VER))
+$(VERRCAXP_EXE_OUT) has the value (veraxp.res)
+$(VERSION_RES_DLL_NT_386) has the value (version.res)
+$(EXTRA_C_FLAGS_PPMACRO) has the value (-zm)
+$(COMMONUI_STR_DEF) has the value ($(commonui_dir)/$(host_os)$(host_cpu)/uistr.gh)
+$(NAME_X64) has the value ($(wres_dir)/$(host_os)x64/_s/wres.lib)
+$(NAME_386_ZDOS) has the value ($(wres_dir)/small386/$(name_model_conv))
+$(C_JAPAN_CHARSET) has the value (-zk0)
+$(INC_DIRS_SYS_DOS) has the value ()
+$(LIBFLAGS_ZDOS) has the value (-io)
+$(LFLAGS_GEN) has the value ($(mode_lflags) $(lflags_$(host_os)_$(host_cpu)) $(extra_l_flags_$(host_os)) $(extra_l_flags))
+$(CLFLAGS_ZDOS_386) has the value (-l=zdos)
+$(CLFLAGS_NT_AXP) has the value (-l=ntaxp)
+$(WIN32VER) has the value (-DWINVER=0x400 -D_WIN32_IE=0x300)
+$(WSAMPLE_DIR) has the value ($(src_dir)/wsample)
+$(EXTRA_CPP_FLAGS) has the value (-DWIN_GUI -DWRESEDLL)
+$(OBJS) has the value (wmain.obj winfo.obj wacc.obj whndl.obj whints.obj wstat.obj wtoolbar.obj wribbon.obj wedit.obj wvk2str.obj wdel.obj wnewitem.obj wkey.obj wsvobj.obj wacc2rc.obj wmem.obj wctl3d.obj wgetfn.obj wlist.obj winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj widn2str.obj wclip.obj wisedit.obj weditsym.obj preproc.obj ppexpr.obj ppmacro.obj)
+$(COMMONUI_LIB) has the value ($(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib)
+$(CXX) has the value (*bwpp -zq)
+$(RC_CPP_386) has the value (-D_M_IX86)
+$(LFLAGS_DLL_NT_AXP) has the value (sys ntaxp_dll)
+$(LFLAGS_OS2_386) has the value (sys os2v2)
+$(DEF_FPU_FLAGS_NTO_386) has the value (-fpi)
+$(NWOS2DIR) has the value ($(tools_root)\nwos2lib)
+$(WDUMP_DIR) has the value ($(src_dir)/wdump)
+$(__NT__) has the value ()
+$(VERRCAXP_EXE) has the value ($(proj_name)axp)
+$(VERRC_EXE_INT) has the value (exever.grc)
+$(INC_DIRS_SYS_NT) has the value (-I"$(w32api_dir)/nt")
+$(RC_CPP_WIN) has the value (-D__WINDOWS__)
+$(LIBFLAGS_RDOSDEV) has the value (-io)
+$(LFLAGS_QNX_386) has the value (sys qnx386 flat)
+$(AFLAGS) has the value ($(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(proj_a_flags))
+$(CPPFLAGS) has the value ($(cppflags_all) $(cppflags_$(host_cpu)) $(cppflags_$(host_os)) $(proj_cpp_flags))
+$(DEF_FPU_FLAGS_NT_386) has the value (-fpi)
+$(CFLAGS_DLL_WIN) has the value (-bd)
+$(LDEBUG_FMT) has the value (debug dwarf)
+$(SYS_OBJECT) has the value (wmain.obj winfo.obj wacc.obj whndl.obj whints.obj wstat.obj wtoolbar.obj wribbon.obj wedit.obj wvk2str.obj wdel.obj wnewitem.obj wkey.obj wsvobj.obj wacc2rc.obj)
+$(PLSDIR) has the value ($(tools_root)\dilib)
+$(LDFLAGS_COMMON_DBG) has the value ()
+$(CC) has the value (*bwcc -zq)
+$(RC_CPP_AXP) has the value (-D__AXP__)
+$(RC_CPP_OS2) has the value (-D__OS2__)
+$(RC_CPP_BSD) has the value (-D__UNIX__ -D__BSD__)
+$(CLFLAGS_EXE) has the value (-fe=$@)
+$(RCSDLL_DIR) has the value ($(src_dir)/rcsdll)
+$(WR_DIR) has the value ($(src_dir)/sdk/wr)
+$(PLUSPLUS_DIR) has the value ($(src_dir)/plusplus)
+$(NAME_I86) has the value ($(name_i86_$(memory_model_i86)))
+$(NAME_I86_H) has the value ($(wres_dir)/dosi86/mh/wres.lib)
+$(BLD_CPPFLAGS) has the value ($(cppflags_common_nt) $(cppflags_common_$(bld_cpu)))
+$(INC_DIRS_LANG_LINUX) has the value (-I"$(hdr_dir)/linux")
+$(LFLAGS_DLL_WIN_I86) has the value (sys windows_dll)
+$(AFLAGS_NT) has the value (-bt=nt)
+$(AFLAGS_MPS) has the value ()
+$(AFLAGS_I86) has the value (-w8)
+$(CFLAGS) has the value ($(cflags_dll))
+$(LIBRARIAN_AXP) has the value (*bwlib)
+$(CXX_PPC) has the value (*bwppppc)
+$(RTDLL_DIR) has the value ($(src_dir)/rtdll)
+$(SRC_DIR) has the value ($(%OWSRCDIR))
+$(WRES_LIB) has the value ($(name_$(host_cpu)))
+$(BLD_CC) has the value ($(bcc) $(bld_cc_sys) $(bld_incs))
+$(BCC) has the value (cl -nologo -c)
+$(RC_CPPFLAGS) has the value ($(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu)))
+$(CLFLAGS_OS2_386) has the value (-l=os2v2)
+$(CLFLAGS_ALL) has the value ($(mode_clflags) $(cl_model_switch))
+$(DEF_FPU_FLAGS_RDOS_386) has the value (-fpi)
+$(DEF_FPU_FLAGS_WIN_386) has the value (-fpi)
+$(DEFAULT_MEMORY_MODEL_386_RDOS) has the value (f)
+$(CC_MPS) has the value (*bwccmps)
+$(LIB_MISC_DIR) has the value ($(src_dir)/lib_misc)
+$(WASMTEST_DIR) has the value ($(src_dir)/wasmtest)
+$(WHEAPWLK_DIR) has the value ($(src_dir)/sdk/heapwalk)
+$(VERBOSE) has the value ($(%OWVERBOSE))
+$(VERRCX64_EXE_SKEL) has the value (../verx64.rc)
+$(BLD_CFLAGS) has the value ($(cflags_common) $(flags_common) -Fo$@)
+$(RC_FLAGS_OS2) has the value (-bt=os2)
+$(RC_CPP_OSX) has the value (-D__UNIX__ -D__OSX__)
+$(LFLAGS_NT_386) has the value (sys nt)
+$(LFLAGS_DOS_I86) has the value (sys dos lib doslfn$(memory_model_i86).lib)
+$(AFLAGS_PPC) has the value ()
+$(CLFLAGS_DLL_OS2_I86) has the value (-l=os2_dll)
+$(PROJ_CPP_FLAGS) has the value ($(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os)) $(extra_cpp_flags_$(host_os)_$(host_cpu)))
+$(CFLAGS_WIND_OS2) has the value (-bg)
+$(CFLAGS_NT) has the value (-bt=nt $(win32ver))
+$(CFLAGS_MPS) has the value ()
+$(CFLAGS_I86) has the value ($(model_switch_$(host_cpu)))
+$(AS_386) has the value (*bwasm)
+$(LIBRARIAN_MPS) has the value (*bwlib)
+$(CL_I86) has the value (*bwcl)
+$(BUILDER_DIR) has the value ($(src_dir)/builder)
+$(YACC_DIR) has the value ($(src_dir)/yacc)
+$(MATHLIB_DIR) has the value ($(src_dir)/mathlib)
+$(TRMEM_DIR) has the value ($(src_dir)/trmem)
+$(BLD_OS) has the value (nt)
+$(VERRC_DLL_INT) has the value (version.grc)
+$(EXTRA_L_FLAGS_NT) has the value (op stack=16k,heap=16k commit heap=8k)
+$(NAME_386_NOV) has the value ($(wres_dir)/small386/$(name_model_conv))
+$(BLD_GEN_CFLAGS) has the value (-ox -w8 -fo=.obj)
+$(LIBFLAGS_NOV) has the value (-io)
+$(LIBFLAGS_X64) has the value (-i6)
+$(LFLAGS_LINUX_MPS) has the value (sys linuxmips)
+$(CLFLAGS_WIND_OS2_386) has the value (-l=os2v2_pm)
+$(CC_PPC) has the value (*bwccppc)
+$(MEMORY_MODEL_I86) has the value (l)
+$(W32API_DIR) has the value ($(src_dir)/w32api)
+$(WDISASM_DIR) has the value ($(src_dir)/wdisasm)
+$(WOMP_DIR) has the value ($(src_dir)/womp)
+$(CPP_DIR) has the value ($(src_dir)/cpp)
+$(WPACK_DIR) has the value ($(src_dir)/wpack)
+$(__VERSION__) has the value (2000)
+$(VERRCX64_EXE_OUT) has the value (verx64.res)
+$(NAME_I86_S) has the value ($(wres_dir)/dosi86/ms/wres.lib)
+$(BLD_CL_SYS) has the value ()
+$(BLIB) has the value (lib -nologo)
+$(AFLAGS_RDOS) has the value (-bt=rdos)
+$(CLFLAGS_DLL) has the value ($(clflags_all) $(cl_fpu_flags) $(cflags_$(host_os)) $(clflags_$(host_os)_$(host_cpu)) $(extra_cl_flags) $(clflags_exe) -fm)
+$(PROJ_C_FLAGS) has the value ($(extra_c_flags) $(extra_c_flags_$(host_cpu)) $(extra_c_flags_$(host_os)) $(extra_c_flags_$(host_os)_$(host_cpu)))
+$(CFLAGS_PPC) has the value ()
+$(CL_MODEL_SWITCH) has the value ($(model_switch_$(host_cpu)))
+$(DEFAULT_MEMORY_MODEL_386_OS2) has the value (f)
+$(AS_AXP) has the value (*bwasaxp)
+$(NCURSES_DIR) has the value ($(src_dir)/ncurses)
+$(CURSES_DIR) has the value ($(src_dir)/curses)
+$(COMP_CFG_DIR) has the value ($(src_dir)/comp_cfg)
+$(WRC_DIR) has the value ($(src_dir)/rc/rc)
+$(WSPY_DIR) has the value ($(src_dir)/sdk/spy)
+$(WIMGEDIT_DIR) has the value ($(src_dir)/sdk/imgedit)
+$(MAKE) has the value (c:\dev\open-watcom-v2\build\bin\wmake.exe)
+$(VERRC386_EXE_INT) has the value (ver386.grc)
+$(NAME_386_DOS) has the value ($(wres_dir)/small386/$(name_model_conv))
+$(INC_DIRS_SYS) has the value ($(inc_dirs_lang) $(inc_dirs_sys_$(host_os)))
+$(LIBFLAGS_DOS) has the value (-io)
+$(LFLAGS_WIN_386) has the value (sys win386)
+$(LFLAGS_LINUX_PPC) has the value (sys linuxppc)
+$(CLFLAGS_LINUX_386) has the value (-l=linux)
+$(CLFLAGS_WIN_I86) has the value (-l=windows)
+$(CL_FPU_FLAGS) has the value ($(fpu_flags))
+$(SYS_RTDLL) has the value (0)
+$(DEFAULT_MEMORY_MODEL_386_QNX) has the value (s)
+$(RELEASE) has the value (1)
+$(CXX_I86) has the value (*bwpp)
+$(EDITDLL_DIR) has the value ($(src_dir)/editdll)
+$(ORL_DIR) has the value ($(src_dir)/orl)
+$(WDDESPY_DIR) has the value ($(src_dir)/sdk/ddespy)
+$(VERRCX64_EXE) has the value ($(proj_name)x64)
+$(NAME_386_LINUX) has the value ($(wres_dir)/linux386/$(name_model_conv))
+$(NAME_386_OSI) has the value ($(wres_dir)/small386/$(name_model_conv))
+$(FLAGS_COMMON_DBG) has the value (-Zi)
+$(LIBFLAGS_NT_X64) has the value (-ic)
+$(LFLAGS_DLL_OS2_386) has the value (sys os2v2_dll)
+$(LFLAGS_WIND_NT_AXP) has the value (sys ntaxp_win)
+$(CLFLAGS_DLL_NT_386) has the value (-l=nt_dll)
+$(CLFLAGS_NOV_386) has the value (-l=netware)
+$(DEF_FPU_FLAGS_DOS_386) has the value (-fpi)
+$(CFLAGS_RDOS) has the value (-bt=rdos -bm)
+$(BATCH_DIR) has the value ($(src_dir)/idebatch)
+$(NULLDEVICE) has the value (nul)
+$(VERRCAXP_EXE_INT) has the value (veraxp.grc)
+$(CFLAGS_COMMON_WNG) has the value (-W4 -wd4214)
+$(BLD_INC_DIRS_SYS) has the value ($(bld_inc_dirs_lang) $(inc_dirs_sys_$(bld_os)))
+$(RC_CPP_NOV) has the value (-D__NETWARE__)
+$(LIBFLAGS_NT_386) has the value (-io)
+$(LIBFLAGS_I86) has the value (-ii)
+$(DEF_FPU_FLAGS_QNX_I86) has the value (-fpi)
+$(CFLAGS_WIND_NT) has the value (-bg)
+$(NAME) has the value (wacc)
+$(ADSDIR) has the value ($(tools_root)\adslib)
+$(WRESEDIT_DIR) has the value ($(src_dir)/sdk/wresedit)
+$(XLIBS) has the value ($(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib))
+$(EXTRA_C_FLAGS) has the value (-s)
+$(WPI_LIB) has the value ($(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib)
+$(CPPFLAGS_COMMON_NT) has the value (-D__NT__ -D__SMALL__ -D__FLAT__)
+$(AFLAGS_QNX) has the value (-bt=qnx)
+$(CLFLAGS_WIND_NT_386) has the value (-l=nt_win)
+$(RE2C_DIR) has the value ($(src_dir)/re2c)
+$(NAME_MPS) has the value ($(wres_dir)/$(host_os)mps/_s/wres.lib)
+$(NAME_MODEL_CONV) has the value (m$(memory_model_386)_r/wres.lib)
+$(CL) has the value (*bwcl -zq)
+$(INC_PATH) has the value ($(inc_dirs_$(host_os)) $(inc_dirs) $(inc_dirs_sys) -I"$(watcom_dir)/h")
+$(INC_DIRS_LANG_NETWARE) has the value (-I"$(nwoss_dir)/common/h")
+$(RC_CPP_DOS) has the value (-D__DOS__)
+$(LFLAGS) has the value ($(lflags_dll))
+$(LFLAGS_RDOSDEV_386) has the value (sys rdos dev32)
+$(CLFLAGS_DLL_RDOS_386) has the value (-l=rdos_dll)
+$(CFLAGS_DLL) has the value ($(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_dll_$(host_os)) $(cflags_rtdll_$(host_os)) $(proj_c_flags))
+$(DEF_FPU_FLAGS_ZDOS_386) has the value (-fpc)
+$(MODEL_SWITCH_386) has the value (-m$(memory_model_386))
+$(MAD_DIR) has the value ($(src_dir)/mad)
+$(F77_DIR) has the value ($(src_dir)/f77)
+$(HDR_DIR) has the value ($(src_dir)/hdr)
+$(IDE2MAKE) has the value (bide2mak)
+$(BCL) has the value (cl -nologo)
+$(LINKER) has the value (*bwlink op q)
+$(RC_FLAGS_WIN) has the value (-bt=windows)
+$(RC_CPP_OSI) has the value (-D__OSI__)
+$(RC_CPP_LINUX) has the value (-D__UNIX__ -D__LINUX__)
+$(LIBFLAGS_NT_PPC) has the value (-ic)
+$(LIBFLAGS_LINUX_PPC) has the value (-ie)
+$(PROJ_A_FLAGS) has the value ($(extra_a_flags) $(extra_a_flags_$(host_cpu)) $(extra_a_flags_$(host_os)))
+$(CLFLAGS_DOS_I86) has the value (-l=dos -"lib doslfn$(memory_model_i86).lib")
+$(CFLAGS_QNX) has the value (-bt=qnx)
+$(DEFAULT_MEMORY_MODEL_386_NTO) has the value (f)
+$(DEFAULT_WINDOWING) has the value ($(%OWDEFAULT_WINDOWING))
+$(CTEST_DIR) has the value ($(src_dir)/ctest)
+$(COMMONUI_DIR) has the value ($(src_dir)/commonui)
+$(NAME_PPC) has the value ($(wres_dir)/$(host_os)ppc/_s/wres.lib)
+$(BLD_CL) has the value ($(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs))
+$(INC_DIRS_SYS_RDOS) has the value ()
+$(RC_FLAGS_ALL) has the value (-xb -r)
+$(LFLAGS_DLL_NT_386) has the value (sys nt_dll)
+$(LFLAGS_WIND_OS2_386) has the value (sys os2v2_pm)
+$(CFLAGS_DLL_NT) has the value (-bd)
+$(CXX_AXP) has the value (*bwppaxp)
+$(CL_MPS) has the value (*bwclmps)
+$(NWNDK_ROOT) has the value ($(%NOVELLNDK))
+$(CAUSEWAY_DIR) has the value ($(src_dir)/causeway)
+$(AS_DIR) has the value ($(src_dir)/as)
+$(CFLOAT_DIR) has the value ($(src_dir)/cfloat)
+
+Extension (.inc):
+
+Extension (.hh):
+
+Extension (.mif):
+    Found in: c:\dev\open-watcom-v2\build\mif
+
+Extension (.cxx):
+
+Extension (.lan):
+
+Extension (.h):
+
+Extension (.cob):
+
+Extension (.cc):
+
+Extension (.i):
+
+Extension (.rc):
+
+Extension (.hpp):
+
+Extension (.hxx):
+
+Extension (.fi):
+
+Extension (.for):
+
+Extension (.asm):
+
+Extension (.exp):
+
+Extension (.res):
+
+Extension (.obj):
+    Can be made from extension (.asm): (.AUTODEPEND)
+
+    Can be made from extension (.c): (.AUTODEPEND)
+
+    Can be made from extension (.cpp): (.AUTODEPEND)
+
+Extension (.lib):
+
+Extension (.dsk):
+
+Extension (.pas):
+
+Extension (.c):
+    Found in: ..\c
+    Found in: ..\..\c
+    Found in: c:\dev\open-watcom-v2\bld\sdk\misc
+    Found in: c:\dev\open-watcom-v2\bld\cpp
+
+Extension (.nlm):
+
+Extension (.exe):
+
+Extension (.cpp):
+
+(clean) is a Single-colon type target (.SYMBOLIC) (.EXPLICIT)
+    Updated with these commands:
+	rm -f *.?bj *.o $(additional_cleanup)
+	@%make killnonobj
+
+(wopts.obj):
+    Has no dependents
+
+(wkey.obj):
+    Has no dependents
+
+(whndl.obj):
+    Has no dependents
+
+(..\h\wacc.rc):
+    Has no dependents
+
+(wclip.obj):
+    Has no dependents
+
+(bind_ver386_res_exe) is a Single-colon type target (.SYMBOLIC) (.MULTIPLE)
+
+(ppexpr.obj):
+    Has no dependents
+
+(wsetedit.obj):
+    Has no dependents
+
+(veraxp.res) is a Single-colon type target
+    Depends on:
+	(..\veraxp.rc)
+    Updated with these commands:
+	genverrc $]@ $(verrcaxp_exe_int) $$ $(verrcaxp_exe) $(patch_level)
+	$(rc) $(rc_flags) $(inc_path) $(verrcaxp_exe_int) -fo=$^@
+
+(..\version.rc):
+    Has no dependents
+
+(wlist.obj):
+    Has no dependents
+
+(wmain.obj):
+    Has no dependents
+
+(wsvobj.obj):
+    Has no dependents
+
+(bind_version_res_dll) is a Single-colon type target (.SYMBOLIC) (.MULTIPLE)
+
+(wacc.obj):
+    Has no dependents
+
+(ver386.res) is a Single-colon type target
+    Depends on:
+	(..\ver386.rc)
+    Updated with these commands:
+	genverrc $]@ $(verrc386_exe_int) $$ $(verrc386_exe) $(patch_level)
+	$(rc) $(rc_flags) $(inc_path) $(verrc386_exe_int) -fo=$^@
+
+(preproc.obj):
+    Has no dependents
+
+(wstrdup.obj):
+    Has no dependents
+
+(widn2str.obj):
+    Has no dependents
+
+(wwait.obj):
+    Has no dependents
+
+(wacc.dll) is a Single-colon type target
+    Depends on:
+	(rcstr.gh)
+	(wmain.obj)
+	(winfo.obj)
+	(wacc.obj)
+	(whndl.obj)
+	(whints.obj)
+	(wstat.obj)
+	(wtoolbar.obj)
+	(wribbon.obj)
+	(wedit.obj)
+	(wvk2str.obj)
+	(wdel.obj)
+	(wnewitem.obj)
+	(wkey.obj)
+	(wsvobj.obj)
+	(wacc2rc.obj)
+	(wmem.obj)
+	(wctl3d.obj)
+	(wgetfn.obj)
+	(wlist.obj)
+	(winst.obj)
+	(wsetedit.obj)
+	(wmsg.obj)
+	(wopts.obj)
+	(wstrdup.obj)
+	(wselft.obj)
+	(wrename.obj)
+	(wwait.obj)
+	(wmemf.obj)
+	(wcopystr.obj)
+	(widn2str.obj)
+	(wclip.obj)
+	(wisedit.obj)
+	(weditsym.obj)
+	(preproc.obj)
+	(ppexpr.obj)
+	(ppmacro.obj)
+	(c:\dev\open-watcom-v2\bld\wres\wini86.gui\ml\wres.lib)
+	(c:\dev\open-watcom-v2\bld\sdk\wr\wini86\wr.lib)
+	(c:\dev\open-watcom-v2\bld\wpi\wini86\wpi.lib)
+	(c:\dev\open-watcom-v2\bld\commonui\wini86\commonui.lib)
+	(wacc.res)
+    Updated with these commands:
+	@%create tmp.lnk
+	@%append tmp.lnk $(lflags)
+	@for %i in ($(objs)) do @%append tmp.lnk file %i
+	@for %i in ($(xlibs)) do @%append tmp.lnk lib %i
+	$(linker) name $^@ @tmp.lnk
+	$(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
+
+(rcstr.gh) is a Single-colon type target
+    Depends on:
+	(rcstrmsg.gh)
+    Updated with these commands:
+	$(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
+
+(..\veraxp.rc):
+    Has no dependents
+
+(wisedit.obj):
+    Has no dependents
+
+(c:\dev\open-watcom-v2\bld\commonui\wini86\commonui.lib):
+    Has no dependents
+
+(wtoolbar.obj):
+    Has no dependents
+
+(wgetfn.obj):
+    Has no dependents
+
+(wedit.obj):
+    Has no dependents
+
+(verppc.res) is a Single-colon type target
+    Depends on:
+	(..\verppc.rc)
+    Updated with these commands:
+	genverrc $]@ $(verrcppc_exe_int) $$ $(verrcppc_exe) $(patch_level)
+	$(rc) $(rc_flags) $(inc_path) $(verrcppc_exe_int) -fo=$^@
+
+(verx64.res) is a Single-colon type target
+    Depends on:
+	(..\verx64.rc)
+    Updated with these commands:
+	genverrc $]@ $(verrcx64_exe_int) $$ $(verrcx64_exe) $(patch_level)
+	$(rc) $(rc_flags) $(inc_path) $(verrcx64_exe_int) -fo=$^@
+
+(version.res) is a Single-colon type target
+    Depends on:
+	(..\version.rc)
+    Updated with these commands:
+	genverrc $]@ $(verrc_dll_int) $$ $(verrc_dll) $(patch_level)
+	$(rc) $(rc_flags) $(inc_path) $(verrc_dll_int) -fo=$^@
+
+(winst.obj):
+    Has no dependents
+
+(rcstrmsg.gh) is a Single-colon type target
+    Depends on:
+	(..\h\wacc.msg)
+    Updated with these commands:
+	$(cpp) $(rc_aui_flags) -I"$(sdk_misc_dir)" $(inc_path) $[@ >$^@
+
+(whints.obj):
+    Has no dependents
+
+(wselft.obj):
+    Has no dependents
+
+(wctl3d.obj):
+    Has no dependents
+
+(wnewitem.obj):
+    Has no dependents
+
+(bind_veraxp_res_exe) is a Single-colon type target (.SYMBOLIC) (.MULTIPLE)
+
+(weditsym.obj):
+    Has no dependents
+
+(wmsg.obj):
+    Has no dependents
+
+(wvk2str.obj):
+    Has no dependents
+
+(killnonobj) is a Single-colon type target (.SYMBOLIC) (.EXPLICIT)
+    Updated with these commands:
+	rm -f *.lnk *.exe *.elf *.exp *.nlm *.dll
+	rm -f *.lib *.lbc *.rc *.dlg *.res *.lst *.err
+	rm -f *.pch *.map *.sym *.tmp *.ilk *.gh *.grc
+
+(winfo.obj):
+    Has no dependents
+
+(..\verppc.rc):
+    Has no dependents
+
+(wdel.obj):
+    Has no dependents
+
+(..\verx64.rc):
+    Has no dependents
+
+(..\exever.rc):
+    Has no dependents
+
+(wacc.res) is a Single-colon type target (.AUTODEPEND)
+    Depends on:
+	(..\h\wacc.rc)
+    Updated with these commands:
+	$(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
+
+(..\h\wacc.msg):
+    Has no dependents
+
+(wcopystr.obj):
+    Has no dependents
+
+(wacc2rc.obj):
+    Has no dependents
+
+(c:\dev\open-watcom-v2\bld\wpi\wini86\wpi.lib):
+    Has no dependents
+
+(wstat.obj):
+    Has no dependents
+
+(exever.res) is a Single-colon type target
+    Depends on:
+	(..\exever.rc)
+    Updated with these commands:
+	genverrc $]@ $(verrc_exe_int) $$ $(verrc_exe) $(patch_level)
+	$(rc) $(rc_flags) $(inc_path) $(verrc_exe_int) -fo=$^@
+
+(..\ver386.rc):
+    Has no dependents
+
+(c:\dev\open-watcom-v2\bld\wres\wini86.gui\ml\wres.lib):
+    Has no dependents
+
+(wacc.lib) is a Single-colon type target
+    Depends on:
+	(wacc.dll)
+    Updated with these commands:
+	$(librarian) $(libflags) +$[@
+
+(ppmacro.obj):
+    Has no dependents
+
+(wmem.obj):
+    Has no dependents
+
+(wribbon.obj):
+    Has no dependents
+
+(bind_verppc_res_exe) is a Single-colon type target (.SYMBOLIC) (.MULTIPLE)
+
+(c:\dev\open-watcom-v2\bld\sdk\wr\wini86\wr.lib):
+    Has no dependents
+
+(wrename.obj):
+    Has no dependents
+
+(bind_version_res_exe) is a Single-colon type target (.SYMBOLIC) (.MULTIPLE)
+
+(bind_verx64_res_exe) is a Single-colon type target (.SYMBOLIC) (.MULTIPLE)
+
+(wmemf.obj):
+    Has no dependents
+

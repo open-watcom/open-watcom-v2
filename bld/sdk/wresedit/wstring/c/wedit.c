@@ -33,8 +33,8 @@
 #include "precomp.h"
 #include <ctype.h>
 #include <string.h>
-#include "wi163264.h"
 
+#include "watcom.h"
 #include "wglbl.h"
 #include "wribbon.h"
 #include "wmain.h"
@@ -64,7 +64,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-LRESULT WINEXPORT WStringEditProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WStringEditProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 extern UINT WClipbdFormat;
 extern UINT WItemClipbdFormat;
@@ -154,7 +155,7 @@ Bool WResizeStringEditWindow( WStringEditInfo *einfo, RECT *prect )
     return( TRUE );
 }
 
-void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect, int height )
+static void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect, int height )
 {
     HWND        win;
     RECT        crect, t;
@@ -396,7 +397,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
         return( FALSE );
     }
 
-    if( **symbol == NULL ) {
+    if( **symbol == '\0' ) {
         *symbol = WGetStrFromEdit( GetDlgItem( dlg, IDM_STREDCMDNUM ), NULL );
     }
 
@@ -420,7 +421,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 *id = (uint_16)new_entry->value;
                 if( !dup ) {
                     SendDlgItemMessage( dlg, IDM_STREDCMDID, CB_ADDSTRING,
-                                        0, (LPARAM)(LPCSTR)new_entry->name );
+                                        0, (LPARAM)(LPSTR)new_entry->name );
                     SendDlgItemMessage( dlg, IDM_STREDCMDID, CB_SETITEMDATA,
                                         0, (LPARAM)new_entry );
                 }
@@ -464,7 +465,7 @@ Bool WInitEditWindowListBox( WStringEditInfo *einfo )
     return( ok );
 }
 
-Bool WInitEditWindow( WStringEditInfo *einfo )
+static Bool WInitEditWindow( WStringEditInfo *einfo )
 {
     HWND        lbox;
     Bool        ok;
@@ -616,7 +617,7 @@ Bool WClipStringItem( WStringEditInfo *einfo, Bool cut )
     }
 
     if( ok ) {
-        id = (uint_16 )(void *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
+        id = (uint_16 )SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
         block = WFindStringBlock( einfo->tbl, id );
         ok = (block != NULL);
     }
@@ -769,10 +770,10 @@ void WHandleSelChange( WStringEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, FALSE );
 }
 
-LRESULT WINEXPORT WStringEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WStringEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WStringEditInfo     *einfo;
-    LRESULT             ret;
+    BOOL                ret;
     WORD                wp;
     WORD                cmd;
 #if 0
@@ -782,13 +783,13 @@ LRESULT WINEXPORT WStringEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
 #endif
 
     ret = FALSE;
-    einfo = (WStringEditInfo *)GetWindowLong( hDlg, DWL_USER );
+    einfo = (WStringEditInfo *)GET_DLGDATA( hDlg );
 
     switch( message ) {
     case WM_INITDIALOG:
         einfo = (WStringEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
-        SetWindowLong( hDlg, DWL_USER, (LONG)einfo );
+        SET_DLGDATA( hDlg, (LONG_PTR)einfo );
         WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
                                 IDM_STREDCMDID, WR_HASHENTRY_ALL );
         ret = TRUE;
@@ -810,7 +811,7 @@ LRESULT WINEXPORT WStringEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
 #else
     case WM_CTLCOLOR:
 #endif
-        return( (LRESULT)WCtl3dCtlColorEx( message, wParam, lParam ) );
+        return( (BOOL)WCtl3dCtlColorEx( message, wParam, lParam ) );
 #endif
 
 #if 0
@@ -873,7 +874,7 @@ LRESULT WINEXPORT WStringEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
     return( ret );
 }
 
-LRESULT WINEXPORT WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     RECT        r;
 

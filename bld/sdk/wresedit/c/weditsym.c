@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
+#include "watcom.h"
+#include "wrdll.h"
 #include "wglbl.h"
 #include "wwait.h"
 #include "wgetfn.h"
@@ -54,7 +56,7 @@ void PP_OutOfMemory( void )
     longjmp( SymEnv, 1 );
 }
 
-void *PP_Malloc( unsigned size )
+void *PP_Malloc( size_t size )
 {
     void        *p;
 

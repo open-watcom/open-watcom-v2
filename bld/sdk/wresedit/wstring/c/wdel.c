@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <ctype.h>
 #include <string.h>
+#include "watcom.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wedit.h"
@@ -129,7 +130,7 @@ Bool WDeleteEditWinLBoxEntry( WStringEditInfo *einfo, int pos, Bool free_it )
     }
 
     if( ok ) {
-        string_id = (uint_16 )(void *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
+        string_id = (uint_16 )SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
         block = WFindStringBlock( einfo->tbl, string_id );
         ok = (block != NULL);
     }
@@ -153,7 +154,7 @@ Bool WDeleteEditWinLBoxEntry( WStringEditInfo *einfo, int pos, Bool free_it )
         einfo->current_block = NULL;
         einfo->current_string = 0;
         einfo->current_pos = -1;
-        pos = min( max - 2, pos );
+        pos = __min( max - 2, pos );
         ret = SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
         ok = (ret != LB_ERR);
         if( ok ) {

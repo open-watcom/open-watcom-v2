@@ -33,8 +33,8 @@
 #include "precomp.h"
 #include <ctype.h>
 #include <string.h>
-#include "wi163264.h"
 
+#include "watcom.h"
 #include "wglbl.h"
 #include "wribbon.h"
 #include "wmem.h"
@@ -63,7 +63,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-LRESULT WINEXPORT WMenuEditProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WMenuEditProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 extern UINT WClipbdFormat;
 extern UINT WItemClipbdFormat;
@@ -163,7 +164,7 @@ Bool WResizeMenuEditWindow( WMenuEditInfo *einfo, RECT *prect )
     return( TRUE );
 }
 
-void WExpandEditWindowItem( HWND hDlg, HWND win, RECT *prect )
+static void WExpandEditWindowItem( HWND hDlg, HWND win, RECT *prect )
 {
     RECT crect, t;
 
@@ -528,7 +529,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 *id = (uint_16)new_entry->value;
                 if( !dup ) {
                     SendDlgItemMessage( dlg, IDM_MENUEDID, CB_ADDSTRING,
-                                        0, (LPARAM)(LPCSTR)new_entry->name );
+                                        0, (LPARAM)(LPSTR)new_entry->name );
                     SendDlgItemMessage( dlg, IDM_MENUEDID, CB_SETITEMDATA,
                                         0, (LPARAM)new_entry );
                 }
@@ -667,7 +668,7 @@ Bool WInitEditWindowListBox( WMenuEditInfo *einfo )
     return( ok );
 }
 
-Bool WInitEditWindow( WMenuEditInfo *einfo )
+static Bool WInitEditWindow( WMenuEditInfo *einfo )
 {
     HWND    lbox;
     Bool    ok;
@@ -962,7 +963,7 @@ static Bool WShiftEntry( WMenuEditInfo *einfo, Bool left )
     return( ok );
 }
 
-LRESULT WINEXPORT WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WMenuEditInfo       *einfo;
     HWND                win;
@@ -972,13 +973,13 @@ LRESULT WINEXPORT WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM 
     WORD                wp, cmd;
 
     ret = FALSE;
-    einfo = (WMenuEditInfo *)GetWindowLong( hDlg, DWL_USER );
+    einfo = (WMenuEditInfo *)GET_DLGDATA( hDlg );
 
     switch( message ) {
     case WM_INITDIALOG:
         einfo = (WMenuEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
-        SetWindowLong( hDlg, DWL_USER, (LONG)einfo );
+        SET_DLGDATA( hDlg, (LONG_PTR)einfo );
         WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
                                 IDM_MENUEDID, WR_HASHENTRY_ALL );
         ret = TRUE;
@@ -1098,7 +1099,7 @@ LRESULT WINEXPORT WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM 
     return( ret );
 }
 
-LRESULT WINEXPORT WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     RECT        r;
 

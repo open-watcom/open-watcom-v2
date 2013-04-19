@@ -30,62 +30,63 @@
 ****************************************************************************/
 
 
-#ifndef WMENU_INCLUDED
-#define WMENU_INCLUDED
-
-#ifndef WINEXPORT
-    #define WINEXPORT   __export PASCAL
-#endif
+#ifndef WSTRING_INCLUDED
+#define WSTRING_INCLUDED
 
 #include "wresall.h"
 #include "wrdll.h"
-#include "wrhash.h"
+#include "wreseapi.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
 
-#define MENU_I_HAVE_CLOSED  (WM_USER + 666 + 10 + 0)
-#define MENU_PLEASE_SAVEME  (WM_USER + 666 + 10 + 1)
-#define MENU_PLEASE_OPENME  (WM_USER + 666 + 10 + 2)
+#define STRING_I_HAVE_CLOSED  (WM_USER + 666 + 20 + 0)
+#define STRING_PLEASE_SAVEME  (WM_USER + 666 + 20 + 1)
+#define STRING_PLEASE_OPENME  (WM_USER + 666 + 20 + 2)
 
 /****************************************************************************/
 /* data types                                                               */
 /****************************************************************************/
-typedef int WMenuHandle;
+typedef int WStringHandle;
 
-typedef struct WMenuInfo {
+typedef struct WStringNode {
+    WResID              *block_name;
+    WResLangType        lang;
+    int                 data_size;
+    void                *data;
+    uint_16             MemFlags;
+    struct WStringNode  *next;
+} WStringNode;
+
+typedef struct WStringInfo {
     HWND                parent;
     HINSTANCE           inst;
     char                *file_name;
     WRHashTable         *symbol_table;
     char                *symbol_file;
-    WResID              *res_name;
-    WResLangType        lang;
-    uint_16             MemFlags;
     int                 is32bit;
-    int                 data_size;
-    void                *data;
     int                 edit_active;
     int                 modified;
     int                 stand_alone;
-} WMenuInfo;
+    WStringNode         *tables;
+} WStringInfo;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WMenuInfo *         WINEXPORT WMenuAllocMenuInfo( void );
-void                WINEXPORT WMenuFreeMenuInfo( WMenuInfo * );
+WRESEDLLENTRY WStringInfo *           WRESEAPI WStrAllocStringInfo( void );
+WRESEDLLENTRY void                    WRESEAPI WStrFreeStringInfo( WStringInfo * );
 
-extern void         WINEXPORT WMenuInit( void );
-extern void         WINEXPORT WMenuFini( void );
-extern int          WINEXPORT WMenuCloseSession( WMenuHandle, int );
-extern WMenuHandle  WINEXPORT WRMenuStartEdit( WMenuInfo * );
-extern WMenuInfo *  WINEXPORT WMenuEndEdit( WMenuHandle );
-extern WMenuInfo *  WINEXPORT WMenuGetEditInfo( WMenuHandle );
-extern int          WINEXPORT WMenuIsModified( WMenuHandle );
-extern int          WINEXPORT WMenuIsDlgMsg( MSG *msg );
-extern void         WINEXPORT WMenuShowWindow( WMenuHandle hndl, int show );
-extern void         WINEXPORT WMenuBringToFront( WMenuHandle hndl );
+WRESEDLLENTRY extern void             WRESEAPI WStringInit( void );
+WRESEDLLENTRY extern void             WRESEAPI WStringFini( void );
+WRESEDLLENTRY extern int              WRESEAPI WStringCloseSession( WStringHandle, int );
+WRESEDLLENTRY extern WStringHandle    WRESEAPI WRStringStartEdit( WStringInfo * );
+WRESEDLLENTRY extern WStringInfo *    WRESEAPI WStringEndEdit( WStringHandle );
+WRESEDLLENTRY extern WStringInfo *    WRESEAPI WStringGetEditInfo( WStringHandle );
+WRESEDLLENTRY extern int              WRESEAPI WStringIsModified( WStringHandle );
+WRESEDLLENTRY extern int              WRESEAPI WStringIsDlgMsg( MSG *msg );
+WRESEDLLENTRY extern void             WRESEAPI WStringShowWindow( WStringHandle hndl, int show );
+WRESEDLLENTRY extern void             WRESEAPI WStringBringToFront( WStringHandle hndl );
 
 #endif

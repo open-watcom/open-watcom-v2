@@ -48,7 +48,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern UINT WINEXPORT WOpenHookProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT UINT CALLBACK WOpenHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -267,7 +267,8 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
     return( WStrDup( WFn ) );
 }
 
-UINT WINEXPORT WOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+#ifndef __NT__
+WINEXPORT UINT CALLBACK WOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *title;
 
@@ -291,6 +292,7 @@ UINT WINEXPORT WOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
 
     return( FALSE );
 }
+#endif
 
 Bool WGetInternalRESName( char *filename, char *newname )
 {
