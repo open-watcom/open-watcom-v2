@@ -198,7 +198,7 @@ static void AuxCopy(           // COPY AUX STRUCTURE
 AUX_INFO *AsmSysCreateAux( char *name )
 /************************************/
 {
-    CreateAux( NameStr( name ) );
+    CreateAux( name );
     AuxCopy( CurrInfo, &WatcallInfo );
     CurrInfo->use = 1;
     CurrEntry->info = CurrInfo;
