@@ -37,6 +37,7 @@
 #define INCL_WINWINDOWMGR
 #define INCL_WININPUT
 #include <os2.h>
+#include "wedit.h"
 
 typedef struct errstr {
     ULONG       errorline;
@@ -397,7 +398,7 @@ MRESULT EXPENTRY clientProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
 }
 
 
-int __export _System EDITConnect( void )
+int EDITAPI EDITConnect( void )
 /**************************************/
 {
     ULONG       style = 0;
@@ -413,7 +414,7 @@ int __export _System EDITConnect( void )
 }
 
 
-int __export _System EDITFile( char *fn, char *hlib )
+int EDITAPI EDITFile( char *fn, char *hlib )
 /***************************************************/
 {
     CurrSession = FindSession( fn );
@@ -440,7 +441,7 @@ int __export _System EDITFile( char *fn, char *hlib )
 }
 
 
-int __export _System EDITLocateError( long lRow, int nCol, int nLen,
+int EDITAPI EDITLocateError( long lRow, int nCol, int nLen,
                                       int resourceid, char *error_msg )
 /*********************************************************************/
 {
@@ -464,14 +465,14 @@ int __export _System EDITLocateError( long lRow, int nCol, int nLen,
 }
 
 
-int __export _System EDITLocate( long lRow, int nCol, int nLen )
+int EDITAPI EDITLocate( long lRow, int nCol, int nLen )
 /**************************************************************/
 {
     return( EDITLocateError( lRow, nCol, nLen, 0, NULL ) );
 }
 
 
-int __export _System EDITShowWindow( int nCmdShow )
+int EDITAPI EDITShowWindow( int nCmdShow )
 /*************************************************/
 {
     nCmdShow = nCmdShow;
@@ -479,7 +480,7 @@ int __export _System EDITShowWindow( int nCmdShow )
 }
 
 
-int __export _System EDITDisconnect( void )
+int EDITAPI EDITDisconnect( void )
 /*****************************************/
 {
     session     *sess;
@@ -495,8 +496,8 @@ int __export _System EDITDisconnect( void )
 }
 
 
-ULONG LibMain( ULONG hModule, ULONG ulReason )
-/********************************************/
+ULONG _System LibMain( ULONG hModule, ULONG ulReason )
+/****************************************************/
 {
     if( ulReason ) {
         // Terminating

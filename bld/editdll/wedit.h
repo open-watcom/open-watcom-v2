@@ -38,15 +38,25 @@ extern "C" {
 
 #if defined( __NT__ )
     typedef char *editstring;
-    #define EDITAPI     __export __stdcall
 #elif defined( __WINDOWS__ )
     typedef char far *editstring;
-    #define EDITAPI     __export far pascal
 #elif defined( __OS2__ )
     typedef char *editstring;
-    #define EDITAPI     __syscall
 #else
     #error Unsupported OS
+#endif
+
+#if defined( WEDITDLL )
+    #define EDITDLLENTRY    __declspec(dllexport)
+#else
+    #define EDITDLLENTRY
+#endif
+
+#if defined( __OS2__ )
+    #define EDITAPI     APIENTRY
+#elif defined( __NT__ ) || defined( __WINDOWS__ )
+    #define EDITAPI     WINAPI
+#else
     #define EDITAPI
 #endif
 
@@ -57,15 +67,15 @@ typedef enum {
 } show_method;
 
 // this file should be identical for all app implementations
-int EDITAPI EDITConnect( void );
-int EDITAPI EDITFile( editstring, editstring );
-int EDITAPI EDITLocate( long, int, int );
-int EDITAPI EDITLocateError( long, int, int, int, editstring );
-int EDITAPI EDITShowWindow( show_method );
-int EDITAPI EDITDisconnect( void );
-int EDITAPI EDITSaveFiles( void );
-int EDITAPI EDITSaveThisFile( const char * );
-int EDITAPI EDITQueryThisFile( const char * );
+EDITDLLENTRY extern int EDITAPI EDITConnect( void );
+EDITDLLENTRY extern int EDITAPI EDITFile( editstring, editstring );
+EDITDLLENTRY extern int EDITAPI EDITLocate( long, int, int );
+EDITDLLENTRY extern int EDITAPI EDITLocateError( long, int, int, int, editstring );
+EDITDLLENTRY extern int EDITAPI EDITShowWindow( int );
+EDITDLLENTRY extern int EDITAPI EDITDisconnect( void );
+EDITDLLENTRY extern int EDITAPI EDITSaveFiles( void );
+EDITDLLENTRY extern int EDITAPI EDITSaveThisFile( const char * );
+EDITDLLENTRY extern int EDITAPI EDITQueryThisFile( const char * );
 
 #ifdef __cplusplus
 }

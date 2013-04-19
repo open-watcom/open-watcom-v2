@@ -72,7 +72,7 @@ char doRequest( char *szCommand )
 
 }
 
-HDDEDATA __export FAR PASCAL DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
+HDDEDATA EDITAPI DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
                     HSZ hszTopic, HSZ hszItem, HDDEDATA hData, DWORD dwData1,
                     DWORD dwData2 )
 {
@@ -144,17 +144,14 @@ int EDITAPI EDITConnect( void )
                 rc = WaitForInputIdle( pi.hProcess, INFINITE );
                 if( rc == 0 ) {
                     // Now this is starting to get scary
-                    n = 0;
                     #define MAX_TRIES 100
-                    while( 1 ) {
+                    for( n = 0; (hConv = DdeConnect( idInstance, hszService, hszTopic, (PCONVCONTEXT)NULL )) == 0 && n < MAX_TRIES; ++n ) {
                         DWORD   status;
 
-                        hConv = DdeConnect( idInstance, hszService, hszTopic, (PCONVCONTEXT) NULL );
-                        if( hConv != 0 ) break;
                         GetExitCodeProcess( pi.hProcess, &status );
-                        if( status != STILL_ACTIVE ) break;
+                        if( status != STILL_ACTIVE )
+                            break;
                         Sleep( 250 );
-                        if( n++ == MAX_TRIES ) break;
                     }
                 }
                 /*
@@ -232,7 +229,7 @@ int EDITAPI EDITLocate( long iRow, int iCol, int iLen )
     return( EDITLocateError( iRow, iCol, iLen, 0, NULL ) );
 }
 
-int EDITAPI EDITShowWindow( show_method iCmdShow )
+int EDITAPI EDITShowWindow( int iCmdShow )
 {
     if( !bConnected ) {
         return( FALSE );
@@ -289,7 +286,7 @@ int EDITAPI EDITQueryThisFile( const char *filename )
 
 #ifdef __NT__
 
-int WINAPI LibMain( HINSTANCE hDll, DWORD reason, LPVOID res )
+BOOL WINAPI DllMain( HINSTANCE hDll, DWORD reason, LPVOID res )
 {
     res = res;
     reason = reason;
@@ -301,8 +298,7 @@ int WINAPI LibMain( HINSTANCE hDll, DWORD reason, LPVOID res )
 
 #else
 
-int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize,
-                        LPSTR lpszCmdLine )
+int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize, LPSTR lpszCmdLine )
 {
     wDataSeg = wDataSeg;
     wHeapSize = wHeapSize;

@@ -219,7 +219,7 @@ int extern __export FAR PASCAL EDITLocate( long lRow, int iCol, int iLen )
     return( EDITLocateError( lRow, iCol, iLen, 0, NULL ) );
 }
 
-int extern __export FAR PASCAL EDITShowWindow( show_method iCmdShow )
+int extern __export FAR PASCAL EDITShowWindow( int iCmdShow )
 {
     char        szCommand[ 80 ];
     BOOL        rc;
@@ -321,17 +321,20 @@ int extern __export FAR PASCAL EDITDisconnect( void )
 
     return( TRUE );
 }
+
 #ifdef __NT__
-int WINAPI LibMain( HINSTANCE hInst, DWORD reason, LPVOID res )
+
+BOOL WINAPI DllMain( HINSTANCE hInst, DWORD reason, LPVOID res )
 {
     res = res;
     reason = reason;
     hInstance = hInst;
     return( 1 );
 }
+
 #else
-int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize,
-                        LPSTR lpszCmdLine )
+
+int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize, LPSTR lpszCmdLine )
 {
     wDataSeg = wDataSeg;
     wHeapSize = wHeapSize;
@@ -345,4 +348,5 @@ int WINAPI WEP( int q )
     q = q;
     return( 1);
 }
+
 #endif

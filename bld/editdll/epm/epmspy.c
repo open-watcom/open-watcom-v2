@@ -263,7 +263,7 @@ int     main( int argc, char *argv[] ) {
                                       "WATCOM", "", 0, NULL, 0,
                                       &WinHandle );
     if( FrameHandle == 0 ) return( 0 );
-    ddeFile = open( "d:\\editdll\\epm\\dde.out", O_WRONLY | O_TEXT | O_CREAT | O_TRUNC );
+    ddeFile = open( "d:\\editdll\\epm\\dde.out", O_WRONLY | O_TEXT | O_CREAT | O_TRUNC, S_IREAD | S_IWRITE );
     fileName = argv[2];
     for( i = 0; i < argc; ++i ) {
         write( ddeFile, argv[i], strlen( argv[i] ) );
