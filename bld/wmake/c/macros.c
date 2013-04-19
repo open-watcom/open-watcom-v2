@@ -599,7 +599,7 @@ char *WrnGetMacroValue( const char *name )
 
     p = GetMacroValue( name );
     if( p == NULL ) {
-        PrtMsg( DBG | WRN | LOC | MACRO_UNDEFINED, name );   /* 13-Dec-90 DJG */
+        PrtMsg( DBG | INF | LOC | MACRO_UNDEFINED, name );   /* 13-Dec-90 DJG */
         // we did this to minimize the number of debugging messages but
         // it causes problems when it defines a macro for the user
         //UnGetCH( EOL );
