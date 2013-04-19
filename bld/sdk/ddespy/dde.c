@@ -47,7 +47,7 @@ static BOOL firstInstInit( void )
     wc.style = 0L;
     wc.lpfnWndProc = (LPVOID)DDEMainWndProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = 4;
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = Instance;
     wc.hIcon = LoadIcon( Instance, "APPLICON" );
     wc.hCursor = LoadCursor( NULL, IDC_ARROW );
@@ -62,7 +62,7 @@ static BOOL firstInstInit( void )
     wc.style = 0L;
     wc.lpfnWndProc = (LPVOID)DDETrackingWndProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = 4;
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = Instance;
     wc.hIcon = NULL /* LoadIcon( Instance, "HEAPICON" ) */;
     wc.hCursor = LoadCursor( NULL, IDC_ARROW );

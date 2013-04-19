@@ -189,7 +189,7 @@ static void hideHintBar( HWND hwnd, DDEWndInfo *info, BOOL hide )
 /*
  * DDEMainWndProc - process messages for the main window
  */
-BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     DDEWndInfo          *info;
     char                *alias_title;
@@ -205,7 +205,7 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
     HWND                hinthwnd;
     BOOL                alias_state;
 
-    info = (DDEWndInfo *)GetWindowLong( hwnd, 0 );
+    info = (DDEWndInfo *)GET_WNDINFO( hwnd );
     switch( msg ) {
     case WM_CREATE:
         DDEMainWnd = hwnd;
@@ -220,8 +220,7 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
         memset( info, 0, sizeof( DDEWndInfo ) );
         memset( &area, 0, sizeof( RECT ) );
         info->hintbar = HintWndCreate( hwnd, &area, Instance, NULL );
-        SetHintText( info->hintbar, (MenuItemHint *)menuHints,
-                     sizeof( menuHints ) / sizeof( MenuItemHint ) );
+        SetHintText( info->hintbar, (MenuItemHint *)menuHints, sizeof( menuHints ) / sizeof( MenuItemHint ) );
         hinthwnd = GetHintHwnd( info->hintbar );
         info->list.ypos = 0;
         info->horz_extent = 0;
@@ -233,7 +232,7 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
         info->char_extent = sz.cx / 10;
         SelectObject( dc, font );
         ReleaseDC( info->list.box, dc );
-        SetWindowLong( hwnd, 0, (DWORD)info );
+        SET_WNDINFO( hwnd, (LONG_PTR)info );
         InitAliases();
         LogInit( hwnd, Instance, LogHeader );
         MakeDDEToolBar( hwnd );
@@ -413,8 +412,8 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
             }
             break;
         case DDEMENU_HELP_SRCH:
-            if( !WHtmlHelp( hwnd, DDE_CHM_FILE, HELP_PARTIALKEY, (DWORD)"" ) ) {
-                WWinHelp( hwnd, DDE_HELP_FILE, HELP_PARTIALKEY, (DWORD)"" );
+            if( !WHtmlHelp( hwnd, DDE_CHM_FILE, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+                WWinHelp( hwnd, DDE_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)"" );
             }
             break;
         case DDEMENU_HELP_ON_HELP:

@@ -86,7 +86,7 @@ static void resizeForTB( RECT *area, HWND hwnd )
     DDEWndInfo          *info;
     RECT                winsize;
 
-    info = (DDEWndInfo *)GetWindowLong( hwnd, 0 );
+    info = (DDEWndInfo *)GET_WNDINFO( hwnd );
     GetClientRect( hwnd, &winsize );
     if( area == NULL ) {
         info->list.ypos = 0;
@@ -189,13 +189,13 @@ void GetFixedTBRect( HWND hwnd, RECT *rect )
 /*
  * showTBHint
  */
-static void showTBHint( HWND hwnd, UINT menuid, BOOL select )
+static void showTBHint( HWND hwnd, WPARAM menuid, BOOL select )
 {
     DDEWndInfo          *info;
 
     hwnd = hwnd;
-    info = (DDEWndInfo *)GetWindowLong( DDEMainWnd, 0 );
-    HintToolBar( info->hintbar, menuid, select );
+    info = (DDEWndInfo *)GET_WNDINFO( DDEMainWnd );
+    HintToolBar( info->hintbar, (UINT)menuid, select );
 
 } /* showTBHint */
 
@@ -235,12 +235,12 @@ void MakeDDEToolBar( HWND hwnd )
     for( i=0; i < BUTTON_CNT; i++ ) {
         if( ButInfo[i].flags & ITEM_BLANK ) {
             ToolBar.bitmaps[i] = NULL;
-            item.blank_space = TOOL_SPACE;
+            item.u.blank_space = TOOL_SPACE;
             item.id = 0;
             item.depressed = NULL;
         } else {
             ToolBar.bitmaps[i] = LoadBitmap( Instance, ButInfo[i].name );
-            item.bmp = ToolBar.bitmaps[i];
+            item.u.bmp = ToolBar.bitmaps[i];
             item.id = ButInfo[i].id;
             item.depressed = ToolBar.bitmaps[i];
         }

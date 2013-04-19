@@ -189,7 +189,7 @@ BOOL DoFilter( WORD msg, WORD filter_type )
  * FilterDlgProc - handle the dialogs to set message and callback
  *                 filters
  */
-BOOL __export FAR PASCAL FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     unsigned            i;
     WORD                cmd;

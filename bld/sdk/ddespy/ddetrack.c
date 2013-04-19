@@ -173,7 +173,7 @@ void SetTrackFont( void )
 
     font = GetMonoFont();
     for( i = 0; i < NO_TRK_WND; i++ ) {
-        info = (DDETrackInfo *)GetWindowLong( Tracking[i].hwnd, 0 );
+        info = (DDETrackInfo *)GET_WNDINFO( Tracking[i].hwnd );
         makePushWin( info, Tracking[i].hwnd, info->hdrinfo, info->hdrcnt );
         GetClientRect( Tracking[i].hwnd, &area );
         ResizeListBox( area.right - area.left, area.bottom - area.top,
@@ -275,7 +275,7 @@ static void displayServers( DDETrackInfo *info )
         strcpy( buf, cur->server );
         buf[len] = ' ';
         strcpy( buf + 20, cur->instname );
-        SendMessage( info->list.box, LB_ADDSTRING, 0, (DWORD)buf );
+        SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)buf );
     }
 
 } /* displayServers */
@@ -324,8 +324,7 @@ void TrackServerMsg( MONCBSTRUCT *info )
     ServerInfo          *cur;
 
     inst = HSZToString( info->hsz2 );
-    listinfo = (DDETrackInfo *)GetWindowLong(
-        Tracking[DDEMENU_TRK_SERVER - DDE_TRK_FIRST].hwnd, 0 );
+    listinfo = (DDETrackInfo *)GET_WNDINFO( Tracking[DDEMENU_TRK_SERVER - DDE_TRK_FIRST].hwnd );
     entry = findServer( inst, listinfo );
 
     if( info->wType == XTYP_REGISTER ) {
@@ -497,7 +496,7 @@ static void redispStrTrk( DDETrackInfo *info )
         }
         sprintf( buf, "%0*lX    %4d    %s", HSZ_FMT_LEN, items[i]->hsz,
                  items[i]->cnt, items[i]->str );
-        SendMessage( info->list.box, LB_ADDSTRING, 0, (DWORD)buf );
+        SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)buf );
     }
 
 } /* redispStrTrk */
@@ -521,8 +520,7 @@ void TrackStringMsg( MONHSZSTRUCT *info )
     StringInfo          **pos;
     StringInfo          *str;
 
-    listinfo = (DDETrackInfo *)GetWindowLong(
-        Tracking[DDEMENU_TRK_STR - DDE_TRK_FIRST].hwnd, 0 );
+    listinfo = (DDETrackInfo *)GET_WNDINFO( Tracking[DDEMENU_TRK_STR - DDE_TRK_FIRST].hwnd );
     pos = getStringInfo( info->hsz, listinfo );
     if( pos == NULL ) {
         str = NULL;
@@ -730,7 +728,7 @@ static void redispLinkTrk( DDETrackInfo *info, BOOL islink )
             sprintf( buf, "%08lX %08lX %-20s %-s", items[i]->client,
                      items[i]->server, items[i]->service, items[i]->topic );
         }
-        SendMessage( info->list.box, LB_ADDSTRING, 0, (DWORD)buf );
+        SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)buf );
     }
 
 } /* redispLinkTrk */
@@ -794,8 +792,7 @@ void TrackLinkMsg( MONLINKSTRUCT *info )
     LinkInfo            *item;
     LinkInfo            **itempos;
 
-    listinfo = (DDETrackInfo *)GetWindowLong(
-        Tracking[DDEMENU_TRK_LINK - DDE_TRK_FIRST].hwnd, 0 );
+    listinfo = (DDETrackInfo *)GET_WNDINFO( Tracking[DDEMENU_TRK_LINK - DDE_TRK_FIRST].hwnd );
     itempos = findLinkInfo( listinfo, info );
     if( info->fEstablished ) {
         if( itempos != NULL ) {
@@ -898,8 +895,7 @@ void TrackConvMsg( MONCONVSTRUCT *info )
     LinkInfo            **itempos;
     DDETrackInfo        *listinfo;
 
-    listinfo = (DDETrackInfo *)GetWindowLong(
-        Tracking[DDEMENU_TRK_CONV - DDE_TRK_FIRST].hwnd, 0 );
+    listinfo = (DDETrackInfo *)GET_WNDINFO( Tracking[DDEMENU_TRK_CONV - DDE_TRK_FIRST].hwnd );
     itempos = findConvInfo( listinfo, info );
     if( info->fConnect ) {
         if( itempos != NULL ) {
@@ -1023,8 +1019,7 @@ static void makePushWin( DDETrackInfo *info, HWND hwnd,
 /*
  * DDETrackingWndProc - handle messages from the tracking windows
  */
-BOOL __export FAR PASCAL DDETrackingWndProc( HWND hwnd, UINT msg,
-                                             WPARAM wparam, LPARAM lparam )
+LRESULT CALLBACK DDETrackingWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     DDETrackInfo                *info;
     WORD                        i;
@@ -1033,13 +1028,13 @@ BOOL __export FAR PASCAL DDETrackingWndProc( HWND hwnd, UINT msg,
     WORD                        cmd;
     char                        *wintitle;
 
-    info = (DDETrackInfo *)GetWindowLong( hwnd, 0 );
+    info = (DDETrackInfo *)GET_WNDINFO( hwnd );
     switch( msg ) {
     case WM_CREATE:
         info = MemAlloc( sizeof( DDETrackInfo ) );
         memset( info, 0, sizeof( DDETrackInfo ) );
         info->type = *(WORD *)((CREATESTRUCT *)lparam)->lpCreateParams;
-        SetWindowLong( hwnd, 0, (DWORD)info );
+        SET_WNDINFO( hwnd, (LONG_PTR)info );
         switch( info->type ) {
         case DDEMENU_TRK_CONV:
             info->sorttype = PUSH_CLIENT;

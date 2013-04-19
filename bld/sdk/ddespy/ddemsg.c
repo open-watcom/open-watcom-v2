@@ -235,7 +235,7 @@ static void doReplace( HWND lb, WORD searchcnt, char **searchfor, char **replace
 
     /* for each line in the listbox */
     for( i = 0;; i++ ) {
-        ret = SendMessage( lb, LB_GETTEXT, i, (LPARAM)(LPCSTR)inbuf );
+        ret = SendMessage( lb, LB_GETTEXT, i, (LPARAM)(LPSTR)inbuf );
         if( ret == LB_ERR ) {
             break;
         }
@@ -336,7 +336,7 @@ void InitAliases( void )
 {
     DDEWndInfo          *info;
 
-    info = (DDEWndInfo *) GetWindowLong( DDEMainWnd, 0 );
+    info = (DDEWndInfo *)GET_WNDINFO( DDEMainWnd );
     hwndReplace.type = DEALIAS_HWND;
     hwndReplace.lb = info->list.box;
     convReplace.type = DEALIAS_CONV;
@@ -439,13 +439,13 @@ void RecordMsg( char *buf )
 
     ptr = buf;
     start = buf;
-    info = (DDEWndInfo *) GetWindowLong( DDEMainWnd, 0 );
+    info = (DDEWndInfo *)GET_WNDINFO( DDEMainWnd );
     while( *ptr ) {
         if( *ptr == '\n' ) {
             *ptr = '\0';
             if( ConfigInfo.screen_out ) {
                 setHorzExtent( info, start );
-                SendMessage( info->list.box, LB_ADDSTRING, 0, (DWORD)start );
+                SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)start );
             }
             SpyLogOut( start );
             *ptr = '\n';
@@ -456,7 +456,7 @@ void RecordMsg( char *buf )
     if( start != ptr ) {
         if( ConfigInfo.screen_out ) {
             setHorzExtent( info, start );
-            ret = SendMessage( info->list.box, LB_ADDSTRING, 0, (DWORD)start );
+            ret = SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)start );
         }
         SpyLogOut( start );
     }
@@ -777,8 +777,7 @@ static void processMsgStruct( char *buf, MONMSGSTRUCT *info, BOOL posted )
 /*
  * DDEMsgProc - process DDE messages received from the DDE manager
  */
-HDDEDATA __export FAR PASCAL DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1,
-                                         HSZ hsz2, HDDEDATA hdata, DWORD data1, DWORD data2 )
+HDDEDATA CALLBACK DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, ULONG_PTR data1, ULONG_PTR data2 )
 {
     char        buf[400];
     void        *info;

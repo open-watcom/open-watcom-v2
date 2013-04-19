@@ -30,7 +30,7 @@ extra_l_flags_win = option stack=7k option heapsize=2k lib ddeml.lib, commdlg.li
 .c: ..
 .h: ..
 
-inc_dirs  = -I.. $(commonui_inc_dirs) $(wpi_inc_dirs)
+inc_dirs  = -I. -I.. $(commonui_inc_dirs) $(wpi_inc_dirs)
 
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
@@ -39,16 +39,16 @@ version_res_exe_nt_x64 = exever.res
 xlibs = $(wpi_lib) $(commonui_lib)
 
 $(name).exe : rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
-        $(cl) $(clflags) $(objs) $(xlibs) $(ldflags)
-!else
+!ifdef __WATCOM__
         $(LINKER) $(lflags) name $^@ file { $(objs) } lib { $(xlibs) }
-!endif
 !ifeq host_CPU axp
 !ifeq release 0
         cvpack $(name).exe
         $(wstrip) $(name).exe $(name).exe $(name).sym
 !endif
+!endif
+!else
+        $(cl) $(clflags) $(objs) $(xlibs) $(ldflags)
 !endif
         $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
 
@@ -58,7 +58,9 @@ rcstr.gh : rcstrmsg.gh
 rcstrmsg.gh : ../ddespy.msg
         $(cpp) $(rc_aui_flags) $(inc_path) $[@ >$^@
 
+rc_inc_dirs = $(inc_dirs)
+
 $(name).res : ../$(name).rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 -I"../res" $(inc_path) $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad -zk0 -I"../res" $(rc_inc_path) $[@ -fo=$^@
 
 !include verrc.mif
