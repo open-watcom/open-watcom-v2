@@ -20,10 +20,12 @@
 # Now it is setup to 0x400
 # to be OK for Windows 95 and Windows NT
 #
+!ifneq bootstrap 1
 !ifdef $(proj_name)_win32ver
 win32ver = $($(proj_name)_win32ver)
 !else
 win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
+!endif
 !endif
 
 !ifeq bootstrap 1
@@ -112,6 +114,17 @@ release = 0
 release = 1
 !endif
 
+!ifdef $(proj_name)_rtdll
+!ifeq $(proj_name)_rtdll 1
+sys_rtdll       = 1
+!else
+sys_rtdll       = 0
+!endif
+!endif
+!ifndef sys_rtdll
+sys_rtdll       = 0
+!endif
+
 !ifdef $(proj_name)_debugfmt
 debugfmt = $($(proj_name)_debugfmt)
 !else ifeq %CODEVIEW 1
@@ -157,6 +170,10 @@ mode_clflags   += -\"op nored\"
 !else
 mode_clflags   += -"op nored"
 !endif
+!ifneq bootstrap 1
+#mode_cflags  += -x -xc
+#mode_clflags += -yx -xc
+!endif
 
 !ifndef $(proj_name)_nosymfile
 mode_lflags    += op symfile
@@ -167,6 +184,9 @@ mode_clflags   += -"op symf"
 !endif
 !endif
 
+########################
+# MEMORY MODELS SETINGS
+######
 !ifndef memory_model_i86
 memory_model_i86 = l
 !endif
@@ -193,69 +213,8 @@ model_switch_386 = -m$(memory_model_386)
 
 cl_model_switch  = $(model_switch_$(host_cpu))
 
-!ifeq bootstrap 1
-cppflags_all    = $(mode_cppflags) -DBOOTSTRAP
-!else
-cppflags_all    = $(mode_cppflags)
-!endif
-!ifdef __UNIX__
-cflags_all      =-w8 -we $(mode_cflags) -fo=.obj
-!else
-cflags_all      =-w8 -we $(mode_cflags)
-!endif
-
-cppflags_win    = -DSTRICT
-cppflags_dos    = -D__WATCOM_LFN__
-
-cflags_386      = $(model_switch_$(host_cpu))
-cflags_i86      = $(model_switch_$(host_cpu))
-cflags_axp      =
-cflags_ppc      =
-cflags_mps      =
-
-!ifndef suppress_zc
-cflags_386      += -zc
-!endif
-
-cflags_nt       = -bt=nt $(win32ver)
-cflags_win      = -bt=windows
-cflags_os2      = -bt=os2
-cflags_qnx      = -bt=qnx
-cflags_osi      = -bt=osi
-cflags_dos      = -bt=dos
-cflags_zdos     = -bt=zdos
-cflags_rdos     = -bt=rdos -bm
-cflags_rdosdev  = -bt=rdosdev -bm -zu
-cflags_nov      = -bt=netware
-cflags_linux    = -bt=linux
-
-!ifdef $(proj_name)_rtdll
-!ifeq $(proj_name)_rtdll 1
-sys_rtdll       = 1
-!else
-sys_rtdll       = 0
-!endif
-!endif
-
-!ifndef sys_rtdll
-sys_rtdll       = 0
-!endif
-
-!ifdef sys_dll
-!ifndef suppress_bd
-cflags_dll_all  = -bd
-!endif
-!endif
-!ifeq sys_rtdll 1
-cflags_dll_nt   = -br
-cflags_dll_win  = -br
-cflags_dll_os2  = -br
-!endif
-
-cflags_dll = $(cflags_dll_all) $(cflags_dll_$(host_os))
-
 ######################
-# DEFAULT FPU SETINGS
+# FPU SETINGS
 ######
   # DOS doesn't have emulator support, but OW has it
   # must be -fpc or -fpi
@@ -313,8 +272,88 @@ fpu_flags = $(fpu_flags_$(host_os)_$(host_cpu))
 fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
 !endif
 
+#######################
+# PREPROCESSOR SETINGS
+######
+!ifeq bootstrap 1
+cppflags_all    = $(mode_cppflags) -DBOOTSTRAP
+!else
+cppflags_all    = $(mode_cppflags)
+!endif
+
+cppflags_win    = -DSTRICT
+cppflags_dos    = -D__WATCOM_LFN__
+
+##########################
+# C/C++ COMPILERS SETINGS
+######
+cflags_all      =-w8 -we $(mode_cflags) -fo=$@
+
+cflags_386      = $(model_switch_$(host_cpu))
+cflags_i86      = $(model_switch_$(host_cpu))
+cflags_axp      =
+cflags_ppc      =
+cflags_mps      =
+
+!ifndef suppress_zc
+cflags_386      += -zc
+!endif
+
+cflags_nt       = -bt=nt $(win32ver)
+cflags_win      = -bt=windows
+cflags_os2      = -bt=os2
+cflags_qnx      = -bt=qnx
+cflags_osi      = -bt=osi
+cflags_dos      = -bt=dos
+cflags_zdos     = -bt=zdos
+cflags_rdos     = -bt=rdos -bm
+cflags_rdosdev  = -bt=rdosdev -bm -zu
+cflags_nov      = -bt=netware
+cflags_linux    = -bt=linux
+
+!ifeq sys_rtdll 1
+cflags_rtdll_nt   = -br
+cflags_rtdll_win  = -br
+cflags_rtdll_os2  = -br
+!endif
+
+# generic application macros
+
+# windowed application macros
+!ifeq sys_windowed 1
+#cflags_wind_nt   = -bg
+#cflags_wind_win  = -bg
+#cflags_wind_os2  = -bg
+!endif
+
+# DLL application macros
+!ifndef suppress_bd
+cflags_dll_nt   = -bd
+cflags_dll_win  = -bd
+cflags_dll_os2  = -bd
+!endif
+
+cxxflags         = $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
+
+proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os)) $(extra_cpp_flags_$(host_os)_$(host_cpu))
+cppflags         = $(cppflags_all) $(cppflags_$(host_cpu)) $(cppflags_$(host_os)) $(proj_cpp_flags)
+
+proj_c_flags     = $(extra_c_flags) $(extra_c_flags_$(host_cpu)) $(extra_c_flags_$(host_os)) $(extra_c_flags_$(host_os)_$(host_cpu))
+
+cflags_gen_all   = $(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_rtdll_$(host_os))
+
+cflags_gen       = $(cflags_gen_all) $(proj_c_flags)
+cflags_dll       = $(cflags_gen_all) $(cflags_dll_$(host_os)) $(proj_c_flags)
+cflags_wind      = $(cflags_gen_all) $(cflags_wind_$(host_os)) $(proj_c_flags)
+
+###################################
+# COMPILE AND LINK UTILITY SETINGS
+######
+clflags_all  = $(mode_clflags) $(cl_model_switch)
+
 cl_fpu_flags = $(fpu_flags)
 
+# generic application macros
 clflags_nt_386     = -l=nt
 clflags_nt_axp     = -l=ntaxp
 clflags_win_i86    = -l=windows
@@ -339,6 +378,25 @@ clflags_linux_386  = -l=linux
 clflags_linux_ppc  = -l=linuxppc
 clflags_linux_mps  = -l=linuxmips
 
+# windowed application macros
+clflags_wind_nt_386   = -l=nt_win
+clflags_wind_nt_axp   = -l=ntaxp_win
+clflags_wind_os2_386  = -l=os2v2_pm
+clflags_wind_os2_i86  = -l=os2_pm
+
+# DLL application macros
+!ifdef __UNIX__
+clflags_dll_dos_386  = -l=causeway_dll -\"lib doslfn3r.lib\"
+!else
+clflags_dll_dos_386  = -l=causeway_dll -"lib doslfn3r.lib"
+!endif
+clflags_dll_nt_386   = -l=nt_dll
+clflags_dll_nt_axp   = -l=ntaxp_dll
+clflags_dll_os2_386  = -l=os2v2_dll
+clflags_dll_os2_i86  = -l=os2_dll
+clflags_dll_rdos_386 = -l=rdos_dll
+clflags_dll_win_i86  = -l=windows_dll
+
 clflags_exe_osi_386 = -fe=$^&.rex
 !ifdef clflags_exe_$(host_os)_$(host_cpu)
 clflags_exe = $(clflags_exe_$(host_os)_$(host_cpu))
@@ -346,20 +404,27 @@ clflags_exe = $(clflags_exe_$(host_os)_$(host_cpu))
 clflags_exe = -fe=$@
 !endif
 
-clflags_all      = $(mode_clflags) $(cl_model_switch) $(cl_fpu_flags)
+proj_cl_flags    = $(extra_cl_flags)
+clflags_gen_all  = $(clflags_all) $(cl_fpu_flags) $(cflags_$(host_os)) $(clflags_exe) -fm
 
-proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os)) $(extra_cpp_flags_$(host_os)_$(host_cpu))
-cppflags         = $(cppflags_all) $(cppflags_$(host_cpu)) $(cppflags_$(host_os)) $(proj_cpp_flags)
-proj_c_flags     = $(extra_c_flags) $(extra_c_flags_$(host_cpu)) $(extra_c_flags_$(host_os)) $(extra_c_flags_$(host_os)_$(host_cpu))
-cflags           = $(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_$(host_os)_$(host_cpu)) $(cflags_dll) $(proj_c_flags)
-cxxflags         = $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
-clflags          = $(clflags_all) $(clflags_$(host_os)_$(host_cpu)) $(cflags_$(host_os)) $(extra_cl_flags) $(clflags_exe) -fm
+clflags_gen      = $(clflags_gen_all) $(clflags_$(host_os)_$(host_cpu)) $(proj_cl_flags)
 
-!ifdef __UNIX__
-aflags_all      = -we $(mode_aflags) -fo=.obj
+!ifdef clflags_dll_$(host_os)_$(host_cpu)
+clflags_dll      = $(clflags_gen_all) $(clflags_dll_$(host_os)_$(host_cpu)) $(proj_cl_flags)
 !else
-aflags_all      = -we $(mode_aflags)
+clflags_dll      = $(clflags_gen)
 !endif
+
+!ifdef clflags_wind_$(host_os)_$(host_cpu)
+clflags_wind     = $(clflags_gen_all) $(clflags_wind_$(host_os)_$(host_cpu)) $(proj_cl_flags)
+!else
+clflags_wind     = $(clflags_gen)
+!endif
+
+#####################
+# ASSEMBLERS SETINGS
+######
+aflags_all      = -we $(mode_aflags) -fo=$@
 
 aflags_386      = -3-w8
 aflags_i86      = -w8
@@ -382,56 +447,94 @@ aflags_linux    = -bt=linux
 proj_a_flags     = $(extra_a_flags) $(extra_a_flags_$(host_cpu)) $(extra_a_flags_$(host_os))
 aflags           = $(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(proj_a_flags)
 
-lflags_dos_i86     = sys dos lib doslfn$(memory_model_i86).lib
-lflags_nt_axp      = sys ntaxp
-lflags_nt_386      = sys nt
-lflags_os2_386     = sys os2v2
-lflags_os2_i86     = sys os2 pmc
-lflags_dos_386     = sys dos4g lib doslfn3r.lib
-lflags_zdos_386    = sys zdos
-lflags_rdos_386    = sys rdos
-lflags_rdosdev_386 = sys rdos dev32
-lflags_qnx_386     = sys qnx386 flat
-lflags_qnx_i86     = sys qnx
-lflags_win_386     = sys win386
-lflags_win_i86     = sys windows
-lflags_nov_386     = sys novell
-lflags_osi_386     = sys osi
-lflags_linux_386   = sys linux
-lflags_linux_ppc   = sys linuxppc
-lflags_linux_mps   = sys linuxmips
+#####################
+# LINKER SETINGS
+######
+# generic application macros
+lflags_dos_386      = sys dos4g lib doslfn3r.lib
+lflags_dos_i86      = sys dos lib doslfn$(memory_model_i86).lib
+lflags_linux_386    = sys linux
+lflags_linux_mps    = sys linuxmips
+lflags_linux_ppc    = sys linuxppc
+lflags_nov_386      = sys novell
+lflags_nt_386       = sys nt
+lflags_nt_axp       = sys ntaxp
+lflags_os2_386      = sys os2v2
+lflags_os2_i86      = sys os2 pmc
+lflags_osi_386      = sys osi
+lflags_qnx_386      = sys qnx386 flat
+lflags_qnx_i86      = sys qnx
+lflags_rdos_386     = sys rdos
+lflags_rdosdev_386  = sys rdos dev32
+lflags_win_386      = sys win386
+lflags_win_i86      = sys windows
+lflags_zdos_386     = sys zdos
 
-lflags_dll_dos_386   = sys causeway dll lib doslfn3r.lib
-lflags_dll_rdos_386  = sys rdos dll
-lflags_dll_nt_axp    = sys ntaxp dll
-lflags_dll_nt_386    = sys nt dll
-lflags_dll_os2_386   = sys os2v2 dll
-lflags_dll_os2_i86   = sys os2 dll
-lflags_dll_win_i86   = sys windows dll
+# windowed application macros
+lflags_wind_nt_386   = sys nt_win
+lflags_wind_nt_axp   = sys ntaxp_win
+lflags_wind_os2_386  = sys os2v2_pm
+lflags_wind_os2_i86  = sys os2_pm
 
-!ifdef sys_windowed
-# this is really stupid
-lflags_nt_386   = sys nt_win
-lflags_nt_axp   = sys ntaxp_win
-lflags_os2_386  = sys os2v2_pm
-lflags_os2_i86  = sys os2_pm
+# DLL application macros
+lflags_dll_dos_386  = sys causeway_dll lib doslfn3r.lib
+lflags_dll_nt_386   = sys nt_dll
+lflags_dll_nt_axp   = sys ntaxp_dll
+lflags_dll_os2_386  = sys os2v2_dll
+lflags_dll_os2_i86  = sys os2_dll
+lflags_dll_rdos_386 = sys rdos_dll
+lflags_dll_win_i86  = sys windows_dll
+
+proj_l_flags     = $(extra_l_flags_$(host_os)) $(extra_l_flags)
+proj_l_flags_dll = $(extra_l_flags_dll_$(host_os)) $(extra_l_flags_dll)
+
+lflags_gen       = $(mode_lflags) $(lflags_$(host_os)_$(host_cpu)) $(proj_l_flags)
+
+!ifdef lflags_dll_$(host_os)_$(host_cpu)
+lflags_dll       = $(mode_lflags) $(lflags_dll_$(host_os)_$(host_cpu)) $(proj_l_flags_dll)
+!else
+lflags_dll       = $(mode_lflags) $(lflags_$(host_os)_$(host_cpu)) $(proj_l_flags_dll)
 !endif
-!ifdef sys_dll
-#this is equally bad
-lflags_dos_386  = sys causeway dll lib doslfn3r.lib
-lflags_nt_386   = sys nt_dll
-lflags_nt_axp   = sys ntaxp_dll
-lflags_win_i86  = sys windows_dll
-lflags_os2_386  = sys os2v2 dll
-lflags_os2_i86  = sys os2 dll
+
+!ifdef lflags_wind_$(host_os)_$(host_cpu)
+lflags_wind      = $(mode_lflags) $(lflags_wind_$(host_os)_$(host_cpu)) $(proj_l_flags)
+!else
+lflags_wind      = $(lflags_gen)
 !endif
 
-lflags          = $(mode_lflags) $(lflags_$(host_os)_$(host_cpu)) $(extra_l_flags_$(host_os)) $(extra_l_flags)
-lflags_dll      = $(mode_lflags) $(lflags_dll_$(host_os)_$(host_cpu)) $(extra_l_flags_dll_$(host_os)) $(extra_l_flags_dll)
+#####################
+# LIBRARIAN SETINGS
+######
+libflags_386    = -ii
+libflags_i86    = -ii
+libflags_ppc    = -ip
+libflags_axp    = -ia
+libflags_x64    = -i6
+
+libflags_dos       = -io
+libflags_nov       = -io
+libflags_linux_386 = -io
+libflags_linux_ppc = -ie
+libflags_linux_x64 = -ie
+libflags_nt_386    = -io
+libflags_nt_axp    = -ic
+libflags_nt_ppc    = -ic
+libflags_nt_x64    = -ic
+libflags_os2       = -io
+libflags_qnx       = -io
+libflags_rdos      = -io
+libflags_rdosdev   = -io
+libflags_win       = -io
+libflags_zdos      = -io
+
+proj_lib_flags  = $(extra_lib_flags) $(extra_lib_flags_$(host_cpu))
 
 libflags_all    = -b-n-pa $(mode_libflags)
-libflags        =  $(libflags_all) $(libflags_$(host_os)_$(host_cpu)) $(extra_lib_flags) $(extra_lib_flags_$(host_cpu)) $^@
+libflags        =  $(libflags_all) $(libflags_$(host_cpu)) $(libflags_$(host_os)) $(libflags_$(host_os)_$(host_cpu)) $(proj_lib_flags) $^@
 
+############################
+# RESOURCE COMPILER SETINGS
+######
 rc_cpp_bsd      = -D__UNIX__ -D__BSD__
 rc_cpp_dos      = -D__DOS__
 rc_cpp_linux    = -D__UNIX__ -D__LINUX__
@@ -458,8 +561,13 @@ rc_flags_nt     = -bt=nt $(win32ver)
 rc_flags_win    = -bt=windows
 rc_flags_os2    = -bt=os2
 
-rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
+proj_rc_flags   = $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
+rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(proj_rc_flags)
+
+##############################
+# INCLUDE DIRECTORIES SETINGS
+######
 # For bootstrap builds, include path configuration is compiler specific
 !ifeq bootstrap 1
 
@@ -523,13 +631,16 @@ inc_dirs_lang   = $(inc_dirs_lang_osi)
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
 
 !ifdef __WATCOM__
-inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
+inc_path        = $(inc_dirs_$(host_os)) $(inc_dirs) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 !else
-inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) -I"$(watcom_dir)/h"
+inc_path        = $(inc_dirs_$(host_os)) $(inc_dirs) -I"$(watcom_dir)/h"
 !endif
 
 rc_inc_path     = $(rc_inc_dirs) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 
+##############################
+# GLOBAL MACROS SETINGS
+######
 cc              = $(cc_$(host_cpu))
 cl              = $(cl_$(host_cpu))
 cxx             = $(cxx_$(host_cpu))
@@ -541,7 +652,22 @@ rc              = bwrc
 rcaui           = bwrc
 
 rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
-rc_aui          = $(rcaui) -xb -r -bt=windows $(rc_aui_flags)
+rc_aui          = $(rcaui) -x -xb -r -bt=windows $(rc_aui_flags)
+
+# current project setup
+!ifeq sys_dll 1
+cflags  = $(cflags_dll)
+clflags = $(clflags_dll)
+lflags  = $(lflags_dll)
+!else ifeq sys_windowed 1
+cflags  = $(cflags_wind)
+clflags = $(clflags_wind)
+lflags  = $(lflags_wind)
+!else
+cflags  = $(cflags_gen)
+clflags = $(clflags_gen)
+lflags  = $(lflags_gen)
+!endif
 
 # simple C preprocessing
 cpp             = wcpp
