@@ -312,11 +312,11 @@ static void addToolBarItem( tool_item *item )
     int                 id;
     
     if( item->is_blank ) {
-        info.blank_space = 8;
+        info.u.blank_space = 8;
         info.flags = ITEM_BLANK;
     } else {
         info.id = item->id;
-        info.bmp = item->bmp;
+        info.u.bmp = item->bmp;
         info.flags = 0;
     }
     id = getTip( item->name );
