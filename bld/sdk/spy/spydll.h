@@ -29,11 +29,19 @@
 ****************************************************************************/
 
 
-void CALLBACK SetFilter( LPVOID );
-void CALLBACK ClearFilter( void );
 #ifdef __NT__
     #define SPY_CLASS_NAME  "watspy_NT"
 #else
     #define SPY_CLASS_NAME  "watspy"
 #endif
 
+#ifdef SPYDLL
+#define SPYDLLENTRY __declspec(dllexport)
+#elif defined( __NT__ )
+#define SPYDLLENTRY __declspec(dllimport)
+#else
+#define SPYDLLENTRY
+#endif
+
+SPYDLLENTRY extern void CALLBACK SetFilter( LPVOID );
+SPYDLLENTRY extern void CALLBACK ClearFilter( void );

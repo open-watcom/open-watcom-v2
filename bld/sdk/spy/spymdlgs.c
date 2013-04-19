@@ -44,7 +44,7 @@ static bool     *savedBits;
 /*
  * SpyMsgDialog - process message range dialogs
  */
-BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 {
     int         i, j, k, max;
     static int  which, firstmsg, pages;
@@ -174,7 +174,7 @@ void DoSpyMsgDialog( HWND hwnd, int which )
 /*
  * MessageDialog - process messages required dialog
  */
-BOOL CALLBACK MessageDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam )
+WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam )
 {
     int         i;
     bool        fl;
@@ -329,7 +329,7 @@ static void setMessageName( HWND hwnd, char *str ) {
 /*
  * MessageSelectDialog - a single message item selected
  */
-BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam )
+WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam )
 {
     int         i;
     WORD        id;
@@ -355,7 +355,7 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam
         str[i] = 0;
         strptr = MemAlloc( strlen( str ) + 1 );
         strcpy( strptr, str );
-        SetWindowLong( hwnd, DWL_USER, (DWORD)strptr );
+        SET_DLGDATA( hwnd, (LONG_PTR)strptr );
         setMessageName( hwnd, str );
         str[SPYOUT_MSG + SPYOUT_MSG_LEN] = 0;
         id = strtol( &str[SPYOUT_MSG], &endptr, 16 );
@@ -396,7 +396,7 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam
         cmdid = LOWORD( wparam );
         switch( cmdid ) {
         case MSGSEL_HELP:
-            strptr = (char *)GetWindowLong( hwnd, DWL_USER );
+            strptr = (char *)GET_DLGDATA( hwnd );
 #ifdef __NT__
             WWinHelp( hwnd, "win32sdk.hlp", HELP_KEY, (LPARAM)strptr );
 #else
@@ -457,7 +457,7 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam
         EndDialog( hwnd, 0 );
         break;
     case WM_DESTROY:
-        strptr = (char *)GetWindowLong( hwnd, DWL_USER );
+        strptr = (char *)GET_DLGDATA( hwnd );
         MemFree( strptr );
         break;
     default:
@@ -479,7 +479,7 @@ void DoMessageSelDialog( HWND hwnd )
         return;
     }
     fp = MakeProcInstance( (FARPROC)MessageSelectDialog, Instance );
-    JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, (LPVOID)fp, (DWORD)(LPSTR)str );
+    JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, (LPVOID)fp, (LPARAM)(LPSTR)str );
     FreeProcInstance( fp );
 
 } /* DoMessageSelDialog */

@@ -34,7 +34,9 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+#ifdef __WATCOMC__
 extern WORD _STACKLOW;
+#endif
 
 /*
  * spyInit - initialization
@@ -54,7 +56,9 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         return( FALSE );
     }
     SpyMenu = LoadMenu( ResInstance, "SPYMENU" );
+#ifdef __WATCOMC__
     _STACKLOW = 0;
+#endif
     MemStart();
 
     HandleMessageInst = MakeProcInstance( (FARPROC) HandleMessage, Instance );
@@ -68,7 +72,7 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.style = 0L;
         wc.lpfnWndProc = (LPVOID)SpyWindowProc;
         wc.cbClsExtra = 0;
-        wc.cbWndExtra = sizeof( DWORD );
+        wc.cbWndExtra = sizeof( LONG_PTR );
         wc.hInstance = Instance;
         wc.hIcon = LoadIcon( ResInstance, "APPLICON" );
         wc.hCursor = LoadCursor( (HANDLE)NULL, IDC_ARROW);

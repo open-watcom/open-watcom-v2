@@ -36,6 +36,7 @@
 #include "mark.h"
 #include "aboutdlg.h"
 #include "wwinhelp.h"
+#include "wi163264.h"
 
 static BOOL     spyAll;
 static WORD     statusHite = 25;
@@ -178,8 +179,7 @@ static void doSpyAll( HWND hwnd, BOOL state ) {
     char        tmp[32];
 
     if( !state ) {
-        SendMessage( hwnd, WM_COMMAND,
-                     GET_WM_COMMAND_MPS( SPY_STOP, 0, 0 ) );
+        SendMessage( hwnd, WM_COMMAND, GET_WM_COMMAND_MPS( SPY_STOP, 0, 0 ) );
     }  else {
         spyAll = state;
         EnableMenuItem( SpyMenu, SPY_STOP, MF_ENABLED );
@@ -220,7 +220,7 @@ void markCallback( char *res )
 /*
  * SpyWindowProc - handle messages for the spy appl.
  */
-LONG CALLBACK SpyWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         check;
     HWND        selwin;
@@ -248,7 +248,7 @@ LONG CALLBACK SpyWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             ShowWindow( hinthwnd, SW_HIDE );
         }
         CreateSpyBox( hwnd );
-        SetWindowLong( hwnd, 0, (DWORD)SpyListBox );
+        SET_WNDINFO( hwnd, (LONG_PTR)SpyListBox );
         CreateSpyTool( hwnd );
         ShowSpyTool( SpyMainWndInfo.show_toolbar );
         if( SpyMainWndInfo.show_toolbar ) {
@@ -418,8 +418,8 @@ LONG CALLBACK SpyWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             }
             break;
         case SPY_HELP_SRCH:
-            if( !WHtmlHelp( hwnd, "spy.chm", HELP_PARTIALKEY, (DWORD)"" ) ) {
-                WWinHelp( hwnd, "spy.hlp", HELP_PARTIALKEY, (DWORD)"" );
+            if( !WHtmlHelp( hwnd, "spy.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+                WWinHelp( hwnd, "spy.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
             }
             break;
         case SPY_HELP_ON_HELP:

@@ -210,85 +210,85 @@ extern unsigned         TotalMessageArraySize;
  */
 
 /* spybox.c */
-void SpyOut( char *msg, LPMSG pmsg );
-void CreateSpyBox( HWND );
-void ClearSpyBox( void );
-void SpyMessagePauseToggle( void );
-void ResizeSpyBox( WORD width, WORD height );
-void SaveSpyBox( void );
-void ResetSpyListBox( void );
-BOOL GetSpyBoxSelection( char *str );
+extern void SpyOut( char *msg, LPMSG pmsg );
+extern void CreateSpyBox( HWND );
+extern void ClearSpyBox( void );
+extern void SpyMessagePauseToggle( void );
+extern void ResizeSpyBox( WORD width, WORD height );
+extern void SaveSpyBox( void );
+extern void ResetSpyListBox( void );
+extern BOOL GetSpyBoxSelection( char *str );
 
 /* spycfg.c */
-void LoadSpyConfig( char *fname );
-void SaveSpyConfig( char *fname );
-void DoSaveSpyConfig( void );
-void DoLoadSpyConfig( void );
+extern void LoadSpyConfig( char *fname );
+extern void SaveSpyConfig( char *fname );
+extern void DoSaveSpyConfig( void );
+extern void DoLoadSpyConfig( void );
 
 /* spyfilt.c */
-void CALLBACK HandleMessage( LPMSG pmsg );
+extern void FAR HandleMessage( LPMSG pmsg );
 
 /* spymdlgs.c */
-void DoMessageDialog( HWND hwnd, WORD wparam );
-void DoMessageSelDialog( HWND hwnd );
+extern void DoMessageDialog( HWND hwnd, WORD wparam );
+extern void DoMessageSelDialog( HWND hwnd );
 
 /* spymisc.c */
-void GetHexStr( LPSTR res, DWORD num, int padlen );
-BOOL IsMyWindow( HWND hwnd );
-void GetWindowName( HWND hwnd, char *str );
-void GetClassStyleString( HWND hwnd, char *str, char *sstr );
-void GetWindowStyleString( HWND hwnd, char *str, char *sstr );
-void DumpToComboBox( char *str, HWND cb );
-void FormatSpyMessage( char *msg, LPMSG pmsg, char *res );
-void SetSpyState( spystate ss );
-BOOL GetFileName( char *ext, int type, char *fname );
-BOOL InitGblStrings( void );
+extern void GetHexStr( LPSTR res, DWORD num, int padlen );
+extern BOOL IsMyWindow( HWND hwnd );
+extern void GetWindowName( HWND hwnd, char *str );
+extern void GetClassStyleString( HWND hwnd, char *str, char *sstr );
+extern void GetWindowStyleString( HWND hwnd, char *str, char *sstr );
+extern void DumpToComboBox( char *str, HWND cb );
+extern void FormatSpyMessage( char *msg, LPMSG pmsg, char *res );
+extern void SetSpyState( spystate ss );
+extern BOOL GetFileName( char *ext, int type, char *fname );
+extern BOOL InitGblStrings( void );
 
 /* spymsgs.c */
-message *GetMessageDataFromID( int msgid, char *class_name );
-void ProcessIncomingMessage( int msgid, char *class_name, char *res );
-LPSTR GetMessageStructAddr( int msgid );
-void InitMessages( void );
-void SetFilterMsgs( MsgClass type, bool val, int bit );
-bool *SaveBitState( int x );
-void RestoreBitState( bool *data, int x );
-void ClearMessageCount( void );
-bool *CloneBitState( bool *old );
-void FreeBitState( bool *data );
-void CopyBitState( bool *dst, bool *src );
-void SetFilterSaveBitsMsgs( MsgClass type, bool val, bool *bits );
+extern message *GetMessageDataFromID( int msgid, char *class_name );
+extern void ProcessIncomingMessage( int msgid, char *class_name, char *res );
+extern LPSTR GetMessageStructAddr( int msgid );
+extern void InitMessages( void );
+extern void SetFilterMsgs( MsgClass type, bool val, int bit );
+extern bool *SaveBitState( int x );
+extern void RestoreBitState( bool *data, int x );
+extern void ClearMessageCount( void );
+extern bool *CloneBitState( bool *old );
+extern void FreeBitState( bool *data );
+extern void CopyBitState( bool *dst, bool *src );
+extern void SetFilterSaveBitsMsgs( MsgClass type, bool val, bool *bits );
 
 /* spypick.c */
-void FrameAWindow( HWND hwnd );
-void UpdateFramedInfo( HWND dlg, HWND framedhwnd, BOOL ispick  );
-HWND DoPickDialog( WORD );
+extern void FrameAWindow( HWND hwnd );
+extern void UpdateFramedInfo( HWND dlg, HWND framedhwnd, BOOL ispick  );
+extern HWND DoPickDialog( WORD );
 
 /* spyproc.c */
-LONG CALLBACK SpyWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam );
-void SetSpyState( spystate ss );
+WINEXPORT extern LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+extern void SetSpyState( spystate ss );
 
 /* spysel.c */
-void ClearSelectedWindows( void );
-void AddSelectedWindow( HWND hwnd );
-void DoShowSelectedDialog( HWND hwnd, BOOL *spyall );
-void ShowFramedInfo( HWND hwnd, HWND framed );
+extern void ClearSelectedWindows( void );
+extern void AddSelectedWindow( HWND hwnd );
+extern void DoShowSelectedDialog( HWND hwnd, BOOL *spyall );
+extern void ShowFramedInfo( HWND hwnd, HWND framed );
 
 /* spytool.c */
-void CreateSpyTool( HWND parent );
-void DestroySpyTool( void );
-void SetOnOffTool( spystate ss );
-void ResizeSpyTool( WORD width, WORD height );
-void ShowSpyTool( BOOL show );
-void GetSpyToolRect( RECT *prect );
+extern void CreateSpyTool( HWND parent );
+extern void DestroySpyTool( void );
+extern void SetOnOffTool( spystate ss );
+extern void ResizeSpyTool( WORD width, WORD height );
+extern void ShowSpyTool( BOOL show );
+extern void GetSpyToolRect( RECT *prect );
 
 /* spylog.c */
-void SpyLogTitle( int f );
+extern void SpyLogTitle( int f );
 
 /* spy.c */
-void SpyFini( void );
+extern void SpyFini( void );
 
 /* spyzord.c */
-HWND GetHwndFromPt( POINT *pt );
-void IdentifyWindows( HWND toplevel, HWND topmost );
-void RemoveWindow( HWND hwnd );
+extern HWND GetHwndFromPt( POINT *pt );
+extern void IdentifyWindows( HWND toplevel, HWND topmost );
+extern void RemoveWindow( HWND hwnd );
 

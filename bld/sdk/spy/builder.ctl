@@ -14,12 +14,15 @@ set PROJNAME=wspy
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> wini86/wspy.exe    <OWRELROOT>/binw/wspy.exe
-    <CCCMD> wini86/wspyhk.dll  <OWRELROOT>/binw/wspyhk.dll
-    <CCCMD> nt386/wspy.exe     <OWRELROOT>/binnt/wspy.exe
-    <CCCMD> nt386/ntspyhk.dll  <OWRELROOT>/binnt/ntspyhk.dll
-    <CCCMD> ntaxp/wspy.exe     <OWRELROOT>/axpnt/wspy.exe
-    <CCCMD> ntaxp/ntspyhk.dll  <OWRELROOT>/axpnt/ntspyhk.dll
+    <CCCMD> wini86/wspy.exe    <OWRELROOT>/binw/
+    <CCCMD> wini86/wspyhk.dll  <OWRELROOT>/binw/
+    <CCCMD> nt386/wspy.exe     <OWRELROOT>/binnt/
+    <CCCMD> nt386/ntspyhk.dll  <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/wspy.exe     <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/ntspyhk.dll  <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/wspy.exe     <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/ntspyhk.dll  <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

@@ -358,7 +358,7 @@ BOOL GetSpyBoxSelection( char *str )
         if( sel == (WORD)LB_ERR ) {
             return( FALSE );
         }
-        SendMessage( SpyListBox, LB_GETTEXT, sel, (DWORD)(LPSTR)str );
+        SendMessage( SpyListBox, LB_GETTEXT, sel, (LPARAM)(LPSTR)str );
         return( TRUE );
 #ifdef __NT__
     } else {

@@ -67,7 +67,7 @@ static void addToolButton( button *tb )
     TOOLITEMINFO        info;
 
     tb->hbmp = LoadBitmap( Instance, tb->name );
-    info.bmp = tb->hbmp;
+    info.u.bmp = tb->hbmp;
     info.id = tb->id;
     info.flags = 0;
     info.depressed = 0;
@@ -83,7 +83,7 @@ static void addToolButton( button *tb )
 /*
  * MyToolBarProc - called by toolbar window proc
  */
-BOOL MyToolBarProc( HWND hwnd, unsigned msg, UINT w, LONG l )
+BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     hwnd = hwnd;
     msg = msg;
@@ -97,10 +97,10 @@ BOOL MyToolBarProc( HWND hwnd, unsigned msg, UINT w, LONG l )
 /*
  * spyToolBarHint
  */
-static void spyToolBarHint( HWND hwnd, UINT menuid, BOOL select ) {
+static void spyToolBarHint( HWND hwnd, WPARAM menuid, BOOL select ) {
 
     hwnd = hwnd;
-    HintToolBar( StatusHdl, menuid, select );
+    HintToolBar( StatusHdl, (UINT)menuid, select );
 }
 
 /*

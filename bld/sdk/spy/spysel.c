@@ -29,11 +29,12 @@
 ****************************************************************************/
 
 
-#include "spy.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "spy.h"
+#include "clibext.h"
 
 static HWND     *tmpWndList;
 static WORD     tmpWndCnt;
@@ -107,7 +108,7 @@ static HWND     hWndDialog;
 /*
  * EnumWindowsFunc - enumerate all windows
  */
-BOOL CALLBACK EnumWindowsFunc( HWND hwnd, DWORD lparam )
+BOOL CALLBACK EnumWindowsFunc( HWND hwnd, LPARAM lparam )
 {
     FARPROC     fp;
 
@@ -120,7 +121,7 @@ BOOL CALLBACK EnumWindowsFunc( HWND hwnd, DWORD lparam )
 
     indentLevel += 3;
     fp = MakeProcInstance( (FARPROC)EnumWindowsFunc, Instance );
-    EnumChildWindows( hwnd, (LPVOID)fp, (DWORD)hwnd );
+    EnumChildWindows( hwnd, (LPVOID)fp, (LPARAM)hwnd );
     FreeProcInstance( fp );
     indentLevel -= 3;
     return( 1 );
@@ -159,10 +160,8 @@ static void addFormattedWindow( HWND hwnd )
             }
         }
     }
-    snprintf( res, sizeof( res ), "%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)hwnd,
-              tmp, name );
-    SendDlgItemMessage( (HWND)hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0,
-                        (LONG)(LPSTR)res );
+    snprintf( res, sizeof( res ), "%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)hwnd, tmp, name );
+    SendDlgItemMessage( (HWND)hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPSTR)res );
 
 } /* addFormattedWindow */
 
@@ -176,7 +175,7 @@ static void setUpWindows( void )
     indentLevel = 0;
     SendDlgItemMessage( hWndDialog, SELWIN_LISTBOX, LB_RESETCONTENT, 0, 0L );
     fp = MakeProcInstance( (FARPROC)EnumWindowsFunc, Instance);
-    EnumWindows( (LPVOID)fp, (DWORD)NULL );
+    EnumWindows( (LPVOID)fp, (LPARAM)NULL );
     FreeProcInstance( fp );
     addFormattedWindow( GetDesktopWindow() );
 
@@ -186,7 +185,7 @@ static void setUpWindows( void )
 /*
  * ShowInfoProc - show info for framed window dialog
  */
-BOOL CALLBACK ShowInfoProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -221,7 +220,7 @@ void ShowFramedInfo( HWND hwnd, HWND framed )
     DLGPROC     fp;
 
     fp = (DLGPROC)MakeProcInstance( (FARPROC)ShowInfoProc, Instance );
-    JDialogBoxParam( Instance, "PEEKWIN", (HWND)hwnd, (LPVOID)fp, (DWORD)framed );
+    JDialogBoxParam( Instance, "PEEKWIN", (HWND)hwnd, (LPVOID)fp, (LPARAM)framed );
     FreeProcInstance( (FARPROC)fp );
 
 } /* ShowFramedInfo */
@@ -229,7 +228,7 @@ void ShowFramedInfo( HWND hwnd, HWND framed )
 /*
  * ShowSelectedDialog - show all selected windows
  */
-BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        resdata[256], ch;
     char        *errstr;

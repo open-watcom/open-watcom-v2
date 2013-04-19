@@ -38,19 +38,22 @@
 
 typedef struct
 {
-    DWORD       lParam;
-    UINT        wParam;
+    LPARAM      lParam;
+    WPARAM      wParam;
     UINT        wMsg;
     HWND        hWnd;
 } callstruct;
-typedef callstruct __FAR *LPCALLMSG;
+typedef callstruct FAR *LPCALLMSG;
+
+SPYDLLENTRY LRESULT CALLBACK CallWndProcFilter( int ncode, WPARAM wparam, LPARAM lparam );
+SPYDLLENTRY LRESULT CALLBACK GetMessageFilter( int ncode, WPARAM wparam, LPARAM lparam );
 
 static HHOOK            callHookHandle, getHookHandle;
 static BOOL             isFiltering = FALSE;
 static HINSTANCE        dllInstance;
 
 #ifndef __NT__
-void (WINAPI *HandleMessage)( LPMSG pmsg );
+void (FAR *HandleMessage)( LPMSG pmsg );
 #else
 static HWND             spyHwnd;
 static HWND             spyLBHwnd;
@@ -61,7 +64,7 @@ static HWND             spyLBHwnd;
 static void findSpyHwnd( void )
 {
     spyHwnd = FindWindow( SPY_CLASS_NAME, NULL );
-    spyLBHwnd = (HWND)GetWindowLong( spyHwnd, 0 );
+    spyLBHwnd = (HWND)GET_WNDINFO( spyHwnd );
 }
 
 /*
@@ -77,11 +80,11 @@ static void HandleMessage( MSG *data )
     if( data->hwnd != spyHwnd && data->hwnd != spyLBHwnd ) {
         info.cbData = sizeof( MSG );
         info.lpData = data;
-        SendMessage( spyHwnd, WM_COPYDATA, 0, (DWORD)&info );
+        SendMessage( spyHwnd, WM_COPYDATA, 0, (LPARAM)&info );
     }
 }
 
-BOOL WINAPI LibMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
+BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
 {
     reason = reason;
     ptr = ptr;
@@ -111,6 +114,7 @@ int WINAPI WEP( int res )
 
     return( 1 );
 }
+
 #endif
 
 /*
@@ -157,10 +161,8 @@ void CALLBACK SetFilter( LPVOID hdlmsg )
 #endif
 
     if( !isFiltering ) {
-        callHookHandle = SetWindowsHookEx( WH_CALLWNDPROC, CallWndProcFilter, dllInstance,
-                                           /*(HTASK)*/ 0 );
-        getHookHandle = SetWindowsHookEx( WH_GETMESSAGE, GetMessageFilter, dllInstance,
-                                          /*(HTASK)*/ 0 );
+        callHookHandle = SetWindowsHookEx( WH_CALLWNDPROC, CallWndProcFilter, dllInstance, /*(HTASK)*/ 0 );
+        getHookHandle = SetWindowsHookEx( WH_GETMESSAGE, GetMessageFilter, dllInstance, /*(HTASK)*/ 0 );
         isFiltering = TRUE;
     }
 
@@ -178,4 +180,3 @@ void CALLBACK ClearFilter( void )
     }
 
 } /* ClearFilter */
-
