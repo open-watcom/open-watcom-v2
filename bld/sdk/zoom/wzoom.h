@@ -98,21 +98,17 @@ extern ZoomConfigInfo   ConfigInfo;
 extern char             *AppName;
 
 /* zmproc.c */
-BOOL __export FAR PASCAL ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
-                                    LPARAM lparam );
-BOOL __export FAR PASCAL ZOOMFloatWndProc( HWND hwnd, UINT msg, WPARAM wparam,
-                                    LPARAM lparam );
-void DoAutoRefresh( HWND mainhwnd, BOOL on );
+WINEXPORT extern LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+extern void DoAutoRefresh( HWND mainhwnd, BOOL on );
 
 /* zmscreen.c */
-ScreenBitmap *InitScreenBitmap( HWND display );
-void GetScreen( ScreenBitmap *info, POINT *pos, POINT *size, BOOL trim );
-void DrawScreen( ScreenBitmap *info, HDC dc, POINT *dstpos, POINT *dstsize,
-                POINT *srcpos, POINT *srcsize );
-void CopyToClipBoard( MainWndInfo *info );
-void FiniScreenBitmap( ScreenBitmap *info );
+extern ScreenBitmap *InitScreenBitmap( HWND display );
+extern void GetScreen( ScreenBitmap *info, POINT *pos, POINT *size, BOOL trim );
+extern void DrawScreen( ScreenBitmap *info, HDC dc, POINT *dstpos, POINT *dstsize, POINT *srcpos, POINT *srcsize );
+extern void CopyToClipBoard( MainWndInfo *info );
+extern void FiniScreenBitmap( ScreenBitmap *info );
 
 /* zmconfig.c */
-void LoadConfig( void );
-void SaveConfig( void );
-void DoConfig( HWND hwnd );
+extern void LoadConfig( void );
+extern void SaveConfig( void );
+extern void DoConfig( HWND hwnd );

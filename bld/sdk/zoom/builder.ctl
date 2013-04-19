@@ -14,9 +14,11 @@ set PROJNAME=wzoom
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> wini86/wzoom.exe <OWRELROOT>/binw/wzoom.exe
-    <CCCMD> nt386/wzoom.exe  <OWRELROOT>/binnt/wzoom.exe
-    <CCCMD> ntaxp/wzoom.exe  <OWRELROOT>/axpnt/wzoom.exe
+    <CCCMD> wini86/wzoom.exe <OWRELROOT>/binw/
+    <CCCMD> nt386/wzoom.exe  <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/wzoom.exe  <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/wzoom.exe  <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

@@ -342,7 +342,7 @@ static void DoMagnify( HWND hwnd, MainWndInfo *info ) {
  *               message
  */
 
-static void DoMouseMove( MainWndInfo *info, DWORD lparam ) {
+static void DoMouseMove( MainWndInfo *info, LPARAM lparam ) {
 
     int                 xpos;
     int                 ypos;
@@ -432,8 +432,7 @@ static void displayAbout( HWND hwnd ) {
     FreeRCString( (char *)ai.title );
 }
 
-BOOL __export FAR PASCAL ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
-                                    LPARAM lparam )
+LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     MainWndInfo         *info;
     HDC                 dc;
@@ -446,7 +445,7 @@ BOOL __export FAR PASCAL ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
     WORD                flags;
 
 
-    info = (MainWndInfo *)GetWindowLong( hwnd, 0 );
+    info = (MainWndInfo *)GET_WNDINFO( hwnd );
     switch( msg ) {
     case WM_CREATE:
         info = (MainWndInfo *)( ( (CREATESTRUCT *)lparam )->lpCreateParams );
@@ -464,12 +463,11 @@ BOOL __export FAR PASCAL ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
         }
         CreateScrollBars( hwnd, info );
         PositionWidgets( hwnd, info );
-        SetWindowLong( hwnd, 0, (DWORD)info );
+        SET_WNDINFO( hwnd, (LONG_PTR)info );
         break;
     case WM_PAINT:
         BeginPaint( hwnd, &paintinfo );
-        DrawScreen( info->screen, paintinfo.hdc, &Origin, &info->wndsize,
-                    &Origin, &info->magsize );
+        DrawScreen( info->screen, paintinfo.hdc, &Origin, &info->wndsize, &Origin, &info->magsize );
         EndPaint( hwnd, &paintinfo );
         break;
     case WM_SIZE:
@@ -478,8 +476,7 @@ BOOL __export FAR PASCAL ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
         GetDisplaySize( hwnd, info );
         CheckMagnifierPos( info );
         GetScreen( info->screen, &info->magpos, &info->magsize, FALSE );
-        DrawScreen( info->screen, NULL, &Origin, &info->wndsize,
-                        &Origin, &info->magsize );
+        DrawScreen( info->screen, NULL, &Origin, &info->wndsize, &Origin, &info->magsize );
         break;
     case WM_HSCROLL:
     case WM_VSCROLL:

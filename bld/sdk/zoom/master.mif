@@ -25,7 +25,7 @@ extra_l_flags_win = op stack=7k, heapsize=2k
 
 xlibs = $(commonui_lib)
 
-inc_dirs = -I.. $(commonui_inc_dirs)
+inc_dirs = -I. -I.. $(commonui_inc_dirs)
 
 .c: ..
 .h: ..
@@ -52,10 +52,12 @@ rcstr.gh : rcstrmsg.gh
 rcstrmsg.gh : ../wzoom.msg
         $(cpp) $(rc_aui_flags) $(inc_path) $[@ >$^@
 
+rc_inc_dirs = $(inc_dirs)
+
 $(name).res : ../wzoom.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 -I"../res" $(inc_path) $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad -zk0 -I"../res" $(rc_inc_path) $[@ -fo=$^@
 
 $(name)j.res : ../wzoom.rc .AUTODEPEND
-        $(rc) $(rc_flags) -ad -zk0 -I"../res/kanji" $(inc_path) -DJAPANESE $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad -zk0 -I"../res/kanji" $(rc_inc_path) -DJAPANESE $[@ -fo=$^@
 
 !include verrc.mif

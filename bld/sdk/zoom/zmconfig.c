@@ -82,7 +82,7 @@ static BOOL ParseNumeric( char *buf, BOOL signed_val, DWORD *val ) {
 /*
  * ConfigDlgProc
  */
-BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+WINEXPORT BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     HWND                ctl;
@@ -91,11 +91,11 @@ BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
     ConfigDlgInfo       *info;
 
     lparam = lparam;
-    info = (ConfigDlgInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (ConfigDlgInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         info = MemAlloc( sizeof( ConfigDlgInfo ) );
-        SetWindowLong( hwnd, DWL_USER, (DWORD)info );
+        SET_DLGDATA( hwnd, (LONG_PTR)info );
 #ifdef __NT__
         ctl = GetDlgItem( hwnd, CFG_STICKY );
         ShowWindow( ctl, SW_HIDE );
