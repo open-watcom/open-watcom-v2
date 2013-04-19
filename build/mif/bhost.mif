@@ -15,7 +15,11 @@ bld_inc_dirs_sys  = $(bld_inc_dirs_lang) $(inc_dirs_sys_$(bld_os))
 
 bld_incs        = $(bld_extra_incs) $(bld_inc_dirs_sys) -I"$(watcom_dir)/h"
 
+!ifeq release 0
+bld_gen_cflags  = -d2 -w8 -fo=.obj
+!else
 bld_gen_cflags  = -ox -w8 -fo=.obj
+!endif
 
 # options for source compilations
 bld_cflags      = $(bld_gen_cflags)
