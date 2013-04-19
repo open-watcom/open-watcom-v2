@@ -54,8 +54,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WRERibbonHook( HWND, UINT, WPARAM, LPARAM );
-extern void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
+BOOL WRERibbonHook( HWND, UINT, WPARAM, LPARAM );
+void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -106,14 +106,14 @@ Bool WREInitRibbon( HINSTANCE inst )
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
         if( WRERibbonNames[i].up ) {
-            WRERibbonInfo->items[i].bmp = LoadBitmap( inst, WRERibbonNames[i].up );
+            WRERibbonInfo->items[i].u.bmp = LoadBitmap( inst, WRERibbonNames[i].up );
             WRERibbonInfo->items[i].id = WRERibbonNames[i].menu_id;
             WRERibbonInfo->items[i].flags = ITEM_DOWNBMP;
             if( WRERibbonNames[i].down ) {
                 WRERibbonInfo->items[i].depressed =
                     LoadBitmap( inst, WRERibbonNames[i].down );
             } else {
-                WRERibbonInfo->items[i].depressed = WRERibbonInfo->items[i].bmp;
+                WRERibbonInfo->items[i].depressed = WRERibbonInfo->items[i].u.bmp;
             }
             if( WRERibbonNames[i].tip_id >= 0 ) {
                 LoadString( inst, WRERibbonNames[i].tip_id, WRERibbonInfo->items[i].tip,
@@ -123,7 +123,7 @@ Bool WREInitRibbon( HINSTANCE inst )
             }
         } else {
             WRERibbonInfo->items[i].flags = ITEM_BLANK;
-            WRERibbonInfo->items[i].blank_space = WRERibbonNames[i].menu_id;
+            WRERibbonInfo->items[i].u.blank_space = WRERibbonNames[i].menu_id;
         }
     }
 
@@ -154,11 +154,11 @@ void WREShutdownRibbon( void )
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
         if( WRERibbonInfo->items[i].flags != ITEM_BLANK ) {
-            if( WRERibbonInfo->items[i].bmp == WRERibbonInfo->items[i].depressed ) {
+            if( WRERibbonInfo->items[i].u.bmp == WRERibbonInfo->items[i].depressed ) {
                 WRERibbonInfo->items[i].depressed = (HBITMAP)NULL;
             }
-            if( WRERibbonInfo->items[i].bmp != NULL ) {
-                DeleteObject( WRERibbonInfo->items[i].bmp );
+            if( WRERibbonInfo->items[i].u.bmp != NULL ) {
+                DeleteObject( WRERibbonInfo->items[i].u.bmp );
             }
             if( WRERibbonInfo->items[i].depressed != NULL ) {
                 DeleteObject( WRERibbonInfo->items[i].depressed );

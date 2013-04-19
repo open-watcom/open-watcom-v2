@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "watcom.h"
 #include "wmenu.h"
 
 #include "wreglbl.h"

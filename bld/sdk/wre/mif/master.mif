@@ -20,11 +20,6 @@ WINDOWS = 1
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 
-# path names used in the script
-wacc_dir        = $(wresedit_dir)/waccel
-wmenu_dir       = $(wresedit_dir)/wmenu
-wstring_dir     = $(wresedit_dir)/wstring
-
 !ifeq wre_trmem 1
 TRMEM           = -DTRMEM
 !ifneq host_CPU axp
@@ -61,14 +56,13 @@ objs += trmem.tbj trmemcvr.tbj
 # where to look for various files
 .c         : ../c;$(cpp_dir);$(trmem_dir)
 
-inc_dirs  = -Ih -I"../h" -I"$(wstring_dir)/h" -I"$(wmenu_dir)/h" -I"$(wacc_dir)/h"
-inc_dirs += -I"$(wr_dir)/h" -I"$(trmem_dir)" -I"$(wres_dir)/h" -I"$(cpp_dir)"
+inc_dirs  = -I. -I"../h" -I"$(wresedit_dir)/h" -I"$(wr_dir)/h"
+inc_dirs += -I"$(trmem_dir)" -I"$(wres_dir)/h" -I"$(cpp_dir)"
 inc_dirs += -I"$(sdk_misc_dir)" $(commonui_inc_dirs) $(wpi_inc_dirs)
 
-
-xlibs = $(commonui_lib) $(wacc_dir)/$(host_os)$(host_cpu)/wacc.lib &
-        $(wmenu_dir)/$(host_os)$(host_cpu)/wmenu.lib &
-        $(wstring_dir)/$(host_os)$(host_cpu)/wstring.lib &
+xlibs = $(commonui_lib) $(wresedit_dir)/waccel/$(host_os)$(host_cpu)/wacc.lib &
+        $(wresedit_dir)/wmenu/$(host_os)$(host_cpu)/wmenu.lib &
+        $(wresedit_dir)/wstring/$(host_os)$(host_cpu)/wstring.lib &
         $(wr_dir)/$(host_os)$(host_cpu)/wr.lib &
         $(wres_lib) $(wpi_lib)
 

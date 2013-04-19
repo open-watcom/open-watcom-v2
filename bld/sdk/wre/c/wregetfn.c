@@ -48,7 +48,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern UINT WINEXPORT WREOpenHookProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT UINT CALLBACK WREOpenHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -305,7 +305,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
     return( WREStrDup( wre_file_name ) );
 }
 
-UINT WINEXPORT WREOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT CALLBACK WREOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *title;
 

@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <string.h>
 #include <limits.h>
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wrestat.h"
 #include "wremain.h"
@@ -53,7 +54,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WREToolBarHook( HWND, UINT, WPARAM, LPARAM );
+BOOL WREToolBarHook( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */

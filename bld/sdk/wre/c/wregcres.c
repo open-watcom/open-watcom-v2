@@ -36,6 +36,7 @@
 #include <io.h>
 #include <limits.h>
 
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wreres.h"
 #include "wremem.h"

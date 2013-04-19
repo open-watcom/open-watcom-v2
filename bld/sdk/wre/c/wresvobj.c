@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <ddeml.h>
 
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wremsg.h"
 #include "rcstr.gh"

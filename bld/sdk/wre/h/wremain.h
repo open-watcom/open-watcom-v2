@@ -51,8 +51,9 @@ extern HWND             WREGetMDIWindowHandle( void );
 extern HMENU            WREGetMenuHandle( void );
 extern void             WREEnableMenus( Bool enable );
 extern void             WREResizeWindows( void );
-extern void CALLBACK    WREHelpRoutine( void );
-extern void CALLBACK    WREHelpSearchRoutine( void );
-extern void CALLBACK    WREHelpOnHelpRoutine( void );
+extern void             WREHelpSearchRoutine( void );
+extern void             WREHelpOnHelpRoutine( void );
+
+WINEXPORT extern void CALLBACK WREHelpRoutine( void );
 
 #endif

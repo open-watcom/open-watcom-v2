@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <stdlib.h>
 
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wremem.h"
 #include "wreseted.h"
@@ -70,7 +71,7 @@ Bool WRESetEditWithStr( HWND edit, char *str )
     Bool    ok;
 
     if( ok = ((edit != (HWND)NULL) && str) ) {
-        SendMessage( edit, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
+        SendMessage( edit, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
     }
 
     return( ok );
@@ -84,12 +85,12 @@ Bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
     ok = ((lbox != (HWND)NULL) && str);
 
     if( ok ) {
-        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
         ok = (index != LB_ERR && index != LB_ERRSPACE);
     }
 
     if( ok ) {
-        SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)data );
+        SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)(LPVOID)data );
         ok = (index != LB_ERR);
     }
 
@@ -140,7 +141,7 @@ char *WREGetStrFromEdit( HWND edit, Bool *mod )
         return( NULL );
     }
 
-    text_copied = SendMessage( edit, WM_GETTEXT, text_length + 1, (LPARAM)cp );
+    text_copied = SendMessage( edit, WM_GETTEXT, text_length + 1, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
         WREMemFree( cp );

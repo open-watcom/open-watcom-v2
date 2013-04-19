@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <stdio.h>
 #include <string.h>
+#include "watcom.h"
 #include "wrdll.h"
 #include "wreglbl.h"
 #include "wretoolb.h"
@@ -404,14 +405,14 @@ void WRESetTotalText( WREResInfo *info )
     }
 
     if( count == 0 ) {
-        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)WRETotalTextNone );
+        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)WRETotalTextNone );
     } else if( count == 1 ) {
-        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)WRETotalTextOne );
+        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)WRETotalTextOne );
     } else {
         buf = WREMemAlloc( strlen( WRETotalText ) + 20 + 1 );
         if( buf != NULL ) {
             sprintf( buf, WRETotalText, count );
-            SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)buf );
+            SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)buf );
             WREMemFree( buf );
         }
     }

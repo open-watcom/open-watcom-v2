@@ -57,7 +57,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WREStatusWndProc( HWND, unsigned, UINT, LONG );
+BOOL WREStatusHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -144,7 +144,7 @@ Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     WREStatusDepth = tm.tmHeight + STATUS_LINE_PAD + VERT_BORDER * 2;
     rect.top = rect.bottom - WREStatusDepth;
 
-    StatusWndInit( inst, WREStatusWndProc, 0, (HCURSOR)NULL );
+    StatusWndInit( inst, WREStatusHookProc, 0, (HCURSOR)NULL );
     WREStatusBar = StatusWndStart();
 
     sbd.separator_width = STATUS_LINE_PAD;
@@ -285,7 +285,7 @@ Bool WREDisplayStatusText( char *str )
     return( TRUE );
 }
 
-BOOL WREStatusWndProc( HWND hWnd, unsigned msg, UINT wParam, LONG lParam )
+BOOL WREStatusHookProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     /* touch unused vars to get rid of warning */
     _wre_touch( hWnd );

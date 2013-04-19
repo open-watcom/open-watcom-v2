@@ -31,6 +31,7 @@
 
 
 #include "precomp.h"
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wrdll.h"
 #include "wrselft.h"

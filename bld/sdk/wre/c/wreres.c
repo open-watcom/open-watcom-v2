@@ -35,6 +35,7 @@
 #include <string.h>
 #include <ddeml.h>
 
+#include "watcom.h"
 #include "waccel.h"
 #include "wmenu.h"
 #include "wstring.h"
@@ -64,9 +65,7 @@
 #include "wresym.h"
 #include "wre_rc.h"
 #include "wrdll.h"
-#include "wrutil.h"
 #include "jdlg.h"
-#include "wi163264.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -77,8 +76,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WREResWndProc( HWND, UINT, WPARAM, LPARAM );
-extern LRESULT WINEXPORT WREResInfoProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WREResWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WREResInfoProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -522,7 +521,7 @@ Bool WRERegisterResClass( HINSTANCE app_inst )
     wc.style = CS_DBLCLKS | CS_VREDRAW | CS_HREDRAW;
     wc.lpfnWndProc = WREResWndProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( WREResInfo * );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = app_inst;
     wc.hIcon = LoadIcon( app_inst, "ResIcon" );
     wc.hCursor = NULL;
@@ -743,8 +742,7 @@ Bool WREIsResInfoWinMsg( LPMSG pmsg )
     return( FALSE );
 }
 
-void WREActivateResourceWindow( WREResInfo *res_info,
-                                WPARAM wParam, LPARAM lParam )
+void WREActivateResourceWindow( WREResInfo *res_info, WPARAM wParam, LPARAM lParam )
 {
     WREResInfo  *info;
     Bool        fActivate;
@@ -958,7 +956,7 @@ Bool WRESaveResource( WREResInfo *res_info, Bool get_name )
 
     if( ok ) {
         //fn_offset = WRFindFnOffset( fn );
-        SendMessage( res_info->res_win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)&fn[fn_offset] );
+        SendMessage( res_info->res_win, WM_SETTEXT, 0, (LPARAM)(LPSTR)&fn[fn_offset] );
     }
 
     return( ok );
@@ -1095,9 +1093,9 @@ Bool WRECreateResourceWindow( WREResInfo *res_info )
         mdics.cx = CW_USEDEFAULT;
         mdics.cy = CW_USEDEFAULT;
         mdics.style = style;
-        mdics.lParam = (LPARAM)res_info;
+        mdics.lParam = (LPARAM)(LPVOID)res_info;
 
-        ret = SendMessage( WREGetMDIWindowHandle(), WM_MDICREATE, 0, (LPARAM)&mdics );
+        ret = SendMessage( WREGetMDIWindowHandle(), WM_MDICREATE, 0, (LPARAM)(LPVOID)&mdics );
         ok = (ret != NULL);
     }
 
@@ -1136,7 +1134,7 @@ Bool WREDestroyResourceWindow( WREResInfo *res_info )
     return( FALSE );
 }
 
-LRESULT WINEXPORT WREResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WREResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREResInfo  *res_info;
     int         msg_processed;
@@ -1148,19 +1146,18 @@ LRESULT WINEXPORT WREResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 
     switch( message ) {
     case WM_CREATE:
-        res_info = (WREResInfo *)
-            ((MDICREATESTRUCT *)((CREATESTRUCT *)lParam)->lpCreateParams)->lParam;
+        res_info = (WREResInfo *)((MDICREATESTRUCT *)((CREATESTRUCT *)lParam)->lpCreateParams)->lParam;
         res_info->res_win = hWnd;
-        SetWindowLong( hWnd, 0, (LONG)res_info );
+        SET_WNDINFO( hWnd, (LONG_PTR)res_info );
         break;
     case WM_SIZE:
     case WM_MDIACTIVATE:
     case WM_CLOSE:
     case WM_SETFOCUS:
-        res_info = (WREResInfo *)GetWindowLong( hWnd, 0 );
+        res_info = (WREResInfo *)GET_WNDINFO( hWnd );
         break;
     case WM_DESTROY:
-        SetWindowLong( hWnd, 0, (LONG)NULL );
+        SET_WNDINFO( hWnd, (LONG_PTR)NULL );
         break;
     }
 
@@ -1216,8 +1213,7 @@ void WREFiniResources( void )
 
 Bool WRECreateResInfoWindow( WREResInfo *info )
 {
-    info->info_win = JCreateDialogParam( WREAppInst, "WREResource", info->res_win,
-                                         WREResInfoWinProc, (LPARAM)info );
+    info->info_win = JCreateDialogParam( WREAppInst, "WREResource", info->res_win, WREResInfoWinProc, (LPARAM)(LPVOID)info );
 
     if( info->info_win == (HWND)NULL ) {
         return( FALSE );
@@ -1226,7 +1222,7 @@ Bool WRECreateResInfoWindow( WREResInfo *info )
     return( TRUE );
 }
 
-LRESULT WINEXPORT WREResInfoProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WREResInfoProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREResInfo  *info;
     LRESULT     ret;
@@ -1239,7 +1235,7 @@ LRESULT WINEXPORT WREResInfoProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM
     case WM_INITDIALOG:
         info = (WREResInfo *)lParam;
         info->info_win = hDlg;
-        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        SET_DLGDATA( hDlg, (LONG_PTR)info );
         if( !WREInitResourceWindow( info, 0 ) ) {
             DestroyWindow( hDlg );
         } else {
@@ -1249,7 +1245,7 @@ LRESULT WINEXPORT WREResInfoProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
     case WM_SYSCOLORCHANGE:
 #if defined( __NT__ )
-        SetClassLong( hDlg, GCL_HBRBACKGROUND, (LONG)(HBRUSH)(COLOR_BTNFACE + 1) );
+        SET_HBRBACKGROUND( hDlg, (HBRUSH)(COLOR_BTNFACE + 1) );
 #endif
         WRECtl3dColorChange();
         break;
@@ -1265,7 +1261,7 @@ LRESULT WINEXPORT WREResInfoProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM
             break;
 
         case IDM_RNTYPE:
-            info = (WREResInfo *)GetWindowLong( hDlg, DWL_USER );
+            info = (WREResInfo *)GET_DLGDATA( hDlg );
             cmd = GET_WM_COMMAND_CMD( wParam, lParam );
             if( cmd == LBN_SELCHANGE ) {
                 WREAddResNames( info );

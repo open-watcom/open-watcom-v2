@@ -39,6 +39,7 @@
 #include <string.h>
 #include <limits.h>
 
+#include "watcom.h"
 #include "wresall.h"
 #include "wreglbl.h"
 #include "wreresin.h"
@@ -47,7 +48,6 @@
 #include "wremem.h"
 #include "wrenew.h"
 #include "wreimage.h"
-#include "bitmap.h"
 #include "wrdll.h"
 #include "wrbitmap.h"
 #include "wricon.h"

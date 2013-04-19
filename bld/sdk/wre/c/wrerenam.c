@@ -34,6 +34,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <string.h>
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wremem.h"
 #include "wremsg.h"
@@ -61,7 +62,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WREResRenameProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WREResRenameProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -202,8 +203,7 @@ Bool WREGetNewName( WREResRenameInfo *info )
 
     proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WREResRenameProc, app_inst );
 
-    modified = JDialogBoxParam( app_inst, "WRERenameResource", dialog_owner,
-                                proc_inst, (LPARAM)info );
+    modified = JDialogBoxParam( app_inst, "WRERenameResource", dialog_owner, proc_inst, (LPARAM)info );
 
     FreeProcInstance( (FARPROC)proc_inst );
 
@@ -226,7 +226,7 @@ void WREGetWinInfo( HWND hDlg, WREResRenameInfo *info )
     }
 }
 
-BOOL WR_EXPORT WREResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+BOOL CALLBACK WREResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREResRenameInfo    *info;
     BOOL                ret;
@@ -236,7 +236,7 @@ BOOL WR_EXPORT WREResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM 
     switch( message ) {
     case WM_INITDIALOG:
         info = (WREResRenameInfo *)lParam;
-        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        SET_DLGDATA( hDlg, (LONG_PTR)info );
         WRESetWinInfo( hDlg, info );
         ret = TRUE;
         break;
@@ -252,7 +252,7 @@ BOOL WR_EXPORT WREResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM 
             break;
 
         case IDOK:
-            info = (WREResRenameInfo *)GetWindowLong( hDlg, DWL_USER );
+            info = (WREResRenameInfo *)GET_DLGDATA( hDlg );
             WREGetWinInfo( hDlg, info );
             EndDialog( hDlg, TRUE );
             ret = TRUE;

@@ -14,12 +14,14 @@ set PROJNAME=wre
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> wini86/wre.exe         <OWRELROOT>/binw/wre.exe
-    <CCCMD> wini86/wre.sym         <OWRELROOT>/binw/wre.sym
-    <CCCMD> nt386/wre.exe          <OWRELROOT>/binnt/wre.exe
-    <CCCMD> nt386/wre.sym          <OWRELROOT>/binnt/wre.sym
-    <CCCMD> ntaxp/wre.exe          <OWRELROOT>/axpnt/wre.exe
-    <CCCMD> ntaxp/wre.sym          <OWRELROOT>/axpnt/wre.sym
+    <CCCMD> wini86/wre.exe         <OWRELROOT>/binw/
+    <CCCMD> wini86/wre.sym         <OWRELROOT>/binw/
+    <CCCMD> nt386/wre.exe          <OWRELROOT>/binnt/
+    <CCCMD> nt386/wre.sym          <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/wre.exe          <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wre.sym          <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/wre.exe          <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

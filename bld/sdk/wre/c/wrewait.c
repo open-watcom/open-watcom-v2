@@ -61,7 +61,7 @@ void WRESetWaitCursor( Bool on )
     static HCURSOR  save_cursor = NULL;
 
     if( wait_cursor == (HCURSOR)NULL ) {
-        wait_cursor = LoadCursor( (HWND)NULL, IDC_WAIT );
+        wait_cursor = LoadCursor( (HINSTANCE)0, IDC_WAIT );
     }
 
     if( on && ref_count == 0 ) {

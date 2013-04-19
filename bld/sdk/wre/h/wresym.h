@@ -34,7 +34,7 @@
 #define WDESYM_INCLUDED
 
 #include "wresall.h"
-#include "wrhash.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

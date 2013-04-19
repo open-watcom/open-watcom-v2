@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <ddeml.h>
 
+#include "watcom.h"
 #include "waccel.h"
 #include "wmenu.h"
 #include "wstring.h"
@@ -70,7 +71,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WREResDeleteProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WREResDeleteProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -287,8 +288,7 @@ Bool WREQueryDeleteName( char *name )
 
     proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WREResDeleteProc, app_inst );
 
-    modified = JDialogBoxParam( app_inst, "WREDeleteResource", dialog_owner,
-                                proc_inst, (LPARAM)name );
+    modified = JDialogBoxParam( app_inst, "WREDeleteResource", dialog_owner, proc_inst, (LPARAM)name );
 
     FreeProcInstance( (FARPROC)proc_inst );
 
@@ -300,7 +300,7 @@ void WRESetWinInfo( HWND hDlg, char *name )
     WRESetEditWithStr( GetDlgItem( hDlg, IDM_DELNAME ), name );
 }
 
-BOOL WR_EXPORT WREResDeleteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+BOOL CALLBACK WREResDeleteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     char    *name;
     BOOL    ret;

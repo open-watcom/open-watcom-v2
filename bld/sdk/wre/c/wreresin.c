@@ -32,6 +32,7 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wreresin.h"
 #include "wremain.h"

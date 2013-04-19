@@ -33,21 +33,15 @@
 #ifndef WREGLBL_INCLUDED
 #define WREGLBL_INCLUDED
 
+#include "bool.h"
+#include "wi163264.h"
+
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
 #define WRE_VERSION  0x0100
 
-#ifndef TRUE
-    #define TRUE 1
-#endif
-#ifndef FALSE
-    #define FALSE 0
-#endif
-
 #define _wre_touch( unused_var )    (unused_var = unused_var)
-
-#define WINEXPORT   __export PASCAL
 
 /****************************************************************************/
 /* type definitions                                                         */

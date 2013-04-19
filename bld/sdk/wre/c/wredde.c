@@ -33,6 +33,7 @@
 #include "precomp.h"
 #include <ddeml.h>
 
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wresall.h"
 #include "wreres.h"
@@ -54,7 +55,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern HDDEDATA WINEXPORT DdeCallBack( WORD wType, WORD wFmt, HCONV hConv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, DWORD lData1, DWORD lData2 );
+WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
+                HSZ hsz1, HSZ hsz2, HDDEDATA hdata, ULONG_PTR lData1, ULONG_PTR lData2 );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -115,21 +117,23 @@ void WRESetPendingService( WRESPT s )
 
 Bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
 {
+    DWORD   dde_size;
+
     if( data == NULL || size == NULL || hData == (HDDEDATA)NULL ) {
         return( FALSE );
     }
 
-    *size = (int)DdeGetData( hData, NULL, 0, 0 );
-    if( *size == 0 ) {
+    *size = dde_size = DdeGetData( hData, NULL, 0, 0 );
+    if( dde_size == 0 ) {
         return( FALSE );
     }
 
-    *data = WREMemAlloc( *size );
+    *data = WREMemAlloc( dde_size );
     if( *data == NULL ) {
         return( FALSE );
     }
 
-    if( (DWORD)*size != DdeGetData( hData, *data, (DWORD)*size, 0 ) ) {
+    if( dde_size != DdeGetData( hData, *data, dde_size, 0 ) ) {
         WREMemFree( *data );
         return( FALSE );
     }
@@ -139,7 +143,7 @@ Bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
 
 Bool WREDDEStart( HINSTANCE inst )
 {
-    WORD        ret;
+    UINT        ret;
     DWORD       flags;
     int         i;
 
@@ -164,13 +168,11 @@ Bool WREDDEStart( HINSTANCE inst )
     }
 
     for( i = 0; i < NUM_SERVERS; i++ ) {
-        EditServers[i].htopic = DdeCreateStringHandle( IdInst, EditServers[i].topic,
-                                                       CP_WINANSI );
+        EditServers[i].htopic = DdeCreateStringHandle( IdInst, EditServers[i].topic, CP_WINANSI );
         if( EditServers[i].htopic == (HSZ)NULL ) {
             return( FALSE );
         }
-        EditServers[i].hservice = DdeCreateStringHandle( IdInst, EditServers[i].service,
-                                                         CP_WINANSI );
+        EditServers[i].hservice = DdeCreateStringHandle( IdInst, EditServers[i].service, CP_WINANSI );
         if( EditServers[i].hservice == (HSZ)NULL ) {
             return( FALSE );
         }
@@ -288,9 +290,8 @@ Bool WREPokeData( HCONV conv, void *data, int size, Bool retry )
         tries = 0;
     }
 
-    while( TRUE ) {
-        ret = (Bool)DdeClientTransaction( (LPBYTE)data, size, conv, hDataItem, CF_TEXT,
-                                          XTYP_POKE, LONG_TIME_OUT, &result );
+    for( ;; ) {
+        ret = ( DdeClientTransaction( (LPBYTE)data, size, conv, hDataItem, CF_TEXT, XTYP_POKE, LONG_TIME_OUT, &result ) != 0 );
         if( !ret && tries-- != 0 ) {
             err = DdeGetLastError( IdInst );
             timeout = ((err & DMLERR_POKEACKTIMEOUT) != 0);
@@ -305,9 +306,9 @@ Bool WREPokeData( HCONV conv, void *data, int size, Bool retry )
     return( ret );
 }
 
-HDDEDATA WINEXPORT DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
+HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
                                 HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
-                                DWORD lData1, DWORD lData2 )
+                                ULONG_PTR lData1, ULONG_PTR lData2 )
 {
     HDDEDATA    ret;
     HSZPAIR     hszpair[2];

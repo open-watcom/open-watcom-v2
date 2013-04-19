@@ -35,7 +35,6 @@
 
 #include "wretoolb.h"
 #include "wrdll.h"
-#include "wrhash.h"
 
 /****************************************************************************/
 /* type definitions                                                         */

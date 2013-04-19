@@ -32,10 +32,11 @@
 
 #include "precomp.h"
 #include <ddeml.h>
-#include <io.h>
 #include <stdio.h>
 #include <string.h>
+#include "wio.h"
 
+#include "watcom.h"
 #include "waccel.h"
 #include "wmenu.h"
 #include "wstring.h"
@@ -70,7 +71,6 @@
 #include "wreftype.h"
 #include "wremain.h"
 #include "wresall.h"
-#include "bitmap.h"
 #include "wrdll.h"
 #include "wrdmsg.h"
 #include "wrbitmap.h"
@@ -79,6 +79,9 @@
 #include "jdlg.h"
 #include "aboutdlg.h"
 #include "ldstr.h"
+#ifdef __WATCOMC__
+#include "clibint.h"
+#endif
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -91,9 +94,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern int PASCAL        WinMain( HINSTANCE, HINSTANCE, LPSTR, int);
-extern LRESULT WINEXPORT WREMainWndProc( HWND, UINT, WPARAM, LPARAM );
-extern Bool WINEXPORT    WRESplash( HWND, WORD, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK WREMainWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT Bool CALLBACK WRESplash( HWND, WORD, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -133,8 +135,8 @@ static char      WREMainClass[]      = "WREMainClass";
 Bool WRECreateNewFiles  = FALSE;
 Bool WRENoInterface     = FALSE;
 
-extern Bool WRERemoveResource( WREResInfo * );
-extern Bool pleaseOpenFile( UINT msg );
+Bool WRERemoveResource( WREResInfo * );
+Bool pleaseOpenFile( UINT msg );
 Bool WREIsEditWindowDialogMessage( MSG *msg );
 
 /* set the WRES library to use compatible functions */
@@ -224,16 +226,18 @@ static void startEditors( void )
     }
 }
 
-extern Bool WREIsResInfoWinMsg( LPMSG pmsg );
+Bool WREIsResInfoWinMsg( LPMSG pmsg );
 
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine, int nCmdShow )
 {
-    extern char **_argv;
-    extern int  _argc;
     MSG         msg;
     Bool        ret;
 
+#if defined( __NT__ ) && !defined( __WATCOMC__ )
+    _argc = __argc;
+    _argv = __argv;
+#endif
     /* touch unused vars to get rid of warning */
     _wre_touch( lpszCmdLine );
     _wre_touch( nCmdShow );
@@ -537,7 +541,7 @@ HINSTANCE WREGetAppInstance( void )
     return( WREInst );
 }
 
-LRESULT WINEXPORT WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HMENU       menu;
     LRESULT     ret;
@@ -1036,8 +1040,6 @@ Bool WREProcessArgs( char **argv, int argc )
 }
 
 #include "wrwresid.h"
-extern WResID * WR_EXPORT WRMem2WResID( void *data, int is32bit );
-extern int      WR_EXPORT WRWResID2Mem( WResID *name, void **data, uint_32 *size, int is32bit );
 
 void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
@@ -1048,7 +1050,7 @@ void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
     FreeProcInstance( lpProcAbout );
 }
 
-Bool WINEXPORT WRESplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam )
+Bool CALLBACK WRESplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, timer, start;
     HDC         dc, tdc;
@@ -1085,7 +1087,7 @@ Bool WINEXPORT WRESplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam 
         if( msecs != 0 ) {
             timer = SetTimer( hDlg, ABOUT_TIMER, msecs, NULL );
             if( timer != 0 ) {
-                SetWindowLong( hDlg, DWL_USER, (LONG)timer );
+                SET_DLGDATA( hDlg, (LONG)timer );
             }
         }
 
@@ -1158,7 +1160,7 @@ Bool WINEXPORT WRESplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam 
         break;
 
     case WM_TIMER:
-        timer = (UINT)GetWindowLong( hDlg, DWL_USER );
+        timer = (UINT)GET_DLGDATA( hDlg );
         if( timer != 0 ) {
             KillTimer( hDlg, timer );
         }
@@ -1169,21 +1171,21 @@ Bool WINEXPORT WRESplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam 
     return( FALSE );
 }
 
-void CALLBACK WREHelpRoutine( void )
+WINEXPORT void CALLBACK WREHelpRoutine( void )
 {
     if( !WHtmlHelp( WREMainWin, "resedt.chm", HELP_CONTENTS, 0 ) ) {
         WWinHelp( WREMainWin, "resedt.hlp", HELP_CONTENTS, 0 );
     }
 }
 
-void CALLBACK WREHelpSearchRoutine( void )
+void WREHelpSearchRoutine( void )
 {
-    if( !WHtmlHelp( WREMainWin, "resedt.chm", HELP_PARTIALKEY, (DWORD)"" ) ) {
-        WWinHelp( WREMainWin, "resedt.hlp", HELP_PARTIALKEY, (DWORD)"" );
+    if( !WHtmlHelp( WREMainWin, "resedt.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+        WWinHelp( WREMainWin, "resedt.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
     }
 }
 
-void CALLBACK WREHelpOnHelpRoutine( void )
+void WREHelpOnHelpRoutine( void )
 {
     WWinHelp( WREMainWin, "winhelp.hlp", HELP_HELPONHELP, 0 );
 }

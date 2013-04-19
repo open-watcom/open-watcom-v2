@@ -31,11 +31,11 @@
 
 
 #include "precomp.h"
-#include "wi163264.h"
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
 
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wremain.h"
 #include "wregetfn.h"
@@ -87,7 +87,7 @@ void PP_OutOfMemory( void )
     longjmp( SymEnv, 1 );
 }
 
-void *PP_Malloc( unsigned size )
+void *PP_Malloc( size_t size )
 {
     void        *p;
 

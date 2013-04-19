@@ -33,7 +33,7 @@
 #ifndef WRELIST_INCLUDED
 #define WRELIST_INCLUDED
 
-#include "watcom.h"
+//#include "watcom.h"
 
 /****************************************************************************/
 /* type definitions                                                         */

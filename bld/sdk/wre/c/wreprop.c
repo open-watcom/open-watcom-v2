@@ -36,7 +36,7 @@
 #include "wreresin.h"
 #include "wreseted.h"
 #include "wreprop.h"
-#include "wrhash.h"
+#include "wrdll.h"
 #include "prop.h"
 
 /****************************************************************************/
@@ -59,7 +59,7 @@ typedef struct WREPropertyInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-BOOL WINEXPORT WREPropertyProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL WREPropertyProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -153,7 +153,7 @@ static void WREGetPropMemoryFlags( HWND hDlg, uint_16 *mflags )
     }
 }
 
-BOOL WINEXPORT WREPropertyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+BOOL WREPropertyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREProperyInfo      *info;
     BOOL                ret;
@@ -163,7 +163,7 @@ BOOL WINEXPORT WREPropertyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
     switch( message ) {
     case WM_INITDIALOG:
         info = (WREProperyInfo *)lParam;
-        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        SET_DLGDATA( hDlg, (LONG_PTR)info );
         WRESetPropMemoryFlags( hDlg, info->mflags )
         ret = TRUE;
         break;
@@ -179,7 +179,7 @@ BOOL WINEXPORT WREPropertyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
             break;
 
         case IDOK:
-            info = (WREProperyInfo *)GetWindowLong( hDlg, DWL_USER );
+            info = (WREProperyInfo *)GET_DLGDATA( hDlg );
             WREGetPropMemoryFlags( hDlg, info->new_mflags );
             EndDialog( hDlg, TRUE );
             ret = TRUE;

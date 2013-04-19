@@ -34,6 +34,7 @@
 #include <limits.h>
 #include <string.h>
 #include <ddeml.h>
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wremain.h"
 #include "wregcres.h"
@@ -55,7 +56,6 @@
 #include "wreres.h"
 #include "wreclip.h"
 #include "wre_rc.h"
-#include "bitmap.h"
 #include "wrdll.h"
 #include "wrbitmap.h"
 #include "jdlg.h"
@@ -67,7 +67,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WR_EXPORT WREResPasteProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK WREResPasteProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -977,8 +977,7 @@ Bool WREQueryPasteReplace( WResID *name, uint_16 type, Bool *replace )
     inst = WREGetAppInstance();
     proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WREResPasteProc, inst );
 
-    ret = JDialogBoxParam( inst, "WREPaste", dialog_owner,
-                           proc_inst, (LPARAM)&pdata );
+    ret = JDialogBoxParam( inst, "WREPaste", dialog_owner, proc_inst, (LPARAM)&pdata );
 
     FreeProcInstance( (FARPROC)proc_inst );
 
@@ -1009,8 +1008,7 @@ static void WRESetPasteInfo( HWND hDlg, WREPasteData *pdata )
     WRESetEditWithWResID( GetDlgItem( hDlg, IDM_PASTE_NAME ), pdata->name );
 }
 
-BOOL WR_EXPORT WREResPasteProc ( HWND hDlg, UINT message,
-                                 WPARAM wParam, LPARAM lParam )
+BOOL CALLBACK WREResPasteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREPasteData        *pdata;
     BOOL                ret;
@@ -1020,7 +1018,7 @@ BOOL WR_EXPORT WREResPasteProc ( HWND hDlg, UINT message,
     switch( message ) {
     case WM_INITDIALOG:
         pdata = (WREPasteData *)lParam;
-        SetWindowLong( hDlg, DWL_USER, (LONG)pdata );
+        SET_DLGDATA( hDlg, (LONG_PTR)pdata );
         WRESetPasteInfo( hDlg, pdata );
         ret = TRUE;
         break;
@@ -1033,7 +1031,7 @@ BOOL WR_EXPORT WREResPasteProc ( HWND hDlg, UINT message,
         switch( LOWORD( wParam ) ) {
         case IDM_PASTE_RENAME:
         case IDM_PASTE_REPLACE:
-            pdata = (WREPasteData *)GetWindowLong( hDlg, DWL_USER );
+            pdata = (WREPasteData *)GET_DLGDATA( hDlg );
             EndDialog( hDlg, LOWORD( wParam ) );
             ret = TRUE;
             break;

@@ -33,7 +33,7 @@
 #include "precomp.h"
 #include <stdio.h>
 #include <string.h>
-#include "wi163264.h"
+#include "watcom.h"
 #include "wreglbl.h"
 #include "wremem.h"
 #include "wrestat.h"
