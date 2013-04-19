@@ -85,6 +85,8 @@
 #define strcasecmp stricmp
 #define _grow_handles _setmaxstdio
 #define snprintf _snprintf
+#define _mbislead _ismbblead
+#define utoa ultoa
 
 #endif
 
