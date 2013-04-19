@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <string.h>
 #include "ieclrpal.h"
 
 static HWND             hColorsWnd;
@@ -248,8 +246,7 @@ static void selectScreen( WPI_POINT *pt, int mousebutton )
 /*
  * ColorsWndProc - handle messages for the available color selection window
  */
-MRESULT CALLBACK ColorsWndProc( HWND hwnd, WPI_MSG msg,
-                                WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_MRESULT CALLBACK ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     static WPI_POINT            pt;
 
@@ -294,8 +291,7 @@ MRESULT CALLBACK ColorsWndProc( HWND hwnd, WPI_MSG msg,
 /*
  * ScreenWndProc - handle messages for the screen and inverse windows
  */
-MRESULT CALLBACK ScreenWndProc( HWND hwnd, WPI_MSG msg,
-                                WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_MRESULT CALLBACK ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_POINT   pt;
     WPI_RECT    wrect1;

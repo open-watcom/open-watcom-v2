@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include "wrctl3d.h"
+#include "wrdll.h"
 
 /*
  * IECtl3dInit

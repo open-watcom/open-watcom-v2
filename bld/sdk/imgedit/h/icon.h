@@ -38,7 +38,7 @@
      sizeof( BITMAPINFO ) + (sizeof( RGBQUAD ) * ((1 << (bc)->biBitCount) - 1)) : \
      sizeof( BITMAPINFOHEADER ))
 
-#pragma pack( 1 );
+#include "pushpck1.h"
 
 typedef struct an_img_resource {
     BYTE        width;
@@ -58,7 +58,7 @@ typedef struct an_img_file {
     an_img_resource resources[1];
 } an_img_file;
 
-#pragma pack();
+#include "poppck.h"
 
 typedef struct an_img {
     BITMAPINFO  *bm;

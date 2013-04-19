@@ -30,10 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <string.h>
-#include <stdio.h>
 #include "ieclrpal.h"
 #include "ieprofil.h"
 
@@ -105,7 +102,7 @@ static void paintPalette( HWND hwnd )
 /*
  * ColorPalWinProc - handle messages for the color palette
  */
-MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PARAM2 mp2 )
+WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PARAM2 mp2 )
 {
     HMENU               sysmenu;
     WPI_RECT            rcpal;

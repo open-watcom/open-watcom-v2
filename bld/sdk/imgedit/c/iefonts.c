@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <stdio.h>
 #include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
 #include <mbstring.h>
 #include "iemem.h"
 

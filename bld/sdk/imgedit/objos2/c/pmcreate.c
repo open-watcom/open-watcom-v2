@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "imgedit.h"
 #include "ieclrpal.h"
 #include "ieprofil.h"

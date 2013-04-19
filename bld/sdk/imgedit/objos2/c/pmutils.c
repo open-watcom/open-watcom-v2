@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#include "imgedit.h"
 #include <malloc.h>
 #include <math.h>
-#include "imgedit.h"
 
 /*
  * CreateInverseBitmap - This routine creates the bitmap which represents

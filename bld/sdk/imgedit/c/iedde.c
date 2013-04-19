@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <ddeml.h>
-
 #include "imgedit.h"
+#include <ddeml.h>
 #include "iemem.h"
 #include "wrdll.h"
 
@@ -94,7 +92,7 @@ typedef struct IEClipFormat {
 /****************************************************************************/
 extern HDDEDATA CALLBACK DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
                                       HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
-                                      DWORD lData1, DWORD lData2 );
+                                      ULONG_PTR lData1, ULONG_PTR lData2 );
 
 /****************************************************************************/
 /* static function prototypes                                               */

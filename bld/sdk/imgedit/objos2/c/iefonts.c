@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdarg.h>
-#include <string.h>
 #include "imgedit.h"
+#include <stdarg.h>
 
 static WPI_LOGFONT      *currentLogFont = NULL;
 
@@ -73,7 +72,7 @@ void CreateStatusFont( void )
 #else
     fp = _wpi_makeprocinstance( EnumFontFunc, Instance );
 #ifdef __NT__
-    EnumFonts( hdc, NULL, (LPVOID)fp, (LPARAM)(LPVOID)"ms sans serif");
+    EnumFonts( hdc, NULL, (LPVOID)fp, (LPARAM)(LPCSTR)"ms sans serif");
 #else
     EnumFonts( hdc, NULL, (LPVOID)fp, (LPVOID)"ms sans serif");
 #endif

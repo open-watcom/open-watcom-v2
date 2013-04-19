@@ -30,16 +30,12 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "imgedit.h"
 #include <commdlg.h>
-#include <stdio.h>
-#include <string.h>
 #include <dos.h>
-#include <stdlib.h>
 #include <malloc.h>
 #include <math.h>
 #include <limits.h>
-#include "imgedit.h"
 #include "wrdll.h"
 #include "wrbitmap.h"
 #include "wricon.h"

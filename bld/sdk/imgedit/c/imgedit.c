@@ -29,16 +29,16 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
 #include <shellapi.h>
 #include <io.h>
-#include <stdio.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include "title.h"
 #include "iedde.h"
 #include "wrdll.h"
+#ifdef __WATCOMC__
+#include "clibint.h"
+#endif
 
 #ifdef __NT__
     #pragma library( "shell32.lib" )
@@ -109,7 +109,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
      */
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID)ImgEdFrameProc;
+        wc.lpfnWndProc = ImgEdFrameProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
@@ -128,7 +128,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
      */
     if( !previnst ) {
         wc.style = CS_BYTEALIGNWINDOW | CS_CLASSDC | CS_DBLCLKS;
-        wc.lpfnWndProc = (LPVOID)DrawAreaWinProc;
+        wc.lpfnWndProc = DrawAreaWinProc;
         wc.cbClsExtra = sizeof( HCURSOR );
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
@@ -144,7 +144,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
     if( !previnst ) {
         wc.style = CS_BYTEALIGNWINDOW | CS_CLASSDC | CS_DBLCLKS;
-        wc.lpfnWndProc = (LPVOID)DrawAreaWinProc;
+        wc.lpfnWndProc = DrawAreaWinProc;
         wc.cbClsExtra = sizeof( HCURSOR );
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
@@ -160,7 +160,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
     if( !previnst ) {
         wc.style = CS_BYTEALIGNWINDOW | CS_CLASSDC | CS_DBLCLKS;
-        wc.lpfnWndProc = (LPVOID)DrawAreaWinProc;
+        wc.lpfnWndProc = DrawAreaWinProc;
         wc.cbClsExtra = sizeof( HCURSOR );
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
@@ -176,7 +176,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID)ViewWindowProc;
+        wc.lpfnWndProc = ViewWindowProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
@@ -192,7 +192,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID)ColorPalWinProc;
+        wc.lpfnWndProc = ColorPalWinProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
@@ -213,7 +213,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     handCursor = LoadCursor( Instance, "HandCursor" );
     if( !previnst ) {
         wc.style = CS_DBLCLKS;
-        wc.lpfnWndProc = (LPVOID)ColorsWndProc;
+        wc.lpfnWndProc = ColorsWndProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
@@ -233,7 +233,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
     if( !previnst ) {
         wc.style = CS_DBLCLKS;
-        wc.lpfnWndProc = (LPVOID)ScreenWndProc;
+        wc.lpfnWndProc = ScreenWndProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
@@ -253,7 +253,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID)CurrentWndProc;
+        wc.lpfnWndProc = CurrentWndProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
@@ -273,7 +273,7 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID)BitmapPickProc;
+        wc.lpfnWndProc = BitmapPickProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
@@ -428,10 +428,12 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst,
                           LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
-    extern char **_argv;
-    extern int  _argc;
 
     cmdline = cmdline;
+#if defined( __NT__ ) && !defined( __WATCOMC__ )
+    _argc = __argc;
+    _argv = __argv;
+#endif
     WRInit();
 
     if( _argc > 1 ) {

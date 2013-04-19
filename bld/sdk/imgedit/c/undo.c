@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
 #include "undo.h"
 #include "iemem.h"

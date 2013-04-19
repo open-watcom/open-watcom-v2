@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <string.h>
 #include "ieprofil.h"
 
 static int              showState = SW_SHOWNORMAL;
@@ -310,7 +308,7 @@ HWND CreateViewWin( int width, int height )
 /*
  * ViewWindowProc - window procedure for the view window
  */
-MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg,
+WPI_MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg,
                                  WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     static HMENU                sysmenu;

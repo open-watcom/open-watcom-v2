@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <string.h>
 #include "iemem.h"
 #include "drawproc.h"
 
@@ -150,7 +148,7 @@ static void setTheCursor( int cursor_index, HWND hwnd )
  * DrawAreaWinProc - window procedure for the drawing area window
  *                 - this window is an MDI window
  */
-MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
+WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
                                   WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     static WPI_POINT    start_pt = { -1, -1 };
@@ -502,9 +500,9 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
     case WM_CLOSE:
         if( lastChanceSave( hwnd ) ) {
             CloseCurrentImage( hwnd );
-            return( (MRESULT)1 );
+            return( (WPI_MRESULT)1 );
         } else {
-            return( (MRESULT)0 );
+            return( (WPI_MRESULT)0 );
         }
 
 #ifndef __OS2_PM__

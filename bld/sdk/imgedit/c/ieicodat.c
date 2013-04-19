@@ -30,15 +30,11 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "imgedit.h"
 #include <commdlg.h>
-#include <stdio.h>
-#include <string.h>
 #include <malloc.h>
 #include <dos.h>
-#include <stdlib.h>
 #include <cderr.h>
-#include "imgedit.h"
 #include "colours.h"
 #include "ieicodat.h"
 #include "iemem.h"

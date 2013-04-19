@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
 #include "iconinfo.h"
 #include "ieprofil.h"
@@ -247,7 +246,7 @@ static BOOL IEIsMenuIDValid( HMENU menu, WORD id )
 /*
  * ImgEdFrameProc - handle messages for the image editor application
  */
-MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
+WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
                                  WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     static BOOL         window_destroyed = FALSE;
@@ -661,7 +660,7 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
         if( _wpi_getfirstchild( _wpi_getclient( ClientWindow ) ) != NULL ) {
             return( 0 );
         }
-        return( (MRESULT)1 );
+        return( (WPI_MRESULT)1 );
 
     case WM_CLOSE:
         // wParam is non-zero if the DDE connection died
@@ -707,7 +706,7 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
 /*
  * This is necessary since the window does not paint itself
  */
-MRESULT CALLBACK ClientProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PARAM2 mp2 )
+WPI_MRESULT CALLBACK ClientProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PARAM2 mp2 )
 {
     RECTL       rect;
     WPI_PRES    pres;
@@ -746,8 +745,8 @@ void IEHelpRoutine( void )
 void IEHelpSearchRoutine( void )
 {
 #ifndef __OS2_PM__
-    if( !WHtmlHelp( HMainWindow, "resimg.chm", HELP_PARTIALKEY, (DWORD)"" ) ) {
-        WWinHelp( HMainWindow, "resimg.hlp", HELP_PARTIALKEY, (DWORD)"" );
+    if( !WHtmlHelp( HMainWindow, "resimg.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+        WWinHelp( HMainWindow, "resimg.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
     }
 #endif
 

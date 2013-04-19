@@ -30,8 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include "bitmap.h"
+#include "imgedit.h"
 #include "wrdll.h"
 #include "wrbitmap.h"
 

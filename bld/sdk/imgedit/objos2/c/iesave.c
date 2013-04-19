@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#include "imgedit.h"
 #include <malloc.h>
 #include <math.h>
-#include "imgedit.h"
 #include "..\h\wbitmap.h"
 
 #define SCANLINE_SIZE   32

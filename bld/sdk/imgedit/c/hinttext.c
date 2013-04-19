@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
 #include "hinttext.h"
 

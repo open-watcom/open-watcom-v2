@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
-#include <commdlg.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include "imgedit.h"
+#include <commdlg.h>
 #include "ieclrpal.h"
 #include "ieprofil.h"
 

@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <string.h>
 #include "settings.h"
 
 /*

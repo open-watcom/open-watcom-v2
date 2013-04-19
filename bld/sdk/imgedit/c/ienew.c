@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
 #include "iconinfo.h"
 #include "jdlg.h"
@@ -213,10 +212,10 @@ BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         hlistbox = GetDlgItem( hwnd, TARGETLISTBOX );
         mono32x32 = IEAllocRCString( WIE_MONO32X32 );
         if( mono32x32 != NULL ) {
-            SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)mono32x32 );
+            SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)(LPSTR)mono32x32 );
             IEFreeRCString( mono32x32 );
         } else {
-            SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)"Monochrome, 32x32" );
+            SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)(LPCSTR)"Monochrome, 32x32" );
         }
         SendMessage( hlistbox, LB_SETCURSEL, 0, 0L );
         return( TRUE );

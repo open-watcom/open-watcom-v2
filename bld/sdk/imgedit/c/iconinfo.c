@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
 #include "iconinfo.h"
 
@@ -265,7 +264,7 @@ WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg,
                                            WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     int         index;
-    MRESULT     mresult;
+    WPI_MRESULT mresult;
     int         i;
     static int  lbindex[NUM_OF_ICONS];
 
@@ -338,7 +337,7 @@ WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg,
 WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg,
                                         WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
-    MRESULT     mresult;
+    WPI_MRESULT mresult;
     int         index;
     int         i;
     static int  lbindex[NUM_OF_ICONS];

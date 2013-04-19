@@ -30,11 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #ifdef __NT__
     #include "desknt.h"
 #endif
@@ -62,7 +58,7 @@ void AbortSnap( HWND hwnd );
 /*
  * deskTopWindowHook
  */
-static BOOL deskTopWindowHook( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+static BOOL deskTopWindowHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     hwnd = hwnd;
     lparam = lparam;

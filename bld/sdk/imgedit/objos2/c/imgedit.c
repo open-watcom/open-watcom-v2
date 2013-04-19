@@ -30,16 +30,14 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdarg.h>
-
 #include "imgedit.h"
+#include <stdarg.h>
 #include "ieclrpal.h"
 #include "ieprofil.h"
 
 static char     className[] = "Watcom Imgedit";
 
-MRESULT CALLBACK ClientProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PARAM2 mp2 );
+WPI_MRESULT CALLBACK ClientProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PARAM2 mp2 );
 
 /*
  * imgEditInit - initialization

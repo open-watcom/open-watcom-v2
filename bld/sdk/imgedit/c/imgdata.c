@@ -30,10 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <stdio.h>
-#include <string.h>
 #include "iconinfo.h"
 #include "iemem.h"
 

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
 #include <io.h>
 #include "iemem.h"
@@ -74,7 +73,7 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
         if( msecs != 0 ) {
             timer = SetTimer( hwnd, TITLE_TIMER, msecs, NULL );
             if( timer ) {
-                SetWindowLong( hwnd, DWL_USER, (LONG)timer );
+                SET_DLGDATA( hwnd, (LONG)timer );
             }
         }
 
@@ -144,7 +143,7 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
         break;
 
     case WM_TIMER:
-        timer = (UINT)GetWindowLong( hwnd, DWL_USER );
+        timer = (UINT)GET_DLGDATA( hwnd );
         if( timer ) {
             KillTimer( hwnd, timer );
         }

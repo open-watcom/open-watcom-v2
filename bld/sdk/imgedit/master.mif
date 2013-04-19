@@ -84,7 +84,7 @@ extra_l_flags_nt += alias '_WinMain'='_WinMain@16'
 extra_l_flags_os2 = option stack=12k option heapsize=2k &
                     option symfile=$(name).sym
 
-inc_dirs  = -Ih -I"$(wimgedit_dir)/h" -I"$(wres_dir)/h" -I"$(wr_dir)/h" $(commonui_inc_dirs)
+inc_dirs  = -I. -Ih -I"$(wimgedit_dir)/h" -I"$(wres_dir)/h" -I"$(wr_dir)/h" $(commonui_inc_dirs)
 inc_dirs += -I"$(sdk_misc_dir)" $(wpi_inc_dirs)
 
 # systems where version resource must be added to .EXE

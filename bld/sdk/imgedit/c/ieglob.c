@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <stdio.h>
-#include "wrutil.h"
+#include "wrdll.h"
 
 char            const PaletteClass[]    = "PalletClass";
 char            const DrawAreaClassB[]  = "DrawAreaWindowB";

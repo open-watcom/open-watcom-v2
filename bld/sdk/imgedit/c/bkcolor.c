@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
 #include "ieclrpal.h"
 
@@ -114,8 +113,7 @@ static void selectColor( WPI_POINT *pt, HWND hwnd )
 /*
  * SelColorProc - select the color to represent the background
  */
-WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg,
-                                     WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     PAINTSTRUCT         ps;
     WPI_POINT           pt;

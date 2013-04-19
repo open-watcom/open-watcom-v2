@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"                    // prototypes are found in wpi.h
 #include "iemem.h"
 

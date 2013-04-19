@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
 #include "ietoolbr.h"
 #include "ieprofil.h"
@@ -187,10 +186,10 @@ void InitTools( HWND hparent )
     tdi.area = toolbar_loc;
     tdi.style = TOOLBAR_FLOATNOSIZE_STYLE;
 //    tdi.style = TOOLBAR_FLOAT_STYLE;
-    tdi.hook = (toolhook)ToolBarProc;
-    tdi.helphook = (helphook)ToolBarHelpProc;
+    tdi.hook = ToolBarProc;
+    tdi.helphook = ToolBarHelpProc;
     tdi.background = (HBITMAP)0;
-    tdi.foreground = (HBITMAP)0;
+    tdi.foreground = (HBRUSH)0;
     tdi.is_fixed = FALSE;
 
     ToolBarDisplay( toolBar, &tdi );
@@ -214,7 +213,7 @@ void InitTools( HWND hparent )
     tii.flags = ITEM_DOWNBMP | ITEM_STICKY;
 
     for( i = 0; i < NUMBER_OF_TOOLS - 1; i++ ) {
-        tii.bmp = bitmaps[i].hToolBmp;
+        tii.u.bmp = bitmaps[i].hToolBmp;
         tii.id = i + IMGED_CLIP;
         tii.depressed = bitmaps[i].hToolDep;
         ToolBarAddItem( toolBar, &tii );
@@ -274,7 +273,7 @@ void AddHotSpotTool( BOOL faddhotspot )
         if( hotspotPresent ) {
             return;
         }
-        tii.bmp = bitmaps[9].hToolBmp;
+        tii.u.bmp = bitmaps[9].hToolBmp;
         tii.id = IMGED_HOTSPOT;
         tii.flags = ITEM_DOWNBMP | ITEM_STICKY;
         tii.depressed = bitmaps[9].hToolDep;

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
 #include "funcbar.h"
 
@@ -104,7 +103,7 @@ static void addFunctionButton( button *tb )
 
     if( tb->id > 0 ) {
         tb->hbmp = _wpi_loadbitmap( Instance, tb->name );
-        info.bmp = tb->hbmp;
+        info.u.bmp = tb->hbmp;
         info.id = tb->id;
         info.flags = ITEM_DOWNBMP;
 
@@ -125,7 +124,7 @@ static void addFunctionButton( button *tb )
         info.depressed = tb->downbmp;
     } else {
         info.flags = ITEM_BLANK;
-        info.blank_space = 5;
+        info.u.blank_space = 5;
     };
     ToolBarAddItem( functionBar, &info );
 
@@ -262,10 +261,10 @@ void InitFunctionBar( HWND hparent )
     tdi.border_size = border;
     tdi.area = functionbar_loc;
     tdi.style = TOOLBAR_FIXED_STYLE;
-    tdi.hook = (toolhook)FunctionBarProc;
-    tdi.helphook = (helphook)FunctionBarHelpProc;
+    tdi.hook = FunctionBarProc;
+    tdi.helphook = FunctionBarHelpProc;
     tdi.background = (HBITMAP)0;
-    tdi.foreground = (HBITMAP)0;
+    tdi.foreground = (HBRUSH)0;
     tdi.is_fixed = 1;
     tdi.use_tips = 1;
 

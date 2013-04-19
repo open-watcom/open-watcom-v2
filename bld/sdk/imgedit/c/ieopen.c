@@ -29,16 +29,12 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "imgedit.h"
 #include <commdlg.h>
 #include <shellapi.h>
-#include <stdio.h>
-#include <string.h>
 #include <malloc.h>
 #include <dos.h>
-#include <stdlib.h>
 #include <cderr.h>
-#include "imgedit.h"
 #include "colors.h"
 #include "iebmpdat.h"
 #include "wrdll.h"
@@ -105,11 +101,11 @@ static BOOL doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, char *fullnam
     GetFnameFromPath( fullname, filename );
 
     if( hbitmap != NULL ) {
-        h = &bmi->bm_info->bmiHeader;
+        h = &bmi->u.bm_info->bmiHeader;
 
         if( h->biWidth > MAX_DIM || h->biHeight > MAX_DIM ) {
             WImgEditError( WIE_ERR_BITMAP_TOO_BIG, filename );
-            MemFree( bmi->bm_info );
+            MemFree( bmi->u.bm_info );
             DeleteObject( hbitmap );
             return( FALSE );
         }
@@ -118,15 +114,15 @@ static BOOL doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, char *fullnam
         /* Should not be an error... */
         else if( h->biBitCount > 8 ) {
             WImgEditError( WIE_ERR_TOO_MANY_COLOURS, filename );
-            MemFree( bmi->bm_info );
+            MemFree( bmi->u.bm_info );
             DeleteObject( hbitmap );
             return( FALSE );
         }
 #endif
         node.imgtype = BITMAP_IMG;
-        node.width = bmi->bm_info->bmiHeader.biWidth;
-        node.height = bmi->bm_info->bmiHeader.biHeight;
-        node.bitcount = bmi->bm_info->bmiHeader.biBitCount;
+        node.width = bmi->u.bm_info->bmiHeader.biWidth;
+        node.height = bmi->u.bm_info->bmiHeader.biHeight;
+        node.bitcount = bmi->u.bm_info->bmiHeader.biBitCount;
         node.hotspot.x = 0;
         node.hotspot.y = 0;
         node.num_of_images = 1;
@@ -160,7 +156,7 @@ static BOOL doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, char *fullnam
         MakeBitmap( &node, FALSE );
         CreateNewDrawPad( &node );
 
-        MemFree( bmi->bm_info );
+        MemFree( bmi->u.bm_info );
         return( TRUE );
     }
     return( FALSE );
@@ -182,13 +178,13 @@ static BOOL readInBitmapFile( char *fullname )
     SetCursor( prevcursor );
 
     if( hbitmap == (HBITMAP)NULL ) {
-        if( bmi.bm_info != NULL && bmi.bm_info->bmiHeader.biBitCount > 32 ) { /* Was 8 */
+        if( bmi.u.bm_info != NULL && bmi.u.bm_info->bmiHeader.biBitCount > 32 ) { /* Was 8 */
             WImgEditError( WIE_ERR_TOO_MANY_COLORS, fullname );
         } else {
             WImgEditError( WIE_ERR_BAD_BITMAP_FILE, fullname );
         }
-        if( bmi.bm_info != NULL ) {
-            MemFree( bmi.bm_info );
+        if( bmi.u.bm_info != NULL ) {
+            MemFree( bmi.u.bm_info );
         }
         return( FALSE );
     }

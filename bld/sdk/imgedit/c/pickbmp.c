@@ -30,11 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #ifdef __NT__
     #include "desknt.h"
 #endif
@@ -199,7 +195,7 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, char *filename )
  * BitmapPickProc - handle messages for choosing the region to begin the
  *                  editing session
  */
-LONG CALLBACK BitmapPickProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static POINT        topleft;
     static POINT        bottomright;

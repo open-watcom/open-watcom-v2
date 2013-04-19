@@ -30,10 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
 #include "imgedit.h"
-#include <string.h>
-#include <stdio.h>
 #include "ieclrpal.h"
 
 static selected_colour  lButton;
@@ -95,7 +92,7 @@ static void paintCurrent( HWND hwnd )
 /*
  * CurrentWndProc - handle messages for the current color selection window
  */
-MRESULT CALLBACK CurrentWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_MRESULT CALLBACK CurrentWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     switch ( msg ) {
     case WM_CREATE:
