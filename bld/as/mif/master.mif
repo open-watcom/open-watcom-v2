@@ -165,7 +165,7 @@ all_lib : msg.gh $(asi_lib) $(asi_lib_j) .symbolic
 $(asi_lib) : $(asi_objs) asmsg.obj
         $(librarian) $(libflags) $<
 
-$(asi_lib_j) : $(asi_lib) asmsgj.obj
+$(asi_lib_j) : $(asi_objs) asmsgj.obj
         $(librarian) $(libflags) $<
 !endif
 

@@ -31,6 +31,7 @@
 
 
 #include "as.h"
+#include "asinline.h"
 
 #ifdef _STANDALONE_
 #error For inline-assembler only!
@@ -60,6 +61,20 @@ extern void AsmFini( void ) {
     DirFini();
     InsFini();
     SymFini();
+}
+
+extern void AsmFiniRelocs( void ) {
+//*********************************
+
+    asmreloc    *reloc;
+    asmreloc    *reloc_next;
+
+    for( reloc = AsmRelocs; reloc != NULL; reloc = reloc_next ) {
+        reloc_next = reloc->next;
+        MemFree( reloc->name );
+        MemFree( reloc );
+    }
+    AsmRelocs = NULL;
 }
 
 extern int AsmLine( char *in_str ) {
