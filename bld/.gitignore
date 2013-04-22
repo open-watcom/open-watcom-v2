@@ -120,6 +120,7 @@
 #
 /plusplus/*/*/*.dll
 /plusplus/*/*/ytab.c
+/plusplus/*/*/ytab.h
 /plusplus/*/*/y.out
 #
 /plustest/*.out
