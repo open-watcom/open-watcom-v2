@@ -30,49 +30,37 @@
 ****************************************************************************/
 
 
-#include "wobject.hpp"
-#include "wvlist1.hpp"
-#include "wstring.hpp"
-#include "wobjfile.hpp"
+#ifndef wvlist1_class
+#define wvlist1_class
 
-class WClassList : public WVList1
-{
-    public:
-        WClassList() {}
-        ~WClassList() { deleteContents() ; }
-};
+#include "wvcllctn.hpp"
 
-class WClassMapItem: public WObject
+WCLASS WVList1 : public WVCollection
 {
+        Declare( WVList1 )
         public:
-                WEXPORT WClassMapItem( const char* name, ctor ctor, int csize ) : _name(name), _ctor(ctor), _csize(csize) {}
-                WEXPORT ~WClassMapItem() {}
-                virtual bool WEXPORT isEqual( const WObject* obj ) const;
-                const char*     _name;
-                ctor            _ctor;
-                int             _csize;
+                WEXPORT WVList1();
+                WEXPORT WVList1( WVList1& );
+                WEXPORT ~WVList1();
+                int WEXPORT count() const { return _free; }
+                WObject* operator[]( long int index ) { return _set[ index ]; }
+                WObject* WEXPORT find( WObject *obj );
+                virtual WObject* WEXPORT add( WObject* obj );
+                int WEXPORT indexOfSame( WObject *obj );
+                virtual WObject* WEXPORT removeAt( int index );
+                virtual WObject* replaceAt( int index, WObject* obj );
+                virtual WObject* insertAt( int index, WObject* obj );
+                WObject* WEXPORT removeSame( WObject* obj );
+                void WEXPORT deleteContents();
+                void WEXPORT reset();
+                void WEXPORT sort();
+        protected:
+         static WObject** _set;
+         static int     _count;
+         static int     _free;
+        private:
+                void growBlock();
 };
 
-bool WEXPORT WClassMapItem::isEqual( const WObject* obj ) const
-{
-        return streq( _name, ((WClassMapItem*)obj)->_name );
-}
+#endif //wvlist_class
 
-#ifdef __WATCOMC__
-#pragma initialize before program
-#endif
-
-WClassList _classMap;
-
-bool WEXPORT WClass::addClass( const char* name, ctor ctor, int csize )
-{
-        _classMap.add( new WClassMapItem( name, ctor, csize ) );
-        return TRUE;
-}
-
-WObject* WClass::createObject( const char* name, WObjectFile& p )
-{
-        WClassMapItem t( name, NULL, 0 );
-        WClassMapItem* m = (WClassMapItem*)_classMap.find( &t );
-        return (*m->_ctor)( p );
-}

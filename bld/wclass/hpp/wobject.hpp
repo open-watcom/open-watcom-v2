@@ -69,9 +69,6 @@ WCLASS WObject {
         // Checks to see if two objects are equivilant.
         virtual bool WEXPORT isEqual( const WObject* ) const { return FALSE; }
 
-        /* If this works like strcmp( then why return 0 if isEqual() returns
-         * false? -- Bryce (Aug 24, 2006)
-         */
         // Compairs two objects.  Results like strcmp()
         virtual int WEXPORT compare( const WObject* ) const { return 0; }
 #ifdef __WATCOM_CPLUSPLUS__
