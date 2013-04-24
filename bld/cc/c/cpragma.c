@@ -34,12 +34,6 @@
 #include "pragdefn.h"
 #include "pdefn2.h"
 
-#ifdef __UNIX__
-    #define FNAMECMPSTR      strcmp      /* for case sensitive file systems */
-#else
-    #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
-#endif
-
 struct  pack_info {
     struct pack_info *next;
     int         pack_amount;

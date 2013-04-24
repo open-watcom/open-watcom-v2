@@ -81,6 +81,12 @@ typedef void        *VOIDPTR;
 #define MACRO_HASH_SIZE             4093
 #define MAX_PARM_LIST_HASH_SIZE     15
 
+#ifdef __UNIX__
+    #define FNAMECMPSTR      strcmp      /* for case sensitive file systems */
+#else
+    #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
+#endif
+
 
 global  char    *PCH_Start;     // start of precompiled memory block
 global  char    *PCH_End;       // end of precompiled memory block

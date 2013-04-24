@@ -249,7 +249,7 @@ typedef struct type_definition {
 extern  void WalkTypeList( void (*func)(TYPEPTR) );
 extern  void WalkFuncTypeList( void (*func)(TYPEPTR,int) );
 
-struct textsegment {    /* used for #pragma alloc_text(seg,func1,func2,...) */
+typedef struct textsegment {    /* used for #pragma alloc_text(seg,func1,func2,...) */
     union {
         struct textsegment *next;
         int textsegment_len;        /* for pre-compiled header */
@@ -257,7 +257,7 @@ struct textsegment {    /* used for #pragma alloc_text(seg,func1,func2,...) */
     int     segment_number;
     int     index;
     char    segname[1];
-};
+} textsegment;
 
 typedef struct fname_list {
     union {

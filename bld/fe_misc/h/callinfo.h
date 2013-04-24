@@ -39,21 +39,12 @@
 
 typedef struct aux_info {
         call_class      cclass;
-        union {
-            byte_seq   *code;
-            int         code_size;      // for C pre-compiled header
-        };
-        union {
-            hw_reg_set  *parms;
-            int         parms_size;     // for C pre-compiled header
-        };
+        byte_seq        *code;          // also used by C pre-compiled header
+        hw_reg_set      *parms;         // also used by C pre-compiled header
         hw_reg_set      returns;
         hw_reg_set      streturn;
         hw_reg_set      save;
-        union {
-            char        *objname;
-            int         objname_size;   // for C pre-compiled header
-        };
+        char            *objname;       // also used by C pre-compiled header
         unsigned        use;            // use count
         aux_flags       flags;
         unsigned        index;          // for C/C++ pre-compiled header
@@ -62,24 +53,32 @@ typedef struct aux_info {
         linkage_regs    *linkage;
     #endif
     #if _CPU == _AXP
-        char           *except_rtn;
+        char            *except_rtn;
     #endif
   #endif
 } aux_info;
 
-global aux_info DefaultInfo;
-global aux_info WatcallInfo;
-global aux_info CdeclInfo;
-global aux_info PascalInfo;
-global aux_info FortranInfo;
-global aux_info SyscallInfo;
-global aux_info OptlinkInfo;
-global aux_info StdcallInfo;
-global aux_info FastcallInfo;
+#define DefaultInfo      BuiltinAuxInfo[0]
+#define WatcallInfo      BuiltinAuxInfo[1]
+#define CdeclInfo        BuiltinAuxInfo[2]
+#define PascalInfo       BuiltinAuxInfo[3]
+#define FortranInfo      BuiltinAuxInfo[4]
+#define SyscallInfo      BuiltinAuxInfo[5]
+#define OptlinkInfo      BuiltinAuxInfo[6]
+#define StdcallInfo      BuiltinAuxInfo[7]
+#define FastcallInfo     BuiltinAuxInfo[8]
 #if _CPU == 386
-global aux_info Far16CdeclInfo;
-global aux_info Far16PascalInfo;
+#define Far16CdeclInfo   BuiltinAuxInfo[9]
+#define Far16PascalInfo  BuiltinAuxInfo[10]
 #endif
+
+#if _CPU == 386
+#define MAX_BUILTIN_AUXINFO (9 + 2)
+#else
+#define MAX_BUILTIN_AUXINFO 9
+#endif
+
+global aux_info          BuiltinAuxInfo[MAX_BUILTIN_AUXINFO];
 
 extern  void    PragmaAuxInfoInit( int );
 extern  void    SetAuxStackConventions( void );

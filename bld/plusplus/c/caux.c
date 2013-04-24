@@ -112,20 +112,20 @@ char *AuxRetrieve( AUX_INFO *pragma )
 
 static void readAuxInfo( AUX_INFO *i, unsigned control )
 {
-    size_t parms_size;
-    size_t objname_size;
+    unsigned parms_size;
+    unsigned objname_size;
 
     if(( control & RAUX_RAW ) == 0 ) {
         freeAuxInfo( i );
     }
     PCHRead( i, sizeof( *i ) );
     AsmSysPCHReadCode( i );
-    parms_size = i->parms_size;
+    parms_size = PCHGetUInt( i->parms );
     if( parms_size != 0 ) {
         i->parms = CMemAlloc( parms_size );
         PCHRead( i->parms, parms_size );
     }
-    objname_size = i->objname_size;
+    objname_size = PCHGetUInt( i->objname );
     if( objname_size != 0 ) {
         i->objname = CMemAlloc( objname_size );
         PCHRead( i->objname, objname_size );
@@ -207,30 +207,34 @@ static void writeAuxInfo( AUX_INFO *info, cv_index *index )
     hw_reg_set  *regs;
     hw_reg_set  *save_parms;
     char        *save_objname;
+    unsigned    parms_size;
+    unsigned    objname_size;
 
     info->index = (*index)++;
     save_parms = info->parms;
     save_objname = info->objname;
-    info->parms_size = 0;
+    parms_size = 0;
     if( save_parms != NULL ) {
         regs = save_parms;
         for(;;) {
-            info->parms_size += sizeof( hw_reg_set );
+            parms_size += sizeof( hw_reg_set );
             if( HW_CEqual( *regs, HW_EMPTY ) ) break;
             ++regs;
         }
     }
-    info->objname_size = 0;
+    info->parms = PCHSetUInt( parms_size );
+    objname_size = 0;
     if( save_objname != NULL ) {
-        info->objname_size = strlen( save_objname ) + 1;
+        objname_size = strlen( save_objname ) + 1;
     }
-    PCHWrite( info, sizeof( *info ) );
+    info->objname = PCHSetUInt( objname_size );
+    PCHWriteVar( *info );
     AsmSysPCHWriteCode( info );
-    if( info->parms_size != 0 ) {
-        PCHWrite( save_parms, info->parms_size );
+    if( parms_size != 0 ) {
+        PCHWrite( save_parms, parms_size );
     }
-    if( info->objname_size != 0 ) {
-        PCHWrite( save_objname, info->objname_size );
+    if( objname_size != 0 ) {
+        PCHWrite( save_objname, objname_size );
     }
     info->parms = save_parms;
     info->objname = save_objname;

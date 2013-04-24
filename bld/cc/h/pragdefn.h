@@ -32,38 +32,32 @@
 
 #define BY_C_FRONT_END
 #include "cgaux.h"
+#include "cmemmgr.h"
+#include "strsave.h"
+#include "auxflags.h"
+#include "callinfo.h"
 
-struct aux_entry {
-    union {
-        struct aux_info *info;
-        unsigned        aux_info_index;         // for pre-compiled header
-    };
+typedef struct aux_entry {
     struct aux_entry    *next;
+    aux_info            *info;         // also used by pre-compiled header
 #if _CPU == 370
     int                 offset;
 #endif
     char                name[1];
-};
+} aux_entry;
 
-typedef int     aux_flags;
-#define AUX_FLAG_FAR16  1
-
-#include "cmemmgr.h"
-#include "strsave.h"
-#include "callinfo.h"
-
-struct  inline_funcs {
-        char       *name;       /* func name */
-        byte_seq   *code;       /* sequence of bytes */
-        hw_reg_set *parms;      /* parameter information */
-        hw_reg_set returns;     /* function return information */
-        hw_reg_set save;        /* registers not modified */
-};
+typedef struct inline_funcs {
+    char       *name;       /* func name */
+    byte_seq   *code;       /* sequence of bytes */
+    hw_reg_set *parms;      /* parameter information */
+    hw_reg_set returns;     /* function return information */
+    hw_reg_set save;        /* registers not modified */
+} inline_funcs;
 
 struct toggle {
-        char *name;
-        int flag;
-    };
+    char *name;
+    int flag;
+};
 
 global struct aux_entry         *AuxList;
 global struct aux_info          *CurrAlias;
