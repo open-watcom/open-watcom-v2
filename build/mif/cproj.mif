@@ -477,24 +477,31 @@ lflags_wind_os2_386  = sys os2v2_pm
 lflags_wind_os2_i86  = sys os2_pm
 
 # DLL application macros
-lflags_dll_dos_386  = sys causeway_dll lib doslfn3r.lib
-lflags_dll_nt_386   = sys nt_dll
-lflags_dll_nt_axp   = sys ntaxp_dll
-lflags_dll_os2_386  = sys os2v2_dll
-lflags_dll_os2_i86  = sys os2_dll
-lflags_dll_rdos_386 = sys rdos_dll
-lflags_dll_win_i86  = sys windows_dll
+lflags_dll_dos_386     = sys causeway_dll lib doslfn3r.lib
+lflags_dll_dos_i86     = $(lflags_dos_i86)
+lflags_dll_linux_386   = $(lflags_linux_386)
+lflags_dll_linux_mps   = $(lflags_linux_mps)
+lflags_dll_linux_ppc   = $(lflags_linux_ppc)
+lflags_dll_nov_386     = $(lflags_nov_386)
+lflags_dll_nt_386      = sys nt_dll
+lflags_dll_nt_axp      = sys ntaxp_dll
+lflags_dll_os2_386     = sys os2v2_dll
+lflags_dll_os2_i86     = sys os2_dll
+lflags_dll_osi_386     = $(lflags_osi_386)
+lflags_dll_qnx_386     = $(lflags_qnx_386)
+lflags_dll_qnx_i86     = $(lflags_qnx_i86)
+lflags_dll_rdos_386    = sys rdos_dll
+lflags_dll_rdosdev_386 = $(lflags_rdosdev_386)
+lflags_dll_win_386     = $(lflags_win_386)
+lflags_dll_win_i86     = sys windows_dll
+lflags_dll_zdos_386    = $(lflags_zdos_386)
 
 proj_l_flags     = $(extra_l_flags_$(host_os)) $(extra_l_flags)
 proj_l_flags_dll = $(extra_l_flags_dll_$(host_os)) $(extra_l_flags_dll)
 
 lflags_gen       = $(mode_lflags) $(lflags_$(host_os)_$(host_cpu)) $(proj_l_flags)
 
-!ifdef lflags_dll_$(host_os)_$(host_cpu)
 lflags_dll       = $(mode_lflags) $(lflags_dll_$(host_os)_$(host_cpu)) $(proj_l_flags_dll)
-!else
-lflags_dll       = $(mode_lflags) $(lflags_$(host_os)_$(host_cpu)) $(proj_l_flags_dll)
-!endif
 
 !ifdef lflags_wind_$(host_os)_$(host_cpu)
 lflags_wind      = $(mode_lflags) $(lflags_wind_$(host_os)_$(host_cpu)) $(proj_l_flags)
