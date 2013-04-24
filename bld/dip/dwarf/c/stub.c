@@ -32,28 +32,24 @@
 
 #if defined(__NT__) || defined(__DOS__) || defined(__OS2__) || defined(__UNIX__)
 
-#pragma off(unreferenced);
-double _matherr( why, who, arg1, arg2, result )
-    int why;
-    char *who;
-    double *arg1, *arg2, result;
-{
-    return( result );
-}
-#if defined(__X86__)
+#if defined( _M_IX86 )
+#if !defined( __NT__ )
 void __set_ERANGE() {};
+#endif
 
-#if defined(__386__)
-#pragma aux __FPE_exception "*_";
-void __FPE_exception() {};
-#else
+#if defined( _M_I86 )
 void far __null_FPE_handler() {};
 void (*__FPE_handler)() = &__null_FPE_handler;
+#else
+#pragma aux __FPE_exception "*_";
+void __FPE_exception() {};
 #endif
 
 /* WD looks for this symbol to determine module bitness */
+#if !defined( __NT__ )
 int __nullarea;
 #pragma aux __nullarea "*";
+#endif
 
 #elif defined(__AXP__)
 int DllMainCRTStartup()
@@ -64,8 +60,7 @@ int DllMainCRTStartup()
 
 #endif
 
-#if defined(__X86__)
-int _real87, _8087;
+#if defined( _M_IX86 )
 int fltused_;
 #elif defined(__AXP__)
 int _fltused_;

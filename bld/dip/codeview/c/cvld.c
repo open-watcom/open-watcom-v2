@@ -36,6 +36,12 @@
 #include "exepe.h"
 #include "exedos.h"
 
+/* WD looks for this symbol to determine module bitness */
+#if !defined( __WINDOWS__ )
+int __nullarea;
+#pragma aux __nullarea "*";
+#endif
+
 /*
         Loading/unloading symbolic information.
 */
