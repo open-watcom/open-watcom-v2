@@ -41,14 +41,16 @@
  * NB: MEM_ALIGN must be at least int-sized
  */
 
-#ifdef __AXP__
+#if defined( __AXP__ )
     #define MEM_ALIGN   sizeof( double )
 #else
     #define MEM_ALIGN   sizeof( int )
 #endif
 
+#define MCB_SHIFT   MEM_ALIGN
+
 typedef struct  mem_block {
-        size_t              len;    /* length of stg */
+        unsigned            len;    /* length of stg */
         struct mem_block    *prev;  /* pointer to previous free memory block */
         struct mem_block    *next;  /* pointer to next     free memory block */
 } MCB;
@@ -56,7 +58,7 @@ typedef struct  mem_block {
 typedef struct mem_blk {
     struct mem_blk  *next;
     char            *ptr;   // old perm pointer
-    long            size;   // old perm size
+    unsigned        size;   // old perm size
 #ifdef __AXP__
     unsigned        pad;    // padding to get quadword aligned size
 #endif
@@ -82,8 +84,8 @@ typedef struct mem_blk {
 */
 
 static  char        *PermPtr;   /* next free byte in PermArea */
-static  size_t      PermSize;   /* total size of permanent memory block */
-static  size_t      PermAvail;  /* # of bytes available in PermArea */
+static  unsigned    PermSize;   /* total size of permanent memory block */
+static  unsigned    PermAvail;  /* # of bytes available in PermArea */
 
 static  MCB         CFreeList;
 static  mem_blk     *Blks;
@@ -115,22 +117,22 @@ static void AllocPermArea( void )
 {
     char    *perm_area;
 
-    PermSize = MAX_PERM_SIZE;
     perm_area = NULL;
-    for( ;PermSize; ) {                                     /* 05-apr-91 */
+    for( PermSize = MAX_PERM_SIZE; PermSize != 0; PermSize -= 32 ) {
         mem_blk *blk;
-        blk = calloc( 1, sizeof( mem_blk )+ PermSize + sizeof( int ) );
+        blk = calloc( 1, sizeof( mem_blk ) + PermSize + sizeof( int ) );
         if( blk != NULL ) {
             blk->next = Blks;
             blk->ptr = PermPtr;
             blk->size = PermSize;
             Blks = blk;
-            perm_area = (char*)blk + sizeof( mem_blk );
+            perm_area = (char *)blk + sizeof( mem_blk );
             *(int *)(perm_area + PermSize) = -1;     /* null length tag */
             break;
         }
-        if( PermSize < 32 )  PermSize = 32;
-        PermSize -= 32;
+        if( PermSize < 32 ) {
+            PermSize = 32;
+        }
     }
     PermPtr = perm_area;
     PermAvail = PermSize;
@@ -156,13 +158,14 @@ void CMemFini( void )
 static void *CFastAlloc( unsigned size )
 /**************************************/
 {
-    size_t      amount;
+    unsigned    amount;
     MCB         *p1;
     MCB         *pnext;
     MCB         *pprev;
 
-    amount = (size + MEM_ALIGN + MEM_ALIGN - 1) & - MEM_ALIGN;
-    if( amount < sizeof( MCB ) )  amount = sizeof( MCB );
+    amount = _RoundUp( size + MCB_SHIFT, MEM_ALIGN );
+    if( amount < sizeof( MCB ) )
+        amount = sizeof( MCB );
 
 /*      search free list before getting memory from PermArea */
 
@@ -182,14 +185,15 @@ static void *CFastAlloc( unsigned size )
                 pnext->prev = pprev;
             }
             p1->len |= 1;           /* indicate block allocated */
-            return( (char *)p1 + MEM_ALIGN );
+            return( (char *)p1 + MCB_SHIFT );
         }
     }
-    if( amount > PermAvail ) return( NULL ); 
+    if( amount > PermAvail )
+        return( NULL ); 
     PermAvail -= amount;
-    p1 = (MCB *) (PermPtr + PermAvail);
+    p1 = (MCB *)( PermPtr + PermAvail );
     p1->len = amount | 1;
-    return( (char *)p1 + MEM_ALIGN );
+    return( (char *)p1 + MCB_SHIFT );
 }
 
 
@@ -201,7 +205,10 @@ static void Ccoalesce( MCB *p1 )
 
     for( ;; ) {
         p2 = (MCB *)( (char *)p1 + p1->len );
-        if( p2->len & 1 )  break;   /* quit if next block not free */
+        if( p2->len & 1 )   /* quit if next block not free */
+            break;
+        if( p2->len == 0 )  /* quit if no more blocks follow in permanet block */
+            break;
         /* coalesce p1 and p2 and remove p2 from free list */
         p1->len += p2->len;
         pnext = p2->next;
@@ -238,14 +245,14 @@ void *CMemRealloc( void *loc, unsigned size )
 {
     void            *p;
     MCB             *p1;
-    size_t          len;
+    unsigned        len;
 
     if( loc == NULL )
         return( CMemAlloc( size ) );
 
     p = loc;
-    p1 = (MCB *) ( (char *)loc - MEM_ALIGN );
-    len = (p1->len & SIZE_MASK) - MEM_ALIGN;
+    p1 = (MCB *)( (char *)loc - MCB_SHIFT );
+    len = (p1->len & SIZE_MASK) - MCB_SHIFT;
     if( size > len ) {
         p = CMemAlloc( size );
         memcpy( p, loc, len );
@@ -264,24 +271,22 @@ enum cmem_kind {
 static enum cmem_kind CMemKind( void *loc )
 {
     char            *ptr;
-    size_t          size;
+    unsigned        size;
     mem_blk         *blk;
 
     ptr  = PermPtr;
     size = PermSize;
-    blk  = Blks;
-    while( blk != NULL ) {
+    for( blk = Blks; blk != NULL; blk = blk->next ) {
         if( (mem_blk *)loc > blk ) {
             if( (char *)loc < ptr ) {
                 return( CMEM_PERM );
             }
-            if( ((mem_blk *)loc < blk) + sizeof( mem_blk ) + size ) {
+            if( (char *)loc < (char *)blk + sizeof( mem_blk ) + size ) {
                 return( CMEM_MEM );
             }
         }
         ptr = blk->ptr;
         size = blk->size;
-        blk = blk->next;
     }
     return( CMEM_NONE );
 }
@@ -290,7 +295,7 @@ static enum cmem_kind CMemKind( void *loc )
 void CMemFree( void *loc )
 /************************/
 {
-    size_t      len;
+    unsigned    len;
     MCB         *p1;
     MCB         *pprev;
     MCB         *pnext;
@@ -298,16 +303,15 @@ void CMemFree( void *loc )
     if( loc == NULL ) { //Should try and get rid of these error cases
         return;
     }
-    if( ((char *) loc >= PCH_Start)  &&  ((char *) loc < PCH_End) ) {
-        return;  // 29-dec-93
+    if( ((char *)loc >= PCH_Start) && ((char *)loc < PCH_End) ) {
+        return;
     }
     switch( CMemKind( loc ) ) {
     case CMEM_PERM:
         return;
     case CMEM_MEM:
-        p1 = (MCB *) ( (char *)loc - MEM_ALIGN );
-        len = p1->len;
-        len &= SIZE_MASK;
+        p1 = (MCB *)( (char *)loc - MCB_SHIFT );
+        len = p1->len & SIZE_MASK;
         if( (char *)p1 == PermPtr + PermAvail ) {
             PermAvail += len;
             if( CFreeList.next != &CFreeList ) {
@@ -350,7 +354,7 @@ void *CPermAlloc( unsigned amount )
 {
     char        *p;
 
-    amount = (amount + MEM_ALIGN - 1) & -MEM_ALIGN;
+    amount = _RoundUp( amount, MEM_ALIGN );
     if( amount > PermAvail ) {
         AllocPermArea();            /* allocate another permanent area */
         if( amount > PermAvail ) {
@@ -379,7 +383,9 @@ void *FEmalloc( unsigned size )                 /* 16-jan-90 */
 
 void FEfree( void *p )
 {
-    if( p != NULL )  free( p );
+    if( p != NULL ) {
+        free( p );
+    }
 }
 
 
