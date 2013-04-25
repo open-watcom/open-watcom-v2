@@ -55,6 +55,7 @@ typedef struct cdat_info {
 extern void             P1Start( void );
 extern unsigned long    IncPass1( void );
 extern void             DoIncGroupDefs( void );
+extern void             Set64BitMode( void );
 extern void             Set32BitMode( void );
 extern void             Set16BitMode( void );
 extern void             AllocateSegment( segnode *, char *clname );
@@ -64,8 +65,7 @@ extern class_entry *    FindClass( section *, char *, bool, bool );
 extern seg_leader *     InitLeader( char * );
 extern void             FreeLeader( void * );
 extern void             AddToGroup( group_entry *, seg_leader * );
-extern void             SetAddPubSym( symbol *, sym_info, mod_entry *, offset,
-                                      unsigned_16 );
+extern void             SetAddPubSym( symbol *, sym_info, mod_entry *, offset, unsigned_16 );
 extern void             DefineSymbol( symbol *, segnode *, offset, unsigned_16);
 extern void             AllocCommunal( symbol *, offset );
 extern symbol *         MakeCommunalSym( symbol *, offset, bool, bool );

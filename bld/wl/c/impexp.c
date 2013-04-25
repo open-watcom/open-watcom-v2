@@ -63,7 +63,7 @@ static entry_export * FindPlace( entry_export *exp )
     entry_export *  ret;
 
     ret = NULL;
-        prev = NULL;
+    prev = NULL;
     place = exp->next;
     if( place != NULL && place->ordinal <= exp->ordinal ) {
         for(;;) {
@@ -307,12 +307,10 @@ void MSImportKeyword( symbol *sym, length_name *modname, length_name *extname, o
             SET_SYM_TYPE( dll->iatsym, SYM_IMPORTED );
             dll->iatsym->p.import = NULL;
         }
-        dll->m.modnum = AddNameTable( modname->name, modname->len, TRUE,
-                                    &FmtData.u.os2.mod_ref_list );
+        dll->m.modnum = AddNameTable( modname->name, modname->len, TRUE, &FmtData.u.os2.mod_ref_list );
         dll->isordinal = ordinal != NOT_IMP_BY_ORDINAL;
         if( !dll->isordinal ) {
-            dll->u.entry = AddNameTable( extname->name, extname->len, FALSE,
-                                        &FmtData.u.os2.imp_tab_list );
+            dll->u.entry = AddNameTable( extname->name, extname->len, FALSE, &FmtData.u.os2.imp_tab_list );
         } else {
             dll->u.ordinal = ordinal;
         }
@@ -376,7 +374,7 @@ static void ReadOldLib( void )
         dos_exe_header  dos;
         os2_exe_header  os2;
         os2_flat_header os2f;
-        pe_header       pe;
+        exe_pe_header   pe;
     }           head;
     char *      fname;
     pe_object * objects;
@@ -397,8 +395,7 @@ static void ReadOldLib( void )
             ReadNameTable( the_file );
             QSeek( the_file, head.os2.nonres_off, fname );
             ReadNameTable( the_file );
-        } else if( head.os2f.signature == OSF_FLAT_SIGNATURE
-                || head.os2f.signature == OSF_FLAT_LX_SIGNATURE ) {
+        } else if( head.os2f.signature == OSF_FLAT_SIGNATURE || head.os2f.signature == OSF_FLAT_LX_SIGNATURE ) {
             if( head.os2f.resname_off != 0 ) {
                 QSeek( the_file, filepos + head.os2f.resname_off, fname );
                 ReadNameTable( the_file );
@@ -407,23 +404,32 @@ static void ReadOldLib( void )
                 QSeek( the_file, head.os2f.nonres_off, fname );
                 ReadNameTable( the_file );
             }
-        } else if( head.pe.signature == PE_SIGNATURE ) {
-            _ChkAlloc( objects, head.pe.num_objects * sizeof(pe_object) );
-            QRead( the_file, objects, head.pe.num_objects * sizeof(pe_object),
-                   fname );
+        } else if( head.pe.pe32.signature == PE_SIGNATURE ) {
+            int                 num_objects;
+            pe_hdr_table_entry  *table;
+
+            if( IS_PE64( head.pe ) ) {
+                num_objects = PE64( head.pe ).num_objects;
+                table = PE64( head.pe ).table;
+            } else {
+                num_objects = PE32( head.pe ).num_objects;
+                table = PE32( head.pe ).table;
+            }
+            _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
+            QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
             currobj = objects;
-            while( head.pe.num_objects > 0 ) {
-                if( currobj->rva == head.pe.table[PE_TBL_EXPORT].rva ) {
+            while( num_objects > 0 ) {
+                if( currobj->rva == table[PE_TBL_EXPORT].rva ) {
                     QSeek( the_file, currobj->physical_offset, fname );
-                    head.pe.table[PE_TBL_EXPORT].rva -=currobj->physical_offset;
-                    ReadPEExportTable( the_file, &head.pe.table[PE_TBL_EXPORT]);
+                    table[PE_TBL_EXPORT].rva -= currobj->physical_offset;
+                    ReadPEExportTable( the_file, &table[PE_TBL_EXPORT]);
                     break;
                 }
-                head.pe.num_objects--;
+                num_objects--;
                 currobj++;
             }
             _LnkFree( objects );
-            if( head.pe.num_objects == 0 ) {
+            if( num_objects == 0 ) {
                 LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
             }
         } else {
@@ -435,8 +441,8 @@ static void ReadOldLib( void )
     FmtData.u.os2.old_lib_name = NULL;
 }
 
-void CheckExport( char * name, ordinal_t ordinal, int (*compare_rtn)(const char *,const char *))
-/**********************************************************************************************/
+void CheckExport( char * name, ordinal_t ordinal, int (*compare_rtn)(const char *,const char *) )
+/***********************************************************************************************/
 /* check if the name is exported and hasn't been assigned a value, and if so,
  * give it the specified value */
 {
@@ -485,10 +491,12 @@ static void ReadNameTable( f_handle the_file )
     }                             // skip the module name & ordinal.
     for( ;; ) {
         QRead( the_file, &length, sizeof( unsigned_8 ), fname );
-        if( length == 0 ) break;
+        if( length == 0 )
+            break;
         QRead( the_file, TokBuff, length, fname );
         QRead( the_file, &ordinal, sizeof( unsigned_16 ), fname );
-        if( ordinal == 0 ) continue;
+        if( ordinal == 0 )
+            continue;
         TokBuff[ length ] = '\0';
         CheckExport( TokBuff, ordinal, compare_rtn );
     }
@@ -505,11 +513,13 @@ ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *grp )
     owner = &FmtData.u.os2.exports;
     for( ;; ) {
         exp = *owner;
-        if( exp == NULL ) break;
+        if( exp == NULL )
+            break;
         if( addr.seg == exp->addr.seg && addr.off == exp->addr.off ) {
             return( exp->ordinal );
         }
-        if( exp->ordinal >= max_ord ) max_ord = exp->ordinal;
+        if( exp->ordinal >= max_ord )
+            max_ord = exp->ordinal;
         owner = &exp->next;
     }
     exp = AllocExport( NULL, 0 );

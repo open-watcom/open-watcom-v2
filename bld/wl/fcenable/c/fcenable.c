@@ -34,12 +34,14 @@
 #include <string.h>
 #include <ctype.h>
 #include <malloc.h>
-#include <fcntl.h>
 #include <setjmp.h>
 #include <process.h>
-#include <unistd.h>
-#include <sys/stat.h>
+#ifdef __UNIX__
 #include <utime.h>
+#else
+#include <sys/utime.h>
+#endif
+#include "wio.h"
 #include "fcenable.h"
 #include "banner.h"
 

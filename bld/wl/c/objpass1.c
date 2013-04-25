@@ -373,7 +373,6 @@ void DoIncGroupDefs( void )
     IncGroupDefs = NULL;
 }
 
-#if 0
 void Set64BitMode( void )
 /******************************/
 // make sure that the executable format is a 64-bit format.
@@ -387,7 +386,6 @@ void Set64BitMode( void )
         }
     }
 }
-#endif
 
 void Set32BitMode( void )
 /******************************/

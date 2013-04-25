@@ -103,8 +103,10 @@ bool LibFind( char *name, bool old_sym )
             continue;
         if( SearchAndProcLibFile( lib, name ) )
             return( TRUE );
-        if( isimpsym && SearchAndProcLibFile( lib, name + PREFIX_LEN ) ) {
-            return( TRUE );
+        if( isimpsym ) {
+            if( SearchAndProcLibFile( lib, name + PREFIX_LEN ) ) {
+                return( TRUE );
+            }
         }
     }
     return( FALSE );

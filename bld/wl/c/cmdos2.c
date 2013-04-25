@@ -104,6 +104,7 @@ static entry_export *ProcWlibDLLImportEntry( void )
     if( !GetToken( SEP_DOT_EXT, 0 ) ) {
         return( NULL );
     }
+    internal.len = 0;
     internal.name = NULL;
     ordinal = 0;
     if( GetToken( SEP_DOT_EXT, 0 ) ) {
@@ -115,8 +116,7 @@ static entry_export *ProcWlibDLLImportEntry( void )
                 memcpy( symname.name, Token.this, Token.len );
                 symname.name[ Token.len ] = '\0';
             }
-            if( GetToken( SEP_DOT_EXT, 0 )
-                && getatoi( &ordinal ) != ST_IS_ORDINAL ) {
+            if( GetToken( SEP_DOT_EXT, 0 ) && getatoi( &ordinal ) != ST_IS_ORDINAL ) {
                 if( GetToken( SEP_DOT_EXT, 0 ) ) {
                     getatoi( &ordinal );
                 }
@@ -198,6 +198,7 @@ static bool getimport( void )
     memcpy( modname.name, Token.this, Token.len );
     modname.name[ Token.len ] = '\0';
     modname.len = Token.len;
+    ordinal = 0;
     state = ST_INVALID_ORDINAL;   // assume to extname or ordinal.
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
         state =  getatoi( &ordinal );
@@ -535,7 +536,7 @@ void ChkBase( offset align )
     if( FmtData.base != NO_BASE_SPEC &&
                 (FmtData.base & (align-1)) != 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_OFFSET_MUST_BE_ALIGNED, "l", align );
-        FmtData.base = (FmtData.base + align-1) & ~(align-1);
+        FmtData.base = ROUND_UP( FmtData.base, align );
     }
 }
 
@@ -1264,5 +1265,20 @@ bool     ProcOsVersion( void )
 bool     ProcChecksum( void )
 {
     FmtData.u.pe.checksumfile = 1;
+    return( TRUE );
+}
+
+bool ProcLargeAddressAware( void )
+/********************************/
+{
+    FmtData.u.pe.largeaddressaware = 1;
+    FmtData.u.pe.nolargeaddressaware = 0;
+    return( TRUE );
+}
+bool ProcNoLargeAddressAware( void )
+/********************************/
+{
+    FmtData.u.pe.nolargeaddressaware = 1;
+    FmtData.u.pe.largeaddressaware = 0;
     return( TRUE );
 }

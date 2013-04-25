@@ -166,23 +166,25 @@ static unsigned long COMAmountWritten;
 static bool WriteSegData( void *_sdata, void *_start )
 /****************************************************/
 {
-    segdata *sdata = _sdata;
-    signed long *start = _start;
-    signed long newpos;
-    signed long pad;
+    segdata         *sdata = _sdata;
+    unsigned long   *start = _start;
+    unsigned long   newpos;
+    unsigned long   pad;
 
     if( !sdata->isuninit && !sdata->isdead ) {
         newpos = *start + sdata->a.delta;
-        if( newpos + (signed long)sdata->length <= 0 )
+        if( newpos + (unsigned long)sdata->length < newpos )
             return( FALSE );
-        pad = newpos - COMAmountWritten;
-        if( pad > 0 ) {
+        if( newpos > COMAmountWritten ) {
+            pad = newpos - COMAmountWritten;
             PadLoad( pad );
-            COMAmountWritten += pad;
-            pad = 0;
+            WriteInfoLoad( sdata->u1.vm_ptr, sdata->length );
+            COMAmountWritten += sdata->length + pad;
+        } else {
+            pad = COMAmountWritten - newpos;
+            WriteInfoLoad( sdata->u1.vm_ptr + pad, sdata->length - pad );
+            COMAmountWritten += sdata->length - pad;
         }
-        WriteInfoLoad( sdata->u1.vm_ptr - pad, sdata->length + pad );
-        COMAmountWritten += sdata->length + pad;
     }
     return( FALSE );
 }
@@ -191,20 +193,19 @@ static bool DoCOMGroup( void *_seg, void *chop )
 /**********************************************************/
 {
     seg_leader *seg = _seg;
-    signed long newstart;
+    unsigned long  newstart;
 
-    newstart = *(signed long *)chop + GetLeaderDelta( seg );
+    newstart = *(unsigned long *)chop + GetLeaderDelta( seg );
     RingLookup( seg->pieces, WriteSegData, &newstart );
     return( FALSE );
 }
 
-static bool WriteCOMGroup( group_entry *group, signed long chop )
-/***************************************************************/
+static bool WriteCOMGroup( group_entry *group, unsigned long chop )
+/*************************************************************/
 /* write the data for group to the loadfile */
 /* returns TRUE if the file should be repositioned */
 {
-    unsigned long       loc;
-    signed  long        diff;
+    unsigned long           loc;
     section             *sect;
     bool                repos;
     outfilelist         *finfo;
@@ -214,10 +215,9 @@ static bool WriteCOMGroup( group_entry *group, signed long chop )
     CurrSect = sect;
     finfo = sect->outfile;
     loc = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
-    diff = loc - finfo->file_loc;
-    if( diff > 0 ) {
-        PadLoad( diff );
-    } else if( diff != 0 ) {
+    if( loc > finfo->file_loc ) {
+        PadLoad( loc - finfo->file_loc );
+    } else if( loc != finfo->file_loc ) {
         SeekLoad( loc );
         repos = TRUE;
     }
@@ -239,8 +239,7 @@ static void WriteCOMFile( void )
     outfilelist         *fnode;
     group_entry         *group;
     bool                repos;
-    unsigned long       root_size;
-    signed long         chop;
+    unsigned long       chop;
 
     if( StartInfo.addr.seg != 0 ) {
         LnkMsg( ERR+MSG_INV_COM_START_ADDR, NULL );
@@ -261,20 +260,14 @@ static void WriteCOMFile( void )
         if( chop > 0 ) {
             chop = 0;
         }
-        if( (signed long)group->size + chop > 0 ) {
+        if( (unsigned long)group->size + chop > 0 ) {
             repos = WriteCOMGroup( group, chop );
             if( repos ) {
                 SeekLoad( fnode->file_loc );
             }
         }
-#if 0
-        if( loc < 0 ) {
-            Root->u.file_loc += (unsigned long)loc;  // adjust for missing code
-        }
-#endif
     }
-    root_size = fnode->file_loc;
-    if( root_size > (64 * 1024L - 0x200) ) {
+    if( fnode->file_loc > (64 * 1024L - 0x200) ) {
         LnkMsg( ERR+MSG_COM_TOO_LARGE, NULL );
     }
     DBIWrite();
@@ -308,8 +301,7 @@ void FiniDOSLoadFile( void )
     // output debug info into root main output file
     CurrSect = Root;
     DBIWrite();
-    hdr_size = MAKE_PARA( (unsigned long)Root->relocs * sizeof( dos_addr )
-                                                                 + mz_hdr_size );
+    hdr_size = MAKE_PARA( Root->relocs * sizeof( dos_addr ) + mz_hdr_size );
     DEBUG((DBG_LOADDOS, "root size %l, hdr size %l", root_size, hdr_size ));
     SeekLoad( 0 );
     _HostU16toTarg( DOS_SIGNATURE, exe_head.signature );

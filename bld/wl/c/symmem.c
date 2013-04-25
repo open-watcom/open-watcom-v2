@@ -82,8 +82,10 @@ static bool ShrinkBlock( block_data *block )
 #ifdef __WATCOMC__
     sym_block   *new;
 
-    if( block->list == NULL ) return( FALSE );
-    if( block->currbrk >= block->list->size ) return( FALSE );
+    if( block->list == NULL )
+        return( FALSE );
+    if( block->currbrk >= block->list->size )
+        return( FALSE );
     _LnkReAlloc( new, block->list, block->currbrk + ALLOC_SIZE );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
@@ -95,6 +97,7 @@ static bool ShrinkBlock( block_data *block )
     return( TRUE );
 #else
     /* There is no guarantee realloc() won't move memory - just don't do it */
+    block = block;
     return( FALSE );
 #endif
 }
@@ -133,10 +136,12 @@ static void GetNewBlock( block_data *block, unsigned size )
 
     ShrinkBlock( block );
     try = SYM_BLOCK_SIZE;
-    if( try < size ) try = size;
+    if( try < size )
+        try = size;
     for( ;; ) {
         _LnkAlloc( new, try + ALLOC_SIZE );
-        if( new != NULL ) break;
+        if( new != NULL )
+            break;
         try /= 2;
         if( try < size || try < SYM_BLOCK_MIN ) {
             LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
@@ -161,7 +166,7 @@ static void * AllocBlock( unsigned size, block_data *block )
     if( block->list == NULL ) {
         GetNewBlock( block, size );
     } else if( newbrk > block->list->size ) {
-#ifndef __V80_LIB__
+#ifdef __WATCOMC__
         ptr = NULL;
         if( newbrk < UINT_MAX - ALLOC_SIZE  ) {
             /* try to expand block without moving it */
@@ -170,11 +175,11 @@ static void * AllocBlock( unsigned size, block_data *block )
         if( ptr != NULL ) {
             block->list->size = newbrk;
         } else {
-#else
-        {
-#endif
             GetNewBlock( block, size );
         }
+#else
+        GetNewBlock( block, size );
+#endif
     }
     ptr = block->list->block + block->currbrk;
     block->currbrk += size;

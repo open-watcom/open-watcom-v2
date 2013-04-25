@@ -49,15 +49,15 @@ typedef struct {
     free_t *    insert;
     blk_t *     blk_list;
     blk_t **    blk_map;
-    size_t      elm_size;
-    size_t      elm_count;
-    size_t      blk_top;
-    size_t      blk_count;
-    size_t      blk_size;
+    unsigned    elm_size;
+    unsigned    elm_count;
+    unsigned    blk_top;
+    unsigned    blk_count;
+    unsigned    blk_size;
     unsigned    size_chg : 1;
 } cv_t, *carve_t;
 
-extern carve_t CarveCreate( size_t elm_size, size_t how_many );
+extern carve_t CarveCreate( unsigned elm_size, unsigned how_many );
 extern void CarveRestart( carve_t cv, unsigned );
 extern void CarvePurge( carve_t cv );
 extern void CarveVerifyAllGone( carve_t cv, char * );
@@ -67,9 +67,14 @@ extern void *CarveAlloc( carve_t cv );
 extern void *CarveZeroAlloc( carve_t cv );
 extern void CarveFree( carve_t cv, void *elm );
 
-#define MK_INDEX( b, o )        (((b)<<16)|(o))
-#define GET_BLOCK( i )          (((i)>>16)&0x0ffff)
-#define GET_OFFSET( i )         ((i)&0x0ffff)
+typedef unsigned_32             cv_index;
+
+#define CV_SHIFT                16
+#define CV_MASK                 ((1<<CV_SHIFT)-1)
+
+#define MK_INDEX( b, o )        (((b)<<CV_SHIFT)|((o)&CV_MASK))
+#define GET_BLOCK( i )          (((i)>>CV_SHIFT))
+#define GET_OFFSET( i )         ((i)&CV_MASK)
 
 // block 0 is reserved for special indices
 
@@ -79,11 +84,9 @@ enum {
 };
 
 extern void *   CarveGetIndex( carve_t, void * );
-extern void     CarveWalkBlocks( carve_t, void (*)(carve_t, void *, void *),
-                                 void * );
+extern void     CarveWalkBlocks( carve_t, void (*)(carve_t, void *, void *), void * );
 extern bool     CarveBlockModified( void * );
-extern void     CarveBlockScan( carve_t, void *, void (*)(void *, void *),
-                                void *);
+extern void     CarveBlockScan( carve_t, void *, void (*)(void *, void *), void *);
 extern unsigned CarveBlockSize( carve_t );
 extern unsigned CarveNumElements( carve_t );
 extern void *   CarveBlockData( void * );

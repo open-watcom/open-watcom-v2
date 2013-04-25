@@ -219,8 +219,7 @@ void NewSegment( seg_leader *seg )
         seg->seg_addr.seg = CurrLoc.seg;
         CurrLoc.off = group->totalsize;
         if( seg == FmtData.dgroupsplitseg ) {
-            FmtData.bsspad = ROUND_UP(CurrLoc.off, FmtData.objalign)
-                                        - CurrLoc.off;
+            FmtData.bsspad = ROUND_UP(CurrLoc.off, FmtData.objalign) - CurrLoc.off;
             AddSize( FmtData.bsspad );
         }
         Align( seg->align );

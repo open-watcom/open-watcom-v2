@@ -87,7 +87,7 @@ static blk_t * newBlk( cv_t *cv )
 static void MakeFreeList( cv_t *cv, blk_t *newblk, unsigned offset )
 /******************************************************************/
 {
-    size_t      elm_size;
+    unsigned    elm_size;
     char *      top_elm;
     char *      bottom_elm;
     char *      free_elm;
@@ -106,12 +106,12 @@ static void MakeFreeList( cv_t *cv, blk_t *newblk, unsigned offset )
     cv->free_list = free_list;
 }
 
-carve_t CarveCreate( size_t elm_size, size_t blk_size )
+carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
 /******************************************************/
 {
     cv_t *      cv;
 
-    elm_size = ( elm_size + (sizeof(int)-1) ) & ~(sizeof(int)-1);
+    elm_size = ROUND_UP( elm_size, sizeof( int ) );
     if( elm_size < sizeof( free_t ) ) {
         elm_size = sizeof( free_t );
     }
@@ -145,10 +145,10 @@ void CarveVerifyAllGone( carve_t cv, char *node_name )
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         compare = block->data + cv->blk_top;
         do {
-            compare -= cv->elm_size;
+            compare = (char *)compare - cv->elm_size;
             /* verify every block has been freed */
             for( check = cv->free_list; check != NULL; check = check->next_free ) {
-                if( compare == (void *) check ) break;
+                if( compare == (char *)check ) break;
             }
             if( check == NULL ) {
                 if( ! some_unfreed ) {
@@ -257,18 +257,18 @@ void CarveDebugFree( carve_t cv, void *elm )
     blk_t *block;
     char *compare;
     char *start;
-    size_t esize;
+    unsigned esize;
 
     /* make sure object hasn't been freed before */
     for( check = cv->free_list; check != NULL; check = check->next_free ) {
-        if( elm == (void *) check ) {
+        if( elm == (void *)check ) {
             LnkFatal( "carve: freed object was previously freed" );
         }
     }
     /* make sure object is from this carve allocator */
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         start = block->data;
-        compare = start + cv->blk_top;
+        compare = (char *)start + cv->blk_top;
 #if ! ( defined(__COMPACT__) || defined(__LARGE__) )
         /* quick check */
         if( elm < start || elm > compare ) {
@@ -278,7 +278,7 @@ void CarveDebugFree( carve_t cv, void *elm )
         esize = cv->elm_size;
         for(;;) {
             if( compare == start ) break;
-            compare -= esize;
+            compare = (char *)compare - esize;
             if( elm == compare ) break;
         }
         if( elm == compare ) break;
@@ -310,7 +310,7 @@ void *CarveGetIndex( carve_t cv, void *elm )
     unsigned    block_index;
 
     if( elm == NULL ) {
-        return( (void *) CARVE_NULL_INDEX );
+        return( (void *)CARVE_NULL_INDEX );
     }
     block_index = cv->blk_count;
     block = cv->blk_list;
@@ -319,12 +319,11 @@ void *CarveGetIndex( carve_t cv, void *elm )
         block = block->next;
     }
     DbgAssert( block != NULL );
-    return (void *) MK_INDEX( block_index, ((char *)elm) - block->data );
+    return( (void *)MK_INDEX( block_index, (char *)elm - block->data ) );
 }
 
-void CarveWalkBlocks( carve_t cv, void (*cbfn)(carve_t, void *, void *),
-                      void * cookie )
-/**********************************************************************/
+void CarveWalkBlocks( carve_t cv, void (*cbfn)(carve_t, void *, void *), void *cookie )
+/*************************************************************************************/
 {
     blk_t *     block;
 
@@ -341,13 +340,12 @@ bool CarveBlockModified( void *blk )
     return ((blk_t *)blk)->modified;
 }
 
-void CarveBlockScan( carve_t cv, void *blk, void (*rtn)(void *, void *),
-                     void *data )
-/**********************************************************************/
+void CarveBlockScan( carve_t cv, void *blk, void (*rtn)(void *, void *), void *data )
+/***********************************************************************************/
 {
     char *      compare;
     char *      end;
-    size_t      esize;
+    unsigned    esize;
 
     esize = cv->elm_size;
     compare = ((blk_t *)blk)->data;

@@ -51,8 +51,7 @@ static bool WriteBinSegGroup( group_entry *group )
 /* write the data for group to the loadfile */
 /* returns TRUE if the file should be repositioned */
 {
-    unsigned_32         loc;
-    signed_32           diff;
+    unsigned long       loc;
     section             *sect;
     bool                repos;
     outfilelist         *finfo;
@@ -64,10 +63,9 @@ static bool WriteBinSegGroup( group_entry *group )
         finfo = sect->outfile;
         loc = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
         if ( (long)loc >= 0) {  // Offset may make this go negative for NOEMIT classes or segments
-            diff = loc - finfo->file_loc;
-            if( diff > 0 ) {
-                PadLoad( diff );
-            } else if( diff != 0 ) {
+            if( loc > finfo->file_loc ) {
+                PadLoad( loc - finfo->file_loc );
+            } else if( loc != finfo->file_loc ) {
                 SeekLoad( loc );
                 repos = TRUE;
             }

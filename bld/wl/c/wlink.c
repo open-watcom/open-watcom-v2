@@ -301,8 +301,7 @@ static void PreAddrCalcFormatSpec( void )
     }
 #endif
 #ifdef _PHARLAP
-    if( FmtData.type & MK_PHAR_FLAT && LinkState & HAVE_16BIT_CODE
-                                    && !(CmdFlags & CF_HAVE_REALBREAK)) {
+    if( FmtData.type & MK_PHAR_FLAT && LinkState & HAVE_16BIT_CODE && !(CmdFlags & CF_HAVE_REALBREAK)) {
         LnkMsg( WRN+MSG_NO_REALBREAK_WITH_16BIT, NULL );
     }
 #endif
@@ -373,16 +372,20 @@ static void DoDefaultSystem( void )
  * system block */
 {
     if( !(LinkState & FMT_DECIDED) ) {
-        if( LinkState & FMT_SEEN_32_BIT ) {
-            HintFormat( MK_386 );
+        if( LinkState & FMT_SEEN_64_BIT ) {
+            HintFormat( MK_64BIT );
+        } else if( LinkState & FMT_SEEN_32_BIT ) {
+            HintFormat( MK_32BIT );
         } else {
-            HintFormat( MK_286 | MK_QNX );
+            HintFormat( MK_16BIT | MK_QNX );
         }
         if( !(LinkState & FMT_DECIDED) ) {
             if( LinkState & FMT_SPECIFIED ) {
                 LnkMsg( FTL+MSG_AMBIG_FORMAT, NULL );
             }
-            if( LinkState & FMT_SEEN_32_BIT ) {
+            if( LinkState & FMT_SEEN_64_BIT ) {
+                ExecSystem( "64bit" );
+            } else if( LinkState & FMT_SEEN_32_BIT ) {
                 ExecSystem( "386" );
             } else {
                 ExecSystem( "286" ); /* no 386 obj's after this */
@@ -395,7 +398,9 @@ static void FindLibPaths( void )
 /******************************/
 {
     AddFmtLibPaths();
-    if( LinkState & FMT_SEEN_32_BIT ) {
+    if( LinkState & FMT_SEEN_64_BIT ) {
+        AddEnvPaths( "LIBX64" );
+    } else if( LinkState & FMT_SEEN_32_BIT ) {
         AddEnvPaths( "LIB386" );
     } else {
         AddEnvPaths( "LIB286" );
@@ -403,7 +408,7 @@ static void FindLibPaths( void )
             If we haven't seen a 386 object file by this time, we're
             not going to.
         */
-        HintFormat( MK_286 );
+        HintFormat( MK_16BIT );
     }
     AddEnvPaths( "LIB" );
 }

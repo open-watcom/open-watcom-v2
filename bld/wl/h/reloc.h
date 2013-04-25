@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#pragma pack(1)
+#include "pushpck1.h"
 
 typedef struct os2_reloc_item {
     unsigned_8      addr_type;          /* see below                     */
@@ -235,4 +235,4 @@ extern unsigned_32      WalkRelocList( RELOC_INFO **head, bool (*fn)( void *data
 extern unsigned         FmtRelocSize;
 extern RELOC_INFO *     FloatFixups;
 
-#pragma pack()
+#include "poppck.h"

@@ -61,7 +61,7 @@ static int              UseArgInfo( void );
 
 #define MSG_ARRAY_SIZE ((MSG_MAX_ERR_MSG_NUM / 8) + 1)
 
-unsigned long   MaxErrors;
+unsigned_32     MaxErrors;
 bool            BannerPrinted;
 
 byte MsgFlags[ MSG_ARRAY_SIZE ];
@@ -132,14 +132,11 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 } else {
                     str = va_arg( *args, symbol * )->name;
                 }
-#if defined(__WATCOMC__)
                 if( !(LinkFlags & DONT_UNMANGLE) ) {
                     size = __demangle_l( str, 0, dest, len );
                     if( size > (len-1) ) size = len - 1;
                     CurrSymName = dest;
-                } else
-#endif
-                {
+                } else {
                     size = strlen( str );
                     if( size > len ) size = len;
                     memcpy( dest, str, size );
@@ -255,11 +252,10 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                     } else {
                         size = FmtStr( dest, len, "DATA:%h", addr->off );
                     }
-                } else if( (FmtData.type & MK_386) || ch == 'A' ) {
+                } else if( (FmtData.type & MK_32BIT) || ch == 'A' ) {
                     size = FmtStr( dest, len, "%x:%h", addr->seg, addr->off );
                 } else {
-                    size = FmtStr( dest, len, "%x:%x", addr->seg,
-                                (unsigned short)addr->off );
+                    size = FmtStr( dest, len, "%x:%x", addr->seg, (unsigned short)addr->off );
                 }
                 dest += size;
                 len -= size;
@@ -612,19 +608,16 @@ int SymAlphaCompare( const void *a, const void *b )
     symbol *    right;
     const char *leftname;
     const char *rightname;
-    unsigned    leftsize;
-    unsigned    rightsize;
+    size_t      leftsize;
+    size_t      rightsize;
     int         result;
 
     left = *((symbol **) a);
     right = *((symbol **) b);
-#if defined(__WATCOMC__)
     if( !(LinkFlags & DONT_UNMANGLE) ) {
         __unmangled_name( left->name, 0, &leftname, &leftsize );
         __unmangled_name( right->name, 0, &rightname, &rightsize );
-    } else
-#endif
-    {
+    } else {
         leftname = left->name;
         rightname = right->name;
         leftsize = strlen( leftname );

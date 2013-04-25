@@ -100,20 +100,18 @@ void DBIInitModule( mod_entry *obj )
 void DBIP1Source( byte *buff, byte *endbuff )
 /**************************************************/
 {
-    int         len;
     byte        major;
     byte        minor;
 
     major = *buff++;
     minor = *buff++;
-    len = endbuff - buff;
-    if( len <= 0 ) {
+    if( endbuff <= buff ) {
         BadObject();
         return;
     }
     ObjFormat |= FMT_DEBUG_COMENT;
     if( LinkFlags & OLD_DBI_FLAG ) {
-        ODBIP1Source( major, minor, (char *)buff, len );
+        ODBIP1Source( major, minor, (char *)buff, endbuff - buff );
     }
 }
 

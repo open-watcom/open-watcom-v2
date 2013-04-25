@@ -366,7 +366,7 @@ bool ProcArea( void )
 /**************************/
 // process the area size directive.
 {
-    unsigned long   value;
+    unsigned_32     value;
     bool            ret;
 
     ret = GetLong( &value );

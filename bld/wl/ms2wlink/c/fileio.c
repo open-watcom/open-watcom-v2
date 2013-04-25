@@ -72,7 +72,7 @@ extern f_handle QOpenR( char *name )
 {
     f_handle h;
 
-    h = open( name, O_RDONLY | O_BINARY, 0 );
+    h = open( name, O_RDONLY | O_BINARY );
     if( h >= 0 ) {
         return( h );
     }

@@ -78,7 +78,6 @@ static void     GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata );
 
 byte            OMFAlignTab[] = {0,0,1,4,8,2,12};
 
-static lib_priority DefLibPriority;
 
 
 void ResetObjOMF( void )
@@ -96,7 +95,6 @@ static unsigned long ProcObj( file_list *file, unsigned long loc, void (*procrtn
     byte                cmd;
     unsigned_16         len;
 
-    DefLibPriority = -1;
     RecNum = 0;
     do {
         ObjFormat &= ~FMT_MS_386;   // assume not a Microsoft 386 .obj file
@@ -357,17 +355,15 @@ static void LinkDirective( void )
 /*******************************/
 {
     unsigned        directive;
+    lib_priority    priority;
     segnode         *seg;
 
     directive = *ObjBuff++;
     switch( directive ) {
     case LDIR_DEFAULT_LIBRARY:
         if( ObjBuff < EOObjRec ) {
-            DefLibPriority = *ObjBuff++ - '0';
-            if( ObjBuff < EOObjRec ) {
-                AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, DefLibPriority );
-                DefLibPriority = -1;
-            }
+            priority = *ObjBuff++ - '0';
+            AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, priority );
         }
         break;
     case LDIR_SOURCE_LANGUAGE:
@@ -519,11 +515,7 @@ static void Comment( void )
         LinkState |= DOSSEG_FLAG;
         break;
     case CMT_DEFAULT_LIBRARY:
-        if( DefLibPriority == -1 ) {
-            DefLibPriority = LIB_PRIORITY_MAX - 2;
-        }
-        AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, DefLibPriority );
-        DefLibPriority = -1;
+        AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, LIB_PRIORITY_MAX - 2 );
         break;
     case CMT_LINKER_DIRECTIVE:
         LinkDirective();

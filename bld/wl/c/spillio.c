@@ -115,8 +115,7 @@ virt_mem_size SpillAlloc( virt_mem_size amt )
         LnkMsg( INF+MSG_USING_SPILL, NULL );
     }
     /* round up storage start to a disk sector boundry -- assumed power of 2 */
-    TmpFSize += SECTOR_SIZE-1;
-    TmpFSize &= ~(SECTOR_SIZE-1);
+    TmpFSize = ROUND_UP( TmpFSize, SECTOR_SIZE - 1 );
     stg = TmpFSize;
     TmpFSize += amt;
     return( stg + 1 );  /* add 1 to prevent a NULL handle */

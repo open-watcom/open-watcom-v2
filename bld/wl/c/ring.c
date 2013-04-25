@@ -52,7 +52,7 @@ struct ring                     // model of a ring
 // following assume that ring will not be modified
 
 #define RingIterBeg( h, i ) \
-    if( i = h ) { \
+    if( (i = h) != 0 ) { \
         RING* _T = i; \
         do { \
             i = i->next;
@@ -64,7 +64,7 @@ struct ring                     // model of a ring
 // following allow ring to be modified
 
 #define RingIterBegSafe( h, i ) \
-    if( i = h ) { \
+    if( (i = h) != 0 ) { \
         RING* _T = i; \
         RING* _N = _T->next; \
         do { \
@@ -353,15 +353,15 @@ void * RINGNAME(Lookup) (       // LOOKUP IN A RING
 }
 
 
-int RINGNAME(Count) (           // COUNT ELEMENTS IN A RING
+unsigned RINGNAME(Count) (      // COUNT ELEMENTS IN A RING
     void *hdr )                 // - ring hdr
 {
-    int count;                  // - number elements
+    unsigned count;             // - number elements
     RING *curr;                 // - current element
 
     count = 0;
     RingIterBeg( hdr, curr ) {
-        ++ count;
+        ++count;
     } RingIterEnd( curr )
     return count;
 }

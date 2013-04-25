@@ -491,13 +491,13 @@ static void PrepStartValue( inc_file_header *hdr )
 /************************************************/
 {
     if( StartInfo.mod != NULL && !StartInfo.user_specd ) {
-        hdr->startmodidx = (unsigned_32) CarveGetIndex( CarveModEntry, StartInfo.mod );
+        hdr->startmodidx = (cv_index)CarveGetIndex( CarveModEntry, StartInfo.mod );
         if( StartInfo.type == START_IS_SDATA ) {
             hdr->flags |= INC_FLAG_START_SEG;
-            hdr->startidx = (unsigned_32) CarveGetIndex( CarveSegData, StartInfo.targ.sdata );
+            hdr->startidx = (cv_index)CarveGetIndex( CarveSegData, StartInfo.targ.sdata );
         } else {
             DbgAssert( StartInfo.type == START_IS_SYM );
-            hdr->startidx = (unsigned_32) CarveGetIndex( CarveSymbol, StartInfo.targ.sym );
+            hdr->startidx = (cv_index)CarveGetIndex( CarveSymbol, StartInfo.targ.sym );
         }
         hdr->startoff = StartInfo.off;
     } else {
@@ -544,6 +544,7 @@ void WritePermData( void )
 {
     inc_file_header     hdr;
     perm_write_info     info;
+    unsigned            strsize;
 
     if( !(LinkFlags & INC_LINK_FLAG) || LinkState & LINK_ERROR )
         return;
@@ -583,12 +584,13 @@ void WritePermData( void )
     DumpBlockStruct( CarveSegData, MarkSegData, &hdr.segdatas, &info );
     info.prepfn = PrepSymbol;
     DumpBlockStruct( CarveSymbol, MarkSymbol, &hdr.symbols, &info );
-    FiniStringBlock( &info.strtab, (unsigned *) &hdr.strtabsize, &info, WriteStringBlock );
+    FiniStringBlock( &info.strtab, &strsize, &info, WriteStringBlock );
+    hdr.strtabsize = strsize;
     QWrite( info.incfhdl, ReadRelocs, SizeRelocs, IncFileName );
     memcpy( hdr.signature, INC_FILE_SIG, INC_FILE_SIG_SIZE );
-    hdr.rootmodidx = (unsigned_32) CarveGetIndex( CarveModEntry, Root->mods );
-    hdr.headsymidx = (unsigned_32) CarveGetIndex( CarveSymbol, HeadSym );
-    hdr.libmodidx = (unsigned_32) CarveGetIndex( CarveModEntry, LibModules );
+    hdr.rootmodidx = (cv_index)CarveGetIndex( CarveModEntry, Root->mods );
+    hdr.headsymidx = (cv_index)CarveGetIndex( CarveSymbol, HeadSym );
+    hdr.libmodidx = (cv_index)CarveGetIndex( CarveModEntry, LibModules );
     hdr.linkstate = LinkState & ~CLEAR_ON_INC;
     hdr.relocsize = SizeRelocs;
     PrepStartValue( &hdr );
@@ -872,7 +874,7 @@ void ReadPermData( void )
         return;
     _ChkAlloc( info.buffer, SECTOR_SIZE );
     QRead( info.incfhdl, info.buffer, SECTOR_SIZE, IncFileName );
-    hdr = (inc_file_header *) info.buffer;
+    hdr = (inc_file_header *)info.buffer;
     if( memcmp( hdr->signature, INC_FILE_SIG, INC_FILE_SIG_SIZE ) != 0 ) {
         LnkMsg( WRN+MSG_INV_INC_FILE, NULL );
         _LnkFree( info.buffer );
@@ -998,7 +1000,7 @@ void PermEndMod( mod_entry *mod )
 }
 
 void *GetSegContents( segdata *sdata, virt_mem_size off )
-/**********************************************************/
+/*******************************************************/
 {
     if( OldSymFile != NULL && IS_DBG_INFO( sdata->u.leader ) ) {
         return( OldSymFile + off );

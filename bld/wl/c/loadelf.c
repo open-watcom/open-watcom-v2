@@ -156,6 +156,8 @@ static void SetHeaders( ElfHdr *hdr )
         hdr->eh.e_machine = EM_PPC;
     } else if( LinkState & HAVE_MIPS_CODE ) {
         hdr->eh.e_machine = EM_MIPS;
+    } else if( LinkState & HAVE_X64_CODE ) {
+        hdr->eh.e_machine = EM_X86_64;
     } else {
         hdr->eh.e_machine = EM_386;
     }

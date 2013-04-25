@@ -103,14 +103,17 @@ static int DoOpen( char *name, unsigned mode, bool isexe )
 /********************************************************/
 {
     int     h;
+    int     perm;
 
-    isexe = isexe;
     CheckBreak();
     mode |= O_BINARY;
+    perm = PMODE_RW;
+    if( isexe )
+        perm = PMODE_RWX;
     for( ;; ) {
         if( OpenFiles >= MAX_OPEN_FILES )
             CleanCachedHandles();
-        h = open( name, mode, PMODE_RW );
+        h = open( name, mode, perm );
         if( h != -1 ) {
             OpenFiles++;
             break;

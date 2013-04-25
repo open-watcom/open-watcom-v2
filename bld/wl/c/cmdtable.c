@@ -258,6 +258,8 @@ parse_entry     MainOptions[] = {
     "LINKVersion",  &ProcLinkVersion,   MK_PE,  0,
     "OSVersion",    &ProcOsVersion,     MK_PE,  0,
     "CHECKSUM",     &ProcChecksum,      MK_PE,  0,
+    "LARGEaddressaware",&ProcLargeAddressAware, MK_PE, 0,
+    "NOLARGEaddressaware",&ProcNoLargeAddressAware, MK_PE, 0,
     "HSHIFT",       &ProcHshift,        (MK_DOS | MK_ALLOW_16),  0,
     "FILLchar",     &ProcFillchar,      MK_ALL,  0,
     "MIXed1632",    &ProcMixed1632,     MK_OS2_FLAT, 0,

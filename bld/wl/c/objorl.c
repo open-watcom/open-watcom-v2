@@ -233,6 +233,9 @@ static bool CheckFlags( orl_file_handle filehdl )
     case ORL_MACHINE_TYPE_I386:
         typemask = HAVE_I86_CODE;
         break;
+    case ORL_MACHINE_TYPE_AMD64:
+        typemask = HAVE_X64_CODE;
+        break;
     case ORL_MACHINE_TYPE_ALPHA:
         typemask = HAVE_ALPHA_CODE;
         break;
@@ -267,7 +270,9 @@ static bool CheckFlags( orl_file_handle filehdl )
         return( FALSE );
     }
 #endif
-    if( flags & ORL_FILE_FLAG_16BIT_MACHINE ) {
+    if( flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
+        Set64BitMode();
+    } else if( flags & ORL_FILE_FLAG_16BIT_MACHINE ) {
         Set16BitMode();
     } else {
         Set32BitMode();
@@ -298,6 +303,7 @@ static orl_return ExportCallback( char *name, void *dummy )
 static orl_return EntryCallback( char *name, void *dummy )
 /*********************************************************/
 {
+    dummy = dummy;
     if( !StartInfo.user_specd ) {
         SetStartSym( name );
     }

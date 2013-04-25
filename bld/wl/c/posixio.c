@@ -33,10 +33,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include "wio.h"
 #include <termios.h>
-#include <sys/stat.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
@@ -73,28 +71,35 @@ void PrintIOError( unsigned msg, char *types, char *name )
 static int DoOpen( char *name, unsigned mode, bool isexe )
 /********************************************************/
 {
-    int     h;
-    int     perm;
+    int         h;
+    int         pmode;
     struct stat st;
 
-    perm = 0666;
     CheckBreak();
-    if( isexe ) perm |= 0111;
+    pmode = PMODE_RW;
+    if( isexe )
+        pmode = PMODE_RWX;
     mode |= O_BINARY;
     for( ;; ) {
-        if( OpenFiles >= MAX_OPEN_FILES ) CleanCachedHandles();
+        if( OpenFiles >= MAX_OPEN_FILES )
+            CleanCachedHandles();
         if ( ( mode & O_CREAT ) && !stat( name, &st) )
             unlink( name );
-        h = open( name, mode, perm );
+        h = open( name, mode, pmode );
         if( h != -1 ) {
             OpenFiles++;
             break;
         }
         if( errno == ENOMEM ) {
-            if( !FreeUpMemory() ) break;
+            if( !FreeUpMemory() ) {
+                break;
+            }
         } else {
-            if( errno != TOOMANY ) break;
-            if( !CleanCachedHandles() ) break;
+            if( errno != TOOMANY )
+                break;
+            if( !CleanCachedHandles() ) {
+                break;
+            }
         }
     }
     return( h );
@@ -213,7 +218,8 @@ unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
     int     h;
     char    rc_buff[RESOURCE_MAX_SIZE];
 
-    if( len == 0 ) return( 0 );
+    if( len == 0 )
+        return( 0 );
     CheckBreak();
     h = dowrite( file, buffer, len );
     if( h < 0 ) {

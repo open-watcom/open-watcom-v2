@@ -246,7 +246,7 @@ static void DwarfAddLines( lineinfo *info )
 
     prevline.off = 0;
     prevline.linnum = 1;
-    if( FmtData.type & MK_286 ) {
+    if( FmtData.type & MK_16BIT ) {
         dwsize = 13;    // start and end sequence with 16-bit offset
     } else {
         dwsize = 15;    // start and end sequence with 32-bit offset
@@ -545,7 +545,7 @@ void DwarfGenLines( lineinfo *info )
     prevline.off = 0;
     prevline.linnum = 1;
     vmem_addr = CurrMod->d.d->dasi.u.vm_ptr;
-    if( FmtData.type & MK_286 ) {
+    if( FmtData.type & MK_16BIT ) {
         dwsize = 3;
     } else {
         dwsize = 5;
@@ -553,7 +553,7 @@ void DwarfGenLines( lineinfo *info )
     buff[0] = 0;        // extended opcode
     buff[1] = dwsize;
     buff[2] = DW_LNE_set_address;
-    if( FmtData.type & MK_286 ) {
+    if( FmtData.type & MK_16BIT ) {
         *( (unsigned_16 *)&buff[3] ) = seg->a.delta + seg->u.leader->seg_addr.off;
     } else {
         off = seg->a.delta + seg->u.leader->seg_addr.off;

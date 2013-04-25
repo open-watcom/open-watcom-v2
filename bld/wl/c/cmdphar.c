@@ -145,11 +145,11 @@ bool ProcPriv( void )
 bool ProcFlags( void )
 /****************************/
 {
-    bool    ret;
-    unsigned long   num;
+    bool            ret;
+    unsigned_32     value;
 
-    ret = GetLong( &num );
-    FmtData.u.phar.params->extender_flags = num;
+    ret = GetLong( &value );
+    FmtData.u.phar.params->extender_flags = value;
     return( ret );
 }
 

@@ -809,6 +809,9 @@ void CalcAddresses( void )
                 FmtData.base = 0x10000000;
             } else if( LinkState & HAVE_MIPS_CODE ) {
                 FmtData.base = 0x00400000;
+            } else if( LinkState & HAVE_X64_CODE ) {
+                // TODO
+                FmtData.base = 0x08048000;
             } else {
                 FmtData.base = 0x08048000;
             }
@@ -822,10 +825,13 @@ void CalcAddresses( void )
         AllocFileSegs();
         if( FmtData.objalign == NO_BASE_SPEC ) {
             if( FmtData.type & MK_PE ) {
-                if( !(LinkState & HAVE_I86_CODE) ) {
+                if( (LinkState & HAVE_I86_CODE) ) {
+                    FmtData.objalign = 4*1024;
+                } else if( (LinkState & HAVE_X64_CODE) ) {
+                    // TODO
                     FmtData.objalign = ( 64 * 1024UL );
                 } else {
-                    FmtData.objalign = 4*1024;
+                    FmtData.objalign = ( 64 * 1024UL );
                 }
             } else if( FmtData.type & MK_QNX ) {
                 FmtData.objalign = QNX_GROUP_ALIGN;

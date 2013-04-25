@@ -63,7 +63,7 @@ void RINGHNAME(Append) (        // APPEND ELEMENT TO RING
     void *hdr,                  // - addr( ring header )
     void *element )             // - element to be appended
 ;
-int RINGHNAME(Count) (          // COUNT ELEMENTS IN A RING
+unsigned RINGHNAME(Count) (     // COUNT ELEMENTS IN A RING
     void *hdr )                 // - ring hdr
 ;
 void RINGHNAME(Dealloc) (       // DE-ALLOCATE A RING ELEMENT

@@ -210,14 +210,12 @@ static void AllocSections( section *first_sect )
             if( AreaSize < min_size ) {
                 AreaSize = min_size;
                 if( area_specified ) {
-                    LnkMsg( WRN+MSG_AREA_TOO_SMALL, "l",
-                                                 (unsigned long)min_size << FmtData.SegShift );
+                    LnkMsg( WRN+MSG_AREA_TOO_SMALL, "l", (unsigned long)min_size << FmtData.SegShift );
                 }
             }
             result = CurrLoc.seg + (unsigned long) ( AreaSize - ovl_size );
             if( result > 0xFFFF ) {
-                LnkMsg( WRN+MSG_CANT_RESERVE_SPACE, "l",
-                                                 (unsigned long)AreaSize << FmtData.SegShift );
+                LnkMsg( WRN+MSG_CANT_RESERVE_SPACE, "l", (unsigned long)AreaSize << FmtData.SegShift );
             } else {
                 CurrLoc.seg = result;
             }
@@ -730,7 +728,7 @@ static void EmitOvlEntry( section *sect, void *_off )
     _HostU16toTarg( flags_anc, entry.flags_anc );
     start_para = sect->sect_addr.seg + ( sect->sect_addr.off >> FmtData.SegShift );
     _HostU16toTarg( start_para, entry.start_para );
-    len = sect->size + 15 >> 4;
+    len = ( sect->size + 15 ) >> 4;
     _HostU16toTarg( len, entry.num_paras );
     _HostU32toTarg( sect->u.file_loc, entry.disk_addr );
     PutOvlInfo( *off, &entry, sizeof( entry ) );

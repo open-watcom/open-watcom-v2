@@ -1101,7 +1101,8 @@ void ReportMultiple( symbol *sym, char *name, unsigned len )
     if( LinkFlags & REDEFS_OK ) {
         lev = WRN;
     } else {
-        lev = ERR;
+        lev = MILD_ERR;
+        LinkState |= UNDEFED_SYM_ERROR;
     }
     if( CmpRtn( sym->name, name, len + 1 ) == 0 ) {
         LnkMsg( LOC+lev+MSG_MULT_DEF, "S", sym );
@@ -1156,7 +1157,7 @@ static void WriteSym( symbol * sym, char star )
     if( sym->info & SYM_STATIC ) {
         star = 's';
     }
-    if( (FmtData.type & MK_286) && ( sym->p.seg != NULL ) && sym->p.seg->is32bit ) {
+    if( (FmtData.type & MK_16BIT) && ( sym->p.seg != NULL ) && sym->p.seg->is32bit ) {
         WriteFormat( 0, "%A%c", &sym->addr, star );
     } else {
         WriteFormat( 0, "%a%c", &sym->addr, star );

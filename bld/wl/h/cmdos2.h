@@ -142,3 +142,5 @@ extern void     FreeOS2Fmt( void );
 extern bool     ProcLinkVersion( void );
 extern bool     ProcOsVersion( void );
 extern bool     ProcChecksum( void );
+extern bool     ProcLargeAddressAware( void );
+extern bool     ProcNoLargeAddressAware( void );

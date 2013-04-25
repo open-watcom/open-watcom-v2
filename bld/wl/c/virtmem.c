@@ -269,6 +269,7 @@ static virt_mem DoAllocStg( virt_struct (*allocfn)(virt_mem_size),
     virt_struct ret;
     bool        gotaddr;
 
+    ret.l = 0;
     gotaddr = FALSE;
     while( size > limit ) {
         if( !gotaddr ) {
@@ -299,16 +300,17 @@ static virt_mem AllocTinyStg( unsigned size )
     retval = TinyAddr;
     TinyAddr += size;
     TinyLeft -= size;
-    return retval;
+    return( retval );
 }
 
 virt_mem AllocStg( virt_mem_size size )
 /*************************************/
 {
-    if( size == 0 ) return 0;
+    if( size == 0 )
+        return 0;
     size = MAKE_EVEN( size );
     if( size <= TINY_BLOCK_CUTOFF ) {
-        return AllocTinyStg( size );
+        return( AllocTinyStg( size ) );
     } else if( size >= MAX_BIGNODE_SIZE ) {
         return( DoAllocStg( GetBigStg, size, MAX_BIGNODE_SIZE ) );
     } else {
@@ -376,7 +378,8 @@ void FreeVirtMem( void )
     huge_table *    huge_entry;
     spilladdr *     page;
 
-    if( SegTab == NULL ) return;
+    if( SegTab == NULL )
+        return;
     for( branch = 0; branch < NumBranches; branch++ ) {
         seg_entry = SegTab[ branch ];
         if( seg_entry != NULL ) {
@@ -405,7 +408,7 @@ static void AllocNode( seg_table *node )
 /**************************************/
 /* allocate a regular 4K page */
 {
-    void *  mem;
+    void        *mem;
 
     _LnkAlloc( mem, node->size );
     if( mem == NULL ) {
@@ -439,8 +442,8 @@ static void AllocHugeNode( huge_table *node )
         page[node->numthere - 1].addr = mem;
         nomem = FALSE;
     }
-/* now allocate all of the subpages, starting at the end and working backwards
- * so that they can be swapped from the start forwards. */
+    /* now allocate all of the subpages, starting at the end and working backwards
+     * so that they can be swapped from the start forwards. */
     for( index = node->numthere - 2; index >= 0; index-- ) {
         if( nomem ) {
             page[ index ].spill = SpillAlloc( HUGE_SUBPAGE_SIZE );
@@ -476,7 +479,7 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
     stg.l = mem;
     if( stg.l & HUGE_PAGE ) {  /* it is a huge page */
         off = BIGNODE_OFF( stg.l );
-        for(;;) {
+        for( ;; ) {
             bignode = BIGNODE( stg.l );
             page = bignode->page;
             subpage = SUBPAGENUM( stg.l );
@@ -578,14 +581,14 @@ void CopyInfo( virt_mem a, virt_mem b, unsigned len )
     _LnkFree( buf );
 }
 
-static bool CompareBlock( void * info, spilladdr loc, unsigned off,
-                                unsigned len, bool inmem )
-/****************************************************************/
+static bool CompareBlock( void * info, spilladdr loc, unsigned off, unsigned len, bool inmem )
+/********************************************************************************************/
 /* compare data at info to the memory or spillfile referenced by node & off */
 {
     void *      buf;
 
-    if( len == 0 ) return TRUE;
+    if( len == 0 )
+        return TRUE;
     if( inmem ) {
         buf = (char *)loc.addr + off;
     } else {
@@ -649,7 +652,7 @@ static bool NullInfo( void *dummy, spilladdr loc, unsigned off, unsigned len, bo
 }
 
 void PutInfoNulls( virt_mem stg, virt_mem_size len )
-/*****************************************************/
+/**************************************************/
 /* copy NULLS in memory or spillfile referenced by stg */
 {
     ScanNodes( stg, NULL, len, NullInfo );

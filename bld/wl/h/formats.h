@@ -63,16 +63,18 @@ typedef enum exe_format {       // there is a corresp. table in MSG.C
 #define MK_OS2       (MK_OS2_16BIT | MK_OS2_LE | MK_OS2_LX)
 #define MK_PHAR_LAP  (MK_PHAR_SIMPLE|MK_PHAR_FLAT|MK_PHAR_REX|MK_PHAR_MULTISEG)
 #define MK_QNX       (MK_QNX_16 | MK_QNX_FLAT)
-#define MK_386       (MK_PHAR_LAP | MK_NOVELL | MK_QNX | MK_OS2_LE | MK_OS2_LX | MK_PE | MK_ELF | MK_WIN_VXD | MK_ZDOS | MK_RAW | MK_RDOS)
-#define MK_286       (MK_DOS | MK_OS2_16BIT | MK_DOS16M | MK_RDOS)
+#define MK_64BIT     (MK_PE | MK_ELF)
+#define MK_32BIT     (MK_PHAR_LAP | MK_NOVELL | MK_QNX | MK_OS2_LE | MK_OS2_LX | MK_PE | MK_ELF | MK_WIN_VXD | MK_ZDOS | MK_RAW | MK_RDOS)
+#define MK_16BIT     (MK_DOS | MK_OS2_16BIT | MK_DOS16M | MK_RDOS)
 /* MK_OS2_LE, MK_OS2_LX, MK_WIN_VXD and MK_PE are not treated as FLAT internally */
 #define MK_FLAT      (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX | MK_ZDOS | MK_RAW)
+#define MK_ALLOW_64  (MK_PE | MK_ELF)
 #define MK_ALLOW_32  (MK_PHAR_LAP | MK_OS2_LE | MK_OS2_LX | MK_NOVELL | MK_QNX | MK_PE | MK_ELF | MK_WIN_VXD | MK_ZDOS | MK_RAW | MK_RDOS)
-#define MK_ALLOW_16  (MK_286 | MK_PHAR_FLAT | MK_OS2 | MK_QNX | MK_PE | MK_WIN_VXD | MK_RAW | MK_RDOS)
+#define MK_ALLOW_16  (MK_16BIT | MK_PHAR_FLAT | MK_OS2 | MK_QNX | MK_PE | MK_WIN_VXD | MK_RAW | MK_RDOS)
 #define MK_ID_SPLIT  (MK_NOVELL)
 #define MK_REAL_MODE (MK_DOS)
 #define MK_PROT_MODE (~MK_REAL_MODE)
-#define MK_SEGMENTED (MK_286 | MK_OS2 | MK_PHAR_MULTISEG | MK_RDOS)
+#define MK_SEGMENTED (MK_16BIT | MK_OS2 | MK_PHAR_MULTISEG | MK_RDOS)
 #define MK_IMPORTS   (MK_NOVELL | MK_OS2 | MK_PE | MK_ELF)
 #define MK_SPLIT_DATA (MK_ELF | MK_PE)
 #define MK_LINEARIZE (MK_ELF | MK_PE)
@@ -142,6 +144,8 @@ struct fmt_pe_data {
     unsigned            osv_specd : 1;      /* OS version specified? */
     unsigned            lnk_specd : 1;      /* Link version specified */
     unsigned            checksumfile : 1;   /* Create checksum for file? */
+    unsigned            largeaddressaware : 1;
+    unsigned            nolargeaddressaware : 1;
 };
 
 // structures used in processing DOS/16M load files.

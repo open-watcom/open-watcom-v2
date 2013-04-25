@@ -600,8 +600,15 @@ bool ProcStack( void )
 /***************************/
 /* process STACK option */
 {
+    unsigned_32     value;
+    bool            ret;
+
     LinkFlags |= STK_SIZE_FLAG;
-    return( GetLong( &StackSize ) );
+    ret = GetLong( &value );
+    if( ret ) {
+        StackSize = value;
+    }
+    return( ret );
 }
 
 bool ProcNameLen( void )
@@ -1291,8 +1298,9 @@ bool ProcOutput( void )
    FmtData.output_offset = 0L;
    FmtData.output_hshift = FALSE;
    FmtData.output_start = FALSE;
+   ret = FALSE;
    while( ProcOne( OutputOpts, SEP_NO, FALSE )) {
-      ret = TRUE;
+       ret = TRUE;
    }
    return( ret );
 }

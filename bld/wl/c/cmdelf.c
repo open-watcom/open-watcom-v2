@@ -108,8 +108,8 @@ bool ProcELFAlignment( void )
 /**********************************/
 {
     ord_state           ret;
-    unsigned long       value;
-    unsigned long       lessone;        // value without the lowest bit.
+    unsigned_32         value;
+    unsigned_32         lessone;        // value without the lowest bit.
 
     if( !HaveEquals(0) ) return( FALSE );
     ret = getatol( &value );

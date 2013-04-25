@@ -138,8 +138,7 @@ typedef enum {
 #define IS_SYM_WEAK_REF(sym) (((sym)->info & SYM_TYPE_MASK) >= SYM_WEAK_REF)
 #define IS_SYM_LINK_WEAK(sym)(((sym)->info & SYM_TYPE_MASK) ==SYM_LINK_WEAK_REF)
 #define IS_SYM_COMM32(sym)   (((sym)->info & SYM_TYPE_MASK) == SYM_COMMUNAL_32)
-#define SET_SYM_TYPE(sym,type) ((sym)->info = ((sym)->info & ~SYM_TYPE_MASK)\
-                                                            | (type))
+#define SET_SYM_TYPE(sym,type) ((sym)->info = ((sym)->info & ~SYM_TYPE_MASK)|(type))
 /* note that OVL_VECTOR && OVL_FORCE can be thought of as a two-bit field.
  * OVL_NO_VECTOR == 0 && OVL_FORCE == 0 means undecided.
  * OVL_NO_VECTOR == 1 && OVL_FORCE == 0 means tenatively no vector generated.

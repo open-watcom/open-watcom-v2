@@ -435,13 +435,11 @@ void SetStartSym( char *name )
     if( StartInfo.type != START_UNDEFED ) {
         if( StartInfo.type == START_IS_SYM ) {
             namelen = strlen( name );
-            if( namelen != strlen(StartInfo.targ.sym->name)
-                || CmpRtn( StartInfo.targ.sym->name, name, namelen ) != 0 ) {
-                LnkMsg( LOC+ERR+MSG_MULT_START_ADDRS_BY, "12",
-                            StartInfo.targ.sym->name, name );
+            if( namelen != strlen(StartInfo.targ.sym->name) || CmpRtn( StartInfo.targ.sym->name, name, namelen ) != 0 ) {
+                LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS_BY, "12", StartInfo.targ.sym->name, name );
             }
         } else {
-            LnkMsg( LOC+ERR+MSG_MULT_START_ADDRS, NULL );
+            LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->file->name, StartInfo.mod->name );
         }
     } else {
         StartInfo.targ.sym = RefISymbol( name );
@@ -595,8 +593,7 @@ bool WriteDOSGroup( group_entry *group )
 /* write the data for group to the loadfile */
 /* returns TRUE if the file should be repositioned */
 {
-    unsigned long       loc;
-    signed  long        diff;
+    unsigned long           loc;
     section             *sect;
     bool                repos;
     outfilelist         *finfo;
@@ -607,10 +604,9 @@ bool WriteDOSGroup( group_entry *group )
         CurrSect = sect;
         finfo = sect->outfile;
         loc = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
-        diff = loc - finfo->file_loc;
-        if( diff > 0 ) {
-            PadLoad( diff );
-        } else if( diff != 0 ) {
+        if( loc > finfo->file_loc ) {
+            PadLoad( loc - finfo->file_loc );
+        } else if( loc != finfo->file_loc ) {
             SeekLoad( loc );
             repos = TRUE;
         }
@@ -644,9 +640,10 @@ unsigned_32 MemorySize( void )
         end = start + Root->size;
         for( ovl = Root->areas; ovl != NULL; ovl = ovl->next_area ) {
             for( sect = ovl->sections; sect != NULL; sect = sect->next_sect ) {
-                curr = MK_REAL_ADDR( sect->sect_addr.seg,
-                         sect->sect_addr.off ) + sect->size;
-                if( curr > end ) end = curr;
+                curr = MK_REAL_ADDR( sect->sect_addr.seg, sect->sect_addr.off ) + sect->size;
+                if( curr > end ) {
+                    end = curr;
+                }
             }
         }
         return( end - start );
@@ -756,6 +753,8 @@ static void ExecWlib( void )
         *temp = 'a';
     } else if( LinkState & HAVE_PPC_CODE ) {
         *temp = 'p';
+    } else if( LinkState & HAVE_X64_CODE ) {
+        *temp = '6';
     }
     temp += 3;
     memcpy( temp, FmtData.implibname, impnamelen );
@@ -786,6 +785,8 @@ static void ExecWlib( void )
         libtype = "-ia";
     } else if( LinkState & HAVE_PPC_CODE ) {
         libtype = "-ip";
+    } else if( LinkState & HAVE_X64_CODE ) {
+        libtype = "-i6";
     } else {
         libtype = "-ii";
     }
@@ -903,11 +904,10 @@ unsigned long NullAlign( unsigned align )
 /* align loadfile -- assumed power of two alignment */
 {
     unsigned long       off;
-    unsigned            pad;
+    unsigned long       pad;
 
     off = PosLoad();
-    align--;
-    pad = ( ( off + align ) & ~(unsigned long)align ) - off;
+    pad = ROUND_UP( off, align ) - off;
     PadLoad( pad );
     return( off + pad );
 }
@@ -918,8 +918,7 @@ unsigned long OffsetAlign( unsigned long off, unsigned long align )
 {
     unsigned long       pad;
 
-    align--;
-    pad = ( ( off + align ) & ~align ) - off;
+    pad = ROUND_UP( off, align ) - off;
     PadLoad( pad );
     return( off + pad );
 }
@@ -929,17 +928,17 @@ static bool WriteSegData( void *_sdata, void *_info )
 {
     segdata         *sdata = _sdata;
     grpwriteinfo    *info = _info;
-    unsigned long   newpos;
-    signed long     pad;
+    unsigned long       newpos;
+    unsigned long       oldpos;
 
     if( !sdata->isuninit && !sdata->isdead && ( ( sdata->length > 0 ) || (FmtData.type & MK_END_PAD) ) ) {
         newpos = info->seg_start + sdata->a.delta;
         if( info->repos ) {
             SeekLoad( newpos );
         } else {
-            pad = newpos - PosLoad();
-            DbgAssert( pad >= 0 );
-            PadLoad( pad );
+            oldpos = PosLoad();
+            DbgAssert( newpos >= oldpos );
+            PadLoad( newpos - oldpos );
         }
         WriteInfoLoad( sdata->u1.vm_ptr, sdata->length );
         sdata->u1.vm_offs = newpos;   // for incremental linking
@@ -1238,8 +1237,7 @@ static void WriteBuffer( char *info, unsigned long len, outfilelist *outfile,
     while( modpos + len >= BUFF_BLOCK_SIZE ) {
         adjust = BUFF_BLOCK_SIZE - modpos;
         rtn( outfile->buffer + modpos, info, adjust );
-        QWrite( outfile->handle, outfile->buffer, BUFF_BLOCK_SIZE,
-                outfile->fname );
+        QWrite( outfile->handle, outfile->buffer, BUFF_BLOCK_SIZE, outfile->fname );
         info += adjust;
         len -= adjust;
         modpos = 0;

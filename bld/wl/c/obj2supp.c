@@ -941,7 +941,7 @@ static bool CheckSpecials( fix_data *fix, frame_spec *targ )
             off -= group->linear;
         }
         off += fix->tgt_addr.off - fix->loc_addr.off;
-    } else if( FmtData.type & (MK_386 | MK_QNX) ) {
+    } else if( FmtData.type & (MK_32BIT | MK_QNX) ) {
         off = fix->tgt_addr.off - fix->loc_addr.off;
         if( fix->type & FIX_ABS ) {
             off -= FindGroup( fix->loc_addr.seg )->linear;
@@ -1359,7 +1359,7 @@ static void FmtReloc( fix_data *fix, frame_spec *tthread )
                 }
             }
             if( ( grp != NULL ) && (grp->segflags & SEG_MOVABLE) ) {
-                os2item->put.internal.grp_num = (signed_8)MOVABLE_ENTRY_PNT;
+                os2item->put.internal.grp_num = (signed char)MOVABLE_ENTRY_PNT;
                 os2item->put.internal.off = FindEntryOrdinal( targ, grp );
             } else {
                 os2item->put.internal.grp_num = targ.seg;
@@ -1578,6 +1578,8 @@ static void FmtReloc( fix_data *fix, frame_spec *tthread )
             } else {
                 new_reloc.item.elf.info = R_386_32;
             }
+        } else if( LinkState & HAVE_X64_CODE ) {
+            // TODO
         } else if( LinkState & HAVE_PPC_CODE ) {
             if( fix->type & FIX_HIGH ) {
                 new_reloc.item.elf.info = R_PPC_ADDR16_HI;
