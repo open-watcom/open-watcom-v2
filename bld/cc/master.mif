@@ -1,31 +1,17 @@
 proj_name = cc
 
-!ifeq bootstrap 1
-!ifeq target_cpu i86
-exename     = bwcc
-dllname     = bwccd
-!else
-exename     = bwcc$(target_cpu)
-dllname     = bwccd$(target_cpu)
-!endif
-!else
-exename     = wc$(target_cpu)
-dllname     = wcd$(target_cpu)
-!endif
-
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifeq bootstrap 1
-realexename = $(exename)
-realdllname = $(dllname)
+exename     = bwcc
+dllname     = bwccd
 !else
-!ifeq target_cpu i86
-realexename = wcc
-realdllname = wccd
-!else
-realexename = wcc$(target_cpu)
-realdllname = wccd$(target_cpu)
+exename     = wcc
+dllname     = wccd
 !endif
+!ifneq target_cpu i86
+exename     +=$(target_cpu)
+dllname     +=$(target_cpu)
 !endif
 
 cc_autodepends = .autodepend
@@ -78,11 +64,6 @@ extra_cpp_flags += -D_CGDLL
 
 extra_c_flags_386 = -3r
 
-!ifeq cc_dll 1
-idedlldriver_c_flags_dos = -bd -DCAUSEWAY
-idedlldriver_c_flags_nt  = -bd
-idedlldriver_c_flags_os2 = -bd
-!endif
 !ifneq bootstrap 1
 !ifeq release 1
 extra_c_flags_cscan_386 = -5r
@@ -90,14 +71,15 @@ extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
 !endif
 !endif
 extra_c_flags_cmsg     = -D__msg_file_prefix=$(intname)
-extra_c_flags_ideentry = $(idedlldriver_c_flags_$(host_os))
 !ifeq cc_dll 1
-extra_c_flags_idedrv   =
+!ifeq host_os dos
+extra_c_flags_ideentry = -DCAUSEWAY
+!endif
 !else
 extra_c_flags_idedrv   = -DSTATIC_LINKAGE
 !endif
 extra_c_flags_intlload = $(incl_file_opts)fesupp.h
-extra_c_flags_maindrv  = -DDLL_NAME=$(realdllname)
+extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 
 #
 # WLINK .EXE options
@@ -113,8 +95,8 @@ extra_l_flags_dos = option stack=32k
 # WLINK .DLL options
 #
 extra_l_flags_dll     = option map, symfile
-extra_l_flags_dll_nt  = initinstance terminstance option offset=0x69400000, modname='$(realdllname).dll'
-extra_l_flags_dll_os2 = initinstance terminstance option manyautodata, modname='$(realdllname)'
+extra_l_flags_dll_nt  = initinstance terminstance option offset=0x69400000, modname='$(dllname).dll'
+extra_l_flags_dll_os2 = initinstance terminstance option manyautodata, modname='$(dllname)'
 
 #
 # external libraries
@@ -153,14 +135,18 @@ inc_dirs += -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
 !ifdef cc_dll
 
-$(exename).exe : $(depends_drv) $(realdllname).lib $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe : $(depends_drv) $(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(comp_objs_drv) $(dllname).lib $(ldflags)
+!else
         @%write drv.lnk $(lflags)
         @for %i in ($(comp_objs_drv)) do @%append drv.lnk file %i
-        @%append drv.lnk lib $(realdllname).lib
+        @%append drv.lnk lib $(dllname).lib
 !ifeq host_os dos
         @%append drv.lnk lib cwdll.lib
 !endif
         $(linker) name $@ @drv.lnk
+!endif
         @%make bind_version_res_exe
 
 !else
@@ -185,16 +171,16 @@ $(exename).exe: $(depends_exe) $(comp_objs_exe) $(version_res_exe_$(host_os)_$(h
 !endif
 
 $(dllname).dll : $(depends_dll) $(comp_objs_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags_dll) $(comp_objs_dll) $(xlibs) $(libs) $(ldflags)
+!else
         @%write dll.lnk $(lflags_dll)
-        @%append dll.lnk op impfile=export.tmp
+        @%append dll.lnk op implib
         @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
         @for %i in ($(xlibs)) do @%append dll.lnk lib %i
         $(linker) name $@ @dll.lnk
+!endif
         @%make bind_version_res_dll
-
-$(realdllname).lib : $(dllname).dll $(__MAKEFILES__)
-        $(sed) -e s/$(dllname).dll/$(realdllname).dll/g export.tmp > $(realdllname).lbc
-        $(librarian) $(libflags) @$(realdllname).lbc
 
 #
 # done
@@ -234,8 +220,8 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
 ./mkcode.exe: ../../a/mkcode.c
         $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
 
-verrc_dll = $(realdllname)
-verrc_exe = $(realexename)
+verrc_dll = $(dllname)
+verrc_exe = $(exename)
 verrc_dll_skel = ../../version.rc
 verrc_exe_skel = ../../exever.rc
 !include verrc.mif

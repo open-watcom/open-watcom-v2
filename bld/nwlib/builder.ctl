@@ -26,24 +26,27 @@ set PROJNAME=wlib
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/wlb.exe      <OWRELROOT>/binw/wlib.exe
-    <CCCMD> dos386/wlb.sym      <OWRELROOT>/binw/wlib.sym
-    <CCCMD> os2386/wlb.exe      <OWRELROOT>/binp/wlib.exe
-    <CCCMD> os2386/wlb.sym      <OWRELROOT>/binp/wlib.sym
-    <CCCMD> os2386/wlbd.dll     <OWRELROOT>/binp/dll/wlibd.dll
-    <CCCMD> os2386/wlbd.sym     <OWRELROOT>/binp/dll/wlibd.sym
-    <CCCMD> nt386/wlb.exe       <OWRELROOT>/binnt/wlib.exe
-    <CCCMD> nt386/wlb.sym       <OWRELROOT>/binnt/wlib.sym
-    <CCCMD> nt386/wlbd.dll      <OWRELROOT>/binnt/wlibd.dll
-    <CCCMD> nt386/wlbd.sym      <OWRELROOT>/binnt/wlibd.sym
-    <CCCMD> ntaxp/wlb.exe       <OWRELROOT>/axpnt/wlib.exe
-    <CCCMD> ntaxp/wlb.sym       <OWRELROOT>/axpnt/wlib.sym
-    <CCCMD> ntaxp/wlbd.dll      <OWRELROOT>/axpnt/wlibd.dll
-    <CCCMD> ntaxp/wlbd.sym      <OWRELROOT>/axpnt/wlibd.sym
-    <CCCMD> qnx386/wlb.exe      <OWRELROOT>/qnx/binq/wlib
-    <CCCMD> qnx386/wlb.sym      <OWRELROOT>/qnx/sym/wlib.sym
-    <CCCMD> linux386/wlb.exe    <OWRELROOT>/binl/wlib
-    <CCCMD> linux386/wlb.sym    <OWRELROOT>/binl/wlib.sym
+    <CCCMD> dos386/wlib.exe      <OWRELROOT>/binw/
+    <CCCMD> dos386/wlib.sym      <OWRELROOT>/binw/
+    <CCCMD> os2386/wlib.exe      <OWRELROOT>/binp/
+    <CCCMD> os2386/wlib.sym      <OWRELROOT>/binp/
+    <CCCMD> os2386/wlibd.dll     <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/wlibd.sym     <OWRELROOT>/binp/dll/
+    <CCCMD> nt386/wlib.exe       <OWRELROOT>/binnt/
+    <CCCMD> nt386/wlib.sym       <OWRELROOT>/binnt/
+    <CCCMD> nt386/wlibd.dll      <OWRELROOT>/binnt/
+    <CCCMD> nt386/wlibd.sym      <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/wlib.exe       <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wlib.sym       <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wlibd.dll      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wlibd.sym      <OWRELROOT>/axpnt/
+    <CCCMD> qnx386/wlib.exe      <OWRELROOT>/qnx/binq/wlib
+    <CCCMD> qnx386/wlib.sym      <OWRELROOT>/qnx/sym/
+    <CCCMD> linux386/wlib.exe    <OWRELROOT>/binl/wlib
+    <CCCMD> linux386/wlib.sym    <OWRELROOT>/binl/
+
+    <CCCMD> ntx64/wlib.exe       <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/wlibd.dll      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

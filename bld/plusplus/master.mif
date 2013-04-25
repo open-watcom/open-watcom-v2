@@ -2,34 +2,17 @@ proj_name = plusplus
  
 plusplus_autodepends = .autodepend
 
-!ifeq bootstrap 1
-!ifeq target_cpu i86
-exename     = bwpp
-!else
-exename     = bwpp$(target_cpu)
-!endif
-dllname     = bwppd$(target_cpu)
-!else
-!ifeq target_cpu i86
-exename     = wp
-!else
-exename     = wp$(target_cpu)
-!endif
-dllname     = wpd$(target_cpu)
-!endif
-
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifeq bootstrap 1
-realexename = $(exename)
-realdllname = $(dllname)
+exename     = bwpp
+dllname     = bwppd$(target_cpu)
 !else
-!ifeq target_cpu i86
-realexename = wpp
-!else
-realexename = wpp$(target_cpu)
+exename     = wpp
+dllname     = wppd$(target_cpu)
 !endif
-realdllname = wppd$(target_cpu)
+!ifneq target_cpu i86
+exename     +=$(target_cpu)
 !endif
 
 # Important! The C++ compiler modifies string literals
@@ -38,7 +21,7 @@ realdllname = wppd$(target_cpu)
 plusplus_nosymfile = 1
  
 # Extra files to delete on clean
-additional_cleanup = *.u *.int y.out ytab.c
+additional_cleanup = *.u *.int y.out ytab.c *.mbr
  
 !include cproj.mif
 !include defrule.mif
@@ -113,7 +96,7 @@ extra_c_flags_vbuf     = $(incl_file_opts)fesupp.h
 extra_c_flags_vstk     = $(incl_file_opts)fesupp.h
 !ifdef plusplus_dll
 extra_c_flags_ideentry = -Dwpp_dll
-extra_c_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(realdllname)
+extra_c_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(dllname)
 !endif
 
 !ifneq bootstrap 1
@@ -158,8 +141,8 @@ extra_l_flags_nt  = OPTION stack=0x10000k COMMIT stack=32k
 #
 extra_l_flags_dll     = OPTION map, symfile
  
-extra_l_flags_dll_nt  = initinstance terminstance op modname='$(realdllname).dll', offset=0x69000000
-extra_l_flags_dll_os2 = initinstance terminstance op modname='$(realdllname)', manyautodata
+extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll', offset=0x69000000
+extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)', manyautodata
  
 # source search path
  
@@ -200,14 +183,18 @@ version_res_exe_nt_x64 = exever.res
 
 !ifdef plusplus_dll
  
-$(exename).exe : $(depends_drv) $(realdllname).lib $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu))
+$(exename).exe : $(depends_drv) $(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+    $(cl) $(clflags) $(comp_objs_drv) $(dllname).lib $(ldflags)
+!else
     @%write drv.lnk $(lflags)
     @for %i in ($(comp_objs_drv)) do @%append drv.lnk file %i
-    @%append drv.lnk lib $(realdllname).lib
+    @%append drv.lnk lib $(dllname).lib
 !ifeq host_os dos
     @%append drv.lnk lib cwdll.lib
 !endif
     $(linker) name $@ @drv.lnk
+!endif
     @%make bind_version_res_exe
  
 !else
@@ -232,17 +219,17 @@ $(exename).exe : $(depends_exe) $(comp_objs_exe) $(version_res_exe_$(host_os)_$(
 !endif
  
 $(dllname).dll : $(depends_dll) $(comp_objs_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM__
+    $(cl) $(clflags_dll) $(comp_objs_dll) $(xlibs) $(libs) $(ldflags)
+!else
     @%write dll.lnk $(lflags_dll)
-    @%append dll.lnk op impfile=export.tmp
+    @%append dll.lnk op implib
     @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
     @for %i in ($(xlibs)) do @%append dll.lnk library %i
     $(linker) name $@ @dll.lnk
+!endif
     @%make bind_version_res_dll
  
-$(realdllname).lib : $(dllname).dll
-    $(sed) -e s/$(dllname).dll/$(realdllname).dll/g export.tmp > $(realdllname).lbc
-    $(librarian) $(libflags) @$(realdllname).lbc
-
 #
 # miscellaneous build rules
 #
@@ -276,9 +263,6 @@ ytab.c ytab.gh : ../../y/plusplus.y ../../c/yydriver.c
 #    $(yacc) -b -d -f -t -u -p -s $[@ $]@ >y.out
 # comment out the next line during testing of grammar changes
 #    diff y.out ../../y/check.out
-!ifdef __WATCOM__
-    diff y.out ../../y/check.out
-!endif
     rm -f ytab.gh
     cp ytab.h ytab.gh
     rm -f ytab.h
@@ -314,8 +298,8 @@ asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok asmops.gh
     $[@ $(wasm_dir)/inlnops.tok $@
  
-verrc_dll = $(realdllname)
-verrc_exe = $(realexename)
+verrc_dll = $(dllname)
+verrc_exe = $(exename)
 verrc_dll_skel = ../../version.rc
 verrc_exe_skel = ../../exever.rc
 !include verrc.mif

@@ -15,7 +15,7 @@ set PROJNAME=wccaxp
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/bwcaxp.exe      <OWBINDIR>/bwccaxp<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwccaxp.exe     <OWBINDIR>/bwccaxp<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwccdaxp<DYEXT> <OWBINDIR>/bwccdaxp<DYEXT>
 
 [ BLOCK <BINTOOL> clean ]
@@ -26,30 +26,34 @@ set PROJNAME=wccaxp
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/wcaxp.exe        <OWRELROOT>/binw/wccaxp.exe
-    <CCCMD> dos386/wcaxp.sym        <OWRELROOT>/binw/wccaxp.sym
-    <CCCMD> dos386/wcaxp01.int      <OWRELROOT>/binw/wccaxp01.int
-    <CCCMD> os2386/wcaxp.exe        <OWRELROOT>/binp/wccaxp.exe
-    <CCCMD> os2386/wcaxp.sym        <OWRELROOT>/binp/wccaxp.sym
-    <CCCMD> os2386/wcdaxp.dll       <OWRELROOT>/binp/dll/wccdaxp.dll
-    <CCCMD> os2386/wcdaxp.sym       <OWRELROOT>/binp/dll/wccdaxp.sym
-    <CCCMD> os2386/wcaxp01.int      <OWRELROOT>/binp/dll/wccaxp01.int
-    <CCCMD> nt386/wcaxp.exe         <OWRELROOT>/binnt/wccaxp.exe
-    <CCCMD> nt386/wcaxp.sym         <OWRELROOT>/binnt/wccaxp.sym
-    <CCCMD> nt386/wcdaxp.dll        <OWRELROOT>/binnt/wccdaxp.dll
-    <CCCMD> nt386/wcdaxp.sym        <OWRELROOT>/binnt/wccdaxp.sym
-    <CCCMD> nt386/wcaxp01.int       <OWRELROOT>/binnt/wccaxp01.int
-    <CCCMD> ntaxp/wcaxp.exe         <OWRELROOT>/axpnt/wccaxp.exe
-    <CCCMD> ntaxp/wcaxp.sym         <OWRELROOT>/axpnt/wccaxp.sym
-    <CCCMD> ntaxp/wcdaxp.dll        <OWRELROOT>/axpnt/wccdaxp.dll
-    <CCCMD> ntaxp/wcdaxp.sym        <OWRELROOT>/axpnt/wccdaxp.sym
-    <CCCMD> ntaxp/wcaxp01.int       <OWRELROOT>/axpnt/wccaxp01.int
-    <CCCMD> qnx386/wcaxp.exe        <OWRELROOT>/qnx/binq/wccaxp
-    <CCCMD> qnx386/wcaxp.sym        <OWRELROOT>/qnx/sym/wccaxp.sym
-    <CCCMD> dos386/wcaxp01.int      <OWRELROOT>/qnx/binq/wccaxp01.int
-    <CCCMD> linux386/wcaxp.exe      <OWRELROOT>/binl/wccaxp
-    <CCCMD> linux386/wcaxp.sym      <OWRELROOT>/binl/wccaxp.sym
-    <CCCMD> linux386/wcaxp01.int    <OWRELROOT>/binl/wccaxp01.int
+    <CCCMD> dos386/wccaxp.exe        <OWRELROOT>/binw/
+    <CCCMD> dos386/wccaxp.sym        <OWRELROOT>/binw/
+    <CCCMD> dos386/wccaxp01.int      <OWRELROOT>/binw/
+    <CCCMD> os2386/wccaxp.exe        <OWRELROOT>/binp/
+    <CCCMD> os2386/wccaxp.sym        <OWRELROOT>/binp/
+    <CCCMD> os2386/wccdaxp.dll       <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/wccdaxp.sym       <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/wccaxp01.int      <OWRELROOT>/binp/dll/
+    <CCCMD> nt386/wccaxp.exe         <OWRELROOT>/binnt/
+    <CCCMD> nt386/wccaxp.sym         <OWRELROOT>/binnt/
+    <CCCMD> nt386/wccdaxp.dll        <OWRELROOT>/binnt/
+    <CCCMD> nt386/wccdaxp.sym        <OWRELROOT>/binnt/
+    <CCCMD> nt386/wccaxp01.int       <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/wccaxp.exe         <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wccaxp.sym         <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wccdaxp.dll        <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wccdaxp.sym        <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wccaxp01.int       <OWRELROOT>/axpnt/
+    <CCCMD> qnx386/wccaxp.exe        <OWRELROOT>/qnx/binq/wccaxp
+    <CCCMD> qnx386/wccaxp.sym        <OWRELROOT>/qnx/sym/
+    <CCCMD> dos386/wccaxp01.int      <OWRELROOT>/qnx/binq/
+    <CCCMD> linux386/wccaxp.exe      <OWRELROOT>/binl/wccaxp
+    <CCCMD> linux386/wccaxp.sym      <OWRELROOT>/binl/
+    <CCCMD> linux386/wccaxp01.int    <OWRELROOT>/binl/
+
+    <CCCMD> ntx64/wccaxp.exe         <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/wccdaxp.dll        <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/wccaxp01.int       <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

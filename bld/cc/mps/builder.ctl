@@ -15,7 +15,7 @@ set PROJNAME=wccmps
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/bwcmps.exe      <OWBINDIR>/bwccmps<CMDEXT>
+    <CPCMD> <OWOBJDIR>/bwccmps.exe      <OWBINDIR>/bwccmps<CMDEXT>
     <CCCMD> <OWOBJDIR>/bwccdmps<DYEXT> <OWBINDIR>/bwccdmps<DYEXT>
 
 [ BLOCK <BINTOOL> clean ]
@@ -26,30 +26,34 @@ set PROJNAME=wccmps
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/wcmps.exe        <OWRELROOT>/binw/wccmps.exe
-    <CCCMD> dos386/wcmps.sym        <OWRELROOT>/binw/wccmps.sym
-    <CCCMD> dos386/wcmps01.int      <OWRELROOT>/binw/wccmps01.int
-    <CCCMD> os2386/wcmps.exe        <OWRELROOT>/binp/wccmps.exe
-    <CCCMD> os2386/wcmps.sym        <OWRELROOT>/binp/wccmps.sym
-    <CCCMD> os2386/wcdmps.dll       <OWRELROOT>/binp/dll/wccdmps.dll
-    <CCCMD> os2386/wcdmps.sym       <OWRELROOT>/binp/dll/wccdmps.sym
-    <CCCMD> os2386/wcmps01.int      <OWRELROOT>/binp/dll/wccmps01.int
-    <CCCMD> nt386/wcmps.exe         <OWRELROOT>/binnt/wccmps.exe
-    <CCCMD> nt386/wcmps.sym         <OWRELROOT>/binnt/wccmps.sym
-    <CCCMD> nt386/wcdmps.dll        <OWRELROOT>/binnt/wccdmps.dll
-    <CCCMD> nt386/wcdmps.sym        <OWRELROOT>/binnt/wccdmps.sym
-    <CCCMD> nt386/wcmps01.int       <OWRELROOT>/binnt/wccmps01.int
-    <CCCMD> ntaxp/wcmps.exe         <OWRELROOT>/axpnt/wccmps.exe
-    <CCCMD> ntaxp/wcmps.sym         <OWRELROOT>/axpnt/wccmps.sym
-    <CCCMD> ntaxp/wcdmps.dll        <OWRELROOT>/axpnt/wccdmps.dll
-    <CCCMD> ntaxp/wcdmps.sym        <OWRELROOT>/axpnt/wccdmps.sym
-    <CCCMD> ntaxp/wcmps01.int       <OWRELROOT>/axpnt/wccmps01.int
-    <CCCMD> qnx386/wcmps.exe        <OWRELROOT>/qnx/binq/wccmps
-    <CCCMD> qnx386/wcmps.sym        <OWRELROOT>/qnx/sym/wccmps.sym
-    <CCCMD> qnx386/wcmps01.int      <OWRELROOT>/qnx/binq/wccmps01.int
-    <CCCMD> linux386/wcmps.exe      <OWRELROOT>/binl/wccmps
-    <CCCMD> linux386/wcmps.sym      <OWRELROOT>/binl/wccmps.sym
-    <CCCMD> linux386/wcmps01.int    <OWRELROOT>/binl/wccmps01.int
+    <CCCMD> dos386/wccmps.exe        <OWRELROOT>/binw/
+    <CCCMD> dos386/wccmps.sym        <OWRELROOT>/binw/
+    <CCCMD> dos386/wccmps01.int      <OWRELROOT>/binw/
+    <CCCMD> os2386/wccmps.exe        <OWRELROOT>/binp/
+    <CCCMD> os2386/wccmps.sym        <OWRELROOT>/binp/
+    <CCCMD> os2386/wccdmps.dll       <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/wccdmps.sym       <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/wccmps01.int      <OWRELROOT>/binp/dll/
+    <CCCMD> nt386/wccmps.exe         <OWRELROOT>/binnt/
+    <CCCMD> nt386/wccmps.sym         <OWRELROOT>/binnt/
+    <CCCMD> nt386/wccdmps.dll        <OWRELROOT>/binnt/
+    <CCCMD> nt386/wccdmps.sym        <OWRELROOT>/binnt/
+    <CCCMD> nt386/wccmps01.int       <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/wccmps.exe         <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wccmps.sym         <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wccdmps.dll        <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wccdmps.sym        <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wccmps01.int       <OWRELROOT>/axpnt/
+    <CCCMD> qnx386/wccmps.exe        <OWRELROOT>/qnx/binq/wccmps
+    <CCCMD> qnx386/wccmps.sym        <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/wccmps01.int      <OWRELROOT>/qnx/binq/
+    <CCCMD> linux386/wccmps.exe      <OWRELROOT>/binl/wccmps
+    <CCCMD> linux386/wccmps.sym      <OWRELROOT>/binl/
+    <CCCMD> linux386/wccmps01.int    <OWRELROOT>/binl/
+
+    <CCCMD> ntx64/wccmps.exe         <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/wccdmps.dll        <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/wccmps01.int       <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

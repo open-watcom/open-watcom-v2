@@ -4,22 +4,14 @@ proj_name = wrc
 wrc_autodepends = .AUTODEPEND
 !endif
 
+# Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
+# internal module name may be required to match file name on some platforms.
 !ifeq bootstrap 1
 exename     = bwrc
 dllname     = bwrcd
 !else
-exename     = wrce
-dllname     = wrced
-!endif
-
-# Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
-# internal module name may be required to match file name on some platforms.
-!ifeq bootstrap 1
-realexename = $(exename)
-realdllname = $(dllname)
-!else
-realexename = wrc
-realdllname = wrcd
+exename     = wrc
+dllname     = wrcd
 !endif
 
 additional_cleanup = ytab.* ytab2.* ytabw.c
@@ -143,7 +135,7 @@ extra_c_flags_rcalloc0 = $(TRACK_MEM_OPTS)
 extra_c_flags_rcalloc1 = $(TRACK_MEM_OPTS)
 extra_c_flags_rcmem    = $(TRACK_MEM_OPTS)
 extra_c_flags_idedrv   = -DSTATIC_LINKAGE
-extra_c_flags_maindrv  = -DDLL_NAME=$(realdllname)
+extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 
 # lflags stuff
 ###############
@@ -153,8 +145,8 @@ extra_l_flags = option map, symfile
 ##################
 extra_l_flags_dll = option map, symfile
 
-extra_l_flags_dll_nt  += option modname='$(realdllname).dll', offset=0x69800000
-extra_l_flags_dll_os2 += option modname='$(realdllname)'
+extra_l_flags_dll_nt  += option modname='$(dllname).dll', offset=0x69800000
+extra_l_flags_dll_os2 += option modname='$(dllname)'
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
@@ -189,11 +181,15 @@ depends_exe = rcmsg.gh wrc.res keyword2.gh weights2.gh keywords.gh weights.gh
 
 !ifdef wrc_dll
 
-$(exename).exe : $(depends_drv) $(realdllname).lib $(objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe : $(depends_drv) $(dllname).dll $(objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs_drv) $(dllname).lib $(ldflags)
+!else
         @%write drv.lnk $(lflags)
         @for %i in ($(objs_drv)) do @%append drv.lnk file %i
-        @%append drv.lnk lib $(realdllname).lib
+        @%append drv.lnk lib $(dllname).lib
         $(linker) name $@ @drv.lnk
+!endif
         @%make bind_version_res_exe
 
 !else
@@ -221,19 +217,19 @@ $(exename).exe : $(depends_exe) $(objs_exe) $(xlibs) $(version_res_exe_$(host_os
 !endif
 
 $(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags_dll) $(objs_dll) $(xlibs) $(ldflags)
+!else
         @%write dll.lnk $(lflags_dll)
-        @%append dll.lnk op impfile=export.tmp
+        @%append dll.lnk op implib
         @for %i in ($(objs_dll)) do @%append dll.lnk file %i
         @for %i in ($(xlibs)) do @%append dll.lnk lib %i
         $(linker) name $@ @dll.lnk
+!endif
         @%make bind_version_res_dll
 !ifneq bootstrap 1
         $(wstrip) -q -a -r $@ . wrc.res
 !endif
-
-$(realdllname).lib : $(dllname).dll $(__MAKEFILES__)
-        $(sed) -e s/$(dllname).dll/$(realdllname).dll/g export.tmp > $(realdllname).lbc
-        $(librarian) $(libflags) @$(realdllname).lbc
 
 # ytab.c is renamed to ytabw.c to avoid filename conflict
 ytabw.c ytab.gh : rc.y ../y/yydriver.c rcmem.h
@@ -272,6 +268,6 @@ rcmsg.gh : msg.gh
 wrc.res : ../rc.rc rcmsg.gh .AUTODEPEND
         $(rc_aui) -ad $(rc_defines) -I"../h" $[@ -fo=$^@
 
-verrc_exe = $(realexename)
-verrc_dll = $(realdllname)
+verrc_exe = $(exename)
+verrc_dll = $(dllname)
 !include verrc.mif

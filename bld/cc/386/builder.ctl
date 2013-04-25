@@ -26,30 +26,34 @@ set PROJNAME=wcc386
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/wc386.exe        <OWRELROOT>/binw/wcc386.exe
-    <CCCMD> dos386/wc386.sym        <OWRELROOT>/binw/wcc386.sym
-    <CCCMD> dos386/wc38601.int      <OWRELROOT>/binw/wcc38601.int
-    <CCCMD> os2386/wc386.exe        <OWRELROOT>/binp/wcc386.exe
-    <CCCMD> os2386/wc386.sym        <OWRELROOT>/binp/wcc386.sym
-    <CCCMD> os2386/wcd386.dll       <OWRELROOT>/binp/dll/wccd386.dll
-    <CCCMD> os2386/wcd386.sym       <OWRELROOT>/binp/dll/wccd386.sym
-    <CCCMD> os2386/wc38601.int      <OWRELROOT>/binp/dll/wcc38601.int
-    <CCCMD> nt386/wc386.exe         <OWRELROOT>/binnt/wcc386.exe
-    <CCCMD> nt386/wc386.sym         <OWRELROOT>/binnt/wcc386.sym
-    <CCCMD> nt386/wcd386.dll        <OWRELROOT>/binnt/wccd386.dll
-    <CCCMD> nt386/wcd386.sym        <OWRELROOT>/binnt/wccd386.sym
-    <CCCMD> nt386/wc38601.int       <OWRELROOT>/binnt/wcc38601.int
-    <CCCMD> ntaxp/wc386.exe         <OWRELROOT>/axpnt/wcc386.exe
-    <CCCMD> ntaxp/wc386.sym         <OWRELROOT>/axpnt/wcc386.sym
-    <CCCMD> ntaxp/wcd386.dll        <OWRELROOT>/axpnt/wccd386.dll
-    <CCCMD> ntaxp/wcd386.sym        <OWRELROOT>/axpnt/wccd386.sym
-    <CCCMD> ntaxp/wc38601.int       <OWRELROOT>/axpnt/wcc38601.int
-    <CCCMD> qnx386/wc386.exe        <OWRELROOT>/qnx/binq/wcc386
-    <CCCMD> qnx386/wc386.sym        <OWRELROOT>/qnx/sym/wcc386.sym
-    <CCCMD> qnx386/wc38601.int      <OWRELROOT>/qnx/binq/wcc38601.int
-    <CCCMD> linux386/wc386.exe      <OWRELROOT>/binl/wcc386
-    <CCCMD> linux386/wc386.sym      <OWRELROOT>/binl/wcc386.sym
-    <CCCMD> linux386/wc38601.int    <OWRELROOT>/binl/wcc38601.int
+    <CCCMD> dos386/wcc386.exe        <OWRELROOT>/binw/
+    <CCCMD> dos386/wcc386.sym        <OWRELROOT>/binw/
+    <CCCMD> dos386/wcc38601.int      <OWRELROOT>/binw/
+    <CCCMD> os2386/wcc386.exe        <OWRELROOT>/binp/
+    <CCCMD> os2386/wcc386.sym        <OWRELROOT>/binp/
+    <CCCMD> os2386/wccd386.dll       <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/wccd386.sym       <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/wcc38601.int      <OWRELROOT>/binp/dll/
+    <CCCMD> nt386/wcc386.exe         <OWRELROOT>/binnt/
+    <CCCMD> nt386/wcc386.sym         <OWRELROOT>/binnt/
+    <CCCMD> nt386/wccd386.dll        <OWRELROOT>/binnt/
+    <CCCMD> nt386/wccd386.sym        <OWRELROOT>/binnt/
+    <CCCMD> nt386/wcc38601.int       <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/wcc386.exe         <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wcc386.sym         <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wccd386.dll        <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wccd386.sym        <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wcc38601.int       <OWRELROOT>/axpnt/
+    <CCCMD> qnx386/wcc386.exe        <OWRELROOT>/qnx/binq/wcc386
+    <CCCMD> qnx386/wcc386.sym        <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/wcc38601.int      <OWRELROOT>/qnx/binq/
+    <CCCMD> linux386/wcc386.exe      <OWRELROOT>/binl/wcc386
+    <CCCMD> linux386/wcc386.sym      <OWRELROOT>/binl/
+    <CCCMD> linux386/wcc38601.int    <OWRELROOT>/binl/
+
+    <CCCMD> ntx64/wcc386.exe         <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/wccd386.dll        <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/wcc38601.int       <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============
