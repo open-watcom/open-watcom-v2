@@ -829,7 +829,7 @@ void DeclVerifyNoOtherCLinkage( SYMBOL sym, SYMBOL exclude )
     } RingIterEnd( check )
 }
 
-static void verifyCanBeOverloaded( SYMBOL_NAME sym_name, SYMBOL sym, char *name )
+static void verifyCanBeOverloaded( SYMBOL_NAME sym_name, SYMBOL sym, NAME name )
 {
     SCOPE scope;
 
@@ -878,7 +878,7 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
     SYMBOL ret_sym;
     FNOV_RESULT check;
     boolean new_sym_is_function;
-    char *name;
+    NAME name;
     prev_sym_adjust sym_adjust;
     fn_stg_class_status fn_sc_status;
     type_flag new_flags;

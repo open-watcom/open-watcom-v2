@@ -207,7 +207,7 @@ static SYMBOL msgBuild(         // BUILD ERROR MESSAGE
 }
 
 
-static IDEBool IDECALL idePrt // PRINT FOR IDE
+static IDEBool IDEAPI idePrt // PRINT FOR IDE
     ( IDECBHdl hdl              // - handle
     , IDEMsgInfo *info )        // - information
 {
@@ -233,8 +233,8 @@ static IDEBool IDECALL idePrt // PRINT FOR IDE
 static void ideDisplay          // DISPLAY USING IDE INTERFACE
     ( IDEMsgSeverity severity   // - message severity
     , MSG_NUM msgnum            // - message number
-    , const char* msg           // - message
-    , TOKEN_LOCN* msg_locn )    // - message location or NULL
+    , char const *msg           // - message
+    , TOKEN_LOCN *msg_locn )    // - message location or NULL
 {
     IDECallBacks* cbs;          // - pointer to call backs
     IDEMsgInfo inf;             // - message information
@@ -424,7 +424,7 @@ void MsgDisplayArgs             // DISPLAY A MESSAGE WITH ARGS
 
 
 void MsgDisplayLine             // DISPLAY A BARE LINE
-    ( const char* line )        // - the line
+    ( const char *line )        // - the line
 {
     ideDisplay( IDEMSGSEV_NOTE_MSG, 0, line, NULL );
 }
@@ -450,7 +450,7 @@ void MsgDisplayLineArgs         // DISPLAY A BARE LINE, FROM ARGUMENTS
 
 
 void MsgDisplayBanner           // DISPLAY A BANNER LINE
-    ( char* line )              // - the line
+    ( const char *line )              // - the line
 {
     ideDisplay( IDEMSGSEV_BANNER, 0, line, NULL );
 }
@@ -561,7 +561,6 @@ void CSuicide(                  // COMMIT SUICIDE
     void *env;
     SUICIDE_CALLBACK *ctl;
 
-    DbgStmt( if( DEBUG_PRESENT_NAME ) __trap() );
     CompFlags.compile_failed = TRUE;
     if( Environment ) {
         env = Environment;
@@ -1028,24 +1027,23 @@ INITDEFN( error_file, errFileInit, errFileFini )
 
 pch_status PCHReadErrWarnData( void )
 {
-    char            tmp_buff[ sizeof( msg_level ) ];
-    unsigned char   *pch_levels;
+    char            tmp_buff[sizeof( msg_level )];
     unsigned char   *orig_levels;
     unsigned char   *p;
     unsigned char   *o;
     unsigned char   *stop;
 
-    PCHReadLocSize( pch_levels, tmp_buff, sizeof( msg_level ) );
+    PCHReadVar( tmp_buff );
     if( NULL != orig_err_levs ) {
         orig_levels = orig_err_levs;
     } else {
         orig_levels = msg_level;
     }
-    stop = &pch_levels[ sizeof( msg_level ) ];
-    for( p = pch_levels, o = orig_levels; p < stop; ++p, ++o ) {
+    stop = &tmp_buff[ sizeof( msg_level ) ];
+    for( p = tmp_buff, o = orig_levels; p < stop; ++p, ++o ) {
         if( *p != *o ) {
             // reflect a change from the header file into current levels
-            changeLevel( *p & 0x0f, p - pch_levels );
+            changeLevel( *p & 0x0f, p - tmp_buff );
         }
     }
     return( PCHCB_OK );
@@ -1056,7 +1054,8 @@ pch_status PCHWriteErrWarnData( void )
     // NYI: save snapshot of msg_level before header file is read
     // so that we can write out a msg_level that indicates the
     // changes made by the header file
-    PCHWrite( msg_level, sizeof( msg_level ) );
+
+    PCHWriteVar( msg_level );
     return( PCHCB_OK );
 }
 

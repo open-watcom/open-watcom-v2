@@ -82,8 +82,7 @@ static void extrefPruneOvfn(    // PRUNE ANY NON-ORIGINATING VIRT FUNC.S
 
     scope = SymScope( latest );
     RingIterBegSafe( *ring, ovfn ) {
-        if( ( latest == ovfn->vfun )
-          ||( ScopeDerived( SymScope( ovfn->vfun ), scope ) != DERIVED_NO ) ) {
+        if( ( latest == ovfn->vfun ) || ( ScopeDerived( SymScope( ovfn->vfun ), scope ) != DERIVED_NO ) ) {
             RingPrune( (void*)ring, ovfn );
             CarveFree( carveOVFN, ovfn );
             break;
@@ -356,9 +355,7 @@ void *ExtrefVfunInfo(           // GET INFORMATION FOR VIRTUAL FUN. REFERENCE
     if( sym->id == SC_VIRTUAL_FUNCTION ) {
         if( CompFlags.virtual_stripping ) {
             orig_funs = startVRing();
-            VfnAncestralWalk( sym->u.virt_fun
-                            , &extrefVfunRegister
-                            , orig_funs );
+            VfnAncestralWalk( sym->u.virt_fun, &extrefVfunRegister, orig_funs );
         } else if( ! CompFlags.vfun_reference_done ) {
             CompFlags.vfun_reference_done = TRUE;
             orig_funs = startVRing();
@@ -431,7 +428,7 @@ static void extrefFini(         // COMPLETION
 // there are allocated memory blocks by virtualListBuild
 // which are not freed
 // 
-//    DbgStmt( CarveVerifyAllGone( carveOVFN, "OVFN" ) );
+    DbgStmt( CarveVerifyAllGone( carveOVFN, "OVFN" ) );
     DbgStmt( CarveVerifyAllGone( carveRingHead, "OVFN* ring heads" ) );
     CarveDestroy( carveOVFN );
     CarveDestroy( carveRingHead );

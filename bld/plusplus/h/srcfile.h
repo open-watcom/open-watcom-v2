@@ -54,7 +54,7 @@ typedef struct dir_list DIR_LIST;
 void SrcFileScanName(           // SCAN AN IDENTIFIER
     int c )                     // - first character to check
 ;
-int SrcFileScanWhiteSpace(      // SCAN WHITESPACE
+void SrcFileScanWhiteSpace(     // SCAN WHITESPACE
     int expanding )             // - expanding a macro
 ;
 void SrcFileScanCppComment(      // SCAN C++ COMMENT

@@ -109,7 +109,7 @@ static SEARCH_RESULT *ctorResult(   // GET SEARCH RESULT FOR A CTOR
     TYPE cl_type )              // - a class type
 {
     SCOPE class_scope;
-    char *ctor_name;
+    NAME ctor_name;
     SEARCH_RESULT *result;
 
     ctor_name = CppConstructorName();
@@ -608,7 +608,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
                                         , this_type
                                         , CNV_FUNC_CD_THIS
                                         , &diagCtor );
-                if( PT_ERROR == this_node ) {
+                if( PT_ERROR == this_node->op ) {
                     NodeFreeDupedExpr( initial );
                     node = PTreeErrorNode( this_node );
                     break;

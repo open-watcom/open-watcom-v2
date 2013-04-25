@@ -55,8 +55,8 @@ struct rewrite_package {
     REWRITE_TOKENS              *list;
     REWRITE_TOKENS              *curr;
     SRCFILE_HANDLE              *srcfiles_refd;
-    uint_8                      *token;
-    uint_8                      last_token;
+    uint_8                      *stream;
+    TOKEN                       last_token;
     unsigned                    busy : 1;       // being used by RewriteToken
     unsigned                    alternate : 1;  // nested use of a REWRITE
     unsigned                    free : 1;       // used for precompiled headers

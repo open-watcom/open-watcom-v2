@@ -36,11 +36,7 @@
 
 #define QSTRING( name ) __STR( name )
 #define RTFUN( code, name ) QSTRING(CPPLIB(name))
-#if _INTEL_CPU
-#define RTDAT( code, name ) "_" QSTRING(CPPDATA(name))
-#elif _CPU == _AXP
-#define RTDAT( code, name ) QSTRING(CPPDATA(name))
-#endif
+#define RTDAT( code, name ) QSTRING(CPPLIBDATA(name))
 #define RTFNC( code, name ) QSTRING(name)
 #define RTFNP( code, name ) #name
 

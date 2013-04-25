@@ -40,33 +40,33 @@
 int classify_escape_char(       // CLASSIFY TYPE OF ESCAPE
     int chr )                   // - character after "\"
 ;
-char *CppArrayDtorName(         // CREATE NAME FOR ARRAY DTOR
+NAME CppArrayDtorName(          // CREATE NAME FOR ARRAY DTOR
     TYPE ar_type )              // - array type
 ;
-char *CppConstructorName(       // GET C++ CONSTRUCTOR NAME
+NAME CppConstructorName(        // GET C++ CONSTRUCTOR NAME
     void )
 ;
-char *CppConversionName(        // GET C++ USER-DEFINED CONVERSION NAME
+NAME CppConversionName(         // GET C++ USER-DEFINED CONVERSION NAME
     void )
 ;
-char *CppDestructorName(        // GET C++ DESTRUCTOR NAME
+NAME CppDestructorName(         // GET C++ DESTRUCTOR NAME
     void )
 ;
 char* CppGetEnv                 // COVER FOR getenv
     ( char const * name )       // - environment variable
 ;
-char *CppIndexMappingName(      // CREATE NAME OF VIRTUAL BASE INDEX MAPPING
+NAME CppIndexMappingName(       // CREATE NAME OF VIRTUAL BASE INDEX MAPPING
     SCOPE from,                 // - from scope
     SCOPE to )                  // - to scope
 ;
-boolean CppLookupName(          // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
-    char *name,                 // - name to find
+boolean CppLookupOperatorName(  // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
+    NAME name,                  // - name to find
     CGOP *oper )                // - index found
 ;
 char *GetMangledName(           // MANGLE SYMBOL NAME
     SYMBOL sym )                // - symbol to mangle
 ;
-char *CppMembPtrOffsetName(     // CREATE NAME FOR MEMBER-PTR OFFSET FUNCTION
+NAME CppMembPtrOffsetName(      // CREATE NAME FOR MEMBER-PTR OFFSET FUNCTION
     SYMBOL sym )                // - field for offsetting
 ;
 boolean IsCppNameInterestingDebug(      // CHECK FOR INTERNAL NAMES
@@ -75,44 +75,44 @@ boolean IsCppNameInterestingDebug(      // CHECK FOR INTERNAL NAMES
 char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
     SYMBOL sym )                // - symbol
 ;
-char *CppClassPathDebug(  //TRANSLATE INTERNAL NAME TO CLASS PREFIXED DEBUGGER NAME
+char *CppClassPathDebug(        //TRANSLATE INTERNAL NAME TO CLASS PREFIXED DEBUGGER NAME
     SYMBOL sym )
 ;
-char *CppNameStateTableCmd(     // NAME OF STATE-TABLE COMMAND
+NAME CppNameStateTableCmd(      // NAME OF STATE-TABLE COMMAND
     unsigned index )            // - command index
 ;
-char *CppNameUniqueNS(          // NAME OF UNIQUE NAMESPACE
+NAME CppNameUniqueNS(           // NAME OF UNIQUE NAMESPACE
     TOKEN_LOCN *locn )          // - location of start of unique namespace
 ;
-char *CppNameThrowRo(           // NAME OF THROW R/O BLOCK
+NAME CppNameThrowRo(            // NAME OF THROW R/O BLOCK
     TYPE type )                 // - the type
 ;
-char const* CppTsName(          // MANGLED NAME FOR TYPE SIGNATURE
+NAME CppTsName(                 // MANGLED NAME FOR TYPE SIGNATURE
     TYPE type )                 // - type being signified
 ;
-char *CppPCHDebugInfoName(      // MANGLED NAME FOR PCH DEBUG INFO
+NAME CppPCHDebugInfoName(       // MANGLED NAME FOR PCH DEBUG INFO
     char *include_file )        // - include file of PCH
 ;
-char *CppNameTypeSig(           // NAME OF TYPE SIGNATURE
+NAME CppNameTypeSig(            // NAME OF TYPE SIGNATURE
     TYPE type )                 // - the type
 ;
-char *CppOperatorName(          // GET C++ OPERATOR NAME
+NAME CppOperatorName(           // GET C++ OPERATOR NAME
     unsigned op )               // - operator number
 ;
-char *CppSpecialName(           // CREATE NAME OF SPECIAL INTERNAL ID
+NAME CppSpecialName(            // CREATE NAME OF SPECIAL INTERNAL ID
     unsigned index )            // - index of special name
 ;
-char *CppStaticInitName(        // CREATE NAME FOR INITIALIZING AUTO AGGREGATES
+NAME CppStaticInitName(         // CREATE NAME FOR INITIALIZING AUTO AGGREGATES
     SYMBOL sym )                // - variable to be initialized
 ;
-char *CppStaticOnceOnlyName(    // CREATE NAME FOR ONCE ONLY CHECK OF STATICS
+NAME CppStaticOnceOnlyName(     // CREATE NAME FOR ONCE ONLY CHECK OF STATICS
     void )
 ;
-char *CppThunkName(             // CREATE NAME OF VIRTUAL FN THUNK
+NAME CppThunkName(              // CREATE NAME OF VIRTUAL FN THUNK
     SCOPE scope,                // - exact class that needs vftables
     THUNK_ACTION *thunk )       // - thunk being created
 ;
-char *CppTypeidName(            // CREATE NAME FOR TYPEID
+NAME CppTypeidName(             // CREATE NAME FOR TYPEID
     unsigned *len,              // - addr( len of type mangle )
     TYPE type )                 // - type for typeid
 ;
@@ -120,14 +120,14 @@ char *CppGetTypeidContents(     // CREATE CONTENTS FOR TYPEID STRUCTURE
     TYPE type,                  // - typeid type
     unsigned *len )             // - addr( strlen of contents )
 ;
-char *CppVBTableName(           // CREATE NAME OF VIRTUAL BASE OFFSET TABLE
+NAME CppVBTableName(            // CREATE NAME OF VIRTUAL BASE OFFSET TABLE
     SCOPE scope,                // - class table is used in
     target_offset_t delta )     // - offset of vbptr table is used for
 ;
-char *CppVATableName(           // CREATE NAME OF VIRTUAL FN ADJUSTOR TABLE
+NAME CppVATableName(            // CREATE NAME OF VIRTUAL FN ADJUSTOR TABLE
     SCOPE scope )               // - class table is used in
 ;
-char *CppVFTableName(           // CREATE NAME OF VIRTUAL FN ADDR TABLE
+NAME CppVFTableName(            // CREATE NAME OF VIRTUAL FN ADDR TABLE
     SCOPE scope,                // - class table is used in
     target_offset_t delta )     // - offset of vfptr table is used for
 ;
@@ -147,14 +147,14 @@ void Int64FromU32               // CREATE 64-BIT VALUE FROM UNSIGNED 32-BIT VALU
     , unsigned_64* result )     // - addr[ result (unsigned) ]
 ;
 boolean IsCppMembPtrOffsetName( // TEST IF NAME IS MEMBER-PTR OFFSET FUNCTION
-    char *name )                // - name of field for offsetting
+    NAME name )                 // - name of field for offsetting
 ;
 boolean IsCppSpecialName(       // TEST IF NAME IS SPECIAL NAME
-    char *name,                 // - name to find
+    NAME name,                  // - name to find
     unsigned *idx )             // - index found
 ;
 boolean IsVftName(              // TEST IF SYMBOL IS VFT NAME
-    char* name )                // - name to be tested
+    NAME name )                 // - name to be tested
 ;
 int octal_dig(                  // GET OCTAL DIGIT FOR CHAR (OR 8)
     int chr )                   // - character

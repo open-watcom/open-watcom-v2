@@ -32,8 +32,6 @@
 #ifndef MACRO_H
 #define MACRO_H
 
-typedef char *  MACADDR_T;       /* contains actual pointer to block of memory */
-
 enum special_macros {
     #define pick( s, i, f )    i,
     #include "specmac.h"
@@ -81,10 +79,7 @@ typedef enum macro_flags {
 
 typedef struct macro_entry MEDEFN, *MEPTR;
 struct macro_entry {
-    union {
-        MEPTR       next_macro; /* next macro in this hash chain */
-        unsigned    pch_hash;
-    } u;
+    MEPTR       next_macro;     /* next macro in this hash chain */
     TOKEN_LOCN  defn;           /* where it was defined */
     uint_16     macro_defn;     /* offset to defn, 0 ==> special macro name*/
     uint_16     macro_len;      /* length of macro definition */
@@ -93,17 +88,5 @@ struct macro_entry {
     unsigned    : 0;            /* align macro_name to a DWORD boundary */
     char        macro_name[1];  /* name,parms, and macro definition */
 };
-
-#include <pushpck1.h>
-typedef struct macro_stack MSTACK, *MSTACKPTR;
-struct macro_stack {
-    MSTACKPTR   stacked_macro;
-    MEPTR       prev_macro;
-    char        **macro_parms;          /* pointer to array of actual parms */
-    char        *prev_ptr;
-    int         macro_class;            /* T_MACRO or T_MACRO_PARM */
-    char        macro_definition[1];    /* copy of current macro definition */
-};
-#include <poppck.h>
 
 #endif

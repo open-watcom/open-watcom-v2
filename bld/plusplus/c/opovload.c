@@ -417,7 +417,7 @@ static CNV_RETN transform_operand(// TRANSFORM AN OPERAND (TO SCALAR)
     }
     if( ( type != NULL ) && ( NULL == EnumType( nd_type ) ) ) {
         *a_operand = CastImplicit( *a_operand, type, CNV_INIT_COPY, &diag_transform );
-        cnv_status = ( PT_ERROR == *a_operand ) ? CNV_ERR : CNV_OK;
+        cnv_status = ( PT_ERROR == (*a_operand)->op ) ? CNV_ERR : CNV_OK;
     } else {
         cnv_status = CNV_OK;
     }
@@ -864,10 +864,11 @@ PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
         scalarOperators( &oli );
         if( ! oli.have_user_type ) break;
         if( oli.flags & PTO_OVLOAD ) {
-            char *ov_fun_name;          // - name of overloaded function
+            NAME ov_fun_name;           // - name of overloaded function
             TYPE type;                  // - class type
             SCOPE scope;                // - class scope
             CGOP cgop;                  // - expression operator
+
             ExtraRptIncrementCtr( ctrOverloadOps );
             cgop = oli.expr->cgop;
             type = oli.left.class_type;
@@ -876,8 +877,7 @@ PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
                  && cgop != CO_EQUAL ) {
                     SCOPE scope;
                     ov_fun_name = CppOperatorName( cgop );
-                    oli.result_nonmem = ScopeFindNaked( GetFileScope()
-                                                      , ov_fun_name );
+                    oli.result_nonmem = ScopeFindNaked( GetFileScope(), ov_fun_name );
                     scope = nsExtract( &oli );
                     if( scope != NULL ) {
                         oli.result_nonmem_namespace = ScopeContainsNaked( scope, ov_fun_name );
@@ -1168,32 +1168,26 @@ INITDEFN( overload_operator, overloadOperatorInit, overloadOperatorFini )
 
 pch_status PCHWriteOperatorOverloadData( void )
 {
-    SYMBOL sym;
     unsigned arg;
 
     for( arg = 0; arg < MAX_FUN_PROTOS; ++arg ) {
-        sym = SymbolGetIndex( ovfuns[ arg ] );
-        PCHWrite( &sym, sizeof( sym ) );
+        PCHWriteCVIndex( (cv_index)SymbolGetIndex( ovfuns[ arg ] ) );
     }
     for( arg = 0; arg < MAX_FUN_PROTOS_EXTRA; ++arg ) {
-        sym = SymbolGetIndex( ovfuns_extra[ arg ] );
-        PCHWrite( &sym, sizeof( sym ) );
+        PCHWriteCVIndex( (cv_index)SymbolGetIndex( ovfuns_extra[ arg ] ) );
     }
     return( PCHCB_OK );
 }
 
 pch_status PCHReadOperatorOverloadData( void )
 {
-    SYMBOL sym;
     unsigned arg;
 
     for( arg = 0; arg < MAX_FUN_PROTOS; ++arg ) {
-        PCHRead( &sym, sizeof( sym ) );
-        ovfuns[ arg ] = SymbolMapIndex( sym );
+        ovfuns[arg] = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() );
     }
     for( arg = 0; arg < MAX_FUN_PROTOS_EXTRA; ++arg ) {
-        PCHRead( &sym, sizeof( sym ) );
-        ovfuns_extra[ arg ] = SymbolMapIndex( sym );
+        ovfuns_extra[arg] = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

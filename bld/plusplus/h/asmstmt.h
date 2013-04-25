@@ -47,7 +47,7 @@ extern PTREE        AsmStmt( void );
 // from CPRAGxxx
 
 extern boolean      AsmSysInsertFixups( VBUF *code );
-extern AUX_INFO     *AsmSysCreateAux( char *name );
+extern AUX_INFO     *AsmSysCreateAux( NAME );
 extern void         AsmSysUsesAuto( void );
 extern void         AsmSysInit( void );
 extern void         AsmSysFini( void );

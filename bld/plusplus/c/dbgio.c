@@ -39,7 +39,7 @@
 #define default_file    "_CPPDBG_."
 
 static FILE* fstk[ MX_FSTK ];   // suspended files
-static unsigned index;          // top of files stack
+static unsigned fstk_index;     // top of files stack
 static int logging;             // true ==> logging at level 0
 
 static void reDirSwitch         // SWITCH TWO FILE AREAS
@@ -50,7 +50,7 @@ static void reDirSwitch         // SWITCH TWO FILE AREAS
 
     fflush( stdout );
     temp = *stdout;
-    fp = fstk[ index ];
+    fp = fstk[ fstk_index ];
     *stdout = *fp;
     *fp = temp;
 }
@@ -58,39 +58,39 @@ static void reDirSwitch         // SWITCH TWO FILE AREAS
 static void reDirBeg            // START REDIRECTION FOR A FILE
     ( void )
 {
-    if( index >= MX_FSTK ) {
+    if( fstk_index >= MX_FSTK ) {
         puts( "DBGIO -- too many log files active" );
         fflush( stdout );
     } else {
         char fname[32];
         FILE* fp;
         strcpy( fname, default_file );
-        itoa( index, &fname[ sizeof( default_file ) - 1 ], 10 );
+        itoa( fstk_index, &fname[ sizeof( default_file ) - 1 ], 10 );
         fp =  fopen( fname, "wt" );
         if( NULL == fp ) {
             puts( "DBGIO -- failure to open file" );
             puts( fname );
-            fstk[ index ] = 0;
+            fstk[ fstk_index ] = 0;
         } else {
-            fstk[ index ] = fp;
+            fstk[ fstk_index ] = fp;
             reDirSwitch();
         }
     }
-    ++ index;
+    ++ fstk_index;
 }
 
 static void reDirEnd            // COMPLETE REDIRECTION FOR A FILE
     ( void )
 {
-    if( index == 0 ) {
+    if( fstk_index == 0 ) {
         puts( "DBGIO -- too many files closed" );
     } else {
-        -- index;
-        if( index < MX_FSTK ) {
-            FILE* fp = fstk[ index ];
+        -- fstk_index;
+        if( fstk_index < MX_FSTK ) {
+            FILE* fp = fstk[ fstk_index ];
             if( fp != 0 ) {
                 reDirSwitch();
-                fclose( fstk[ index ] );
+                fclose( fstk[ fstk_index ] );
             }
         }
     }
@@ -99,7 +99,7 @@ static void reDirEnd            // COMPLETE REDIRECTION FOR A FILE
 void DbgRedirectBeg             // START REDIRECTION
     ( void )
 {
-    if( index == 0 ) {
+    if( fstk_index == 0 ) {
         reDirBeg();
         logging = 0;
     }
@@ -110,8 +110,8 @@ int DbgRedirectEnd              // COMPLETE REDIRECTION
 {
     int retn;                   // - # of file to view
 
-    retn = index - 1;
-    if( index > 1 || logging ) {
+    retn = fstk_index - 1;
+    if( fstk_index > 1 || logging ) {
         fflush( stdout );
     } else {
         reDirEnd();
@@ -122,7 +122,7 @@ int DbgRedirectEnd              // COMPLETE REDIRECTION
 void DbgLogBeg                  // START LOGGING
     ( void )
 {
-    if( index == 0 ) {
+    if( fstk_index == 0 ) {
         logging = 1;
     }
     reDirBeg();
@@ -131,8 +131,8 @@ void DbgLogBeg                  // START LOGGING
 int DbgLogEnd                   // END LOGGING
     ( void )
 {
-    if( index > 0 ) {
+    if( fstk_index > 0 ) {
         reDirEnd();
     }
-    return index;
+    return fstk_index;
 }

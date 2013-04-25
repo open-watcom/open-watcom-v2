@@ -288,9 +288,9 @@ static void fmtTypeBitfield( TYPE type, VBUF *pvbuf )
     VbufFree( &working );
 }
 
-static char *getArgName( unsigned index )
+static NAME getArgName( unsigned index )
 {
-    char *name;
+    NAME name;
     SYMBOL sym;
 
     name = NULL;
@@ -309,7 +309,7 @@ static void fmtTypeArgument( TYPE arg_type, unsigned arg_index, VBUF *pvbuf, FMT
     FMT_CONTROL arg_control;
     VBUF arg_prefix;
     VBUF arg_suffix;
-    char *name;
+    NAME name;
 
     arg_control = FormatTypeDefault | control;
     arg_control &= ~FF_ARG_NAMES;
@@ -510,7 +510,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
     FMT_INFO    *StackFMT;
     FMT_INFO    *top;
     type_flag   flags;
-    char        *name;
+    NAME        name;
     AUX_INFO    *pragma;
     int         use_def;
     FMT_CONTROL fn_control;

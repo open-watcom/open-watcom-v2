@@ -34,31 +34,25 @@
 
 #define BY_CPP_FRONT_END
 #include "cgaux.h"
+#include "memmgr.h"
+#include "callinfo.h"
 
 typedef struct aux_entry AUX_ENTRY;
 typedef struct aux_info AUX_INFO;
 
-#include <pushpck1.h>
-struct aux_entry {
+typedef struct aux_entry {
     AUX_ENTRY       *next;
     AUX_INFO        *info;
     char            name[1];
-};
-#include <poppck.h>
+} aux_entry;
 
-typedef char aux_flags;
-#define AUX_FLAG_FAR16  0x01
-
-#include "memmgr.h"
-#include "callinfo.h"
-
-struct inline_funcs {
+typedef struct inline_funcs {
     char            *name;      /* func name */
     byte_seq        *code;      /* sequence of bytes */
     hw_reg_set      *parms;     /* parameter information */
     hw_reg_set      returns;    /* function return information */
     hw_reg_set      save;       /* registers not modified */
-};
+} inline_funcs;
 
 global AUX_ENTRY        *AuxList;
 global AUX_ENTRY        *CurrEntry;
@@ -88,13 +82,13 @@ char *AuxObjnameDup(            // DUPLICATE AUX OBJNAME
 void freeAuxInfo(               // FREE ALL AUX INFO MEM
     AUX_INFO *i )
 ;
-struct aux_entry *AuxLookup(    // LOOK UP AUX ENTRY
+AUX_ENTRY *AuxLookup(           // LOOK UP AUX ENTRY
     char *name )
 ;
 char *AuxRetrieve(              // RETRIEVE NAME OF AUX ENTRY
     AUX_INFO *pragma )
 ;
-void CgInfoAddPragmaExtrefS(    // ADD EXTREF FOR PRAGMA'D SYMBOL
+void CgInfoAddPragmaExtrefS(    // ADD EXTREF FOR PRAGMA'D NAME
     SYMBOL sym )
 ;
 void CgInfoAddPragmaExtrefN(    // ADD EXTREF FOR PRAGMA'D NAME
@@ -162,17 +156,11 @@ void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
 boolean PragRecog(              // RECOGNIZE PRAGMA ID
     char *what )                // - id
 ;
-boolean PragIdCurToken(         // IS CURTOKEN AN ID?
-    void )
-;
 hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     void )
 ;
 hw_reg_set PragRegName(         // GET REGISTER NAME
     char *str )                 // - register
-;
-int PragSet(                    // GET ENDING PRAGMA DELIMITER
-    void )
 ;
 boolean ReverseParms(           // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma

@@ -243,15 +243,12 @@ static void reportOnType        // SET UP TYPE REFERENCE
     , TYPE type                 // - a type
     , SYMBOL sym )              // - symbol for type
 {
-    if( NULL != sym
-     && ( SF2_TOKEN_LOCN & sym->flag2 ) ) {
+    if( NULL != sym && ( SF2_TOKEN_LOCN & sym->flag2 ) ) {
         SRCFILE refed = sym->locn->tl.src_file;
         if( curr != refed ) {
             REPO_STAT* repo = reposStat( curr );
             TYPE* last;
-            for( last = VstkTop( &repo->typeset )
-               ;
-               ; last = VstkNext( &repo->typeset, last ) ) {
+            for( last = VstkTop( &repo->typeset ); ; last = VstkNext( &repo->typeset, last ) ) {
                 if( NULL == last ) {
                     *(TYPE*)VstkPush( &repo->typeset ) = type;
                     break;
@@ -275,9 +272,11 @@ static void extraRptTypeUsage   // TYPE USAGE
             reportOnType( current, type, sym );
           } break;
           case TYP_CLASS :
-          { SYMBOL sym = type->u.c.scope->owner.sym;
-            reportOnType( current, type, sym );
-          } break;
+            if( type->u.c.scope->id == SCOPE_FUNCTION ) {
+                SYMBOL sym = type->u.c.scope->owner.sym;
+                reportOnType( current, type, sym );
+            }
+            break;
           case TYP_MEMBER_POINTER :
             extraRptTypeUsage( type->u.mp.host );
             continue;
@@ -470,7 +469,7 @@ static void extraRptPrintCtr(   // PRINT A COUNTER
     if( reg->ctr.text != NULL ) {
         char buffer[32];
         memset( buffer, ' ', sizeof(buffer) );
-        utoa( *reg->ctr.a_ctr, buffer + 16, 10 );
+        ultoa( *reg->ctr.a_ctr, buffer + 16, 10 );
         MsgDisplayLineArgs( buffer + strlen(buffer) - 9
                           , " = "
                           , reg->ctr.text

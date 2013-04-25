@@ -316,7 +316,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CompFlags.cpp_output = TRUE;
                 CompFlags.ignore_fnf = FALSE;
                 if( ForceInclude ) {
-                    EmitLineNL( 1, WholeFName );
+                    EmitLine( 1, WholeFName );
                     openForceIncludeFile();
                     PpParse();
                     SrcFileClose( TRUE );
@@ -526,24 +526,6 @@ static int compilePrimaryCmd(   // COMPILE PRIMARY CMD LINE
 }
 
 
-static void reallocTokens( void )   // ALLOCATE STORAGE FOR TOKENS
-{                                   // - tokens need to be writable
-#ifndef __WATCOMC__
-    int i;
-
-    /* Quick hack: The tokens need to be writable, but string literals
-     * often aren't. For Watcom we use -zc switch, otherwise allocate
-     * writable storage manually.
-     * NB: We might want to only copy the tokens that actually need
-     * to be writable.
-     */
-    for( i = 0; i < T_LAST_TOKEN; ++i ) {
-        Tokens[i] = strdup( Tokens[i] );
-    }
-#endif
-}
-
-
 #ifndef NDEBUG
 #define ZAP_NUM 20
 #define ZAP_SIZE 1024
@@ -577,7 +559,7 @@ static void exitPointStart(     // CALLED AT EACH exitPointAcquire
 }
 
 
-int PP_EXPORT WppCompile(       // MAIN-LINE (DLL)
+int WppCompile(                 // MAIN-LINE (DLL)
     DLL_DATA* dll_data,         // - data for DLL
     char *input,                // - input file name argv string
     char *output )              // - output file name argv string
@@ -588,7 +570,6 @@ int PP_EXPORT WppCompile(       // MAIN-LINE (DLL)
     InitFiniStartup( &exitPointStart );
     ExitPointAcquire( mem_management );
     DbgHeapInit();
-    reallocTokens();
     if( dll_data->cmd_line != NULL ) {
         char* vect[4];
         unsigned i = 1;

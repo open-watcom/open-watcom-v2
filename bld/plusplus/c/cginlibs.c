@@ -42,7 +42,7 @@ enum {
 
 typedef struct lib_list {
     struct lib_list *next;
-    char            libname[1];         // first char is priority, rest is name
+    char            libname[2]; // first char is priority '1'-'9', next is library name
 } lib_list;
 
 static lib_list *libHead;
@@ -50,34 +50,40 @@ static lib_list *libHead;
 static void addNewLib( char *name, char priority )
 /************************************************/
 {
+    lib_list    **next_owner;
     lib_list    **new_owner;
-    lib_list    **owner;
+    lib_list    **old_owner;
     lib_list    *lib;
     int         len;
 
-    for( owner = &libHead; (lib = *owner) != NULL; owner = &lib->next ) {
+    new_owner = &libHead;
+    old_owner = NULL;
+    for( next_owner = &libHead; (lib = *next_owner) != NULL; next_owner = &lib->next ) {
         if( lib->libname[0] < priority ) {
-            break;
-        }
-        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
-            return;
-        }
-    }
-    new_owner = owner;
-    for( ; (lib = *owner) != NULL; owner = &lib->next ) {
-        if( FNAMECMPSTR( lib->libname + 1, name ) == 0 ) {
-            *owner = lib->next;
-            break;
+            if( old_owner == NULL && strcmp( lib->libname + 1, name ) == 0 ) {
+                old_owner = next_owner;
+            }
+        } else {
+            new_owner = &lib->next;
+            if( strcmp( lib->libname + 1, name ) == 0 ) {
+                new_owner = NULL;
+                break;
+            }
         }
     }
-    if( lib == NULL ) {
+    if( old_owner != NULL ) {
+        lib = *old_owner;
+        *old_owner = lib->next;
+    } else if( new_owner != NULL ) {
         len = strlen( name );
         lib = CMemAlloc( offsetof( lib_list, libname ) + len + 2 );
         memcpy( lib->libname + 1, name, len + 1 );
     }
-    lib->libname[0] = priority;
-    lib->next = *new_owner;
-    *new_owner = lib;
+    if( new_owner != NULL ) {
+        lib->libname[0] = priority;
+        lib->next = *new_owner;
+        *new_owner = lib;
+    }
 }
 
 void CgInfoAddUserLib( char *name )
@@ -143,14 +149,13 @@ void CgInfoLibPCHRead( void )
 void CgInfoLibPCHWrite( void )
 /****************************/
 {
-    size_t len;
-    lib_list *lib;
+    unsigned    len;
+    lib_list    *lib;
 
     for( lib = libHead; lib != NULL; lib = lib->next ) {
-        len = sizeof( *lib ) + strlen( lib->libname );
+        len = offsetof( lib_list, libname ) + strlen( lib->libname ) + 1;
         PCHWriteUInt( len );
         PCHWrite( lib, len );
     }
-    len = 0;
-    PCHWriteUInt( len );
+    PCHWriteUInt( 0 );
 }

@@ -135,7 +135,7 @@ CGINTER *CgioReadIC(            // READ IC RECORD (LOCATE MODE)
 ;
 CGINTER *CgioReadICUntilOpcode( // READ IC RECORD UNTIL OPCODE IS FOUND
     CGFILE *ctl,                // - control for the file
-    unsigned opcode )           // - opcode to find
+    CGINTEROP opcode )          // - opcode to find
 ;
 CGINTER *CgioReadICMask(        // READ IC RECORD UNTIL OPCODE IN SET IS FOUND
     CGFILE *ctl,                // - control for the file
@@ -191,7 +191,7 @@ void DbgCgioEndFront(           // CALLED AT END OF FRONT END
 CGFILE *CGFileMapIndex( CGFILE * );
 CGFILE *CGFileGetIndex( CGFILE * );
 
-CGVALUE CgioGetIndex( unsigned, CGVALUE );
-CGVALUE CgioMapIndex( unsigned, CGVALUE );
+CGVALUE CgioGetIndex( CGINTEROP, CGVALUE );
+CGVALUE CgioMapIndex( CGINTEROP, CGVALUE );
 
 #endif

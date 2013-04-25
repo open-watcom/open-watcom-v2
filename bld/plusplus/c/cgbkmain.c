@@ -1145,7 +1145,7 @@ static void genExactVPtrInit(   // generate a vptr init with exact delta
 static void genVBaseVPtrInit(   // generate a vptr init in a virtual base
     FN_CTL* fctl,               // - function information
     target_offset_t vb_offset,  // - offset in class of vbptr
-    target_offset_t vb_index,   // - vbase index in table
+    unsigned vb_index,          // - vbase index in table
     target_offset_t delta,      // - offset in class of vptr
     SYMBOL table_sym,           // - symbol of table to init vptr with
     boolean vbptr )             // - a vbptr?
@@ -2544,7 +2544,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_VBASE_VPTR_INIT : // GENERATE VBASE OFFSET VPTR INIT CODE
           { SYMBOL table_sym;
             target_offset_t vb_offset;
-            target_offset_t vb_index;
+            unsigned vb_index;
             target_offset_t exact_delta;
             boolean vbptr;
             IC_PARM_POP_INT( exact_delta );
@@ -2653,7 +2653,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
         {
             boolean vf_call;            // TRUE ==> virtual call gen'ed
             target_offset_t vf_offset;  // offset to virtual function ptr
-            target_offset_t vf_index;   // index for virtual function
+            unsigned vf_index;          // index for virtual function
             target_offset_t vf_adj_this;// adjustment for "this" on virt call
             target_offset_t vf_adj_retn;// adjustment for return on virt call
             SYMBOL vf_this;             // this for function (bound ?)
@@ -2743,7 +2743,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             target_offset_t vb_exact;   // exact for virtual base
             target_offset_t vb_delta;   // delta for virtual base
             target_offset_t vb_offset;  // offset to virtual base ptr.
-            target_offset_t vb_index;   // index for virtual base
+            unsigned        vb_index;   // index for virtual base
 
           case IC_VB_EXACT :        // SET vb_exact
             vb_exact = ins_value.uvalue;

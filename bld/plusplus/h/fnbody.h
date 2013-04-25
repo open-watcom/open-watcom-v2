@@ -131,7 +131,7 @@ typedef struct fn_label FNLABEL;
 struct fn_label {
     FNLABEL             *next;
     BLK_LABEL           destination;
-    char                *name;
+    NAME                name;
     blk_count_t         block;
     unsigned            defined : 1;
     unsigned            referenced : 1;

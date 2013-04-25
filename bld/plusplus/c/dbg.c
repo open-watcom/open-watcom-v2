@@ -73,6 +73,7 @@
 #define F_BUF_FMT   "[%3x-%4x]"
 #define F_CPP_FLOAT "(%s)"
 
+extern char *FEName( SYMBOL );
 
 char *DbgSymNameFull(           // GET FULL SYMBOL NAME
     SYMBOL sym )                // - symbol
@@ -96,7 +97,6 @@ char *DbgSymNameFull(           // GET FULL SYMBOL NAME
 char *DbgSymNameShort(          // GET Short SYMBOL NAME
     SYMBOL sym )                // - symbol
 {
-    extern char *FEName( SYMBOL );
     return FEName( sym );
 }
 
@@ -122,8 +122,7 @@ void DumpToken(                 // DUMP A TOKEN
     void )
 {
     if( PragDbgToggle.dump_tokens ) {
-        printf( "Token(%3d) Line(%4d) Column(%3d) ", CurToken, TokenLine
-              , TokenColumn );
+        printf( "Token(%3d) Line(%4d) Column(%3d) ", CurToken, TokenLine, TokenColumn );
         printToken();
     }
 }
@@ -133,8 +132,7 @@ void DumpMacToken(              // DUMP A MACRO TOKEN
     void )
 {
     if( PragDbgToggle.dump_mtokens ) {
-        printf( "MacroToken(%3d) Line(%4d) Column(%3d) ", CurToken, TokenLine
-              , TokenColumn );
+        printf( "MacroToken(%3d) Line(%4d) Column(%3d) ", CurToken, TokenLine, TokenColumn );
         printToken();
     }
 }
@@ -168,69 +166,54 @@ void DumpMacPush(               // DUMP PUSH OF MACRO
 
 
 void DumpMDefn(                 // DUMP MACRO DEFINITION
-    char *pdef )                // - definition
+    char *p )                  // - definition
 {
     int             c;
-    unsigned char   *p = (unsigned char *)pdef;
+    TOKEN           tok;
 
     if( p == NULL )
         return;
-    for( ; *p != '\0'; ) {
-        switch( *p ) {
+    for( ; (tok = *(TOKEN *)p) != T_NULL; ) {
+        p += sizeof( TOKEN );
+        switch( tok ) {
         case T_CONSTANT:
-            ++p;
-            switch( *p ) {
+            switch( *p++ ) {
             case TYP_FLOAT :
             case TYP_DOUBLE :
             case TYP_LONG_DOUBLE :
-                break;
-            case TYP_CHAR:
-            case TYP_SCHAR:
-            case TYP_UCHAR:
-            case TYP_WCHAR:
-            case TYP_SSHORT:
-            case TYP_USHORT:
-            case TYP_SINT:
-            case TYP_UINT:
-                p += sizeof( target_int );
+                for( ; (c = *p++) != '\0'; )
+                    putchar( c );
                 break;
             default:
-                p += sizeof( target_long );
+                printf( "%lld", Constant64 );
+                p += sizeof( Constant64 );
+                break;
             }
+            break;
         case T_ID:
-            ++p;
-            for( ;; ) {
-                c = *p++;
-                if( c == '\0' ) break;
+            for( ; (c = *p++) != '\0'; ) {
                 putchar( c );
             }
-            continue;
+            break;
         case T_STRING:
-            ++p;
             putchar( '\"' );
-            for( ;; ) {
-                c = *p++;
-                if( c == '\0' ) break;
+            for( ; (c = *p++) != '\0'; ) {
                 putchar( c );
             }
             putchar( '\"' );
-            continue;
+            break;
         case T_WHITE_SPACE:
-            ++p;
             putchar( ' ' );
-            continue;
+            break;
         case T_BAD_CHAR:
-            ++p;
             putchar( *p++ );
-            continue;
+            break;
         case T_MACRO_PARM:
-            ++p;
             printf( "parm#%c", '1' + *p++ );
-            continue;
+            break;
         default:
-            printf( "%s", Tokens[ *p ] );
-            ++p;
-            continue;
+            printf( "%s", Tokens[tok] );
+            break;
         }
     }
     putchar( '\n' );
@@ -258,21 +241,19 @@ char *DbgOperator(              // GET CGOP NAME
 
 
 char *DbgIcOpcode(              // GET IC OPCODE
-    unsigned opcode )           // - opcode
+    CGINTEROP opcode )          // - opcode
 {
-    char *name;                 // - name for opcode
     static char *ic_names[] = {
         #define IC( code, type, mask ) # code
         #include "ic.h"
         #undef IC
     };
 
-    if( opcode >= IC_END ) {
-        name = "BAD OPCODE";
+    if( opcode < IC_END ) {
+        return( ic_names[opcode] );
     } else {
-        name = ic_names[ opcode ];
+        return( "BAD OPCODE" );
     }
-    return name;
 }
 
 enum                            // types of opcodes
@@ -304,14 +285,10 @@ void DumpCgFront(               // DUMP GENERATED CODE
 
     ins = instruction;
     opcode = DbgIcOpcode( ins->opcode );
-    if( ins->opcode >= IC_END ) {
-        uvalue = ins->value.uvalue;
+    if( ins->opcode == IC_EOF ) {
+        uvalue = 0;
     } else {
-        if( ins->opcode == IC_EOF ) {
-            uvalue = 0;
-        } else {
-            uvalue = ins->value.uvalue;
-        }
+        uvalue = ins->value.uvalue;
     }
     switch( optypes[ ins->opcode ] ) {
       case DBG_OPCODE_SYM :
@@ -576,7 +553,7 @@ void DumpType(                  // DUMP TYPE ENTRY
         return;
     }
     if( tp->id >= TYP_MAX ) {
-        utoa( tp->id, unknown_type + sizeof( unknown_type ) - 2, 16 );
+        ultoa( tp->id, unknown_type + sizeof( unknown_type ) - 2, 16 );
         id = unknown_type;
     } else {
         id = id_names[ tp->id ];

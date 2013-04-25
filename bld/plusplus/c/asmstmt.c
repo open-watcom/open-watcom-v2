@@ -73,12 +73,12 @@ static void ensureBufferReflectsCurToken( void )
             }
         }
     } else {
-        strcpy( Buffer, Tokens[ CurToken ] );
+        strcpy( Buffer, Tokens[CurToken] );
     }
 
 }
 
-static PTREE genFnCall( char *name )
+static PTREE genFnCall( NAME name )
 {
     return( PTreeBinary( CO_CALL, PTreeId( name ), NULL ) );
 }
@@ -94,17 +94,6 @@ static boolean endOfAsmStmt( void )
     return( FALSE );
 }
 
-static boolean isId( unsigned token )
-{
-    if( token == T_ID ) {
-        return( TRUE );
-    }
-    if( token >= FIRST_KEYWORD && token <= LAST_KEYWORD ) {
-        return( TRUE );
-    }
-    return( FALSE );
-}
-
 static void getAsmLine( VBUF *buff )
 {
     char line[256];
@@ -112,10 +101,10 @@ static void getAsmLine( VBUF *buff )
     if( endOfAsmStmt() )
         return;
     /* reserve at least MAX_INSTR_SIZE bytes in the buffer */
-    VbufReqd( buff, ((AsmCodeAddress+MAX_INSTR_SIZE) + (MAX_INSTR_SIZE-1)) & ~(MAX_INSTR_SIZE-1) );
+    VbufReqd( buff, _RoundUp( ( AsmCodeAddress + MAX_INSTR_SIZE ), MAX_INSTR_SIZE ) );
     AsmCodeBuffer = VbufBuffer( buff );
     ensureBufferReflectsCurToken();
-    if( isId( CurToken ) && strcmp( Buffer, "__emit" ) == 0 ) {
+    if( IS_ID_OR_KEYWORD( CurToken ) && strcmp( Buffer, "__emit" ) == 0 ) {
         strcpy( line, AsmSysDefineByte() );
         strcat( line, " " );
         NextToken();
@@ -134,7 +123,7 @@ static void getAsmLine( VBUF *buff )
             strncat( line, " ", sizeof(line)-1 );
             break;
         default:
-            if( isId( CurToken ) )
+            if( IS_ID_OR_KEYWORD( CurToken ) )
                 strncat( line, " ", sizeof(line)-1 );
             break;
         }
@@ -155,12 +144,12 @@ static void getAsmLine( VBUF *buff )
     }
 }
 
-int NextTokenSkipEOL( void )
-/**************************/
+TOKEN NextTokenSkipEOL( void )
+/****************************/
 {
-    PPState = PPS_NORMAL;
+    PPS_DISABLE_EOL();
     NextToken();
-    PPState = PPS_EOL;
+    PPS_ENABLE_EOL();
     return( CurToken );
 }
 
@@ -168,19 +157,18 @@ PTREE AsmStmt( void )
 /*******************/
 {
     boolean     uses_auto;
-    AUX_INFO    *aux_info;
-    unsigned    skip_token;
-    unsigned    skip_alt_token;
+    AUX_INFO    *auxinfo;
+    TOKEN       skip_token;
+    TOKEN       skip_alt_token;
     PTREE       expr;
     TYPE        fn_type;
     TYPE        ret_type;
     SYMBOL      sym;
-    char        *fn_name;
+    NAME        fn_name;
     auto VBUF   code_buffer;
-    ppstate_t   save_ppstate;
+    ppstate_t   old_ppstate;
 
-    save_ppstate = PPState;
-    PPState = PPS_EOL;
+    old_ppstate = SetPPState( PPS_EOL );
     PPStateAsm = TRUE;
     VbufInit( &code_buffer );
     NextTokenSkipEOL();
@@ -201,13 +189,13 @@ PTREE AsmStmt( void )
         skip_token = skip_alt_token = T_NULL;
     }
     PPStateAsm = FALSE;
-    PPState = save_ppstate;
+    SetPPState( old_ppstate );
     if( ( CurToken == skip_token ) || ( CurToken == skip_alt_token ) ) {
         NextToken();
     }
     if( AsmCodeAddress != 0 ) {
         fn_name = NameDummy();
-        aux_info = AsmSysCreateAux( fn_name );
+        auxinfo = AsmSysCreateAux( fn_name );
         uses_auto = AsmSysInsertFixups( &code_buffer );
         if( uses_auto ) {
             AsmSysUsesAuto();
@@ -215,7 +203,7 @@ PTREE AsmStmt( void )
         AsmSysDone();
         ret_type = GetBasicType( TYP_VOID );
         fn_type = MakeModifiableFunction( ret_type, NULL );
-        fn_type->u.f.pragma = aux_info;
+        fn_type->u.f.pragma = auxinfo;
         fn_type = CheckDupType( fn_type );
         sym = SymCreateFileScope( fn_type, SC_NULL, SF_NULL, fn_name );
         LinkageSet( sym, "C" );

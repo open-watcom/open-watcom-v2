@@ -485,14 +485,14 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         }
     }
     if( GET_FPU_EMU( CpuSwitches ) ) {
-        strcpy( MATHLIB_Name, "8math87?" );
-        EmuLib_Name = "9emu87";
+        strcpy( MATHLIB_Name, "7math87?" );
+        EmuLib_Name = "8emu87";
     } else if( GET_FPU_LEVEL( CpuSwitches ) == FPU_NONE ) {
         strcpy( MATHLIB_Name, "5math?" );
         EmuLib_Name = NULL;
     } else {
-        strcpy( MATHLIB_Name, "8math87?" );
-        EmuLib_Name = "9noemu87";
+        strcpy( MATHLIB_Name, "7math87?" );
+        EmuLib_Name = "8noemu87";
     }
 #else
     if( CompFlags.register_conventions ) {
@@ -552,11 +552,11 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     }
     if( GET_FPU_EMU( CpuSwitches ) ) {
         if( data->br ) {
-            strcpy( MATHLIB_Name, "8mt7?dll" );
+            strcpy( MATHLIB_Name, "7mt7?dll" );
         } else {
-            strcpy( MATHLIB_Name, "8math387?" );
+            strcpy( MATHLIB_Name, "7math387?" );
         }
-        EmuLib_Name = "9emu387";
+        EmuLib_Name = "8emu387";
     } else if( GET_FPU_LEVEL( CpuSwitches ) == FPU_NONE ) {
         if( data->br ) {
             strcpy( MATHLIB_Name, "5mth?dll" );
@@ -566,11 +566,11 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         EmuLib_Name = NULL;
     } else {
         if( data->br ) {
-            strcpy( MATHLIB_Name, "8mt7?dll" );
+            strcpy( MATHLIB_Name, "7mt7?dll" );
         } else {
-            strcpy( MATHLIB_Name, "8math387?" );
+            strcpy( MATHLIB_Name, "7math387?" );
         }
-        EmuLib_Name = "9noemu387";
+        EmuLib_Name = "8noemu387";
     }
     *strchr( CDLL_Name, '?' ) = model;
     *strchr( WCPPDLL_Name, '?' ) = model;

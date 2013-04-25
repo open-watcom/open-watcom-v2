@@ -243,9 +243,9 @@ static void setMemoryModel( OPT_STORAGE *data )
         }
     }
     if( data->br ) {
-        strcpy( MATHLIB_Name, "8mthdll" );
+        strcpy( MATHLIB_Name, "7mthdll" );
     } else {
-        strcpy( MATHLIB_Name, "8math" );
+        strcpy( MATHLIB_Name, "7math" );
     }
     strcpy( DLL_CLIB_Name, CLIB_Name );
     strcpy( DLL_WCPPLIB_Name, WCPPLIB_Name );

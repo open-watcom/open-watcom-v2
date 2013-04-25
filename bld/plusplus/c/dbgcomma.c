@@ -31,9 +31,9 @@
 
 
 #include "plusplus.h"
-
+#ifdef __WATCOMC__
 #include <process.h>
-
+#endif
 #include "name.h"
 #include "cgfront.h"
 #include "initdefs.h"
@@ -43,22 +43,22 @@
 #define RTN_COMMA_AT "__dbg_comma_at"
 #define RTN_COMMA_OP "__dbg_comma_op"
 
-static SYMBOL sym_op;           // - operator routine
-static SYMBOL sym_at;           // - atom routine
+static SYMBOL   sym_at;           // - atom routine
+static SYMBOL   sym_op;           // - operator routine
 
+static NAME     name_at;
+static NAME     name_op;
 
 static SYMBOL defineRoutine     // DEFINE R/T ROUTINE
-    ( char const* name )        // - routine name
+    ( NAME name )               // - routine name
 {
-    char* def_name;             // - created name
     SYMBOL sym;                 // - created symbol
     TYPE sym_type;              // - symbol's type
     symbol_flag flags;          // - symbol's flags
 
-    def_name = NameCreateNoLen( (char*)name );
     sym_type = TypeVoidFunOfVoid();
     flags = SF_REFERENCED | SF_NO_LONGJUMP;
-    sym = SymCreateFileScope( sym_type, SC_EXTERN, flags, def_name );
+    sym = SymCreateFileScope( sym_type, SC_EXTERN, flags, name );
     LinkageSet( sym, "C" );
     return sym;
 }
@@ -70,12 +70,14 @@ static void init                // INITIALIZATION FOR MODULE
     defn = defn;
 
     if( NULL != CppGetEnv( "WPPCOMOP" ) ) {
-        sym_op = defineRoutine( RTN_COMMA_OP );
+        name_op = NameCreateNoLen( RTN_COMMA_OP );
+        sym_op = defineRoutine( name_op );
     } else {
         sym_op = NULL;
     }
     if( NULL != CppGetEnv( "WPPCOMAT" ) ) {
-        sym_at = defineRoutine( RTN_COMMA_AT );
+        name_at = NameCreateNoLen( RTN_COMMA_AT );
+        sym_at = defineRoutine( name_at );
     } else {
         sym_at = NULL;
     }
@@ -94,12 +96,12 @@ INITDEFN( comma_insertion, init, fini )
 
 static PTREE insert             // INSERT AT NODE
     ( PTREE node                // - node
-    , char const* name )        // - routine name
+    , NAME name )               // - routine name
 {
     PTREE left;                 // - new left operand
     PTREE comma;                // - new comma node
 
-    left = PTreeId( NameCreateNoLen( (char*)name ) );
+    left = PTreeId( name );
     left = PTreeCopySrcLocation( left, node );
     left = PTreeBinary( CO_CALL, left, NULL );
     left = PTreeCopySrcLocation( left, node );
@@ -135,7 +137,7 @@ static void insertOperand       // INSERT FOR OPERAND, IF POSSIBLE
                         // drops thru
                       case CO_NAME_THIS :
                       case CO_NAME_CONVERT :
-                        node = insert( node, RTN_COMMA_AT );
+                        node = insert( node, name_at );
                         break;
                     }
                 }
@@ -145,7 +147,7 @@ static void insertOperand       // INSERT FOR OPERAND, IF POSSIBLE
             switch( node->cgop ) {
               case CO_ARROW :
               case CO_DOT :
-                node = insert( node, RTN_COMMA_OP );
+                node = insert( node, name_op );
                 break;
               default :
                 break;
@@ -178,11 +180,11 @@ static PTREE insertNode         // INSERTION FOR A NODE
               case CO_SIZEOF_TYPE :
               case CO_OFFSETOF :
               case CO_TYPEID_TYPE :
-                node = insert( node, RTN_COMMA_OP );
+                node = insert( node, name_op );
                 break;
               default :
                 insertOperand( &node->u.subtree[0] );
-                node = insert( node, RTN_COMMA_OP );
+                node = insert( node, name_op );
                 break;
             }
         }
@@ -218,12 +220,12 @@ static PTREE insertNode         // INSERTION FOR A NODE
               case CO_NEW :
               case CO_NEW_G :
               case CO_NEW_ARRAY :
-                node = insert( node, RTN_COMMA_OP );
+                node = insert( node, name_op );
                 break;
               default :
                 insertOperand( &node->u.subtree[0] );
                 insertOperand( &node->u.subtree[1] );
-                node = insert( node, RTN_COMMA_OP );
+                node = insert( node, name_op );
                 break;
             }
         }

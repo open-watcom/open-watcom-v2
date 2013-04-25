@@ -37,29 +37,23 @@
 // 91/11/07 -- J.W.Welch        -- placed common definitions in WCCP.H
 // 92/12/29 -- B.J. Stecher     -- QNX support
 
+#define NAME_PTR_IS_NAME_MEMBER
+
 #include <stdlib.h>
 #include <string.h>
 
-#define ARRAY_SIZE( array ) ( sizeof( array ) / sizeof( array[0] ) )
-#define PAD_UNSIGNED unsigned :0;
-
 #include "wcpp.h"
 #include "target.h"
+
+#define ARRAY_SIZE( array ) ( sizeof( array ) / sizeof( array[0] ) )
+#define PAD_UNSIGNED unsigned :0;
 
 #define OPTIMIZE_EMPTY
 #define CARVEPCH
 
 #ifndef NDEBUG
-#define OPT_BR          // OPTIMA-STYLE BROWSING
-#if defined( __X86__ )
-void __trap();
-#pragma aux __trap = "int 3h";
-#elif defined( __AXP__ )
-#define __trap()        _asm { call_pal 0x080 };
+//#define OPT_BR          // OPTIMA-STYLE BROWSING
 #endif
-#endif
-
-#define  __FAR  #@should not be used anymore@#
 
 // useful for stringizing tokens
 #define __str( m )      #m
@@ -69,8 +63,28 @@ void __trap();
 #define global  extern
 #endif
 
-void CFatal( char *msg );
+#ifdef __UNIX__
+    #define FNAMECMPSTR      strcmp      /* for case  sensitive file systems */
+#else
+    #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
+#endif
 
+typedef struct idname {
+    struct idname       *next;
+    uint_16             xhash;
+    uint_16             hash;
+    char                name[1];
+} idname;
+
+#ifdef NAME_PTR_IS_NAME_MEMBER
+typedef char            *NAME;      // name pointer
+#define NameStr(x)	(x)
+#else
+typedef struct idname   *NAME;      // name pointer
+#define NameStr(x)	(x)->name
+#endif
+
+void CFatal( char *msg );
 
 #ifndef NDEBUG
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
@@ -120,13 +134,26 @@ typedef struct type     *TYPE;      // type pointer
 
 #define PCH_struct      struct      // use to indicate struct is saved in PCH
 
-union cgvalue {                     // CGVALUE: one of
+typedef union cgvalue {             // CGVALUE: one of
     target_ulong        uvalue;     // - unsigned integer
     target_long         ivalue;     // - signed integer
     void                *pvalue;    // - pointer
-};
+} CGVALUE;
 
 #include "icodes.h"
+
+// structure is written out to a file
+#include "pushpck1.h"
+
+// having 'value' first means it will be aligned in cases
+// were it is a singleton
+typedef struct cginter          CGINTER;    // intermediate text
+struct cginter {                // CGINTER -- intermediate-code instruction
+    CGVALUE     value;          // - value
+    CGINTEROP   opcode;         // - opcode for text
+};
+
+#include "poppck.h"
 
 /* Target System types */
 enum {
@@ -161,13 +188,7 @@ global struct comp_info CompInfo;   // - compiler information
 global void *Environment;           // - var for Suicide()
 global int ErrLimit;                // - error limit
 
-#ifdef IDE_PGM
-#define PP_EXPORT
-#else
-#define PP_EXPORT __export
-#endif
-
-int PP_EXPORT WppCompile(       // MAIN-LINE (DLL)
+int WppCompile(                 // MAIN-LINE (DLL)
     DLL_DATA* dll_data,         // - data for DLL
     char *input,                // - input file name argv string
     char *output )              // - output file name argv string

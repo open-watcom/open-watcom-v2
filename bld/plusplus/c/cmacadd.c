@@ -42,8 +42,9 @@
 
 
 #define MACRO_HASH_SIZE         NAME_HASH
-#define MAC_SEGMENT_SIZE        (0x8000 - sizeof( char *) )
-#define HASH_TABLE_SIZE         ( MACRO_HASH_SIZE * sizeof( macroHashTable ) )
+#define MAC_SEGMENT_SIZE        (0x8000 - sizeof( char * ))
+#define MAC_SEGMENT_LIMIT       (MAC_SEGMENT_SIZE - 2)
+#define HASH_TABLE_SIZE         (MACRO_HASH_SIZE * sizeof( macroHashTable ))
 
 typedef struct macro_seg_list MACRO_SEG_LIST;
 struct macro_seg_list {
@@ -58,11 +59,10 @@ struct pch_delmac {
     char                name[1];
 };
 
-static char             *macroLimit;        // last  free byte in MacroSegment
+static unsigned         macroSegmentLimit;  // last free byte in MacroSegment
 static MEPTR            *macroHashTable;    // hash table [ MACRO_HASH_SIZE ]
 static MEPTR            beforeIncludeChecks;// #undef macros defined before first #include
 static MACRO_SEG_LIST   *macroSegmentList;  // pointer to list of macro segments
-static MACRO_SEG_LIST   *macroSegment;      // current macro segment
 static PCH_DELMAC       *macroPCHDeletes;   // macros to delete after PCH load
 static unsigned long    undefCount;         // # macros #undef'd
 
@@ -72,16 +72,18 @@ ExtraRptCtr( macros_defined_with_parms );
 ExtraRptCtr( macros_redefined );
 ExtraRptSpace( macro_space );
 
-#define macroSizeAlign( s )     (((s)+(sizeof(int)-1))&~(sizeof(int)-1))
+#define macroSizeAlign( s )     _RoundUp((s), sizeof( int ))
 
 static void *macroAllocateInSeg( // ALLOCATE WITHIN A SEGMENT
     unsigned size )             // - size
 {
     void *retn;                 // - return location
 
-    retn = MacroOffset;
-    MacroOffset += macroSizeAlign( size );
     ExtraRptSpaceAdd( macro_space, size );
+    retn = MacroOffset;
+    size = macroSizeAlign( size );
+    MacroOffset += size;
+    macroSegmentLimit -= size;
     return( retn );
 }
 
@@ -89,59 +91,73 @@ static void *macroAllocateInSeg( // ALLOCATE WITHIN A SEGMENT
 static void macroAllocSegment(   // ALLOCATE MACRO SEGMENT
     unsigned minimum )          // - minimum size req'd
 {
-    if( minimum > MAC_SEGMENT_SIZE - 2 ) {
+    MACRO_SEG_LIST  *macroSegment;
+
+    if( minimum > MAC_SEGMENT_LIMIT ) {
         CErr1( ERR_OUT_OF_MACRO_MEMORY );
         CSuicide();
     }
     macroSegment = RingAlloc( &macroSegmentList, sizeof( MACRO_SEG_LIST ) );
     MacroOffset =  macroSegment->segment;
-    macroLimit = MacroOffset + MAC_SEGMENT_SIZE - 2;
+    macroSegmentLimit = MAC_SEGMENT_LIMIT;
     ExtraRptIncrementCtr( macro_segments );
 }
 
-static void storageInitialize(  // INITIALIZE STORAGE DATA
-    void )
+static void macroStorageAlloc( void )
 {
-    macroAllocSegment( HASH_TABLE_SIZE );
-    macroHashTable = (MEPTR *) macroAllocateInSeg( HASH_TABLE_SIZE );
+    macroHashTable = CMemAlloc( HASH_TABLE_SIZE );
     memset( macroHashTable, 0, HASH_TABLE_SIZE );
+    macroSegmentList = NULL;
     beforeIncludeChecks = NULL;
-    //macroPCHDeletes = NULL;
     undefCount = 0;
+    MacroOffset = NULL;
+    macroSegmentLimit = 0;
+}
+
+static void macroStorageFree( MACRO_SEG_LIST **seglist, MEPTR **hashtab )
+{
+    CMemFreePtr( hashtab );
+    RingFree( seglist );
+}
+
+static void macroStorageRestart( MACRO_SEG_LIST **old_seglist, MEPTR **old_hashtab )
+{
+    *old_seglist = macroSegmentList;
+    *old_hashtab = macroHashTable;
+    macroStorageAlloc();
+    ExtraRptZeroCtr( macro_segments );
+    ExtraRptZeroCtr( macros_defined );
+    ExtraRptZeroCtr( macros_defined_with_parms );
+    ExtraRptZeroCtr( macros_redefined );
+    ExtraRptZeroSpace( macro_space );
 }
 
 void MacroStorageInit(          // INITIALIZE FOR MACRO STORAGE
     void )
 {
-    storageInitialize();
-    // macroStorageRestart doesn't want this
-    macroPCHDeletes = NULL;
+    macroStorageAlloc();
     ExtraRptRegisterCtr( &macro_segments, "macro segments" );
     ExtraRptRegisterCtr( &macros_defined, "macros defined" );
     ExtraRptRegisterCtr( &macros_defined_with_parms, "macros defined with parms" );
     ExtraRptRegisterCtr( &macros_redefined, "macros redefined" );
     ExtraRptRegisterSpace( &macro_space, "macros space" );
+    macroPCHDeletes = NULL;
 }
 
 static int macroCompare(        // COMPARE TWO MACROS TO SEE IF IDENTICAL
     MEPTR m1,                   // - macro #1
     MEPTR m2 )                  // - macro #2
 {
-    char        *p1;
-    char        *p2;
-
     if( m1->macro_len  != m2->macro_len )   return( -1 );
     if( m1->macro_defn != m2->macro_defn )  return( -1 );
     if( m1->parm_count != m2->parm_count )  return( -1 );
-    p1 = (char *)m1 + offsetof(MEDEFN,macro_name);
-    p2 = (char *)m2 + offsetof(MEDEFN,macro_name);
-    return( memcmp( p1, p2, m1->macro_len - offsetof(MEDEFN,macro_name) ) );
+    return( memcmp( m1->macro_name, m2->macro_name, m1->macro_len - offsetof( MEDEFN, macro_name ) ) );
 }
 
 void MacroStorageFini( void )
 /***************************/
 {
-    RingFree( &macroSegmentList );
+    macroStorageFree( &macroSegmentList, &macroHashTable );
 }
 
 #ifdef OPT_BR
@@ -169,20 +185,19 @@ pch_status PCHWriteMacros( void )
 
     for( hashval = 0; hashval < MACRO_HASH_SIZE; ++hashval ) {
         RingIterBeg( macroHashTable[hashval], curr ) {
-            next = curr->u.next_macro;
-            curr->macro_flags &= ~MFLAG_PCH_TEMPORARY_FLAGS;
-            wlen = curr->macro_len;
-            curr->u.pch_hash = hashval;
+            next = curr->next_macro;
             save_defn_src_file = curr->defn.src_file;
+            curr->macro_flags &= ~MFLAG_PCH_TEMPORARY_FLAGS;
+            curr->next_macro = PCHSetUInt( hashval );
             curr->defn.src_file = SrcFileGetIndex( save_defn_src_file );
+            wlen = curr->macro_len;
             PCHWriteUInt( wlen );
             PCHWrite( curr, wlen );
             curr->defn.src_file = save_defn_src_file;
-            curr->u.next_macro = next;
+            curr->next_macro = next;
         } RingIterEnd( curr )
     }
-    wlen = 0;
-    PCHWriteUInt( wlen );
+    PCHWriteUInt( 0 );
     return( PCHCB_OK );
 }
 
@@ -215,16 +230,15 @@ static void writeMacroCheck( MEPTR curr, void *data )
     unsigned wlen;
     MEPTR next;
 
-    next = curr->u.next_macro;
+    next = curr->next_macro;
+    curr->next_macro = PCHSetUInt( *phash );
     wlen = curr->macro_len;
-    curr->u.pch_hash = *phash;
     PCHWriteUInt( wlen );
     PCHWrite( curr, wlen );
-    curr->u.next_macro = next;
+    curr->next_macro = next;
 }
 
-static void forAllMacrosDefinedBeforeFirstInclude( void (*rtn)( MEPTR, void * ),
-                                                   void *data )
+static void forAllMacrosDefinedBeforeFirstInclude( void (*rtn)( MEPTR, void * ), void *data )
 {
     size_t len;
     unsigned i;
@@ -257,7 +271,6 @@ static void forAllMacrosDefinedBeforeFirstInclude( void (*rtn)( MEPTR, void * ),
 void PCHDumpMacroCheck(         // DUMP MACRO CHECK INFO INTO PCHDR
     void )
 {
-    unsigned wlen;
     unsigned max_wlen;
 
     // find largest macro definition size
@@ -266,8 +279,7 @@ void PCHDumpMacroCheck(         // DUMP MACRO CHECK INFO INTO PCHDR
     PCHWriteUInt( max_wlen );
     // write macros out
     forAllMacrosDefinedBeforeFirstInclude( writeMacroCheck, NULL );
-    wlen = 0;
-    PCHWriteUInt( wlen );
+    PCHWriteUInt( 0 );
 }
 
 boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
@@ -310,11 +322,9 @@ boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     ret = TRUE;
     max_rlen = PCHReadUInt();
     pch_macro = CMemAlloc( max_rlen );
-    for(;;) {
-        rlen = PCHReadUInt();
-        if( rlen == 0 ) break;
+    for( ; (rlen = PCHReadUInt()) != 0; ) {
         PCHRead( pch_macro, rlen );
-        pch_hash = pch_macro->u.pch_hash;
+        pch_hash = PCHGetUInt( pch_macro->next_macro );
         //printf( "pch mac: %s\n", pch_macro->macro_name );
         matched_macro = NULL;
         RingIterBeg( macroHashTable[pch_hash], new_macro ) {
@@ -356,7 +366,7 @@ boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
                 break;
             }
             // (3) queue macro to be deleted when PCH is loaded
-            del_len = offsetof( PCH_DELMAC, name ) + 1 + strlen( pch_macro->macro_name );
+            del_len = offsetof( PCH_DELMAC, name ) + strlen( pch_macro->macro_name ) + 1;
             macro_delete = CMemAlloc( del_len );
             macro_delete->hash = pch_hash;
             strcpy( macro_delete->name, pch_macro->macro_name );
@@ -384,21 +394,6 @@ boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     return( ret );
 }
 
-static void macroStorageRestart( MACRO_SEG_LIST **old_seglist, MEPTR **old_hashtab )
-{
-    // macro state is changing
-    ++undefCount;
-    *old_seglist = macroSegmentList;
-    macroSegmentList = NULL;
-    *old_hashtab = macroHashTable;
-    macroHashTable = NULL;
-    storageInitialize();
-    ExtraRptZeroCtr( macros_defined );
-    ExtraRptZeroCtr( macros_defined_with_parms );
-    ExtraRptZeroCtr( macros_redefined );
-    ExtraRptZeroSpace( macro_space );
-}
-
 pch_status PCHReadMacros( void )
 {
     int i;
@@ -409,23 +404,19 @@ pch_status PCHReadMacros( void )
     MEPTR pch_curr;
     unsigned mlen;
     unsigned hash;
-    void *mac_dest;
     MACRO_SEG_LIST *old_seglist;
     MEPTR *old_hashtab;
     PCH_DELMAC *del_name;
 
     macroStorageRestart( &old_seglist, &old_hashtab );
-    for(;;) {
-        mlen = PCHReadUInt();
-        if( mlen == 0 ) break;
+    for( ; (mlen = PCHReadUInt()) != 0; ) {
         MacroOverflow( mlen, 0 );
-        mac_dest = macroAllocateInSeg( mlen );
-        PCHRead( mac_dest, mlen );
-        curr = (MEPTR) mac_dest;
-        hash = curr->u.pch_hash;
-        curr->u.next_macro = NULL;
-        curr->defn.src_file = SrcFileMapIndex( curr->defn.src_file );
-        RingAppend( &macroHashTable[ hash ], curr );
+        new_mac = macroAllocateInSeg( mlen );
+        PCHRead( new_mac, mlen );
+        hash = PCHGetUInt( new_mac->next_macro );
+        new_mac->next_macro = NULL;
+        new_mac->defn.src_file = SrcFileMapIndex( new_mac->defn.src_file );
+        RingAppend( &macroHashTable[ hash ], new_mac );
     }
     // add macros from current compilation that should override the PCH macros
     for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
@@ -461,7 +452,7 @@ pch_status PCHReadMacros( void )
         } RingIterEnd( curr )
     } RingIterEnd( del_name )
     RingFree( &macroPCHDeletes );
-    RingFree( &old_seglist );
+    macroStorageFree( &old_seglist, &old_hashtab );
     return( PCHCB_OK );
 }
 
@@ -503,11 +494,11 @@ void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
     unsigned amount_needed,     // - amount for macro
     unsigned amount_used )      // - amount used in segment
 {
-    MACADDR_T old_offset;
+    char    *old_offset;
 
     amount_needed = macroSizeAlign( amount_needed );
-    DbgAssert( MacroOffset + amount_used <= macroLimit );
-    if( macroLimit < MacroOffset + amount_needed ) {
+    DbgAssert( amount_used <= macroSegmentLimit );
+    if( macroSegmentLimit < amount_needed ) {
         old_offset = MacroOffset;
         macroAllocSegment( amount_needed );
         if( amount_used != 0 ) {
@@ -542,7 +533,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
     unsigned hash;              // - hash bucket for macro
     msg_status_t msg_st;        // - error message status
 
-    DbgAssert( mentry == (MEPTR) MacroOffset );
+    DbgAssert( mentry == (MEPTR)MacroOffset );
     mptr = NULL;
     mac_name = mentry->macro_name;
     if( magicPredefined( mac_name ) ) {
@@ -601,7 +592,7 @@ MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
     len = strlen( name );
     reqd = offsetof( MEDEFN, macro_name ) + 1 + len;
     MacroOverflow( reqd, 0 );
-    mentry = (MEPTR) MacroOffset;
+    mentry = (MEPTR)MacroOffset;
     TokenLocnClear( mentry->defn );
     mentry->macro_defn = 0;     /* indicate special macro */
     mentry->macro_len = reqd;

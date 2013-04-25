@@ -42,6 +42,9 @@
 
 #define isUDF( node ) ( node->cgop == CO_NAME_CONVERT )
 
+#ifndef NDEBUG
+extern void DumpPTree( PTREE );
+#endif
 
 static TYPE lvalueErrMsg(       // GENERATE NOT-LVALUE ERROR MESSAGE
     PTREE expr_chk,             // - expression, to be checked
@@ -283,7 +286,7 @@ static boolean checkIdLookup(   // CHECK RESULT OF ID LOOKUP
     boolean retn;               // - TRUE ==> ok
     SYMBOL sym;                 // - a symbol lookup up
     unsigned msg;               // - undeclared sym error message
-    char *name;                 // - id name
+    NAME name;                  // - id name
 
     if( result == NULL ) {
         ScopeInsertErrorSym( scope, id );
@@ -666,7 +669,6 @@ static boolean analyseMembRight(// ANALYSE MEMBER ON RIGHT
                     && ( right->u.subtree[0]->op == PT_SYMBOL ) ) {
                 // TODO
 #ifndef NDEBUG
-                void DumpPTree( PTREE );
                 printf("%s:%d\n", __FILE__, __LINE__);
                 DumpPTree( right );
 #endif
@@ -1038,7 +1040,7 @@ PTREE AnalyseOffsetOf(          // ANALYSE OFFSETOF
     target_offset_t offset;     // - current offset
     target_offset_t exact;      // - exact member offset
     SYMBOL sym;                 // - member sym
-    char *name;                 // - member name
+    NAME name;                  // - member name
     PTREE right;                // - RHS expr
     PTREE field;                // - field expr
     PTREE curr;                 // - current field expr

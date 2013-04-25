@@ -371,8 +371,7 @@ void DwioBuffFini(              // BUFFERING COMPLETION
     void )
 {
     if( NULL != beingWritten ) {
-        CMemFree( beingWritten );
-        beingWritten = NULL;
+        CMemFreePtr( &beingWritten );
     }
     RingFree( &freeBufs );
 }

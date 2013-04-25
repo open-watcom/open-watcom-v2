@@ -61,7 +61,7 @@ static SYMBOL makeTemporary(    // ALLOCATE A TEMPORARY
     boolean storage )           // - allocate storage if needed
 {
     SYMBOL sym;                 // - symbol for temporary
-    char *name;                 // - name for temporary
+    NAME name;                  // - name for temporary
     symbol_class id;            // - class for symbol
 
 #if 0

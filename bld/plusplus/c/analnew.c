@@ -108,7 +108,7 @@ static TYPE figureOutNewType( PTREE *pnumber, TYPE *of_type )
     return( new_expr_type );
 }
 
-static SEARCH_RESULT *findNewDelOp( SCOPE search_scope, char *name )
+static SEARCH_RESULT *findNewDelOp( SCOPE search_scope, NAME name )
 {
     SEARCH_RESULT *result;
 
@@ -294,7 +294,7 @@ static PTREE buildNewCall(      // BUILD CALL TO NEW OPERATOR
     SEARCH_RESULT *result_new;  // - search result for operator new
     SYMBOL sym;                 // - symbol for operator new
     FNOV_RESULT ovret;          // - overload resolution result
-    char *name;                 // - op new name
+    NAME name;                  // - op new name
     TEMP_PT_LIST default_list;  // - default PTREE list
     TEMP_ARG_LIST default_args; // - default arg_list
     FNOV_DIAG fnov_diag;        // - diagnosis information

@@ -207,14 +207,14 @@ static DUMP_INFO* dumpDataMemb( // DUMP A DATA MEMBER
 
 static void dumpMember(         // DUMP A MEMBER
     SYMBOL memb,                // - member
-    void *_di )             // - dump information
+    void *_di )                 // - dump information
 {
     DUMP_INFO* di = _di;
     target_offset_t offset;     // - offset of symbol
     TYPE type;                  // - type of symbol
-    char* name;                 // - symbol's name
+    NAME name;                  // - symbol's name
 
-    offset = di->offset + memb->u.offset;
+    offset = di->offset + memb->u.member_offset;
     name = memb->name->name;
     type = TypedefModifierRemove( memb->sym_type );
     if( type->id == TYP_BITFIELD ) {
@@ -241,8 +241,9 @@ static DUMP_INFO* dumpStruct(   // DUMP A STRUCTURE
     ds_control control )        // - control word
 {
     CLASSINFO* info;            // - class information
-    char** parent;              // - where parent ptr is stored
+    NAME *parent;               // - where parent ptr is stored
 
+    control = control;
     type = StructType( type );
     info = type->u.c.info;
     parent = VstkPush( &di->stack );
@@ -341,7 +342,7 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     VBUF buffer;                // - printing buffer
     char buf[16];               // - buffer
     long numb;                  // - a numeric value
-    char *name;                 // - name to be printed
+    NAME name;                  // - name to be printed
     boolean sign;               // - TRUE ==> signed enum
     unsigned long mask;         // - used to mask to true size
     unsigned long val;          // - value as unsigned

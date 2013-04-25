@@ -67,6 +67,10 @@
         - record padding, stuff empty base classes into the padding
 */
 
+#define ITEM_BITSIZE    (CHAR_BIT * sizeof( indices_t ))
+
+typedef unsigned        indices_t;
+
 static CLASS_DATA *classDataStack;
 
 #define BLOCK_BASE_CLASS        16
@@ -194,9 +198,7 @@ static void doAlignment( CLASS_DATA *data, target_offset_t adjustment )
 
     if( adjustment != 1 ) {
         old_offset = data->offset;
-        calc_offset = old_offset;
-        calc_offset += adjustment - 1;
-        calc_offset &= ~(((target_size_t) adjustment ) - 1 );
+        calc_offset = _RoundUp( old_offset, adjustment );
         _CLASS_CHECK_SIZE( calc_offset, data->offset );
         data->offset = calc_offset;
         if( calc_offset != old_offset && CompFlags.warn_about_padding ) {
@@ -399,7 +401,7 @@ static void typeError( int msg, TYPE type )
     CErr2p( msg, type );
 }
 
-static boolean verifyNoChangePerm( CLASS_DATA *data, symbol_flag perm, char *name )
+static boolean verifyNoChangePerm( CLASS_DATA *data, symbol_flag perm, NAME name )
 {
     if( perm != data->perm ) {
         /* data->perm is 'protected' or 'public' */
@@ -422,7 +424,7 @@ static boolean handleAccessDeclaration( PTREE id_tree )
     PTREE scope_tree;
     PTREE name_tree;
     CLASS_DATA *data;
-    char *name;
+    NAME name;
     TYPE type;
     TYPE udc_return_type;
     SCOPE scope;
@@ -472,8 +474,7 @@ static boolean handleAccessDeclaration( PTREE id_tree )
     }
     scope = type->u.c.scope;
     if( udc_return_type != NULL ) {
-        result = ScopeFindScopedMemberConversion( curr_scope, scope,
-                                                  udc_return_type, TF1_NULL );
+        result = ScopeFindScopedMemberConversion( curr_scope, scope, udc_return_type, TF1_NULL );
     } else {
         result = ScopeFindScopedMember( curr_scope, scope, name );
     }
@@ -547,7 +548,7 @@ void ClassAccessDeclaration( PTREE id_tree, TOKEN_LOCN *locn )
 static boolean handleAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
 {
     CLASS_DATA *data;
-    char *name;
+    NAME name;
     TYPE type;
     TYPE base_type;
     SCOPE scope;
@@ -648,7 +649,7 @@ void ClassChangingScope( SYMBOL typedef_sym, SCOPE new_scope )
     ScopeAdjustUsing( NULL, GetCurrScope() );
 }
 
-static TYPE createClassType( char *name, type_flag flag )
+static TYPE createClassType( NAME name, type_flag flag )
 {
     TYPE class_type;
     SCOPE class_scope;
@@ -768,8 +769,8 @@ static void setClassType( CLASS_DATA *data, TYPE type, CLASS_DECL declaration )
     }
 }
 
-TYPE ClassUnboundTemplate( char *name )
-/*************************************/
+TYPE ClassUnboundTemplate( NAME name )
+/************************************/
 {
     TYPE type;
 
@@ -787,7 +788,7 @@ static SYMBOL getClassSym( CLASS_DATA *data )
     return( sym );
 }
 
-static void injectClassName( char *name, TYPE type, TOKEN_LOCN *locn )
+static void injectClassName( NAME name, TYPE type, TOKEN_LOCN *locn )
 {
     SCOPE scope = type->u.c.scope;
     SYMBOL sym = AllocSymbol();
@@ -800,7 +801,6 @@ static void injectClassName( char *name, TYPE type, TOKEN_LOCN *locn )
     SymbolLocnDefine( locn, sym );
     sym->name = sym_name;
     sym->next = sym;
-    sym_name->name_type = sym;
 
     HashInsert( scope->names, sym_name, name );
 }
@@ -822,8 +822,8 @@ static void newClassSym( CLASS_DATA *data, CLASS_DECL declaration, PTREE id )
     }
 }
 
-TYPE ClassTagDefinition( TYPE type, char *name )
-/**********************************************/
+TYPE ClassTagDefinition( TYPE type, NAME name )
+/*********************************************/
 {
     TYPE class_type;
     CLASSINFO *info;
@@ -871,8 +871,8 @@ static CLNAME_STATE processClassTemplate( CLASS_DATA *data, SCOPE scope,
     return( ret );
 }
 
-TYPE ClassPreDefined( char *name, TOKEN_LOCN *locn )
-/**************************************************/
+TYPE ClassPreDefined( NAME name, TOKEN_LOCN *locn )
+/*************************************************/
 {
     TYPE class_type;
     PTREE id;
@@ -884,16 +884,14 @@ TYPE ClassPreDefined( char *name, TOKEN_LOCN *locn )
     id = NULL;
     ClassPush( &data );
     ClassInitState( TF1_NULL, CLINIT_NULL, NULL );
-    std_sym_name = ScopeYYMember( GetFileScope(),
-                                  CppSpecialName( SPECIAL_STD ) );
+    std_sym_name = ScopeYYMember( GetFileScope(), CppSpecialName( SPECIAL_STD ) );
     std_sym = ( std_sym_name != NULL ) ? std_sym_name->name_type : NULL;
     if( ( std_sym != NULL ) && ( std_sym->id == SC_NAMESPACE ) ) {
         sym_name = ScopeYYMember( std_sym->u.ns->scope, name );
         if( sym_name != NULL ) {
             id = PTreeId( name );
             id = PTreeSetLocn( id, locn );
-            id = PTreeBinary( CO_COLON_COLON,
-                              PTreeId( std_sym_name->name ), id );
+            id = PTreeBinary( CO_COLON_COLON, PTreeId( std_sym_name->name ), id );
             id = PTreeSetLocn( id, locn );
             id->sym_name = sym_name;
         }
@@ -913,7 +911,7 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
 {
     boolean scoped_id;
     boolean something_went_wrong;
-    char *name;
+    NAME name;
     CLASS_DATA *data;
     CLASS_DATA *enclosing_data;
     TYPE class_type;
@@ -1030,9 +1028,7 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
                             }
                         }
                         SymbolLocnDefine( &(id->locn), sym );
-                        injectClassName( data->name,
-                                         TypedefRemove( sym->sym_type ),
-                                         NULL );
+                        injectClassName( data->name, TypedefRemove( sym->sym_type ), NULL );
                     }
                     setClassType( data, type, declaration );
                     if( declaration == CLASS_DECLARATION ) {
@@ -1054,9 +1050,8 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
     return( CLNAME_NULL );
 }
 
-void ClassSpecificInstantiation( PTREE id, CLASS_DECL declaration,
-                                 int tcd_control )
-/****************************************************************/
+void ClassSpecificInstantiation( PTREE id, CLASS_DECL declaration, int tcd_control )
+/**********************************************************************************/
 {
     TYPE type;
     CLASS_DATA *data;
@@ -1195,9 +1190,8 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
     SCOPE sym_scope;
     PTREE defarg_expr;
 
-    if( ( CurToken != T_RIGHT_BRACE ) && ( CurToken != T_ALT_RIGHT_BRACE ) ) {
-        Expecting( Tokens[ T_RIGHT_BRACE ] );
-    }
+    ExpectingToken( T_RIGHT_BRACE );
+
     SrcFileGetTokenLocn( &locn );
     // process default args
     save_scope = GetCurrScope();
@@ -1288,7 +1282,7 @@ static target_offset_t nonVirtualField( TYPE type )
     return( addField( classDataStack, info->vsize, info->max_align ) );
 }
 
-static SYMBOL insertDefaultFunc( SCOPE scope, TYPE fn_type, char *name )
+static SYMBOL insertDefaultFunc( SCOPE scope, TYPE fn_type, NAME name )
 {
     // SF_INITIALIZED prevents the user from defining the class
     // themselves (see FNBODY check for GeneratedDefaultFunction check)
@@ -1360,7 +1354,7 @@ SYMBOL ClassAddDefaultDtor( SCOPE scope )
     return( sym );
 }
 
-static SYMBOL checkPresence( SCOPE scope, char *name )
+static SYMBOL checkPresence( SCOPE scope, NAME name )
 {
     SEARCH_RESULT *result;
     SYMBOL syms;
@@ -1410,7 +1404,7 @@ SYMBOL ClassAddDefaultCopy( SCOPE scope )
     CLASSINFO *info;
     SYMBOL syms;
     SYMBOL sym;
-    char *name;
+    NAME name;
 
     class_type = ScopeClass( scope );
     name = CppConstructorName();
@@ -1446,7 +1440,7 @@ SYMBOL ClassAddDefaultAssign( SCOPE scope )
     CLASSINFO *info;
     SYMBOL syms;
     SYMBOL sym;
-    char *name;
+    NAME name;
 
     class_type = ScopeClass( scope );
     name = CppOperatorName( CO_EQUAL );
@@ -1588,7 +1582,7 @@ static void warnAboutHiding( CLASS_DATA *data )
     unsigned i;
     unsigned m;
     unsigned amt;
-    unsigned *indices_used;
+    indices_t *indices_used;
     SYMBOL base_sym;
     SYMBOL derived_sym;
     SYMBOL derived_head;
@@ -1598,33 +1592,29 @@ static void warnAboutHiding( CLASS_DATA *data )
         RingCarveFree( carveVF_HIDE, &(data->vf_hide_list) );
         return;
     }
-    amt = (( data->vf_index / CHAR_BIT ) + 1 ) + sizeof( unsigned );
-    amt &= ~( sizeof( unsigned ) - 1 );
-    DbgAssert(( amt % sizeof( unsigned )) == 0 );
-    DbgAssert( ((data->vf_index+1)/(CHAR_BIT*sizeof(unsigned))) < (amt/sizeof(unsigned)) );
+    vf_index = data->vf_index;
+    amt = (( vf_index / ITEM_BITSIZE ) + 1 ) * sizeof( indices_t );
     indices_used = alloca( amt );
-    for(;;) {
-        curr = RingPop( &data->vf_hide_list );
-        if( curr == NULL ) break;
+    for( ; (curr = RingPop( &data->vf_hide_list )) != NULL; ) {
         memset( indices_used, 0, amt );
         derived_head = curr->derived->name_syms;
         RingIterBeg( derived_head, derived_sym ) {
             if( SymIsVirtual( derived_sym ) && ! SymIsDefArg( derived_sym ) ) {
-                vf_index = derived_sym->u.offset;
+                vf_index = derived_sym->u.member_vf_index;
                 if( vf_index != 0 ) {
-                    i = vf_index / ( sizeof( unsigned ) * CHAR_BIT );
-                    m = 1 << ( vf_index % (sizeof( unsigned ) * CHAR_BIT ) );
-                    indices_used[ i ] |= m;
+                    i = vf_index / ITEM_BITSIZE;
+                    m = 1 << ( vf_index % ITEM_BITSIZE );
+                    indices_used[i] |= m;
                 }
             }
         } RingIterEnd( derived_sym );
         RingIterBeg( curr->base->name_syms, base_sym ) {
             if( SymIsVirtual( base_sym ) && ! SymIsDefArg( base_sym ) ) {
-                vf_index = base_sym->u.offset;
+                vf_index = base_sym->u.member_vf_index;
                 if( vf_index != 0 ) {
-                    i = vf_index / ( sizeof( unsigned ) * CHAR_BIT );
-                    m = 1 << ( vf_index % (sizeof( unsigned ) * CHAR_BIT ) );
-                    if(( indices_used[ i ] & m ) == 0 ) {
+                    i = vf_index / ITEM_BITSIZE;
+                    m = 1 << ( vf_index % ITEM_BITSIZE );
+                    if( (indices_used[i] & m) == 0 ) {
                         if( CErr1( WARN_HIDDEN_VIRTUAL ) & MS_PRINTED ) {
                             InfMsgPtr( INF_BASE_VFN, base_sym );
                             InfMsgPtr( INF_HIDDEN_WHY, data->type );
@@ -1645,12 +1635,11 @@ static void createVFPtrField( CLASS_DATA *data, boolean do_creation )
     if( do_creation ) {
         vfptr_type = MakeVFTableFieldType( TRUE );
         data->vf_offset = addTypeField( data, vfptr_type );
-    }
 #ifndef NDEBUG
-    else if( data->own_vfptr ) {
+    } else if( data->own_vfptr ) {
         CFatal( "vfptr created twice" );
-    }
 #endif
+    }
     info = data->info;
     info->has_vfptr = TRUE;
     data->own_vfptr = TRUE;
@@ -1956,7 +1945,7 @@ boolean ClassIsDefaultAssign( SYMBOL sym, TYPE class_type )
 boolean GeneratedDefaultFunction(// IS SYMBOL A DEFAULT CTOR,COPY, OR DTOR?
     SYMBOL sym )                // - symbol to check
 {
-    char *name;
+    NAME name;
     TYPE class_type;
     CLASSINFO *info;
 
@@ -2125,7 +2114,7 @@ static boolean checkForCallingConventionChange( SYMBOL sym, SYMBOL above )
     return( TRUE );
 }
 
-static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, char *name )
+static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
 {
     unsigned vf_index;
     unsigned arg_info;
@@ -2203,7 +2192,7 @@ static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, char *name )
             is_different = checkForCallingConventionChange( sym, above );
             // add "&& ! is_different" when we change the object model
             if(( fv_status & FVS_USE_INDEX ) != 0 ) {
-                vf_index = above->u.offset;
+                vf_index = above->u.member_vf_index;
                 if( fv_status & FVS_RETURN_THUNK ) {
                     /* if we need to apply a return thunk we need our own vftable */
                     if( ! data->own_vfptr ) {
@@ -2248,7 +2237,7 @@ static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, char *name )
             }
             vf_index = ++(data->vf_index);
         }
-        sym->u.offset = vf_index;
+        sym->u.member_vf_index = vf_index;
         info->needs_ctor = TRUE;
         info->has_vfn = TRUE;
     }
@@ -2364,8 +2353,8 @@ void ClassMember( SCOPE scope, SYMBOL sym )
     type_flag mod_flags;
     type_flag base_type_flags;
     type_flag explicit_flags;
-    char *scope_name;
-    char *name;
+    NAME scope_name;
+    NAME name;
     struct {
         unsigned static_member : 1;
         unsigned zero_sized_array : 1;
@@ -2445,7 +2434,7 @@ void ClassMember( SCOPE scope, SYMBOL sym )
     }
     switch( typ->id ) {
     case TYP_BITFIELD:
-        sym->u.offset = data->boffset;
+        sym->u.member_offset = data->boffset;
         setHasData( data );
         break;
     default:
@@ -2505,9 +2494,9 @@ void ClassMember( SCOPE scope, SYMBOL sym )
             setHasData( data );
             if( flags.zero_sized_array ) {
                 data->zero_array_defd = TRUE;
-                sym->u.offset = addZeroSizedField( data, typ );
+                sym->u.member_offset = addZeroSizedField( data, typ );
             } else {
-                sym->u.offset = addTypeField( data, typ );
+                sym->u.member_offset = addTypeField( data, typ );
             }
         } else {
             if( data->local_class ) {
@@ -2523,7 +2512,7 @@ void ClassBitfield( DECL_SPEC *dspec, PTREE name_tree, PTREE width_tree )
     TYPE base_type;
     TYPE bitfield_type;
     SYMBOL sym;
-    char *name;
+    NAME name;
     target_size_t base_width;
     target_long safe_width;
     unsigned width;
@@ -3117,7 +3106,7 @@ static void doPromotion( SYMBOL_NAME sym_name )
     SCOPE scope;
     SYMBOL sym;
     TYPE type;
-    char *name;
+    NAME name;
 
     sym = sym_name->name_syms;
     sym_name->name_syms = NULL;
@@ -3149,7 +3138,7 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
     SYMBOL next;
     TYPE occupy_space;
     SYMBOL place_holder;
-    char *name;
+    NAME name;
 
     promote_to_class = FALSE;
     if( ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
@@ -3187,7 +3176,7 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
             if( promote_to_class ) {
                 curr->flag |= owner->flag & SF_ACCESS;
                 /* looking ahead to anonymous structs */
-                curr->u.offset += owner->u.offset;
+                curr->u.member_offset += owner->u.member_offset;
             } else {
                 curr->id = owner->id;
                 curr->u.alias = owner;
@@ -3222,7 +3211,7 @@ boolean ClassAnonymousUnion( DECL_SPEC *dspec )
 /*********************************************/
 {
     SYMBOL sym;
-    char *name;
+    NAME name;
     TYPE class_type;
     CLASSINFO *info;
     stg_class_t stg_class;
@@ -3327,7 +3316,7 @@ static boolean verifyBaseClassInit( PTREE base, SCOPE scope )
 
 static boolean verifyMemberInit( PTREE id, SCOPE scope )
 {
-    char *name;
+    NAME name;
     SEARCH_RESULT *result;
     SYMBOL sym;
 
@@ -3358,7 +3347,7 @@ static boolean symInitialized( PTREE mem_init, SYMBOL sym )
 {
     PTREE curr;
     PTREE test;
-    char *name;
+    NAME name;
 
     name = sym->name->name;
     for( curr = mem_init; curr != NULL; curr = curr->u.subtree[0] ) {
@@ -3382,11 +3371,9 @@ static boolean verifyAllConstRefsInit( SCOPE scope, PTREE mem_init )
 
     error_detected = FALSE;
     stop = ScopeOrderedStart( scope );
-    curr = NULL;
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
-        if( ! SymIsData( curr ) || SymIsStaticMember( curr ) ) continue;
+    for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
+        if( ! SymIsData( curr ) || SymIsStaticMember( curr ) )
+            continue;
         type = TypeModFlags( curr->sym_type, &flags );
         if( flags & TF1_CONST ) {
             if( ! symInitialized( mem_init, curr ) ) {
@@ -3616,7 +3603,7 @@ boolean ClassNeedsAssign( TYPE class_type, boolean exact )
 
 static boolean genDefaultCtor( TYPE class_type )
 {
-    char *name;
+    NAME name;
     SCOPE scope;
     SYMBOL syms;
     SYMBOL sym;
@@ -3635,7 +3622,7 @@ static boolean genDefaultCtor( TYPE class_type )
 
 static boolean genDefaultCopy( TYPE class_type )
 {
-    char *name;
+    NAME name;
     SCOPE scope;
     SYMBOL syms;
     SYMBOL sym;
@@ -3654,7 +3641,7 @@ static boolean genDefaultCopy( TYPE class_type )
 
 static boolean genDefaultDtor( TYPE class_type )
 {
-    char *name;
+    NAME name;
     SCOPE scope;
     SYMBOL syms;
     SYMBOL sym;
@@ -3674,7 +3661,7 @@ static boolean genDefaultDtor( TYPE class_type )
 
 static boolean genDefaultAssign( TYPE class_type )
 {
-    char *name;
+    NAME name;
     SCOPE scope;
     SYMBOL syms;
     SYMBOL sym;
@@ -3770,36 +3757,31 @@ static void saveBaseClass( void *e, carve_walk_base *d )
     type_save = b->type;
     b->type = TypeGetIndex( type_save );
     PCHWriteCVIndex( d->index );
-    PCHWrite( b, sizeof( *b ) );
+    PCHWriteVar( *b );
     b->next = next_save;
     b->type = type_save;
 }
 
 pch_status PCHWriteBases( void )
 {
-    cv_index terminator = CARVE_NULL_INDEX;
     auto carve_walk_base data;
 
-    PCHWrite( &classIndex, sizeof( classIndex ) );
+    PCHWriteVar( classIndex );
     CarveWalkAllFree( carveBASE_CLASS, markFreeBaseClass );
     CarveWalkAll( carveBASE_CLASS, saveBaseClass, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 
 pch_status PCHReadBases( void )
 {
-    cv_index i;
     BASE_CLASS *b;
     auto cvinit_t data;
 
-    PCHRead( &classIndex, sizeof( classIndex ) );
+    PCHReadVar( classIndex );
     CarveInitStart( carveBASE_CLASS, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        b = CarveInitElement( &data, i );
-        PCHRead( b, sizeof( *b ) );
+    for( ; (b = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *b );
         b->next = BaseClassMapIndex( b->next );
         b->type = TypeMapIndex( b->type );
     }
@@ -3818,15 +3800,11 @@ BASE_CLASS *BaseClassMapIndex( BASE_CLASS *e )
 
 pch_status PCHInitBases( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carveBASE_CLASS );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveBASE_CLASS ) );
     } else {
         carveBASE_CLASS = CarveRestart( carveBASE_CLASS );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveBASE_CLASS, n );
+        CarveMapOptimize( carveBASE_CLASS, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

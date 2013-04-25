@@ -54,7 +54,7 @@ typedef enum                    // REPO_FUN_FLAGS -- flags for function
 
 struct repo_rec_fun             // REPO_REC_FUN -- repository record, function
 {   REPO_REC_BASE base;         // - base
-    char const* name;           // - function name
+    NAME name;                  // - function name
     REPO_FUN_FLAGS flags;       // - flags
 };
 
@@ -67,11 +67,11 @@ union repo_rec                  // REPO_REC -- union of all repository records
 // PROTOTYPES:
 
 REPO_REC_FUN* RepoFunAdd(       // ADD FUNCTION TO REPOSITORY
-    const char* name,           // - function name
+    NAME name,                  // - function name
     REPO_FUN_FLAGS flags )      // - function flags
 ;
 REPO_REC_FUN* RepoFunRead(      // GET FUNCTION RECORD FROM REPOSITORY
-    const char* name )          // - function name
+    NAME name )                 // - function name
 ;
 void RepoFunRelease(            // RELEASE FUNCTION RECORD
     REPO_REC_FUN* rec )         // - record to be released

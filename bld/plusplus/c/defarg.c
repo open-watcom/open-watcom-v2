@@ -69,16 +69,13 @@ static PTREE DefargList = NULL;
 void DefArgPCHWrite( void )
 /*************************/
 {
-    PTREE defarg_list;
-
-    defarg_list = PTreeGetIndex( DefargList );
-    PCHWrite( &defarg_list, sizeof( defarg_list ) );
+    PCHWriteCVIndex( (cv_index)PTreeGetIndex( DefargList ) );
 }
 
 void DefArgPCHRead( void )
 /************************/
 {
-    DefargList = PTreeMapIndex( PCHReadPtr() );
+    DefargList = PTreeMapIndex( (PTREE)PCHReadCVIndex() );
 }
 
 static void defargFreePtrees( void )  // FREE ALL DEFARG PTREES

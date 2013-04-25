@@ -36,8 +36,12 @@
 #include "preproc.h"
 #include "scan.h"
 #include "name.h"
-
+#include "weights.gh"
 #include "kwhash.h"
+
+#define BITSIZE   (CHAR_BIT * sizeof( kwflags ))
+
+typedef unsigned char  kwflags;
 
 ExtraRptCtr( ctr_calls );
 ExtraRptCtr( ctr_ids );
@@ -45,14 +49,14 @@ ExtraRptCtr( ctr_len_min );
 ExtraRptCtr( ctr_len_max );
 ExtraRptCtr( ctr_len_mask );
 
+static kwflags kw_flags[(T_LAST_TOKEN + BITSIZE) / BITSIZE] = {0};
 
-int KwLookup(           // TRANSFORM TO T_ID OR KEYWORD TOKEN
+static const kwflags _bits[BITSIZE] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+
+TOKEN KwLookup(         // TRANSFORM TO T_ID OR KEYWORD TOKEN
     unsigned len )      // - length of id
 {
-    unsigned hash;      // - hash value for KW
-    unsigned mask;      // - test mask
-    unsigned *s1;       // - keyword string to compare with
-    unsigned *s2;       // - token string to compare against
+    TOKEN    token;     // - token value for KW
 
 #ifdef XTRA_RPT
     ExtraRptIncrementCtr( ctr_calls );
@@ -63,49 +67,26 @@ int KwLookup(           // TRANSFORM TO T_ID OR KEYWORD TOKEN
     if(( (1<<len) & LEN_MASK ) == 0 )
         ExtraRptIncrementCtr( ctr_len_mask );
 #endif
-    hash = keyword_hash( Buffer, TokValue, len ) + FIRST_KEYWORD;
+    token = keyword_hash( Buffer, TokValue, len ) + FIRST_KEYWORD;
     /* hash is now a token number */
     ++len;
-    s1 = (unsigned*) Tokens[ hash ];
-    s2 = (unsigned*) Buffer;
-    if( len > sizeof( unsigned ) ) {
-        do {
-            if( *s1 != *s2 ) {
-                // codegen can't seem to do this simple optimization
-                goto is_id;
-                //ExtraRptIncrementCtr( ctr_ids );
-                //hash = T_ID;
-                //return( hash );
-            }
-            ++s1;
-            ++s2;
-            len -= sizeof( unsigned );
-        } while( len > sizeof( unsigned ) );
-    }
-    mask = NameCmpMask[ len ];
-    if((( *s1 ^ *s2 ) & mask ) != 0 ) {
-is_id:
+    if( NameMemCmp( Tokens[token], Buffer, len ) != 0 || (kw_flags[token / BITSIZE] & _bits[token % BITSIZE]) ) {
         ExtraRptIncrementCtr( ctr_ids );
-        hash = T_ID;
+        token = T_ID;
     }
-    return( hash );
+    return( token );
 }
 
-char KwDisable(                 // DISABLE A KEYWORD TOKEN TO T_ID
-    unsigned token )            // - token id
+void KwDisable(                 // DISABLE A KEYWORD TOKEN TO T_ID
+    TOKEN token )               // - token id
 {
-    char retn = Tokens[ token ][0];
-    Tokens[ token ][0] = '\0';
-    return retn;
+    kw_flags[token / BITSIZE] |= _bits[token % BITSIZE];
 }
 
 void KwEnable(                  // ENABLE A KEYWORD TOKEN FROM T_ID
-    unsigned token,             // - token id
-    char first_char )           // - first character of name
+    TOKEN token )               // - token id
 {
-    DbgAssert( first_char == '_'
-            || ( first_char >= 'a' && first_char <= 'z' ) );
-    Tokens[ token ][0] = first_char;
+    kw_flags[token / BITSIZE] &= ~_bits[token % BITSIZE];
 }
 
 #ifdef XTRA_RPT

@@ -92,7 +92,7 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     PTREE expr,                 // - expr to cast
     TYPE final_type,            // - final type after cast
     target_offset_t vb_offset,  // - offset of vbptr
-    target_offset_t vb_index )  // - index in vbtable
+    unsigned vb_index )         // - index in vbtable
 {
     PTREE offset;
     TYPE vbptr_type;
@@ -152,7 +152,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
     boolean positive )          // - TRUE ==> use positive value
 {
     target_offset_t vb_offset;  // - offset of vbptr
-    target_offset_t vb_index;   // - index in vbtable
+    unsigned vb_index;          // - index in vbtable
     target_offset_t delta;      // - delta for class
     PTREE node;                 // - new node
     PTREE dup;                  // - node containing duplicate of original
@@ -170,7 +170,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
     } else if( result->non_virtual ) {
         adjust_by_delta( a_expr, base, result->delta, positive );
     } else {
-        PTO_FLAG orig_prop;     // - flags propogated from original
+        PTF_FLAG orig_prop;     // - flags propogated from original
         SYMBOL ibp;             // - inline bound reference parameter
         target_offset_t offset; // - offset to ibp
 #if 0

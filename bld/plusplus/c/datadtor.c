@@ -71,7 +71,7 @@ static PTREE addPtIc(           // DECORATE TREE WITH PT_IC NODE
 
 static PTREE addPtIcUnsigned(   // DECORATE TREE WITH PT_IC NODE (unsigned)
     PTREE tree,                 // - tree
-    unsigned opcode,            // - opcode
+    CGINTEROP opcode,           // - opcode
     unsigned value )            // - value
 {
     return addPtIc( tree, NodeIcUnsigned( opcode, value ) );

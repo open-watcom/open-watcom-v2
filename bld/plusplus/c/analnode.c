@@ -905,7 +905,7 @@ PTREE NodeStripPoints(          // STRIP * APPLIED TO & OPERATION
 
 static PTREE nodeDoFetch(       // FETCH A VALUE
     PTREE curr,                 // - node to be transformed
-    unsigned opcode )           // - fetch opcode
+    CGOP opcode )               // - fetch opcode
 {
     PTREE* ref;                 // - ref[ rightmost ',' operand ]
     PTREE fet;                  // - fetch node
@@ -2146,7 +2146,7 @@ static boolean nonVolatileSymbol(  // TEST IF EXPRESSION IS NON-VOLATILE SYM
 
 
 static PTREE nodeIcCgValue(     // ADD A PTREE NODE
-    unsigned opcode,            // - opcode
+    CGINTEROP opcode,           // - opcode
     CGVALUE value )             // - operand
 {
     PTREE node = PTreeIc( opcode, value );
@@ -2156,7 +2156,7 @@ static PTREE nodeIcCgValue(     // ADD A PTREE NODE
 
 
 PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
-    unsigned opcode,            // - opcode
+    CGINTEROP opcode,           // - opcode
     unsigned operand )          // - operand
 {
     CGVALUE val;                // - operand
@@ -2167,7 +2167,7 @@ PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
 
 
 PTREE NodeIc(                   // ADD A PTREE-IC NODE
-    unsigned opcode )           // - opcode
+    CGINTEROP opcode )          // - opcode
 {
     return NodeIcUnsigned( opcode, 0 );
 }

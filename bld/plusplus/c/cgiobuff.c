@@ -48,7 +48,7 @@
 #include "conpool.h"
 #include "pcheader.h"
 
-#define CGIOBUFF_CHECK  (-(sizeof(CGIOBUFF)|1))
+#define CGIOBUFF_CHECK  (-(int)(sizeof(CGIOBUFF)|1))
 
 // This must be free at bottom of a block for that block to be re-used
 // for another virtual file
@@ -338,35 +338,35 @@ static CGIOBUFF *switchToNextBuffer( CGIOBUFF *ctl )
     return( next );
 }
 
-CGINTER *CgioBuffPCHRead(       // READ FROM PCH AND WRITE INTO BUFFER
-    CGINTER *buff,              // - alternate buffer for PCHReadLoc
+CGINTER CgioBuffPCHRead(        // READ FROM PCH AND WRITE INTO BUFFER
     CGIOBUFF **pctl )           // - addr( buffer control )
 {
-    CGIRELOCFN *relocate;       // - relocator function
+    CGIRELOCFN *reloc_fn;       // - relocator function
     CGINTER *p_instr;           // - IC to process
     CGINTER *s_instr;           // - past last IC to process
     CGIOBUFF *ctl;              // - buffer control
     CGINTER *start;             // - first destination for IC
     CGINTER *dest;              // - destination for IC
     CGINTER *stop;              // - last destination for IC
-    unsigned opcode;            // - IC opcode
+    CGINTEROP opcode;           // - IC opcode
+    CGINTER buff[CGINTER_BLOCKING]; // - buffer for PCHRead
 
-    #define CBP_LIMIT ( MAX_WRITE_AMT - CGINTER_BLOCKING * sizeof(CGINTER) )
     ctl = *pctl;
     start = pointXfer( ctl );
     dest = start;
-    stop = pointXferOffset( ctl, CBP_LIMIT );
-    for(;;) {
-        if( dest >= stop ) {
-            ctl->free_offset += ((char*)dest) - (char*)start;
-            ctl = switchToNextBuffer( ctl );
-            start = pointXfer( ctl );
-            dest = start;
-            stop = pointXferOffset( ctl, CBP_LIMIT );
-        }
-        PCHReadLocSize( p_instr, buff, CGINTER_BLOCKING * sizeof( *p_instr ) );
+    stop = pointXferOffset( ctl, MAX_WRITE_AMT );
+    for( ;; ) {
+        PCHReadVar( buff );
+        p_instr = buff;
         s_instr = &p_instr[ CGINTER_BLOCKING ];
         do {
+            if( dest >= stop ) {
+                ctl->free_offset += (char *)dest - (char *)start;
+                ctl = switchToNextBuffer( ctl );
+                start = pointXfer( ctl );
+                dest = start;
+                stop = pointXferOffset( ctl, MAX_WRITE_AMT );
+            }
             opcode = p_instr->opcode;
             if( icMaskTable[ opcode ] & ICOPM_PCHREAD ) {
                 ctl->free_offset += ((char*)dest) - (char*)start;
@@ -383,11 +383,11 @@ CGINTER *CgioBuffPCHRead(       // READ FROM PCH AND WRITE INTO BUFFER
                     }
                 }
 #endif
-                return( p_instr );
+                return( *p_instr );
             }
-            relocate = relocReadOperand[ ICOpTypes[ opcode ] ];
-            if( relocate != NULL ) {
-                dest->value.pvalue = (*relocate)( p_instr->value.pvalue );
+            reloc_fn = relocReadOperand[ ICOpTypes[ opcode ] ];
+            if( reloc_fn != NULL ) {
+                dest->value.pvalue = (*reloc_fn)( p_instr->value.pvalue );
             } else {
                 dest->value = p_instr->value;
             }
@@ -396,20 +396,19 @@ CGINTER *CgioBuffPCHRead(       // READ FROM PCH AND WRITE INTO BUFFER
             ++p_instr;
         } while( p_instr < s_instr );
     }
-    #undef CBP_LIMIT
 }
 
 
-CGVALUE CgioMapIndex( unsigned opcode, CGVALUE value )
+CGVALUE CgioMapIndex( CGINTEROP opcode, CGVALUE value )
 /****************************************************/
 {
     ic_op_type op_class;
-    CGIRELOCFN *reloc;
+    CGIRELOCFN *reloc_fn;
 
     op_class = ICOpTypes[ opcode ];
-    reloc = relocReadOperand[ op_class ];
-    if( reloc != NULL ) {
-        value.pvalue = reloc( value.pvalue );
+    reloc_fn = relocReadOperand[ op_class ];
+    if( reloc_fn != NULL ) {
+        value.pvalue = (*reloc_fn)( value.pvalue );
     }
     return( value );
 }
@@ -493,8 +492,7 @@ static void dumpRead            // DBG: TRACE AN INSTRUCTION READ
 {
     char * prefix = NULL;       // - NULL or prefix when tracing
 
-    if( IC_EOF != curr->opcode
-     && icMaskTable[ curr->opcode ] & ICOPM_BRINFO ) {
+    if( IC_EOF != curr->opcode && (icMaskTable[ curr->opcode ] & ICOPM_BRINFO) ) {
         if( PragDbgToggle.browse_read ) {
             prefix = "BiRd";
         }
@@ -541,9 +539,9 @@ CGIOBUFF *CgioBuffReadIC(       // READ A RECORD
 CGIOBUFF *CgioBuffReadICUntilOpcode(       // READ A RECORD UNTIL OPCODE IS FOUND
     CGIOBUFF *ctl,              // - buffer control
     CGINTER **ins,              // - cursor to update
-    unsigned opcode )           // - opcode to find
+    CGINTEROP opcode )          // - opcode to find
 {
-    unsigned check_opcode;
+    CGINTEROP check_opcode;
     CGINTER *curr;
 
     curr = *ins;
@@ -569,7 +567,7 @@ CGIOBUFF *CgioBuffReadICMask(   // READ A RECORD UNTIL OPCODE IN SET IS FOUND
     unsigned mask )             // - control mask for opcodes
 {
     CGINTER *curr;
-    unsigned opcode;
+    CGINTEROP opcode;
 
     curr = *ins;
     ++curr;
@@ -595,7 +593,7 @@ CGIOBUFF *CgioBuffReadICMaskCount(      // READ A RECORD UNTIL OPCODE IN SET IS 
     unsigned count_mask,        // - control mask for opcodes to count
     unsigned *count )           // - counter to update
 {
-    unsigned opcode;
+    CGINTEROP opcode;
     unsigned extra;
     unsigned op_mask;
     CGINTER *curr;
@@ -780,8 +778,7 @@ void CgioBuffFini(              // BUFFERING COMPLETION
     }
 #endif
     if( NULL != beingWritten ) {
-        CMemFree( beingWritten );
-        beingWritten = NULL;
+        CMemFreePtr( &beingWritten );
     }
     RingFree( &allBufs );
 }

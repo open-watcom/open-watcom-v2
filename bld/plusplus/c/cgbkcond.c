@@ -282,7 +282,7 @@ void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
     cg_name op_mask;            // - mask operand
     COND_INFO cond;             // - conditional information
     patch_handle patch;         // - handle for patch
-    unsigned opcode;            // - opcode for set/clr
+    cg_op opcode;               // - opcode for set/clr
 
     stk = PstkTopElement( &stack_cond_blks );
     CondInfoSetup( stk->offset, &cond, fctl );
@@ -380,6 +380,26 @@ void CondInfoNewCtorEnd(        // CTOR OF NEW'ED OBJECT: END
 }
 
 
+char *CallbackName( void *f )
+{
+#ifndef NDEBUG
+    if( f == callBackTrue )
+        return( "callBackTrue" );
+    if( f == callBackFalse )
+        return( "callBackFalse" );
+    if( f == callBackEnd )
+        return( "callBackEnd" );
+    if( f == callBackNewCtorBeg )
+        return( "callBackNewCtorBeg" );
+    if( f == callBackNewCtorEnd )
+        return( "callBackNewCtorEnd" );
+#else
+    f = f;
+#endif
+    return( NULL );
+}
+
+
 // MODULE INITIALIZATION
 
 
@@ -389,11 +409,6 @@ static void init(               // CGBKCOND INITIALIZATION
     defn = defn;
     PstkOpen( &stack_cond_blks );
     carveInfo = CarveCreate( sizeof( COND_STK ), 32 );
-    CGDBG_CallBackName( callBackTrue );
-    CGDBG_CallBackName( callBackFalse );
-    CGDBG_CallBackName( callBackEnd );
-    CGDBG_CallBackName( callBackNewCtorBeg );
-    CGDBG_CallBackName( callBackNewCtorEnd );
 }
 
 

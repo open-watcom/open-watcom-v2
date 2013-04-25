@@ -182,7 +182,7 @@ static void* brinfReadPch       // READ SUPPLIED # OF BYTES
     ( BRI_PCH_CTL * ctl       // - control
     , unsigned size )           // - size required
 {
-    return PCHReadLocateUnaligned( brinfPchGetBuffer( ctl, size ), size );
+    return PCHReadUnaligned( brinfPchGetBuffer( ctl, size ), size );
 }
 
 

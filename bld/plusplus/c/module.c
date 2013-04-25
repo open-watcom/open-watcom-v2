@@ -261,7 +261,7 @@ void ModuleInitFini(            // COMPLETE MODULE-INITIALIZATION FUNCTION
 static void genInitFiniReference( // GENERATE INIT/FINI REFERENCE TO FUNCTION
     SYMBOL func,                // - function to be called
     unsigned priority,          // - priority
-    char *name,                 // - name for reference
+    NAME name,                  // - name for reference
     fe_seg_id tgt_seg )         // - segment # of target segment
 {
     SYMBOL init_ref;            // - reference to mod-init. function
@@ -334,18 +334,13 @@ SCOPE ModuleInitScope(          // GET BLOCK SCOPE FOR MODULE INITIALIZATION
 
 pch_status PCHWriteModuleData( void )
 {
-    SYMBOL func;
-    SCOPE scope;
     uint_8 has_state_table;
 
-    func = SymbolGetIndex( module_init_func );
-    PCHWrite( &func, sizeof( func ) );
-    scope = ScopeGetIndex( module_init_scope );
-    PCHWrite( &scope, sizeof( scope ) );
-    scope = ScopeGetIndex( module_fd.fn_scope );
-    PCHWrite( &scope, sizeof( scope ) );
+    PCHWriteCVIndex( (cv_index)SymbolGetIndex( module_init_func ) );
+    PCHWriteCVIndex( (cv_index)ScopeGetIndex( module_init_scope ) );
+    PCHWriteCVIndex( (cv_index)ScopeGetIndex( module_fd.fn_scope ) );
     has_state_table = module_fd.has_state_tab;
-    PCHWrite( &has_state_table, sizeof( has_state_table ) );
+    PCHWriteVar( has_state_table );
     LabelPCHWrite( &module_fd.label_mem );
     return( PCHCB_OK );
 }
@@ -354,13 +349,10 @@ pch_status PCHReadModuleData( void )
 {
     uint_8 has_state_table;
 
-    PCHRead( &module_init_func, sizeof( module_init_func ) );
-    module_init_func = SymbolMapIndex( module_init_func );
-    PCHRead( &module_init_scope, sizeof( module_init_scope ) );
-    module_init_scope = ScopeMapIndex( module_init_scope );
-    PCHRead( &module_fd.fn_scope, sizeof( module_fd.fn_scope ) );
-    module_fd.fn_scope = ScopeMapIndex( module_fd.fn_scope );
-    PCHRead( &has_state_table, sizeof( has_state_table ) );
+    module_init_func = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() );
+    module_init_scope = ScopeMapIndex( (SCOPE)PCHReadCVIndex() );
+    module_fd.fn_scope = ScopeMapIndex( (SCOPE)PCHReadCVIndex() );
+    PCHReadVar( has_state_table );
     module_fd.has_state_tab = ( has_state_table != 0 );
     LabelPCHRead( &module_fd.label_mem );
     return( PCHCB_OK );

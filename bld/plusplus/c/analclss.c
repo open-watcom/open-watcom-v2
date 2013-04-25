@@ -257,8 +257,7 @@ static PTREE getRefSymFromFirstParm( SYMBOL sym, target_offset_t cl_offset )
     PTREE first_parm_ref;
 
     sym_type = sym->sym_type;
-    first_parm_ref = addOffsetToFirstParm( sym->u.offset + cl_offset
-                                         , sym_type );
+    first_parm_ref = addOffsetToFirstParm( sym->u.member_offset + cl_offset, sym_type );
     sym_type = TypedefModifierRemove( sym_type );
     if( sym_type->id == TYP_BITFIELD ) {
         first_parm_ref = NodeUnaryCopy( CO_BITFLD_CONVERT, first_parm_ref );
@@ -327,7 +326,7 @@ static void initClassFunction(  // START GENERATION OF CLASS FUNCTION
             // special case of compiler-generated copy constructors
             // (this is the only case in a constructor where copy ctors are used
             //  for all of the base classes instead of normal constructors)
-            arg = ScopeInsert( GetCurrScope(), arg, CppSpecialName(SPECIAL_COPY_ARG) );
+            arg = ScopeInsert( GetCurrScope(), arg, CppSpecialName( SPECIAL_COPY_ARG ) );
         }
     }
     FunctionBodyStartup( fun, fn_data, FUNC_NULL );
@@ -348,7 +347,7 @@ static void finiClassFunction(  // COMPLETE GENERATION OF CLASS FUNCTION
 static SEARCH_RESULT *classResult( // GET SEARCH RESULT FOR A TYPE
     TYPE type,                  // - the type
     SYMBOL *sym_ok,             // - addr( good symbol )
-    char *name,                 // - name to search for
+    NAME name,                  // - name to search for
     SCOPE access )              // - derived access scope
 {
     SCOPE scope;                // - scope to search in
@@ -723,7 +722,7 @@ static SEARCH_RESULT *classAssignResult( // GET SEARCH_RESULT FOR OPERATOR=()
 {
     SYMBOL sym;
     SEARCH_RESULT *result;
-    char *name;
+    NAME name;
 
     name = CppOperatorName( CO_EQUAL );
     type = ClassTypeForType( type );
@@ -895,7 +894,7 @@ static SEARCH_RESULT *accessDefaultCopy( // ACCESS DEFAULT-COPY CTOR
 {
     SYMBOL sym;
     SEARCH_RESULT *result;
-    char *name;
+    NAME name;
 
     name = CppConstructorName();
     result = classResult( type, ctor, name, NULL );
@@ -937,7 +936,7 @@ static SEARCH_RESULT* classCopyResult( // GET SEARCH_RESULT FOR COPY CTOR
     SYMBOL *ctor )              // - addr[copy ctor ]
 {
     SEARCH_RESULT *result;      // - search result
-    char *name;                 // - name of copy ctor
+    NAME name;                  // - name of copy ctor
 
     name = CppConstructorName();
     result = classResult( type, ctor, name, NULL );
@@ -1383,7 +1382,7 @@ void GenerateDefaultDtor(       // EMIT A DEFAULT DTOR
 
 static SYMBOL createArrayDtorSymbol( // CREATE ARRAY DTOR SYMBOL
     TYPE cl_type,               // - class type
-    char *name )                // - name of DTOR
+    NAME name )                 // - name of DTOR
 {
     SYMBOL sym;
     TYPE fn_type;
@@ -1412,7 +1411,7 @@ SEARCH_RESULT *DtorFindResult(  // FIND DTOR FOR A POSSIBLE VIRTUAL CALL
 {
     SEARCH_RESULT *result;      // - result of search
     SCOPE scope;
-    char *dtor_name;
+    NAME dtor_name;
 
     cl_type = ClassTypeForType( cl_type );
     scope = cl_type->u.c.scope;
@@ -1452,7 +1451,7 @@ static SYMBOL findOrDefineDtor( // FIND OR DEFINE DTOR FOR DIRECT CALL
     TOKEN_LOCN *locn,           // - error location
     boolean del )               // - TRUE ==> return NULL on access violation
 {
-    char *dtor_name;
+    NAME dtor_name;
     SYMBOL dtor;
     SCOPE class_scope;
     SEARCH_RESULT *result;
@@ -1499,7 +1498,7 @@ static SYMBOL findOrDefineArrayDtor( // FIND (OR ALLOCATE) ARRAY DTOR FOR SYMBOL
     TOKEN_LOCN *locn,           // - error location
     boolean del )               // - TRUE ==> return NULL on access violation
 {
-    char *name;                 // - name of array dtor
+    NAME name;                  // - name of array dtor
     SCOPE scope;                // - scope for name
     SYMBOL dtor;                // - symbol created
     SEARCH_RESULT *result;      // - search result
@@ -1530,7 +1529,7 @@ void RtnGenCallBackArrayDtor(   // GENERATE ARRAY DTOR
     SYMBOL p1;                  // - parameter[1]: DTOR_NULL
     SYMBOL retn;                // - return symbol
     SCOPE scope;                // - scope for parameters
-    char *name;                 // - dummy name for parameter
+    NAME name;                  // - dummy name for parameter
     PTREE stmt;
     auto FUNCTION_DATA fn_data;
     auto error_state_t check;
@@ -2029,7 +2028,7 @@ static void ctorPrologueComponents( // GENERATE CTOR OF COMPONENTS
 
 static PTREE extractMemberInit( // EXTRACT INITIALIZATION TREE
     ctor_prologue *data,        // - traversal data
-    char *name )                // - name of item
+    NAME name )                 // - name of item
 {
     PTREE *last;
     PTREE curr;
@@ -2056,7 +2055,7 @@ static PTREE extractMemberInit( // EXTRACT INITIALIZATION TREE
 
 static void ctorPrologueMember( // GENERATE PROLOGUE FOR MEMBER
     SYMBOL sym,                 // - member
-    void *_data )       // - traversal data
+    void *_data )               // - traversal data
 {
     ctor_prologue *data = _data;
     if( data->gen_copy && SymIsAnonymousMember( sym ) ) {
@@ -2065,7 +2064,7 @@ static void ctorPrologueMember( // GENERATE PROLOGUE FOR MEMBER
     }
     if( SymIsThisDataMember( sym ) ) {
         data->comp_type = sym->sym_type;
-        data->comp_offset = sym->u.offset;
+        data->comp_offset = sym->u.member_offset;
         data->comp_expr = extractMemberInit( data, sym->name->name );
         if( data->comp_expr != NULL ) {
             if( NULL != ArrayType( sym->sym_type ) ) {
@@ -2195,14 +2194,12 @@ static void genCtorDispInit( SCOPE scope )
 {
     TYPE host_class;
     CLASSINFO *info;
-    target_offset_t last_vbase;
     boolean no_code_reqd;
     BASE_CLASS *base;
 
     host_class = ScopeClass( scope );
     info = host_class->u.c.info;
-    last_vbase = info->last_vbase;
-    if( last_vbase == 0 ) {
+    if( info->last_vbase == 0 ) {
         return;
     }
     no_code_reqd = TRUE;

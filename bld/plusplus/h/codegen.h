@@ -39,15 +39,6 @@
 
 #define TY_BOOL TY_UINT_1
 
-
-#ifndef NDEBUG
-    #include "cgechoap.h"
-  #if 0
-    #define __CGFunc DbgCGFuncTable
-    extern      struct cg_interface *DbgCGFuncTable;
-  #endif
-#endif
-
 #include "cg.h"
 #include "cgstd.h"
 #include "cgdefs.h"

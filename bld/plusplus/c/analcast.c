@@ -374,6 +374,7 @@ static CAST_RESULT findConvRtn   // LOCATE UDC FOR CONVERSION
     boolean is_ctor;            // - TRUE ==> ctor udc, FALSE ==> udcf udc
     FNOV_LIST* fnov_list;       // - matches list
 
+    result = 0;
     if( ctl->tgt.class_operand ) {
         ClassAddDefaultCopy( ctl->tgt.class_type->u.c.scope );
     }
@@ -532,9 +533,7 @@ static CAST_RESULT findConvCtor // LOCATE CTOR FOR CONVERSION
     if( retn == CAST_UDC_IMPOSSIBLE ) {
         retn = DIAG_CAST_ILLEGAL;
     } else if( retn == CAST_CTOR ) {
-        SEARCH_RESULT* result =
-            ScopeFindBaseMember( ctl->tgt.class_type->u.c.scope
-                               , ctl->conv_fun->name->name );
+        SEARCH_RESULT* result = ScopeFindBaseMember( ctl->tgt.class_type->u.c.scope, ctl->conv_fun->name->name );
         if( NULL == result ) {
             retn = DIAG_ALREADY;
         } else {
@@ -3032,6 +3031,7 @@ PTREE CastImplicitCommonPtrExpr // CONVERT TO COMMON PTR EXPRESSION
     TYPE final_type;            // - final type
     CONVCTL ctl;                // - controller
 
+    final_type = NULL;
     ConvCtlInitCommon( &ctl, expr, diagnosis );
     ConvCtlAnalysePoints( &ctl );
     switch( ctl.ctd ) {

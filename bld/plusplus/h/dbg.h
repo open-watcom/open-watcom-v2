@@ -67,7 +67,7 @@ void DbgHeapInit                // INITIALIZATION
     ( void )
 ;
 char *DbgIcOpcode(              // GET IC OPCODE
-    unsigned opcode )           // - opcode
+    CGINTEROP opcode )          // - opcode
 ;
 void DbgLogBeg                  // START LOGGING
     ( void )

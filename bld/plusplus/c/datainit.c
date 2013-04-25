@@ -357,6 +357,8 @@ static void dataInitCheckHugeSegment( target_size_t position )
     if( position > 0 && check == 0 ) {
         DgSegmentIncrement();
     }
+#else
+    position = position;
 #endif
 }
 
@@ -513,7 +515,7 @@ static target_size_t dataInitFieldSize( INITIALIZE_INFO *entry )
     SYMBOL          next;
 
     curr = entry->u.c.curr;
-    curr_off = curr->u.offset;
+    curr_off = curr->u.member_offset;
     next = curr;
     flags = StructType( entry->type )->flag;
     if( flags & TF1_UNION ) {
@@ -521,7 +523,7 @@ static target_size_t dataInitFieldSize( INITIALIZE_INFO *entry )
             DbgAssert( next != NULL );
             next = dataInitScopeOrderedNext( entry->u.c.stop, next );
             if( next == NULL ) break;
-            next_off = next->u.offset;
+            next_off = next->u.member_offset;
             if( next_off == 0 ) {
                 // member of the union so quit
                 next = NULL;
@@ -537,7 +539,7 @@ static target_size_t dataInitFieldSize( INITIALIZE_INFO *entry )
             DbgAssert( next != NULL );
             next = dataInitScopeOrderedNext( entry->u.c.stop, next );
             if( next == NULL ) break;
-            next_off = next->u.offset;
+            next_off = next->u.member_offset;
             if( next_off != curr_off ) {
                 // next field
                 break;
@@ -1551,7 +1553,7 @@ static TYPE dataInitAdvanceField( INITIALIZE_INFO *entry )
         if(( flags & TF1_UNION ) == 0 ) {
             return( type );
         }
-        if( curr->u.offset != 0 ) {
+        if( curr->u.member_offset != 0 ) {
             // anonymous struct fields in a union
             return( type );
         }

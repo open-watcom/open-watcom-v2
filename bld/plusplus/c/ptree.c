@@ -102,8 +102,7 @@ static void ptreeInit(          // INITIALIZATION
 {
     defn = defn;
     carvePTREE = CarveCreate( sizeof( struct parse_tree_node ), BLOCK_PTREE );
-    ExtraRptRegisterCtr( &nodes_hiwater
-                       , "high-water mark: PTREE nodes used" );
+    ExtraRptRegisterCtr( &nodes_hiwater, "high-water mark: PTREE nodes used" );
     ExtraRptRegisterCtr( &total_frees, "total # of PTreeFreeSubtrees" );
     ExtraRptRegisterCtr( &null_frees, "total # of NULL PTreeFreeSubtrees" );
     ExtraRptRegisterCtr( &simple_frees, "total # of simple PTreeFreeSubtrees" );
@@ -452,8 +451,8 @@ PTREE PTreeFloatingConstant( CPP_FLOAT *rep, type_id id )
     return new_tree;
 }
 
-PTREE PTreeId( char *id )
-/***********************/
+PTREE PTreeId( NAME id )
+/**********************/
 {
     PTREE new_tree;
 
@@ -466,7 +465,7 @@ PTREE PTreeId( char *id )
 }
 
 PTREE PTreeIc(                  // CREATE PT_IC NODE
-    unsigned opcode,            // - IC opcode
+    CGINTEROP opcode,           // - IC opcode
     CGVALUE value )             // - IC value
 {
     PTREE node;                 // - new node
@@ -949,7 +948,7 @@ msg_status_t PTreeErrorExpr(    // ISSUE ERROR MESSAGE FOR PTREE NODE
 void PTreeErrorExprName(        // ISSUE ERROR MESSAGE FOR PTREE NODE, NAME
     PTREE expr,                 // - node for error
     unsigned err_code,          // - error code
-    char *name )                // - name
+    NAME name )                 // - name
 {
     PTreeSetErrLoc( expr );
     if(( CErr2p( err_code, name ) & MS_WARNING ) == 0 ) {
@@ -1000,7 +999,7 @@ void PTreeErrorExprType(        // ISSUE ERROR MESSAGE FOR PTREE NODE, TYPE
 void PTreeErrorExprNameType(    // ISSUE ERROR MESSAGE FOR PTREE NODE, NAME, TYPE
     PTREE expr,                 // - node for error
     unsigned err_code,          // - error code
-    char *name,                 // - name
+    NAME name,                  // - name
     TYPE type )                 // - type
 {
     PTreeSetErrLoc( expr );
@@ -1076,7 +1075,7 @@ PTREE PTreeForceIntegral( PTREE cexpr )
     return NULL;
 }
 
-static TYPE mustBeLexicalTypeName( SCOPE scope, char *name )
+static TYPE mustBeLexicalTypeName( SCOPE scope, NAME name )
 {
     SEARCH_RESULT *result;
     TYPE dtor_type;
@@ -1118,7 +1117,7 @@ PTREE SimpleDestructorId( TYPE type )
 
 static PTREE makeDestructorId( SCOPE scope, PTREE id, TYPE class_type )
 {
-    char *name_of_class;
+    NAME name_of_class;
 
     name_of_class = id->u.id.name;
     PTreeFree( id );
@@ -1378,13 +1377,13 @@ PTREE MakeScopedOperatorId( PTREE scoped_operator, CGOP op )
     return id;
 }
 
-PTO_FLAG PTreeEffFlags(     // GET MEANINGFUL FLAGS FOR A PTREE OPERAND
+PTF_FLAG PTreeEffFlags(     // GET MEANINGFUL FLAGS FOR A PTREE OPERAND
     PTREE node )            // - node
 {
-    PTO_FLAG flags;         // - flags
+    PTF_FLAG flags;         // - flags
 
     if( node == NULL ) {
-        flags = 0;
+        flags = PTF_NULL;
     } else {
         flags = node->flags & ( PTF_SIDE_EFF | PTF_MEANINGFUL );
     }
@@ -1796,7 +1795,7 @@ static void savePTree( void *p, carve_walk_base *d )
     SRCFILE save_locn;
     SCOPE save_scope;
     PTREE save_next;
-    char *save_name;
+    NAME save_name;
     STRING_LITERAL *save_string;
     SYMBOL save_symbol;
     CGVALUE save_value;
@@ -1826,7 +1825,7 @@ static void savePTree( void *p, carve_walk_base *d )
     case PT_FLOATING_CONSTANT:
         save_float = s->u.floating_constant;
         fp_len = PTreeGetFPRaw( s, buff, sizeof( buff ) );
-        s->u.floating_constant = (CPP_FLOAT*) fp_len;
+        s->u.floating_constant = PCHSetUInt( fp_len );
         break;
     case PT_SYMBOL:
         save_symbol = s->u.symcg.symbol;
@@ -1865,7 +1864,7 @@ static void savePTree( void *p, carve_walk_base *d )
     DbgDefault( "unknown PTREE op" );
     }
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->type = save_type;
     s->decor = save_decor;
     s->locn.src_file = save_locn;
@@ -1910,78 +1909,65 @@ static void savePTree( void *p, carve_walk_base *d )
 
 pch_status PCHWritePTrees( void )
 {
-    cv_index terminator = CARVE_NULL_INDEX;
     auto carve_walk_base data;
 
     CarveWalkAllFree( carvePTREE, markFreePTree );
     CarveWalkAll( carvePTREE, savePTree, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     DefArgPCHWrite();
     return PCHCB_OK;
 }
 
 pch_status PCHReadPTrees( void )
 {
-    cv_index i;
     PTREE r;
-    PTREE pch;
     unsigned len;
     auto cvinit_t data;
     auto char buff[128];
 
     CarveInitStart( carvePTREE, &data );
-    for(;;) {
-        PCHReadMapped( pch, r, i, data );
-        r->op = pch->op;
-        r->cgop = pch->cgop;
-        r->id_cgop = pch->id_cgop;
-        r->flags = pch->flags;
-        r->type = TypeMapIndex( pch->type );
-        r->decor = PtdMapIndex( pch->decor );
-        r->locn.line = pch->locn.line;
-        r->locn.column = pch->locn.column;
-        r->locn.src_file = SrcFileMapIndex( pch->locn.src_file );
-        switch( pch->op ) {
+    for( ; (r = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *r );
+        r->type = TypeMapIndex( r->type );
+        r->decor = PtdMapIndex( r->decor );
+        r->locn.src_file = SrcFileMapIndex( r->locn.src_file );
+        switch( r->op ) {
         case PT_NULL:
             break;
         case PT_STRING_CONSTANT:
-            r->u.string = StringMapIndex( pch->u.string );
+            r->u.string = StringMapIndex( r->u.string );
             break;
         case PT_INT_CONSTANT:
-            //r->u.uint_constant = pch->u.uint_constant;
-            r->u.int64_constant.u._32[0] = pch->u.int64_constant.u._32[0];
-            r->u.int64_constant.u._32[1] = pch->u.int64_constant.u._32[1];
             break;
         case PT_FLOATING_CONSTANT:
-            len = (unsigned) pch->u.floating_constant;
+            len = PCHGetUInt( r->u.floating_constant );
             PCHRead( buff, len );
             DbgAssert( len > 1 );
             r->u.floating_constant = makeFPRep( buff, len - 1 );
             break;
         case PT_ID:
-            r->u.id.name = NameMapIndex( pch->u.id.name );
-            r->u.id.scope = ScopeMapIndex( pch->u.id.scope );
+            r->u.id.name = NameMapIndex( r->u.id.name );
+            r->u.id.scope = ScopeMapIndex( r->u.id.scope );
             break;
         case PT_TYPE:
-            r->u.type.next = PTreeMapIndex( pch->u.type.next );
-            r->u.type.scope = ScopeMapIndex( pch->u.type.scope );
+            r->u.type.next = PTreeMapIndex( r->u.type.next );
+            r->u.type.scope = ScopeMapIndex( r->u.type.scope );
             break;
         case PT_SYMBOL:
-            r->u.symcg.symbol = SymbolMapIndex( pch->u.symcg.symbol );
+            r->u.symcg.symbol = SymbolMapIndex( r->u.symcg.symbol );
             r->u.symcg.result = NULL;
             break;
         case PT_DUP_EXPR:
-            r->u.dup.subtree[0] = PTreeMapIndex( pch->u.dup.subtree[0] );
-            r->u.dup.node = PTreeMapIndex( pch->u.dup.node );
+            r->u.dup.subtree[0] = PTreeMapIndex( r->u.dup.subtree[0] );
+            r->u.dup.node = PTreeMapIndex( r->u.dup.node );
             break;
         case PT_IC:
-            r->u.ic.opcode = pch->u.ic.opcode;
-            r->u.ic.value = CgioMapIndex( pch->u.ic.opcode, pch->u.ic.value );
+            r->u.ic.value = CgioMapIndex( r->u.ic.opcode, r->u.ic.value );
             break;
         case PT_UNARY:
         case PT_BINARY:
-            r->u.subtree[0] = PTreeMapIndex( pch->u.subtree[0] );
-            r->u.subtree[1] = PTreeMapIndex( pch->u.subtree[1] );
+            r->u.subtree[0] = PTreeMapIndex( r->u.subtree[0] );
+            r->u.subtree[1] = PTreeMapIndex( r->u.subtree[1] );
             break;
         DbgDefault( "unknown PTREE op" );
         }
@@ -1992,15 +1978,11 @@ pch_status PCHReadPTrees( void )
 
 pch_status PCHInitPTrees( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carvePTREE );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carvePTREE ) );
     } else {
         carvePTREE = CarveRestart( carvePTREE );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carvePTREE, n );
+        CarveMapOptimize( carvePTREE, PCHReadCVIndex() );
     }
     return PCHCB_OK;
 }

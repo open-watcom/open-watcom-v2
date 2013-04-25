@@ -119,7 +119,7 @@ static char *stxcpy(            // CONCATENATE HEXADECIMAL NUMBER
 {
     char buffer[16];
 
-    return stpcpy( tgt, utoa( value, buffer, 16 ) );
+    return stpcpy( tgt, ultoa( value, buffer, 16 ) );
 }
 
 

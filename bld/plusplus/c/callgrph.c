@@ -178,17 +178,17 @@ static void cgrfPruneEdge(      // PRUNE AN EDGE
 
 
 static DIRGRAPH_VFT cgrfVft =   // VIRTUAL FUNCTIONS FOR CALL GRAPHING
-{ (void *)&cgrfInit,                  // - init call-graph info.
-  (void *)&cgrfFini,                  // - fini call-graph info.
-  (void *)&cgrfAllocNode,             // - allocate node
-  (void *)&cgrfAllocEdge,             // - allocate edge
-  (void *)&cgrfFreeNode,              // - allocate node
-  (void *)&cgrfFreeEdge,              // - allocate edge
-  (void *)&cgrfInitNode,              // - init node
-  (void *)&cgrfInitEdge,              // - init edge
-  (void *)&cgrfDupEdge,               // - duplicated edge
-  (void *)&cgrfPruneNode,             // - prune node
-  (void *)&cgrfPruneEdge,             // - prune edge
+{ (fn_init_ctl)cgrfInit,            // - init call-graph info.
+  (fn_fini_ctl)cgrfFini,            // - fini call-graph info.
+  (fn_alloc_node)cgrfAllocNode,     // - allocate node
+  (fn_alloc_edge)cgrfAllocEdge,     // - allocate edge
+  (fn_free_node)cgrfFreeNode,       // - allocate node
+  (fn_free_edge)cgrfFreeEdge,       // - allocate edge
+  (fn_init_node)cgrfInitNode,       // - init node
+  (fn_init_edge)cgrfInitEdge,       // - init edge
+  (fn_dup_edge)cgrfDupEdge,         // - duplicated edge
+  (fn_prune_node)cgrfPruneNode,     // - prune node
+  (fn_prune_edge)cgrfPruneEdge,     // - prune edge
 };
 
 

@@ -57,10 +57,10 @@ typedef enum                    // SPECIFIES RUN-TIME SYMBOL'S TYPE
 
 #include "rtfunnam.h"           // - function name array
 
-static char *runTimeCodeName[ ARRAY_SIZE( runTimeCodeString ) ];
+static NAME runTimeCodeName[ ARRAY_SIZE( runTimeCodeString ) ];
 
 static SYMBOL rtSymbolLookup(   // LOOKUP RUN-TIME SYMBOL IN FILE SCOPE
-    char *name )                // - name of run-time function
+    NAME name )                 // - name of run-time function
 {
     SEARCH_RESULT *result;      // - lookup result
     SYMBOL sym;                 // - symbol for lookup
@@ -81,7 +81,7 @@ static SYMBOL rtSymbolLookup(   // LOOKUP RUN-TIME SYMBOL IN FILE SCOPE
 //
 static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
     RTS_TYPE runtime_type,      // - run-time type definition
-    char *name )                // - name of run-time function
+    NAME name )                 // - name of run-time function
 {
     SYMBOL sym;                 // - new symbol
     TYPE sym_type;              // - symbol's type
@@ -131,9 +131,9 @@ boolean RunTimeIsThrow(         // TEST IF FUNCTION IS A C++ THROW
 }
 
 
-static char *getRTCName( RTF code )
+static NAME getRTCName( RTF code )
 {
-    char *name;
+    NAME name;
 
     name = runTimeCodeName[ code ];
     if( name == NULL ) {
@@ -148,7 +148,7 @@ SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL
     RTF code )                  // - code for call
 {
     SYMBOL sym;                 // - symbol for run-time call
-    char *name;                 // - name for function
+    NAME name;                  // - name for function
     RTS_TYPE runtime;           // - definition for run-time symbol
 
     name = getRTCName( code );
@@ -243,7 +243,7 @@ PTREE RunTimeCall(              // GENERATE A RUN-TIME CALL PARSE SUBTREE
 char *RunTimeCodeString(        // GET IMPORT STRING FOR RUN-TIME FUNCTION FROM RTF CODE
     RTF code )                  // - code for function
 {
-    return runTimeCodeString[ code];
+    return( runTimeCodeString[code] );
 }
 
 static void rtfInit(            // INITIALIZE NAMES FOR NAMES PROCESSING
@@ -259,24 +259,20 @@ INITDEFN( rtf_names, rtfInit, InitFiniStub )
 
 pch_status PCHReadRTFNames( void )
 {
-    char **name;
-    char *rname;
+    NAME *name;
 
     for( name = runTimeCodeName; name < &runTimeCodeName[ RTF_LAST ]; ++name ) {
-        PCHRead( &rname, sizeof( rname ) );
-        *name = NameMapIndex( rname );
+        *name = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
     }
     return( PCHCB_OK );
 }
 
 pch_status PCHWriteRTFNames( void )
 {
-    char **name;
-    char *wname;
+    NAME *name;
 
     for( name = runTimeCodeName; name < &runTimeCodeName[ RTF_LAST ]; ++name ) {
-        wname = NameGetIndex( *name );
-        PCHWrite( &wname, sizeof( wname ) );
+        PCHWriteUInt( PCHGetUInt( NameGetIndex( *name ) ) );
     }
     return( PCHCB_OK );
 }

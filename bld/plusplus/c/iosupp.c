@@ -549,8 +549,11 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
     LINE_NO dummy;              // - dummy line number holder
     char prevpth[ _MAX_PATH ];  // - buffer for previous path
 
+    retn = FALSE;
+    paths = NULL;
     switch( typ ) {
     case FT_SRC:
+        exts = extsSrc;
         if( fd->fnm[0] == '\0' && fd->ext[0] == '.' && fd->ext[1] == '\0' ) {
             if( ErrCount != 0 ) {
                 // command line errors may result in "." as the input name
@@ -560,105 +563,99 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
             WholeFName = FNameAdd( "stdin" );
             stdin_srcfile = SrcFileOpen( stdin, WholeFName );
             SrcFileNotAFile( stdin_srcfile );
-            goto file_was_found;
+            retn = TRUE;
+            break;
         }
-        paths = pathSrc;
-        exts = extsSrc;
+        retn = openSrcPath( "", exts, fd, typ );
+        if( retn )
+            break;
+        if( !CompFlags.ignore_current_dir && !IS_PATH_SEP( fd->dir[0] ) ) {
+            paths = pathSrc;
+        }
         break;
     case FT_HEADER:
     case FT_LIBRARY:
-        if( !CompFlags.ignore_current_dir ) {
-            paths = pathHdr;
-        } else {
-            paths = NULL;
-        }
         exts = extsHdr;
-        break;
-    case FT_CMD:
-        paths = pathCmd;
-        exts = extsCmd;
-        break;
-    }
-    switch( typ ) {
-    case FT_LIBRARY:
+        // have to look for absolute paths
         if( fd->drv[0] != '\0' || IS_DIR_SEP( fd->dir[0] ) ) {
             retn = openSrcPath( "", exts, fd, typ );
-            if( retn ) goto file_was_found;
+            break;
         }
-        break;
-    case FT_HEADER:
-        // even if ignoreing current dir, have to look for absolute paths
-        if( !CompFlags.ignore_current_dir || fd->drv[0] != '\0' ) {
-             // look in current directory
-            retn = openSrcPath( "", exts, fd, typ );
-            if( retn ) goto file_was_found;
-        }
-        /* check directories of currently included files */
-        if( !IS_PATH_SEP( fd->dir[0] ) ) {
+        if( typ == FT_HEADER && !IS_PATH_SEP( fd->dir[0] ) ) {
+            if( !CompFlags.ignore_current_dir ) {
+                // check for current directory
+                retn = openSrcPath( "", exts, fd, typ );
+                if( retn ) {
+                    break;
+                }
+            }
+            /* check directories of currently included files */
             prevpth[0] = '\xff'; /* to make it not compare with anything else */
             prevpth[1] = '\0';
             curr = SrcFileCurrent();
-            for( ;; ) {
-                if( curr == NULL ) break;
+            for( ; curr != NULL; ) {
                 splitFileName( SrcFileName( curr ), &idescr );
                 _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
                 /*optimization: don't try and open if in previously checked dir*/
                 if( strcmp( bufpth, prevpth ) != 0 ) {
                     retn = openSrcPath( bufpth, exts, fd, FT_HEADER );
-                    if( retn ) goto file_was_found;
+                    if( retn ) {
+                        break;
+                    }
                 }
                 curr = SrcFileIncluded( curr, &dummy );
                 strcpy( prevpth, bufpth );
             }
-        }
-        break;
-    case FT_SRC:
-    case FT_CMD:
-        retn = openSrcPath( "", exts, fd, typ );
-        if( retn ) goto file_was_found;
-        break;
-    }
-    switch( typ ) {
-    case FT_HEADER:
-    case FT_LIBRARY:
-        HFileListStart();
-        for( ; ; ) {
-            HFileListNext( bufpth );
-            if( *bufpth == '\0' ) break;
-            retn = openSrcPath( bufpth, exts, fd, typ );
-            if( retn ) goto file_was_found;
-        }
-        break;
-    }
-    switch( typ ) {
-    case FT_HEADER:
-    case FT_CMD:
-    case FT_SRC:
-        if( IS_PATH_SEP( fd->dir[0] ) ) {
-            // absolute path
-            break;
-        }
-        if( paths != NULL ) {
-            for( ; ; ) {
-                path = *paths++;
-                if( path == NULL ) break;
-                retn = openSrcPath( path, exts, fd, typ );
-                if( retn ) goto file_was_found;
+            if( retn ) {
+                break;
             }
         }
+        HFileListStart();
+        for( ;; ) {
+            HFileListNext( bufpth );
+            if( *bufpth == '\0' )
+                break;
+            retn = openSrcPath( bufpth, exts, fd, typ );
+            if( retn ) {
+                break;
+            }
+        }
+        if( retn ) {
+            break;
+        }
+        if( typ == FT_HEADER && !CompFlags.ignore_current_dir && !IS_PATH_SEP( fd->dir[0] ) ) {
+            paths = pathHdr;
+        }
         break;
-    }
-    return FALSE;
-file_was_found:
-    switch( typ ) {
     case FT_CMD:
-        SrcFileCommand();
-        break;
-    case FT_LIBRARY:
-        SrcFileLibrary();
+        exts = extsCmd;
+        retn = openSrcPath( "", exts, fd, typ );
+        if( retn )
+            break;
+        if( !CompFlags.ignore_current_dir && !IS_PATH_SEP( fd->dir[0] ) ) {
+            paths = pathCmd;
+        }
         break;
     }
-    return TRUE;
+    if( paths != NULL ) {
+        for( ; (path = *paths) != NULL; ++paths ) {
+            retn = openSrcPath( path, exts, fd, typ );
+            if( retn ) {
+                break;
+            }
+        }
+    }
+    if( retn ) {
+        switch( typ ) {
+        case FT_CMD:
+            SrcFileCommand();
+            break;
+        case FT_LIBRARY:
+            SrcFileLibrary();
+            break;
+        }
+    }
+    return( retn );
 }
 
 
@@ -747,27 +744,23 @@ static void ioSuppWriteError(     // SIGNAL ERROR ON WRITE
     ioSuppError( ERR_WORK_FILE_WRITE_ERROR );
 }
 
+#ifdef __QNX__
+#define AMODE   (O_RDWR | O_CREAT | O_EXCL | O_BINARY | O_TEMP)
+#else
+#define AMODE   (O_RDWR | O_CREAT | O_EXCL | O_BINARY)
+#endif
 
 static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
     void )
 {
-    int         mode;
     auto char   fname[ _MAX_PATH ];
 
-    mode = O_RDWR | O_CREAT | O_EXCL;
-#ifdef __UNIX__
-  #ifndef O_TEMP
-    #define O_TEMP 0    /* Not a standard flag */
-  #endif
-    // Unix files are always binary
-    mode |= O_TEMP;
-#else
-    mode |= O_BINARY;
-#endif
     for(;;) {
         tempFname( fname );
-        #if defined(__DOS__)
-        {   tiny_ret_t  rc;
+#if defined(__DOS__)
+        {
+            tiny_ret_t  rc;
+
             rc = TinyCreateNew( fname, 0 );
             if( TINY_ERROR( rc ) ) {
                 temphandle = -1;
@@ -776,9 +769,9 @@ static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
                 __SetIOMode( temphandle, _READ | _WRITE | _BINARY );
             }
         }
-        #else
-            temphandle = open( fname, mode, PMODE_RW );
-        #endif
+#else
+        temphandle = open( fname, AMODE, PMODE_RW );
+#endif
         if( temphandle != -1 ) break;
         if( workFile[5] == 'Z' ) {
             temphandle = -1;
@@ -799,15 +792,15 @@ static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
             break;
         }
     }
-    #if defined(__UNIX__)
-        /* Under POSIX it's legal to remove a file that's open. The file
-           space will be reclaimed when the handle is closed. This makes
-           sure that the work file always gets removed. */
-        remove( fname );
-        tempname = NULL;
-    #else
-        tempname = FNameAdd( fname );
-    #endif
+#if defined(__UNIX__)
+    /* Under POSIX it's legal to remove a file that's open. The file
+       space will be reclaimed when the handle is closed. This makes
+       sure that the work file always gets removed. */
+    remove( fname );
+    tempname = NULL;
+#else
+    tempname = FNameAdd( fname );
+#endif
     if( temphandle == -1 ) {
         ioSuppError( ERR_UNABLE_TO_OPEN_WORK_FILE );
     }

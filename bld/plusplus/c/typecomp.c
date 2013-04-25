@@ -159,8 +159,7 @@ static boolean typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2,
             return( FALSE );
         }
         if( ( type1->u.f.pragma != type2->u.f.pragma )
-          &&( ! PragmasTypeEquivalent( type1->u.f.pragma
-                                     , type2->u.f.pragma ) ) ) {
+          &&( ! PragmasTypeEquivalent( type1->u.f.pragma, type2->u.f.pragma ) ) ) {
             return( FALSE );
         }
         args1 = type1->u.f.args;

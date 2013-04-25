@@ -30,40 +30,40 @@
 
 
 #include "plusplus.h"
-
-#include <stdarg.h>
-
 #include "preproc.h"
 
 
 
-void MacroOffsetAddChar(                // MacroOffset: ADD A CHARACTER
-    unsigned *mlen,                     // - length of MacroOffset
-    unsigned nchar, ... )               // - no. of chars to insert
+void MacroOffsetAddChar(            // MacroOffset: ADD A CHARACTER
+    unsigned *mlen,                 // - length of MacroOffset
+    char chr )                      // - character to insert
 {
     unsigned clen;
-    unsigned i;
-    char *p;
-    va_list args;
 
     clen = *mlen;
-    MacroOverflow( clen + nchar, clen );
-    p = MacroOffset + clen;
-    va_start( args, nchar );
-    for( i = 0; i < nchar; i++ ) {
-        *p = va_arg( args, int );
-        ++clen;
-        ++p;
-    }
-    va_end( args );
-    *mlen = clen;
+    MacroOverflow( clen + 1, clen );
+    MacroOffset[clen] = chr;
+    *mlen = clen + 1;
 }
 
 
-void MacroOffsetAddMemNoCopy(      // MacroOffset: ADD A SEQUENCE OF BYTES
-    unsigned *mlen,                // - Macro Offset Length
-    const char *buff,              // - bytes to be added
-    unsigned len )                 // - number of bytes
+void MacroOffsetAddToken(           // MacroOffset: ADD A TOKEN
+    unsigned *mlen,                 // - Macro Offset Length
+    TOKEN token )                   // - token to be added
+{
+    unsigned clen;
+
+    clen = *mlen;
+    MacroOverflow( clen + sizeof( TOKEN ), clen );
+    *(TOKEN *)( MacroOffset + clen ) = token;
+    *mlen = clen + sizeof( TOKEN );
+}
+
+
+void MacroOffsetAddMemNoCopy(       // MacroOffset: ADD A SEQUENCE OF BYTES
+    unsigned *mlen,                 // - Macro Offset Length
+    const char *buff,               // - bytes to be added
+    unsigned len )                  // - number of bytes
 {
     unsigned clen;
 
@@ -75,10 +75,10 @@ void MacroOffsetAddMemNoCopy(      // MacroOffset: ADD A SEQUENCE OF BYTES
 }
 
 
-void MacroOffsetAddMem(            // MacroOffset: ADD A SEQUENCE OF BYTES
-    unsigned *mlen,                // - Macro Offset Length
-    const char *buff,              // - bytes to be added
-    unsigned len )                 // - number of bytes
+void MacroOffsetAddMem(             // MacroOffset: ADD A SEQUENCE OF BYTES
+    unsigned *mlen,                 // - Macro Offset Length
+    const char *buff,               // - bytes to be added
+    unsigned len )                  // - number of bytes
 {
     unsigned clen;
 

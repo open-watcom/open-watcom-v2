@@ -42,7 +42,7 @@
 static SYMBOL makeCgVar(        // MAKE CODEGEN VARIABLE OF A CERTAIN TYPE
     TYPE type,                  // - type
     unsigned id,                // - SC_...
-    char *name,                 // - name to be used
+    NAME name,                  // - name to be used
     symbol_flag flags )         // - flags to be used
 {
     SYMBOL var;                 // - new variable
@@ -106,7 +106,7 @@ SYMBOL CgVarTempTyped(          // MAKE R/W AUTO TEMPORARY, FOR cg_type
 SYMBOL CgVarRo(                 // MAKE R/O CODEGEN VARIABLE
     target_size_t size,         // - size of variable
     unsigned id,                // - SC_...
-    char *name )                // - name or NULL
+    NAME name )                 // - name or NULL
 {
     TYPE type;                  // - variable type
 

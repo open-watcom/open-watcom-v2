@@ -60,7 +60,7 @@ typedef struct {                // PRAG_EXT_REF -- extref's pragma'd
     char    name[1];            // - extref name
 } PRAG_EXT_REF;
 
-static PRAG_EXT_REF* pragmaExtrefs; // ring of pragma'd extref symbols
+static PRAG_EXT_REF *pragmaExtrefs; // ring of pragma'd extref symbols
 
 extern  void    PragAux();
 
@@ -139,25 +139,19 @@ static void pragInlineDepth(    // PROCESS #pragma inline_depth
 static void pragComment(        // #PRAGMA COMMENT
     void )
 {
-    if( CurToken == T_LEFT_PAREN ) {
-        PPState = PPS_EOL;
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
         if( PragRecog( "lib" ) ) {
-            MustRecog( T_COMMA );
-            if( CurToken != T_STRING ) {
-                MustRecog( T_STRING );
-            } else {
-                do {
-                    CgInfoAddUserLib( Buffer );
-                    NextToken();
-                } while( CurToken == T_STRING );
-            }
-        } else {
-            while( CurToken != T_RIGHT_PAREN ) {
+            PPS_ENABLE_MACROS();
+            if( ExpectingToken( T_COMMA ) ) {
                 NextToken();
             }
+            while( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
+                CgInfoAddUserLib( Buffer );
+                NextToken();
+            }
+            PPS_DISABLE_MACROS();
         }
-        PPState = PPS_EOL | PPS_NO_EXPAND;
         MustRecog( T_RIGHT_PAREN );
     }
 }
@@ -178,15 +172,15 @@ static void pragMessage(        // #PRAGMA MESSAGE
 {
     VBUF str;
 
-    if( CurToken == T_LEFT_PAREN ) {
-        PPState = PPS_EOL;
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
+        PPS_ENABLE_MACROS();
         NextToken();
         if( CurToken == T_STRING ) {
             collectStrings( &str );
             CErr2p( WARN_USER_WARNING_MSG, VbufString( &str ) );
             VbufFree( &str );
         }
-        PPState = PPS_EOL | PPS_NO_EXPAND;
+        PPS_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
     }
 }
@@ -199,11 +193,11 @@ static void pragError(          // #PRAGMA ERROR
     VBUF str;
 
     if( CurToken == T_STRING ) {
-        PPState = PPS_EOL;
+        PPS_ENABLE_MACROS();
         collectStrings( &str );
         CErr2p( ERR_USER_ERROR_MSG, VbufString( &str ) );
         VbufFree( &str );
-        PPState = PPS_EOL | PPS_NO_EXPAND;
+        PPS_DISABLE_MACROS();
     }
 }
 
@@ -251,14 +245,17 @@ static void pragCodeSeg(        // SET NEW CODE SEGMENT
     char *seg_class;
 
     if( CurToken == T_LEFT_PAREN ) {
-        PPState = PPS_EOL;
+        PPS_ENABLE_MACROS();
         NextToken();
+        PPS_DISABLE_MACROS();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             seg_name = strsave( Buffer );
             seg_class = NULL;
             NextToken();
             if( CurToken == T_COMMA ) {
+                PPS_ENABLE_MACROS();
                 NextToken();
+                PPS_DISABLE_MACROS();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     seg_class = strsave( Buffer );
                     NextToken();
@@ -273,7 +270,6 @@ static void pragCodeSeg(        // SET NEW CODE SEGMENT
             // restore back to default behaviour
             SegmentCode( NULL, NULL );
         }
-        PPState = PPS_EOL | PPS_NO_EXPAND;
         MustRecog( T_RIGHT_PAREN );
     } else if( CurToken == T_STRING ) {
         SegmentCode( Buffer, NULL );
@@ -295,14 +291,17 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
     char *seg_class;
 
     if( CurToken == T_LEFT_PAREN ) {
-        PPState = PPS_EOL;
+        PPS_ENABLE_MACROS();
         NextToken();
+        PPS_DISABLE_MACROS();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             seg_name = strsave( Buffer );
             seg_class = NULL;
             NextToken();
             if( CurToken == T_COMMA ) {
+                PPS_ENABLE_MACROS();
                 NextToken();
+                PPS_DISABLE_MACROS();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     seg_class = strsave( Buffer );
                     NextToken();
@@ -317,7 +316,6 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
             // restore back to default behaviour
             SegmentData( NULL, NULL );
         }
-        PPState = PPS_EOL | PPS_NO_EXPAND;
         MustRecog( T_RIGHT_PAREN );
     } else if( CurToken == T_STRING ) {
         SegmentData( Buffer, NULL );
@@ -433,8 +431,9 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
 static void endOfPragma(
     void )
 {
-    if( CurToken == T_SEMI_COLON ) NextToken();
-    if( CurToken != T_NULL ) Expecting( Tokens[ T_NULL ] );
+    if( CurToken == T_SEMI_COLON )
+        NextToken();
+    ExpectingToken( T_NULL );
     while( CurToken != T_NULL && CurToken != T_EOF ) {
         NextToken();
     }
@@ -458,19 +457,11 @@ void PragmaSetToggle(           // SET TOGGLE
     #include "tognam.h"
 }
 
-boolean PragIdCurToken(         // IS CURTOKEN AN ID?
-    void )
-{
-    TOKEN   t = CurToken;
-
-    return( t == T_ID || t >= FIRST_KEYWORD && t <= LAST_KEYWORD );
-}
-
-
 static boolean PragIdRecog(     // RECOGNIZE PRAGMA ID
     char *what )                // - id
 {
     char *p = Buffer;
+    boolean rc;
 
     if( *p == '_' ) {
         ++p;
@@ -478,48 +469,40 @@ static boolean PragIdRecog(     // RECOGNIZE PRAGMA ID
             ++p;
         }
     }
-    if( stricmp( p, what ) == 0 ) {
+    if( (rc = ( stricmp( p, what ) == 0 )) ) {
         NextToken();
-        return( 1 );
     }
-    return( 0 );
+    return( rc );
+}
+
+
+static boolean startPragRecog( char *id )
+{
+    boolean rc;
+
+    PPS_ENABLE_MACROS();
+    rc = PragIdRecog( id );
+    PPS_DISABLE_MACROS();
+    return( rc );
 }
 
 
 boolean PragRecog(              // RECOGNIZE PRAGMA ID
     char *what )                // - id
 {
-    if( PragIdCurToken() ) {
+    if( IS_ID_OR_KEYWORD( CurToken ) ) {
         return( PragIdRecog( what ) );
     }
     return( 0 );
 }
 
 
-static boolean startPrag( char *id )
-{
-    unsigned save;
-
-    // use this function when you want to immediately process macros
-    // after you recognize the pragma (PragRecog performs a NextToken
-    // so the pre-processing flag has to be set before PragRecog is called)
-    save = PPState;
-    PPState = PPS_EOL;
-    // NextToken inside of PragRecog will process macros on next token
-    if( PragRecog( id ) ) {
-        return( TRUE );
-    }
-    PPState = save;
-    return( FALSE );
-}
-
-
 static void pragFlag(           // SET TOGGLES
     boolean set_flag )          // - TRUE ==> set flag
 {
-    if( CurToken == T_LEFT_PAREN ) {
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
-        while( PragIdCurToken() ) {
+        while( IS_ID_OR_KEYWORD( CurToken ) ) {
             PragmaSetToggle( set_flag );
             NextToken();
         }
@@ -659,7 +642,7 @@ static void pragInitSeg(     // #pragma init_seg ...
 {
     int priority;
 
-    if( CurToken == T_LEFT_PAREN ) {
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
         if( PragRecog( "compiler" ) ) {
             priority = INIT_PRIORITY_LIBRARY - 1;
@@ -689,9 +672,11 @@ static void parseExtRef(     // PARSE SYMBOL NAME
         entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + TokenLen + 1 );
         memcpy( entry->name, Buffer, TokenLen + 1 );
         entry->symbol = NULL;
-    } else if( PragIdCurToken() ) {
+    } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
         SEARCH_RESULT* result;
-        result = ScopeFindNaked( GetCurrScope(), NameCreateLen( Buffer, TokenLen ) );
+        NAME name = NameCreateLen( Buffer, TokenLen );
+
+        result = ScopeFindNaked( GetCurrScope(), name );
         if( result == NULL ) {
             CErr2p( ERR_PRAG_EXTREF_NONE, Buffer );
         } else {
@@ -724,18 +709,21 @@ static void parseExtRef(     // PARSE SYMBOL NAME
 static void pragExtRef(     // #pragma extref ...
     void )
 {
-    if( CurToken == T_LEFT_PAREN ) {
-        PPState = PPS_EOL;
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
+        PPS_ENABLE_MACROS();
         NextToken();
-        for( ; PragIdCurToken() || CurToken == T_STRING; ) {
+        PPS_DISABLE_MACROS();
+        while( CurToken == T_STRING || IS_ID_OR_KEYWORD( CurToken ) ) {
             parseExtRef();
             NextToken();
-            if( CurToken != T_COMMA )  break;
+            if( CurToken != T_COMMA )
+                break;
+            PPS_ENABLE_MACROS();
             NextToken();
+            PPS_DISABLE_MACROS();
         }
-        PPState = PPS_EOL | PPS_NO_EXPAND;
         MustRecog( T_RIGHT_PAREN );
-    } else if( PragIdCurToken() || CurToken == T_STRING ) {
+    } else if( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
         parseExtRef();
         NextToken();
     }
@@ -782,9 +770,9 @@ void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
 static void pragIntrinsic(      // SET FUNCTIONS TO BE (NOT TO BE) INTRINSIC
     boolean intrinsic )         // - TRUE ==> function to be intrinsic
 {
-    if( CurToken == T_LEFT_PAREN ) {
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
-        while( PragIdCurToken() ) {
+        while( IS_ID_OR_KEYWORD( CurToken ) ) {
             ScopeIntrinsic( intrinsic );
             NextToken();
             if( CurToken != T_COMMA )  break;
@@ -798,9 +786,9 @@ static void pragIntrinsic(      // SET FUNCTIONS TO BE (NOT TO BE) INTRINSIC
 static void pragDumpObjectModel( // DUMP OBJECT MODEL
     void )
 {
-    if( PragIdCurToken() ) {
-        SEARCH_RESULT* result = ScopeFindNaked( GetCurrScope()
-                                              , NameCreateLen( Buffer, TokenLen ) );
+    if( IS_ID_OR_KEYWORD( CurToken ) ) {
+        NAME name = NameCreateLen( Buffer, TokenLen );
+        SEARCH_RESULT* result = ScopeFindNaked( GetCurrScope(), name );
         if( result == NULL ) {
             CErr2p( ERR_DUMP_OBJ_MODEL, Buffer );
         } else {
@@ -961,6 +949,7 @@ static void pragReadOnlyFile
 static void pragReadOnlyDir
     ( void )
 {
+    PPS_ENABLE_MACROS();
     while( CurToken == T_STRING ) {
         SrcFileReadOnlyDir( Buffer );
         NextToken();
@@ -968,6 +957,7 @@ static void pragReadOnlyDir
             NextToken();
         }
     }
+    PPS_DISABLE_MACROS();
 }
 
 // form: #pragma include_alias( "alias_name", "real_name" )
@@ -978,8 +968,8 @@ static void pragReadOnlyDir
 //
 static void pragIncludeAlias( void )
 {
-    if( CurToken == T_LEFT_PAREN ) {
-        PPState = PPS_EOL;
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
+        PPS_ENABLE_MACROS();
         NextToken();
         if( CurToken == T_STRING ) {
             char    *alias_name;
@@ -987,14 +977,15 @@ static void pragIncludeAlias( void )
             alias_name = CMemAlloc( strlen( Buffer ) + 1 );
             strcpy( alias_name, Buffer );
             NextToken();
-            MustRecog( T_COMMA );
+            if( ExpectingToken( T_COMMA ) ) {
+                NextToken();
+            }
             if( CurToken == T_STRING ) {
                 IAliasAdd( alias_name, Buffer, FALSE );
                 NextToken();
             }
             CMemFree( alias_name );
-        }
-        else if( CurToken == T_LT ) {
+        } else if( CurToken == T_LT ) {
             char    a_buf[82];
             char    r_buf[82];
 
@@ -1005,9 +996,14 @@ static void pragIncludeAlias( void )
                     NextToken();
                     break;
                 }
-                strncat( a_buf, Buffer, 80 );
+                if( CurToken == T_NULL ) {
+                    break;
+                }
+                strncat( a_buf, Buffer, sizeof( a_buf ) - 2 );
             }
-            MustRecog( T_COMMA );
+            if( ExpectingToken( T_COMMA ) ) {
+                NextToken();
+            }
             if( CurToken == T_LT ) {
                 r_buf[0] = '\0';
                 for( ;; ) {
@@ -1016,12 +1012,15 @@ static void pragIncludeAlias( void )
                         NextToken();
                         break;
                     }
-                    strncat( r_buf, Buffer, 80 );
+                    if( CurToken == T_NULL ) {
+                        break;
+                    }
+                    strncat( r_buf, Buffer, sizeof( r_buf ) - 2 );
                 }
                 IAliasAdd( a_buf, r_buf, TRUE );
             }
         }
-        PPState = PPS_EOL | PPS_NO_EXPAND;
+        PPS_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
     }
 }
@@ -1039,7 +1038,7 @@ static void pragLibs(           // #PRAGMA library ( lib ... lib )
 {
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
-        while( PragIdCurToken() || CurToken == T_STRING ) {
+        while( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
             CgInfoAddUserLib( Buffer );
             NextToken();
         }
@@ -1058,49 +1057,46 @@ static void pragLibs(           // #PRAGMA library ( lib ... lib )
 static void pragPack(           // #PRAGMA PACK
     void )
 {
-    if( CurToken == T_LEFT_PAREN ) {
-        PPState = PPS_EOL;
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
+        PPS_ENABLE_MACROS();
         NextToken();
+        PPS_DISABLE_MACROS();
         switch( CurToken ) {
         case T_ID:
-            if( PragRecog( "pop" ) ) {
+            if( PragIdRecog( "pop" ) ) {
                 popPrag( &HeadPacks, &PackAmount );
-                MustRecog( T_RIGHT_PAREN );
-            } else if( PragRecog( "push" ) ) {
+            } else if( PragIdRecog( "push" ) ) {
                 if( CurToken == T_RIGHT_PAREN ) {
                     pushPrag( &HeadPacks, PackAmount );
-                    MustRecog( T_RIGHT_PAREN );
                 } else {
-                    MustRecog( T_COMMA );
-                    if( CurToken != T_CONSTANT ) {
-                        MustRecog( T_CONSTANT );
-                    } else {
+                    if( ExpectingToken( T_COMMA ) ) {
+                        PPS_ENABLE_MACROS();
+                        NextToken();
+                        PPS_DISABLE_MACROS();
+                    }
+                    if( CurToken == T_CONSTANT ) {
                         pushPrag( &HeadPacks, PackAmount );
                         PackAmount = VerifyPackAmount( U32Fetch( Constant64 ) );
                         NextToken();
-                        MustRecog( T_RIGHT_PAREN );
+                    } else {
+                        MustRecog( T_CONSTANT );
                     }
                 }
             } else {
-                CErr( ERR_EXPECTING_BUT_FOUND, "pop", Buffer );
+                CErr( ERR_EXPECTING_BUT_FOUND, "push or pop", Buffer );
             }
-            PPState = PPS_EOL | PPS_NO_EXPAND;
             break;
         case T_CONSTANT:
             PackAmount = VerifyPackAmount( U32Fetch( Constant64 ) );
-            PPState = PPS_EOL | PPS_NO_EXPAND;
             NextToken();
-            MustRecog( T_RIGHT_PAREN );
             break;
         case T_RIGHT_PAREN:
-            PPState = PPS_EOL | PPS_NO_EXPAND;
-            NextToken();
             PackAmount = GblPackAmount;
             break;
         default:
-            PPState = PPS_EOL | PPS_NO_EXPAND;
-            MustRecog( T_RIGHT_PAREN );
+            break;
         }
+        MustRecog( T_RIGHT_PAREN );
     }
 }
 
@@ -1114,75 +1110,75 @@ void CPragma( void )                  // PROCESS A PRAGMA
     if( PragRecog( "include_alias" ) ) {
         pragIncludeAlias();
     } else if( CompFlags.cpp_output ) {
-        PPState = PPS_EOL;
+        PPS_ENABLE_MACROS();
         fprintf( CppFile, "#pragma " );
         for( ; CurToken != T_NULL; ) {
             PrtToken();
             GetNextToken();
         }
-        PPState = PPS_EOL | PPS_NO_EXPAND;
-    } else if( PragIdCurToken() ) {
-        if( PragRecog( "on" ) ) {
+        PPS_DISABLE_MACROS();
+    } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
+        if( PragIdRecog( "on" ) ) {
             pragFlag( 1 );
-        } else if( PragRecog( "off" ) ) {
+        } else if( PragIdRecog( "off" ) ) {
             pragFlag( 0 );
-        } else if( startPrag( "aux" ) || startPrag( "linkage" ) ) {
+        } else if( PragIdRecog( "aux" ) || PragIdRecog( "linkage" ) ) {
             PragAux();
-        } else if( PragRecog( "library" ) ) {
+        } else if( PragIdRecog( "library" ) ) {
             pragLibs();
-        } else if( PragRecog( "once" ) ) {
+        } else if( PragIdRecog( "once" ) ) {
             pragOnce();
-        } else if( PragRecog( "extref" ) ) {
+        } else if( PragIdRecog( "extref" ) ) {
             pragExtRef();
-        } else if( PragRecog( "comment" ) ) {
+        } else if( PragIdRecog( "comment" ) ) {
             pragComment();
-        } else if( PragRecog( "pack" ) ) {
+        } else if( PragIdRecog( "pack" ) ) {
             pragPack();
-        } else if( PragRecog( "warning" ) ) {
+        } else if( PragIdRecog( "warning" ) ) {
             if( pragWarning() ) {
                 /* ignore #pragma warning */
                 check_end = FALSE;  /* skip rest of line */
             }
-        } else if( PragRecog( "enable_message" ) ) {
+        } else if( PragIdRecog( "enable_message" ) ) {
             pragEnableMessage();
-        } else if( PragRecog( "disable_message" ) ) {
+        } else if( PragIdRecog( "disable_message" ) ) {
             pragDisableMessage();
-        } else if( PragRecog( "code_seg" ) ) {
+        } else if( PragIdRecog( "code_seg" ) ) {
             pragCodeSeg();
-        } else if( PragRecog( "data_seg" ) ) {
+        } else if( PragIdRecog( "data_seg" ) ) {
             pragDataSeg();
-        } else if( PragRecog( "initialize" ) ) {
+        } else if( PragIdRecog( "initialize" ) ) {
             pragInitialize();
-        } else if( PragRecog( "init_seg" ) ) {
+        } else if( PragIdRecog( "init_seg" ) ) {
             pragInitSeg();
-        } else if( PragRecog( "inline_depth" ) ) {
+        } else if( PragIdRecog( "inline_depth" ) ) {
             pragInlineDepth();
-        } else if( PragRecog( "template_depth" ) ) {
+        } else if( PragIdRecog( "template_depth" ) ) {
             pragTemplateDepth();
-        } else if( PragRecog( "inline_recursion" ) ) {
+        } else if( PragIdRecog( "inline_recursion" ) ) {
             pragInlineRecursion();
-        } else if( PragRecog( "intrinsic" ) ) {
+        } else if( PragIdRecog( "intrinsic" ) ) {
             pragIntrinsic( TRUE );
-        } else if( PragRecog( "function" ) ) {
+        } else if( PragIdRecog( "function" ) ) {
             pragIntrinsic( FALSE );
-        } else if( PragRecog( "destruct" ) ) {
+        } else if( PragIdRecog( "destruct" ) ) {
             pragDestruct();
-        } else if( PragRecog( "enum" ) ) {
+        } else if( PragIdRecog( "enum" ) ) {
             pragEnum();
-        } else if( PragRecog( "dump_object_model" ) ) {
+        } else if( PragIdRecog( "dump_object_model" ) ) {
             pragDumpObjectModel();
-        } else if( startPrag( "read_only_file" ) ) {
+        } else if( startPragRecog( "read_only_file" ) ) {
             pragReadOnlyFile();
-        } else if( startPrag( "read_only_directory" ) ) {
+        } else if( startPragRecog( "read_only_directory" ) ) {
             pragReadOnlyDir();
-        } else if( PragRecog( "include_alias" ) ) {
+        } else if( PragIdRecog( "include_alias" ) ) {
             pragIncludeAlias();
-        } else if( PragRecog( "message" ) ) {
+        } else if( PragIdRecog( "message" ) ) {
             pragMessage();
-        } else if( PragRecog( "error" ) ) {
+        } else if( PragIdRecog( "error" ) ) {
             pragError();
 #ifndef NDEBUG
-        } else if( PragRecog( "break" ) ) {
+        } else if( PragIdRecog( "break" ) ) {
             pragBreak();
 #endif
         } else {                /* unknown pragma */
@@ -1217,7 +1213,7 @@ void PragInit(
 
 typedef struct magic_word {
     char            *name;
-    struct aux_info *info;
+    AUX_INFO        *info;
 } MAGIC_WORD;
 
 static MAGIC_WORD magicWords[] = {
@@ -1257,7 +1253,7 @@ static int MagicKeyword(                    // LOOKUP A MAGIC KEYWORD FROM BUFFE
     return lookupMagicKeyword( Buffer );
 }
 
-static struct aux_info *MagicKeywordInfo(   // LOOKUP A MAGIC KEYWORD FROM BUFFER
+static AUX_INFO *MagicKeywordInfo(   // LOOKUP A MAGIC KEYWORD FROM BUFFER
     void )
 {
     return( magicWords[ lookupMagicKeyword( Buffer ) ].info );
@@ -1268,7 +1264,7 @@ static struct aux_info *MagicKeywordInfo(   // LOOKUP A MAGIC KEYWORD FROM BUFFE
 void CreateAux(                 // CREATE AUX ID
         char *id )              // - id
 {
-    CurrEntry = CMemAlloc( sizeof( AUX_ENTRY ) + strlen( id ) );
+    CurrEntry = CMemAlloc( offsetof( AUX_ENTRY, name ) + strlen( id ) + 1 );
     strcpy( CurrEntry->name, id );
     CurrInfo = CMemAlloc( sizeof( AUX_INFO ) );
     // AuxCopy assumes destination is valid
@@ -1341,7 +1337,7 @@ void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE
 void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
     void )
 {
-    struct aux_entry *search;
+    AUX_ENTRY *search;
 
     search = NULL;
     CurrAlias = MagicKeywordInfo();
@@ -1423,7 +1419,7 @@ void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
 AUX_INFO *PragmaLookup( char *name, unsigned index )
 /**************************************************/
 {
-    struct aux_entry *ent;
+    AUX_ENTRY *ent;
 
     if( index != M_UNKNOWN ) {
         if( setAuxInfo( index, FALSE ) ) {
@@ -1460,48 +1456,30 @@ AUX_INFO *GetTargetHandlerPragma    // GET PRAGMA FOR FS HANDLER
 
 
 #if _INTEL_CPU
-int PragSet(                    // GET ENDING PRAGMA DELIMITER
-    void )
-{
-    int retn;                   // - delimiter
-
-    switch( CurToken ) {
-    case  T_LEFT_BRACKET :
-        retn = T_RIGHT_BRACKET;
-        break;
-    case T_LEFT_BRACE :
-        retn = T_RIGHT_BRACE;
-        break;
-    default :
-        retn = T_NULL;
-        break;
-    }
-    return( retn );
-}
-#endif
-
-
-#if _INTEL_CPU
 hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     void )
 {
     hw_reg_set res;             // - resultant set
     hw_reg_set reg;             // - current set
-    int close;                  // - ending delimiter
+    TOKEN close_token;          // - ending delimiter
 
     HW_CAsgn( res, HW_EMPTY );
-    close = PragSet();
-    if( close != T_NULL ) {
-        PPState = PPS_EOL;
-        NextToken();
-        for( ; CurToken != close; ) {
-            reg = PragRegName( Buffer );
-            HW_TurnOn( res, reg );
-            NextToken();
-        }
-        PPState = PPS_EOL | PPS_NO_EXPAND;
-        MustRecog( close );
+    if( CurToken == T_LEFT_BRACKET ) {
+        close_token = T_RIGHT_BRACKET;
+    } else if( CurToken == T_LEFT_BRACE ) {
+        close_token = T_RIGHT_BRACE;
+    } else {
+        return( res );
     }
+    PPS_ENABLE_MACROS();
+    NextToken();
+    for( ; CurToken != close_token; ) {
+        reg = PragRegName( Buffer );
+        HW_TurnOn( res, reg );
+        NextToken();
+    }
+    PPS_DISABLE_MACROS();
+    MustRecog( close_token );
     return( res );
 }
 #endif
@@ -1602,9 +1580,7 @@ static void readPacks( void )
     while( HeadPacks != NULL ) {
         popPrag( &HeadPacks, &PackAmount );
     }
-    for( ; ; ) {
-        pack_amount = PCHReadUInt();
-        if( pack_amount == -1 ) break;
+    for( ; (pack_amount = PCHReadUInt()) != -1; ) {
         pushPrag( &HeadPacks, pack_amount );
     }
     pack_amount = PCHReadUInt();
@@ -1645,9 +1621,7 @@ static void readEnums( void )
     while( HeadEnums != NULL ) {
         popPrag( &HeadEnums, NULL );
     }
-    for( ; ; ) {
-        enum_int = PCHReadUInt();
-        if( enum_int == -1 ) break;
+    for( ; (enum_int = PCHReadUInt()) != -1; ) {
         pushPrag( &HeadEnums, enum_int );
     }
     CompFlags.make_enums_an_int = PCHReadUInt();
@@ -1663,7 +1637,7 @@ static void writeExtrefs( void )
             PCHWriteCVIndex( (cv_index)SymbolGetIndex( e->symbol ) );
         }
     } RingIterEnd( e )
-    PCHWriteCVIndex( CARVE_NULL_INDEX );
+    PCHWriteCVIndexTerm();
     RingIterBeg( pragmaExtrefs, e ) {
         if( e->symbol == NULL ) {
             len = strlen( e->name );
@@ -1698,13 +1672,13 @@ pch_status PCHReadPragmaData( void )
     unsigned depth;
     unsigned value;
 
-    PCHRead( &PragToggle, sizeof( PragToggle ) );
+    PCHReadVar( PragToggle );
     CgInfoLibPCHRead();
     readPacks();
     readEnums();
     readExtrefs();
-    PCHRead( &CompInfo.init_priority, sizeof( CompInfo.init_priority ) );
-    PCHRead( &CompInfo.dt_method_speced, sizeof( CompInfo.dt_method_speced ) );
+    PCHReadVar( CompInfo.init_priority );
+    PCHReadVar( CompInfo.dt_method_speced );
     depth = PCHReadUInt();
     CgBackSetInlineDepth( depth );
     value = PCHReadUInt();
@@ -1717,13 +1691,13 @@ pch_status PCHWritePragmaData( void )
     unsigned depth;
     unsigned value;
 
-    PCHWrite( &PragToggle, sizeof( PragToggle ) );
+    PCHWriteVar( PragToggle );
     CgInfoLibPCHWrite();
     writePacks();
     writeEnums();
     writeExtrefs();
-    PCHWrite( &CompInfo.init_priority, sizeof( CompInfo.init_priority ) );
-    PCHWrite( &CompInfo.dt_method_speced, sizeof( CompInfo.dt_method_speced ) );
+    PCHWriteVar( CompInfo.init_priority );
+    PCHWriteVar( CompInfo.dt_method_speced );
     depth = CgBackGetInlineDepth();
     PCHWriteUInt( depth );
     value = CgBackGetInlineRecursion();

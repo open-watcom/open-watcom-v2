@@ -272,9 +272,7 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
     type_ret = SymFuncReturnType( func );
     ret = SymFunctionReturn();
     if( SymIsThisDataMember( refed ) ) {
-        expr = NodeBinary( CO_PLUS
-                         , NodeThis()
-                         , NodeOffset( refed->u.offset ) );
+        expr = NodeBinary( CO_PLUS, NodeThis(), NodeOffset( refed->u.member_offset ) );
         expr->type = refed->sym_type;
         expr = NodeFetchReference( expr );
     } else {
@@ -326,7 +324,7 @@ TYPE MembPtrDerefFnPtr(   // GET TYPE OF DE-REFERENCING FUNC. POINTER
 static SYMBOL membPtrOffsetFunc(// GET OFFSET FUNCTION FOR MEMBER
     PTREE node )                // - symbol node
 {
-    char *name;                 // - name for offset function
+    NAME name;                  // - name for offset function
     SCOPE scope;                // - source scope
     SEARCH_RESULT *result;      // - lookup result
     SYMBOL src;                 // - symbol referenced
@@ -712,8 +710,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
               ) {
                 retn = CNV_ERR;
             } else if( SymIsThisFuncMember( base_item ) ) {
-                item->type = MakeMemberPointerTo( SymClass( base_item )
-                                                , base_item->sym_type );
+                item->type = MakeMemberPointerTo( SymClass( base_item ), base_item->sym_type );
             } else {
                 PTreeErrorExpr( item, ERR_MEMB_PTR_ADDR_OF );
                 retn = CNV_ERR;
@@ -869,10 +866,10 @@ PTREE MembPtrExtend             // FAKE AN ADDRESS-OF NODE FOR BARE FUNCTION
     SYMBOL sym;                 // - symbol for function
 
     DbgVerify( CompFlags.extensions_enabled, "bad call of MembPtrExtend" );
+    sym = expr->u.symcg.symbol;
     expr->flags |= PTF_COLON_QUALED;
     expr->flags &= ~PTF_LVALUE;
     expr = NodeUnaryCopy( CO_ADDR_OF, expr );
-    sym = expr->u.symcg.symbol;
     expr->type = MakeMemberPointerTo( SymClass(sym ), sym->sym_type );
     return expr;
 }

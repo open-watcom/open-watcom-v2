@@ -122,7 +122,7 @@ static TYPE generate_node_type( // GENERATE EXACT TYPE FOR NODE
 static void generate_type_instr(// GENERATE TYPE, INSTRUCTION
     TYPE type,                  // - type generated
     unsigned value,             // - value for ic instruction
-    CGOP opcode )               // - opcode
+    CGINTEROP opcode )          // - opcode
 {
     CgSetType( type );
     CgFrontCodeUint( opcode, value );
@@ -132,7 +132,7 @@ static void generate_type_instr(// GENERATE TYPE, INSTRUCTION
 static void generate_expr_instr(// GENERATE EXPR-TYPE, INSTRUCTION
     PTREE expr,                 // - current node
     unsigned value,             // - value for ic instruction
-    CGOP opcode )               // - opcode
+    CGINTEROP opcode )          // - opcode
 {
     generate_node_type( expr );
     CgFrontCodeUint( opcode, value );

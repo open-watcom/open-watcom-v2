@@ -452,7 +452,7 @@ void CDoptChkAccFun(            // CHECK FUNCTIONS ACCESS FOR CLASS
 {
     SCOPE old;                  // - old scope
     ACC_FUN* af;                // - accessed function
-    char* name;                 // - name of function
+    NAME name;                  // - name of function
     SEARCH_RESULT* result;      // - search result for function
 
     if( ! descr->chk_acc ) {
@@ -1169,7 +1169,7 @@ static SYMBOL getDefedCtor(     // FIND DEFINED DEFAULT CTOR
     FNOV_RESULT fnov_status;    // - overload status
     SYMBOL ctor;                // - CTOR for type
     SEARCH_RESULT *result;      // - lookup result
-    char* name;                 // - name for lookup
+    NAME name;                  // - name for lookup
     SCOPE scope;                // - scope for lookup
     arg_list arglist;           // - dummy arguments list
 
@@ -1576,7 +1576,7 @@ static void pushMember(         // PUSH MEMBER FUNCTION FOR MEMBER
                 return;
             }
         }
-        pushElement( sym_type, sym->u.offset, sym, expansion, otype );
+        pushElement( sym_type, sym->u.member_offset, sym, expansion, otype );
     }
 }
 

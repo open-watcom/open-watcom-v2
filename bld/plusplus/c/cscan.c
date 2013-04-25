@@ -149,7 +149,7 @@ static unsigned_64 uintMax  = I64Val( 0x00000000, 0xffffffff );
 #define prt_char( x )           if( CompFlags.cpp_output ) { PrtChar( x ); }
 
 #define diagnose_lex_error( e ) \
-        (!(e) && ( SkipLevel == NestLevel ) && ( PPState & PPS_NO_LEX_ERRORS ) == 0 )
+        (!(e) && ( SkipLevel == NestLevel ) && (PPState & PPS_NO_LEX_ERRORS) == 0 )
 
 void ReScanInit( char *ptr )
 /**************************/
@@ -170,7 +170,7 @@ int ReScanToken( void )
 /*********************/
 {
     int saved_currchar;
-    int (*saved_nextchar)();
+    int (*saved_nextchar)(void);
     int saved_line;
     int saved_column;
 
@@ -187,10 +187,7 @@ int ReScanToken( void )
     NextChar = saved_nextchar;
     TokenLine = saved_line;
     TokenColumn = saved_column;
-    if( CompFlags.rescan_buffer_done == 0 ) {
-        return( 1 );
-    }
-    return( 0 );
+    return( CompFlags.rescan_buffer_done );
 }
 
 void (*SetTokenSource( void (*source)( void ) ))( void )
@@ -209,8 +206,8 @@ void ResetTokenSource( void (*source)( void ) )
     tokenSource = source;
 }
 
-int NextToken( void )
-/*******************/
+TOKEN NextToken( void )
+/*********************/
 {
 #ifdef XTRA_RPT
     ExtraRptIncrementCtr( nextTokenCalls );
@@ -281,7 +278,7 @@ static int scanHex( int expanding )
     return( 1 );                    /* indicate characters were matched */
 }
 
-static int idLookup( unsigned len, MEPTR *pmeptr )
+static TOKEN idLookup( unsigned len, MEPTR *pmeptr )
 {
     MEPTR fmentry;
 
@@ -452,11 +449,11 @@ static int doESCChar( int c, int expanding, int char_type )
     return( n );
 }
 
-static int charConst( int char_type, int expanding )
+static TOKEN charConst( int char_type, int expanding )
 {
     int c;
     int i;
-    int token;
+    TOKEN token;
     long value;
     struct {
         unsigned double_byte_char : 1;
@@ -566,9 +563,15 @@ static int printWhiteSpace( int c )
     return( c );
 }
 
+static TOKEN scanWhiteSpace( int expanding )
+{
+    SrcFileScanWhiteSpace( expanding );
+    return( T_WHITE_SPACE );
+}
+
 static int skipWhiteSpace( int c )
 {
-    if( CompFlags.cpp_output && PPState == PPS_NORMAL ) {
+    if( CompFlags.cpp_output && (PPState & PPS_EOL) == 0 ) {
         c = printWhiteSpace( c );
     } else {
         SrcFileScanWhiteSpace( 0 );
@@ -625,7 +628,7 @@ void SkipAhead( void )
                 c = skipWhiteSpace( c );
             }
             if( c != '\n' ) break;
-            if( PPState == PPS_NORMAL ) {
+            if( (PPState & PPS_EOL) == 0 ) {
                 prt_char( '\n' );
             }
             c = NextChar();
@@ -635,7 +638,7 @@ void SkipAhead( void )
     }
 }
 
-static int scanDotSomething( int c )
+static TOKEN scanDotSomething( int c )
 {
     if( c == '*' ) {
         NextChar();
@@ -655,7 +658,7 @@ static int scanDotSomething( int c )
     return( T_DOT );
 }
 
-static int doScanFloat( void )
+static TOKEN doScanFloat( void )
 {
     int c;
     int one_case;
@@ -720,7 +723,7 @@ static void willContinueStringLater( int string_type )
     ++TokenLen;
 }
 
-static int doScanString( int string_type, int expanding )
+static TOKEN doScanString( int string_type, int expanding )
 {
     int c;
     int ok;
@@ -785,12 +788,12 @@ static int doScanString( int string_type, int expanding )
     return( T_BAD_TOKEN );
 }
 
-static int doScanName( int c, int expanding )
+static TOKEN doScanName( int c, int expanding )
 {
-    MEPTR fmentry;
+    MEPTR fmentry = NULL;
 
     SrcFileScanName( c );
-    if( expanding || ( PPState & PPS_NO_EXPAND ) ) {
+    if( expanding || (PPState & PPS_NO_EXPAND) ) {
         return( T_ID );
     }
     CurToken = idLookup( TokenLen, &fmentry );
@@ -823,7 +826,7 @@ static int doScanName( int c, int expanding )
     return( CurToken );
 }
 
-static int scanName( int expanding )
+static TOKEN scanName( int expanding )
 {
     int c;
 
@@ -835,7 +838,7 @@ static int scanName( int expanding )
     return( doScanName( c, expanding ) );
 }
 
-static int doScanAsmToken( void )
+static TOKEN doScanAsmToken( void )
 {
     TokenLen = 0;
     do {
@@ -849,10 +852,10 @@ static int doScanAsmToken( void )
     return( CurToken );
 }
 
-static int scanWide( int expanding )    // scan something that starts with L
+static TOKEN scanWide( int expanding )  // scan something that starts with L
 {
     int c;
-    int token;
+    TOKEN token;
 
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
@@ -905,7 +908,7 @@ static void msIntSuffix( uint_32 signed_max, unsigned sid, unsigned uid, unsigne
     }
 }
 
-static int scanNum( int expanding )
+static TOKEN scanNum( int expanding )
 {
     int c;
     unsigned_64 *max_value;
@@ -1181,9 +1184,9 @@ static int scanNum( int expanding )
     }
 }
 
-static int scanDelim1( int expanding )
+static TOKEN scanDelim1( int expanding )
 {
-    int token;
+    TOKEN token;
 
     SrcFileCurrentLocation();
     expanding = expanding;
@@ -1195,11 +1198,11 @@ static int scanDelim1( int expanding )
     return( token );
 }
 
-static int scanDelim12( int expanding )         // @ or @@ token
+static TOKEN scanDelim12( int expanding )       // @ or @@ token
 {
     int c;
     int chr2;
-    int tok;
+    TOKEN tok;
     int token_len;
 
     expanding = expanding;
@@ -1220,11 +1223,11 @@ static int scanDelim12( int expanding )         // @ or @@ token
     return( tok );
 }
 
-static int scanDelim12EQ( int expanding )       // @, @@, or @= token
+static TOKEN scanDelim12EQ( int expanding )     // @, @@, or @= token
 {
     int c;
     int chr2;
-    int tok;
+    TOKEN tok;
     int token_len;
 
     expanding = expanding;
@@ -1249,11 +1252,11 @@ static int scanDelim12EQ( int expanding )       // @, @@, or @= token
     return( tok );
 }
 
-static int scanDelim12EQ2EQ( int expanding )    // @, @@, @=, or @@= token
+static TOKEN scanDelim12EQ2EQ( int expanding )  // @, @@, @=, or @@= token
 {
     int c;
     int chr2;
-    int tok;
+    TOKEN tok;
     int token_len;
 
     expanding = expanding;
@@ -1283,11 +1286,11 @@ static int scanDelim12EQ2EQ( int expanding )    // @, @@, @=, or @@= token
     return( tok );
 }
 
-static int scanDelim1EQ( int expanding )        // @ or @= token
+static TOKEN scanDelim1EQ( int expanding )      // @ or @= token
 {
     int c;
     int chr2;
-    int tok;
+    TOKEN tok;
     int token_len;
 
     expanding = expanding;
@@ -1308,7 +1311,7 @@ static int scanDelim1EQ( int expanding )        // @ or @= token
     return( tok );
 }
 
-static int scanSlash( int expanding )   // /, /=, // comment, or /*comment*/
+static TOKEN scanSlash( int expanding ) // /, /=, // comment, or /*comment*/
 {
     int nc;
     int tok;
@@ -1342,10 +1345,10 @@ static int scanSlash( int expanding )   // /, /=, // comment, or /*comment*/
     return( tok );
 }
 
-static int scanLT( int expanding ) // <, <=, <<, <<=, <%, <:
+static TOKEN scanLT( int expanding )    // <, <=, <<, <<=, <%, <:
 {
     int nc;
-    int tok;
+    TOKEN tok;
     int token_len;
 
     expanding = expanding;
@@ -1382,10 +1385,10 @@ static int scanLT( int expanding ) // <, <=, <<, <<=, <%, <:
     return( tok );
 }
 
-static int scanPercent( int expanding ) // %, %=, %>, %:, %:%:
+static TOKEN scanPercent( int expanding )   // %, %=, %>, %:, %:%:
 {
     int nc;
-    int tok;
+    TOKEN tok;
     int token_len;
 
     expanding = expanding;
@@ -1425,10 +1428,10 @@ static int scanPercent( int expanding ) // %, %=, %>, %:, %:%:
     return( tok );
 }
 
-static int scanColon( int expanding )   // :, ::, or :>
+static TOKEN scanColon( int expanding ) // :, ::, or :>
 {
     int nc;
-    int tok;
+    TOKEN tok;
     int token_len;
 
     expanding = expanding;
@@ -1454,11 +1457,11 @@ static int scanColon( int expanding )   // :, ::, or :>
     return( tok );
 }
 
-static int scanMinus( int expanding )   // -, -=, --, ->, or ->*
+static TOKEN scanMinus( int expanding ) // -, -=, --, ->, or ->*
 {
     int nc;
     int nnc;
-    int tok;
+    TOKEN tok;
     int token_len;
 
     expanding = expanding;
@@ -1493,7 +1496,7 @@ static int scanMinus( int expanding )   // -, -=, --, ->, or ->*
     return( tok );
 }
 
-static int scanFloat( int expanding )
+static TOKEN scanFloat( int expanding )
 {
     expanding = expanding;
     SrcFileCurrentLocation();
@@ -1505,7 +1508,7 @@ static int scanFloat( int expanding )
     return( doScanFloat() );
 }
 
-static int scanPPNumber( void )
+static TOKEN scanPPNumber( void )
 {
     int c;
     int prevc;
@@ -1558,7 +1561,7 @@ static int scanPPNumber( void )
     return( T_PPNUMBER );
 }
 
-static int scanPPDigit( int expanding )
+static TOKEN scanPPDigit( int expanding )
 {
     expanding = expanding;
     SrcFileCurrentLocation();
@@ -1567,7 +1570,7 @@ static int scanPPDigit( int expanding )
     return scanPPNumber();
 }
 
-static int scanPPDot( int expanding )
+static TOKEN scanPPDot( int expanding )
 {
     int         c;
 
@@ -1583,25 +1586,25 @@ static int scanPPDot( int expanding )
     }
 }
 
-static int scanString( int expanding )
+static TOKEN scanString( int expanding )
 {
     SrcFileCurrentLocation();
     return( doScanString( TYP_CHAR, expanding ) );
 }
 
-static int scanStringContinue( int expanding )
+static TOKEN scanStringContinue( int expanding )
 {
     SrcFileCurrentLocation();
     return( doScanString( TYP_CHAR, expanding ) );
 }
 
-static int scanLStringContinue( int expanding )
+static TOKEN scanLStringContinue( int expanding )
 {
     SrcFileCurrentLocation();
     return( doScanString( TYP_WCHAR, expanding ) );
 }
 
-static int scanCharConst( int expanding )
+static TOKEN scanCharConst( int expanding )
 {
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
@@ -1609,7 +1612,7 @@ static int scanCharConst( int expanding )
     return( charConst( TYP_CHAR, expanding ) );
 }
 
-static int scanNewline( int expanding )
+static TOKEN scanNewline( int expanding )
 {
     DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
     if( PPState & PPS_EOL ) {
@@ -1618,7 +1621,7 @@ static int scanNewline( int expanding )
     return( ChkControl( expanding ) );
 }
 
-static int scanCarriageReturn( int expanding )
+static TOKEN scanCarriageReturn( int expanding )
 {
     int         c;
 
@@ -1632,10 +1635,10 @@ static int scanCarriageReturn( int expanding )
         }
         return( ChkControl( expanding ) );
     }
-    return( SrcFileScanWhiteSpace( expanding ) );
+    return( scanWhiteSpace( expanding ) );
 }
 
-static int scanInvalid( int expanding )
+static TOKEN scanInvalid( int expanding )
 {
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
@@ -1658,14 +1661,14 @@ static int scanInvalid( int expanding )
     return( T_BAD_CHAR );
 }
 
-static int scanEof( int expanding )
+static TOKEN scanEof( int expanding )
 {
     DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
     expanding = expanding;
     return( T_EOF );
 }
 
-static int (*scanFunc[])( int ) = {
+static TOKEN (*scanFunc[])( int ) = {
     scanName,
     scanWide,
     scanNum,
@@ -1686,15 +1689,15 @@ static int (*scanFunc[])( int ) = {
     scanCharConst,
     scanCarriageReturn,
     scanNewline,
-    SrcFileScanWhiteSpace,
+    scanWhiteSpace,
     scanInvalid,
     scanEof,
 };
 
-#define dispatchFunc( _ex ) (scanFunc[ ClassTable[ CurrChar ] ]( (_ex) ))
+#define dispatchFunc( _ex ) (scanFunc[ClassTable[CurrChar]]( (_ex) ))
 
-int ScanToken( int expanding )
-/****************************/
+TOKEN ScanToken( int expanding )
+/******************************/
 {
     return( dispatchFunc( expanding ) );
 }
@@ -1721,10 +1724,6 @@ void ScanInit( void )
     uint_8  *p;
 
 #ifndef NDEBUG
-    {
-        int c1 = ( T_LAST_TOKEN <= 0x0ff );
-        DbgAssert( c1 );
-    }
     _BufferOverrun = BUFFER_OVERRUN_CHECK;
 #endif
     tokenSource = nextMacroToken;
@@ -1817,10 +1816,10 @@ void GetNextToken( void )       // used ONLY if generating pre-processed output
     }
 }
 
-boolean TokenUsesBuffer( unsigned t )
-/***********************************/
+boolean TokenUsesBuffer( TOKEN token )
+/************************************/
 {
-    switch( t ) {
+    switch( token ) {
     case T_ID:
     case T_BAD_TOKEN:
     case T_BAD_CHAR:

@@ -45,18 +45,20 @@
 #include "asmstmt.h"
 #include "pcheader.h"
 
+#define IS_REGSET(t)    (t == T_LEFT_BRACKET || t == T_LEFT_BRACE)
+
 
 static int      GetAliasInfo();
 static byte_seq *AuxCodeDup( byte_seq *code );
 static int      GetByteSeq( void );
 
-static  hw_reg_set      asmRegsSaved = { HW_D( HW_FULL ) };
+static  hw_reg_set          asmRegsSaved = { HW_D( HW_FULL ) };
 
-#define WCPP_ASM     // enable assembler
+#define WCPP_ASM            // enable assembler
 
-#define ASM_BLOCK       (64)
+#define ASM_BLOCK           (64)
 
-#define ROUND_ASM_BLOCK(x)   ((x+ASM_BLOCK-1) & ~(ASM_BLOCK-1))
+#define ROUND_ASM_BLOCK(x)  ((x+ASM_BLOCK-1) & ~(ASM_BLOCK-1))
 
 static void pragmaInit(         // INITIALIZATION FOR PRAGMAS
     INITFINI* defn )            // - definition
@@ -87,16 +89,13 @@ static void pragmaInit(         // INITIALIZATION FOR PRAGMAS
 static void freeInfo( AUX_INFO *info )
 {
     if( info->code != NULL ) {
-        CMemFree( info->code );
-        info->code = NULL;
+        CMemFreePtr( &info->code );
     }
     if( !IsAuxParmsBuiltIn( info->parms ) ) {
-        CMemFree( info->parms );
-        info->parms = NULL;
+        CMemFreePtr( &info->parms );
     }
     if( info->objname != NULL ) {
-        CMemFree( info->objname );
-        info->objname = NULL;
+        CMemFreePtr( &info->objname );
     }
 }
 
@@ -104,30 +103,30 @@ static void freeInfo( AUX_INFO *info )
 static void pragmaFini(         // FINISH PRAGMAS
     INITFINI* defn )            // - definition
 {
-    register struct aux_entry *next;
-    register void             *junk;
+    AUX_ENTRY       *next;
+    AUX_ENTRY       *curr;
+    AUX_INFO        *info;
 
     defn = defn;
-    next = AuxList;
-    while( next != NULL ) {
-        junk = next;
-        if( next->info != NULL ) {
-            if( next->info->use != 1 ) {
-                next->info->use--;
+    for( curr = AuxList; curr != NULL; curr = next ) {
+        next = curr->next;
+        info = curr->info;
+        if( info != NULL ) {
+            if( info->use != 1 ) {
+                info->use--;
             } else {
-                freeInfo( next->info );
+                freeInfo( info );
 #ifndef NDEBUG
-                if( IsAuxInfoBuiltIn( next->info ) ) {
+                if( IsAuxInfoBuiltIn( info ) ) {
                     CFatal( "freeing a static calling convention info" );
                 }
 #endif
-                if( !IsAuxInfoBuiltIn( next->info ) ) {
-                    CMemFree( next->info );
+                if( !IsAuxInfoBuiltIn( info ) ) {
+                    CMemFree( info );
                 }
             }
         }
-        next = next->next;
-        CMemFree( junk );
+        CMemFree( curr );
     }
     freeInfo( &DefaultInfo );
     freeInfo( &CdeclInfo );
@@ -214,45 +213,38 @@ static boolean GetAliasInfo(
 {
     char buff[256];
     boolean isfar16;
-    boolean retn;
 
     CurrAlias = &DefaultInfo;
-    if( CurToken != T_LEFT_PAREN ) {
-        retn = TRUE;
-    } else {
+    if( CurToken != T_LEFT_PAREN )              // #pragma aux symbol ....
+        return( IS_ID_OR_KEYWORD( CurToken ) );
+    NextToken();
+    if( !IS_ID_OR_KEYWORD( CurToken ) )         // error
+        return( FALSE );
+    PragCurrAlias();
+    strcpy( buff, Buffer );
+    NextToken();
+    if( CurToken == T_RIGHT_PAREN ) {           // #pragma aux (alias) symbol ....
         NextToken();
-        if( ! PragIdCurToken() ) {
-            retn = FALSE;
-        } else {
+        return( IS_ID_OR_KEYWORD( CurToken ) );
+    }
+    if( CurToken == T_COMMA ) {                 // #pragma aux (alias, symbol)
+        NextToken();
+        if( IS_ID_OR_KEYWORD( CurToken ) ) {
+            isfar16 = PragRecog( "far16" );
+            CreateAux( buff );
             PragCurrAlias();
-            strcpy( buff, Buffer );
             NextToken();
             if( CurToken == T_RIGHT_PAREN ) {
+                AuxCopy( CurrInfo, CurrAlias );
                 NextToken();
-                retn = TRUE;
-            } else if( CurToken == T_COMMA ) {
-                NextToken();
-                if( ! PragIdCurToken() ) {
-                    retn = FALSE;
-                } else {
-                    isfar16 = PragRecog( "far16" );
-                    CreateAux( buff );
-                    PragCurrAlias();
-                    NextToken();
-                    if( CurToken == T_RIGHT_PAREN ) {
-                        AuxCopy( CurrInfo, CurrAlias );
-                        NextToken();
-                    }
-                    if( isfar16 ) {
-                        CurrInfo->flags |= AUX_FLAG_FAR16;
-                    }
-                    PragEnding( TRUE );
-                    retn = FALSE;
-                }
             }
+            if( isfar16 ) {
+                CurrInfo->flags |= AUX_FLAG_FAR16;
+            }
+            PragEnding( TRUE );
         }
     }
-    return retn;
+    return( FALSE );
 }
 
 static void GetParmInfo(
@@ -287,7 +279,7 @@ static void GetParmInfo(
         } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
             CurrInfo->cclass |= LOAD_DS_ON_CALL;
             have.f_loadds = 1;
-        } else if( !have.f_list && PragSet() != T_NULL ) {
+        } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             PragManyRegSets();
             have.f_list = 1;
         } else {
@@ -323,7 +315,7 @@ static void GetSTRetInfo(
         } else if( !have.f_allocs && PragRecog( "caller" ) ) {
             have.f_allocs = 1;
             CurrInfo->cclass &= ~ROUTINE_RETURN;
-        } else if( !have.f_list && PragSet() != T_NULL ) {
+        } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             have.f_list = 1;
             CurrInfo->cclass |= SPECIAL_STRUCT_RETURN;
             CurrInfo->streturn = PragRegList();
@@ -351,7 +343,7 @@ static void GetRetInfo(
             have.f_no8087 = 1;
             HW_CTurnOff( CurrInfo->returns, HW_FLTS );
             CurrInfo->cclass |= NO_8087_RETURNS;
-        } else if( !have.f_list && PragSet() != T_NULL ) {
+        } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             have.f_list = 1;
             CurrInfo->cclass |= SPECIAL_RETURN;
             CurrInfo->returns = PragRegList();
@@ -387,7 +379,7 @@ static void GetSaveInfo(
         } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
             CurrInfo->cclass |= NO_MEMORY_CHANGED;
             have.f_nomemory = 1;
-        } else if( !have.f_list && PragSet() != T_NULL ) {
+        } else if( !have.f_list && IS_REGSET( CurToken ) ) {
             modlist = PragRegList();
             have.f_list = 1;
         } else {
@@ -408,7 +400,7 @@ static void GetSaveInfo(
     }
 }
 
-static void doPragAux(                   // #PRAGMA AUX ...
+void PragAux(                   // #PRAGMA AUX ...
     void )
 {
     struct {
@@ -425,7 +417,7 @@ static void doPragAux(                   // #PRAGMA AUX ...
 
     if( !GetAliasInfo() ) return;
     CurrEntry = NULL;
-    if( !PragIdCurToken() ) return;
+    if( !IS_ID_OR_KEYWORD( CurToken ) ) return;
     SetCurrInfo();
     NextToken();
     AuxCopy( CurrInfo, CurrAlias );
@@ -483,15 +475,6 @@ static void doPragAux(                   // #PRAGMA AUX ...
     PragEnding( TRUE );
 }
 
-void PragAux(                   // #PRAGMA AUX ...
-    void )
-{
-    PPState = PPS_EOL;
-    doPragAux();
-    PPState = PPS_EOL | PPS_NO_EXPAND;
-}
-
-
 typedef enum
 {       FIXWORD_NONE
 ,       FIXWORD_FLOAT
@@ -542,7 +525,7 @@ enum sym_state AsmQueryState( void *handle )
     }
     return( state );
 #else
-    handle = handle;
+    id = id;
     return( SYM_UNDEFINED );
 #endif
 }
@@ -684,7 +667,7 @@ enum sym_type AsmQueryType( void *handle )
     }
     return( type );
 #else
-    handle = handle;
+    id = id;
     return( SYM_INT1 );
 #endif
 }
@@ -704,7 +687,7 @@ static int insertFixups( VBUF *src_code )
     bool                perform_fixups;
     byte_seq            *seq;
     SYMBOL              sym;
-    char                *name;
+    NAME                name;
     unsigned char       *dst;
     byte_seq_len        len;
     unsigned            skip;
@@ -744,11 +727,12 @@ static int insertFixups( VBUF *src_code )
         /* insert fixup escape sequences */
         for( src = src_start; src < src_end; ) {
             /* reserve at least ASM_BLOCK bytes in the buffer */
-            VbufReqd( &out_code, ROUND_ASM_BLOCK( len + ASM_BLOCK ) );
+            VbufReqd( &out_code, _RoundUp( len + ASM_BLOCK, ASM_BLOCK ) );
             dst = VbufBuffer( &out_code );
             if( fix != NULL && fix->fixup_loc == (src - src_start) ) {
-                name = fix->name;
-                if( name != NULL ) {
+                name = NULL;
+                if( fix->name != NULL ) {
+                    name = NameCreateNoLen( fix->name );
                     sym = ScopeASMUseSymbol( name, &uses_auto );
                     if( sym == NULL ) {
                         return( 0 );
@@ -1146,7 +1130,7 @@ static int GetByteSeq( void )
     len = 0;
     for( ;; ) {
         /* reserve at least ASM_BLOCK bytes in the buffer */
-        VbufReqd( &code_buffer, ROUND_ASM_BLOCK( len + ASM_BLOCK ) );
+        VbufReqd( &code_buffer, _RoundUp( len + ASM_BLOCK, ASM_BLOCK ) );
         if( CurToken == T_STRING ) {
             AsmCodeAddress = len;
             AsmCodeBuffer = VbufBuffer( &code_buffer );
@@ -1184,7 +1168,7 @@ static int GetByteSeq( void )
                 }
 #endif
             } else { /* seg or offset */
-                if( !PragIdCurToken() ) {
+                if( !IS_ID_OR_KEYWORD( CurToken ) ) {
                     CErr1( ERR_EXPECTING_ID );
                 } else {
                     name = strsave( Buffer );

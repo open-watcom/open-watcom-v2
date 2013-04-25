@@ -38,7 +38,7 @@ typedef struct class_data CLASS_DATA;
 struct class_data {
     CLASS_DATA      *next;              /* enclosing class' data */
     CLASS_DATA      *inline_data;       /* inlines stored here (non-NULL if defn seen) */
-    char            *name;              /* name of class */
+    NAME            name;              /* name of class */
     SYMBOL          sym;                /* symbol of current class typedef */
     TYPE            type;               /* type of current class */
     SCOPE           scope;              /* scope of current class */
@@ -147,7 +147,7 @@ extern void ClassAccessDeclaration( PTREE, TOKEN_LOCN * );
 extern void ClassAccessTypeDeclaration( DECL_SPEC *, TOKEN_LOCN * );
 extern void ClassMakeUniqueName( TYPE, char * );
 extern boolean ClassAnonymousUnion( DECL_SPEC * );
-extern TYPE ClassTagDefinition( TYPE, char * );
+extern TYPE ClassTagDefinition( TYPE, NAME );
 extern PTREE ClassMemInit( SYMBOL, REWRITE * );
 extern void ClassPush( CLASS_DATA * );
 extern void ClassPop( CLASS_DATA * );
@@ -164,12 +164,12 @@ extern SYMBOL ClassAddDefaultCopy( SCOPE );
 extern SYMBOL ClassAddDefaultDtor( SCOPE );
 extern SYMBOL ClassAddDefaultAssign( SCOPE );
 extern boolean ClassCorrupted( TYPE );
-extern TYPE ClassUnboundTemplate( char * );
+extern TYPE ClassUnboundTemplate( NAME );
 extern void ClassChangingScope( SYMBOL, SCOPE );
 extern boolean ClassDefineRefdDefaults( void );
 extern void ClassAddFunctionMods( TYPE );
 extern boolean ClassParmIsRef( TYPE );
-extern TYPE ClassPreDefined( char *, TOKEN_LOCN * );
+extern TYPE ClassPreDefined( NAME, TOKEN_LOCN * );
 extern boolean ClassOKToRewrite( void );
 
 BASE_CLASS *BaseClassGetIndex( BASE_CLASS * );

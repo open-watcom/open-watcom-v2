@@ -449,7 +449,7 @@ static SYMBOL symAllocate(      // ALOOCATE A NEW SYMBOL
 
 SYMBOL SymMakeDummy(            // MAKE A DUMMY SYMBOL
     TYPE type,                  // - type of the symbol
-    char **name )               // - gets filled in with the name
+    NAME *name )                // - gets filled in with the name
 {
     *name = NameDummy();
     return symAllocate( type, 0, 0 );
@@ -465,10 +465,8 @@ boolean SymIsTemporary(         // DETERMINE IF INTERNAL SYMBOL
         retn = FALSE;
     } else if( SymIsAnError( sym ) ) {
         retn = TRUE;
-    } else if( sym->name->name[0] == NAME_DUMMY_PREFIX_0 ) {
-        retn = TRUE;
     } else {
-        retn = FALSE;
+        retn = ( NameStr( sym->name->name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX_0 );
     }
     return( retn );
 }
@@ -483,10 +481,8 @@ boolean SymIsGenedFunc(         // DETERMINE IF SYMBOL IS A GENERATED FUNC.
         retn = FALSE;
     } else if( SymIsAnError( sym ) ) {
         retn = TRUE;
-    } else if( sym->name->name[0] == NAME_DUMMY_PREFIX_0 ) {
-        retn = TRUE;
     } else {
-        retn = FALSE;
+        retn = ( NameStr( sym->name->name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX_0 );
     }
     return( retn );
 }
@@ -797,8 +793,7 @@ boolean SymIsModuleDtorable(    // TEST IF SYMBOL IS MODULE-DTORABLE
             (3) function static variables
     */
     symGetScope( sym, scope );
-    if( ( sym->name->name[0] != NAME_DUMMY_PREFIX_0 )
-     && ( ScopeId( scope ) == SCOPE_FILE ) ) {
+    if( ( NameStr( sym->name->name )[0] != NAME_OPERATOR_OR_DUMMY_PREFIX_0 ) && ( ScopeId( scope ) == SCOPE_FILE ) ) {
         retn = TRUE;
     } else {
         retn = ( sym->id == SC_STATIC );
@@ -825,7 +820,7 @@ boolean SymIsConversionToType(  // SYMBOL IS operator T()?
 
 static boolean symHasFuncName(  // DETERMINE IF NAMED FUNCTION
     SYMBOL func,                // - function symbol
-    char *name )                // - name used
+    NAME name )                 // - name used
 {
     boolean retn;               // - return: TRUE ==> is named function
 
@@ -858,9 +853,8 @@ boolean SymIsCtorOrDtor(        // TEST IF SYMBOL IS CTOR OR DTOR
     boolean retn;               // - return: TRUE ==> is named function
 
     if( SymIsFunction( func ) ) {
-        char const *name = func->name->name;
-        retn = ( name == CppConstructorName() )
-             ||( name == CppDestructorName()  );
+        NAME name = func->name->name;
+        retn = ( ( name == CppConstructorName() ) || ( name == CppDestructorName() ) );
     } else {
         retn = FALSE;
     }
@@ -1060,7 +1054,7 @@ boolean SymIsNextInitializableMember(// SYMBOL CAN BE BRACE INITIALIZED
     if( save_prev != NULL ) {
         if( SymIsAnonymousMember( save_prev ) ) {
             if( SymIsAnonymousMember( sym ) ) {
-                if( save_prev->u.offset >= sym->u.offset ) {
+                if( save_prev->u.member_offset >= sym->u.member_offset ) {
                     // we've already initialized the anonymous union
                     // so skip the rest
                     *prev = save_prev;
@@ -1076,12 +1070,11 @@ boolean SymIsNextInitializableMember(// SYMBOL CAN BE BRACE INITIALIZED
 boolean SymIsThunk(             // DETERMINE IF FUNCTION IS THUNK
     SYMBOL func )               // - function which is possible thunk
 {
-    boolean retn;               // - TRUE ==> is thunk
-    char* name;                 // - function name
+    boolean retn = FALSE;       // - TRUE ==> is thunk
+    NAME name;                  // - function name
 
     if( func != NULL ) {
-        if( ( func->name != NULL )
-          &&( func->name->name != NULL ) ) {
+        if( ( func->name != NULL ) && ( func->name->name != NULL ) ) {
             name = func->name->name;
             if( ( name == CppSpecialName( SPECIAL_DTOR_THUNK     ) )
               ||( name == CppSpecialName( SPECIAL_CTOR_THUNK     ) )
@@ -1090,17 +1083,11 @@ boolean SymIsThunk(             // DETERMINE IF FUNCTION IS THUNK
               ||( name == CppSpecialName( SPECIAL_COPY_THUNK     ) )
               ) {
                 retn = TRUE;
-            } else {
-                retn = FALSE;
             }
-        } else {
-            retn = FALSE;
         }
-    } else {
-        retn = FALSE;
     }
     // we should be able to use SF_ADDR_THUNK; so we test this...
-    DbgAssert( func == NULL || ((func->flag & SF_ADDR_THUNK)!=0) == (retn!=0) );
+    DbgAssert( func == NULL || ( (func->flag & SF_ADDR_THUNK) != 0 ) == ( retn != 0 ) );
     return retn;
 }
 
@@ -1108,18 +1095,14 @@ boolean SymIsThunk(             // DETERMINE IF FUNCTION IS THUNK
 boolean SymIsVft(               // TEST IF SYMBOL IS VFT SYMBOL
     SYMBOL sym )                // - symbol
 {
-    boolean retn;               // - TRUE ==> is VFT symbol
+    boolean retn = FALSE;       // - TRUE ==> is VFT symbol
     SYMBOL_NAME sname;          // - symbol-name entry
-    char* name;                 // - name for symbol
+    NAME name;                  // - name for symbol
 
     sname = sym->name;
-    if( sname == NULL ) {
-        retn = FALSE;
-    } else {
+    if( sname != NULL ) {
         name = sname->name;
-        if( name == NULL ) {
-            retn = FALSE;
-        } else {
+        if( name != NULL ) {
             retn = IsVftName( name );
         }
     }
@@ -1153,7 +1136,7 @@ SYMBOL SymCreate(               // CREATE NEW SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
     symbol_flag flags,          // - symbol flags
-    char* name,                 // - symbol name
+    NAME name,                  // - symbol name
     SCOPE scope )               // - scope for insertion
 {
     SYMBOL sym;                 // - created symbol
@@ -1173,7 +1156,7 @@ SYMBOL SymCreateAtLocn(         // CREATE NEW SYMBOL AT LOCATION
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
     symbol_flag flags,          // - symbol flags
-    char* name,                 // - symbol name
+    NAME name,                  // - symbol name
     SCOPE scope,                // - scope for insertion
     TOKEN_LOCN* locn )          // - location
 {
@@ -1194,7 +1177,7 @@ SYMBOL SymCreateCurrScope(      // CREATE NEW CURR-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
     symbol_flag flags,          // - symbol flags
-    char* name )                // - symbol name
+    NAME name )                 // - symbol name
 {
     return SymCreate( type, id, flags, name, GetCurrScope() );
 }
@@ -1204,7 +1187,7 @@ SYMBOL SymCreateFileScope(      // CREATE NEW FILE-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
     symbol_flag flags,          // - symbol flags
-    char* name )                // - symbol name
+    NAME name )                 // - symbol name
 {
     return SymCreate( type, id, flags, name, GetFileScope() );
 }
@@ -1214,7 +1197,7 @@ SYMBOL SymCreateTempScope(      // CREATE NEW TEMP-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
     symbol_flag flags,          // - symbol flags
-    char* name )                // - symbol name
+    NAME name )                 // - symbol name
 {
     return SymCreate( type, id, flags, name, ScopeForTemps() );
 }
@@ -1282,23 +1265,17 @@ SYMBOL SymReloc                 // RELOCATE SYMBOL
 SYMBOL SymForClass              // GET SYMBOL FOR CLASS IF IT EXISTS
     ( TYPE cltype )             // - a type
 {
-    SYMBOL retn;                // - NULL or TYPEDEF for class
+    SYMBOL retn = NULL;         // - NULL or TYPEDEF for class
 
     cltype = StructType( cltype );
-    if( NULL == cltype ) {
-        retn = NULL;
-    } else {
-        char* name = cltype->u.c.info->name;
-        if( NULL == name ) {
-            retn = NULL;
-        } else {
-            SEARCH_RESULT* result;
+    if( NULL != cltype ) {
+        NAME name = cltype->u.c.info->name;
+        if( NULL != name ) {
+            SEARCH_RESULT *result;
             result = ScopeFindNaked( cltype->u.c.scope->enclosing, name );
-            if( NULL == result ) {
-                retn = NULL;
-            } else {
+            if( NULL != result ) {
                 retn = result->sym_name->name_type;
-                if( ! SymIsTypedef( retn ) ) {
+                if( !SymIsTypedef( retn ) ) {
                     retn = NULL;
                 }
                 ScopeFreeResult( result );

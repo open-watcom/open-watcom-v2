@@ -46,24 +46,26 @@
 #include "pragdefn.h"
 #endif
 
-#pragma pack( 1 )
-typedef struct name NAME;
-struct name {
-    NAME                *next;
-    uint_16             xhash;
-    name_hash_t         hash;
-    char                name[1];
-};
-#pragma pack()
 
 #define NAME_TABLE_HASH NAME_HASH
 
-static NAME *hashTable[ NAME_TABLE_HASH ];
+#define NAME_SIZE       offsetof( idname, name )
+#define NAME_SIZE_PCH   (offsetof( idname, name ) - offsetof( idname, xhash ))
+
+#ifdef NAME_PTR_IS_NAME_MEMBER
+#define NAME_PTR(n)     ((idname *)((char *)(n) - NAME_SIZE ))
+#define NAME_RETVAL(n)  ((n)->name)     
+#else
+#define NAME_PTR(n)     (n)
+#define NAME_RETVAL(n)  (n)     
+#endif
+
+static idname           *hashTable[ NAME_TABLE_HASH ];
 
 static name_dummy_index_t nameDummyIndex;
-static unsigned long nameCount;
+static unsigned         nameCount;
 
-static NAME **nameTranslateTable;
+static idname           **nameTranslateTable;
 
 static struct {
     unsigned            no_creates_allowed : 1; // name list is frozen
@@ -80,7 +82,7 @@ ExtraRptCtr( ctr_memcmp );
 ExtraRptCtr( ctr_memcmp_fail );
 ExtraRptCtr( ctr_max_length );
 
-unsigned const NameCmpMask[5] = {
+const unsigned NameCmpMask[5] = {
     0x00000000,
     0x000000ff,
     0x0000ffff,
@@ -88,17 +90,17 @@ unsigned const NameCmpMask[5] = {
     0xffffffff,
 };
 
-int NameMemCmp( char const *t1, char const *t2, unsigned len )
+int NameMemCmp( const char *t1, const char *t2, unsigned len )
 /************************************************************/
 {
-    unsigned *s1 = (unsigned*) t1;
-    unsigned *s2 = (unsigned*) t2;
+    const unsigned *s1 = (const unsigned *)t1;
+    const unsigned *s2 = (const unsigned *)t2;
     unsigned mask;
     int diff;
 
     // can only check for one null byte since the common length
     // may access invalid memory with the other string
-    DbgAssert( t2[len-1] == 0 );
+    DbgAssert( t2[len - 1] == 0 );
     if( len > sizeof( unsigned ) ) {
         do {
             diff = *s1 - *s2;
@@ -114,10 +116,10 @@ int NameMemCmp( char const *t1, char const *t2, unsigned len )
     return( ( *s1 & mask ) - ( *s2 & mask ) );
 }
 
-unsigned NameCalcHashLen( char const *id, size_t len )
-/**********************************************/
+unsigned NameCalcHashLen( const char *id, unsigned len )
+/******************************************************/
 {
-    unsigned *s = (unsigned*) id;
+    const unsigned *s = (const unsigned *)id;
     unsigned mask;
     unsigned c;
     unsigned g;
@@ -153,10 +155,9 @@ unsigned NameCalcHashLen( char const *id, size_t len )
     return( h );
 }
 
-static char *nameAdd( NAME **head, unsigned bucket, unsigned xhash,
-                      char *id, size_t len )
+static NAME nameAdd( idname **head, unsigned bucket, unsigned xhash, const char *id, unsigned len )
 {
-    NAME *name;
+    idname  *name;
 
 #ifdef XTRA_RPT
     if( *head == NULL ) {
@@ -164,28 +165,27 @@ static char *nameAdd( NAME **head, unsigned bucket, unsigned xhash,
     }
 #endif
     ExtraRptIncrementCtr( ctr_names );
-    DbgVerify( ! nameFlags.no_creates_allowed
-             , "name create occurred during precompiled header processing" );
-    name = CPermAlloc( sizeof( NAME ) + len );
+    DbgVerify( !nameFlags.no_creates_allowed, "name create occurred during precompiled header processing" );
+    name = CPermAlloc( NAME_SIZE + len + 1 );
     memcpy( name->name, id, len + 1 );
     name->xhash = xhash;
     name->hash = bucket;
     name->next = *head;
     *head = name;
     ++nameCount;
-    return( name->name );
+    return( NAME_RETVAL( name ) );
 }
 
 
-char *NameCreateLen( char *id, unsigned len )
-/*******************************************/
+NAME NameCreateLen( const char *id, unsigned len )
+/************************************************/
 {
     unsigned xhash;
     unsigned bucket;
-    size_t cmp_len;
-    NAME *name;
-    NAME **head;
-    NAME **prev;
+    unsigned cmp_len;
+    idname *name;
+    idname **head;
+    idname **prev;
 
     ExtraRptIncrementCtr( ctr_searches );
     xhash = NameCalcHashLen( id, len );
@@ -203,7 +203,8 @@ char *NameCreateLen( char *id, unsigned len )
     for( name = *prev; ; name = *prev ) {
         ExtraRptIncrementCtr( ctr_probes );
         ExtraRptIncrementCtr( ctr_length );
-        if( name == NULL ) break;
+        if( name == NULL )
+            break;
         if( name->xhash == xhash ) {
             ExtraRptIncrementCtr( ctr_memcmp );
             if( NameMemCmp( name->name, id, cmp_len ) == 0 ) {
@@ -211,7 +212,7 @@ char *NameCreateLen( char *id, unsigned len )
                 *prev = name->next;
                 name->next = *head;
                 *head = name;
-                return( name->name );
+                return( NAME_RETVAL( name ) );
             }
             ExtraRptIncrementCtr( ctr_memcmp_fail );
         }
@@ -222,17 +223,17 @@ char *NameCreateLen( char *id, unsigned len )
 }
 
 
-char *NameCreateNoLen( char *id )
-/*******************************/
+NAME NameCreateNoLen( const char *id )
+/************************************/
 {
-    size_t len;
+    unsigned len;
     name_dummy_index_t ni;
     unsigned xhash;
     unsigned bucket;
-    NAME **head;
+    idname **head;
 
     len = strlen( id );
-    if( id[0] != NAME_DUMMY_PREFIX_0 ) {
+    if( id[0] != NAME_OPERATOR_OR_DUMMY_PREFIX_0 ) {
         return( NameCreateLen( id, len ) );
     }
     // everybody uses the same 'name' so the hash doesn't have to be generated
@@ -250,21 +251,21 @@ name_dummy_index_t NameNextDummyIndex( void )
     return( nameDummyIndex++ );
 }
 
-char *NameDummy( void )
-/*********************/
+NAME NameDummy( void )
+/********************/
 {
     name_dummy_index_t ni;
     unsigned xhash;
     unsigned bucket;
-    size_t len;
-    NAME **head;
+    unsigned len;
+    idname **head;
     char buff[ 1 + 1 + sizeof( ni ) * 3 + 1 ];
 
     ExtraRptIncrementCtr( ctr_dummy_names );
     ni = nameDummyIndex++;
     xhash = ni % NAME_TABLE_HASH;
     bucket = xhash;
-    buff[0] = NAME_DUMMY_PREFIX_0;
+    buff[0] = NAME_OPERATOR_OR_DUMMY_PREFIX_0;
     buff[1] = NAME_DUMMY_PREFIX_1;
     // the contents of the name don't have to be different just the address
     // but for debugging it is handy to have unique contents
@@ -280,22 +281,22 @@ char *NameDummy( void )
     return( nameAdd( head, bucket, xhash, buff, len ) );
 }
 
-boolean IsNameDummy( char *name )
-/*******************************/
+boolean IsNameDummy( NAME name )
+/******************************/
 {
-    if( name[0] != NAME_DUMMY_PREFIX_0 ) {
-        return( FALSE );
-    }
-    if( name[1] != NAME_DUMMY_PREFIX_1 ) {
-        return( FALSE );
-    }
-    return( TRUE );
+#ifdef NAME_PTR_IS_NAME_MEMBER
+#define sname   name
+#else
+    char *sname = name->name;
+#endif
+
+    return( ( sname[0] == NAME_OPERATOR_OR_DUMMY_PREFIX_0 ) && ( sname[1] == NAME_DUMMY_PREFIX_1 ) );
 }
 
 static int cmpName( const void *lp, const void *rp )
 {
-    NAME *left = *(NAME **)lp;
-    NAME *right = *(NAME **)rp;
+    idname *left = *(idname **)lp;
+    idname *right = *(idname **)rp;
 
     if( left < right ) {
         return( -1 );
@@ -308,13 +309,13 @@ static int cmpName( const void *lp, const void *rp )
 pch_status PCHInitNames( boolean writing )
 {
     int i;
-    NAME *name;
-    NAME **p;
+    idname *name;
+    idname **p;
 
     if( ! writing ) {
         return( PCHCB_OK );
     }
-    nameTranslateTable = CMemAlloc( nameCount * sizeof( NAME * ) );
+    nameTranslateTable = CMemAlloc( nameCount * sizeof( idname * ) );
     p = nameTranslateTable;
     for( i = 0; i < NAME_TABLE_HASH; ++i ) {
         for( name = hashTable[ i ]; name != NULL; name = name->next ) {
@@ -322,12 +323,12 @@ pch_status PCHInitNames( boolean writing )
             ++p;
         }
     }
-    qsort( nameTranslateTable, nameCount, sizeof( NAME * ), cmpName );
+    qsort( nameTranslateTable, nameCount, sizeof( idname * ), cmpName );
 #ifndef NDEBUG
     {
         int i;
         for( i = 1; i < nameCount; ++i ) {
-            if( nameTranslateTable[i-1] == nameTranslateTable[i] ) {
+            if( nameTranslateTable[i - 1] == nameTranslateTable[i] ) {
                 CFatal( "two identical names in translation table" );
             }
         }
@@ -347,70 +348,67 @@ pch_status PCHFiniNames( boolean writing )
 
 pch_status PCHReadNames( void )
 {
-    size_t name_len;
-    NAME **p;
-    NAME **head;
-    NAME *name;
+    unsigned len;
+    idname **p;
+    idname **head;
+    idname *name;
 
     memset( hashTable, 0, sizeof( hashTable ) );
-    PCHRead( &nameCount, sizeof( nameCount ) );
-    PCHRead( &nameDummyIndex, sizeof( nameDummyIndex ) );
-    nameTranslateTable = CMemAlloc( nameCount * sizeof( NAME * ) );
+    PCHReadVar( nameCount );
+    PCHReadVar( nameDummyIndex );
+    nameTranslateTable = CMemAlloc( nameCount * sizeof( idname * ) );
     p = nameTranslateTable;
-    for(;;) {
-        name_len = PCHReadUInt();
-        if( name_len == 0 ) break;
-        name = CPermAlloc( sizeof( NAME ) + name_len );
-        PCHRead( &(name->xhash), sizeof(*name) - sizeof(name->next) + name_len );
+    for( ; (len = PCHReadUInt()) != 0; ) {
+        name = CPermAlloc( NAME_SIZE + len + 1 );
+        PCHRead( &(name->xhash), NAME_SIZE_PCH + len + 1 );
         head = &hashTable[ name->hash ];
         name->next = *head;
         *head = name;
-        *p = name;
-        ++p;
+        *p++ = name;
     }
     return( PCHCB_OK );
 }
 
 pch_status PCHWriteNames( void )
 {
-    size_t dummy_len;
+    unsigned len;
     int i;
-    NAME *name;
-    NAME **p;
+    idname *name;
+    idname **p;
 
-    PCHWrite( &nameCount, sizeof( nameCount ) );
-    PCHWrite( &nameDummyIndex, sizeof( nameDummyIndex ) );
+    PCHWriteVar( nameCount );
+    PCHWriteVar( nameDummyIndex );
     p = nameTranslateTable;
     for( i = 0; i < nameCount; ++i ) {
-        name = p[i];
-        dummy_len = strlen( name->name );
-        DbgAssert( dummy_len != 0 );
-        PCHWriteUInt( dummy_len );
-        PCHWrite( &(name->xhash), sizeof(*name) - sizeof(name->next) + dummy_len );
+        name = *p++;
+        len = strlen( name->name );
+        DbgAssert( len != 0 );
+        PCHWriteUInt( len );
+        PCHWrite( &(name->xhash), NAME_SIZE_PCH + len + 1 );
     }
-    dummy_len = 0;
-    PCHWriteUInt( dummy_len );
+    PCHWriteUInt( 0 );
     return( PCHCB_OK );
 }
 
-char *NameMapIndex( char *index )
-/*******************************/
+NAME NameMapIndex( NAME index )
+/*****************************/
 {
-    if( index < (char *) PCH_FIRST_INDEX ) {
+    if( PCHGetUInt( index ) < PCH_FIRST_INDEX ) {
         return( NULL );
     }
 #ifndef NDEBUG
-    if( ((unsigned) index) >= nameCount + PCH_FIRST_INDEX ) {
+    if( PCHGetUInt( index ) >= nameCount + PCH_FIRST_INDEX ) {
         CFatal( "invalid name index" );
     }
 #endif
-    return nameTranslateTable[ ((unsigned) index) - PCH_FIRST_INDEX ]->name;
+    return( NAME_RETVAL( nameTranslateTable[ PCHGetUInt( index ) - PCH_FIRST_INDEX ] ) );
 }
 
 static int cmpFindName( const void *kp, const void *tp )
+/******************************************************/
 {
-    char *key = *(char **)kp;
-    char *table = (*((NAME **)tp))->name;
+    void *key = *(idname **)kp;
+    void *table = *(idname **)tp;
 
     if( key < table ) {
         return( -1 );
@@ -420,22 +418,30 @@ static int cmpFindName( const void *kp, const void *tp )
     return( 0 );
 }
 
-char *NameGetIndex( char *name )
-/******************************/
+NAME NameGetIndex( NAME name )
+/****************************/
 {
-    NAME **found;
+    idname **found;
+    idname *pname;
 
     if( name == NULL ) {
-        return( (char *) PCH_NULL_INDEX );
+        return( PCHSetUInt( PCH_NULL_INDEX ) );
     }
-    found = bsearch( &name, nameTranslateTable, nameCount, sizeof( NAME * ), cmpFindName );
+    pname = NAME_PTR( name );
+    found = bsearch( &pname, nameTranslateTable, nameCount, sizeof( idname * ), cmpFindName );
     if( found == NULL ) {
 #ifndef NDEBUG
         CFatal( "invalid name passed to NameGetIndex" );
 #endif
-        return( (char *) PCH_ERROR_INDEX );
+        return( PCHSetUInt( PCH_ERROR_INDEX ) );
     }
-    return( (char *) (( found - nameTranslateTable ) + PCH_FIRST_INDEX ) );
+    return( PCHSetUInt( ( found - nameTranslateTable ) + PCH_FIRST_INDEX ) );
+}
+
+unsigned NameHash( NAME name )
+/****************************/
+{
+    return( NAME_PTR( name )->hash );
 }
 
 static void init(               // INITIALIZATION
@@ -450,15 +456,11 @@ static void init(               // INITIALIZATION
     ExtraRptRegisterCtr( &ctr_hashes, "# names hashed" );
     ExtraRptRegisterCtr( &ctr_searches, "# names searched" );
     ExtraRptRegisterCtr( &ctr_probes, NULL );
-    ExtraRptRegisterAvg( &ctr_probes
-                       , &ctr_searches
-                       , "average length of name search" );
+    ExtraRptRegisterAvg( &ctr_probes, &ctr_searches, "average length of name search" );
     ExtraRptRegisterCtr( &ctr_names, "# names defined (includes dummy names)" );
     ExtraRptRegisterCtr( &ctr_dummy_names, "# dummy names defined" );
     ExtraRptRegisterCtr( &ctr_chains, "# name chains defined" );
-    ExtraRptRegisterAvg( &ctr_names
-                       , &ctr_chains
-                       , "average length of name chain" );
+    ExtraRptRegisterAvg( &ctr_names, &ctr_chains, "average length of name chain" );
     ExtraRptRegisterCtr( &ctr_length, NULL );
     ExtraRptRegisterCtr( &ctr_memcmp, "# of memcmps" );
     ExtraRptRegisterCtr( &ctr_memcmp_fail, "# of memcmps that failed" );
@@ -475,7 +477,7 @@ void dumpNames( void )
     double uniform_stat;
     double perfect_stat;
     int i;
-    NAME *name;
+    idname *name;
     FILE *fp;
     static unsigned freq[100];
 
@@ -510,7 +512,7 @@ void dumpNames( void )
         }
         freq[ length ]++;
     }
-    perfect_stat = sum * ( sum + 2.0 * NAME_TABLE_HASH - 1 ) / (2*NAME_TABLE_HASH);
+    perfect_stat = sum * ( sum + 2.0 * NAME_TABLE_HASH - 1 ) / ( 2 * NAME_TABLE_HASH );
     fprintf( fp, "histogram chart of chain lengths:\n" );
     for( i = 0; i < NAME_TABLE_HASH; ++i ) {
         name = hashTable[ i ];

@@ -240,8 +240,7 @@ static void cleanupOpenFiles(   // CLEAN UP ON MEMORY FAILURE
     union freed_open_file *fr;
 
     RingIterBegSafe( freeFiles, fr ) {
-        CMemFree( fr->fb.buff );
-        fr->fb.buff = NULL;
+        CMemFreePtr( &fr->fb.buff );
     } RingIterEndSafe( fr )
 }
 
@@ -331,7 +330,7 @@ static SRCFILE srcFileGetUnique(// FIND SOURCE FILE IN UNIQUE LIST
     for( srch = srcFilesUnique
        ; ( srch != NULL ) && ( 0 != strcmp( srch->name, name ) )
        ; srch = srch->unique );
-    return srch;
+    return( srch );
 }
 
 
@@ -345,7 +344,7 @@ static SRCFILE srcFileAddUnique(// ADD NEW SOURCE FILE TO UNIQUE LIST
         curr->unique = srcFilesUnique;
         srcFilesUnique = curr;
     }
-    return srch;
+    return( srch );
 }
 
 
@@ -367,6 +366,11 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     new_src->lib_inc = FALSE;
     new_src->alias = FALSE;
     new_src->cmdline = FALSE;
+    new_src->read_only = FALSE;
+    if( fp == NULL && name == NULL ) {
+        new_src->cmdline = TRUE;
+        new_src->read_only = TRUE;
+    }
     new_src->cmdlneol = FALSE;
     new_src->cmdlneof = FALSE;
     new_src->uncached = FALSE;
@@ -375,7 +379,6 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     new_src->pch_kludge = FALSE;
     new_src->assume_file = TRUE;
     new_src->found_eof = FALSE;
-    new_src->read_only = FALSE;
     new_src->once_only = FALSE;
     new_src->ignore_swend = FALSE;
     new_src->index = totalSrcFiles;
@@ -383,6 +386,8 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     new_src->ifndef_name = NULL;
     new_src->ifndef_len = 0;
     new_src->sister = new_src;
+    new_src->guard_state = GUARD_NULL;
+    new_src->time_stamp = 0;
     MacroStateGet( &(new_src->macro_state) );
     if( srcFile == NULL ) {
         new_src->parent_locn = 0;
@@ -412,14 +417,11 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     new_act->nextc = &notFilled[0];
     new_act->lastc = &notFilled[1];
     new_act->fp = fp;
-    new_src->guard_state = GUARD_NULL;
-    new_src->time_stamp = 0;
-    new_src->free = FALSE;
     set_srcFile( new_src );
-    if( CompFlags.cpp_output ) {
-        EmitLineNL( 1, new_src->name );
+    if( CompFlags.cpp_output && !new_src->cmdline ) {
+        EmitLine( 1, new_src->name );
     }
-    ++ totalSrcFiles;
+    ++totalSrcFiles;
     return( new_src );
 }
 
@@ -614,7 +616,7 @@ boolean SrcFileClose(           // CLOSE A SOURCE FILE
         SrcFileCurrentLocation();
         PCHeaderCreate( tmp_src->name );
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -632,7 +634,7 @@ char *SrcFileName(              // GET NAME OF SOURCE FILE
     } else {
         name = sf->name;
     }
-    return name;
+    return( name );
 }
 
 char *SrcFileFullName(          // GET FULL PATH NAME OF SOURCE FILE
@@ -653,14 +655,14 @@ char *SrcFileFullName(          // GET FULL PATH NAME OF SOURCE FILE
 char *SrcFileNameCurrent(       // GET NAME OF CURRENT SOURCE FILE
     void )
 {
-    return SrcFileName( srcFile );
+    return( SrcFileName( srcFile ) );
 }
 
 
 LINE_NO SrcFileLine(            // GET CURRENT SOURCE LINE
     void )
 {
-    return activeSrc()->line;
+    return( activeSrc()->line );
 }
 
 
@@ -1321,7 +1323,7 @@ void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
     TokenLen = len;
 }
 
-int SrcFileScanWhiteSpace( int expanding )
+void SrcFileScanWhiteSpace( int expanding )
 {
     unsigned char   *p;
     OPEN_FILE       *act;
@@ -1378,7 +1380,6 @@ int SrcFileScanWhiteSpace( int expanding )
             if(( CharSet[c] & C_WS ) == 0 ) break;
         }
     }
-    return( T_WHITE_SPACE );
 }
 
 void SrcFileScanCppComment()
@@ -1506,14 +1507,14 @@ boolean IsSrcFileLibrary(       // DETERMINE IF SOURCE FILE IS #include <file.h>
 boolean IsSrcFileCmdLine(       // DETERMINE IF SOURCE FILE IS FOR CMD-LINE
     SRCFILE sf )                // - a source file
 {
-    return ( sf != NULL ) && sf->cmdline;
+    return( sf != NULL && sf->cmdline );
 }
 
 
 boolean SrcFilesOpen(           // DETERMINE IF ANY SOURCE FILES OPEN
     void )
 {
-    return ( srcFile != NULL ) && ( ! srcFile->cmdline );
+    return( srcFile != NULL && !srcFile->cmdline );
 }
 
 
@@ -1550,7 +1551,7 @@ boolean SrcFileAreTLSameLine(   // CHECK WHETHER TOKEN_LOCNs ARE THE SAME LINE
 SRCFILE SrcFileCurrent(         // GET CURRENT SRCFILE
     void )
 {
-    return srcFile;
+    return( srcFile );
 }
 
 
@@ -1564,21 +1565,21 @@ void SrcFilePoint(              // SET CURRENT SRCFILE
 time_t SrcFileTimeStamp(       // GET TIME STAMP FOR FILE
     SRCFILE srcfile )           // - source file
 {
-    return srcfile->time_stamp;
+    return( srcfile->time_stamp );
 }
 
 
 SRCFILE SrcFileWalkInit(        // START WALK OF SOURCE FILES
     void )
 {
-    return srcFilesUnique;
+    return( srcFilesUnique );
 }
 
 
 SRCFILE SrcFileWalkNext(        // NEXT FILE IN WALK OF SOURCE FILES
     SRCFILE curr )              // - previous file
 {
-    return curr->unique;
+    return( curr->unique );
 }
 
 SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
@@ -1594,16 +1595,14 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
         read_only = FALSE;
         file_name = SrcFileFullName( curr );
         RingIterBeg( roDirs, srch ) {
-            if( 0 == strnicmp( srch->name
-                             , file_name
-                             , strlen( srch->name ) ) ) {
+            if( 0 == strnicmp( srch->name, file_name, strlen( srch->name ) ) ) {
                 read_only = TRUE;
                 break;
             }
         } RingIterEnd( srch );
         if( ! read_only ) break;
     }
-    return curr;
+    return( curr );
 }
 
 static void addRoDir( const char *dirname )
@@ -1623,8 +1622,7 @@ void SrcFileReadOnlyDir(        // SPECIFY DIRECTORY AS READ-ONLY
     DIR_LIST* curr;             // - current R/O entry
     DIR_LIST* srch;             // - search R/O entry
 
-    for(;;) {
-        if( *dir == '\0' ) break;
+    for( ; *dir != '\0'; ) {
         dir = IoSuppIncPathElement( dir, path );
         full = IoSuppFullPath( path, buff, sizeof( buff ) );
         curr = NULL;
@@ -1793,7 +1791,6 @@ void SrcFileCmdLnDummyOpen(     // OPEN DUMMY FILE FOR COMMAND LINE
     SRCFILE cmd_file;           // - command file
 
     cmd_file = srcFileAlloc( NULL, NULL );
-    cmd_file->cmdline = TRUE;
     setGuardState( GUARD_IFNDEF );
 }
 
@@ -1836,7 +1833,7 @@ int SrcFileCmdLnGetChar(        // GET NEXT CHARACTER FOR CMD-LINE FILE
         }
     }
     CurrChar = next_char;
-    return next_char;
+    return( next_char );
 }
 
 
@@ -1850,14 +1847,14 @@ void SrcFileTraceBack(          // INDICATE SRCFILE USED IN TRACE-BACK
 boolean SrcFileTraceBackReqd(   // DETERMINE IF MSG TRACE-BACK REQ'D
     SRCFILE sf )                // - source-file in message
 {
-    return (sf != NULL ) && ( sf != traced_back );
+    return( ( sf != NULL ) && ( sf != traced_back ) );
 }
 
 
 SRCFILE SrcFileTraceBackFile(   // GET SRCFILE TRACED BACK
     void )
 {
-    return traced_back;
+    return( traced_back );
 }
 
 boolean SrcFileSame(            // ARE THESE SRC FILES THE SAME FILE?
@@ -1873,7 +1870,7 @@ boolean SrcFileSame(            // ARE THESE SRC FILES THE SAME FILE?
 unsigned SrcFileIndex(          // GET INDEX OF THIS SRCFILE
     SRCFILE sf )                // - the source file
 {
-    return sf->index;
+    return( sf->index );
 }
 
 
@@ -1999,14 +1996,14 @@ static void saveSrcFile( void *e, carve_walk_base *d )
     if( name_save != NULL ) {
         name_len = strlen( name_save ) + 1;
     }
-    s->name = (char *) name_len;
+    s->name = PCHSetUInt( name_len );
     ifndef_len = 0;
     if( ifndef_save != NULL ) {
         ifndef_len = s->ifndef_len + 1;
     }
-    s->ifndef_name = (char *) ifndef_len;
+    s->ifndef_name = PCHSetUInt( ifndef_len );
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     if( name_len != 0 ) {
         PCHWrite( name_save, name_len );
     }
@@ -2036,15 +2033,12 @@ static void writeRoDirs( void )
 
 pch_status PCHWriteSrcFiles( void )
 {
-    SRCFILE unique_srcfiles;
-    cv_index terminator = CARVE_NULL_INDEX;
     auto carve_walk_base dsrc;
 
-    unique_srcfiles = SrcFileGetIndex( srcFilesUnique );
-    PCHWrite( &unique_srcfiles, sizeof( unique_srcfiles ) );
+    PCHWriteCVIndex( (cv_index)SrcFileGetIndex( srcFilesUnique ) );
     CarveWalkAllFree( carveSrcFile, markFreeSrcFile );
     CarveWalkAll( carveSrcFile, saveSrcFile, &dsrc );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     writeRoDirs();
     return( PCHCB_OK );
 }
@@ -2052,14 +2046,11 @@ pch_status PCHWriteSrcFiles( void )
 static void readRoDirs( void )
 {
     unsigned len;
-    char *dirname;
     auto char buff[_MAX_PATH];
 
-    for(;;) {
-        len = PCHReadUInt();
-        if( len == 0 ) break;
-        dirname = PCHReadLocate( buff, len );
-        addRoDir( dirname );
+    for( ; (len = PCHReadUInt()) != 0; ) {
+        PCHRead( buff, len );
+        addRoDir( buff );
     }
 }
 
@@ -2070,29 +2061,24 @@ pch_status PCHReadSrcFiles( void )
     size_t buff_len;
     SRCFILE s;
     SRCFILE n;
-    cv_index si;
     size_t name_len;
     size_t ifndef_len;
     auto cvinit_t data;
 
     // primarySrcFile will already be set properly so it is unaffected by PCH
-    PCHRead( &unique_srcfiles, sizeof( unique_srcfiles ) );
-    unique_srcfiles = SrcFileMapIndex( unique_srcfiles );
+    unique_srcfiles = SrcFileMapIndex( (SRCFILE)PCHReadCVIndex() );
     buff_len = 80;
     buff = CMemAlloc( buff_len );
     CarveInitStart( carveSrcFile, &data );
-    for(;;) {
-        si = PCHReadCVIndex();
-        if( si == CARVE_NULL_INDEX ) break;
-        s = CarveInitElement( &data, si );
-        PCHRead( s, sizeof( *s ) );
+    for( ; (s = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *s );
         s->sister = SrcFileMapIndex( s->sister );
         s->parent = SrcFileMapIndex( s->parent );
         s->unique = SrcFileMapIndex( s->unique );
         s->active = NULL;
         s->full_name = NULL;
         MacroStateClear( &(s->macro_state) );
-        name_len = (size_t) s->name;
+        name_len = PCHGetUInt( s->name );
         if( name_len != 0 ) {
             if( name_len > buff_len ) {
                 CMemFree( buff );
@@ -2104,7 +2090,7 @@ pch_status PCHReadSrcFiles( void )
         } else {
             s->name = NULL;
         }
-        ifndef_len = (size_t) s->ifndef_name;
+        ifndef_len = PCHGetUInt( s->ifndef_name );
         if( ifndef_len != 0 ) {
             if( ifndef_len > buff_len ) {
                 CMemFree( buff );
@@ -2140,16 +2126,12 @@ SRCFILE SrcFileMapIndex( SRCFILE e )
 
 pch_status PCHInitSrcFiles( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carveSrcFile );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveSrcFile ) );
     } else {
         alternateCarveSrcFile = carveSrcFile;
         carveSrcFile = CarveCreate( sizeof( *srcFile ), BLOCK_SRCFILE );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveSrcFile, n );
+        CarveMapOptimize( carveSrcFile, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

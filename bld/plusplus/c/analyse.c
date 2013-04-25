@@ -3928,8 +3928,8 @@ start_opac_string:
           } continue;
           case RESULT_COLON :
           #define ExtractColonFlags(node) ( node->flags & PTF_FETCH )
-          { PTO_FLAG rflag; // - flags on right
-            PTO_FLAG lflag; // - flags on left
+          { PTF_FLAG rflag; // - flags on right
+            PTF_FLAG lflag; // - flags on left
             lflag = ExtractColonFlags( expr->u.subtree[0] );
             rflag = ExtractColonFlags( expr->u.subtree[1] );
             expr->flags &= ~ ( PTF_FETCH );

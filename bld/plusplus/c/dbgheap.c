@@ -31,12 +31,14 @@
 
 
 #include <malloc.h>
-#include <process.h>
 #include <stdio.h>
+#ifdef __WATCOMC__
+#include <process.h>
+#endif
 
 
 typedef struct                  // ALLOCED -- allocated entry
-{   void __far *_pentry;        // - entry
+{   void *_pentry;        	    // - entry
     size_t _size;               // - size
 } ALLOCED;
 

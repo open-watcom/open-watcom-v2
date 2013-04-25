@@ -564,7 +564,7 @@ TYPE MakeBasedModifier( type_flag mod, boolean seg_cast, PTREE base )
     SYMBOL sym;
     SYMBOL_NAME sym_name;
     TYPE type;
-    char *id;
+    NAME id;
     void *base_expr;
 
     base_expr = NULL;
@@ -1876,8 +1876,10 @@ CLASS_INST *TypeClassInstantiation( TYPE type )
     return NULL;
 }
 
-static char *betterAnonEnumName( SYMBOL sym, TYPE typ ) {
+static NAME betterAnonEnumName( SYMBOL sym, TYPE typ )
+{
     SYMBOL next = sym->thread;
+
     if( next->id != SC_ENUM ) {
         return( NULL );
     }
@@ -1887,28 +1889,27 @@ static char *betterAnonEnumName( SYMBOL sym, TYPE typ ) {
     return( next->name->name );
 }
 
-char *AnonymousEnumExtraName( TYPE type ) {
+NAME AnonymousEnumExtraName( TYPE type )
+{
     SYMBOL sym;
-    char *name = NULL;
 
-    if( ! CompFlags.fixed_name_mangling ) {
-        return( name );
-    }
-    DbgAssert( type->id == TYP_ENUM );
-    DbgAssert( TypeIsAnonymousEnum( type ) );
-    sym = type->u.t.sym;
-    if( sym != NULL ) {
-        if( type->flag & TF1_UNNAMED ) {
-            name = betterAnonEnumName( sym, type );
+    if( CompFlags.fixed_name_mangling ) {
+        DbgAssert( type->id == TYP_ENUM );
+        DbgAssert( TypeIsAnonymousEnum( type ) );
+        sym = type->u.t.sym;
+        if( sym != NULL ) {
+            if( type->flag & TF1_UNNAMED ) {
+                return( betterAnonEnumName( sym, type ) );
+            }
         }
     }
-    return( name );
+    return( NULL );
 }
 
-char *SimpleTypeName( TYPE typ )
-/******************************/
+NAME SimpleTypeName( TYPE typ )
+/*****************************/
 {
-    char *name;
+    NAME name;
     SYMBOL sym;
 
     name = NULL;
@@ -2273,7 +2274,7 @@ DECL_SPEC *PTypeCombine( DECL_SPEC *d1, DECL_SPEC *d2 )
     return( d1 );
 }
 
-static SYMBOL checkPreviouslyDeclared( SYMBOL sym, char *name )
+static SYMBOL checkPreviouslyDeclared( SYMBOL sym, NAME name )
 {
     SYMBOL class_template;
     SYMBOL free_sym;
@@ -2312,7 +2313,7 @@ static SYMBOL checkPreviouslyDeclared( SYMBOL sym, char *name )
 
 static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, boolean decl_done )
 {
-    char *name;
+    NAME name;
     TYPE type;
     TYPE original_type;
     SYMBOL sym;
@@ -2442,7 +2443,7 @@ DECL_SPEC *PTypeStgClass( stg_class_t val )
 DECL_SPEC *PTypeMSDeclSpec( DECL_SPEC *dspec, PTREE id )
 /******************************************************/
 {
-    char        *name;
+    NAME        name;
     DECL_SPEC   *spec;
 
     if( id == NULL ) {
@@ -3103,8 +3104,9 @@ static void checkDestructor( TYPE return_type, int status, unsigned arg_count )
     }
 }
 
-static void checkOperator( TYPE return_type, int status, char *name )
+static void checkOperator( TYPE return_type, int status, NAME name )
 {
+    return_type = return_type;
     if( status & SM_NOT_A_FUNCTION ) {
         CErr2p( ERR_OPERATOR_BAD_DECL, name );
     }
@@ -3142,9 +3144,9 @@ static void setStorageClass( SYMBOL sym, stg_class_t sc )
     }
 }
 
-static void reportRepeatedInfo( unsigned token )
+static void reportRepeatedInfo( TOKEN token )
 {
-    CErr2p( INF_REPEATED_ITEM, Tokens[ token ] );
+    CErr2p( INF_REPEATED_ITEM, Tokens[token] );
 }
 
 static void dumpInfoFunctionMods( type_flag repeats )
@@ -3576,7 +3578,7 @@ static TYPE makeModifiedTypeOf( TYPE mod, TYPE of )
     return( MakeTypeOf( mod, of ) );
 }
 
-static void checkForUnnamedStruct( DECL_SPEC *dspec, char *id )
+static void checkForUnnamedStruct( DECL_SPEC *dspec, NAME id )
 {
     TYPE base_type;
 
@@ -3602,7 +3604,7 @@ static msg_status_t errWithSymLoc( unsigned msg, SYMBOL sym )
 DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
 /***************************************************************/
 {
-    char *id;
+    NAME id;
     SYMBOL sym;
     PTREE id_tree;
     TYPE test_type;
@@ -3920,8 +3922,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
             if( flag.diagnose_sym ) {
                 prev_type = TypeError;
             } else {
-                prev_type = BindTemplateClass( prev_type, &id_tree->locn,
-                                               FALSE );
+                prev_type = BindTemplateClass( prev_type, &id_tree->locn, FALSE );
             }
         }
         sym = AllocSymbol();
@@ -4768,9 +4769,8 @@ PTREE ProcessBitfieldId( PTREE id_tree )
     return( id_tree );
 }
 
-TYPE MakeBitfieldType( DECL_SPEC *dspec, TYPE base_type,
-                                                unsigned start, unsigned width )
-/******************************************************************************/
+TYPE MakeBitfieldType( DECL_SPEC *dspec, TYPE base_type, unsigned start, unsigned width )
+/***************************************************************************************/
 {
     TYPE type;
     type_flag flag;
@@ -5267,10 +5267,9 @@ void FreeDeclInfo( DECL_INFO *dinfo )
     CarveFree( carveDECL_INFO, dinfo );
 }
 
-static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope,
-                                unsigned *pinfo )
+static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope, unsigned *pinfo )
 {
-    char *name;
+    NAME name;
     TYPE class_type;
     TYPE scope_class_type;
     PTREE name_tree;
@@ -5441,7 +5440,7 @@ DECL_INFO *DeclSpecDeclarator( DECL_SPEC *dspec )
 static void noDuplicateNames( DECL_INFO *head, DECL_INFO *check )
 {
     SYMBOL arg_sym;
-    char *check_name;
+    NAME check_name;
     DECL_INFO *curr;
 
     check_name = check->name;
@@ -5525,7 +5524,7 @@ static TYPE functionReduce( TYPE type, unsigned arg_index )
     return( replaceModifiers( mod_list, new_fn_type ) );
 }
 
-static SYMBOL tryInsertion( SCOPE scope, SYMBOL sym, char *name )
+static SYMBOL tryInsertion( SCOPE scope, SYMBOL sym, NAME name )
 {
     DECL_INFO *tmp_dinfo;
     SYMBOL decl_sym;
@@ -5539,8 +5538,8 @@ static SYMBOL tryInsertion( SCOPE scope, SYMBOL sym, char *name )
     return( decl_sym );
 }
 
-SYMBOL InsertSymbol( SCOPE scope, SYMBOL sym, char *name )
-/********************************************************/
+SYMBOL InsertSymbol( SCOPE scope, SYMBOL sym, NAME name )
+/*******************************************************/
 {
     return( tryInsertion( scope, sym, name ) );
 }
@@ -5879,7 +5878,7 @@ static TYPE genericOrGenericRef( TYPE type )
     return( generic_type );
 }
 
-static boolean arrowReturnOK( TYPE type, char *arrow_name, boolean undefd_OK )
+static boolean arrowReturnOK( TYPE type, NAME arrow_name, boolean undefd_OK )
 {
     TYPE class_type;
     SCOPE scope;
@@ -5955,7 +5954,7 @@ static void verifyIncDecSecondArg( TYPE fn_type, boolean non_static_member )
     }
 }
 
-static void verifyNewFirstArg( char *name, TYPE fn_type )
+static void verifyNewFirstArg( NAME name, TYPE fn_type )
 {
     TYPE arg;
 
@@ -5965,7 +5964,7 @@ static void verifyNewFirstArg( char *name, TYPE fn_type )
     }
 }
 
-static void verifyDelFirstArg( char *name, TYPE fn_type )
+static void verifyDelFirstArg( NAME name, TYPE fn_type )
 {
     TYPE arg;
 
@@ -5975,7 +5974,7 @@ static void verifyDelFirstArg( char *name, TYPE fn_type )
     }
 }
 
-static void verifyDelSecondArg( char *name, TYPE fn_type )
+static void verifyDelSecondArg( NAME name, TYPE fn_type )
 {
     TYPE arg;
 
@@ -6007,7 +6006,7 @@ static boolean checkOperatorArgs( TYPE fn_type )
     return( FALSE );
 }
 
-static void changeName( DECL_INFO *dinfo, char *name )
+static void changeName( DECL_INFO *dinfo, NAME name )
 {
     PTREE id;
 
@@ -6099,7 +6098,7 @@ static void checkForExplicit( TYPE fn_type )
     }
 }
 
-static void verifyNotInNameSpace( SCOPE scope, DECL_INFO *dinfo, char *name )
+static void verifyNotInNameSpace( SCOPE scope, DECL_INFO *dinfo, NAME name )
 {
     SCOPE friend_scope = dinfo->friend_scope;
 
@@ -6125,8 +6124,8 @@ static TYPE stripPragma( TYPE fn_type, SYMBOL sym )
 void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
 /*********************************************************/
 {
-    char *name;
-    char *scope_name;
+    NAME name;
+    NAME scope_name;
     type_flag cv_qualifiers;
     PTREE id;
     SYMBOL sym;
@@ -6152,8 +6151,7 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
     }
     name = id->u.id.name;
     is_a_member = memberCheck( scope, dinfo, &scope_type );
-    is_out_of_class_member =
-        is_a_member && ( dinfo->scope != NULL ) && ( dinfo->scope != scope );
+    is_out_of_class_member = is_a_member && ( dinfo->scope != NULL ) && ( dinfo->scope != scope );
     non_static_member = FALSE;
     scope_name = NULL;
     if( is_a_member ) {
@@ -6234,8 +6232,7 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
         if( is_a_member && name == scope_name ) {
             /* a constructor! */
             changeName( dinfo, CppConstructorName() );
-            if( ( DefaultIntType( fn_type->of ) == NULL ) 
-             || ( fn_type->of->id == TYP_MODIFIER ) ) {
+            if( ( DefaultIntType( fn_type->of ) == NULL ) || ( fn_type->of->id == TYP_MODIFIER ) ) {
                 CErr1( ERR_CTOR_RETURNS_NOTHING );
             }
             if( ! non_static_member ) {
@@ -6634,7 +6631,7 @@ void InsertArgs( DECL_INFO **args )
 /*********************************/
 {
     DECL_INFO *curr;
-    char *name;
+    NAME name;
 
     RingIterBeg( *args, curr ) {
         if( curr->type->id == TYP_DOT_DOT_DOT ) break;
@@ -6844,10 +6841,11 @@ boolean VerifyPureFunction( DECL_INFO *dinfo )
 void VerifyMemberFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
 /*************************************************************/
 {
+    dspec = dspec;
     FreeDeclInfo( dinfo );
 }
 
-static SYMBOL alreadyDefined( char *name )
+static SYMBOL alreadyDefined( NAME name )
 {
     return( ScopeAlreadyExists( GetFileScope(), name ) );
 }
@@ -6859,7 +6857,7 @@ SYMBOL MakeTypeidSym( TYPE type )
     unsigned len;
     SYMBOL sym;
     TYPE typeid_type;
-    char *name;
+    NAME name;
 
     name = CppTypeidName( &len, type );
     sym = alreadyDefined( name );
@@ -6884,7 +6882,7 @@ SYMBOL MakeVATableSym( SCOPE class_scope )
 {
     SYMBOL sym;
     TYPE vatable_type;
-    char *name;
+    NAME name;
 
     name = CppVATableName( class_scope );
     sym = alreadyDefined( name );
@@ -6907,7 +6905,7 @@ SYMBOL MakeVBTableSym( SCOPE scope, unsigned num_vbases, target_offset_t delta )
 {
     SYMBOL sym;
     TYPE vbtable_type;
-    char *name;
+    NAME name;
 
     name = CppVBTableName( scope, delta );
     sym = alreadyDefined( name );
@@ -6931,8 +6929,8 @@ SYMBOL MakeVMTableSym( SCOPE from, SCOPE to, boolean *had_to_define )
 {
     SYMBOL sym;
     TYPE vmtable_type;
-    target_offset_t num_vbases;
-    char *name;
+    unsigned num_vbases;
+    NAME name;
 
     *had_to_define = FALSE;
     name = CppIndexMappingName( from, to );
@@ -6959,7 +6957,7 @@ SYMBOL MakeVFTableSym( SCOPE scope, unsigned num_vfns, target_offset_t delta )
 {
     SYMBOL sym;
     TYPE vftable_type;
-    char *name;
+    NAME name;
 
     name = CppVFTableName( scope, delta );
     sym = alreadyDefined( name );
@@ -6984,7 +6982,7 @@ void TypedefUsingDecl( DECL_SPEC *dspec, SYMBOL typedef_sym, TOKEN_LOCN *locn )
 {
     PTREE id;
     TYPE type;
-    char *name;
+    NAME name;
     TOKEN_LOCN id_locn;
 
     if( dspec != NULL ) {
@@ -7179,8 +7177,7 @@ boolean TypeParmSize( TYPE fn_type, target_size_t *parm_size )
     p = args->type_list;
     for( i = args->num_args; i != 0; --i ) {
         size += CgMemorySize( *p );
-        size += sizeof( target_int ) - 1;
-        size &= ~( sizeof( target_int ) - 1 );
+        size = _RoundUp( size, sizeof( target_int ) );
         ++p;
     }
     *parm_size = size;
@@ -7451,7 +7448,7 @@ boolean FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
     PstkOpen( &type_stack );
     pushArguments( &type_stack, fn_type->u.f.args );
     for(;;) {
-        top = PstkPop( &type_stack );
+        top = (TYPE *)PstkPop( &type_stack );
         if( top == NULL ) break;
         if( *top != NULL ) {
             scanForGenerics( &type_stack, *top );
@@ -7470,7 +7467,7 @@ static void clearGenericBindings( PSTK_CTL *stk, SCOPE decl_scope )
     DbgAssert( stk != NULL );
 
     for(;;) {
-        top = PstkPop( stk );
+        top = (TYPE *)PstkPop( stk );
         if( top == NULL ) break;
         if( *top == NULL ) continue;
         bound_type = *top;
@@ -7649,8 +7646,8 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
     for(;;) {
         flags.arg_1st_level = FALSE;
 
-        b_top = PstkPop( &(data->without_generic) );
-        u_top = PstkPop( &(data->with_generic) );
+        b_top = (PTREE *)PstkPop( &(data->without_generic) );
+        u_top = (PTREE *)PstkPop( &(data->with_generic) );
         if( b_top == NULL || u_top == NULL ) {
             if( b_top != NULL ) {
                 PTreeFree( *b_top );
@@ -7661,11 +7658,10 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
             break;
         }
 
-        if( ( ( *u_top )->op == PT_TYPE )
-         && ( *u_top )->type == TypeGetCache( TYPC_FIRST_LEVEL ) ) {
+        if( ( (*u_top)->op == PT_TYPE ) && (*u_top)->type == TypeGetCache( TYPC_FIRST_LEVEL ) ) {
             flags.arg_1st_level = TRUE;
             PTreeFree( *u_top );
-            u_top = PstkPop( &(data->with_generic) );
+            u_top = (PTREE *)PstkPop( &(data->with_generic) );
             if( u_top == NULL ) {
                 if( b_top != NULL ) {
                     PTreeFree( *b_top );
@@ -7674,10 +7670,9 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
             }
         }
 
-        if( ( *u_top )->op == PT_INT_CONSTANT ) {
-            if( ( *b_top )->op == PT_INT_CONSTANT ) {
-                if( !I64Cmp( &( *u_top )->u.int64_constant,
-                             &( *b_top )->u.int64_constant ) ) {
+        if( (*u_top)->op == PT_INT_CONSTANT ) {
+            if( (*b_top)->op == PT_INT_CONSTANT ) {
+                if( !I64Cmp( &(*u_top)->u.int64_constant, &(*b_top)->u.int64_constant ) ) {
                     PTreeFree( *b_top );
                     PTreeFree( *u_top );
                     continue;
@@ -7686,18 +7681,17 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
             PTreeFree( *b_top );
             PTreeFree( *u_top );
             return( TB_NULL );
-        } else if( ( *u_top )->op == PT_ID ) {
+        } else if( (*u_top)->op == PT_ID ) {
             /* TODO: check type */
-            if( ( *b_top )->op == PT_INT_CONSTANT ) {
-                SYMBOL sym = ScopeYYMember( data->parm_scope,
-                                            ( *u_top )->u.id.name )->name_syms;
+            if( (*b_top)->op == PT_INT_CONSTANT ) {
+                SYMBOL sym = ScopeYYMember( data->parm_scope, (*u_top)->u.id.name )->name_syms;
 
                 if( ( sym->id == SC_NULL ) && ( sym->u.sval == 0 ) ) {
                     sym->id = SC_STATIC;
-                    DgStoreConstScalar( *b_top, ( *b_top )->type, sym );
+                    DgStoreConstScalar( *b_top, (*b_top)->type, sym );
                 }
 
-                if( sym->u.sval != ( *b_top )->u.int_constant ) {
+                if( sym->u.sval != (*b_top)->u.int_constant ) {
                     // already bound to different value
                     PTreeFree( *b_top );
                     PTreeFree( *u_top );
@@ -7707,17 +7701,15 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
                 PTreeFree( *b_top );
                 PTreeFree( *u_top );
                 continue;
-            } else if( ( *b_top )->op == PT_ID ) {
-                SYMBOL sym = ScopeYYMember( data->parm_scope,
-                                            ( *u_top )->u.id.name )->name_syms;
+            } else if( (*b_top)->op == PT_ID ) {
+                SYMBOL sym = ScopeYYMember( data->parm_scope, (*u_top)->u.id.name )->name_syms;
 
                 // using SC_NULL here is a bit dirty...
                 if( ( sym->id == SC_NULL ) && ( sym->u.sval == 0 ) ) {
-                    sym->u.sval = (target_int) ( *b_top )->u.id.name;
+                    sym->u.sval = (target_int)(*b_top)->u.id.name;
                 }
 
-                if( ( sym->id != SC_NULL )
-                 || ( sym->u.sval != (target_int) ( *b_top )->u.id.name ) ) {
+                if( ( sym->id != SC_NULL ) || ( sym->u.sval != (target_int)(*b_top)->u.id.name ) ) {
                     // already bound to different value
                     PTreeFree( *b_top );
                     PTreeFree( *u_top );
@@ -7732,19 +7724,18 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
             PTreeFree( *u_top );
             return( TB_NULL );
 
-        } else if( ( ( *u_top )->op != PT_TYPE )
-                || ( ( *b_top )->op != PT_TYPE ) ) {
+        } else if( ( (*u_top)->op != PT_TYPE ) || ( (*b_top)->op != PT_TYPE ) ) {
             PTreeFree( *b_top );
             PTreeFree( *u_top );
             CFatal( "typesBind failed" );
         }
 
-        b_type = ( *b_top )->type;
+        b_type = (*b_top)->type;
         if( b_type == NULL ) {
             return( TB_NULL );
         }
         b_unmod_type = TypeModFlagsBaseEC( b_type, &b_flags, &b_base );
-        u_type = ( *u_top )->type;
+        u_type = (*u_top)->type;
 
         if( flags.arg_1st_level ) {
             u_cv_mask = TF1_CONST | TF1_VOLATILE;
@@ -7755,11 +7746,11 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
              * cv-qualifier information down the stack. We do this by
              * using the "filler" field in the PTREE struct.
              */
-            u_cv_mask = ( *u_top )->filler & TF1_CONST;
+            u_cv_mask = (*u_top)->filler & TF1_CONST;
             if( u_cv_mask & TF1_CONST ) {
                 u_cv_mask |= TF1_VOLATILE;
             }
-            u_allow_base = ( ( *u_top )->filler & 0x80 ) != 0;
+            u_allow_base = ( (*u_top)->filler & 0x80 ) != 0;
         }
 
         PTreeFree( *b_top );
@@ -7812,11 +7803,9 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
                 return( TB_NULL );
             }
             /* we don't want any extra mem-model flags */
-            b_unmod_type = TypeModExtract( b_type, &b_flags, &b_base,
-                                           TC1_NOT_ENUM_CHAR );
+            b_unmod_type = TypeModExtract( b_type, &b_flags, &b_base, TC1_NOT_ENUM_CHAR );
             /* generics can be anything so default memory models can't be trusted */
-            u_unmod_type = TypeModExtract( u_type, &u_flags, &u_base,
-                                           TC1_NOT_ENUM_CHAR );
+            u_unmod_type = TypeModExtract( u_type, &u_flags, &u_base, TC1_NOT_ENUM_CHAR );
 
             /*
                 we have to split modifiers so that
@@ -7880,10 +7869,8 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
                     /* but don't care if it was an explicit specification */
                     continue;
                 }
-                t_unmod_type = TypeModExtract( match, &t_flags, &t_base,
-                                               TC1_NOT_ENUM_CHAR );
-                if( ! TypeCompareExclude( b_unmod_type, t_unmod_type,
-                                          TC1_NOT_ENUM_CHAR ) ) {
+                t_unmod_type = TypeModExtract( match, &t_flags, &t_base, TC1_NOT_ENUM_CHAR );
+                if( ! TypeCompareExclude( b_unmod_type, t_unmod_type, TC1_NOT_ENUM_CHAR ) ) {
                     /* unmodified types are different */
                     return( TB_NULL );
                 }
@@ -8012,8 +7999,7 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
             PstkPush( &(data->with_generic), u_tree );
             break;
         default:
-            if( ! TypeCompareExclude( b_unmod_type, u_unmod_type,
-                                      TC1_NOT_ENUM_CHAR ) ) {
+            if( ! TypeCompareExclude( b_unmod_type, u_unmod_type, TC1_NOT_ENUM_CHAR ) ) {
                 return( TB_NULL );
             }
         }
@@ -8051,13 +8037,13 @@ static void binderFini( type_bind_info *data )
     PTREE *top;
 
     for(;;) {
-        top = PstkPop( &(data->with_generic) );
+        top = (PTREE *)PstkPop( &(data->with_generic) );
         if( top == NULL ) break;
         PTreeFree( *top );
     }
 
     for(;;) {
-        top = PstkPop( &(data->without_generic) );
+        top = (PTREE *)PstkPop( &(data->without_generic) );
         if( top == NULL ) break;
         PTreeFree( *top );
     }
@@ -8086,7 +8072,7 @@ static SYMBOL templateArgTypedef( TYPE type )
     return tsym;
 }
 
-static void injectTemplateParm( SCOPE scope, PTREE parm, char *name )
+static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
 {
     SYMBOL addr_sym;
     SYMBOL sym;
@@ -8129,7 +8115,7 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
     PTREE node;
     PTREE parm;
     TYPE typ;
-    char *name;
+    NAME name;
     int num_explicit;
     boolean something_went_wrong;
 
@@ -8186,12 +8172,9 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
             }
 
             if( ( typ = GenericType( curr->sym_type ) ) ) {
-                ScopeInsert( parm_scope, templateArgTypedef( typ ),
-                             name );
+                ScopeInsert( parm_scope, templateArgTypedef( typ ), name );
             } else if( ( typ = IntegralType( curr->sym_type ) ) ) {
-                ScopeInsert( parm_scope,
-                             templateArgSym( SC_NULL, typ ),
-                             name );
+                ScopeInsert( parm_scope, templateArgSym( SC_NULL, typ ), name );
             } else {
                 CFatal( "not yet implemented" );
             }
@@ -8564,7 +8547,7 @@ static void dumpXrefType( void *e, carve_walk_base *d )
     }
     fprintf( fp, "%u %u %u\n", s->id, s->u.b.field_start, s->u.b.field_width );
 }
-void DumpOfRefs()
+void DumpOfRefs( void )
 {
     FILE *fp;
     auto carve_walk_base data;
@@ -8587,9 +8570,9 @@ static void freeTypeName( void *e, carve_walk_base *d )
 {
     TYPE t = e;
 
+    d = d;
     if( t->id == TYP_TYPENAME ) {
-        CMemFree( t->u.n.name );
-        t->u.n.name = NULL;
+        CMemFreePtr( &t->u.n.name );
     }
 }
 
@@ -8713,7 +8696,6 @@ static void pchWriteArgLists( type_pch_walk *data )
     unsigned except_spec_count;
     TYPE *head;
     TYPE curr;
-    TYPE tmp_type;
     TYPE *save_except_spec;
     TYPE *etype;
     arg_list **table;
@@ -8792,16 +8774,14 @@ static void pchWriteArgLists( type_pch_walk *data )
                 ++except_spec_count;
             }
         }
-        args->except_spec = (TYPE *) except_spec_count;
-        PCHWrite( args, sizeof( *args ) - sizeof( TYPE ) );
+        args->except_spec = PCHSetUInt( except_spec_count );
+        PCHWrite( args, offsetof( arg_list, type_list ) );
         for( i = 0; i < args->num_args; ++i ) {
-            tmp_type = TypeGetIndex( args->type_list[i] );
-            PCHWrite( &tmp_type, sizeof( tmp_type ) );
+            PCHWriteCVIndex( (cv_index)TypeGetIndex( args->type_list[i] ) );
         }
         if( save_except_spec != NULL ) {
             for( etype = save_except_spec; *etype != NULL; ++etype ) {
-                tmp_type = TypeGetIndex( *etype );
-                PCHWrite( &tmp_type, sizeof( tmp_type ) );
+                PCHWriteCVIndex( (cv_index)TypeGetIndex( *etype ) );
             }
         }
         args->except_spec = save_except_spec;
@@ -8825,11 +8805,11 @@ static int cmpFindArgList( const void *kp, const void *tp )
 
 static arg_list *argListMapIndex( type_pch_walk *d, arg_list *index )
 {
-    if( index < (arg_list *) PCH_FIRST_INDEX ) {
+    if( PCHGetUInt( index ) < PCH_FIRST_INDEX ) {
         return( NULL );
     }
-    DbgAssert( !( ((unsigned) index) >= d->count + PCH_FIRST_INDEX ) );
-    return d->translate[ ((unsigned) index) - PCH_FIRST_INDEX ];
+    DbgAssert( !( PCHGetUInt( index ) >= d->count + PCH_FIRST_INDEX ) );
+    return d->translate[PCHGetUInt( index ) - PCH_FIRST_INDEX];
 }
 
 static arg_list *argListGetIndex( type_pch_walk *d, arg_list *arg )
@@ -8837,19 +8817,19 @@ static arg_list *argListGetIndex( type_pch_walk *d, arg_list *arg )
     arg_list **found;
 
     if( arg == NULL ) {
-        return( (arg_list *) PCH_NULL_INDEX );
+        return( PCHSetUInt( PCH_NULL_INDEX ) );
     }
     found = bsearch( &arg, d->translate, d->count, sizeof( arg_list * ), cmpFindArgList );
     if( found == NULL ) {
         DbgAssert( 0 );
-        return( (arg_list *) PCH_ERROR_INDEX );
+        return( PCHSetUInt( PCH_ERROR_INDEX ) );
     }
-    return( (arg_list *) (( found - d->translate ) + PCH_FIRST_INDEX ) );
+    return( PCHSetUInt( ( found - d->translate ) + PCH_FIRST_INDEX ) );
 }
 
 static void saveType( void *e, carve_walk_base *d )
 {
-    type_pch_walk *ed = (type_pch_walk *) d;
+    type_pch_walk *ed = (type_pch_walk *)d;
     TYPE s = e;
     TYPE save_next;
     TYPE save_of;
@@ -8901,22 +8881,22 @@ static void saveType( void *e, carve_walk_base *d )
             }
         }
         save_pragma = s->u.m.pragma;
-        s->u.m.pragma_idx = PragmaGetIndex( save_pragma );
+        s->u.m.pragma = PragmaGetIndex( save_pragma );
         break;
     case TYP_FUNCTION:
         save_args = s->u.f.args;
         s->u.f.args = argListGetIndex( ed, save_args );
         save_pragma = s->u.f.pragma;
-        s->u.f.pragma_idx = PragmaGetIndex( save_pragma );
+        s->u.f.pragma = PragmaGetIndex( save_pragma );
         break;
     case TYP_TYPENAME:
         save_string = s->u.n.name;
-        s->u.n.name = (char *) strlen( s->u.n.name );
+        s->u.n.name = PCHSetUInt( strlen( s->u.n.name ) );
         break;
     }
     s->dbgflag |= ed->dbgflag_mask;
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->next = save_next;
     s->of = save_of;
     switch( s->id ) {
@@ -8941,7 +8921,7 @@ static void saveType( void *e, carve_walk_base *d )
         s->u.f.args = save_args;
         break;
     case TYP_TYPENAME:
-        PCHWrite( save_string, (unsigned int) s->u.n.name );
+        PCHWrite( save_string, PCHGetUInt( s->u.n.name ) );
         s->u.n.name = save_string;
         break;
     }
@@ -8951,13 +8931,11 @@ static void saveClassInfo( void *e, carve_walk_base *d )
 {
     CLASSINFO *s = e;
     BASE_CLASS *save_bases;
-    char *save_name;
+    NAME save_name;
     TYPE save_class_mod;
     AUX_INFO *save_pragma;
     FRIEND *friend;
     signed char friend_is_type;
-    SYMBOL friend_sym;
-    TYPE friend_type;
     CDOPT_CACHE *save_cdopt_cache;
 
     if( s->free ) {
@@ -8972,22 +8950,20 @@ static void saveClassInfo( void *e, carve_walk_base *d )
     save_class_mod = s->class_mod;
     s->class_mod = TypeGetIndex( save_class_mod );
     save_pragma = s->fn_pragma;
-    s->fn_pragma_idx = PragmaGetIndex( save_pragma );
+    s->fn_pragma = PragmaGetIndex( save_pragma );
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     RingIterBeg( s->friends, friend ) {
         friend_is_type = FriendIsType( friend );
-        PCHWrite( &friend_is_type, sizeof( friend_is_type ) );
+        PCHWriteVar( friend_is_type );
         if( friend_is_type ) {
-            friend_type = TypeGetIndex( FriendGetType( friend ) );
-            PCHWrite( &friend_type, sizeof( friend_type ) );
+            PCHWriteCVIndex( (cv_index)TypeGetIndex( FriendGetType( friend ) ) );
         } else {
-            friend_sym = SymbolGetIndex( FriendGetSymbol( friend ) );
-            PCHWrite( &friend_sym, sizeof( friend_sym ) );
+            PCHWriteCVIndex( (cv_index)SymbolGetIndex( FriendGetSymbol( friend ) ) );
         }
     } RingIterEnd( friend )
     friend_is_type = -1;
-    PCHWrite( &friend_is_type, sizeof( friend_is_type ) );
+    PCHWriteVar( friend_is_type );
     s->fn_pragma = save_pragma;
     s->class_mod = save_class_mod;
     s->cdopt_cache = save_cdopt_cache;
@@ -9012,7 +8988,7 @@ static void saveDeclInfo( void *e, carve_walk_base *d )
     REWRITE *save_body;
     REWRITE *save_mem_init;
     REWRITE *save_defarg_rewrite;
-    char *save_name;
+    NAME save_name;
     SRCFILE save_locn_src_file;
 
     if( s->free ) {
@@ -9052,7 +9028,7 @@ static void saveDeclInfo( void *e, carve_walk_base *d )
     s->init_locn.src_file = SrcFileGetIndex( save_locn_src_file );
 
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
 
     s->next = save_next;
     s->parms = save_parms;
@@ -9074,11 +9050,10 @@ static void saveDeclInfo( void *e, carve_walk_base *d )
 
 static void writeType( TYPE t )
 {
-    t = TypeGetIndex( t );
-    PCHWriteCVIndex( (cv_index) t );
+    PCHWriteCVIndex( (cv_index)TypeGetIndex( t ) );
 }
 
-static void writeTypeHashed( TYPE* vector )
+static void writeTypeHashed( TYPE *vector )
 {
     int j;
 
@@ -9089,10 +9064,8 @@ static void writeTypeHashed( TYPE* vector )
 
 pch_status PCHWriteTypes( void )
 {
-    cv_index terminator = CARVE_NULL_INDEX;
     unsigned i;
     unsigned tci;
-    unsigned tmp_pragma;
     auto type_pch_walk type_data;
     auto carve_walk_base data;
 
@@ -9130,8 +9103,7 @@ pch_status PCHWriteTypes( void )
     for( i = ARGS_HASH; i < ARGS_MAX; ++i ) {
         writeType( fnTable[i-ARGS_HASH] );
     }
-    tmp_pragma = PragmaGetIndex( cdeclPragma );
-    PCHWrite( &tmp_pragma, sizeof( tmp_pragma ) );
+    PCHWriteUInt( PCHGetUInt( PragmaGetIndex( cdeclPragma ) ) );
     pchWriteArgLists( &type_data );
     CarveWalkAllFree( carveTYPE, markFreeType );
     if( CompFlags.pch_debug_info_opt ) {
@@ -9142,23 +9114,23 @@ pch_status PCHWriteTypes( void )
     } else {
         CarveWalkAll( carveTYPE, saveType, &type_data.base );
     }
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveCLASSINFO, markFreeClassInfo );
     CarveWalkAll( carveCLASSINFO, saveClassInfo, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveDECL_INFO, markFreeDeclInfo );
     CarveWalkAll( carveDECL_INFO, saveDeclInfo, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CMemFree( type_data.translate );
     return( PCHCB_OK );
 }
 
 static void readType( TYPE *t )
 {
-    *t = TypeMapIndex( PCHReadPtr() );
+    *t = TypeMapIndex( (TYPE)PCHReadCVIndex() );
 }
 
-static void readTypeHashed( TYPE* vector )
+static void readTypeHashed( TYPE *vector )
 {
     int j;
 
@@ -9169,60 +9141,53 @@ static void readTypeHashed( TYPE* vector )
 
 static void readTypes( type_pch_walk *type_data )
 {
-    cv_index i;
     unsigned int l;
     TYPE t;
-    TYPE pch;
     auto cvinit_t data;
 
     CarveInitStart( carveTYPE, &data );
-    for(;;) {
-        PCHReadMapped( pch, t, i, data );
-        t->next = TypeMapIndex( pch->next );
-        t->of = TypeMapIndex( pch->of );
-        t->dbg = pch->dbg;
-        t->flag = pch->flag;
-        t->id = pch->id;
-        t->dbgflag = pch->dbgflag;
-        switch( pch->id ) {
+    for( ; (t = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *t );
+        t->next = TypeMapIndex( t->next );
+        t->of = TypeMapIndex( t->of );
+        switch( t->id ) {
         case TYP_TYPEDEF:
         case TYP_ENUM:
-            t->u.t.sym = SymbolMapIndex( pch->u.t.sym );
-            t->u.t.scope = ScopeMapIndex( pch->u.t.scope );
+            t->u.t.sym = SymbolMapIndex( t->u.t.sym );
+            t->u.t.scope = ScopeMapIndex( t->u.t.scope );
             break;
         case TYP_CLASS:
-            t->u.c.scope = ScopeMapIndex( pch->u.c.scope );
-            t->u.c.info = CarveMapIndex( carveCLASSINFO, pch->u.c.info );
+            t->u.c.scope = ScopeMapIndex( t->u.c.scope );
+            t->u.c.info = CarveMapIndex( carveCLASSINFO, t->u.c.info );
             break;
         case TYP_MEMBER_POINTER:
-            t->u.mp.host = TypeMapIndex( pch->u.mp.host );
+            t->u.mp.host = TypeMapIndex( t->u.mp.host );
             break;
         case TYP_MODIFIER:
-            if( pch->flag & TF1_BASED ) {
-                switch( pch->flag & TF1_BASED ) {
+            if( t->flag & TF1_BASED ) {
+                switch( t->flag & TF1_BASED ) {
                 case TF1_BASED_FETCH:
                 case TF1_BASED_ADD:
-                    t->u.m.base = SymbolMapIndex( pch->u.m.base );
+                    t->u.m.base = SymbolMapIndex( t->u.m.base );
                     break;
                 case TF1_BASED_STRING:
-                    t->u.m.base = StringMapIndex( pch->u.m.base );
+                    t->u.m.base = StringMapIndex( t->u.m.base );
                     break;
                 }
             }
-            t->u.m.pragma = PragmaMapIndex( pch->u.m.pragma_idx );
+            t->u.m.pragma = PragmaMapIndex( t->u.m.pragma );
             break;
         case TYP_FUNCTION:
-            t->u.f.args = argListMapIndex( type_data, pch->u.f.args );
-            t->u.f.pragma = PragmaMapIndex( pch->u.f.pragma_idx );
+            t->u.f.args = argListMapIndex( type_data, t->u.f.args );
+            t->u.f.pragma = PragmaMapIndex( t->u.f.pragma );
             break;
         case TYP_TYPENAME:
-            l = (unsigned int) pch->u.n.name;
+            l = PCHGetUInt( t->u.n.name );
             t->u.n.name = CMemAlloc( l + 1 );
             PCHRead( t->u.n.name, l );
             t->u.n.name[l] = '\0';
             break;
         default :
-            t->u = pch->u;
             break;
         }
     }
@@ -9230,36 +9195,27 @@ static void readTypes( type_pch_walk *type_data )
 
 static void readClassInfos( void )
 {
-    cv_index i;
     CLASSINFO *ci;
-    SYMBOL sym;
-    TYPE type;
     signed char friend_is_type;
     auto cvinit_t data;
 
     CarveInitStart( carveCLASSINFO, &data );
-    for(;;) {
-        PCHLocateCVIndex( i );
-        if( i == CARVE_NULL_INDEX ) break;
-        ci = CarveInitElement( &data, i );
-        PCHRead( ci, sizeof( *ci ) );
+    for( ; (ci = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *ci );
         ci->bases = BaseClassMapIndex( ci->bases );
         ci->name = NameMapIndex( ci->name );
         ci->cdopt_cache = NULL;
         ci->class_mod = TypeMapIndex( ci->class_mod );
-        ci->fn_pragma = PragmaMapIndex( ci->fn_pragma_idx );
+        ci->fn_pragma = PragmaMapIndex( ci->fn_pragma );
         ci->friends = NULL;
-        for(;;) {
-            PCHRead( &friend_is_type, sizeof( friend_is_type ) );
-            if( friend_is_type == -1 ) break;
+        for( ;; ) {
+            PCHReadVar( friend_is_type );
+            if( friend_is_type == -1 )
+                break;
             if( friend_is_type ) {
-                PCHRead( &type, sizeof( type ) );
-                type = TypeMapIndex( type );
-                ScopeRawAddFriendType( ci, type );
+                ScopeRawAddFriendType( ci, TypeMapIndex( (TYPE)PCHReadCVIndex() ) );
             } else {
-                PCHRead( &sym, sizeof( sym ) );
-                sym = SymbolMapIndex( sym );
-                ScopeRawAddFriendSym( ci, sym );
+                ScopeRawAddFriendSym( ci, SymbolMapIndex( (SYMBOL)PCHReadCVIndex() ) );
             }
         }
     }
@@ -9267,16 +9223,12 @@ static void readClassInfos( void )
 
 static void readDeclInfos( void )
 {
-    cv_index i;
     DECL_INFO *dinfo;
     auto cvinit_t data;
 
     CarveInitStart( carveDECL_INFO, &data );
-    for(;;) {
-        PCHLocateCVIndex( i );
-        if( i == CARVE_NULL_INDEX ) break;
-        dinfo = CarveInitElement( &data, i );
-        PCHRead( dinfo, sizeof( *dinfo ) );
+    for( ; (dinfo = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *dinfo );
 
         dinfo->next = DeclInfoMapIndex( dinfo->next );
         dinfo->parms = DeclInfoMapIndex( dinfo->parms );
@@ -9307,7 +9259,6 @@ pch_status PCHReadTypes( void )
     arg_list **translate;
     arg_list *args;
     arg_list **set;
-    unsigned tmp_pragma;
     auto type_pch_walk type_data;
     auto arg_list tmp_arglist;
 
@@ -9342,27 +9293,26 @@ pch_status PCHReadTypes( void )
         readTypeHashed( fnHashTable[i] );
     }
     for( i = ARGS_HASH; i < ARGS_MAX; ++i ) {
-        readType( &fnTable[i-ARGS_HASH] );
+        readType( &fnTable[i - ARGS_HASH] );
     }
-    tmp_pragma = PCHReadUInt();
-    cdeclPragma = PragmaMapIndex( tmp_pragma );
+    cdeclPragma = PragmaMapIndex( PCHSetUInt( PCHReadUInt() ) );
     arglist_count = PCHReadUInt();
     translate = CMemAlloc( arglist_count * sizeof( arg_list * ) );
     type_data.count = arglist_count;
     type_data.translate = translate;
     set = translate;
     for( i = 0; i < arglist_count; ++i ) {
-        PCHRead( &tmp_arglist, sizeof( tmp_arglist ) - sizeof( TYPE ) );
+        PCHRead( &tmp_arglist, offsetof( arg_list, type_list ) );
         args = AllocArgListPerm( tmp_arglist.num_args );
         args->qualifier = tmp_arglist.qualifier;
         for( j = 0; j < tmp_arglist.num_args; ++j ) {
-            args->type_list[j] = TypeMapIndex( PCHReadPtr() );
+            args->type_list[j] = TypeMapIndex( (TYPE)PCHReadCVIndex() );
         }
-        except_spec_count = (unsigned) tmp_arglist.except_spec;
+        except_spec_count = PCHGetUInt( tmp_arglist.except_spec );
         if( except_spec_count != 0 ) {
             args->except_spec = CPermAlloc( ( except_spec_count + 1 ) * sizeof( TYPE ) );
             for( j = 0; j < except_spec_count; ++j ) {
-                args->except_spec[j] = TypeMapIndex( PCHReadPtr() );
+                args->except_spec[j] = TypeMapIndex( (TYPE)PCHReadCVIndex() );
             }
             args->except_spec[j] = NULL;
         } else {
@@ -9380,25 +9330,17 @@ pch_status PCHReadTypes( void )
 
 pch_status PCHInitTypes( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carveTYPE );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveCLASSINFO );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveDECL_INFO );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveTYPE ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveCLASSINFO ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveDECL_INFO ) );
     } else {
         carveTYPE = CarveRestart( carveTYPE );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveTYPE, n );
+        CarveMapOptimize( carveTYPE, PCHReadCVIndex() );
         carveCLASSINFO = CarveRestart( carveCLASSINFO );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveCLASSINFO, n );
+        CarveMapOptimize( carveCLASSINFO, PCHReadCVIndex() );
         carveDECL_INFO = CarveRestart( carveDECL_INFO );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveDECL_INFO, n );
+        CarveMapOptimize( carveDECL_INFO, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }
@@ -9415,7 +9357,7 @@ pch_status PCHFiniTypes( boolean writing )
 
 static void relocType( void *e, carve_walk_base *d )
 {
-    type_reloc_pch_walk *ed = (type_reloc_pch_walk *) d;
+    type_reloc_pch_walk *ed = (type_reloc_pch_walk *)d;
     TYPE s = e;
     unsigned pch_type_index;
     TYPE pch_type;

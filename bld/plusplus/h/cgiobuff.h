@@ -50,7 +50,7 @@ struct cgiobuff {               // CGIOBUFF -- buffer in memory
     char        data[TMPBLOCK_BSIZE]; // - buffer in memory
 #ifndef NDEBUG
 
-    unsigned    check;          // - consistency check
+    int         check;          // - consistency check
 #endif
 };
 
@@ -61,19 +61,6 @@ struct cgfile_ins               // CGFILE_INS -- location of instruction
 };
 
 #define CGINTER_BLOCKING        (sizeof(unsigned))
-
-// structure is written out to a file
-#include <pushpck1.h>
-
-// having 'value' first means it will be aligned in cases
-// were it is a singleton
-typedef struct cginter          CGINTER;    // intermediate text
-struct cginter {                // CGINTER -- intermediate-code instruction
-    CGVALUE     value;          // - value
-    CGINTEROP   opcode;         // - opcode for text
-};
-
-#include <poppck.h>
 
 typedef void *CGIRELOCFN( void * );
 
@@ -110,7 +97,7 @@ CGIOBUFF *CgioBuffReadIC(       // READ A RECORD
 CGIOBUFF *CgioBuffReadICUntilOpcode(       // READ A RECORD UNTIL OPCODE IS FOUND
     CGIOBUFF *ctl,              // - buffer control
     CGINTER **ins,              // - cursor to update
-    unsigned opcode )           // - opcode to find
+    CGINTEROP opcode )          // - opcode to find
 ;
 CGIOBUFF *CgioBuffReadICMask(   // READ A RECORD UNTIL OPCODE IN SET IS FOUND
     CGIOBUFF *ctl,              // - buffer control
@@ -134,8 +121,7 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
     CGIOBUFF *ctl,              // - buffer control
     CGINTER *ins )              // - IC to write
 ;
-CGINTER *CgioBuffPCHRead(       // READ FROM PCH AND WRITE INTO BUFFER
-    CGINTER *buff,              // - alternate buffer for PCHReadLoc
+CGINTER CgioBuffPCHRead(        // READ FROM PCH AND WRITE INTO BUFFER
     CGIOBUFF **pctl )           // - addr( buffer control )
 ;
 void CgioBuffZap(               // ZAP A WRITTEN AREA OF A BUFFER

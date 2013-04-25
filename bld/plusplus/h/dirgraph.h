@@ -44,49 +44,60 @@ typedef struct dirgraph_edge DIRGRAPH_EDGE;
 
 typedef void *DIRGRAPH_OBJECT;
 
+typedef void (*fn_init_ctl)             // - initialize control information
+        ( DIRGRAPH_CTL *                // - - control information
+        );
+typedef void (*fn_fini_ctl)             // - finalize control information
+        ( DIRGRAPH_CTL *                // - - control information
+        );
+typedef DIRGRAPH_NODE *(*fn_alloc_node) // - allocate node
+        ( DIRGRAPH_CTL *                // - - control information
+        );
+typedef DIRGRAPH_EDGE *(*fn_alloc_edge) // - allocate edge
+        ( DIRGRAPH_CTL *                // - - control information
+        );
+typedef void (*fn_free_node)            // - free node
+        ( DIRGRAPH_CTL *                // - - control information
+        , DIRGRAPH_NODE *               // - - node to be freed
+        );
+typedef void (*fn_free_edge)            // - free edge
+        ( DIRGRAPH_CTL *                // - - control information
+        , DIRGRAPH_EDGE *               // - - edge to be freed
+        );
+typedef DIRGRAPH_NODE *(*fn_init_node)  // - initialize non-abstract information
+        ( DIRGRAPH_CTL *                // - - control information
+        , DIRGRAPH_NODE *               // - - node to be initialized
+        );
+typedef DIRGRAPH_EDGE *(*fn_init_edge)  // - initialize non-abstract information
+        ( DIRGRAPH_CTL *                // - - control information
+        , DIRGRAPH_EDGE *               // - - edge to be initialized
+        );
+typedef DIRGRAPH_EDGE *(*fn_dup_edge)   // - process allocated edge
+        ( DIRGRAPH_CTL *                // - - control information
+        , DIRGRAPH_EDGE *               // - - edge to be initialized
+        );
+typedef void (*fn_prune_node)           // - prune node
+        ( DIRGRAPH_CTL *                // - - control information
+        , DIRGRAPH_NODE *               // - - node to be pruned
+        );
+typedef void (*fn_prune_edge)           // - prune edge
+        ( DIRGRAPH_CTL *                // - - control information
+        , DIRGRAPH_EDGE *               // - - edge to be pruned
+        );
 
 struct dirgraph_vft             // DIRGRAPH_VFT -- virtual functions
 {
-    void (*init_ctl)            // - initialize control information
-        ( DIRGRAPH_CTL *        // - - control information
-        );
-    void (*fini_ctl)            // - finalize control information
-        ( DIRGRAPH_CTL *        // - - control information
-        );
-    DIRGRAPH_NODE *(*alloc_node)// - allocate node
-        ( DIRGRAPH_CTL *        // - - control information
-        );
-    DIRGRAPH_EDGE *(*alloc_edge)// - allocate edge
-        ( DIRGRAPH_CTL *        // - - control information
-        );
-    void (*free_node)           // - free node
-        ( DIRGRAPH_CTL *        // - - control information
-        , DIRGRAPH_NODE *       // - - node to be freed
-        );
-    void (*free_edge)           // - free edge
-        ( DIRGRAPH_CTL *        // - - control information
-        , DIRGRAPH_EDGE *       // - - edge to be freed
-        );
-    DIRGRAPH_NODE *(*init_node) // - initialize non-abstract information
-        ( DIRGRAPH_CTL *        // - - control information
-        , DIRGRAPH_NODE *       // - - node to be initialized
-        );
-    DIRGRAPH_EDGE *(*init_edge) // - initialize non-abstract information
-        ( DIRGRAPH_CTL *        // - - control information
-        , DIRGRAPH_EDGE *       // - - edge to be initialized
-        );
-    DIRGRAPH_EDGE *(*dup_edge)  // - process allocated edge
-        ( DIRGRAPH_CTL *        // - - control information
-        , DIRGRAPH_EDGE *       // - - edge to be initialized
-        );
-    void (*prune_node)          // - prune node
-        ( DIRGRAPH_CTL *        // - - control information
-        , DIRGRAPH_NODE *       // - - node to be pruned
-        );
-    void (*prune_edge)          // - prune edge
-        ( DIRGRAPH_CTL *        // - - control information
-        , DIRGRAPH_EDGE *       // - - edge to be pruned
-        );
+    fn_init_ctl     init_ctl;
+    fn_fini_ctl     fini_ctl;
+    fn_alloc_node   alloc_node;
+    fn_alloc_edge   alloc_edge;
+    fn_free_node    free_node;
+    fn_free_edge    free_edge;
+    fn_init_node    init_node;
+    fn_init_edge    init_edge;
+    fn_dup_edge     dup_edge;
+    fn_prune_node   prune_node;
+    fn_prune_edge   prune_edge;
 };
 
 
@@ -152,3 +163,4 @@ boolean DgrfWalkObjects(        // WALK ALL OBJECTS
 
 
 #endif
+        

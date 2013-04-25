@@ -39,7 +39,7 @@ void FormatSymWithTypedefs( SYMBOL, VBUF * );
 void FormatFnDefnWithTypedefs( SYMBOL, VBUF * );
 void FormatFnDefn( SYMBOL, VBUF * );
 void FormatScope( SCOPE, VBUF *, boolean );
-void FormatName( char *, VBUF * );
+void FormatName( NAME, VBUF * );
 void FormatTemplateParms( VBUF *, TYPE );
 void FormatUnboundTemplateParms( VBUF *, TYPE );
 void FormatTemplateParmScope( VBUF *parms, SCOPE parm_scope );

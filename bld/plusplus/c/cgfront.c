@@ -200,7 +200,7 @@ void CgFrontFuncInitFlags(      // GENERATE INIT FLAGS FOR FUNCTION
 
 static void cgEmitCodeUint(     // EMIT INSTRUCTION TO CODE FILE WITH UINT PARM
     CGFILE_GEN *gen,            // - generation data
-    unsigned opcode,            // - opcode
+    CGINTEROP opcode,           // - opcode
     unsigned value )            // - value
 {
     CGINTER ins;                // - instruction
@@ -213,7 +213,7 @@ static void cgEmitCodeUint(     // EMIT INSTRUCTION TO CODE FILE WITH UINT PARM
 
 static void cgEmitCodePtr(      // EMIT INSTRUCTION TO CODE FILE WITH PTR PARM
     CGFILE_GEN *gen,            // - generation data
-    unsigned opcode,            // - opcode
+    CGINTEROP opcode,           // - opcode
     void *value )               // - value
 {
     CGINTER ins;                // - instruction
@@ -322,7 +322,7 @@ CGFILE_INS CgFrontLastIns(      // RETURN LOCATION OF LAST WRITTEN CODE IC
 
 
 void CgFrontCode(               // EMIT TO CODE SEGMENT
-    int opcode )                // - intermediate code
+    CGINTEROP opcode )          // - intermediate code
 {
     CGINTER ins;                // - instruction
 
@@ -333,7 +333,7 @@ void CgFrontCode(               // EMIT TO CODE SEGMENT
 
 
 void CgFrontCodeInt(            // EMIT (code,int) TO CODE SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     int value )                 // - value
 {
     CGINTER ins;                // - instruction
@@ -345,7 +345,7 @@ void CgFrontCodeInt(            // EMIT (code,int) TO CODE SEGMENT
 
 
 void CgFrontCodeUint(           // EMIT (code,unsigned) TO CODE SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     unsigned value )            // - value
 {
     CGINTER ins;                // - instruction
@@ -357,7 +357,7 @@ void CgFrontCodeUint(           // EMIT (code,unsigned) TO CODE SEGMENT
 
 
 void CgFrontCodePtr(            // EMIT (code,ptr) TO CODE SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     void *value )               // - value
 {
     CGINTER ins;                // - instruction
@@ -369,7 +369,7 @@ void CgFrontCodePtr(            // EMIT (code,ptr) TO CODE SEGMENT
 
 
 void CgFrontData(               // EMIT TO DATA SEGMENT
-    int opcode )                // - intermediate code
+    CGINTEROP opcode )          // - intermediate code
 {
     CGINTER ins;                // - instruction
 
@@ -380,7 +380,7 @@ void CgFrontData(               // EMIT TO DATA SEGMENT
 
 
 void CgFrontDataInt(            // EMIT (code,int) TO DATA SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     int value )                 // - value
 {
     CGINTER ins;                // - instruction
@@ -392,7 +392,7 @@ void CgFrontDataInt(            // EMIT (code,int) TO DATA SEGMENT
 
 
 void CgFrontDataUint(           // EMIT (code,unsigned) TO DATA SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     unsigned value )            // - value
 {
     CGINTER ins;                // - instruction
@@ -404,7 +404,7 @@ void CgFrontDataUint(           // EMIT (code,unsigned) TO DATA SEGMENT
 
 
 void CgFrontDataPtr(            // EMIT (code,ptr) TO DATA SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     void *value )               // - value
 {
     CGINTER ins;                // - instruction
@@ -440,7 +440,7 @@ void CgFrontInitRef(            // EMIT TO INIT-REF SEGMENT
 
 void CgFrontZapPtr(             // ZAP A WRITTEN RECORD (PTR OPERAND)
     CGFILE_INS location,        // - location to be zapped
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     void *operand )             // - operand
 {
     CGINTER ins;                // - instruction
@@ -453,7 +453,7 @@ void CgFrontZapPtr(             // ZAP A WRITTEN RECORD (PTR OPERAND)
 
 void CgFrontZapUint(            // ZAP A WRITTEN RECORD (UNSIGNED OPERAND)
     CGFILE_INS location,        // - location to be zapped
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     unsigned operand )          // - operand
 {
     CGINTER ins;                // - instruction
@@ -510,14 +510,14 @@ unsigned CgFrontLabelGoto(      // GET NEXT AVAILABLE LABEL # (GOTO)
 
 static void label_reference(    // EMIT NEAR LABEL REFERENCE
     CGLABEL label,              // - label
-    int opcode )                // - opcode
+    CGINTEROP opcode )          // - opcode
 {
     CgFrontCodeInt( opcode, label - 1 );
 }
 
 
 void CgFrontGotoNear(           // EMIT GOTO IN NEAR SPACE (CS,GOTO)
-    int opcode,                 // - opcode to determine type of label ref.
+    CGINTEROP opcode,           // - opcode to determine type of label ref.
     unsigned condition,         // - condition for goto
     CGLABEL label )             // - label number
 {
@@ -863,7 +863,7 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
         } else {
             stpcpy( seg_name, TS_SEG_CODE );
         }
-        CMemFreePtr( &TextSegName );
+        CMemFree( TextSegName );
         TextSegName = strsave( seg_name );
     }
     SegmentInit( TextSegName );
@@ -897,23 +897,15 @@ INITDEFN( front_end, cgfrontInit, cgfrontFini )
 
 pch_status PCHWriteFrontData( void )
 {
-    CGFILE *tmp_cgfile;
-
-    tmp_cgfile = CGFileGetIndex( dataCGFILE );
-    PCHWrite( &tmp_cgfile, sizeof( tmp_cgfile ) );
-    tmp_cgfile = CGFileGetIndex( codeCGFILE );
-    PCHWrite( &tmp_cgfile, sizeof( tmp_cgfile ) );
+    PCHWriteCVIndex( (cv_index)CGFileGetIndex( dataCGFILE ) );
+    PCHWriteCVIndex( (cv_index)CGFileGetIndex( codeCGFILE ) );
     return( PCHCB_OK );
 }
 
 pch_status PCHReadFrontData( void )
 {
-    CGFILE *tmp_cgfile;
-
-    PCHRead( &tmp_cgfile, sizeof( tmp_cgfile ) );
-    dataCGFILE = CGFileMapIndex( tmp_cgfile );
-    PCHRead( &tmp_cgfile, sizeof( tmp_cgfile ) );
-    codeCGFILE = CGFileMapIndex( tmp_cgfile );
+    dataCGFILE = CGFileMapIndex( (CGFILE *)PCHReadCVIndex() );
+    codeCGFILE = CGFileMapIndex( (CGFILE *)PCHReadCVIndex() );
     return( PCHCB_OK );
 }
 

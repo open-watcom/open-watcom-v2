@@ -159,7 +159,7 @@ void MsgDisplayArgs             // DISPLAY A MESSAGE WITH ARGS
     , ... )                     // - arguments
 ;
 void MsgDisplayBanner           // DISPLAY A BANNER LINE
-    ( char* line )              // - the line
+    ( const char *line )        // - the line
 ;
 void MsgDisplayLine             // DISPLAY A BARE LINE
     ( const char* line )        // - the line

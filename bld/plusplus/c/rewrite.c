@@ -48,7 +48,9 @@
 
 /*
     The "rewrite file" consists of a string of tokens, each of which is
-    preceded by one or more modifiers. The modifiers are decoded as follows:
+    preceded by one or more modifiers.
+
+    The modifiers are decoded as extra token (T_REWRITE_MODS) and aditional data.
 
         byte:   b'00000000' -- next bytes are SRCFILE for source file
 
@@ -56,7 +58,7 @@
                             -- if value > 0
                                     value is column #, fetch token
                                else
-                                    (-value) is line #
+                                    (-value) is line #, column <-- 0
 
                 b'1xxxxxxx' -- add 'xxxxxx' to line no., column <-- 0
 
@@ -74,17 +76,21 @@
     T_STRING, T_LSTRING, T_ID, T_BAD_CHAR
         followed by bytes in token buffer ('\0' terminator)
     T_CONSTANT (integral)
-        followed by <ConstType> <4-byte value> (least significant first)
+        followed by <ConstType> <8-byte value> (least significant first)
     T_CONSTANT (floating point)
         followed by <ConstType> string of flt-pt number ('\0' terminator)
     T_BAD_TOKEN
         followed by contents of BadTokenInfo
 */
 
+#define T_REWRITE_MODS         T_LAST_TOKEN
+
 #define CODE_FILE 0x00              // code for SRCFILE
 #define CODE_ABS  0x80              // code for line#, col#
 #define MASK_ABS_LINE 0x80000000    // mask for absolute line
 #define MASK_DELTA_LINE 0x80        // mask for delta line
+
+#define REWRITE_EOT             (-1 << 8)
 
 static REWRITE *currRewrite;
 static TOKEN_LOCN *currLocn;
@@ -92,6 +98,9 @@ static TOKEN_LOCN *currLocn;
 #define BLOCK_REWRITE           8
 #define BLOCK_REWRITE_TOKENS    8
 #define BLOCK_SRCFILE_HANDLE    8
+
+#define _TokenPosGetIndex(s)    ((uint_8 *)(size_t)(s->stream - (uint_8 *)s->curr))
+#define _TokenPosMapIndex(s)    ((uint_8 *)((uint_8 *)s->curr + (size_t)s->stream))
 
 static carve_t carveREWRITE;
 static carve_t carveREWRITE_TOKENS;
@@ -102,10 +111,8 @@ static void rewriteInit( INITFINI* defn )
     defn = defn;
     currRewrite = NULL;
     carveREWRITE = CarveCreate( sizeof( REWRITE ), BLOCK_REWRITE );
-    carveREWRITE_TOKENS = CarveCreate( sizeof( REWRITE_TOKENS ),
-                                        BLOCK_REWRITE_TOKENS );
-    carveSRCFILE_HANDLE = CarveCreate( sizeof( SRCFILE_HANDLE ),
-                                        BLOCK_SRCFILE_HANDLE );
+    carveREWRITE_TOKENS = CarveCreate( sizeof( REWRITE_TOKENS ), BLOCK_REWRITE_TOKENS );
+    carveSRCFILE_HANDLE = CarveCreate( sizeof( SRCFILE_HANDLE ), BLOCK_SRCFILE_HANDLE );
 }
 
 static void rewriteFini( INITFINI* defn )
@@ -192,6 +199,11 @@ static void putBinary( REWRITE *r, uint_8 *bin, unsigned size )
     }
 }
 
+static void putToken( REWRITE *r, TOKEN token )
+{
+    putBinary( r, (uint_8 *)&token, sizeof( token ) );
+}
+
 static uint_32 newSrcFileHandle( REWRITE *r, SRCFILE src_file )
 {
     uint_32 index;
@@ -233,6 +245,7 @@ static void putSrcFile( REWRITE *r, TOKEN_LOCN *locn )
     uint_32 srcfile_index;
 
     srcfile_index = newSrcFileHandle( r, locn->src_file );
+    putToken( r, T_REWRITE_MODS );
     putByte( r, CODE_FILE );
     putBinary( r, (uint_8*)&srcfile_index, sizeof( srcfile_index ) );
     locn->line = 0;
@@ -250,6 +263,7 @@ static void putSrcLocn( REWRITE *r, TOKEN_LOCN *locn )
         locn->src_file = currfile;
         putSrcFile( r, locn );
     }
+    putToken( r, T_REWRITE_MODS );
     if( ( TokenLine - locn->line ) > 127 ) {
         putByte( r, CODE_ABS );
         absolute = TokenLine | MASK_ABS_LINE;
@@ -285,19 +299,19 @@ static void saveToken( REWRITE *r, TOKEN_LOCN *locn )
     case T_LSTRING:
     case T_ID:
     case T_BAD_CHAR:
-        putByte( r, CurToken );
+        putToken( r, CurToken );
         putString( r, Buffer );
         break;
     case T_BAD_TOKEN:
-        putByte( r, CurToken );
+        putToken( r, CurToken );
         putBinary( r, (uint_8*)&BadTokenInfo, sizeof( BadTokenInfo ) );
         break;
     case T_SAVED_ID:
-        putByte( r, T_ID );
-        putString( r, SavedId );
+        putToken( r, T_ID );
+        putString( r, NameStr( SavedId ) );
         break;
     case T_CONSTANT:
-        putByte( r, CurToken );
+        putToken( r, CurToken );
         putByte( r, ConstType );
         switch( ConstType ) {
         case TYP_LONG_DOUBLE:
@@ -307,14 +321,16 @@ static void saveToken( REWRITE *r, TOKEN_LOCN *locn )
             break;
         default:
             putBinary( r, (uint_8*)&Constant64, sizeof( Constant64 ) );
+            break;
         }
         break;
     default:
-        putByte( r, CurToken );
+        putToken( r, CurToken );
+        break;
     }
 }
 
-static REWRITE *newREWRITE( int end_token, TOKEN_LOCN *locn )
+static REWRITE *newREWRITE( TOKEN end_token, TOKEN_LOCN *locn )
 {
     REWRITE *r;
     REWRITE_TOKENS *rt;
@@ -324,7 +340,7 @@ static REWRITE *newREWRITE( int end_token, TOKEN_LOCN *locn )
     r->list = rt;
     r->curr = rt;
     r->srcfiles_refd = NULL;
-    r->token = rt->stream;
+    r->stream = rt->stream;
     r->last_token = end_token;
     r->busy = FALSE;
     r->free = FALSE;
@@ -342,7 +358,7 @@ static REWRITE *dupREWRITE( REWRITE *old_r )
     r->list = old_r->list;
     r->curr = old_r->curr;
     r->srcfiles_refd = old_r->srcfiles_refd;
-    r->token = old_r->token;
+    r->stream = old_r->stream;
     r->last_token = old_r->last_token;
     r->busy = FALSE;
     r->alternate = TRUE;
@@ -405,8 +421,8 @@ static PTREE recoverToken( PTREE tree )
 
 static void captureMulti( REWRITE *r, PTREE multi, TOKEN_LOCN *locn )
 {
-    int save_CurToken;
-    char *save_SavedId;
+    TOKEN save_CurToken;
+    NAME save_SavedId;
     REWRITE *save_rewrite;
     TOKEN_LOCN *save_locn;
 
@@ -431,7 +447,7 @@ static void captureMulti( REWRITE *r, PTREE multi, TOKEN_LOCN *locn )
 REWRITE *RewritePackageFunction( PTREE multi )
 /********************************************/
 {
-    ppstate_t save_pp;
+    ppstate_t old_ppstate;
     boolean skip_first;
     REWRITE *r;
     unsigned depth;
@@ -448,7 +464,7 @@ REWRITE *RewritePackageFunction( PTREE multi )
         skip_first = TRUE;
     }
     captureMulti( r, multi, plocn );
-    save_pp = PPState;
+    old_ppstate = PPState;
     asm_depth = 0;
     depth = 1;          /* we've seen one '{' */
     for(;;) {
@@ -460,7 +476,7 @@ REWRITE *RewritePackageFunction( PTREE multi )
 #ifndef NDEBUG
             DbgAssert( asm_depth != 0 );
 #endif
-            PPState = save_pp;
+            PPState = old_ppstate;
             if( depth == asm_depth ) {
                 asm_depth = 0;
                 PPStateAsm = FALSE;
@@ -468,7 +484,7 @@ REWRITE *RewritePackageFunction( PTREE multi )
             break;
         case T___ASM:
             if( asm_depth == 0 ) {
-                PPState = PPS_EOL;
+                PPS_ENABLE_EOL();
                 asm_depth = depth;
                 PPStateAsm = TRUE;
             }
@@ -483,10 +499,12 @@ REWRITE *RewritePackageFunction( PTREE multi )
         case T_ALT_RIGHT_BRACE:
             --depth;
             if( depth == asm_depth ) {
-                PPState = save_pp;
+                PPState = old_ppstate;
                 asm_depth = 0;
                 PPStateAsm = FALSE;
             }
+            break;
+        default:
             break;
         }
         if( ! skip_first ) {
@@ -497,10 +515,10 @@ REWRITE *RewritePackageFunction( PTREE multi )
             break;
         NextToken();
         if( PPStateAsm ) {
-            PPState = PPS_EOL;
+            PPS_ENABLE_EOL();
         }
     }
-    PPState = save_pp;
+    PPState = old_ppstate;
     return( r );
 }
 
@@ -519,7 +537,7 @@ REWRITE *RewritePackageMemInit( PTREE multi )
     unsigned paren_depth;
     unsigned brace_depth;
     TOKEN_LOCN locn;
-    auto TOKEN_LOCN start_locn;
+    TOKEN_LOCN start_locn;
 
     SrcFileGetTokenLocn( &start_locn );
     r = newREWRITE( T_RIGHT_BRACE, &locn );
@@ -556,6 +574,8 @@ REWRITE *RewritePackageMemInit( PTREE multi )
             }
             ++brace_depth;
             break;
+        default:
+            break;
         }
         NextToken();
     }
@@ -577,7 +597,7 @@ REWRITE *RewritePackageDefArg( PTREE multi )
     unsigned paren_depth;
     unsigned brace_depth;
     TOKEN_LOCN locn;
-    auto TOKEN_LOCN start_locn;
+    TOKEN_LOCN start_locn;
 
     DbgAssert( CurToken == T_EQUAL );
     NextToken();
@@ -626,6 +646,8 @@ REWRITE *RewritePackageDefArg( PTREE multi )
                 return( r );
             }
             break;
+        default:
+            break;
         }
         saveToken( r, &locn );
         NextToken();
@@ -642,7 +664,7 @@ REWRITE *RewritePackageTemplateArgument( void )
     unsigned bracket_depth;
     unsigned paren_depth;
     TOKEN_LOCN locn;
-    auto TOKEN_LOCN start_locn;
+    TOKEN_LOCN start_locn;
 
     SrcFileGetTokenLocn( &start_locn );
     r = newREWRITE( T_DEFARG_END, &locn );
@@ -720,6 +742,8 @@ REWRITE *RewritePackageTemplateArgument( void )
                 }
             }
             break;
+        default:
+            break;
         }
         saveToken( r, &locn );
         NextToken();
@@ -748,7 +772,7 @@ REWRITE *RewritePackagePassThrough( REWRITE *r )
     unsigned paren_depth;
     unsigned brace_depth;
     TOKEN_LOCN locn;
-    auto TOKEN_LOCN start_locn;
+    TOKEN_LOCN start_locn;
 
     DbgAssert( CurToken == T_EQUAL );
     NextToken();
@@ -796,6 +820,8 @@ REWRITE *RewritePackagePassThrough( REWRITE *r )
                 return( dummy );
             }
             break;
+        default:
+            break;
         }
         saveToken( r, &locn );
         NextToken();
@@ -816,7 +842,7 @@ REWRITE *RewritePackageClassTemplate( REWRITE *r, TOKEN_LOCN *locn )
 {
     unsigned brace_depth;
     boolean first_time;
-    auto TOKEN_LOCN start_locn;
+    TOKEN_LOCN start_locn;
 
     SrcFileGetTokenLocn( &start_locn );
     brace_depth = 0;
@@ -840,8 +866,7 @@ REWRITE *RewritePackageClassTemplate( REWRITE *r, TOKEN_LOCN *locn )
             --brace_depth;
             if( brace_depth == 0 ) {
                 NextToken();
-                if( CurToken != T_SEMI_COLON ) {
-                    Expecting( Tokens[ T_SEMI_COLON ] );
+                if( !ExpectingToken( T_SEMI_COLON ) ) {
                     return( templateError( r, &start_locn ) );
                 }
                 return( r );
@@ -850,6 +875,8 @@ REWRITE *RewritePackageClassTemplate( REWRITE *r, TOKEN_LOCN *locn )
         case T_LEFT_BRACE:
         case T_ALT_LEFT_BRACE:
             ++brace_depth;
+            break;
+        default:
             break;
         }
         NextToken();
@@ -862,7 +889,7 @@ REWRITE *RewritePackageClassTemplateMember( REWRITE *r, TOKEN_LOCN *locn )
 {
     unsigned brace_depth;
     boolean first_time;
-    auto TOKEN_LOCN start_locn;
+    TOKEN_LOCN start_locn;
 
     SrcFileGetTokenLocn( &start_locn );
     brace_depth = 0;
@@ -902,6 +929,8 @@ REWRITE *RewritePackageClassTemplateMember( REWRITE *r, TOKEN_LOCN *locn )
                 NextToken();
                 return( r );
             }
+            break;
+        default:
             break;
         }
         NextToken();
@@ -957,30 +986,26 @@ REWRITE *RewriteRewind( REWRITE *r )
     currRewrite = r;
     r->busy = TRUE;
     r->curr = r->list;
-    r->token = &(r->curr->stream[0]);
+    r->stream = r->curr->stream;
     RewriteToken();
     return( last_rewrite );
 }
 
-static uint_8 getByte( REWRITE *r, REWRITE_TOKENS **rt, uint_8 **stop )
+static int getByte( REWRITE *r, REWRITE_TOKENS **rt, uint_8 **stop )
 {
     REWRITE_TOKENS *my_rt;
 
-    if( r->token != *stop ) {
-        return( *(r->token++) );
-    }
-    my_rt = (*rt)->next;
-    if( my_rt == NULL ) {
-        return( r->last_token );
-    }
-    *rt = my_rt;
-    r->curr = my_rt;
-    if( *rt != NULL ) {
+    if( r->stream == *stop ) {
+        my_rt = (*rt)->next;
+        if( my_rt == NULL ) {
+            return( REWRITE_EOT );
+        }
+        *rt = my_rt;
+        r->curr = my_rt;
         *stop = &(my_rt->stream[my_rt->count]);
-        r->token = &(my_rt->stream[0]);
-        return( *(r->token++) );
+        r->stream = my_rt->stream;
     }
-    return( r->last_token );
+    return( *(r->stream++) );
 }
 
 static unsigned getString( REWRITE*r, REWRITE_TOKENS**rt, uint_8**stop, char*dest)
@@ -1000,12 +1025,23 @@ static unsigned getString( REWRITE*r, REWRITE_TOKENS**rt, uint_8**stop, char*des
     return( len );
 }
 
-static void getBinary( REWRITE*r, REWRITE_TOKENS**rt, uint_8**stop,
-                       uint_8 *bin, unsigned size )
+static int getBinary( REWRITE*r, REWRITE_TOKENS**rt, uint_8**stop, uint_8 *bin, unsigned size )
 {
+    int  rc = 0;
+
     for( ; size > 0; --size, ++bin ) {
-        *bin = getByte( r, rt, stop );
+        *bin = rc = getByte( r, rt, stop );
     }
+    return( rc == REWRITE_EOT );
+}
+
+static TOKEN getToken( REWRITE *r, REWRITE_TOKENS **rt, uint_8 **stop )
+{
+    TOKEN       token;
+
+    if( getBinary( r, rt, stop, (uint_8 *)&token, sizeof( token ) ) )
+        return( r->last_token );
+    return( token );
 }
 
 void RewriteToken( void )
@@ -1014,17 +1050,17 @@ void RewriteToken( void )
     REWRITE *r;
     REWRITE_TOKENS *rt;
     uint_8 *stop;
-    uint_8 token;
     uint_32 srcfile_index;
     SRCFILE srcfile;
     uint_32 absolute;
-    uint_8 code_byte;
+    int code_byte;
     unsigned len;
 
     r = currRewrite;
     rt = r->curr;
     stop = &(rt->stream[rt->count]);
-    for(;;) {
+    CurToken = getToken( r, &rt, &stop );
+    if( CurToken == T_REWRITE_MODS ) {
         code_byte = getByte( r, &rt, &stop );
         if( code_byte == CODE_FILE ) {
             getBinary( r, &rt, &stop, (uint_8*)&srcfile_index, sizeof( srcfile_index ) );
@@ -1032,24 +1068,34 @@ void RewriteToken( void )
             SrcFilePoint( srcfile );
             TokenLine = 0;
             TokenColumn = 0;
-        } else if( code_byte == CODE_ABS ) {
-            getBinary( r, &rt, &stop, (uint_8*)&absolute, sizeof( absolute ) );
-            if( MASK_ABS_LINE & absolute ) {
-                TokenLine = absolute & ~MASK_ABS_LINE;
-                TokenColumn = 0;
-            } else {
-                TokenColumn = absolute;
-                break;
+            CurToken = getToken( r, &rt, &stop );
+            if( CurToken == T_REWRITE_MODS ) {
+                code_byte = getByte( r, &rt, &stop );
             }
-        } else if( MASK_DELTA_LINE & code_byte ) {
-            TokenLine += code_byte & ~ MASK_DELTA_LINE;
-        } else {
-            TokenColumn += code_byte;
-            break;
         }
     }
-    token = getByte( r, &rt, &stop );
-    switch( token ) {
+    if( CurToken == T_REWRITE_MODS ) {
+        for( ;; ) {
+            if( code_byte == CODE_ABS ) {
+                getBinary( r, &rt, &stop, (uint_8*)&absolute, sizeof( absolute ) );
+                if( MASK_ABS_LINE & absolute ) {
+                    TokenLine = absolute & ~MASK_ABS_LINE;
+                    TokenColumn = 0;
+                } else {
+                    TokenColumn = absolute;
+                    break;
+                }
+            } else if( MASK_DELTA_LINE & code_byte ) {
+                TokenLine += code_byte & ~MASK_DELTA_LINE;
+            } else {
+                TokenColumn += code_byte;
+                break;
+            }
+            code_byte = getByte( r, &rt, &stop );
+        }
+        CurToken = getToken( r, &rt, &stop );
+    }
+    switch( CurToken ) {
     case T_ID:
     case T_BAD_CHAR:
         len = getString( r, &rt, &stop, Buffer );
@@ -1074,10 +1120,12 @@ void RewriteToken( void )
             break;
         default:
             getBinary( r, &rt, &stop, (uint_8*)&Constant64, sizeof( Constant64 ) );
+            break;
         }
         break;
+    default:
+        break;
     }
-    CurToken = token;
 #ifndef NDEBUG
     CtxScanToken();
     DumpToken();
@@ -1138,30 +1186,26 @@ static void saveRewrite( void *e, carve_walk_base *d )
     REWRITE_TOKENS *save_list;
     REWRITE_TOKENS *save_curr;
     SRCFILE_HANDLE *h;
-    SRCFILE srcfile;
-    unsigned srcfile_terminator;
-    uint_8 *save_token;
+    uint_8 *save_stream;
 
     if( s->free ) {
         return;
     }
+    save_stream = s->stream;
     save_list = s->list;
-    s->list = CarveGetIndex( carveREWRITE_TOKENS, save_list );
     save_curr = s->curr;
+    s->stream = _TokenPosGetIndex( s );  // must be first
+    s->list = CarveGetIndex( carveREWRITE_TOKENS, save_list );
     s->curr = CarveGetIndex( carveREWRITE_TOKENS, save_curr );
-    save_token = s->token;
-    s->token = (uint_8 *) ( save_token - (uint_8 *) save_curr );
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     for( h = s->srcfiles_refd; h != NULL; h = h->next ) {
-        srcfile = SrcFileGetIndex( h->srcfile );
-        PCHWrite( &srcfile, sizeof( srcfile ) );
+        PCHWriteCVIndex( (cv_index)SrcFileGetIndex( h->srcfile ) );
     }
-    srcfile_terminator = CARVE_NULL_INDEX;
-    PCHWriteCVIndex( srcfile_terminator );
+    PCHWriteCVIndexTerm();
     s->list = save_list;
     s->curr = save_curr;
-    s->token = save_token;
+    s->stream = save_stream;
 }
 
 static void markFreeRewriteTokens( void *p )
@@ -1182,21 +1226,20 @@ static void saveRewriteTokens( void *e, carve_walk_base *d )
     save_next = s->next;
     s->next = CarveGetIndex( carveREWRITE_TOKENS, save_next );
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->next = save_next;
 }
 
 pch_status PCHWriteRewrites( void )
 {
-    unsigned terminator = CARVE_NULL_INDEX;
-    auto carve_walk_base data;
+    carve_walk_base data;
 
     CarveWalkAllFree( carveREWRITE, markFreeRewrite );
     CarveWalkAll( carveREWRITE, saveRewrite, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveREWRITE_TOKENS, markFreeRewriteTokens );
     CarveWalkAll( carveREWRITE_TOKENS, saveRewriteTokens, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 
@@ -1205,32 +1248,22 @@ pch_status PCHReadRewrites( void )
     cv_index i;
     REWRITE *r;
     REWRITE_TOKENS *rt;
-    SRCFILE srcfile;
-    auto cvinit_t data;
+    cvinit_t data;
 
     CarveInitStart( carveREWRITE, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        r = CarveInitElement( &data, i );
-        PCHRead( r, sizeof( *r ) );
+    for( ; (r = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *r );
         r->list = CarveMapIndex( carveREWRITE_TOKENS, r->list );
         r->curr = CarveMapIndex( carveREWRITE_TOKENS, r->curr );
+        r->stream = _TokenPosMapIndex( r );  // must be last
         r->srcfiles_refd = NULL;
-        r->token = ((uint_8 *) r->curr) + (unsigned) r->token;
-        for(;;) {
-            PCHRead( &srcfile, sizeof( srcfile ) );
-            srcfile = SrcFileMapIndex( srcfile );
-            if( srcfile == NULL ) break;
-            newSrcFileHandle( r, srcfile );
+        for( ; (i = PCHReadCVIndex()) != CARVE_NULL_INDEX; ) {
+            newSrcFileHandle( r, SrcFileMapIndex( (SRCFILE)i ) );
         }
     }
     CarveInitStart( carveREWRITE_TOKENS, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        rt = CarveInitElement( &data, i );
-        PCHRead( rt, sizeof( *rt ) );
+    for( ; (rt = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *rt );
         rt->next = CarveMapIndex( carveREWRITE_TOKENS, rt->next );
     }
     return( PCHCB_OK );
@@ -1238,25 +1271,17 @@ pch_status PCHReadRewrites( void )
 
 pch_status PCHInitRewrites( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carveREWRITE );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveREWRITE_TOKENS );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveSRCFILE_HANDLE );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveREWRITE ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveREWRITE_TOKENS ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveSRCFILE_HANDLE ) );
     } else {
         carveREWRITE = CarveRestart( carveREWRITE );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveREWRITE, n );
+        CarveMapOptimize( carveREWRITE, PCHReadCVIndex() );
         carveREWRITE_TOKENS = CarveRestart( carveREWRITE_TOKENS );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveREWRITE_TOKENS, n );
+        CarveMapOptimize( carveREWRITE_TOKENS, PCHReadCVIndex() );
         carveSRCFILE_HANDLE = CarveRestart( carveSRCFILE_HANDLE );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveSRCFILE_HANDLE, n );
+        CarveMapOptimize( carveSRCFILE_HANDLE, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

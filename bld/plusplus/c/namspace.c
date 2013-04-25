@@ -49,7 +49,7 @@ typedef enum {
 static SYMBOL injectNameSpaceSym( SYMBOL sym
                                 , NAME_SPACE *ns
                                 , SCOPE scope
-                                , char *name
+                                , NAME name
                                 , TOKEN_LOCN *locn )
 {
     SYMBOL ret_sym;
@@ -66,7 +66,7 @@ static SYMBOL injectNameSpaceSym( SYMBOL sym
     return( ret_sym );
 }
 
-static SYMBOL previousNSSym( char *name, SCOPE host_scope, find_ns control )
+static SYMBOL previousNSSym( NAME name, SCOPE host_scope, find_ns control )
 {
     SEARCH_RESULT *result;
     SYMBOL_NAME sym_name;
@@ -90,9 +90,9 @@ static SYMBOL previousNSSym( char *name, SCOPE host_scope, find_ns control )
     return( NULL );
 }
 
-static void openNameSpaceSym( char *name, TOKEN_LOCN *locn )
+static void openNameSpaceSym( NAME name, TOKEN_LOCN *locn )
 {
-    char *ns_name;
+    NAME ns_name;
     SCOPE inject_scope;
     SCOPE scope;
     SYMBOL ns_sym;
@@ -136,7 +136,7 @@ void NameSpaceUnnamed( TOKEN_LOCN *locn )
 void NameSpaceNamed( PTREE id )
 /*****************************/
 {
-    char *name;
+    NAME name;
 
     name = id->u.id.name;
     openNameSpaceSym( name, &(id->locn) );
@@ -184,7 +184,7 @@ static SCOPE getSearchScope( PTREE id, PTREE *find_id, find_ns *pcontrol )
 void NameSpaceAlias( PTREE to_id, PTREE from_id )
 /***********************************************/
 {
-    char *alias_name;
+    NAME alias_name;
     PTREE id;
     SCOPE find_scope;
     NAME_SPACE *ns;
@@ -247,7 +247,7 @@ static SEARCH_RESULT *lookupUsingId( PTREE using_id )
     SCOPE disambig;
     PTREE left;
     PTREE right;
-    char *name;
+    NAME name;
     SEARCH_RESULT *result;
 
     if( NodeIsBinaryOp( using_id, CO_COLON_COLON ) ) {

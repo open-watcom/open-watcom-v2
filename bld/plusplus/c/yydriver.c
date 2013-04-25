@@ -420,7 +420,7 @@ static PTREE makeId( void )
 static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
                               SYMBOL_NAME *psym_name )
 {
-    char *name;
+    NAME name;
     SYMBOL_NAME sym_name;
     SYMBOL sym;
     TYPE type;
@@ -560,7 +560,7 @@ static void nextYYLexToken( PARSE_STACK *state )
     nextRecordedToken( state );
 }
 
-static TYPE findGenericType( SCOPE scope, char *name )
+static TYPE findGenericType( SCOPE scope, NAME name )
 {
     TYPE generic_type;
     TYPE test_type;
@@ -583,7 +583,7 @@ static TYPE findGenericType( SCOPE scope, char *name )
 static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
                               boolean special_typename )
 {
-    char *name;
+    NAME name;
     TYPE test_type;
     TYPE scope_type;
     TYPE class_type;
@@ -601,8 +601,7 @@ static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
          * [class.dtor] (14) "the notation for explicit call of a
          * destructor can be used for any scalar type name
          * (5.2.4)." */
-        result = ScopeFindLexicalColonColon( not_nested, name,
-                                             CurToken == T_TILDE );
+        result = ScopeFindLexicalColonColon( not_nested, name, CurToken == T_TILDE );
     }
     if( result == NULL ) {
         if( scope != NULL ) {
@@ -665,7 +664,7 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
                         unsigned ctrl, boolean special_typename )
 {
     lk_result id_check;
-    char *name;
+    NAME name;
     SCOPE scope;
     SCOPE lexical_lookup;
     SCOPE member_lookup;
@@ -719,8 +718,7 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
             special_template = FALSE;
         }
         if( ! undefined_scope ) {
-            scope = checkColonColon( id, member_lookup, lexical_lookup,
-                                     special_typename );
+            scope = checkColonColon( id, member_lookup, lexical_lookup, special_typename );
             if( scope == NULL ) {
                 undefined_scope = TRUE;
             }
@@ -747,8 +745,7 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
                 }
             }
 
-            id_check = lexCategory( scope, id, LK_NULL,
-                                    &yylval.tree->sym_name );
+            id_check = lexCategory( scope, id, LK_NULL, &yylval.tree->sym_name );
             switch( id_check ) {
             case LK_ID:
                 return( Y_SCOPED_ID );
@@ -793,7 +790,7 @@ static int templateScopedChain( PARSE_STACK *state, boolean special_typename )
     PTREE id;
     TYPE template_type;
     TYPE template_class_type;
-    char *name;
+    NAME name;
     SCOPE scope;
     int adjusted_token;
     boolean undefined_scope;
@@ -827,9 +824,7 @@ static int templateScopedChain( PARSE_STACK *state, boolean special_typename )
             if( ! undefined_scope ) {
                 id = makeId();
                 if( LAToken == T_COLON_COLON ) {
-                    adjusted_token =
-                        scopedChain( state, curr, id, CH_ALREADY_STARTED,
-                                     special_typename );
+                    adjusted_token = scopedChain( state, curr, id, CH_ALREADY_STARTED, special_typename );
                     /* translate to the correct token value */
                     adjusted_token -= Y_SCOPED_ID;
                     adjusted_token += Y_TEMPLATE_SCOPED_ID;
@@ -841,8 +836,7 @@ static int templateScopedChain( PARSE_STACK *state, boolean special_typename )
                 if( template_class_type != NULL ) {
                     scope = template_class_type->u.c.scope;
 
-                    id_check = lexCategory( scope, id, LK_NULL,
-                                            &yylval.tree->sym_name );
+                    id_check = lexCategory( scope, id, LK_NULL, &yylval.tree->sym_name );
                     if( id_check == LK_TEMPLATE ) {
                         return( Y_TEMPLATE_SCOPED_TEMPLATE_NAME );
                     } else if( id_check == LK_TYPE ) {
@@ -904,13 +898,11 @@ static int globalChain( PARSE_STACK *state, boolean special_typename )
     case T_SAVED_ID:
         id = makeId();
         if( LAToken == T_COLON_COLON ) {
-            return( scopedChain( state, tree, id, CH_NULL,
-                                 special_typename ) );
+            return( scopedChain( state, tree, id, CH_NULL, special_typename ) );
         }
         yylval.tree = makeBinary( CO_STORAGE, tree, id );
         yylval.tree->flags |= special_typename ? PTF_TYPENAME : 0;
-        id_check = lexCategory( GetFileScope(), id, LK_LEXICAL,
-                                &yylval.tree->sym_name );
+        id_check = lexCategory( GetFileScope(), id, LK_LEXICAL, &yylval.tree->sym_name );
         return( globalLookupToken[ id_check ] );
     case T_OPERATOR:
         yylval.tree = makeUnary( CO_OPERATOR, tree );
@@ -1006,8 +998,7 @@ static int yylex( PARSE_STACK *state )
             break;
         case Y_TYPE_NAME:
             // this is the only kind of id that can change in an ambiguity zone
-            id_check = lexCategory( GetCurrScope(), yylval.tree, LK_LEXICAL,
-                                    &yylval.tree->sym_name );
+            id_check = lexCategory( GetCurrScope(), yylval.tree, LK_LEXICAL, &yylval.tree->sym_name );
             if( id_check != LK_TYPE ) {
                 yylval.tree->type = NULL;
                 token = Y_ID;
@@ -1052,8 +1043,7 @@ static int yylex( PARSE_STACK *state )
         /* fall through */
     case T_SAVED_ID:
         if( LAToken == T_COLON_COLON && ! flags.no_super_token ) {
-            token = scopedChain( state, NULL, makeId(), CH_NULL,
-                                 flags.special_typename );
+            token = scopedChain( state, NULL, makeId(), CH_NULL, flags.special_typename );
         } else {
             token = doId( state->scope_member );
             yylval.tree->flags |= flags.special_typename ? PTF_TYPENAME : 0;
@@ -2176,11 +2166,11 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
     #undef INC_STACK
 }
 
-static void makeStable( int end_token )
+static void makeStable( TOKEN end_token )
 {
     unsigned depth;
     boolean token_absorbed;
-    int alt_token;
+    TOKEN alt_token;
 
     /* also accept alternative tokens (digraphs) */
     if( end_token == T_LEFT_BRACKET ) {
@@ -2203,8 +2193,7 @@ static void makeStable( int end_token )
     depth = 0;
     for(;;) {
         if( CurToken == T_EOF ) return;
-        if( ( CurToken == T_LEFT_BRACE )
-         || ( CurToken == T_ALT_LEFT_BRACE ) ) {
+        if( ( CurToken == T_LEFT_BRACE ) || ( CurToken == T_ALT_LEFT_BRACE ) ) {
             ++depth;
         } else if( depth == 0 ) {
             switch( CurToken ) {
@@ -2233,12 +2222,11 @@ static void makeStable( int end_token )
                 nextToken( &yylocation );
                 return;
             default:
-                if( ( CurToken == end_token ) || ( CurToken == alt_token ) ){
+                if( ( CurToken == end_token ) || ( CurToken == alt_token ) ) {
                     return;
                 }
             }
-        } else if( ( CurToken == T_RIGHT_BRACE ) 
-                || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
+        } else if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
             --depth;
         }
         token_absorbed = TRUE;
@@ -2316,8 +2304,7 @@ static void syntaxError( PARSE_STACK *state )
             break;
         default:
             if( state->expect != NULL ) {
-                CErr( ERR_SYNTAX_UNEXPECTED_TOKEN, TokenString(),
-                      state->expect );
+                CErr( ERR_SYNTAX_UNEXPECTED_TOKEN, TokenString(), state->expect );
             } else {
                 CErr1( ERR_SYNTAX );
             }
@@ -2371,8 +2358,7 @@ static void recordTemplateCtorInitializer( PARSE_STACK *state )
     }
 }
 
-static PTREE genericParseExpr( YYTOKENTYPE tok, int end_token,
-                               MSG_NUM err_msg )
+static PTREE genericParseExpr( YYTOKENTYPE tok, TOKEN end_token, MSG_NUM err_msg )
 {
     int t;
     PARSE_STACK expr_state;
@@ -2415,40 +2401,34 @@ static PTREE genericParseExpr( YYTOKENTYPE tok, int end_token,
     return( expr_tree );
 }
 
-PTREE ParseExpr( int end_token )
+PTREE ParseExpr( TOKEN end_token )
 {
-    return genericParseExpr( Y_EXPRESSION_SPECIAL, end_token,
-                             ERR_COMPLICATED_EXPRESSION );
+    return genericParseExpr( Y_EXPRESSION_SPECIAL, end_token, ERR_COMPLICATED_EXPRESSION );
 }
 
 PTREE ParseExprDecl( void )
 {
-    return genericParseExpr( Y_EXPR_DECL_SPECIAL, T_SEMI_COLON,
-                             ERR_COMPLICATED_STATEMENT );
+    return genericParseExpr( Y_EXPR_DECL_SPECIAL, T_SEMI_COLON, ERR_COMPLICATED_STATEMENT );
 }
 
 PTREE ParseMemInit( void )
 {
-    return genericParseExpr( Y_MEM_INIT_SPECIAL, T_LEFT_BRACE,
-                             ERR_COMPLICATED_EXPRESSION );
+    return genericParseExpr( Y_MEM_INIT_SPECIAL, T_LEFT_BRACE, ERR_COMPLICATED_EXPRESSION );
 }
 
 PTREE ParseDefArg( )
 {
-    return genericParseExpr( Y_DEFARG_SPECIAL, T_DEFARG_END,
-                             ERR_COMPLICATED_EXPRESSION );
+    return genericParseExpr( Y_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION );
 }
 
 PTREE ParseTemplateIntDefArg( )
 {
-    return genericParseExpr( Y_TEMPLATE_INT_DEFARG_SPECIAL, T_DEFARG_END,
-                             ERR_COMPLICATED_EXPRESSION );
+    return genericParseExpr( Y_TEMPLATE_INT_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION );
 }
 
 PTREE ParseTemplateTypeDefArg( )
 {
-    return genericParseExpr( Y_TEMPLATE_TYPE_DEFARG_SPECIAL, T_DEFARG_END,
-                             ERR_COMPLICATED_EXPRESSION );
+    return genericParseExpr( Y_TEMPLATE_TYPE_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION );
 }
 
 DECL_INFO *ParseException( void )
@@ -2806,8 +2786,7 @@ static void declOnlyRewriteToken( void )
         CurToken = T_EOF;
     }
 
-    if( ( decl_paren_depth == 0 ) && ( decl_bracket_depth == 0 )
-     && ( CurToken == T_COLON ) ) {
+    if( ( decl_paren_depth == 0 ) && ( decl_bracket_depth == 0 ) && ( CurToken == T_COLON ) ) {
         CurToken = T_EOF;
     }
 }

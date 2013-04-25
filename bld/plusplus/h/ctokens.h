@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "weights.gh"
-
 typedef enum TOKEN {
     #define pick(token,string,class,prec) token,
     #include "_ctokens.h"
@@ -39,5 +37,4 @@ typedef enum TOKEN {
     T_LAST_TOKEN
 } TOKEN;
 
-extern  char    *Tokens[];
-
+extern  const char  *Tokens[];

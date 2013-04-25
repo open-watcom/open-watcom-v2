@@ -142,7 +142,7 @@ void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
     TYPE fn_type;
     auto VSTK_CTL sym_stack;
     SYMBOL ret_sym;
-    char* ret_name;
+    NAME ret_name;
 
     fn_type = FunctionDeclarationType( fctl->func->sym_type );
     VstkOpen( &sym_stack, sizeof( SYMBOL ), 16 );

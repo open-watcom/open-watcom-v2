@@ -68,8 +68,8 @@
 #include "specfuns.h"
 #include "autodept.h"
 
-#if _CPU == 386
-    extern struct  inline_funcs Fs_Functions[];   // FS PRAGMAS
+#if _INTEL_CPU && ( _CPU != 8086 )
+    extern inline_funcs Fs_Functions[];   // FS PRAGMAS
 #endif
 
 static SYMBOL lastFunctionOutOfMem;
@@ -140,10 +140,8 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         if( CompFlags.ide_console_output ) {
             if( ! CompFlags.quiet_mode ) {
                 char buffer[16];
-                ultoa( (unsigned)parm, buffer, 10 );
-                MsgDisplayLineArgs( "\rCode size: "
-                                  , buffer
-                                  , NULL );
+                ultoa( (unsigned long)parm, buffer, 10 );
+                MsgDisplayLineArgs( "\rCode size: ", buffer, NULL );
             }
         }
         break;
@@ -209,6 +207,7 @@ int FETrue(                     // RETURN TRUE
 int FESymIndex(                 // STUB EXCEPT FOR JAVA
     SYMBOL sym )
 {
+    sym = sym;
     return( 0 );
 }
 
@@ -216,6 +215,7 @@ int FECodeBytes(                // STUB EXCEPT FOR JAVA
     const char *buffer,
     int len )
 {
+    buffer = buffer; len = len;
     return( FALSE );
 }
 
@@ -251,7 +251,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
     fe_attr mask;               // - remove these attributes
     SYMBOL_NAME sym_name;       // - symbol name of symbol
     SCOPE scope;                // - scope of symbol
-    char *name;                 // - name of symbol
+    NAME name;                  // - name of symbol
     TYPE unmod_type;            // - type for symbol
     type_flag mod_flags;        // - modifier flags
     scf_mask scf_info;          // - sym comdat function info
@@ -413,13 +413,13 @@ cg_type FEParmType(                 // ARGUMENT PROMOTION ?
     case TY_UINT_4:
         return( TY_UINT_8 );
 #else
-#if _CPU == 386
+#if _CPU != 8086
     case TY_UINT_2:
     case TY_INT_2:
 #endif
     case TY_INT_1:
     case TY_UINT_1:
-#if _CPU == 386
+#if _CPU != 8086
         if( func != NULL ) {
             type_flag fn_flags;
             TypeModFlags( func->sym_type, &fn_flags );
@@ -447,88 +447,87 @@ int FEStackChk(                 // STACK CHECKING ?
 
 
 #if _INTEL_CPU
-static struct inline_funcs *Flat( struct inline_funcs *ifunc )
+static inline_funcs *Flat( inline_funcs *ifunc )
 {
-    #if _CPU == 386
-        extern byte_seq *FlatAlternates[];
-        byte_seq **p;
-        if( TargetSwitches & FLAT_MODEL ) {
-            for( p = FlatAlternates; p[0] != NULL; p += 2 ) {
-                if( p[0] == ifunc->code ) {
-                    ifunc->code = p[1];
-                    return( ifunc );
-                }
+  #if _CPU != 8086
+    extern byte_seq *FlatAlternates[];
+    byte_seq **p;
+    if( TargetSwitches & FLAT_MODEL ) {
+        for( p = FlatAlternates; p[0] != NULL; p += 2 ) {
+            if( p[0] == ifunc->code ) {
+                ifunc->code = p[1];
+                return( ifunc );
             }
         }
-    #endif
+    }
+  #endif
     return( ifunc );
 }
 #endif
 
 #if _INTEL_CPU
-static struct inline_funcs *InlineLookup( char *name )
+static inline_funcs *InlineLookup( NAME name )
 {
-    struct inline_funcs *ifunc;
-#if _INTEL_CPU
+    inline_funcs    *ifunc;
+
     if( GET_FPU( CpuSwitches ) > FPU_NONE ) {
         ifunc = _8087_Functions;
         while( ifunc->name ) {
-            if( strcmp( ifunc->name, name ) == 0 ) return( Flat( ifunc ) );
+            if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( Flat( ifunc ) );
             ++ifunc;
         }
     }
-#endif
     if( OptSize == 100 ) {              /* if /os specified */
         ifunc = SInline_Functions;
         if( TargetSwitches & BIG_DATA ) {
-            #if _CPU == 8086
-                if( TargetSwitches & FLOATING_DS ) {
-                    ifunc = ZF_Data_Functions;
-                } else {
-                    ifunc = ZP_Data_Functions;
-                }
-            #else
-                ifunc = SBigData_Functions;
-            #endif
+  #if _CPU == 8086
+            if( TargetSwitches & FLOATING_DS ) {
+                ifunc = ZF_Data_Functions;
+            } else {
+                ifunc = ZP_Data_Functions;
+            }
+  #else
+            ifunc = SBigData_Functions;
+  #endif
         }
         while( ifunc->name ) {
-            if( strcmp( ifunc->name, name ) == 0 ) return( Flat( ifunc ) );
+            if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( Flat( ifunc ) );
             ++ifunc;
         }
     }
-    #if _CPU == 386
-        ifunc = Fs_Functions;
+  #if _CPU != 8086
+    ifunc = Fs_Functions;
+    while( ifunc->name ) {
+        if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( ifunc );
+        ++ifunc;
+    }
+    if( TargetSwitches & FLAT_MODEL ) {
+        ifunc = Flat_Functions;
         while( ifunc->name ) {
-            if( strcmp( ifunc->name, name ) == 0 ) return( ifunc );
+            if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( ifunc );
             ++ifunc;
         }
-        if( TargetSwitches & FLAT_MODEL ) {
-            ifunc = Flat_Functions;
-            while( ifunc->name ) {
-                if( strcmp( ifunc->name, name ) == 0 ) return( ifunc );
-                ++ifunc;
-            }
-        }
-    #endif
+    }
+  #endif
     ifunc = Inline_Functions;
     if( TargetSwitches & BIG_DATA ) {
-        #if _CPU == 8086
-            if( TargetSwitches & FLOATING_DS ) {
-                ifunc = DF_Data_Functions;
-            } else {
-                ifunc = DP_Data_Functions;
-            }
-        #else
-            ifunc = BigData_Functions;
-        #endif
+  #if _CPU == 8086
+        if( TargetSwitches & FLOATING_DS ) {
+            ifunc = DF_Data_Functions;
+        } else {
+            ifunc = DP_Data_Functions;
+        }
+  #else
+        ifunc = BigData_Functions;
+  #endif
     }
     while( ifunc->name ) {
-        if( strcmp( ifunc->name, name ) == 0 ) return( Flat( ifunc ) );
+        if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( Flat( ifunc ) );
         ++ifunc;
     }
     ifunc = Common_Functions;
     while( ifunc->name ) {
-        if( strcmp( ifunc->name, name ) == 0 ) return( Flat( ifunc ) );
+        if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( Flat( ifunc ) );
         ++ifunc;
     }
     return( NULL );
@@ -539,7 +538,7 @@ static AUX_INFO *IntrinsicAuxLookup(
     SYMBOL sym )
 {
 #if _INTEL_CPU
-    struct inline_funcs *ifunc;
+    inline_funcs *ifunc;
     AUX_INFO *inf;
 
     ifunc = InlineLookup( sym->name->name );
@@ -598,15 +597,15 @@ static AUX_INFO *getLangInfo(   // GET LANGUAGE INFO. FOR SYMBOL
                     inf = &DefaultInfo;
                 }
             }
-            #if _CPU == 386
-                if(( mod_flags & TF1_FAR16 ) || ( inf->flags & AUX_FLAG_FAR16 )) {
-                    if( inf->cclass & REVERSE_PARMS ) {
-                        inf = &Far16PascalInfo;
-                    } else {
-                        inf = &Far16CdeclInfo;
-                    }
+#if _INTEL_CPU && ( _CPU != 8086 )
+            if(( mod_flags & TF1_FAR16 ) || ( inf->flags & AUX_FLAG_FAR16 )) {
+                if( inf->cclass & REVERSE_PARMS ) {
+                    inf = &Far16PascalInfo;
+                } else {
+                    inf = &Far16CdeclInfo;
                 }
-            #endif
+            }
+#endif
         } else {
             inf = TypeHasPragma( sym->sym_type );
             if( inf == NULL ) {
@@ -625,7 +624,7 @@ static target_size_t GetParmsSize( SYMBOL sym )
     size = 0;
     fn_type = FunctionDeclarationType( sym->sym_type );
     if( fn_type == NULL ) {
-        size = -1;
+        size = ~0UL;
     } else {
         TypeParmSize( fn_type, &size );
     }
@@ -713,6 +712,8 @@ char *FEExtName( SYMBOL sym, int request ) {
         return( GetNamePattern( sym ) );
     case EXTN_PRMSIZE:
         return( (char *)GetParmsSize( sym ) );
+    case EXTN_CALLBACKNAME:
+        return( (char *)CallbackName( sym ) );
     default:
         return( NULL );
     }
@@ -767,7 +768,7 @@ static call_class getCallClass( // GET CLASS OF CALL
     value = inf->cclass;
     if( sym != NULL ) {
         if( SymIsFunction( sym ) ) {
-            #if _CPU == _AXP
+#if _CPU == _AXP
             {
                 #define SETJMP_MASK  ( \
                         ( 1 << SPFN_SETJMP ) | \
@@ -781,7 +782,7 @@ static call_class getCallClass( // GET CLASS OF CALL
                     value |= SETJMP_KLUGE;
                 }
             }
-            #endif
+#endif
             if( SymIsEllipsisFunc( sym ) ) {
                 value |= CALLER_POPS | HAS_VARARGS;
             }
@@ -791,7 +792,7 @@ static call_class getCallClass( // GET CLASS OF CALL
             /* only want the explicit memory model flags */
             /* default near/far is in the aux info already */
             fn_type = TypeGetActualFlags( sym->sym_type, &flags );
-            #if _INTEL_CPU
+#if _INTEL_CPU
             if( flags & TF1_FAR ) {
                 /* function has an explicit FAR */
                 value |= FAR_CALL;
@@ -807,9 +808,9 @@ static call_class getCallClass( // GET CLASS OF CALL
                     }
                 }
             }
-            #endif
+#endif
             fn_flags = fn_type->flag;
-            #if _INTEL_CPU
+#if _INTEL_CPU
             // don't export addressability thunks
             if(( sym->flag & SF_ADDR_THUNK ) == 0 ) {
                 if( flags & TF1_DLLEXPORT ) {
@@ -833,43 +834,43 @@ static call_class getCallClass( // GET CLASS OF CALL
             if( CompFlags.emit_names ) {
                 value |= EMIT_FUNCTION_NAME;
             }
-            #endif
-            #if _CPU == 8086
-                if( inf == &PascalInfo || inf == &CdeclInfo ) {
-                    if( TargetSwitches & WINDOWS ) {
-                        value |= FAT_WINDOWS_PROLOG;
-                    }
+#endif
+#if _CPU == 8086
+            if( inf == &PascalInfo || inf == &CdeclInfo ) {
+                if( TargetSwitches & WINDOWS ) {
+                    value |= FAT_WINDOWS_PROLOG;
                 }
-            #endif
-            #if _INTEL_CPU
+            }
+#endif
+#if _INTEL_CPU
             if( sym->flag & SF_FAR16_CALLER ) {
                 value |= THUNK_PROLOG;
             }
-            #endif
+#endif
         }
-        #ifdef REVERSE
-            value &= ~ REVERSE_PARMS;
-        #endif
-        #ifdef PROLOG_HOOKS
-            if( CompFlags.ep_switch_used != 0 ) {
-                value |= PROLOG_HOOKS;
-            }
-        #endif
-        #ifdef EPILOG_HOOKS
-            if( CompFlags.ee_switch_used != 0 ) {
-                value |= EPILOG_HOOKS;
-            }
-        #endif
-        #ifdef GROW_STACK
-            if( CompFlags.sg_switch_used ) {
-                value |= GROW_STACK;
-            }
-        #endif
-        #ifdef TOUCH_STACK
-            if( CompFlags.st_switch_used ) {
-                value |= TOUCH_STACK;
-            }
-        #endif
+#ifdef REVERSE
+        value &= ~ REVERSE_PARMS;
+#endif
+#ifdef PROLOG_HOOKS
+        if( CompFlags.ep_switch_used != 0 ) {
+            value |= PROLOG_HOOKS;
+        }
+#endif
+#ifdef EPILOG_HOOKS
+        if( CompFlags.ee_switch_used != 0 ) {
+            value |= EPILOG_HOOKS;
+        }
+#endif
+#ifdef GROW_STACK
+        if( CompFlags.sg_switch_used ) {
+            value |= GROW_STACK;
+        }
+#endif
+#ifdef TOUCH_STACK
+        if( CompFlags.st_switch_used ) {
+            value |= TOUCH_STACK;
+        }
+#endif
     }
     return( value );
 }
@@ -893,10 +894,11 @@ static time_t *getFileDepTimeStamp( SRCFILE h )
 {
     static time_t            stamp;
 
-#if ( ( _CPU == 8086 ) || ( _CPU == 386 ) ) && ( COMP_CFG_COFF == 0 )
-    stamp = _timet2dos( SrcFileTimeStamp( h ) );
-#else
+#if ( _RISC_CPU || COMP_CFG_COFF )
     stamp = SrcFileTimeStamp( h );
+#else
+    /* OMF format */
+    stamp = _timet2dos( SrcFileTimeStamp( h ) );
 #endif
     return( &stamp );
 }
@@ -906,7 +908,7 @@ static void addDefaultLibs( void )
     if( CompFlags.emit_library_names ) {
         if( _HAS_ANY_MAIN || CompFlags.extern_C_defn_found
             || CompFlags.pragma_library || CompFlags.emit_all_default_libs ) {
-#if _CPU == 386
+#if _INTEL_CPU && ( _CPU != 8086 )
             if( CompFlags.br_switch_used ) {
                 CgInfoAddCompLib( CDLL_Name );
             } else
@@ -916,7 +918,7 @@ static void addDefaultLibs( void )
             } else {
                 CgInfoAddCompLib( CLIB_Name );
             }
-#if _CPU == 386
+#if _INTEL_CPU && ( _CPU != 8086 )
             if( CompFlags.br_switch_used ) {
                 CgInfoAddCompLib( WCPPDLL_Name );
             } else
@@ -959,7 +961,7 @@ static void addDefaultImports( void )
         CM_NULL         = 0x00
     } check_mask;
     PragmaExtrefsInject();
-#if _INTEL_CPU || _CPU == _AXP
+#if _INTEL_CPU || ( _CPU == _AXP )
     if( _HAS_ANY_MAIN ) {
         check_mask control;
 
@@ -1015,23 +1017,23 @@ static void addDefaultImports( void )
         if( CompFlags.bm_switch_used ) {
             CgInfoAddImport( "__imthread" );
         }
-    #if _INTEL_CPU
-        #if _CPU == 8086
-            if( CompFlags.external_defn_found ) {
-                if( TargetSwitches & BIG_CODE ) {
-                    CgInfoAddImport( "_big_code_" );
-                } else {
-                    CgInfoAddImport( "_small_code_" );
-                }
+#if _INTEL_CPU
+    #if _CPU == 8086
+        if( CompFlags.external_defn_found ) {
+            if( TargetSwitches & BIG_CODE ) {
+                CgInfoAddImport( "_big_code_" );
+            } else {
+                CgInfoAddImport( "_small_code_" );
             }
-        #endif
+        }
+    #endif
         if( CompFlags.pgm_used_8087 || CompFlags.float_used ) {
             if( CpuSwitches & FPU_EMU ) {
-                #if _CPU == 386
-                    CgInfoAddImport( "__init_387_emulator" );
-                #else
-                    CgInfoAddImport( "__init_87_emulator" );
-                #endif
+    #if _CPU == 8086
+                CgInfoAddImport( "__init_87_emulator" );
+    #else
+                CgInfoAddImport( "__init_387_emulator" );
+    #endif
             }
             if( GET_FPU( CpuSwitches ) > FPU_NONE ) {
                 if( Stack87 == 4 ) {
@@ -1041,99 +1043,96 @@ static void addDefaultImports( void )
                 }
             }
         }
-    #endif
+#endif
     }
     if( CompFlags.main_has_parms ) {
-        #if _INTEL_CPU
-            #if _CPU == 386
-                if( CompFlags.register_conventions ) {
-                    if( CompFlags.has_wide_char_main ) {
-                        CgInfoAddImport( "__wargc" );
-                    } else {
-                        CgInfoAddImport( "__argc" );
-                    }
-                } else {
-                    if( CompFlags.has_wide_char_main ) {
-                        CgInfoAddImport( "_wargc" );
-                    } else {
-                        CgInfoAddImport( "_argc" );
-                    }
-                }
-            #else
-                if( CompFlags.has_wide_char_main ) {
-                    CgInfoAddImport( "__wargc" );
-                } else {
-                    CgInfoAddImport( "__argc" );
-                }
-            #endif
-        #elif _CPU == _AXP
+#if _INTEL_CPU
+    #if _CPU == 8086
+        if( CompFlags.has_wide_char_main ) {
+            CgInfoAddImport( "__wargc" );
+        } else {
+            CgInfoAddImport( "__argc" );
+        }
+    #else
+        if( CompFlags.register_conventions ) {
+            if( CompFlags.has_wide_char_main ) {
+                CgInfoAddImport( "__wargc" );
+            } else {
+                CgInfoAddImport( "__argc" );
+            }
+        } else {
             if( CompFlags.has_wide_char_main ) {
                 CgInfoAddImport( "_wargc" );
             } else {
                 CgInfoAddImport( "_argc" );
             }
-        #else
-            #error missing _CPU case
-        #endif
+        }
+    #endif
+#elif _CPU == _AXP
+        if( CompFlags.has_wide_char_main ) {
+            CgInfoAddImport( "_wargc" );
+        } else {
+            CgInfoAddImport( "_argc" );
+        }
+#else
+    #error missing _CPU case
+#endif
     }
     if( CompFlags.bw_switch_used ) {
         CgInfoAddImport( "__init_default_win" );
     }
 #if 0
     if( CompFlags.file_scope_dtors || CompFlags.fun_scope_static_dtors ) {
-        CgInfoAddImport( RunTimeCodeString( RTF_MOD_DTOR ) );
+        CgInfoAddImportS( RunTimeCallSymbol( RTF_MOD_DTOR ) );
     }
 #else
     if( CompFlags.genned_static_dtor ) {
-        CgInfoAddImport( RunTimeCodeString( RTF_MOD_DTOR ) );
+        CgInfoAddImportS( RunTimeCallSymbol( RTF_MOD_DTOR ) );
     }
 #endif
 #if 0
     // not req'd with new library
     if( CompFlags.inline_fun_reg ) {
-        CgInfoAddImport( RunTimeCodeString( RTF_INLINE_FREG ) );
+        CgInfoAddImportS( RunTimeCallSymbol( RTF_INLINE_FREG ) );
     }
 #endif
 #if _INTEL_CPU
-    if( CompFlags.has_longjmp
-     && CompFlags.rw_registration
-     && ! CompFlags.fs_registration ) {
-        CgInfoAddImport( RunTimeCodeString( RTF_LONGJMP_REF ) );
+    if( CompFlags.has_longjmp && CompFlags.rw_registration && !CompFlags.fs_registration ) {
+        CgInfoAddImportS( RunTimeCallSymbol( RTF_LONGJMP_REF ) );
     }
     if( CompFlags.has_main && ( (TargetSystem == TS_NETWARE) || (TargetSystem == TS_NETWARE5) ) ) {
         CgInfoAddImport( "__WATCOM_Prelude" );
     }
 #endif
-    if( _HAS_EXE_MAIN
-     && CompFlags.rw_registration ) {
-        CgInfoAddImport( RunTimeCodeString( RTD_FS_ROOT ) );
+    if( _HAS_EXE_MAIN && CompFlags.rw_registration ) {
+        CgInfoAddImportS( RunTimeCallSymbol( RTD_FS_ROOT ) );
     }
     if( CompFlags.excs_enabled ) {
-        #if _CPU == 386
-            if( CompFlags.fs_registration ) {
-                switch( TargetSystem ) {
-                case TS_OS2 :
-                    CgInfoAddImport( RunTimeCodeString( RTD_TS_OS2 ) );
-                    break;
-                case TS_NT :
-                    CgInfoAddImport( RunTimeCodeString( RTD_TS_NT ) );
-                    break;
-                DbgDefault( "CGINFO -- bad fs o/s" );
-                }
-            } else {
-                CgInfoAddImport( RunTimeCodeString( RTD_TS_GENERIC ) );
+#if _INTEL_CPU && ( _CPU != 8086 )
+        if( CompFlags.fs_registration ) {
+            switch( TargetSystem ) {
+            case TS_OS2 :
+                CgInfoAddImport( RunTimeCodeString( RTD_TS_OS2 ) );
+                break;
+            case TS_NT :
+                CgInfoAddImport( RunTimeCodeString( RTD_TS_NT ) );
+                break;
+            DbgDefault( "CGINFO -- bad fs o/s" );
             }
-        #else
+        } else {
             CgInfoAddImport( RunTimeCodeString( RTD_TS_GENERIC ) );
-        #endif
-    }
-    #if _CPU == 386
-        if( TargetSwitches & NEW_P5_PROFILING ) {
-            CgInfoAddImport( "__new_p5_profile" );
-        } else if( TargetSwitches & P5_PROFILING ) {
-            CgInfoAddImport( "__p5_profile" );
         }
-    #endif
+#else
+        CgInfoAddImport( RunTimeCodeString( RTD_TS_GENERIC ) );
+#endif
+    }
+#if _INTEL_CPU && ( _CPU != 8086 )
+    if( TargetSwitches & NEW_P5_PROFILING ) {
+        CgInfoAddImport( "__new_p5_profile" );
+    } else if( TargetSwitches & P5_PROFILING ) {
+        CgInfoAddImport( "__p5_profile" );
+    }
+#endif
 }
 
 #ifndef NDEBUG
@@ -1177,7 +1176,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case STACK_SIZE_8087:
         DbgNotSym();
         DbgNotRetn();
-        retn = (char *)Stack87;
+        retn = (void *)Stack87;
         break;
 #endif
 #if _INTEL_CPU
@@ -1227,7 +1226,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotRetn();
         retn = (void *) ProEpiDataSize;
         break;
-#if _CPU == 386
+  #if _CPU != 8086
     case P5_PROF_DATA:
         DbgNotSym();
         DbgNotRetn();
@@ -1236,9 +1235,9 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case P5_PROF_SEG:
         DbgNotSym();
         DbgNotRetn();
-        retn = (void*)SEG_PROF_REF;
+        retn = (void *)SEG_PROF_REF;
         break;
-#endif
+  #endif
 #endif
 #if _INTEL_CPU
     case CODE_LABEL_ALIGNMENT:
@@ -1398,7 +1397,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case TEMP_LOC_NAME :
         DbgNotRetn();
         dtor_sym = sym;
-        retn = (void*)TEMP_LOC_YES;
+        retn = (void *)TEMP_LOC_YES;
         break;
     case TEMP_LOC_TELL :
         DbgNotSym();

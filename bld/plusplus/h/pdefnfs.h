@@ -57,7 +57,7 @@ static byte_seq fs_pop = {
 };
 
 
-struct  inline_funcs Fs_Functions[] =
+inline_funcs Fs_Functions[] =
 {   { ".FsPush", &fs_push, fs_push_parms, fs_push_ret, fs_push_saves }
 ,   { ".FsPop",  &fs_pop,  fs_pop_parms,  fs_pop_ret,  fs_pop_saves  }
 ,   { NULL                                                          }

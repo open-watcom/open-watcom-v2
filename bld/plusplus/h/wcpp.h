@@ -160,14 +160,7 @@ struct ts_hdr                           // TYPE-SIG HEADER
 // These names should be changed to something like __wint_* so that
 // they are not confused with external compiler entry points.
 //
-#define CPPLIB( name ) __wcpp_4_##name##_       // name of run-time function
-#define CPPDATA( name ) __wcpp_4_data_##name##_ // name of data
-#define CPPDATA_LIB( name ) ___wcpp_4_data_##name##_ // name of data
-
-#ifdef __UNIX__
-    #define FNAMECMPSTR      strcmp      /* for case sensitive file systems */
-#else
-    #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
-#endif
+#define CPPLIB( name )      __wcpp_4_##name##_          // name of run-time function
+#define CPPLIBDATA( name )  __wcpp_4_data_##name##_     // name of data
 
 #endif

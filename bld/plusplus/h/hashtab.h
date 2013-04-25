@@ -53,8 +53,8 @@ extern HASHTAB HashCreate( unsigned init_table_size);
 extern void HashDestroy( HASHTAB );
 extern HASHTAB HashMakeMax( HASHTAB );
 extern boolean HashEmpty( HASHTAB );
-extern SYMBOL_NAME HashLookup( HASHTAB, char * );
-extern void HashInsert( HASHTAB, SYMBOL_NAME, char * );
+extern SYMBOL_NAME HashLookup( HASHTAB, NAME );
+extern void HashInsert( HASHTAB, SYMBOL_NAME, NAME );
 extern void HashWalk( HASHTAB, void (*)( SYMBOL_NAME ) );
 extern void HashWalkData( HASHTAB, void (*)( SYMBOL_NAME, void * ), void * );
 

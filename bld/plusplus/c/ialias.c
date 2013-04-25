@@ -35,17 +35,13 @@
 #include "ialias.h"
 
 typedef struct ialias_list {
-    union {
-        struct ialias_list  *next;
-        int                 total_len;
-    };
-    union {
-        char                *real_name;
-        int                 alias_name_len;
-    };
-    boolean is_lib;
-    char    alias_name[1];
-} *IALIASPTR;
+    struct ialias_list  *next;
+    char                *real_name;
+    boolean             is_lib;
+    char                alias_name[1];
+} ialias_list;
+
+typedef ialias_list *IALIASPTR;
 
 static IALIASPTR    IAliasNames;
 
@@ -82,7 +78,7 @@ const char *IAliasLookup( const char *filename, boolean is_lib )
 void IAliasAdd( const char *alias_name, const char *real_name, boolean is_lib )
 /****************************************************************************/
 {
-    size_t      alias_size, alias_len;
+    unsigned    alias_size, alias_len;
     IALIASPTR   alias, old_alias;
     IALIASPTR   *lnk;
 
@@ -92,13 +88,13 @@ void IAliasAdd( const char *alias_name, const char *real_name, boolean is_lib )
         }
     }
 
-    alias_len = strlen( alias_name );
-    alias_size = sizeof( struct ialias_list ) + alias_len + strlen( real_name ) + 1;
+    alias_len = strlen( alias_name ) + 1;
+    alias_size = offsetof( ialias_list, alias_name ) + alias_len + strlen( real_name ) + 1;
     alias = CMemAlloc( alias_size );
     alias->next = NULL;
     alias->is_lib = is_lib;
     strcpy( alias->alias_name, alias_name );
-    alias->real_name = alias->alias_name + alias_len + 1;
+    alias->real_name = alias->alias_name + alias_len;
     strcpy( alias->real_name, real_name );
 
     if( old_alias ) {
@@ -116,14 +112,12 @@ pch_status PCHReadIncAlias( void )
 
     for( ; (alias_len = PCHReadUInt()) != 0; ) {
         real_name_len = PCHReadUInt();
-        alias_size = sizeof( struct ialias_list ) + alias_len + real_name_len + 1;
+        alias_size = offsetof( ialias_list, alias_name ) + alias_len + real_name_len;
         alias = CMemAlloc( alias_size );
         alias->next = IAliasNames;
         PCHRead( alias->alias_name, alias_len );
-        alias->alias_name[alias_len] = '\0';
-        alias->real_name = alias->alias_name + alias_len + 1;
+        alias->real_name = alias->alias_name + alias_len;
         PCHRead( alias->real_name, real_name_len );
-        alias->real_name[real_name_len] = '\0';
         alias->is_lib = PCHReadUInt();
         IAliasNames = alias;
     }
@@ -133,12 +127,12 @@ pch_status PCHReadIncAlias( void )
 
 pch_status PCHWriteIncAlias( void )
 {
-    size_t      alias_len, real_name_len;
+    unsigned    alias_len, real_name_len;
     IALIASPTR   alias;
     
     for( alias = IAliasNames; alias != NULL; alias = alias->next ) {
-        alias_len = strlen( alias->alias_name );
-        real_name_len = strlen( alias->real_name );
+        alias_len = strlen( alias->alias_name ) + 1;
+        real_name_len = strlen( alias->real_name ) + 1;
         PCHWriteUInt( alias_len );
         PCHWriteUInt( real_name_len );
         PCHWrite( alias->alias_name, alias_len );
@@ -152,16 +146,19 @@ pch_status PCHWriteIncAlias( void )
 
 pch_status PCHInitIncAlias( boolean writing )
 {
+    writing = writing;
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniIncAlias( boolean writing )
 {
+    writing = writing;
     return( PCHCB_OK );
 }
 
 pch_status PCHRelocIncAlias( char *block, size_t size )
 {
+    block = block; size = size;
     return( PCHCB_OK );
 }
 

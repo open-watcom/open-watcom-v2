@@ -356,18 +356,18 @@ void CDtorScheduleArgRemap(     // SCHEDULE CTOR/DTOR ARG.S REMAP, IF REQ'D
     SYMBOL cdtor )              // - CTOR OR DTOR
 ;
 void CgFrontCode(               // EMIT TO CODE SEGMENT
-    int opcode )                // - intermediate code
+    CGINTEROP opcode )          // - intermediate code
 ;
 void CgFrontCodeInt(            // EMIT (code,int) TO CODE SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     int value )                 // - value
 ;
 void CgFrontCodePtr(            // EMIT (code,ptr) TO CODE SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     void *value )               // - value
 ;
 void CgFrontCodeUint(           // EMIT (code,unsigned) TO CODE SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     unsigned value )            // - value
 ;
 void CgFrontCtorTest(           // INDICATE FUNCTION MIGHT HAVE CTOR-TEST
@@ -377,18 +377,18 @@ SYMBOL CgFrontCurrentFunction(  // GET CURRENT FUNCTION BEING GENERATED
     void )
 ;
 void CgFrontData(               // EMIT TO DATA FILE
-    int opcode )                // - intermediate code
+    CGINTEROP opcode )          // - intermediate code
 ;
 void CgFrontDataInt(            // EMIT (code,int) TO DATA SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     int value )                 // - value
 ;
 void CgFrontDataUint(           // EMIT (code,unsigned) TO DATA SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     unsigned value )            // - value
 ;
 void CgFrontDataPtr(            // EMIT (code,ptr) TO DATA SEGMENT
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     void *value )               // - value
 ;
 void CgFrontDbgLine(            // SET LINE FOR DEBUGGING
@@ -426,7 +426,7 @@ CGFILE_INS CgFrontFuncOpen(     // OPEN A FUNCTION (AND ITS FILE)
     TOKEN_LOCN *posn )          // - source-file position
 ;
 void CgFrontGotoNear(           // EMIT GOTO IN NEAR SPACE (CS,GOTO)
-    int opcode,                 // - opcode to determine type of label ref.
+    CGINTEROP opcode,           // - opcode to determine type of label ref.
     unsigned condition,         // - condition for goto
     CGLABEL label )             // - label number
 ;
@@ -506,12 +506,12 @@ void CgFrontSymbol(             // EMIT A SYMBOL
 ;
 void CgFrontZapPtr(             // ZAP A WRITTEN RECORD (PTR OPERAND)
     CGFILE_INS location,        // - location to be zapped
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     void *operand )             // - operand
 ;
 void CgFrontZapUint(            // ZAP A WRITTEN RECORD (UNSIGNED OPERAND)
     CGFILE_INS location,        // - location to be zapped
-    int opcode,                 // - opcode
+    CGINTEROP opcode,           // - opcode
     unsigned operand )          // - operand
 ;
 void CgSetType(                 // SET NORMAL TYPE FOR GENERATION
@@ -1020,7 +1020,7 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     PTREE expr,                 // - expr to cast
     TYPE final_type,            // - final type after cast
     target_offset_t vb_offset,  // - offset of vbptr
-    target_offset_t vb_index )  // - index in vbtable
+    unsigned vb_index )         // - index in vbtable
 ;
 PTREE NodeCopyClassObject(      // COPY OBJECT W/O CTOR
     PTREE tgt,                  // - target object (LVALUE)
@@ -1079,10 +1079,10 @@ boolean NodeGetIbpSymbol(       // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
     target_offset_t* a_offset ) // - addr[ offset to basing symbol ]
 ;
 PTREE NodeIc(                   // ADD A PTREE-IC NODE
-    unsigned opcode )           // - opcode
+    CGINTEROP opcode )          // - opcode
 ;
 PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
-    unsigned opcode,            // - opcode
+    CGINTEROP opcode,           // - opcode
     unsigned operand )          // - operand
 ;
 PTREE NodeIntDummy              // BUILD A DUMMY INTEGRAL NODE

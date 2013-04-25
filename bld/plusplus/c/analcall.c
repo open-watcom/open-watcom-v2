@@ -558,8 +558,7 @@ static PTREE transformVaStart   // TRANSFORM TO CO_VASTART OPCODE
             arg_size = TARGET_PACKING;
         } else {
             arg_size = CgMemorySize( curr->sym_type );
-            arg_size += TARGET_PACKING - 1;
-            arg_size &= ~( TARGET_PACKING - 1 );
+            arg_size = _RoundUp( arg_size, TARGET_PACKING );
         }
         offset += arg_size;
         if( curr == pre_ellipsis_sym ) break;
@@ -764,8 +763,7 @@ static PTREE insertCDtor(       // INSERT CDTOR NODE INTO CALL LIST
         r_val = PTreeRefRight( arg );
         val = *r_val;
         if( val->op == PT_INT_CONSTANT ) {
-            PTREE new_val = NodeIcUnsigned( IC_CDARG_VAL
-                                          , val->u.uint_constant );
+            PTREE new_val = NodeIcUnsigned( IC_CDARG_VAL, val->u.uint_constant );
             new_val->type = val->type;
             *r_val = new_val;
             PTreeFree( val );
@@ -789,6 +787,7 @@ PTREE CallArgsArrange(          // ARRANGE CALL ARGUMENTS
     if( thisnode != NULL ) {
         thisnode->flags |= PTF_ARG_THIS;
     }
+    arglist = NULL;
     return_kind = ObjModelFunctionReturn( ftype );
     switch( PcCallImpl( ftype ) ) {
       case CALL_IMPL_REV_C :
@@ -818,7 +817,7 @@ PTREE CallArgsArrange(          // ARRANGE CALL ARGUMENTS
 static void outputCallTriggeredWarning( PTREE expr, SYMBOL sym )
 {
     MSG_NUM msg;
-    char *name;
+    NAME name;
 
     msg = ERR_NULL;
     name = sym->name->name;

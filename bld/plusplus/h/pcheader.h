@@ -168,7 +168,7 @@ typedef enum {
 } pch_reloc_index;
 
 /* Relocation function prototypes */
-#define PCH_RELOC( s, g )       extern pch_status PCHReloc##g( char *, size_t );
+#define PCH_RELOC( s, g )       extern pch_status PCHReloc##g( char *, unsigned );
 #include "pcregdef.h"
 
 typedef enum {
@@ -200,92 +200,29 @@ typedef enum {
 #define PCHWriteCVIndexTerm()   PCHWriteUInt( CARVE_NULL_INDEX )
 
 
-#define PCHReadLocSize( tgt, src, size )        \
-{   void* cursor = CompInfo.pch_buff_cursor;    \
-    void* last = (char *)cursor + _pch_align_size(size);\
-    if( last <= (void *)CompInfo.pch_buff_end ) {       \
-        PCHTrashAlreadyRead();                  \
-        tgt = cursor;                           \
-        CompInfo.pch_buff_cursor = last;        \
-    } else {                                    \
-        tgt = PCHRead( src, size );             \
-    }                                           \
-}
-
-#define PCHReadLoc( tgt, src )                  \
-    PCHReadLocSize( tgt, src, sizeof(*tgt) );
-
-#define PCHLocateCVIndex( tgt )                 \
-{                                               \
-    cv_index* p_value;                          \
-    void* buff_ptr;                             \
-    void* end;                                  \
-    buff_ptr = CompInfo.pch_buff_cursor;        \
-    end = (char*)buff_ptr + sizeof( cv_index ); \
-    if( end <= (void *)CompInfo.pch_buff_end ) {\
-        PCHTrashAlreadyRead();                  \
-        p_value = (cv_index*)buff_ptr;          \
-        CompInfo.pch_buff_cursor = end;         \
-        tgt = *p_value;                         \
-    } else {                                    \
-        tgt = PCHReadCVIndex();                 \
-    }                                           \
-}
-
-#define PCHReadMapped( tgt, src, index, init )  \
-{   void* cursor;                               \
-    void* last;                                 \
-    void* end;                                  \
-    end = CompInfo.pch_buff_end;                \
-    cursor = CompInfo.pch_buff_cursor;          \
-    last = (char*)cursor + sizeof(cv_index);    \
-    if( last <= end ) {                         \
-        PCHTrashAlreadyRead();                  \
-        index = *(cv_index*)cursor;             \
-    } else {                                    \
-        index = PCHReadCVIndex();               \
-        last = CompInfo.pch_buff_cursor;        \
-    }                                           \
-    if( index == CARVE_NULL_INDEX ) {           \
-        CompInfo.pch_buff_cursor = last;        \
-        break;                                  \
-    }                                           \
-    src = CarveInitElement( &init, index );     \
-    cursor = last;                              \
-    last = (char*)last + _pch_align_size(sizeof(*tgt));          \
-    if( last <= end ) {                         \
-        tgt = cursor;                           \
-        CompInfo.pch_buff_cursor = last;        \
-    } else {                                    \
-        CompInfo.pch_buff_cursor = cursor;      \
-        tgt = PCHRead( src, sizeof(*tgt) );     \
-    }                                           \
-}
-
-
 // PROTOTYPES
 
 extern void PCHActivate( void );
 extern void PCHSetFileName( char * );
 extern void PCHeaderCreate( char * );
 extern pch_absorb PCHeaderAbsorb( char * );
-extern void PCHWrite( void const *, size_t );
-extern void PCHWriteUnaligned( void const *, size_t );
-extern void* PCHRead( void *, size_t );
-extern void* PCHReadUnaligned( void *, size_t );
-extern void* PCHReadLocate( void *p, size_t size );
-extern void* PCHReadLocateUnaligned( void *p, size_t size );
+extern void PCHWrite( void const *, unsigned );
+extern void PCHWriteUnaligned( void const *, unsigned );
+extern void *PCHRead( void *, unsigned );
+extern void *PCHReadUnaligned( void *, unsigned );
 extern unsigned PCHReadUInt( void );
 extern unsigned PCHReadUIntUnaligned( void );
-extern void* PCHReadPtr( void );
 extern void PCHWriteUInt( unsigned );
 extern void PCHRelocStart( pch_reloc_index );
 extern void PCHRelocStop( pch_reloc_index );
 extern void PCHPerformReloc( pch_reloc_index );
 extern void PCHWarn2p( unsigned, void * );
-extern char *PCHDebugInfoName( void );
+extern NAME PCHDebugInfoName( void );
 extern void PCHFlushBuffer( void );
 extern char *PCHFileName( void );
+
+extern void *PCHReadCVIndexElement( cvinit_t * );
+
 #ifdef OPT_BR
 long PCHSeek( long offset, int type );
 #endif
@@ -293,12 +230,6 @@ long PCHSeek( long offset, int type );
 extern void PCHVerifyFile( int handle );
 #else
 #define  PCHVerifyHandle( handle ) handle = handle
-#endif
-
-#ifndef NDEBUG
-extern void PCHTrashAlreadyRead( void );
-#else
-#define PCHTrashAlreadyRead()
 #endif
 
 #endif // _PCH_HEADER_ONLY

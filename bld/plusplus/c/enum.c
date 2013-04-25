@@ -182,8 +182,6 @@ static type_id figureOutBaseType( ENUM_DATA *edata )
 void InitEnumState( ENUM_DATA *edata, PTREE id )
 /**********************************************/
 {
-    char *name;
-
     edata->type = TypeError;
     if( CompFlags.make_enums_an_int ) {
         edata->base_id = TYP_SINT;
@@ -196,7 +194,6 @@ void InitEnumState( ENUM_DATA *edata, PTREE id )
     edata->next_value.u._32[1] = 0;
     edata->next_signed = FALSE;
     edata->has_sign = FALSE;
-    name = NULL;
     SrcFileGetTokenLocn( &(edata->locn) );
     if( id != NULL ) {
         edata->locn = id->locn;
@@ -208,7 +205,7 @@ void InitEnumState( ENUM_DATA *edata, PTREE id )
 void EnumDefine( ENUM_DATA *edata )
 /*********************************/
 {
-    char *enum_typedef_name;
+    NAME enum_typedef_name;
     SYMBOL sym;
     TYPE enum_type;
     TYPE base_type;
@@ -321,7 +318,7 @@ DECL_SPEC *MakeEnumType( ENUM_DATA *edata )
     return( dspec );
 }
 
-static boolean enumNameOK( TYPE type, char *name )
+static boolean enumNameOK( TYPE type, NAME name )
 {
     TYPE enum_type;
 
@@ -345,7 +342,7 @@ static boolean enumNameOK( TYPE type, char *name )
 DECL_SPEC *EnumReference( ENUM_DATA *edata )
 /******************************************/
 {
-    char *name;
+    NAME name;
     DECL_SPEC *dspec;
     TYPE type;
     TYPE ref_type;

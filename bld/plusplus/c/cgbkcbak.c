@@ -146,7 +146,7 @@ cg_name CgCallBackRight(        // MAKE A RIGHT CALL-BACK
 
 static cg_name ctorFlagSet(     // SET/RESET CTOR FLAG
     FN_CTL* fctl,               // - function info
-    unsigned opcode,            // - set/reset opcode
+    cg_op opcode,               // - set/reset opcode
     patch_handle* a_ph )        // - addr[ patch_handle ]
 {
     unsigned offset;            // - offset of flag byte

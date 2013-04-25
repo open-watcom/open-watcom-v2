@@ -356,42 +356,30 @@ static RTTI_TYPEID *rttiTypeidMapIndex( RTTI_TYPEID *e )
 
 pch_status PCHReadRttiDescriptors( void )
 {
-    cv_index i;
     RTTI_CLASS *c;
     RTTI_VFPTR *v;
     RTTI_TYPEID *t;
     auto cvinit_t data;
 
     // NYI: use read in place optimizations
-    PCHRead( &rttiClasses, sizeof( rttiClasses ) );
-    rttiClasses = rttiClassMapIndex( rttiClasses );
-    PCHRead( &rttiTypeids, sizeof( rttiTypeids ) );
-    rttiTypeids = rttiTypeidMapIndex( rttiTypeids );
+    rttiClasses = rttiClassMapIndex( (RTTI_CLASS *)PCHReadCVIndex() );
+    rttiTypeids = rttiTypeidMapIndex( (RTTI_TYPEID *)PCHReadCVIndex() );
     CarveInitStart( carveRTTI_CLASS, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        c = CarveInitElement( &data, i );
-        PCHRead( c, sizeof( *c ) );
+    for( ; (c = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *c );
         c->next = rttiClassMapIndex( c->next );
         c->vfptrs = rttiVfptrMapIndex( c->vfptrs );
         c->class_type = TypeMapIndex( c->class_type );
         c->sym = SymbolMapIndex( c->sym );
     }
     CarveInitStart( carveRTTI_VFPTR, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        v = CarveInitElement( &data, i );
-        PCHRead( v, sizeof( *v ) );
+    for( ; (v = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *v );
         v->next = rttiVfptrMapIndex( v->next );
     }
     CarveInitStart( carveRTTI_TYPEID, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        t = CarveInitElement( &data, i );
-        PCHRead( t, sizeof( *t ) );
+    for( ; (t = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *t );
         t->next = rttiTypeidMapIndex( t->next );
         t->type = TypeMapIndex( t->type );
         t->sym = SymbolMapIndex( t->sym );
@@ -440,7 +428,7 @@ static void saveClass( void *e, carve_walk_base *d )
     save_sym = s->sym;
     s->sym = SymbolGetIndex( save_sym );
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->next = save_next;
     s->vfptrs = save_vfptrs;
     s->class_type = save_class_type;
@@ -458,7 +446,7 @@ static void saveVfptr( void *e, carve_walk_base *d )
     save_next = s->next;
     s->next = rttiVfptrGetIndex( save_next );
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->next = save_next;
 }
 
@@ -479,7 +467,7 @@ static void saveTypeid( void *e, carve_walk_base *d )
     save_sym = s->sym;
     s->sym = SymbolGetIndex( save_sym );
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->next = save_next;
     s->type = save_type;
     s->sym = save_sym;
@@ -487,48 +475,35 @@ static void saveTypeid( void *e, carve_walk_base *d )
 
 pch_status PCHWriteRttiDescriptors( void )
 {
-    RTTI_CLASS *list_head;
-    RTTI_TYPEID *head_typeid;
-    cv_index terminator = CARVE_NULL_INDEX;
     auto carve_walk_base data;
 
-    list_head = rttiClassGetIndex( rttiClasses );
-    PCHWrite( &list_head, sizeof( list_head ) );
-    head_typeid = rttiTypeidGetIndex( rttiTypeids );
-    PCHWrite( &head_typeid, sizeof( head_typeid ) );
+    PCHWriteCVIndex( (cv_index)rttiClassGetIndex( rttiClasses ) );
+    PCHWriteCVIndex( (cv_index)rttiTypeidGetIndex( rttiTypeids ) );
     CarveWalkAllFree( carveRTTI_CLASS, markFreeClass );
     CarveWalkAll( carveRTTI_CLASS, saveClass, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveRTTI_VFPTR, markFreeVfptr );
     CarveWalkAll( carveRTTI_VFPTR, saveVfptr, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveRTTI_TYPEID, markFreeTypeid );
     CarveWalkAll( carveRTTI_TYPEID, saveTypeid, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 
 pch_status PCHInitRttiDescriptors( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carveRTTI_CLASS );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveRTTI_VFPTR );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveRTTI_TYPEID );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveRTTI_CLASS ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveRTTI_VFPTR ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveRTTI_TYPEID ) );
     } else {
         carveRTTI_CLASS = CarveRestart( carveRTTI_CLASS );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveRTTI_CLASS, n );
+        CarveMapOptimize( carveRTTI_CLASS, PCHReadCVIndex() );
         carveRTTI_VFPTR = CarveRestart( carveRTTI_VFPTR );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveRTTI_VFPTR, n );
+        CarveMapOptimize( carveRTTI_VFPTR, PCHReadCVIndex() );
         carveRTTI_TYPEID = CarveRestart( carveRTTI_TYPEID );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveRTTI_TYPEID, n );
+        CarveMapOptimize( carveRTTI_TYPEID, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

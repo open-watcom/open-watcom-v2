@@ -231,8 +231,8 @@ static dbg_type symWVDebugClassType( TYPE type )
                 dl = DBLocSym( dl, symbolicDebugSymAlias( curr ) );
             } else if( SymIsThisDataMember( curr ) ){
                 TYPE pt;
-                if( curr->u.offset != 0 ) {
-                    dl = DBLocConst( dl, curr->u.offset );
+                if( curr->u.member_offset != 0 ) {
+                    dl = DBLocConst( dl, curr->u.member_offset );
                     dl = DBLocOp( dl, DB_OP_ADD, 0 );
                 }
                 pt = PointerTypeEquivalent( curr->sym_type );
@@ -305,13 +305,10 @@ static dbg_type symWVDebugClassType( TYPE type )
                             dl = DBLocConst( dl, info->vf_offset );
                             dl = DBLocOp( dl, DB_OP_ADD, 0 );
                         }
-                        dl = DBLocOp( dl, DB_OP_POINTS,
-                                      CgTypeOutput( pvf_FieldType ) );
-                        dl = DBLocConst( dl, ( curr->u.offset - VFUN_BASE ) *
-                                             vf_FieldTypeSize );
+                        dl = DBLocOp( dl, DB_OP_POINTS, CgTypeOutput( pvf_FieldType ) );
+                        dl = DBLocConst( dl, ( curr->u.member_vf_index - VFUN_BASE ) * vf_FieldTypeSize );
                         dl = DBLocOp( dl, DB_OP_ADD, 0 );
-                        dl = DBLocOp( dl, DB_OP_POINTS,
-                                      CgTypeOutput( vf_FieldType ) );
+                        dl = DBLocOp( dl, DB_OP_POINTS, CgTypeOutput( vf_FieldType ) );
                         dl = symbolicDebugSetCodeSegment( dl );
                     } else {
                         dl = symbolicDebugSymAddr( dl, curr );
@@ -560,8 +557,8 @@ static dbg_type symCVDebugClassType( TYPE type )
             }
             dl = DBLocInit();
             if( SymIsThisDataMember( curr ) ){
-                if( curr->u.offset != 0 ) {
-                    dl = DBLocConst( dl, curr->u.offset );
+                if( curr->u.member_offset != 0 ) {
+                    dl = DBLocConst( dl, curr->u.member_offset );
                     dl = DBLocOp( dl, DB_OP_ADD, 0 );
                 }
             } else {
@@ -609,8 +606,7 @@ static dbg_type symCVDebugClassType( TYPE type )
                 } else if( SymIsThisFuncMember( curr ) ) {
                     if( SymIsVirtual( curr ) ) {
                         kind = METHOD_VIRTUAL;
-                        dl = DBLocConst( dl, ( curr->u.offset - VFUN_BASE ) *
-                                             vf_FieldTypeSize );
+                        dl = DBLocConst( dl, ( curr->u.member_vf_index - VFUN_BASE ) * vf_FieldTypeSize );
                     } else {
                         dl = symbolicDebugSymAddr( dl, curr );
                     }
@@ -840,8 +836,9 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
         break;
     case TYP_ENUM:
     {   dbg_enum    de;
-        char        *name;
+        NAME        name;
         SYMBOL      sym;
+
         de = DBBegEnum( CgTypeOutput( type ) );
         sym = base->u.t.sym->thread;
         while( SymIsEnumeration( sym ) ) {
@@ -879,7 +876,8 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
         }
     }   break;
     case TYP_CLASS:
-    {   char *name;
+    {   NAME name;
+
         switch( base->flag & (TF1_UNION|TF1_STRUCT) ) {
         case TF1_STRUCT:
             fwd_info->dt = scopeStruct;

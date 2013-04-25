@@ -215,7 +215,7 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
     TYPE_SIG *sig;              // - signature
     SYMBOL sym;                 // - symbol
     unsigned size;              // - size of R/O data
-    char *typesig_name;         // - name of type signature
+    NAME typesig_name;          // - name of type signature
     TYPE typesig_type;          // - type of type signature
     boolean err_this_time;      // - TRUE ==> we have error
     TYPE_SIG_ACCESS acc_ind;    // - indirect access
@@ -381,18 +381,13 @@ INITDEFN( type_signature, typeSigInit, typeSigFini )
 
 pch_status PCHReadTypeSigs( void )
 {
-    cv_index i;
     TYPE_SIG *s;
     auto cvinit_t data;
 
-    PCHRead( &type_sigs, sizeof( type_sigs ) );
-    type_sigs = TypeSigMapIndex( type_sigs );
+    type_sigs = TypeSigMapIndex( (TYPE_SIG *)PCHReadCVIndex() );
     CarveInitStart( carveTYPE_SIG, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        s = CarveInitElement( &data, i );
-        PCHRead( s, sizeof( *s ) );
+    for( ; (s = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *s );
         s->next = TypeSigMapIndex( s->next );
         s->base = TypeSigMapIndex( s->base );
         s->type = TypeMapIndex( s->type );
@@ -440,7 +435,7 @@ static void saveTypeSig( void *e, carve_walk_base *d )
     save_copy_ctor = s->copy_ctor;
     s->copy_ctor = SymbolGetIndex( save_copy_ctor );
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->next = save_next;
     s->base = save_base;
     s->type = save_type;
@@ -452,15 +447,12 @@ static void saveTypeSig( void *e, carve_walk_base *d )
 
 pch_status PCHWriteTypeSigs( void )
 {
-    TYPE_SIG *list_head;
-    cv_index terminator = CARVE_NULL_INDEX;
     auto carve_walk_base data;
 
-    list_head = TypeSigGetIndex( type_sigs );
-    PCHWrite( &list_head, sizeof( list_head ) );
+    PCHWriteCVIndex( (cv_index)TypeSigGetIndex( type_sigs ) );
     CarveWalkAllFree( carveTYPE_SIG, markFreeTypeSig );
     CarveWalkAll( carveTYPE_SIG, saveTypeSig, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 
@@ -476,15 +468,11 @@ TYPE_SIG *TypeSigMapIndex( TYPE_SIG *e )
 
 pch_status PCHInitTypeSigs( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carveTYPE_SIG );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveTYPE_SIG ) );
     } else {
         carveTYPE_SIG = CarveRestart( carveTYPE_SIG );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveTYPE_SIG, n );
+        CarveMapOptimize( carveTYPE_SIG, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

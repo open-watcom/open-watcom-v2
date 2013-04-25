@@ -35,7 +35,7 @@
 #include "ctokens.h"
 #include "xlat.gh"
 
-char *Tokens[] = {
+const char *Tokens[] = {
     #define pick(token,string,class,prec) string,
     #include "_ctokens.h"
     #undef pick

@@ -40,6 +40,8 @@
 #include "preproc.h"
 #include "carve.h"
 
+#define PCH_FIRST_USER_INDEX    (PCH_FIRST_INDEX + MAX_BUILTIN_AUXINFO)
+
 enum {
     RAUX_RAW    = 0x01,         // auxinfo doesn't exist
     RAUX_NULL   = 0x00
@@ -110,37 +112,34 @@ char *AuxRetrieve( AUX_INFO *pragma )
     return( NULL );
 }
 
-static void readAuxInfo( AUX_INFO *i, unsigned control )
+static void readAuxInfo( AUX_INFO *i )
 {
-    unsigned parms_size;
-    unsigned objname_size;
+    unsigned    len;
 
-    if(( control & RAUX_RAW ) == 0 ) {
-        freeAuxInfo( i );
-    }
-    PCHRead( i, sizeof( *i ) );
+    PCHReadVar( *i );
     AsmSysPCHReadCode( i );
-    parms_size = PCHGetUInt( i->parms );
-    if( parms_size != 0 ) {
-        i->parms = CMemAlloc( parms_size );
-        PCHRead( i->parms, parms_size );
+    len = PCHGetUInt( i->parms );
+    if( len != 0 ) {
+        i->parms = CMemAlloc( len );
+        PCHRead( i->parms, len );
     }
-    objname_size = PCHGetUInt( i->objname );
-    if( objname_size != 0 ) {
-        i->objname = CMemAlloc( objname_size );
-        PCHRead( i->objname, objname_size );
+    len = PCHGetUInt( i->objname );
+    if( len != 0 ) {
+        i->objname = CMemAlloc( len );
+        PCHRead( i->objname, len );
     }
 }
 
 pch_status PCHReadPragmas( void )
 {
-    size_t      xlat_size;
-    size_t      entry_len;
-    unsigned    info_index;
+    unsigned    size;
+    unsigned    max_index;
+    unsigned    entry_len;
+    unsigned    index;
     AUX_ENTRY   *e;
     AUX_ENTRY   *f;
     AUX_ENTRY   *next_f;
-    AUX_INFO    *i;
+    AUX_INFO    *info;
 
     for( f = AuxList; f != NULL; f = next_f ) {
         next_f = f->next;
@@ -148,93 +147,62 @@ pch_status PCHReadPragmas( void )
         CMemFree( f->info );
         CMemFree( f );
     }
-    AuxList = NULL;
-    readAuxInfo( &DefaultInfo, RAUX_NULL );
-    readAuxInfo( &CdeclInfo, RAUX_NULL );
-    readAuxInfo( &PascalInfo, RAUX_NULL );
-    readAuxInfo( &FortranInfo, RAUX_NULL );
-    readAuxInfo( &SyscallInfo, RAUX_NULL );
-    readAuxInfo( &OptlinkInfo, RAUX_NULL );
-    readAuxInfo( &StdcallInfo, RAUX_NULL );
-    readAuxInfo( &FastcallInfo, RAUX_NULL );
-    readAuxInfo( &WatcallInfo, RAUX_NULL );
-#if _CPU == 386
-    readAuxInfo( &Far16CdeclInfo, RAUX_NULL );
-    readAuxInfo( &Far16PascalInfo, RAUX_NULL );
-#endif
-    for(;;) {
-        entry_len = PCHReadUInt();
-        if( entry_len == 0 ) break;
-        e = CMemAlloc( sizeof( AUX_ENTRY ) + entry_len );
-        PCHRead( e->name, entry_len + 1 );
-        info_index = PCHReadCVIndex();
-        if( info_index == PCH_NULL_INDEX ) {
-            i = CMemAlloc( sizeof( AUX_INFO ) );
-            e->info = i;
-            readAuxInfo( i, RAUX_RAW );
+    max_index = PCHReadUInt();
+    size = max_index * sizeof( AUX_INFO * );
+    infoTranslate = CMemAlloc( size );
+    memset( infoTranslate, 0, size );
+    // read all aux_info
+    for( index = PCH_FIRST_INDEX; index < max_index; ++index ) {
+        if( index < PCH_FIRST_USER_INDEX ) {
+            info = BuiltinAuxInfo + index - PCH_FIRST_INDEX;
         } else {
-            e->info = PragmaMapIndex( info_index );
+            info = CMemAlloc( sizeof( AUX_INFO ) );
         }
-        // must be after PragmaMapIndex
+        infoTranslate[index] = info;
+        readAuxInfo( info );
+    }
+    // read aux entries
+    AuxList = NULL;
+    for( ; (entry_len = PCHReadUInt()) != 0; ) {
+        e = CMemAlloc( offsetof( AUX_ENTRY, name ) + entry_len + 1 );
+        PCHRead( e->name, entry_len + 1 );
+        e->info = PragmaMapIndex( PCHSetUInt( PCHReadUInt() ) );
         e->next = AuxList;
         AuxList = e;
     }
-    info_index = PCHReadCVIndex();
-    xlat_size = info_index * sizeof( AUX_INFO * );
-    infoTranslate = CMemAlloc( xlat_size );
-    memset( infoTranslate, 0, xlat_size );
-    for( e = AuxList; e != NULL; e = e->next ) {
-        infoTranslate[ e->info->index ] = e->info;
-    }
-    infoTranslate[ DefaultInfo.index ] = &DefaultInfo;
-    infoTranslate[ CdeclInfo.index ] = &CdeclInfo;
-    infoTranslate[ PascalInfo.index ] = &PascalInfo;
-    infoTranslate[ FortranInfo.index ] = &FortranInfo;
-    infoTranslate[ SyscallInfo.index ] = &SyscallInfo;
-    infoTranslate[ OptlinkInfo.index ] = &OptlinkInfo;
-    infoTranslate[ StdcallInfo.index ] = &StdcallInfo;
-    infoTranslate[ FastcallInfo.index ] = &FastcallInfo;
-    infoTranslate[ WatcallInfo.index ] = &WatcallInfo;
-#if _CPU == 386
-    infoTranslate[ Far16CdeclInfo.index ] = &Far16CdeclInfo;
-    infoTranslate[ Far16PascalInfo.index ] = &Far16PascalInfo;
-#endif
     return( PCHCB_OK );
 }
 
-static void writeAuxInfo( AUX_INFO *info, cv_index *index )
+static void writeAuxInfo( AUX_INFO *info, unsigned index )
 {
     hw_reg_set  *regs;
     hw_reg_set  *save_parms;
     char        *save_objname;
-    unsigned    parms_size;
-    unsigned    objname_size;
+    unsigned    len;
 
-    info->index = (*index)++;
+    info->index = index;
     save_parms = info->parms;
     save_objname = info->objname;
-    parms_size = 0;
     if( save_parms != NULL ) {
+        len = 0;
         regs = save_parms;
         for(;;) {
-            parms_size += sizeof( hw_reg_set );
+            len += sizeof( hw_reg_set );
             if( HW_CEqual( *regs, HW_EMPTY ) ) break;
             ++regs;
         }
+        info->parms = PCHSetUInt( len );
     }
-    info->parms = PCHSetUInt( parms_size );
-    objname_size = 0;
     if( save_objname != NULL ) {
-        objname_size = strlen( save_objname ) + 1;
+        info->objname = PCHSetUInt( strlen( save_objname ) + 1 );
     }
-    info->objname = PCHSetUInt( objname_size );
     PCHWriteVar( *info );
     AsmSysPCHWriteCode( info );
-    if( parms_size != 0 ) {
-        PCHWrite( save_parms, parms_size );
+    if( save_parms != NULL ) {
+        PCHWrite( save_parms, PCHGetUInt( info->parms ) );
     }
-    if( objname_size != 0 ) {
-        PCHWrite( save_objname, objname_size );
+    if( save_objname != NULL ) {
+        PCHWrite( save_objname, PCHGetUInt( info->objname ) );
     }
     info->parms = save_parms;
     info->objname = save_objname;
@@ -242,116 +210,67 @@ static void writeAuxInfo( AUX_INFO *info, cv_index *index )
 
 pch_status PCHWritePragmas( void )
 {
-    cv_index    index;
-    cv_index    write_index;
-    size_t      len;
+    unsigned    index;
+    unsigned    len;
     AUX_INFO    *info;
     AUX_ENTRY   *e;
 
+    // get aux_info count
     for( e = AuxList; e != NULL; e = e->next ) {
         e->info->index = PCH_NULL_INDEX;
     }
-    index = PCH_FIRST_INDEX;
-    writeAuxInfo( &DefaultInfo, &index );
-    writeAuxInfo( &CdeclInfo, &index );
-    writeAuxInfo( &PascalInfo, &index );
-    writeAuxInfo( &FortranInfo, &index );
-    writeAuxInfo( &SyscallInfo, &index );
-    writeAuxInfo( &OptlinkInfo, &index );
-    writeAuxInfo( &StdcallInfo, &index );
-    writeAuxInfo( &FastcallInfo, &index );
-    writeAuxInfo( &WatcallInfo, &index );
-#if _CPU == 386
-    writeAuxInfo( &Far16CdeclInfo, &index );
-    writeAuxInfo( &Far16PascalInfo, &index );
-#endif
+    index = PCH_FIRST_USER_INDEX;
+    for( e = AuxList; e != NULL; e = e->next ) {
+        if( e->info->index == PCH_NULL_INDEX ) {
+            e->info->index = index++;
+        }
+    }
+    PCHWriteUInt( index );
+    for( e = AuxList; e != NULL; e = e->next ) {
+        e->info->index = PCH_NULL_INDEX;
+    }
+    // write built-in aux_info
+    for( index = PCH_FIRST_INDEX; index < PCH_FIRST_USER_INDEX; ++index ) {
+        info = BuiltinAuxInfo + index - PCH_FIRST_INDEX;
+        writeAuxInfo( info, index );
+    }
+    // write user aux_info
+    for( e = AuxList; e != NULL; e = e->next ) {
+        info = e->info;
+        if( info->index == PCH_NULL_INDEX ) {
+            writeAuxInfo( info, index++ );
+        }
+    }
+    // write aux entries
     for( e = AuxList; e != NULL; e = e->next ) {
         len = strlen( e->name );
         PCHWriteUInt( len );
         PCHWrite( e->name, len + 1 );
-        info = e->info;
-        write_index = info->index;
-        PCHWriteCVIndex( write_index );
-        if( write_index == PCH_NULL_INDEX ) {
-            writeAuxInfo( info, &index );
-        }
+        PCHWriteUInt( PCHGetUInt( PragmaGetIndex( e->info ) ) );
     }
-    len = 0;
-    PCHWriteUInt( len );
-    PCHWriteCVIndex( index );
+    PCHWriteUInt( 0 );
     return( PCHCB_OK );
 }
 
-unsigned PragmaGetIndex( AUX_INFO *i )
+AUX_INFO *PragmaGetIndex( AUX_INFO *i )
 {
     if( i == NULL ) {
-        return( PCH_NULL_INDEX );
+        return( (AUX_INFO *)PCH_NULL_INDEX );
     }
 #ifndef NDEBUG
     if( i->index < PCH_FIRST_INDEX ) {
         CFatal( "aux info not assigned an index" );
     }
 #endif
-    return( i->index );
+    return( PCHSetUInt( i->index ) );
 }
 
-AUX_INFO *PragmaMapIndex( unsigned i )
+AUX_INFO *PragmaMapIndex( AUX_INFO *i )
 {
-    AUX_ENTRY   *e;
-    AUX_INFO    *mapped_info;
-
-    if( i == PCH_NULL_INDEX ) {
+    if( PCHGetUInt( i ) < PCH_FIRST_INDEX ) {
         return( NULL );
     }
-    mapped_info = NULL;
-    if( infoTranslate != NULL ) {
-        mapped_info = infoTranslate[ i ];
-    } else {
-        for( e = AuxList; e != NULL; e = e->next ) {
-            if( e->info->index == i ) {
-                return( e->info );
-            }
-        }
-        if( i == DefaultInfo.index ) {
-            return( &DefaultInfo );
-        }
-        if( i == CdeclInfo.index ) {
-            return( &CdeclInfo );
-        }
-        if( i == PascalInfo.index ) {
-            return( &PascalInfo );
-        }
-        if( i == FortranInfo.index ) {
-            return( &FortranInfo );
-        }
-        if( i == SyscallInfo.index ) {
-            return( &SyscallInfo );
-        }
-        if( i == OptlinkInfo.index ) {
-            return( &OptlinkInfo );
-        }
-        if( i == StdcallInfo.index ) {
-            return( &StdcallInfo );
-        }
-        if( i == FastcallInfo.index ) {
-            return( &FastcallInfo );
-        }
-        if( i == WatcallInfo.index ) {
-            return( &WatcallInfo );
-        }
-#if _CPU == 386
-        if( i == Far16CdeclInfo.index ) {
-            return( &Far16CdeclInfo );
-        }
-        if( i == Far16PascalInfo.index ) {
-            return( &Far16PascalInfo );
-        }
-#endif
-#ifndef NDEBUG
-        CFatal( "invalid index passed to PragmaMapIndex" );
-#endif
-    }
-    return( mapped_info );
+    return( infoTranslate[PCHGetUInt( i )] );
 }
 
 pch_status PCHInitPragmas( boolean writing )

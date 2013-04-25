@@ -37,7 +37,7 @@
 
 
 static carve_t carveFunRepository;  // carver for functions
-static REPO_REC_FUN* funRepository; // repository for functions
+static REPO_REC_FUN *funRepository; // repository for functions
 
 
 static void init(               // INITIALIZATION
@@ -62,10 +62,10 @@ INITDEFN( fun_repository, init, fini );
 
 
 REPO_REC_FUN* RepoFunAdd(       // ADD FUNCTION TO REPOSITORY
-    const char* name,           // - function name
+    NAME name,                  // - function name
     REPO_FUN_FLAGS flags )      // - function flags
 {
-    REPO_REC_FUN* frec;         // - new function record
+    REPO_REC_FUN *frec;         // - new function record
 
     frec = RingCarveAlloc( carveFunRepository, &funRepository );
     frec->name = name;
@@ -75,10 +75,10 @@ REPO_REC_FUN* RepoFunAdd(       // ADD FUNCTION TO REPOSITORY
 
 
 REPO_REC_FUN* RepoFunRead(      // GET FUNCTION RECORD FROM REPOSITORY
-    const char* name )          // - function name
+    NAME name )                 // - function name
 {
-    REPO_REC_FUN* curr;         // - current entry
-    REPO_REC_FUN* retn;         // - entry for function
+    REPO_REC_FUN *curr;         // - current entry
+    REPO_REC_FUN *retn;         // - entry for function
 
     retn = NULL;
     RingIterBeg( funRepository, curr ) {

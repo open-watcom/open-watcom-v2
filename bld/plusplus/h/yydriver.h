@@ -36,7 +36,7 @@ typedef struct parse_stack PARSE_STACK;
 
 extern void ParseFlush( void );
 extern REWRITE *ParseGetRecordingInProgress( TOKEN_LOCN ** );
-extern PTREE ParseExpr( int end_token );
+extern PTREE ParseExpr( TOKEN end_token );
 extern void ParseDecls( void );
 extern PTREE ParseExprDecl( void );
 extern PTREE ParseMemInit( void );

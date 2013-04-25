@@ -501,7 +501,7 @@ static void emitDone            // EMIT CGDONE
 
 
 static void emitCode            // EMIT STAND-ALONE OPCODE
-    ( unsigned opcode )         // - opcode
+    ( CGINTEROP opcode )        // - opcode
 {
     CgFrontCode( opcode );
     emitDone();
@@ -509,7 +509,7 @@ static void emitCode            // EMIT STAND-ALONE OPCODE
 
 
 static void emitCodeUint        // EMIT STAND-ALONE OPCODE + UNSIGNED
-    ( unsigned opcode           // - opcode
+    ( CGINTEROP opcode          // - opcode
     , unsigned value )          // - value
 {
     CgFrontCodeUint( opcode, value );
@@ -603,7 +603,7 @@ PTREE PtdNewCtor                // DECORATE FOR CTORING NEW'ED EXPRESSION
 
 PTREE PtdVfunAccess             // ACCESS VIRTUAL FUNCTION
     ( PTREE expr                // - expression
-    , target_offset_t vf_index  // - index into VF table
+    , unsigned vf_index         // - index into VF table
     , target_offset_t vf_offset // - offset to VF table ptr
     , SYMBOL baser )            // - basing "this" symbol
 {
@@ -617,7 +617,7 @@ PTREE PtdVfunAccess             // ACCESS VIRTUAL FUNCTION
 PTREE PtdVbaseFetch             // FETCH OF VIRTUAL BASE
     ( PTREE expr                // - expression
     , target_offset_t vb_offset // - virtual base offset
-    , target_offset_t vb_index  // - virtual base index
+    , unsigned vb_index         // - virtual base index
     , target_offset_t vb_delta  // - virtual base delta
     , target_offset_t vb_exact )// - virtual base exact offset
 {
@@ -933,7 +933,7 @@ static void savePtd( void *p, carve_walk_base *d )
         break;
     }
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->base.next = save_next;
     switch( s->base.fmt ) {
     case PTD_FMT_SYMBOL:
@@ -950,45 +950,38 @@ static void savePtd( void *p, carve_walk_base *d )
 
 pch_status PCHWritePtds( void )
 {
-    cv_index terminator = CARVE_NULL_INDEX;
     auto carve_walk_base data;
 
     CarveWalkAllFree( carvePTD, markFreePtd );
     CarveWalkAll( carvePTD, savePtd, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 
 pch_status PCHReadPtds( void )
 {
-    cv_index i;
     PTD *r;
-    PTD *pch;
     auto cvinit_t data;
 
     CarveInitStart( carvePTD, &data );
-    for(;;) {
-        PCHReadMapped( pch, r, i, data );
-        r->base.next = PtdMapIndex( pch->base.next );
-        r->base.kind = pch->base.kind;
-        r->base.fmt = pch->base.fmt;
-        switch( pch->base.fmt ) {
+    for( ; (r = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *r );
+        r->base.next = PtdMapIndex( r->base.next );
+        switch( r->base.fmt ) {
         case PTD_FMT_BASE:
             break;
         case PTD_FMT_OFFSET:
-            r->off.offset = pch->off.offset;
             break;
         case PTD_FMT_SIZE:
-            r->size.size = pch->size.size;
             break;
         case PTD_FMT_SYMBOL:
-            r->symbol.sym = SymbolMapIndex( pch->symbol.sym );
+            r->symbol.sym = SymbolMapIndex( r->symbol.sym );
             break;
         case PTD_FMT_TYPE:
-            r->type.type = TypeMapIndex( pch->type.type );
+            r->type.type = TypeMapIndex( r->type.type );
             break;
         case PTD_FMT_PTREE:
-            r->ptree.tree = PTreeMapIndex( pch->ptree.tree );
+            r->ptree.tree = PTreeMapIndex( r->ptree.tree );
             break;
         DbgDefault( "incorrect PTD format" );
         }
@@ -998,15 +991,11 @@ pch_status PCHReadPtds( void )
 
 pch_status PCHInitPtds( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carvePTD );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carvePTD ) );
     } else {
         carvePTD = CarveRestart( carvePTD );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carvePTD, n );
+        CarveMapOptimize( carvePTD, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

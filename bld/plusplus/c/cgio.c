@@ -361,7 +361,7 @@ CGINTER *CgioReadIC(            // READ IC RECORD (LOCATE MODE)
 
 CGINTER *CgioReadICUntilOpcode( // READ IC RECORD UNTIL OPCODE IS FOUND
     CGFILE *ctl,                // - control for the file
-    unsigned opcode )           // - opcode to find
+    CGINTEROP opcode )          // - opcode to find
 {
     DbgAssert( ctl->cursor != NULL );
     ctl->buffer = CgioBuffReadICUntilOpcode( ctl->buffer, &ctl->cursor, opcode );
@@ -542,8 +542,8 @@ static CGIRELOCFN *relocWriteOperand[] = {
 };
 
 
-CGVALUE CgioGetIndex( unsigned opcode, CGVALUE value )
-/****************************************************/
+CGVALUE CgioGetIndex( CGINTEROP opcode, CGVALUE value )
+/*****************************************************/
 {
     ic_op_type op_class;
     CGIRELOCFN *reloc;
@@ -590,13 +590,12 @@ static unsigned padOutICBlock( unsigned ics )
 static void saveCGFILE( void *e, carve_walk_base *d )
 {
     CGFILE *file = e;
-    SYMBOL fn_sym;
     CGIOBUFF *h;
     CGIOBUFF *stop_buffer;
     CGINTER *cursor;
     CGINTER *stop_cursor;
     ic_op_type op_class;
-    unsigned opcode;
+    CGINTEROP opcode;
     unsigned ics;
     void *zap_reloc;
     CGIRELOCFN *reloc;
@@ -604,18 +603,15 @@ static void saveCGFILE( void *e, carve_walk_base *d )
     auto CGINTER zap_ref;
     auto CGFILE_INS zap_locn;
 
-    if( !file->s.write_to_pch
-     || file->symbol == BRINF_SYMBOL ) {
+    if( !file->s.write_to_pch || file->symbol == BRINF_SYMBOL ) {
         return;
     }
     PCHWriteCVIndex( d->index );
-    fn_sym = SymbolGetIndex( file->symbol );
-    PCHWrite( &fn_sym, sizeof( fn_sym ) );
-    fn_sym = SymbolGetIndex( file->opt_retn );
-    PCHWrite( &fn_sym, sizeof( fn_sym ) );
+    PCHWriteCVIndex( (cv_index)SymbolGetIndex( file->symbol ) );
+    PCHWriteCVIndex( (cv_index)SymbolGetIndex( file->opt_retn ) );
     PCHWriteUInt( file->flags );
     h = CgioBuffRdOpen( file->first );
-    cursor = (CGINTER *) ( h->data + file->offset );
+    cursor = (CGINTER *)( h->data + file->offset );
     ics = 0;
     if( file->s.done ) {
         // CGFILE contains a finished function
@@ -708,7 +704,6 @@ static void markFreeCGFILE( void *p )
 
 pch_status PCHWriteCGFiles( void )
 {
-    unsigned terminator = CARVE_NULL_INDEX;
     CGFILE *curr;
     auto carve_walk_base data;
 
@@ -717,29 +712,22 @@ pch_status PCHWriteCGFiles( void )
         curr->s.write_to_pch = TRUE;
     } RingIterEnd( curr )
     CarveWalkAll( carveCGFILE, saveCGFILE, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 
 pch_status PCHReadCGFiles( void )
 {
-    cv_index i;
-    unsigned opcode;
+    CGINTEROP opcode;
     CGFILE *curr;
-    SYMBOL sym;
-    auto CGINTER instr[ CGINTER_BLOCKING ];
+    CGINTER last;
     auto cvinit_t data;
-    CGINTER *p_instr;
 
     CarveInitStart( carveCGFILE, &data );
-    for(;;) {
-        PCHLocateCVIndex( i );
-        if( i == CARVE_NULL_INDEX ) break;
-        curr = CarveInitElement( &data, i );
+    for( ; (curr = PCHReadCVIndexElement( &data )) != NULL; ) {
         RingAppend( &cg_file_ring, curr );
-        sym = SymbolMapIndex( PCHReadPtr() );
-        initCGFILE( curr, sym );
-        curr->opt_retn = SymbolMapIndex( PCHReadPtr() );
+        initCGFILE( curr, SymbolMapIndex( (SYMBOL)PCHReadCVIndex() ) );
+        curr->opt_retn = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() );
         curr->flags = PCHReadUInt();
         for(;;) {
             // The following comment is a trigger for the ICMASK program to
@@ -752,9 +740,10 @@ pch_status PCHReadCGFiles( void )
                 case IC_EOF:
             */
             // ICMASK END (do not remove)
-            p_instr = CgioBuffPCHRead( instr, &(curr->buffer) );
-            opcode = p_instr->opcode;
-            if( opcode == IC_PCH_STOP ) break;
+            last = CgioBuffPCHRead( &(curr->buffer) );
+            opcode = last.opcode;
+            if( opcode == IC_PCH_STOP )
+                break;
             if( opcode == IC_EOF ) {
                 DbgAssert( ICOpTypes[ opcode ] == ICOT_NUL );
                 // this writes the IC_EOF into the buffer
@@ -766,7 +755,7 @@ pch_status PCHReadCGFiles( void )
                 ModuleAdjustZap1( curr );
                 break;
             case IC_ZAP2_REF:
-                ModuleAdjustZap2( curr, p_instr->value.pvalue );
+                ModuleAdjustZap2( curr, last.value.pvalue );
                 break;
             DbgDefault( "unexpected IC opcode during PCH read" );
             }
@@ -777,13 +766,9 @@ pch_status PCHReadCGFiles( void )
 
 pch_status PCHInitCGFiles( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carveCGFILE );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveCGFILE_GEN );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveCGFILE ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveCGFILE_GEN ) );
     } else {
         CGFILE *curr;
 
@@ -796,11 +781,9 @@ pch_status PCHInitCGFiles( boolean writing )
         } RingIterEnd( curr )
         cg_file_ring = NULL;
         carveCGFILE = CarveRestart( carveCGFILE );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveCGFILE, n );
+        CarveMapOptimize( carveCGFILE, PCHReadCVIndex() );
         carveCGFILE_GEN = CarveRestart( carveCGFILE_GEN );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveCGFILE_GEN, n );
+        CarveMapOptimize( carveCGFILE_GEN, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

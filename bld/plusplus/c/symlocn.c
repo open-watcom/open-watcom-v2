@@ -146,51 +146,41 @@ static void saveTokenLocn( void *e, carve_walk_base *d )
     }
 #endif
     PCHWriteCVIndex( d->index );
-    PCHWrite( b, sizeof( *b ) );
+    PCHWriteVar( *b );
     b->tl.src_file = save_src_file;
 }
 
 pch_status PCHWriteTokenLocns( void )
 {
-    cv_index terminator = CARVE_NULL_INDEX;
     auto carve_walk_base data;
 
     CarveWalkAllFree( carveSYMBOL_LOCN, markFreeTokenLocn );
     CarveWalkAll( carveSYMBOL_LOCN, saveTokenLocn, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 
 pch_status PCHReadTokenLocns( void )
 {
-    cv_index i;
     SYM_TOKEN_LOCN *b;
-    SYM_TOKEN_LOCN *pch;
     auto cvinit_t data;
 
     // DbgVerify( sizeof( uint_32 ) >= sizeof( void* ), "Bad assumption" );
     CarveInitStart( carveSYMBOL_LOCN, &data );
-    for(;;) {
-        PCHReadMapped( pch, b, i, data );
-        b->tl.line = pch->tl.line;
-        b->tl.column = pch->tl.column;
-        b->tl.src_file = SrcFileMapIndex( pch->tl.src_file );
-        b->dwh = pch->dwh;
+    for( ; (b = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *b );
+        b->tl.src_file = SrcFileMapIndex( b->tl.src_file );
     }
     return( PCHCB_OK );
 }
 
 pch_status PCHInitTokenLocns( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carveSYMBOL_LOCN );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveSYMBOL_LOCN ) );
     } else {
         carveSYMBOL_LOCN = CarveRestart( carveSYMBOL_LOCN );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveSYMBOL_LOCN, n );
+        CarveMapOptimize( carveSYMBOL_LOCN, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

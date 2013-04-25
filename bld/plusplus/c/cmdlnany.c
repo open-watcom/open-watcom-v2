@@ -387,11 +387,11 @@ int OPT_GET_CHAR( int *p )
     return( 0 );
 }
 
-static void addString( OPT_STRING **h, char const *s, size_t len )
+static void addString( OPT_STRING **h, char const *s, unsigned len )
 {
     OPT_STRING *value;
 
-    value = CMemAlloc( sizeof( *value ) + len );
+    value = CMemAlloc( offsetof( OPT_STRING, data ) + len + 1 );
     stvcpy( value->data, s, len );
     value->next = *h;
     *h = value;

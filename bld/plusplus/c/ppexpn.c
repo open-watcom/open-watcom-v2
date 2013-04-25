@@ -85,7 +85,7 @@ static  int    Prec[] = {     // table of token precedences
 };
 
 #ifndef NDEBUG
-static char * TokenNames[] = {
+static const char *TokenNames[] = {
     #define pick(token,string,class,prec) string,
     #define define_precedence
     #include "_ctokens.h"
@@ -94,11 +94,9 @@ static char * TokenNames[] = {
 };
 #endif
 
-#define NUM_PREC (sizeof(Prec) / sizeof(int))
+#define LAST_TOKEN_PREC (sizeof( Prec ) / sizeof( Prec[0] ))
 
-#define IS_OPERAND( token ) ( ( token == T_ID ) || ( token == T_CONSTANT ) \
-                           || ( ( token >= FIRST_KEYWORD ) \
-                             && ( token <= LAST_KEYWORD ) ) )
+#define IS_OPERAND( token ) ( IS_ID_OR_KEYWORD( token ) || token == T_CONSTANT )
 
 typedef struct ppvalue {
     union {
@@ -125,7 +123,7 @@ static PPEXPN_OPERAND_STACK *HeadOperand = NULL;
 typedef struct token_stack PPEXPN_OPERATOR_STACK; // stack to store operators
 struct token_stack {
     PPEXPN_OPERATOR_STACK *next;
-    int token;
+    TOKEN token;
     loc_info loc;
     int prec;
 };
@@ -156,7 +154,7 @@ void DbgDumpOperatorStack( void )       // dump PPEXPN_OPERATOR_STACK
     }
 }
 
-void DbgDumpToken( int token )          // dump PPEXPN_OPERAND_STACK
+void DbgDumpToken( TOKEN token )        // dump PPEXPN_OPERAND_STACK
 {
     printf("Token: %s\n", TokenNames[token] );
 }
@@ -237,7 +235,7 @@ static void ppexpnFini( // COMPLETION FOR MODULE
 INITDEFN( ppexpn, ppexpnInit, ppexpnFini );
 
 
-static void PushOperator( int token, loc_info *loc, int prec )
+static void PushOperator( TOKEN token, loc_info *loc, int prec )
 {
     PPEXPN_OPERATOR_STACK *stack_entry;
 
@@ -258,7 +256,7 @@ static void PushCurToken( int prec )
 }
 
 
-static boolean PopOperator( int *token, loc_info *loc )
+static boolean PopOperator( TOKEN *token, loc_info *loc )
 {
     PPEXPN_OPERATOR_STACK *stack_entry;
 
@@ -276,7 +274,7 @@ static boolean PopOperator( int *token, loc_info *loc )
     return( FALSE );
 }
 
-static boolean TopOperator( int *token, int *prec )
+static boolean TopOperator( TOKEN *token, int *prec )
 {
     PPEXPN_OPERATOR_STACK *stack_entry;
 
@@ -331,7 +329,7 @@ static boolean PopOperand( ppvalue *p, loc_info *loc )
     return( FALSE );
 }
 
-static boolean CheckToken( int prev_token )
+static boolean CheckToken( TOKEN prev_token )
 {
     if( IS_OPERAND( prev_token ) && IS_OPERAND( CurToken ) ) {
         CErr1( ERR_CONSECUTIVE_OPERANDS ); //  can't have 2 operands in a row
@@ -353,7 +351,7 @@ static boolean CheckToken( int prev_token )
 
 static boolean PpNextToken( void )  // scan the next token and check for errors
 {
-    static int prev_token;
+    static TOKEN prev_token;
 
     prev_token = CurToken;
     NextToken();
@@ -376,7 +374,6 @@ static void unexpectedCurToken( void )
 
 static int isMacroDefined( void )
 {
-    PPState = PPS_EOL;
     return MacroDependsDefined();
 }
 
@@ -394,7 +391,9 @@ static boolean COperand( void )
         loc.pos = Pos;
         Pos++;
         if( strcmp( "defined", Buffer ) == 0 ) {
-            PPState = PPS_EOL | PPS_NO_EXPAND;
+            ppstate_t   old_ppstate;
+
+            old_ppstate = SetPPState( PPS_EOL | PPS_NO_EXPAND );
             NextToken(); // Don't error check: can have T_ID T_ID here
             if( CurToken == T_LEFT_PAREN ) {
                 SrcFileGetTokenLocn( &left_loc );
@@ -409,6 +408,7 @@ static boolean COperand( void )
             } else {
                 I32ToI64( isMacroDefined(), &(p.sval) );
             }
+            SetPPState( old_ppstate );
         } else {
             CErr2p( WARN_UNDEFD_MACRO_IS_ZERO, Buffer );
             I64SetZero( p );
@@ -471,7 +471,7 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
     int prec_token;
     int prec_operator;
     boolean done;
-    int top;
+    TOKEN top;
     ppvalue empty;
     loc_info loc;
     error_state_t error_info;
@@ -498,13 +498,12 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
             done = PpNextToken();
         } else {
             TopOperator( &top, &prec_operator );
-            DbgVerify( ( prec_operator >= 0 ) && (prec_operator < NUM_PREC ),
+            DbgVerify( ( prec_operator >= 0 ) && (prec_operator <= MAX_PREC ),
                        "Operator on stack with back precedence " );
-            if( CurToken < NUM_PREC ) {
+            if( CurToken < LAST_TOKEN_PREC ) {
                 prec_token = Prec[CurToken];
-                if( prec_token < prec_operator ||
-                    ( ( prec_token == prec_operator )
-                   && ( prec_token != PREC_UNARY ) ) ) {
+                if( prec_token < prec_operator 
+                  || ( ( prec_token == prec_operator ) && ( prec_token != PREC_UNARY ) ) ) {
                     done = CExpr[prec_operator](); // reduce
                 } else {
                     PushCurToken( prec_token ); // shift
@@ -536,7 +535,7 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
 
 static boolean CRightParen( void )  // reduce extra )
 {
-    int right_paren;
+    TOKEN right_paren;
     loc_info right_info;
 
     // as ) doesn't get pushed for (expr), this must be an unmatched )
@@ -549,7 +548,7 @@ static boolean CRightParen( void )  // reduce extra )
 
 static boolean CLeftParen( void )   // reduce (expr)
 {
-    int left_paren;
+    TOKEN left_paren;
     loc_info left_info;
     loc_info e1_info;
     ppvalue e1;
@@ -581,8 +580,8 @@ static boolean CConditional( void ) // reduce an a?b:c expression
     ppvalue e1;
     ppvalue e2;
     ppvalue e3;
-    int op1;
-    int op2;
+    TOKEN op1;
+    TOKEN op2;
 
     PopOperator( &op2, &op2_info );
     if( op2 != T_COLON ) {
@@ -640,7 +639,7 @@ static boolean CConditional( void ) // reduce an a?b:c expression
 }
 
 static boolean Binary( // pop binary operand and two operands, error check
-    int *token, ppvalue *e1, ppvalue *e2, loc_info *loc )
+    TOKEN *token, ppvalue *e1, ppvalue *e2, loc_info *loc )
 {
     loc_info e1_info;
     loc_info e2_info;
@@ -666,7 +665,7 @@ static boolean CLogicalOr( void )   // reduce a || b
     ppvalue e1;
     ppvalue e2;
     loc_info loc;
-    int token;
+    TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
 
@@ -691,7 +690,7 @@ static boolean CLogicalAnd( void )  // reduce a && b
     ppvalue e1;
     ppvalue e2;
     loc_info loc;
-    int token;
+    TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
 
@@ -715,7 +714,7 @@ static boolean COr( void )  // reduce a|b
     ppvalue e1;
     ppvalue e2;
     loc_info loc;
-    int token;
+    TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         U64OrEq( e1, e2 );
@@ -731,7 +730,7 @@ static boolean CXOr( void ) // reduce a^b
     ppvalue e1;
     ppvalue e2;
     loc_info loc;
-    int token;
+    TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         U64XOrEq( e1, e2 );
@@ -747,7 +746,7 @@ static boolean CAnd( void ) // reduce a&b
     ppvalue e1;
     ppvalue e2;
     loc_info loc;
-    int token;
+    TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         U64AndEq( e1, e2 );
@@ -763,7 +762,7 @@ static boolean CEquality( void )    // reduce a == b or a != b
     ppvalue e1;
     ppvalue e2;
     loc_info loc;
-    int token;
+    TOKEN token;
     int val;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
@@ -785,7 +784,7 @@ static boolean CRelational( void )  // reduce a<b, a>b, a<=b, or a>=b
     ppvalue e1;
     ppvalue e2;
     loc_info loc;
-    int token;
+    TOKEN token;
     int val;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
@@ -836,7 +835,7 @@ static boolean CShift( void )   // reduce a<<b or a>>b
     ppvalue e1;
     ppvalue e2;
     loc_info loc;
-    int token;
+    TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
@@ -879,7 +878,7 @@ static boolean CAdditive( void )    // reduce a+b or a-b
     ppvalue e1;
     ppvalue e2;
     loc_info loc;
-    int token;
+    TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
@@ -905,7 +904,7 @@ static boolean CMultiplicative( void )  // reduce a/b or a*b
     ppvalue e1;
     ppvalue e2;
     loc_info loc;
-    int token;
+    TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
@@ -948,7 +947,7 @@ static boolean CUnary( void )   // reduce +a or -a or !a or ~a
     ppvalue p;
     loc_info operator_info;
     loc_info operand_info;
-    int top;
+    TOKEN top;
 
     PopOperator( &top, &operator_info );
     if( PopOperand( &p, &operand_info ) &&
@@ -985,7 +984,7 @@ static boolean CUnary( void )   // reduce +a or -a or !a or ~a
 
 static boolean CStart( void )
 {
-    int top;
+    TOKEN top;
 
     PopOperator( &top, NULL );
     if( CurToken != T_NULL ) {

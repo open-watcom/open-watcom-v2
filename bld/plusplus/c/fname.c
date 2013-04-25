@@ -70,7 +70,7 @@ char *FNameAdd(                 // ADD AN FNAME
     FNAME *p;
 
     len = strlen( name );
-    p = CMemAlloc( sizeof( *p ) + len );
+    p = CMemAlloc( offsetof( FNAME, name ) + len + 1 );
     strcpy( p->name, name );
     RingAppend( &fnameList, p );
     return( p->name );

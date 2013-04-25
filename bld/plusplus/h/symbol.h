@@ -118,14 +118,14 @@ SYMBOL SymCreate(               // CREATE NEW SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
     symbol_flag flags,          // - symbol flags
-    char* name,                 // - symbol name
+    NAME name,                  // - symbol name
     SCOPE scope )               // - scope for insertion
 ;
 SYMBOL SymCreateAtLocn(         // CREATE NEW SYMBOL AT LOCATION
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
     symbol_flag flags,          // - symbol flags
-    char* name,                 // - symbol name
+    NAME name,                  // - symbol name
     SCOPE scope,                // - scope for insertion
     TOKEN_LOCN* locn )          // - location
 ;
@@ -133,19 +133,19 @@ SYMBOL SymCreateCurrScope(      // CREATE NEW CURR-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
     symbol_flag flags,          // - symbol flags
-    char* name )                // - symbol name
+    NAME name )                 // - symbol name
 ;
 SYMBOL SymCreateFileScope(      // CREATE NEW FILE-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
     symbol_flag flags,          // - symbol flags
-    char* name )                // - symbol name
+    NAME name )                 // - symbol name
 ;
 SYMBOL SymCreateTempScope(      // CREATE NEW TEMP-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
     symbol_flag flags,          // - symbol flags
-    char* name )                // - symbol name
+    NAME name )                 // - symbol name
 ;
 SYMBOL SymDefaultBase(          // REMOVE DEFAULT ARGUMENTS TO GET BASE SYMBOL
     SYMBOL sym )                // - the symbol
@@ -234,11 +234,6 @@ boolean SymIsEnumDefinition(    // TEST IF SYMBOL IS AN ENUMERATION
 ;
 boolean SymIsExtern(            // SYMBOL IS DEFINED OUTSIDE THIS MODULE
     SYMBOL sym )                // - the symbol
-;
-boolean SymIsFsFunction(        // TEST IF SPECIFIC FILE-SCOPE FUNCTION
-    SYMBOL func,                // - potential function
-    const char* name,           // - specific name
-    unsigned length )           // - length of name
 ;
 boolean SymIsFuncMember(        // TEST IF SYMBOL IS A MEMBER FUNCTION
     SYMBOL sym )                // - the symbol
@@ -337,7 +332,7 @@ void SymLocnCopy(               // COPY LOCATION TO SYMBOL FROM ANOTHER SYMBOL
 ;
 SYMBOL SymMakeDummy(            // MAKE A DUMMY SYMBOL
     TYPE type,                  // - type of the symbol
-    char **name )               // - gets filled in with the name
+    NAME *name )                // - gets filled in with the name
 ;
 SYMBOL SymMarkRefed(            // MARK SYMBOL AS REFERENCED
     SYMBOL sym )                // - the symbol

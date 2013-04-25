@@ -52,7 +52,6 @@
 #include "vstk.h"
 #include "pstk.h"
 #include "pragdefn.h"
-#include "yydriver.h"
 #include "fnbody.h"
 #include "initdefs.h"
 #include "pcheader.h"
@@ -63,6 +62,8 @@
 #include "brinfo.h"
 #include "conpool.h"
 #include "fmtsym.h"
+#include "vfun.h"
+#include "yydriver.h"
 
 #define _ScopeMask( i )         ( 1 << (i) )
 
@@ -299,10 +300,6 @@ SYMBOL ChipBugSym;
 SYMBOL DFAbbrevSym;
 SYMBOL PCHDebugSym;
 
-static char bool_zapped_char;
-static char static_assert_zapped_char;
-static char decltype_zapped_char;
-
 extern SCOPE    GetCurrScope(void)
 {
     return g_CurrScope;
@@ -393,7 +390,7 @@ ExtraRptCtr( cnv_quick );
 ExtraRptCtr( cnv_found );
 
 static SAVE_MAPPING *mappingList;       // member pointer mapping array list
-static char *uniqueNameSpaceName;       // name for unique namespaces
+static NAME uniqueNameSpaceName;        // name for unique namespaces
 static NAME_SPACE *allNameSpaces;       // list of all namespaces
 
 static inherit_flag verifyAccess( access_data * );
@@ -502,10 +499,8 @@ static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, unsig
         return;
     }
     printSymbolName( sym );
-    printf( "offset=%04xh index=%u\n", table->h.exact_delta, vf_index + 1 );
-    top = data->top;
-    for(;;) {
-        if( top == NULL ) break;
+    printf( "offset=%04xh index=%u\n", table->h.exact_delta, vf_index + VFUN_BASE );
+    for( top = data->top; top != NULL; top = top->parent ) {
         printScopeName( top->scope, NULL );
         base = top->base;
         if( base != NULL ) {
@@ -515,7 +510,6 @@ static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, unsig
                 printf( "-%xh-> ", base->delta );
             }
         }
-        top = top->parent;
     }
     putchar( '\n' );
 }
@@ -619,14 +613,11 @@ static SCOPE makeScope( scope_type_t scope_type )
     return( new_scope );
 }
 
-static SYMBOL injectOpDel( char *name )
+static SYMBOL injectOpDel( NAME name )
 {
     SYMBOL sym;
 
-    sym = SymCreateFileScope( TypeVoidFunOfPtrVoid()
-                            , SC_EXTERN
-                            , 0
-                            , name );
+    sym = SymCreateFileScope( TypeVoidFunOfPtrVoid(), SC_EXTERN, 0, name );
     LinkageSet( sym, "C++" );
     return( sym );
 }
@@ -640,14 +631,11 @@ static void injectGlobalOpDelete( void )
     injectOpDel( CppOperatorName( CO_DELETE_ARRAY ) );
 }
 
-static void injectOpNew( TYPE fn_type, char *name )
+static void injectOpNew( TYPE fn_type, NAME name )
 {
     SYMBOL sym;
 
-    sym = SymCreateFileScope( fn_type
-                            , SC_EXTERN
-                            , 0
-                            , name );
+    sym = SymCreateFileScope( fn_type, SC_EXTERN, 0, name );
     LinkageSet( sym, "C++" );
 }
 
@@ -657,8 +645,8 @@ static void injectGlobalOpNew( void )
     TYPE size_type;
     TYPE size_fn_type;
     TYPE placement_fn_type;
-    char *simple_name;
-    char *array_name;
+    NAME simple_name;
+    NAME array_name;
 
     pvoid_type = TypePtrToVoid();
     size_type = GetBasicType( TYP_UINT );
@@ -683,7 +671,7 @@ static void injectGlobalOpNew( void )
 static void injectChipBug( void )
 {
     TYPE type;
-    char *name;
+    NAME name;
     SYMBOL sym;
 
     name = CppSpecialName( SPECIAL_CHIPBUG );
@@ -696,12 +684,12 @@ static void injectChipBug( void )
 
 static void injectBool( void )
 {
-    char *name;
+    NAME name;
 
     /* 'bool' cannot be a keyword because the idiots at MS use it as an id */
     if( CompFlags.extensions_enabled ) {
         name = NameCreateNoLen( Tokens[T_BOOL] );
-        bool_zapped_char = KwDisable( T_BOOL );
+        KwDisable( T_BOOL );
         SymCreateFileScope( GetBasicType( TYP_BOOL ), SC_TYPEDEF, 0, name );
     }
 }
@@ -709,7 +697,7 @@ static void injectBool( void )
 static void injectDwarfAbbrev( void )
 {
     TYPE type;
-    char *name;
+    NAME name;
     SYMBOL sym;
 
     name = CppSpecialName( SPECIAL_DWARF_ABBREV );
@@ -723,7 +711,7 @@ void ScopeCreatePCHDebugSym( void )
 /*********************************/
 {
     TYPE type;
-    char *name;
+    NAME name;
     SYMBOL sym;
 
     if( CompFlags.pch_debug_info_write ) {
@@ -796,9 +784,6 @@ static void scopeInit(          // SCOPES INITIALIZATION
     INITFINI* defn )            // - definition
 {
     defn = defn;
-    DbgStmt( bool_zapped_char = '\0' );
-    DbgStmt( static_assert_zapped_char = '\0' );
-    DbgStmt( decltype_zapped_char = '\0' );
     PCHActivate();
     carveSYM_REGION = CarveCreate( sizeof( SYM_REGION ), BLOCK_SYM_REGION );
     carveUSING_NS = CarveCreate( sizeof( USING_NS ), BLOCK_USING_NS );
@@ -839,8 +824,8 @@ static void scopeInit(          // SCOPES INITIALIZATION
     injectDwarfAbbrev();
     injectBool();
     if( ! CompFlags.enable_std0x ) {
-        static_assert_zapped_char = KwDisable( T_STATIC_ASSERT );
-        decltype_zapped_char = KwDisable( T_DECLTYPE );
+        KwDisable( T_STATIC_ASSERT );
+        KwDisable( T_DECLTYPE );
     }
     ExtraRptRegisterCtr( &syms_defined, "symbols defined" );
     ExtraRptRegisterCtr( &scopes_alloced, "scopes allocated" );
@@ -867,10 +852,11 @@ static void scopeFini(          // SCOPES COMPLETION
     CarveVerifyAllGone( carveSYMBOL_EXCLUDE, "SYMBOL_EXCLUDE" );
 #endif
     if( CompFlags.extensions_enabled ) {
-        KwEnable( T_BOOL, bool_zapped_char );
+        KwEnable( T_BOOL );
     }
-    if( ! CompFlags.enable_std0x ) {
-        KwEnable( T_STATIC_ASSERT, static_assert_zapped_char );
+    if( !CompFlags.enable_std0x ) {
+        KwEnable( T_STATIC_ASSERT );
+        KwEnable( T_DECLTYPE );
     }
     CarveDestroy( carveSYM_REGION );
     CarveDestroy( carveUSING_NS );
@@ -1144,20 +1130,20 @@ void ScopeEstablish( SCOPE scope )
 
 static SCOPE findFunctionScope( SCOPE scope )
 {
-    for(;;) {
-        if( scope == NULL ) break;
-        if( _IsFunctionScope( scope ) ) break;
-        scope = scope->enclosing;
+    for( ; scope != NULL; scope = scope->enclosing ) {
+        if( _IsFunctionScope( scope ) ) {
+            break;
+        }
     }
     return( scope );
 }
 
 static SCOPE findBlockScope( SCOPE scope )
 {
-    for(;;) {
-        if( scope == NULL ) break;
-        if( _IsBlockScope( scope ) ) break;
-        scope = scope->enclosing;
+    for( ; scope != NULL; scope = scope->enclosing ) {
+        if( _IsBlockScope( scope ) ) {
+            break;
+        }
     }
     return( scope );
 }
@@ -1263,7 +1249,7 @@ static void handleFileSyms( SYMBOL sym )
             if( sym->flag & SF_REFERENCED ) {
                 if( ! SymIsInitialized( sym ) ) {
                     /* Check to see if we have a matching aux entry with code attached */
-                    struct aux_entry * paux = NULL;
+                    AUX_ENTRY *paux = NULL;
                     paux = AuxLookup( sym->name->name );
                     if( !paux || !paux->info || !paux->info->code ) {
                         if( sym != ModuleInitFuncSym() ) {
@@ -1553,8 +1539,8 @@ SYMBOL ScopeOrderedNext( SYMBOL stop, SYMBOL curr )
     return( curr->thread );
 }
 
-void ScopeWalkAllNameSpaces( void (*rtn)(NAME_SPACE*,void*), void *data )
-/***********************************************************************/
+void ScopeWalkAllNameSpaces( void (*rtn)(NAME_SPACE *, void *), void *data )
+/**************************************************************************/
 {
     NAME_SPACE *curr;
 
@@ -1563,19 +1549,15 @@ void ScopeWalkAllNameSpaces( void (*rtn)(NAME_SPACE*,void*), void *data )
     }
 }
 
-void ScopeWalkDataMembers( SCOPE scope
-                         , void (*rtn)( SYMBOL, void* )
-                         , void *data )
-/************************************************************/
+void ScopeWalkDataMembers( SCOPE scope, void (*rtn)(SYMBOL, void *), void *data )
+/*********************************************************************************/
 {
     SYMBOL stop;                // - first symbol for scope
     SYMBOL next;                // - next symbol in scope
 
     stop = ScopeOrderedStart( scope );
     if( stop != NULL ) {
-        for( next = NULL; ; ) {
-            next = ScopeOrderedNext( stop, next );
-            if( next == NULL ) break;
+        for( next = NULL; (next = ScopeOrderedNext( stop, next )) != NULL; ) {
             if( SymIsThisDataMember( next ) ) {
                 (*rtn)( next, data );
             }
@@ -1608,8 +1590,8 @@ SCOPE ScopeBegin( scope_type_t scope_type )
     return( scope );
 }
 
-SCOPE ScopeOpenNameSpace( char *name, SYMBOL sym )
-/************************************************/
+SCOPE ScopeOpenNameSpace( NAME name, SYMBOL sym )
+/***********************************************/
 {
     SCOPE scope;
     fs_control control;
@@ -1712,8 +1694,8 @@ SYMBOL AllocTypedSymbol( TYPE type )
 }
 
 
-SYMBOL_NAME AllocSymbolName( char *name, SCOPE scope )
-/****************************************************/
+SYMBOL_NAME AllocSymbolName( NAME name, SCOPE scope )
+/***************************************************/
 {
     SYMBOL_NAME new_sym;
 
@@ -1896,10 +1878,10 @@ boolean ScopeEquivalent( SCOPE scope, scope_type_t scope_type )
     return( ScopeType( scope, scope_type ) );
 }
 
-char *ScopeUnnamedNamespaceName( TOKEN_LOCN *locn )
-/*************************************************/
+NAME ScopeUnnamedNamespaceName( TOKEN_LOCN *locn )
+/************************************************/
 {
-    char *ns_name;
+    NAME ns_name;
 
     if( ! CompFlags.extensions_enabled ) {
         ns_name = uniqueNameSpaceName;
@@ -1913,7 +1895,7 @@ char *ScopeUnnamedNamespaceName( TOKEN_LOCN *locn )
     return( ns_name );
 }
 
-char *ScopeNameSpaceName( SCOPE scope )
+NAME ScopeNameSpaceName( SCOPE scope )
 /*************************************/
 {
     NAME_SPACE *ns;
@@ -2099,7 +2081,7 @@ boolean ScopeHasVirtualFunctions( SCOPE scope )
 }
 
 
-SYMBOL_NAME scopeInsertName( SCOPE scope, SYMBOL sym, char *name )
+SYMBOL_NAME scopeInsertName( SCOPE scope, SYMBOL sym, NAME name )
 {
     SYMBOL_NAME sym_name;
     SYMBOL_NAME check_name;
@@ -2132,7 +2114,7 @@ SYMBOL_NAME scopeInsertName( SCOPE scope, SYMBOL sym, char *name )
 void ScopeInsertErrorSym( SCOPE scope, PTREE id )
 /***********************************************/
 {
-    char *name;                 // - id name
+    NAME name;                  // - id name
     SYMBOL sym;                 // - symbol
     SYMBOL_NAME sym_name;       // - symbol name
 
@@ -2148,8 +2130,8 @@ void ScopeInsertErrorSym( SCOPE scope, PTREE id )
     }
 }
 
-SYMBOL ScopePromoteSymbol( SCOPE scope, SYMBOL sym, char *name )
-/**************************************************************/
+SYMBOL ScopePromoteSymbol( SCOPE scope, SYMBOL sym, NAME name )
+/*************************************************************/
 {
     SYMBOL_NAME sym_name;       // - symbol name
 
@@ -2164,8 +2146,8 @@ SYMBOL ScopePromoteSymbol( SCOPE scope, SYMBOL sym, char *name )
 }
 
 
-boolean ScopeCarefulInsert( SCOPE scope, SYMBOL *psym, char *name )
-/*****************************************************************/
+boolean ScopeCarefulInsert( SCOPE scope, SYMBOL *psym, NAME name )
+/****************************************************************/
 {
     decl_check decl_status;
     SYMBOL_NAME sym_name;
@@ -2200,8 +2182,8 @@ boolean ScopeCarefulInsert( SCOPE scope, SYMBOL *psym, char *name )
 }
 
 
-SYMBOL ScopeInsert( SCOPE scope, SYMBOL sym, char *name )
-/*******************************************************/
+SYMBOL ScopeInsert( SCOPE scope, SYMBOL sym, NAME name )
+/******************************************************/
 {
     ScopeCarefulInsert( scope, &sym, name );
     return( sym );
@@ -2356,8 +2338,7 @@ static void deletePath( BASE_PATH *path )
     CarveFree( carveBASE_PATH, path );
 }
 
-static void pushBase( BASE_STACK **hdr,
-                      BASE_CLASS *base, SCOPE scope, BASE_STACK *parent )
+static void pushBase( BASE_STACK **hdr, BASE_CLASS *base, SCOPE scope, BASE_STACK *parent )
 {
     BASE_STACK *elt;
 
@@ -2377,8 +2358,10 @@ static BASE_STACK *popBase( BASE_STACK **hdr )
 
     for(;;) {
         top = *hdr;
-        if( top == NULL ) return( NULL );
-        if( top->used == FALSE ) break;
+        if( top == NULL )
+            return( NULL );
+        if( top->used == FALSE )
+            break;
         *hdr = top->next;
         CarveFree( carveBASE_STACK, top );
     }
@@ -2392,7 +2375,9 @@ static void cleanStack( BASE_STACK **hdr )
 
     for(;;) {
         top = popBase( hdr );
-        if( top == NULL ) break;
+        if( top == NULL ) {
+            break;
+        }
     }
 }
 
@@ -2434,9 +2419,7 @@ static void walkDirectBases( SCOPE scope, walk_routine rtn, void *parm )
     if( status == WALK_ABANDON ) {
         popBase( &stack );
     }
-    for(;;) {
-        top = popBase( &stack );
-        if( top == NULL ) break;
+    for( ; (top = popBase( &stack )) != NULL; ) {
         RingIterBeg( ScopeInherits( top->scope ), curr ) {
             if( _IsDirectBase( curr ) ) {
                 pushBase( &stack, curr, curr->type->u.c.scope, top );
@@ -2462,9 +2445,7 @@ static void walkInheritedDirectBases( SCOPE scope, walk_routine rtn, void *parm)
 
     stack = NULL;
     pushBase( &stack, NULL, scope, NULL );
-    for(;;) {
-        top = popBase( &stack );
-        if( top == NULL ) break;
+    for( ; (top = popBase( &stack )) != NULL; ) {
         RingIterBeg( ScopeInherits( top->scope ), curr ) {
             if( _IsDirectBase( curr ) ) {
                 pushBase( &stack, curr, curr->type->u.c.scope, top );
@@ -2490,9 +2471,7 @@ static void walkImmediateBases( SCOPE scope, walk_routine rtn, void *parm )
 
     stack = NULL;
     pushBase( &stack, NULL, scope, NULL );
-    for(;;) {
-        top = popBase( &stack );
-        if( top == NULL ) break;
+    for( ; (top = popBase( &stack )) != NULL; ) {
         RingIterBeg( ScopeInherits( top->scope ), curr ) {
             if( _IsDirectBase( curr ) ) {
                 pushBase( &stack, curr, curr->type->u.c.scope, top );
@@ -2538,9 +2517,7 @@ static void walkVisitOnce( SCOPE scope, walk_routine rtn, void *parm )
             }
         }
     } RingIterEnd( curr )
-    for(;;) {
-        top = popBase( &stack );
-        if( top == NULL ) break;
+    for( ; (top = popBase( &stack )) != NULL; ) {
         RingIterBeg( ScopeInherits( top->scope ), curr ) {
             if( _IsDirectBase( curr ) && ! _IsVirtualBase( curr ) ) {
                 pushBase( &stack, curr, curr->type->u.c.scope, top );
@@ -2568,10 +2545,10 @@ static inherit_flag findPtrOffset( BASE_STACK *top, SCOPE scope, CLASS_TABLE *ta
     delta = table->delta;
     access_flags = IN_NULL;
     virtual_base = NULL;
-    for(;;) {
-        if( top == NULL ) break;
+    for( ; top != NULL; top = top->parent ) {
         base = top->base;
-        if( base == NULL ) break;
+        if( base == NULL )
+            break;
         access_flags |= base->flag;
         if( _IsDirectVirtualBase( base ) ) {
             if( virtual_base == NULL ) {
@@ -2581,7 +2558,6 @@ static inherit_flag findPtrOffset( BASE_STACK *top, SCOPE scope, CLASS_TABLE *ta
         } else {
             delta += base->delta;
         }
-        top = top->parent;
     }
     table->delta = delta;
     if( virtual_base != NULL ) {
@@ -2798,15 +2774,14 @@ static walk_status derivedBase( BASE_STACK *top, void *parm )
     if( top->scope == data->base ) {
         data->copies++;
         data->is_derived = TRUE;
-        for(;;) {
-            if( top == NULL ) break;
+        for( ; top != NULL; top = top->parent ) {
             base = top->base;
-            if( base == NULL ) break;
+            if( base == NULL )
+                break;
             if( _IsVirtualBase( base ) ) {
                 data->virtual_base = TRUE;
                 break;
             }
-            top = top->parent;
         }
         return( WALK_ABANDON );
     }
@@ -2981,17 +2956,14 @@ static boolean protectedPathOK( access_data *data )
     BASE_PATH *path;
     SCOPE check;
 
-    path = data->path;
     data->perm = IN_PRIVATE;
-    for(;;) {
-        if( path == NULL ) break;
+    for( path = data->path; path != NULL; path = path->prev ) {
         check = path->scope;
         data->path = path;
         data->located = check;
         if( verifyAccess( data ) == IN_PUBLIC ) {
             return( TRUE );
         }
-        path = path->prev;
     }
     return( FALSE );
 }
@@ -3158,9 +3130,7 @@ SCOPE ScopeCommonBase( SCOPE scope_1, SCOPE scope_2 )
     walkVisitOnce( scope_2, colourScope, &data );
     walkVisitOnce( scope_1, findCommonBase, &data );
     common = NULL;
-    for(;;) {
-        top = PstkPop( &data.common_bases );
-        if( top == NULL ) break;
+    for( ; (top = (SCOPE *)PstkPop( &data.common_bases )) != NULL; ) {
         scope = *top;
         status = ScopeDerived( scope_1, scope );
         if( status == DERIVED_YES || status == DERIVED_YES_BUT_VIRTUAL ) {
@@ -3184,12 +3154,11 @@ static walk_status calcBaseDepth( BASE_STACK *top, void *parm )
 
     if( top->scope == data->base ) {
         depth = 0;
-        for(;;) {
-            if( top == NULL ) break;
+        for( ; top != NULL; top = top->parent ) {
             base = top->base;
-            if( base == NULL ) break;
+            if( base == NULL )
+                break;
             ++depth;
-            top = top->parent;
         }
         if( depth < data->depth ) {
             data->depth = depth;
@@ -3201,9 +3170,8 @@ static walk_status calcBaseDepth( BASE_STACK *top, void *parm )
     return( WALK_NORMAL );
 }
 
-derived_status ScopeDerivedCount( SCOPE derived, SCOPE possible_base,
-                                                         unsigned *depth )
-/************************************************************************/
+derived_status ScopeDerivedCount( SCOPE derived, SCOPE possible_base, unsigned *depth )
+/*************************************************************************************/
 {
     derived_status status;
     auto base_depth_walk data;
@@ -3297,8 +3265,7 @@ static PATH_CAP *recordPath( lookup_walk *data, BASE_STACK *top,
     }
     access_scope = NULL;
     last_path = NULL;
-    for(;;) {
-        if( top == NULL ) break;
+    for( ; top != NULL; top = top->parent ) {
         path = newPath( cap );
         scope = top->scope;
         if( scope == disambiguate_scope ) {
@@ -3322,7 +3289,6 @@ static PATH_CAP *recordPath( lookup_walk *data, BASE_STACK *top,
             }
         }
         last_path = path;
-        top = top->parent;
     }
     cap->access_decl = access_scope;
     return( cap );
@@ -3380,8 +3346,7 @@ static inherit_flag makePerm( symbol_flag flag )
     return( IN_PUBLIC );
 }
 
-static FNOV_RESULT distinctVirtualFunction( SYMBOL *sym, SYMBOL fun2,
-                                            char *name )
+static FNOV_RESULT distinctVirtualFunction( SYMBOL *sym, SYMBOL fun2, NAME name )
 {
     SYMBOL chk_sym;
     FNOV_RESULT check;
@@ -3402,7 +3367,7 @@ static FNOV_RESULT distinctVirtualFunction( SYMBOL *sym, SYMBOL fun2,
 
 static FNOV_RESULT matchVirtualFunction( SYMBOL *sym, lookup_walk *data )
 {
-    return distinctVirtualFunction( sym, data->fn_sym, data->name );
+    return( distinctVirtualFunction( sym, data->fn_sym, data->name ) );
 }
 
 
@@ -3410,7 +3375,7 @@ boolean ScopeSameVFuns( SYMBOL fun1, SYMBOL fun2 )
 /************************************************/
 {
     SYMBOL *a_fun1;             // - addr[ fun1 ]
-    char *name;                 // - name for checking
+    NAME name;                  // - name for checking
     boolean retn;               // - TRUE ==> is same virtual function
 
     a_fun1 = &fun1;
@@ -3555,8 +3520,7 @@ static SYMBOL recordVirtualOverride( lookup_walk *data, BASE_STACK *top, SYMBOL_
     if( ! data->same_table ) {
         data->same_table = 1;
         data->vfn_name = sym_name;
-        for(;;) {
-            if( top == NULL ) break;
+        for( ; top != NULL; top = top->parent ) {
             base = top->base;
             if( base != NULL ) {
                 if( !_UsingVFIndices( base ) ) {
@@ -3564,7 +3528,6 @@ static SYMBOL recordVirtualOverride( lookup_walk *data, BASE_STACK *top, SYMBOL_
                     break;
                 }
             }
-            top = top->parent;
         }
     }
     return( sameVirtualFnSignature( sym_name, data ) );
@@ -3662,7 +3625,8 @@ static void dumpSearch( lookup_walk *data )
         for(;;) {
             printScopeName( path->scope, NULL );
             path = path->next;
-            if( path == NULL ) break;
+            if( path == NULL )
+                break;
             switch( path->flag & IN_ACCESS_SPECIFIED ) {
             case IN_PRIVATE:
                 printf( "pri" );
@@ -3690,7 +3654,7 @@ static void dumpSearch( lookup_walk *data )
 }
 #endif
 
-static void newLookupData( lookup_walk *data, char *name )
+static void newLookupData( lookup_walk *data, NAME name )
 {
     DbgStmt( memset( data, -1, sizeof( *data ) ) );
     data->start = NULL;
@@ -3780,7 +3744,8 @@ static void reduceToOnePath( lookup_walk *data )
     }
     --count;
     for( cap = data->paths; cap != NULL; cap = cap->next ) {
-        if( count == 0 ) break;
+        if( count == 0 )
+            break;
         cap->throw_away = TRUE;
         --count;
     }
@@ -3893,14 +3858,11 @@ static SCOPE differentScopesAmbiguity( lookup_walk *data )
     DbgAssert( data->path_count > 1 );
     cap = data->paths;
     scope = cap->tail->scope;
-    for(;;) {
-        next = cap->next;
-        if( next == NULL ) break;
+    for( ; (next = cap->next) != NULL; cap = next ) {
         if( next->tail->scope != scope ) {
             data->ambiguous = TRUE;
             return( NULL );
         }
-        cap = next;
     }
     return( scope );
 }
@@ -4013,11 +3975,10 @@ static inherit_flag setAccess( PATH_CAP *cap )
     auto access_data access_data;
 
     perm = IN_PUBLIC;
-    path = cap->head;
-    for(;;) {
-        if( path == NULL ) break;
+    for( path = cap->head; path != NULL; path = next ) {
         next = path->next;
-        if( next == NULL ) break;
+        if( next == NULL )
+            break;
         perm = next->flag & IN_ACCESS_SPECIFIED;
         scope = path->scope;
         newAccessData( &access_data, perm, scope );
@@ -4026,7 +3987,6 @@ static inherit_flag setAccess( PATH_CAP *cap )
         if( perm != IN_PUBLIC ) {
             break;
         }
-        path = next;
     }
     cap->flag = perm;
     return( perm );
@@ -4282,8 +4242,11 @@ static void applySameVTable( lookup_walk *data )
     for( cap = data->paths; cap != NULL; cap = cap->next ) {
         for( path = cap->tail; path != NULL; path = path->prev ) {
             base = path->base;
-            if( base == NULL ) continue;
-            if( !_UsingVFIndices( base ) ) break;
+            if( base == NULL )
+                continue;
+            if( !_UsingVFIndices( base ) ) {
+                break;
+            }
         }
         if( path == NULL ) {
             best_cap = cap;
@@ -4567,11 +4530,10 @@ static boolean tryDisambigLookup( lookup_walk *data, SCOPE scope,
     SCOPE edge_scope;
     SCOPE *top;
 
+    scope = scope;
     DbgAssert( PstkTopElement( to_stack ) == NULL );
     PstkPopAll( to_stack );
-    for(;;) {
-        top = PstkPop( from_stack );
-        if( top == NULL ) break;
+    for( ; (top = (SCOPE *)PstkPop( from_stack )) != NULL; ) {
         RingIterBeg( (*top)->using_list, curr ) {
             if( curr->trigger != NULL ) {
                 edge_scope = curr->using_scope;
@@ -4654,9 +4616,7 @@ static boolean simpleNSLookup( lookup_walk *data, SCOPE scope )
     } RingIterEnd( curr )
     if( edge_scope != NULL ) {
         // sym was found in this scope or this scope has triggers
-        for(;;) {
-            top = PstkPop( &stack );
-            if( top == NULL ) break;
+        for( ; (top = (SCOPE *)PstkPop( &stack )) != NULL; ) {
             top_scope = *top;
             RingIterBeg( top_scope->using_list, curr ) {
                 trigger_scope = curr->trigger;
@@ -4720,8 +4680,7 @@ static boolean searchScope( lookup_walk *data, SCOPE scope )
 static void lexicalLookup( lookup_walk *data, SCOPE curr )
 {
     setConsiderMask( data, _ScopeMask( SCOPE_FILE ) );
-    for(;;) {
-        if( curr == NULL ) break;
+    for( ; curr != NULL; curr = curr->enclosing ) {
         if( _IsClassScope( curr ) ) {
             if( data->use_this || data->no_this || data->saw_class ) {
                 data->use_this = FALSE;
@@ -4734,11 +4693,11 @@ static void lexicalLookup( lookup_walk *data, SCOPE curr )
             data->use_this = FALSE;
             data->no_this = FALSE;
         }
-        if( searchScope( data, curr ) ) break;
+        if( searchScope( data, curr ) )
+            break;
         if( _IsFunctionScope( curr ) ) {
             data->saw_function = TRUE;
         }
-        curr = curr->enclosing;
     }
 }
 
@@ -4775,7 +4734,8 @@ static void addClassPath( lookup_walk *data, SEARCH_RESULT *result )
     last_virtual_base = NULL;
     for( path = head; path != NULL; path = path->next ) {
         base = path->base;
-        if( base == NULL ) continue;
+        if( base == NULL )
+            continue;
         if( _IsDirectVirtualBase( base ) ) {
             last_virtual_base = base->type;
             delta = 0;
@@ -4830,7 +4790,7 @@ static void makeClassResult( lookup_walk *data, SEARCH_RESULT *result )
     sym = result->sym_name->name_syms;
     if( sym != NULL ) {
         if( sym->id == SC_MEMBER ) {
-            result->offset = sym->u.offset;
+            result->offset = sym->u.member_offset;
         }
     }
 }
@@ -4904,7 +4864,7 @@ static SEARCH_RESULT *makeResult( lookup_walk *data )
     return( result );
 }
 
-static void initVirtualSearch( lookup_walk *data, SYMBOL sym, char *name )
+static void initVirtualSearch( lookup_walk *data, SYMBOL sym, NAME name )
 {
     TYPE type;
     TYPE fn_type;
@@ -4972,7 +4932,7 @@ static walk_status collectVBTable( BASE_STACK *top, void *parm )
     if( ! data->already_done ) {
         RingIterBeg( ScopeInherits( scope ), base ) {
             if( _IsVirtualBase( base ) ) {
-                table->data[ base->vb_index - 1 ] = base->type;
+                table->data[ base->vb_index - VFUN_BASE ] = base->type;
             }
         } RingIterEnd( base )
     }
@@ -5003,7 +4963,7 @@ CLASS_VBTABLE *ScopeCollectVBTable( SCOPE scope, scv_control control )
 static boolean overloadedSym( SYMBOL derived_sym, SYMBOL base_sym )
 {
     FNOV_RESULT check;
-    char *derived_name;
+    NAME derived_name;
 
     if( derived_sym == base_sym ) {
         return( FALSE );
@@ -5023,12 +4983,10 @@ static boolean overloadedSym( SYMBOL derived_sym, SYMBOL base_sym )
 
 static boolean scopeInBaseStack( SCOPE scope, BASE_STACK *top )
 {
-    for(;;) {
-        if( top == NULL ) break;
+    for( ; top != NULL; top = top->parent ) {
         if( top->scope == scope ) {
             return( TRUE );
         }
-        top = top->parent;
     }
     return( FALSE );
 }
@@ -5060,7 +5018,8 @@ static SYMBOL findOverride( BASE_STACK *top, SYMBOL curr_override, SYMBOL base_s
             }
             break;
         }
-        if( thunk->last_entry ) break;
+        if( thunk->last_entry )
+            break;
         ++thunk;
     }
     return( NULL );
@@ -5079,16 +5038,14 @@ static void fillInput( THUNK_ACTION *thunk, vftable_walk *data, TYPE ctor_disp )
     SCOPE host_scope;
 
     final = data->final;
-    top = data->top;
-    for(;;) {
-        if( top == NULL ) break;
-        if( top->scope == final ) break;
-        top = top->parent;
+    for( top = data->top; top != NULL; top = top->parent ) {
+        if( top->scope == final ) {
+            break;
+        }
     }
     virtual_base = NULL;
     delta = 0;
-    for(;;) {
-        if( top == NULL ) break;
+    for( ; top != NULL; top = top->parent ) {
         base = top->base;
         if( base != NULL ) {
             if( _IsDirectVirtualBase( base ) ) {
@@ -5097,7 +5054,6 @@ static void fillInput( THUNK_ACTION *thunk, vftable_walk *data, TYPE ctor_disp )
             }
             delta += base->delta;
         }
-        top = top->parent;
     }
     host_scope = data->start;
     vbase = NULL;
@@ -5196,35 +5152,31 @@ static walk_status doReturnCast( BASE_STACK *top, void *parm )
                 if( curr == NULL ) {
                     return( WALK_NORMAL );
                 }
-                if( curr == parent ) break;
+                if( curr == parent )
+                    break;
                 curr = curr->parent;
             }
         }
-        vstk = &(data->disambig);
-        for(;;) {
-            pscope = VstkTop( vstk );
-            if( pscope == NULL ) break;
+        for( vstk = &(data->disambig); (pscope = VstkTop( vstk )) != NULL; VstkPop( vstk ) ) {
             if( scope != *pscope ) {
                 /* now find the next accessible base */
                 data->base = *pscope;
                 data->parent = top;
                 return( WALK_NORMAL );
             }
-            VstkPop( vstk );
         }
         /* stack is exhausted so we've found a good path */
         vbase = NULL;
         delta = 0;
-        for(;;) {
-            if( top == NULL ) break;
+        for( ; top != NULL; top = top->parent ) {
             base = top->base;
-            if( base == NULL ) break;
+            if( base == NULL )
+                break;
             if( _IsVirtualBase( base ) ) {
                 vbase = base->type;
                 break;
             }
             delta += base->delta;
-            top = top->parent;
         }
         thunk = data->thunk;
         if( delta != 0 ) {
@@ -5248,7 +5200,9 @@ static void clearVstk( VSTK_CTL *vstk )
 
     for(;;) {
         pscope = VstkPop( vstk );
-        if( pscope == NULL ) break;
+        if( pscope == NULL ) {
+            break;
+        }
     }
 }
 
@@ -5293,9 +5247,7 @@ static void analyseVFN( THUNK_ACTION *thunk, vftable_walk *data )
     leap_delta = 0;
     prev_delta = 0;
     first_top = data->top;
-    top = first_top;
-    for(;;) {
-        if( top == NULL ) break;
+    for( top = first_top; top != NULL; top = top->parent ) {
         if( virtual_base == NULL ) {
             delta += prev_delta;
             base = top->base;
@@ -5328,7 +5280,6 @@ static void analyseVFN( THUNK_ACTION *thunk, vftable_walk *data )
                 thunk->delta = delta;
             }
         }
-        top = top->parent;
     }
     if( last_override_sym == NULL ) {
         /* no override found in this path */
@@ -5390,14 +5341,11 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
         printf( ")\n" );
     }
 #endif
-    top = data->top;
-    for(;;) {
-        if( top == NULL ) break;
+    for( top = data->top; top != NULL; top = top->parent ) {
         DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( top->scope, NULL ); );
         if( top->scope == override_scope ) {
             break;
         }
-        top = top->parent;
     }
     DbgStmt( if( PragDbgToggle.dump_vftables ) putchar( '\n' ); );
     if( top != NULL ) {
@@ -5407,9 +5355,7 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
     test_override_sym = NULL;
     virtual_base = NULL;
     first_top = data->top;
-    top = first_top;
-    for(;;) {
-        if( top == NULL ) break;
+    for( top = first_top; top != NULL; top = top->parent ) {
         DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( top->scope, "\n" ); );
         if( virtual_base == NULL ) {
             base = top->base;
@@ -5436,7 +5382,6 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
                 }
             }
         }
-        top = top->parent;
     }
     if( test_override_sym != NULL ) {
         test_override_scope = SymScope( test_override_sym );
@@ -5460,14 +5405,14 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
 static void handleVFN( vftable_walk *data, SYMBOL sym )
 {
     SYMBOL introducing_sym;
-    target_offset_t vf_index;
+    unsigned vf_index;
     CLASS_VFTABLE *table;
     THUNK_ACTION *thunk;
     THUNK_ACTION *thunk_table;
 
     table = data->curr;
     thunk_table = table->data;
-    vf_index = sym->u.offset - 1;
+    vf_index = sym->u.member_vf_index - VFUN_BASE;
     thunk = &thunk_table[ vf_index ];
     introducing_sym = thunk->sym;
     if( introducing_sym == NULL ) {
@@ -5506,7 +5451,7 @@ static void scanForVFNs( SYMBOL_NAME sym_name, void *_data )
             /* don't involve default args */
             continue;
         }
-        if( sym->u.offset == 0 ) {
+        if( sym->u.member_vf_index == 0 ) {
             /* virtual function was never allocated an index (error) */
             continue;
         }
@@ -5525,7 +5470,8 @@ static void doubleCheckEntries( vftable_walk *data, CLASS_VFTABLE *table )
         if( sym != NULL && thunk->possible_ambiguity ) {
             handleVFN( data, sym );
         }
-        if( thunk->last_entry ) break;
+        if( thunk->last_entry )
+            break;
         ++thunk;
     }
 }
@@ -5679,7 +5625,8 @@ boolean ScopeHasPureFunctions( SCOPE scope )
                 has_a_pure = TRUE;
                 break;
             }
-            if( thunk->last_entry ) break;
+            if( thunk->last_entry )
+                break;
             ++thunk;
         }
         if( has_a_pure ) {
@@ -5726,7 +5673,8 @@ void ScopeNotePureFunctions( TYPE type )
             if( pure_fn != NULL ) {
                 CErr( INF_PURE_FUNCTION, pure_fn, &pure_fn->locn->tl );
             }
-            if( thunk->last_entry ) break;
+            if( thunk->last_entry )
+                break;
             ++thunk;
         }
     } RingIterEnd( table )
@@ -5855,12 +5803,14 @@ static void emitIndexMapping( SAVE_MAPPING *mapping )
     to_info = to_type->u.c.info;
     for( from_index = 1; from_index <= from_info->last_vbase; ++from_index ) {
         RingIterBeg( from_info->bases, from_base ) {
-            if( ! _IsVirtualBase( from_base ) ) break;
+            if( ! _IsVirtualBase( from_base ) )
+                break;
             if( from_index == from_base->vb_index ) {
                 to_index = 0;
                 find_base = from_base->type;
                 RingIterBeg( to_info->bases, to_base ) {
-                    if( ! _IsVirtualBase( to_base ) ) break;
+                    if( ! _IsVirtualBase( to_base ) )
+                        break;
                     if( to_base->type == find_base ) {
                         to_index = to_base->vb_index;
                         break;  /* we found our matching vbase */
@@ -5928,8 +5878,7 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
     }
     base = NULL;
     delta = 0;
-    for(;;) {
-        if( top == NULL ) break;
+    for( ; top != NULL; top = top->parent ) {
         base = top->base;
         if( base != NULL ) {
             if( _IsDirectVirtualBase( base ) ) {
@@ -5937,7 +5886,6 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
             }
             delta += base->delta;
         }
-        top = top->parent;
     }
     if( delta != 0 ) {
         data->delta = delta;
@@ -6040,8 +5988,8 @@ void ScopeMemberPtrCastAction( MEMBER_PTR_CAST *cast_data )
     dumpData( cast_data );
 }
 
-find_virtual_status ScopeFindVirtual( SCOPE scope, SYMBOL sym[2], char *name )
-/****************************************************************************/
+find_virtual_status ScopeFindVirtual( SCOPE scope, SYMBOL sym[2], NAME name )
+/***************************************************************************/
 {
     find_virtual_status status;
     auto lookup_walk data;
@@ -6156,8 +6104,8 @@ static inherit_flag checkBaseAccess( SCOPE d, SCOPE b, derived_status status )
     return( IN_PRIVATE );
 }
 
-SEARCH_RESULT *ScopeFindBaseMember( SCOPE scope, char *name )
-/***********************************************************/
+SEARCH_RESULT *ScopeFindBaseMember( SCOPE scope, NAME name )
+/**********************************************************/
 {
     SEARCH_RESULT *result;
 
@@ -6181,14 +6129,14 @@ SEARCH_RESULT *ScopeFindSymbol( SYMBOL sym )
     if( SymIsUDC( sym ) ) {
         result->sym = sym;
     } else if( SymIsThisDataMember( sym ) ) {
-        result->offset = sym->u.offset;
+        result->offset = sym->u.member_offset;
         result->non_virtual = TRUE;
     }
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindScopedMember( SCOPE scope, SCOPE disambig, char *name )
-/*****************************************************************************/
+SEARCH_RESULT *ScopeFindScopedMember( SCOPE scope, SCOPE disambig, NAME name )
+/****************************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6201,15 +6149,14 @@ SEARCH_RESULT *ScopeFindScopedMember( SCOPE scope, SCOPE disambig, char *name )
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindMember( SCOPE scope, char *name )
-/*******************************************************/
+SEARCH_RESULT *ScopeFindMember( SCOPE scope, NAME name )
+/******************************************************/
 {
     return( ScopeFindScopedMember( scope, NULL, name ) );
 }
 
-SEARCH_RESULT *ScopeFindScopedMemberConversion( SCOPE scope, SCOPE disambig,
-/**************************************************************************/
-    TYPE t, type_flag this_qualifier )
+SEARCH_RESULT *ScopeFindScopedMemberConversion( SCOPE scope, SCOPE disambig, TYPE t, type_flag this_qualifier )
+/*************************************************************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6227,9 +6174,8 @@ SEARCH_RESULT *ScopeFindScopedMemberConversion( SCOPE scope, SCOPE disambig,
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindScopedNakedConversion( SCOPE scope, SCOPE disambig,
-/*************************************************************************/
-    TYPE t, type_flag this_qualifier )
+SEARCH_RESULT *ScopeFindScopedNakedConversion( SCOPE scope, SCOPE disambig, TYPE t, type_flag this_qualifier )
+/************************************************************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6246,9 +6192,8 @@ SEARCH_RESULT *ScopeFindScopedNakedConversion( SCOPE scope, SCOPE disambig,
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindNakedConversion( SCOPE scope, TYPE type,
-/**************************************************************/
-    type_flag this_qualifier )
+SEARCH_RESULT *ScopeFindNakedConversion( SCOPE scope, TYPE type, type_flag this_qualifier )
+/*****************************************************************************************/
 {
     return( ScopeFindScopedNakedConversion( scope, NULL, type, this_qualifier));
 }
@@ -6281,8 +6226,8 @@ FNOV_LIST *ScopeConversionList( SCOPE scope, type_flag this_qualifier, TYPE type
     return( data.user_conv_list );
 }
 
-SEARCH_RESULT *ScopeContainsMember( SCOPE scope, char *name )
-/***********************************************************/
+SEARCH_RESULT *ScopeContainsMember( SCOPE scope, NAME name )
+/**********************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6294,8 +6239,8 @@ SEARCH_RESULT *ScopeContainsMember( SCOPE scope, char *name )
     return( result );
 }
 
-SEARCH_RESULT *ScopeContainsNaked( SCOPE scope, char *name )
-/**********************************************************/
+SEARCH_RESULT *ScopeContainsNaked( SCOPE scope, NAME name )
+/*********************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6306,8 +6251,8 @@ SEARCH_RESULT *ScopeContainsNaked( SCOPE scope, char *name )
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindScopedNaked( SCOPE scope, SCOPE disambig, char *name )
-/****************************************************************************/
+SEARCH_RESULT *ScopeFindScopedNaked( SCOPE scope, SCOPE disambig, NAME name )
+/***************************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6319,14 +6264,14 @@ SEARCH_RESULT *ScopeFindScopedNaked( SCOPE scope, SCOPE disambig, char *name )
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindNaked( SCOPE scope, char *name )
-/******************************************************/
+SEARCH_RESULT *ScopeFindNaked( SCOPE scope, NAME name )
+/*****************************************************/
 {
     return( ScopeFindScopedNaked( scope, NULL, name ) );
 }
 
-SEARCH_RESULT *ScopeFindNakedFriend( SCOPE scope, char *name )
-/************************************************************/
+SEARCH_RESULT *ScopeFindNakedFriend( SCOPE scope, NAME name )
+/***********************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6340,8 +6285,8 @@ SEARCH_RESULT *ScopeFindNakedFriend( SCOPE scope, char *name )
     return( result );
 }
 
-SYMBOL_NAME ScopeYYLexical( SCOPE scope, char *name )
-/***************************************************/
+SYMBOL_NAME ScopeYYLexical( SCOPE scope, NAME name )
+/**************************************************/
 {
     SYMBOL_NAME sym_name;
     auto lookup_walk data;
@@ -6363,8 +6308,8 @@ SYMBOL_NAME ScopeYYLexical( SCOPE scope, char *name )
     return( sym_name );
 }
 
-SYMBOL_NAME ScopeYYMember( SCOPE scope, char *name )
-/**************************************************/
+SYMBOL_NAME ScopeYYMember( SCOPE scope, NAME name )
+/*************************************************/
 {
     SYMBOL_NAME sym_name;
     auto lookup_walk data;
@@ -6380,8 +6325,8 @@ SYMBOL_NAME ScopeYYMember( SCOPE scope, char *name )
     return( NULL );
 }
 
-SYMBOL ScopeAlreadyExists( SCOPE scope, char *name )
-/**************************************************/
+SYMBOL ScopeAlreadyExists( SCOPE scope, NAME name )
+/*************************************************/
 {
     SYMBOL sym;
     SEARCH_RESULT *result;
@@ -6401,8 +6346,8 @@ SYMBOL ScopeAlreadyExists( SCOPE scope, char *name )
     The lookup must search enclosing lexical scopes until it finds a
     type-name corresponding to the id (if one is present).
 */
-SEARCH_RESULT *ScopeFindLexicalClassType( SCOPE scope, char *name )
-/*****************************************************************/
+SEARCH_RESULT *ScopeFindLexicalClassType( SCOPE scope, NAME name )
+/****************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6415,8 +6360,8 @@ SEARCH_RESULT *ScopeFindLexicalClassType( SCOPE scope, char *name )
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindLexicalEnumType( SCOPE scope, char *name )
-/****************************************************************/
+SEARCH_RESULT *ScopeFindLexicalEnumType( SCOPE scope, NAME name )
+/***************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6429,9 +6374,8 @@ SEARCH_RESULT *ScopeFindLexicalEnumType( SCOPE scope, char *name )
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE scope, char *name,
-                                           boolean tilde )
-/*****************************************************************/
+SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE scope, NAME name, boolean tilde )
+/********************************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6445,8 +6389,8 @@ SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE scope, char *name,
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindLexicalNameSpace( SCOPE scope, char *name )
-/*****************************************************************/
+SEARCH_RESULT *ScopeFindLexicalNameSpace( SCOPE scope, NAME name )
+/****************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6460,8 +6404,8 @@ SEARCH_RESULT *ScopeFindLexicalNameSpace( SCOPE scope, char *name )
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindMemberColonColon( SCOPE scope, char *name )
-/*****************************************************************/
+SEARCH_RESULT *ScopeFindMemberColonColon( SCOPE scope, NAME name )
+/****************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6477,7 +6421,7 @@ SEARCH_RESULT *ScopeFindMemberColonColon( SCOPE scope, char *name )
 static walk_status findExactOverride( BASE_STACK *top, void *parm )
 {
     vfn_opt_walk *data = parm;
-    char *name;
+    NAME name;
     SYMBOL vfn_dummy;
     SYMBOL vfn_base;
     SYMBOL vfn_override;
@@ -6752,15 +6696,12 @@ void ScopeFreeResult( SEARCH_RESULT *result )
 boolean ScopeEnclosed( SCOPE encloser, SCOPE enclosed )
 /*****************************************************/
 {
-    for(;;) {
-        if( enclosed == NULL ) {
-            return( FALSE );
-        }
+    for( ; enclosed != NULL; enclosed = enclosed->enclosing ) {
         if( encloser == enclosed ) {
             return( TRUE );
         }
-        enclosed = enclosed->enclosing;
     }
+    return( FALSE );
 }
 
 void ScopeKeep( SCOPE scope )
@@ -6816,10 +6757,10 @@ SCOPE ScopeQualifyPop( void )
 SCOPE ScopeEnclosingId( SCOPE scope, scope_type_t id )
 /****************************************************/
 {
-    for(;;) {
-        if( scope == NULL ) break;
-        if( scope->id == id ) break;
-        scope = scope->enclosing;
+    for( ; scope != NULL; scope = scope->enclosing ) {
+        if( scope->id == id ) {
+            break;
+        }
     }
     return( scope );
 }
@@ -6827,15 +6768,13 @@ SCOPE ScopeEnclosingId( SCOPE scope, scope_type_t id )
 SCOPE ScopeNearestNonTemplate( SCOPE scope )
 /******************************************/
 {
-    for(;;) {
-        if( scope == NULL ) break;
+    for( ; scope != NULL; scope = scope->enclosing ) {
         if( ( scope->id != SCOPE_TEMPLATE_DECL )
          && ( scope->id != SCOPE_TEMPLATE_INST )
          && ( scope->id != SCOPE_TEMPLATE_PARM )
          && ( scope->id != SCOPE_TEMPLATE_SPEC_PARM ) ) {
             break;
         }
-        scope = scope->enclosing;
     }
     return( scope );
 }
@@ -6843,12 +6782,13 @@ SCOPE ScopeNearestNonTemplate( SCOPE scope )
 SCOPE ScopeNearestNonClass( SCOPE scope )
 /***************************************/
 {
-    for(;;) {
-        if( scope == NULL ) break;
+    for( ; scope != NULL; scope = scope->enclosing ) {
         /* we have too many weird scope types so we check for positive cases */
-        if( _IsBlockScope( scope ) ) break;
-        if( _IsFileScope( scope ) ) break;
-        scope = scope->enclosing;
+        if( _IsBlockScope( scope ) )
+            break;
+        if( _IsFileScope( scope ) ) {
+            break;
+        }
     }
     return( scope );
 }
@@ -6856,10 +6796,10 @@ SCOPE ScopeNearestNonClass( SCOPE scope )
 SCOPE ScopeNearestFile( SCOPE scope )
 /***********************************/
 {
-    for(;;) {
-        if( scope == NULL ) break;
-        if( _IsFileScope( scope ) ) break;
-        scope = scope->enclosing;
+    for( ; scope != NULL; scope = scope->enclosing ) {
+        if( _IsFileScope( scope ) ) {
+            break;
+        }
     }
     return( scope );
 }
@@ -6867,11 +6807,12 @@ SCOPE ScopeNearestFile( SCOPE scope )
 SCOPE ScopeNearestFileOrClass( SCOPE scope )
 /***********************************/
 {
-    for(;;) {
-        if( scope == NULL ) break;
-        if( _IsFileScope( scope ) ) break;
-        if( _IsClassScope( scope ) ) break;
-        scope = scope->enclosing;
+    for( ; scope != NULL; scope = scope->enclosing ) {
+        if( _IsFileScope( scope ) )
+            break;
+        if( _IsClassScope( scope ) ) {
+            break;
+        }
     }
     return( scope );
 }
@@ -6911,7 +6852,9 @@ SYMBOL ScopeFuncParm( unsigned parm_no )
     stopper = ScopeOrderedStart( findFunctionScope( GetCurrScope() ) );
     for( sym = NULL; ; --parm_no ) {
         sym = ScopeOrderedNext( stopper, sym );
-        if( parm_no == 0 ) break;
+        if( parm_no == 0 ) {
+            break;
+        }
     }
     return( sym );
 }
@@ -6991,7 +6934,8 @@ SCOPE ScopeHostClass( SCOPE class_scope )
     for(;;) {
         /* class_scope is a class scope here */
         next = class_scope->enclosing;
-        if( ! _IsClassScope( next ) ) break;
+        if( ! _IsClassScope( next ) )
+            break;
         class_scope = next;
     }
     return( class_scope );
@@ -7010,14 +6954,14 @@ target_offset_t ScopeVBPtrOffset( SCOPE scope )
 ** entry points for #pragma code when symbol accesses are required
 */
 
-SYMBOL ScopeASMUseSymbol( char *buff, boolean *uses_auto )
-/********************************************************/
+SYMBOL ScopeASMUseSymbol( NAME name, boolean *uses_auto )
+/*******************************************************/
 {
     SYMBOL sym;
 
-    sym = ScopeASMLookup( buff );
+    sym = ScopeASMLookup( name );
     if( sym == NULL ) {
-        CErr2p( ERR_UNDECLARED_SYM, buff );
+        CErr2p( ERR_UNDECLARED_SYM, name );
         return( NULL );
     }
     sym->flag |= SF_ADDR_TAKEN | SF_CG_ADDR_TAKEN;
@@ -7038,14 +6982,14 @@ void ScopeASMUsesAuto( void )
     fn_sym->flag |= SF_DONT_INLINE;
 }
 
-SYMBOL ScopeASMLookup( char *buff )
-/*********************************/
+SYMBOL ScopeASMLookup( NAME name )
+/********************************/
 {
     SYMBOL          sym;
     SEARCH_RESULT   *result;
 
     sym = NULL;
-    result = ScopeFindNaked( GetCurrScope(), NameCreateNoLen( buff ) );
+    result = ScopeFindNaked( GetCurrScope(), NameCreateNoLen( name ) );
     if( result != NULL ) {
         if( result->simple ) {
             sym = result->sym_name->name_syms;
@@ -7107,7 +7051,7 @@ static void changeSymType( SYMBOL sym, TYPE type )
 
 static boolean changePragmaType(// TEST IF NEW NEW PRAGMA TYPE REQUIRED
     SYMBOL sym,                 // - old symbol
-    AUX_INFO *aux_info )        // - new aux info
+    AUX_INFO *auxinfo )        // - new aux info
 {
     boolean     retn;           // - return: TRUE ==> change required
     AUX_INFO    *old_pragma;    // - old aux info
@@ -7115,9 +7059,9 @@ static boolean changePragmaType(// TEST IF NEW NEW PRAGMA TYPE REQUIRED
     old_pragma = TypeHasPragma( sym->sym_type );
     if( old_pragma == NULL ) {
         retn = TRUE;
-    } else if( old_pragma == aux_info ) {
+    } else if( old_pragma == auxinfo ) {
         retn = FALSE;
-    } else if( PragmaChangeConsistent( old_pragma, aux_info ) ) {
+    } else if( PragmaChangeConsistent( old_pragma, auxinfo ) ) {
         retn = TRUE;
     } else {
         CErr2p( WARN_PRAGMA_MERGE, sym );
@@ -7126,20 +7070,20 @@ static boolean changePragmaType(// TEST IF NEW NEW PRAGMA TYPE REQUIRED
     return retn;
 }
 
-static void changeNonFunction( SYMBOL sym, AUX_INFO *aux_info )
+static void changeNonFunction( SYMBOL sym, AUX_INFO *auxinfo )
 {
     TYPE type;                  // - modifier type
 
-    if( changePragmaType( sym, aux_info ) ) {
-        type = MakePragmaModifier( aux_info );
+    if( changePragmaType( sym, auxinfo ) ) {
+        type = MakePragmaModifier( auxinfo );
         changeSymType( sym, AddNonFunctionPragma( type, sym->sym_type ) );
     }
 }
 
-void ScopeAuxName( char *id, AUX_INFO *aux_info )
+void ScopeAuxName( char *id, AUX_INFO *auxinfo )
 /***********************************************/
 {
-    char *name;
+    NAME name;
     SEARCH_RESULT *result;
     SYMBOL_NAME sym_name;
     SYMBOL sym;
@@ -7159,7 +7103,7 @@ void ScopeAuxName( char *id, AUX_INFO *aux_info )
         ret_type = GetBasicType( TYP_VOID );
         arg_type = GetBasicType( TYP_DOT_DOT_DOT );
         fn_type = MakeModifiableFunction( ret_type, arg_type, NULL );
-        fn_type->u.f.pragma = aux_info;
+        fn_type->u.f.pragma = auxinfo;
         fn_type = CheckDupType( fn_type );
         sym = SymCreateAtLocn( fn_type, SC_EXTERN, 0, name, GetFileScope(), NULL );
         LinkageSet( sym, "C" );
@@ -7180,13 +7124,13 @@ void ScopeAuxName( char *id, AUX_INFO *aux_info )
          *  Check to see if we are defining code and we already have a symbol 
          *  defined that has code attached ( a function body )
          */ 
-        if( aux_info && aux_info->code && SymIsInitialized( sym ) && SymIsFunction( sym ) ){
+        if( auxinfo && auxinfo->code && SymIsInitialized( sym ) && SymIsFunction( sym ) ){
             CErr2p( ERR_FUNCTION_REDEFINITION, sym );   //ERR_SYM_ALREADY_DEFINED, sym );
         }
         
         fn_type = FunctionDeclarationType( sym->sym_type );
         if( fn_type == NULL ) {
-            changeNonFunction( sym, aux_info );
+            changeNonFunction( sym, auxinfo );
             return;
         }
         if( SymIsDefArg( sym ) ) {
@@ -7209,8 +7153,8 @@ void ScopeAuxName( char *id, AUX_INFO *aux_info )
         /* name is defined with "C" linkage */
         /* OR name is defined once with "C++" linkage */
         /* action: set pragma entry in function type */
-        if( changePragmaType( aux_sym, aux_info ) ) {
-            fn_type = ChangeFunctionPragma( aux_sym->sym_type, aux_info );
+        if( changePragmaType( aux_sym, auxinfo ) ) {
+            fn_type = ChangeFunctionPragma( aux_sym->sym_type, auxinfo );
             changeSymType( aux_sym, fn_type );
         }
         return;
@@ -7364,7 +7308,7 @@ static void saveSymRegion( void *e, carve_walk_base *d )
     save_to = r->to;
     r->to = SymbolGetIndex( save_to );
     PCHWriteCVIndex( d->index );
-    PCHWrite( r, sizeof( *r ) );
+    PCHWriteVar( *r );
     r->next = save_next;
     r->from = save_from;
     r->to = save_to;
@@ -7394,7 +7338,7 @@ static void saveUsingNS( void *e, carve_walk_base *d )
     save_using_scope = u->using_scope;
     u->using_scope = ScopeGetIndex( save_using_scope );
     PCHWriteCVIndex( d->index );
-    PCHWrite( u, sizeof( *u ) );
+    PCHWriteVar( *u );
     u->next = save_next;
     u->trigger = save_trigger;
     u->using_scope = save_using_scope;
@@ -7424,7 +7368,7 @@ static void saveNameSpace( void *e, carve_walk_base *d )
     save_all = ns->all;
     ns->all = NameSpaceGetIndex( save_all );
     PCHWriteCVIndex( d->index );
-    PCHWrite( ns, sizeof( *ns ) );
+    PCHWriteVar( *ns );
     ns->sym = save_sym;
     ns->scope = save_scope;
     ns->all = save_all;
@@ -7483,7 +7427,7 @@ static void saveScope( void *e, carve_walk_base *d )
         break;
     }
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->enclosing = save_enclosing;
     s->names = save_names;
     s->ordered = save_ordered;
@@ -7517,7 +7461,7 @@ static void saveSymbolName( void *e, carve_walk_base *d )
     SYMBOL_NAME save_next;
     SYMBOL save_name_type;
     SYMBOL save_name_syms;
-    char *save_name;
+    NAME save_name;
     SCOPE save_containing;
 
     if( s->containing == NULL ) {
@@ -7537,7 +7481,7 @@ static void saveSymbolName( void *e, carve_walk_base *d )
     save_containing = s->containing;
     s->containing = ScopeGetIndex( save_containing );
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->next = save_next;
     s->name_type = save_name_type;
     s->name_syms = save_name_syms;
@@ -7559,7 +7503,7 @@ static void saveSymbol( void *e, carve_walk_base *d )
     SYMBOL save_thread;
     TYPE save_sym_type;
     SYMBOL_NAME save_name;
-    SYM_TOKEN_LOCN *save_hdl_location;
+    SYM_TOKEN_LOCN *save_locn;
     TEMPLATE_INFO *save_u_tinfo;
     FN_TEMPLATE *save_u_defn;
     SYMBOL save_u_sym;
@@ -7573,7 +7517,7 @@ static void saveSymbol( void *e, carve_walk_base *d )
     }
     save_next = s->next;
     if( s == s->next ) {
-        s->next = (SYMBOL) d->index;
+        s->next = (SYMBOL)d->index;
     } else {
         s->next = SymbolGetIndex( save_next );
     }
@@ -7583,8 +7527,8 @@ static void saveSymbol( void *e, carve_walk_base *d )
     s->sym_type = TypeGetIndex( save_sym_type );
     save_name = s->name;
     s->name = SymbolNameGetIndex( save_name );
-    save_hdl_location = s->locn;
-    s->locn = SymTokenLocnGetIndex( save_hdl_location );
+    save_locn = s->locn;
+    s->locn = SymTokenLocnGetIndex( save_locn );
     switch( s->id ) {
     case SC_NAMESPACE:
         save_u_ns = s->u.ns;
@@ -7620,15 +7564,18 @@ static void saveSymbol( void *e, carve_walk_base *d )
         } else if( s->flag & SF_CONSTANT_INT64 ) {
             save_con = s->u.pval;
             s->u.pval = ConstantPoolGetIndex( save_con );
+        } else if( (s->flag & SF_ANONYMOUS) && ( s->id != SC_MEMBER ) ) {
+            save_u_sym = s->u.sym;
+            s->u.sym = SymbolGetIndex( save_u_sym );
         }
     }
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->next = save_next;
     s->thread = save_thread;
     s->sym_type = save_sym_type;
     s->name = save_name;
-    s->locn = save_hdl_location;
+    s->locn = save_locn;
     switch( s->id ) {
     case SC_NAMESPACE:
         s->u.ns = save_u_ns;
@@ -7652,12 +7599,13 @@ static void saveSymbol( void *e, carve_walk_base *d )
         s->u.type = save_u_type;
         break;
     default:
-        DbgVerify( SymIsThunk( s ) == (( s->flag & SF_ADDR_THUNK ) != 0 ),
-                   "SF_ADDR_THUNK not set properly" );
+        DbgVerify( SymIsThunk( s ) == (( s->flag & SF_ADDR_THUNK ) != 0 ), "SF_ADDR_THUNK not set properly" );
         if( s->flag & ( SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS ) ) {
             s->u.sym = save_u_sym;
         } else if( s->flag & SF_CONSTANT_INT64 ) {
             s->u.pval = save_con;
+        } else if( (s->flag & SF_ANONYMOUS) && ( s->id != SC_MEMBER ) ) {
+            s->u.sym = save_u_sym;
         }
     }
 }
@@ -7682,7 +7630,7 @@ static void saveMappingList( void )
         m->from = ScopeGetIndex( save_from );
         save_to = m->to;
         m->to = ScopeGetIndex( save_to );
-        PCHWrite( m, sizeof( *m ) );
+        PCHWriteVar( *m );
         m->sym = save_sym;
         m->from = save_from;
         m->to = save_to;
@@ -7691,164 +7639,131 @@ static void saveMappingList( void )
 
 pch_status PCHWriteScopes( void )
 {
-    cv_index terminator = CARVE_NULL_INDEX;
-    char *unique_name;
-    NAME_SPACE *all_name_spaces;
-    SCOPE curr_scope;
-    SCOPE file_scope;
-    SCOPE internal_scope;
-    SYMBOL chip_bug_sym;
-    SYMBOL dfabbrev_sym;
-    SYMBOL pchdebug_sym;
     auto carve_walk_base data;
 
-    unique_name = NameGetIndex( uniqueNameSpaceName );
-    PCHWrite( &unique_name, sizeof( unique_name ) );
-    all_name_spaces = NameSpaceGetIndex( allNameSpaces );
-    PCHWrite( &all_name_spaces, sizeof( all_name_spaces ) );
-    curr_scope = ScopeGetIndex( GetCurrScope() );
-    PCHWrite( &curr_scope, sizeof( curr_scope ) );
-    file_scope = ScopeGetIndex( GetFileScope() );
-    PCHWrite( &file_scope, sizeof( file_scope ) );
-    internal_scope = ScopeGetIndex( GetInternalScope() );
-    PCHWrite( &internal_scope, sizeof( internal_scope ) );
-    chip_bug_sym = SymbolGetIndex( ChipBugSym );
-    PCHWrite( &chip_bug_sym, sizeof( chip_bug_sym ) );
-    dfabbrev_sym = SymbolGetIndex( DFAbbrevSym );
-    PCHWrite( &dfabbrev_sym, sizeof( dfabbrev_sym ) );
-    pchdebug_sym = SymbolGetIndex( PCHDebugSym );
-    PCHWrite( &pchdebug_sym, sizeof( pchdebug_sym ) );
+    PCHWriteUInt( PCHGetUInt( NameGetIndex( uniqueNameSpaceName ) ) );
+    PCHWriteCVIndex( (cv_index)NameSpaceGetIndex( allNameSpaces ) );
+    PCHWriteCVIndex( (cv_index)ScopeGetIndex( GetCurrScope() ) );
+    PCHWriteCVIndex( (cv_index)ScopeGetIndex( GetFileScope() ) );
+    PCHWriteCVIndex( (cv_index)ScopeGetIndex( GetInternalScope() ) );
+    PCHWriteCVIndex( (cv_index)SymbolGetIndex( ChipBugSym ) );
+    PCHWriteCVIndex( (cv_index)SymbolGetIndex( DFAbbrevSym ) );
+    PCHWriteCVIndex( (cv_index)SymbolGetIndex( PCHDebugSym ) );
     CarveWalkAllFree( carveSYM_REGION, markFreeSymRegion );
     CarveWalkAll( carveSYM_REGION, saveSymRegion, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveUSING_NS, markFreeUsingNS );
     CarveWalkAll( carveUSING_NS, saveUsingNS, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveNAME_SPACE, markFreeNameSpace );
     CarveWalkAll( carveNAME_SPACE, saveNameSpace, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveSCOPE, markFreeScope );
     CarveWalkAll( carveSCOPE, saveScope, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveSYMBOL_NAME, markFreeSymbolName );
     CarveWalkAll( carveSYMBOL_NAME, saveSymbolName, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveSYMBOL, markFreeSymbol );
     CarveWalkAll( carveSYMBOL, saveSymbol, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     saveMappingList();
     return( PCHCB_OK );
 }
 
 static void readMappingList( void )
 {
-    unsigned count;
-    SAVE_MAPPING *m;
-    SAVE_MAPPING *pch;
+    unsigned        count;
+    SAVE_MAPPING    *m;
 
     while( mappingList != NULL ) {
         m = mappingList;
         mappingList = m->next;
         CMemFree( m );
     }
-    count = PCHReadUInt();
-    while( count != 0 ) {
+    for( count = PCHReadUInt(); count != 0; --count ) {
         m = CMemAlloc( sizeof( SAVE_MAPPING ) );
-        PCHReadLoc( pch, m );
-        m->sym = SymbolMapIndex( pch->sym );
-        m->from = ScopeMapIndex( pch->from );
-        m->to = ScopeMapIndex( pch->to );
-        m->map_0 = pch->map_0;
+        PCHReadVar( *m );
+        m->sym = SymbolMapIndex( m->sym );
+        m->from = ScopeMapIndex( m->from );
+        m->to = ScopeMapIndex( m->to );
         m->next = mappingList;
         mappingList = m;
-        --count;
     }
 }
 
 static void readSymRegion( void )
 {
-    cv_index i;
     SYM_REGION *u;
-    SYM_REGION *pch;
     auto cvinit_t data;
 
     CarveInitStart( carveSYM_REGION, &data );
-    for(;;) {
-        PCHReadMapped( pch, u, i, data );
-        u->next = CarveMapIndex( carveSYM_REGION, pch->next );
-        u->from = SymbolMapIndex( pch->from );
-        u->to = SymbolMapIndex( pch->to );
+    for( ; (u = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *u );
+        u->next = CarveMapIndex( carveSYM_REGION, u->next );
+        u->from = SymbolMapIndex( u->from );
+        u->to = SymbolMapIndex( u->to );
     }
 }
 
 static void readUsingNS( void )
 {
-    cv_index i;
     USING_NS *u;
-    USING_NS *pch;
     auto cvinit_t data;
 
     CarveInitStart( carveUSING_NS, &data );
-    for(;;) {
-        PCHReadMapped( pch, u, i, data );
-        u->next = CarveMapIndex( carveUSING_NS, pch->next );
-        u->trigger = ScopeMapIndex( pch->trigger );
-        u->using_scope = ScopeMapIndex( pch->using_scope );
+    for( ; (u = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *u );
+        u->next = CarveMapIndex( carveUSING_NS, u->next );
+        u->trigger = ScopeMapIndex( u->trigger );
+        u->using_scope = ScopeMapIndex( u->using_scope );
     }
 }
 
 static void readNameSpaces( void )
 {
-    cv_index i;
     NAME_SPACE *ns;
-    NAME_SPACE *pch;
     auto cvinit_t data;
 
     CarveInitStart( carveNAME_SPACE, &data );
-    for(;;) {
-        PCHReadMapped( pch, ns, i, data );
-        ns->sym = SymbolMapIndex( pch->sym );
-        ns->scope = ScopeMapIndex( pch->scope );
-        ns->all = NameSpaceMapIndex( pch->all );
-        ns->flags = pch->flags;
+    for( ; (ns = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *ns );
+        ns->sym = SymbolMapIndex( ns->sym );
+        ns->scope = ScopeMapIndex( ns->scope );
+        ns->all = NameSpaceMapIndex( ns->all );
     }
 }
 
 static void readScopes( void )
 {
-    cv_index i;
     SCOPE s;
-    SCOPE pch;
     auto cvinit_t data;
 
     CarveInitStart( carveSCOPE, &data );
-    for(;;) {
-        PCHReadMapped( pch, s, i, data );
-        s->enclosing = ScopeMapIndex( pch->enclosing );
-        s->names = HashMapIndex( pch->names );
-        s->ordered = SymbolMapIndex( pch->ordered );
-        s->using_list = CarveMapIndex( carveUSING_NS, pch->using_list );
-        s->id = pch->id;
-        s->flags = pch->flags;
+    for( ; (s = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *s );
+        s->enclosing = ScopeMapIndex( s->enclosing );
+        s->names = HashMapIndex( s->names );
+        s->ordered = SymbolMapIndex( s->ordered );
+        s->using_list = CarveMapIndex( carveUSING_NS, s->using_list );
         // used to indicate changes from creation time (or PCH creation time)
         s->s.dirty = FALSE;
-        switch( pch->id ) {
+        switch( s->id ) {
         case SCOPE_FUNCTION:
-            s->owner.sym = SymbolMapIndex( pch->owner.sym );
+            s->owner.sym = SymbolMapIndex( s->owner.sym );
             break;
         case SCOPE_CLASS:
-            s->owner.type = TypeMapIndex( pch->owner.type );
+            s->owner.type = TypeMapIndex( s->owner.type );
             break;
         case SCOPE_FILE:
-            DbgAssert( pch->owner.ns != NULL );
-            s->owner.ns = NameSpaceMapIndex( pch->owner.ns );
+            DbgAssert( s->owner.ns != NULL );
+            s->owner.ns = NameSpaceMapIndex( s->owner.ns );
             break;
         case SCOPE_TEMPLATE_PARM:
             DbgAssert( s->s.fn_template == FALSE );
-            s->owner.tinfo = TemplateClassInfoMapIndex( pch->owner.tinfo );
+            s->owner.tinfo = TemplateClassInfoMapIndex( s->owner.tinfo );
             break;
         default :
-            s->owner.index = pch->owner.index;
             break;
         }
     }
@@ -7856,19 +7771,17 @@ static void readScopes( void )
 
 static void readSymbolNames( void )
 {
-    cv_index i;
     SYMBOL_NAME sn;
-    SYMBOL_NAME psn;
     auto cvinit_t data;
 
     CarveInitStart( carveSYMBOL_NAME, &data );
-    for(;;) {
-        PCHReadMapped( psn, sn, i, data );
-        sn->next = SymbolNameMapIndex( psn->next );
-        sn->name_type = SymbolMapIndex( psn->name_type );
-        sn->name_syms = SymbolMapIndex( psn->name_syms );
-        sn->name = NameMapIndex( psn->name );
-        sn->containing = ScopeMapIndex( psn->containing );
+    for( ; (sn = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *sn );
+        sn->next = SymbolNameMapIndex( sn->next );
+        sn->name_type = SymbolMapIndex( sn->name_type );
+        sn->name_syms = SymbolMapIndex( sn->name_syms );
+        sn->name = NameMapIndex( sn->name );
+        sn->containing = ScopeMapIndex( sn->containing );
     }
 }
 
@@ -7876,55 +7789,51 @@ static void readSymbols( void )
 {
     cv_index i;
     SYMBOL sym;
-    SYMBOL pch;
     auto cvinit_t data;
 
     CarveInitStart( carveSYMBOL, &data );
-    for(;;) {
-        PCHReadMapped( pch, sym, i, data );
-        if( i == (unsigned)pch->next ) {
+    for( ; (i = PCHReadCVIndex()) != CARVE_NULL_INDEX; ) {
+        sym = CarveInitElement( &data, i );
+        PCHReadVar( *sym );
+        if( i == (cv_index)sym->next ) {
             // most symbols are not overloaded
             sym->next = sym;
         } else {
-            sym->next = SymbolMapIndex( pch->next );
+            sym->next = SymbolMapIndex( sym->next );
         }
-        sym->thread = SymbolMapIndex( pch->thread );
-        sym->sym_type = TypeMapIndex( pch->sym_type );
-        sym->name = SymbolNameMapIndex( pch->name );
-        sym->locn = SymTokenLocnMapIndex( pch->locn );
-        sym->flag = pch->flag;
-        sym->flag2 = pch->flag2;
-        sym->id = pch->id;
-        sym->segid = pch->segid;
-        switch( pch->id ) {
+        sym->thread = SymbolMapIndex( sym->thread );
+        sym->sym_type = TypeMapIndex( sym->sym_type );
+        sym->name = SymbolNameMapIndex( sym->name );
+        sym->locn = SymTokenLocnMapIndex( sym->locn );
+        switch( sym->id ) {
         case SC_NAMESPACE:
-            sym->u.ns = NameSpaceMapIndex( pch->u.ns );
+            sym->u.ns = NameSpaceMapIndex( sym->u.ns );
             break;
         case SC_CLASS_TEMPLATE:
-            sym->u.tinfo = TemplateClassInfoMapIndex( pch->u.tinfo );
+            sym->u.tinfo = TemplateClassInfoMapIndex( sym->u.tinfo );
             break;
         case SC_FUNCTION_TEMPLATE:
         case SC_EXTERN_FUNCTION_TEMPLATE:
         case SC_STATIC_FUNCTION_TEMPLATE:
-            sym->u.defn = TemplateFunctionInfoMapIndex( pch->u.defn );
+            sym->u.defn = TemplateFunctionInfoMapIndex( sym->u.defn );
             break;
         case SC_DEFAULT:
-            sym->u.defarg_info = PTreeMapIndex( pch->u.defarg_info );
+            sym->u.defarg_info = PTreeMapIndex( sym->u.defarg_info );
             break;
         case SC_VIRTUAL_FUNCTION:
         case SC_ADDRESS_ALIAS:
-            sym->u.sym = SymbolMapIndex( pch->u.sym );
+            sym->u.sym = SymbolMapIndex( sym->u.sym );
             break;
         case SC_ACCESS:
-            sym->u.type = TypeMapIndex( pch->u.type );
+            sym->u.type = TypeMapIndex( sym->u.type );
             break;
         default:
-            if( pch->flag & ( SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS ) ) {
-                sym->u.sym = SymbolMapIndex( pch->u.sym );
-            } else if( pch->flag & SF_CONSTANT_INT64 ) {
-                sym->u.pval = ConstantPoolMapIndex( pch->u.pval );
-            } else {
-                sym->u = pch->u;
+            if( sym->flag & ( SF_ADDR_THUNK | SF_TEMPLATE_FN | SF_ALIAS ) ) {
+                sym->u.sym = SymbolMapIndex( sym->u.sym );
+            } else if( sym->flag & SF_CONSTANT_INT64 ) {
+                sym->u.pval = ConstantPoolMapIndex( sym->u.pval );
+            } else if( (sym->flag & SF_ANONYMOUS) && ( sym->id != SC_MEMBER ) ) {
+                sym->u.sym = SymbolMapIndex( sym->u.sym );
             }
         }
     }
@@ -7932,14 +7841,14 @@ static void readSymbols( void )
 
 pch_status PCHReadScopes( void )
 {
-    uniqueNameSpaceName = NameMapIndex( PCHReadPtr() );
-    allNameSpaces = NameSpaceMapIndex( PCHReadPtr() );
-    SetCurrScope(ScopeMapIndex( PCHReadPtr() ));
-    SetFileScope(ScopeMapIndex( PCHReadPtr() ));
-    SetInternalScope(ScopeMapIndex( PCHReadPtr() ));
-    ChipBugSym = SymbolMapIndex( PCHReadPtr() );
-    DFAbbrevSym = SymbolMapIndex( PCHReadPtr() );
-    PCHDebugSym = SymbolMapIndex( PCHReadPtr() );
+    uniqueNameSpaceName = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
+    allNameSpaces = NameSpaceMapIndex( (NAME_SPACE *)PCHReadCVIndex() );
+    SetCurrScope(ScopeMapIndex( (SCOPE)PCHReadCVIndex() ));
+    SetFileScope(ScopeMapIndex( (SCOPE)PCHReadCVIndex() ));
+    SetInternalScope(ScopeMapIndex( (SCOPE)PCHReadCVIndex() ));
+    ChipBugSym = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() );
+    DFAbbrevSym = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() );
+    PCHDebugSym = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() );
     readSymRegion();
     readUsingNS();
     readNameSpaces();
@@ -7952,35 +7861,23 @@ pch_status PCHReadScopes( void )
 
 pch_status PCHInitScopes( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carveUSING_NS );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveNAME_SPACE );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveSCOPE );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveSYMBOL_NAME );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveSYMBOL );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveUSING_NS ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveNAME_SPACE ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveSCOPE ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveSYMBOL_NAME ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveSYMBOL ) );
     } else {
         carveUSING_NS = CarveRestart( carveUSING_NS );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveUSING_NS, n );
+        CarveMapOptimize( carveUSING_NS, PCHReadCVIndex() );
         carveNAME_SPACE = CarveRestart( carveNAME_SPACE );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveNAME_SPACE, n );
+        CarveMapOptimize( carveNAME_SPACE, PCHReadCVIndex() );
         carveSCOPE = CarveRestart( carveSCOPE );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveSCOPE, n );
+        CarveMapOptimize( carveSCOPE, PCHReadCVIndex() );
         carveSYMBOL_NAME = CarveRestart( carveSYMBOL_NAME );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveSYMBOL_NAME, n );
+        CarveMapOptimize( carveSYMBOL_NAME, PCHReadCVIndex() );
         carveSYMBOL = CarveRestart( carveSYMBOL );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveSYMBOL, n );
+        CarveMapOptimize( carveSYMBOL, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

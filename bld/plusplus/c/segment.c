@@ -267,7 +267,7 @@ static PC_SEGMENT *segmentAlloc(    // SEGMENT: ALLOCATE NEW SEGMENT
              , "segmentAlloc -- defining in back end" );
 #endif
     size = strlen( seg_name );
-    curr = RingAlloc( &seg_list, sizeof( PC_SEGMENT ) + size );
+    curr = RingAlloc( &seg_list, offsetof( PC_SEGMENT, name ) + size + 1 );
     curr->sibling = curr;
     stvcpy( curr->name, seg_name, size );
     curr->offset = 0;
@@ -473,9 +473,7 @@ target_offset_t SegmentAdjust(  // SEGMENT: ADJUST OFFSET TO ALIGN
         /* no padding in these segments */
         return( 0 );
     }
-    calc_offset = offset;
-    calc_offset += align - 1;
-    calc_offset &= ~(((target_size_t) align ) - 1 );
+    calc_offset = _RoundUp( offset, align );
     adjust = calc_offset - offset;
     _CHECK_ADJUST( adjust, calc_offset, offset );
     return( adjust );
@@ -848,7 +846,7 @@ static SYMBOL segDefineLabel(   // DEFINE LABEL FOR SEGMENT, IF REQ'D
     PC_SEGMENT *seg )           // - current segment
 {
     SYMBOL label;               // - reference symbol
-    char *name;                 // - label's name
+    NAME name;                  // - label's name
     SYMBOL func;                // - function being compiled
 
     label = seg->label;
@@ -1386,18 +1384,16 @@ pch_status PCHReadSegments( void )
     if( curr_module_len > old_module_len ) {
         extra = curr_module_len - old_module_len;
     }
-    PCHRead( &seg_max, sizeof( seg_max ) );
-    PCHRead( &dgroup_size, sizeof( dgroup_size ) );
+    PCHReadVar( seg_max );
+    PCHReadVar( dgroup_size );
     RingFree( &seg_list );
-    for(;;) {
-        len = PCHReadUInt();
-        if( len == 0 ) break;
+    for( ; (len = PCHReadUInt()) != 0; ) {
         curr = CMemAlloc( len + extra );
         PCHRead( curr, len );
         if( curr->module_prefix ) {
             if( old_module_len != curr_module_len ) {
                 suffix_len = len;
-                suffix_len -= sizeof( PC_SEGMENT ) - sizeof( char );
+                suffix_len -= offsetof( PC_SEGMENT, name );
                 suffix_len -= old_module_len;
                 src_suffix = &(curr->name[old_module_len]);
                 dest_suffix = &(curr->name[curr_module_len]);
@@ -1406,7 +1402,7 @@ pch_status PCHReadSegments( void )
             memcpy( curr->name, ModuleName, curr_module_len );
         }
         curr->label = SymbolMapIndex( curr->label );
-        class_name_len = (size_t) curr->class_name;
+        class_name_len = PCHGetUInt( curr->class_name );
         if( class_name_len != 0 ) {
             class_name = CPermAlloc( class_name_len );
             PCHRead( class_name, class_name_len );
@@ -1441,20 +1437,20 @@ pch_status PCHWriteSegments( void )
 
     prefix_len = strlen( ModuleName );
     PCHWriteUInt( prefix_len );
-    PCHWrite( &seg_max, sizeof( seg_max ) );
-    PCHWrite( &dgroup_size, sizeof( dgroup_size ) );
+    PCHWriteVar( seg_max );
+    PCHWriteVar( dgroup_size );
     RingIterBeg( seg_list, curr ) {
         class_name_len = 0;
         if( curr->class_name != NULL ) {
             class_name_len = strlen( curr->class_name ) + 1;
         }
         save_sibling = curr->sibling;
-        curr->sibling = (PC_SEGMENT*) save_sibling->seg_id;
+        curr->sibling = (PC_SEGMENT *)save_sibling->seg_id;
         save_label = curr->label;
         curr->label = SymbolGetIndex( save_label );
         save_class_name = curr->class_name;
-        curr->class_name = (void*) class_name_len;
-        len = sizeof( PC_SEGMENT ) + strlen( curr->name );
+        curr->class_name = PCHSetUInt( class_name_len );
+        len = offsetof( PC_SEGMENT, name ) + strlen( curr->name ) + 1;
         PCHWriteUInt( len );
         PCHWrite( curr, len );
         curr->sibling = save_sibling;
@@ -1464,8 +1460,7 @@ pch_status PCHWriteSegments( void )
             PCHWrite( save_class_name, class_name_len );
         }
     } RingIterEnd( curr )
-    len = 0;
-    PCHWriteUInt( len );
+    PCHWriteUInt( 0 );
     PCHWriteUInt( code_def_seg.pcseg->seg_id );
     PCHWriteUInt( data_def_seg.pcseg->seg_id );
     return( PCHCB_OK );

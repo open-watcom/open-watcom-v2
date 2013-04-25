@@ -56,7 +56,7 @@ static SYMBOL getSymInScope(    // GET A SYMBOL IN A SCOPE
     SEARCH_RESULT *result;      // - search result for symbol
     SYMBOL sym;                 // - the symbol
     arg_list *alist;            // - arguments for function
-    char *name;                 // - symbol name
+    NAME name;                  // - symbol name
 
     name = orig->name->name;
     alist = SymFuncArgList( orig );
@@ -153,7 +153,7 @@ void VfnAncestralWalk(          // WALK ANCESTRAL VIRTUAL FUNCTIONS
 static PTREE genVfunCall(       // DIRECTLY GENERATE VFUN CALL
     target_offset_t vf_offset,  // - offset to VF table ptr
     PTREE node,                 // - original "this" expression
-    target_offset_t vf_index,   // - index into VF table
+    unsigned vf_index,          // - index into VF table
     SYMBOL sym )                // - symbol to access
 {
     TYPE vfptr_type;            // - type[ ptr to VF table ]
@@ -166,9 +166,7 @@ static PTREE genVfunCall(       // DIRECTLY GENERATE VFUN CALL
     node = PtdExprConst( node );
     node = NodeRvalue( node );
     vfn_type = TypePointedAtModified( vfptr_type );
-    node = NodeBinary( CO_DOT
-                     , node
-                     , NodeOffset( vf_index * CgMemorySize( vfn_type ) ) );
+    node = NodeBinary( CO_DOT, node, NodeOffset( vf_index * CgMemorySize( vfn_type ) ) );
     node->type = vfn_type;
     node->flags |= PTF_LVALUE;
     node = NodeRvalue( node );
@@ -188,7 +186,7 @@ static PTREE genVfunCall(       // DIRECTLY GENERATE VFUN CALL
 static PTREE genVfunIcs(        // GENERATE IC'S FOR CG-GENERATION OF VFUN CALL
     target_offset_t vf_offset,  // - offset to VF table ptr
     PTREE node,                 // - original "this" expression
-    target_offset_t vf_index,   // - index into VF table
+    unsigned vf_index,          // - index into VF table
     SYMBOL baser,               // - basing "this" symbol
     SYMBOL vfun )               // - virtual function
 {
@@ -214,11 +212,11 @@ PTREE AccessVirtualFnAddress(   // GET ADDRESS OF VIRTUAL FUNCTION
     SYMBOL base_this;           // - basing "this" symbol
     target_offset_t this_offset;// - offset to "this" basing symbol
     target_offset_t vf_offset;  // - offset to VF PTR
-    target_offset_t vf_index;   // - index in VF table
+    unsigned vf_index;          // - index in VF table
 
     vf_offset = result->vf_offset;
     vfun = SymDefaultBase( sym );
-    vf_index = vfun->u.offset - VFUN_BASE;
+    vf_index = vfun->u.member_vf_index - VFUN_BASE;
     if( NodeGetIbpSymbol( node, &base_this, &this_offset ) ) {
         node = genVfunIcs( vf_offset, node, vf_index, base_this, vfun );
     } else {

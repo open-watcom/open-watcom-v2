@@ -109,12 +109,13 @@ MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
 {
     MEPTR mptr;
     int (*old_scanner)( void );
+    ppstate_t old_ppstate;
 
     old_scanner = NextChar;
     NextChar = &SrcFileCmdLnGetChar;
     SrcFileCmdLnDummyOpen();
     CurrChar = NextChar();
-    PPState = PPS_EOL | PPS_NO_EXPAND;
+    old_ppstate = SetPPState( PPS_EOL | PPS_NO_EXPAND );
     if( many_tokes ) {
         mptr = MacroScan( MSCAN_CMDLN_PLUS );
     } else {
@@ -122,7 +123,7 @@ MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
     }
     SrcFileCmdLnDummyClose();
     NextChar = old_scanner;
-    PPState = PPS_NORMAL;
+    SetPPState( old_ppstate );
     return( mptr );
 }
 

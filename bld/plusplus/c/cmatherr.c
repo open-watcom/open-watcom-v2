@@ -34,8 +34,22 @@
 #include <math.h>
 #include <errno.h>
 
+#ifdef __WATCOMC__
 double _matherr( struct _exception *p )
 /************************************/
 {
     return( p->retval );
 }
+#elif defined( __UNIX__ )
+int _matherr( struct exception *p )
+/*********************************/
+{
+    return( (int)p->retval );
+}
+#else
+int _matherr( struct _exception *p )
+/**********************************/
+{
+    return( (int)p->retval );
+}
+#endif

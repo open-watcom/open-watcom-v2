@@ -61,7 +61,7 @@ static unsigned idIndex;
 void PpStartFile(               // INDICATE START/CONTINUATION OF A FILE
     void )
 {
-    skipChars = 2;
+    skipChars = 1;
 }
 
 
@@ -249,7 +249,7 @@ static IDMANGLE *addNewId( IDMANGLE **head, IDMANGLE *next )
     size_t len;
 
     len = strlen( Buffer );
-    new_id = CMemAlloc( sizeof( IDMANGLE ) + len );
+    new_id = CMemAlloc( offsetof( IDMANGLE, id ) + len + 1 );
     new_id->next = next;
     new_id->index = idIndex;
     strcpy( new_id->id, Buffer );
@@ -341,10 +341,10 @@ void PpParse(                   // PARSE WHEN PREPROCESSING
 }
 
 
-char *TokenString(              // RETURN A PRINTABLE STRING FOR CURRENT TOK
+const char *TokenString(              // RETURN A PRINTABLE STRING FOR CURRENT TOK
     void )
 {
-    char *token;
+    const char *token;
 
     switch( CurToken ) {
     case T_BAD_CHAR:
@@ -363,39 +363,47 @@ char *TokenString(              // RETURN A PRINTABLE STRING FOR CURRENT TOK
 
 
 void Expecting(                 // ISSUE EXPECTING ERROR FOR A TOKEN
-    char *a_token )             // - required token
+    const char *a_token )       // - required token
 {
     CErr( ERR_EXPECTING_BUT_FOUND, a_token, TokenString() );
 }
 
 
-void MustRecog(                 // REQUIRE A SPECIFIC TOKEN AND SCAN NEXT
-    int this_token )            // - token to be recognized
+int ExpectingToken(             // ISSUE EXPECTING ERROR FOR A TOKEN
+    TOKEN token )               // - required token
 {
-    int alt_token;
+    TOKEN alt_token;
 
     /* also accept alternative tokens (digraphs) */
-    if( this_token == T_LEFT_BRACKET ) {
+    switch( token ) {
+    case T_LEFT_BRACKET:
         alt_token = T_ALT_LEFT_BRACKET;
-    }
-    if( this_token == T_RIGHT_BRACKET ) {
+        break;
+    case T_RIGHT_BRACKET:
         alt_token = T_ALT_RIGHT_BRACKET;
-    }
-    if( this_token == T_LEFT_BRACE ) {
+        break;
+    case T_LEFT_BRACE:
         alt_token = T_ALT_LEFT_BRACE;
-    }
-    if( this_token == T_RIGHT_BRACE ) {
+        break;
+    case T_RIGHT_BRACE:
         alt_token = T_ALT_RIGHT_BRACE;
-    } else {
-        alt_token = this_token;
+        break;
+    default:
+        alt_token = token;
+        break;
     }
+    if( ( CurToken == token ) || ( CurToken == alt_token ) ) {
+        return( 1 );
+    }
+    CErr( ERR_EXPECTING_BUT_FOUND, Tokens[token], TokenString() );
+    return( 0 );
+}
 
-    if( ( CurToken != this_token ) && ( CurToken != alt_token ) ) {
-        Expecting( Tokens[ this_token ] );
-        if( CurToken != T_EOF ) {
-            NextToken();
-        }
-    } else {
+void MustRecog(                 // REQUIRE A SPECIFIC TOKEN AND SCAN NEXT
+    TOKEN token )               // - token to be recognized
+{
+    ExpectingToken( token );
+    if( CurToken != T_EOF ) {
         NextToken();
     }
 }

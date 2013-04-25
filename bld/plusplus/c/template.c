@@ -33,8 +33,8 @@
 #include "plusplus.h"
 #include "cgfront.h"
 #include "errdefns.h"
-#include "rewrite.h"
 #include "preproc.h"
+#include "rewrite.h"
 #include "ring.h"
 #include "stack.h"
 #include "memmgr.h"
@@ -113,7 +113,7 @@ static struct {
 
 static SUICIDE_CALLBACK templateSuicide;
 
-static void injectTemplateParm( SCOPE scope, PTREE parm, char *name );
+static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name );
 
 
 static void templateSuicideHandler( void )
@@ -353,7 +353,7 @@ static void validateNonTypeParameterType( TYPE type )
 void TemplateDeclAddArgument( DECL_INFO *new_dinfo )
 {
     SYMBOL sym;
-    char *name;
+    NAME name;
 
     currentTemplate->args = AddArgument( currentTemplate->args, new_dinfo );
     currentTemplate->nr_args++;
@@ -370,14 +370,13 @@ void TemplateDeclAddArgument( DECL_INFO *new_dinfo )
         /* template non-type parameter */
         currentTemplate->all_generic = FALSE;
         if( name != NULL ) {
-            sym = ScopeInsert( GetCurrScope(),
-                               AllocTypedSymbol( new_dinfo->type ), name );
+            sym = ScopeInsert( GetCurrScope(), AllocTypedSymbol( new_dinfo->type ), name );
         }
         validateNonTypeParameterType( new_dinfo->type );
     }
 }
 
-static unsigned getArgList( DECL_INFO *args, TYPE *type_list, char **names,
+static unsigned getArgList( DECL_INFO *args, TYPE *type_list, NAME *names,
                             REWRITE **defarg_list, boolean allow_defargs )
 {
     DECL_INFO *curr;
@@ -459,7 +458,7 @@ static TEMPLATE_SPECIALIZATION *newTemplateSpecialization(
     TokenLocnAssign( tspec->locn, data->locn );
     tspec->num_args = arg_count;
     tspec->type_list = CPermAlloc( arg_count * sizeof( TYPE ) );
-    tspec->arg_names = CPermAlloc( arg_count * sizeof( char * ) );
+    tspec->arg_names = CPermAlloc( arg_count * sizeof( NAME ) );
     tspec->spec_args = data->spec_args;
     data->spec_args = NULL;
     tspec->ordering = NULL;
@@ -539,8 +538,8 @@ void TemplateUsingDecl( SYMBOL sym, TOKEN_LOCN *locn )
     }
 }
 
-SYMBOL ClassTemplateLookup( SCOPE scope, char *name )
-/***************************************************/
+SYMBOL ClassTemplateLookup( SCOPE scope, NAME name )
+/**************************************************/
 {
     SCOPE file_scope;
     SEARCH_RESULT *result;
@@ -583,7 +582,7 @@ static boolean templateArgListsSame( DECL_INFO *args, TEMPLATE_INFO *tinfo )
     return( TRUE );
 }
 
-static boolean sameArgNames( DECL_INFO *args, char **names )
+static boolean sameArgNames( DECL_INFO *args, NAME *names )
 {
     DECL_INFO *curr;
 
@@ -596,22 +595,22 @@ static boolean sameArgNames( DECL_INFO *args, char **names )
     return( TRUE );
 }
 
-static char **getUniqueArgNames( DECL_INFO *args,
-                                 TEMPLATE_SPECIALIZATION *tspec )
+static NAME *getUniqueArgNames( DECL_INFO *args, TEMPLATE_SPECIALIZATION *tspec )
 {
-    unsigned arg_count;
-    char **arg_names;
+    unsigned    arg_count;
+    NAME        *arg_names;
 
     arg_names = tspec->arg_names;
-    if( ! sameArgNames( args, arg_names ) ) {
+    if( !sameArgNames( args, arg_names ) ) {
         arg_count = getArgList( args, NULL, NULL, NULL, TRUE );
-        arg_names = CPermAlloc( arg_count * sizeof( char * ) );
+        arg_names = CPermAlloc( arg_count * sizeof( NAME ) );
         getArgList( args, NULL, arg_names, NULL, TRUE );
     }
     return( arg_names );
 }
 
-static boolean templateArgSame( PTREE left, PTREE right ) {
+static boolean templateArgSame( PTREE left, PTREE right )
+{
     if( ( left->op == PT_TYPE ) && ( right->op == PT_TYPE ) ) {
         return TypesIdentical( left->type, right->type );
     } else if( ( left->op == PT_INT_CONSTANT )
@@ -1028,12 +1027,11 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
 }
 
 static void addMemberEntry( TEMPLATE_SPECIALIZATION *tspec, SCOPE scope,
-                            REWRITE *r, char **arg_names )
+                            REWRITE *r, NAME *arg_names )
 {
     TEMPLATE_MEMBER *extra_defn;
 
-    extra_defn = RingCarveAlloc( carveTEMPLATE_MEMBER
-                               , &(tspec->member_defns) );
+    extra_defn = RingCarveAlloc( carveTEMPLATE_MEMBER, &(tspec->member_defns) );
     extra_defn->scope = scope;
     extra_defn->defn = r;
     extra_defn->arg_names = arg_names;
@@ -1042,7 +1040,7 @@ static void addMemberEntry( TEMPLATE_SPECIALIZATION *tspec, SCOPE scope,
 static void addClassTemplateMember( TEMPLATE_DATA *data, SYMBOL sym,
                                     TEMPLATE_SPECIALIZATION *tspec )
 {
-    char **arg_names;
+    NAME *arg_names;
 
     if( ( NULL == data) || ( NULL == sym) ){
         return;
@@ -1100,7 +1098,7 @@ static SYMBOL dupTemplateParm( SYMBOL old_parm )
     return( sym );
 }
 
-static void copyWithNewNames( SCOPE old_scope, char **names )
+static void copyWithNewNames( SCOPE old_scope, NAME *names )
 {
     SYMBOL curr;
     SYMBOL stop;
@@ -1197,7 +1195,7 @@ void TemplateDeclFini( void )
 {
     TEMPLATE_DATA *data;
     TEMPLATE_SPECIALIZATION *tspec;
-    char *name;
+    NAME name;
     SYMBOL sym;
 
     ScopeEnd( SCOPE_TEMPLATE_DECL );
@@ -1267,6 +1265,7 @@ static FN_TEMPLATE *newTemplateFunction( SYMBOL sym )
 void TemplateFunctionCheck( SYMBOL sym, DECL_INFO *dinfo )
 /********************************************************/
 {
+    dinfo = dinfo;
     if( ! SymIsFunction( sym ) ) {
         CErr1( ERR_NO_VARIABLE_TEMPLATES );
         return;
@@ -1383,6 +1382,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
     unsigned num_parms, num_args;
     int num_explicit;
 
+    pcontrol = pcontrol;
     *templ_parm_scope = NULL;
     num_args = ( args != NULL ) ? args->num_args : 0;
     fn_type = FunctionDeclarationType( fn_templ->sym_type );
@@ -1722,7 +1722,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
     return NULL;
 }
 
-static void commonTemplateClass( TEMPLATE_DATA *data, PTREE id, SCOPE scope, char *name )
+static void commonTemplateClass( TEMPLATE_DATA *data, PTREE id, SCOPE scope, NAME name )
 {
     data->template_name = name;
     data->template_scope = ScopeType( scope, SCOPE_TEMPLATE_DECL ) ?
@@ -1733,8 +1733,8 @@ static void commonTemplateClass( TEMPLATE_DATA *data, PTREE id, SCOPE scope, cha
     }
 }
 
-void TemplateClassDeclaration( PTREE id, SCOPE scope, char *name )
-/****************************************************************/
+void TemplateClassDeclaration( PTREE id, SCOPE scope, NAME name )
+/***************************************************************/
 {
     TEMPLATE_DATA *data;
     TOKEN_LOCN *locn;
@@ -1746,8 +1746,8 @@ void TemplateClassDeclaration( PTREE id, SCOPE scope, char *name )
     commonTemplateClass( data, id, scope, name );
 }
 
-boolean TemplateClassDefinition( PTREE id, SCOPE scope, char *name )
-/******************************************************************/
+boolean TemplateClassDefinition( PTREE id, SCOPE scope, NAME name )
+/*****************************************************************/
 {
     TEMPLATE_DATA *data;
     TOKEN_LOCN *locn;
@@ -1903,8 +1903,7 @@ static PTREE processIndividualParm( TYPE arg_type, PTREE parm )
     return( parm );
 }
 
-static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms,
-                                        boolean *is_generic )
+static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, boolean *is_generic )
 {
     SCOPE save_scope;
     SCOPE parm_scope;
@@ -1954,8 +1953,7 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms,
                      * should take that into account */
                     SEARCH_RESULT *result;
 
-                    result = ScopeFindMember( parm_scope,
-                                              tprimary->arg_names[arg_type->u.g.index - 1] );
+                    result = ScopeFindMember( parm_scope, tprimary->arg_names[arg_type->u.g.index - 1] );
                     if( result != NULL ) {
                         arg_type = TypedefRemove( result->sym_name->name_type->sym_type );
                         ScopeFreeResult( result );
@@ -2244,7 +2242,7 @@ static SYMBOL templateArgTypedef( TYPE type )
     return tsym;
 }
 
-static void injectTemplateParm( SCOPE scope, PTREE parm, char *name )
+static void injectTemplateParm( SCOPE scope, PTREE parm, NAME name )
 {
     SYMBOL addr_sym;
     SYMBOL sym;
@@ -2283,8 +2281,8 @@ static void injectTemplateParms( TEMPLATE_SPECIALIZATION *tspec, SCOPE scope,
                                  PTREE parms, boolean unnamed )
 {
     PTREE list;
-    char **pname;
-    char *name;
+    NAME *pname;
+    NAME name;
 
     pname = NULL;
     if( tspec != NULL ) {
@@ -2538,7 +2536,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
 TYPE TemplateClassReference( PTREE tid, PTREE parms )
 /***************************************************/
 {
-    char *template_name;
+    NAME template_name;
     TYPE typ;
     TEMPLATE_INFO *tinfo;
     SYMBOL sym;
@@ -2825,8 +2823,7 @@ void TemplateHandleClassMember( DECL_INFO *dinfo )
     data->member_defn = r;
     data->member_found = TRUE;
     data->template_name = SimpleTypeName( dinfo->id->u.subtree[0]->type );
-    data->template_scope =
-        ScopeNearestFileOrClass( TypeScope( dinfo->id->u.subtree[0]->type )->enclosing );
+    data->template_scope = ScopeNearestFileOrClass( TypeScope( dinfo->id->u.subtree[0]->type )->enclosing );
     data->unbound_type = dinfo->id->u.subtree[0]->type;
     FreeDeclInfo( dinfo );
 }
@@ -2859,7 +2856,7 @@ void TemplateMemberAttachDefn( DECL_INFO *dinfo, boolean is_inline )
     member->is_inline = is_inline;
 }
 
-static boolean sameParmArgNames( SCOPE parm_scope, char **arg_names )
+static boolean sameParmArgNames( SCOPE parm_scope, NAME *arg_names )
 {
     SYMBOL curr;
     SYMBOL stop;
@@ -2892,7 +2889,7 @@ static void instantiateMember( TEMPLATE_INFO *tinfo,
     SCOPE class_parm_scope;
     SCOPE save_parm_enclosing;
     SCOPE parm_scope;
-    char **member_arg_names;
+    NAME *member_arg_names;
     TOKEN_LOCN *locn;
     auto TEMPLATE_CONTEXT context;
 
@@ -3300,6 +3297,7 @@ void TemplateSpecificDefnStart( PTREE tid, TYPE type )
     SCOPE parm_scope;
     PTREE parms;
 
+    tid = tid;
     tinfo = classUnboundTemplateInfo( type );
     tprimary = RingFirst( tinfo->specializations );
     if( tprimary->corrupted ) {
@@ -3490,25 +3488,21 @@ static void markFreeFnTemplateDefn( void *p )
     s->free = TRUE;
 }
 
-static void saveUnboundTemplate( UNBOUND_TEMPLATE *s,
-                                 UNBOUND_TEMPLATE *stop )
+static void saveUnboundTemplate( UNBOUND_TEMPLATE *s, UNBOUND_TEMPLATE *stop )
 {
     UNBOUND_TEMPLATE *save_next;
     TYPE save_type;
 
     save_next = s->next;
-    s->next = (UNBOUND_TEMPLATE *) ( s != stop );
     save_type = s->unbound_type;
+    s->next = PCHSetUInt( s != stop );
     s->unbound_type = TypeGetIndex( save_type );
-
-    PCHWrite( s, sizeof( *s ) );
-
+    PCHWriteVar( *s );
     s->next = save_next;
     s->unbound_type = save_type;
 }
 
-static void saveTemplateSpecialization( TEMPLATE_SPECIALIZATION *s,
-                                        TEMPLATE_SPECIALIZATION *stop )
+static void saveTemplateSpecialization( TEMPLATE_SPECIALIZATION *s, TEMPLATE_SPECIALIZATION *stop )
 {
     TEMPLATE_SPECIALIZATION *save_next;
     TEMPLATE_INFO *save_tinfo;
@@ -3519,13 +3513,10 @@ static void saveTemplateSpecialization( TEMPLATE_SPECIALIZATION *s,
     PTREE save_spec_args;
     unsigned char *save_ordering;
     TEMPLATE_MEMBER *member;
-    REWRITE *member_defn;
-    SCOPE scope;
-    void *nti;
     unsigned i;
 
     save_next = s->next;
-    s->next = (TEMPLATE_SPECIALIZATION *) ( s != stop );
+    s->next = PCHSetUInt( s != stop );
     save_tinfo = s->tinfo;
     s->tinfo = TemplateClassInfoGetIndex( save_tinfo );
     save_decl_scope = s->decl_scope;
@@ -3539,38 +3530,29 @@ static void saveTemplateSpecialization( TEMPLATE_SPECIALIZATION *s,
     save_spec_args = s->spec_args;
     s->spec_args = PTreeGetIndex( save_spec_args );
     save_ordering = s->ordering;
-    s->ordering = ( save_ordering != NULL ) ? (void *) save_tinfo->nr_specs : NULL;
-
-    PCHWrite( s, sizeof( *s ) );
+    s->ordering = ( save_ordering != NULL ) ? PCHSetUInt( save_tinfo->nr_specs ) : PCHSetUInt( 0 );
+    PCHWriteVar( *s );
     for( i = 0; i < s->num_args; ++i ) {
-        nti = NameGetIndex( s->arg_names[i] );
-        PCHWrite( &nti, sizeof( nti ) );
+        PCHWriteUInt( PCHGetUInt( NameGetIndex( s->arg_names[i] ) ) );
     }
     for( i = 0; i < s->num_args; ++i ) {
-        nti = TypeGetIndex( s->type_list[i] );
-        PCHWrite( &nti, sizeof( nti ) );
+        PCHWriteCVIndex( (cv_index)TypeGetIndex( s->type_list[i] ) );
     }
     RingIterBeg( s->member_defns, member ){
-        scope = ScopeGetIndex( member->scope );
-        PCHWrite( &scope, sizeof( SCOPE ) );
-        member_defn = RewriteGetIndex( member->defn );
-        PCHWrite( &member_defn, sizeof( REWRITE * ) );
+        PCHWriteCVIndex( (cv_index)ScopeGetIndex( member->scope ) );
+        PCHWriteCVIndex( (cv_index)RewriteGetIndex( member->defn ) );
         if( member->arg_names != s->arg_names ) {
-            PCHWrite( &s->num_args, sizeof( int ) );
+            PCHWriteUInt( s->num_args );
             for( i = 0; i < s->num_args; ++i ) {
-                nti = NameGetIndex( member->arg_names[i] );
-                PCHWrite( &nti, sizeof( nti ) );
+                PCHWriteUInt( PCHGetUInt( NameGetIndex( member->arg_names[i] ) ) );
             }
         } else {
-            i = 0;
-            PCHWrite( &i, sizeof( int ) );
+            PCHWriteUInt( 0 );
         }
     } RingIterEnd( member )
-    scope = NULL;
-    PCHWrite( &scope, sizeof( SCOPE ) );
+    PCHWriteCVIndexTerm();
     if( save_ordering != NULL ) {
-        PCHWrite( save_ordering,
-                  16 * ( ( save_tinfo->nr_specs - 2 ) / 128 + 1 ) );
+        PCHWrite( save_ordering, 16 * ( ( save_tinfo->nr_specs - 2 ) / 128 + 1 ) );
     }
 
     s->next = save_next;
@@ -3594,7 +3576,6 @@ static void saveTemplateInfo( void *p, carve_walk_base *d )
     TEMPLATE_SPECIALIZATION *tspec;
     SYMBOL save_sym;
     REWRITE **save_defarg_list;
-    void *defarg_index;
     unsigned i;
 
     if( s->free ) {
@@ -3606,16 +3587,16 @@ static void saveTemplateInfo( void *p, carve_walk_base *d )
     save_next = s->next;
     s->next = TemplateClassInfoGetIndex( save_next );
     save_unbound_templates = s->unbound_templates;
-    s->unbound_templates = (UNBOUND_TEMPLATE *) ( s->unbound_templates != NULL );
+    s->unbound_templates = PCHSetUInt( s->unbound_templates != NULL );
     save_specializations = s->specializations;
-    s->specializations = (TEMPLATE_SPECIALIZATION *) ( s->specializations != NULL );
+    s->specializations = PCHSetUInt( s->specializations != NULL );
     save_sym = s->sym;
     s->sym = SymbolGetIndex( save_sym );
     save_defarg_list = s->defarg_list;
-    s->defarg_list = (REWRITE **) tprimary->num_args;
+    s->defarg_list = (REWRITE **)PCHSetUInt( tprimary->num_args );
 
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
 
     s->next = save_next;
     s->unbound_templates = save_unbound_templates;
@@ -3624,8 +3605,7 @@ static void saveTemplateInfo( void *p, carve_walk_base *d )
     s->defarg_list = save_defarg_list;
 
     for( i = 0; i < tprimary->num_args; ++i ) {
-        defarg_index = RewriteGetIndex( s->defarg_list[i] );
-        PCHWrite( &defarg_index, sizeof( defarg_index ) );
+        PCHWriteCVIndex( (cv_index)RewriteGetIndex( s->defarg_list[i] ) );
     }
 
     RingIterBeg( s->unbound_templates, unbound ) {
@@ -3646,7 +3626,7 @@ static void saveMemberInst( MEMBER_INST *s, MEMBER_INST *stop )
     SCOPE save_class_parm_enclosing;
 
     save_next = s->next;
-    s->next = (MEMBER_INST *) ( s != stop );
+    s->next = PCHSetUInt( s != stop );
     save_dinfo = s->dinfo;
     s->dinfo = DeclInfoGetIndex( save_dinfo );
     save_scope = s->scope;
@@ -3656,7 +3636,7 @@ static void saveMemberInst( MEMBER_INST *s, MEMBER_INST *stop )
     save_class_parm_enclosing = s->class_parm_enclosing;
     s->class_parm_enclosing = ScopeGetIndex( save_class_parm_enclosing );
 
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
 
     s->next = save_next;
     s->dinfo = save_dinfo;
@@ -3682,12 +3662,12 @@ static void saveClassInst( void *p, carve_walk_base *d )
     save_scope = s->scope;
     s->scope = ScopeGetIndex( save_scope );
     save_members = s->members;
-    s->members = (MEMBER_INST *) ( s->members != NULL );
+    s->members = PCHSetUInt( s->members != NULL );
     save_locn_src_file = s->locn.src_file;
     s->locn.src_file = SrcFileGetIndex( save_locn_src_file );
 
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
 
     s->next = save_next;
     s->scope = save_scope;
@@ -3707,7 +3687,7 @@ static void saveFnTemplateInst( FN_TEMPLATE_INST *s, FN_TEMPLATE_INST *stop )
     SCOPE save_inst_scope;
 
     save_next = s->next;
-    s->next = (FN_TEMPLATE_INST *) ( s != stop );
+    s->next = PCHSetUInt( s != stop );
     save_bound_sym = s->bound_sym;
     s->bound_sym = SymbolGetIndex( save_bound_sym );
     save_parm_scope = s->parm_scope;
@@ -3715,7 +3695,7 @@ static void saveFnTemplateInst( FN_TEMPLATE_INST *s, FN_TEMPLATE_INST *stop )
     save_inst_scope = s->inst_scope;
     s->inst_scope = ScopeGetIndex( save_inst_scope );
 
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
 
     s->next = save_next;
     s->bound_sym = save_bound_sym;
@@ -3739,7 +3719,7 @@ static void saveFnTemplateDefn( void *p, carve_walk_base *d )
     save_next = s->next;
     s->next = TemplateFunctionInfoGetIndex( save_next );
     save_instantiations = s->instantiations;
-    s->instantiations = (FN_TEMPLATE_INST *) ( s->instantiations != NULL );
+    s->instantiations = PCHSetUInt( s->instantiations != NULL );
     save_sym = s->sym;
     s->sym = SymbolGetIndex( save_sym );
     save_defn = s->defn;
@@ -3747,7 +3727,7 @@ static void saveFnTemplateDefn( void *p, carve_walk_base *d )
     save_decl_scope = s->decl_scope;
     s->decl_scope = ScopeGetIndex( save_decl_scope );
     PCHWriteCVIndex( d->index );
-    PCHWrite( s, sizeof( *s ) );
+    PCHWriteVar( *s );
     s->next = save_next;
     s->instantiations = save_instantiations;
     s->sym = save_sym;
@@ -3761,36 +3741,30 @@ static void saveFnTemplateDefn( void *p, carve_walk_base *d )
 
 pch_status PCHWriteTemplates( void )
 {
-    cv_index terminator = CARVE_NULL_INDEX;
-    TEMPLATE_INFO *all_class_templates;
-    FN_TEMPLATE *all_function_templates;
     auto carve_walk_base data;
 
-    PCHWrite( &templateData.max_depth, sizeof( templateData.max_depth ) );
-    all_class_templates = TemplateClassInfoGetIndex( allClassTemplates );
-    PCHWrite( &all_class_templates, sizeof( all_class_templates ) );
-    all_function_templates = TemplateFunctionInfoGetIndex( allFunctionTemplates );
-    PCHWrite( &all_function_templates, sizeof( all_function_templates ) );
+    PCHWriteVar( templateData.max_depth );
+    PCHWriteCVIndex( (cv_index)TemplateClassInfoGetIndex( allClassTemplates ) );
+    PCHWriteCVIndex( (cv_index)TemplateFunctionInfoGetIndex( allFunctionTemplates ) );
     CarveWalkAllFree( carveCLASS_INST, markFreeClassInst );
     CarveWalkAll( carveCLASS_INST, saveClassInst, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveFN_TEMPLATE, markFreeFnTemplateDefn );
     CarveWalkAll( carveFN_TEMPLATE, saveFnTemplateDefn, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     CarveWalkAllFree( carveTEMPLATE_INFO, markFreeTemplateInfo );
     CarveWalkAll( carveTEMPLATE_INFO, saveTemplateInfo, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 
 pch_status PCHReadTemplates( void )
 {
-    cv_index i;
     unsigned j;
     size_t arg_names_size;
     size_t type_list_size;
     size_t defarg_list_size;
-    char **arg_names;
+    NAME *arg_names;
     TYPE *type_list;
     REWRITE **defarg_list;
     MEMBER_INST *mi;
@@ -3802,33 +3776,27 @@ pch_status PCHReadTemplates( void )
     UNBOUND_TEMPLATE *ut;
     SCOPE scope;
     REWRITE *memb_defn;
-    char **memb_arg_names;
+    NAME *memb_arg_names;
     boolean cont;
     auto cvinit_t data;
 
-    PCHRead( &templateData.max_depth, sizeof( templateData.max_depth ) );
-    PCHRead( &allClassTemplates, sizeof( allClassTemplates ) );
-    allClassTemplates = TemplateClassInfoMapIndex( allClassTemplates );
-    PCHRead( &allFunctionTemplates, sizeof( allFunctionTemplates ) );
-    allFunctionTemplates = TemplateFunctionInfoMapIndex( allFunctionTemplates );
+    PCHReadVar( templateData.max_depth );
+    allClassTemplates = TemplateClassInfoMapIndex( (TEMPLATE_INFO *)PCHReadCVIndex() );
+    allFunctionTemplates = TemplateFunctionInfoMapIndex( (FN_TEMPLATE *)PCHReadCVIndex() );
 
     CarveInitStart( carveCLASS_INST, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        ci = CarveInitElement( &data, i );
-        PCHRead( ci, sizeof( *ci ) );
+    for( ; (ci = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *ci );
         ci->next = CarveMapIndex( carveCLASS_INST, ci->next );
         ci->scope = ScopeMapIndex( ci->scope );
         ci->locn.src_file = SrcFileMapIndex( ci->locn.src_file );
 
-        cont = ci->members != NULL;
+        cont = ( ci->members != NULL );
         ci->members = NULL;
         while( cont ) {
             mi = CPermAlloc( sizeof( MEMBER_INST ) );
-            PCHRead( mi, sizeof( *mi ) );
-            cont = mi->next != NULL;
-
+            PCHReadVar( *mi );
+            cont = ( mi->next != NULL );
             mi->next = NULL;
             mi->dinfo = DeclInfoMapIndex( mi->dinfo );
             mi->scope = ScopeMapIndex( mi->scope );
@@ -3839,23 +3807,19 @@ pch_status PCHReadTemplates( void )
     }
 
     CarveInitStart( carveFN_TEMPLATE, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        ftd = CarveInitElement( &data, i );
-        PCHRead( ftd, sizeof( *ftd ) );
+    for( ; (ftd = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *ftd );
         ftd->next = TemplateFunctionInfoMapIndex( ftd->next );
         ftd->sym = SymbolMapIndex( ftd->sym );
         ftd->decl_scope = ScopeMapIndex( ftd->decl_scope );
         ftd->defn = RewriteMapIndex( ftd->defn );
 
-        cont = ftd->instantiations != NULL;
+        cont = ( ftd->instantiations != NULL );
         ftd->instantiations = NULL;
         while( cont ) {
             fti = CPermAlloc( sizeof( FN_TEMPLATE_INST ) );
-            PCHRead( fti, sizeof( *fti ) );
-            cont = fti->next != NULL;
-
+            PCHReadVar( *fti );
+            cont = ( fti->next != NULL );
             fti->next = NULL;
             fti->bound_sym = SymbolMapIndex( fti->bound_sym );
             fti->parm_scope = ScopeMapIndex( fti->parm_scope );
@@ -3865,83 +3829,71 @@ pch_status PCHReadTemplates( void )
     }
 
     CarveInitStart( carveTEMPLATE_INFO, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        ti = CarveInitElement( &data, i );
-        PCHRead( ti, sizeof( *ti ) );
+    for( ; (ti = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *ti );
         ti->next = TemplateClassInfoMapIndex( ti->next );
         ti->sym = SymbolMapIndex( ti->sym );
 
-        defarg_list_size = (unsigned int) ti->defarg_list;
+        defarg_list_size = PCHGetUInt( ti->defarg_list );
         defarg_list = CPermAlloc( defarg_list_size * sizeof( REWRITE * ) );
         ti->defarg_list = defarg_list;
-        PCHRead( defarg_list, defarg_list_size * sizeof( REWRITE * ) );
         for( j = 0; j < defarg_list_size; ++j ) {
-            defarg_list[j] = RewriteMapIndex( defarg_list[j] );
+            defarg_list[j] = RewriteMapIndex( (REWRITE *)PCHReadCVIndex() );
         }
 
-        cont = ti->unbound_templates != NULL;
+        cont = ( ti->unbound_templates != NULL );
         ti->unbound_templates = NULL;
         while( cont ) {
             ut = CPermAlloc( sizeof( UNBOUND_TEMPLATE ) );
-            PCHRead( ut, sizeof( *ut ) );
-            cont = ut->next != NULL;
-
+            PCHReadVar( *ut );
+            cont = ( ut->next != NULL );
             ut->next = NULL;
             ut->unbound_type = TypeMapIndex( ut->unbound_type );
-
             RingAppend( &ti->unbound_templates, ut );
         }
 
-        cont = ti->specializations != NULL;
+        cont = ( ti->specializations != NULL );
         ti->specializations = NULL;
         while( cont ) {
             ts = CPermAlloc( sizeof( TEMPLATE_SPECIALIZATION ) );
-            PCHRead( ts, sizeof( *ts ) );
-            cont = ts->next != NULL;
+            PCHReadVar( *ts );
+            cont = ( ts->next != NULL );
 
             ts->next = NULL;
             ts->tinfo = TemplateClassInfoMapIndex( ts->tinfo );
             ts->locn.src_file = SrcFileMapIndex( ts->locn.src_file );
             ts->decl_scope = ScopeMapIndex( ts->decl_scope );
             ts->defn = RewriteMapIndex( ts->defn );
-            ts->instantiations = CarveMapIndex( carveCLASS_INST,
-                                                ts->instantiations );
+            ts->instantiations = CarveMapIndex( carveCLASS_INST, ts->instantiations );
             ts->member_defns = NULL;
             ts->spec_args = PTreeMapIndex( ts->spec_args );
-            arg_names_size = ts->num_args * sizeof( char * );
+            arg_names_size = ts->num_args * sizeof( NAME );
             arg_names = CPermAlloc( arg_names_size );
             ts->arg_names = arg_names;
             type_list_size = ts->num_args * sizeof( TYPE );
             type_list = CPermAlloc( type_list_size );
             ts->type_list = type_list;
-            PCHRead( arg_names, arg_names_size );
-            PCHRead( type_list, type_list_size );
             for( j = 0; j < ts->num_args; ++j ) {
-                arg_names[j] = NameMapIndex( arg_names[j] );
-                type_list[j] = TypeMapIndex( type_list[j] );
+                arg_names[j] = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
             }
-            for(;;) {
-                PCHRead( &scope, sizeof( scope ) );
-                if( scope == NULL ) break;
-                scope = ScopeMapIndex( scope );
-                PCHRead( &memb_defn, sizeof( memb_defn ) );
-                memb_defn = RewriteMapIndex( memb_defn );
-                PCHRead( &j, sizeof( j ) );
+            for( j = 0; j < ts->num_args; ++j ) {
+                type_list[j] = TypeMapIndex( (TYPE)PCHReadCVIndex() );
+            }
+            for( ; (scope = ScopeMapIndex( (SCOPE)PCHReadCVIndex() )) != NULL; ) {
+                memb_defn = RewriteMapIndex( (REWRITE *)PCHReadCVIndex() );
+                j = PCHReadUInt();
                 if( j != 0 ) {
                     memb_arg_names = CPermAlloc( arg_names_size );
-                    PCHRead( memb_arg_names, arg_names_size );
                     for( j = 0; j < ts->num_args; ++j ) {
-                        memb_arg_names[j] = NameMapIndex( memb_arg_names[j] );
+                        memb_arg_names[j] = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
                     }
                 } else {
                     memb_arg_names = arg_names;
                 }
                 addMemberEntry( ts, scope, memb_defn, memb_arg_names );
             }
-            if( ts->ordering != NULL ) {
-                j = 16 * ( ( ( (unsigned) ts->ordering ) - 2 ) / 128 + 1 );
+            if( PCHGetUInt( ts->ordering ) != 0 ) {
+                j = 16 * ( ( PCHGetUInt( ts->ordering ) - 2 ) / 128 + 1 );
                 ts->ordering = CMemAlloc( j );
                 PCHRead( ts->ordering, j );
             }
@@ -3955,25 +3907,17 @@ pch_status PCHReadTemplates( void )
 
 pch_status PCHInitTemplates( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carveCLASS_INST );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveFN_TEMPLATE );
-        PCHWriteCVIndex( n );
-        n = CarveLastValidIndex( carveTEMPLATE_INFO );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveCLASS_INST ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveFN_TEMPLATE ) );
+        PCHWriteCVIndex( CarveLastValidIndex( carveTEMPLATE_INFO ) );
     } else {
         carveCLASS_INST = CarveRestart( carveCLASS_INST );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveCLASS_INST, n );
+        CarveMapOptimize( carveCLASS_INST, PCHReadCVIndex() );
         carveFN_TEMPLATE = CarveRestart( carveFN_TEMPLATE );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveFN_TEMPLATE, n );
+        CarveMapOptimize( carveFN_TEMPLATE, PCHReadCVIndex() );
         carveTEMPLATE_INFO = CarveRestart( carveTEMPLATE_INFO );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveTEMPLATE_INFO, n );
+        CarveMapOptimize( carveTEMPLATE_INFO, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

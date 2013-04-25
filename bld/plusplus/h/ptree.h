@@ -171,12 +171,12 @@ ptree_op_t;
 #define PT_ERROR PT_NULL
 
 typedef struct parse_tree_node {
+    TYPE                type;
     PTF_FLAG            flags;
     ptree_op_t          op;
     CGOP                cgop;
     CGOP                id_cgop;
     uint_8              filler;
-    TYPE                type;
     SYMBOL_NAME         sym_name;
     PTD                 *decor;                 // decoration for node
     TOKEN_LOCN          locn;
@@ -200,7 +200,7 @@ typedef struct parse_tree_node {
         CPP_FLOAT               *floating_constant; // PT_FLOATING_CONSTANT
         signed_64               int64_constant; // PT_INT_CONSTANT
         struct {                                // PT_ID
-            char                *name;
+            NAME                name;
             SCOPE               scope;
         } id;
         struct {                                // PT_TYPE
@@ -215,10 +215,7 @@ typedef struct parse_tree_node {
             PTREE               subtree[1];     // - subtree or NULL
             PTREE               node;           // - duplication partner
         } dup;
-        struct {                                // PT_IC
-            unsigned            opcode;         // - opcode
-            CGVALUE             value;          // - value
-        } ic;
+        CGINTER                 ic;             // PT_IC
         PTREE                   subtree[2];     // all others
     } u;
 } PTREE_NODE;
@@ -234,7 +231,7 @@ extern PTREE PTreeInt64Constant( signed_64, type_id );
 //extern PTREE PTreeUIntConstant( unsigned long, type_id );
 extern PTREE PTreeFloatingConstantStr( char *, unsigned, type_id );
 extern PTREE PTreeFloatingConstant( CPP_FLOAT *, type_id );
-extern PTREE PTreeId( char * );
+extern PTREE PTreeId( NAME );
 extern PTREE PTreeIdSym( SYMBOL );
 extern PTREE PTreeDottedSyms( SYMBOL base, SYMBOL qual );
 extern PTREE PTreeSymbol( SYMBOL, char * );
@@ -268,7 +265,7 @@ PTREE PTreeCopySrcLocation(     // COPY LOCATION OF SOURCE
     PTREE tgt,                  // - target node
     PTREE src )                 // - source node
 ;
-PTO_FLAG PTreeEffFlags(         // GET MEANINGFUL FLAGS FOR A PTREE OPERAND
+PTF_FLAG PTreeEffFlags(         // GET MEANINGFUL FLAGS FOR A PTREE OPERAND
     PTREE node )                // - node
 ;
 PTREE PTreeSetErrLoc(           // SET THE ERROR LOCATION FOR A TREE
@@ -281,7 +278,7 @@ msg_status_t PTreeErrorExpr(    // ISSUE ERROR MESSAGE FOR PTREE NODE
 void PTreeErrorExprName(        // ISSUE ERROR MESSAGE FOR PTREE NODE, NAME
     PTREE expr,                 // - node for error
     unsigned err_code,          // - error code
-    char *name )                // - name
+    NAME name )                 // - name
 ;
 void PTreeErrorExprSym(         // ISSUE ERROR MESSAGE FOR PTREE NODE, SYMBOL
     PTREE expr,                 // - node for error
@@ -301,14 +298,14 @@ void PTreeErrorExprType(        // ISSUE ERROR MESSAGE FOR PTREE NODE, TYPE
 void PTreeErrorExprNameType(    // ISSUE ERROR MESSAGE FOR PTREE NODE, NAME, TYPE
     PTREE expr,                 // - node for error
     unsigned err_code,          // - error code
-    char *name,                 // - name
+    NAME name,                  // - name
     TYPE type )                 // - type
 ;
 PTREE PTreeErrorNode(           // SET NODE TO BE AN ERROR
     PTREE curr )                // - node to be transformed
 ;
 PTREE PTreeIc(                  // CREATE PT_IC NODE
-    unsigned opcode,            // - IC opcode
+    CGINTEROP opcode,           // - IC opcode
     CGVALUE value )             // - IC value
 ;
 PTO_FLAG PTreeOpFlags(          // GET FLAGS FOR A PTREE NODE

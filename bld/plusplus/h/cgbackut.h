@@ -966,7 +966,7 @@ void CgTrash(                   // COMPLETE TRASH OF EXPRESSION
 SYMBOL CgVarRo(                 // MAKE R/O CODEGEN VARIABLE
     target_size_t size,         // - size of variable
     unsigned id,                // - SC_...
-    char *name )                // - name or NULL
+    NAME name )                 // - name or NULL
 ;
 SYMBOL CgVarRw(                 // MAKE R/W CODEGEN VARIABLE
     target_size_t size,         // - size
@@ -1269,14 +1269,14 @@ cg_name IbpFetchVbRef(          // MAKE A REFERENCE FROM A BOUND PARAMETER
     target_offset_t delta,      // - offset after vb computation
     target_offset_t vb_exact,   // - offset from original sym to base
     target_offset_t vb_offset,  // - offset to vb table
-    target_offset_t vb_index )  // - index in vb table
+    unsigned vb_index )         // - index in vb table
 ;
 cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
     SYMBOL vfun,                // - virtual function
     cg_name this_expr,          // - expression for this
     SYMBOL vf_this,             // - original symbol (for access)
     target_offset_t vf_offset,  // - offset to vf table ptr
-    target_offset_t vf_index,   // - index in vf table
+    unsigned vf_index,          // - index in vf table
     boolean* is_vcall,          // - addr[ TRUE ==> real virtual call ]
     target_offset_t* a_adj_this,// - addr[ this adjustment ]
     target_offset_t* a_adj_retn,// - addr[ return adjustment ]
@@ -1462,4 +1462,7 @@ TYPE TypeFromCgType(            // GET C++ TYPE FOR cg_type
     cg_type cgtype )            // - code-gen type
 ;
 
+char *CallbackName(             // GET CALLBACK FUNCTION NAME
+    void *f )                   // - function pointer
+;
 #endif

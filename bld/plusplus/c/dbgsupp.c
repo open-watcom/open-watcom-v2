@@ -59,8 +59,8 @@ void DbgSuppInit( dsi_control control )
     TYPE data_type;
     SYMBOL code_sym;
     SYMBOL data_sym;
-    char *code_name;
-    char *data_name;
+    NAME code_name;
+    NAME data_name;
     segment_id old_seg;
 
     code_sym = DefaultCodeSymbol;

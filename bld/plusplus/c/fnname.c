@@ -54,6 +54,12 @@
 #include "srcfile.h"
 #include "pragdefn.h"
 
+#ifdef ZZ_LEN_3
+#define ZZ_LEN_LIMIT    (36 * 36 * 36)
+#else
+#define ZZ_LEN_LIMIT    (36 * 36)
+#endif
+
 typedef enum {                  // type mangling control
     TM_INCLUDE_FIRST_DIM= 0x01, // - include first dimension in array type mangling
     TM_NO_INITIAL_MOD   = 0x02, // - don't include initial mods
@@ -62,7 +68,7 @@ typedef enum {                  // type mangling control
 } tm_control;
 
 static char *operatorNamesStr[] = {
-#include "ppopfstr.h"
+    #include "ppopfstr.h"
 };
 #define MAX_OP_NAMES ARRAY_SIZE( operatorNamesStr )
 
@@ -72,15 +78,15 @@ static CGOP const operatorSameAs[] = {
 };
 
 static char *specialNamesStr[] = {
-#define SPECNAME_DEFINE
-#include "specname.h"
+    #define SPECNAME_DEFINE
+    #include "specname.h"
 };
 #define MAX_SPECIAL_NAMES ARRAY_SIZE( specialNamesStr )
 
 static VBUF mangled_name;       // buffer for working on name
 static char *objNameBuff;
-static char *specialNames[ MAX_SPECIAL_NAMES ];
-static char *operatorNames[ MAX_OP_NAMES + 1 ]; // one more for sentinel
+static NAME specialNames[MAX_SPECIAL_NAMES];
+static NAME operatorNames[MAX_OP_NAMES + 1]; // one more for sentinel
 
 #define MAX_REPLICATE   10
 typedef struct replicate_desc {
@@ -141,28 +147,6 @@ static uint_32 objNameHash( uint_32 h, char *s )
     return( h );
 }
 
-static char __Alphabet62[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-static char *utoa62( unsigned value, char *buffer )
-{
-    char        *p = buffer;
-    char        *q;
-    unsigned    rem;
-    char        buf[ 16 ];       // only holds ASCII so 'char' is OK
-
-    buf[0] = '\0';
-    q = &buf[1];
-    do {
-        rem = value % 62;
-        value = value / 62;
-        *q = __Alphabet62[ rem ];
-        ++q;
-    } while( value != 0 );
-    while( (*p++ = *--q) )
-        ;
-    return( buffer );
-}
-
 static TYPE typeLookAhead( TYPE type, type_flag *flags, void **base )
 {
     return TypeModExtract( type
@@ -198,49 +182,11 @@ static void appendChar(         // APPEND A CHARACTER
 }
 
 
-static void prependChar(         // PREPEND A CHARACTER
-    char chr )                  // - the character
-{
-    VbufPrepChr( &mangled_name, chr );
-}
-
-
 static void appendStr(          // APPEND A STRING
     char *str )                 // - the string
 {
     if( str != NULL ) {
         VbufConcStr( &mangled_name, str );
-    }
-}
-
-static void appendZZLen(        // CONCATENATE A 'ZZ' length
-    unsigned len )              // - the length
-{
-    char sbuf[ 60 ];
-
-    utoa62( len, sbuf );
-    switch( strlen( sbuf ) ){
-    case 1:
-        appendChar( '0' );
-        /* fall through */
-    case 2:
-        appendStr( sbuf );
-        break;
-    default:
-        sprintf( sbuf, "internal name length=%d is > 62*62 (1)", len );
-        CFatal( sbuf );
-        break;
-    }
-}
-
-static void appendStrWithLen(   // APPEND A STRING FOR LENGTH CHARS
-    char *str,                  // - the string
-    unsigned len )              // - how many chars to concatenate
-{
-    while( len != 0 ) {
-        appendChar( *str );
-        ++str;
-        --len;
     }
 }
 
@@ -252,26 +198,35 @@ static void prependStr(         // PREPEND A STRING
     }
 }
 
-static void prependLen(         // PREPEND A THE CURRENT STRING LEN
-    void )
-{
-    int len;
-    char sbuf[ 60 ];           // - buffer
 
-    len = VbufLen( &mangled_name );
-    utoa62( len, sbuf );
-    switch( strlen( sbuf ) ){
-    case 1:
-        prependStr( sbuf );
-        prependChar( '0' );
-        break;
-    case 2:
-        prependStr( sbuf );
-        break;
-    default:
-        sprintf( sbuf, "internal name length=%d is > 62*62 (2)", len );
-        CFatal( sbuf );
-        break;
+static char __Alphabet36[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+static char *utoa_zz( unsigned value, char *buffer )
+{
+    char        *p = buffer;
+#ifdef ZZ_LEN_3
+    unsigned    rem;
+
+    rem = value % 36;
+    value = value / 36;
+#endif
+    *p++ = __Alphabet36[ value / 36 ];
+    *p++ = __Alphabet36[ value % 36 ];
+#ifdef ZZ_LEN_3
+    *p++ = __Alphabet36[ rem ];
+#endif
+    *p = '\0';
+    return( buffer );
+}
+
+static void appendStrWithLen(   // APPEND A STRING FOR LENGTH CHARS
+    char *str,                  // - the string
+    unsigned len )              // - how many chars to concatenate
+{
+    while( len != 0 ) {
+        appendChar( *str );
+        ++str;
+        --len;
     }
 }
 
@@ -307,7 +262,7 @@ static void appendReplName(     // APPEND A REPLICATIBLE NAME
 static void appendNameSpaceName(// APPEND A NAMESPACE NAME
     SCOPE scope )               // - the scope
 {
-    char *name;
+    NAME name;
 
     name = ScopeNameSpaceName( scope );
     if( name != NULL ) {
@@ -315,11 +270,11 @@ static void appendNameSpaceName(// APPEND A NAMESPACE NAME
             // we don't want unnamed namespace name in replicate table
             // (demangler never stores anything with '$' prefix in rep table)
             appendChar( IN_CLASS_DELIM );
-            appendStr( name );
+            appendStr( NameStr( name ) );
             appendStr( IN_NAME_SUFFIX );
         } else {
             appendChar( IN_CLASS_DELIM );
-            appendReplName( name );
+            appendReplName( NameStr( name ) );
         }
     }
 }
@@ -327,14 +282,14 @@ static void appendNameSpaceName(// APPEND A NAMESPACE NAME
 static void appendSymName(      // APPEND A SYMBOL's MANGLED NAME
     SYMBOL sym )                // - the symbol
 {
-    char    *name;
+    char    *sname;
 
-    name = sym->name->name;
-    if( nameHasPrefix( name, IN_OP_PREFIX ) ) {
+    sname = NameStr( sym->name->name );
+    if( nameHasPrefix( sname, IN_OP_PREFIX ) ) {
         appendStr( IN_NAME_PREFIX );
-        appendStr( &name[ sizeof( IN_NAME_PREFIX ) ] );
+        appendStr( &sname[ sizeof( IN_NAME_PREFIX ) ] );
     } else {
-        appendReplName( name );
+        appendReplName( sname );
     }
 }
 
@@ -348,7 +303,7 @@ static void appendScopedSymName(// APPEND A SCOPED SYMBOL NAME
     appendScopeMangling( sym->name->containing );
 }
 
-static char *className(         // GET CLASS' NAME
+static NAME className(          // GET CLASS' NAME
     TYPE class_type )           // - the class type
 {
     CLASSINFO *info;
@@ -363,7 +318,7 @@ static char *className(         // GET CLASS' NAME
 static void appendClassName(    // APPEND A CLASS' NAME
     TYPE class_type )           // - the class type
 {
-    appendReplName( className( class_type ) );
+    appendReplName( NameStr( className( class_type ) ) );
 }
 
 static void appendBasedMod(     // APPEND A BASED MODIFIER
@@ -389,7 +344,17 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
 #endif
         appendChar( IN_BASED_STRING );
         str = base;
-        appendZZLen( str->len );
+        if( str->len < ZZ_LEN_LIMIT ) {
+            char    sbuf[10];
+
+            utoa_zz( str->len, sbuf );
+            appendStr( sbuf );
+        } else {
+            char    sbuf[60];
+
+            sprintf( sbuf, "internal name length=%d is > %d (1)", str->len, ZZ_LEN_LIMIT );
+            CFatal( sbuf );
+        }
         appendStrWithLen( str->string, str->len );
         break;
     case TF1_BASED_FETCH:
@@ -454,7 +419,7 @@ static void appendTypeFlags(    // APPEND TYPE FLAGS
 
 static void appendTypeContinue( // APPEND A TYPE MANGLING (NO NEAR/FAR PREFIX)
     TYPE type,                  // - type
-    char *name,                 // - original name of symbol
+    NAME name,                  // - original name of symbol
     tm_control control )        // - control mask
 {
     TYPE *aptr;                 // - arg.s structure
@@ -535,17 +500,16 @@ static void appendTypeContinue( // APPEND A TYPE MANGLING (NO NEAR/FAR PREFIX)
             /* typedefs are synonyms for other types (ignore them) */
             break;
         case TYP_ENUM:
-        {   char *name;
             appendStr( IN_NAME_PREFIX );
             name = SimpleTypeName( type );
             if( name != NULL ) {
-                appendReplName( name );
+                appendReplName( NameStr( name ) );
             } else {
                 name = AnonymousEnumExtraName( type );
                 appendStr( IN_NAME_PREFIX );
                 appendStr( IN_ANON_ENUM );
                 if( name != NULL ) {
-                    appendStr( name );
+                    appendStr( NameStr( name ) );
                 }
                 appendStr( IN_NAME_SUFFIX );
             }
@@ -554,7 +518,7 @@ static void appendTypeContinue( // APPEND A TYPE MANGLING (NO NEAR/FAR PREFIX)
             // terminate mangle for this type
             name = NULL;
             type = TypeError;
-        }   break;
+            break;
         case TYP_CLASS:
             appendStr( IN_NAME_PREFIX );
             appendClassName( type );
@@ -616,7 +580,7 @@ static void appendTypeContinue( // APPEND A TYPE MANGLING (NO NEAR/FAR PREFIX)
 
 static void appendType(         // APPEND A TYPE MANGLING
     TYPE type,                  // - type
-    char *name,                 // - original name of symbol
+    NAME name,                  // - original name of symbol
     tm_control control )        // - control mask
 {
     type_flag flags;            // - look ahead flags
@@ -698,7 +662,7 @@ static void appendScopeMangling(// APPEND CLASS SCOPES
     SYMBOL curr;
     SYMBOL stop;
     SYMBOL fn_symbol;
-    char buff[ 1 + sizeof( unsigned long ) * 2 + 1 ];
+    char buff[1 + sizeof( unsigned long ) * 2 + 1];
 
     for(;;) {
         if( scope == NULL ) break;
@@ -746,7 +710,7 @@ static void appendScopeMangling(// APPEND CLASS SCOPES
     }
 }
 
-static char *formatGlobalName(       // GET C++ GLOBAL NAME
+static char *formatGlobalName(  // GET C++ GLOBAL NAME
     SYMBOL sym )                // - symbol
 {
     replicateInit();
@@ -771,83 +735,87 @@ static char *cppDataName(       // GET C++ DATA NAME
     return( formatGlobalName( sym ) );
 }
 
-boolean CppLookupName(          // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
-    char *name,                 // - name to find
+boolean CppLookupOperatorName(  // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
+    NAME name,                  // - name to find
     CGOP *oper )                // - index found
 {
     unsigned index;
+    char *sname;
+#ifndef NDEBUG
+    unsigned i;
+#endif
 
     ExtraRptIncrementCtr( ctr_lookups );
-    if( ! nameHasPrefix( name, IN_OP_PREFIX ) ) {
-        // name isn't an operator
-        return( FALSE );
-    }
-    ExtraRptIncrementCtr( ctr_lookups_slow );
-    index = NameHash( name ) - NameHash( operatorNames[ 0 ] );
+    if( name != NULL ) {
+        sname = NameStr( name );
+        if( nameHasPrefix( sname, IN_OP_PREFIX ) ) {
+            // name is an operator
+            ExtraRptIncrementCtr( ctr_lookups_slow );
+            index = NameHash( name ) - NameHash( operatorNames[ 0 ] );
 #ifndef NDEBUG
-    {
-        unsigned i;
-        operatorNames[ MAX_OP_NAMES ] = name;
-        i = 0;
-        for(;;) {
-            if( operatorNames[ i ] == name ) break;
-            ++i;
-            if( operatorNames[ i ] == name ) break;
-            ++i;
-        }
-        DbgAssert( i != MAX_OP_NAMES );
-#if 0   // should be useless
-        if( index == MAX_OP_NAMES ) {
-            // found the sentinel
-            return( FALSE );
-        }
+            operatorNames[ MAX_OP_NAMES ] = name;
+            i = 0;
+            for(;;) {
+                if( operatorNames[ i ] == name ) break;
+                ++i;
+                if( operatorNames[ i ] == name ) break;
+                ++i;
+            }
+            DbgAssert( i != MAX_OP_NAMES );
+    #if 0   // should be useless
+            if( index == MAX_OP_NAMES ) {
+                // found the sentinel
+                return( FALSE );
+            }
+    #endif
+            DbgAssert( i == index );
 #endif
-        DbgAssert( i == index );
+            *oper = (CGOP)index;
+            return( TRUE );
+        }
     }
-#endif
-    *oper = (CGOP) index;
-    return( TRUE );
+    return( FALSE );
 }
 
-char *CppOperatorName(          // GET FUNCTION NAME FOR AN OPERATOR
+NAME CppOperatorName(           // GET FUNCTION NAME FOR AN OPERATOR
     unsigned oper )             // - operator
 {
     DbgVerify( oper < MAX_OP_NAMES, "Illegal operator name" );
-    return( operatorNames[ oper ] );
+    return( operatorNames[oper] );
 }
 
-char *CppConversionName(        // GET CONVERSION NAME
+NAME CppConversionName(         // GET CONVERSION NAME
     void )
 {
-    return( operatorNames[ CO_CONVERT ] );
+    return( operatorNames[CO_CONVERT] );
 }
 
-char *CppDestructorName(        // CREATE NAME OF DESTRUCTOR
+NAME CppDestructorName(         // CREATE NAME OF DESTRUCTOR
     void )
 {
-    return( operatorNames[ CO_DTOR ] );
+    return( operatorNames[CO_DTOR] );
 }
 
-char *CppConstructorName(       // CREATE NAME OF CONSTRUCTOR
+NAME CppConstructorName(        // CREATE NAME OF CONSTRUCTOR
     void )
 {
-    return( operatorNames[ CO_CTOR ] );
+    return( operatorNames[CO_CTOR] );
 }
 
-char *CppSpecialName(           // CREATE NAME OF SPECIAL INTERNAL ID
+NAME CppSpecialName(            // CREATE NAME OF SPECIAL INTERNAL ID
     unsigned index )            // - index of special name
 {
-    return( specialNames[ index ] );
+    return( specialNames[index] );
 }
 
 boolean IsCppSpecialName(       // TEST IF NAME IS SPECIAL NAME
-    char *name,                 // - name to find
+    NAME name,                  // - name to find
     unsigned *idx )             // - index found
 {
     unsigned index;
 
     for( index = 0; index < MAX_SPECIAL_NAMES; index++ ) {
-        if( specialNames[ index ] == name ) {
+        if( specialNames[index] == name ) {
             *idx = index;
             return( TRUE );
         }
@@ -856,7 +824,7 @@ boolean IsCppSpecialName(       // TEST IF NAME IS SPECIAL NAME
 }
 
 static void setPrefix(          // SET A PREFIX FOR NAME
-    char* last )                // - last segment of prefix
+    char *last )                // - last segment of prefix
 {
     replicateInit();
     VbufRewind( &mangled_name );
@@ -866,7 +834,7 @@ static void setPrefix(          // SET A PREFIX FOR NAME
 }
 
 static char* setMangling(       // SET FOR MANGLING
-    char* last )                // - last segment of prefix
+    char *last )                // - last segment of prefix
 {
     char *save;                 // - saved name
 
@@ -876,37 +844,50 @@ static char* setMangling(       // SET FOR MANGLING
     return save;
 }
 
-static char* retMangling(       // RETURN MANGLED NAME
+static NAME retMangling(        // RETURN MANGLED NAME
     char* save )                // - saved name
 {
-    prependLen();
+    unsigned    len;
+
+    len = VbufLen( &mangled_name );
+    if( len < ZZ_LEN_LIMIT ) {
+        char    sbuf[10];
+
+        utoa_zz( len, sbuf );
+        prependStr( sbuf );
+    } else {
+        char    sbuf[60];
+
+        sprintf( sbuf, "internal name length=%d is > %d (2)", len, ZZ_LEN_LIMIT );
+        CFatal( sbuf );
+    }
     prependStr( save );
     CMemFree( save );
     return( NameCreateLen( VbufString( &mangled_name ), VbufLen( &mangled_name ) ) );
 }
 
-static char* mangledNameType(   // MAKE MANGLED NAME, TYPE
+static NAME mangledNameType(    // MAKE MANGLED NAME, TYPE
     TYPE type,                  // - type used
-    char* last )                // - last segment of prefix
+    char *last )                // - last segment of prefix
 {
     char *save;                 // - saved name
 
     save = setMangling( last );
     appendType( type, NULL, TM_NULL );
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
-static char *tableName( SCOPE scope, target_offset_t delta, char *table_type )
+static NAME tableName( SCOPE scope, target_offset_t delta, char *table_type )
 {
     char *save;
 
     save = setMangling( table_type );
     appendDelta( delta );
     appendScopeMangling( scope );
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
-char *CppTypeidName(            // CREATE NAME FOR TYPEID
+NAME CppTypeidName(             // CREATE NAME FOR TYPEID
     unsigned *len,              // - addr( len of type mangle )
     TYPE type )                 // - type for typeid
 {
@@ -915,7 +896,7 @@ char *CppTypeidName(            // CREATE NAME FOR TYPEID
     save = setMangling( IN_TYPEID_NAME );
     appendType( type, NULL, TM_NO_INITIAL_MOD );
     *len = VbufLen( &mangled_name );
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
 char *CppGetTypeidContents(     // CREATE CONTENTS FOR TYPEID STRUCTURE
@@ -928,20 +909,20 @@ char *CppGetTypeidContents(     // CREATE CONTENTS FOR TYPEID STRUCTURE
     return( VbufString( &mangled_name ) );
 }
 
-char *CppVATableName(           // CREATE NAME OF VIRTUAL FN ADJUSTOR TABLE
+NAME CppVATableName(            // CREATE NAME OF VIRTUAL FN ADJUSTOR TABLE
     SCOPE scope )               // - class table is used in
 {
     return( tableName( scope, 0, IN_VATABLE_NAME ) );
 }
 
-char *CppVBTableName(           // CREATE NAME OF VIRTUAL BASE OFFSET TABLE
+NAME CppVBTableName(            // CREATE NAME OF VIRTUAL BASE OFFSET TABLE
     SCOPE scope,                // - class table is used in
     target_offset_t delta )     // - offset of vbptr table is used for
 {
     return( tableName( scope, delta, IN_VBTABLE_NAME ) );
 }
 
-char *CppVFTableName(           // CREATE NAME OF VIRTUAL FN ADDR TABLE
+NAME CppVFTableName(            // CREATE NAME OF VIRTUAL FN ADDR TABLE
     SCOPE scope,                // - class table is used in
     target_offset_t delta )     // - offset of vfptr table is used for
 {
@@ -949,13 +930,12 @@ char *CppVFTableName(           // CREATE NAME OF VIRTUAL FN ADDR TABLE
 }
 
 boolean IsVftName(              // TEST IF SYMBOL IS VFT NAME
-    char* name )                // - name to be tested
+    NAME name )                 // - name to be tested
 {
-    return nameHasPrefix( name
-                        , IN_NAME_PREFIX IN_SYM_WATCOM IN_VFTABLE_NAME );
+    return( nameHasPrefix( NameStr( name ), IN_NAME_PREFIX IN_SYM_WATCOM IN_VFTABLE_NAME ) );
 }
 
-char *CppThunkName(             // CREATE NAME OF VIRTUAL FN THUNK
+NAME CppThunkName(              // CREATE NAME OF VIRTUAL FN THUNK
     SCOPE scope,                // - exact class that needs vftables
     THUNK_ACTION *thunk )       // - thunk being created
 {
@@ -963,7 +943,7 @@ char *CppThunkName(             // CREATE NAME OF VIRTUAL FN THUNK
     SYMBOL  sym;
 
     save = setMangling( IN_VFTHUNK_NAME );
-    appendStr( thunk->sym->name->name );
+    appendStr( NameStr( thunk->sym->name->name ) );
     appendScopeMangling( scope );
     if( thunk->delta ) {
         appendDelta( thunk->delta );
@@ -983,10 +963,10 @@ char *CppThunkName(             // CREATE NAME OF VIRTUAL FN THUNK
     sym = thunk->override;
     appendScopeMangling( SymScope( sym ) );
     appendTypedSymName( sym );
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
-char *CppIndexMappingName(      // CREATE NAME OF VIRTUAL BASE INDEX MAPPING
+NAME CppIndexMappingName(       // CREATE NAME OF VIRTUAL BASE INDEX MAPPING
     SCOPE from,                 // - from scope
     SCOPE to )                  // - to scope
 {
@@ -996,40 +976,40 @@ char *CppIndexMappingName(      // CREATE NAME OF VIRTUAL BASE INDEX MAPPING
     appendScopeMangling( from );
     appendStr( IN_NAME_PREFIX );
     appendScopeMangling( to );
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
 
-char *CppMembPtrOffsetName(     // CREATE NAME FOR MEMBER-PTR OFFSET FUNCTION
+NAME CppMembPtrOffsetName(      // CREATE NAME FOR MEMBER-PTR OFFSET FUNCTION
     SYMBOL sym )                // - field for offsetting
 {
     char *save;
 
     save = setMangling( IN_NAME_MEMPTR_FUNC );
     appendTypedSymName( sym );
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
 
 boolean IsCppMembPtrOffsetName( // TEST IF NAME IS MEMBER-PTR OFFSET FUNCTION
-    char *name )                // - name of field for offsetting
+    NAME name )                 // - name of field for offsetting
 {
-    return nameHasPrefix( name, IN_NAME_PREFIX IN_SYM_WATCOM IN_NAME_MEMPTR_FUNC );
+    return( nameHasPrefix( NameStr( name ), IN_NAME_PREFIX IN_SYM_WATCOM IN_NAME_MEMPTR_FUNC ) );
 }
 
 
-char *CppStaticInitName(        // CREATE NAME FOR INITIALIZING AUTO AGGREGATES
+NAME CppStaticInitName(         // CREATE NAME FOR INITIALIZING AUTO AGGREGATES
     SYMBOL sym )                // - variable to be initialized
 {
     char *save;
 
     save = setMangling( IN_NAME_STATIC_INIT );
     appendTypedSymName( sym );
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
 
-char *CppStaticOnceOnlyName(    // CREATE NAME FOR ONCE ONLY CHECK OF STATICS
+NAME CppStaticOnceOnlyName(     // CREATE NAME FOR ONCE ONLY CHECK OF STATICS
     void )
 {
     setPrefix( IN_NAME_STATIC_ONCE );
@@ -1037,7 +1017,7 @@ char *CppStaticOnceOnlyName(    // CREATE NAME FOR ONCE ONLY CHECK OF STATICS
 }
 
 
-char *CppArrayDtorName(         // CREATE NAME FOR ARRAY DTOR
+NAME CppArrayDtorName(          // CREATE NAME FOR ARRAY DTOR
     TYPE ar_type )              // - array type
 {
     char *save;
@@ -1045,10 +1025,10 @@ char *CppArrayDtorName(         // CREATE NAME FOR ARRAY DTOR
     save = setMangling( IN_NAME_ARRAY_DTOR );
     ar_type = ArrayType( ar_type );
     appendInt( ArrayTypeNumberItems( ar_type ) );
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
-char *CppNameTypeSig(           // NAME OF TYPE SIGNATURE
+NAME CppNameTypeSig(            // NAME OF TYPE SIGNATURE
     TYPE type )                 // - the type
 {
     char *save;
@@ -1059,10 +1039,10 @@ char *CppNameTypeSig(           // NAME OF TYPE SIGNATURE
     } else {
         appendType( type, NULL, TM_NULL );
     }
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
-char *CppNameUniqueNS(          // NAME OF UNIQUE NAMESPACE
+NAME CppNameUniqueNS(           // NAME OF UNIQUE NAMESPACE
     TOKEN_LOCN *locn )          // - location of start of unique namespace
 {
     SRCFILE src;
@@ -1088,23 +1068,23 @@ char *CppNameUniqueNS(          // NAME OF UNIQUE NAMESPACE
     }
     h = objNameHash( h, SrcFileFullName( primary ) );
     appendBase36Int( h );
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
-char *CppNameStateTableCmd(     // NAME OF STATE-TABLE COMMAND
+NAME CppNameStateTableCmd(      // NAME OF STATE-TABLE COMMAND
     unsigned index )            // - command index
 {
     char *save;
 
     save = setMangling( IN_NAME_STAB_CMD );
     appendInt( index );
-    return retMangling( save );
+    return( retMangling( save ) );
 }
 
-char *CppNameThrowRo(           // NAME OF THROW R/O BLOCK
+NAME CppNameThrowRo(            // NAME OF THROW R/O BLOCK
     TYPE type )                 // - the type
 {
-    return mangledNameType( type, IN_NAME_THROW_RO );
+    return( mangledNameType( type, IN_NAME_THROW_RO ) );
 }
 
 static char *cppNameCgop(       // PRODUCE PRINTABLE OPERATOR NAME
@@ -1113,13 +1093,13 @@ static char *cppNameCgop(       // PRODUCE PRINTABLE OPERATOR NAME
     char *name;                 // - name
 
     static char *opNames[] ={   // - opcode long names
-    #include "ppopslnm.h"
+        #include "ppopslnm.h"
     };
 
     if( oper >= ( sizeof( opNames ) / sizeof( opNames[0] ) ) ) {
         name = "***INVALID CGOP***";
     } else {
-        name = opNames[ oper ];
+        name = opNames[oper];
     }
     return( name );
 }
@@ -1127,18 +1107,21 @@ static char *cppNameCgop(       // PRODUCE PRINTABLE OPERATOR NAME
 boolean IsCppNameInterestingDebug(      // CHECK FOR INTERNAL NAMES
     SYMBOL sym )                        // - symbol
 {
-    char *name;
+    NAME name;
+    char *sname;
 
     name = sym->name->name;
-    if( name[0] == CHR_NAME_PREFIX && name[1] == CHR_SYM_WATCOM ) {
+    sname = NameStr( name );
+    if( nameHasPrefix( sname, IN_NAME_PREFIX IN_SYM_WATCOM ) ) {
+        // internal symbol names
         return( FALSE );
     }
-    if( name[0] == NAME_DUMMY_PREFIX_0 ) {
+    if( sname[0] == NAME_OPERATOR_OR_DUMMY_PREFIX_0 ) {
         if( name == specialNames[ SPECIAL_RETURN_VALUE ] ) {
             // special case for ".return"
             return( TRUE );
         }
-        if( nameHasPrefix( name, IN_OP_PREFIX ) ) {
+        if( sname[1] == NAME_OPERATOR_PREFIX_1 ) {
             // operator function names
             return( TRUE );
         }
@@ -1156,7 +1139,7 @@ char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
     ExtraRptIncrementCtr( ctr_debug_names );
     replicateInit();
     VbufRewind( &mangled_name );
-    if( CppLookupName( sym->name->name, &oper ) ) {
+    if( CppLookupOperatorName( sym->name->name, &oper ) ) {
         switch( oper ) {
         case CO_CONVERT:
         {
@@ -1170,46 +1153,47 @@ char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
             VbufFree( &suffix );
         }   break;
         case CO_CTOR:
-            appendStr( SimpleTypeName( ScopeClass( SymScope( sym ) ) ) );
+            appendStr( NameStr( SimpleTypeName( ScopeClass( SymScope( sym ) ) ) ) );
             break;
         case CO_DTOR:
             appendStr( "~" );
-            appendStr( SimpleTypeName( ScopeClass( SymScope( sym ) ) ) );
+            appendStr( NameStr( SimpleTypeName( ScopeClass( SymScope( sym ) ) ) ) );
             break;
         default:
             appendStr( "operator " );
             appendStr( cppNameCgop( oper ) );
         }
     } else {
-        char *name = sym->name->name;
-        if( nameHasPrefix( name, IN_NAME_PREFIX IN_SYM_WATCOM ) ) {
-            if( nameHasPrefix( name+2, IN_NAME_MEMPTR_FUNC ) ) {
+        NAME name = sym->name->name;
+        char *sname = NameStr( name );
+        if( nameHasPrefix( sname, IN_NAME_PREFIX IN_SYM_WATCOM ) ) {
+            if( nameHasPrefix( sname + 2, IN_NAME_MEMPTR_FUNC ) ) {
                 appendStr( "__mbrptrthunk" );
-            } else if( nameHasPrefix( name+2, IN_VBTABLE_NAME ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_VBTABLE_NAME ) ) {
                 appendStr( "__vbtbl" );
-            } else if( nameHasPrefix( name+2, IN_VFTABLE_NAME ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_VFTABLE_NAME ) ) {
                 appendStr( "__vftbl" );
-            } else if( nameHasPrefix( name+2, IN_VATABLE_NAME ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_VATABLE_NAME ) ) {
                 appendStr( "__rtti" );
-            } else if( nameHasPrefix( name+2, IN_VMTABLE_NAME ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_VMTABLE_NAME ) ) {
                 appendStr( "__vmtbl" );
-            } else if( nameHasPrefix( name+2, IN_VFTHUNK_NAME ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_VFTHUNK_NAME ) ) {
                 appendStr( "__vfthunk");
-            } else if( nameHasPrefix( name+2, IN_TYPEID_NAME ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_TYPEID_NAME ) ) {
                 appendStr( "__typeid");
-            } else if( nameHasPrefix( name+2, IN_NAME_DTOR_OBJ ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_NAME_DTOR_OBJ ) ) {
                 appendStr( "__dtorobjblk" );
-            } else if( nameHasPrefix( name+2, IN_NAME_THROW_RO ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_NAME_THROW_RO ) ) {
                 appendStr( "__throwblk" );
-            } else if( nameHasPrefix( name+2, IN_NAME_TYPE_SIG ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_NAME_TYPE_SIG ) ) {
                 appendStr( "__typesig" );
-            } else if( nameHasPrefix( name+2, IN_NAME_ARRAY_DTOR ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_NAME_ARRAY_DTOR ) ) {
                 appendStr( "__arrdtorblk" );
-            } else if( nameHasPrefix( name+2, IN_NAME_STATIC_ONCE ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_NAME_STATIC_ONCE ) ) {
                 appendStr( "__onceonly" );
-            } else if( nameHasPrefix( name+2, IN_NAME_STATIC_INIT ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_NAME_STATIC_INIT ) ) {
                 appendStr( "__staticinit" );
-            } else if( nameHasPrefix( name+2, IN_NAME_DEBUG_INFO ) ) {
+            } else if( nameHasPrefix( sname + 2, IN_NAME_DEBUG_INFO ) ) {
                 appendStr( "__debuginfo" );
             } else {
                 appendStr( "__internal" );
@@ -1217,7 +1201,7 @@ char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
         } else if( IsNameDummy( name ) ) {
             appendStr( "<unnamed>" );
         } else {
-            appendStr( name );
+            appendStr( sname );
         }
     }
     return( VbufString( &mangled_name ) );
@@ -1226,25 +1210,25 @@ char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
 char *CppClassPathDebug(  //TRANSLATE INTERNAL NAME TO CLASS PREFIXED DEBUGGER NAME
     SYMBOL sym )
 {
-    char *scope_name;
+    NAME name;
     SCOPE scope;
 
     ExtraRptIncrementCtr( ctr_debug_scoped_names );
     CppNameDebug( sym );
     scope = SymScope( sym );
     for( scope = SymScope( sym ); scope != NULL; scope = scope->enclosing ) {
-        scope_name = NULL;
+        name = NULL;
         switch( ScopeId( scope ) ) {
         case SCOPE_FILE:
-            scope_name = ScopeNameSpaceName( scope );
+            name = ScopeNameSpaceName( scope );
             break;
         case SCOPE_CLASS:
-            scope_name = className( ScopeClass( scope ) );
+            name = className( ScopeClass( scope ) );
             break;
         }
-        if( scope_name != NULL ) {
+        if( name != NULL ) {
             prependStr( "::" );
-            prependStr( scope_name );
+            prependStr( NameStr( name ) );
         }
     }
     return( VbufString( &mangled_name ) );
@@ -1258,44 +1242,41 @@ char *GetMangledName(           // MANGLE SYMBOL NAME
     TYPE fn_type;               // - symbol's function type
 
     if( sym == NULL || sym->name == NULL ) {
-        return( "*** NULL ***" );
+        sym_name = "*** NULL ***";
     } else {
         scope = SymScope( sym );
         fn_type = FunctionDeclarationType( sym->sym_type );
         if( fn_type != NULL ) {
-            if( ( scope->id != SCOPE_FILE )
-              || LinkageIsCpp( sym ) && ( fn_type->flag & TF1_PLUSPLUS ) ) {
+            if( ( scope->id != SCOPE_FILE ) || LinkageIsCpp( sym ) && ( fn_type->flag & TF1_PLUSPLUS ) ) {
                 sym_name = cppFunctionName( sym );
             } else {
-                sym_name = sym->name->name;
+                sym_name = NameStr( sym->name->name );
             }
         } else {
-            if( ( scope->id != SCOPE_FILE )
-              || LinkageIsCpp( sym ) ) {
+            if( ( scope->id != SCOPE_FILE ) || LinkageIsCpp( sym ) ) {
                 sym_name = cppDataName( sym );
             } else {
-                sym_name = sym->name->name;
+                sym_name = NameStr( sym->name->name );
             }
         }
     }
     return( sym_name );
 }
 
-char const* CppTsName(          // MANGLED NAME FOR TYPE SIGNATURE
+NAME CppTsName(                 // MANGLED NAME FOR TYPE SIGNATURE
     TYPE type )                 // - type being signified
 {
-    return CppNameTypeSig( type );
+    return( CppNameTypeSig( type ) );
 }
 
 
-char *CppPCHDebugInfoName(      // MANGLED NAME FOR PCH DEBUG INFO
+NAME CppPCHDebugInfoName(       // MANGLED NAME FOR PCH DEBUG INFO
     char *include_file )        // - include file of PCH
 {
     time_t curr_time;
-    char *name;
     char *save;
     char *p;
-    char buff[ _MAX_PATH ];
+    char buff[_MAX_PATH];
 
     save = setMangling( IN_NAME_DEBUG_INFO );
     curr_time = time( NULL );
@@ -1308,8 +1289,7 @@ char *CppPCHDebugInfoName(      // MANGLED NAME FOR PCH DEBUG INFO
         }
     }
     appendStr( buff );
-    name = retMangling( save );
-    return( name );
+    return( retMangling( save ) );
 }
 
 
@@ -1317,17 +1297,17 @@ static void cppNamesInit(       // INITIALIZE NAMES FOR NAMES PROCESSING
     INITFINI* defn )            // - definition
 {
     CGOP const *ap;
-    char **op;
+    NAME *op;
     char **cp;
-    char **tp;
-    char *op_name;
-    char *place_holder;
+    NAME *tp;
+    NAME op_name;
+    NAME place_holder;
 
     defn = defn;
     DbgStmt( { unsigned n = MAX_OP_NAMES; DbgAssert( n == ARRAY_SIZE( operatorSameAs )); } );
     place_holder = NameDummy();
     for( cp = operatorNamesStr, op = operatorNames, ap = operatorSameAs
-       ; cp < &operatorNamesStr[ MAX_OP_NAMES ]
+       ; cp < &operatorNamesStr[MAX_OP_NAMES]
        ; ++cp, ++op, ++ap ) {
         if( strcmp( *cp, IN_OP_PREFIX ) == 0 ) {
             *op = place_holder;
@@ -1335,10 +1315,10 @@ static void cppNamesInit(       // INITIALIZE NAMES FOR NAMES PROCESSING
             op_name = NameCreateNoLen( *cp );
             if( *ap != CO_INVALID ) {
                 DbgAssert( *ap < ( op - operatorNames ) );
-                DbgAssert( strcmp( *cp, operatorNames[ *ap ] ) == 0 );
+                DbgAssert( strcmp( *cp, NameStr( operatorNames[*ap] ) ) == 0 );
                 // we still allocate the name so that the trick we
-                // use in CppLookupName will still work
-                *op = operatorNames[ *ap ];
+                // use in CppLookupOperatorName will still work
+                *op = operatorNames[*ap];
             } else {
 #ifndef NDEBUG
                 {
@@ -1353,13 +1333,13 @@ static void cppNamesInit(       // INITIALIZE NAMES FOR NAMES PROCESSING
         }
     }
     for( cp = specialNamesStr, tp = specialNames
-       ; cp < &specialNamesStr[ MAX_SPECIAL_NAMES ]
+       ; cp < &specialNamesStr[MAX_SPECIAL_NAMES]
        ; ++cp, ++tp ) {
         *tp = NameCreateNoLen( *cp );
     }
     VbufInit( &mangled_name );
-    ExtraRptRegisterCtr( &ctr_lookups, "# calls to CppLookupName" );
-    ExtraRptRegisterCtr( &ctr_lookups_slow, "# calls to CppLookupName for operator names" );
+    ExtraRptRegisterCtr( &ctr_lookups, "# calls to CppLookupOperatorName" );
+    ExtraRptRegisterCtr( &ctr_lookups_slow, "# calls to CppLookupOperatorName for operator names" );
     ExtraRptRegisterCtr( &ctr_debug_names, "# calls to CppNameDebug" );
     ExtraRptRegisterCtr( &ctr_debug_scoped_names, "# calls to CppClassPathDebug" );
 }
@@ -1376,42 +1356,30 @@ static void cppNamesFini(       // COMPLETION OF NAMES PROCESSING
 
 INITDEFN( cpp_names, cppNamesInit, cppNamesFini )
 
-static void readName( char **name )
-{
-    PCHRead( name, sizeof( *name ) );
-    *name = NameMapIndex( *name );
-}
-
 pch_status PCHReadOpNames( void )
 {
-    char **op;
-    char **cp;
+    NAME *op;
+    NAME *cp;
 
-    for( op = operatorNames; op < &operatorNames[ MAX_OP_NAMES ]; ++op ) {
-        readName( op );
+    for( op = operatorNames; op < &operatorNames[MAX_OP_NAMES]; ++op ) {
+        *op = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
     }
-    for( cp = specialNames; cp < &specialNames[ MAX_SPECIAL_NAMES ]; ++cp ) {
-        readName( cp );
+    for( cp = specialNames; cp < &specialNames[MAX_SPECIAL_NAMES]; ++cp ) {
+        *cp = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
     }
     return( PCHCB_OK );
 }
 
-static void writeName( char *name )
-{
-    name = NameGetIndex( name );
-    PCHWrite( &name, sizeof( name ) );
-}
-
 pch_status PCHWriteOpNames( void )
 {
-    char **op;
-    char **cp;
+    NAME *op;
+    NAME *cp;
 
-    for( op = operatorNames; op < &operatorNames[ MAX_OP_NAMES ]; ++op ) {
-        writeName( *op );
+    for( op = operatorNames; op < &operatorNames[MAX_OP_NAMES]; ++op ) {
+        PCHWriteUInt( PCHGetUInt( NameGetIndex( *op ) ) );
     }
-    for( cp = specialNames; cp < &specialNames[ MAX_SPECIAL_NAMES ]; ++cp ) {
-        writeName( *cp );
+    for( cp = specialNames; cp < &specialNames[MAX_SPECIAL_NAMES]; ++cp ) {
+        PCHWriteUInt( PCHGetUInt( NameGetIndex( *cp ) ) );
     }
     return( PCHCB_OK );
 }

@@ -45,7 +45,7 @@ struct template_data {
     SCOPE               decl_scope;     // template decl scope
     REWRITE             *defn;          // class template definition
     REWRITE             *member_defn;   // class template member definition
-    char                *template_name; // name of the template
+    NAME                template_name; // name of the template
     SCOPE               template_scope; // conaining scope of the template
     TOKEN_LOCN          locn;           // location of class template id
     error_state_t       errors;         // error state at beginning
@@ -91,7 +91,7 @@ PCH_struct template_member {
     TEMPLATE_MEMBER     *next;          // (ring)
     SCOPE               scope;          // scope for member definition
     REWRITE             *defn;          // member definition
-    char                **arg_names;    // argument names
+    NAME                *arg_names;    // argument names
 };
 
 PCH_struct template_specialization {
@@ -104,7 +104,7 @@ PCH_struct template_specialization {
     TOKEN_LOCN          locn;           // location of class template id
     unsigned            num_args;       // number of template arguments
     TYPE                *type_list;     // template argument types
-    char                **arg_names;    // argument names
+    NAME                *arg_names;     // argument names
     PTREE               spec_args;      // template specialization arguments
     unsigned char       *ordering;      // "at least as specialized as" bitmask
     unsigned            corrupted : 1;  // template def'n contained errors
@@ -171,8 +171,8 @@ extern void TemplateFunctionCheck( SYMBOL, DECL_INFO * );
 extern void TemplateFunctionDeclaration( SYMBOL, boolean is_defn );
 extern void TemplateFunctionAttachDefn( DECL_INFO * );
 extern SYMBOL TemplateFunctionGenerate( SYMBOL, arg_list *, PTREE, TOKEN_LOCN * );
-extern void TemplateClassDeclaration( PTREE, SCOPE, char * );
-extern boolean TemplateClassDefinition( PTREE, SCOPE, char * );
+extern void TemplateClassDeclaration( PTREE, SCOPE, NAME );
+extern boolean TemplateClassDefinition( PTREE, SCOPE, NAME );
 extern TYPE TemplateClassReference( PTREE, PTREE );
 extern void TemplateHandleClassMember( DECL_INFO * );
 extern void TemplateMemberAttachDefn( DECL_INFO *, boolean );
@@ -189,7 +189,7 @@ extern boolean TemplateParmEqual( SYMBOL, SYMBOL );
 extern SYMBOL TemplateFunctionTranslate( SYMBOL, boolean, SCOPE * );
 extern tc_fn_control TemplateFunctionControl( void );
 extern TYPE TemplateUnboundInstantiate( TYPE, arg_list *, TOKEN_LOCN * );
-extern SYMBOL ClassTemplateLookup( SCOPE scope, char * );
+extern SYMBOL ClassTemplateLookup( SCOPE scope, NAME );
 extern SYMBOL TemplateSymFromClass( TYPE );
 extern void TemplateSetDepth( unsigned );
 extern boolean TemplateUnboundSame( TYPE, TYPE );

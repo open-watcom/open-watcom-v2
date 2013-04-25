@@ -56,7 +56,7 @@ static IMP_LIST *addNewImport( char *name )
     IMP_LIST *new_import;
 
     len = strlen( name );
-    new_import = CMemAlloc( sizeof( *new_import ) + len );
+    new_import = CMemAlloc( offsetof( IMP_LIST, name ) + len + 1 );
     strcpy( new_import->name, name );
     RingAppend( &importRing, new_import );
     return( new_import );

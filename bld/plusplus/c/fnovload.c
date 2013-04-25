@@ -830,12 +830,12 @@ static OV_RESULT WP13332(
 }
 
 static OV_RESULT compareScalar( FNOV_SCALAR *first, TYPE *first_type,
-/**********************************************************************/
- FNOV_SCALAR *second, TYPE *second_type, boolean isUDC,
- FNOV_CONTROL control )
+ FNOV_SCALAR *second, TYPE *second_type, boolean isUDC, FNOV_CONTROL control )
+/****************************************************************************/
 {
     OV_RESULT   retn;
 
+    isUDC = isUDC;
     if( first->udcnv != second->udcnv ) {
         retn = compareInt( first->udcnv, second->udcnv );
     } else if( first->standard != second->standard ) {
@@ -1975,9 +1975,9 @@ static SYMBOL findNonDefargSym( FNOV_LIST *match)
     return match->sym;
 }
 
-static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control,
-/***************************************************************/
-    SYMBOL *pold_sym, SYMBOL new_sym, char*name )
+static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control, SYMBOL *pold_sym,
+                                            SYMBOL new_sym, NAME name )
+/*********************************************************************************/
 // determine if new_sym is a distinct function w.r.t old_sym
 // returns:
 //    FNOV_DISTINCT             - completely distinct
@@ -2015,8 +2015,7 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control,
     info.pcandidates = &candidates;
     info.pmatch = &match;
     info.control = control;
-    if( SymIsFunctionTemplateModel( old_sym )
-     || ScopeType( GetCurrScope(), SCOPE_TEMPLATE_DECL ) ) {
+    if( SymIsFunctionTemplateModel( old_sym ) || ScopeType( GetCurrScope(), SCOPE_TEMPLATE_DECL ) ) {
         info.control |= FNC_ONLY_TEMPLATE;
     } else {
         info.control |= FNC_ONLY_NON_TEMPLATE;
@@ -2029,12 +2028,10 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control,
     if( *info.pcandidates != NULL ) {
         overload_result = resolveOverload( &info );
         if( overload_result != FNOV_NO_MATCH ) {
-            DbgAssert( overload_result == FNOV_NONAMBIGUOUS ||
-                       overload_result == FNOV_AMBIGUOUS );
+            DbgAssert( overload_result == FNOV_NONAMBIGUOUS || overload_result == FNOV_AMBIGUOUS );
             *pold_sym = match->sym;
             if( isRank( match, OV_RANK_EXACT ) ) {
-                if( isReturnIdentical( match->sym->sym_type
-                                     , new_sym->sym_type ) ) {
+                if( isReturnIdentical( match->sym->sym_type, new_sym->sym_type ) ) {
                     if( overload_result == FNOV_AMBIGUOUS ) {
                         // need ambig list here!!
                         *pold_sym = findNonDefargSym( match );
@@ -2066,9 +2063,8 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control,
 }
 
 
-FNOV_RESULT IsOverloadedFuncDistinct( SYMBOL *pold_sym,SYMBOL new_sym,char*name
-                                    , FNOV_CONTROL control )
-/******************************************************************************/
+FNOV_RESULT IsOverloadedFuncDistinct( SYMBOL *pold_sym, SYMBOL new_sym, NAME name, FNOV_CONTROL control )
+/*******************************************************************************************************/
 // determine if new_sym is a distinct function w.r.t old_sym
 // returns:
 //    FNOV_DISTINCT             - completely distinct
@@ -2082,8 +2078,8 @@ FNOV_RESULT IsOverloadedFuncDistinct( SYMBOL *pold_sym,SYMBOL new_sym,char*name
     return doFunctionDistinctCheck( control, pold_sym, new_sym, name );
 }
 
-FNOV_RESULT AreFunctionsDistinct( SYMBOL *pold_sym,SYMBOL new_sym,char*name )
-/***************************************************************************/
+FNOV_RESULT AreFunctionsDistinct( SYMBOL *pold_sym, SYMBOL new_sym, NAME name )
+/*****************************************************************************/
 // determine if new_sym and old_sym are distinct functions
 // returns:
 //    FNOV_DISTINCT             - completely distinct

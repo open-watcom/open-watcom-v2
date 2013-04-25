@@ -83,7 +83,7 @@ static void nextYYToken( void )
     NextToken();
 }
 
-static void mustRecog( int token )
+static void mustRecog( TOKEN token )
 {
     ParseFlush();       // cleanup YYDRIVER
     MustRecog( token );
@@ -186,7 +186,7 @@ static PTREE emitCodeExpr( PTREE expr )
     return( IcEmitExpr( expr ) );
 }
 
-static PTREE safeParseExpr( int end_token )
+static PTREE safeParseExpr( TOKEN end_token )
 {
     if( CurToken == T_EOF ) {
         return( NULL );
@@ -428,7 +428,7 @@ static void endBlock( void )
     currFunction->depth--;
 }
 
-static FNLABEL *findLabel( char *name )
+static FNLABEL *findLabel( NAME name )
 {
     FNLABEL *curr;
     FNLABEL *new_label;
@@ -479,8 +479,7 @@ static void parseLabels( void )
         nextYYToken();
     }
     if( label != NULL ) {
-        if( ( CurToken == T_RIGHT_BRACE )
-         || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
+        if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
             CErr1( ERR_STMT_REQUIRED_AFTER_LABEL );
         }
     }
@@ -1285,7 +1284,7 @@ static SYMBOL makeCatchVar(     // CREATE A CATCH VARIABLE
     DECL_INFO *info )           // - parse information
 {
     SYMBOL catch_var;           // - new catch variable
-    char* name;                 // - variable name
+    NAME name;                  // - variable name
 
     if( info->id == NULL ) {
         name = NameDummy();
@@ -1645,7 +1644,7 @@ static void initFunctionData(   // INITIALIZE FUNCTION DATA (BEFORE FNSTARTUP)
     SYMBOL func,                // - function
     FUNCTION_DATA *f )          // - data
 {
-    char *fn_name;
+    NAME fn_name;
 
     CtxFunction( func );
     f->next = currFunction;
@@ -2143,8 +2142,7 @@ void FunctionBody( DECL_INFO *dinfo )
             continue;
         case T_DO:
             beginLoop( CS_DO );
-            if( ( CurToken == T_RIGHT_BRACE )
-             || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
+            if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
                 CErr1( ERR_STMT_REQUIRED_AFTER_DO );
                 break;
             }
@@ -2404,6 +2402,7 @@ void FunctionBodyDefargStartup(
 void FunctionBodyDefargShutdown(
     FUNCTION_DATA *f )          // - data
 {
+    f = f;
     DbgAssert( f->is_defarg == TRUE );
     currFunction = currFunction->next;
 }

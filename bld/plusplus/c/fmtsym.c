@@ -116,19 +116,15 @@ static void fmtSymOpName( SYMBOL sym, VBUF *pvbuf )
     }
 }
 
-static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
-/****************************************************************/
-    VBUF *pvbuf, FMT_CONTROL control )
+static boolean fmtSymName( SYMBOL sym, NAME name, VBUF *pvprefix, VBUF *pvbuf, FMT_CONTROL control )
+/**************************************************************************************************/
 // returns TRUE if sym is CTOR/DTOR so that the caller drop the return type
 {
     VBUF    prefix, suffix, op_name;
     CGOP    oper;
     boolean ctordtor = FALSE;
 
-    if( name == NULL ) {
-        name = nullSymname;
-    }
-    if( CppLookupName( name, &oper ) ) {
+    if( CppLookupOperatorName( name, &oper ) ) {
         switch( oper ) {
         case CO_CONVERT:
             if( sym == NULL ) {
@@ -136,11 +132,7 @@ static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
                 VbufConcStrRev( pvbuf, operatorUnknown );
             } else {
                 fmtSymOpName( sym, &op_name );
-                fmtSymFunction( sym
-                              , &prefix
-                              , &suffix
-                              , (FormatTypeDefault & ~FF_USE_VOID)
-                                                   | FF_DROP_RETURN );
+                fmtSymFunction( sym, &prefix, &suffix, (FormatTypeDefault & ~FF_USE_VOID) | FF_DROP_RETURN );
                 VbufConcVbufRev( pvbuf, &suffix );
                 VbufConcVbuf( pvbuf, &op_name );
                 VbufConcStrRev( pvbuf, operatorPrefix );
@@ -154,8 +146,8 @@ static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
             if( sym == NULL ) {
                 VbufConcStrRev( pvbuf, constructorName );
             } else {
-                ctordtor = TRUE;
                 name = SimpleTypeName( ScopeClass( SymScope( sym ) ) );
+                ctordtor = TRUE;
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault );
                 VbufConcVbufRev( pvbuf, &suffix );
                 if( name != NULL ) {
@@ -170,8 +162,8 @@ static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
             if( sym == NULL ) {
                 VbufConcStrRev( pvbuf, destructorName );
             } else {
-                ctordtor = TRUE;
                 name = SimpleTypeName( ScopeClass( SymScope( sym ) ) );
+                ctordtor = TRUE;
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault );
                 VbufConcVbufRev( pvbuf, &suffix );
                 if( name != NULL ) {
@@ -198,24 +190,28 @@ static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
             }
             break;
         }
-    } else {
-        if( sym == NULL ) {
-            VbufConcStrRev( pvbuf, name );
+    } else if( sym != NULL ) {
+        if( SymIsFunction( sym ) ) {
+            fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault | control );
+        } else if( !SymIsTypedef( sym ) ) {
+            FormatType( sym->sym_type, &prefix, &suffix );
         } else {
-            if( SymIsFunction( sym ) ) {
-                fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault | control );
-            } else if( !SymIsTypedef( sym ) ) {
-                FormatType( sym->sym_type, &prefix, &suffix );
-            } else {
-                VbufInit( &prefix );
-                VbufInit( &suffix );
-            }
-            VbufConcVbufRev( pvbuf, &suffix );
-            VbufConcStrRev( pvbuf, name );
-            VbufConcVbufRev( pvprefix, &prefix );
-            VbufFree( &prefix );
-            VbufFree( &suffix );
+            VbufInit( &prefix );
+            VbufInit( &suffix );
         }
+        VbufConcVbufRev( pvbuf, &suffix );
+        if( name == NULL ) {
+            VbufConcStrRev( pvbuf, nullSymname );
+        } else {
+            VbufConcStrRev( pvbuf, NameStr( name ) );
+        }
+        VbufConcVbufRev( pvprefix, &prefix );
+        VbufFree( &prefix );
+        VbufFree( &suffix );
+    } else if( name != NULL ) {
+        VbufConcStrRev( pvbuf, NameStr( name ) );
+    } else {
+        VbufConcStrRev( pvbuf, nullSymname );
     }
     return( ctordtor );
 }
@@ -430,8 +426,8 @@ void FormatFnDefn( SYMBOL sym, VBUF *pvbuf )
     doFormatSym( sym, pvbuf, FF_ARG_NAMES );
 }
 
-void FormatName( char *name, VBUF *pvbuf )
-/****************************************/
+void FormatName( NAME name, VBUF *pvbuf )
+/***************************************/
 {
     VBUF    prefix;
     boolean ctordtor;

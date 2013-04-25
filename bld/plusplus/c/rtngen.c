@@ -174,53 +174,35 @@ INITDEFN( rtn_gen, rtnGenInit, rtnGenFini )
 
 pch_status PCHReadGenerators( void )
 {
-    unsigned index;
     SYMBOL read_symbol;
     TYPE read_type;
 
     carveRTN_GEN = CarveRestart( carveRTN_GEN );
     useSYMBOL = NULL;
     useTYPE = NULL;
-    for(;;) {
-        PCHRead( &read_symbol, sizeof( read_symbol ) );
-        read_symbol = SymbolMapIndex( read_symbol );
-        if( read_symbol == NULL ) break;
-        PCHRead( &index, sizeof( index ) );
-        addGenRoutine( &useSYMBOL, index, read_symbol );
+    for( ; (read_symbol = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() )) != NULL; ) {
+        addGenRoutine( &useSYMBOL, PCHReadUInt(), read_symbol );
     }
-    for(;;) {
-        PCHRead( &read_type, sizeof( read_type ) );
-        read_type = TypeMapIndex( read_type );
-        if( read_type == NULL ) break;
-        PCHRead( &index, sizeof( index ) );
-        addGenRoutine( &useTYPE, index, read_type );
+    for( ; (read_type = TypeMapIndex( (TYPE)PCHReadCVIndex() )) != NULL; ) {
+        addGenRoutine( &useTYPE, PCHReadUInt(), read_type );
     }
     return( PCHCB_OK );
 }
 
 pch_status PCHWriteGenerators( void )
 {
-    unsigned index;
-    SYMBOL write_symbol;
-    TYPE write_type;
     RTN_GEN *c;
 
     for( c = useSYMBOL; c != NULL; c = c->next ) {
-        write_symbol = SymbolGetIndex( c->parm );
-        PCHWrite( &write_symbol, sizeof( write_symbol ) );
-        index = c->index;
-        PCHWrite( &index, sizeof( index ) );
+        PCHWriteCVIndex( (cv_index)SymbolGetIndex( c->parm ) );
+        PCHWriteUInt( c->index );
     }
-    write_symbol = SymbolGetIndex( NULL );
-    PCHWrite( &write_symbol, sizeof( write_symbol ) );
+    PCHWriteCVIndexTerm();
     for( c = useTYPE; c != NULL; c = c->next ) {
-        write_type = TypeGetIndex( c->parm );
-        PCHWrite( &write_type, sizeof( write_type ) );
-        index = c->index;
-        PCHWrite( &index, sizeof( index ) );
+        PCHWriteCVIndex( (cv_index)TypeGetIndex( c->parm ) );
+        PCHWriteUInt( c->index );
     }
-    write_type = TypeGetIndex( NULL );
-    PCHWrite( &write_type, sizeof( write_type ) );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 

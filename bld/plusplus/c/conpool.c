@@ -128,7 +128,7 @@ static void saveConstant( void *e, carve_walk_base *d )
     save_next = fcon->next;
     fcon->next = ConstantPoolGetIndex( save_next );
     PCHWriteCVIndex( d->index );
-    PCHWrite( fcon, sizeof( *fcon ) );
+    PCHWriteVar( *fcon );
     if( fcon->flt ) {
         PCHWrite( fcon->s.fp_constant, fcon->s.len );
     }
@@ -137,35 +137,27 @@ static void saveConstant( void *e, carve_walk_base *d )
 
 pch_status PCHWriteConstantPool( void )
 {
-    POOL_CON *tmp;
-    unsigned terminator = CARVE_NULL_INDEX;
     auto carve_walk_base data;
 
-    tmp = ConstantPoolGetIndex( pool_float );
-    PCHWrite( &tmp, sizeof( tmp ) );
-    tmp = ConstantPoolGetIndex( pool_int64 );
-    PCHWrite( &tmp, sizeof( tmp ) );
+    PCHWriteCVIndex( (cv_index)ConstantPoolGetIndex( pool_float ) );
+    PCHWriteCVIndex( (cv_index)ConstantPoolGetIndex( pool_int64 ) );
     CarveWalkAllFree( carvePOOL_CON, markFreeConstant );
     CarveWalkAll( carvePOOL_CON, saveConstant, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 
 pch_status PCHReadConstantPool( void )
 {
-    cv_index i;
     unsigned len;
     POOL_CON *c;
     auto cvinit_t data;
 
-    pool_float = ConstantPoolMapIndex( PCHReadPtr() );
-    pool_int64 = ConstantPoolMapIndex( PCHReadPtr() );
+    pool_float = ConstantPoolMapIndex( (POOL_CON *)PCHReadCVIndex() );
+    pool_int64 = ConstantPoolMapIndex( (POOL_CON *)PCHReadCVIndex() );
     CarveInitStart( carvePOOL_CON, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        c = CarveInitElement( &data, i );
-        PCHRead( c, sizeof( *c ) );
+    for( ; (c = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *c );
         c->next = ConstantPoolMapIndex( c->next );
         if( c->flt ) {
             len = c->s.len;
@@ -178,15 +170,11 @@ pch_status PCHReadConstantPool( void )
 
 pch_status PCHInitConstantPool( boolean writing )
 {
-    cv_index n;
-
     if( writing ) {
-        n = CarveLastValidIndex( carvePOOL_CON );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carvePOOL_CON ) );
     } else {
         carvePOOL_CON = CarveRestart( carvePOOL_CON );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carvePOOL_CON, n );
+        CarveMapOptimize( carvePOOL_CON, PCHReadCVIndex() );
     }
     return( PCHCB_OK );
 }

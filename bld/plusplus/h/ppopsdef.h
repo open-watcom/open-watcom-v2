@@ -59,7 +59,7 @@
 // 93/01/18 -- Greg Bentz       -- added PPOPOP
 // 93/09/29 -- A.F.Scian        -- added delete [] and new []
 // 95/02/16 -- A.F.Scian        -- moved non-null PPOPOP operators up so that
-//                                 CppLookupName doesn't have to sift through
+//                                 CppLookupOperatorName doesn't have to sift through
 //                                 impossible operator names to lookup valid
 //                                 operator names
 

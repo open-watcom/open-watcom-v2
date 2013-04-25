@@ -34,8 +34,11 @@
 
 void MacroOffsetAddChar(           // MacroOffset: ADD A CHARACTER
     unsigned *mlen,                // - Macro Offset Length
-    unsigned nchars,               // - no of chars to be added
-    ... )                          // - character(s) to be added
+    char chr )                     // - character to be added
+;
+void MacroOffsetAddToken(          // MacroOffset: ADD A TOKEN
+    unsigned *mlen,                // - Macro Offset Length
+    TOKEN token )                  // - token to be added
 ;
 void MacroOffsetAddMem(            // MacroOffset: ADD A SEQUENCE OF BYTES
     unsigned *mlen,                // - Macro Offset Length

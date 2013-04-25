@@ -31,9 +31,7 @@
 
 
 #include "plusplus.h"
-
 #include <stdarg.h>
-
 #include "srcfile.h"
 #include "vbuf.h"
 #include "dbg.h"
@@ -55,18 +53,14 @@ static boolean formatClassForSym( SYMBOL sym, VBUF *buf )
 /*******************************************************/
 {
     CLASSINFO *info;            // - class information for symbol
-    boolean retn;               // - return: TRUE ==> is class member
-    char *name;                 // - class name
+    boolean retn = FALSE;       // - return: TRUE ==> is class member
+    NAME name;                  // - class name
 
     info = SymClassInfo( sym );
-    if( info == NULL ) {
-        retn = FALSE;
-    } else {
+    if( info != NULL ) {
         name = info->name;
-        if( name == NULL ) {
-            retn = FALSE;
-        } else {
-            VbufConcStr( buf, info->name );
+        if( name != NULL ) {
+            VbufConcStr( buf, name );
             retn = TRUE;
         }
     }
@@ -149,7 +143,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                 }
             }   break;
             case 'N':   /* name */
-                FormatName( va_arg( arg, char * ), &prefix );
+                FormatName( va_arg( arg, NAME ), &prefix );
                 VbufConcVbuf( pbuf, &prefix );
                 VbufFree( &prefix );
                 break;
@@ -163,7 +157,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
             case 'S':   /* symbol name (abbreviated) */
             {   SYMBOL      sym;
                 SYMBOL_NAME sn;
-                char *name;
+                NAME        name;
                 sym = va_arg( arg, SYMBOL );
                 if( sym == NULL ) {
                     VbufConcStr( pbuf, "module data" );

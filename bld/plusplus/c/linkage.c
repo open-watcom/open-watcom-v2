@@ -41,11 +41,11 @@
 #include "pragdefn.h"
 #include "initdefs.h"
 
-struct linkage_name {
-    LINKAGE                     next;
-    AUX_INFO                    *pragma;
-    char                        name[1];
-};
+typedef struct linkage_name {
+    LINKAGE             next;
+    AUX_INFO            *pragma;
+    char                name[1];
+} linkage_name;
 
 typedef struct linkage_stack *LINKAGE_STACK;
 
@@ -90,7 +90,7 @@ LINKAGE LinkageAdd( char *name, AUX_INFO *defn )
         return( p );
     }
     len = strlen( name );
-    p = CPermAlloc( sizeof( *p ) + len );
+    p = CPermAlloc( offsetof( linkage_name, name ) + len + 1 );
     memcpy( p->name, name, len + 1 );
     p->pragma = defn;
     p->next = validLinkages;

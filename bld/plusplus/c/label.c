@@ -944,7 +944,7 @@ void *LabelBlockOpenFindZap( LAB_MEM *lm, CGFILE_INS *p )
             }
         } RingIterEnd( b );
     } RingIterEnd( h )
-    return( (void *) CARVE_NULL_INDEX );
+    return( (void *)CARVE_NULL_INDEX );
 }
 
 CGFILE_INS *LabelBlockOpenAdjustZap( LAB_MEM *lm, void *h )
@@ -1013,7 +1013,7 @@ static void saveBLK_INIT( void *e, carve_walk_base *d )
     save_sw_sym = b->switch_posn.sym;
     b->switch_posn.sym = SymbolGetIndex( save_sw_sym );
     PCHWriteCVIndex( d->index );
-    PCHWrite( b, sizeof( *b ) );
+    PCHWriteVar( *b );
     b->next = save_next;
     b->containing = save_containing;
     b->contains = save_contains;
@@ -1031,40 +1031,27 @@ static void saveBLK_INIT( void *e, carve_walk_base *d )
 
 void LabelPCHWrite( LAB_MEM *p )
 {
-    BLK_INIT *header;
-    cv_index terminator = CARVE_NULL_INDEX;
-    cv_index n;
     auto carve_walk_base data;
 
-    n = CarveLastValidIndex( p->carve );
-    PCHWriteCVIndex( n );
-    header = CarveGetIndex( p->carve, p->blk_hdr );
-    PCHWrite( &header, sizeof( header ) );
+    PCHWriteCVIndex( CarveLastValidIndex( p->carve ) );
+    PCHWriteCVIndex( (cv_index)CarveGetIndex( p->carve, p->blk_hdr ) );
     data.extra = p->carve;
     CarveWalkAllFree( p->carve, markFreeBLK_INIT );
     CarveWalkAll( p->carve, saveBLK_INIT, &data );
-    PCHWrite( &terminator, sizeof( terminator ) );
+    PCHWriteCVIndexTerm();
 }
 
 void LabelPCHRead( LAB_MEM *p )
 {
-    BLK_INIT *header;
     BLK_INIT *b;
-    cv_index i;
-    cv_index n;
     auto cvinit_t data;
 
     p->carve = CarveRestart( p->carve );
-    n = PCHReadCVIndex();
-    CarveMapOptimize( p->carve, n );
-    PCHRead( &header, sizeof( header ) );
-    p->blk_hdr = CarveMapIndex( p->carve, header );
+    CarveMapOptimize( p->carve, PCHReadCVIndex() );
+    p->blk_hdr = CarveMapIndex( p->carve, (void *)PCHReadCVIndex() );
     CarveInitStart( p->carve, &data );
-    for(;;) {
-        i = PCHReadCVIndex();
-        if( i == CARVE_NULL_INDEX ) break;
-        b = CarveInitElement( &data, i );
-        PCHRead( b, sizeof( *b ) );
+    for( ; (b = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *b );
         b->next = CarveMapIndex( p->carve, b->next );
         b->containing = CarveMapIndex( p->carve, b->containing );
         b->contains = CarveMapIndex( p->carve, b->contains );

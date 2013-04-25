@@ -55,8 +55,8 @@
 #include "brinfo.h"
 
 typedef struct pch_reloc_info {
-    off_t               start;
-    off_t               stop;
+    long        start;
+    long        stop;
 } pch_reloc_info;
 
 static pch_status (*readFunctions[])( void ) = {
@@ -76,55 +76,71 @@ static pch_status (*finiFunctions[])( boolean ) = {
 #define PCH_EXEC( s, g )        PCHFini##g,
 #include "pcregdef.h"
 };
-static pch_status (*relocFunctions[])( char *, size_t ) = {
+static pch_status (*relocFunctions[])( char *, unsigned ) = {
 #define PCH_RELOC( s, g )       PCHReloc##g,
 #include "pcregdef.h"
 };
 
 ExtraRptCtr( ctr_pch_length );
 ExtraRptCtr( ctr_pch_waste );
-ExtraRptTable( ctr_pchw_region, PCHRW_MAX+1, 1 );
+ExtraRptTable( ctr_pchw_region, PCHRW_MAX + 1, 1 );
 
 static pch_reloc_info relocInfo[ PCHRELOC_MAX ];
 
 static char *pchName;
-static char *pchDebugInfoName;
-static int pchFile;
+static NAME pchDebugInfoName;
+static int  pchFile;
 
 #ifndef NDEBUG
 #define IO_BUFFER_SIZE  1024
 #else
 #define IO_BUFFER_SIZE  65536
 #endif
-static int amountLeft;
-static char *ioBuffer;
-static char *bufferCursor;
-//static char *bufferEnd;
-static off_t bufferPosition;
+static int      amountLeft;
+static char     *ioBuffer;
+static char     *bufferCursor;
+//static char     *bufferEnd;
+static long     bufferPosition;
 
 #define pch_buff_cur CompInfo.pch_buff_cursor
 #define pch_buff_eob CompInfo.pch_buff_end
 
 static jmp_buf  *abortData;
 
-#ifndef NDEBUG
-static clock_t start_parse;
-void PCHActivate( void )
-{
-    start_parse = clock();
-}
-#else
+#ifdef NDEBUG
+
+#define PCHTrashAlreadyRead()
+
 void PCHActivate( void )
 /**********************/
 {
 }
+
+#else
+
+static clock_t start_parse;
+
+static void PCHTrashAlreadyRead( void )
+/*************************************/
+{
+    if( ioBuffer != NULL && ioBuffer < pch_buff_cur ) {
+        unsigned amt = pch_buff_cur - ioBuffer;
+        DbgZapFreed( ioBuffer, amt );
+    }
+}
+
+void PCHActivate( void )
+{
+    start_parse = clock();
+}
+
 #endif
 
 
 void PCHSetFileName( char *name )
 /*******************************/
 {
-    CMemFreePtr( &pchName );
+    CMemFree( pchName );
     pchName = name;
 }
 
@@ -157,13 +173,12 @@ static void dumpHeader( void )
     header.host_architecture = PHH_HOST_ARCHITECTURE;
     header.corrupted = PHH_CORRUPTED_YES;
     header.browse_info = 0;
-    PCHWrite( &header, sizeof( header ) );
+    PCHWriteVar( header );
 }
 
 static void setOKHeader( unsigned long brinf_posn )
 {
     auto precompiled_header_header header;
-
 
     if( lseek( pchFile, 0, SEEK_SET ) != 0 ) {
         fail();
@@ -183,29 +198,20 @@ static void setOKHeader( unsigned long brinf_posn )
 
 static void dumpFileString( char *str )
 {
-    size_t len;
+    unsigned len;
 
     len = strlen( str ) + 1;
     PCHWriteUInt( len );
     PCHWrite( str, len );
 }
 
-static void* readFileStringLocate( char *buff )
+static char *readFileString( char *buff )
 {
-    size_t len;
+    unsigned len;
 
     // assumes 'buff' is at least _MAX_PATH bytes
     len = PCHReadUInt();
-    return PCHReadLocate( buff, len );
-}
-
-static void* readFileString( char *buff )
-{
-    size_t len;
-
-    // assumes 'buff' is at least _MAX_PATH bytes
-    len = PCHReadUInt();
-    return PCHRead( buff, len );
+    return( PCHRead( buff, len ) );
 }
 
 static void dumpCheckData( char *include_file )
@@ -214,12 +220,12 @@ static void dumpCheckData( char *include_file )
     time_t stamp;
     auto char buff[_MAX_PATH];
 
-    PCHWrite( &GenSwitches, sizeof( GenSwitches ) );
-    PCHWrite( &TargetSwitches, sizeof( TargetSwitches ) );
+    PCHWriteVar( GenSwitches );
+    PCHWriteVar( TargetSwitches );
     PCHWriteUInt( ErrPCHVersion() );
     PCHWriteUInt( TYPC_LAST );
     PCHWriteUInt( sizeof( COMP_FLAGS ) );
-    PCHWrite( &CompFlags, sizeof( CompFlags ) );
+    PCHWriteVar( CompFlags );
     dumpFileString( WholeFName );
     include_file = IoSuppFullPath( include_file, buff, sizeof( buff ) );
     dumpFileString( include_file );
@@ -232,12 +238,11 @@ static void dumpCheckData( char *include_file )
         if( buff[0] == '\0' ) break;
     }
     src = SrcFileNotReadOnly( SrcFileWalkInit() );
-    for(;;) {
-        if( src == NULL ) break;
+    for( ; src != NULL; ) {
         if( ! IsSrcFilePrimary( src ) ) {
             dumpFileString( SrcFileName( src ) );
             stamp = SrcFileTimeStamp( src );
-            PCHWrite( &stamp, sizeof( stamp ) );
+            PCHWriteVar( stamp );
         }
         src = SrcFileNotReadOnly( SrcFileWalkNext( src ) );
     }
@@ -246,9 +251,9 @@ static void dumpCheckData( char *include_file )
     PCHDumpMacroCheck();
 }
 
-static off_t cursorWriteFilePosition( void )
+static long cursorWriteFilePosition( void )
 {
-    off_t   posn;
+    long   posn;
 
     posn = bufferPosition;
     posn += ( bufferCursor - ioBuffer );
@@ -258,20 +263,20 @@ static off_t cursorWriteFilePosition( void )
 static void alignPCH( unsigned i, boolean writing )
 {
     unsigned skip;
-    unsigned dummy;
+    char dummy[PCH_ALIGN] = {0};
 
     if( writing ) {
         skip = - cursorWriteFilePosition();
-        skip &= sizeof( unsigned ) - 1;
+        skip &= PCH_ALIGN - 1;
         PCHWriteUInt( skip );
         DbgAssert( skip == 0 );
         if( skip != 0 ) {
-            PCHWrite( &dummy, skip );
+            PCHWrite( dummy, skip );
         }
     } else {
         skip = PCHReadUInt();
         if( skip != 0 ) {
-            PCHRead( &dummy, skip );
+            PCHRead( dummy, skip );
         }
     }
 #ifndef NDEBUG
@@ -310,7 +315,7 @@ static void execFiniFunctions( boolean writing )
     int i;
     pch_status fst;
 
-    for( i = PCHRW_MAX-1; i >= 0; --i ) {
+    for( i = PCHRW_MAX - 1; i >= 0; --i ) {
         fst = (finiFunctions[i])( writing );
         if( fst != PCHCB_OK ) {
             fail();
@@ -339,8 +344,8 @@ static void execControlFunctions( boolean writing, pch_status (**tbl)( void ) )
 
 void PCHFlushBuffer( void )
 {
-    size_t amount;
-    size_t amt_written;
+    unsigned amount;
+    unsigned amt_written;
 
     if( amountLeft != IO_BUFFER_SIZE ) {
         amount = IO_BUFFER_SIZE - amountLeft;
@@ -375,21 +380,15 @@ long PCHSeek( long offset, int type )
 #endif
 
 
-void PCHWrite( void const *p, size_t size )
-/*****************************************/
+void PCHWrite( void const *p, unsigned size )
+/*******************************************/
 {
-    size_t aligned_size;
+    unsigned aligned_size;
 //  int amt_written;
 
     aligned_size = _pch_align_size( size );
     ExtraRptAddtoCtr( ctr_pch_waste, (aligned_size-size) );
-    for(;;) {
-        if( aligned_size <= amountLeft ) {
-            memcpy( bufferCursor, p, size );
-            bufferCursor += aligned_size;
-            amountLeft -= aligned_size;
-            break;
-        }
+    for( ; aligned_size > amountLeft; ) {
         memcpy( bufferCursor, p, amountLeft );
         p = (char *)p + amountLeft;
         size -= amountLeft;
@@ -407,25 +406,25 @@ void PCHWrite( void const *p, size_t size )
         amountLeft = 0;
         PCHFlushBuffer();
 #endif
-        DbgAssert(( aligned_size % sizeof( unsigned ) ) == 0 );
+        DbgAssert( ( aligned_size % PCH_ALIGN ) == 0 );
     }
+    memcpy( bufferCursor, p, size );
+    bufferCursor += aligned_size;
+    amountLeft -= aligned_size;
 }
 
-void PCHWriteUnaligned( void const *p, size_t size )
-/**************************************************/
+void PCHWriteUnaligned( void const *p, unsigned size )
+/****************************************************/
 {
-    int amt_written;
+#if 0
+    wio_ssize_t amt_written;
+#endif
 
-    for(;;) {
-        if( size <= amountLeft ) {
-            memcpy( bufferCursor, p, size );
-            bufferCursor += size;
-            amountLeft -= size;
-            break;
-        }
+    for( ; size > amountLeft; ) {
         memcpy( bufferCursor, p, amountLeft );
         p = (char *)p + amountLeft;
         size -= amountLeft;
+#if 0
         bufferCursor = ioBuffer;
         amt_written = write( pchFile, ioBuffer, IO_BUFFER_SIZE );
         if( amt_written == -1 || amt_written != IO_BUFFER_SIZE ) {
@@ -434,7 +433,14 @@ void PCHWriteUnaligned( void const *p, size_t size )
         ExtraRptAddtoCtr( ctr_pch_length, amt_written );
         bufferPosition += IO_BUFFER_SIZE;
         amountLeft = IO_BUFFER_SIZE;
+#else
+        amountLeft = 0;
+        PCHFlushBuffer();
+#endif
     }
+    memcpy( bufferCursor, p, size );
+    bufferCursor += size;
+    amountLeft -= size;
 }
 
 void PCHWriteUInt( unsigned v )
@@ -443,20 +449,20 @@ void PCHWriteUInt( unsigned v )
     unsigned write_value;
 
     if( sizeof( unsigned ) <= amountLeft ) {
-        DbgAssert((( (unsigned) bufferCursor ) & (sizeof(unsigned)-1)) == 0 );
-        *((unsigned*)bufferCursor) = v;
+        DbgAssert( (((unsigned)bufferCursor) & ( PCH_ALIGN - 1 )) == 0 );
+        *((unsigned *)bufferCursor) = v;
         bufferCursor += sizeof( unsigned );
         amountLeft -= sizeof( unsigned );
         return;
     }
     write_value = v;
-    PCHWrite( &write_value, sizeof( write_value ) );
+    PCHWriteVar( write_value );
 }
 
-char *PCHDebugInfoName( void )
-/****************************/
+NAME PCHDebugInfoName( void )
+/***************************/
 {
-    return pchDebugInfoName;
+    return( pchDebugInfoName );
 }
 
 void PCHeaderCreate( char *include_file )
@@ -479,7 +485,7 @@ void PCHeaderCreate( char *include_file )
         return;
     }
     pch_fname = PCHFileName();
-    pchFile = sopen4( pch_fname, O_RDWR|O_BINARY|O_CREAT|O_TRUNC, SH_DENYRW, S_IREAD|S_IWRITE );
+    pchFile = sopen4( pch_fname, O_RDWR | O_BINARY | O_CREAT | O_TRUNC, SH_DENYRW, PMODE_RW );
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_CREATE_ERROR, pch_fname );
         return;
@@ -527,8 +533,7 @@ void PCHeaderCreate( char *include_file )
 #endif
 }
 
-static boolean headerIsOK
-    ( precompiled_header_header const* hp )
+static boolean headerIsOK( precompiled_header_header const* hp )
 {
     if( hp->signature[0] != PHH_SIGNATURE_0 ) {
         return( FALSE );
@@ -657,11 +662,10 @@ static boolean stringIsDifferent( const char *from_pch, const char *curr, unsign
 
 static void flushUntilNullString( char *buff )
 {
-    char *p;
-
     for(;;) {
-        p = readFileStringLocate( buff );
-        if( *p == '\0' ) break;
+        if( *readFileString( buff ) == '\0' ) {
+            break;
+        }
     }
 }
 
@@ -673,12 +677,9 @@ static boolean stalePCH( char *include_file )
     auto char buff1[_MAX_PATH];
     auto char buff2[_MAX_PATH];
     auto COMP_FLAGS testflags;
-    char* pbuff1;
-    char* pbuff2;
-    time_t* pstamp;
 
-    PCHRead( &test_gen, sizeof( test_gen ) );
-    PCHRead( &test_target, sizeof( test_target ) );
+    PCHReadVar( test_gen );
+    PCHReadVar( test_target );
     if( test_gen != GenSwitches || test_target != TargetSwitches ) {
         pchWarn( WARN_PCH_CONTENTS_OPTIONS );
         return( TRUE );
@@ -695,15 +696,13 @@ static boolean stalePCH( char *include_file )
         pchWarn( WARN_PCH_CONTENTS_HEADER_ERROR );
         return( TRUE );
     }
-    // can't use PCHReadLocate since transferCompFlags must access
-    // buffer when header is completely checked (buffer may change)
-    PCHRead( &testflags, sizeof( testflags ) );
+    PCHReadVar( testflags );
     if( checkCompFlags( &testflags ) ) {
         pchWarn( WARN_PCH_CONTENTS_OPTIONS );
         return( TRUE );
     }
-    pbuff1 = readFileStringLocate( buff1 );
-    if( FNAMECMPSTR( pbuff1, WholeFName ) == 0 ) {
+    readFileString( buff1 );
+    if( FNAMECMPSTR( buff1, WholeFName ) == 0 ) {
         if( CompFlags.pch_debug_info_opt ) {
             // this source file created the PCH but it is being recompiled
             // so we have to recreate the PCH along with the debug info
@@ -711,15 +710,15 @@ static boolean stalePCH( char *include_file )
             return( TRUE );
         }
     }
-    pbuff1 = readFileStringLocate( buff1 );
+    readFileString( buff1 );
     include_file = IoSuppFullPath( include_file, buff2, sizeof( buff2 ) );
-    if( FNAMECMPSTR( pbuff1, include_file ) != 0 ) {
+    if( FNAMECMPSTR( buff1, include_file ) != 0 ) {
         pchWarn( WARN_PCH_CONTENTS_INCFILE );
         return( TRUE );
     }
-    pbuff1 = readFileStringLocate( buff1 );
+    readFileString( buff1 );
     getcwd( buff2, sizeof( buff2 ) );
-    if( stringIsDifferent( pbuff1, buff2, WARN_PCH_CONTENTS_CWD ) ) {
+    if( stringIsDifferent( buff1, buff2, WARN_PCH_CONTENTS_CWD ) ) {
         return( TRUE );
     }
     if( CompFlags.pch_min_check ) {
@@ -728,19 +727,17 @@ static boolean stalePCH( char *include_file )
         HFileListStart();
         for(;;) {
             HFileListNext( buff1 );
-            pbuff2 = readFileStringLocate( buff2 );
-            if( stringIsDifferent( buff1, pbuff2, WARN_PCH_CONTENTS_INCLUDE ) ) {
+            readFileString( buff2 );
+            if( stringIsDifferent( buff1, buff2, WARN_PCH_CONTENTS_INCLUDE ) ) {
                 return( TRUE );
             }
             if( buff1[0] == '\0' ) break;
         }
     }
-    for(;;) {
-        pbuff1 = readFileString( buff1 );
-        if( pbuff1[0] == '\0' ) break;
-        pstamp = PCHReadLocate( &stamp, sizeof( stamp ) );
-        if( ! sameStamp( pbuff1, *pstamp ) ) {
-            PCHWarn2p( WARN_PCH_CONTENTS_HFILE, pbuff1 );
+    for( ; *readFileString( buff1 ) != '\0'; ) {
+        PCHReadVar( stamp );
+        if( ! sameStamp( buff1, stamp ) ) {
+            PCHWarn2p( WARN_PCH_CONTENTS_HFILE, buff1 );
             return( TRUE );
         }
     }
@@ -790,7 +787,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     if( CompFlags.fhw_switch_used ) {
         return( PCHA_IGNORE );
     }
-    pchFile = sopen3( PCHFileName(), O_RDONLY|O_BINARY, SH_DENYWR );
+    pchFile = sopen3( PCHFileName(), O_RDONLY | O_BINARY, SH_DENYWR );
     if( pchFile == -1 ) {
         return( PCHA_NOT_PRESENT );
     }
@@ -805,11 +802,11 @@ pch_absorb PCHeaderAbsorb( char *include_file )
             ret = PCHA_NOT_PRESENT;
         } else {
             auto precompiled_header_header header;
-            precompiled_header_header const* hp;
             unsigned long br_posn;
-            hp = PCHReadLocate( &header, sizeof( header ) );
-            br_posn = hp->browse_info;
-            if( headerIsOK( hp ) ) {
+
+            PCHReadVar( header );
+            br_posn = header.browse_info;
+            if( headerIsOK( &header ) ) {
                 if( ! stalePCH( include_file ) ) {
                     execInitFunctions( FALSE );
                     execControlFunctions( FALSE, readFunctions );
@@ -843,27 +840,14 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     return( ret );
 }
 
-#ifndef NDEBUG
-
-void PCHTrashAlreadyRead( void )
-/******************************/
-{
-    if( ioBuffer != NULL && ioBuffer < pch_buff_cur ) {
-        size_t amt = pch_buff_cur - ioBuffer;
-        DbgZapFreed( ioBuffer, amt );
-    }
-}
-
-#endif
-
 // NOTE: the reading routines are coded to assume that adding a
 //       reasonable size to a buffer pointer will never cause a
 //       memory wrap-around.
 
-void* PCHRead( void *p, size_t size )
-/***********************************/
+void *PCHRead( void *p, unsigned size )
+/*************************************/
 {
-    size_t aligned_size;
+    unsigned aligned_size;
     unsigned left;
     char *buff_ptr;
     void *retn;
@@ -873,24 +857,22 @@ void* PCHRead( void *p, size_t size )
     buff_ptr = pch_buff_cur;
     left = pch_buff_eob - buff_ptr;
     aligned_size = _pch_align_size( size );
-    for(;;) {
-        if( aligned_size <= left ) {
-            memcpy( p, buff_ptr, size );
-            pch_buff_cur = buff_ptr + aligned_size;
-            return retn;
-        }
+    for( ; aligned_size > left; ) {
         p = memcpy( p, buff_ptr, left );
         p = (char *)p + left;
         size -= left;
         aligned_size -= left;
         left = readBuffer( 0 );
         buff_ptr = ioBuffer;
-        DbgAssert(( aligned_size % sizeof( unsigned ) ) == 0 );
+        DbgAssert( ( aligned_size % PCH_ALIGN ) == 0 );
     }
+    memcpy( p, buff_ptr, size );
+    pch_buff_cur = buff_ptr + aligned_size;
+    return retn;
 }
 
-void* PCHReadUnaligned( void *p, size_t size )
-/********************************************/
+void *PCHReadUnaligned( void *p, unsigned size )
+/**********************************************/
 {
     unsigned left;
     char *buff_ptr;
@@ -900,55 +882,20 @@ void* PCHReadUnaligned( void *p, size_t size )
     retn = p;
     buff_ptr = pch_buff_cur;
     left = pch_buff_eob - buff_ptr;
-    for(;;) {
-        if( size <= left ) {
-            memcpy( p, buff_ptr, size );
-            pch_buff_cur = buff_ptr + size;
-            return retn;
-        }
+    for( ; size > left; ) {
         p = memcpy( p, buff_ptr, left );
         p = (char *)p + left;
         size -= left;
         left = readBuffer( 0 );
         buff_ptr = ioBuffer;
     }
-}
-
-void* PCHReadLocate( void *p, size_t size )
-/*****************************************/
-{
-    size_t aligned_size;
-    void *retn;
-    void *end;
-
-    PCHTrashAlreadyRead();
-    aligned_size = _pch_align_size( size );
-    retn = pch_buff_cur;
-    end = (char*)retn + aligned_size;
-    if( end <= (void *)pch_buff_eob ) {
-        pch_buff_cur = end;
-        return retn;
-    }
-    return PCHRead( p, size );
-}
-
-void* PCHReadLocateUnaligned( void *p, size_t size )
-/**************************************************/
-{
-    void *retn;
-    void *end;
-
-    PCHTrashAlreadyRead();
-    retn = pch_buff_cur;
-    end = (char*)retn + size;
-    if( end <= (void *)pch_buff_eob ) {
-        pch_buff_cur = end;
-        return retn;
-    }
-    return PCHReadUnaligned( p, size );
+    memcpy( p, buff_ptr, size );
+    pch_buff_cur = buff_ptr + size;
+    return retn;
 }
 
 static unsigned doReadUnsigned( void )
+/************************************/
 {
     unsigned read_value;
     PCHRead( &read_value, sizeof( read_value ) );
@@ -959,16 +906,16 @@ unsigned PCHReadUInt( void )
 /**************************/
 {
     unsigned value;
-    unsigned* p_value;
-    void* buff_ptr;
-    void* end;
+    unsigned *p_value;
+    void *buff_ptr;
+    void *end;
 
     PCHTrashAlreadyRead();
     buff_ptr = pch_buff_cur;
-    end = (char*)buff_ptr + sizeof( value );
+    end = (char *)buff_ptr + sizeof( value );
     if( end <= (void *)pch_buff_eob ) {
-        DbgAssert((((unsigned) buff_ptr ) % sizeof( unsigned ) ) == 0 );
-        p_value = (unsigned*)buff_ptr;
+        DbgAssert( ( ((unsigned)buff_ptr) % PCH_ALIGN ) == 0 );
+        p_value = (unsigned *)buff_ptr;
         pch_buff_cur = end;
         value = *p_value;
         return value;
@@ -976,19 +923,43 @@ unsigned PCHReadUInt( void )
     return doReadUnsigned();
 }
 
+void *PCHReadCVIndexElement( cvinit_t *data )
+/*******************************************/
+{
+    cv_index index;
+    void *buff_ptr;
+    void *end;
+
+    PCHTrashAlreadyRead();
+    buff_ptr = pch_buff_cur;
+    end = (char *)buff_ptr + sizeof( cv_index );
+    if( end <= (void *)pch_buff_eob ) {
+        DbgAssert( ( ((unsigned)pch_buff_cur) % PCH_ALIGN ) == 0 );
+        index = *(cv_index *)pch_buff_cur;
+        pch_buff_cur = end;
+    } else {
+        PCHReadVar( index );
+    }
+    if( index == PCH_NULL_INDEX ) {
+        return( NULL );
+    } else {
+        return( CarveInitElement( data, index ) );
+    }
+}
+
 unsigned PCHReadUIntUnaligned( void )
 /***********************************/
 {
     unsigned value;
-    unsigned* p_value;
-    void* buff_ptr;
-    void* end;
+    unsigned *p_value;
+    void *buff_ptr;
+    void *end;
 
     PCHTrashAlreadyRead();
     buff_ptr = pch_buff_cur;
-    end = (char*)buff_ptr + sizeof( value );
+    end = (char *)buff_ptr + sizeof( value );
     if( end <= (void *)pch_buff_eob ) {
-        p_value = (unsigned*)buff_ptr;
+        p_value = (unsigned *)buff_ptr;
         pch_buff_cur = end;
         value = *p_value;
         return value;
@@ -997,42 +968,14 @@ unsigned PCHReadUIntUnaligned( void )
     return value;
 }
 
-static void* pchReadPtr( void )
-{
-    void* read_value;
-    PCHRead( &read_value, sizeof( read_value ) );
-    return( read_value );
-}
-
-void* PCHReadPtr( void )
-/**********************/
-{
-    void* value;
-    void** p_value;
-    void* buff_ptr;
-    void *end;
-
-    PCHTrashAlreadyRead();
-    buff_ptr = pch_buff_cur;
-    end = (char*)buff_ptr + sizeof( value );
-    if( end <= (void *)pch_buff_eob ) {
-        p_value = (void**)buff_ptr;
-        pch_buff_cur = end;
-        value = *p_value;
-        return( value );
-    }
-    return pchReadPtr();
-}
-
 pch_status PCHReadVerify( void )
 /******************************/
 {
     char buff[10];
-    char* pbuff;
 
-    pchDebugInfoName = NameMapIndex( (char *) PCHReadUInt() );
-    pbuff = PCHReadLocate( buff, 10 );
-    if( memcmp( pbuff, "WATCOM-PCH", 10 ) != 0 ) {
+    pchDebugInfoName = NameMapIndex( PCHSetUInt( PCHReadUInt() ) );
+    PCHRead( buff, 10 );
+    if( memcmp( buff, "WATCOM-PCH", 10 ) != 0 ) {
         return( PCHCB_ERROR );
     }
     return( PCHCB_OK );
@@ -1041,7 +984,7 @@ pch_status PCHReadVerify( void )
 pch_status PCHWriteVerify( void )
 /*******************************/
 {
-    PCHWriteUInt( (unsigned) NameGetIndex( pchDebugInfoName ) );
+    PCHWriteUInt( PCHGetUInt( NameGetIndex( pchDebugInfoName ) ) );
     PCHWrite( "WATCOM-PCH", 10 );
     return( PCHCB_OK );
 }
@@ -1077,15 +1020,15 @@ void PCHRelocStop( pch_reloc_index ri )
 void PCHPerformReloc( pch_reloc_index ri )
 /****************************************/
 {
-    off_t start_position;
-    off_t stop_position;
-    size_t reloc_size;
-    char * volatile pch_fname;  // must be preserved by setjmp()
-    int status;
-    auto jmp_buf restore_state;
+    long        start_position;
+    long        stop_position;
+    unsigned    reloc_size;
+    char        *volatile pch_fname;  // must be preserved by setjmp()
+    int         status;
+    jmp_buf     restore_state;
 #ifndef NDEBUG
-    clock_t start;
-    clock_t stop;
+    clock_t     start;
+    clock_t     stop;
 
     start = clock();
 #endif
@@ -1098,7 +1041,7 @@ void PCHPerformReloc( pch_reloc_index ri )
     }
     stop_position = relocInfo[ ri ].stop;
     pch_fname = PCHFileName();
-    pchFile = sopen3( pch_fname, O_RDWR|O_BINARY|O_EXCL, SH_DENYRW );
+    pchFile = sopen3( pch_fname, O_RDWR | O_BINARY | O_EXCL, SH_DENYRW );
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_OPEN_ERROR, pch_fname );
         return;
@@ -1118,7 +1061,7 @@ void PCHPerformReloc( pch_reloc_index ri )
         if( relocFunctions[ri]( ioBuffer, reloc_size ) == PCHCB_ERROR ) {
             fail();
         }
-        if( lseek( pchFile, -(off_t)reloc_size, SEEK_CUR ) != start_position ) {
+        if( lseek( pchFile, -(long)reloc_size, SEEK_CUR ) != start_position ) {
             fail();
         }
         if( write( pchFile, ioBuffer, reloc_size ) != reloc_size ) {

@@ -49,7 +49,7 @@
     #define TC_A3 "\x00\x00\x00"
 #endif
 
-char *Tokens[] = {
+const char *Tokens[] = {
     #define pick(token,string,class,prec) string class,
     #include "_ctokens.h"
     #undef pick

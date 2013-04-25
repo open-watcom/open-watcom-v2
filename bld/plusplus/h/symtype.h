@@ -153,7 +153,7 @@ struct decl_spec {
     TYPE                ms_declspec_fnmod;  // __declspec( <fn-modifier> )
     LINKAGE             linkage;            // non-NULL if extern "?"
     PTREE               id;                 // id from typedef references
-    char                *name;              // name of typedef ('C' in class C)
+    NAME                name;              // name of typedef ('C' in class C)
     stg_class_t         stg_class;          // storage class part of decl-spec
     scalar_t            scalar;             // scalar tokens part of decl-spec
     specifier_t         specifier;          // type qualifiers part of decl-spec
@@ -194,7 +194,7 @@ PCH_struct decl_info {
     REWRITE             *body;          // storage for function body
     REWRITE             *mem_init;      // storage for mem-initializer
     REWRITE             *defarg_rewrite;// storage for default argument
-    char                *name;          // name of symbol (NULLable)
+    NAME                name;           // name of symbol (NULLable)
     TOKEN_LOCN          init_locn;      // location of '(' for inits
     unsigned            sym_used : 1;   // don't free 'sym'
     unsigned            friend_fn : 1;  // symbol is a friend function
@@ -534,7 +534,7 @@ PCH_struct base_class {
 typedef PCH_struct {
     BASE_CLASS      *bases;         // base classes
     FRIEND          *friends;       // ring of friends
-    char            *name;          // name of class
+    NAME            name;           // name of class
     CDOPT_CACHE     *cdopt_cache;   // CDOPT info cache
     TYPE            class_mod;      // type representing class <mods> X mods
     /*
@@ -542,10 +542,7 @@ typedef PCH_struct {
      *  Added a copy of the class modifiers to the CLASS_INFO structure so that
      *  type modifiers can be added and retained from a class declaration.
      */
-    union {
-        AUX_INFO    *fn_pragma;     // function pragma for member functions
-        unsigned    fn_pragma_idx;
-    };
+    AUX_INFO        *fn_pragma;     // function pragma for member functions
     type_flag       fn_flags;       // function flags for member functions
     type_flag       mod_flags;      // modifier flags for members
 
@@ -657,17 +654,11 @@ PCH_struct type {
         } a;
         struct {                        // TYP_MODIFIER
             void        *base;
-            union {
-                AUX_INFO    *pragma;
-                unsigned    pragma_idx;
-            };
+            AUX_INFO    *pragma;
         } m;
         struct {                        // TYP_FUNCTION
             arg_list    *args;
-            union {
-                AUX_INFO    *pragma;
-                unsigned    pragma_idx;
-            };
+            AUX_INFO    *pragma;
         } f;
         struct {                        // TYP_MEMBER_POINTER
             TYPE        host;           // may not be TYP_CLASS! (can be NULL)
@@ -828,7 +819,8 @@ PCH_struct symbol {                     // SYMBOL in symbol table
         target_ulong    uval;           // - SC_ENUM -- unsigned value
         target_long     sval;           // - SC_ENUM -- signed value
         POOL_CON*       pval;           // - SC_ENUM, const int: - pool value
-        target_offset_t offset;         // - SC_MEMBER -- data offset
+        target_offset_t member_offset;  // - SC_MEMBER -- data offset
+        unsigned        member_vf_index;// - SC_MEMBER -- virtual function index
         TEMPLATE_INFO   *tinfo;         // - SC_CLASS_TEMPLATE -- info for it
         FN_TEMPLATE     *defn;          // - SC_FUNCTION_TEMPLATE -- defn for it
         PTREE           defarg_info;    // - SC_DEFAULT -- defarg info
@@ -859,7 +851,7 @@ PCH_struct symbol_name {
     SYMBOL_NAME         next;
     SYMBOL              name_type;
     SYMBOL              name_syms;
-    char                *name;
+    NAME                name;
     SCOPE               containing;
 };
 
@@ -989,7 +981,7 @@ struct search_result {                  // * means private to SCOPE.C
     SYMBOL              info1;          // * parm for info message #1
     SYMBOL              info2;          // * parm for info message #2
     target_offset_t     vb_offset;      // - offset of vftable pointer
-    target_offset_t     vb_index;       // - index of virtual base
+    unsigned            vb_index;       // - index of virtual base
     target_offset_t     delta;          // - last base class offset
     target_offset_t     exact_delta;    // - last base class direct offset
     target_offset_t     offset;         // - member offset
@@ -1022,7 +1014,7 @@ typedef enum {
 struct class_table {
     CLASS_TABLE         *next;          /* must be RingFreed after use */
     target_offset_t     vb_offset;      /* offset of vbptr */
-    target_offset_t     vb_index;       /* index into vbtable */
+    unsigned            vb_index;       /* index into vbtable */
     target_offset_t     delta;          /* delta table ptr goes in */
     target_offset_t     exact_delta;    /* exact delta table ptr goes in */
     unsigned            count;          /* number of things def'd */
@@ -1053,7 +1045,7 @@ struct class_vbtable {
 */
 struct thunk_cast {
     target_offset_t     vb_offset;
-    target_offset_t     vb_index;
+    unsigned            vb_index;
     target_offset_t     delta;
 };
 
@@ -1138,7 +1130,7 @@ struct member_ptr_cast {                /* I - input, O - output, * - private */
     SCOPE               derived;        /* I: derived from 'base' */
     target_offset_t     delta;          /* O: amount to adjust delta by */
     target_offset_t     single_test;    /* O: single idx val that needs mapping */
-    target_offset_t     vb_index;       /* O: new value for 'index' */
+    unsigned            vb_index;       /* O: new value for 'index' */
     SYMBOL              mapping;        /* O: unsigned array to map indices */
     unsigned            safe : 1;       /* I: casting from 'base' to 'derived' */
     unsigned            init_conv : 1;  /* I: convert from found base to final base */
@@ -1160,7 +1152,7 @@ struct member_ptr_cast {                /* I - input, O - output, * - private */
 struct gen_leap {
     GEN_LEAP            *next;
     TYPE                type;           /* base class type */
-    target_offset_t     vb_index;       /* index into virtual base table */
+    unsigned            vb_index;       /* index into virtual base table */
     target_offset_t     offset;         /* offset to add */
     unsigned            control;        /* RL_* control mask */
 };
@@ -1221,7 +1213,7 @@ typedef enum {
     FVS_NAME_SAME_TABLE = 0x08, // sym[1] will be set
     FVS_NULL            = 0x00
 } find_virtual_status;
-extern find_virtual_status ScopeFindVirtual( SCOPE, SYMBOL [2], char * );
+extern find_virtual_status ScopeFindVirtual( SCOPE, SYMBOL [2], NAME );
 
 extern void ScopeAddUsing( SCOPE, SCOPE );
 extern SCOPE ScopeIsGlobalNameSpace( SCOPE );
@@ -1236,7 +1228,7 @@ extern void ScopeOpen( SCOPE );
 extern void ScopeRestoreUsing( SCOPE, boolean );
 extern void ScopeAdjustUsing( SCOPE, SCOPE );
 extern void ScopeEstablish( SCOPE );
-extern SCOPE ScopeOpenNameSpace( char *, SYMBOL );
+extern SCOPE ScopeOpenNameSpace( NAME, SYMBOL );
 extern SCOPE ScopeSetEnclosing( SCOPE, SCOPE );
 extern SCOPE ScopeEstablishEnclosing( SCOPE, SCOPE );
 extern void ScopeSetClassOwner( SCOPE, TYPE );
@@ -1253,27 +1245,27 @@ extern TYPE ScopeFindBoundBase( TYPE, TYPE );
 extern boolean ScopeHasPureFunctions( SCOPE );
 extern void ScopeNotePureFunctions( TYPE );
 extern SYMBOL ScopePureVirtualThunk( THUNK_ACTION * );
-extern SYMBOL ScopeAlreadyExists( SCOPE, char * );
-extern SYMBOL_NAME ScopeYYLexical( SCOPE, char * );
-extern SYMBOL_NAME ScopeYYMember( SCOPE, char * );
+extern SYMBOL ScopeAlreadyExists( SCOPE, NAME );
+extern SYMBOL_NAME ScopeYYLexical( SCOPE, NAME );
+extern SYMBOL_NAME ScopeYYMember( SCOPE, NAME );
 extern SEARCH_RESULT *ScopeFindSymbol( SYMBOL );
-extern SEARCH_RESULT *ScopeFindLexicalNameSpace( SCOPE, char * );
-extern SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE, char *, boolean );
-extern SEARCH_RESULT *ScopeFindMemberColonColon( SCOPE, char * );
-extern SEARCH_RESULT *ScopeFindBaseMember( SCOPE, char * );
-extern SEARCH_RESULT *ScopeFindLexicalClassType( SCOPE, char * );
-extern SEARCH_RESULT *ScopeFindLexicalEnumType( SCOPE, char * );
-extern SEARCH_RESULT *ScopeFindNakedFriend( SCOPE, char * );
-extern SEARCH_RESULT *ScopeFindNaked( SCOPE, char * );
-extern SEARCH_RESULT *ScopeContainsNaked( SCOPE, char * );
-extern SEARCH_RESULT *ScopeFindScopedNaked( SCOPE, SCOPE, char * );
-extern SEARCH_RESULT *ScopeFindMember( SCOPE, char * );
-extern SEARCH_RESULT *ScopeFindScopedMember( SCOPE, SCOPE, char * );
+extern SEARCH_RESULT *ScopeFindLexicalNameSpace( SCOPE, NAME );
+extern SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE, NAME, boolean );
+extern SEARCH_RESULT *ScopeFindMemberColonColon( SCOPE, NAME );
+extern SEARCH_RESULT *ScopeFindBaseMember( SCOPE, NAME );
+extern SEARCH_RESULT *ScopeFindLexicalClassType( SCOPE, NAME );
+extern SEARCH_RESULT *ScopeFindLexicalEnumType( SCOPE, NAME );
+extern SEARCH_RESULT *ScopeFindNakedFriend( SCOPE, NAME );
+extern SEARCH_RESULT *ScopeFindNaked( SCOPE, NAME );
+extern SEARCH_RESULT *ScopeContainsNaked( SCOPE, NAME );
+extern SEARCH_RESULT *ScopeFindScopedNaked( SCOPE, SCOPE, NAME );
+extern SEARCH_RESULT *ScopeFindMember( SCOPE, NAME );
+extern SEARCH_RESULT *ScopeFindScopedMember( SCOPE, SCOPE, NAME );
 extern SEARCH_RESULT *ScopeFindScopedMemberConversion( SCOPE, SCOPE, TYPE, type_flag );
 extern SEARCH_RESULT *ScopeFindNakedConversion( SCOPE, TYPE, type_flag );
 extern SEARCH_RESULT *ScopeFindScopedNakedConversion( SCOPE, SCOPE, TYPE, type_flag );
 extern FNOV_LIST *ScopeConversionList( SCOPE, type_flag, TYPE );
-extern SEARCH_RESULT *ScopeContainsMember( SCOPE, char * );
+extern SEARCH_RESULT *ScopeContainsMember( SCOPE, NAME );
 extern boolean ScopeImmediateCheck( SEARCH_RESULT * );
 extern boolean ScopeAmbiguousSymbol( SEARCH_RESULT *, SYMBOL );
 extern boolean ScopeCheckSymbol( SEARCH_RESULT *, SYMBOL );
@@ -1319,15 +1311,15 @@ extern CLASS_VBTABLE *ScopeCollectVBTable( SCOPE, scv_control );
 extern CLASS_VFTABLE *ScopeCollectVFTable( SCOPE, scv_control );
 
 /* front-end #pragma support */
-extern SYMBOL ScopeASMUseSymbol( char *, boolean * );
+extern SYMBOL ScopeASMUseSymbol( NAME, boolean * );
 extern void ScopeASMUsesAuto( void );
-extern SYMBOL ScopeASMLookup( char * );
+extern SYMBOL ScopeASMLookup( NAME );
 extern SYMBOL ScopeIntrinsic( boolean );
 extern void ScopeAuxName( char *, AUX_INFO * );
 
-extern SYMBOL ScopeInsert( SCOPE, SYMBOL, char * );
-extern boolean ScopeCarefulInsert( SCOPE, SYMBOL *, char * );
-extern SYMBOL ScopePromoteSymbol( SCOPE, SYMBOL, char * );
+extern SYMBOL ScopeInsert( SCOPE, SYMBOL, NAME );
+extern boolean ScopeCarefulInsert( SCOPE, SYMBOL *, NAME );
+extern SYMBOL ScopePromoteSymbol( SCOPE, SYMBOL, NAME );
 extern void ScopeInsertErrorSym( SCOPE, PTREE );
 extern void ScopeRawAddFriendSym( CLASSINFO *, SYMBOL );
 extern void ScopeRawAddFriendType( CLASSINFO *, TYPE );
@@ -1335,7 +1327,7 @@ extern void ScopeAddFriendSym( SCOPE, SYMBOL );
 extern void ScopeAddFriendType( SCOPE, TYPE, SYMBOL );
 extern SYMBOL AllocSymbol( void );
 extern SYMBOL AllocTypedSymbol( TYPE );
-extern SYMBOL_NAME AllocSymbolName( char *, SCOPE );
+extern SYMBOL_NAME AllocSymbolName( NAME, SCOPE );
 boolean EnumTypeName( SYMBOL_NAME sym_name );
 boolean ClassTypeName( SYMBOL_NAME sym_name );
 extern void FreeSymbol( SYMBOL );
@@ -1360,8 +1352,8 @@ extern BASE_CLASS *ScopeInherits( SCOPE );
 extern FRIEND *ScopeFriends( SCOPE );
 extern boolean ScopeDirectBase( SCOPE, TYPE );
 extern boolean ScopeIndirectVBase( SCOPE, TYPE );
-extern char *ScopeUnnamedNamespaceName( TOKEN_LOCN * );
-extern char *ScopeNameSpaceName( SCOPE );
+extern NAME ScopeUnnamedNamespaceName( TOKEN_LOCN * );
+extern NAME ScopeNameSpaceName( SCOPE );
 extern char *ScopeNameSpaceFormatName( SCOPE );
 extern TYPE ScopeClass( SCOPE );
 extern SYMBOL ScopeFunction( SCOPE );
@@ -1477,8 +1469,8 @@ extern boolean TypeBasesEqual( type_flag, void *, void * );
 
 extern SCOPE TypeScope( TYPE );
 extern CLASS_INST *TypeClassInstantiation( TYPE );
-extern char *SimpleTypeName( TYPE );
-extern char *AnonymousEnumExtraName( TYPE );
+extern NAME SimpleTypeName( TYPE );
+extern NAME AnonymousEnumExtraName( TYPE );
 
 extern void TypedefUsingDecl( DECL_SPEC *, SYMBOL, TOKEN_LOCN * );
 extern TYPE MakeType( type_id );
@@ -1583,7 +1575,7 @@ extern void FreeArgs( DECL_INFO * );
 extern void FreeTemplateArgs( DECL_INFO * );
 extern DECL_INFO *InsertDeclInfo( SCOPE, DECL_INFO * );
 extern void ProcessDefArgs( DECL_INFO * );
-extern SYMBOL InsertSymbol( SCOPE, SYMBOL, char *name );
+extern SYMBOL InsertSymbol( SCOPE, SYMBOL, NAME );
 extern void InsertArgs( DECL_INFO ** );
 extern PTREE TypeDeclarator( DECL_INFO * );
 extern PTREE MakeConstructorId( DECL_SPEC * );

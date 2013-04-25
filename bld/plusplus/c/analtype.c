@@ -61,7 +61,7 @@ TYPE TypeReferenced(            // GET TYPE OR TYPE REFERENCED
 
 static TYPE typeTested(         // TEST FOR TYPE PAST MODIFIERS, REFERENCE
     TYPE type,                  // - input type
-    unsigned id )               // - requested id
+    type_id id )                // - requested id
 {
     if( type != NULL ) {
         type = TypeReferenced( type );
@@ -219,15 +219,15 @@ TYPE TypeTargetSizeT(           // GET TYPE OF TARGET'S size_t
 {
     TYPE type;                  // - return type
 
-    #if _CPU == 386
+#if _CPU == 8086
+    if( ( TargetSwitches & ( BIG_DATA | CHEAP_POINTER ) ) == BIG_DATA ) {
+        type = GetBasicType( TYP_ULONG );
+    } else {
         type = GetBasicType( TYP_UINT );
-    #else
-        if( ( TargetSwitches & ( BIG_DATA | CHEAP_POINTER ) ) == BIG_DATA ) {
-            type = GetBasicType( TYP_ULONG );
-        } else {
-            type = GetBasicType( TYP_UINT );
-        }
-    #endif
+    }
+#else
+    type = GetBasicType( TYP_UINT );
+#endif
     return type;
 }
 
@@ -237,15 +237,15 @@ unsigned SizeTargetSizeT(       // GET SIZE OF TARGET'S size_t
 {
     unsigned size;              // - size of type
 
-    #if _CPU == 386
+#if _CPU == 8086
+    if( ( TargetSwitches & ( BIG_DATA | CHEAP_POINTER ) ) == BIG_DATA ) {
+        size = TARGET_ULONG;
+    } else {
         size = TARGET_UINT;
-    #else
-        if( ( TargetSwitches & ( BIG_DATA | CHEAP_POINTER ) ) == BIG_DATA ) {
-            size = TARGET_ULONG;
-        } else {
-            size = TARGET_UINT;
-        }
-    #endif
+    }
+#else
+    size = TARGET_UINT;
+#endif
     return size;
 }
 
@@ -448,7 +448,7 @@ TYPE TypeBinArithResult(        // TYPE OF BINARY ARITHMETIC RESULT
         id1 = id2;
         id2 = tmp;
     }
-#if _CPU == 386
+#if _CPU != 8086
     if( ( id1 == TYP_UINT ) && ( id2 == TYP_SLONG ) ) {
         id2 = TYP_ULONG;
     }

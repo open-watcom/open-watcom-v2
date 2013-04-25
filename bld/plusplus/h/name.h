@@ -32,37 +32,41 @@
 
 #ifndef _NAME_H
 
-typedef uint_16                 name_hash_t;
-typedef unsigned long           name_dummy_index_t;
-
-#define NAME_HASH               (0x01000)
+#define NAME_HASH           (0x1000)
 
 /*
-  All internal names start with NAME_DUMMY_PREFIX_0 and all
-  counter generated names have the extra NAME_DUMMY_PREFIX_1
-  as a prefix
+  All internal names start with NAME_OPERATOR_OR_DUMMY_PREFIX_0 and all
+  counter generated names have the extra NAME_DUMMY_PREFIX_1 as a prefix
 */
-#define NAME_DUMMY_PREFIX_0     '.'
-#define NAME_DUMMY_PREFIX_1     '#'
+#define NAME_OPERATOR_OR_DUMMY_PREFIX_0 '.'
+#define NAME_DUMMY_PREFIX_1             '#'
+#define NAME_OPERATOR_PREFIX_1          '@'
 
-extern char *NameCreateNoLen( char *name );
-extern char *NameCreateLen( char *name, unsigned len );
-extern char *NameDummy( void );
-extern name_dummy_index_t NameNextDummyIndex( void );
-extern boolean IsNameDummy( char *name );
+typedef unsigned            name_dummy_index_t;
+
+extern NAME                 NameCreateNoLen( const char *name );
+extern NAME                 NameCreateLen( const char *name, unsigned len );
+extern NAME                 NameDummy( void );
+extern name_dummy_index_t   NameNextDummyIndex( void );
+extern boolean              IsNameDummy( NAME name );
 
 // hash returned is 0..4095 i.e., mod NAME_RAW_HASH
-extern unsigned NameCalcHashLen( char const *, size_t );
+extern unsigned             NameCalcHashLen( const char *, unsigned );
 
-#define NameHash( n )   ((unsigned)(((name_hash_t *)(n))[-1]))
+extern unsigned             NameHash( NAME name );
+#ifdef NAME_PTR_IS_NAME_MEMBER
+#define NameStr(n)          (n)
+#else
+extern char                 *NameStr( NAME name );
+#endif
 
-extern char *NameGetIndex( char *name );
-extern char *NameMapIndex( char *index );
+extern NAME                 NameGetIndex( NAME name );
+extern NAME                 NameMapIndex( NAME name );
 
-extern int NameMemCmp( const char *, const char *, unsigned );
+extern int                  NameMemCmp( const char *, const char *, unsigned );
 
-extern unsigned const NameCmpMask[5];
-#define NAME_MAX_MASK_INDEX     ( ARRAY_SIZE( NameCmpMask ) - 1 )
+extern unsigned const       NameCmpMask[5];
+#define NAME_MAX_MASK_INDEX ( ARRAY_SIZE( NameCmpMask ) - 1 )
 
 #define _NAME_H
 #endif

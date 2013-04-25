@@ -106,7 +106,7 @@ static unsigned base2( unsigned n )
     return nbits;
 }
 
-static void hashInit( INITFINI* defn )
+static void hashInit( INITFINI *defn )
 {
     unsigned i;
     unsigned size;
@@ -178,7 +178,7 @@ HASHTAB HashCreate( unsigned init_table_size )
     hash = CarveAlloc( carveHASHTAB );
     hash->avg = 0;
     hash->remainder = 0;
-    half = 1 << (init_table_size-1);
+    half = 1 << (init_table_size - 1);
     expand_next = half;
     hash->half = half;
     hash->expand_next = expand_next;
@@ -202,7 +202,7 @@ HASHTAB HashCreate( unsigned init_table_size )
 void HashDestroy( HASHTAB hash )
 /*******************************/
 {
-    CarveFree( carveTable[base2(hash->half)+1-MIN_HASHTAB_SIZE], hash->table );
+    CarveFree( carveTable[base2( hash->half ) + 1 - MIN_HASHTAB_SIZE], hash->table );
     CarveFree( carveHASHTAB, hash );
 }
 
@@ -223,8 +223,8 @@ HASHTAB HashMakeMax( HASHTAB hash )
     return( HashCreate( MAX_HASHTAB_SIZE ) );
 }
 
-SYMBOL_NAME HashLookup( HASHTAB hash, char *name )
-/************************************************/
+SYMBOL_NAME HashLookup( HASHTAB hash, NAME name )
+/***********************************************/
 {
     unsigned x;
     unsigned half;
@@ -248,19 +248,16 @@ SYMBOL_NAME HashLookup( HASHTAB hash, char *name )
     }
     ExtraRptIncrementCtr( hash_searches );
     listSentinel->name = name;
-    head = &(hash->table[ xmask ]);
+    head = &(hash->table[xmask]);
     prev = head;
     s = *prev;
     DbgStmt( probes = 1 );
     ExtraRptIncrementCtr( hash_lookup_cost );
-    if( s->name != name ) {
-        for(;;) {
-            prev = &(s->next);
-            s = *prev;
-            DbgStmt( ++probes );
-            ExtraRptIncrementCtr( hash_lookup_cost );
-            if( s->name == name ) break;
-        }
+    for( ; s->name != name; ) {
+        prev = &(s->next);
+        s = *prev;
+        DbgStmt( ++probes );
+        ExtraRptIncrementCtr( hash_lookup_cost );
     }
 #ifndef NDEBUG
     hash->sum_probes += probes;
@@ -351,7 +348,7 @@ void expandHASHTAB( HASHTAB hash )
     half = hash->half;
     expand_next = hash->expand_next;
     buckets = half + expand_next;
-    if( buckets < MAX_HASH+1 ) {
+    if( buckets < MAX_HASH + 1 ) {
         unsigned num_keys;
         unsigned avg;
         unsigned old_size;
@@ -408,8 +405,8 @@ void expandHASHTAB( HASHTAB hash )
     }
 }
 
-void HashInsert( HASHTAB hash, SYMBOL_NAME sym_name, char *name )
-/***************************************************************/
+void HashInsert( HASHTAB hash, SYMBOL_NAME sym_name, NAME name )
+/**************************************************************/
 {
     unsigned mask;
     unsigned buckets;
@@ -432,7 +429,7 @@ void HashInsert( HASHTAB hash, SYMBOL_NAME sym_name, char *name )
     if( xmask < expand_next ) { // name hashes to already expanded bucket
         xmask |= x & half;
     }
-    head = &(hash->table[ xmask ]);
+    head = &(hash->table[xmask]);
     sym_name->next = *head;
     *head = sym_name;
     buckets = half + expand_next;
@@ -446,7 +443,7 @@ void HashInsert( HASHTAB hash, SYMBOL_NAME sym_name, char *name )
 }
 
 void HashWalk( HASHTAB hash, void (*do_it)( SYMBOL_NAME ) )
-/*****************************************************/
+/*********************************************************/
 {
     unsigned i;
     unsigned buckets;
@@ -466,7 +463,7 @@ void HashWalk( HASHTAB hash, void (*do_it)( SYMBOL_NAME ) )
 }
 
 void HashWalkData( HASHTAB hash, void (*do_it)( SYMBOL_NAME, void * ), void *data )
-/*****************************************************************************/
+/*********************************************************************************/
 {
     unsigned i;
     unsigned buckets;
@@ -493,40 +490,31 @@ static void markFreeHashTable( void *p )
 static void saveHashTable( void *e, carve_walk_base *d )
 {
     HASHTAB hash = e;
-    int i;
-    SYMBOL_NAME *tmp_links;
+    unsigned i;
     SYMBOL_NAME *src_links;
-    unsigned size;
     unsigned buckets;
 
     if( hash->half == 0 ) {
         return;
     }
     PCHWriteCVIndex( d->index );
-    PCHWrite( hash, sizeof( *hash ) );
-    size = base2(hash->half)+1;
-    tmp_links = CarveAlloc( carveTable[size-MIN_HASHTAB_SIZE] );
+    PCHWriteVar( *hash );
     src_links = hash->table;
     buckets = hash->half + hash->expand_next;
     for( i = 0; i < buckets; ++i ) {
-        tmp_links[i] = SymbolNameGetIndex( src_links[i] );
+        PCHWriteCVIndex( (cv_index)SymbolNameGetIndex( src_links[i] ) );
     }
-    PCHWrite( tmp_links, sizeof(SYMBOL_NAME) * buckets );
-    CarveFree( carveTable[size-MIN_HASHTAB_SIZE], tmp_links );
 }
 
 pch_status PCHWriteHashTables( void )
 /***********************************/
 {
-    cv_index terminator = CARVE_NULL_INDEX;
     auto carve_walk_base data;
-    SYMBOL_NAME wname;
 
-    wname = SymbolNameGetIndex( listSentinel );
-    PCHWrite( &wname, sizeof( wname ) );
+    PCHWriteCVIndex( (cv_index)SymbolNameGetIndex( listSentinel ) );
     CarveWalkAllFree( carveHASHTAB, markFreeHashTable );
     CarveWalkAll( carveHASHTAB, saveHashTable, &data );
-    PCHWriteCVIndex( terminator );
+    PCHWriteCVIndexTerm();
     return( PCHCB_OK );
 }
 
@@ -534,31 +522,24 @@ pch_status PCHReadHashTables( void )
 /**********************************/
 {
     int i;
-    cv_index hi;
     HASHTAB hash;
     SYMBOL_NAME *links;
-    SYMBOL_NAME rname;
     unsigned half;
     unsigned size;
     unsigned buckets;
     auto cvinit_t data;
 
-    PCHRead( &rname, sizeof( rname ) );
-    listSentinel = SymbolNameMapIndex( rname );
+    listSentinel = SymbolNameMapIndex( (SYMBOL_NAME)PCHReadCVIndex() );
     CarveInitStart( carveHASHTAB, &data );
-    for(;;) {
-        hi = PCHReadCVIndex();
-        if( hi == CARVE_NULL_INDEX ) break;
-        hash = CarveInitElement( &data, hi );
-        PCHRead( hash, sizeof( *hash ) );
+    for( ; (hash = PCHReadCVIndexElement( &data )) != NULL; ) {
+        PCHReadVar( *hash );
         half = hash->half;
-        size = base2( half )+1;
-        links = CarveAlloc( carveTable[size-MIN_HASHTAB_SIZE] );
+        size = base2( half ) + 1;
+        links = CarveAlloc( carveTable[size - MIN_HASHTAB_SIZE] );
         hash->table = links;
         buckets = half + hash->expand_next;
-        PCHRead( links, sizeof( SYMBOL_NAME ) * buckets );
         for( i = 0; i < buckets; ++i ) {
-            links[i] = SymbolNameMapIndex( links[i] );
+            links[i] = SymbolNameMapIndex( (SYMBOL_NAME)PCHReadCVIndex() );
         }
     }
     return( PCHCB_OK );
@@ -579,24 +560,19 @@ HASHTAB HashMapIndex( HASHTAB i )
 pch_status PCHInitHashTables( boolean writing )
 /*********************************************/
 {
-    cv_index n;
     unsigned i;
 
     if( writing ) {
-        n = CarveLastValidIndex( carveHASHTAB );
-        PCHWriteCVIndex( n );
+        PCHWriteCVIndex( CarveLastValidIndex( carveHASHTAB ) );
         for( i = 0; i < CARVE_TABLE_SIZE; i++ ) {
-            n = CarveLastValidIndex( carveTable[i] );
-            PCHWriteCVIndex( n );
+            PCHWriteCVIndex( CarveLastValidIndex( carveTable[i] ) );
         }
     } else {
         carveHASHTAB = CarveRestart( carveHASHTAB );
-        n = PCHReadCVIndex();
-        CarveMapOptimize( carveHASHTAB, n );
+        CarveMapOptimize( carveHASHTAB, PCHReadCVIndex() );
         for( i = 0; i < CARVE_TABLE_SIZE; i++ ) {
             carveTable[i] = CarveRestart( carveTable[i] );
-            n = PCHReadCVIndex();
-            CarveMapOptimize( carveTable[i], n );
+            CarveMapOptimize( carveTable[i], PCHReadCVIndex() );
         }
     }
     return( PCHCB_OK );

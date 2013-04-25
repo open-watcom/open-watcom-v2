@@ -301,13 +301,13 @@ SYMBOL ActualNonOverloadedFunc( // GET SYMBOL FOR ACTUAL NON-OVERLOADED FUNC.
 FNOV_RESULT IsOverloadedFuncDistinct(// TEST IF AN OVERLOADED FUNCTION IS DISTINCT
     SYMBOL *pold_sym,           // - existing symbols (returns best SYMBOL)
     SYMBOL new_sym,             // - new symbol
-    char *name,                 // - name of new symbol
+    NAME name,                  // - name of new symbol
     FNOV_CONTROL control )      // - control word
 ;
 FNOV_RESULT AreFunctionsDistinct(// - TEST if TWO FUNCTIONS ARE DISTINCT
     SYMBOL *pold_sym,           // - existing symbols (returns best SYMBOL)
     SYMBOL new_sym,             // - new symbol
-    char *name )                // - name of new symbol
+    NAME name )                 // - name of new symbol
 ;
 void BuildUdcList(              // BUILD FNOV_LIST FOR USER-DEFD CONVERSIONS
     FNOV_LIST **pcandidates,    // - pointer to candidate list

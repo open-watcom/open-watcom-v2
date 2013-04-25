@@ -412,12 +412,10 @@ pch_status PCHReadStringPool( void )
     while( uniqueStrings != NULL ) {
         StringTrash( uniqueStrings );
     }
-    PCHRead( &stringCount, sizeof( stringCount ) );
+    stringCount = PCHReadUInt();
     stringTranslateTable = CMemAlloc( stringCount * sizeof( STRING_CONSTANT ) );
     p = stringTranslateTable;
-    for(;;) {
-        str_len = PCHReadUInt();
-        if( str_len == 0 ) break;
+    for( ; (str_len = PCHReadUInt()) != 0; ) {
         str = findLiteral( str_len );
         str->len = str_len - 1;
         PCHRead( str->string, str_len );
@@ -430,36 +428,35 @@ pch_status PCHReadStringPool( void )
 
 pch_status PCHWriteStringPool( void )
 {
-    size_t dummy_len;
+    unsigned len;
     int i;
     STRING_CONSTANT str;
     STRING_CONSTANT *p;
 
-    PCHWrite( &stringCount, sizeof( stringCount ) );
+    PCHWriteUInt( stringCount );
     p = stringTranslateTable;
     for( i = 0; i < stringCount; ++i ) {
         str = p[i];
-        dummy_len = StringByteLength( str );
-        PCHWriteUInt( dummy_len );
-        PCHWrite( StringBytes( str ), dummy_len );
+        len = StringByteLength( str );
+        PCHWriteUInt( len );
+        PCHWrite( StringBytes( str ), len );
     }
-    dummy_len = 0;
-    PCHWriteUInt( dummy_len );
+    PCHWriteUInt( 0 );
     return( PCHCB_OK );
 }
 
 STRING_CONSTANT StringMapIndex( STRING_CONSTANT index )
 /*****************************************************/
 {
-    if( index < (STRING_CONSTANT) PCH_FIRST_INDEX ) {
+    if( PCHGetUInt( index ) < PCH_FIRST_INDEX ) {
         return( NULL );
     }
 #ifndef NDEBUG
-    if( ((unsigned) index) >= stringCount + PCH_FIRST_INDEX ) {
+    if( PCHGetUInt( index ) >= stringCount + PCH_FIRST_INDEX ) {
         CFatal( "invalid string index" );
     }
 #endif
-    return stringTranslateTable[ ((unsigned) index) - PCH_FIRST_INDEX ];
+    return( stringTranslateTable[ PCHGetUInt( index ) - PCH_FIRST_INDEX ] );
 }
 
 static int cmpFindString( const void *kp, const void *tp )
@@ -481,14 +478,14 @@ STRING_CONSTANT StringGetIndex( STRING_CONSTANT str )
     STRING_CONSTANT *found;
 
     if( str == NULL ) {
-        return( (STRING_CONSTANT) PCH_NULL_INDEX );
+        return( PCHSetUInt( PCH_NULL_INDEX ) );
     }
     found = bsearch( &str, stringTranslateTable, stringCount, sizeof( STRING_CONSTANT ), cmpFindString );
     if( found == NULL ) {
 #ifndef NDEBUG
         CFatal( "invalid string passed to StringGetIndex" );
 #endif
-        return( (STRING_CONSTANT) PCH_ERROR_INDEX );
+        return( PCHSetUInt( PCH_ERROR_INDEX ) );
     }
-    return( (STRING_CONSTANT) (( found - stringTranslateTable ) + PCH_FIRST_INDEX ) );
+    return( PCHSetUInt( ( found - stringTranslateTable ) + PCH_FIRST_INDEX ) );
 }

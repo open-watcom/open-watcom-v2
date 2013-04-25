@@ -89,7 +89,7 @@ boolean PragmaChangeConsistent( // TEST IF PRAGMA CHANGE IS CONSISTENT
 }
 
 boolean PragmaOKForInlines(     // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
-    struct aux_info *fnp )      // - pragma
+    AUX_INFO *fnp )             // - pragma
 {
     if( fnp->code != NULL ) {
         return( FALSE );
@@ -153,34 +153,33 @@ boolean AsmSysInsertFixups( VBUF *code )
     SYMBOL          sym;
     boolean         uses_auto;
     asmreloc        *curr;
-    asmreloc        *next;
-    byte_seq_reloc  *cg_relocs;
+    byte_seq_reloc  **lnk;
     byte_seq_reloc  *new_reloc;
     byte_seq        *seq;
     unsigned        len;
 
+    AsmFini();
     len = VbufLen( code );
     seq = CMemAlloc( offsetof( byte_seq, data ) + len );
     seq->length = len;
     memcpy( seq->data, VbufBuffer( code ), len );
-    cg_relocs = NULL;
+    lnk = &seq->relocs;
     uses_auto = FALSE;
-    for( curr = AsmRelocs; curr != NULL; curr = next ) {
-        next = curr->next;
+    for( curr = AsmRelocs; curr != NULL; curr = curr->next ) {
         sym = ScopeASMUseSymbol( NameCreateNoLen( curr->name ), &uses_auto );
         if( sym != NULL ) {
             new_reloc = CMemAlloc( sizeof( *new_reloc ) );
             new_reloc->off = curr->offset;
             new_reloc->type = curr->type;
             new_reloc->sym = sym;
-            new_reloc->next = cg_relocs;
-            cg_relocs = new_reloc;
+            *lnk = new_reloc;
+            lnk = &new_reloc->next;
         }
-        AsmFree( curr );
     }
     AsmRelocs = NULL;
-    seq->relocs = cg_relocs;
+    *lnk = NULL;
     CurrInfo->code = seq;
+    AsmFiniRelocs();
     return( uses_auto );
 }
 
@@ -195,7 +194,7 @@ static void AuxCopy(           // COPY AUX STRUCTURE
     to->code = AuxCodeDup( from->code );
 }
 
-AUX_INFO *AsmSysCreateAux( char *name )
+AUX_INFO *AsmSysCreateAux( NAME name )
 /************************************/
 {
     CreateAux( name );
@@ -298,17 +297,16 @@ void AsmSysPCHReadCode( AUX_INFO *info )
     code = CMemAlloc( code_size );
     info->code = code;
     PCHRead( code, code_size );
-    code->relocs = NULL;
     head = &(code->relocs);
     for( ; (sym = SymbolMapIndex( (SYMBOL)PCHReadCVIndex() )) != NULL; ) {
         reloc = CMemAlloc( sizeof( *reloc ) );
-        reloc->next = NULL;
-        *head = reloc;
-        head = &(reloc->next);
         reloc->sym = sym;
         PCHReadVar( reloc->off );
         PCHReadVar( reloc->type );
+        *head = reloc;
+        head = &(reloc->next);
     }
+    *head = NULL;
 }
 
 void AsmSysLine( char *buff )

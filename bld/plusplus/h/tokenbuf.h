@@ -34,9 +34,9 @@
 #define _TOKENBUF_H
 
 #ifndef NDEBUG
-#define BUF_SZ  3
+#define BUF_SZ  (sizeof( TOKEN ) + 2)
 #else
-#define BUF_SZ  32
+#define BUF_SZ  (sizeof( TOKEN ) + 31)
 #endif
 
 typedef struct token_buffer TOKEN_BUFFER;
@@ -56,11 +56,11 @@ typedef struct buffer_hdr {
 
 BUFFER_HDR *TokenBufAddChar(          // TokenBuf: ADD A CHARACTER
     BUFFER_HDR *,                     // - handle to token buffer
-    char character )                   // - character to be added
+    char character )                  // - character to be added
 ;
-BUFFER_HDR *TokenBufAddWhiteSpace(    // TokenBuf: ADD A CHARACTER
+BUFFER_HDR *TokenBufAddToken(         // TokenBuf: ADD A TOKEN
     BUFFER_HDR *,                     // - handle to token buffer
-    char character )                   // - character to be added
+    TOKEN token )                     // - token to be added
 ;
 BUFFER_HDR *TokenBufAddStr(           // TokenBuf: ADD A STRING
     BUFFER_HDR *,                     // - handle to token buffer

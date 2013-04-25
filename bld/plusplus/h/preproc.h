@@ -43,11 +43,11 @@
 
 #include "pragdefn.h"
 
-//typedef unsigned char TOKEN;
-
 
 #define BUF_SIZE_SHIFT          (9)
 #define BUF_SIZE                (1<<BUF_SIZE_SHIFT)
+
+#define IS_ID_OR_KEYWORD(t)     (t == T_ID || t >= FIRST_KEYWORD && t <= LAST_KEYWORD)
 
 enum {
     #define pick( a, b, c ) a,
@@ -65,11 +65,19 @@ typedef enum ppstate_t {
     PPS_NULL            = 0x00
 } ppstate_t;
 
+#define SetPPState(x)               PPState; PPState = x
+#define PPS_ENABLE_EOL()            PPState |= PPS_EOL
+#define PPS_DISABLE_EOL()           PPState &= ~PPS_EOL
+#define PPS_ENABLE_MACROS()         PPState &= ~PPS_NO_EXPAND
+#define PPS_DISABLE_MACROS()        PPState |= PPS_NO_EXPAND
+#define PPS_ENABLE_LEX_ERRORS()     PPState &= ~PPS_NO_LEX_ERRORS
+#define PPS_DISABLE_LEX_ERRORS()    PPState |= PPS_NO_LEX_ERRORS
+
 // PREPROCESSOR DATA:
 
 global  unsigned    PPState;            // pre-processor state (ppstate_t)
 global  boolean     PPStateAsm;         // pre-processor state in _asm
-global  enum TOKEN  CurToken;           // current token
+global  TOKEN       CurToken;           // current token
 global  unsigned    BadTokenInfo;       // error message that describes why T_BAD_TOKEN is bad
 global  int         TokenLen;           // length of current token
 global  int         TokenLine;          // line # of current token
@@ -79,10 +87,10 @@ global  int         ConstType;          // type of constant
 global  signed_64   Constant64;         // value of constant: 33-64 bits
 global  int         NestLevel;          // pre-processing level of #if
 global  int         SkipLevel;          // pre-processing level of #if to skip to
-global  char *      SavedId;            // saved id when doing look ahead
-global  enum TOKEN  LAToken;            // look ahead token
+global  NAME        SavedId;            // saved id when doing look ahead
+global  TOKEN       LAToken;            // look ahead token
 global  macro_flags InitialMacroFlag;   // current value to init macro flags to
-global  MACADDR_T   MacroOffset;        // first free byte in MacroSegment
+global  char        *MacroOffset;       // first free byte in MacroSegment
 global  char        __Time[10];         // "HH:MM:SS" for __TIME__ macro
 global  char        __Date[12];         // "MMM DD YYYY" for __DATE__ macro
 global  FILE *      CppFile;            /* output for preprocessor */
@@ -116,7 +124,7 @@ void (*SetTokenSource( void (*)( void ) ))( void );
 // restore source of tokens
 void ResetTokenSource( void (*)( void ) );
 
-boolean TokenUsesBuffer( unsigned t );
+boolean TokenUsesBuffer( TOKEN t );
 
 void GetNextToken(              // GET THE NEXT TOKEN FOR PROCESSOR
     void )
@@ -189,10 +197,10 @@ void ScanInit(                  // SCAN INITIALIZATION
 int InitPPScan(                 // INIT SCANNER FOR PPNUMBER TOKENS
     void )
 ;
-void FiniPPScan(                 // INIT SCANNER FOR PPNUMBER TOKENS
+void FiniPPScan(                // INIT SCANNER FOR PPNUMBER TOKENS
     int ppscan_mode )           // - mode returned by InitPPScan()
 ;
-int SpecialMacro(               // EXECUTE A SPECIAL MACRO
+TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
     MEPTR fmentry )             // - macro entry
 ;
 void DefineAlternativeTokens(   // DEFINE ALTERNATIVE TOKENS
@@ -202,13 +210,13 @@ AUX_INFO * PragmaLookup(        // FIND A PRAGMA
     char * name,                // - name of the pragma
     unsigned index )            // - index (M_UNKNOWN if not known)
 ;
-unsigned PragmaGetIndex( AUX_INFO * );
+AUX_INFO *PragmaGetIndex( AUX_INFO * );
 
-AUX_INFO *PragmaMapIndex( unsigned index );
+AUX_INFO *PragmaMapIndex( AUX_INFO * );
 
 // PROTOTYPES: internal to scanner
 
-int ChkControl(                 // CHECK AND PROCESS DIRECTIVES
+TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
     int expanding )
 ;
 int CppPrinting(                // TEST IF AT LEVEL FOR PREPROC PRINTING
@@ -235,10 +243,13 @@ void EmitLineNL(                // EMIT #LINE DIRECTIVE ON ITS OWN LINE, IF REQ'
     char *filename )            // - file name
 ;
 void Expecting(                 // ISSUE EXPECTING ERROR FOR A TOKEN
-    char *a_token )             // - required token
+    const char *a_token )       // - required token
 ;
-char *TokenString(              // RETURN A PRINTABLE STRING FOR CURRENT TOK
+const char *TokenString(        // RETURN A PRINTABLE STRING FOR CURRENT TOK
     void )
+;
+int ExpectingToken(             // ISSUE EXPECTING ERROR FOR A TOKEN
+    TOKEN token )               // - required token
 ;
 void GetMacroToken(             // GET NEXT TOKEN
     boolean doing_macro_expansion ) // - TRUE ==> doing an expansion
@@ -252,15 +263,14 @@ void GetNextCharUndo(           // UNDO PREVIOUS GET NEXT CHARACTER
 AUX_INFO *GetTargetHandlerPragma // GET PRAGMA FOR FS HANDLER
     ( void )
 ;
-int KwLookup(                   // TRANSFORM TO T_ID OR KEYWORD TOKEN
+TOKEN KwLookup(                 // TRANSFORM TO T_ID OR KEYWORD TOKEN
     unsigned len )              // - length of id
 ;
-char KwDisable(                 // DISABLE A KEYWORD TOKEN TO T_ID
-    unsigned token )            // - token id
+void KwDisable(                 // DISABLE A KEYWORD TOKEN TO T_ID
+    TOKEN token )               // - token id
 ;
 void KwEnable(                  // ENABLE A KEYWORD TOKEN FROM T_ID
-    unsigned token,             // - token id
-    char first_char )           // - first character of name
+    TOKEN token )               // - token id
 ;
 MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
     char *name,                 // - macro name
@@ -294,9 +304,9 @@ void MacroCmdLnUndef(           // -U<macro-name>
     unsigned len )              // - length of macro name
 ;
 void MustRecog(                 // REQUIRE A SPECIFIC TOKEN AND SCAN NEXT
-    int this_token )            // - token to be recognized
+    TOKEN token )               // - token to be recognized
 ;
-int NextToken(                  // GET NEXT TOKEN
+TOKEN NextToken(                // GET NEXT TOKEN
     void )
 ;
 long int PpConstExpr(           // PREPROCESSOR CONSTANT EXPRESSION
@@ -320,7 +330,7 @@ int ReScanToken(                // RE-SCAN TOKEN FROM BUFFER
 boolean ScanOptionalComment(    // SCAN AN OPTIONAL COMMENT
     void )
 ;
-int ScanToken(                  // SCAN NEXT TOKEN
+TOKEN ScanToken(                // SCAN NEXT TOKEN
     int doing_macro_expansion ) // - TRUE ==> expanding
 ;
 void SkipAhead(                 // SKIP AHEAD TO SIGNIFICANT LOCATION

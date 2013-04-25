@@ -60,10 +60,10 @@ void DgAlignPad(                // INSERT PADDING IN A STRUCTURE
 {
     unsigned left;
 
-#if ( _CPU == _AXP ) || ( _CPU == 386 )
-    #define ALIGN 4
-#else
+#if ( _CPU == 8086 )
     #define ALIGN 2
+#else
+    #define ALIGN 4
 #endif
 
     left = ( ( total + ALIGN - 1 ) & ( - ALIGN ) ) - total;
@@ -177,13 +177,11 @@ static void dataGenPtrSym(      // GENERATE POINTER FOR A SYMBOL + OFFSET
     cg_type type )              // - codegen type of pointer
 {
     if( sym == NULL ) {
-        DbgVerify( offset == 0
-                 , "dataGenPtrSym -- NULL symbol with offset <> 0" );
+        DbgVerify( offset == 0, "dataGenPtrSym -- NULL symbol with offset <> 0" );
         DGInteger( 0, type );
     } else {
         DGFEPtr( (cg_sym_handle)sym, type, offset );
-        if( type == TY_CODE_PTR
-         && SymIsThunk( sym ) ) {
+        if( type == TY_CODE_PTR && SymIsThunk( sym ) ) {
             CgioThunkAddrTaken( sym );
         }
     }
@@ -195,8 +193,7 @@ void DgPtrSymOff(               // GENERATE POINTER FOR A SYMBOL + OFFSET
     target_size_t offset )      // - the offset
 {
     if( sym == NULL || SymIsFunction( sym ) ) {
-        DbgVerify( offset == 0
-                 , "DgPtrSymOffset -- function with offset <> 0" );
+        DbgVerify( offset == 0, "DgPtrSymOffset -- function with offset <> 0" );
         dataGenPtrSym( NULL, offset, TY_CODE_PTR );
     } else {
         dataGenPtrSym( sym, offset, TY_POINTER );
@@ -849,8 +846,7 @@ SYMBOL CgBackOpDelete(          // GET ADDRESIBLE OPERATOR DELETE FOR A TYPE
     SEARCH_RESULT* result;      // - lookup result
     SYMBOL op_del;              // - operator delete
 
-    result = ScopeFindNaked( TypeScope( type )
-                           , CppOperatorName( CO_DELETE ) );
+    result = ScopeFindNaked( TypeScope( type ), CppOperatorName( CO_DELETE ) );
     op_del = ClassFunMakeAddressable( result->sym_name->name_syms );
     ScopeFreeResult( result );
     return op_del;

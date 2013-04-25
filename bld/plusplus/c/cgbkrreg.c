@@ -54,10 +54,10 @@ static OPT_DEFN optFuncReg      // OPT_DEFN for function registration
     = { NULL, "_wint_thread_data" };
 
 
-static char* optName(           // NAME OF OPTIMIZATION SYMBOL
+static NAME optName(            // NAME OF OPTIMIZATION SYMBOL
     OPT_DEFN *odef )            // - optimization definition
 {
-    return NameCreateNoLen( odef->name );
+    return( NameCreateNoLen( odef->name ) );
 }
 
 
