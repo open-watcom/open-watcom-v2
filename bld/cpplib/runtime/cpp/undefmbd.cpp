@@ -34,10 +34,6 @@
 
 extern "C" {
 
-#ifdef _M_IX86
-    int CPPDATA_LIB( undefined_member_data );
-#else
-    int CPPDATA( undefined_member_data );
-#endif
+    int CPPLIBDATA( undefined_member_data );
 
 };

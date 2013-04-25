@@ -118,10 +118,10 @@ static DTREG_VFTBL fs_vftable =// virtual functions for DTRG_FUN
 static void init(               // PROGRAM INITIALIZATION
     void )
 {
-    CPPDATA( dtreg_vfptrs )[ DTRG_STATIC_INITFS ] = &fs_vftable;
+    CPPLIBDATA( dtreg_vfptrs )[ DTRG_STATIC_INITFS ] = &fs_vftable;
 }
 
-XI( CPPDATA( stab_init_mod ), init, INIT_PRIORITY_RUNTIME )
+XI( CPPLIBDATA( stab_init_mod ), init, INIT_PRIORITY_RUNTIME )
 
 #endif
 

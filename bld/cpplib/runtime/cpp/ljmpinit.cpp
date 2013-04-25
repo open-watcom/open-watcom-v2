@@ -43,10 +43,4 @@ static void longjmpInit(        // INITIALIZATION FOR longjmp SUPPORT
     __longjmp_handler = (pfun)CPPLIB( lj_handler )();
 }
 
-extern "C" XI( CPPDATA( init_longjmp ), longjmpInit, INIT_PRIORITY_THREAD )
-
-#ifdef _M_IX86
-
-#pragma aux CPPDATA(init_longjmp) "_*";
-
-#endif
+extern "C" XI( CPPLIBDATA( init_longjmp ), longjmpInit, INIT_PRIORITY_THREAD )

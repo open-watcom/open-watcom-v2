@@ -82,6 +82,6 @@ static void fini(                       // FINALIZE STATIC INIT SEMAPHORE
     _RWD_StaticInitSema.~__lock();
 }
 
-YI( CPPDATA( fini_sisema ), fini, INIT_PRIORITY_RUNTIME );
+YI( CPPLIBDATA( fini_sisema ), fini, INIT_PRIORITY_RUNTIME );
 
 #endif

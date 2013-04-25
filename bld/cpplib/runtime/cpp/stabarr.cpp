@@ -69,10 +69,10 @@ static DTREG_VFTBL arr_vftable =// virtual functions for DTRG_ARRAY
 static void init(               // PROGRAM INITIALIZATION
     void )
 {
-    CPPDATA( dtreg_vfptrs )[ DTRG_ARRAY ] = &arr_vftable;
+    CPPLIBDATA( dtreg_vfptrs )[ DTRG_ARRAY ] = &arr_vftable;
 }
 
-XI( CPPDATA( stab_init_arr ), init, INIT_PRIORITY_RUNTIME )
+XI( CPPLIBDATA( stab_init_arr ), init, INIT_PRIORITY_RUNTIME )
 
 
 extern "C"

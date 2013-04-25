@@ -71,14 +71,10 @@ static DTREG_VFTBL fun_vftable =// virtual functions for DTRG_FUN
 static void init(               // PROGRAM INITIALIZATION
     void )
 {
-    CPPDATA( dtreg_vfptrs )[ DTRG_FUN ] = &fun_vftable;
+    CPPLIBDATA( dtreg_vfptrs )[ DTRG_FUN ] = &fun_vftable;
 }
 
-extern "C" XI( CPPDATA( stab_init_fun ), init, INIT_PRIORITY_RUNTIME )
-
-#ifdef _M_IX86
-    #pragma aux CPPDATA(stab_init_fun) "_*";
-#endif
+extern "C" XI( CPPLIBDATA( stab_init_fun ), init, INIT_PRIORITY_RUNTIME )
 
 #endif
 

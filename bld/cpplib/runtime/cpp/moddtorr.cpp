@@ -33,8 +33,4 @@
 #include <cpplib.h>
 #include <rtinit.h>
 
-extern "C" YI( CPPDATA(module_dtor_ref), CPPLIB(module_dtor), DTOR_PRIORITY );
-
-#ifdef _M_IX86
-    #pragma aux CPPDATA(module_dtor_ref) "_*";
-#endif
+extern "C" YI( CPPLIBDATA(module_dtor_ref), CPPLIB(module_dtor), DTOR_PRIORITY );

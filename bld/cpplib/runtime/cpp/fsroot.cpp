@@ -90,8 +90,4 @@ static void fs_root             // ESTABLISH ROOT ENTRY
 }
 
 
-extern "C" XI( CPPDATA( init_fs_root ), fs_root, INIT_PRIORITY_RUNTIME+1 )
-
-#ifdef _M_IX86
-#pragma aux CPPDATA(init_fs_root) "_*";
-#endif
+extern "C" XI( CPPLIBDATA( init_fs_root ), fs_root, INIT_PRIORITY_RUNTIME+1 )
