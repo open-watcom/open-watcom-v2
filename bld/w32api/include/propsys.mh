@@ -21,6 +21,8 @@
 #include <ocidl.h>
 #include <shtypes.h>
 #ifndef RC_INVOKED
+    #pragma include_alias( <structuredquery.h>, <strquery.h> )
+    #pragma include_alias( <propkeydef.h>, <propkdef.h> )
     #include <structuredquery.h>
     #include <propkeydef.h>
 #endif

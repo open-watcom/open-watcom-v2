@@ -10,6 +10,7 @@
 #include <exdisp.h>
 #include <shldisp.h>
 #ifndef RC_INVOKED
+    #pragma include_alias( <knownfolders.h>, <knownfld.h> )
     #include <knownfolders.h>
 #endif
 

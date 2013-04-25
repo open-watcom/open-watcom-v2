@@ -16,6 +16,9 @@
 
 :include readonly.sp
 
+#pragma include_alias( <structuredquerycondition.h>, <strqcond.h> )
+#pragma include_alias( <objectarray.h>, <objarray.h> )
+#pragma include_alias( <propkeydef.h>, <propkdef.h> )
 #include <structuredquerycondition.h>
 #include <objectarray.h>
 #include <propkeydef.h>

@@ -9,6 +9,7 @@
 
 :include readonly.sp
 
+#pragma include_alias( <specstrings.h>, <specstr.h> )
 #include <specstrings.h>
 
 :include cpluspro.sp
