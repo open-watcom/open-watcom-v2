@@ -182,14 +182,14 @@ static void printLine           // PRINT A LINE
 // IDE INTERFACE
 
 
-unsigned IDEDLL_EXPORT IDEGetVersion // GET IDE VERSION
+unsigned IDEAPI IDEGetVersion // GET IDE VERSION
     ( void )
 {
     return IDE_CUR_DLL_VER;
 }
 
 
-IDEBool IDEDLL_EXPORT IDEInitDLL// DLL INITIALIZATION
+IDEBool IDEAPI IDEInitDLL// DLL INITIALIZATION
     ( IDECBHdl hdl              // - handle for this instantiation
     , IDECallBacks* cb          // - call backs into IDE
     , IDEDllHdl* info )         // - uninitialized info
@@ -201,7 +201,7 @@ IDEBool IDEDLL_EXPORT IDEInitDLL// DLL INITIALIZATION
 }
 
 
-void IDEDLL_EXPORT IDEFiniDLL   // DLL COMPLETION
+void IDEAPI IDEFiniDLL   // DLL COMPLETION
     ( IDEDllHdl hdl )           // - handle
 {
     hdl = hdl;
@@ -218,19 +218,13 @@ static void fillInputOutput( char *input, char *output )
     output[0] = '\0';
     if( ! CompFlags.ide_cmd_line ) {
         cbs = CompInfo.dll_callbacks;
-        if( ! (*cbs->GetInfo)( CompInfo.dll_handle
-                       , IDE_GET_SOURCE_FILE
-                       , 0
-                       , (IDEGetInfoLParam) &input[1] ) ) {
+        if( ! (*cbs->GetInfo)( CompInfo.dll_handle, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)&input[1] ) ) {
             input[0] = '"';
             len = strlen( &input[1] );
             input[ 1 + len ] = '"';
             input[ 1 + len + 1 ] = '\0';
         }
-        if( ! (*cbs->GetInfo)( CompInfo.dll_handle
-                             , IDE_GET_TARGET_FILE
-                             , 0
-                             , (IDEGetInfoLParam) &output[5] ) ) {
+        if( ! (*cbs->GetInfo)( CompInfo.dll_handle, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)&output[5] ) ) {
             output[0] = '-';
             output[1] = 'f';
             output[2] = 'o';
@@ -254,7 +248,7 @@ static void initDLLInfo( DLL_DATA *data ) {
 
 
 
-IDEBool IDEDLL_EXPORT IDERunYourSelf // COMPILE A PROGRAM
+IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     ( IDEDllHdl hdl             // - handle for this instantiation
     , const char* opts          // - options
     , IDEBool* fatal_error )    // - addr[ fatality indication ]
@@ -263,6 +257,7 @@ IDEBool IDEDLL_EXPORT IDERunYourSelf // COMPILE A PROGRAM
     auto char input[1+_MAX_PATH+1]; // - input file name ("<fname>")
     auto char output[4+1+_MAX_PATH+1];//- output file name (-fo="<fname>")
 
+    hdl = hdl;
     DbgVerify( hdl == CompInfo.dll_handle
              , "RunYourSelf -- handle mismatch" );
     TBreak();   // clear any pending IDEStopRunning's
@@ -275,7 +270,7 @@ IDEBool IDEDLL_EXPORT IDERunYourSelf // COMPILE A PROGRAM
 }
 
 
-IDEBool IDEDLL_EXPORT IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
+IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     IDEDllHdl hdl,              // - handle for this instantiation
     int argc,                   // - # of arguments
     char **argv,                // - argument vector
@@ -285,6 +280,7 @@ IDEBool IDEDLL_EXPORT IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     auto char input[1+_MAX_PATH+1]; // - input file name ("<fname>")
     auto char output[4+1+_MAX_PATH+1];//- output file name (-fo="<fname>")
 
+    hdl = hdl;
     DbgVerify( hdl == CompInfo.dll_handle
              , "RunYourSelf -- handle mismatch" );
     TBreak();   // clear any pending IDEStopRunning's
@@ -297,12 +293,12 @@ IDEBool IDEDLL_EXPORT IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     return CompFlags.compile_failed;
 }
 
-void IDEDLL_EXPORT IDEStopRunning( void )
+void IDEAPI IDEStopRunning( void )
 {
     CauseTBreak();
 }
 
-void IDEDLL_EXPORT IDEFreeHeap( void )
+void IDEAPI IDEFreeHeap( void )
 {
 #ifdef __WATCOMC__
     _heapmin();
@@ -311,7 +307,7 @@ void IDEDLL_EXPORT IDEFreeHeap( void )
 
 // HELP Interface
 
-IDEBool IDEDLL_EXPORT IDEProvideHelp // PROVIDE HELP INFORMATION
+IDEBool IDEAPI IDEProvideHelp // PROVIDE HELP INFORMATION
     ( IDEDllHdl hdl             // - handle for this instantiation
     , char const* msg )         // - message
 {
@@ -507,7 +503,7 @@ static IDEBool parseFileName    // PARSE FILE NAME, IF POSSIBLE
 }
 
 
-IDEBool IDEDLL_EXPORT IDEParseMessage // PARSE A MESSAGE
+IDEBool IDEAPI IDEParseMessage // PARSE A MESSAGE
     ( IDEDllHdl hdl             // - handle for this instantiation
     , char const* msg           // - message
     , ErrorInfo* err )          // - error information
@@ -556,7 +552,7 @@ IDEBool IDEDLL_EXPORT IDEParseMessage // PARSE A MESSAGE
 }
 #endif
 
-IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
+IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     hdl = hdl;
     DbgVerify( hdl == CompInfo.dll_handle
@@ -599,10 +595,7 @@ char* CppGetEnv                 // COVER FOR getenv
 
     if( ! CompFlags.ignore_environment ) {
         cbs = CompInfo.dll_callbacks;
-        if( (*cbs->GetInfo)( CompInfo.dll_handle
-                           , IDE_GET_ENV_VAR
-                           , (IDEGetInfoWParam) name
-                           , (IDEGetInfoLParam) &env_val ) ) {
+        if( (*cbs->GetInfo)( CompInfo.dll_handle, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env_val ) ) {
             env_val = NULL;
         }
     }

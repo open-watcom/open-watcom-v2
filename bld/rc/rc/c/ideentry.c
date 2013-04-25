@@ -290,13 +290,13 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     return( rc );
 }
 
-unsigned IDEDLL_EXPORT IDEGetVersion( void ) {
-/*********************************************/
+unsigned IDEAPI IDEGetVersion( void ) {
+/*************************************/
     return( IDE_CUR_DLL_VER );
 }
 
-IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
-/*********************************************************************************/
+IDEBool IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
+/**************************************************************************/
 {
     cbHandle = hdl;
     ideCb = cb;
@@ -308,8 +308,8 @@ IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *inf
     return( FALSE );
 }
 
-IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
-/***********************************************************************/
+IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
+/****************************************************************/
 {
     hdl = hdl;
     if( info == NULL || info->ver < 2 ) {
@@ -336,14 +336,14 @@ IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
     return( FALSE );
 }
 
-void IDEDLL_EXPORT IDEStopRunning( void )
-/*****************************************/
+void IDEAPI IDEStopRunning( void )
+/********************************/
 {
     StopInvoked = TRUE;
 }
 
-IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
-/****************************************************************************************/
+IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
+/*********************************************************************************/
 {
     int         rc;
 
@@ -357,8 +357,8 @@ IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *
     return( rc );
 }
 
-IDEBool IDEDLL_EXPORT IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool* fatalerr )
-/*************************************************************************************************/
+IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool* fatalerr )
+/******************************************************************************************/
 {
     int         rc;
 
@@ -376,16 +376,16 @@ IDEBool IDEDLL_EXPORT IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, 
     return( rc );
 }
 
-void IDEDLL_EXPORT IDEFreeHeap( void )
-/**************************************/
+void IDEAPI IDEFreeHeap( void )
+/*****************************/
 {
 #if defined( __WATCOMC__ )
     _heapshrink();
 #endif
 }
 
-void IDEDLL_EXPORT IDEFiniDLL( IDEDllHdl hdl )
-/********************************************/
+void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
+/*************************************/
 {
     // fini wrc
     hdl = hdl;

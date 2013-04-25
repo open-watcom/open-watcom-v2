@@ -143,8 +143,7 @@ char * GetEnvString( char *envname )
 
     if( IdeCB == NULL || InitInfo.ignore_env )
         return( NULL );
-    IdeCB->GetInfo( IdeHdl, IDE_GET_ENV_VAR,(IDEGetInfoWParam)envname,
-                    (IDEGetInfoLParam) &retval );
+    IdeCB->GetInfo( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)envname, (IDEGetInfoLParam)&retval );
     return( retval );
 }
 
@@ -162,7 +161,7 @@ static bool GetAddtlCommand( IDEInfoType cmd, char *buf )
     return FALSE;
 #if 0
     if( InitInfo.cmd_line_has_files ) return FALSE;
-    return !IdeCB->GetInfo( IdeHdl, cmd, NULL, (IDEGetInfoLParam) &buf );
+    return !IdeCB->GetInfo( IdeHdl, cmd, NULL, (IDEGetInfoLParam)&buf );
 #endif
 }
 
@@ -188,8 +187,8 @@ void GetExtraCommands( void )
 
 /* routines which are called by the DLL driver */
 
-IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
-/******************************************************************************/
+IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
+/****************************************************************/
 {
     hdl = hdl;
     if( info->ver < IDE_CUR_INFO_VER5 ) return TRUE;
@@ -197,29 +196,28 @@ IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
     return FALSE;
 }
 
-unsigned IDEDLL_EXPORT IDEGetVersion( void )
-/*************************************************/
+unsigned IDEAPI IDEGetVersion( void )
+/***********************************/
 {
     return IDE_CUR_DLL_VER;
 }
 
-void IDEDLL_EXPORT IDEStopRunning( void )
-/**********************************************/
+void IDEAPI IDEStopRunning( void )
+/********************************/
 {
     LinkState |= STOP_WORKING|LINK_ERROR;
 }
 
-void IDEDLL_EXPORT IDEFreeHeap( void )
-/*******************************************/
+void IDEAPI IDEFreeHeap( void )
+/*****************************/
 {
 #if defined( __WATCOMC__ )
     _heapshrink();
 #endif
 }
 
-IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb,
-                                         IDEDllHdl *info )
-/**********************************************************************/
+IDEBool IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
+/**************************************************************************/
 {
     info = info;
     IdeHdl = hdl;
@@ -231,16 +229,15 @@ IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb,
     return FALSE;
 }
 
-void IDEDLL_EXPORT IDEFiniDLL( IDEDllHdl hdl )
-/***************************************************/
+void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
+/*************************************/
 {
     hdl = hdl;
     FiniSubSystems();
 }
 
-IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char * opts,
-                                             IDEBool *fatalerr )
-/****************************************************************************/
+IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatalerr )
+/**********************************************************************************/
 {
     hdl = hdl;
 #if defined( __OS2__ )
@@ -257,12 +254,12 @@ IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char * opts,
     return( *fatalerr );
 }
 
-IDEBool IDEDLL_EXPORT IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv,
-                                             IDEBool *fatalerr )
-/******************************************************************************/
+IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr )
+/******************************************************************************************/
 {
     argc = argc;        /* to avoid a warning */
     argv = argv;
+    hdl = hdl;
 #ifndef __WATCOMC__
     _argv = argv;
     _argc = argc;

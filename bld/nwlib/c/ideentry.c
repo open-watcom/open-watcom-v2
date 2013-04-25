@@ -45,12 +45,12 @@ static IDECBHdl     ideHdl;
 static IDECallBacks *ideCb;
 static IDEInitInfo  *ideInfo;
 
-unsigned IDEDLL_EXPORT IDEGetVersion( void )
+unsigned IDEAPI IDEGetVersion( void )
 {
     return( IDE_CUR_DLL_VER );
 }
 
-IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
+IDEBool IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
 {
     ideHdl = hdl;
     ideCb = cb;
@@ -58,14 +58,14 @@ IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *inf
     return( InitSubSystems() );
 }
 
-IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
+IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     hdl = hdl;
     ideInfo = info;
     return( FALSE );
 }
 
-IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
+IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
 {
     char        *argv[ 3 ];
 
@@ -77,7 +77,7 @@ IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *
     return( WlibMainLine( argv ) );
 }
 
-IDEBool IDEDLL_EXPORT IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
+IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     IDEDllHdl hdl,              // - handle for this instantiation
     int argc,                   // - # of arguments
     char **argv,                // - argument vector
@@ -88,7 +88,7 @@ IDEBool IDEDLL_EXPORT IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     return( WlibMainLine( argv ) );
 }
 
-void IDEDLL_EXPORT IDEStopRunning( void )
+void IDEAPI IDEStopRunning( void )
 {
     if( !ideInfo || ideInfo->ver <= 2 || ideInfo->console_output ) {
         exit( 1 );
@@ -97,14 +97,14 @@ void IDEDLL_EXPORT IDEStopRunning( void )
     }
 }
 
-void IDEDLL_EXPORT IDEFreeHeap( void )
+void IDEAPI IDEFreeHeap( void )
 {
 #ifdef __WATCOMC__
     _heapshrink();
 #endif
 }
 
-void IDEDLL_EXPORT IDEFiniDLL( IDEDllHdl hdl )
+void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
 {
     hdl = hdl;
     FiniSubSystems();

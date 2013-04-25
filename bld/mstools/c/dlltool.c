@@ -57,15 +57,15 @@
  * Types.
  */
 typedef char                    WBool;          /* really a C++ 'bool' */
-typedef unsigned IDEDLL_EXPORT  (*GetVerFn)( void );
-typedef WBool IDEDLL_EXPORT     (*InitDllFn)( IDECBHdl hdl, IDECallBacks *cb,
+typedef unsigned IDEAPI  (*GetVerFn)( void );
+typedef WBool IDEAPI     (*InitDllFn)( IDECBHdl hdl, IDECallBacks *cb,
                                               IDEDllHdl *info );
-typedef WBool IDEDLL_EXPORT     (*InitInfoFn)( IDEDllHdl hdl,
+typedef WBool IDEAPI     (*InitInfoFn)( IDEDllHdl hdl,
                                                IDEInitInfo *info );
-typedef WBool IDEDLL_EXPORT     (*RunSelfFn)( IDEDllHdl hdl, const char *opts,
+typedef WBool IDEAPI     (*RunSelfFn)( IDEDllHdl hdl, const char *opts,
                                               WBool *fatalerr );
-typedef void IDEDLL_EXPORT      (*FiniDllFn)( IDEDllHdl hdl );
-typedef void IDEDLL_EXPORT      (*StopRunFn)( void );
+typedef void IDEAPI      (*FiniDllFn)( IDEDllHdl hdl );
+typedef void IDEAPI      (*StopRunFn)( void );
 
 typedef struct {
     HINSTANCE           dllhandle;

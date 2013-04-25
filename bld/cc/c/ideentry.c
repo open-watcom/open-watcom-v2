@@ -135,8 +135,7 @@ extern char *FEGetEnv( char const *name ){
     char *ret;
     ret = NULL;
     if( !Info.ignore_env ){
-        if((*Cbs->GetInfo)( Hdl, IDE_GET_ENV_VAR,
-             (IDEGetInfoWParam)name, (IDEGetInfoLParam)&ret ) ){
+        if((*Cbs->GetInfo)( Hdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&ret ) ) {
             ret = NULL;
         }
     }
@@ -157,16 +156,19 @@ extern void MyExit( int ret ){
 // IDE INTERFACE
 
 
-unsigned IDEDLL_EXPORT IDEGetVersion ( void ){
+unsigned IDEAPI IDEGetVersion ( void ){
  // GET IDE VERSION
     return IDE_CUR_DLL_VER;
 }
+
 #define HEAP_CHK 0
+
 #if HEAP_CHK == 1
 static long HeapUsedHi;
 static long HeapFreeHi;
 #endif
-IDEBool IDEDLL_EXPORT IDEInitDLL
+
+IDEBool IDEAPI IDEInitDLL
     ( IDECBHdl      hdl             // - handle for this instantiation
     , IDECallBacks* cbs             // - call backs into IDE
     , IDEDllHdl*    info ){         // - uninitialized info
@@ -176,22 +178,24 @@ IDEBool IDEDLL_EXPORT IDEInitDLL
     Hdl = hdl;
     Cbs = cbs;
     *info = NULL;
-    #if HEAP_CHK == 1
-        HeapUsedHi = 0;
-        HeapFreeHi = 0;
-    #endif
+#if HEAP_CHK == 1
+    HeapUsedHi = 0;
+    HeapFreeHi = 0;
+#endif
     FrontEndInit( TRUE );
     return FALSE;
 }
 
-void IDEDLL_EXPORT IDEFreeHeap( void ){
+void IDEAPI IDEFreeHeap( void ){
 //*************************************
 //Cleanup Heap
 //*************************************
+#ifdef __WATCOMC__
    _heapmin();
+#endif
 }
 
-void IDEDLL_EXPORT IDEFiniDLL( IDEDllHdl hdl ){
+void IDEAPI IDEFiniDLL( IDEDllHdl hdl ){
 //*********************************************
 //DLL COMPLETION
 //********************************************
@@ -256,71 +260,68 @@ static int heap_size( struct heap_stat *stat ){
     return( heap_status );
 }
 #endif
-IDEBool IDEDLL_EXPORT IDERunYourSelf // COMPILE A PROGRAM
+
+static char **getFrontEndArgv( char **argv, int argc, char *infile, char *outfile )
+{
+    char    **p;
+    int     count;
+
+    if( !Info.cmd_line_has_files ) {
+        p = argv + 1;
+        if( argc > 0 ) {
+            argv = malloc( ( argc + 2 ) * sizeof( char * ) );
+            for( count = 0; count < argc - 1; ++count ) {
+                argv[count] = *p++;
+            }
+            p = argv + count;
+        }
+        infile[0] = '\0';
+        (*Cbs->GetInfo)( Hdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)infile );
+        *p++ = infile;
+        outfile[0] = '\0';
+        if( !(*Cbs->GetInfo)( Hdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)(outfile + 4) ) ) {
+            outfile[0] = '-';
+            outfile[1] = 'f';
+            outfile[2] = 'o';
+            outfile[3] = '=';
+        }
+        *p++ = outfile;
+        *p = NULL;
+    } else if( argc > 0 ) {
+        ++argv;
+    }
+    return( argv );
+}
+
+
+IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     ( IDEDllHdl hdl             // - handle for this instantiation
     , const char* opts          // - options
     , IDEBool* fatal_error ){   // - addr[ fatality indication ]
-//****************************
-// Do a compile of a file
-//****************************
-    jmp_buf env;
-    char    input[_MAX_PATH]; // - input file name
-    char    output[4+_MAX_PATH];//- output file name (need room for "-fo=")
-    char const *argv[4];
-    int     ret;
-#if HEAP_CHK == 1
-    struct heap_stat    after;
-#endif
+    
+    //****************************
+    // Do a compile of a file
+    //****************************
+    jmp_buf     env;
+    char        infile[_MAX_PATH];      // - input file name
+    char        outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
+    char        *argv[4];
+    int         ret;
 
+    hdl = hdl;
     TBreak();   // clear any pending IDEStopRunning's
-    argv[1] = NULL;
-    argv[2] = NULL;
     *fatal_error = FALSE;
     FatalEnv = &env;
-    if( ret = setjmp( env ) ) {       /* if fatal error has occurred */
+    if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
         *fatal_error = TRUE;
-        return( ret ); // get out
+    } else {
+        argv[0] = (char *)opts;
+        argv[1] = NULL;
+        getFrontEndArgv( argv, 0, infile, outfile );
+        ret = FrontEnd( argv );
     }
-    if( !Info.cmd_line_has_files ){
-        if(!(*Cbs->GetInfo)( Hdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam) &input[0] ) ){
-            argv[1] = input;
-        }
-        if(!(*Cbs->GetInfo)( Hdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam) &output[4] ) ){
-            output[0] = '-';
-            output[1] = 'f';
-            output[2] = 'o';
-            output[3] = '=';
-            output[4] = '\0';
-            argv[2] = output;
-        }
-    }
-    argv[0] = opts;
-    argv[3] = NULL;
-    ret = FrontEnd( (char **)argv );
 #if HEAP_CHK  == 1
-
-    switch( heap_size( &after ) ){
-    case _HEAPOK:
-        break;
-    case _HEAPBADBEGIN:
-        DebugMsg( "heap HEAPBADBEGIN" );
-        break;
-    case _HEAPBADNODE:
-        DebugMsg( "heap HEAPBADNODE" );
-        break;
-    }
-    printf( "Used %d + Free %d = %d\n", after.used, after.free, after.used + after.free  );
-    if( after.used != HeapUsedHi ){
-        printf( "Used different\n" );
-        HeapUsedHi = after.used;
- //     heap_dump();
-    }
-    if( after.free > HeapFreeHi ){
-        printf( "Bigger Free\n" );
-        HeapFreeHi = after.free;
- //     heap_dump();
-    }
-    fflush( stdout );
+    heap_check();
 #endif
 #ifdef __OS2__
    _heapmin();
@@ -328,14 +329,49 @@ IDEBool IDEDLL_EXPORT IDERunYourSelf // COMPILE A PROGRAM
     return( ret );
 }
 
-void IDEDLL_EXPORT IDEStopRunning( void )
+#ifdef __UNIX__
+IDEBool IDEAPI IDERunYourSelfArgv // COMPILE A PROGRAM
+    ( IDEDllHdl hdl,            // - handle for this instantiation
+    int argc,                   // - # of arguments
+    char **args,                // - argument vector
+    IDEBool* fatal_error )      // - addr[ fatality indication ]
+{
+    //****************************
+    // Do a compile of a file
+    //****************************
+    jmp_buf             env;
+    char                infile[_MAX_PATH];      // - input file name
+    char                outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
+    char                **argv = NULL;
+    int                 ret;
+
+    break_flag = FALSE;                 // clear any pending IDEStopRunning's
+    *fatal_error = FALSE;
+    FatalEnv = &env;
+    if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
+        *fatal_error = TRUE;
+    } else {
+        argv = getFrontEndArgv( args, argc, infile, outfile );
+        ret = FrontEnd( argv );
+    }
+    if( !Info.cmd_line_has_files ) {
+        free( argv );
+    }
+#if HEAP_CHK  == 1
+    heap_check();
+#endif
+    return( ret );
+}
+#endif
+
+void IDEAPI IDEStopRunning( void )
 {
     CauseTBreak();
 }
 
 // HELP Interface
 
-IDEBool IDEDLL_EXPORT IDEProvideHelp       // PROVIDE HELP INFORMATION
+IDEBool IDEAPI IDEProvideHelp       // PROVIDE HELP INFORMATION
     ( IDEDllHdl hdl             // - handle for this instantiation
     , char const* msg )         // - message
 {
@@ -344,7 +380,7 @@ IDEBool IDEDLL_EXPORT IDEProvideHelp       // PROVIDE HELP INFORMATION
     return( TRUE );
 }
 
-IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
+IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     hdl = hdl;
     Info = *info;

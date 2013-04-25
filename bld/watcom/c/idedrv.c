@@ -55,7 +55,7 @@
     // you can use link in the dll objects into the stub in other os's
     //(eg dos--if you consider that an os) by defining STATIC_LINKAGE
     // and IDE_PGM. note that IDE_PGM needs to be defined anywhere that
-    // IDEDLL_EXPORT is used and/or idedll.h is included
+    // IDEAPI is used and/or idedll.h is included
 
     #if defined( __OS2__ ) && !defined( __OSI__ )
         #define DLLS_IMPLEMENTED
@@ -99,20 +99,20 @@
     #endif
 
     #ifdef DLLS_IMPLEMENTED
-        typedef unsigned IDEDLL_EXPORT (*GetVerFn)( void );
-        typedef IDEBool IDEDLL_EXPORT (*InitDllFn)( IDECBHdl hdl
+        typedef unsigned IDEAPI (*GetVerFn)( void );
+        typedef IDEBool IDEAPI (*InitDllFn)( IDECBHdl hdl
                                                   , IDECallBacks *cb
                                                   , IDEDllHdl *info );
-        typedef IDEBool IDEDLL_EXPORT (*RunSelfFn)( IDEDllHdl hdl
+        typedef IDEBool IDEAPI (*RunSelfFn)( IDEDllHdl hdl
                                                   , const char *opts
                                                   , IDEBool *fatalerr );
-        typedef IDEBool IDEDLL_EXPORT (*RunSelfFnArgv)( IDEDllHdl hdl
+        typedef IDEBool IDEAPI (*RunSelfFnArgv)( IDEDllHdl hdl
                                                   , int
                                                   , char **argv
                                                   , IDEBool *fatalerr );
-        typedef void IDEDLL_EXPORT (*FiniDllFn)( IDEDllHdl hdl );
-        typedef void IDEDLL_EXPORT (*StopRunFn)( void );
-        typedef IDEBool IDEDLL_EXPORT (*PassInitInfo)( IDEDllHdl hdl, IDEInitInfo *info );
+        typedef void IDEAPI (*FiniDllFn)( IDEDllHdl hdl );
+        typedef void IDEAPI (*StopRunFn)( void );
+        typedef IDEBool IDEAPI (*PassInitInfo)( IDEDllHdl hdl, IDEInitInfo *info );
     #endif
 
 #else
@@ -247,7 +247,7 @@ typedef int (*USER_DLL_FUN_ARGV)( int, char ** );
 
 #ifndef CHAIN_CALLBACK
 
-static IDEBool IDECALL stubPrintMsgFn( IDECBHdl hdl, char const *msg )
+static IDEBool IDEAPI stubPrintMsgFn( IDECBHdl hdl, char const *msg )
 {
     hdl = hdl;
 #ifndef NDEBUG
@@ -261,7 +261,7 @@ static IDEBool IDECALL stubPrintMsgFn( IDECBHdl hdl, char const *msg )
 }
 
 #ifndef NDEBUG
-static void IDECALL printProgressIndex( IDECBHdl hdl, unsigned index )
+static void IDEAPI printProgressIndex( IDECBHdl hdl, unsigned index )
 {
     hdl = hdl;
     fprintf( errout, "progress: %u\n", index );
@@ -270,7 +270,7 @@ static void IDECALL printProgressIndex( IDECBHdl hdl, unsigned index )
 #define printProgressIndex      NULL
 #endif
 
-static IDEBool IDECALL printMessage( IDECBHdl hdl, char const *msg )
+static IDEBool IDEAPI printMessage( IDECBHdl hdl, char const *msg )
 {
     hdl = hdl;
     fputs( msg, errout );
@@ -278,7 +278,7 @@ static IDEBool IDECALL printMessage( IDECBHdl hdl, char const *msg )
     return( FALSE );
 }
 
-static IDEBool IDECALL printWithInfo( IDECBHdl hdl, IDEMsgInfo *inf )
+static IDEBool IDEAPI printWithInfo( IDECBHdl hdl, IDEMsgInfo *inf )
 {
     FILE    *fp;
     char    prt_buffer[ 512 ];
@@ -307,7 +307,7 @@ static IDEBool IDECALL printWithInfo( IDECBHdl hdl, IDEMsgInfo *inf )
     return( FALSE );
 }
 
-static IDEBool IDECALL printWithCrLf( IDECBHdl hdl, const char *message )
+static IDEBool IDEAPI printWithCrLf( IDECBHdl hdl, const char *message )
 {
     hdl = hdl;
     fputs( message, errout );
@@ -315,7 +315,7 @@ static IDEBool IDECALL printWithCrLf( IDECBHdl hdl, const char *message )
     return( FALSE );
 }
 
-static IDEBool IDECALL getInfoCB( IDECBHdl hdl, IDEInfoType type, IDEGetInfoWParam extra, IDEGetInfoLParam lparam )
+static IDEBool IDEAPI getInfoCB( IDECBHdl hdl, IDEInfoType type, IDEGetInfoWParam extra, IDEGetInfoLParam lparam )
 {
     IDEBool retn;
 

@@ -39,18 +39,18 @@ extern "C" {
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#pragma pack( 4 )
+#include "pushpck4.h"
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
-#define IDECALL                 __stdcall
+#define IDEAPI                  __stdcall
 #else
-#define IDECALL
+#define IDEAPI
 #endif
 
-#if defined( __WATCOMC__ ) && !defined( IDE_PGM )
-#define IDEDLL_EXPORT           __export IDECALL
+#if !defined( IDE_PGM )
+#define IDEDLLENTRY             __declspec(dllexport)
 #else
-#define IDEDLL_EXPORT           IDECALL
+#define IDEDLLENTRY
 #endif
 
 #define IDE_CUR_DLL_VER         3
@@ -243,34 +243,34 @@ typedef unsigned long IDEGetInfoWParam;
 typedef unsigned long IDEGetInfoLParam;
 #endif
 
-typedef IDEBool IDECALL (*IDERunBatchFn)( IDECBHdl hdl, const char *cmdline,
+typedef IDEBool IDEAPI (*IDERunBatchFn)( IDECBHdl hdl, const char *cmdline,
                                 BatchFilter cb, void *cookie );
-typedef IDEBool IDECALL (*IDEPrintMsgFn)( IDECBHdl hdl, const char *message );
-typedef IDEBool IDECALL (*IDEGetInfoFn)( IDECBHdl hdl, IDEInfoType type,
+typedef IDEBool IDEAPI (*IDEPrintMsgFn)( IDECBHdl hdl, const char *message );
+typedef IDEBool IDEAPI (*IDEGetInfoFn)( IDECBHdl hdl, IDEInfoType type,
                                 IDEGetInfoWParam wparam, IDEGetInfoLParam lparam );
-typedef IDEBool IDECALL (*IDEMsgInfoFn)( IDECBHdl hdl, IDEMsgInfo *info );
-typedef IDEBool IDECALL (*IDERunDllFn)( IDECBHdl hdl, const char *dllname,
+typedef IDEBool IDEAPI (*IDEMsgInfoFn)( IDECBHdl hdl, IDEMsgInfo *info );
+typedef IDEBool IDEAPI (*IDERunDllFn)( IDECBHdl hdl, const char *dllname,
                                 const char *cmdline, BatchDllFilter cb,
                                 void *cookie );
-typedef IDEBool IDECALL (*IDERunBatchCwdFn)( IDECBHdl hdl,
+typedef IDEBool IDEAPI (*IDERunBatchCwdFn)( IDECBHdl hdl,
                                 const char *cmdline, const char *cwd,
                                 BatchFilter cb, void *cookie );
-typedef IDEBool IDECALL (*IDEOpenJavaSource)( IDECBHdl hdl, const char *name, IDEIOOpts opt, IDEDataInfo **info );
-typedef IDEBool IDECALL (*IDEOpenClassFile)( IDECBHdl hdl, const char *name, IDEIOOpts opt, IDEDataInfo **info );
-typedef IDEBool IDECALL (*IDEPackageExists)( IDECBHdl hdl, const char *name );
-typedef int     IDECALL (*IDEGetSize)( IDECBHdl hdl, IDEDataInfo *info );
-typedef time_t  IDECALL (*IDEGetTimeStamp)( IDECBHdl hdl, IDEDataInfo *info );
-typedef IDEBool IDECALL (*IDEIsReadOnly)( IDECBHdl hdl, IDEDataInfo *info );
-typedef int     IDECALL (*IDEReadData)( IDECBHdl hdl, IDEDataInfo *info, char *buffer, int max_len );
-typedef IDEBool IDECALL (*IDEClose)( IDECBHdl hdl, IDEDataInfo *info );
-typedef size_t  IDECALL (*IDEReceiveOutput)( IDECBHdl hdl, IDEDataInfo *info, void const *buffer, size_t len );
-typedef void    IDECALL (*IDEReceiveIndex)( IDECBHdl hdl, unsigned index /* 0-99 */ );
+typedef IDEBool IDEAPI (*IDEOpenJavaSource)( IDECBHdl hdl, const char *name, IDEIOOpts opt, IDEDataInfo **info );
+typedef IDEBool IDEAPI (*IDEOpenClassFile)( IDECBHdl hdl, const char *name, IDEIOOpts opt, IDEDataInfo **info );
+typedef IDEBool IDEAPI (*IDEPackageExists)( IDECBHdl hdl, const char *name );
+typedef int     IDEAPI (*IDEGetSize)( IDECBHdl hdl, IDEDataInfo *info );
+typedef time_t  IDEAPI (*IDEGetTimeStamp)( IDECBHdl hdl, IDEDataInfo *info );
+typedef IDEBool IDEAPI (*IDEIsReadOnly)( IDECBHdl hdl, IDEDataInfo *info );
+typedef int     IDEAPI (*IDEReadData)( IDECBHdl hdl, IDEDataInfo *info, char *buffer, int max_len );
+typedef IDEBool IDEAPI (*IDEClose)( IDECBHdl hdl, IDEDataInfo *info );
+typedef size_t  IDEAPI (*IDEReceiveOutput)( IDECBHdl hdl, IDEDataInfo *info, void const *buffer, size_t len );
+typedef void    IDEAPI (*IDEReceiveIndex)( IDECBHdl hdl, unsigned index /* 0-99 */ );
 
-typedef IDEBool IDECALL (*IDEJavaSrcDepBegin)( IDECBHdl hdl );
+typedef IDEBool IDEAPI (*IDEJavaSrcDepBegin)( IDECBHdl hdl );
 //the values passed in the code parameter of the IDEJavaSrcDepFile are
 //defined as the macros IDE_DEP_FILETYPE_...
-typedef IDEBool IDECALL (*IDEJavaSrcDepFile)( IDECBHdl hdl, char code, char const *filename );
-typedef IDEBool IDECALL (*IDEJavaSrcDepEnd)( IDECBHdl hdl );
+typedef IDEBool IDEAPI (*IDEJavaSrcDepFile)( IDECBHdl hdl, char code, char const *filename );
+typedef IDEBool IDEAPI (*IDEJavaSrcDepEnd)( IDECBHdl hdl );
 
 // structure used by version 1 DLL's
 typedef struct {
@@ -317,15 +317,15 @@ typedef struct {
 /*********************************************************
  * Routines implemented by the DLL
  *********************************************************/
-unsigned IDEDLL_EXPORT IDEGetVersion( void );
-IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info );
-IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info );
-void IDEDLL_EXPORT IDEFiniDLL( IDEDllHdl hdl );
-IDEBool IDEDLL_EXPORT IDEDetermineBuildStatus( IDEDllHdl hdl, const char *opts, IDEBool *status );
-IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr );
-IDEBool IDEDLL_EXPORT IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr );
-void IDEDLL_EXPORT IDEStopRunning( void );
-void IDEDLL_EXPORT IDEFreeHeap( void );
+IDEDLLENTRY unsigned IDEAPI IDEGetVersion( void );
+IDEDLLENTRY IDEBool  IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info );
+IDEDLLENTRY IDEBool  IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info );
+IDEDLLENTRY void     IDEAPI IDEFiniDLL( IDEDllHdl hdl );
+IDEDLLENTRY IDEBool  IDEAPI IDEDetermineBuildStatus( IDEDllHdl hdl, const char *opts, IDEBool *status );
+IDEDLLENTRY IDEBool  IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr );
+IDEDLLENTRY IDEBool  IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr );
+IDEDLLENTRY void     IDEAPI IDEStopRunning( void );
+IDEDLLENTRY void     IDEAPI IDEFreeHeap( void );
 
 /**********************************************************
  * Routines the DLL should use to fill in the Output Message
@@ -389,7 +389,7 @@ void IdeMsgStartDll             // START OF FORMATING FOR A DLL (EACH TIME)
     ( void )
 ;
 
-#pragma pack()
+#include "poppck.h"
 
 #ifdef __cplusplus
 }
