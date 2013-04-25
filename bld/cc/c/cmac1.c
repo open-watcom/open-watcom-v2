@@ -31,6 +31,8 @@
 
 #include "cvars.h"
 #include "scan.h"
+#include "pragdefn.h"
+#include "cfeinfo.h"
 
 
 #define T_UNEXPANDABLE_ID       T_LAST_TOKEN
@@ -90,20 +92,6 @@ static struct special_macro_names  SpcMacros[] = {
  };
 
 
-static MEPTR  MKSpcMacEntry( struct special_macro_names *mac )
-{
-    int         macro_len;
-    MEPTR       mentry;
-
-    macro_len = sizeof( MEDEFN ) + strlen( mac->name );
-    mentry = (MEPTR)CMemAlloc( macro_len );
-    mentry->macro_defn = 0; /* indicate special macro */
-    mentry->macro_len = macro_len;
-    mentry->parm_count = mac->value;
-    strcpy( mentry->macro_name, mac->name );
-    return( mentry );
-}
-
 void MacroInit( void )
 {
     int         i;
@@ -124,9 +112,11 @@ void MacroInit( void )
     for( i=0; i < MACRO_HASH_SIZE; ++i ) {
         MacHash[i] = NULL;
     }
-    for( mac = SpcMacros; mac->name; ++mac ) {
-        mentry = MKSpcMacEntry( mac );
+    for( mac = SpcMacros; mac->name != NULL; ++mac ) {
+        mentry = CreateMEntry( mac->name );
+        mentry->parm_count = mac->value;
         MacroAdd( mentry, NULL, 0, MFLAG_NONE );
+        FreeMEntry( mentry );
     }
     TimeInit(); /* grab time and date for __TIME__ and __DATE__ */
 }
@@ -142,9 +132,11 @@ void MacroAddComp( void )
     struct special_macro_names *mac;
     MEPTR       mentry;
 
-    for( mac = SpcMacroCompOnly; mac->name; ++mac ) {
-        mentry = MKSpcMacEntry( mac );
+    for( mac = SpcMacroCompOnly; mac->name != NULL; ++mac ) {
+        mentry = CreateMEntry( mac->name );
+        mentry->parm_count = mac->value;
         MacroAdd( mentry, NULL, 0, MFLAG_NONE );
+        FreeMEntry( mentry );
     }
 }
 

@@ -142,7 +142,7 @@ void DumpTypeCounts( void )
 {
     int     i;
 
-    for( i = TYPE_CHAR; i <= TYPE_VOID; ++i ) {
+    for( i = TYPE_BOOL; i <= TYPE_VOID; ++i ) {
         printf( "%3d %s\n", CTypeCounts[i], CTypeNames[i] );
     }
     printf( "%d pointer nodes\n", CTypeCounts[TYPE_POINTER] );

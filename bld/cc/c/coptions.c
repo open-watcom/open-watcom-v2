@@ -818,42 +818,39 @@ void MergeInclude( void )
     char        *env_var;
     char        buff[128];
 
-    if( CompFlags.cpp_ignore_env ) {
-        CMemFree( SwData.sys_name );
-        return;
-    }
+    if( !CompFlags.cpp_ignore_env ) {
+        switch( TargSys ) {
+        case TS_CHEAP_WINDOWS:
+        case TS_WINDOWS:
+            strcpy( buff, "WINDOWS" );
+            break;
+        case TS_NETWARE:
+        case TS_NETWARE5:
+            strcpy( buff, "NETWARE" );
+            break;
+        default:
+            strcpy( buff, SwData.sys_name );
+            break;
+        }
+        strcat( buff, "_" INC_VAR );
+        env_var = FEGetEnv( buff );
+        if( env_var != NULL ) {
+            while( *env_var == ' ' )  ++env_var;        /* 23-jun-93 */
+            AddIncList( env_var );
+        }
 
-    switch( TargSys ) {
-    case TS_CHEAP_WINDOWS:
-    case TS_WINDOWS:
-        strcpy( buff, "WINDOWS" );
-        break;
-    case TS_NETWARE:
-    case TS_NETWARE5:
-        strcpy( buff, "NETWARE" );
-        break;
-    default:
-        strcpy( buff, SwData.sys_name );
-        break;
-    }
-    strcat( buff, "_" INC_VAR );
-    env_var = FEGetEnv( buff );
-    if( env_var != NULL ) {
-        while( *env_var == ' ' )  ++env_var;        /* 23-jun-93 */
-        AddIncList( env_var );
-    }
-
-    #if _CPU == 386
+#if _CPU == 386
         env_var = FEGetEnv( "INC386" );               /* 03-may-89 */
         if( env_var == NULL ) {                 /* 12-mar-90 */
             env_var = FEGetEnv( INC_VAR );
         }
-    #else
+#else
         env_var = FEGetEnv( INC_VAR );
-    #endif
-    if( env_var != NULL ) {
-        while( *env_var == ' ' )  ++env_var;        /* 23-jun-93 */
-        AddIncList( env_var );
+#endif
+        if( env_var != NULL ) {
+            while( *env_var == ' ' )  ++env_var;        /* 23-jun-93 */
+            AddIncList( env_var );
+        }
     }
     CMemFree( SwData.sys_name );
 }
@@ -1042,7 +1039,7 @@ static void Set_EP( void )
     ProEpiDataSize = OptValue;
 }
 
-void SetNoCurrInc( void )           { CompFlags.curdir_inc = 0;}
+void SetNoCurrInc( void )           { CompFlags.ignore_curr_dirs = 1;}
 
 static void StripQuotes( char *fname )
 {
@@ -1294,7 +1291,7 @@ static void Set_ZKU( void )
 static void Set_ZK0U( void )        { character_encoding = ENC_ZK0U; }
 
 static void Set_ZL( void )          { CompFlags.emit_library_names = 0; }
-static void Set_ZLF( void )         { CompFlags.emit_all_default_libs  = 1; }
+static void Set_ZLF( void )         { CompFlags.emit_all_default_libs = 1; }
 static void Set_ZLD( void )         { CompFlags.emit_dependencies = 0; }
 static void Set_ZLS( void )         { CompFlags.emit_targimp_symbols = 0; }
 static void Set_ZEV( void )         { CompFlags.unix_ext = 1; }
@@ -1416,6 +1413,7 @@ static void SetAutoDependBackSlash( void )
 }
 
 static void Set_X( void )           { CompFlags.cpp_ignore_env = 1; }
+static void Set_XC( void )          { CompFlags.ignore_curr_dirs = 1; }
 static void Set_PIL( void )         { CompFlags.cpp_ignore_line = 1; }
 static void Set_PL( void )          { CompFlags.cpp_line_wanted = 1; }
 static void Set_NA( void )          { CompFlags.disable_ialias = 1; }
@@ -1699,6 +1697,7 @@ static struct option const CFE_Options[] = {
     { "wx",     0,              Set_WX },
     { "w=#",    0,              SetWarningLevel },
     { "x",      0,              Set_X },
+    { "xc",     0,              Set_XC },
 #if _CPU == 386
     { "xgv",    0,              Set_XGV },
 #endif
@@ -2121,14 +2120,14 @@ local void Define_Memory_Model( void )
             }
         }
         if( GET_FPU_EMU( ProcRevision ) ) {         /* 07-jan-90 */
-            strcpy( MATHLIB_Name, "8math87?" );
-            EmuLib_Name = "9emu87";                     /* 02-apr-90 */
+            strcpy( MATHLIB_Name, "7math87?" );
+            EmuLib_Name = "8emu87";                     /* 02-apr-90 */
         } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
             strcpy( MATHLIB_Name, "5math?" );
             EmuLib_Name = NULL;
         } else {
-            strcpy( MATHLIB_Name, "8math87?" );
-            EmuLib_Name = "9noemu87";                   /* 02-apr-90 */
+            strcpy( MATHLIB_Name, "7math87?" );
+            EmuLib_Name = "8noemu87";                   /* 02-apr-90 */
         }
     #elif _CPU == 386
         model = 'r';                                    /* 07-nov-89 */
@@ -2140,11 +2139,11 @@ local void Define_Memory_Model( void )
         }
         if( GET_FPU_EMU( ProcRevision ) ) {
             if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
-                strcpy( MATHLIB_Name, "8mt7?dll" );
+                strcpy( MATHLIB_Name, "7mt7?dll" );
             } else {
-                strcpy( MATHLIB_Name, "8math387?" );
+                strcpy( MATHLIB_Name, "7math387?" );
             }
-            EmuLib_Name = "9emu387";
+            EmuLib_Name = "8emu387";
         } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
             if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
                 strcpy( MATHLIB_Name, "5mth?dll" );
@@ -2154,20 +2153,21 @@ local void Define_Memory_Model( void )
             EmuLib_Name = NULL;
         } else {
             if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
-                strcpy( MATHLIB_Name, "8mt7?dll" );
+                strcpy( MATHLIB_Name, "7mt7?dll" );
             } else {
-                strcpy( MATHLIB_Name, "8math387?" );
+                strcpy( MATHLIB_Name, "7math387?" );
             }
-            EmuLib_Name = "9noemu387";
+            EmuLib_Name = "8noemu387";
         }
     #elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
         if( CompFlags.br_switch_used ) {                /* 15-may-95 */
             strcpy( CLIB_Name, "1clbdll" );
-            strcpy( MATHLIB_Name, "8mthdll" );
+            strcpy( MATHLIB_Name, "7mthdll" );
         } else {
             strcpy( CLIB_Name, "1clib" );
-            strcpy( MATHLIB_Name, "8math" );
+            strcpy( MATHLIB_Name, "7math" );
         }
+        EmuLib_Name = NULL;
     #else
         #error Define_Memory_Model not configured
     #endif

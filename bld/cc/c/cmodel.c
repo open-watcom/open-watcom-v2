@@ -88,14 +88,11 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflag
     TOKEN       *p_token;
 
     str = copy_eq( Buffer, str);
-    i = strlen( Buffer );
-    if( i == 0 ) {
+    mentry = CreateMEntry( Buffer );
+    if( mentry == NULL ) {
         CErr1( ERR_NO_MACRO_ID_COMMAND_LINE );
         return( str );
     }
-    mentry = (MEPTR) CMemAlloc( sizeof( MEDEFN ) + i );
-    strcpy( mentry->macro_name, Buffer );
-    mentry->parm_count = 0;
     i = 0;
     if( !EqualChar( *str ) ) {
         p_token = (TOKEN *)&TokenBuf[i];
@@ -146,8 +143,8 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflag
         MacroAdd( mentry, TokenBuf, i + sizeof( TOKEN ), mflags );
     }else{
         CErr1( ERR_CANT_DEFINE_DEFINED );
-        CMemFree( mentry );
     }
+    FreeMEntry( mentry );
     return( str );
 }
 
@@ -163,9 +160,9 @@ char *Define_UserMacro( char *str )
 
 void PreDefine_Macro( char *str )
 {
-    struct undef_names  *uname;
-    int                 len;
-    char                *p;
+    undef_names     *uname;
+    int             len;
+    char            *p;
 
     if( ! CompFlags.undefine_all_macros ) {
         if( UndefNames != NULL ) {
@@ -190,8 +187,8 @@ void PreDefine_Macro( char *str )
 
 char *AddUndefName( char *str )
 {
-    int                 len;
-    struct undef_names  *uname;
+    int             len;
+    undef_names     *uname;
 
     len = strlen( str );
     if( len == 0 ) {
@@ -199,7 +196,7 @@ char *AddUndefName( char *str )
     } else {
         CalcHash( str, len );
         if( !MacroDel( str ) ){
-            uname = (struct undef_names *)CMemAlloc(sizeof(struct undef_names));
+            uname = (undef_names *)CMemAlloc( sizeof( undef_names ) );
             uname->next = UndefNames;
             uname->name = CMemAlloc( len + 1 );
             memcpy( uname->name, str, len );
@@ -214,7 +211,7 @@ char *AddUndefName( char *str )
 
 static void FreeUndefNames( void )
 {
-    struct undef_names *uname;
+    undef_names     *uname;
 
     for(; (uname = UndefNames); ) {
         UndefNames = uname->next;
@@ -344,7 +341,7 @@ void InitModInfo( void )
     CompFlags.auto_agg_inits        = 0;
     CompFlags.no_check_inits        = 0;
     CompFlags.no_check_qualifiers   = 0;
-    CompFlags.curdir_inc            = 1;
+    CompFlags.ignore_curr_dirs      = 0;
     CompFlags.use_stdcall_at_number = 1;
     CompFlags.rent = 0;
 

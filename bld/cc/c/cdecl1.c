@@ -32,12 +32,9 @@
 #include "cvars.h"
 #include "cgswitch.h"
 #include "langenv.h"
+#include "pragdefn.h"
+#include "cfeinfo.h"
 
-extern  struct  parm_list   *NewParm( TYPEPTR, struct parm_list * );
-
-extern  TREEPTR     CurFuncNode;
-
-        TYPEPTR *MakeParmList( struct parm_list *, int, int );
 local   void    ParmDeclList( void );
 local   void    AddParms( void );
 local   void    ChkParms( void );
@@ -403,7 +400,7 @@ local void AddParms( void )
     TYPEPTR             typ = NULL;
     int                 parm_count;
     int                 hash;
-    struct parm_list    *parmlist;
+    parm_list           *parmlist;
     SYM_ENTRY           new_sym;
 
     CurFunc->u.func.locals = 0;

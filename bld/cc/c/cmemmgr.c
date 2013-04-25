@@ -391,5 +391,6 @@ void FEfree( void *p )
 
 int FEMoreMem( int size )
 {
+    size = size;
     return( 0 );
 }

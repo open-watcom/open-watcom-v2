@@ -41,9 +41,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <sys/types.h>
-#include <sys/stat.h>
 #include "wio.h"
 #include "watcom.h"
 
@@ -61,8 +59,8 @@ static char usage[] = "Usage: inp.file out.file\n";
 
 int main(int argc, char *argv[])
 {
-    FILE                *fp;
-    int                 fi;
+    FILE                *fp = NULL;
+    int                 fi = -1;
     int                 i;
     int                 len;
     unsigned char       *p;

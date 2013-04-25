@@ -354,7 +354,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
         break;
     case QDT_SHORT:
     case QDT_USHORT:
-        amount = sizeof( target_short );
+        amount = TARGET_SHORT;
         printf( "%6lu byte short (%s): %d\n",
                 amount, dq->type == QDT_SHORT ? "QDT_SHORT" :
                 "QDT_UINT", dq->u.long_values[0] );
@@ -367,7 +367,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
         break;
     case QDT_INT:
     case QDT_UINT:
-        amount = sizeof( target_int );
+        amount = TARGET_INT;
         printf( "%6lu byte int (%s): %d\n",
                 amount, dq->type == QDT_INT ? "QDT_INT" :
                 "QDT_UINT", dq->u.long_values[0] );
@@ -380,7 +380,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
         break;
     case QDT_LONG:
     case QDT_ULONG:
-        amount = sizeof( target_long );
+        amount = TARGET_LONG;
         printf( "%6lu byte long (%s): %d\n",
                 amount, dq->type == QDT_LONG ? "QDT_LONG" :
                 "QDT_ULONG", dq->u.long_values[0] );
@@ -393,7 +393,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
         break;
     case QDT_LONG64:
     case QDT_ULONG64:
-        amount = sizeof( int64 );
+        amount = TARGET_LONG64;
         printf( "%6lu byte long long (%s)\n",
                 amount, dq->type == QDT_LONG64 ? "QDT_LONG64" :
                 "QDT_ULONG64" );
@@ -401,7 +401,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
         break;
     case QDT_FLOAT:
     case QDT_FIMAGINARY:
-        amount = sizeof( float );
+        amount = TARGET_FLOAT;
         printf( "%6lu byte float (%s): %f\n",
                 amount, dq->type == QDT_FLOAT ? "QDT_FLOAT" :
                 "QDT_IMAGINARY", dq->u.double_value );
@@ -409,7 +409,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
         break;
     case QDT_DOUBLE:
     case QDT_DIMAGINARY:
-        amount = sizeof( double );
+        amount = TARGET_DOUBLE;
         printf( "%6lu byte double (%s): %f\n",
                 amount, dq->type == QDT_DOUBLE ? "QDT_DOUBLE" :
                 "QDT_DIMAGINARY", dq->u.double_value );
@@ -417,7 +417,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
         break;
     case QDT_LONG_DOUBLE:
     case QDT_LDIMAGINARY:
-        amount = sizeof( long_double );
+        amount = TARGET_LDOUBLE;
         printf( "%6lu byte long double (%s)\n",
                 amount, dq->type == QDT_DOUBLE ? "QDT_LONG_DOUBLE" :
                 "QDT_LDIMAGINARY" );

@@ -24,35 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C fron-end auxiliary info function prototypes
 *
 ****************************************************************************/
 
 
-#include "cvars.h"
-
-void CSegFree( SEGADDR_T segment )
-{
-    FEfree( segment );
-}
-
-
-SEGADDR_T AllocSegment( seg_info *si )
-{
-    /* FEmalloc never returns NULL - it either allocates the memory
-     * or kills the compiler.
-     */
-    si->index = (SEGADDR_T)FEmalloc( 0x04000 );
-    si->allocated = 1;
-    return( si->index );
-}
-
-
-SEGADDR_T AccessSegment( seg_info *si )
-{
-    if( !si->allocated ) {
-        AllocSegment( si );
-    }
-    return( si->index );
-}
+extern  aux_entry *AuxLookup( char * );         /* caux.c */
+extern  void    PragmaAuxInit( void );          /* caux.c */
+extern  void    PragmaAuxFini( void );          /* caux.c */

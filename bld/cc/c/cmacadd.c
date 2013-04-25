@@ -35,22 +35,43 @@
 #include "cgstd.h"
 
 
+MEPTR CreateMEntry( const char *name )
+{
+    MEPTR   mentry;
+    int     macro_len;
+
+    macro_len = strlen( name );
+    if( macro_len == 0 )
+        return( NULL );
+    macro_len += sizeof( MEDEFN );
+    mentry = (MEPTR)CMemAlloc( macro_len );
+    strcpy( mentry->macro_name, name );
+    mentry->macro_len = macro_len;
+    mentry->parm_count = 0;
+    mentry->macro_defn = 0; /* indicate special macro */
+    return( mentry );
+}
+
+void FreeMEntry( MEPTR mentry )
+{
+    CMemFree( mentry );
+}
+
 void MacroAdd( MEPTR mentry, char *buf, int len, macro_flags mflags )
 {
     unsigned    size;
 
-    size = offsetof(MEDEFN,macro_name) + strlen( mentry->macro_name ) + 1;
-    if( len != 0 ) {                    // if not a special macro
+    size = mentry->macro_len;
+    if( len != 0 ) {                // if not a special macro
         mentry->macro_defn = size;
     }
-    mentry->macro_len = size + len;
+    mentry->macro_len += len;
     MacroOverflow( size + len, 0 );
-    MacroCopy( mentry, MacroOffset, size );     /* 01-apr-94 */
+    MacroCopy( mentry, MacroOffset, size );
     if( len != 0 ) {
         MacroCopy( buf, MacroOffset + size, len );
     }
     MacLkAdd( mentry, size + len, mflags );
-    CMemFree( mentry );
 }
 
 
@@ -59,11 +80,11 @@ void AllocMacroSegment( unsigned minimum )
     struct macro_seg_list *msl;
     unsigned amount;
 
-    amount = (minimum + 0x8000) & ~0x7fff;
+    amount = _RoundUp( minimum, 0x8000 );
     MacroSegment = FEmalloc( amount );
     MacroOffset = MacroSegment;
     MacroLimit = MacroOffset + amount - 2;
-    if( MacroSegment == 0 ) {                   /* 16-aug-93 */
+    if( MacroSegment == 0 ) {
         CErr1( ERR_OUT_OF_MACRO_MEMORY );
         CSuicide();
     }
@@ -127,7 +148,7 @@ void MacLkAdd( MEPTR mentry, int len, macro_flags mflags )
     MEPTR       old_mentry, *lnk;
     macro_flags old_mflags;
 
-    MacroCopy( mentry, MacroOffset, offsetof(MEDEFN,macro_name) + 1 );
+    MacroCopy( mentry, MacroOffset, offsetof(MEDEFN,macro_name) );
     mentry = (MEPTR)MacroOffset;
     CalcHash( mentry->macro_name, strlen( mentry->macro_name ) );
     lnk  = &MacHash[ MacHashValue ];
@@ -173,18 +194,13 @@ SYM_HASHPTR SymHashAlloc( unsigned amount )
 
 int MacroCompare( MEPTR m1, MEPTR m2 )
 {
-    char        *p1;
-    char        *p2;
-
     if( m1->macro_len != m2->macro_len )
         return( -1 );
     if( m1->macro_defn != m2->macro_defn )
         return( -1 );
     if( m1->parm_count != m2->parm_count )
         return( -1 );
-    p1 = (char *)m1 + offsetof(MEDEFN,macro_name);
-    p2 = (char *)m2 + offsetof(MEDEFN,macro_name);
-    return( memcmp( p1, p2, m1->macro_len - offsetof(MEDEFN,macro_name) ) );
+    return( memcmp( m1->macro_name, m2->macro_name, m1->macro_len - offsetof(MEDEFN,macro_name) ) );
 }
 
 

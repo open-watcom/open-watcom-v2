@@ -372,9 +372,11 @@ static enum  conv_types const CnvTable[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 };
 
 static  char    Operator[] = {
+    #define OPERATORS_ONLY
     #define pick(token,string,class,oper) oper,
     #include "_ctokens.h"
-    #undef  pick
+    #undef pick
+    #undef OPERATORS_ONLY
 };
 
 opr_code TokenToOperator( TOKEN token )
@@ -759,7 +761,7 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
 
     /* check for meaningless comparison:  04-feb-91 */
     //TODO this would be a better check maybe in foldtree
-    if( !CompFlags.pre_processing ) {            /* 07-feb-89 */
+    if( CompFlags.pre_processing == 0 ) {
         cmp_cc = CMP_VOID;
         if( op2->op.opr == OPR_PUSHINT ) {
             if( op2_type != TYPE_LONG64 && op2_type != TYPE_ULONG64 ) {
@@ -1598,7 +1600,7 @@ TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, int cast_op )
         }
     }
     opnd_type = opnd->expr_type->decl_type;
-    if( !CompFlags.pre_processing ) {
+    if( CompFlags.pre_processing == 0 ) {
         opnd = RValue( opnd );
     }
     typ = TypeOf( opnd );

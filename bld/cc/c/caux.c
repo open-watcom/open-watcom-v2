@@ -32,11 +32,12 @@
 #include "cvars.h"
 #include "pragdefn.h"
 #include "pdefn2.h"
+#include "caux.h"
 
 
-struct aux_entry *AuxLookup( char *name )
+aux_entry *AuxLookup( char *name )
 {
-    struct aux_entry    *ent;
+    aux_entry   *ent;
 
     for( ent = AuxList; ent; ent = ent->next ) {
         if( strcmp( ent->name, name ) == 0 ) {
@@ -47,7 +48,7 @@ struct aux_entry *AuxLookup( char *name )
 }
 
 
-static void FreeAuxInfo( struct aux_info *info )
+static void FreeAuxInfo( aux_info *info )
 {
     if( info->code != NULL ) {
         CMemFree( info->code );

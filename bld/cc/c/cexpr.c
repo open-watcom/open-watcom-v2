@@ -35,6 +35,8 @@
 #include "cgswitch.h"
 #include "pragdefn.h"
 #include "i64.h"
+#include "caux.h"
+#include "cfeinfo.h"
 
 struct mathfuncs {
     char            *name;
@@ -301,14 +303,18 @@ local TREEPTR EnumLeaf( ENUMPTR ep )
     decl_type = ep->parent->sym_type->object->decl_type;
     switch( decl_type ) {
     case TYPE_CHAR:
-    case TYPE_UCHAR:
     case TYPE_SHORT:
-    case TYPE_USHORT:
         decl_type = TYPE_INT;
         // fall through
     case TYPE_INT:
-    case TYPE_UINT:
     case TYPE_LONG:
+        leaf->op.long_value = (signed_32)ep->value.u._32[L];
+        break;
+    case TYPE_UCHAR:
+    case TYPE_USHORT:
+        decl_type = TYPE_INT;
+        // fall through
+    case TYPE_UINT:
     case TYPE_ULONG:
         leaf->op.long_value = ep->value.u._32[L];
         break;
@@ -510,8 +516,9 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
     target_uint         value;
     SYM_ENTRY           sym;
 
-    if( tree->op.opr == OPR_ERROR ) return( tree );     /* 16-mar-88*/
-    if( CompFlags.pre_processing ) {            /* 07-feb-89 */
+    if( tree->op.opr == OPR_ERROR )
+        return( tree );
+    if( CompFlags.pre_processing ) {
         if( tree->op.opr == OPR_PUSHFLOAT ) {
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             return( ErrorNode( tree ) );
@@ -1437,7 +1444,6 @@ local TREEPTR GetExpr( void )
             CompFlags.meaningless_stmt = 1;
             continue;
         case TC_POSTINC:
-
             tree = IncDec( tree, CurToken );
             NextToken();
             continue;
@@ -1607,8 +1613,7 @@ local TREEPTR ExprOpnd( void )
             NextToken();
             break;
         default:
-            if( CompFlags.pre_processing  &&    /* 07-mar-92 */
-                CurToken >= FIRST_KEYWORD  &&  CurToken < T_MACRO_PARM ) {
+            if( CompFlags.pre_processing && IS_KEYWORD( CurToken ) ) {
                 tree = ExprId();
             } else {
                 CErr1( ERR_MISSING_OPERAND );
@@ -1647,17 +1652,20 @@ local TREEPTR ExprId( void )
 
     if( CompFlags.pre_processing ) {
         if( strcmp( Buffer, "defined" ) == 0 ) {
-            CompFlags.pre_processing = 2;       /* don't want macro expanded */
+            ppctl_t old_ppctl;
+
+            old_ppctl = CompFlags.pre_processing;
+            PPCTL_DISABLE_MACROS();    /* don't want macro expanded */
             NextToken();
             if( CurToken == T_LEFT_PAREN ) {
                 NextToken();
                 value = IsMacroDefined();
                 NextToken();
                 MustRecog( T_RIGHT_PAREN );
-                CompFlags.pre_processing = 1;
+                CompFlags.pre_processing = old_ppctl;
             } else {
                 value = IsMacroDefined();
-                CompFlags.pre_processing = 1;
+                CompFlags.pre_processing = old_ppctl;
                 NextToken();
             }
         } else {
@@ -1957,7 +1965,7 @@ local TREEPTR GenVaStartNode( TREEPTR last_parm )
     // - last_parm should be an integer 0 or 1 (0=>varargs, 1=>stdarg)
 
     SYMPTR      sym;
-    SYM_HANDLE  parm_list;
+    SYM_HANDLE  parms_list;
     int         offset;
     TREEPTR     parmsym;
     TREEPTR     tree;
@@ -1973,18 +1981,18 @@ local TREEPTR GenVaStartNode( TREEPTR last_parm )
             offset = -REG_SIZE;
         }
         parmsym = ValueStack[Level];            // get name of parameter
-        parm_list = 0;
+        parms_list = 0;
         if( parmsym->op.opr == OPR_PUSHSYM ) {
-            parm_list = CurFunc->u.func.parms;
-            while( parm_list != 0 ) {
-                sym = SymGetPtr( parm_list );
-                offset += (SizeOfArg( sym->sym_type ) + (REG_SIZE-1)) & -REG_SIZE;
-                if( parm_list == parmsym->op.sym_handle )
+            parms_list = CurFunc->u.func.parms;
+            while( parms_list != 0 ) {
+                sym = SymGetPtr( parms_list );
+                offset += _RoundUp( SizeOfArg( sym->sym_type ), REG_SIZE );
+                if( parms_list == parmsym->op.sym_handle )
                     break;
-                parm_list = sym->handle;
+                parms_list = sym->handle;
             }
         }
-        if( offset == 0 || parm_list == 0 ) {
+        if( offset == 0 || parms_list == 0 ) {
             // error: name not found in parm list
             sym = SymGetPtr( parmsym->op.sym_handle );
             CErr2p( ERR_SYM_NOT_IN_PARM_LIST,
@@ -2092,8 +2100,8 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
         }
 #if _CPU == 386                                 /* 22-aug-94 */
         {
-            struct aux_info     *inf;
-            struct aux_entry    *ent;
+            aux_info    *inf;
+            aux_entry   *ent;
 
             inf = FindInfo( &sym, functree->op.sym_handle );
             if( (inf->flags & AUX_FLAG_FAR16) || (sym.attrib & FLAG_FAR16) ) {
@@ -2385,7 +2393,7 @@ local TREEPTR OrOr( TREEPTR tree )
     if( tree->op.opr == OPR_PUSHINT ) {
         if( tree->op.long_value != 0 ) {
             ++SizeOfCount;      /* skip code gen */
-            CurToken = 0;
+            CurToken = T_NULL;
         }
     }
     return( tree );
@@ -2398,7 +2406,7 @@ local TREEPTR AndAnd( TREEPTR tree )
     if( tree->op.opr == OPR_PUSHINT ) {
         if( tree->op.long_value == 0 ) {
             ++SizeOfCount;      /* skip code gen */
-            CurToken = 0;
+            CurToken = T_NULL;
         }
     }
     return( tree );

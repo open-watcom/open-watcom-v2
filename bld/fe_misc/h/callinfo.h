@@ -37,14 +37,16 @@
 
 #else
 
+#include "auxflags.h"
+
 typedef struct aux_info {
         call_class      cclass;
-        byte_seq        *code;          // also used by C pre-compiled header
-        hw_reg_set      *parms;         // also used by C pre-compiled header
+        byte_seq        *code;          // also used by pre-compiled header
+        hw_reg_set      *parms;         // also used by pre-compiled header
         hw_reg_set      returns;
         hw_reg_set      streturn;
         hw_reg_set      save;
-        char            *objname;       // also used by C pre-compiled header
+        char            *objname;       // also used by pre-compiled header
         unsigned        use;            // use count
         aux_flags       flags;
         unsigned        index;          // for C/C++ pre-compiled header

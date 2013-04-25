@@ -180,6 +180,7 @@ int CalcHash( const char *id, int len )
 {
     unsigned    hash;
 
+    len = len;
     hash = hashpjw( id );
     HashValue = hash % SYM_HASH_SIZE;
 #if ( MACRO_HASH_SIZE > 0x0ff0 ) && ( MACRO_HASH_SIZE < 0x0fff )
@@ -278,7 +279,7 @@ static TOKEN doScanName( void )
     CalcHash( Buffer, TokenLen );
     if( CompFlags.doing_macro_expansion )
         return( T_ID );
-    if( CompFlags.pre_processing == 2 )
+    if( CompFlags.pre_processing & PPCTL_NO_EXPAND )
         return( T_ID );
     token = IdLookup( Buffer, TokenLen );
     if( token == T_MACRO ) {
@@ -450,7 +451,7 @@ static TOKEN doScanAsm( void )
 
 static TOKEN ScanDot( void )
 {
-    if( CompFlags.inside_asm_stmt == 1 )
+    if( CompFlags.pre_processing & PPCTL_ASM )
         return( doScanAsm() );
 
     Buffer[ 0 ] = '.';
@@ -699,7 +700,7 @@ static TOKEN ScanNum( void )
                SUFF_LL,SUFF_ULL } suffix;
     } con;
 
-    if( CompFlags.inside_asm_stmt == 1 )
+    if( CompFlags.pre_processing & PPCTL_ASM )
         return( doScanAsm() );
 
     BadTokenInfo = 0;
@@ -1513,7 +1514,7 @@ static void SkipWhiteSpace( int c )
         for( ;; ) {
             if( (CharSet[ c ] & C_WS) == 0 )
                 break;
-            if( c != '\r' && !CompFlags.pre_processing ) {
+            if( c != '\r' && CompFlags.pre_processing == 0 ) {
                 CppPrtChar( c );
             }
             c = NextChar();
@@ -1531,7 +1532,7 @@ void SkipAhead( void )
             }
             if( CurrChar != '\n' )
                 break;
-            if( CompFlags.cpp_output && !CompFlags.pre_processing ) {
+            if( CompFlags.cpp_output && CompFlags.pre_processing == 0 ) {
                 CppPrtChar( '\n' );
             }
             SrcFileLoc = SrcFile->src_loc;
@@ -1554,7 +1555,7 @@ void SkipAhead( void )
 static TOKEN ScanNewline( void )
 {
     SrcFileLoc = SrcFile->src_loc;
-    if( CompFlags.pre_processing )
+    if( CompFlags.pre_processing & PPCTL_EOL )
         return( T_NULL );
     return( ChkControl() );
 }
@@ -1731,7 +1732,7 @@ void ScanInit( void )
         ClassTable[ c ] =  InitClassTable[ i + 1 ];
     }
     CurrChar = '\n';
-    CompFlags.pre_processing = 0;
+    CompFlags.pre_processing = PPCTL_NORMAL;
     CompFlags.scanning_comment = 0;
     SizeOfCount = 0;
     NextChar = GetNextChar;

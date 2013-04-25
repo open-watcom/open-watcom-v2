@@ -44,7 +44,7 @@ void InitGlobalVars( void )
     PCH_SymArray            = NULL; // array of symbol table pointers from PCH
     PCH_MaxSymHandle        = 0;    // number of symbols in PCH_SymArray
     DebugFlag               = 0;
-    CurToken                = 0;
+    CurToken                = T_NULL;
     BadTokenInfo            = 0;
     TokenLen                = 0;
     TokenLoc.line           = 0;
@@ -211,7 +211,6 @@ void InitGlobalVars( void )
     DependForceSlash        = 0;
     PackAmount              = 0;    /* current packing alignment */
     GblPackAmount           = 0;    /* packing alignment given on command line */
-    UserSegments            = NULL;
     Column                  = 0;    /* skip to Column when reading */
     Trunc                   = 0;    /* stop at Trunc when reading  */
     PrevProtoType           = NULL; /* prev func prototype */

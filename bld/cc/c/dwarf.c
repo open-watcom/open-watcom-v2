@@ -56,7 +56,7 @@ static void type_update( TYPEPTR typ, int mask, dw_handle dh )
 /************************************************************/
 {
     typ->type_flags = (typ->type_flags & ~TF2_DWARF) | mask;
-    typ->dwarf_type = dh;
+    typ->u1.dwarf_type = dh;
 }
 
 static void dwarfFile( unsigned filenum )
@@ -149,7 +149,7 @@ static dw_handle dwarfStructUnion( TYPEPTR typ, DC_CONTROL control )
 
     control = control;
     if( typ->type_flags & TF2_DWARF ) {
-        dh = typ->dwarf_type;
+        dh = typ->u1.dwarf_type;
     } else {
         if( typ->decl_type == TYPE_STRUCT ) {
             dh = DWStruct( Client, DW_ST_STRUCT );
@@ -223,7 +223,8 @@ static dw_handle dwarfTypeArray( TYPEPTR typ )
 {
     dw_handle           dh;
 
-    if( typ->type_flags & TF2_DWARF ) return( typ->dwarf_type );
+    if( typ->type_flags & TF2_DWARF )
+        return( typ->u1.dwarf_type );
     dh = DWSimpleArray( Client,
                 dwarfType( typ->object, DC_DEFAULT ),
                 typ->u.array->dimension );
@@ -235,9 +236,10 @@ static dw_handle dwarfTypeFunction( TYPEPTR typ, char *name )
 /***********************************************************/
 {
     dw_handle   dh;
-    TYPEPTR     *parm_list;
+    TYPEPTR     *parms_list;
 
-    if( typ->type_flags & TF2_DWARF ) return( typ->dwarf_type );
+    if( typ->type_flags & TF2_DWARF )
+        return( typ->u1.dwarf_type );
     dh = dwarfType( typ->object, DC_RETURN );
     dh = DWBeginSubroutineType( Client,
                                 dh,
@@ -245,10 +247,11 @@ static dw_handle dwarfTypeFunction( TYPEPTR typ, char *name )
                                 0,
                                 DW_FLAG_DECLARATION | DW_FLAG_PROTOTYPED );
     type_update( typ, TF2_DWARF_DEF, dh );
-    parm_list = typ->u.fn.parms;
-    while( parm_list != NULL ) {
-        typ = *parm_list++;
-        if( typ == NULL ) break;
+    parms_list = typ->u.fn.parms;
+    while( parms_list != NULL ) {
+        typ = *parms_list++;
+        if( typ == NULL )
+            break;
         if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
             DWAddEllipsisToSubroutineType( Client );
         } else {
@@ -274,27 +277,27 @@ uint dwarfTypeModifier( type_modifiers decl_flags )
     if( decl_flags & FLAG_VOLATILE ) {
         modtype |= DW_MOD_VOLATILE;
     }
-    #if _CPU == 386
-        if( decl_flags & FLAG_NEAR ) {
-            modtype |= DW_MOD_NEAR32;
-        }
-        if( decl_flags & FLAG_FAR ) {
-            modtype |= DW_MOD_FAR32;
-        }
-        if( decl_flags & FLAG_FAR16 ) {
-            modtype |= DW_MOD_FAR16;
-        }
-    #else
-        if( decl_flags & FLAG_NEAR ) {
-            modtype |= DW_MOD_NEAR16;
-        }
-        if( decl_flags & FLAG_FAR ) {
-            modtype |= DW_MOD_FAR16;
-        }
-        if( decl_flags & FLAG_HUGE ) {
-            modtype |= DW_MOD_HUGE16;
-        }
-    #endif
+#if _CPU == 386
+    if( decl_flags & FLAG_NEAR ) {
+        modtype |= DW_MOD_NEAR32;
+    }
+    if( decl_flags & FLAG_FAR ) {
+        modtype |= DW_MOD_FAR32;
+    }
+    if( decl_flags & FLAG_FAR16 ) {
+        modtype |= DW_MOD_FAR16;
+    }
+#else
+    if( decl_flags & FLAG_NEAR ) {
+        modtype |= DW_MOD_NEAR16;
+    }
+    if( decl_flags & FLAG_FAR ) {
+        modtype |= DW_MOD_FAR16;
+    }
+    if( decl_flags & FLAG_HUGE ) {
+        modtype |= DW_MOD_HUGE16;
+    }
+#endif
     return( modtype  );
 }
 
@@ -304,9 +307,15 @@ static dw_handle dwarfType( TYPEPTR typ, DC_CONTROL control )
     dw_handle   dh = 0;
     SYMPTR      sym;
 
-    if( typ->type_flags & TF2_DWARF ) return( typ->dwarf_type );
+    control = control;
+    if( typ->type_flags & TF2_DWARF )
+        return( typ->u1.dwarf_type );
 
     switch( typ->decl_type ) {
+    case TYPE_BOOL:
+        dh = DWFundamental( Client, "_Bool", DW_FT_UNSIGNED_CHAR, TypeSize( typ ) );
+        type_update( typ, TF2_DWARF_DEF, dh );
+        break;
     case TYPE_CHAR:
         dh = DWFundamental( Client, "char", DW_FT_SIGNED_CHAR, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
@@ -396,18 +405,18 @@ static dw_handle dwarfType( TYPEPTR typ, DC_CONTROL control )
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
     default:
-        #ifdef FDEBUG
-            DumpFullType( typ );
-            CFatal( "dwarf: illegal type" );
-        #endif
+#ifdef FDEBUG
+        DumpFullType( typ );
+        CFatal( "dwarf: illegal type" );
+#endif
         break;
     }
-    #ifdef FDEBUG
-        if( dh == 0 && !(control & DC_RETURN) ) {
-            DumpFullType( type );
-            CFatal( "dwarf: unable to define type" );
-        }
-    #endif
+#ifdef FDEBUG
+    if( dh == 0 && !(control & DC_RETURN) ) {
+        DumpFullType( type );
+        CFatal( "dwarf: unable to define type" );
+    }
+#endif
     return( dh );
 }
 
@@ -619,14 +628,14 @@ static void dwarfEmitFunctions( void )
 void SetDwarfType( TYPEPTR typ )
 {
     typ->type_flags &= ~TF2_DWARF;
-    typ->dwarf_type = 0;
+    typ->u1.dwarf_type = 0;
 }
 
 void SetFuncDwarfType( TYPEPTR typ, int index )
 {
-    // index;   /* unused */
+    index = index;   /* unused */
     typ->type_flags &= ~TF2_DWARF;
-    typ->dwarf_type = 0;
+    typ->u1.dwarf_type = 0;
 }
 
 static void EmitAType( TYPEPTR typ )
@@ -647,7 +656,7 @@ static void dwarfEmit( void )
     int         i;
 
     dwarfInitTypes();
-    for( i = TYPE_CHAR; i <= TYPE_DOUBLE; i++ ) {
+    for( i = TYPE_BOOL; i <= TYPE_DOUBLE; i++ ) {
         dwarfType( GetType( i ), DC_DEFAULT );
     }
     WalkTypeList( EmitAType );

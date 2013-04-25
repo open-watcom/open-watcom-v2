@@ -41,6 +41,8 @@
 #include "cgdefs.h"
 #include "feprotos.h"
 #include "swchar.h"
+#include "pragdefn.h"
+#include "cfeinfo.h"
 
 #ifndef _MAX_PATH
     #define _MAX_PATH   (PATH_MAX + 1)
@@ -259,30 +261,30 @@ void DumpDepFile( void )
 
 static IALIASPTR AddIAlias( const char *alias_name, const char *real_name, bool is_lib )
 {
-    size_t      alias_size, alias_len;
+    size_t      alias_len;
+    size_t      real_len;
     IALIASPTR   alias, old_alias;
     IALIASPTR   *lnk;
 
     for( lnk = &IAliasNames; (old_alias = *lnk) != NULL; lnk = &old_alias->next ) {
-        if( ( old_alias->is_lib == is_lib ) && !strcmp( alias_name, old_alias->alias_name ) ) {
+        if( ( old_alias->is_lib == is_lib ) && !FNAMECMPSTR( alias_name, old_alias->alias_name ) ) {
             break;
         }
     }
-    alias_len = strlen( alias_name );
-    alias_size = sizeof( struct ialias_list ) + alias_len + strlen( real_name ) + 1;
-    alias = CMemAlloc( alias_size );
+    alias_len = strlen( alias_name ) + 1;
+    real_len = strlen( real_name ) + 1;
+    alias = CMemAlloc( offsetof( ialias_list, alias_name ) + alias_len + real_len );
     alias->next = NULL;
     alias->is_lib = is_lib;
-    strcpy( alias->alias_name, alias_name );
-    alias->real_name = alias->alias_name + alias_len + 1;
-    strcpy( alias->real_name, real_name );
-
+    alias->real_name = alias->alias_name + alias_len;
+    memcpy( alias->alias_name, alias_name, alias_len );
+    memcpy( alias->real_name, real_name, real_len );
+    *lnk = alias;
     if( old_alias != NULL ) {
         /* Replace old alias if it exists */
         alias->next = old_alias->next;
         CMemFree( old_alias );
     }
-    *lnk = alias;
 
     return( alias );
 }
@@ -295,6 +297,7 @@ static void FreeIAlias( void )
         IAliasNames = aliaslist->next;
         CMemFree( aliaslist );
     }
+    IAliasNames = NULL;
 }
 
 static const char *IncludeAlias( const char *filename, bool is_lib )
@@ -302,7 +305,7 @@ static const char *IncludeAlias( const char *filename, bool is_lib )
     IALIASPTR   alias;
 
     for( alias = IAliasNames; alias != NULL; alias = alias->next ) {
-        if( !strcmp( filename, alias->alias_name ) && ( alias->is_lib == is_lib ) ) {
+        if( ( alias->is_lib == is_lib ) && !FNAMECMPSTR( filename, alias->alias_name ) ) {
             return( alias->real_name );
         }
     }
@@ -347,7 +350,8 @@ static void DoCCompile( char **cmdline )
                 OpenSrcFile( "_ialias.h", TRUE );
                 CompFlags.ignore_fnf = FALSE;
                 if( SrcFile != NULL ) {
-                    for( ; CurToken != T_EOF; ) {
+                    CurToken = T_NULL;
+                    while( CurToken != T_EOF ) {
                         GetNextToken();
                     }
                 }
@@ -753,7 +757,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
         goto cant_open_file;
     }
     if( !is_lib ) {
-        if( CompFlags.curdir_inc ) {  // try current directory
+        if( !CompFlags.ignore_curr_dirs ) {  // try current directory
             if( TryOpen( "", "", filename, "" ) ) {
                 return( TRUE );
             }
@@ -979,7 +983,7 @@ static FNAMEPTR FindFlist( char const *filename )
     FNAMEPTR    flist;
 
     for( flist = FNames; flist != NULL; flist = flist->next ) {
-        if( strcmp( filename, flist->name ) == 0 ) {
+        if( FNAMECMPSTR( filename, flist->name ) == 0 ) {
             break;
         }
     }
@@ -994,7 +998,7 @@ FNAMEPTR AddFlist( char const *filename )
 
     index = 0;
     for( lnk = &FNames; (flist = *lnk) != NULL; lnk = &flist->next ) {
-        if( strcmp( filename, flist->name ) == 0 )
+        if( FNAMECMPSTR( filename, flist->name ) == 0 )
             break;
         index++;
     }
@@ -1007,13 +1011,10 @@ FNAMEPTR AddFlist( char const *filename )
             }
         }
         if( p[ 0 ] == '\0' && DependHeaderPath != NULL ) {
-            flist = (FNAMEPTR)CMemAlloc( strlen( DependHeaderPath )
-                                       + strlen( filename )
-                                       + sizeof( struct fname_list ) );
+            flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + strlen( DependHeaderPath ) + strlen( filename ) + 1 );
             sprintf( flist->name, "%s%s", DependHeaderPath, filename );
         } else {
-            flist = (FNAMEPTR)CMemAlloc( strlen( filename )
-                                       + sizeof( struct fname_list ) );
+            flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + strlen( filename ) + 1 );
             strcpy( flist->name, filename );
         }
         *lnk = flist;
@@ -1097,16 +1098,10 @@ void FreeFNames( void )
     }
 }
 
-void AddIncFileList( const char *filename )
+void AddIncFile( INCFILE *ifile )
 {
-    INCFILE     *ifile;
     INCFILE     *ifilep;
-    int         len;
 
-    len = strlen( filename );
-    ifile = (INCFILE *)CMemAlloc( sizeof( INCFILE ) + len );
-    ifile->len = len;
-    strcpy( ifile->filename, filename );
     ifile->nextfile = NULL;
     if( IncFileList == NULL ) {
         IncFileList = ifile;
@@ -1116,6 +1111,18 @@ void AddIncFileList( const char *filename )
             ifilep = ifilep->nextfile;
         ifilep->nextfile = ifile;
     }
+}
+
+void AddIncFileList( const char *filename )
+{
+    INCFILE     *ifile;
+    int         len;
+
+    len = strlen( filename );
+    ifile = (INCFILE *)CMemAlloc( offsetof( INCFILE, filename ) + len + 1 );
+    ifile->len = len;
+    strcpy( ifile->filename, filename );
+    AddIncFile( ifile );
 }
 
 void FreeIncFileList( void )
@@ -1130,8 +1137,8 @@ void FreeIncFileList( void )
 
 RDIRPTR AddRDir( char *path )
 {
-    RDIRPTR   dirlist;
-    RDIRPTR  *lnk;
+    RDIRPTR     dirlist;
+    RDIRPTR     *lnk;
 
     for( lnk = &RDirNames; (dirlist = *lnk) != NULL; lnk = &dirlist->next ) {
         if( stricmp( path, dirlist->name ) == 0 ) {
@@ -1139,8 +1146,7 @@ RDIRPTR AddRDir( char *path )
         }
     }
     if( dirlist == NULL ) {
-        dirlist = (RDIRPTR)CMemAlloc( strlen( path )
-                            + sizeof( struct rdir_list ) );
+        dirlist = (RDIRPTR)CMemAlloc( offsetof( rdir_list, name ) + strlen( path ) + 1 );
         dirlist->next = NULL;
         strcpy( dirlist->name, path );
         *lnk = dirlist;
@@ -1352,10 +1358,9 @@ static void CPP_Parse( void )
         CppPrtChar( '\n' );
         OpenSrcFile( ForceInclude, FALSE );
     }
-    for( ;; ) {
+    CurToken = T_NULL;
+    while( CurToken != T_EOF ) {
         GetNextToken();
-        if( CurToken == T_EOF )
-            break;
         CppPrtToken();
     }
     MacroFini();
@@ -1427,7 +1432,7 @@ void GetNextToken( void )
     if( MacroPtr != NULL ) {
         GetMacroToken();
     } else {
-        for( ; CurrChar != EOF_CHAR; ) {
+        while( CurrChar != EOF_CHAR ) {
             if( (CharSet[ CurrChar ] & C_WS) == 0 )
                 break;
             if( CurrChar != '\r' )

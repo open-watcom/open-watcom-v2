@@ -33,31 +33,31 @@
 #define __PDEFN2_H
 
 #if _CPU == 370
-global  linkage_regs            DefaultLinkage;
-global  linkage_regs            OSLinkage;
+global  linkage_regs    DefaultLinkage;
+global  linkage_regs    OSLinkage;
 #endif
-global  hw_reg_set              DefaultParms[];
-global  hw_reg_set              CdeclParms[];
-global  hw_reg_set              PascalParms[];
-global  hw_reg_set              DefaultVarParms[];
-global  hw_reg_set              RegBits[];
-global  char                    Registers[];
-global  struct  aux_info        InlineInfo;
-global  struct  inline_funcs    SInline_Functions[];
-global  struct  inline_funcs    Inline_Functions[];
+global  hw_reg_set      DefaultParms[];
+global  hw_reg_set      CdeclParms[];
+global  hw_reg_set      PascalParms[];
+global  hw_reg_set      DefaultVarParms[];
+global  hw_reg_set      RegBits[];
+global  char            Registers[];
+global  aux_info        InlineInfo;
+global  inline_funcs    SInline_Functions[];
+global  inline_funcs    Inline_Functions[];
 #if _CPU == 8086
-global  struct  inline_funcs    ZF_Data_Functions[];
-global  struct  inline_funcs    ZP_Data_Functions[];
-global  struct  inline_funcs    DF_Data_Functions[];
-global  struct  inline_funcs    DP_Data_Functions[];
+global  inline_funcs    ZF_Data_Functions[];
+global  inline_funcs    ZP_Data_Functions[];
+global  inline_funcs    DF_Data_Functions[];
+global  inline_funcs    DP_Data_Functions[];
 #else
-global  struct  inline_funcs    Flat_Functions[];
-global  struct  inline_funcs    BigData_Functions[];
-global  struct  inline_funcs    BigDataNoDs_Functions[];
-global  struct  inline_funcs    SBigData_Functions[];
-global  struct  inline_funcs    SBigDataNoDs_Functions[];
+global  inline_funcs    Flat_Functions[];
+global  inline_funcs    BigData_Functions[];
+global  inline_funcs    BigDataNoDs_Functions[];
+global  inline_funcs    SBigData_Functions[];
+global  inline_funcs    SBigDataNoDs_Functions[];
 #endif
-global  struct  inline_funcs    Common_Functions[];
-global  struct  inline_funcs    _8087_Functions[];
+global  inline_funcs    Common_Functions[];
+global  inline_funcs    _8087_Functions[];
 
 #endif

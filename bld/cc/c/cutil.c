@@ -34,8 +34,9 @@
 
 void MustRecog( TOKEN this_token )
 {
-    if( CurToken != this_token ) {
-        Expecting( Tokens[ this_token ] );
+    if( ExpectingToken( this_token ) ) {
+        NextToken();
+    } else {
 /*      if( CurToken != T_LEFT_BRACE && CurToken != T_RIGHT_BRACE */
         if( CurToken != T_EOF ) {
             if( CurToken == T_SEMI_COLON ) {    /* 13-nov-94 */
@@ -51,12 +52,10 @@ void MustRecog( TOKEN this_token )
                 NextToken();
             }
         }
-    } else {
-        NextToken();
     }
 }
 
-static char *NameOfToken( void )
+static char *NameOfCurToken( void )
 {
     char        *token;
 
@@ -77,46 +76,51 @@ static char *NameOfToken( void )
 
 void Expecting( char *a_token )
 {
-    if( CurToken == T_EOF ) {
-        CErr2p( ERR_EXPECTING_BUT_FOUND_END_OF_FILE, a_token );
-    } else {
-        CErr3p( ERR_EXPECTING_BUT_FOUND, a_token, NameOfToken() );
-    }
+    CErr3p( ERR_EXPECTING_BUT_FOUND, a_token, NameOfCurToken() );
 }
 
-void ExpectingAfter( char *a_token, char *after_token )
+int ExpectingToken( TOKEN token )
 {
-    if( CurToken == T_EOF ) {
-        CErr3p( ERR_EXPECTING_AFTER_BUT_FOUND_END_OF_FILE, a_token, after_token );
-    } else {
-        CErr4p( ERR_EXPECTING_AFTER_BUT_FOUND, a_token, after_token, NameOfToken() );
+    if( CurToken == token ) {
+        return( 1 );
     }
+    CErr3p( ERR_EXPECTING_BUT_FOUND, Tokens[token], NameOfCurToken() );
+    return( 0 );
+}
+
+void ExpectingAfter( TOKEN token, TOKEN after_token )
+{
+    CErr4p( ERR_EXPECTING_AFTER_BUT_FOUND, Tokens[token], Tokens[after_token], NameOfCurToken() );
 }
 
 
 void ExpectEndOfLine( void )
 {
-    CErr2p( ERR_EXPECTING_END_OF_LINE_BUT_FOUND, NameOfToken() );
+    CErr2p( ERR_EXPECTING_END_OF_LINE_BUT_FOUND, NameOfCurToken() );
 }
 
 void ExpectIdentifier( void )
 {
-    CErr2p( ERR_EXPECTING_IDENTIFIER_BUT_FOUND, NameOfToken() );
+    CErr2p( ERR_EXPECTING_IDENTIFIER_BUT_FOUND, NameOfCurToken() );
 }
 
-void ExpectConstant( void )
+int ExpectingConstant( void )
 {
-    CErr2p( ERR_EXPECTING_CONSTANT_BUT_FOUND, NameOfToken() );
+    if( CurToken == T_CONSTANT ) {
+        return( 1 );
+    }
+    CErr2p( ERR_EXPECTING_CONSTANT_BUT_FOUND, NameOfCurToken() );
+    return( 0 );
 }
 
 void ExpectString( void )
 {
-    CErr2p( ERR_EXPECTING_STRING_BUT_FOUND, NameOfToken() );
+    CErr2p( ERR_EXPECTING_STRING_BUT_FOUND, NameOfCurToken() );
 }
 
 void ExpectStructUnionTag( void )
 {
-    CErr2p( ERR_EXPECTING_STRUCT_UNION_TAG_BUT_FOUND, NameOfToken() );
+    CErr2p( ERR_EXPECTING_STRUCT_UNION_TAG_BUT_FOUND, NameOfCurToken() );
 }
 
 

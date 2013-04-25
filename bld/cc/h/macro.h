@@ -58,23 +58,20 @@ typedef enum macro_flags {
 } macro_flags;
 
 typedef struct  macro_entry {
-    union {
-        struct  macro_entry     *next_macro;
-        int                     macro_index;    /* for pre-compiled header */
-    };
-    unsigned    macro_defn;     /* offset to defn, 0 ==>special macro name*/
-    unsigned    macro_len;      /* length of macro definition */
-    unsigned    parm_count;     /* special macro indicator if defn == 0 */
-    macro_flags macro_flags;    /* flags */
-    source_loc  src_loc;        /* where macro defined, for diagnostic */
-    char        macro_name[1];  /* name,parms, and macro definition */
+    struct macro_entry  *next_macro;    /* also used by pre-compiled header */
+    unsigned            macro_defn;     /* offset to defn, 0 ==>special macro name*/
+    unsigned            macro_len;      /* length of macro definition */
+    unsigned            parm_count;     /* special macro indicator if defn == 0 */
+    macro_flags         macro_flags;    /* flags */
+    source_loc          src_loc;        /* where macro defined, for diagnostic */
+    char                macro_name[1];  /* name,parms, and macro definition */
 } MEDEFN, *MEPTR;
 
 typedef struct  macro_stack {
-    struct  macro_stack *stacked_macro;
-    MEPTR   prev_macro;
-    char    **macro_parms;  /* pointer to array of actual parms */
-    char    *prev_ptr;
-    int     macro_class;    /* T_MACRO or T_MACRO_PARM */
-    char    macro_definition[1]; /* copy of current macro definition */
+    struct macro_stack  *stacked_macro;
+    MEPTR               prev_macro;
+    char                **macro_parms;          /* pointer to array of actual parms */
+    char                *prev_ptr;
+    int                 macro_class;            /* T_MACRO or T_MACRO_PARM */
+    char                macro_definition[1];    /* copy of current macro definition */
 } MSTACK, *MSTACKPTR;

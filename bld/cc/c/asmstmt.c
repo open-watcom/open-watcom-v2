@@ -42,8 +42,7 @@ static int EndOfAsmStmt( void )
         // ; .ASM comment
         for( ;; ) {
             NextToken();
-            if( ( CurToken == T_EOF )
-              || ( CurToken == T_NULL ) ) {
+            if( ( CurToken == T_EOF ) || ( CurToken == T_NULL ) ) {
                 break;
             }
         }
@@ -67,7 +66,7 @@ static void GetAsmLine( void )
     TOKEN       LastToken;
     char        buf[ MAX_ASM_LINE_LEN + 1 ];
 
-    CompFlags.pre_processing = 1;
+    PPCTL_ENABLE_EOL();
     AsmErrLine = TokenLoc.line;
     *buf = '\0';
     if( strcmp( Buffer, "_emit" ) == 0 ) {
@@ -78,9 +77,7 @@ static void GetAsmLine( void )
     for( ;; ) {
         if( EndOfAsmStmt() )
             break;
-        if(( LastToken != T_DOT )
-          && ( LastToken != T_BAD_CHAR )
-          && ( CurToken != T_XOR ))
+        if(( LastToken != T_DOT ) && ( LastToken != T_BAD_CHAR ) && ( CurToken != T_XOR ))
             strncat( buf, " ", MAX_ASM_LINE_LEN );
         strncat( buf, Buffer, MAX_ASM_LINE_LEN );
         LastToken = CurToken;
@@ -91,7 +88,7 @@ static void GetAsmLine( void )
         TokenLoc.line = AsmErrLine;
         AsmSysLine( buf );
     }
-    CompFlags.pre_processing = 0;
+    PPCTL_DISABLE_EOL();
 }
 
 void AsmStmt( void )
@@ -100,10 +97,12 @@ void AsmStmt( void )
     int             too_many_bytes;
     unsigned char   buff[ MAXIMUM_BYTESEQ + 32 ];
     TOKEN           skip_token;
+    ppctl_t         old_ppctl;
 
+    old_ppctl = CompFlags.pre_processing;
     // indicate that we are inside an __asm statement so scanner will
     // allow tokens unique to the assembler. e.g. 21h
-    CompFlags.inside_asm_stmt = 1;
+    PPCTL_ENABLE_ASM();
 
     NextToken();
     AsmSysInit( buff );
@@ -131,8 +130,7 @@ void AsmStmt( void )
         GetAsmLine();           // grab single assembler instruction
         skip_token = T_NULL;
     }
-    CompFlags.pre_processing = 0;
-    CompFlags.inside_asm_stmt = 0;
+    CompFlags.pre_processing = old_ppctl;
     AsmSysMakeInlineAsmFunc( too_many_bytes );
     AsmSysFini();
     if( CurToken == skip_token ) {

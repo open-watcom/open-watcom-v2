@@ -37,8 +37,6 @@
 #include "asciiout.h"
 #include "unicode.h"                                    /* 05-jun-91 */
 
-extern TREEPTR         CurFuncNode;
-
 static int RemoveEscapes( char *buf, const char *inbuf, size_t length );
 
 static int OpenUnicodeFile( const char *filename )

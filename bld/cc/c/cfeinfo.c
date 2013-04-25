@@ -43,6 +43,8 @@
 #include "autodept.h"
 #include "langenv.h"
 #include "feprotos.h"
+#include "cfeinfo.h"
+#include "caux.h"
 
 #define TRUNC_SYMBOL_HASH_LEN        4
 #define TRUNC_SYMBOL_LEN_WARN        120
@@ -187,7 +189,7 @@ int VarFunc( SYMPTR sym )
 
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
 
-static struct inline_funcs *Flat( struct inline_funcs *ifunc )
+static inline_funcs *Flat( inline_funcs *ifunc )
 {
   #if _CPU == 386
     byte_seq            **p;
@@ -204,9 +206,9 @@ static struct inline_funcs *Flat( struct inline_funcs *ifunc )
     return( ifunc );
 }
 
-struct inline_funcs *IF_Lookup( char *name )
+inline_funcs *IF_Lookup( char *name )
 {
-    struct inline_funcs     *ifunc;
+    inline_funcs     *ifunc;
 
     if( GET_FPU( ProcRevision ) > FPU_NONE ) {
         ifunc = _8087_Functions;
@@ -280,7 +282,7 @@ struct inline_funcs *IF_Lookup( char *name )
 }
 #endif
 
-struct aux_info *GetLangInfo( type_modifiers flags )
+aux_info *GetLangInfo( type_modifiers flags )
 {
     switch( flags & MASK_LANGUAGES ) {
     case LANG_WATCALL:
@@ -307,7 +309,7 @@ struct aux_info *GetLangInfo( type_modifiers flags )
 /*
 //    return language specific info
 */
-static struct aux_info *LangInfo( type_modifiers flags, struct aux_info *inf )
+static aux_info *LangInfo( type_modifiers flags, aux_info *inf )
 {
     if( inf != &DefaultInfo )
         return( inf );
@@ -315,7 +317,7 @@ static struct aux_info *LangInfo( type_modifiers flags, struct aux_info *inf )
     return( GetLangInfo( flags ) );
 }
 
-int ParmsToBeReversed( int flags, struct aux_info *inf )
+int ParmsToBeReversed( int flags, aux_info *inf )
 {
 #ifdef REVERSE
     inf = LangInfo( flags, inf );
@@ -331,11 +333,11 @@ int ParmsToBeReversed( int flags, struct aux_info *inf )
     return( 0 );
 }
 
-struct aux_info *InfoLookup( SYMPTR sym )
+aux_info *InfoLookup( SYMPTR sym )
 {
-    char                  *name;
-    struct aux_info       *inf;
-    struct aux_entry      *ent;
+    char            *name;
+    aux_info        *inf;
+    aux_entry       *ent;
 
     name = sym->name;
     inf = &DefaultInfo;         /* assume default */
@@ -354,7 +356,7 @@ struct aux_info *InfoLookup( SYMPTR sym )
         }
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
         {
-            struct inline_funcs     *ifunc;
+            inline_funcs     *ifunc;
 
             ifunc = IF_Lookup( name );
             if( ifunc == NULL )
@@ -401,12 +403,12 @@ struct aux_info *InfoLookup( SYMPTR sym )
     return( inf );
 }
 
-struct aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
+aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
 {
-    SYM_ENTRY           sym_typedef;
-    struct aux_entry    *ent;
-    TYPEPTR             typ;
-    struct aux_info     *inf;
+    SYM_ENTRY       sym_typedef;
+    aux_entry       *ent;
+    TYPEPTR         typ;
+    aux_info        *inf;
 
     inf = &DefaultInfo;         /* assume default */
     if( sym_handle == 0 )
@@ -444,10 +446,8 @@ struct aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
         }
     }
 #if _CPU == 386
-    if( ( inf->flags & AUX_FLAG_FAR16 )
-      || ( sym->attrib & FLAG_FAR16 ) ) {
-        if( ( (sym->attrib & MASK_LANGUAGES) == LANG_PASCAL )
-          || ( inf->cclass & REVERSE_PARMS ) ) {
+    if( (inf->flags & AUX_FLAG_FAR16) || (sym->attrib & FLAG_FAR16) ) {
+        if( (sym->attrib & MASK_LANGUAGES) == LANG_PASCAL || (inf->cclass & REVERSE_PARMS) ) {
             return( &Far16PascalInfo );
         } else {
             return( &Far16CdeclInfo );
@@ -459,7 +459,7 @@ struct aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
 
 int FunctionAborts( SYM_ENTRY *sym, SYM_HANDLE sym_handle )  /* 09-apr-93 */
 {
-    struct aux_entry    *ent;
+    aux_entry    *ent;
 
     if( sym_handle != 0 ) {              /* 19-apr-93 */
         SymGet( sym, sym_handle );
@@ -473,106 +473,109 @@ int FunctionAborts( SYM_ENTRY *sym, SYM_HANDLE sym_handle )  /* 09-apr-93 */
     return( 0 );
 }
 
-void GetCallClass( SYM_HANDLE sym_handle )
+call_class GetCallClass( SYM_HANDLE sym_handle )
 {
-    struct aux_info     *inf;
+    aux_info            *inf;
     SYM_ENTRY           sym;
+    call_class          cclass;
 
-    CallClass = DefaultInfo.cclass;
+    cclass = DefaultInfo.cclass;
     if( sym_handle != 0 ) {
         inf = FindInfo( &sym, sym_handle );
         if( sym.flags & SYM_FUNCTION ) {
             if( inf != &DefaultInfo ) {
-                CallClass = inf->cclass;
+                cclass = inf->cclass;
             } else {
-                CallClass = GetLangInfo( sym.attrib )->cclass;
+                cclass = GetLangInfo( sym.attrib )->cclass;
 #if _CPU == 8086
                 if( TargSys == TS_WINDOWS ) {
                     if( sym.attrib & (LANG_CDECL | LANG_PASCAL) ) {
-                        CallClass |= FAT_WINDOWS_PROLOG;
+                        cclass |= FAT_WINDOWS_PROLOG;
                     }
                 }
 #endif
             }
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
             if( CompFlags.emit_names ) {
-                CallClass |= EMIT_FUNCTION_NAME;
+                cclass |= EMIT_FUNCTION_NAME;
             }
             if( sym.attrib & FLAG_FAR ) {
-                CallClass |= FAR_CALL;
+                cclass |= FAR_CALL;
                 if( sym.attrib & FLAG_NEAR ) {
-                    CallClass |= INTERRUPT;
+                    cclass |= INTERRUPT;
                 }
             } else if( sym.attrib & FLAG_NEAR ) {
-                CallClass &= ~ FAR_CALL;
+                cclass &= ~ FAR_CALL;
             }
 #endif
 #ifdef DLL_EXPORT
             if( sym.attrib & FLAG_EXPORT ) {  /* 12-mar-90 */
-                CallClass |= DLL_EXPORT;
+                cclass |= DLL_EXPORT;
             }
 #endif
 #ifdef LOAD_DS_ON_ENTRY
             if( sym.attrib & FLAG_LOADDS ) {  /* 26-apr-90 */
   #if 0 /* John - 11-mar-93 */          /* 21-feb-93 */
                 if( TargSys == TS_WINDOWS ) {
-                    CallClass |= FAT_WINDOWS_PROLOG;
+                    cclass |= FAT_WINDOWS_PROLOG;
                 } else {
-                    CallClass |= LOAD_DS_ON_ENTRY;
+                    cclass |= LOAD_DS_ON_ENTRY;
                 }
   #else
-                CallClass |= LOAD_DS_ON_ENTRY;
+                cclass |= LOAD_DS_ON_ENTRY;
   #endif
             }
 #endif
 #ifdef MAKE_CALL_INLINE
             if( IsInLineFunc( sym_handle ) ) {
-                CallClass |= MAKE_CALL_INLINE;
+                cclass |= MAKE_CALL_INLINE;
             }
 #endif
             if( VarFunc( &sym ) ) {
-                CallClass |= CALLER_POPS | HAS_VARARGS;
+                cclass |= CALLER_POPS | HAS_VARARGS;
             }
         }
     }
 #ifdef REVERSE
-    CallClass &= ~ REVERSE_PARMS;               /* 28-may-89 */
+    cclass &= ~ REVERSE_PARMS;               /* 28-may-89 */
 #endif
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
     if( sym_handle != 0 && sym.flags & SYM_FUNC_NEEDS_THUNK ) {
-        CallClass |= THUNK_PROLOG;
+        cclass |= THUNK_PROLOG;
     }
 #endif
 #ifdef PROLOG_HOOKS
     if( CompFlags.ep_switch_used != 0 ) {
-        CallClass |= PROLOG_HOOKS;
+        cclass |= PROLOG_HOOKS;
     }
 #endif
 #ifdef EPILOG_HOOKS
     if( CompFlags.ee_switch_used != 0 ) {
-        CallClass |= EPILOG_HOOKS;
+        cclass |= EPILOG_HOOKS;
     }
 #endif
 #ifdef GROW_STACK
     if( CompFlags.sg_switch_used ) {
-        CallClass |= GROW_STACK;
+        cclass |= GROW_STACK;
     }
 #endif
 #ifdef TOUCH_STACK
     if( CompFlags.st_switch_used ) {
-        CallClass |= TOUCH_STACK;
+        cclass |= TOUCH_STACK;
     }
 #endif
+    return( cclass );
 }
 
 static time_t *getFileDepTimeStamp( FNAMEPTR flist )
 {
     static time_t            stamp;
 
-#if ( ( _CPU == 8086 ) || ( _CPU == 386 ) ) && ( COMP_CFG_COFF == 0 )
-    stamp = _timet2dos( flist->mtime );
-#else
+#if _RISC_CPU || COMP_CFG_COFF
     stamp = flist->mtime;
+#else
+    /* OMF format */
+    stamp = _timet2dos( flist->mtime );
 #endif
     return( &stamp );
 }
@@ -645,14 +648,16 @@ static VOIDPTR NextLibrary( int index, aux_class request )
 //                returns the alias name, or NULL if alias refers to a symbol.
 //            ALIAS_SYMBOL
 //                returns the alias symbol, or NULL if alias refers to a name.
-//            ALIAS_SUBSTITUTE
-//                returns the name to be substituted for the alias.
+//            ALIAS_SUBST_NAME
+//                returns the name to be substituted for the alias, or NULL.
+//            ALIAS_SUBST_SYMBOL
+//                returns the symbol to be substituted for the alias, or NULL.
 //
-// Note: One of ALIAS_NAME and ALIAS_SYMBOL will always be 0/NULL and the other
+// Note: One of ALIAS..._NAME and ALIAS..._SYMBOL will always be 0/NULL and the other
 // will be valid, depending on which form of the pragma was used.
 static VOIDPTR NextAlias( int index, aux_class request )
 {
-    struct alias_list   *aliaslist;
+    alias_list          *aliaslist;
     SYM_HANDLE          alias_sym = NULL;
     SYM_HANDLE          subst_sym = NULL;
     const char          *alias_name = NULL;
@@ -715,9 +720,7 @@ static int GetParmsSize( CGSYM_HANDLE sym_handle )
                 if( typ->decl_type == TYPE_VOID )
                     break;
 
-                parm_size = TypeSize( typ );
-                parm_size = (parm_size + sizeof( target_int ) - 1)
-                            & -sizeof( target_int );
+                parm_size = _RoundUp( TypeSize( typ ), TARGET_INT );
                 total_parm_size += parm_size;
             }
         }
@@ -734,7 +737,7 @@ static char *GetNamePattern( CGSYM_HANDLE sym_handle )
 {
     char                 *pattern;
     SYM_ENTRY            sym;
-    struct aux_info      *inf;
+    aux_info             *inf;
 
     inf = FindInfo( &sym, sym_handle );
 #ifdef __SEH__
@@ -792,10 +795,12 @@ char *FEExtName( CGSYM_HANDLE sym_handle, int request )
         return( GetNamePattern( sym_handle ) );
     case EXTN_PRMSIZE:
         return( (char *)GetParmsSize( sym_handle ) );
+    case EXTN_CALLBACKNAME:
     default:
         return( NULL );
     }
 }
+
 
 static void addDefaultImports( void )
 {
@@ -1032,8 +1037,8 @@ static VOIDPTR NextImportS( int index, aux_class request )
     return( (char *)index );
 }
 
-
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
+
 /*
 //    This section is for
 //        8086
@@ -1044,7 +1049,7 @@ static VOIDPTR NextImportS( int index, aux_class request )
 VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
 {
     SYM_HANDLE           sym_handle = cgsym_handle;
-    struct aux_info *    inf;
+    aux_info             *inf;
     auto SYM_ENTRY       sym;
     static hw_reg_set    save_set;
 
@@ -1096,8 +1101,12 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
             return( ModuleName );
         }
     case CALL_CLASS:
-        GetCallClass( sym_handle );
-        return( &CallClass );
+        {
+            static call_class cclass;
+
+            cclass = GetCallClass( sym_handle );
+            return( &cclass );
+        }
     case FREE_SEGMENT:
         return( NULL );
     case NEXT_LIBRARY:
@@ -1199,7 +1208,7 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
 VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
 {
     SYM_HANDLE              sym_handle = cgsym_handle;
-    struct aux_info         *inf;
+    aux_info                *inf;
     auto SYM_ENTRY          sym;
     static hw_reg_set       save_set;
 
@@ -1219,8 +1228,12 @@ VOIDPTR FEAuxInfo( CGSYM_HANDLE cgsym_handle, int request )
             return( ModuleName );
         }
     case CALL_CLASS:
-        GetCallClass( sym_handle );
-        return( &CallClass );
+        {
+            static call_class cclass;
+
+            cclass = GetCallClass( sym_handle );
+            return( &cclass );
+        }
     case NEXT_LIBRARY:
     case LIBRARY_NAME:
         return( NextLibrary( (int)sym_handle, request ) );

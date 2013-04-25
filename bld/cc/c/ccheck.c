@@ -33,6 +33,7 @@
 #include "cgswitch.h"
 #include "pragdefn.h"
 #include "i64.h"
+#include "cfeinfo.h"
 
 
 /*  return types from TypeCheck */
@@ -56,8 +57,7 @@ typedef enum {
     AC,         /* assignment compatible */
 } cmp_type;
 
-extern struct aux_info  *GetLangInfo( type_modifiers flags );
-extern call_list        *CallNodeList;
+extern call_list    *CallNodeList;
 
 #define __  NO
 
@@ -649,7 +649,7 @@ extern void ChkCallParms( void )
     }
 }
 
-#define MAXSIZE        (sizeof( long )*8)
+#define MAXSIZE        TARGET_BITS
 
 static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
 {
@@ -680,9 +680,9 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
             }
             break;
         case TYPE_UINT:
-            if( sizeof( target_uint ) > 2 ) {
-                break;
-            }
+#if TARGET_INT > TARGET_SHORT
+            break;
+#endif
             // fall throught
         case TYPE_USHORT:
             if( opnd2->op.ulong_value > 0xffff ) {
@@ -692,9 +692,9 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
             }
             break;
         case TYPE_INT:
-            if( sizeof( target_uint ) > 2 ) {
-                break;
-            }
+#if TARGET_INT > TARGET_SHORT
+            break;
+#endif
             // fall throught
         case TYPE_SHORT:
             if( opnd2->op.long_value > 32767 ||

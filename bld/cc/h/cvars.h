@@ -52,6 +52,12 @@
     #define __SEH__
 #endif
 
+#ifdef __UNIX__
+    #define FNAMECMPSTR      strcmp      /* for case sensitive file systems */
+#else
+    #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
+#endif
+
 typedef char        *MACADDR_T; /* contains actual pointer to block of memory */
 typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 typedef void        *VOIDPTR;
@@ -81,13 +87,6 @@ typedef void        *VOIDPTR;
 #define MACRO_HASH_SIZE             4093
 #define MAX_PARM_LIST_HASH_SIZE     15
 
-#ifdef __UNIX__
-    #define FNAMECMPSTR      strcmp      /* for case sensitive file systems */
-#else
-    #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
-#endif
-
-
 global  char    *PCH_Start;     // start of precompiled memory block
 global  char    *PCH_End;       // end of precompiled memory block
 global  char    *PCH_Macros;    // macros loaded from pre-compiled header
@@ -116,9 +115,9 @@ global  char    *ForceInclude;
 #if _CPU == 370
 global  char    *AuxName;
 #endif
-global  struct  fname_list *FNames;     /* list of file names processed */
-global  struct  rdir_list *RDirNames;  /* list of read only directorys */
-global  struct  ialias_list *IAliasNames;  /* list of include aliases */
+global  fname_list *FNames;     /* list of file names processed */
+global  rdir_list *RDirNames;   /* list of read only directorys */
+global  ialias_list *IAliasNames;  /* list of include aliases */
 global  FILE    *ErrFile;       /* error file */
 global  FILE    *DefFile;       /* output for func prototypes */
 global  FILE    *CppFile;       /* output for preprocessor */
@@ -169,8 +168,8 @@ global  SYM_HANDLE SymExcept;   /* builtin symbol for '__Except' */
 global  SYM_HANDLE SymFinally;  /* builtin symbol for '__Finally' */
 global  SYM_HANDLE SymTryUnwind;/* builtin symbol for '__TryUnwind' */
 global  SYM_HANDLE TrySymHandle;/* builtin symbol for local try block */
-global  int     TryScope;       /* current scope of _try blocks */
-global  int     TryCount;       /* current number of _try blocks */
+global  tryindex_t TryScope;    /* current scope of _try blocks */
+global  tryindex_t TryCount;    /* current number of _try blocks */
 #endif
 global  SYM_HANDLE SymSTOW;     /* builtin symbol for 'rep stosw' */
 global  SYM_HANDLE SymSTOWB;    /* builtin symbol for 'rep stosw, stosb' */
@@ -240,7 +239,7 @@ global  char        Token[ MAX_LEVEL ];
 global  token_class Class[ MAX_LEVEL ];
 global  int         Level;
 
-global  struct  segment_list *SegListHead;
+global  segment_list *SegListHead;
 global  int     SegImport;              /* next segment # for import sym */
 global  int     SegData;                /* data segment # for -nd option */
 
@@ -290,15 +289,18 @@ typedef struct library_list {
     char                    libname[2]; // first char is priority '1'-'9' followed by library name
 } library_list;
 
-global library_list     *HeadLibs;
+global  library_list        *HeadLibs;
 
-global  struct alias_list {
+typedef struct alias_list {
     struct  alias_list      *next;
     const char              *name;  /* one of 'name', 'a_sym' is valid */
     SYM_HANDLE              a_sym;
     const char              *subst;
     SYM_HANDLE              s_sym;  /* one of 'subst', 's_sym' is valid */
-} *AliasHead;
+    char                    names[1];
+} alias_list;
+
+global  alias_list          *AliasHead;
 
 global  SYMPTR  CurFunc;        /* current function being worked on */
 global  SYM_ENTRY CurFuncSym;   /* for contents of current function symbol */
@@ -315,10 +317,13 @@ global  SEGADDR_T SymSegment;   /* segment # for symbol table buffers */
 global  TYPEPTR StringType;     /* "unsigned char *" for use by literals */
 global  TYPEPTR ConstCharType;  /* "const char" type */
 global  TYPEPTR StringArrayType;/* "unsigned char []" used by literals */
-global  struct nested_parm_lists {
-        struct nested_parm_lists *prev_list;
-        TYPEPTR *next_parm_type;
-} *NestedParms;
+
+typedef struct nested_parm_lists {
+    struct nested_parm_lists    *prev_list;
+    TYPEPTR                     *next_parm_type;
+} nested_parm_lists;
+
+global  nested_parm_lists   *NestedParms;
 
 #ifndef LARGEST_QUAD_INDEX
     #define LARGEST_QUAD_INDEX             0xFFFF
@@ -335,7 +340,7 @@ global  struct nested_parm_lists {
 
 #define MAX_SYM_SEGS  (LARGEST_SYM_INDEX/(SYMS_PER_BUF*SYMBUFS_PER_SEG)+1)
 
-global  struct seg_info SymSegs[MAX_SYM_SEGS];  /* segments for symbols */
+global  seg_info SymSegs[MAX_SYM_SEGS];  /* segments for symbols */
 
 #define STRING_HASH_SIZE        1024
 global  STR_HANDLE StringHash[STRING_HASH_SIZE];    /* string literals */
@@ -351,7 +356,7 @@ global  char    *SrcDepName;    /* name of first depend (sourcefile)*/
 global  char     DependForceSlash;/* type of slash to force to in depend output */
 global  int      PackAmount;    /* current packing alignment */
 global  int      GblPackAmount; /* packing alignment given on command line */
-global  struct textsegment *TextSegList; /* list of #pragma alloc_text segs*/
+global  textsegment *TextSegList; /* list of #pragma alloc_text segs*/
 
 typedef enum {
     SEGTYPE_CODE       = 1,     /* #pragma code_seg("segname","class") */
@@ -367,13 +372,39 @@ typedef struct extref_info {
     char                name[1];
 } extref_info;
 
-struct user_seg;
-
-global struct user_seg  *UserSegments;
-
 global extref_info      *ExtrefInfo;
 
-#if defined(__386__) && defined(__FLAT__) && defined(__WATCOMC__)
+global  int     (*NextChar)( void );
+global  struct debug_fwd_types *DebugNameList;
+
+global  unsigned Column;        /* skip to Column when reading */
+global  unsigned Trunc;         /* stop at Trunc when reading  */
+global  int     EnumRecSize;    /* size of largest enum entry */
+global  int     PreProcChar;
+global  TYPEPTR PrevProtoType;          /* prev func prototype */
+
+global  unsigned SegAlignment[FIRST_PRIVATE_SEGMENT];
+global  unsigned TargSys;
+global  unsigned DefDataSegment;  /* #pragma data_seg("segname","class") */
+global  textsegment *DefCodeSegment; /* #pragma code_seg("seg","c") */
+
+global  unsigned        UnrollCount;    /* #pragma unroll(#); */
+global  macro_flags     InitialMacroFlag;
+global  unsigned char   Stack87;
+global  char            *ErrorFileName;
+
+typedef struct undef_names {
+    struct undef_names  *next;
+    char                *name;
+} undef_names;
+
+global undef_names      *UndefNames;
+
+global  TREEPTR         CurFuncNode;
+
+//================= Function Prototypes ========================
+
+#if defined(__WATCOMC__) && defined(_M_IX86) && defined(__FLAT__)
 
 extern  int     far_strcmp( char *, char *, int );
 #pragma aux     far_strcmp = 0xf3        /* rep   */\
@@ -401,37 +432,7 @@ extern  void    far_memcpy( char *, char *, int );
 
 #endif
 
-global  int     (*NextChar)( void );
-global  struct debug_fwd_types *DebugNameList;
-
-global  unsigned Column;        /* skip to Column when reading */
-global  unsigned Trunc;         /* stop at Trunc when reading  */
-global  int     EnumRecSize;    /* size of largest enum entry */
-global  int     PreProcChar;
-global  TYPEPTR PrevProtoType;          /* prev func prototype */
-
-global  unsigned SegAlignment[FIRST_PRIVATE_SEGMENT];
-global  unsigned TargSys;
-global  unsigned DefDataSegment;  /* #pragma data_seg("segname","class") */
-global  struct textsegment *DefCodeSegment; /* #pragma code_seg("seg","c") */
-
-global  unsigned        UnrollCount;    /* #pragma unroll(#); */
-global  macro_flags     InitialMacroFlag;
-global  unsigned char   Stack87;
-global  char            *ErrorFileName;
-
-global struct  undef_names {
-    struct undef_names  *next;
-    char                *name;
-} *UndefNames;
-
-//================= Function Prototypes ========================
-
 extern  void    SetDBChar(int);                 /* casian */
-
-extern  struct aux_entry *AuxLookup( char * );  /* caux.c */
-extern  void    PragmaAuxInit( void );          /* caux.c */
-extern  void    PragmaAuxFini( void );          /* caux.c */
 
 extern  int     ChkCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, int topLevelCheck ); /*ccheck*/
 extern  int     ChkCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 ); /*ccheck*/
@@ -486,6 +487,7 @@ extern  void    GetNextToken(void);
 extern  void    EmitLine(unsigned,const char *);
 extern  void    EmitPoundLine(unsigned,const char *,int);
 
+extern  void    AddIncFile( INCFILE * );
 extern  void    AddIncFileList( const char *filename );
 extern  void    FreeIncFileList( void );
 
@@ -506,7 +508,9 @@ extern  TYPEPTR SkipDummyTypedef(TYPEPTR);
 extern  TYPEPTR TypeName(void);
 
 // cdecl2.c
-extern  void InvDecl( void );
+extern  void    InvDecl( void );
+extern  parm_list *NewParm( TYPEPTR, parm_list * );
+extern  TYPEPTR *MakeParmList( parm_list *, int, int );
 
 // cinfo.c
 extern  segment_id SymSegId( SYMPTR sym );
@@ -526,8 +530,8 @@ extern  void    DumpFuncDefn(void);             /* cdump */
 extern  void    SymDump(void);                  /* cdump */
 extern  char *  DiagGetTypeName(TYPEPTR typ);   /* cdump */
 
-extern  SEGADDR_T AccessSegment(struct seg_info *);     /* cems */
-extern  SEGADDR_T AllocSegment(struct seg_info *);      /* cems */
+extern  SEGADDR_T AccessSegment(seg_info *);    /* cems */
+extern  SEGADDR_T AllocSegment(seg_info *);     /* cems */
 
 extern  TYPEPTR EnumDecl(int);                  /* cenum */
 extern  ENUMPTR EnumLookup(int,char *);         /* cenum */
@@ -583,17 +587,7 @@ extern  TREEPTR BasedPtrNode(TYPEPTR,TREEPTR);
 extern  int     IsLValue(TREEPTR);
 extern  op_flags OpFlags( type_modifiers  flags );
 extern  type_modifiers FlagOps( op_flags ops );
-extern  FIELDPTR SearchFields( TYPEPTR *class_typ, unsigned long *field_offset,
-                               char *name );
-
-//cfeinfo.c
-extern  int     VarFunc(SYMPTR);
-extern  int     VarParm(SYMPTR);
-extern  void    GetCallClass(SYM_HANDLE);
-extern  struct aux_info *FindInfo(SYMPTR,SYM_HANDLE);
-extern  int     FunctionAborts(SYMPTR,SYM_HANDLE);
-extern  int     ParmsToBeReversed(int,struct aux_info *);
-extern  char    *SrcFullPath( char *, char const *, unsigned );
+extern  FIELDPTR SearchFields( TYPEPTR *class_typ, unsigned long *field_offset, char *name );
 
 //cfold.c
 extern  int64   LongValue64( TREEPTR leaf );
@@ -668,6 +662,8 @@ extern  void    CppStackFini(void);
 //cmacadd.c
 extern  void    AllocMacroSegment(unsigned);
 extern  void    FreeMacroSegments(void);
+extern  MEPTR   CreateMEntry(const char *);
+extern  void    FreeMEntry( MEPTR mentry );
 extern  void    MacLkAdd( MEPTR mentry, int len, macro_flags flags );
 extern  void    MacroAdd( MEPTR mentry, char *buf, int len, macro_flags flags );
 extern  int     MacroCompare(MEPTR,MEPTR);
@@ -724,8 +720,8 @@ extern  void    CPragmaInit( void );            /* cpragma */
 extern  void    CPragmaFini( void );            /* cpragma */
 extern  int     SetToggleFlag( char const *name, int const value ); /* cpragma */
 extern  void    CPragma(void);                  /* cpragma */
-extern  struct textsegment *LkSegName(char *,char *);   /* cpragma */
-extern  struct textsegment *NewTextSeg(char *,char *,char *);
+extern  textsegment *LkSegName(char *,char *);   /* cpragma */
+extern  textsegment *NewTextSeg(char *,char *,char *);
 extern  void    PragmaInit(void);               /* cpragma */
 extern  void    PragmaFini(void);               /* cpragma */
 extern  void    PragmaAuxInit(void);            /* cpragma */
@@ -847,8 +843,9 @@ extern  void    CCusage( void );                        /* cusage */
 
 extern  void    CErrSymName( int, SYMPTR,SYM_HANDLE );  /* cutil */
 extern  void    Expecting( char * );                    /* cutil */
-extern  void    ExpectingAfter( char *, char * );       /* cutil */
-extern  void    ExpectConstant( void );                 /* cutil */
+extern  int     ExpectingToken( TOKEN );                /* cutil */
+extern  void    ExpectingAfter( TOKEN, TOKEN );         /* cutil */
+extern  int     ExpectingConstant( void );              /* cutil */
 extern  void    ExpectEndOfLine( void );                /* cutil */
 extern  void    ExpectIdentifier( void );               /* cutil */
 extern  void    ExpectString( void );                   /* cutil */
@@ -875,14 +872,6 @@ extern  void    DBSetSymLoc( CGSYM_HANDLE, long );      /* dbsupp */
 extern  SYM_HANDLE GetBlockSymList( void );
 extern  void    InitStmt( void );
 extern  void    SwitchPurge( void );
-
-#ifndef min
-    #define min( a, b )  ((a < b ) ? (a) : (b))
-#endif
-
-#ifndef max
-    #define max( a, b )  ((a > b ) ? (a) : (b))
-#endif
 
 /* Macro to skip all typedefs and arrive at the underlying type */
 #define SKIP_TYPEDEFS( typeptr )                        \

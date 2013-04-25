@@ -33,6 +33,7 @@
 #include "cvars.h"
 #include "pragdefn.h"
 #include "pdefn2.h"
+#include "caux.h"
 
 
 extern  void    NextToken();            /* cscan */
@@ -46,7 +47,7 @@ extern  int     PragRecog();
 extern  void    PragCurrAlias();
 extern  hw_reg_set PragRegList();
 extern  void    PragManyRegSets(void);
-extern  struct aux_entry *AuxLookup();  /* caux.c */
+extern  aux_entry *AuxLookup();  /* caux.c */
 
 static  int     Offset;
 

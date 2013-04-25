@@ -31,6 +31,8 @@
 
 #include "cvars.h"
 #include "i64.h"
+#include "pragdefn.h"
+#include "cfeinfo.h"
 
 typedef struct block_entry {
     struct block_entry  *prev_block;
@@ -39,8 +41,8 @@ typedef struct block_entry {
     int         top_label;
     int         break_label;
     int         continue_label;
-    int         try_index;      /* TRY: current index */
-    int         parent_index;   /* TRY: parent index */
+    tryindex_t  try_index;      /* TRY: current index */
+    tryindex_t  parent_index;   /* TRY: parent index */
     TREEPTR     inc_var;        /* variable used in FOR statement */
     SYM_HANDLE  sym_list;       /* symbols defined in this block */
     bool        gen_endblock;   /* set if OPR_ENDBLOCK needed */
@@ -59,7 +61,6 @@ struct return_info {
 };
 
 extern int          NodeCount;
-TREEPTR             CurFuncNode;
 int                 LabelIndex;
 SYM_LISTS           *SymListHeads;
 
@@ -349,7 +350,7 @@ static int GrabLabels( void )
 }
 
 
-static void UnWindTry( int try_scope )
+static void UnWindTry( tryindex_t try_scope )
 {
 #ifdef __SEH__
     TREEPTR     tree;
@@ -393,14 +394,11 @@ static void ReturnStmt( SYM_HANDLE func_result, struct return_info *info )
     if( info->with != with ) {
         CErr1( ERR_INCONSISTENT_USE_OF_RETURN );
     }
-    block = BlockStack;                                 /* 16-apr-94 */
-    while( block != NULL ) {
-        if( (block->block_type == T__TRY) || (block->block_type == T___TRY) )
+    for( block = BlockStack; block != NULL; block = block->prev_block ) {
+        if( (block->block_type == T__TRY) || (block->block_type == T___TRY) ) {
+            UnWindTry( TRYSCOPE_NONE );
             break;
-        block = block->prev_block;
-    }
-    if( block != NULL ) {
-        UnWindTry( -1 );
+        }
     }
 }
 
@@ -519,10 +517,10 @@ static void JumpBreak( BLOCKPTR block )
 static void BreakStmt( void )
 {
     BLOCKPTR    block;
-    int         try_scope;
+    tryindex_t  try_scope;
 
     NextToken();
-    try_scope = -2;
+    try_scope = TRYSCOPE_UNDEF;
     block = BlockStack;
     if( block != NULL ) {
         while( block != LoopStack ) {
@@ -535,7 +533,7 @@ static void BreakStmt( void )
         }
     }
     if( block != NULL ) {
-        if( try_scope != -2 ) {
+        if( try_scope != TRYSCOPE_UNDEF ) {
             UnWindTry( try_scope );
         }
         JumpBreak( block );
@@ -571,21 +569,20 @@ static void LeaveStmt( void )
 static void ContinueStmt( void )
 {
     BLOCKPTR    block;
-    int         try_scope;
+    tryindex_t  try_scope;
 
     NextToken();
     if( LoopStack != NULL ) {
         if( ! DeadCode ) {                              /* 05-apr-92 */
-            try_scope = -2;
+            try_scope = TRYSCOPE_UNDEF;
             block = BlockStack;
             while( block != LoopStack ) {
-                if( ( block->block_type == T__TRY )
-                  || ( block->block_type == T___TRY ) ) {
+                if( ( block->block_type == T__TRY ) || ( block->block_type == T___TRY ) ) {
                     try_scope = block->parent_index;
                 }
                 block = block->prev_block;
             }
-            if( try_scope != -2 ) {
+            if( try_scope != TRYSCOPE_UNDEF ) {
                 UnWindTry( try_scope );
             }
             if( LoopStack->continue_label == 0 ) {
@@ -735,27 +732,8 @@ static void EndForStmt( void )
 static void StmtExpr( void )
 {
     ChkStmtExpr();
-    switch( CurToken ) {
-    case T_IF:
-    case T_WHILE:
-    case T_DO:
-    case T_FOR:
-    case T_SWITCH:
-    case T_CASE:
-    case T_DEFAULT:
-    case T_BREAK:
-    case T_CONTINUE:
-    case T_RETURN:
-    case T_GOTO:
-    case T_LEFT_BRACE:
-    case T_RIGHT_BRACE:
-        Expecting( Tokens[ T_SEMI_COLON ] );
-        break;
-    default:
-        Expecting( Tokens[ T_SEMI_COLON ] );
-    case T_SEMI_COLON:
+    if( ExpectingToken( T_SEMI_COLON ) ) {
         NextToken();
-        break;
     }
 }
 
@@ -897,7 +875,7 @@ static SYM_HANDLE DummyTrySymbol( void )
 
 static int EndTry( void )
 {
-    int         parent_scope;
+    tryindex_t  parent_scope;
     TREEPTR     expr;
     TREEPTR     func;
     TREEPTR     tree;
@@ -1231,8 +1209,8 @@ void Statement( void )
     LoopStack = NULL;
     SwitchStack = NULL;
 #ifdef __SEH__
-    TryCount = -1;
-    TryScope = -1;
+    TryCount = TRYSCOPE_NONE;
+    TryScope = TRYSCOPE_NONE;
 #endif
     StartNewBlock();
     NextToken();                        // skip over {

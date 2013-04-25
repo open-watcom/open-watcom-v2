@@ -366,7 +366,7 @@ local void StoreIValue64( DATA_TYPE dtype, uint64 value )
     dq_ptr = &dq;
     dq.u.long64 = value;
     CompFlags.non_zero_data = 1;
-    GenDataQuad( &dq, sizeof( int64 ) );
+    GenDataQuad( &dq, TARGET_LONG64 );
 }
 
 
@@ -633,7 +633,7 @@ local void StoreInt64( TYPEPTR typ )
         FreeExprTree( tree );
         CompFlags.non_zero_data = 1;
     }
-    GenDataQuad( &dq, sizeof( int64 ) );
+    GenDataQuad( &dq, TARGET_LONG64 );
 }
 
 local FIELDPTR InitBitField( FIELDPTR field )
@@ -1050,7 +1050,8 @@ local void InitCharArray( TYPEPTR typ )
     if( CompFlags.wide_char_string )
         CErr1( ERR_TYPE_MISMATCH );
     len = str_lit->length;
-    if( typ->u.array->unspecified_dim )  typ->u.array->dimension = len;
+    if( typ->u.array->unspecified_dim )
+        typ->u.array->dimension = len;
     size = typ->u.array->dimension;
     if( len > size ) {
         if( (len - size) > 1 ) {
@@ -1105,7 +1106,7 @@ local void InitWCharArray( TYPEPTR typ )
         value = *pwc++;
         if( value != 0 ) CompFlags.non_zero_data = 1;
         dq.u.long_values[0] = value;
-        GenDataQuad( &dq, sizeof( target_short ) );
+        GenDataQuad( &dq, TARGET_WCHAR );
         ++i;
     }
     if( i < size ) {

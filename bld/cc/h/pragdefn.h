@@ -34,8 +34,10 @@
 #include "cgaux.h"
 #include "cmemmgr.h"
 #include "strsave.h"
-#include "auxflags.h"
 #include "callinfo.h"
+
+#define IS_KEYWORD(t)           (t >= FIRST_KEYWORD && t <= LAST_KEYWORD)
+#define IS_ID_OR_KEYWORD(t)     (t == T_ID || t >= FIRST_KEYWORD && t <= LAST_KEYWORD)
 
 typedef struct aux_entry {
     struct aux_entry    *next;
@@ -54,21 +56,20 @@ typedef struct inline_funcs {
     hw_reg_set save;        /* registers not modified */
 } inline_funcs;
 
-struct toggle {
+typedef struct toggle {
     char *name;
     int flag;
-};
+} toggle;
 
-global struct aux_entry         *AuxList;
-global struct aux_info          *CurrAlias;
-global struct aux_entry         *CurrEntry;
-global struct aux_info          *CurrInfo;
-global struct aux_info          *DftCallConv;
+global aux_entry        *AuxList;
+global aux_info         *CurrAlias;
+global aux_entry        *CurrEntry;
+global aux_info         *CurrInfo;
+global aux_info         *DftCallConv;
 
 #if _CPU == 386
-global struct aux_info          STOSBInfo;
+global aux_info         STOSBInfo;
 #endif
-global call_class               CallClass;
 
 #define MAX_POSSIBLE_REG        8
 

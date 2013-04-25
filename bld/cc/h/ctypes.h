@@ -147,16 +147,16 @@ typedef struct string_literal *STR_HANDLE;
 
 #define SYM_INVALID     ((SYM_HANDLE)~0)    // invalid symbol; never a real sym
 
-struct parm_list {
-    struct  parm_list       *next_parm;
-    struct  type_definition *parm_type;
-};
+typedef struct parm_list {
+    struct parm_list        *next_parm;
+    struct type_definition  *parm_type;
+} parm_list;
 
-struct array_info {
+typedef struct array_info {
     unsigned long   dimension;
     int             refno;
     bool            unspecified_dim;    // or flexible array member?
-};
+} array_info;
 
 typedef enum BASED_KIND {
     BASED_NONE,
@@ -203,18 +203,15 @@ enum type_state {
 };
 
 typedef struct type_definition {
-    DATA_TYPE       decl_type;
-    enum type_state type_flags;
-    union {
-        struct type_definition * object;
-        int         object_index;       /* for pre-compiled headers */
-    };
-    struct  type_definition *next_type;
+    DATA_TYPE               decl_type;
+    enum type_state         type_flags;
+    struct type_definition  *object;    /* also used by pre-compiled headers */
+    struct type_definition  *next_type;
     union {
         dw_handle           dwarf_type; /* used for browsing info */
         dbug_type           debug_type; /* pass 2: debug type */
         int                 type_index; /* for pre-compiled hdrs */
-    };
+    } u1;
     union {
         struct {
             short int       segment;    /* TYPE_POINTER */
@@ -222,16 +219,10 @@ typedef struct type_definition {
             BASED_KIND      based_kind; /* kind of base variable    */
             type_modifiers  decl_flags; /* only symbols, fn and ptr have attribs */
         } p;
-        union {
-            struct tag_entry *tag;      /* STRUCT, UNION, ENUM */
-            int             tag_index;  /* for pre-compiled header */
-        };
+        struct tag_entry    *tag;       /* STRUCT, UNION, ENUM, also used by pre-compiled header */
         SYM_HANDLE          typedefn;   /* TYPE_TYPEDEF */
-        struct {
-            union {
-                struct type_definition **parms;/* TYPE_FUNCTION */
-                int         parm_index; /* for pre-compiled header */
-            };
+        struct {                        /* TYPE_FUNCTION */
+            struct type_definition **parms; /* also used by pre-compiled header */
             type_modifiers  decl_flags; /* only symbols, fn and ptr have attribs */
         } fn;
         struct {                        /* TYPE_FIELD or TYPE_UFIELD */
@@ -239,10 +230,7 @@ typedef struct type_definition {
             unsigned char field_start;  /* # of bits to << by */
             DATA_TYPE     field_type;   /* TYPE_xxxx of field */
         } f;
-        union {
-            struct array_info *array;   /* TYPE_ARRAY */
-            unsigned long array_dimension; /* for pre-compiled header */
-        };
+        array_info          *array;     /* TYPE_ARRAY, also used by pre-compiled header */
     } u;
 } TYPEDEFN, *TYPEPTR;
 
@@ -250,54 +238,39 @@ extern  void WalkTypeList( void (*func)(TYPEPTR) );
 extern  void WalkFuncTypeList( void (*func)(TYPEPTR,int) );
 
 typedef struct textsegment {    /* used for #pragma alloc_text(seg,func1,func2,...) */
-    union {
-        struct textsegment *next;
-        int textsegment_len;        /* for pre-compiled header */
-    };
+    struct textsegment *next;       /* also used by pre-compiled header */
     int     segment_number;
     int     index;
     char    segname[1];
 } textsegment;
 
 typedef struct fname_list {
-    union {
-        struct fname_list *next;
-        int    fname_len;           /* for pre-compiled header */
-    };
-    time_t   mtime;                 /* from stat.st_mtime */
-    unsigned index;
-    unsigned index_db;
-    bool     rwflag;
-    bool     once;
-    char    *fullpath;
-    char     name[1];
-} *FNAMEPTR;
+    struct fname_list   *next;      /* also used by pre-compiled header */
+    time_t              mtime;      /* from stat.st_mtime */
+    unsigned            index;
+    unsigned            index_db;
+    bool                rwflag;
+    bool                once;
+    char                *fullpath;
+    char                name[1];
+} fname_list, *FNAMEPTR;
 
 typedef struct rdir_list {
-    union {
-        struct rdir_list *next;
-        int    name_len;           /* for pre-compiled header */
-    };
-    char     name[1];
-} *RDIRPTR;
+    struct rdir_list    *next;      /* also used by pre-compiled header */
+    char                name[1];
+} rdir_list, *RDIRPTR;
 
 typedef struct ialias_list {
-    union {
-        struct ialias_list  *next;
-        int                 total_len;      /* for pre-compiled header */
-    };
-    union {
-        char                *real_name;
-        int                 alias_name_len; /* for pre-compiled header */
-    };
-    bool            is_lib;
-    char            alias_name[1];
-} *IALIASPTR;
+    struct ialias_list  *next;      /* also used by pre-compiled header */
+    char                *real_name; /* also used by pre-compiled header */
+    bool                is_lib;
+    char                alias_name[1];
+} ialias_list, *IALIASPTR;
 
 typedef struct incfile {
-    struct incfile  *nextfile;
-    int             len;
-    char            filename[1];
+    struct incfile      *nextfile;
+    int                 len;
+    char                filename[1];
 } INCFILE;
 
 typedef struct source_loc {
@@ -312,39 +285,29 @@ typedef struct xref_entry {
 
 extern  XREFPTR NewXref( XREFPTR );
 
-struct sym_hash_entry {   /* SYMBOL TABLE structure */
-    union {
-        struct sym_hash_entry   *next_sym;
-        int     hash_index;         /* for pre-compiled header */
-    };
-    union {
-        TYPEPTR     sym_type;
-        int         sym_type_index; /* for pre-compiled header */
-    };
+typedef struct sym_hash_entry {         /* SYMBOL TABLE structure */
+    struct sym_hash_entry   *next_sym;  /* also used by pre-compiled header */
+    TYPEPTR         sym_type;           /* also used by pre-compiled header */
     SYM_HANDLE      handle;
-#if defined(  __386__ )
+#if defined( _M_IX86 ) || defined( _M_X64 )
     unsigned char   level;
 #else
     int             level;
 #endif
     char            name[1];
-};
+} sym_hash_entry, *SYM_HASHPTR;
 
-typedef struct sym_hash_entry   *SYM_HASHPTR;
-typedef struct expr_node        *TREEPTR;
+typedef struct expr_node    *TREEPTR;
 
 typedef struct symtab_entry {           /* SYMBOL TABLE structure */
     char                *name;
-    union {
-        TYPEPTR         sym_type;
-        int             sym_type_index;     /* for pre-compiled header */
-    };
+    TYPEPTR             sym_type;       /* also used by pre-compiled header */
     SYM_HANDLE          handle;
     source_loc          src_loc;
     union {
         BACK_HANDLE     backinfo;
         int             hash_value;
-        temp_handle     return_var;         /* for the .R symbol */
+        temp_handle     return_var;     /* for the .R symbol */
     } info;
     union {
         struct {
@@ -357,18 +320,15 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
             TREEPTR         start_of_func;  /* starting tree node */
         } func;
     } u;
-    union {
-        struct textsegment  *seginfo;       /* 26-oct-91 */
-        int                 seginfo_index;  /* for pre-compiled header */
-    };
-    dw_handle       dwarf_handle;           /* used for browsing info; could be
+    textsegment         *seginfo;           /* also used by pre-compiled header */
+    dw_handle           dwarf_handle;       /* used for browsing info; could be
                                              * perhaps stored in 'info' union. */
-    type_modifiers  attrib;   /* LANG_CDECL, _PASCAL, _FORTRAN */
-    sym_flags       flags;
-#if defined(  __386__ )
-    unsigned char   level;
+    type_modifiers      attrib;             /* LANG_CDECL, _PASCAL, _FORTRAN */
+    sym_flags           flags;
+#if defined( _M_IX86 ) || defined( _M_X64 )
+    unsigned char       level;
 #else
-    int             level;
+    int                 level;
 #endif
     struct {
         unsigned char stg_class  : 3;
@@ -386,73 +346,58 @@ typedef struct parm_entry {
 
 
 typedef struct field_entry {
-    union {
-        struct field_entry *next_field;
-        int    field_len;           /* used for pre-compiled header */
-    };
-    union {
-        TYPEPTR field_type;
-        int     field_type_index;   /* used for pre-compiled header */
-    };
-    XREFPTR xref;
+    struct field_entry  *next_field;    /* also used by pre-compiled header */
+    TYPEPTR             field_type;     /* also used by pre-compiled header */
+    XREFPTR             xref;
 #if _CPU == 386
-    unsigned long offset;
+    unsigned long       offset;
 #else
-    unsigned offset;
+    unsigned            offset;
 #endif
-    type_modifiers  attrib;         /* LANG_CDECL, _PASCAL, _FORTRAN */
-    int     level;
-    int     hash;
-    struct  field_entry *next_field_same_hash;
-    char    name[1];
+    type_modifiers      attrib;         /* LANG_CDECL, _PASCAL, _FORTRAN */
+    int                 level;
+    int                 hash;
+    struct field_entry  *next_field_same_hash; /* also used by PCH for length */
+    char                name[1];
 } FIELD_ENTRY, *FIELDPTR;
 
 #define FIELD_HASH_SIZE SYM_HASH_SIZE
 
 typedef struct enum_entry {
-    struct enum_entry   *next_enum;     /* used in hash table */
+    struct enum_entry   *next_enum;     /* used in hash table, also used by PCH for length */
     struct enum_entry   *thread;        /* list belonging to same enum */
-    XREFPTR xref;
-    union {
-        struct tag_entry    *parent;
-        int                 enum_len;   /* for pre-compiled header */
-    };
-    int         hash;
-    uint64      value;
-    source_loc  src_loc;
-    char        name[1];
+    XREFPTR             xref;
+    struct tag_entry    *parent;        /* also used by pre-compiled header */
+    int                 hash;
+    uint64              value;
+    source_loc          src_loc;
+    char                name[1];
 } ENUMDEFN, *ENUMPTR;
 
 typedef struct tag_entry {
-    struct tag_entry *next_tag;
+    struct tag_entry    *next_tag;      /* also used by pre-compiled header */
+    TYPEPTR             sym_type;       /* also used by pre-compiled header */
+    XREFPTR             xref;
     union {
-        TYPEPTR sym_type;
-        int     sym_type_index;     /* for pre-compiled header */
-    };
-    XREFPTR xref;
-    union {
-        ENUMPTR  enum_list;         /* for ENUM */
-        FIELDPTR field_list;        /* for STRUCT or UNION */
+        ENUMPTR         enum_list;      /* for ENUM */
+        FIELDPTR        field_list;     /* for STRUCT or UNION */
     } u;
-    unsigned long size;             /* size of STRUCT, UNION or ENUM */
-    union {
-        int         refno;
-        int         tag_index;      /* for pre-compiled header */
-    };
-#if defined( __386__ )
-    unsigned short  hash;           /* hash value for tag */
-    unsigned char   level;
-    unsigned char   alignment;      /* alignment required */
+    unsigned long       size;           /* size of STRUCT, UNION or ENUM */
+    int                 refno;          /* also used by pre-compiled header */
+#if defined( _M_IX86 ) || defined( _M_X64 )
+    unsigned short      hash;           /* hash value for tag */
+    unsigned char       level;
+    unsigned char       alignment;      /* alignment required */
 #else
-    unsigned        hash;
-    int             level;
-    unsigned        alignment;
+    unsigned            hash;
+    int                 level;
+    unsigned            alignment;
 #endif
     union   {
-        ENUMPTR  last_enum;         /* for ENUM */
-        FIELDPTR last_field;        /* for STRUCT or UNION */
+        ENUMPTR         last_enum;         /* for ENUM */
+        FIELDPTR        last_field;        /* for STRUCT or UNION */
     };
-    char            name[1];
+    char                name[1];
 } TAGDEFN, *TAGPTR;
 
 #define TAG_HASH_SIZE   SYM_HASH_SIZE
@@ -528,11 +473,11 @@ typedef struct label_entry {
     char                    name[1];
 } LABELDEFN, *LABELPTR;
 
-struct segment_list {
+typedef struct segment_list {
     struct segment_list     *next_segment;
     int                     segment_number;
     unsigned                size_left;
-};
+} segment_list;
 
 struct debug_fwd_types {
     struct  debug_fwd_types *next;
@@ -541,10 +486,24 @@ struct debug_fwd_types {
     unsigned                scope;
 };
 
-struct seg_info {
+typedef struct seg_info {
     SEGADDR_T index;        /* segment #, EMS page #, disk seek # */
     unsigned allocated : 1; /* 1 => has been allocated */
-};
+} seg_info;
+
+typedef enum {
+    PPCTL_NORMAL          = 0x00, // expand macros, treat <eol> as white space
+    PPCTL_EOL             = 0x01, // return <end-of-line> as a token
+    PPCTL_NO_EXPAND       = 0x02, // don't expand macros
+    PPCTL_ASM             = 0x04, // pre-processor is in _asm statement
+} ppctl_t;
+
+#define PPCTL_ENABLE_ASM()      CompFlags.pre_processing |= PPCTL_ASM
+#define PPCTL_DISABLE_ASM()     CompFlags.pre_processing &= ~PPCTL_ASM
+#define PPCTL_ENABLE_EOL()      CompFlags.pre_processing |= PPCTL_EOL
+#define PPCTL_DISABLE_EOL()     CompFlags.pre_processing &= ~PPCTL_EOL
+#define PPCTL_ENABLE_MACROS()   CompFlags.pre_processing &= ~PPCTL_NO_EXPAND
+#define PPCTL_DISABLE_MACROS()  CompFlags.pre_processing |= PPCTL_NO_EXPAND
 
 struct comp_flags {
     unsigned label_dropped          : 1;
@@ -556,9 +515,8 @@ struct comp_flags {
     unsigned check_syntax           : 1;
     unsigned meaningless_stmt       : 1;
 
-    unsigned pre_processing         : 2;    /* values: 0,1,2 */
+    unsigned pre_processing         : 3;    /* pre-processor control bits */
     unsigned scanning_cpp_comment   : 1;
-    unsigned inside_asm_stmt        : 1;
     unsigned thread_data_present    : 1;    /* __declspec(thread) */
     unsigned in_finally_block       : 1;    /* in _finally { ... } */
     unsigned unix_ext               : 1;    /* like sizeof( void ) == 1 */
@@ -598,8 +556,8 @@ struct comp_flags {
     unsigned extended_defines       : 1;
     unsigned errfile_written        : 1;
     unsigned main_has_parms         : 1;    /* on if "main" has parm(s) */
-
     unsigned register_conventions   : 1;    /* on for -3r, off for -3s */
+
     unsigned pgm_used_8087          : 1;    /* on => 8087 ins. generated */
     unsigned emit_library_names     : 1;    /* on => put LIB name in obj */
     unsigned strings_in_code_segment: 1;    /* on => put strings in CODE */
@@ -607,15 +565,14 @@ struct comp_flags {
     unsigned strict_ANSI            : 1;    /* on => strict ANSI C (-zA)*/
     unsigned expand_macros          : 1;    /* on => expand macros in WCPP*/
     unsigned exception_filter_expr  : 1;    /* on => parsing _except(expr)*/
-
     unsigned exception_handler      : 1;    /* on => inside _except block*/
+
     unsigned comments_wanted        : 1;    /* on => comments wanted     */
     unsigned wide_char_string       : 1;    /* on => T_STRING is L"xxx"  */
     unsigned banner_printed         : 1;    /* on => banner printed      */
     unsigned undefine_all_macros    : 1;    /* on => -u all macros       */
     unsigned emit_browser_info      : 1;    /* -db emit broswer info */
     unsigned rescan_buffer_done     : 1;    /* ## re-scan buffer used up */
-
     unsigned cpp_output             : 1;    /* WCC doing CPP output      */
     unsigned cpp_output_to_file     : 1;    /* WCC doing CPP output to?.i*/
 
@@ -633,46 +590,44 @@ struct comp_flags {
     unsigned cpp_output_requested   : 1;    /* CPP output requested      */
     unsigned warnings_cause_bad_exit: 1;    /* warnings=>non-zero exit   */
     unsigned save_restore_segregs   : 1;    /* save/restore segregs      */
-
     unsigned has_winmain            : 1;    /* WinMain defined           */
     unsigned make_enums_an_int      : 1;    /* force all enums to be int */
+
     unsigned original_enum_setting  : 1;    /* reset value if pragma used*/
     unsigned zc_switch_used         : 1;    /* -zc switch specified   */
     unsigned use_unicode            : 1;    /* use unicode for L"abc" */
     unsigned op_switch_used         : 1;    /* -op force floats to mem */
     unsigned no_debug_type_names    : 1;    /* -d2~ switch specified  */
     unsigned asciiout_used          : 1;    /* (asciiout specified  */
-
     unsigned addr_of_auto_taken     : 1;    /*=>can't opt tail recursion*/
     unsigned sg_switch_used         : 1;    /* /sg switch used */
+
     unsigned bm_switch_used         : 1;    /* /bm switch used */
     unsigned bd_switch_used         : 1;    /* /bd switch used */
-
     unsigned bw_switch_used         : 1;    /* /bw switch used */
     unsigned zm_switch_used         : 1;    /* /zm switch used */
     unsigned has_libmain            : 1;    /* LibMain defined */
     unsigned ep_switch_used         : 1;    /* emit prolog hooks */
     unsigned ee_switch_used         : 1;    /* emit epilog hooks */
     unsigned dump_types_with_names  : 1;    /* -d3 information */
+
     unsigned ec_switch_used         : 1;    /* emit coverage hooks */
     unsigned jis_to_unicode         : 1;    /* convert JIS to UNICODE */
-
     unsigned using_overlays         : 1;    /* user doing overlays */
     unsigned unique_functions       : 1;    /* func addrs are unique */
     unsigned st_switch_used         : 1;    /* touch stack through esp */
     unsigned make_precompiled_header: 1;    /* make precompiled header */
     unsigned emit_dependencies      : 1;    /* include file dependencies*/
     unsigned multiple_code_segments : 1;    /* more than 1 code seg */
+
     unsigned returns_promoted       : 1;    /* return char/short as int */
     unsigned pending_dead_code      : 1;    /* aborts func in an expr */
-
     unsigned use_precompiled_header : 1;    /* use precompiled header */
     unsigned doing_macro_expansion  : 1;    /* doing macro expansion */
     unsigned no_pch_warnings        : 1;    /* disable PCH warnings */
     unsigned align_structs_on_qwords: 1;    /* for Alpha */
     unsigned no_check_inits         : 1;    /* ease init  type checking */
     unsigned no_check_qualifiers    : 1;    /* ease qualifier mismatch */
-    unsigned curdir_inc             : 1;    /* check current dir for include files */
 
     unsigned use_stdcall_at_number  : 1;    /* add @nn thing */
     unsigned rent                   : 1;    /* make re-entrant r/w split thind  */
@@ -681,11 +636,12 @@ struct comp_flags {
     unsigned generate_auto_depend   : 1;    /* Generate make auto depend file */
     unsigned c99_extensions         : 1;    /* C99 extensions enabled */
     unsigned use_long_double        : 1;    /* Make CC send long double types to code gen */
-
     unsigned track_includes         : 1;    /* report opens of include files */
+
     unsigned ignore_fnf             : 1;    /* ignore file not found errors */
     unsigned disable_ialias         : 1;    /* supress inclusion of _ialias.h */
     unsigned cpp_ignore_env         : 1;    /* ignore *INCLUDE env var(s) */
+    unsigned ignore_curr_dirs       : 1;    /* ignore current directories .,../h,../c, etc. */
     unsigned pragma_library         : 1;    /* pragma library simulate -zlf option */
 };
 

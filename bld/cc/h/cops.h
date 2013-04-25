@@ -135,6 +135,10 @@ typedef struct floatval {
     char                string[2];
 } FLOATVAL;
 
+typedef short           tryindex_t;
+#define TRYSCOPE_UNDEF  ((tryindex_t)-2)
+#define TRYSCOPE_NONE   ((tryindex_t)-1)
+
 struct expr_node;
 
 typedef struct  opnode {
@@ -170,9 +174,9 @@ typedef struct  opnode {
         struct { /* try_info */
             union {
                 SYM_HANDLE      try_sym_handle; // OPR_EXCEPT, OPR_FINALLY
-                short           try_index;      // OPR_TRY
+                tryindex_t      try_index;      // OPR_TRY
             };
-            short       parent_scope;
+            tryindex_t  parent_scope;
         } st;
         struct { /* ptr_conv_info */        // OPR_CONVERT_PTR
             char        oldptr_class;

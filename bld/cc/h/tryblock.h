@@ -29,6 +29,9 @@
 *
 ****************************************************************************/
 
+/*
+
+these structures are valid only for 32-bit OS2/NT targets
 
 struct  scope_entry {
         unsigned char           parent_scope;
@@ -51,3 +54,27 @@ struct  try_block {
         struct _EXCEPTION_RECORD *exception_info;
         struct _CONTEXT         *context_info;
 };
+
+next structure is defined as target specific for field offset calculation
+see CRTL startup directory for seh386.asm
+
+*/
+
+#if ( _CPU != 8086 )
+
+typedef target_ulong    target_pointer;
+
+struct  try_block {
+        target_pointer  next;
+        target_pointer  try_handler;
+        target_ulong    saved_EBP;
+        target_pointer  scope_table;
+        unsigned char   scope_index;
+        unsigned char   unwindflag;
+        unsigned char   unwind_index;
+        unsigned char   slack3;
+        target_pointer  exception_info;
+        target_pointer  context_info;
+};
+
+#endif

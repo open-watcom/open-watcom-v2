@@ -30,11 +30,15 @@
 ****************************************************************************/
 
 
+#ifdef __WATCOMC__
 #include <process.h>
+#endif
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
 #include "idedrv.h"
+#include "walloca.h"
+#include "watcom.h"
 
 #ifndef DLL_NAME
   #error DLL_NAME must be given with -d switch when DLL Driver
@@ -44,32 +48,48 @@
   #define DLL_NAME_STR _str(DLL_NAME)
 #endif
 
-int main( int count, char* args[] ){
+int main( int argc, char* argv[] ){
 /**********************************/
     IDEDRV  info;
-    char    *buffer;
-    int     len;
+#ifndef __UNIX__
+    char    *cmdline;
+    int     cmdlen;
+#endif
     int     retcode;                 // - return code
 
-    count = count;
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
     IdeDrvInit( &info, DLL_NAME_STR, NULL );
     retcode = IDEDRV_ERR_RUN_FATAL;
-    len = _bgetcmd( NULL, INT_MAX ) + 1;
-    buffer = malloc( len );
-    if( buffer != NULL ) {
-        _bgetcmd( buffer, len );
-        retcode = IdeDrvExecDLL( &info, buffer );
-        switch( retcode ) {
-          case IDEDRV_SUCCESS :
-          case IDEDRV_ERR_RUN :
-          case IDEDRV_ERR_RUN_EXEC :
-          case IDEDRV_ERR_RUN_FATAL :
-            break;
-          default :
-            retcode = IdeDrvPrintError( &info );
-            break;
+
+#ifndef __UNIX__
+    argc = argc;
+    argv = argv;
+    cmdline = NULL;
+    cmdlen = _bgetcmd( NULL, 0 );
+    if( cmdlen != 0 ) {
+        cmdlen++;               // add 1 for null char
+        cmdline = alloca( cmdlen );
+        if( cmdline != NULL ) {
+            _bgetcmd( cmdline, cmdlen );
         }
-        free( buffer );
     }
-    return retcode;
+    retcode = IdeDrvExecDLL( &info, cmdline );
+#else
+    retcode = IdeDrvExecDLLArgv( &info, argc, argv );
+#endif
+    switch( retcode ) {
+    case IDEDRV_SUCCESS :
+    case IDEDRV_ERR_RUN :
+    case IDEDRV_ERR_RUN_EXEC :
+    case IDEDRV_ERR_RUN_FATAL :
+        break;
+    default:
+        retcode = IdeDrvPrintError( &info );
+        break;
+    }
+//    IdeDrvUnloadDLL( &info );
+    return( retcode != IDEDRV_SUCCESS );
 }

@@ -110,7 +110,7 @@ hw_reg_set RegBits[] = {
 
 /*      INLINE FUNCTIONS */
 
-struct  aux_info        InlineInfo;
+aux_info        InlineInfo;
 
 /*
   here come the code bursts ...
@@ -362,7 +362,7 @@ byte_seq *FlatAlternates[] = {
 };
 
 /* these must also work in FLAT model */
-struct  inline_funcs SInline_Functions[] = {
+inline_funcs SInline_Functions[] = {
     { "strcpy", &S_strcpy, S_strcpy_parms, S_strcpy_ret, S_strcpy_saves },
     { "strcmp", &S_strcmp, S_strcmp_parms, S_strcmp_ret, S_strcmp_saves },
     { "strcat", &S_strcat, S_strcat_parms, S_strcat_ret, S_strcat_saves },
@@ -373,7 +373,7 @@ struct  inline_funcs SInline_Functions[] = {
 };
 
 /* these must also work in FLAT model */
-struct  inline_funcs Inline_Functions[] = {
+inline_funcs Inline_Functions[] = {
     { "strlen", &C_strlen, C_strlen_parms, C_strlen_ret, C_strlen_saves },
     { "strcpy", &C_strcpy, C_strcpy_parms, C_strcpy_ret, C_strcpy_saves },
     { "strcmp", &C_strcmp, C_strcmp_parms, C_strcmp_ret, C_strcmp_saves },
@@ -389,7 +389,7 @@ struct  inline_funcs Inline_Functions[] = {
     { NULL }
 };
 
-struct  inline_funcs SBigData_Functions[] = {
+inline_funcs SBigData_Functions[] = {
     { "strcpy", &Z_strcpy, Z_strcpy_parms, Z_strcpy_ret, Z_strcpy_saves },
     { "strcmp", &Z_strcmp, Z_strcmp_parms, Z_strcmp_ret, Z_strcmp_saves },
     { "strcat", &Z_strcat, Z_strcat_parms, Z_strcat_ret, Z_strcat_saves },
@@ -398,7 +398,7 @@ struct  inline_funcs SBigData_Functions[] = {
     { NULL }
 };
 
-struct  inline_funcs SBigDataNoDs_Functions[] = {
+inline_funcs SBigDataNoDs_Functions[] = {
     { "strcpy", &DP_strcpy, DP_strcpy_parms, DP_strcpy_ret, DP_strcpy_saves },
     { "strcmp", &DP_strcmp, DP_strcmp_parms, DP_strcmp_ret, DP_strcmp_saves },
     { "strcat", &DP_strcat, DP_strcat_parms, DP_strcat_ret, DP_strcat_saves },
@@ -407,7 +407,7 @@ struct  inline_funcs SBigDataNoDs_Functions[] = {
     { NULL }
 };
 
-struct  inline_funcs Flat_Functions[] = {
+inline_funcs Flat_Functions[] = {
     { "strcmp", &F_strcmp, F_strcmp_parms, F_strcmp_ret, F_strcmp_saves },
     { ".stosd", &F_stosd,  F_stosd_parms,  F_stosd_ret,  F_stosd_saves  },
     { ".stosw", &F_stosw,  F_stosw_parms,  F_stosw_ret,  F_stosw_saves  },
@@ -415,7 +415,7 @@ struct  inline_funcs Flat_Functions[] = {
     { NULL }
 };
 
-struct  inline_funcs BigData_Functions[] = {
+inline_funcs BigData_Functions[] = {
     { "strlen", &BD_strlen, BD_strlen_parms, BD_strlen_ret, BD_strlen_saves },
     { "strcpy", &BD_strcpy, BD_strcpy_parms, BD_strcpy_ret, BD_strcpy_saves },
     { "strcmp", &BD_strcmp, BD_strcmp_parms, BD_strcmp_ret, BD_strcmp_saves },

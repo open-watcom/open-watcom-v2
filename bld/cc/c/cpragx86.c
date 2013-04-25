@@ -35,13 +35,9 @@
 #include "pdefn2.h"
 #include "asmstmt.h"
 
-extern struct aux_info  *GetLangInfo( type_modifiers flags );
-
-extern  TREEPTR         CurFuncNode;
-
 static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
 static  int             AsmFuncNum;
-static  struct aux_info AuxInfo;
+static  aux_info        AuxInfo;
 
 #if _CPU == 386
 static  hw_reg_set      STOSBParms[] = {
@@ -163,7 +159,7 @@ static void CopyAuxInfo( void )
     if( CurrEntry == NULL ) {
         // Redefining a built-in calling convention
     } else {
-        CurrInfo = (struct aux_info *)CMemAlloc( sizeof( struct aux_info ) );
+        CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
         *CurrInfo = *CurrAlias;
     }
     if( AuxInfo.code != NULL ) {
@@ -220,25 +216,25 @@ static int GetAliasInfo( void )
     int     isfar16;
 
     if( CurToken != T_LEFT_PAREN )          // #pragma aux symbol .....
-        return( 1 );
+        return( IS_ID_OR_KEYWORD( CurToken ) );
     NextToken();
-    if( CurToken != T_ID )                  // error
+    if( !IS_ID_OR_KEYWORD( CurToken ) )     // error
         return( 0 );
     LookAhead();
     if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
         PragCurrAlias( SavedId );
         AdvanceToken();
         NextToken();
-        return( 1 );
+        return( IS_ID_OR_KEYWORD( CurToken ) );
     } else if( LAToken == T_COMMA ) {       // #pragma aux (symbol, alias)
         HashValue = SavedHash;
         SetCurrInfo( SavedId );
         AdvanceToken();
         NextToken();
-        if( CurToken != T_ID )              // error
+        if( !IS_ID_OR_KEYWORD( CurToken ) ) // error
             return( 0 );
         isfar16 = PragRecog( "far16" );
-        if( CurToken == T_ID ) {
+        if( IS_ID_OR_KEYWORD( CurToken ) ) {
             PragCurrAlias( Buffer );
             NextToken();
         }
@@ -450,8 +446,7 @@ static int InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code 
             if( fix != NULL && fix->fixup_loc == (src - buff) ) {
                 name = fix->name;
                 if( name != NULL ) {
-                    sym_handle = SymLook( CalcHash( name, strlen( name ) ),
-                                name );
+                    sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
                     if( sym_handle == 0 ) {
                         CErr2p( ERR_UNDECLARED_SYM, name );
                         return( 0 );
@@ -597,7 +592,7 @@ static int InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code 
         len = dst - temp;
         perform_fixups = TRUE;
     }
-    seq = (byte_seq *)CMemAlloc( sizeof( byte_seq ) + len );
+    seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + len );
     seq->relocs = perform_fixups;
     seq->length = len;
     memcpy( &seq->data[0], buff, len );
@@ -626,9 +621,7 @@ local void FreeAsmFixups( void )
 {
     struct asmfixup     *fix;
 
-    for( ;; ) {
-        fix = FixupHead;
-        if( fix == NULL ) break;
+    for( ; (fix = FixupHead) != NULL; ) {
         FixupHead = fix->next;
         CMemFree( fix );
     }
@@ -659,7 +652,7 @@ local int GetByteSeq( byte_seq **code )
 #endif
 
     AsmSysInit( buff );
-    CompFlags.pre_processing = 1;       /* enable macros */
+    PPCTL_ENABLE_MACROS();
     NextToken();
     too_many_bytes = 0;
     uses_auto = 0;
@@ -700,7 +693,7 @@ local int GetByteSeq( byte_seq **code )
                 }
 #endif
             } else { /* seg or offset */
-                if( CurToken != T_ID ) {
+                if( !IS_ID_OR_KEYWORD( CurToken ) ) {
                     CErr1( ERR_EXPECTING_ID );
                 } else {
                     name = CStrSave( Buffer );
@@ -753,13 +746,13 @@ local int GetByteSeq( byte_seq **code )
             AsmCodeAddress = 0;          // reset index to we don't overrun buffer
         }
     }
+    PPCTL_DISABLE_MACROS();
     if( too_many_bytes ) {
-        FreeAsmFixups();
         uses_auto = 0;
     } else {
         uses_auto = InsertFixups( buff, AsmCodeAddress, code );
     }
-    CompFlags.pre_processing = 2;
+    FreeAsmFixups();
     AsmSysFini();
     return( uses_auto );
 }
@@ -962,71 +955,69 @@ void PragAux( void )
     } have;
 
     InitAuxInfo();
-    if( !GetAliasInfo() )
-        return;
-    if( CurToken != T_ID )
-        return;
-    SetCurrInfo( Buffer );
-    NextToken();
-    PragObjNameInfo( &AuxInfo.objname );
-    have.f_call   = 0;
-    have.f_loadds = 0;
-    have.f_rdosdev = 0;
-    have.f_export = 0;
-    have.f_parm   = 0;
-    have.f_value  = 0;
-    have.f_modify = 0;
-    have.f_frame = 0;
-    have.uses_auto = 0; /* BBB - Jan 26, 1994 */
-    for( ;; ) {
-        if( !have.f_call && CurToken == T_EQUAL ) {
-            have.uses_auto = GetByteSeq( &AuxInfo.code );
-            have.f_call = 1;
-        } else if( !have.f_call && PragRecog( "far" ) ) {
-            AuxInfo.cclass |= FAR_CALL;
-            have.f_call = 1;
-        } else if( !have.f_call && PragRecog( "near" ) ) {
-            AuxInfo.cclass &= ~FAR_CALL;
-            AuxInfoFlg.f_near = 1;
-            have.f_call = 1;
-        } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
-            AuxInfo.cclass |= LOAD_DS_ON_ENTRY;
-            have.f_loadds = 1;
-        } else if( !have.f_rdosdev && PragRecog( "rdosdev" ) ) {
-            AuxInfo.cclass |= LOAD_RDOSDEV_ON_ENTRY;
-            have.f_rdosdev = 1;
-        } else if( !have.f_export && PragRecog( "export" ) ) {
-            AuxInfo.cclass |= DLL_EXPORT;
-            have.f_export = 1;
-        } else if( !have.f_parm && PragRecog( "parm" ) ) {
-            GetParmInfo();
-            have.f_parm = 1;
-        } else if( !have.f_value && PragRecog( "value" ) ) {
-            GetRetInfo();
-            have.f_value = 1;
-        } else if( !have.f_value && PragRecog( "aborts" ) ) {
-            AuxInfo.cclass |= SUICIDAL;
-            have.f_value = 1;
-        } else if( !have.f_modify && PragRecog( "modify" ) ) {
-            GetSaveInfo();
-            have.f_modify = 1;
-        } else if( !have.f_frame && PragRecog( "frame" ) ) {
-            AuxInfo.cclass |= GENERATE_STACK_FRAME;
-            have.f_frame = 1;
-        } else {
-            break;
+    if( GetAliasInfo() ) {
+        SetCurrInfo( Buffer );
+        NextToken();
+        PragObjNameInfo( &AuxInfo.objname );
+        have.f_call   = 0;
+        have.f_loadds = 0;
+        have.f_rdosdev = 0;
+        have.f_export = 0;
+        have.f_parm   = 0;
+        have.f_value  = 0;
+        have.f_modify = 0;
+        have.f_frame = 0;
+        have.uses_auto = 0; /* BBB - Jan 26, 1994 */
+        for( ;; ) {
+            if( !have.f_call && CurToken == T_EQUAL ) {
+                have.uses_auto = GetByteSeq( &AuxInfo.code );
+                have.f_call = 1;
+            } else if( !have.f_call && PragRecog( "far" ) ) {
+                AuxInfo.cclass |= FAR_CALL;
+                have.f_call = 1;
+            } else if( !have.f_call && PragRecog( "near" ) ) {
+                AuxInfo.cclass &= ~FAR_CALL;
+                AuxInfoFlg.f_near = 1;
+                have.f_call = 1;
+            } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
+                AuxInfo.cclass |= LOAD_DS_ON_ENTRY;
+                have.f_loadds = 1;
+            } else if( !have.f_rdosdev && PragRecog( "rdosdev" ) ) {
+                AuxInfo.cclass |= LOAD_RDOSDEV_ON_ENTRY;
+                have.f_rdosdev = 1;
+            } else if( !have.f_export && PragRecog( "export" ) ) {
+                AuxInfo.cclass |= DLL_EXPORT;
+                have.f_export = 1;
+            } else if( !have.f_parm && PragRecog( "parm" ) ) {
+                GetParmInfo();
+                have.f_parm = 1;
+            } else if( !have.f_value && PragRecog( "value" ) ) {
+                GetRetInfo();
+                have.f_value = 1;
+            } else if( !have.f_value && PragRecog( "aborts" ) ) {
+                AuxInfo.cclass |= SUICIDAL;
+                have.f_value = 1;
+            } else if( !have.f_modify && PragRecog( "modify" ) ) {
+                GetSaveInfo();
+                have.f_modify = 1;
+            } else if( !have.f_frame && PragRecog( "frame" ) ) {
+                AuxInfo.cclass |= GENERATE_STACK_FRAME;
+                have.f_frame = 1;
+            } else {
+                break;
+            }
         }
+        if( have.uses_auto ) {
+            /*
+               We want to force the calling routine to set up a [E]BP frame
+               for the use of this pragma. This is done by saying the pragma
+               modifies the [E]SP register. A kludge, but it works.
+            */
+            HW_CTurnOn( AuxInfo.save, HW_SP );
+        }
+        CopyAuxInfo();
+        PragEnding();
     }
-    if( have.uses_auto ) {
-        /*
-           We want to force the calling routine to set up a [E]BP frame
-           for the use of this pragma. This is done by saying the pragma
-           modifies the [E]SP register. A kludge, but it works.
-        */
-        HW_CTurnOn( AuxInfo.save, HW_SP );
-    }
-    CopyAuxInfo();
-    PragEnding();
 }
 
 void AsmSysInit( unsigned char *buf )
@@ -1053,12 +1044,13 @@ void AsmSysMakeInlineAsmFunc( int code_ovrflw )
     int                 uses_auto;
     char                name[8];
 
+    code_ovrflw = code_ovrflw;
     code_length = AsmCodeAddress;
     if( code_length != 0 ) {
         sprintf( name, "F.%d", AsmFuncNum );
         ++AsmFuncNum;
         CreateAux( name );
-        CurrInfo = (struct aux_info *)CMemAlloc( sizeof( struct aux_info ) );
+        CurrInfo = (aux_info *)CMemAlloc( sizeof( aux_info ) );
         *CurrInfo = WatcallInfo;
         CurrInfo->use = 1;
         CurrInfo->save = AsmRegsSaved;  // indicate no registers saved

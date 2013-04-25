@@ -315,9 +315,9 @@ int DoUnSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     } else {
         value = DoOp32( left, tree->op.opr, right, FALSE );
         if( const_type == TYPE_ULONG || const_type == TYPE_POINTER ) {
-            tree->op.long_value = value;
+            tree->op.ulong_value = value;
         } else {
-            tree->op.long_value = (target_uint)value;
+            tree->op.ulong_value = (target_uint)value;
         }
     }
     tree->op.opr = OPR_PUSHINT;
@@ -392,8 +392,8 @@ int64 LongValue64( TREEPTR leaf )
 #ifdef _LONG_DOUBLE_
         __LDI8( (long_double _WCNEAR *)&ld, (void _WCNEAR *)value.u._64 );
         return( value );
-#elif defined(__WATCOM_INT64__) || defined(__GNUC__)
-        value.u._64[0] = (long long)ld.value;
+#elif ( _INTEGRAL_MAX_BITS >= 64 )
+        value.u._64[0] = ld.value;
         return( value );
 #else
         val32 = ld.value;
@@ -512,7 +512,7 @@ int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         if( const_type  == TYPE_LONG64 ) {
             tree->op.long64_value = value;
         } else {
-            tree->op.long_value = value.u._32[L];
+            tree->op.long_value = (signed_32)value.u._32[L];
         }
     }
     tree->op.opr = OPR_PUSHINT;
@@ -543,6 +543,28 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
         }
     } else {    // integer
         switch( leaf->op.const_type ) {
+        case TYPE_LONG64:
+#ifdef _LONG_DOUBLE_
+            __I8LD( &leaf->op.long64_value, (long_double near *)&ld );
+#elif ( _INTEGRAL_MAX_BITS >= 64 )
+            ld.value = (double)leaf->op.long64_value.u._64[0];
+#else
+
+    #error not implemented for compiler with integral max bits < 64
+            ld.value = 0;
+#endif
+            break;
+        case TYPE_ULONG64:
+#ifdef _LONG_DOUBLE_
+            __U8LD( &leaf->op.ulong64_value, (long_double near *)&ld );
+#elif ( _INTEGRAL_MAX_BITS >= 64 )
+            ld.value = (double)leaf->op.ulong64_value.u._64[0];
+#else
+
+    #error not implemented for compiler with integral max bits < 64
+            ld.value = 0;
+#endif
+            break;
         //signed types
         case TYPE_CHAR:
         case TYPE_SHORT:
@@ -554,32 +576,13 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
             ld.value = (double)leaf->op.long_value;
 #endif
             break;
-        case TYPE_LONG64:
-#ifdef _LONG_DOUBLE_
-            __I8LD( &leaf->op.long64_value, (long_double near *)&ld );
-#elif defined(__WATCOM_INT64__) || defined(__GNUC__)
-            ld.value = (double)leaf->op.ulong64_value.u._64[0];
-#else
-            ld.value = 0;//not implemented, issue a warning
-#endif
-            break;
         default:
         //unsigned types
-            if( leaf->op.const_type == TYPE_ULONG64 ) {
 #ifdef _LONG_DOUBLE_
-                __U8LD( &leaf->op.ulong64_value, (long_double near *)&ld );
-#elif defined(__WATCOM_INT64__) || defined(__GNUC__)
-                ld.value = (double)leaf->op.ulong64_value.u._64[0];
+            __U4LD( leaf->op.ulong_value, (long_double near *)&ld );
 #else
-                ld.value = 0;//not implemented, issue a warning
+            ld.value = (double)leaf->op.ulong_value;
 #endif
-            } else {
-#ifdef _LONG_DOUBLE_
-                __U4LD( leaf->op.long_value, (long_double near *)&ld );
-#else
-                ld.value = (double)leaf->op.ulong_value;
-#endif
-            }
             break;
         }
         flt = CMemAlloc( sizeof(FLOATVAL) );
@@ -918,7 +921,7 @@ void CastConstNode( TREEPTR leaf, TYPEPTR newtyp )
         leaf->op.flags = OpFlags( newtyp->u.p.decl_flags );
         // This really ought to be in CastConstValue, but that
         // function can't figure out the exact pointer size
-        if ( TypeSize( newtyp ) == sizeof( target_ushort ) ) {
+        if ( TypeSize( newtyp ) == TARGET_SHORT ) {
             leaf->op.ulong_value = (target_ushort)leaf->op.ulong_value;
         }
     }

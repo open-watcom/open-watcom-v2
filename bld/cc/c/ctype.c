@@ -161,7 +161,7 @@ void InitTypeHashTables( void )
     for( index = 0; index <= MAX_PARM_LIST_HASH_SIZE; ++index ) {
         FuncTypeHead[ index ] = NULL;
     }
-    for( base_type = TYPE_CHAR; base_type < TYPE_LAST_ENTRY; ++base_type ) {
+    for( base_type = TYPE_BOOL; base_type < TYPE_LAST_ENTRY; ++base_type ) {
         CTypeHash[ base_type ] = NULL;
         PtrTypeHash[ base_type ] = NULL;
     }
@@ -183,7 +183,7 @@ void CTypeInit( void )
     FieldCount = 0;
     EnumCount = 0;
     InitTypeHashTables();
-    for( base_type = TYPE_CHAR; base_type < TYPE_LAST_ENTRY; ++base_type ) {
+    for( base_type = TYPE_BOOL; base_type < TYPE_LAST_ENTRY; ++base_type ) {
         CTypeCounts[ base_type ] = 0;
         size = CTypeSizes[ base_type ];
         /*
@@ -235,12 +235,12 @@ void WalkTypeList( void (*func)(TYPEPTR) )
     TYPEPTR     typ;
     int         base_type;
 
-    for( base_type = TYPE_CHAR; base_type < TYPE_LAST_ENTRY; ++base_type ) {
+    for( base_type = TYPE_BOOL; base_type < TYPE_LAST_ENTRY; ++base_type ) {
         for( typ = CTypeHash[ base_type ]; typ; typ = typ->next_type ) {
             func( typ );
         }
     }
-    for( base_type = TYPE_CHAR; base_type < TYPE_LAST_ENTRY; ++base_type ) {
+    for( base_type = TYPE_BOOL; base_type < TYPE_LAST_ENTRY; ++base_type ) {
         for( typ = PtrTypeHash[ base_type ]; typ; typ = typ->next_type ) {
             func( typ );
         }
@@ -894,8 +894,7 @@ local unsigned long FieldAlign( unsigned long next_offset,
     if( align != 1 ) {
         unsigned long old_offset = next_offset;
 
-        next_offset += align - 1;
-        next_offset &= - (long)align;
+        next_offset = _RoundUp( next_offset, align );
         if( CompFlags.slack_byte_warning && (next_offset - old_offset) ) {
             CWarn2( WARN_LEVEL_1, ERR_SLACK_ADDED, (next_offset - old_offset) );
         }
@@ -1068,8 +1067,7 @@ local unsigned long GetFields( TYPEPTR decl )
                         next_offset += bits_total >> 3;
                     } else if( width == 0 ) {
                         /* no bits have been used; align to base type */
-                        next_offset += scalar_size - 1;
-                        next_offset &= ~( scalar_size - 1 );
+                        next_offset = _RoundUp( next_offset, scalar_size );
                     }
                     bits_available = scalar_size * 8;
                     bits_total = bits_available;
@@ -1112,8 +1110,7 @@ local unsigned long GetFields( TYPEPTR decl )
     }
     ClearFieldHashTable( decl->u.tag );
     decl->u.tag->alignment = worst_alignment;   /* 25-jul-91 */
-    struct_size += worst_alignment - 1;         /* 01-may-92 */
-    struct_size &= - (long)worst_alignment;
+    struct_size = _RoundUp( struct_size, worst_alignment );
     _CHECK_SIZE( struct_size );
     NextToken();
     struct_level--;
@@ -1252,8 +1249,7 @@ local unsigned long GetComplexFields( TYPEPTR decl )
 
 
     decl->u.tag->alignment = worst_alignment;
-    struct_size += worst_alignment - 1;
-    struct_size &= - (long)worst_alignment;
+    struct_size = _RoundUp( struct_size, worst_alignment );
     _CHECK_SIZE( struct_size );
     return( struct_size );
 }
@@ -1424,7 +1420,7 @@ TYPEPTR ArrayNode( TYPEPTR the_object )
     TYPEPTR     typ;
 
     typ = TypeNode( TYPE_ARRAY, the_object );
-    typ->u.array = CPermAlloc( sizeof( struct array_info ) );
+    typ->u.array = CPermAlloc( sizeof( array_info ) );
     return( typ );
 }
 

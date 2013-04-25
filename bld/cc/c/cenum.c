@@ -148,6 +148,7 @@ TYPEPTR EnumDecl( int flags )
     TYPEPTR     typ;
     TAGPTR      tag;
 
+    flags = flags;
     NextToken();
     if( CurToken == T_ID ) {
         /* could be: (1) "enum" <id> ";"

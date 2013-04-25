@@ -24,35 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C fron-end info function prototypes
 *
 ****************************************************************************/
 
 
-#include "cvars.h"
-
-void CSegFree( SEGADDR_T segment )
-{
-    FEfree( segment );
-}
-
-
-SEGADDR_T AllocSegment( seg_info *si )
-{
-    /* FEmalloc never returns NULL - it either allocates the memory
-     * or kills the compiler.
-     */
-    si->index = (SEGADDR_T)FEmalloc( 0x04000 );
-    si->allocated = 1;
-    return( si->index );
-}
-
-
-SEGADDR_T AccessSegment( seg_info *si )
-{
-    if( !si->allocated ) {
-        AllocSegment( si );
-    }
-    return( si->index );
-}
+extern int          VarFunc( SYMPTR );
+extern int          VarParm( SYMPTR );
+extern call_class   GetCallClass( SYM_HANDLE );
+extern aux_info     *FindInfo( SYMPTR, SYM_HANDLE );
+extern int          FunctionAborts( SYMPTR, SYM_HANDLE );
+extern int          ParmsToBeReversed( int, aux_info * );
+extern aux_info     *GetLangInfo( type_modifiers flags );
+extern char         *SrcFullPath( char *, char const *, unsigned );

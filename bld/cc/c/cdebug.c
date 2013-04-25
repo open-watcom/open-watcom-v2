@@ -53,9 +53,9 @@ static void InitDBType( void )
     ScopeEnum = DBScope( "enum" );
     typ = GetType( TYPE_PLAIN_CHAR );
     if( typ->decl_type == TYPE_UCHAR ){
-        typ->debug_type = DBScalar( "char", TY_UINT_1 );
+        typ->u1.debug_type = DBScalar( "char", TY_UINT_1 );
     }else{
-        typ->debug_type = DBScalar( "char", TY_INT_1 );
+        typ->u1.debug_type = DBScalar( "char", TY_INT_1 );
     }
     B_Int_1  = DBScalar( "signed char", TY_INT_1 );
     B_UInt_1 = DBScalar( "unsigned char", TY_UINT_1 );
@@ -221,15 +221,15 @@ dbug_type DBType( TYPEPTR typ )
     auto struct debug_fwd_types fwd_info, *fip;
     cg_type         cgtype;
 
-    if( typ->debug_type == DBG_FWD_TYPE ) {
+    if( typ->u1.debug_type == DBG_FWD_TYPE ) {
         fip = DebugNameList;
         while( fip->typ != typ )  fip = fip->next;
         if( fip->debug_name == NULL ) {
             fip->debug_name = DBBegName( "", fip->scope );
         }
-        typ->debug_type = DBForward( fip->debug_name );
+        typ->u1.debug_type = DBForward( fip->debug_name );
     }
-    if( typ->debug_type != DBG_NIL_TYPE )  return( typ->debug_type );
+    if( typ->u1.debug_type != DBG_NIL_TYPE )  return( typ->u1.debug_type );
 
     fwd_info.next = DebugNameList;
     fwd_info.typ = typ;
@@ -274,7 +274,7 @@ dbug_type DBType( TYPEPTR typ )
                                         fwd_info.scope );
         }
         DebugNameList = &fwd_info;
-        typ->debug_type = DBG_FWD_TYPE;
+        typ->u1.debug_type = DBG_FWD_TYPE;
         ret_val = DBTypeStruct( typ );
         if( fwd_info.debug_name != NULL ) {
             ret_val = DBEndName( fwd_info.debug_name, ret_val );
@@ -299,7 +299,7 @@ dbug_type DBType( TYPEPTR typ )
             if( !CompFlags.no_debug_type_names ) {
                 fwd_info.debug_name = DBBegName( sym.name, DBG_NIL_TYPE );
             }
-            typ->debug_type = DBG_FWD_TYPE;
+            typ->u1.debug_type = DBG_FWD_TYPE;
             DebugNameList = &fwd_info;
             ret_val = DBType( typ->object );
             if( fwd_info.debug_name != NULL ) {
@@ -318,7 +318,7 @@ dbug_type DBType( TYPEPTR typ )
         ret_val = DBIntegralType( typ->decl_type );
         break;
     }
-    typ->debug_type = ret_val;
+    typ->u1.debug_type = ret_val;
     return( ret_val );
 }
 
@@ -339,11 +339,11 @@ static void DumpFieldList( dbg_struct st,  unsigned long bias,
                         field_typ->u.tag->u.field_list, NULL );
         } else if(( field_typ->decl_type == TYPE_FIELD ) ||
             ( field_typ->decl_type == TYPE_UFIELD ) ) {
-            field_typ->debug_type = DBIntegralType(field_typ->u.f.field_type);
+            field_typ->u1.debug_type = DBIntegralType(field_typ->u.f.field_type);
             DBAddBitField( st, bias + pfield->offset,
                 field_typ->u.f.field_start,
                 field_typ->u.f.field_width, pfield->name,
-                field_typ->debug_type );
+                field_typ->u1.debug_type );
         } else if( field_obj != NULL
                 && field_typ->decl_type == TYPE_ARRAY
                 && field_typ->u.array->dimension == 0 ){
@@ -372,7 +372,7 @@ static dbug_type DBTypeStruct( TYPEPTR typ )
                                 typ->decl_type==TYPE_STRUCT );
     ret_val = DBStructForward( st );
     if( ret_val != DBG_NIL_TYPE ) {
-         typ->debug_type = ret_val;
+         typ->u1.debug_type = ret_val;
     }
     DumpFieldList( st, 0, typ->u.tag->u.field_list, obj );
     ret_val = DBEndStruct( st );

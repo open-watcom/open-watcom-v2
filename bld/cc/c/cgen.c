@@ -38,6 +38,7 @@
 #include "cgprotos.h"
 #include "feprotos.h"
 #include "cgen.h"
+#include "cfeinfo.h"
 
 extern  SYM_LISTS       *SymListHeads;
 extern  int             LabelIndex;
@@ -354,7 +355,7 @@ static void SetTryTable( back_handle except_table )
     CGDone( CGAssign( name, table, TY_POINTER ) );
 }
 
-static void SetTryScope( int scope )
+static void SetTryScope( tryindex_t scope )
 {
     cg_name     name;
 
@@ -414,13 +415,12 @@ static void CallTryFini( void )
     CallTryRtn( SymTryFini, name );
 }
 
-static void TryUnwind( int scope_index )
+static void CallTryUnwind( tryindex_t scope_index )
 {
     call_handle call_list;
     cg_name     parm;
 
-    call_list = CGInitCall( CGFEName( SymTryUnwind, TY_POINTER ),
-                            TY_INTEGER, SymTryUnwind );
+    call_list = CGInitCall( CGFEName( SymTryUnwind, TY_POINTER ), TY_INTEGER, SymTryUnwind );
     parm = CGInteger( scope_index, TY_UINT_1 );
     CGAddParm( call_list, parm, TY_INTEGER );
     CGDone( CGCall( call_list ) );
@@ -1081,7 +1081,7 @@ local void EmitNodes( TREEPTR tree )
             EndFinally();
             break;
         case OPR_UNWIND:
-            TryUnwind( node->st.try_index );
+            CallTryUnwind( node->st.try_index );
             break;
         case OPR_EXCEPT_CODE:
             op1 = TryExceptionInfoAddr();
@@ -1565,8 +1565,7 @@ local int DoFuncDefn( SYM_HANDLE funcsym_handle )
     parms_reversed = 0;
     sym_handle = CurFunc->u.func.parms;
     if( sym_handle ) {
-        GetCallClass( CurFuncHandle );
-        if( CallClass & REVERSE_PARMS ) {                       /* 22-jan-90 */
+        if( GetCallClass( CurFuncHandle ) & REVERSE_PARMS ) {                       /* 22-jan-90 */
             ParmReverse( sym_handle );
             parms_reversed = 1;
         } else {
@@ -1991,11 +1990,11 @@ local void EmitCS_Strings( void )
 static void GenerateTryBlock( TREEPTR tree )
 {
     TREEPTR     stmt;
-    int         try_index;
-    int         max_try_index;
+    tryindex_t  try_index;
+    tryindex_t  max_try_index;
 
     try_index = 0;
-    max_try_index = -1;
+    max_try_index = TRYSCOPE_NONE;
     for( ; tree != NULL; tree = tree->left ) {
         stmt = tree->right;
         if( stmt->op.opr == OPR_FUNCEND )
@@ -2014,7 +2013,7 @@ static void GenerateTryBlock( TREEPTR tree )
             break;
         }
     }
-    if( max_try_index != -1 ) {
+    if( max_try_index != TRYSCOPE_NONE ) {
         segment_id      old_segment;
         back_handle     except_label;
         back_handle     except_table;

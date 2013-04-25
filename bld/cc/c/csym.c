@@ -32,9 +32,9 @@
 #include "cvars.h"
 #include "cgswitch.h"
 #include "pragdefn.h"
+#include "caux.h"
 
 extern  void    CSegFree( SEGADDR_T );
-extern  TREEPTR CurFuncNode;
 
 unsigned    SymTypedef;
 
@@ -86,8 +86,8 @@ void SymInit( void )
 
 void SymFini( void )
 {
-    unsigned        seg_num;
-    struct seg_info *si;
+    unsigned    seg_num;
+    seg_info    *si;
 
     for( seg_num = 0; seg_num < MAX_SYM_SEGS; ++seg_num ) {
         si = &SymSegs[ seg_num ];
@@ -276,9 +276,9 @@ void SymCreate( SYMPTR sym, char *id )
 
 void SymAccess( unsigned sym_num )
 {
-    unsigned        buf_num;
-    unsigned        seg_num;
-    struct seg_info *si;
+    unsigned    buf_num;
+    unsigned    seg_num;
+    seg_info    *si;
 
     Cached_sym_num = sym_num;
     if( sym_num < FirstSymInBuf || sym_num >= FirstSymInBuf + SYMS_PER_BUF ) {
@@ -368,7 +368,7 @@ SYM_HASHPTR SymHash( SYMPTR sym, SYM_HANDLE sym_handle )
     int             sym_len;
 
     sym_len = strlen( sym->name );
-    hsym = SymHashAlloc( sizeof( struct sym_hash_entry ) + sym_len );
+    hsym = SymHashAlloc( offsetof( sym_hash_entry, name ) + sym_len + 1 );
     hsym->sym_type = NULL;
     if( sym->stg_class == SC_TYPEDEF ) {        /* 28-feb-92 */
         typ = sym->sym_type; {
@@ -584,7 +584,7 @@ local void ChkDefined( SYM_ENTRY *sym, SYM_NAMEPTR name )
             if( sym->stg_class == SC_STATIC ) {
                 if( sym->flags & SYM_FUNCTION ) {
                     /* Check to see if we have a matching aux entry with code attached */
-                    struct aux_entry * paux = AuxLookup( name );
+                    aux_entry   *paux = AuxLookup( name );
                     if( !paux || !paux->info || !paux->info->code ) {
                         CErr2p( ERR_FUNCTION_NOT_DEFINED, name );
                     }

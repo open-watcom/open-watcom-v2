@@ -179,6 +179,7 @@ void PragmaAuxInfoInit( int flag_stdatnum )
         StdcallInfo.objname = AUX_STRALLOC( "_*" );
     }
 #else
+    flag_stdatnum = flag_stdatnum;
     StdcallInfo.objname = AUX_STRALLOC( "_*" );
 #endif
 
@@ -406,8 +407,8 @@ void SetAuxDefaultInfo( void )
     }
 }
 
-int IsAuxInfoBuiltIn( struct aux_info *inf )
-/*****************************************/
+int IsAuxInfoBuiltIn( aux_info *inf )
+/***********************************/
 {
     if( inf == &DefaultInfo )
         return( TRUE );
@@ -442,8 +443,8 @@ int IsAuxInfoBuiltIn( struct aux_info *inf )
  * and useful for interoperability with IBM compilers.
  * NB: WatcallInfo.objname value depends on the -3r/3s switch.
  */
-char *VarNamePattern( struct aux_info *inf )
-/******************************************/
+char *VarNamePattern( aux_info *inf )
+/***********************************/
 {
     if( inf == &DefaultInfo )
         inf = DftCallConv;

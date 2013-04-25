@@ -33,8 +33,7 @@
 #include "cgswitch.h"
 #include "i64.h"
 
-extern  TYPEPTR     *MakeParmList( struct parm_list *, int, int );
-struct  parm_list   *NewParm( TYPEPTR, struct parm_list * );
+
 static  TYPEPTR     DeclPart2( TYPEPTR typ, type_modifiers mod );
 static  TYPEPTR     DeclPart3( TYPEPTR typ, type_modifiers mod );
 static  void        AbsDecl( SYMPTR sym, type_modifiers mod, TYPEPTR typ );
@@ -1330,12 +1329,12 @@ local TYPEPTR  *FuncProtoType( void );
 
 static TYPEPTR DeclPart3( TYPEPTR typ, type_modifiers mod )
 {
-    PARMPTR     parm_list;
+    PARMPTR     parms_list;
     TYPEPTR     *parms;
 
     parms = NULL;
     if( CurToken != T_RIGHT_PAREN ) {
-        parm_list = ParmList;
+        parms_list = ParmList;
         ParmList = NULL;
         parms = FuncProtoType();
         if( (parms == NULL) && (ParmList != NULL) ) {
@@ -1346,9 +1345,9 @@ static TYPEPTR DeclPart3( TYPEPTR typ, type_modifiers mod )
             /* Old-style declarations are obsolescent (ever since ANSI C89!) */
             CWarn1( WARN_OBSOLETE_FUNC_DECL, ERR_OBSOLETE_FUNC_DECL );
         }
-        if( parm_list != NULL )  {
+        if( parms_list != NULL )  {
             FreeParmList();
-            ParmList = parm_list;
+            ParmList = parms_list;
         }
     } else {
         NextToken();    /* skip over ')' */
@@ -1412,11 +1411,11 @@ local void CheckUniqueName( PARMPTR parm, char *name )  /* 13-apr-89 */
 }
 
 
-struct parm_list *NewParm( TYPEPTR typ, struct parm_list *prev_parm )
+parm_list *NewParm( TYPEPTR typ, parm_list *prev_parm )
 {
-    struct parm_list    *parm;
+    parm_list    *parm;
 
-    parm = (struct parm_list *)CMemAlloc( sizeof( struct parm_list ) );
+    parm = (parm_list *)CMemAlloc( sizeof( parm_list ) );
     parm->parm_type = typ;
     parm->next_parm = prev_parm;
     return( parm );
@@ -1447,7 +1446,7 @@ local TYPEPTR *GetProtoType( decl_info *first )
     PARMPTR             prev_parm = NULL;
     PARMPTR             parm_namelist;
     int                 parm_count;
-    struct parm_list    *parmlist;
+    parm_list           *parmlist;
     decl_state          state;
     declspec_class      declspec;
     stg_classes         stg_class;
@@ -1535,10 +1534,11 @@ local TYPEPTR *GetProtoType( decl_info *first )
 }
 
 
-TYPEPTR *MakeParmList( struct parm_list *parm, int parm_count, int reversed )
+TYPEPTR *MakeParmList( parm_list *parm, int parm_count, int reversed )
 {
     TYPEPTR             *type_list;
-    struct parm_list    *next_parm, *prev_parm;
+    parm_list           *next_parm;
+    parm_list           *prev_parm;
     TYPEPTR             typ;
     int                 index;
 
@@ -1625,10 +1625,8 @@ local TYPEPTR *FuncProtoType( void )
     FullDeclSpecifier( &info );
     if( (info.stg == SC_NULL) && (info.typ == NULL) ) {
         GetFuncParmList();
-        if( CurToken == T_RIGHT_PAREN ) {
+        if( ExpectingToken( T_RIGHT_PAREN ) ) {
             NextToken();
-        } else {
-            Expecting( ")" );                               /* 24-mar-91 */
         }
         type_list = NULL;
     } else {    /* function prototype present */
@@ -1638,10 +1636,8 @@ local TYPEPTR *FuncProtoType( void )
         } else {
             type_list = GetProtoType( &info );
         }
-        if( CurToken == T_RIGHT_PAREN ) {
+        if( ExpectingToken( T_RIGHT_PAREN ) ) {
             NextToken();
-        } else {
-            Expecting( ")" );                           /* 24-mar-91 */
         }
         if( CurToken != T_LEFT_BRACE ) {                /* 18-jan-89 */
             if( SymLevel > 1  ||                        /* 03-dec-90 */

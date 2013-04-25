@@ -94,7 +94,7 @@ hw_reg_set RegBits[] = {
 
 /*      INLINE FUNCTIONS */
 
-struct  aux_info        InlineInfo;
+aux_info        InlineInfo;
 
 
 /*
@@ -297,7 +297,7 @@ static hw_reg_set P_8087[]         = {
 };
 
 
-struct  inline_funcs SInline_Functions[] = {
+inline_funcs SInline_Functions[] = {
     { "strcpy", &S_strcpy, S_strcpy_parms, S_strcpy_ret, S_strcpy_saves },
     { "strcmp", &S_strcmp, S_strcmp_parms, S_strcmp_ret, S_strcmp_saves },
     { "strcat", &S_strcat, S_strcat_parms, S_strcat_ret, S_strcat_saves },
@@ -307,7 +307,7 @@ struct  inline_funcs SInline_Functions[] = {
     { NULL }
 };
 
-struct  inline_funcs Inline_Functions[] = {
+inline_funcs Inline_Functions[] = {
     { "strlen", &C_strlen, C_strlen_parms, C_strlen_ret, C_strlen_saves },
     { "strcpy", &C_strcpy, C_strcpy_parms, C_strcpy_ret, C_strcpy_saves },
     { "strcmp", &C_strcmp, C_strcmp_parms, C_strcmp_ret, C_strcmp_saves },
@@ -323,7 +323,7 @@ struct  inline_funcs Inline_Functions[] = {
     { NULL }
 };
 
-struct  inline_funcs ZF_Data_Functions[] = {
+inline_funcs ZF_Data_Functions[] = {
     { "strcpy", &ZF_strcpy, ZF_strcpy_parms, ZF_strcpy_ret, ZF_strcpy_saves },
     { "strcmp", &ZF_strcmp, ZF_strcmp_parms, ZF_strcmp_ret, ZF_strcmp_saves },
     { "strcat", &ZF_strcat, ZF_strcat_parms, ZF_strcat_ret, ZF_strcat_saves },
@@ -333,7 +333,7 @@ struct  inline_funcs ZF_Data_Functions[] = {
 };
 
 
-struct  inline_funcs ZP_Data_Functions[] = {
+inline_funcs ZP_Data_Functions[] = {
     { "strcpy", &ZP_strcpy, ZP_strcpy_parms, ZP_strcpy_ret, ZP_strcpy_saves },
     { "strcmp", &ZP_strcmp, ZP_strcmp_parms, ZP_strcmp_ret, ZP_strcmp_saves },
     { "strcat", &ZP_strcat, ZP_strcat_parms, ZP_strcat_ret, ZP_strcat_saves },
@@ -343,7 +343,7 @@ struct  inline_funcs ZP_Data_Functions[] = {
     { NULL }
 };
 
-struct  inline_funcs DF_Data_Functions[] = {
+inline_funcs DF_Data_Functions[] = {
     { "strlen", &DF_strlen, DF_strlen_parms, DF_strlen_ret, DF_strlen_saves },
     { "strcpy", &DF_strcpy, DF_strcpy_parms, DF_strcpy_ret, DF_strcpy_saves },
     { "strcmp", &DF_strcmp, DF_strcmp_parms, DF_strcmp_ret, DF_strcmp_saves },
@@ -358,7 +358,7 @@ struct  inline_funcs DF_Data_Functions[] = {
     { NULL }
  };
 
-struct  inline_funcs DP_Data_Functions[] = {
+inline_funcs DP_Data_Functions[] = {
     { "strlen", &DP_strlen, DP_strlen_parms, DP_strlen_ret, DP_strlen_saves },
     { "strcpy", &DP_strcpy, DP_strcpy_parms, DP_strcpy_ret, DP_strcpy_saves },
     { "strcmp", &DP_strcmp, DP_strcmp_parms, DP_strcmp_ret, DP_strcmp_saves },
@@ -373,7 +373,7 @@ struct  inline_funcs DP_Data_Functions[] = {
     { NULL }
  };
 
-struct  inline_funcs _8087_Functions[] = {
+inline_funcs _8087_Functions[] = {
  { "fabs", &_8087_fabs, C_8087_fabs_parms, C_8087_fabs_ret, C_8087_fabs_saves  },
  { NULL }
  };
@@ -381,7 +381,7 @@ struct  inline_funcs _8087_Functions[] = {
 
 /* memory model independent functions */
 
-struct  inline_funcs Common_Functions[] = {
+inline_funcs Common_Functions[] = {
   { "abs",     &C_abs,     C_abs_parms,     C_abs_ret,     C_abs_saves     },
   { "labs",    &C_labs,    C_labs_parms,    C_labs_ret,    C_labs_saves    },
   { "fabs",    &C_fabs,    C_fabs_parms,    C_fabs_ret,    C_fabs_saves    },
