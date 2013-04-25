@@ -35,7 +35,6 @@
 
 typedef unsigned        byte_seq_len;
 
-#include "pushpck1.h"
 typedef struct byte_seq_reloc {
     struct byte_seq_reloc   *next;
     offset                  off;
@@ -48,4 +47,3 @@ typedef struct byte_seq {
     byte_seq_reloc      *relocs;
     char                data[];
 } byte_seq;
-#include "poppck.h"

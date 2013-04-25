@@ -74,10 +74,8 @@ typedef enum {
 
 typedef unsigned    byte_seq_len;
 
-#include "pushpck1.h"
 typedef struct byte_seq {
     byte_seq_len    length;
     bool            relocs;
     byte            data[];
 } byte_seq;
-#include "poppck.h"
