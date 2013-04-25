@@ -39,11 +39,7 @@ extern "C" {
 
 Define( WVList1 )
 
-WEXPORT WVList1::WVList1()
-{
-}
-
-WEXPORT WVList1::WVList1( WVList1& x )
+WEXPORT WVList1::WVList1( WVList1 & x )
 {
     _set = NULL;
     _count = x._count;

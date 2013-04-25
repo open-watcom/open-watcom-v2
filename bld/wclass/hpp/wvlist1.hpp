@@ -39,8 +39,8 @@ WCLASS WVList1 : public WVCollection
 {
         Declare( WVList1 )
         public:
-                WEXPORT WVList1();
-                WEXPORT WVList1( WVList1& );
+                WEXPORT WVList1(){}
+                WEXPORT WVList1( WVList1 & x );
                 WEXPORT ~WVList1();
                 int WEXPORT count() const { return _free; }
                 WObject* operator[]( long int index ) { return _set[ index ]; }
