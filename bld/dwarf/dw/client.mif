@@ -15,6 +15,7 @@ dwarf_dw_lib_386     = $(__dwarf_dw_prefix)osi386$(__dwarf_dw_suffix)
 dwarf_dw_lib_axp     = $(__dwarf_dw_prefix)osiaxp$(__dwarf_dw_suffix)
 dwarf_dw_lib_ppc     = $(__dwarf_dw_prefix)osippc$(__dwarf_dw_suffix)
 dwarf_dw_lib_mps     = $(__dwarf_dw_prefix)osimps$(__dwarf_dw_suffix)
+dwarf_dw_lib_x64     = $(__dwarf_dw_prefix)osix64$(__dwarf_dw_suffix)
 
 #
 # DWARF run-time DLL used
@@ -23,6 +24,7 @@ dwarf_dw_lib_mps     = $(__dwarf_dw_prefix)osimps$(__dwarf_dw_suffix)
 dwarf_dw_lib_os2_386 = $(__dwarf_dw_prefix)os2386.dll$(__dwarf_dw_suffix)
 dwarf_dw_lib_nt_386  = $(__dwarf_dw_prefix)nt386.dll$(__dwarf_dw_suffix)
 dwarf_dw_lib_nt_axp  = $(__dwarf_dw_prefix)ntaxp.dll$(__dwarf_dw_suffix)
+dwarf_dw_lib_nt_x64  = $(__dwarf_dw_prefix)ntx64.dll$(__dwarf_dw_suffix)
 !endif
 
 #

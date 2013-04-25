@@ -15,6 +15,7 @@ owl_lib_386 = $(__owl_prefix)osi386$(__owl_suffix)
 owl_lib_axp = $(__owl_prefix)osiaxp$(__owl_suffix)
 owl_lib_ppc = $(__owl_prefix)osippc$(__owl_suffix)
 owl_lib_mps = $(__owl_prefix)osimps$(__owl_suffix)
+owl_lib_x64 = $(__owl_prefix)osix64$(__owl_suffix)
 
 #
 # OWL run-time DLL used
@@ -22,6 +23,7 @@ owl_lib_mps = $(__owl_prefix)osimps$(__owl_suffix)
 !ifeq $(proj_name)_rtdll 1
 owl_lib_nt_386 = $(__owl_prefix)nt386.dll$(__owl_suffix)
 owl_lib_nt_axp = $(__owl_prefix)ntaxp.dll$(__owl_suffix)
+owl_lib_nt_x64 = $(__owl_prefix)ntx64.dll$(__owl_suffix)
 !endif
 
 #
