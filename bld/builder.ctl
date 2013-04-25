@@ -42,13 +42,18 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/dwarf/dw/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wl/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/wl/exe2bin/builder.ctl ]
-# Now we also have everything to build wasm, wcl, owcc
+# Build the OWL for code generator and assemblers
+[ INCLUDE <OWSRCDIR>/owl/builder.ctl ]
+# Now we also have everything to build assemblers
+# Build RISC assemblers
+[ INCLUDE <OWSRCDIR>/re2c/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/as/builder.ctl ]
+# Build WASM assembler
 [ INCLUDE <OWSRCDIR>/wasm/builder.ctl ]
+# Now we also have everything to build wcl, owcc
 [ INCLUDE <OWSRCDIR>/wcl/386/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wcl/i86/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/wcl/owcc/builder.ctl ]
-# Build the OWL for code generator
-[ INCLUDE <OWSRCDIR>/owl/builder.ctl ]
 # Build the 16-bit and 32-bit x86 compilers
 [ INCLUDE <OWSRCDIR>/cfloat/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cg/intel/386/builder.ctl ]
@@ -57,9 +62,6 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/cc/i86/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plusplus/386/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plusplus/i86/builder.ctl ]
-# Build RISC assemblers
-[ INCLUDE <OWSRCDIR>/re2c/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/as/builder.ctl ]
 # copy DOS4GW extender on build PATH for DOS build host
 [ IFDEF <BLD_HOST> DOS ]
 [ INCLUDE <OWSRCDIR>/redist/builder.ctl ]
@@ -74,6 +76,15 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/browser/dlgprs/builder.ctl ]
+# Build help compilers and tools
+[ INCLUDE <OWSRCDIR>/hcdos/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/helpcomp/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/wipfc/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/bmp2eps/builder.ctl ]
+# Build ide2make tool for idedemo
+[ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/ide/lib/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/ide/ide2make/builder.ctl ]
 # Miscellaneous libraries/utilities required during installers build
 [ INCLUDE <OWSRCDIR>/setupgui/ziplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/zlib/builder.ctl ]
