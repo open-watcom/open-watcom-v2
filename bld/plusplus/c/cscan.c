@@ -149,7 +149,7 @@ static unsigned_64 uintMax  = I64Val( 0x00000000, 0xffffffff );
 #define prt_char( x )           if( CompFlags.cpp_output ) { PrtChar( x ); }
 
 #define diagnose_lex_error( e ) \
-        (!(e) && ( SkipLevel == NestLevel ) && (PPState & PPS_NO_LEX_ERRORS) == 0 )
+        (!(e) && ( SkipLevel == NestLevel ) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0 )
 
 void ReScanInit( char *ptr )
 /**************************/
@@ -571,7 +571,7 @@ static TOKEN scanWhiteSpace( int expanding )
 
 static int skipWhiteSpace( int c )
 {
-    if( CompFlags.cpp_output && (PPState & PPS_EOL) == 0 ) {
+    if( CompFlags.cpp_output && (PPControl & PPCTL_EOL) == 0 ) {
         c = printWhiteSpace( c );
     } else {
         SrcFileScanWhiteSpace( 0 );
@@ -628,7 +628,7 @@ void SkipAhead( void )
                 c = skipWhiteSpace( c );
             }
             if( c != '\n' ) break;
-            if( (PPState & PPS_EOL) == 0 ) {
+            if( (PPControl & PPCTL_EOL) == 0 ) {
                 prt_char( '\n' );
             }
             c = NextChar();
@@ -698,7 +698,7 @@ static TOKEN doScanFloat( void )
     } else {
         ConstType = TYP_DOUBLE;
     }
-    if( PPStateAsm && (CharSet[c] & (C_AL | C_DI)) ) {
+    if( (PPControl & PPCTL_ASM) && (CharSet[c] & (C_AL | C_DI)) ) {
         for(;;) {
             c = saveNextChar();
             if( (CharSet[c] & (C_AL | C_DI)) == 0 ) break;
@@ -793,7 +793,7 @@ static TOKEN doScanName( int c, int expanding )
     MEPTR fmentry = NULL;
 
     SrcFileScanName( c );
-    if( expanding || (PPState & PPS_NO_EXPAND) ) {
+    if( expanding || (PPControl & PPCTL_NO_EXPAND) ) {
         return( T_ID );
     }
     CurToken = idLookup( TokenLen, &fmentry );
@@ -917,7 +917,7 @@ static TOKEN scanNum( int expanding )
     char max_digit;
 
     SrcFileCurrentLocation();
-    if( PPStateAsm )
+    if( PPControl & PPCTL_ASM )
         return( doScanAsmToken() );
 
     U64Clear( Constant64 );
@@ -1169,7 +1169,7 @@ static TOKEN scanNum( int expanding )
             CErr1( WARN_CONSTANT_TOO_BIG );
         }
     }
-    if( PPStateAsm && (CharSet[c] & (C_AL | C_DI)) ) {
+    if( (PPControl & PPCTL_ASM) && (CharSet[c] & (C_AL | C_DI)) ) {
         for(;;) {
             c = saveNextChar();
             if( (CharSet[c] & (C_AL | C_DI)) == 0 ) break;
@@ -1500,7 +1500,7 @@ static TOKEN scanFloat( int expanding )
 {
     expanding = expanding;
     SrcFileCurrentLocation();
-    if( PPStateAsm )
+    if( PPControl & PPCTL_ASM )
         return( doScanAsmToken() );
 
     Buffer[0] = CurrChar;
@@ -1615,7 +1615,7 @@ static TOKEN scanCharConst( int expanding )
 static TOKEN scanNewline( int expanding )
 {
     DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
-    if( PPState & PPS_EOL ) {
+    if( PPControl & PPCTL_EOL ) {
         return( T_NULL );
     }
     return( ChkControl( expanding ) );
@@ -1630,10 +1630,7 @@ static TOKEN scanCarriageReturn( int expanding )
     // so we perform a quick check and perform the '\n' code right away
     c = NextChar();
     if( c == '\n' ) {
-        if( PPState & PPS_EOL ) {
-            return( T_NULL );
-        }
-        return( ChkControl( expanding ) );
+        return( scanNewline( expanding ) );
     }
     return( scanWhiteSpace( expanding ) );
 }
@@ -1728,8 +1725,7 @@ void ScanInit( void )
 #endif
     tokenSource = nextMacroToken;
     ReScanPtr = NULL;
-    PPState = PPS_NORMAL;
-    PPStateAsm = FALSE;
+    PPControl = PPCTL_NORMAL;
     CompFlags.scanning_c_comment = 0;
     memset( ClassTable, SCAN_INVALID, sizeof( ClassTable ) );
     memset( &ClassTable['A'], SCAN_NAME, 26 );

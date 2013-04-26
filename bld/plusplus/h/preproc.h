@@ -57,26 +57,27 @@ enum {
 
 //typedef target_ulong target_int_const;
 
-typedef enum ppstate_t {
-    PPS_NO_EXPAND       = 0x01, // don't expand macros
-    PPS_EOL             = 0x02, // return <end-of-line> as a token
-    PPS_NO_LEX_ERRORS   = 0x04, // don't diagnose lexical problems
-    PPS_NORMAL          = 0x00, // expand macros, treat <eol> as white space
-    PPS_NULL            = 0x00
-} ppstate_t;
+typedef enum ppctl_t {
+    PPCTL_NO_EXPAND       = 0x01, // don't expand macros
+    PPCTL_EOL             = 0x02, // return <end-of-line> as a token
+    PPCTL_NO_LEX_ERRORS   = 0x04, // don't diagnose lexical problems
+    PPCTL_ASM             = 0x08, // pre-processor is in _asm statement
+    PPCTL_NORMAL          = 0x00, // expand macros, treat <eol> as white space
+    PPCTL_NULL            = 0x00
+} ppctl_t;
 
-#define SetPPState(x)               PPState; PPState = x
-#define PPS_ENABLE_EOL()            PPState |= PPS_EOL
-#define PPS_DISABLE_EOL()           PPState &= ~PPS_EOL
-#define PPS_ENABLE_MACROS()         PPState &= ~PPS_NO_EXPAND
-#define PPS_DISABLE_MACROS()        PPState |= PPS_NO_EXPAND
-#define PPS_ENABLE_LEX_ERRORS()     PPState &= ~PPS_NO_LEX_ERRORS
-#define PPS_DISABLE_LEX_ERRORS()    PPState |= PPS_NO_LEX_ERRORS
+#define PPCTL_ENABLE_ASM()            PPControl |= PPCTL_ASM
+#define PPCTL_DISABLE_ASM()           PPControl &= ~PPCTL_ASM
+#define PPCTL_ENABLE_EOL()            PPControl |= PPCTL_EOL
+#define PPCTL_DISABLE_EOL()           PPControl &= ~PPCTL_EOL
+#define PPCTL_ENABLE_MACROS()         PPControl &= ~PPCTL_NO_EXPAND
+#define PPCTL_DISABLE_MACROS()        PPControl |= PPCTL_NO_EXPAND
+#define PPCTL_ENABLE_LEX_ERRORS()     PPControl &= ~PPCTL_NO_LEX_ERRORS
+#define PPCTL_DISABLE_LEX_ERRORS()    PPControl |= PPCTL_NO_LEX_ERRORS
 
 // PREPROCESSOR DATA:
 
-global  unsigned    PPState;            // pre-processor state (ppstate_t)
-global  boolean     PPStateAsm;         // pre-processor state in _asm
+global  ppctl_t     PPControl;          // pre-processor control bits
 global  TOKEN       CurToken;           // current token
 global  unsigned    BadTokenInfo;       // error message that describes why T_BAD_TOKEN is bad
 global  int         TokenLen;           // length of current token

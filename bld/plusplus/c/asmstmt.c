@@ -147,9 +147,9 @@ static void getAsmLine( VBUF *buff )
 TOKEN NextTokenSkipEOL( void )
 /****************************/
 {
-    PPS_DISABLE_EOL();
+    PPCTL_DISABLE_EOL();
     NextToken();
-    PPS_ENABLE_EOL();
+    PPCTL_ENABLE_EOL();
     return( CurToken );
 }
 
@@ -166,10 +166,11 @@ PTREE AsmStmt( void )
     SYMBOL      sym;
     NAME        fn_name;
     auto VBUF   code_buffer;
-    ppstate_t   old_ppstate;
+    ppctl_t     old_ppctl;
 
-    old_ppstate = SetPPState( PPS_EOL );
-    PPStateAsm = TRUE;
+    old_ppctl = PPControl;
+    PPCTL_ENABLE_EOL();
+    PPCTL_ENABLE_ASM();
     VbufInit( &code_buffer );
     NextTokenSkipEOL();
     AsmSysInit();
@@ -188,8 +189,7 @@ PTREE AsmStmt( void )
         getAsmLine( &code_buffer );
         skip_token = skip_alt_token = T_NULL;
     }
-    PPStateAsm = FALSE;
-    SetPPState( old_ppstate );
+    PPControl = old_ppctl;
     if( ( CurToken == skip_token ) || ( CurToken == skip_alt_token ) ) {
         NextToken();
     }

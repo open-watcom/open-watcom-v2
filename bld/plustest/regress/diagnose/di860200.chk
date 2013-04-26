@@ -254,11 +254,14 @@ File: source\diag0212.c
 (153,18): Warning! W368: conditional expression in if statement is always false
 (158,20): Error! E028: expecting ')' but found '/'
 (159,21): Error! E028: expecting ',' but found '+'
-(159,21): Error! E028: expecting 'constant' but found 'end of line'
+(159,21): Error! E028: expecting 'constant' but found '+'
+(159,21): Error! E028: expecting ')' but found 'end of line'
 (160,23): Error! E028: expecting 'constant' but found '*'
+(160,23): Error! E028: expecting ')' but found 'end of line'
 (161,25): Error! E028: expecting ')' but found '-'
-(163,35): Warning! W894: unexpected character (36) in source file
 (163,35): Error! E028: expecting ')' but found '$'
+(164,9): Error! E028: expecting '(' but found 'end of line'
+(165,13): Error! E028: expecting '(' but found ';'
 File: source\diag0213.c
 (1,16): Error! E360: typedef 'DOUBLE1' defined without an explicit type
 (30,7): Error! E386: attempt to use pointer to undefined class

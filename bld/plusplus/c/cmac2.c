@@ -170,13 +170,14 @@ static void CInclude( void )
     if( CompFlags.use_macro_tokens ) {
         flags.in_macro = 1;
     }
-    PPS_ENABLE_MACROS();
+    PPCTL_ENABLE_MACROS();
     NextToken();
+    PPCTL_DISABLE_MACROS();
     if( CurToken == T_STRING ) {
         OpenSrcFile( Buffer, FALSE );
     } else if( CurToken == T_LT ) {
-        if( !flags.in_macro ) {
-            PPS_DISABLE_MACROS();
+        if( flags.in_macro ) {
+            PPCTL_ENABLE_MACROS();
         }
         buf[0] = '\0';
         for( ;; ) {
@@ -191,10 +192,12 @@ static void CInclude( void )
                 break;
             }
         }
+        if( flags.in_macro ) {
+            PPCTL_DISABLE_MACROS();
+        }
     } else {
         CErr1( ERR_INVALID_INCLUDE );
     }
-    PPS_DISABLE_MACROS();
     if( CurToken != T_EOF ) {
         NextToken();
     }
@@ -538,12 +541,12 @@ static void CIfNDef( void )
 static void CIf( void )
 {
     SrcFileGuardPpIf();
-    PPS_ENABLE_LEX_ERRORS();
-    PPS_ENABLE_MACROS();
+    PPCTL_ENABLE_LEX_ERRORS();
+    PPCTL_ENABLE_MACROS();
     NextToken();
     ppIf( PpConstExpr() );
-    PPS_DISABLE_MACROS();
-    PPS_DISABLE_LEX_ERRORS();
+    PPCTL_DISABLE_MACROS();
+    PPCTL_DISABLE_LEX_ERRORS();
 }
 
 
@@ -552,7 +555,7 @@ static void CElif( void )
     int         value;
 
     SrcFileGuardPpElse();
-    PPS_ENABLE_MACROS();
+    PPCTL_ENABLE_MACROS();
     NextToken();
     if( NestLevel == 0 || pp_stack->cpp_type == PRE_ELSE ) {
         CErr1( ERR_MISPLACED_ELIF );
@@ -574,7 +577,7 @@ static void CElif( void )
             }
         }
     }
-    PPS_DISABLE_MACROS();
+    PPCTL_DISABLE_MACROS();
 }
 
 static void wantEOL( void )
@@ -647,7 +650,7 @@ static void CLine( void )
     int         adjust;
     LINE_NO     line;
 
-    PPS_ENABLE_MACROS();
+    PPCTL_ENABLE_MACROS();
     NextToken();
     if( ExpectingToken( T_CONSTANT ) ) {
         line = U32Fetch( Constant64 ); // side effects of NextToken
@@ -671,7 +674,7 @@ static void CLine( void )
             ChkEOL();           // will increment line # if CurToken != T_NULL
         }
     }
-    PPS_DISABLE_MACROS();
+    PPCTL_DISABLE_MACROS();
 }
 
 static void CError( void )
@@ -738,7 +741,7 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
     int expanding )
 {
     int         lines_skipped;
-    ppstate_t   old_ppstate;
+    ppctl_t     old_ppctl;
 
     while( CurrChar == '\n' ) {
         SrcFileCurrentLocation();
@@ -747,7 +750,7 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
             CSuicide();
         }
         lines_skipped = 0;
-        old_ppstate = PPState;
+        old_ppctl = PPControl;
         for(;;) {
             if( CompFlags.cpp_output )  PrtChar( '\n' );
             NextChar();
@@ -768,15 +771,19 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
                 }
             }
             if( CurrChar == PreProcChar ) {
-                SetPPState( PPS_EOL | PPS_NO_EXPAND | PPS_NO_LEX_ERRORS );
+                PPCTL_ENABLE_EOL();
+                PPCTL_DISABLE_MACROS();
+                PPCTL_DISABLE_LEX_ERRORS();
                 preProcStmt();
                 flush2EOL();
-                SetPPState( old_ppstate );
+                PPControl = old_ppctl;
             } else if( NestLevel != SkipLevel ) {
-                SetPPState( PPS_EOL | PPS_NO_EXPAND | PPS_NO_LEX_ERRORS );
+                PPCTL_ENABLE_EOL();
+                PPCTL_DISABLE_MACROS();
+                PPCTL_DISABLE_LEX_ERRORS();
                 NextToken();
                 flush2EOL();
-                SetPPState( old_ppstate );
+                PPControl = old_ppctl;
             }
             if( NestLevel == SkipLevel )
                 break;

@@ -808,18 +808,18 @@ File: source\diag0050.c
 (15,35): Error! E420: memory initializer list may only appear in a constructor definition
 (19,16): Error! E336: declaration specifiers are required to declare 'c_bad'
 (20,15): Error! E336: declaration specifiers are required to declare 'c_OK'
-(13,12): Error! E426: 'd' cannot be initialized because it is a static member
-(13,12): Error! E423: 'S' is not a direct base class
-(13,12): Error! E425: 'f' cannot be initialized because it is a member function
-(13,12): Error! E424: 'z' cannot be initialized because it is not a member
-(13,12): Error! E422: cannot initialize base class 'S' twice
-(13,12): Error! E423: 'S' is not a direct base class
-(13,12): Error! E421: cannot initialize member 'a' twice
-(13,12): Error! E428: const/reference member 'T::c_bad' must have an initializer
+(13,11): Error! E426: 'd' cannot be initialized because it is a static member
+(13,11): Error! E423: 'S' is not a direct base class
+(13,11): Error! E425: 'f' cannot be initialized because it is a member function
+(13,11): Error! E424: 'z' cannot be initialized because it is not a member
+(13,11): Error! E422: cannot initialize base class 'S' twice
+(13,11): Error! E423: 'S' is not a direct base class
+(13,11): Error! E421: cannot initialize member 'a' twice
+(13,11): Error! E428: const/reference member 'T::c_bad' must have an initializer
   definition: 'int const T::c_bad'
-(13,12): Error! E428: const/reference member 'T::r_bad' must have an initializer
+(13,11): Error! E428: const/reference member 'T::r_bad' must have an initializer
   definition: 'int & T::r_bad'
-(13,12): Error! E428: const/reference member 'T::z2' must have an initializer
+(13,11): Error! E428: const/reference member 'T::z2' must have an initializer
   definition: 'void (& T::z2)( void )'
 (32,7): Error! E424: 'd' cannot be initialized because it is not a member
 (32,7): Error! E424: 'c' cannot be initialized because it is not a member

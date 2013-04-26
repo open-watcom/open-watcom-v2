@@ -44,7 +44,7 @@
 #include "initdefs.h"
 #include "pragdefn.h"
 #include "codegen.h"
-#ifndef NDEBUG
+#if defined( __WATCOMC__ ) && !defined( NDEBUG )
 #include "trap.h"
 #endif
 #ifdef TRACKER
@@ -322,10 +322,11 @@ static void cmemFini(           // COMPLETION
     if( PragDbgToggle.dump_memory ) {
         _trmem_prt_list( trackerHdl );
     }
-    if( _trmem_close( trackerHdl ) != 0
-     && ! CompFlags.compile_failed ) {
+    if( _trmem_close( trackerHdl ) != 0 && ! CompFlags.compile_failed ) {
         // we can't print an error message since we have no more memory
+  #if defined( __WWATCOMC__ )
         __trap();
+  #endif
     }
 #endif
 #endif

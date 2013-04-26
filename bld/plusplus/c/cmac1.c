@@ -416,7 +416,7 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
 
 static TOKEN nextMToken( TOKEN prev_token )
 {
-    ppstate_t old_ppstate;
+    ppctl_t old_ppctl;
 
     internalTokenList = doGetMacroToken( internalTokenList, TRUE );
     if( CurToken == T_NULL ) {
@@ -429,9 +429,10 @@ static TOKEN nextMToken( TOKEN prev_token )
                 // may be significant)
                 // [the prev_token check is req'd because the scanner
                 //  will not advance past T_NULL]
-                old_ppstate = SetPPState( PPS_EOL );
+                old_ppctl = PPControl;
+                PPCTL_ENABLE_EOL();
                 CurToken = ScanToken( 1 );
-                SetPPState( old_ppstate );
+                PPControl = old_ppctl;
                 if( CurToken == T_NULL ) {
                     CurToken = T_WHITE_SPACE;
                 }
@@ -773,7 +774,9 @@ static MACRO_TOKEN *expandNestedMacros( MACRO_TOKEN *head, int rescanning )
     ++macroDepth;
 #ifndef NDEBUG
     if( macroDepth > 100 ) {
+  #if defined( __WATCOMC__ )
         __trap();
+  #endif
     }
 #endif
     for( mtok = head; mtok != NULL; ) {

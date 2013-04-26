@@ -372,11 +372,6 @@ static void unexpectedCurToken( void )
     CErr2p( ERR_UNEXPECTED_IN_CONSTANT_EXPRESSION, Tokens[CurToken] );
 }
 
-static int isMacroDefined( void )
-{
-    return MacroDependsDefined();
-}
-
 static boolean COperand( void )
 {
     ppvalue p;
@@ -391,14 +386,16 @@ static boolean COperand( void )
         loc.pos = Pos;
         Pos++;
         if( strcmp( "defined", Buffer ) == 0 ) {
-            ppstate_t   old_ppstate;
+            ppctl_t old_ppctl;
 
-            old_ppstate = SetPPState( PPS_EOL | PPS_NO_EXPAND );
+            old_ppctl = PPControl;
+            PPCTL_DISABLE_MACROS();
             NextToken(); // Don't error check: can have T_ID T_ID here
             if( CurToken == T_LEFT_PAREN ) {
                 SrcFileGetTokenLocn( &left_loc );
                 NextToken(); // no need to error check or advance Pos
-                I32ToI64( isMacroDefined(), &(p.sval) );
+                PPControl = old_ppctl;
+                I32ToI64( MacroDependsDefined(), &(p.sval) );
                 NextToken(); // no need to error check or advance Pos
                 if( CurToken != T_RIGHT_PAREN ) {
                     SetErrLoc( &left_loc );
@@ -406,9 +403,9 @@ static boolean COperand( void )
                     done = TRUE;
                 }
             } else {
-                I32ToI64( isMacroDefined(), &(p.sval) );
+                PPControl = old_ppctl;
+                I32ToI64( MacroDependsDefined(), &(p.sval) );
             }
-            SetPPState( old_ppstate );
         } else {
             CErr2p( WARN_UNDEFD_MACRO_IS_ZERO, Buffer );
             I64SetZero( p );

@@ -447,7 +447,7 @@ static void captureMulti( REWRITE *r, PTREE multi, TOKEN_LOCN *locn )
 REWRITE *RewritePackageFunction( PTREE multi )
 /********************************************/
 {
-    ppstate_t old_ppstate;
+    ppctl_t old_ppctl;
     boolean skip_first;
     REWRITE *r;
     unsigned depth;
@@ -464,29 +464,27 @@ REWRITE *RewritePackageFunction( PTREE multi )
         skip_first = TRUE;
     }
     captureMulti( r, multi, plocn );
-    old_ppstate = PPState;
+    old_ppctl = PPControl;
     asm_depth = 0;
     depth = 1;          /* we've seen one '{' */
-    for(;;) {
-        if( CurToken == T_EOF )
-            break;
+    while( CurToken != T_EOF ) {
         DbgAssert( depth != 0 );
         switch( CurToken ) {
         case T_NULL:
 #ifndef NDEBUG
             DbgAssert( asm_depth != 0 );
 #endif
-            PPState = old_ppstate;
+            PPCTL_DISABLE_EOL();
             if( depth == asm_depth ) {
+                PPCTL_DISABLE_ASM();
                 asm_depth = 0;
-                PPStateAsm = FALSE;
             }
             break;
         case T___ASM:
             if( asm_depth == 0 ) {
-                PPS_ENABLE_EOL();
+                PPCTL_ENABLE_EOL();
+                PPCTL_ENABLE_ASM();
                 asm_depth = depth;
-                PPStateAsm = TRUE;
             }
             break;
         case T_SEMI_COLON:
@@ -499,9 +497,9 @@ REWRITE *RewritePackageFunction( PTREE multi )
         case T_ALT_RIGHT_BRACE:
             --depth;
             if( depth == asm_depth ) {
-                PPState = old_ppstate;
+                PPCTL_DISABLE_EOL();
+                PPCTL_DISABLE_ASM();
                 asm_depth = 0;
-                PPStateAsm = FALSE;
             }
             break;
         default:
@@ -514,11 +512,11 @@ REWRITE *RewritePackageFunction( PTREE multi )
         if( depth == 0 )
             break;
         NextToken();
-        if( PPStateAsm ) {
-            PPS_ENABLE_EOL();
+        if( PPControl & PPCTL_ASM ) {
+            PPCTL_ENABLE_EOL();
         }
     }
-    PPState = old_ppstate;
+    PPControl = old_ppctl;
     return( r );
 }
 
