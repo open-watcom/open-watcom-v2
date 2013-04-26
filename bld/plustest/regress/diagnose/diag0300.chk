@@ -23,7 +23,7 @@ File: source\diag0303.c
 (1,35): Error! E244: missing default arguments
 (5,37): Error! E244: missing default arguments
 (9,40): Error! E198: expression cannot be used as a class template parameter
-(13,123): Error! E121: syntax error
+(13,21): Error! E121: syntax error
 (17,21): Error! E928: syntax error: identifier 'test', but expected: 'type-id'
 (28,1): Warning! W014: no reference to symbol 'c'
   definition: '<error> c' in 'int main( void )'
