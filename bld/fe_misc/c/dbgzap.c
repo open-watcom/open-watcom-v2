@@ -38,9 +38,11 @@
 //
 // 96/04/15 -- J.W.Welch        - swiped from C++ project
 
+#ifdef __header1
+#include __header1
+#endif
 #include <string.h>
 
-#include header
 #include "dbgzap.h"
 
 
