@@ -190,12 +190,12 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
 //      case ORL_SYM_TYPE_NONE:
 //      case ORL_SYM_TYPE_FUNC_INFO:
 //          return( ORL_OKAY );
-    case ORL_SYM_TYPE_FILE:
-        SourceName = ORLSymbolGetName( sym_hnd );
-        if( (SourceName != NULL) && (SourceFileInObject == NULL) ) {
-            SourceFileInObject = SourceName;
-        }
-        return( ORL_OKAY );
+        case ORL_SYM_TYPE_FILE:
+            SourceName = ORLSymbolGetName( sym_hnd );
+            if( (SourceName != NULL) && (SourceFileInObject == NULL) ) {
+                SourceFileInObject = SourceName;
+            }
+            return( ORL_OKAY );
     }
     entry = MemAlloc( sizeof( label_entry_struct ) );
     if( !entry ) return( ORL_OUT_OF_MEMORY );

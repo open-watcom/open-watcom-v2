@@ -87,6 +87,9 @@ static label_entry handleLabels( char *sec_name, orl_sec_offset offset, orl_sec_
                              label_entry l_entry, orl_sec_size size )
 // handle any labels at this offset and skip all unused non-label symbols
 {
+    bool    is32bit;
+
+    is32bit = ( size >= 0x10000 );
     for( ; ( l_entry != NULL ) && ( l_entry->offset < end ); l_entry = l_entry->next ) {
         switch( l_entry->type ) {
         case LTYP_SECTION:
@@ -120,13 +123,15 @@ static label_entry handleLabels( char *sec_name, orl_sec_offset offset, orl_sec_
             }
         case LTYP_SECTION:
             if( !( DFormat & DFF_ASM ) ) {
-                PrintLinePrefix( NULL, offset, size, 1, 0 );
+                PrintLinePrefixAddress( offset, is32bit );
+                BufferAlignToTab( PREFIX_SIZE_TABS );
             }
             BufferStore( "%s:\n", l_entry->label.name );
             break;
         case LTYP_UNNAMED:
             if( !( DFormat & DFF_ASM ) ) {
-                PrintLinePrefix( NULL, offset, size, 1, 0 );
+                PrintLinePrefixAddress( offset, is32bit );
+                BufferAlignToTab( PREFIX_SIZE_TABS );
             }
             BufferStore( "%c$%d:\n", LabelChar, l_entry->label.number );
             break;
@@ -559,6 +564,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
     sa_disasm_struct    sds;
     char                *FPU_fixup;
     int                 pos_tabs;
+    bool                is32bit;
 
     routineBase = 0;
     st = sec->scan;
@@ -592,6 +598,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
     } else {
         is_intel = IsIntelx86();
     }
+    is32bit = ( size >= 0x10000 );
     for( data.loop = 0; data.loop < size; data.loop += decoded.size ) {
 
         // process data in code segment
@@ -670,7 +677,9 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
                     break;
                 }
             }
-            PrintLinePrefix( contents, data.loop, size, DisInsSizeInc( &DHnd ), decoded.size );
+            PrintLinePrefixAddress( data.loop, is32bit );
+            PrintLinePrefixData( contents, data.loop, size, DisInsSizeInc( &DHnd ), decoded.size );
+            BufferAlignToTab( PREFIX_SIZE_TABS );
         }
         BufferStore( "\t%s", name );
         pos_tabs = ( DisInsNameMax( &DHnd ) + TAB_WIDTH ) / TAB_WIDTH + 1;

@@ -29,36 +29,33 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdlib.h>
 #if defined( __WATCOMC__ )
     #include <process.h>
 #endif
+#include "wio.h"
+#include "watcom.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
 #include "msg.h"
-
-#define NIL_HANDLE      ((int)-1)
 
 #define NO_RES_MESSAGE "Error: could not open message resource file\r\n"
 #define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
 
 static HANDLE_INFO      hInstance = {0};
 static unsigned         MsgShift;
-extern long             FileShift;
 
-static off_t resSeek( int handle, off_t position, int where )
+static long res_seek( WResFileID handle, long position, int where )
 {
     if( where == SEEK_SET ) {
-        return( lseek( handle, position+FileShift, where ) - FileShift );
+        return( lseek( handle, position + FileShift, where ) - FileShift );
     } else {
         return( lseek( handle, position, where ) );
     }
 }
 
-WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
+WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 extern int MsgInit( void )
 {
@@ -80,7 +77,7 @@ extern int MsgInit( void )
         }
     }
     MsgShift = WResLanguage() * MSG_LANG_SPACING;
-    if( !error && !MsgGet( USAGE_1, name ) ) {
+    if( !error && !MsgGet( WDIS_LITERAL_BASE, name ) ) {
         error = 1;
     }
     if( error ) {
@@ -93,8 +90,7 @@ extern int MsgInit( void )
 
 extern int MsgGet( int resourceid, char *buffer )
 {
-    if( LoadString( &hInstance, resourceid + MsgShift,
-                (LPSTR) buffer, MAX_RESOURCE_SIZE ) == -1 ) {
+    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) == -1 ) {
         buffer[0] = '\0';
         return( 0 );
     }

@@ -31,8 +31,8 @@
 
 
 #include <string.h>
-#include <dis.h>
 #include "global.h"
+#include "dis.h"
 #include "pdata.h"
 #include "buffer.h"
 #include "print.h"
@@ -48,22 +48,18 @@ typedef struct {
     uint_32     prolog_end;
 } descriptor_struct;
 
-extern hash_table       HandleToRefListTable;
-extern char             LabelChar;
-extern char *           CommentString;
+extern hash_table           HandleToRefListTable;
+extern char                 LabelChar;
+extern char                 *CommentString;
+extern dis_format_flags     DFormat;
+extern section_list_struct  Sections;
 
-extern dis_format_flags DFormat;
+static orl_reloc            *pdataReloc;
 
-extern section_list_struct      Sections;
-
-static orl_reloc *      pdataReloc;
-
-static void doDescriptorRelocs( ref_entry *r_entry, orl_sec_offset offset,
-                                uint_32 address )
+static void doDescriptorRelocs( ref_entry *r_entry, orl_sec_offset offset, uint_32 address )
 {
     /* Skip over pair relocs */
-    while( (*r_entry) && ((*r_entry)->type == ORL_RELOC_TYPE_PAIR ||
-                (*r_entry)->offset < offset ) ) {
+    while( (*r_entry) && ((*r_entry)->type == ORL_RELOC_TYPE_PAIR || (*r_entry)->offset < offset ) ) {
         (*r_entry) = (*r_entry)->next;
     }
     if( (*r_entry) && (*r_entry)->offset == offset ) {
@@ -138,13 +134,16 @@ return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
     ref_list            r_list;
     ref_entry           r_entry;
     descriptor_struct   descriptor;
+    bool                is32bit;
 
     if( pass == 1 ) return( OKAY );
     if( size == 0 ) return( OKAY );
 
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) sec->shnd );
+    is32bit = ( size >= 0x10000 );
+
+    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)sec->shnd );
     if( *data_ptr ) {
-        r_list = (ref_list) *data_ptr;
+        r_list = (ref_list)*data_ptr;
         if( r_list ) {
             r_entry = r_list->first;
         } else {
@@ -161,28 +160,28 @@ return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
             BufferStore( "\t\t" );
             BufferStore( "%s %04X\t\t", CommentString, loop );
         } else {
-            PrintLinePrefix( NULL, loop, size, 1, 0 );
+            PrintLinePrefixAddress( loop, is32bit );
+            BufferAlignToTab( PREFIX_SIZE_TABS );
             BufferStore( "%s ", CommentString );
         }
         BufferMsg( PROCEDURE_DESCRIPTOR );
 
         /* Skip over pair relocs */
-        while( r_entry && (r_entry->type == ORL_RELOC_TYPE_PAIR ||
-                        r_entry->offset < loop) ) {
+        while( r_entry && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < loop) ) {
             r_entry = r_entry->next;
         }
         switch( r_entry->label->type ) {
-            case LTYP_EXTERNAL_NAMED:
-                BufferStore( "%s", r_entry->label->label.name );
-                break;
-            case LTYP_NAMED:
-            case LTYP_SECTION:
-            case LTYP_GROUP:
-                BufferStore( "%s", r_entry->label->label.name );
-                break;
-            default:
-                BufferStore( "%c$%d", LabelChar, r_entry->label->label.number );
-                break;
+        case LTYP_EXTERNAL_NAMED:
+            BufferStore( "%s", r_entry->label->label.name );
+            break;
+        case LTYP_NAMED:
+        case LTYP_SECTION:
+        case LTYP_GROUP:
+            BufferStore( "%s", r_entry->label->label.name );
+            break;
+        default:
+            BufferStore( "%c$%d", LabelChar, r_entry->label->label.number );
+            break;
         }
         BufferConcatNL();
         printDescriptor( loop, &descriptor, &r_entry );

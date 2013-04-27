@@ -33,8 +33,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include <unistd.h>
-
+#include "wio.h"
 #include "global.h"
 #include "dis.h"
 #include "banner.h"
@@ -44,6 +43,14 @@
 #include "print.h"
 #include "cmdlhelp.h"
 
+static const char * const banner[]={
+    banner1w( "Multi-processor Disassembler", _WDISASM_VERSION_ ),
+    banner2( "1995" ),
+    banner3,
+    banner3a,
+    NULL
+};
+
 extern wd_options               Options;
 extern char                     LabelChar;
 extern char *                   ObjFileName;
@@ -52,16 +59,11 @@ extern char *                   SourceFileName;
 extern bool                     source_mix;
 extern dis_format_flags         DFormat;
 
-static void printUsage( int msg ) {
-    int i;
-    static const char * const banner[]={
-        banner1w( "Multi-processor Disassembler", _WDISASM_VERSION_ ),
-        banner2( "1995" ),
-        banner3,
-        banner3a,
-        NULL
-    };
-    const char * const *text;
+static void printUsage( int msg )
+{
+    int                 id;
+    const char * const  *text;
+    char                buff[MAX_RESOURCE_SIZE];
 
     ChangePrintDest( STDERR_FILENO );
     if( msg != 0 ) {
@@ -72,13 +74,21 @@ static void printUsage( int msg ) {
     }
     text = banner;
     while( *text ) {
-        Print( (char *)*text++ );
+        Print( *text++ );
         Print( "\n" );
     }
-    for( i = USAGE_1; i <= USAGE_LAST; i++ ) {
-        BufferMsg( i );
-        BufferConcatNL();
-        BufferPrint();
+    id = MSG_USAGE_BASE;
+    if( MsgGet( id, buff ) ) {
+        ++id;
+        while( MsgGet( id, buff ) ) {
+            if( buff[0] == '.' && buff[1] == '\0' ) {
+                break;
+            }
+            BufferConcat( buff );
+            BufferConcatNL();
+            BufferPrint();
+            ++id;
+        }
     }
     if( ObjFileName != NULL ) {
         MemFree( ObjFileName );

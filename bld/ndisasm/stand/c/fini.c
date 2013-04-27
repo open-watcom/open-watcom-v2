@@ -31,8 +31,9 @@
 
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include "wio.h"
+#include "global.h"
 #include "dis.h"
 #include "fini.h"
 #include "memfuncs.h"
@@ -40,7 +41,6 @@
 #include "identsec.h"
 #include "init.h"
 #include "main.h"
-#include "msg.h"
 
 extern wd_options       Options;
 extern orl_handle       ORLHnd;

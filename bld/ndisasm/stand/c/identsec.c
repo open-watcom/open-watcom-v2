@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "global.h"
 #include "identsec.h"
 #include "hashtabl.h"
 #include "init.h"

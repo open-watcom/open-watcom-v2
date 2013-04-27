@@ -69,7 +69,7 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry,
                     value = *((short *)&(contents[ r_entry->offset ]));
                     break;
                 case( 1 ):
-                    value = *((char *)&(contents[ r_entry->offset ]));
+                    value = *((signed char *)&(contents[ r_entry->offset ]));
                     break;
                 default:
                     value = 0;

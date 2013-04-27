@@ -31,19 +31,18 @@
 
 
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
+#include "wio.h"
 #include "print.h"
 
-int CurrentDest = STDOUT_FILENO;
+static int CurrentDest;
 
 void ChangePrintDest( int dest )
 {
     CurrentDest = dest;
 }
 
-void Print( char *string )
+void Print( const char *string )
 {
     write( CurrentDest, string, strlen( string ) );
 }
-

@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "global.h"
 #include "dis.h"
 #include "formasm.h"
 #include "langenv.h"
@@ -214,7 +215,7 @@ static orl_sec_offset tryDUP( unsigned_8 *bytes, orl_sec_offset i, orl_sec_size 
     dup = d / 8;
     if( dup < MIN_DUP_LINES ) return( 0 );
 
-    BufferStore( "0%XH DUP(", dup, bytes[i] );
+    BufferStore( "0%XH DUP(", dup );
 
     for( dup = 0; dup < 7; dup++ ) {
         BufferHex( 2, bytes[i + dup] );
@@ -563,7 +564,7 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
                     }
                 } else {
                     if( l_entry->offset != curr_pos ) {
-                        BufferStore( "%c$%d equ $-%d", LabelChar, l_entry->label.number, curr_pos - l_entry->offset );
+                        BufferStore( "%c$%d equ $-%d", LabelChar, l_entry->label.number, (int)( curr_pos - l_entry->offset ) );
                     } else {
                         BufferStore( "%c$%d:", LabelChar, l_entry->label.number );
                     }
@@ -577,7 +578,7 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
                     }
                 } else {
                     if( l_entry->offset != curr_pos ) {
-                        BufferStore( "%s equ $-%d", l_entry->label.name, curr_pos - l_entry->offset );
+                        BufferStore( "%s equ $-%d", l_entry->label.name, (int)( curr_pos - l_entry->offset ) );
                     } else {
                         BufferStore( "%s:", l_entry->label.name );
                     }

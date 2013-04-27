@@ -33,14 +33,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #if defined( __WATCOMC__ )
     #include <process.h>
 #endif
-
+#include "wio.h"
+#include "global.h"
 #include "dis.h"
 #include "init.h"
 #include "buffer.h"
@@ -51,12 +49,10 @@
 #include "print.h"
 #include "labproc.h"
 #include "refproc.h"
-#include "msg.h"
 #include "main.h"
 #include "identsec.h"
 #include "fini.h"
 #include "formasm.h"
-
 
 struct recognized_struct {
     char                *name;
@@ -66,8 +62,6 @@ struct recognized_struct {
 typedef struct recognized_struct recognized_struct;
 
 #define SEC_NAME_LEN 8
-#define OBJ_FILE_FLAGS O_RDONLY | O_BINARY
-#define LIST_FILE_FLAGS O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU
 
 #define HANDLE_TO_SECTION_TABLE_SIZE 53
 #define HANDLE_TO_LIST_TABLE_SIZE 53
@@ -446,13 +440,9 @@ static orl_return sectionInit( orl_sec_handle shnd )
 }
 
 
-static void openError( char * file_name ) {
-// TODO: merge again when Linux clib supports perror()
-#ifdef __LINUX__
-    printf( "File Open Error: %s\n", file_name );
-#else
+static void openError( char * file_name )
+{
     perror( file_name );
-#endif
     exit( 1 );
 }
 
@@ -460,14 +450,12 @@ static void openFiles( void )
 {
     int objhdl;
 
-    objhdl = open( ObjFileName, OBJ_FILE_FLAGS );
+    objhdl = open( ObjFileName, O_RDONLY | O_BINARY );
     if( objhdl != -1 ) {
         if( ListFileName ) {
-            OutputDest = open( ListFileName, LIST_FILE_FLAGS, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
+            OutputDest = open( ListFileName, O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
             if( OutputDest == -1 ) openError( ListFileName );
             ChangePrintDest( OutputDest );
-        } else {
-            OutputDest = STDOUT_FILENO;
         }
         objFileLen = filelength( objhdl );
         if( objFileLen == 0 ) {
@@ -812,6 +800,9 @@ void Init( void )
     char                cmd_line[ CMD_LINE_LEN ];
     return_val          error;
     char                **list;
+
+    OutputDest = STDOUT_FILENO;
+    ChangePrintDest( OutputDest );
 
     relocSections.first = NULL;
     relocSections.last = NULL;

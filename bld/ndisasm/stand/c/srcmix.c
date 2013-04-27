@@ -34,8 +34,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "global.h"
-#include "orl.h"
 #include "dis.h"
+#include "orl.h"
 #include "srcmix.h"
 #include "buffer.h"
 #include "mydwarf.h"

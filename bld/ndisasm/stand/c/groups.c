@@ -33,8 +33,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <dis.h>
 #include <ctype.h>
+#include "global.h"
+#include "dis.h"
 #include "groups.h"
 #include "formasm.h"
 #include "buffer.h"

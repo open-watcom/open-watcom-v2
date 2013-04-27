@@ -31,6 +31,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "global.h"
 #include "dis.h"
 #include "main.h"
@@ -46,9 +47,6 @@
 #include "pdata.h"
 #include "groups.h"
 #include "demangle.h"
-#if !defined( __WATCOMC__ )
-    #include "clibext.h"
-#endif
 
 #define SMALL_STRING_LEN        8
 #define TMP_TABLE_SIZE          29
@@ -80,7 +78,7 @@ publics_struct          Publics;
 
 static int              flatModel = 0;
 
-extern char *           SourceFileInObject;
+extern char             *SourceFileInObject;
 
 static void printUnixHeader( section_ptr sec )
 {
@@ -152,7 +150,7 @@ static void printUnixHeader( section_ptr sec )
         if( !( DFormat & DFF_ASM ) ) {
             BufferConcat("\t\t\t\t");
         }
-        BufferStore(".align %d", alignment );
+        BufferStore(".align %d", (int)alignment );
     }
 
     BufferConcatNL();
@@ -285,7 +283,7 @@ static void printMasmHeader( section_ptr sec )
                          getUse( flags ), class );
         } else {
             BufferQuoteName( name );
-            BufferStore( "\t\tSEGMENT\t at %08X %s '%s'", frame << 4,
+            BufferStore( "\t\tSEGMENT\t at %08X %s '%s'", (unsigned)frame << 4,
                          getUse( flags ), class );
         }
     } else {
@@ -397,64 +395,49 @@ void PrintTail( section_ptr sec )
 }
 
 
-static void DoPrintLinePrefix( void *data, orl_sec_offset off, orl_sec_offset total,
-                        unsigned item_size, unsigned len )
+void PrintLinePrefixAddress( orl_sec_offset off, bool is32bit )
+{
+    if( is32bit ) {
+        BufferStore( "%08X", off );
+    } else {
+        BufferStore( "%04X", off );
+    }
+}
+
+
+void PrintLinePrefixData( unsigned_8 *data, orl_sec_offset off, orl_sec_offset total, unsigned item_size, unsigned len )
 {
     unsigned    done;
-    union {
+    union ptr {
         unsigned_8      u8;
         unsigned_16     u16;
         unsigned_32     u32;
     }           *p;
 
-
-    if( total >= 0x10000 ) {
-        BufferStore( "%08X", off );
-    } else {
-        BufferStore( "%04X", off );
-    }
-    if( len ) {
-        BufferConcat( " " );
-    }
+    p = (union ptr *)( data + off );
+    total -= off;
+    BufferConcat( " " );
     for( done = 0; done < len; done += item_size ) {
         BufferConcat( " " );
-        if( off >= total ) {
-            switch( item_size ) {
-            case 1:
-                BufferConcat( "  " );
-                break;
-            case 2:
-                BufferConcat( "    " );
-                break;
-            case 4:
-                BufferConcat( "        " );
-                break;
-            }
-        } else {
-            p = (void *)((unsigned_8 *)data + off);
-            switch( item_size ) {
-            case 1:
+        if( done < total ) {
+            if( item_size == 1 ) {
                 BufferStore( "%02X", p->u8 );
-                break;
-            case 2:
+            } else if( item_size == 2 ) {
                 BufferStore( "%04X", p->u16 );
-                break;
-            case 4:
+            } else if( item_size == 4 ) {
                 BufferStore( "%08X", p->u32 );
-                break;
+            }
+            p = (union ptr *)( (char *)p + item_size );
+        } else {
+            if( item_size == 1 ) {
+                BufferConcat( "  " );
+            } else if( item_size == 2 ) {
+                BufferConcat( "    " );
+            } else if( item_size == 4 ) {
+                BufferConcat( "        " );
             }
         }
-        off += item_size;
     }
-    return;
-}
-
-
-void PrintLinePrefix( void *data, orl_sec_offset off, orl_sec_offset total,
-                        unsigned item_size, unsigned len )
-{
-    DoPrintLinePrefix( data, off, total, item_size, len );
-    BufferAlignToTab( PREFIX_SIZE_TABS );
 }
 
 
@@ -490,7 +473,7 @@ static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
         disassembly_errors = DoPass2( sec, contents, size, sec_label_list, sec_ref_list );
         if( !(DFormat & DFF_ASM) ) {
             if( disassembly_errors > 0 ) {
-                BufferStore( "%d ", disassembly_errors );
+                BufferStore( "%d ", (int)disassembly_errors );
                 BufferMsg( DIS_ERRORS );
             } else {
                 BufferMsg( NO_DIS_ERRORS );
@@ -516,17 +499,20 @@ static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
 static label_entry dumpLabel( label_entry l_entry, section_ptr sec,
                               orl_sec_offset loop, orl_sec_offset end )
 {
-    while( l_entry != NULL
-        && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= loop ) ) {
+    bool    is32bit;
+
+    is32bit = ( end >= 0x10000 );
+    while( l_entry != NULL && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= loop ) ) {
         switch( l_entry->type ){
         case LTYP_ABSOLUTE:
             break;
         case LTYP_UNNAMED:
-            PrintLinePrefix( NULL, loop, end, 1, 0 );
+            PrintLinePrefixAddress( loop, is32bit );
+            BufferAlignToTab( PREFIX_SIZE_TABS );
             if( loop != l_entry->offset ) {
-                BufferStore("%c$%d equ $-%d", LabelChar, l_entry->label.number, loop - l_entry->offset );
+                BufferStore( "%c$%d equ $-%d", LabelChar, l_entry->label.number, (int)( loop - l_entry->offset ) );
             } else {
-                BufferStore("%c$%d:", LabelChar, l_entry->label.number );
+                BufferStore( "%c$%d:", LabelChar, l_entry->label.number );
             }
             BufferConcatNL();
             break;
@@ -535,11 +521,12 @@ static label_entry dumpLabel( label_entry l_entry, section_ptr sec,
             if( strcmp( l_entry->label.name, sec->name ) == 0 )
                 break;
         default:
-            PrintLinePrefix( NULL, loop, end, 1, 0 );
+            PrintLinePrefixAddress( loop, is32bit );
+            BufferAlignToTab( PREFIX_SIZE_TABS );
             if( loop != l_entry->offset ) {
-                BufferStore("%s equ $-%d", l_entry->label.name, loop - l_entry->offset  );
+                BufferStore( "%s equ $-%d", l_entry->label.name, (int)( loop - l_entry->offset ) );
             } else {
-                BufferStore("%s:", l_entry->label.name );
+                BufferStore( "%s:", l_entry->label.name );
             }
             BufferConcatNL();
             break;
@@ -569,7 +556,7 @@ static orl_sec_offset checkForDupLines( unsigned_8 *contents, orl_sec_offset loo
     lines = d / 16;
     if( lines < MIN_DUP_LINES ) return( 0 );
     BufferConcatNL();
-    BufferStore( "\t--- Above line repeats %d times ---", lines );
+    BufferStore( "\t--- Above line repeats %u times ---", lines );
     return( d );
 }
 
@@ -582,6 +569,9 @@ void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
     unsigned                    amount;
     label_entry                 l_entry;
     ref_entry                   r_entry;
+    bool                        is32bit;
+
+    is32bit = ( end >= 0x10000 );
 
     l_entry = *labent;
     r_entry = *refent;
@@ -592,14 +582,15 @@ void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
 
         if( l_entry != NULL ) {
             amount = l_entry->offset - loop;
-            if( amount > 16 ) amount = 16;
+            if( amount > 16 ) {
+                amount = 16;
+            }
         } else {
             amount = 16;
         }
         if( (loop + amount) > end ) amount = end - loop;
         /* Skip over pair relocs */
-        while( r_entry && (r_entry->type == ORL_RELOC_TYPE_PAIR ||
-                        r_entry->offset < loop) ) {
+        while( r_entry && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < loop) ) {
             r_entry = r_entry->next;
         }
         if( r_entry && r_entry->offset < loop + amount ) {
@@ -612,7 +603,8 @@ void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
 
         /* This is a bit fake.  We want to print a full 16 columns,
            but we only want the amount of data specified, up to 16. */
-        DoPrintLinePrefix( contents, loop, loop + amount, 1, 16 );
+        PrintLinePrefixAddress( loop, is32bit );
+        PrintLinePrefixData( contents, loop, loop + amount, 1, 16 );
         BufferConcat( " " );
         if( r_entry && r_entry->offset == loop ) {
             HandleRefInData( r_entry, &(contents[loop]), TRUE );
@@ -630,8 +622,7 @@ void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
             // So we check this here.  We only do this is we have a
             // full 16 bytes displayed per line.
             if( amount == 16 ) {
-                loop += checkForDupLines( contents, loop, end, l_entry,
-                                          r_entry );
+                loop += checkForDupLines( contents, loop, end, l_entry, r_entry );
             }
         }
         BufferConcatNL();
@@ -642,8 +633,7 @@ void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
     *refent = r_entry;
 }
 
-static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
-                        unsigned pass )
+static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size size, unsigned pass )
 {
     hash_data                   *data_ptr;
     label_list                  sec_label_list;
@@ -652,9 +642,9 @@ static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size siz
     ref_entry                   r_entry;
 
     /* Obtain the Symbol Table */
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
+    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)sec->shnd );
     if( data_ptr ) {
-        sec_label_list = (label_list) *data_ptr;
+        sec_label_list = (label_list)*data_ptr;
         l_entry = sec_label_list->first;
     } else {
         sec_label_list = NULL;
@@ -662,14 +652,13 @@ static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size siz
     }
 
     /* Obtain the reloc table */
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) sec->shnd );
+    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)sec->shnd );
+    r_entry = NULL;
     if( data_ptr ) {
-        sec_ref_list = (ref_list) *data_ptr;
-        if( sec_ref_list ) {
+        sec_ref_list = (ref_list)*data_ptr;
+        if( sec_ref_list != NULL ) {
             r_entry = sec_ref_list->first;
         }
-    } else {
-        r_entry = NULL;
     }
 
     if( pass == 1 ) {
@@ -691,12 +680,15 @@ static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size siz
 
 static void bssSection( section_ptr sec, orl_sec_size size, unsigned pass )
 {
-    hash_data *                 data_ptr;
-    label_list                  sec_label_list;
-    label_entry                 l_entry;
+    hash_data           *data_ptr;
+    label_list          sec_label_list;
+    label_entry         l_entry;
+    bool                is32bit;
 
     if( pass == 1 )
         return;
+
+    is32bit = ( size >= 0x10000 );
 
     /* Obtain the Symbol Table */
     data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
@@ -705,14 +697,14 @@ static void bssSection( section_ptr sec, orl_sec_size size, unsigned pass )
     } else {
         sec_label_list = NULL;
     }
-    l_entry = sec_label_list->first;
 
     PrintHeader( sec );
 
-    while( l_entry != NULL ){
+    for( l_entry = sec_label_list->first; l_entry != NULL; l_entry = l_entry->next ) {
         switch( l_entry->type ){
         case LTYP_UNNAMED:
-            PrintLinePrefix( NULL, l_entry->offset, size, 1, 0 );
+            PrintLinePrefixAddress( l_entry->offset, is32bit );
+            BufferAlignToTab( PREFIX_SIZE_TABS );
             BufferStore("%c$%d:\n", LabelChar, l_entry->label.number );
             break;
         case LTYP_SECTION:
@@ -720,12 +712,12 @@ static void bssSection( section_ptr sec, orl_sec_size size, unsigned pass )
                 break;
             /* Fall through */
         case LTYP_NAMED:
-            PrintLinePrefix( NULL, l_entry->offset, size, 1, 0 );
+            PrintLinePrefixAddress( l_entry->offset, is32bit );
+            BufferAlignToTab( PREFIX_SIZE_TABS );
             BufferStore("%s:\n", l_entry->label.name );
             break;
         }
         BufferPrint();
-        l_entry = l_entry->next;
     }
     BufferConcatNL();
     BufferMsg( BSS_SIZE );

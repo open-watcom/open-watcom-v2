@@ -36,18 +36,16 @@
 #include <ctype.h>
 #include "global.h"
 #include "dis.h"
-#include "msg.h"
 #include "buffer.h"
 #include "print.h"
 #include "formasm.h"
 #include "labproc.h"
 
-extern int                      OutputDest;
 extern dis_format_flags         DFormat;
 
 static buffer_position          OutputPos = 0;
-/* static */ char               Buffer[BUFFER_LEN];
-/* static */ char               IntermedBuffer[BUFFER_LEN];
+static char                     Buffer[BUFFER_LEN] = {0};
+static char                     IntermedBuffer[BUFFER_LEN] = {0};
 
 void FmtHexNum( char *buff, unsigned prec, unsigned long value )
 {
@@ -172,9 +170,9 @@ void BufferQuoteName( const char *name )
 {
     if( NeedsQuoting( name ) ) {
         BufferConcat( "`" );
-        BufferConcat( (char *)name );
+        BufferConcat( name );
         BufferConcat( "`" );
     } else {
-        BufferConcat( (char *)name );
+        BufferConcat( name );
     }
 }
