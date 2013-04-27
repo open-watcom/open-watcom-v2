@@ -20,6 +20,8 @@ set PROJNAME=wtouch
     <CCCMD> linux386/wtouch.exe  <OWRELROOT>/binl/wtouch
     <CCCMD> ntaxp/wtouch.exe     <OWRELROOT>/axpnt/
 
+    <CCCMD> ntx64/wtouch.exe     <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

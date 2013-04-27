@@ -41,6 +41,8 @@ set PROJNAME=madaxp
     <CCCMD> qnx386/madaxp.mad     <OWRELROOT>/qnx/watcom/wd/
     <CCCMD> qnx386/madaxp.sym     <OWRELROOT>/qnx/sym/
 
+    <CCCMD> ntx64/madaxp.dll      <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

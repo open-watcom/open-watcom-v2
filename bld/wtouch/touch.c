@@ -36,13 +36,9 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
-#include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <ctype.h>
-
 #if defined( __UNIX__ )
-#include <fcntl.h>
 #include <dirent.h>
 #include <utime.h>
 #else
@@ -50,19 +46,11 @@
 #include <sys/utime.h>
 #endif
 
+#include "wio.h"
 #include "watcom.h"
 #include "banner.h"
 #include "touch.h"
 #include "wtmsg.h"
-
-#if defined( __NT__ )
-#undef STDOUT_FILENO
-#define STDOUT_FILENO (stdout->_handle)
-#else
-#ifndef STDOUT_FILENO
-#define STDOUT_FILENO   1
-#endif
-#endif
 
 extern touchflags   TouchFlags;
 extern timestruct   TimeAdjust;

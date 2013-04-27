@@ -41,11 +41,11 @@ additional_cleanup = *.d32 *.mad
 ###############
 extra_cpp_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
 
-extra_c_flags += -s
+extra_c_flags = -s
 extra_c_flags_i86 = -zu
 extra_c_flags_win = -zc
 
-!ifneq bootstrap 1
+!ifdef __WATCOM__
 extra_c_flags_madimp = -zlf
 !endif
 
@@ -94,7 +94,7 @@ xname = mad$(target_cpu)$(ext_lib_shared)
 
 $(xname) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(objs) $(ldflags)
+        $(cl) $(clflags_dll) $(objs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags_dll) file {$(objs)}
 !endif

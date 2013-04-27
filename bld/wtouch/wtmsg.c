@@ -48,15 +48,6 @@
 
 #define NIL_HANDLE      ((int)-1)
 
-#if defined( __NT__ )
-#undef STDOUT_FILENO
-#define STDOUT_FILENO (stdout->_handle)
-#else
-#ifndef STDOUT_FILENO
-#define STDOUT_FILENO   1
-#endif
-#endif
-
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 extern  long            FileShift;

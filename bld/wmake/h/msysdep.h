@@ -132,17 +132,6 @@ enum {
 #define MAKEFINI_NAME   "makefini"
 #define TOOLSINI_NAME   "tools.ini"
 
-#if defined( __NT__ )
-#include <stdio.h>
-#define STDIN   _fileno( stdin )
-#define STDOUT  _fileno( stdout )
-#define STDERR  _fileno( stderr )
-#else
-#define STDIN   STDIN_FILENO    /* the standard Posix i/o file handles      */
-#define STDOUT  STDOUT_FILENO
-#define STDERR  STDERR_FILENO
-#endif
-
 /*
  * Sanity checks
  */

@@ -24,16 +24,18 @@ set PROJNAME=wasmps
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/wasmps.exe     <OWRELROOT>/binw/wasmps.exe
-    <CCCMD> dos386/wasmps.sym     <OWRELROOT>/binw/wasmps.sym
-    <CCCMD> os2386/wasmps.exe     <OWRELROOT>/binp/wasmps.exe
-    <CCCMD> os2386/wasmps.sym     <OWRELROOT>/binp/wasmps.sym
-    <CCCMD> nt386/wasmps.exe      <OWRELROOT>/binnt/wasmps.exe
-    <CCCMD> nt386/wasmps.sym      <OWRELROOT>/binnt/wasmps.sym
+    <CCCMD> dos386/wasmps.exe     <OWRELROOT>/binw/
+    <CCCMD> dos386/wasmps.sym     <OWRELROOT>/binw/
+    <CCCMD> os2386/wasmps.exe     <OWRELROOT>/binp/
+    <CCCMD> os2386/wasmps.sym     <OWRELROOT>/binp/
+    <CCCMD> nt386/wasmps.exe      <OWRELROOT>/binnt/
+    <CCCMD> nt386/wasmps.sym      <OWRELROOT>/binnt/
     <CCCMD> linux386/wasmps.exe   <OWRELROOT>/binl/wasmps
-    <CCCMD> linux386/wasmps.sym   <OWRELROOT>/binl/wasmps.sym
-    <CCCMD> ntaxp/wasmps.exe      <OWRELROOT>/axpnt/wasmps.exe
-    <CCCMD> ntaxp/wasmps.sym      <OWRELROOT>/axpnt/wasmps.sym
+    <CCCMD> linux386/wasmps.sym   <OWRELROOT>/binl/
+    <CCCMD> ntaxp/wasmps.exe      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wasmps.sym      <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/wasmps.exe      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

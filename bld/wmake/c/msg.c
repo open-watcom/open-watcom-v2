@@ -440,10 +440,10 @@ void PrtMsg( enum MsgClass num, ... )
     class = num & CLASS_MSK;
     switch( class ) {
     case INF & CLASS_MSK:
-        fh = STDOUT;
+        fh = STDOUT_FILENO;
         break;
     default:
-        fh = STDERR;
+        fh = STDERR_FILENO;
         switch( class ) {
         case WRN & CLASS_MSK:
             wefchar = 'W';
@@ -475,7 +475,7 @@ void PrtMsg( enum MsgClass num, ... )
      * with the doFmtStr() substitution.
      */
     if( len > 0 ) {
-        if( fh == STDERR ) {
+        if( fh == STDERR_FILENO ) {
             logWrite( buff, len );
         }
         write( fh, buff, len );
@@ -485,7 +485,7 @@ void PrtMsg( enum MsgClass num, ... )
     if( num & PRNTSTR ) {       /* print a big string */
         str = va_arg( args, char * );
 
-        if( fh == STDERR ) {
+        if( fh == STDERR_FILENO ) {
             logWrite( str, strlen( str ) );
         }
         write( fh, str, (unsigned)strlen( str ) );
@@ -506,7 +506,7 @@ void PrtMsg( enum MsgClass num, ... )
     if( !(num & NEOL) ) {
         buff[len++] = EOL;
     }
-    if( fh == STDERR ) {
+    if( fh == STDERR_FILENO ) {
         logWrite( buff, len );
     }
     write( fh, buff, len );
@@ -554,7 +554,7 @@ BOOLEAN GetYes( enum MsgClass querymsg )
 
     PrtMsg( INF | NEOL | STRING_YES_NO, querymsg );
 
-    if( read( STDIN, buf, LINE_BUFF ) == 0 ) {
+    if( read( STDIN_FILENO, buf, LINE_BUFF ) == 0 ) {
         return( FALSE );
     }
 

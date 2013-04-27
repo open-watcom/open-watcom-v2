@@ -44,6 +44,8 @@ set PROJNAME=madx86
     <CCCMD> rdos386/madx86.dll    <OWRELROOT>/rdos/
     <CCCMD> rdos386/madx86.sym    <OWRELROOT>/rdos/
 
+    <CCCMD> ntx64/madx86.dll      <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

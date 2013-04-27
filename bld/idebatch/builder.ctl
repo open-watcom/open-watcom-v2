@@ -14,12 +14,14 @@ set PROJNAME=idebatch
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> os2386/batserv.exe  <OWRELROOT>/binp/batserv.exe
-    <CCCMD> nt386/batserv.exe   <OWRELROOT>/binnt/batserv.exe
+    <CCCMD> os2386/batserv.exe  <OWRELROOT>/binp/
+    <CCCMD> nt386/batserv.exe   <OWRELROOT>/binnt/
     <CCCMD> dosi86/int.exe      <OWRELROOT>/binw/dosserv.exe
 # there is no makefile in the wini86 dir
-    <CPCMD> win/batchbox.pif 	<OWRELROOT>/binw/batchbox.pif
-    <CCCMD> ntaxp/batserv.exe   <OWRELROOT>/axpnt/batserv.exe
+    <CPCMD> win/batchbox.pif 	<OWRELROOT>/binw/
+    <CCCMD> ntaxp/batserv.exe   <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/batserv.exe   <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

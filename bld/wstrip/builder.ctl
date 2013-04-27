@@ -15,7 +15,7 @@ set PROJNAME=wstrip
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/wstripx.exe          <OWBINDIR>/bwstrip<CMDEXT>
+    <CPCMD> <OWOBJDIR>/wstripx.exe <OWBINDIR>/bwstrip<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
@@ -30,6 +30,8 @@ set PROJNAME=wstrip
     <CCCMD> linux386/wstripx.exe  <OWRELROOT>/binl/wstrip
     <CCCMD> ntaxp/wstripx.exe     <OWRELROOT>/axpnt/wstrip.exe
     <CCCMD> qnx386/wstripx.exe    <OWRELROOT>/qnx/binq/wstrip
+
+    <CCCMD> ntx64/wstripx.exe     <OWRELROOT>/binnt64/wstrip.exe
 
 [ BLOCK . . ]
 #============

@@ -449,7 +449,7 @@ STATIC void parseFiles( void )
             p = cur->name;
             FreeSafe( cur );
             if( p[0] == '-' && p[1] == NULLCHAR ) { /* handle -f - */
-                InsOpenFile( STDIN );
+                InsOpenFile( STDIN_FILENO );
                 ret = RET_SUCCESS;
             } else {
                 ret = InsFile( p, FALSE );

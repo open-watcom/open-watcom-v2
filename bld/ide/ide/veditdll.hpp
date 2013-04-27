@@ -40,15 +40,15 @@ extern "C" {
 #include "wedit.h"
 };
 
-typedef int EDITAPI (*ConnectFn)( void );
-typedef int EDITAPI (*FileFn)( editstring, editstring );
-typedef int EDITAPI (*LocFn)( long, int, int );
-typedef int EDITAPI (*LocErrFn)( long, int, int, int, editstring );
-typedef int EDITAPI (*ShowFn)( show_method );
-typedef int EDITAPI (*DisconnectFn)( void );
-typedef int EDITAPI (*SaveAllFn)( void );
-typedef int EDITAPI (*SaveThisFileFn)( const char * );
-typedef int EDITAPI (*IsFileInBufFn)( const char * );
+typedef int (EDITAPI *ConnectFn)( void );
+typedef int (EDITAPI *FileFn)( editstring, editstring );
+typedef int (EDITAPI *LocFn)( long, int, int );
+typedef int (EDITAPI *LocErrFn)( long, int, int, int, editstring );
+typedef int (EDITAPI *ShowFn)( show_method );
+typedef int (EDITAPI *DisconnectFn)( void );
+typedef int (EDITAPI *SaveAllFn)( void );
+typedef int (EDITAPI *SaveThisFileFn)( const char * );
+typedef int (EDITAPI *IsFileInBufFn)( const char * );
 
 WCLASS VEditDLL : public WObject
 {

@@ -32,21 +32,18 @@
 #ifndef _POSIX_INCLUDED
 #define _POSIX_INCLUDED
 
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <stdlib.h>
+#include "wio.h"
 #if defined( __UNIX__ )
-  #include <unistd.h>
   #include <dirent.h>
   #define _mkdir( a, b )    mkdir( a, b )
-  #define DIRFLAGS          S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
+  #define DIRFLAGS          PMODE_RW
   #define WRITEATTRS        (CurrentFile->attr)
 #else
   #include <direct.h>
-  #include <io.h>
   #define _mkdir( a, b )    mkdir( a )
-  #define DIRFLAGS 0
-  #define WRITEATTRS        (S_IRWXU)
+  #define DIRFLAGS          0
+  #define WRITEATTRS        PMODE_RW
   #ifdef __IBMC__
     typedef struct dirent DIR;
   #endif
@@ -61,24 +58,6 @@
 #ifndef ACCESS_WR
   #define ACCESS_WR W_OK
   #define ACCESS_RD R_OK
-#endif
-
-#ifndef S_IRWXU
-  #define S_IRWXU    (S_IREAD | S_IWRITE | S_IEXEC)
-#endif
-
-#ifndef STDIN_FILENO
-  #define STDIN_FILENO    0
-  #define STDOUT_FILENO   1
-  #define STDERR_FILENO   2
-#endif
-
-#ifndef O_BINARY
-  #define O_BINARY 0
-#endif
-
-#ifndef O_TEXT
-  #define O_TEXT 0
 #endif
 
 #ifndef _MAX_DRIVE

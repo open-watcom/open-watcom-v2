@@ -34,7 +34,17 @@
 
 extern char _viperError[];
 
-#if defined( __NT__ ) && !defined( __AXP__ )
+#if defined( __WINDOWS__ )
+#define EDITCONNECT     "EDITCONNECT"
+#define EDITFILE        "EDITFILE"
+#define EDITLOCATE      "EDITLOCATE"
+#define EDITLOCATEERROR "EDITLOCATEERROR"
+#define EDITSHOWWINDOW  "EDITSHOWWINDOW"
+#define EDITDISCONNECT  "EDITDISCONNECT"
+#define EDITSAVEALL     "EDITSAVEFILES"
+#define EDITSAVETHIS    "EDITSAVETHISFILE"
+#define EDITISFILEINBUF "EDITQUERYTHISFILE"
+#elif defined( __NT__ ) && defined( __386__ )
 #define EDITCONNECT     "_EDITConnect@0"
 #define EDITFILE        "_EDITFile@8"
 #define EDITLOCATE      "_EDITLocate@12"

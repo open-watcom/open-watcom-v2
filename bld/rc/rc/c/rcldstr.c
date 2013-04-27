@@ -32,7 +32,7 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
-#include <fcntl.h>
+#include "wio.h"
 #include "global.h"
 #include "layer0.h"
 #include "errors.h"

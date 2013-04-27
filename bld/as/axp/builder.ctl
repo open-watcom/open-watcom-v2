@@ -24,16 +24,18 @@ set PROJNAME=wasaxp
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/wasaxp.exe     <OWRELROOT>/binw/wasaxp.exe
-    <CCCMD> dos386/wasaxp.sym     <OWRELROOT>/binw/wasaxp.sym
-    <CCCMD> os2386/wasaxp.exe     <OWRELROOT>/binp/wasaxp.exe
-    <CCCMD> os2386/wasaxp.sym     <OWRELROOT>/binp/wasaxp.sym
-    <CCCMD> nt386/wasaxp.exe      <OWRELROOT>/binnt/wasaxp.exe
-    <CCCMD> nt386/wasaxp.sym      <OWRELROOT>/binnt/wasaxp.sym
+    <CCCMD> dos386/wasaxp.exe     <OWRELROOT>/binw/
+    <CCCMD> dos386/wasaxp.sym     <OWRELROOT>/binw/
+    <CCCMD> os2386/wasaxp.exe     <OWRELROOT>/binp/
+    <CCCMD> os2386/wasaxp.sym     <OWRELROOT>/binp/
+    <CCCMD> nt386/wasaxp.exe      <OWRELROOT>/binnt/
+    <CCCMD> nt386/wasaxp.sym      <OWRELROOT>/binnt/
     <CCCMD> linux386/wasaxp.exe   <OWRELROOT>/binl/wasaxp
-    <CCCMD> linux386/wasaxp.sym   <OWRELROOT>/binl/wasaxp.sym
-    <CCCMD> ntaxp/wasaxp.exe      <OWRELROOT>/axpnt/wasaxp.exe
-    <CCCMD> ntaxp/wasaxp.sym      <OWRELROOT>/axpnt/wasaxp.sym
+    <CCCMD> linux386/wasaxp.sym   <OWRELROOT>/binl/
+    <CCCMD> ntaxp/wasaxp.exe      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wasaxp.sym      <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/wasaxp.exe      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

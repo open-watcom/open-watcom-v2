@@ -24,16 +24,18 @@ set PROJNAME=wasppc
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/wasppc.exe     <OWRELROOT>/binw/wasppc.exe
-    <CCCMD> dos386/wasppc.sym     <OWRELROOT>/binw/wasppc.sym
-    <CCCMD> os2386/wasppc.exe     <OWRELROOT>/binp/wasppc.exe
-    <CCCMD> os2386/wasppc.sym     <OWRELROOT>/binp/wasppc.sym
-    <CCCMD> nt386/wasppc.exe      <OWRELROOT>/binnt/wasppc.exe
-    <CCCMD> nt386/wasppc.sym      <OWRELROOT>/binnt/wasppc.sym
+    <CCCMD> dos386/wasppc.exe     <OWRELROOT>/binw/
+    <CCCMD> dos386/wasppc.sym     <OWRELROOT>/binw/
+    <CCCMD> os2386/wasppc.exe     <OWRELROOT>/binp/
+    <CCCMD> os2386/wasppc.sym     <OWRELROOT>/binp/
+    <CCCMD> nt386/wasppc.exe      <OWRELROOT>/binnt/
+    <CCCMD> nt386/wasppc.sym      <OWRELROOT>/binnt/
     <CCCMD> linux386/wasppc.exe   <OWRELROOT>/binl/wasppc
-    <CCCMD> linux386/wasppc.sym   <OWRELROOT>/binl/wasppc.sym
-    <CCCMD> ntaxp/wasppc.exe      <OWRELROOT>/axpnt/wasppc.exe
-    <CCCMD> ntaxp/wasppc.sym      <OWRELROOT>/axpnt/wasppc.sym
+    <CCCMD> linux386/wasppc.sym   <OWRELROOT>/binl/
+    <CCCMD> ntaxp/wasppc.exe      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wasppc.sym      <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/wasppc.exe      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

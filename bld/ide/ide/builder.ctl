@@ -23,6 +23,8 @@ set PROJNAME=ide
     <CCCMD> nt386/ide.exe   <OWRELROOT>/binnt/
     <CCCMD> ntaxp/ide.exe   <OWRELROOT>/axpnt/
 
+    <CCCMD> ntx64/ide.exe   <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

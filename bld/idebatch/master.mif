@@ -31,11 +31,21 @@ extra_l_flags = op map
 
 all: batserv.exe tst.exe .symbolic
 
+inc_dirs = -I"../h"
+
 batserv.exe : batserv.obj batpipe.obj
+!ifndef __WATCOM__
+        $(cl) $(clflags) batserv.obj batpipe.obj $(ldflags)
+!else
         $(linker) $(lflags) file batserv.obj,batpipe.obj op stack=32K
+!endif
 
 tst.exe : tst.obj batcli.obj batpipe.obj
+!ifndef __WATCOM__
+        $(cl) $(clflags) tst.obj batcli.obj batpipe.obj $(ldflags)
+!else
         $(linker) $(lflags) file tst.obj,batcli.obj,batpipe.obj
+!endif
 
 !else ifeq host_os dos
 

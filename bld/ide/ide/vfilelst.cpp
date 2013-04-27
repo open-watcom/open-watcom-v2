@@ -148,7 +148,7 @@ static void getRelFname( HWND hwnd, const char *fname, WString *relname ) {
     char                 drive[ _MAX_DRIVE ];
     char                 dir[ _MAX_DIR ];
 
-    info = (GetFilesInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     getFullFname( hwnd, fname, &fullpath );
     filename = fullpath.gets();
     _splitpath( info->tgt_file, drive, dir, NULL, NULL );
@@ -290,7 +290,7 @@ static void addAllFiles95( HWND hwnd ) {
     BOOL            found = TRUE;
     char            *fname;
     
-    info = (GetFilesInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     ext = info->filter;
     n = info->filter_index * 2 - 1;
     for( i = 0; i < n; i++ ) {
@@ -326,7 +326,7 @@ void GetResults( HWND hwnd ) {
     HWND                lb;
     GetFilesInfo        *info;
 
-    info = (GetFilesInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     lb = GetDlgItem( hwnd, FOD_FILELIST );
     len = getMaxItemLen( lb );
     buf = (char *)alloca( (size_t)( len + 1 ) );
@@ -343,7 +343,7 @@ void initFileList( HWND hwnd ) {
     HWND                lb;
     GetFilesInfo        *info;
 
-    info = (GetFilesInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     lb = GetDlgItem( hwnd, FOD_FILELIST );
     if( *info->result != "" ) {
         WStringList names( *info->result );
@@ -381,7 +381,7 @@ UINT CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             ctl = GetDlgItem( hwnd, IDOK );
             EnableWindow( ctl, FALSE );
             of = (OPENFILENAME *)lparam;
-            SetWindowLong( hwnd, DWL_USER, of->lCustData );
+            SET_DLGDATA( hwnd, of->lCustData );
             initFileList( hwnd );
         }
         break;
@@ -459,7 +459,7 @@ UINT CALLBACK AddSrcDlgProc95( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             EnableWindow( ctl, FALSE );
             dlg = GetParent( hwnd );
             SendMessage( dlg, CDM_SETCONTROLTEXT, IDOK, (LPARAM)"&Add" );
-            SetWindowLong( hwnd, DWL_USER, of->lCustData );
+            SET_DLGDATA( hwnd, of->lCustData );
             info = (GetFilesInfo *)of->lCustData;
             info->filter_index = of->nFilterIndex;
             info->filter = of->lpstrFilter;
@@ -496,12 +496,12 @@ UINT CALLBACK AddSrcDlgProc95( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             break;
         case FOD_CLOSE:
             GetResults( hwnd );
-            info = (GetFilesInfo *)GetWindowLong( hwnd, DWL_USER );
+            info = (GetFilesInfo *)GET_DLGDATA( hwnd );
             info->ret_code = IDOK;
             PostMessage( GetParent( hwnd ), WM_COMMAND, IDCANCEL, 0L );
             return( TRUE );
         case IDCANCEL:
-            info = (GetFilesInfo *)GetWindowLong( hwnd, DWL_USER );
+            info = (GetFilesInfo *)GET_DLGDATA( hwnd );
             info->ret_code = IDCANCEL;
             PostMessage( GetParent( hwnd ), WM_COMMAND, IDCANCEL, 0L );
             return( TRUE );
@@ -513,10 +513,10 @@ UINT CALLBACK AddSrcDlgProc95( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
         switch( ((NMHDR *)lparam)->code ) {
         case CDN_FILEOK:
             PostMessage( hwnd, WM_COMMAND, FOD_ADD, 0L );
-            SetWindowLong( hwnd, DWL_MSGRESULT, 1L );
+            SET_DLGRESULT( hwnd, 1L );
             return( TRUE );
         case CDN_TYPECHANGE:
-            info = (GetFilesInfo *)GetWindowLong( hwnd, DWL_USER );
+            info = (GetFilesInfo *)GET_DLGDATA( hwnd );
             info->filter_index = ((OFNOTIFY *)lparam)->lpOFN->nFilterIndex;
             break;
         }
@@ -560,13 +560,13 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
 #ifdef __WINDOWS__
     of.lpfnHook = (CallbackFnType)MakeProcInstance( (FARPROC)AddSrcDlgProc, hinst );
 #else
-    of.lpfnHook = AddSrcDlgProc;
+    of.lpfnHook = (LPOFNHOOKPROC)AddSrcDlgProc;
 #endif
 #ifdef __NT__
     if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
         of.lpTemplateName = "ADD_SRC_DLG_95";
         of.Flags |= OFN_EXPLORER;
-        of.lpfnHook = AddSrcDlgProc95;
+        of.lpfnHook = (LPOFNHOOKPROC)AddSrcDlgProc95;
     } else {
 #endif
         of.lpTemplateName = "ADD_SRC_DLG";

@@ -1,4 +1,4 @@
-#pmake: build os_nt host_x86 targ_axp axp
+#pmake: build targ_axp axp os_nt host_386
 
 host_os  = nt
 host_cpu = 386

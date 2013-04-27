@@ -57,6 +57,9 @@ set PROJNAME=vi
 
     <CCCMD> qnxi86/vi.exe             <OWRELROOT>/qnx/binq/vi
 
+    <CCCMD> ntx64/vi.exe              <OWRELROOT>/binnt64/
+    <CCCMD> ntx64.win/vi.exe          <OWRELROOT>/binnt64/viw.exe
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

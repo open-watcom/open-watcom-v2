@@ -47,48 +47,63 @@ typedef enum {
     RF_XMMREG = 0x8,
 } register_flags;
 
+#define REG_BIT_OFF(basereg)    (offsetof( mad_registers, x86.basereg ) * 8)
+#define STK_REG_BIT_OFF(num)    ((offsetof( mad_registers, x86.fpu.reg ) + sizeof( xreal ) * num) * 8)
+#define MMX_REG_BIT_OFF(num)    ((offsetof( mad_registers, x86.mmx.mm ) + sizeof( mmx_reg ) * num) * 8)
+#define XMM_REG_BIT_OFF(num)    ((offsetof( mad_registers, x86.xmm.xmm ) + sizeof( xmm_reg ) * num) * 8)
+
+#define GET_STK_REG_IDX(off)    ((off - STK_REG_BIT_OFF( 0 )) / (sizeof( xreal ) * 8))
+
 #define REG( p, name, type, start, size, flags, sublist, cpulevel, fpulevel ) \
-    const x86_reg_info p##_##name = { { #name, X86T_##type, start, size,    \
-                                    RF_##flags##REG }, sublist, cpulevel, fpulevel };
+    const x86_reg_info p##_##name = { \
+        { #name, X86T_##type, start, size, RF_##flags##REG }, \
+        sublist, cpulevel, fpulevel \
+    };
 
-#define CPU( name, type, basereg, startbit, size, sublist, cpulevel )   \
-    REG( CPU, name, type, offsetof( mad_registers, x86.cpu.basereg )*8+startbit,        \
-        size, GP, sublist, cpulevel, LX )
+#define CPU( name, type, basereg, startbit, size, sublist, cpulevel ) \
+    REG( CPU, name, type, REG_BIT_OFF( cpu.basereg ) + startbit, size, GP, sublist, cpulevel, LX )
 
-#define CPU_FLAG( name, cpulevel )      \
+#define CPU_FLAG( name, cpulevel ) \
     CPU( name, BYTE, efl, SHIFT_##name, LEN_##name, NULL, cpulevel )
 
-#define FPU( name, type, basereg, startbit, size, sublist, fpulevel )   \
-    REG( FPU, name, type, offsetof( mad_registers, x86.fpu.basereg )*8+startbit,        \
-        size, FP, sublist, LX, fpulevel )
+#define FPU( name, type, basereg, startbit, size, sublist, fpulevel ) \
+    REG( FPU, name, type, REG_BIT_OFF( fpu.basereg ) + startbit, size, FP, sublist, LX, fpulevel )
 
-#define FPU_STK( num )  \
-    FPU( st##num, EXTENDED, reg[num], 0, 80, NULL, L1 )
+#define FPU_STK( num ) \
+    REG( FPU, st##num, EXTENDED, STK_REG_BIT_OFF( num ), 80, FP, NULL, LX, L1 )
 
-#define FPU_SW( name, fpulevel )        \
+#define FPU_SW( name, fpulevel ) \
     FPU( name, BYTE, sw, SHIFT_##name, LEN_##name, NULL, fpulevel )
 
-#define FPU_CW( name, fpulevel )        \
+#define FPU_CW( name, fpulevel ) \
     FPU( name, BYTE, cw, SHIFT_##name, LEN_##name, NULL, fpulevel )
 
-#define MMX( num )      \
-    REG( MMX, mm##num, U64, offsetof( mad_registers, x86.mmx.mm[num] )*8,\
-    64, MM, MMXSubList##num, L5, LX )
+#define MMX( num ) \
+    REG( MMX, mm##num, U64, MMX_REG_BIT_OFF( num ), 64, MM, MMXSubList##num, L5, LX )
 
-#define XMM( num )      \
-    REG( XMM, xmm##num, U128, offsetof( mad_registers, x86.xmm.xmm[num] )*8,\
-    128, XMM, XMMSubList##num, L6, LX )
+#define XMM( num ) \
+    REG( XMM, xmm##num, U128, XMM_REG_BIT_OFF( num ), 128, XMM, XMMSubList##num, L6, LX )
 
-#define MXCSR( name )        \
-    REG( XMM_mxcsr, name, BYTE, offsetof( mad_registers, x86.xmm.mxcsr )*8 + SHIFT_mxcsr_##name, \
-        LEN_mxcsr_##name, XMM, NULL, L6, LX )
+#define MXCSR( name ) \
+    REG( XMM_mxcsr, name, BYTE, REG_BIT_OFF( xmm.mxcsr ) + SHIFT_mxcsr_##name, LEN_mxcsr_##name, XMM, NULL, L6, LX )
 
+CPU_FLAG( vm,   L3 );
+CPU_FLAG( rf,   L3 );
+CPU_FLAG( nt,   L2 );
+CPU_FLAG( iopl, L2 );
+CPU_FLAG( o,    L1 );
+CPU_FLAG( d,    L1 );
+CPU_FLAG( i,    L1 );
+CPU_FLAG( s,    L1 );
+CPU_FLAG( z,    L1 );
+CPU_FLAG( a,    L1 );
+CPU_FLAG( p,    L1 );
+CPU_FLAG( c,    L1 );
 
-/* forward definitions */
-static const x86_reg_info       * const EFLRegList[];
-static const x86_reg_info       * const SWRegList[];
-static const x86_reg_info       * const CWRegList[];
-static const x86_reg_info       * const MXCSRRegList[];
+static const x86_reg_info * const EFLRegList[] = {
+    &CPU_vm, &CPU_rf, &CPU_nt, &CPU_iopl,
+    &CPU_o, &CPU_d, &CPU_i, &CPU_s, &CPU_z, &CPU_a, &CPU_p, &CPU_c,
+NULL };
 
 /* register definitions */
 CPU( eax, DWORD, eax, 0, 32, NULL, L3 );
@@ -129,41 +144,19 @@ CPU(  ss,  WORD,  ss, 0, 16, NULL, L1 );
 CPU(  fs,  WORD,  fs, 0, 16, NULL, L3 );
 CPU(  gs,  WORD,  gs, 0, 16, NULL, L3 );
 
-CPU_FLAG( vm,   L3 );
-CPU_FLAG( rf,   L3 );
-CPU_FLAG( nt,   L2 );
-CPU_FLAG( iopl, L2 );
-CPU_FLAG( o,    L1 );
-CPU_FLAG( d,    L1 );
-CPU_FLAG( i,    L1 );
-CPU_FLAG( s,    L1 );
-CPU_FLAG( z,    L1 );
-CPU_FLAG( a,    L1 );
-CPU_FLAG( p,    L1 );
-CPU_FLAG( c,    L1 );
+/* register list definitions */
+static const x86_reg_info * const CPURegList[] = {
+    &CPU_eax, &CPU_ebx, &CPU_ecx, &CPU_edx, &CPU_eip,
+    &CPU_esi, &CPU_edi, &CPU_esp, &CPU_ebp, &CPU_efl,
 
-FPU_STK( 0 );
-FPU_STK( 1 );
-FPU_STK( 2 );
-FPU_STK( 3 );
-FPU_STK( 4 );
-FPU_STK( 5 );
-FPU_STK( 6 );
-FPU_STK( 7 );
+    &CPU_ax,  &CPU_bx,  &CPU_cx,  &CPU_dx,  &CPU_ip,
+    &CPU_si,  &CPU_di,  &CPU_sp,  &CPU_bp,  &CPU_fl,
 
-FPU( sw,  WORD, sw,  0, 16, SWRegList, L1 );
-FPU( cw,  WORD, cw,  0, 16, CWRegList, L1 );
-FPU( tag, WORD, tag, 0, 16, NULL, L1 );
-FPU( tag0, BIT, tag, 0,  2, NULL, L1 );
-FPU( tag1, BIT, tag, 2,  2, NULL, L1 );
-FPU( tag2, BIT, tag, 4,  2, NULL, L1 );
-FPU( tag3, BIT, tag, 6,  2, NULL, L1 );
-FPU( tag4, BIT, tag, 8,  2, NULL, L1 );
-FPU( tag5, BIT, tag,10,  2, NULL, L1 );
-FPU( tag6, BIT, tag,12,  2, NULL, L1 );
-FPU( tag7, BIT, tag,14,  2, NULL, L1 );
-FPU( iptr, F32_PTR, ip_err, 0, 64, NULL, L1 );
-FPU( optr, F32_PTR, op_err, 0, 64, NULL, L1 );
+    &CPU_al,  &CPU_bl,  &CPU_cl,  &CPU_dl,
+    &CPU_ah,  &CPU_bh,  &CPU_ch,  &CPU_dh,
+
+    &CPU_cs,  &CPU_ds,  &CPU_es,  &CPU_ss,  &CPU_fs,  &CPU_gs,
+NULL };
 
 FPU_SW( ie, L1 );
 FPU_SW( de, L1 );
@@ -180,6 +173,11 @@ FPU_SW( st, L1 );
 FPU_SW( c3, L1 );
 FPU_SW( b,  L1 );
 
+static const x86_reg_info * const SWRegList[] = {
+    &FPU_ie, &FPU_de, &FPU_ze, &FPU_oe, &FPU_ue, &FPU_pe,
+    &FPU_sf, &FPU_c0, &FPU_es, &FPU_c1, &FPU_c2, &FPU_st, &FPU_c3, &FPU_b,
+NULL };
+
 FPU_CW( im,  L1 );
 FPU_CW( dm,  L1 );
 FPU_CW( zm,  L1 );
@@ -191,39 +189,38 @@ FPU_CW( pc,  L1 );
 FPU_CW( rc,  L1 );
 FPU_CW( ic,  L1 );
 
-/* register list definitions */
-static const x86_reg_info * const CPURegList[] = {
-    &CPU_eax, &CPU_ebx, &CPU_ecx, &CPU_edx, &CPU_eip,
-    &CPU_esi, &CPU_edi, &CPU_esp, &CPU_ebp, &CPU_efl,
-
-    &CPU_ax,  &CPU_bx,  &CPU_cx,  &CPU_dx,  &CPU_ip,
-    &CPU_si,  &CPU_di,  &CPU_sp,  &CPU_bp,  &CPU_fl,
-
-    &CPU_al,  &CPU_bl,  &CPU_cl,  &CPU_dl,
-    &CPU_ah,  &CPU_bh,  &CPU_ch,  &CPU_dh,
-
-    &CPU_cs,  &CPU_ds,  &CPU_es,  &CPU_ss,  &CPU_fs,  &CPU_gs,
+static const x86_reg_info * const CWRegList[] = {
+    &FPU_im, &FPU_dm, &FPU_zm, &FPU_om, &FPU_um, &FPU_pm,
+    &FPU_iem, &FPU_pc, &FPU_rc, &FPU_ic,
 NULL };
 
-static const x86_reg_info * const EFLRegList[] = {
-    &CPU_vm, &CPU_rf, &CPU_nt, &CPU_iopl,
-    &CPU_o, &CPU_d, &CPU_i, &CPU_s, &CPU_z, &CPU_a, &CPU_p, &CPU_c,
-NULL };
+FPU( sw,  WORD, sw,  0, 16, SWRegList, L1 );
+FPU( cw,  WORD, cw,  0, 16, CWRegList, L1 );
+FPU( tag, WORD, tag, 0, 16, NULL, L1 );
+FPU( tag0, BIT, tag, 0,  2, NULL, L1 );
+FPU( tag1, BIT, tag, 2,  2, NULL, L1 );
+FPU( tag2, BIT, tag, 4,  2, NULL, L1 );
+FPU( tag3, BIT, tag, 6,  2, NULL, L1 );
+FPU( tag4, BIT, tag, 8,  2, NULL, L1 );
+FPU( tag5, BIT, tag,10,  2, NULL, L1 );
+FPU( tag6, BIT, tag,12,  2, NULL, L1 );
+FPU( tag7, BIT, tag,14,  2, NULL, L1 );
+FPU( iptr, F32_PTR, ip_err, 0, 64, NULL, L1 );
+FPU( optr, F32_PTR, op_err, 0, 64, NULL, L1 );
+
+FPU_STK( 0 );
+FPU_STK( 1 );
+FPU_STK( 2 );
+FPU_STK( 3 );
+FPU_STK( 4 );
+FPU_STK( 5 );
+FPU_STK( 6 );
+FPU_STK( 7 );
 
 static const x86_reg_info * const FPURegList[] = {
     &FPU_st0, &FPU_st1, &FPU_st2, &FPU_st3,
     &FPU_st4, &FPU_st5, &FPU_st6, &FPU_st7,
     &FPU_sw,  &FPU_cw,  &FPU_tag,
-NULL };
-
-static const x86_reg_info * const SWRegList[] = {
-    &FPU_ie, &FPU_de, &FPU_ze, &FPU_oe, &FPU_ue, &FPU_pe,
-    &FPU_sf, &FPU_c0, &FPU_es, &FPU_c1, &FPU_c2, &FPU_st, &FPU_c3, &FPU_b,
-NULL };
-
-static const x86_reg_info * const CWRegList[] = {
-    &FPU_im, &FPU_dm, &FPU_zm, &FPU_om, &FPU_um, &FPU_pm,
-    &FPU_iem, &FPU_pc, &FPU_rc, &FPU_ic,
 NULL };
 
 #define X86T_b  X86T_BYTE
@@ -240,14 +237,10 @@ NULL };
 #define XMMS_q  64
 
 #define MMX_SUBREG( s, i, reg ) \
-    REG( MMX##reg, s##i, s,     \
-    offsetof( mad_registers, x86.mmx.mm[reg] )*8 + MMXS_##s * i,\
-    MMXS_##s, MM, NULL, L5, LX )
+    REG( MMX##reg, s##i, s, MMX_REG_BIT_OFF( reg ) + MMXS_##s * i, MMXS_##s, MM, NULL, L5, LX )
 
 #define XMM_SUBREG( s, i, reg ) \
-    REG( XMM##reg, s##i, s,     \
-    offsetof( mad_registers, x86.xmm.xmm[reg] )*8 + XMMS_##s * i,\
-    XMMS_##s, XMM, NULL, L6, LX )
+    REG( XMM##reg, s##i, s, XMM_REG_BIT_OFF( reg ) + XMMS_##s * i, XMMS_##s, XMM, NULL, L6, LX )
 
 #define MMX_SUBLIST( n )        \
         MMX_SUBREG( b, 0, n )   \
@@ -270,7 +263,8 @@ NULL };
             &MMX##n##_b0, &MMX##n##_b1, &MMX##n##_b2, &MMX##n##_b3,     \
             &MMX##n##_b4, &MMX##n##_b5, &MMX##n##_b6, &MMX##n##_b7,     \
             &MMX##n##_w0, &MMX##n##_w1, &MMX##n##_w2, &MMX##n##_w3,     \
-            &MMX##n##_d0, &MMX##n##_d1, &MMX##n##_q0, NULL };
+            &MMX##n##_d0, &MMX##n##_d1, &MMX##n##_q0, NULL              \
+        };
 
 MMX_SUBLIST( 0 )
 MMX_SUBLIST( 1 )
@@ -356,10 +350,6 @@ XMM( 5 );
 XMM( 6 );
 XMM( 7 );
 
-/* MXCSR register */
-REG( XMM, mxcsr, DWORD, offsetof( mad_registers, x86.xmm.mxcsr )*8, \
-    32, XMM, MXCSRRegList, L6, LX )
-
 MXCSR( ie );
 MXCSR( de );
 MXCSR( ze );
@@ -376,12 +366,6 @@ MXCSR( pm );
 MXCSR( rc );
 MXCSR( fz );
 
-static const x86_reg_info * const XMMRegList[] = {
-    &XMM_xmm0, &XMM_xmm1, &XMM_xmm2, &XMM_xmm3,
-    &XMM_xmm4, &XMM_xmm5, &XMM_xmm6, &XMM_xmm7,
-    &XMM_mxcsr,
-NULL };
-
 static const x86_reg_info * const MXCSRRegList[] = {
     &XMM_mxcsr_ie, &XMM_mxcsr_de, &XMM_mxcsr_ze, &XMM_mxcsr_oe, &XMM_mxcsr_ue, &XMM_mxcsr_pe,
     &XMM_mxcsr_daz,
@@ -389,6 +373,14 @@ static const x86_reg_info * const MXCSRRegList[] = {
     &XMM_mxcsr_rc, &XMM_mxcsr_fz,
 NULL };
 
+/* MXCSR register */
+REG( XMM, mxcsr, DWORD, REG_BIT_OFF( xmm.mxcsr ), 32, XMM, MXCSRRegList, L6, LX )
+
+static const x86_reg_info * const XMMRegList[] = {
+    &XMM_xmm0, &XMM_xmm1, &XMM_xmm2, &XMM_xmm3,
+    &XMM_xmm4, &XMM_xmm5, &XMM_xmm6, &XMM_xmm7,
+    &XMM_mxcsr,
+NULL };
 
 
 struct mad_reg_set_data {
@@ -1037,7 +1029,7 @@ static mad_status MMXGetPiece(
     unsigned            type;
     const x86_reg_info  **list;
 
-
+    mr = mr;
     /* in case we haven't got an MMX */
     *reg_p = NULL;
     *disp_type_p = X86T_UNKNOWN;
@@ -1195,6 +1187,7 @@ static mad_status XMMGetPiece(
     const x86_reg_info  **list = NULL;
 
 
+    mr = mr;
     /* in case we haven't got an XMM */
     *reg_p = NULL;
     *disp_type_p = X86T_UNKNOWN;
@@ -1336,8 +1329,8 @@ mad_status DIGENTRY MIRegSetDisplayModify(
     } else if( ri->type == X86T_EXTENDED ) {
         *possible_p = ModFPUStack;
         *num_possible_p = NUM_ELTS( ModFPUStack );
-    } else if( ri->bit_start >= offsetof( mad_registers, x86.fpu.tag )*8
-            && ri->bit_start <  offsetof( mad_registers, x86.fpu.tag )*8+16
+    } else if( ri->bit_start >= REG_BIT_OFF( fpu.tag )
+            && ri->bit_start <  REG_BIT_OFF( fpu.tag ) + 16
             && ri->bit_size == 2 ) {
         *possible_p = ModFPUTag;
         *num_possible_p = NUM_ELTS( ModFPUTag );
@@ -1512,8 +1505,7 @@ mad_status DIGENTRY MIRegModified(
     if( old == cur )
         return( MS_OK );
     cur_start = ri->bit_start;
-    if( cur_start >= offsetof( mad_registers, x86.cpu.eip )*8
-     && cur_start <  offsetof( mad_registers, x86.cpu.eip )*8 + 32 ) {
+    if( cur_start >= REG_BIT_OFF( cpu.eip ) && cur_start < REG_BIT_OFF( cpu.eip ) + 32 ) {
         /* dealing with [E]IP - check for control transfer */
         addr = GetRegIP( old );
         DecodeIns( &addr, &dd, BIG_SEG( addr ) );
@@ -1526,21 +1518,19 @@ mad_status DIGENTRY MIRegModified(
     unchanged = MS_OK;
     old_start = cur_start;
     if( rsd - RegSet == FPU_REG_SET ) {
-        if( cur_start >= offsetof( mad_registers, x86.fpu.reg[0] )*8
-         && cur_start <  offsetof( mad_registers, x86.fpu.reg[8] )*8 ) {
+        if( cur_start >= STK_REG_BIT_OFF( 0 ) && cur_start <  STK_REG_BIT_OFF( 8 ) ) {
             /* dealing with a 87 stack register - handle stack rotation */
-            st = (cur_start - offsetof( mad_registers, x86.fpu.reg[0])*8)
-                    / (sizeof( cur->x86.fpu.reg[0]) * 8);
+            st = GET_STK_REG_IDX( cur_start );
             rotation = EXTRACT_ST( old ) - EXTRACT_ST( cur );
             old_tag = GetTag( old, st - rotation );
             cur_tag = GetTag( cur, st );
             if( old_tag == cur_tag ) {
                 if( rotation != 0 ) {
-                    old_start -= rotation * sizeof( xreal )*8;
-                    if( old_start < offsetof( mad_registers, x86.fpu.reg[0] )*8 ) {
-                        old_start += sizeof( xreal )*8*8;
-                    } else if( old_start >= (offsetof( mad_registers, x86.fpu.reg[7] ) + sizeof( xreal ))*8 ) {
-                        old_start -= sizeof( xreal )*8*8;
+                    old_start -= rotation * sizeof( xreal ) * 8;
+                    if( old_start < STK_REG_BIT_OFF( 0 ) ) {
+                        old_start += sizeof( xreal ) * 8 * 8;
+                    } else if( old_start >= STK_REG_BIT_OFF( 8 ) ) {
+                        old_start -= sizeof( xreal ) * 8 * 8;
                     }
                 }
                 if( cur_tag != TAG_EMPTY ) {
@@ -1551,18 +1541,17 @@ mad_status DIGENTRY MIRegModified(
             } else {
                 return( MS_MODIFIED_SIGNIFICANTLY );
             }
-        } else if( cur_start >= offsetof( mad_registers, x86.fpu.tag )*8
-                && cur_start <  offsetof( mad_registers, x86.fpu.tag )*8 + 16 ) {
+        } else if( cur_start >= REG_BIT_OFF( fpu.tag ) && cur_start < REG_BIT_OFF( fpu.tag ) + 16 ) {
             /* dealing with the 87 tag register - handle stack rotation */
             rotation = EXTRACT_ST( old ) - EXTRACT_ST( cur );
             if( rotation != 0 ) {
                 old_start -= rotation * 2;
-                if( old_start < offsetof( mad_registers, x86.fpu.tag )*8 ) {
+                if( old_start < REG_BIT_OFF( fpu.tag ) ) {
                     old_start += 16;
-                } else if( old_start >= offsetof( mad_registers, x86.fpu.tag )*8 + 16 ) {
+                } else if( old_start >= REG_BIT_OFF( fpu.tag ) + 16 ) {
                     old_start -= 16;
                 }
-                st = (cur_start - offsetof( mad_registers, x86.fpu.tag)*8) / 2;
+                st = ( cur_start - REG_BIT_OFF( fpu.tag ) ) / 2;
                 old_tag = GetTag( old, st );
                 cur_tag = GetTag( cur, st );
                 if( old_tag != cur_tag ) {
@@ -1590,39 +1579,38 @@ mad_status DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, const mad_register
     unsigned_32 *p;
 
     bit_start = ri->bit_start;
-    if( bit_start >= offsetof( mad_registers, x86.fpu ) * 8 ) {
+    if( bit_start >= REG_BIT_OFF( fpu ) ) {
         return( MS_FAIL );
     }
-    if( bit_start >= offsetof( mad_registers, x86.cpu.efl )*8
-     && bit_start <  offsetof( mad_registers, x86.cpu.efl )*8 + 32 ) {
+    if( bit_start >= REG_BIT_OFF( cpu.efl ) && bit_start < REG_BIT_OFF( cpu.efl ) + 32 ) {
         return( MS_FAIL );
     }
-    if( bit_start == offsetof( mad_registers, x86.cpu.eip )*8 ) {
+    if( bit_start == REG_BIT_OFF( cpu.eip ) ) {
         *a = GetRegIP( mr );
         return( MS_OK );
     }
-    if( bit_start == offsetof( mad_registers, x86.cpu.esp )*8 ) {
+    if( bit_start == REG_BIT_OFF( cpu.esp ) ) {
         *a = GetRegSP( mr );
         return( MS_OK );
     }
-    if( bit_start == offsetof( mad_registers, x86.cpu.ebp )*8 ) {
+    if( bit_start == REG_BIT_OFF( cpu.ebp ) ) {
         *a = GetRegFP( mr );
         return( MS_OK );
     }
     memset( a, 0, sizeof( *a ) );
-    if( bit_start == offsetof( mad_registers, x86.cpu.cs )*8 ) {
+    if( bit_start == REG_BIT_OFF( cpu.cs ) ) {
         a->mach.segment = mr->x86.cpu.cs;
-    } else if( bit_start == offsetof( mad_registers, x86.cpu.ds )*8 ) {
+    } else if( bit_start == REG_BIT_OFF( cpu.ds ) ) {
         a->mach.segment = mr->x86.cpu.ds;
-    } else if( bit_start == offsetof( mad_registers, x86.cpu.es )*8 ) {
+    } else if( bit_start == REG_BIT_OFF( cpu.es ) ) {
         a->mach.segment = mr->x86.cpu.es;
-    } else if( bit_start == offsetof( mad_registers, x86.cpu.es )*8 ) {
+    } else if( bit_start == REG_BIT_OFF( cpu.es ) ) {
         a->mach.segment = mr->x86.cpu.es;
-    } else if( bit_start == offsetof( mad_registers, x86.cpu.ss )*8 ) {
+    } else if( bit_start == REG_BIT_OFF( cpu.ss ) ) {
         a->mach.segment = mr->x86.cpu.ss;
-    } else if( bit_start == offsetof( mad_registers, x86.cpu.fs )*8 ) {
+    } else if( bit_start == REG_BIT_OFF( cpu.fs ) ) {
         a->mach.segment = mr->x86.cpu.fs;
-    } else if( bit_start == offsetof( mad_registers, x86.cpu.gs )*8 ) {
+    } else if( bit_start == REG_BIT_OFF( cpu.gs ) ) {
         a->mach.segment = mr->x86.cpu.gs;
     } else {
         p = (unsigned_32 *)((unsigned_8 *)mr + (bit_start / BITS_PER_BYTE));
@@ -1923,43 +1911,42 @@ void DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_st
     if( flags & RF_XMMREG )
         MCNotify( MNT_MODIFY_REG, (void *)&RegSet[XMM_REG_SET] );
     switch( bit_start ) {
-    case offsetof( mad_registers, x86.cpu.eip ) * 8:
-    case offsetof( mad_registers, x86.cpu.cs  ) * 8:
+    case REG_BIT_OFF( cpu.eip ):
+    case REG_BIT_OFF( cpu.cs ):
         MCNotify( MNT_MODIFY_IP, NULL );
         break;
-    case offsetof( mad_registers, x86.cpu.esp ) * 8:
+    case REG_BIT_OFF( cpu.esp ):
         MCNotify( MNT_MODIFY_SP, NULL );
         break;
-    case offsetof( mad_registers, x86.cpu.ebp ) * 8:
+    case REG_BIT_OFF( cpu.ebp ):
         MCNotify( MNT_MODIFY_FP, NULL );
         break;
-    case offsetof( mad_registers, x86.cpu.ss  ) * 8:
+    case REG_BIT_OFF( cpu.ss ):
         MCNotify( MNT_MODIFY_SP, NULL );
         MCNotify( MNT_MODIFY_FP, NULL );
         break;
-    case offsetof( mad_registers, x86.fpu.tag ) * 8 + 0:
-    case offsetof( mad_registers, x86.fpu.tag ) * 8 + 2:
-    case offsetof( mad_registers, x86.fpu.tag ) * 8 + 4:
-    case offsetof( mad_registers, x86.fpu.tag ) * 8 + 6:
-    case offsetof( mad_registers, x86.fpu.tag ) * 8 + 8:
-    case offsetof( mad_registers, x86.fpu.tag ) * 8 + 10:
-    case offsetof( mad_registers, x86.fpu.tag ) * 8 + 12:
-    case offsetof( mad_registers, x86.fpu.tag ) * 8 + 14:
+    case REG_BIT_OFF( fpu.tag ) + 0:
+    case REG_BIT_OFF( fpu.tag ) + 2:
+    case REG_BIT_OFF( fpu.tag ) + 4:
+    case REG_BIT_OFF( fpu.tag ) + 6:
+    case REG_BIT_OFF( fpu.tag ) + 8:
+    case REG_BIT_OFF( fpu.tag ) + 10:
+    case REG_BIT_OFF( fpu.tag ) + 12:
+    case REG_BIT_OFF( fpu.tag ) + 14:
         MCNotify( MNT_REDRAW_REG, (void *)&RegSet[FPU_REG_SET] );
         break;
-    case offsetof( mad_registers, x86.fpu.reg[0] ) * 8:
-    case offsetof( mad_registers, x86.fpu.reg[1] ) * 8:
-    case offsetof( mad_registers, x86.fpu.reg[2] ) * 8:
-    case offsetof( mad_registers, x86.fpu.reg[3] ) * 8:
-    case offsetof( mad_registers, x86.fpu.reg[4] ) * 8:
-    case offsetof( mad_registers, x86.fpu.reg[5] ) * 8:
-    case offsetof( mad_registers, x86.fpu.reg[6] ) * 8:
-    case offsetof( mad_registers, x86.fpu.reg[7] ) * 8:
+    case STK_REG_BIT_OFF( 0 ):
+    case STK_REG_BIT_OFF( 1 ):
+    case STK_REG_BIT_OFF( 2 ):
+    case STK_REG_BIT_OFF( 3 ):
+    case STK_REG_BIT_OFF( 4 ):
+    case STK_REG_BIT_OFF( 5 ):
+    case STK_REG_BIT_OFF( 6 ):
+    case STK_REG_BIT_OFF( 7 ):
         if( flags & RF_FPREG ) {
             unsigned    index;
 
-            index = bit_start - (offsetof( mad_registers, x86.fpu.reg[0] ) * 8);
-            index /= sizeof( mr->x86.fpu.reg[0] ) * 8;
+            index = GET_STK_REG_IDX( bit_start );
             SetTag( mr, index, TAG_VALID );
         }
         break;

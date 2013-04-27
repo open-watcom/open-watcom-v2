@@ -41,6 +41,8 @@ set PROJNAME=madmips
     <CCCMD> qnx386/madmips.mad     <OWRELROOT>/qnx/watcom/wd/
     <CCCMD> qnx386/madmips.sym     <OWRELROOT>/qnx/sym/
 
+    <CCCMD> ntx64/madmips.dll      <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

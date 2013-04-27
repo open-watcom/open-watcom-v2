@@ -547,13 +547,6 @@ static void searchBuffer( char *srch, size_t read )
     return;
 }
 
-#ifndef STDIN_FILENO
-    #define STDIN_FILENO 0
-#endif
-#ifndef STDOUT_FILENO
-    #define STDOUT_FILENO 1
-#endif
-
 static void OutMode( int mode )
 {
     if( mode == CurOutMode ) return;

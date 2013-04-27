@@ -35,10 +35,9 @@
   #include <i86.h>
 #endif
 #include <errno.h>
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
   #include <process.h>
 #endif
-#include "watcom.h"
 #include "source.h"
 #include "posix.h"
 #include "win.h"

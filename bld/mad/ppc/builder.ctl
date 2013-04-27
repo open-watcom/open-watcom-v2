@@ -41,6 +41,8 @@ set PROJNAME=madppc
     <CCCMD> qnx386/madppc.mad     <OWRELROOT>/qnx/watcom/wd/
     <CCCMD> qnx386/madppc.sym     <OWRELROOT>/qnx/sym/
 
+    <CCCMD> ntx64/madppc.dll      <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>
