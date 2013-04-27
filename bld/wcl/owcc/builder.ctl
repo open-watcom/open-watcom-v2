@@ -40,6 +40,9 @@ set PROJNAME=owcc
     <CCCMD> linux386/owcc.exe    <OWRELROOT>/binl/owcc
     <CCCMD> linux386/owcc.sym    <OWRELROOT>/binl/owcc.sym
 
+    <CCCMD> ntx64/specs.owc      <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/owcc.exe       <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

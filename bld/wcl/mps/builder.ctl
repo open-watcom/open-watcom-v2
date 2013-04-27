@@ -24,12 +24,14 @@ set PROJNAME=wclmps
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> nt386/wclmps.exe      <OWRELROOT>/binnt/wclmps.exe
-    <CCCMD> nt386/wclmps.sym      <OWRELROOT>/binnt/wclmps.sym
-    <CCCMD> os2386/wclmps.exe     <OWRELROOT>/binp/wclmps.exe
-    <CCCMD> os2386/wclmps.sym     <OWRELROOT>/binp/wclmps.sym
+    <CCCMD> nt386/wclmps.exe      <OWRELROOT>/binnt/
+    <CCCMD> nt386/wclmps.sym      <OWRELROOT>/binnt/
+    <CCCMD> os2386/wclmps.exe     <OWRELROOT>/binp/
+    <CCCMD> os2386/wclmps.sym     <OWRELROOT>/binp/
     <CCCMD> linux386/wclmps.exe   <OWRELROOT>/binl/wclmps
-    <CCCMD> linux386/wclmps.sym   <OWRELROOT>/binl/wclmps.sym
+    <CCCMD> linux386/wclmps.sym   <OWRELROOT>/binl/
+
+    <CCCMD> ntx64/wclmps.exe      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

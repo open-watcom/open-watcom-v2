@@ -41,14 +41,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
-#include "getopt.h"
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #include <conio.h>
-#else
-#include "clibext.h"
 #endif
+#include "wio.h"
+#include "watcom.h"
+#include "getopt.h"
 #include "misc.h"
 #include "bool.h"
 #include "swchar.h"

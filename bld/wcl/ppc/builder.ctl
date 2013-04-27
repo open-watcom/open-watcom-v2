@@ -24,12 +24,14 @@ set PROJNAME=wclppc
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dosi86/wclppc.exe     <OWRELROOT>/binw/wclppc.exe
-    <CCCMD> dosi86/wclppc.sym     <OWRELROOT>/binw/wclppc.sym
-    <CCCMD> nt386/wclppc.exe      <OWRELROOT>/binnt/wclppc.exe
-    <CCCMD> nt386/wclppc.sym      <OWRELROOT>/binnt/wclppc.sym
-    <CCCMD> os2386/wclppc.exe     <OWRELROOT>/binp/wclppc.exe
-    <CCCMD> os2386/wclppc.sym     <OWRELROOT>/binp/wclppc.sym
+    <CCCMD> dosi86/wclppc.exe     <OWRELROOT>/binw/
+    <CCCMD> dosi86/wclppc.sym     <OWRELROOT>/binw/
+    <CCCMD> nt386/wclppc.exe      <OWRELROOT>/binnt/
+    <CCCMD> nt386/wclppc.sym      <OWRELROOT>/binnt/
+    <CCCMD> os2386/wclppc.exe     <OWRELROOT>/binp/
+    <CCCMD> os2386/wclppc.sym     <OWRELROOT>/binp/
+
+    <CCCMD> ntx64/wclppc.exe      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============
