@@ -11,7 +11,7 @@ name = dis
 
 !include ../../mif/dis.mif
 
-extra_c_flags = -DNDIS_$(target_cpu)
+extra_cpp_flags = -DNDIS_$(target_cpu)
 
 .c: $(dis_srcs);$(disasm_dir)/test/c
 .h: $(dis_hdirs)

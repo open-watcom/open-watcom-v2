@@ -78,19 +78,19 @@ typedef union {
 typedef enum {
     MOD_0 = 0x0,
     MOD_1 = 0x1,
-    MOD_2 = 0X2,
-    MOD_3 = 0X3
+    MOD_2 = 0x2,
+    MOD_3 = 0x3
 } MOD;
 
 typedef enum {
     RM_0 = 0x0,
     RM_1 = 0x1,
-    RM_2 = 0X2,
-    RM_3 = 0X3,
+    RM_2 = 0x2,
+    RM_3 = 0x3,
     RM_4 = 0x4,
-    RM_5 = 0X5,
-    RM_6 = 0X6,
-    RM_7 = 0X7,
+    RM_5 = 0x5,
+    RM_6 = 0x6,
+    RM_7 = 0x7,
     RM_8 = 0x8,
     RM_9 = 0x9,
     RM_A = 0xA,
@@ -141,8 +141,8 @@ typedef enum {
 typedef enum {
     SC_0 = 0x0,
     SC_1 = 0x1,
-    SC_2 = 0X2,
-    SC_3 = 0X3
+    SC_2 = 0x2,
+    SC_3 = 0x3
 } SCALE;
 
 typedef enum {
@@ -174,7 +174,7 @@ typedef enum {
     MF_0 = 0x0,
     MF_1 = 0x1,
     MF_2 = 0x2,
-    MF_3 = 0X3
+    MF_3 = 0x3
 } MF_BITS;
 
 typedef enum {

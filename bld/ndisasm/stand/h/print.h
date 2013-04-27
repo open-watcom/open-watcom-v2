@@ -33,9 +33,7 @@
 #ifndef WDIS_PRINT_INCLUDED
 #define WDIS_PRINT_INCLUDED
 
-#include "global.h"
-
-extern void Print( char * );
+extern void Print( const char * );
 extern void ChangePrintDest( int );
 
 

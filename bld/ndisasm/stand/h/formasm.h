@@ -33,8 +33,6 @@
 #ifndef WDIS_FORMASM_INCLUDED
 #define WDIS_FORMASM_INCLUDED
 
-#include "global.h"
-
 extern return_val       DumpASMSection( section_ptr, unsigned_8 *, orl_sec_size,
                                         unsigned );
 extern return_val       BssASMSection( section_ptr, orl_sec_size, unsigned );

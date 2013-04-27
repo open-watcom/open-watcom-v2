@@ -33,8 +33,6 @@
 #ifndef WDIS_IDENTIFY_INCLUDED
 #define WDIS_IDENTIFY_INCLUDED
 
-#include "global.h"
-
 extern section_type     IdentifySec( orl_sec_handle );
 
 #endif

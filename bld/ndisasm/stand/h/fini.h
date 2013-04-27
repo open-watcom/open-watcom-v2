@@ -33,8 +33,6 @@
 #ifndef WDIS_FINI_INCLUDED
 #define WDIS_FINI_INCLUDED
 
-#include "global.h"
-
 extern void     FreeHashTables( void );
 extern void     FreeServicesUsed( void );
 extern void     CloseFiles( void );

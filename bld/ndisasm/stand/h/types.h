@@ -32,7 +32,7 @@
 #ifndef WDIS_TYPES_INCLUDED
 #define WDIS_TYPES_INCLUDED
 
-#include <watcom.h>
+#include "watcom.h"
 #include "orl.h"
 
 // label list
@@ -217,9 +217,9 @@ typedef struct sa_disasm_struct sa_disasm_struct;
 typedef sa_disasm_struct *sa_disasm;
 
 // hash table definitions
-typedef uint_32         hash_value;
+typedef pointer_int     hash_value;
+typedef pointer_int     hash_data;
 typedef uint_32         hash_table_size;
-typedef uint_32         hash_data;
 
 typedef enum {
     HASH_STRING,

@@ -33,8 +33,6 @@
 #ifndef WDIS_HASH_INCLUDED
 #define WDIS_HASH_INCLUDED
 
-#include "global.h"
-
 extern hash_table       HashTableCreate( hash_table_size, hash_table_type,
                                          hash_table_comparison_func );
 extern return_val       HashTableInsert( hash_table, hash_value, hash_data );

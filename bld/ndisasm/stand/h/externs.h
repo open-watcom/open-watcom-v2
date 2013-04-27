@@ -33,8 +33,6 @@
 #ifndef WDIS_EXTERNS_INCLUDED
 #define WDIS_EXTERNS_INCLUDED
 
-#include "global.h"
-
 #define ADDRESSES_POS 3
 
 extern externs          CreateExterns( ref_list );

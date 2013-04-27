@@ -33,8 +33,6 @@
 #ifndef WDIS_INIT_INCLUDED
 #define WDIS_INIT_INCLUDED
 
-#include "global.h"
-
 extern void                     PrintErrorMsg( return_val, int );
 extern void                     Init( void );
 extern void                     CloseObjFile( void );
