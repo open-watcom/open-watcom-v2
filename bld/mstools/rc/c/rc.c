@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "watcom.h"
 #include "cmdline.h"
 #include "context.h"
 #include "error.h"
@@ -45,15 +46,7 @@
 #include "system.h"
 
 
-#if defined(__TARGET_386__)
-    #define RESCOMPILER         "wrc"
-#elif defined(__TARGET_AXP__)
-    #define RESCOMPILER         "wrc"
-#elif defined(__TARGET_PPC__)
-    #define RESCOMPILER         "wrc"
-#else
-    #error Unrecognized CPU type
-#endif
+#define RESCOMPILER             "wrc"
 
 #define RC_SUCCESS              0
 #define RC_NOACTION             (-1)
@@ -149,6 +142,10 @@ void main( int argc, char *argv[] )
     int                 itemsParsed;
     int                 rc = RC_NOACTION;
 
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     cmdLine = InitCmdLine( RC_NUM_SECTIONS );

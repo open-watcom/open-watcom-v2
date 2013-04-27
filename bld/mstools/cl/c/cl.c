@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "watcom.h"
 #include "cl.h"
 #include "cmdline.h"
 #include "context.h"
@@ -271,6 +272,10 @@ void main( int argc, char *argv[] )
     int                 compRc = COMPILE_NOACTION;
     int                 linkRc = LINK_NOACTION;
 
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     compCmdLine = InitCmdLine( CL_C_NUM_SECTIONS );

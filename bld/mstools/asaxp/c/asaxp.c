@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "watcom.h"
 #include "cmdline.h"
 #include "context.h"
 #include "error.h"
@@ -138,6 +139,10 @@ void main( int argc, char *argv[] )
     CmdLine *           cmdLine;
     int                 itemsParsed;
 
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     cmdLine = InitCmdLine( ASAXP_NUM_SECTIONS );

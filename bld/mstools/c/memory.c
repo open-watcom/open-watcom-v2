@@ -89,12 +89,12 @@ char *DupQuoteStrMem( const char *str, char quote )
 
     len = strlen( str );
     if( quote != '\0' ) {
-        do {
+        for( ;; ) {
             if( str[0] == '"'  && str[len-1] == '"'  ) break;
             if( str[0] == '\'' && str[len-1] == '\'' ) break;
             len += 2;
             add_quote = 1;
-        } while( 0 );
+        }
     }
     p = AllocMem( len + 1 );
     if( add_quote ) {

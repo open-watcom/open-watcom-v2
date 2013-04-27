@@ -49,7 +49,7 @@
 
 static char *   stristr( const char *str, const char *substr );
 
-static FILE *           exp = NULL; /* '.exp' file containing export entries for the linker */
+static FILE *           exp_file = NULL; /* '.exp' file containing export entries for the linker */
 
 static OPT_STRING *     comment = NULL;
 static OPT_STRING *     base = NULL;
@@ -412,14 +412,14 @@ void CreateExp( OPT_STORAGE *cmdOpts, char * name )
     _splitpath( name, drive, dir, fname, NULL );
     _makepath( expname, drive, dir, fname, ".exp" );
 
-    exp = fopen( expname, "w" );
-    if( exp == NULL ) {
+    exp_file = fopen( expname, "w" );
+    if( exp_file == NULL ) {
         FatalError( "Cannot create file: %s ", expname );
     }
 
     optStr = comment;
     while( optStr != NULL ) {
-        fprintf( exp, "OPTION DESCRIPTION %s\n", optStr->data );
+        fprintf( exp_file, "OPTION DESCRIPTION %s\n", optStr->data );
         optStr = optStr->next;
     }
     del_string(&comment); // don't need it any more
@@ -432,24 +432,24 @@ void CreateExp( OPT_STORAGE *cmdOpts, char * name )
             tmp = cmdOpts->name_value->data;
         }
         newstr = PathConvert( tmp, '\'' );
-        fprintf( exp, "NAME %s\n", newstr );
+        fprintf( exp_file, "NAME %s\n", newstr );
         FreeMem( newstr );
     }
 
     if( base ) {
-        fprintf( exp, "OPTION OFFSET=%s\n", base->data );
+        fprintf( exp_file, "OPTION OFFSET=%s\n", base->data );
     }
     del_string(&base); // don't need it any more
 
     if( heap ) {
         p = strchr( heap->data, ',' );
         if( p == NULL ) {               /* /HEAP:reserve */
-            fprintf( exp, "OPTION HEAPSIZE=%s\n", heap->data );
+            fprintf( exp_file, "OPTION HEAPSIZE=%s\n", heap->data );
         } else {                        /* /HEAP:reserve,commit */
             *p = '\0';
-            fprintf( exp, "OPTION HEAPSIZE=%s\n", heap->data );
+            fprintf( exp_file, "OPTION HEAPSIZE=%s\n", heap->data );
             p++;
-            fprintf( exp, "COMMIT HEAP=%s\n", p );
+            fprintf( exp_file, "COMMIT HEAP=%s\n", p );
         }
     }
     del_string(&heap); // don't need it any more
@@ -457,19 +457,19 @@ void CreateExp( OPT_STORAGE *cmdOpts, char * name )
     if( stack ) {
         p = strchr( stack->data, ',' );
         if( p == NULL ) {               /* /STACK:reserve */
-            fprintf( exp, "OPTION STACK=%s\n", stack->data );
+            fprintf( exp_file, "OPTION STACK=%s\n", stack->data );
         } else {                        /* /STACK:reserve,commit */
             *p = '\0';
-            fprintf( exp, "OPTION STACK=%s\n", stack->data );
+            fprintf( exp_file, "OPTION STACK=%s\n", stack->data );
             p++;
-            fprintf( exp, "COMMIT STACK=%s\n", p );
+            fprintf( exp_file, "COMMIT STACK=%s\n", p );
         }
     }
     del_string(&stack); // don't need it any more
 
     if( internaldllname ) {
         newstr = DupQuoteStrMem( internaldllname->data, '\'' );
-        fprintf( exp, "OPTION MODNAME=%s\n",newstr );
+        fprintf( exp_file, "OPTION MODNAME=%s\n",newstr );
         FreeMem( newstr );
     }
     del_string(&internaldllname); // don't need it any more
@@ -482,13 +482,13 @@ void CreateExp( OPT_STORAGE *cmdOpts, char * name )
             tmp = stub->data;
         }
         newstr = PathConvert( tmp, '\'' );
-        fprintf( exp, "OPTION STUB=%s\n", newstr );
+        fprintf( exp_file, "OPTION STUB=%s\n", newstr );
         FreeMem( newstr );
     }
     del_string(&stub); // don't need it any more
 
     if( version ) {
-        fprintf( exp, "OPTION VERSION=%s\n", version->data );
+        fprintf( exp_file, "OPTION VERSION=%s\n", version->data );
     }
     del_string(&version); // don't need it any more
 }
@@ -564,17 +564,17 @@ static char *ImportEntry( char *export, char *dll_name )
 
     /***  do the '.exp'  file entry  ***/
     if( internal_name != NULL ) {
-        fprintf( exp, "EXPORT %s", entry_name );
+        fprintf( exp_file, "EXPORT %s", entry_name );
         if (ordinal) {
-            fprintf( exp, ".%s", ordinal );
+            fprintf( exp_file, ".%s", ordinal );
         }
-        fprintf( exp, "=%s", internal_name );
+        fprintf( exp_file, "=%s", internal_name );
         if (the_rest) {
-            fprintf( exp, " %s", the_rest );
+            fprintf( exp_file, " %s", the_rest );
         }
-        fprintf( exp, "\n");
+        fprintf( exp_file, "\n");
     } else {
-        fprintf( exp, "EXPORT %s\n", export );
+        fprintf( exp_file, "EXPORT %s\n", export );
     }
 
 
@@ -656,7 +656,7 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
                 optStr = optStr->next;
             }
 
-            if (exp) fclose(exp);
+            if (exp_file) fclose(exp_file);
             FiniFuzzy();
         }else {
             FatalError( "/EXPORT option not specified!" );

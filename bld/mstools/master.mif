@@ -7,12 +7,22 @@ proj_name = mstools
 mstools_autodepends = .AUTODEPEND
 !endif
 
-!ifeq host_cpu axp
+!ifeq target_cpu axp
 targdef = -D__TARGET_AXP__
-!else ifeq host_cpu ppc
+!else ifeq target_cpu ppc
 targdef = -D__TARGET_PPC__
-!else
-targdef = -D__TARGET_$(host_cpu)__
+!else ifeq target_cpu 386
+targdef = -D__TARGET_386__
+#!else ifeq host_cpu axp
+#targdef = -D__TARGET_AXP__
+#!else ifeq host_cpu ppc
+#targdef = -D__TARGET_PPC__
+#!else ifeq host_cpu 386
+#targdef = -D__TARGET_386__
+#!else ifeq host_cpu x64
+#targdef = -D__TARGET_X64__
+#!else
+#!error undrecognized CPU
 !endif
 
 #

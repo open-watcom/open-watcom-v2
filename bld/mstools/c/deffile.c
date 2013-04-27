@@ -140,7 +140,7 @@ void FuzzyMassageAXPStdcall( char *name ) {
         while( isdigit( *last ) ) {
             last--;
         }
-        if( *last == '\@' ) {
+        if( *last == '@' ) {
             *last++ = '\'';
             *last = '\0';
             while( *first ) {
@@ -927,9 +927,10 @@ static void strip_quotes( char *str )
 {
     int                 count;
     int                 diff;
-    int                 len = strlen( str );;
-    char *              p;
+    int                 len;
+    char                *p;
 
+    len = strlen( str );
     /*** Strip trailing quotes and whitespace ***/
     p = str + len - 1;
     while( *p == '"'  ||  isspace( *p ) )  *(p--) = '\0';

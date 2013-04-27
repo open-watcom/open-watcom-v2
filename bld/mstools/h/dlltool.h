@@ -46,7 +46,7 @@
 /*
  * Define some types.
  */
-typedef IDEBool __stdcall (*IDEMsgInfo2Fn)( IDECBHdl hdl, IDEMsgInfo2 *info );
+typedef IDEBool (IDEAPI *IDEMsgInfo2Fn)( IDECBHdl hdl, IDEMsgInfo2 *info );
 
 typedef struct {
     IDEPrintMsgFn       printmessage;

@@ -1241,7 +1241,7 @@ static int OPT_END( void )
     if( isspace( ch ) ) return( 1 );
     if( ch == '/' ) return( 1 );
     if( ch == '-' ) return( 1 );
-    if( ch == '\@' ) return( 1 );
+    if( ch == '@' ) return( 1 );
     if( ch == '"' ) return( 1 );
     if( ch == '\'' ) return( 1 );
     return( 0 );

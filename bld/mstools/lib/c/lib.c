@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "watcom.h"
 #include "cmdline.h"
 #include "context.h"
 #include "error.h"
@@ -51,7 +52,7 @@
 #elif defined(__TARGET_PPC__)
     #define LIBRARIAN           "wlib"
 #else
-    #error Unrecognized CPU type
+    #error Unrecognized CPU type (lib.c)
 #endif
 
 #define LIB_SUCCESS             0
@@ -165,6 +166,10 @@ void main( int argc, char *argv[] )
     CmdLine *           cmdLine;
     int                 itemsParsed;
 
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     cmdLine = InitCmdLine( LIB_NUM_SECTIONS );

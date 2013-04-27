@@ -58,7 +58,7 @@ char *PathConvert( const char *pathname, char quote )
         _mbschr( path, '\t' )  !=  NULL     ||
         _mbschr( path, '"' )  !=  NULL      ||
         _mbschr( path, '\'' )  !=  NULL     ||
-        _mbschr( path, '\`' )  !=  NULL     ||
+        _mbschr( path, '`' )  !=  NULL      ||
         _mbschr( path, quote )  !=  NULL ) {
         quoteends = 1;
         *p++ = quote;

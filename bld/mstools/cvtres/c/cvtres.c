@@ -29,10 +29,11 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "wio.h"
+#include "watcom.h"
 #include "context.h"
 #include "error.h"
 #include "file.h"
@@ -166,6 +167,10 @@ void main( int argc, char *argv[] )
     int                 itemsParsed;
     int                 rc = CVTRES_NOACTION;
 
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     SetDefaultFile( TYPE_RES_FILE, "res" );

@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "watcom.h"
 #include "context.h"
 #include "error.h"
 #include "memory.h"

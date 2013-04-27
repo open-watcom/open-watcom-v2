@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "watcom.h"
 #include "lib.h"
 #include "cmdline.h"
 #include "cmdscan.h"
@@ -231,12 +232,12 @@ static void add_string( OPT_STRING **p, char *str, char quote )
 
     len = strlen(str);
     if( quote != 0 ) {
-        do {
+        for( ;; ) {
             if( str[0] == '"'  && str[len-1] == '"'  ) break;
             if( str[0] == '\'' && str[len-1] == '\'' ) break;
             len += 2;
             add_quote = 1;
-        } while( 0 );
+        }
     }
     /*** Make a new list item ***/
     buf = AllocMem( sizeof(OPT_STRING) + len );

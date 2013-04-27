@@ -30,10 +30,13 @@
 ****************************************************************************/
 
 
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
+#include "watcom.h"
 #include "memory.h"
 #include "stub.h"
 

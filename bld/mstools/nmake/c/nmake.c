@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "watcom.h"
 #include "cmdline.h"
 #include "context.h"
 #include "error.h"
@@ -44,15 +45,7 @@
 #include "system.h"
 
 
-#if defined(__TARGET_386__)
-    #define MAKE                "wmake"
-#elif defined(__TARGET_AXP__)
-    #define MAKE                "wmake"
-#elif defined(__TARGET_PPC__)
-    #define MAKE                "wmake"
-#else
-    #error Unrecognized CPU type
-#endif
+#define MAKE                    "wmake"
 
 #define NMAKE_SUCCESS           0
 #define NMAKE_ERROR             (-2)
@@ -156,6 +149,10 @@ void main( int argc, char *argv[] )
     CmdLine *           cmdLine;
 
 
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
     /*** Initialize ***/
     SetBannerFuncError( BannerMessage );
     cmdLine = InitCmdLine( NMAKE_NUM_SECTIONS );

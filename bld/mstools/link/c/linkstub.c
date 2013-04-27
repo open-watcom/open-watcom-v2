@@ -37,8 +37,8 @@
 /*
  * Program entry point.
  */
-void main( void )
-/***************/
+int main( void )
+/**************/
 {
     int                 cpuType;
 
@@ -56,4 +56,5 @@ void main( void )
       default:
         FatalError( "Unrecognized CPU type" );
     }
+    return( 0 );
 }

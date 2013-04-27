@@ -14,7 +14,7 @@ set PROJNAME=mstools
 
 [ BLOCK <1> rel cprel acprel ]
 #==============================
-    <CCCMD> cl/nt386/cl.exe            <OWRELROOT>/binnt/cl.exe
+    <CCCMD> cl/nt386/clx.exe           <OWRELROOT>/binnt/cl.exe
     <CCCMD> cl/nt386/cl386.exe         <OWRELROOT>/binnt/cl386.exe
     <CCCMD> cvtres/nt386/cvtres.exe    <OWRELROOT>/binnt/cvtres.exe
     <CCCMD> lib/nt386/lib.exe          <OWRELROOT>/binnt/lib.exe
@@ -27,7 +27,7 @@ set PROJNAME=mstools
 #    <CCCMD> asaxp/nt386/asaxp.exe      <OWRELROOT>/binnt/asaxp.exe
 #    <CCCMD> asaxp/ntaxp/asaxp.exe      <OWRELROOT>/axpnt/asaxp.exe
 #    <CCCMD> cl/nt386/claxp.exe         <OWRELROOT>/binnt/claxp.exe
-#    <CCCMD> cl/ntaxp/cl.exe            <OWRELROOT>/axpnt/cl.exe
+#    <CCCMD> cl/ntaxp/clx.exe           <OWRELROOT>/axpnt/cl.exe
 #    <CCCMD> cl/ntaxp/cl386.exe         <OWRELROOT>/axpnt/cl386.exe
 #    <CCCMD> cl/ntaxp/claxp.exe         <OWRELROOT>/axpnt/claxp.exe
 #    <CCCMD> cvtres/ntaxp/cvtres.exe    <OWRELROOT>/axpnt/cvtres.exe
@@ -41,6 +41,16 @@ set PROJNAME=mstools
 #    <CCCMD> link/ntaxp/linkaxp.exe     <OWRELROOT>/axpnt/linkaxp.exe
 #    <CCCMD> nmake/ntaxp/nmake.exe      <OWRELROOT>/axpnt/nmake.exe
 #    <CCCMD> rc/ntaxp/rc.exe            <OWRELROOT>/axpnt/rc.exe
+
+    <CCCMD> cl/ntx64/clx.exe           <OWRELROOT>/binnt64/
+    <CCCMD> cl/ntx64/cl386.exe         <OWRELROOT>/binnt64/
+    <CCCMD> cvtres/ntx64/cvtres.exe    <OWRELROOT>/binnt64/
+    <CCCMD> lib/ntx64/lib.exe          <OWRELROOT>/binnt64/
+    <CCCMD> lib/ntx64/lib386.exe       <OWRELROOT>/binnt64/
+    <CCCMD> link/ntx64/link.exe        <OWRELROOT>/binnt64/
+    <CCCMD> link/ntx64/link386.exe     <OWRELROOT>/binnt64/
+    <CCCMD> nmake/ntx64/nmake.exe      <OWRELROOT>/binnt64/
+    <CCCMD> rc/ntx64/rc.exe            <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============
