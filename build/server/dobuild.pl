@@ -156,7 +156,11 @@ sub batch_output_set_watcom_env
     print BATCH "$setenv WATCOM=", get_reldir(), "\n";
     if ($^O eq "MSWin32") {
         print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\nt\n";
-        print BATCH "$setenv PATH=%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%\n";
+        if ($Config{archname} =~ /64/) {
+            print BATCH "$setenv PATH=%WATCOM%\\binnt64;%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%\n";
+        } else {
+            print BATCH "$setenv PATH=%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%\n";
+        }
     } elsif ($^O eq "os2") {
         print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\os2\n";
         print BATCH "$setenv PATH=%WATCOM%\\binp;%WATCOM%\\binw;%PATH%\n";
