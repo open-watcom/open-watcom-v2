@@ -88,12 +88,14 @@ void    WriteErr( int errcode, va_list args ) {
     strcpy( buffer, ErrorPref );
     BldErrCode( errcode, &buffer[ ERR_PREF_SIZE ] );
     __BldErrMsg( errcode, &buffer[ERR_PREF_SIZE + ERR_CODE_SIZE], args );
+#if defined( __WATCOMC__ )
     if( !__EnterWVIDEO( buffer ) ) {
         StdBuffer();
         StdWriteNL( buffer, strlen( buffer ) );
         ERR_HOOK( errcode, buffer );
         StdFlush();
     }
+#endif
     _ReleaseFIO();
 }
 

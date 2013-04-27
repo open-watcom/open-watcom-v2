@@ -30,12 +30,10 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <share.h>
+#include "sopen.h"
+#include "wio.h"
 
 typedef enum { // must map onto error message table in POSERR.C
     IO_OK,
@@ -47,9 +45,3 @@ typedef enum { // must map onto error message table in POSERR.C
     IO_EOR,
     IO_SYS_ERROR
 };
-
-#if !defined( STDIN_FILENO )
-#define STDIN_FILENO    0
-#define STDOUT_FILENO   1
-#define STDERR_FILENO   2
-#endif
