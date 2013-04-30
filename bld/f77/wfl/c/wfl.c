@@ -29,14 +29,6 @@
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "ftextfun.h"
-#include "errcod.h"
-#include "optflags.h"
-#include "cioconst.h"
-#include "banner.h"
-#include "errrtns.h"
-
 #include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -49,7 +41,19 @@
 #endif
 #include <process.h>
 #include <malloc.h>
+#if defined( __WATCOMC__ ) || defined( __UNIX__ )
 #include <fnmatch.h>
+#endif
+#include "wio.h"
+#include "watcom.h"
+#include "ftnstd.h"
+#include "ftextfun.h"
+#include "errcod.h"
+#include "optflags.h"
+#include "cioconst.h"
+#include "banner.h"
+#include "errrtns.h"
+
 #include "pathgrp.h"
 #include "swchar.h"
 

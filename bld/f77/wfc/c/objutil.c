@@ -29,6 +29,11 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#include <process.h>
+#endif
+#include "wio.h"
 #include "ftnstd.h"
 #include "progsw.h"
 #include "sdfile.h"
@@ -42,10 +47,6 @@
 #include "fmemmgr.h"
 #include "emitobj.h"
 #include "ferror.h"
-
-#include <string.h>
-#include <process.h>
-#include <unistd.h>
 
 #if defined( __UNIX__ )
 #define PATH_SEP '/'

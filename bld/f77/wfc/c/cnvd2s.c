@@ -39,25 +39,14 @@
 #include "ftnstd.h"
 #include "target.h"
 
-// IMPORTANT: READ ME
-// After the next branch, i.e. when we start using 11.0 libraries we
-// this should be changed back to gcvt() from __gcvt().
-// __gcvt() makes use of the __LDCvt which gives us the required amount
-// of precision.  In the 11.0 and higher libraries gcvt() also use __LDCvt().
-extern char     *__gcvt( double __val, int __ndig, char *__buf );
-
-
 void    CnvD2S( double *val, char *buff ) {
 // Convert floating point number to string.
-
-    __gcvt( *val, CONVERSION_DIGITS, buff );
+    gcvt( *val, CONVERSION_DIGITS, buff );
 }
-
 
 void    CnvX2S( extended *val, char *buff ) {
 // Convert floating point number to string.
-
-    __gcvt( *val, CONVERSION_DIGITS, buff );
+    gcvt( *val, CONVERSION_DIGITS, buff );
 }
 
 void    CnvS2S( float *val, char *buff ) {

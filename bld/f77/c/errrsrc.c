@@ -29,12 +29,11 @@
 ****************************************************************************/
 
 
+#include <malloc.h>
+#include "wio.h"
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
-#include <unistd.h>
-#include <fcntl.h>
-#include <malloc.h>
 #include "cioconst.h"
 #include "wressetr.h"
 #include "wresset2.h"
@@ -77,7 +76,7 @@ static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
     }
 }
 
-static  void    ErrorInit( char *pgm_name )
+static  void    ErrorInit( const char *pgm_name )
 {
     if( OpenResFile( &hInstance, pgm_name ) == -1 )
         return;

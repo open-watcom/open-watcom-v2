@@ -53,11 +53,10 @@ static  void    ChkRedirection( b_file *fp );
 
 static  int     IOBufferSize = { IO_BUFFER };
 
-#define PERMS   (S_IROTH | S_IWOTH | S_IRGRP | S_IWGRP | S_IRUSR | S_IWUSR)
-
-void    InitStd( void ) {
+void    InitStd( void )
+{
 // Initialize standard i/o.
-#if ! defined( __UNIX__ )
+#if !defined( __UNIX__ ) && defined( __WATCOMC__ )
     // don't call setmode() since we don't want to affect higher level
     // i/o so that if C function gets called, printf() works ok
 // There is no __GetIOMode in the C runtime!
@@ -169,14 +168,14 @@ b_file  *Openf( char *f, f_attrs attrs ) {
     if( attrs & WRONLY ) {
         attrs |= WRITE_ONLY;
         if( attrs & APPEND ) {
-            retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT, share, PERMS );
+            retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT, share, PMODE_RW );
         } else {
-            retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC, share, PERMS );
+            retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC, share, PMODE_RW );
         }
     } else if( attrs & RDONLY ) {
         retc = sopen3( f, O_RDONLY | O_BINARY, share );
     } else { // if( attrs & RDWR ) {
-        retc = sopen4( f, O_RDWR | O_BINARY | O_CREAT, share, PERMS );
+        retc = sopen4( f, O_RDWR | O_BINARY | O_CREAT, share, PMODE_RW );
     }
     if( retc < 0 ) {
         FSetSysErr( NULL );

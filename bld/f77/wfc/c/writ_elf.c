@@ -34,6 +34,7 @@
 #include <string.h>
 #include <errno.h>
 #include <setjmp.h>
+#include "wio.h"
 #include "dw.h"
 #include "exeelf.h"
 #include "ftnstd.h"
@@ -45,7 +46,6 @@
 #include "ferror.h"
 #include "cspawn.h"
 
-#include <unistd.h>
 
 extern  void            SDWrite(file_handle,byte *,int);
 extern  bool            SDError(file_handle,char *);

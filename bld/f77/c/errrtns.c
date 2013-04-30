@@ -33,5 +33,5 @@
 #include "errrtns.h"
 
 void            (* __BldErrMsg)(uint,char *,va_list);
-void            (* __ErrorInit)(char *);
+void            (* __ErrorInit)(const char *);
 void            (* __ErrorFini)(void);

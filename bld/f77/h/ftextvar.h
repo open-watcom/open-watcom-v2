@@ -36,7 +36,6 @@
 #include "fmttab.h"
 
 extern  character_set    CharSetInfo;
-extern  long            FileShift;
 extern  b_file           *FStdErr;
 extern  b_file           *FStdIn;
 extern  b_file           *FStdOut;

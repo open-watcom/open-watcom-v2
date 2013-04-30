@@ -112,7 +112,7 @@ static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
 }
 
 
-static  void    ErrorInit( char *unused ) {
+static  void    ErrorInit( const char *unused ) {
     unused = unused;
 }
 

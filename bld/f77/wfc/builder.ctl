@@ -43,6 +43,12 @@ set PROJNAME=wfc
 # axp compilers and link utilities (NT)
     <CCCMD> axp/ntaxp/wfcaxp.exe        <OWRELROOT>/axpnt/wfcaxp.exe
 
+    <CCCMD> i86/ntx64/wfc.exe           <OWRELROOT>/binnt64/wfc.exe
+    <CCCMD> i86/ntx64/wfc.sym           <OWRELROOT>/binnt64/wfc.sym
+    <CCCMD> 386/ntx64/wfc386.exe        <OWRELROOT>/binnt64/wfc386.exe
+    <CCCMD> 386/ntx64/wfc386.sym        <OWRELROOT>/binnt64/wfc386.sym
+#    <CCCMD> axp/ntx64/wfcaxp.exe        <OWRELROOT>/binnt64/wfcaxp.exe
+
 [ BLOCK . . ]
 #==================
 cdsay <PROJDIR>

@@ -31,30 +31,9 @@
 #include "ftnstd.h"
 #include "xfflags.h"
 
-extern  bool    __Add( intstar4 *arg1, intstar4 *arg2 );
-extern  bool    __Sub( intstar4 *arg1, intstar4 *arg2 );
-#ifdef __386__
- #pragma aux    __Add = \
-                "mov    edx,[edx]" \
-                "add    [eax],edx" \
-                "seto   al"        \
-                parm [eax] [edx] value [al];
- #pragma aux    __Sub = \
-                "mov    edx,[edx]" \
-                "sub    [eax],edx" \
-                "seto   al"        \
-                parm [eax] [edx] value [al];
- extern bool    __Mul( intstar4 *arg1, intstar4 *arg2 );
- #pragma aux    __Mul = \
-                "push   ebx"       \
-                "mov    edx,[edx]" \
-                "mov    ebx,[eax]" \
-                "imul   ebx,edx"   \
-                "mov    [eax],ebx" \
-                "pop    ebx"       \
-                "seto   al"        \
-                parm [eax] [edx] value [al];
-#elif defined( _M_I86 )  // 16-bit
+#if defined( _M_I86 )  // 16-bit
+ extern  bool    __Add( intstar4 *arg1, intstar4 *arg2 );
+ extern  bool    __Sub( intstar4 *arg1, intstar4 *arg2 );
  #if defined(__SMALL__) || defined(__MEDIUM__)
   #pragma aux   __Add = \
                 "mov    ax,[bx]"   \
@@ -109,8 +88,68 @@ extern  bool    __Sub( intstar4 *arg1, intstar4 *arg2 );
                 parm [dx ax] [cx bx] value [al];
  #endif
  extern  bool   ChkI4Mul(intstar4 __far *arg1,intstar4 arg2);
-#else
+#elif defined( _M_IX86 )
+ extern  bool    __Add( intstar4 *arg1, intstar4 *arg2 );
+ extern  bool    __Sub( intstar4 *arg1, intstar4 *arg2 );
+ #pragma aux    __Add = \
+                "mov    edx,[edx]" \
+                "add    [eax],edx" \
+                "seto   al"        \
+                parm [eax] [edx] value [al];
+ #pragma aux    __Sub = \
+                "mov    edx,[edx]" \
+                "sub    [eax],edx" \
+                "seto   al"        \
+                parm [eax] [edx] value [al];
  extern bool    __Mul( intstar4 *arg1, intstar4 *arg2 );
+ #pragma aux    __Mul = \
+                "push   ebx"       \
+                "mov    edx,[edx]" \
+                "mov    ebx,[eax]" \
+                "imul   ebx,edx"   \
+                "mov    [eax],ebx" \
+                "pop    ebx"       \
+                "seto   al"        \
+                parm [eax] [edx] value [al];
+#elif defined( _M_X64 )
+bool    __Add( intstar4 *arg1, intstar4 *arg2 )
+{
+    intstar4  arg1v = *arg1;
+    intstar4  arg2v = *arg2;
+    intstar4  result = arg1v + arg2v;
+
+    *arg1 = result;
+    return( ( result < arg2v ) && ( arg1v >= 0 ) || ( result > arg2v ) && ( arg1v < 0 ) );
+}
+
+bool    __Sub( intstar4 *arg1, intstar4 *arg2 )
+{
+    intstar4  arg1v = *arg1;
+    intstar4  arg2v = *arg2;
+    intstar4  result = arg1v - arg2v;
+
+    *arg1 = result;
+    return( ( result < arg1v ) && ( arg2v < 0 ) || ( result > arg1v ) && ( arg2v >= 0 ) );
+}
+
+bool    __Mul( intstar4 *arg1, intstar4 *arg2 )
+{
+#if _INTEGRAL_MAX_BITS >= 64
+    long long arg1v = *arg1;
+    long long arg2v = *arg2;
+    long long result = arg1v * arg2v;
+
+    *arg1 = result;
+    result >>= 31;
+    return( result != 0 && result != -1 );
+#else
+    #error compiler doesn't support 64-bit integral type
+#endif
+}
+#else
+ extern  bool    __Add( intstar4 *arg1, intstar4 *arg2 );
+ extern  bool    __Sub( intstar4 *arg1, intstar4 *arg2 );
+ extern  bool    __Mul( intstar4 *arg1, intstar4 *arg2 );
 #endif
 
 bool    AddIOFlo( intstar4 *arg1, intstar4 *arg2 ) {

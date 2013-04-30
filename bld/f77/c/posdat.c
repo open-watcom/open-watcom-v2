@@ -32,8 +32,18 @@
 #include "fio.h"
 #include "posio.h"
 
+#if defined( __WATCOMC__ ) || defined( __UNIX__ )
+#define STDIN   STDIN_FILENO
+#define STDOUT  STDOUT_FILENO
+#define STDERR  STDERR_FILENO
+#else
+#define STDIN   0
+#define STDOUT  1
+#define STDERR  2
+#endif
+
 static  b_file          _FStdIn = { RDONLY | REC_TEXT,
-                                    STDIN_FILENO,
+                                    STDIN,
                                     0,
                                     0,
                                     0,
@@ -41,7 +51,7 @@ static  b_file          _FStdIn = { RDONLY | REC_TEXT,
                                     0,
                                     MIN_BUFFER };
 static  b_file          _FStdOut = { WRONLY | REC_TEXT,
-                                     STDOUT_FILENO,
+                                     STDOUT,
                                      0,
                                      0,
                                      0,
@@ -49,7 +59,7 @@ static  b_file          _FStdOut = { WRONLY | REC_TEXT,
                                      0,
                                      MIN_BUFFER };
 static  b_file          _FStdErr = { WRONLY | REC_TEXT,
-                                     STDERR_FILENO,
+                                     STDERR,
                                      0,
                                      0,
                                      0,
