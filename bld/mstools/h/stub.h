@@ -41,6 +41,7 @@
 #define STUB_FOUND_386          1
 #define STUB_FOUND_AXP          2
 #define STUB_FOUND_PPC          3
+#define STUB_FOUND_X64          4
 
 
 /*

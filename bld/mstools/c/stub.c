@@ -62,6 +62,9 @@ int GetCpuTypeStub( void )
       case PROCESSOR_INTEL_PENTIUM:
         return( STUB_FOUND_386 );
         break;
+      case PROCESSOR_AMD_X8664:
+        return( STUB_FOUND_X64 );
+        break;
       case PROCESSOR_ALPHA_21064:
         return( STUB_FOUND_AXP );
         break;
@@ -82,6 +85,8 @@ int GetCpuTypeStub( void )
     if( env != NULL ) {
         if( !stricmp( env, "x86" ) ) {
             return( STUB_FOUND_386 );
+        } else if( !stricmp( env, "AMD64" ) ) {
+            return( STUB_FOUND_X64 );
         } else if( !stricmp( env, "alpha" ) ) {
             return( STUB_FOUND_AXP );
         } else if( !stricmp( env, "ppc" ) ) {

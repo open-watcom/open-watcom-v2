@@ -47,6 +47,9 @@ int main( void )
       case STUB_FOUND_386:
         SpawnProgStub( "rc386.exe" );
         break;
+      case STUB_FOUND_X64:
+        SpawnProgStub( "rc386.exe" );
+        break;
       case STUB_FOUND_AXP:
         SpawnProgStub( "rcaxp.exe" );
         break;

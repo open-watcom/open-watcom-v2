@@ -48,6 +48,9 @@ int main( void )
       case STUB_FOUND_386:
         SpawnProgStub( "nmake386.exe" );
         break;
+      case STUB_FOUND_X64:
+        SpawnProgStub( "nmake386.exe" );
+        break;
       case STUB_FOUND_AXP:
         SpawnProgStub( "nmakeaxp.exe" );
         break;
