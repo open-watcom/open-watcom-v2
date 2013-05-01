@@ -18,6 +18,8 @@ debugobjs = dovlboth.obj dovldata.obj
 .c   : ../c
 .asm : ../a
 
+inc_dirs = -I"../h"
+
 extra_c_flags = $(inc_path) -Fo=$^@ -r -s -d1 -zu -zl -nc=_OVLCODE -nt=_TEXT -nm=$^&
 
 extra_c_flags_sovlldr  = -mc -DOVL_SMALL

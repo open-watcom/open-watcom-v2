@@ -54,12 +54,14 @@ OBJS_vxd = wdebug.obj &
 .asm : ../conv/win386;../asm
 .c : ../conv/win386;../c
 
+inc_dirs = -I"../h"
+
 # cflags stuff
 ###############
 extra_c_flags = -s
 extra_c_flags_i86 = -3
 !ifeq fmt dll
-extra_c_flags_wininit += -DDLL32 -zu
+extra_c_flags_wininit  = -DDLL32 -zu
 extra_c_flags_libmain  = -DDLL32 -zu
 extra_c_flags_windpmi  = -DDLL32 -zu
 extra_c_flags_clib     = -DDLL32 -zu
@@ -74,10 +76,6 @@ extra_c_flags_toolhelp = -DDLL32 -zu
 ###############
 extra_a_flags_wdebug   = -mf
 extra_a_flags_winglue  = -I"../conv/win386"
-extra_a_flags_wincb    = -I"../h"
-extra_a_flags_call16   = -I"$(watcom_dir)/h"
-extra_a_flags_dllpatch = -I"$(watcom_dir)/h"
-extra_a_flags_int21win = -I"$(watcom_dir)/h"
 !ifeq fmt dll
 extra_a_flags_wincall  = -DDLL32
 extra_a_flags_dllthunk = -DDLL32

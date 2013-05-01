@@ -18,6 +18,8 @@ records.obj
 
 .c: ../c
 
+inc_dirs = -I"../h"
+
 fcenable.exe : $(objs)
         $(linker) $(lflags) name $^@ op map file {$(objs)}
 

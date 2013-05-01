@@ -57,8 +57,13 @@ set PROJNAME=vi
 
     <CCCMD> qnxi86/vi.exe             <OWRELROOT>/qnx/binq/vi
 
-    <CCCMD> ntx64/vi.exe              <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/vi.exe              <OWRELROOT>/binnt64/vi.exe
     <CCCMD> ntx64.win/vi.exe          <OWRELROOT>/binnt64/viw.exe
+    <CCCMD> ctags/ntx64/ctags.exe     <OWRELROOT>/binnt64/ctags.exe
+    <CCCMD> bind/ntx64/edbind.exe     <OWRELROOT>/binnt64/edbind.exe
+    <CCCMD> linuxx64/vi.exe           <OWRELROOT>/binl64/vi
+    <CCCMD> ctags/linuxx64/ctags.exe  <OWRELROOT>/binl64/ctags
+    <CCCMD> bind/linuxx64/edbind.exe  <OWRELROOT>/binl64/edbind
 
 [ BLOCK . . ]
 #============

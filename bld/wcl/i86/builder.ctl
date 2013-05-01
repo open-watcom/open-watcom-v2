@@ -24,16 +24,18 @@ set PROJNAME=wcl
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dosi86/wcl.exe        <OWRELROOT>/binw/wcl.exe
-    <CCCMD> dosi86/wcl.sym        <OWRELROOT>/binw/wcl.sym
-    <CCCMD> nt386/wcl.exe         <OWRELROOT>/binnt/wcl.exe
-    <CCCMD> nt386/wcl.sym         <OWRELROOT>/binnt/wcl.sym
-    <CCCMD> os2386/wcl.exe        <OWRELROOT>/binp/wcl.exe
-    <CCCMD> os2386/wcl.sym        <OWRELROOT>/binp/wcl.sym
+    <CCCMD> dosi86/wcl.exe        <OWRELROOT>/binw/
+    <CCCMD> dosi86/wcl.sym        <OWRELROOT>/binw/
+    <CCCMD> nt386/wcl.exe         <OWRELROOT>/binnt/
+    <CCCMD> nt386/wcl.sym         <OWRELROOT>/binnt/
+    <CCCMD> os2386/wcl.exe        <OWRELROOT>/binp/
+    <CCCMD> os2386/wcl.sym        <OWRELROOT>/binp/
     <CCCMD> linux386/wcl.exe      <OWRELROOT>/binl/wcl
-    <CCCMD> linux386/wcl.sym      <OWRELROOT>/binl/wcl.sym
-    <CCCMD> ntaxp/wcl.exe         <OWRELROOT>/axpnt/wcl.exe
-    <CCCMD> ntaxp/wcl.sym         <OWRELROOT>/axpnt/wcl.sym
+    <CCCMD> linux386/wcl.sym      <OWRELROOT>/binl/
+    <CCCMD> ntaxp/wcl.exe         <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/wcl.sym         <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/wcl.exe         <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

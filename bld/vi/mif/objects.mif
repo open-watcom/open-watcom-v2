@@ -6,7 +6,7 @@ objtime = fcbems.obj fcbxms.obj fcbdisk.obj fcbxmem.obj &
         fcbblock.obj fcb.obj fcbmem.obj &
         fcbsplit.obj fcbdup.obj fcbmerge.obj &
         linenew.obj dc.obj &
-        lineptr.obj linecfb.obj linedisp.obj linemisc.obj &
+        lineptr.obj linefcb.obj linedisp.obj linemisc.obj &
         linedel.obj lineins.obj lineyank.obj &
         grep.obj editmain.obj &
         filesave.obj filenew.obj &
@@ -53,7 +53,7 @@ objsize = xmem.obj fcbswap.obj clset.obj hist.obj samefile.obj &
         selrgn.obj cstatus.obj help.obj &
         readstr.obj tab_e_c.obj gencfg.obj fts.obj
 
-!ifdef sys_windowed
+!ifeq sys_windowed 1
 !ifeq host_os os2
 !include $(vi_dir)/pm/pm.mif
 !else

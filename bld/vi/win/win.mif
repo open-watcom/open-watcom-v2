@@ -27,7 +27,7 @@ rc_deps = ../win/viw.ico ../win/filelist.dlg ../win/fgrep.dlg &
           $(commonui_dir)/h/about.dlg  &
           ../ctl/setfs.dlg ../ctl/setscr.dlg ../ctl/setgen.dlg
 
-!ifdef sys_windowed
+!ifeq sys_windowed 1
 other = $(name).res
 ! ifeq host_os nt
 extraobjs += spawn.obj ntcmds.obj

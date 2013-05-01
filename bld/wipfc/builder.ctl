@@ -27,6 +27,8 @@ set PROJNAME=wipfc
     <CCCMD> nt386/wipfc.exe       <OWRELROOT>/binnt/
     <CCCMD> linux386/wipfc.exe    <OWRELROOT>/binl/wipfc
 
+    <CCCMD> ntx64/wipfc.exe       <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

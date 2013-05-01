@@ -51,6 +51,8 @@ set PROJNAME=ide cfg
 
     <CCCMD> ntaxp/idex.cfg    <OWRELROOT>/axpnt/
 
+    <CCCMD> ntx64/idex.cfg    <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

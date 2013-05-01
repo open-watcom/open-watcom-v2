@@ -17,7 +17,7 @@ objs = uninstal.obj
 
 .c: $(uninstal_dir)
 
-inc_dirs = -I".." $(commonui_inc_dirs)
+inc_dirs = -I. -I".." $(commonui_inc_dirs)
 
 xlibs = $(commonui_lib)
 

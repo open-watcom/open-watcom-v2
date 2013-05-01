@@ -38,7 +38,7 @@ dnmpbind.exe : _err.gh _jerr.gh $(objs)
 
 .c: ../c
 
-inc_dirs = -I"$(trap_dir)/h"
+inc_dirs = -I. -I"../h" -I"$(trap_dir)/h"
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
         $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" $[@ >$@

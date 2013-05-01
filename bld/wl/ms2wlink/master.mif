@@ -18,6 +18,8 @@ utils.obj
 
 .c: ../c
 
+inc_dirs = -I"../h"
+
 extra_l_flags_os2 = op stack=8k
 
 ms2wlink.exe : $(objs)

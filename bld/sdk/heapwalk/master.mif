@@ -28,7 +28,7 @@ extra_l_flags_win = op stack=7k, heapsize=2k lib stress.lib, commdlg.lib
 
 xlibs = $(commonui_lib)
 
-inc_dirs = -I.. $(commonui_inc_dirs) $(dis_includes)
+inc_dirs = -I. -I.. $(commonui_inc_dirs) $(dis_includes)
 
 .c   : ..;$(dis_srcs)
 .asm : ..

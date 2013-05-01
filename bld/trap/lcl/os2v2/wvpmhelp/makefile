@@ -20,7 +20,7 @@ description = 'Open Watcom Debugger PM Helper'
 
 extra_c_flags = -s -fpc
 
-inc_dirs = -I"$(trap_dir)/h"
+inc_dirs = -I. -I"../h" -I"$(trap_dir)/h"
 
 w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
         @%null

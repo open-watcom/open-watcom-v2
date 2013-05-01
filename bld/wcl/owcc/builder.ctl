@@ -27,18 +27,18 @@ set PROJNAME=owcc
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dosi86/specs.owc     <OWRELROOT>/binw/specs.owc
-    <CCCMD> dosi86/owcc.exe      <OWRELROOT>/binw/owcc.exe
-    <CCCMD> dosi86/owcc.sym      <OWRELROOT>/binw/owcc.sym
-    <CCCMD> nt386/specs.owc      <OWRELROOT>/binnt/specs.owc
-    <CCCMD> nt386/owcc.exe       <OWRELROOT>/binnt/owcc.exe
-    <CCCMD> nt386/owcc.sym       <OWRELROOT>/binnt/owcc.sym
-    <CCCMD> os2386/specs.owc     <OWRELROOT>/binp/specs.owc
-    <CCCMD> os2386/owcc.exe      <OWRELROOT>/binp/owcc.exe
-    <CCCMD> os2386/owcc.sym      <OWRELROOT>/binp/owcc.sym
-    <CCCMD> linux386/specs.owc   <OWRELROOT>/binl/specs.owc
+    <CCCMD> dosi86/specs.owc     <OWRELROOT>/binw/
+    <CCCMD> dosi86/owcc.exe      <OWRELROOT>/binw/
+    <CCCMD> dosi86/owcc.sym      <OWRELROOT>/binw/
+    <CCCMD> nt386/specs.owc      <OWRELROOT>/binnt/
+    <CCCMD> nt386/owcc.exe       <OWRELROOT>/binnt/
+    <CCCMD> nt386/owcc.sym       <OWRELROOT>/binnt/
+    <CCCMD> os2386/specs.owc     <OWRELROOT>/binp/
+    <CCCMD> os2386/owcc.exe      <OWRELROOT>/binp/
+    <CCCMD> os2386/owcc.sym      <OWRELROOT>/binp/
+    <CCCMD> linux386/specs.owc   <OWRELROOT>/binl/
     <CCCMD> linux386/owcc.exe    <OWRELROOT>/binl/owcc
-    <CCCMD> linux386/owcc.sym    <OWRELROOT>/binl/owcc.sym
+    <CCCMD> linux386/owcc.sym    <OWRELROOT>/binl/
 
     <CCCMD> ntx64/specs.owc      <OWRELROOT>/binnt64/
     <CCCMD> ntx64/owcc.exe       <OWRELROOT>/binnt64/
