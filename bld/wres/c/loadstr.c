@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include "wresall.h"
 #include "wresset2.h"
+#include "resdefs.h"
 #include "loadstr.h"
 
 #define GET_STR_BUF_LEN 128
@@ -106,11 +107,11 @@ static int GetString(   WResLangInfo    *res,
     return( 0 );
 }
 
-extern int WINAPI WResLoadString2(  WResDir             dir,
-                                    PHANDLE_INFO        hInstance,
-                                    UINT                idResource,
-                                    LPSTR               lpszBuffer,
-                                    int                 nBufferMax )
+extern int WResLoadString2(  WResDir             dir,
+                             PHANDLE_INFO        hInstance,
+                             UINT                idResource,
+                             LPSTR               lpszBuffer,
+                             int                 nBufferMax )
 /******************************************************************/
 {
     int                 retcode;
@@ -142,10 +143,10 @@ extern int WINAPI WResLoadString2(  WResDir             dir,
     return( retcode );
 }
 
-extern int WINAPI WResLoadString(   PHANDLE_INFO        hInstance,
-                                    UINT                idResource,
-                                    LPSTR               lpszBuffer,
-                                    int                 nBufferMax )
+extern int WResLoadString(   PHANDLE_INFO        hInstance,
+                             UINT                idResource,
+                             LPSTR               lpszBuffer,
+                             int                 nBufferMax )
 /******************************************************************/
 {
     return( WResLoadString2( MainDir, hInstance, idResource, lpszBuffer, nBufferMax ) );

@@ -41,6 +41,7 @@
 #include "param.h"
 #include "types.h"
 #include "swchar.h"
+#include "resdefs.h"
 
 static int CheckPredefType( const char * restype )
 {

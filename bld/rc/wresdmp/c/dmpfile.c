@@ -41,6 +41,7 @@
 #include "dmpcont.h"
 #include "global.h"
 #include "dmpfile.h"
+#include "resdefs.h"
 
 static void ConvertIDToStr( WResID * id, char * str, int maxlen )
 /***************************************************************/

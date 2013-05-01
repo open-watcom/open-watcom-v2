@@ -33,78 +33,10 @@
 #ifndef RESDIAG_INCLUDED
 #define RESDIAG_INCLUDED
 
-#ifdef WIN_GUI
-// the following is a temporary measure to get around the fact
-// that winreg.h defines a type called ppvalue
-#define _WINREG_
-#define WIN32_LEAN_AND_MEAN
-#include "windows.h"
-#endif
-
 #include "resnamor.h"
 
 typedef uint_32     DialogStyle;
 typedef uint_32     DialogExstyle;
-
-/* style bits used by name for Dialog box headers and controls */
-/* these statements same as found in windows.h */
-
-/* Wes Nelson -- Added the following #ifndef's to allow windows.h
- *               to be included before this file
- */
-
-#if !defined( WIN_GUI ) && !defined( RES2WXF_COMPILE )
-
-#define WS_POPUP            0x80000000L
-#define WS_CHILD            0x40000000L
-#define WS_VISIBLE          0x10000000L
-#define WS_BORDER           0x00800000L
-#define WS_DLGFRAME         0x00400000L
-#define WS_CAPTION          ( WS_BORDER | WS_DLGFRAME )
-#define WS_VSCROLL          0x00200000L
-#define WS_HSCROLL          0x00100000L
-#define WS_SYSMENU          0x00080000L
-#define WS_THICKFRAME       0x00040000L
-#define WS_GROUP            0x00020000L
-#define WS_TABSTOP          0x00010000L
-#define WS_MINIMIZEBOX      0x00020000L
-#define WS_MAXIMIZEBOX      0x00010000L
-#define DS_SETFONT          0x00000040L
-/* edit control styles */
-#define ES_LEFT             0x00000000L
-#define ES_WANTRETURN       0x00001000L
-#define ES_MULTILINE        0x00000004L
-/* button control styles */
-#define BS_PUSHBUTTON       0x00000000L
-#define BS_DEFPUSHBUTTON    0x00000001L
-#define BS_CHECKBOX         0x00000002L
-#define BS_AUTOCHECKBOX     0x00000003L
-#define BS_RADIOBUTTON      0x00000004L
-#define BS_3STATE           0x00000005L
-#define BS_AUTO3STATE       0x00000006L
-#define BS_GROUPBOX         0x00000007L
-#define BS_AUTORADIOBUTTON  0x00000009L
-/* listbox control styles */
-#define LBS_NOTIFY          0x00000001L
-#define LBS_SORT            0x00000002L
-#define LBS_NOINTEGRALHEIGHT        0x00000100L
-/* static control styles */
-#define SS_LEFT             0x00000000L
-#define SS_CENTER           0x00000001L
-#define SS_RIGHT            0x00000002L
-#define SS_ICON             0x00000003L
-#define SS_LEFTNOWORDWRAP   0x0000000CL
-#define SS_NOPREFIX         0x00000080L
-/* combobox styles */
-#define CBS_SIMPLE          0x00000001L
-#define CBS_DROPDOWN        0x00000002L
-#define CBS_DROPDOWNLIST    0x00000003L
-#define CBS_SORT            0x00000100L
-#define CBS_NOINTEGRALHEIGHT        0x00000400L
-/* scrollbar styles */
-#define SBS_HORZ            0x00000000L
-
-#endif
 
 #include "pushpck1.h"
 typedef struct DialogSizeInfo {

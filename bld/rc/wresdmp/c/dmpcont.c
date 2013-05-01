@@ -39,6 +39,7 @@
 #include "dmpcurgr.h"
 #include "dmpstr.h"
 #include "dmpcont.h"
+#include "resdefs.h"
 
 extern int DumpContents( WResTypeInfo *type, WResResInfo *res,
                     WResLangInfo *lang, WResFileID handle, uint_16 os )

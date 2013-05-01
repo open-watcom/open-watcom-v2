@@ -37,6 +37,7 @@
 #include "read.h"
 #include "resdiag.h"
 #include "reserr.h"
+#include "resdefs.h"
 
 static int ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head,
                                  WResFileID handle, char add_quotes );

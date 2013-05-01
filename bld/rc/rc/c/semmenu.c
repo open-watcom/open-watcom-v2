@@ -69,6 +69,7 @@ struct PopupMenuExItem {
 #include "ytab.gh"
 #include "semantic.h"
 #include "semmenu.h"
+#include "resdefs.h"
 
 static void SemFreeSubMenu( FullMenu *submenu );
 
@@ -327,7 +328,7 @@ void SemWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         }
         if(error) goto OutputWriteError;
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RT_MENU ), flags, loc );
+        SemAddResourceFree( name, WResIDFromNum( (long)RT_MENU ), flags, loc );
     } else {
         RcMemFree( name );
     }

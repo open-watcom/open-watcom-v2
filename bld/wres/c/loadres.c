@@ -56,7 +56,7 @@ static int GetResource( WResLangInfo    *res,
     return( 0 );
 }
 
-extern int WINAPI WResLoadResource2( WResDir            dir,
+extern int WResLoadResource2( WResDir            dir,
                                      PHANDLE_INFO       hInstance,
                                      UINT               idType,
                                      UINT               idResource,
@@ -103,7 +103,7 @@ extern int WINAPI WResLoadResource2( WResDir            dir,
     return( retcode );
 }
 
-extern int WINAPI WResLoadResource( PHANDLE_INFO       hInstance,
+extern int WResLoadResource( PHANDLE_INFO       hInstance,
                                     UINT               idType,
                                     UINT               idResource,
                                     LPSTR              *lpszBuffer,

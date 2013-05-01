@@ -38,6 +38,7 @@
 #include "ytab.gh"
 #include "semantic.h"
 #include "semver.h"
+#include "resdefs.h"
 
 
 /*** Forward References ***/

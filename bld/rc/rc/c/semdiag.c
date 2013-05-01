@@ -80,6 +80,7 @@ struct ControlData {
 #include "ytab.gh"
 #include "semantic.h"
 #include "semdiag.h"
+#include "resdefs.h"
 
 
 static FullDialogBoxHeader *NewDialogBoxHeader( void )
@@ -762,7 +763,7 @@ extern void SemWriteDialogBox( WResID *name, ResMemFlags flags,
         if( error ) goto OutputWriteError;
 
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RT_DIALOG ), flags, loc );
+        SemAddResourceFree( name, WResIDFromNum( (long)RT_DIALOG ), flags, loc );
     } else {
         RcMemFree( name );
     }

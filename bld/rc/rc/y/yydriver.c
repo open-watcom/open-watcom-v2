@@ -38,6 +38,7 @@
 #include "ytab.gh"
 #include "yydriver.h"
 #include "errprt.h"
+#include "resdefs.h"
 
 typedef uint_16         YYCHKTYPE;
 typedef uint_16         YYACTTYPE;

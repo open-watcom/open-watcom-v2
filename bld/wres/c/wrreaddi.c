@@ -33,6 +33,7 @@
 #include <string.h>
 #include "wresall.h"
 #include "reserr.h"
+#include "resdefs.h"
 
 
 static int readLangInfoList( WResFileID handle, WResResNode *res, void *fileinfo )

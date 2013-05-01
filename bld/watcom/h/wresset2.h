@@ -39,9 +39,6 @@
             WResLoadString2( Dir, hInstance, idResource, lpszBuffer, nBufferMax )
   #define LoadString( hInstance, idResource, lpszBuffer, nBufferMax ) \
             WResLoadString( hInstance, idResource, lpszBuffer, nBufferMax )
-  #ifndef WINAPI
-    #define WINAPI
-  #endif
   #ifndef _WCI86FAR
     #define _WCI86FAR   // Is there a cleaner way?
   #endif
@@ -72,21 +69,21 @@ extern int OpenResFile( PHANDLE_INFO hInstance, const char *filename );
 extern int FindResources( PHANDLE_INFO hInstance );
 extern int InitResources( PHANDLE_INFO hInstance );
 extern int InitResources2( struct WResDirHead **, PHANDLE_INFO hInstance );
-extern int WINAPI WResLoadString( PHANDLE_INFO hInstance,
+extern int WResLoadString( PHANDLE_INFO hInstance,
                            UINT idResource,
                            LPSTR lpszBuffer,
                            int nBufferMax );
-extern int WINAPI WResLoadString2( struct WResDirHead *,
+extern int WResLoadString2( struct WResDirHead *,
                             PHANDLE_INFO hInstance,
                             UINT idResource,
                             LPSTR lpszBuffer,
                             int nBufferMax );
-extern int WINAPI WResLoadResource( PHANDLE_INFO       hInstance,
+extern int WResLoadResource( PHANDLE_INFO       hInstance,
                              UINT               idType,
                              UINT               idResource,
                              LPSTR              *lpszBuffer,
                              int                *bufferSize );
-extern int WINAPI WResLoadResource2( struct WResDirHead *,
+extern int WResLoadResource2( struct WResDirHead *,
                               PHANDLE_INFO      hInstance,
                               UINT              idType,
                               UINT              idResource,
