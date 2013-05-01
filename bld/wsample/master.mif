@@ -116,17 +116,18 @@ extra_l_flags_win = option heap=10k, stack=10k &
     lib commdlg, toolhelp
 
 !ifeq target nov
-inc_dirs = -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)"
+inc_dirs = -I"../h" -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)" -I"$(dig_dir)/h"
 !else ifeq target win
-inc_dirs = $(windbg_inc_dirs)
+inc_dirs = -I. -I"../h" $(windbg_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target rsi
-inc_dirs = $(rsilib_inc_dirs)
+inc_dirs = -I"../h" $(rsilib_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target pls
-inc_dirs = -I"$(plsdir)"
+inc_dirs = -I"../h" -I"$(plsdir)" -I"$(dig_dir)/h"
 !else ifeq target linux
-inc_dirs = -I"$(trap_dir)/lcl/linux/h"
+inc_dirs = -I"../h" -I"$(trap_dir)/lcl/linux/h" -I"$(dig_dir)/h"
+!else
+inc_dirs = -I"../h" -I"$(dig_dir)/h"
 !endif
-inc_dirs += -I"../h" -I"$(dig_dir)/h"
 
 !ifeq target linux
 .c: $(trap_dir)/lcl/linux/c
