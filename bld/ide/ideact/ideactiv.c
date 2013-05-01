@@ -33,11 +33,17 @@
 #include <windows.h>
 #include <string.h>
 
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+#define WINEXPORT   __declspec(dllexport)
+#else
+#define WINEXPORT
+#endif
+
 #define IDE_WINDOW_CLASS        "GUIClass"
 #define IDE_WIN_CAP_LEN         15
 #define IDE_WINDOW_CAPTION      "Open Watcom IDE"
 
-BOOL __export CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam ) {
+WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam ) {
     char        buf[256];
     BOOL        *found;
 
