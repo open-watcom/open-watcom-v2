@@ -35,11 +35,9 @@
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>
-#include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <ctype.h>
-
+#include "wio.h"
 #include "watcom.h"
 #include "banner.h"
 #if defined( __OS2__ )

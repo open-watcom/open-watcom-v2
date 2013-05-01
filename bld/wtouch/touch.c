@@ -45,7 +45,6 @@
 #include <direct.h>
 #include <sys/utime.h>
 #endif
-
 #include "wio.h"
 #include "watcom.h"
 #include "banner.h"
@@ -550,7 +549,7 @@ static void doTouch( void )
                     // can't change the timestamp but we can truncate it
                     continue;
                 }
-                fh = creat( item, S_IWRITE | S_IREAD | S_IRGRP | S_IROTH );
+                fh = creat( item, PMODE_RW );
                 if( fh == -1 ) {
                     if( !TouchFlags.quiet ) {
                         writeMsg( MSG_CANT_CREATE, item );

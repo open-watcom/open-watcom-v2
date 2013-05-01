@@ -10,7 +10,7 @@ wtouch_autodepends = .AUTODEPEND
 
 .EXTENSIONS: .msg .vi .rc .sp
 
-inc_dirs = -I"$(wtouch_dir)"
+inc_dirs = -I. -I..
 
 .c .msg .vi .rc .sp: ..
 

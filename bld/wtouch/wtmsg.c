@@ -34,11 +34,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/stat.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
-#include <fcntl.h>
-#include <unistd.h>
-
+#endif
+#include "wio.h"
 #include "watcom.h"
 #include "wtmsg.h"
 #include "wressetr.h"
