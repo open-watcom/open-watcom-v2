@@ -1039,8 +1039,6 @@ static void Set_EP( void )
     ProEpiDataSize = OptValue;
 }
 
-void SetNoCurrInc( void )           { CompFlags.ignore_curr_dirs = 1;}
-
 static void StripQuotes( char *fname )
 {
     char    *s;
@@ -1413,7 +1411,7 @@ static void SetAutoDependBackSlash( void )
 }
 
 static void Set_X( void )           { CompFlags.cpp_ignore_env = 1; }
-static void Set_XC( void )          { CompFlags.ignore_curr_dirs = 1; }
+static void Set_XX( void )          { CompFlags.ignore_default_dirs = 1; }
 static void Set_PIL( void )         { CompFlags.cpp_ignore_line = 1; }
 static void Set_PL( void )          { CompFlags.cpp_line_wanted = 1; }
 static void Set_NA( void )          { CompFlags.disable_ialias = 1; }
@@ -1697,7 +1695,6 @@ static struct option const CFE_Options[] = {
     { "wx",     0,              Set_WX },
     { "w=#",    0,              SetWarningLevel },
     { "x",      0,              Set_X },
-    { "xc",     0,              Set_XC },
 #if _CPU == 386
     { "xgv",    0,              Set_XGV },
 #endif
@@ -1705,6 +1702,7 @@ static struct option const CFE_Options[] = {
 #if _CPU == _AXP
     { "xd",     0,              Set_XD },
 #endif
+    { "xx",     0,              Set_XX },
     { "za99",   0,              Set_ZA99 },
     { "zA",     0,              SetStrictANSI },
     { "za",     0,              Set_ZA },

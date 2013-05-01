@@ -948,12 +948,6 @@
 :usage. ignore all ..INCLUDE environment variables
 :jusage. ignore all ..INCLUDE environment variables
 
-#:option. xc
-#:target. any
-#:nochain.
-#:usage. ignore current directories (.,../h,../c)
-#:jusage. ignore current directories (.,../h,../c)
-
 :option. xgv
 :target. 386
 :nochain.
@@ -974,6 +968,12 @@
 :enumerate. exc_level
 :usage. use default exception handler
 :jusage.
+
+:option. xx
+:target. any
+:nochain.
+:usage. ignore default directories for file search (.,../h,../c,...)
+:jusage. ignore default directories for file search (.,../h,../c,...)
 
 :option. z\a
 :target. any

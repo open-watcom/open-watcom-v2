@@ -641,13 +641,19 @@ struct comp_flags {
     unsigned ignore_fnf             : 1;    /* ignore file not found errors */
     unsigned disable_ialias         : 1;    /* supress inclusion of _ialias.h */
     unsigned cpp_ignore_env         : 1;    /* ignore *INCLUDE env var(s) */
-    unsigned ignore_curr_dirs       : 1;    /* ignore current directories .,../h,../c, etc. */
+    unsigned ignore_default_dirs    : 1;    /* ignore default directories for file search .,../h,../c, etc. */
     unsigned pragma_library         : 1;    /* pragma library simulate -zlf option */
 };
 
 struct global_comp_flags {  // things that live across compiles
     unsigned cc_reuse               : 1;    /* in a reusable version batch, dll*/
     unsigned cc_first_use           : 1;    /* first time thru           */
+    unsigned ignore_environment     : 1;
+    unsigned ignore_current_dir     : 1;
+    unsigned ide_cmd_line_has_files : 1;
+    unsigned ide_console_output     : 1;
+    unsigned progress_messages      : 1;
+//    unsigned dll_active             : 1;
 };
 
 /* Target System types */

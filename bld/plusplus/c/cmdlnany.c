@@ -1314,6 +1314,9 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->xto ) {
         CompFlags.obfuscate_typesig_names = 1;
     }
+    if( data->xx ) {
+        CompFlags.ignore_default_dirs = 1;
+    }
     if( data->zat ) {
         CompFlags.no_alternative_tokens = 1;
     }

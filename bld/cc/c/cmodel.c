@@ -341,7 +341,7 @@ void InitModInfo( void )
     CompFlags.auto_agg_inits        = 0;
     CompFlags.no_check_inits        = 0;
     CompFlags.no_check_qualifiers   = 0;
-    CompFlags.ignore_curr_dirs      = 0;
+    CompFlags.ignore_default_dirs   = 0;
     CompFlags.use_stdcall_at_number = 1;
     CompFlags.rent = 0;
 

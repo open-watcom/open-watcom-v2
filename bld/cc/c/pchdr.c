@@ -143,7 +143,7 @@ typedef struct pheader {
     unsigned        msgflags_len;   // length of MsgFlags array
     unsigned        disable_ialias;
     unsigned        cpp_ignore_env;
-    unsigned        ignore_curr_dirs;
+    unsigned        ignore_default_dirs;
 } pheader;
 
 static int FixupDataStructures( char *p, pheader *pch );
@@ -311,7 +311,7 @@ static void OutPutHeader( void )
     pch.msgflags_len      = MESSAGE_COUNT;
     pch.disable_ialias    = CompFlags.disable_ialias;
     pch.cpp_ignore_env    = CompFlags.cpp_ignore_env;
-    pch.ignore_curr_dirs  = CompFlags.ignore_curr_dirs;
+    pch.ignore_default_dirs = CompFlags.ignore_default_dirs;
 
     rc  = PCHWriteVar( pch );
     rc |= PCHWrite( PH_Buffer + sizeof( pch ), pch.cwd_len );
@@ -1807,7 +1807,7 @@ int UsePreCompiledHeader( const char *filename )
         AbortPreCompiledHeader();
         return( -1 );
     }
-    if( CompFlags.cpp_ignore_env != pch.cpp_ignore_env || CompFlags.ignore_curr_dirs != pch.ignore_curr_dirs ) {
+    if( CompFlags.cpp_ignore_env != pch.cpp_ignore_env || CompFlags.ignore_default_dirs != pch.ignore_default_dirs ) {
         PCHNote( PCHDR_INCFILE_DIFFERENT );
         AbortPreCompiledHeader();
         return( -1 );

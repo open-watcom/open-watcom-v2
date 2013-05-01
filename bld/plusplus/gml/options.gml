@@ -1123,6 +1123,12 @@
 :usage. obfuscate type signature names
 :jusage.
 
+:option. xx
+:target. any
+:nochain.
+:usage. ignore default directories for file search (.,../h,../c,...)
+:jusage. ignore default directories for file search (.,../h,../c,...)
+
 :option. za
 :target. any
 :enumerate. iso

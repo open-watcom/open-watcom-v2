@@ -213,7 +213,7 @@ typedef struct comp_flags {
     unsigned rw_registration        : 1;    // RW-centric function registration
     unsigned original_enum_setting  : 1;    // original -ei setting
     unsigned ignore_environment     : 1;    // don't process WPP* and INCLUDE
-    unsigned ignore_current_dir     : 1;    // ignore current dir for include search
+    unsigned ignore_current_dir     : 1;    // ignore current dir for include files
     unsigned progress_messages      : 1;    // output msgs as compile progresses
 /*  136 */
     unsigned no_error_sym_injection : 1;    // don't insert error symbols
@@ -285,6 +285,7 @@ typedef struct comp_flags {
     unsigned ignore_fnf             : 1;
     unsigned disable_ialias         : 1;
     unsigned cpp_ignore_env         : 1;    // ignore include path env vars
+    unsigned ignore_default_dirs    : 1;
 } COMP_FLAGS;
 
 #ifdef OPT_BR

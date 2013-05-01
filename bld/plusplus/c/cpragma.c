@@ -247,15 +247,12 @@ static void pragCodeSeg(        // SET NEW CODE SEGMENT
     if( CurToken == T_LEFT_PAREN ) {
         PPCTL_ENABLE_MACROS();
         NextToken();
-        PPCTL_DISABLE_MACROS();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             seg_name = strsave( Buffer );
             seg_class = NULL;
             NextToken();
             if( CurToken == T_COMMA ) {
-                PPCTL_ENABLE_MACROS();
                 NextToken();
-                PPCTL_DISABLE_MACROS();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     seg_class = strsave( Buffer );
                     NextToken();
@@ -270,6 +267,7 @@ static void pragCodeSeg(        // SET NEW CODE SEGMENT
             // restore back to default behaviour
             SegmentCode( NULL, NULL );
         }
+        PPCTL_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
     } else if( CurToken == T_STRING ) {
         SegmentCode( Buffer, NULL );
@@ -293,15 +291,12 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
     if( CurToken == T_LEFT_PAREN ) {
         PPCTL_ENABLE_MACROS();
         NextToken();
-        PPCTL_DISABLE_MACROS();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             seg_name = strsave( Buffer );
             seg_class = NULL;
             NextToken();
             if( CurToken == T_COMMA ) {
-                PPCTL_ENABLE_MACROS();
                 NextToken();
-                PPCTL_DISABLE_MACROS();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     seg_class = strsave( Buffer );
                     NextToken();
@@ -316,6 +311,7 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
             // restore back to default behaviour
             SegmentData( NULL, NULL );
         }
+        PPCTL_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
     } else if( CurToken == T_STRING ) {
         SegmentData( Buffer, NULL );
@@ -709,19 +705,16 @@ static void parseExtRef(     // PARSE SYMBOL NAME
 static void pragExtRef(     // #pragma extref ...
     void )
 {
-    if( ExpectingToken( T_LEFT_PAREN ) ) {
-        PPCTL_ENABLE_MACROS();
-        NextToken();
-        PPCTL_DISABLE_MACROS();
-        while( CurToken == T_STRING || IS_ID_OR_KEYWORD( CurToken ) ) {
-            parseExtRef();
-            NextToken();
-            if( CurToken != T_COMMA )
-                break;
+    if( CurToken == T_LEFT_PAREN ) {
+        do {
             PPCTL_ENABLE_MACROS();
             NextToken();
             PPCTL_DISABLE_MACROS();
-        }
+            if( !IS_ID_OR_KEYWORD( CurToken ) && CurToken != T_STRING )
+                break;
+            parseExtRef();
+            NextToken();
+        } while( CurToken == T_COMMA );
         MustRecog( T_RIGHT_PAREN );
     } else if( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
         parseExtRef();
@@ -951,7 +944,6 @@ static void pragReadOnlyFile
 static void pragReadOnlyDir
     ( void )
 {
-    PPCTL_ENABLE_MACROS();
     while( CurToken == T_STRING ) {
         SrcFileReadOnlyDir( Buffer );
         NextToken();
@@ -959,7 +951,6 @@ static void pragReadOnlyDir
             NextToken();
         }
     }
-    PPCTL_DISABLE_MACROS();
 }
 
 // form: #pragma include_alias( "alias_name", "real_name" )

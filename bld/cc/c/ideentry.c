@@ -42,11 +42,9 @@
 #include "cgcli.h"
 #include "feprotos.h"
 
-extern  void    SetNoCurrInc( void ); // no curr inc
-
 static   IDECBHdl      Hdl;          // - handle for this instantiation
 static   IDECallBacks* Cbs;          // - call backs into IDE
-static   IDEInitInfo   Info;
+//static   IDEInitInfo   Info;
 
 extern void ConsMsg( char const  *line ){
 // C compiler call back to do a  console print to stdout
@@ -61,7 +59,7 @@ extern void ConBlip( void ){
 
 extern bool ConTTY( void ){
 // C compiler do a blip to console
-    return( Info.console_output );
+    return( GlobalCompFlags.ide_console_output );
 }
 
 extern void ConsErrMsg( cmsg_info  *cinfo ){
@@ -134,18 +132,12 @@ extern char *FEGetEnv( char const *name ){
 // get enviorment variable
     char *ret;
     ret = NULL;
-    if( !Info.ignore_env ){
+    if( !GlobalCompFlags.ignore_environment ){
         if((*Cbs->GetInfo)( Hdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&ret ) ) {
             ret = NULL;
         }
     }
     return( ret );
-}
-
-extern void FESetCurInc( void ){
-    if( Info.ignore_env ){
-        SetNoCurrInc();
-    }
 }
 
 static   jmp_buf *FatalEnv;
@@ -266,7 +258,7 @@ static char **getFrontEndArgv( char **argv, int argc, char *infile, char *outfil
     char    **p;
     int     count;
 
-    if( !Info.cmd_line_has_files ) {
+    if( !GlobalCompFlags.ide_cmd_line_has_files ) {
         p = argv + 1;
         if( argc > 0 ) {
             argv = malloc( ( argc + 2 ) * sizeof( char * ) );
@@ -354,7 +346,7 @@ IDEBool IDEAPI IDERunYourSelfArgv // COMPILE A PROGRAM
         argv = getFrontEndArgv( args, argc, infile, outfile );
         ret = FrontEnd( argv );
     }
-    if( !Info.cmd_line_has_files ) {
+    if( !GlobalCompFlags.ide_cmd_line_has_files ) {
         free( argv );
     }
 #if HEAP_CHK  == 1
@@ -383,9 +375,31 @@ IDEBool IDEAPI IDEProvideHelp       // PROVIDE HELP INFORMATION
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     hdl = hdl;
-    Info = *info;
-    if( info->ver < IDE_CUR_INFO_VER5 ) {
+//    DbgVerify( hdl == CompInfo.dll_handle, "PassInitInfo -- handle mismatch" );
+    if( info->ver < 2 ) {
         return( TRUE );
     }
+    if( info->ignore_env ) {
+        GlobalCompFlags.ignore_environment = TRUE;
+        GlobalCompFlags.ignore_current_dir = TRUE;
+    }
+    if( info->ver >= 2 ) {
+        if( info->cmd_line_has_files ) {
+            GlobalCompFlags.ide_cmd_line_has_files = TRUE;
+        }
+        if( info->ver >= 3 ) {
+            if( info->console_output ) {
+                GlobalCompFlags.ide_console_output = TRUE;
+            }
+            if( info->ver >= 4 ) {
+                if( info->progress_messages ) {
+                    GlobalCompFlags.progress_messages = TRUE;
+                }
+            }
+        }
+    }
+#if defined( wcc_dll )
+//    GlobalCompFlags.dll_active = TRUE;
+#endif
     return( FALSE );
 }

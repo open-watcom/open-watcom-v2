@@ -642,7 +642,6 @@ extern void     DebugMsg( char const  *line );
 extern void     NoteMsg( char const  *line );
 extern void     ConBlip( void );
 extern bool     ConTTY( void );
-extern void     FESetCurInc( void );
 
 //cmac1.c
 extern  void    EnlargeBuffer(size_t);

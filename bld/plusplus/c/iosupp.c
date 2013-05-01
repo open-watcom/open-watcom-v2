@@ -569,7 +569,7 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
         retn = openSrcPath( "", exts, fd, typ );
         if( retn )
             break;
-        if( !CompFlags.ignore_current_dir && !IS_PATH_SEP( fd->dir[0] ) ) {
+        if( !CompFlags.ignore_default_dirs && !IS_PATH_SEP( fd->dir[0] ) ) {
             paths = pathSrc;
         }
         break;
@@ -582,32 +582,42 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
             break;
         }
         if( typ == FT_HEADER && !IS_PATH_SEP( fd->dir[0] ) ) {
-            if( !CompFlags.ignore_current_dir ) {
-                // check for current directory
-                retn = openSrcPath( "", exts, fd, typ );
+            if( CompFlags.ignore_default_dirs ) {
+                curr = SrcFileCurrent();
+                splitFileName( SrcFileName( curr ), &idescr );
+                _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
+                retn = openSrcPath( bufpth, exts, fd, FT_HEADER );
                 if( retn ) {
                     break;
                 }
-            }
-            /* check directories of currently included files */
-            prevpth[0] = '\xff'; /* to make it not compare with anything else */
-            prevpth[1] = '\0';
-            curr = SrcFileCurrent();
-            for( ; curr != NULL; ) {
-                splitFileName( SrcFileName( curr ), &idescr );
-                _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
-                /*optimization: don't try and open if in previously checked dir*/
-                if( strcmp( bufpth, prevpth ) != 0 ) {
-                    retn = openSrcPath( bufpth, exts, fd, FT_HEADER );
+            } else {
+                if( !CompFlags.ignore_current_dir ) {
+                    // check for current directory
+                    retn = openSrcPath( "", exts, fd, typ );
                     if( retn ) {
                         break;
                     }
                 }
-                curr = SrcFileIncluded( curr, &dummy );
-                strcpy( prevpth, bufpth );
-            }
-            if( retn ) {
-                break;
+                /* check directories of currently included files */
+                prevpth[0] = '\xff'; /* to make it not compare with anything else */
+                prevpth[1] = '\0';
+                curr = SrcFileCurrent();
+                for( ; curr != NULL; ) {
+                    splitFileName( SrcFileName( curr ), &idescr );
+                    _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
+                    /*optimization: don't try and open if in previously checked dir*/
+                    if( strcmp( bufpth, prevpth ) != 0 ) {
+                        retn = openSrcPath( bufpth, exts, fd, FT_HEADER );
+                        if( retn ) {
+                            break;
+                        }
+                    }
+                    curr = SrcFileIncluded( curr, &dummy );
+                    strcpy( prevpth, bufpth );
+                }
+                if( retn ) {
+                    break;
+                }
             }
         }
         HFileListStart();
@@ -623,7 +633,7 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
         if( retn ) {
             break;
         }
-        if( typ == FT_HEADER && !CompFlags.ignore_current_dir && !IS_PATH_SEP( fd->dir[0] ) ) {
+        if( typ == FT_HEADER && !CompFlags.ignore_default_dirs && !IS_PATH_SEP( fd->dir[0] ) ) {
             paths = pathHdr;
         }
         break;
@@ -632,7 +642,7 @@ static boolean doIoSuppOpenSrc(  // OPEN A SOURCE FILE (PRIMARY,HEADER)
         retn = openSrcPath( "", exts, fd, typ );
         if( retn )
             break;
-        if( !CompFlags.ignore_current_dir && !IS_PATH_SEP( fd->dir[0] ) ) {
+        if( !IS_PATH_SEP( fd->dir[0] ) ) {
             paths = pathCmd;
         }
         break;

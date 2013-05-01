@@ -1127,16 +1127,15 @@ static void PragExtRef( void )
     if( CurToken == T_LEFT_PAREN ) {
         do {
             PPCTL_ENABLE_MACROS();
-            CompFlags.pre_processing = 1;
             NextToken();
             PPCTL_DISABLE_MACROS();
-            if( CurToken != T_ID && CurToken != T_STRING )
+            if( !IS_ID_OR_KEYWORD( CurToken ) && CurToken != T_STRING )
                 break;
             parseExtRef();
             NextToken();
         } while( CurToken == T_COMMA );
         MustRecog( T_RIGHT_PAREN );
-    } else if( CurToken == T_ID || CurToken == T_STRING ) {
+    } else if( IS_ID_OR_KEYWORD( CurToken ) || CurToken == T_STRING ) {
         parseExtRef();
         NextToken();
     }

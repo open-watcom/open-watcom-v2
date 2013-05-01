@@ -52,9 +52,9 @@
 #endif
 
 #if defined( __UNIX__ )
-    #define IS_PATH_SEP( ch ) ((ch) == '/')
+    #define IS_PATH_SEP( ch ) ((ch) == PATH_SEP)
 #else
-    #define IS_PATH_SEP( ch ) ((ch) == '/' || (ch) == '\\')
+    #define IS_PATH_SEP( ch ) ((ch) == PATH_SEP || (ch) == '/')
 #endif
 
 #define MAX_INC_DEPTH   255
@@ -71,7 +71,7 @@ static  void        DelErrFile( void );
 static  void        MakePgmName( void );
 static  int         OpenFCB( FILE *fp, const char *filename );
 static  bool        IsFNameOnce( char const *filename );
-static  bool        TryOpen( char *prefix, char *separator, const char *filename, char *suffix );
+static  bool        TryOpen( char *prefix, char separator, const char *filename, char *suffix );
 static  void        ParseInit( void );
 static  void        CPP_Parse( void );
 static  int         FCB_Alloc( FILE *fp, const char *filename );
@@ -87,6 +87,12 @@ void FrontEndInit( bool reuse )
 {
     GlobalCompFlags.cc_reuse = reuse;
     GlobalCompFlags.cc_first_use = TRUE;
+    GlobalCompFlags.ignore_environment  = FALSE;
+    GlobalCompFlags.ignore_current_dir  = FALSE;
+    GlobalCompFlags.ide_cmd_line_has_files = FALSE;
+    GlobalCompFlags.ide_console_output  = FALSE;
+    GlobalCompFlags.progress_messages   = FALSE;
+//    GlobalCompFlags.dll_active          = FALSE;
 }
 
 void FrontEndFini( void )
@@ -189,7 +195,6 @@ static bool ParseCmdLine( char **cmdline )
         return( FALSE );
     }
     GenCOptions( cmdline );
-    FESetCurInc();
     return( TRUE );
 }
 
@@ -468,8 +473,8 @@ static int OpenPgmFile( void )
         }
         return( FALSE );
     }
-    if( !TryOpen( "", "", WholeFName, "" ) ) {
-        if( !TryOpen( C_PATH, PATH_SEP, WholeFName, "" ) ) {
+    if( !TryOpen( "", '\0', WholeFName, "" ) ) {
+        if( CompFlags.ignore_default_dirs || !TryOpen( C_PATH, PATH_SEP, WholeFName, "" ) ) {
             CantOpenFile( WholeFName );
             CSuicide();
             return( FALSE );
@@ -751,67 +756,76 @@ bool OpenSrcFile( const char *filename, bool is_lib )
     // include path here...
     _splitpath2( filename, buff, &drive, &dir, NULL, NULL );
     if( drive[ 0 ] != '\0' || IS_PATH_SEP( dir[ 0 ] ) ) {
-        // 14-sep-94 if drive letter given or path from root given
-        if( TryOpen( "", "", filename, "" ) )
+        // try absolute path
+        // if drive letter given or path from root given
+        if( TryOpen( "", '\0', filename, "" ) ) {
             return( TRUE );
-        goto cant_open_file;
-    }
-    if( !is_lib ) {
-        if( !CompFlags.ignore_curr_dirs ) {  // try current directory
-            if( TryOpen( "", "", filename, "" ) ) {
-                return( TRUE );
+        }
+    } else {
+        if( !is_lib ) {
+            if( CompFlags.ignore_default_dirs ) {
+                // physical file name must be used, not logical
+                _splitpath2( SrcFile->src_flist->name, buff, &drive, &dir, NULL, NULL );
+                _makepath( try, drive, dir, filename, NULL );
+                if( TryOpen( "", '\0', try, "" ) ) {
+                    return( TRUE );
+                }
+            } else {
+                // try current directory
+                if( !GlobalCompFlags.ignore_current_dir && TryOpen( "", '\0', filename, "" ) ) {
+                    return( TRUE );
+                }
+                for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
+                    // physical file name must be used, not logical
+                    _splitpath2( curr->src_flist->name, buff, &drive, &dir, NULL, NULL );
+                    _makepath( try, drive, dir, filename, NULL );
+                    if( TryOpen( "", '\0', try, "" ) ) {
+                        return( TRUE );
+                    }
+                }
             }
         }
-        if( drive[ 0 ] == '\0' && !IS_PATH_SEP( dir[ 0 ] ) ) {
-            for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
-                // physical file name must be used, not logical
-                _splitpath2( curr->src_flist->name, buff, &drive, &dir, NULL, NULL );
-                _makepath( try, drive, dir, filename, NULL );
-                if( TryOpen( "", "", try, "" ) ) {
+        if( IncPathList != NULL ) {
+            p = IncPathList;
+            do {
+                i = 0;
+                while( *p == ' ' )
+                    ++p;
+                for( ;; ) {
+                    if( *p == INCLUDE_SEP || *p == ';' )
+                        break;
+                    if( *p == '\0' )
+                        break;
+                    if( i < sizeof( buff ) - 2 ) {
+                        buff[ i++ ] = *p;
+                    }
+                    ++p;
+                }
+                while( i != 0 ) {
+                    if( buff[ i - 1 ] != ' ' )
+                        break;
+                    --i;
+                }
+                buff[ i ] = '\0';
+                if( i > 0 && buff[i - 1] == PATH_SEP ) {
+                    buff[ i - 1 ] = '\0';
+                }
+                if( TryOpen( buff, PATH_SEP, filename, "" ) )
+                    return( TRUE );
+                if( *p == INCLUDE_SEP || *p == ';' ) {
+                    ++p;
+                }
+            } while( *p != '\0' );
+        }
+        if( !is_lib ) {
+            if( !CompFlags.ignore_default_dirs ) {
+                // try current ../h directory
+                if( TryOpen( H_PATH, PATH_SEP, filename, "" ) ) {
                     return( TRUE );
                 }
             }
         }
     }
-    if( IncPathList != NULL ) {
-        p = IncPathList;
-        do {
-            i = 0;
-            while( *p == ' ' )
-                ++p;
-            for( ;; ) {
-                if( *p == INCLUDE_SEP || *p == ';' )
-                    break;
-                if( *p == '\0' )
-                    break;
-                if( i < sizeof( buff ) - 2 ) {
-                    buff[ i++ ] = *p;
-                }
-                ++p;
-            }
-            while( i != 0 ) {
-                if( buff[ i - 1 ] != ' ' )
-                    break;
-                --i;
-            }
-#define SEP_LEN (sizeof( PATH_SEP ) - 1)
-            buff[ i ] = '\0';
-            if( i >= SEP_LEN && strcmp( &buff[ i - SEP_LEN ], PATH_SEP ) == 0 ) {
-                buff[ i - SEP_LEN ] = '\0';
-            }
-            if( TryOpen( buff, PATH_SEP, filename, "" ) )
-                return( 1 );
-            if( *p == INCLUDE_SEP || *p == ';' ) {
-                ++p;
-            }
-        } while( *p != '\0' );
-    }
-    if( !is_lib ) {
-        if( TryOpen( H_PATH, PATH_SEP, filename, "" ) ) {
-            return( TRUE );
-        }
-    }
-cant_open_file:
     save = CompFlags.cpp_output;
     if( CompFlags.cpp_output ) {                        /* 18-aug-91 */
         if( is_lib ) {
@@ -926,7 +940,7 @@ bool FreeSrcFP( void )
     return( ret );
 }
 
-static bool TryOpen( char *prefix, char *separator, const char *filename, char *suffix )
+static bool TryOpen( char *prefix, char separator, const char *filename, char *suffix )
 {
     int         i, j;
     FILE        *fp;
@@ -940,8 +954,9 @@ static bool TryOpen( char *prefix, char *separator, const char *filename, char *
     i = 0;
     while( (buf[ i ] = *prefix++) != '\0' )
         ++i;
-    while( (buf[ i ] = *separator++) != '\0' )
-        ++i;
+    if( separator != '\0' ) {
+        buf[i++] = separator;
+    }
     j = i;
     while( (buf[ i ] = *filename++) != '\0' )
         ++i;
@@ -1137,8 +1152,8 @@ void FreeIncFileList( void )
 
 RDIRPTR AddRDir( char *path )
 {
-    RDIRPTR     dirlist;
-    RDIRPTR     *lnk;
+    RDIRPTR   dirlist;
+    RDIRPTR  *lnk;
 
     for( lnk = &RDirNames; (dirlist = *lnk) != NULL; lnk = &dirlist->next ) {
         if( stricmp( path, dirlist->name ) == 0 ) {
