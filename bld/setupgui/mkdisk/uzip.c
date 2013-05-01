@@ -50,40 +50,38 @@ int add_files( struct zip *archive, const char *list_fname, char *dir )
     FILE                *f;
     char                srcname[FILENAME_MAX];
     int                 retval;
-    char                *curr_dir;
+    int                 len;
 
     if( (f = fopen( list_fname, "r" )) == NULL ) {
-        fprintf( stderr, "failed to open list '%s': %s\n",
-                list_fname, strerror( errno ) );
+        fprintf( stderr, "failed to open list '%s': %s\n", list_fname, strerror( errno ) );
         return( -1 );
     }
-    curr_dir = NULL;
-    if( dir != NULL ) {
-        curr_dir = getcwd( NULL, 0 );
-        chdir( dir );
-    }
+    len = strlen( dir );
     /* Loop over list, add individual files */
     retval = 0;
     while( fgets( srcname, sizeof( srcname ), f ) != NULL ) {
-        size_t  len;
+        size_t  len1;
+        int     i;
 
         /* Strip terminating newline */
-        len = strlen( srcname );
-        if( srcname[len - 1] == '\n' )
-            srcname[len - 1] = '\0';
-
+        len1 = strlen( srcname );
+        if( srcname[len1 - 1] == '\n' ) {
+            srcname[--len1] = '\0';
+        }
+#if !defined( __UNIX__ )
+        for( i = 0; i < len1; ++i ) {
+            if( srcname[i] == '/' ) {
+                srcname[i] = '\\';
+            }
+        }
+#endif
+        strcpy( dir + len, srcname );
         /* Add file to archive */
-        if( (zsrc = zip_source_file( archive, srcname, 0, 0 )) == NULL
-            || zip_add( archive, srcname, zsrc ) < 0) {
+        if( (zsrc = zip_source_file( archive, dir, 0, 0 )) == NULL || zip_add( archive, srcname, zsrc ) < 0) {
             zip_source_free( zsrc );
-            fprintf( stderr, "failed to add '%s' to archive: %s\n",
-                    srcname, zip_strerror( archive ) );
+            fprintf( stderr, "failed to add '%s' to archive: %s\n", srcname, zip_strerror( archive ) );
             retval = -1;
         }
-    }
-    if( curr_dir != NULL ) {
-        chdir( curr_dir );
-        free( curr_dir );
     }
     fclose( f );
     return( retval );
@@ -94,38 +92,37 @@ int main( int argc, char **argv )
     struct zip          *z;
     int                 zerr;
     char                zerrstr[MAX_ZERR_LENGTH], *zname;
+    char                dir[FILENAME_MAX];
 
     if( argc < 3 ) {
         printf( "Usage: uzip <archive> <file_list> [<files dir>]\n" );
         return( 2 );
     }
 
-    /* Because libzip keeps all the files in the list open, we'll need
-     * a humongous amount of file handles. Not sure if this is intentional
-     * or a design defect of the library.
-     */
-#if defined( __WATCOMC__ ) || defined( __NT__ )
-    _grow_handles( 4096 );
-#endif
-
     zname = argv[1];
 
     if( (z = zip_open( zname, ZIP_CREATE, &zerr )) == NULL ) {
         zip_error_to_str( zerrstr, sizeof( zerrstr ), zerr, errno );
-        fprintf( stderr, "failed to create archive '%s': %s\n",
-                 zname, zerrstr );
+        fprintf( stderr, "failed to create archive '%s': %s\n", zname, zerrstr );
         return( 1 );
     }
     /* Process list of source files */
     if( argc > 3 ) {
-        add_files( z, argv[2], argv[3] );
+        strcpy( dir, argv[3] );
     } else {
-        add_files( z, argv[2], NULL );
+        getcwd( dir, FILENAME_MAX );
     }
+    if( dir[0] != '\0' && ( dir[1] != ':' || dir[2] != '\0' ) ) {
+#if defined( __UNIX__ )
+        strcat( dir, "/" );
+#else
+        strcat( dir, "\\" );
+#endif
+    }
+    add_files( z, argv[2], dir );
 
     if( zip_close( z ) ) {
-        fprintf( stderr, "failed to write archive '%s': %s\n",
-                 zname, zip_strerror( z ) );
+        fprintf( stderr, "failed to write archive '%s': %s\n", zname, zip_strerror( z ) );
         return( 1 );
     }
     return( 0 );
