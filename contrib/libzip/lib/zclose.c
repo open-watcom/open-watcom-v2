@@ -249,12 +249,12 @@ add_data(struct zip *za, int idx, struct zip_dirent *de, FILE *ft)
     cb = za->entry[idx].source->f;
     ud = za->entry[idx].source->ud;
 
-    if (cb(ud, &st, sizeof(st), ZIP_SOURCE_STAT) < sizeof(st)) {
+    if (cb(ud, NULL, 0, ZIP_SOURCE_OPEN) < 0) {
 	ch_set_error(&za->error, cb, ud);
 	return -1;
     }
 
-    if (cb(ud, NULL, 0, ZIP_SOURCE_OPEN) < 0) {
+    if (cb(ud, &st, sizeof(st), ZIP_SOURCE_STAT) < sizeof(st)) {
 	ch_set_error(&za->error, cb, ud);
 	return -1;
     }

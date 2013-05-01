@@ -47,24 +47,17 @@ struct zip_source *
 zip_source_file(struct zip *za, const char *fname, off_t start, off_t len)
 {
     struct zip_source *zs;
-    FILE *fp;
 
     if (za == NULL)
-	return NULL;
+        return NULL;
 
     if (fname == NULL || start < 0 || len < -1) {
-	_zip_error_set(&za->error, ZIP_ER_INVAL, 0);
-	return NULL;
+        _zip_error_set(&za->error, ZIP_ER_INVAL, 0);
+        return NULL;
     }
 
-    if ((fp=fopen(fname, "rb")) == NULL) {
-	_zip_error_set(&za->error, ZIP_ER_OPEN, errno);
-	return NULL;
-    }
-
-    if ((zs=zip_source_filep(za, fp, start, len)) == NULL) {
-	fclose(fp);
-	return NULL;
+    if ((zs=zip_source_filep(za, fname, start, len)) == NULL) {
+        return NULL;
     }
 
     return zs;

@@ -40,6 +40,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "watcom.h"
+
 #include "zip.h"
 #include "zipint.h"
 

@@ -57,10 +57,10 @@ extern "C" {
 
 /* flags for zip_name_locate, zip_fopen, zip_stat, ... */
 
-#define ZIP_FL_NOCASE		1 /* ignore case on name lookup */
-#define ZIP_FL_NODIR		2 /* ignore directory component */
-#define ZIP_FL_COMPRESSED	4 /* read compressed data */
-#define ZIP_FL_UNCHANGED	8 /* use original data, ignoring changes */
+#define ZIP_FL_NOCASE           1 /* ignore case on name lookup */
+#define ZIP_FL_NODIR            2 /* ignore directory component */
+#define ZIP_FL_COMPRESSED       4 /* read compressed data */
+#define ZIP_FL_UNCHANGED        8 /* use original data, ignoring changes */
 
 /* libzip error codes */
 
@@ -92,47 +92,47 @@ extern "C" {
 
 /* type of system error value */
 
-#define ZIP_ET_NONE	      0  /* sys_err unused */
-#define ZIP_ET_SYS	      1  /* sys_err is errno */
-#define ZIP_ET_ZLIB	      2  /* sys_err is zlib error code */
+#define ZIP_ET_NONE           0  /* sys_err unused */
+#define ZIP_ET_SYS            1  /* sys_err is errno */
+#define ZIP_ET_ZLIB           2  /* sys_err is zlib error code */
 
 /* compression methods */
 
-#define ZIP_CM_DEFAULT	      -1  /* better of deflate or store */
-#define ZIP_CM_STORE	       0  /* stored (uncompressed) */
-#define ZIP_CM_SHRINK	       1  /* shrunk */
-#define ZIP_CM_REDUCE_1	       2  /* reduced with factor 1 */
-#define ZIP_CM_REDUCE_2	       3  /* reduced with factor 2 */
-#define ZIP_CM_REDUCE_3	       4  /* reduced with factor 3 */
-#define ZIP_CM_REDUCE_4	       5  /* reduced with factor 4 */
-#define ZIP_CM_IMPLODE	       6  /* imploded */
+#define ZIP_CM_DEFAULT        -1  /* better of deflate or store */
+#define ZIP_CM_STORE           0  /* stored (uncompressed) */
+#define ZIP_CM_SHRINK          1  /* shrunk */
+#define ZIP_CM_REDUCE_1        2  /* reduced with factor 1 */
+#define ZIP_CM_REDUCE_2        3  /* reduced with factor 2 */
+#define ZIP_CM_REDUCE_3        4  /* reduced with factor 3 */
+#define ZIP_CM_REDUCE_4        5  /* reduced with factor 4 */
+#define ZIP_CM_IMPLODE         6  /* imploded */
 /* 7 - Reserved for Tokenizing compression algorithm */
-#define ZIP_CM_DEFLATE	       8  /* deflated */
+#define ZIP_CM_DEFLATE         8  /* deflated */
 #define ZIP_CM_DEFLATE64       9  /* deflate64 */
 #define ZIP_CM_PKWARE_IMPLODE 10  /* PKWARE imploding */
 
 
 
 enum zip_source_cmd {
-    ZIP_SOURCE_OPEN,	/* prepare for reading */
-    ZIP_SOURCE_READ, 	/* read data */
-    ZIP_SOURCE_CLOSE,	/* reading is done */
-    ZIP_SOURCE_STAT,	/* get meta information */
-    ZIP_SOURCE_ERROR,	/* get error information */
-    ZIP_SOURCE_FREE	/* cleanup and free resources */
+    ZIP_SOURCE_OPEN,    /* prepare for reading */
+    ZIP_SOURCE_READ,    /* read data */
+    ZIP_SOURCE_CLOSE,   /* reading is done */
+    ZIP_SOURCE_STAT,    /* get meta information */
+    ZIP_SOURCE_ERROR,   /* get error information */
+    ZIP_SOURCE_FREE     /* cleanup and free resources */
 };
 
 typedef ssize_t (*zip_source_callback)(void *state, void *data,
-				       size_t len, enum zip_source_cmd cmd);
+                                       size_t len, enum zip_source_cmd cmd);
 
 struct zip_stat {
-    const char *name;			/* name of the file */
-    int index;				/* index within archive */
-    unsigned int crc;			/* crc of file data */
-    time_t mtime;			/* modification time */
-    off_t size;				/* size of file (uncompressed) */
-    off_t comp_size;			/* size of file (compressed) */
-    unsigned short comp_method;		/* compression method used */
+    const char *name;                   /* name of the file */
+    int index;                          /* index within archive */
+    unsigned int crc;                   /* crc of file data */
+    time_t mtime;                       /* modification time */
+    off_t size;                         /* size of file (uncompressed) */
+    off_t comp_size;                    /* size of file (compressed) */
+    unsigned short comp_method;         /* compression method used */
 };
 
 struct zip;
@@ -161,12 +161,12 @@ int zip_rename(struct zip *, int, const char *);
 int zip_replace(struct zip *, int, struct zip_source *);
 struct zip_source *zip_source_buffer(struct zip *, const void *, off_t, int);
 struct zip_source *zip_source_file(struct zip *, const char *, off_t, off_t);
-struct zip_source *zip_source_filep(struct zip *, FILE *, off_t, off_t);
+struct zip_source *zip_source_filep(struct zip *, const char *, off_t, off_t);
 void zip_source_free(struct zip_source *);
 struct zip_source *zip_source_function(struct zip *,
-				       zip_source_callback, void *);
+                                       zip_source_callback, void *);
 struct zip_source *zip_source_zip(struct zip *, struct zip *, int, int,
-				  off_t, off_t);
+                                  off_t, off_t);
 int zip_stat(struct zip *, const char *, int, struct zip_stat *);
 int zip_stat_index(struct zip *, int, int, struct zip_stat *);
 const char *zip_strerror(struct zip *);
