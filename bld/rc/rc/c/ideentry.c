@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <malloc.h>
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
 #include "global.h"
@@ -45,6 +45,9 @@
 #include "rcldstr.h"
 #include "errors.h"
 #include "banner.h"
+#if !defined( __WATCOMC__ ) && defined( __NT__ )
+#include <windows.h>
+#endif
 
 #ifdef _BANEXTRA
 #undef  _BANEXTRA
@@ -218,7 +221,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     bool        pass1;
     unsigned    i;
     int         rc;
-#if defined( IDE_PGM )
+#if defined( IDE_PGM ) || !defined( __WATCOMC__ ) && defined( __NT__ )
     char        ImageName[_MAX_PATH];
 #else
     char        *ImageName;
@@ -228,6 +231,8 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     RcMemInit();
 #if defined( IDE_PGM )
     _cmdname( ImageName );
+#elif !defined( __WATCOMC__ ) && defined( __NT__ )
+    GetModuleFileName( NULL, ImageName, sizeof( ImageName ) );
 #else
     ImageName = _LpDllName;
 #endif
