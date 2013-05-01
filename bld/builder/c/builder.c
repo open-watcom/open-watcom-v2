@@ -197,7 +197,7 @@ static void ProcessOptions( char *argv[] )
                 Usage();
                 break;
             }
-        } else if( strchr( argv[0], '=' ) != NULL ) {
+        } else if( !opt_end && strchr( argv[0], '=' ) != NULL ) {
             putenv( argv[0] );
         } else {
             sprintf( parm_buff, "%d",++ParmCount );
