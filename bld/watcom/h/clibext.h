@@ -64,6 +64,7 @@
 
 #define S_ISDIR(x) (((x)&_S_IFMT)==_S_IFDIR)
 #define S_ISREG(x) (((x)&_S_IFMT)==_S_IFREG)
+#define S_ISCHR(x) (((x)&_S_IFMT)==_S_IFCHR)
 #define _A_VOLID 0
 #define F_OK 0
 #define X_OK 1
