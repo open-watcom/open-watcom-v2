@@ -172,7 +172,7 @@ static void PushInclude( const char *name )
     new->ifdefskipping = 0;
     new->reset_abit = NULL;
     IncludeStk = new;
-    new->fp = fopen( name, "r" );
+    new->fp = fopen( name, "rb" );
     if( new->fp == NULL ) {
         Fatal( "Could not open '%s': %s\n", name, strerror( errno ) );
     }
@@ -300,6 +300,7 @@ static void SubstLine( const char *in, char *out )
         case '^':
             ++in;
             switch( *in ) {
+            case '\r':
             case '\n':
             case '\0':
                 break;
@@ -321,6 +322,7 @@ static void SubstLine( const char *in, char *out )
             ++in;
             out = SubstOne( &in, out );
             break;
+        case '\r':
         case '\n':
         case '\0':
             *out = '\0';
@@ -364,18 +366,22 @@ static bool ContainsWord( const char *str, const char *word )
     char    *s_copy;
     char    *p;
     bool    result = FALSE;
+    int     len;
 
-    s_copy = strdup( str );
-    p = FirstWord( s_copy );
-    do {
+    len = strlen( str ) + 1;
+    s_copy = Alloc( len + 1 ); // extra 1 byte is required for processing by First/NextWord
+    memcpy( s_copy, str, len );
+    for( p = FirstWord( s_copy ); p != NULL; p = NextWord( p ) ) {
         if( !strcmp( p, word ) ) {
             result = TRUE;
+            break;
         }
-        p = NextWord( p );
-    } while( p != NULL );
+    }
     free( s_copy );
     return( result );
 }
+
+#define DEFVAL(x)   ((x==NULL)?"":x)
 
 static void ProcessLine( const char *line )
 {
@@ -383,11 +389,21 @@ static void ProcessLine( const char *line )
     char    *line_copy;
     char    *type, *redist, *dir, *usr, *rel, *cond;
     char    *pack, *where, *desc, *old, *patch, *dstvar;
-    int     special = FALSE;
+    int     special;
 
-    type = DefType; redist = DefRedist; dir = DefDir; usr = DefUsr;
-    rel = DefRel; cond = DefCond; pack = DefPack; where = DefWhere;
-    desc = DefDesc; old = DefOld; patch = DefPatch; dstvar = DefDstvar;
+    special = FALSE;
+    type = DEFVAL( DefType );
+    redist = DEFVAL( DefRedist );
+    dir = DEFVAL( DefDir );
+    usr = DEFVAL( DefUsr );
+    rel = DEFVAL( DefRel );
+    cond = DEFVAL( DefCond );
+    pack = DEFVAL( DefPack );
+    where = DefWhere;
+    desc = DEFVAL( DefDesc );
+    old = DEFVAL( DefOld );
+    patch = DEFVAL( DefPatch );
+    dstvar = DEFVAL( DefDstvar );
 
     line_copy = strdup( line );
     p = SkipBlanks( line_copy );
@@ -432,9 +448,11 @@ static void ProcessLine( const char *line )
     } while( cmd != NULL );
     if( !special ) {
         /* Check if 'where' matches specified product */
-        if( !Product || !where || ContainsWord( where, Product ) ) {
-            Log( TRUE, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n",
-                type, redist, dir, old, usr, rel, where, dstvar, cond, desc );
+        if( Product == NULL || where == NULL || ContainsWord( where, Product ) ) {
+            if( where == NULL ) {
+                where = "";
+            }
+            Log( TRUE, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n", type, redist, dir, old, usr, rel, where, dstvar, cond, desc );
         }
     }
     free( line_copy );
