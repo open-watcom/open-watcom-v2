@@ -65,7 +65,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "clibext.h"
 #include "../h/regexp.h"
 
 
