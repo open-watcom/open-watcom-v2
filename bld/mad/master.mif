@@ -51,10 +51,10 @@ extra_c_flags_madimp = -zlf
 
 # lflags stuff
 ###############
-lflags_dll_dos_386  = sys pharlap rex disable 1023,1014
-lflags_dll_linux_386= sys pharlap rex disable 1023,1014
-lflags_dll_qnx_386  = sys pharlap rex disable 1023,1014
-lflags_dll_win_i86  = sys windows op rwr
+lflags_dll_dos_386   = sys pharlap rex disable 1023,1014
+lflags_dll_linux_386 = sys pharlap rex disable 1023,1014
+lflags_dll_qnx_386   = sys pharlap rex disable 1023,1014
+lflags_dll_win_i86   = sys windows op rwr
 
 extra_l_flags_dll = op map
 
