@@ -33,11 +33,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <setjmp.h>
-#include <unistd.h>
-
+#include "wio.h"
 #include "wdglb.h"
 #include "wdfunc.h"
 #include "banner.h"

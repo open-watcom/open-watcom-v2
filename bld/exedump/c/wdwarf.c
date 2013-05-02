@@ -32,9 +32,8 @@
 #include <setjmp.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
-
+#include "wio.h"
 #include "wdglb.h"
 #include "dumpwv.h"
 #include "wdfunc.h"

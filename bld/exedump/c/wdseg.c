@@ -32,8 +32,7 @@
 #include <stdio.h>
 #include <setjmp.h>
 #include <stdlib.h>
-#include <unistd.h>
-
+#include "wio.h"
 #include "wdglb.h"
 #include "wdfunc.h"
 

@@ -31,11 +31,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <setjmp.h>
 #include "walloca.h"
-
+#include "wio.h"
 #include "wdglb.h"
 #include "dumpwv.h"
 #include "wdfunc.h"
