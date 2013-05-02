@@ -1,4 +1,4 @@
-#pmake: build os_win host_x86 targ_ppc
+#pmake: build target_ppc os_win cpu_i86
 
 host_os  = win
 host_cpu = i86

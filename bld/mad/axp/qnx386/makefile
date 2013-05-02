@@ -1,4 +1,4 @@
-#pmake: os_qnx host_x86 targ_axp axp
+#pmake: nobuild target_axp axp os_qnx cpu_386
 
 host_os  = qnx
 host_cpu = 386

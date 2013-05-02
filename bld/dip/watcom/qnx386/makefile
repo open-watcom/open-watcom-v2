@@ -1,4 +1,4 @@
-#pmake: os_qnx watcom cpu_386
+#pmake: nobuild watcom os_qnx cpu_386
 
 host_os  = qnx
 host_cpu = 386

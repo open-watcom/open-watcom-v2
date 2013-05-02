@@ -1,4 +1,4 @@
-#pmake: build os_win host_x86 targ_axp axp
+#pmake: build target_axp axp os_win cpu_i86
 
 host_os  = win
 host_cpu = i86

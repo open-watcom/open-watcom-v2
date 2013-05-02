@@ -1,4 +1,4 @@
-#pmake: build os_win export cpu_i86
+#pmake: build export os_win cpu_i86
 
 host_os  = win
 host_cpu = i86

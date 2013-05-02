@@ -94,7 +94,7 @@ xname = mad$(target_cpu)$(ext_lib_shared)
 
 $(xname) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags_dll) $(objs) $(ldflags)
+        $(cl) $(clflags_dll) $(objs) $(ldflags_dll)
 !else
         $(linker) name $^@ $(lflags_dll) file {$(objs)}
 !endif

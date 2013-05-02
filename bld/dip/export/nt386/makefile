@@ -1,4 +1,4 @@
-#pmake: build os_nt export cpu_386
+#pmake: build export os_nt cpu_386
 
 host_os  = nt
 host_cpu = 386

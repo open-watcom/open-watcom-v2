@@ -41,6 +41,8 @@ set PROJNAME=hllcv
     <CCCMD> qnx386/hllcv.dip      <OWRELROOT>/qnx/watcom/wd/
     <CCCMD> qnx386/hllcv.sym      <OWRELROOT>/qnx/sym/
 
+    <CCCMD> ntx64/hllcv.dll       <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

@@ -44,6 +44,8 @@ set PROJNAME=mapsym
     <CCCMD> rdos386/mapsym.dll        <OWRELROOT>/rdos/
     <CCCMD> rdos386/mapsym.sym        <OWRELROOT>/rdos/
 
+    <CCCMD> ntx64/mapsym.dll          <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

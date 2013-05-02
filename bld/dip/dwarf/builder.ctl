@@ -44,6 +44,8 @@ set PROJNAME=dwarf
     <CCCMD> rdos386/dwarf.dll     <OWRELROOT>/rdos/
     <CCCMD> rdos386/dwarf.sym     <OWRELROOT>/rdos/
 
+    <CCCMD> ntx64/dwarf.dll       <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

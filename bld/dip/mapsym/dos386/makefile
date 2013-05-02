@@ -1,4 +1,4 @@
-#pmake: build os_dos mapsym cpu_386
+#pmake: build mapsym os_dos cpu_386
 
 host_os  = dos
 host_cpu = 386

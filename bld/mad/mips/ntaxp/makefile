@@ -1,4 +1,4 @@
-#pmake: os_nt host_axp cpu_axp targ_mips
+#pmake: nobuild target_mips os_nt cpu_axp
 
 host_os  = nt
 host_cpu = axp

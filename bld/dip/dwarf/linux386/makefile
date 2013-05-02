@@ -1,4 +1,4 @@
-#pmake: build os_linux dwarf cpu_386
+#pmake: build dwarf os_linux cpu_386
 
 host_os  = linux
 host_cpu = 386
