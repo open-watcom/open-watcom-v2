@@ -171,7 +171,7 @@ mode_clflags   += -\"op nored\"
 mode_clflags   += -"op nored"
 !endif
 !ifneq bootstrap 1
-#mode_cflags  += -x -xc
+mode_cflags  += -x -xx
 #mode_clflags += -yx -xc
 !endif
 
@@ -287,7 +287,7 @@ cppflags_dos    = -D__WATCOM_LFN__
 ##########################
 # C/C++ COMPILERS SETINGS
 ######
-cflags_all      =-w8 -we $(mode_cflags) -fo=$@ -x
+cflags_all      =-w8 -we $(mode_cflags) -fo=$@
 
 cflags_386      = $(model_switch_$(host_cpu))
 cflags_i86      = $(model_switch_$(host_cpu))
