@@ -879,9 +879,9 @@ static void PragCodeSeg( void )                       /* 22-oct-92 */
         PPCTL_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
         DefCodeSegment = seg;
-        #if _CPU == 8086 || _CPU == 386
-            CompFlags.multiple_code_segments = 1;
-        #endif
+#if _CPU == 8086 || _CPU == 386
+        CompFlags.multiple_code_segments = 1;
+#endif
     }
 }
 
@@ -985,7 +985,7 @@ static void PragReadOnlyDir( void )
 static void PragIncludeAlias( void )
 /**********************************/
 {
-    if( CurToken == T_LEFT_PAREN ) {
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPCTL_ENABLE_MACROS();
         NextToken();
         if( CurToken == T_STRING ) {
@@ -1157,39 +1157,34 @@ static void PragAlias( void )
     alias_list      **alias;
     alias_list      *new_alias;
 
-    if( CurToken != T_LEFT_PAREN ) 
-        return;
-
-    PPCTL_ENABLE_MACROS();
-    PPNextToken();
     alias_name = subst_name = NULL;
     alias_sym  = subst_sym  = NULL;
 
-    if( CurToken == T_ID ) {
-        alias_sym = SymLook( HashValue, Buffer );
-        if( alias_sym == 0 ) {
-            CErr2p( ERR_UNDECLARED_SYM, Buffer );
+    if( ExpectingToken( T_LEFT_PAREN ) ) {
+        PPCTL_ENABLE_MACROS();
+        PPNextToken();
+        if( CurToken == T_ID ) {
+            alias_sym = SymLook( HashValue, Buffer );
+            if( alias_sym == 0 ) {
+                CErr2p( ERR_UNDECLARED_SYM, Buffer );
+            }
+        } else if( CurToken == T_STRING ) {
+            alias_name = CStrSave( Buffer );
         }
-    } else if( CurToken == T_STRING ) {
-        alias_name = CStrSave( Buffer );
-    } else {
-        return;     /* error */
-    }
-    PPNextToken();
-    MustRecog( T_COMMA );
-    if( CurToken == T_ID ) {
-        subst_sym = SymLook( HashValue, Buffer );
-        if( subst_sym == 0 ) {
-            CErr2p( ERR_UNDECLARED_SYM, Buffer );
+        PPNextToken();
+        MustRecog( T_COMMA );
+        if( CurToken == T_ID ) {
+            subst_sym = SymLook( HashValue, Buffer );
+            if( subst_sym == 0 ) {
+                CErr2p( ERR_UNDECLARED_SYM, Buffer );
+            }
+        } else if( CurToken == T_STRING ) {
+            subst_name = CStrSave( Buffer );
         }
-    } else if( CurToken == T_STRING ) {
-        subst_name = CStrSave( Buffer );
-    } else {
-        return;     /* error */
+        PPNextToken();
+        PPCTL_DISABLE_MACROS();
+        MustRecog( T_RIGHT_PAREN );
     }
-    PPNextToken();
-    PPCTL_DISABLE_MACROS();
-    MustRecog( T_RIGHT_PAREN );
 
     /* Add a new alias record - if it's valid - to the list */
     if( ( alias_name != NULL || alias_sym != NULL ) && ( subst_name != NULL || subst_sym != NULL ) ) {

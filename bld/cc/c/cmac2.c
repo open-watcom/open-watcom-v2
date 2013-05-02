@@ -34,6 +34,8 @@
 #include <stddef.h>
 #include "cgmisc.h"
 
+extern bool PrintWhiteSpace;  //ppc printing   (from ccmain.c)
+
 static void    CSkip( void );
 static void    CSkipIf( void );
 static void    CDefine( void );
@@ -48,13 +50,9 @@ static void    CUndef( void );
 static void    CLine( void );
 static void    CError( void );
 static void    CIdent( void );
-static void    CUnknown( void );
 
-local void PPFlush2EOL( void );
 local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char *mac_name, source_loc *src_loc );
-local void IncLevel( int value );
 local int  FormalParm( struct macro_parm *formal_parms );
-local void ChkEOL( void );
 
 struct preproc {
     char  *directive;
@@ -101,6 +99,65 @@ struct  cpp_info {              /* C Pre-processor information */
 };
 
 
+static void PPFlush2EOL( void )
+{
+    while( CurToken != T_NULL && CurToken != T_EOF ) {
+        PPNextToken();
+    }
+}
+
+
+local void ChkEOL( void )
+{
+    if( CurToken != T_EOF ) {
+        ExpectingToken( T_NULL );
+    }
+}
+
+
+local void WantEOL( void )
+{
+    if( CompFlags.extensions_enabled ) {
+        if( CurToken != T_NULL && CurToken != T_EOF ) {
+            if( NestLevel == SkipLevel ) {
+                CWarn1( WARN_JUNK_FOLLOWS_DIRECTIVE, ERR_JUNK_FOLLOWS_DIRECTIVE );
+            }
+        }
+    } else {
+        ChkEOL();
+    }
+}
+
+
+local void IncLevel( int value )
+{
+    struct cpp_info *cpp;
+
+    cpp = (struct cpp_info *)CMemAlloc( sizeof( struct cpp_info ) );
+    cpp->prev_cpp = CppStack;
+    cpp->src_loc = TokenLoc;
+    cpp->flist = SrcFile->src_flist;
+    cpp->cpp_type = PRE_IF;
+    cpp->processing = 0;
+    CppStack = cpp;
+    if( NestLevel == SkipLevel ) {
+        if( value ) {
+            ++SkipLevel;
+            cpp->processing = 1;
+        }
+    }
+    ++NestLevel;
+}
+
+
+local void CUnknown( void )
+{
+    if( NestLevel == SkipLevel ) {
+        CErr2p( ERR_UNKNOWN_DIRECTIVE, Buffer );
+    }
+}
+
+
 static void PreProcStmt( void )
 {
     struct preproc      *pp;
@@ -126,13 +183,10 @@ static void PreProcStmt( void )
     }
 }
 
-extern bool PrintWhiteSpace;  //ppc printing   (from ccmain.c)
-
 TOKEN ChkControl( void )
 {
     int         lines_skipped;
     ppctl_t     old_ppctl;
-
 
     if( !CompFlags.doing_macro_expansion ) {
         if( CompFlags.cpp_output ) {
@@ -190,14 +244,6 @@ TOKEN ChkControl( void )
 }
 
 
-static void PPFlush2EOL( void )
-{
-    while( CurToken != T_NULL && CurToken != T_EOF ) {
-        PPNextToken();
-    }
-}
-
-
 local void CSkip( void )
 {
 }
@@ -206,14 +252,6 @@ local void CSkip( void )
 local void CSkipIf( void )
 {
     IncLevel( 0 );
-}
-
-
-local void CUnknown( void )
-{
-    if( NestLevel == SkipLevel ) {
-        CErr2p( ERR_UNKNOWN_DIRECTIVE, Buffer );
-    }
 }
 
 
@@ -624,41 +662,6 @@ local void CElif( void )
 }
 
 
-local void IncLevel( int value )
-{
-    struct cpp_info *cpp;
-
-    cpp = (struct cpp_info *)CMemAlloc( sizeof( struct cpp_info ) );
-    cpp->prev_cpp = CppStack;
-    cpp->src_loc = TokenLoc;
-    cpp->flist = SrcFile->src_flist;
-    cpp->cpp_type = PRE_IF;
-    cpp->processing = 0;
-    CppStack = cpp;
-    if( NestLevel == SkipLevel ) {
-        if( value ) {
-            ++SkipLevel;
-            cpp->processing = 1;
-        }
-    }
-    ++NestLevel;
-}
-
-
-local void WantEOL( void )
-{
-    if( CompFlags.extensions_enabled ) {
-        if( CurToken != T_NULL && CurToken != T_EOF ) {
-            if( NestLevel == SkipLevel ) {
-                CWarn1( WARN_JUNK_FOLLOWS_DIRECTIVE, ERR_JUNK_FOLLOWS_DIRECTIVE );
-            }
-        }
-    } else {
-        ChkEOL();
-    }
-}
-
-
 local void CElse( void )
 {
     if( ( NestLevel == 0 ) || ( CppStack->cpp_type == PRE_ELSE ) ) {
@@ -756,14 +759,6 @@ local void CUndef( void )
         MacroDel( Buffer );
         PPNextToken();
         ChkEOL();
-    }
-}
-
-
-local void ChkEOL( void )
-{
-    if( CurToken != T_EOF ) {
-        ExpectingToken( T_NULL );
     }
 }
 

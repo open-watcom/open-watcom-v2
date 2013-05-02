@@ -285,7 +285,7 @@ typedef struct comp_flags {
     unsigned ignore_fnf             : 1;
     unsigned disable_ialias         : 1;
     unsigned cpp_ignore_env         : 1;    // ignore include path env vars
-    unsigned ignore_default_dirs    : 1;
+    unsigned ignore_default_dirs    : 1;    // ignore all default dirs for file search (., ../h, ../c, ...)
 } COMP_FLAGS;
 
 #ifdef OPT_BR

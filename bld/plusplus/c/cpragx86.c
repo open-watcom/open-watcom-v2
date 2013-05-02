@@ -667,7 +667,7 @@ enum sym_type AsmQueryType( void *handle )
     }
     return( type );
 #else
-    id = id;
+    handle = handle;
     return( SYM_INT1 );
 #endif
 }

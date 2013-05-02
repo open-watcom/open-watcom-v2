@@ -325,7 +325,6 @@ void PragAux( void )
         unsigned uses_auto: 1;
     } have;
 
-//    PPCTL_ENABLE_MACROS();
     InitAuxInfo();
     if( GetAliasInfo() && CurToken == T_ID ) {
         SetCurrInfo( Buffer );
@@ -374,7 +373,6 @@ void PragAux( void )
         CopyAuxInfo();
         PragEnding();
     }
-//    PPCTL_DISABLE_MACROS();
 }
 
 
