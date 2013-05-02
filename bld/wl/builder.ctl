@@ -74,6 +74,9 @@ set PROJNAME=wlink
 
     <CCCMD> ntx64/wlink.exe                 <OWRELROOT>/binnt64/
     <CCCMD> ntx64/wlinkd.dll                <OWRELROOT>/binnt64/
+    <CCCMD> ms2wlink/ntx64/ms2wlink.exe     <OWRELROOT>/binnt64/
+    <CCCMD> fcenable/ntx64/fcenable.exe     <OWRELROOT>/binnt64/
+    <CCCMD> exe2bin/ntx64/exe2bin.exe       <OWRELROOT>/binnt64/
     <CCCMD> wlbinnt.lnk                     <OWRELROOT>/binnt64/wlink.lnk
     <CCCMD> linuxx64/wlink.exe              <OWRELROOT>/binl64/wlink
 

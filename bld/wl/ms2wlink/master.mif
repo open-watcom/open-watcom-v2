@@ -23,5 +23,8 @@ inc_dirs = -I"../h"
 extra_l_flags_os2 = op stack=8k
 
 ms2wlink.exe : $(objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(ldflags)
+!else
         $(linker) $(lflags) name $^@ op map file {$(objs)}
-
+!endif

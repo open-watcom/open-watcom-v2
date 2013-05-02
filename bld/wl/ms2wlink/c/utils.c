@@ -99,7 +99,7 @@ extern char *FileName( char *buff, int len, int etype, bool force )
     if( *namptr == '\\' || *namptr == '/' ) {
         namptr++;
     }
-    cnt = len - ( (int) namptr - (int) buff );
+    cnt = len - ( namptr - buff );
     namptr = buff + len;
     while( *namptr != '.' && --cnt != 0 ) {
         namptr--;
@@ -159,7 +159,7 @@ extern void AddNumOption( char *msg, unsigned value )
     char    buffer[ 7 ];
     char *  msg2;
 
-    utoa( value, buffer, 10 );
+    ultoa( value, buffer, 10 );
     msg2 = Msg3Splice( msg, "=", buffer );
     AddOption( msg2 );
     MemFree( msg2 );

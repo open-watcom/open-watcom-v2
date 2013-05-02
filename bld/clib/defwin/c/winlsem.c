@@ -48,7 +48,7 @@ void __FiniWinLinesSem( void )
 
 void _AccessWinLines( void )
 {
-    WaitForSingleObject( __WinLines_sem, -1 );
+    WaitForSingleObject( __WinLines_sem, INFINITE );
 }
 
 void _ReleaseWinLines( void )

@@ -42,6 +42,7 @@
 #include <sys/utime.h>
 #endif
 #include "wio.h"
+#include "watcom.h"
 #include "fcenable.h"
 #include "banner.h"
 

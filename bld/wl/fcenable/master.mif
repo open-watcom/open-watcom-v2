@@ -21,5 +21,8 @@ records.obj
 inc_dirs = -I"../h"
 
 fcenable.exe : $(objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(ldflags)
+!else
         $(linker) $(lflags) name $^@ op map file {$(objs)}
-
+!endif

@@ -36,10 +36,9 @@
 */
 
 #include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <stdio.h>      /* for SEEK_SET/SEEK_END */
 #include <string.h>
+#include "wio.h"
 #include "ms2wlink.h"
 
 static bool     DeleteMsg = FALSE;

@@ -403,7 +403,7 @@ static void loadProg( char *exe, char *cmdline )
     if( !rc ) {
         internalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
     }
-    rc = WaitForDebugEvent( &debugEvent, -1 );
+    rc = WaitForDebugEvent( &debugEvent, INFINITE );
     if( !rc || (debugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT) ||
                 (debugEvent.dwProcessId != pinfo.dwProcessId) ) {
         internalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
@@ -561,7 +561,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
 
     while( 1 ) {
         ContinueDebugEvent( taskPid, tid, continue_how );
-        rc = WaitForDebugEvent( &debugEvent, -1 );
+        rc = WaitForDebugEvent( &debugEvent, INFINITE );
         continue_how = DBG_CONTINUE;
         tid = debugEvent.dwThreadId;
         switch( debugEvent.dwDebugEventCode ) {

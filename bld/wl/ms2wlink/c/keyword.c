@@ -84,8 +84,6 @@ typedef struct switch_entry {
     char                minlen;
 } switch_entry;
 
-static  switch_entry        OptionsTable[];
-
 static void ProcAppLoader( void );
 static void ProcCode( void );
 static void ProcData( void );
@@ -258,6 +256,89 @@ static  parse_entry     DeviceKeyword[] = {
     NULL
 };
 
+static void ProcHelp( const char *arg );
+static void ProcAlignment( const char *arg );
+static void ProcBatch( const char *arg );
+static void ProcCodeview( const char *arg );
+static void ProcCParMaxAlloc( const char *arg );
+static void ProcDosseg( const char *arg );
+static void ProcDSAllocate( const char *arg );
+static void ProcDynamic( const char *arg );
+static void ProcExePack( const char *arg );
+static void ProcFarCallTrans( const char *arg );
+static void ProcHigh( const char *arg );
+static void ProcIncremental( const char *arg );
+static void ProcInformation( const char *arg );
+static void ProcLineNumbers( const char *arg );
+static void ProcMap( const char *arg );
+static void ProcNoDefLibSearch( const char *arg );
+static void ProcNoExtDictSearch( const char *arg );
+static void ProcNoFarCallTrans( const char *arg );
+static void ProcNoGroupAssoc( const char *arg );
+static void ProcNoIgnoreCase( const char *arg );
+static void ProcNoLogo( const char *arg );
+static void ProcNoNullsDosseg( const char *arg );
+static void ProcNoPackCode( const char *arg );
+static void ProcNoPackFunctions( const char *arg );
+static void ProcOldOverlay( const char *arg );
+static void ProcOnError( const char *arg );
+static void ProcOverlayInterrupt( const char *arg );
+static void ProcPackCode( const char *arg );
+static void ProcPackData( const char *arg );
+static void ProcPadCode( const char *arg );
+static void ProcPadData( const char *arg );
+static void ProcPause( const char *arg );
+static void ProcPMType( const char *arg );
+static void ProcQuickLibrary( const char *arg );
+static void ProcSegments( const char *arg );
+static void ProcStack( const char *arg );
+static void ProcTiny( const char *arg );
+static void ProcWarnFixup( const char *arg );
+
+
+static  switch_entry        OptionsTable[] = {
+/*  option name               processing routine    shortest match */
+    "?",                        ProcHelp,               1,
+    "alignment",                ProcAlignment,          1,
+    "batch",                    ProcBatch,              1,
+    "codeview",                 ProcCodeview,           2,
+    "cparmaxalloc",             ProcCParMaxAlloc,       2,
+    "dosseg",                   ProcDosseg,             4,
+    "dsallocate",               ProcDSAllocate,         2,
+    "dynamic",                  ProcDynamic,            2,
+    "exepack",                  ProcExePack,            1,
+    "farcalltranslation",       ProcFarCallTrans,       1,
+    "help",                     ProcHelp,               2,
+    "high",                     ProcHigh,               2,
+    "incremental",              ProcIncremental,        3,
+    "information",              ProcInformation,        1,
+    "linenumbers",              ProcLineNumbers,        2,
+    "map",                      ProcMap,                1,
+    "nodefaultlibrarysearch",   ProcNoDefLibSearch,     3,
+    "noextdictionary",          ProcNoExtDictSearch,    3,
+    "nofarcalltranslation",     ProcNoFarCallTrans,     3,
+    "nogroupassociation",       ProcNoGroupAssoc,       3,
+    "noignorecase",             ProcNoIgnoreCase,       3,
+    "nologo",                   ProcNoLogo,             3,
+    "nonullsdosseg",            ProcNoNullsDosseg,      3,
+    "nopackcode",               ProcNoPackCode,         7,
+    "nopackfunctions",          ProcNoPackFunctions,    7,
+    "oldoverlay",               ProcOldOverlay,         2,
+    "onerror",                  ProcOnError,            2,
+    "overlayinterrupt",         ProcOverlayInterrupt,   2,
+    "packcode",                 ProcPackCode,           5,
+    "packdata",                 ProcPackData,           5,
+    "padcode",                  ProcPadCode,            4,
+    "paddata",                  ProcPadData,            4,
+    "pause",                    ProcPause,              3,
+    "pmtype",                   ProcPMType,             2,
+    "quicklibrary",             ProcQuickLibrary,       1,
+    "segments",                 ProcSegments,           2,
+    "stack",                    ProcStack,              2,
+    "tiny",                     ProcTiny,               1,
+    "warnfixup",                ProcWarnFixup,          1,
+    NULL
+};
 
 static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
 /***********************************************************************/
@@ -726,7 +807,7 @@ static void GetExport( void )
     currloc += namelen;
     if( value <= (64*1024UL) ) {   // if an ordinal was specified....
         *currloc++ = '.';
-        utoa( value, currloc, 10 );
+        ultoa( value, currloc, 10 );
         while( *currloc != '\0' ) {    // find end of string.
             currloc++;
         }
@@ -743,7 +824,7 @@ static void GetExport( void )
     }
     if( iopl <= 63 ) {
         *currloc++ = ' ';
-        utoa( iopl * 2, currloc, 10 ); // convert iopl value to a byte value
+        ultoa( iopl * 2, currloc, 10 ); // convert iopl value to a byte value
     } else {
         *currloc = '\0';
     }
@@ -850,7 +931,7 @@ static void GetImport( void )
     currloc += firstlen;
     if( value < (64*1024UL) ) {
         *currloc++ = '.';
-        utoa( value, currloc, 10 );
+        ultoa( value, currloc, 10 );
     } else {
         if( second != NULL ) {
             *currloc++ = '.';
@@ -1141,12 +1222,14 @@ static void ProcBatch( const char *arg )
      * object file, run file, etc. prompts. For ms2wlink, it is effectively
      * always true.
      */
+    arg=arg;
     NotNecessary( "batch" );
 }
 
 static void ProcCodeview( const char *arg )
 /*****************************************/
 {
+    arg=arg;
     DebugInfo = TRUE;
 }
 
@@ -1160,12 +1243,14 @@ static void ProcCParMaxAlloc( const char *arg )
 static void ProcDosseg( const char *arg )
 /***************************************/
 {
+    arg=arg;
     AddOption( "dosseg" );
 }
 
 static void ProcDSAllocate( const char *arg )
 /*******************************************/
 {
+    arg=arg;
     NotSupported( "dsallocate" );
 }
 
@@ -1179,12 +1264,14 @@ static void ProcDynamic( const char *arg )
 static void ProcExePack( const char *arg )
 /****************************************/
 {
+    arg=arg;
     NotSupported( "exepack" );
 }
 
 static void ProcFarCallTrans( const char *arg )
 /*********************************************/
 {
+    arg=arg;
     Warning( "far call translation happens automatically for WATCOM .obj files", OPTION_SLOT );
     Warning( "use FCENABLE for far call translation on non-WATCOM .obj files", OPTION_SLOT );
 }
@@ -1222,6 +1309,7 @@ static void WriteOptions( switch_entry *entry )
 static void ProcHelp( const char *arg )
 /*************************************/
 {
+    arg=arg;
     WriteHelp();
     WriteOptions( OptionsTable );
     Suicide();
@@ -1230,30 +1318,35 @@ static void ProcHelp( const char *arg )
 static void ProcHigh( const char *arg )
 /*************************************/
 {
+    arg=arg;
     NotSupported( "high" );
 }
 
 static void ProcIncremental( const char *arg )
 /********************************************/
 {
+    arg=arg;
     NotSupported( "incremental" );
 }
 
 static void ProcInformation( const char *arg )
 /********************************************/
 {
+    arg=arg;
     NotNecessary( "information" );
 }
 
 static void ProcLineNumbers( const char *arg )
 /********************************************/
 {
+    arg=arg;
     NotSupported( "linenumbers" );
 }
 
 static void ProcMap( const char *arg )
 /************************************/
 {
+    arg=arg;
     MapOption = TRUE;
     /* Argument is ignored. */
 }
@@ -1271,60 +1364,70 @@ static void ProcNoDefLibSearch( const char *arg )
 static void ProcNoExtDictSearch( const char *arg )
 /************************************************/
 {
+    arg=arg;
     NotNecessary( "noextdictionary" );
 }
 
 static void ProcNoFarCallTrans( const char *arg )
 /***********************************************/
 {
+    arg=arg;
     NotNecessary( "nofarcalltranslation" );
 }
 
 static void ProcNoGroupAssoc( const char *arg )
 /*********************************************/
 {
+    arg=arg;
     NotSupported( "nogroupassociation" );
 }
 
 static void ProcNoIgnoreCase( const char *arg )
 /*********************************************/
 {
+    arg=arg;
     AddOption( "caseexact" );
 }
 
 static void ProcNoLogo( const char *arg )
 /***************************************/
 {
+    arg=arg;
     AddOption( "quiet" );
 }
 
 static void ProcNoNullsDosseg( const char *arg )
 /**********************************************/
 {
+    arg=arg;
     NotSupported( "nonullsdosseg" );
 }
 
 static void ProcNoPackCode( const char *arg )
 /*******************************************/
 {
+    arg=arg;
     AddNumOption( "packcode", 0 );    // option packcode=0 doesn't pack code.
 }
 
 static void ProcNoPackFunctions( const char *arg )
 /************************************************/
 {
+    arg=arg;
     NotNecessary( "nopackfunctions" );
 }
 
 static void ProcOldOverlay( const char *arg )
 /*******************************************/
 {
+    arg=arg;
     AddOption( "standard" );
 }
 
 static void ProcOnError( const char *arg )
 /****************************************/
 {
+    arg=arg;
     Warning( "undefsok behaviour slightly different than onerror", OPTION_SLOT );
     AddOption( "undefsok" );
 }
@@ -1371,6 +1474,7 @@ static void ProcPadData( const char *arg )
 static void ProcPause( const char *arg )
 /**************************************/
 {
+    arg=arg;
     NotSupported( "pause" );
 }
 
@@ -1428,64 +1532,23 @@ static void ProcStack( const char *arg )
 static void ProcQuickLibrary( const char *arg )
 /*********************************************/
 {
+    arg=arg;
     NotSupported( "quicklibrary" );
 }
 
 static void ProcTiny( const char *arg )
 /*************************************/
 {
+    arg=arg;
     FmtType = FMT_COM;
 }
 
 static void ProcWarnFixup( const char *arg )
 /******************************************/
 {
+    arg=arg;
     NotSupported( "warnfixup" );
 }
-
-static  switch_entry        OptionsTable[] = {
-/*  option name               processing routine    shortest match */
-    "?",                        ProcHelp,               1,
-    "alignment",                ProcAlignment,          1,
-    "batch",                    ProcBatch,              1,
-    "codeview",                 ProcCodeview,           2,
-    "cparmaxalloc",             ProcCParMaxAlloc,       2,
-    "dosseg",                   ProcDosseg,             4,
-    "dsallocate",               ProcDSAllocate,         2,
-    "dynamic",                  ProcDynamic,            2,
-    "exepack",                  ProcExePack,            1,
-    "farcalltranslation",       ProcFarCallTrans,       1,
-    "help",                     ProcHelp,               2,
-    "high",                     ProcHigh,               2,
-    "incremental",              ProcIncremental,        3,
-    "information",              ProcInformation,        1,
-    "linenumbers",              ProcLineNumbers,        2,
-    "map",                      ProcMap,                1,
-    "nodefaultlibrarysearch",   ProcNoDefLibSearch,     3,
-    "noextdictionary",          ProcNoExtDictSearch,    3,
-    "nofarcalltranslation",     ProcNoFarCallTrans,     3,
-    "nogroupassociation",       ProcNoGroupAssoc,       3,
-    "noignorecase",             ProcNoIgnoreCase,       3,
-    "nologo",                   ProcNoLogo,             3,
-    "nonullsdosseg",            ProcNoNullsDosseg,      3,
-    "nopackcode",               ProcNoPackCode,         7,
-    "nopackfunctions",          ProcNoPackFunctions,    7,
-    "oldoverlay",               ProcOldOverlay,         2,
-    "onerror",                  ProcOnError,            2,
-    "overlayinterrupt",         ProcOverlayInterrupt,   2,
-    "packcode",                 ProcPackCode,           5,
-    "packdata",                 ProcPackData,           5,
-    "padcode",                  ProcPadCode,            4,
-    "paddata",                  ProcPadData,            4,
-    "pause",                    ProcPause,              3,
-    "pmtype",                   ProcPMType,             2,
-    "quicklibrary",             ProcQuickLibrary,       1,
-    "segments",                 ProcSegments,           2,
-    "stack",                    ProcStack,              2,
-    "tiny",                     ProcTiny,               1,
-    "warnfixup",                ProcWarnFixup,          1,
-    NULL
-};
 
 extern void ProcessOption( const char *opt )
 /******************************************/

@@ -334,7 +334,7 @@ void intern waitforevent( void )
                 break;
             }
         }
-        WaitForSingleObject( InputHandle, -1 );
+        WaitForSingleObject( InputHandle, INFINITE );
     }
 
 } /* waitforevent */

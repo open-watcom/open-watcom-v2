@@ -100,7 +100,7 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
             }
         } else {
             // this is WIN32 or Windows95
-            if( WaitForSingleObject( pinfo.hProcess, -1 ) == 0 ) {
+            if( WaitForSingleObject( pinfo.hProcess, INFINITE ) == 0 ) {
                 GetExitCodeProcess( pinfo.hProcess, &rc );
             } else {
                 rc = __set_errno_nt();

@@ -33,6 +33,7 @@
 /*
   Mem : memory management routines for ms2wlink
 */
+#include <stdlib.h>
 #include <malloc.h>
 #include "ms2wlink.h"
 
