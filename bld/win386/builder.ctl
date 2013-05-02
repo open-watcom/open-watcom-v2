@@ -14,20 +14,21 @@ set PROJNAME=win386
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> ext/win386.ext              <OWRELROOT>/binw/win386.ext
-    <CCCMD> dll/w386dll.ext             <OWRELROOT>/binw/w386dll.ext
-    <CCCMD> conv/win386/win386.lib      <OWRELROOT>/lib386/win/win386.lib
-    <CCCMD> vxd/wdebug.386              <OWRELROOT>/binw/wdebug.386
-    <CCCMD> vxd/wemu387.386             <OWRELROOT>/binw/wemu387.386
+    <CCCMD> ext/win386.ext              <OWRELROOT>/binw/
+    <CCCMD> dll/w386dll.ext             <OWRELROOT>/binw/
+    <CCCMD> conv/win386/win386.lib      <OWRELROOT>/lib386/win/
+    <CCCMD> vxd/wdebug.386              <OWRELROOT>/binw/
+    <CCCMD> vxd/wemu387.386             <OWRELROOT>/binw/
 
-    <CCCMD> wbind/dosi86/wbind.exe      <OWRELROOT>/binw/wbind.exe
+    <CCCMD> wbind/dosi86/wbind.exe      <OWRELROOT>/binw/
 
-    <CCCMD> wbind/os2i86/wbind.exe      <OWRELROOT>/binp/wbind.exe
+    <CCCMD> wbind/os2i86/wbind.exe      <OWRELROOT>/binp/
 
-    <CCCMD> wbind/nt386/wbind.exe       <OWRELROOT>/binnt/wbind.exe
+    <CCCMD> wbind/nt386/wbind.exe       <OWRELROOT>/binnt/
 
     <CCCMD> wbind/linux386/wbind.exe    <OWRELROOT>/binl/wbind
 
+    <CCCMD> wbind/ntx64/wbind.exe       <OWRELROOT>/binnt64/
 
 [ BLOCK <1> clean ]
 #==================
