@@ -42,7 +42,7 @@
 #include "madcli.h"
 #include "xfloat.h"
 
-#if defined( __386__ ) || defined( __I86__ ) || defined( __ALPHA__ ) || defined( __PPC__ ) || defined( __MIPS__ )
+#if defined( _M_IX86 ) || defined( _M_X64 ) || defined( __ALPHA__ ) || defined( __PPC__ ) || defined( __MIPS__ )
    #define MNR_HOST_SIGNED      MNR_TWOS_COMP
    #define FLOAT_IEEE
 #else

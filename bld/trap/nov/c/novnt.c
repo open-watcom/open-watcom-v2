@@ -33,12 +33,11 @@
 #include <stddef.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
 #include <winsock.h>
 #include <wsipx.h>
 #include <svcguid.h>
 #include <nspapi.h>
-
+#include "wio.h"
 #include "watcom.h"
 #include "ipxstuff.h"
 #include "packet.h"
@@ -46,7 +45,7 @@
 #include "trptypes.h"
 #include "bool.h"
 
-#ifdef __NT__
+#if defined( __WATCOMC__ ) && defined( __NT__ )
 #pragma library("wsock32")
 #endif
 
@@ -62,7 +61,7 @@ static struct sockaddr_ipx      PartnerAddr;
 static char                     ServerName[128];
 
 /* The _SWAPINT is because NT swaps the bytes on us again */
-#define DBG_SAP_ID      SVCID_NETWARE( _SWAPINT( DBG_SERVER_TYPE ) );
+#define DBG_SAP_ID      SVCID_NETWARE( _SWAPINT( DBG_SERVER_TYPE ) )
 
 bool Terminate( void )
 {

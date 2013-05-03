@@ -30,9 +30,7 @@
 
 
 #include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
-
+#include "wio.h"
 #include "common.h"
 #if defined( __WINDOWS__ ) || defined( __NT__ )
 #include <windows.h>

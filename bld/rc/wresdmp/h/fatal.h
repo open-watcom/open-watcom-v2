@@ -33,7 +33,10 @@
 #ifndef FATAL_INCLUDED
 #define FATAL_INCLUDED
 
+#ifdef __WATCOMC__
 #pragma aux FatalError aborts;
+#endif
+
 extern void FatalError( char * msg );
 
 #endif

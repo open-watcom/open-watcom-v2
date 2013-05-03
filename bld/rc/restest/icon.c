@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <windows.h>
+#include "wi163264.h"
 #include "restest.h"
 #include "resname.h"
 
@@ -69,17 +70,9 @@ void DisplayIcon( HWND hwnd )
         Error( "icon", buf );
         return;
     }
-#ifdef __NT__
-    oldicon = (HICON)SetClassLong( hwnd, GCL_HICON, (LONG)newicon );
-#else
-    oldicon = (HICON)SetClassWord( hwnd, GCW_HICON, (WORD)newicon );
-#endif
+    oldicon = SET_HICON( hwnd, newicon );
     ShowWindow( hwnd, SW_MINIMIZE );
     MessageBox( NULL, "The Icon is displayed", "ICON", MB_OK );
     ShowWindow( hwnd, SW_SHOWNORMAL );
-#ifdef __NT__
-    SetClassLong( hwnd, GCL_HICON, (DWORD)oldicon );
-#else
-    SetClassWord( hwnd, GCW_HICON, (WORD)oldicon );
-#endif
+    SET_HICON( hwnd, oldicon );
 }

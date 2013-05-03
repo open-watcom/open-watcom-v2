@@ -30,18 +30,16 @@
 ****************************************************************************/
 
 
+#include <limits.h>
+#include <string.h>
+#include <stddef.h>
+#include <stdio.h>
+#include "wio.h"
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "dbgtoggl.h"
 #include "errno.h"
-#include <limits.h>
-#include <string.h>
-#include <stddef.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
 #include "trpfile.h"
 
 extern char *Format(char *,char *,... );

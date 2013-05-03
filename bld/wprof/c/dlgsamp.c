@@ -29,9 +29,7 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <sys/stat.h>
-
+#include "wio.h"
 #include "common.h"
 #include "aui.h"
 #include "guidlg.h"

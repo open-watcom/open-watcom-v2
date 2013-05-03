@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "_srcmgt.h"
 #include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbgtoggl.h"
@@ -40,9 +41,9 @@
 #include "dbgwind.h"
 #include "dbgadget.h"
 #include "dbghook.h"
-#include "dbgio.h"
 #include "dbgbreak.h"
 #include "dui.h"
+#include "srcmgt.h"
 
 extern void             *CmdHistory;
 extern void             *SrchHistory;
@@ -83,8 +84,6 @@ extern void             SetBrkMenuItems( void );
 extern void             SetIOMenuItems( void );
 extern void             DoInput( void );
 extern void             *OpenSrcFile(cue_handle *);
-extern int              FReadLine( void *, int, int, char *, int );
-extern void             FDoneSource( void * );
 extern bool             GUIIsDBCS( void );
 extern int              EnvLkup( char *src, char *dst, int );
 extern void             PopErrBox( char *buff );

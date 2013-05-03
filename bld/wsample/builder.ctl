@@ -25,6 +25,8 @@ set PROJNAME=wsample
     <CCCMD> ntaxp/wsmpaxp.exe       <OWRELROOT>/axpnt/wsample.exe
     <CCCMD> nlm/wsample.nlm         <OWRELROOT>/nlm/
 
+    <CCCMD> ntx64/wsmpnt.exe        <OWRELROOT>/binnt64/wsample.exe
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

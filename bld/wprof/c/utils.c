@@ -30,23 +30,21 @@
 
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <ctype.h>
-#include <fcntl.h>
-#include <sys/stat.h>
+#include "wio.h"
 #include "common.h"
-
 #if defined( __WINDOWS__ ) || defined( __NT__ )
 #include <windows.h>
 #endif
 #if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __NT__ )
+#if defined( __WATCOMC__ )
 #   include "tinyio.h"
+#endif
 #elif defined( __OS2__ )
 #   define INCL_DOS
 #   include "os2.h"
 #elif defined( __UNIX__ )
-#   include <unistd.h>
 #   if defined( __WATCOMC__ )
 #       include <process.h>
 #   endif

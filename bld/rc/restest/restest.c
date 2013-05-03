@@ -50,7 +50,7 @@ static BOOL FirstInstInit( void )
 
     /* fixed window */
     wc.style = 0L;
-    wc.lpfnWndProc = (LPVOID) MainWndProc;
+    wc.lpfnWndProc = MainWndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 4;
     wc.hInstance = Instance;

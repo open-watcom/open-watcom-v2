@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <fcntl.h>
-
-extern void *ProfAlloc(size_t size);
-extern void ProfFree(void *ptr);
+#include <malloc.h>
+#include "wio.h"
 
 #define SMTabIntervalGet()              8
 
@@ -46,7 +43,7 @@ extern void ProfFree(void *ptr);
 #define sm_cue_file_id                  int
 
 #define SM_NO_MOD                       ((sm_mod_handle)-1)
-#define SM_BUF_SIZE                     512
+#define SM_BUF_SIZE                     512UL
 
 #define SMSeekStart( fp )               lseek( fp, 0L, SEEK_CUR )
 #define SMSeekOrg( fp, offset )         lseek( fp, offset, SEEK_SET )
@@ -59,3 +56,7 @@ extern void ProfFree(void *ptr);
 #define SMReadStream( fp, buff, len )   read( fp, buff, len )
 
 #define SMFileRemote( fp )              0
+
+
+extern void *ProfAlloc(size_t size);
+extern void ProfFree(void *ptr);

@@ -29,6 +29,11 @@
 ****************************************************************************/
 
 
+#include "_srcmgt.h"
+#include <string.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <process.h>
 #define INCL_DOS
 #include <os2.h>
 #include "dbgdefn.h"
@@ -42,11 +47,8 @@
 #include "dui.h"
 #include "dbgvar.h"
 #include "dbgstk.h"
+#include "srcmgt.h"
 
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <process.h>
 
 extern void             FlushEOC( void );
 extern char             *DupStr( char * );

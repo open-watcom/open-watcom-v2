@@ -31,12 +31,10 @@
 
 #include <string.h>
 #include <stddef.h>
-#include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <limits.h>
-
+#include "wio.h"
 #define MD_x86
 #define MD_axp
 #include "madcli.h"

@@ -34,14 +34,14 @@
 #include "restest.h"
 #include "resname.h"
 
-#define BITMAP_WND_CLASS                "BitmapWindowClass"
+#define BITMAP_WND_CLASS    "BitmapWindowClass"
+
 static char             bitmapName[256];
 static HDC              memDc;
 static HBITMAP          oldBm;
 static BITMAP           bmInfo;
 
-BOOL __export FAR PASCAL BitmapWndProc( HWND hwnd, UINT msg, UINT wparam,
-                                    LONG lparam )
+LRESULT CALLBACK BitmapWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HBITMAP     new;
     PAINTSTRUCT paintinfo;
@@ -69,7 +69,7 @@ BOOL RegisterBitmapClass( void ) {
 
     /* fixed window */
     wc.style = 0L;
-    wc.lpfnWndProc = (LPVOID) BitmapWndProc;
+    wc.lpfnWndProc = BitmapWndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 4;
     wc.hInstance = Instance;

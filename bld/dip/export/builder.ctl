@@ -41,6 +41,8 @@ set PROJNAME=export
     <CCCMD> qnx386/export.dip     <OWRELROOT>/qnx/watcom/wd/
     <CCCMD> qnx386/export.sym     <OWRELROOT>/qnx/sym/
 
+    <CCCMD> ntx64/export.dll      <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

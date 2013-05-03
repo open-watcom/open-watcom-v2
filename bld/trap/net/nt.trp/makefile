@@ -9,6 +9,4 @@ cpu = x86
 which = TRAP
 remote_link = 1
 
-reg_dll = 1
-
 !include $(trap_dir)/master.mif

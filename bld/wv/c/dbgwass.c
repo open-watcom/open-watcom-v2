@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
+#include "_srcmgt.h"
 #include <string.h>
 #include "dbgdefn.h"
 #include "dbgreg.h"
-#include "dbgio.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
 #include "dbginfo.h"
@@ -43,6 +43,7 @@
 #include "dbgitem.h"
 #include "dbgbreak.h"
 #include "mad.h"
+#include "srcmgt.h"
 
 extern cue_file_id      CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
@@ -83,8 +84,6 @@ extern char             *AddrToString( address *, mad_address_format, char *, un
 extern void             ReportMADFailure( mad_status );
 
 extern void             *OpenSrcFile(cue_handle * );
-extern int              FReadLine(void   *,int ,int ,char *,int );
-extern void             FDoneSource(void         *);
 extern char             *Format(char *,char *,... );
 extern void             StepIntoFunction( char * );
 extern void             BreakOnSelected( char *item );

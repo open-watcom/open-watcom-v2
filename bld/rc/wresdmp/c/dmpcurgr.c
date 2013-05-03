@@ -50,9 +50,7 @@ static void PrintCurDirEntry( CurDirEntry * entry )
     printf( "\tLength: %ld   Resource Name: %d\n", entry->Length, entry->CurID );
 }
 
-#pragma off (unreferenced)
 extern int DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID handle )
-#pragma on (unreferenced)
 /*****************************************************************************/
 {
     IconCurDirHeader    head;

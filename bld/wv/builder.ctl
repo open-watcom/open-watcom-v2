@@ -52,6 +52,9 @@ set PROJNAME=wd
     <CCCMD> qnx/qnx386/wv.qnx       <OWRELROOT>/qnx/binq/wd
     <CCCMD> qnx/qnx386/wv.sym       <OWRELROOT>/qnx/sym/wd.sym
 
+    <CCCMD> win/ntx64/wv.exe        <OWRELROOT>/binnt64/wd.exe
+    <CCCMD> win/ntx64.gui/wv.exe    <OWRELROOT>/binnt64/wdw.exe
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

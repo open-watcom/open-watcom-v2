@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "_srcmgt.h"
 #include "dbgdefn.h"
 #include "dbgtoken.h"
 #include "dbgreg.h"
@@ -42,6 +43,7 @@
 #include "dbgmem.h"
 #include "trpcore.h"
 #include "mad.h"
+#include "srcmgt.h"
 
 
 enum {
@@ -103,7 +105,6 @@ extern system_config    SysConfig;
 extern address          NilAddr;
 
 
-extern void             FDoneSource( void * );
 extern void             *OpenSrcFile( cue_handle *ch );
 extern cue_file_id      CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );

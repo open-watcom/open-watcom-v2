@@ -29,41 +29,14 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-
-#define SMTabIntervalGet()              8
-
-#define _SMAlloc( pointer, size )       (pointer) = malloc( size )
-#define _SMFree( pointer )              free( pointer )
-
-#define sm_file_handle                  int
-#define sm_mod_handle                   int
-#define sm_cue_file_id                  int
-
-#define SM_NO_MOD                       ((sm_mod_handle)-1)
-#define SM_BUF_SIZE                     512
-
-#define SMSeekStart( fp )               lseek( fp, 0L, SEEK_CUR )
-#define SMSeekOrg( fp, offset )         lseek( fp, offset, SEEK_SET )
-#define SMSeekEnd( fp )                 lseek( fp, 0L, SEEK_END );
-
-#define SMOpenRead( name )              open( name, O_RDONLY|O_BINARY )
-#define SMNilHandle( fp)                ( fp == -1 )
-#define SMClose( fp )                   close( fp )
-
-#define SMReadStream( fp, buff, len )   read( fp, buff, len )
-
-#define SMFileRemote( fp )              0
-
 struct browser;
-extern struct browser *FOpenSource( char *name, sm_mod_handle mod, sm_cue_file_id id );
-extern void FDoneSource( struct browser * );
-extern unsigned long FSize( struct browser * );
-extern unsigned long FLastOffset( struct browser * );
-extern int FileIsRemote( struct browser * );
-extern char *FGetName( struct browser * );
-extern int FCurrLine( struct browser * );
-extern int FReadLine( struct browser *, int, int, char *, int );
-extern void FClearOpenSourceCache( void );
+
+extern struct browser   *FOpenSource( char *name, sm_mod_handle mod, sm_cue_file_id id );
+extern void             FDoneSource( struct browser * );
+extern unsigned long    FSize( struct browser * );
+extern unsigned long    FLastOffset( struct browser * );
+extern int              FileIsRemote( struct browser * );
+extern char             *FGetName( struct browser * );
+extern int              FCurrLine( struct browser * );
+extern int              FReadLine( struct browser *, int, int, char *, int );
+extern void             FClearOpenSourceCache( void );

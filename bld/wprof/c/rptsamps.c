@@ -30,13 +30,10 @@
 
 
 #include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
-#include <unistd.h>
-
+#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "machtype.h"

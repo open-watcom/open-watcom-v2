@@ -29,8 +29,10 @@
 ****************************************************************************/
 
 
+#include "_srcmgt.h"
+#include <string.h>
+#include <limits.h>
 #include "dbgdefn.h"
-#include "dbgio.h"
 #include "dbgwind.h"
 #include "dbgadget.h"
 #include "dbginfo.h"
@@ -41,8 +43,7 @@
 #include "dbgitem.h"
 #include "dbgbreak.h" //
 #include "dbgstk.h"
-#include <string.h>
-#include <limits.h>
+#include "srcmgt.h"
 
 extern bool             ScanItem( bool, char **, unsigned int * );
 extern void             ReqEOC( void );
@@ -52,14 +53,10 @@ extern void             BreakOnSelected( char *item );
 extern char             *StrCopy( char *, char * );
 extern a_window         *WndFileInspect( char *file, bool binary );
 extern void             *OpenSrcFile( cue_handle * );
-extern int              FReadLine( void *, int, int, char *, int );
-extern void             FDoneSource( void * );
 extern char             *ScanPos( void );
 extern unsigned int     ScanCmd( char * );
 extern void             Scan( void );
 extern char             *ReScan( char * );
-extern unsigned long    FSize( void * );
-extern unsigned long    FLastOffset( void * );
 extern brkp             *FindBreakByLine( mod_handle, cue_file_id, unsigned );
 extern void             WndFuncInspect( mod_handle mod );
 extern void             *AddBreak( address );
@@ -81,7 +78,6 @@ extern void             AsmNewSrcNotify( a_window *, mod_handle, bool track );
 extern void             SkipToAddr( address );
 extern void             StepIntoFunction( char * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
-extern int              FCurrLine( struct browser *hndl );
 extern int              FileIsRemote( struct browser *hndl );
 extern unsigned         NewCurrRadix( unsigned int );
 extern bool             DbgWndSearch( a_window *, bool, int );
@@ -97,7 +93,6 @@ extern unsigned         ExprSize( stack_entry * );
 extern void             EvalLValExpr( int );
 extern void             PopEntry( void );
 extern char             *ModImageName( mod_handle handle );
-extern char             *FGetName( void *viewhndl );
 extern unsigned         ModName( mod_handle mh, char *result, unsigned max );
 extern a_window         *WndNewSrcInspect( address addr );
 extern int              AddrComp( address a, address b );

@@ -130,6 +130,14 @@ set PROJNAME=trap
     <CCCMD> ser/rdos.srv/serserv.exe                  <OWRELROOT>/rdos/
     <CCCMD> ser/rdos.srv/serserv.sym                  <OWRELROOT>/rdos/
 
+    <CCCMD> net/ntx64.trp/net.dll                     <OWRELROOT>/binnt64/
+    <CCCMD> nov/ntx64.trp/nov.dll                     <OWRELROOT>/binnt64/
+    <CCCMD> ser/ntx64.trp/ser.dll                     <OWRELROOT>/binnt64/
+    <CCCMD> tcp/ntx64.trp/tcp.dll                     <OWRELROOT>/binnt64/
+# NT parallel port device driver and installer
+    <CCCMD> par/ntsupp.x64/dbgport.sys                <OWRELROOT>/binnt64/
+    <CCCMD> par/ntsupp.x64/dbginst.exe                <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

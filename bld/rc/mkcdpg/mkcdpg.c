@@ -31,11 +31,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <windows.h>
 #include <string.h>
+#include "wio.h"
 #include "watcom.h"
 #include "banner.h"
 #include "rctypes.h"
@@ -62,8 +60,7 @@ static BOOL writeInfo( char *fname, DBInformation *info ) {
     int         rc;
     unsigned    len;
 
-    fp = open( fname, O_WRONLY | O_BINARY | O_CREAT,
-                S_IRWXO | S_IRWXG | S_IRWXU );
+    fp = open( fname, O_WRONLY | O_BINARY | O_CREAT, PMODE_RWX );
     if( fp == -1 ) {
         printf( "Error - could not open %s", fname );
         return( TRUE );

@@ -49,9 +49,7 @@ static void PrintIconDirEntry( IconDirEntry * entry, int entrynum )
             entry->IconID );
 }
 
-#pragma off (unreferenced)
 extern int DumpIconGroup( uint_32 offset, uint_32 length, WResFileID handle )
-#pragma on (unreferenced)
 /***************************************************************************/
 {
     IconCurDirHeader    head;

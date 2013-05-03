@@ -14,8 +14,10 @@ set PROJNAME=mkcdpg
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> nt386/mkcdpg.exe   <OWRELROOT>/binnt/mkcdpg.exe
-    <CCCMD> ntaxp/mkcdpg.exe   <OWRELROOT>/axpnt/mkcdpg.exe
+    <CCCMD> nt386/mkcdpg.exe   <OWRELROOT>/binnt/
+    <CCCMD> ntaxp/mkcdpg.exe   <OWRELROOT>/axpnt/
+
+    <CCCMD> ntx64/mkcdpg.exe   <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

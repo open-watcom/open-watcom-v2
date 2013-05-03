@@ -31,9 +31,8 @@
 
 #include <stdarg.h>
 #include <string.h>
-#include <unistd.h>
 #include <stdio.h>
-
+#include "wio.h"
 #include "common.h"
 #include "myassert.h"
 #include "msg.h"

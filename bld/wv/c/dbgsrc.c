@@ -29,15 +29,16 @@
 ****************************************************************************/
 
 
+#include "_srcmgt.h"
 #include "dbgdefn.h"
 #include "dbglit.h"
 #include "dbgtoken.h"
 #include "dbgerr.h"
 #include "dbgmem.h"
 #include "dbginfo.h"
-#include "dbgio.h"
 #include "dui.h"
 #include <string.h>
+#include "srcmgt.h"
 
 
 extern cue_file_id      CueFileId( cue_handle * );

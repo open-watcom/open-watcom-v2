@@ -29,9 +29,8 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
 #include <stdio.h>
-
+#include "wio.h"
 #include "common.h"
 #include "aui.h"
 #include "wpaui.h"

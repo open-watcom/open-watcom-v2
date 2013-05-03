@@ -42,6 +42,8 @@ extra_c_flags_qnx       = -zt32
 extra_c_flags_win       = -zW
 !endif
 
+extra_c_flags_srcmgt = $(incl_file_opts)_srcmgt.h
+
 # lflags stuff
 ###############
 extra_l_flags_nt        = op stack=100k

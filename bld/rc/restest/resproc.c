@@ -94,8 +94,7 @@ void LBDump( HWND hwnd, char *str, WORD len ) {
 }
 
 
-BOOL __export FAR PASCAL MainWndProc( HWND hwnd, UINT msg, UINT wparam,
-                                    LONG lparam )
+LRESULT CALLBACK MainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
 

@@ -14,8 +14,10 @@ set PROJNAME=rcexedmp
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> os2386/exedmp.exe  <OWRELROOT>/binp/exedmp.exe
-    <CCCMD> nt386/exedmp.exe   <OWRELROOT>/binnt/exedmp.exe
+    <CCCMD> os2386/exedmp.exe  <OWRELROOT>/binp/
+    <CCCMD> nt386/exedmp.exe   <OWRELROOT>/binnt/
+
+    <CCCMD> ntx64/exedmp.exe   <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

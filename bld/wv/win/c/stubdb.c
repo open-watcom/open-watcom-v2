@@ -29,7 +29,12 @@
 ****************************************************************************/
 
 
-#include "windows.h"
+#include "_srcmgt.h"
+#include <string.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <process.h>
+#include <windows.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dbginfo.h"
@@ -40,11 +45,7 @@
 #include "mad.h"
 #include "dui.h"
 #include "dbgvar.h"
-
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <process.h>
+#include "srcmgt.h"
 
 extern void             FlushEOC(void);
 extern char             *DupStr(char*);

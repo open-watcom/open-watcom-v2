@@ -36,8 +36,7 @@
 
 static char menuName[256];
 
-BOOL __export FAR PASCAL MenuWndProc( HWND hwnd, UINT msg, UINT wparam,
-                                    LONG lparam )
+LRESULT CALLBACK MenuWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     char        buf[256];
@@ -63,7 +62,7 @@ BOOL RegisterMenuClass( void )
 
     /* fixed window */
     wc.style = 0L;
-    wc.lpfnWndProc = (LPVOID) MenuWndProc;
+    wc.lpfnWndProc = MenuWndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 4;
     wc.hInstance = Instance;

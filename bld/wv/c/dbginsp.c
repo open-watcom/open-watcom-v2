@@ -30,6 +30,9 @@
 
 
 
+#include "_srcmgt.h"
+#include <string.h>
+#include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgtoken.h"
 #include "dbginfo.h"
@@ -38,11 +41,9 @@
 #include "dbgwind.h"
 #include "dbgitem.h"
 #include "dbgtoggl.h"
-#include "dbgio.h"
 #include "dbginfo.h"
 #include "mad.h"
-#include <string.h>
-#include <ctype.h>
+#include "srcmgt.h"
 
 search_result           LineCue( mod_handle, cue_file_id,
                           unsigned long line, unsigned column, cue_handle *ch );
@@ -61,7 +62,6 @@ extern void             DupStack( void );
 extern  a_window        *DoWndFileOpen( char *name, void *viewhndl,
                                     cue_handle *, bool track, bool erase,
                                     wnd_class class );
-extern void             *FOpenSource( char *, mod_handle, cue_file_id );
 extern void             *OpenSrcFile( cue_handle * );
 extern void             DoWndBinOpen( char *, handle );
 extern a_window         *DoWndModOpen( mod_handle handle );

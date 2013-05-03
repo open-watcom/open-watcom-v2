@@ -65,7 +65,13 @@ Done:
 */
 
 
-#include "windows.h"
+#include "_srcmgt.h"
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <process.h>
+#include <windows.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dbginfo.h"
@@ -78,11 +84,7 @@ Done:
 #include "dbgvar.h"
 #include "modlist.h"
 #include "dbgbreak.h"
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <process.h>
+#include "srcmgt.h"
 
 enum {
     REQ_NONE,

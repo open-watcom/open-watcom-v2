@@ -108,9 +108,7 @@ static void PrintDialogBoxControl( DialogBoxControl * control )
     PrintResNameOrOrd( control->Text );
 }
 
-#pragma off (unreferenced)
 extern int DumpDialog( uint_32 offset, uint_32 length, WResFileID handle )
-#pragma on (unreferenced)
 /************************************************************************/
 {
     int                 error;

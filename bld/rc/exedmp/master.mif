@@ -17,4 +17,8 @@ objs =              &
         param.obj
 
 $(proj_name).exe : $(objs)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(ldflags)
+!else
         $(linker) $(lflags) name $^. file { $< }
+!endif

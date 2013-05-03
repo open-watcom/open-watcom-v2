@@ -41,6 +41,7 @@
 #include "sampinfo.h"
 #include "wpasmfil.h"
 #include "wpsrcfil.h"
+#include "_srcmgt.h"
 #include "srcmgt.h"
 #include "msg.h"
 
@@ -60,9 +61,6 @@ extern void SetNumBytes(uint_16 num);
 extern void CodeAdvance( address * );
 extern void GetFullInstruct( address, char *buffer,int max);
 extern char EndOfSegment(void );
-extern void *FOpenSource( char *name, sm_mod_handle mod, sm_cue_file_id id );
-extern void FDoneSource( void *hndl );
-extern int FReadLine( void *hndl, int line, int off, char *buff, int size );
 
 #define MAX_ASM_BUFF_LEN    256
 

@@ -27,6 +27,8 @@ set PROJNAME=CauseWay
     <CCCMD> cwc/os2386/cwc.exe      <OWRELROOT>/binp/
     <CCCMD> cwc/linux386/cwc.exe    <OWRELROOT>/binl/cwc
 
+    <CCCMD> cwc/ntx64/cwc.exe       <OWRELROOT>/binnt64/
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

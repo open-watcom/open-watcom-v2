@@ -31,12 +31,10 @@
 
 #include <string.h>
 #include <stddef.h>
-#include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <limits.h>
-
+#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "dipcli.h"

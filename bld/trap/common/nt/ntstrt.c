@@ -32,12 +32,14 @@
 
 #include <windows.h>
 
+#ifdef __WATCOMC__
 #pragma library("kernel32")
 #pragma library("user32")
 #pragma library("advapi32")
+#endif
 
-#pragma off (unreferenced);
-int WINAPI LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
+BOOL WINAPI DllMain( HINSTANCE hinst, DWORD dw, LPVOID *ptr )
 {
-    return( 1 );
+    hinst=hinst,dw=dw;ptr=ptr;
+    return( TRUE );
 }

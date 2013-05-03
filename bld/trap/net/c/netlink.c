@@ -33,7 +33,7 @@
 #include <string.h>
 #include <dos.h>
 #if defined( __OS2__ )
-#define INCL_DOSMODULEMGR
+    #define INCL_DOSMODULEMGR
 #include <os2.h>
     #if defined( __386__ )
     #define far
@@ -41,49 +41,56 @@
 #elif defined( __NT__ )
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
+    #include "bool.h"
+  #ifdef __WATCOMC__
     /* Don't actually include nb30.h because of conflicting definitions. */
     #pragma library( "netapi32.lib" )
+  #endif
 #else
-#include "tinyio.h"
+    #include "tinyio.h"
 #endif
-#include "wnetbios.h"
 #include "trperr.h"
 #include "packet.h"
 
 #if defined( __OS2__ )
-    #if defined( __386__ )
+    #include "wnetbios.h"
+  #if defined( __386__ )
     unsigned short _System (*NetBiosSubmit)( unsigned short, unsigned short, NCB * );
-    #else
-        int pascal (far *NetBiosSubmit)( int, int, NCB far * );
-    #endif
-#define NetBIOS( x ) (NetBiosSubmit)( 0, 0, (x) )
+  #else
+    int pascal (far *NetBiosSubmit)( int, int, NCB far * );
+  #endif
+    #define NetBIOS( x ) (NetBiosSubmit)( 0, 0, (x) )
 
-extern unsigned char pascal far NetBiosOpen( char far *, char far *,
-                                             unsigned, int far *);
+    extern unsigned char pascal far NetBiosOpen( char far *, char far *, unsigned, int far *);
 
 #elif defined( __NT__ )
+    #include <nb30.h>
 
-UCHAR APIENTRY Netbios( NCB * );
-#define NetBIOS( x )    Netbios( (x) )
+    #define NET_INVALID_CMD 0x7F
+
+    UCHAR APIENTRY Netbios( NCB * );
+    #define NetBIOS( x )    Netbios( (x) )
 
 #elif defined( __WINDOWS__ )
+    #include "wnetbios.h"
 
-#define NetBIOS( x ) NetBIOSCall( x )
+    #define NetBIOS( x ) NetBIOSCall( x )
 
-extern unsigned char far NetBIOSCall( NCB far * );
-#pragma aux NetBIOSCall "^" parm [es bx] value [al];
+    extern unsigned char far NetBIOSCall( NCB far * );
+    #pragma aux NetBIOSCall "^" parm [es bx] value [al];
 
 #else
+    #include "wnetbios.h"
 
-#define NET_BIOS_INT    0x5c
-extern unsigned char NetBIOS( NCB far * );
-#pragma aux NetBIOS = 0xcd NET_BIOS_INT parm [es bx] value [al];
+    #define NET_BIOS_INT    0x5c
+    extern unsigned char NetBIOS( NCB far * );
+    #pragma aux NetBIOS = 0xcd NET_BIOS_INT parm [es bx] value [al];
 
-extern tiny_dos_version GetTrueDOSVersion( void );
-#pragma aux GetTrueDOSVersion = \
-    "mov    ax,3306h"               \
-    "int    21h"                    \
-    value [bx] modify exact [ax bx dx];
+    extern tiny_dos_version GetTrueDOSVersion( void );
+    #pragma aux GetTrueDOSVersion = \
+        "mov    ax,3306h"               \
+        "int    21h"                    \
+        value [bx] modify exact [ax bx dx];
 
 #endif
 
@@ -108,59 +115,67 @@ unsigned char GetLanaNum( void )
 
     if( !SkipEnum ) {
         memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
-        NetCtlBlk.buff = &l_enum;
-        NetCtlBlk.length = sizeof( l_enum );
-        NetCtlBlk.cmd = NET_ENUM;
+        NetCtlBlk.ncb_buffer = (char far *)&l_enum;
+        NetCtlBlk.ncb_length = sizeof( l_enum );
+        NetCtlBlk.ncb_command = NCBENUM;
         NetBIOS( &NetCtlBlk );
-        if( (NetCtlBlk.ret_code == NET_RC_OK) && l_enum.length ) {
+        if( (NetCtlBlk.ncb_retcode == NRC_GOODRET) && l_enum.length ) {
             return( l_enum.lana[0] );
         }
     }
     return( 0 );    /* Default if not running on NT. */
 }
 
+#ifdef __NT__
+bool Terminate( void )
+{
+    // a sideways dive to terminate the link (with failure)
+    return( FALSE );
+}
+#endif
+
 unsigned RemoteGet( char *rec, unsigned len )
 {
-    NetCtlBlk.buff = rec;
-    NetCtlBlk.length = len;
-    NetCtlBlk.cmd = NET_RECEIVE;
+    NetCtlBlk.ncb_buffer = (char far *)rec;
+    NetCtlBlk.ncb_length = len;
+    NetCtlBlk.ncb_command = NCBRECV;
     NetBIOS( &NetCtlBlk );
-    return( NetCtlBlk.length );
+    return( NetCtlBlk.ncb_length );
 }
 
 unsigned RemotePut( char *rec, unsigned len )
 {
-    NetCtlBlk.buff = rec;
-    NetCtlBlk.length = len;
-    NetCtlBlk.cmd = NET_SEND;
+    NetCtlBlk.ncb_buffer = (char far *)rec;
+    NetCtlBlk.ncb_length = len;
+    NetCtlBlk.ncb_command = NCBSEND;
     NetBIOS( &NetCtlBlk );
-    return( NetCtlBlk.length );
+    return( NetCtlBlk.ncb_length );
 }
 
 static char PostListen( void )
 {
-    NetCtlBlk.cmd = NET_LISTEN | NET_NOWAIT;
+    NetCtlBlk.ncb_command = NCBLISTEN | ASYNCH;
     return( NetBIOS( &NetCtlBlk ) == 0 );
 }
 
 char RemoteConnect( void )
 {
 #ifdef SERVER
-    if( NetCtlBlk.cmd_cmplt != 0xff ) {
-        if( NetCtlBlk.ret_code == NET_RC_OK ) return( 1 );
+    if( NetCtlBlk.ncb_cmd_cplt != 0xff ) {
+        if( NetCtlBlk.ncb_retcode == NRC_GOODRET ) return( 1 );
         PostListen();
     }
 #else
-    NetCtlBlk.cmd = NET_CALL;
+    NetCtlBlk.ncb_command = NCBCALL;
     NetBIOS( &NetCtlBlk );
-    if( NetCtlBlk.ret_code == NET_RC_OK ) return( 1 );
+    if( NetCtlBlk.ncb_retcode == NRC_GOODRET ) return( 1 );
 #endif
     return( 0 );
 }
 
 void RemoteDisco( void )
 {
-    NetCtlBlk.cmd = NET_HANG_UP;
+    NetCtlBlk.ncb_command = NCBHANGUP;
     NetBIOS( &NetCtlBlk );
 #ifdef SERVER
     PostListen();
@@ -219,9 +234,9 @@ char *RemoteLink( char *name, char server )
             SkipEnum = 1;
     }
 #endif
-    NetCtlBlk.cmd = NET_INVALID_CMD;
+    NetCtlBlk.ncb_command = NET_INVALID_CMD;
     NetBIOS( &NetCtlBlk );
-    if( NetCtlBlk.ret_code != NET_RC_ILLCMD ) {
+    if( NetCtlBlk.ncb_retcode != NRC_ILLCMD ) {
         return( NotThere );
     }
 
@@ -230,29 +245,29 @@ char *RemoteLink( char *name, char server )
     /* NetBIOS reset is required on NT, but kills connections on DOS. */
 #ifdef __NT__
     memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
-    NetCtlBlk.cmd = NET_RESET;
-    NetCtlBlk.lana_num = LanaNum;
+    NetCtlBlk.ncb_command = NCBRESET;
+    NetCtlBlk.ncb_lana_num = LanaNum;
     NetBIOS( &NetCtlBlk );
-    if( NetCtlBlk.ret_code != NET_RC_OK ) {
+    if( NetCtlBlk.ncb_retcode != NRC_GOODRET ) {
         return( NotThere );
     }
 #endif
 
     memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
-    for( i = 1; i < MAX_NAME_LEN; ++i ) {
-        NetCtlBlk.name[i] = (*name != '\0') ? *name++ : ' ';
+    for( i = 1; i < NCBNAMSZ; ++i ) {
+        NetCtlBlk.ncb_name[i] = (*name != '\0') ? *name++ : ' ';
     }
-    NetCtlBlk.name[0] = server ? 'S' : 'C';
-    NetCtlBlk.cmd = NET_ADD_NAME;
-    NetCtlBlk.lana_num = LanaNum;
+    NetCtlBlk.ncb_name[0] = server ? 'S' : 'C';
+    NetCtlBlk.ncb_command = NCBADDNAME;
+    NetCtlBlk.ncb_lana_num = LanaNum;
     NetBIOS( &NetCtlBlk );
-    if( NetCtlBlk.ret_code == NET_RC_DUPNAME || NetCtlBlk.ret_code == NET_RC_INUSE ) {
+    if( NetCtlBlk.ncb_retcode == NRC_DUPNAME || NetCtlBlk.ncb_retcode == NRC_INUSE ) {
         return( TRP_ERR_server_name_already_in_use );
-    } else if( NetCtlBlk.ret_code != NET_RC_OK ) {
+    } else if( NetCtlBlk.ncb_retcode != NRC_GOODRET ) {
         return( TRP_ERR_NetBIOS_name_add_failed ); 
     }
-    memcpy( NetCtlBlk.call_name, NetCtlBlk.name, MAX_NAME_LEN );
-    NetCtlBlk.call_name[0] = !server ? 'S' : 'C';
+    memcpy( NetCtlBlk.ncb_callname, NetCtlBlk.ncb_name, NCBNAMSZ );
+    NetCtlBlk.ncb_callname[0] = !server ? 'S' : 'C';
     if( server ) {
         if( !PostListen() ) return( TRP_ERR_can_not_start_server );
     }
@@ -264,13 +279,13 @@ void RemoteUnLink( void )
 {
     NCB     cancel;
 
-    if( NetCtlBlk.cmd_cmplt == 0xff ) {
-        cancel.cmd = NET_CANCEL;
-        cancel.buff = &NetCtlBlk;
-        cancel.lana_num = LanaNum;
-        cancel.post = 0;
+    if( NetCtlBlk.ncb_cmd_cplt == 0xff ) {
+        cancel.ncb_command = NCBCANCEL;
+        cancel.ncb_buffer = (char far *)&NetCtlBlk;
+        cancel.ncb_lana_num = LanaNum;
+        cancel.ncb_post = 0;
         NetBIOS( &cancel );
     }
-    NetCtlBlk.cmd = NET_DELETE_NAME;
+    NetCtlBlk.ncb_command = NCBDELNAME;
     NetBIOS( &NetCtlBlk );
 }

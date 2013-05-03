@@ -30,8 +30,7 @@
 
 
 #include <stdio.h>
-#include <unistd.h>
-
+#include "wio.h"
 #include "common.h"
 #include "aui.h"
 #include "dip.h"

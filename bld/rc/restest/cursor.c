@@ -73,7 +73,7 @@ void DisplayCursor( HWND hwnd )
     MessageBox( NULL, "The new cursor will be displayed for\n5 seconds after you hit OK", "", MB_OK );
     oldcur = SetCursor( newcur );
     SetCapture( hwnd );
-    sleep( 5 );
+    Sleep( 5 );
     oldcur = SetCursor( oldcur );
     ReleaseCapture();
     DestroyCursor( newcur );

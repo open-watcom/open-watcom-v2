@@ -29,16 +29,14 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "wio.h"
 #include "wresall.h"
 #include "types.h"
 #include "dmpstr.h"
 
-#pragma off (unreferenced)
 extern int DumpString( uint_32 offset, uint_32 length, WResFileID handle )
-#pragma on (unreferenced)
 /************************************************************************/
 {
     int                 prevpos;

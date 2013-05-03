@@ -32,20 +32,16 @@
 //#define LOGGING 1
 
 #include <string.h>
+#ifdef LOGGING
+#include <stdio.h>
+#endif
+#include "wio.h"
 #include "dbgdefn.h"
 #include "trpcore.h"
 #include "trpfile.h"
 #include "dbgio.h"
-
-#include <fcntl.h>
-#include <unistd.h>
-
-#ifdef LOGGING
-#include <stdio.h>
-#endif
-
 #ifdef __NT__
-#include "windows.h"
+#include <windows.h>
 extern system_config    SysConfig;
 #endif
 

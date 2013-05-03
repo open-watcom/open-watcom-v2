@@ -30,6 +30,7 @@
 
 
 #include "sysdef.h"
+#include "bool.h"
 
 typedef         unsigned handle;
 typedef unsigned_8 seek_method; enum {

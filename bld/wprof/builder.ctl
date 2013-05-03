@@ -26,6 +26,9 @@ set PROJNAME=wprof
     <CCCMD> qnx386/wprof.qnx     <OWRELROOT>/qnx/binq/wprof
     <CCCMD> qnx386/wprof.sym     <OWRELROOT>/qnx/sym/
 
+    <CCCMD> ntx64/wprof.exe      <OWRELROOT>/binnt64/
+    <CCCMD> ntx64c/wprof.exe     <OWRELROOT>/binnt64/wprofc.exe
+
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

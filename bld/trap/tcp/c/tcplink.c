@@ -29,10 +29,12 @@
 ****************************************************************************/
 
 
+#if defined( __WATCOMC__ )
 #if defined( __NT__ )
 #pragma library("wsock32.lib")
 #elif defined( __WINDOWS__ )
 #pragma library("winsock.lib")
+#endif
 #endif
 
 #if defined(__OS2__) && !defined(__386__)

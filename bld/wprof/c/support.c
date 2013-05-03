@@ -32,12 +32,9 @@
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
-#include <fcntl.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/stat.h>
 #include "walloca.h"
-
+#include "wio.h"
 #include "common.h"
 #include "dip.h"
 #include "mad.h"

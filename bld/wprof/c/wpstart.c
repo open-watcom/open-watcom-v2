@@ -31,15 +31,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
 #include <ctype.h>
 #ifdef __WATCOMC__
     #include <process.h>
-#else
-    #include "clibext.h"
 #endif
-
+#include "wio.h"
+#include "watcom.h"
 #include "common.h"
 #include "msg.h"
 #include "dip.h"

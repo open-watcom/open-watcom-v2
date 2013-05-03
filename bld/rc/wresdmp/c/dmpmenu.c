@@ -100,9 +100,7 @@ static void PrintHeader( MenuHeader * head )
                 head->HeaderSize );
 }
 
-#pragma off (unreferenced)
 extern int DumpMenu( uint_32 offset, uint_32 length, WResFileID handle )
-#pragma on (unreferenced)
 /**********************************************************************/
 {
     int         error;

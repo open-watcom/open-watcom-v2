@@ -241,7 +241,7 @@ extra_cpp_flags += -DAUI_DBG -DDBG_DBG
 
 extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 
-extra_c_flags += -s
+extra_c_flags = -s
 
 extra_c_flags_win += -zW -zc
 !ifeq sys_windowed 1
@@ -255,6 +255,8 @@ extra_c_flags_dos += $(extra_c_flags_dos_$(host_cpu))
 
 extra_c_flags_trmem = $(trmem_cflags)
 extra_c_flags_dynmem = $(trmem_cover_cflags)
+
+extra_c_flags_srcmgt = $(incl_file_opts)_srcmgt.h
 
 # inc_dirs
 ###########

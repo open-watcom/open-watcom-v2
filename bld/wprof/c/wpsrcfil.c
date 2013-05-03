@@ -40,6 +40,7 @@
 #include "dip.h"
 #include "sampinfo.h"
 #include "wpsrcfil.h"
+#include "_srcmgt.h"
 #include "srcmgt.h"
 #include "msg.h"
 
@@ -47,9 +48,6 @@
 extern void *ProfRealloc(void *p,size_t new_size);
 extern void *ProfCAlloc(size_t size);
 extern void ErrorMsg(char *msg,... );
-extern void *FOpenSource( char *name, sm_mod_handle mod, sm_cue_file_id id );
-extern void FDoneSource( void *hndl );
-extern int FReadLine( void *hndl, int line, int off, char *buff, int size );
 
 STATIC void setSrcLineData( wp_srcfile *, sio_data *, mod_info *,
                             file_info *, rtn_info *  );

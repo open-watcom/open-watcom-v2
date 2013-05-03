@@ -39,8 +39,7 @@ extern HWND             MainHwnd;
 extern HWND             AccelHwnd;
 extern HACCEL           Accel;
 
-BOOL __export FAR PASCAL MainWndProc( HWND hwnd, UINT msg, UINT wparam,
-                                    LONG lparam );
+LRESULT CALLBACK MainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 void LBDump( HWND hwnd, char *str, WORD len );
 void DisplayVerInfo( void );
 void LBPrintf( HWND lb, char *str, ... );

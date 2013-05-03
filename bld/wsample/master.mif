@@ -16,6 +16,7 @@ xname_dos_i86   = wsample
 xname_nov_386   = wsample
 xname_nt_axp    = wsmpaxp
 xname_nt_386    = wsmpnt
+xname_nt_x64    = wsmpnt
 xname_os2_386   = wsmpos22
 xname_os2_i86   = wsampos2
 xname_pls_386   = wsamppls
@@ -36,6 +37,7 @@ xname = $(xname_$(target)_$(host_cpu))
 
 objs_nt_axp     = sampaxp.obj sysinit.obj sampexe.obj
 objs_nt_386     = sampnt.obj sysinit.obj sampexe.obj
+objs_nt_x64     = sampnt64.obj sysinit.obj sampexe.obj
 objs_os2_386    = sampos22.obj sysinit.obj sampexe.obj
 objs_os2_i86    = sampos2.obj sysinit.obj sampexe.obj
 objs_win_i86    = sampwin.obj sampexe.obj winmain.obj winopts.obj fault.obj notify.obj libload.obj globals.obj getidata.obj

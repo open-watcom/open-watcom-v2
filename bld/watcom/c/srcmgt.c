@@ -29,13 +29,13 @@
 ****************************************************************************/
 
 
+#ifdef __header1
+#include __header1
+#endif
 #include <limits.h>
 #include <string.h>
+#include "watcom.h"
 #include "srcmgt.h"
-
-#ifndef O_BINARY
-    #define O_BINARY    0
-#endif
 
 #define SM_CR                   '\r'
 #define SM_LF                   '\n'
@@ -58,7 +58,7 @@ typedef struct browser {
         char                    line_buf[ SM_BUF_SIZE ];
 } browser;
 
-browser *FileList = NULL;
+static browser *FileList = NULL;
 
 static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_file_id id )
 {
