@@ -102,7 +102,7 @@ int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
         return( ERR_READ );
     }
 
-    if( !( buffer = malloc( BUF_SIZE ) ) ) {
+    if( (buffer = malloc( BUF_SIZE )) == NULL ) {
         return( ERR_ALLOC );
     }
 
@@ -404,12 +404,12 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 
-    if( !(header = get_header( arg.ifile )) || (header->signature != DOS_SIGNATURE) ) {
+    if( (header = get_header( arg.ifile )) == NULL || (header->signature != DOS_SIGNATURE) ) {
         printf( "Error. %s has no valid exe-header.\n", arg.iname );
         return( EXIT_FAILURE );
     }
 
-    if( !(reltab = get_reltab( arg.ifile, header )) ) {
+    if( (reltab = get_reltab( arg.ifile, header )) == NULL ) {
         printf( "Error allocating/reading reloc-table.\n" );
         free( header );
         return( EXIT_FAILURE );
@@ -476,8 +476,7 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 
-    if( (result = copy_bindata( arg.ifile, arg.ofile, bin_size, tot_skip,
-                                reltab )) ) {
+    if( (result = copy_bindata( arg.ifile, arg.ofile, bin_size, tot_skip, reltab )) != 0 ) {
         switch( result ) {
         case ERR_ALLOC:
             printf( "Error allocating file I/O buffer.\n" );

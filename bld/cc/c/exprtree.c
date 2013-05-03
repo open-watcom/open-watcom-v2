@@ -88,7 +88,7 @@ void FreeExprNode( TREEPTR node )
             CMemFree( node->op.float_value );
         } else if( node->op.opr == OPR_SWITCH ) {
             sw = node->op.switch_info;
-            for( ; cse = sw->case_list; ) {
+            for( ; (cse = sw->case_list) != NULL; ) {
                 sw->case_list = cse->next_case;
                 CMemFree( cse );
             }

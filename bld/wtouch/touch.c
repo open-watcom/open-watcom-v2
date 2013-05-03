@@ -471,8 +471,7 @@ static void doTouch( void )
             dir_name[len] = '.';
             dir_name[len + 1] = '\0';
             item = dir_name;
-        } else if( ( strpbrk( item, "*?" ) == NULL ) && !stat( item, &sb ) &&
-                    S_ISDIR( sb.st_mode ) ) {
+        } else if( ( strpbrk( item, "*?" ) == NULL ) && !stat( item, &sb ) && S_ISDIR( sb.st_mode ) ) {
             strcpy( dir_name, item );
         #ifdef __UNIX__
             dir_name[len] = '/';
@@ -492,7 +491,7 @@ static void doTouch( void )
 #else
         dirpt = opendir( item );
         if( dirpt ) {
-            while( ndir = readdir( dirpt ) ) {
+            while( (ndir = readdir( dirpt )) != NULL ) {
                 int attr;
 
                 _makepath( full_name, drive, dir, ndir->d_name, NULL );
@@ -518,7 +517,7 @@ static void doTouch( void )
                 // it would make no sense for this to fail, and I'm not entirely sure
                 // what to do if it does....
                 if( dirpt ) {
-                    while( ndir = readdir( dirpt ) ) {
+                    while( (ndir = readdir( dirpt )) != NULL ) {
                         if ( '.' != *ndir->d_name ) {
                         #ifdef __UNIX__
                             _makepath( full_name, drive, dir, ndir->d_name, NULL );

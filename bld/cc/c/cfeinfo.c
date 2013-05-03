@@ -148,7 +148,7 @@ int VarParm( SYMPTR sym )
         SKIP_TYPEDEFS( fn_typ );
         parm = fn_typ->u.fn.parms;
         if( parm != NULL ) {
-            for( ; (typ = *parm); ++parm ) {
+            for( ; (typ = *parm) != NULL; ++parm ) {
                 if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
                     return( 1 );
                 }
@@ -710,7 +710,7 @@ static int GetParmsSize( CGSYM_HANDLE sym_handle )
     if( fn_typ->decl_type == TYPE_FUNCTION ) {
         parm = fn_typ->u.fn.parms;
         if( parm != NULL ) {
-            for( ; (typ = *parm); ++parm ) {
+            for( ; (typ = *parm) != NULL; ++parm ) {
                 if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
                     total_parm_size = -1;
                     break;

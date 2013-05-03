@@ -231,11 +231,9 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
         break;
       case OFT_SRCDEP:
         outFileChecked |= 1 << typ;
-        if( !(path = SrcDepFileName ) ) {
+        if( (path = SrcDepFileName ) == NULL ) {
             path = WholeFName;
-        }
-        else 
-        {
+        } else {
             auto char buff[ _MAX_PATH2 ];
             char *drive;
             char *dir;
@@ -245,7 +243,10 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
         break;
       case OFT_TRG:
         outFileChecked |= 1 << typ; // don't create a file. it's just a name.
-        if( path = TargetFileName ) break;
+        if( (path = TargetFileName) != NULL ) {
+            break;
+        }
+        // fall down
       case OFT_PPO:
       case OFT_OBJ:
       case OFT_MBR:

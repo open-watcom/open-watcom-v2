@@ -998,7 +998,8 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         break;
 
     case WM_QUERYENDSESSION:
-        if( (ret = WdeQueryKillApp( FALSE )) ) {
+        ret = WdeQueryKillApp( FALSE );
+        if( ret ) {
             WdeFatalExit = TRUE;
             pass_to_def = FALSE;
         }

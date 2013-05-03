@@ -1027,7 +1027,8 @@ static void ITPseudoAbs( ins_table *table, instruction *ins, uint_32 *buffer, as
     */
     s_reg_idx = RegIndex( src_op->reg );
     d_reg_idx = RegIndex( ins->operands[1]->reg );
-    if( same_reg = ( s_reg_idx == d_reg_idx ) ) {
+    same_reg = ( s_reg_idx == d_reg_idx );
+    if( same_reg ) {
         // Then $at reg will be needed.
         if( !_DirIsSet( AT ) ) {
             Warning( INS_USES_AT_REG );
@@ -1036,8 +1037,7 @@ static void ITPseudoAbs( ins_table *table, instruction *ins, uint_32 *buffer, as
     } else {
         rc_reg_idx = d_reg_idx;
     }
-    doOpcodeFcRaRc( buffer, table->opcode, table->funccode, 31,
-                    rc_reg_idx, _Rb( s_reg_idx ) );
+    doOpcodeFcRaRc( buffer, table->opcode, table->funccode, 31, rc_reg_idx, _Rb( s_reg_idx ) );
     // So buffer gets ins #1. Now do ins #2.
     ++buffer;
 #define OPCODE_CMOVGT           0x11

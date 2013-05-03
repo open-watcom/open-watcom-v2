@@ -304,7 +304,7 @@ static void FreeBckInfoCarveBlocks( void )
 {
     bck_info_block      *carve_block;
 
-    for( ; carve_block = BckInfoCarveHead; ) {
+    for( ; (carve_block = BckInfoCarveHead) != NULL; ) {
         BckInfoCarveHead = carve_block->next;
         CGFree( carve_block );
     }

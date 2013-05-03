@@ -213,7 +213,7 @@ static void FreeUndefNames( void )
 {
     undef_names     *uname;
 
-    for(; (uname = UndefNames); ) {
+    for(; (uname = UndefNames) != NULL; ) {
         UndefNames = uname->next;
         CMemFree( uname->name );
         CMemFree( uname );

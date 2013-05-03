@@ -70,7 +70,8 @@ Bool WRESetEditWithStr( HWND edit, char *str )
 {
     Bool    ok;
 
-    if( ok = ((edit != (HWND)NULL) && str) ) {
+    ok = ( edit != (HWND)NULL && str != NULL );
+    if( ok ) {
         SendMessage( edit, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
     }
 
@@ -82,16 +83,16 @@ Bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
     Bool    ok;
     LRESULT index;
 
-    ok = ((lbox != (HWND)NULL) && str);
+    ok = ( lbox != (HWND)NULL && str != NULL );
 
     if( ok ) {
         index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
-        ok = (index != LB_ERR && index != LB_ERRSPACE);
+        ok = ( index != LB_ERR && index != LB_ERRSPACE );
     }
 
     if( ok ) {
         SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)(LPVOID)data );
-        ok = (index != LB_ERR);
+        ok = ( index != LB_ERR );
     }
 
     return( ok );
@@ -104,7 +105,7 @@ Bool WRESetLBoxWithWResID( HWND lbox, WResID *id, void *data )
 
     name = NULL;
 
-    ok = (lbox != (HWND)NULL && id != NULL);
+    ok = ( lbox != (HWND)NULL && id != NULL );
 
     ok = ok && ((name = WResIDToStr( id )) != NULL);
 

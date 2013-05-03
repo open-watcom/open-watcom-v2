@@ -218,7 +218,7 @@ void WSetKey( WAccelEditInfo *einfo, BYTE scan_code )
         // The ToAscii function handles everything except the following
         // keys where cntl is pressed. These keys are `-=[]\;',./
         // So, I throw up my hands in defeat and add a special case
-        } else if( cntl && ( scan_key = WMapScanCodeToKey( scan_code ) ) ) {
+        } else if( cntl && (scan_key = WMapScanCodeToKey( scan_code )) != 0 ) {
             str = WGetASCIIKeyText( scan_key );
         } else {
             ta_ret = ToAscii( key, scan_code, kbstate, &ta_key, 0 );

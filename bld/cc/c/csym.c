@@ -957,7 +957,7 @@ void FreeLabels( void )
 {
     LABELPTR    label;
 
-    for( ; (label = LabelHead); ) {
+    for( ; (label = LabelHead) != NULL; ) {
         LabelHead = label->next_label;
         if( label->defined == 0 ) {
             CErr2p( ERR_UNDEFINED_LABEL, label->name );

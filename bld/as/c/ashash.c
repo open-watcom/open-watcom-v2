@@ -42,7 +42,7 @@ extern uint_32 AsHashVal( const char *string, uint_32 size ) {
     h = 0;
     for( p = string; *p; p++ ) {
         h = ( h << 4 ) + *p;
-        if( g = h & 0xf0000000 ) {
+        if( (g = h & 0xf0000000) != 0 ) {
             h = h ^ ( g >> 24 );
             h = h ^ g;
         }

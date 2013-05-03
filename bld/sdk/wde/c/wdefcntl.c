@@ -218,7 +218,8 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
 
     new = NULL;
 
-    if( !(ok = (parent != NULL)) ) {
+    ok = ( parent != NULL );
+    if( !ok ) {
         WdeWriteTrail( "WdeControlCreate: Control has no parent!" );
     }
 
@@ -226,16 +227,21 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
         ok = (!Forward( parent, GET_ORDER_MODE, &mode, NULL ) || mode == WdeSelect);
     }
 
-    if( ok && !(ok = (handle != NULL)) ) {
+    if( ok ) {
+        ok = ( handle != NULL );
+    }
+
+    if( !ok ) {
         WdeWriteTrail( "WdeControlCreate: Control cant use its own handle!" );
     }
 
     if( ok ) {
         new = (WdeControlObject *)WdeMemAlloc( sizeof( WdeControlObject ) );
-        if( !(ok = (new != NULL)) ) {
-            WdeWriteTrail( "WdeControlCreate: Object malloc failed" );
-        } else {
+        ok = ( new != NULL );
+        if( ok ) {
             memset( new, 0, sizeof( WdeControlObject ) );
+        } else {
+            WdeWriteTrail( "WdeControlCreate: Object malloc failed" );
         }
     }
 
@@ -258,31 +264,39 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
         }
         new->base_obj = GetMainObject();
         new->res_info = WdeGetCurrentRes();
-        if( !(ok = (new->base_obj != NULL && new->res_info != NULL)) ) {
+        ok = ( new->base_obj != NULL && new->res_info != NULL );
+        if( !ok ) {
             WdeWriteTrail( "WdeControlCreate: Bad base_obj or res_info!" );
         }
     }
 
-    if( ok && !(ok = Forward( new->parent, GET_WINDOW_HANDLE,
-                              &new->parent_handle, NULL )) ) {
+    if( ok ) {
+        ok = Forward( new->parent, GET_WINDOW_HANDLE, &new->parent_handle, NULL );
+    }
+
+    if( !ok ) {
         WdeWriteTrail( "WdeControlCreate: Couldn't get parent window handle!" );
     }
 
-    if( ok && !(ok = Forward( new->parent, GET_FONT, &new->font, NULL )) ) {
+    if( ok ) {
+        ok = Forward( new->parent, GET_FONT, &new->font, NULL );
+    }
+
+    if( !ok ) {
         WdeWriteTrail( "WdeControlCreate: Couldn't get parent font!" );
     }
 
     if( ok ) {
         new->o_item = Create( OBJ_ITEM, new->parent, obj_rect, new->object_handle );
 
-        if( !(ok = (new->o_item != NULL)) ) {
+        ok = ( new->o_item != NULL );
+        if( !ok ) {
             WdeWriteTrail( "WdeControlCreate: OITEM not created!" );
         }
     }
 
     if( ok ) {
-        ok = Forward( new->object_handle, GET_WINDOW_CLASS,
-                      &new->window_class, NULL );
+        ok = Forward( new->object_handle, GET_WINDOW_CLASS, &new->window_class, NULL );
         if( !ok ) {
             WdeWriteTrail( "WdeControlCreate: Couldn't get window class!" );
         }

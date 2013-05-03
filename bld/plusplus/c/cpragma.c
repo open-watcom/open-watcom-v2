@@ -465,7 +465,8 @@ static boolean PragIdRecog(     // RECOGNIZE PRAGMA ID
             ++p;
         }
     }
-    if( (rc = ( stricmp( p, what ) == 0 )) ) {
+    rc = ( stricmp( p, what ) == 0 );
+    if( rc ) {
         NextToken();
     }
     return( rc );

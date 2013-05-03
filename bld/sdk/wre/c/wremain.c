@@ -844,7 +844,7 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
         break;
 
     case WM_QUERYENDSESSION:
-        if( ret = WREQueryKillApp( FALSE ) ) {
+        if( (ret = WREQueryKillApp( FALSE )) != 0 ) {
             WREFatalExit = TRUE;
         }
         pass_to_def = FALSE;

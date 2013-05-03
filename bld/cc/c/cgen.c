@@ -1728,7 +1728,7 @@ local void FreeLocalVars( SYM_HANDLE sym_list )
     SYM_HANDLE          sym_handle;
     SYM_ENTRY           sym;
 
-    for( ; sym_handle = sym_list; ) {
+    for( ; (sym_handle = sym_list) != NULL; ) {
         SymGet( &sym, sym_handle );
         sym_list = sym.handle;
         if( sym.stg_class != SC_EXTERN ) {

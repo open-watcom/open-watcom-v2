@@ -1709,7 +1709,7 @@ local void FreeParmList( void )
 {
     PARMPTR     parm;
 
-    for( ; (parm = ParmList); ) {
+    for( ; (parm = ParmList) != NULL; ) {
         ParmList = parm->next_parm;
         CMemFree( parm->sym.name );
         CMemFree( parm );

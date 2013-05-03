@@ -8171,9 +8171,9 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
                 name = NameDummy();
             }
 
-            if( ( typ = GenericType( curr->sym_type ) ) ) {
+            if( (typ = GenericType( curr->sym_type )) != NULL ) {
                 ScopeInsert( parm_scope, templateArgTypedef( typ ), name );
-            } else if( ( typ = IntegralType( curr->sym_type ) ) ) {
+            } else if( (typ = IntegralType( curr->sym_type )) != NULL ) {
                 ScopeInsert( parm_scope, templateArgSym( SC_NULL, typ ), name );
             } else {
                 CFatal( "not yet implemented" );

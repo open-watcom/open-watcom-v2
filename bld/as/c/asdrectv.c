@@ -201,7 +201,7 @@ static bool optionString( const char *str, const char *option )
         return( FALSE );
     }
     s = str + n;
-    while( c = *s ) {
+    while( (c = *s) != '\0' ) {
         // ignore trailing blanks only
         if( c != '\t' && c != ' ' ) return( FALSE );
         ++s;

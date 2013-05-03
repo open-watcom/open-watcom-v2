@@ -47,7 +47,8 @@ char *stpcpy_after(             // COPY STRING, UPDATE SOURCE POINTER
 {
     const char *src_ptr;        // - source
 
-    for( src_ptr = *src; *tgt++ = *src_ptr++; );
+    for( src_ptr = *src; (*tgt++ = *src_ptr++) != '\0'; )
+        ;
     *src = src_ptr;
     return( tgt );
 }

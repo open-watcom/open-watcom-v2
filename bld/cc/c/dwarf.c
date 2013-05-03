@@ -129,7 +129,7 @@ static void dwarfStructInfo( TAGPTR tag )
                         DW_FLAG_PUBLIC );
         }
         if( xref != NULL ){
-            for( ; (xref = xref->next_xref); ) {
+            for( ; (xref = xref->next_xref) != NULL; ) {
                 dwarfReference( dh, &xref->src_loc );
             }
             FreeXrefs( field->xref );

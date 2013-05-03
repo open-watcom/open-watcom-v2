@@ -170,6 +170,6 @@ char const *CGetMsgStr(  msg_codes msgcode )
 void CGetMsg( char *msgbuf, msg_codes msgcode )
 {
     char const *p = CGetMsgStr( msgcode );
-    while( (*msgbuf++ = *p++) )
+    while( (*msgbuf++ = *p++) != '\0' )
         /* empty */;
 }

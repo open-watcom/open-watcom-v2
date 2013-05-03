@@ -114,7 +114,7 @@ extern int MsgGet( int resourceid, char *buffer )
 static char *strApp( char *dest, const char *src )
 /************************************************/
 {
-    while( *dest = *src ) {
+    while( (*dest = *src) != '\0' ) {
         ++dest;
         ++src;
     }

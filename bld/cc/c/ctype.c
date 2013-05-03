@@ -1359,8 +1359,9 @@ void FreeTags( void )
     int         hash;
 
     for( hash = 0; hash <= TAG_HASH_SIZE; ++hash ) {
-        for( ; (tag = TagHash[ hash ]); ) {
-            if( tag->level < SymLevel ) break;
+        for( ; (tag = TagHash[ hash ]) != NULL; ) {
+            if( tag->level < SymLevel )
+                break;
             TagHash[ hash ] = tag->next_tag;
             tag->next_tag = DeadTags;
             DeadTags = tag;
@@ -1374,7 +1375,7 @@ void WalkTagList( void (*func)(TAGPTR) )
     int         index;
 
     for( index = 0; index <= TAG_HASH_SIZE; ++index ) {
-        for( tag = TagHash[index]; tag; tag = tag->next_tag ) {
+        for( tag = TagHash[index]; tag != NULL; tag = tag->next_tag ) {
             func( tag );
         }
     }

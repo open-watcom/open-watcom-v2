@@ -208,7 +208,7 @@ void GetMacroToken( void )
         }
         CurToken = mtok->token;
         i = 0;
-        while( (buf[i] = mtok->data[i]) ) {
+        while( (buf[i] = mtok->data[i]) != '\0' ) {
             i++;
         }
         switch( CurToken ) {
@@ -313,7 +313,8 @@ local char *ExpandMacroToken( void )
         if( tok == T_LSTRING )
             buf[i++] = 'L';
         buf[i++] = '"';
-        while( (buf[i] = *MacroPtr++) )  ++i;
+        while( (buf[i] = *MacroPtr++) != '\0' )
+            ++i;
         buf[i++] = '"';
         buf[i] = '\0';
         return( buf );
@@ -550,7 +551,7 @@ static MACRO_ARG *CollectParms(void)
             case T_STRING:
             case T_BAD_TOKEN:                           /* 07-apr-91 */
                 j = 0;
-                while( (TokenBuf[MTokenLen++] = Buffer[j++]) )
+                while( (TokenBuf[MTokenLen++] = Buffer[j++]) != '\0' )
                     /* empty */;
                 break;
             default:
@@ -823,7 +824,8 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, int rescanning )
             // only tokens available for expansion are those in mtok list
             buf = Buffer;
             i = 0;
-            while( (buf[i] = mtok->data[i]) ) i++;
+            while( (buf[i] = mtok->data[i]) != '\0' )
+                i++;
             CalcHash( buf, i );
             if( IdLookup( buf, i ) == T_MACRO ) {
                 if( rescanning ) {

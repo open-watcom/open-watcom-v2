@@ -131,7 +131,7 @@ void SwitchPurge( void )
     SWITCHPTR   sw;
     CASEPTR     c_entry, c_tmp;
 
-    while( (sw = SwitchStack) ) {
+    while( (sw = SwitchStack) != NULL ) {
         SwitchStack = sw->prev_switch;
         c_entry = sw->case_list;
         while( c_entry != NULL ) {
