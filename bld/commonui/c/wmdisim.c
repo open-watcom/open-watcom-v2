@@ -56,11 +56,14 @@ typedef struct mdi_data {
 } mdi_data;
 
 #if defined( __WINDOWS__ )
+#if defined( __WINDOWS_386__ )
+typedef FARPROC TILECHILDPROC;
+typedef FARPROC CASCADECHILDPROC;
+#else
 typedef int (WINAPI *TILECHILDPROC)( HWND parent, WORD action );
 typedef int (WINAPI *CASCADECHILDPROC)( HWND parent, WORD action );
 #endif
-
-#if defined( __NT__ )
+#elif defined( __NT__ )
 extern int WINAPI TileChildWindows( HWND parent, WORD action );
 extern int WINAPI CascadeChildWindows( HWND parent, WORD action );
 #endif
@@ -646,37 +649,32 @@ void MDISetMaximized( int setting )
  */
 void MDITile( int is_horz )
 {
-#if defined( __UNIX__ )
-    return;
-#else
 #ifndef __OS2_PM__
-    WORD        tile_how;
-#if !defined( __NT__ )
-    HANDLE      h;
-#if defined( __WINDOWS_386__ )
-    LPVOID      TileChildWindows;
-    HINDIR      hindir;
-#else
-    TILECHILDPROC TileChildWindows;
+    WORD            tile_how;
+#if defined( __WINDOWS__ )
+    HANDLE          h;
+    TILECHILDPROC   TileChildWindows;
 #endif
+#if defined( __WINDOWS_386__ )
+    HINDIR          hindir;
 #endif
 
     if( childrenMaximized ) {
         return;
     }
-
     if( is_horz ) {
         tile_how = MDITILE_HORIZONTAL;
     } else {
         tile_how = MDITILE_VERTICAL;
     }
-
-#if !defined( __NT__ )
+#if defined( __NT__ )
+    TileChildWindows( mdiInfo.container, tile_how );
+#else
     h = LoadLibrary( "USER.EXE" );
     if( h == NULL ) {
         return;
     }
-    TileChildWindows = (LPVOID)GetProcAddress( h, "TileChildWindows" );
+    TileChildWindows = (TILECHILDPROC)GetProcAddress( h, "TileChildWindows" );
     if( TileChildWindows == NULL ) {
         return;
     }
@@ -688,12 +686,9 @@ void MDITile( int is_horz )
     TileChildWindows( mdiInfo.container, tile_how );
 #endif
     FreeLibrary( h );
-#else
-    TileChildWindows( mdiInfo.container, tile_how );
 #endif
 #else
     is_horz = is_horz;
-#endif
 #endif
 
 } /* MDITile */
@@ -703,30 +698,27 @@ void MDITile( int is_horz )
  */
 void MDICascade( void )
 {
-#if defined( __UNIX__ )
-    return;
-#else
 #ifndef __OS2_PM__
-#if !defined( __NT__ )
-    HANDLE      h;
-#if defined( __WINDOWS_386__ )
-    LPVOID      CascadeChildWindows;
-    HINDIR      hindir;
-#else
-    CASCADECHILDPROC CascadeChildWindows;
+#if defined( __WINDOWS__ )
+    HANDLE              h;
+    CASCADECHILDPROC    CascadeChildWindows;
 #endif
+#if defined( __WINDOWS_386__ )
+    HINDIR              hindir;
 #endif
 
     if( childrenMaximized ) {
         return;
     }
 
-#if !defined( __NT__ )
+#if defined( __NT__ )
+    CascadeChildWindows( mdiInfo.container, 0 );
+#else
     h = LoadLibrary( "USER.EXE" );
     if( h == NULL ) {
         return;
     }
-    CascadeChildWindows = (LPVOID)GetProcAddress( h, "CascadeChildWindows" );
+    CascadeChildWindows = (CASCADECHILDPROC)GetProcAddress( h, "CascadeChildWindows" );
     if( CascadeChildWindows == NULL ) {
         return;
     }
@@ -738,9 +730,6 @@ void MDICascade( void )
     CascadeChildWindows( mdiInfo.container, 0 );
 #endif
     FreeLibrary( h );
-#else
-    CascadeChildWindows( mdiInfo.container, 0 );
-#endif
 #endif
 #endif
 

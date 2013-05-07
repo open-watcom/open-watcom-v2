@@ -91,7 +91,7 @@ static DWORD Disp_Types[] = {
 };
 
 /* forward declarations */
-WINEXPORT BOOL CALLBACK MemDisplayProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND, UINT, WPARAM, LPARAM );
 static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info );
 static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info );
 static void positionSegInfo( HWND hwnd );
@@ -311,7 +311,7 @@ BOOL RegMemWndClass( HANDLE instance )
     WNDCLASS    wc;
 
     wc.style = 0L;
-    wc.lpfnWndProc = (LPVOID)MemDisplayProc;
+    wc.lpfnWndProc = (WNDPROC)MemDisplayProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;
@@ -895,7 +895,7 @@ WINEXPORT BOOL CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 /*
  * MemDisplayProc
  */
-BOOL CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HDC                 dc;
     MemWndInfo          *info;

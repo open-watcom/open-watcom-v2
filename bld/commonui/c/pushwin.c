@@ -42,7 +42,7 @@
 /*
  * PushWinProc - push window procedure
  */
-WINEXPORT BOOL CALLBACK PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT LRESULT CALLBACK PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PushWinInfo         *info;
     PAINTSTRUCT         paint;
@@ -88,7 +88,7 @@ BOOL RegPushWin( HANDLE instance )
     WNDCLASS    wc;
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = (LPVOID)PushWinProc;
+    wc.lpfnWndProc = (WNDPROC)PushWinProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;

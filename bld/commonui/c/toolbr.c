@@ -91,8 +91,8 @@ HBITMAP TB_CreateTransparentBitmap( HBITMAP, int, int );
 
 WINEXPORT WPI_MRESULT CALLBACK    ToolBarWndProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 #ifdef __NT__
-WINEXPORT LRESULT WINAPI      WinToolWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT LRESULT WINAPI      ToolContainerWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK    WinToolWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK    ToolContainerWndProc( HWND, UINT, WPARAM, LPARAM );
 #endif
 #ifdef __OS2__
 WINEXPORT WPI_MRESULT CALLBACK FrameProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
@@ -1573,7 +1573,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
 /*
  * WinToolWndProc - callback for native toolbars
  */
-WINEXPORT LRESULT WINAPI WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     struct toolbar  *bar;
     UINT            id;
@@ -1638,7 +1638,7 @@ WINEXPORT LRESULT WINAPI WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
 /*
  * ToolContainerWndProc - window procedure for the frame window containing a native toolbar
  */
-WINEXPORT LRESULT WINAPI ToolContainerWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT LRESULT CALLBACK ToolContainerWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND            otherwnd;
     struct toolbar  *bar;

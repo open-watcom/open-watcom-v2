@@ -104,11 +104,7 @@ BOOL RegisterSnapClass( HANDLE instance )
 
     thisInstance = instance;
     wc.style = 0L;
-#if defined( __WINDOWS_386__ )
-    wc.lpfnWndProc = (LPVOID)DesktopProc;
-#else
-    wc.lpfnWndProc = DesktopProc;
-#endif
+    wc.lpfnWndProc = (WNDPROC)DesktopProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = thisInstance;
