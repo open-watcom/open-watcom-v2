@@ -81,7 +81,7 @@ bool WEXPORT WFile::open( const char* name, OpenStyle style )
     return _ok;
 }
 
-bool WEXPORT WFile::open( const char* name, char* env, OpenStyle style )
+bool WEXPORT WFile::open( const char* name, const char* env, OpenStyle style )
 {
     char buff[_MAX_PATH];
     _searchenv( name, env, buff );
