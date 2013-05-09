@@ -136,7 +136,8 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
-#include <wio.h>
+#include "wio.h"
+#include "clibext.h"
 
 #endif
 /* ifndef BMEPSCO_INC */

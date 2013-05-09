@@ -179,22 +179,22 @@ static  uint_8  SetImmedOpcodes[][2] = {
 // enabling different trap bits on instructions.
 
 static  uint_8 FloatingBinaryOpcodes[] = {
-        { 0x00 },                                       /* OP_ADD */
-        { 0x00 },                                       /* OP_EXT_ADD */
-        { 0x01 },                                       /* OP_SUB */
-        { 0x01 },                                       /* OP_EXT_SUB */
-        { 0x02 },                                       /* OP_MUL */
-        { 0x02 },                                       /* OP_EXT_MUL */
-        { 0x03 },                                       /* OP_DIV */
+        0x00,                                       /* OP_ADD */
+        0x00,                                       /* OP_EXT_ADD */
+        0x01,                                       /* OP_SUB */
+        0x01,                                       /* OP_EXT_SUB */
+        0x02,                                       /* OP_MUL */
+        0x02,                                       /* OP_EXT_MUL */
+        0x03,                                       /* OP_DIV */
 };
 
 static  uint_8 FloatingSetOpcodes[] = {
-        { 0x32 },                                       /* OP_SET_EQUAL */
-        { 0x32 },                                       /* OP_SET_NOT_EQUAL */
-        { 0x36 },                                       /* OP_SET_GREATER */
-        { 0x36 },                                       /* OP_SET_LESS_EQUAL */
-        { 0x34 },                                       /* OP_SET_LESS */
-        { 0x34 },                                       /* OP_SET_GREATER_EQUAL */
+        0x32,                                       /* OP_SET_EQUAL */
+        0x32,                                       /* OP_SET_NOT_EQUAL */
+        0x36,                                       /* OP_SET_GREATER */
+        0x36,                                       /* OP_SET_LESS_EQUAL */
+        0x34,                                       /* OP_SET_LESS */
+        0x34,                                       /* OP_SET_GREATER_EQUAL */
 };
 
 

@@ -33,4 +33,4 @@ decstub.gh : decstub.asm ./mkcode.exe
     $]@ $^&.tmp $@
 
 ./mkcode.exe: mkcode.c
-    $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)

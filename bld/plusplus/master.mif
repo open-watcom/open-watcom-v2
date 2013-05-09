@@ -234,7 +234,7 @@ $(dllname).dll : $(depends_dll) $(comp_objs_dll) $(version_res_dll_$(host_os)_$(
 # miscellaneous build rules
 #
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
-    $(bld_cl) $(bld_clflags) -I"$(fe_misc_dir)/h" $[@ $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) -I"$(fe_misc_dir)/h" $(bld_ldflags)
  
 wpp$(target_cpu)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ wpp$(target_cpu)
@@ -246,13 +246,13 @@ keywords.gh weights.gh : ../../hash/plusplus.key ../../hash/pc.key
     findhash -q -e ",-1" ../../hash/plusplus.key ../../hash/pc.key
 
 ./umktable.exe: ../../c/umktable.c xlat.gh
-    $(bld_cl) $(bld_clflags) -I. -I"../../h" $[@ $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) -I. -I"../../h" $(bld_ldflags)
  
 yylex.gh : ./umktable.exe
     $[@ $@
  
 ./mktrans.exe: ../../c/mktrans.c
-    $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
  
 xlat.gh : ./mktrans.exe ../../h/ctokens.h keywords.gh ytab.gh
     $[@ $]@ $@
@@ -281,19 +281,19 @@ cmdlnpr1.gh cmdlnpr2.gh cmdlnusg.gh usage01.int : ../../gml/options.gml
     optencod -i -n -q $(optencod_opt_$(host_os)) $]@ cmdlnpr1.gh cmdlnpr2.gh cmdlnusg.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))
  
 ./icmask.exe: ../../c/icmask.c
-    $(bld_cl) $(bld_clflags) -I"../../h" $[@ $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) -I"../../h" $(bld_ldflags)
  
 ic_mask.gh : ./icmask.exe ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c
     $[@ ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c
  
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
-    $(bld_cl) $(bld_clflags) -I. -I"$(wasm_dir)/h" $[@ $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) -I. -I"$(wasm_dir)/h" $(bld_ldflags)
  
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@
  
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
-    $(bld_cl) $(bld_clflags) -I. -I"$(wasm_dir)/h" $[@ $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) -I. -I"$(wasm_dir)/h" $(bld_ldflags)
  
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok asmops.gh
     $[@ $(wasm_dir)/inlnops.tok $@
@@ -337,4 +337,4 @@ xcode$(target_cpu).tmp: $(cc_dir)/a/code$(target_cpu).asm
 bld_extra_incs = -I. -I"$(fe_misc_dir)/h" -I"../../h" -I"$(wasm_dir)/h"
 
 ./mkcode.exe: $(cc_dir)/a/mkcode.c
-    $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)

@@ -35,11 +35,14 @@
 
 #include "wobject.hpp"
 #include "wstring.hpp"
-
+#if 0
 extern "C" {
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
+#endif
+    #include "clibext.h"
 }
-
+#endif
 WCLASS WCommandArgs {
     public:
         WEXPORT WCommandArgs();

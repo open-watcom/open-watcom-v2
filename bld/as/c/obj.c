@@ -369,13 +369,13 @@ void ObjDirectEmitReloc( owl_section_handle section, owl_offset offset, void *ta
     doEmitReloc( section, offset, target, type, named_sym );
 }
 
-/*
+#if 0
 owl_offset ObjTellOffset( owl_section_handle section ) {
 //******************************************************
 
     return( OWLTellOffset( section ) );
 }
-*/
+#endif
 
 void ObjEmitReloc( owl_section_handle section, void *target, owl_reloc_type type, bool align, bool named_sym ) {
 //**************************************************************************************************************

@@ -159,13 +159,13 @@ usagej.u : ../h/options.gml
 ###################################################################
 
 ./mkopcod1.exe: ../mkopcod1.c ../mkopcode.h
-        $(bld_cl) -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $[@ $(bld_ldflags)
+        $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe ../fullops.tok ../inlnops.tok
         $< $@
 
 ./mkopcode.exe: ../mkopcode.c ../mkopcode.h asmops.gh
-        $(bld_cl) -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $[@ $(bld_ldflags)
+        $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe ../fullops.tok ../inlnops.tok
         $< $@

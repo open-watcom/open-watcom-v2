@@ -41,7 +41,9 @@
 #include "wobjfile.hpp"
 #include "mtypo.hpp"
 
+#if defined( __WATCOMC__ )
 #include <mbctype.h>
+#endif
 
 extern "C" {
     #include <malloc.h>
@@ -72,11 +74,11 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host )
     , _hostType( HOST_UNDEFINED )
 {
     struct {
-        char    *batserv;
-        char    *editor;
-        bool    editorIsDLL;
-        char    *editorParms;
-        char    pathsep;
+        const char    *batserv;
+        const char    *editor;
+        bool          editorIsDLL;
+        const char    *editorParms;
+        char          pathsep;
     } host_info[] = {
         #undef pick
         #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) { batchserv, editor, DLL, parms, pathsep },

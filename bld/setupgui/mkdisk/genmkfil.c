@@ -32,10 +32,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
+#endif
+#include "clibext.h"
 
 enum {
     FALSE,

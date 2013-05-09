@@ -31,5 +31,5 @@
 
 struct dwarf_info {
     dr_dbg_handle   handle;
-    uint_32         sect_offsets[DR_DEBUG_NUM_SECTS];
+    unsigned long   sect_offsets[DR_DEBUG_NUM_SECTS];
 };

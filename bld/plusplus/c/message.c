@@ -1027,7 +1027,7 @@ INITDEFN( error_file, errFileInit, errFileFini )
 
 pch_status PCHReadErrWarnData( void )
 {
-    char            tmp_buff[sizeof( msg_level )];
+    unsigned char   tmp_buff[sizeof( msg_level )];
     unsigned char   *orig_levels;
     unsigned char   *p;
     unsigned char   *o;

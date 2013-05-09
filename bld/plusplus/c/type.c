@@ -9389,7 +9389,7 @@ static void relocType( void *e, carve_walk_base *d )
 #undef __type_reloc_size
 }
 
-pch_status PCHRelocTypes( char *block, size_t size )
+pch_status PCHRelocTypes( char *block, unsigned size )
 {
     auto type_reloc_pch_walk type_data;
 

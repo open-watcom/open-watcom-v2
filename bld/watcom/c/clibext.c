@@ -2448,6 +2448,14 @@ int mkstemp( char *template )
     return( -1 );
 }
 
+unsigned sleep( unsigned time )
+{
+    Sleep( time * 1000UL );
+    return( 0 );
+}
+
+#endif /* _MSC_VER */
+
 int _vbprintf( char *s, size_t bufsize, const char *format, __va_list arg )
 {
     int rc;
@@ -2460,13 +2468,5 @@ int _vbprintf( char *s, size_t bufsize, const char *format, __va_list arg )
     s[bufsize] = '\0';
     return( rc );
 }
-
-unsigned sleep( unsigned time )
-{
-    Sleep( time * 1000UL );
-    return( 0 );
-}
-
-#endif /* _MSC_VER */
 
 #endif /* ! __WATCOMC__ */

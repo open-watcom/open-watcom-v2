@@ -107,7 +107,7 @@ void WEXPORT WControl::getText( char* buff, unsigned len ) {
     if( text == NULL ) {
         *buff = NULLCHAR;
     } else {
-        int text_len = strlen( text );
+        unsigned text_len = strlen( text );
         if( text_len > len - 1 ) text_len = len - 1;
         memcpy( buff, text, text_len );
         buff[text_len] = NULLCHAR;

@@ -75,9 +75,9 @@ extern  int     OptInsSize( oc_class class, oc_dest_attr attr )
 {
     int         i;
 
+    i = 0;
     switch( class ) {
     case OC_CALL:
-        i = 0;
         break;
     case OC_JMP:
         i = 2;

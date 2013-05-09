@@ -33,14 +33,10 @@
 
 #define _WSTD_H_INCLUDED
 
-#if defined( __WATCOMC__ )  &&  __WATCOMC__ < 950
-    #error Must be using compiler version 9.5 or higher.
-#endif
-
 #include "watcom.h"
 
 #if !defined( UNIX )  &&  !defined( _MSC_VER )
-    #if !(defined(__cplusplus) && (__WATCOMC__ >= 1070))
+    #if !defined(__cplusplus)
         typedef unsigned char   bool;
     #endif
 #endif
@@ -269,7 +265,7 @@ typedef unsigned_8      sbit;
 ||  defined( __SC__ )           \
 ||  defined( __MWERKS__ )       \
 ||  defined( __ALPHA__ )        \
-|| (defined( _MSC_VER )  &&  (defined( __386__ ) || defined( UNDER_CE )))
+|| (defined( _MSC_VER )  &&  (defined( __386__ ) || defined( _M_X64 ) || defined( UNDER_CE )))
     #undef __FLAT__
     #define __FLAT__
 #endif

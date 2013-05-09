@@ -35,4 +35,4 @@ proctab.c : ./maketab.exe ../h/ytab.h
         $[@ > proctab.c
 
 ./maketab.exe : ../c/maketab.c
-        $(bld_cl) -I"../h" $(bld_clflags) $[@ $(bld_ldflags)
+        $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)

@@ -104,7 +104,7 @@ distbls.gh : ./disbuild.exe
     $[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
-    $(bld_cl) -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $[@ $(bld_ldflags)
+    $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
 
 verrc_dll = $(name)
 !include verrc.mif

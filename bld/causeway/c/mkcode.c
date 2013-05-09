@@ -42,6 +42,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include "wio.h"
+#include "clibext.h"
 
 static unsigned char *buff;
 

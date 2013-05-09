@@ -218,7 +218,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
         *bwlink format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
 
 ./mkcode.exe: ../../a/mkcode.c
-        $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
+        $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 verrc_dll = $(dllname)
 verrc_exe = $(exename)
@@ -230,19 +230,19 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
         msgencod -s -i -ip -q -g ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
-        $(bld_cl) -I"$(fe_misc_dir)/h" $(bld_clflags) $[@ $(bld_ldflags)
+        $(bld_cl) $[@ -I"$(fe_misc_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
         $[@ $(intname)
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
-        $(bld_cl) -I. -I"$(wasm_dir)/h" $(bld_clflags) $[@ $(bld_ldflags)
+        $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
         $[@ $(wasm_dir)/inlnops.tok $@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
-        $(bld_cl) -I. -I"$(wasm_dir)/h" $(bld_clflags) $[@ $(bld_ldflags)
+        $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
         $[@ $(wasm_dir)/inlnops.tok $@

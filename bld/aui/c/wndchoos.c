@@ -33,6 +33,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "walloca.h"
+#include "clibext.h"
 
 
 void WndChooseEvent( a_window *wnd, gui_event event, void *parm )

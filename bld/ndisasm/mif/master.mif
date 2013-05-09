@@ -85,10 +85,10 @@ $(exe_name) : msg.gh $(dis_prereq) $(disasm_objs) $(xlibs) $(proj_name).res $(ve
         $(wstrip) -q -a -r $@ . $^&.res
 
 distbls.gh : ./disbuild.exe
-    $[@
+        $[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
-    $(bld_cl) -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $[@ $(bld_ldflags)
+        $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
 
 $(proj_name).res : wdis.rc usage.gh usagej.gh msg.gh
         $(rc_aui) $[@ -I"../stand/h" -I"../stand" -fo=$@

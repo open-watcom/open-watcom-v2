@@ -39,7 +39,7 @@ Define( MAccelerator )
 
 typedef struct {
     WKeyCode    code;
-    char        *identifier;
+    const char  *identifier;
 } KeyMap;
 
 static const WKeyCode   ctrlAlph[] = {
@@ -52,18 +52,18 @@ static const WKeyCode   ctrlAlph[] = {
 };
 
 static const KeyMap     ctrlSpecialKeys[] = {
-    WKeyCtrlF1,         "F1",
-    WKeyCtrlF2,         "F2",
-    WKeyCtrlF3,         "F3",
-    WKeyCtrlF4,         "F4",
-    WKeyCtrlF5,         "F5",
-    WKeyCtrlF6,         "F6",
-    WKeyCtrlF7,         "F7",
-    WKeyCtrlF8,         "F8",
-    WKeyCtrlF9,         "F9",
-    WKeyCtrlF10,        "F10",
-    WKeyCtrlF11,        "F11",
-    WKeyCtrlF12,        "F12"
+    { WKeyCtrlF1,         "F1" },
+    { WKeyCtrlF2,         "F2" },
+    { WKeyCtrlF3,         "F3" },
+    { WKeyCtrlF4,         "F4" },
+    { WKeyCtrlF5,         "F5" },
+    { WKeyCtrlF6,         "F6" },
+    { WKeyCtrlF7,         "F7" },
+    { WKeyCtrlF8,         "F8" },
+    { WKeyCtrlF9,         "F9" },
+    { WKeyCtrlF10,        "F10" },
+    { WKeyCtrlF11,        "F11" },
+    { WKeyCtrlF12,        "F12" }
 };
 
 static const WKeyCode   altAlph[] = {
@@ -128,13 +128,13 @@ WEXPORT WKeyCode MAccelerator::lookUpAccel( WTokenFile &fil, WString &tok ) {
         alph_keys = ctrlAlph;
         _desc.concat( tok );
         _desc.concat( "+" );
-    }else if( tok == "ALT" ) {
+    } else if( tok == "ALT" ) {
         sp_keys = altSpecialKeys;
         sp_len = sizeof( altSpecialKeys ) / sizeof( KeyMap );
         alph_keys = altAlph;
         _desc.concat( tok );
         _desc.concat( "+" );
-    }else if( tok == "PLAIN" ) {
+    } else if( tok == "PLAIN" ) {
         sp_keys = plainSpecialKeys;
         sp_len = sizeof( plainSpecialKeys ) / sizeof( KeyMap );
         alph_keys = plainAlph;
@@ -143,7 +143,7 @@ WEXPORT WKeyCode MAccelerator::lookUpAccel( WTokenFile &fil, WString &tok ) {
     }
 
     WKeyCode    ret;
-    char        ch;
+    int         ch;
 
     fil.token( tok );
     _desc.concat( tok );

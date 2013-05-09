@@ -18,10 +18,10 @@ commands = mkexezip.exe uzip.exe splitfil.exe packsize.exe genmkfil.exe langdat.
 all : $(commands) .SYMBOLIC
 
 .c.exe:
-    $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 langdat.exe : langdat.c $(builder_dir)/c/utils.c
-    $(bld_cl) $(bld_clflags) $< $(bld_ldflags)
+    $(bld_cl) $< $(bld_clflags) $(bld_ldflags)
 
 uzip.exe: uzip.c
-    $(bld_cl) $(bld_clflags) $[@ $(ziplib) $(zlib) $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) $(ziplib) $(zlib) $(bld_ldflags)

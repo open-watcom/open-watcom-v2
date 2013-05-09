@@ -32,11 +32,11 @@
 
 #ifndef __CHFILE_H__
 
-#include <string>
-#include <vector>
 #include <sys/types.h>
 #include <wstd.h>
 #include "wio.h"
+#include <string>
+#include <vector>
 
 // FileExcept -- indicate that an exceptional file condition has occured
 

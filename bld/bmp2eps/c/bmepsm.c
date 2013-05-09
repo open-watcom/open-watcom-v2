@@ -635,6 +635,7 @@ int main(int argc, char *argv[])
         int m, f, r;
         m = f = 0;
 
+#if !defined( __UNIX__ )
 /*
   Get the file descriptor number
 */
@@ -654,6 +655,7 @@ int main(int argc, char *argv[])
         else {
           fprintf(stderr, "setmode(): Binary mode established.\n");
         }
+#endif
 #endif
 
         /*

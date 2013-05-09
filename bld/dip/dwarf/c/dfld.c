@@ -90,16 +90,15 @@ static void ByteSwapShdr( Elf32_Shdr *elf_sec, int byteswap )
 }
 
 
-static dip_status GetSectInfo( dig_fhandle f, uint_32 *sizes,
-                               uint_32 *bases, unsigned *byteswap )
-/*****************************************************************/
+static dip_status GetSectInfo( dig_fhandle f, unsigned long *sizes, unsigned long *bases, unsigned *byteswap )
+/************************************************************************************************************/
 // Fill in the starting offset & length of the dwarf sections
 {
     TISTrailer          dbg_head;
     Elf32_Ehdr          elf_head;
     Elf32_Shdr          elf_sec;
-    unsigned_32         offset;
-    unsigned_32         start;
+    unsigned long       offset;
+    unsigned long       start;
     char                *string_table;
     int                 i;
     uint                sect;
@@ -163,10 +162,9 @@ static dip_status GetSectInfo( dig_fhandle f, uint_32 *sizes,
     if( elf_head.e_shnum == 0 ) {
         return( DS_FAIL );  // no sections no DWARF
     }
-    memset( bases, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned_32 ) );
-    memset( sizes, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned_32 ) );
-    offset = elf_head.e_shoff
-           + elf_head.e_shstrndx * elf_head.e_shentsize+start;
+    memset( bases, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
+    memset( sizes, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
+    offset = elf_head.e_shoff + elf_head.e_shstrndx * elf_head.e_shentsize + start;
     DCSeek( f, offset, DIG_ORG );
     DCRead( f, &elf_sec, sizeof( Elf32_Shdr ) );
     ByteSwapShdr( &elf_sec, *byteswap );
@@ -197,8 +195,8 @@ static dip_status GetSectInfo( dig_fhandle f, uint_32 *sizes,
 static void DWRRead( void *_f, dr_section sect, void *buff, size_t size )
 /***********************************************************************/
 {
-    imp_image   f = _f;
-    uint_32     base;
+    imp_image       f = _f;
+    unsigned long   base;
 
     base = f->dwarf->sect_offsets[sect];
     DCRead( f->sym_file, buff, size );

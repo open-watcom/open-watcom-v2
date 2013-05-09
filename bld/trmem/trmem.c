@@ -152,7 +152,7 @@ static size_t getSize( entry_ptr p )
 }
 #pragma warning 579 4;  // reenable pointer truncated warning.
 
-static char *stpcpy( char *dest, const char *src )
+static char *mystpcpy( char *dest, const char *src )
 {
     *dest = *src;
     while( *dest ) {
@@ -240,7 +240,7 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
             ch = *fmt++;
             switch( ch ) {
             case 'W':   /* "a1(a2):" */
-                ptr = stpcpy( ptr, va_arg( args, const char * ) );
+                ptr = mystpcpy( ptr, va_arg( args, const char * ) );
                 who = va_arg( args, _trmem_who );
                 if( who != _TRMEM_NO_ROUTINE ) {
                     *ptr++ = '(';
@@ -262,7 +262,7 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
 #endif
                 break;
             case 'S':   /* char * (string) pointer */
-                ptr = stpcpy( ptr, va_arg( args, char * ) );
+                ptr = mystpcpy( ptr, va_arg( args, char * ) );
                 break;
             case 'U':   /* unsigned integer */
                 ui = va_arg( args, uint );

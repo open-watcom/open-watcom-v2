@@ -65,7 +65,7 @@ WCLASS VpeMain : public WObject
         bool loadProject( const WFileName& fn );
 };
 
-static char* usage[] = {
+static const char *usage[] = {
     "Usage: ide2make [*options] [tgtfile]*",
     "",
     "  ide2make loads an IDE project file (-p switch) and, using the associated",
@@ -84,7 +84,7 @@ static char* usage[] = {
     NULL
 };
 
-static char* usage_hosts[] = {
+static const char *usage_hosts[] = {
     #undef pick
     #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) descr,
     #include "hosttype.h"

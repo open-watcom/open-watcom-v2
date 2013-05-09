@@ -34,8 +34,7 @@
 #include "wfilenam.hpp"
 #include "wresstr.hpp"
 
-static  char            *FilterList = "All files(*.*)\0*.*\0" \
-                                      "\0";
+static  char            *FilterList = "All files(*.*)\0*.*\0\0";
 
 
 WEXPORT WFileDialog::WFileDialog( WWindow* parent, const char *filter )

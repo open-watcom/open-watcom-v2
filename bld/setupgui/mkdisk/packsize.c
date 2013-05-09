@@ -30,12 +30,14 @@
 ****************************************************************************/
 
 
-#include "stdio.h"
-#include "stdlib.h"
-#include "process.h"
-#include "string.h"
-#include "conio.h"
-#include "sys/stat.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#include <process.h>
+#endif
+#include "clibext.h"
 
 #define BUF_SIZE        4096
 #define MAX_PACK_SIZE   (3L*(1024*1024)/4)      // half of 1.44 meg
@@ -70,8 +72,9 @@ int main( int argc, char **argv )
         exit( -1 );
     }
     for( ;; ) {
-        cprintf( "%d\r", i++ );
-        if( fgets( buff, sizeof( buff ), in ) == NULL ) break;
+        printf( "%d\r", i++ );
+        if( fgets( buff, sizeof( buff ), in ) == NULL ) 
+            break;
         buff[strlen(buff)-1] = '\0';
         n = strtok( buff, " \t" );
         dir = strtok( NULL, " \t" );

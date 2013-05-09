@@ -70,6 +70,7 @@ WCLASS WString : public WObject
                 WEXPORT operator long() const;
                 void WEXPORT puts( const char * );
                 void WEXPORT printf( const char* parms... );
+                virtual void WEXPORT concat( const WString& s ) { concat( (const char *)s ); }
                 virtual void WEXPORT concat( const char* str );
                 virtual void WEXPORT concat( char chr );
                 void WEXPORT concatf( const char* parms... );

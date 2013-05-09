@@ -191,7 +191,6 @@ banner3a,
         newLine();
     }
     showDateTimeFormat();
-    exit( EXIT_FAILURE );
 }
 
 static void doFOption( char *date_file )
@@ -288,8 +287,8 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
     syncStamp( stamp );
 }
 
-static void processOptions( int argc, char **argv )
-/*************************************************/
+static int processOptions( int argc, char **argv )
+/************************************************/
 {
     time_t      curr_time;
     struct tm   *ptime;
@@ -320,6 +319,7 @@ static void processOptions( int argc, char **argv )
                 switch( tolower( p[1] ) ) {
                 case '?':
                     usage();
+                    return( 0 );
                     break;
                 case 'u':
                     TouchFlags.usa_date_time = 1;
@@ -381,7 +381,9 @@ static void processOptions( int argc, char **argv )
     }
     if( files == 0 ) {
         usage();
+        return( 0 );
     }
+    return( 1 );
 }
 
 static int doTouchFile( char *full_name, struct dirent *ndir,
@@ -567,12 +569,14 @@ static void doTouch( void )
     }
 }
 
-void main( int argc, char **argv )
-/********************************/
+int main( int argc, char **argv )
+/*******************************/
 {
-    if( !MsgInit() ) exit( EXIT_FAILURE );
-    processOptions( argc, argv );
+    if( !MsgInit() ) 
+        return( 1 );
+    if( !processOptions( argc, argv ) )
+        return( 1 );
     doTouch();
     MsgFini();
-    exit( EXIT_SUCCESS );
+    return( 0 );
 }
