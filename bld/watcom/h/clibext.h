@@ -59,6 +59,7 @@
 #define _fsopen(x,y,z) fopen(x,y)
 #define _fmemcpy memcpy
 #define __int64 long long
+#define __alloca alloca
 
 #elif defined( _MSC_VER )
 
