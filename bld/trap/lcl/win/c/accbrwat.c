@@ -129,7 +129,7 @@ break_point far * findBrkEntry( void )
     return( &brkList[old_num] );
 }
 
-unsigned ReqSet_break( void )
+trap_elen ReqSet_break( void )
 {
     BYTE                ch;
     set_break_req       *acc;
@@ -154,7 +154,7 @@ unsigned ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break( void )
+trap_elen ReqClear_break( void )
 {
     BYTE                        ch;
     int                         i;
@@ -274,7 +274,7 @@ BOOL CheckWatchPoints( void )
     return( FALSE );
 } /* CheckWatchPoints */
 
-unsigned ReqSet_watch( void )
+trap_elen ReqSet_watch( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
@@ -315,7 +315,7 @@ unsigned ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch( void )
+trap_elen ReqClear_watch( void )
 {
     clear_watch_req     *acc;
     watch_point         *dst;

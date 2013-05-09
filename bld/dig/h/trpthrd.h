@@ -33,7 +33,7 @@
 
 #include "trptypes.h"
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 #define THREAD_SUPP_NAME                "Threads"
 
@@ -96,7 +96,7 @@ typedef struct {
 
 /* return for REQ_THREAD_GET_EXTRA is a string with the thread extra info */
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #define TRPTHRD_H
 

@@ -24,43 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of fileinfo supplementary module
+* Description:  System specific support routines
 *
 ****************************************************************************/
 
-#include "stdrdos.h"
 
-trap_elen ReqFileInfo_getdate( void )
-{
-    file_info_get_date_req  *req;
-    file_info_get_date_ret  *ret;
-    char                    *name;
+// on WIN64 long is OK because HANDLE can be hold as 32-bit sign extended value
+// even if HANDLE is defined as 64-bit value
 
-    req = GetInPtr( 0 );
-    name = GetInPtr( sizeof( *req ) );
-    ret = GetOutPtr( 0 );
+typedef long        dip_sys_handle;
 
-/* not yet implemented */
-
-    ret->err = MSG_FILE_NOT_FOUND;
-    ret->date = 0;
-    
-    return( sizeof( *ret ) );
-}
-
-trap_elen ReqFileInfo_setdate( void )
-{
-    file_info_set_date_req  *req;
-    file_info_set_date_ret  *ret;
-    char                    *name;
-
-    req = GetInPtr( 0 );
-    name = GetInPtr( sizeof( *req ) );
-    ret = GetOutPtr( 0 );
-    
-/* not yet implemented */
-
-    ret->err = MSG_FILE_NOT_FOUND;
-
-    return( sizeof( *ret ) );
-}
+extern dip_status   DIPSysLoad( char *, dip_client_routines *, dip_imp_routines **, dip_sys_handle * );
+extern void         DIPSysUnload( dip_sys_handle );

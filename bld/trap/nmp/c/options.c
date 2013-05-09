@@ -31,13 +31,13 @@
 
 
 #include <windows.h>
+#include "wi163264.h"
 #include "wserver.h"
 #include "options.h"
 
 extern char TrapParm[];
 
-BOOL _EXPORT FAR PASCAL OptionsDlgProc( HWND hwnd, unsigned msg,
-                                UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;                    /* turn off warning */
 
@@ -58,5 +58,4 @@ BOOL _EXPORT FAR PASCAL OptionsDlgProc( HWND hwnd, unsigned msg,
         break;
     }
     return( FALSE );
-
 }

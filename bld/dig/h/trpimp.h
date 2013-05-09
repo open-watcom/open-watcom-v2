@@ -31,362 +31,175 @@
 
 
 #ifndef TRPIMP_H
-
 #define TRPIMP_H
-
-#if defined( _M_I86 )
-    #define TRAPFAR __far
-#else
-    #define TRAPFAR
-#endif
-
-#if defined(__DOS__) || defined(__DSX__)
-    #if defined(DOSXHELP)
-        /* protected mode helper */
-        #undef          WANT_FILE_INFO
-        #undef          WANT_ENV
-        #undef          WANT_ASYNC
-        #undef          WANT_FILE
-        #undef          WANT_OVL
-        #undef          WANT_THREAD
-        #undef          WANT_RUN_THREAD
-        #undef          WANT_RFX
-    #elif defined(DOSXTRAP)
-        /* real mode trap file talking to protected mode helper */
-        #undef          WANT_FILE_INFO
-        #undef          WANT_ENV
-        #undef          WANT_ASYNC
-        #define         WANT_FILE
-        #undef          WANT_OVL
-        #undef          WANT_THREAD
-        #undef          WANT_RUN_THREAD
-        #define         WANT_RFX
-    #else
-        /* straight dos */
-        #undef          WANT_FILE_INFO
-        #undef          WANT_ENV
-        #undef          WANT_ASYNC
-        #define         WANT_FILE
-        #define         WANT_OVL
-        #undef          WANT_THREAD
-        #undef          WANT_RUN_THREAD
-        #define         WANT_RFX
-    #endif
-    #define     TRAPENTRY TRAPFAR __saveregs
-#elif defined(__OS2__) && defined(__I86__)
-    #undef          WANT_FILE_INFO
-    #undef          WANT_ENV
-    #undef          WANT_ASYNC
-    #define         WANT_FILE
-    #undef          WANT_OVL
-    #define         WANT_THREAD
-    #undef          WANT_RUN_THREAD
-    #define         WANT_RFX
-    #define         TRAPENTRY TRAPFAR __saveregs
-#elif defined(__OS2V2__) || defined(__OS2__) && !defined(__I86__)
-    #if defined(ELFCORE)
-        #undef      WANT_FILE_INFO
-        #undef      WANT_ENV
-        #undef      WANT_ASYNC
-        #define     WANT_FILE
-        #undef      WANT_OVL
-        #undef      WANT_THREAD
-        #undef      WANT_RUN_THREAD
-        #undef      WANT_RFX
-        #define     TRAPENTRY TRAPFAR
-    #else
-        #undef      WANT_FILE_INFO
-        #undef      WANT_ENV
-        #undef      WANT_ASYNC
-        #define     WANT_FILE
-        #undef      WANT_OVL
-        #define     WANT_THREAD
-        #undef      WANT_RUN_THREAD
-        #define     WANT_RFX
-        #define     TRAPENTRY TRAPFAR
-    #endif
-#elif defined(__NT__)
-    #if defined(JVMXHELP) || defined(MSJXHELP)
-        #undef  WANT_FILE_INFO
-        #undef  WANT_ENV
-        #undef  WANT_ASYNC
-        #define WANT_FILE
-        #undef  WANT_OVL
-        #define WANT_THREAD
-        #undef  WANT_RUN_THREAD
-        #undef  WANT_RFX
-        #define TRAPENTRY TRAPFAR
-    #elif defined(MSJXTRAP)
-        #define WANT_FILE_INFO
-        #define WANT_ENV
-        #undef  WANT_ASYNC
-        #define WANT_FILE
-        #undef  WANT_OVL
-        #define WANT_THREAD
-        #undef  WANT_RUN_THREAD
-        #undef  WANT_RFX
-        #define TRAPENTRY TRAPFAR
-    #elif defined(ELFCORE)
-        #undef  WANT_FILE_INFO
-        #undef  WANT_ENV
-        #undef  WANT_ASYNC
-        #define WANT_FILE
-        #undef  WANT_OVL
-        #undef  WANT_THREAD
-        #undef  WANT_RUN_THREAD
-        #undef  WANT_RFX
-        #define TRAPENTRY TRAPFAR
-    #else
-        #define WANT_FILE_INFO
-        #define WANT_ENV
-        #undef  WANT_ASYNC
-        #define WANT_FILE
-        #undef  WANT_OVL
-        #define WANT_THREAD
-        #undef  WANT_RUN_THREAD
-        #undef  WANT_RFX
-        #define WANT_CAPABILITIES
-        #define TRAPENTRY TRAPFAR
-    #endif
-#elif defined(__WINDOWS__)
-    #undef      WANT_FILE_INFO
-    #undef      WANT_ENV
-    #undef      WANT_ASYNC
-    #define     WANT_FILE
-    #undef      WANT_OVL
-    #undef      WANT_THREAD
-    #undef      WANT_RUN_THREAD
-    #define     WANT_RFX
-    #define     TRAPENTRY TRAPFAR __pascal
-#elif defined(__QNX__)
-    #undef      WANT_FILE_INFO
-    #undef      WANT_ENV
-    #undef      WANT_ASYNC
-    #define     WANT_FILE
-    #undef      WANT_OVL
-    #define     WANT_THREAD
-    #undef      WANT_RUN_THREAD
-    #undef      WANT_RFX
-    #ifdef __WATCOMC__
-        #define     TRAPENTRY TRAPFAR __saveregs
-    #else
-        #define     TRAPENTRY TRAPFAR
-    #endif
-#elif defined(__LINUX__)
-    #undef      WANT_FILE_INFO  // TODO: Want this later for Linux!
-    #undef      WANT_ENV        // TODO: Want this later for Linux!
-    #undef      WANT_ASYNC      // TODO: Want this later for Linux!
-    #define     WANT_FILE
-    #undef      WANT_OVL
-    #undef      WANT_THREAD     // TODO: Want this later for Linux!
-    #undef      WANT_RUN_THREAD
-    #undef      WANT_RFX        // TODO: Want this later for Linux!
-    #define     TRAPENTRY TRAPFAR
-#elif defined(__UNIX__)
-    #undef      WANT_FILE_INFO
-    #undef      WANT_ENV
-    #undef      WANT_ASYNC
-    #define     WANT_FILE
-    #undef      WANT_OVL
-    #undef      WANT_THREAD
-    #undef      WANT_RUN_THREAD
-    #undef      WANT_RFX
-    #define     TRAPENTRY TRAPFAR
-#elif defined(__NETWARE__)
-    #undef      WANT_FILE_INFO
-    #undef      WANT_ENV
-    #undef      WANT_ASYNC
-    #define     WANT_FILE
-    #undef      WANT_OVL
-    #define     WANT_THREAD
-    #undef      WANT_RUN_THREAD
-    #undef      WANT_RFX
-    #define     TRAPENTRY TRAPFAR
-#elif defined(__RDOS__)
-    #define     WANT_FILE_INFO
-    #define     WANT_ENV
-    #define     WANT_ASYNC
-    #define     WANT_FILE
-    #undef      WANT_OVL
-    #undef      WANT_THREAD
-    #define     WANT_RUN_THREAD
-    #undef      WANT_RFX
-    #define     WANT_CAPABILITIES
-    #define     TRAPENTRY TRAPFAR
-#else
-    #error Unknown operating system
-#endif
 
 #include "trpcore.h"
 
-extern unsigned ReqConnect(void);
-extern unsigned ReqDisconnect(void);
-extern unsigned ReqSuspend(void);
-extern unsigned ReqResume(void);
-extern unsigned ReqGet_supplementary_service(void);
-extern unsigned ReqPerform_supplementary_service(void);
-extern unsigned ReqGet_sys_config(void);
-extern unsigned ReqMap_addr(void);      //obsolete
-extern unsigned ReqAddr_info(void);
-extern unsigned ReqChecksum_mem(void);
-extern unsigned ReqRead_mem(void);
-extern unsigned ReqWrite_mem(void);
-extern unsigned ReqRead_io(void);
-extern unsigned ReqWrite_io(void);
-extern unsigned ReqRead_cpu(void);      //obsolete
-extern unsigned ReqRead_fpu(void);      //obsolete
-extern unsigned ReqWrite_cpu(void);     //obsolete
-extern unsigned ReqWrite_fpu(void);     //obsolete
-extern unsigned ReqProg_go(void);
-extern unsigned ReqProg_step(void);
-extern unsigned ReqProg_load(void);
-extern unsigned ReqProg_kill(void);
-extern unsigned ReqSet_watch(void);
-extern unsigned ReqClear_watch(void);
-extern unsigned ReqSet_break(void);
-extern unsigned ReqClear_break(void);
-extern unsigned ReqGet_next_alias(void);
-extern unsigned ReqSet_user_screen(void);
-extern unsigned ReqSet_debug_screen(void);
-extern unsigned ReqRead_user_keyboard(void);
-extern unsigned ReqGet_lib_name(void);
-extern unsigned ReqGet_err_text(void);
-extern unsigned ReqGet_message_text(void);
-extern unsigned ReqRedirect_stdin(void);
-extern unsigned ReqRedirect_stdout(void);
-extern unsigned ReqSplit_cmd(void);
-extern unsigned ReqRead_regs(void);
-extern unsigned ReqWrite_regs(void);
-extern unsigned ReqMachine_data(void);
+extern trap_elen ReqConnect(void);
+extern trap_elen ReqDisconnect(void);
+extern trap_elen ReqSuspend(void);
+extern trap_elen ReqResume(void);
+extern trap_elen ReqGet_supplementary_service(void);
+extern trap_elen ReqPerform_supplementary_service(void);
+extern trap_elen ReqGet_sys_config(void);
+extern trap_elen ReqMap_addr(void);      //obsolete
+extern trap_elen ReqAddr_info(void);
+extern trap_elen ReqChecksum_mem(void);
+extern trap_elen ReqRead_mem(void);
+extern trap_elen ReqWrite_mem(void);
+extern trap_elen ReqRead_io(void);
+extern trap_elen ReqWrite_io(void);
+extern trap_elen ReqRead_cpu(void);      //obsolete
+extern trap_elen ReqRead_fpu(void);      //obsolete
+extern trap_elen ReqWrite_cpu(void);     //obsolete
+extern trap_elen ReqWrite_fpu(void);     //obsolete
+extern trap_elen ReqProg_go(void);
+extern trap_elen ReqProg_step(void);
+extern trap_elen ReqProg_load(void);
+extern trap_elen ReqProg_kill(void);
+extern trap_elen ReqSet_watch(void);
+extern trap_elen ReqClear_watch(void);
+extern trap_elen ReqSet_break(void);
+extern trap_elen ReqClear_break(void);
+extern trap_elen ReqGet_next_alias(void);
+extern trap_elen ReqSet_user_screen(void);
+extern trap_elen ReqSet_debug_screen(void);
+extern trap_elen ReqRead_user_keyboard(void);
+extern trap_elen ReqGet_lib_name(void);
+extern trap_elen ReqGet_err_text(void);
+extern trap_elen ReqGet_message_text(void);
+extern trap_elen ReqRedirect_stdin(void);
+extern trap_elen ReqRedirect_stdout(void);
+extern trap_elen ReqSplit_cmd(void);
+extern trap_elen ReqRead_regs(void);
+extern trap_elen ReqWrite_regs(void);
+extern trap_elen ReqMachine_data(void);
 
 #ifdef WANT_FILE_INFO
 #include "trpfinfo.h"
 
-extern unsigned  ReqFileInfo_getdate(void);
-extern unsigned  ReqFileInfo_setdate(void);
+extern trap_elen ReqFileInfo_getdate(void);
+extern trap_elen ReqFileInfo_setdate(void);
 
 #endif
 
 #ifdef WANT_ENV
 #include "trpenv.h"
 
-extern unsigned  ReqEnv_getvar(void);
-extern unsigned  ReqEnv_setvar(void);
+extern trap_elen ReqEnv_getvar(void);
+extern trap_elen ReqEnv_setvar(void);
 
 #endif
 
 #ifdef WANT_ASYNC
 #include "trpasync.h"
 
-extern unsigned ReqAsync_go(void);
-extern unsigned ReqAsync_step(void);
-extern unsigned ReqAsync_poll(void);
-extern unsigned ReqAsync_stop(void);
+extern trap_elen ReqAsync_go(void);
+extern trap_elen ReqAsync_step(void);
+extern trap_elen ReqAsync_poll(void);
+extern trap_elen ReqAsync_stop(void);
 
 #endif
 
 #ifdef WANT_FILE
 #include "trpfile.h"
 
-extern unsigned  ReqFile_get_config(void);
-extern unsigned  ReqFile_open(void);
-extern unsigned  ReqFile_seek(void);
-extern unsigned  ReqFile_read(void);
-extern unsigned  ReqFile_write(void);
-extern unsigned  ReqFile_write_console(void);
-extern unsigned  ReqFile_close(void);
-extern unsigned  ReqFile_erase(void);
-extern unsigned  ReqFile_string_to_fullpath(void);
-extern unsigned  ReqFile_run_cmd(void);
+extern trap_elen ReqFile_get_config(void);
+extern trap_elen ReqFile_open(void);
+extern trap_elen ReqFile_seek(void);
+extern trap_elen ReqFile_read(void);
+extern trap_elen ReqFile_write(void);
+extern trap_elen ReqFile_write_console(void);
+extern trap_elen ReqFile_close(void);
+extern trap_elen ReqFile_erase(void);
+extern trap_elen ReqFile_string_to_fullpath(void);
+extern trap_elen ReqFile_run_cmd(void);
 
 #endif
 
 #ifdef WANT_OVL
 #include "trpovl.h"
 
-extern unsigned ReqOvl_state_size(void);
-extern unsigned ReqOvl_get_data(void);
-extern unsigned ReqOvl_read_state(void);
-extern unsigned ReqOvl_write_state(void);
-extern unsigned ReqOvl_trans_vect_addr(void);
-extern unsigned ReqOvl_trans_ret_addr(void);
-extern unsigned ReqOvl_get_remap_entry(void);
+extern trap_elen ReqOvl_state_size(void);
+extern trap_elen ReqOvl_get_data(void);
+extern trap_elen ReqOvl_read_state(void);
+extern trap_elen ReqOvl_write_state(void);
+extern trap_elen ReqOvl_trans_vect_addr(void);
+extern trap_elen ReqOvl_trans_ret_addr(void);
+extern trap_elen ReqOvl_get_remap_entry(void);
 
 #endif
 
 #ifdef WANT_THREAD
 #include "trpthrd.h"
 
-extern unsigned ReqThread_get_next(void);
-extern unsigned ReqThread_set(void);
-extern unsigned ReqThread_freeze(void);
-extern unsigned ReqThread_thaw(void);
-extern unsigned ReqThread_get_extra(void);
+extern trap_elen ReqThread_get_next(void);
+extern trap_elen ReqThread_set(void);
+extern trap_elen ReqThread_freeze(void);
+extern trap_elen ReqThread_thaw(void);
+extern trap_elen ReqThread_get_extra(void);
 
 #endif
 
 #ifdef WANT_RUN_THREAD
 #include "trprtrd.h"
 
-extern unsigned ReqRunThread_info(void);
-extern unsigned ReqRunThread_get_next(void);
-extern unsigned ReqRunThread_get_runtime(void);
-extern unsigned ReqRunThread_poll(void);
-extern unsigned ReqRunThread_set(void);
-extern unsigned ReqRunThread_get_name(void);
-extern unsigned ReqRunThread_stop(void);
-extern unsigned ReqRunThread_signal_stop(void);
+extern trap_elen ReqRunThread_info(void);
+extern trap_elen ReqRunThread_get_next(void);
+extern trap_elen ReqRunThread_get_runtime(void);
+extern trap_elen ReqRunThread_poll(void);
+extern trap_elen ReqRunThread_set(void);
+extern trap_elen ReqRunThread_get_name(void);
+extern trap_elen ReqRunThread_stop(void);
+extern trap_elen ReqRunThread_signal_stop(void);
 
 #endif
 
 #ifdef WANT_RFX
 #include "trprfx.h"
 
-extern unsigned ReqRfx_rename(void);
-extern unsigned ReqRfx_mkdir(void);
-extern unsigned ReqRfx_rmdir(void);
-extern unsigned ReqRfx_setdrive(void);
-extern unsigned ReqRfx_getdrive(void);
-extern unsigned ReqRfx_setcwd(void);
-extern unsigned ReqRfx_getcwd(void);
-extern unsigned ReqRfx_setdatetime(void);
-extern unsigned ReqRfx_getdatetime(void);
-extern unsigned ReqRfx_getfreespace(void);
-extern unsigned ReqRfx_setfileattr(void);
-extern unsigned ReqRfx_getfileattr(void);
-extern unsigned ReqRfx_nametocannonical(void);
-extern unsigned ReqRfx_findfirst(void);
-extern unsigned ReqRfx_findnext(void);
-extern unsigned ReqRfx_findclose(void);
+extern trap_elen ReqRfx_rename(void);
+extern trap_elen ReqRfx_mkdir(void);
+extern trap_elen ReqRfx_rmdir(void);
+extern trap_elen ReqRfx_setdrive(void);
+extern trap_elen ReqRfx_getdrive(void);
+extern trap_elen ReqRfx_setcwd(void);
+extern trap_elen ReqRfx_getcwd(void);
+extern trap_elen ReqRfx_setdatetime(void);
+extern trap_elen ReqRfx_getdatetime(void);
+extern trap_elen ReqRfx_getfreespace(void);
+extern trap_elen ReqRfx_setfileattr(void);
+extern trap_elen ReqRfx_getfileattr(void);
+extern trap_elen ReqRfx_nametocannonical(void);
+extern trap_elen ReqRfx_findfirst(void);
+extern trap_elen ReqRfx_findnext(void);
+extern trap_elen ReqRfx_findclose(void);
 
 #endif
 
 #ifdef WANT_CAPABILITIES
 #include "trpcapb.h"
 
-extern unsigned ReqCapabilities_get_8b_bp(void);
-extern unsigned ReqCapabilities_set_8b_bp(void);
-extern unsigned ReqCapabilities_get_exact_bp(void);
-extern unsigned ReqCapabilities_set_exact_bp(void);
+extern trap_elen ReqCapabilities_get_8b_bp(void);
+extern trap_elen ReqCapabilities_set_8b_bp(void);
+extern trap_elen ReqCapabilities_get_exact_bp(void);
+extern trap_elen ReqCapabilities_set_exact_bp(void);
 
 #endif
 
-extern unsigned_8       In_Mx_Num;
-extern unsigned_8       Out_Mx_Num;
-extern mx_entry TRAPFAR *In_Mx_Ptr;
-extern mx_entry TRAPFAR *Out_Mx_Ptr;
+extern trap_elen        In_Mx_Num;
+extern trap_elen        Out_Mx_Num;
+extern mx_entry_p       In_Mx_Ptr;
+extern mx_entry_p       Out_Mx_Ptr;
 
-extern void             *GetInPtr( unsigned );
-extern void             *GetOutPtr( unsigned );
-extern unsigned         GetTotalSize( void );
-
-#include "bool.h"
+extern void             *GetInPtr( trap_elen );
+extern void             *GetOutPtr( trap_elen );
+extern trap_elen        GetTotalSize( void );
 
 #define BUFF_SIZE       256
 
-extern trap_version TRAPENTRY TrapInit( char *, char *, bool );
-extern unsigned     TRAPENTRY TrapRequest( unsigned, mx_entry *,
-                                          unsigned, mx_entry * );
-extern void         TRAPENTRY TrapFini( void );
+extern trap_init_func   TrapInit;
+extern trap_req_func    TrapRequest;
+extern trap_fini_func   TrapFini;
 
 #endif

@@ -34,7 +34,7 @@
 #include "trptypes.h"
 #include <time.h>
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 #define CAPABILITIES_SUPP_NAME  "Capabilities"
 
@@ -101,7 +101,7 @@ typedef struct {
     unsigned_32         status;     /* 0 = off, !0 = on */
 } capabilities_set_exact_bp_ret;
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #define TRPCAPB_H
 

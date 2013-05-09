@@ -109,47 +109,47 @@ static void WriteFPU( struct x86_fpu *r )
     }
 }
 
-unsigned ReqRead_cpu()
+trap_elen ReqRead_cpu()
 {
     ReadCPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_cpu ) );
 }
 
-unsigned ReqRead_fpu()
+trap_elen ReqRead_fpu()
 {
     ReadFPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_fpu ) );
 }
 
-unsigned ReqRead_regs( void )
+trap_elen ReqRead_regs( void )
 {
     mad_registers       *mr;
 
     mr = GetOutPtr( 0 );
 
     ReadCPU( &mr->x86.cpu );
-    ReadFPU( &mr->x86.fpu );
+    ReadFPU( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
 }
 
-unsigned ReqWrite_cpu()
+trap_elen ReqWrite_cpu()
 {
     WriteCPU( GetInPtr( sizeof( write_cpu_req ) ) );
     return( 0 );
 }
 
-unsigned ReqWrite_fpu()
+trap_elen ReqWrite_fpu()
 {
     WriteFPU( GetInPtr( sizeof( write_fpu_req ) ) );
     return( 0 );
 }
 
-unsigned ReqWrite_regs( void )
+trap_elen ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
     mr = GetInPtr( sizeof( write_regs_req ) );
     WriteCPU( &mr->x86.cpu );
-    WriteFPU( &mr->x86.fpu );
+    WriteFPU( &mr->x86.u.fpu );
     return( 0 );
 }

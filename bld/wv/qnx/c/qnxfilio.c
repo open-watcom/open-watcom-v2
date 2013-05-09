@@ -30,6 +30,12 @@
 ****************************************************************************/
 
 
+#include <limits.h>
+#include <string.h>
+#include <stddef.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dbgio.h"
@@ -37,13 +43,7 @@
 #include "farptrs.h"
 #include "dbgreg.h"
 #include "errno.h"
-#include <limits.h>
-#include <string.h>
-#include <stddef.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include "trpfile.h"
+#include "trptypes.h"
 
 
 #define READONLY    0

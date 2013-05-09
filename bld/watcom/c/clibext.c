@@ -1916,7 +1916,7 @@ static void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr )
     }
 }
 
-static void __GetNTAccessAttr( int rwmode, LPDWORD desired_access, LPDWORD attr )
+void __GetNTAccessAttr( int rwmode, LPDWORD desired_access, LPDWORD attr )
 {
     if( rwmode == O_RDWR ) {
         *desired_access = GENERIC_READ | GENERIC_WRITE;
@@ -1930,7 +1930,7 @@ static void __GetNTAccessAttr( int rwmode, LPDWORD desired_access, LPDWORD attr 
     }
 }
 
-static void __GetNTShareAttr( int mode, LPDWORD share_mode )
+void __GetNTShareAttr( int mode, LPDWORD share_mode )
 {
     int share;
     int rwmode;

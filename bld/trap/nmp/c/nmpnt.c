@@ -40,38 +40,34 @@ bool Terminate( void )
     return( FALSE );
 }
 
-int myopen( char *name )
+bhandle myopen( char *name )
 {
-    HANDLE      h;
-
-    h = CreateFile( name, GENERIC_READ+GENERIC_WRITE,
+    return( CreateFile( name, GENERIC_READ+GENERIC_WRITE,
                         FILE_SHARE_READ+FILE_SHARE_WRITE, NULL,
-                        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
-    if( h == INVALID_HANDLE_VALUE ) return( -1 );
-    return( (int)h );
+                        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL ) );
 }
 
-void myclose( int handle )
+void myclose( bhandle handle )
 {
-    CloseHandle( (HANDLE)handle );
+    CloseHandle( handle );
 }
 
-int myread( int handle, char *buff, int len )
+int myread( bhandle handle, char *buff, int len )
 {
     DWORD               bytes;
 
-    if( !ReadFile( (HANDLE)handle, buff, len, &bytes, NULL ) ) {
+    if( !ReadFile( handle, buff, len, &bytes, NULL ) ) {
         bytes = 0;
     }
     return( bytes );
 }
 
 
-int mywrite( int handle, char *buff, int len )
+int mywrite( bhandle handle, char *buff, int len )
 {
     DWORD               bytes;
 
-    if( !WriteFile( (HANDLE)handle, buff, len, &bytes, NULL ) ) {
+    if( !WriteFile( handle, buff, len, &bytes, NULL ) ) {
         bytes = 0;
     }
     return( bytes );

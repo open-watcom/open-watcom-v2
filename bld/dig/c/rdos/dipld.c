@@ -35,9 +35,9 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#include "dipsys.h"
 
-dip_status DIPSysLoad( char *path, dip_client_routines *cli,
-                                dip_imp_routines **imp, unsigned long *sys_hdl )
+dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     int                 dll;
     dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );
@@ -60,11 +60,11 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
         RdosFreeDll( dll );
         return( status );
     }
-    *sys_hdl = (unsigned long)dll;
+    *sys_hdl = (dip_sys_handle)dll;
     return( DS_OK );
 }
 
-void DIPSysUnload( unsigned long sys_hdl )
+void DIPSysUnload( dip_sys_handle sys_hdl )
 {
     RdosFreeDll( (int)sys_hdl );
 }

@@ -43,7 +43,7 @@ int WaitByte( unsigned timer_ticks )
     wait_time = WaitCount() + timer_ticks;
     for( ;; ) {
         data = GetByte();
-        if( data != NO_DATA ) break;    /* character received */
+        if( data != SDATA_NO_DATA ) break;    /* character received */
         if( WaitCount() >= wait_time ) break;
         NothingToDo();
     }

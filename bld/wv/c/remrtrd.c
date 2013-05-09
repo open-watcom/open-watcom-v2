@@ -31,9 +31,9 @@
 
 #include "dbgdefn.h"
 #include "dbgreg.h"
+#include "dbgio.h"
 #include "trpcore.h"
 #include "trprtrd.h"
-#include "dbgio.h"
 
 #define DEFAULT_TID     1
 
@@ -43,7 +43,7 @@ extern void             GetSysConfig( void );
 extern void             CheckMADChange( void );
 
 #if defined(__GUI__) && defined(__OS2__)
-extern unsigned         OnAnotherThread( unsigned(*)(), unsigned, void *, unsigned, void * );
+extern unsigned         OnAnotherThread( trap_elen(*)(), unsigned, void *, unsigned, void * );
 #else
 #define                 OnAnotherThread( a,b,c,d,e ) a( b,c,d,e )
 #endif
@@ -53,26 +53,24 @@ extern void             InitRunThreadWnd();
 extern machine_state    *DbgRegs;
 extern system_config    SysConfig;
 
-static trap_shandle     SuppRunThreadId;
+static trap_shandle     SuppRunThreadId = 0;
 
 bool InitRunThreadSupp( void )
 {
+#ifdef WANT_RUN_THREAD
     SuppRunThreadId = GetSuppId( RUN_THREAD_SUPP_NAME );
     if( SuppRunThreadId == 0 ) return( FALSE );
     InitRunThreadWnd();
     return( TRUE );
+#else
+    SuppRunThreadId = 0;
+    return( FALSE );
+#endif
 }
 
 bool HaveRemoteRunThread( void )
 {
-     /* only available on selected hosts for now */
-#if defined( __NT__ ) && defined( __GUI__ )
     return( SuppRunThreadId != 0 );
-#elif defined( __RDOS__ )
-    return( SuppRunThreadId != 0 );
-#else
-    return( FALSE );
-#endif
 }
 
 bool RemoteGetRunThreadInfo( int row, char *infotype, int *width, char *header, int maxsize )

@@ -34,7 +34,7 @@
 #include "trptypes.h"
 #include <time.h>
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 #define ENV_SUPP_NAME   "Environment"
 
@@ -71,7 +71,7 @@ typedef struct {
     trap_error          err;
 } env_set_var_ret;
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #define TRPENV_H
 

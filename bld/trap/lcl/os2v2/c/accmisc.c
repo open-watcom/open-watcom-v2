@@ -68,12 +68,12 @@ extern  void    DebugSession( void );
 extern  void    AppSession( void );
 
 
-unsigned ReqRead_io( void )
+trap_elen ReqRead_io( void )
 {
     return( 0 );
 }
 
-unsigned ReqWrite_io()
+trap_elen ReqWrite_io()
 {
     write_io_ret        *ret;
 
@@ -82,7 +82,7 @@ unsigned ReqWrite_io()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_get_config( void )
+trap_elen ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -132,7 +132,7 @@ long OpenFile( char *name, USHORT mode, int flags )
 #define WRITEONLY   1
 #define READWRITE   2
 
-unsigned ReqFile_open( void )
+trap_elen ReqFile_open( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -160,7 +160,7 @@ unsigned ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek( void )
+trap_elen ReqFile_seek( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -172,7 +172,7 @@ unsigned ReqFile_seek( void )
 }
 
 
-unsigned ReqFile_read( void )
+trap_elen ReqFile_read( void )
 {
     ULONG               read_len;
     file_read_req       *acc;
@@ -186,7 +186,7 @@ unsigned ReqFile_read( void )
     return( sizeof( *ret ) + read_len );
 }
 
-unsigned ReqFile_write( void )
+trap_elen ReqFile_write( void )
 {
     ULONG               len;
     ULONG               written_len;
@@ -203,7 +203,7 @@ unsigned ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_close( void )
+trap_elen ReqFile_close( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -214,7 +214,7 @@ unsigned ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_erase()
+trap_elen ReqFile_erase()
 {
     file_erase_ret      *ret;
 
@@ -223,7 +223,7 @@ unsigned ReqFile_erase()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_get_extra( void )
+trap_elen ReqThread_get_extra( void )
 {
     char *ch;
 
@@ -232,14 +232,14 @@ unsigned ReqThread_get_extra( void )
     return( 1 );
 }
 
-unsigned ReqSet_user_screen( void )
+trap_elen ReqSet_user_screen( void )
 {
     AppSession();
     Screen = USER_SCREEN;
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen( void )
+trap_elen ReqSet_debug_screen( void )
 {
     DebugSession();
     Screen = DEBUG_SCREEN;
@@ -255,7 +255,7 @@ void RestoreScreen( void )
     }
 }
 
-unsigned ReqRead_user_keyboard( void )
+trap_elen ReqRead_user_keyboard( void )
 {
     HMONITOR    mon;
     struct {
@@ -325,7 +325,7 @@ unsigned ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_err_text( void )
+trap_elen ReqGet_err_text( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -389,7 +389,7 @@ unsigned ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-static unsigned Redirect( bool input )
+static trap_elen Redirect( bool input )
 {
     HFILE                   std_hndl;
     HFILE                   *var;
@@ -436,12 +436,12 @@ static unsigned Redirect( bool input )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRedirect_stdin( void )
+trap_elen ReqRedirect_stdin( void )
 {
     return( Redirect( TRUE ) );
 }
 
-unsigned ReqRedirect_stdout( void )
+trap_elen ReqRedirect_stdout( void )
 {
     return( Redirect( FALSE ) );
 }
@@ -474,7 +474,7 @@ char *StrCopy( char *src, char *dst )
     return( strlen( dst ) + dst );
 }
 
-unsigned ReqFile_run_cmd( void )
+trap_elen ReqFile_run_cmd( void )
 {
     char                *dst;
     char                *src;
@@ -625,7 +625,7 @@ long FindFilePath( char *pgm, char *buffer, char *ext_list )
 
 extern char    OS2ExtList[];
 
-unsigned ReqFile_string_to_fullpath( void )
+trap_elen ReqFile_string_to_fullpath( void )
 {
     char                        *ext_list;
     char                        *name;
@@ -649,12 +649,12 @@ unsigned ReqFile_string_to_fullpath( void )
     return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }
 
-unsigned ReqSplit_cmd( void )
+trap_elen ReqSplit_cmd( void )
 {
     char            *cmd;
     char            *start;
     split_cmd_ret   *ret;
-    unsigned        len;
+    trap_elen       len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSize() - sizeof( split_cmd_req );

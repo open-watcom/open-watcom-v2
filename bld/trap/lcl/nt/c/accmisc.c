@@ -35,13 +35,15 @@
 #include "stdnt.h"
 #include "trperr.h"
 #include "madregs.h"
+#if defined( MD_x86 )
 #include "x86cpu.h"
+#endif
 
 BOOL IsBigSel( WORD sel )
 {
 #if defined( MD_axp ) | defined( MD_ppc )
     return( TRUE );
-#elif defined( MD_x86 )
+#elif defined( MD_x86 ) || defined( MD_x64 )
     thread_info *ti;
     LDT_ENTRY   ldt;
 
@@ -59,7 +61,7 @@ BOOL IsBigSel( WORD sel )
 #endif
 }
 
-unsigned ReqAddr_info( void )
+trap_elen ReqAddr_info( void )
 {
     WORD            seg;
     addr_info_req   *acc;
@@ -68,7 +70,7 @@ unsigned ReqAddr_info( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     seg = acc->in_addr.segment;
-    ret->is_32 = IsBigSel( seg );
+    ret->is_big = IsBigSel( seg );
     return( sizeof( *ret ) );
 }
 
@@ -79,7 +81,7 @@ typedef struct {
     unsigned_32 except_handler;
     unsigned_32 handler_data;
     unsigned_32 pro_end_addr;
-}               nt_pdata;
+} nt_pdata;
 
 bool FindPData( addr_off off, axp_pdata *pdata )
 {
@@ -124,7 +126,7 @@ bool FindPData( addr_off off, axp_pdata *pdata )
 }
 #endif
 
-unsigned ReqMachine_data()
+trap_elen ReqMachine_data()
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -146,6 +148,15 @@ unsigned ReqMachine_data()
         data->u8 |= X86AC_BIG;
     }
     return( sizeof( *ret ) + sizeof( data->u8 ) );
+#elif defined( MD_x64 )
+    ret->cache_start = 0;
+    ret->cache_end = ~( addr_off ) 0;
+    data->u8 = 0;
+    if( IsBigSel( acc->addr.segment ) ) {
+        data->u8 |= X86AC_BIG;
+//        data->u8 |= X64AC_BIG;
+    }
+    return( sizeof( *ret ) + sizeof( data->u8 ) );
 #elif defined( MD_axp )
     memset( &data->pd, 0, sizeof( data->pd ) );
     if( FindPData( acc->addr.offset, &data->pd ) ) {
@@ -163,16 +174,18 @@ unsigned ReqMachine_data()
 #endif
 }
 
-unsigned ReqGet_sys_config( void )
+trap_elen ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
     SYSTEM_INFO         info;
 
     ret = GetOutPtr( 0 );
     ret->sys.os = OS_NT;
+#if defined( __WATCOMC__ )
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
-
+#else
+#endif
     ret->sys.huge_shift = 3;
 
     GetSystemInfo( &info );
@@ -182,6 +195,16 @@ unsigned ReqGet_sys_config( void )
     if( IsWOW ) {
         ret->sys.os = OS_WINDOWS;
     }
+    ret->sys.mad = MAD_X86;
+#elif defined( MD_x64 )
+    ret->sys.cpu = X86_P4 | X86_MMX | X86_XMM;
+    ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
+//    ret->sys.cpu = X64_CPU1;
+//    ret->sys.fpu = X64_FPU1;
+    if( !IsWOW ) {
+//        ret->sys.os = OS_NT64;
+    }
+//    ret->sys.mad = MAD_X64;
     ret->sys.mad = MAD_X86;
 #elif defined( MD_axp )
     switch( info.dwProcessorType ) {
@@ -223,7 +246,7 @@ unsigned ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_message_text( void )
+trap_elen ReqGet_message_text( void )
 {
     get_message_text_ret    *ret;
     char                    *err_txt;
@@ -336,7 +359,7 @@ unsigned ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_elen ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -380,7 +403,7 @@ void AddMessagePrefix( char *buff, int len )
     strcpy( MsgPrefix, buff );
 }
 
-unsigned ReqGet_err_text( void )
+trap_elen ReqGet_err_text( void )
 {
     get_err_text_req    *acc;
     char                *err_txt;
@@ -427,9 +450,8 @@ static int tryPath( char *name, char *end, char *ext_list )
         for( p = end; (*p = *ext_list) != 0; ++p,++ext_list ) {
         }
 
-        h = CreateFile( name, GENERIC_READ, FILE_SHARE_READ, NULL,
-                                OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
-        if( h != ( HANDLE ) - 1 ) {
+        h = CreateFile( name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+        if( h != INVALID_HANDLE_VALUE ) {
             CloseHandle( h );
             return( 0 );
         }
@@ -500,7 +522,7 @@ int FindFilePath( char *pgm, char *buffer, char *ext_list )
     return( -1 );
 }
 
-unsigned ReqSplit_cmd( void )
+trap_elen ReqSplit_cmd( void )
 {
     char            *cmd;
     char            *start;
@@ -544,12 +566,12 @@ done:
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_io( void )
+trap_elen ReqRead_io( void )
 {
     return( 0 );
 }
 
-unsigned ReqWrite_io( void )
+trap_elen ReqWrite_io( void )
 {
     write_io_ret    *ret;
 
@@ -558,12 +580,12 @@ unsigned ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_user_screen( void )
+trap_elen ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen( void )
+trap_elen ReqSet_debug_screen( void )
 {
     ProcessQueuedRepaints();
     return( 0 );

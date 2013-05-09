@@ -29,14 +29,6 @@
 ****************************************************************************/
 
 
-#if defined( __WATCOMC__ )
-#if defined( __NT__ )
-#pragma library("wsock32.lib")
-#elif defined( __WINDOWS__ )
-#pragma library("winsock.lib")
-#endif
-#endif
-
 #if defined(__OS2__) && !defined(__386__)
 #define OS2
 #define _TCP_ENTRY __cdecl __far
@@ -109,11 +101,27 @@
     #define _DBG_ERROR( x )
 #endif
 
-#include "packet.h"
 #include "trptypes.h"
 #include "trperr.h"
-#include "bool.h"
+#include "packet.h"
 #include "ifi.h"
+
+#if defined( __WATCOMC__ )
+#if defined( __NT__ )
+#pragma library("wsock32.lib")
+#elif defined( __WINDOWS__ )
+#pragma library("winsock.lib")
+#endif
+#endif
+
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+#define IS_SOCK_ERROR(x)    (x==INVALID_SOCKET)
+#elif defined( __DOS__ )
+#define IS_SOCK_ERROR(x)    (x<0)
+#else
+#define IS_SOCK_ERROR(x)    (x<0)
+#define INVALID_SOCKET      -1
+#endif
 
 #define DEFAULT_PORT    0xDEB
 
@@ -144,11 +152,19 @@ static struct ifi_info  *get_ifi_info( int family, int doaliases );
 static void             free_ifi_info( struct ifi_info *ifihead );
 #endif
 
-static int                  data_socket;
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+static SOCKET               data_socket = INVALID_SOCKET;
+#else
+static int                  data_socket = INVALID_SOCKET;
+#endif
 static struct sockaddr_in   socket_address;
 static bool die = FALSE;
 #ifdef SERVER
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+static SOCKET               control_socket;
+#else
 static int                  control_socket;
+#endif
 #endif
 
 #endif
@@ -175,7 +191,7 @@ bool Terminate( void )
     linger.l_linger = 0;
     setsockopt( data_socket, (int)SOL_SOCKET, SO_LINGER, (void*)&linger, sizeof( linger ) );
     soclose( data_socket );
-    data_socket = -1;
+    data_socket = INVALID_SOCKET;
 #endif
     return( TRUE );    
 }
@@ -205,7 +221,7 @@ static unsigned FullGet( void *get, unsigned len )
 
 #endif
 
-unsigned RemoteGet( char *rec, unsigned len )
+trap_elen RemoteGet( char *rec, trap_elen len )
 {
     unsigned_16         rec_len;
 #ifdef __RDOS__    
@@ -249,7 +265,7 @@ unsigned RemoteGet( char *rec, unsigned len )
 #endif
 }
 
-unsigned RemotePut( char *rec, unsigned len )
+trap_elen RemotePut( char *rec, trap_elen len )
 {
     unsigned_16         send_len;
 
@@ -325,7 +341,7 @@ char RemoteConnect( void )
     timeout.tv_usec = 10000;
     if( select( control_socket+1, &ready, 0, 0, &timeout ) > 0 ) {
         data_socket = accept( control_socket, &dummy, &dummy_len );
-        if( data_socket != -1 ) {
+        if( !IS_SOCK_ERROR( data_socket ) ) {
             nodelay();
             _DBG_NET(("Found a connection\r\n"));
             return( 1 );
@@ -337,9 +353,8 @@ char RemoteConnect( void )
 // todo: Add code for connect!
 #else
     data_socket = socket( AF_INET, SOCK_STREAM, 0 );
-    if( data_socket >= 0 ) {
-        if( connect( data_socket, (struct sockaddr *)&socket_address,
-                     sizeof( socket_address ) ) >= 0 ) {
+    if( !IS_SOCK_ERROR( data_socket ) ) {
+        if( connect( data_socket, (struct sockaddr *)&socket_address, sizeof( socket_address ) ) >= 0 ) {
             nodelay();
             return( 1 );
         }
@@ -359,7 +374,9 @@ void RemoteDisco( void )
         socket_handle = 0;
     }
 #else
-    if( data_socket != -1 ) soclose( data_socket );
+    if( data_socket != INVALID_SOCKET ) {
+        soclose( data_socket );
+    }
 #endif
 }
 
@@ -395,7 +412,7 @@ char *RemoteLink( char *name, char server )
 
 #ifndef __RDOS__
     control_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if( control_socket < 0 ) {
+    if( IS_SOCK_ERROR( control_socket ) ) {
         return( TRP_ERR_unable_to_open_stream_socket );
     }
 #endif   
@@ -431,14 +448,12 @@ char *RemoteLink( char *name, char server )
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
     socket_address.sin_port = port;
-    if( bind( control_socket, (struct sockaddr *)&socket_address,
-              sizeof( socket_address ) ) ) {
+    if( bind( control_socket, (struct sockaddr *)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
     }
     /* Find out assigned port number and print it out */
     length = sizeof( socket_address );
-    if( getsockname( control_socket, (struct sockaddr *)&socket_address,
-                     &length ) ) {
+    if( getsockname( control_socket, (struct sockaddr *)&socket_address, &length ) ) {
         return( TRP_ERR_unable_to_get_socket_name );
     }
     sprintf( buff2, "%s%d", TRP_TCP_socket_number, ntohs( socket_address.sin_port ) );
@@ -607,11 +622,16 @@ void RemoteUnLink( void )
 static struct ifi_info * get_ifi_info( int family, int doaliases )
 {
     struct ifi_info     *ifi, *ifihead, **ifipnext;
-    int                 sockfd, len, lastlen, flags, myflags;
+    int                 len, lastlen, flags, myflags;
     char                *ptr, *buf, lastname[IFNAMSIZ], *cptr;
     struct ifconf       ifc;
     struct ifreq        *ifr, ifrcopy;
     struct sockaddr_in  *sinptr;
+#if defined( __NT__ )
+    SOCKET              sockfd;
+#else
+    int                 sockfd;
+#endif
 
     sockfd = socket( AF_INET, SOCK_DGRAM, 0 );
 

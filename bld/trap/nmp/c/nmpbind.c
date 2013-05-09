@@ -348,8 +348,8 @@ static void CheckForTraffic( HPIPE hdl )
 
 void Error( char *msg )
 {
-    mywrite( 2, msg, strlen( msg ) );
-    mywrite( 2, "\r\n", 2 );
+    mywrite( BHANDLE_STDERR, msg, strlen( msg ) );
+    mywrite( BHANDLE_STDERR, "\r\n", 2 );
     exit( 1 );
 }
 
@@ -357,11 +357,11 @@ int main( int argc, char *argv[] )
 {
     APIRET      rc;
     char        req;
-    int         bind;
+    bhandle     bind;
 
     if( argc > 1 && argv[1][0] == 'q' ) {
         bind = myopen( BINDERY );
-        if( bind != -1 ) {
+        if( bind != BHANDLE_INVALID ) {
             req = BIND_KILL;
             mywrite( bind, &req, sizeof( req ) );
             myread( bind, &req, sizeof( req ) );

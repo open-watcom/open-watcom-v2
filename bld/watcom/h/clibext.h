@@ -182,6 +182,8 @@ extern unsigned _dos_findfirst( const char *__path, unsigned __attr, find_t *__b
 extern unsigned _dos_findclose( struct find_t *__buf );
 extern int      _vbprintf( char *s, size_t bufsize, const char *format, __va_list arg );
 extern unsigned sleep( unsigned );
+extern void __GetNTAccessAttr( int rwmode, unsigned long *desired_access, unsigned long *attr );
+extern void __GetNTShareAttr( int mode, unsigned long *share_mode );
 
 extern int      getopt( int __argc, char * const __argv[], const char *__optstring );
 /* Globals used and set by getopt() */

@@ -119,8 +119,7 @@ unsigned ReqFile_open( void )
         } else {
             create_disp = OPEN_EXISTING;
         }
-        h = CreateFile( (LPTSTR) buff, desired_access, share_mode, 0,
-                    create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
+        h = CreateFile( (LPTSTR) buff, desired_access, share_mode, 0, create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
         if( h == INVALID_HANDLE_VALUE ) {
             ret->err = GetLastError();
             h = 0;
@@ -144,9 +143,8 @@ unsigned ReqFile_seek( void )
         ret->pos = -1;
         return( sizeof( *ret ) );
     }
-    rc = SetFilePointer( (HANDLE) acc->handle, acc->pos, 0,
-                        acc->mode );
-    if( rc == -1 ) {
+    rc = SetFilePointer( (HANDLE) acc->handle, acc->pos, NULL, acc->mode );
+    if( rc == INVALID_SET_FILE_POINTER ) {
         ret->err = GetLastError();
     } else {
         ret->err = 0;
@@ -388,8 +386,7 @@ unsigned ReqFileInfo_setdate()
     md = ( req->date >> 16 ) & 0xffff;
     mt = req->date;
     DosDateTimeToFileTime( md, mt, &ft );
-    h = CreateFile( name, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-                    OPEN_EXISTING, 0, NULL );
+    h = CreateFile( name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
     if( h == INVALID_HANDLE_VALUE ) {
         ret->err = GetLastError();
         return( sizeof( *ret ) );

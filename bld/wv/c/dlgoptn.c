@@ -43,7 +43,7 @@ extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
 extern void             DefaultRadixSet( unsigned radix );
 extern void             LookCaseSet( bool respect );
 extern unsigned         NewCurrRadix( unsigned rad );
-extern int              CapabilitiesSetExactBreakpointSupport( bool status );
+extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
 
 static void GetDlgStatus( gui_window *gui )
 {
@@ -89,7 +89,7 @@ static void SetDlgStatus( gui_window *gui )
     DlgSetLong( gui, CTL_OPT_RADIX, old );
     DlgSetLong( gui, CTL_OPT_DCLICK, WndGetDClick() );
     NewCurrRadix( old );
-    GUIEnableControl( gui, CTL_OPT_BR_ON_WRITE, SupportsExactBreakpoints != 0 );
+    GUIEnableControl( gui, CTL_OPT_BR_ON_WRITE, SupportsExactBreakpoints );
     GUISetChecked( gui, CTL_OPT_NOHEX, _IsOn( SW_DONT_EXPAND_HEX ) );
     if( SupportsExactBreakpoints )
         GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, _IsOn ( SW_BREAK_ON_WRITE ) );

@@ -32,12 +32,12 @@
 
 #include "trpimp.h"
 
-unsigned ReqSplit_cmd()
+trap_elen ReqSplit_cmd()
 {
-    char             *cmd;
-    char             *start;
-    split_cmd_ret       *ret;
-    unsigned            len;
+    char            *cmd;
+    char            *start;
+    split_cmd_ret   *ret;
+    unsigned        len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     len = GetTotalSize() - sizeof( split_cmd_req );

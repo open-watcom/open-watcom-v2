@@ -70,7 +70,7 @@ static Elf32_Dyn        *dbg_dyn;       /* VA of debuggee's dynamic section (if 
 static bp_t             old_ld_bp;
 
 
-unsigned ReqChecksum_mem( void )
+trap_elen ReqChecksum_mem( void )
 {
     char                buf[256];
     addr_off            offv;
@@ -104,10 +104,10 @@ unsigned ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_mem( void )
+trap_elen ReqRead_mem( void )
 {
     read_mem_req    *acc;
-    unsigned        len;
+    trap_elen       len;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mem_addr.offset );
@@ -117,11 +117,11 @@ unsigned ReqRead_mem( void )
     return( len );
 }
 
-unsigned ReqWrite_mem( void )
+trap_elen ReqWrite_mem( void )
 {
     write_mem_req   *acc;
     write_mem_ret   *ret;
-    unsigned        len;
+    trap_elen       len;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->mem_addr.offset );
@@ -184,7 +184,7 @@ static int GetExeNameFromPid( pid_t pid, char *buffer, int max_len )
     return( len );
 }
 
-unsigned ReqProg_load( void )
+trap_elen ReqProg_load( void )
 {
     char                        **args;
     char                        *parms;
@@ -195,7 +195,7 @@ unsigned ReqProg_load( void )
     pid_t                       save_pgrp;
     prog_load_req               *acc;
     prog_load_ret               *ret;
-    unsigned                    len;
+    trap_elen                   len;
     int                         status;
 
     acc = GetInPtr( 0 );
@@ -273,7 +273,7 @@ unsigned ReqProg_load( void )
         int status;
 
         ret->task_id = pid;
-        ret->flags |= LD_FLAG_IS_PROT | LD_FLAG_IS_32;
+        ret->flags |= LD_FLAG_IS_PROT | LD_FLAG_IS_BIG;
         /* wait until it hits _start (upon execve) or
            gives us a SIGSTOP (if attached) */
         if( waitpid( pid, &status, 0 ) < 0 )
@@ -323,7 +323,7 @@ fail:
     return( 0 );
 }
 
-unsigned ReqProg_kill( void )
+trap_elen ReqProg_kill( void )
 {
     prog_kill_ret   *ret;
 
@@ -347,7 +347,7 @@ unsigned ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_break( void )
+trap_elen ReqSet_break( void )
 {
     set_break_req   *acc;
     set_break_ret   *ret;
@@ -369,7 +369,7 @@ unsigned ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break( void )
+trap_elen ReqClear_break( void )
 {
     clear_break_req *acc;
     bp_t            opcode;
@@ -398,7 +398,7 @@ static sighandler_t setsig( int sig, sighandler_t handler )
     return old_sa.sa_handler;
 }
 
-static unsigned ProgRun( int step )
+static trap_elen ProgRun( int step )
 {
     static int          ptrace_sig = 0;
     static int          ld_state = 0;
@@ -590,17 +590,17 @@ static unsigned ProgRun( int step )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_step( void )
+trap_elen ReqProg_step( void )
 {
     return( ProgRun( TRUE ) );
 }
 
-unsigned ReqProg_go( void )
+trap_elen ReqProg_go( void )
 {
     return( ProgRun( FALSE ) );
 }
 
-unsigned ReqRedirect_stdin( void  )
+trap_elen ReqRedirect_stdin( void  )
 {
     redirect_stdin_ret *ret;
 
@@ -609,7 +609,7 @@ unsigned ReqRedirect_stdin( void  )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRedirect_stdout( void  )
+trap_elen ReqRedirect_stdout( void  )
 {
     redirect_stdout_ret *ret;
 
@@ -618,7 +618,7 @@ unsigned ReqRedirect_stdout( void  )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_string_to_fullpath( void )
+trap_elen ReqFile_string_to_fullpath( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
@@ -651,7 +651,7 @@ unsigned ReqFile_string_to_fullpath( void )
     return( sizeof( *ret ) + len + 1 );
 }
 
-unsigned ReqGet_message_text( void )
+trap_elen ReqGet_message_text( void )
 {
     get_message_text_ret    *ret;
     char                    *err_txt;
@@ -670,14 +670,14 @@ unsigned ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-unsigned ReqAddr_info( void )
+trap_elen ReqAddr_info( void )
 {
     addr_info_req   *acc;
     addr_info_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->is_32 = TRUE;
+    ret->is_big = TRUE;
     return( sizeof( *ret ) );
 }
 

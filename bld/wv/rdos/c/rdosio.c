@@ -29,11 +29,6 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgmem.h"
-#include "dbgio.h"
-#include "dbgtoggl.h"
-#include "errno.h"
 #include <io.h>
 #include <limits.h>
 #include <string.h>
@@ -41,7 +36,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include "trpfile.h"
+#include "dbgdefn.h"
+#include "dbgmem.h"
+#include "dbgio.h"
+#include "dbgtoggl.h"
+#include "errno.h"
+#include "trptypes.h"
 
 extern char *Format(char *,char *,... );
 extern char *StrCopy(char *,char *);

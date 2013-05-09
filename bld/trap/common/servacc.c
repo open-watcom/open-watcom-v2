@@ -63,8 +63,8 @@ static bool AccConnect( void )
     connect_req         *acc;
     char                *data;
     connect_ret         *ret;
-    unsigned            max;
-    unsigned            len;
+    trap_elen           max;
+    trap_elen           len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -75,8 +75,10 @@ static bool AccConnect( void )
     } else {
         len = TrapAccess( 1, &In[0], 1, &Out[0] );
         max = MaxPacketSize();
-        if( max > sizeof( RWBuff ) ) max = sizeof( RWBuff );
-        if( ret->max_msg_size > max ) ret->max_msg_size = max;
+        if( max > sizeof( RWBuff ) )
+            max = sizeof( RWBuff );
+        if( ret->max_msg_size > max )
+            ret->max_msg_size = max;
         CONV_LE_16( ret->max_msg_size );
         PutBuffPacket( len, RWBuff );
     }

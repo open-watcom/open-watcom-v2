@@ -58,7 +58,7 @@ enum {
         OPENMODE_ACCESS_RDWR            = 0x0002
 };
 
-int myopen( char *name )
+bhandle myopen( char *name )
 {
     HFILE  hdl;
     ULONG  action;
@@ -68,15 +68,15 @@ int myopen( char *name )
                 OPENMODE_ACCESS_RDWR+SH_DENYNO, 0ul ) == 0 ) {
         return( hdl );
     }
-    return( -1 );
+    return( BHANDLE_INVALID );
 }
 
-void myclose( int handle )
+void myclose( bhandle handle )
 {
     DosClose( handle );
 }
 
-int myread( int handle, char *buff, int len )
+int myread( bhandle handle, char *buff, int len )
 {
     APIRET      rc;
     ULONG       bytes_read;
@@ -87,7 +87,7 @@ int myread( int handle, char *buff, int len )
 }
 
 
-int mywrite( int handle, char *buff, int len )
+int mywrite( bhandle handle, char *buff, int len )
 {
     APIRET      rc;
     ULONG       bytes_written;

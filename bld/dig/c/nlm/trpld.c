@@ -35,8 +35,7 @@
 #include "tcerr.h"
 
 extern trap_version     TrapVer;
-extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
-                                        unsigned, mx_entry * );
+extern trap_req_func    *ReqFunc;
 
 void KillTrap( void )
 {
@@ -52,6 +51,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     ptr = (*ptr != '\0') ? ptr + 1 : ptr;
     *trap_ver = TrapInit( ptr, buff, trap_ver->remote );
     if( buff[0] != '\0' ) {
+        KillTrap();
         return( buff );
     }
     if( !TrapVersionOK( *trap_ver ) ) {

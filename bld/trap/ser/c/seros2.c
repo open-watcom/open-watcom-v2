@@ -163,7 +163,7 @@ int WaitByte( unsigned ticks )
     data = 0;
     if( ReadBuffAdd == ReadBuffRemove ) {
         if( DosSemSetWait( &ReadSemaphore, ticks*MILLISEC_PER_TICK ) != 0 ) {
-            return( NO_DATA );
+            return( SDATA_NO_DATA );
         }
     }
     data = ReadBuff[ ReadBuffRemove ];

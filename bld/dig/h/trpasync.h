@@ -35,7 +35,7 @@
 #include "trptypes.h"
 #include <time.h>
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 #define ASYNC_SUPP_NAME "Asynch"
 
@@ -75,6 +75,6 @@ typedef async_go_ret     async_poll_ret;
 typedef async_go_req     async_stop_req;
 typedef async_go_ret     async_stop_ret;
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #endif

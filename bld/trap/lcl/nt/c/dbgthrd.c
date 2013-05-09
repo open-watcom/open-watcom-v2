@@ -73,12 +73,10 @@ static struct {
 static void CantDoIt( void )
 {
     if( PendingProgramInterrupt ) {
-        if( MessageBox( 0, TRP_WIN_wanna_kill, TRP_The_WATCOM_Debugger,
-                    MB_SYSTEMMODAL + MB_YESNO + MB_ICONQUESTION ) == IDYES ) {
+        if( MessageBox( 0, TRP_WIN_wanna_kill, TRP_The_WATCOM_Debugger, MB_SYSTEMMODAL + MB_YESNO + MB_ICONQUESTION ) == IDYES ) {
             Terminate();
         }
-    } else if( MessageBox( 0, TRP_WIN_wanna_interrupt, TRP_The_WATCOM_Debugger,
-                  MB_SYSTEMMODAL + MB_YESNO + MB_ICONQUESTION ) == IDYES ) {
+    } else if( MessageBox( 0, TRP_WIN_wanna_interrupt, TRP_The_WATCOM_Debugger, MB_SYSTEMMODAL + MB_YESNO + MB_ICONQUESTION ) == IDYES ) {
         InterruptProgram();
     }
 }
@@ -265,8 +263,7 @@ static BOOL MyDebugActiveProcess( DWORD dwPidToDebug )
     //
     // Make sure we have access to adjust and to get the old token privileges
     //
-    if( !OpenProcessToken( GetCurrentProcess(),
-                           TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token ) ) {
+    if( !OpenProcessToken( GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token ) ) {
         goto done;
     }
 
@@ -295,8 +292,7 @@ static BOOL MyDebugActiveProcess( DWORD dwPidToDebug )
     //
 
     pbOldPriv = OldPriv;
-    fRc = AdjustTokenPrivileges( Token, FALSE, NewPrivileges, 1024,
-            ( PTOKEN_PRIVILEGES )pbOldPriv, &cbNeeded );
+    fRc = AdjustTokenPrivileges( Token, FALSE, NewPrivileges, 1024, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded );
 
     if( !fRc ) {
 
@@ -311,8 +307,7 @@ static BOOL MyDebugActiveProcess( DWORD dwPidToDebug )
                 goto done;
             }
 
-            fRc = AdjustTokenPrivileges( Token, FALSE, NewPrivileges, cbNeeded,
-                    ( PTOKEN_PRIVILEGES )pbOldPriv, &cbNeeded );
+            fRc = AdjustTokenPrivileges( Token, FALSE, NewPrivileges, cbNeeded, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded );
         }
     }
 
@@ -401,8 +396,7 @@ static BOOL StartDebuggee( void )
     char                fname[_MAX_FNAME];
     char                ext[_MAX_EXT];
 
-    ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination,
-        &service_parm );
+    ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination, &service_parm );
     service = NULL;
     service_manager = NULL;
     if( service_name[0] ) {
@@ -419,20 +413,14 @@ static BOOL StartDebuggee( void )
         DWORD               servicesReturned;
         DWORD               resumeHandle = 0;
 
-        EnumServicesStatus( service_manager, SERVICE_WIN32 + SERVICE_DRIVER,
-                            SERVICE_ACTIVE + SERVICE_INACTIVE,
-                            NULL, 0, &bytesNeeded, &servicesReturned,
-                            &resumeHandle );
+        EnumServicesStatus( service_manager, SERVICE_WIN32 + SERVICE_DRIVER, SERVICE_ACTIVE + SERVICE_INACTIVE, NULL, 0, &bytesNeeded, &servicesReturned, &resumeHandle );
         if( servicesReturned == 0 ) {
             eenum = calloc( 1, bytesNeeded );
             if( eenum == NULL ) {
                 rc = FALSE;
                 goto failed;
             }
-            EnumServicesStatus( service_manager, SERVICE_WIN32 + SERVICE_DRIVER,
-                                SERVICE_ACTIVE + SERVICE_INACTIVE,
-                                eenum, bytesNeeded, &bytesNeeded,
-                                &servicesReturned, &resumeHandle );
+            EnumServicesStatus( service_manager, SERVICE_WIN32 + SERVICE_DRIVER, SERVICE_ACTIVE + SERVICE_INACTIVE, eenum, bytesNeeded, &bytesNeeded, &servicesReturned, &resumeHandle );
             for( i = 0; i < servicesReturned; ++i ) {
                 strlwr( eenum[i].lpServiceName );
                 strlwr( eenum[i].lpDisplayName );
@@ -467,8 +455,7 @@ static BOOL StartDebuggee( void )
             }
         }
     done:
-        service = OpenService( service_manager, service_name,
-            SERVICE_ALL_ACCESS );
+        service = OpenService( service_manager, service_name, SERVICE_ALL_ACCESS );
         if( service == NULL ) {
             AddMessagePrefix( "Unable to open the specified service", 0 );
             rc = FALSE;
@@ -482,14 +469,12 @@ static BOOL StartDebuggee( void )
             i = 0;
             for( ;; ) {
                 if( i == 40 ) {
-                    AddMessagePrefix( "Unable to stop the specified service",
-                        0 );
+                    AddMessagePrefix( "Unable to stop the specified service", 0 );
                     Shared.err = ERROR_SERVICE_REQUEST_TIMEOUT;
                     goto failed;
                 }
                 if( !QueryServiceStatus( service, &status ) ) {
-                    AddMessagePrefix( "Unable to stop the specified service",
-                        0 );
+                    AddMessagePrefix( "Unable to stop the specified service", 0 );
                     rc = FALSE;
                     goto failed;
                 }
@@ -585,6 +570,7 @@ static BOOL StartDebuggee( void )
     }
     if( Shared.pid != 0 && Shared.pid != -1 ) {
         rc = MyDebugActiveProcess( Shared.pid );
+#if !defined( MD_x64 )
         if( IsWOW ) {
             /*
              * WOW was already running, so we start up wowdeb (this
@@ -619,6 +605,7 @@ static BOOL StartDebuggee( void )
                                 &pinfo          /* process info */
                                 );
         }
+#endif
         pinfo.dwProcessId = Shared.pid;
     } else {
         memset( &sinfo, 0, sizeof( sinfo ) );
@@ -650,7 +637,9 @@ static BOOL DoWaitForDebugEvent( void )
 
     done = FALSE;
 
+#if !defined( MD_x64 )
     UseVDMStuff = FALSE;
+#endif
     while( !done ) {
         SetLastError( 0 );
         if( WaitForDebugEvent( &DebugEvent, INFINITE ) ) {
@@ -660,6 +649,7 @@ static BOOL DoWaitForDebugEvent( void )
             if( DebugEvent.dwDebugEventCode == EXCEPTION_DEBUG_EVENT ) {
                 code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
 #ifdef WOW
+#if !defined( MD_x64 )
                 if( code == STATUS_VDM_EVENT ) {
                     BOOL    vdmrc;
 
@@ -676,6 +666,7 @@ static BOOL DoWaitForDebugEvent( void )
                      * is to ignore it.  When all else fails, punt.
                      */
                 } else
+#endif
 #endif
                 {
                     switch( code ) {
@@ -732,11 +723,15 @@ static void StopDebuggee( void )
          * terminated
          */
         Slaying = TRUE;
+#if !defined( MD_x64 )
         if( IsWin32s ) {
             DoContinueDebugEvent( DBG_TERMINATE_PROCESS );
             DoWaitForDebugEvent();
             DoContinueDebugEvent( DBG_CONTINUE );
         } else {
+#else
+        {
+#endif
             HANDLE  hp;
 
             hp = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
@@ -766,16 +761,18 @@ DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
     Shared.flags = cr_flags;
     Shared.name = name;
     Shared.control_thread_running = FALSE;
+#if !defined( MD_x64 )
     if( !IsWin32s ) {
+#else
+    {
+#endif
         DWORD       tid;
 
         Shared.requestsem = CreateSemaphore( NULL, 0, 1, NULL );
         Shared.requestdonesem = CreateSemaphore( NULL, 0, 1, NULL );
-        Shared.hThread = CreateThread( NULL, 0,
-            ( LPTHREAD_START_ROUTINE )ControlFunc, NULL, 0, &tid );
+        Shared.hThread = CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)ControlFunc, NULL, 0, &tid );
         if( Shared.hThread == NULL ) {
-            MessageBox( NULL, "Error creating thread!", TRP_The_WATCOM_Debugger,
-                MB_APPLMODAL + MB_OK );
+            MessageBox( NULL, "Error creating thread!", TRP_The_WATCOM_Debugger, MB_APPLMODAL + MB_OK );
         }
         Shared.control_thread_running = TRUE;
     }

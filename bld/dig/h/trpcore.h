@@ -31,6 +31,7 @@
 
 #ifndef TRPCORE_H
 
+#include "trpconf.h"
 #include "trptypes.h"
 
 #if defined( __WATCOMC__ )
@@ -158,7 +159,7 @@ typedef struct {
 
 //obsolete - use REQ_MACHINE_DATA
 typedef struct {
-    unsigned_8          is_32;
+    unsigned_8          is_big;
 } addr_info_ret;
 
 typedef struct {
@@ -304,8 +305,8 @@ typedef prog_go_ret     prog_step_ret;
 /*===================== REQ_PROG_LOAD ====================*/
 
 enum {
-    LD_FLAG_IS_32               = 0x0001,       //obsolete
-    LD_FLAG_IS_PROT             = 0x0002,       //obsolete
+    LD_FLAG_IS_BIG              = 0x0001,
+    LD_FLAG_IS_PROT             = 0x0002,
     LD_FLAG_IS_STARTED          = 0x0004,
     LD_FLAG_IGNORE_SEGMENTS     = 0x0008,
     LD_FLAG_HAVE_RUNTIME_DLLS   = 0x0010,

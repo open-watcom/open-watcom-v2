@@ -49,6 +49,7 @@
 #else
     #include "tinyio.h"
 #endif
+#include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"
 
@@ -115,7 +116,7 @@ unsigned char GetLanaNum( void )
 
     if( !SkipEnum ) {
         memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
-        NetCtlBlk.ncb_buffer = (char far *)&l_enum;
+        NetCtlBlk.ncb_buffer = (unsigned char far *)&l_enum;
         NetCtlBlk.ncb_length = sizeof( l_enum );
         NetCtlBlk.ncb_command = NCBENUM;
         NetBIOS( &NetCtlBlk );
@@ -134,18 +135,18 @@ bool Terminate( void )
 }
 #endif
 
-unsigned RemoteGet( char *rec, unsigned len )
+trap_elen RemoteGet( char *rec, trap_elen len )
 {
-    NetCtlBlk.ncb_buffer = (char far *)rec;
+    NetCtlBlk.ncb_buffer = (unsigned char far *)rec;
     NetCtlBlk.ncb_length = len;
     NetCtlBlk.ncb_command = NCBRECV;
     NetBIOS( &NetCtlBlk );
     return( NetCtlBlk.ncb_length );
 }
 
-unsigned RemotePut( char *rec, unsigned len )
+trap_elen RemotePut( char *rec, trap_elen len )
 {
-    NetCtlBlk.ncb_buffer = (char far *)rec;
+    NetCtlBlk.ncb_buffer = (unsigned char far *)rec;
     NetCtlBlk.ncb_length = len;
     NetCtlBlk.ncb_command = NCBSEND;
     NetBIOS( &NetCtlBlk );
@@ -281,7 +282,7 @@ void RemoteUnLink( void )
 
     if( NetCtlBlk.ncb_cmd_cplt == 0xff ) {
         cancel.ncb_command = NCBCANCEL;
-        cancel.ncb_buffer = (char far *)&NetCtlBlk;
+        cancel.ncb_buffer = (unsigned char far *)&NetCtlBlk;
         cancel.ncb_lana_num = LanaNum;
         cancel.ncb_post = 0;
         NetBIOS( &cancel );

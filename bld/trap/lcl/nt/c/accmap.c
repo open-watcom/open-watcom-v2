@@ -32,12 +32,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 #include "stdnt.h"
 
 
 typedef struct lli {
     HANDLE      file_handle;
-    LPVOID      base;
+    LPSTR       base;
     addr_off    code_size;
     LPVOID      except_base;
     addr_off    except_size;
@@ -203,15 +204,14 @@ static void addSegmentToLibList( DWORD module, WORD seg, DWORD off )
     listInfoTail->segcount++;
 }
 
-BOOL FindExceptInfo( addr_off off, LPVOID *base, addr_off *size )
+BOOL FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size )
 {
     unsigned        i;
     lib_load_info   *lli;
 
     for( i = 0; i < ModuleTop; ++i ) {
-        lli = &moduleInfo[0];
-        if( off >= ( addr_off ) lli->base
-         && off < ( addr_off ) lli->base + lli->code_size ) {
+        lli = &moduleInfo[i];
+        if( (LPSTR)off >= lli->base && (LPSTR)off < lli->base + lli->code_size ) {
             /* this is the image */
             if( lli->except_size == 0 ) {
                 return( FALSE );
@@ -226,20 +226,21 @@ BOOL FindExceptInfo( addr_off off, LPVOID *base, addr_off *size )
 
 static void FillInExceptInfo( lib_load_info *lli )
 {
-    DWORD       pe_off;
-    DWORD       bytes;
-    pe_header   hdr;
+    DWORD           pe_off;
+    SIZE_T          bytes;
+    exe_pe_header   hdr;
 
-    ReadProcessMemory( ProcessInfo.process_handle,
-                ( LPVOID ) ( ( DWORD ) lli->base + OS2_NE_OFFSET ), &pe_off,
-                sizeof( pe_off ), &bytes );
-    ReadProcessMemory( ProcessInfo.process_handle,
-                ( LPVOID ) ( ( DWORD ) lli->base + pe_off ), &hdr,
-                sizeof( hdr ), &bytes );
-    lli->code_size = hdr.code_base + hdr.code_size;
-    lli->except_base = ( LPVOID ) ( ( DWORD ) lli->base +
-        hdr.table[PE_TBL_EXCEPTION].rva );
-    lli->except_size = hdr.table[PE_TBL_EXCEPTION].size;
+    ReadProcessMemory( ProcessInfo.process_handle, lli->base + OS2_NE_OFFSET, &pe_off, sizeof( pe_off ), &bytes );
+    ReadProcessMemory( ProcessInfo.process_handle, lli->base + pe_off, &hdr, sizeof( hdr ), &bytes );
+    if( IS_PE64( hdr ) ) {
+        lli->code_size = PE64( hdr ).code_base + PE64( hdr ).code_size;
+        lli->except_base = lli->base + PE64( hdr ).table[PE_TBL_EXCEPTION].rva;
+        lli->except_size = PE64( hdr ).table[PE_TBL_EXCEPTION].size;
+    } else {
+        lli->code_size = PE32( hdr ).code_base + PE32( hdr ).code_size;
+        lli->except_base = lli->base + PE32( hdr ).table[PE_TBL_EXCEPTION].rva;
+        lli->except_size = PE32( hdr ).table[PE_TBL_EXCEPTION].size;
+    }
 }
 
 /*
@@ -255,21 +256,25 @@ void AddProcess( header_info *hi )
 
     lli = &moduleInfo[0];
 
+#if defined( MD_x86 )
     if( IsWOW || IsDOS ) {
         lli->is_16 = TRUE;
         lli->file_handle = 0;
-        lli->base = 0;
+        lli->base = NULL;
         lli->has_real_filename = TRUE;
         strcpy( lli->modname, hi->modname );
         strcpy( lli->filename, CurrEXEName );
     } else {
+#else
+    hi=hi;
+    {
+#endif
         lli->has_real_filename = FALSE;
         lli->is_16 = FALSE;
         lli->file_handle = DebugEvent.u.CreateProcessInfo.hFile;
         // kludge - NT doesn't give us a handle sometimes
         if( lli->file_handle == INVALID_HANDLE_VALUE ) {
-            lli->file_handle = CreateFile( ( LPTSTR )CurrEXEName, GENERIC_READ,
-                FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
+            lli->file_handle = CreateFile( CurrEXEName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
         }
         lli->base = DebugEvent.u.CreateProcessInfo.lpBaseOfImage;
         FillInExceptInfo( lli );
@@ -350,9 +355,15 @@ BOOL NameFromHandle( HANDLE hFile, char *name )
         goto error_exit;
 
     // Create a file mapping object and map the file.
-    if( !(hFileMap = CreateFileMapping( hFile, NULL, PAGE_READONLY, 0, 1, NULL ))
-     || !(pMem = MapViewOfFile( hFileMap, FILE_MAP_READ, 0, 0, 1 ))
-     || !pGetMappedFileName( GetCurrentProcess(), pMem, pszFilename, MAX_PATH ) ) {
+    hFileMap = CreateFileMapping( hFile, NULL, PAGE_READONLY, 0, 1, NULL );
+    if( hFileMap == 0 ) {
+        goto error_exit;
+    }
+    pMem = MapViewOfFile( hFileMap, FILE_MAP_READ, 0, 0, 1 );
+    if( pMem == 0 ) {
+        goto error_exit;
+    }
+    if( pGetMappedFileName( GetCurrentProcess(), pMem, pszFilename, MAX_PATH ) == 0 ) {
         goto error_exit;
     }
 
@@ -371,7 +382,7 @@ BOOL NameFromHandle( HANDLE hFile, char *name )
 
             // Look up each device name
             if( pQueryDosDevice( szDrive, szName, BUFSIZE ) ) {
-                UINT    uNameLen = strlen( szName );
+                UINT    uNameLen = (UINT)strlen( szName );
 
                 if( uNameLen < MAX_PATH ) {
                     bFound = ( strnicmp( pszFilename, szName, uNameLen ) == 0
@@ -380,10 +391,10 @@ BOOL NameFromHandle( HANDLE hFile, char *name )
                     if( bFound ) {
                         // Reconstruct pszFilename using szTemp
                         // Replace device path with DOS path
-                        char    szTempFile[MAX_PATH];
+//                        char    szTempFile[MAX_PATH];
 
-                        sprintf( szTempFile, "%s%s", szDrive, pszFilename + uNameLen );
-                        strlcpy( name, szTempFile, MAX_PATH );
+                        snprintf( name, MAX_PATH, "%s%s", szDrive, pszFilename + uNameLen );
+//                        strncpy( name, szTempFile, MAX_PATH );
                         bSuccess = TRUE;
                     }
                 }
@@ -406,7 +417,6 @@ error_exit:
 
 
 
-
 /*
  * AddLib - a new library has loaded
  */
@@ -415,21 +425,21 @@ void AddLib( BOOL is_16, IMAGE_NOTE *im )
     lib_load_info   *lli;
 
     ModuleTop++;
-    lli = LocalAlloc( LMEM_FIXED, ModuleTop*sizeof( lib_load_info ) );
-    memset( lli, 0, ModuleTop*sizeof( lib_load_info ) );
-    memcpy( lli, moduleInfo, ( ModuleTop - 1 ) *sizeof( lib_load_info ) );
+    lli = LocalAlloc( LMEM_FIXED, ModuleTop * sizeof( lib_load_info ) );
+    memset( lli, 0, ModuleTop * sizeof( lib_load_info ) );
+    memcpy( lli, moduleInfo, ( ModuleTop - 1 ) * sizeof( lib_load_info ) );
     LocalFree( moduleInfo );
     moduleInfo = lli;
     lli = &moduleInfo[ModuleTop - 1];
 
-#ifndef WOW
+#if !defined( WOW ) || defined( MD_x64 )
     (void)im, (void)is_16; // Unused
 #else
     if( is_16 ) {
         lli->is_16 = TRUE;
         lli->has_real_filename = TRUE;
         lli->file_handle = 0;
-        lli->base = 0;
+        lli->base = NULL;
         lli->newly_loaded = TRUE;
         lli->newly_unloaded = FALSE;
         strcpy( lli->filename, im->FileName );
@@ -500,6 +510,7 @@ void DelProcess( BOOL closeHandles )
  *                      will be loaded into memory.
  */
 #ifdef WOW
+#if !defined( MD_x64 )
 
 #define INS_BYTES 7
 
@@ -510,8 +521,8 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
     };
     static unsigned char    origBytes[INS_BYTES];
     static BOOL             gotOrig;
-    auto   CONTEXT          con;
-    auto   CONTEXT          oldcon;
+    MYCONTEXT               con;
+    MYCONTEXT               oldcon;
 
     if( !UseVDMStuff ) {
         return;
@@ -528,14 +539,14 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
     con.Eip = WOWAppInfo.offset;
     con.SegCs = WOWAppInfo.segment;
     MySetThreadContext( ti, &con );
-    DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD |
-                        STATE_EXPECTING_FAULT, NULL, FALSE );
+    DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD | STATE_EXPECTING_FAULT, NULL, FALSE );
     MySetThreadContext( ti, &oldcon );
     WriteMem( WOWAppInfo.segment, WOWAppInfo.offset, origBytes, INS_BYTES );
 }
 #endif
+#endif
 
-unsigned ReqMap_addr( void )
+trap_elen ReqMap_addr( void )
 {
     int             i;
     HANDLE          handle;
@@ -547,6 +558,7 @@ unsigned ReqMap_addr( void )
     header_info     hi;
     lib_load_info   *lli;
     WORD            stack;
+    int             num_objects;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -564,6 +576,7 @@ unsigned ReqMap_addr( void )
 
     lli = &moduleInfo[acc->handle];
 
+#if !defined( MD_x64 )
 #ifdef WOW
     if( lli->is_16 ) {
         LDT_ENTRY   ldt;
@@ -588,7 +601,10 @@ unsigned ReqMap_addr( void )
         ret->out_addr.offset = 0;
     } else
 #endif
- {
+#endif
+    {
+        DWORD   seek_offset;
+
         /*
          * for a 32-bit app, we get the PE header. We can look the up the
          * object in the header and determine if it is code or data, and
@@ -600,38 +616,55 @@ unsigned ReqMap_addr( void )
         if( !GetEXEHeader( handle, &hi, &stack ) ) {
             return( 0 );
         }
-        if( hi.sig == EXE_PE ) {
-            for( i = 0; i < hi.peh.num_objects; i++ ) {
-                ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
-                if( i == seg ) {
-                    break;
-                }
-            }
-            if( i == hi.peh.num_objects ) {
-                return( 0 );
-            }
-            if( obj.flags & ( PE_OBJ_CODE | PE_OBJ_EXECUTABLE ) ) {
-                ret->out_addr.segment = FlatCS;
-            } else {
-                ret->out_addr.segment = FlatDS;
-            }
-            ret->out_addr.offset = ( DWORD ) lli->base + obj.rva;
-        } else {
+        if( hi.sig != EXE_PE ) {
             return( 0 );
         }
+
+        seek_offset = SetFilePointer( handle, 0, NULL, FILE_CURRENT );
+        if( seek_offset == INVALID_SET_FILE_POINTER ) {
+            return( 0 );
+        }
+        if( IS_PE64( hi.u.peh ) ) {
+            num_objects = PE64( hi.u.peh ).num_objects;
+            seek_offset += PE64( hi.u.peh ).nt_hdr_size + offsetof( pe_header64, magic ) - sizeof( exe_pe_header );
+        } else {
+            num_objects = PE32( hi.u.peh ).num_objects;
+            seek_offset += PE32( hi.u.peh ).nt_hdr_size + offsetof( pe_header, magic ) - sizeof( exe_pe_header );
+        }
+        if( num_objects == 0 ) {
+            return( 0 );
+        }
+        /* position to begining of object table */
+        if( SetFilePointer( handle, seek_offset, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
+            return( 0 );
+        }
+        for( i = 0; i < num_objects; i++ ) {
+            ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
+            if( i == seg ) {
+                break;
+            }
+        }
+        if( i == num_objects ) {
+            return( 0 );
+        }
+        if( obj.flags & ( PE_OBJ_CODE | PE_OBJ_EXECUTABLE ) ) {
+            ret->out_addr.segment = FlatCS;
+        } else {
+            ret->out_addr.segment = FlatDS;
+        }
+        ret->out_addr.offset = (ULONG_PTR)( lli->base + obj.rva );
     }
-    addSegmentToLibList( acc->handle, ret->out_addr.segment,
-         ret->out_addr.offset );
+    addSegmentToLibList( acc->handle, ret->out_addr.segment, ret->out_addr.offset );
     ret->out_addr.offset += acc->in_addr.offset;
     ret->lo_bound = 0;
-    ret->hi_bound = ~( addr48_off ) 0;
+    ret->hi_bound = ~(addr48_off)0;
     return( sizeof( *ret ) );
 }
 
 /*
  * AccGetLibName - get lib name of current module
  */
-unsigned ReqGet_lib_name( void )
+trap_elen ReqGet_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;

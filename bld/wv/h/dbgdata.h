@@ -44,8 +44,8 @@ extern char             *TrpFile;
 /*
  *  Queried from trap file supplemental services
  */
-extern int              Supports8ByteBreakpoints;
-extern int              SupportsExactBreakpoints;
+extern bool             Supports8ByteBreakpoints;
+extern bool             SupportsExactBreakpoints;
 
 extern char             *InvokeFile;
 extern char             *DipFiles[10];

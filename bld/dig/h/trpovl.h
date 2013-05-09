@@ -33,7 +33,7 @@
 
 #include "trptypes.h"
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 #define OVERLAY_SUPP_NAME               "Overlays"
 
@@ -113,7 +113,7 @@ typedef struct {
     ovl_address         ovl_addr;
 } _WCUNALIGNED ovl_get_remap_entry_ret;
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #define TRPOVL_H
 

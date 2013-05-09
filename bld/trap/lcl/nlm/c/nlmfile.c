@@ -60,7 +60,7 @@ extern int IOSeek( int seekhandle, int seekmode, long seekpos );
 extern int IORead( int readhandle, char *buff, int len );
 extern void StringToNLMPath( char *name, char *res );
 
-unsigned ReqFile_get_config()
+trap_elen ReqFile_get_config()
 {
     file_get_config_ret *ret;
 
@@ -75,7 +75,7 @@ unsigned ReqFile_get_config()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_open()
+trap_elen ReqFile_open()
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -100,7 +100,7 @@ unsigned ReqFile_open()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_close()
+trap_elen ReqFile_close()
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -111,7 +111,7 @@ unsigned ReqFile_close()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write()
+trap_elen ReqFile_write()
 {
     int          retval;
     file_write_req      *acc;
@@ -132,7 +132,7 @@ unsigned ReqFile_write()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write_console()
+trap_elen ReqFile_write_console()
 {
     int          retval;
     file_write_console_req      *acc;
@@ -153,7 +153,7 @@ unsigned ReqFile_write_console()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek()
+trap_elen ReqFile_seek()
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -172,7 +172,7 @@ unsigned ReqFile_seek()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_read()
+trap_elen ReqFile_read()
 {
     file_read_req       *acc;
     file_read_ret       *ret;
@@ -191,7 +191,7 @@ unsigned ReqFile_read()
     return( sizeof( *ret ) + retval );
 }
 
-unsigned ReqFile_string_to_fullpath()
+trap_elen ReqFile_string_to_fullpath()
 {
     char               *name;
     char               *fullname;
@@ -213,7 +213,7 @@ unsigned ReqFile_string_to_fullpath()
     return( sizeof( *ret ) + len + 1 );
 }
 
-unsigned ReqFile_erase()
+trap_elen ReqFile_erase()
 {
     file_erase_ret      *ret;
 
@@ -222,7 +222,7 @@ unsigned ReqFile_erase()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_run_cmd()
+trap_elen ReqFile_run_cmd()
 {
     file_run_cmd_ret *ret;
 

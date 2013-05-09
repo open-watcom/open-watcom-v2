@@ -108,7 +108,7 @@ void RemoveAllThreads( void )
     ProcessInfo.thread_list = NULL;
 }
 
-unsigned ReqThread_freeze( void )
+trap_elen ReqThread_freeze( void )
 {
     thread_freeze_req   *acc;
     thread_freeze_ret   *ret;
@@ -141,7 +141,7 @@ unsigned ReqThread_freeze( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_thaw( void )
+trap_elen ReqThread_thaw( void )
 {
     thread_thaw_req *acc;
     thread_thaw_ret *ret;
@@ -168,7 +168,7 @@ unsigned ReqThread_thaw( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_set( void )
+trap_elen ReqThread_set( void )
 {
     thread_set_req  *acc;
     thread_set_ret  *ret;
@@ -190,7 +190,7 @@ unsigned ReqThread_set( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_get_next( void )
+trap_elen ReqThread_get_next( void )
 {
     static thread_info  *ti;
     thread_get_next_req *acc;
@@ -240,7 +240,7 @@ unsigned ReqThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_get_extra( void )
+trap_elen ReqThread_get_extra( void )
 {
     thread_get_extra_req    *acc;
     char                    *name;

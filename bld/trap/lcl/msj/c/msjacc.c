@@ -116,7 +116,7 @@ unsigned ReqAddr_info( void )
     addr_info_ret *     ret;
 
     ret = GetOutPtr( 0 );
-    ret->is_32 = TRUE;
+    ret->is_big = TRUE;
     return sizeof( *ret );
 }
 
@@ -371,7 +371,7 @@ unsigned ReqProg_load( void )
         if( DebuggerWindow != NULL ) SetForegroundWindow( DebuggerWindow );
         ret->err = 0;
         ret->task_id = 0;
-        ret->flags = LD_FLAG_IS_32 | LD_FLAG_IS_PROT | LD_FLAG_HAVE_RUNTIME_DLLS;
+        ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_HAVE_RUNTIME_DLLS;
     }
     return sizeof( *ret );
 }

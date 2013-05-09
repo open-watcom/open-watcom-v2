@@ -37,11 +37,14 @@
 #endif
 #include "wio.h"
 #include "dbgdefn.h"
-#include "trpcore.h"
-#include "trpfile.h"
 #include "dbgio.h"
 #ifdef __NT__
 #include <windows.h>
+#endif
+#include "trpcore.h"
+#include "trpfile.h"
+
+#ifdef __NT__
 extern system_config    SysConfig;
 #endif
 
@@ -51,7 +54,8 @@ extern handle           LclStringToFullName( char *name, unsigned len, char *ful
 extern unsigned         MaxPacketLen;
 extern unsigned         CheckSize;
 
-static trap_shandle     SuppFileId;
+static trap_shandle     SuppFileId = 0;
+
 file_components     RemFile;
 
 #ifdef LOGGING
@@ -134,15 +138,22 @@ int DelCachedHandle( int local )
 
 bool InitFileSupp( void )
 {
+#ifdef WANT_FILE
     file_get_config_req acc;
 
     InitHandleCache();
 
     SuppFileId = GetSuppId( FILE_SUPP_NAME );
-    if( SuppFileId == 0 ) return( FALSE );
+    if( SuppFileId == 0 )
+        return( FALSE );
     SUPP_FILE_SERVICE( acc, REQ_FILE_GET_CONFIG );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( RemFile ), &RemFile );
     return( TRUE );
+#else
+    SuppFileId = 0;
+    InitHandleCache();
+    return( FALSE );
+#endif
 }
 
 bool HaveRemoteFiles( void )

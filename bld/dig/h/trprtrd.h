@@ -33,7 +33,7 @@
 
 #include "trptypes.h"
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 #define RUN_THREAD_SUPP_NAME                "RunThread"
 
@@ -146,7 +146,7 @@ typedef struct {
 } _WCUNALIGNED run_thread_signal_stop_req;
 
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #define TRPRTRD_H
 

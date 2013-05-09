@@ -35,9 +35,9 @@
 #include <i86.h>
 #include "nitipx.h"
 #include "tinyio.h"
-#include "packet.h"
 #include "trptypes.h"
 #include "trperr.h"
+#include "packet.h"
 
 #include "ipxstuff.h"
 
@@ -248,11 +248,11 @@ static void PostAListen( int i )
     _SPXListenForSequencedPacket( &RecECB[i] );
 }
 
-static unsigned DoRemoteGet( char *rec, unsigned len )
+static trap_elen DoRemoteGet( char *rec, trap_elen len )
 {
     int         i;
-    unsigned    recvd;
-    unsigned    got;
+    trap_elen   recvd;
+    trap_elen   got;
     int         p;
 
     len = len;
@@ -284,7 +284,7 @@ static unsigned DoRemoteGet( char *rec, unsigned len )
     return( recvd );
 }
 
-static unsigned DoRemotePut( char *snd, unsigned len )
+static trap_elen DoRemotePut( char *snd, trap_elen len )
 {
     _INITECB( SendECB, SendHead, 2, SPX );
     SendHead.connectControl |= 0x10;
@@ -296,12 +296,12 @@ static unsigned DoRemotePut( char *snd, unsigned len )
     return( len );
 }
 
-unsigned RemoteGet( char *rec, unsigned len )
+trap_elen RemoteGet( char *rec, trap_elen len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-unsigned RemotePut( char *snd, unsigned len )
+trap_elen RemotePut( char *snd, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
@@ -370,7 +370,7 @@ void RemoteDisco( void )
 #ifdef SERVER
     _IPXCancelEvent( &ConnECB );
 #endif
-    for( i = NUM_REC_BUFFS-1; i >= 0; --i ) {
+    for( i = NUM_REC_BUFFS - 1; i >= 0; --i ) {
         if( RecECB[i].inUseFlag ) {
             _IPXCancelEvent( &RecECB[i] );
         }
@@ -451,7 +451,7 @@ static char FindPartner( void )
 {
     static char RepBuff[132];
 
-    #ifdef __WINDOWS__
+#ifdef __WINDOWS__
     {
         BYTE    moresegments;
         BYTE    propertyflags;
@@ -469,7 +469,7 @@ static char FindPartner( void )
         if( binderyerror != 0 ) return( 0 );
         AssignArray( ServHead.destination, RepBuff[0] );
     }
-    #else
+#else
     {
         extern char ReadPropertyValue( void *, void *);
 
@@ -499,7 +499,7 @@ putstring( "read prop\r\n" );
 putstring( "assgn array\r\n" );
         AssignArray( ServHead.destination, RepBuff[2] );
     }
-    #endif
+#endif
 putstring( "lcl targ\r\n" );
     if( _IPXGetLocalTarget( &ServHead.destination.network.a[0],
                            &ServECB.immediateAddress.a[0],

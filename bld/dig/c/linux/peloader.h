@@ -47,7 +47,7 @@
 
 /*---------------------- Macros and type definitions ----------------------*/
 
-#pragma pack(1)
+#include "pushpck1.h"
 
 /****************************************************************************
 REMARKS:
@@ -92,7 +92,7 @@ typedef enum {
     PE_unknownImageFormat
     } PE_errorCodes;
 
-#pragma pack()
+#include "poppck.h"
 
 /*------------------------- Function Prototypes ---------------------------*/
 

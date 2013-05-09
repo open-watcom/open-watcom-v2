@@ -145,7 +145,7 @@ unsigned DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsi
     op = (dp & MDP_OPERANDS)    ? obuff : NULL;
     ff = DFF_ASM;
     if( MADState->disasm_state & DT_UPPER ) ff |= DFF_INS_UP | DFF_REG_UP;
-    if( MADState->disasm_state & DT_INSIDE ) ff |= DFF_X86_ALT_INDEXING;
+    if( MADState->disasm_state & DT_INSIDE ) ff |= DFF_ALT_INDEXING;
     dd->radix = radix;
     if( DisFormat( &DH, dd, &dd->ins, ff, np, op ) != DR_OK ) {
         return( 0 );

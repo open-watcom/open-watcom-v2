@@ -33,9 +33,14 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#if defined( __WATCOMC__ )
+#include "variety.h"
+#include <windows.h>
+#include "ntex.h"
+#endif
 #include "stdnt.h"
 
-unsigned ReqFile_get_config( void )
+trap_elen ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -50,7 +55,7 @@ unsigned ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_user_keyboard( void )
+trap_elen ReqRead_user_keyboard( void )
 {
     read_user_keyboard_req  *acc;
     read_user_keyboard_ret  *ret;
@@ -68,7 +73,7 @@ unsigned ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_open( void )
+trap_elen ReqFile_open( void )
 {
     HANDLE                  h;
     file_open_req           *acc;
@@ -92,13 +97,6 @@ unsigned ReqFile_open( void )
     h = GetMagicalFileHandle( buff );
     ret->err = 0;
     if( h == NULL ) {
-        /*
-         * these __GetNT... routines are in the C library.  they turn
-         * DOS style access and share bits into NT style ones
-         */
-        extern void __GetNTAccessAttr( int rwmode, LPDWORD desired_access,
-                                        LPDWORD attr );
-        extern void __GetNTShareAttr( int share, LPDWORD share_mode );
         DWORD   share_mode;
         DWORD   desired_access;
         DWORD   attr;
@@ -112,19 +110,18 @@ unsigned ReqFile_open( void )
         } else {
             create_disp = OPEN_EXISTING;
         }
-        h = CreateFile( ( LPTSTR ) buff, desired_access, share_mode, 0,
-                    create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
-        if( h == ( HANDLE ) - 1 ) {
+        h = CreateFile( (LPTSTR)buff, desired_access, share_mode, 0, create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
+        if( h == INVALID_HANDLE_VALUE ) {
             ret->err = GetLastError();
             h = 0;
         }
 
     }
-    ret->handle = ( DWORD ) h;
+    ret->handle = (trap_fhandle)h;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek( void )
+trap_elen ReqFile_seek( void )
 {
     DWORD           rc;
     file_seek_req   *acc;
@@ -132,9 +129,8 @@ unsigned ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = SetFilePointer( ( HANDLE ) acc->handle, acc->pos, 0,
-                        acc->mode );
-    if( rc == -1 ) {
+    rc = SetFilePointer( (HANDLE)acc->handle, acc->pos, NULL, acc->mode );
+    if( rc == INVALID_SET_FILE_POINTER ) {
         ret->err = GetLastError();
     } else {
         ret->err = 0;
@@ -143,7 +139,7 @@ unsigned ReqFile_seek( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write( void )
+trap_elen ReqFile_write( void )
 {
     DWORD           bytes;
     BOOL            rc;
@@ -158,7 +154,7 @@ unsigned ReqFile_write( void )
 
     len = GetTotalSize() - sizeof( *acc );
 
-    rc = WriteFile( ( HANDLE )acc->handle, buff, len, &bytes, NULL );
+    rc = WriteFile( (HANDLE)acc->handle, buff, len, &bytes, NULL );
     if( !rc ) {
         ret->err = GetLastError();
         bytes = 0;
@@ -169,7 +165,7 @@ unsigned ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write_console( void )
+trap_elen ReqFile_write_console( void )
 {
     DWORD                   bytes;
     BOOL                    rc;
@@ -200,7 +196,7 @@ unsigned ReqFile_write_console( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_read( void )
+trap_elen ReqFile_read( void )
 {
     DWORD           bytes;
     BOOL            rc;
@@ -211,7 +207,7 @@ unsigned ReqFile_read( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
-    rc = ReadFile( ( HANDLE ) acc->handle, buff, acc->len, &bytes, NULL );
+    rc = ReadFile( (HANDLE)acc->handle, buff, acc->len, &bytes, NULL );
     if( !rc ) {
         ret->err = GetLastError();
         bytes = 0;
@@ -221,7 +217,7 @@ unsigned ReqFile_read( void )
     return( sizeof( *ret ) + bytes );
 }
 
-unsigned ReqFile_close( void )
+trap_elen ReqFile_close( void )
 {
     file_close_req  *acc;
     file_close_ret  *ret;
@@ -235,8 +231,8 @@ unsigned ReqFile_close( void )
      * we do not close the file handle if it was a magical one that
      * we remembered from a DLL load
      */
-    if( !IsMagicalFileHandle( ( HANDLE ) acc->handle ) ) {
-        rc = CloseHandle( ( HANDLE ) acc->handle );
+    if( !IsMagicalFileHandle( (HANDLE)acc->handle ) ) {
+        rc = CloseHandle( (HANDLE)acc->handle );
         if( !rc ) {
             ret->err = GetLastError();
         }
@@ -244,7 +240,7 @@ unsigned ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_erase( void )
+trap_elen ReqFile_erase( void )
 {
     file_erase_ret  *ret;
     char            *buff;
@@ -261,7 +257,7 @@ unsigned ReqFile_erase( void )
 
 }
 
-unsigned ReqFile_run_cmd( void )
+trap_elen ReqFile_run_cmd( void )
 {
     file_run_cmd_ret    *ret;
 
@@ -271,7 +267,7 @@ unsigned ReqFile_run_cmd( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_string_to_fullpath( void )
+trap_elen ReqFile_string_to_fullpath( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;

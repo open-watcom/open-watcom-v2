@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <direct.h>
 #include "stdnt.h"
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
   #include "dbg386.h"
 #endif
 
@@ -58,7 +58,7 @@ typedef struct break_point {
 
 static break_point      *Breaks = NULL;
 
-unsigned ReqSet_break( void )
+trap_elen ReqSet_break( void )
 {
     brkpnt_type     ch;
     set_break_req   *acc;
@@ -82,7 +82,7 @@ unsigned ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break( void )
+trap_elen ReqClear_break( void )
 {
     brkpnt_type     ch;
     clear_break_req *acc;
@@ -120,13 +120,13 @@ BOOL FindBreak( WORD segment, DWORD offset, BYTE *ch )
     return( FALSE );
 }
 
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
 /*
  * setDR6 - set value of debug register 6
  */
 static void setDR6( DWORD tmp )
 {
-    CONTEXT     con;
+    MYCONTEXT   con;
     thread_info *ti;
 
     ti = FindThread( DebugeeTid );
@@ -140,7 +140,7 @@ static void setDR6( DWORD tmp )
  */
 void SetDR7( DWORD tmp )
 {
-    CONTEXT     con;
+    MYCONTEXT   con;
     thread_info *ti;
     //char buff[256];
 
@@ -160,7 +160,7 @@ void SetDR7( DWORD tmp )
  */
 DWORD GetDR6( void )
 {
-    CONTEXT     con;
+    MYCONTEXT   con;
     thread_info *ti;
 
     ti = FindThread( DebugeeTid );
@@ -170,12 +170,12 @@ DWORD GetDR6( void )
 
 static DWORD setDRn( int i, DWORD linear, long type )
 {
-    CONTEXT     con;
+    MYCONTEXT   con;
     thread_info *ti;
 
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
-    ( ( DWORD * ) & con.Dr0 )[i] = linear;
+    ( (DWORD *)&con.Dr0 )[i] = linear;
     MySetThreadContext( ti, &con );
 
     return( ( type << DR7_RWLSHIFT( i ) )
@@ -189,7 +189,7 @@ static DWORD setDRn( int i, DWORD linear, long type )
  */
 void ClearDebugRegs( void )
 {
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
     int i;
 
     for( i = 0; i < 4; i++ ) {
@@ -209,7 +209,7 @@ void ClearDebugRegs( void )
  */
 BOOL SetDebugRegs( void )
 {
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
     int         needed;
     int         i;
     int         dr;
@@ -327,15 +327,13 @@ BOOL SetDebugRegs( void )
             if( wp->dregs > 1 ) {  
                 /* Must be 2, 4 or 8 to cross a boundary */
                 DWORD   additive = wp->len == 8 ? 4 : wp->len;
-                dr7 |= setDRn( dr, wp->linear + additive,
-                    DRLen( wp->len ) | DR7_BWR );
+                dr7 |= setDRn( dr, wp->linear + additive, DRLen( wp->len ) | DR7_BWR );
                 dr++;
             }
             /* This watchpoint must cross dword boundaries AND be larger than 4B (8!)  */
             if( wp->dregs > 2 ) {
                 DWORD   additive = wp->len;
-                dr7 |= setDRn( dr, wp->linear + additive,
-                    DRLen( wp->len ) | DR7_BWR );
+                dr7 |= setDRn( dr, wp->linear + additive, DRLen( wp->len ) | DR7_BWR );
                 dr++;
             }
         }
@@ -393,7 +391,7 @@ static DWORD CalcLinear( WORD segment, DWORD offset )
 #endif
 
 
-unsigned ReqSet_watch( void )
+trap_elen ReqSet_watch( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -514,7 +512,7 @@ unsigned ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch( void )
+trap_elen ReqClear_watch( void )
 {
     clear_watch_req *acc;
     watch_point     *dst;

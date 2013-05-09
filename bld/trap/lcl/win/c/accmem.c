@@ -72,11 +72,11 @@ DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
 
 } /* WriteMem */
 
-unsigned ReqRead_mem( void )
+trap_elen ReqRead_mem( void )
 {
     read_mem_req        *acc;
     LPVOID              data;
-    unsigned            len;
+    trap_elen           len;
 
     acc = GetInPtr(0);
     data = GetOutPtr(0);
@@ -85,9 +85,9 @@ unsigned ReqRead_mem( void )
     return( len );
 }
 
-unsigned ReqWrite_mem( void )
+trap_elen ReqWrite_mem( void )
 {
-    DWORD               len;
+    trap_elen           len;
     LPVOID              data;
     write_mem_req       *acc;
     write_mem_ret       *ret;
@@ -101,11 +101,12 @@ unsigned ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqChecksum_mem( void )
+trap_elen ReqChecksum_mem( void )
 {
-    DWORD       offset;
-    WORD        length,value;
-    DWORD       sum;
+    DWORD               offset;
+    trap_elen           length;
+    WORD                value;
+    DWORD               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 

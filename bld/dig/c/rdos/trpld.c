@@ -38,22 +38,23 @@
 #include "trpimp.h"
 #include "tcerr.h"
 
-static int   TrapFile;
-static trap_version (TRAPENTRY *InitFunc)(char *, char *, bool);
-static void (TRAPENTRY *FiniFunc)(void);
-
 extern trap_version     TrapVer;
-extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
-                                        unsigned, mx_entry * );
+extern trap_req_func    *ReqFunc;
+
+static int              TrapFile = 0;
+static trap_fini_func   *FiniFunc = NULL;
 
 void KillTrap( void )
 {
     ReqFunc = NULL;
-    if( FiniFunc != NULL ) FiniFunc();
-    FiniFunc = NULL;
-    InitFunc = NULL;
-    if( TrapFile != 0 ) RdosFreeDll( TrapFile );
-    TrapFile = 0;
+    if( FiniFunc != NULL ) {
+        FiniFunc();
+        FiniFunc = NULL;
+    }
+    if( TrapFile != 0 ) {
+        RdosFreeDll( TrapFile );
+        TrapFile = 0;
+    }
 }
 
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
@@ -64,8 +65,10 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     char                *dst;
     char                have_ext;
     char                chr;
+    trap_init_func      *init_func;
 
-    if( trapbuff == NULL ) trapbuff = "std";
+    if( trapbuff == NULL )
+        trapbuff = "std";
     have_ext = FALSE;
     ptr = trapbuff;
     dst = (char *)trpfile;
@@ -98,19 +101,19 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
-    InitFunc = RdosGetModuleProc( TrapFile, "TrapInit_" );
+    init_func = RdosGetModuleProc( TrapFile, "TrapInit_" );
     FiniFunc = RdosGetModuleProc( TrapFile, "TrapFini_" );
     ReqFunc  = RdosGetModuleProc( TrapFile, "TrapRequest_" );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( InitFunc == NULL || FiniFunc == NULL || ReqFunc == NULL
+    if( init_func == NULL || FiniFunc == NULL || ReqFunc == NULL
         /* || LibListFunc == NULL */ ) {
         KillTrap();
         return( buff );
     }
-    *trap_ver = InitFunc( parm, trpfile, trap_ver->remote );
+    *trap_ver = init_func( parm, trpfile, trap_ver->remote );
     if( trpfile[0] != '\0' ) {
-        KillTrap();
         strcpy( buff, (char *)trpfile );
+        KillTrap();
         return( buff );
     }
     if( !TrapVersionOK( *trap_ver ) ) {

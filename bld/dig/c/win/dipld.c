@@ -37,6 +37,7 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#include "dipsys.h"
 
 typedef void (DIPENTRY INTER_FUNC)( void );
 
@@ -45,14 +46,13 @@ HMODULE DIPLastHandle;  /* for Dr. WATCOM */
 #ifdef DEBUGGING
 void Say( char *buff )
 {
-    MessageBox( (HWND) NULL, buff, "DEBUG",
-            MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
+    MessageBox( (HWND) NULL, buff, "DEBUG", MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
 }
 #endif
 
 
 
-void DIPSysUnload( unsigned long sys_hdl )
+void DIPSysUnload( dip_sys_handle sys_hdl )
 {
     void        (DIPENTRY *fini_func)( void ) = (void *)sys_hdl;
 
@@ -62,8 +62,7 @@ void DIPSysUnload( unsigned long sys_hdl )
 }
 
 
-dip_status DIPSysLoad( char *path, dip_client_routines *cli,
-                                dip_imp_routines **imp, unsigned long *sys_hdl )
+dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     HANDLE              dll;
     dip_imp_routines    *(DIPENTRY *init_func)( dip_status *, dip_client_routines * );
@@ -89,7 +88,7 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
 
     strcpy( newpath, path );
     strcat( newpath, ".dll" );
-    *sys_hdl = 0;
+    *sys_hdl = (dip_sys_handle)0;
     p = parm;
     *p++ = ' ';
     utoa( FP_SEG( &transfer_block ), p, 16 );
@@ -111,7 +110,7 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
     if( (UINT)dll < 32 ) {
         return( DS_ERR|DS_FOPEN_FAILED );
     }
-    *sys_hdl = (unsigned long)transfer_block.unload;
+    *sys_hdl = (dip_sys_handle)transfer_block.unload;
     init_func = ( dip_imp_routines *(DIPENTRY *)( dip_status *, dip_client_routines * ))transfer_block.load;
     if( init_func == NULL ) {
         DIPSysUnload( *sys_hdl );

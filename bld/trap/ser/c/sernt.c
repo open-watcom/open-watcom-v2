@@ -30,8 +30,6 @@
 
 
 #include <windows.h>
-#undef NO_DATA      // Clashes with define in serial.h
-
 #include <stdio.h>
 #include <stddef.h>
 #include "trpimp.h"

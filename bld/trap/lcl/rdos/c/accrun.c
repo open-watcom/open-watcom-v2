@@ -36,7 +36,7 @@
 #include "stdrdos.h"
 #include "debug.h"
 
-unsigned ReqProg_go( void )
+trap_elen ReqProg_go( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -51,21 +51,21 @@ unsigned ReqProg_go( void )
 
     obj = GetCurrentDebug();
 
-	if (obj) {
-	    Go( obj );
+        if (obj) {
+            Go( obj );
 
         if( IsTerminated( obj ) )
-			ret->conditions |= COND_TERMINATE;
+            ret->conditions |= COND_TERMINATE;
 
         if( HasThreadChange( obj ) ) {
             ClearThreadChange( obj );
-			ret->conditions |= COND_THREAD;
-		}
+            ret->conditions |= COND_THREAD;
+        }
 
         if( HasModuleChange( obj ) ) {
             ClearModuleChange( obj );
-			ret->conditions |= COND_LIBRARIES;
-		}
+            ret->conditions |= COND_LIBRARIES;
+        }
 
         thread = obj->CurrentThread;
         if( thread ) {
@@ -79,7 +79,7 @@ unsigned ReqProg_go( void )
                 ret->conditions |= COND_EXCEPTION;                
         }
     } else
-        ret->conditions	|= COND_TERMINATE;
+        ret->conditions |= COND_TERMINATE;
 
     if( thread ) {
         ret->program_counter.offset = thread->Eip;
@@ -91,7 +91,7 @@ unsigned ReqProg_go( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_step( void )
+trap_elen ReqProg_step( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -106,21 +106,21 @@ unsigned ReqProg_step( void )
 
     obj = GetCurrentDebug();
 
-	if (obj) {
-	    Trace( obj );
+        if (obj) {
+            Trace( obj );
 
         if( IsTerminated( obj ) )
-			ret->conditions |= COND_TERMINATE;
+            ret->conditions |= COND_TERMINATE;
 
         if( HasThreadChange( obj ) ) {
             ClearThreadChange( obj );
-			ret->conditions |= COND_THREAD;
-		}
+            ret->conditions |= COND_THREAD;
+        }
 
         if( HasModuleChange( obj ) ) {
             ClearModuleChange( obj );
-			ret->conditions |= COND_LIBRARIES;
-		}
+            ret->conditions |= COND_LIBRARIES;
+        }
 
         thread = obj->CurrentThread;
         if( thread ) {
@@ -134,7 +134,7 @@ unsigned ReqProg_step( void )
                 ret->conditions |= COND_EXCEPTION;                
         }
     } else
-        ret->conditions	|= COND_TERMINATE;
+        ret->conditions |= COND_TERMINATE;
 
     if( thread ) {
         ret->program_counter.offset = thread->Eip;

@@ -37,11 +37,8 @@
 #include "trpimp.h"
 #include "packet.h"
 
-static char             PackBuff[ 0x400 ];
-static unsigned         PackInd = 0;
-
-#undef MAX_PACK_LEN
-#define MAX_PACK_LEN (sizeof(PackBuff))
+static char         PackBuff[0x400];
+static trap_elen    PackInd = 0;
 
 void StartPacket( void )
 {
@@ -49,9 +46,9 @@ void StartPacket( void )
     PackInd = 0;
 }
 
-unsigned PutPacket( void )
+trap_elen PutPacket( void )
 {
-    unsigned rc;
+    trap_elen   rc;
 
     _DBG_Writeln( "in PutPacket()" );
     rc = RemotePut( PackBuff, PackInd );
@@ -59,9 +56,9 @@ unsigned PutPacket( void )
     return( rc );
 }
 
-unsigned PutBuffPacket( unsigned len, void *buff )
+trap_elen PutBuffPacket( trap_elen len, void *buff )
 {
-    unsigned rc;
+    trap_elen   rc;
 
     _DBG_Writeln( "in PutBuffPacket()" );
     rc = RemotePut( buff, len );
@@ -69,37 +66,37 @@ unsigned PutBuffPacket( unsigned len, void *buff )
     return( rc );
 }
 
-void AddPacket( int len, void *ptr )
+void AddPacket( trap_elen len, void *ptr )
 {
-    if( ( len + PackInd ) > MAX_PACK_LEN ) {
-        len = MAX_PACK_LEN - PackInd;
+    if( ( len + PackInd ) > sizeof( PackBuff ) ) {
+        len = sizeof( PackBuff ) - PackInd;
     }
-    memcpy( &PackBuff[ PackInd ], ptr, len );
+    memcpy( &PackBuff[PackInd], ptr, len );
     PackInd += len;
 }
 
-unsigned GetPacket( void )
+trap_elen GetPacket( void )
 {
     _DBG_Writeln( "in GetPacket()" );
     PackInd = 0;
-    return( RemoteGet( PackBuff, MAX_PACK_LEN ) );
+    return( RemoteGet( PackBuff, sizeof( PackBuff ) ) );
 }
 
-void RemovePacket( int len, void *ptr )
+void RemovePacket( trap_elen len, void *ptr )
 {
-    if( ( len + PackInd ) > MAX_PACK_LEN ) {
-        len = MAX_PACK_LEN - PackInd;
+    if( ( len + PackInd ) > sizeof( PackBuff ) ) {
+        len = sizeof( PackBuff ) - PackInd;
     }
-    memcpy( ptr, &PackBuff[ PackInd ], len );
+    memcpy( ptr, &PackBuff[PackInd], len );
     PackInd += len;
 }
 
 char *GetPacketBuffPtr( void )
 {
-    return( &PackBuff[ PackInd ] );
+    return( &PackBuff[PackInd] );
 }
 
-unsigned MaxPacketSize( void )
+trap_elen MaxPacketSize( void )
 {
-    return( MAX_PACK_LEN );
+    return( sizeof( PackBuff ) );
 }

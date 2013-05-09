@@ -41,11 +41,11 @@
 
 #include "ipxstuff.h"
 
-#include "packet.h"
 #include "debugme.h"
 #include "trpimp.h"
 #include "trperr.h"
-#include "trptypes.h"
+//#include "trptypes.h"
+#include "packet.h"
 
 extern struct ResourceTagStructure              *SocketTag;
 extern struct ResourceTagStructure              *TimerTag;
@@ -125,11 +125,11 @@ _DBG_IPX(("Posting RecECB[%d]\r\n", i));
     CSPXListenForSequencedPacket( &RecECB[i] );
 }
 
-static unsigned DoRemoteGet( char *rec, unsigned len )
+static trap_elen DoRemoteGet( char *rec, trap_elen len )
 {
-    unsigned    recvd;
+    trap_elen   recvd;
     int         i;
-    unsigned    got;
+    trap_elen   got;
     int         p;
 
     len = len;
@@ -163,7 +163,7 @@ _DBG_IPX(("Got a packet - size=%d\r\n", got));
     return( recvd );
 }
 
-static unsigned DoRemotePut( char *snd, unsigned len )
+static trap_elen DoRemotePut( char *snd, trap_elen len )
 {
 _DBG_IPX(("RemotePut\r\n"));
     _INITSPXECB( Send, 2, snd, len );
@@ -174,12 +174,12 @@ _DBG_IPX(("RemotePut\r\n"));
     return( len );
 }
 
-unsigned RemoteGet( char *rec, unsigned len )
+trap_elen RemoteGet( char *rec, trap_elen len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-unsigned RemotePut( char *snd, unsigned len )
+trap_elen RemotePut( char *snd, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {

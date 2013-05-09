@@ -39,7 +39,7 @@
 #include "madregs.h"
 #include "x86cpu.h"
 
-unsigned ReqAddr_info( void )
+trap_elen ReqAddr_info( void )
 {
     WORD            seg;
     addr_info_req   *acc;
@@ -48,11 +48,11 @@ unsigned ReqAddr_info( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     seg = acc->in_addr.segment;
-    ret->is_32 = TRUE;
+    ret->is_big = TRUE;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data()
+trap_elen ReqMachine_data()
 {
     int                 sel;
     int                 size;
@@ -86,12 +86,12 @@ unsigned ReqMachine_data()
     return( sizeof( *ret ) + sizeof( data->u8 ) );
 }
 
-unsigned ReqGet_sys_config( void )
+trap_elen ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
     int                 major, minor, release;
 
-	RdosGetVersion(&major, &minor, &release);
+        RdosGetVersion(&major, &minor, &release);
 
     ret = GetOutPtr( 0 );
 
@@ -106,7 +106,7 @@ unsigned ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_message_text( void )
+trap_elen ReqGet_message_text( void )
 {
     get_message_text_ret    *ret;
     char                    *err_txt;
@@ -129,7 +129,7 @@ unsigned ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_elen ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -139,7 +139,7 @@ unsigned ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_err_text( void )
+trap_elen ReqGet_err_text( void )
 {
     get_err_text_req    *acc;
     char                *err_txt;
@@ -179,7 +179,7 @@ unsigned ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-unsigned ReqSplit_cmd( void )
+trap_elen ReqSplit_cmd( void )
 {
     char            *cmd;
     char            *start;
@@ -223,12 +223,12 @@ done:
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_io( void )
+trap_elen ReqRead_io( void )
 {
     return( 0 );
 }
 
-unsigned ReqWrite_io( void )
+trap_elen ReqWrite_io( void )
 {
     write_io_ret    *ret;
 
@@ -237,13 +237,13 @@ unsigned ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_user_screen( void )
+trap_elen ReqSet_user_screen( void )
 {
     SetUserScreen();
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen( void )
+trap_elen ReqSet_debug_screen( void )
 {
     SetDebugScreen();
     return( 0 );

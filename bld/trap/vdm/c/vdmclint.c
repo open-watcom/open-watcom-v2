@@ -43,10 +43,11 @@
 
 #include <windows.h>
 #include "watcom.h"
-#include "packet.h"
 #include "namepipe.h"
 #include "vdm.h"
+#include "trptypes.h"
 #include "trperr.h"
+#include "packet.h"
 
 HANDLE  pipeHdl;
 
@@ -107,11 +108,11 @@ char RemoteConnect( void )
 }
 
 
-unsigned RemoteGet( char *data, unsigned length )
+trap_elen RemoteGet( char *data, trap_elen length )
 {
-    unsigned_16 incoming;
-    ULONG       bytes_read;
-    unsigned    ret;
+    unsigned_16     incoming;
+    ULONG           bytes_read;
+    trap_elen  ret;
 
     length = length;
     ReadFile( pipeHdl, &incoming, sizeof( incoming ), &bytes_read, NULL );
@@ -125,7 +126,7 @@ unsigned RemoteGet( char *data, unsigned length )
 }
 
 
-unsigned RemotePut( char *data, unsigned length )
+trap_elen RemotePut( char *data, trap_elen length )
 {
     unsigned_16 outgoing;
     ULONG       bytes_written;

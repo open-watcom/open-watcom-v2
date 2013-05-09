@@ -35,17 +35,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "trpimp.h"
+#include "trptypes.h"
 #include "tcerr.h"
 
-static HANDLE   TrapFile;
-static trap_version (TRAPENTRY *InitFunc)(char *, char *, bool);
-static void (TRAPENTRY *FiniFunc)(void);
-static void (TRAPENTRY *InfoFunction)( HWND );
-
 extern trap_version     TrapVer;
-extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
-                                        unsigned, mx_entry * );
+extern trap_req_func    *ReqFunc;
+
+static HANDLE           TrapFile = 0;
+static trap_fini_func   *FiniFunc = NULL;
+
+static void (TRAPENTRY *InfoFunction)( HWND );
 
 void TellHWND( HWND hwnd )
 {
@@ -57,12 +56,15 @@ void TellHWND( HWND hwnd )
 void KillTrap( void )
 {
     ReqFunc = NULL;
-    if( FiniFunc != NULL ) FiniFunc();
-    FiniFunc = NULL;
+    if( FiniFunc != NULL ) {
+        FiniFunc();
+        FiniFunc = NULL;
+    }
     InfoFunction = NULL;
-    InitFunc = NULL;
-    if( TrapFile != 0 ) FreeLibrary( TrapFile );
-    TrapFile = 0;
+    if( TrapFile != 0 ) {
+        FreeLibrary( TrapFile );
+        TrapFile = 0;
+    }
 }
 
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
@@ -73,6 +75,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     char                *dst;
     char                have_ext;
     char                chr;
+    trap_init_func      *init_func;
 
     if( trapbuff == NULL ) trapbuff = "std";
     have_ext = FALSE;
@@ -107,17 +110,17 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
-    InitFunc = (LPVOID) GetProcAddress( TrapFile, (LPSTR)1 );
-    FiniFunc = (LPVOID) GetProcAddress( TrapFile, (LPSTR)2 );
-    ReqFunc  = (LPVOID) GetProcAddress( TrapFile, (LPSTR)3 );
-    InfoFunction = (LPVOID) GetProcAddress( TrapFile, (LPSTR)4 );
+    init_func = (LPVOID)GetProcAddress( TrapFile, (LPSTR)1 );
+    FiniFunc = (LPVOID)GetProcAddress( TrapFile, (LPSTR)2 );
+    ReqFunc = (LPVOID)GetProcAddress( TrapFile, (LPSTR)3 );
+    InfoFunction = (LPVOID)GetProcAddress( TrapFile, (LPSTR)4 );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( InitFunc == NULL || FiniFunc == NULL || ReqFunc == NULL
+    if( init_func == NULL || FiniFunc == NULL || ReqFunc == NULL
         /* || LibListFunc == NULL */ ) {
         KillTrap();
         return( buff );
     }
-    *trap_ver = InitFunc( parm, trpfile, trap_ver->remote );
+    *trap_ver = init_func( parm, trpfile, trap_ver->remote );
     if( trpfile[0] != '\0' ) {
         KillTrap();
         strcpy( buff, (char *)trpfile );

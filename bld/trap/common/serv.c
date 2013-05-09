@@ -59,8 +59,6 @@ extern void             SayGNiteGracey( int );
 extern void             StartupErr(char *);
 extern int              KeyPress(void);
 extern int              KeyGet(void);
-extern char             *LoadTrap( char *,char *,trap_version *);
-extern void             KillTrap(void);
 extern void             NothingToDo(void);
 extern bool             Session( void );
 extern bool             ParseCommandLine( char *cmdline, char *trap, char *parm, bool *oneshot );

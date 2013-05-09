@@ -55,18 +55,18 @@ BOOL IsSegSize32( WORD seg )
     return( FALSE );
 }
 
-unsigned ReqAddr_info( void )
+trap_elen ReqAddr_info( void )
 {
     addr_info_req       *acc;
     addr_info_ret       *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->is_32 = IsSegSize32( acc->in_addr.segment );
+    ret->is_big = IsSegSize32( acc->in_addr.segment );
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data()
+trap_elen ReqMachine_data()
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -84,7 +84,7 @@ unsigned ReqMachine_data()
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-unsigned ReqGet_sys_config( void )
+trap_elen ReqGet_sys_config( void )
 {
     unsigned_8          fpu;
     get_sys_config_ret  *ret;
@@ -120,7 +120,7 @@ unsigned ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_message_text( void )
+trap_elen ReqGet_message_text( void )
 {
     static const char * const ExceptionMsgs[] = {
         #define pick(a,b) b,
@@ -150,12 +150,12 @@ unsigned ReqGet_message_text( void )
     return( sizeof( ret ) + strlen( err_txt ) + 1 );
 }
 
-unsigned ReqRead_io()
+trap_elen ReqRead_io()
 {
     return( 0 );
 }
 
-unsigned ReqWrite_io()
+trap_elen ReqWrite_io()
 {
     write_io_ret        *ret;
 
@@ -164,12 +164,12 @@ unsigned ReqWrite_io()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_user_screen()
+trap_elen ReqSet_user_screen()
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen()
+trap_elen ReqSet_debug_screen()
 {
     return( 0 );
 }

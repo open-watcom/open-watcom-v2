@@ -65,7 +65,7 @@ extern mad_type_handle  FindMADTypeHandle( mad_type_kind tk, unsigned size );
 extern char             *TxtBuff;
 extern address          NilAddr;
 
-//extern int              Supports8ByteBreakpoints;
+//extern bool             Supports8ByteBreakpoints;
 
 static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
 {
@@ -188,7 +188,7 @@ static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
     GUISetChecked( gui, CTL_BRK_WORD,    mti.b.bits == 2*BITS_PER_BYTE );
     GUISetChecked( gui, CTL_BRK_DWORD,   mti.b.bits == 4*BITS_PER_BYTE );
     
-    GUIEnableControl(gui, CTL_BRK_QWORD, Supports8ByteBreakpoints != 0);
+    GUIEnableControl( gui, CTL_BRK_QWORD, Supports8ByteBreakpoints );
     GUISetChecked( gui, CTL_BRK_QWORD,   mti.b.bits == 8*BITS_PER_BYTE );
 
     if( dlg->cmd_error ) {

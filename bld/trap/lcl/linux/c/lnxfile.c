@@ -38,7 +38,7 @@
 #include "trpimp.h"
 
 
-unsigned ReqFile_get_config( void )
+trap_elen ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -52,7 +52,7 @@ unsigned ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_open( void )
+trap_elen ReqFile_open( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -87,7 +87,7 @@ unsigned ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek( void )
+trap_elen ReqFile_seek( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -108,13 +108,13 @@ unsigned ReqFile_seek( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_read( void )
+trap_elen ReqFile_read( void )
 {
-    unsigned            total;
-    unsigned            len;
+    trap_elen           total;
+    trap_elen           len;
     char                *ptr;
-    size_t              curr;
-    ssize_t             rv;
+    trap_elen           curr;
+    trap_elen           rv;
     file_read_req       *acc;
     file_read_ret       *ret;
 
@@ -128,10 +128,10 @@ unsigned ReqFile_read( void )
     for( ;; ) {
         if( len == 0 ) break;
         curr = len;
-        if( curr > INT_MAX ) curr = INT_MAX;
+        if( curr > SHRT_MAX ) curr = SHRT_MAX;
         rv = read( acc->handle, ptr, curr );
-        if( rv < 0 ) {
-            total = -1;
+        if( rv == (trap_elen)-1 ) {
+            total = (trap_elen)-1;
             break;
         }
         total += rv;
@@ -139,7 +139,7 @@ unsigned ReqFile_read( void )
         ptr += rv;
         len -= rv;
     }
-    if( total == -1 ) {
+    if( total == (trap_elen)-1 ) {
         total = 0;
     } else {
         errno = 0;
@@ -149,27 +149,27 @@ unsigned ReqFile_read( void )
     return( sizeof( *ret ) + total );
 }
 
-static unsigned DoWrite( int hdl, unsigned_8 *ptr, unsigned len )
+static trap_elen DoWrite( int hdl, unsigned_8 *ptr, trap_elen len )
 {
-    unsigned    total;
-    unsigned    curr;
-    int         rv;
+    trap_elen   total;
+    trap_elen   curr;
+    trap_elen   rv;
 
     total = 0;
     for( ;; ) {
         if( len == 0 ) break;
         curr = len;
-        if( curr > INT_MAX ) curr = INT_MAX;
+        if( curr > SHRT_MAX ) curr = SHRT_MAX;
         rv = write( hdl, ptr, curr );
-        if( rv <= 0 ) {
-            total = -1;
+        if( rv == (trap_elen)-1 ) {
+            total = (trap_elen)-1;
             break;
         }
         total += rv;
         ptr += rv;
         len -= rv;
     }
-    if( total == -1 ) {
+    if( total == (trap_elen)-1 ) {
         total = 0;
     } else {
         errno = 0;
@@ -177,7 +177,7 @@ static unsigned DoWrite( int hdl, unsigned_8 *ptr, unsigned len )
     return( total );
 }
 
-unsigned ReqFile_write( void )
+trap_elen ReqFile_write( void )
 {
     file_write_req      *acc;
     file_write_ret      *ret;
@@ -185,28 +185,26 @@ unsigned ReqFile_write( void )
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->handle );
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( acc->handle, GetInPtr( sizeof( *acc ) ),
-                        GetTotalSize() - sizeof( *acc ) );
+    ret->len = DoWrite( acc->handle, GetInPtr( sizeof( *acc ) ), GetTotalSize() - sizeof( *acc ) );
     ret->err = errno;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write_console( void )
+trap_elen ReqFile_write_console( void )
 {
     file_write_console_ret      *ret;
 
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ),
-                        GetTotalSize() - sizeof( file_write_console_req ) );
+    ret->len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ), GetTotalSize() - sizeof( file_write_console_req ) );
     ret->err = errno;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_close( void )
+trap_elen ReqFile_close( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -224,7 +222,7 @@ unsigned ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_erase( void )
+trap_elen ReqFile_erase( void )
 {
     file_erase_ret      *ret;
 
@@ -239,7 +237,7 @@ unsigned ReqFile_erase( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_run_cmd( void )
+trap_elen ReqFile_run_cmd( void )
 {
     char                buff[256];
     char                *argv[4];

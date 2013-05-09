@@ -43,13 +43,18 @@ extern trap_shandle     GetSuppId( char * );
         in.supp.id              = SuppFileInfoId;       \
         in.req                  = request;
 
-static trap_shandle     SuppFileInfoId;
+static trap_shandle     SuppFileInfoId = 0;
 
 bool InitFileInfoSupp()
 {
+#ifdef WANT_FILE_INFO
     SuppFileInfoId = GetSuppId( FILE_INFO_SUPP_NAME );
-    if( SuppFileInfoId == 0 ) return( FALSE );
-    return( TRUE );
+    if( SuppFileInfoId != 0 )
+        return( TRUE );
+#else
+    SuppFileInfoId = 0;
+#endif
+    return( FALSE );
 }
 
 long RemoteGetFileDate( char *name )

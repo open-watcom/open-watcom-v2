@@ -35,26 +35,25 @@
 #include "nmp.h"
 
 extern struct ResourceTagStructure             *TimerTag;
-extern void DelayMyself( LONG timeInTicks,
-                struct ResourceTagStructure *TimerResourceTag);
+extern void DelayMyself( LONG timeInTicks, struct ResourceTagStructure *TimerResourceTag );
 
-int myopen( char *name )
+bhandle myopen( char *name )
 {
     return( open( name, O_RDWR+O_BINARY ) );
 }
 
-void myclose( int handle )
+void myclose( bhandle handle )
 {
     close( handle );
 }
 
-int myread( int handle, char *buff, int len )
+int myread( bhandle handle, char *buff, int len )
 {
     return( read( handle, buff, len ) );
 }
 
 
-int mywrite( int handle, char *buff, int len )
+int mywrite( bhandle handle, char *buff, int len )
 {
     return( write( handle, buff, len ) );
 }

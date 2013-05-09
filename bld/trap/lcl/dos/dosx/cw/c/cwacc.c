@@ -483,7 +483,7 @@ static void AddModsInfo( char *name, epsp_t *epsp )
     }
 }
 
-unsigned ReqGet_sys_config( void )
+trap_elen ReqGet_sys_config( void )
 /********************************/
 {
     get_sys_config_ret  *ret;
@@ -502,7 +502,7 @@ unsigned ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMap_addr( void )
+trap_elen ReqMap_addr( void )
 /**************************/
 {
     map_addr_req    *acc;
@@ -554,7 +554,7 @@ unsigned ReqMap_addr( void )
 }
 
 //OBSOLETE - use ReqMachine_data
-unsigned ReqAddr_info( void )
+trap_elen ReqAddr_info( void )
 /***************************/
 {
     addr_info_req       *acc;
@@ -563,31 +563,31 @@ unsigned ReqAddr_info( void )
     _DBG( "AccAddrInfo\r\n" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->is_32 = 0;
+    ret->is_big = 0;
     if( IsSel32bit( acc->in_addr.segment ) ) {
-        ret->is_32 = 1;
+        ret->is_big = 1;
     }
     return( sizeof( *ret ) );
 }
 
-static unsigned ReadMemory( addr48_ptr *addr, void *data, unsigned len )
-/**********************************************************************/
+static trap_elen ReadMemory( addr48_ptr *addr, void *data, trap_elen len )
+/************************************************************************/
 {
     return( MemoryRead( addr->offset, addr->segment, data, len ) );
 }
 
-static unsigned WriteMemory( addr48_ptr *addr, void *data, unsigned len )
-/***********************************************************************/
+static trap_elen WriteMemory( addr48_ptr *addr, void *data, trap_elen len )
+/*************************************************************************/
 {
     return( MemoryWrite( addr->offset, addr->segment, data, len ) );
 }
 
-unsigned ReqChecksum_mem( void )
+trap_elen ReqChecksum_mem( void )
 /******************************/
 {
-    unsigned            len;
+    trap_elen           len;
     int                 i;
-    unsigned            read;
+    trap_elen           read;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
     char                buffer[256];
@@ -617,7 +617,7 @@ unsigned ReqChecksum_mem( void )
     return( sizeof( ret ) );
 }
 
-unsigned ReqRead_mem( void )
+trap_elen ReqRead_mem( void )
 /**************************/
 {
     read_mem_req        *acc;
@@ -626,7 +626,7 @@ unsigned ReqRead_mem( void )
     return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
-unsigned ReqWrite_mem( void )
+trap_elen ReqWrite_mem( void )
 /***************************/
 {
     write_mem_req       *acc;
@@ -638,7 +638,7 @@ unsigned ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_io( void )
+trap_elen ReqRead_io( void )
 /*************************/
 {
     read_io_req         *acc;
@@ -656,10 +656,10 @@ unsigned ReqRead_io( void )
     return( acc->len );
 }
 
-unsigned ReqWrite_io( void )
+trap_elen ReqWrite_io( void )
 /**************************/
 {
-    unsigned            len;
+    trap_elen           len;
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
@@ -679,7 +679,7 @@ unsigned ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_cpu( void )
+trap_elen ReqRead_cpu( void )
 /**************************/
 {
     trap_cpu_regs       *regs;
@@ -689,7 +689,7 @@ unsigned ReqRead_cpu( void )
     return( sizeof( *regs ) );
 }
 
-unsigned ReqRead_fpu( void )
+trap_elen ReqRead_fpu( void )
 /**************************/
 {
     trap_fpu_regs       *regs;
@@ -699,7 +699,7 @@ unsigned ReqRead_fpu( void )
     return( sizeof( *regs ) );
 }
 
-unsigned ReqWrite_cpu( void )
+trap_elen ReqWrite_cpu( void )
 /***************************/
 {
     trap_cpu_regs       *regs;
@@ -709,7 +709,7 @@ unsigned ReqWrite_cpu( void )
     return( 0 );
 }
 
-unsigned ReqWrite_fpu( void )
+trap_elen ReqWrite_fpu( void )
 /***************************/
 {
     trap_fpu_regs       *regs;
@@ -749,19 +749,19 @@ static unsigned ProgRun( bool step )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_go( void )
+trap_elen ReqProg_go( void )
 /*************************/
 {
     return( ProgRun( FALSE ) );
 }
 
-unsigned ReqProg_step( void )
+trap_elen ReqProg_step( void )
 /***************************/
 {
     return( ProgRun( TRUE ) );
 }
 
-unsigned ReqProg_load( void )
+trap_elen ReqProg_load( void )
 /***************************/
 {
     char            *src;
@@ -794,7 +794,7 @@ unsigned ReqProg_load( void )
     *cmdl = dst - cmdl - 1;
     rc = DebugLoad( name, cmdl );
     _DBG1( "back from debugload - %d\r\n", rc );
-    ret->flags = LD_FLAG_IS_32 | LD_FLAG_IS_PROT | LD_FLAG_DISPLAY_DAMAGED | LD_FLAG_HAVE_RUNTIME_DLLS;
+    ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_DISPLAY_DAMAGED | LD_FLAG_HAVE_RUNTIME_DLLS;
     ret->mod_handle = 0;
     if( rc == 0 ) {
         ret->err = 0;
@@ -816,7 +816,7 @@ unsigned ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_kill( void )
+trap_elen ReqProg_kill( void )
 /***************************/
 {
     prog_kill_req       *acc;
@@ -831,7 +831,7 @@ unsigned ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_watch( void )
+trap_elen ReqSet_watch( void )
 /***************************/
 {
     set_watch_req   *acc;
@@ -881,7 +881,7 @@ unsigned ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch( void )
+trap_elen ReqClear_watch( void )
 /*****************************/
 {
     clear_watch_req     *acc;
@@ -916,7 +916,7 @@ unsigned ReqClear_watch( void )
     return( 0 );
 }
 
-unsigned ReqSet_break( void )
+trap_elen ReqSet_break( void )
 /***************************/
 {
     byte            ch;
@@ -933,7 +933,7 @@ unsigned ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break( void )
+trap_elen ReqClear_break( void )
 /*****************************/
 {
     byte            ch;
@@ -946,7 +946,7 @@ unsigned ReqClear_break( void )
     return( 0 );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_elen ReqGet_next_alias( void )
 /********************************/
 {
     get_next_alias_req  *acc;
@@ -959,7 +959,7 @@ unsigned ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_lib_name( void )
+trap_elen ReqGet_lib_name( void )
 /******************************/
 {
     char                *name;
@@ -981,7 +981,7 @@ unsigned ReqGet_lib_name( void )
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
-unsigned ReqGet_err_text( void )
+trap_elen ReqGet_err_text( void )
 /******************************/
 {
     static char *DosErrMsgs[] = {
@@ -1007,7 +1007,7 @@ unsigned ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-unsigned ReqGet_message_text( void )
+trap_elen ReqGet_message_text( void )
 /**********************************/
 {
     static const char * const ExceptionMsgs[] = {
@@ -1029,29 +1029,29 @@ unsigned ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-unsigned ReqRead_regs( void )
+trap_elen ReqRead_regs( void )
 /***************************/
 {
     mad_registers       *mr;
 
     mr = GetOutPtr( 0 );
     *(&mr->x86.cpu) = DebugRegs;
-    Read387( &mr->x86.fpu );
+    Read387( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
 }
 
-unsigned ReqWrite_regs( void )
+trap_elen ReqWrite_regs( void )
 /****************************/
 {
     mad_registers       *mr;
 
     mr = GetInPtr( sizeof( write_regs_req ) );
     DebugRegs = *(&mr->x86.cpu);
-    Write387( &mr->x86.fpu );
+    Write387( &mr->x86.u.fpu );
     return( 0 );
 }
 
-unsigned ReqMachine_data( void )
+trap_elen ReqMachine_data( void )
 /******************************/
 {
     machine_data_req    *acc;
@@ -1059,7 +1059,7 @@ unsigned ReqMachine_data( void )
     union {
         unsigned_8      charact;
     } *data;
-    unsigned            len;
+    trap_elen           len;
 
     _DBG( "AccMachineData\r\n" );
     acc = GetInPtr( 0 );

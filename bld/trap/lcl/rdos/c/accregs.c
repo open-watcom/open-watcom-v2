@@ -36,7 +36,7 @@
 #include "madregs.h"
 #include "debug.h"
 
-unsigned ReqRead_cpu( void )
+trap_elen ReqRead_cpu( void )
 {
     trap_cpu_regs           *regs;
     struct TDebug           *obj;
@@ -46,7 +46,7 @@ unsigned ReqRead_cpu( void )
     memset( regs, 0, sizeof( *regs ) );
 
     obj = GetCurrentDebug();
-	if (obj) {
+    if (obj) {
         thread = obj->CurrentThread;
         if( thread ) {
             regs->EAX = thread->Eax;
@@ -68,11 +68,11 @@ unsigned ReqRead_cpu( void )
             regs->GS = thread->Gs;
         }
     }
-	    
+            
     return( sizeof( *regs ) );
 }
 
-unsigned ReqRead_fpu( void )
+trap_elen ReqRead_fpu( void )
 {
     trap_fpu_regs           *fpu;
     struct TDebug           *obj;
@@ -82,7 +82,7 @@ unsigned ReqRead_fpu( void )
     memset( fpu, 0, sizeof( *fpu ) );
 
     obj = GetCurrentDebug();
-	if (obj) {
+    if (obj) {
         thread = obj->CurrentThread;
         if( thread ) {
             fpu->control = thread->MathControl;
@@ -99,7 +99,7 @@ unsigned ReqRead_fpu( void )
     return( sizeof( *fpu ) );
 }
 
-unsigned ReqWrite_cpu( void )
+trap_elen ReqWrite_cpu( void )
 {
     trap_cpu_regs           *regs;
     struct TDebug           *obj;
@@ -108,7 +108,7 @@ unsigned ReqWrite_cpu( void )
     regs = GetInPtr( sizeof( write_cpu_req ) );
 
     obj = GetCurrentDebug();
-	if (obj) {
+    if (obj) {
         thread = obj->CurrentThread;
         if( thread ) {
             thread->Eax = regs->EAX;
@@ -131,11 +131,11 @@ unsigned ReqWrite_cpu( void )
             WriteRegs( thread );
         }
     }
-	    
+            
     return( 0 );
 }
 
-unsigned ReqWrite_fpu( void )
+trap_elen ReqWrite_fpu( void )
 {
     trap_fpu_regs           *fpu;
     struct TDebug           *obj;
@@ -144,7 +144,7 @@ unsigned ReqWrite_fpu( void )
     fpu = GetInPtr( sizeof( write_fpu_req ) );
 
     obj = GetCurrentDebug();
-	if (obj) {
+    if (obj) {
         thread = obj->CurrentThread;
         if( thread ) {
             thread->MathControl = fpu->control;
@@ -163,7 +163,7 @@ unsigned ReqWrite_fpu( void )
     return( 0 );
 }
 
-unsigned ReqRead_regs( void )
+trap_elen ReqRead_regs( void )
 {
     mad_registers           _WCUNALIGNED *mr;
     struct TDebug           *obj;
@@ -173,7 +173,7 @@ unsigned ReqRead_regs( void )
     memset( mr, 0, sizeof( mr->x86 ) );
 
     obj = GetCurrentDebug();
-	if (obj) {
+    if (obj) {
         thread = obj->CurrentThread;
         if( thread ) {
             mr->x86.cpu.eax = thread->Eax;
@@ -194,14 +194,14 @@ unsigned ReqRead_regs( void )
             mr->x86.cpu.fs = thread->Fs;
             mr->x86.cpu.gs = thread->Gs;
 
-            mr->x86.fpu.cw = thread->MathControl;
-            mr->x86.fpu.sw = thread->MathStatus;
-            mr->x86.fpu.tag = thread->MathTag;
-            mr->x86.fpu.ip_err.p.offset = thread->MathEip;
-            mr->x86.fpu.ip_err.p.segment = thread->MathCs;
-            mr->x86.fpu.op_err.p.offset = thread->MathDataOffs;
-            mr->x86.fpu.op_err.p.segment = thread->MathDataSel;
-            memcpy( mr->x86.fpu.reg, thread->St, 8 * 10 );
+            mr->x86.u.fpu.cw = thread->MathControl;
+            mr->x86.u.fpu.sw = thread->MathStatus;
+            mr->x86.u.fpu.tag = thread->MathTag;
+            mr->x86.u.fpu.ip_err.p.offset = thread->MathEip;
+            mr->x86.u.fpu.ip_err.p.segment = thread->MathCs;
+            mr->x86.u.fpu.op_err.p.offset = thread->MathDataOffs;
+            mr->x86.u.fpu.op_err.p.segment = thread->MathDataSel;
+            memcpy( mr->x86.u.fpu.reg, thread->St, 8 * 10 );
 
         }
     }
@@ -209,7 +209,7 @@ unsigned ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-unsigned ReqWrite_regs( void )
+trap_elen ReqWrite_regs( void )
 {
     mad_registers           _WCUNALIGNED *mr;
     struct TDebug           *obj;
@@ -218,7 +218,7 @@ unsigned ReqWrite_regs( void )
     mr = GetInPtr( sizeof( write_regs_req ) );
 
     obj = GetCurrentDebug();
-	if (obj) {
+    if (obj) {
         thread = obj->CurrentThread;
         if( thread ) {
             thread->Eax = mr->x86.cpu.eax;
@@ -238,14 +238,14 @@ unsigned ReqWrite_regs( void )
             thread->Fs = mr->x86.cpu.fs;
             thread->Gs = mr->x86.cpu.gs;
 
-            thread->MathControl = mr->x86.fpu.cw;
-            thread->MathStatus = mr->x86.fpu.sw;
-            thread->MathTag = mr->x86.fpu.tag;
-            thread->MathEip = mr->x86.fpu.ip_err.p.offset;
-            thread->MathCs = mr->x86.fpu.ip_err.p.segment;
-            thread->MathDataOffs = mr->x86.fpu.op_err.p.offset;
-            thread->MathDataSel = mr->x86.fpu.op_err.p.segment;
-            memcpy( thread->St, mr->x86.fpu.reg, 8 * 10 );
+            thread->MathControl = mr->x86.u.fpu.cw;
+            thread->MathStatus = mr->x86.u.fpu.sw;
+            thread->MathTag = mr->x86.u.fpu.tag;
+            thread->MathEip = mr->x86.u.fpu.ip_err.p.offset;
+            thread->MathCs = mr->x86.u.fpu.ip_err.p.segment;
+            thread->MathDataOffs = mr->x86.u.fpu.op_err.p.offset;
+            thread->MathDataSel = mr->x86.u.fpu.op_err.p.segment;
+            memcpy( thread->St, mr->x86.u.fpu.reg, 8 * 10 );
 
             WriteRegs( thread );
         }

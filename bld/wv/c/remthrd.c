@@ -32,15 +32,15 @@
 
 #include "dbgdefn.h"
 #include "dbgreg.h"
+#include "dbgio.h"
 #include "trpcore.h"
 #include "trpthrd.h"
-#include "dbgio.h"
 
 extern trap_shandle     GetSuppId( char * );
 
 #define DEFAULT_TID     1
 
-trap_shandle    SuppThreadId;
+trap_shandle    SuppThreadId = 0;
 
 #define SUPP_THREAD_SERVICE( in, request )      \
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \
@@ -50,8 +50,13 @@ trap_shandle    SuppThreadId;
 
 bool InitThreadSupp()
 {
+#ifdef WANT_THREAD
     SuppThreadId = GetSuppId( THREAD_SUPP_NAME );
     return( SuppThreadId != 0 );
+#else
+    SuppThreadId = 0;
+    return( FALSE );
+#endif
 }
 
 dtid_t RemoteGetNextThread( dtid_t tid, unsigned *state )

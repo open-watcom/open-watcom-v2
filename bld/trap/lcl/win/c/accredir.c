@@ -92,7 +92,7 @@ void ExecuteRedirect( void )
  * do file redirection by swapping to the debugee, and having him run
  * the ExecuteRedirect code.
  */
-static unsigned doRedirect( BOOL isin )
+static trap_elen doRedirect( BOOL isin )
 {
     rdRet = GetOutPtr( 0 );
     isInput = isin;
@@ -101,12 +101,12 @@ static unsigned doRedirect( BOOL isin )
     return( sizeof( redirect_stdin_ret ) );
 } /* doRedirect */
 
-unsigned ReqRedirect_stdin( void  )
+trap_elen ReqRedirect_stdin( void  )
 {
     return( doRedirect( TRUE ) );
 }
 
-unsigned ReqRedirect_stdout( void )
+trap_elen ReqRedirect_stdout( void )
 {
     return( doRedirect( FALSE ) );
 }

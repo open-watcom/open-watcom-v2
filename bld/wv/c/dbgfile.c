@@ -33,12 +33,12 @@
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "dbgtoggl.h"
-#include "trpfile.h"
 #include "dui.h"
 #include <string.h>
 #if !defined( BUILD_RFX )
 #include "dbglit.h"
 #endif
+#include "trptypes.h"
 
 extern int              DUIEnvLkup( char *, char *, int );
 extern char             *StrCopy( char const *, char * );

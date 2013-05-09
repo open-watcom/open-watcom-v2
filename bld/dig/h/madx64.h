@@ -30,91 +30,96 @@
 ****************************************************************************/
 
 
-#ifndef MADX86_H
-#define MADX86_H
+#ifndef MADX64_H
+#define MADX64_H
 #include "digpck.h"
-enum x86_cputypes {
-        X86_86,
-        X86_186,
-        X86_286,
-        X86_386,
-        X86_486,
-        X86_586,
-        X86_686,
-        X86_P4 = 0x0f,
-        X86_CPU_MASK = 0x0f,
-        X86_MMX = 0x10,
-        X86_XMM = 0x20
+enum x64_cputypes {
+        X64_CPU1 = 0x01,
 };
 
-enum x86_fputypes {
-        X86_NO,
-        X86_87,
-        X86_287,
-        X86_387,
-        X86_487,
-        X86_587,
-        X86_687,
-        X86_P47 = 0x0f,
-        X86_EMU = (unsigned_8)-1
+enum x64_fputypes {
+        X64_FPU1 = 0x01,
 };
 
-enum x86_machine_data {
-    X86MD_ADDR_CHARACTERISTICS
+enum x64_machine_data {
+    X64MD_ADDR_CHARACTERISTICS
 };
 
-enum x86_addr_characteristics {
-    X86AC_BIG   = 0x01,
-    X86AC_REAL  = 0x02
-};
-
-struct x86_cpu {
-    unsigned_32 eax;
-    unsigned_32 ebx;
-    unsigned_32 ecx;
-    unsigned_32 edx;
-    unsigned_32 esi;
-    unsigned_32 edi;
-    unsigned_32 ebp;
-    unsigned_32 esp;
-    unsigned_32 eip;
-    unsigned_32 efl;
-    unsigned_32 cr0;
-    unsigned_32 cr2;
-    unsigned_32 cr3;
-    unsigned_16 ds;
-    unsigned_16 es;
-    unsigned_16 ss;
-    unsigned_16 cs;
-    unsigned_16 fs;
-    unsigned_16 gs;
+enum x64_addr_characteristics {
+    X64AC_BIG   = 0x01
 };
 
 typedef struct {
-    unsigned_16     low    : 16;
-    unsigned_16     __fill1: 16;
-    unsigned_16     opcode : 11;    /* not really there for data ptr */
-    unsigned_16     __fill2: 1;
-    unsigned_16     hi     : 4;     /* really should be 16 bits */
+    union {
+        unsigned_64     q[2];
+        unsigned_32     d[4];
+        unsigned_16     w[8];
+        unsigned_8      b[16];
+    } u;
+} xmm_reg;
+
+struct x64_cpu {
+    unsigned_16 cs;
+    unsigned_16 ds;
+    unsigned_16 es;
+    unsigned_16 fs;
+    unsigned_16 gs;
+    unsigned_16 ss;
+    unsigned_32 eflags;
+
+    unsigned_64 dr0;
+    unsigned_64 dr1;
+    unsigned_64 dr2;
+    unsigned_64 dr3;
+    unsigned_64 dr6;
+    unsigned_64 dr7;
+
+    unsigned_64 rax;
+    unsigned_64 rcx;
+    unsigned_64 rdx;
+    unsigned_64 rbx;
+    unsigned_64 rsp;
+    unsigned_64 rbp;
+    unsigned_64 rsi;
+    unsigned_64 rdi;
+    unsigned_64 r8;
+    unsigned_64 r9;
+    unsigned_64 r10;
+    unsigned_64 r11;
+    unsigned_64 r12;
+    unsigned_64 r13;
+    unsigned_64 r14;
+    unsigned_64 r15;
+
+    unsigned_64 rip;
+
+};
+
+typedef struct {
+        unsigned_16     low    : 16;
+        unsigned_16     __fill1: 16;
+        unsigned_16     opcode : 11;    /* not really there for data ptr */
+        unsigned_16     __fill2: 1;
+        unsigned_16     hi     : 4;     /* really should be 16 bits */
 } fpu_ptr_rm;
 
 typedef struct {
-    unsigned_32     offset;
-    unsigned_32     segment;
+        unsigned_32     offset;
+        unsigned_32     segment;
 } fpu_ptr_pm;
 
 typedef union {
-    fpu_ptr_pm      p;
-    fpu_ptr_rm      r;
+        fpu_ptr_pm      p;
+        fpu_ptr_rm      r;
 } fpu_ptr;
 
-struct x86_fpu {
-    unsigned_32     cw;
-    unsigned_32     sw;
-    unsigned_32     tag;
-    fpu_ptr         ip_err;
-    fpu_ptr         op_err;
-    xreal           reg[8];
+struct x64_fpu {
+    unsigned_32         cw;
+    unsigned_32         sw;
+    unsigned_32         tag;
+    fpu_ptr             ip_err;
+    fpu_ptr             op_err;
+    xreal               reg[8];
 };
 
 typedef struct {
@@ -127,32 +132,23 @@ typedef struct {
     unsigned_16         _spacer;
 } mmx_reg;
 
-struct x86_mmx {
+struct x64_mmx {
     unsigned_32         _spacer[7];
     mmx_reg             mm[8];
 };
 
-typedef struct {
-    union {
-        unsigned_64     q[2];
-        unsigned_32     d[4];
-        unsigned_16     w[8];
-        unsigned_8      b[16];
-    } u;
-} xmm_reg;
-
-struct x86_xmm {
+struct x64_xmm {
     xmm_reg             xmm[8];
     unsigned_32         mxcsr;
 };
 
-struct x86_mad_registers {
-    struct x86_cpu      cpu;
+struct x64_mad_registers {
+    struct x64_cpu      cpu;
     union {
-        struct x86_fpu  fpu;
-        struct x86_mmx  mmx;
+        struct x64_fpu  fpu;
+        struct x64_mmx  mmx;
     } u;
-    struct x86_xmm      xmm;
+    struct x64_xmm      xmm;
 };
 
 #define BIT( name, shift, len ) SHIFT_##name = shift, LEN_##name = len

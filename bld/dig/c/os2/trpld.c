@@ -37,17 +37,17 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
-#include "trpimp.h"
+#include "trptypes.h"
 #include "tcerr.h"
 
-static trap_version     (TRAPENTRY *InitFunc)(char *,char *, bool);
-static void             (TRAPENTRY *FiniFunc)(void);
+extern trap_version     TrapVer;
+extern trap_req_func    *ReqFunc;
+
+static HMODULE          TrapFile = 0;
+static trap_fini_func   *FiniFunc = NULL;
+
 static unsigned_16      (TRAPENTRY *InfoFunc)( void *, void * );
 static char             (TRAPENTRY *HardFunc)( char );
-
-extern trap_version     TrapVer;
-extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
-                                        unsigned, mx_entry * );
 
 bool IsTrapFilePumpingMessageQueue()
 {
@@ -69,12 +69,17 @@ char TellHardMode( char hard )
 
 void KillTrap( void )
 {
-    FiniFunc();
     ReqFunc = NULL;
-    InitFunc = NULL;
-    FiniFunc = NULL;
+    if( FiniFunc != NULL ) {
+        FiniFunc();
+        FiniFunc = NULL;
+    }
     InfoFunc = NULL;
     HardFunc = NULL;
+    if( TrapFile != 0 ) {
+        DosFreeModule( TrapFile );
+        TrapFile = 0;
+    }
 }
 
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
@@ -83,8 +88,8 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     int                 len;
     char                *ptr;
     char                *parm;
-    unsigned            dll;
     unsigned            rc;
+    trap_init_func      *init_func;
 
     if( trapbuff == NULL ) trapbuff = "std";
     ptr = trapbuff;
@@ -110,26 +115,28 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         }
         trpfile[len] = 0;
     }
-    rc = DosLoadModule( NULL, 0, trpfile, (PHMODULE)&dll );
+    rc = DosLoadModule( NULL, 0, trpfile, &TrapFile );
     if( rc != 0 ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( DosGetProcAddr( dll, "#1", (PFN FAR *)&InitFunc ) != 0
-     || DosGetProcAddr( dll, "#2", (PFN FAR *)&FiniFunc ) != 0
-     || DosGetProcAddr( dll, "#3", (PFN FAR *)&ReqFunc ) != 0 ) {
+    if( DosGetProcAddr( TrapFile, "#1", (PFN FAR *)&init_func ) != 0
+     || DosGetProcAddr( TrapFile, "#2", (PFN FAR *)&FiniFunc ) != 0
+     || DosGetProcAddr( TrapFile, "#3", (PFN FAR *)&ReqFunc ) != 0 ) {
+        KillTrap();
         return( buff );
     }
-    if( DosGetProcAddr( dll, "#4", (PFN FAR *)&InfoFunc ) != 0 ) {
+    if( DosGetProcAddr( TrapFile, "#4", (PFN FAR *)&InfoFunc ) != 0 ) {
         InfoFunc = NULL;
     }
-    if( DosGetProcAddr( dll, "#5", (PFN FAR *)&HardFunc ) != 0 ) {
+    if( DosGetProcAddr( TrapFile, "#5", (PFN FAR *)&HardFunc ) != 0 ) {
         HardFunc = NULL;
     }
-    *trap_ver = InitFunc( parm, trpfile, trap_ver->remote );
+    *trap_ver = init_func( parm, trpfile, trap_ver->remote );
     if( trpfile[0] != '\0' ) {
         strcpy( buff, (char *)trpfile );
+        KillTrap();
         return( buff );
     }
     if( !TrapVersionOK( *trap_ver ) ) {

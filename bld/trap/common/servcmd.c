@@ -107,11 +107,6 @@ static char *CollectTrapParm( char *ptr, char *start )
     #define IS_OPTION( c )      ((c) == '-' || (c) == '/')
 #endif
 
-#if defined(__AXP__) && defined(__NT__)
-    //NYI: temp until we can get all the unaligned stuff straightened out.
-    #include <windows.h>
-#endif
-
 bool ParseCommandLine( char *cmdline, char *trap, char *parm, bool *oneshot )
 /***************************************************************************/
 {

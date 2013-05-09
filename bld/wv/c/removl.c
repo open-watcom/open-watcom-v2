@@ -42,7 +42,7 @@ extern void             AddrFloat( address * );
 
 extern unsigned         OvlSize;
 
-static trap_shandle     SuppOvlId;
+static trap_shandle     SuppOvlId = 0;
 
 #define SUPP_OVL_SERVICE( in, request )         \
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \
@@ -52,8 +52,13 @@ static trap_shandle     SuppOvlId;
 
 bool InitOvlSupp( void )
 {
+#ifdef WANT_OVL
     SuppOvlId = GetSuppId( OVERLAY_SUPP_NAME );
     return( SuppOvlId != 0 );
+#else
+    SuppOvlId = 0;
+    return( FALSE );
+#endif
 }
 
 unsigned RemoteOvlSectSize( void )

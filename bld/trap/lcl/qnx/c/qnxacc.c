@@ -621,7 +621,7 @@ unsigned ReqRead_regs( void )
     mr = GetOutPtr( 0 );
 
     ReadCPU( &mr->x86.cpu );
-    ReadFPU( &mr->x86.fpu );
+    ReadFPU( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
 }
 
@@ -687,7 +687,7 @@ unsigned ReqWrite_regs( void )
 
     mr = GetInPtr( sizeof( write_regs_req ) );
     WriteCPU( &mr->x86.cpu );
-    WriteFPU( &mr->x86.fpu );
+    WriteFPU( &mr->x86.u.fpu );
     return( 0 );
 }
 
@@ -904,7 +904,7 @@ unsigned ReqProg_load()
         }
         if( proc.flags & _PPF_32BIT ) {
             ProcInfo.dbg32 = TRUE;
-            ret->flags |= LD_FLAG_IS_32;
+            ret->flags |= LD_FLAG_IS_BIG;
         }
         ProcInfo.priv_level = proc.ss_reg & PRIV_MASK;
         ProcInfo.magic.offset = proc.magic_off;
@@ -1552,7 +1552,7 @@ unsigned ReqAddr_info()
         }
     }
     ret = GetOutPtr( 0 );
-    ret->is_32 = is_32;
+    ret->is_big = is_32;
     return( sizeof( *ret ) );
 }
 

@@ -40,7 +40,7 @@
 #include "dbgio.h"
 #include "dbgtoggl.h"
 #include "errno.h"
-#include "trpfile.h"
+#include "trptypes.h"
 
 extern char *Format(char *,char *,... );
 extern char *StrCopy(char *,char *);

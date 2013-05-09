@@ -52,11 +52,6 @@
 #endif
 
 
-extern char             *RemoteLink(char *, char);
-extern char             RemoteConnect(void);
-extern void             RemoteDisco(void);
-extern void             RemoteUnLink(void);
-
 static trap_version     TrapVer;
 
 char    RWBuff[ 0x400 ];

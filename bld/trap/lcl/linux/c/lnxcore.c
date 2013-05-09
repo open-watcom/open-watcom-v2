@@ -426,7 +426,7 @@ unsigned ReqRead_regs( void )
     mr = GetOutPtr( 0 );
 
     ReadCPU( &mr->x86.cpu );
-    ReadFPU( &mr->x86.fpu );
+    ReadFPU( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
 }
 
@@ -491,7 +491,7 @@ unsigned ReqProg_load( void )
     }
     core_info.err_no = 0;
     load_core_header( argv );
-    ret->flags = LD_FLAG_IS_STARTED | LD_FLAG_IS_PROT | LD_FLAG_IS_32;
+    ret->flags = LD_FLAG_IS_STARTED | LD_FLAG_IS_PROT | LD_FLAG_IS_BIG;
     ret->task_id = 123; //core_info.hdr.psdata.pid;
     ret->err = core_info.err_no;
     if( core_info.err_no == 0 ) {
@@ -651,7 +651,7 @@ unsigned ReqAddr_info( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->is_32 = TRUE;
+    ret->is_big = TRUE;
     return( sizeof( *ret ) );
 }
 

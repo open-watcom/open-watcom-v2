@@ -36,7 +36,7 @@
 #include "stdrdos.h"
 #include "debug.h"
 
-unsigned ReqAsync_go( void )
+trap_elen ReqAsync_go( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -50,11 +50,11 @@ unsigned ReqAsync_go( void )
 
     if (obj) {
         thread = obj->CurrentThread;
-	ok = AsyncGo( obj, 250 );
+        ok = AsyncGo( obj, 250 );
 
         if( ok ) {
             if( IsTerminated( obj ) )
-	        ret->conditions |= COND_TERMINATE;
+                ret->conditions |= COND_TERMINATE;
 
             if( HasThreadChange( obj ) ) {
                 ret->conditions |= COND_THREAD;
@@ -87,10 +87,10 @@ unsigned ReqAsync_go( void )
                     ret->conditions |= COND_EXCEPTION;                
             }
         } else {
-            ret->conditions	|= COND_RUNNING;
+            ret->conditions     |= COND_RUNNING;
         }            
     } else
-        ret->conditions	|= COND_TERMINATE;
+        ret->conditions |= COND_TERMINATE;
 
     if( thread && ok ) {
         ret->program_counter.offset = thread->Eip;
@@ -107,7 +107,7 @@ unsigned ReqAsync_go( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqAsync_step( void )
+trap_elen ReqAsync_step( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -126,7 +126,7 @@ unsigned ReqAsync_step( void )
         if( ok ) {
 
             if( IsTerminated( obj ) )
-	    	ret->conditions |= COND_TERMINATE;
+                ret->conditions |= COND_TERMINATE;
 
             if( HasThreadChange( obj ) ) {
                 ret->conditions |= COND_THREAD;
@@ -140,7 +140,7 @@ unsigned ReqAsync_step( void )
 
             if( HasModuleChange( obj ) ) {
                 ClearModuleChange( obj );
-	        ret->conditions |= COND_LIBRARIES;
+                ret->conditions |= COND_LIBRARIES;
             }
 
             if ( HasConfigChange( obj ) ) {
@@ -159,10 +159,10 @@ unsigned ReqAsync_step( void )
                     ret->conditions |= COND_EXCEPTION;                
             }
         } else {
-            ret->conditions	|= COND_RUNNING;
+            ret->conditions     |= COND_RUNNING;
         }            
     } else
-        ret->conditions	|= COND_TERMINATE;
+        ret->conditions |= COND_TERMINATE;
 
     if( thread && ok ) {
         ret->program_counter.offset = thread->Eip;
@@ -179,7 +179,7 @@ unsigned ReqAsync_step( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqAsync_poll( void )
+trap_elen ReqAsync_poll( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -192,12 +192,12 @@ unsigned ReqAsync_poll( void )
     obj = GetCurrentDebug();
 
     if (obj) {
-	ok = AsyncPoll( obj, 250 );
+        ok = AsyncPoll( obj, 250 );
 
         if( ok ) {
 
             if( IsTerminated( obj ) )
-	    	ret->conditions |= COND_TERMINATE;
+                ret->conditions |= COND_TERMINATE;
 
             if( HasThreadChange( obj ) ) {
                 ret->conditions |= COND_THREAD;
@@ -211,7 +211,7 @@ unsigned ReqAsync_poll( void )
 
             if( HasModuleChange( obj ) ) {
                 ClearModuleChange( obj );
-	        ret->conditions |= COND_LIBRARIES;
+                ret->conditions |= COND_LIBRARIES;
             }
 
             if ( HasConfigChange( obj ) ) {
@@ -230,10 +230,10 @@ unsigned ReqAsync_poll( void )
                     ret->conditions |= COND_EXCEPTION;                
             }
         } else {
-            ret->conditions	|= COND_RUNNING;
+            ret->conditions     |= COND_RUNNING;
         }            
     } else
-        ret->conditions	|= COND_TERMINATE;
+        ret->conditions |= COND_TERMINATE;
 
     if( thread && ok ) {
         ret->program_counter.offset = thread->Eip;
@@ -250,7 +250,7 @@ unsigned ReqAsync_poll( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqAsync_stop( void )
+trap_elen ReqAsync_stop( void )
 {
     async_go_ret            *ret;
 

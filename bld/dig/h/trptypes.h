@@ -31,15 +31,30 @@
 
 #ifndef TRPTYPES_H
 
-#include <digtypes.h>
-
+#include "bool.h"
+#include "digtypes.h"
 #include "digpck.h"
+
+
+#if defined( __WATCOMC__ ) && defined( _M_I86 )
+    #define     TRAPFAR     __far
+#else
+    #define     TRAPFAR
+#endif
+
+#if defined( __WATCOMC__ ) && defined( __WINDOWS__ )
+    #define     TRAPENTRY   TRAPFAR __pascal
+#elif defined( __WATCOMC__ ) && ( defined( _M_I86 ) || defined( __DOS__ ) || defined( __DSX__ ) )
+    #define     TRAPENTRY   TRAPFAR __saveregs
+#else
+    #define     TRAPENTRY   TRAPFAR
+#endif
 
 #define TRAP_MAJOR_VERSION      17
 #define TRAP_MINOR_VERSION      1
-#define OLD_TRAP_MINOR_VERSION      0
+#define OLD_TRAP_MINOR_VERSION  0
 
-#define REQUEST_FAILED ((unsigned)-1)
+#define REQUEST_FAILED ((trap_elen)-1)
 
 #if OLD_TRAP_MINOR_VERSION > 0
     #define TrapVersionOK( ver )  (((ver).major == TRAP_MAJOR_VERSION) && \
@@ -49,38 +64,51 @@
 #endif
 
 typedef struct {
-    unsigned_8          major;
-    unsigned_8          minor;
-    unsigned_8          remote;
+    unsigned_8      major;
+    unsigned_8      minor;
+    unsigned_8      remote;
 } trap_version;
 
-typedef unsigned_8      access_req;
-typedef unsigned_32     trap_error;
-typedef unsigned_32     trap_mhandle;   /* module handle */
-typedef unsigned_32     trap_phandle;   /* process handle */
-typedef unsigned_32     trap_shandle;   /* supplementary service handle */
+typedef unsigned_8  access_req;
+typedef unsigned_16 trap_elen;
+typedef unsigned_32 trap_error;
+typedef unsigned_32 trap_mhandle;   /* module handle */
+typedef unsigned_32 trap_phandle;   /* process handle */
+typedef unsigned_32 trap_shandle;   /* supplementary service handle */
+
+#include "pushpck1.h"
 
 typedef struct {
-    access_req          core_req;
-    trap_shandle        id;
+    access_req      core_req;
+    trap_shandle    id;
 } _WCUNALIGNED supp_prefix;
 
-#ifndef TRAPENTRY
-#define TRAPENTRY
-#endif
+typedef struct {
+    char            ext_separator;
+    char            path_separator[3];
+    char            newline[2];
+} file_components;
+
+#include "poppck.h"
 
 typedef struct {
-    void                *ptr;
-    unsigned            len;
+    void        *ptr;
+    trap_elen   len;
 } mx_entry;
 
+typedef mx_entry        TRAPFAR *mx_entry_p;
+
+typedef trap_version    TRAPENTRY trap_init_func( char *, char *, bool );
+typedef trap_elen       TRAPENTRY trap_req_func( trap_elen, mx_entry_p, trap_elen, mx_entry_p );
+typedef void            TRAPENTRY trap_fini_func( void );
+
 /* Client interface routines */
-extern char     *LoadDumbTrap( trap_version * );
-extern char     *LoadTrap( char *, char *, trap_version * );
-extern void     TrapSetFailCallBack( void (*func)(void) );
-extern unsigned TrapAccess( unsigned, mx_entry *, unsigned, mx_entry * );
-extern unsigned TrapSimpAccess( unsigned, void *, unsigned, void * );
-extern void     KillTrap(void);
+extern char             *LoadDumbTrap( trap_version * );
+extern char             *LoadTrap( char *, char *, trap_version * );
+extern void             TrapSetFailCallBack( void (*func)(void) );
+extern trap_elen        TrapAccess( trap_elen, mx_entry_p, trap_elen, mx_entry_p );
+extern trap_elen        TrapSimpAccess( trap_elen, void *, trap_elen, void * );
+extern void             KillTrap(void);
 
 #include "digunpck.h"
 

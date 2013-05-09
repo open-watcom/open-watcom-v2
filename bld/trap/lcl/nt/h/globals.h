@@ -44,13 +44,15 @@ TRPGLOBAL BOOL                  StopForDLLs;
 TRPGLOBAL LPSTR                 DLLPath;
 TRPGLOBAL subsystems            DebugeeSubsystem;
 TRPGLOBAL msg_list              *DebugString;
+TRPGLOBAL DEBUG_EVENT           DebugEvent;
 TRPGLOBAL BOOL                  IsWOW;
+#if defined( MD_x86 )
 TRPGLOBAL BOOL                  IsDOS;
 TRPGLOBAL BOOL                  IsWin32s;
 TRPGLOBAL BOOL                  IsWin95;
 TRPGLOBAL BOOL                  IsWinNT;
-TRPGLOBAL DEBUG_EVENT           DebugEvent;
 TRPGLOBAL BOOL                  UseVDMStuff;
+#endif
 TRPGLOBAL char                  CurrEXEName[MAX_PATH];
 TRPGLOBAL BOOL                  DidWaitForDebugEvent;
 TRPGLOBAL BOOL                  Slaying;
@@ -62,14 +64,16 @@ TRPGLOBAL char                  *MsgPrefix TRPGLOBINIT( NULL );
 TRPGLOBAL BOOL                  Supporting8ByteBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
 TRPGLOBAL BOOL                  SupportingExactBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
 
-#ifdef WOW
+#if defined( MD_x86 ) && defined( WOW )
 TRPGLOBAL wow_info              WOWAppInfo;
-#else
+//typedef void    *LPVDMCONTEXT;
+#endif
+#if !defined( WOW )
 typedef void    *LPMODULEENTRY;
-typedef void    *LPVDMCONTEXT;
 typedef void    (WINAPI *DEBUGEVENTPROC)();
 typedef BOOL    (WINAPI *PROCESSENUMPROC)( DWORD, DWORD, LPARAM );
 #endif
+
 TRPGLOBAL
 HANDLE
 (WINAPI*pOpenThread)(
@@ -114,6 +118,7 @@ BOOL
     LPMODULEENTRY32 lpme
 );
 
+#if defined( MD_x86 ) && defined( WOW )
 TRPGLOBAL
 BOOL
 (WINAPI*pVDMModuleFirst)(
@@ -181,5 +186,7 @@ BOOL
     WORD            wSelector,
     LPVDMLDT_ENTRY  lpSelectorEntry
 );
+#endif
+
 #undef TRPGLOBAL
 #undef TRPGLOBINIT

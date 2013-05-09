@@ -42,7 +42,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "trpfile.h"
+#include "trptypes.h"
 
 
 #define READONLY    0

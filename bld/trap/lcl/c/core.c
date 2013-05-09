@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include "trpimp.h"
+#include "packet.h"
 
 #if defined(DOSXTRAP) || defined(DOSXHELP)
     #define DOSX
@@ -40,11 +41,7 @@
     #include "winctrl.h"
 #endif
 
-extern unsigned         MaxPacketSize( void );
-extern void             RemoteDisco( void );
-extern char             RemoteConnect( void );
-
-static unsigned (* const CoreRequests[])(void) = {
+static trap_elen (* const CoreRequests[])(void) = {
         ReqConnect,
         ReqDisconnect,
         ReqSuspend,
@@ -86,7 +83,7 @@ static unsigned (* const CoreRequests[])(void) = {
         ReqMachine_data,
 };
 
-unsigned ReqConnect( void )
+trap_elen ReqConnect( void )
 {
     connect_ret *ret;
     char        *err;
@@ -108,7 +105,7 @@ unsigned ReqConnect( void )
     return( sizeof( *ret ) + strlen( err ) + 1 );
 }
 
-unsigned ReqDisconnect( void )
+trap_elen ReqDisconnect( void )
 {
 #if defined(DOSX)
     RemoteDisco();
@@ -118,20 +115,19 @@ unsigned ReqDisconnect( void )
     return( 0 );
 }
 
-unsigned ReqSuspend( void )
+trap_elen ReqSuspend( void )
 {
     return( 0 );
 }
 
-unsigned ReqResume( void )
+trap_elen ReqResume( void )
 {
     return( 0 );
 }
 
-unsigned TRAPENTRY TrapRequest( unsigned num_in_mx, mx_entry *mx_in,
-                            unsigned num_out_mx, mx_entry *mx_out )
+trap_elen TRAPENTRY TrapRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
-    unsigned    len;
+    trap_elen   len;
 
     In_Mx_Num = num_in_mx;
     Out_Mx_Num = num_out_mx;

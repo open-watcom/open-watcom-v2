@@ -329,7 +329,7 @@ unsigned ReqAddr_info()
 
                                                                           _DBG1(( "AccAddrInfo" ));
     ret = GetOutPtr( 0 );
-    ret->is_32 = 1;
+    ret->is_big = 1;
     return( sizeof( *ret ) );
 }
 
@@ -468,7 +468,7 @@ unsigned ReqRead_regs( void )
 
     mr = GetOutPtr(0);
     mr->x86.cpu = *(struct x86_cpu *)&Regs;
-    Read387( &mr->x86.fpu );
+    Read387( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
 }
 
@@ -492,7 +492,7 @@ unsigned ReqWrite_regs( void )
 
     mr = GetInPtr(sizeof(write_regs_req));
     *(struct x86_cpu *)&Regs = mr->x86.cpu;
-    Write387( &mr->x86.fpu );
+    Write387( &mr->x86.u.fpu );
     return( 0 );
 }
 
@@ -544,7 +544,7 @@ unsigned ReqProg_load()
     GetSysRegs( &SysRegs );
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    ret->flags = LD_FLAG_IS_32 | LD_FLAG_IS_PROT | LD_FLAG_IS_STARTED | LD_FLAG_DISPLAY_DAMAGED;
+    ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT | LD_FLAG_IS_STARTED | LD_FLAG_DISPLAY_DAMAGED;
     ret->task_id = 4;
     ret->mod_handle = 0;
     Regs.DS = Regs.ES = Regs.FS = Regs.GS = GetDS();

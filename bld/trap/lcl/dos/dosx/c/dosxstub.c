@@ -36,22 +36,22 @@
         These routines are never passed up to the protect mode helpers
 */
 
-unsigned ReqSet_user_screen()
+trap_elen ReqSet_user_screen()
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen()
+trap_elen ReqSet_debug_screen()
 {
     return( 0 );
 }
 
-unsigned ReqRead_user_keyboard()
+trap_elen ReqRead_user_keyboard()
 {
     return( 0 );
 }
 
-unsigned ReqSplit_cmd()
+trap_elen ReqSplit_cmd()
 {
     return( 0 );
 }

@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#pragma pack( __push, 4 )
+#include "pushpck4.h"
 
 #define STATUS_VDM_EVENT    STATUS_SEGMENT_NOTIFICATION
 
@@ -273,7 +273,7 @@ typedef struct {
     DWORD   dwNextAlt;
 } GLOBALENTRY, *LPGLOBALENTRY;
 
-#pragma pack( __pop )
+#include "poppck.h"
 
 typedef DWORD (CALLBACK *DEBUGEVENTPROC)(LPDEBUG_EVENT,LPVOID);
 

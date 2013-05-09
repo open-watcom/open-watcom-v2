@@ -117,7 +117,7 @@ int WaitByte( unsigned ticks )
     if( ticks > 0 && timeout == 0 ) timeout = 1;
 
     if( dev_read( ComPort, &data, 1, 0, timeout, 0, 0, 0 ) != 1 ) {
-        return( NO_DATA );
+        return( SDATA_NO_DATA );
     }
     if( data == 0xff ) {
         dev_read( ComPort, &data, 1, 0, timeout, 0, 0, 0 );
@@ -125,7 +125,7 @@ int WaitByte( unsigned ticks )
         /* a transmission error has occured */
         HadError = TRUE;
         dev_read( ComPort, &data, 1, 0, timeout, 0, 0, 0 );
-        return( NO_DATA );
+        return( SDATA_NO_DATA );
     }
     return( data );
 }

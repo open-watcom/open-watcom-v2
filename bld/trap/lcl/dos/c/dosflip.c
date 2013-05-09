@@ -48,7 +48,7 @@ extern unsigned KeyWaiting( void );
     parm caller [ax];
 
 
-unsigned ReqRead_user_keyboard( void )
+trap_elen ReqRead_user_keyboard( void )
 {
     read_user_keyboard_req      *acc;
     read_user_keyboard_ret      *ret;
@@ -74,12 +74,12 @@ unsigned ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_user_screen( void )
+trap_elen ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen( void )
+trap_elen ReqSet_debug_screen( void )
 {
     return( 0 );
 }

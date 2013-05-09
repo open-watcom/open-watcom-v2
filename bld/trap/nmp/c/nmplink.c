@@ -33,20 +33,23 @@
 #include <string.h>
 #include <stddef.h>
 #include <ctype.h>
+#if defined( __OS2__ )
+#include <wos2.h>
+#endif
 #include "nmp.h"
-#include "packet.h"
 #include "trptypes.h"
 #include "trperr.h"
+#include "packet.h"
 
-int     ConnHdl;
-int     ReadHdl;
-int     WriteHdl;
-int     BindHdl;
+bhandle ConnHdl;
+bhandle ReadHdl;
+bhandle WriteHdl;
+bhandle BindHdl;
 
 extern          void SetLinkName( char* );
 
 #ifdef DEBUG
-    #define dbg(a) mywrite(2,a,strlen(a))
+    #define dbg(a) mywrite(BHANDLE_STDERR,a,strlen(a))
 #else
     #define dbg(x)
 #endif
@@ -55,7 +58,7 @@ static char     MachBuff[ MACH_NAME+1 ];
        char     NameBuff[ MAX_PIPE_NAME+1 ];
 static char     *NameEnd;
 
-static int PipeOpen( char *name )
+static bhandle PipeOpen( char *name )
 {
     char        buff[ MAX_PIPE_NAME+1 ];
     char        *end;
@@ -75,7 +78,7 @@ static int PipeOpen( char *name )
 
 static char *OpenRequest( void )
 {
-    unsigned short      bytes;
+    trap_elen  bytes;
 
     BindHdl = PipeOpen( BINDERY );
     if( BindHdl == -1 ) return( TRP_ERR_NMPBIND_not_found );
@@ -89,7 +92,7 @@ static char *OpenRequest( void )
 }
 
 
-void DoOpen( int *phdl, char *suff )
+void DoOpen( bhandle *phdl, char *suff )
 {
     strcpy( NameEnd, suff );
     dbg( "DoOpen " );
@@ -181,28 +184,28 @@ char RemoteConnect( void )
 }
 
 
-unsigned RemoteGet( char *data, unsigned length )
+trap_elen RemoteGet( char *data, trap_elen length )
 {
-    unsigned short      bytes_read;
-    unsigned short      tmp;
+    trap_elen      bytes_read;
+    trap_elen      tmp;
 
     bytes_read = myread( ReadHdl, data, length );
     switch( bytes_read ) {
     case 0:
         return( REQUEST_FAILED );
     case 1:
-        tmp = myread( ReadHdl, (char*)&bytes_read, sizeof( unsigned short ) );
-        if( tmp != sizeof( unsigned short ) ) return( REQUEST_FAILED );
+        tmp = myread( ReadHdl, (char*)&bytes_read, sizeof( trap_elen ) );
+        if( tmp != sizeof( trap_elen ) ) return( REQUEST_FAILED );
         break;
     }
     return( bytes_read );
 }
 
 
-unsigned RemotePut( char *data, unsigned length )
+trap_elen RemotePut( char *data, trap_elen length )
 {
-    unsigned short      bytes_written;
-    unsigned short      real_length;
+    trap_elen  bytes_written;
+    trap_elen  real_length;
 
     real_length = length;
     if( length == 0 ) length = 1;       /* Can't write zero bytes */
@@ -210,8 +213,8 @@ unsigned RemotePut( char *data, unsigned length )
     if( bytes_written != length ) return( REQUEST_FAILED );
     if( length == 1 ) {
         /* Send true length through */
-        bytes_written = mywrite( WriteHdl, (char*)&real_length, sizeof( unsigned short ) );
-        if( bytes_written != sizeof( unsigned short ) ) return( REQUEST_FAILED );
+        bytes_written = mywrite( WriteHdl, (char*)&real_length, sizeof( trap_elen ) );
+        if( bytes_written != sizeof( trap_elen ) ) return( REQUEST_FAILED );
     }
     return( length );
 }

@@ -258,7 +258,7 @@ unsigned ReqAddr_info()
     _DBG(("AccAddrInfo\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->is_32 = IsProtSeg( acc->in_addr.segment );
+    ret->is_big = IsProtSeg( acc->in_addr.segment );
     return( sizeof( *ret ) );
 }
 
@@ -604,7 +604,7 @@ unsigned ReqRead_regs( void )
 
     mr = GetOutPtr(0);
     ReadCPU( &mr->x86.cpu );
-    TaskFPExec( (ULONG)&Read387, &mr->x86.fpu );
+    TaskFPExec( (ULONG)&Read387, &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
 }
 
@@ -614,7 +614,7 @@ unsigned ReqWrite_regs( void )
 
     mr = GetInPtr(sizeof(write_regs_req));
     WriteCPU( &mr->x86.cpu );
-    TaskFPExec( (ULONG)&Write387, &mr->x86.fpu );
+    TaskFPExec( (ULONG)&Write387, &mr->x86.u.fpu );
     return( 0 );
 }
 
@@ -699,14 +699,14 @@ unsigned ReqProg_load()
     FakeBreak = 0;
     dbg_rdmsb( &Mach );
     if( Mach.msb_protmf ) {
-        //loadret->flags = LD_FLAG_IS_32 | LD_FLAG_IS_FLAT | LD_FLAG_IS_PROT;
+        //loadret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_FLAT | LD_FLAG_IS_PROT;
         _DBG(("LD_FLAG_IS_PROT!!!\r\n"));
-        ret->flags = LD_FLAG_IS_32 | LD_FLAG_IS_PROT;
+        ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT;
         ret->task_id = 4;
         CheckForPE( name );
     } else {
         _DBG(("Not Protected mode?!!!\r\n"));
-        ret->flags = LD_FLAG_IS_32;
+        ret->flags = LD_FLAG_IS_BIG;
         ret->task_id = Mach.msb_ds;
     }
     ret->mod_handle = 0;

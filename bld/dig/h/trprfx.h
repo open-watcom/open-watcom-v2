@@ -33,7 +33,7 @@
 
 #include "trpfile.h"
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 #define RFX_SUPP_NAME           "RFX"
 
@@ -228,7 +228,7 @@ typedef struct {
     /* followed by a trap_dta */
 } rfx_findclose_ret;
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #define TRPRFX_H
 

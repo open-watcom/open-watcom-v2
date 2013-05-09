@@ -33,8 +33,8 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <process.h>
+#include "wi163264.h"
 #include "wserver.h"
-
 #include "banner.h"
 #include "trpimp.h"
 #include "trperr.h"
@@ -48,8 +48,6 @@ char  TrapParm[ 0x400 ];
 extern char  RWBuff[ 0x400 ];
 extern  char ServName[];
 
-extern char             *LoadTrap( char *,char *,trap_version *);
-extern void             KillTrap(void);
 extern void             NothingToDo(void);
 extern bool             Session( void );
 extern bool             ParseCommandLine( char *cmdline, char *trap, char *parm, bool *oneshot );
@@ -72,10 +70,9 @@ extern void TellHWND( HWND );
 #define MENU_ON (MF_ENABLED+MF_BYCOMMAND)
 #define MENU_OFF (MF_DISABLED+MF_GRAYED+MF_BYCOMMAND)
 
-extern BOOL _EXPORT FAR PASCAL OptionsDlgProc( HWND hwnd, unsigned msg,
-                                UINT wparam, LONG lparam );
+WINEXPORT extern BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
+WINEXPORT LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );
 
 /* Forward declarations */
 void StartupErr(char *err);
@@ -85,8 +82,7 @@ void Output( char *str );
 /*
  * WinMain - initialization, message loop
  */
-int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline,
-                      int cmdshow )
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
 
@@ -122,7 +118,7 @@ static BOOL FirstInstance( HINSTANCE this_inst )
      * set up and register window class
      */
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = (LPVOID) WindowProc;
+    wc.lpfnWndProc = WindowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( DWORD );
     wc.hInstance = this_inst;
@@ -150,6 +146,7 @@ static void EnableMenus( HWND hwnd, BOOL connected, BOOL session )
     EnableMenuItem( hMenu, MENU_BREAK, session ? MENU_ON : MENU_OFF );
     DrawMenuBar( hwnd );
 }
+
 /*
  * AnyInstance - do work required for every instance of the application:
  *                create the window, initialize data
@@ -185,9 +182,9 @@ static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
 
     if( !hwndMain ) return( FALSE );
 
-    #ifdef __NT__
-        TellHWND( hwndMain );
-    #endif
+#ifdef __NT__
+    TellHWND( hwndMain );
+#endif
 
     /*
      * display window
@@ -203,8 +200,7 @@ static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
 /*
  * AboutDlgProc - processes messages for the about dialog.
  */
-BOOL _EXPORT FAR PASCAL AboutDlgProc( HWND hwnd, unsigned msg,
-                                UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;                    /* turn off warning */
 
@@ -228,8 +224,7 @@ static bool Exit = FALSE;
 /*
  * WindowProc - handle messages for the main application window
  */
-LRESULT _EXPORT FAR PASCAL WindowProc( HWND hwnd, UINT msg,
-                                     WPARAM wparam, LPARAM lparam )
+WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     FARPROC     proc;
     char        *err;
@@ -309,7 +304,9 @@ LRESULT _EXPORT FAR PASCAL WindowProc( HWND hwnd, UINT msg,
             PostQuitMessage( 0 );
             break;
         case MENU_BREAK:
-#ifdef __386__
+#if defined( _M_I86 )
+            Output( "Press CTRL-ALT-F to interrupt the program" );
+#else
             {
                 OSVERSIONINFO   osver;
                 osver.dwOSVersionInfoSize = sizeof( osver );
@@ -318,8 +315,6 @@ LRESULT _EXPORT FAR PASCAL WindowProc( HWND hwnd, UINT msg,
                     Output( "You must press CTRL-ALT-F11 to interrupt a program under Win32s" );
                 }
             }
-#else
-            Output( "Press CTRL-ALT-F to interrupt the program" );
 #endif
             break;
         }

@@ -279,7 +279,7 @@ unsigned ReqRead_regs( void )
     mr = GetOutPtr( 0 );
 
     ReadCPU( &mr->x86.cpu );
-    ReadFPU( &mr->x86.fpu );
+    ReadFPU( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
 }
 
@@ -333,7 +333,7 @@ unsigned ReqWrite_regs( void )
 
     mr = GetInPtr( sizeof( write_regs_req ) );
     WriteCPU( &mr->x86.cpu );
-    WriteFPU( &mr->x86.fpu );
+    WriteFPU( &mr->x86.u.fpu );
     return( 0 );
 }
 
@@ -645,7 +645,7 @@ unsigned ReqProg_load( void )
     ret->flags = 0;
     if( ProcInfo.pid != -1 ) {
         // Tell debugger to ignore segment values when comparing pointers
-        ret->flags |= LD_FLAG_IS_32 | LD_FLAG_IGNORE_SEGMENTS;
+        ret->flags |= LD_FLAG_IS_BIG | LD_FLAG_IGNORE_SEGMENTS;
         ProcInfo.pid = proc_attach( ProcInfo.pid, &ProcInfo.procfd, &ProcInfo.tid );
         if( ProcInfo.pid == 0 ) {
             if( ProcInfo.loaded_proc ) {
@@ -1133,7 +1133,7 @@ unsigned ReqAddr_info( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->is_32 = TRUE;
+    ret->is_big = TRUE;
     return( sizeof( *ret ) );
 }
 

@@ -35,13 +35,13 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#include "dipsys.h"
 #ifndef __WATCOMC__
     #include "clibext.h"
 #endif
 
 
-dip_status DIPSysLoad( char *path, dip_client_routines *cli,
-                       dip_imp_routines **imp, unsigned long *sys_hdl )
+dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     void                *shlib;
     dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );
@@ -69,11 +69,11 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
         dlclose( shlib );
         return( status );
     }
-    *sys_hdl = (unsigned long)shlib;
+    *sys_hdl = (dip_sys_handle)shlib;
     return( DS_OK );
 }
 
-void DIPSysUnload( unsigned long sys_hdl )
+void DIPSysUnload( dip_sys_handle sys_hdl )
 {
     dlclose( (void *)sys_hdl );
 }

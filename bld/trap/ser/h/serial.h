@@ -35,16 +35,16 @@
 #define MAX_BAUD_SET_TICKS      6
 #define FOREVER                 0 /* must be defined as 0 */
 
-#define HI                      0x01 /* start of conversation */
-#define STX                     0x02 /* start of text */
-#define ETX                     0x03 /* end of text */
-#define ACK                     0x06 /* acknowledge */
-#define NAK                     0x15 /* non-acknowledge */
-#define TAK                     0xAA /* acknowledge test ok (TestAcK)*/
-#define RLR                     0x1D /* request last response */
-#define LOK                     0xFF /* lock step */
+#define SDATA_HI                      0x01 /* start of conversation */
+#define SDATA_STX                     0x02 /* start of text */
+#define SDATA_ETX                     0x03 /* end of text */
+#define SDATA_ACK                     0x06 /* acknowledge */
+#define SDATA_NAK                     0x15 /* non-acknowledge */
+#define SDATA_TAK                     0xAA /* acknowledge test ok (TestAcK)*/
+#define SDATA_RLR                     0x1D /* request last response */
+#define SDATA_LOK                     0xFF /* lock step */
 
-#define NO_DATA                 (-1) /* no new character in receive buffer */
+#define SDATA_NO_DATA                 (-1) /* no new character in receive buffer */
 
 #define SYNC_BYTE               0x08 /* first byte to sync on */
 #define SYNC_END                0x04 /* end of sync bytes */

@@ -36,7 +36,9 @@
 #include "dbgdefn.h"
 #include "dbgio.h"
 #include "trpcore.h"
+#ifdef WANT_RFX
 #include "trprfx.h"
+#endif
 
 extern trap_shandle     GetSuppId( char * );
 

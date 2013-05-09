@@ -91,7 +91,7 @@ typedef struct
  *      - Trace one instruction. This leaves you at the first instruction
  *        of the 32-bit code
  */
-unsigned ReqProg_load( void )
+trap_elen ReqProg_load( void )
 {
     char                exe_name[_MAX_PATH];
     char                drive[_MAX_DRIVE],directory[_MAX_DIR];
@@ -255,7 +255,7 @@ unsigned ReqProg_load( void )
                 LoadingDebugee = FALSE;
                 return( sizeof( *ret ) );
             }
-            ret->flags |= LD_FLAG_IS_32;
+            ret->flags |= LD_FLAG_IS_BIG;
             if( tid == 0 ) {
                 WriteMem( IntResult.CS, SIG_OFF, win386sig2, sizeof( DWORD ) );
                 pmsg = DebuggerWaitForMessage( GOING_TO_32BIT_START,
@@ -311,7 +311,7 @@ unsigned ReqProg_load( void )
  * second pause - to allow Windows to get on with the unloading of the module,
  * if it is going to.  Ack.
  */
-unsigned ReqProg_kill( void )
+trap_elen ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 

@@ -44,19 +44,19 @@
 /*
  * AccLoadProg - create a new process for debugging
  */
-unsigned ReqProg_load( void )
+trap_elen ReqProg_load( void )
 {
     char            *parm;
     prog_load_req   *acc;
     prog_load_ret   *ret;
     struct TDebug   *obj;
-	char            name[256];
-	char            drive[10];
-	char            dir[256];
-	char            fname[100];
-	char            ext[10];
-	char            curdir[256];
-	char            argstr[256];
+    char            name[256];
+    char            drive[10];
+    char            dir[256];
+    char            fname[100];
+    char            ext[10];
+    char            curdir[256];
+    char            argstr[256];
     char            *src;
     char            *dst;
     int             len;
@@ -100,13 +100,13 @@ unsigned ReqProg_load( void )
     *dst = 0;
     
     if( access( name, 0 ) == 0 ) {
-	    obj = (struct TDebug *)malloc( sizeof( struct TDebug ) );
-	    InitDebug( obj, name, argstr, getcwd( curdir, 255 ) );
-	    WaitForLoad( obj );
+            obj = (struct TDebug *)malloc( sizeof( struct TDebug ) );
+            InitDebug( obj, name, argstr, getcwd( curdir, 255 ) );
+            WaitForLoad( obj );
 
         if( obj->ThreadList && obj->ModuleList ) {
             ret->task_id = obj->ThreadList->ThreadID;
-		    ret->mod_handle = obj->ModuleList->Handle;
+                    ret->mod_handle = obj->ModuleList->Handle;
             ret->flags = LD_FLAG_HAVE_RUNTIME_DLLS;            
             SetCurrentDebug( obj );
         } else {
@@ -122,7 +122,7 @@ unsigned ReqProg_load( void )
 
 }
 
-unsigned ReqProg_kill( void )
+trap_elen ReqProg_kill( void )
 {
     prog_kill_ret   *ret;
 

@@ -31,7 +31,7 @@
 
 #include "stdnt.h"
 
-unsigned ReqFileInfo_getdate( void )
+trap_elen ReqFileInfo_getdate( void )
 {
     file_info_get_date_req  *req;
     file_info_get_date_ret  *ret;
@@ -45,7 +45,7 @@ unsigned ReqFileInfo_getdate( void )
     name = GetInPtr( sizeof( *req ) );
     ret = GetOutPtr( 0 );
     h = FindFirstFile( name, &ffb );
-    if( h == ( HANDLE ) - 1 ) {
+    if( h == INVALID_HANDLE_VALUE ) {
         ret->err = ERROR_FILE_NOT_FOUND;
         return( sizeof( *ret ) );
     }
@@ -56,7 +56,7 @@ unsigned ReqFileInfo_getdate( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFileInfo_setdate( void )
+trap_elen ReqFileInfo_setdate( void )
 {
     file_info_set_date_req  *req;
     file_info_set_date_ret  *ret;
@@ -72,9 +72,8 @@ unsigned ReqFileInfo_setdate( void )
     md = ( req->date >> 16 ) & 0xffff;
     mt = req->date;
     DosDateTimeToFileTime( md, mt, &ft );
-    h = CreateFile( name, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-                    OPEN_EXISTING, 0, NULL );
-    if( h == ( HANDLE ) - 1 ) {
+    h = CreateFile( name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
+    if( h == INVALID_HANDLE_VALUE ) {
         ret->err = GetLastError();
         return( sizeof( *ret ) );
     }

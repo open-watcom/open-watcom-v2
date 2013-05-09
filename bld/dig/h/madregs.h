@@ -38,6 +38,11 @@
 #include "madx86.h"
 #endif
 
+#ifdef MD_x64
+#include "madx86.h"
+//#include "madx64.h"
+#endif
+
 #ifdef MD_axp
 #include "madaxp.h"
 #endif
@@ -60,6 +65,10 @@ union mad_registers {
     unsigned_8                  nul;
 #ifdef MD_x86
     struct x86_mad_registers    x86;
+#endif
+#ifdef MD_x64
+    struct x86_mad_registers    x86;
+//    struct x64_mad_registers    x64;
 #endif
 #ifdef MD_axp
     struct axp_mad_registers    axp;

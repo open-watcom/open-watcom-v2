@@ -36,12 +36,12 @@
 #include "dosver.h"
 #include "trpimp.h"
 
-unsigned ReqRfx_rename()
+trap_elen ReqRfx_rename()
 {
-    tiny_ret_t     rc;
-    char           *old_name;
-    char           *new_name;
-    rfx_rename_ret      *ret;
+    tiny_ret_t      rc;
+    char            *old_name;
+    char            *new_name;
+    rfx_rename_ret  *ret;
 
     old_name = GetInPtr( sizeof( rfx_rename_req ) );
     new_name = GetInPtr( sizeof( rfx_rename_req ) + strlen( old_name ) + 1 );
@@ -51,10 +51,10 @@ unsigned ReqRfx_rename()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_mkdir()
+trap_elen ReqRfx_mkdir()
 {
-    tiny_ret_t       rc;
-    rfx_mkdir_ret       *ret;
+    tiny_ret_t      rc;
+    rfx_mkdir_ret   *ret;
 
     ret = GetOutPtr( 0 );
     rc = TinyMakeDir( (char *)GetInPtr( sizeof( rfx_mkdir_req ) ) );
@@ -62,10 +62,10 @@ unsigned ReqRfx_mkdir()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_rmdir()
+trap_elen ReqRfx_rmdir()
 {
-    tiny_ret_t       rc;
-    rfx_mkdir_ret       *ret;
+    tiny_ret_t      rc;
+    rfx_mkdir_ret   *ret;
 
     ret = GetOutPtr( 0 );
     rc = TinyRemoveDir( (char *)GetInPtr( sizeof( rfx_rmdir_req ) ) );
@@ -73,7 +73,7 @@ unsigned ReqRfx_rmdir()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_setdrive()
+trap_elen ReqRfx_setdrive()
 {
     rfx_setdrive_req    *acc;
     rfx_setdrive_ret    *ret;
@@ -85,7 +85,7 @@ unsigned ReqRfx_setdrive()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getdrive()
+trap_elen ReqRfx_getdrive()
 {
     rfx_getdrive_ret    *ret;
 
@@ -94,9 +94,9 @@ unsigned ReqRfx_getdrive()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_setcwd()
+trap_elen ReqRfx_setcwd()
 {
-    tiny_ret_t        rc;
+    tiny_ret_t          rc;
     rfx_setcwd_ret      *ret;
 
     ret = GetOutPtr( 0 );
@@ -105,12 +105,12 @@ unsigned ReqRfx_setcwd()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getcwd()
+trap_elen ReqRfx_getcwd()
 {
-    tiny_ret_t        rc;
+    tiny_ret_t          rc;
     rfx_getcwd_req      *acc;
     rfx_getcwd_ret      *ret;
-    char              *cwd;
+    char                *cwd;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -124,9 +124,9 @@ unsigned ReqRfx_getcwd()
     return( sizeof( *ret ) + 1 + strlen( cwd ) );
 }
 
-unsigned ReqRfx_setfileattr()
+trap_elen ReqRfx_setfileattr()
 {
-    tiny_ret_t         rc;
+    tiny_ret_t          rc;
     rfx_setfileattr_req *acc;
     rfx_setfileattr_ret *ret;
 
@@ -137,9 +137,9 @@ unsigned ReqRfx_setfileattr()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getfileattr()
+trap_elen ReqRfx_getfileattr()
 {
-    tiny_ret_t         rc;
+    tiny_ret_t          rc;
     rfx_getfileattr_ret *ret;
 
     ret = GetOutPtr( 0 );
@@ -148,10 +148,10 @@ unsigned ReqRfx_getfileattr()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getfreespace()
+trap_elen ReqRfx_getfreespace()
 {
-    rfx_getfreespace_req        *acc;
-    rfx_getfreespace_ret        *ret;
+    rfx_getfreespace_req    *acc;
+    rfx_getfreespace_ret    *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -198,10 +198,10 @@ static void mylocaltime( unsigned long date_time, tiny_ftime_t *time, tiny_fdate
     time->twosecs = ( date_time % 60 ) / 2;
 }
 
-unsigned ReqRfx_setdatetime()
+trap_elen ReqRfx_setdatetime()
 {
-    tiny_ftime_t       time;
-    tiny_fdate_t       date;
+    tiny_ftime_t        time;
+    tiny_fdate_t        date;
     rfx_setdatetime_req *acc;
 
     acc = GetInPtr( 0 );
@@ -240,13 +240,13 @@ static unsigned long mymktime( unsigned time, unsigned date )
     return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
 }
 
-unsigned ReqRfx_getdatetime()
+trap_elen ReqRfx_getdatetime()
 {
-    tiny_ret_t         rc;
+    tiny_ret_t          rc;
     rfx_getdatetime_req *acc;
     rfx_getdatetime_ret *ret;
-    unsigned           time;
-    unsigned           date;
+    unsigned            time;
+    unsigned            date;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -257,22 +257,21 @@ unsigned ReqRfx_getdatetime()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_findfirst()
+trap_elen ReqRfx_findfirst()
 {
-    tiny_ret_t           rc;
+    tiny_ret_t          rc;
     rfx_findfirst_req   *acc;
     rfx_findfirst_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     TinySetDTA( GetOutPtr( sizeof( *ret ) ) );
-    rc = TinyFindFirst( (char *)GetInPtr( sizeof( *acc ) ),
-                           acc->attrib );
+    rc = TinyFindFirst( (char *)GetInPtr( sizeof( *acc ) ), acc->attrib );
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) + sizeof( tiny_find_t ) );
 }
 
-unsigned ReqRfx_findnext()
+trap_elen ReqRfx_findnext()
 {
     tiny_ret_t          rc;
     rfx_findnext_ret    *ret;
@@ -291,20 +290,20 @@ unsigned ReqRfx_findnext()
     return( sizeof( *ret ) + sizeof( tiny_find_t ) );
 }
 
-unsigned ReqRfx_findclose()
+trap_elen ReqRfx_findclose()
 {
     return( 0 );
 }
 
-unsigned ReqRfx_nametocannonical()
+trap_elen ReqRfx_nametocannonical()
 {
     rfx_nametocannonical_ret    *ret;
-    char                  *name;
-    char                  *fullname;
-    char                  *p;
-    int                   drive;
-    int                   level = 0;
-    char                  ch;
+    char                        *name;
+    char                        *fullname;
+    char                        *p;
+    int                         drive;
+    int                         level = 0;
+    char                        ch;
 
     name = GetInPtr( sizeof( rfx_nametocannonical_req ) );
     ret = GetOutPtr( 0 );

@@ -36,7 +36,7 @@
 #include "stdrdos.h"
 #include "rdos.h"
 
-unsigned ReqFile_get_config( void )
+trap_elen ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -51,7 +51,7 @@ unsigned ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_user_keyboard( void )
+trap_elen ReqRead_user_keyboard( void )
 {
     read_user_keyboard_req  *acc;
     read_user_keyboard_ret  *ret;
@@ -66,7 +66,7 @@ unsigned ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_open( void )
+trap_elen ReqFile_open( void )
 {
     file_open_req           *acc;
     file_open_ret           *ret;
@@ -91,7 +91,7 @@ unsigned ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek( void )
+trap_elen ReqFile_seek( void )
 {
     file_seek_req   *acc;
     file_seek_ret   *ret;
@@ -103,34 +103,29 @@ unsigned ReqFile_seek( void )
     pos = acc->pos;
     ret->err = 0;
     ret->pos = 0;
-
-	switch( acc->mode ) {
-		case 0:
-			RdosSetFilePos( acc->handle, pos );
-            ret->pos = pos;
-			break;
-
-		case 1:
-			pos += RdosGetFilePos( acc->handle );
-			RdosSetFilePos( acc->handle, pos );
-            ret->pos = pos;
-			break;
-
-		case 2:
-			pos += RdosGetFileSize( acc->handle );
-			RdosSetFilePos( acc->handle, pos );
-            ret->pos = pos;
-			break;
-
-		default:
-			 ret->err = MSG_FILE_MODE_ERROR;
-		    break;
-	}
-
+    switch( acc->mode ) {
+    case 0:
+        RdosSetFilePos( acc->handle, pos );
+        ret->pos = pos;
+        break;
+    case 1:
+        pos += RdosGetFilePos( acc->handle );
+        RdosSetFilePos( acc->handle, pos );
+        ret->pos = pos;
+        break;
+    case 2:
+        pos += RdosGetFileSize( acc->handle );
+        RdosSetFilePos( acc->handle, pos );
+        ret->pos = pos;
+        break;
+    default:
+        ret->err = MSG_FILE_MODE_ERROR;
+        break;
+    }
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write( void )
+trap_elen ReqFile_write( void )
 {
     file_write_req  *acc;
     file_write_ret  *ret;
@@ -153,7 +148,7 @@ unsigned ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write_console( void )
+trap_elen ReqFile_write_console( void )
 {
     file_write_console_req  *acc;
     file_write_console_ret  *ret;
@@ -173,7 +168,7 @@ unsigned ReqFile_write_console( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_read( void )
+trap_elen ReqFile_read( void )
 {
     file_read_req   *acc;
     file_read_ret   *ret;
@@ -190,7 +185,7 @@ unsigned ReqFile_read( void )
     return( sizeof( *ret ) + bytes );
 }
 
-unsigned ReqFile_close( void )
+trap_elen ReqFile_close( void )
 {
     file_close_req  *acc;
     file_close_ret  *ret;
@@ -204,7 +199,7 @@ unsigned ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_erase( void )
+trap_elen ReqFile_erase( void )
 {
     file_erase_ret  *ret;
     char            *buff;
@@ -221,7 +216,7 @@ unsigned ReqFile_erase( void )
 
 }
 
-unsigned ReqFile_run_cmd( void )
+trap_elen ReqFile_run_cmd( void )
 {
     file_run_cmd_ret    *ret;
 
@@ -231,16 +226,16 @@ unsigned ReqFile_run_cmd( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_string_to_fullpath( void )
+trap_elen ReqFile_string_to_fullpath( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
     char                        *name;
     char                        *fullname;
-	char                        drive[10];
-	char                        dir[256];
-	char                        fname[100];
-	char                        ext[10];
+    char                        drive[10];
+    char                        dir[256];
+    char                        fname[100];
+    char                        ext[10];
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );

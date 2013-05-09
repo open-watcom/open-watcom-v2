@@ -33,14 +33,13 @@
 #include <string.h>
 #include "trpimp.h"
 
-mx_entry TRAPFAR    *Out_Mx_Ptr;
+mx_entry_p  Out_Mx_Ptr;
 
 #define OUTPTR( type, name ) type *name = Out_Mx_Ptr->ptr;
 
-extern unsigned (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
-                                        unsigned, mx_entry * );
+extern trap_req_func    *ReqFunc;
 
-unsigned ReqConnect( void )
+trap_elen ReqConnect( void )
 {
     OUTPTR( connect_ret, ret );
 
@@ -48,12 +47,12 @@ unsigned ReqConnect( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSimpleStub( void )
+trap_elen ReqSimpleStub( void )
 {
     return( 0 );
 }
 
-unsigned ReqGet_supplementary_service(void)
+trap_elen ReqGet_supplementary_service(void)
 {
     OUTPTR( get_supplementary_service_ret, ret );
 
@@ -62,7 +61,7 @@ unsigned ReqGet_supplementary_service(void)
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMap_addr( void )
+trap_elen ReqMap_addr( void )
 {
     OUTPTR( map_addr_ret, ret );
 
@@ -73,7 +72,7 @@ unsigned ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqChecksum_mem( void )
+trap_elen ReqChecksum_mem( void )
 {
     OUTPTR( checksum_mem_ret, ret );
 
@@ -81,7 +80,7 @@ unsigned ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_load( void )
+trap_elen ReqProg_load( void )
 {
     OUTPTR( prog_load_ret, ret );
 
@@ -89,7 +88,7 @@ unsigned ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_kill( void )
+trap_elen ReqProg_kill( void )
 {
     OUTPTR( prog_kill_ret, ret );
 
@@ -97,7 +96,7 @@ unsigned ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_watch( void )
+trap_elen ReqSet_watch( void )
 {
     OUTPTR( set_watch_ret, ret );
 
@@ -106,7 +105,7 @@ unsigned ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_break( void )
+trap_elen ReqSet_break( void )
 {
     OUTPTR( set_break_ret, ret );
 
@@ -114,7 +113,7 @@ unsigned ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_elen ReqGet_next_alias( void )
 {
     OUTPTR( get_next_alias_ret, ret );
 
@@ -123,7 +122,7 @@ unsigned ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_user_keyboard( void )
+trap_elen ReqRead_user_keyboard( void )
 {
     OUTPTR( read_user_keyboard_ret, ret );
 
@@ -131,7 +130,7 @@ unsigned ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_lib_name( void )
+trap_elen ReqGet_lib_name( void )
 {
     OUTPTR( get_lib_name_ret, ret );
 
@@ -139,7 +138,7 @@ unsigned ReqGet_lib_name( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRedirect_stdin( void  )
+trap_elen ReqRedirect_stdin( void  )
 {
     OUTPTR( redirect_stdin_ret, ret );
 
@@ -147,7 +146,7 @@ unsigned ReqRedirect_stdin( void  )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRedirect_stdout( void  )
+trap_elen ReqRedirect_stdout( void  )
 {
     OUTPTR( redirect_stdout_ret, ret );
 
@@ -156,7 +155,7 @@ unsigned ReqRedirect_stdout( void  )
 }
 
 
-unsigned ReqSplit_cmd( void )
+trap_elen ReqSplit_cmd( void )
 {
     OUTPTR( split_cmd_ret, ret );
 
@@ -165,7 +164,7 @@ unsigned ReqSplit_cmd( void )
     return( sizeof( *ret ) );
 }
 
-static unsigned (* const DumbRequests[])(void) = {
+static trap_elen (* const DumbRequests[])(void) = {
         ReqConnect,
         ReqSimpleStub, // ReqDisconnect,
         ReqSimpleStub, // ReqSuspend,
@@ -208,10 +207,9 @@ static unsigned (* const DumbRequests[])(void) = {
 };
 
 
-unsigned TRAPENTRY DumbRequest( unsigned num_in_mx, mx_entry *mx_in,
-                            unsigned num_out_mx, mx_entry *mx_out )
+trap_elen TRAPENTRY DumbRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
-    unsigned    len;
+    trap_elen   len;
 
     Out_Mx_Ptr = mx_out;
     len = DumbRequests[ *(access_req *)mx_in[0].ptr ]();

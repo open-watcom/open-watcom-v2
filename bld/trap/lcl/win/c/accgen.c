@@ -62,7 +62,7 @@ void __far __loadds DebuggerHookRtn( unsigned event, unsigned info )
     set_carry();
 }
 
-unsigned ReqRead_user_keyboard( void )
+trap_elen ReqRead_user_keyboard( void )
 {
     DWORD               end_time;
     read_user_keyboard_req      *acc;
@@ -97,7 +97,7 @@ void EnableHookEvents( void )
     }
 }
 
-unsigned ReqGet_err_text( void )
+trap_elen ReqGet_err_text( void )
 {
     static const char * const doswinErrMsgs[] = {
         #define pick(a,b)   b,

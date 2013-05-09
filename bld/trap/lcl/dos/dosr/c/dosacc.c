@@ -118,8 +118,7 @@ typedef enum {
 } trap_types;
 
 /* user modifiable flags */
-#define USR_FLAGS (FLG_C | FLG_P | FLG_A | FLG_Z | FLG_S | \
-            FLG_I | FLG_D | FLG_O)
+#define USR_FLAGS (FLG_C | FLG_P | FLG_A | FLG_Z | FLG_S | FLG_I | FLG_D | FLG_O)
 
 extern addr_seg         DbgPSP(void);
 extern tiny_ret_t       DOSLoadProg(char far *, pblock far *);
@@ -219,7 +218,7 @@ char * hex( unsigned long num )
     #define hex( n )
 #endif
 
-unsigned ReqGet_sys_config( void )
+trap_elen ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -245,7 +244,7 @@ unsigned ReqGet_sys_config( void )
 }
 
 
-unsigned ReqMap_addr( void )
+trap_elen ReqMap_addr( void )
 {
     word            seg;
     int             count;
@@ -281,16 +280,16 @@ unsigned ReqMap_addr( void )
 }
 
 //OBSOLETE - use ReqMachine_data
-unsigned ReqAddr_info( void )
+trap_elen ReqAddr_info( void )
 {
-    addr_info_ret       *ret;
+    addr_info_ret   *ret;
 
     ret = GetOutPtr( 0 );
-    ret->is_32 = FALSE;
+    ret->is_big = FALSE;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data( void )
+trap_elen ReqMachine_data( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -303,7 +302,7 @@ unsigned ReqMachine_data( void )
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-unsigned ReqChecksum_mem( void )
+trap_elen ReqChecksum_mem( void )
 {
     unsigned_8          far *ptr;
     unsigned long       sum = 0;
@@ -332,12 +331,12 @@ static bool IsInterrupt( addr48_ptr addr, unsigned length )
 }
 
 
-unsigned ReqRead_mem( void )
+trap_elen ReqRead_mem( void )
 {
-    bool          int_tbl;
-    read_mem_req  *acc;
-    void          *data;
-    unsigned      len;
+    bool            int_tbl;
+    read_mem_req    *acc;
+    void            *data;
+    trap_elen       len;
 
     acc = GetInPtr(0);
     data = GetOutPtr( 0 );
@@ -357,13 +356,13 @@ unsigned ReqRead_mem( void )
 }
 
 
-unsigned ReqWrite_mem( void )
+trap_elen ReqWrite_mem( void )
 {
-    bool          int_tbl;
-    write_mem_req *acc;
-    write_mem_ret *ret;
-    unsigned      len;
-    void          *data;
+    bool            int_tbl;
+    write_mem_req   *acc;
+    write_mem_ret   *ret;
+    trap_elen       len;
+    void            *data;
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
@@ -386,11 +385,11 @@ unsigned ReqWrite_mem( void )
 }
 
 
-unsigned ReqRead_io( void )
+trap_elen ReqRead_io( void )
 {
-    read_io_req *acc;
-    void        *data;
-    unsigned    len;
+    read_io_req     *acc;
+    void            *data;
+    trap_elen       len;
 
     acc = GetInPtr(0);
     data = GetOutPtr(0);
@@ -410,12 +409,12 @@ unsigned ReqRead_io( void )
 }
 
 
-unsigned ReqWrite_io( void )
+trap_elen ReqWrite_io( void )
 {
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
-    unsigned            len;
+    trap_elen           len;
 
     acc = GetInPtr(0);
     data = GetInPtr( sizeof( *acc ) );
@@ -437,7 +436,7 @@ unsigned ReqWrite_io( void )
 }
 
 //OBSOLETE - use ReqRead_regs
-unsigned ReqRead_cpu( void )
+trap_elen ReqRead_cpu( void )
 {
     void          *regs;
     read_cpu_ret  *ret;
@@ -449,7 +448,7 @@ unsigned ReqRead_cpu( void )
 }
 
 //OBSOLETE - use ReqRead_regs
-unsigned ReqRead_fpu( void )
+trap_elen ReqRead_fpu( void )
 {
     void    far *regs;
 
@@ -465,7 +464,7 @@ unsigned ReqRead_fpu( void )
 }
 
 //OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_cpu( void )
+trap_elen ReqWrite_cpu( void )
 {
     trap_cpu_regs *regs;
 
@@ -475,7 +474,7 @@ unsigned ReqWrite_cpu( void )
 }
 
 //OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_fpu( void )
+trap_elen ReqWrite_fpu( void )
 {
     void    far *regs;
 
@@ -488,32 +487,32 @@ unsigned ReqWrite_fpu( void )
     return( 0 );
 }
 
-unsigned ReqRead_regs( void )
+trap_elen ReqRead_regs( void )
 {
     mad_registers       *mr;
 
     mr = GetOutPtr(0);
     mr->x86.cpu = *(struct x86_cpu *)&TaskRegs;
     if( Have87Emu() ) {
-        Read87EmuState( &mr->x86.fpu );
+        Read87EmuState( &mr->x86.u.fpu );
     } else if( RealNPXType != X86_NO ) {
-        Read8087( &mr->x86.fpu );
+        Read8087( &mr->x86.u.fpu );
     } else {
-        memset( &mr->x86.fpu, 0, sizeof( mr->x86.fpu ) );
+        memset( &mr->x86.u.fpu, 0, sizeof( mr->x86.u.fpu ) );
     }
     return( sizeof( mr->x86 ) );
 }
 
-unsigned ReqWrite_regs( void )
+trap_elen ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
     mr = GetInPtr(sizeof(write_regs_req));
     *(struct x86_cpu *)&TaskRegs = mr->x86.cpu;
     if( Have87Emu() ) {
-        Write87EmuState( &mr->x86.fpu );
+        Write87EmuState( &mr->x86.u.fpu );
     } else if( RealNPXType != X86_NO ) {
-        Write8087( &mr->x86.fpu );
+        Write8087( &mr->x86.u.fpu );
     }
     return( 0 );
 }
@@ -582,7 +581,7 @@ static EXE_TYPE CheckEXEType( char *name )
 
 static char DosExtList[] = { ".com\0.exe\0" };
 
-unsigned ReqProg_load( void )
+trap_elen ReqProg_load( void )
 {
     addr_seg        psp;
     pblock          parmblock;
@@ -697,7 +696,7 @@ unsigned ReqProg_load( void )
 }
 
 
-unsigned ReqProg_kill( void )
+trap_elen ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 
@@ -719,7 +718,7 @@ out( "done AccKillProg\r\n" );
 }
 
 
-unsigned ReqSet_watch( void )
+trap_elen ReqSet_watch( void )
 {
     watch               *curr;
     set_watch_req       *wp;
@@ -755,13 +754,13 @@ unsigned ReqSet_watch( void )
     return( sizeof( *wr ) );
 }
 
-unsigned ReqClear_watch( void )
+trap_elen ReqClear_watch( void )
 {
     WatchCount = 0;
     return( 0 );
 }
 
-unsigned ReqSet_break( void )
+trap_elen ReqSet_break( void )
 {
     byte            far *loc;
     set_break_req   *acc;
@@ -781,7 +780,7 @@ unsigned ReqSet_break( void )
 }
 
 
-unsigned ReqClear_break( void )
+trap_elen ReqClear_break( void )
 {
     clear_break_req     *bp;
 
@@ -918,7 +917,7 @@ static unsigned MapReturn( int trap )
     return( 0 );
 }
 
-static unsigned ProgRun( bool step )
+static trap_elen ProgRun( bool step )
 {
     bool        watch386;
     prog_go_ret *ret;
@@ -960,17 +959,17 @@ static unsigned ProgRun( bool step )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_go( void )
+trap_elen ReqProg_go( void )
 {
     return( ProgRun( FALSE ) );
 }
 
-unsigned ReqProg_step( void )
+trap_elen ReqProg_step( void )
 {
     return( ProgRun( TRUE ) );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_elen ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -980,7 +979,7 @@ unsigned ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_lib_name( void )
+trap_elen ReqGet_lib_name( void )
 {
     char                *ch;
     get_lib_name_ret    *ret;
@@ -992,7 +991,7 @@ unsigned ReqGet_lib_name( void )
     return( sizeof( *ret ) + 1 );
 }
 
-unsigned ReqGet_err_text( void )
+trap_elen ReqGet_err_text( void )
 {
     static const char *const DosErrMsgs[] = {
         #define pick( a, b )    b,
@@ -1013,7 +1012,7 @@ unsigned ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-unsigned ReqGet_message_text( void )
+trap_elen ReqGet_message_text( void )
 {
     static const char * const ExceptionMsgs[] = {
         #define pick(a,b) b,

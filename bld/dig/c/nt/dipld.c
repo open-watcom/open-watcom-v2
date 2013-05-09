@@ -35,11 +35,11 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#include "dipsys.h"
 
 extern  int      PathOpen(char *,unsigned, char *);
 
-dip_status DIPSysLoad( char *path, dip_client_routines *cli,
-                                dip_imp_routines **imp, unsigned long *sys_hdl )
+dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     HANDLE              dll;
     dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );
@@ -62,11 +62,11 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
         FreeLibrary( dll );
         return( status );
     }
-    *sys_hdl = (unsigned long)dll;
+    *sys_hdl = (dip_sys_handle)dll;
     return( DS_OK );
 }
 
-void DIPSysUnload( unsigned long sys_hdl )
+void DIPSysUnload( dip_sys_handle sys_hdl )
 {
-    FreeLibrary( (HINSTANCE)sys_hdl );
+    FreeLibrary( (HANDLE)sys_hdl );
 }

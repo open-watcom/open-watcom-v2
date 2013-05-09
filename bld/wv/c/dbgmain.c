@@ -187,10 +187,10 @@ OVL_EXTERN void         ProcNil( void );
 
 
 /* Internal - to be moved */
-int CapabilitiesGet8ByteBreakpointSupport( void );
-int CapabilitiesGetExactBreakpointSupport( void );
-int CapabilitiesSet8ByteBreakpointSupport( bool status );
-int CapabilitiesSetExactBreakpointSupport( bool status );
+bool CapabilitiesGet8ByteBreakpointSupport( void );
+bool CapabilitiesGetExactBreakpointSupport( void );
+bool CapabilitiesSet8ByteBreakpointSupport( bool status );
+bool CapabilitiesSetExactBreakpointSupport( bool status );
 
 #define pick( a, b, c ) extern void b( void );
 #include "dbgcmd.h"
@@ -483,9 +483,10 @@ trap_shandle    SuppCapabilitiesId = 0;
 bool InitCapabilities( void )
 {
     /* Always reset in case of trap switch */
-    Supports8ByteBreakpoints = 0;
-    SupportsExactBreakpoints = 0;
+    Supports8ByteBreakpoints = FALSE;
+    SupportsExactBreakpoints = FALSE;
 
+#ifdef WANT_CAPABILITIES
     SuppCapabilitiesId = GetSuppId( CAPABILITIES_SUPP_NAME );
     if( SuppCapabilitiesId == 0 ) 
         return( FALSE );
@@ -500,6 +501,10 @@ bool InitCapabilities( void )
         CapabilitiesSetExactBreakpointSupport( TRUE );
         
     return( TRUE );
+#else
+    SuppCapabilitiesId = 0;
+    return( FALSE );
+#endif
 }
 
 #define SUPP_CAPABILITIES_SERVICE( in, request )   \
@@ -507,7 +512,7 @@ bool InitCapabilities( void )
         in.supp.id              = SuppCapabilitiesId;       \
         in.req                  = request;
 
-int CapabilitiesGet8ByteBreakpointSupport()
+bool CapabilitiesGet8ByteBreakpointSupport()
 {
     mx_entry                    in[1];
     mx_entry                    out[1];
@@ -515,7 +520,7 @@ int CapabilitiesGet8ByteBreakpointSupport()
     capabilities_get_8b_bp_ret  ret;
 
     if( SuppCapabilitiesId == 0 ) 
-        return( -1 );
+        return( FALSE );
     
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_8B_BP );
     in[0].ptr = &acc;
@@ -527,12 +532,12 @@ int CapabilitiesGet8ByteBreakpointSupport()
     if( ret.err != 0 ) {
         return( FALSE );
     } else {
-        Supports8ByteBreakpoints = 1;   /* The trap supports 8 byte breakpoints */
+        Supports8ByteBreakpoints = TRUE;   /* The trap supports 8 byte breakpoints */
         return( TRUE );
     }
 }
 
-int CapabilitiesSet8ByteBreakpointSupport( bool status )
+bool CapabilitiesSet8ByteBreakpointSupport( bool status )
 {
     mx_entry                    in[1];
     mx_entry                    out[1];
@@ -540,7 +545,7 @@ int CapabilitiesSet8ByteBreakpointSupport( bool status )
     capabilities_set_8b_bp_ret  ret;
     
     if( SuppCapabilitiesId == 0 ) 
-        return( -1 );
+        return( FALSE );
     
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_8B_BP );
     acc.status = status ? TRUE : FALSE;
@@ -559,7 +564,7 @@ int CapabilitiesSet8ByteBreakpointSupport( bool status )
     }
 }
 
-int CapabilitiesGetExactBreakpointSupport( void )
+bool CapabilitiesGetExactBreakpointSupport( void )
 {
     mx_entry                    in[1];
     mx_entry                    out[1];
@@ -568,7 +573,7 @@ int CapabilitiesGetExactBreakpointSupport( void )
 
 
     if( SuppCapabilitiesId == 0 ) 
-        return( -1 );
+        return( FALSE );
     
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_EXACT_BP );
     in[0].ptr = &acc;
@@ -586,7 +591,7 @@ int CapabilitiesGetExactBreakpointSupport( void )
     }
 }
 
-int CapabilitiesSetExactBreakpointSupport( bool status )
+bool CapabilitiesSetExactBreakpointSupport( bool status )
 {
     mx_entry                    in[1];
     mx_entry                    out[1];
@@ -594,7 +599,7 @@ int CapabilitiesSetExactBreakpointSupport( bool status )
     capabilities_set_8b_bp_ret  ret;
     
     if( SuppCapabilitiesId == 0 ) 
-        return( -1 );
+        return( FALSE );
     
     SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_EXACT_BP );
     acc.status = status ? TRUE : FALSE;

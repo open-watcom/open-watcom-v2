@@ -50,8 +50,8 @@ bool                    TrpDebugFileFlush = FALSE;
 /*
  *  Queried from trap file supplemental services
  */
-int                     Supports8ByteBreakpoints = 0;
-int                     SupportsExactBreakpoints = 0;
+bool                    Supports8ByteBreakpoints = FALSE;
+bool                    SupportsExactBreakpoints = FALSE;
 
 char                    *InvokeFile;
 char                    *DipFiles[10];

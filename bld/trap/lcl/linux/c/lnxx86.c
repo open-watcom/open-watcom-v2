@@ -112,25 +112,25 @@ static void ReadFPUXMM( struct x86_fpu *r, struct x86_xmm *x )
     }
 }
 
-unsigned ReqRead_cpu( void )
+trap_elen ReqRead_cpu( void )
 {
     ReadCPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_cpu ) );
 }
 
-unsigned ReqRead_fpu( void )
+trap_elen ReqRead_fpu( void )
 {
     ReadFPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_fpu ) );
 }
 
-unsigned ReqRead_regs( void )
+trap_elen ReqRead_regs( void )
 {
     mad_registers   *mr;
 
     mr = GetOutPtr( 0 );
     ReadCPU( &mr->x86.cpu );
-    ReadFPUXMM( &mr->x86.fpu, &mr->x86.xmm );
+    ReadFPUXMM( &mr->x86.u.fpu, &mr->x86.xmm );
     return( sizeof( mr->x86 ) );
 }
 
@@ -211,25 +211,25 @@ static void WriteFPUXMM( struct x86_fpu *r, struct x86_xmm *x )
     }
 }
 
-unsigned ReqWrite_cpu( void )
+trap_elen ReqWrite_cpu( void )
 {
     WriteCPU( GetInPtr( sizeof( write_cpu_req ) ) );
     return( 0 );
 }
 
-unsigned ReqWrite_fpu()
+trap_elen ReqWrite_fpu()
 {
     WriteFPU( GetInPtr( sizeof( write_fpu_req ) ) );
     return( 0 );
 }
 
-unsigned ReqWrite_regs( void )
+trap_elen ReqWrite_regs( void )
 {
     mad_registers   *mr;
 
     mr = GetInPtr( sizeof( write_regs_req ) );
     WriteCPU( &mr->x86.cpu );
-    WriteFPUXMM( &mr->x86.fpu, &mr->x86.xmm );
+    WriteFPUXMM( &mr->x86.u.fpu, &mr->x86.xmm );
     return( 0 );
 }
 
@@ -308,7 +308,7 @@ int CheckWatchPoints( void )
     return( FALSE );
 }
 
-unsigned ReqSet_watch( void )
+trap_elen ReqSet_watch( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -342,7 +342,7 @@ unsigned ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch( void )
+trap_elen ReqClear_watch( void )
 {
     clear_watch_req *acc;
     watch_point     *dst;
@@ -365,11 +365,11 @@ unsigned ReqClear_watch( void )
     return( 0 );
 }
 
-unsigned ReqRead_io( void )
+trap_elen ReqRead_io( void )
 {
     read_io_req *acc;
     void        *ret;
-    unsigned    len;
+    trap_elen   len;
 
     /* Perform I/O on the target machine on behalf of the debugger.
      * Since there are no kernel APIs in Linux to do this, we just
@@ -402,12 +402,12 @@ unsigned ReqRead_io( void )
     return( len );
 }
 
-unsigned ReqWrite_io( void )
+trap_elen ReqWrite_io( void )
 {
     write_io_req    *acc;
     write_io_ret    *ret;
     void            *data;
-    unsigned        len;
+    trap_elen       len;
 
     /* Perform I/O on the target machine on behalf of the debugger.
      * Since there are no kernel APIs in Linux to do this, we just
@@ -442,7 +442,7 @@ unsigned ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_sys_config( void )
+trap_elen ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -464,7 +464,7 @@ unsigned ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data( void )
+trap_elen ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;

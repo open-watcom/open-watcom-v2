@@ -37,7 +37,7 @@
 #include "dbgtoggl.h"
 #include "farptrs.h"
 #include "dbgreg.h"
-#include "trpfile.h"
+#include "trptypes.h"
 
 #include "doserr.h"
 

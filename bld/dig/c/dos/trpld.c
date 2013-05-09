@@ -41,6 +41,8 @@
 
 #define TRAP_SIGNATURE          0xDEAF
 
+#define NUM_BUFF_RELOCS         16
+
 typedef struct {
     unsigned_16         signature;
     unsigned_16         init_off;
@@ -48,68 +50,14 @@ typedef struct {
     unsigned_16         fini_off;
 } trap_header;
 
-
-static trap_header      far *TrapCode;
-
-extern  unsigned_32 GetSystemHandle( int );
-extern  int      PathOpen(char *,unsigned,char *);
-extern  unsigned FileClose( int );
-static  char    *ReadInTrap( tiny_handle_t );
-
+extern unsigned_32      GetSystemHandle( int );
+extern int              PathOpen(char *,unsigned,char *);
+extern unsigned         FileClose( int );
 extern trap_version     TrapVer;
-extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
-                                        unsigned, mx_entry * );
+extern trap_req_func    *ReqFunc;
 
-void KillTrap( void )
-{
-    void    (TRAPENTRY *fini_func)(void);
-
-    fini_func = MK_FP( FP_SEG( TrapCode ), TrapCode->fini_off );
-    fini_func();
-    ReqFunc = NULL;
-    TinyFreeBlock( FP_SEG( TrapCode ) );
-}
-
-char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
-{
-    char        init_error[256];
-    tiny_handle_t filehndl;
-    char        *ptr;
-    char        *parm;
-    trap_version (TRAPENTRY *init_func)( char *, char *, bool);
-
-    if( trapbuff == NULL ) trapbuff = "std";
-    for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr ) ;
-    parm = (*ptr != '\0') ? ptr + 1 : ptr;
-    filehndl = PathOpen( trapbuff, ptr - trapbuff, "trp" );
-    if( filehndl <= 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
-        return( buff );
-    }
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    ptr = ReadInTrap( GetSystemHandle( filehndl ) );
-    FileClose( filehndl );
-    if( ptr != NULL ) return( ptr );
-    if( TrapCode->signature != TRAP_SIGNATURE ) {
-        return( buff );
-    }
-    init_func = MK_FP( FP_SEG( TrapCode ), TrapCode->init_off );
-    *trap_ver = init_func( parm, init_error, trap_ver->remote );
-    if( init_error[0] != '\0' ) {
-        strcpy( buff, init_error );
-        return( buff );
-    }
-    if( !TrapVersionOK( *trap_ver ) ) {
-        KillTrap();
-        return( buff );
-    }
-    TrapVer = *trap_ver;
-    ReqFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->req_off );
-    return( NULL );
-}
-
-
-#define NUM_BUFF_RELOCS         16
+static trap_header      far *TrapCode = NULL;
+static trap_fini_func   *FiniFunc = NULL;
 
 static char *ReadInTrap( tiny_handle_t fh )
 {
@@ -155,5 +103,63 @@ static char *ReadInTrap( tiny_handle_t fh )
         *fixup += start_seg;
         ++p;
     }
+    return( NULL );
+}
+
+void KillTrap( void )
+{
+    ReqFunc = NULL;
+    if( FiniFunc != NULL ) {
+        FiniFunc();
+        FiniFunc = NULL;
+    }
+    if( TrapCode != NULL ) {
+        TinyFreeBlock( FP_SEG( TrapCode ) );
+        TrapCode = NULL;
+    }
+}
+
+char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
+{
+    char            init_error[256];
+    tiny_handle_t   filehndl;
+    char            *ptr;
+    char            *parm;
+    trap_init_func  *init_func;
+
+    if( trapbuff == NULL )
+        trapbuff = "std";
+    for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr ) ;
+    parm = (*ptr != '\0') ? ptr + 1 : ptr;
+    filehndl = PathOpen( trapbuff, ptr - trapbuff, "trp" );
+    if( filehndl <= 0 ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
+        return( buff );
+    }
+    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    ptr = ReadInTrap( GetSystemHandle( filehndl ) );
+    FileClose( filehndl );
+    if( ptr != NULL ) {
+        KillTrap();
+        return( ptr );
+    }
+    if( TrapCode->signature != TRAP_SIGNATURE ) {
+        KillTrap();
+        return( buff );
+    }
+    init_func = MK_FP( FP_SEG( TrapCode ), TrapCode->init_off );
+    *trap_ver = init_func( parm, init_error, trap_ver->remote );
+    if( init_error[0] != '\0' ) {
+        strcpy( buff, init_error );
+        KillTrap();
+        return( buff );
+    }
+    FiniFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->fini_off );
+    if( !TrapVersionOK( *trap_ver ) ) {
+        KillTrap();
+        return( buff );
+    }
+    TrapVer = *trap_ver;
+    ReqFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->req_off );
     return( NULL );
 }

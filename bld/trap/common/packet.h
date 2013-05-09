@@ -30,19 +30,19 @@
 ****************************************************************************/
 
 
-extern void             StartPacket(void);
-extern unsigned         PutPacket(void);
-extern unsigned         PutBuffPacket( unsigned, void * );
-extern void             AddPacket( int, void * );
-extern unsigned         GetPacket(void);
-extern void             RemovePacket( int, void * );
-extern char             *GetPacketBuffPtr(void);
-extern unsigned         MaxPacketSize(void);
+extern void         StartPacket(void);
+extern trap_elen    PutPacket(void);
+extern trap_elen    PutBuffPacket( trap_elen, void * );
+extern void         AddPacket( trap_elen, void * );
+extern trap_elen    GetPacket(void);
+extern void         RemovePacket( trap_elen, void * );
+extern char         *GetPacketBuffPtr(void);
+extern trap_elen    MaxPacketSize(void);
 
-extern char             *RemoteLink(char *, char);
-extern char             RemoteConnect(void);
-extern void             RemoteDisco(void);
-extern void             RemoteUnLink(void);
-extern unsigned         RemotePut(char *, unsigned);
-extern unsigned         RemoteGet(char *, unsigned);
+extern char         *RemoteLink(char *, char);
+extern char         RemoteConnect(void);
+extern void         RemoteDisco(void);
+extern void         RemoteUnLink(void);
+extern trap_elen    RemotePut(char *, trap_elen);
+extern trap_elen    RemoteGet(char *, trap_elen);
 

@@ -40,10 +40,9 @@
 #include "wio.h"
 #include "watcom.h"
 #include "ipxstuff.h"
-#include "packet.h"
-#include "trperr.h"
 #include "trptypes.h"
-#include "bool.h"
+#include "trperr.h"
+#include "packet.h"
 
 #if defined( __WATCOMC__ ) && defined( __NT__ )
 #pragma library("wsock32")
@@ -51,11 +50,11 @@
 
 #ifdef SERVER
 static HANDLE                   ResponderThreadHandle;
-static int                      ResponderSocket;
-static int                      ListenSocket = INVALID_SOCKET;
+static SOCKET                   ResponderSocket = INVALID_SOCKET;
+static SOCKET                   ListenSocket = INVALID_SOCKET;
 static WORD                     ListenPort = 0;
 #endif
-static int                      ConnectionSocket = INVALID_SOCKET;
+static SOCKET                   ConnectionSocket = INVALID_SOCKET;
 static struct sockaddr_ipx      PartnerAddr;
 
 static char                     ServerName[128];
@@ -69,15 +68,16 @@ bool Terminate( void )
     return( FALSE );
 }
 
-unsigned RemoteGet( char *rec, unsigned len )
+trap_elen RemoteGet( char *rec, trap_elen len )
 {
-    unsigned    got;
-    unsigned    total;
+    int         got;
+    trap_elen   total;
 
     total = 0;
     for( ;; ) {
         got = recv( ConnectionSocket, rec, len, 0 );
-        if( got == SOCKET_ERROR ) return( REQUEST_FAILED );
+        if( got == SOCKET_ERROR )
+            return( REQUEST_FAILED );
         total += got;
         if( got != MAX_DATA_SIZE ) break;
         len -= got;
@@ -86,7 +86,7 @@ unsigned RemoteGet( char *rec, unsigned len )
     return( total );
 }
 
-unsigned RemotePut( char *snd, unsigned len )
+trap_elen RemotePut( char *snd, trap_elen len )
 {
 
     while( len >= MAX_DATA_SIZE ) {
@@ -239,12 +239,14 @@ static char *InitServer( void )
     struct sockaddr_ipx address;
 
     ResponderSocket = socket( AF_IPX, SOCK_DGRAM, NSPROTO_IPX+IPX_PACKET_TYPE );
-    if( ResponderSocket == -1 ) return( "No responder socker" );
+    if( ResponderSocket == INVALID_SOCKET )
+        return( "No responder socker" );
     memset( &address, 0, sizeof( address ) );
     address.sa_family = AF_IPX;
     bind( ResponderSocket, (struct sockaddr *)&address, sizeof( address ) );
     ResponderThreadHandle = CreateThread( NULL, 0, &Responder, NULL, 0, &tid );
-    if( ResponderThreadHandle == NULL ) return( "No responder thread" );
+    if( ResponderThreadHandle == NULL )
+        return( "No responder thread" );
     register_bindery( ServerName, TRUE );
     return( NULL );
 }
@@ -284,7 +286,7 @@ static BOOL read_bindery( char * name ) {
 
 static char FindPartner( void )
 {
-    int                         b_socket;
+    SOCKET                      b_socket;
     int                         rv;
     int                         from_length;
     struct sockaddr_ipx         s_address;
@@ -369,37 +371,37 @@ char *RemoteLink( char *name, char server )
     if( WSAStartup( 0x101, &data ) != 0 ) {
         return( TRP_ERR_can_not_obtain_socket );
     }
-    #ifdef SERVER
-        if( FindPartner() ) {
-            RemoteUnLink();
-            return( TRP_ERR_server_name_already_in_use );
-        }
-        if( ( p = InitServer() ) != NULL ) {
-            RemoteUnLink();
-            return( p );
-        }
-    #else
-        if( !FindPartner() ) {
-            RemoteUnLink();
-            return( TRP_ERR_no_such_server );
-        }
-    #endif
+#ifdef SERVER
+    if( FindPartner() ) {
+        RemoteUnLink();
+        return( TRP_ERR_server_name_already_in_use );
+    }
+    if( ( p = InitServer() ) != NULL ) {
+        RemoteUnLink();
+        return( p );
+    }
+#else
+    if( !FindPartner() ) {
+        RemoteUnLink();
+        return( TRP_ERR_no_such_server );
+    }
+#endif
     return( NULL );
 }
 
 
 void RemoteUnLink( void )
 {
-    #ifdef SERVER
-        register_bindery( ServerName, FALSE );
-        TerminateThread( ResponderThreadHandle, 0 );
-        closesocket( ResponderSocket );
-        closesocket( ListenSocket );
-        ResponderThreadHandle = 0;
-        ResponderSocket = 0;
-        ListenSocket = INVALID_SOCKET;
-        ListenPort = 0;
-    #endif
+#ifdef SERVER
+    register_bindery( ServerName, FALSE );
+    TerminateThread( ResponderThreadHandle, 0 );
+    closesocket( ResponderSocket );
+    closesocket( ListenSocket );
+    ResponderThreadHandle = 0;
+    ResponderSocket = 0;
+    ListenSocket = INVALID_SOCKET;
+    ListenPort = 0;
+#endif
     closesocket( ConnectionSocket );
     WSACleanup();
     ConnectionSocket = INVALID_SOCKET;

@@ -35,6 +35,7 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#include "dipsys.h"
 
 #define IMAGE_MAP_INIT  16
 #define IMAGE_MAP_GROW  16
@@ -100,8 +101,8 @@ static unsigned         LoadingImageIdx = NO_IMAGE_IDX;
 
 static process_info     *ActProc;
 static struct {
-        dip_imp_routines        *rtns;
-        unsigned long           sys_hdl;
+    dip_imp_routines    *rtns;
+    dip_sys_handle      sys_hdl;
 }                       LoadedDIPs[MAX_DIPS];
 static unsigned         MaxHdlSize[HK_LAST];
 
@@ -122,14 +123,7 @@ char DIPDefaults[] = {
     "\0"
 };
 
-static const address    NilAddr;
-
-/*
- * System specific support routines
- */
-dip_status      DIPSysLoad( char *, dip_client_routines *,
-                                dip_imp_routines **, unsigned long * );
-void            DIPSysUnload( unsigned long );
+static const address    NilAddr = { 0 };
 
 /*
  * Client interface
@@ -206,8 +200,7 @@ dip_status DIPLoad( char *path )
             return( DS_ERR|DS_TOO_MANY_DIPS );
         }
     }
-    status = DIPSysLoad( path, &DIPClientInterface,
-            &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
+    status = DIPSysLoad( path, &DIPClientInterface, &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
     if( status != DS_OK ) return( status );
     if( DIPClientInterface.major != LoadedDIPs[i].rtns->major
      || DIPClientInterface.minor > LoadedDIPs[i].rtns->minor ) {

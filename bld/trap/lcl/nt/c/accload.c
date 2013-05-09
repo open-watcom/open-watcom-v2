@@ -51,8 +51,8 @@ static BOOL executeUntilStart( BOOL was_running )
     brkpnt_type old;
     brkpnt_type brk = BRK_POINT;
     LPVOID      base;
-    DWORD       bytes;
-    CONTEXT     con;
+    SIZE_T      bytes;
+    MYCONTEXT   con;
     thread_info *ti;
 
     ph = DebugEvent.u.CreateProcessInfo.hProcess;
@@ -61,14 +61,12 @@ static BOOL executeUntilStart( BOOL was_running )
          * if we are not debugging an already running app, then we
          * plant a breakpoint at the first instruction of our new app
          */
-        base = DebugEvent.u.CreateProcessInfo.lpStartAddress;
-        ReadProcessMemory( ph, ( LPVOID )base, ( LPVOID )&old, sizeof( old ),
-            ( LPDWORD )&bytes );
-        WriteProcessMemory( ph, ( LPVOID )base, ( LPVOID )&brk, sizeof( brk ),
-            ( LPDWORD )&bytes );
+        base = (LPVOID)DebugEvent.u.CreateProcessInfo.lpStartAddress;
+        ReadProcessMemory( ph, base, (LPVOID)&old, sizeof( old ), &bytes );
+        WriteProcessMemory( ph, base, (LPVOID)&brk, sizeof( brk ), &bytes );
     } else {
         // a trick to make app execute long enough to hit a breakpoint
-        PostMessage( HWND_TOPMOST, WM_NULL, 0, 0 );
+        PostMessage( HWND_TOPMOST, WM_NULL, 0, 0L );
     }
 
     for( ;; ) {
@@ -76,8 +74,7 @@ static BOOL executeUntilStart( BOOL was_running )
          * if we encounter anything but a break point, then we are in
          * trouble!
          */
-        if( DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD,
-                        NULL, FALSE ) & COND_BREAK ) {
+        if( DebugExecute( STATE_IGNORE_DEBUG_OUT | STATE_IGNORE_DEAD_THREAD, NULL, FALSE ) & COND_BREAK ) {
             ti = FindThread( DebugEvent.dwThreadId );
             MyGetThreadContext( ti, &con );
             if( was_running ) {
@@ -90,19 +87,17 @@ static BOOL executeUntilStart( BOOL was_running )
                  * the user has asked us to stop before any DLL's run
                  * their startup code (";dll"), so we do.
                  */
-                WriteProcessMemory( ph, ( LPVOID )base, ( LPVOID )&old,
-                    sizeof( old ), ( LPDWORD )&bytes );
+                WriteProcessMemory( ph, base, (LPVOID)&old, sizeof( old ), &bytes );
                 AdjustIP( &con, sizeof( brk ) );
                 MySetThreadContext( ti, &con );
                 return( TRUE );
             }
-            if( ( AdjustIP( &con, 0 ) == ( DWORD ) base ) ) {
+            if( ( AdjustIP( &con, 0 ) == base ) ) {
                 /*
                  * we stopped at the applications starting address,
                  * so we can offically declare that the app has loaded
                  */
-                WriteProcessMemory( ph, ( LPVOID )base, ( LPVOID )&old,
-                    sizeof( old ), ( LPDWORD )&bytes );
+                WriteProcessMemory( ph, base, (LPVOID)&old, sizeof( old ), &bytes );
                 return( TRUE );
             }
             /*
@@ -117,13 +112,14 @@ static BOOL executeUntilStart( BOOL was_running )
 
 }
 
+#if defined( MD_x86 )
 #ifdef WOW
 /*
  * addKERNEL - add the KERNEL module to the library load (WOW)
  */
 static void addKERNEL( void )
 {
-    #if 0
+#if 0
     /*
      * there are bugs in the way VDMDBG.DLL implements some of this
      * stuff, so this is currently disabled
@@ -131,23 +127,23 @@ static void addKERNEL( void )
     MODULEENTRY                 me;
     thread_info                 *ti;
     IMAGE_NOTE                  im;
+    int                         rc;
 
     ti = FindThread( DebugeeTid );
     me.dwSize = sizeof( MODULEENTRY );
-    if( pVDMModuleFirst( ProcessInfo.process_handle, ti->thread_handle,
-                    &me, NULL, 0 ) ) {
-        do {
-            if( !memicmp( me.szModule, "KERNEL", 6 ) ) {
-                memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
-                memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
-                AddLib( TRUE, &im );
-                break;
-            }
-            me.dwSize = sizeof( MODULEENTRY );
-        } while( pVDMModuleNext( ProcessInfo.process_handle, ti->thread_handle,
-                        &me, NULL, 0 ) );
+    for( rc = pVDMModuleFirst( ProcessInfo.process_handle, ti->thread_handle, &me, NULL, 0 );
+         rc != 0;
+         rc = pVDMModuleNext( ProcessInfo.process_handle, ti->thread_handle, &me, NULL, 0 ) )
+    {
+        if( !memicmp( me.szModule, "KERNEL", 6 ) ) {
+            memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
+            memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
+            AddLib( TRUE, &im );
+            break;
+        }
+        me.dwSize = sizeof( MODULEENTRY );
     }
-    #else
+#else
     IMAGE_NOTE                  im;
 
     /*
@@ -159,7 +155,7 @@ static void addKERNEL( void )
     GetSystemDirectory( im.FileName, sizeof( im.FileName ) );
     strcat( im.FileName, "\\KRNL386.EXE" );
     AddLib( TRUE, &im );
-    #endif
+#endif
 
 }
 
@@ -173,21 +169,18 @@ static void addAllWOWModules( void )
     MODULEENTRY         me;
     thread_info         *ti;
     IMAGE_NOTE          im;
+    int                 rc;
 
     ti = FindThread( DebugeeTid );
     me.dwSize = sizeof( MODULEENTRY );
-    if( pVDMModuleFirst( ProcessInfo.process_handle, ti->thread_handle,
-                    &me, NULL, 0 ) ) {
-        do {
-            if( !strcmp( me.szModule, WOWAppInfo.modname ) ) {
-                continue;
-            }
-            memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
-            memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
-            AddLib( TRUE, &im );
-            me.dwSize = sizeof( MODULEENTRY );
-        } while( pVDMModuleNext( ProcessInfo.process_handle, ti->thread_handle,
-                        &me, NULL, 0 ) );
+    for( rc = pVDMModuleFirst( ProcessInfo.process_handle, ti->thread_handle, &me, NULL, 0 );
+         rc != 0 && strcmp( me.szModule, WOWAppInfo.modname ) != 0;
+         rc = pVDMModuleNext( ProcessInfo.process_handle, ti->thread_handle, &me, NULL, 0 ) )
+    {
+        memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
+        memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
+        AddLib( TRUE, &im );
+        me.dwSize = sizeof( MODULEENTRY );
     }
 
 }
@@ -229,11 +222,12 @@ static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
     return( FALSE );
 }
 #endif
+#endif
 
 /*
  * AccLoadProg - create a new process for debugging
  */
-unsigned ReqProg_load( void )
+trap_elen ReqProg_load( void )
 {
     char            *parm;
     char            *src;
@@ -243,7 +237,7 @@ unsigned ReqProg_load( void )
     char            ch;
     BOOL            rc;
     int             len;
-    CONTEXT         con;
+    MYCONTEXT       con;
     thread_info     *ti;
     HANDLE          handle;
     prog_load_req   *acc;
@@ -281,8 +275,7 @@ unsigned ReqProg_load( void )
     /*
      * check if pid is specified
      */
-    ParseServiceStuff( parm, &dll_name, &service_name, &dll_destination,
-        &service_parm );
+    ParseServiceStuff( parm, &dll_name, &service_name, &dll_destination, &service_parm );
     pid = 0;
     src = parm;
 
@@ -316,7 +309,9 @@ unsigned ReqProg_load( void )
      * skip directly to doing a DebugActiveProcess
      */
     IsWOW = FALSE;
+#if !defined( MD_x64 )
     IsDOS = FALSE;
+#endif
     if( pid == 0 ) {
         if( FindFilePath( parm, exe_name, ExtensionList ) != 0 ) {
             ret->err = ERROR_FILE_NOT_FOUND;
@@ -326,9 +321,8 @@ unsigned ReqProg_load( void )
         /*
          * Get type of application
          */
-        handle = CreateFile( ( LPTSTR ) exe_name, GENERIC_READ, FILE_SHARE_READ,
-                            NULL, OPEN_EXISTING, 0, 0 );
-        if( handle == ( HANDLE ) - 1 ) {
+        handle = CreateFile( (LPTSTR)exe_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0 );
+        if( handle == INVALID_HANDLE_VALUE ) {
             ret->err = GetLastError();
             goto error_exit;
         }
@@ -367,25 +361,32 @@ unsigned ReqProg_load( void )
 
         if( !GetEXEHeader( handle, &hi, &stack ) ) {
             ret->err = GetLastError();
+            CloseHandle( handle );
             goto error_exit;
         }
         if( hi.sig == EXE_PE ) {
-            DebugeeSubsystem = hi.peh.subsystem;
+            if( IS_PE64( hi.u.peh ) ) {
+                DebugeeSubsystem = PE64( hi.u.peh ).subsystem;
+            } else {
+                DebugeeSubsystem = PE32( hi.u.peh ).subsystem;
+#if defined( MD_x64 )
+                IsWOW = TRUE;
+#endif
+            }
             if( DebugeeSubsystem == SS_WINDOWS_CHAR ) {
                 cr_flags |= CREATE_NEW_CONSOLE;
             }
+#if !defined( MD_x64 )
         } else if( hi.sig == EXE_NE ) {
             IsWOW = TRUE;
             /*
              * find out the pid of WOW, if it is already running.
              */
-            pVDMEnumProcessWOW( EnumWOWProcessFunc, ( LPARAM ) & pid );
+            pVDMEnumProcessWOW( EnumWOWProcessFunc, (LPARAM)&pid );
             if( pid != 0 ) {
                 version = LOWORD( GetVersion() );
                 if( LOBYTE( version ) == 3 && HIBYTE( version ) < 50 ) {
-                    int kill = MessageBox( NULL, TRP_NT_wow_warning,
-                            TRP_The_WATCOM_Debugger,
-                        MB_APPLMODAL + MB_YESNO );
+                    int kill = MessageBox( NULL, TRP_NT_wow_warning, TRP_The_WATCOM_Debugger, MB_APPLMODAL + MB_YESNO );
                     if( kill == IDYES ) {
                         DWORD axs = PROCESS_TERMINATE+STANDARD_RIGHTS_REQUIRED;
                         HANDLE hprocess = OpenProcess( axs, FALSE, pid );
@@ -402,10 +403,12 @@ unsigned ReqProg_load( void )
             }
             if( pid != 0 ) {
                 ret->err = GetLastError();
+                CloseHandle( handle );
                 goto error_exit;
             }
         } else {
             IsDOS = TRUE;
+#endif
         }
         CloseHandle( handle );
     }
@@ -443,8 +446,7 @@ unsigned ReqProg_load( void )
      * If it is not, then something is horribly wrong.
      */
     rc = MyWaitForDebugEvent();
-    if( !rc || ( DebugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT ) ||
-                 ( DebugEvent.dwProcessId != pid_started ) ) {
+    if( !rc || ( DebugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT ) || ( DebugEvent.dwProcessId != pid_started ) ) {
         ret->err = GetLastError();
         goto error_exit;
     }
@@ -452,12 +454,12 @@ unsigned ReqProg_load( void )
     ProcessInfo.process_handle = DebugEvent.u.CreateProcessInfo.hProcess;
     ProcessInfo.base_addr = DebugEvent.u.CreateProcessInfo.lpBaseOfImage;
     AddProcess( &hi );
-    AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateProcessInfo.hThread,
-                        DebugEvent.u.CreateProcessInfo.lpStartAddress );
+    AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateProcessInfo.hThread, DebugEvent.u.CreateProcessInfo.lpStartAddress );
     DebugeePid = DebugEvent.dwProcessId;
     DebugeeTid = DebugEvent.dwThreadId;
     LastDebugEventTid = DebugEvent.dwThreadId;
 
+#if defined( MD_x86 )
 #ifdef WOW
     if( IsWOW ) {
         ret->flags = LD_FLAG_IS_PROT;
@@ -489,9 +491,7 @@ unsigned ReqProg_load( void )
         con.SegSs = con.SegDs; // Wow lies about the stack segment.  Reset it
         con.Esp = stack;
         MySetThreadContext( ti, &con );
-    } else
-#endif
-    if( IsDOS ) {
+    } else if( IsDOS ) {
         // TODO! Clean up this code
         ret->flags = 0; //LD_FLAG_IS_PROT;
         ret->err = 0;
@@ -519,25 +519,31 @@ unsigned ReqProg_load( void )
          */
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-        WOWAppInfo.segment = ( WORD ) con.SegCs;
-        WOWAppInfo.offset = ( WORD ) con.Eip;
+        WOWAppInfo.segment = ( WORD )con.SegCs;
+        WOWAppInfo.offset = ( WORD )con.Eip;
         con.SegSs = con.SegDs; // Wow lies about the stack segment.  Reset it
         con.Esp = stack;
         MySetThreadContext( ti, &con );
     } else {
-        DWORD base;
+#else
+    {
+#endif
+#else
+    {
+#endif
+        LPVOID base;
 
         if( pid == 0 ) {
-            base = ( DWORD ) DebugEvent.u.CreateProcessInfo.lpStartAddress;
+            base = (LPVOID)DebugEvent.u.CreateProcessInfo.lpStartAddress;
         } else {
             base = 0;
         }
 
-        ret->flags = 0;
+        ret->flags = LD_FLAG_IS_PROT;
         ret->err = 0;
         ret->task_id = DebugeePid;
         if( executeUntilStart( pid != 0 ) ) {
-            DWORD old;
+            LPVOID old;
             /*
              * make the application load our DLL, so that we can have it
              * run code out of it.  One small note: this will not work right
@@ -547,7 +553,7 @@ unsigned ReqProg_load( void )
 
             ti = FindThread( DebugeeTid );
             MyGetThreadContext( ti, &con );
-            old = AdjustIP( &con, 0 );
+            old = (LPVOID)AdjustIP( &con, 0 );
             if( base != 0 ) {
                 SetIP( &con, base );
             }
@@ -561,6 +567,7 @@ unsigned ReqProg_load( void )
         FlatCS = con.SegCs;
         FlatDS = con.SegDs;
 #endif
+        ret->flags |= LD_FLAG_IS_BIG;
     }
     ret->flags |= LD_FLAG_HAVE_RUNTIME_DLLS;
     if( pid != 0 ) {
@@ -577,7 +584,7 @@ error_exit:
 
 }
 
-unsigned ReqProg_kill( void )
+trap_elen ReqProg_kill( void )
 {
     prog_kill_ret   *ret;
 

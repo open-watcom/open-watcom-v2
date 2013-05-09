@@ -48,8 +48,8 @@ typedef enum {
 } register_flags;
 
 #define REG_BIT_OFF(basereg)    (offsetof( mad_registers, x86.basereg ) * 8)
-#define STK_REG_BIT_OFF(num)    ((offsetof( mad_registers, x86.fpu.reg ) + sizeof( xreal ) * num) * 8)
-#define MMX_REG_BIT_OFF(num)    ((offsetof( mad_registers, x86.mmx.mm ) + sizeof( mmx_reg ) * num) * 8)
+#define STK_REG_BIT_OFF(num)    ((offsetof( mad_registers, x86.u.fpu.reg ) + sizeof( xreal ) * num) * 8)
+#define MMX_REG_BIT_OFF(num)    ((offsetof( mad_registers, x86.u.mmx.mm ) + sizeof( mmx_reg ) * num) * 8)
 #define XMM_REG_BIT_OFF(num)    ((offsetof( mad_registers, x86.xmm.xmm ) + sizeof( xmm_reg ) * num) * 8)
 
 #define GET_STK_REG_IDX(off)    ((off - STK_REG_BIT_OFF( 0 )) / (sizeof( xreal ) * 8))
@@ -69,14 +69,17 @@ typedef enum {
 #define FPU( name, type, basereg, startbit, size, sublist, fpulevel ) \
     REG( FPU, name, type, REG_BIT_OFF( fpu.basereg ) + startbit, size, FP, sublist, LX, fpulevel )
 
+#define FPU1( name, type, basereg, startbit, size, sublist, fpulevel ) \
+    REG( FPU, name, type, REG_BIT_OFF( u.fpu.basereg ) + startbit, size, FP, sublist, LX, fpulevel )
+
 #define FPU_STK( num ) \
     REG( FPU, st##num, EXTENDED, STK_REG_BIT_OFF( num ), 80, FP, NULL, LX, L1 )
 
 #define FPU_SW( name, fpulevel ) \
-    FPU( name, BYTE, sw, SHIFT_##name, LEN_##name, NULL, fpulevel )
+    FPU1( name, BYTE, sw, SHIFT_##name, LEN_##name, NULL, fpulevel )
 
 #define FPU_CW( name, fpulevel ) \
-    FPU( name, BYTE, cw, SHIFT_##name, LEN_##name, NULL, fpulevel )
+    FPU1( name, BYTE, cw, SHIFT_##name, LEN_##name, NULL, fpulevel )
 
 #define MMX( num ) \
     REG( MMX, mm##num, U64, MMX_REG_BIT_OFF( num ), 64, MM, MMXSubList##num, L5, LX )
@@ -194,19 +197,19 @@ static const x86_reg_info * const CWRegList[] = {
     &FPU_iem, &FPU_pc, &FPU_rc, &FPU_ic,
 NULL };
 
-FPU( sw,  WORD, sw,  0, 16, SWRegList, L1 );
-FPU( cw,  WORD, cw,  0, 16, CWRegList, L1 );
-FPU( tag, WORD, tag, 0, 16, NULL, L1 );
-FPU( tag0, BIT, tag, 0,  2, NULL, L1 );
-FPU( tag1, BIT, tag, 2,  2, NULL, L1 );
-FPU( tag2, BIT, tag, 4,  2, NULL, L1 );
-FPU( tag3, BIT, tag, 6,  2, NULL, L1 );
-FPU( tag4, BIT, tag, 8,  2, NULL, L1 );
-FPU( tag5, BIT, tag,10,  2, NULL, L1 );
-FPU( tag6, BIT, tag,12,  2, NULL, L1 );
-FPU( tag7, BIT, tag,14,  2, NULL, L1 );
-FPU( iptr, F32_PTR, ip_err, 0, 64, NULL, L1 );
-FPU( optr, F32_PTR, op_err, 0, 64, NULL, L1 );
+FPU1( sw,  WORD, sw,  0, 16, SWRegList, L1 );
+FPU1( cw,  WORD, cw,  0, 16, CWRegList, L1 );
+FPU1( tag, WORD, tag, 0, 16, NULL, L1 );
+FPU1( tag0, BIT, tag, 0,  2, NULL, L1 );
+FPU1( tag1, BIT, tag, 2,  2, NULL, L1 );
+FPU1( tag2, BIT, tag, 4,  2, NULL, L1 );
+FPU1( tag3, BIT, tag, 6,  2, NULL, L1 );
+FPU1( tag4, BIT, tag, 8,  2, NULL, L1 );
+FPU1( tag5, BIT, tag,10,  2, NULL, L1 );
+FPU1( tag6, BIT, tag,12,  2, NULL, L1 );
+FPU1( tag7, BIT, tag,14,  2, NULL, L1 );
+FPU1( iptr, F32_PTR, ip_err, 0, 64, NULL, L1 );
+FPU1( optr, F32_PTR, op_err, 0, 64, NULL, L1 );
 
 FPU_STK( 0 );
 FPU_STK( 1 );
@@ -446,7 +449,7 @@ unsigned DIGENTRY MIRegistersSize( void )
 }
 
 
-#define EXTRACT_ST( mr ) (((unsigned_16)(mr)->x86.fpu.sw >> SHIFT_st) & ((1<<LEN_st)-1))
+#define EXTRACT_ST( mr ) (((unsigned_16)(mr)->x86.u.fpu.sw >> SHIFT_st) & ((1<<LEN_st)-1))
 
 mad_status DIGENTRY MIRegistersHost( mad_registers *mr )
 {
@@ -455,10 +458,10 @@ mad_status DIGENTRY MIRegistersHost( mad_registers *mr )
 
     /* normalize the tag bits to tag[0..1] refer to ST(0), etc */
     st = EXTRACT_ST(mr)*2;
-    tag = mr->x86.fpu.tag;
+    tag = mr->x86.u.fpu.tag;
     tag = (tag >> (st)) | (tag << (16-st));
-    mr->x86.fpu.tag &= ~0xffffUL;
-    mr->x86.fpu.tag |= tag;
+    mr->x86.u.fpu.tag &= ~0xffffUL;
+    mr->x86.u.fpu.tag |= tag;
     return( MS_MODIFIED );
 }
 
@@ -469,10 +472,10 @@ mad_status DIGENTRY MIRegistersTarget( mad_registers *mr )
 
     /* put the tag bits back the stupid way the x87 wants them */
     st = EXTRACT_ST(mr)*2;
-    tag = mr->x86.fpu.tag;
+    tag = mr->x86.u.fpu.tag;
     tag = (tag << (st)) | (tag >> (16-st));
-    mr->x86.fpu.tag &= ~0xffffUL;
-    mr->x86.fpu.tag |= tag;
+    mr->x86.u.fpu.tag &= ~0xffffUL;
+    mr->x86.u.fpu.tag |= tag;
     return( MS_MODIFIED );
 }
 
@@ -792,7 +795,7 @@ static unsigned GetTag( const mad_registers *mr, int st )
     int shft;
 
     shft = ( st & 0x07 ) << 1;
-    return(( mr->x86.fpu.tag >> shft ) & 0x03 );
+    return(( mr->x86.u.fpu.tag >> shft ) & 0x03 );
 }
 
 static void SetTag( mad_registers *mr, int st, int val )
@@ -800,8 +803,8 @@ static void SetTag( mad_registers *mr, int st, int val )
     int shft;
 
     shft = ( st & 0x07 ) << 1;
-    mr->x86.fpu.tag &= ~( 3 << shft );
-    mr->x86.fpu.tag |= ( val & 0x03 ) << shft;
+    mr->x86.u.fpu.tag &= ~( 3 << shft );
+    mr->x86.u.fpu.tag |= ( val & 0x03 ) << shft;
 }
 
 static mad_status FPUGetPiece(
@@ -1329,8 +1332,8 @@ mad_status DIGENTRY MIRegSetDisplayModify(
     } else if( ri->type == X86T_EXTENDED ) {
         *possible_p = ModFPUStack;
         *num_possible_p = NUM_ELTS( ModFPUStack );
-    } else if( ri->bit_start >= REG_BIT_OFF( fpu.tag )
-            && ri->bit_start <  REG_BIT_OFF( fpu.tag ) + 16
+    } else if( ri->bit_start >= REG_BIT_OFF( u.fpu.tag )
+            && ri->bit_start <  REG_BIT_OFF( u.fpu.tag ) + 16
             && ri->bit_size == 2 ) {
         *possible_p = ModFPUTag;
         *num_possible_p = NUM_ELTS( ModFPUTag );
@@ -1541,17 +1544,17 @@ mad_status DIGENTRY MIRegModified(
             } else {
                 return( MS_MODIFIED_SIGNIFICANTLY );
             }
-        } else if( cur_start >= REG_BIT_OFF( fpu.tag ) && cur_start < REG_BIT_OFF( fpu.tag ) + 16 ) {
+        } else if( cur_start >= REG_BIT_OFF( u.fpu.tag ) && cur_start < REG_BIT_OFF( u.fpu.tag ) + 16 ) {
             /* dealing with the 87 tag register - handle stack rotation */
             rotation = EXTRACT_ST( old ) - EXTRACT_ST( cur );
             if( rotation != 0 ) {
                 old_start -= rotation * 2;
-                if( old_start < REG_BIT_OFF( fpu.tag ) ) {
+                if( old_start < REG_BIT_OFF( u.fpu.tag ) ) {
                     old_start += 16;
-                } else if( old_start >= REG_BIT_OFF( fpu.tag ) + 16 ) {
+                } else if( old_start >= REG_BIT_OFF( u.fpu.tag ) + 16 ) {
                     old_start -= 16;
                 }
-                st = ( cur_start - REG_BIT_OFF( fpu.tag ) ) / 2;
+                st = ( cur_start - REG_BIT_OFF( u.fpu.tag ) ) / 2;
                 old_tag = GetTag( old, st );
                 cur_tag = GetTag( cur, st );
                 if( old_tag != cur_tag ) {
@@ -1579,7 +1582,7 @@ mad_status DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, const mad_register
     unsigned_32 *p;
 
     bit_start = ri->bit_start;
-    if( bit_start >= REG_BIT_OFF( fpu ) ) {
+    if( bit_start >= REG_BIT_OFF( u.fpu ) ) {
         return( MS_FAIL );
     }
     if( bit_start >= REG_BIT_OFF( cpu.efl ) && bit_start < REG_BIT_OFF( cpu.efl ) + 32 ) {
@@ -1925,14 +1928,14 @@ void DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_st
         MCNotify( MNT_MODIFY_SP, NULL );
         MCNotify( MNT_MODIFY_FP, NULL );
         break;
-    case REG_BIT_OFF( fpu.tag ) + 0:
-    case REG_BIT_OFF( fpu.tag ) + 2:
-    case REG_BIT_OFF( fpu.tag ) + 4:
-    case REG_BIT_OFF( fpu.tag ) + 6:
-    case REG_BIT_OFF( fpu.tag ) + 8:
-    case REG_BIT_OFF( fpu.tag ) + 10:
-    case REG_BIT_OFF( fpu.tag ) + 12:
-    case REG_BIT_OFF( fpu.tag ) + 14:
+    case REG_BIT_OFF( u.fpu.tag ) + 0:
+    case REG_BIT_OFF( u.fpu.tag ) + 2:
+    case REG_BIT_OFF( u.fpu.tag ) + 4:
+    case REG_BIT_OFF( u.fpu.tag ) + 6:
+    case REG_BIT_OFF( u.fpu.tag ) + 8:
+    case REG_BIT_OFF( u.fpu.tag ) + 10:
+    case REG_BIT_OFF( u.fpu.tag ) + 12:
+    case REG_BIT_OFF( u.fpu.tag ) + 14:
         MCNotify( MNT_REDRAW_REG, (void *)&RegSet[FPU_REG_SET] );
         break;
     case STK_REG_BIT_OFF( 0 ):

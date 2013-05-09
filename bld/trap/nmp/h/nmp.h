@@ -87,8 +87,22 @@ enum {
 #define PIPE_ALREADY_OPEN 231
 #define BROKEN_PIPE       109
 
-extern int myopen( char * );
-extern void myclose( int );
-extern int myread( int, char *, int );
-extern int mywrite( int, char *, int );
+#if defined( __NT__ )
+#define bhandle         HANDLE
+#define BHANDLE_INVALID INVALID_HANDLE_VALUE
+#define BHANDLE_STDERR  GetStdHandle( STD_ERROR_HANDLE )
+#elif defined( __OS2__ )
+#define bhandle         HFILE
+#define BHANDLE_INVALID ((HFILE)-1L)
+#define BHANDLE_STDERR  2
+#else
+#define bhandle         int
+#define BHANDLE_INVALID (-1)
+#define BHANDLE_STDERR  2
+#endif
+
+extern bhandle myopen( char * );
+extern void myclose( bhandle );
+extern int myread( bhandle, char *, int );
+extern int mywrite( bhandle, char *, int );
 extern void mysnooze( void );

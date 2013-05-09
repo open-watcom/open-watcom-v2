@@ -35,6 +35,22 @@
 #include <machtype.h>
 #include "digpck.h"
 
+#if defined( __WATCOMC__ ) && defined( _M_I86 )
+    #define DIGFAR	__far
+#else
+    #define DIGFAR
+#endif
+
+#if defined( __WATCOMC__ ) && defined( __WINDOWS__ )
+    #define DIGREGISTER     DIGFAR __pascal
+    #define DIGENTRY        DIGFAR __export __pascal
+    #define DIGCLIENT       __loadds
+#else
+    #define DIGREGISTER     DIGFAR
+    #define DIGENTRY        DIGFAR
+    #define DIGCLIENT
+#endif
+
 typedef unsigned_8 search_result; enum {
                 SR_NONE,
                 SR_EXACT,
@@ -397,24 +413,6 @@ enum {
     MAP_FLAT_CODE_SELECTOR      = (unsigned_16)-1,
     MAP_FLAT_DATA_SELECTOR      = (unsigned_16)-2,
 };
-
-#if defined(__WINDOWS__) && !defined(__NT__)
-#define DIGREGISTER     __far __pascal
-#define DIGENTRY        __export DIGREGISTER
-#define DIGCLIENT       __loadds
-#endif
-
-#if !defined(DIGENTRY)
-#define DIGENTRY
-#endif
-
-#if !defined(DIGREGISTER)
-#define DIGREGISTER
-#endif
-
-#if !defined(DIGCLIENT)
-#define DIGCLIENT
-#endif
 
 #include "digunpck.h"
 #endif

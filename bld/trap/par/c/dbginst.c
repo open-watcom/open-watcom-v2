@@ -197,7 +197,7 @@ BOOL OpenDevice(
     HANDLE   hDevice;
 
         sprintf( completeDeviceName, "\\\\.\\%s", test_file );
-        hDevice = CreateFile (completeDeviceName,
+        hDevice = CreateFile( completeDeviceName,
                           GENERIC_READ | GENERIC_WRITE,
                           0,
                           NULL,
@@ -205,7 +205,7 @@ BOOL OpenDevice(
                           FILE_ATTRIBUTE_NORMAL,
                           NULL
                           );
-        if (hDevice == ((HANDLE)-1))
+        if (hDevice == INVALID_HANDLE_VALUE)
                 return FALSE;
         CloseHandle (hDevice);
         return TRUE;

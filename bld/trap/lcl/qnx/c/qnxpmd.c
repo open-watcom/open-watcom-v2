@@ -441,7 +441,7 @@ unsigned ReqRead_regs( void )
     mr = GetOutPtr( 0 );
 
     ReadCPU( &mr->x86.cpu );
-    ReadFPU( &mr->x86.fpu );
+    ReadFPU( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
 }
 
@@ -553,7 +553,7 @@ unsigned ReqProg_load()
         ret->flags |= LD_FLAG_IS_PROT;
     }
     if( PmdInfo.hdr.psdata.flags & _PPF_32BIT ) {
-        ret->flags |= LD_FLAG_IS_32;
+        ret->flags |= LD_FLAG_IS_BIG;
         PmdInfo.dbg32 = TRUE;
     }
     if( PmdInfo.hdr.psdata.flags & _PPF_32BIT ) {
@@ -748,7 +748,7 @@ unsigned ReqAddr_info()
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->is_32 = AddrIs32( acc->in_addr.segment );
+    ret->is_big = AddrIs32( acc->in_addr.segment );
     return( sizeof( *ret ) );
 }
 

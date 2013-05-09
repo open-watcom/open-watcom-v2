@@ -42,7 +42,13 @@
 
 #include "../dsx/ldimp.h"
 
+#define TRAPSIG 0x50415254UL
+
 extern void             *_slib_func[2];
+extern trap_version     TrapVer;
+extern trap_req_func    *ReqFunc;
+
+extern int              PathOpen(char *,unsigned, char *);
 
 const static trap_callbacks TrapCallbacks = {
     sizeof( trap_callbacks ),
@@ -57,23 +63,20 @@ const static trap_callbacks TrapCallbacks = {
     signal,
 };
 
-static imp_header               *TrapCode;
-static const trap_requests      *TrapFuncs;
-
-extern trap_version     TrapVer;
-extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
-                                        unsigned, mx_entry * );
-
-
-extern  int      PathOpen(char *,unsigned, char *);
-
-#define TRAPSIG 0x50415254UL
+static imp_header       *TrapCode = NULL;
+static trap_fini_func   *FiniFunc = NULL;
 
 void KillTrap( void )
 {
-    TrapFuncs->fini_func();
     ReqFunc = NULL;
-    DIGCliFree( TrapCode );
+    if( FiniFunc != NULL ) {
+        FiniFunc();
+        FiniFunc = NULL;
+    }
+    if( TrapCode != NULL ) {
+        DIGCliFree( TrapCode );
+        TrapCode = NULL;
+    }
 }
 
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
@@ -83,6 +86,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     char                *ptr;
     char                *parm;
     const trap_requests *(*ld_func)( const trap_callbacks * );
+    const trap_requests *trap_funcs;
 
     if( trapbuff == NULL ) trapbuff = "std";
     for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr ) ;
@@ -96,24 +100,28 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     DIGCliClose( filehndl );
     if( TrapCode == NULL || TrapCode->sig != TRAPSIG ) {
         strcpy( buff, TC_ERR_BAD_TRAP_FILE );
+        KillTrap();
         return( buff );
     }
     ld_func = (void *)TrapCode->init_rtn;
-    TrapFuncs = ld_func( &TrapCallbacks );
-    if( TrapFuncs == NULL ) {
+    trap_funcs = ld_func( &TrapCallbacks );
+    if( trap_funcs == NULL ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
+        KillTrap();
         return( buff );
     }
-    *trap_ver = TrapFuncs->init_func( parm, init_error, trap_ver->remote );
+    *trap_ver = trap_funcs->init_func( parm, init_error, trap_ver->remote );
     if( init_error[0] != '\0' ) {
         strcpy( buff, init_error );
+        KillTrap();
         return( buff );
     }
+    FiniFunc = trap_funcs->fini_func;
     if( !TrapVersionOK( *trap_ver ) ) {
         KillTrap();
         return( buff );
     }
     TrapVer = *trap_ver;
-    ReqFunc = TrapFuncs->req_func;
+    ReqFunc = trap_funcs->req_func;
     return( NULL );
 }

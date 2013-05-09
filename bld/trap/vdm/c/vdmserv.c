@@ -37,10 +37,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tinyio.h"
-#include "packet.h"
 #include "watcom.h"
 #include "vdm.h"
+#include "trptypes.h"
 #include "trperr.h"
+#include "packet.h"
 
 typedef unsigned short  USHORT;
 
@@ -114,11 +115,11 @@ char RemoteConnect( void )
 }
 
 
-unsigned RemoteGet( char *data, unsigned length )
+trap_elen RemoteGet( char *data, trap_elen length )
 {
-    unsigned_16 incoming;
-    unsigned    got;
-    unsigned    ret;
+    unsigned_16     incoming;
+    trap_elen  got;
+    trap_elen  ret;
 
     length = length;
     TinyRead( pipeHdl, &incoming, sizeof( incoming ) );
@@ -132,7 +133,7 @@ unsigned RemoteGet( char *data, unsigned length )
 }
 
 
-unsigned RemotePut( char *data, unsigned length )
+trap_elen RemotePut( char *data, trap_elen length )
 {
     unsigned_16 outgoing;
 

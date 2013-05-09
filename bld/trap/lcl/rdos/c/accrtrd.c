@@ -41,7 +41,7 @@
 #define THD_RUN         6
 #define THD_DEBUG       7
 
-unsigned ReqRunThread_info( void )
+trap_elen ReqRunThread_info( void )
 {
     run_thread_info_req *acc;
     run_thread_info_ret *ret;
@@ -88,7 +88,7 @@ unsigned ReqRunThread_info( void )
     return( sizeof( *ret ) + strlen( header_txt ) + 1 );
 }
 
-unsigned ReqRunThread_get_next( void )
+trap_elen ReqRunThread_get_next( void )
 {
     run_thread_get_next_req *acc;
     run_thread_get_next_ret *ret;
@@ -99,13 +99,13 @@ unsigned ReqRunThread_get_next( void )
     ret->thread = 0;
 
     obj = GetCurrentDebug();
-	if (obj)
+        if (obj)
         ret->thread = GetNextThread( obj, acc->thread );
 
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRunThread_get_runtime( void )
+trap_elen ReqRunThread_get_runtime( void )
 {
     run_thread_get_runtime_req *acc;
     run_thread_get_runtime_ret *ret;
@@ -228,7 +228,7 @@ unsigned ReqRunThread_get_runtime( void )
     return( sizeof( *ret ) + strlen( time_txt ) + 1 );
 }
 
-unsigned ReqRunThread_poll( void )
+trap_elen ReqRunThread_poll( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -242,7 +242,7 @@ unsigned ReqRunThread_poll( void )
     if (obj) {
 
         if( IsTerminated( obj ) )
-	    ret->conditions |= COND_TERMINATE;
+            ret->conditions |= COND_TERMINATE;
 
         if( HasThreadChange( obj ) ) {
             ret->conditions |= COND_THREAD;
@@ -262,7 +262,7 @@ unsigned ReqRunThread_poll( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRunThread_set( void )
+trap_elen ReqRunThread_set( void )
 {
     run_thread_set_req      *acc;
     run_thread_set_ret      *ret;
@@ -280,7 +280,7 @@ unsigned ReqRunThread_set( void )
         t = obj->CurrentThread;
 
     if( t )
-	ret->old_thread = t->ThreadID;
+        ret->old_thread = t->ThreadID;
 
     if( obj && acc->thread != 0 ) {
         SetCurrentThread( obj, acc->thread );
@@ -290,7 +290,7 @@ unsigned ReqRunThread_set( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRunThread_get_name( void )
+trap_elen ReqRunThread_get_name( void )
 {
     run_thread_get_name_req *acc;
     char                    *name;
@@ -305,7 +305,7 @@ unsigned ReqRunThread_get_name( void )
         strcpy( name, "Name" );
     else {
         obj = GetCurrentDebug();
-	    if (obj) {
+            if (obj) {
             t = LockThread( obj, acc->thread );
 
             if( t )
@@ -318,7 +318,7 @@ unsigned ReqRunThread_get_name( void )
     return( strlen( name ) + 1 );
 }
 
-unsigned ReqRunThread_stop( void )
+trap_elen ReqRunThread_stop( void )
 {
     run_thread_stop_req     *acc;
 
@@ -328,7 +328,7 @@ unsigned ReqRunThread_stop( void )
     return( 0 );
 }
 
-unsigned ReqRunThread_signal_stop( void )
+trap_elen ReqRunThread_signal_stop( void )
 {
     run_thread_signal_stop_req     *acc;
 

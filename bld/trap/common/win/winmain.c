@@ -39,7 +39,6 @@
 #include "packet.h"
 
 extern void OpeningStatement( void );
-extern void KillTrap( void );
 extern int Initialize( char * );
 
 int RemoteLinkObtained = FALSE;
@@ -63,8 +62,7 @@ HANDLE  Instance;
 /*
  * WinMain - main entry point from windows
  */
-int PASCAL WinMain( HANDLE thishandle, HANDLE prevhandle, LPSTR cmdline,
-                    int cmdshow )
+int PASCAL WinMain( HANDLE thishandle, HANDLE prevhandle, LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
     char        str[128];
@@ -72,13 +70,11 @@ int PASCAL WinMain( HANDLE thishandle, HANDLE prevhandle, LPSTR cmdline,
     Instance = thishandle;
     cmdshow = cmdshow;
     if( prevhandle ) {
-        MessageBox( MainWindowHandle, TRP_ERR_one_allowed, ServName,
-            MB_ICONEXCLAMATION | MB_OK );
+        MessageBox( MainWindowHandle, TRP_ERR_one_allowed, ServName, MB_ICONEXCLAMATION | MB_OK );
         return( FALSE );
     }
     if( !( GetWinFlags() & WF_PMODE ) ) {
-        MessageBox( MainWindowHandle, TRP_WIN_not_protect_mode, ServName,
-            MB_ICONEXCLAMATION | MB_OK );
+        MessageBox( MainWindowHandle, TRP_WIN_not_protect_mode, ServName, MB_ICONEXCLAMATION | MB_OK );
         return( FALSE );
     }
     _fstrcpy( str, cmdline );
@@ -170,7 +166,7 @@ static BOOL initAppl( void )
     y = GetSystemMetrics( SM_CYSCREEN );
 
     MainWindowHandle = CreateWindow(
-        _mainclass,            /* class */
+        _mainclass,             /* class */
         ServName,               /* caption */
         WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW,
         0,                      /* init. x pos */
@@ -231,8 +227,7 @@ BOOL StartOutput( short x, short y )
 /*
  * GenericBox - display a dialog box
  */
-BOOL FAR PASCAL GenericBox( HWND hwnd, unsigned msg, WORD wparam,
-                            LONG lparam )
+BOOL CALLBACK GenericBox( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     /*
      * process messages
@@ -257,8 +252,7 @@ BOOL FAR PASCAL GenericBox( HWND hwnd, unsigned msg, WORD wparam,
 /*
  * MainDriver - receives all messages for the main window
  */
-long __export FAR PASCAL MainDriver( HWND hwnd, unsigned msg, WORD wparam,
-                       LONG lparam )
+LRESULT __export CALLBACK MainDriver( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     FARPROC     farproc;
 

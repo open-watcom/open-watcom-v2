@@ -64,7 +64,7 @@ typedef void (DIGENTRY pill_private_func)();
     #error link_atomic_t not configured for processor
 #endif
 
-#pragma pack(__push, 8)
+#include "pushpck8.h"
 
 typedef enum {
     PL_ENGLISH,
@@ -117,7 +117,7 @@ typedef struct {
     link_buffer         * volatile *tail_owner;
 } link_queue;
 
-#pragma pack(__pop)
+#include "poppck.h"
 
 /* maximum packet sizes */
 #define PILL_MAX_PACKET         0x7fff  /* max allowed */

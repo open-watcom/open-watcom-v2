@@ -64,7 +64,7 @@ extern void             RemoteSectTblRead( void * );
 extern void             RemoteSectTblWrite( void * );
 extern void             CheckMADChange( void );
 #if defined(__GUI__) && defined(__OS2__)
-extern unsigned         OnAnotherThread( unsigned(*)(), unsigned, void *, unsigned, void * );
+extern unsigned         OnAnotherThread( trap_elen(*)(), unsigned, void *, unsigned, void * );
 #else
 #define                 OnAnotherThread( a,b,c,d,e ) a( b,c,d,e )
 #endif

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-//#define WOW
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #undef WIN32_LEAN_AND_MEAN
@@ -43,7 +42,7 @@
 #ifndef STATUS_SEGMENT_NOTIFICATION
 #define STATUS_SEGMENT_NOTIFICATION 0x40000005
 #endif
-#ifdef WOW
+#if defined( MD_x86 ) && defined( WOW )
 #include "vdmdbg.h"
 #endif
 
@@ -51,16 +50,60 @@
 #define EXE_NE  OS2_SIGNATURE_WORD
 #define EXE_MZ  DOS_SIGNATURE
 
+#if defined( MD_x64 )
+    #define MYCONTEXT           WOW64_CONTEXT
+    // position in Windows CONTEXT, 
+    // it is offset in FXSAVE/FXRSTOR memory structure
+    #define MYCONTEXT_MXCSR     24
+    #define MYCONTEXT_XMM       (10 * 16)
+
+    #define MYCONTEXT_CONTROL   WOW64_CONTEXT_CONTROL;
+    #define MYCONTEXT_TO_USE    (WOW64_CONTEXT_FULL | WOW64_CONTEXT_FLOATING_POINT | \
+                        WOW64_CONTEXT_DEBUG_REGISTERS | WOW64_CONTEXT_EXTENDED_REGISTERS)
+#else
+    #define MYCONTEXT           CONTEXT
+    // position in Windows CONTEXT, 
+    // it is offset in FXSAVE/FXRSTOR memory structure
+    #define MYCONTEXT_MXCSR     24
+    #define MYCONTEXT_XMM       (10 * 16)
+
+    #define MYCONTEXT_CONTROL   CONTEXT_CONTROL;
+  #if defined( MD_x86 )
+    #define MYCONTEXT_TO_USE    (CONTEXT_FULL | CONTEXT_FLOATING_POINT | \
+                        CONTEXT_DEBUG_REGISTERS | CONTEXT_EXTENDED_REGISTERS)
+  #else
+    #define MYCONTEXT_TO_USE    CONTEXT_FULL
+  #endif
+#endif
+
+#if defined( MD_x64 )
+    #define WOW64CONTEXT           WOW64_CONTEXT
+    // position in Windows CONTEXT, 
+    // it is offset in FXSAVE/FXRSTOR memory structure
+    #define WOW64CONTEXT_MXCSR     24
+    #define WOW64CONTEXT_XMM       (10 * 16)
+
+    #define WOW64CONTEXT_CONTROL   WOW64_CONTEXT_CONTROL;
+    #define WOW64CONTEXT_TO_USE    (WOW64_CONTEXT_FULL | WOW64_CONTEXT_FLOATING_POINT | \
+                        WOW64_CONTEXT_DEBUG_REGISTERS | WOW64_CONTEXT_EXTENDED_REGISTERS)
+#endif
+
+#if defined( MD_x64 )
+#define RDWORD  DWORD64
+#else
+#define RDWORD  DWORD
+#endif
+
 typedef struct {
     WORD                sig;
     union {
-        pe_header       peh;
+        exe_pe_header   peh;
         os2_exe_header  neh;
-    };
+    } u;
     char                modname[16];
 } header_info;
 
-#ifdef WOW
+#if defined( MD_x86 ) && defined( WOW )
 typedef struct {
     WORD        offset;
     WORD        segment;
@@ -81,7 +124,7 @@ typedef struct {
 #define STATE_WAIT_FOR_VDM_START        0x00000010
 #define STATE_IGNORE_DEBUG_OUT          0x00000020
 
-#if defined(__386__)
+#if defined( _M_IX86 )
 
     #define TRACE_BIT   0x100
     #define BRK_POINT   0xcc
@@ -100,7 +143,19 @@ typedef struct {
             "mov        ax,cs" \
             value[ax];
 
-#elif defined(__ALPHA__)
+#elif defined( _M_X64 )
+
+    #define TRACE_BIT   0x100
+    #define BRK_POINT   0xcc
+    typedef unsigned_8  brkpnt_type;
+
+    extern void BreakPoint( void );
+//    #pragma aux BreakPoint = BRK_POINT;
+
+    #define DS()        0
+    #define CS()        0
+
+#elif defined( __ALPHA__ )
 
     #define BRK_POINT   0x00000080
     typedef unsigned_32 brkpnt_type;
@@ -108,7 +163,7 @@ typedef struct {
     #define DS()        0
     #define CS()        0
 
-#elif defined(__PPC__)
+#elif defined( __PPC__ )
 
     #define TRACE_BIT   (1UL << MSR_L_se)
     #define BRK_POINT   0x00000000
@@ -175,7 +230,7 @@ struct msg_list {
  */
 
 /* accmap.c */
-BOOL FindExceptInfo( addr_off off, LPVOID *base, addr_off *size );
+BOOL FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size );
 void FixUpDLLNames( void );
 void RemoveModuleFromLibList( char *module, char *filename );
 BOOL IsMagicalFileHandle( HANDLE h );
@@ -183,18 +238,17 @@ HANDLE GetMagicalFileHandle( char *name );
 void AddProcess( header_info * );
 void DelProcess( BOOL );
 void VoidProcess( void );
-#ifndef WOW
+#if !defined( WOW ) || defined( MD_x64 )
 typedef void IMAGE_NOTE;
 #endif
 void AddLib( BOOL, IMAGE_NOTE *im );
 void DelLib( void );
 void FreeLibList( void );
-int DoListLibs( char *buff, int is_first, int want_16, int want_32,
-                                        int verbose, int sel );
+int DoListLibs( char *buff, int is_first, int want_16, int want_32, int verbose, int sel );
 
 /* accmem.c */
-DWORD WriteMem( WORD seg, DWORD base, LPVOID buff, DWORD size );
-DWORD ReadMem( WORD seg, DWORD base, LPVOID buff, DWORD size );
+DWORD WriteMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
+DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
 
 /* accmisc.c */
 BOOL IsBigSel( WORD sel );
@@ -208,9 +262,9 @@ void InterruptProgram( void );
 bool Terminate( void );
 
 /* misc.c */
-BOOL MyGetThreadContext( thread_info *ti, PCONTEXT pc );
+BOOL MyGetThreadContext( thread_info *ti, MYCONTEXT *pc );
 #define GetThreadContext Dont_call_GetThreadContext_directly__Call_MyGetThreadContext_instead
-BOOL MySetThreadContext( thread_info *ti, PCONTEXT pc );
+BOOL MySetThreadContext( thread_info *ti, MYCONTEXT *pc );
 #define SetThreadContext Dont_call_SetThreadContext_directly__Call_MySetThreadContext_instead
 
 /* peread.c */
@@ -253,7 +307,7 @@ extern void ParseServiceStuff( char *name,
     char **pdll_destination, char **pservice_parm );
 
 /* accregs.c */
-extern DWORD AdjustIP( CONTEXT *, int );
-extern void SetIP( CONTEXT *, DWORD );
+extern LPVOID AdjustIP( MYCONTEXT *, int );
+extern void SetIP( MYCONTEXT *, LPVOID );
 
 extern void say( char *fmt, ... );

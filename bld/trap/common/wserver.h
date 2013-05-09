@@ -37,9 +37,3 @@
 #define MENU_OPTIONS            5
 #define MENU_BREAK              6
 #define MENU_STOP               7
-
-#ifdef __NT__
-#define _EXPORT __export
-#else
-#define _EXPORT __export
-#endif

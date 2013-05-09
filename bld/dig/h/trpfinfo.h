@@ -34,7 +34,7 @@
 #include "trptypes.h"
 #include <time.h>
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 #define FILE_INFO_SUPP_NAME     "FileInfo"
 
@@ -70,7 +70,7 @@ typedef struct {
     trap_error          err;
 } file_info_set_date_ret;
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #define TRPFINFO_H
 

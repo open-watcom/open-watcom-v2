@@ -100,9 +100,9 @@ extern unsigned         QualifiedSymName( sym_handle *sh, char *name, unsigned m
 extern void             AddrFloat( address * );
 unsigned                GetMADNormalizedString( mad_string, unsigned, char * );
 
-extern int              CapabilitiesGetExactBreakpointSupport( void );
-extern int              CapabilitiesSetExactBreakpointSupport( bool status );
-extern int              SupportsExactBreakpoints;
+extern bool             CapabilitiesGetExactBreakpointSupport( void );
+extern bool             CapabilitiesSetExactBreakpointSupport( bool status );
+extern bool             SupportsExactBreakpoints;
 
 extern char             OnOffNameTab[];
 extern char             *TxtBuff;

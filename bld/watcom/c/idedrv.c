@@ -496,7 +496,7 @@ static int ensureLoaded( IDEDRV *inf, int *p_runcode )
                         if( 0 == runcode ) {
                             if( NULL == InfoPtr ) {
                                 InfoPtr = &info;
-                                info.console_output = isatty( fileno(stdout) );
+                                info.console_output = ( isatty( fileno(stdout) ) != 0 );
                             }
                             _SET_PROGRESS;
                             runcode = initinfo( inf->ide_handle, InfoPtr );

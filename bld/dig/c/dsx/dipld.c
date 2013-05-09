@@ -35,6 +35,7 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#include "dipsys.h"
 
 #include "ldimp.h"
 #include "dbgmod.h"
@@ -53,14 +54,13 @@ static int PathOpenDIP( char const *name, unsigned len, char *ext, char *dip_nam
     return( FullPathOpen( path, ext, dip_name, dip_name_len ) );
 }
 
-void DIPSysUnload( unsigned long sys_hdl )
+void DIPSysUnload( dip_sys_handle sys_hdl )
 {
     /* We should unload the symbols here but it's not worth the trouble */
     DIGCliFree( (void *)sys_hdl );
 }
 
-dip_status DIPSysLoad( char *path, dip_client_routines *cli,
-                                dip_imp_routines **imp, unsigned long *sys_hdl )
+dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     int                 h;
     imp_header          *dip;
@@ -80,7 +80,7 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
 #ifdef WATCOM_DEBUG_SYMBOLS
     /* Look for symbols in separate .sym files, not the .dip itself */
     strcpy( dip_name + strlen( dip_name ) - 4, ".sym" );
-    NotifyWDLoad( dip_name, (unsigned long)dip );
+    NotifyWDLoad( dip_name, (dip_sys_handle)dip );
 #endif
     init_func = (void *)dip->init_rtn;
     *imp = init_func( &status, cli );
@@ -88,9 +88,9 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
 #ifdef WATCOM_DEBUG_SYMBOLS
         NotifyWDUnload( dip_name );
 #endif
-        DIPSysUnload( (unsigned long)dip );
+        DIPSysUnload( (dip_sys_handle)dip );
         return( status );
     }
-    *sys_hdl = (unsigned long)dip;
+    *sys_hdl = (dip_sys_handle)dip;
     return( DS_OK );
 }

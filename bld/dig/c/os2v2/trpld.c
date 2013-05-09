@@ -37,17 +37,17 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "trpimp.h"
+#include "trptypes.h"
 #include "tcerr.h"
 
-static trap_version     (TRAPENTRY *InitFunc)( char *,char *, bool );
-static void             (TRAPENTRY *FiniFunc)( void );
+extern trap_version     TrapVer;
+extern trap_req_func    *ReqFunc;
+
+static trap_fini_func   *FiniFunc = NULL;
+static HMODULE          TrapFile = 0;
+
 static unsigned_16      (TRAPENTRY *InfoFunc)( HAB, HWND );
 static char             (TRAPENTRY *HardFunc)( char );
-
-extern trap_version     TrapVer;
-extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
-                                              unsigned, mx_entry * );
 
 bool IsTrapFilePumpingMessageQueue( void )
 {
@@ -72,12 +72,17 @@ char TellHardMode( char hard )
 
 void KillTrap( void )
 {
-    FiniFunc();
-    ReqFunc  = NULL;
-    InitFunc = NULL;
-    FiniFunc = NULL;
+    ReqFunc = NULL;
+    if( FiniFunc != NULL ) {
+        FiniFunc();
+        FiniFunc = NULL;
+    }
     InfoFunc = NULL;
     HardFunc = NULL;
+    if( TrapFile != 0 ) {
+        DosFreeModule( TrapFile );
+        TrapFile = 0;
+    }
 }
 
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
@@ -86,10 +91,10 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     int                 len;
     char                *ptr;
     char                *parm;
-    HMODULE             hmodDll;
     APIRET              rc;
     char                trpname[CCHMAXPATH] = "";
     char                trppath[CCHMAXPATH] = "";
+    trap_init_func      *init_func;
 
     if( trapbuff == NULL )
         trapbuff = "std";
@@ -114,26 +119,28 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         return( buff );
     }
 
-    rc = DosLoadModule( NULL, 0, trppath, &hmodDll );
+    rc = DosLoadModule( NULL, 0, trppath, &TrapFile );
     if( rc != 0 ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trppath );
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( DosQueryProcAddr( hmodDll, 1, NULL, (PFN*)&InitFunc ) != 0
-     || DosQueryProcAddr( hmodDll, 2, NULL, (PFN*)&FiniFunc ) != 0
-     || DosQueryProcAddr( hmodDll, 3, NULL, (PFN*)&ReqFunc ) != 0 ) {
+    if( DosQueryProcAddr( TrapFile, 1, NULL, (PFN*)&init_func ) != 0
+     || DosQueryProcAddr( TrapFile, 2, NULL, (PFN*)&FiniFunc ) != 0
+     || DosQueryProcAddr( TrapFile, 3, NULL, (PFN*)&ReqFunc ) != 0 ) {
+        KillTrap();
         return( buff );
     }
-    if( DosQueryProcAddr( hmodDll, 4, NULL, (PFN*)&InfoFunc ) != 0 ) {
+    if( DosQueryProcAddr( TrapFile, 4, NULL, (PFN*)&InfoFunc ) != 0 ) {
         InfoFunc = NULL;
     }
-    if( DosQueryProcAddr( hmodDll, 5, NULL, (PFN*)&HardFunc ) != 0 ) {
+    if( DosQueryProcAddr( TrapFile, 5, NULL, (PFN*)&HardFunc ) != 0 ) {
         HardFunc = NULL;
     }
-    *trap_ver = InitFunc( parm, trpfile, trap_ver->remote );
+    *trap_ver = init_func( parm, trpfile, trap_ver->remote );
     if( trpfile[0] != '\0' ) {
         strcpy( buff, (char *)trpfile );
+        KillTrap();
         return( buff );
     }
     if( !TrapVersionOK( *trap_ver ) ) {

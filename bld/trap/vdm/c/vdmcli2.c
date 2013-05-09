@@ -37,10 +37,11 @@
 #define INCL_DOSERRORS
 #include <os2.h>
 #include "watcom.h"
-#include "packet.h"
 #include "namepipe.h"
 #include "vdm.h"
+#include "trptypes.h"
 #include "trperr.h"
+#include "packet.h"
 
 HPIPE   pipeHdl;
 
@@ -101,7 +102,7 @@ char RemoteConnect(void)
 }
 
 
-unsigned RemoteGet(char *data, unsigned length)
+trap_elen RemoteGet(char *data, trap_elen length)
 {
     unsigned_16 incoming;
     ULONG       bytes_read;
@@ -119,7 +120,7 @@ unsigned RemoteGet(char *data, unsigned length)
 }
 
 
-unsigned RemotePut(char *data, unsigned length)
+trap_elen RemotePut(char *data, trap_elen length)
 {
     unsigned_16 outgoing;
     ULONG       bytes_written;

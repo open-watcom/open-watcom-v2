@@ -183,11 +183,13 @@ RQ_HANDLER MyReplyHandlers[] = {
 
 typedef int ( SVC_DECODE )( int request, unsigned char * pkt, unsigned short len );
 
+typedef unsigned service_func(void);
+
 typedef struct tagServiceNameAndId{
-    struct tagServiceNameAndId *    next;
-    char *                          service_name;
-    unsigned int                    service_id;
-    SVC_DECODE *                    service_decode;
+    struct tagServiceNameAndId      *next;
+    char                            *service_name;
+    trap_shandle                    service_id;
+    SVC_DECODE                      *service_decode;
 }ServiceNameAndId;
 
 char    last_service_name[1024] = { 0 };
@@ -488,15 +490,15 @@ int handle_REQ_GET_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_GET_SUPPLEMENTARY_SERVICE_REPLY( unsigned char * pkt, unsigned short )
+int handle_REQ_GET_SUPPLEMENTARY_SERVICE_REPLY( unsigned char *pkt, unsigned short )
 {
-    get_supplementary_service_ret * pr = ( get_supplementary_service_ret * ) pkt;
+    get_supplementary_service_ret *pr = (get_supplementary_service_ret *)pkt;
     
     printf( "Trap reply: REQ_GET_SUPPLEMENTARY_SERVICE\n" );
     printf( "    Error : %u\n", pr->err );
     printf( "    ID:     0x%.08x\n", pr->id );
     
-    ServiceNameAndId * new_entry = ( ServiceNameAndId * ) calloc( 1, sizeof( ServiceNameAndId ) );
+    ServiceNameAndId *new_entry = (ServiceNameAndId *)calloc( 1, sizeof( ServiceNameAndId ) );
     new_entry->service_name = strdup( last_service_name );
     new_entry->service_id = pr->id;
     new_entry->service_decode = get_supp_service_decoder( last_service_name );
@@ -516,7 +518,7 @@ int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned shor
     printf( "Debugger request: REQ_PERFORM_SUPPLEMENTARY_SERVICE\n" );
     printf( "    ID: 0x%.08x", prq->id );
     
-    ServiceNameAndId * lookup = services;
+    ServiceNameAndId *lookup = services;
     while( lookup ) {
         if( prq->id == lookup->service_id ) {
             printf( " [ %s ]", lookup->service_name );
@@ -635,7 +637,7 @@ int handle_REQ_ADDR_INFO_REPLY( unsigned char * pkt, unsigned short )
     addr_info_ret * pr = ( addr_info_ret * ) pkt;
     
     printf( "Trap reply: REQ_ADDR_INFO\n" );
-    printf( "    Is32:    %u\n", pr->is_32 );
+    printf( "    Is big:  %u\n", pr->is_big );
     
     return 1;
 }
@@ -903,7 +905,7 @@ int handle_REQ_PROG_LOAD_REPLY( unsigned char * pkt, unsigned short )
         printf( "    Flags:          0x%.02x\n", pr->flags );
         printf( "                    " );
         
-        if( pr->flags & LD_FLAG_IS_32 )             printf( "LD_FLAG_IS_32 " );
+        if( pr->flags & LD_FLAG_IS_BIG )            printf( "LD_FLAG_IS_BIG " );
         if( pr->flags & LD_FLAG_IS_PROT )           printf( "LD_FLAG_IS_PROT " );
         if( pr->flags & LD_FLAG_IS_STARTED )        printf( "LD_FLAG_IS_STARTED " );
         if( pr->flags & LD_FLAG_IGNORE_SEGMENTS )   printf( "LD_FLAG_IGNORE_SEGMENTS " );

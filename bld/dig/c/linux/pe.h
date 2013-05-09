@@ -40,7 +40,7 @@
 
 /*---------------------- Macros and type definitions ----------------------*/
 
-#pragma pack(1)
+#include "pushpck1.h"
 
 /* Macro to round a value to a 4Kb boundary */
 
@@ -262,7 +262,7 @@ typedef struct {
     u_long  OrdinalTableRVA;
     } EXPORT_DIRECTORY;
 
-#pragma pack()
+#include "poppck.h"
 
 #endif  /* __PE_H */
 

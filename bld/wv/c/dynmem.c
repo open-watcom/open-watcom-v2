@@ -41,10 +41,11 @@
 #include "dbgdefn.h"
 #include "dbgerr.h"
 #ifdef TRMEM
+ #include "wio.h"
  #include "trmem.h"
  #include "dui.h"
- #include <unistd.h>
- #include <fcntl.h>
+// #include <unistd.h>
+// #include <fcntl.h>
 #else
  #include "dbgio.h"
  #include "dui.h"
@@ -85,7 +86,7 @@ static void TRPrintLine( int * handle, const char * buff, size_t len )
 static void TRMemOpen( void )
 /***************************/
 {
-    TRMemHandle = _trmem_open( malloc, free, realloc, _expand,
+    TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
             NULL, TRPrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );

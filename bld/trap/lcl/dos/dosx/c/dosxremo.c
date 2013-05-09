@@ -44,6 +44,7 @@
 
 extern void             SaveVectors(unsigned long *);
 extern void             RestoreVectors(unsigned long *);
+extern void             InitPSP( void );
 
 static char             LinkParm[256];
 static char             FailMsg[128];
@@ -55,12 +56,12 @@ static unsigned long    LoadVectors[256];       /* int vectors after load */
 static unsigned long    CurrVectors[256];       /* current int vectors */
 
 
-static unsigned DoAccess( void )
+static trap_elen DoAccess( void )
 {
-    unsigned    left;
-    unsigned    len;
-    unsigned    i;
-    unsigned    piece;
+    trap_elen  left;
+    trap_elen  len;
+    trap_elen  i;
+    trap_elen  piece;
 
     _DBG_EnterFunc( "DoAccess()" );
     _DBG_Writeln( "StartPacket" );
@@ -99,7 +100,7 @@ static unsigned DoAccess( void )
 }
 
 
-unsigned ReqGet_sys_config( void )
+trap_elen ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -117,7 +118,7 @@ unsigned ReqGet_sys_config( void )
     return( DoAccess() );
 }
 
-unsigned ReqGet_err_text( void )
+trap_elen ReqGet_err_text( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -144,7 +145,7 @@ unsigned ReqGet_err_text( void )
     return( DoAccess() );
 }
 
-unsigned ReqMap_addr( void )
+trap_elen ReqMap_addr( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -160,7 +161,7 @@ unsigned ReqMap_addr( void )
     return( DoAccess() );
 }
 
-unsigned ReqRead_io( void )
+trap_elen ReqRead_io( void )
 {
     if( !TaskLoaded ) {
         return( 0 );
@@ -168,7 +169,7 @@ unsigned ReqRead_io( void )
     return( DoAccess() );
 }
 
-unsigned ReqWrite_io( void )
+trap_elen ReqWrite_io( void )
 {
     write_io_ret        *ret;
 
@@ -181,7 +182,7 @@ unsigned ReqWrite_io( void )
 }
 
 // OBSOLETE - use ReqRead_regs
-unsigned ReqRead_cpu( void )
+trap_elen ReqRead_cpu( void )
 {
     read_cpu_ret        *ret;
 
@@ -194,7 +195,7 @@ unsigned ReqRead_cpu( void )
 }
 
 // OBSOLETE - use ReqRead_regs
-unsigned ReqRead_fpu( void )
+trap_elen ReqRead_fpu( void )
 {
     read_fpu_ret        *ret;
 
@@ -206,7 +207,7 @@ unsigned ReqRead_fpu( void )
     return( DoAccess() );
 }
 
-unsigned ReqRead_regs( void )
+trap_elen ReqRead_regs( void )
 {
     mad_registers       *mr;
 
@@ -219,7 +220,7 @@ unsigned ReqRead_regs( void )
 }
 
 
-unsigned ReqChecksum_mem( void )
+trap_elen ReqChecksum_mem( void )
 {
     checksum_mem_ret    *ret;
 
@@ -231,7 +232,7 @@ unsigned ReqChecksum_mem( void )
     return( DoAccess() );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_elen ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -244,10 +245,10 @@ unsigned ReqGet_next_alias( void )
     return( DoAccess() );
 }
 
-unsigned ReqProg_go( void )
+trap_elen ReqProg_go( void )
 {
-    prog_go_ret         *ret;
-    unsigned            len;
+    prog_go_ret     *ret;
+    trap_elen       len;
 
     if( !TaskLoaded ) {
         ret = GetOutPtr( 0 );
@@ -262,19 +263,19 @@ unsigned ReqProg_go( void )
 }
 
 //OBSOLETE - use ReqMachine_data
-unsigned ReqAddr_info( void )
+trap_elen ReqAddr_info( void )
 {
     addr_info_ret       *ret;
 
     if( !TaskLoaded ) {
         ret = GetOutPtr( 0 );
-        ret->is_32 = TRUE;
+        ret->is_big = TRUE;
         return( sizeof( *ret ) );
     }
     return( DoAccess() );
 }
 
-unsigned ReqMachine_data( void )
+trap_elen ReqMachine_data( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -290,7 +291,7 @@ unsigned ReqMachine_data( void )
     return( DoAccess() );
 }
 
-unsigned ReqGet_lib_name( void )
+trap_elen ReqGet_lib_name( void )
 {
     get_lib_name_ret    *ret;
 
@@ -303,7 +304,7 @@ unsigned ReqGet_lib_name( void )
     return( DoAccess() );
 }
 
-unsigned ReqRead_mem( void )
+trap_elen ReqRead_mem( void )
 {
     if( !TaskLoaded ) {
         return( 0 );
@@ -311,7 +312,7 @@ unsigned ReqRead_mem( void )
     return( DoAccess() );
 }
 
-unsigned ReqWrite_mem( void )
+trap_elen ReqWrite_mem( void )
 {
     write_mem_ret       *ret;
 
@@ -337,7 +338,7 @@ char *GetExeExtensions( void )
     return( DosXExtList );
 }
 
-unsigned ReqProg_load( void )
+trap_elen ReqProg_load( void )
 {
     char                buffer[160];
     char                *src;
@@ -347,7 +348,7 @@ unsigned ReqProg_load( void )
     char                *err;
     tiny_ret_t          rc;
     prog_load_ret       *ret;
-    unsigned_16         len;
+    trap_elen           len;
 
     SaveVectors( OrigVectors );
     _DBG_EnterFunc( "AccLoadProg()" );
@@ -391,7 +392,7 @@ unsigned ReqProg_load( void )
         if( ret->err != 0 ) {
             get_err_text_req    erracc;
             prog_kill_req       killacc;
-            int                 msg_len;
+            trap_elen           msg_len;
 
             _DBG_Writeln( "loadret->errcode != 0" );
             if( LoadError == NULL ) {
@@ -439,10 +440,10 @@ unsigned ReqProg_load( void )
     return( len );
 }
 
-unsigned ReqProg_kill( void )
+trap_elen ReqProg_kill( void )
 {
-    int         len;
-    prog_kill_ret       *ret;
+    trap_elen       len;
+    prog_kill_ret   *ret;
 
     if( !TaskLoaded ) {
         ret = GetOutPtr( 0 );
@@ -457,69 +458,66 @@ unsigned ReqProg_kill( void )
 }
 
 // OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_cpu( void )
+trap_elen ReqWrite_cpu( void )
 {
     return( DoAccess() );
 }
 
 // OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_fpu( void )
+trap_elen ReqWrite_fpu( void )
 {
     return( DoAccess() );
 }
-unsigned ReqWrite_regs( void )
-{
-    return( DoAccess() );
-}
-
-unsigned ReqSet_watch( void )
+trap_elen ReqWrite_regs( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqClear_watch( void )
+trap_elen ReqSet_watch( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqSet_break( void )
+trap_elen ReqClear_watch( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqClear_break( void )
+trap_elen ReqSet_break( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqGet_message_text( void )
+trap_elen ReqClear_break( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqRedirect_stdin( void )
+trap_elen ReqGet_message_text( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqRedirect_stdout( void )
+trap_elen ReqRedirect_stdin( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqProg_step( void )
+trap_elen ReqRedirect_stdout( void )
+{
+    return( DoAccess() );
+}
+
+trap_elen ReqProg_step( void )
 {
     return( ReqProg_go() );
 }
 
-#pragma off(unreferenced);
-trap_version TRAPENTRY TrapInit( char *parm, char *error,
-                                       bool remote )
-#pragma on(unreferenced);
+trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
 {
     trap_version    ver;
-    extern     void InitPSP( void );
 
+    remote = remote;
     ver.remote = FALSE;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

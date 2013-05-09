@@ -35,8 +35,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "wdebug.h"
-#include "packet.h"
+#include "trptypes.h"
 #include "trperr.h"
+#include "packet.h"
 
 static _dword _id;
 #ifdef DEBUG_ME
@@ -59,7 +60,7 @@ int c;
 }
 #endif
 
-unsigned RemoteGet( char *rec, unsigned len )
+trap_elen RemoteGet( char *rec, trap_elen len )
 {
 unsigned long rc;
 
@@ -81,7 +82,7 @@ unsigned long rc;
     return( rc >> 16 );
 }
 
-unsigned RemotePut( char *rec, unsigned len )
+trap_elen RemotePut( char *rec, trap_elen len )
 {
 #ifdef __WINDOWS__
 int rc;

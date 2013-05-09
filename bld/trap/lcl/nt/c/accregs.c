@@ -35,13 +35,11 @@
 #include "stdnt.h"
 #include "madregs.h"
 
-// position in Windows CONTEXT, 
-// it is offset in FXSAVE/FXRSTOR memory structure
-#define CONTEXT_MXCSR    24
-#define CONTEXT_XMM      (10 * 16) 
+#define LDWORD(x)   (x&0xFFFFFFFFL)
+#define HDWORD(x)   ((x>>32)&0xFFFFFFFFL)
 
 #if defined( MD_x86 )
-static void ReadCPU( struct x86_cpu *r, CONTEXT *con )
+static void ReadCPU( struct x86_cpu *r, MYCONTEXT *con )
 {
     r->eax = con->Eax;
     r->ebx = con->Ebx;
@@ -61,7 +59,104 @@ static void ReadCPU( struct x86_cpu *r, CONTEXT *con )
     r->gs = con->SegGs;
 }
 
-static void WriteCPU( struct x86_cpu *r, CONTEXT *con )
+static void WriteCPU( struct x86_cpu *r, MYCONTEXT *con )
+{
+    con->Eax = r->eax;
+    con->Ebx = r->ebx;
+    con->Ecx = r->ecx;
+    con->Edx = r->edx;
+    con->Esi = r->esi;
+    con->Edi = r->edi;
+    con->Esp = r->esp;
+    con->Ebp = r->ebp;
+    con->Eip = r->eip;
+    con->EFlags = r->efl;
+    con->SegDs = r->ds;
+    con->SegCs = r->cs;
+    con->SegEs = r->es;
+    con->SegSs = r->ss;
+    con->SegFs = r->fs;
+    con->SegGs = r->gs;
+}
+#elif defined( MD_x64 )
+#if 0
+static void ReadCPU( struct x64_cpu *r, MYCONTEXT *con )
+{
+    r->rax.u._64[0] = con->Rax;
+    r->rbx.u._64[0] = con->Rbx;
+    r->rcx.u._64[0] = con->Rcx;
+    r->rdx.u._64[0] = con->Rdx;
+    r->rsi.u._64[0] = con->Rsi;
+    r->rdi.u._64[0] = con->Rdi;
+    r->rsp.u._64[0] = con->Rsp;
+    r->rbp.u._64[0] = con->Rbp;
+    r->rip.u._64[0] = con->Rip;
+    r->r8.u._64[0] = con->R8;
+    r->r9.u._64[0] = con->R9;
+    r->r10.u._64[0] = con->R10;
+    r->r11.u._64[0] = con->R11;
+    r->r12.u._64[0] = con->R12;
+    r->r13.u._64[0] = con->R13;
+    r->r14.u._64[0] = con->R14;
+    r->r15.u._64[0] = con->R15;
+    r->eflags = con->EFlags;
+    r->ds = con->SegDs;
+    r->cs = con->SegCs;
+    r->es = con->SegDs;
+    r->ss = con->SegSs;
+    r->fs = con->SegFs;
+    r->gs = con->SegGs;
+}
+
+static void WriteCPU( struct x64_cpu *r, MYCONTEXT *con )
+{
+    con->Rax = r->rax.u._64[0];
+    con->Rbx = r->rbx.u._64[0];
+    con->Rcx = r->rcx.u._64[0];
+    con->Rdx = r->rdx.u._64[0];
+    con->Rsi = r->rsi.u._64[0];
+    con->Rdi = r->rdi.u._64[0];
+    con->Rsp = r->rsp.u._64[0];
+    con->Rbp = r->rbp.u._64[0];
+    con->Rip = r->rip.u._64[0];
+    con->R8 = r->r8.u._64[0];
+    con->R9 = r->r9.u._64[0];
+    con->R10 = r->r10.u._64[0];
+    con->R11 = r->r11.u._64[0];
+    con->R12 = r->r12.u._64[0];
+    con->R13 = r->r13.u._64[0];
+    con->R14 = r->r14.u._64[0];
+    con->R15 = r->r15.u._64[0];
+    con->EFlags = r->eflags;
+    con->SegDs = r->ds;
+    con->SegCs = r->cs;
+    con->SegEs = r->es;
+    con->SegSs = r->ss;
+    con->SegFs = r->fs;
+    con->SegGs = r->gs;
+}
+#else
+static void ReadCPU( struct x86_cpu *r, MYCONTEXT *con )
+{
+    r->eax = con->Eax;
+    r->ebx = con->Ebx;
+    r->ecx = con->Ecx;
+    r->edx = con->Edx;
+    r->esi = con->Esi;
+    r->edi = con->Edi;
+    r->esp = con->Esp;
+    r->ebp = con->Ebp;
+    r->eip = con->Eip;
+    r->efl = con->EFlags;
+    r->ds = con->SegDs;
+    r->cs = con->SegCs;
+    r->es = con->SegEs;
+    r->ss = con->SegSs;
+    r->fs = con->SegFs;
+    r->gs = con->SegGs;
+}
+
+static void WriteCPU( struct x86_cpu *r, MYCONTEXT *con )
 {
     con->Eax = r->eax;
     con->Ebx = r->ebx;
@@ -81,12 +176,12 @@ static void WriteCPU( struct x86_cpu *r, CONTEXT *con )
     con->SegGs = r->gs;
 }
 #endif
+#endif
 
-unsigned ReqRead_cpu( void )
+trap_elen ReqRead_cpu( void )
 {
-#if defined( MD_x86 )
+    MYCONTEXT       con;
     trap_cpu_regs   *regs;
-    CONTEXT         con;
     thread_info     *ti;
 
     regs = GetOutPtr( 0 );
@@ -98,15 +193,11 @@ unsigned ReqRead_cpu( void )
         ReadCPU( ( void * ) regs, &con );
     }
     return( sizeof( *regs ) );
-#else
-    return( 0 );
-#endif
 }
 
-unsigned ReqRead_fpu( void )
+trap_elen ReqRead_fpu( void )
 {
-#if defined( MD_x86 )
-    CONTEXT         con;
+    MYCONTEXT       con;
     read_fpu_ret    *ret;
     thread_info     *ti;
 
@@ -119,15 +210,11 @@ unsigned ReqRead_fpu( void )
         memcpy( ret, &con.FloatSave, sizeof( *ret ) );
     }
     return( sizeof( *ret ) );
-#else
-    return( 0 );
-#endif
 }
 
-unsigned ReqWrite_cpu( void )
+trap_elen ReqWrite_cpu( void )
 {
-#if defined( MD_x86 )
-    CONTEXT         con;
+    MYCONTEXT       con;
     thread_info     *ti;
     trap_cpu_regs   *regs;
 
@@ -140,15 +227,13 @@ unsigned ReqWrite_cpu( void )
     MyGetThreadContext( ti, &con );
     WriteCPU( ( void * )regs, &con );
     MySetThreadContext( ti, &con );
-#endif
     return( 0 );
 }
 
-unsigned ReqWrite_fpu( void )
+trap_elen ReqWrite_fpu( void )
 {
-#if defined( MD_x86 )
+    MYCONTEXT       con;
     trap_fpu_regs   *fpu;
-    CONTEXT         con;
     thread_info     *ti;
 
     if( DebugeePid == 0 ) {
@@ -159,20 +244,22 @@ unsigned ReqWrite_fpu( void )
     MyGetThreadContext( ti, &con );
     memcpy( &con.FloatSave, fpu, sizeof( *fpu ) );
     MySetThreadContext( ti, &con );
-#endif
     return( 0 );
 }
 
-unsigned ReqRead_regs( void )
+trap_elen ReqRead_regs( void )
 {
+    MYCONTEXT       con;
     mad_registers   _WCUNALIGNED *mr;
-    CONTEXT         con;
     thread_info     *ti;
 
     mr = GetOutPtr( 0 );
 
 #if defined( MD_x86 )
     memset( mr, 0, sizeof( mr->x86 ) );
+#elif defined( MD_x64 )
+    memset( mr, 0, sizeof( mr->x86 ) );
+//    memset( mr, 0, sizeof( mr->x64 ) );
 #elif defined( MD_axp )
     memset( mr, 0, sizeof( mr->axp ) );
 #elif defined( MD_ppc )
@@ -183,12 +270,12 @@ unsigned ReqRead_regs( void )
     if( DebugeePid ) {
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
         ReadCPU( &mr->x86.cpu, &con );
-        memcpy( &mr->x86.fpu, &con.FloatSave, sizeof( mr->x86.fpu ) );
-        memcpy( mr->x86.xmm.xmm, &con.ExtendedRegisters[ CONTEXT_XMM ],
+        memcpy( &mr->x86.u.fpu, &con.FloatSave, sizeof( mr->x86.u.fpu ) );
+        memcpy( mr->x86.xmm.xmm, &con.ExtendedRegisters[ MYCONTEXT_XMM ],
             sizeof( mr->x86.xmm.xmm ) );
-        mr->x86.xmm.mxcsr = con.ExtendedRegisters[ CONTEXT_MXCSR ];
+        mr->x86.xmm.mxcsr = con.ExtendedRegisters[ MYCONTEXT_MXCSR ];
 #elif defined( MD_axp )
         memcpy( &mr->axp.r, &con, sizeof( mr->axp.r ) );
         mr->axp.pal.nt.fir      = *( unsigned_64 * ) & con.Fir;
@@ -243,6 +330,9 @@ unsigned ReqRead_regs( void )
     }
 #if defined( MD_x86 )
     return( sizeof( mr->x86 ) );
+#elif defined( MD_x64 )
+    return( sizeof( mr->x86 ) );
+//    return( sizeof( mr->x64 ) );
 #elif defined( MD_axp )
     return( sizeof( mr->axp ) );
 #elif defined( MD_ppc )
@@ -252,9 +342,9 @@ unsigned ReqRead_regs( void )
 #endif
 }
 
-unsigned ReqWrite_regs( void )
+trap_elen ReqWrite_regs( void )
 {
-    CONTEXT         con;
+    MYCONTEXT       con;
     thread_info     *ti;
     mad_registers   _WCUNALIGNED *mr;
 
@@ -265,12 +355,11 @@ unsigned ReqWrite_regs( void )
 
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
     WriteCPU( &mr->x86.cpu, &con );
-    memcpy( &con.FloatSave, &mr->x86.fpu, sizeof( mr->x86.fpu ) );
-    memcpy( &con.ExtendedRegisters[ CONTEXT_XMM ], 
-            mr->x86.xmm.xmm, sizeof( mr->x86.xmm.xmm ) );
-    con.ExtendedRegisters[ CONTEXT_MXCSR ] = mr->x86.xmm.mxcsr;
+    memcpy( &con.FloatSave, &mr->x86.u.fpu, sizeof( mr->x86.u.fpu ) );
+    memcpy( &con.ExtendedRegisters[ MYCONTEXT_XMM ], mr->x86.xmm.xmm, sizeof( mr->x86.xmm.xmm ) );
+    con.ExtendedRegisters[ MYCONTEXT_MXCSR ] = mr->x86.xmm.mxcsr;
 #elif defined( MD_axp )
     memcpy( &con, &mr->axp.r, sizeof( mr->axp.r ) );
     *( unsigned_64 * ) & con.Fir            = mr->axp.pal.nt.fir;
@@ -325,11 +414,11 @@ unsigned ReqWrite_regs( void )
     return( 0 );
 }
 
-DWORD AdjustIP( CONTEXT *con, int adjust )
+LPVOID AdjustIP( MYCONTEXT *con, int adjust )
 {
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
     con->Eip += adjust;
-    return( con->Eip );
+    return( (LPVOID)con->Eip );
 #elif defined( MD_axp )
     //NYI: 64 bit
     ( ( unsigned_64 * ) & con->Fir )->u._32[0] += adjust;
@@ -342,10 +431,10 @@ DWORD AdjustIP( CONTEXT *con, int adjust )
 #endif
 }
 
-void SetIP( CONTEXT *con, DWORD new )
+void SetIP( MYCONTEXT *con, LPVOID new )
 {
-#if defined( MD_x86 )
-    con->Eip = new;
+#if defined( MD_x86 ) || defined( MD_x64 )
+    con->Eip = (DWORD)new;
 #elif defined( MD_axp )
     //NYI: 64 bit
     ( ( unsigned_64 * ) & con->Fir )->u._32[0] = new;

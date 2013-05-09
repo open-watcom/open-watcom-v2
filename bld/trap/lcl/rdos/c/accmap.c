@@ -35,14 +35,14 @@
 #include "stdrdos.h"
 #include "debug.h"
 
-unsigned ReqMap_addr( void )
+trap_elen ReqMap_addr( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
     struct TDebug       *obj;
-	struct TDebugModule *mod = 0;
-	int                  sel;
-	int                  offset;
+        struct TDebugModule *mod = 0;
+        int                  sel;
+        int                  offset;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -52,32 +52,48 @@ unsigned ReqMap_addr( void )
 
     obj = GetCurrentDebug();
 
-	if (obj) {
+    if (obj) {
         mod = LockModule( obj, acc->handle );
         if( mod ) {
-            switch ( sel )
-            {
-                case MAP_FLAT_CODE_SELECTOR:                
-                    ret->out_addr.segment = 0x1B3;
-                    ret->out_addr.offset = mod->ImageBase + mod->ObjectRva + offset;
-                    ret->lo_bound = 0;
-                    ret->hi_bound = mod->ImageSize - 1;            
-                    break;
-                case MAP_FLAT_DATA_SELECTOR:
-                    ret->out_addr.segment = 0x1BB;
-                    ret->out_addr.offset = mod->ImageBase + mod->ObjectRva + offset;
-                    ret->lo_bound = 0;
-                    ret->hi_bound = mod->ImageSize - 1;            
-                    break;
-                case 0:
-                case 1:
+            switch ( sel ) {
+            case MAP_FLAT_CODE_SELECTOR:                
+                ret->out_addr.segment = 0x1B3;
+                ret->out_addr.offset = mod->ImageBase + mod->ObjectRva + offset;
+                ret->lo_bound = 0;
+                ret->hi_bound = mod->ImageSize - 1;            
+                break;
+            case MAP_FLAT_DATA_SELECTOR:
+                ret->out_addr.segment = 0x1BB;
+                ret->out_addr.offset = mod->ImageBase + mod->ObjectRva + offset;
+                ret->lo_bound = 0;
+                ret->hi_bound = mod->ImageSize - 1;            
+                break;
+            case 0:
+            case 1:
+                ret->out_addr.segment = mod->CodeSel;
+                ret->out_addr.offset = offset;
+                ret->lo_bound = 0;
+                ret->hi_bound = mod->ImageSize - 1;            
+                break;
+            case 2:
+            case 3:
+                ret->out_addr.segment = mod->DataSel;
+                ret->out_addr.offset = offset;
+                ret->lo_bound = 0;
+                if( mod->DataSel && mod->DataSize )
+                    ret->hi_bound = mod->DataSize - 1;
+                else
+                    ret->hi_bound = 0;
+                break;
+            default:
+                if( sel == mod->CodeSel ) {
                     ret->out_addr.segment = mod->CodeSel;
                     ret->out_addr.offset = offset;
                     ret->lo_bound = 0;
                     ret->hi_bound = mod->ImageSize - 1;            
                     break;
-                case 2:
-                case 3:
+                }
+                if( sel == mod->DataSel ) {
                     ret->out_addr.segment = mod->DataSel;
                     ret->out_addr.offset = offset;
                     ret->lo_bound = 0;
@@ -86,29 +102,12 @@ unsigned ReqMap_addr( void )
                     else
                         ret->hi_bound = 0;
                     break;
-                default:
-                    if( sel == mod->CodeSel ) {
-                        ret->out_addr.segment = mod->CodeSel;
-                        ret->out_addr.offset = offset;
-                        ret->lo_bound = 0;
-                        ret->hi_bound = mod->ImageSize - 1;            
-                        break;
-                    }
-                    if( sel == mod->DataSel ) {
-                        ret->out_addr.segment = mod->DataSel;
-                        ret->out_addr.offset = offset;
-                        ret->lo_bound = 0;
-                        if( mod->DataSel && mod->DataSize )
-                            ret->hi_bound = mod->DataSize - 1;
-                        else
-                            ret->hi_bound = 0;
-                        break;
-                    }                    
-                    ret->out_addr.segment = 0;
-                    ret->out_addr.offset = offset;
-                    ret->lo_bound = 0;
-                    ret->hi_bound = 0;
-                    break;
+                }                    
+                ret->out_addr.segment = 0;
+                ret->out_addr.offset = offset;
+                ret->lo_bound = 0;
+                ret->hi_bound = 0;
+                break;
             }
         }
         UnlockModule( obj );
@@ -123,7 +122,7 @@ unsigned ReqMap_addr( void )
 /*
  * AccGetLibName - get lib name of current module
  */
-unsigned ReqGet_lib_name( void )
+trap_elen ReqGet_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -139,8 +138,8 @@ unsigned ReqGet_lib_name( void )
 
     obj = GetCurrentDebug();
 
-	if (obj) {
-		ret->handle = GetNextModule( obj, acc->handle );
+    if (obj) {
+        ret->handle = GetNextModule( obj, acc->handle );
 
         if( ret->handle ) {
             mod = LockModule( obj, ret->handle );
@@ -150,9 +149,9 @@ unsigned ReqGet_lib_name( void )
                 name[0] = 0;
             UnlockModule( obj );
         }
-	}
+    }
 
-	if( mod )
+    if( mod )
         return( sizeof( *ret ) + strlen( name ) + 1 );
     else
         return( sizeof( *ret ) );

@@ -42,11 +42,12 @@
 #include "dbgdefn.h"
 #include "dbgio.h"
 #include "dbgtoggl.h"
-#include "trpcore.h"
-#include "trpfile.h"
 #include "dta.h"
-#include "trprfx.h"
 #include "tcerr.h"
+#include "trpcore.h"
+#ifdef WANT_RFX
+#include "trprfx.h"
+#endif
 
 #include "local.h"
 

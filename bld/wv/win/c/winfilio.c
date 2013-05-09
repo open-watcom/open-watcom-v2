@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "tinyio.h"
@@ -36,8 +37,7 @@
 #include "dbgtoggl.h"
 #include "farptrs.h"
 #include "dbgreg.h"
-#include <string.h>
-#include "trpfile.h"
+#include "trptypes.h"
 
 #include "doserr.h"
 

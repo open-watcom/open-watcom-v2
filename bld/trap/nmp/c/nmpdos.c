@@ -33,24 +33,24 @@
 #include "tinyio.h"
 #include "nmp.h"
 
-int myopen( char *name )
+bhandle myopen( char *name )
 {
     tiny_ret_t  rc;
 
     rc = TinyOpen( name, TIO_READ_WRITE );
     if( TINY_ERROR( rc ) ) {
-        return( -1 );
+        return( BHANDLE_INVALID );
     } else {
         return( TINY_INFO( rc ) );
     }
 }
 
-void myclose( int handle )
+void myclose( bhandle handle )
 {
     TinyClose( handle );
 }
 
-int myread( int handle, char *buff, int len )
+int myread( bhandle handle, char *buff, int len )
 {
     tiny_ret_t  rc;
 
@@ -63,7 +63,7 @@ int myread( int handle, char *buff, int len )
 }
 
 
-int mywrite( int handle, char *buff, int len )
+int mywrite( bhandle handle, char *buff, int len )
 {
     tiny_ret_t  rc;
 

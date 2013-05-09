@@ -43,8 +43,8 @@ BOOL SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
     int     rc;
     DWORD   bytes;
 
-    rc = SetFilePointer( handle, newpos, 0, SEEK_SET );
-    if( rc == -1 ) {
+    rc = SetFilePointer( handle, newpos, NULL, FILE_BEGIN );
+    if( rc == INVALID_SET_FILE_POINTER ) {
         return( FALSE );
     }
     rc = ReadFile( handle, buff, size, &bytes, NULL );
@@ -90,30 +90,22 @@ int GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
     }
     hi->sig = sig;
     if( sig == EXE_PE ) {
-        if( !SeekRead( handle, nh_offset, &hi->peh, sizeof( pe_header ) ) ) {
-            return( FALSE );
-        }
-        /* position to begining of object table */
-        nh_offset += hi->peh.nt_hdr_size + offsetof( pe_header, magic );
-        if( SetFilePointer( handle, nh_offset, 0, SEEK_SET ) == -1 ) {
-            return( FALSE );
-        }
-        return( TRUE );
+        return( SeekRead( handle, nh_offset, &hi->u.peh, sizeof( exe_pe_header ) ) );
     }
 #if defined( MD_x86 )
     if( sig == EXE_NE ) {
-        if( !SeekRead( handle, nh_offset, &hi->neh, sizeof( os2_exe_header ) ) )
+        if( !SeekRead( handle, nh_offset, &hi->u.neh, sizeof( os2_exe_header ) ) )
         {
             return( FALSE );
         }
-        if( hi->neh.target == TARGET_WINDOWS ) {
+        if( hi->u.neh.target == TARGET_WINDOWS ) {
             DWORD       off;
             int         len;
             DWORD       bytes;
             DWORD       pos;
 
-            off = nh_offset + hi->neh.resident_off;
-            if( SetFilePointer( handle, off, 0, SEEK_SET ) == -1 ) {
+            off = nh_offset + hi->u.neh.resident_off;
+            if( SetFilePointer( handle, off, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
                 return( FALSE );
             }
             if( !ReadFile( handle, &len, sizeof( len ), &bytes, NULL ) ) {
@@ -126,19 +118,21 @@ int GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
                 return( FALSE );
             }
             hi->modname[len] = 0;
-            pos = nh_offset + hi->neh.segment_off + 
-                ( hi->neh.adsegnum - 1 ) * sizeof( segment_record ) +
+            pos = nh_offset + hi->u.neh.segment_off + 
+                ( hi->u.neh.adsegnum - 1 ) * sizeof( segment_record ) +
                 offsetof( segment_record, min );
             if( !SeekRead( handle, pos, stack, sizeof( *stack ) ) ) {
                 return( FALSE );
             }
-            *stack += hi->neh.stack;
+            *stack += hi->u.neh.stack;
             return( TRUE );
         }
         return( FALSE );
     }
     hi->sig = EXE_MZ;
     return( TRUE );
+#elif defined( MD_x64 )
+    return( FALSE );
 #elif defined( MD_axp ) || defined( MD_ppc )
     return( FALSE );
 #else
@@ -156,6 +150,8 @@ int GetModuleName( HANDLE fhdl, char *name )
     DWORD               i;
     char                buf[_MAX_PATH];
     WORD                stack;
+    int                 num_objects;
+    DWORD               seek_offset;
 
     if( !GetEXEHeader( fhdl, &hi, &stack ) ) {
         return( FALSE );
@@ -163,33 +159,44 @@ int GetModuleName( HANDLE fhdl, char *name )
     if( hi.sig != EXE_PE ) {
         return( FALSE );
     }
-    export_rva = hi.peh.table[PE_TBL_EXPORT].rva;
-    if( hi.peh.num_objects == 0 ) {
+    seek_offset = SetFilePointer( fhdl, 0, NULL, FILE_CURRENT );
+    if( seek_offset == INVALID_SET_FILE_POINTER ) {
         return( FALSE );
     }
-    for( i = 0; i < hi.peh.num_objects; i++ ) {
-        if( !ReadFile( fhdl, &obj, sizeof( obj ), &lenread, NULL )
-            || lenread != sizeof( obj ) ) {
+    if( IS_PE64( hi.u.peh ) ) {
+        export_rva = PE64( hi.u.peh ).table[PE_TBL_EXPORT].rva;
+        num_objects = PE64( hi.u.peh ).num_objects;
+        seek_offset += PE64( hi.u.peh ).nt_hdr_size + offsetof( pe_header64, magic ) - sizeof( exe_pe_header );
+    } else {
+        export_rva = PE32( hi.u.peh ).table[PE_TBL_EXPORT].rva;
+        num_objects = PE32( hi.u.peh ).num_objects;
+        seek_offset += PE32( hi.u.peh ).nt_hdr_size + offsetof( pe_header, magic ) - sizeof( exe_pe_header );
+    }
+    if( num_objects == 0 ) {
+        return( FALSE );
+    }
+    /* position to begining of object table */
+    if( SetFilePointer( fhdl, seek_offset, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
+        return( FALSE );
+    }
+    for( i = 0; i < num_objects; i++ ) {
+        if( !ReadFile( fhdl, &obj, sizeof( obj ), &lenread, NULL ) || lenread != sizeof( obj ) ) {
             return( FALSE );
         }
-        if( export_rva >= obj.rva && export_rva < obj.rva + obj.physical_size )
-        {
+        if( export_rva >= obj.rva && export_rva < obj.rva + obj.physical_size ) {
             break;
         }
     }
-    if( i == hi.peh.num_objects ) {
+    if( i == num_objects ) {
         return( FALSE );
     }
-    if( !SeekRead( fhdl, obj.physical_offset + export_rva - obj.rva,
-                   &expdir, sizeof( expdir ) ) ) {
+    if( !SeekRead( fhdl, obj.physical_offset + export_rva - obj.rva, &expdir, sizeof( expdir ) ) ) {
         return( FALSE );
     }
-    if( !SeekRead( fhdl, obj.physical_offset + expdir.name_rva - obj.rva,
-                   buf, _MAX_PATH ) ) {
+    if( !SeekRead( fhdl, obj.physical_offset + expdir.name_rva - obj.rva, buf, _MAX_PATH ) ) {
         return( FALSE );
     }
-    if( SetFilePointer( fhdl, obj.physical_offset + expdir.name_rva - obj.rva,
-                        NULL, FILE_BEGIN ) == -1 ) {
+    if( SetFilePointer( fhdl, obj.physical_offset + expdir.name_rva - obj.rva, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
         return( FALSE );
     }
     if( !ReadFile( fhdl, buf, _MAX_PATH, &lenread, NULL ) ) {
@@ -209,9 +216,8 @@ int CpFile( HANDLE in )
     DWORD   old;
     int     rc;
 
-    out = CreateFile( ( LPTSTR ) "CP.OUT", GENERIC_WRITE, FILE_SHARE_READ, 0,
-                CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-    if( out == 0 ) {
+    out = CreateFile( (LPTSTR)"CP.OUT", GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+    if( out == INVALID_HANDLE_VALUE ) {
         return( 1 );
     }
     old = SetFilePointer( in, 0, NULL, FILE_CURRENT );

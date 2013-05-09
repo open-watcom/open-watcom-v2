@@ -35,14 +35,14 @@
 #include "ovldbg.h"
 #include "doscomm.h"
 
-extern unsigned_8       RunProg( trap_cpu_regs *, trap_cpu_regs * );
+extern unsigned_8           RunProg( trap_cpu_regs *, trap_cpu_regs * );
 extern ovl_dbg_hook_func    OvlTrap;
 
-extern trap_cpu_regs    TaskRegs;
+extern trap_cpu_regs        TaskRegs;
 
-static unsigned         OvlStateSize;
-static ovl_dbg_req_func *OvlRequest;
-static ovl_dbg_req_func NoOvlsHdlr;
+static trap_elen            OvlStateSize;
+static ovl_dbg_req_func     *OvlRequest;
+static ovl_dbg_req_func     NoOvlsHdlr;
 
 static int far NoOvlsHdlr( int req, void far *data )
 /**************************************************/
@@ -71,7 +71,7 @@ bool CheckOvl( addr32_ptr start )
     return( FALSE );
 }
 
-unsigned ReqOvl_state_size( void )
+trap_elen ReqOvl_state_size( void )
 /********************************/
 {
     ovl_state_size_ret  *ret;
@@ -82,14 +82,14 @@ unsigned ReqOvl_state_size( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqOvl_read_state( void )
+trap_elen ReqOvl_read_state( void )
 /********************************/
 {
     OvlRequest( OVLDBG_GET_OVERLAY_STATE, GetOutPtr( 0 ) );
     return( OvlStateSize );
 }
 
-unsigned ReqOvl_write_state( void )
+trap_elen ReqOvl_write_state( void )
 /*********************************/
 {
     SetUsrTask(); /* overlay manager needs access to its file table */
@@ -98,7 +98,7 @@ unsigned ReqOvl_write_state( void )
     return( 0 );
 }
 
-unsigned ReqOvl_trans_vect_addr( void )
+trap_elen ReqOvl_trans_vect_addr( void )
 /*************************************/
 {
     ovl_trans_vect_addr_req     *acc;
@@ -114,7 +114,7 @@ unsigned ReqOvl_trans_vect_addr( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqOvl_trans_ret_addr( void )
+trap_elen ReqOvl_trans_ret_addr( void )
 /************************************/
 {
     ovl_trans_ret_addr_req      *acc;
@@ -130,7 +130,7 @@ unsigned ReqOvl_trans_ret_addr( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqOvl_get_remap_entry( void )
+trap_elen ReqOvl_get_remap_entry( void )
 /*************************************/
 {
     ovl_get_remap_entry_req     *acc;
@@ -143,7 +143,7 @@ unsigned ReqOvl_get_remap_entry( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqOvl_get_data( void )
+trap_elen ReqOvl_get_data( void )
 /******************************/
 {
     ovl_get_data_req    *acc;

@@ -666,7 +666,7 @@ unsigned ReqAddr_info( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->is_32 = Is32BitSeg( acc->in_addr.segment );
+    ret->is_big = Is32BitSeg( acc->in_addr.segment );
     return( sizeof( *ret ) );
 }
 
@@ -863,7 +863,7 @@ unsigned ReqRead_regs( void )
         ReadRegs( &Buff );
         ReadCPU( &mr->x86.cpu );
         Buff.Cmd = DBG_C_ReadCoRegs;
-        Buff.Buffer = (ULONG) MakeLocalPtrFlat( &mr->x86.fpu );
+        Buff.Buffer = (ULONG) MakeLocalPtrFlat( &mr->x86.u.fpu );
         Buff.Value = DBG_CO_387;        /* for 2.0: DBG_CO_387 */
         Buff.Len = DBG_CO_SIZE;         /* for 2.0: size of register state */
         Buff.Index = 0;                 /* for 2.0: must be 0 */
@@ -881,7 +881,7 @@ unsigned ReqWrite_regs( void )
         WriteCPU( &mr->x86.cpu );
         WriteRegs( &Buff );
         Buff.Cmd = DBG_C_WriteCoRegs;
-        Buff.Buffer = (ULONG) MakeLocalPtrFlat( &mr->x86.fpu );
+        Buff.Buffer = (ULONG) MakeLocalPtrFlat( &mr->x86.u.fpu );
         Buff.Value = DBG_CO_387;        /* for 2.0: DBG_CO_387 */
         Buff.Len = DBG_CO_SIZE;         /* for 2.0: buffer size */
         Buff.Index = 0;                 /* for 2.0: must be zero */
@@ -1119,7 +1119,7 @@ unsigned ReqProg_load( void )
         CanExecTask = FALSE;
         if( FindLinearStartAddress( &startLinear, UtilBuff ) ) {
             if( Is32Bit ) {
-                ret->flags |= LD_FLAG_IS_32;
+                ret->flags |= LD_FLAG_IS_BIG;
             }
             CanExecTask = ExecuteUntilLinearAddressHit( startLinear );
             ReadRegs( &Buff );

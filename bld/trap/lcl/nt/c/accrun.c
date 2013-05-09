@@ -47,17 +47,17 @@ typedef enum {
  */
 static void setATBit( thread_info *ti, set_t set )
 {
-    CONTEXT con;
+    MYCONTEXT con;
 
-    con.ContextFlags = CONTEXT_CONTROL;
+    con.ContextFlags = MYCONTEXT_CONTROL;
     MyGetThreadContext( ti, &con );
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
     if( set != T_OFF ) {
         con.EFlags |= TRACE_BIT;
     } else {
         con.EFlags &= ~TRACE_BIT;
     }
-    con.ContextFlags = CONTEXT_CONTROL;
+    con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
 #elif defined( MD_axp )
     {
@@ -69,19 +69,19 @@ static void setATBit( thread_info *ti, set_t set )
             if( set == T_ON_NEXT )
                 ti->brk_addr += 4;
                 ReadProcessMemory( ProcessInfo.process_handle,
-                    ( LPVOID )ti->brk_addr, ( LPVOID )&ti->brk_opcode,
-                    sizeof( ti->brk_opcode ), ( LPDWORD )&bytes );
+                    (LPVOID)ti->brk_addr, (LPVOID)&ti->brk_opcode,
+                    sizeof( ti->brk_opcode ), (LPDWORD)&bytes );
             if( ti->brk_opcode != brk ) {
                 WriteProcessMemory( ProcessInfo.process_handle,
-                    ( LPVOID )ti->brk_addr, ( LPVOID )&brk, sizeof( brk ),
-                    ( LPDWORD )&bytes );
+                    (LPVOID)ti->brk_addr, (LPVOID)&brk, sizeof( brk ),
+                    (LPDWORD)&bytes );
             } else {
                 ti->brk_addr = 0;
             }
         } else if( ti->brk_addr != 0 ) {
             WriteProcessMemory( ProcessInfo.process_handle,
-                ( LPVOID )ti->brk_addr, ( LPVOID )&ti->brk_opcode,
-                sizeof( ti->brk_opcode ), ( LPDWORD )&bytes );
+                (LPVOID)ti->brk_addr, (LPVOID)&ti->brk_opcode,
+                sizeof( ti->brk_opcode ), (LPDWORD)&bytes );
             ti->brk_addr = 0;
         }
     }
@@ -91,7 +91,7 @@ static void setATBit( thread_info *ti, set_t set )
     } else {
         con.Msr &= ~TRACE_BIT;
     }
-    con.ContextFlags = CONTEXT_CONTROL;
+    con.ContextFlags = MYCONTEXT_CONTROL;
     MySetThreadContext( ti, &con );
 #else
     #error setATBit not configured
@@ -190,17 +190,17 @@ static void setTBit( set_t set )
 /*
  * handleInt3 - process an encountered break point
  */
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
 static DWORD    BreakFixed;
 #endif
 
 static int handleInt3( DWORD state )
 {
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
     thread_info *ti;
-    CONTEXT     con;
+    MYCONTEXT   con;
 
-    (void)state; // Unused
+    state=state; // Unused
     ti = FindThread( DebugeeTid );
     if( ti == NULL ) {
         HANDLE  th;
@@ -215,18 +215,18 @@ static int handleInt3( DWORD state )
     }
     if( ti->is_foreign ) {
         HANDLE  proc;
-        DWORD   written;
+        SIZE_T  written;
         BYTE    ch;
 
         MyGetThreadContext( ti, &con );
         con.Eip--;
-        if( !FindBreak( ( WORD ) con.SegCs, ( DWORD ) con.Eip, &ch ) ) {
+        if( !FindBreak( (WORD)con.SegCs, (DWORD)con.Eip, &ch ) ) {
             MySetThreadContext( ti, &con );
             return( COND_BREAK );
         }
         BreakFixed = con.Eip;
         proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-        WriteProcessMemory( proc, ( LPVOID ) con.Eip, &ch, 1, &written );
+        WriteProcessMemory( proc, (LPVOID)con.Eip, &ch, 1, &written );
         con.EFlags |= TRACE_BIT;
         MySetThreadContext( ti, &con );
         CloseHandle( proc );
@@ -238,7 +238,7 @@ static int handleInt3( DWORD state )
     }
 #elif defined( MD_axp )
     thread_info *ti;
-    CONTEXT     con;
+    MYCONTEXT   con;
 
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
@@ -295,7 +295,7 @@ static int handleInt1( DWORD state )
         }
         ch = BRK_POINT;
         proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-        WriteProcessMemory( proc, ( LPVOID ) BreakFixed, &ch, 1, &written );
+        WriteProcessMemory( proc, (LPVOID)BreakFixed, &ch, 1, &written );
         CloseHandle( proc );
         BreakFixed = 0;
         return( 0 );
@@ -307,14 +307,16 @@ static int handleInt1( DWORD state )
 }
 
 #ifdef WOW
+#if !defined( MD_x64 )
 /*
  * getImageNote - get current image note structure (WOW)
  */
 static void getImageNote( IMAGE_NOTE *pin )
 {
-    ReadMem( FlatDS, ( DWORD ) DW3( DebugEvent.u.Exception.ExceptionRecord ),
+    ReadMem( FlatDS, (DWORD)DW3( DebugEvent.u.Exception.ExceptionRecord ),
                          pin, sizeof( IMAGE_NOTE ) );
 }
+#endif
 #endif
 
 /*
@@ -332,9 +334,11 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
     char        *q;
     bool        rc;
 #ifdef WOW
+#if !defined( MD_x64 )
     thread_info *ti;
     DWORD       subcode;
     IMAGE_NOTE  imgnote;
+#endif
 #endif
     int         returnCode;
 
@@ -368,16 +372,16 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                if a conditional branch is going to happen or not.
             */
             {
-                DWORD   bytes;
-                DWORD   addr;
-                DWORD   opcode;
-                CONTEXT con;
+                DWORD       bytes;
+                DWORD       addr;
+                DWORD       opcode;
+                MYCONTEXT   con;
 
-                con.ContextFlags = CONTEXT_CONTROL;
+                con.ContextFlags = MYCONTEXT_CONTROL;
                 MyGetThreadContext( FindThread( DebugeeTid ), &con );
                 addr = AdjustIP( &con, 0 );
-                ReadProcessMemory( ProcessInfo.process_handle, ( LPVOID )addr,
-                    ( LPVOID )&opcode, sizeof( opcode ), ( LPDWORD )&bytes );
+                ReadProcessMemory( ProcessInfo.process_handle, (LPVOID)addr,
+                    (LPVOID)&opcode, sizeof( opcode ), (LPDWORD)&bytes );
                 opcode &= 0xfc000000;
                 if( opcode == ( 0x1a << 26 ) || opcode >= ( 0x30 << 26 ) ) {
                     returnCode = COND_WATCH;
@@ -391,15 +395,18 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
         continue_how = DBG_CONTINUE;
         rc = MyWaitForDebugEvent();
         LastDebugEventTid = DebugEvent.dwThreadId;
+#if !defined( MD_x64 )
         if( IsWin32s && !rc ) {
             returnCode = COND_LIBRARIES;
             goto done;
         }
+#endif
         switch( DebugEvent.dwDebugEventCode ) {
         case EXCEPTION_DEBUG_EVENT:
             code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
             switch( code ) {
 #ifdef WOW
+#if !defined( MD_x64 )
             case STATUS_VDM_EVENT:
                 subcode = W1( DebugEvent.u.Exception.ExceptionRecord );
                 switch( subcode ) {
@@ -478,6 +485,8 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                     goto done;
                 }
                 break;
+#else
+#endif
 #endif
             case DBG_CONTROL_C:
                 /*
@@ -523,7 +532,14 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                     strcat( new->msg, buff );
                     strcat( new->msg, " at 0x" );
                     a = DebugEvent.u.Exception.ExceptionRecord.ExceptionAddress;
-                    ultoa( (DWORD)a, buff, 16 );
+#if 0
+#if defined( MD_x64 )
+                    ultoa( (unsigned long)((pointer_int)a >> 32), buff, 16 );
+                    strcat( new->msg, buff );
+                    strcat( new->msg, ":0x" );
+#endif
+#endif
+                    ultoa( (unsigned long)(pointer_int)a, buff, 16 );
                     strcat( new->msg, buff );
                     owner = &DebugString;
                     for( ;; ) {
@@ -552,8 +568,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
             if( tsc != NULL ) {
                 *tsc = TRUE;
             }
-            AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateThread.hThread,
-                            DebugEvent.u.CreateThread.lpStartAddress );
+            AddThread( DebugEvent.dwThreadId, DebugEvent.u.CreateThread.hThread, DebugEvent.u.CreateThread.lpStartAddress );
             break;
         case EXIT_THREAD_DEBUG_EVENT:
             DebugeeTid = DebugEvent.dwThreadId;
@@ -595,8 +610,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
             }
             len = DebugEvent.u.DebugString.nDebugStringLength;
             p = LocalAlloc( LMEM_FIXED, len + 1 );
-            ReadMem( FlatDS,
-                ( DWORD )DebugEvent.u.DebugString.lpDebugStringData, p, len );
+            ReadMem( FlatDS, (ULONG_PTR)DebugEvent.u.DebugString.lpDebugStringData, p, len );
             p[len] = '\0';
             #define GOOFY_NT_MESSAGE "LDR: LdrpMapDll Relocating:"
             if( !strncmp( p, GOOFY_NT_MESSAGE, sizeof( GOOFY_NT_MESSAGE ) - 1 )
@@ -649,10 +663,10 @@ done:
 /*
  * runProg - run threads
  */
-static unsigned runProg( bool single_step )
+static trap_elen runProg( bool single_step )
 {
     DWORD       state;
-    CONTEXT     con;
+    MYCONTEXT   con;
     BOOL        thread_state_changed;
     thread_info *ti;
     prog_go_ret *ret;
@@ -700,14 +714,14 @@ static unsigned runProg( bool single_step )
 
     ti = FindThread( DebugeeTid );
     MyGetThreadContext( ti, &con );
-#if defined( MD_x86 )
+#if defined( MD_x86 ) || defined( MD_x64 )
     ret->program_counter.offset = con.Eip;
     ret->stack_pointer.offset = con.Esp;
     ret->program_counter.segment = con.SegCs;
     ret->stack_pointer.segment = con.SegSs;
 #elif defined( MD_axp )
-    ret->program_counter.offset = ( ( unsigned_64 * ) & con.Fir )->u._32[0];
-    ret->stack_pointer.offset = ( ( unsigned_64 * ) & con.IntSp )->u._32[0];
+    ret->program_counter.offset = ( (unsigned_64 *)&con.Fir )->u._32[0];
+    ret->stack_pointer.offset = ( (unsigned_64 *)&con.IntSp )->u._32[0];
     ret->program_counter.segment = 0;
     ret->stack_pointer.segment = 0;
 #elif defined( MD_ppc )
@@ -725,12 +739,12 @@ static unsigned runProg( bool single_step )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_go( void )
+trap_elen ReqProg_go( void )
 {
     return( runProg( FALSE ) );
 }
 
-unsigned ReqProg_step( void )
+trap_elen ReqProg_step( void )
 {
     return( runProg( TRUE ) );
 }

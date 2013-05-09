@@ -38,12 +38,12 @@
 #include "packet.h"
 
 
-static unsigned DoRequest( void )
+static trap_elen DoRequest( void )
 {
-    unsigned    left;
-    unsigned    len;
-    unsigned    i;
-    unsigned    piece;
+    trap_elen   left;
+    trap_elen   len;
+    trap_elen   i;
+    trap_elen   piece;
 
     _DBG_EnterFunc( "DoRequest" );
     StartPacket();
@@ -55,14 +55,17 @@ static unsigned DoRequest( void )
         AddPacket( In_Mx_Ptr[i].len, In_Mx_Ptr[i].ptr );
     }
     *(access_req *)In_Mx_Ptr[0].ptr &= ~0x80;
-    if( PutPacket() == REQUEST_FAILED ) return( REQUEST_FAILED );
+    if( PutPacket() == REQUEST_FAILED )
+        return( REQUEST_FAILED );
     if( Out_Mx_Num != 0 ) {
         len = GetPacket();
-        if( len == REQUEST_FAILED ) return( REQUEST_FAILED );
+        if( len == REQUEST_FAILED )
+            return( REQUEST_FAILED );
         left = len;
         i = 0;
         for( ;; ) {
-            if( i >= Out_Mx_Num ) break;
+            if( i >= Out_Mx_Num )
+                break;
             if( left > Out_Mx_Ptr[i].len ) {
                 piece = Out_Mx_Ptr[i].len;
             } else {
@@ -71,7 +74,9 @@ static unsigned DoRequest( void )
             RemovePacket( piece, Out_Mx_Ptr[i].ptr );
             i++;
             left -= piece;
-            if( left == 0 ) break;
+            if( left == 0 ) {
+                break;
+            }
         }
     } else {
         len = 0;
@@ -81,12 +86,12 @@ static unsigned DoRequest( void )
 }
 
 
-static unsigned ReqRemoteConnect( void )
+static trap_elen ReqRemoteConnect( void )
 {
     connect_ret     *connect;
     char            *data;
-    unsigned        len;
-    unsigned        max;
+    trap_elen       len;
+    trap_elen       max;
 
     _DBG_EnterFunc( "ReqRemoteConnect" );
     connect = GetOutPtr( 0 );
@@ -126,14 +131,13 @@ static void ReqRemoteResume( void )
     _DBG_ExitFunc( "ReqResume" );
 }
 
-#pragma off(unreferenced);
 trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
-#pragma on(unreferenced);
 {
     trap_version    ver;
     char           *err;
     int             fix_minor;
 
+    remote=remote;
     _DBG_EnterFunc( "TrapInit" );
     ver.remote = TRUE;
     fix_minor = 0;
@@ -153,10 +157,9 @@ trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
     return( ver );
 }
 
-unsigned TRAPENTRY TrapRequest( unsigned num_in_mx,  mx_entry *mx_in,
-                                       unsigned num_out_mx, mx_entry *mx_out )
+trap_elen TRAPENTRY TrapRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
-    unsigned            ret;
+    trap_elen   ret;
 
     _DBG_EnterFunc( "TrapAccess" );
     _DBG_Writeln( _DBG_Request( *(access_req *)mx_in[0].ptr ) );

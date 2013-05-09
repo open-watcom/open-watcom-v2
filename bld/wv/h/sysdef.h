@@ -29,7 +29,7 @@
 *
 ****************************************************************************/
 
-typedef unsigned long   sys_handle;
+typedef long            sys_handle;
 typedef unsigned long   sys_error;
 
 #define NIL_SYS_HANDLE  ((sys_handle)-1)

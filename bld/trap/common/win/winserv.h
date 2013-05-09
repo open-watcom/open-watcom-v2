@@ -51,7 +51,7 @@
 #define MAX_PPORTS      3
 #define MAX_SERVER_NAME 80
 
-long __export FAR PASCAL MainDriver( HWND, unsigned, WORD, LONG );
+WINEXPORT LRESULT CALLBACK MainDriver( HWND, UINT, WPARAM, LPARAM );
 void WinMessage( char *, ... );
 
 extern HANDLE CProcHandle;

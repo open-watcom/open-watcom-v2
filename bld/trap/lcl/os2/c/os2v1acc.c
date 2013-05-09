@@ -359,7 +359,7 @@ unsigned ReqGet_sys_config()
             ret->sys.fpu = NPXType();
         }
     } else {
-        ret->sys.fpu = X86_NO;
+        ret->sys.u.fpu = X86_NO;
     }
     emu = TaskExecute( &DoGetMSW );
     if( emu != -1 && (emu & 0x04) ) { /* if EM bit is on in the MSW */
@@ -415,7 +415,7 @@ unsigned ReqAddr_info()
     addr_info_ret *retblk;
 
     retblk = GetOutPtr( 0 );
-    retblk->is_32 = FALSE;
+    retblk->is_big = FALSE;
     return( sizeof( *retblk ) );
 }
 
@@ -611,13 +611,13 @@ unsigned ReqRead_regs()
 
         Buff.cmd = PT_CMD_READ_8087;
         Buff.segv = FP_SEG( mr );
-        Buff.offv = FP_OFF( &mr->x86.fpu );
+        Buff.offv = FP_OFF( &mr->x86.u.fpu );
         save = Buff.tid;
         Buff.tid = 1;   /*NYI: OS/2 V1.2 gets upset trying to read other tids */
         DosPTrace( &Buff );
         Buff.tid = save;
         if( Buff.cmd != PT_RET_NO_NPX_YET ) {
-            FPUExpand( &mr->x86.fpu );
+            FPUExpand( &mr->x86.u.fpu );
         }
     }
     return( sizeof( mr->x86 ) );
@@ -635,8 +635,8 @@ unsigned ReqWrite_regs()
 
         Buff.cmd = PT_CMD_WRITE_8087;
         Buff.segv = FP_SEG( mr );
-        Buff.offv = FP_OFF( &mr->x86.fpu );
-        FPUContract( &mr->x86.fpu );
+        Buff.offv = FP_OFF( &mr->x86.u.fpu );
+        FPUContract( &mr->x86.u.fpu );
         save = Buff.tid;
         Buff.tid = 1;   /*NYI: OS/2 V1.2 gets upset trying to read other tids */
         DosPTrace( &Buff );

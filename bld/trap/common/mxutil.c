@@ -32,15 +32,15 @@
 
 #include "trpimp.h"
 
-unsigned_8      In_Mx_Num;
-unsigned_8      Out_Mx_Num;
-mx_entry        TRAPFAR *In_Mx_Ptr;
-mx_entry        TRAPFAR *Out_Mx_Ptr;
+trap_elen   In_Mx_Num;
+trap_elen   Out_Mx_Num;
+mx_entry_p  In_Mx_Ptr;
+mx_entry_p  Out_Mx_Ptr;
 
-void *GetInPtr( unsigned pos )  /* Absolute position */
+void *GetInPtr( trap_elen pos )     /* Absolute position */
 {
-    unsigned_8          entries_left;
-    mx_entry            TRAPFAR *entry;
+    trap_elen   entries_left;
+    mx_entry_p  entry;
 
     entries_left = In_Mx_Num - 1;
     entry = In_Mx_Ptr;
@@ -53,10 +53,10 @@ void *GetInPtr( unsigned pos )  /* Absolute position */
     return( (unsigned_8 *)entry->ptr + pos );
 }
 
-void *GetOutPtr( unsigned pos )  /* Absolute position */
+void *GetOutPtr( trap_elen pos )    /* Absolute position */
 {
-    unsigned_8          entries_left;
-    mx_entry            TRAPFAR *entry;
+    trap_elen       entries_left;
+    mx_entry_p      entry;
 
     entries_left = Out_Mx_Num - 1;
     entry = Out_Mx_Ptr;
@@ -69,11 +69,12 @@ void *GetOutPtr( unsigned pos )  /* Absolute position */
     return( (unsigned_8 *)entry->ptr + pos );
 }
 
-unsigned GetTotalSize( void )
+trap_elen GetTotalSize( void )
 {
-    unsigned            i;
-    unsigned            len = 0;
+    trap_elen       i;
+    trap_elen       len;
 
+    len = 0;
     for( i = 0; i < In_Mx_Num; i++ ) {
          len += In_Mx_Ptr[i].len;
     }

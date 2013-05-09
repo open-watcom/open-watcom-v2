@@ -39,6 +39,8 @@
 #define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER | \
                     VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS | \
                     VDMCONTEXT_FLOATING_POINT | VDMCONTEXT_EXTENDED_REGISTERS)
+#elif defined( MD_x64 )
+#define VDMCONTEXT_TO_USE
 #elif defined( MD_axp ) | defined( MD_ppc )
 #define VDMCONTEXT_TO_USE (VDMCONTEXT_CONTROL | VDMCONTEXT_INTEGER | \
                     VDMCONTEXT_SEGMENTS | VDMCONTEXT_DEBUG_REGISTERS | \
@@ -47,19 +49,18 @@
     #error VDMCONTEXT_TO_USE not configured
 #endif
 
-#if defined( MD_x86 )
-    #define CONTEXT_TO_USE (CONTEXT_FULL | CONTEXT_FLOATING_POINT | \
-                        CONTEXT_DEBUG_REGISTERS | CONTEXT_EXTENDED_REGISTERS)
-#elif defined( MD_axp ) | defined( MD_ppc )
-    #define CONTEXT_TO_USE CONTEXT_FULL
+#if defined( MD_x64 )
+#define WOWCONTEXT_TO_USE
+#elif defined( MD_x86 ) || defined( MD_axp ) | defined( MD_ppc )
+#define WOWCONTEXT_TO_USE
 #else
-    #error CONTEXT_TO_USE not configured
+    #error WOWCONTEXT_TO_USE not configured
 #endif
 
 /*
  * MyGetThreadContext - get the context for a specific thread
  */
-BOOL MyGetThreadContext( thread_info *ti, PCONTEXT pc )
+BOOL MyGetThreadContext( thread_info *ti, MYCONTEXT *pc )
 {
 #ifdef WOW
     BOOL    rc;
@@ -75,18 +76,18 @@ BOOL MyGetThreadContext( thread_info *ti, PCONTEXT pc )
          * If we were ever to try to port this to NT running on a RISC,
          * they would be different, and this memcpy would be total crap.
          */
-        memcpy( pc, &vc, sizeof( CONTEXT ) );
+        memcpy( pc, &vc, sizeof( MYCONTEXT ) );
         /*
          * Sometimes crap is in the high word of EIP, ESP or EBP.  We
          * check if CS or SS is a 32-bit selector, and if they are not,
          * we zero out the high word of EIP, ESP or EBP as appropriate
          */
         if( !IsBigSel( pc->SegCs ) ) {
-            pc->Eip = ( DWORD ) ( WORD ) pc->Eip;
+            pc->Eip = (DWORD)(WORD)pc->Eip;
         }
         if( !IsBigSel( pc->SegSs ) ) {
-            pc->Esp = ( DWORD ) ( WORD ) pc->Esp;
-            pc->Ebp = ( DWORD ) ( WORD ) pc->Ebp;
+            pc->Esp = (DWORD)(WORD)pc->Esp;
+            pc->Ebp = (DWORD)(WORD)pc->Ebp;
         }
 #elif defined( MD_axp ) | defined( MD_ppc )
         rc = 0;
@@ -95,20 +96,34 @@ BOOL MyGetThreadContext( thread_info *ti, PCONTEXT pc )
 #endif
         return( rc );
     } else {
-        pc->ContextFlags = CONTEXT_TO_USE;
+        pc->ContextFlags = MYCONTEXT_TO_USE;
         return( GetThreadContext( ti->thread_handle, pc ) );
     }
 #else
-    pc->ContextFlags = CONTEXT_TO_USE;
+#if 1
+    pc->ContextFlags = MYCONTEXT_TO_USE;
+#if defined( MD_x64 )
+    return( Wow64GetThreadContext( ti->thread_handle, pc ) );
+#else
     return( GetThreadContext( ti->thread_handle, pc ) );
 #endif
-
+#else
+#if defined( MD_x64 )
+    if( ti->is_wow ) {
+        pc->ContextFlags = WOW64CONTEXT_TO_USE;
+        return( Wow64GetThreadContext( ti->thread_handle, pc ) );
+    }
+#endif
+    pc->ContextFlags = MYCONTEXT_TO_USE;
+    return( GetThreadContext( ti->thread_handle, pc ) );
+#endif
+#endif
 }
 
 /*
  * MySetThreadContext - set the context for a specific thread
  */
-BOOL MySetThreadContext( thread_info *ti, PCONTEXT pc )
+BOOL MySetThreadContext( thread_info *ti, MYCONTEXT *pc )
 {
 #ifdef WOW
     if( ( ti->is_wow || ti->is_dos ) && UseVDMStuff ) {
@@ -119,7 +134,7 @@ BOOL MySetThreadContext( thread_info *ti, PCONTEXT pc )
          * If we were ever to try to port this to NT running on a RISC,
          * they would be different, and this memcpy would be total crap.
          */
-        memcpy( &vc, pc, sizeof( CONTEXT ) );
+        memcpy( &vc, pc, sizeof( MYCONTEXT ) );
         vc.ContextFlags = VDMCONTEXT_TO_USE;
         return( pVDMSetThreadContext( &DebugEvent, &vc ) );
 #elif defined( MD_axp ) | defined( MD_ppc )
@@ -128,11 +143,26 @@ BOOL MySetThreadContext( thread_info *ti, PCONTEXT pc )
         #error MySetThreadContext not configured
 #endif
     } else {
-        pc->ContextFlags = CONTEXT_TO_USE;
+        pc->ContextFlags = MYCONTEXT_TO_USE;
         return( SetThreadContext( ti->thread_handle, pc ) );
     }
 #else
-    pc->ContextFlags = CONTEXT_TO_USE;
+#if 1
+    pc->ContextFlags = MYCONTEXT_TO_USE;
+#if defined( MD_x64 )
+    return( Wow64SetThreadContext( ti->thread_handle, pc ) );
+#else
     return( SetThreadContext( ti->thread_handle, pc ) );
+#endif
+#else
+#if defined( MD_x64 )
+    if( ti->is_wow ) {
+        pc->ContextFlags = WOW64CONTEXT_TO_USE;
+        return( Wow64SetThreadContext( ti->thread_handle, pc ) );
+    }
+#endif
+    pc->ContextFlags = MYCONTEXT_TO_USE;
+    return( SetThreadContext( ti->thread_handle, pc ) );
+#endif
 #endif
 }

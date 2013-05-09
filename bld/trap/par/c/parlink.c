@@ -192,6 +192,7 @@
 #else
 #include <i86.h>
 #endif
+#include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"
 
@@ -602,13 +603,12 @@ static int DataPut( char data, unsigned long wait )
     return( 0 );
 }
 
-#pragma off(unreferenced);
-unsigned RemoteGet( char *rec, unsigned len )
-#pragma on(unreferenced);
+trap_elen RemoteGet( char *rec, trap_elen len )
 {
-    unsigned    get_len;
-    unsigned    i;
+    trap_elen  get_len;
+    trap_elen  i;
 
+    len = len;
     get_len = DataGet( RELINQUISH );
     if( get_len & 0x80 ) {
         get_len = ((get_len & 0x7f) << 8) | DataGet( KEEP );
@@ -620,9 +620,9 @@ unsigned RemoteGet( char *rec, unsigned len )
     return( get_len );
 }
 
-unsigned RemotePut( char *snd, unsigned len )
+trap_elen RemotePut( char *snd, trap_elen len )
 {
-    unsigned    count;
+    trap_elen  count;
 
     if( len >= 0x80 ) {
         DataPut( (len >> 8) | 0x80, RELINQUISH );

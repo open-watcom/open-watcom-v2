@@ -33,7 +33,7 @@
 
 #include "trptypes.h"
 
-#pragma pack(push, 1)
+#include "pushpck1.h"
 
 #define FILE_SUPP_NAME          "Files"
 
@@ -54,11 +54,6 @@ enum {
 
 
 /*======================= REQ_FILE_GET_CONFIG ================*/
-typedef struct {
-    char        ext_separator;
-    char        path_separator[3];
-    char        newline[2];
-} file_components;
 
 typedef struct {
     supp_prefix         supp;
@@ -190,7 +185,7 @@ typedef struct {
     trap_error          err;
 } file_run_cmd_ret;
 
-#pragma pack(pop)
+#include "poppck.h"
 
 #define TRPFILE_H
 

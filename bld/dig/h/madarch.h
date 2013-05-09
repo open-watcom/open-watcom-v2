@@ -31,6 +31,7 @@
 
 //          enum      file              desc
 pick_mad( MAD_X86,  "madx86",       "Intel Architecture [80(x)86]" )
+pick_mad( MAD_X64,  "madx64",       "Intel Architecture [x64]" )
 pick_mad( MAD_AXP,  "madaxp",       "Alpha Architecture" )
 pick_mad( MAD_PPC,  "madppc",       "PowerPC Architecture" )
 pick_mad( MAD_MIPS, "madmips",      "MIPS Architecture" )

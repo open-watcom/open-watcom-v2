@@ -32,6 +32,7 @@
 
 #include <windows.h>
 #include <stdlib.h>
+#include "wi163264.h"
 #include "wserver.h"
 #include "options.h"
 
@@ -40,8 +41,7 @@ extern int              NumPrinters(void);
 extern unsigned         PrnAddress(int);
 extern
 
-BOOL _EXPORT FAR PASCAL OptionsDlgProc( HWND hwnd, unsigned msg,
-                                UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND edit;
     int num = NumPrinters();

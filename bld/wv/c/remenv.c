@@ -43,13 +43,18 @@ extern trap_shandle     GetSuppId( char * );
         in.supp.id              = SuppEnvId;    \
         in.req                  = request;
 
-static trap_shandle     SuppEnvId;
+static trap_shandle     SuppEnvId = 0;
 
-bool InitEnvSupp()
+bool InitEnvSupp( void )
 {
+#ifdef WANT_ENV
     SuppEnvId = GetSuppId( ENV_SUPP_NAME );
-    if( SuppEnvId == 0 ) return( FALSE );
-    return( TRUE );
+    if( SuppEnvId != 0 )
+        return( TRUE );
+#else
+    SuppEnvId = 0;
+#endif
+    return( FALSE );
 }
 
 bool RemoteSetEnvironmentVariable( char *name, char *value )

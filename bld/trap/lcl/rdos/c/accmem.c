@@ -35,7 +35,7 @@
 #include "debug.h"
 
 
-unsigned ReqRead_mem( void )
+trap_elen ReqRead_mem( void )
 {
     void                *data;
     read_mem_req        *acc;
@@ -46,7 +46,7 @@ unsigned ReqRead_mem( void )
     data = ( void * ) GetOutPtr( 0 );
 
     obj = GetCurrentDebug();
-	if (obj)
+        if (obj)
         thread = obj->CurrentThread;
 
     if( thread )
@@ -59,7 +59,7 @@ unsigned ReqRead_mem( void )
         return( 0 );
 }
 
-unsigned ReqWrite_mem( void )
+trap_elen ReqWrite_mem( void )
 {
     void                *data;
     int                 len;
@@ -76,7 +76,7 @@ unsigned ReqWrite_mem( void )
     ret->len = 0;
 
     obj = GetCurrentDebug();
-	if (obj)
+        if (obj)
         thread = obj->CurrentThread;
 
     if( thread )
@@ -89,7 +89,7 @@ unsigned ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqChecksum_mem( void )
+trap_elen ReqChecksum_mem( void )
 {
     long                offset;
     int                 segment;

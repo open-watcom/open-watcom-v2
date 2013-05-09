@@ -593,7 +593,7 @@ static USHORT ReadBuffer( void *dst, USHORT segv, ULONG offv, USHORT size )
 }
 
 
-unsigned ReqGet_sys_config( void )
+trap_elen ReqGet_sys_config( void )
 {
     ULONG               version[2];
     uDB_t               buff;
@@ -626,7 +626,7 @@ unsigned ReqGet_sys_config( void )
 }
 
 
-unsigned ReqMap_addr( void )
+trap_elen ReqMap_addr( void )
 {
     USHORT              seg;
     ULONG               flags;
@@ -649,21 +649,20 @@ unsigned ReqMap_addr( void )
     seg = acc->in_addr.segment;
     off = acc->in_addr.offset;
     switch( seg ) {
-        case MAP_FLAT_CODE_SELECTOR:
-        case MAP_FLAT_DATA_SELECTOR:
-            seg = 1;
-            off += ObjInfo[0].addr;
-            for( i = 0; i < NumObjects; ++i ) {
-                if( ObjInfo[i].addr <= off
-                        && ( ObjInfo[i].addr + ObjInfo[i].size ) > off ) {
-                    seg = i + 1;
-                    off -= ObjInfo[i].addr;
-                    ret->lo_bound = ObjInfo[i].addr - ObjInfo[0].addr;
-                    ret->hi_bound = ret->lo_bound + ObjInfo[i].size - 1;
-                    break;
-                }
+    case MAP_FLAT_CODE_SELECTOR:
+    case MAP_FLAT_DATA_SELECTOR:
+        seg = 1;
+        off += ObjInfo[0].addr;
+        for( i = 0; i < NumObjects; ++i ) {
+            if( ObjInfo[i].addr <= off && ( ObjInfo[i].addr + ObjInfo[i].size ) > off ) {
+                seg = i + 1;
+                off -= ObjInfo[i].addr;
+                ret->lo_bound = ObjInfo[i].addr - ObjInfo[0].addr;
+                ret->hi_bound = ret->lo_bound + ObjInfo[i].size - 1;
+                break;
             }
-            break;
+        }
+        break;
     }
 
     Buff.MTE = ModHandles[acc->handle];
@@ -684,18 +683,18 @@ unsigned ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqAddr_info( void )
+trap_elen ReqAddr_info( void )
 {
     addr_info_req       *acc;
     addr_info_ret       *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->is_32 = Is32BitSeg( acc->in_addr.segment );
+    ret->is_big = Is32BitSeg( acc->in_addr.segment );
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data( void )
+trap_elen ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -712,11 +711,11 @@ unsigned ReqMachine_data( void )
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-unsigned ReqChecksum_mem( void )
+trap_elen ReqChecksum_mem( void )
 {
-    ULONG         offset;
-    USHORT        length;
-    ULONG         sum;
+    ULONG               offset;
+    trap_elen           length;
+    ULONG               sum;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
@@ -748,11 +747,11 @@ unsigned ReqChecksum_mem( void )
 }
 
 
-unsigned ReqRead_mem( void )
+trap_elen ReqRead_mem( void )
 {
     read_mem_req        *acc;
     void                *ret;
-    unsigned            len;
+    trap_elen           len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -761,19 +760,18 @@ unsigned ReqRead_mem( void )
 }
 
 
-unsigned ReqWrite_mem( void )
+trap_elen ReqWrite_mem( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
-    unsigned            len;
+    trap_elen           len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
     len = GetTotalSize() - sizeof( *acc );
 
-    ret->len = WriteBuffer( GetInPtr( sizeof( *acc ) ),
-                           acc->mem_addr.segment, acc->mem_addr.offset, len );
+    ret->len = WriteBuffer( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
     return( sizeof( *ret ) );
 }
 
@@ -828,7 +826,7 @@ static void WriteCPU( struct x86_cpu *r )
     lastEIP = Buff.EIP;
 }
 
-unsigned ReqRead_cpu( void )
+trap_elen ReqRead_cpu( void )
 {
     trap_cpu_regs *regs;
 
@@ -841,7 +839,7 @@ unsigned ReqRead_cpu( void )
     return( sizeof( *regs ) );
 }
 
-unsigned ReqRead_fpu( void )
+trap_elen ReqRead_fpu( void )
 {
     Buff.Cmd    = DBG_C_ReadCoRegs;
     Buff.Buffer = (ULONG)GetOutPtr(0);
@@ -856,7 +854,7 @@ unsigned ReqRead_fpu( void )
     }
 }
 
-unsigned ReqWrite_cpu( void )
+trap_elen ReqWrite_cpu( void )
 {
     trap_cpu_regs       *regs;
 
@@ -868,7 +866,7 @@ unsigned ReqWrite_cpu( void )
     return( 0 );
 }
 
-unsigned ReqWrite_fpu( void )
+trap_elen ReqWrite_fpu( void )
 {
     Buff.Cmd    = DBG_C_WriteCoRegs;
     Buff.Buffer = (ULONG)GetInPtr(sizeof(write_fpu_req));
@@ -879,7 +877,7 @@ unsigned ReqWrite_fpu( void )
     return( 0 );
 }
 
-unsigned ReqRead_regs( void )
+trap_elen ReqRead_regs( void )
 {
     mad_registers       *mr;
 
@@ -889,7 +887,7 @@ unsigned ReqRead_regs( void )
         ReadRegs( &Buff );
         ReadCPU( &mr->x86.cpu );
         Buff.Cmd    = DBG_C_ReadCoRegs;
-        Buff.Buffer = (ULONG)&mr->x86.fpu;
+        Buff.Buffer = (ULONG)&mr->x86.u.fpu;
         Buff.Value  = DBG_CO_387;       /* for 2.0: DBG_CO_387 */
         Buff.Len    = DBG_LEN_387;      /* for 2.0: size of register state */
         Buff.Index  = 0;                /* for 2.0: must be 0 */
@@ -899,7 +897,7 @@ unsigned ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-unsigned ReqWrite_regs( void )
+trap_elen ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
@@ -908,7 +906,7 @@ unsigned ReqWrite_regs( void )
         WriteCPU( &mr->x86.cpu );
         WriteRegs( &Buff );
         Buff.Cmd    = DBG_C_WriteCoRegs;
-        Buff.Buffer = (ULONG)&mr->x86.fpu;
+        Buff.Buffer = (ULONG)&mr->x86.u.fpu;
         Buff.Value  = DBG_CO_387;       /* for 2.0: DBG_CO_387 */
         Buff.Len    = DBG_LEN_387;      /* for 2.0: buffer size */
         Buff.Index  = 0;                /* for 2.0: must be zero */
@@ -918,7 +916,7 @@ unsigned ReqWrite_regs( void )
     return( 0 );
 }
 
-unsigned ReqGet_lib_name( void )
+trap_elen ReqGet_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -1110,7 +1108,7 @@ static unsigned StartProcess( const char *exe_name, char *parms )
     return( rc );
 }
 
-unsigned ReqProg_load( void )
+trap_elen ReqProg_load( void )
 {
     char            *parms;
     char            *end;
@@ -1252,7 +1250,7 @@ unsigned ReqProg_load( void )
     }
 
     if( Is32Bit ) {
-        ret->flags |= LD_FLAG_IS_32;
+        ret->flags |= LD_FLAG_IS_BIG;
     }
     ret->flags |= LD_FLAG_HAVE_RUNTIME_DLLS;
     ret->mod_handle = 0;
@@ -1260,7 +1258,7 @@ unsigned ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_kill( void )
+trap_elen ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 
@@ -1288,7 +1286,7 @@ unsigned ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_break( void )
+trap_elen ReqSet_break( void )
 {
     byte                ch;
     set_break_req       *acc;
@@ -1303,7 +1301,7 @@ unsigned ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break( void )
+trap_elen ReqClear_break( void )
 {
     clear_break_req     *acc;
     byte                ch;
@@ -1314,7 +1312,7 @@ unsigned ReqClear_break( void )
     return( 0 );
 }
 
-unsigned ReqSet_watch( void )
+trap_elen ReqSet_watch( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
@@ -1341,7 +1339,7 @@ unsigned ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch( void )
+trap_elen ReqClear_watch( void )
 {
     clear_watch_req  *acc;
     watch            *dst;
@@ -1556,9 +1554,9 @@ static unsigned progRun( bool step )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_go( void )
+trap_elen ReqProg_go( void )
 {
-    unsigned    rc;
+    trap_elen   rc;
 
     PMUnLock();
     rc = progRun( FALSE );
@@ -1566,9 +1564,9 @@ unsigned ReqProg_go( void )
     return( rc );
 }
 
-unsigned ReqProg_step( void )
+trap_elen ReqProg_step( void )
 {
-    unsigned    rc;
+    trap_elen   rc;
 
     PMUnLock();
     rc = progRun( TRUE );
@@ -1576,7 +1574,7 @@ unsigned ReqProg_step( void )
     return( rc );
 }
 
-unsigned ReqFile_write_console( void )
+trap_elen ReqFile_write_console( void )
 {
     ULONG        len;
     ULONG        written_len;
@@ -1621,7 +1619,7 @@ static int ValidThread( TID thread )
     return( Buff.Cmd == DBG_N_Success );
 }
 
-unsigned ReqThread_get_next( void )
+trap_elen ReqThread_get_next( void )
 {
     thread_get_next_req *acc;
     thread_get_next_ret *ret;
@@ -1645,7 +1643,7 @@ unsigned ReqThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_set( void )
+trap_elen ReqThread_set( void )
 {
     thread_set_req      *acc;
     thread_set_ret      *ret;
@@ -1693,7 +1691,7 @@ typedef enum {                  /* values for .cmd field */
 #endif
 } trace_codes;
 
-static unsigned DoThread( trace_codes code )
+static trap_elen DoThread( trace_codes code )
 {
     TID                 save;
     thread_thaw_req     *acc;
@@ -1715,17 +1713,17 @@ static unsigned DoThread( trace_codes code )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_freeze( void )
+trap_elen ReqThread_freeze( void )
 {
     return( DoThread( DBG_C_Freeze ) );
 }
 
-unsigned ReqThread_thaw( void )
+trap_elen ReqThread_thaw( void )
 {
     return( DoThread( DBG_C_Resume ) );
 }
 
-unsigned ReqGet_message_text( void )
+trap_elen ReqGet_message_text( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -1742,7 +1740,7 @@ unsigned ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_elen ReqGet_next_alias( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;

@@ -37,17 +37,17 @@
 #include "dbgmem.h"
 #include "dbgtoggl.h"
 #include "dbginfo.h"
-#include "trpcore.h"
-#include "trpasync.h"
 #include "mad.h"
 #include "dui.h"
+#include "trpcore.h"
+#include "trpasync.h"
 
 extern void             GetSysConfig( void );
 extern void             CheckMADChange( void );
 extern dtid_t           RemoteSetThread( dtid_t );
 
 #if defined(__GUI__) && defined(__OS2__)
-extern unsigned         OnAnotherThread( unsigned(*)(), unsigned, void *, unsigned, void * );
+extern unsigned         OnAnotherThread( trap_elen(*)(), unsigned, void *, unsigned, void * );
 #else
 #define                 OnAnotherThread( a,b,c,d,e ) a( b,c,d,e )
 #endif
@@ -62,25 +62,23 @@ extern trap_shandle GetSuppId( char * );
         in.supp.id                  = SuppAsyncId;       \
         in.req                      = request;
 
-static trap_shandle     SuppAsyncId;
+static trap_shandle     SuppAsyncId = 0;
 
 bool InitAsyncSupp( void )
 {
+#ifdef WANT_ASYNC
     SuppAsyncId = GetSuppId( ASYNC_SUPP_NAME );
-    if( SuppAsyncId == 0 ) return( FALSE );
-    return( TRUE );
+    if( SuppAsyncId != 0 )
+        return( TRUE );
+#else
+    SuppAsyncId = 0;
+#endif
+    return( FALSE );
 }
 
 bool HaveRemoteAsync( void )
 {
-     /* only available on selected hosts for now */
-#if defined( __NT__ ) && defined( __GUI__ )
     return( SuppAsyncId != 0 );
-#elif defined( __RDOS__ )
-    return( SuppAsyncId != 0 );
-#else
-    return( FALSE );
-#endif
 }
 
 unsigned MakeAsyncRun( bool single )

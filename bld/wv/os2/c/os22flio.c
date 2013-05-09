@@ -30,19 +30,18 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <stddef.h>
+#define INCL_ERRORS
+#define INCL_BASE
+#include <os2.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "dbgtoggl.h"
 #include "farptrs.h"
 #include "dbgreg.h"
-#include "trpfile.h"
-#include <string.h>
-#include <stddef.h>
-
-#define INCL_ERRORS
-#define INCL_BASE
-#include <os2.h>
+#include "trptypes.h"
 
 #include "doserr.h"
 

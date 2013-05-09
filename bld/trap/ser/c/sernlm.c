@@ -129,7 +129,7 @@ int GetByte( void )
 
     AIOReadStatus( ComPortHandle, &count, NULL );
     if( count == 0 ) {
-        data = NO_DATA;
+        data = SDATA_NO_DATA;
     } else {
         data = 0;
         AIOReadData( ComPortHandle, (char *)&data, 1, &count );

@@ -115,7 +115,7 @@ unsigned FindFilePath( int exe, char *name, char *result )
     return 0;
 }
 
-unsigned ReqRead_user_keyboard( void )
+trap_elen ReqRead_user_keyboard( void )
 {
     read_user_keyboard_req  *acc;
     read_user_keyboard_ret  *ret;
@@ -152,7 +152,7 @@ unsigned ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_err_text( void )
+trap_elen ReqGet_err_text( void )
 {
     get_err_text_req    *acc;
     char                *err_txt;
@@ -164,12 +164,12 @@ unsigned ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-unsigned ReqSplit_cmd( void )
+trap_elen ReqSplit_cmd( void )
 {
     char                *cmd;
     char                *start;
     split_cmd_ret       *ret;
-    unsigned            len;
+    trap_elen           len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     ret = GetOutPtr( 0 );
@@ -197,7 +197,7 @@ unsigned ReqSplit_cmd( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_elen ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -207,12 +207,12 @@ unsigned ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_user_screen( void )
+trap_elen ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen( void )
+trap_elen ReqSet_debug_screen( void )
 {
     return( 0 );
 }

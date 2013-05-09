@@ -34,6 +34,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <i86.h>
+#include "trptypes.h"
 #include "packet.h"
 #include "trperr.h"
 #ifdef SERVER
@@ -151,9 +152,9 @@ extern unsigned short   GetCS( void );
 #pragma aux GetCS = "mov ax,cs" value [ ax ];
 
 
-unsigned RemoteGet( char *rec, unsigned len )
+trap_elen RemoteGet( char *rec, trap_elen len )
 {
-    unsigned        received;
+    trap_elen       received;
 #ifdef SERVER
     unsigned long   buff;
 
@@ -183,7 +184,7 @@ unsigned RemoteGet( char *rec, unsigned len )
     return( received );
 }
 
-unsigned RemotePut( char *snd, unsigned len )
+trap_elen RemotePut( char *snd, trap_elen len )
 {
 #ifdef SERVER
     unsigned long   buff;

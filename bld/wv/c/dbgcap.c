@@ -34,7 +34,7 @@
 #include "dbglit.h"
 #include "dbginp.h"
 #include "dbgerr.h"
-#include "trpfile.h"
+#include "trptypes.h"
 
 extern bool             ScanItem( bool, char **, unsigned int * );
 extern cmd_list         *AllocCmdList( char *, unsigned int );

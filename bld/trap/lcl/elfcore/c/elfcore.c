@@ -541,7 +541,7 @@ unsigned ReqProg_load( void )
     }
     ret->flags = LD_FLAG_IS_STARTED | LD_FLAG_IS_PROT;
     /* Tell debugger to ignore segment values when comparing pointers */
-    ret->flags |= LD_FLAG_IS_32 | LD_FLAG_IGNORE_SEGMENTS;
+    ret->flags |= LD_FLAG_IS_BIG | LD_FLAG_IGNORE_SEGMENTS;
     ret->err = Core.err_no;
     ret->task_id = Core.plat->qpid( Core.ctx );
     if( Core.err_no == 0 ) {
@@ -719,7 +719,7 @@ unsigned ReqAddr_info( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->is_32 = TRUE;
+    ret->is_big = TRUE;
     return( sizeof( *ret ) );
 }
 

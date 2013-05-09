@@ -34,22 +34,24 @@
 #include <string.h>
 #include "trpimp.h"
 
+typedef trap_elen service_func(void);
+
 #if defined(WANT_FILE_INFO)
-static unsigned (* const FileInfoRequests[])(void) = {
+static service_func * const FileInfoRequests[] = {
          ReqFileInfo_getdate,
          ReqFileInfo_setdate,
 };
 #endif
 
 #if defined(WANT_ENV)
-static unsigned (* const EnvRequests[])(void) = {
+static service_func * const EnvRequests[] = {
          ReqEnv_getvar,
          ReqEnv_setvar,
 };
 #endif
 
 #if defined(WANT_FILE)
-static unsigned (* const FileRequests[])(void) = {
+static service_func * const FileRequests[] = {
          ReqFile_get_config,
          ReqFile_open,
          ReqFile_seek,
@@ -64,7 +66,7 @@ static unsigned (* const FileRequests[])(void) = {
 #endif
 
 #if defined(WANT_OVL)
-static unsigned (* const OvlRequests[])(void) = {
+static service_func * const OvlRequests[] = {
         ReqOvl_state_size,
         ReqOvl_get_data,
         ReqOvl_read_state,
@@ -76,7 +78,7 @@ static unsigned (* const OvlRequests[])(void) = {
 #endif
 
 #if defined(WANT_THREAD)
-static unsigned (* const ThreadRequests[])(void) = {
+static service_func * const ThreadRequests[] = {
         ReqThread_get_next,
         ReqThread_set,
         ReqThread_freeze,
@@ -86,7 +88,7 @@ static unsigned (* const ThreadRequests[])(void) = {
 #endif
 
 #if defined(WANT_RUN_THREAD)
-static unsigned (* const RunThreadRequests[])(void) = {
+static service_func * const RunThreadRequests[] = {
         ReqRunThread_info,
         ReqRunThread_get_next,
         ReqRunThread_get_runtime,
@@ -99,7 +101,7 @@ static unsigned (* const RunThreadRequests[])(void) = {
 #endif
 
 #if defined(WANT_RFX)
-static unsigned (* const RFXRequests[])(void) = {
+static service_func * const RFXRequests[] = {
         ReqRfx_rename,
         ReqRfx_mkdir,
         ReqRfx_rmdir,
@@ -120,7 +122,7 @@ static unsigned (* const RFXRequests[])(void) = {
 #endif
 
 #if defined(WANT_CAPABILITIES)
-static unsigned (* const CapabilitiesRequests[])(void) = {
+static service_func * const CapabilitiesRequests[] = {
         ReqCapabilities_get_8b_bp,
         ReqCapabilities_set_8b_bp,
         ReqCapabilities_get_exact_bp,
@@ -129,7 +131,7 @@ static unsigned (* const CapabilitiesRequests[])(void) = {
 #endif
 
 #if defined(WANT_ASYNC)
-static unsigned (* const AsyncRequests[])(void) = {
+static service_func * const AsyncRequests[] = {
         ReqAsync_go,
         ReqAsync_step,
         ReqAsync_poll,
@@ -139,7 +141,7 @@ static unsigned (* const AsyncRequests[])(void) = {
 
 typedef struct {
     const char *name;
-    const void *vectors;
+    service_func * const * const vectors;
 } service_entry;
 
 static const service_entry Services[] = {
@@ -173,7 +175,7 @@ static const service_entry Services[] = {
     { NULL,             NULL }
 };
 
-unsigned ReqGet_supplementary_service(void)
+trap_elen ReqGet_supplementary_service(void)
 {
     char                                *name;
     get_supplementary_service_ret       *out;
@@ -185,19 +187,21 @@ unsigned ReqGet_supplementary_service(void)
     out->id = 0;
     for( i = 0; Services[i].name != NULL; ++i ) {
         if( stricmp( Services[i].name, name ) == 0 ) {
-            out->id = (unsigned_32)Services[i].vectors;
+            out->id = i + 1;
             break;
         }
     }
     return( sizeof( *out ) );
 }
 
-unsigned ReqPerform_supplementary_service( void )
+trap_elen ReqPerform_supplementary_service( void )
 {
-    unsigned    (* const * _WCUNALIGNED *vectors)(void);
-    access_req  *sup_req;
+    access_req      *sup_req;
+    trap_shandle    *id;
 
-    vectors = GetInPtr( sizeof( access_req ) );
+    id = GetInPtr( sizeof( access_req ) );
+    if( *id == 0 )
+        return( 0 );
     sup_req = GetInPtr( sizeof( supp_prefix ) );
-    return( (*vectors)[*sup_req]() );
+    return( Services[*id - 1].vectors[*sup_req]() );
 }

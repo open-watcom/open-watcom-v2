@@ -61,7 +61,7 @@ void SingleStepMode( void )
  * - after the fault, we record information about it and return
  *
  */
-static unsigned runProg( bool single_step )
+static trap_elen runProg( bool single_step )
 {
     private_msg         pmsg;
     BOOL                watch386;
@@ -184,13 +184,13 @@ static unsigned runProg( bool single_step )
     return( sizeof( *ret ) );
 } /* runProg */
 
-unsigned ReqProg_go( void )
+trap_elen ReqProg_go( void )
 {
     Out(( OUT_RUN, "ReqProg_go" ));
     return( runProg( FALSE ) );
 }
 
-unsigned ReqProg_step( void )
+trap_elen ReqProg_step( void )
 {
     Out(( OUT_RUN, "ReqProg_step" ));
     return( runProg( TRUE ) );

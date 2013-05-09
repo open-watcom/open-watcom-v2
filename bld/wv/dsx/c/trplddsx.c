@@ -51,8 +51,7 @@
 #include <stdio.h>
 
 extern trap_version     TrapVer;
-extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
-                                        unsigned, mx_entry * );
+extern trap_req_func    *ReqFunc;
 
 #define DOS4G_COMM_VECTOR       0x15
 #define NUM_BUFF_RELOCS         16
@@ -129,7 +128,7 @@ extern void DoRawSwitchToRM( unsigned, unsigned, unsigned );
         "call   pword ptr [RawPMtoRMSwitchAddr]"        \
         "pop    ebp"            \
         parm caller [eax] [ebx] [edi]   \
-        modify exact [ eax ebx ecx edx esi edi gs ];
+        modify exact [eax ebx ecx edx esi edi gs];
 
 extern void                     BackFromRealMode( void );
 
@@ -284,9 +283,7 @@ static void GoToRealMode( void *rm_func )
         for( i = 0; i < NUM_PM_SAVE_EXCEPTS; ++i ) {
             DPMISetPMExceptionVector( PMExceptSaveList[i], SavePMExcepts[i] );
         }
-        DoRawSwitchToRM( RMData.s.rm,
-                        offsetof( rm_data, stack )+STACK_SIZE,
-                        RM_OFF( RawSwitchHandler ) );
+        DoRawSwitchToRM( RMData.s.rm, offsetof( rm_data, stack ) + STACK_SIZE, RM_OFF( RawSwitchHandler ) );
         for( i = 0; i < NUM_PM_SAVE_EXCEPTS; ++i ) {
             SavePMExcepts[i] = DPMIGetPMExceptionVector(PMExceptSaveList[i]);
             DPMISetPMExceptionVector( PMExceptSaveList[i], OrigPMExcepts[i] );
@@ -401,7 +398,7 @@ static bool CallTrapInit( char *parm, char *errmsg, trap_version *trap_ver )
     callstruct = (void __far *)PMData->parmarea;
     callstruct->remote = trap_ver->remote;
     if( parm == NULL ) parm = "";
-    _fstrcpy( (char _far *)&callstruct[ 1 ], parm );
+    _fstrcpy( (char _far *)&callstruct[1], parm );
     callstruct->errmsg_off = sizeof( *callstruct ) + strlen( parm ) + 1;
     GoToRealMode( RMTrapInit );
     *trap_ver = callstruct->version;
@@ -412,7 +409,7 @@ static bool CallTrapInit( char *parm, char *errmsg, trap_version *trap_ver )
 static char *ReadInTrap( tiny_handle_t fh )
 {
     dos_exe_header      hdr;
-    memptr              relocbuff[ NUM_BUFF_RELOCS ];
+    memptr              relocbuff[NUM_BUFF_RELOCS];
     unsigned            relocnb;
     unsigned            imagesize;
     unsigned            hdrsize;
@@ -469,17 +466,16 @@ static char *ReadInTrap( tiny_handle_t fh )
             }
             relocnb = 0;
         }
-        *(addr_seg __far *)MK_PM( TrapMem.s.rm + relocbuff[ relocnb ].s.segment,
-                      relocbuff[ relocnb ].s.offset ) += TrapMem.s.rm;
+        *(addr_seg __far *)MK_PM( TrapMem.s.rm + relocbuff[relocnb].s.segment,
+                      relocbuff[relocnb].s.offset ) += TrapMem.s.rm;
     }
     return( NULL );
 }
 
-static unsigned DoTrapAccess( unsigned num_in_mx,  mx_entry *mx_in, unsigned num_out_mx,
-                        mx_entry *mx_out )
+static trap_elen DoTrapAccess( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
     uint_8              __far *msgptr;
-    unsigned            j;
+    unsigned_8          j;
     struct {
         mx_entry16      in;
         mx_entry16      out;
@@ -494,9 +490,9 @@ static unsigned DoTrapAccess( unsigned num_in_mx,  mx_entry *mx_in, unsigned num
     callstruct->in.ptr.s.offset = (unsigned)msgptr - (unsigned)PMData;
     callstruct->in.len = 0;
     for( j = 0; j < num_in_mx; ++j ) {
-        _fmemcpy( msgptr, mx_in[ j ].ptr, mx_in[ j ].len );
-        callstruct->in.len += mx_in[ j ].len;
-        msgptr += mx_in[ j ].len;
+        _fmemcpy( msgptr, mx_in[j].ptr, mx_in[j].len );
+        callstruct->in.len += mx_in[j].len;
+        msgptr += mx_in[j].len;
     }
 
     callstruct->out.len = 0;
@@ -504,7 +500,7 @@ static unsigned DoTrapAccess( unsigned num_in_mx,  mx_entry *mx_in, unsigned num
         callstruct->out.ptr.s.segment = RMData.s.rm;
         callstruct->out.ptr.s.offset = (unsigned)msgptr - (unsigned)PMData;
         for( j = 0; j < num_out_mx; ++j ) {
-            callstruct->out.len += mx_out[ j ].len;
+            callstruct->out.len += mx_out[j].len;
         }
     } else {
         callstruct->out.ptr.a = 0;
@@ -518,8 +514,9 @@ static unsigned DoTrapAccess( unsigned num_in_mx,  mx_entry *mx_in, unsigned num
         j = 0;
         for( len = callstruct->retlen; len != 0; len -= copy ) {
             copy = len;
-            if( copy > mx_out[ j ].len ) copy = mx_out[ j ].len;
-            _fmemcpy( mx_out[ j ].ptr, msgptr, copy );
+            if( copy > mx_out[j].len )
+                copy = mx_out[j].len;
+            _fmemcpy( mx_out[j].ptr, msgptr, copy );
             ++j;
             msgptr += copy;
         }
@@ -549,7 +546,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     }
     end = strchr( trapbuff, PARM_SEPARATOR );
     if( end == NULL ) {
-        end = &trapbuff[ strlen( trapbuff ) ];
+        end = &trapbuff[strlen( trapbuff )];
         parm = end;
     } else {
         parm = end + 1;

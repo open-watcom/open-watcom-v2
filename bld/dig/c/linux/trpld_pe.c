@@ -46,14 +46,14 @@ extern const trap_requests *TrapLoad( const trap_callbacks *client );
 extern char **environ;
 #endif
 
-static const trap_requests      *TrapFuncs;
-static PE_MODULE *TrapFile;
-static void (TRAPENTRY *FiniFunc)(void);
 extern trap_version     TrapVer;
-extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *, unsigned, mx_entry * );
+extern trap_req_func    *ReqFunc;
 
 extern  int      FullPathOpen( char const *name, char *ext, char *result, unsigned max_result );
 extern  int      GetSystemHandle(int);
+
+static PE_MODULE        *TrapFile = NULL;
+static trap_fini_func   *FiniFunc = NULL;
 
 const static trap_callbacks TrapCallbacks = {
     sizeof( trap_callbacks ),
@@ -71,10 +71,14 @@ const static trap_callbacks TrapCallbacks = {
 void KillTrap( void )
 {
     ReqFunc = NULL;
-    if( FiniFunc != NULL ) FiniFunc();
-    FiniFunc = NULL;
-    if( TrapFile != 0 ) PE_freeLibrary( TrapFile );
-    TrapFile = 0;
+    if( FiniFunc != NULL ) {
+        FiniFunc();
+        FiniFunc = NULL;
+    }
+    if( TrapFile != NULL ) {
+        PE_freeLibrary( TrapFile );
+        TrapFile = NULL;
+    }
 }
 
 int PathOpenTrap( char const *name, unsigned len, char *ext, char *trap_name, int trap_name_len )
@@ -95,6 +99,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     char                *parm;
     const trap_requests *(*ld_func)( const trap_callbacks * );
     char                trap_name[_MAX_PATH];
+    const trap_requests *trap_funcs;
 
     if( trapbuff == NULL ) trapbuff = "std";
     for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr ) ;
@@ -118,16 +123,17 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         KillTrap();
         return( buff );
     }
-    TrapFuncs = ld_func( &TrapCallbacks );
-    if( TrapFuncs == NULL ) {
+    trap_funcs = ld_func( &TrapCallbacks );
+    if( trap_funcs == NULL ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
+        KillTrap();
         return( buff );
     }
-    *trap_ver = TrapFuncs->init_func( parm, init_error, trap_ver->remote );
-    FiniFunc = TrapFuncs->fini_func;
+    *trap_ver = trap_funcs->init_func( parm, init_error, trap_ver->remote );
+    FiniFunc = trap_funcs->fini_func;
     if( init_error[0] != '\0' ) {
-        KillTrap();
         strcpy( buff, init_error );
+        KillTrap();
         return( buff );
     }
     if( !TrapVersionOK( *trap_ver ) ) {
@@ -135,7 +141,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         return( buff );
     }
     TrapVer = *trap_ver;
-    ReqFunc = TrapFuncs->req_func;
+    ReqFunc = trap_funcs->req_func;
     return( NULL );
 }
 

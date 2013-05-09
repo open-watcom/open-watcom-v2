@@ -840,7 +840,7 @@ void BigKludge( msb *m )
     };
 #endif
 
-unsigned ReqGet_sys_config( void )
+trap_elen ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -855,7 +855,7 @@ unsigned ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMap_addr( void )
+trap_elen ReqMap_addr( void )
 {
     nlm_entry   *curr;
     map_addr_req        *acc;
@@ -914,16 +914,16 @@ unsigned ReqMap_addr( void )
 }
 
 //obsolete
-unsigned ReqAddr_info( void )
+trap_elen ReqAddr_info( void )
 {
     addr_info_ret       *ret;
 
     ret = GetOutPtr( 0 );
-    ret->is_32 = TRUE;
+    ret->is_big = TRUE;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data( void )
+trap_elen ReqMachine_data( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -982,15 +982,15 @@ static unsigned short ReadWrite( int (*rtn)(addr48_ptr *, unsigned long, void *)
 }
 
 
-unsigned ReqChecksum_mem( void )
+trap_elen ReqChecksum_mem( void )
 {
-    unsigned short      len;
+    trap_elen           len;
     addr48_ptr          addr;
     int                 i;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
-    long                want;
-    long                got;
+    trap_elen           want;
+    trap_elen           got;
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
@@ -1014,11 +1014,11 @@ unsigned ReqChecksum_mem( void )
 }
 
 
-unsigned ReqRead_mem( void )
+trap_elen ReqRead_mem( void )
 {
     addr48_ptr          addr;
     read_mem_req        *acc;
-    unsigned            len;
+    trap_elen           len;
 
     acc = GetInPtr(0);
 
@@ -1028,12 +1028,12 @@ unsigned ReqRead_mem( void )
     return( len );
 }
 
-unsigned ReqWrite_mem( void )
+trap_elen ReqWrite_mem( void )
 {
     addr48_ptr          addr;
     write_mem_req       *acc;
     write_mem_ret       *ret;
-    unsigned            len;
+    trap_elen           len;
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
@@ -1047,10 +1047,10 @@ unsigned ReqWrite_mem( void )
 }
 
 
-unsigned ReqRead_io( void )
+trap_elen ReqRead_io( void )
 {
-    read_io_req *acc;
-    void         *data;
+    read_io_req     *acc;
+    void            *data;
 
     acc = GetInPtr(0);
     data = GetOutPtr( 0 );
@@ -1065,12 +1065,12 @@ unsigned ReqRead_io( void )
 }
 
 
-unsigned ReqWrite_io( void )
+trap_elen ReqWrite_io( void )
 {
-    write_io_req        *acc;
-    write_io_ret        *ret;
-    void         *data;
-    unsigned  len;
+    write_io_req    *acc;
+    write_io_ret    *ret;
+    void            *data;
+    trap_elen       len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1088,7 +1088,7 @@ unsigned ReqWrite_io( void )
 }
 
 //obsolete
-unsigned ReqRead_cpu( void )
+trap_elen ReqRead_cpu( void )
 {
     trap_cpu_regs       *regs;
 
@@ -1102,7 +1102,7 @@ unsigned ReqRead_cpu( void )
 }
 
 //obsolete
-unsigned ReqRead_fpu( void )
+trap_elen ReqRead_fpu( void )
 {
     trap_fpu_regs       *regs;
 
@@ -1116,7 +1116,7 @@ unsigned ReqRead_fpu( void )
 }
 
 //obsolete
-unsigned ReqWrite_cpu( void )
+trap_elen ReqWrite_cpu( void )
 {
     if( MSB != NULL ) {
         MSB->cpu = *(trap_cpu_regs *)GetInPtr(sizeof(write_cpu_req));
@@ -1125,7 +1125,7 @@ unsigned ReqWrite_cpu( void )
 }
 
 //obsolete
-unsigned ReqWrite_fpu( void )
+trap_elen ReqWrite_fpu( void )
 {
     if( MSB != NULL ) {
         MSB->fpu = *(trap_fpu_regs *)GetInPtr(sizeof(write_fpu_req));
@@ -1133,7 +1133,7 @@ unsigned ReqWrite_fpu( void )
     return( 0 );
 }
 
-unsigned ReqRead_regs( void )
+trap_elen ReqRead_regs( void )
 {
     mad_registers       *mr;
 
@@ -1141,19 +1141,19 @@ unsigned ReqRead_regs( void )
     memset( mr, 0, sizeof( mr->x86 ) );
     if( MSB != NULL ) {
         mr->x86.cpu = *(struct x86_cpu *)&MSB->cpu;
-        mr->x86.fpu = *(struct x86_fpu *)&MSB->fpu;
+        mr->x86.u.fpu = *(struct x86_fpu *)&MSB->fpu;
     }
     return( sizeof( mr->x86 ) );
 }
 
-unsigned ReqWrite_regs( void )
+trap_elen ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
     mr = GetInPtr(sizeof(write_regs_req));
     if( MSB != NULL ) {
         *(struct x86_cpu *)&MSB->cpu = mr->x86.cpu;
-        *(struct x86_fpu *)&MSB->fpu = mr->x86.fpu;
+        *(struct x86_fpu *)&MSB->fpu = mr->x86.u.fpu;
     }
     return( 0 );
 }
@@ -1327,7 +1327,7 @@ static void LoadHelper( void )
 
 static char    helper_stack[8192]; /* We may return before thread dies! */
 
-unsigned ReqProg_load( void )
+trap_elen ReqProg_load( void )
 {
     prog_load_ret       *ret;
     struct LoadDefinitionStructure *ld;
@@ -1345,7 +1345,7 @@ unsigned ReqProg_load( void )
     _DBG_EVENT(( "ReqProg_load: Debugger awake after load\r\n" ));
 
     ret->task_id = 1;
-    ret->flags = LD_FLAG_IS_32 | LD_FLAG_IS_PROT;
+    ret->flags = LD_FLAG_IS_BIG | LD_FLAG_IS_PROT;
     ret->mod_handle = 0;
     LoadRet = NULL;
     // The list that is traversed are all the loaded NLMs.
@@ -1367,7 +1367,7 @@ unsigned ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_kill( void )
+trap_elen ReqProg_kill( void )
 {
     msb         *m;
     prog_kill_ret       *ret;
@@ -1470,14 +1470,14 @@ unsigned Execute( msb *which )
     }
 }
 
-unsigned ReqSet_watch( void )
+trap_elen ReqSet_watch( void )
 {
-    dword        l;
-    set_watch_req       *acc;
-    set_watch_ret       *ret;
-    watch        *curr;
-    int         i,needed;
-    int         dreg_avail[4];
+    dword           l;
+    set_watch_req   *acc;
+    set_watch_ret   *ret;
+    watch           *curr;
+    int             i, needed;
+    int             dreg_avail[4];
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1514,13 +1514,13 @@ unsigned ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch( void )
+trap_elen ReqClear_watch( void )
 {
     WatchCount = 0;
     return( 0 );
 }
 
-unsigned ReqSet_break( void )
+trap_elen ReqSet_break( void )
 {
     byte            l;
     set_break_req   *acc;
@@ -1540,7 +1540,7 @@ unsigned ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break( void )
+trap_elen ReqClear_break( void )
 {
     clear_break_req     *acc;
 
@@ -1609,7 +1609,7 @@ static bool SetDebugRegs( void )
     return( TRUE );
 }
 
-static unsigned ProgRun( bool step )
+static trap_elen ProgRun( bool step )
 {
     watch       *wp;
     int         i;
@@ -1671,17 +1671,17 @@ leave:
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_go( void )
+trap_elen ReqProg_go( void )
 {
     return( ProgRun( FALSE ) );
 }
 
-unsigned ReqProg_step( void )
+trap_elen ReqProg_step( void )
 {
     return( ProgRun( TRUE ) );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_elen ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -1706,7 +1706,7 @@ static msb *LocateTid( dword tid )
 }
 
 
-unsigned ReqThread_get_next( void )
+trap_elen ReqThread_get_next( void )
 {
     msb             *m;
     thread_get_next_req *acc;
@@ -1731,11 +1731,11 @@ unsigned ReqThread_get_next( void )
 }
 
 
-unsigned ReqThread_set( void )
+trap_elen ReqThread_set( void )
 {
-    msb            *m;
-    thread_set_req      *acc;
-    thread_set_ret      *ret;
+    msb             *m;
+    thread_set_req  *acc;
+    thread_set_ret  *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1758,9 +1758,9 @@ unsigned ReqThread_set( void )
 }
 
 
-unsigned ReqThread_freeze( void )
+trap_elen ReqThread_freeze( void )
 {
-    msb               *m;
+    msb                 *m;
     thread_freeze_req   *acc;
     thread_freeze_ret   *ret;
 
@@ -1778,9 +1778,9 @@ unsigned ReqThread_freeze( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_thaw( void )
+trap_elen ReqThread_thaw( void )
 {
-    msb             *m;
+    msb                 *m;
     thread_thaw_req     *acc;
     thread_thaw_ret     *ret;
 
@@ -1799,11 +1799,11 @@ unsigned ReqThread_thaw( void )
 }
 
 
-unsigned ReqThread_get_extra( void )
+trap_elen ReqThread_get_extra( void )
 {
-    msb              *m;
-    char             *name;
-    thread_get_extra_req        *acc;
+    msb                     *m;
+    char                    *name;
+    thread_get_extra_req    *acc;
 
     acc = GetInPtr( 0 );
     name = GetOutPtr( 0 );
@@ -1820,7 +1820,7 @@ unsigned ReqThread_get_extra( void )
     return( strlen( name ) + 1 );
 }
 
-unsigned ReqGet_err_text( void )
+trap_elen ReqGet_err_text( void )
 {
     char        *err;
 
@@ -1830,7 +1830,7 @@ unsigned ReqGet_err_text( void )
     return( strlen( err ) + 1 );
 }
 
-unsigned ReqGet_message_text( void )
+trap_elen ReqGet_message_text( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -1864,7 +1864,7 @@ static LoadedListHandle GetLoadedListHandle( struct LoadDefinitionStructure *ld 
 }
 #endif
 
-unsigned ReqGet_lib_name( void )
+trap_elen ReqGet_lib_name( void )
 {
     int             len;
     get_lib_name_req    *acc;
@@ -1900,7 +1900,7 @@ unsigned ReqGet_lib_name( void )
     }
 }
 
-unsigned ReqRedirect_stdin( void )
+trap_elen ReqRedirect_stdin( void )
 {
     redirect_stdin_ret  *ret;
 
@@ -1909,7 +1909,7 @@ unsigned ReqRedirect_stdin( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRedirect_stdout( void )
+trap_elen ReqRedirect_stdout( void )
 {
     redirect_stdout_ret *ret;
 
@@ -1919,21 +1919,21 @@ unsigned ReqRedirect_stdout( void )
 }
 
 
-unsigned ReqSet_user_screen( void )
+trap_elen ReqSet_user_screen( void )
 {
     /* NOT IMPLEMENTED */
     return( 0 );
 }
 
 
-unsigned ReqSet_debug_screen( void )
+trap_elen ReqSet_debug_screen( void )
 {
     /* NOT IMPLEMENTED */
     return( 0 );
 }
 
 
-unsigned ReqRead_user_keyboard( void )
+trap_elen ReqRead_user_keyboard( void )
 {
     /* NOT IMPLEMENTED */
     read_user_keyboard_ret      *ret;
@@ -1943,7 +1943,7 @@ unsigned ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSplit_cmd( void )
+trap_elen ReqSplit_cmd( void )
 {
     char             *cmd;
     char             *start;

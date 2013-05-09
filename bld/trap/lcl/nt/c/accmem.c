@@ -36,35 +36,35 @@
 /*
  * getRealBase - get real base address, based on segment/offset
  */
-static DWORD getRealBase( WORD seg, DWORD base, DWORD *limit )
+static ULONG_PTR getRealBase( WORD seg, ULONG_PTR base, ULONG_PTR *limit )
 {
 #if defined( MD_axp ) || defined( MD_ppc )
 
-    *limit = -( DWORD )1;
+    *limit = (ULONG_PTR)-1L;
     return( base );
 
-#elif defined( MD_x86 )
+#elif defined( MD_x86 ) || defined( MD_x64 )
 
-    DWORD       realbase;
+    ULONG_PTR   realbase;
     LDT_ENTRY   ldt;
     thread_info *ti;
-    DWORD       lim;
-    DWORD       selbase;
+    ULONG_PTR   lim;
+    ULONG_PTR   selbase;
 
     if( seg != FlatDS && seg != FlatCS ) {
         ti = FindThread( DebugeeTid );
         if( GetThreadSelectorEntry( ti->thread_handle, seg, &ldt ) ) {
-            lim = 1 + ( DWORD ) ldt.LimitLow +
-                ( ( DWORD ) ldt.HighWord.Bits.LimitHi << 16L );
+            lim = 1 + (ULONG_PTR)ldt.LimitLow +
+                ( (ULONG_PTR)ldt.HighWord.Bits.LimitHi << 16L );
             if( ldt.HighWord.Bits.Granularity ) {
                 lim *= 0x1000L;
             }
             if( !ldt.HighWord.Bits.Default_Big ) {
-                base = ( DWORD ) ( WORD ) base;
+                base = (ULONG_PTR)(WORD)base;
             }
-            selbase = ( DWORD ) ldt.BaseLow +
-                ( ( DWORD ) ldt.HighWord.Bytes.BaseMid << 16L ) +
-                ( ( DWORD ) ldt.HighWord.Bytes.BaseHi << 24L );
+            selbase = (ULONG_PTR)ldt.BaseLow +
+                ( (ULONG_PTR)ldt.HighWord.Bytes.BaseMid << 16L ) +
+                ( (ULONG_PTR)ldt.HighWord.Bytes.BaseHi << 24L );
             realbase = base + selbase;
             *limit = lim + selbase;
         } else {
@@ -72,7 +72,7 @@ static DWORD getRealBase( WORD seg, DWORD base, DWORD *limit )
             *limit = 0;
         }
     } else {
-        *limit = ( DWORD ) - 1L;
+        *limit = (ULONG_PTR)-1L;
         realbase = base;
     }
     return( realbase );
@@ -87,10 +87,10 @@ static DWORD getRealBase( WORD seg, DWORD base, DWORD *limit )
 /*
  * ReadMem - read some memory
  */
-DWORD ReadMem( WORD seg, DWORD base, LPVOID buff, DWORD size )
+DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 {
-    LONG        bytes;
-    DWORD       limit;
+    SIZE_T      bytes;
+    ULONG_PTR   limit;
 #ifdef DEBUGGING_THIS_DAMN_WIN95_PROBLEM
     static bool first = TRUE;
     DWORD       oldbase;
@@ -107,11 +107,15 @@ DWORD ReadMem( WORD seg, DWORD base, LPVOID buff, DWORD size )
         limit = base;
     }
     if( base + size < base ) { // wants to wrap segment
-        size = ( ( DWORD ) ~0 ) - base;
+        size = ( ~(ULONG_PTR)0 ) - base;
     }
-    if( limit != ( DWORD ) - 1L ) {
+    if( limit != (ULONG_PTR)-1L ) {
         if( base + size > limit ) {
-            size = limit - base;
+            if( limit < base ) {
+                size = 0;
+            } else {
+                size = limit - base;
+            }
         }
     }
     if( size > 2048 )
@@ -120,12 +124,11 @@ DWORD ReadMem( WORD seg, DWORD base, LPVOID buff, DWORD size )
     FILE        *io;
     io = fopen( "t.t", "a+" );
     fprintf( io, "%4.4x:%8.8x, base=%8.8x, limit=%8.8x, size=%d\n",
-                seg, oldbase,
-                base, limit, size );
+                seg, oldbase, base, limit, size );
     fclose( io );
 #endif
-    ReadProcessMemory( ProcessInfo.process_handle, ( LPVOID ) base, buff,
-                        size, ( LPDWORD )&bytes );
+    bytes = 0;
+    ReadProcessMemory( ProcessInfo.process_handle, (LPVOID)base, buff, size, &bytes );
 #ifdef DEBUGGING_THIS_DAMN_WIN95_PROBLEM
     if( first ) {
         remove( "t.t" );
@@ -137,43 +140,41 @@ DWORD ReadMem( WORD seg, DWORD base, LPVOID buff, DWORD size )
         fclose( io );
     }
 #endif
-    if( bytes < 0 ) {
-        bytes = 0;
-    }
     return( bytes );
 }
 
 /*
  * WriteMem - write some memory
  */
-DWORD WriteMem( WORD seg, DWORD base, LPVOID buff, DWORD size )
+DWORD WriteMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 {
-    LONG    bytes;
-    DWORD   limit;
+    SIZE_T      bytes;
+    ULONG_PTR   limit;
 
     if( DebugeePid == 0 ) {
         return( 0 );
     }
     base = getRealBase( seg, base, &limit );
-    if( limit != ( DWORD ) - 1L ) {
+    if( limit != (ULONG_PTR)-1L ) {
         if( base + size > limit ) {
-            size = limit - base;
+            if( limit < base ) {
+                size = 0;
+            } else {
+                size = limit - base;
+            }
         }
     }
-    WriteProcessMemory( ProcessInfo.process_handle, ( LPVOID )base, buff,
-                        size, ( LPDWORD ) & bytes );
+    bytes = 0;
+    WriteProcessMemory( ProcessInfo.process_handle, (LPVOID)base, buff, size, &bytes );
     GetLastError();
-    if( bytes < 0 ) {
-        bytes = 0;
-    }
     return( bytes );
 
 }
 
-unsigned ReqRead_mem( void )
+trap_elen ReqRead_mem( void )
 {
     WORD            seg;
-    DWORD           offset;
+    ULONG_PTR       offset;
     DWORD           length;
     LPSTR           data;
     read_mem_req    *acc;
@@ -193,10 +194,10 @@ unsigned ReqRead_mem( void )
     return( length );
 }
 
-unsigned ReqWrite_mem( void )
+trap_elen ReqWrite_mem( void )
 {
     WORD            seg;
-    DWORD           offset;
+    ULONG_PTR       offset;
     DWORD           length;
     LPSTR           data;
     write_mem_req   *acc;
@@ -219,9 +220,9 @@ unsigned ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqChecksum_mem( void )
+trap_elen ReqChecksum_mem( void )
 {
-    DWORD               offset;
+    ULONG_PTR           offset;
     WORD                length;
     WORD                value;
     WORD                segment;
