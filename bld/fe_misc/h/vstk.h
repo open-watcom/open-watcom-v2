@@ -86,8 +86,8 @@ void *VstkNext(                 // GET NEXT ITEM IN STACK
 ;
 void VstkOpen(                  // OPEN THE VIRTUAL STACK
     VSTK_CTL *stack,            // - stack to be opened
-    size_t size,                // - size of an element
-    size_t count )              // - number per block
+    unsigned size,              // - size of an element
+    unsigned count )            // - number per block
 ;
 void *VstkPop(                  // POP THE STACK
     VSTK_CTL *stack )           // - stack to be used

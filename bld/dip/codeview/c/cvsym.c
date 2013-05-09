@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "walloca.h"
+#include "watcom.h"
 #include "demangle.h"
 #include "cvinfo.h"
 

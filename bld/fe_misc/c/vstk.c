@@ -58,7 +58,7 @@ static VSTK_BLK *freeVstkBlk(   // FREE A VSTK_BLK
 static unsigned vstkDataSize(   // COMPUTE SIZE OF DATA AREA IN BLOCK
     VSTK_CTL const *stack )     // - control for stack
 {
-    return stack->per_block * stack->size;
+    return( stack->per_block * stack->size );
 }
 
 
@@ -86,7 +86,7 @@ static void *vstkPushBlk(       // PUSH THE BLOCK
 {
     VSTK_BLK *blk;              // - current block
     void *cur;                  // - current entry
-    size_t size;                // - size of stacking area
+    unsigned size;              // - size of stacking area
 
     blk = stack->freed;
     size = vstkDataSize( stack );
@@ -113,7 +113,7 @@ void _VstkPushZapPop( VSTK_CTL *stack )
 {
     VSTK_BLK *blk;              // - current block
     void *cur;                  // - current entry
-    size_t size;                // - block size
+    unsigned size;              // - block size
 
     // NYI: zap on block transitions
     blk = stack->top;
@@ -122,7 +122,7 @@ void _VstkPushZapPop( VSTK_CTL *stack )
         if( cur != NULL ) {
             if( cur != blk->data ) {
                 size = stack->size;
-                cur = ((char*) cur ) - size;
+                cur = (char *)cur - size;
                 DbgZapFreed( cur, size );
             }
         }
@@ -154,7 +154,7 @@ void *VstkPush(                 // PUSH THE STACK
             }
         }
     }
-    cur = ( char * )cur - stack->size;
+    cur = (char *)cur - stack->size;
     stack->current = cur;
     _VstkIntegrity( stack );
     DbgZapAlloc( cur, stack->size );
@@ -192,7 +192,7 @@ void *VstkPop(                  // POP THE STACK
                 cur = lst->data;
             }
         } else {
-            cur = ( char * )cur + stack->size;
+            cur = (char *)cur + stack->size;
         }
         stack->current = cur;
         _VstkIntegrity( stack );
@@ -203,8 +203,8 @@ void *VstkPop(                  // POP THE STACK
 
 void VstkOpen(                  // OPEN THE VIRTUAL STACK
     VSTK_CTL *stack,            // - stack to be opened
-    size_t size,                // - size of an element
-    size_t count )              // - number per block
+    unsigned size,              // - size of an element
+    unsigned count )            // - number per block
 {
     stack->current = NULL;
     stack->top = NULL;
@@ -290,8 +290,7 @@ int VstkDimension(              // GET UPPER DIMENSION OF VIRTUAL STACK
     if( blk == NULL ) {
         dimension = 0;
     } else {
-        dimension = - ( (char*)stack->current - blk->data )
-                  / stack->size;
+        dimension = - ( (char*)stack->current - blk->data ) / stack->size;
         per_block = stack->per_block;
 #ifndef NDEBUG
         if( dimension > per_block ) {
@@ -327,7 +326,7 @@ void *VstkNext(                 // GET NEXT ITEM IN STACK
             break;
         }
         if( vstkInBlk( blk, cur, blk_size ) ) {
-            cur = (char*)cur + stack->size;
+            cur = (char *)cur + stack->size;
             if( cur >= (void *)&blk->data[blk_size] ) {
                 blk = blk->last;
                 if( blk == NULL ) {
@@ -349,7 +348,7 @@ void *VstkBase(                 // GET BASE ELEMENT
 {
     void *cur;                  // - current element
 
-    -- base;
+    --base;
     if( base >= VstkDimension( stack ) ) {
         cur = VstkTop( stack );
     } else {

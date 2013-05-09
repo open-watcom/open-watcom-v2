@@ -752,13 +752,15 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
         lines_skipped = 0;
         old_ppctl = PPControl;
         for(;;) {
-            if( CompFlags.cpp_output )  PrtChar( '\n' );
+            if( CompFlags.cpp_output )
+	            PrtChar( '\n' );
             NextChar();
             // look for a #-char or the corresponding digraph (%:)
             if( CurrChar != PreProcChar && CurrChar != '%' ) {
                 SkipAhead();
             }
-            if( CurrChar == LCHR_EOF ) break;
+            if( CurrChar == LCHR_EOF )
+	            break;
 
             if( CurrChar == '%' ) {
                 NextChar();
