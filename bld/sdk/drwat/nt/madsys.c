@@ -107,7 +107,7 @@ void LoadMADRegisters( mad_registers *MadRegisters, HANDLE threadhdl )
     MadRegisters->x86.cpu.ss = context.SegSs;
     MadRegisters->x86.cpu.cs = context.SegCs;
     MadRegisters->x86.cpu.fs = context.SegFs;
-    memcpy( &( MadRegisters->x86.fpu ), &( context.FloatSave ), sizeof( MadRegisters->x86.fpu ) );
+    memcpy( &( MadRegisters->x86.u.fpu ), &( context.FloatSave ), sizeof( MadRegisters->x86.u.fpu ) );
     MADRegistersHost( MadRegisters );
 }
 
@@ -132,7 +132,7 @@ void StoreMADRegisters( mad_registers *MadRegisters, HANDLE threadhdl )
     context.SegSs = MadRegisters->x86.cpu.ss;
     context.SegCs = MadRegisters->x86.cpu.cs;
     context.SegFs = MadRegisters->x86.cpu.fs;
-    memcpy(&(context.FloatSave),&(MadRegisters->x86.fpu),min(sizeof(context.FloatSave),sizeof(MadRegisters->x86.fpu)));
+    memcpy(&(context.FloatSave),&(MadRegisters->x86.u.fpu),min(sizeof(context.FloatSave),sizeof(MadRegisters->x86.u.fpu)));
     SetThreadContext( threadhdl, &context );
 }
 
