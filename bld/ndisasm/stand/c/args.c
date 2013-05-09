@@ -222,7 +222,7 @@ void HandleArgs( char *cmd )
                         DFormat |= DFF_ASM;
                         if( cmd[1] == 'u' ) {
                             ++cmd;
-                            DFormat |= DFF_X86_UNIX;
+                            DFormat |= DFF_UNIX;
                         }
                         break;
                     case 'e':
@@ -268,7 +268,7 @@ void HandleArgs( char *cmd )
                             Options |= PRINT_FPU_EMU_FIXUP;
                             break;
                         case 'i':
-                            DFormat ^= DFF_X86_ALT_INDEXING;
+                            DFormat ^= DFF_ALT_INDEXING;
                             ++cmd;
                             break;
                         case 'u':

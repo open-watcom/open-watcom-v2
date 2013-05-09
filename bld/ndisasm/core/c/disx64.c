@@ -2811,12 +2811,12 @@ static unsigned X64InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     p = name;
     if( ins->flags.u.x64 & DIF_X64_LOCK ) {
         p += DisGetString( DisInstructionTable[DI_X64_lock_pr].name, p, 0 );
-        if( flags & DFF_X86_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX ) *p++ = ';';
         *p++ = ' ';
     }
     if( ins->flags.u.x64 & DIF_X64_REPNE ) {
         p += DisGetString( DisInstructionTable[DI_X64_repne_pr].name, p, 0 );
-        if( flags & DFF_X86_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX ) *p++ = ';';
         *p++ = ' ';
     }
     if( ins->flags.u.x64 & DIF_X64_REPE ) {
@@ -2829,11 +2829,11 @@ static unsigned X64InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             p += DisGetString( DisInstructionTable[DI_X64_rep_pr].name, p, 0 );
             break;
         }
-        if( flags & DFF_X86_UNIX ) *p++ = ';';
+        if( flags & DFF_UNIX ) *p++ = ';';
         *p++ = ' ';
     }
     len = DisGetString( DisInstructionTable[ins->type].name, p, 0 );
-    if( flags & DFF_X86_UNIX ) {
+    if( flags & DFF_UNIX ) {
         if( ins->num_ops >= 2 ) {
             op = ins->num_ops - 1;
             save = ins->op[op];
@@ -2853,7 +2853,7 @@ static unsigned X64InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         case DI_X64_scas:
         case DI_X64_stos:*/
             /* UnixMangleName will have already taken care of this */
-/*            if( !( flags & DFF_X86_UNIX ) ) {
+/*            if( !( flags & DFF_UNIX ) ) {
                 op = 0;
                 if( ( ins->op[op].type & DO_MASK ) != DO_MEMORY_ABS )
                     op = 1;
@@ -2951,7 +2951,7 @@ static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
 {
     unsigned    len;
 
-    if( !( flags & DFF_X86_ALT_INDEXING ) ||
+    if( !( flags & DFF_ALT_INDEXING ) ||
         ( ( ins->op[i].base == DR_NONE ) && ( ins->op[i].index == DR_NONE ) ) ) {
         p += DisCliValueString( d, ins, i, p );
     }
@@ -2974,7 +2974,7 @@ static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
                     *p++ = '0' + ins->op[i].scale;
                 }
             }
-            if( flags & DFF_X86_ALT_INDEXING ) {
+            if( flags & DFF_ALT_INDEXING ) {
                 *p++ = '+';
                 len = DisCliValueString( d, ins, i, p );
                 switch( *p ) {
@@ -2999,7 +2999,7 @@ static int NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_num
 {
     unsigned    i;
 
-    if( flags & DFF_X86_UNIX ) return( FALSE );
+    if( flags & DFF_UNIX ) return( FALSE );
     if( flags & DFF_ASM ) return( TRUE );
 /*    switch( ins->type ) {
     case DI_X64_movsx:
@@ -3071,7 +3071,7 @@ static unsigned X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
                 over = '\0';
             }
             ins_flags.u.x64 &= ~SEGOVER;
-            if( flags & DFF_X86_UNIX ) *p++ = '%';
+            if( flags & DFF_UNIX ) *p++ = '%';
             if( flags & DFF_REG_UP ) {
                 *p++ = toupper( over );
                 *p++= 'S';
@@ -3096,7 +3096,7 @@ static unsigned X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         break;
     case DO_ABSOLUTE:
     case DO_RELATIVE:
-        if( ( flags & DFF_ASM ) && !( flags & DFF_X86_UNIX ) ) {
+        if( ( flags & DFF_ASM ) && !( flags & DFF_UNIX ) ) {
             switch( ins->type ) {
             case DI_X64_call:
             case DI_X64_jmp1:
@@ -3118,7 +3118,7 @@ static unsigned X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         }
         break;
     }
-    if( flags & DFF_X86_UNIX ) {
+    if( flags & DFF_UNIX ) {
         p = DisOpUnixFormat( d, ins, flags, op_num, p );
     } else {
         p = DisOpMasmFormat( d, ins, flags, op_num, p );
