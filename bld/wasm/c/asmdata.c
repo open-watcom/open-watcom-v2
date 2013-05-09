@@ -686,7 +686,7 @@ static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned
             if( count == 0 ) {
                 int     level;
                 /* zero count is valid, needs special processing */
-                for( level = 0; AsmBuffer[cur_pos] != TC_FINAL; cur_pos++ ) {
+                for( level = 0; AsmBuffer[cur_pos]->class != TC_FINAL; cur_pos++ ) {
                     if( AsmBuffer[cur_pos]->class == TC_OP_BRACKET )
                         level++;
                     else if( AsmBuffer[cur_pos]->class == TC_CL_BRACKET )
