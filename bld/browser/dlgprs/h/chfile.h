@@ -33,7 +33,7 @@
 #ifndef __CHFILE_H__
 
 #include <sys/types.h>
-#include <wstd.h>
+#include "wstd.h"
 #include "wio.h"
 #include <string>
 #include <vector>
@@ -101,8 +101,8 @@ public:
                     }
 
             int     fstat( struct stat * buf );
-            time_t  st_mtime();
-            off_t   st_size();
+            time_t  get_st_mtime();
+            off_t   get_st_size();
 
     const   char *  getFileName() const { return _fileName; }
             void    setFileName( const char * fn );
@@ -128,7 +128,7 @@ private:
             void    removeOpenFile( CheckedFile * );
 };
 
-extern char * BadWhenceMessage;
+extern const char * BadWhenceMessage;
 
 #define __CHFILE_H__
 #endif

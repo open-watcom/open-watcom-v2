@@ -180,7 +180,7 @@ long CheckedBufferedFile::seek( long offset, int whence )
             newOff = _startOffset + _buffOffset + offset;
             break;
         case SEEK_END:
-            newOff = st_size() + offset;
+            newOff = get_st_size() + offset;
             break;
         default:
             FileExcept oops( FileExcept::Seek, EINVAL, _fileName, BadWhenceMessage );

@@ -36,8 +36,8 @@
 #include "dialog.h"
 #include "bind.h"
 
-extern Dialog * CurrDialog = NULL;
-extern Binding * CurrBinding = NULL;
+Dialog * CurrDialog = NULL;
+Binding * CurrBinding = NULL;
 
 int main( int argc, char * argv[] ) {
 
@@ -61,7 +61,7 @@ try {
     }
 
 } catch( FileExcept oops ) {
-    static char * act[] = { "open", "close", "read", "write", "seek", "tell", "stat" };
+    static const char * act[] = { "open", "close", "read", "write", "seek", "tell", "stat" };
 
     printf( "Error %sing %s: %d -- %s\n", act[ oops._action ], oops._fileName, oops._error, oops._message );
 }

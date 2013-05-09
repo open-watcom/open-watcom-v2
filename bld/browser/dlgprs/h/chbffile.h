@@ -37,7 +37,6 @@
 #pragma warning 389 9
 #endif
 
-#include <wstd.h>
 #include "chfile.h"
 #include "mempool.h"
 

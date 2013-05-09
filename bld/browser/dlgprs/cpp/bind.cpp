@@ -105,7 +105,7 @@ void Binding::bindHeader( const char * hdr )
 //------------------------------------------
 {
     CheckedBufferedFile header( hdr );
-    int                 i;
+    unsigned        i;
 
     header.open( CheckedFile::WriteText | O_CREAT, CheckedFile::UserReadWrite );
 
@@ -171,10 +171,10 @@ void Binding::bindSource( Dialog * dlg, const char * cpp, const char * hdr )
     CheckedBufferedFile source( cpp );
     Control             *dlgControl;
     Control             *ctrl;
-    int                 i;
+    unsigned            i;
     int                 len;
     int                 trl;
-    static char *       dashes = "//------------------------------------------------------------------------------------------";
+    static const char   *dashes = "//------------------------------------------------------------------------------------------";
 
     source.open( CheckedFile::WriteText | O_CREAT, CheckedFile::UserReadWrite );
 

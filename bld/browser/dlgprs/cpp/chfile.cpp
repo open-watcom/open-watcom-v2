@@ -38,8 +38,8 @@
 
 #include "chfile.h"
 
-char *      BadWhenceMessage = "Invalid \"whence\" argument.";
-const int   MaxOpenReadFiles = 20;      // maximum # of files open for reading
+const char  *BadWhenceMessage = "Invalid \"whence\" argument.";
+const unsigned MaxOpenReadFiles = 20;      // maximum # of files open for reading
 
 FileExcept::FileExcept( Action act, int error, const char * fn,
                             const char * msg )
@@ -391,7 +391,7 @@ int CheckedFile::fstat( struct stat * buf )
     return retVal;
 }
 
-time_t CheckedFile::st_mtime()
+time_t CheckedFile::get_st_mtime()
 //----------------------------
 {
     struct stat buf;
@@ -401,7 +401,7 @@ time_t CheckedFile::st_mtime()
     return buf.st_mtime;
 }
 
-off_t CheckedFile::st_size()
+off_t CheckedFile::get_st_size()
 //--------------------------
 {
     struct stat buf;

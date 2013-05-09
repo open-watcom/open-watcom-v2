@@ -37,7 +37,7 @@
 #pragma warning 665 9
 #endif
 
-#include <wstd.h>
+#include "wstd.h"
 #include <vector>
 
 #define YYPARSER BindingParser
