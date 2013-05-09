@@ -34,86 +34,86 @@
 #include "drpriv.h"
 #include "drutils.h"
 
-extern unsigned_16 const FunctionTags[] = {
+unsigned_16 const FunctionTags[] = {
     DW_TAG_subprogram, 0
 };
 
-extern unsigned_16 const ClassTags[] = {
+unsigned_16 const ClassTags[] = {
     DW_TAG_class_type, DW_TAG_union_type, DW_TAG_structure_type, 0
 };
 
-extern unsigned_16 const TypedefTags[] = {
+unsigned_16 const TypedefTags[] = {
     DW_TAG_typedef, 0
 };
 
-extern unsigned_16 const EnumTags[] = {
+unsigned_16 const EnumTags[] = {
     DW_TAG_enumeration_type, 0
 };
 
-extern unsigned_16 const LabelTags[] = {
+unsigned_16 const LabelTags[] = {
     DW_TAG_label, 0
 };
 
-extern unsigned_16 const VariableTags[] = {
+unsigned_16 const VariableTags[] = {
     DW_TAG_common_block, DW_TAG_variable,
     DW_TAG_formal_parameter, DW_TAG_member, 0
 };
 
-extern unsigned_16 const MacroTags[] = { 0 };
+unsigned_16 const MacroTags[] = { 0 };
 
-extern unsigned_16 const * const SearchTags[] = {
+unsigned_16 const * const SearchTags[] = {
     FunctionTags, ClassTags, EnumTags,
     TypedefTags, VariableTags,
     MacroTags, LabelTags
 };
 
-extern unsigned_16 const SearchSymbolTags[] = {
+unsigned_16 const SearchSymbolTags[] = {
     DW_TAG_class_type, DW_TAG_common_block, DW_TAG_enumeration_type,
     DW_TAG_subprogram, DW_TAG_variable, DW_TAG_member, DW_TAG_structure_type,
     DW_TAG_typedef, DW_TAG_union_type, DW_TAG_label, 0
 };
 
-extern unsigned_16 const SearchFunctionTags[] = {
+unsigned_16 const SearchFunctionTags[] = {
     DW_TAG_subprogram, 0
 };
 
-extern unsigned_16 const SearchClassTags[] = {
+unsigned_16 const SearchClassTags[] = {
     DW_TAG_class_type, DW_TAG_union_type, DW_TAG_structure_type, 0
 };
 
-extern unsigned_16 const SearchTypeTags[] = {
+unsigned_16 const SearchTypeTags[] = {
     DW_TAG_typedef, DW_TAG_enumeration_type, 0
 };
 
-extern unsigned_16 const SearchVariableTags[] = {
+unsigned_16 const SearchVariableTags[] = {
     DW_TAG_common_block, DW_TAG_variable, DW_TAG_member, 0
 };
 
-extern unsigned_16 const SearchFriendTags[] = {
+unsigned_16 const SearchFriendTags[] = {
     DW_TAG_friend, 0
 };
 
-extern unsigned_16 const SearchBaseTags[] = {
+unsigned_16 const SearchBaseTags[] = {
     DW_TAG_inheritance, 0
 };
 
-extern unsigned_16 const ScanKidsTags[] = {
+unsigned_16 const ScanKidsTags[] = {
     DW_TAG_compile_unit,  DW_TAG_lexical_block, 0
 };
 
-extern unsigned_16 const DeclarationTags[] = {
+unsigned_16 const DeclarationTags[] = {
     DW_TAG_array_type, DW_TAG_class_type, DW_TAG_common_block, DW_TAG_constant,
     DW_TAG_enumeration_type, DW_TAG_member, DW_TAG_structure_type,
     DW_TAG_subprogram, DW_TAG_union_type, DW_TAG_variable, 0
 };
 
-extern unsigned_16 const * const SearchTypes[] = {
+unsigned_16 const * const SearchTypes[] = {
     SearchSymbolTags, SearchFunctionTags, SearchClassTags,
     SearchTypeTags, SearchVariableTags, SearchFriendTags, SearchBaseTags
 };
 
 
-extern long DWRInfoLength( dr_handle mod )
+long DWRInfoLength( dr_handle mod )
 /****************************************/
 // return length of dbg_info for mod
 {
@@ -125,7 +125,7 @@ extern long DWRInfoLength( dr_handle mod )
 }
 
 
-extern bool DWRScanCompileUnit( dr_search_context *ctxt,
+bool DWRScanCompileUnit( dr_search_context *ctxt,
                            DWRCUWLK fn,
                            unsigned_16 const *tagarray, dr_depth depth, void *data)
 /*********************************************************************************/
@@ -208,7 +208,7 @@ extern bool DWRScanCompileUnit( dr_search_context *ctxt,
     return( TRUE );
 }
 
-extern void DWRSkipChildren( dr_handle *abbrev, dr_handle *mod )
+void DWRSkipChildren( dr_handle *abbrev, dr_handle *mod )
 /**************************************************************/
 {
     unsigned_16 value;
@@ -229,7 +229,7 @@ extern void DWRSkipChildren( dr_handle *abbrev, dr_handle *mod )
     }
 }
 
-extern void DWRSkipAttribs( dr_handle abbrev, dr_handle *mod )
+void DWRSkipAttribs( dr_handle abbrev, dr_handle *mod )
 /************************************************************/
 // skip the attributes.
 {
@@ -244,7 +244,7 @@ extern void DWRSkipAttribs( dr_handle abbrev, dr_handle *mod )
     }
 }
 
-extern void DWRSkipRest( dr_handle abbrev, dr_handle *mod )
+void DWRSkipRest( dr_handle abbrev, dr_handle *mod )
 /*********************************************************/
 // skip the rest of the attributes.  This is designed to come after a
 // DWRScanForAttrib, which leaves abbrev pointing at the form.
@@ -261,7 +261,7 @@ extern void DWRSkipRest( dr_handle abbrev, dr_handle *mod )
     }
 }
 
-extern void DWRAllChildren( dr_handle mod,
+void DWRAllChildren( dr_handle mod,
                             bool (*fn)(dr_handle, dr_handle, void *),
                             void *data )
 /*******************************************************************/
@@ -279,7 +279,7 @@ extern void DWRAllChildren( dr_handle mod,
     }
 }
 
-extern bool DWRSearchArray( unsigned_16 const *array, unsigned_16 value )
+bool DWRSearchArray( unsigned_16 const *array, unsigned_16 value )
 /***********************************************************************/
 {
     while( *array != 0 ) {
@@ -289,7 +289,7 @@ extern bool DWRSearchArray( unsigned_16 const *array, unsigned_16 value )
     return( FALSE );
 }
 
-extern unsigned DWRGetAddrSize( dr_handle mod )
+unsigned DWRGetAddrSize( dr_handle mod )
 /**********************************************/
 /* returns the size of the address for the compile unit */
 {
@@ -297,7 +297,7 @@ extern unsigned DWRGetAddrSize( dr_handle mod )
 }
 
 
-extern void DWRSkipForm( dr_handle *addr, unsigned_16 form )
+void DWRSkipForm( dr_handle *addr, unsigned_16 form )
 /**********************************************************/
 {
     unsigned_32 value;
@@ -359,7 +359,7 @@ extern void DWRSkipForm( dr_handle *addr, unsigned_16 form )
     }
 }
 
-extern dwr_formcl DWRFormClass( unsigned_16 form )
+dwr_formcl DWRFormClass( unsigned_16 form )
 /************************************************/
 // class a form
 {
@@ -407,7 +407,7 @@ extern dwr_formcl DWRFormClass( unsigned_16 form )
     return( formcl );
 }
 
-extern unsigned_32 ReadConst( unsigned form, dr_handle info )
+unsigned_32 ReadConst( unsigned form, dr_handle info )
 /***********************************************************/
 {
     unsigned_32 retval;
@@ -444,7 +444,7 @@ extern unsigned_32 ReadConst( unsigned form, dr_handle info )
     return( retval );
 }
 
-extern unsigned_32 DWRReadConstant( dr_handle abbrev, dr_handle info )
+unsigned_32 DWRReadConstant( dr_handle abbrev, dr_handle info )
 /********************************************************************/
 {
     unsigned    form;
@@ -453,7 +453,7 @@ extern unsigned_32 DWRReadConstant( dr_handle abbrev, dr_handle info )
     return( ReadConst( form, info ) );
 }
 
-extern dr_handle DWRReadReference( dr_handle abbrev, dr_handle info )
+dr_handle DWRReadReference( dr_handle abbrev, dr_handle info )
 /*******************************************************************/
 // references are just a constant with the start of the compile unit added on.
 {
@@ -476,7 +476,7 @@ extern dr_handle DWRReadReference( dr_handle abbrev, dr_handle info )
     return( handle );
 }
 
-extern dr_handle DWRReadAddr( dr_handle abbrev, dr_handle info )
+dr_handle DWRReadAddr( dr_handle abbrev, dr_handle info )
 /**************************************************************/
 // address size dependent on CCU info
 {
@@ -509,7 +509,7 @@ extern dr_handle DWRReadAddr( dr_handle abbrev, dr_handle info )
     return( retval );
 }
 
-extern char * DWRReadString( dr_handle abbrev, dr_handle info )
+char * DWRReadString( dr_handle abbrev, dr_handle info )
 /*************************************************************/
 {
     unsigned    form;
@@ -528,7 +528,7 @@ extern char * DWRReadString( dr_handle abbrev, dr_handle info )
     return( NULL );
 }
 
-extern int DWRReadFlag( dr_handle abbrev, dr_handle info )
+int DWRReadFlag( dr_handle abbrev, dr_handle info )
 /********************************************************/
 {
     unsigned    form;
@@ -542,7 +542,7 @@ extern int DWRReadFlag( dr_handle abbrev, dr_handle info )
     return( 0 );
 }
 
-extern dr_handle DWRGetAbbrev( dr_handle *entry )
+dr_handle DWRGetAbbrev( dr_handle *entry )
 /***********************************************/
 {
     dr_handle       abbrev;
@@ -556,7 +556,7 @@ extern dr_handle DWRGetAbbrev( dr_handle *entry )
     return( abbrev );
 }
 
-extern dr_handle DWRLookupAbbrev( dr_handle entry, dr_handle abbr )
+dr_handle DWRLookupAbbrev( dr_handle entry, dr_handle abbr )
 /*****************************************************************/
 {
     dr_handle       abbrev;
@@ -571,7 +571,7 @@ extern dr_handle DWRLookupAbbrev( dr_handle entry, dr_handle abbr )
     return( abbrev );
 }
 
-extern dr_handle DWRReadAbbrev( dr_handle entry )
+dr_handle DWRReadAbbrev( dr_handle entry )
 /***********************************************/
 {
     dr_handle       abbrev;
@@ -580,7 +580,7 @@ extern dr_handle DWRReadAbbrev( dr_handle entry )
     return( DWRLookupAbbrev( entry, abbrev ) );
 }
 
-extern char * DWRCopyString( dr_handle *info )
+char * DWRCopyString( dr_handle *info )
 /********************************************/
 {
     unsigned    count;
@@ -592,7 +592,7 @@ extern char * DWRCopyString( dr_handle *info )
     return( str );
 }
 
-extern char * DWRCopyDbgSecString( dr_handle *info, unsigned_32 offset )
+char * DWRCopyDbgSecString( dr_handle *info, unsigned_32 offset )
 /**********************************************************************/
 {
     unsigned    count;
@@ -606,7 +606,7 @@ extern char * DWRCopyDbgSecString( dr_handle *info, unsigned_32 offset )
     return( str );
 }
 
-extern dw_atnum DWRScanForAttrib( dr_handle *abbrev, dr_handle *info,
+dw_atnum DWRScanForAttrib( dr_handle *abbrev, dr_handle *info,
                                                         dw_atnum at )
 /*******************************************************************/
 /* look for a specific attribute in the list of attributes */
@@ -626,7 +626,7 @@ extern dw_atnum DWRScanForAttrib( dr_handle *abbrev, dr_handle *info,
 
 static unsigned_16 CompUnitTag[] = { DW_TAG_compile_unit, 0 };
 
-extern void DWRGetCompileUnitHdr( dr_handle mod,
+void DWRGetCompileUnitHdr( dr_handle mod,
                                   DWRCUWLK fn,
                                   void *data )
 /**********************************************/
@@ -648,7 +648,7 @@ extern void DWRGetCompileUnitHdr( dr_handle mod,
     DWRFreeContextStack( &ctxt.stack );
 }
 
-extern dr_handle DRGetCompileUnitTag( dr_handle comp_unit )
+dr_handle DRGetCompileUnitTag( dr_handle comp_unit )
 /*********************************************************/
 { // given the start of the compilation unit header
   // return the start of the DW_TAG_compile_unit
@@ -660,7 +660,7 @@ extern dr_handle DRGetCompileUnitTag( dr_handle comp_unit )
 
 #define DEMANGLE_BUF_SIZE 256
 
-extern char * DWRGetName( dr_handle abbrev, dr_handle entry )
+char * DWRGetName( dr_handle abbrev, dr_handle entry )
 /***********************************************************/
 {
     char    *name;
@@ -741,7 +741,7 @@ bool DWRScanAllCompileUnits( dr_search_context * startingCtxt,
     return( cont );     /* false if more symbols, true if at end of info */
 }
 
-extern bool DWRWalkCompileUnit( dr_handle mod, DWRCUWLK fn,
+bool DWRWalkCompileUnit( dr_handle mod, DWRCUWLK fn,
                         unsigned_16 const *tagarray, dr_depth depth, void *data )
 /*******************************************************************************/
 {
@@ -767,7 +767,7 @@ extern bool DWRWalkCompileUnit( dr_handle mod, DWRCUWLK fn,
     return( cont );     /* false if more symbols, true if at end of info */
 }
 
-extern int DWRWalkChildren( dr_handle mod, unsigned_16 const *tags,
+int DWRWalkChildren( dr_handle mod, unsigned_16 const *tags,
                             DRWLKBLK *wlks, void *d )
 /*****************************************************************/
 // takes an array of tags and wlks and calls wlk on tag match
@@ -823,7 +823,7 @@ extern int DWRWalkChildren( dr_handle mod, unsigned_16 const *tags,
     return( TRUE );
 }
 
-extern int DWRWalkContaining( dr_handle mod, dr_handle target,
+int DWRWalkContaining( dr_handle mod, dr_handle target,
                               DRWLKBLK wlk, void *d )
 /************************************************************/
 // Walk into tags that enclose target
@@ -879,7 +879,7 @@ extern int DWRWalkContaining( dr_handle mod, dr_handle target,
     return( TRUE );
 }
 
-extern bool DWRWalkSiblings( dr_handle           curr,
+bool DWRWalkSiblings( dr_handle           curr,
                              unsigned_16  const *tags,
                              DRWLKBLK *wlks,  void *d )
 /*************************************************************/
@@ -923,7 +923,7 @@ extern bool DWRWalkSiblings( dr_handle           curr,
     return( cont );
 }
 
-extern int DWRWalkScope( dr_handle mod,
+int DWRWalkScope( dr_handle mod,
                          unsigned_16 const *tags,
                          DRWLKBLK wlk,   void *d )
 /************************************************/
@@ -1031,7 +1031,7 @@ dr_handle DWRFindCompileUnit( dr_handle addr )
 
 #define CONTEXT_GUESS 0x10
 
-extern void DWRContextPush( dr_context_stack *stack, uint_32 val )
+void DWRContextPush( dr_context_stack *stack, uint_32 val )
 /****************************************************************/
 {
     if( stack->stack == NULL ) {
@@ -1048,7 +1048,7 @@ extern void DWRContextPush( dr_context_stack *stack, uint_32 val )
     stack->free += 1;
 }
 
-extern uint_32 DWRContextPop( dr_context_stack *stack )
+uint_32 DWRContextPop( dr_context_stack *stack )
 /*****************************************************/
 {
     if( stack->free <= 0 ) {
@@ -1059,7 +1059,7 @@ extern uint_32 DWRContextPop( dr_context_stack *stack )
     return( stack->stack[ stack->free ] );
 }
 
-extern dr_handle DWRContext( dr_context_stack *stack, int up )
+dr_handle DWRContext( dr_context_stack *stack, int up )
 /************************************************************/
 {
     int free;
@@ -1072,7 +1072,7 @@ extern dr_handle DWRContext( dr_context_stack *stack, int up )
     return( stack->stack[free] );
 }
 
-extern void DWRFreeContextStack( dr_context_stack *stack )
+void DWRFreeContextStack( dr_context_stack *stack )
 /********************************************************/
 {
     DWRFREE( stack->stack );

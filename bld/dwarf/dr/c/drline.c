@@ -33,6 +33,7 @@
 #include "drutils.h"
 #include <string.h>
 #include "walloca.h"
+#include "clibext.h"
 
 
 static unsigned_32 ReadVWord( dr_handle where, int size )

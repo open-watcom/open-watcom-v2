@@ -10,17 +10,18 @@ __dwarf_dr_suffix=\dwarfr.lib
 !endif
 #
 inline_vmem_nt_386  = vm
-inline_vmem_os2_386 = vm
 inline_vmem_nt_axp  = vm
+inline_vmem_os2_386 = vm
 
 #
 # DWARF library
 #
 dwarf_dr_lib_386       = $(__dwarf_dr_prefix)osi386$(__dwarf_dr_suffix)
 dwarf_dr_lib_axp       = $(__dwarf_dr_prefix)osiaxp$(__dwarf_dr_suffix)
+dwarf_dr_lib_x64       = $(__dwarf_dr_prefix)osix64$(__dwarf_dr_suffix)
 dwarf_dr_lib_nt_386vm  = $(__dwarf_dr_prefix)osi386vm$(__dwarf_dr_suffix)
-dwarf_dr_lib_os2_386vm = $(__dwarf_dr_prefix)osi386vm$(__dwarf_dr_suffix)
 dwarf_dr_lib_nt_axpvm  = $(__dwarf_dr_prefix)osiaxpvm$(__dwarf_dr_suffix)
+dwarf_dr_lib_os2_386vm = $(__dwarf_dr_prefix)osi386vm$(__dwarf_dr_suffix)
 dwarf_dr_lib_win_i86   = $(__dwarf_dr_prefix)wini86$(__dwarf_dr_suffix)
 dwarf_dr_lib_os2_i86   = $(__dwarf_dr_prefix)os2i86$(__dwarf_dr_suffix)
 dwarf_dr_lib_qnx_386   = $(__dwarf_dr_prefix)qnx386$(__dwarf_dr_suffix)
