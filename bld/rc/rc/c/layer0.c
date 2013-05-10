@@ -215,8 +215,8 @@ extern int RcClose( WResFileID fileno )
 
 } /* RcClose */
 
-extern int RcWrite( WResFileID fileno, const void *out_buff, unsigned size )
-/**************************************************************************/
+extern WResFileSSize RcWrite( WResFileID fileno, const void *out_buff, WResFileSize size )
+/****************************************************************************************/
 {
     RcBuffer    *buff;
     int         copy_bytes;
@@ -277,8 +277,8 @@ static int FillRcBuffer( int fileno, RcBuffer * buff )
     return( buff->Count );
 } /* FillRcBuffer */
 
-int RcRead( WResFileID fileno, void * in_buff, unsigned size )
-/************************************************************/
+WResFileSSize RcRead( WResFileID fileno, void * in_buff, WResFileSize size )
+/**************************************************************************/
 {
     RcBuffer    *buff;
     int         copy_bytes;
@@ -326,8 +326,8 @@ int RcRead( WResFileID fileno, void * in_buff, unsigned size )
     return( total_read );
 } /* RcRead */
 
-long RcSeek( WResFileID fileno, long amount, int where )
-/******************************************************/
+WResFileOffset RcSeek( WResFileID fileno, WResFileOffset amount, int where )
+/**************************************************************************/
 /* Note: Don't seek backwards in a buffer that has been writen to without */
 /* flushing the buffer and doing an lseek since moving the NextChar pointer */
 /* back will make it look like less data has been writen */
@@ -422,8 +422,8 @@ long RcSeek( WResFileID fileno, long amount, int where )
     return( currpos );
 } /* RcSeek */
 
-long RcTell( WResFileID fileno )
-/******************************/
+WResFileOffset RcTell( WResFileID fileno )
+/****************************************/
 {
     RcBuffer *  buff;
     int         i;
