@@ -78,9 +78,9 @@ static cfloat *scalarMultiply( cfloat *f, int s )
 
     d.quot = 0;
 
-    for( i = f->len - 1; i >= 0; i-- ) {
-        d = div( s * CFAccess( f, i ) + d.quot, 10 );
-        CFDeposit( res, i + 1, d.rem );
+    for( i = f->len; i > 0; i-- ) {
+        d = div( s * CFAccess( f, i - 1 ) + d.quot, 10 );
+        CFDeposit( res, i, d.rem );
     }
     CFDeposit( res, 0, d.quot );
     return( res );
