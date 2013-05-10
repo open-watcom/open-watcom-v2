@@ -127,7 +127,7 @@ typedef enum                    // CODES FOR ADDR(FUNCTION)
 ,   ADDR_FN_MANY                // - addr of function (overloaded)
 ,   ADDR_FN_ONE_USED            // - use of function (not overloaded)
 ,   ADDR_FN_MANY_USED           // - use of function (overloaded)
-} addr_func;
+} addr_func_t;
 
 enum                            // control bits for EffectCtor
 {   EFFECT_EXACT        = 0x01  // - exact version of class

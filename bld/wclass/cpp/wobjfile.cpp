@@ -97,7 +97,7 @@ bool WEXPORT WObjectFile::open( const char* name, OpenStyle style )
         return _objOk;
 }
 
-bool WEXPORT WObjectFile::open( const char* name, char* env, OpenStyle style )
+bool WEXPORT WObjectFile::open( const char* name, const char* env, OpenStyle style )
 {
     return _objOk = _objOk & WFile::open( name, env, style );
 }
