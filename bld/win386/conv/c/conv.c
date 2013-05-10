@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "watcom.h"
+#include "clibext.h"
 
 #define MAX_BUFF 256
 
@@ -117,19 +117,6 @@ fcn     *VoidHead, *VoidCurr;    /* list of all prototypes */
 
 FILE    *stubs,*stubsinc;
 FILE    *dllthunk;
-
-/* Local strupr() implementation */
-char *mystrupr( char *string )
-{
-    char    *s;
-
-    if( string ) {
-        for( s = string; *s != '\0'; ++s ) {
-            *s = toupper( *s );
-        }
-    }
-    return( string );
-} 
 
 void *myalloc( size_t size )
 {
@@ -1137,7 +1124,7 @@ void GenerateCStubs( void )
             exit( 1 );
         }
         startOBJECT();
-        mystrupr( fn2 );                                  /* 23-sep-92 AFS */
+        strupr( fn2 );
         emitOBJECT( ii, fn2, tmpf, 4*index );
         endOBJECT();
         fclose( objFile );
