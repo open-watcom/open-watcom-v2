@@ -34,7 +34,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "watcom.h"
 #include "alloc.h"
 #include "yacc.h"
 

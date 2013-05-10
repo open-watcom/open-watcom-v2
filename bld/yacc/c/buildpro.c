@@ -35,8 +35,6 @@
 #include "alloc.h"
 #include "yacc.h"
 
-#define DUPSTR(string)  strcpy((char *) malloc(strlen(string)+1), string)
-
 index_t npro;
 index_t nsym;
 index_t nterm;
@@ -124,7 +122,7 @@ a_sym *addsym( char *s )
     sym = findsymptr( s );
     if( *sym == NULL ) {
         p = CALLOC( 1, a_sym );
-        p->name = DUPSTR( s );
+        p->name = strdup( s );
         *sym = p;
     }
     return( *sym );

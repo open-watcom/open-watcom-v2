@@ -31,6 +31,7 @@
 
 
 #include <stdio.h>
+#include "clibext.h"
 
 typedef enum {
     FALSE = 0,
