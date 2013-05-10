@@ -3,7 +3,7 @@
 host_os  = nt
 host_cpu = axp
 
-#IS_GUI = y
+#is_gui = 1
 linkage = static
 
 !include $(wres_dir)/master.mif
