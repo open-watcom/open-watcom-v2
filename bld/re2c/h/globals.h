@@ -35,6 +35,7 @@
 
 #include "basics.h"
 #include "bool.h"
+#include "clibext.h"
 
 extern const char   *fileName;
 extern bool         sFlag;

@@ -36,7 +36,6 @@
 #include "wio.h"
 
 #include "sysdep.h"
-#include "watcom.h"
 
 #if defined(__DOS__)
 

@@ -273,7 +273,7 @@ yy34:
                                 }
 yy35:   yych = *++YYCURSOR;
 yy36:
-        { fprintf( stderr, "unexpected character: %s\n", *s->tok );
+        { fprintf( stderr, "unexpected character: %c\n", *s->tok );
                                   goto scan;
                                 }
 yy37:   ++YYCURSOR;

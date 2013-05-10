@@ -35,7 +35,6 @@
 #include <stddef.h>
 
 #include "errdefns.h"
-#include "watcom.h"
 #include "memmgr.h"
 #include "stringl.h"
 #include "cgfront.h"

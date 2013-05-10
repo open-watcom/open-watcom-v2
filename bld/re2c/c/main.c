@@ -1,17 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-#include <sys/fcntl.h>
-#else
-#include <fcntl.h>
-#endif
-#if defined( __UNIX__ )
-#include <unistd.h>
-#else
-#include <io.h>
-#endif
-
 #include "globals.h"
 #include "parser.h"
 #include "dfa.h"
@@ -35,17 +24,6 @@ static void usage( void )
         "-i      Do not generate '#line' info (usefull for versioning).\n"
         "-s      Generate nested ifs for some switches. Many compilers\n"
         "        need this assist to generate better code.\n" );
-}
-
-char *mystrdup( const char *str )
-{
-    size_t  len;
-    char    *copy;
-
-    len = strlen( str ) + 1;
-    copy = malloc( len );
-    memcpy( copy, str, len );
-    return( copy );
 }
 
 int main(int argc, char *argv[])

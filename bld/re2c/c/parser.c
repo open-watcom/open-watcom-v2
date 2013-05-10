@@ -233,7 +233,7 @@ static void line_source( FILE *o, uint line )
     if( fileName == NULL ) {
         fputs( "<stdin>", o );
     } else {
-        fnamebuf = mystrdup( fileName );
+        fnamebuf = strdup( fileName );
         token = strtok( fnamebuf, "\\" );
         for(;;) {
             fputs( token, o );
