@@ -37,19 +37,28 @@
 /* of the file opening functions which will get it from the low level open */
 /* function */
 
+#if !defined( __WATCOMC__ ) && defined( __UNIX__ )
+#define WResFileSSize   ssize_t
+#define WResFileSize    size_t
+#else
+#define WResFileSSize   int
+#define WResFileSize    unsigned
+#endif
+#define WResFileOffset  long
+
 typedef int     WResFileID;
 
-typedef struct WResRoutines {                                   /* defaults */
+typedef struct WResRoutines {                                           /* defaults */
     /* I/O routines */
-    WResFileID  (*open)(const char *, int, ...);                /* open */
-    int         (*close)(WResFileID);                           /* close */
-    int         (*read)(WResFileID, void *, unsigned);          /* read */
-    int         (*write)(WResFileID, const void *, unsigned);   /* write */
-    long        (*seek)(WResFileID, long, int );                /* lseek */
-    long        (*tell)(WResFileID);                            /* tell */
+    WResFileID      (*open)(const char *, int, ...);                    /* open */
+    int             (*close)(WResFileID);                               /* close */
+    WResFileSSize   (*read)(WResFileID, void *, WResFileSize);          /* read */
+    WResFileSSize   (*write)(WResFileID, const void *, WResFileSize);   /* write */
+    WResFileOffset  (*seek)(WResFileID, WResFileOffset, int );          /* lseek */
+    WResFileOffset  (*tell)(WResFileID);                                /* tell */
     /* memory routines */
-    void        *(*alloc)(size_t);                              /* malloc */
-    void        (*free)(void *);                                /* free */
+    void            *(*alloc)(size_t);                                  /* malloc */
+    void            (*free)(void *);                                    /* free */
 } WResRoutines;
 
 #define WResSetRtns( open, close, read, write, seek, tell, alloc, free ) \
