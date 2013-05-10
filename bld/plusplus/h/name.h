@@ -54,11 +54,6 @@ extern boolean              IsNameDummy( NAME name );
 extern unsigned             NameCalcHashLen( const char *, unsigned );
 
 extern unsigned             NameHash( NAME name );
-#ifdef NAME_PTR_IS_NAME_MEMBER
-#define NameStr(n)          (n)
-#else
-extern char                 *NameStr( NAME name );
-#endif
 
 extern NAME                 NameGetIndex( NAME name );
 extern NAME                 NameMapIndex( NAME name );

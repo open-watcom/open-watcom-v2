@@ -61,7 +61,9 @@ int add_files( struct zip *archive, const char *list_fname, char *dir )
     retval = 0;
     while( fgets( srcname, sizeof( srcname ), f ) != NULL ) {
         size_t  len1;
+#if !defined( __UNIX__ )
         int     i;
+#endif
 
         /* Strip terminating newline */
         len1 = strlen( srcname );

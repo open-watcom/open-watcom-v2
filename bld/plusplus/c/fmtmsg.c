@@ -99,7 +99,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                 VbufConcStr( pbuf, local_buf );
                 break;
             case 'c':   /* %c */
-                VbufConcChr( pbuf, va_arg( arg, char ) );
+                VbufConcChr( pbuf, va_arg( arg, int ) );
                 break;
             case 's':   /* %s */
                 VbufConcStr( pbuf, va_arg( arg, char * ) );

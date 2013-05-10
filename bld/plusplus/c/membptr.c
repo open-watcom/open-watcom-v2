@@ -686,8 +686,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
         }
     } else if( SymIsFunction( base_item ) ) {
         if( ADDR_FN_ONE_USED == NodeAddrOfFun( item, &item ) ) {
-            item->u.symcg.symbol = ActualNonOverloadedFunc( base_item,
-                                                          item->u.symcg.result );
+            item->u.symcg.symbol = ActualNonOverloadedFunc( base_item, item->u.symcg.result );
             retn = CNV_OK;
         } else {
             switch( conversion ) {
@@ -808,7 +807,7 @@ static boolean membPtrAddrOfNode( // TEST IF (& class::member)
 {
     TYPE mbrptr;
     PTREE fn;
-    CNV_RETN    retn;
+    addr_func_t retn;
 
     if( NodeIsUnaryOp( node, CO_ADDR_OF ) ) {
         mbrptr = MemberPtrType( node->type );

@@ -121,13 +121,13 @@ typedef enum                    // CODES FOR PC POINTER REPRESENTATIONS
 ,   PC_PTR_NOT                  // - not a pointer
 } PC_PTR;
 
-enum                            // CODES FOR ADDR(FUNCTION)
+typedef enum                    // CODES FOR ADDR(FUNCTION)
 {   ADDR_FN_NONE                // - not addr of function
 ,   ADDR_FN_ONE                 // - addr of function (not overloaded)
 ,   ADDR_FN_MANY                // - addr of function (overloaded)
 ,   ADDR_FN_ONE_USED            // - use of function (not overloaded)
 ,   ADDR_FN_MANY_USED           // - use of function (overloaded)
-};
+} addr_func;
 
 enum                            // control bits for EffectCtor
 {   EFFECT_EXACT        = 0x01  // - exact version of class
@@ -878,7 +878,7 @@ PTREE NodeAddSideEffect(        // ADD A SIDE-EFFECT EXPRESSION
 PTREE NodeActualNonOverloaded(  // POSITION OVER DEFAULT-ARG SYMBOLS
     PTREE node )                // - PT_SYMBOL for function
 ;
-unsigned NodeAddrOfFun(         // GET PTREE FOR &FUN (FUN IS OVERLOADED)
+addr_func_t NodeAddrOfFun(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
     PTREE oper,                 // - expression
     PTREE *addr_func )          // - addr[ &function ]
 ;

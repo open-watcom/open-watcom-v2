@@ -138,8 +138,8 @@ void CloseAllFiles( void ) {
     }
 }
 
-extern WResFileID RcOpen( const char * file_name, int access, ... )
-/*****************************************************************/
+WResFileID RcOpen( const char * file_name, int access, ... )
+/**********************************************************/
 {
     int         perms;
     va_list     args;
@@ -191,8 +191,8 @@ static int FlushRcBuffer( int fileno, RcBuffer * buff )
 
 } /* FlushRcBuffer */
 
-extern int RcClose( WResFileID fileno )
-/*************************************/
+int RcClose( WResFileID fileno )
+/******************************/
 {
     RcBuffer    *buff;
     int         error,
@@ -215,8 +215,8 @@ extern int RcClose( WResFileID fileno )
 
 } /* RcClose */
 
-extern WResFileSSize RcWrite( WResFileID fileno, const void *out_buff, WResFileSize size )
-/****************************************************************************************/
+WResFileSSize RcWrite( WResFileID fileno, const void *out_buff, WResFileSize size )
+/*********************************************************************************/
 {
     RcBuffer    *buff;
     int         copy_bytes;
@@ -441,7 +441,7 @@ WResFileOffset RcTell( WResFileID fileno )
     }
 } /* RcTell */
 
-extern void Layer0InitStatics( void )
+void Layer0InitStatics( void )
 /***********************************/
 {
     memset( RcFileList, 0, RC_MAX_FILES * sizeof( RcFileEntry ) );

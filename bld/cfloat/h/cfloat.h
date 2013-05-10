@@ -114,8 +114,8 @@ extern  cfloat  *       CFSub( cfloat *op1, cfloat *op2 );
 extern  void            CFNegate( cfloat *f );
 extern  int             CFCompare( cfloat *op1, cfloat *op2 );
 extern  int             CFTest( cfloat *f );
-extern  int             CFAccess( cfloat *f, int index );
-extern  void            CFDeposit( cfloat *f, int index, int data );
+extern  int             CFAccess( cfloat *f, unsigned index );
+extern  void            CFDeposit( cfloat *f, unsigned index, int data );
 extern  void            CFClean( cfloat *f );
 
 extern  void            CFInit( cf_callbacks * );

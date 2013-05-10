@@ -1479,13 +1479,13 @@ FNOV_RANK *bestrank, FNOV_RANK *curr_rank, boolean src_mptr )
 }
 
 static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
+                                     FNOV_RANK *bestrank, PTREE *ptlist )
 /***********************************************************************/
 // called only when an argument is a (possible overloaded) function symbol
-FNOV_RANK *bestrank, PTREE *ptlist )
 {
     boolean             src_mptr;   // can src be a pointer to member
     PTREE               fn;
-    unsigned            retn;
+    addr_func_t         retn;
     SYMBOL              curr;
     SYM_REGION          *region;
     auto FNOV_RANK      curr_rank;
@@ -1498,8 +1498,7 @@ FNOV_RANK *bestrank, PTREE *ptlist )
     if( fn->flags & PTF_COLON_QUALED ) { // i.e. S::foo not just foo
         // &S::foo can be a mptr
         // just S:: can also be a mptr if extensions enabled
-        src_mptr = ( retn == ADDR_FN_MANY || retn == ADDR_FN_ONE ||
-                     CompFlags.extensions_enabled );
+        src_mptr = ( retn == ADDR_FN_MANY || retn == ADDR_FN_ONE || CompFlags.extensions_enabled );
 
     }
     bestrank->rank = OV_RANK_NO_MATCH;

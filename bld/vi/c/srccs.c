@@ -47,7 +47,7 @@ static  cs_entry      *TOS;
 /*
  * oopsBob - fatal block nesting error
  */
-#ifndef __AXP__
+#if defined( __WATCOMC__ ) && !defined( __AXP__ )
 #pragma aux oopsBob aborts;
 #endif
 static void oopsBob( char *current, char *start )

@@ -1657,11 +1657,11 @@ PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
 }
 
 
-static unsigned checkFunction(  // CHECK IF FUNCTION
-    PTREE fun )                 // - potential function node
+static addr_func_t checkFunction(   // CHECK IF FUNCTION
+    PTREE fun )                     // - potential function node
 {
-    unsigned retn;              // - return: ADDR_FN_...
-    SYMBOL sym;                 // - symbol for function
+    addr_func_t retn;               // - return: ADDR_FN_...
+    SYMBOL sym;                     // - symbol for function
 
     if( fun->op == PT_SYMBOL ) {
         sym = fun->u.symcg.symbol;
@@ -1683,11 +1683,11 @@ static unsigned checkFunction(  // CHECK IF FUNCTION
 }
 
 
-unsigned NodeAddrOfFun(         // GET PTREE FOR &FUN (FUN IS OVERLOADED)
+addr_func_t NodeAddrOfFun(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
     PTREE oper,                 // - expression
     PTREE *addr_func )          // - addr[ function ]
 {
-    unsigned retn;              // - return: ADDR_FN_...
+    addr_func_t retn;           // - return: ADDR_FN_...
 
     retn = ADDR_FN_NONE;
     *addr_func = NULL;

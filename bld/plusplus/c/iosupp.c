@@ -386,7 +386,7 @@ static boolean openSrc(         // ATTEMPT TO OPEN FILE
     char *name,                 // - file name
     enum file_type typ )        // - type of file being opened
 {
-    pch_status pch_OK;          // - pre-compiled header load status
+    pch_absorb pch_OK;          // - pre-compiled header load status
     FILE *fp;                   // - file pointer
     boolean might_browse;       // - true ==> might browse, if right file type
 

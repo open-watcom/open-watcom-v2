@@ -454,13 +454,13 @@ extern owl_offset ObjAlign( uint_8 alignment ) {
     return( offset + alignment );
 }
 
-/*
+#if 0
 extern owl_offset ObjTellOffset( void ) {
 //***************************************
 
     return( tellOffset() );
 }
-*/
+#endif
 
 extern void ObjDirectEmitReloc( owl_offset offset, void *target, owl_reloc_type type, bool named_sym ) {
 //******************************************************************************************************

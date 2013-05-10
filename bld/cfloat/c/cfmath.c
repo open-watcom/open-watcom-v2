@@ -47,10 +47,10 @@ static  int     Suber( int a, int b ) {
     return( a - b );
 }
 
-extern  int     CFOrder( cfloat *float1, cfloat *float2 ) {
-/*********************************************************/
+int     CFOrder( cfloat *float1, cfloat *float2 ) {
+/*************************************************/
 
-    int         index;
+    unsigned    index;
     int         diff;
 
     if( float1->exp > float2->exp ) return( 1 );
@@ -84,7 +84,7 @@ static  int     Min( int a, int b ) {
 }
 
 static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
-/****************************************************************************/
+/***************************************************************************/
 {
     int         carry;
     int         pos;
@@ -138,8 +138,8 @@ static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
 
 
 
-extern  cfloat  *CFAdd( cfloat *op1, cfloat *op2 ) {
-/**************************************************/
+cfloat  *CFAdd( cfloat *op1, cfloat *op2 ) {
+/******************************************/
 
     int         ord;
 
@@ -169,8 +169,8 @@ extern  cfloat  *CFAdd( cfloat *op1, cfloat *op2 ) {
     return( NULL ); // shut up compiler
 }
 
-extern  cfloat  *CFSub( cfloat *op1, cfloat *op2 ) {
-/**************************************************/
+cfloat  *CFSub( cfloat *op1, cfloat *op2 ) {
+/******************************************/
 
     cfloat      *result;
     int         ord;
@@ -205,14 +205,14 @@ extern  cfloat  *CFSub( cfloat *op1, cfloat *op2 ) {
     return( NULL ); // shut up compiler
 }
 
-extern  void    CFNegate( cfloat *f ) {
-/*************************************/
+void    CFNegate( cfloat *f ) {
+/*****************************/
 
     f->sign = -f->sign;
 }
 
-extern  int     CFCompare( cfloat *op1, cfloat *op2 ) {
-/*****************************************************/
+int     CFCompare( cfloat *op1, cfloat *op2 ) {
+/*********************************************/
 
     if( op1->sign < op2->sign ) {
         return( -1 );
@@ -223,38 +223,38 @@ extern  int     CFCompare( cfloat *op1, cfloat *op2 ) {
     }
 }
 
-extern  int     CFTest( cfloat *f ) {
-/***********************************/
+int     CFTest( cfloat *f ) {
+/***************************/
 
     return( f->sign );
 }
 
-extern  int     CFAccess( cfloat *f, int index ) {
-/************************************************/
+int     CFAccess( cfloat *f, unsigned index ) {
+/*********************************************/
 
-    return( f->mant[ index ] - '0' );
+    return( f->mant[index] - '0' );
 }
 
-extern  void    CFDeposit( cfloat *f, unsigned index, int data ) {
-/****************************************************************/
+void    CFDeposit( cfloat *f, unsigned index, int data ) {
+/********************************************************/
 
     f->mant[index] = data + '0';
 }
 
-extern  void    CFClean( cfloat *f ) {
-/************************************/
+void    CFClean( cfloat *f ) {
+/****************************/
 
-    int         headindex;
-    int         tailindex;
+    unsigned    headindex;
+    unsigned    tailindex;
     char        *head;
 
     tailindex = f->len - 1;
-    while( f->mant[ tailindex ] == '0' ) {
+    while( f->mant[tailindex] == '0' ) {
         if( tailindex == 0 ) { /* it's zero!*/
             f->exp = 1;
             f->sign = 0;
             f->len = 1;
-            f->mant[ 1 ] = 0;
+            f->mant[1] = 0;
             return;
         }
         tailindex--;
@@ -274,5 +274,5 @@ extern  void    CFClean( cfloat *f ) {
         tailindex = CF_MAX_PREC;
     }
     f->len = tailindex + 1;
-    f->mant[ tailindex + 1 ] = 0;
+    f->mant[tailindex + 1] = 0;
 }

@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
-extern WResFileID   RcOpen( const char *, int, ... );
-extern int          RcClose( WResFileID );
-extern int          RcWrite( WResFileID, const void *, unsigned );
-extern int          RcRead( WResFileID, void *, unsigned );
-extern long         RcSeek( WResFileID, long, int );
-extern long         RcTell( WResFileID );
+extern WResFileID       RcOpen( const char *, int, ... );
+extern int              RcClose( WResFileID );
+extern WResFileSSize    RcWrite( WResFileID, const void *, WResFileSize );
+extern WResFileSSize    RcRead( WResFileID, void *, WResFileSize );
+extern WResFileOffset   RcSeek( WResFileID, WResFileOffset, int );
+extern WResFileOffset   RcTell( WResFileID );
 
 extern void     CloseAllFiles( void );
 extern void     RegisterOpenFile( int fhdl );
