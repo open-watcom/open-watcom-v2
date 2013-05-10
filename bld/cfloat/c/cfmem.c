@@ -97,8 +97,8 @@ extern  void    CFInit( cf_callbacks *table ) {
 }
 
 
-extern  cfloat  *CFAlloc( int size ) {
-/***********************************/
+extern  cfloat  *CFAlloc( unsigned size ) {
+/*****************************************/
 
     cfloat      *number;
 

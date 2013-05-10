@@ -67,8 +67,8 @@ static void efSet( cfloat *u, char ue[], int i, int val )
 static cfloat *scalarMultiply( cfloat *f, int s )
 {
     cfloat      *res;
-    div_t        d;
-    int          i;
+    div_t       d;
+    unsigned    i;
 
     res = CFAlloc( f->len + 1 );
 
@@ -86,10 +86,10 @@ static cfloat *scalarMultiply( cfloat *f, int s )
     return( res );
 }
 
-static void expandCF( cfloat **f, int scale )
+static void expandCF( cfloat **f, unsigned scale )
 {
     cfloat      *new;
-    int          l;
+    unsigned    l;
 
     new = CFAlloc( scale + (*f)->len );
 
@@ -138,7 +138,8 @@ static void roundupCF( cfloat *f )
 extern  cfloat  *CFDiv( cfloat *op1, cfloat *op2 ) {
     cfloat         *result;
     cfloat         *u, *v;
-    int             i, j, qa, ua, va, v1, cy, scale;
+    int             i, qa, ua, va, v1, cy, scale;
+    unsigned        j;
     div_t           d;
     char            ue[ CF_MAX_PREC ];
 

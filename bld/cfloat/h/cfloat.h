@@ -42,8 +42,8 @@ extern "C" {
 #define STRUCT_cfloat( x ) \
 { \
         int             exp; \
-        int             len; \
-        int             alloc; \
+        unsigned        len; \
+        unsigned        alloc; \
         signed_8        sign; \
         char            mant[ x ]; \
 }
@@ -51,7 +51,7 @@ extern "C" {
 typedef struct cfloat STRUCT_cfloat( 1 ) cfloat;
 
 typedef struct cf_callbacks {
-    void * (*alloc)( unsigned );
+    void * (*alloc)( size_t );
     void   (*free)( void * );
 } cf_callbacks;
 
@@ -101,13 +101,9 @@ extern  signed_32       CFCnvF32( cfloat *f );
 extern  signed_64       CFCnvF64( cfloat *f );
 extern  double          CFToF( cfloat *f );
 
-extern  int             CFAccess(cfloat*,int);
-extern  void            CFDeposit(cfloat*,int,int);
-extern  void            CFClean(cfloat*);
-extern  cfloat  *       CFAlloc(int);
+extern  cfloat  *       CFAlloc(unsigned);
 extern  void            CFFree(cfloat*);
 extern  cfloat  *       CFCopy(cfloat*);
-extern  cfloat  *       CFDiv(cfloat*,cfloat*);
 
 extern  cfloat  *       CFMul( cfloat *op1, cfloat *op2 );
 extern  cfloat  *       CFDiv( cfloat *op1, cfloat *op2 );

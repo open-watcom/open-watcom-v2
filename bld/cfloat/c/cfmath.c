@@ -88,7 +88,7 @@ static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
 {
     int         carry;
     int         pos;
-    int         length;
+    unsigned    length;
     int         op1left;
     int         op2left;
     int         farleft;
@@ -235,10 +235,10 @@ extern  int     CFAccess( cfloat *f, int index ) {
     return( f->mant[ index ] - '0' );
 }
 
-extern  void    CFDeposit( cfloat *f, int index, int data ) {
-/***********************************************************/
+extern  void    CFDeposit( cfloat *f, unsigned index, int data ) {
+/****************************************************************/
 
-    f->mant[ index ] = data + '0';
+    f->mant[index] = data + '0';
 }
 
 extern  void    CFClean( cfloat *f ) {

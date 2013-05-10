@@ -32,12 +32,6 @@
 
 #include "cfloat.h"
 
-extern  cfloat  *       CFAlloc(int);
-extern  int             CFAccess(cfloat*,int);
-extern  cfloat  *       CFAdd(cfloat*,cfloat*);
-extern  void            CFFree(cfloat*);
-extern  void            CFDeposit(cfloat*,int,int);
-extern  void            CFClean(cfloat*);
 
 static  cfloat  *SDMul( cfloat *op1, int plyer, int op1left,
                         int op1exp, int byexp ) {
@@ -47,7 +41,7 @@ static  cfloat  *SDMul( cfloat *op1, int plyer, int op1left,
     int         exp;
     cfloat      *result;
     int         resexp;
-    int         respos;
+    unsigned    respos;
 
     sum = 0;
     exp = op1exp;
