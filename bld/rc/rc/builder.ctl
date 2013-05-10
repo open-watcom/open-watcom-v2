@@ -50,6 +50,7 @@ set PROJNAME=wrc
     <CCCMD> linux386/wrc.exe    <OWRELROOT>/binl/wrc
     <CCCMD> linux386/wrc.sym    <OWRELROOT>/binl/
 
+    <CCCMD> linuxx64/wrc.exe    <OWRELROOT>/binl64/wrc
     <CCCMD> ntx64/wrc.exe       <OWRELROOT>/binnt64/
     <CCCMD> ntx64/wrcd.dll      <OWRELROOT>/binnt64/
 
