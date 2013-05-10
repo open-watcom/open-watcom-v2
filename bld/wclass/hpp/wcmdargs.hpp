@@ -40,7 +40,6 @@ extern "C" {
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
-    #include "clibext.h"
 }
 
 WCLASS WCommandArgs {
