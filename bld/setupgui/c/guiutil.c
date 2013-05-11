@@ -186,10 +186,12 @@ extern bool SetupPreInit( void )
      *
      *  see curr_date above
      */
-    if( 1 ) {
+#if 1
+    {
         char        tt[sizeof( __DATE__ ) == 12];
         tt[0] = 0;
     }
+#endif
 
     adj_date = strlen( curr_date ) - 4; /* subtract YYYY */
     sprintf( cpy1, banner4gui(), &curr_date[adj_date] );

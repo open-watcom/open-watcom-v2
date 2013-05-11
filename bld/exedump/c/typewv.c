@@ -341,7 +341,7 @@ void Dmp_type( int cnt, unsigned_32 *offs )
         Puthex( offs[i], 8 );
         Wdputslc( "\n" );
         curr_index = 0;
-        while( 1 ) {
+        for( ;; ) {
             Wlseek( coff + Curr_sectoff + offs[i] );
             Wread( buff, sizeof( buff ) );
             Wdputs( "        " );

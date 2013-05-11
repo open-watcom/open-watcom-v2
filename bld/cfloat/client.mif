@@ -30,3 +30,5 @@ cfloat_lib = $(cfloat_lib_$(host_os)_$(host_cpu))
 !else
 cfloat_lib = $(cfloat_lib_$(host_cpu))
 !endif
+
+cfloat_inc_dirs = -I"$(cfloat_dir)/h"

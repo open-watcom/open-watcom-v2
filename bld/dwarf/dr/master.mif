@@ -4,18 +4,64 @@ proj_name = dwarfr
 dwarfr_autodepends = .AUTODEPEND
 !endif
 
+fpu_flags_dos_i86   = -fpc
+fpu_flags_dos_386   = -fpc
+fpu_flags_os2_i86   = -fpc
+fpu_flags_os2_386   = -fpc
+fpu_flags_osi_i86   = -fpc
+fpu_flags_osi_386   = -fpc
+fpu_flags_qnx_i86   = -fpc
+fpu_flags_qnx_386   = -fpc
+fpu_flags_nt_386    = -fpc
+fpu_flags_linux_386 = -fpc
+fpu_flags_win_i86   = -fpc
+fpu_flags_rdos_386  = -fpc
+
+objs = &
+drarange.obj &
+drdecnam.obj &
+drenum.obj   &
+drfdkids.obj &
+drgetref.obj &
+drgettab.obj &
+drinfo.obj   &
+drinit.obj   &
+drline.obj   &
+drloc.obj    &
+drpubnam.obj &
+drscope.obj  &
+drsearch.obj &
+drstack.obj  &
+drtype.obj   &
+drutils.obj  &
+!ifeq inline_vmem 1
+virtstub.obj
+!else
+virtmem.obj
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
-extra_c_flags = -s
 
 .c: ../c
 
 inc_dirs = -I"../h"
 
+!ifeq inline_vmem 1
+extra_cpp_flags += -DINLINE_VMEM
+!endif
+
+extra_c_flags = -s
+
 extra_c_flags_i86 = -zc -zu
 extra_c_flags_386 = -zc
 extra_c_flags_win = -zW
 
-!include ../dr.mif
+extra_c_flags_drutils  = -I"$(lib_misc_dir)/h"
+extra_c_flags_drsearch = -I"$(posix_dir)/h"
+
+dwarfr.lib : $(objs)
+    @%create dr.lbc
+    @for %i in ($(objs)) do @%append dr.lbc %i
+    $(librarian) $(libflags) @dr.lbc

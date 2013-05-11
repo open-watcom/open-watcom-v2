@@ -1,14 +1,6 @@
 # DWARF DR library finder.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-!ifdef __UNIX__
-__dwarf_dr_prefix=$(dwarf_dir)/dr/
-__dwarf_dr_suffix=/dwarfr.lib
-!else
-__dwarf_dr_prefix=$(dwarf_dir)\dr\
-__dwarf_dr_suffix=\dwarfr.lib
-!endif
-#
 inline_vmem_nt_386  = vm
 inline_vmem_nt_axp  = vm
 inline_vmem_os2_386 = vm
@@ -16,15 +8,15 @@ inline_vmem_os2_386 = vm
 #
 # DWARF library
 #
-dwarf_dr_lib_386       = $(__dwarf_dr_prefix)osi386$(__dwarf_dr_suffix)
-dwarf_dr_lib_axp       = $(__dwarf_dr_prefix)osiaxp$(__dwarf_dr_suffix)
-dwarf_dr_lib_x64       = $(__dwarf_dr_prefix)osix64$(__dwarf_dr_suffix)
-dwarf_dr_lib_nt_386vm  = $(__dwarf_dr_prefix)osi386vm$(__dwarf_dr_suffix)
-dwarf_dr_lib_nt_axpvm  = $(__dwarf_dr_prefix)osiaxpvm$(__dwarf_dr_suffix)
-dwarf_dr_lib_os2_386vm = $(__dwarf_dr_prefix)osi386vm$(__dwarf_dr_suffix)
-dwarf_dr_lib_win_i86   = $(__dwarf_dr_prefix)wini86$(__dwarf_dr_suffix)
-dwarf_dr_lib_os2_i86   = $(__dwarf_dr_prefix)os2i86$(__dwarf_dr_suffix)
-dwarf_dr_lib_qnx_386   = $(__dwarf_dr_prefix)qnx386$(__dwarf_dr_suffix)
+dwarfr_lib_386       = $(dwarfr_dir)/osi386/dwarfr.lib
+dwarfr_lib_axp       = $(dwarfr_dir)/osiaxp/dwarfr.lib
+dwarfr_lib_x64       = $(dwarfr_dir)/osix64/dwarfr.lib
+dwarfr_lib_nt_386vm  = $(dwarfr_dir)/osi386vm/dwarfr.lib
+dwarfr_lib_nt_axpvm  = $(dwarfr_dir)/osiaxpvm/dwarfr.lib
+dwarfr_lib_os2_386vm = $(dwarfr_dir)/osi386vm/dwarfr.lib
+dwarfr_lib_win_i86   = $(dwarfr_dir)/wini86/dwarfr.lib
+dwarfr_lib_os2_i86   = $(dwarfr_dir)/os2i86/dwarfr.lib
+dwarfr_lib_qnx_386   = $(dwarfr_dir)/qnx386/dwarfr.lib
 
 #
 # DWARF run-time DLL used
@@ -33,8 +25,10 @@ dwarf_dr_lib_qnx_386   = $(__dwarf_dr_prefix)qnx386$(__dwarf_dr_suffix)
 !endif
 
 #
-!ifdef dwarf_dr_lib_$(host_OS)_$(host_CPU)$(inline_vmem_$(host_os)_$(host_cpu))
-dwarf_dr_lib = $(dwarf_dr_lib_$(host_OS)_$(host_CPU)$(inline_vmem_$(host_os)_$(host_cpu)))
+!ifdef dwarfr_lib_$(host_OS)_$(host_CPU)$(inline_vmem_$(host_os)_$(host_cpu))
+dwarfr_lib = $(dwarfr_lib_$(host_OS)_$(host_CPU)$(inline_vmem_$(host_os)_$(host_cpu)))
 !else
-dwarf_dr_lib = $(dwarf_dr_lib_$(host_CPU))
+dwarfr_lib = $(dwarfr_lib_$(host_CPU))
 !endif
+
+dwarfr_inc_dirs = -I"$(dwarfr_dir)/h"

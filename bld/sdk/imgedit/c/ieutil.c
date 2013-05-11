@@ -184,13 +184,18 @@ BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
 
     num_strips.x = nWidthDest / 256;
     num_strips.x++;
-    if( nWidthDest > 32 && FALSE ) {
+#if 0
+    if( nWidthDest > 32 ) {
         /* use the version that returns exact bytes needed for bits */
         linesize = BITS_INTO_BYTES( (unsigned long)(nWidthDest * bitcount), 1 );
     } else {
         /* use the version that rounds up to 32 bits */
         linesize = BITS_TO_BYTES( (unsigned long)(nWidthDest * bitcount), 1 );
     }
+#else
+    /* use the version that rounds up to 32 bits */
+    linesize = BITS_TO_BYTES( (unsigned long)(nWidthDest * bitcount), 1 );
+#endif
     num_strips.y = ((unsigned long)nHeightDest * linesize) / (16 * 1024);
     num_strips.y++;
 
@@ -714,13 +719,15 @@ void ConvertToDIBitmap( HBITMAP hbitmap )
      */
     bmi->bmiHeader.biWidth = bm.bmWidth;
     bmi->bmiHeader.biHeight = bm.bmHeight;
-    if( bmi->bmiHeader.bmWidth > 32 && FALSE ) {
-        bmi->bmiHeader.biSizeImage = BITS_INTO_BYTES( bmi->bmiHeader.biBitCount *
-                                                      bm.bmWidth, bm.bmHeight );
+#if 0
+    if( bmi->bmiHeader.bmWidth > 32 ) {
+        bmi->bmiHeader.biSizeImage = BITS_INTO_BYTES( bmi->bmiHeader.biBitCount * bm.bmWidth, bm.bmHeight );
     } else {
-        bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( bmi->bmiHeader.biBitCount *
-                                                    bm.bmWidth, bm.bmHeight );
+        bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( bmi->bmiHeader.biBitCount * bm.bmWidth, bm.bmHeight );
     }
+#else
+    bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( bmi->bmiHeader.biBitCount * bm.bmWidth, bm.bmHeight );
+#endif
     bits = MemAlloc( bmi->bmiHeader.biSizeImage );
 
     hdc = GetDC( NULL );

@@ -191,7 +191,7 @@ bool Dmp_mdbg_head( void )
         if( Dmp_elf_header( 0 ) || os2_debug() ) {
             return( 1 );    // Don't dump debug data twice
         }
-        while( 1 ) {
+        for( ;; ) {
             Wlseek( Curr_sectoff -(int)sizeof( debug_header ) );
             Wread( &dbg, sizeof( debug_header ) );
             if( memcmp( dbg.signature, signature, 4 ) != 0 ) {

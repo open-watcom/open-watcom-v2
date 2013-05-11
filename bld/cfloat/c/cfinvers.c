@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include "watcom.h"
-#include "cfloat.h"
 #include <stdlib.h>
 #include <string.h>
+#include "cfloat.h"
 
 extern  cfloat  *CFInverse( cfloat *op ) {
 /****************************************/

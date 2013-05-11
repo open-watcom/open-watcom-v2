@@ -33,9 +33,8 @@
 #include "cfloat.h"
 
 
-static  cfloat  *SDMul( cfloat *op1, int plyer, int op1left,
-                        int op1exp, int byexp ) {
-/*******************************************************************/
+static  cfloat  *SDMul( cfloat *op1, int plyer, int op1left, int op1exp, int byexp ) {
+/************************************************************************************/
 
     int         sum;
     int         exp;

@@ -70,7 +70,7 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
      */
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID)SpyWindowProc;
+        wc.lpfnWndProc = SpyWindowProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = sizeof( LONG_PTR );
         wc.hInstance = Instance;

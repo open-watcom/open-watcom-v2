@@ -47,7 +47,7 @@ OBJECTS += dmem.obj trmem.obj trmemcpp.obj
 OBJECTS += mem.obj
 !endif
 
-inc_dirs = -I"../h" -I"$(browse_dir)/h" -I"$(dwarf_dir)/dr/h" -I"$(posix_dir)/h"
+inc_dirs = -I"../h" -I"$(browse_dir)/h" -I"$(dwarfr_dir)/h" -I"$(posix_dir)/h"
 
 !ifneq host_cpu axp
 mem_flags = -of+

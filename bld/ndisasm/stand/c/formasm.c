@@ -501,7 +501,7 @@ static void printOut( char *string, orl_sec_offset offset, orl_sec_size size)
 
     ascii = !IsMasmOutput();
 
-    while( 1 ) {
+    for( ;; ) {
         if( string_left < ( string + size ) ) {
             if( ascii && printableString( string_left ) &&
                                                 strlen( string_left ) > 0 ) {

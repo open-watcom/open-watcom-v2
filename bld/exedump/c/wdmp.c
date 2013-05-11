@@ -273,7 +273,7 @@ static int parse_options( int argc, char * const *argv )
     Segspec = 0;
     Hexoff = 0;
 
-    while( 1 ) {
+    for( ;; ) {
         while( (c = getopt( argc, argv, ":aA:bB:dD:efipqrsS:x" )) != -1 ) {
             switch( c ) {
             case 'A':

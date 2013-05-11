@@ -1,3 +1,5 @@
+name = dwarf
+
 imp_objs = &
         dfmisc.obj &
         dfld.obj &
@@ -13,20 +15,15 @@ imp_objs = &
         dfaddsym.obj &
         dfscope.obj &
         dfhash.obj &
-        demangle.obj &
-        stub.obj
+        demangle.obj
 
-name = dwarf
+imp_objs_watcom = stub.obj
 
-extra_incs = -I"$(dwarf_dir)/dr/h" -I"$(lib_misc_dir)/h"
+extra_incs = $(dwarfr_inc_dirs) -I"$(lib_misc_dir)/h"
 extra_srcs = $(lib_misc_dir)/c
-extra_cppflags =  -DDIP_PRIORITY=DP_DEFAULT
+extra_cppflags = -DDIP_PRIORITY=DP_DEFAULT
 
-!include $(dwarf_dir)/dr/client.mif
+imp_libs = $(dwarfr_lib)
 
-.c: $(dwarf_dir)/dr/c
-
-imp_libs = $(dwarf_dr_lib)
-
+!include $(dwarfr_dir)/client.mif
 !include ../../imp.mif
-

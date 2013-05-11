@@ -3,4 +3,4 @@
 host_os  = osi
 host_cpu = mps
 
-!include ../dw.mif
+!include ../master.mif

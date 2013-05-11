@@ -28,11 +28,11 @@ dwsym.obj &
 dwtype.obj &
 dwutils.obj
 
-.c : $(dwarf_dir)/dw/c
+.c : $(dwarfw_dir)/c
 
 inc_dirs = -I. -I"../h"
 
-dw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
+dwarfw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
         $(librarian) $(libflags) $(objs)
 
 extra_c_flags = -s
@@ -47,5 +47,5 @@ dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
 
 dwabbrev.obj : dwabbrev.c dwabinfo.gh
 
-testcli.exe : testcli.obj testtest.obj testdump.obj dw.lib
-        $(linker) $(lflags) file testcli.obj,testtest.obj,testdump.obj lib dw.lib
+testcli.exe : testcli.obj testtest.obj testdump.obj dwarfw.lib
+        $(linker) $(lflags) file testcli.obj,testtest.obj,testdump.obj lib dwarfw.lib

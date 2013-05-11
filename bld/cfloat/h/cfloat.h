@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <sys/types.h>
 #include "watcom.h"
 
 #ifdef __cplusplus
@@ -69,7 +70,7 @@ typedef union flt {
 extern  void            CFCnvTarget( cfloat *f, flt *buffer, int class );
 extern  signed_64       CFGetDec64( char *bstart );
 extern  signed_32       CFGetDec32( char *bstart );
-extern  char    *       CFCnvFS( cfloat *f, char *buffer, int maxlen );
+extern  char    *       CFCnvFS( cfloat *f, char *buffer, unsigned maxlen );
 extern  cfloat  *       CFCnvSF( char *bstart, char *bend );
 extern  cfloat  *       CFCopy( cfloat *old );
 extern  cfloat  *       CFTrunc( cfloat *f );

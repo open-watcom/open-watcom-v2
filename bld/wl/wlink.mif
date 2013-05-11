@@ -31,13 +31,13 @@ suppress_zc = 1
 
 !include $(orl_dir)/client.mif
 !include wres.mif
-!include $(dwarf_dir)/dw/client.mif
+!include $(dwarfw_dir)/client.mif
 
 !include trmem.mif
 
 !include ../wlobjs.mif
 
-inc_dirs = -I. -I"../h" -I"$(dwarf_dir)/dw/h" -I"$(orl_dir)/h" -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
+inc_dirs = -I. -I"../h" $(dwarfw_inc_dirs) -I"$(orl_dir)/h" -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(lib_misc_dir)/h" -I"$(watcom_dir)/c"
 
 .c: ../c;$(watcom_dir)/c;$(wrc_dir)/c;$(lib_misc_dir)/c;$(trmem_dir)
 
@@ -87,7 +87,7 @@ extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)'
 orl_lib = 
 !endif
 
-xlibs = $(wres_lib) $(dwarf_dw_lib) $(orl_lib)
+xlibs = $(wres_lib) $(dwarfw_lib) $(orl_lib)
 
 ###########
 # rc stuff

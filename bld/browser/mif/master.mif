@@ -32,7 +32,7 @@ to_os_path=/=\
 !include defrule.mif
 !include deftarg.mif
 
-!include $(dwarf_dir)/dr/client.mif
+!include $(dwarfr_dir)/client.mif
 !include $(wclass_dir)/mif/client.mif
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
@@ -67,7 +67,7 @@ doc_inc_dirs_os2    = -I"$(doc_path_os2)"
 doc_inc_dirs_win    = -I"$(doc_path_win)"
 
 inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) $(doc_inc_dirs_$(host_os))
-inc_dirs += -I"$(dwarf_dir)/dr/h" -I"$(posix_dir)/h" -I"$(editdll_dir)"
+inc_dirs += $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
 extra_cpp_flags = -DSTANDALONE_RX=1 -DNOPERSIST=1
 !ifeq release 0
@@ -108,7 +108,7 @@ res_file     = $(res_file_$(host_OS))
 #linker
 LIBS_dos = $(ui_lib)
 
-LIBS     = $(gui_lib) $(LIBS_$(host_os)) $(dwarf_dr_lib) $(wclass_lib)
+LIBS     = $(gui_lib) $(LIBS_$(host_os)) $(dwarfr_lib) $(wclass_lib)
 
 lflags_win_i86  = sys windows font mem op stack=16k
 lflags_dos_386  = sys pharlap

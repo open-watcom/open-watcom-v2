@@ -466,10 +466,11 @@ extern unsigned_32 DWRVMReadULEB128( dr_handle *vmptr )
     off = NODE_OFF(vm);
     if( off <= MAX_NODE_SIZE - 5 ) {  // we can read whole uleb from buffer
         walk = node->mem + off;
-        while( 1 ) {
+        for( ;; ) {
             b = *walk++;
             result |= ( b & 0x7f ) << shift;
-            if( ( b & 0x80 ) == 0 ) break;
+            if( ( b & 0x80 ) == 0 )
+                break;
             shift += 7;
         }
         *vmptr += walk - node->mem - off;
@@ -498,9 +499,11 @@ extern void DWRVMSkipLEB128( dr_handle *hdl )
     off = NODE_OFF( vm );
     if( off <= MAX_NODE_SIZE - 5 ) {  // we can read whole leb from buffer
         walk = node->mem + off;
-        while( 1 ) {
+        for( ;; ) {
             b = *walk++;
-            if( (b & 0x80) == 0 ) break;
+            if( (b & 0x80) == 0 ) {
+                break;
+            }
         }
         vm.l += walk - node->mem - off;
     } else {

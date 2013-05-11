@@ -6,7 +6,7 @@
 
 !include $(owl_dir)/client.mif
 !include $(cfloat_dir)/client.mif
-!include $(dwarf_dir)/dw/client.mif
+!include $(dwarfw_dir)/client.mif
 
 !ifeq bootstrap 1
 obj_dir = $(%OWOBJDIR)
@@ -68,7 +68,7 @@ cg_libs = &
     $(o_dir)/cg$(target_cpu)$(cg_host).lib &
     $(owl_lib) &
     $(cfloat_lib) &
-    $(dwarf_dw_lib)
+    $(dwarfw_lib)
 !else
 !ifeq debug_cg 1
 cg_objs = $(o_dir)/dmpinc.obj
@@ -77,5 +77,5 @@ cg_libs = &
     $(o_dir)/cg$(target_cpu).lib &
     $(o_dir)/cg$(target_cpu)$(cg_host).lib &
     $(cfloat_lib) &
-    $(dwarf_dw_lib)
+    $(dwarfw_lib)
 !endif

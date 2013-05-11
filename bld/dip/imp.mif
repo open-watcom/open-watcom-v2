@@ -87,6 +87,10 @@ xname = $(name)$(ext_lib_shared)
 !endif
 !endif
 
+!ifdef __WATCOM__
+objs += $(imp_objs_watcom)
+!endif
+
 $(xname) : $(objs) $(imp_libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags_dll) $(objs) $(imp_libs) $(ldflags_dll)

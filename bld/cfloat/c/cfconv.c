@@ -84,10 +84,10 @@ static  signed_16       CFGetDec16( char *bstart ) {
     return( number );
 }
 
-extern  char    *CFCnvFS( cfloat *f, char *buffer, int maxlen ) {
-/***************************************************************/
+extern  char    *CFCnvFS( cfloat *f, char *buffer, unsigned maxlen ) {
+/********************************************************************/
 
-    int         len;
+    unsigned    len;
 
     len = f->len - 1;
     if( len + 5 + I16DIGITS > maxlen ) {
@@ -101,10 +101,11 @@ extern  char    *CFCnvFS( cfloat *f, char *buffer, int maxlen ) {
     memcpy( buffer, &f->mant[1], len );         /* copy mantissa*/
     buffer += len;
     *buffer++ = 'E';
-    len = f->exp - 1;
-    if( len < 0 ) {
+    if( f->exp > 0 ) {
+        len = f->exp - 1;
+    } else {
         *buffer++ = '-';
-        len = -len;
+        len = 1 - f->exp;
     }
     buffer[ 2 ] = len % 10 + '0';
     len /= 10;
@@ -220,12 +221,14 @@ extern  cfloat  *CFTrunc( cfloat *f ) {
 /*************************************/
 
     cfloat      *new;
-    int         len;
+    unsigned    len;
 
+    if( f->exp <= 0 )
+        return( CFAlloc( 1 ) );
     len = f->exp;
-    if( len <= 0 ) return( CFAlloc( 1 ) );
     new = CFCopy( f );
-    if( new->len <= len ) return( new );
+    if( new->len <= len )
+        return( new );
     new->len = len;
     new->mant[ len ] = NULLCHAR;
     return( new );
@@ -237,10 +240,10 @@ extern  cfloat  *CFRound( cfloat *f ) {
     cfloat      *trim;
     cfloat      *addto;
     cfloat      *new;
-    int         len;
+    unsigned    len;
 
+    if( f->exp < 0 ) return( CFAlloc( 1 ) );
     len = f->exp;
-    if( len < 0 ) return( CFAlloc( 1 ) );
     if( f->len <= len ) return( CFCopy( f ) );
     trim = CFTrunc( f );
     if( f->mant[ len ] < '5' ) return( trim );
@@ -258,7 +261,7 @@ static  cfloat  *CFCnvLongToF( signed_32 data, cf_bool is_signed ) {
 /******************************************************************/
 
     cfloat              *new;
-    int                 len;
+    unsigned            len;
     signed_8            sign;
     char                *digit;
     unsigned_32         dividend;

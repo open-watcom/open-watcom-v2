@@ -42,8 +42,6 @@
  * or not targetting an IEEE target, this must be replaced.
  */
 
-extern      char    *CFCnvFS( cfloat *f, char *buffer, int maxlen );
-
 extern      double        CFToF( cfloat *f ) {
 /********************************************/
 

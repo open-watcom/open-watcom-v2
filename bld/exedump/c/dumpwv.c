@@ -125,7 +125,7 @@ static void dump_line_numbers( mod_info *mi )
         Wread( Wbuff, sizeof( v3_line_segment ) );
         li = (v3_line_segment *) Wbuff;
         coff = 0;
-        while( 1 ) {
+        for( ;; ) {
             size = (li->num-1)* sizeof( line_info );
             Wread( Wbuff + sizeof( v3_line_segment ), size );
             Wdputslc( "      -------------------------------------\n" );
@@ -610,7 +610,7 @@ static void dump_locals( mod_info *mi )
         Wdputs( ":  offset " );
         Puthex( offs[i], 8 );
         Wdputslc( "\n" );
-        while( 1 ) {
+        for( ;; ) {
             Wlseek( coff + Curr_sectoff + offs[i] );
             Wread( buff, sizeof( buff ) );
             Wdputs( "        " );

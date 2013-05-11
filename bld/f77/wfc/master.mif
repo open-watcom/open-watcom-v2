@@ -11,8 +11,6 @@ wfc_autodepends = .AUTODEPEND
 !include $(cg_dir)/mif/fe.mif
 !include $(as_dir)/mif/client.mif
 !include $(wasm_dir)/mif/client.mif
-!include $(dwarf_dir)/dw/client.mif
-!include $(cfloat_dir)/client.mif
 
 !include wres.mif
 
@@ -22,7 +20,7 @@ wfc_autodepends = .AUTODEPEND
 wfc_trmem = 1
 !endif
 
-inc_dirs= -I. -I.. -I"../../h" -I"../../../h" $(cg_inc_dirs) -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $(asminline_inc_dirs)
+inc_dirs= -I. -I.. -I"../../h" -I"../../../h" $(cg_inc_dirs) $(dwarf_dw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $(asminline_inc_dirs)
 
 # define _USE_RESOURCES_ so that WASM error messages come from resources
 extra_cpp_flags = -D_USE_RESOURCES_
@@ -54,14 +52,14 @@ target_exe  = $(exename_$(target_cpu))
 
 extra_c_flags_trmem = -DTRMEM -of+
 extra_c_flags_trmemcvr = -DTRMEM -of+
-extra_c_flags_fcdata = -I"$(cfloat_dir)/h"
+extra_c_flags_fcdata = $(cfloat_inc_dirs)
 
 extra_l_flags += op map
 
 # Need lots of stack for NT because code gen turns off safe recurse.
 extra_l_flags_nt = op stack=1024k commit stack=32k
 
-flibs = $(dwarf_dw_lib) $(cfloat_lib) $(asminline_lib) $(cg_libs) $(wres_lib)
+flibs = $(cfloat_lib) $(asminline_lib) $(cg_libs) $(wres_lib)
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res

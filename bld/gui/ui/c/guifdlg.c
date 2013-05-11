@@ -781,7 +781,7 @@ static bool setDirList( gui_window *gui )
     drvlist = (char **) dlgControls[DRIVE_LIST_INDEX].text;
 #endif
     i = 0;
-    while( 1 && drvlist != NULL ) {
+    while( drvlist != NULL ) {
         if( drvlist[i] == NULL ) {
             break;
         }

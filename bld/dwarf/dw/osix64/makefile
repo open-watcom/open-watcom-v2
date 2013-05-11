@@ -2,5 +2,5 @@
 host_os = osi
 host_cpu = x64
 
-!include ../dw.mif
+!include ../master.mif
 

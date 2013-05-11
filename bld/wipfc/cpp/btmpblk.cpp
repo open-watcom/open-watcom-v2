@@ -163,7 +163,7 @@ STD1::int16_t BitmapBlock::findMatch( std::vector< STD1::uint16_t >& code,
 {
     STD1::int16_t index( ( character << hashingShift ) ^ hashPrefix );
     STD1::int16_t offset( ( index == 0 ) ? 1 : TABLESIZE - index );
-    while( true ) {
+    for( ;; ) {
         if( code[ index ] == UNDEFINED )
             return index;
         if( prefix[ index ] == hashPrefix && append[ index ] == character)

@@ -70,11 +70,15 @@ static BOOL writeDataInPieces( BITMAPINFO *bmi, FILE *fp, img_node *node )
     byte_count = bmi->bmiHeader.biSizeImage;
     start = 0;
     num_lines = SCANLINE_SIZE;
-    if( node->width > 32 && FALSE ) {
+#if 0
+    if( node->width > 32 ) {
         one_scanline_size = BITS_INTO_BYTES( node->width * node->bitcount, 1 );
     } else {
         one_scanline_size = BITS_TO_BYTES( node->width * node->bitcount, 1 );
     }
+#else
+    one_scanline_size = BITS_TO_BYTES( node->width * node->bitcount, 1 );
+#endif
     scanline_count = node->height;
     chunk_size = one_scanline_size * num_lines;
     while( chunk_size > MAX_CHUNK ) {
@@ -124,11 +128,15 @@ static BOOL writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data,
     byte_count = bmi->bmiHeader.biSizeImage;
     start = 0;
     num_lines = SCANLINE_SIZE;
-    if( node->width > 32 && FALSE ) {
+#if 0
+    if( node->width > 32 ) {
         one_scanline_size = BITS_INTO_BYTES( node->width * node->bitcount, 1 );
     } else {
         one_scanline_size = BITS_TO_BYTES( node->width * node->bitcount, 1 );
     }
+#else
+    one_scanline_size = BITS_TO_BYTES( node->width * node->bitcount, 1 );
+#endif
     scanline_count = node->height;
     chunk_size = one_scanline_size * num_lines;
     while( chunk_size > MAX_CHUNK ) {
@@ -302,13 +310,18 @@ static BOOL saveBitmapFile( img_node *node )
     HDC                 hdc;
 
     bmi = GetDIBitmapInfo( node );
-    if( bmi->bmiHeader.biWidth > 32 && FALSE ) {
+#if 0
+    if( bmi->bmiHeader.biWidth > 32 ) {
         number_of_bytes = BITS_INTO_BYTES( bmi->bmiHeader.biBitCount *
             bmi->bmiHeader.biWidth, bmi->bmiHeader.biHeight );
     } else {
         number_of_bytes = BITS_TO_BYTES( bmi->bmiHeader.biBitCount *
             bmi->bmiHeader.biWidth, bmi->bmiHeader.biHeight );
     }
+#else
+    number_of_bytes = BITS_TO_BYTES( bmi->bmiHeader.biBitCount *
+        bmi->bmiHeader.biWidth, bmi->bmiHeader.biHeight );
+#endif
 
     bitmap_size = DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
 
@@ -388,13 +401,18 @@ BOOL SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size )
     }
 
     bmi = GetDIBitmapInfo( node );
-    if( bmi->bmiHeader.biWidth > 32 && FALSE ) {
+#if 0
+    if( bmi->bmiHeader.biWidth > 32 ) {
         number_of_bytes = BITS_INTO_BYTES( bmi->bmiHeader.biBitCount *
             bmi->bmiHeader.biWidth, bmi->bmiHeader.biHeight );
     } else {
         number_of_bytes = BITS_TO_BYTES( bmi->bmiHeader.biBitCount *
             bmi->bmiHeader.biWidth, bmi->bmiHeader.biHeight );
     }
+#else
+    number_of_bytes = BITS_TO_BYTES( bmi->bmiHeader.biBitCount *
+        bmi->bmiHeader.biWidth, bmi->bmiHeader.biHeight );
+#endif
 
     bitmap_size = DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
 
@@ -490,7 +508,8 @@ static BOOL saveImgFile( img_node *node )
 
         GetBitmapInfoHeader( &imginfo[i], currentimage );
         bitmap_size = DIB_INFO_SIZE( imginfo[i].biBitCount );
-        if( imginfo[i].biWidth > 32 && FALSE ) {
+#if 0
+        if( imginfo[i].biWidth > 32 ) {
             img_res.DIB_size = bitmap_size +
                 BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
                                  imginfo[i].biHeight ) +
@@ -501,6 +520,12 @@ static BOOL saveImgFile( img_node *node )
                                imginfo[i].biHeight ) +
                 BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
         }
+#else
+        img_res.DIB_size = bitmap_size +
+            BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
+                           imginfo[i].biHeight ) +
+            BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+#endif
         if( i == 0 ) {
             img_res.DIB_offset = sizeof( an_img_file ) +
                                  sizeof( an_img_resource ) * (count - 1);
@@ -543,7 +568,8 @@ static BOOL saveImgFile( img_node *node )
             break;
         }
         bitmap_size = DIB_INFO_SIZE( imginfo[i].biBitCount );
-        if( imginfo[i].biWidth > 32 && FALSE ) {
+#if 0
+        if( imginfo[i].biWidth > 32 ) {
             img.xor_size = BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
                                             imginfo[i].biHeight );
             img.and_size = BITS_INTO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
@@ -552,6 +578,11 @@ static BOOL saveImgFile( img_node *node )
                                           imginfo[i].biHeight );
             img.and_size = BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
         }
+#else
+        img.xor_size = BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
+                                      imginfo[i].biHeight );
+        img.and_size = BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+#endif
         img.bm = MemAlloc( bitmap_size );
         // JAMIE
         MemFree( img.bm );
@@ -635,15 +666,18 @@ static int getSaveImgDataLength( img_node *node, an_img_file *img_file,
             break;
         }
         data_length += DIB_INFO_SIZE( imginfo[i].biBitCount );
-        if( imginfo[i].biWidth > 32 && FALSE ) {
-            data_length += BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
-                                            imginfo[i].biHeight );
+#if 0
+        if( imginfo[i].biWidth > 32 ) {
+            data_length += BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
             data_length += BITS_INTO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
         } else {
-            data_length += BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
-                                          imginfo[i].biHeight );
+            data_length += BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
             data_length += BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
         }
+#else
+        data_length += BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
+        data_length += BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+#endif
         currentimage = currentimage->nexticon;
     }
 
@@ -700,17 +734,21 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
 
         GetBitmapInfoHeader( &imginfo[i], currentimage );
         bitmap_size = DIB_INFO_SIZE( imginfo[i].biBitCount );
-        if( imginfo[i].biWidth > 32 && FALSE ) {
+#if 0
+        if( imginfo[i].biWidth > 32 ) {
             img_res.DIB_size = bitmap_size +
-                BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
-                                 imginfo[i].biHeight ) +
+                BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight ) +
                 BITS_INTO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
         } else {
             img_res.DIB_size = bitmap_size +
-                BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
-                               imginfo[i].biHeight ) +
+                BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight ) +
                 BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
         }
+#else
+        img_res.DIB_size = bitmap_size +
+            BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight ) +
+            BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+#endif
         if( i == 0 ) {
             img_res.DIB_offset = sizeof( an_img_file ) +
                                  sizeof( an_img_resource ) * (count - 1);
@@ -751,15 +789,18 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
         }
         bitmap_size = DIB_INFO_SIZE( imginfo[i].biBitCount );
         img.bm = MemAlloc( bitmap_size );
-        if( imginfo[i].biWidth > 32 && FALSE ) {
-            img.xor_size = BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
-                                            imginfo[i].biHeight );
+#if 0
+        if( imginfo[i].biWidth > 32 ) {
+            img.xor_size = BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
             img.and_size = BITS_INTO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
         } else {
-            img.xor_size = BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
-                                          imginfo[i].biHeight );
+            img.xor_size = BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
             img.and_size = BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
         }
+#else
+        img.xor_size = BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
+        img.and_size = BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+#endif
         img.xor_mask = MemAlloc( img.xor_size );
         img.and_mask = MemAlloc( img.and_size );
         memcpy( &img.bm->bmiHeader, &imginfo[i], sizeof( BITMAPINFOHEADER ) );
@@ -912,7 +953,7 @@ static BOOL saveResourceFile( img_node *node )
 
     if( ok ) {
         was32bit = WRIs32Bit( node->wrinfo->file_type );
-        while( TRUE ) {
+        for( ;; ) {
             cb = _wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
             save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, TRUE, cb );
             _wpi_freeprocinstance( cb );

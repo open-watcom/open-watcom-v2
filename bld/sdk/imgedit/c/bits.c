@@ -97,11 +97,15 @@ static void getTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
 
     GetDIBits( memdc, bitmap, 0, bm.bmHeight, NULL, bmi, DIB_RGB_COLORS );
     if( bmi->bmiHeader.biSizeImage == 0 ) {
-        if( bm.bmWidth > 32 && FALSE ) {
+#if 0
+        if( bm.bmWidth > 32 ) {
             bmi->bmiHeader.biSizeImage = BITS_INTO_BYTES( bm.bmWidth * bc, bm.bmHeight );
         } else {
             bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( bm.bmWidth * bc, bm.bmHeight );
         }
+#else
+        bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( bm.bmWidth * bc, bm.bmHeight );
+#endif
     }
     GetDIBits( memdc, bitmap, 0, bm.bmHeight, bits, bmi, DIB_RGB_COLORS );
 
@@ -127,11 +131,15 @@ bitmap_bits *GetTheBits( HBITMAP bitmap )
 
     info = MemAlloc( sizeof( bitmap_bits ) );
     info->bitcount = planes * bitspixel;
-    if( width > 32 && FALSE ) {
+#if 0
+    if( width > 32 ) {
         info->byte_count = BITS_INTO_BYTES( width * info->bitcount, height );
     } else {
         info->byte_count = BITS_TO_BYTES( width * info->bitcount, height );
     }
+#else
+    info->byte_count = BITS_TO_BYTES( width * info->bitcount, height );
+#endif
     info->width = ((width + 7) / 8) * 8;
     info->bits = MemAlloc( info->byte_count );
 
@@ -299,11 +307,15 @@ static void setTheBitmapBits( HBITMAP bitmap, long bcount, BYTE *bits )
 
     GetDIBits( memdc, bitmap, 0, bm.bmHeight, NULL, bmi, DIB_RGB_COLORS );
     if( bmi->bmiHeader.biSizeImage == 0 ) {
-        if( bm.bmWidth > 32 && FALSE ) {
+#if 0
+        if( bm.bmWidth > 32 ) {
             bmi->bmiHeader.biSizeImage = BITS_INTO_BYTES( bm.bmWidth * bc, bm.bmHeight );
         } else {
             bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( bm.bmWidth * bc, bm.bmHeight );
         }
+#else
+        bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( bm.bmWidth * bc, bm.bmHeight );
+#endif
     }
     SetDIBits( memdc, bitmap, 0, bm.bmHeight, bits, bmi, DIB_RGB_COLORS );
 

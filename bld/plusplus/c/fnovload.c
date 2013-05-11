@@ -842,13 +842,12 @@ static OV_RESULT compareScalar( FNOV_SCALAR *first, TYPE *first_type,
         retn = compareInt( first->standard, second->standard );
     } else if( first->promotion != second->promotion ) {
         retn = compareInt( first->promotion, second->promotion );
-    } else if( first->trivial != second->trivial &&
-               (
 #ifndef NEW_TRIVIAL_RULE
-TRUE ||
+    } else if( first->trivial != second->trivial ) {
+#else
+    } else if( first->trivial != second->trivial &&
+        ( !isUDC || first_type == NULL || second_type == NULL || myTypesSame( *first_type, *second_type ) ) ) {
 #endif
-               !isUDC || first_type == NULL || second_type == NULL ||
-               myTypesSame( *first_type, *second_type ) ) ) {
         // all else being equal, can decide on number of added cv-qualifiers
         // if two implicit comversion sequences yield types identical except
         // for their cv-qualification

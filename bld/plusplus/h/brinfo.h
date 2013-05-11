@@ -114,7 +114,7 @@ void MacroWriteBrinf            // WRITE MACROS TO BRINF
 #define BrinfCloseScope(s)
 #define BrinfCloseSource(s)
 #define BrinfDeclClass(i)
-#define BrinfDeclMacro(m) m
+#define BrinfDeclMacro(m)
 #define BrinfDeclNamespace(n)
 #define BrinfDeclSymbol(s)
 #define BrinfDeclTemplateClass(c)

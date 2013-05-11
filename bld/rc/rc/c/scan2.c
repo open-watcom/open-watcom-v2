@@ -70,7 +70,7 @@ static int scanDFA( ScanValue *value );
 
 static void GetNextChar( void )
 {
-    while( 1 ) {
+    for( ;; ) {
         LookAhead = _next;
         if( LookAhead != RC_EOF ) {
             _next = RcIoGetChar();

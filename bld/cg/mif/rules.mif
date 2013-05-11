@@ -15,7 +15,7 @@ extra_c_flags_memwrap   = $(track_flags_$(host_cpu))
 extra_c_flags_trmem     = $(track_flags_$(host_cpu))
 !endif
 
-inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)
+inc_dirs += -I. $(inc_dirs_targ) $(dwarfw_inc_dirs) $(mem_include)
 
 .c: $(src_path);$(trmem_dir)
 .h: $(include_path)

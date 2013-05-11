@@ -30,7 +30,6 @@ additional_cleanup = *.u *.int y.out ytab.c *.mbr
 !include $(cg_dir)/mif/fe.mif
 !include $(as_dir)/mif/client.mif
 !include $(wasm_dir)/mif/client.mif
-!include $(dwarf_dir)/dw/client.mif
  
 !include trmem.mif
  
@@ -55,8 +54,8 @@ inc_dirs += -I"$(trmem_dir)"
 !endif
 inc_dirs += $(cg_inc_dirs)
 inc_dirs += $(asminline_inc_dirs)
-inc_dirs += -I"$(dwarf_dir)/dw/h"
-inc_dirs += -I"$(cfloat_dir)/h"
+inc_dirs += $(dwarf_dw_inc_dirs)
+inc_dirs += $(cfloat_inc_dirs)
 inc_dirs += -I"$(cc_dir)/h"
 inc_dirs += -I"$(comp_cfg_dir)/h"
 inc_dirs += -I"$(fe_misc_dir)/h"
@@ -151,7 +150,7 @@ extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)', manya
 #
 # External libraries
 #
-xlibs = $(dwarf_dw_lib) $(asminline_lib) $(cg_libs)
+xlibs = $(asminline_lib) $(cg_libs)
  
 #
 # External dependencies

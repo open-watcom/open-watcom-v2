@@ -611,10 +611,10 @@ extern  void    ParmIns( pn parm, call_state *state ) {
         }
         curr = ins->result;
 #if _TARGET & _TARG_AXP
-        if( 1 ) {
+        ins = MakeMove( curr, reg, TypeClass( addr->tipe ) );
+        AddIns( ins );
 #else
         if( addr->tipe->length == reg->n.size ) {
-#endif
             ins = MakeMove( curr, reg, TypeClass( addr->tipe ) );
             AddIns( ins );
         } else if( !CvtOk( TypeClass(addr->tipe), reg->n.name_class ) ) {
@@ -630,6 +630,7 @@ extern  void    ParmIns( pn parm, call_state *state ) {
                                reg->n.name_class, TypeClass( addr->tipe ) );
             AddIns( ins );
         }
+#endif
         addr->format = NF_ADDR;
 #if _TARGET & _TARG_80386
         if( state->attr & ROUTINE_STACK_RESERVE ) {

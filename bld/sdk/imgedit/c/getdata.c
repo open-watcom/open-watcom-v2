@@ -50,13 +50,15 @@ static BOOL getXorBits( BITMAPINFO *bmi, BYTE *bits, img_node *node )
 
     GetDIBits( memdc, node->hxorbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
     if( bmi->bmiHeader.biSizeImage == 0 ) {
-        if( node->width > 32 && FALSE ) {
-            bmi->bmiHeader.biSizeImage = BITS_INTO_BYTES( node->width * node->bitcount,
-                                                          node->height );
+#if 0
+        if( node->width > 32 ) {
+            bmi->bmiHeader.biSizeImage = BITS_INTO_BYTES( node->width * node->bitcount, node->height );
         } else {
-            bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( node->width*node->bitcount,
-                                                        node->height );
+            bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( node->width*node->bitcount, node->height );
         }
+#else
+        bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( node->width*node->bitcount, node->height );
+#endif
     }
     GetDIBits( memdc, node->hxorbitmap, 0, node->height, bits, bmi, DIB_RGB_COLORS );
     DeleteDC( memdc );

@@ -22,8 +22,11 @@ plusplus_dir    = $(src_dir)/plusplus
 !ifndef cpplib_dir
 cpplib_dir      = $(src_dir)/cpplib
 !endif
-!ifndef dwarf_dir
-dwarf_dir       = $(src_dir)/dwarf
+!ifndef dwarfr_dir
+dwarfr_dir      = $(src_dir)/dwarf/dr
+!endif
+!ifndef dwarfw_dir
+dwarfw_dir      = $(src_dir)/dwarf/dw
 !endif
 !ifndef wzoom_dir
 wzoom_dir       = $(src_dir)/sdk/zoom
