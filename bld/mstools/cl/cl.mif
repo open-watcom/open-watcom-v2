@@ -3,15 +3,11 @@ name = cl
 #
 # Define the name(s) of the program(s) to build.
 #
-!ifeq      host_OS nt
-!   define cl_stub clx.exe
+!ifeq host_OS nt
+all: clx.exe cl386.exe claxp.exe clppc.exe
 !else
-!   define cl_stub
+all: cl386.exe claxp.exe clppc.exe
 !endif
-
-done: $(cl_stub) cl386.exe claxp.exe clppc.exe
-
-!include ../../master.mif
 
 clstub_objs     = clstub.obj $(mstools_stub_obj) $(mstools_objs)
 cl_common_objs  = macro.obj $(mstools_objs)

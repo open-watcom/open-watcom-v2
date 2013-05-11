@@ -3,4 +3,6 @@
 host_OS     = nt
 host_CPU    = axp
 
-!include ../cl.mif
+target_mif = ../cl.mif
+
+!include ../../master.mif

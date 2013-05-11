@@ -3,4 +3,6 @@
 host_OS     = nt
 host_CPU    = 386
 
-!include ../cl.mif
+target_mif = ../cl.mif
+
+!include ../../master.mif

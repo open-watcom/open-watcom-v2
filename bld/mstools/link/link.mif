@@ -15,8 +15,6 @@ name = link
 
 done: $(link_stub) link386.exe linkaxp.exe linkppc.exe
 
-!include ../../master.mif
-
 !include $(orl_dir)/client.mif
 
 linkstub_objs       = linkstub.obj $(mstools_stub_obj) $(mstools_objs)

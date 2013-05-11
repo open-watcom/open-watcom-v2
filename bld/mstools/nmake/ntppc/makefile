@@ -3,4 +3,6 @@
 host_OS     = nt
 host_CPU    = ppc
 
-!include ../nmake.mif
+target_mif = ../nmake.mif
+
+!include ../../master.mif

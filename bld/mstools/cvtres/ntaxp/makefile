@@ -3,4 +3,6 @@
 host_OS     = nt
 host_CPU    = axp
 
-!include ../cvtres.mif
+target_mif = ../cvtres.mif
+
+!include ../../master.mif

@@ -3,4 +3,6 @@
 host_OS     = nt
 host_CPU    = x64
 
-!include ../link.mif
+target_mif = ../link.mif
+
+!include ../../master.mif

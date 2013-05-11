@@ -2,8 +2,6 @@ done: asaxp.exe
 
 target_cpu = axp
 
-!include ../../master.mif
-
 extra_cpp_flags = $(targdef)
 
 common_objs = parse.obj $(mstools_objs)

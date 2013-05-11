@@ -15,8 +15,6 @@ name = lib
 
 done: $(lib_stub) lib386.exe libaxp.exe libppc.exe
 
-!include ../../master.mif
-
 !include $(orl_dir)/client.mif
 
 libstub_objs        = libstub.obj $(mstools_stub_obj) $(mstools_objs)

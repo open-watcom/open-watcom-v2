@@ -44,6 +44,18 @@ inc_dirs = -I. -I"../h" -I"../../h" -I"../c"
 !include deftarg.mif
 !include defrule.mif
 
+# systems where version resources must be added to .EXE
+version_res_exe_nt_386 = exever.res
+version_res_exe_nt_x64 = exever.res
+ver386_res_exe_nt_386 = ver386.res
+ver386_res_exe_nt_x64 = ver386.res
+veraxp_res_exe_nt_386 = veraxp.res
+veraxp_res_exe_nt_x64 = veraxp.res
+verppc_res_exe_nt_386 = verppc.res
+verppc_res_exe_nt_x64 = verppc.res
+
+!include $(target_mif)
+
 optp386c.gh optp386h.gh : ../gml/ms.gml
         optencod -n -q $]@ optp386h.gh optp386c.gh usage386.gh i86
 
@@ -55,16 +67,6 @@ optpppcc.gh optpppch.gh : ../gml/ms.gml
 
 optparsc.gh optparsh.gh : ../gml/ms.gml
         optencod -n -q $]@ optparsh.gh optparsc.gh usagemsg.gh i86
-
-# systems where version resources must be added to .EXE
-version_res_exe_nt_386 = exever.res
-version_res_exe_nt_x64 = exever.res
-ver386_res_exe_nt_386 = ver386.res
-ver386_res_exe_nt_x64 = ver386.res
-veraxp_res_exe_nt_386 = veraxp.res
-veraxp_res_exe_nt_x64 = veraxp.res
-verppc_res_exe_nt_386 = verppc.res
-verppc_res_exe_nt_x64 = verppc.res
 
 verrc_exe = $(name)
 verrc386_exe = $(name)386

@@ -3,4 +3,6 @@
 host_OS     = nt
 host_CPU    = ppc
 
-!include ../link.mif
+target_mif = ../link.mif
+
+!include ../../master.mif
