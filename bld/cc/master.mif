@@ -126,8 +126,7 @@ version_res_dll_nt_x64 = version.res
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 
-inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs)
-inc_dirs += $(dwarf_dw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
 .c: ../../c;$(asminline_c);$(watcom_dir)/c;$(fe_misc_dir)/c
 .h: ../../h;$(watcom_dir)/h

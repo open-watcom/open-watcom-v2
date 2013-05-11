@@ -20,7 +20,7 @@ wfc_autodepends = .AUTODEPEND
 wfc_trmem = 1
 !endif
 
-inc_dirs= -I. -I.. -I"../../h" -I"../../../h" $(cg_inc_dirs) $(dwarf_dw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $(asminline_inc_dirs)
+inc_dirs= -I. -I.. -I"../../h" -I"../../../h" $(cg_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $(asminline_inc_dirs)
 
 # define _USE_RESOURCES_ so that WASM error messages come from resources
 extra_cpp_flags = -D_USE_RESOURCES_

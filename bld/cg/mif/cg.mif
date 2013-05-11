@@ -145,10 +145,12 @@ cg_client_objs = &
 cg_debug_objs = &
     dmpinc.obj
 
+!include $(cfloat_dir)/client.mif
+!include $(owl_dir)/client.mif
+!include $(dwarfw_dir)/client.mif
+
 pre_obj_deps    = $(bit_sets) cgprotos.gh feprotos.gh $(cg_debug_objs)
 
-include_path    = $+$(include_path)$-;$(cg_dir)/h;$(watcom_dir)/h;$(cfloat_dir)/h;$(comp_cfg_dir)/h
-inc_dirs       += -I"$(cg_dir)/h" -I"$(cfloat_dir)/h" -I"$(comp_cfg_dir)/h"
 src_path        = $+$(src_path)$-;$(cg_dir)/c;$(watcom_dir)/c
 
 asm_include     = $+$(asm_include)$-;$(cg_dir)/a

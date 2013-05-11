@@ -19,6 +19,5 @@ risc_objs = &
         rsctype.obj  &
         rscqueue.obj
 
-include_path    = $+$(include_path)$-;$(cg_dir)/risc/h;$(owl_dir)/h
 inc_dirs_targ  += -I"$(cg_dir)/risc/h" -I"$(owl_dir)/h"
 src_path        = $+$(src_path)$-;$(cg_dir)/risc/c

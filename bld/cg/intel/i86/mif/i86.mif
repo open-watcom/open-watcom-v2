@@ -14,5 +14,4 @@ i86_objs = i86conv.obj &
     i87wait.obj
 
 
-include_path    = $(cg_dir)/intel/i86/h
 src_path        = $(cg_dir)/intel/i86/c

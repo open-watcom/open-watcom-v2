@@ -18,5 +18,4 @@ ppc_objs = &
         rscptype.obj
 
 src_path        = $(cg_dir)/risc/ppc/c
-include_path    = $(cg_dir)/risc/ppc/h
 inc_dirs_targ   = -I"$(cg_dir)/risc/ppc/h"

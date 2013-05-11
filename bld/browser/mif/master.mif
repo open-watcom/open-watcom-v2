@@ -66,8 +66,7 @@ doc_inc_dirs_nt     = -I"$(doc_path_nt)"
 doc_inc_dirs_os2    = -I"$(doc_path_os2)"
 doc_inc_dirs_win    = -I"$(doc_path_win)"
 
-inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) $(doc_inc_dirs_$(host_os))
-inc_dirs += $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
+inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(wclass_inc_dirs) $(doc_inc_dirs_$(host_os)) $(dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
 
 extra_cpp_flags = -DSTANDALONE_RX=1 -DNOPERSIST=1
 !ifeq release 0

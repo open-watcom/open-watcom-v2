@@ -54,7 +54,7 @@ inc_dirs += -I"$(trmem_dir)"
 !endif
 inc_dirs += $(cg_inc_dirs)
 inc_dirs += $(asminline_inc_dirs)
-inc_dirs += $(dwarf_dw_inc_dirs)
+inc_dirs += $(dwarfw_inc_dirs)
 inc_dirs += $(cfloat_inc_dirs)
 inc_dirs += -I"$(cc_dir)/h"
 inc_dirs += -I"$(comp_cfg_dir)/h"
