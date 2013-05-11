@@ -40,9 +40,9 @@
 #define MKOPCODE
 #include "asminsd.h"
 
-char Chars[ 32000 ];
+char Chars[32000];
 
-static unsigned short inst_table[ HASH_TABLE_SIZE ] = { 0 };
+static unsigned short inst_table[HASH_TABLE_SIZE] = { 0 };
 static unsigned short *index_table;
 static unsigned short *pos_table;
 
@@ -69,30 +69,30 @@ void make_inst_hash_tables( unsigned int count, sword *Words )
     unsigned short  i;
     unsigned short  *p;
     int             pos;
-    int             size = sizeof( AsmOpTable ) / sizeof( AsmOpTable[ 0 ] );
+    int             size = sizeof( AsmOpTable ) / sizeof( AsmOpTable[0] );
 
     index_table = calloc( count, sizeof( unsigned short ) );
     pos_table = calloc( count, sizeof( unsigned short ) );
     for( pos = 0, i = 0; i < count; i++ ) {
         // create indexes for hash item lists
-        name = Words[ i ].word;
-        for( p = &inst_table[ hashpjw( name ) ]; *p; p = &index_table[ *p - 1 ] ) {
-            if( stricmp( name, Words[ *p - 1 ].word ) == 0 ) {
+        name = Words[i].word;
+        for( p = &inst_table[hashpjw( name )]; *p; p = &index_table[*p - 1] ) {
+            if( stricmp( name, Words[*p - 1].word ) == 0 ) {
                 break;
             }
         }
         if( *p == 0 ) {
-            index_table[ i ] = 0;
+            index_table[i] = 0;
             *p = i + 1;
         }
         // create index for position in AsmOpTable
-        while ( AsmOpTable[ pos ] < i && pos < size )
+        while ( AsmOpTable[pos] < i && pos < size )
             pos++;
-        if( AsmOpTable[ pos ] != i || pos >= size ) {
+        if( AsmOpTable[pos] != i || pos >= size ) {
             printf( "Wrong data in asminsd.h. position=%d, index=%d\n", pos, i );
             exit( 1 );
         }
-        pos_table[ i ] = pos;
+        pos_table[i] = pos;
     }
 }
 
@@ -109,17 +109,17 @@ int main( int argc, char *argv[] )
     unsigned int    idx;
     sword           *Words;
     char            *word;
-    char            buf[ KEY_MAX_LEN ];
+    char            buf[KEY_MAX_LEN];
 
-    out_name = argv[ argc - 1 ];
+    out_name = argv[argc - 1];
     --argc;
 
     // Count the words in all the input files
     count = 0;
     for( idx = 1; idx < argc; ++idx ) {
-        in = fopen( argv[ idx ], "r" );
+        in = fopen( argv[idx], "r" );
         if( in == NULL ) {
-            printf( "Unable to open '%s'\n", argv[ idx ] );
+            printf( "Unable to open '%s'\n", argv[idx] );
             exit( 1 );
         }
         for( ; fgets( buf, KEY_MAX_LEN, in ) != NULL; ) {
@@ -132,20 +132,20 @@ int main( int argc, char *argv[] )
         printf( "Unable to allocate Words array\n" );
         exit( 1 );
     }
-    Words[ count ].word = NULL;
+    Words[count].word = NULL;
     index = 0;
     for( idx = 1; idx < argc; ++idx ) {
-        in = fopen( argv[ idx ], "r" );
+        in = fopen( argv[idx], "r" );
         if( in == NULL ) {
-            printf( "Unable to open '%s'\n", argv[ idx ] );
+            printf( "Unable to open '%s'\n", argv[idx] );
             exit( 1 );
         }
         for( ; fgets( buf, KEY_MAX_LEN, in ) != NULL; ) {
-            for( i = 0; buf[ i ] && !isspace( buf[ i ] ); i++ )
+            for( i = 0; buf[i] && !isspace( buf[i] ); i++ )
                 ;
-            buf[ i ] = '\0';
-            Words[ index ].word = strdup( buf );
-            if( Words[ index ].word == NULL ) {
+            buf[i] = '\0';
+            Words[index].word = strdup( buf );
+            if( Words[index].word == NULL ) {
                 printf( "Out of memory\n" );
                 exit( 1 );
             }
@@ -155,28 +155,28 @@ int main( int argc, char *argv[] )
     }
     qsort( Words, count, sizeof( sword ), len_compare );
     index = 0;
-    Chars[ 0 ] = '\0';
+    Chars[0] = '\0';
     for( i = 0; i < count; i++ ) {
-        word = strstr( Chars, Words[ i ].word );
+        word = strstr( Chars, Words[i].word );
         if( word == NULL ) {
-            word = &Chars[ index ];
-            len = strlen( Words[ i ].word ) - 1;
+            word = &Chars[index];
+            len = strlen( Words[i].word ) - 1;
             if( index < len )
                 len = index;
             for( ; ; ) {
                 if( len == 0 )
                     break;
-                if( memcmp( word - len, Words[ i ].word, len ) == 0 ) {
+                if( memcmp( word - len, Words[i].word, len ) == 0 ) {
                     word -= len;
                     index -= len;
                     break;
                 }
                 len--;
             }
-            strcpy( word, Words[ i ].word );
+            strcpy( word, Words[i].word );
             index += strlen( word );
         }
-        Words[ i ].index = word - Chars;
+        Words[i].index = word - Chars;
     }
     qsort( Words, count, sizeof( sword ), str_compare );
 
@@ -191,22 +191,21 @@ int main( int argc, char *argv[] )
     for( i = 0; i < index; i++ ) {
         if( i % 10 == 0 )
             fprintf( out, "/*%4d*/ ", i );
-        fprintf( out, "'%c',", Chars[ i ] );
+        fprintf( out, "'%c',", Chars[i] );
         if( i % 10 == 9 ) {
             fprintf( out, "\n" );
         }
     }
     fprintf( out, "'\\0'\n};\n\n" );
-    fprintf( out, "static const unsigned short inst_table[ HASH_TABLE_SIZE ] = {\n" );
+    fprintf( out, "static const unsigned short inst_table[HASH_TABLE_SIZE] = {\n" );
     for( i = 0; i < HASH_TABLE_SIZE; i++ )
-        fprintf( out, "\t%d,\n", inst_table[ i ] );
+        fprintf( out, "\t%d,\n", inst_table[i] );
     fprintf( out, "};\n\n" );
     fprintf( out, "const struct AsmCodeName AsmOpcode[] = {\n" );
     for( i = 0; i < count; i++ ) {
-        word = Words[ i ].word;
-        fprintf( out, "\t{\t%d,\t%d,\t%d,\t%d\t},\t/* %s */\n", pos_table[ i ],
-            strlen( word ), Words[ i ].index, index_table[ i ], 
-            get_enum_key( word ) );
+        word = Words[i].word;
+        fprintf( out, "\t{\t%d,\t%d,\t%d,\t%d\t},\t/* %s */\n", 
+                 pos_table[i], (int)strlen( word ), Words[i].index, index_table[i], get_enum_key( word ) );
     }
     fprintf( out, "\t{\t0,\t0,\t0,\t0\t}\t/* T_NULL */\n" );
     fprintf( out, "};\n\n" );

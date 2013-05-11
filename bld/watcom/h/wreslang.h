@@ -42,9 +42,9 @@ typedef unsigned char res_language_enumeration;
 #ifndef _COMDEF_H_INCLUDED
  #include <_comdef.h>
 #endif
-_WCRTLINK res_language_enumeration _WResLanguage(void);
+_WCRTLINK extern res_language_enumeration _WResLanguage(void);
 #else
-res_language_enumeration _WResLanguage(void);
+extern res_language_enumeration _WResLanguage(void);
 #endif
 
 /* for ease of migration to new name */

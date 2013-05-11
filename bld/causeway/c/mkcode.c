@@ -50,8 +50,8 @@ static char usage[] = "Usage: inp.file out.file\n";
 
 int main(int argc, char *argv[])
 {
-    FILE                *fp;
-    int                 fi;
+    FILE                *fp = NULL;
+    int                 fi = -1;;
     int                 i;
     int                 len;
     unsigned char       *p;
@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
         stat( argv[1], &bufstat );
     } else {
         printf( usage );
+        return( 1 );
     }
     buff = malloc( bufstat.st_size );
     read( fi, buff, bufstat.st_size );
