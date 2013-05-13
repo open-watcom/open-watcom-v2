@@ -51,7 +51,7 @@ static char usage[] = "Usage: inp.file out.file\n";
 int main(int argc, char *argv[])
 {
     FILE                *fp = NULL;
-    int                 fi = -1;;
+    int                 fi = -1;
     int                 i;
     int                 len;
     unsigned char       *p;
