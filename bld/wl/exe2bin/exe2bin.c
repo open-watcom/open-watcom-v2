@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 
 #include "watcom.h"             // unsigned_16, ..., endian-macros, ...
 #include "exedos.h"             // dos_exe_header, ...
@@ -56,7 +57,7 @@
 typedef struct reloc_table {
     unsigned_16     num;        // number of relocations in reloc-table
     unsigned_16     lseg;       // load-address of exe-program (segment)
-    unsigned_32     reloc[];    // array  of relocations in reloc-table
+    unsigned_32     reloc[1];   // array  of relocations in reloc-table
 } reloc_table;
 
 
@@ -261,7 +262,7 @@ reloc_table *get_reltab( FILE *stream, dos_exe_header *header )
     int             i;
 
     rel_num = header->num_relocs;
-    reltab  = malloc( sizeof( reloc_table ) + rel_num * sizeof( unsigned_32 ) );
+    reltab  = malloc( offsetof( reloc_table, reloc ) + rel_num * sizeof( unsigned_32 ) );
     if( reltab ) {
         reltab->num = rel_num;
         if( fseek( stream, header->reloc_offset, SEEK_SET ) ) {

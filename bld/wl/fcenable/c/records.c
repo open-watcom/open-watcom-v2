@@ -47,7 +47,7 @@ extern int      QWrite( int, void *, int );
 extern void     FreeList( void * );
 extern void     BuildRecord( void *, unsigned );
 extern int      GetIndex( char ** );
-extern void     IndexRecord( unsigned );
+extern void     IndexRecord( int );
 
 #define VARIABLE_SIZE 1
 #define MAJOR_OBJ_VERSION 1
@@ -143,7 +143,7 @@ static int      NameIndex;
 static int      SegIndex;
 static BYTE     SubTotal = 0;
 static char *   OutputBuffer;
-static int      InBuffer = 0;
+static unsigned InBuffer = 0;
 
 // forward declarations
 extern char *   SaveRecord( void * );
@@ -338,7 +338,7 @@ static void procsegdef( bool is386 )
 static void ProcDataRec( bool is386 )
 /***********************************/
 {
-    unsigned        segidx;
+    int             segidx;
     char *          dataloc;
     exclude_list *  exclude;
     unsigned long   offset;
@@ -475,13 +475,13 @@ extern int ReadRec( void )
     return( OK );
 }
 
-static void AddToSubTotal( void * buff, int len )
-/***********************************************/
+static void AddToSubTotal( void * buff, unsigned len )
+/****************************************************/
 {
     char *  data;
 
-    data = (char *) buff;
-    while( --len >= 0 ) {
+    data = (char *)buff;
+    while( len-- > 0 ) {
         SubTotal += *data++;
     }
 }
@@ -489,18 +489,16 @@ static void AddToSubTotal( void * buff, int len )
 extern void BuildRecord( void *info, unsigned len )
 /*************************************************/
 {
-    int     overlap;
     char *  data;
 
     data = (char *) info;
     AddToSubTotal( data, len );
-    overlap = len + InBuffer - MAX_OBJECT_REC_SIZE;
-    if( overlap > 0 ) {
-        memcpy( OutputBuffer + InBuffer, data, len - overlap );
+    if( len + InBuffer > MAX_OBJECT_REC_SIZE ) {
+        memcpy( OutputBuffer + InBuffer, data, MAX_OBJECT_REC_SIZE - InBuffer );
         QWrite( OutFile, OutputBuffer, MAX_OBJECT_REC_SIZE );
-        data += len - overlap;
+        data += MAX_OBJECT_REC_SIZE - InBuffer;
+        len -= MAX_OBJECT_REC_SIZE - InBuffer;
         InBuffer = 0;
-        len = overlap;
     }
     memcpy( OutputBuffer + InBuffer, data, len );
     InBuffer += len;
@@ -515,16 +513,18 @@ extern void FlushBuffer( void )
     }
 }
 
-extern void IndexRecord( unsigned index )
-/***************************************/
+extern void IndexRecord( int index )
+/**********************************/
 // note this assumes the intel byte ordering
 {
-    BYTE    onebyte;
+    BYTE            onebyte;
+    unsigned short  twobytes;
 
     if( index >= 128 ) {
-        index = (index << 8) | (index >> 8) | 0x80;
-        AddToSubTotal( &index, 2 );
-        BuildRecord( &index, 2 );
+        twobytes = index;
+        twobytes = (twobytes << 8) | (twobytes >> 8) | 0x80;
+        AddToSubTotal( &twobytes, 2 );
+        BuildRecord( &twobytes, 2 );
     } else {
         onebyte = index;
         AddToSubTotal( &onebyte, 1 );
