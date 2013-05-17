@@ -35,8 +35,7 @@
 static char *className = "MDICLIENT";
 WNDPROC oldContainerProc;
 
-LONG WINEXP ContainerWindowProc( HWND, unsigned, UINT, LONG );
-
+WINEXPORT LRESULT CALLBACK ContainerWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 
 /*
@@ -55,11 +54,9 @@ window_id CreateContainerWindow( RECT *size )
                 size->left, size->top,
                 size->right - size->left, size->bottom - size->top,
                 Root, (HMENU)NULLHANDLE, InstanceHandle, (LPVOID)&client );
-    SetWindowLong( container, 0, 0 );
-    oldContainerProc =(WNDPROC)GetWindowLong( container, GWL_WNDPROC );
-    SetWindowLong( container, GWL_WNDPROC,
-                   (LONG)MakeProcInstance( (FARPROC)ContainerWindowProc,
-                                           InstanceHandle ) );
+    SET_WNDINFO( container, 0 );
+    oldContainerProc = (WNDPROC)GET_WNDPROC( container );
+    SET_WNDPROC( container, (LONG_PTR)MakeProcInstance( (FARPROC)ContainerWindowProc, InstanceHandle ) );
     SetScrollRange( container, SB_VERT, 1, 1, FALSE );
     SetScrollRange( container, SB_HORZ, 1, 1, FALSE );
     return( container );
@@ -69,7 +66,7 @@ window_id CreateContainerWindow( RECT *size )
 /*
  * ContainerWindowProc - window procedure for container
  */
-LONG WINEXP ContainerWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
+WINEXPORT LRESULT CALLBACK ContainerWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_KEYDOWN:

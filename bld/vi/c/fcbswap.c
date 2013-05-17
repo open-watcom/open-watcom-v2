@@ -46,6 +46,7 @@ void FetchFcb( fcb *fb )
         if( fb->in_memory ) {
             return;
         }
+        rc = ERR_NO_ERR;
         if( fb->swapped ) {
             rc = SwapToMemoryFromDisk( fb );
 #ifndef NOXTD
@@ -122,7 +123,7 @@ vi_rc RestoreToNormalMemory( fcb *fb, int len )
     /*
      * remove line data from buffer that is restored
      */
-    len -= (int) 2 * (fb->end_line - fb->start_line + 1);
+    len -= (int) sizeof( linedata_t ) * (fb->end_line - fb->start_line + 1);
     buff = &ReadBuffer[len];
     savech = *buff;
 
@@ -136,8 +137,8 @@ vi_rc RestoreToNormalMemory( fcb *fb, int len )
      */
     *buff = savech;
     for( cline = fb->lines.head; cline != NULL; cline = cline->next ) {
-        cline->inf.word = *(short *)buff;
-        buff += 2;
+        cline->u.ld_word = *(linedata_t *)buff;
+        buff += sizeof( linedata_t );
     }
 
     /*

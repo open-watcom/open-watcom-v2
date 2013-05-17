@@ -328,12 +328,12 @@ static item *findItem( menu *m, int offset )
     if( offset == -1 ) {
         citem = m->item_tail;
     } else {
-        citem = m->item_head;
-        for( i = 0; i < offset; i++ ) {
-            citem = citem->next;
-            if( citem == NULL ) {
+        i = 0;
+        for( citem = m->item_head; citem != NULL; citem = citem->next ) {
+            if( i >= offset ) {
                 break;
             }
+            ++i;
         }
     }
     return( citem );
@@ -718,16 +718,14 @@ int FiniMenu( void )
 
     if( Root ) {
         if( rootMenu->menu_handle != NULL ) {
-            for( m = (menu *)rootMenu->item_head; m != NULL; ) {
+            for( m = (menu *)rootMenu->item_head; m != NULL; m = next ) {
                 next = m->next;
                 if( m->menu_handle ) {
                     clearMenu( m );
                     // DestroyMenu( m->menu_handle );
                 }
-                DeleteLLItem( (ss **)&rootMenu->item_head, (ss **)&rootMenu->item_tail,
-                              (ss *)m );
+                DeleteLLItem( (ss **)&rootMenu->item_head, (ss **)&rootMenu->item_tail, (ss *)m );
                 MemFree( m );
-                m = next;
             }
             // DestroyMenu( rootMenu->menu_handle );
         }
@@ -765,14 +763,12 @@ static int doFloatMenu( int id, int x, int y )
     assert( id >= 0 && id < MAX_FLOAT_MENUS );
     m = &floatMenus[id];
     f = CreatePopupMenu();
-    citem = m->item_head;
-    while( citem != NULL ) {
+    for( citem = m->item_head; citem != NULL; citem = citem->next ) {
         if( citem->name == NULL ) {
             AppendMenu( f, MF_SEPARATOR, 0, NULL );
         } else {
             AppendMenu( f, MF_ENABLED | MF_STRING, citem->id, citem->name );
         }
-        citem = citem->next;
     }
     p.x = x;
     p.y = y;
@@ -890,8 +886,7 @@ static void dumpMenu( FILE *f, menu *cmenu )
             } else {
                 char name[256];
                 tabs_to_slash_t( name, citem->name );
-                MyFprintf( f, "    menuitem \"%s\" \"%s\" %s\n", name,
-                           citem->help, citem->cmd );
+                MyFprintf( f, "    menuitem \"%s\" \"%s\" %s\n", name, citem->help, citem->cmd );
             }
             citem = citem->next;
         }
@@ -911,8 +906,7 @@ void BarfMenuData( FILE *f )
 {
     menu        *cmenu;
 
-    cmenu = rootMenu->item_head;
-    while( cmenu != NULL ) {
+    for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
         if( cmenu->menu_handle != NULL ) {
             if( cmenu->need_hook ) {
                 MyFprintf( f, "menu %s \"%s\" 1\n", cmenu->name, cmenu->help );
@@ -922,7 +916,6 @@ void BarfMenuData( FILE *f )
             dumpMenu( f, cmenu );
             MyFprintf( f, "endmenu\n" );
         }
-        cmenu = cmenu->next;
     }
 
 } /* BarfMenuData */
@@ -948,8 +941,7 @@ static void purgeOldMenuBottom( menu *cmenu )
         while( cnt < cmenu->num_items ) {
             nitem = citem->next;
             DeleteMenu( cmenu->menu_handle, cmenu->orig_num_items, MF_BYPOSITION );
-            DeleteLLItem( (ss **)&cmenu->item_head, (ss **)&cmenu->item_tail,
-                          (ss *)citem );
+            DeleteLLItem( (ss **)&cmenu->item_head, (ss **)&cmenu->item_tail, (ss *)citem );
             MemFree( citem );
             citem = nitem;
             cnt++;
@@ -1043,7 +1035,7 @@ static void addLastFiles( menu *cmenu )
     char                *menu_text;
     int                 i, j;
 
-    h = &LastFilesHist;
+    h = &EditVars.LastFilesHist;
     if( h->curr == 0 ) {
         cmenu->orig_num_items = cmenu->num_items;
         return;
@@ -1079,13 +1071,11 @@ void HandleInitMenu( HMENU hmenu )
     bool        need_gray;
     bool        need_check;
 
-    cmenu = rootMenu->item_head;
     i = 1;
-    while( cmenu != NULL ) {
+    for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
         if( cmenu->need_hook && cmenu->menu_handle != NULL ) {
             j = 1;
-            citem = cmenu->item_head;
-            while( citem != NULL ) {
+            for( citem = cmenu->item_head; citem != NULL; citem = citem->next ) {
                 result = InvokeMenuHook( i, j );
                 need_gray = (result == -1);
                 need_check = (result == -2);
@@ -1108,7 +1098,6 @@ void HandleInitMenu( HMENU hmenu )
                     }
                 }
                 j++;
-                citem = citem->next;
             }
         }
         if( cmenu->has_file_list ) {
@@ -1117,7 +1106,6 @@ void HandleInitMenu( HMENU hmenu )
             addLastFiles( cmenu );
         }
         i++;
-        cmenu = cmenu->next;
     }
 
 } /* HandleInitMenu */
@@ -1130,8 +1118,7 @@ void ResetMenuBits( void )
     menu        *cmenu;
     item        *citem;
 
-    cmenu = rootMenu->item_head;
-    while( cmenu != NULL ) {
+    for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
         if( cmenu->menu_handle != NULL ) {
             citem = cmenu->item_head;
             while( citem != NULL ) {
@@ -1140,7 +1127,6 @@ void ResetMenuBits( void )
                 citem = citem->next;
             }
         }
-        cmenu = cmenu->next;
     }
 
 } /* ResetMenuBits */
@@ -1176,7 +1162,7 @@ static char *currMenuHelpString;
 /*
  * HandleMenuSelect - handle a WM_MENUSELECT message (display help)
  */
-void HandleMenuSelect( UINT wparam, LONG lparam )
+void HandleMenuSelect( WPARAM wparam, LPARAM lparam )
 {
     int         flags;
     int         id;
@@ -1191,40 +1177,34 @@ void HandleMenuSelect( UINT wparam, LONG lparam )
     flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
     currMenuHelpString = NULL;
     if( flags != -1 || hmenu != 0 ) {
-        cmenu = rootMenu->item_head;
         found = FALSE;
-        while( cmenu != NULL ) {
+        for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
             if( (flags & MF_POPUP) ) {
                 if( cmenu->menu_handle == (HMENU) id ) {
                     currMenuHelpString = cmenu->help;
                     found = TRUE;
                 }
             } else {
-                citem = cmenu->item_head;
-                while( citem != NULL ) {
+                for( citem = cmenu->item_head; citem != NULL; citem = citem->next ) {
                     if( id == citem->id ) {
                         currMenuHelpString = citem->help;
                         found = TRUE;
                         break;
                     }
-                    citem = citem->next;
                 }
             }
             if( found ) {
                 break;
             }
-            cmenu = cmenu->next;
         }
         if( !found ) {
             for( i = 0; i < sizeof( specialMenus ) / sizeof( special_menu ); i++ ) {
-                citem = specialMenus[i].m->item_head;
-                while( citem != NULL ) {
+                for( citem = specialMenus[i].m->item_head; citem != NULL; citem = citem->next ) {
                     if( id == citem->id ) {
                         currMenuHelpString = citem->help;
                         found = TRUE;
                         break;
                     }
-                    citem = citem->next;
                 }
                 if( found ) {
                     break;

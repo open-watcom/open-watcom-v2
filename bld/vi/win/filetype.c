@@ -58,7 +58,7 @@ static const filetype fileTypes[NUM_FILE_TYPES] = {
 };
 #endif
 
-typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
+typedef HANDLE (CALLBACK *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
 
 /*
  * UpdateFileTypeIcon - update a window's icon for a new file name

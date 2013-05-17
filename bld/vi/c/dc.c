@@ -62,15 +62,15 @@ void DCCreate( void )
     dc      dc;
 
     assert( CurrentInfo );
-    nlines = WindowAuxInfo( CurrentInfo->CurrentWindow,
-                            WIND_INFO_TEXT_LINES );
+    nlines = WindowAuxInfo( CurrentInfo->CurrentWindow, WIND_INFO_TEXT_LINES );
     CurrentInfo->dc = NULL;
-    if( nlines != 0 ) {
-        CurrentInfo->dc = dc = MemAlloc( nlines * sizeof( dc_line ) );
-    }
-    for( i = 0; i < nlines; i++ ) {
-        initDCLine( dc );
-        dc++;
+    if( nlines > 0 ) {
+        dc = MemAlloc( nlines * sizeof( dc_line ) );
+        CurrentInfo->dc = dc;
+        for( i = 0; i < nlines; i++ ) {
+            initDCLine( dc );
+            dc++;
+        }
     }
     CurrentInfo->dc_size = nlines;
 }
@@ -86,13 +86,11 @@ void DCResize( info *info )
         return;
     }
     nlines = WindowAuxInfo( info->CurrentWindow, WIND_INFO_TEXT_LINES );
-    extra = nlines - info->dc_size;
     dc = info->dc;
     dc += info->dc_size - 1;
-    while( extra < 0 ) {
+    for( extra = nlines - info->dc_size; extra < 0; ++extra ) {
         deinitDCLine( dc );
         dc--;
-        extra++;
     }
     if( nlines == 0 ) {
         // no room to display anything - trash the cache
@@ -103,10 +101,9 @@ void DCResize( info *info )
     } else {
         info->dc = dc = MemReAlloc( info->dc, nlines * sizeof( dc_line ) );
         dc += info->dc_size;
-        while( extra > 0 ) {
+        for( ; extra > 0; --extra ) {
             initDCLine( dc );
             dc++;
-            extra--;
         }
     }
     info->dc_size = nlines;
@@ -235,7 +232,7 @@ vi_rc DCUpdate( void )
                 }
 
                 displayText = line->data;
-                if( line->inf.ld.nolinedata ) {
+                if( line->u.ld.nolinedata ) {
                     if( WorkLine->len >= 0 ) {
                         displayText = WorkLine->data;
                     } else {
@@ -252,7 +249,7 @@ vi_rc DCUpdate( void )
                 } else {
                     displayText = "";
                     if( firstTilde ) {
-                        displayText = FileEndString;
+                        displayText = EditVars.FileEndString;
                         firstTilde = FALSE;
                     }
                 }

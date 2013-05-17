@@ -94,7 +94,7 @@ static int NextWordNT( char *buff, char *res )
     /*
      * get word
      */
-    while( TRUE ) {
+    for( ;; ) {
         c = buff[k];
         cnext = buff[k + 1];
         if( c == 0 ) {
@@ -122,7 +122,7 @@ vi_rc EditFile( char *name, int dammit )
     char        *fn, **list, *currfn;
     int         i, cnt, ocnt;
     int         j, len;
-    window_id   wn;
+    window_id   wn = NO_WINDOW;
     char        cdir[FILENAME_MAX];
     info        *ci, *il;
     bool        usedir = FALSE;

@@ -36,18 +36,9 @@
  * constants
  */
 enum {
-    EX_T_APPEND,
-    EX_T_CHANGE,
-    EX_T_COPY,
-    EX_T_INSERT,
-    EX_T_JOIN,
-    EX_T_LIST,
-    EX_T_MARK,
-    EX_T_MOVE,
-    EX_T_UNDO,
-    EX_T_VERSION,
-    EX_T_VISUAL,
-    EX_T_EQUALS
+    #define PICK(a,b) b,
+    #include "excmds.h"
+    #undef PICK
 };
 
 
@@ -61,7 +52,7 @@ extern char _NEAR ExTokens[];
  */
 /* ex.c */
 extern vi_rc    EnterExMode( void );
-extern vi_rc    ProcessEx( linenum, linenum, bool, int, int, char * );
+extern vi_rc    ProcessEx( linenum, linenum, bool, int, char * );
 
 /* exappend.c */
 extern vi_rc    Append( linenum, bool );

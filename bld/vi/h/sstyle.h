@@ -80,51 +80,51 @@ typedef struct ss_block {
 } ss_block;
 
 typedef struct ss_flags_c {
-    unsigned short  inCComment      : 1;
-    unsigned short  inCPPComment    : 1;
-    unsigned short  inString        : 1;
-    unsigned short  inPreprocessor  : 1;
-    unsigned short  inErrorDir      : 1;
-    unsigned short  inIfDir         : 1;
-    unsigned short  inPragmaDir     : 1;
-    unsigned short  inDeclspec      : 1;
-    unsigned short  inDeclspec2     : 1;
-    unsigned short  spare           : 7;
+    unsigned  inCComment      : 1;
+    unsigned  inCPPComment    : 1;
+    unsigned  inString        : 1;
+    unsigned  inPreprocessor  : 1;
+    unsigned  inErrorDir      : 1;
+    unsigned  inIfDir         : 1;
+    unsigned  inPragmaDir     : 1;
+    unsigned  inDeclspec      : 1;
+    unsigned  inDeclspec2     : 1;
+    unsigned  spare           : 7;
 } ss_flags_c;
 
 typedef struct ss_flags_f {
-    unsigned short  inString    : 1;
-    unsigned short  spare       : 15;
+    unsigned  inString    : 1;
+    unsigned  spare       : 15;
 } ss_flags_f;
 
 typedef struct ss_flags_h {
-    unsigned short  inHTMLComment       : 1;
-    unsigned short  inHTMLKeyword       : 1;
-    unsigned short  inAltHTMLKeyword    : 1;
-    unsigned short  inString            : 1;
-    unsigned short  spare               : 12;
+    unsigned  inHTMLComment       : 1;
+    unsigned  inHTMLKeyword       : 1;
+    unsigned  inAltHTMLKeyword    : 1;
+    unsigned  inString            : 1;
+    unsigned  spare               : 12;
 } ss_flags_h;
 
 typedef struct ss_flags_g {
-    unsigned short  inGMLComment    : 1;
-    unsigned short  inGMLKeyword    : 1;
-    unsigned short  inAltGMLKeyword : 1;
-    unsigned short  inString        : 1;
-    unsigned short  spare           : 12;
+    unsigned  inGMLComment    : 1;
+    unsigned  inGMLKeyword    : 1;
+    unsigned  inAltGMLKeyword : 1;
+    unsigned  inString        : 1;
+    unsigned  spare           : 12;
 } ss_flags_g;
 
 typedef struct ss_flags_m {
-    unsigned short  inPreproc       : 1;
-    unsigned short  inInlineFile    : 1;
-    unsigned short  inMacro         : 1;
-    unsigned short  spare           : 13;
+    unsigned  inPreproc       : 1;
+    unsigned  inInlineFile    : 1;
+    unsigned  inMacro         : 1;
+    unsigned  spare           : 13;
 } ss_flags_m;
 
 typedef struct ss_flags_p {
-    unsigned short  inString        : 1;
-    unsigned short  beforeRegExp    : 1;
-    unsigned short  doubleRegExp    : 1;
-    unsigned short  spare           : 13;
+    unsigned  inString        : 1;
+    unsigned  beforeRegExp    : 1;
+    unsigned  doubleRegExp    : 1;
+    unsigned  spare           : 13;
 } ss_flags_p;
 
 typedef union ss_flags {

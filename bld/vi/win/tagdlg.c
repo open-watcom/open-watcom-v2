@@ -39,7 +39,7 @@ static char     **tagList;
 /*
  * TagListProc - handle the tag selection dialog
  */
-BOOL WINEXP TagListProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
 
@@ -48,8 +48,7 @@ BOOL WINEXP TagListProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         CenterWindowInRoot( hwnd );
         SetDlgItemText( hwnd, TAGS_TAGNAME, (LPSTR) lparam );
         for( i = 0; i < tagCnt; i++ ) {
-            SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_ADDSTRING, 0,
-                                (LONG) (LPSTR) tagList[i] );
+            SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_ADDSTRING, 0, (LPARAM)tagList[i] );
         }
         SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_SETCURSEL, 0, 0L );
         return( TRUE );
@@ -93,9 +92,9 @@ int PickATag( int clist, char **list, char *tagname )
     tagCnt = clist;
     tagList = list;
 
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) TagListProc, InstanceHandle );
-    rc = DialogBoxParam( InstanceHandle, "TAGS", Root, proc, (LONG) (LPSTR) tagname );
-    FreeProcInstance( (FARPROC) proc );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)TagListProc, InstanceHandle );
+    rc = DialogBoxParam( InstanceHandle, "TAGS", Root, proc, (LPARAM)tagname );
+    FreeProcInstance( (FARPROC)proc );
     return( rc );
 
 } /* PickATag */

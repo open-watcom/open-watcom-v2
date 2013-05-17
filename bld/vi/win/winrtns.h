@@ -119,7 +119,7 @@ void    BarfToolBarData( FILE * );
 DWORD   GetEditStyle( bool is_max );
 void    EditDrawScrollBars( HWND hwnd );
 void    SetWindowTitle( HWND hwnd );
-void    HandleMenuSelect( UINT wparam, LONG lparam );
+void    HandleMenuSelect( WPARAM wparam, LPARAM lparam );
 void    GetMenuHelpString( char *res );
 void    SetMenuHelpString( char *str );
 void    ShowStartupDialog( void );

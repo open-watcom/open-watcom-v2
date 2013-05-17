@@ -32,10 +32,8 @@
 
 #if !defined(OLE2DEF_INCLUDED)
 #define OLE2DEF_INCLUDED
-#ifdef __386__
-bool OLE2Init( void );
-void OLE2Fini( void );
-#else
+
+#ifdef _M_I86
 
 #include <ole2.h>
 #include <olenls.h>
@@ -78,10 +76,10 @@ typedef struct object FAR *LPOBJECT;
 
 typedef struct objvtbl {
     IDispatchVtbl       id;
-    WORD (__export FAR PASCAL *PutProp1)();
-    WORD (__export FAR PASCAL *GetProp1)();
-    void (__export FAR PASCAL *Func1)();
-    WORD (__export FAR PASCAL *Func2)();
+    WORD (CALLBACK *PutProp1)();
+    WORD (CALLBACK *GetProp1)();
+    void (CALLBACK *Func1)();
+    WORD (CALLBACK *Func2)();
 } objvtbl;
 
 typedef objvtbl FAR *LPOBJVTBL;
@@ -100,5 +98,11 @@ void OLE2Fini( void );
 bool OLE2ClassFactoryInit( void );
 void OLE2ClassFactoryFini( void );
 
+#else
+
+bool OLE2Init( void );
+void OLE2Fini( void );
+
 #endif
+
 #endif

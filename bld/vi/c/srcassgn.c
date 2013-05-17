@@ -120,7 +120,7 @@ vi_rc SrcAssign( char *data, vlist *vl )
             return( ERR_SRC_INVALID_ASSIGN );
         }
         j = Tokenize( StrTokens, v1, FALSE );
-        if( j >= 0 ) {
+        if( j != TOK_INVALID ) {
             if( NextWord1( data, v1 ) <= 0 ) {
                 return( ERR_SRC_INVALID_ASSIGN );
             }
@@ -131,11 +131,10 @@ vi_rc SrcAssign( char *data, vlist *vl )
             switch( j ) {
             case STR_T_STRLEN:
                 if( v != NULL ) {
-                    j = v->len;
+                    itoa( v->len, v1, 10 );
                 } else {
-                    j = 0;
+                    strcpy( v1, "0" );
                 }
-                itoa( j, v1, 10 );
                 break;
             case STR_T_SUBSTR:
                 if( NextWord1( data, v1 ) <= 0 ) {
@@ -152,8 +151,7 @@ vi_rc SrcAssign( char *data, vlist *vl )
                     v1[0] = 0;
                     break;
                 }
-                k = v->len;
-                if( j >= k || i < 0 ) {
+                if( j >= v->len || i < 0 ) {
                     v1[0] = 0;
                 } else {
                     l = 0;
@@ -230,7 +228,7 @@ vi_rc SrcAssign( char *data, vlist *vl )
             }
             return( ERR_NO_ERR );
         } else {
-            ltoa( val, v1, Radix );
+            ltoa( val, v1, EditVars.Radix );
         }
     }
 

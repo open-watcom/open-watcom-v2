@@ -52,9 +52,9 @@ vi_rc EnterExMode( void )
     if( EditFlags.InputKeyMapMode ) {
         return( ERR_NO_ERR );
     }
-    i = WindMaxHeight - 1;
+    i = EditVars.WindMaxHeight - 1;
     exwInfo.y1 = exwInfo.y2 = i;
-    exwInfo.x2 = WindMaxWidth - 1;
+    exwInfo.x2 = EditVars.WindMaxWidth - 1;
     SetPosToMessageLine();
     EditFlags.ExMode = TRUE;
     EditFlags.LineDisplay = TRUE;
@@ -64,15 +64,15 @@ vi_rc EnterExMode( void )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    st = MemAlloc( MaxLine );
+    st = MemAlloc( EditVars.MaxLine );
 
-    while( 1 ) {
+    for( ;; ) {
         if( EditFlags.Appending ) {
             prompt = "";
         } else {
             prompt = ":";
         }
-        ret = ReadStringInWindow( clw, 1, prompt, st, MaxLine, &CLHist );
+        ret = ReadStringInWindow( clw, 1, prompt, st, EditVars.MaxLine, &EditVars.CLHist );
         MyPrintf( "\n" );
         if( !ret ) {
             continue;
@@ -101,8 +101,7 @@ static char strCmmsg[] = "%l lines %s after line %l";
 /*
  * ProcessEx - process an ex command
  */
-vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
-               char *data )
+vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
 {
     vi_rc       rc = ERR_INVALID_COMMAND, i;
     char        word[MAX_STR], wordback[MAX_STR];
@@ -236,11 +235,10 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
         }
         break;
     case EX_T_UNDO:
-        if( dmt ) {
-            rc = DoUndoUndo();
-        } else {
-            rc = DoUndo();
-        }
+        rc = DoUndo();
+        break;
+    case EX_T_UNDO_DMT:
+        rc = DoUndoUndo();
         break;
     case EX_T_EQUALS:
         Message1( "%l", n1 );
@@ -250,6 +248,7 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
         rc = DoVersion();
         break;
     case EX_T_VISUAL:
+    case EX_T_VISUAL_DMT:
         if( EditFlags.LineDisplay ) {
             ScreenPage( -1 );
             EditFlags.ExMode = FALSE;
@@ -259,7 +258,7 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
             DoVersion();
         }
         if( wordback[0] != 0 ) {
-            rc = EditFile( wordback, dmt );
+            rc = EditFile( wordback, ( tkn == EX_T_VISUAL_DMT ) );
         } else {
             rc = ERR_NO_ERR;
         }

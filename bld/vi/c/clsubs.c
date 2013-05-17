@@ -53,7 +53,7 @@ static HHOOK    hhookMB = 0;
 static int      MB_posx = -1;
 static int      MB_posy = -1;
 
-LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM lparam )
+WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM lparam )
 {
     char        className[10];
     HWND        hWnd;
@@ -114,7 +114,7 @@ static change_resp ChangePrompt( void )
     vi_key      key = 0;
 
     Message1( "Change? (y)es/(n)o/(a)ll/(q)uit" );
-    while( TRUE ) {
+    for( ;; ) {
         key = GetNextEvent( FALSE );
         if( key == VI_KEY( y ) ) {
             return( CHANGE_OK );
@@ -202,7 +202,8 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
         return( ERR_NO_STACK );
     }
     strcpy( sstr, data );
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     strcpy( data, sstr );
@@ -348,7 +349,7 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
         if( rc != ERR_NO_ERR ) {
             break;
         }
-        if( CurrentLine->len + rlen - slen >= MaxLine ) {
+        if( CurrentLine->len + rlen - slen >= EditVars.MaxLine ) {
             rc = ERR_LINE_FULL;
             break;
         }
@@ -439,7 +440,7 @@ linenum SplitUpLine( linenum cl )
     /*
      * run through, and for every 0x01, make a new line
      */
-    while( 1 ) {
+    for( ;; ) {
 
         /*
          * get current line

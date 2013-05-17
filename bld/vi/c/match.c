@@ -76,6 +76,7 @@ vi_rc FindMatch( i_mark *pos1 )
     /*
      * find start of match on this line
      */
+    which = 0;
     pos2 = CurrentPos;
     pos2.column -= 1;
     RegExpAttrSave( -1, NULL );
@@ -105,7 +106,7 @@ vi_rc FindMatch( i_mark *pos1 )
             /*
              * matched the first of a pair, so look for the closing element
              */
-            while( TRUE ) {
+            for( ;; ) {
                 if( m2 ) {
                     pos2.column--;
                     rc = FindRegularExpressionBackwards( NULL, &pos2, &linedata, -1L, 0 );

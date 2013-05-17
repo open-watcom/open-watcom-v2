@@ -45,7 +45,8 @@ vi_rc InsertLinesAtCursor( fcb_list *fcblist, undo_stack *us )
     line        *tLine;
     vi_rc       rc;
 
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
 
@@ -120,7 +121,8 @@ vi_rc InsertLines( linenum s, fcb_list *fcblist, undo_stack *us )
     linenum     l, e;
     vi_rc       rc;
 
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     if( s < 0 ) {

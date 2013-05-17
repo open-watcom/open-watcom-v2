@@ -34,9 +34,9 @@
 #include <assert.h>
 
 static lang_info    langInfo[] = {
-#define pick_lang(enum,enumrc,name,namej,fname) { NULL, 0, 0, NULL },
-#include "langdef.h"
-#undef pick_lang
+    #define pick_lang(enum,enumrc,name,namej,fname) { NULL, 0, 0, NULL },
+    #include "langdef.h"
+    #undef pick_lang
 };
 
 static hash_entry   *pragma_table           = NULL;
@@ -59,7 +59,7 @@ static int hashpjw( char *s, int entries )
     
     while( *s != '\0' ) {
         h = (h << 4) + toupper( *s );
-        if( g = h & 0xf0000000 ) {
+        if( (g = h & 0xf0000000) != 0 ) {
             h = h ^ (g >> 24);
             h = h ^ g;
         }
@@ -72,14 +72,14 @@ bool IsKeyword( char *keyword, bool case_ignore )
 {
     hash_entry  *entry;
 
-    assert( langInfo[CurrentInfo->Language].ref_count > 0 );
+    assert( langInfo[CurrentInfo->fsi.Language].ref_count > 0 );
 
-    if( langInfo[CurrentInfo->Language].keyword_table == NULL ) {
+    if( langInfo[CurrentInfo->fsi.Language].keyword_table == NULL ) {
         return( FALSE );
     }
 
-    entry = langInfo[CurrentInfo->Language].keyword_table +
-        hashpjw( keyword, langInfo[CurrentInfo->Language].table_entries );
+    entry = langInfo[CurrentInfo->fsi.Language].keyword_table +
+        hashpjw( keyword, langInfo[CurrentInfo->fsi.Language].table_entries );
     if( !entry->real ) {
         return( FALSE );
     }
@@ -217,6 +217,7 @@ static bool lang_alloc( int cnt )
 
 static bool lang_save( int i, char *buff )
 {
+    i = i; buff = buff;
     return( TRUE );
 }
 
@@ -234,14 +235,14 @@ void LangInit( lang_t newLanguage )
     };
 
     assert( CurrentInfo != NULL );
-    CurrentInfo->Language = newLanguage;
+    CurrentInfo->fsi.Language = newLanguage;
 
     if( newLanguage == LANG_NONE ) {
         return;
     }
 
     if( langInfo[newLanguage].ref_count == 0 ) {
-        rc = ReadDataFile( fname[newLanguage], &buff, lang_alloc, lang_save );
+        rc = ReadDataFile( fname[newLanguage], &buff, lang_alloc, lang_save, EditFlags.BoundData );
         if( rc != ERR_NO_ERR ) {
             if( rc == ERR_FILE_NOT_FOUND ) {
                 ErrorBox( GetErrorMsg( ERR_SPECIFIC_FILE_NOT_FOUND ),
@@ -249,7 +250,7 @@ void LangInit( lang_t newLanguage )
             } else {
                 ErrorBox( GetErrorMsg( rc ) );
             }
-            CurrentInfo->Language = LANG_NONE;
+            CurrentInfo->fsi.Language = LANG_NONE;
             return;
         }
         // build new langInfo entry
@@ -263,7 +264,7 @@ void LangInit( lang_t newLanguage )
     langInfo[newLanguage].ref_count++;
 
     if( (newLanguage == LANG_C || newLanguage == LANG_CPP) && pragma_table == NULL ) {
-        rc = ReadDataFile( PRAGMA_DATFILE, &pragma_read_buf, lang_alloc, lang_save );
+        rc = ReadDataFile( PRAGMA_DATFILE, &pragma_read_buf, lang_alloc, lang_save, EditFlags.BoundData );
         if( rc == ERR_FILE_NOT_FOUND ) {
             ErrorBox( GetErrorMsg( ERR_SPECIFIC_FILE_NOT_FOUND ), PRAGMA_DATFILE );
             return;
@@ -275,7 +276,7 @@ void LangInit( lang_t newLanguage )
         pragma_table = createTable( NextBiggestPrime( nkeywords ) );
         addTable( pragma_table, pragma_read_buf, nkeywords, pragma_table_entries );
 
-        rc = ReadDataFile( DECLSPEC_DATFILE, &declspec_read_buf, lang_alloc, lang_save );
+        rc = ReadDataFile( DECLSPEC_DATFILE, &declspec_read_buf, lang_alloc, lang_save, EditFlags.BoundData );
         if( rc == ERR_FILE_NOT_FOUND ) {
             ErrorBox( GetErrorMsg( ERR_SPECIFIC_FILE_NOT_FOUND ), DECLSPEC_DATFILE );
             return;

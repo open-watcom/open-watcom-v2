@@ -42,7 +42,7 @@
 
 #define SPLIT_CHAR      3
 
-#define NO_WINDOW ((window_id) -1)
+#define TOK_INVALID         (-1)
 
 #define GET_BOOL_PREFIX(b)  ((b) ? "" : "no")
 
@@ -79,14 +79,15 @@ typedef enum {
     #define TMP_NAME_LEN        14
 #endif
 
+#define TOK_MAX_LEN     30
 #define NAMEWIDTH       14
 #define MAX_NUM_STR     48
 
 /*
  * extra data per line: +4 because of swap file
- * considerations: +2 for c/r,l/f and +2 for extra line data
+ * considerations: +2 for CR,LF and +2 for extra line data
  */
-#define LINE_EXTRA      4
+#define LINE_EXTRA      (2 + sizeof( linedata_t ))
 
 #define Tab( col, ta )  ((ta == 0) ? 0 : ((((col - 1) / ta) + 1) * ta - (col - 1)))
 
@@ -116,7 +117,7 @@ typedef enum {
 #define EXTENSION_LENGTH        5
 #define CR                      0x0d
 #define LF                      0x0a
-#define CTLZ                    26
+#define CTRLZ                   0x1a
 #define MAX_STATIC_BUFFERS      5
 #define MAX_STARTUP             10
 #define MAX_INPUT_LINE          512
@@ -270,11 +271,10 @@ typedef enum event_type {
 /*
  * Color type
  */
-#undef vi_pick
-#define vi_pick(a) a,
 typedef enum {
-#include "colors.h"
-#undef vi_pick
+    #define vi_pick(a) a,
+    #include "colors.h"
+    #undef vi_pick
 #ifdef __WIN__
     MAX_COLORS = 64
 #else
@@ -288,16 +288,21 @@ typedef enum {
 #define VI_KEY( a )                 __VIKEY__##a
 #define BITS( a, b, c, d, e, f, g ) { a, b, c, d, e, f, g }
 
-#undef vi_pick
-#define vi_pick( enum, modeless, insert, command, nm_bits, bits ) enum,
 typedef enum vi_key {
-#include "events.h"
+    #define vi_pick( enum, modeless, insert, command, nm_bits, bits ) enum,
+    #include "events.h"
+    #undef vi_pick
     MAX_EVENTS
-#undef vi_pick
 } vi_key;
 
 #define NO_ADD_TO_HISTORY_KEY   VI_KEY( CTRL_A )
 #define VI_KEY_HANDLED          VI_KEY( NULL )
 #define VI_KEY_DUMMY            MAX_EVENTS
+
+enum border_char {
+    #define vi_pick( enum, UnixNG, UnixG, DosNG, DosG ) enum,
+    #include "borders.h"
+    #undef vi_pick
+};
 
 #endif

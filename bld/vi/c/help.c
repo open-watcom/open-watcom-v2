@@ -84,17 +84,17 @@ vi_rc DoHelp( char *data )
 
     RemoveLeadingSpaces( data );
     if( !strcmp( data, "OnHelp" ) ) {
-        WWinHelp( Root, NULL, HELP_HELPONHELP, 0L );
+        WWinHelp( Root, NULL, HELP_HELPONHELP, (HELP_DATA)0 );
     } else if( !strcmp( data, "Contents" ) ) {
-        if( !WHtmlHelp( Root, vi_chmfile, HELP_CONTENTS, 0L ) ) {
-            WWinHelp( Root, vi_helpfile, HELP_CONTENTS, 0L );
+        if( !WHtmlHelp( Root, vi_chmfile, HELP_CONTENTS, (HELP_DATA)0 ) ) {
+            WWinHelp( Root, vi_helpfile, HELP_CONTENTS, (HELP_DATA)0 );
         }
     } else if( !strcmp( data, "Search" ) ) {
-        if( !WHtmlHelp( Root, vi_chmfile, HELP_PARTIALKEY, (DWORD)(LPSTR)"" ) ) {
-            WWinHelp( Root, vi_helpfile, HELP_PARTIALKEY, (DWORD)(LPSTR)"" );
+        if( !WHtmlHelp( Root, vi_chmfile, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+            WWinHelp( Root, vi_helpfile, HELP_PARTIALKEY, (HELP_DATA)"" );
         }
     } else {
-        WWinHelp( Root, win_helpfile, HELP_KEY, (DWORD)(LPSTR)data );
+        WWinHelp( Root, win_helpfile, HELP_KEY, (HELP_DATA)data );
     }
     return ( ERR_NO_ERR );
 }
@@ -118,7 +118,7 @@ vi_rc DoHelp( char *data )
 
     RemoveLeadingSpaces( data );
     token = Tokenize( helpCmds, data, FALSE );
-    if( token < 0 ) {
+    if( token == TOK_INVALID ) {
         if( data[0] == 0 ) {
             strcpy( tmp, "Topics: " );
             for( i = 0; i < nHelpFiles; i++ ) {

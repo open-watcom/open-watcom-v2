@@ -33,11 +33,8 @@
 #ifdef __WATCOMC__
     #include <malloc.h>
     #include <process.h>
-#else
-    #include "clibext.h"
 #endif
 #include "source.h"
-#include "stack.h"
 
 void main( int argc, char *argv[] )
 {
@@ -48,15 +45,9 @@ void main( int argc, char *argv[] )
     _argv = argv;
 #endif
     EXEName = _cmdname( buffer );
-#ifdef __WATCOMC__
-    InitialStack();
-#endif
     VarAddGlobalStr( "OS", "unix" );
     Comspec = getenv( "SHELL" );
     InitializeEditor();
-#ifdef __WATCOMC__
-    FinalStack();
-#endif
     EditMain();
 
 } /* main */

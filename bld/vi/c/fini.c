@@ -138,17 +138,18 @@ static void miscGlobalsFini( void )
     MemFree( DotCmd );
     MemFree( ReadBuffer );
     MemFree( WriteBuffer );
-    MemFree( TileColors );
-    MemFree( GrepDefault );
-    MemFree( FileEndString );
-    MemFree( Majick );
-    MemFree( GadgetString );
-    MemFree( WordDefn );
-    MemFree( WordAltDefn );
-    MemFree( TagFileName );
-    MemFree( StatusString );
-    MemFree( StatusSections );
-    MemFree( TmpDir );
+    MemFree( EditVars.TileColors );
+    MemFree( EditVars.GrepDefault );
+    MemFree( EditVars.FileEndString );
+    MemFree( EditVars.Majick );
+    MemFree( EditVars.GadgetString );
+    MemFree( EditVars.WordDefn );
+    MemFree( EditVars.WordAltDefn );
+    MemFree( EditVars.TagFileName );
+    MemFree( EditVars.StatusString );
+    MemFree( EditVars.StatusSections );
+    MemFree( EditVars.TmpDir );
+    MemFree( EditVars.SpawnPrompt );
     MemFree( CurrentRegularExpression );
 }
 
@@ -179,7 +180,7 @@ void ExitEditor( int rc )
     FiniSavebufs();
     FindCmdFini();
     DirFini();
-    CurrentWindow = (window_id)-1;
+    CurrentWindow = NO_WINDOW;
     FinishWindows();
     ScreenFini();
 #ifdef __WIN__
@@ -197,6 +198,7 @@ void ExitEditor( int rc )
     FiniCommandLine();
     SSFini();
     HistFini();
+    BoundDataFini();
     FTSFini();
     StaticFini();
     VarFini();
@@ -206,7 +208,6 @@ void ExitEditor( int rc )
     ChangeDirectory( HomeDirectory );
 #if defined( __NT__ ) && !defined( __WIN__ )
     {
-        extern HANDLE OutputHandle;
         SetConsoleActiveScreenBuffer( GetStdHandle( STD_OUTPUT_HANDLE ) );
     }
 #endif

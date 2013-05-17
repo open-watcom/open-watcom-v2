@@ -73,7 +73,7 @@ vi_rc GetErrorTokenValue( int *value, char *str )
         return( rc );
     }
     i = Tokenize( ErrorTokens, str, TRUE );
-    if( i >= 0 ) {
+    if( i != TOK_INVALID ) {
         *value = ErrorValues[i];
     } else {
         *value = atoi( str );
@@ -107,7 +107,7 @@ vi_rc ReadErrorTokens( void )
         return( ERR_NO_ERR );
     }
 
-    rc = ReadDataFile( "error.dat", &ErrorTokens, err_alloc, err_save );
+    rc = ReadDataFile( "error.dat", &ErrorTokens, err_alloc, err_save, TRUE );
     if( rc != ERR_NO_ERR ) {
         if( rc == ERR_FILE_NOT_FOUND ) {
             return( ERR_SRC_NO_ERROR_DATA );

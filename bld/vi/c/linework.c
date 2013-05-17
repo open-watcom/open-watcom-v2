@@ -40,7 +40,7 @@ void GetCurrentLine( void )
 {
     memcpy( WorkLine->data, CurrentLine->data, CurrentLine->len + 1 );
     WorkLine->len = CurrentLine->len;
-    CurrentLine->inf.ld.nolinedata = TRUE;
+    CurrentLine->u.ld.nolinedata = TRUE;
 
 } /* GetCurrentLine */
 
@@ -64,7 +64,7 @@ vi_rc ReplaceCurrentLine( void )
      * copy new data in
      */
     tmp = LineAlloc( WorkLine->data, WorkLine->len );
-    tmp->inf.ld.mark = CurrentLine->inf.ld.mark;
+    tmp->u.ld.mark = CurrentLine->u.ld.mark;
     ReplaceLLItem( (ss **)&CurrentFcb->lines.head, (ss **)&CurrentFcb->lines.tail,
                    (ss *)CurrentLine, (ss *)tmp );
     MemFree( CurrentLine );

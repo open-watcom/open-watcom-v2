@@ -256,7 +256,7 @@ vi_rc FindCharOnCurrentLine( bool fwdflag, int mod, int *col, int cnt )
     }
     lst[0] = (char)LastEvent;
     lst[1] = 0;
-
+    i = 0;
     for( j = 0; j < cnt; j++ ) {
         i = -1;
         if( fwdflag ) {
@@ -289,7 +289,7 @@ vi_rc FancyGotoLine( void )
 
     if( GetLineDialog( &newline ) ) {
         SetCurrentLine( newline );
-        NewCursor( CurrentWindow, NormalCursorType );
+        NewCursor( CurrentWindow, EditVars.NormalCursorType );
     }
 #endif
     return( ERR_NO_ERR );

@@ -37,34 +37,41 @@
 #endif
 
 #if defined( __WINDOWS__ )
-  #define NOXMS
-  #define NOEMS
-  #define NOXTD
-  #define _FAR
-  #define __WIN__
+    #define NOXMS
+    #define NOEMS
+    #define NOXTD
+    #define _FAR
+    #define __WIN__
 #elif defined( __OS2__ ) || defined( __UNIX__ ) || defined( __NT__ )
-  #define NOXMS
-  #define NOEMS
-  #define NOXTD
-  #define _FAR
-  #ifndef __WIN__
-    #define __VIO__
+    #define NOXMS
+    #define NOEMS
+    #define NOXTD
+    #define _FAR
+#elif defined( _M_I86 )
+  #if defined( __286__ )
+    #define _FAR
+  #elif defined( __86__ )
+    #define NOXMS
+    #define NOXTD
+    #define _FAR
   #endif
-#elif defined( __386__ )
-  #define NOXMS
-  #define NOEMS
-  #define NOXTD
+#elif defined( _M_IX86 )
+    #define NOXMS
+    #define NOEMS
+    #define NOXTD
   #if !defined( __4G__ )
     #define _FAR    __far
   #else
     #define _FAR
   #endif
-#elif defined( __286__ )
-  #define _FAR
-#elif defined( __86__ )
-  #define NOXMS
-  #define NOXTD
-  #define _FAR
+#else
+    #error _FAR not configured
+#endif
+
+#ifndef __WIN__
+  #if defined( __CURSES__ ) || defined( __OS2__ ) || defined( __UNIX__ ) || defined( __NT__ )
+    #define __VIO__
+  #endif
 #endif
 
 #if defined( _M_I86 )
@@ -73,11 +80,14 @@
   #define _NEAR
 #endif
 
-#ifndef max
-  #define max(a,b)  (((a) > (b)) ? (a) : (b))
+#if defined( __WATCOMC__ ) && !defined( __AXP__ ) && !defined( __PPC__ ) && !defined( __MIPS__ )
+  #define VI_RCS  1
 #endif
-#ifndef min
-  #define min(a,b)  (((a) < (b)) ? (a) : (b))
+
+#ifdef __UNIX__
+  #define FSYS_CASE_SENSITIVE         1
+#else
+  #define FSYS_CASE_SENSITIVE         0
 #endif
 
 #endif

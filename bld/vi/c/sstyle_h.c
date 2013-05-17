@@ -162,6 +162,7 @@ void GetHTMLFlags( ss_flags_h *storeFlags )
 
 void InitHTMLFlags( linenum line_no )
 {
+    line_no = line_no;
     flags.inHTMLComment = FALSE;
     flags.inHTMLKeyword = FALSE;
     flags.inString = FALSE;

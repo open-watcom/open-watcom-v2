@@ -34,6 +34,9 @@
 #include "ctkeyb.h"
 #include "vibios.h"
 
+extern int      PageCnt;
+extern bool     UserForcedTermRefresh;
+
 void BIOSGetColorPalette( void *a ) {}
 long BIOSGetColorRegister( short a ) { return( 0 ); }
 void BIOSSetNoBlinkAttr( void ) {}
@@ -236,27 +239,23 @@ bool BIOSKeyboardHit( void )
 /*
  * BIOSUpdateScreen - update the screen
  */
-void  BIOSUpdateScreen( unsigned offset, unsigned length )
+void  BIOSUpdateScreen( unsigned offset, unsigned nchars )
 {
-    extern int  PageCnt;
     SAREA       area;
 
     if( PageCnt > 0 || EditFlags.Quiet ) {
         return;
     }
 
-    if ( length == WindMaxWidth * WindMaxHeight ) {
-        extern bool UserForcedTermRefresh;
+    if ( nchars == EditVars.WindMaxWidth * EditVars.WindMaxHeight ) {
         _physupdate( NULL );
         UserForcedTermRefresh = TRUE;
         return;
     }
 
-    offset /= sizeof( char_info );
-
-    area.row = offset / WindMaxWidth;
-    area.col = offset % WindMaxWidth;
-    area.width = length;
+    area.row = offset / EditVars.WindMaxWidth;
+    area.col = offset % EditVars.WindMaxWidth;
+    area.width = nchars;
     area.height = 1;
 
     _physupdate(&area);

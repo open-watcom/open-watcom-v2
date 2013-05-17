@@ -35,7 +35,14 @@
 #include "stdui.h"
 #include "vibios.h"
 
+extern int  PageCnt;
+
 static char oldPath[FILENAME_MAX];
+
+int FileSysNeedsCR( int handle )
+{
+    return( FALSE );
+}
 
 /*
  * PushDirectory
@@ -89,8 +96,8 @@ void ScreenInit( void )
     uistart();
     BIOSKeyboardInit();
 
-    WindMaxHeight = LINES;
-    WindMaxWidth = COLS;
+    EditVars.WindMaxHeight = LINES;
+    EditVars.WindMaxWidth = COLS;
     Scrn = (void *)(UIData->screen.origin);
 
     EditFlags.Color = TRUE;
@@ -130,8 +137,6 @@ long MemSize( void )
  */
 void ScreenPage( int page )
 {
-    extern int PageCnt;
-
     PageCnt += page;
 
 } /* ScreenPage */
@@ -190,7 +195,7 @@ void MyDelay( int ms )
  */
 void SetCursorBlinkRate( int cbr )
 {
-    CursorBlinkRate = cbr;
+    EditVars.CursorBlinkRate = cbr;
 
 } /* SetCursorBlinkRate */
 
@@ -204,8 +209,8 @@ bool KeyboardHit( void )
     return( BIOSKeyboardHit() );
 }
 
-void MyVioShowBuf( unsigned offset, unsigned length )
+void MyVioShowBuf( unsigned offset, unsigned nchars )
 {
-    BIOSUpdateScreen( offset, length );
+    BIOSUpdateScreen( offset, nchars );
 }
 

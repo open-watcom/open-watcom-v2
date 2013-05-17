@@ -36,8 +36,11 @@
 /*
  * ReadDataFile - do just that
  */
-vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ),
-                  bool (*fn_save)( int, char* ) )
+#ifdef VICOMP
+vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ), bool (*fn_save)( int, char* ) )
+#else
+vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ), bool (*fn_save)( int, char* ), bool bounddata )
+#endif
 {
     GENERIC_FILE        gf;
     int                 i, dcnt, len, size;
@@ -48,7 +51,11 @@ vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ),
     /*
      * get file and buffer
      */
+#ifdef VICOMP
     if( !SpecialOpen( file, &gf ) ) {
+#else
+    if( !SpecialOpen( file, &gf, bounddata ) ) {
+#endif
         return( ERR_FILE_NOT_FOUND );
     }
 

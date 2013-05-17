@@ -232,75 +232,68 @@ vi_rc DoLastEvent( void )
     bool        keep_sel;
 
     if( LastEvent >= MAX_EVENTS ) {
-        return( InvalidKey() );
-    } else {
-        if( !EditFlags.InsertModeActive || EditFlags.Modeless ) {
-            if( !EditFlags.Modeless && KeyMaps[LastEvent].data != NULL ) {
-                if( !KeyMaps[LastEvent].inuse ) {
-                    return( DoKeyMap( LastEvent ) );
-                }
-            }
-            event = &EventList[LastEvent];
-            keep_sel = event->b.keep_selection;
-            if( event->b.keep_selection_maybe ) {
-                if( SelRgn.selected ) {
-                    keep_sel = TRUE;
-                }
-            }
-            if( !keep_sel && !EditFlags.ScrollCommand ) {
-                UnselectRegion();
-            }
-            if( EditFlags.ScrollCommand == FALSE ) {
-                ensureCursorDisplayed();
-            }
-            switch( event->b.type ) {
-            case EVENT_INS:
-                if( EditFlags.Modeless ) {
-                    /* don't allow following cursor movements to affect seln
-                     */
-                    keep_sel = SelRgn.selected;
-                    DeleteSelectedRegion();
-                    SelRgn.selected = keep_sel;
-                    InsertLikeLast();
-                    rc = event->rtn.ins();
-                    DoneCurrentInsert( FALSE );
-                    SelRgn.selected = FALSE;
-                } else {
-                    if( !EditFlags.InsertModeActive ) {
-                        InsertLikeLast();
-                    }
-                    rc = event->rtn.ins();
-                }
-                break;
-            case EVENT_OP:
-                DoneCurrentInsert( TRUE );
-                rc = doOperator( event );
-                break;
-            case EVENT_REL_MOVE:
-            case EVENT_ABS_MOVE:
-                DoneCurrentInsert( TRUE );
-                rc = DoMove( event );
-                break;
-            case EVENT_MISC:
-                DoneCurrentInsert( TRUE );
-                rc = event->rtn.old();
-                break;
-            }
-            return( rc );
+        rc = InvalidKey();
+    } else if( !EditFlags.Modeless && EditFlags.InsertModeActive ) {
+//        UnselectRegion();
+        if( EditFlags.EscapedInsertChar ) {
+            rc = IMChar();
+        } else if( InputKeyMaps[LastEvent].data != NULL && !InputKeyMaps[LastEvent].inuse ) {
+            rc = StartInputKeyMap( LastEvent );
         } else {
-//          UnselectRegion();
-            if( EditFlags.EscapedInsertChar ) {
-                return( IMChar() );
-            } else {
-                if( InputKeyMaps[LastEvent].data != NULL ) {
-                    if( !InputKeyMaps[LastEvent].inuse ) {
-                        return( StartInputKeyMap( LastEvent ) );
-                    }
-                }
-                return( (EventList[LastEvent].ins)() );
+            rc = (EventList[LastEvent].ins)();
+        }
+    } else if( !EditFlags.Modeless && KeyMaps[LastEvent].data != NULL && !KeyMaps[LastEvent].inuse ) {
+        rc = DoKeyMap( LastEvent );
+    } else {
+        event = &EventList[LastEvent];
+        keep_sel = event->b.keep_selection;
+        if( event->b.keep_selection_maybe ) {
+            if( SelRgn.selected ) {
+                keep_sel = TRUE;
             }
         }
+        if( !keep_sel && !EditFlags.ScrollCommand ) {
+            UnselectRegion();
+        }
+        if( EditFlags.ScrollCommand == FALSE ) {
+            ensureCursorDisplayed();
+        }
+        rc = ERR_NO_ERR;
+        switch( event->b.type ) {
+        case EVENT_INS:
+            if( EditFlags.Modeless ) {
+                /* don't allow following cursor movements to affect seln
+                 */
+                keep_sel = SelRgn.selected;
+                DeleteSelectedRegion();
+                SelRgn.selected = keep_sel;
+                InsertLikeLast();
+                rc = event->rtn.ins();
+                DoneCurrentInsert( FALSE );
+                SelRgn.selected = FALSE;
+            } else {
+                if( !EditFlags.InsertModeActive ) {
+                    InsertLikeLast();
+                }
+                rc = event->rtn.ins();
+            }
+            break;
+        case EVENT_OP:
+            DoneCurrentInsert( TRUE );
+            rc = doOperator( event );
+            break;
+        case EVENT_REL_MOVE:
+        case EVENT_ABS_MOVE:
+            DoneCurrentInsert( TRUE );
+            rc = DoMove( event );
+            break;
+        case EVENT_MISC:
+            DoneCurrentInsert( TRUE );
+            rc = event->rtn.old();
+            break;
+        }
     }
+    return( rc );
 
 } /* DoLastEvent */
 
@@ -345,13 +338,13 @@ void DoneLastEvent( vi_rc rc, bool is_dotmode )
 void EditMain( void )
 {
     vi_rc       rc;
-    char        *msg;
+    char        *msg = NULL;
     bool        doclear;
 
     /*
      * loop forever, or at least until all done
      */
-    while( TRUE ) {
+    for( ;; ) {
 
 #if 0
 #ifdef __WIN__
@@ -454,7 +447,7 @@ vi_rc NullResponse( void )
 
 } /* NullResponse */
 
-static window_id        repeatWindow = (window_id)-1;
+static window_id        repeatWindow = NO_WINDOW;
 
 /*
  * KillRepeatWindow - just like it says
@@ -536,7 +529,7 @@ vi_rc DoDigit( void )
         return( ERR_REPEAT_STRING_TOO_LONG );
     }
 
-    if( repeatWindow == (window_id)-1 && EditFlags.RepeatInfo ) {
+    if( repeatWindow == NO_WINDOW && EditFlags.RepeatInfo ) {
         rc = NewWindow2( &repeatWindow, &repcntw_info );
         if( rc != ERR_NO_ERR ) {
             DoneRepeat();
@@ -547,7 +540,7 @@ vi_rc DoDigit( void )
 
     RepeatString[RepeatDigits++] = LastEvent;
     RepeatString[RepeatDigits] = 0;
-    if( repeatWindow != (window_id)-1 ) {
+    if( repeatWindow != NO_WINDOW ) {
         UpdateRepeatString( RepeatString );
     }
     return( GOT_A_DIGIT );

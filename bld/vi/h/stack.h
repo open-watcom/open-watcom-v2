@@ -30,40 +30,29 @@
 ****************************************************************************/
 
 
-#ifdef __386__
+#if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __OS2V2__ )
+
+#if !defined( _M_I86 )
     #define _nheapgrow()
     #define _nheapshrink()
 #endif
 
-#ifdef _M_IX86
 extern char _NEAR *GetSP( void );
 extern void SetSP( char _NEAR * );
-#ifdef __386__
-#pragma aux GetSP = \
-        "mov eax, esp" \
-    value [eax];
-#pragma aux SetSP = \
-        "mov esp, eax" \
-    parm [eax] modify [esp];
-#else
+#ifdef _M_I86
 #pragma aux GetSP = \
         "mov ax, sp" \
     value [ax];
 #pragma aux SetSP = \
         "mov sp, ax" \
     parm [ax] modify [sp];
-#endif
-#endif
-
-#if defined( __V__ ) && defined( _M_I86 )
-extern void ResetBPChain( void );
-#pragma aux ResetBPChain = \
-        "mov    bp, 0" \
-        "push   bp" \
-        "mov    bp, sp";
-
 #else
-#define ResetBPChain()
+#pragma aux GetSP = \
+        "mov eax, esp" \
+    value [eax];
+#pragma aux SetSP = \
+        "mov esp, eax" \
+    parm [eax] modify [esp];
 #endif
 
 #define InitialStack() \
@@ -83,20 +72,20 @@ extern void ResetBPChain( void );
     { \
         SetSP( sp ); \
         _nfree( stackptr ); \
-        while( 1 ) { \
-            stackptr2 = _nmalloc( StackK * 1024 ); \
+        for( ;; ) { \
+            stackptr2 = _nmalloc( EditVars.StackK * 1024 ); \
             if( stackptr2 == NULL ) { \
-                StackK--; \
-                if( StackK < MIN_STACK_K ) { \
+                EditVars.StackK--; \
+                if( EditVars.StackK < MIN_STACK_K ) { \
                     QuitEditor( ERR_NO_MEMORY ); \
                 } \
             } else { \
                 break; \
             } \
         } \
-        SetSP( stackptr2 + StackK * 1024 - 16 ); \
+        SetSP( stackptr2 + EditVars.StackK * 1024 - 16 ); \
         _STACKLOW = (unsigned) stackptr2; \
-        _STACKTOP = (unsigned) (stackptr2 + StackK * 1024 - 16); \
+        _STACKTOP = (unsigned) (stackptr2 + EditVars.StackK * 1024 - 16); \
         _nheapshrink(); \
     }
 
@@ -105,3 +94,10 @@ static char near    *sp;
 
 extern unsigned _STACKLOW;
 extern unsigned _STACKTOP;
+
+#else
+
+#define InitialStack()
+#define FinalStack()
+
+#endif

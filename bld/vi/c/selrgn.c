@@ -65,8 +65,8 @@ static void markRegion( bool val )
         return;
     }
     ln= e - s;
-    while( 1 ) {
-        cline->inf.ld.hilite = val;
+    for( ;; ) {
+        cline->u.ld.hilite = val;
         ln--;
         if( ln < 0 ) {
             break;
@@ -224,8 +224,7 @@ void UpdateDrag( window_id id, int win_x, int win_y )
         } else if( MouseCol <= WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ) ) {
             GoToColumnOnCurrentLine( LeftTopPos.column - 1 );
         } else if( MouseCol >= WindowAuxInfo( CurrentWindow, WIND_INFO_X2 ) ) {
-            GoToColumnOnCurrentLine( LeftTopPos.column + WindowAuxInfo( CurrentWindow,
-                WIND_INFO_WIDTH ));
+            GoToColumnOnCurrentLine( LeftTopPos.column + WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ));
         }
 #else
         {
@@ -315,7 +314,7 @@ void SetSelRegionCols( linenum sl, int sc, int ec )
     SelRgn.start_col_v = 0;
     rc = CGimmeLinePtr( sl, &fcb, &line );
     if( rc == ERR_NO_ERR ) {
-        data = ( line->inf.ld.nolinedata ) ? WorkLine->data : line->data;
+        data = ( line->u.ld.nolinedata ) ? WorkLine->data : line->data;
         SelRgn.start_col_v = GetVirtualCursorPosition( data, SelRgn.start.column );
     }
 
@@ -678,7 +677,7 @@ vi_rc SetSelectedRegionFromLine( range *r, linenum lineno )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    data = line->inf.ld.nolinedata ? WorkLine->data : line->data;
+    data = line->u.ld.nolinedata ? WorkLine->data : line->data;
     SelRgn.start_col_v = GetVirtualCursorPosition( data, SelRgn.start.column );
 
     return( ERR_NO_ERR );

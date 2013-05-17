@@ -37,6 +37,7 @@
 #include "dosx.h"
 #include "xmem.h"
 #include "fcbmem.h"
+#include "pragmas.h"
 
 
 ems_struct              EMSCtrl;
@@ -72,7 +73,7 @@ void EMSBlockWrite( long addr, void *buff, unsigned len )
 int EMSGetBlock( long *addr )
 {
     int         i;
-    long        found = NULL;
+    long        found = 0;
 
     i = EMSBlockTest( 1 );
     if( i ) {
@@ -80,9 +81,9 @@ int EMSGetBlock( long *addr )
     }
     EMSBlocksInUse++;
     for( i = 0; i < TotalEMSBlocks; i++ ) {
-        if( emsPtrs[i] != NULL ) {
+        if( emsPtrs[i] != 0 ) {
             found = emsPtrs[i];
-            emsPtrs[i] = NULL;
+            emsPtrs[i] = 0;
             break;
         }
     }
@@ -139,20 +140,20 @@ static long eMSAlloc( U_INT size )
 
     size = ( size + 1 ) & ~1;
     if( size > EMS_MAX_PAGE_SIZE || EMSCtrl.exhausted ) {
-        return( NULL );
+        return( 0 );
     }
     if( EMSCtrl.offset + size > EMS_MAX_PAGE_SIZE ) {
         ++EMSCtrl.logical;
         if( EMSCtrl.logical == EMSCtrl.max_logical ) {
             EMSCtrl.max_logical = EMS_MAX_LOGICAL_PAGES;
-            while( 1 ) {
+            for( ;; ) {
                 if( _EMSAllocateMemory( EMSCtrl.max_logical, &handle ) == 0 )  {
                     break;
                 }
                 --EMSCtrl.max_logical;
                 if( EMSCtrl.max_logical == 0 ) {
                     EMSCtrl.exhausted = TRUE;
-                    return( NULL );
+                    return( 0 );
                 }
             }
             EMSCtrl.logical = 0;
@@ -217,11 +218,11 @@ void EMSInit( void )
         EMSCtrl.physical[i].used = FALSE;
     }
 
-    emsPtrs = MemAlloc( sizeof( long ) * MaxEMSBlocks );
+    emsPtrs = MemAlloc( sizeof( long ) * EditVars.MaxEMSBlocks );
 
-    for( i = 0; i < MaxEMSBlocks; i++ ) {
+    for( i = 0; i < EditVars.MaxEMSBlocks; i++ ) {
         emsPtrs[i] = eMSAlloc( MAX_IO_BUFFER );
-        if( emsPtrs[i] == NULL ) {
+        if( emsPtrs[i] == 0 ) {
             break;
         }
         h.external = emsPtrs[i];
@@ -291,7 +292,7 @@ static void *emsAccess( ems_addr x )
     unsigned char       handle, logical, physical;
     U_INT               offset;
 
-    if( x.external == NULL ) {
+    if( x.external == 0 ) {
         return( NULL );
     }
     logical = x.internal.logical;
@@ -317,7 +318,7 @@ static void emsRelease( ems_addr x )
 {
     unsigned char       handle, logical, physical;
 
-    if( x.external == NULL ) {
+    if( x.external == 0 ) {
         return;
     }
     logical = x.internal.logical;
@@ -375,7 +376,7 @@ void GiveBackEMSBlock( long addr )
     int i;
 
     for( i = 0; i < TotalEMSBlocks; i++ ) {
-        if( emsPtrs[i] == NULL ) {
+        if( emsPtrs[i] == 0 ) {
             emsPtrs[i] = addr;
             break;
         }
@@ -392,8 +393,8 @@ void EMSBlockInit( int i )
     if( EMSCtrl.inuse ) {
         return;
     }
-    MaxEMSBlocks = i;
-    MaxEMSBlocks /= (MAX_IO_BUFFER / 1024);
+    EditVars.MaxEMSBlocks = i;
+    EditVars.MaxEMSBlocks /= (MAX_IO_BUFFER / 1024);
 
 } /* EMSBlockInit */
 

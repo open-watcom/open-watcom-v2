@@ -88,7 +88,7 @@ static void getNextBlock( ss_block *ss_new, char *text, int text_col,
         return;
     }
 
-    switch( CurrentInfo->Language ) {
+    switch( CurrentInfo->fsi.Language ) {
     case LANG_NONE:
         getText( ss_new, text + text_col );
         break;
@@ -266,6 +266,7 @@ void addSelection( ss_block *ss_start, linenum line_no )
             i++;
         }
         ss2 = ss_start + 1;
+        ss_save = *ss2;
         if( ss->end >= sel_end_col ) {
             ss_save.type = ss->type;
             ss_save.len = ss->end - sel_end_col + 1;
@@ -320,7 +321,7 @@ void SSDifBlock( ss_block *ss_old, char *text, int start_col,
     *dif = 0;
     index = 0;
     anychange = FALSE;
-    switch( CurrentInfo->Language ) {
+    switch( CurrentInfo->fsi.Language ) {
     case LANG_C:
     case LANG_CPP:
     case LANG_JAVA:
@@ -405,7 +406,7 @@ bool SSKillsFlags( char ch )
     // Warning!  contains language-specific information
 
     if( CurrentInfo != NULL ) {
-        switch( CurrentInfo->Language ) {
+        switch( CurrentInfo->fsi.Language ) {
         case LANG_C:
         case LANG_CPP:
         case LANG_JAVA:
@@ -450,7 +451,7 @@ bool SSKillsFlags( char ch )
 void SSInitLanguageFlags( linenum line_no )
 {
     if( CurrentInfo != NULL ) {
-        switch( CurrentInfo->Language ) {
+        switch( CurrentInfo->fsi.Language ) {
         case LANG_C:
         case LANG_CPP:
         case LANG_JAVA:
@@ -486,7 +487,7 @@ void SSInitLanguageFlags( linenum line_no )
 void SSInitLanguageFlagsGivenValues( ss_flags *flags )
 {
     if( CurrentInfo != NULL ) {
-        switch( CurrentInfo->Language ) {
+        switch( CurrentInfo->fsi.Language ) {
         case LANG_C:
         case LANG_CPP:
         case LANG_JAVA:
@@ -522,7 +523,7 @@ void SSInitLanguageFlagsGivenValues( ss_flags *flags )
 void SSGetLanguageFlags( ss_flags *flags )
 {
     if( CurrentInfo != NULL ) {
-        switch( CurrentInfo->Language ) {
+        switch( CurrentInfo->fsi.Language ) {
         case LANG_C:
         case LANG_CPP:
         case LANG_JAVA:

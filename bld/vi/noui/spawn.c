@@ -42,9 +42,9 @@ int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char * );
 
 void ResetSpawnScreen( void ) {}
 
-int MySpawn( char *cmd )
+long MySpawn( char *cmd )
 {
-    int rc;
+    long rc;
 
     rc = system( cmd );
     return( rc );

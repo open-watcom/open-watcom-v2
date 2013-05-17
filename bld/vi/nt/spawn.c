@@ -35,8 +35,7 @@
 #include <process.h>
 #include <dos.h>
 #include "fcbmem.h"
-
-extern HANDLE   OutputHandle, InputHandle;
+#include "win.h"
 
 void ResetSpawnScreen( void )
 {
@@ -47,7 +46,7 @@ void ResetSpawnScreen( void )
 #endif
 }
 
-int MySpawn( char *cmd )
+long MySpawn( char *cmd )
 {
     char                path[MAX_PATH + 128];
     cmd_struct          cmds;
@@ -70,15 +69,14 @@ int MySpawn( char *cmd )
     memset( &sinfo, 0, sizeof( sinfo ) );
     sinfo.wShowWindow = SW_NORMAL;
     sinfo.cb = sizeof( sinfo );
-    if( !CreateProcess( NULL, path, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL,
-                        &sinfo, &pinfo ) ) {
-        rc = -1;
+    if( !CreateProcess( NULL, path, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &sinfo, &pinfo ) ) {
+        return( -1L );
     } else {
-        if( WaitForSingleObject( pinfo.hProcess, -1 ) == 0 ) {
+        if( WaitForSingleObject( pinfo.hProcess, INFINITE ) == 0 ) {
             GetExitCodeProcess( pinfo.hProcess, &rc );
+            return( (long)rc );
         } else {
-            rc = -1;
+            return( -1L );
         }
     }
-    return( rc );
 }

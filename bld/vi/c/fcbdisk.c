@@ -200,9 +200,9 @@ void SwapBlockInit( int i )
     int k;
 
     if( SwapBlocks == NULL ) {
-        MaxSwapBlocks = i;
-        MaxSwapBlocks /= (MAX_IO_BUFFER / 1024);
-        SwapBlockArraySize = MaxSwapBlocks >> 3;
+        EditVars.MaxSwapBlocks = i;
+        EditVars.MaxSwapBlocks /= (MAX_IO_BUFFER / 1024);
+        SwapBlockArraySize = EditVars.MaxSwapBlocks >> 3;
         SwapBlocks = MemAlloc( SwapBlockArraySize + 1 );
         for( k = 0; k < SwapBlockArraySize; k++ ) {
             SwapBlocks[k] = 0xff;

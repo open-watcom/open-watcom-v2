@@ -37,11 +37,10 @@
 #include "color.h"
 #include "utils.h"
 // #include "mdisim.h"
-#include "watcom.h"
 
 char *EditWindowClassName = "Buffer Window";
 
-extern LONG WINEXP EditWindowProc( HWND, unsigned, UINT, LONG );
+WINEXPORT LRESULT CALLBACK EditWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 extern HWND hColorbar, hFontbar, hSSbar;
 
@@ -71,7 +70,7 @@ static BOOL Init( window *w, void *parm )
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
     wc.lpfnWndProc = (WNDPROC)EditWindowProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( LPVOID ) * WIN_LAST;
+    wc.cbWndExtra = EXTRA_WIN_DATA;
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( InstanceHandle, "WATCOMICON" );
     wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_IBEAM );
@@ -149,7 +148,7 @@ window_id NewEditWindow( void )
     mdinew.style = style;
     mdinew.lParam = 0;
 
-    edit =(HWND)SendMessage( EditContainer, WM_MDICREATE, 0, (LONG)(&mdinew) );
+    edit =(HWND)SendMessage( EditContainer, WM_MDICREATE, 0, (LPARAM)&mdinew );
 
     wd = DATA_FROM_ID( edit );
 
@@ -309,7 +308,7 @@ static void regionSelected( HWND id, int x, int y, BOOL dclick, bool popMenu )
     MouseX = x;
     MouseY = y;
     if( dclick ) {
-        InitWordSearch( WordAltDefn );
+        InitWordSearch( EditVars.WordAltDefn );
     }
     /*
      * The hook stuff needs to know if it was invoked by a mouse press
@@ -324,7 +323,7 @@ static void regionSelected( HWND id, int x, int y, BOOL dclick, bool popMenu )
         DoSelectSelection( popMenu );
     }
     if( dclick ) {
-        InitWordSearch( WordDefn );
+        InitWordSearch( EditVars.WordDefn );
     }
     MouseY = 0;
     MouseX = 0;
@@ -479,17 +478,17 @@ typedef void (*func)( HWND, int, int, BOOL );
 /*
  * mouseEvent - handle all mouse events in an edit window
  */
-static void mouseEvent( HWND hwnd, LONG l, BOOL flag, func f )
+static void mouseEvent( HWND hwnd, LPARAM l, BOOL flag, func f )
 {
     if( EditFlags.HoldEverything ) {
         return;
     }
     if( EditFlags.InsertModeActive ) {
         PushMode();
-        f( hwnd, (signed_16) LOWORD( l ), (signed_16) HIWORD( l ), flag );
+        f( hwnd, (short)LOWORD( l ), (short)HIWORD( l ), flag );
         PopMode();
     } else {
-        f( hwnd, (signed_16) LOWORD( l ), (signed_16) HIWORD( l ), flag );
+        f( hwnd, (short)LOWORD( l ), (short)HIWORD( l ), flag );
     }
     DCUpdate();
     SetWindowCursorForReal();
@@ -601,7 +600,7 @@ void EditDrawScrollBars( HWND hwnd )
 /*
  * doVScroll - handle various scroll events (vertical)
  */
-static void doVScroll( HWND hwnd, UINT wparam, LONG lparam )
+static void doVScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
     window_data *wd;
     int         scrollAmount;
@@ -669,7 +668,7 @@ static void doVScroll( HWND hwnd, UINT wparam, LONG lparam )
 /*
  * doHScroll - handle various scroll events (horizontal)
  */
-static void doHScroll( HWND hwnd, UINT wparam, LONG lparam )
+static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
     int newLeftColumn;
 
@@ -715,7 +714,7 @@ static void doHScroll( HWND hwnd, UINT wparam, LONG lparam )
 /*
  * EditWindowProc - window procedure for all edit windows
  */
-LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
+WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     window      *w;
     PAINTSTRUCT ps;
@@ -732,8 +731,8 @@ LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
     switch( msg ) {
     case WM_CREATE:
         data = MemAlloc( sizeof( window_data ) );
-        SetWindowLong( hwnd, WIN_WINDOW * MAGIC_SIZE, (LONG)(LPVOID)(&EditWindow) );
-        SetWindowLong( hwnd, WIN_DATA * MAGIC_SIZE, (LONG)(LPVOID)data );
+        WINDOW_TO_ID( hwnd, (LONG_PTR)&EditWindow );
+        DATA_TO_ID( hwnd, (LONG_PTR)data );
         return( 0 );
     case WM_PAINT:
         if( GetUpdateRect( hwnd, &rect, FALSE ) ) {
@@ -811,8 +810,7 @@ LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         }
         return( 0 );
     case WM_MOUSEMOVE:
-        mouseMove( hwnd, (int)(signed_16) LOWORD( lparam ),
-                   (int)(signed_16) HIWORD( lparam ), FALSE );
+        mouseMove( hwnd, (int)(short)LOWORD( lparam ), (int)(short)HIWORD( lparam ), FALSE );
         return( 0 );
     case WM_ERASEBKGND:
         return( TRUE );
@@ -863,7 +861,7 @@ LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         if( wparam == SIZE_MINIMIZED ) {
             sinfo = CurrentInfo;
             cinfo = CurrentInfo->next;
-            while( 1 ) {
+            for( ;; ) {
                 if( cinfo == NULL ) {
                     cinfo = InfoHead;
                 }
@@ -895,7 +893,7 @@ LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
 /*
  * ResizeExtra - reset the left over rectange for an edit window
  */
-BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l )
+WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l )
 {
     window_data         *data;
     char                class[MAX_STR];
@@ -940,4 +938,3 @@ static BOOL Fini( window *w, void *parm )
     return( TRUE );
 
 } /* Fini */
-

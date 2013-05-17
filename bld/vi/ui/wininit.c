@@ -38,12 +38,13 @@
  */
 static void allocImage( void )
 {
-    int i, j;
+    int     i;
+    int     size;
 
-    i = WindMaxWidth * WindMaxHeight;
-    ScreenImage = MemAlloc( i );
-    for( j = 0; j < i; j++ ) {
-        ScreenImage[j] = NO_CHAR;
+    size = EditVars.WindMaxWidth * EditVars.WindMaxHeight;
+    ScreenImage = MemAlloc( size * sizeof( window_id ) );
+    for( i = 0; i < size; i++ ) {
+        ScreenImage[i] = NO_WINDOW;
     }
 
 } /* allocImage */
@@ -78,26 +79,21 @@ void FinishWindows( void )
 
     if( EditFlags.ZapColors ) {
         int             i, total;
-        char_info       _FAR *scr, what;
 
-        what.attr = ExitAttr;
         if( !EditFlags.Quiet && Scrn != NULL ) {
-            total = WindMaxWidth * WindMaxHeight;
-            scr = (char_info _FAR *) Scrn;
+            total = EditVars.WindMaxWidth * EditVars.WindMaxHeight;
             for( i = 0; i < total; i++ ) {
-                what.ch = (*scr).ch;
-                WRITE_SCREEN( *scr, what );
-                scr++;
+                Scrn[i].cinfo_attr = EditVars.ExitAttr;
             }
 #ifdef __VIO__
-            MyVioShowBuf( 0, WindMaxWidth * WindMaxHeight );
+            MyVioShowBuf( 0, EditVars.WindMaxWidth * EditVars.WindMaxHeight );
 #endif
         }
     }
     FiniColors();
     ct.height = 7;
     ct.width = 100;
-    NewCursor( (window_id) 0, ct );
+    NewCursor( NO_WINDOW, ct );
     MemFree( ScreenImage );
 
 } /* FinishWindows */

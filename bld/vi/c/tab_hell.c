@@ -46,12 +46,12 @@ static bool getNextPos( int ch, int *opos )
         if( ch == '\t' ) {
 #ifndef __WIN__
             if( EditFlags.RealTabs ) {
-                pos += Tab( pos + 1, HardTab );
+                pos += Tab( pos + 1, EditVars.HardTab );
             } else {
                 pos++;
             }
 #else
-            pos += Tab( pos + 1, HardTab );
+            pos += Tab( pos + 1, EditVars.HardTab );
 #endif
         } else if ( ch == 0 ) {
             return( FALSE );
@@ -78,11 +78,11 @@ int InsertTabSpace( int j, char *buff, bool *tabme )
 
     if( *tabme ) {
         *tabme = FALSE;
-        n = HardTab - Tab( j + 1, HardTab );
+        n = EditVars.HardTab - Tab( j + 1, EditVars.HardTab );
         extra = j - n;
         if( extra > 0 ) {
-            m = extra / HardTab;
-            if( extra % HardTab > 0 ) {
+            m = extra / EditVars.HardTab;
+            if( extra % EditVars.HardTab > 0 ) {
                 m++;
             }
             TabCnt += m;
@@ -154,7 +154,7 @@ bool ExpandTabsInABuffer( char *in, int inlen, char *out, int outlen )
         if( c < ' ' || c > 127 ) {
             if( c == '\t' ) {
                 TabCnt++;
-                tb = Tab( k + 1, HardTab );
+                tb = Tab( k + 1, EditVars.HardTab );
                 for( l = k; l < k + tb; l++ ) {
                     if( l < outlen ) {
                         out[l] = ' ';
@@ -293,7 +293,7 @@ int VirtualColumnOnCurrentLine( int ccol )
     } else {
         col = ccol;
     }
-    if( CurrentLine->inf.ld.nolinedata ) {
+    if( CurrentLine->u.ld.nolinedata ) {
         return( GetVirtualCursorPosition( WorkLine->data, col ) );
     } else {
         return( GetVirtualCursorPosition( CurrentLine->data, col ) );
@@ -335,7 +335,7 @@ int RealColumnOnCurrentLine( int vc )
     int         cl;
     char        *buff;
 
-    if( CurrentLine->inf.ld.nolinedata ) {
+    if( CurrentLine->u.ld.nolinedata ) {
         cl = WorkLine->len;
         buff = WorkLine->data;
     } else {
@@ -355,7 +355,7 @@ bool CursorPositionOffRight( int vc )
     char        *buff;
 
 
-    if( CurrentLine->inf.ld.nolinedata ) {
+    if( CurrentLine->u.ld.nolinedata ) {
         cl = WorkLine->len;
         buff = WorkLine->data;
     } else {
@@ -441,7 +441,7 @@ bool AddLeadingTabSpace( short *len, char *buff, int amount )
         start++;
     }
     tmp = StaticAlloc();
-    ExpandTabsInABuffer( buff, j,  tmp, MaxLine );
+    ExpandTabsInABuffer( buff, j,  tmp, EditVars.MaxLine );
     while( tmp[i] == ' ' ) {
         i++;
     }
@@ -455,7 +455,7 @@ bool AddLeadingTabSpace( short *len, char *buff, int amount )
             k = 0;
         }
     } else {
-        if( i + amount >= MaxLine ) {
+        if( i + amount >= EditVars.MaxLine ) {
             full = TRUE;
             k = i;
         } else {
@@ -530,15 +530,15 @@ bool ConvertSpacesToTabsUpToColumn( int endcol, char *in, int inlen, char *out,
                 blanks_inprog = FALSE;
                 l = j - first_blank;
                 if( l > 1 ) {
-                    n = HardTab - Tab( j + 1, HardTab );
+                    n = EditVars.HardTab - Tab( j + 1, EditVars.HardTab );
                     extra = l - n;
 
                     /*
                      * add tabs, then spaces
                      */
                     if( extra > 0 ) {
-                        m = extra / HardTab;
-                        if( extra % HardTab > 0 ) {
+                        m = extra / EditVars.HardTab;
+                        if( extra % EditVars.HardTab > 0 ) {
                             m++;
                         }
                         TabCnt += m;

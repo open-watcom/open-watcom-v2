@@ -36,23 +36,27 @@
     #include <malloc.h>
 #endif
 #ifdef TRMEM
-    #include <fcntl.h>
-    #include <unistd.h>
+    #include "wio.h"
     #include "trmem.h"
+#endif
 
-    static int                  trmemOutput;
-    static _trmem_hdl           trmemHandle;
+#ifdef TRMEM
     #define MSIZE( x )          _trmem_msize( x, trmemHandle )
 #else
-    typedef void *_trmem_who;
-    #define _trmem_guess_who()  0
     #define MSIZE( x )          _msize( x )
 #endif
+
+#ifdef TRMEM
+    static int                  trmemOutput;
+    static _trmem_hdl           trmemHandle;
+#endif
+
+static char     *StaticBuffer = NULL;
 
 /*
  * getMem - get and clear memory
  */
-static void *getMem( unsigned size, _trmem_who who )
+static void *getMem( unsigned size, void *who )
 {
     void        *tmp;
 
@@ -75,16 +79,15 @@ static void *getMem( unsigned size, _trmem_who who )
 /*
  * getLRU - get lru block from fcb list
  */
-static fcb *getLRU( unsigned upper_bound )
+static fcb *getLRU( int upper_bound )
 {
     long lru = MAX_LONG;
     fcb *cfcb, *tfcb = NULL;
     int bootlimit = MAX_IO_BUFFER / 2;
 
-    while( 1 ) {
+    for( ;; ) {
 
-        cfcb = FcbThreadHead;
-        while( cfcb != NULL ) {
+        for( cfcb = FcbThreadHead; cfcb != NULL; cfcb = cfcb->thread_next ) {
             if( !cfcb->on_display && !cfcb->non_swappable && cfcb->in_memory
                 && cfcb->byte_cnt >= bootlimit && cfcb != CurrentFcb ) {
                 if( cfcb->last_swap == 0 ) {
@@ -95,7 +98,6 @@ static fcb *getLRU( unsigned upper_bound )
                     tfcb = cfcb;
                 }
             }
-            cfcb = cfcb->thread_next;
         }
         if( tfcb == NULL && bootlimit > 64 ) {
             bootlimit /= 2;
@@ -112,12 +114,12 @@ static fcb *getLRU( unsigned upper_bound )
 /*
  * trySwap - try to swap an fcb
  */
-static void *trySwap( unsigned size, unsigned upper_bound, _trmem_who who )
+static void *trySwap( unsigned size, int upper_bound, void *who )
 {
     void        *tmp = NULL;
     fcb         *tfcb;
 
-    while( 1 ) {
+    for( ;; ) {
 
         /*
          * find LRU fcb
@@ -147,9 +149,9 @@ static void *trySwap( unsigned size, unsigned upper_bound, _trmem_who who )
  */
 static void tossBoundData( void )
 {
-    if( EditFlags.BoundData ) {
+    if( BoundData ) {
         if( !EditFlags.BndMemoryLocked ) {
-            MemFree2( &BndMemory );
+            MemFreePtr( (void **)&BndMemory );
         }
     }
 
@@ -160,7 +162,7 @@ static void tossBoundData( void )
 /*
  * doMemAllocUnsafe - see above
  */
-void *doMemAllocUnsafe( unsigned size, _trmem_who who )
+static void *doMemAllocUnsafe( unsigned size, void *who )
 {
     void        *tmp;
 
@@ -189,7 +191,15 @@ void *MemAlloc( unsigned size )
 {
     void        *tmp;
 
+#ifdef TRMEM
+#ifndef __WATCOMC__
+    tmp = doMemAllocUnsafe( size, 1 );
+#else
     tmp = doMemAllocUnsafe( size, _trmem_guess_who() );
+#endif
+#else
+    tmp = doMemAllocUnsafe( size, 0 );
+#endif
     if( tmp == NULL ) {
         AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
     }
@@ -202,7 +212,15 @@ void *MemAlloc( unsigned size )
  */
 void *MemAllocUnsafe( unsigned size )
 {
+#ifdef TRMEM
+#ifndef __WATCOMC__
+    return( doMemAllocUnsafe( size, 2 ) );
+#else
     return( doMemAllocUnsafe( size, _trmem_guess_who() ) );
+#endif
+#else
+    return( doMemAllocUnsafe( size, 0 ) );
+#endif
 
 } /* MemAllocUnsafe */
 
@@ -212,7 +230,11 @@ void *MemAllocUnsafe( unsigned size )
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
+#ifndef __WATCOMC__
+    _trmem_free( ptr, 3, trmemHandle );
+#else
     _trmem_free( ptr, _trmem_guess_who(), trmemHandle );
+#endif
 #else
     free( ptr );
 #endif
@@ -220,14 +242,51 @@ void MemFree( void *ptr )
 } /* MemFree */
 
 /*
+ * MemFreePtr - free up memory
+ */
+void MemFreePtr( void **ptr )
+{
+#ifdef TRMEM
+#ifndef __WATCOMC__
+    _trmem_free( *ptr, 4, trmemHandle );
+#else
+    _trmem_free( *ptr, _trmem_guess_who(), trmemHandle );
+#endif
+#else
+    free( *ptr );
+#endif
+    *ptr = NULL;
+
+} /* MemFreePtr */
+
+
+/*
+ * MemFreeList - free up memory
+ */
+void MemFreeList( int count, char **ptr )
+{
+    if( ptr != NULL ) {
+        int i;
+        for( i = 0; i < count; i++ ) {
+            MemFree( ptr[i] );
+        }
+        MemFree( ptr );
+    }
+
+} /* MemFreeList */
+
+
+/*
  * doMemReallocUnsafe - reallocate a block, return NULL if it fails
  */
-void *doMemReAllocUnsafe( void *ptr, unsigned size, _trmem_who who )
+static void *doMemReAllocUnsafe( void *ptr, unsigned size, void *who )
 {
     void        *tmp;
 
     unsigned    orig_size;
+#ifdef __WATCOMC__
     unsigned    tsize;
+#endif
 
     if( ptr != NULL ) {
 #ifdef __WATCOMC__
@@ -242,6 +301,7 @@ void *doMemReAllocUnsafe( void *ptr, unsigned size, _trmem_who who )
 #ifdef TRMEM
     tmp = _trmem_realloc( ptr, size, who, trmemHandle );
 #else
+    who = who;
     tmp = realloc( ptr, size );
 #endif
 #ifdef __WATCOMC__
@@ -275,7 +335,15 @@ void *doMemReAllocUnsafe( void *ptr, unsigned size, _trmem_who who )
 
 void *MemReAllocUnsafe( void *ptr, unsigned size )
 {
+#ifdef TRMEM
+#ifndef __WATCOMC__
+    return( doMemReAllocUnsafe( ptr, size, 5 ) );
+#else
     return( doMemReAllocUnsafe( ptr, size, _trmem_guess_who() ) );
+#endif
+#else
+    return( doMemReAllocUnsafe( ptr, size, 0 ) );
+#endif
 }
 
 /*
@@ -285,7 +353,15 @@ void *MemReAlloc( void *ptr, unsigned size )
 {
     void        *tmp;
 
+#ifdef TRMEM
+#ifndef __WATCOMC__
+    tmp = doMemReAllocUnsafe( ptr, size, 6 );
+#else
     tmp = doMemReAllocUnsafe( ptr, size, _trmem_guess_who() );
+#endif
+#else
+    tmp = doMemReAllocUnsafe( ptr, size, 0 );
+#endif
     if( tmp == NULL ) {
         AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
     }
@@ -349,7 +425,7 @@ void StaticStart( void )
     int i, bs;
 
     MemFree( StaticBuffer );
-    bs = MaxLine + 2;
+    bs = EditVars.MaxLine + 2;
     StaticBuffer = MemAlloc( MAX_STATIC_BUFFERS * bs );
     for( i = 0; i < MAX_STATIC_BUFFERS; i++ ) {
         staticUse[i] = FALSE;
@@ -404,13 +480,8 @@ void FiniMem( void )
 void InitMem( void )
 {
 #ifdef TRMEM
-    char        file[FILENAME_MAX];
-
-    strcpy( file, getenv( "EDPATH" ) );
-    strcat( file, "\\trmem.out" );
-    trmemOutput = open( file, O_RDWR | O_CREAT | O_TEXT );
-
-    trmemHandle = _trmem_open( malloc, free, realloc, _expand,
+    trmemOutput = open( "trmem.out", O_RDWR | O_CREAT | O_TEXT, PMODE_RW );
+    trmemHandle = _trmem_open( malloc, free, realloc, NULL,
         &trmemOutput, trmemPrint,
         _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
         _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );

@@ -125,11 +125,11 @@ void UpdateStatusWindow( void )
         EditFlags.DisplayHold ||
         EditFlags.Quiet ||
         !EditFlags.StatusInfo ||
-        StatusString == NULL ) {
+        EditVars.StatusString == NULL ) {
         return;
     }
 
-    str = StatusString;
+    str = EditVars.StatusString;
     res = result;
     line = 1;
     format = FMT_LEFT;
@@ -147,6 +147,7 @@ void UpdateStatusWindow( void )
                 digits = 0;
             }
             use_num = FALSE;
+            num = 0;
             switch( *str++ ) {
             case '$':
                 *res++ = '$';

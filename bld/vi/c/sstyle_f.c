@@ -107,7 +107,7 @@ static bool isInitialLine( line *line )
     if( line->len < 6 ) {
         return( TRUE );
     }
-    data = (line->inf.ld.nolinedata) ? WorkLine->data : line->data;
+    data = (line->u.ld.nolinedata) ? WorkLine->data : line->data;
     if( isspace( data[5] ) || data[5] == '0' ) {
         return( TRUE );
     } else {
@@ -298,11 +298,11 @@ squashed:
         // if next line a continuation line, then flag flags.inString, else
         // flag unterminated string
         rc = CGimmeLinePtr( thisLine + 1, &fcb, &line );
-        while( 1 ) {
+        for( ;; ) {
             if( rc != ERR_NO_ERR ) {
                 break;
             }
-            data = (line->inf.ld.nolinedata) ? WorkLine->data : line->data;
+            data = (line->u.ld.nolinedata) ? WorkLine->data : line->data;
             if( !iscomment( data[0] ) ) {
                 break;
             }
@@ -422,7 +422,7 @@ void GetFORTRANFlags( ss_flags_f *storeFlags )
 void InitFORTRANFlags( linenum line_no )
 {
     char    *text;
-    char    *start;
+//    char    *start;
     line    *line;
     fcb     *fcb;
     vi_rc   rc;
@@ -440,13 +440,13 @@ void InitFORTRANFlags( linenum line_no )
         return;
     }
 
-    while( 1 ) {
+    for( ;; ) {
         rc = GimmePrevLinePtr( &fcb, &line );
         if( rc != ERR_NO_ERR ) {
             break;
         }
-        text = line->inf.ld.nolinedata ? WorkLine->data : line->data;
-        start = text;
+        text = line->u.ld.nolinedata ? WorkLine->data : line->data;
+//        start = text;
         if( iscomment( *text ) ) {
             continue;
         }

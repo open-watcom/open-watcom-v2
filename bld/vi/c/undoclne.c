@@ -49,7 +49,7 @@ void CurrentLineReplaceUndoStart( void )
     cCol = CurrentPos.column;
     pageTop = LeftTopPos.line;
     lineSave = LineAlloc( CurrentLine->data, CurrentLine->len );
-    lineSave->inf.ld.mark = CurrentLine->inf.ld.mark;
+    lineSave->u.ld.mark = CurrentLine->u.ld.mark;
 
 } /* CurrentLineReplaceUndoStart */
 

@@ -124,7 +124,7 @@ int PickATag( int clist, char **list, char *tagname )
 
     memcpy( &tw, &dirw_info, sizeof( window_info ) );
     tw.x1 = 12;
-    tw.x2 = WindMaxWidth - 12;
+    tw.x2 = EditVars.WindMaxWidth - 12;
     i = tw.y2 - tw.y1 + 1;
     if( tw.has_border ) {
         i -= 2;
@@ -174,7 +174,7 @@ static vi_rc selectTag( FILE *f, char *str, char *buff, char *fname )
     tagcnt = 0;
     taglist = NULL;
 
-    while( 1 ) {
+    for( ;; ) {
         RemoveLeadingSpaces( buff );
         taglist = MemReAlloc( taglist, sizeof( char * ) * (tagcnt + 1) );
         AddString( &taglist[tagcnt], buff );
@@ -284,7 +284,7 @@ vi_rc LocateTag( char *str, char *fname, char *buff )
     /*
      * get file and buffer
      */
-    f = GetFromEnvAndOpen( TagFileName );
+    f = GetFromEnvAndOpen( EditVars.TagFileName );
     if( !f ) {
         if( EditFlags.SearchForTagfile ) {
             f = SearchForTags();
@@ -298,8 +298,7 @@ vi_rc LocateTag( char *str, char *fname, char *buff )
     /*
      * loop until tag found
      */
-    while( TRUE ) {
-
+    for( ;; ) {
         if( fgets( buff, MAX_STR, f ) == NULL )  {
             fclose( f );
             return( ERR_TAG_NOT_FOUND );

@@ -31,6 +31,7 @@
 
 #include "vi.h"
 #include <stdarg.h>
+#include <stdlib.h>
 #include "posix.h"
 #include "source.h"
 #include "specio.h"
@@ -68,6 +69,21 @@ void MemFree( void *ptr )
     free( ptr );
 
 } /* MemFree */
+
+/*
+ * MemFreeList - free up memory
+ */
+void MemFreeList( int count, char **ptr )
+{
+    if( ptr != NULL ) {
+        int i;
+        for( i = 0; i < count; i++ ) {
+            free( ptr[i] );
+        }
+        free( ptr );
+    }
+
+} /* MemFreeList */
 
 /*
  * MemReAlloc - reallocate a block, and it will succeed.
@@ -166,7 +182,7 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf )
 /*
  * writeScript - write a compiled script
  */
-static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, int *ln, char *vn )
+static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn )
 {
     sfile       *curr;
     FILE        *foo;
@@ -175,6 +191,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, int *ln, char *v
     char        tmp[MAX_SRC_LINE];
     int         token;
 
+    vl = vl;
     /*
      * get compiled file name, and make error file
      */
@@ -271,7 +288,7 @@ static vi_rc Compile( const char *fn, char *data )
     sfile       *sf;
     char        sname[FILENAME_MAX];
     vi_rc       rc;
-    int         ln = 0;
+    unsigned    ln = 0;
 
     WorkLine = MemAlloc( sizeof( line ) + MaxLine + 2 );
     WorkLine->len = -1;
@@ -303,6 +320,7 @@ int main( int argc, char **argv )
 {
     vi_rc   rc;
 
+    argc = argc;
     rc = Compile( argv[1], argv[2] );
     return( (rc == ERR_NO_ERR) ? 0 : -1 );
 }

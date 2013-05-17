@@ -86,7 +86,7 @@ void ResetSpawnScreen( void )
 {
 }
 
-int MySpawn( char *cmd )
+long MySpawn( char *cmd )
 {
     USHORT              rc;
     RESULTCODES         returncodes;
@@ -107,7 +107,7 @@ int MySpawn( char *cmd )
 
     rc = DosExecPgm( NULL, 0, EXEC_SYNC, all, NULL, &returncodes, path );
     if( rc != 0 ) {
-        return( -1 );
+        return( -1L );
     }
     return( returncodes.codeResult );
 }

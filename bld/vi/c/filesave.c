@@ -44,7 +44,7 @@ static int fileHandle;
 /*
  * writeRange - write a range of lines in an fcb to current file
  */
-static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt )
+static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt, int write_crlf, bool last_eol )
 {
     line        *cline;
     int         i, len = 0;
@@ -73,12 +73,14 @@ static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt )
             data++;
         }
         len += cline->len;
-        if( EditFlags.WriteCRLF ) {
-            *buff++ = 13;
+        if( s != e || last_eol ) {
+            if( write_crlf ) {
+                *buff++ = CR;
+                len++;
+            }
+            *buff++ = LF;
             len++;
         }
-        *buff++ = 10;
-        len++;
         cline = cline->next;
         s++;
 
@@ -167,6 +169,7 @@ vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
     long        bc = 0;
     status_type lastst;
     vi_rc       rc;
+    int         write_crlf;
 
     if( CurrentFile == NULL ) {
         return( ERR_NO_FILE );
@@ -235,10 +238,9 @@ vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
     }
     if( !CurrentFile->is_stdio ) {
         if( makerw ) {
-            chmod( fn, S_IWRITE | S_IREAD );
+            chmod( fn, PMODE_RW );
         }
-        rc = FileOpen( fn, existflag, O_TRUNC | O_WRONLY | O_BINARY | O_CREAT,
-                      WRITEATTRS, &fileHandle);
+        rc = FileOpen( fn, existflag, O_TRUNC | O_WRONLY | O_BINARY | O_CREAT, WRITEATTRS, &fileHandle);
         if( rc != ERR_NO_ERR ) {
             Message1( strerror( errno ) );
             return( rc );
@@ -256,27 +258,14 @@ vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
 #ifdef __WIN__
     ToggleHourglass( TRUE );
 #endif
-    if( CurrentFile->check_for_crlf ) {
-        if( fileHandle ) {
-            EditFlags.WriteCRLF = FALSE;
-#ifndef __LINUX__
-            if( FileSysNeedsCR( fileHandle ) ) {
-                EditFlags.WriteCRLF = TRUE;
-            }
-#endif 
-        } else {
-#ifdef __UNIX__
-            EditFlags.WriteCRLF = FALSE;
-#else
-            EditFlags.WriteCRLF = TRUE;
-#endif
-        }
+    if( EditFlags.CRLFAutoDetect ) {
+        write_crlf = CurrentFile->write_crlf;
+    } else {
+        write_crlf = EditFlags.WriteCRLF;
     }
     lastst = UpdateCurrentStatus( CSTATUS_WRITING );
-    cfcb = sfcb;
-    while( cfcb != efcb ) {
-
-        rc = writeRange( s, cfcb->end_line, cfcb, &bc );
+    for( cfcb = sfcb; cfcb != efcb; cfcb = cfcb->next ) {
+        rc = writeRange( s, cfcb->end_line, cfcb, &bc, write_crlf, TRUE );
         if( rc != ERR_NO_ERR ) {
 #ifdef __WIN__
             ToggleHourglass( FALSE );
@@ -285,14 +274,12 @@ vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
             return( rc );
         }
         s = cfcb->end_line + 1;
-        cfcb = cfcb->next;
-
     }
 
     /*
      * last bit
      */
-    rc = writeRange( s, e, efcb, &bc );
+    rc = writeRange( s, e, efcb, &bc, write_crlf, EditFlags.LastEOL );
 #ifdef __WIN__
     ToggleHourglass( FALSE );
 #endif
@@ -303,7 +290,7 @@ vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
     if( !CurrentFile->is_stdio ) {
         i = close( fileHandle );
         if( makerw ) {
-            chmod( fn, S_IREAD );
+            chmod( fn, PMODE_R );
         }
         if( i == -1 ) {
             Message1( strerror( errno ) );
@@ -531,4 +518,3 @@ vi_rc DoKeyboardSave( void )
 #endif
 
 } /* DoKeyboardSave */
-

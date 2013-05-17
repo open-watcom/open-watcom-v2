@@ -41,12 +41,12 @@ static vi_rc getBracketLoc( i_mark *pos )
     vi_rc       rc;
     char        tmp[3];
     int         len;
-    linenum     lne;
+//    linenum     lne;
 
     tmp[0] = '\\';
     tmp[1] = ')';
     tmp[2] = 0;
-    lne = CurrentPos.line;
+//    lne = CurrentPos.line;
     RegExpAttrSave( -1, NULL );
     rc = GetFind( tmp, pos, &len, FINDFL_BACKWARDS | FINDFL_NOERROR | FINDFL_NOCHANGE );
     RegExpAttrRestore();
@@ -99,7 +99,7 @@ int GetAutoIndentAmount( char *buff, int extra, bool above_line )
                     if( ch == '}' && !above_line ) {
                         break;
                     }
-                    extra += ShiftWidth;
+                    extra += EditVars.ShiftWidth;
                     SaveCurrentFilePos();
                     CurrentPos.column = k + 1;
                     /* add a { to keep matches even! */

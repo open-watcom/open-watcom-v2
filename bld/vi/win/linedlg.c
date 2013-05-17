@@ -40,7 +40,7 @@ static linenum  *lineVal;
 /*
  * GotoLineDlgProc - callback routine for goto line dialog
  */
-BOOL WINEXP GotoLineDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -83,9 +83,9 @@ bool GetLineDialog( linenum *line )
 
     lineStr[0] = '\0';
     lineVal = line;
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) GotoLineDlgProc, InstanceHandle );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)GotoLineDlgProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "LINEDLG", Root, proc );
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
     SetWindowCursor();
     return( rc );
 

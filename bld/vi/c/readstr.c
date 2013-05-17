@@ -138,7 +138,7 @@ static void displayLine( input_buffer *input )
 {
     char            display[MAX_STR];
     char            *buffer, *dest;
-    unsigned        length;
+    int             length;
     int             cursor_pos;
 
     if( EditFlags.NoInputWindow ) {
@@ -149,7 +149,7 @@ static void displayLine( input_buffer *input )
     length = strlen( display );
     dest = &display[length];
     buffer = input->buffer + input->left_column;
-    while( *buffer && length < input->window.width ) {
+    while( *buffer != '\0' && length < input->window.width ) {
         *dest++ = *buffer++;
         length += 1;
     }
@@ -440,17 +440,19 @@ bool GetTextForSpecialKey( int str_max, vi_key event, char *tmp )
         tmp[str_max] = 0;
         break;
     case VI_KEY( ALT_L ):
+        if( CurrentLine == NULL ) {
+            break;
+        }
         i = CurrentPos.column - 1;
-        i = (i > 0) ? i : 0;
+        if( i < 0 )
+            i = 0;
+        ExpandTabsInABuffer( &CurrentLine->data[i], CurrentLine->len - i, tmp, str_max );
+        break;
     case VI_KEY( CTRL_L ):
         if( CurrentLine == NULL ) {
             break;
         }
-        if( event == VI_KEY( CTRL_L ) ) {
-            i = 0;
-        }
-        ExpandTabsInABuffer( &CurrentLine->data[i], CurrentLine->len - i,
-                             tmp, str_max );
+        ExpandTabsInABuffer( &CurrentLine->data[0], CurrentLine->len, tmp, str_max );
         break;
     case VI_KEY( CTRL_R ):
         if( CurrentLine == NULL ) {
@@ -622,7 +624,7 @@ static bool fileComplete( input_buffer *input, vi_key first_event )
  *          removes the mouse handler.
  */
 
-static window_id    thisWindow = (window_id)-1;
+static window_id    thisWindow = NO_WINDOW;
 
 static bool mouseHandler( window_id id, int x, int y )
 {
@@ -658,7 +660,7 @@ static void initInput( input_buffer *input )
     s->font = WindowAuxInfo( id, WIND_INFO_TEXT_FONT );
     input->window.width = WindowAuxInfo( id, WIND_INFO_TEXT_COLS );
     PushMouseEventHandler( mouseHandler );
-    NewCursor( input->window.id, NormalCursorType );
+    NewCursor( input->window.id, EditVars.NormalCursorType );
     displayLine( input );
 
 } /* initInput */
@@ -669,7 +671,7 @@ static void finiInput( input_buffer *input )
     thisWindow = NO_WINDOW;
     PopMouseEventHandler();
     if( !EditFlags.NoInputWindow ) {
-        NewCursor( input->window.id, NormalCursorType );
+        NewCursor( input->window.id, EditVars.NormalCursorType );
     }
 
 } /* finiInput */
@@ -689,7 +691,7 @@ static bool getStringInWindow( input_buffer *input )
     if( input->history != NULL ) {
         input->curr_hist = input->history->curr;
     }
-    while( TRUE ) {
+    for( ;; ) {
         event = GetNextEvent( FALSE );
         event = cursorKeyFilter( input, event );
         event = historyFilter( input, event );
@@ -724,8 +726,7 @@ static bool getStringInWindow( input_buffer *input )
         case VI_KEY( INS ):
             input->overstrike = !input->overstrike;
             if( !EditFlags.NoInputWindow ) {
-                NewCursor( input->window.id,
-                    input->overstrike ? NormalCursorType : InsertCursorType );
+                NewCursor( input->window.id, input->overstrike ? EditVars.NormalCursorType : EditVars.InsertCursorType );
             }
             break;
         case VI_KEY( CTRL_END ):

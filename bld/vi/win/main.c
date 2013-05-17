@@ -30,6 +30,10 @@
 
 
 #include "vi.h"
+#ifdef __WATCOMC__
+#include <process.h>
+#include "clibint.h"
+#endif
 // #include "ole2def.h"
 #include "font.h"
 #include "color.h"
@@ -84,7 +88,7 @@ void FiniInstance( void )
     // OLE2Fini();
 }
 
-#ifdef DBG
+#if defined( __WATCOMC__ ) && defined( DBG )
 void *HeapWalker( void )
 {
     struct _heapinfo    info;
@@ -108,9 +112,13 @@ void *HeapWalker( void )
 
 int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
 {
-    extern char **_argv;
+    char buffer[PATH_MAX];
 
-    EXEName = _argv[0];
+#if !defined( __WATCOMC__ ) && defined( __NT__ )
+    _argc = __argc;
+    _argv = __argv;
+#endif
+    EXEName = _cmdname( buffer );
     InstanceHandle = inst;
     showHow = show;
     prev = prev;

@@ -72,7 +72,7 @@ vi_rc GenericJoinCurrentLineToNext( bool remsp )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    if( CurrentLine->len + nline->len + 1 >= MaxLine ) {
+    if( CurrentLine->len + nline->len + 1 >= EditVars.MaxLine ) {
         return( ERR_LINE_FULL );
     }
 
@@ -90,12 +90,11 @@ vi_rc GenericJoinCurrentLineToNext( bool remsp )
             WorkLine->len--;
         }
         j = FindStartOfALine( nline ) - 1;
+	    k = 0;
         if( !(j == 0 && nline->data[0] == ' ') ) {
             if( WorkLine->len != 0 ) {
                 WorkLine->data[WorkLine->len] = ' ';
                 k = WorkLine->len + 1;
-            } else {
-                k = 0;
             }
             for( i = j; i <= nline->len; i++ ) {
                 WorkLine->data[k + i - j] = nline->data[i];
@@ -140,7 +139,8 @@ vi_rc JoinCurrentLineToNext( void )
     int     i, j;
     vi_rc   rc;
 
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     i = (int) GetRepeatCount();

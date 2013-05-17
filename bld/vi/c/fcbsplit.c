@@ -110,7 +110,7 @@ vi_rc SplitFcbAtLine( linenum lne, file *f, fcb *fb )
          */
         fb->globalmatch = FALSE;
         for( cl = fb->lines.head; cl != NULL; cl = cl->next ) {
-            if( cl->inf.ld.globmatch ) {
+            if( cl->u.ld.globmatch ) {
                 fb->globalmatch = TRUE;
                 break;
             }
@@ -119,7 +119,7 @@ vi_rc SplitFcbAtLine( linenum lne, file *f, fcb *fb )
          * see if new one needs to be locked
          */
         for( cl = cfcb->lines.head; cl != NULL; cl = cl->next ) {
-            if( cl->inf.ld.globmatch ) {
+            if( cl->u.ld.globmatch ) {
                 cfcb->globalmatch = TRUE;
                 break;
             }

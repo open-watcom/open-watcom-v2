@@ -120,7 +120,7 @@ void DoneCurrentInsert( bool trim )
         doneWithCurrentLine();
         EndUndoGroup( UndoStack );
         if( !EditFlags.Modeless ) {
-            NewCursor( CurrentWindow, NormalCursorType );
+            NewCursor( CurrentWindow, EditVars.NormalCursorType );
             SetWindowCursor();
         }
         EditFlags.EscapedInsertChar = FALSE;
@@ -137,11 +137,11 @@ void UpdateEditStatus( void )
     if( overStrike ) {
         UpdateCurrentStatus( CSTATUS_OVERSTRIKE );
         EditFlags.WasOverstrike = TRUE;
-        NewCursor( CurrentWindow, OverstrikeCursorType );
+        NewCursor( CurrentWindow, EditVars.OverstrikeCursorType );
     } else {
         UpdateCurrentStatus( CSTATUS_INSERT );
         EditFlags.WasOverstrike = FALSE;
-        NewCursor( CurrentWindow, InsertCursorType );
+        NewCursor( CurrentWindow, EditVars.InsertCursorType );
     }
     SetWindowCursor();
 
@@ -192,11 +192,11 @@ static void checkWrapMargin( void )
     int         pos;
     bool        old_ai;
 
-    if( WrapMargin != 0 ) {
-        if( WrapMargin < 0 ) {
-            width = -WrapMargin;
+    if( EditVars.WrapMargin != 0 ) {
+        if( EditVars.WrapMargin < 0 ) {
+            width = -EditVars.WrapMargin;
         } else {
-            width = WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ) - WrapMargin;
+            width = WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ) - EditVars.WrapMargin;
         }
         if( CurrentPos.column > width ) {
             for( i = CurrentPos.column - 1; i >= 0; i-- ) {
@@ -221,7 +221,7 @@ static void checkWrapMargin( void )
  */
 static vi_rc insertChar( bool add_to_abbrev, bool move_to_new_col )
 {
-    if( WorkLine->len == MaxLine ) {
+    if( WorkLine->len == EditVars.MaxLine ) {
         return( ERR_NO_ERR );
     }
     addChar( LastEvent );
@@ -598,7 +598,7 @@ vi_rc IMTabs( void )
     switch( LastEvent ) {
     case VI_KEY( TAB ):
         if( EditFlags.RealTabs ) {
-            if( WorkLine->len + 1 >= MaxLine ) {
+            if( WorkLine->len + 1 >= EditVars.MaxLine ) {
                 break;
             }
             addChar( '\t' );
@@ -619,27 +619,27 @@ vi_rc IMTabs( void )
         } else {
             add = 0;
         }
+        j = 0;
+        back = FALSE;
         switch( LastEvent ) {
         case VI_KEY( SHIFT_TAB ):
-            j = ShiftTab( vc, TabAmount );
+            j = ShiftTab( vc, EditVars.TabAmount );
             back = TRUE;
             break;
         case VI_KEY( CTRL_D ):
-            j = ShiftTab( vc, ShiftWidth );
+            j = ShiftTab( vc, EditVars.ShiftWidth );
             back = TRUE;
             break;
         case VI_KEY( TAB ):
-            j = Tab( vc, TabAmount );
-            back = FALSE;
+            j = Tab( vc, EditVars.TabAmount );
             break;
         case VI_KEY( CTRL_T ):
-            j = Tab( vc, ShiftWidth );
-            back = FALSE;
+            j = Tab( vc, EditVars.ShiftWidth );
             break;
         }
         if( back && (vc - j < 1) ) {
             break;
-        } else if( VirtualLineLen( WorkLine->data ) + j >= MaxLine ) {
+        } else if( VirtualLineLen( WorkLine->data ) + j >= EditVars.MaxLine ) {
             break;
         }
 
@@ -647,8 +647,7 @@ vi_rc IMTabs( void )
          * create a real version of the line
          */
         buff = StaticAlloc();
-        ExpandTabsInABufferUpToColumn( CurrentPos.column - 1, WorkLine->data,
-                                       WorkLine->len, buff, MaxLine );
+        ExpandTabsInABufferUpToColumn( CurrentPos.column - 1, WorkLine->data, WorkLine->len, buff, EditVars.MaxLine );
         len = strlen( buff );
 
         /*
@@ -679,7 +678,7 @@ vi_rc IMTabs( void )
             cp = vc + j;
         }
         if( EditFlags.RealTabs ) {
-            ConvertSpacesToTabsUpToColumn( cp, buff, len, WorkLine->data, MaxLine );
+            ConvertSpacesToTabsUpToColumn( cp, buff, len, WorkLine->data, EditVars.MaxLine );
         } else {
             strcpy( WorkLine->data, buff );
         }
@@ -783,12 +782,12 @@ static vi_rc getBracketLoc( i_mark *pos )
     vi_rc       rc;
     char        tmp[3];
     int         len;
-    linenum     lne;
+//    linenum     lne;
 
     tmp[0] = '\\';
     tmp[1] = ')';
     tmp[2] = 0;
-    lne = CurrentPos.line;
+//    lne = CurrentPos.line;
     RegExpAttrSave( -1, NULL );
     rc = GetFind( tmp, pos, &len, FINDFL_BACKWARDS | FINDFL_NOERROR | FINDFL_NOCHANGE );
     RegExpAttrRestore();
@@ -880,15 +879,15 @@ vi_rc IMCloseBrace( void )
                 i = FindStartOfALine( cline );
                 i = GetVirtualCursorPosition( cline->data, i );
                 j = i - VirtualColumnOnCurrentLine( CurrentPos.column );
-                ts = ShiftWidth;
+                ts = EditVars.ShiftWidth;
                 if( j > 0 ) {
-                    ShiftWidth = j;
+                    EditVars.ShiftWidth = j;
                     Shift( CurrentPos.line, CurrentPos.line, '>', FALSE );
                 } else if( j < 0 ) {
-                    ShiftWidth = -j;
+                    EditVars.ShiftWidth = -j;
                     Shift( CurrentPos.line, CurrentPos.line, '<', FALSE );
                 }
-                ShiftWidth = ts;
+                EditVars.ShiftWidth = ts;
                 newcol = 1 + RealColumnOnCurrentLine( j + newcol );
             }
             GetCurrentLine();
@@ -927,14 +926,14 @@ static vi_rc stdInsert( int col, bool overstrike )
 {
     vi_rc   rc;
 
-    if( rc = ModificationTest() ) {
-        return( rc );
+    rc = ModificationTest();
+    if( rc == ERR_NO_ERR ) {
+        StartUndoGroup( UndoStack );
+        CurrentLineReplaceUndoStart();
+        currLineRepUndo = TRUE;
+        continueInsertText( col, overstrike );
     }
-    StartUndoGroup( UndoStack );
-    CurrentLineReplaceUndoStart();
-    currLineRepUndo = TRUE;
-    continueInsertText( col, overstrike );
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* stdInsert */
 
@@ -989,7 +988,8 @@ static vi_rc insertTextOnOtherLine( insert_dir type )
     bool        above_line = FALSE;
     vi_rc       rc;
 
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     /*

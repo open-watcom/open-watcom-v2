@@ -42,6 +42,44 @@
     #include <commctrl.h>
 #endif
 
+static char windowBordersG[] =  {
+#if defined( __UNIX__ )
+    #define vi_pick( enum, UnixNG, UnixG, DosNG, DosG ) UnixG,
+#else
+    #define vi_pick( enum, UnixNG, UnixG, DosNG, DosG ) DosG,
+#endif
+    #include "borders.h"
+    #undef vi_pick
+    '\0'
+};
+#define GADGET_SIZE (sizeof( windowBordersG ) - 1)
+
+int FileSysNeedsCR( int handle )
+{
+    handle = handle;
+    return( TRUE );
+}
+
+void SetGadgetString( char *str )
+{
+    int     i;
+
+    if( str != NULL ) {
+        i = strlen( str );
+        if( i > GADGET_SIZE ) {
+            i = GADGET_SIZE;
+        }
+        if( EditVars.GadgetString == NULL ) {
+            EditVars.GadgetString = MemAlloc( GADGET_SIZE + 1 );
+            EditVars.GadgetString[GADGET_SIZE] = '\0';
+        }
+        memset( EditVars.GadgetString, ' ', GADGET_SIZE );
+        memcpy( EditVars.GadgetString, str, i );
+    } else {
+        AddString2( &EditVars.GadgetString, windowBordersG );
+    }
+}
+
 /*
  * WriteText - write a length specified string to a window
  */
@@ -292,9 +330,7 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
 
             while( end_str != start_str + lenBlock ) {
                 if( *end_str == '\t' ) {
-                    cur_pixel = (WinVirtualCursorPosition( text, end_str + 1 - text ) -
-                                 LeftTopPos.column ) * avg_width;
-
+                    cur_pixel = (WinVirtualCursorPosition( text, end_str + 1 - text ) - LeftTopPos.column ) * avg_width;
                     if( cur_pixel > x ) {
                         // we've found the new boundries for the block.
                         // that do not contain any tabs!
@@ -327,12 +363,13 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
     }
 
     // refine guess
+    toleftExtent = 0;
+    difExtent = 0;
     intoExtent = MyTextExtent( hwnd, &SEType[ss->type], str, intoCols );
     if( intoExtent > x ) {
         while( intoExtent > x ) {
             intoCols--;
-            difExtent = intoExtent - MyTextExtent( hwnd, &SEType[ss->type], str,
-                                                   intoCols );
+            difExtent = intoExtent - MyTextExtent( hwnd, &SEType[ss->type], str, intoCols );
             intoExtent -= difExtent;
         }
         intoCols++;
@@ -341,8 +378,7 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
         while( intoExtent <= x ) {
             intoCols++;
             toleftExtent = intoExtent;
-            difExtent = MyTextExtent( hwnd, &SEType[ss->type], str, intoCols ) -
-                                            intoExtent;
+            difExtent = MyTextExtent( hwnd, &SEType[ss->type], str, intoCols ) - intoExtent;
             intoExtent += difExtent;
         }
     }
@@ -353,7 +389,6 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
             intoCols++;
         }
     }
-
     *col = startCols + intoCols;
 
 } /* ClientToRowCol */
@@ -384,18 +419,11 @@ void ToggleHourglass( bool on )
 
 long MemSize( void )
 {
-#ifndef __NT__
+#ifdef __WINDOWS__
     return( GlobalCompact( 0 ) );
 #else
     return( 0 );
 #endif
-}
-
-char *GadgetString;
-
-void SetGadgetString( char *str )
-{
-    AddString2( &GadgetString, str );
 }
 
 #ifdef __AXP__
@@ -403,7 +431,11 @@ extern void     delay( unsigned int __milliseconds );
 #endif
 void MyDelay( int ms )
 {
+#if !defined( __WATCOMC__ ) && defined( _WIN64 )
+    Sleep( ms );
+#else
     delay( ms );
+#endif
 }
 
 void MyBeep( void )
@@ -461,9 +493,7 @@ vi_rc DoAboutBox( void )
     ai.version = banner1p2( _VI_VERSION_ );
     ai.first_cr_year = "1989";
     ai.title = "About Open Watcom Text Editor";
-
     DoAbout( &ai );
-
     return( ERR_NO_ERR );
 
 } /* DoAboutBox */
@@ -566,17 +596,9 @@ HWND GetOwnedWindow( POINT pt )
         if( !strcmp( textBuffer, windowName[i] ) ) {
             /* a recognized window - return handle to it
             */
-#ifdef __WINDOWS__
-            if( GetWindowWord( hwndElement, GWW_HINSTANCE ) ==
-                GetWindowWord( Root, GWW_HINSTANCE ) ) {
+            if( GET_HINSTANCE( hwndElement ) == GET_HINSTANCE( Root ) ) {
                 return( hwndElement );
             }
-#else
-            if( GetWindowLong( hwndElement, GWL_HINSTANCE ) ==
-                GetWindowLong( Root, GWL_HINSTANCE ) ) {
-                return( hwndElement );
-            }
-#endif
             return( (HWND)NULLHANDLE );
         }
     }

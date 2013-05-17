@@ -37,7 +37,6 @@
 #include "toolbr.h"
 #include "sstyle.h"
 #include "subclass.h"
-#include "watcom.h"
 
 #define NUM_ACROSS      8
 #define NUM_DOWN        8
@@ -70,8 +69,8 @@ static void sendNewColourToolbar( void )
 {
     /* toolbar has no text_style data in w_info format - change directly
     */
-    ToolBarColor = INDEX_FROM_XY( cursx, cursy );
-    ToolBarChangeSysColors( RGBValues[ToolBarColor],
+    EditVars.ToolBarColor = INDEX_FROM_XY( cursx, cursy );
+    ToolBarChangeSysColors( RGBValues[EditVars.ToolBarColor],
                             GetSysColor( COLOR_BTNHIGHLIGHT ),
                             GetSysColor( COLOR_BTNSHADOW ) );
     /* also redraw seperately
@@ -263,7 +262,7 @@ static void initRGBValues( void )
     }
 }
 
-static long gotoNewBlock( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+static LRESULT gotoNewBlock( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HDC     hdc;
 
@@ -273,8 +272,8 @@ static long gotoNewBlock( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     hdc = GetDC( hwnd );
     drawUnselected( hdc, cursx, cursy );
 
-    cursx = min( (signed_16)(LOWORD( lparam ) / Width), NUM_ACROSS - 1 );
-    cursy = min( (signed_16)(HIWORD( lparam ) / Height), NUM_DOWN - 1 );
+    cursx = min( (short)(LOWORD( lparam ) / Width), NUM_ACROSS - 1 );
+    cursy = min( (short)(HIWORD( lparam ) / Height), NUM_DOWN - 1 );
 
     drawSelected( hdc, cursx, cursy );
     ReleaseDC( hwnd, hdc );
@@ -294,7 +293,7 @@ static int eitherButtonDown( UINT w )
 }
 
 
-static long selectedNewColour( HWND hwnd, NewColourOps op, UINT wparam )
+static LRESULT selectedNewColour( HWND hwnd, NewColourOps op, WPARAM wparam )
 {
     HDC     hdc;
 
@@ -313,7 +312,7 @@ static long selectedNewColour( HWND hwnd, NewColourOps op, UINT wparam )
 
 extern char *windowName[1];
 
-static long processMouseMove( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RECT    rect;
 
@@ -322,8 +321,8 @@ static long processMouseMove( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     }
 
     // check we aren't on ourselves first
-    m_pt.x = (signed_16)LOWORD( lparam );
-    m_pt.y = (signed_16)HIWORD( lparam );
+    m_pt.x = (short)LOWORD( lparam );
+    m_pt.y = (short)HIWORD( lparam );
     ClientToScreen( hwnd, &m_pt );
     GetWindowRect( GetParent( hwnd ), &rect );
     if( PtInRect( &rect, m_pt ) ) {
@@ -343,7 +342,7 @@ static long processMouseMove( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     return( 0 );
 }
 
-LONG WINEXP ClrPickProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT LRESULT CALLBACK ClrPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_CREATE:
@@ -386,7 +385,7 @@ void InitClrPick( void )
     wndclass.hInstance      = InstanceHandle;
     wndclass.hIcon          = (HICON)NULLHANDLE;
     wndclass.hCursor        = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
-    wndclass.hbrBackground  = (HBRUSH) COLOR_APPWORKSPACE;
+    wndclass.hbrBackground  = (HBRUSH)COLOR_APPWORKSPACE;
     wndclass.lpszMenuName   = NULL;
     wndclass.lpszClassName  = "ClrPick";
 

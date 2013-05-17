@@ -57,10 +57,9 @@ static void shrinkUndoStack( undo_stack *stack )
 {
     stack->current--;
     if( stack->current < 0 ) {
-        MemFree2( &stack->stack );
+        MemFreePtr( (void **)&stack->stack );
     } else {
-        stack->stack = MemReAlloc( stack->stack,
-                                   (stack->current + 1) * sizeof( undo * ) );
+        stack->stack = MemReAlloc( stack->stack, (stack->current + 1) * sizeof( undo * ) );
     }
 
 } /* shrinkUndoStack */
@@ -92,7 +91,7 @@ undo *UndoAlloc( undo_stack *stack, int type )
         break;
     }
 
-    while( 1 ) {
+    for( ;; ) {
         tmp = MemAllocUnsafe( size );
         if( tmp != NULL ) {
             memset( tmp, 0, size );
@@ -187,7 +186,7 @@ void PurgeUndoStack( undo_stack *stack )
     for( i = stack->current; i >= 0; i-- ) {
         UndoFree( stack->stack[i], TRUE );
     }
-    MemFree2( &(stack->stack) );
+    MemFreePtr( (void **)&(stack->stack) );
     stack->current = -1;
 
 } /* PurgeUndoStack */
@@ -226,9 +225,9 @@ void FreeUndoStacks( void )
 {
     FreeAllUndos();
     MemFree( UndoStack->stack );
-    MemFree2( &UndoStack );
+    MemFreePtr( (void **)&UndoStack );
     MemFree( UndoUndoStack->stack );
-    MemFree2( &UndoUndoStack );
+    MemFreePtr( (void **)&UndoUndoStack );
 
 } /* FreeUndoStacks */
 

@@ -122,6 +122,9 @@ static vi_rc realUndo( undo_stack *stack, undo_stack *us )
     /*
      * loop through all undos in this group
      */
+    top = 0;
+    lne = 0;
+    col = 0;
     while( !done ) {
         switch( cundo->type ) {
         case START_UNDO_GROUP:

@@ -37,66 +37,42 @@
 /*
  * ResizeWindow - give a window a new size
  */
-vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, int scrflag )
+vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
 {
-    wind        *tmp, *w;
-    int         bt, k;
+    wind        *oldw;
+//    int         bt, k;
 //    char        *txt, *tptr;
 //    char        *ot;
 //    int         i, j;
 
-    w = AccessWindow( wn );
+    oldw = AccessWindow( wn );
 
-    if( !ValidDimension( x1, y1, x2, y2, w->has_border ) ) {
-        ReleaseWindow( w );
+    if( !ValidDimension( x1, y1, x2, y2, oldw->has_border ) ) {
+        ReleaseWindow( oldw );
         return( ERR_WIND_INVALID );
     }
-
-    tmp = AllocWindow( x1, y1, x2, y2, w->has_border, w->border_color1,
-                       w->border_color2, w->text_color, w->background_color );
-    tmp->id = wn;
-    tmp->has_gadgets = w->has_gadgets;
-    // txt = MemAlloc( w->width + 1 );
-    // tptr = txt;
-
     RestoreOverlap( wn, scrflag );
 
-    Windows[wn] = tmp;
-    tmp->accessed = TRUE;
-    ResetOverlap( tmp );
+    AllocWindow( wn, x1, y1, x2, y2, oldw->has_border, oldw->has_gadgets, TRUE,
+            oldw->border_color1, oldw->border_color2, oldw->text_color, oldw->background_color );
     MarkOverlap( wn );
 
     /*
      * display the new text
      */
-    k = 1;
-    bt = (int) w->has_border;
     ClearWindow( wn );
-    if( w->title != NULL ) {
-        WindowTitle( wn, w->title );
+    if( oldw->title != NULL ) {
+        WindowTitle( wn, oldw->title );
     } else {
         DrawBorder( wn );
     }
-#if 0
-    for( j = bt; j < w->height - bt; j++ ) {
-
-        ot = &(w->text[(j * w->width) * sizeof( char_info )]);
-        for( i = bt; i < w->width - bt; i++ ) {
-            *txt++ = ot[i * sizeof( char_info )];
-        }
-        *txt = 0;
-        DisplayLineInWindow( wn, k++, tptr );
-        txt = tptr;
-    }
-#else
     DCResize( CurrentInfo );
     DCDisplayAllLines();
     DCUpdate();
-#endif
 
-    FreeWindow( w );
+    FreeWindow( oldw );
 
-    ReleaseWindow( tmp );
+    ReleaseWindow( Windows[wn] );
     return( ERR_NO_ERR );
 
 } /* ResizeWindow */
@@ -104,7 +80,7 @@ vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, int scrflag )
 /*
  * ResizeWindowRelative - resize current window with relative shifts
  */
-vi_rc ResizeWindowRelative( window_id wn, int x1, int y1, int x2, int y2, int scrflag )
+vi_rc ResizeWindowRelative( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
 {
     wind        *w;
     vi_rc       rc;
@@ -147,14 +123,14 @@ vi_rc MinimizeCurrentWindow( void )
     if( !i ) {
         return( ERR_NO_ERR );
     }
-    miny1 = WindMaxHeight - 8;
+    miny1 = EditVars.WindMaxHeight - 8;
     minx1 = 0;
     for( j = 1; j < i; j++ ) {
         minx1 += MIN_WIN_WIDTH;
-        if( minx1 >= WindMaxWidth - MIN_WIN_WIDTH ) {
+        if( minx1 >= EditVars.WindMaxWidth - MIN_WIN_WIDTH ) {
             miny1 -= 3;
             if( miny1 < 0 ) {
-                miny1 = WindMaxHeight - 7;
+                miny1 = EditVars.WindMaxHeight - 7;
             }
             minx1 = 0;
         }
@@ -174,15 +150,12 @@ vi_rc MaximizeCurrentWindow( void )
 
     if( EditFlags.LineNumbers ) {
         if( EditFlags.LineNumsOnRight ) {
-            rc = CurrentWindowResize( editw_info.x1, editw_info.y1,
-                                      editw_info.x2 - LineNumWinWidth, editw_info.y2 );
+            rc = CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2 - EditVars.LineNumWinWidth, editw_info.y2 );
         } else {
-            rc = CurrentWindowResize( editw_info.x1 + LineNumWinWidth,
-                                      editw_info.y1, editw_info.x2, editw_info.y2 );
+            rc = CurrentWindowResize( editw_info.x1 + EditVars.LineNumWinWidth, editw_info.y1, editw_info.x2, editw_info.y2 );
         }
     } else {
-        rc = CurrentWindowResize( editw_info.x1, editw_info.y1,
-                                  editw_info.x2, editw_info.y2 );
+        rc = CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2, editw_info.y2 );
     }
     return( rc );
 

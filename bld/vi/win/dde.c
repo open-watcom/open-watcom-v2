@@ -31,6 +31,7 @@
 
 
 #include "vi.h"
+#include <stddef.h>
 #include "source.h"
 #include "ddedef.h"
 
@@ -51,7 +52,7 @@ bool            UseDDE;
 /*
  * DDECallback - callback routine for DDE
  */
-HDDEDATA WINEXP DDECallback( UINT type, UINT fmt, HCONV hconv,
+WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
                              HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem, DWORD data1,
                              DWORD data2 )
 {
@@ -107,7 +108,7 @@ bool CreateStringHandle( char *name, HSZ *hdl )
         return( FALSE );
     }
     len = strlen( name );
-    hlptr = MemAlloc( sizeof( hsz_list ) + len );
+    hlptr = MemAlloc( offsetof( hsz_list, string ) + len + 1 );
 
     hlptr->hsz = *hdl;
     memcpy( hlptr->string, name, len + 1 );

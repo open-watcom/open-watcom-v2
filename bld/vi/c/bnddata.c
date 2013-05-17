@@ -30,23 +30,23 @@
 
 
 #include "vi.h"
-#include "posix.h"
-#include <fcntl.h>
 #include "sopen.h"
+#include "posix.h"
 #include "bnddata.h"
 #include "specio.h"
 
+
 #define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
-static bind_size    *dataOffsets;
-static bind_size    *entryCounts;
-static char         *dataFnames;
+static bind_size    *dataOffsets = NULL;
+static bind_size    *entryCounts = NULL;
+static char         *dataFnames  = NULL;
 static long         dataStart;
 
 /*
- * CheckForBoundData - check if data is bound to our exe
+ * BoundDataInit - check if data is bound to our exe
  */
-void CheckForBoundData( void )
+void BoundDataInit( void )
 {
     int         h;
     unsigned    i;
@@ -59,6 +59,9 @@ void CheckForBoundData( void )
      * get trailer
      */
     h = sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
+    if( h == -1 ) {
+        return;
+    }
     lseek( h, -((long)sizeof( buff )), SEEK_END );
     read( h, buff, sizeof( buff ) );
 
@@ -105,14 +108,26 @@ void CheckForBoundData( void )
     tmp += i;
     memcpy( entryCounts, tmp , dataFcnt * sizeof( bind_size ) );
 
-    EditFlags.BoundData = TRUE;
+    BoundData = TRUE;
 
-} /* CheckForBoundData */
+} /* BoundDataInit */
+
+/*
+ * BoundDataFini - check if data is bound to our exe
+ */
+void BoundDataFini( void )
+{
+    MemFree( BndMemory );
+    MemFree( dataOffsets );
+    MemFree( entryCounts );
+    MemFree( dataFnames );
+
+} /* BoundDataFini */
 
 /*
  * SpecialOpen - open a file or exe
  */
-bool SpecialOpen( const char *fn, GENERIC_FILE *gf )
+bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
 {
     long        shift = 0;
     int         h, i;
@@ -122,14 +137,14 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf )
     /*
      * process bound file
      */
-    if( EditFlags.BoundData && !EditFlags.OpeningFileToCompile ) {
+    if( BoundData ) {
 
         if( !strcmp( fn, CONFIG_FILE ) ) {
             i = 0;
         } else {
             i = Tokenize( dataFnames, fn, TRUE );
         }
-        if( i >= 0 ) {
+        if( i != TOK_INVALID && bounddata ) {
 
             shift = dataStart + dataOffsets[i];
             gf->type = GF_BOUND;

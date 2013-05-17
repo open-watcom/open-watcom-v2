@@ -30,10 +30,10 @@
 
 
 #include "vi.h"
-#include <unistd.h>
 #include <dirent.h>
 #include <time.h>
-#include <sys/stat.h>
+#include "wio.h"
+
 
 /*
  * GetFileInfo - get info from a directory entry
@@ -55,7 +55,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
     stat( tmpname, &st );
     free( tmpname );
     tmp->attr = 0;
-    if( st.st_mode & S_IFDIR ) {
+    if( S_ISDIR( st.st_mode ) ) {
         tmp->attr |= _A_SUBDIR;
     }
     tmp->fsize = st.st_size;
@@ -89,7 +89,7 @@ bool IsDirectory( char *name )
     if( stat( name, &sb ) < 0 ) {
         return( FALSE );
     }
-    if( sb.st_mode & S_IFDIR ) {
+    if( S_ISDIR( sb.st_mode ) ) {
         return( TRUE );
     }
     return( FALSE );

@@ -39,7 +39,7 @@ static bool     cancelPressed;
 /*
  * GrepDlgProc - callback routine for grep dialog
  */
-BOOL WINEXP GrepDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -67,7 +67,7 @@ BOOL WINEXP GrepDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
  */
 void InitGrepDialog( void )
 {
-    grepProc = (DLGPROC) MakeProcInstance( (FARPROC) GrepDlgProc, InstanceHandle );
+    grepProc = (DLGPROC)MakeProcInstance( (FARPROC)GrepDlgProc, InstanceHandle );
     cancelPressed = FALSE;
     grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", Root, grepProc );
 
@@ -83,9 +83,7 @@ void FiniGrepDialog( void )
     if( grepHwnd != NULL ) {
         DestroyWindow( grepHwnd );
     }
-#ifndef __NT__
-    (void)FreeProcInstance( (FARPROC) grepProc );
-#endif
+    (void)FreeProcInstance( (FARPROC)grepProc );
     grepProc = NULL;
     grepHwnd = (HWND)NULLHANDLE;
 

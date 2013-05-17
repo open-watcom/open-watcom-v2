@@ -208,7 +208,7 @@ void ToolBarHelp( HWND hwnd, UINT id, BOOL isdown )
 /*
  * MyToolBarProc - called by toolbar window proc
  */
-BOOL MyToolBarProc( HWND hwnd, UINT msg, UINT w, LONG l )
+BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     switch( msg ) {
     case WM_KILLFOCUS:
@@ -248,13 +248,13 @@ static void createToolBar( RECT *rect )
     TOOLDISPLAYINFO     dinfo;
 
     fixedToolBar = TRUE;
-    dinfo.button_size.x = ToolBarButtonWidth;
-    dinfo.button_size.y = ToolBarButtonHeight;
-    dinfo.border_size.x = BORDER_X( ToolBarButtonWidth );
-    dinfo.border_size.y = BORDER_Y( ToolBarButtonHeight );
+    dinfo.button_size.x = EditVars.ToolBarButtonWidth;
+    dinfo.button_size.y = EditVars.ToolBarButtonHeight;
+    dinfo.border_size.x = BORDER_X( EditVars.ToolBarButtonWidth );
+    dinfo.border_size.y = BORDER_Y( EditVars.ToolBarButtonHeight );
     dinfo.style = TOOLBAR_FIXED_STYLE;
     dinfo.is_fixed = TRUE;
-    toolbar_height = TOOLBAR_HEIGHT( ToolBarButtonHeight );
+    toolbar_height = TOOLBAR_HEIGHT( EditVars.ToolBarButtonHeight );
     dinfo.area = *rect;
     dinfo.area.bottom = ((dinfo.area.top + toolbar_height + 1) & ~1) - 1;
     dinfo.area.top -= 1;
@@ -270,7 +270,7 @@ static void createToolBar( RECT *rect )
 #if defined( __NT__ )
     ToolBarChangeSysColors( GetSysColor( COLOR_BTNFACE ),
 #else
-    ToolBarChangeSysColors( GetRGB( ToolBarColor ),
+    ToolBarChangeSysColors( GetRGB( EditVars.ToolBarColor ),
 #endif
                             GetSysColor( COLOR_BTNHIGHLIGHT ),
                             GetSysColor( COLOR_BTNSHADOW ) );

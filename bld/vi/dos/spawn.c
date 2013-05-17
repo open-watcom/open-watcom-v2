@@ -39,7 +39,7 @@ void ResetSpawnScreen( void )
 {
 }
 
-#if !defined( __386__ )
+#if defined( _M_I86 )
 static long minMemoryLeft;
 static int  chkSwapSize;
 
@@ -366,10 +366,10 @@ extern int GetFcb( void *, void * );
         "pop    ds" \
     parm [dx ax] [cx bx] value [ax];
 
-int MySpawn( char *cmd )
+long MySpawn( char *cmd )
 {
     bool        cp;
-    int         rc;
+    long        rc;
     exec_block  exeparm;
     _fcb        fcb1, fcb2;
     cmd_struct  cmds;
@@ -412,7 +412,7 @@ int MySpawn( char *cmd )
 #endif
     file[0] = 0;
     tmpnam( chkfname );
-    StrMerge( 3, file, TmpDir, FILE_SEP_STR, chkfname );
+    StrMerge( 3, file, EditVars.TmpDir, FILE_SEP_STR, chkfname );
     fullName = file;
     ret = TinyCreate( fullName, TIO_NORMAL );
     if( ret < 0 ) {
@@ -449,7 +449,7 @@ evil_goto:
     return( rc );
 }
 #else
-int MySpawn( char *cmd )
+long MySpawn( char *cmd )
 {
     return( system( cmd ) );
 }

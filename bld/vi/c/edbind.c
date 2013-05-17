@@ -174,7 +174,7 @@ void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
             tocopy -= (unsigned long)COPY_SIZE;
         } else {
             i = read( h, copy, (unsigned int)tocopy );
-            if( i != tocopy ) {
+            if( i != (int)tocopy ) {
                 Abort( "Read error on \"%s\"", exe );
             }
             i = write( newh, copy, (unsigned int)tocopy );
@@ -191,7 +191,7 @@ void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
      */
     if( !sflag ) {
         i = write( newh, buffer, len );
-        if( i != len ) {
+        if( i != (int)len ) {
             Abort( "write 1 error on \"%s\"", exe );
         }
         strcpy( buff, MAGIC_COOKIE );
@@ -349,7 +349,7 @@ int main( int argc, char *argv[] )
                     Usage( "Invalid option" );
                 }
             }
-            for( i = j; i < (unsigned)argc; i++ ) {
+            for( i = j; i < argc; i++ ) {
                 argv[i]= argv[i + 1];
             }
             argc--;

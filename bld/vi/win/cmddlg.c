@@ -39,7 +39,7 @@ static int      cmdLen;
 /*
  * CmdDlgProc - callback routine for command dialog
  */
-BOOL WINEXP CmdDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int                 curr;
     int                 i;
@@ -53,13 +53,12 @@ BOOL WINEXP CmdDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );
-        EditSubClass( hwnd, CMD_EDIT, &CLHist );
+        EditSubClass( hwnd, CMD_EDIT, &EditVars.CLHist );
         SetDlgItemText( hwnd, CMD_EDIT, cmdStr );
-        curr = CLHist.curr + CLHist.max - 1;
-        for( i = 0; i < CLHist.max; i++ ) {
-            if( CLHist.data[curr % CLHist.max] != NULL ) {
-                SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_ADDSTRING, 0,
-                                    (LONG) CLHist.data[curr % CLHist.max] );
+        curr = EditVars.CLHist.curr + EditVars.CLHist.max - 1;
+        for( i = 0; i < EditVars.CLHist.max; i++ ) {
+            if( EditVars.CLHist.data[curr % EditVars.CLHist.max] != NULL ) {
+                SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_ADDSTRING, 0, (LPARAM)EditVars.CLHist.data[curr % EditVars.CLHist.max] );
             }
             curr--;
             if( curr < 0 ) {
@@ -79,7 +78,7 @@ BOOL WINEXP CmdDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_GETTEXT, index, (LONG) str );
+                SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_GETTEXT, index, (LPARAM)str );
                 SetDlgItemText( hwnd, CMD_EDIT, str );
                 if( cmd == LBN_DBLCLK ) {
                     PostMessage( hwnd, WM_COMMAND, IDOK, 0L );
@@ -92,7 +91,7 @@ BOOL WINEXP CmdDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             break;
         case IDOK:
             GetDlgItemText( hwnd, CMD_EDIT, cmdStr, cmdLen );
-            h = &CLHist;
+            h = &EditVars.CLHist;
             curr = h->curr + h->max - 1;
             ptr = NULL;
             if( curr >= 0 ) {
@@ -124,9 +123,9 @@ bool GetCmdDialog( char *str, int len )
 
     cmdStr = str;
     cmdLen = len;
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) CmdDlgProc, InstanceHandle );
+    proc = (DLGPROC) MakeProcInstance( (FARPROC)CmdDlgProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "CMDDLG", Root, proc );
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
 
     /* this is technically a bug of some kind - if the above command
      * was a DDE message to another window to take focus, we will

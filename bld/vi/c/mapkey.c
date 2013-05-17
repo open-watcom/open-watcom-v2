@@ -60,7 +60,11 @@ static vi_rc readKeyData( void )
     if( keysRead ) {
         return( ERR_NO_ERR );
     }
+#ifdef VICOMP
     rc = ReadDataFile( "keys.dat", &charTokens, key_alloc, key_save );
+#else
+    rc = ReadDataFile( "keys.dat", &charTokens, key_alloc, key_save, TRUE );
+#endif
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -112,14 +116,23 @@ vi_rc MapKey( int flag, char *data )
     if( !EditFlags.ScriptIsCompiled || (flag & MAPFLAG_UNMAP) ) {
 #endif
         j = Tokenize( charTokens, keystr, TRUE );
-        if( j < 0 ) {
+        if( j == TOK_INVALID ) {
             key = (unsigned char)keystr[0];
         } else {
             key = keyVals[j];
         }
+        if( key >= MAX_EVENTS ) {
+            return( ERR_INVALID_KEY );
+        }
 #ifndef VICOMP
     } else {
-        key = atoi( keystr );
+        long    keyl;
+
+        keyl = atol( keystr );
+        if( keyl < 0 || keyl >= MAX_EVENTS ) {
+            return( ERR_INVALID_KEY );
+        }
+        key = (vi_key)keyl;
     }
 #endif
 
@@ -146,11 +159,7 @@ vi_rc MapKey( int flag, char *data )
         }
 #ifndef VICOMP
     }
-#endif
 
-    if( key < 0 || key >= MAX_EVENTS ) {
-        return( ERR_INVALID_KEY );
-    }
     maps[key].inuse = FALSE;
     maps[key].is_base = FALSE;
     MemFree( maps[key].data );
@@ -162,6 +171,7 @@ vi_rc MapKey( int flag, char *data )
         return( AddKeyMap( &maps[key], data ) );
     }
     return( ERR_NO_ERR );
+#endif
 
 } /* MapKey */
 
@@ -260,9 +270,9 @@ static vi_rc doRunKeyMap( key_map *scr, long total )
  */
 vi_rc RunKeyMap( key_map *scr, long total )
 {
-    int         oldcount;
+    int         oldcount = 0;
     bool        restore = FALSE;
-    vi_key      *oldmap;
+    vi_key      *oldmap = NULL;
     vi_rc       rc;
 
     /*
@@ -346,7 +356,7 @@ vi_key extractViKeyToken( unsigned char **p )
         return( VI_KEY( ESC ) );
     }
     j = Tokenize( charTokens, str, TRUE );
-    if( j < 0 ) {
+    if( j == TOK_INVALID ) {
         return( (unsigned char)str[0] );
     } else {
         return( keyVals[j] );
@@ -470,7 +480,8 @@ vi_rc ExecuteBuffer( void )
     char        *data;
     key_map     scr;
 
-    if( (rc = ModificationTest()) != ERR_NO_ERR ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     rc = GetSavebufString( &data );

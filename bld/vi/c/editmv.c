@@ -148,9 +148,7 @@ vi_rc MovePage( int dir, long repcnt, bool keepselect )
         UnselectRegion();
     }
 
-    tmp = (repcnt * dir *
-                WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ))
-                - (dir * PageLinesExposed);
+    tmp = (repcnt * dir * WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES )) - (dir * EditVars.PageLinesExposed);
 #if 0
     x = CurrentPos.line + tmp;
     top = LeftTopPos.line + tmp;
@@ -274,7 +272,7 @@ static vi_rc moveHalfPage( int dir )
     long        repcnt;
     int         ln;
 
-    ople = PageLinesExposed;
+    ople = EditVars.PageLinesExposed;
     repcnt = GetRepeatCount();
     if( repcnt > 1 ) {
         ln = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) - repcnt;
@@ -284,9 +282,9 @@ static vi_rc moveHalfPage( int dir )
         HalfPageLines = ln;
     }
 
-    PageLinesExposed = HalfPageLines;
+    EditVars.PageLinesExposed = HalfPageLines;
     rc = MovePage( dir, 1, FALSE );
-    PageLinesExposed = ople;
+    EditVars.PageLinesExposed = ople;
     return( rc );
 
 } /* moveHalfPage */

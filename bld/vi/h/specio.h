@@ -29,6 +29,10 @@
 ****************************************************************************/
 
 
+#ifdef VICOMP
 bool    SpecialOpen( const char *, GENERIC_FILE * );
+#else
+bool    SpecialOpen( const char *, GENERIC_FILE *, bool );
+#endif
 void    SpecialFclose( GENERIC_FILE * );
 int     SpecialFgets( char *, int, GENERIC_FILE * );

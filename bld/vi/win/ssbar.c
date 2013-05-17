@@ -59,7 +59,7 @@ char *findBlockString( int block )
     int     i;
 
     i = 0;
-    mod = StatusString;
+    mod = EditVars.StatusString;
     while( i != block ) {
         while( *mod && *mod != '$' ) {
             mod++;
@@ -76,7 +76,7 @@ char *findBlockString( int block )
 
 void totalRedraw( void )
 {
-    StatusWndSetSeparatorsWithArray( StatusSections, NumStatusSections );
+    StatusWndSetSeparatorsWithArray( EditVars.StatusSections, EditVars.NumStatusSections );
     UpdateStatusWindow();
     InvalidateRect( StatusWindow, NULL, TRUE );
     UpdateWindow( StatusWindow );
@@ -86,23 +86,21 @@ void destroyBlock( int i, char *start )
 {
     char    new_ss[MAX_STR];
 
-    if( NumStatusSections == 1 ) {
+    if( EditVars.NumStatusSections == 1 ) {
         // unfortunately wstatus.c can't handle this right now
         // (it would be nice)
         MyBeep();
         return;
     }
 
-    if( i != NumStatusSections ) {
-        memmove( StatusSections + i, StatusSections + i + 1,
-                 (NumStatusSections - 1 - i) * sizeof( short ) );
+    if( i != EditVars.NumStatusSections ) {
+        memmove( EditVars.StatusSections + i, EditVars.StatusSections + i + 1, (EditVars.NumStatusSections - 1 - i) * sizeof( short ) );
     }
-    NumStatusSections--;
-    StatusSections = MemReAlloc( StatusSections,
-                                 NumStatusSections * sizeof( short ) );
+    EditVars.NumStatusSections--;
+    EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, EditVars.NumStatusSections * sizeof( short ) );
 
-    strncpy( new_ss, StatusString, start - StatusString );
-    new_ss[start - StatusString] = '\0';
+    strncpy( new_ss, EditVars.StatusString, start - EditVars.StatusString );
+    new_ss[start - EditVars.StatusString] = '\0';
     while( start[0] && !(start[0] == '$' && start[1] == '[') ) {
         start++;
     }
@@ -110,7 +108,7 @@ void destroyBlock( int i, char *start )
         start += 2;
         strcat( new_ss, start );
     }
-    AddString2( &StatusString, new_ss );
+    AddString2( &EditVars.StatusString, new_ss );
 
     totalRedraw();
 }
@@ -121,43 +119,41 @@ void splitBlock( int i, char *start )
     int     diff;
     RECT    rect;
 
-    if( NumStatusSections == MAX_SECTIONS ) {
+    if( EditVars.NumStatusSections == MAX_SECTIONS ) {
         MyBeep();
         return;
     }
 
-    if( i == NumStatusSections ) {
+    if( i == EditVars.NumStatusSections ) {
         GetWindowRect( StatusWindow, &rect );
-        diff = rect.right - StatusSections[i - 1];
+        diff = rect.right - EditVars.StatusSections[i - 1];
     } else if( i == 0 ) {
-        diff = StatusSections[1];
+        diff = EditVars.StatusSections[1];
     } else {
-        diff = StatusSections[i] - StatusSections[i - 1];
+        diff = EditVars.StatusSections[i] - EditVars.StatusSections[i - 1];
     }
 
     if( diff < BOUNDARY_WIDTH * 4 ) {
         MyBeep();
         return;
     }
-    NumStatusSections++;
-    StatusSections = MemReAlloc( StatusSections,
-                                 NumStatusSections * sizeof( short ) );
-    memmove( StatusSections + i + 1, StatusSections + i,
-             (NumStatusSections - 1 - i) * sizeof( short ) );
+    EditVars.NumStatusSections++;
+    EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, EditVars.NumStatusSections * sizeof( short ) );
+    memmove( EditVars.StatusSections + i + 1, EditVars.StatusSections + i, (EditVars.NumStatusSections - 1 - i) * sizeof( short ) );
     if( i > 0 ) {
-        StatusSections[i] = StatusSections[i - 1] + (diff / 2);
+        EditVars.StatusSections[i] = EditVars.StatusSections[i - 1] + (diff / 2);
     } else {
-        StatusSections[i] /= 2;
+        EditVars.StatusSections[i] /= 2;
     }
 
     while( start[0] && !(start[0] == '$' && start[1] == '[') ) {
         start++;
     }
-    strncpy( new_ss, StatusString, start - StatusString );
-    new_ss[start - StatusString] = '\0';
+    strncpy( new_ss, EditVars.StatusString, start - EditVars.StatusString );
+    new_ss[start - EditVars.StatusString] = '\0';
     strcat( new_ss, "$[ " );
     strcat( new_ss, start );
-    AddString2( &StatusString, new_ss );
+    AddString2( &EditVars.StatusString, new_ss );
 
     totalRedraw();
 }
@@ -168,8 +164,8 @@ void buildNewItem( char *start, int id )
     char    *sz_content[] = { "$T", "$D", "Mode: $M",
                               "Line:$5L", "Col:$3C", "$H" };
     char    *sz_alignment[] = { "$<", "$|", "$>" };
-    char    *new_item;
-    int     type;
+    char    *new_item = "";
+    int     type = 0;
 
     if( id >= SS_FIRST_CONTENT && id <= SS_LAST_CONTENT ) {
         new_item = sz_content[id - SS_FIRST_CONTENT];
@@ -181,8 +177,8 @@ void buildNewItem( char *start, int id )
         assert( 0 );
     }
 
-    strncpy( new_ss, StatusString, start - StatusString );
-    new_ss[start - StatusString] = '\0';
+    strncpy( new_ss, EditVars.StatusString, start - EditVars.StatusString );
+    new_ss[start - EditVars.StatusString] = '\0';
     strcat( new_ss, new_item );
     if( type == BUTTON_CONTENT ) {
         // only copy alignments, if any
@@ -208,7 +204,7 @@ void buildNewItem( char *start, int id )
         }
     }
     strcat( new_ss, start );
-    AddString2( &StatusString, new_ss );
+    AddString2( &EditVars.StatusString, new_ss );
 
     totalRedraw();
 }
@@ -217,11 +213,11 @@ void buildDefaults( void )
 {
     short   def_sections[] = DEFAULT_STATUSSECTIONS;
 
-    AddString2( &StatusString, DEFAULT_STATUSSTRING );
+    AddString2( &EditVars.StatusString, DEFAULT_STATUSSTRING );
 
-    NumStatusSections = NARRAY( def_sections );
-    StatusSections = MemReAlloc( StatusSections, sizeof( def_sections ) );
-    memcpy( StatusSections, def_sections, sizeof( def_sections ) );
+    EditVars.NumStatusSections = NARRAY( def_sections );
+    EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, sizeof( def_sections ) );
+    memcpy( EditVars.StatusSections, def_sections, sizeof( def_sections ) );
 
     totalRedraw();
 }
@@ -257,7 +253,7 @@ static void sendNewItem( int x, int id )
     assert( mod_hwnd == StatusWindow );
 
     i = 0;
-    while( i < NumStatusSections && StatusSections[i] < x ) {
+    while( i < EditVars.NumStatusSections && EditVars.StatusSections[i] < x ) {
         i++;
     }
 
@@ -265,7 +261,7 @@ static void sendNewItem( int x, int id )
     buildNewStatusString( i, id );
 }
 
-static long processLButtonUp( HWND hwnd, LONG lparam )
+static long processLButtonUp( HWND hwnd, LPARAM lparam )
 {
     POINT   m_pt;
     if( haveCapture ) {
@@ -293,7 +289,7 @@ static long processLButtonDown( HWND hwnd )
     return( 0L );
 }
 
-static long processMouseMove( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+static long processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RECT    rect;
     POINT   m_pt;
@@ -326,7 +322,7 @@ static long processMouseMove( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     return( 0L );
 }
 
-long WINEXP StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT long CALLBACK StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_NCHITTEST:
@@ -373,7 +369,7 @@ void removeSubclasses( HWND hwnd )
 /*
  * SSDlgProc - callback routine for status bar settings drag & drop dialog
  */
-BOOL WINEXP SSDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     wparam = wparam;
@@ -408,14 +404,14 @@ void RefreshSSbar( void )
         if( hSSbar != NULL ) {
             return;
         }
-        proc = (DLGPROC) MakeProcInstance( (FARPROC) SSDlgProc, InstanceHandle );
+        proc = (DLGPROC)MakeProcInstance( (FARPROC)SSDlgProc, InstanceHandle );
         hSSbar = CreateDialog( InstanceHandle, "SSBAR", Root, proc );
     } else {
         if( hSSbar == NULL ) {
             return;
         }
         SendMessage( hSSbar, WM_CLOSE, 0, 0L );
-        FreeProcInstance( (FARPROC) proc );
+        FreeProcInstance( (FARPROC)proc );
     }
     UpdateStatusWindow();
 

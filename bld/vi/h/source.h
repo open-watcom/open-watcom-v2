@@ -50,32 +50,9 @@ typedef enum {
 } expr_oper;
 
 enum {
-    SRC_T_EXPR,
-    SRC_T_LABEL,
-    SRC_T_IF,
-    SRC_T_QUIF,
-    SRC_T_ELSEIF,
-    SRC_T_ELSE,
-    SRC_T_ENDIF,
-    SRC_T_LOOP,
-    SRC_T_ENDLOOP,
-    SRC_T_ENDWHILE,
-    SRC_T_WHILE,
-    SRC_T_UNTIL,
-    SRC_T_BREAK,
-    SRC_T_CONTINUE,
-    SRC_T_GOTO,
-    SRC_T_ASSIGN,
-    SRC_T_RETURN,
-    SRC_T_OPEN,
-    SRC_T_READ,
-    SRC_T_WRITE,
-    SRC_T_CLOSE,
-    SRC_T_INPUT,
-    SRC_T_ATOMIC,
-    SRC_T_GET,
-    SRC_T_VBJ__,
-    SRC_T_NEXTWORD,
+    #define PICK(a,b) b,
+    #include "srckeys.h"
+    #undef PICK
     SRC_T_NULL
 };
 
@@ -116,7 +93,7 @@ typedef struct cs_entry {
     label               alt;
     label               end;
     cstype              type;
-    short               srcline;
+    unsigned            srcline;
 } cs_entry;
 
 struct sfile;
@@ -127,9 +104,11 @@ typedef struct labels {
     struct sfile    **pos;
 } labels;
 
+typedef unsigned short  var_len;
+
 typedef struct vars {
     struct vars *next, *prev;
-    short       len;
+    var_len     len;
     char        *value;
     char        name[1];
 } vars;
@@ -171,7 +150,7 @@ typedef struct sfile {
         expr_oper   oper;
     } u;
     char            hasvar;
-    int             line;
+    unsigned        line;
     char            *data;
 } sfile;
 
@@ -192,7 +171,8 @@ extern char         *ErrorTokens;
 extern int          *ErrorValues;
 extern vars         *VarHead, *VarTail;
 extern long         CurrentSrcLabel;
-extern int          CurrentSrcLine, CurrentSrcToken;
+extern unsigned     CurrentSrcLine;
+extern int          CurrentSrcToken;
 extern char         *CurrentSrcData;
 
 /*

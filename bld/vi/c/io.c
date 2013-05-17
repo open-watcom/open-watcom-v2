@@ -45,8 +45,8 @@ vi_rc FileExists( char *name )
     int     i, en;
     vi_rc   rc;
 
-    while( TRUE ) {
-        i = open( name, O_RDWR | O_BINARY, 0 );
+    for( ;; ) {
+        i = open( name, O_RDWR | O_BINARY );
         if( i == - 1 ) {
             en = errno;
             if( en == -1 ) {
@@ -63,7 +63,7 @@ vi_rc FileExists( char *name )
                  * Trying to open file as writable in read only network share will cause EIO, so
                  * try to open it as read only to determine that share is read only.
                  */
-                i = open( name, O_RDONLY | O_BINARY, 0 );
+                i = open( name, O_RDONLY | O_BINARY );
                 if( i == - 1 ) {
                     en = errno;
                     if( en == -1 ) {
@@ -120,7 +120,7 @@ vi_rc FileOpen( char *name, int existflag, int stat, int attr, int *_handle )
     /*
      * try to open, check for problems
      */
-    while( TRUE ) {
+    for( ;; ) {
         handle = open( name, stat, attr );
         en = errno;
         if( en == -1 ) en = ENOENT;     /* CLIB BUG in OS2 libraries */
@@ -231,16 +231,16 @@ void VerifyTmpDir( void )
     int     i;
     char    *env_tmpdir;
 
-    if( TmpDir != NULL ) {
-        i = strlen( TmpDir ) - 1;
-        if( TmpDir[i] == FILE_SEP && i > 2 ) {
+    if( EditVars.TmpDir != NULL ) {
+        i = strlen( EditVars.TmpDir ) - 1;
+        if( EditVars.TmpDir[i] == FILE_SEP && i > 2 ) {
             /* this sucks -- we need the '\' IFF it is [drive]:\ */
-            TmpDir[i] = 0;
+            EditVars.TmpDir[i] = 0;
         }
-        if( IsDirectory( TmpDir ) ) {
+        if( IsDirectory( EditVars.TmpDir ) ) {
             /* strip the following file_sep char for [drive]:\ */
-            if( TmpDir[i] == FILE_SEP ) {
-                TmpDir[i] = 0;
+            if( EditVars.TmpDir[i] == FILE_SEP ) {
+                EditVars.TmpDir[i] = 0;
             }
             return;
         }
@@ -251,13 +251,13 @@ void VerifyTmpDir( void )
             char buf[FILENAME_MAX];
             strcpy( buf, env_tmpdir );
             buf[strlen( buf ) - 1] = '\0';
-            AddString2( &TmpDir, buf );
+            AddString2( &EditVars.TmpDir, buf );
         } else {
-            AddString2( &TmpDir, env_tmpdir );
+            AddString2( &EditVars.TmpDir, env_tmpdir );
         }
     } else {
         // _mkdir( altTmpDir, DIRFLAGS );
-        AddString2( &TmpDir, altTmpDir );
+        AddString2( &EditVars.TmpDir, altTmpDir );
     }
 
 } /* VerifyTmpDir */
@@ -268,7 +268,7 @@ void VerifyTmpDir( void )
 void MakeTmpPath( char *out, char *in )
 {
     out[0] = 0;
-    if( TmpDir == NULL ) {
+    if( EditVars.TmpDir == NULL ) {
         char *env_tmpdir = getenv( "tmp" );
         if( env_tmpdir != NULL ) {
             StrMerge( 3, out, env_tmpdir, FILE_SEP_STR, in );
@@ -276,7 +276,7 @@ void MakeTmpPath( char *out, char *in )
             StrMerge( 3, out, altTmpDir, FILE_SEP_STR, in );
         }
     } else {
-        StrMerge( 3, out, TmpDir, FILE_SEP_STR, in );
+        StrMerge( 3, out, EditVars.TmpDir, FILE_SEP_STR, in );
     }
 
 } /* MakeTmpPath */
@@ -290,8 +290,7 @@ vi_rc TmpFileOpen( char *inname, int *_handle )
 
     tmpnam( inname );
     MakeTmpPath( file, inname );
-    return( FileOpen( file, FALSE, O_TRUNC | O_RDWR | O_BINARY | O_CREAT,
-                      0, _handle ) );
+    return( FileOpen( file, FALSE, O_TRUNC | O_RDWR | O_BINARY | O_CREAT, PMODE_RW, _handle ) );
 
 } /* TmpFileOpen */
 
@@ -331,7 +330,7 @@ bool FileTemplateMatch( const char *name, const char *template )
 {
     bool    inExtension = FALSE;
 
-    while( 1 ) {
+    for( ;; ) {
         if( *template == '*' ) {
             if( inExtension == FALSE ) {
                 while( *(name + 1) && *(name + 1) != '.' ) {

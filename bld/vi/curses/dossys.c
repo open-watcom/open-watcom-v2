@@ -43,6 +43,12 @@ WINDOW *CursesWindow;
 
 static char oldPath[_MAX_PATH];
 static char oldDrive;
+
+int FileSysNeedsCR( int handle )
+{
+    return( TRUE );
+}
+
 /*
  * PushDirectory
  */
@@ -113,10 +119,10 @@ void ScreenInit( void )
     int size;
 
     CursesWindow = initscr();
-    WindMaxWidth = COLS;
-    WindMaxHeight = LINES;
+    EditVars.WindMaxWidth = COLS;
+    EditVars.WindMaxHeight = LINES;
 
-    size = WindMaxWidth * WindMaxHeight * sizeof( char_info );
+    size = EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info );
     Scrn = malloc( size );
 
     // EditFlags.Monocolor = TRUE;
@@ -152,10 +158,10 @@ long MemSize( void )
     short       x;
 
     x = DosMaxAlloc();
-#ifdef __386__
-    return( 4096L * (long) x );
-#else
+#ifdef _M_I86
     return( 16L * (long) x );
+#else
+    return( 4096L * (long) x );
 #endif
 
 } /* MemSize */
@@ -189,10 +195,10 @@ int ChangeDrive( int drive )
 
 }/* ChangeDrive */
 
-#if defined( __386__ ) && !defined( __4G__ )
-    #define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
+#if defined( _M_I86 ) || defined( __4G__ )
+    #define KEY_PTR (char *)0x00400017;
 #else
-    #define KEY_PTR (char *) 0x00400017;
+    #define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
 #endif
 
 /*
@@ -272,25 +278,23 @@ void SetCursorBlinkRate( int cbr )
 
 } /* SetCursorBlinkRate */
 
-void MyVioShowBuf( unsigned short offset, unsigned short length )
+void MyVioShowBuf( unsigned short offset, unsigned short nchars )
 {
     int         line, column;
-    extern int  PageCnt;
-    char_info   *info;
+    char_info   _FAR *info;
     int         i, x, y;
 
     if( PageCnt > 0 || EditFlags.Quiet ) {
         return;
     }
-    info = &Scrn[offset];
-    offset /= sizeof( char_info );
+    info = Scrn + offset;
     getyx( CursesWindow, y, x );
 
-    line = offset / WindMaxWidth;
-    column = offset % WindMaxWidth;
+    line = offset / EditVars.WindMaxWidth;
+    column = offset % EditVars.WindMaxWidth;
     wmove( CursesWindow, line, column );
-    for( i = 0; i < length; i++, info++ ) {
-        addch( info->ch | (info->attr << 8) );
+    for( i = 0; i < nchars; i++, info++ ) {
+        addch( info->cinfo_char | (info->cinfo_attr << 8) );
     }
     wmove( CursesWindow, y, x );
     refresh();
@@ -331,9 +335,9 @@ unsigned short BIOSGetKeyboard( int extended )
  * come up with a correct curses attribute given a color combo and a
  * window.
  */
-unsigned short WindowAttr( wind *w, vi_color foreground, vi_color background )
+viattr_t WindowAttr( wind *w, vi_color foreground, vi_color background )
 {
-    unsigned short      attr = A_NORMAL;
+    unsigned long   attr = A_NORMAL;
 
     if( w != NULL ) {
         /* reverse video */
@@ -345,5 +349,5 @@ unsigned short WindowAttr( wind *w, vi_color foreground, vi_color background )
             }
         }
     }
-    return( attr >> 8 );
+    return( (viattr_t)( attr >> 8 ) );
 }

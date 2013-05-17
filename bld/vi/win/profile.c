@@ -32,13 +32,11 @@
 
 #include "vi.h"
 #include <dos.h>
-#include <sys/stat.h>
-#include <io.h>
 #ifdef __NT__
     #include <shlobj.h>
-    typedef HRESULT (WINAPI *GetFolderPath)( HWND, int, HANDLE, DWORD, LPTSTR );
+    typedef HRESULT (CALLBACK *GetFolderPath)( HWND, int, HANDLE, DWORD, LPTSTR );
 #endif
-#include <direct.h>
+#include "posix.h"
 
 #define CONFIG_INI "weditor.ini"
 #define CONFIG_DIR "Open Watcom"
@@ -243,27 +241,29 @@ static void readConfigFileName( void )
     char        *cfgname;
     struct stat cfg;
     int         rc;
+    DWORD       new_cfgtime = 0;
 
     cfgTime = getProfileLong( keyCfgTime );
     cfgname = GetConfigFileName();
     GetFromEnv( cfgname, cname );
     if( cname[0] != 0 ) {
         stat( cname, &cfg );
+        new_cfgtime = cfg.st_mtime;
         if( cfgTime == 0 ) {
-            cfgTime = cfg.st_mtime;
+            cfgTime = new_cfgtime;
         }
     }
 
-    if( access( cfgFile, ACCESS_RD ) != -1 ) {
+    if( access( cfgFile, R_OK ) != -1 ) {
         rc = IDNO;
 #if 0
         // don't prompt for newer config files
-        if( cfg.st_mtime > cfgTime ) {
+        if( new_cfgtime > cfgTime ) {
             MySprintf( str, "The configuration file \"%s\" is newer than your .INI file, do you wish to use the new configuration?",
                        cname );
             rc = MessageBox( (HWND) NULL, str, EditorName, MB_YESNO | MB_TASKMODAL );
             if( rc == IDYES ) {
-                cfgTime = cfg.st_mtime;
+                cfgTime = new_cfgtime;
             }
 
         }
@@ -272,7 +272,7 @@ static void readConfigFileName( void )
             SetConfigFileName( cfgFile );
         }
     } else {
-        cfgTime = cfg.st_mtime;
+        cfgTime = new_cfgtime;
     }
     saveConfig = getProfileLong( keySaveConfig );
 

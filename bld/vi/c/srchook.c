@@ -99,7 +99,7 @@ vars *GetHookVar( hooktype num )
 static vi_rc srcHook( hooktype num, vi_rc lastrc )
 {
     vars        *v;
-    int         ln;
+    unsigned    ln;
     vi_rc       rc;
 
     if( hookRun & num ) {
@@ -200,15 +200,17 @@ vi_rc InvokeColSelHook( int sc, int ec )
     int         lne;
 #ifndef __WIN__
     int         x1;
-    bool        has_bord;
+    int         has_bord;
 #endif
 
 #ifndef __WIN__
     has_bord = WindowAuxInfo( CurrentWindow, WIND_INFO_HAS_BORDER );
     x1 = WindowAuxInfo( CurrentWindow, WIND_INFO_X1 );
     if( LastEvent != VI_KEY( MOUSEEVENT ) ) {
-        lne = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) +
-            CurrentPos.line - LeftTopPos.line + has_bord;
+        lne = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) + CurrentPos.line - LeftTopPos.line;
+        if( has_bord ) {
+            ++lne;
+        }
     } else {
         lne = MouseRow;
     }
@@ -255,16 +257,18 @@ vi_rc InvokeLineSelHook( linenum s, linenum e )
     char        tmp[32];
     int         lne, col;
 #ifndef __WIN__
-    bool        has_bord;
+    int         has_bord;
 #endif
 
 #ifndef __WIN__
     if( LastEvent != VI_KEY( MOUSEEVENT ) ) {
         has_bord = WindowAuxInfo( CurrentWindow, WIND_INFO_HAS_BORDER );
-        lne = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) +
-              CurrentPos.line - LeftTopPos.line + has_bord;
-        col = WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ) +
-              VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column - 1 + has_bord;
+        lne = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) + CurrentPos.line - LeftTopPos.line;
+        col = WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ) + VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column - 1;
+        if( has_bord ) {
+            ++lne;
+            ++col;
+        }
         if( col < 0 ) {
             col = 0;
         }

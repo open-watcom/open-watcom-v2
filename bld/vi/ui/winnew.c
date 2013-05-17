@@ -31,6 +31,7 @@
 
 
 #include "vi.h"
+#include <stddef.h>
 #include "walloca.h"
 #include "win.h"
 
@@ -77,10 +78,10 @@ bool ValidDimension( int x1, int y1, int x2, int y2, bool has_border )
         lb = 2;
     }
 
-    if( x2 - x1 < lb || x2 >= WindMaxWidth ) {
+    if( x2 - x1 < lb || x2 >= EditVars.WindMaxWidth ) {
         return( FALSE );
     }
-    if( y2 - y1 < lb || y2 >= WindMaxHeight ) {
+    if( y2 - y1 < lb || y2 >= EditVars.WindMaxHeight ) {
         return( FALSE );
     }
     if( x1 < 0 || y1 < 0 ) {
@@ -95,35 +96,37 @@ bool ValidDimension( int x1, int y1, int x2, int y2, bool has_border )
  */
 window_id GimmeWindow( void )
 {
-    window_id   i;
+    window_id   wn;
 
-    for( i = 0; i < MAX_WINDS; i++ ) {
-        if( Windows[i] == NULL ) {
-            return( i );
+    for( wn = 0; wn < MAX_WINDS; wn++ ) {
+        if( Windows[wn] == NULL ) {
+            return( wn );
         }
     }
-    return( -1 );
+    return( NO_WINDOW );
 
 } /* GimmeWindow */
 
 /*
  * AllocWindow - allocate a new window
  */
-wind *AllocWindow( int x1, int y1, int x2, int y2, bool has_border,
-                   vi_color bc1, vi_color bc2, vi_color tc, vi_color bgc )
+wind *AllocWindow( window_id wn, int x1, int y1, int x2, int y2, bool has_border, bool has_gadgets
+                    , bool accessed, vi_color bc1, vi_color bc2, vi_color tc, vi_color bgc )
 {
     wind        *tmp;
-    int         width, height, size;
+    int         width, height, size, i;
 
     width = x2 - x1 + 1;
     height = y2 - y1 + 1;
     size = width * height;
 
-    tmp = MemAlloc( WIND_SIZE + height );
-
-    tmp->text = MemAlloc( sizeof( char_info ) * size );
-    tmp->overlap = MemAlloc( size );
-    tmp->whooverlapping = MemAlloc( size );
+    tmp = MemAlloc( offsetof( wind, overcnt ) + height );
+    tmp->id = wn;
+    tmp->has_gadgets = has_gadgets;
+    tmp->accessed = ( accessed ) ? 1 : 0;
+    tmp->text = MemAlloc( size * sizeof( char_info ) );
+    tmp->overlap = MemAlloc( size * sizeof( window_id ) );
+    tmp->whooverlapping = MemAlloc( size * sizeof( window_id ) );
     tmp->x1 = x1;
     tmp->x2 = x2;
     tmp->y1 = y1;
@@ -142,6 +145,14 @@ wind *AllocWindow( int x1, int y1, int x2, int y2, bool has_border,
         tmp->text_cols -= 2;
         tmp->vert_scroll_pos = THUMB_START;
     }
+    for( i = 0; i < size; ++i ) {
+        tmp->overlap[i] = NO_WINDOW;
+        tmp->whooverlapping[i] = NO_WINDOW;
+    }
+    for( i = 0; i < height; ++i ) {
+        tmp->overcnt[i] = 0;
+    }
+    Windows[wn] = tmp;
     return( tmp );
 
 } /* AllocWindow */
@@ -152,33 +163,27 @@ wind *AllocWindow( int x1, int y1, int x2, int y2, bool has_border,
 vi_rc NewWindow( window_id *wn, int x1, int y1, int x2, int y2, bool has_border,
                vi_color bc1, vi_color bc2, type_style *s )
 {
-    wind        *w;
-    window_id   i;
+    window_id   new_wn;
     bool        has_mouse;
 
     if( !ValidDimension( x1, y1, x2, y2, has_border ) ) {
         return( ERR_WIND_INVALID );
     }
 
-    if( (i = GimmeWindow()) < 0 ) {
+    if( (new_wn = GimmeWindow()) == NO_WINDOW ) {
         return( ERR_WIND_NO_MORE_WINDOWS );
     }
 
     has_mouse = DisplayMouse( FALSE );
 
-    w = AllocWindow( x1, y1, x2, y2, has_border, bc1, bc2,
-                     s->foreground, s->background );
-    w->id = i;
+    AllocWindow( new_wn, x1, y1, x2, y2, has_border, FALSE, FALSE, bc1, bc2, s->foreground, s->background );
 
-    Windows[i] = w;
+    MarkOverlap( new_wn );
 
-    ResetOverlap( w );
-    MarkOverlap( i );
+    ClearWindow( new_wn );
+    DrawBorder( new_wn );
 
-    ClearWindow( i );
-    DrawBorder( i );
-
-    *wn = i;
+    *wn = new_wn;
     DisplayMouse( has_mouse );
     return( ERR_NO_ERR );
 

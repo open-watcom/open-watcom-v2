@@ -44,7 +44,8 @@ vi_rc Append( linenum n1, bool startundo )
     /*
      * initialize
      */
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     if( n1 == 0 || CurrentFcb->nullfcb ) {

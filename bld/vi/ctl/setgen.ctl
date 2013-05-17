@@ -6,6 +6,10 @@ ctl_check SETGEN_AUTOSAVE
     offsetof( dlg_data, AutoSave )
     *
     
+ctl_check SETGEN_LASTEOL
+    offsetof( dlg_data, LastEOL )
+    *
+    
 ctl_check SETGEN_SAVECONFIG
     offsetof( dlg_data, SaveConfig )
     *

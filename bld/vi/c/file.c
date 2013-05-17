@@ -59,17 +59,26 @@ void SaveInfo( info *ci  )
     ci->CurrNumWindow = CurrNumWindow;
     ci->linenumflag = EditFlags.LineNumbers;
     ci->MarkList = MarkList;
-    ci->CMode = EditFlags.CMode;
-    ci->WriteCRLF = EditFlags.WriteCRLF;
     ci->SelRgn = SelRgn;
-    ci->RealTabs = EditFlags.RealTabs;
-    ci->ReadEntireFile = EditFlags.ReadEntireFile;
-    ci->ReadOnlyCheck = EditFlags.ReadOnlyCheck;
-    ci->EightBits = EditFlags.EightBits;
-    ci->AutoIndent = EditFlags.AutoIndent;
-    ci->TabAmount = TabAmount;
-    ci->HardTab = HardTab;
-    ci->ShiftWidth = ShiftWidth;
+    ci->fsi.Language        = CurrentInfo->fsi.Language;
+    ci->fsi.PPKeywordOnly   = EditFlags.PPKeywordOnly;
+    ci->fsi.CMode           = EditFlags.CMode;
+    ci->fsi.ReadEntireFile  = EditFlags.ReadEntireFile;
+    ci->fsi.ReadOnlyCheck   = EditFlags.ReadOnlyCheck;
+    ci->fsi.IgnoreCtrlZ     = EditFlags.IgnoreCtrlZ;
+    ci->fsi.CRLFAutoDetect  = EditFlags.CRLFAutoDetect;
+    ci->fsi.WriteCRLF       = EditFlags.WriteCRLF;
+    ci->fsi.EightBits       = EditFlags.EightBits;
+    ci->fsi.TabAmount       = EditVars.TabAmount;
+    ci->fsi.RealTabs        = EditFlags.RealTabs;
+    ci->fsi.HardTab         = EditVars.HardTab;
+    ci->fsi.AutoIndent      = EditFlags.AutoIndent;
+    ci->fsi.ShiftWidth      = EditVars.ShiftWidth;
+    ci->fsi.IgnoreTagCase   = EditFlags.IgnoreTagCase;
+    ci->fsi.TagPrompt       = EditFlags.TagPrompt;
+    ci->fsi.ShowMatch       = EditFlags.ShowMatch;
+    ci->fsi.TagFileName     = EditVars.TagFileName;
+    ci->fsi.GrepDefault     = EditVars.GrepDefault;
     CTurnOffFileDisplayBits();
 #ifdef __WIN__
     ci->VScrollBarScale = VScrollBarScale;
@@ -124,15 +133,36 @@ bool RestoreInfo( info *ci  )
         CurrentLine = NULL;
         CurrentFcb = NULL;
 
-        ci->HardTab = HardTab;
-        ci->ShiftWidth = ShiftWidth;
-        ci->TabAmount = TabAmount;
-        ci->ReadEntireFile = EditFlags.ReadEntireFile;
-        ci->ReadOnlyCheck = EditFlags.ReadOnlyCheck;
-        ci->AutoIndent = EditFlags.AutoIndent;
-        ci->EightBits = EditFlags.EightBits;
-
-        ci->RealTabs = EditFlags.RealTabs;
+        ci->fsi.Language        = CurrentInfo->fsi.Language;
+        ci->fsi.HardTab         = EditVars.HardTab;
+        ci->fsi.ShiftWidth      = EditVars.ShiftWidth;
+        ci->fsi.TabAmount       = EditVars.TabAmount;
+        ci->fsi.ReadEntireFile  = EditFlags.ReadEntireFile;
+        ci->fsi.ReadOnlyCheck   = EditFlags.ReadOnlyCheck;
+        ci->fsi.AutoIndent      = EditFlags.AutoIndent;
+        ci->fsi.EightBits       = EditFlags.EightBits;
+        ci->fsi.RealTabs        = EditFlags.RealTabs;
+#if 0
+        ci->fsi.Language        = CurrentInfo->fsi.Language;
+        ci->fsi.PPKeywordOnly   = EditFlags.PPKeywordOnly;
+        ci->fsi.CMode           = EditFlags.CMode;
+        ci->fsi.ReadEntireFile  = EditFlags.ReadEntireFile;
+        ci->fsi.ReadOnlyCheck   = EditFlags.ReadOnlyCheck;
+        ci->fsi.IgnoreCtrlZ     = EditFlags.IgnoreCtrlZ;
+        ci->fsi.CRLFAutoDetect  = EditFlags.CRLFAutoDetect;
+        ci->fsi.WriteCRLF       = EditFlags.WriteCRLF;
+        ci->fsi.EightBits       = EditFlags.EightBits;
+        ci->fsi.TabAmount       = EditVars.TabAmount;
+        ci->fsi.RealTabs        = EditFlags.RealTabs;
+        ci->fsi.HardTab         = EditVars.HardTab;
+        ci->fsi.AutoIndent      = EditFlags.AutoIndent;
+        ci->fsi.ShiftWidth      = EditVars.ShiftWidth;
+        ci->fsi.IgnoreTagCase   = EditFlags.IgnoreTagCase;
+        ci->fsi.TagPrompt       = EditFlags.TagPrompt;
+        ci->fsi.ShowMatch       = EditFlags.ShowMatch;
+        ci->fsi.TagFileName     = EditVars.TagFileName;
+        ci->fsi.GrepDefault     = EditVars.GrepDefault;
+#endif
     }
     CurrentFile = ci->CurrentFile;
     SelRgn = ci->SelRgn;
@@ -149,18 +179,38 @@ bool RestoreInfo( info *ci  )
     UndoUndoStack = ci->UndoUndoStack;
     MarkList = ci->MarkList;
     SetMarkContext();
-    EditFlags.CMode = ci->CMode;
-    EditFlags.WriteCRLF = ci->WriteCRLF;
-
-    EditFlags.RealTabs = ci->RealTabs;
-    EditFlags.ReadEntireFile = ci->ReadEntireFile;
-    EditFlags.ReadOnlyCheck = ci->ReadOnlyCheck;
-    EditFlags.AutoIndent = ci->AutoIndent;
-    EditFlags.EightBits = ci->EightBits;
-    TabAmount = ci->TabAmount;
-    HardTab = ci->HardTab;
-    ShiftWidth = ci->ShiftWidth;
-
+    EditFlags.CMode             = ci->fsi.CMode;
+    EditFlags.CRLFAutoDetect    = ci->fsi.CRLFAutoDetect;
+    EditFlags.WriteCRLF         = ci->fsi.WriteCRLF;
+    EditFlags.RealTabs          = ci->fsi.RealTabs;
+    EditFlags.ReadEntireFile    = ci->fsi.ReadEntireFile;
+    EditFlags.ReadOnlyCheck     = ci->fsi.ReadOnlyCheck;
+    EditFlags.AutoIndent        = ci->fsi.AutoIndent;
+    EditFlags.EightBits         = ci->fsi.EightBits;
+    EditVars.TabAmount          = ci->fsi.TabAmount;
+    EditVars.HardTab            = ci->fsi.HardTab;
+    EditVars.ShiftWidth         = ci->fsi.ShiftWidth;
+#if 0
+    ci->fsi.Language        = CurrentInfo->fsi.Language;
+    ci->fsi.PPKeywordOnly   = EditFlags.PPKeywordOnly;
+    ci->fsi.CMode           = EditFlags.CMode;
+    ci->fsi.ReadEntireFile  = EditFlags.ReadEntireFile;
+    ci->fsi.ReadOnlyCheck   = EditFlags.ReadOnlyCheck;
+    ci->fsi.IgnoreCtrlZ     = EditFlags.IgnoreCtrlZ;
+    ci->fsi.CRLFAutoDetect  = EditFlags.CRLFAutoDetect;
+    ci->fsi.WriteCRLF       = EditFlags.WriteCRLF;
+    ci->fsi.EightBits       = EditFlags.EightBits;
+    ci->fsi.TabAmount       = EditVars.TabAmount;
+    ci->fsi.RealTabs        = EditFlags.RealTabs;
+    ci->fsi.HardTab         = EditVars.HardTab;
+    ci->fsi.AutoIndent      = EditFlags.AutoIndent;
+    ci->fsi.ShiftWidth      = EditVars.ShiftWidth;
+    ci->fsi.IgnoreTagCase   = EditFlags.IgnoreTagCase;
+    ci->fsi.TagPrompt       = EditFlags.TagPrompt;
+    ci->fsi.ShowMatch       = EditFlags.ShowMatch;
+    ci->fsi.TagFileName     = EditVars.TagFileName;
+    ci->fsi.GrepDefault     = EditVars.GrepDefault;
+#endif
     cRestoreFileDisplayBits();
 
     CGimmeLinePtr( CurrentPos.line, &CurrentFcb, &CurrentLine );
@@ -184,6 +234,13 @@ bool RestoreInfo( info *ci  )
 static int getFileInfoString( char *st, int is_small )
 {
     long        pc;
+    int         write_crlf;
+
+    if( EditFlags.CRLFAutoDetect ) {
+        write_crlf = CurrentFile->write_crlf;
+    } else {
+        write_crlf = EditFlags.WriteCRLF;
+    }
     st[0] = 0;
     if( !is_small ) {
         if( EditFlags.NewFile ) {
@@ -205,11 +262,11 @@ static int getFileInfoString( char *st, int is_small )
             strcat( st, " [modified]" );
         }
 #if defined( __UNIX__ )
-        if( EditFlags.WriteCRLF ) {
+        if( write_crlf ) {
             strcat( st, " [crlf]" );
         }
-#elif 0
-        if( !EditFlags.WriteCRLF ) {
+#elif 1
+        if( write_crlf == 0 ) {
             strcat( st, " [lf]" );
         }
 #endif
@@ -238,12 +295,12 @@ static int getFileInfoString( char *st, int is_small )
         if( CurrentFile->modified ) {
             strcat( st, "[M]" );
         }
-#if defined(__UNIX__)
-        if( EditFlags.WriteCRLF ) {
+#if defined( __UNIX__ )
+        if( write_crlf ) {
             strcat( st, " [C]" );
         }
-#elif 0
-        if( !EditFlags.WriteCRLF ) {
+#elif 1
+        if( write_crlf == 0 ) {
             strcat( st, " [L]" );
         }
 #endif
@@ -361,7 +418,7 @@ bool CFileReadOnly( void )
             CurrentFile->read_only = FALSE;
         } else {
             ConditionalChangeDirectory( CurrentFile->home );
-            attr = access( CurrentFile->name, ACCESS_WR );
+            attr = access( CurrentFile->name, W_OK );
             if( stricmp( CurrentFile->home, CurrentDirectory ) ) {
                 ChangeDirectory( CurrentDirectory );
             }
@@ -398,8 +455,8 @@ bool IsTextFile( char *file )
 
     i = strlen( file );
     fend = file + i;
-    fign = FIgnore;
-    for( j = 0; j < CurrFIgnore; j++ ) {
+    fign = EditVars.FIgnore;
+    for( j = 0; j < EditVars.CurrFIgnore; j++ ) {
          if( !strcmp( fend - strlen( fign ), fign ) ) {
              return( FALSE );
          }

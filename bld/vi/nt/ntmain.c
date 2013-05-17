@@ -31,20 +31,26 @@
 
 
 #include "vi.h"
+#ifdef __WATCOMC__
+#include <process.h>
+#endif
 #include "source.h"
 
 void main( int argc, char *argv[] )
 {
+    char buffer[PATH_MAX];
+#if !defined( __WATCOMC__ )
+    _argv = argv;
+    _argc = argc;
+#endif
     InitMem();
-
     argc = argc;
-    EXEName = argv[0];
+    EXEName = _cmdname( buffer );
     EditFlags.HasSystemMouse = TRUE;
     VarAddGlobalStr( "OS", "nt" );
     Comspec = getenv( "ComSpec" );
     InitializeEditor();
     EditMain();
-
     FiniMem();
 
 } /* main */

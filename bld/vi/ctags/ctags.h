@@ -30,12 +30,9 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-
-typedef enum {
-    FALSE = 0,
-    TRUE
-} bool;
+#include "wio.h"
+#include "watcom.h"
+#include "bool.h"
 
 typedef enum {
     TYPE_C,

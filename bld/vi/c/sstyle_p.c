@@ -352,6 +352,7 @@ static void getSpecialVariable( ss_block *ss_new, char *start )
 
 static void getSymbol( ss_block *ss_new, char *start )
 {
+    start = start;
     flags.beforeRegExp = TRUE;
     flags.doubleRegExp = FALSE;
     ss_new->type = SE_SYMBOL;
@@ -485,7 +486,7 @@ void InitPerlFlags( linenum line_no )
     fcb     *fcb;
     char    *text;
     line    *thisline;
-    line    *topline;
+//    line    *topline;
     vi_rc   rc;
     int     withinQuotes = 0;
     line    *line;
@@ -507,12 +508,12 @@ void InitPerlFlags( linenum line_no )
     }
 
     if( rc == ERR_NO_ERR ) {
-        topline = line;
+//        topline = line;
         if( inBlock ) {
             CGimmeNextLinePtr( &fcb, &line );
         }
     } else {
-        topline = NULL;
+//        topline = NULL;
         if( inBlock ) {
             CGimmeLinePtr( 1, &fcb, &line );
         } else {

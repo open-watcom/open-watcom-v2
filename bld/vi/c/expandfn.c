@@ -53,7 +53,7 @@ int ExpandFileNames( char *p, char ***argv )
     /*
      * check if there is anything to expand
      */
-    while( TRUE ) {
+    for( ;; ) {
         if( *p == '\0' ) {
             break;
         }

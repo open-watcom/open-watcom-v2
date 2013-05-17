@@ -43,7 +43,7 @@
     #define _FAR_
 #endif
 
-#if !defined( __386__ ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( __4G__ )
 
 static void (interrupt _FAR_ *oldInt1c)( void );
 static void (interrupt _FAR_ *oldInt1b)( void );
@@ -65,14 +65,14 @@ static char tSec1, tSec2, tMin1, tMin2, tHour1, tHour2;
 static char cTick1 = 18, cTick2 = 5;
 
 void __int24_handler( void );
-#ifdef __386__
-#pragma aux __int24_handler = \
-        "mov    al, 3" \
-        "iretd" ;
-#else
+#if defined( _M_I86 )
 #pragma aux __int24_handler = \
         "mov    al, 3" \
         "iret" ;
+#elif defined( _M_IX86 )
+#pragma aux __int24_handler = \
+        "mov    al, 3" \
+        "iretd" ;
 #endif
 
 static void _FAR_ HandleInt24( void )
@@ -87,15 +87,15 @@ static void drawClock( void )
 {
     if( EditFlags.ClockActive && EditFlags.Clock ) {
         if( EditFlags.DisplaySeconds ) {
-            ClockStart[7 * 2] = tSec2;
-            ClockStart[6 * 2] = tSec1;
-            ClockStart[5 * 2] = ':';
+            ClockStart[7].cinfo_char = tSec2;
+            ClockStart[6].cinfo_char = tSec1;
+            ClockStart[5].cinfo_char = ':';
         }
-        ClockStart[4 * 2] = tMin2;
-        ClockStart[3 * 2] = tMin1;
-        ClockStart[2 * 2] = ':';
-        ClockStart[1 * 2] = tHour2;
-        ClockStart[0 * 2] = tHour1;
+        ClockStart[4].cinfo_char = tMin2;
+        ClockStart[3].cinfo_char = tMin1;
+        ClockStart[2].cinfo_char = ':';
+        ClockStart[1].cinfo_char = tHour2;
+        ClockStart[0].cinfo_char = tHour1;
     }
 
 } /* drawClock */
@@ -141,14 +141,14 @@ static void interrupt handleInt1c( void )
         drawClock();
     }
     if( EditFlags.ClockActive && EditFlags.SpinningOurWheels && EditFlags.Spinning ) {
-        *SpinLoc = SpinData[SpinCount];
+        SpinLoc->cinfo_char = SpinData[SpinCount];
         SpinCount++;
         if( SpinCount >= 4 ) {
             SpinCount = 0;
         }
     }
 
-#if !defined( __386__ ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( __4G__ )
     _chain_intr( oldInt1c );
 #endif
 
@@ -182,7 +182,7 @@ static void setClockTime( void )
 
 } /* setClockTime */
 
-#if defined( __386__ ) && !defined( __4G__ )
+#if !defined( _M_I86 ) && !defined( __4G__ )
 static bool     noTimer;
 
 /*
@@ -290,7 +290,7 @@ static void setStupid1c( void )
  */
 void SetInterrupts( void )
 {
-#if !defined( __386__ ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( __4G__ )
     oldInt1c = DosGetVect( 0x1c );
     oldInt1b = DosGetVect( 0x1b );
     oldInt23 = DosGetVect( 0x23 );
@@ -303,7 +303,7 @@ void SetInterrupts( void )
 #endif
 
     setClockTime();
-#if !defined( __386__ ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( __4G__ )
     DosSetVect( 0x1b, handleInt1b_23 );
     DosSetVect( 0x1c, handleInt1c );
     DosSetVect( 0x23, handleInt1b_23 );
@@ -323,7 +323,7 @@ void SetInterrupts( void )
 void RestoreInterrupts( void )
 {
     _disable();
-#if !defined( __386__ ) || defined( __4G__ )
+#if defined( _M_I86 ) || defined( __4G__ )
     DosSetVect( 0x1c, oldInt1c );
     DosSetVect( 0x1b, oldInt1b );
     DosSetVect( 0x23, oldInt23 );

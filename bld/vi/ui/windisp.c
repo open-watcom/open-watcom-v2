@@ -34,19 +34,18 @@
 #include "win.h"
 #include "sstyle.h"
 
-static void WriteLongLineMarker( window_id wn, type_style *style,
-                                 char_info *txt, char_info _FAR *scr, char old )
+static void WriteLongLineMarker( window_id wn, type_style *style, char_info *txt, char_info _FAR *scr, char old )
 {
-    char_info   info;
+    char_info   info = {0, 0};
 
     if( wn != CurrentWindow || !EditFlags.MarkLongLines ) {
         return;
     }
-    info.attr = MAKE_ATTR( Windows[wn], style->background, style->foreground );
-    if( EndOfLineChar ) {
-        info.ch = EndOfLineChar;
+    info.cinfo_attr = MAKE_ATTR( Windows[wn], style->background, style->foreground );
+    if( EditVars.EndOfLineChar ) {
+        info.cinfo_char = EditVars.EndOfLineChar;
     } else {
-        info.ch = old;
+        info.cinfo_char = old;
     }
     WRITE_SCREEN_DATA( *txt, info );
     WRITE_SCREEN( *scr, info );
@@ -62,28 +61,30 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
 {
     wind                *w;
     char_info           *txt;
-    char                *over, *tmp, *otmp;
+    window_id           *over;
+    char                *tmp, *otmp;
     char_info           _FAR *scr;
+    unsigned            oscr;
     int                 addr, start, end, a, spend;
     int                 cnt1, cnt2, startc, spl;
-    char_info           blank, what;
+    char_info           blank = {0, 0};
+    char_info           what = {0, 0};
 #ifdef __VIO__
-    unsigned            oscr;
     unsigned            tbytes;
 #endif
     bool                has_mouse, write_eol;
-    unsigned            ss_i; // index into text, not ss[ss_i]
+    int                 ss_i; // index into text, not ss[ss_i]
 
     if( EditFlags.Quiet ) {
         return( ERR_NO_ERR );
     }
     w = Windows[wn];
-
+    otmp = NULL;
     write_eol = FALSE;
     if( EditFlags.RealTabs ) {
         a = strlen( text );
         otmp = tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, a, tmp, MaxLinem1 + 2 );
+        ExpandTabsInABuffer( text, a, tmp, EditVars.MaxLine + 1 );
     } else {
         tmp = text;
     }
@@ -135,18 +136,17 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
      * initialize
      */
     addr = startc + spl * w->width;
-    txt = (char_info *) &(w->text[sizeof( char_info ) * addr]);
-    scr = (char_info _FAR *) &Scrn[(w->x1 + startc +
-                                   (spl + w->y1) * WindMaxWidth) * sizeof(char_info)];
+    txt = &(w->text[addr]);
+    over = &(w->overlap[addr]);
+    oscr = w->x1 + startc + (spl + w->y1) * EditVars.WindMaxWidth;
+    scr = &Scrn[oscr];
 #ifdef __VIO__
-    oscr = (unsigned) ((char *) scr - Scrn);
     tbytes = cnt1 + cnt2;
 #endif
 
     ss_i = 0;
-    what.attr = MAKE_ATTR( w, SEType[ss->type].foreground,
-                              SEType[ss->type].background );
-    blank.ch = ' ';
+    what.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
+    blank.cinfo_char = ' ';
 
     has_mouse = DisplayMouse( FALSE );
 
@@ -154,62 +154,47 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
      * display line
      */
     if( w->overcnt[spl] ) {
-        over = &(w->overlap[addr]);
         while( cnt1-- != 0 ) {
-            what.ch = (*tmp);
-            WRITE_SCREEN_DATA( *txt, what );
-            if( *over++ == NO_CHAR ) {
+            what.cinfo_char = *tmp++;
+            WRITE_SCREEN_DATA( *txt++, what );
+            if( *over++ == NO_WINDOW ) {
                 WRITE_SCREEN( *scr, what );
             }
-            tmp++;
             scr++;
-            txt++;
             if( ++ss_i > ss->end ) {
                 ss++;
-                what.attr = MAKE_ATTR( w, SEType[ss->type].foreground,
-                                          SEType[ss->type].background );
+                what.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             }
         }
-        if( write_eol && *(over - 1) == NO_CHAR ) {
-            WriteLongLineMarker( wn, &( SEType[SE_EOFTEXT] ),
-                                 txt - 1, scr - 1, *(tmp - 1) );
+        if( write_eol && *(over - 1) == NO_WINDOW ) {
+            WriteLongLineMarker( wn, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
         } else {
-            blank.attr = MAKE_ATTR( w, SEType[ss->type].foreground,
-                                       SEType[ss->type].background );
+            blank.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             while( cnt2-- != 0 ) {
-                WRITE_SCREEN_DATA( *txt, blank );
-                if( *over++ == NO_CHAR ) {
+                WRITE_SCREEN_DATA( *txt++, blank );
+                if( *over++ == NO_WINDOW ) {
                     WRITE_SCREEN( *scr, blank );
                 }
                 scr++;
-                txt++;
             }
         }
     } else {
         while( cnt1-- != 0 ) {
-            what.ch = (*tmp);
-            WRITE_SCREEN_DATA( *txt, what );
-            WRITE_SCREEN( *scr, what );
-            scr++;
-            txt++;
-            tmp++;
+            what.cinfo_char = *tmp++;
+            WRITE_SCREEN_DATA( *txt++, what );
+            WRITE_SCREEN( *scr++, what );
             if( ++ss_i > ss->end ) {
                 ss++;
-                what.attr = MAKE_ATTR( w, SEType[ss->type].foreground,
-                                          SEType[ss->type].background );
+                what.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             }
         }
         if( write_eol ) {
-            WriteLongLineMarker( wn, &( SEType[SE_EOFTEXT] ),
-                                 txt - 1, scr - 1, *(tmp - 1) );
+            WriteLongLineMarker( wn, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
         } else {
-            blank.attr = MAKE_ATTR( w, SEType[ss->type].foreground,
-                                       SEType[ss->type].background );
+            blank.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             while( cnt2-- != 0 ) {
-                WRITE_SCREEN_DATA( *txt, blank );
-                WRITE_SCREEN( *scr, blank );
-                txt++;
-                scr++;
+                WRITE_SCREEN_DATA( *txt++, blank );
+                WRITE_SCREEN( *scr++, blank );
             }
         }
     }
@@ -229,8 +214,7 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
 /*
  * DisplayLineInWindowWithColor - do just that
  */
-vi_rc DisplayLineInWindowWithColor( window_id wn, int c_line_no,
-                                  char *text, type_style *ts, int start_col )
+vi_rc DisplayLineInWindowWithColor( window_id wn, int c_line_no, char *text, type_style *ts, int start_col )
 {
     ss_block    ss;
 
@@ -262,7 +246,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
     if( EditFlags.RealTabs ) {
         a = strlen( text );
         tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, a, tmp, MaxLinem1 + 2 );
+        ExpandTabsInABuffer( text, a, tmp, EditVars.MaxLine + 1 );
     } else {
         tmp = text;
     }
@@ -301,14 +285,12 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
 void DisplayCrossLineInWindow( window_id wn, int line )
 {
     wind                *w;
-    char                *over;
+    window_id           *over;
     char_info           *txt;
     char_info           _FAR *scr;
-#ifdef __VIO__
     unsigned            oscr;
-#endif
     int                 addr, i;
-    char_info           what;
+    char_info           what = {0, 0};
 
     if( EditFlags.Quiet ) {
         return;
@@ -331,41 +313,34 @@ void DisplayCrossLineInWindow( window_id wn, int line )
      */
     w = AccessWindow( wn );
     addr = 1 + (1 + line) * w->width;
-    txt = (char_info *) &(w->text[sizeof( char_info ) * addr]);
-    scr = (char_info _FAR *) &Scrn[(w->x1 + (1 + line + w->y1) * WindMaxWidth) *
-                                    sizeof( char_info )];
-#ifdef __VIO__
-    oscr = (unsigned) ((char _FAR *) (scr) - Scrn);
-#endif
-    what.attr = MAKE_ATTR( w, w->border_color1, w->border_color2 );
-    what.ch = WindowBordersNG[WB_LEFTT];
-
+    txt = &(w->text[addr]);
     over = &(w->overlap[addr]);
-    if( *over++ == NO_CHAR ) {
+    oscr = w->x1 + (1 + line + w->y1) * EditVars.WindMaxWidth;
+    scr = &Scrn[oscr];
+    what.cinfo_attr = MAKE_ATTR( w, w->border_color1, w->border_color2 );
+    what.cinfo_char = WindowBordersNG[WB_LEFTT];
+
+    WRITE_SCREEN_DATA( *txt++, what );
+    if( *over++ == NO_WINDOW ) {
         WRITE_SCREEN( *scr, what );
     }
-    WRITE_SCREEN_DATA( *txt, what );
-    txt++;
     scr++;
 
-    what.ch = WindowBordersNG[WB_TOPBOTTOM];
+    what.cinfo_char = WindowBordersNG[WB_TOPBOTTOM];
     for( i = w->x1 + 1; i < w->x2; i++ ) {
-        if( *over++ == NO_CHAR ) {
+        WRITE_SCREEN_DATA( *txt++, what );
+        if( *over++ == NO_WINDOW ) {
             WRITE_SCREEN( *scr, what );
         }
-        WRITE_SCREEN_DATA( *txt, what );
-        txt++;
         scr++;
     }
 
     if( line != w->height - 3 && line != 0 ) {
-        what.ch = WindowBordersNG[WB_RIGHTT];
+        what.cinfo_char = WindowBordersNG[WB_RIGHTT];
         WRITE_SCREEN_DATA( *txt, what );
-        if( *over == NO_CHAR ) {
+        if( *over == NO_WINDOW ) {
             WRITE_SCREEN( *scr, what );
         }
-        scr++;
-        txt++;
     }
 
 #ifdef __VIO__
@@ -381,14 +356,15 @@ void DisplayCrossLineInWindow( window_id wn, int line )
 static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *s )
 {
     wind                *w;
-    char                *over;
+    window_id           *over;
     char_info           _FAR *scr;
-    char_info           what;
-#ifdef __VIO__
     unsigned            oscr;
+    char_info           what = {0, 0};
+#ifdef __VIO__
     unsigned            onscr;
 #endif
-    int                 attr, t, end, spend, cnt1, cnt2, sscol, spl;
+    viattr_t            attr;
+    int                  end, spend, cnt1, cnt2, sscol, spl;
 
     if( EditFlags.Quiet ) {
         return;
@@ -435,24 +411,22 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     /*
      * initialize
      */
-    t = sscol + spl * w->width;
-    scr = (char_info _FAR *) &Scrn[(w->x1 + sscol + (spl + w->y1) * WindMaxWidth) *
-                                   sizeof( char_info )];
+    oscr = w->x1 + sscol + (spl + w->y1) * EditVars.WindMaxWidth;
+    scr = &Scrn[oscr];
 #ifdef __VIO__
-    oscr = (unsigned) ((char _FAR *) scr - Scrn);
     onscr = 0;
 #endif
     attr = MAKE_ATTR( w, s->foreground, s->background );
-    what.attr = attr;
+    what.cinfo_attr = attr;
 
     /*
      * display line
      */
     if( w->overcnt[spl] ) {
-        over = w->overlap + t;
+        over = w->overlap + sscol + spl * w->width;
         while( cnt1-- != 0 ) {
-            if( *over++ == NO_CHAR ) {
-                what.ch = (*scr).ch;
+            if( *over++ == NO_WINDOW ) {
+                what.cinfo_char = scr->cinfo_char;
                 WRITE_SCREEN( *scr, what );
 #ifdef __VIO__
                 onscr++;
@@ -461,8 +435,8 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
             scr++;
         }
         while( cnt2-- != 0 ) {
-            if( *over++ == NO_CHAR ) {
-                what.ch = (*scr).ch;
+            if( *over++ == NO_WINDOW ) {
+                what.cinfo_char = scr->cinfo_char;
                 WRITE_SCREEN( *scr, what );
 #ifdef __VIO__
                 onscr++;
@@ -472,20 +446,18 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
         }
     } else {
         while( cnt1-- != 0 ) {
-            what.ch = (*scr).ch;
-            WRITE_SCREEN( *scr, what );
+            what.cinfo_char = scr->cinfo_char;
+            WRITE_SCREEN( *scr++, what );
 #ifdef __VIO__
             onscr++;
 #endif
-            scr++;
         }
         while( cnt2-- != 0 ) {
-            what.ch = (*scr).ch;
-            WRITE_SCREEN( *scr, what );
+            what.cinfo_char = scr->cinfo_char;
+            WRITE_SCREEN( *scr++, what );
 #ifdef __VIO__
             onscr++;
 #endif
-            scr++;
         }
     }
 #ifdef __VIO__
@@ -536,16 +508,13 @@ void ColorAColumnRange( int row, int scol, int ecol, type_style *style )
 /*
  * SetCharInWindowWithColor - do just that, using given colors
  */
-vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text,
-                              type_style *style )
+vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type_style *style )
 {
     wind                *w;
-    char                *over;
-    int                 attr, addr, start, spl;
-    char_info           tmp;
-    char_info           *txt;
-    char_info           _FAR *scr;
+    int                 addr, start, spl;
+    char_info           tmp = {0, 0};
     bool                has_mouse;
+    unsigned            oscr;
 
     if( EditFlags.Quiet ) {
         return( ERR_NO_ERR );
@@ -579,24 +548,20 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text,
      */
     w = AccessWindow( wn );
     addr = col + start + spl * w->width;
-    txt = (char_info *) &(w->text[sizeof( char_info ) * addr]);
-    scr = (char_info _FAR *) &Scrn[(w->x1 + start + col + (spl + w->y1) *
-                                    WindMaxWidth) * sizeof( char_info )];
-    attr = MAKE_ATTR( w, style->foreground, style->background );
+    oscr = w->x1 + start + col + (spl + w->y1) * EditVars.WindMaxWidth;
+    tmp.cinfo_attr = MAKE_ATTR( w, style->foreground, style->background );
+    tmp.cinfo_char = text;
 
     /*
      * display char
      */
     has_mouse = DisplayMouse( FALSE );
-    over = &(w->overlap[addr]);
-    tmp.attr = attr;
-    tmp.ch = text;
-    WRITE_SCREEN_DATA( *txt, tmp );
-    if( *over == NO_CHAR ) {
-        WRITE_SCREEN( *scr, tmp );
+    WRITE_SCREEN_DATA( w->text[addr], tmp );
+    if( w->overlap[addr] == NO_WINDOW ) {
+        WRITE_SCREEN( Scrn[oscr], tmp );
     }
 #ifdef __VIO__
-    MyVioShowBuf( (unsigned)((char *) scr - Scrn), 1 );
+    MyVioShowBuf( oscr, 1 );
 #endif
 
     ReleaseWindow( w );

@@ -31,6 +31,7 @@
 
 
 #include "vi.h"
+#include <stddef.h>
 
 static file_stack       **fStack;
 static int              fDepth;
@@ -42,7 +43,7 @@ void InitFileStack( void )
 {
     fDepth = 0;
     MemFree( fStack );
-    fStack = MemAlloc( MaxPush * sizeof( file_stack * ) );
+    fStack = MemAlloc( EditVars.MaxPush * sizeof( file_stack * ) );
 
 } /* InitFileStack */
 
@@ -67,12 +68,12 @@ vi_rc PushFileStack( void )
 
     len = strlen( CurrentFile->name );
 
-    fs = MemAlloc( sizeof( file_stack ) + len );
+    fs = MemAlloc( offsetof( file_stack, fname ) + len + 1 );
     memcpy( fs->fname, CurrentFile->name, len + 1 );
     fs->p = CurrentPos;
 
-    if( fDepth == MaxPush ) {
-        for( i = 1; i < MaxPush; i++ ) {
+    if( fDepth == EditVars.MaxPush ) {
+        for( i = 1; i < EditVars.MaxPush; i++ ) {
             fStack[i - 1] = fStack[i];
         }
     } else {

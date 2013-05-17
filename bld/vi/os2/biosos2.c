@@ -32,13 +32,14 @@
 #include "vi.h"
 #define INCL_BASE
 #define INCL_VIO
-#include "os2.h"
+#include <os2.h>
+#include "win.h"
 #include "vibios.h"
 
-#ifdef __386__
-    #define SEG16 _Seg16
-#else
+#ifdef _M_I86
     #define SEG16
+#else
+    #define SEG16 _Seg16
 #endif
 
 typedef void * SEG16 ptr_16;
@@ -49,6 +50,8 @@ typedef struct {
    USHORT  numcolorregs;
    ptr_16  colorregaddr;
 } THUNKEDVIO;
+
+extern int  PageCnt;
 
 long BIOSGetColorRegister( short reg )
 {
@@ -151,7 +154,7 @@ void BIOSNewCursor( char ch, char notused )
 /*
  * BIOSGetKeyboard - get a keyboard char
  */
-extern vi_key BIOSGetKeyboard( int *scan )
+vi_key BIOSGetKeyboard( int *scan )
 {
     KBDKEYINFO      info;
 
@@ -169,7 +172,7 @@ extern vi_key BIOSGetKeyboard( int *scan )
 /*
  * BIOSKeyboardHit - test for keyboard hit
  */
-extern bool BIOSKeyboardHit( void )
+bool BIOSKeyboardHit( void )
 {
     KBDKEYINFO  info;
 
@@ -181,14 +184,12 @@ extern bool BIOSKeyboardHit( void )
 /*
  * BIOSUpdateScreen - update the screen
  */
-void  BIOSUpdateScreen( unsigned offset, unsigned length )
+void  BIOSUpdateScreen( unsigned offset, unsigned nchars )
 {
-    extern int  PageCnt;
-
     if( PageCnt > 0 ) {
         return;
     }
-    VioShowBuf( (unsigned short)offset, (unsigned short)(length * 2), 0 );
+    VioShowBuf( offset * sizeof( char_info ), nchars * sizeof( char_info ), 0 );
 
 } /* BIOSUpdateScreen */
 

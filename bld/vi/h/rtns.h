@@ -55,7 +55,8 @@ void    RemoveFromAutoSaveList( void );
 void    GetCurrentFilePath( char *path );
 
 /* bnddata.c */
-void    CheckForBoundData( void );
+void    BoundDataInit( void );
+void    BoundDataFini( void );
 
 /* change.c */
 vi_rc   DoSubstitute( event **, event ** );
@@ -88,7 +89,7 @@ linenum SplitUpLine( linenum );
 void    InitCommandLine( void );
 vi_rc   ProcessCommandLine( void );
 vi_rc   FancyProcessCommandLine( void );
-vi_rc   TryCompileableToken( int token, char *data, bool iscmdline, bool dmt );
+vi_rc   TryCompileableToken( int token, char *data, bool iscmdline );
 vi_rc   RunCommandLine( char * );
 vi_rc   ProcessWindow( int, char * );
 void    FiniCommandLine( void );
@@ -101,7 +102,11 @@ status_type UpdateCurrentStatus( status_type st );
 vi_rc   Cut( linenum, int, linenum, int, int );
 
 /* dat.c */
+#ifdef VICOMP
 vi_rc   ReadDataFile( char *file, char **buffer, bool (*)( int ), bool (*)( int, char * ) );
+#else
+vi_rc   ReadDataFile( char *file, char **buffer, bool (*)( int ), bool (*)( int, char * ), bool );
+#endif
 
 /* delete.c */
 vi_rc   DoDeleteRegion( event **, event ** );
@@ -267,7 +272,8 @@ void    ErrorFini( void );
 int ExpandFileNames( char *, char *** );
 
 /* fcb.c */
-vi_rc   ReadFcbData( file * );
+vi_rc   OpenFcbData( file * );
+vi_rc   ReadFcbData( file *, int * );
 void    CreateFcbData( file *, int );
 int     FcbSize( fcb * );
 
@@ -475,6 +481,7 @@ void    AddCurrentMouseEvent( void );
 
 /* linecfb.c */
 bool    CreateLinesFromBuffer( int, line_list *, int *, int *, short * );
+bool    CreateLinesFromFileBuffer( int, line_list *, int *, int *, short *, int * );
 
 /* linedel.c */
 void    UpdateLineNumbers( linenum amt, fcb *cfcb  );
@@ -571,7 +578,7 @@ vi_rc   GoMark( range *, long );
 vi_rc   GoMarkLine( range *, long );
 vi_rc   GetMark( linenum *, int * );
 vi_rc   GetMarkLine( linenum * );
-vi_rc   VerifyMark( int, int );
+vi_rc   VerifyMark( unsigned, int );
 void    AllocateMarkList( void );
 void    FreeMarkList( void );
 void    MemorizeCurrentContext( void );
@@ -588,6 +595,8 @@ void    MatchFini( void );
 void    *MemAlloc( unsigned );
 void    *MemAllocUnsafe( unsigned );
 void    MemFree( void * );
+void    MemFreePtr( void ** );
+void    MemFreeList( int, char ** );
 void    *MemReAlloc( void *, unsigned );
 void    *MemReAllocUnsafe( void *ptr, unsigned size );
 void    *StaticAlloc( void );
@@ -599,28 +608,11 @@ vi_rc   DumpMemory( void );
 void    InitMem( void );
 void    FiniMem( void );
 
-#define MemFree2( pp ) \
-    do {                    \
-        MemFree( *(pp) );   \
-        *(pp) = NULL;       \
-    } while( 0 )
-
-#define MemFreeList(s, pp)                                                  \
-    do {                                                                    \
-        if( pp ) {                                                          \
-            size_t memFreeList_i;                                           \
-            for( memFreeList_i = 0; memFreeList_i < s; memFreeList_i++ ) {  \
-                MemFree( pp[memFreeList_i] );                               \
-            }                                                               \
-            MemFree( pp );                                                  \
-        }                                                                   \
-    } while( 0 )
-
 /* misc.c */
-int     ExecCmd( char *, char *, char * );
+long    ExecCmd( char *, char *, char * );
 vi_rc   GetResponse( char *, char * );
 void    ExitWithVerify( void );
-bool    ExitWithPrompt( bool );
+bool    ExitWithPrompt( bool, bool );
 bool    PromptFilesForSave( void );
 bool    PromptThisFileForSave( const char * );
 bool    QueryFile( const char * );
@@ -664,11 +656,12 @@ int     NextWord( char *, char *, char *);
 int     NextWordSlash( char *, char * );
 int     NextWord1( char *, char * );
 void    EliminateFirstN( char *, int );
-int     Tokenize( char *, const char *, bool );
-int     GetLongestTokenLength( char * );
-int     GetNumberOfTokens( char * );
+int     Tokenize( const char *, const char *, bool );
+int     GetLongestTokenLength( const char * );
+int     GetNumberOfTokens( const char * );
 char    **BuildTokenList( int, char * );
-char    *GetTokenString( char *, int );
+char    *GetTokenString( const char *, int );
+char    *GetTokenStringCVT( const char *, int, char *, bool );
 char    *ExpandTokenSet( char *token_no, char *buff );
 int     AddColorToken( char *);
 int     ReplaceSubString( char *, int, int, int, char *, int );
@@ -679,7 +672,7 @@ void    GetEndString( char *data, char *res );
 void    ParseConfigFile( char * );
 
 /* parsecl.c */
-vi_rc ParseCommandLine( char *, linenum *, int *, linenum *, int *, int *, char *, int * );
+vi_rc ParseCommandLine( char *, linenum *, bool *, linenum *, bool *, int *, char * );
 vi_rc GetAddress( char *, linenum * );
 
 /* printf.c */
@@ -754,13 +747,13 @@ vi_rc   SelectAll( void );
 vi_rc Shift( linenum, linenum, char, bool );
 
 /* source.c */
-vi_rc   Source( char *, char *, int * );
+vi_rc   Source( char *, char *, unsigned * );
 void    FileSPVAR( void );
 void    SourceError( char *msg );
 void    DeleteResidentScripts( void );
 
 /* spawn.c */
-int     MySpawn( char * );
+long    MySpawn( char * );
 void    ResetSpawnScreen( void );
 
 /* srcvar.c */

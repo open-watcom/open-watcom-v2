@@ -31,10 +31,9 @@
 
 
 #include "vi.h"
-#ifdef __386__
-bool OLE2Init( void ) { return( FALSE ); }
-void OLE2Fini( void ) {}
-#else
+
+#ifdef _M_I86
+
 #define DO_DEFINE_OLEGUID
 #include "ole2def.h"
 
@@ -77,4 +76,7 @@ void OLE2Fini( void )
     UseOLE2 = FALSE;
 
 } /* OLE2Fini */
+#else
+bool OLE2Init( void ) { return( FALSE ); }
+void OLE2Fini( void ) {}
 #endif

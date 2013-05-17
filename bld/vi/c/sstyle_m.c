@@ -233,6 +233,7 @@ void GetMkFlags( ss_flags_m *storeFlags )
 
 void InitMkFlags( linenum line_no )
 {
+    line_no = line_no;
     flags.inPreproc = FALSE;
     flags.inInlineFile = FALSE;
     flags.inMacro = FALSE;

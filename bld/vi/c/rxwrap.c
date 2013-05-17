@@ -33,7 +33,7 @@
 
 #define CASEIGNORE      EditFlags.CaseIgnore
 #define MAGICFLAG       EditFlags.Magic
-#define MAGICSTR        Majick
+#define MAGICSTR        EditVars.Majick
 #define REALTABS        EditFlags.RealTabs
 #define ALLOC           MemAlloc
 #define WANT_EXCLAMATION

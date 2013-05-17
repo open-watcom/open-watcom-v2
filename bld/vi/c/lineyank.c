@@ -155,10 +155,8 @@ vi_rc GetCopyOfLineRange( linenum s, linenum e, fcb_list *fcblist )
         FreeEntireFcb( fcblist->tail->next );
     }
     fcblist->head->prev = fcblist->tail->next = NULL;
-    sfcb = fcblist->head;
-    while( sfcb != NULL ) {
+    for( sfcb = fcblist->head; sfcb != NULL; sfcb = sfcb->next ) {
         sfcb->f = NULL;
-        sfcb = sfcb->next;
     }
     FileFree( cfile );
     return( ERR_NO_ERR );

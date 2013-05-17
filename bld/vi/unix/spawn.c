@@ -49,9 +49,9 @@ void ResetSpawnScreen( void )
     return;
 }
 
-int MySpawn( char *cmd )
+long MySpawn( char *cmd )
 {
-    int rc;
+    long rc;
 
     FiniMouse();
     ScreenFini();

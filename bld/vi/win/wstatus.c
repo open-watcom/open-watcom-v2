@@ -35,7 +35,6 @@
 #include "utils.h"
 #include "statwnd.h"
 #include "wstatus.h"
-#include "watcom.h"
 #include <assert.h>
 
 static BOOL Init( window *, void * );
@@ -68,7 +67,8 @@ void StatusWndSetSeparatorsWithArray( short *source, int num )
     MemFree( list );
 }
 
-BOOL StatusWindowProc( HWND, UINT, UINT, LONG );
+BOOL StatusHookProc( HWND, UINT, WPARAM, LPARAM );
+
 static BOOL Init( window *w, void *parm )
 {
     BOOL    rc;
@@ -76,20 +76,16 @@ static BOOL Init( window *w, void *parm )
     parm = parm;
     w = w;
 
-    rc = StatusWndInit( InstanceHandle, StatusWindowProc, sizeof( LPVOID ),
-                        (HCURSOR)NULLHANDLE );
+    rc = StatusWndInit( InstanceHandle, StatusHookProc, sizeof( LPVOID ), (HCURSOR)NULLHANDLE );
     sw = StatusWndStart();
 #if defined( __NT__ )
-    StatusWndChangeSysColors( GetSysColor( COLOR_BTNFACE ),
-                              GetSysColor( COLOR_BTNTEXT ),
+    StatusWndChangeSysColors( GetSysColor( COLOR_BTNFACE ), GetSysColor( COLOR_BTNTEXT ),
 #else
-    StatusWndChangeSysColors( GetRGB( statusw_info.text.background ),
-                              GetRGB( statusw_info.text.foreground ),
+    StatusWndChangeSysColors( GetRGB( statusw_info.text.background ), GetRGB( statusw_info.text.foreground ),
 #endif
-                              GetSysColor( COLOR_BTNHIGHLIGHT ),
-                              GetSysColor( COLOR_BTNSHADOW ) );
-    if( NumStatusSections > 0 ) {
-        StatusWndSetSeparatorsWithArray( StatusSections, NumStatusSections );
+                              GetSysColor( COLOR_BTNHIGHLIGHT ), GetSysColor( COLOR_BTNSHADOW ) );
+    if( EditVars.NumStatusSections > 0 ) {
+        StatusWndSetSeparatorsWithArray( EditVars.StatusSections, EditVars.NumStatusSections );
     }
     return( rc );
 }
@@ -106,8 +102,8 @@ static BOOL Fini( window *w, void *parm )
 int setCursor( short x )
 {
     int     i;
-    for( i = 0; i < NumStatusSections; i++ ) {
-        if( abs( x - (StatusSections[i]) ) < MOUSE_ALLOWANCE ) {
+    for( i = 0; i < EditVars.NumStatusSections; i++ ) {
+        if( abs( x - (EditVars.StatusSections[i]) ) < MOUSE_ALLOWANCE ) {
             CursorOp( COP_STATMOVE );
             return( i );
         }
@@ -116,13 +112,13 @@ int setCursor( short x )
     return( -1 );
 }
 
-void processMouseMove( UINT w, LONG l )
+void processMouseMove( WPARAM w, LPARAM l )
 {
     int         deep, delta, maxmove, movedby, i, next;
     short       x;
     int         secIndex;
 
-    x = (signed_16)LOWORD( l ) - CURSOR_CORRECT;
+    x = (short)LOWORD( l ) - CURSOR_CORRECT;
     w = w;
 
     if( capIndex == -1 ) {
@@ -153,7 +149,7 @@ void processMouseMove( UINT w, LONG l )
     // shove bars to right
     deep = 0;
     delta = x - sections[secIndex];
-    while( delta > 0 && secIndex + deep <= NumStatusSections ) {
+    while( delta > 0 && secIndex + deep <= EditVars.NumStatusSections ) {
         next = secIndex + deep;
         maxmove = sections[next + 1] - sections[next] - BOUNDARY_WIDTH;
         movedby = 0;
@@ -167,26 +163,24 @@ void processMouseMove( UINT w, LONG l )
         deep++;
     }
 
-    StatusWndSetSeparatorsWithArray( sections + 1, NumStatusSections );
+    StatusWndSetSeparatorsWithArray( sections + 1, EditVars.NumStatusSections );
     InvalidateRect( StatusWindow, NULL, TRUE );
     UpdateWindow( StatusWindow );
 }
 
-void processLButtonDown( HWND hwnd, UINT w, LONG l )
+void processLButtonDown( HWND hwnd, WPARAM w, LPARAM l )
 {
     RECT        rect;
 
     w = w;
-    capIndex = setCursor( (signed_16)LOWORD( l ) - CURSOR_CORRECT );
+    capIndex = setCursor( (short)LOWORD( l ) - CURSOR_CORRECT );
     if( capIndex != -1 ) {
         SetCapture( hwnd );
-        sections = MemAlloc( (NumStatusSections + 2) * sizeof( short ) );
+        sections = MemAlloc( (EditVars.NumStatusSections + 2) * sizeof( short ) );
         GetClientRect( StatusWindow, &rect );
-        memcpy( sections + 1, StatusSections,
-                NumStatusSections * sizeof( short ) );
+        memcpy( sections + 1, EditVars.StatusSections, EditVars.NumStatusSections * sizeof( short ) );
         sections[0] = 0;
-        sections[NumStatusSections + 1] = rect.right - BOUNDARY_WIDTH +
-                                          CURSOR_CORRECT;
+        sections[EditVars.NumStatusSections + 1] = rect.right - BOUNDARY_WIDTH + CURSOR_CORRECT;
     }
 }
 
@@ -196,22 +190,21 @@ void processLButtonUp( void )
         CursorOp( COP_ARROW );
         ReleaseCapture();
         capIndex = -1;
-        memcpy( StatusSections, sections + 1,
-                NumStatusSections * sizeof( short ) );
+        memcpy( EditVars.StatusSections, sections + 1, EditVars.NumStatusSections * sizeof( short ) );
         MemFree( sections );
     }
 }
 
 /*
- * StatusWindowProc - handle messages for the status window
+ * StatusHookProc - handle messages for the status window
  */
-BOOL StatusWindowProc( HWND hwnd, UINT msg, UINT w, LONG l )
+BOOL StatusHookProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     w = w;
     l = l;
     switch( msg ) {
     case WM_CREATE:
-        SetWindowLong( hwnd, 0, (LONG)(LPVOID)&StatusBar );
+        SET_WNDINFO( hwnd, (LONG_PTR)&StatusBar );
         break;
     case WM_SETFOCUS:
         SetFocus( Root );
@@ -228,7 +221,7 @@ BOOL StatusWindowProc( HWND hwnd, UINT msg, UINT w, LONG l )
     }
     return( FALSE );
 
-} /* StatusWindowProc */
+} /* StatusHookProc */
 
 /*
  * NewStatWindow - create a new status window

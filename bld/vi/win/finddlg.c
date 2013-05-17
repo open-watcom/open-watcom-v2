@@ -39,7 +39,7 @@ static fancy_find findData =
 /*
  * FindDlgProc - callback routine for find dialog
  */
-BOOL WINEXP FindDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int                 curr;
     int                 i;
@@ -59,17 +59,16 @@ BOOL WINEXP FindDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             SetWindowPos( hwnd, (HWND)NULLHANDLE, findData.posx, findData.posy, 
                 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
         }
-        EditSubClass( hwnd, FIND_EDIT, &FindHist );
+        EditSubClass( hwnd, FIND_EDIT, &EditVars.FindHist );
         CheckDlgButton( hwnd, FIND_IGNORE_CASE, findData.case_ignore );
         CheckDlgButton( hwnd, FIND_REGULAR_EXPRESSIONS, findData.use_regexp );
         CheckDlgButton( hwnd, FIND_SEARCH_BACKWARDS, !findData.search_forward );
         CheckDlgButton( hwnd, FIND_SEARCH_WRAP, findData.search_wrap );
         SetDlgItemText( hwnd, FIND_EDIT, findData.find );
-        curr = FindHist.curr + FindHist.max - 1;
-        for( i = 0; i < FindHist.max; i++ ) {
-            if( FindHist.data[curr % FindHist.max] != NULL ) {
-                SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_ADDSTRING, 0,
-                                    (LONG) FindHist.data[curr % FindHist.max] );
+        curr = EditVars.FindHist.curr + EditVars.FindHist.max - 1;
+        for( i = 0; i < EditVars.FindHist.max; i++ ) {
+            if( EditVars.FindHist.data[curr % EditVars.FindHist.max] != NULL ) {
+                SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_ADDSTRING, 0, (LPARAM)EditVars.FindHist.data[curr % EditVars.FindHist.max] );
             }
             curr--;
             if( curr < 0 ) {
@@ -92,7 +91,7 @@ BOOL WINEXP FindDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_GETTEXT, index, (LONG) find );
+                SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_GETTEXT, index, (LPARAM)find );
                 SetDlgItemText( hwnd, FIND_EDIT, find );
                 if( cmd == LBN_DBLCLK ) {
                     PostMessage( hwnd, WM_COMMAND, GET_WM_COMMAND_MPS( IDOK, 0, 0 ) );
@@ -112,7 +111,7 @@ BOOL WINEXP FindDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             findData.use_regexp = IsDlgButtonChecked( hwnd, FIND_REGULAR_EXPRESSIONS );
             findData.search_forward = !IsDlgButtonChecked( hwnd, FIND_SEARCH_BACKWARDS );
             findData.search_wrap = IsDlgButtonChecked( hwnd, FIND_SEARCH_WRAP );
-            h = &FindHist;
+            h = &EditVars.FindHist;
             curr = h->curr + h->max - 1;
             ptr = NULL;
             if( curr >= 0 ) {
@@ -147,9 +146,9 @@ bool GetFindStringDialog( fancy_find *ff )
 
     findData.find = ff->find;
     findData.findlen = ff->findlen;
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) FindDlgProc, InstanceHandle );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)FindDlgProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "FINDDLG", Root, proc );
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
     SetWindowCursor();
     if( rc ) {
         ff->case_ignore = findData.case_ignore;

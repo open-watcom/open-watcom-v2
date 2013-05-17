@@ -46,7 +46,7 @@ static int eatWhiteSpace( void )
 {
     int ch;
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetChar();
         if( ch == EOF ) {
             break;
@@ -116,7 +116,7 @@ static void eatUntilChar( int match )
 
     escape = FALSE;
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetChar();
         if( ch == EOF ) {
             break;
@@ -150,7 +150,7 @@ static void doPreProcessorDirective( void )
     /*
      * eat leading whitespace
      */
-    while( 1 ) {
+    for( ;; ) {
         ch = GetChar();
         if( ch == EOF ) {
             return;
@@ -165,7 +165,7 @@ static void doPreProcessorDirective( void )
      * get token
      */
     buffptr = buff;
-    while( 1 ) {
+    for( ;; ) {
         ch = GetChar();
         if( ch == EOF ) {
             return;
@@ -199,7 +199,7 @@ static void doPreProcessorDirective( void )
         !acceptOnlyEndif ) {
         ch = eatWhiteSpace();
         buffptr = buff;
-        while( 1 ) {
+        for( ;; ) {
             *buffptr++ = ch;
             ch = GetChar();
             if( ch == EOF ) {
@@ -244,7 +244,7 @@ static void eatUntilClosingBracket( void )
 
     escape = FALSE;
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetChar();
         if( ch == EOF ) {
             break;
@@ -318,7 +318,7 @@ static tag_type doFunction( int *brace_level )
     char        ch;
 
     eatUntilClosingBracket();
-    while( 1 ) {
+    for( ;; ) {
         ch = eatWhiteSpace();
         if( IsTokenChar( ch ) || ch == '{' ) {
             break;
@@ -367,7 +367,7 @@ static bool doCUSE( int ch )
      * get struct name
      */
     buffptr = buff;
-    while( 1 ) {
+    for( ;; ) {
         *buffptr++ = ch;
         ch = GetChar();
         if( ch == EOF ) {
@@ -388,7 +388,7 @@ static bool doCUSE( int ch )
     if( ch == '{' ) {
         buffptr--;
     } else {
-        while( 1 ) {
+        for( ;; ) {
             ch = GetChar();
             if( ch == EOF ) {
                 break;
@@ -437,6 +437,7 @@ void ScanC( void )
 
     buffptr = buff;
     brace_level = 0;
+    paren_level = 0;
     typedef_level = -1;
     have_token = FALSE;
     have_typedef = FALSE;
@@ -444,7 +445,7 @@ void ScanC( void )
     acceptOnlyEndif = FALSE;
     structStackDepth = 0;
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetChar();
         if( ch == EOF ) {
             break;

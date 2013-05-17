@@ -131,15 +131,15 @@ vi_rc WindowTile( int maxx, int maxy )
              * resize the window and display it
              */
             BringUpFile( cinfo, FALSE );
-            if( TileColors != NULL ) {
-                for( i = 0; i < MaxTileColors; i++, tc++ ) {
-                    if( tc > MaxTileColors )
+            if( EditVars.TileColors != NULL ) {
+                for( i = 0; i < EditVars.MaxTileColors; i++, tc++ ) {
+                    if( tc > EditVars.MaxTileColors )
                         tc = 0;
-                    if( TileColors[tc].foreground != -1 && TileColors[tc].background != -1 ) {
-                        WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_COLOR, TileColors[tc].foreground );
-                        WindowAuxUpdate( CurrentWindow, WIND_INFO_BACKGROUND_COLOR, TileColors[tc].background );
+                    if( EditVars.TileColors[tc].foreground != -1 && EditVars.TileColors[tc].background != -1 ) {
+                        WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_COLOR, EditVars.TileColors[tc].foreground );
+                        WindowAuxUpdate( CurrentWindow, WIND_INFO_BACKGROUND_COLOR, EditVars.TileColors[tc].background );
                         /* tile fonts? Nah... sounds real stupid... */
-                        WindowAuxUpdate( CurrentWindow, WIND_INFO_BORDER_COLOR2, TileColors[tc].background );
+                        WindowAuxUpdate( CurrentWindow, WIND_INFO_BORDER_COLOR2, EditVars.TileColors[tc].background );
                         tc++;
                         break;
                     }
@@ -188,7 +188,8 @@ vi_rc WindowCascade( void )
     int         xend = editw_info.x2;
     int         ystart = editw_info.y1;
     int         yend = editw_info.y2;
-    info        *cinfo, *cwinfo;
+    info        *cinfo;
+//    info        *cwinfo;
     vi_rc       rc;
 
     /*
@@ -212,7 +213,8 @@ vi_rc WindowCascade( void )
     xend -= cnt - 1;
     yend -= cnt - 1;
     SaveCurrentInfo();
-    cwinfo = cinfo = CurrentInfo;
+//    cwinfo = cinfo = CurrentInfo;
+    cinfo = CurrentInfo;
 
     /*
      * resize all the files

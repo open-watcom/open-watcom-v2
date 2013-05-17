@@ -47,13 +47,15 @@
 #include "win.h"
 #include "vibios.h"
 
+extern pid_t            _my_pid;
+extern int              PageCnt;
+
 struct                  _console_ctrl *QNXCon;
 int                     QNXConHandle;
 unsigned int            QNXConsole;
 struct termios          SaveTermSet;
 int                     SaveTermProtocol;
 pid_t                   Proxy;
-extern pid_t            _my_pid;
 
 
 struct map {
@@ -219,11 +221,11 @@ void BIOSSetCursor( char page, char row, char col )
     msg.write.nbytes = 0;
 
     _setmx( &sx[1], 0, 0 );
-    _setmx( &sx[0], &msg.write, sizeof(msg.write)-sizeof(msg.write.data) );
+    _setmx( &sx[0], &msg.write, sizeof( msg.write ) - sizeof( msg.write.data ) );
 
     _setmx( &rx, &msg.write_reply, sizeof( msg.write_reply ) );
 
-    Sendmx(QNXCon->driver, 2, 1, &sx, &rx );
+    Sendmx( QNXCon->driver, 2, 1, &sx, &rx );
 
 } /* BIOSSetCursor */
 
@@ -255,7 +257,7 @@ static int CompareEvents( const void *d1, const void *d2 )
 /*
  * BIOSGetKeyboard - get a keyboard char
  */
-extern vi_key BIOSGetKeyboard( int *scan )
+vi_key BIOSGetKeyboard( int *scan )
 {
     unsigned char   ch;
     struct map      what;
@@ -294,7 +296,7 @@ extern vi_key BIOSGetKeyboard( int *scan )
 /*
  * BIOSKeyboardHit - test for keyboard hit
  */
-extern bool BIOSKeyboardHit( void )
+bool BIOSKeyboardHit( void )
 {
     return( dev_ischars( QNXConHandle ) != 0 );
 
@@ -350,7 +352,7 @@ int BIOSKeyboardInit( void )
     qnx_vc_detach( proc );
 
     ptr = &sidinfo.tty_name[strlen( sidinfo.tty_name )];
-    while( 1 ) {
+    for( ;; ) {
         if( ptr[-1] < '0' || ptr[-1] > '9' ) {
             break;
         }
@@ -436,7 +438,7 @@ void StopKeyboard( void )
 /*
  * BIOSUpdateScreen - update the screen
  */
-void BIOSUpdateScreen( unsigned offset, unsigned nbytes )
+void BIOSUpdateScreen( unsigned offset, unsigned nchars )
 {
     struct _mxfer_entry sx[2];
     struct _mxfer_entry rx;
@@ -444,8 +446,6 @@ void BIOSUpdateScreen( unsigned offset, unsigned nbytes )
             struct _console_write       write;
             struct _console_write_reply write_reply;
     }                   msg;
-    extern int          PageCnt;
-
 
     if( PageCnt > 0 ) {
         return;
@@ -457,11 +457,11 @@ void BIOSUpdateScreen( unsigned offset, unsigned nbytes )
     msg.write.curs_row = _crow;
     msg.write.curs_col = _ccol;
     msg.write.curs_type = _ctype;
-    msg.write.offset = offset;
-    msg.write.nbytes = nbytes*2;
+    msg.write.offset = offset * sizeof( char_info );
+    msg.write.nbytes = nchars * sizeof( char_info );
 
-    _setmx( &sx[1], &(Scrn[offset]), nbytes*2 );
-    _setmx( &sx[0], &msg.write, sizeof(msg.write)-sizeof(msg.write.data) );
+    _setmx( &sx[1], Scrn + offset, nchars * sizeof( char_info ) );
+    _setmx( &sx[0], &msg.write, sizeof( msg.write ) - sizeof( msg.write.data ) );
 
     _setmx( &rx, &msg.write_reply, sizeof( msg.write_reply ) );
 

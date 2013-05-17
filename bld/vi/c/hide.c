@@ -86,7 +86,7 @@ vi_rc HideLineRange( linenum s, linenum e, bool unhide )
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
-        cline->inf.ld.hidden = hideval;
+        cline->u.ld.hidden = hideval;
     }
 
     DCDisplayAllLines();
@@ -123,12 +123,12 @@ void GetHiddenRange( linenum l, linenum *s, linenum *e )
      */
     cfcb = ofcb;
     cline = oline;
-    while( 1 ) {
+    for( ;; ) {
         i = GimmePrevLinePtr( &cfcb, &cline );
         if( i ) {
             break;
         }
-        if( cline->inf.ld.hidden ) {
+        if( cline->u.ld.hidden ) {
             (*s)--;
             continue;
         } else {
@@ -141,12 +141,12 @@ void GetHiddenRange( linenum l, linenum *s, linenum *e )
      */
     cfcb = ofcb;
     cline = oline;
-    while( 1 ) {
+    for( ;; ) {
         i = CGimmeNextLinePtr( &cfcb, &cline );
         if( i ) {
             break;
         }
-        if( cline->inf.ld.hidden ) {
+        if( cline->u.ld.hidden ) {
             (*e)++;
             continue;
         } else {
@@ -179,7 +179,7 @@ linenum GetHiddenLineBreaks( linenum s, linenum e )
         if( i ) {
             break;
         }
-        if( cline->inf.ld.hidden ) {
+        if( cline->u.ld.hidden ) {
             GetHiddenRange( curr, &s1, &e1 );
             curr = e1 + 1;
             cnt++;
@@ -212,7 +212,7 @@ linenum GetHiddenLineCount( linenum s, linenum e )
     }
     cnt = 0L;
     while( s <= e ) {
-        if( cline->inf.ld.hidden ) {
+        if( cline->u.ld.hidden ) {
             cnt++;
         }
         s++;

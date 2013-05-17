@@ -56,10 +56,10 @@ static char *filterList = "C/C++ Files (*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0
                           "\0";
 static char *FileNameList;
 
-typedef UINT (WINEXP * OPENHOOKTYPE)( HWND, UINT, WPARAM, LPARAM );
+typedef UINT (CALLBACK *OPENHOOKTYPE)( HWND, UINT, WPARAM, LPARAM );
 
 
-BOOL WINEXP OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT BOOL CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int                         len;
     static OPENFILENAME __FAR__ *of;
@@ -80,8 +80,7 @@ BOOL WINEXP OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXTLENGTH, 0, 0 );
             if( len >= of->nMaxFile ) {
                 FileNameList = MemAlloc( len + 1 );
-                len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXT, len + 1,
-                                          (LPARAM)FileNameList );
+                len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXT, len + 1, (LPARAM)FileNameList );
             }
         }
         break;
@@ -127,12 +126,11 @@ vi_rc SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs )
     } else {
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY |
                    OFN_ALLOWMULTISELECT | OFN_ENABLEHOOK;
-        of.lpfnHook = (LPOFNHOOKPROC) MakeProcInstance( (FARPROC) OpenHook,
-                                                        InstanceHandle );
+        of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)OpenHook, InstanceHandle );
     }
     rc = GetOpenFileName( &of );
     filemask = of.nFilterIndex;
-    (void)FreeProcInstance( (FARPROC) of.lpfnHook );
+    (void)FreeProcInstance( (FARPROC)of.lpfnHook );
     if( rc == FALSE && CommDlgExtendedError() == FNERR_BUFFERTOOSMALL ) {
         if( !is_chicago ) {
             MemFree( (char*)(of.lpstrFile) );
@@ -181,10 +179,9 @@ vi_rc SelectFileSave( char *result )
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT |
                    OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_ENABLEHOOK;
     }
-    of.lpfnHook = (LPOFNHOOKPROC) MakeProcInstance( (FARPROC) OpenHook,
-                                                    InstanceHandle );
+    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)OpenHook, InstanceHandle );
     doit = GetSaveFileName( &of );
-    (void)FreeProcInstance( (FARPROC) of.lpfnHook );
+    (void)FreeProcInstance( (FARPROC)of.lpfnHook );
 
     if( doit != 0 ) {
         UpdateCurrentDirectory();

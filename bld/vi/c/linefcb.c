@@ -37,7 +37,7 @@ static char *buffPtr;
 /*
  * create a line from a string of chars
  */
-static int createLine( char *res )
+static int createLine( char *res, int *crlf_reached )
 {
     char        c;
     char        *buff;
@@ -45,7 +45,7 @@ static int createLine( char *res )
 
     len = 0;
     buff = buffPtr;
-    while( 1 ) {
+    for( ;; ) {
 
         c = *buff;
         if( c < 32 ) {
@@ -53,8 +53,8 @@ static int createLine( char *res )
                 if( !EditFlags.RealTabs ) {
                     int tb, i;
 
-                    tb = Tab( len + 1, HardTab );
-                    if( len + tb >= MaxLinem1 ) {
+                    tb = Tab( len + 1, EditVars.HardTab );
+                    if( len + tb >= EditVars.MaxLine - 1 ) {
                         *res = 0;
                         buffPtr = buff;
                         return( len );
@@ -68,13 +68,13 @@ static int createLine( char *res )
                 }
             } else {
                 if( c == CR ) {
-                    if( EditFlags.CRLFAutoDetect ) {
-                        EditFlags.WriteCRLF = TRUE;
+                    if( crlf_reached != NULL ) {
+                        *crlf_reached = TRUE;
                     }
                     buff++;
                     continue;
                 }
-                if( c == CTLZ && !EditFlags.IgnoreCtrlZ ) {
+                if( c == CTRLZ && !EditFlags.IgnoreCtrlZ ) {
                     buffPtr = buff;
                     *res = 0;
                     return( len );
@@ -86,7 +86,7 @@ static int createLine( char *res )
                 }
             }
         }
-        if( len == MaxLinem1 ) {
+        if( len == EditVars.MaxLine - 1 ) {
             *res = 0;
             buffPtr = buff;
             return( len );
@@ -100,73 +100,71 @@ static int createLine( char *res )
 } /* createLine */
 
 /*
- * CreateLinesFromBuffer - create a set of lines from specified buffer
+ * createLinesFromBuffer - create a set of lines from specified buffer
  */
-bool CreateLinesFromBuffer( int cnt, line_list *linelist, int *used,
-                            int *lcnt, short *bytecnt )
+static bool createLinesFromBuffer( int cnt, line_list *linelist, int *used,
+                            int *lcnt, short *bytecnt, int *crlf_reached )
 {
     int         curr, copylen, total, tmpmio;
     short       bcnt, llcnt;
     char        *tmpbuff;
+    bool        rc;
 
     total = bcnt = copylen = llcnt = curr = 0;
     linelist->tail = linelist->head = NULL;
     tmpmio = MAX_IO_BUFFER - 2;
     tmpbuff = StaticAlloc();
 
+    rc = FALSE;
     /*
      * this zero makes sure that the file will always have a termination
      */
     ReadBuffer[cnt] = 0;
 
-    while( TRUE ) {
-
-        /*
-         * check if we are past the end of the buffer
-         */
-        if( curr >= cnt ) {
-            StaticFree( tmpbuff );
-            *used = curr;
-            *bytecnt = bcnt;
-            *lcnt = llcnt;
-            return( FALSE );
-        }
+    for( curr = 0; curr < cnt; curr = (int)( buffPtr - ReadBuffer ) ) {
 
         /*
          * get next string
          */
         buffPtr = &ReadBuffer[curr];
-        if( *buffPtr == CTLZ && !EditFlags.IgnoreCtrlZ ) {
-            StaticFree( tmpbuff );
-            *bytecnt = bcnt;
-            *used = curr;
-            *lcnt = llcnt;
-            return( TRUE );
-        } else {
-            copylen = createLine( tmpbuff );
-
-            /*
-             * try to add in these new bytes: +4 because of swap file
-             * considerations: +2 for c/r,l/f and +2 for extra line data
-             */
-            total += copylen + LINE_EXTRA;
-            if( total >= tmpmio ) {
-                StaticFree( tmpbuff );
-                *bytecnt = bcnt;
-                *used = curr;
-                *lcnt = llcnt;
-                return( FALSE );
+        if( crlf_reached != NULL ) {
+            if( *buffPtr == CTRLZ && !EditFlags.IgnoreCtrlZ ) {
+                rc = TRUE;
+                break;
             }
+        }
+        copylen = createLine( tmpbuff, crlf_reached );
 
-            /*
-             * update line counts and buffer pointer
-             */
-            InsertNewLine( linelist->tail, linelist, tmpbuff, copylen, INSERT_AFTER );
-            llcnt++;
-            bcnt += copylen + 1;
-            curr = (int) (buffPtr - ReadBuffer);
+        /*
+         * try to add in these new bytes: +4 because of swap file
+         * considerations: +2 for CR,LF and +2 for extra line data
+         */
+        total += copylen + LINE_EXTRA;
+        if( total >= tmpmio ) {
+            break;
         }
 
+        /*
+         * update line counts and buffer pointer
+         */
+        InsertNewLine( linelist->tail, linelist, tmpbuff, copylen, INSERT_AFTER );
+        llcnt++;
+        bcnt += copylen + 2;
     }
+    StaticFree( tmpbuff );
+    *bytecnt = bcnt;
+    *used = curr;
+    *lcnt = llcnt;
+    return( rc );
 
-} /* CreateLinesFromBuffer */
+} /* createLinesFromBuffer */
+
+bool CreateLinesFromBuffer( int cnt, line_list *linelist, int *used, int *lcnt, short *bytecnt )
+{
+    return( createLinesFromBuffer( cnt, linelist, used, lcnt, bytecnt, NULL ) );
+}
+
+bool CreateLinesFromFileBuffer( int cnt, line_list *linelist, int *used, int *lcnt, short *bytecnt, int *crlf_reached )
+{
+    return( createLinesFromBuffer( cnt, linelist, used, lcnt, bytecnt, crlf_reached ) );
+}

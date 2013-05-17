@@ -37,7 +37,7 @@
 /*
  * HotkeyProc - pass hotkeys on to root for various modeless 'bars'
  */
-long WINEXP HotkeyProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT LRESULT CALLBACK HotkeyProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     vi_key      key;
 
@@ -52,6 +52,5 @@ long WINEXP HotkeyProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         break;
     }
 
-    return( CallWindowProc( SubclassGenericFindOldProc( hwnd ),
-                            hwnd, msg, wparam, lparam ) );
+    return( CallWindowProc( SubclassGenericFindOldProc( hwnd ), hwnd, msg, wparam, lparam ) );
 }

@@ -37,10 +37,9 @@
  * regular tokens
  */
 enum {
-    PCL_T_NO_COMMAND = -2,
-    PCL_T_INVALID,
     #define PICK( a,b ) b,
     #include "cmds.h"
+    #undef PICK
     PCL_T_
 };
 
@@ -48,14 +47,16 @@ enum {
  * setting tokens
  */
 enum {
-    #define PICK( a,b,c ) c,
+    #define PICK( a,b,c,d,e,f ) f,
     #include "setnb.h"
+    #undef PICK
     SET1_T_
 };
 
 enum {
-    #define PICK( a, b, c, d, e ) e,
+    #define PICK( a,b,c,d,e ) e,
     #include "setb.h"
+    #undef PICK
     SET2_T_
 };
 

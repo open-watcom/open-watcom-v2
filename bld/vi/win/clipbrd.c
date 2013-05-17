@@ -206,7 +206,7 @@ int AddFcbsToClipboard( fcb_list *fcblist )
     for( cfcb = fcblist->head; cfcb != NULL; cfcb = cfcb->next ) {
         FetchFcb( cfcb );
         for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
-            // one CRLF left to write?
+            // one CR,LF left to write?
             if( crlf_left_to_write ) {
                 // yes: write it
                 crlf_left_to_write = 0;
@@ -219,14 +219,14 @@ int AddFcbsToClipboard( fcb_list *fcblist )
                 *ptr = cline->data[i];
                 INC_POINTER( ptr );
             }
-            // remember to write one CRLF next time
+            // remember to write one CR,LF next time
             crlf_left_to_write = 1;
         }
         if( cfcb == fcblist->tail ) {
             break;
         }
     }
-    // the last CRLF is omitted
+    // the last CR,LF is omitted
     *ptr = 0;
     GlobalUnlock( hglob );
     SetClipboardData( CF_TEXT, hglob );
@@ -324,7 +324,7 @@ int GetClipboardSavebuf( savebuf *clip )
             strcpy( clip->u.data, ReadBuffer );
             record_done = TRUE;
         } else {
-            // add CRLF to end of buffer
+            // add LF to end of buffer
             if( i >= MAX_IO_BUFFER - 2 ) {
                 addAnFcb( &fcblist, i );
                 i = 0;

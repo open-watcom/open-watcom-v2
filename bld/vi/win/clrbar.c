@@ -38,7 +38,7 @@ HWND        hColorbar;
 /*
  * ClrDlgProc - callback routine for colour drag & drop dialog
  */
-BOOL WINEXP ClrDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     wparam = wparam;
@@ -82,7 +82,7 @@ void RefreshColorbar( void )
         // if( proc ){
         //     proc = NULL;
         // }
-        proc = (DLGPROC) MakeProcInstance( (FARPROC) ClrDlgProc, InstanceHandle );
+        proc = (DLGPROC) MakeProcInstance( (FARPROC)ClrDlgProc, InstanceHandle );
         hColorbar = CreateDialog( InstanceHandle, "CLRBAR", Root, proc );
         SetMenuHelpString( "Left button = foreground, right button = background.  Ctrl affects all syntax elements" );
     } else {
@@ -90,10 +90,9 @@ void RefreshColorbar( void )
             return;
         }
         SendMessage( hColorbar, WM_CLOSE, 0, 0L );
-        FreeProcInstance( (FARPROC) proc );
+        FreeProcInstance( (FARPROC)proc );
         SetMenuHelpString( "" );
     }
     UpdateStatusWindow();
 
 } /* RefreshColorbar */
-

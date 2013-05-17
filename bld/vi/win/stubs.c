@@ -33,45 +33,59 @@
 #include "vi.h"
 #include <dos.h>
 
+#if defined( __WATCOMC__ )
 #pragma off( unreferenced );
+#endif
 
-void RedrawMouse( int p1, int p2 ) {}
-bool DisplayMouse( bool p1 ) { return( FALSE ); }
+void RedrawMouse( int p1, int p2 ) { p1=p1;p2=p2;}
+bool DisplayMouse( bool p1 ) { p1=p1; return( FALSE ); }
 void TurnOffCapsLock( void ) {}
 vi_rc HandleMouseEvent( void ) { return( ERR_NO_ERR ); }
 void SwapAllWindows( void ) {}
 void SetMouseSpeed( int i ) {}
 void GetClockStart( void ) {}
 void GetSpinStart( void ) {}
-void WindowAuxUpdate( window_id id, int x, int y ) {}
-void DrawBorder( window_id id ) {}
-void PushMouseEventHandler( mouse_callback cb ) {}
+void WindowAuxUpdate( window_id id, int x, int y ) { id=id;x=x;y=y; }
+void DrawBorder( window_id id ) { id=id; }
+void PushMouseEventHandler( mouse_callback cb ) { cb=cb; }
 void PopMouseEventHandler( void ) {}
-void WindowBorderData( window_id id, char *c, int x ) {}
-void ResizeWindowRelative( window_id id, int p1, int p2, int p3, int p4, int flags ) {}
-void ResizeWindow( window_id id, int p1, int p2, int p3, int p4, int flags ) {}
+void WindowBorderData( window_id id, char *c, int x ) { id=id;c=c;x=x; }
+vi_rc ResizeWindowRelative( window_id id, int p1, int p2, int p3, int p4, bool flags ) {
+    id=id;p1=p1;p2=p2;p3=p3;p4=p4;flags=flags;
+    return( ERR_NO_ERR );
+}
+vi_rc ResizeWindow( window_id id, int p1, int p2, int p3, int p4, bool flags ) {
+    id=id;p1=p1;p2=p2;p3=p3;p4=p4;flags=flags;
+    return( ERR_NO_ERR );
+}
 void RestoreInterrupts( void ) {}
 void WindowSwapFileClose( void ) {}
 void FiniMouse( void ) {}
 void ScreenFini( void ) {}
 vi_rc ResizeCurrentWindowWithKeys( void ) { return( ERR_NO_ERR ); }
 vi_rc MoveCurrentWindowWithKeys( void ) { return( ERR_NO_ERR ); }
-drive_type DoGetDriveType( int i ) { return( DRIVE_NONE ); }
+drive_type DoGetDriveType( int i ) { i=i; return( DRIVE_NONE ); }
 void ClearScreen( void ) {}
-vi_rc ResetWindow( window_id *id ) { return( ERR_NO_ERR ); }
-bool WindowIsVisible( window_id id ) { return( TRUE ); }
+vi_rc ResetWindow( window_id *id ) { id=id; return( ERR_NO_ERR ); }
+bool WindowIsVisible( window_id id ) { id=id; return( TRUE ); }
 void ScreenInit( void ) {}
 void SetInterrupts( void ) {}
 void ChkExtendedKbd( void ) {}
 void InitMouse( void ) {}
-void SetBorderGadgets( window_id id, bool how ) {}
+void SetBorderGadgets( window_id id, bool how ) { id=id;how=how; }
 void NewWindow( void ) {}
-int GetNewValueDialog( char *value ) { return( 0 ); }
-void DisplayCrossLineInWindow( window_id id, int line ) {}
-int SetCharInWindowWithColor( window_id wn, int line, int col, char text,
-    type_style *style ) { return( ERR_NO_ERR ); }
-void DisplayLineWithHilite( window_id id, int line, char *text, int start, int end,
-    int ignore ) {}
+vi_rc GetNewValueDialog( char *value ) { value=value; return( ERR_NO_ERR ); }
+void DisplayCrossLineInWindow( window_id id, int line ) { id=id;line=line; }
+int SetCharInWindowWithColor( window_id wn, int line, int col, char text, type_style *style ) {
+    wn=wn;line=line;col=col;text=text;style=style;
+    return( ERR_NO_ERR );
+}
+void DisplayLineWithHilite( window_id id, int line, char *text, int start, int end, int ignore ) {
+    id=id;line=line;text=text;start=start;end=end;ignore=ignore;
+}
 void SetPosToMessageLine( void ) {}
 void HideCursor( void ) {}
 
+#if defined( __WATCOMC__ )
+#pragma on( unreferenced );
+#endif

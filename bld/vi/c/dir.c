@@ -113,7 +113,7 @@ vi_rc SetCWD( char *str )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    MemFree2( &CurrentDirectory );
+    MemFreePtr( (void **)&CurrentDirectory );
     GetCWD1( &CurrentDirectory );
     return( ERR_NO_ERR );
 
@@ -137,7 +137,8 @@ static void addDirData( file *cfile, char *str )
         totalBytes = 0;
     }
     memcpy( &ReadBuffer[currOff], str, k );
-    memcpy( &ReadBuffer[currOff + k], crlf, 2 );
+    ReadBuffer[currOff + k] = CR;
+    ReadBuffer[currOff + k + 1] = LF;
     currOff += k + 2;
     totalBytes += k + LINE_EXTRA;
 

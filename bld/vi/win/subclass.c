@@ -44,9 +44,9 @@ void SubclassGenericAdd( HWND hwnd, WNDPROC proc )
     newProc = MemAlloc( sizeof( proc_entry ) );
 
     newProc->hwnd = hwnd;
-    newProc->oldProc = (WNDPROC) GetWindowLong( hwnd, GWL_WNDPROC );
-    newProc->newProc = (WNDPROC) MakeProcInstance( (FARPROC) proc, InstanceHandle );
-    SetWindowLong( hwnd, GWL_WNDPROC, (LONG) newProc->newProc );
+    newProc->oldProc = (WNDPROC)GET_WNDPROC( hwnd );
+    newProc->newProc = (WNDPROC)MakeProcInstance( (FARPROC)proc, InstanceHandle );
+    SET_WNDPROC( hwnd, (LONG_PTR)newProc->newProc );
 
     AddLLItemAtEnd( (ss **)&procHead, (ss **)&procTail, (ss *)newProc );
 }
@@ -61,10 +61,8 @@ void SubclassGenericRemove( HWND hwnd )
     }
     assert( findProc != NULL );
 
-    SetWindowLong( hwnd, GWL_WNDPROC, (LONG) findProc->oldProc );
-#ifndef __NT__
-    FreeProcInstance( (FARPROC)findProc->newProc );
-#endif
+    SET_WNDPROC( hwnd, (LONG_PTR)findProc->oldProc );
+    (void)FreeProcInstance( (FARPROC)findProc->newProc );
 
     DeleteLLItem( (ss **)&procHead, (ss **)&procTail, (ss *)findProc );
     MemFree( findProc );

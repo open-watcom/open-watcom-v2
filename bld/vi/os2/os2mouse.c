@@ -122,8 +122,8 @@ void InitMouse( void )
         }
     }
 
-    SetMousePosition( WindMaxWidth / 2 - 1, WindMaxHeight / 2 - 1 );
-    SetMouseSpeed( MouseSpeed );
+    SetMousePosition( EditVars.WindMaxWidth / 2 - 1, EditVars.WindMaxHeight / 2 - 1 );
+    SetMouseSpeed( EditVars.MouseSpeed );
     PollMouse( &MouseStatus, &MouseRow, &MouseCol );
 
 } /* InitMouse */

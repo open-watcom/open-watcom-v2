@@ -49,18 +49,21 @@
 #endif
 #include "rcs.h"
 #include "autoenv.h"
+#ifdef __WATCOMC__
+#include "clibint.h"
+#endif
 
 static char     nullFN[] = "no_name";
 static char     defaultEDPath[] = DIR_SEP_STR "eddat";
 static char     *cFN;
 static char     *cfgFN = NULL;
-static char     *cTag;
-static char     *keysToPush;
+static char     *cTag = NULL;
+static char     *keysToPush = NULL;
 #ifdef __WIN__
     static int  lineToGoTo = 0;
 #endif
-static char     goCmd[10];
-static bool     wantNoReadEntireFile;
+static char     goCmd[10] = {0};
+static bool     wantNoReadEntireFile = FALSE;
 char            *WordDefnDefault = "::..\\\\__09AZaz";
 
 #ifdef __WIN__
@@ -101,7 +104,7 @@ static void checkFlags( int *argc, char *argv[], char *start[],
 #endif
 
     cFN = NULL;
-    while( 1 ) {
+    for( ;; ) {
 #ifndef __WIN__
         ch = GetOpt( argc, argv, "#-ndvqzirc:k:p:s:t:", NULL );
 #else
@@ -210,7 +213,8 @@ static void checkFlags( int *argc, char *argv[], char *start[],
  */
 static void doInitializeEditor( int argc, char *argv[] )
 {
-    int         i, arg, cnt, ocnt, ln, startcnt = 0;
+    int         i, arg, cnt, ocnt, startcnt = 0;
+    unsigned    ln;
     int         k, j;
     char        tmp[FILENAME_MAX], c[1];
     char        buff[MAX_STR], file[MAX_STR], **list;
@@ -250,11 +254,10 @@ static void doInitializeEditor( int argc, char *argv[] )
     /*
      * misc. set up
      */
-    SpawnPrompt[0] = 0;
     MaxMemFree = MemSize();
     StaticStart();
     FTSInit();
-    CheckForBoundData();
+    BoundDataInit();
     EditFlags.Starting = TRUE;
     InitCommandLine();
     ChkExtendedKbd();
@@ -286,13 +289,16 @@ static void doInitializeEditor( int argc, char *argv[] )
     /*
      * initial configuration
      */
-    Majick = MemStrDup( "()~@" );
-    FileEndString = MemStrDup( "[END_OF_FILE]" );
+    EditVars.Majick = MemStrDup( "()~@" );
+    EditVars.FileEndString = MemStrDup( "[END_OF_FILE]" );
     MatchInit();
+    SetGadgetString( NULL );
+    WorkLine = MemAlloc( sizeof( line ) + EditVars.MaxLine + 2 );
+    WorkLine->len = -1;
 
+    ln = 0;
     if( cfgFN[0] != 0 ) {
         c[0] = 0;
-        ln = 0;
         rc = Source( cfgFN, c, &ln );
         if( rc == ERR_FILE_NOT_FOUND ) {
 #ifdef __WIN__
@@ -307,7 +313,6 @@ static void doInitializeEditor( int argc, char *argv[] )
     } else {
         rc = ERR_NO_ERR;
     }
-    SetGadgetString( NULL );
     if( wantNoReadEntireFile ) {
         EditFlags.ReadEntireFile = FALSE;
     }
@@ -323,28 +328,26 @@ static void doInitializeEditor( int argc, char *argv[] )
     /*
      * more misc. setup
      */
-    if( WordDefn == NULL ) {
-        AddString( &WordDefn, &WordDefnDefault[6] );
-        InitWordSearch( WordDefn );
+    if( EditVars.WordDefn == NULL ) {
+        AddString( &EditVars.WordDefn, &WordDefnDefault[6] );
+        InitWordSearch( EditVars.WordDefn );
     }
-    if( WordAltDefn == NULL ) {
-        AddString( &WordAltDefn, WordDefnDefault );
+    if( EditVars.WordAltDefn == NULL ) {
+        AddString( &EditVars.WordAltDefn, WordDefnDefault );
     }
-    if( TagFileName == NULL ) {
-        AddString( &TagFileName, "tags" );
+    if( EditVars.TagFileName == NULL ) {
+        AddString( &EditVars.TagFileName, "tags" );
     }
-    WorkLine = MemAlloc( sizeof( line ) + MaxLine + 2 );
     DotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
     AltDotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
     DotCmd = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
-    WorkLine->len = -1;
-    SwapBlockInit( MaxSwapBlocks );
+    SwapBlockInit( EditVars.MaxSwapBlocks );
     ReadBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
     WriteBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
-    FindHistInit( FindHist.max );
-    FilterHistInit( FilterHist.max );
-    CLHistInit( CLHist.max );
-    LastFilesHistInit( LastFilesHist.max );
+    FindHistInit( EditVars.FindHist.max );
+    FilterHistInit( EditVars.FilterHist.max );
+    CLHistInit( EditVars.CLHist.max );
+    LastFilesHistInit( EditVars.LastFilesHist.max );
     GetClockStart();
     GetSpinStart();
     SelRgnInit();
@@ -393,7 +396,6 @@ static void doInitializeEditor( int argc, char *argv[] )
 #if defined( __NT__ ) && !defined( __WIN__ )
         {
             if( !EditFlags.Quiet ) {
-                extern HANDLE OutputHandle;
                 SetConsoleActiveScreenBuffer( OutputHandle );
             }
         }
@@ -409,7 +411,7 @@ static void doInitializeEditor( int argc, char *argv[] )
         }
     }
 
-    while( TRUE && !EditFlags.NoInitialFileLoad ) {
+    while( !EditFlags.NoInitialFileLoad ) {
 
         if( cFN == nullFN && !EditFlags.UseNoName ) {
             break;
@@ -535,24 +537,24 @@ static void doInitializeEditor( int argc, char *argv[] )
 #if defined( __NT__ ) && !defined( __WIN__ )
             {
                 if( !EditFlags.Quiet ) {
-                    extern HANDLE OutputHandle;
                     SetConsoleActiveScreenBuffer( OutputHandle );
                 }
             }
 #endif
+            ln = 0;
             rc = Source( cfgFN, parm, &ln );
         }
     }
     if( rc > ERR_NO_ERR ) {
-        Error( "%s on line %d of \"%s\"", GetErrorMsg( rc ), ln, cfgFN );
+        Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), ln, cfgFN );
     }
     if( argc == 1 ) {
         LoadHistory( NULL );
     } else {
         LoadHistory( cmd );
     }
-    if( GrepDefault == NULL ) {
-        AddString( &GrepDefault, "*.(c|h)" );
+    if( EditVars.GrepDefault == NULL ) {
+        AddString( &EditVars.GrepDefault, "*.(c|h)" );
     }
     if( goCmd[0] != 0 ) {
         KeyAddString( goCmd );
@@ -563,16 +565,18 @@ static void doInitializeEditor( int argc, char *argv[] )
 #ifdef __WIN__
     if( lineToGoTo != 0 ) {
         SetCurrentLine( lineToGoTo );
-        NewCursor( CurrentWindow, NormalCursorType );
+        NewCursor( CurrentWindow, EditVars.NormalCursorType );
     }
 #endif
     AutoSaveInit();
     HalfPageLines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) / 2 - 1;
-#ifdef __386__
+#if defined( _M_X64 )
+    VarAddGlobalStr( "OSX64", "1" );
+#elif defined( _M_IX86 ) && !defined( _M_I86 )
     VarAddGlobalStr( "OS386", "1" );
 #endif
-    if( StatusString == NULL ) {
-        AddString( &StatusString, "L:$6L$nC:$6C" );
+    if( EditVars.StatusString == NULL ) {
+        AddString( &EditVars.StatusString, "L:$6L$nC:$6C" );
     }
     UpdateStatusWindow();
 #ifdef __WIN__
@@ -581,10 +585,9 @@ static void doInitializeEditor( int argc, char *argv[] )
         DisplayFileStatus();
     }
 #endif
-    NewCursor( CurrentWindow, NormalCursorType );
+    NewCursor( CurrentWindow, EditVars.NormalCursorType );
 #if defined( __NT__ ) && !defined( __WIN__ )
     {
-        extern HANDLE OutputHandle;
         SetConsoleActiveScreenBuffer( OutputHandle );
     }
 #endif
@@ -596,9 +599,10 @@ static void doInitializeEditor( int argc, char *argv[] )
  */
 void InitializeEditor( void )
 {
-    extern int  _argc;
-    extern char **_argv;
-
+#if !defined( __WATCOMC__ ) && defined( __NT__ )
+    _argc = __argc;
+    _argv = __argv;
+#endif
     doInitializeEditor( _argc, _argv );
 
 } /* InitializeEditor */

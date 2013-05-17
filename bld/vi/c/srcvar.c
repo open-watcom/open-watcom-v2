@@ -31,6 +31,7 @@
 
 
 #include "vi.h"
+#include <stddef.h>
 #include "rxsupp.h"
 #include "source.h"
 
@@ -95,7 +96,7 @@ void VarAddStr( char *name, char *val, vlist *vl )
 {
     vars        *new, *curr, *head;
     bool        glob;
-    int         len;
+    var_len     len;
     int         name_len;
 
     /*
@@ -132,7 +133,7 @@ void VarAddStr( char *name, char *val, vlist *vl )
      * create and add a new variable
      */
     name_len = strlen( name );
-    new = MemAlloc( sizeof( vars ) + name_len );
+    new = MemAlloc( offsetof( vars, name ) + name_len + 1 );
     memcpy( new->name, name, name_len + 1 );
     AddString( &new->value, val );
     new->len = len;

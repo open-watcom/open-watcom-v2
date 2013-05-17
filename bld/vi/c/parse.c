@@ -41,16 +41,15 @@ void RemoveLeadingSpaces( char *buff )
 {
     int k = 0;
 
-    if( buff[0] == 0 ) {
+    if( buff[0] == '\0' ) {
         return;
     }
     while( isspace( buff[k] ) ) {
         k++;
     }
-    if( k == 0 ) {
-        return;
+    if( k ) {
+        EliminateFirstN( buff, k );
     }
-    EliminateFirstN( buff, k );
 
 } /* RemoveLeadingSpaces */
 
@@ -59,30 +58,27 @@ void RemoveLeadingSpaces( char *buff )
  */
 void TranslateTabs( char *buff )
 {
-    int k = 0, j;
+    int     k;
+    int     j;
 
-    if( buff[0] == 0 ) {
-        return;
-    }
-    while( buff[k] ) {
+    for( k = 0; buff[k] != '\0'; ++k ) {
         if( buff[k] == '\\' && buff[k + 1] == 't') {
             buff[k] = '\t';
             for( j = k + 1; buff[j] != 0; j++ ) {
                 buff[j] = buff[j + 1];
             }
         }
-        k++;
     }
 
 } /* TranslateTabs */
 
 /*
- * GetStringWithPossibleQuote
+ * GetStringWithPossibleQuote2
  */
 vi_rc GetStringWithPossibleQuote2( char *data, char *st, bool allow_slash )
 {
     int     len;
-    
+
     RemoveLeadingSpaces( data );
     if( allow_slash && data[0] == '/' ) {
         len = NextWord( data, st, SingleSlash );
@@ -90,7 +86,7 @@ vi_rc GetStringWithPossibleQuote2( char *data, char *st, bool allow_slash )
             EliminateFirstN( data, 1 );
         }
     } else if( data[0] == '"' ) {
-        len = NextWord( data, st, "\"" );
+        len = NextWord( data, st, SingleQuote );
         if( len >= 0 ) {
             EliminateFirstN( data, 1 );
         }
@@ -121,26 +117,22 @@ int NextWord1( char *buff, char *res )
     while( isspace( buff[k] ) ) {
         k++;
     }
-    if( buff[k] == 0 ) {
-        res[0] = 0;
+    if( buff[k] == '\0' ) {
+        res[0] = '\0';
         return( -1 );
     }
-    j = 0;
 
     /*
      * get word
      */
-    while( TRUE ) {
-        c = buff[k];
-        if( isspace( c ) || c == 0 ) {
-            res[j] = 0;
-            EliminateFirstN( buff, k );
-            return( j );
-        } else {
-            res[j++] = c;
-            k++;
-        }
+    for( j = 0; (c = buff[k]) != '\0'; ++k ) {
+        if( isspace( c ) )
+            break;
+        res[j++] = c;
     }
+    res[j] = '\0';
+    EliminateFirstN( buff, k );
+    return( j );
 
 } /* NextWord1 */
 
@@ -175,42 +167,39 @@ int NextWord( char *buff, char *res, char *ign )
             k++;
         }
     }
-    if( buff[k] == 0 ) {
-        res[0] = 0;
+    if( buff[k] == '\0' ) {
+        res[0] = '\0';
         return( -1 );
     }
 
     /*
      * get word
      */
-    while( TRUE ) {
-        c = buff[k];
+    for( ; (c = buff[k]) != '\0'; ++k ) {
         /*
          * look for escaped delimiters
          */
         if( c == '\\' && sl == 1 ) {
             if( buff[k + 1] == ign[0] ) {
-                k++;
+                ++k;
                 res[j++] = buff[k];
-                k++;
                 continue;
             }
             if( buff[k + 1] == '\\' ) {
-                k += 2;
+                ++k;
                 res[j++] = '\\';
                 res[j++] = '\\';
                 continue;
             }
         }
-        if( isIgnorable( c, ign ) || c == 0 ) {
-            res[j] = 0;
-            EliminateFirstN( buff, k );
-            return( j );
-        } else {
-            res[j++] = c;
-            k++;
+        if( isIgnorable( c, ign ) ) {
+            break;
         }
+        res[j++] = c;
     }
+    res[j] = '\0';
+    EliminateFirstN( buff, k );
+    return( j );
 
 } /* NextWord */
 
@@ -249,10 +238,7 @@ void EliminateFirstN( char *buff, int n )
 
 } /* EliminateFirstN */
 
-#if !defined( _M_IX86 ) || !defined( __WATCOMC__ )
-#define toUpper( x )    toupper( x )
-#define toLower( x )    tolower( x )
-#else
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
 extern char toUpper( char );
 #pragma aux toUpper = \
         "cmp    al, 061h" \
@@ -272,31 +258,46 @@ extern char toLower( char );
         "add    al, 0020H" \
         "LL35:" \
     parm [al] value[al];
+#else
+#define toUpper( x )    toupper( x )
+#define toLower( x )    tolower( x )
 #endif
+
+#define BOTX(s) ( s[0] == '!' && s[1] != '\0' )
+
+#define EOT(c)  ( c == '\0' || c == ' ' )
+#define EOTX(s) ( s[0] == exclm && EOT( s[1] ) )
 
 /*
  * Tokenize - convert character to a token
  */
-int Tokenize( char *Tokens, const char *token, bool entireflag )
+int Tokenize( const char *Tokens, const char *token, bool entireflag )
 {
     int         i = 0;
-    char        *t, c, tc;
-    const char  *tkn;
+    const char  *t, *tkn;
+    char        c, tc, exclm;
 
-    if( Tokens == NULL ) {
-        return( -1 );
+    if( Tokens == NULL || *token == '\0' ) {
+        return( TOK_INVALID );
     }
-    t = Tokens;
-    while( 1 ) {
-
-        if( *t == 0 ) {
-            return( -1 );
-        }
+    for( t = Tokens; *t != '\0'; ++t ) {
         tkn = token;
-        while( 1 ) {
+        exclm = '\0';
+        if( BOTX( t ) ) {
+            exclm = '!';
+            ++t;
+            ++i;
+        }
+        for( ;; ) {
             c = *t;
             tc = *tkn;
-            if( c == 0 && (tc != ' ' && tc != 0) ) {
+            if( c == 0 ) {
+                if( EOT( tc ) ) {
+                    return( i );
+                }
+                if( EOTX( tkn ) ) {
+                    return( i - 1 );
+                }
                 break;
             }
             if( isupper( c ) ) {
@@ -308,11 +309,14 @@ int Tokenize( char *Tokens, const char *token, bool entireflag )
                     break;
                 }
             } else {
-                if( tc == 0 ) {
+                if( EOT( tc ) ) {
                     return( i );
                 }
+                if( EOTX( tkn ) ) {
+                    return( i - 1 );
+                }
                 if( isupper( tc ) ) {
-                    if( c != (char) toLower( tc ) ) {
+                    if( c != (char)toLower( tc ) ) {
                         break;
                     }
                 } else  {
@@ -321,42 +325,31 @@ int Tokenize( char *Tokens, const char *token, bool entireflag )
                     }
                 }
             }
-            if( c == 0 ) {
-                return( i );
-            }
             t++;
             tkn++;
         }
         while( *t != 0 ) {
             t++;
         }
-        t++;
         i++;
-
     }
+    return( TOK_INVALID );
 
 } /* Tokenize */
 
 /*
  * GetNumberOfTokens - return number of tokens in a token string
  */
-int GetNumberOfTokens( char *list )
+int GetNumberOfTokens( const char *list )
 {
-    int         i = 0, off = 0, k;
-    char        *t;
+    int         i;
 
-    while( TRUE ) {
-
-        t = &list[off];
-        if( *t == 0 ) {
-            break;
+    for( i = 0; *list != '\0'; ++i ) {
+        if( BOTX( list ) ) {
+            ++i;
         }
-        k = strlen( t );
-        off += k + 1;
-        i++;
-
+        list += strlen( list ) + 1;
     }
-
     return( i );
 
 } /* GetNumberOfTokens */
@@ -364,27 +357,18 @@ int GetNumberOfTokens( char *list )
 /*
  * GetLongestTokenLength - return length of longest token in token string
  */
-int GetLongestTokenLength( char *list )
+int GetLongestTokenLength( const char *list )
 {
-    int         i = 0, off = 0, l = 0, k;
-    char        *t;
+    int         max_len = 0, len;
+    const char  *t;
 
-    while( TRUE ) {
-
-        t = &list[off];
-        if( *t == 0 ) {
-            break;
+    for( t = list; *t != '\0'; t += len + 1 ) {
+        len = strlen( t );
+        if( len > max_len ) {
+            max_len = len;
         }
-        k = strlen( t );
-        if( k > l ) {
-            l = k;
-        }
-        off += k + 1;
-        i++;
-
     }
-
-    return( l );
+    return( max_len );
 
 } /* GetLongestTokenLength */
 
@@ -398,7 +382,7 @@ char **BuildTokenList( int num, char *list )
     int         k, i = 0, off = 0;
 
     arr = MemAlloc( num * sizeof( char * ) );
-    while( TRUE ) {
+    for( ;; ) {
 
         t = &list[off];
         if( *t == 0 ) {
@@ -420,27 +404,67 @@ char **BuildTokenList( int num, char *list )
 /*
  * GetTokenString - return token string
  */
-char *GetTokenString( char *list, int num )
+char *GetTokenString( const char *list, int num )
 {
-    int         off = 0, i = 0, k;
-    char        *t;
+    int         i = 0;
+    const char  *t;
 
-    while( TRUE ) {
-
-        t = &list[off];
-        if( *t == 0 ) {
-            return( NULL );
-        }
+    for( t = list; *t != '\0'; ) {
         if( i == num ) {
-            return( t );
+            return( (char *)t );
         }
-        k = strlen( t );
-        off += k + 1;
+        if( BOTX( t ) ) {
+            ++i;
+            if( i == num ) {
+                return( (char *)( t + 1 ) );
+            }
+        }
+        t += strlen( t ) + 1;
         i++;
-
     }
+    return( NULL );
 
 } /* GetTokenString */
+
+/*
+ * GetTokenStringCVT - return token string
+ */
+char *GetTokenStringCVT( const char *list, int num, char *dst, bool lowercase )
+{
+    char        *new = dst;
+    const char  *src;
+    int         f;
+
+    if( dst == NULL ) {
+        return( NULL );
+    }
+    src = GetTokenString( list, num );
+    if( src == NULL ) {
+        *dst = '\0';
+        return( NULL );
+    }
+    f = ( *src == '!' );
+    if( f ) {
+        src++;
+    }
+    if( lowercase ) {
+        while( (*dst = tolower( *src )) != '\0' ) {
+            ++src;
+            ++dst;
+        }
+    } else {
+        while( (*dst = *src) != '\0' ) {
+            ++src;
+            ++dst;
+        }
+    }
+    if( f ) {
+        *dst++ = '!';
+        *dst = '\0';
+    }
+    return( new );
+
+} /* GetTokenStringCVT */
 
 /*
  * ReplaceSubString - replace a sub-string with a different one

@@ -87,7 +87,7 @@ vi_rc DoGenericFilter( linenum s, linenum e, char *cmd )
     /*
      * shell out to the given command
      */
-    rc = ExecCmd( filtin, filtout, cmd );
+    ExecCmd( filtin, filtout, cmd );
     StartUndoGroup( UndoStack );
     rc = DeleteLineRange( s, e, 0 );
     if( rc == ERR_NO_ERR ) {

@@ -55,7 +55,7 @@ static bool applyToSelectedList( HWND list_box, bool (*func)( info * ) )
     for( i = 0; i < count; i++ ) {
         if( SendMessage( list_box, LB_GETSEL, i, 0L ) ) {
             name = MemAlloc( SendMessage( list_box, LB_GETTEXTLEN, i, 0L ) + 1 );
-            SendMessage( list_box, LB_GETTEXT, i, (LONG) (LPVOID) name );
+            SendMessage( list_box, LB_GETTEXT, i, (LPARAM)name );
             info = findInfo( name );
             MemFree( name );
             if( func( info ) ) {
@@ -92,14 +92,14 @@ static int fillBox( HWND list_box )
     count = 0;
     SendMessage( list_box, LB_RESETCONTENT, 0, 0L );
     for( i = InfoHead; i != NULL; i = i->next ) {
-        SendMessage( list_box, LB_ADDSTRING, 0, (LONG)(LPVOID) i->CurrentFile->name );
+        SendMessage( list_box, LB_ADDSTRING, 0, (LPARAM)i->CurrentFile->name );
         count++;
     }
     SendMessage( list_box, LB_SETSEL, TRUE, 0L );
     return( count );
 }
 
-BOOL WINEXP FileListProc( HWND dlg, UINT msg, UINT w, LONG l )
+WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l )
 {
     HWND    list_box;
     bool    (*func)( info * );
@@ -148,8 +148,8 @@ vi_rc EditFileFromList( void )
     DLGPROC     proc;
     vi_rc       rc;
 
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) FileListProc, InstanceHandle );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)FileListProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "FILELIST", Root, proc );
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
     return( rc );
 }

@@ -40,6 +40,7 @@
 #define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
 static char     **tagList;
+static long     total = 0;
 
 /*
  * addToTagList - add new string to tag list
@@ -58,6 +59,7 @@ static void addToTagList( char *res )
         ErrorMsgExit( "Out of memory!\n" );
     }
     memcpy( tagList[TagCount], res, len );
+    total += len;
     TagCount++;
 
 } /* addToTagList */
@@ -147,11 +149,10 @@ void GenerateTagsFile( char *fname )
     if( tagList == NULL ) {
         total = 0;
     } else {
-        total = _msize( tagList );
+        total = TagCount * sizeof( char * );
     }
     for( i = 0; i < TagCount; i++ ) {
         fprintf( f, "%s\n", tagList[i] );
-        total += _msize( tagList[i] );
     }
     fclose( f );
     if( VerboseFlag ) {

@@ -76,14 +76,14 @@ void Message1( char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || MessageWindow < 0 ) {
+    if( !EditFlags.EchoOn || MessageWindow == NO_WINDOW ) {
         return;
     }
     ClearWindow( MessageWindow );
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
-    tmp[WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = 0;
 
     if( !EditFlags.LineDisplay ) {
         DisplayLineInWindow( MessageWindow, 1, tmp );
@@ -101,14 +101,14 @@ void Message1Box( char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || MessageWindow < 0 ) {
+    if( !EditFlags.EchoOn || MessageWindow == NO_WINDOW ) {
         return;
     }
     ClearWindow( MessageWindow );
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
-    tmp[WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = 0;
 
     if( !EditFlags.LineDisplay ) {
         DisplayLineInWindow( MessageWindow, 1, tmp );
@@ -126,13 +126,13 @@ void Message2( char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || MessageWindow < 0 ) {
+    if( !EditFlags.EchoOn || MessageWindow == NO_WINDOW ) {
         return;
     }
     va_start( al, str );
     MyVSprintf( tmp,str, al );
     va_end( al );
-    tmp[WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = 0;
 
     if( !EditFlags.LineDisplay ) {
         DisplayLineInWindow( MessageWindow, 2, tmp );
@@ -154,7 +154,7 @@ vi_rc WPrintfLine( window_id w, int line, char *str, ... )
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
-    tmp[WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = 0;
 
     return( DisplayLineInWindow( w, line, tmp ) );
 
@@ -251,42 +251,42 @@ bool ColumnInWindow( int col, int *diff )
  */
 void SetWindowSizes( void )
 {
-    VarAddGlobalLong( "SW", WindMaxWidth );
-    VarAddGlobalLong( "SH", WindMaxHeight );
-    SpinX = WindMaxWidth - 15;
-    ClockX = WindMaxWidth - 9;
-    filecw_info.x2 = WindMaxWidth - 5;
-    filecw_info.y2 = WindMaxHeight - 8;
-    repcntw_info.y1 = WindMaxHeight - 5;
-    repcntw_info.y2 = WindMaxHeight - 3;
+    VarAddGlobalLong( "SW", EditVars.WindMaxWidth );
+    VarAddGlobalLong( "SH", EditVars.WindMaxHeight );
+    EditVars.SpinX = EditVars.WindMaxWidth - 15;
+    EditVars.ClockX = EditVars.WindMaxWidth - 9;
+    filecw_info.x2 = EditVars.WindMaxWidth - 5;
+    filecw_info.y2 = EditVars.WindMaxHeight - 8;
+    repcntw_info.y1 = EditVars.WindMaxHeight - 5;
+    repcntw_info.y2 = EditVars.WindMaxHeight - 3;
 #ifdef __WIN__
-    editw_info.x2 = WindMaxWidth - 1;
-    editw_info.y2 = WindMaxHeight - 3;
+    editw_info.x2 = EditVars.WindMaxWidth - 1;
+    editw_info.y2 = EditVars.WindMaxHeight - 3;
     cmdlinew_info.x1 = 2;
-    cmdlinew_info.x2 = WindMaxWidth - 3;
-    cmdlinew_info.y1 = WindMaxHeight - 7;
-    cmdlinew_info.y2 = WindMaxHeight - 5;
-    messagew_info.x2 = WindMaxWidth - 1;
-    messagew_info.y1 = WindMaxHeight - 2;
-    messagew_info.y2 = WindMaxHeight - 1;
+    cmdlinew_info.x2 = EditVars.WindMaxWidth - 3;
+    cmdlinew_info.y1 = EditVars.WindMaxHeight - 7;
+    cmdlinew_info.y2 = EditVars.WindMaxHeight - 5;
+    messagew_info.x2 = EditVars.WindMaxWidth - 1;
+    messagew_info.y1 = EditVars.WindMaxHeight - 2;
+    messagew_info.y2 = EditVars.WindMaxHeight - 1;
 #else
-    editw_info.x2 = WindMaxWidth - 1;
-    editw_info.y2 = WindMaxHeight - 2;
+    editw_info.x2 = EditVars.WindMaxWidth - 1;
+    editw_info.y2 = EditVars.WindMaxHeight - 2;
     cmdlinew_info.x1 = 0;
-    cmdlinew_info.x2 = WindMaxWidth - 1;
-    cmdlinew_info.y1 = WindMaxHeight - 1;
-    cmdlinew_info.y2 = WindMaxHeight - 1;
-    messagew_info.x2 = WindMaxWidth - 1;
-    messagew_info.y1 = WindMaxHeight - 1;
-    messagew_info.y2 = WindMaxHeight - 1;
+    cmdlinew_info.x2 = EditVars.WindMaxWidth - 1;
+    cmdlinew_info.y1 = EditVars.WindMaxHeight - 1;
+    cmdlinew_info.y2 = EditVars.WindMaxHeight - 1;
+    messagew_info.x2 = EditVars.WindMaxWidth - 1;
+    messagew_info.y1 = EditVars.WindMaxHeight - 1;
+    messagew_info.y2 = EditVars.WindMaxHeight - 1;
 #endif
-    dirw_info.x2 = WindMaxWidth - 12;
-    dirw_info.y2 = WindMaxHeight - 7;
-    setw_info.y2 = WindMaxHeight - 4;
-    filelistw_info.x2 = WindMaxWidth - 2;
-    filelistw_info.y2 = WindMaxHeight - 7;
-    statusw_info.y1 = WindMaxHeight - 2;
-    statusw_info.y2 = WindMaxHeight - 1;
+    dirw_info.x2 = EditVars.WindMaxWidth - 12;
+    dirw_info.y2 = EditVars.WindMaxHeight - 7;
+    setw_info.y2 = EditVars.WindMaxHeight - 4;
+    filelistw_info.x2 = EditVars.WindMaxWidth - 2;
+    filelistw_info.y2 = EditVars.WindMaxHeight - 7;
+    statusw_info.y1 = EditVars.WindMaxHeight - 2;
+    statusw_info.y2 = EditVars.WindMaxHeight - 1;
 
 } /* SetWindSizes */
 
@@ -301,9 +301,9 @@ vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
 
     if( EditFlags.LineNumbers ) {
         if( EditFlags.LineNumsOnRight ) {
-            rc = ResizeWindow( CurrentWindow, x1, y1, x2 + LineNumWinWidth, y2, TRUE );
+            rc = ResizeWindow( CurrentWindow, x1, y1, x2 + EditVars.LineNumWinWidth, y2, TRUE );
         } else {
-            rc = ResizeWindow( CurrentWindow, x1 - LineNumWinWidth, y1, x2, y2, TRUE );
+            rc = ResizeWindow( CurrentWindow, x1 - EditVars.LineNumWinWidth, y1, x2, y2, TRUE );
         }
     } else {
         rc = ResizeWindow( CurrentWindow, x1, y1, x2, y2, TRUE );

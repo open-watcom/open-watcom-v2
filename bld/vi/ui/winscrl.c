@@ -41,8 +41,9 @@ void ShiftWindowUpDown( window_id id, int diff )
     wind                *w;
     int                 start, spl, i, j;
     int                 sline, eline, add;
-    char_info           _FAR *scr_d;
     char_info           *txt_s, *txt_d;
+    char_info           _FAR *scr;
+    unsigned            oscr;
 
     if( EditFlags.DisplayHold || EditFlags.Quiet ) {
         return;
@@ -71,18 +72,17 @@ void ShiftWindowUpDown( window_id id, int diff )
     sline += spl;
     eline += spl;
     i = sline;
-    while( 1 ) {
-        txt_s = (char_info *) &w->text[(i * w->width + start) * sizeof( char_info )];
-        txt_d = (char_info *) &w->text[((i - diff) * w->width + start) *
-                                       sizeof( char_info )];
-        scr_d = (char_info _FAR *) &Scrn[(w->x1 + start + (w->y1 + i - diff) *
-                                          WindMaxWidth) * sizeof( char_info )];
+    for( ;; ) {
+        txt_s = &(w->text[i * w->width + start]);
+        txt_d = &(w->text[(i - diff) * w->width + start]);
+        oscr = w->x1 + start + (w->y1 + i - diff) * EditVars.WindMaxWidth;
+        scr = &Scrn[oscr];
         for( j = 0; j < w->text_cols; j++ ) {
-            WRITE_SCREEN( scr_d[j], txt_s[j] );
+            WRITE_SCREEN( scr[j], txt_s[j] );
             WRITE_SCREEN_DATA( txt_d[j], txt_s[j] );
         }
 #ifdef __VIO__
-        MyVioShowBuf( (unsigned)((char *) scr_d - Scrn), w->text_cols );
+        MyVioShowBuf( oscr, w->text_cols );
 #endif
         if( i == eline ) {
             break;

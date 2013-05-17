@@ -30,23 +30,18 @@
 
 
 #include "vi.h"
+#include <stddef.h>
 #include <time.h>
 #include "menu.h"
 #include "win.h"
 
 typedef struct menu_item {
     struct menu_item    *next, *prev;
-    char                hi;
-    char                hioff;
+    hilst               hi;
     char                slen;
     char                *cmd;
     char                str[1];
 } menu_item;
-
-typedef struct {
-    char        hi;
-    char        hioff;
-} hilst;
 
 typedef struct menu {
     struct menu     *next, *prev;
@@ -61,8 +56,7 @@ typedef struct menu {
     unsigned char   spare           : 5;
     char            maxwidth;
     char            orig_maxwidth;
-    char            hi;
-    char            hioff;
+    hilst           hi;
     char            slen;
     char            str[1];
 } menu;
@@ -104,7 +98,7 @@ static void dumpMenu( FILE *f, menu *cmenu )
         if( citem->slen == 0 ) {
             MyFprintf( f, "    menuitem \"\"\n" );
         } else {
-            getMenuName( str, citem->str, citem->slen, citem->hioff );
+            getMenuName( str, citem->str, citem->slen, citem->hi._offs );
             MyFprintf( f, "    menuitem \"%s\" %s\n", str, citem->cmd );
         }
         citem = citem->next;
@@ -128,9 +122,8 @@ void BarfMenuData( FILE *f )
         dumpMenu( f, windowGadgetMenu );
         MyFprintf( f, "endmenu\n" );
     }
-    cmenu = menuHead;
-    while( cmenu != NULL ) {
-        getMenuName( str, cmenu->str, cmenu->slen, cmenu->hioff );
+    for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
+        getMenuName( str, cmenu->str, cmenu->slen, cmenu->hi._offs );
         if( cmenu->need_hook ) {
             MyFprintf( f, "menu %s 1\n", str );
         } else {
@@ -138,7 +131,6 @@ void BarfMenuData( FILE *f )
         }
         dumpMenu( f, cmenu );
         MyFprintf( f, "endmenu\n" );
-        cmenu = cmenu->next;
     }
 
 } /* BarfMenuData */
@@ -146,7 +138,7 @@ void BarfMenuData( FILE *f )
 /*
  * extractMenuStr - get the string and activation char for a menu item
  */
-static int extractMenuStr( char *str, int *hioff )
+static char extractMenuStr( char *str, int *hioff )
 {
     int         len, i, j;
     char        ch;
@@ -207,11 +199,11 @@ static void freeMenu( menu *menu )
  */
 static menu *findMenu( char *str, menu ***predef_menu )
 {
-    int         len;
+//    int         len;
     menu        *res;
     int         num;
 
-    len = strlen( str );
+//    len = strlen( str );
     *predef_menu = NULL;
     res = NULL;
     if( str[0] == 'f' || str[0] == 'w' ) {
@@ -228,12 +220,10 @@ static menu *findMenu( char *str, menu ***predef_menu )
     }
 
     if( res == NULL ) {
-        res = menuHead;
-        while( res != NULL ) {
+        for( res = menuHead; res != NULL; res = res->next ) {
             if( !stricmp( str, res->str ) ) {
                 break;
             }
-            res = res->next;
         }
     }
     return( res );
@@ -275,7 +265,7 @@ vi_rc StartMenu( char *data )
     }
 
     if( tmp == NULL ) {
-        tmp = MemAlloc( sizeof( menu ) + len );
+        tmp = MemAlloc( offsetof( menu, str ) + len + 1 );
         new = TRUE;
     }
     if( predef_menu == NULL ) {
@@ -288,8 +278,8 @@ vi_rc StartMenu( char *data )
         *predef_menu = tmp;
     }
     strcpy( tmp->str, str );
-    tmp->hi = ch;
-    tmp->hioff = hioff;
+    tmp->hi._char = ch;
+    tmp->hi._offs = hioff;
     tmp->slen = len;
     tmp->need_hook = need_hook;
     currMenu = tmp;
@@ -313,12 +303,12 @@ static void initMenuList( menu *cmenu )
     cmi = cmenu->itemhead;
     for( i = 0; i < cmenu->itemcnt; i++ ) {
         cmenu->list[i] = cmi->str;
-        cmenu->hilist[i].hi = cmi->hi;
-        cmenu->hilist[i].hioff = cmi->hioff;
+        cmenu->hilist[i]._char = cmi->hi._char;
+        cmenu->hilist[i]._offs = cmi->hi._offs;
         cmi = cmi->next;
     }
-    cmenu->hilist[i].hi = 0;
-    cmenu->hilist[i].hioff = 0;
+    cmenu->hilist[i]._char = 0;
+    cmenu->hilist[i]._offs = 0;
 
 } /* initMenuList */
 
@@ -336,7 +326,7 @@ vi_rc ViEndMenu( void )
     if( currMenu == menuTail ) {
         menuCnt++;
     }
-    ch = toupper( currMenu->hi );
+    ch = toupper( currMenu->hi._char );
     if( ch >= 'A' && ch <='Z' ) {
         key = ch - 'A' + VI_KEY( ALT_A );
         EventList[key].rtn.old = DoMenu;
@@ -375,8 +365,8 @@ vi_rc MenuItem( char *data )
     size = sizeof( menu_item ) + len + strlen( data ) + 2;
     tmp = MemAlloc( size );
     tmp->slen = len;
-    tmp->hi = ch;
-    tmp->hioff = hioff;
+    tmp->hi._char = ch;
+    tmp->hi._offs = hioff;
     strcpy( tmp->str, str );
     tmp->cmd = &(tmp->str[len + 1]);
     strcpy( tmp->cmd, data );
@@ -570,9 +560,9 @@ vi_rc InitMenu( void )
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
     }
-    if( MenuWindow >= 0 ) {
+    if( MenuWindow != NO_WINDOW ) {
         CloseAWindow( MenuWindow );
-        MenuWindow = -1;
+        MenuWindow = NO_WINDOW;
     }
     if( !EditFlags.Menus ) {
         return( ERR_NO_ERR );
@@ -580,7 +570,7 @@ vi_rc InitMenu( void )
     menubarw_info.y1 = 0;
     menubarw_info.y2 = 0;
     menubarw_info.x1 = 0;
-    menubarw_info.x2 = WindMaxWidth - 1;
+    menubarw_info.x2 = EditVars.WindMaxWidth - 1;
     rc = NewWindow2( &MenuWindow, &menubarw_info );
     if( rc != ERR_NO_ERR ) {
         EditFlags.Menus = FALSE;
@@ -595,7 +585,7 @@ vi_rc InitMenu( void )
     }
     disp[strlen( disp )] = ' ';
     if( EditFlags.CurrentStatus ) {
-        disp[CurrentStatusColumn - 1] = 0;
+        disp[EditVars.CurrentStatusColumn - 1] = 0;
         // disp[CurrentStatusColumn - 7] = 0;
         // strcat( disp, "Mode:" );
     }
@@ -603,8 +593,7 @@ vi_rc InitMenu( void )
 
     ws = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        SetCharInWindowWithColor( MenuWindow, 1, ws + START_OFFSET + 1 +
-            cmenu->hioff, cmenu->hi, &menubarw_info.hilight );
+        SetCharInWindowWithColor( MenuWindow, 1, ws + START_OFFSET + 1 + cmenu->hi._offs, cmenu->hi._char, &menubarw_info.hilight );
         ws += cmenu->slen + 2;
     }
 
@@ -614,13 +603,12 @@ vi_rc InitMenu( void )
 
 void FiniMenu( void )
 {
-    menu        *cmenu;
     menu        *oldmenu;
     int         i;
 
-    for( cmenu = menuHead; cmenu != NULL; ) {
-        oldmenu = cmenu;
-        cmenu = cmenu->next;
+    while( menuHead != NULL ) {
+        oldmenu = menuHead;
+        menuHead = menuHead->next;
         freeMenu( oldmenu );
     }
     for( i = 0; i < MAX_FLOAT_MENUS; i++ ) {
@@ -653,8 +641,8 @@ static void lightMenu( int sel, int ws, int on )
     }
 
     for( i = 0; i < cmenu->slen; i++ ) {
-        if( i == cmenu->hioff && !on ) {
-            ch = cmenu->hi;
+        if( i == cmenu->hi._offs && !on ) {
+            ch = cmenu->hi._char;
             s = menubarw_info.hilight;
         } else {
             ch = cmenu->str[i];
@@ -709,7 +697,7 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
         xwid = 0;
     }
 
-    while( TRUE ) {
+    for( ;; ) {
 
         if( cmenu->has_file_list ) {
             addFileList( cmenu );
@@ -721,10 +709,8 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
         currentID = sel;
         if( xpos < 0 ) {
             ws = START_OFFSET;
-            tmenu = menuHead;
-            while( tmenu != cmenu ) {
+            for( tmenu = menuHead; tmenu != cmenu; tmenu = tmenu->next ) {
                 ws += tmenu->slen + 2;
-                tmenu = tmenu->next;
             }
             x1 = ws;
             arl = &allowrl;
@@ -745,17 +731,17 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
         /*
          * make sure menu will be valid!
          */
-        if( x2 - x1 + 1 > WindMaxWidth || y2 - y1 + 1 > WindMaxHeight ) {
+        if( x2 - x1 + 1 > EditVars.WindMaxWidth || y2 - y1 + 1 > EditVars.WindMaxHeight ) {
             return( ERR_WIND_INVALID );
         }
         if( xpos < 0 ) {
-            if( x2 >= WindMaxWidth ) {
-                diff = x2 - WindMaxWidth;
+            if( x2 >= EditVars.WindMaxWidth ) {
+                diff = x2 - EditVars.WindMaxWidth;
                 x2 -= diff;
                 x1 -= diff;
             }
         } else {
-            if( y2 >= WindMaxHeight ) {
+            if( y2 >= EditVars.WindMaxHeight ) {
                 diff = y2 - y1;
                 y2 = y1;
                 y1 -= diff;
@@ -764,7 +750,7 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
                     y2 -= 2;
                 }
             }
-            if( x2 >= WindMaxWidth ) {
+            if( x2 >= EditVars.WindMaxWidth ) {
                 diff = x2 - x1;
                 x2 = x1 - xwid;
                 x1 -= (diff + xwid);
@@ -786,9 +772,9 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
         si.maxlist = (int) cmenu->itemcnt;
         si.result = result;
         si.allowrl = arl;
-        si.hilite = (char **) cmenu->hilist;
+        si.hilite = cmenu->hilist;
         si.cln = 1;
-        si.eiw = -1;
+        si.eiw = NO_WINDOW;
 
         if( xpos < 0 ) {
             lightMenu( sel, ws, TRUE );
@@ -862,7 +848,7 @@ vi_rc DoMenu( void )
     ch = LastEvent - VI_KEY( ALT_A ) + 'A';
     i = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        if( ch == cmenu->hi ) {
+        if( ch == cmenu->hi._char ) {
             sel = i;
             break;
         }
@@ -998,7 +984,7 @@ bool IsMenuHotKey( vi_key key )
 
     ch = key - VI_KEY(ALT_A ) + 'A';
     for( curr = menuHead; curr != NULL; curr = curr->next ) {
-        if( curr->hi == ch ) {
+        if( curr->hi._char == ch ) {
             return( TRUE );
         }
     }

@@ -34,17 +34,18 @@
 #include "mouse.h"
 #include "win.h"
 
+
 #define MOUSE_LEFT_BUTTON          0
 #define MOUSE_RIGHT_BUTTON         1
 #define MOUSE_MIDDLE_BUTTON        2
 
-static long mouseTime;
-static int  lastButton;
-static int  oldRow = -1;
-static int  oldCol = -1;
-static char oldAttr;
-static bool mouseOn;
-static bool mouseRepeat;
+static long         mouseTime;
+static int          lastButton;
+static int          oldRow = -1;
+static int          oldCol = -1;
+static viattr_t     oldAttr;
+static bool         mouseOn;
+static bool         mouseRepeat;
 
 /*
  * getButton - return an integer representing the mouse button
@@ -114,13 +115,14 @@ vi_mouse_event GetMouseEvent( void )
     // this confuses us so disallow it.
     row = max( row, 0 );
     col = max( col, 0 );
-    row = min( row, WindMaxHeight - 1 );
-    col = min( col, WindMaxWidth - 1 );
+    row = min( row, EditVars.WindMaxHeight - 1 );
+    col = min( col, EditVars.WindMaxWidth - 1 );
 
     moved = (row != MouseRow || col != MouseCol);
     diff = (status ^ MouseStatus) & MOUSE_ANY_BUTTON_DOWN;
 
     me = MOUSE_NONE;
+    button = 0;
     if( moved ) {
         lastButton = -1;
         if( MouseStatus & MOUSE_ANY_BUTTON_DOWN ) {
@@ -133,7 +135,7 @@ vi_mouse_event GetMouseEvent( void )
     } else if( diff & MOUSE_ANY_BUTTON_DOWN ) {
         if( (diff & status) == diff ) {
             if( getButton( diff ) == lastButton &&
-                (ClockTicks - mouseTime) < MouseDoubleClickSpeed ) {
+                (ClockTicks - mouseTime) < EditVars.MouseDoubleClickSpeed ) {
                 me = MOUSE_DCLICK;
             } else {
                 me = MOUSE_PRESS;
@@ -150,12 +152,12 @@ vi_mouse_event GetMouseEvent( void )
     } else if( status & MOUSE_ANY_BUTTON_DOWN ) {
         button = getButton( status );
         if( !mouseRepeat ){
-            if( ClockTicks - mouseTime > MouseRepeatStartDelay ) {
+            if( ClockTicks - mouseTime > EditVars.MouseRepeatStartDelay ) {
                 me = MOUSE_REPEAT;
                 mouseRepeat = TRUE;
                 mouseTime = ClockTicks;
             }
-        } else if( ClockTicks - mouseTime > MouseRepeatDelay ) {
+        } else if( ClockTicks - mouseTime > EditVars.MouseRepeatDelay ) {
             me = MOUSE_REPEAT;
             mouseTime = ClockTicks;
         }
@@ -173,20 +175,20 @@ vi_mouse_event GetMouseEvent( void )
  */
 static void drawMouseCursor( int row, int col )
 {
-    char_info   _FAR *ptr;
+    unsigned    oscr;
 
     if( mouseOn ) {
-        ptr = (char_info _FAR *) &Scrn[sizeof( char_info ) * (row * WindMaxWidth + col)];
-        oldAttr = ptr->attr;
+        oscr = row * EditVars.WindMaxWidth + col;
+        oldAttr = Scrn[oscr].cinfo_attr;
         if( EditFlags.Monocolor ) {
-            ptr->attr = (oldAttr & 0x79) ^ 0x71;
+            Scrn[oscr].cinfo_attr = (oldAttr & 0x79) ^ 0x71;
         } else {
-            ptr->attr = (oldAttr & 0x7f) ^ 0x77;
+            Scrn[oscr].cinfo_attr = (oldAttr & 0x7f) ^ 0x77;
         }
         oldRow = row;
         oldCol = col;
 #ifdef __VIO__
-        MyVioShowBuf( (char _FAR *) ptr - Scrn, 1 );
+        MyVioShowBuf( oscr, 1 );
 #endif
     }
 
@@ -197,14 +199,13 @@ static void drawMouseCursor( int row, int col )
  */
 static void eraseMouseCursor( void )
 {
-    char_info   _FAR *ptr;
+    unsigned    oscr;
 
     if( mouseOn && oldRow >= 0 ) {
-        ptr = (char_info _FAR *) &Scrn[sizeof( char_info ) *
-                                       (oldRow * WindMaxWidth + oldCol)];
-        ptr->attr = oldAttr;
+        oscr = oldRow * EditVars.WindMaxWidth + oldCol;
+        Scrn[oscr].cinfo_attr = oldAttr;
 #ifdef __VIO__
-        MyVioShowBuf( (char _FAR *) ptr - Scrn, 1 );
+        MyVioShowBuf( oscr, 1 );
 #endif
     }
 

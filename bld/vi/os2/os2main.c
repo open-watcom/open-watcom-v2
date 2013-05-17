@@ -33,8 +33,8 @@
 #include "source.h"
 #ifndef __OS2V2__
     #include <malloc.h>
-    #include "stack.h"
 #endif
+#include "stack.h"
 
 /*
  * getEXEName - look up full path to exe
@@ -66,13 +66,11 @@ void main( int argc, char *argv[] )
     VarAddGlobalStr( "OS", "os2v2" );
 #else
     VarAddGlobalStr( "OS", "os2" );
-    InitialStack();
 #endif
+    InitialStack();
     Comspec = getenv( "COMSPEC" );
     InitializeEditor();
-#ifndef __OS2V2__
     FinalStack();
-#endif
     EditMain();
 
     FiniMem();

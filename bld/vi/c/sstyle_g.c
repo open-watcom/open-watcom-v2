@@ -174,6 +174,7 @@ void GetGMLFlags( ss_flags_g *storeFlags )
 
 void InitGMLFlags( linenum line_no )
 {
+    line_no = line_no;
     flags.inGMLComment = FALSE;
     flags.inGMLKeyword = FALSE;
     flags.inString = FALSE;

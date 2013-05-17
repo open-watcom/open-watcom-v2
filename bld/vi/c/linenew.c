@@ -31,6 +31,7 @@
 
 
 #include "vi.h"
+#include <stddef.h>
 #include "win.h"
 
 /*
@@ -107,7 +108,7 @@ line *LineAlloc( char *data, int len )
 {
     line        *tmp;
 
-    tmp = MemAlloc( sizeof( line ) + len );  /* Don't Need len+1 */
+    tmp = MemAlloc( offsetof( line, data ) + len + 1 );
     if( data != NULL ) {
         memcpy( tmp->data, data, len );
     }

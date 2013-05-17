@@ -34,7 +34,7 @@
 #include "win.h"
 #include "dosx.h"
 
-static char *tmpImage;
+static char_info    *tmpImage;
 
 /*
  * drawTmpBorder - display border
@@ -42,54 +42,52 @@ static char *tmpImage;
 static void drawTmpBorder( int color, int x1, int y1, int x2, int y2 )
 {
     int                 i, tl, bl, tr, br, height, width, k;
-    char_info           what;
-    char_info           _FAR *scr;
+    char_info           what = {0, 0};
 
     height = y2 - y1 + 1;
     width = x2 - x1 + 1;
-    tl = x1 + y1 * WindMaxWidth;
-    tr = x2 + y1 * WindMaxWidth;
-    bl = x1 + y2 * WindMaxWidth;
-    br = x2 + y2 * WindMaxWidth;
-    what.attr = MAKE_ATTR( NULL, color, BLACK );
+    tl = x1 + y1 * EditVars.WindMaxWidth;
+    tr = x2 + y1 * EditVars.WindMaxWidth;
+    bl = x1 + y2 * EditVars.WindMaxWidth;
+    br = x2 + y2 * EditVars.WindMaxWidth;
+    what.cinfo_attr = MAKE_ATTR( NULL, color, BLACK );
 
     /*
      * corners
      */
-    scr = (char_info _FAR *) Scrn;
-    what.ch = WindowBordersNG[WB_TOPLEFT];
-    WRITE_SCREEN( scr[tl], what );
-    what.ch = WindowBordersNG[WB_TOPRIGHT];
-    WRITE_SCREEN( scr[tr], what );
-    what.ch = WindowBordersNG[WB_BOTTOMLEFT];
-    WRITE_SCREEN( scr[bl], what );
-    what.ch = WindowBordersNG[WB_BOTTOMRIGHT];
-    WRITE_SCREEN( scr[br], what );
+    what.cinfo_char = WindowBordersNG[WB_TOPLEFT];
+    WRITE_SCREEN( Scrn[tl], what );
+    what.cinfo_char = WindowBordersNG[WB_TOPRIGHT];
+    WRITE_SCREEN( Scrn[tr], what );
+    what.cinfo_char = WindowBordersNG[WB_BOTTOMLEFT];
+    WRITE_SCREEN( Scrn[bl], what );
+    what.cinfo_char = WindowBordersNG[WB_BOTTOMRIGHT];
+    WRITE_SCREEN( Scrn[br], what );
 
     /*
      * sides, top and bottom
      */
-    what.ch = WindowBordersNG[WB_LEFTSIDE];
-    k = WindMaxWidth;
+    what.cinfo_char = WindowBordersNG[WB_LEFTSIDE];
+    k = EditVars.WindMaxWidth;
     for( i = 1; i < height - 1; i++) {
-        WRITE_SCREEN( scr[tr + k], what );
-        WRITE_SCREEN( scr[tl + k], what );
+        WRITE_SCREEN( Scrn[tr + k], what );
+        WRITE_SCREEN( Scrn[tl + k], what );
 #ifdef __VIO__
-        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tr + k), 1 );
-        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tl + k), 1 );
+        MyVioShowBuf( tr + k, 1 );
+        MyVioShowBuf( tl + k, 1 );
 #endif
-        k += WindMaxWidth;
+        k += EditVars.WindMaxWidth;
     }
-    what.ch = WindowBordersNG[WB_TOPBOTTOM];
+    what.cinfo_char = WindowBordersNG[WB_TOPBOTTOM];
     for( i = 1; i < width - 1; i++ ) {
-        WRITE_SCREEN( scr[bl + i], what );
+        WRITE_SCREEN( Scrn[bl + i], what );
     }
     for( i = 1; i < width - 1; i++ ) {
-        WRITE_SCREEN( scr[tl + i], what );
+        WRITE_SCREEN( Scrn[tl + i], what );
     }
 #ifdef __VIO__
-    MyVioShowBuf( (unsigned) sizeof( char_info ) * tl, width );
-    MyVioShowBuf( (unsigned) sizeof( char_info ) * bl, width );
+    MyVioShowBuf( tl, width );
+    MyVioShowBuf( bl, width );
 #endif
 
 } /* drawTmpBorder */
@@ -104,10 +102,10 @@ static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1,
 
     height = y2 - y1 + 1;
     width = x2 - x1 + 1;
-    tl = x1 + y1 * WindMaxWidth;
-    tr = x2 + y1 * WindMaxWidth;
-    bl = x1 + y2 * WindMaxWidth;
-    br = x2 + y2 * WindMaxWidth;
+    tl = x1 + y1 * EditVars.WindMaxWidth;
+    tr = x2 + y1 * EditVars.WindMaxWidth;
+    bl = x1 + y2 * EditVars.WindMaxWidth;
+    br = x2 + y2 * EditVars.WindMaxWidth;
 
     /*
      * corners
@@ -120,23 +118,23 @@ static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1,
     /*
      * sides, top and bottom
      */
-    k = WindMaxWidth;
+    k = EditVars.WindMaxWidth;
     for( i = 1; i < height - 1; i++ ) {
         WRITE_SCREEN2( dest[tr + k], src[tr + k] );
         WRITE_SCREEN2( dest[tl + k], src[tl + k] );
 #ifdef __VIO__
-        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tr + k), 1 );
-        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tl + k), 1 );
+        MyVioShowBuf( tr + k, 1 );
+        MyVioShowBuf( tl + k, 1 );
 #endif
-        k += WindMaxWidth;
+        k += EditVars.WindMaxWidth;
     }
     for( i = 1; i < width - 1; i++ ) {
         WRITE_SCREEN2( dest[bl + i], src[bl + i] );
         WRITE_SCREEN2( dest[tl + i], src[tl + i] );
     }
 #ifdef __VIO__
-    MyVioShowBuf( (unsigned) sizeof( char_info ) * tl, width );
-    MyVioShowBuf( (unsigned) sizeof( char_info ) * bl, width );
+    MyVioShowBuf( tl, width );
+    MyVioShowBuf( bl, width );
 #endif
 
 } /* swapTmp */
@@ -151,7 +149,8 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
     vi_key      key;
     bool        done = FALSE;
     int         x1, x2, y1, y2, nx1, nx2, ny1, ny2;
-    int         mrow, mcol;
+    int         mrow = 0;
+    int         mcol = 0;
     int         dx, dy, bclr;
     wind        *cwd;
 
@@ -166,23 +165,23 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
     }
     *doresize = FALSE;
     cwd = Windows[wn];
-    tmpImage = MemAlloc( WindMaxWidth * WindMaxHeight * sizeof( char_info ) );
+    tmpImage = MemAlloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
     x1 = cwd->x1;
     x2 = cwd->x2;
     y1 = cwd->y1;
     y2 = cwd->y2;
     if( move ) {
-        bclr = MoveColor;
+        bclr = EditVars.MoveColor;
     } else {
-        bclr = ResizeColor;
+        bclr = EditVars.ResizeColor;
     }
-    swapTmp( (char_info _FAR *) Scrn, (char_info _FAR *) tmpImage, x1, y1, x2, y2 );
+    swapTmp( Scrn, tmpImage, x1, y1, x2, y2 );
     drawTmpBorder( bclr, x1, y1, x2, y2 );
 
     /*
      * engage in resizing
      */
-    while( TRUE ) {
+    for( ;; ) {
 
         /*
          * get keyboard info
@@ -192,7 +191,7 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
             mcol = MouseCol;
             DisplayMouse( TRUE );
         }
-        while( 1 ) {
+        for( ;; ) {
             key = GetNextEvent( TRUE );
             dy = dx = 0;
             if( key == VI_KEY( ESC ) ) {
@@ -255,8 +254,7 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
          * check if we should exit
          */
         if( done ) {
-            swapTmp( (char_info _FAR *) tmpImage, (char_info _FAR *) Scrn,
-                     x1, y1, x2, y2 );
+            swapTmp( tmpImage, Scrn, x1, y1, x2, y2 );
             MemFree( tmpImage );
             if( *doresize ) {
                 wd->x1 = x1;
@@ -305,11 +303,9 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
          * do the resize
          */
         if( ValidDimension( nx1, ny1, nx2, ny2, cwd->has_border ) ) {
-            swapTmp( (char_info _FAR *) tmpImage, (char_info _FAR *) Scrn,
-                     x1, y1, x2, y2 );
+            swapTmp( tmpImage, Scrn, x1, y1, x2, y2 );
             x1 = nx1; x2 = nx2; y1 = ny1; y2 = ny2;
-            swapTmp( (char_info _FAR *) Scrn, (char_info _FAR *) tmpImage,
-                     x1, y1, x2, y2 );
+            swapTmp( Scrn, tmpImage, x1, y1, x2, y2 );
             drawTmpBorder( bclr, x1, y1, x2, y2 );
             *doresize = TRUE;
         }
@@ -327,6 +323,11 @@ static vi_rc dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
     windim      w;
     vi_rc       rc;
 
+    resize = 0;
+    w.x1 = 0;
+    w.y1 = 0;
+    w.x2 = 0;
+    w.y2 = 0;
     dickWithAWindow( CurrentWindow, topcorner, move, &resize, &w, mouse );
     if( resize ) {
         rc = CurrentWindowResize( w.x1, w.y1, w.x2, w.y2 );

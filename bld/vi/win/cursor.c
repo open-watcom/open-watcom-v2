@@ -52,7 +52,7 @@ extern int WinVirtualCursorPosition( char *, int );
 void SetCursorBlinkRate( int cbr )
 {
     SetCaretBlinkTime( cbr );
-    CursorBlinkRate = cbr;
+    EditVars.CursorBlinkRate = cbr;
 
 } /* SetCursorBlinkRate */
 
@@ -95,7 +95,7 @@ void NewCursor( window_id id, cursor_type ct )
         haveOldBlinkTime = TRUE;
     }
     CreateCaret( id, (HBITMAP)NULLHANDLE, cursorWidth, cursorHeight );
-    SetCursorBlinkRate( CursorBlinkRate );
+    SetCursorBlinkRate( EditVars.CursorBlinkRate );
     MyShowCaret( id );
     cursorType = ct;
 
@@ -106,7 +106,7 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
     ss_block    *ss, *ss_start, *ss_prev;
     dc          dc_line;
     int         len;
-    int         old_col;
+    int         old_col = 0;
     char        *str;
     int         funny = 0;
 
@@ -140,6 +140,7 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
         return( 0 );
     }
     ss_start = ss = dc_line->ss;
+    ss_prev = NULL;
 
 
     // this bit adjusts col for real tabs
@@ -232,7 +233,7 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
                 // the first tab. this should be the tab boundry.
                 int dist = (old_col + 1) - (end_str - cur_pos);
                 // unless the end_str was also a tab, So we round down.
-                left = (dist - (dist % HardTab) - LeftTopPos.column) * avg_width;
+                left = (dist - (dist % EditVars.HardTab) - LeftTopPos.column) * avg_width;
 
                 cur_pos++;
             }
@@ -341,7 +342,7 @@ void SetCursorOnLine( window_id id, int col, char *str, type_style *style )
      * Also make the overstrike cursor the height of the insert cursor.
      */
     width = (long) width * cursorType.width / 100L;
-    height = InsertCursorType.height;
+    height = EditVars.InsertCursorType.height;
     y = FontHeight( WIN_FONT( w ) ) - height;
 
     MyHideCaret( id );
@@ -370,12 +371,12 @@ void SetGenericWindowCursor( window_id id, int row, int col )
 void ResetEditWindowCursor( window_id id )
 {
     if( !EditFlags.Modeless && !EditFlags.InsertModeActive ) {
-        NewCursor( id, NormalCursorType );
+        NewCursor( id, EditVars.NormalCursorType );
     } else {
         if( EditFlags.WasOverstrike ) {
-            NewCursor( id, OverstrikeCursorType );
+            NewCursor( id, EditVars.OverstrikeCursorType );
         } else {
-            NewCursor( id, InsertCursorType );
+            NewCursor( id, EditVars.InsertCursorType );
         }
     }
 

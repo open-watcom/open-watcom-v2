@@ -64,7 +64,7 @@ vi_rc SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_di
     /*
      * work through all files
      */
-    while( TRUE ) {
+    for( ;; ) {
 
         if( dd[strlen( dd ) - 1] != FILE_SEP ) {
             strcat( dd, FILE_SEP_STR );
@@ -91,7 +91,7 @@ vi_rc SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_di
         sfd.title = CurrentDirectory;
         sfd.show_lineno = TRUE;
         sfd.cln = 1;
-        sfd.eiw = -1;
+        sfd.eiw = NO_WINDOW;
         rc = SelectLineInFile( &sfd );
         if( rc != ERR_NO_ERR ) {
             break;
@@ -153,19 +153,19 @@ static bool             isMenu;
  * displayGenericLines - display all lines in a window
  */
 static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
-                                linenum hilite, type_style *style, char **hichars,
+                                linenum hilite, type_style *style, hilst *hilist,
                                 char **vals, int valoff )
 {
     int         i, j, k, text_lines;
     linenum     cl = pagetop;
     fcb         *cfcb, *tfcb;
     line        *cline;
-    char        *ptr;
+    hilst       *ptr;
     type_style  *text, *hot_key;
     window_info *info;
     type_style  base;
     char        tmp[MAX_STR];
-    bool        disabled;
+//    bool        disabled;
     vi_rc       rc;
 
     /*
@@ -191,22 +191,22 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
     /*
      * run through each line in the window
      */
-    ptr = (char *) (hichars);
+    ptr = hilist;
     if( ptr != NULL ) {
-        ptr += 2 * (pagetop - 1);
+        ptr += pagetop - 1;
     }
     for( j = 1; j <= text_lines; j++ ) {
         if( cline != NULL ) {
             if( isMenu ) {
                 if( InvokeMenuHook( CurrentMenuNumber, cl ) == -1 ) {
-                    disabled = TRUE;
+//                    disabled = TRUE;
                     if( cl == hilite ) {
                         info = &activegreyedmenu_info;
                     } else {
                         info = &greyedmenu_info;
                     }
                 } else {
-                    disabled = FALSE;
+//                    disabled = FALSE;
                     if( cl == hilite ) {
                         info = &activemenu_info;
                     } else {
@@ -232,7 +232,7 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
             } else if( cline->len > leftcol ) {
                 if( vals != NULL ) {
                     i = cline->len - leftcol;
-                    strncpy( tmp, &(cline->data[leftcol]), WindMaxWidth + 5 );
+                    strncpy( tmp, &(cline->data[leftcol]), EditVars.WindMaxWidth + 5 );
                     for( k = i; k < valoff; k++ ) {
                         tmp[k] = ' ';
                     }
@@ -246,10 +246,10 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
                 DisplayLineInWindowWithColor( cWin, j, SingleBlank, text, 0 );
             }
             if( ptr != NULL ) {
-                SetCharInWindowWithColor( cWin, j, 1 + (int)ptr[1], ptr[0], hot_key );
+                SetCharInWindowWithColor( cWin, j, 1 + ptr->_offs, ptr->_char, hot_key );
             }
 evil_goto:  if( ptr != NULL ) {
-                ptr += 2;
+                ptr += 1;
             }
             rc = GimmeNextLinePtr( f, &cfcb, &cline );
             if( rc != ERR_NO_ERR ) {
@@ -444,7 +444,8 @@ vi_rc SelectLineInFile( selflinedata *sfd )
     bool        hiflag = FALSE, drawbord = FALSE;
     int         farx, text_lines;
     linenum     pagetop = 1, lln = 1;
-    char        tmp[MAX_STR], *ptr;
+    char        tmp[MAX_STR];
+    hilst       *ptr;
     linenum     cln;
     linenum     endline;
     vi_rc       rc;
@@ -501,9 +502,9 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 drawbord = TRUE;
             }
             if( hiflag ) {
-                ptr = (char *) sfd->hilite;
-                ptr += 2 * (cln - 1);
-                if( ptr[0] == (char) -1 ) {
+                ptr = sfd->hilite;
+                ptr += cln - 1;
+                if( ptr->_char == (char)-1 ) {
                     if( cln > lln ) {
                         cln++;
                     } else if( cln < lln ) {
@@ -514,9 +515,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             if( drawbord ) {
                 DrawBorder( cWin );
             }
-            displayGenericLines( sfd->f, pagetop, leftcol, cln,
-                                 &(sfd->wi->hilight), sfd->hilite,
-                                 sfd->vals, sfd->valoff );
+            displayGenericLines( sfd->f, pagetop, leftcol, cln, &(sfd->wi->hilight), sfd->hilite, sfd->vals, sfd->valoff );
         }
         lln = cln;
         redraw = TRUE;
@@ -538,15 +537,15 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             } else {
                 key2 = key;
             }
-            ptr = (char *) sfd->hilite;
-            while( ptr[0] != 0 ) {
-                if( toupper( ptr[0] ) == key2 ) {
+            ptr = sfd->hilite;
+            while( ptr->_char != '\0' ) {
+                if( toupper( ptr->_char ) == key2 ) {
                     cln = i + 1;
                     key = VI_KEY( ENTER );
                     break;
                 }
-                i++;
-                ptr += 2;
+                ++i;
+                ++ptr;
             }
         }
 
@@ -580,9 +579,9 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         case VI_KEY( MOUSEEVENT ):
             DisplayMouse( FALSE );
             if( hiflag ) {
-                ptr = (char *) sfd->hilite;
-                ptr += 2 * mouseLine;
-                if( ptr[0] == (char) -1 ) {
+                ptr = sfd->hilite;
+                ptr += mouseLine;
+                if( ptr->_char == (char) -1 ) {
                     break;
                 }
             }
@@ -598,8 +597,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 case MS_PAGEUP: goto evil_pageup;
                 case MS_PAGEDOWN: goto evil_pagedown;
                 case MS_EXPOSEDOWN:
-                    adjustCLN( &cln, &pagetop, pagetop + text_lines - cln - 1,
-                               endline, text_lines );
+                    adjustCLN( &cln, &pagetop, pagetop + text_lines - cln - 1, endline, text_lines );
                     adjustCLN( &cln, &pagetop, 1, endline, text_lines );
                     drawbord = TRUE;
                     break;

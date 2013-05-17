@@ -108,7 +108,7 @@ void GenLabel( label where )
     vi_rc   rc;
 
     genItem( SRC_T_LABEL, where );
-    if( rc = AddLabel( tmpTail, cLab, where ) ) {
+    if( (rc = AddLabel( tmpTail, cLab, where )) != ERR_NO_ERR ) {
         AbortGen( rc );
     }
     tmpTail->hasvar = FALSE;
@@ -234,7 +234,7 @@ label NewLabel( void )
 vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 {
     GENERIC_FILE        gf;
-    int                 i, token, k, len, dammit, rec;
+    int                 i, token, k, len;
     sfile               *tsf;
     char                tmp[MAX_SRC_LINE], tmp2[MAX_SRC_LINE];
     char                tmp3[MAX_SRC_LINE];
@@ -248,14 +248,16 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     /*
      * get source file
      */
-#ifndef VICOMP
+#ifdef VICOMP
+    ret = SpecialOpen( fn, &gf );
+#else
     if( EditFlags.CompileScript ) {
         EditFlags.OpeningFileToCompile = TRUE;
+        ret = SpecialOpen( fn, &gf, FALSE );
+        EditFlags.OpeningFileToCompile = FALSE;
+    } else {
+        ret = SpecialOpen( fn, &gf, EditFlags.BoundData );
     }
-#endif
-    ret = SpecialOpen( fn, &gf );
-#ifndef VICOMP
-    EditFlags.OpeningFileToCompile = FALSE;
 #endif
     if( !ret ) {
         return( ERR_FILE_NOT_FOUND );
@@ -328,7 +330,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                 }
 #endif
             } else {
-                token = -1;
+                token = TOK_INVALID;
             }
 #ifndef VICOMP
         } else {
@@ -340,7 +342,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
         /*
          * process recognized tokens
          */
-        if( token >= 0 ) {
+        if( token != TOK_INVALID ) {
 
             RemoveLeadingSpaces( tmp );
             if( token > SRC_T_NULL ) {
@@ -431,22 +433,10 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                 continue;
             }
 #endif
-            if( tmp2[len - 1] == '!' ) {
-                dammit = TRUE;
-                tmp2[len - 1] = 0;
-            } else {
-                dammit = FALSE;
-            }
-
             if( !AppendingFlag ) {
-                rec = token = Tokenize( ParseClTokens, tmp2, TRUE );
-                if( dammit && token != PCL_T_MAP ) {
-                    tmp2[len - 1] = '!';
-                    token = -1;
-                }
+                token = Tokenize( ParseClTokens, tmp2, TRUE );
             } else {
-                rec = -1;
-                token = -1;
+                token = TOK_INVALID;
             }
             switch( token ) {
             case PCL_T_COMMANDWINDOW:
@@ -495,20 +485,19 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             case PCL_T_FILETYPESOURCE:
             case PCL_T_ENDFILETYPESOURCE:
             case PCL_T_LOCATE:
+            case PCL_T_MAP:
+            case PCL_T_MAP_DMT:
+
+            case PCL_T_MENUFILELIST:
+            case PCL_T_MENULASTFILES:
+
+            case PCL_T_DEFAULTWINDOW:
+            case PCL_T_ACTIVEMENUWINDOW:
+            case PCL_T_GREYEDMENUWINDOW:
+            case PCL_T_ACTIVEGREYEDMENUWINDOW:
                 RemoveLeadingSpaces( tmp );
                 token += SRC_T_NULL + 1;
                 genItem( token, tmp );
-                break;
-
-            case PCL_T_MAP:
-                token += SRC_T_NULL + 1;
-                if( !dammit ) {
-                    genItem( token, tmp );
-                } else {
-                    strcpy( tmp2, "! " );
-                    strcat( tmp2, tmp );
-                    genItem( token, tmp2 );
-                }
                 break;
 
             case PCL_T_SET:
@@ -538,14 +527,14 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                     if( tmp3[0] == '.' && tmp3[1] == 0 ) {
                         AppendingFlag = FALSE;
                     }
-                } else if( rec < 0 ) {
+                } else if( token == TOK_INVALID ) {
                     /*
                      * see if the current token is a Ex token.  If
                      * it isn't, then see if the next one is
                      * (i.e., look for <n> append)
                      */
                     token = Tokenize( ExTokens, tmp2, FALSE );
-                    if( token < 0 ) {
+                    if( token == TOK_INVALID ) {
                         if( NextWord1( tmp, tmp2 ) >= 0 ) {
                             token = Tokenize( ExTokens, tmp2, FALSE );
                             if( token == EX_T_APPEND ) {
@@ -557,7 +546,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                 if( tmp3[0] == '>' ) {
                     tmp3[0] = ' ';
                 }
-                genItem( -1, tmp3 );
+                genItem( TOK_INVALID, tmp3 );
                 break;
             }
         }

@@ -36,17 +36,8 @@
  * language tokens
  */
 char _NEAR ExTokens[] = {
-    "Append\0"
-    "Change\0"
-    "COpy\0"
-    "Insert\0"
-    "Join\0"
-    "List\0"
-    "MArk\0"
-    "Move\0"
-    "Undo\0"
-    "VErsion\0"
-    "VIsual\0"
-    "=\0"
+    #define PICK(a,b) a
+    #include "excmds.h"
+    #undef PICK
     "\0"
 };

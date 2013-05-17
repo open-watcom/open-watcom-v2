@@ -33,7 +33,6 @@
 #include "color.h"
 #include "font.h"
 #include "utils.h"
-#include "watcom.h"
 
 static BOOL Init( window *, void * );
 static BOOL Fini( window *, void * );
@@ -45,8 +44,8 @@ window FileCompleteWindow = {
     Fini
 };
 
-extern void FileCompleteMouseClick( HWND, int, int, BOOL );
-LONG WINEXP FileCompleteWindowProc( HWND, unsigned, UINT, LONG );
+void FileCompleteMouseClick( HWND, int, int, BOOL );
+WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *ClassName = "FileCompleteWindow";
 
@@ -59,7 +58,7 @@ static BOOL Init( window *w, void *parm )
     wc.style = CS_DBLCLKS;
     wc.lpfnWndProc = (WNDPROC)FileCompleteWindowProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( LPVOID );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
     wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
@@ -76,7 +75,7 @@ static BOOL Fini( window *w, void *parm )
     return( TRUE );
 }
 
-LONG WINEXP FileCompleteWindowProc( HWND hwnd, unsigned msg, UINT w, LONG l )
+WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     switch( msg ) {
     case WM_KEYDOWN:
@@ -89,19 +88,17 @@ LONG WINEXP FileCompleteWindowProc( HWND hwnd, unsigned msg, UINT w, LONG l )
     case WM_ERASEBKGND:
         return( TRUE );
     case WM_CREATE:
-        SetWindowLong( hwnd, 0, (LONG)(LPSTR)&FileCompleteWindow );
+        SET_WNDINFO( hwnd, (LONG_PTR)&FileCompleteWindow );
         break;
     case WM_LBUTTONDBLCLK:
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
-        FileCompleteMouseClick( hwnd, (int)(signed_16)LOWORD( l ),
-                                (int)(signed_16)HIWORD( l ), TRUE );
+        FileCompleteMouseClick( hwnd, (int)(short)LOWORD( l ), (int)(short)HIWORD( l ), TRUE );
         break;
     case WM_LBUTTONUP:
     case WM_MBUTTONUP:
     case WM_RBUTTONUP:
-        FileCompleteMouseClick( hwnd, (int)(signed_16)LOWORD( l ),
-                                (int)(signed_16)HIWORD( l ), FALSE );
+        FileCompleteMouseClick( hwnd, (int)(short)LOWORD( l ), (int)(short)HIWORD( l ), FALSE );
         break;
     }
     return( DefWindowProc( hwnd, msg, w, l ) );

@@ -83,7 +83,7 @@ static vi_rc        setSyntaxStyle( syntax_element, char * );
  */
 void InitCommandLine( void )
 {
-    dataBuff = MemAlloc( MaxLine );
+    dataBuff = MemAlloc( EditVars.MaxLine );
 
 } /* InitCommandLine */
 
@@ -107,20 +107,20 @@ static vi_rc doProcessCommandLine( bool is_fancy )
     /*
      * open the window and get the string
      */
-    st = MemAllocUnsafe( MaxLine );
+    st = MemAllocUnsafe( EditVars.MaxLine );
     if( st == NULL ) {
         return( ERR_NO_MEMORY );
     }
     is_fancy = is_fancy;
 #ifdef __WIN__
     if( is_fancy ) {
-        if( !GetCmdDialog( st, MaxLine ) ) {
+        if( !GetCmdDialog( st, EditVars.MaxLine ) ) {
             MemFree( st );
             return( ERR_NO_ERR );
         }
     } else {
 #endif
-        rc = PromptForString( ":", st, MaxLine, &CLHist );
+        rc = PromptForString( ":", st, EditVars.MaxLine, &EditVars.CLHist );
         if( rc != ERR_NO_ERR ) {
             MemFree( st );
             if( rc == NO_VALUE_ENTERED ) {
@@ -163,14 +163,14 @@ vi_rc FancyProcessCommandLine( void )
 /*
  * TryCompileableToken - process token that can also be compiled
  */
-vi_rc TryCompileableToken( int token, char *data, bool iscmdline,
-                         bool dmt )
+vi_rc TryCompileableToken( int token, char *data, bool iscmdline )
 {
     vi_rc       rc = ERR_INVALID_COMMAND;
     bool        mflag;
-    char        *tmp;
 
     switch( token ) {
+    case PCL_T_MAPBASE_DMT:
+    case PCL_T_MAP_DMT:
     case PCL_T_MAPBASE:
     case PCL_T_MAP:
         if( iscmdline ) {
@@ -178,21 +178,13 @@ vi_rc TryCompileableToken( int token, char *data, bool iscmdline,
         } else {
             mflag = 0;
         }
-        if( token == PCL_T_MAPBASE ) {
+        if( token == PCL_T_MAPBASE || token == PCL_T_MAPBASE_DMT ) {
             mflag |= MAPFLAG_BASE;
         }
-        tmp = data;
-        if( iscmdline ) {
-            if( dmt ) {
-                mflag |= MAPFLAG_DAMMIT;
-            }
-        } else {
-            if( data[0] == '!' ) {
-                mflag |= MAPFLAG_DAMMIT;
-                tmp = &data[1];
-            }
+        if( token == PCL_T_MAP_DMT || token == PCL_T_MAPBASE_DMT ) {
+            mflag |= MAPFLAG_DAMMIT;
         }
-        rc = MapKey( mflag, tmp );
+        rc = MapKey( mflag, data );
         break;
     case PCL_T_MENUFILELIST:
         rc = MenuItemFileList();
@@ -269,7 +261,8 @@ vi_rc TryCompileableToken( int token, char *data, bool iscmdline,
 vi_rc RunCommandLine( char *cl )
 {
     int         i, x, y, x2, y2;
-    int         n2f, n1f, dmt, tkn, flag;
+    bool        n1f, n2f;
+    int         tkn, flag;
     bool        test1;
     linenum     n1, n2;
     char        st[FILENAME_MAX];
@@ -281,7 +274,8 @@ vi_rc RunCommandLine( char *cl )
     /*
      * parse command string
      */
-    rc = ParseCommandLine( cl, &n1, &n1f, &n2, &n2f, &tkn, dataBuff, &dmt );
+    tkn = TOK_INVALID;
+    rc = ParseCommandLine( cl, &n1, &n1f, &n2, &n2f, &tkn, dataBuff );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -338,14 +332,14 @@ vi_rc RunCommandLine( char *cl )
         rc = MinimizeCurrentWindow();
         break;
     case PCL_T_EXITFILESONLY:
-        if( ExitWithPrompt( FALSE ) == FALSE ) {
+        if( ExitWithPrompt( FALSE, FALSE ) == FALSE ) {
             rc = ERR_EXIT_ABORTED;
         } else {
             rc = ERR_NO_ERR;
         }
         break;
     case PCL_T_EXITALL:
-        if( ExitWithPrompt( TRUE ) == FALSE ) {
+        if( ExitWithPrompt( TRUE, FALSE ) == FALSE ) {
             rc = ERR_EXIT_ABORTED;
         } else {
             rc = ERR_NO_ERR;
@@ -370,8 +364,9 @@ vi_rc RunCommandLine( char *cl )
         break;
 
     case PCL_T_UNMAP:
+    case PCL_T_UNMAP_DMT:
         flag = MAPFLAG_MESSAGE + MAPFLAG_UNMAP;
-        if( dmt ) {
+        if( tkn == PCL_T_UNMAP_DMT ) {
             flag |= MAPFLAG_DAMMIT;
         }
         rc = MapKey( flag, dataBuff );
@@ -385,7 +380,7 @@ vi_rc RunCommandLine( char *cl )
         } else {
             StartExprParse( dataBuff, jmpaddr );
             val = GetConstExpr();
-            ltoa( val, st, Radix );
+            ltoa( val, st, EditVars.Radix );
             Message1( "%s", st );
             rc = ERR_NO_ERR;
         }
@@ -395,7 +390,8 @@ vi_rc RunCommandLine( char *cl )
     case PCL_T_SOURCE:
     case PCL_T_LOAD:
         {
-            char *tstr;
+            char        *tstr;
+            unsigned    ln;
 
             if( NextWord1( dataBuff, st ) <= 0 ) {
                 rc = ERR_NO_FILE_SPECIFIED;
@@ -420,8 +416,8 @@ vi_rc RunCommandLine( char *cl )
             if( tkn == PCL_T_LOAD ) {
                 EditFlags.LoadResidentScript = TRUE;
             }
-
-            rc = Source( st, dataBuff, &i );
+            ln = 0;
+            rc = Source( st, dataBuff, &ln );
 
             EditFlags.LoadResidentScript = FALSE;
             EditFlags.CompileScript = FALSE;
@@ -431,7 +427,7 @@ vi_rc RunCommandLine( char *cl )
                 LastError = rc;
             }
             if( rc > ERR_NO_ERR ) {
-                Error( "%s on line %d of \"%s\"", GetErrorMsg( rc ), i, st );
+                Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), ln, st );
             } else {
                 if( rc != DO_NOT_CLEAR_MESSAGE_WINDOW ) {
                     if( tkn != PCL_T_SOURCE ) {
@@ -440,8 +436,8 @@ vi_rc RunCommandLine( char *cl )
                         } else {
                             tstr = strCompile;
                         }
-                        Message1( "Script \"%s\" %s, %d lines generated, %d errors",
-                                        st, tstr, i, SourceErrCount );
+                        Message1( "Script \"%s\" %s, %u lines generated, %d errors",
+                                        st, tstr, ln, SourceErrCount );
                         rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
                     }
                 }
@@ -504,17 +500,21 @@ vi_rc RunCommandLine( char *cl )
         break;
 
     case PCL_T_VIEW:
+    case PCL_T_VIEW_DMT:
         EditFlags.ViewOnly = TRUE;
     case PCL_T_EDIT:
-        rc = EditFile( dataBuff, dmt );
+    case PCL_T_EDIT_DMT:
+        rc = EditFile( dataBuff, ( tkn == PCL_T_VIEW_DMT || tkn == PCL_T_EDIT_DMT ) );
         EditFlags.ViewOnly = FALSE;
         break;
+
     case PCL_T_OPEN:
         rc = OpenWindowOnFile( dataBuff );
         break;
 
     case PCL_T_HIDE:
-        rc = HideLineRange( n1, n2, dmt );
+    case PCL_T_HIDE_DMT:
+        rc = HideLineRange( n1, n2, ( tkn == PCL_T_HIDE_DMT ) );
         break;
 
     case PCL_T_DELETE:
@@ -545,13 +545,14 @@ vi_rc RunCommandLine( char *cl )
         break;
 
     case PCL_T_PUT:
+    case PCL_T_PUT_DMT:
         rc = SetSavebufNumber( dataBuff );
         if( rc != ERR_NO_ERR ) {
             break;
         }
         rc = SaveAndResetFilePos( n1 );
         if( rc == ERR_NO_ERR ) {
-            if( !dmt ) {
+            if( tkn == PCL_T_PUT ) {
                 rc = InsertSavebufAfter();
             } else {
                 rc = InsertSavebufBefore();
@@ -580,6 +581,7 @@ vi_rc RunCommandLine( char *cl )
         break;
 
     case PCL_T_GLOBAL:
+    case PCL_T_GLOBAL_DMT:
         if( !test1 ) {
             n1 = 1;
             rc = CFindLastLine( &n2 );
@@ -587,7 +589,7 @@ vi_rc RunCommandLine( char *cl )
                 break;
             }
         }
-        rc = Global( n1,n2, dataBuff, dmt );
+        rc = Global( n1,n2, dataBuff, ( tkn == PCL_T_GLOBAL_DMT ) );
         break;
 
     case PCL_T_WRITEQUIT:
@@ -604,11 +606,12 @@ vi_rc RunCommandLine( char *cl )
         break;
 
     case PCL_T_WRITE:
+    case PCL_T_WRITE_DMT:
         if( test1 ) {
             if( NextWord1( dataBuff, st ) <= 0 ) {
                 rc = ERR_NO_FILE_SPECIFIED;
             } else {
-                rc = SaveFile( st, n1, n2, dmt );
+                rc = SaveFile( st, n1, n2, ( tkn == PCL_T_WRITE_DMT ) );
             }
         } else {
             if( NextWord1( dataBuff, st ) >= 0 ) {
@@ -617,13 +620,13 @@ vi_rc RunCommandLine( char *cl )
                     rc = SaveFileAs();
                     break;
                 } else {
-                    rc = SaveFile( st, -1, -1, dmt );
+                    rc = SaveFile( st, -1, -1, ( tkn == PCL_T_WRITE_DMT ) );
                 }
 #else
-                rc = SaveFile( st, -1, -1, dmt );
+                rc = SaveFile( st, -1, -1, ( tkn == PCL_T_WRITE_DMT ) );
 #endif
             } else {
-                rc = SaveFile( NULL, -1, -1, dmt );
+                rc = SaveFile( NULL, -1, -1, ( tkn == PCL_T_WRITE_DMT ) );
                 if( rc == ERR_NO_ERR ) {
                     Modified( FALSE );
                 }
@@ -636,15 +639,14 @@ vi_rc RunCommandLine( char *cl )
         break;
 
     case PCL_T_QUIT:
-        if( dmt ) {
-            rc = NextFileDammit();
-        } else {
 #ifdef __WIN__
-            rc = CurFileExitOptionSaveChanges();
+        rc = CurFileExitOptionSaveChanges();
 #else
-            rc = NextFile();
+        rc = NextFile();
 #endif
-        }
+        break;
+    case PCL_T_QUIT_DMT:
+        rc = NextFileDammit();
         break;
 
     case PCL_T_DATE:
@@ -718,8 +720,8 @@ vi_rc RunCommandLine( char *cl )
                 }
             }
         } else {
-            x = MaxWindowTileX;
-            y = MaxWindowTileY;
+            x = EditVars.MaxWindowTileX;
+            y = EditVars.MaxWindowTileY;
         }
         if( x > 0 && y > 0) {
             rc = WindowTile( x, y );
@@ -956,10 +958,10 @@ vi_rc RunCommandLine( char *cl )
 #endif
     default:
         if( tkn >= 1000 ) {
-            rc = ProcessEx( n1, n2, n2f, dmt, tkn - 1000, dataBuff );
+            rc = ProcessEx( n1, n2, n2f, tkn - 1000, dataBuff );
             break;
         }
-        rc = TryCompileableToken( tkn, dataBuff, TRUE, dmt );
+        rc = TryCompileableToken( tkn, dataBuff, TRUE );
         if( rc != NOT_COMPILEABLE_TOKEN ) {
             break;
         }
@@ -967,6 +969,7 @@ vi_rc RunCommandLine( char *cl )
         if( rc >= ERR_NO_ERR ) {
             break;
         }
+    case TOK_INVALID:
         if( n1f && !n2f ) {
             if( !n1 ) {
                 n1 = 1;
@@ -1201,7 +1204,6 @@ static vi_rc setWText( char *data )
     if( NextWord1( data, token ) > 0 ) {
         tc3 = atoi( token );
     }
-
     setStyle( &wInfo->text, tc1, tc2, tc3 );
     /* want an SE_TEXT entry when SS turned off - steal it from here */
     if( wInfo == &editw_info ) {
@@ -1234,7 +1236,6 @@ static vi_rc setWHilite( char *data )
     if( NextWord1( data, token ) > 0 ) {
         tc3 = atoi( token );
     }
-
     setStyle( &wInfo->hilight, tc1, tc2, tc3 );
     return( ERR_NO_ERR );
 
@@ -1291,7 +1292,7 @@ static vi_rc setWDimension( char *data )
     if( x < 0 || y < 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
-    if( x >= WindMaxWidth || y >= WindMaxHeight ) {
+    if( x >= EditVars.WindMaxWidth || y >= EditVars.WindMaxHeight ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     wInfo->x1 = x1;
@@ -1331,7 +1332,11 @@ static vi_rc setSyntaxStyle( syntax_element style, char *data )
 }
 
 #ifdef VI_RCS
-int RCSAPI Batcher( char *cmd, void *cookie )
+#ifdef __WIN__
+WINEXPORT int CALLBACK Batcher( char *cmd, void *cookie )
+#else
+int Batcher( char *cmd, void *cookie )
+#endif
 {
     cookie = cookie;
     if( ExecCmd( NULL, NULL, cmd ) == 0 ) return( 1 );

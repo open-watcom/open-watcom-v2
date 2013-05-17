@@ -185,6 +185,7 @@ static bool errmsg_alloc( int cnt )
 
 static bool errmsg_save( int i, char *buff )
 {
+    i = i; buff = buff;
     return( TRUE );
 }
 
@@ -196,7 +197,7 @@ static void readErrorMsgData( void )
 {
     vi_rc       rc;
 
-    rc = ReadDataFile( "errmsg.dat", &errorList, errmsg_alloc, errmsg_save );
+    rc = ReadDataFile( "errmsg.dat", &errorList, errmsg_alloc, errmsg_save, TRUE );
     if( rc != ERR_NO_ERR ) {
         return;
     }

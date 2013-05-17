@@ -31,6 +31,7 @@
 
 
 #include "vi.h"
+#include <stddef.h>
 #include "fts.h"
 #include "source.h"
 #include <assert.h>
@@ -52,12 +53,13 @@ vi_rc FTSStart( char *data )
     fts->cmd_head = fts->cmd_tail = NULL;
     fts->template_head = fts->template_tail = NULL;
     while( NextWord1( data, template_data ) > 0 ) {
-        templatePtr = MemAlloc( sizeof( template_ll ) + strlen( template_data ) ); // +1 not needed
+        templatePtr = MemAlloc( offsetof( template_ll, data ) + strlen( template_data ) + 1 );
         strcpy( templatePtr->data, template_data );
         AddLLItemAtEnd( (ss **)&fts->template_head, (ss **)&fts->template_tail, (ss *)templatePtr );
     }
 
-    if( ftsOld = FTSMatchTemplate( fts->template_head ) ) {
+    ftsOld = FTSMatchTemplate( fts->template_head );
+    if( ftsOld != NULL ) {
         FTSKill( ftsOld );
     }
     AddLLItemAtEnd( (ss **)&ftsHead, (ss **)&ftsTail, (ss *)fts );
@@ -94,7 +96,7 @@ vi_rc FTSAddCmd( char *data, int tok )
     }
     strcat( cmd_data, data );
 
-    cmd = MemAlloc( sizeof( cmd_ll ) + strlen( cmd_data ) );
+    cmd = MemAlloc( offsetof( cmd_ll, data ) + strlen( cmd_data ) + 1 );
     strcpy( cmd->data, cmd_data );
 
     AddLLItemAtEnd( (ss **)&ftsTail->cmd_head, (ss **)&ftsTail->cmd_tail, (ss *)cmd );
@@ -208,6 +210,8 @@ static vi_rc runCmds( ft_src *fts )
     vi_rc   rc;
     cmd_ll  *cmd;
     bool    oldScript, oldQuiet, oldHold;
+
+    rc = ERR_NO_ERR;
 
     oldScript = EditFlags.ScriptIsCompiled;
     oldQuiet = EditFlags.Quiet;
@@ -362,7 +366,7 @@ ft_src *FTSMatchTemplateData( char *data )
     // build a template list
     template_head = template_tail = NULL;
     while( NextWord1( data, template_data ) > 0 ) {
-        templatePtr = MemAlloc( sizeof( template_ll ) + strlen( template_data ) ); // +1 not needed
+        templatePtr = MemAlloc( offsetof( template_ll, data ) + strlen( template_data ) + 1 );
         strcpy( templatePtr->data, template_data );
         AddLLItemAtEnd( (ss **)&template_head, (ss **)&template_tail, (ss *)templatePtr );
     }

@@ -75,16 +75,18 @@ status_type UpdateCurrentStatus( status_type st )
     lastStatus = st;
 #ifndef __WIN__
     if( EditFlags.Menus ) {
-        char    str[20];
+        char    str[MAX_CSTATUS_STRLEN + 1];
         int     i;
 
         if( EditFlags.CurrentStatus ) {
             memset( str, ' ', MAX_CSTATUS_STRLEN );
             str[MAX_CSTATUS_STRLEN] = 0;
-            memcpy( str, currStatus[lastStatus], strlen( currStatus[lastStatus] ) );
+            i = strlen( currStatus[lastStatus] );
+            if( i > MAX_CSTATUS_STRLEN )
+                i = MAX_CSTATUS_STRLEN;
+            memcpy( str, currStatus[lastStatus], i );
             for( i = 0; i < MAX_CSTATUS_STRLEN; i++ ) {
-                SetCharInWindowWithColor( MenuWindow, 1, CurrentStatusColumn + i,
-                        str[i], &menubarw_info.text );
+                SetCharInWindowWithColor( MenuWindow, 1, EditVars.CurrentStatusColumn + i, str[i], &menubarw_info.text );
             }
         } else {
 #if 0
@@ -92,9 +94,7 @@ status_type UpdateCurrentStatus( status_type st )
             memset( str, ' ', 15 );
             str[15] = 0;
             for( i = 0; i < 14; i++ ) {
-                SetCharInWindowWithColor( MenuWindow, 1,
-                        CurrentStatusColumn + i - 6, str[i],
-                        &menubarw_info.text );
+                SetCharInWindowWithColor( MenuWindow, 1, CurrentStatusColumn + i - 6, str[i], &menubarw_info.text );
             }
 #endif
         }

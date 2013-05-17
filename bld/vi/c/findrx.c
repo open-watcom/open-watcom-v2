@@ -45,7 +45,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
 {
     vi_rc       rc;
     int         found;
-    linenum     ilineno;
+    linenum     ilineno = 0;
     bool        wrapped = FALSE;
     char        *data;
     line        *cline;
@@ -138,13 +138,12 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
     char        *data;
     bool        wrapped = FALSE;
     bool        found;
-    linenum     ilineno;
+    linenum     ilineno = 0;
     line        *cline;
     fcb         *cfcb;
     regexp      rcpy;
     int         scol;
     linenum     sline;
-    bool        ret;
 
     /*
      * initialize for search
@@ -168,11 +167,12 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
             return( rc );
         }
     }
+    memset( &rcpy, 0, sizeof( rcpy ) );
 
     /*
      * loop until string found
      */
-    while( TRUE ) {
+    for( ;; ) {
         data = cline->data;
         found = FALSE;
         /*
@@ -180,7 +180,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
          * only the last one
          */
         if( scol >= 0 ) {
-            while( *data != '\0' && (ret = RegExec( CurrentRegularExpression, data, (data == cline->data) )) == TRUE ) {
+            while( *data != '\0' && RegExec( CurrentRegularExpression, data, (data == cline->data) ) == TRUE ) {
                 int     col, len;
 
                 if( RegExpError != ERR_NO_ERR ) {

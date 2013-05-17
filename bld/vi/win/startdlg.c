@@ -36,7 +36,7 @@
 /*
  * StartupProc - callback routine for startup modeless dialog
  */
-BOOL WINEXP StartupProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     wparam = wparam;
@@ -77,9 +77,8 @@ static FARPROC  startDlgProc;
  */
 void ShowStartupDialog( void )
 {
-    startDlgProc = MakeProcInstance( (FARPROC) StartupProc, InstanceHandle );
-    startDlgWindow = CreateDialog( InstanceHandle, "Startup", (HWND)NULLHANDLE,
-                                   (DLGPROC) startDlgProc );
+    startDlgProc = MakeProcInstance( (FARPROC)StartupProc, InstanceHandle );
+    startDlgWindow = CreateDialog( InstanceHandle, "Startup", (HWND)NULLHANDLE, (DLGPROC)startDlgProc );
 
 } /* ShowStartupDialog */
 
@@ -94,8 +93,6 @@ void CloseStartupDialog( void )
     }
     DestroyWindow( startDlgWindow );
     startDlgWindow = (HWND)NULLHANDLE;
-#ifndef __NT__
-    (void)FreeProcInstance( (FARPROC) startDlgProc );
-#endif
+    (void)FreeProcInstance( (FARPROC)startDlgProc );
 
 } /* CloseStartupDialog */

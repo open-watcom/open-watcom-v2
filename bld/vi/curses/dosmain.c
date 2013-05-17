@@ -35,29 +35,16 @@
 #include "source.h"
 #include "stack.h"
 
-#ifdef __V__
-extern void ResetBPChain( void );
-
-#pragma aux ResetBPChain = \
-        "xor    bp, bp" \
-        "push   bp" \
-        "mov    bp, sp";
-
-#else
-#define ResetBPChain()
-#endif
 
 void main( int argc, char *argv[] )
 {
     argc = argc;
     EXEName = argv[0];
     InitialStack();
-    ResetBPChain();
     VarAddGlobalStr( "OS", "dos" );
     Comspec = getenv( "COMSPEC" );
     InitializeEditor();
     FinalStack();
-    ResetBPChain();
     EditMain();
 
 } /* main */

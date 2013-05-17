@@ -49,15 +49,14 @@ static vi_rc createNewFile( char *name, bool same_file )
     /*
      * test that we can create this file
      */
+    tmp = NULL;
     if( !same_file ) {
         rc = FileExists( name );
         if( !(rc == ERR_READ_ONLY_FILE || rc == ERR_NO_ERR || rc == ERR_FILE_EXISTS) ) {
             return( rc );
         }
     } else {
-        if( name == NULL ) {
-            tmp = CurrentInfo;
-        } else {
+        if( name != NULL ) {
             for( tmp = InfoHead; tmp != NULL; tmp = tmp->next ) {
                 if( !strcmp( tmp->CurrentFile->name, name ) ) {
                     break;
@@ -96,26 +95,24 @@ static vi_rc createNewFile( char *name, bool same_file )
         CurrentFile->dup_count++;
         SetFileWindowTitle( CurrentWindow, CurrentInfo, TRUE );
         tmp = CurrentInfo;
-        CurrentInfo = MemAlloc( INFO_SIZE );
+        CurrentInfo = MemAlloc( sizeof( *CurrentInfo ) );
         FTSRunCmds( name );
 
         rc = ERR_NO_ERR;
     } else {
+        int crlf_reached;
+
+        crlf_reached = FALSE;
         tmp = CurrentInfo;
-        CurrentInfo = MemAlloc( INFO_SIZE );
+        CurrentInfo = MemAlloc( sizeof( *CurrentInfo ) );
         FTSRunCmds( name );
+        height = editw_info.y2 - editw_info.y1 + 1;
 
         CurrentFile = FileAlloc( name );
-        height = editw_info.y2 - editw_info.y1 + 1;
-        if( EditFlags.CRLFAutoDetect ) {
-            EditFlags.WriteCRLF = FALSE;
-        }
-        for( ;; ) {
-            rc = ReadFcbData( CurrentFile );
-            if( rc != ERR_NO_ERR ) {
-                break;
-            }
-            if( !CurrentFile->is_stdio ) {
+        rc = OpenFcbData( CurrentFile );
+        for( ; rc == ERR_NO_ERR; ) {
+            rc = ReadFcbData( CurrentFile, &crlf_reached );
+            if( rc == ERR_NO_ERR && !CurrentFile->is_stdio ) {
                 if( EditFlags.BreakPressed || !EditFlags.ReadEntireFile ) {
                     if( CurrentFile->fcbs.tail->end_line > height ) {
                         break;
@@ -133,15 +130,13 @@ static vi_rc createNewFile( char *name, bool same_file )
         if( rc == ERR_FILE_NOT_FOUND ) {
             rc = NEW_FILE;
             EditFlags.NewFile = TRUE;
-            if( EditFlags.CRLFAutoDetect ) {
-                CurrentFile->check_for_crlf = TRUE;
-            }
+            CurrentFile->write_crlf = FileSysNeedsCR( CurrentFile->handle );
 #ifdef __UNIX__
-            CurrentFile->attr = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |
-                S_IROTH | S_IWOTH;
+            CurrentFile->attr = PMODE_RW;
 #endif
         } else {
             rc = ERR_NO_ERR;
+            CurrentFile->write_crlf = crlf_reached;
             EditFlags.NewFile = FALSE;
 #ifdef __UNIX__
             {
@@ -169,7 +164,7 @@ static vi_rc createNewFile( char *name, bool same_file )
     CurrentWindow = cw;
     CurrentInfo->DuplicateID = CurrentFile->dup_count;
     CurrentInfo->CurrentWindow = cw;
-    LangInit( CurrentInfo->Language );
+    LangInit( CurrentInfo->fsi.Language );
 #ifdef __WIN__
     {
         window_data     *wd;
@@ -208,7 +203,7 @@ static int      inReadHook;
 vi_rc NewFile( char *name, bool same_file )
 {
     vi_rc       rc;
-    int         dup;
+    bool        dup;
     status_type oldstatus;
 
     dup = EditFlags.DuplicateFile;

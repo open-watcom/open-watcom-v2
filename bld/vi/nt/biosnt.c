@@ -97,18 +97,37 @@ static const map events[] = {
     { VK_F12, VI_KEY( F12 ), VI_KEY( SHIFT_F12 ), VI_KEY( CTRL_F12 ), VI_KEY( ALT_F12 ) }
 };
 
-extern HANDLE   InputHandle, OutputHandle;
 extern COORD    BSize;
+extern int      PageCnt;
+extern int      CurrMouseStatus;
+extern int      CurrMouseCol;
+extern int      CurrMouseRow;
 
-#pragma off( unreferenced );
-void BIOSGetColorPalette( void far *a ) {}
-long BIOSGetColorRegister( short a ) { return( 0 ); }
-void BIOSSetNoBlinkAttr( void ) {}
-void BIOSSetBlinkAttr( void ) {}
-void BIOSSetColorRegister( short reg, char r, char g, char b ) {}
-#pragma on( unreferenced );
+void BIOSGetColorPalette( void far *a )
+{
+    a = a;
+}
 
-static COORD    _cpos;
+long BIOSGetColorRegister( short a )
+{
+    a = a;
+    return( 0 );
+}
+
+void BIOSSetNoBlinkAttr( void )
+{
+}
+
+void BIOSSetBlinkAttr( void )
+{
+}
+
+void BIOSSetColorRegister( short reg, char r, char g, char b )
+{
+    reg = reg; r = r; g = g; b =b;
+}
+
+static COORD    _cpos = { 0, 0 };
 
 static int CompareEvents( const void *p1, const void *p2 )
 {
@@ -149,10 +168,7 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
     WORD            vk;
     DWORD           st;
     DWORD           ss;
-    extern int      CurrMouseStatus;
-    extern int      CurrMouseCol;
-    extern int      CurrMouseRow;
-    static short    alt_numpad_number;
+    static short    alt_numpad_number = 0;
 
     if( ir->EventType == MOUSE_EVENT ) {
         CurrMouseCol = ir->Event.MouseEvent.dwMousePosition.X;
@@ -193,8 +209,7 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
         return( FALSE );
     }
     ss = ir->Event.KeyEvent.dwControlKeyState;
-    if( (ss & (RIGHT_ALT_PRESSED  | LEFT_ALT_PRESSED)) &&
-        !(ss &(ENHANCED_KEY)) ) {
+    if( (ss & (RIGHT_ALT_PRESSED  | LEFT_ALT_PRESSED)) && !(ss &(ENHANCED_KEY)) ) {
         if( alt_numpad_number == -1 ) {
             alt_numpad_number = 0;
         }
@@ -249,8 +264,7 @@ vi_key BIOSGetKeyboard( int *scan )
     has_capsl = ((ss & CAPSLOCK_ON) ? TRUE : FALSE);
     what.vk = vk;
 
-    ev = bsearch( &what, events, sizeof( events ) / sizeof( events[0] ),
-        sizeof( what ), CompareEvents );
+    ev = bsearch( &what, events, sizeof( events ) / sizeof( events[0] ), sizeof( what ), CompareEvents );
     if( ev != NULL ) {
         if( has_ctrl && has_alt ) {
             // it handles AltGr + key
@@ -290,7 +304,7 @@ bool BIOSKeyboardHit( void )
     INPUT_RECORD        ir;
     bool                rc;
 
-    while( 1 ) {
+    for( ;; ) {
         PeekConsoleInput( InputHandle, &ir, 1, &rd );
         if( rd == 0 ) {
             rc = FALSE;
@@ -309,26 +323,23 @@ bool BIOSKeyboardHit( void )
 /*
  * BIOSUpdateScreen - update the screen
  */
-void  BIOSUpdateScreen( unsigned offset, unsigned nbytes )
+void  BIOSUpdateScreen( unsigned offset, unsigned nchars )
 {
     SMALL_RECT  sr;
     COORD       bcoord;
     unsigned    oend;
-    extern int  PageCnt;
 
-    if( PageCnt > 0 ) {
+    if( PageCnt > 0 || nchars == 0 ) {
         return;
     }
 
-    offset /= sizeof( char_info );
-    oend = offset + (nbytes - 1);
+    oend = offset + nchars - 1;
 
-    bcoord.Y = sr.Top = offset / WindMaxWidth;
-    bcoord.X = sr.Left = offset - sr.Top * WindMaxWidth;
-    sr.Bottom = oend / WindMaxWidth;
-    sr.Right = oend - sr.Bottom * WindMaxWidth;
+    bcoord.Y = sr.Top = offset / EditVars.WindMaxWidth;
+    bcoord.X = sr.Left = offset - sr.Top * EditVars.WindMaxWidth;
+    sr.Bottom = oend / EditVars.WindMaxWidth;
+    sr.Right = oend - sr.Bottom * EditVars.WindMaxWidth;
 
-    WriteConsoleOutput( OutputHandle, (PCHAR_INFO)Scrn, BSize, bcoord, &sr );
+    WriteConsoleOutput( OutputHandle, Scrn, BSize, bcoord, &sr );
 
 } /* BIOSUpdateScreen */
-

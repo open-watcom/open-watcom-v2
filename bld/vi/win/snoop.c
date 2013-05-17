@@ -42,8 +42,8 @@ static fancy_find       snoopData =
 #ifdef __NT__
 static HINSTANCE        hInstShell = NULL;
 
-typedef LPITEMIDLIST    (WINAPI *PFNSHBFF)( LPBROWSEINFO );
-typedef BOOL            (WINAPI *PFNSHGPFIL)( LPCITEMIDLIST, LPSTR );
+typedef LPITEMIDLIST    (CALLBACK *PFNSHBFF)( LPBROWSEINFO );
+typedef BOOL            (CALLBACK *PFNSHGPFIL)( LPCITEMIDLIST, LPSTR );
 
 static PFNSHBFF     pfnSHBrowseForFolder = NULL;
 static PFNSHGPFIL   pfnSHGetPathFromIDList = NULL;
@@ -54,7 +54,7 @@ static PFNSHGPFIL   pfnSHGetPathFromIDList = NULL;
 /*
  * BrowseCallbackProc - callback routine for the browse dialog
  */
-int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data )
+WINEXPORT int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data )
 {
     switch( msg ) {
     case BFFM_INITIALIZED:
@@ -70,7 +70,7 @@ int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data
 /*
  * snoopDlgProc - callback routine for snoop dialog
  */
-BOOL WINEXP SnoopDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     // int                 i;
     int                 cmd;
@@ -99,8 +99,7 @@ BOOL WINEXP SnoopDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         // this isn't quite right. but it's close.
         /*
         for( i = 0; i < extension.max; i++ ) {
-            SendDlgItemMessage( hwnd, SNOOP_LISTBOX, LB_ADDSTRING, 0,
-                                (LONG)extension[i] );
+            SendDlgItemMessage( hwnd, SNOOP_LISTBOX, LB_ADDSTRING, 0, (LPARAM)extension[i] );
         }
         */
 
@@ -117,7 +116,7 @@ BOOL WINEXP SnoopDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETTEXT, index, (LONG) snoop );
+                SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETTEXT, index, (LPARAM)snoop );
                 SetDlgItemText( hwnd, SNOOP_STRING, snoop );
             }
             break;
@@ -176,10 +175,8 @@ bool GetSnoopStringDialog( fancy_find **ff )
 #ifdef __NT__
     if( hInstShell == NULL ) {
         hInstShell = GetModuleHandle( "SHELL32.DLL" );
-        pfnSHBrowseForFolder = (PFNSHBFF)GetProcAddress( hInstShell,
-                                                         "SHBrowseForFolderA" );
-        pfnSHGetPathFromIDList = (PFNSHGPFIL)GetProcAddress( hInstShell,
-                                                             "SHGetPathFromIDListA" );
+        pfnSHBrowseForFolder = (PFNSHBFF)GetProcAddress( hInstShell, "SHBrowseForFolderA" );
+        pfnSHGetPathFromIDList = (PFNSHGPFIL)GetProcAddress( hInstShell, "SHGetPathFromIDListA" );
     }
 #endif
 
@@ -187,9 +184,9 @@ bool GetSnoopStringDialog( fancy_find **ff )
      * all other values are saved from the last fgrep before
      */
     snoopData.case_ignore = EditFlags.CaseIgnore;
-    AddString2( &snoopData.ext, GrepDefault );
+    AddString2( &snoopData.ext, EditVars.GrepDefault );
     *ff = &snoopData; /* data is no longer copied */
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) SnoopDlgProc, InstanceHandle );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)SnoopDlgProc, InstanceHandle );
 #ifdef __NT__
     if( pfnSHBrowseForFolder != NULL ) {
         rc = DialogBox( InstanceHandle, "SNOOPDLG95", Root, proc );
@@ -199,7 +196,7 @@ bool GetSnoopStringDialog( fancy_find **ff )
 #ifdef __NT__
     }
 #endif
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
     SetWindowCursor();
     return( rc );
 

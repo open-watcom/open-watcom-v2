@@ -119,15 +119,15 @@ void PollMouse( int *status, int *row, int *col )
             if( lastRow < 0 ) {
                 lastRow = 0;
             }
-            if( lastRow > (WindMaxHeight-1) * MOUSE_SCALE ) {
-                lastRow = (WindMaxHeight-1) * MOUSE_SCALE;
+            if( lastRow > (EditVars.WindMaxHeight-1) * MOUSE_SCALE ) {
+                lastRow = (EditVars.WindMaxHeight-1) * MOUSE_SCALE;
             }
             lastCol += event.dx;
             if( lastCol < 0 ) {
                 lastCol = 0;
             }
-            if( lastCol > (WindMaxWidth-1) * MOUSE_SCALE ) {
-                lastCol = (WindMaxWidth-1) * MOUSE_SCALE;
+            if( lastCol > (EditVars.WindMaxWidth-1) * MOUSE_SCALE ) {
+                lastCol = (EditVars.WindMaxWidth-1) * MOUSE_SCALE;
             }
             lastStatus = 0;
             if( event.buttons & _MOUSE_LEFT ) {
@@ -194,7 +194,7 @@ void InitMouse( void )
     qnx_osinfo( 0, &osinfo );
     sysTime = MK_FP( osinfo.timesel, 0 );
 
-    SetMousePosition( WindMaxWidth/2-1, WindMaxHeight/2-1 );
+    SetMousePosition( EditVars.WindMaxWidth / 2 - 1, EditVars.WindMaxHeight / 2 - 1 );
     SetMouseSpeed( MouseSpeed );
     PollMouse( &MouseStatus, &MouseRow, &MouseCol );
     StopMouse();

@@ -86,7 +86,16 @@ static dyn_dim_type dynGetLanguage( HWND hwndDlg, BOOL initial )
     return( DYN_VISIBLE );
 }
 
-static BOOL dynIsLanguage( UINT wParam, LONG lParam, HWND hwndDlg )
+static dyn_dim_type dynGetCRLFAutoDetect( HWND hwndDlg, BOOL initial )
+{
+    initial = initial;
+    if( IsDlgButtonChecked( hwndDlg, SETFS_CRLFAUTODETECT ) ) {
+        return( DYN_DIM );
+    }
+    return( DYN_VISIBLE );
+}
+
+static BOOL dynIsLanguage( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
@@ -101,13 +110,28 @@ static BOOL dynIsLanguage( UINT wParam, LONG lParam, HWND hwndDlg )
     return( FALSE );
 }
 
+static BOOL dynIsCRLFAutoDetect( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
+{
+    WORD        id;
+    WORD        cmd;
+
+    hwndDlg = hwndDlg;
+    lParam = lParam;
+    id = LOWORD( wParam );
+    cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+    if( id == SETFS_CRLFAUTODETECT && cmd == BN_CLICKED ) {
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
 #include "setfs.dh"
 #include "setfs.ch"
 
 static void globalTodlgData( dlg_data *data, info *envInfo )
 {
     if( envInfo != NULL ) {
-        data->Language          = envInfo->Language;
+        data->Language          = envInfo->fsi.Language;
         data->PPKeywordOnly     = EditFlags.PPKeywordOnly;
         data->CMode             = EditFlags.CMode;
         data->ReadEntireFile    = EditFlags.ReadEntireFile;
@@ -116,16 +140,16 @@ static void globalTodlgData( dlg_data *data, info *envInfo )
         data->CRLFAutoDetect    = EditFlags.CRLFAutoDetect;
         data->WriteCRLF         = EditFlags.WriteCRLF;
         data->EightBits         = EditFlags.EightBits;
-        data->TabAmount         = TabAmount;
+        data->TabAmount         = EditVars.TabAmount;
         data->RealTabs          = EditFlags.RealTabs;
-        data->HardTab           = HardTab;
+        data->HardTab           = EditVars.HardTab;
         data->AutoIndent        = EditFlags.AutoIndent;
-        data->ShiftWidth        = ShiftWidth;
-        strncpy( data->TagFileName, TagFileName, TAGFILENAMEWIDTH - 1 );
+        data->ShiftWidth        = EditVars.ShiftWidth;
+        strncpy( data->TagFileName, EditVars.TagFileName, TAGFILENAMEWIDTH - 1 );
         data->TagFileName[TAGFILENAMEWIDTH - 1] = '\0';
         data->IgnoreTagCase     = EditFlags.IgnoreTagCase;
         data->TagPrompt         = EditFlags.TagPrompt;
-        strncpy( data->GrepDefault, GrepDefault, GREPDEFAULTWIDTH - 1 );
+        strncpy( data->GrepDefault, EditVars.GrepDefault, GREPDEFAULTWIDTH - 1 );
         data->GrepDefault[GREPDEFAULTWIDTH - 1] = '\0';
         data->ShowMatch         = EditFlags.ShowMatch;
     }
@@ -170,18 +194,18 @@ static void dlgDataToGlobal( dlg_data *data )
     EditFlags.IgnoreTagCase     = data->IgnoreTagCase;
     EditFlags.TagPrompt         = data->TagPrompt;
     EditFlags.ShowMatch         = data->ShowMatch;
-    TabAmount                   = data->TabAmount;
-    HardTab                     = data->HardTab;
-    ShiftWidth                  = data->ShiftWidth;
+    EditVars.TabAmount          = data->TabAmount;
+    EditVars.HardTab            = data->HardTab;
+    EditVars.ShiftWidth         = data->ShiftWidth;
 
     /*
      * language specific variables with extra handling
      */
-    if( strcmp( TagFileName, data->TagFileName ) ) {
-        AddString2( &TagFileName, data->TagFileName );
+    if( strcmp( EditVars.TagFileName, data->TagFileName ) ) {
+        AddString2( &EditVars.TagFileName, data->TagFileName );
     }
-    if( strcmp( GrepDefault, data->GrepDefault ) ) {
-        AddString2( &GrepDefault, data->GrepDefault );
+    if( strcmp( EditVars.GrepDefault, data->GrepDefault ) ) {
+        AddString2( &EditVars.GrepDefault, data->GrepDefault );
     }
 }
 
@@ -259,7 +283,7 @@ static void fillFileType( HWND hwndDlg )
     SendMessage( hwndCB, CB_SETCURSEL, index, 0L );
 
     // restore vi original setup
-    LangFini( CurrentInfo->Language );
+    LangFini( CurrentInfo->fsi.Language );
     CurrentInfo = oldCurrentInfo;
     if( CurrentInfo != NULL ) {
         dlgDataToGlobal( &old_dlgData );
@@ -281,7 +305,7 @@ static void updateDialogSettings( HWND hwndDlg, BOOL title )
         totallen += sizeof( FT_TITLE ) + 1;
         template = MemAlloc( totallen );
         strcpy( template, FT_TITLE );
-        SendMessage( hwndCB, CB_GETLBTEXT, index, (LONG)(template + sizeof( FT_TITLE ) - 1) );
+        SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(template + sizeof( FT_TITLE ) - 1) );
         template[totallen - 2] = ')';
         template[totallen - 1] = '\0';
         SetWindowText( hwndDlg, template );
@@ -338,7 +362,7 @@ static void writeSettings( HWND hwndDlg )
         // put back in order we got them
         len = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
         template = MemAlloc( len + 1 );
-        SendMessage( hwndCB, CB_GETLBTEXT, index, (LONG)template );
+        SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)template );
         FTSStart( template );
         dumpCommands( dlgDataArray + index );
         FTSEnd();
@@ -368,7 +392,7 @@ static long deleteSelectedFT( HWND hwndDlg )
     // get template in string form
     len = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
     template = MemAlloc( len + 1 );
-    SendMessage( hwndCB, CB_GETLBTEXT, index, (LONG)template );
+    SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)template );
     // can't delete *.* entry
     rc = IDYES;
     if( !strcmp( template, "*.*" ) ) {
@@ -409,7 +433,7 @@ static long insertFT( HWND hwndDlg )
     GetWindowText( hwndCB, text, len + 1 );
 
     // attempt to insert at current position
-    index = SendMessage( hwndCB, CB_FINDSTRING, -1, (LONG)text );
+    index = SendMessage( hwndCB, CB_FINDSTRING, -1, (LPARAM)text );
     if( index != CB_ERR && SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L ) == strlen( text ) ) {
         MessageBox( hwndDlg, "Template already defined", "", MB_ICONINFORMATION | MB_OK );
         return( 0L );
@@ -422,7 +446,7 @@ static long insertFT( HWND hwndDlg )
     index = 0;
     memmove( dlgDataArray + index + 1, dlgDataArray + index, sizeof( dlg_data ) * ( dlgDataArray_count - index ) );
     dlgDataDefault( dlgDataArray + index );
-    SendMessage( hwndCB, CB_INSERTSTRING, index, (LONG)text );
+    SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)text );
     SendMessage( hwndCB, CB_SETCURSEL, index, 0L );
     updateDialogSettings( hwndDlg, TRUE );
 
@@ -432,7 +456,7 @@ static long insertFT( HWND hwndDlg )
 /*
  * SetFSProc - processes messages for the Data Control Dialog
  */
-BOOL WINEXP SetFSProc( HWND hwndDlg, unsigned msg, UINT wParam, LONG lParam )
+WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     int         index;
     HWND        ctlhwnd;

@@ -95,7 +95,8 @@ static vi_rc insertGenericSavebuf( int buf, int afterflag )
     int         maxCursor;
     vi_rc       rc;
 
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
 
@@ -127,7 +128,7 @@ static vi_rc insertGenericSavebuf( int buf, int afterflag )
          * get starting data
          */
         len = strlen( tmp->u.data );
-        if( len + CurrentLine->len >= MaxLine ) {
+        if( len + CurrentLine->len >= EditVars.MaxLine ) {
             rc = ERR_LINE_FULL;
             break;
         }
@@ -301,6 +302,7 @@ vi_rc GetSavebufString( char **data )
     /*
      * get length of stuff
      */
+    len = 0L;
     switch( tmp->type ) {
     case SAVEBUF_NOP:
         return( ERR_EMPTY_SAVEBUF );
@@ -308,7 +310,6 @@ vi_rc GetSavebufString( char **data )
         len = strlen( tmp->u.data );
         break;
     case SAVEBUF_FCBS:
-        len = 0L;
         for( cfcb = tmp->u.fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
             len += FcbSize( cfcb );
         }
@@ -530,6 +531,7 @@ vi_rc SwitchSavebuf( void )
     }
     CurrentSavebuf = buf;
     tmp = &Savebufs[buf];
+    data = NULL;
     switch( tmp->type ) {
     case SAVEBUF_NOP:
         Message1( "Buffer %d now active. (empty buffer)", buf + 1 );

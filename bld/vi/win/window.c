@@ -321,8 +321,9 @@ void MoveWindowToFront( window_id id )
     }
 }
 
-void MoveWindowToFrontDammit( window_id id )
+void MoveWindowToFrontDammit( window_id id, bool scrflag )
 {
+    scrflag = scrflag;
     if( BAD_ID( id ) ) {
         return;
     }

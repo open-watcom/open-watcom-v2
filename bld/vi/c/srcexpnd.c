@@ -84,7 +84,7 @@ void Expand( char *data, vlist *vl )
     bPos = 0;
     bPtr = result;
 
-    while( 1 ) {
+    for( ;; ) {
         ch = *data++;
         if( ch == '%' ) {
             if( *data == '%' ) {
@@ -102,7 +102,7 @@ void Expand( char *data, vlist *vl )
                 data++;
                 paren_level = 1;
                 ptr = varname;
-                while( 1 ) {
+                for( ;; ) {
                     ch = *data++;
                     if( ch == 0 ) {
                         break;

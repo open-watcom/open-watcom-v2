@@ -43,6 +43,12 @@ extern int PageCnt;
 
 static char oldPath[_MAX_PATH];
 static char oldDrive;
+
+int FileSysNeedsCR( int handle )
+{
+    return( TRUE );
+}
+
 /*
  * PushDirectory
  */
@@ -165,13 +171,11 @@ static void getExitAttr( void )
 {
     short       cursor;
     short       x, y;
-    short       attr;
 
     cursor = BIOSGetCursor( VideoPage );
     x = cursor >> 8;
     y = cursor & 0xff;
-    attr = Scrn[(y * WindMaxWidth + x) * 2 + 1];
-    ExitAttr = attr;
+    EditVars.ExitAttr = Scrn[y * EditVars.WindMaxWidth + x].cinfo_attr;
 }
 
 /*
@@ -184,7 +188,7 @@ void ScreenInit( void )
 
     x = BIOSGetVideoMode();
     y = (U_INT) x;
-    WindMaxWidth = (y >> 8);
+    EditVars.WindMaxWidth = (y >> 8);
     y &= 0xff;
     VideoPage = (U_INT) (x >> 24);
 
@@ -199,8 +203,7 @@ void ScreenInit( void )
         EditFlags.Color = TRUE;
     }
     ScreenPage( 0 );
-
-    WindMaxHeight = BIOSGetRowCount() + 1;
+    EditVars.WindMaxHeight = BIOSGetRowCount() + 1;
     getExitAttr();
 
 } /* ScreenInit */
@@ -253,10 +256,10 @@ long MemSize( void )
     short       x;
 
     x = DosMaxAlloc();
-#ifdef __386__
-    return( 4096L * (long) x );
-#else
+#ifdef _M_I86
     return( 16L * (long) x );
+#else
+    return( 4096L * (long) x );
 #endif
 
 } /* MemSize */
@@ -266,29 +269,50 @@ long MemSize( void )
  */
 void ScreenPage( int page )
 {
-#if defined( __4G__ )
-    unsigned short      a;
+#if defined( _M_I86 )
+    unsigned long       a;
     unsigned long       b;
 
     if( !EditFlags.Monocolor ) {
-        Scrn = (char *) 0xb8000;
+        Scrn = (char_info *)0xb8000000;
     } else {
-        Scrn = (char *) 0xb0000;
+        Scrn = (char_info *)0xb0000000;
     }
-    a = *(unsigned short *) 0x44e;
-    Scrn += (unsigned long) a;
+    a = *(unsigned short *)MK_FP( 0x40,0x4e ) / sizeof( char_info );
+    Scrn += a;
     PageCnt += page;
     if( PageCnt > 0 ) {
-        b = (unsigned long)((WindMaxWidth + 1) * (WindMaxHeight + 1)) * 2L;
-        if( a + b < 0x8000L ) {
+        b = (unsigned long)( ( EditVars.WindMaxWidth + 1 ) * ( EditVars.WindMaxHeight + 1 ) );
+        if( a + b < 0x8000L / sizeof( char_info ) ) {
             Scrn += b;
         }
         EditFlags.NoSetCursor = TRUE;
     } else {
         EditFlags.NoSetCursor = FALSE;
     }
-#elif defined( __386__ )
-    unsigned short      a;
+#elif defined( __4G__ )
+    unsigned long       a;
+    unsigned long       b;
+
+    if( !EditFlags.Monocolor ) {
+        Scrn = (char_info *)0xb8000;
+    } else {
+        Scrn = (char_info *)0xb0000;
+    }
+    a = *(unsigned short *)0x44e / sizeof( char_info );
+    Scrn += a;
+    PageCnt += page;
+    if( PageCnt > 0 ) {
+        b = (unsigned long)( ( EditVars.WindMaxWidth + 1 ) * ( EditVars.WindMaxHeight + 1 ) );
+        if( a + b < 0x8000L / sizeof( char_info ) ) {
+            Scrn += b;
+        }
+        EditFlags.NoSetCursor = TRUE;
+    } else {
+        EditFlags.NoSetCursor = FALSE;
+    }
+#else
+    unsigned long       a;
     unsigned long       b;
     unsigned long       c;
 
@@ -297,40 +321,19 @@ void ScreenPage( int page )
     } else {
         c = 0xb0000;
     }
-    a = *(unsigned short _FAR *) MK_FP( PHAR_SCRN_SEL, 0x44e );
-    c += (unsigned long) a;
+    a = *(unsigned short _FAR *)MK_FP( PHAR_SCRN_SEL, 0x44e );
+    c += a;
     PageCnt += page;
     if( PageCnt > 0 ) {
-        b = (unsigned long)((WindMaxWidth + 1) * (WindMaxHeight + 1)) * 2L;
+        b = (unsigned long)( ( EditVars.WindMaxWidth + 1 ) * ( EditVars.WindMaxHeight + 1 ) * sizeof( char_info ) );
         if( a + b < 0x8000L ) {
-            c+= b;
+            c += b;
         }
         EditFlags.NoSetCursor = TRUE;
     } else {
         EditFlags.NoSetCursor = FALSE;
     } /* if */
     Scrn = MK_FP( PHAR_SCRN_SEL, c );
-#else
-    unsigned short      a;
-    unsigned long       b;
-
-    if( !EditFlags.Monocolor ) {
-        Scrn = (char *) 0xb8000000;
-    } else {
-        Scrn = (char *) 0xb0000000;
-    }
-    a = *(unsigned short *) MK_FP( 0x40,0x4e );
-    Scrn += (unsigned long) a;
-    PageCnt += page;
-    if( PageCnt > 0 ) {
-        b = (unsigned long)((WindMaxWidth + 1)*(WindMaxHeight + 1)) * 2L;
-        if( a + b < 0x8000L ) {
-            Scrn += b;
-        }
-        EditFlags.NoSetCursor = TRUE;
-    } else {
-        EditFlags.NoSetCursor = FALSE;
-    }
 #endif
 
 } /* ScreenPage */
@@ -355,12 +358,10 @@ vi_rc ChangeDrive( int drive )
 
 }/* ChangeDrive */
 
-#if defined( __4G__ )
-    #define KEY_PTR (char *) 0x00000417;
-#elif defined( __386__ )
-    #define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
-#else
+#if defined( _M_I86 ) || defined( __4G__ )
     #define KEY_PTR (char *) 0x00400017;
+#else
+    #define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
 #endif
 
 /*
@@ -436,7 +437,7 @@ void MyDelay( int ms )
  */
 void SetCursorBlinkRate( int cbr )
 {
-    CursorBlinkRate = cbr;
+    EditVars.CursorBlinkRate = cbr;
 
 } /* SetCursorBlinkRate */
 
@@ -449,7 +450,7 @@ bool KeyboardHit( void )
 
     rc = _BIOSKeyboardHit( EditFlags.ExtendedKeyboard + 1 );
     if( !rc ) {
-#if defined( __386__ ) && !defined( __4G__ )
+#if !( defined( _M_I86 ) || defined( __4G__ ) )
         UpdateDOSClock();
 #endif
         JustAnInt28();

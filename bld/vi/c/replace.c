@@ -43,7 +43,8 @@ vi_rc ReplaceChar( void )
     vi_rc       rc;
     vi_key      key;
 
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     UpdateCurrentStatus( CSTATUS_REPLACECHAR );
@@ -70,7 +71,7 @@ vi_rc ReplaceChar( void )
         GoToColumnOnCurrentLine( 1 );
         if( EditFlags.AutoIndent ) {
             ai = strlen( buff );
-            if( ai + CurrentLine->len < MaxLine ) {
+            if( ai + CurrentLine->len < EditVars.MaxLine ) {
                 GetCurrentLine();
                 i = 0;
                 while( isspace( WorkLine->data[i] ) ) {

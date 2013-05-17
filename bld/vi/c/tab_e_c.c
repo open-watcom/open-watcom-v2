@@ -50,10 +50,12 @@ static vi_rc doCompressExpand( bool compress )
     /*
      * init
      */
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    if( rc = SaveAndResetFilePos( 1 ) ) {
+    rc = SaveAndResetFilePos( 1 );
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     tmp = StaticAlloc();
@@ -62,20 +64,18 @@ static vi_rc doCompressExpand( bool compress )
      * process all lines
      */
     TabCnt = 0;
-    while( TRUE ) {
+    for( ;; ) {
 
         if( compress ) {
             otabcnt = TabCnt;
-            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, tmp,
-                                 MaxLine );
+            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, tmp, EditVars.MaxLine );
             TabCnt = otabcnt;
             k = strlen( tmp );
-            ConvertSpacesToTabsUpToColumn( k, tmp, k, WorkLine->data, MaxLine );
+            ConvertSpacesToTabsUpToColumn( k, tmp, k, WorkLine->data, EditVars.MaxLine );
             WorkLine->len = strlen( WorkLine->data );
             bytes_saved += CurrentLine->len - WorkLine->len;
         } else {
-            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len,
-                                 WorkLine->data, MaxLine );
+            ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, EditVars.MaxLine );
             WorkLine->len = strlen( WorkLine->data );
             bytes_added += WorkLine->len - CurrentLine->len;
         }

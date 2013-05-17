@@ -151,9 +151,12 @@ vi_rc YankLines( void )
 vi_rc Change( range *r )
 {
     int         scol, ecol;
-    int         tmp, vecol;
+    int         tmp;
     vi_rc       rc;
     vi_key      key;
+#ifndef __WIN__
+    int         vecol;
+#endif
 
     /*
      * change line ranges
@@ -196,7 +199,6 @@ vi_rc Change( range *r )
     ecol = r->end.column;
     scol = r->start.column;
 #ifdef __WIN__
-    vecol = vecol;
 //    GetCurrentLine();
     strcpy( WorkLine->data, CurrentLine->data );
     tmp = WorkLine->data[ecol];
@@ -204,7 +206,7 @@ vi_rc Change( range *r )
 #else
     vecol = VirtualColumnOnCurrentLine( ecol + 1 );
     vecol--;
-    ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, MaxLine );
+    ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, EditVars.MaxLine );
     WorkLine->len = strlen( WorkLine->data );
     tmp = WorkLine->data[vecol];
     WorkLine->data[vecol] = '$';
@@ -366,7 +368,7 @@ vi_rc Filter( range *r )
     vi_rc       rc;
     char        cmd[MAX_STR];
 
-    rc = PromptForString( "Command: ", cmd, sizeof( cmd ), &FilterHist );
+    rc = PromptForString( "Command: ", cmd, sizeof( cmd ), &EditVars.FilterHist );
     if( rc == ERR_NO_ERR ) {
         rc = DoGenericFilter( r->start.line, r->end.line, cmd );
     } else {

@@ -35,7 +35,7 @@
 /*
  * ASaveDlgProc - callback routine for autosave response dialog
  */
-BOOL WINEXP ASaveDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK ASaveDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -73,9 +73,9 @@ vi_key GetAutosaveResponse( void )
     DLGPROC     proc;
     int         rc;
 
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) ASaveDlgProc, InstanceHandle );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)ASaveDlgProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "ASaveDlg", (HWND)NULLHANDLE, proc );
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
 
     return( rc );
 

@@ -52,7 +52,7 @@ vi_rc NextFileDammit( void )
      */
     if( CurrentInfo != NULL ) {
         // decrease ref count on language info
-        LangFini( CurrentInfo->Language );
+        LangFini( CurrentInfo->fsi.Language );
         DCDestroy();
 
         if( EditFlags.QuitMovesForward ) {
@@ -104,7 +104,7 @@ vi_rc NextFileDammit( void )
 
     if( cinfo == NULL ) {
         if( EditFlags.QuitAtLastFileExit || !dont_exit_this_time ) {
-            CurrentWindow = (window_id) 0;
+            CurrentWindow = NO_WINDOW;
             // EditFlags.Quiet = TRUE;
             if( CommandBuffer ) {
                 MemFree( CommandBuffer );

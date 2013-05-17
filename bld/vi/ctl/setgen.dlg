@@ -12,6 +12,8 @@ BEGIN
     LTEXT           "Interval:", SETGEN_AUTOSAVEINTERVALSTR1, 20, 41, 28, 8
     EDITTEXT        SETGEN_AUTOSAVEINTERVAL, 51, 39, 41, 12, ES_AUTOHSCROLL
     LTEXT           "secs", SETGEN_AUTOSAVEINTERVALSTR2, 94, 41, 16, 8
+    CONTROL         "Last line EOL", SETGEN_LASTEOL,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 9, 53, 98, 10
     CONTROL         "Save configuration on exit", SETGEN_SAVECONFIG,
                     "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 9, 65, 98, 10
     CONTROL         "Save files on IDE build", SETGEN_SAVEONBUILD,

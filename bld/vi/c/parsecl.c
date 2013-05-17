@@ -36,12 +36,13 @@
 #include "ex.h"
 
 static char pDelims[] = " /!";
+static char pkwDelims[] = " /";
 
 /*
  * ParseCommandLine - parse a command line
  */
-vi_rc ParseCommandLine( char *buff, linenum *n1, int *n1flag, linenum *n2, int *n2flag,
-                      int *token, char *data, int *dammit )
+vi_rc ParseCommandLine( char *buff, linenum *n1, bool *n1flag, linenum *n2, bool *n2flag,
+                      int *token, char *data )
 {
     char        *tres, *tmp;
     int         i, j, k;
@@ -57,7 +58,6 @@ vi_rc ParseCommandLine( char *buff, linenum *n1, int *n1flag, linenum *n2, int *
         return( ERR_NO_STACK );
     }
     *n1flag = *n2flag = FALSE;
-    *token = PCL_T_INVALID;
     data[0] = 0;
 
     /*
@@ -152,7 +152,7 @@ vi_rc ParseCommandLine( char *buff, linenum *n1, int *n1flag, linenum *n2, int *
     /*
      * get token and data
      */
-    if( NextWord( buff, tres, pDelims ) < 0 ) {
+    if( NextWord( buff, tres, pkwDelims ) < 0 ) {
         return( ERR_NO_ERR );
     }
     if( !CheckAlias( tres, tmp ) ) {
@@ -169,20 +169,14 @@ vi_rc ParseCommandLine( char *buff, linenum *n1, int *n1flag, linenum *n2, int *
         }
     }
 
-    if( buff[0] == '!' ) {
-        EliminateFirstN( buff, 1 );
-        *dammit = TRUE;
-    } else {
-        *dammit = FALSE;
-    }
-
-    *token = Tokenize( ParseClTokens, tres, FALSE );
-    if( (*token) == -1 ) {
-        *token = Tokenize( ExTokens, tres, FALSE );
-        if( (*token) >= 0 ) {
-            (*token) += 1000;
+    j = Tokenize( ParseClTokens, tres, FALSE );
+    if( j == TOK_INVALID ) {
+        j = Tokenize( ExTokens, tres, FALSE );
+        if( j != TOK_INVALID ) {
+            j += 1000;
         }
     }
+    *token = j;
     strcpy( data, buff );
     return( ERR_NO_ERR );
 

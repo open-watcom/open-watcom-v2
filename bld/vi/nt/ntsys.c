@@ -35,12 +35,18 @@
 #include "dosx.h"
 #include "vibios.h"
 
-HANDLE  InputHandle, OutputHandle;
-COORD   BSize;
+HANDLE  InputHandle = INVALID_HANDLE_VALUE;
+HANDLE  OutputHandle = INVALID_HANDLE_VALUE;
+COORD   BSize = {0, 0};
 
 extern int PageCnt;
 
 static char oldDir[_MAX_PATH];
+
+int FileSysNeedsCR( int handle )
+{
+    return( TRUE );
+}
 
 /*
  * PushDirectory
@@ -101,31 +107,27 @@ static char *oldConTitle;
  */
 void ScreenInit( void )
 {
-    DWORD                       size;
     CONSOLE_SCREEN_BUFFER_INFO  sbi;
     char                        tmp[256];
 
     InputHandle = CreateFile( "CONIN$", GENERIC_READ | GENERIC_WRITE,
                               FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
                               OPEN_EXISTING, 0, NULL );
-    SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT | ENABLE_LINE_INPUT |
-                                 ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT );
+    SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT | ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT );
 
-    OutputHandle = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE,
-                                              0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL );
+    OutputHandle = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL );
     SetConsoleMode( OutputHandle, 0 );
     // SetConsoleActiveScreenBuffer( OutputHandle );
 
     GetConsoleScreenBufferInfo( OutputHandle, &sbi );
-    WindMaxWidth = sbi.dwMaximumWindowSize.X;
-    WindMaxHeight = sbi.dwMaximumWindowSize.Y;
-    BSize.X = WindMaxWidth;
-    BSize.Y = WindMaxHeight;
+    EditVars.WindMaxWidth = sbi.dwMaximumWindowSize.X;
+    EditVars.WindMaxHeight = sbi.dwMaximumWindowSize.Y;
+    BSize.X = EditVars.WindMaxWidth;
+    BSize.Y = EditVars.WindMaxHeight;
 
     EditFlags.Color = TRUE;
 
-    size = WindMaxWidth * WindMaxHeight * sizeof( char_info );
-    Scrn = malloc( size );
+    Scrn = malloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
     ScreenPage( 0 );
 
     tmp[0] = 0;
@@ -259,7 +261,7 @@ void MyDelay( int ms )
  */
 void SetCursorBlinkRate( int cbr )
 {
-    CursorBlinkRate = cbr;
+    EditVars.CursorBlinkRate = cbr;
 
 } /* SetCursorBlinkRate */
 
@@ -273,8 +275,8 @@ bool KeyboardHit( void )
     return( BIOSKeyboardHit() );
 }
 
-void MyVioShowBuf( unsigned offset, unsigned length )
+void MyVioShowBuf( unsigned offset, unsigned nchars )
 {
-    BIOSUpdateScreen( offset, length );
+    BIOSUpdateScreen( offset, nchars );
 }
 

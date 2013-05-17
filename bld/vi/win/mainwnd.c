@@ -38,8 +38,8 @@
     #pragma library( "shell32" )
 #endif
 
-extern LONG WINEXP  MainWindowProc( HWND, unsigned, UINT, LONG );
-extern void         DefaultWindows( RECT *, RECT * );
+WINEXPORT LRESULT CALLBACK MainWindowProc( HWND, UINT, WPARAM, LPARAM );
+void                       DefaultWindows( RECT *, RECT * );
 
 RECT    RootRect;
 int     RootState;
@@ -199,8 +199,7 @@ void ResizeRoot( void )
         }
     }
     height = rect.bottom - rect.top;
-    MoveWindow( EditContainer, rect.left, rect.top, rect.right - rect.left,
-                height, TRUE );
+    MoveWindow( EditContainer, rect.left, rect.top, rect.right - rect.left, height, TRUE );
     if( CurrentInfo ) {
         bufHwnd = CurrentInfo->CurrentWindow;
         if( IsWindow( bufHwnd ) && IsZoomed( bufHwnd ) ) {
@@ -217,7 +216,7 @@ static int      timerID;
 /*
  * MainWindowProc - procedure for main (root) window
  */
-LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
+WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RECT        rect;
     vi_rc       rc;
@@ -287,7 +286,7 @@ LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         if( !wparam ) {
             InactiveWindow( CurrentWindow );
         } else {
-            SendMessage( EditContainer, WM_MDIACTIVATE, (UINT)CurrentWindow, 0L );
+            SendMessage( EditContainer, WM_MDIACTIVATE, (WPARAM)CurrentWindow, 0L );
         }
 #endif
         if( wparam ) {
@@ -304,7 +303,7 @@ LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
             break;
         }
         if( !IsIconic( CurrentWindow ) ) {
-            SendMessage( EditContainer, WM_MDIACTIVATE, (UINT)CurrentWindow, 0L );
+            SendMessage( EditContainer, WM_MDIACTIVATE, (WPARAM)CurrentWindow, 0L );
             DCUpdate();
             SetWindowCursor();
             SetWindowCursorForReal();
@@ -330,8 +329,8 @@ LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         }
         return( 0 );
     case WM_INITMENU:
-        if( (HMENU) wparam == GetMenu( hwnd ) ) {
-            HandleInitMenu( (HMENU) wparam );
+        if( (HMENU)wparam == GetMenu( hwnd ) ) {
+            HandleInitMenu( (HMENU)wparam );
         } else {
             ResetMenuBits();
         }
@@ -346,18 +345,9 @@ LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         }
         return( 0 );
     case WM_QUERYENDSESSION:
-        {
-            bool    ret;
-
-            PushMode();
-            ret = ExitWithPrompt( FALSE );
-            PopMode();
-            return( ret );
-        }
+        return( ExitWithPrompt( FALSE, TRUE ) );
     case WM_CLOSE:
-        PushMode();
-        ExitWithPrompt( TRUE );
-        PopMode();
+        ExitWithPrompt( TRUE, TRUE );
         return( 0 );
 #ifdef __NT__        
     case WM_MOUSEWHEEL:
@@ -366,7 +356,7 @@ LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
             ULONG   linesPerNotch;
             HWND    activeWnd;
             
-            activeWnd = (HWND)SendMessage( EditContainer, (UINT) WM_MDIGETACTIVE, 0, 0 );
+            activeWnd = (HWND)SendMessage( EditContainer, WM_MDIGETACTIVE, 0, 0 );
             SystemParametersInfo( SPI_GETWHEELSCROLLLINES, 0, &linesPerNotch, 0 );
             
             increment = GET_WHEEL_DELTA_WPARAM( wparam ) / 120;

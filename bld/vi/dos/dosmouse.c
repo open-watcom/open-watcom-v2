@@ -40,7 +40,7 @@
 void SetMouseSpeed( int speed )
 {
     SetMickeysToPixelsRatio( speed, speed * 2 );
-    MouseSpeed = speed;
+    EditVars.MouseSpeed = speed;
 
 } /* SetMouseSpeed */
 
@@ -82,15 +82,15 @@ void InitMouse( void )
         return;
     }
 
-#if defined( __4G__ )
-    vector = (unsigned short *)(MOUSE_INT * 4);
-    intrtn = (unsigned char *)((((unsigned) vector[1]) << 4) + vector[0]);
-#elif defined(__386__)
-    vector = MK_FP( 0x34, MOUSE_INT * 4 );
-    intrtn = MK_FP( 0x34, (((unsigned) vector[1]) << 4) + vector[0]);
-#else
+#if defined( _M_I86 )
     vector = MK_FP( 0, MOUSE_INT * 4 );
     intrtn = MK_FP( vector[1], vector[0] );
+#elif defined( __4G__ )
+    vector = (unsigned short *)(MOUSE_INT * 4);
+    intrtn = (unsigned char *)((((unsigned) vector[1]) << 4) + vector[0]);
+#else
+    vector = MK_FP( 0x34, MOUSE_INT * 4 );
+    intrtn = MK_FP( 0x34, (((unsigned) vector[1]) << 4) + vector[0]);
 #endif
     if( !((intrtn != NULL) && (*intrtn != 0xcf)) ) {
         EditFlags.UseMouse = FALSE;
@@ -99,8 +99,8 @@ void InitMouse( void )
 
     MouseFunction( RESET_MOUSE_DRIVER );
 
-    SetHorizontalLimitsForPointer( 0, (WindMaxWidth - 1) * MOUSE_SCALE );
-    SetVerticalLimitsForPointer( 0, (WindMaxHeight - 1) * MOUSE_SCALE );
+    SetHorizontalLimitsForPointer( 0, (EditVars.WindMaxWidth - 1) * MOUSE_SCALE );
+    SetVerticalLimitsForPointer( 0, (EditVars.WindMaxHeight - 1) * MOUSE_SCALE );
 
     if( EditFlags.Monocolor ) {
         and_mask = 0x79ff;
@@ -111,8 +111,8 @@ void InitMouse( void )
     }
     SetTextPointerType( SOFTWARE_CURSOR, and_mask, or_mask );
     SetMousePointerExclusionArea( 0, 0, 0, 0 );
-    SetMousePosition( WindMaxWidth / 2 - 1, WindMaxHeight / 2 - 1 );
-    SetMouseSpeed( MouseSpeed );
+    SetMousePosition( EditVars.WindMaxWidth / 2 - 1, EditVars.WindMaxHeight / 2 - 1 );
+    SetMouseSpeed( EditVars.MouseSpeed );
     PollMouse( &MouseStatus, &MouseRow, &MouseCol );
 
 } /* InitMouse */

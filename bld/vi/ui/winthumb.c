@@ -38,32 +38,31 @@
  */
 void DrawVerticalThumb( wind *w, char ch )
 {
-    char_info   what;
-    int         pos, xpos;
+    char_info   what = {0, 0};
+    int         addr;
     char_info   *txt;
-    char        *over;
-    char_info   _FAR *scr;
+    window_id   *over;
+    unsigned    oscr;
 
     if( w->vert_scroll_pos < THUMB_START || EditFlags.Quiet ) {
         return;
     }
 
-    txt = (char_info *) w->text;
+    txt = w->text;
     over = w->overlap;
-    scr = (char_info _FAR *) Scrn;
 
-    what.ch = ch;
-    what.attr = MAKE_ATTR( w, w->border_color1, w->border_color2 );
+    what.cinfo_char = ch;
+    what.cinfo_attr = MAKE_ATTR( w, w->border_color1, w->border_color2 );
 
-    pos = (w->x2) + (w->y1 + w->vert_scroll_pos) * WindMaxWidth;
-    xpos = w->width - 1 + w->vert_scroll_pos * w->width;
+    addr = w->width - 1 + w->vert_scroll_pos * w->width;
+    oscr = (w->x2) + (w->y1 + w->vert_scroll_pos) * EditVars.WindMaxWidth;
 
-    WRITE_SCREEN_DATA( txt[xpos], what );
-    if( over[xpos] == NO_CHAR ) {
-        WRITE_SCREEN( scr[pos], what );
+    WRITE_SCREEN_DATA( txt[addr], what );
+    if( over[addr] == NO_WINDOW ) {
+        WRITE_SCREEN( Scrn[oscr], what );
     }
 #ifdef __VIO__
-    MyVioShowBuf( sizeof( char_info ) * pos, 1 );
+    MyVioShowBuf( oscr, 1 );
 #endif
 
 } /* DrawVerticalThumb */
@@ -91,10 +90,10 @@ void PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last )
         newpos = (int)(((long) (height - 1) * curr) / last) + THUMB_START + 1;
     }
     if( w->vert_scroll_pos != newpos ) {
-        DrawVerticalThumb( w, GadgetString[WB_RIGHTSIDE] );
+        DrawVerticalThumb( w, EditVars.GadgetString[WB_RIGHTSIDE] );
     }
     w->vert_scroll_pos = newpos;
-    DrawVerticalThumb( w, GadgetString[WB_THUMB] );
+    DrawVerticalThumb( w, EditVars.GadgetString[WB_THUMB] );
 
     ReleaseWindow( w );
 

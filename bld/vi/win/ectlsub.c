@@ -58,7 +58,7 @@ static void setEditText( HWND hwnd, char *tmp )
  */
 static void insertEditText( HWND hwnd, char *tmp )
 {
-    SendMessage( hwnd, EM_REPLACESEL, 0, (LONG) tmp );
+    SendMessage( hwnd, EM_REPLACESEL, 0, (LPARAM)tmp );
 
 } /* insertEditText */
 
@@ -133,7 +133,7 @@ static bool handleKey( HWND hwnd, vi_key key, bool process )
 /*
  * EditSubClassProc - handle keystrokes for an edit control
  */
-long WINEXP EditSubClassProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     vi_key      key;
 
@@ -164,9 +164,9 @@ void EditSubClass( HWND hwnd, int id, history_data *h )
     hData = h;
     currHist = h->curr;
     edit = GetDlgItem( hwnd, id );
-    oldEditProc = (WNDPROC) GetWindowLong( edit, GWL_WNDPROC );
-    editProc = MakeProcInstance( (FARPROC) EditSubClassProc, InstanceHandle );
-    SetWindowLong( edit, GWL_WNDPROC, (LONG) editProc );
+    oldEditProc = (WNDPROC)GET_WNDPROC( edit );
+    editProc = MakeProcInstance( (FARPROC)EditSubClassProc, InstanceHandle );
+    SET_WNDPROC( edit, (LONG_PTR)editProc );
     SendMessage( edit, EM_LIMITTEXT, MAX_INPUT_LINE, 0L );
 
 } /* EditSubClass */
@@ -179,10 +179,8 @@ void RemoveEditSubClass( HWND hwnd, int id )
     HWND    edit;
 
     edit = GetDlgItem( hwnd, id );
-    SetWindowLong( edit, GWL_WNDPROC, (LONG) oldEditProc );
-#ifndef __NT__
+    SET_WNDPROC( edit, (LONG_PTR)oldEditProc );
     (void)FreeProcInstance( editProc );
-#endif
     FinishFileComplete();
 
 } /* RemoveEditSubClass */

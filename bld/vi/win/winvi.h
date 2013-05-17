@@ -37,28 +37,24 @@
 
 #if defined( __WINDOWS_386__ )
     #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows (32-bit)"
-    #define WINEXP              FAR PASCAL
     #define MAKEPTR( a )        ((void far *)MK_FP32( (void *) a ))
     #define __FAR__             __far
     #define MEMCPY              _fmemcpy
     #define NULLHANDLE          ((HANDLE)0)
 #elif defined( __WINDOWS__ )
     #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
-    #define WINEXP              __export FAR PASCAL
     #define MAKEPTR( a )        ((LPVOID) a)
     #define __FAR__
     #define MEMCPY              memcpy
     #define NULLHANDLE          ((HANDLE)0)
 #elif defined( __NT__ )
     #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
-    #define WINEXP              __export __stdcall
     #define MAKEPTR( a )        ((LPVOID) a)
     #define __FAR__
     #define MEMCPY              memcpy
     #define NULLHANDLE          ((HANDLE)0)
 #elif defined( __OS2__ )
     #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for OS/2 PM"
-    #define WINEXP              __export _System
     #define MAKEPTR( a )        ((LPVOID) a)
     #define __FAR__
     #define MEMCPY              memcpy
@@ -76,15 +72,14 @@ typedef struct colour {
     long        rgb;
 } colour;
 
-typedef BOOL (*win_func)( struct window *, void * );
-
 /*
  * This structure is mostly an artifact without any real use now...
  */
 typedef struct window {
     window_info *info;
     RECT        area;
-    win_func    init, fini;
+    BOOL        (*init)( struct window *, void * );
+    BOOL        (*fini)( struct window *, void * );
 } window;
 
 typedef struct window_data {
@@ -99,15 +94,20 @@ typedef enum window_extra {
     WIN_LAST                    // so we can tell how big this is
 } window_extra;
 
-#define MAGIC_SIZE      4       // we will always be using SetWindowLong
-
 #ifdef DBG
-    #define BAD_ID( id )    ((id) == NULL || (id) == (window_id)-1 || !IsWindow( id ))
+    #define BAD_ID( id )    ((id) == NULL || (id) == NO_WINDOW || !IsWindow( id ))
 #else
-    #define BAD_ID( id )    ((id) == (window_id)-1)
+    #define BAD_ID( id )    ((id) == NO_WINDOW)
 #endif
-#define WINDOW_FROM_ID( x ) ((window *)GetWindowLong( x, WIN_WINDOW * MAGIC_SIZE ))
-#define DATA_FROM_ID( x )   ((window_data *)GetWindowLong( x, WIN_DATA * MAGIC_SIZE ))
+
+// we will always be using SetWindowLongPtr
+#define MAGIC_SIZE          sizeof( LONG_PTR )
+#define EXTRA_WIN_DATA      (WIN_LAST * MAGIC_SIZE)
+#define WINDOW_FROM_ID( x ) ((window *)GET_WNDLONGPTR( x, WIN_WINDOW * MAGIC_SIZE ))
+#define DATA_FROM_ID( x )   ((window_data *)GET_WNDLONGPTR( x, WIN_DATA * MAGIC_SIZE ))
+#define WINDOW_TO_ID( x, d )((window *)SET_WNDLONGPTR( x, WIN_WINDOW * MAGIC_SIZE, d ))
+#define DATA_TO_ID( x, d )  ((window_data *)SET_WNDLONGPTR( x, WIN_DATA * MAGIC_SIZE, d ))
+
 #define WIN_STYLE( w )      (&((w)->info->text))
 #define WIN_HILIGHT( w )    (&((w)->info->hilight))
 #define WIN_FONT( w )       ((w)->info->text.font)

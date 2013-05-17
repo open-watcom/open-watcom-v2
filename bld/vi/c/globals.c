@@ -47,7 +47,7 @@ char _NEAR      SingleQuote[] = "\"";
 char            * _NEAR BoolStr[] = { "FALSE", "TRUE" };
 
 /* edit options */
-char * _NEAR EditOpts[] =  {
+char _NEAR * _NEAR EditOpts[] =  {
     "<F1> Go To",
     "<F2> Edit",
     "<F3> Get All"
@@ -55,12 +55,11 @@ char * _NEAR EditOpts[] =  {
 int NumEditOpts = sizeof( EditOpts ) / sizeof( char _NEAR * );
 
 /* event data */
-#undef vi_pick
-#define vi_pick( enum, modeless, insert, command, nm_bits, bits ) \
-    modeless, insert, command, nm_bits, bits,
 event _NEAR EventList[] = {
-#include "events.h"
-#undef vi_pick
+    #define vi_pick( enum, modeless, insert, command, nm_bits, bits ) \
+        modeless, insert, command, nm_bits, bits,
+    #include "events.h"
+    #undef vi_pick
 };
 
 /* mouse data */
@@ -69,40 +68,19 @@ int             MouseRow;
 int             MouseCol;
 int             MouseStatus;
 #endif
-int             MouseSpeed = 4;
-int             MouseDoubleClickSpeed = 3;
-int             MouseRepeatStartDelay = 5;
-int             MouseRepeatDelay;
 vi_mouse_event  LastMouseEvent = MOUSE_NONE;
 
 /* generic editing data */
-char            *FileEndString = NULL;
-char            *StatusString = NULL;
-int             MaxPush = 15;
-int             Radix = 10;
-char            *WordDefn;
-char            *WordAltDefn;
-int             AutoSaveInterval = 30;
 long            NextAutoSave;
-int             PageLinesExposed = 1;
 int             HalfPageLines;
-char            *GrepDefault;
 vi_key          LastEvent;
-int             StackK = MIN_STACK_K;
 int             SpinCount;
 char            _NEAR SpinData[] = { '\xC4', '\\', '|', '/' };
-char            ExitAttr = 7;
 char            VideoPage;
 char            *EXEName;
-char            *Majick;
 char            *BndMemory;
-char            *HistoryFile;
-char            *TagFileName;
-char            *StaticBuffer;
-int             SystemRC;
+long            SystemRC;
 int             FcbBlocksInUse;
-int             CurrFIgnore;
-char            *FIgnore;
 mark            *MarkList;
 fcb             *FcbThreadHead;
 fcb             *FcbThreadTail;
@@ -112,59 +90,22 @@ info            *CurrentInfo;
 file            *CurrentFile;
 fcb             *CurrentFcb;
 line            *CurrentLine;
-line            *WorkLine;
+line            *WorkLine = NULL;
 i_mark          CurrentPos = { 1, 1 };
 i_mark          LeftTopPos = { 1, 0 };
 int             VirtualColumnDesired = 1;
-window_id       CurrentWindow = (window_id)-1;
-window_id       MessageWindow = (window_id)-1;
-window_id       StatusWindow = (window_id)-1;
-window_id       MenuWindow = (window_id)-1;
-window_id       CurrNumWindow = (window_id)-1;
+window_id       CurrentWindow = NO_WINDOW;
+window_id       MessageWindow = NO_WINDOW;
+window_id       StatusWindow = NO_WINDOW;
+window_id       MenuWindow = NO_WINDOW;
+window_id       CurrNumWindow = NO_WINDOW;
 select_rgn      SelRgn;
-int             CursorBlinkRate = -1;
 
 /*
  * directory data
  */
 direct_ent      * _NEAR DirFiles[MAX_FILES];
 int             DirFileCount;
-
-/*
- * bang history
- */
-history_data    FilterHist = {
-    10,
-    0,
-    NULL
-};
-
-/*
- * cmdline history
- */
-history_data    CLHist = {
-    10,
-    0,
-    NULL
-};
-
-/*
- * find history
- */
-history_data    FindHist = {
-    10,
-    0,
-    NULL
-};
-
-/*
- * last files edited
- */
-history_data    LastFilesHist = {
-    4,
-    0,
-    NULL
-};
 
 /*
  * key map data
@@ -279,47 +220,33 @@ window_info activegreyedmenu_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
 /*
  * file io data
  */
-char            *TmpDir;
 char            *CommandBuffer = NULL;
-char            *CurrentDirectory;
-char            *HomeDirectory;
-char            *ReadBuffer;
-char            *WriteBuffer;
-unsigned char   *SwapBlocks;
+char            *CurrentDirectory = NULL;
+char            *HomeDirectory = NULL;
+char            *ReadBuffer = NULL;
+char            *WriteBuffer = NULL;
+unsigned char   *SwapBlocks = NULL;
 int             SwapFileHandle = -1;
 int             SwapBlockArraySize;
 int             SwapBlocksInUse;
-int             MaxSwapBlocks = 2048;
-int             MaxLine = 512, MaxLinem1 = 511;
-char            *Comspec;
+char            *Comspec = NULL;
 
 /*
  * misc data
  */
-int             WrapMargin;
-short           *StatusSections;
-int             NumStatusSections;
 vi_rc           LastRetCode;
 vi_rc           LastRC;
 long            MaxMemFree;
 long            MaxMemFreeAfterInit;
 int             RegExpError;
-regexp          *CurrentRegularExpression;
-char            _NEAR crlf[] = { 13, 10 };
-cursor_type     OverstrikeCursorType = { 100, 100 };
-cursor_type     InsertCursorType = { 50, 0 };
-cursor_type     NormalCursorType = { 7, 0 };
+regexp          *CurrentRegularExpression = NULL;
 char            * _NEAR MatchData[MAX_SEARCH_STRINGS * 2];
 int             MatchCount = INITIAL_MATCH_COUNT;
 vi_rc           LastError;
-int             LineNumWinWidth = 8;
-int             TabAmount = 8;
-int             ShiftWidth = 4;
-int             HardTab = 8;
 int             maxdotbuffer = 1024;
-vi_key          *DotBuffer;
-vi_key          *AltDotBuffer;
-vi_key          *DotCmd;
+vi_key          *DotBuffer = NULL;
+vi_key          *AltDotBuffer = NULL;
+vi_key          *DotCmd = NULL;
 int             DotDigits;
 int             DotCount;
 int             DotCmdCount;
@@ -330,104 +257,38 @@ int             RepeatDigits;
 bool            NoRepeatInfo;
 char            _NEAR RepeatString[MAX_REPEAT_STRING];
 int             SourceErrCount;
-char            _NEAR SpawnPrompt[MAX_STR];
+bool            BoundData = FALSE;
 
-/*
- * windowing data
- */
-int             CurrentStatusColumn = 56;
-int             ClockX = 74, ClockY = 0;
-int             SpinX = 68, SpinY = 0;
-type_style      *TileColors;
-int             MaxTileColors = 10;
-int             MaxWindowTileX = 3;
-int             MaxWindowTileY = 1;
-vi_color        MoveColor = CYAN;
-vi_color        ResizeColor = YELLOW;
-vi_color        InactiveWindowColor = WHITE;
-short           WindMaxWidth = 80;
-short           WindMaxHeight = 25;
-int             ToolBarButtonHeight = 24;
-int             ToolBarButtonWidth = 24;
-vi_color        ToolBarColor = BLUE;
-char            EndOfLineChar = 0;
-
+#define INITVARS
 /*
  * edit flags
  */
 eflags EditFlags = {
     #define PICK( a,b,c,d,e )   d,
     #include "setb.h"
+    #undef PICK
 
     /*
      * internal booleans are here
      */
-    FALSE /* DisplayHold */,
-    FALSE /* Starting */,
-    FALSE /* DotMode */,
-    FALSE /* Dotable */,
-    FALSE /* KeyMapMode */,
-    FALSE /* ClockActive */,
-    FALSE /* KeyOverride */,
-    FALSE /* ViewOnly */,
-    FALSE /* NewFile */,
-    FALSE /* SourceScriptActive */,
-    FALSE /* InputKeyMapMode */,
-    FALSE /* LineWrap */,
-    FALSE /* Monocolor */,
-    FALSE /* BlackAndWhite */,
-    FALSE /* Color */,
-    FALSE /* KeyMapInProgress */,
-    FALSE /* ResetDisplayLine */,
-    FALSE /* GlobalInProgress */,
-    FALSE /* ExtendedKeyboard */,
-    FALSE /* BreakPressed */,
-    FALSE /* AllowRegSubNewline */,
-    FALSE /* BoundData */,
-    FALSE /* SpinningOurWheels */,
-    FALSE /* ReadOnlyError */,
-    FALSE /* WindowsStarted */,
-    FALSE /* CompileScript */,
-    FALSE /* ScriptIsCompiled */,
-    FALSE /* CompileAssignments */,
-    FALSE /* OpeningFileToCompile */,
-    FALSE /* InsertModeActive */,
-    FALSE /* WatchForBreak */,
-    TRUE  /* EchoOn */,
-    FALSE /* LoadResidentScript */,
-    FALSE /* CompileAssignmentsDammit */,
-    FALSE /* ExMode */,
-    FALSE /* Appending */,
-    FALSE /* LineDisplay */,
-    FALSE /* NoSetCursor */,
-    FALSE /* NoInputWindow */,
-    FALSE /* ResizeableWindow */,
-    FALSE /* BndMemoryLocked */,
-    FALSE /* MemorizeMode */,
-    FALSE /* DuplicateFile */,
-    FALSE /* NoReplaceSearchString */,
-    TRUE  /* LastSearchWasForward */,
-    FALSE /* UndoLost */,
-    FALSE /* NoAddToDotBuffer */,
-    FALSE /* Dragging */,
-    FALSE /* NoCapsLock */,
-    FALSE /* RecoverLostFiles */,
-    FALSE /* IgnoreLostFiles */,
-    FALSE /* UseIDE */,
-    FALSE /* HasSystemMouse */,
-    FALSE /* UndoInProg */,
-    FALSE /* StdIOMode */,
-    FALSE /* NoInitialFileLoad */,
-    FALSE /* WasOverstrike */,
-    FALSE /* ReturnToInsertMode */,
-    FALSE /* AltMemorizeMode */,
-    FALSE /* AltDotMode */,
-    FALSE /* EscapedInsertChar */,
-    FALSE /* HoldEverything */,
-    FALSE /* IsWindowedConsole */,
-    FALSE /* ModeInStatusLine */,
-    FALSE /* IsChangeWord */,
-    FALSE /* OperatorWantsMove */,
-    FALSE /* ScrollCommand */,
-    FALSE /* FileTypeSource */,
+    #define PICK( a,b )         b,
+    #include "setbi.h"
+    #undef PICK
 };
+
+/*
+ * edit vars
+ */
+evars EditVars = {
+    #define PICK( a,b,c,d,e,f ) e,
+    #include "setnb.h"
+    #undef PICK
+
+    /*
+     * internal vars are here
+     */
+    #define PICK( a,b,c )       c,
+    #include "setnbi.h"
+    #undef PICK
+};
+#undef INITVARS

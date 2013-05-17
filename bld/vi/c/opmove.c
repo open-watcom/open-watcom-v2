@@ -306,7 +306,7 @@ vi_rc MoveTab( range *r, long count )
     len = VirtualLineLen( CurrentLine->data );
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
     while( count ) {
-        i = Tab( vc, TabAmount );
+        i = Tab( vc, EditVars.TabAmount );
         vc += i;
         if( vc > len ) {
             r->start.column = len;
@@ -333,7 +333,7 @@ vi_rc MoveShiftTab( range *r, long count )
     r->line_based = FALSE;
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
     while( count ) {
-        i = ShiftTab( vc, TabAmount );
+        i = ShiftTab( vc, EditVars.TabAmount );
         vc -= i;
         if( vc < 1 ) {
             r->start.column = 1;
@@ -400,6 +400,7 @@ static vi_rc moveForwardAWord( range *r, bool end, bool bigword, int count )
         return( ERR_NO_FILE );
     }
     assert( count > 0 );
+    rc = ERR_NO_ERR;
     curr = r->end;
     for( i = 0; i < count; i++ ) {
         if( end ) {

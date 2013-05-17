@@ -61,7 +61,7 @@ static vi_rc goToLine( linenum lineno, int relcurs )
         return( rc );
     }
 #if 0
-    if( cline->inf.ld.hidden ) {
+    if( cline->u.ld.hidden ) {
         GetHiddenRange( lineno, &s, &e );
         if( lineno > CurrentPos.line ) {
             lineno = e + 1;
@@ -343,7 +343,7 @@ void ValidateCurrentColumn( void )
     if( CurrentLine == NULL ) {
         return;
     }
-    if( CurrentLine->inf.ld.nolinedata ) {
+    if( CurrentLine->u.ld.nolinedata ) {
         cline = WorkLine;
     } else {
         cline = CurrentLine;

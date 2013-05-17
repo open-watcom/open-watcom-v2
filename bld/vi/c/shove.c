@@ -45,7 +45,8 @@ vi_rc Shift( linenum s, linenum e, char dir, bool msgflag )
     /*
      * set up undo
      */
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     rc = UndoReplaceLines( s, e );
@@ -70,7 +71,7 @@ vi_rc Shift( linenum s, linenum e, char dir, bool msgflag )
          * Add/Subtract leading tab space
          */
         GetCurrentLine();
-        shv = ShiftWidth;
+        shv = EditVars.ShiftWidth;
         if( dir != '>' ) {
             shv *= -1;
         }

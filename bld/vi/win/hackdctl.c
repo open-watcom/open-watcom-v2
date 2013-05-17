@@ -85,10 +85,10 @@ static BOOL ctl_rfloat_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
 //   first parameter: pointer to the control element data
 //   second parameter: the wParam of the message
 //   third parameter: the lParam of the message
-static BOOL ctl_check_modified( ctl_elt *, UINT, LONG );
-static BOOL ctl_text_modified( ctl_elt *, UINT, LONG );
-static BOOL ctl_combo_modified( ctl_elt *, UINT, LONG );
-static BOOL ctl_radio_modified( ctl_elt *, UINT, LONG );
+static BOOL ctl_check_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
+static BOOL ctl_text_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
+static BOOL ctl_combo_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
+static BOOL ctl_radio_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
 
 // The control table: Contains the
 ctl_action Ctl_int_actions[] =
@@ -184,6 +184,7 @@ BOOL ctl_dlg_reset( WPI_INST ___a, HWND dlg, void *ptr, void *ctl_ptr, BOOL ___b
 /********************************************************************************/
 /* this routine must be called to reset the dialog to the given state */
 {
+    ___b=___b;
     // simply call the ctl_dlg_init routine
     return ctl_dlg_init( ___a, dlg, ptr, ctl_ptr );
 }
@@ -224,8 +225,7 @@ void dyn_tpl_init( void *dyn_def, HWND dlg_hld )
                 // mark all control elements in range [b; e] as state indicates.
                 for( ; b <= e; ++b ) {
                     HWND h = GetDlgItem( dlg_hld, b );
-                    ShowWindow( h, (dim->info.state == DYN_INVISIBLE) ?
-                                   SW_HIDE : SW_SHOW );
+                    ShowWindow( h, (dim->info.state == DYN_INVISIBLE) ? SW_HIDE : SW_SHOW );
                     EnableWindow( h, (dim->info.state == DYN_VISIBLE) ? TRUE : FALSE );
                 }
             }
@@ -284,29 +284,23 @@ void dyn_tpl_process( void *dyn_def, HWND dlg_hld, WPI_PARAM1 parm1, WPI_PARAM2 
                         // mark all control elements in range [b; e] as state indicates.
                         for( ; b <= e; ++b ) {
                             HWND h = GetDlgItem( dlg_hld, b );
-                            ShowWindow( h, (dim->info.state == DYN_INVISIBLE) ?
-                                           SW_HIDE : SW_SHOW );
-                            EnableWindow( h, (dim->info.state == DYN_VISIBLE) ?
-                                             TRUE : FALSE );
+                            ShowWindow( h, (dim->info.state == DYN_INVISIBLE) ? SW_HIDE : SW_SHOW );
+                            EnableWindow( h, (dim->info.state == DYN_VISIBLE) ? TRUE : FALSE );
                         }
                     }
                     // then there comes a list in form "item" which is zero terminated
                     for( ++i; dim->dyn_tpl[i] != 0; ++i ) {
                         // mark control element as state indicates.
                         HWND h = GetDlgItem( dlg_hld, dim->dyn_tpl[i] );
-                        ShowWindow( h, (dim->info.state == DYN_INVISIBLE) ?
-                                       SW_HIDE : SW_SHOW );
-                        EnableWindow( h, (dim->info.state == DYN_VISIBLE) ?
-                                         TRUE : FALSE );
+                        ShowWindow( h, (dim->info.state == DYN_INVISIBLE) ? SW_HIDE : SW_SHOW );
+                        EnableWindow( h, (dim->info.state == DYN_VISIBLE) ? TRUE : FALSE );
                     }
                     // I don't know what comes now, just take it as another list (MISSING!!!)
                     for( ++i; dim->dyn_tpl[i] != -1; ++i ) {
                         // mark control element as state indicates.
                         HWND h = GetDlgItem( dlg_hld, dim->dyn_tpl[i] );
-                        ShowWindow( h, (dim->info.state == DYN_INVISIBLE) ?
-                                       SW_HIDE : SW_SHOW );
-                        EnableWindow( h, (dim->info.state == DYN_VISIBLE) ?
-                                         TRUE : FALSE );
+                        ShowWindow( h, (dim->info.state == DYN_INVISIBLE) ? SW_HIDE : SW_SHOW );
+                        EnableWindow( h, (dim->info.state == DYN_VISIBLE) ? TRUE : FALSE );
                     }
                 }
             }
@@ -326,6 +320,7 @@ static BOOL ctl_check_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
 /*****************************************************************/
 /* start check field */
 {
+    ___b=___b;
     inst = inst;
 
     CheckDlgButton( dlg, elt->control, _value_bool( ptr, elt ) );
@@ -338,6 +333,7 @@ static BOOL ctl_check_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 /******************************************************************/
 /* end check field */
 {
+    ___f=___f;
     inst = inst;
 
     _value_bool( ptr, elt ) = IsDlgButtonChecked( dlg, elt->control );
@@ -345,8 +341,8 @@ static BOOL ctl_check_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     return( TRUE );
 }
 
-static BOOL ctl_check_modified( ctl_elt *elt, UINT wparam, LONG lparam )
-/**********************************************************************/
+static BOOL ctl_check_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+/**********************************************************************************/
 {
     WORD        cmd;
     WORD        id;
@@ -380,6 +376,8 @@ static BOOL ctl_combo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
     int                 choose;
     int                 max;
 
+    ___b=___b;
+
     choose = _value_int( ptr, elt ) - elt->info.combo.origin;
 
     if( choose < 0 ) {
@@ -391,18 +389,14 @@ static BOOL ctl_combo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
         }
     }
 
-    SendDlgItemMessage( dlg, elt->control, ctl_combo_clr_msg( dlg, elt->control ),
-                        0, 0L );
+    SendDlgItemMessage( dlg, elt->control, ctl_combo_clr_msg( dlg, elt->control ), 0, 0L );
     for( id = elt->info.combo.start_id; id <= elt->info.combo.end_id; ++id ) {
 
         LoadString( inst, id, value, 50 );
         value[49] = '\0';
-        SendDlgItemMessage( dlg, elt->control,
-                            ctl_combo_add_msg( dlg, elt->control ), 0,
-                            (DWORD)(LPSTR) value );
+        SendDlgItemMessage( dlg, elt->control, ctl_combo_add_msg( dlg, elt->control ), 0, (LPARAM)value );
     }
-    SendDlgItemMessage( dlg, elt->control, ctl_combo_sel_msg( dlg, elt->control ),
-                        choose, 0 );
+    SendDlgItemMessage( dlg, elt->control, ctl_combo_sel_msg( dlg, elt->control ), choose, 0 );
 
     return( TRUE );
 }
@@ -412,16 +406,16 @@ static BOOL ctl_combo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 /******************************************************************/
 /* finish a combo list box */
 {
+    ___f=___f;
     inst = inst;
 
-    _value_int( ptr, elt ) = elt->info.combo.origin + SendDlgItemMessage( dlg,
-        elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
+    _value_int( ptr, elt ) = elt->info.combo.origin + SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
     return( TRUE );
 }
 
-static BOOL ctl_combo_modified( ctl_elt *elt, UINT wparam, LONG lparam )
-/**********************************************************************/
+static BOOL ctl_combo_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+/**************************************************************************/
 {
     WORD        id;
     WORD        cmd;
@@ -503,6 +497,7 @@ static BOOL ctl_dcombo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
     int                 i;
     int                 value;
 
+    ___b=___b;
     inst = inst;
 
     value = _value_int( ptr, elt ) - elt->info.dcombo.origin;
@@ -513,16 +508,14 @@ static BOOL ctl_dcombo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
             break;
         }
 
-        SendDlgItemMessage( dlg, elt->control, ctl_combo_add_msg( dlg, elt->control ),
-                            0, (DWORD)(LPSTR) str );
+        SendDlgItemMessage( dlg, elt->control, ctl_combo_add_msg( dlg, elt->control ), 0, (LPARAM)str );
     }
 
     if( value >= i ) {
         value = i - 1;
     }
 
-    SendDlgItemMessage( dlg, elt->control, ctl_combo_sel_msg( dlg, elt->control ),
-                        value, 0 );
+    SendDlgItemMessage( dlg, elt->control, ctl_combo_sel_msg( dlg, elt->control ), value, 0 );
 
     return( TRUE );
 }
@@ -532,10 +525,10 @@ static BOOL ctl_dcombo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 /*******************************************************************/
 /* finish a dynamic combo list box */
 {
+    ___f=___f;
     inst = inst;
 
-    _value_int( ptr, elt ) = elt->info.dcombo.origin + SendDlgItemMessage( dlg,
-        elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
+    _value_int( ptr, elt ) = elt->info.dcombo.origin + SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
     return( TRUE );
 }
@@ -553,6 +546,7 @@ static BOOL ctl_float_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
     int                 dec;
     float               value;
 
+    ___b=___b;
     inst = inst;
 
     value = _value_float( ptr, elt );
@@ -578,6 +572,7 @@ static BOOL ctl_float_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     char                str[50];
     float               value;
 
+    ___f=___f;
     inst = inst;
 
     GetDlgItemText( dlg, elt->control, str, 50 );
@@ -639,6 +634,7 @@ static BOOL ctl_int_start( ctl_elt *elt, WPI_INST inst, HWND dlg, void *ptr, BOO
 /**************************************************************************************/
 /* start an integer field */
 {
+    ___b=___b;
     inst = inst;
 
     SetDlgItemInt( dlg, elt->control, _value_int( ptr, elt ), TRUE );
@@ -653,6 +649,7 @@ static BOOL ctl_int_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 {
     BOOL                ok;
 
+    ___f=___f;
     inst = inst;
 
     _value_int( ptr, elt ) = GetDlgItemInt( dlg, elt->control, &ok, TRUE );
@@ -714,6 +711,7 @@ static BOOL ctl_radio_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
 {
     int                 value;
 
+    ___b=___b;
     inst = inst;
 
     value = _value_int( ptr, elt );
@@ -733,6 +731,7 @@ static BOOL ctl_radio_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 {
     int                 control;
 
+    ___f=___f;
     inst = inst;
 
     for( control = elt->info.radio.end_control; control >= elt->control; --control ) {
@@ -746,7 +745,7 @@ static BOOL ctl_radio_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     return( TRUE );
 }
 
-static BOOL ctl_radio_modified( ctl_elt *elt, UINT wparam, LONG lparam )
+static BOOL ctl_radio_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 /**********************************************************************/
 {
     WORD        id;
@@ -770,6 +769,7 @@ static BOOL ctl_text_start( ctl_elt *elt, WPI_INST inst, HWND dlg, void *ptr, BO
 /***************************************************************************************/
 /* start a text field */
 {
+    ___b=___b;
     inst = inst;
 
     SetDlgItemText( dlg, elt->control, _str_ptr( ptr, elt ) );
@@ -784,6 +784,7 @@ static BOOL ctl_text_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 {
     char                *str;
 
+    ___f=___f;
     inst = inst;
 
     str = _str_ptr( ptr, elt );
@@ -795,7 +796,7 @@ static BOOL ctl_text_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     return( TRUE );
 }
 
-static BOOL ctl_text_modified( ctl_elt *elt, UINT wparam , LONG lparam )
+static BOOL ctl_text_modified( ctl_elt *elt, WPI_PARAM1 wparam , WPI_PARAM2 lparam )
 /**********************************************************************/
 {
     WORD        id;

@@ -41,7 +41,6 @@
 #else
     #include <direct.h>
 #endif
-
 #include "ctags.h"
 #include "banner.h"
 
@@ -98,10 +97,11 @@ static void displayBanner( void )
 void ErrorMsgExit( const char *str, ... )
 {
     va_list     al;
-    int         len;
+//    int         len;
 
     va_start( al, str );
-    len = vfprintf( stderr, str, al );
+//    len = vfprintf( stderr, str, al );
+    vfprintf( stderr, str, al );
     va_end( al );
     exit( 1 );
 }
@@ -115,6 +115,7 @@ static void Quit( const char **usage_msg, const char *str, ... )
     int         i;
     int         cnt;
 
+    usage_msg = usage_msg;
     if( str != NULL ) {
         va_start( al, str );
         vfprintf( stderr, str, al );
@@ -226,6 +227,7 @@ static void processFile( char *arg )
     } else {
         ftype = fileType;
     }
+    tagcnt = 0;
     if( VerboseFlag ) {
         printf( "Processing %s", arg );
         tagcnt = TagCount;
@@ -354,7 +356,7 @@ static void processOptionFile( char *fname )
             continue;
         }
         if( !stricmp( cmd, "file" ) ) {
-            while( 1 ) {
+            for( ;; ) {
                 arg = ptr;
                 while( !isspace( *ptr ) && *ptr != ',' && *ptr != 0 ) {
                     ptr++;

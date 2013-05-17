@@ -32,11 +32,9 @@
 #include "vi.h"
 #include <time.h>
 #include <errno.h>
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
   #include <process.h>
 #endif
-#include <fcntl.h>
-#include <sys/stat.h>
 #include "sopen.h"
 #include "posix.h"
 #include "win.h"
@@ -45,6 +43,7 @@
 #ifdef __WIN__
   #include "winrtns.h"
 #endif
+
 
 /*
  * note that the lock file and the data file had better have the
@@ -112,7 +111,7 @@ static void getTmpName( char *path, char *tmpname )
     char        tmp[FILENAME_MAX];
     int         i;
 
-    while( 1 ) {
+    for( ;; ) {
         strcpy( tmp, path );
         strcat( tmp, currTmpName );
         if( access( tmp, F_OK ) == -1 ) {
@@ -143,7 +142,7 @@ void DoAutoSave( void )
     vi_rc       rc;
     status_type lastst;
 
-    if( !AutoSaveInterval ) {
+    if( EditVars.AutoSaveInterval == 0 ) {
         return;
     }
     if( clock() < NextAutoSave ) {
@@ -223,7 +222,7 @@ bool LostFileCheck( void )
     vi_key      key;
     char        ch;
     int         off;
-    int         handle;
+    int         handle = 0;
 
     MakeTmpPath( path, lockFileName );
     off = strlen( path ) - 5;
@@ -258,7 +257,7 @@ bool LostFileCheck( void )
                 SetPosToMessageLine();
                 MyPrintf( "Files have been lost since your last session, do you wish to:\n" );
                 MyPrintf( "\ti)gnore\n\tr)ecover\n\tq)uit\n" );
-                while( 1 ) {
+                for( ;; ) {
                     key = GetKeyboard();
                     if( handleKey( key ) ) {
                         return( TRUE );
@@ -296,7 +295,7 @@ void AutoSaveInit( void )
     int         ch;
     int         handle;
     int         off;
-    int         old_len;
+//    int         old_len;
     int         i;
 
     /*
@@ -377,17 +376,17 @@ void AutoSaveInit( void )
         Message1( "%d files recovered", cnt );
 
     }
-    if( !AutoSaveInterval ) {
+    if( EditVars.AutoSaveInterval == 0 ) {
         return;
     }
 
-    old_len = strlen( lockFileName );
+//    old_len = strlen( lockFileName );
     MakeTmpPath( path, lockFileName );
     len = strlen( path ) - strlen( lockFileName );
     off = len + CHAR_OFF;
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
         path[off] = ch;
-        lockFileHandle = sopen4( path, O_CREAT | O_TRUNC | O_RDWR |O_TEXT, SH_DENYRW, S_IREAD | S_IWRITE );
+        lockFileHandle = sopen4( path, O_CREAT | O_TRUNC | O_RDWR | O_TEXT, SH_DENYRW, PMODE_RW );
         if( lockFileHandle > 0 ) {
             break;
         }
@@ -411,7 +410,7 @@ void AutoSaveFini( void )
     char        path[FILENAME_MAX];
     info        *cinfo;
 
-    if( !AutoSaveInterval ) {
+    if( EditVars.AutoSaveInterval == 0 ) {
         return;
     }
     if( !noEraseFileList ) {
@@ -435,7 +434,7 @@ void AutoSaveFini( void )
  */
 void SetNextAutoSaveTime( void )
 {
-    NextAutoSave = clock() + AutoSaveInterval * (long) CLOCKS_PER_SEC;
+    NextAutoSave = clock() + EditVars.AutoSaveInterval * (long)CLOCKS_PER_SEC;
 
 } /* SetNextAutoSaveTime */
 
@@ -450,10 +449,10 @@ void RemoveFromAutoSaveList( void )
     char        path[FILENAME_MAX];
     char        path2[FILENAME_MAX];
     char        data[FILENAME_MAX];
-    bool        found;
+//    bool        found;
     int         i;
 
-    if( !AutoSaveInterval ) {
+    if( EditVars.AutoSaveInterval == 0 ) {
         return;
     }
     if( CurrentFile == NULL ) {
@@ -468,7 +467,7 @@ void RemoveFromAutoSaveList( void )
 
     GetCurrentFilePath( path );
 
-    found = FALSE;
+//    found = FALSE;
     f = fopen( as_path, "r" );
     if( f == NULL ) {
         return;
@@ -487,7 +486,7 @@ void RemoveFromAutoSaveList( void )
         if( !strcmp( path, path2 ) ) {
             MakeTmpPath( path2, CurrentFile->as_name );
             if( !strcmp( data, path2 ) ) {
-                found = TRUE;
+//                found = TRUE;
                 remove( path2 );
                 while( fgets( data, FILENAME_MAX, f ) != NULL ) {
                     for( i = strlen( data ); i && isWSorCtrlZ( data[i - 1] ); --i ) {

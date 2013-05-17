@@ -105,9 +105,7 @@ static void doWindow( FILE *f, int id, window_info *wi, bool colour_only )
 {
     char        token[64];
 
-    strcpy( token, GetTokenString( ParseClTokens, id ) );
-    strlwr( token );
-    MyFprintf( f, "%s\n", token );
+    MyFprintf( f, "%s\n", GetTokenStringCVT( ParseClTokens, id, token, TRUE ) );
     if( !colour_only ) {
         MyFprintf( f, "    dimension %d %d %d %d\n", wi->x1, wi->y1,
                    wi->x2, wi->y2 );
@@ -248,9 +246,7 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
         if( i == SET1_T_TILECOLOR || i == SET1_T_FIGNORE || i == SET1_T_FILENAME ) {
             continue;
         }
-        strcpy( token, GetTokenString( SetTokens1, i ) );
-        strlwr( token );
-        res = GetASetVal( token );
+        res = GetASetVal( GetTokenStringCVT( SetTokens1, i, token, TRUE ) );
         if( i == SET1_T_STATUSSTRING || i == SET1_T_FILEENDSTRING ||
             i == SET1_T_HISTORYFILE || i == SET1_T_TMPDIR ) {    /* strings with possible spaces */
             fmt = "set %s = \"%s\"\n";
@@ -263,9 +259,7 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
     writeTitle( f, "Boolean Settings" );
     num = GetNumberOfTokens( SetTokens2 );
     for( i = 0; i < num; i++ ) {
-        strcpy( token, GetTokenString( SetTokens2, i ) );
-        strlwr( token );
-        str = GetASetVal( token );
+        str = GetASetVal( GetTokenStringCVT( SetTokens2, i, token, TRUE ) );
         boolstr[0] = 0;
         if( str[0] == '0' ) {
             boolstr[0] = 'n';

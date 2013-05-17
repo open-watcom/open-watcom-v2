@@ -164,7 +164,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         return( TRUE );
 
     case T_EXIT:
-        if( ExitWithPrompt( TRUE ) ) {
+        if( ExitWithPrompt( TRUE, FALSE ) ) {
             *result = ERR_NO_ERR;
             return( TRUE );
         } else {
@@ -266,16 +266,16 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
             if( str[0] == 0 ) {
                 return( TRUE );
             }
-            if( !WHtmlHelp( Root, tmp2, HELP_KEY, (DWORD) str ) ) {
-                WWinHelp( Root, tmp, HELP_KEY, (DWORD) str );
+            if( !WHtmlHelp( Root, tmp2, HELP_KEY, (HELP_DATA)str ) ) {
+                WWinHelp( Root, tmp, HELP_KEY, (HELP_DATA)str );
             }
             break;
         case WINHELP_PARTIALKEY:
             if( str[0] == 0 ) {
                 return( TRUE );
             }
-            if( !WHtmlHelp( Root, tmp2, HELP_PARTIALKEY, (DWORD) str ) ) {
-                WWinHelp( Root, tmp, HELP_PARTIALKEY, (DWORD) str );
+            if( !WHtmlHelp( Root, tmp2, HELP_PARTIALKEY, (HELP_DATA)str ) ) {
+                WWinHelp( Root, tmp, HELP_PARTIALKEY, (HELP_DATA)str );
             }
             break;
         }

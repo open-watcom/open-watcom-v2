@@ -121,7 +121,7 @@ vi_rc CSFini( void )
 #endif
         while( TOS->type != CS_EOS ) {
             iserr = TRUE;
-            MyError( "unfinished c.s. at line %d", TOS->srcline );
+            MyError( "unfinished c.s. at line %u", TOS->srcline );
             Pop();
         }
 

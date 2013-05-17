@@ -34,7 +34,6 @@
 #include "ftbar.h"
 #include "font.h"
 #include "sstyle.h"
-#include "watcom.h"
 
 extern  LOGFONT     CurLogfont;
 
@@ -100,7 +99,7 @@ static void sendNewFont( void )
     }
 }
 
-static long doDrop( HWND hwnd, UINT wparam )
+static LRESULT doDrop( HWND hwnd, WPARAM wparam )
 {
     DrawRectangleUpDown( GetDlgItem( GetParent( hwnd ), FT_RECTANGLE ), DRAW_UP );
     CursorOp( COP_ARROW );
@@ -116,7 +115,7 @@ static long doDrop( HWND hwnd, UINT wparam )
     return( 0 );
 }
 
-static long processMouseMove( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RECT    rect;
 
@@ -125,8 +124,8 @@ static long processMouseMove( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     }
 
     // check we aren't on ourselves first
-    m_pt.x = (int)(signed_16)LOWORD( lparam );
-    m_pt.y = (int)(signed_16)HIWORD( lparam );
+    m_pt.x = (int)(short)LOWORD( lparam );
+    m_pt.y = (int)(short)HIWORD( lparam );
     ClientToScreen( hwnd, &m_pt );
     GetWindowRect( GetParent( hwnd ), &rect );
     if( PtInRect( &rect, m_pt ) ) {
@@ -148,7 +147,7 @@ static long processMouseMove( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     return( 0 );
 }
 
-LONG drawCurLogfont( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+LRESULT drawCurLogfont( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
     HDC         hdc;
@@ -192,7 +191,7 @@ LONG drawCurLogfont( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     return( 0 );
 }
 
-static long setupForDrop( HWND hwnd )
+static LRESULT setupForDrop( HWND hwnd )
 {
     DrawRectangleUpDown( GetDlgItem( GetParent( hwnd ), FT_RECTANGLE ), DRAW_DOWN );
     CursorOp( COP_DROPFT );
@@ -203,7 +202,7 @@ static long setupForDrop( HWND hwnd )
     return( 0 );
 }
 
-LONG WINEXP FtPickProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT LRESULT CALLBACK FtPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_CREATE:
@@ -237,7 +236,7 @@ void InitFtPick( void )
     wndclass.hInstance      = InstanceHandle;
     wndclass.hIcon          = (HICON)NULLHANDLE;
     wndclass.hCursor        = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
-    wndclass.hbrBackground  = (HBRUSH) COLOR_APPWORKSPACE;
+    wndclass.hbrBackground  = (HBRUSH)COLOR_APPWORKSPACE;
     wndclass.lpszMenuName   = NULL;
     wndclass.lpszClassName  = "FtPick";
 

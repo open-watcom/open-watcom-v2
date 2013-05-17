@@ -31,7 +31,7 @@
 
 
 #include "vi.h"
-#include <fcntl.h>
+#include <stddef.h>
 #include "posix.h"
 
 /*
@@ -97,7 +97,7 @@ static vi_rc getDir( char *dname, bool want_all_dirs )
 #endif
 
     for( i = 0; i < DirFileCount; i++ ) {
-        MemFree2( &DirFiles[i] );
+        MemFreePtr( (void **)&DirFiles[i] );
     }
     DirFileCount = 0;
     d = opendir( path );
@@ -116,7 +116,7 @@ static vi_rc getDir( char *dname, bool want_all_dirs )
         }
         is_subdir = FALSE;
 #if defined( __QNX__ )
-        if( nd->d_stat.st_mode & S_IFDIR ) {
+        if( S_ISDIR( nd->d_stat.st_mode ) {
             is_subdir = TRUE;
         }
 #elif defined( __UNIX__ )
@@ -124,7 +124,7 @@ static vi_rc getDir( char *dname, bool want_all_dirs )
             struct stat st;
 
             stat( nd->d_name, &st );
-            if( st.st_mode & S_IFDIR ) {
+            if( S_ISDIR( st.st_mode ) ) {
                 is_subdir = TRUE;
             }
         }
@@ -140,7 +140,7 @@ static vi_rc getDir( char *dname, bool want_all_dirs )
         }
 
         len = strlen( nd->d_name );
-        DirFiles[DirFileCount] = MemAlloc( sizeof( direct_ent ) + len );
+        DirFiles[DirFileCount] = MemAlloc( offsetof( direct_ent, name ) + len + 1 );
         tmp = DirFiles[DirFileCount];
         GetFileInfo( tmp, nd, path );
 

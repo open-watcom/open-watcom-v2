@@ -44,14 +44,14 @@
 static int  saveRow, saveCol;
 int         PageCnt = 0;
 
-#if defined( __386__ ) /* && !defined( __4G__ ) */
+#if defined( _M_I86 ) /* || defined( __4G__ ) */
+static char     colorPalette[MAX_COLOR_REGISTERS + 1];
+#else
 static char     colorPalette[MAX_COLOR_REGISTERS + 1] = {
     0, 1, 2, 3, 4, 5, 0x14, 7,
     0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
     0x00
 };
-#else
-static char     colorPalette[MAX_COLOR_REGISTERS + 1];
 #endif
 static rgb      oldColors[MAX_COLOR_REGISTERS];
 static rgb      newColors[MAX_COLOR_REGISTERS];
@@ -85,7 +85,7 @@ static void setCursor( int row, int col )
 void KillCursor( void )
 {
     getCursor( &saveRow, &saveCol );
-    setCursor( WindMaxHeight, 0 );
+    setCursor( EditVars.WindMaxHeight, 0 );
 
 } /* KillCursor */
 
@@ -95,7 +95,7 @@ void KillCursor( void )
  */
 void TurnOffCursor( void )
 {
-    setCursor( WindMaxHeight, 0 );
+    setCursor( EditVars.WindMaxHeight, 0 );
 
 } /* TurnOffCursor */
 #endif
@@ -124,21 +124,21 @@ void ClearScreen( void )
     clear();
 #else
     int                 i;
-    char_info           what;
+    char_info           what = {0, 0};
     char_info           _FAR *foo;
 
     if( EditFlags.Quiet ) {
         return;
     }
-    foo = (char_info _FAR *) Scrn;
-    what.ch = ' ';
-    what.attr = ExitAttr;
-    for( i = WindMaxWidth * WindMaxHeight - 1; i >= 0; i-- ) {
+    foo = Scrn;
+    what.cinfo_char = ' ';
+    what.cinfo_attr = EditVars.ExitAttr;
+    for( i = EditVars.WindMaxWidth * EditVars.WindMaxHeight - 1; i >= 0; i-- ) {
         WRITE_SCREEN( *foo, what );
         foo++;
     }
 #ifdef __VIO__
-    MyVioShowBuf( 0, WindMaxWidth * WindMaxHeight );
+    MyVioShowBuf( 0, EditVars.WindMaxWidth * EditVars.WindMaxHeight );
 #endif
 #endif
     setCursor( 0, 0 );
@@ -150,7 +150,7 @@ void ClearScreen( void )
  */
 void GetClockStart( void )
 {
-    ClockStart = &Scrn[sizeof( char_info ) * (ClockX + ClockY * WindMaxWidth)];
+    ClockStart = &Scrn[EditVars.ClockX + EditVars.ClockY * EditVars.WindMaxWidth];
 
 } /* GetClockStart */
 
@@ -159,7 +159,7 @@ void GetClockStart( void )
  */
 void GetSpinStart( void )
 {
-    SpinLoc = &Scrn[sizeof( char_info ) * (SpinX + SpinY * WindMaxWidth)];
+    SpinLoc = &Scrn[EditVars.SpinX + EditVars.SpinY * EditVars.WindMaxWidth];
 
 } /* GetSpinStart */
 
@@ -168,7 +168,7 @@ void GetSpinStart( void )
  */
 void SetPosToMessageLine( void )
 {
-    setCursor( WindMaxHeight - 1, 0 );
+    setCursor( EditVars.WindMaxHeight - 1, 0 );
 
 } /* SetPosToMessageLine */
 
@@ -228,7 +228,7 @@ static void setColorRegister( vi_color reg, rgb *c )
  */
 static void getColorPalette( char *p )
 {
-#if defined( __I86__ ) || defined( __OS2__ ) /* || defined( __4G__ ) */
+#if defined( _M_I86 ) || defined( __OS2__ ) /* || defined( __4G__ ) */
     BIOSGetColorPalette( p );
 #else
     p = p;

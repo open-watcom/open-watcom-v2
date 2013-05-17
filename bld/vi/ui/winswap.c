@@ -62,7 +62,7 @@ static long buffSize( void )
 {
     long        tmp;
 
-    tmp = (long)WindMaxWidth * (long)WindMaxHeight * 4L;
+    tmp = (long)EditVars.WindMaxWidth * (long)EditVars.WindMaxHeight * 4L;
     tmp = tmp / 512;
     tmp++;
     tmp *= 512;
@@ -81,21 +81,21 @@ void static windowSwap( wind *w )
     pos = (long)w->id * buffSize();
     FileSeek( swapHandle, pos );
     size = w->width * w->height;
-    i = write( swapHandle, w->overlap, size );
-    if( i != size ) {
+    i = write( swapHandle, w->overlap, size * sizeof( window_id ) );
+    if( i != size * sizeof( window_id ) ) {
         return;
     }
-    i = write( swapHandle, w->whooverlapping, size );
-    if( i != size ) {
+    i = write( swapHandle, w->whooverlapping, size * sizeof( window_id ) );
+    if( i != size * sizeof( window_id ) ) {
         return;
     }
     i = write( swapHandle, w->text, size * sizeof( char_info ) );
-    if( i != sizeof( char_info ) * size ) {
+    if( i != size * sizeof( char_info ) ) {
         return;
     }
-    MemFree2( &w->text );
-    MemFree2( &w->whooverlapping );
-    MemFree2( &w->overlap );
+    MemFreePtr( (void **)&w->text );
+    MemFreePtr( (void **)&w->whooverlapping );
+    MemFreePtr( (void **)&w->overlap );
     w->isswapped = TRUE;
 
 } /* windowSwap */
@@ -133,15 +133,15 @@ static void fetchWindow( wind *w )
     long        pos;
 
     size = w->width * w->height;
-    w->text = MemAlloc( sizeof( char_info ) * size );
-    w->whooverlapping = MemAlloc( size );
-    w->overlap = MemAlloc( size );
+    w->text = MemAlloc( size * sizeof( char_info ) );
+    w->whooverlapping = MemAlloc( size * sizeof( window_id ) );
+    w->overlap = MemAlloc( size * sizeof( window_id ) );
 
     pos = (long)w->id * buffSize();
     FileSeek( swapHandle, pos );
-    read( swapHandle, w->overlap, size );
-    read( swapHandle, w->whooverlapping, size );
-    read( swapHandle, w->text, sizeof( char_info ) * size );
+    read( swapHandle, w->overlap, size * sizeof( window_id ) );
+    read( swapHandle, w->whooverlapping, size * sizeof( window_id ) );
+    read( swapHandle, w->text, size * sizeof( char_info ) );
     w->isswapped = FALSE;
 
 } /* fetchWindow */

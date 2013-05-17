@@ -32,41 +32,17 @@
 #ifndef __VI_INCLUDED__
 #define __VI_INCLUDED__
 
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#if defined( __NT__ )
+  #define _WINSOCKAPI_
+  #include <windows.h>
+#endif
+
 #include "control.h"
 
-#ifndef _FAR
-  #error _FAR not configured
-#endif
-
-#ifndef __WATCOMC__
-  #include "clibext.h"
-#endif
-
-typedef unsigned int U_INT;
-
-char            *_inline_strchr( const char *__s, int __c );
-unsigned int    _inline_strlen( const char *__s );
-int             _inline_strcmp( const char *__s1, const char *__s2 );
-char            *_inline_strcat( char *__s1, const char *__s2 );
-void            *_inline_memcpy( void *__s1, const void *__s2, unsigned int __n );
-void            *_inline_memset( void *__s, int __c, unsigned int __n );
-
-#ifdef __UNIX__
-  #define FSYS_CASE_SENSITIVE         1
-  #ifdef __QNX__
-    extern int FileSysNeedsCR( int handle );
-  #else
-    #define FileSysNeedsCR( x )       0
-  #endif
-#else
-  #define FSYS_CASE_SENSITIVE         0
-  #define FileSysNeedsCR( x )         1
-#endif
-
-#if defined( __WATCOMC__ ) && !defined( __AXP__ ) && !defined( __PPC__ ) && !defined( __MIPS__ )
-  #define VI_RCS  1
-#endif
-
+#include "watcom.h"
 #include "const.h"
 #include "errs.h"
 #include "lang.h"
@@ -77,15 +53,21 @@ void            *_inline_memset( void *__s, int __c, unsigned int __n );
 #include "rtns2.h"
 #include "dc.h"
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-
 #ifdef __WIN__
   #include "winvi.h"
-#elif defined( __NT__ )
-  #define _WINSOCKAPI_
-  #include <windows.h>
 #endif
+
+typedef unsigned int U_INT;
+
+#if defined( __WATCOMC__ ) && !defined( __ALPHA__ )
+char            *_inline_strchr( const char *__s, int __c );
+unsigned int    _inline_strlen( const char *__s );
+int             _inline_strcmp( const char *__s1, const char *__s2 );
+char            *_inline_strcat( char *__s1, const char *__s2 );
+void            *_inline_memcpy( void *__s1, const void *__s2, unsigned int __n );
+void            *_inline_memset( void *__s, int __c, unsigned int __n );
+#endif
+
+extern int      FileSysNeedsCR( int handle );
 
 #endif

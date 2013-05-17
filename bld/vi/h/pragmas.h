@@ -32,7 +32,7 @@
 #ifndef _PRAGMAS_INCLUDED
 #define _PRAGMAS_INCLUDED
 
-#if defined( __DOS__ ) && defined( __X86__ ) && defined( __WATCOMC__ )
+#if defined( __WATCOMC__ ) && defined( __DOS__ ) && defined( _M_IX86 )
 
 extern unsigned char    In61( void );
 extern void             Out61( unsigned char );
@@ -85,7 +85,7 @@ extern unsigned DosMaxAlloc( void );
     parm [ch] [cl] modify [ax cx];
 #endif
 
-#if !defined( __386__ )
+#if defined( _M_I86 )
 #pragma aux DosSetVect = \
         "mov  ah, 25h" \
         "int  21h" \

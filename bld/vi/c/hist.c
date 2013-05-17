@@ -71,8 +71,8 @@ void LoadHistory( char *cmd )
 
     historyLoaded = TRUE;
 
-    while( HistoryFile != NULL ) {
-        f = fopen( HistoryFile,"rt" );
+    while( EditVars.HistoryFile != NULL ) {
+        f = fopen( EditVars.HistoryFile, "rt" );
         if( f == NULL ) {
             break;
         }
@@ -92,16 +92,16 @@ void LoadHistory( char *cmd )
             }
             switch( rs ) {
             case READ_CMD:
-                updateHist( &CLHist, str );
+                updateHist( &EditVars.CLHist, str );
                 break;
             case READ_FIND:
-                updateHist( &FindHist, str );
+                updateHist( &EditVars.FindHist, str );
                 break;
             case READ_FILTER:
-                updateHist( &FilterHist, str );
+                updateHist( &EditVars.FilterHist, str );
                 break;
             case READ_LASTFILES:
-                updateHist( &LastFilesHist, str );
+                updateHist( &EditVars.LastFilesHist, str );
                 break;
             }
             cnt--;
@@ -110,8 +110,8 @@ void LoadHistory( char *cmd )
         break;
     }
     if( cmd != NULL ) {
-        AddString2( &CLHist.data[CLHist.curr % CLHist.max], cmd );
-        CLHist.curr++;
+        AddString2( &EditVars.CLHist.data[EditVars.CLHist.curr % EditVars.CLHist.max], cmd );
+        EditVars.CLHist.curr++;
     }
 
 } /* LoadHistory */
@@ -165,18 +165,18 @@ void SaveHistory( void )
 {
     FILE        *f;
 
-    if( HistoryFile == NULL || !historyLoaded ) {
+    if( EditVars.HistoryFile == NULL || !historyLoaded ) {
         return;
     }
 
-    f = fopen( HistoryFile, "wt" );
+    f = fopen( EditVars.HistoryFile, "wt" );
     if( f == NULL ) {
         return;
     }
-    writeHistory( f, &CLHist );
-    writeHistory( f, &FindHist );
-    writeHistory( f, &FilterHist );
-    writeHistory( f, &LastFilesHist );
+    writeHistory( f, &EditVars.CLHist );
+    writeHistory( f, &EditVars.FindHist );
+    writeHistory( f, &EditVars.FilterHist );
+    writeHistory( f, &EditVars.LastFilesHist );
     fclose( f );
 
 } /* SaveHistory */
@@ -186,10 +186,10 @@ void SaveHistory( void )
  */
 void FilterHistInit( int max )
 {
-    FilterHist.max = max;
-    FilterHist.curr = 0;
-    FilterHist.data = MemReAlloc( FilterHist.data,
-        (FilterHist.max + 1) * sizeof( char * ) );
+    EditVars.FilterHist.max = max;
+    EditVars.FilterHist.curr = 0;
+    EditVars.FilterHist.data = MemReAlloc( EditVars.FilterHist.data,
+        (EditVars.FilterHist.max + 1) * sizeof( char * ) );
 
 } /* FilterHistInit */
 
@@ -198,9 +198,9 @@ void FilterHistInit( int max )
  */
 void CLHistInit( int max )
 {
-    CLHist.max = max;
-    CLHist.curr = 0;
-    CLHist.data = MemReAlloc( CLHist.data, (CLHist.max + 1) * sizeof( char * ) );
+    EditVars.CLHist.max = max;
+    EditVars.CLHist.curr = 0;
+    EditVars.CLHist.data = MemReAlloc( EditVars.CLHist.data, (EditVars.CLHist.max + 1) * sizeof( char * ) );
 
 } /* CLHistInit */
 
@@ -209,9 +209,9 @@ void CLHistInit( int max )
  */
 void FindHistInit( int max )
 {
-    FindHist.max = max;
-    FindHist.curr = 0;
-    FindHist.data = MemReAlloc( FindHist.data, (FindHist.max + 1) * sizeof( char * ) );
+    EditVars.FindHist.max = max;
+    EditVars.FindHist.curr = 0;
+    EditVars.FindHist.data = MemReAlloc( EditVars.FindHist.data, (EditVars.FindHist.max + 1) * sizeof( char * ) );
 
 } /* FindHistInit */
 
@@ -220,18 +220,18 @@ void FindHistInit( int max )
  */
 void LastFilesHistInit( int max )
 {
-    LastFilesHist.max = max;
-    LastFilesHist.curr = 0;
-    LastFilesHist.data = MemReAlloc( LastFilesHist.data,
-        (LastFilesHist.max + 1) * sizeof( char * ) );
+    EditVars.LastFilesHist.max = max;
+    EditVars.LastFilesHist.curr = 0;
+    EditVars.LastFilesHist.data = MemReAlloc( EditVars.LastFilesHist.data,
+        (EditVars.LastFilesHist.max + 1) * sizeof( char * ) );
 
 } /* LastFilesHistInit */
 
 void HistFini( void )
 {
-    MemFree( LastFilesHist.data );
-    MemFree( FindHist.data );
-    MemFree( CLHist.data );
-    MemFree( FilterHist.data );
-    MemFree( HistoryFile );
+    MemFree( EditVars.LastFilesHist.data );
+    MemFree( EditVars.FindHist.data );
+    MemFree( EditVars.CLHist.data );
+    MemFree( EditVars.FilterHist.data );
+    MemFree( EditVars.HistoryFile );
 }

@@ -98,7 +98,7 @@ typedef struct {
 } mouse_status;
 
 extern void GetMousePositionAndButtonStatus( mouse_status * );
-#ifndef __386__
+#ifdef _M_I86
 #pragma aux GetMousePositionAndButtonStatus = \
         "mov ax, 03h" \
         "push si" \

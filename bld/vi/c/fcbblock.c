@@ -82,7 +82,7 @@ bool GetNewBlock( long *p, unsigned char *blocks, int size )
             k = blocks[i];
             j = 0x80;
             l = 8 * i;
-            while( TRUE ) {
+            for( ;; ) {
                 /*
                  * if we find a position, return it
                  */
@@ -117,8 +117,8 @@ int MakeWriteBlock( fcb *fb )
     for( cline = fb->lines.head; cline != NULL; cline = cline->next ) {
         memcpy( buff, cline->data, cline->len );
         buff += cline->len;
-        *buff++ = 13;
-        *buff++ = 10;
+        *buff++ = CR;
+        *buff++ = LF;
         len += cline->len;
     }
 
@@ -126,11 +126,11 @@ int MakeWriteBlock( fcb *fb )
      * swap line data
      */
     for( cline = fb->lines.head; cline != NULL; cline = tline ) {
-        *(U_INT *)buff = cline->inf.word;
-        buff += 2;
+        *(linedata_t *)buff = cline->u.ld_word;
+        buff += sizeof( linedata_t );
         tline = cline->next;
         MemFree( cline );
-        len += 4; /* 2 for these and 2 for c/r l/f */
+        len += LINE_EXTRA; /* 2 for these and 2 for CR,LF */
     }
 
     if( len != FcbSize( fb ) ) {

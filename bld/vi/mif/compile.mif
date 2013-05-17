@@ -36,7 +36,7 @@ extra_cpp_flags_dos_386 = -D__PHAR__ -D__CURSES__
 extra_cpp_flags_dos_386 = -D__4G__
 !endif
 
-extra_c_flags = $(extra_c_flags_debug) -fh
+extra_c_flags = -fh
 !ifdef is286
 extra_c_flags_dos_i86 = -2
 !endif

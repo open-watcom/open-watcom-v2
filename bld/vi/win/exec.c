@@ -39,7 +39,7 @@ static HMODULE  instanceHandle;
 #define MODULE_FROM_TASK( t )   (*((WORD far *) MK_FP( (t), 0x1e )))
 #define INSTANCE_FROM_TASK( t ) (*((WORD far *) MK_FP( (t), 0x1c )))
 
-BOOL WINEXP NotifyHandler( WORD id, DWORD data )
+WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data )
 {
     UINT        task;
 
@@ -60,7 +60,7 @@ BOOL WINEXP NotifyHandler( WORD id, DWORD data )
 /*
  * MySpawn - spawn a windows app
  */
-int MySpawn( char *cmd )
+long MySpawn( char *cmd )
 {
     FARPROC             proc;
     HANDLE              inst;
@@ -76,7 +76,7 @@ int MySpawn( char *cmd )
     proc = MakeProcInstance( (FARPROC)NotifyHandler, InstanceHandle );
     if( !NotifyRegister( (HANDLE)NULLHANDLE, (LPFNNOTIFYCALLBACK)proc, NF_NORMAL ) ) {
         FreeProcInstance( proc );
-        return( -1 );
+        return( -1L );
     }
     strcat( path, " " );
     strcat( path, &(cmds.cmd[0]) );
@@ -109,7 +109,7 @@ int MySpawn( char *cmd )
         EditFlags.HoldEverything = FALSE;
         rc = 0;
     } else {
-        rc = -1;
+        rc = -1L;
     }
     NotifyUnRegister( (HANDLE)NULLHANDLE );
     FreeProcInstance( proc );

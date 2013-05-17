@@ -49,6 +49,7 @@ typedef struct {
     BOOL        Undo;
     BOOL        AutoSave;
     int         AutoSaveInterval;
+    BOOL        LastEOL;
     // int         MaxLineLen;
     BOOL        SaveConfig;
     BOOL        SaveOnBuild;
@@ -74,7 +75,7 @@ static dyn_dim_type dynGetAutoSave( HWND hwndDlg, BOOL initial )
     return( DYN_DIM );
 }
 
-static BOOL dynIsAutoSave( UINT wParam, LONG lParam, HWND hwndDlg )
+static BOOL dynIsAutoSave( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
@@ -94,14 +95,15 @@ static BOOL dynIsAutoSave( UINT wParam, LONG lParam, HWND hwndDlg )
 
 static void globalTodlgData( void )
 {
-    strncpy( dlgData.Word, WordDefn, WORDWIDTH - 1 );
-    strncpy( dlgData.WordAlt, WordAltDefn, WORDWIDTH - 1 );
+    strncpy( dlgData.Word, EditVars.WordDefn, WORDWIDTH - 1 );
+    strncpy( dlgData.WordAlt, EditVars.WordAltDefn, WORDWIDTH - 1 );
     dlgData.Undo = EditFlags.Undo;
-    dlgData.AutoSaveInterval = AutoSaveInterval;
+    dlgData.AutoSaveInterval = EditVars.AutoSaveInterval;
     dlgData.AutoSave = FALSE;
-    if( AutoSaveInterval > 0 ) {
+    if( EditVars.AutoSaveInterval > 0 ) {
         dlgData.AutoSave = TRUE;
     }
+    dlgData.LastEOL = EditFlags.LastEOL;
     // dlgData.MaxLineLen = MaxLine;
     dlgData.SaveConfig = EditFlags.SaveConfig;
     dlgData.SaveOnBuild = EditFlags.SaveOnBuild;
@@ -111,32 +113,32 @@ static void globalTodlgData( void )
     dlgData.Modal = !EditFlags.Modeless;
     dlgData.CaseIgnore = EditFlags.CaseIgnore;
     dlgData.SearchWrap = EditFlags.SearchWrap;
-    strncpy( dlgData.TmpDir, TmpDir, TMPDIRWIDTH - 1 );
-    strncpy( dlgData.HistoryFile, HistoryFile, HISTORYFILEWIDTH - 1 );
+    strncpy( dlgData.TmpDir, EditVars.TmpDir, TMPDIRWIDTH - 1 );
+    strncpy( dlgData.HistoryFile, EditVars.HistoryFile, HISTORYFILEWIDTH - 1 );
 }
 
 static void dlgDataToGlobal( void )
 {
-    UtilUpdateStr( WordDefn, dlgData.Word, "word" );
-    UtilUpdateStr( WordAltDefn, dlgData.WordAlt, "wordalt" );
+    UtilUpdateStr( EditVars.WordDefn, dlgData.Word, "word" );
+    UtilUpdateStr( EditVars.WordAltDefn, dlgData.WordAlt, "wordalt" );
     UtilUpdateBoolean( EditFlags.Undo, dlgData.Undo, "undo" );
     if( dlgData.AutoSave ) {
-        UtilUpdateInt( AutoSaveInterval, dlgData.AutoSaveInterval, "autosaveinterval" );
+        UtilUpdateInt( EditVars.AutoSaveInterval, dlgData.AutoSaveInterval, "autosaveinterval" );
     } else {
-        UtilUpdateInt( AutoSaveInterval, 0, "autosaveinterval" );
+        UtilUpdateInt( EditVars.AutoSaveInterval, 0, "autosaveinterval" );
     }
+    UtilUpdateBoolean( EditFlags.LastEOL, dlgData.LastEOL, "lasteol" );
     // UtilUpdateInt( MaxLine, dlgData.MaxLineLen, "maxlinelen" );
     UtilUpdateBoolean( EditFlags.SaveConfig, dlgData.SaveConfig, "saveconfig" );
     UtilUpdateBoolean( EditFlags.SaveOnBuild, dlgData.SaveOnBuild, "saveonbuild" );
     UtilUpdateBoolean( EditFlags.BeepFlag, dlgData.BeepFlag, "beepflag" );
-    UtilUpdateBoolean( EditFlags.QuitMovesForward, dlgData.QuitMovesForward,
-                       "quitmovesforward" );
+    UtilUpdateBoolean( EditFlags.QuitMovesForward, dlgData.QuitMovesForward, "quitmovesforward" );
     UtilUpdateBoolean( EditFlags.SameFileCheck, dlgData.SameFileCheck, "samefilecheck" );
     UtilUpdateBoolean( EditFlags.Modeless, !dlgData.Modal, "modeless" );
     UtilUpdateBoolean( EditFlags.CaseIgnore, dlgData.CaseIgnore, "caseignore" );
     UtilUpdateBoolean( EditFlags.SearchWrap, dlgData.SearchWrap, "searchwrap" );
-    UtilUpdateStr( TmpDir, dlgData.TmpDir, "tmpdir" );
-    UtilUpdateStr( HistoryFile, dlgData.HistoryFile, "historyfile" );
+    UtilUpdateStr( EditVars.TmpDir, dlgData.TmpDir, "tmpdir" );
+    UtilUpdateStr( EditVars.HistoryFile, dlgData.HistoryFile, "historyfile" );
 }
 
 static void setdlgDataDefaults( void )
@@ -147,6 +149,7 @@ static void setdlgDataDefaults( void )
     dlgData.Undo = TRUE;
     dlgData.AutoSaveInterval = 30;
     dlgData.AutoSave = TRUE;
+    dlgData.LastEOL = FALSE;
     // dlgData.MaxLineLen = 512;
     dlgData.SaveConfig = FALSE;
     dlgData.SaveOnBuild = TRUE;
@@ -163,7 +166,7 @@ static void setdlgDataDefaults( void )
 /*
  * SetGenProc - processes messages for the Data Control Dialog
  */
-BOOL WINEXP SetGenProc( HWND hwndDlg, unsigned msg, UINT wParam, LONG lParam )
+WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -209,9 +212,9 @@ bool GetSetGenDialog( void )
     DLGPROC     proc;
     bool        rc;
 
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) SetGenProc, InstanceHandle );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)SetGenProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "SETGEN", Root, proc );
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( FALSE );

@@ -67,15 +67,9 @@ static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
             }
         }
         memcpy( &ReadBuffer[boff + indent], dd, k );
-        /* Don't change the CRLF state of the current file */
-        if( EditFlags.WriteCRLF ) {
-            memcpy( &ReadBuffer[boff + k + indent], crlf, 2 );
-            boff += 2;
-        } else {
-            memcpy( &ReadBuffer[boff + k + indent], &crlf[1], 1 );
-            boff += 1;
-        }
-        boff += k + indent;
+        ReadBuffer[boff + k + indent] = CR;
+        ReadBuffer[boff + k + indent + 1] = LF;
+        boff += k + indent + 2;
         j++;
     }
 
@@ -146,14 +140,14 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
                         int maxlist, vi_rc (*updatertn)( char *, char *, int * ),
                         int indent, char **vals, int valoff )
 {
-    int                 j;
+//    int                 j;
     file                *cfile;
     selflinedata        sfd;
     vi_rc               rc;
 
     tempFileSetup( &cfile, list, maxlist, indent, TRUE );
 
-    while( TRUE ) {
+    for( ;; ) {
 
         /*
          * go get selected line
@@ -174,7 +168,7 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
         if( sfd.sl == -1 ) {
             break;
         }
-        j = (int) sfd.sl - 1;
+//        j = (int) sfd.sl - 1;
 
     }
 

@@ -40,8 +40,8 @@ extern char _NEAR META[];
  */
 bool IsMagicCharRegular( char ch )
 {
-    if( !EditFlags.Magic && Majick != NULL ) {
-        if( strchr( Majick, ch ) != NULL ) {
+    if( !EditFlags.Magic && EditVars.Majick != NULL ) {
+        if( strchr( EditVars.Majick, ch ) != NULL ) {
             return( TRUE );
         }
     }
@@ -120,16 +120,16 @@ void RegExpAttrSave( int caseignore, char *majick )
 {
     old_CaseIgnore  = EditFlags.CaseIgnore;
     old_Magic       = EditFlags.Magic;
-    old_Majick      = Majick;
+    old_Majick      = EditVars.Majick;
 
     if( caseignore != -1 ) {
-        EditFlags.CaseIgnore = caseignore;
+        EditFlags.CaseIgnore = ( caseignore ) ? TRUE : FALSE;
     }
     if( majick == NULL ) {
         EditFlags.Magic      = TRUE;
     } else {
         EditFlags.Magic      = FALSE;
-        Majick               = majick;
+        EditVars.Majick      = majick;
     }
 }
 
@@ -137,5 +137,5 @@ void RegExpAttrRestore( void )
 {
     EditFlags.CaseIgnore = old_CaseIgnore;
     EditFlags.Magic      = old_Magic;
-    Majick               = old_Majick;
+    EditVars.Majick      = old_Majick;
 }

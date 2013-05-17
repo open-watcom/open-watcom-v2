@@ -37,34 +37,13 @@
 #if defined( __UNIX__ )
   #include <dirent.h>
   #define _mkdir( a, b )    mkdir( a, b )
-  #define DIRFLAGS          PMODE_RW
+  #define DIRFLAGS          (PMODE_RW)
   #define WRITEATTRS        (CurrentFile->attr)
 #else
   #include <direct.h>
   #define _mkdir( a, b )    mkdir( a )
   #define DIRFLAGS          0
-  #define WRITEATTRS        PMODE_RW
-  #ifdef __IBMC__
-    typedef struct dirent DIR;
-  #endif
-#endif
-
-#ifndef R_OK
-  #define F_OK  0
-  #define W_OK  2
-  #define R_OK  4
-#endif
-
-#ifndef ACCESS_WR
-  #define ACCESS_WR W_OK
-  #define ACCESS_RD R_OK
-#endif
-
-#ifndef _MAX_DRIVE
-  #define _MAX_DRIVE    3
-  #define _MAX_DIR      260
-  #define _MAX_FNAME    256
-  #define _MAX_EXT      256
+  #define WRITEATTRS        (PMODE_RW)
 #endif
 
 #endif

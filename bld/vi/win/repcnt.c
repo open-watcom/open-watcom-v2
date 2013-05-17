@@ -44,7 +44,7 @@ window RepeatCountWindow = {
     Fini
 };
 
-LONG WINEXP RepeatWindowProc( HWND, unsigned, UINT, LONG );
+WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char     *className = "RepeatWindow";
 static char     repString[MAX_STR];
@@ -62,7 +62,7 @@ static BOOL Init( window *w, void *parm )
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = (WNDPROC)RepeatWindowProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( LPVOID );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
     wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
@@ -99,21 +99,20 @@ static void drawRepeatString( void )
     hdc = TextGetDC( repeatWindow, WIN_STYLE( &RepeatCountWindow ) );
     FillRect( hdc, &rect, ColorBrush( WIN_BACKCOLOR( &RepeatCountWindow ) ) );
     TextReleaseDC( repeatWindow, hdc );
-    WriteString( repeatWindow, 0, rect.top, WIN_STYLE( &RepeatCountWindow ),
-                 repString );
+    WriteString( repeatWindow, 0, rect.top, WIN_STYLE( &RepeatCountWindow ), repString );
 
 } /* drawRepeatString */
 
 /*
  * RepeatWindowProc - message procedure for the repeat count window
  */
-LONG WINEXP RepeatWindowProc( HWND hwnd, unsigned msg, UINT w, LONG l )
+WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     PAINTSTRUCT ps;
 
     switch( msg ) {
     case WM_CREATE:
-        SetWindowLong( hwnd, 0, (LONG)(LPVOID)&RepeatCountWindow );
+        SET_WNDINFO( hwnd, (LONG_PTR)&RepeatCountWindow );
         break;
     case WM_PAINT:
         BeginPaint( hwnd, &ps );

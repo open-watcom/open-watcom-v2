@@ -300,13 +300,13 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
 
     // set up tabs for drawing
     if( !EditFlags.RealTabs ) {
-#ifndef __ALPHA__
+#if defined( __WATCOMC__) && !defined( __ALPHA__ )
         len = _inline_strlen( text );
 #else
         len = strlen( text );
 #endif
         otmp = tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, len, tmp, MaxLinem1 + 2 );
+        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLine + 1 );
     } else {
         // leave the tabs alone ...
         // let tabbedTextExtent and tabbedTextOut do the rest.
@@ -332,6 +332,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     ss_cache = c_line->ss;
     indent = 0;
     changed = TRUE;
+    ss_step = NULL;
     if( c_line->valid && c_line->start_col == start_col ) {
         /* do not redraw whatever is in common */
         old = c_line->text;
@@ -406,7 +407,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
                 // put in dummy offsets for the rest of the blocks
                 // and exit
                 ss_step++;
-                while( 1 ) {
+                for( ;; ) {
                     if( ss_step->end == BEYOND_TEXT ) {
                         break;
                     }
@@ -492,13 +493,13 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     rect.bottom = y + height;
 
     if( EditFlags.RealTabs ) {
-#ifndef __ALPHA__
+#if defined( __WATCOMC__) && !defined( __ALPHA__ )
         len = _inline_strlen( text );
 #else
         len = strlen( text );
 #endif
         otmp = tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, len, tmp, MaxLinem1 + 2 );
+        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLine + 1 );
     } else {
         otmp = tmp = text;
     }

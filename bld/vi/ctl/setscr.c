@@ -56,8 +56,8 @@ static void globalTodlgData( void )
 {
     dlgData.JumpyScroll = EditFlags.JumpyScroll;
     dlgData.LineBased = EditFlags.LineBased;
-    dlgData.PageLinesExposed = PageLinesExposed;
-    strncpy( dlgData.FileEndString, FileEndString, FILEENDSTRINGWIDTH - 1 );
+    dlgData.PageLinesExposed = EditVars.PageLinesExposed;
+    strncpy( dlgData.FileEndString, EditVars.FileEndString, FILEENDSTRINGWIDTH - 1 );
     dlgData.SavePosition = EditFlags.SavePosition;
     dlgData.AutoMessageClear = EditFlags.AutoMessageClear;
 }
@@ -69,8 +69,8 @@ static void dlgDataToGlobal( void )
     UtilUpdateBoolean( EditFlags.SavePosition, dlgData.SavePosition, "saveposition" );
     UtilUpdateBoolean( EditFlags.AutoMessageClear, dlgData.AutoMessageClear,
                        "automessageclear" );
-    UtilUpdateInt( PageLinesExposed, dlgData.PageLinesExposed, "pagelinesexposed" );
-    UtilUpdateStr( FileEndString, dlgData.FileEndString, "fileendstring" );
+    UtilUpdateInt( EditVars.PageLinesExposed, dlgData.PageLinesExposed, "pagelinesexposed" );
+    UtilUpdateStr( EditVars.FileEndString, dlgData.FileEndString, "fileendstring" );
 }
 
 static void setdlgDataDefaults( void )
@@ -87,14 +87,13 @@ static void setdlgDataDefaults( void )
 /*
  * SetScrProc - processes messages for the Data Control Dialog
  */
-BOOL WINEXP SetScrProc( HWND hwndDlg, unsigned msg, WORD wParam, LONG lParam )
+WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwndDlg );
         globalTodlgData();
-        ctl_dlg_init( GET_HINSTANCE( hwndDlg ), hwndDlg,
-                      &dlgData, &Ctl_setscr );
+        ctl_dlg_init( GET_HINSTANCE( hwndDlg ), hwndDlg, &dlgData, &Ctl_setscr );
         return( TRUE );
 
     case WM_COMMAND:
@@ -131,9 +130,9 @@ bool GetSetScrDialog( void )
     DLGPROC     proc;
     bool        rc;
 
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) SetScrProc, InstanceHandle );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)SetScrProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "SETSCR", Root, proc );
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( FALSE );

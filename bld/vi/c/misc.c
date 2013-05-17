@@ -42,17 +42,13 @@
 #include "posix.h"
 #include "win.h"
 
-#ifdef __NT__
-  extern HANDLE       OutputHandle;
-#endif
-
 static char *oldPrompt;
 
 static void setPrompt( void )
 {
     char        *tmp;
 
-    if( SpawnPrompt[0] != 0 ) {
+    if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != 0 ) {
         tmp = getenv( PROMPT_ENVIRONMENT_VARIABLE );
         if( tmp != NULL ) {
             oldPrompt = MemAlloc( strlen( tmp ) + 1 );
@@ -60,13 +56,13 @@ static void setPrompt( void )
         } else {
             oldPrompt = NULL;
         }
-        setenv( PROMPT_ENVIRONMENT_VARIABLE, SpawnPrompt, TRUE );
+        setenv( PROMPT_ENVIRONMENT_VARIABLE, EditVars.SpawnPrompt, TRUE );
     }
 }
 
 static void restorePrompt( void )
 {
-    if( SpawnPrompt[0] != 0 ) {
+    if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != 0 ) {
         setenv( PROMPT_ENVIRONMENT_VARIABLE, oldPrompt, TRUE );
         if( oldPrompt != NULL ) {
             MemFree( oldPrompt );
@@ -100,10 +96,10 @@ static void preSpawn( void )
     setPrompt();
 }
 
-static void postSpawn( int rc )
+static void postSpawn( long rc )
 {
     restorePrompt();
-    VarAddGlobalLong( "Sysrc", (long) rc );
+    VarAddGlobalLong( "Sysrc", rc );
     UpdateCurrentDirectory();
 
 #ifndef __WIN__
@@ -125,7 +121,7 @@ static void postSpawn( int rc )
 // ifdef __NT__
 #include "batcher.h"
 #include <conio.h>
-int ExecCmd( char *file_in, char *file_out, char *cmd )
+long ExecCmd( char *file_in, char *file_out, char *cmd )
 {
     int                 len;
     unsigned long       stat;
@@ -160,7 +156,7 @@ int ExecCmd( char *file_in, char *file_out, char *cmd )
 #endif
 
 #ifdef __WIN__
-int ExecCmd( char *file_in, char *file_out, char *cmd )
+long ExecCmd( char *file_in, char *file_out, char *cmd )
 {
     file_in = file_in;
     file_out = file_out;
@@ -171,11 +167,12 @@ int ExecCmd( char *file_in, char *file_out, char *cmd )
     return( SystemRC );
 }
 #else
+#ifndef __NT__
 static int doRedirect( int original, char * filename, int mode )
 {
     int fh;
 
-    fh = open( filename, mode, S_IREAD | S_IWRITE );
+    fh = open( filename, mode, PMODE_RW );
     if( fh != -1 ) {
         close( original );
         if( dup2( fh, original ) == 0 ) {
@@ -184,12 +181,69 @@ static int doRedirect( int original, char * filename, int mode )
     }
     return( -1 );
 }
+#endif
 
 #define MAX_ARGS        128
 
-int doExec( char *std_in, char *std_out, char *cmd )
+#ifdef __NT__
+static long doExec( char *std_in, char *std_out, char *cmd )
 {
-    int         st;
+    HANDLE      cp;
+    long        st;
+    HANDLE      old_in;
+    HANDLE      new_in;
+    HANDLE      old_out;
+    HANDLE      new_out;
+
+    old_in = INVALID_HANDLE_VALUE;
+    new_in = INVALID_HANDLE_VALUE;
+    old_out = INVALID_HANDLE_VALUE;
+    new_out = INVALID_HANDLE_VALUE;
+    preSpawn();
+    cp = GetCurrentProcess();
+    if( std_in != NULL ) {
+        old_in = GetStdHandle( STD_INPUT_HANDLE );
+        new_in = CreateFile( std_in, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+        if( new_in == INVALID_HANDLE_VALUE ) {
+            return( -1L );
+        }
+        SetStdHandle( STD_INPUT_HANDLE, new_in );
+    }
+    if( std_out != NULL ) {
+        old_out = GetStdHandle( STD_INPUT_HANDLE );
+        new_out = CreateFile( std_out, GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING | CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
+        if( new_out == INVALID_HANDLE_VALUE ) {
+            if( std_in != NULL ) {
+                SetStdHandle( STD_INPUT_HANDLE, old_in );
+                CloseHandle( new_in );
+            }
+            return( -1L );
+        }
+        SetStdHandle( STD_OUTPUT_HANDLE, new_out );
+    }
+
+    if( cmd == NULL ) {
+        st = MySpawn( Comspec );
+    } else {
+        SetConsoleActiveScreenBuffer( GetStdHandle( STD_OUTPUT_HANDLE ) );
+        st = system( cmd );
+    }
+
+    if( std_in != NULL ) {
+        CloseHandle( new_in );
+        SetStdHandle( STD_INPUT_HANDLE, old_in );
+    }
+    if( std_out != NULL ) {
+        CloseHandle( new_out );
+        SetStdHandle( STD_OUTPUT_HANDLE, old_out );
+    }
+    postSpawn( st );
+    return( st );
+}
+#else
+static long doExec( char *std_in, char *std_out, char *cmd )
+{
+    long        st;
     int         save_in, new_in;
     int         save_out, new_out;
 #if 0
@@ -199,13 +253,17 @@ int doExec( char *std_in, char *std_out, char *cmd )
     int         i;
 #endif
 
+    save_in = -1;
+    new_in = -1;
+    save_out = -1;
+    new_out = -1;
     preSpawn();
     if( std_in != NULL ) {
         save_in = dup( STDIN_FILENO );
         new_in = doRedirect( STDIN_FILENO, std_in, O_RDONLY | O_BINARY );
         if( new_in == -1 ) {
             close( save_in );
-            return( -1 );
+            return( -1L );
         }
     }
     if( std_out != NULL ) {
@@ -219,7 +277,7 @@ int doExec( char *std_in, char *std_out, char *cmd )
                 dup2( save_in, STDIN_FILENO );
                 close( save_in );
             }
-            return( -1 );
+            return( -1L );
         }
     }
 
@@ -274,13 +332,10 @@ int doExec( char *std_in, char *std_out, char *cmd )
     postSpawn( st );
     return( st );
 }
-#if !defined( __DOS__ )
-int ExecCmd( char *file_in, char *file_out, char *cmd )
-{
-    return( doExec( file_in, file_out, cmd ) );
-}
-#else
-int ExecCmd( char *file_in, char *file_out, char *cmd )
+#endif
+
+#if defined( __DOS__ )
+long ExecCmd( char *file_in, char *file_out, char *cmd )
 {
     if( file_in != NULL || file_out != NULL ) {
         SystemRC = doExec( file_in, file_out, cmd );
@@ -290,6 +345,11 @@ int ExecCmd( char *file_in, char *file_out, char *cmd )
         postSpawn( SystemRC );
     }
     return( SystemRC );
+}
+#else
+long ExecCmd( char *file_in, char *file_out, char *cmd )
+{
+    return( doExec( file_in, file_out, cmd ) );
 }
 #endif
 #endif
@@ -414,13 +474,16 @@ bool QueryFile( const char *filename )
  * ExitWithPrompt - try to exit, verifying for every file which has
  * been modified.
  */
-bool ExitWithPrompt( bool do_quit )
+bool ExitWithPrompt( bool do_quit, bool push_pop )
 {
     info        *cinfo;
     int         i;
     int         num = 0;
-    bool        rc;
+    bool        rc = TRUE;
 
+    if( push_pop ) {
+        PushMode();
+    }
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         num++;
     }
@@ -428,17 +491,20 @@ bool ExitWithPrompt( bool do_quit )
     for( i = 0; i < num; i++ ){
         if( NextFile() > ERR_NO_ERR ) {
             // file modified ask
-            rc = FileExitOptionSaveChanges( CurrentFile );
-            if( rc == TRUE ) {
+            if( FileExitOptionSaveChanges( CurrentFile ) ) {
                 /* user hit cancel - always allow this! */
-                return( FALSE );
+                rc = FALSE;
+                break;
             }
         }
     }
-    if( do_quit ) {
+    if( push_pop ) {
+        PopMode();
+    }
+    if( rc && do_quit ) {
         QuitEditor( ERR_NO_ERR );
     }
-    return( TRUE );
+    return( rc );
 
 } /* ExitWithPrompt */
 
@@ -540,11 +606,9 @@ void ExitWithVerify( void )
         return;
     }
     entered = TRUE;
-    cinfo = InfoHead;
     modified = FALSE;
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         modified |= cinfo->CurrentFile->modified;
-        cinfo = cinfo->next;
     }
     if( modified ) {
 #ifdef __WIN__
@@ -596,10 +660,11 @@ vi_rc EnterHexKey( void )
     char        st[MAX_STR], val;
     vi_rc       rc;
 
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    if( CurrentLine->len >= MaxLinem1 ) {
+    if( CurrentLine->len >= EditVars.MaxLine - 1 ) {
         return( ERR_LINE_FULL );
     }
 
@@ -728,7 +793,7 @@ vi_rc CurFileExitOptionSaveChanges( void )
 void UpdateCurrentDirectory( void )
 {
 
-    MemFree2( &CurrentDirectory );
+    MemFreePtr( (void **)&CurrentDirectory );
     GetCWD1( &CurrentDirectory );
 
 } /* UpdateCurrentDirectory */
@@ -752,7 +817,7 @@ int NextBiggestPrime( int start )
     int n = start;
     int i;
 
-    while( 1 ) {
+    for( ;; ) {
         for( i = 2; i < (int)(n / 2); i++ ) {
             if( i * (n / i) == n ) {
                 break;

@@ -160,7 +160,7 @@ static unsigned long xmsAlloc( int size )
         }
 
         page_request = XMS_MAX_BLOCK_SIZE_IN_K;
-        while( 1 ) {
+        for( ;; ) {
 
             if( _XMSAllocate( &xmsControl, page_request,
                 (unsigned short *) &handle ) != 0 ) {

@@ -32,7 +32,14 @@
 #include "vi.h"
 #include "win.h"
 
+extern int PageCnt;
+
 static char oldPath[_MAX_PATH];
+
+int FileSysNeedsCR( int handle )
+{
+    return( FALSE );
+}
 
 /*
  * PushDirectory
@@ -73,8 +80,8 @@ void MyBeep( void ) {}
  */
 void ScreenInit( void )
 {
-    WindMaxHeight = 80;
-    WindMaxWidth = 24;
+    EditVars.WindMaxHeight = 80;
+    EditVars.WindMaxWidth = 24;
     EditFlags.Color = FALSE;
     EditFlags.HasSystemMouse = FALSE;
 
@@ -108,8 +115,6 @@ long MemSize( void )
  */
 void ScreenPage( int page )
 {
-    extern int PageCnt;
-
     PageCnt += page;
 
 } /* ScreenPage */

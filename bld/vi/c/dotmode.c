@@ -84,7 +84,7 @@ vi_rc DoDotMode( void )
         EditFlags.DotMode = TRUE;
         DotCount = 0;
         LastError = ERR_NO_ERR;
-        while( TRUE ) {
+        for( ;; ) {
             LastEvent = GetNextEvent( FALSE );
             if( DotCount > DotCmdCount ) {
                 break;
@@ -141,7 +141,7 @@ vi_rc DoAltDotMode( void )
         EditFlags.AltDotMode = TRUE;
         AltDotCount = 0;
         LastError = ERR_NO_ERR;
-        while( TRUE ) {
+        for( ;; ) {
             LastEvent = GetNextEvent( FALSE );
             if( AltDotCount > AltDotDigits ) {
                 break;

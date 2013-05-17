@@ -97,43 +97,38 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
 #ifdef __WIN__
         ToggleHourglass( TRUE );
 #endif
-        while( TRUE ) {
-            rc = ReadFcbData( cfile );
+        rc = OpenFcbData( cfile );
+        for( ; rc == ERR_NO_ERR; ) {
+            rc = ReadFcbData( cfile, NULL );
             lnecnt += cfile->fcbs.tail->end_line - cfile->fcbs.tail->start_line + 1L;
             bytecnt += (long) cfile->fcbs.tail->byte_cnt;
-            if( rc != ERR_NO_ERR ) {
-                break;
-            }
         }
 #ifdef __WIN__
         ToggleHourglass( FALSE );
 #endif
         UpdateCurrentStatus( lastst );
         if( rc != ERR_NO_ERR && rc != END_OF_FILE ) {
+            FreeEntireFile( cfile );
             MemFree( fn );
             return( rc );
         }
         bytecnt += lnecnt;
-
     }
 
     /*
      * add lines to current file
      */
     rc = InsertLines( afterwhich, &cfile->fcbs, UndoStack );
-    FileFree( cfile );
-    if( rc != ERR_NO_ERR ) {
-        MemFree( fn );
-        return( rc );
+    if( rc == ERR_NO_ERR ) {
+        DCDisplayAllLines();
+    
+        if( fn[0] == '$' ) {
+            Message1( "Directory %s read", &fn[1] );
+        } else {
+            FileIOMessage( fn, lnecnt, bytecnt );
+        }
     }
-
-    DCDisplayAllLines();
-
-    if( fn[0] == '$' ) {
-        Message1( "Directory %s read", &fn[1] );
-    } else {
-        FileIOMessage( fn, lnecnt, bytecnt );
-    }
+    FreeEntireFile( cfile );
     MemFree( fn );
     return( ERR_NO_ERR );
 

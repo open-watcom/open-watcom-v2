@@ -42,8 +42,15 @@
     #define STUPID_UINT     unsigned short
 #endif
 
+extern int      PageCnt;
+
 static char     oldPath[_MAX_PATH];
 static char     oldDisk;
+
+int FileSysNeedsCR( int handle )
+{
+    return( TRUE );
+}
 
 /*
  * PushDirectory - save the current directory
@@ -116,8 +123,8 @@ void ScreenInit( void )
     if( VioGetMode( &vioMode, 0 ) != 0 ) {
         FatalError( ERR_WIND_INVALID );
     }
-    WindMaxWidth = vioMode.col;
-    WindMaxHeight = vioMode.row;
+    EditVars.WindMaxWidth = vioMode.col;
+    EditVars.WindMaxHeight = vioMode.row;
 
     config.cb = sizeof( config );
     if( VioGetConfig( 0, &config, 0 ) != 0 ) {
@@ -169,8 +176,6 @@ long MemSize( void )
  */
 void ScreenPage( int page )
 {
-    extern int  PageCnt;
-
     PageCnt += page;
 
 } /* ScreenPage */
@@ -267,7 +272,7 @@ void MyDelay( int ms )
  */
 void SetCursorBlinkRate( int cbr )
 {
-    CursorBlinkRate = cbr;
+    EditVars.CursorBlinkRate = cbr;
 
 } /* SetCursorBlinkRate */
 
@@ -291,8 +296,8 @@ bool KeyboardHit( void )
     return( BIOSKeyboardHit() );
 }
 
-void MyVioShowBuf( unsigned offset, unsigned length )
+void MyVioShowBuf( unsigned offset, unsigned nchars )
 {
-    BIOSUpdateScreen( offset, length );
+    BIOSUpdateScreen( offset, nchars );
 }
 

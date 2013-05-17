@@ -40,7 +40,7 @@ static char     *usageStr;
 /*
  * UsageProc - callback routine for usage dialog
  */
-BOOL WINEXP UsageProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK UsageProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
     HFONT       font;
@@ -50,14 +50,13 @@ BOOL WINEXP UsageProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     switch( msg ) {
     case WM_INITDIALOG:
         font = GetStockObject( SYSTEM_FIXED_FONT );
-        SendDlgItemMessage( hwnd, USAGE_LISTBOX, WM_SETFONT, (UINT) font, 0L );
-        SendDlgItemMessage( hwnd, USAGE_TEXT, WM_SETFONT, (UINT) font, 0L );
+        SendDlgItemMessage( hwnd, USAGE_LISTBOX, WM_SETFONT, (UINT)font, 0L );
+        SendDlgItemMessage( hwnd, USAGE_TEXT, WM_SETFONT, (UINT)font, 0L );
         if( usageStr[0] != 0 ) {
             SetDlgItemText( hwnd, USAGE_TEXT, usageStr );
         }
         for( i = 0; i < usageCnt; i++ ) {
-            SendDlgItemMessage( hwnd, USAGE_LISTBOX, LB_ADDSTRING, 0,
-                                (LONG) usageList[i] );
+            SendDlgItemMessage( hwnd, USAGE_LISTBOX, LB_ADDSTRING, 0, (LPARAM)usageList[i] );
         }
         return( TRUE );
     case WM_CLOSE:
@@ -85,8 +84,8 @@ void UsageDialog( char **list, char *msg, int cnt )
     usageStr = msg;
     usageCnt = cnt;
 
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) UsageProc, InstanceHandle );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)UsageProc, InstanceHandle );
     DialogBox( InstanceHandle, "Usage", Root, proc );
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
 
 } /* UsageDialog */

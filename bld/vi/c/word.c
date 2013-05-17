@@ -59,12 +59,12 @@ static char *ptrFromMark( i_mark *curr )
     rc = CGimmeLinePtr( curr->line, &fcb, &line );
     if( rc == ERR_NO_ERR ) {
         if( curr->column > 0 && curr->column <= line->len ) {
-            ptr = &line->data[curr->column - 1];
+            ptr = &(line->data[curr->column - 1]);
         } else if( !EditFlags.WordWrap ) {
             if( curr->column == 0 ) {
-                ptr = &line->data[curr->column];
+                ptr = &(line->data[curr->column]);
             } else {
-                ptr = &line->data[line->len - 1];
+                ptr = &(line->data[line->len - 1]);
             }
             noWrap = TRUE;
         }

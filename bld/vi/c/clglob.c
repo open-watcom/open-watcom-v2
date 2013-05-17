@@ -134,7 +134,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
          * mark fcb and line for a match
          */
         CurrentFcb->globalmatch = TRUE;
-        CurrentLine->inf.ld.globmatch = TRUE;
+        CurrentLine->u.ld.globmatch = TRUE;
         if( EditFlags.Verbose && EditFlags.EchoOn ) {
             // WPrintfLine( MessageWindow,1,"Match on line %l",clineno );
             Message1( "Match on line %l", pos.line );
@@ -152,11 +152,11 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
         CGimmeLinePtr( n1, &CurrentFcb, &CurrentLine );
         i = FALSE;
         for( CurrentPos.line = n1; CurrentPos.line <= n2; CurrentPos.line++ ) {
-            if( CurrentLine->inf.ld.globmatch ) {
-                CurrentLine->inf.ld.globmatch = FALSE;
+            if( CurrentLine->u.ld.globmatch ) {
+                CurrentLine->u.ld.globmatch = FALSE;
             } else {
                 i = TRUE;
-                CurrentLine->inf.ld.globmatch = TRUE;
+                CurrentLine->u.ld.globmatch = TRUE;
             }
             CurrentLine = CurrentLine->next;
             if( CurrentLine == NULL ) {
@@ -182,9 +182,9 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
         FetchFcb( CurrentFcb );
         CurrentPos.line = CurrentFcb->start_line;
         for( CurrentLine = CurrentFcb->lines.head; CurrentLine != NULL; CurrentLine = CurrentLine->next, CurrentPos.line++ ) {
-            if( !CurrentLine->inf.ld.globmatch )
+            if( !CurrentLine->u.ld.globmatch )
                 continue;
-            CurrentLine->inf.ld.globmatch = FALSE;
+            CurrentLine->u.ld.globmatch = FALSE;
             changecnt++;
 
             CurrentPos.column = 1;
@@ -213,7 +213,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
                 cfcb->globalmatch = FALSE;
                 cfcb->non_swappable = FALSE;
                 for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
-                    cline->inf.ld.globmatch = FALSE;
+                    cline->u.ld.globmatch = FALSE;
                 }
             }
         }

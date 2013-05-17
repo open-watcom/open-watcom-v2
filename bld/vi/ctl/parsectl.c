@@ -42,6 +42,34 @@ static char White_space[] = " \t";
 
 static int Line = 1;
 
+/* Local implementations of strupr()/strlwr() for portability */
+
+char *my_strupr( char *string )
+/*****************************/
+{
+    char    *s;
+    
+    if( string != NULL ) {
+        for( s = string; *s; ++s ) {
+            *s = toupper( *s );
+        }
+    }
+    return( string );
+} 
+
+char *my_strlwr( char *string )
+/*****************************/
+{
+    char    *s;
+
+    if( string != NULL ) {
+        for( s = string; *s; ++s ) {
+            *s = tolower( *s );
+        }
+    }
+    return( string );
+}
+
 static char *get_line( char *buf, FILE *file ) 
 /********************************************/
 {
@@ -148,7 +176,7 @@ int main( int argc, char *argv[] )
             goto error;
         }
         if( !empty_data( line ) ) {
-            fprintf( out,  "            %s            d1;\n", strlwr( type ) );
+            fprintf( out,  "            %s            d1;\n", my_strlwr( type ) );
         }
         fputs( "            ctl_info      d2;\n", out );
         fputs( "        } d3;\n", out );
@@ -172,7 +200,7 @@ int main( int argc, char *argv[] )
         *end = '\0';
         ++end;
 
-        fprintf( out, "{ %s, %s, FALSE,", strupr( line ), end );
+        fprintf( out, "{ %s, %s, FALSE,", my_strupr( line ), end );
 
         line = get_line( buf, in );
         fprintf( out, "%s ", line );

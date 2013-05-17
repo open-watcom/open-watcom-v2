@@ -45,7 +45,7 @@ void IDEInit( void )
     if( !VxDPresent() ) {
         Die( "WDEBUG.386 not present!" );
     }
-    while( 1 ) {
+    for( ;; ) {
         if( VxDLink( EDITOR_LINK_NAME ) == NULL ) {
             VxDConnect();
             break;

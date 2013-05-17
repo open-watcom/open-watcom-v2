@@ -51,7 +51,7 @@ window CommandWindow = {
 
 window_id CommandId = NO_WINDOW;
 
-LONG WINEXP CommandWindowProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *className = "CommandWindow";
 
@@ -64,7 +64,7 @@ static BOOL Init( window *w, void *parm )
     wc.style = 0;
     wc.lpfnWndProc = (WNDPROC)CommandWindowProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( LPVOID );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
     wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
@@ -81,7 +81,7 @@ static BOOL Fini( window *w, void *parm )
     return( TRUE );
 }
 
-LONG WINEXP CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     PAINTSTRUCT ps;
     HDC         hdc;
@@ -89,18 +89,17 @@ LONG WINEXP CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
     switch( msg ) {
     case WM_CREATE:
         CommandId = hwnd;
-        SetWindowLong( hwnd, 0, (LONG)(LPVOID) &CommandWindow );
+        SET_WNDINFO( hwnd, (LONG_PTR)&CommandWindow );
         break;
     case WM_SETFOCUS:
         /* turn on caret */
-        NewCursor( hwnd, NormalCursorType );
+        NewCursor( hwnd, EditVars.NormalCursorType );
         break;
     case WM_KILLFOCUS:
         /* turn off the caret */
         MyHideCaret( hwnd );
         DestroyCaret();
-        if( w && ((HWND) w == Root ||
-                   GetWindow( (HWND) w, GW_OWNER ) == EditContainer) ) {
+        if( w && ((HWND) w == Root || GetWindow( (HWND) w, GW_OWNER ) == EditContainer) ) {
             /* hmmm... losing focus to one of our own windows - suicide */
             if( ReadingAString ) {
                 KeyAdd( VI_KEY( ESC ) );

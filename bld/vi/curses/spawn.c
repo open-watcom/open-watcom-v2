@@ -39,7 +39,7 @@ void ResetSpawnScreen( void )
 {
 }
 
-#if !defined( __386__ )
+#if defined( _M_I86 )
 static long minMemoryLeft;
 static int  chkSwapSize;
 
@@ -362,10 +362,10 @@ extern int GetFcb( void *, void * );
         "pop    ds" \
     parm [dx ax] [cx bx] value [ax];
 
-int MySpawn( char *cmd )
+long MySpawn( char *cmd )
 {
     bool        cp;
-    int         rc;
+    long        rc;
     exec_block  exeparm;
     _fcb        fcb1, fcb2;
     cmd_struct  cmds;

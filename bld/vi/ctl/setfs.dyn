@@ -1,2 +1,4 @@
 DYN_TPL_DIM dynGetLanguage dynIsLanguage
     0, SETFS_PPKEYWORDONLY, 0
+DYN_TPL_DIM dynGetCRLFAutoDetect dynIsCRLFAutoDetect
+    0, SETFS_WRITECRLF, 0

@@ -45,7 +45,7 @@ window MessageBar = {
     Fini
 };
 
-LONG WINEXP MessageWindowProc( HWND, unsigned, UINT, LONG );
+WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *ClassName = "MessageWindow";
 static char msgString1[MAX_STR];
@@ -65,7 +65,7 @@ static BOOL Init( window *w, void *parm )
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = (WNDPROC)MessageWindowProc;
     wc.cbClsExtra = 0;
-    wc.cbWndExtra = sizeof( LPVOID );
+    wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
     wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
@@ -82,13 +82,13 @@ static BOOL Fini( window *w, void *parm )
     return( FALSE );
 }
 
-LONG WINEXP MessageWindowProc( HWND hwnd, unsigned msg, UINT w, LONG l )
+WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     PAINTSTRUCT ps;
 
     switch( msg ) {
     case WM_CREATE:
-        SetWindowLong( hwnd, 0, (LONG)(LPVOID)&MessageBar );
+        SET_WNDINFO( hwnd, (LONG_PTR)&MessageBar );
         break;
     case WM_PAINT:
         BeginPaint( hwnd, &ps );

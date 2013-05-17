@@ -38,7 +38,7 @@
 void AbandonHopeAllYeWhoEnterHere( vi_rc rc )
 {
 
-    AutoSaveInterval = 0;
+    EditVars.AutoSaveInterval = 0;
     ClearScreen();
     SetPosToMessageLine();
     if( rc == ERR_NO_MEMORY )  {

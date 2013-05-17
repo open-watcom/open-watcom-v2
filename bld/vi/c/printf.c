@@ -108,11 +108,7 @@ static void basePrintf( const char *in, va_list al )
                 goto copyloop2;
 #ifdef DBG
             case 'W':
-#ifdef __386__
-                i = va_arg( al, int );
-                itoa( j, buff, 16 );
-                Lead( '0', 8, buff );
-#else
+#ifdef _M_I86
                 i = va_arg( al, int );
                 j = va_arg( al, int );
                 itoa( j, buff, 16 );
@@ -120,6 +116,10 @@ static void basePrintf( const char *in, va_list al )
                 buff[4] = ':';
                 itoa( i, &buff[5], 16 );
                 Lead( '0', 4, &buff[5] );
+#else
+                i = va_arg( al, int );
+                itoa( j, buff, 16 );
+                Lead( '0', 8, buff );
 #endif
                 goto copyloop1;
 #endif

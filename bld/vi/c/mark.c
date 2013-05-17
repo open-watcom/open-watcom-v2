@@ -33,11 +33,11 @@
 #include "vi.h"
 #include <assert.h>
 
-static int  unMark( mark * );
-static vi_rc invalidMark( mark *, int );
+static unsigned  unMark( mark * );
+static vi_rc invalidMark( mark *, unsigned );
 static vi_rc goToMark( range * );
-static vi_rc getAMark( int, linenum *, int * );
-static vi_rc tryToFindMark( mark *, int );
+static vi_rc getAMark( bool, linenum *, int * );
+static vi_rc tryToFindMark( mark *, unsigned );
 
 /*
  * Mark numbers etc: everywhere you see a "no" used to indicate a
@@ -96,14 +96,14 @@ vi_rc SetMark( void )
  *              given line. It simply follows the trail through the mark
  *              list until it finds a NO_MARK or the mark it is searching for.
  */
-bool MarkOnLine( line *line, int no )
+bool MarkOnLine( line *line, unsigned no )
 {
     mark        *m;
 
-    if( line->inf.ld.mark == no ) {
+    if( line->u.ld.mark == no ) {
         return( TRUE );
     }
-    m = MARK_PTR( line->inf.ld.mark );
+    m = MARK_PTR( line->u.ld.mark );
     while( m->next != NO_MARK ) {
         if( m->next == no ) {
             return( TRUE );
@@ -119,14 +119,14 @@ bool MarkOnLine( line *line, int no )
  *                      happen to find it on. After this the mark is no
  *                      longer in use.
  */
-vi_rc RemoveMarkFromLine( int no )
+vi_rc RemoveMarkFromLine( unsigned no )
 {
     mark        *mark, *curr;
     fcb         *fcb;
     line        *line;
     vi_rc       rc;
 
-    assert( no > 0 && no <= MAX_MARKS + 1 );
+    assert( no != NO_MARK && no <= MAX_MARKS + 1 );
     mark = MARK_PTR( no );
     rc = CGimmeLinePtr( mark->p.line, &fcb, &line );
     if( rc != ERR_NO_ERR ) {
@@ -140,11 +140,11 @@ vi_rc RemoveMarkFromLine( int no )
            tryToFindMark */
         CGimmeLinePtr( mark->p.line, &fcb, &line );
     }
-    if( line->inf.ld.mark != NO_MARK ) {
-        if( line->inf.ld.mark == no ) {
-            line->inf.ld.mark = mark->next;
+    if( line->u.ld.mark != NO_MARK ) {
+        if( line->u.ld.mark == no ) {
+            line->u.ld.mark = mark->next;
         } else {
-            curr = MARK_PTR( line->inf.ld.mark );
+            curr = MARK_PTR( line->u.ld.mark );
             while( curr->next != no ) {
                 if( curr->next == NO_MARK ) {
                     /* we have run through the linked list and not found it */
@@ -168,7 +168,7 @@ vi_rc RemoveMarkFromLine( int no )
  */
 vi_rc SetGenericMark( linenum num, int col, char mlet )
 {
-    int         no;
+    unsigned    no;
     mark        *cmark;
     line        *mline;
     fcb         *mfcb;
@@ -183,7 +183,7 @@ vi_rc SetGenericMark( linenum num, int col, char mlet )
      * unmark the current line
      */
     if( mlet == '!' ) {
-        no = mline->inf.ld.mark;
+        no = mline->u.ld.mark;
         while( no != NO_MARK ) {
             no = unMark( MARK_PTR( no ) );
         }
@@ -213,8 +213,8 @@ vi_rc SetGenericMark( linenum num, int col, char mlet )
     /*
      * do the set
      */
-    cmark->next = mline->inf.ld.mark;
-    mline->inf.ld.mark = no;
+    cmark->next = mline->u.ld.mark;
+    mline->u.ld.mark = no;
     cmark->p.line = num;
     cmark->p.column = col;
     cmark->inuse = TRUE;
@@ -252,9 +252,9 @@ vi_rc GetMark( linenum *ln, int *cl )
 /*
  * getAMark - get a specified mark
  */
-static vi_rc getAMark( int lineonly, linenum *ln, int *cl )
+static vi_rc getAMark( bool lineonly, linenum *ln, int *cl )
 {
-    int         no;
+    unsigned    no;
     mark        *m;
     vi_rc       rc;
     vi_key      key;
@@ -288,7 +288,7 @@ static vi_rc getAMark( int lineonly, linenum *ln, int *cl )
  */
 static vi_rc goToMark( range *r )
 {
-    int         no;
+    unsigned    no;
     mark        *m;
     vi_rc       rc;
     vi_key      key;
@@ -321,7 +321,7 @@ static vi_rc goToMark( range *r )
 /*
  * VerifyMark - check that a mark is okay
  */
-vi_rc VerifyMark( int no, int lineonly )
+vi_rc VerifyMark( unsigned no, int lineonly )
 {
     fcb         *cfcb;
     line        *cline;
@@ -329,7 +329,7 @@ vi_rc VerifyMark( int no, int lineonly )
     int         len;
     vi_rc       rc;
 
-    if( no <= 0 || no > MAX_MARKS + 1 ) {
+    if( no == NO_MARK || no > MAX_MARKS + 1 ) {
         return( ERR_INVALID_MARK_RANGE );
     }
     if( no == MAX_MARKS + 1 ) {
@@ -379,13 +379,13 @@ vi_rc VerifyMark( int no, int lineonly )
 /*
  * unMark - clear a mark
  */
-static int unMark( mark *cmark )
+static unsigned unMark( mark *cmark )
 {
-    int next;
+    unsigned next;
 
     cmark->inuse = FALSE;
     next = cmark->next;
-    cmark->next = 0;
+    cmark->next = NO_MARK;
     return( next );
 
 } /* unMark */
@@ -393,7 +393,7 @@ static int unMark( mark *cmark )
 /*
  * invalidMark - set a mark as no longer vaid
  */
-static vi_rc invalidMark( mark *cmark, int no )
+static vi_rc invalidMark( mark *cmark, unsigned no )
 {
     int         i;
     mark        *m;
@@ -443,7 +443,7 @@ void SetMarkContext( void )
  */
 void FreeMarkList( void )
 {
-    MemFree2( &MarkList );
+    MemFreePtr( (void **)&MarkList );
     /* set currContext to NULL so we get a GPFault if we deref it */
     currContext = NULL;
 
@@ -452,7 +452,7 @@ void FreeMarkList( void )
 /*
  * tryToFindMark - try to find a moved mark
  */
-static vi_rc tryToFindMark( mark *cmark, int no )
+static vi_rc tryToFindMark( mark *cmark, unsigned no )
 {
     fcb         *cfcb;
     line        *cline;
@@ -463,7 +463,7 @@ static vi_rc tryToFindMark( mark *cmark, int no )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    while( TRUE ) {
+    for( ;; ) {
         if( MarkOnLine( cline, no ) ) {
             cmark->p.line = lineno;
             return( ERR_NO_ERR );

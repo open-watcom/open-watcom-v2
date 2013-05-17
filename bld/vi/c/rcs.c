@@ -57,7 +57,11 @@ extern RCSFiniFn                *RCSFini = NULL;
 #if defined( __WINDOWS__ ) || defined( __NT__ )
 
 #define GET_ADDR( inst, name, proc, type ) proc = (type *)GetProcAddress( inst, name )
-static HINSTANCE LibHandle;
+#if defined( __WINDOWS__ )
+static HINSTANCE LibHandle = (HINSTANCE)0;
+#else
+static HINSTANCE LibHandle = NULL;
+#endif
 static void getFunctionPtrs( void );
 
 bool ViRCSInit( void )
@@ -68,7 +72,12 @@ bool ViRCSInit( void )
     uErrMode = SetErrorMode( SEM_NOOPENFILEERRORBOX );
     LibHandle = LoadLibrary( RCS_DLLNAME );
     SetErrorMode( uErrMode );
+#if defined( __WINDOWS__ )
     if( LibHandle < (HINSTANCE)32 ) {
+        LibHandle = (HINSTANCE)0;
+#else
+    if( LibHandle == NULL ) {
+#endif
         return( FALSE );
     }
     getFunctionPtrs();
@@ -77,7 +86,12 @@ bool ViRCSInit( void )
 
 bool ViRCSFini( void )
 {
-    FreeLibrary( LibHandle );
+#if defined( __WINDOWS__ )
+    if( LibHandle != (HINSTANCE)0 )
+#else
+    if( LibHandle != NULL )
+#endif
+        FreeLibrary( LibHandle );
     return( TRUE );
 }
 

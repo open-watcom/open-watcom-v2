@@ -41,10 +41,10 @@ int WindowAuxInfo( window_id wn, int type )
     wind        *w;
     int         rc;
 
-    if( wn == -1 ) {
+    if( wn == NO_WINDOW ) {
         return( 1 );
     }
-
+    rc = 0;
     w = Windows[wn];
     switch( type ) {
     case WIND_INFO_X1: rc = w->x1; break;
@@ -74,7 +74,7 @@ void WindowAuxUpdate( window_id wn, int type, int data )
 {
     wind *w;
 
-    if( wn == -1 ) {
+    if( wn == NO_WINDOW ) {
         return;
     }
 

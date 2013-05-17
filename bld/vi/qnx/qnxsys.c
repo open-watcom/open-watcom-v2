@@ -43,10 +43,12 @@
 #include "win.h"
 #include "dosx.h"
 
-static char                     oldPath[_MAX_PATH];
+extern int                      PageCnt;
 extern struct _console_ctrl     *QNXCon;
 extern int                      QNXConHandle;
 extern unsigned int             QNXConsole;
+
+static char                     oldPath[_MAX_PATH];
 
 int FileSysNeedsCR( int handle )
 {
@@ -144,8 +146,8 @@ void ScreenInit( void )
         console_close( QNXCon );
         FatalError( rc );
     }
-    WindMaxWidth = cols;
-    WindMaxHeight = rows;
+    EditVars.WindMaxWidth = cols;
+    EditVars.WindMaxHeight = rows;
 
     qnx_osinfo( 0, &info );
     switch( info.primary_monitor ) {
@@ -206,8 +208,6 @@ long MemSize( void )
  */
 void ScreenPage( int page )
 {
-    extern int  PageCnt;
-
     PageCnt += page;
 
 } /* ScreenPage */

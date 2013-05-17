@@ -41,11 +41,9 @@ static void reDisplayWindow( window_id wn )
 {
     wind                *w;
     char_info           *txt;
-    char                *over;
+    window_id           *over;
     char_info           _FAR *scr;
-#ifdef __VIO__
     unsigned            oscr;
-#endif
     int                 j, i;
 
     if( EditFlags.Quiet ) {
@@ -56,15 +54,13 @@ static void reDisplayWindow( window_id wn )
     /*
      * re-display text area
      */
-    txt = (char_info *) w->text;
+    txt = w->text;
     over = w->overlap;
     for( j = w->y1; j <= w->y2; j++ ) {
-        scr = (char_info _FAR *) &Scrn[(w->x1 + j * WindMaxWidth) * sizeof( char_info )];
-#ifdef __VIO__
-        oscr = (unsigned) ((char *)scr - Scrn);
-#endif
+        oscr = w->x1 + j * EditVars.WindMaxWidth;
+        scr = &Scrn[oscr];
         for( i = w->x1; i <= w->x2; i++ ) {
-            if( *over++ == NO_CHAR ) {
+            if( *over++ == NO_WINDOW ) {
                 WRITE_SCREEN( *scr, *txt );
             }
             scr++;
@@ -136,7 +132,7 @@ void InactiveWindow( window_id wn )
      * change the border color
      */
     c = w->border_color1;
-    w->border_color1 = InactiveWindowColor;
+    w->border_color1 = EditVars.InactiveWindowColor;
     DrawBorder( wn );
     w->border_color1 = c;
 
@@ -192,47 +188,45 @@ void WindowTitleInactive( window_id id, char *name )
 void ClearWindow( window_id wn )
 {
     wind                *w;
-    char                *over;
+    window_id           *over;
     char_info           *txt;
     char_info           _FAR *scr;
-    int                 j, i, shift, addr;
-    char_info           what;
-#ifdef __VIO__
     unsigned            oscr;
-#endif
+    int                 j, i, shift, addr;
+    char_info           what = {0, 0};
 
     if( EditFlags.Quiet ) {
         return;
     }
     w = AccessWindow( wn );
-    shift = (int) w->has_border;
 
     /*
      * clear text area
      */
-    what.ch = ' ';
-    what.attr = MAKE_ATTR( w, w->text_color, w->background_color );
-    addr = shift * w->width + shift;
+    what.cinfo_char = ' ';
+    what.cinfo_attr = MAKE_ATTR( w, w->text_color, w->background_color );
+    shift = 0;
+    addr = 0;
+    if( w->has_border ) {
+        shift = 1;
+        addr = w->width + shift;
+    }
     for( j = w->y1 + shift; j <= w->y2 - shift; j++ ) {
-        scr = (char_info _FAR *) &Scrn[(w->x1 + shift + j * WindMaxWidth) *
-                                       sizeof( char_info )];
-#ifdef __VIO__
-        oscr = (unsigned) ((char *) scr - Scrn);
-#endif
-        txt = (char_info *) &(w->text[sizeof( char_info ) * addr]);
+        oscr = w->x1 + shift + j * EditVars.WindMaxWidth;
+        scr = &Scrn[oscr];
+        txt = &(w->text[addr]);
         over = &(w->overlap[addr]);
-        addr += w->width;
         for( i = w->x1 + shift; i <= w->x2 - shift; i++ ) {
-            if( *over++ == NO_CHAR ) {
+            WRITE_SCREEN_DATA( *txt++, what );
+            if( *over++ == NO_WINDOW ) {
                 WRITE_SCREEN( *scr, what );
             }
-            WRITE_SCREEN_DATA( *txt, what );
-            txt++;
             scr++;
         }
 #ifdef __VIO__
         MyVioShowBuf( oscr, w->width - 2 * shift ); // inside of window only
 #endif
+        addr += w->width;
     }
 
     ReleaseWindow( w );

@@ -60,11 +60,11 @@ static jmp_buf  abortAddr;
 static int      tokenBuffCnt;
 
 #define str( a ) #a
-#undef vi_pick
-#define vi_pick( a ) str( a\0 )
+
 static char     colorTokens[] = {
-#include "colors.h"
-#undef vi_pick
+    #define vi_pick( a ) str( a\0 )
+    #include "colors.h"
+    #undef vi_pick
 };
 
 #ifdef __WIN__
@@ -143,7 +143,7 @@ static token _nextToken( void )
     char        ch;
 
     tokenBuffCnt = 0;
-    while( 1 ) {
+    for( ;; ) {
         ch = nextCh;
         if( ch == 0 ) {
             nextChar();
@@ -162,7 +162,7 @@ static token _nextToken( void )
         }
         if( ch == '"' ) {
             if( tokenBuffCnt == 0 ) {
-                while( 1 ) {
+                for( ;; ) {
                     nextChar();
                     if( nextCh == '"' || nextCh == 0 ) {
                         nextChar();
@@ -358,9 +358,9 @@ static token nextToken( void )
             } else if( !strcmp( tokenBuff, "lastrc" ) ) {
                 constantVal = (long)LastRC;
             } else if( !strcmp( tokenBuff, "pagelen" ) ) {
-                constantVal = WindMaxHeight;
+                constantVal = EditVars.WindMaxHeight;
             } else if( !strcmp( tokenBuff, "endcolumn" ) ) {
-                constantVal = WindMaxWidth;
+                constantVal = EditVars.WindMaxWidth;
             } else if( !strcmp( tokenBuff, "numundos" ) ) {
                 if( UndoStack == NULL ) {
                     constantVal = 0;
@@ -380,16 +380,16 @@ static token nextToken( void )
             } else if( !strncmp( tokenBuff, "emptybuf", 8 ) ) {
                 j = tokenBuff[8];
                 constantVal = IsEmptySavebuf( j );
-            } else if( (j = Tokenize( colorTokens, tokenBuff, TRUE )) >= 0 ) {
+            } else if( (j = Tokenize( colorTokens, tokenBuff, TRUE )) != TOK_INVALID ) {
                 constantVal = j;
 #ifdef __WIN__
-            } else if( (j = Tokenize( ddeTokens, tokenBuff, TRUE )) >= 0 ) {
+            } else if( (j = Tokenize( ddeTokens, tokenBuff, TRUE )) != TOK_INVALID ) {
                 constantVal = ddeNums[j];
 #endif
             } else {
                 ReadErrorTokens();
                 j = Tokenize( ErrorTokens, tokenBuff, TRUE );
-                if( j >= 0 ) {
+                if( j != TOK_INVALID ) {
                     constantVal = ErrorValues[j];
                 } else {
                     currToken = T_STRING;
@@ -551,7 +551,6 @@ static long _NEAR cExpr7( void )
 
     value = cExpr8();
     for( ;; ) {
-
         if( currToken == T_LT ) {
             value = doCompare( value, cExpr8 ) < 0;
         } else if( currToken == T_LE ) {

@@ -68,7 +68,7 @@ static void clearSpin( void )
 {
     if( EditFlags.Spinning ) {
 #if !defined(__WIN__)
-        (*(char_info _FAR *)SpinLoc).ch = ' ';
+        SpinLoc->cinfo_char = ' ';
 #endif
 #ifdef __VIO__
         MyVioShowBuf( SpinLoc - Scrn, 1 );
@@ -87,7 +87,7 @@ static vi_key getOverrideKey( void )
     bool        mouse = FALSE;
     int         mcnt = 0;
 
-    while( 1 ) {
+    for( ;; ) {
         c = overrideKeyBuff[overrideKeyPos];
         if( overrideKeyPos == MAX_OVERRIDE_KEY_BUFF - 1 ) {
             overrideKeyPos = 0;
@@ -290,7 +290,7 @@ vi_key GetKey( bool usemouse )
     vi_key      key;
 
     clearSpin();
-    while( 1 ) {
+    for( ;; ) {
         if( EditFlags.NoCapsLock ) {
             TurnOffCapsLock();
         }

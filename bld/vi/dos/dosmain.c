@@ -42,12 +42,10 @@ void main( int argc, char *argv[] )
     argc = argc;
     EXEName = argv[0];
     InitialStack();
-    ResetBPChain();
     VarAddGlobalStr( "OS", "dos" );
     Comspec = getenv( "COMSPEC" );
     InitializeEditor();
     FinalStack();
-    ResetBPChain();
     EditMain();
     
     FiniMem();

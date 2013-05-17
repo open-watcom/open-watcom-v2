@@ -191,7 +191,7 @@ UINT FontAverageWidth( font_type f )
 UINT FontTabWidth( font_type f )
 {
     // return( Fonts[f].space_width * HardTab );
-    return( Fonts[f].avg_width * HardTab );
+    return( Fonts[f].avg_width * EditVars.HardTab );
 }
 
 UINT GetTextExtentX( HDC hdc, char *str, int cnt )

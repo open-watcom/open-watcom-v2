@@ -40,13 +40,7 @@ static regexp  *cRx;
  */
 bool FileMatch( char *name )
 {
-    int i;
-
-    i = RegExec( cRx, name, TRUE );
-    if( i ) {
-        return( TRUE );
-    }
-    return( FALSE );
+    return( RegExec( cRx, name, TRUE ) == TRUE );
 
 } /* FileMatch */
 

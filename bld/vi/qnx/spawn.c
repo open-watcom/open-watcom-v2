@@ -48,9 +48,9 @@ void ResetSpawnScreen( void )
 {
 }
 
-int MySpawn( char *cmd )
+long MySpawn( char *cmd )
 {
-    int rc;
+    long rc;
 
     KeyboardFini();
     rc = system( cmd );

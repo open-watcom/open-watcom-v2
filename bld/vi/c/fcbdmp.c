@@ -35,12 +35,12 @@
 #endif
 #include "win.h"
 
-#ifdef DBG
+#if defined( DBG )
 #include <malloc.h>
 static type_style errStyle = { 7, 0, 0 };
 #endif
 
-#ifdef DBG
+#if defined( __WATCOMC__ ) && defined( DBG )
 void HeapMsg( int msg )
 {
     switch( msg ) {
@@ -68,7 +68,7 @@ void HeapMsg( int msg )
 
 vi_rc HeapCheck( void )
 {
-#ifdef DBG
+#if defined( __WATCOMC__ ) && defined( DBG )
     int                 i;
     struct _heapinfo    hinfo;
 
@@ -79,7 +79,7 @@ vi_rc HeapCheck( void )
         return( ERR_NO_ERR );
     }
     hinfo._pentry = NULL;
-    while( 1 ) {
+    for( ;; ) {
 #if defined(__NT__) || defined(__OS2V2__)
         i = _nheapwalk( &hinfo );
 #else
@@ -100,7 +100,7 @@ vi_rc HeapCheck( void )
 
 vi_rc FcbDump( void )
 {
-#ifdef DBG
+#if defined( DBG )
     int         lc, fcbcnt = 0;
     window_id   fw;
     fcb         *cfcb;
@@ -143,7 +143,7 @@ vi_rc FcbDump( void )
 
 vi_rc FcbThreadDump( void )
 {
-#ifdef DBG
+#if defined( DBG )
     int         lc, fcbcnt = 0;
     window_id   fw;
     char        msg[80];
@@ -156,10 +156,7 @@ vi_rc FcbThreadDump( void )
         return( rc );
     }
     lc = 1;
-    cfcb = FcbThreadHead;
-
-    while( cfcb != NULL ) {
-
+    for( cfcb = FcbThreadHead; cfcb != NULL; cfcb = cfcb->thread_next ) {
         fcbcnt++;
         cfile = cfcb->f;
         if( cfcb->dead ) {
@@ -183,8 +180,6 @@ vi_rc FcbThreadDump( void )
             ClearWindow( fw );
             lc = 1;
         }
-        cfcb = cfcb->thread_next;
-
     }
 
     CloseAWindow( fw );
@@ -194,7 +189,7 @@ vi_rc FcbThreadDump( void )
 
 vi_rc SanityCheck( void )
 {
-#ifdef DBG
+#if defined( DBG )
     int         lc, tfcbcnt = 0, fcbcnt, sum;
     window_id   fw;
     fcb         *cfcb;
@@ -272,7 +267,7 @@ vi_rc SanityCheck( void )
 
 vi_rc LineInfo( void )
 {
-#ifdef DBG
+#if defined( DBG )
     fcb         *cfcb;
     int         fcbcnt = 1;
     int         bcnt;
@@ -295,7 +290,7 @@ vi_rc LineInfo( void )
  */
 vi_rc WalkUndo( void )
 {
-#ifdef DBG
+#if defined( DBG )
     int         ln = 1, i, col, fcbcnt, depth = 0;
     window_id   fw;
     linenum     lne, lcnt;
@@ -311,7 +306,7 @@ vi_rc WalkUndo( void )
 
     cundo = UndoStack->stack[UndoStack->current];
 
-    while( TRUE ) {
+    for( ;; ) {
         switch( cundo->type ) {
         case START_UNDO_GROUP:
             depth--;
@@ -364,18 +359,16 @@ vi_rc WalkUndo( void )
 
 } /* WalkUndo */
 
-#ifdef DBG
+#if defined( DBG )
 void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt )
 {
     line        *cline;
 
     *bcnt = 0;
     *lnecnt = 0;
-    cline = cfcb->line_head;
-    while( cline != NULL ) {
+    for( cline = cfcb->line_head; cline != NULL; cline = cline->next ) {
         *bcnt += cline->len + 1;
         *lnecnt += 1;
-        cline = cline->next;
     }
 
 } /* CheckFcb */
@@ -408,15 +401,15 @@ vi_rc DumpMemory( void )
     window_id   wn;
     window_info *wi;
     char        tmp[128], tmp2[128];
-#if !defined( __WIN__ ) && !defined( __386__ ) && !defined( __OS2__ ) && \
-    !defined( __UNIX__ ) && !defined( __ALPHA__ )
+#if !defined( NOXMS ) || !defined( NOEMS ) || !defined( NOXTD )
     long        mem1;
 #endif
     long        mem2;
-    vi_rc       rc;
+//    vi_rc       rc;
 
     wi = &filecw_info;
-    rc = NewWindow2( &wn, wi );
+//    rc = NewWindow2( &wn, wi );
+    NewWindow2( &wn, wi );
 #if defined(__OS2__ )
     WPrintfLine( wn, ln++, "Mem:  (unlimited) (maxStatic=%d)", maxStatic );
 #else
@@ -424,12 +417,10 @@ vi_rc DumpMemory( void )
         MaxMemFree, MaxMemFreeAfterInit, maxStatic );
 #endif
 
-    mem2 = (MaxSwapBlocks - SwapBlocksInUse) * (long) MAX_IO_BUFFER;
+    mem2 = (EditVars.MaxSwapBlocks - SwapBlocksInUse) * (long) MAX_IO_BUFFER;
     MySprintf( tmp, freeBytes, "Dsk", mem2,
-        (int) ((100L * mem2) / ((long)MaxSwapBlocks * (long)MAX_IO_BUFFER)) );
-#ifdef __386__
-    MySprintf( tmp2, "386 Flat memory addressing" );
-#else
+        (int) ((100L * mem2) / ((long)EditVars.MaxSwapBlocks * (long)MAX_IO_BUFFER)) );
+#ifdef _M_I86
 #ifndef NOXTD
     if( XMemCtrl.inuse ) {
         mem1 = XMemCtrl.amount_left - XMemCtrl.allocated * (long) MAX_IO_BUFFER;
@@ -441,7 +432,8 @@ vi_rc DumpMemory( void )
 #ifndef NOXTD
     }
 #endif
-
+#else
+    MySprintf( tmp2, "Flat memory addressing" );
 #endif
     WPrintfLine( wn, ln++, twoStr, tmp, tmp2 );
 

@@ -403,8 +403,7 @@ static void displayFiles( void )
                 MySprintf( tmp2, strFmt, dirc, DirFiles[lastFilec]->name );
                 z = j + strlen( tmp2 );
                 for( k = j; k < z; k++ ) {
-                    SetCharInWindowWithColor( dirWin, l - 1,
-                        k + 1, tmp2[k - j], &filecw_info.hilight );
+                    SetCharInWindowWithColor( dirWin, l - 1, k + 1, tmp2[k - j], &filecw_info.hilight );
                 }
                 hilite = -1;
             }

@@ -192,7 +192,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
             prompt = "?";
         }
         st[0] = prompt[0];
-        rc = PromptForString( prompt, st + 1, sizeof( st ) - 1, &FindHist );
+        rc = PromptForString( prompt, st + 1, sizeof( st ) - 1, &EditVars.FindHist );
         if( rc != ERR_NO_ERR ) {
             if( rc == NO_VALUE_ENTERED ) {
                 return( ERR_NO_ERR );
@@ -440,7 +440,7 @@ static vi_rc processFind( range *r, char *st, vi_rc (*rtn)( char *, i_mark *, in
 vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type flags )
 {
     int         len;
-    char        *linedata;
+    char        *linedata = NULL;
     i_mark      pos2;
     vi_rc       rc;
 

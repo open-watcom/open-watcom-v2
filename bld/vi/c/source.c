@@ -40,7 +40,7 @@
 
 static void     finiSource( labels *, vlist *, sfile *, undo_stack * );
 static vi_rc    initSource( vlist *, char *);
-static vi_rc    barfScript( char *, sfile *, vlist *,int *, char *);
+static vi_rc    barfScript( char *, sfile *, vlist *, unsigned *, char *);
 static void     addResidentScript( char *, sfile *, labels * );
 static resident *residentScript( char * );
 static void     finiSourceErrFile( char * );
@@ -48,7 +48,7 @@ static void     finiSourceErrFile( char * );
 /*
  * Source - main driver
  */
-vi_rc Source( char *fn, char *data, int *ln )
+vi_rc Source( char *fn, char *data, unsigned *ln )
 {
     undo_stack  *atomic = NULL;
     labels      *lab, lb;
@@ -181,7 +181,7 @@ vi_rc Source( char *fn, char *data, int *ln )
             if( curr->hasvar) {
                 Expand( tmp, &vl );
             }
-            rc = TryCompileableToken( cTokenID, tmp, FALSE, 0 );
+            rc = TryCompileableToken( cTokenID, tmp, FALSE );
             if( rc == NOT_COMPILEABLE_TOKEN ) {
                 rc = ProcessWindow( cTokenID, tmp );
             }
@@ -425,7 +425,7 @@ void SourceError( char *msg )
                 return;
             }
         }
-        MyFprintf( srcErrFile, "Error on line %d: \"%s\"\n", CurrentSrcLine, msg );
+        MyFprintf( srcErrFile, "Error on line %u: \"%s\"\n", CurrentSrcLine, msg );
     }
     SourceErrCount++;
 
@@ -461,13 +461,13 @@ static void finiSourceErrFile( char *fn )
 /*
  * barfScript - write a compiled script
  */
-static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, int *ln, char *vn )
+static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn )
 {
     sfile       *curr;
     FILE        *foo;
     char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
     char        path[FILENAME_MAX];
-    char        tmp[MAX_SRC_LINE], *tmp2;
+    char        tmp[MAX_SRC_LINE];
     int         i, k;
     vi_rc       rc;
 
@@ -491,7 +491,7 @@ static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, int *ln, char *vn )
     /*
      * process all lines
      */
-    while( TRUE ) {
+    for( ;; ) {
 
         curr = curr->next;
         if( curr == NULL ) {
@@ -548,22 +548,17 @@ static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, int *ln, char *vn )
          * process the map command
          */
         case PCL_T_MAP + SRC_T_NULL + 1:
-            if( tmp[0] == '!' ) {
-                k = MAPFLAG_DAMMIT;
-                tmp2 = &tmp[1];
+        case PCL_T_MAP_DMT + SRC_T_NULL + 1:
+            if( curr->token == PCL_T_MAP_DMT + SRC_T_NULL + 1 ) {
+                rc = MapKey( MAPFLAG_DAMMIT, tmp );
             } else {
-                k = 0;
-                tmp2 = tmp;
+                rc = MapKey( 0, tmp );
             }
-            rc = MapKey( k, tmp2 );
             if( rc != ERR_NO_ERR ) {
                 fclose( foo );
                 return( rc );
             }
-            if( k ) {
-                tmp[0] = '!';
-            }
-            strcpy( &tmp[k], WorkLine->data );
+            strcpy( tmp, WorkLine->data );
             break;
         }
 

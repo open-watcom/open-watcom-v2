@@ -33,7 +33,7 @@
 #include "vi.h"
 #include "source.h"
 
-#define isEOL(x)        ((x == CR) || (x == LF) || (x == CTLZ))
+#define isEOL(x)        ((x == CR) || (x == LF) || (x == CTRLZ))
 
 /*
  * SrcOpen - open a file

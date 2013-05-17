@@ -36,66 +36,31 @@
 #include <errno.h>
 
 static int      extraDataSize;
-static void     *extraData;
+static void     *extraData = NULL;
 
 /*
  * ReadFcbData - read fcb data
  */
-vi_rc ReadFcbData( file *f )
+vi_rc ReadFcbData( file *f, int *crlf_reached )
 {
-    int         handle;
     int         cnt, used, linecnt;
-    bool        eofflag = FALSE;
+    bool        eofflag;
     fcb         *cfcb;
     vi_rc       rc;
 
-    /*
-     * get new fcb
-     */
     f->bytes_pending = FALSE;
-    cfcb = FcbAlloc( f );
-    AddLLItemAtEnd( (ss **)&(f->fcbs.head), (ss **)&(f->fcbs.tail), (ss *)cfcb );
-
-    /*
-     * open file handle if we need to
-     */
-    if( f->handle < 0 ) {
-        ConditionalChangeDirectory( f->home );
-        if( f->is_stdio ) {
-            handle = fileno( stdin );
-        } else {
-            rc = FileOpen( f->name, FALSE, O_BINARY | O_RDONLY, 0, &handle );
-            if( rc != ERR_NO_ERR ) {
-                return( ERR_FILE_OPEN );
-            }
-        }
-        f->handle = handle;
-    } else {
-        handle = f->handle;
-    }
-    if( f->handle == -1 ) {
-        CreateNullLine( cfcb );
-        return( ERR_FILE_NOT_FOUND );
-    }
-    if( f->size == 0 && !f->is_stdio ) {
-        CreateNullLine( cfcb );
-        close( handle );
-        f->handle = -1;
-        return( END_OF_FILE );
-    }
-
     /*
      * go to appropriate location in file
      */
-    if( !f->is_stdio ) {
-        rc = FileSeek( handle, f->curr_pos );
-        if( rc != ERR_NO_ERR ) {
-            return( rc );
-        }
-    } else {
+    if( f->is_stdio ) {
         if( extraData != NULL ) {
             memcpy( ReadBuffer, extraData, extraDataSize );
-            MemFree2( &extraData );
+            MemFreePtr( &extraData );
+        }
+    } else {
+        rc = FileSeek( f->handle, f->curr_pos );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
     }
 
@@ -103,65 +68,72 @@ vi_rc ReadFcbData( file *f )
      * read file data
      */
     if( f->is_stdio ) {
-        cnt = fread( ReadBuffer + extraDataSize, 1, MAX_IO_BUFFER - extraDataSize,
-                     stdin );
+        cnt = fread( ReadBuffer + extraDataSize, 1, MAX_IO_BUFFER - extraDataSize, stdin );
         cnt += extraDataSize;
         extraDataSize = 0;
         if( ferror( stdin ) ) {
             return( ERR_READ );
         }
     } else {
-        cnt = read( handle, ReadBuffer, MAX_IO_BUFFER );
+        cnt = read( f->handle, ReadBuffer, MAX_IO_BUFFER );
         if( cnt == -1 ) {
             return( ERR_READ );
         }
     }
 
     /*
+     * get new fcb
+     */
+    cfcb = FcbAlloc( f );
+    AddLLItemAtEnd( (ss **)&(f->fcbs.head), (ss **)&(f->fcbs.tail), (ss *)cfcb );
+
+    /*
      * create lines from buffer info
      */
-    eofflag = CreateLinesFromBuffer( cnt, &cfcb->lines, &used, &linecnt, &(cfcb->byte_cnt) );
+    eofflag = CreateLinesFromFileBuffer( cnt, &cfcb->lines, &used, &linecnt, &(cfcb->byte_cnt), crlf_reached );
 
     if( used == 0 ) {
         CreateNullLine( cfcb );
-        close( handle );
-        f->handle = -1;
-        return( END_OF_FILE );
-    }
+        eofflag = TRUE;
+    } else {
 
-    /*
-     * update position and line numbers
-     */
-    f->curr_pos += used;
-    if( !f->is_stdio ) {
-        if( f->curr_pos >= f->size ) {
-            eofflag = TRUE;
-        }
-    } else {
-        if( feof( stdin ) && used >= cnt ) {
-            eofflag = TRUE;
+        /*
+         * update position
+         */
+        f->curr_pos += used;
+        if( f->fcbs.tail->prev == NULL ) {
+            cfcb->start_line = 1;
         } else {
-            extraDataSize = cnt - used;
-            extraData = MemAlloc( extraDataSize );
-            memcpy( extraData, ReadBuffer + used, extraDataSize );
+            cfcb->start_line = f->fcbs.tail->prev->end_line + 1;
         }
+        if( f->is_stdio && feof( stdin ) && used >= cnt || !f->is_stdio && f->curr_pos >= f->size ) {
+            eofflag = TRUE;
+            if( !EditFlags.LastEOL && ReadBuffer[used - 1] == LF ) {
+                ++linecnt;
+                AddLLItemAtEnd( (ss **)&(cfcb->lines.head), (ss **)&(cfcb->lines.tail), (ss *)LineAlloc( NULL, 0 ) );
+            }
+        }
+        /*
+         * update line numbers
+         */
+        cfcb->end_line = cfcb->start_line + linecnt - 1;
+        cfcb->non_swappable = FALSE;
     }
-    if( f->fcbs.tail->prev == NULL ) {
-        cfcb->start_line = 1;
-    } else {
-        cfcb->start_line = f->fcbs.tail->prev->end_line + 1;
-    }
-    cfcb->end_line = cfcb->start_line + linecnt - 1;
-    cfcb->non_swappable = FALSE;
 
     if( eofflag ) {
         if( !f->is_stdio ) {
-            close( handle );
+            close( f->handle );
+            f->handle = -1;
         }
-        f->handle = -1;
         return( END_OF_FILE );
     }
+
     f->bytes_pending = TRUE;
+    if( f->is_stdio ) {
+        extraDataSize = cnt - used;
+        extraData = MemAlloc( extraDataSize );
+        memcpy( extraData, ReadBuffer + used, extraDataSize );
+    }
     return( ERR_NO_ERR );
 
 } /* ReadFcbData */
@@ -196,7 +168,7 @@ vi_rc FindFcbWithLine( linenum lineno, file *cfile, fcb **fb )
     if( tfcb == NULL ) {
         return( ERR_NO_SUCH_LINE );
     }
-    while( TRUE ) {
+    for( ;; ) {
 
         if( tfcb->end_line >= lineno ) {
             *fb = tfcb;
@@ -217,12 +189,12 @@ vi_rc FindFcbWithLine( linenum lineno, file *cfile, fcb **fb )
             if( EditFlags.Verbose ) {
                 Message1( "At line %l", ofcb->end_line );
             }
-            if( (rc = ReadFcbData( cfile )) > 0 ) {
+            rc = ReadFcbData( cfile, NULL );
+            if( rc != ERR_NO_ERR && rc != END_OF_FILE ) {
                 return( rc );
             }
             tfcb = cfile->fcbs.tail;
         }
-
     }
 
 } /* FindFcbWithLine */
@@ -259,6 +231,40 @@ void CreateFcbData( file *f, int cnt )
 
 } /* CreateFcbData */
 
+vi_rc OpenFcbData( file *f )
+{
+    int         handle;
+    vi_rc       rc;
+    fcb         *cfcb;
+
+    /*
+     * open file handle if we need to
+     */
+    rc = ERR_NO_ERR;
+    if( !f->is_stdio ) {
+        handle = -1;
+        ConditionalChangeDirectory( f->home );
+        rc = FileOpen( f->name, FALSE, O_BINARY | O_RDONLY, 0, &handle );
+        if( rc != ERR_NO_ERR ) {
+            return( ERR_FILE_OPEN );
+        }
+        if( handle == -1 ) {
+            rc = ERR_FILE_NOT_FOUND;
+        } else if( f->size == 0 ) {
+            close( handle );
+            rc = END_OF_FILE;
+        } else {
+            f->handle = handle;
+        }
+        if( rc != ERR_NO_ERR ) {
+            cfcb = FcbAlloc( f );
+            AddLLItemAtEnd( (ss **)&(f->fcbs.head), (ss **)&(f->fcbs.tail), (ss *)cfcb );
+            CreateNullLine( cfcb );
+        }
+    }
+    return( rc );
+}
+ 
 /*
  * FcbSize - get the size (in bytes) of an fcb
  */

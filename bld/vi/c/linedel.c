@@ -63,7 +63,8 @@ vi_rc DeleteLineRange( linenum s, linenum e, linedel_flags flags )
      * check line range
      */
     UnselectRegion();
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     if( s > e ) {

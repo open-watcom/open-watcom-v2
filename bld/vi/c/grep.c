@@ -46,7 +46,7 @@
 #endif
 #include <assert.h>
 
-#define isEOL(x)        ((x == CR) || (x == LF) || (x == CTLZ))
+#define isEOL(x)        ((x == CR) || (x == LF) || (x == CTRLZ))
 
 #define MAX_DISP 60
 
@@ -140,8 +140,8 @@ static vi_rc getFile( char *fname )
     } else {
         strcpy( dir, origString );
     }
-    AddString2( &(FindHist.data[FindHist.curr % FindHist.max] ), origString );
-    FindHist.curr += 1;
+    AddString2( &(EditVars.FindHist.data[EditVars.FindHist.curr % EditVars.FindHist.max] ), origString );
+    EditVars.FindHist.curr += 1;
     ColorFind( dirptr, FINDFL_NOERROR );
     SetLastFind( origString );
     return( rc );
@@ -162,12 +162,12 @@ static int initList( window_id w, char *dirlist, char **list )
     clist = 0;
     EditFlags.WatchForBreak = TRUE;
     if( NextWord1( dirlist, dir ) <= 0 ) {
-        fileGrep( GrepDefault, list, &clist, w );
+        fileGrep( EditVars.GrepDefault, list, &clist, w );
     } else {
         do {
             if( IsDirectory( dir ) ) {
                 strcat( dir, FILE_SEP_STR );
-                strcat( dir, GrepDefault );
+                strcat( dir, EditVars.GrepDefault );
             }
             fileGrep( dir, list, &clist, w );
             if( EditFlags.BreakPressed ) {
@@ -187,11 +187,6 @@ static int initList( window_id w, char *dirlist, char **list )
     FiniGrepDialog();
 #endif
     return( clist );
-}
-
-static void finiList( int clist, char **list )
-{
-    MemFreeList( clist, list );
 }
 
 #ifdef __WIN__
@@ -259,7 +254,7 @@ static void getAllFiles( HWND dlg, char **files, int *count )
 
 } /* editFiles */
 
-BOOL WINEXP GrepListProc( HWND dlg, UINT msg, UINT wparam, LONG lparam )
+WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static char         **fileList;
     static int          fileCount;
@@ -270,7 +265,7 @@ BOOL WINEXP GrepListProc( HWND dlg, UINT msg, UINT wparam, LONG lparam )
     switch( msg ) {
     case WM_INITDIALOG:
         list_box = GetDlgItem( dlg, ID_FILE_LIST );
-        SendMessage( list_box, WM_SETFONT, (UINT)FontHandle( dirw_info.text.font ), 0L );
+        SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text.font ), 0L );
         MySprintf( tmp, "Files Containing \"%s\"", sString );
         SetWindowText( dlg, tmp );
         fileList = (char **)MemAlloc( sizeof( char * ) * MAX_FILES );
@@ -306,7 +301,7 @@ BOOL WINEXP GrepListProc( HWND dlg, UINT msg, UINT wparam, LONG lparam )
         }
         break;
     case WM_DESTROY:
-        finiList( fileCount, fileList );
+        MemFreeList( fileCount, fileList );
         break;
     }
     return( FALSE );
@@ -314,7 +309,7 @@ BOOL WINEXP GrepListProc( HWND dlg, UINT msg, UINT wparam, LONG lparam )
 } /* GrepListProc */
 
 #ifdef __NT__
-BOOL WINEXP GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static char         **fileList;
     static int          fileCount;
@@ -328,7 +323,7 @@ BOOL WINEXP GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
     switch( msg ) {
     case WM_INITDIALOG:
         list_box = GetDlgItem( dlg, ID_FILE_LIST );
-        SendMessage( list_box, WM_SETFONT, (UINT)FontHandle( dirw_info.text.font ), 0L );
+        SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text.font ), 0L );
         MySprintf( tmp, "Files Containing \"%s\"", sString );
         SetWindowText( dlg, tmp );
         rc.left = 0;
@@ -377,7 +372,7 @@ BOOL WINEXP GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
         }
         break;
     case WM_DESTROY:
-        finiList( fileCount, fileList );
+        MemFreeList( fileCount, fileList );
         break;
     }
     return( FALSE );
@@ -393,17 +388,15 @@ static vi_rc doGREP( char *dirlist )
 #ifdef __NT__
     if( LoadCommCtrl() ) {
         grep_proc = (DLGPROC)MakeProcInstance( (FARPROC)GrepListProc95, InstanceHandle );
-        rc = DialogBoxParam( InstanceHandle, "GREPLIST95", Root, grep_proc,
-                             (LONG)(LPVOID)dirlist );
+        rc = DialogBoxParam( InstanceHandle, "GREPLIST95", Root, grep_proc, (LPARAM)dirlist );
     } else {
 #endif
-        grep_proc = (DLGPROC) MakeProcInstance( (FARPROC) GrepListProc, InstanceHandle );
-        rc = DialogBoxParam( InstanceHandle, "GREPLIST", Root, grep_proc,
-                             (LONG)(LPVOID)dirlist );
+        grep_proc = (DLGPROC)MakeProcInstance( (FARPROC)GrepListProc, InstanceHandle );
+        rc = DialogBoxParam( InstanceHandle, "GREPLIST", Root, grep_proc, (LPARAM)dirlist );
 #ifdef __NT__
     }
 #endif
-    FreeProcInstance( (FARPROC) grep_proc );
+    FreeProcInstance( (FARPROC)grep_proc );
     return( rc );
 }
 #else
@@ -453,7 +446,7 @@ static vi_rc doGREP( char *dirlist )
          */
         memcpy( &tw, &dirw_info, sizeof( window_info ) );
         tw.x1 = 14;
-        tw.x2 = WindMaxWidth - 2;
+        tw.x2 = EditVars.WindMaxWidth - 2;
         i = tw.y2 - tw.y1 + 1;
         if( tw.has_border ) {
             i -= 2;
@@ -481,7 +474,7 @@ static vi_rc doGREP( char *dirlist )
         /*
          * process selections
          */
-        while( TRUE ) {
+        for( ;; ) {
 
             if( n + 1 > clist ) {
                 n = clist - 1;
@@ -529,7 +522,6 @@ static vi_rc doGREP( char *dirlist )
                 break;
             }
             MoveWindowToFrontDammit( optwin, FALSE );
-
         }
         CloseAWindow( optwin );
 
@@ -541,7 +533,7 @@ static vi_rc doGREP( char *dirlist )
     /*
      * cleanup
      */
-    finiList( clist, list );
+    MemFreeList( clist, list );
     return( rc );
 
 } /* DoFGREP */
@@ -618,7 +610,7 @@ static void fileGrep( char *dir, char **list, int *clist, window_id wn )
                     SendMessage( wn, LVM_SETITEM, 0, (LPARAM)&lvi );
                 } else {
 #endif
-                    SendMessage( wn, LB_ADDSTRING, 0, (LONG)(LPVOID)data );
+                    SendMessage( wn, LB_ADDSTRING, 0, (LPARAM)data );
                     MySprintf( data, "%X", fn );
 #ifdef __NT__
                 }
@@ -656,7 +648,7 @@ static vi_rc eSearch( char *fn, char *res )
      * read lines from the file, and search through them
      */
     buff = StaticAlloc();
-    while( fgets( buff, MaxLine, f ) != NULL ) {
+    while( fgets( buff, EditVars.MaxLine, f ) != NULL ) {
         for( i = strlen( buff ); i && isEOL( buff[i - 1] ); --i ) {
             buff[i - 1] = 0;
         }
@@ -710,7 +702,7 @@ static vi_rc fSearch( char *fn, char *r )
      * read in buffers from the file, and search through them
      */
     strloc = sString; // don't reset at start of new block - could span blocks
-    while( 1 ) {
+    for( ;; ) {
         bcnt = bytes = read( handle, buff, bytecnt );
         buffloc = buff;
         while( bytes ) {
@@ -724,7 +716,7 @@ static vi_rc fSearch( char *fn, char *r )
                     if( buffloc - strlen( sString ) < buff ) {
                         // match spans blocks - see context_display
                         res = context_display + MAX_DISP - 1;
-                        while( 1 ) {
+                        for( ;; ) {
                             if( *res == LF || res == context_display ) {
                                 if( *res == LF ) {
                                     res++;
@@ -734,7 +726,7 @@ static vi_rc fSearch( char *fn, char *r )
                             res--;
                         }
                         // copy the part of the string NOT in buff
-                        while( 1 ) {
+                        for( ;; ) {
                             if( j == MAX_DISP || *res == CR || *res == LF ||
                                 res == &context_display[MAX_DISP] ) {
                                 r[j] = 0;
@@ -746,7 +738,7 @@ static vi_rc fSearch( char *fn, char *r )
                         res = buff;
                     } else {
                         res = &buffloc[-strlen( sString )];
-                        while( 1 ) {
+                        for( ;; ) {
                             if( *res == LF || res == buff ) {
                                 if( *res == LF ) {
                                     res++;
@@ -757,7 +749,7 @@ static vi_rc fSearch( char *fn, char *r )
                         }
                     }
                     // now copy the string ( all that is in buff )
-                    while( 1 ) {
+                    for( ;; ) {
                         if( j == MAX_DISP || *res == CR || *res == LF ||
                             res == &buff[bytecnt] ) {
                             r[j] = 0;
