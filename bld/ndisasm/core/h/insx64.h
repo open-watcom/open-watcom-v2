@@ -237,7 +237,7 @@ inspick( push,          "push",         0x000030ff,     0x000038ff,     X64ModRM
 inspick( pushw,         "pushw",        0x00000000,     0x00000000,     NULL )
 //inspick( pushd,         "pushd",        0x00000000,     0x00000000,     NULL )
 inspick( push2,         "push",         0x00000050,     0x000000f8,     X64Reg_8 )
-inspick( push3,         "push",         0x00000006,     0x000000e7,     X64SReg_8 )
+//inspick( push3,         "push",         0x00000006,     0x000000e7,     X64SReg_8 )
 inspick( push4f,        "push",         0x0000a00f,     0x0000ffff,     X64SReg_16 )
 inspick( push4g,        "push",         0x0000a80f,     0x0000ffff,     X64SReg_16 )
 inspick( push5,         "push",         0x00000068,     0x000000fd,     X64Imm_8 )
@@ -332,3 +332,5 @@ inspick( xor2,          "xor",          0x00000034,     0x000000fe,     X64ImmAc
 inspick( xor3,          "xor",          0x00003080,     0x000038fc,     X64ModRMImm_16 )
 // Part of xchg
 inspick( nop,           "nop",          0x00000090,     0x00000000,     NULL )
+// Multi-byte NOP
+inspick( nop2,          "nop",          0x00001f0f,     0x0038ffff,     X64ModRM_24 )
