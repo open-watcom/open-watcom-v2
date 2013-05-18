@@ -1044,7 +1044,7 @@ void dump_tiny( unsigned first_index, unsigned last_index )
     min_char = INT_MAX;
     max_char = 0;
     for( letter = LETTER_MIN; letter <= LETTER_MAX; ++letter ) {
-        if( weights[i] != 0 ) {
+        if( weights[letter] != 0 ) {
             c = make_char( letter );
             if( c < min_char ) {
                 min_char = c;

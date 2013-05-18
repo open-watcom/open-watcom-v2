@@ -107,11 +107,11 @@ int main( int argc, char **argv )
         }
         sprintf( new_pack, "pck%05d", packnum );
         fprintf( out, "%-*s" "%-*s" "%-*s" "%-*s" "%-*s" "%s" "\n",
-                dir-n,n,
-                file-dir,dir,
-                rel_file-file,file,
-                pack_file-rel_file,rel_file,
-                cond-pack_file,new_pack,
+                (int)(dir-n), n,
+                (int)(file-dir), dir,
+                (int)(rel_file-file), file,
+                (int)(pack_file-rel_file), rel_file,
+                (int)(cond-pack_file), new_pack,
                 cond );
         strcpy( prev_cond, cond );
         strcpy( prev_dir, dir );
