@@ -220,7 +220,7 @@ static bool     buttonDown;
 static bool     hasCapture;
 static bool     doubleClickPending;
 static bool     dragPending;
-static int      timerID;
+static UINT_PTR timerID;
 static HWND     timerHwnd;
 int             MouseX, MouseY;
 

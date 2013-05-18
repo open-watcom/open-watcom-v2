@@ -34,7 +34,7 @@
 #include "window.h"
 #include "win.h"
 
-#ifdef __NT__
+#if defined( __WATCOMC__ ) && defined( __NT__ )
     #pragma library( "shell32" )
 #endif
 
@@ -210,8 +210,8 @@ void ResizeRoot( void )
 
 } /* ResizeRoot */
 
-#define TIMER_ID        0x02
-static int      timerID;
+#define TIMER_ID    0x02
+static UINT_PTR     timerID;
 
 /*
  * MainWindowProc - procedure for main (root) window
