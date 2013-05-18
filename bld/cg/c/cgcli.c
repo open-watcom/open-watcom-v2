@@ -53,7 +53,7 @@
 #include "cgprotos.h"
 #include "feprotos.h"
 
-#if defined( __NT__ ) && defined( __386__ )
+#if defined( __NT__ ) && defined( _M_IX86 )
 #define BEDLLINIT   "_BEDLLInit@4"
 #define BEDLLFINI   "_BEDLLFini@4"
 #else
