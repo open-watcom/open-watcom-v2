@@ -35,7 +35,7 @@
 /*
  * language tokens
  */
-char _NEAR ExTokens[] = {
+char _NEAR TokensEx[] = {
     #define PICK(a,b) a
     #include "excmds.h"
     #undef PICK

@@ -105,7 +105,7 @@ static void doWindow( FILE *f, int id, window_info *wi, bool colour_only )
 {
     char        token[64];
 
-    MyFprintf( f, "%s\n", GetTokenStringCVT( ParseClTokens, id, token, TRUE ) );
+    MyFprintf( f, "%s\n", GetTokenStringCVT( TokensCmdLine, id, token, TRUE ) );
     if( !colour_only ) {
         MyFprintf( f, "    dimension %d %d %d %d\n", wi->x1, wi->y1,
                    wi->x2, wi->y2 );
@@ -241,14 +241,14 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
     doHookAssign( f, SRC_HOOK_MOUSE_CHARSEL );
 
     writeTitle( f, "General Settings" );
-    num = GetNumberOfTokens( SetTokens1 );
+    num = GetNumberOfTokens( TokensSetVar );
     for( i = 0; i < num; i++ ) {
-        if( i == SET1_T_TILECOLOR || i == SET1_T_FIGNORE || i == SET1_T_FILENAME ) {
+        if( i == SETVAR_T_TILECOLOR || i == SETVAR_T_FIGNORE || i == SETVAR_T_FILENAME ) {
             continue;
         }
-        res = GetASetVal( GetTokenStringCVT( SetTokens1, i, token, TRUE ) );
-        if( i == SET1_T_STATUSSTRING || i == SET1_T_FILEENDSTRING ||
-            i == SET1_T_HISTORYFILE || i == SET1_T_TMPDIR ) {    /* strings with possible spaces */
+        res = GetASetVal( GetTokenStringCVT( TokensSetVar, i, token, TRUE ) );
+        if( i == SETVAR_T_STATUSSTRING || i == SETVAR_T_FILEENDSTRING ||
+            i == SETVAR_T_HISTORYFILE || i == SETVAR_T_TMPDIR ) {    /* strings with possible spaces */
             fmt = "set %s = \"%s\"\n";
         } else {
             fmt = "set %s = %s\n";
@@ -257,9 +257,9 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
     }
 
     writeTitle( f, "Boolean Settings" );
-    num = GetNumberOfTokens( SetTokens2 );
+    num = GetNumberOfTokens( TokensSetFlag );
     for( i = 0; i < num; i++ ) {
-        str = GetASetVal( GetTokenStringCVT( SetTokens2, i, token, TRUE ) );
+        str = GetASetVal( GetTokenStringCVT( TokensSetFlag, i, token, TRUE ) );
         boolstr[0] = 0;
         if( str[0] == '0' ) {
             boolstr[0] = 'n';

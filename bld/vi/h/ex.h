@@ -45,7 +45,7 @@ enum {
 /*
  * external defs (from exdata.c)
  */
-extern char _NEAR ExTokens[];
+extern char _NEAR TokensEx[];
 
 /*
  * function prototypes

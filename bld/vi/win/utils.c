@@ -682,7 +682,7 @@ void UpdateBoolSetting( HWND hwnd, int token, int id, bool oldval )
         ptr = result;
     }
 
-    str = GetTokenString( SetTokens2, token );
+    str = GetTokenString( TokensSetFlag, token );
     strcpy( ptr, str );
     Set( result );
 
@@ -696,7 +696,7 @@ void DoStrSet( char *value, int token )
     char        result[MAX_STR];
     char        *str;
 
-    str = GetTokenString( SetTokens1, token );
+    str = GetTokenString( TokensSetVar, token );
     strcpy( result, str );
     strcat( result, " " );
     strcat( result, value );

@@ -434,7 +434,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             }
 #endif
             if( !AppendingFlag ) {
-                token = Tokenize( ParseClTokens, tmp2, TRUE );
+                token = Tokenize( TokensCmdLine, tmp2, TRUE );
             } else {
                 token = TOK_INVALID;
             }
@@ -533,10 +533,10 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                      * it isn't, then see if the next one is
                      * (i.e., look for <n> append)
                      */
-                    token = Tokenize( ExTokens, tmp2, FALSE );
+                    token = Tokenize( TokensEx, tmp2, FALSE );
                     if( token == TOK_INVALID ) {
                         if( NextWord1( tmp, tmp2 ) >= 0 ) {
-                            token = Tokenize( ExTokens, tmp2, FALSE );
+                            token = Tokenize( TokensEx, tmp2, FALSE );
                             if( token == EX_T_APPEND ) {
                                 AppendingFlag = TRUE;
                             }

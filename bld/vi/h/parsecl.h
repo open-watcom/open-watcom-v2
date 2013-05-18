@@ -50,14 +50,14 @@ enum {
     #define PICK( a,b,c,d,e,f ) f,
     #include "setnb.h"
     #undef PICK
-    SET1_T_
+    SETVAR_T_
 };
 
 enum {
     #define PICK( a,b,c,d,e ) e,
     #include "setb.h"
     #undef PICK
-    SET2_T_
+    SETFLAG_T_
 };
 
 #endif

@@ -169,9 +169,9 @@ vi_rc ParseCommandLine( char *buff, linenum *n1, bool *n1flag, linenum *n2, bool
         }
     }
 
-    j = Tokenize( ParseClTokens, tres, FALSE );
+    j = Tokenize( TokensCmdLine, tres, FALSE );
     if( j == TOK_INVALID ) {
-        j = Tokenize( ExTokens, tres, FALSE );
+        j = Tokenize( TokensEx, tres, FALSE );
         if( j != TOK_INVALID ) {
             j += 1000;
         }

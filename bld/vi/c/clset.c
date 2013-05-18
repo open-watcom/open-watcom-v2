@@ -82,7 +82,7 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
         }
     } else {
         switch( token ) {
-        case SET1_T_STATUSSECTIONS:
+        case SETVAR_T_STATUSSECTIONS:
             str = tmpstr;
             *str = 0;
             for( i = 0; i < EditVars.NumStatusSections; i++ ) {
@@ -92,16 +92,16 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
                 strcat( str, " " );
             }
             break;
-        case SET1_T_FILEENDSTRING:
+        case SETVAR_T_FILEENDSTRING:
             str = EditVars.FileEndString;
             break;
-        case SET1_T_STATUSSTRING:
+        case SETVAR_T_STATUSSTRING:
             str = EditVars.StatusString;
             break;
-        case SET1_T_TILECOLOR:
+        case SETVAR_T_TILECOLOR:
             str = tmpstr;
             break;
-        case SET1_T_FIGNORE:
+        case SETVAR_T_FIGNORE:
             fign = EditVars.FIgnore;
             str = tmpstr;
             for( j = 0; j < EditVars.CurrFIgnore; j++ ) {
@@ -109,46 +109,46 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
                 fign += EXTENSION_LENGTH;
             }
             break;
-        case SET1_T_GADGETSTRING:
+        case SETVAR_T_GADGETSTRING:
             str = EditVars.GadgetString;
             break;
-        case SET1_T_SHELLPROMPT:
+        case SETVAR_T_SHELLPROMPT:
             str = EditVars.SpawnPrompt;
             break;
-        case SET1_T_GREPDEFAULT:
+        case SETVAR_T_GREPDEFAULT:
             str = EditVars.GrepDefault;
             break;
-        case SET1_T_TMPDIR:
+        case SETVAR_T_TMPDIR:
             str = EditVars.TmpDir;
             break;
-        case SET1_T_WORD:
+        case SETVAR_T_WORD:
             str = EditVars.WordDefn;
             break;
-        case SET1_T_WORDALT:
+        case SETVAR_T_WORDALT:
             str = EditVars.WordAltDefn;
             break;
-        case SET1_T_FILENAME:
+        case SETVAR_T_FILENAME:
             if( CurrentFile == NULL ) {
                 str = "";
             } else {
                 str = CurrentFile->name;
             }
             break;
-        case SET1_T_HISTORYFILE:
+        case SETVAR_T_HISTORYFILE:
             str = EditVars.HistoryFile;
             break;
-        case SET1_T_TAGFILENAME:
+        case SETVAR_T_TAGFILENAME:
             str = EditVars.TagFileName;
             break;
-        case SET1_T_MAGICSTRING:
+        case SETVAR_T_MAGICSTRING:
             str = EditVars.Majick;
             break;
-        case SET1_T_COMMANDCURSORTYPE:
-        case SET1_T_OVERSTRIKECURSORTYPE:
-        case SET1_T_INSERTCURSORTYPE:
-            if( token == SET1_T_COMMANDCURSORTYPE ) {
+        case SETVAR_T_COMMANDCURSORTYPE:
+        case SETVAR_T_OVERSTRIKECURSORTYPE:
+        case SETVAR_T_INSERTCURSORTYPE:
+            if( token == SETVAR_T_COMMANDCURSORTYPE ) {
                 ct = EditVars.NormalCursorType;
-            } else if( token == SET1_T_OVERSTRIKECURSORTYPE ) {
+            } else if( token == SETVAR_T_OVERSTRIKECURSORTYPE ) {
                 ct = EditVars.OverstrikeCursorType;
             } else {
                 ct = EditVars.InsertCursorType;
@@ -159,132 +159,132 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
         default:
             j = 0;
             switch( token ) {
-            case SET1_T_WRAPMARGIN:
+            case SETVAR_T_WRAPMARGIN:
                 j = EditVars.WrapMargin;
                 break;
-            case SET1_T_CURSORBLINKRATE:
+            case SETVAR_T_CURSORBLINKRATE:
                 j = EditVars.CursorBlinkRate;
                 break;
-            case SET1_T_MAXPUSH:
+            case SETVAR_T_MAXPUSH:
                 j = EditVars.MaxPush;
                 break;
-            case SET1_T_RADIX:
+            case SETVAR_T_RADIX:
                 j = EditVars.Radix;
                 break;
-            case SET1_T_AUTOSAVEINTERVAL:
+            case SETVAR_T_AUTOSAVEINTERVAL:
                 j = EditVars.AutoSaveInterval;
                 break;
-            case SET1_T_LANGUAGE:
+            case SETVAR_T_LANGUAGE:
                 if( CurrentInfo == NULL ) {
                     j = LANG_NONE;
                 } else {
                     j = CurrentInfo->fsi.Language;
                 }
                 break;
-            case SET1_T_MOUSEDCLICKSPEED:
+            case SETVAR_T_MOUSEDCLICKSPEED:
                 j = EditVars.MouseDoubleClickSpeed;
                 break;
-            case SET1_T_MOUSESPEED:
+            case SETVAR_T_MOUSESPEED:
                 j = EditVars.MouseSpeed;
                 break;
-            case SET1_T_MOUSEREPEATDELAY:
+            case SETVAR_T_MOUSEREPEATDELAY:
                 j = EditVars.MouseRepeatDelay;
                 break;
-            case SET1_T_CURRENTSTATUSCOLUMN:
+            case SETVAR_T_CURRENTSTATUSCOLUMN:
                 j = EditVars.CurrentStatusColumn;
                 break;
-            case SET1_T_ENDOFLINECHAR:
+            case SETVAR_T_ENDOFLINECHAR:
                 j = EditVars.EndOfLineChar;
                 break;
-            case SET1_T_EXITATTR:
+            case SETVAR_T_EXITATTR:
                 j = EditVars.ExitAttr;
                 break;
-            case SET1_T_MAXSWAPK:
+            case SETVAR_T_MAXSWAPK:
                 j = EditVars.MaxSwapBlocks;
                 j *= (MAX_IO_BUFFER / 1024);
                 break;
-            case SET1_T_MAXEMSK:
+            case SETVAR_T_MAXEMSK:
 #ifndef NOEMS
                 j = EditVars.MaxEMSBlocks;
                 j *= (MAX_IO_BUFFER / 1024);
 #endif
                 break;
-            case SET1_T_MAXXMSK:
+            case SETVAR_T_MAXXMSK:
 #ifndef NOXMS
                 j = EditVars.MaxXMSBlocks;
                 j *= (MAX_IO_BUFFER / 1024);
 #endif
                 break;
-            case SET1_T_RESIZECOLOR:
+            case SETVAR_T_RESIZECOLOR:
                 j = EditVars.ResizeColor;
                 break;
-            case SET1_T_MOVECOLOR:
+            case SETVAR_T_MOVECOLOR:
                 j = EditVars.MoveColor;
                 break;
-            case SET1_T_INACTIVEWINDOWCOLOR:
+            case SETVAR_T_INACTIVEWINDOWCOLOR:
                 j = EditVars.InactiveWindowColor;
                 break;
-            case SET1_T_MAXTILECOLORS:
+            case SETVAR_T_MAXTILECOLORS:
                 j = EditVars.MaxTileColors;
                 break;
-            case SET1_T_MAXWINDOWTILEX:
+            case SETVAR_T_MAXWINDOWTILEX:
                 j = EditVars.MaxWindowTileX;
                 break;
-            case SET1_T_MAXWINDOWTILEY:
+            case SETVAR_T_MAXWINDOWTILEY:
                 j = EditVars.MaxWindowTileY;
                 break;
-            case SET1_T_HARDTAB:
+            case SETVAR_T_HARDTAB:
                 j = EditVars.HardTab;
                 break;
-            case SET1_T_TABAMOUNT:
+            case SETVAR_T_TABAMOUNT:
                 j = EditVars.TabAmount;
                 break;
-            case SET1_T_SHIFTWIDTH:
+            case SETVAR_T_SHIFTWIDTH:
                 j = EditVars.ShiftWidth;
                 break;
-            case SET1_T_STACKK:
+            case SETVAR_T_STACKK:
                 j = EditVars.StackK;
                 break;
-            case SET1_T_LINENUMWINWIDTH:
+            case SETVAR_T_LINENUMWINWIDTH:
                 j = EditVars.LineNumWinWidth;
                 break;
-            case SET1_T_CLOCKX:
+            case SETVAR_T_CLOCKX:
                 j = EditVars.ClockX;
                 break;
-            case SET1_T_CLOCKY:
+            case SETVAR_T_CLOCKY:
                 j = EditVars.ClockY;
                 break;
-            case SET1_T_SPINX:
+            case SETVAR_T_SPINX:
                 j = EditVars.SpinX;
                 break;
-            case SET1_T_SPINY:
+            case SETVAR_T_SPINY:
                 j = EditVars.SpinY;
                 break;
-            case SET1_T_MAXCLHISTORY:
+            case SETVAR_T_MAXCLHISTORY:
                 j = EditVars.CLHist.max;
                 break;
-            case SET1_T_MAXFILTERHISTORY:
+            case SETVAR_T_MAXFILTERHISTORY:
                 j = EditVars.FilterHist.max;
                 break;
-            case SET1_T_MAXFINDHISTORY:
+            case SETVAR_T_MAXFINDHISTORY:
                 j = EditVars.FindHist.max;
                 break;
-            case SET1_T_MAXLASTFILESHISTORY:
+            case SETVAR_T_MAXLASTFILESHISTORY:
                 j = EditVars.LastFilesHist.max;
                 break;
-            case SET1_T_MAXLINELEN:
+            case SETVAR_T_MAXLINELEN:
                 j = EditVars.MaxLine;
                 break;
-            case SET1_T_PAGELINESEXPOSED:
+            case SETVAR_T_PAGELINESEXPOSED:
                 j = EditVars.PageLinesExposed;
                 break;
-            case SET1_T_TOOLBARBUTTONHEIGHT:
+            case SETVAR_T_TOOLBARBUTTONHEIGHT:
                 j = EditVars.ToolBarButtonHeight;
                 break;
-            case SET1_T_TOOLBARBUTTONWIDTH:
+            case SETVAR_T_TOOLBARBUTTONWIDTH:
                 j = EditVars.ToolBarButtonWidth;
                 break;
-            case SET1_T_TOOLBARCOLOR:
+            case SETVAR_T_TOOLBARCOLOR:
                 j = EditVars.ToolBarColor;
                 break;
             }
@@ -349,7 +349,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
     vi_rc       rc = ERR_NO_ERR;
     int         clr;
     bool        newset;
-    bool        set1, toggle, *ptr;
+    bool        set_bool_flag, toggle, *ptr;
     jmp_buf     jmpaddr;
     cursor_type ct;
     char        *name;
@@ -376,11 +376,11 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
 #ifndef VICOMP
     if( !(*winflag) ) {
         toggle = TRUE;
-        set1 = isnonbool;
+        set_bool_flag = !isnonbool;
     } else {
         toggle = FALSE;
 #endif
-        if( j >= SET1_T_ ) {
+        if( j >= SETVAR_T_ ) {
 #ifndef VICOMP
             if( EditFlags.CompileScript ) {
 #endif
@@ -392,10 +392,10 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 return( ERR_NO_ERR );
 #ifndef VICOMP
             }
-            set1 = FALSE;
-            j -= SET1_T_;
+            set_bool_flag = TRUE;
+            j -= SETVAR_T_;
         } else {
-            set1 = TRUE;
+            set_bool_flag = FALSE;
 #endif
         }
 #ifndef VICOMP
@@ -405,8 +405,8 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
     /*
      * process boolean settings
      */
-    if( !set1 ) {
-        if( j >= SET2_T_ ) {
+    if( set_bool_flag ) {
+        if( j >= SETFLAG_T_ ) {
             return( ERR_INVALID_SET_COMMAND );
         }
         ptr = &(((bool *)&EditFlags)[j]);
@@ -415,7 +415,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
             newset = !(*ptr);
         }
         switch( j ) {
-        case SET2_T_MODELESS:
+        case SETFLAG_T_MODELESS:
             if( (newset && !EditFlags.Modeless) ||
                 (!newset && EditFlags.Modeless) ) {
                 for( k = 0; k < MAX_EVENTS; k++ ) {
@@ -446,40 +446,40 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
             }
             EditFlags.Modeless = newset;
             break;
-        case SET2_T_UNDO:
+        case SETFLAG_T_UNDO:
             if( EditFlags.Undo && !newset ) {
                 FreeAllUndos();
             }
             EditFlags.Undo = newset;
             break;
-        case SET2_T_STATUSINFO:
+        case SETFLAG_T_STATUSINFO:
             EditFlags.StatusInfo = newset;
 #ifdef __WIN__
             ResizeRoot();
 #endif
             rc = NewStatusWindow();
             break;
-        case SET2_T_WINDOWGADGETS:
+        case SETFLAG_T_WINDOWGADGETS:
             EditFlags.WindowGadgets = newset;
             ResetAllWindows();
             *winflag = TRUE;
             redisplay = TRUE;
             break;
-        case SET2_T_REALTABS:
+        case SETFLAG_T_REALTABS:
             EditFlags.RealTabs = newset;
             redisplay = TRUE;
             break;
-        case SET2_T_CLOCK:
+        case SETFLAG_T_CLOCK:
             EditFlags.Clock = newset;
             redisplay = TRUE;
             break;
-        case SET2_T_TOOLBAR:
+        case SETFLAG_T_TOOLBAR:
             EditFlags.Toolbar = newset;
 #ifdef __WIN__
             ResizeRoot();
 #endif
             break;
-        case SET2_T_COLORBAR:
+        case SETFLAG_T_COLORBAR:
             EditFlags.Colorbar = newset;
 #ifdef __WIN__
             if( Root == NULL ) {
@@ -489,7 +489,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
             }
 #endif
             break;
-        case SET2_T_SSBAR:
+        case SETFLAG_T_SSBAR:
             EditFlags.SSbar = newset;
 #ifdef __WIN__
             if( Root == NULL ) {
@@ -499,7 +499,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
             }
 #endif
             break;
-        case SET2_T_FONTBAR:
+        case SETFLAG_T_FONTBAR:
             EditFlags.Fontbar = newset;
 #ifdef __WIN__
             if( Root == NULL ) {
@@ -509,14 +509,14 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
             }
 #endif
             break;
-        case SET2_T_MARKLONGLINES:
+        case SETFLAG_T_MARKLONGLINES:
             EditFlags.MarkLongLines = newset;
             break;
-        case SET2_T_MENUS:
+        case SETFLAG_T_MENUS:
             EditFlags.Menus = newset;
             InitMenu();
             break;
-        case SET2_T_LINENUMBERS:
+        case SETFLAG_T_LINENUMBERS:
             if( toggle ) {
                 newset = !EditFlags.LineNumbers;
             }
@@ -526,19 +526,19 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 *winflag = TRUE;
             }
             break;
-        case SET2_T_CURRENTSTATUS:
+        case SETFLAG_T_CURRENTSTATUS:
             EditFlags.CurrentStatus = newset;
             InitMenu();
             break;
-        case SET2_T_DISPLAYSECONDS:
+        case SETFLAG_T_DISPLAYSECONDS:
             EditFlags.DisplaySeconds = newset;
             redisplay = TRUE;
             break;
-        case SET2_T_PPKEYWORDONLY:
+        case SETFLAG_T_PPKEYWORDONLY:
             EditFlags.PPKeywordOnly = newset;
             redisplay = TRUE;
             break;
-        case SET2_T_LASTEOL:
+        case SETFLAG_T_LASTEOL:
 #ifndef __WIN__
             *ptr = TRUE;
             toggle = FALSE;
@@ -556,7 +556,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
             } else {
                 tmp[0] = 0;
             }
-            MySprintf( fn, "%s%s set", tmp, GetTokenStringCVT( SetTokens2, j, settokstr, TRUE ) );
+            MySprintf( fn, "%s%s set", tmp, GetTokenStringCVT( TokensSetFlag, j, settokstr, TRUE ) );
         }
         if( toggle ) {
             strcpy( save, BoolStr[(int) newset] );
@@ -615,23 +615,23 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
             if( fn[0] == '\0' )
                 return( ERR_NO_ERR );
             switch( j ) {
-            case SET1_T_STATUSSTRING:
-            case SET1_T_FILEENDSTRING:
-            case SET1_T_HISTORYFILE:
-            case SET1_T_TMPDIR:
-            case SET1_T_TAGFILENAME:
+            case SETVAR_T_STATUSSTRING:
+            case SETVAR_T_FILEENDSTRING:
+            case SETVAR_T_HISTORYFILE:
+            case SETVAR_T_TMPDIR:
+            case SETVAR_T_TAGFILENAME:
                 StrMerge( 4, WorkLine->data, SingleBlank, SingleQuote, fn, SingleQuote );
                 break;
-            case SET1_T_COMMANDCURSORTYPE:
-            case SET1_T_OVERSTRIKECURSORTYPE:
-            case SET1_T_INSERTCURSORTYPE:
+            case SETVAR_T_COMMANDCURSORTYPE:
+            case SETVAR_T_OVERSTRIKECURSORTYPE:
+            case SETVAR_T_INSERTCURSORTYPE:
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
                 if( NextWord1( value, fn ) <= 0 ) {
                     break;
                 }
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
                 break;
-            case SET1_T_TILECOLOR:
+            case SETVAR_T_TILECOLOR:
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
                 if( NextWord1( value, fn ) <= 0 ) {
                     return( ERR_INVALID_SET_COMMAND );
@@ -641,7 +641,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 }
                 StrMerge( 4, WorkLine->data, fn, SingleBlank, str, SingleBlank );
                 break;
-            case SET1_T_STATUSSECTIONS:
+            case SETVAR_T_STATUSSECTIONS:
                 StrMerge( 2, WorkLine->data, SingleBlank, fn );
                 while( NextWord1( value, fn ) > 0 ) {
 #ifdef VICOMP
@@ -662,7 +662,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
 #ifndef VICOMP
         }
         switch( j ) {
-        case SET1_T_STATUSSECTIONS:
+        case SETVAR_T_STATUSSECTIONS:
             if( EditVars.StatusSections != NULL ) {
                 MemFree( EditVars.StatusSections );
                 EditVars.StatusSections = NULL;
@@ -686,12 +686,12 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 MySprintf( fn, "statussections set" );
             }
             break;
-        case SET1_T_FILEENDSTRING:
+        case SETVAR_T_FILEENDSTRING:
             AddString2( &EditVars.FileEndString, fn );
             ResetAllWindows();
             redisplay = TRUE;
             break;
-        case SET1_T_STATUSSTRING:
+        case SETVAR_T_STATUSSTRING:
             AddString2( &EditVars.StatusString, fn );
             if( StatusWindow != NO_WINDOW ) {
                 ClearWindow( StatusWindow );
@@ -701,10 +701,10 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 MySprintf( fn, "statusstring set to %s", EditVars.StatusString );
             }
             break;
-        case SET1_T_GREPDEFAULT:
+        case SETVAR_T_GREPDEFAULT:
             AddString2( &EditVars.GrepDefault, fn );
             break;
-        case SET1_T_TILECOLOR:
+        case SETVAR_T_TILECOLOR:
             if( EditVars.TileColors == NULL ) {
                 EditVars.TileColors = (type_style *) MemAlloc( sizeof( type_style ) * ( EditVars.MaxTileColors + 1 ) );
                 for( i = 0; i <= EditVars.MaxTileColors; ++i ) {
@@ -730,20 +730,20 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 MySprintf( fn, "tilecolor %d set", clr );
             }
             break;
-        case SET1_T_GADGETSTRING:
+        case SETVAR_T_GADGETSTRING:
             SetGadgetString( fn );
             if( msgFlag ) {
                 MySprintf( fn, "gadget string set to %s", EditVars.GadgetString );
             }
             ResetAllWindows();
             break;
-        case SET1_T_SHELLPROMPT:
+        case SETVAR_T_SHELLPROMPT:
             AddString2( &EditVars.SpawnPrompt, fn );
             if( msgFlag ) {
                 MySprintf( fn, "prompt string set to %s", EditVars.SpawnPrompt );
             }
             break;
-        case SET1_T_FIGNORE:
+        case SETVAR_T_FIGNORE:
             if( fn[0] == 0 ) {
                 MemFreePtr( (void **)&EditVars.FIgnore );
                 EditVars.CurrFIgnore = 0;
@@ -763,21 +763,21 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 }
             }
             break;
-        case SET1_T_HISTORYFILE:
+        case SETVAR_T_HISTORYFILE:
             AddString2( &EditVars.HistoryFile, fn );
             if( msgFlag ) {
                 MySprintf( fn, "history file set to %s", EditVars.HistoryFile );
             }
             break;
 
-        case SET1_T_TAGFILENAME:
+        case SETVAR_T_TAGFILENAME:
             AddString2( &EditVars.TagFileName, fn );
             if( msgFlag ) {
                 MySprintf( fn, "tag file name set to %s", EditVars.TagFileName );
             }
             break;
 
-        case SET1_T_FILENAME:
+        case SETVAR_T_FILENAME:
             if( CurrentFile != NULL ) {
                 AddString2( &(CurrentFile->name), fn );
                 SetFileWindowTitle( CurrentWindow, CurrentInfo, TRUE );
@@ -787,35 +787,35 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 FileSPVAR();
             }
             break;
-        case SET1_T_TMPDIR:
+        case SETVAR_T_TMPDIR:
             AddString2( &EditVars.TmpDir, fn );
             VerifyTmpDir();
             if( msgFlag ) {
                 MySprintf( fn, "tmpdir set to %s", EditVars.TmpDir );
             }
             break;
-        case SET1_T_WORD:
+        case SETVAR_T_WORD:
             AddString2( &EditVars.WordDefn, fn );
             InitWordSearch( EditVars.WordDefn );
             if( msgFlag ) {
                 MySprintf( fn, "word set to %s", EditVars.WordDefn );
             }
             break;
-        case SET1_T_WORDALT:
+        case SETVAR_T_WORDALT:
             AddString2( &EditVars.WordAltDefn, fn );
             if( msgFlag ) {
                 MySprintf( fn, "wordalt set to %s", EditVars.WordAltDefn );
             }
             break;
-        case SET1_T_MAGICSTRING:
+        case SETVAR_T_MAGICSTRING:
             AddString2( &EditVars.Majick, fn );
             if( msgFlag ) {
                 MySprintf( fn, "magicstring set to %s", EditVars.Majick );
             }
             break;
-        case SET1_T_COMMANDCURSORTYPE:
-        case SET1_T_OVERSTRIKECURSORTYPE:
-        case SET1_T_INSERTCURSORTYPE:
+        case SETVAR_T_COMMANDCURSORTYPE:
+        case SETVAR_T_OVERSTRIKECURSORTYPE:
+        case SETVAR_T_INSERTCURSORTYPE:
             i = setjmp( jmpaddr );
             if( i != 0 ) {
                 return( ERR_INVALID_SET_COMMAND );
@@ -832,10 +832,10 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 StartExprParse( fn, jmpaddr );
                 ct.width = GetConstExpr();
             }
-            if( j == SET1_T_COMMANDCURSORTYPE ) {
+            if( j == SETVAR_T_COMMANDCURSORTYPE ) {
                 EditVars.NormalCursorType = ct;
                 name = "command";
-            } else if( j == SET1_T_OVERSTRIKECURSORTYPE ) {
+            } else if( j == SETVAR_T_OVERSTRIKECURSORTYPE ) {
                 EditVars.OverstrikeCursorType = ct;
                 name = "overstrike";
             } else {
@@ -858,27 +858,27 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 i = 0;
             }
             switch( j ) {
-            case SET1_T_WRAPMARGIN:
+            case SETVAR_T_WRAPMARGIN:
                 EditVars.WrapMargin = i;
                 break;
-            case SET1_T_CURSORBLINKRATE:
+            case SETVAR_T_CURSORBLINKRATE:
                 SetCursorBlinkRate( i );
                 break;
-            case SET1_T_MAXPUSH:
+            case SETVAR_T_MAXPUSH:
                 EditVars.MaxPush = i;
                 if( EditVars.MaxPush < 1 ) {
                     EditVars.MaxPush = 1;
                 }
                 InitFileStack();
                 break;
-            case SET1_T_RADIX:
+            case SETVAR_T_RADIX:
                 EditVars.Radix = i;
                 break;
-            case SET1_T_AUTOSAVEINTERVAL:
+            case SETVAR_T_AUTOSAVEINTERVAL:
                 EditVars.AutoSaveInterval = i;
                 SetNextAutoSaveTime();
                 break;
-            case SET1_T_LANGUAGE:
+            case SETVAR_T_LANGUAGE:
                 if( i < LANG_NONE || i >= LANG_MAX ) {
                     return( ERR_INVALID_SET_COMMAND );
                 }
@@ -888,87 +888,87 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                     redisplay = TRUE;
                 }
                 break;
-            case SET1_T_MOVECOLOR:
+            case SETVAR_T_MOVECOLOR:
                 EditVars.MoveColor = i;
                 break;
-            case SET1_T_RESIZECOLOR:
+            case SETVAR_T_RESIZECOLOR:
                 EditVars.ResizeColor = i;
                 break;
-            case SET1_T_MOUSEDCLICKSPEED:
+            case SETVAR_T_MOUSEDCLICKSPEED:
                 EditVars.MouseDoubleClickSpeed = i;
                 break;
-            case SET1_T_MOUSESPEED:
+            case SETVAR_T_MOUSESPEED:
                 SetMouseSpeed( i );
                 break;
-            case SET1_T_MOUSEREPEATDELAY:
+            case SETVAR_T_MOUSEREPEATDELAY:
                 EditVars.MouseRepeatDelay = i;
                 break;
-            case SET1_T_CURRENTSTATUSCOLUMN:
+            case SETVAR_T_CURRENTSTATUSCOLUMN:
                 EditVars.CurrentStatusColumn = i;
                 InitMenu();
                 break;
-            case SET1_T_ENDOFLINECHAR:
+            case SETVAR_T_ENDOFLINECHAR:
                 EditVars.EndOfLineChar = (unsigned char)i;
                 break;
-            case SET1_T_EXITATTR:
+            case SETVAR_T_EXITATTR:
                 EditVars.ExitAttr = (viattr_t)i;
                 break;
-            case SET1_T_INACTIVEWINDOWCOLOR:
+            case SETVAR_T_INACTIVEWINDOWCOLOR:
                 EditVars.InactiveWindowColor = i;
                 break;
-            case SET1_T_TABAMOUNT:
+            case SETVAR_T_TABAMOUNT:
                 EditVars.TabAmount = i;
                 break;
-            case SET1_T_SHIFTWIDTH:
+            case SETVAR_T_SHIFTWIDTH:
                 EditVars.ShiftWidth = i;
                 break;
-            case SET1_T_PAGELINESEXPOSED:
+            case SETVAR_T_PAGELINESEXPOSED:
                 EditVars.PageLinesExposed = i;
                 break;
-            case SET1_T_HARDTAB:
+            case SETVAR_T_HARDTAB:
                 EditVars.HardTab = i;
                 redisplay = TRUE;
                 break;
-            case SET1_T_STACKK:
+            case SETVAR_T_STACKK:
                 if( EditFlags.Starting ) {
                     EditVars.StackK = i;
                 }
                 break;
-            case SET1_T_LINENUMWINWIDTH:
+            case SETVAR_T_LINENUMWINWIDTH:
                 EditVars.LineNumWinWidth = i;
                 break;
-            case SET1_T_MAXWINDOWTILEX:
+            case SETVAR_T_MAXWINDOWTILEX:
                 EditVars.MaxWindowTileX = i;
                 break;
-            case SET1_T_MAXWINDOWTILEY:
+            case SETVAR_T_MAXWINDOWTILEY:
                 EditVars.MaxWindowTileY = i;
                 break;
-            case SET1_T_MAXSWAPK:
+            case SETVAR_T_MAXSWAPK:
                 SwapBlockInit( i );
                 break;
-            case SET1_T_MAXEMSK:
+            case SETVAR_T_MAXEMSK:
 #ifndef NOEMS
                 EMSBlockInit( i );
 #endif
                 break;
-            case SET1_T_MAXXMSK:
+            case SETVAR_T_MAXXMSK:
 #ifndef NOXMS
                 XMSBlockInit( i );
 #endif
                 break;
-            case SET1_T_MAXFILTERHISTORY:
+            case SETVAR_T_MAXFILTERHISTORY:
                 FilterHistInit( i );
                 break;
-            case SET1_T_MAXCLHISTORY:
+            case SETVAR_T_MAXCLHISTORY:
                 CLHistInit( i );
                 break;
-            case SET1_T_MAXFINDHISTORY:
+            case SETVAR_T_MAXFINDHISTORY:
                 FindHistInit( i );
                 break;
-            case SET1_T_MAXLASTFILESHISTORY:
+            case SETVAR_T_MAXLASTFILESHISTORY:
                 LastFilesHistInit( i );
                 break;
-            case SET1_T_MAXTILECOLORS:
+            case SETVAR_T_MAXTILECOLORS:
                 k = (EditVars.TileColors == NULL) ? 0 : EditVars.MaxTileColors + 1;
                 EditVars.MaxTileColors = i;
                 EditVars.TileColors = MemReAlloc( EditVars.TileColors, sizeof( type_style ) * ( EditVars.MaxTileColors + 1 ) );
@@ -978,42 +978,42 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                     EditVars.TileColors[k].font = -1;
                 }
                 break;
-            case SET1_T_CLOCKX:
+            case SETVAR_T_CLOCKX:
                 EditVars.ClockX = i;
                 GetClockStart();
                 break;
-            case SET1_T_CLOCKY:
+            case SETVAR_T_CLOCKY:
                 EditVars.ClockY = i;
                 GetClockStart();
                 break;
-            case SET1_T_SPINX:
+            case SETVAR_T_SPINX:
                 EditVars.SpinX = i;
                 GetSpinStart();
                 break;
-            case SET1_T_SPINY:
+            case SETVAR_T_SPINY:
                 EditVars.SpinY = i;
                 GetSpinStart();
                 break;
-            case SET1_T_MAXLINELEN:
+            case SETVAR_T_MAXLINELEN:
                 /* file save fails if 1 line is > MAX_IO_BUFFER */
                 i = min( i, MAX_IO_BUFFER );
                 EditVars.MaxLine = i;
                 StaticStart();
                 WorkLine = MemReAlloc( WorkLine, sizeof( line ) + EditVars.MaxLine + 2 );
                 break;
-            case SET1_T_TOOLBARBUTTONHEIGHT:
+            case SETVAR_T_TOOLBARBUTTONHEIGHT:
                 EditVars.ToolBarButtonHeight = i;
 #ifdef __WIN__
                 ResizeRoot();
 #endif
                 break;
-            case SET1_T_TOOLBARBUTTONWIDTH:
+            case SETVAR_T_TOOLBARBUTTONWIDTH:
                 EditVars.ToolBarButtonWidth = i;
 #ifdef __WIN__
                 ResizeRoot();
 #endif
                 break;
-            case SET1_T_TOOLBARCOLOR:
+            case SETVAR_T_TOOLBARCOLOR:
                 EditVars.ToolBarColor = i;
 #ifdef __WIN__
                 if( GetToolbarWindow() != NULL ) {
@@ -1027,7 +1027,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
             }
 
             if( msgFlag ) {
-                MySprintf( fn, "%s set to %d", GetTokenStringCVT( SetTokens1, j, settokstr, TRUE ), i );
+                MySprintf( fn, "%s set to %d", GetTokenStringCVT( TokensSetVar, j, settokstr, TRUE ), i );
             }
             break;
         }
@@ -1054,11 +1054,11 @@ vi_rc SettingSelected( char *item, char *value, int *winflag )
     int         id;
     bool        isnonbool;
 
-    id = Tokenize( SetTokens1, item, FALSE );
+    id = Tokenize( TokensSetVar, item, FALSE );
     if( id != TOK_INVALID ) {
         isnonbool = TRUE;
     } else {
-        id = Tokenize( SetTokens2, item, FALSE );
+        id = Tokenize( TokensSetFlag, item, FALSE );
         if( id == TOK_INVALID ) {
             return( ERR_INVALID_SET_COMMAND );
         }
@@ -1098,8 +1098,8 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
     set_data    **sdata;
     int         tc, tc1, tc2;
 
-    tc1 = GetNumberOfTokens( SetTokens1 );
-    tc2 = GetNumberOfTokens( SetTokens2 );
+    tc1 = GetNumberOfTokens( TokensSetVar );
+    tc2 = GetNumberOfTokens( TokensSetFlag );
     tc = tc1 + tc2;
     sdata = MemAlloc( tc * sizeof( set_data * ) );
     *list = MemAlloc( tc * sizeof( char * ) );
@@ -1107,12 +1107,12 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
 
     for( i = 0; i < tc1; i++ ) {
         sdata[i] = MemAlloc( sizeof( set_data ) );
-        AddString( &(sdata[i]->setting), GetTokenStringCVT( SetTokens1, i, settokstr, TRUE ) );
+        AddString( &(sdata[i]->setting), GetTokenStringCVT( TokensSetVar, i, settokstr, TRUE ) );
         AddString( &(sdata[i]->val), getOneSetVal( i, TRUE, tmpstr, TRUE ) );
     }
     for( i = 0; i < tc2; i++ ) {
         sdata[tc1 + i] = MemAlloc( sizeof( set_data ) );
-        AddString( &(sdata[tc1 + i]->setting), GetTokenStringCVT( SetTokens2, i, settokstr, TRUE ) );
+        AddString( &(sdata[tc1 + i]->setting), GetTokenStringCVT( TokensSetFlag, i, settokstr, TRUE ) );
         AddString( &(sdata[tc1 + i]->val), getOneSetVal( i, FALSE, tmpstr, TRUE ) );
     }
     qsort( sdata, tc, sizeof( set_data * ), compareString );
@@ -1122,8 +1122,8 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
         MemFree( sdata[i] );
     }
     MemFree( sdata );
-    i = GetLongestTokenLength( SetTokens1 );
-    j = GetLongestTokenLength( SetTokens2 );
+    i = GetLongestTokenLength( TokensSetVar );
+    j = GetLongestTokenLength( TokensSetFlag );
     if( i > j ) {
         *longest = i;
     } else {
@@ -1214,16 +1214,16 @@ vi_rc Set( char *name )
                 } else {
                     i = 1;
                 }
-                j = Tokenize( SetTokens1, fn, FALSE );
+                j = Tokenize( TokensSetVar, fn, FALSE );
                 if( j == TOK_INVALID ) {
-                    j = Tokenize( SetTokens2a, fn, FALSE );
+                    j = Tokenize( TokensSetFlagShort, fn, FALSE );
                     if( j == TOK_INVALID ) {
-                        j = Tokenize( SetTokens2, fn, FALSE );
+                        j = Tokenize( TokensSetFlag, fn, FALSE );
                         if( j == TOK_INVALID ) {
                             return( ERR_INVALID_SET_COMMAND );
                         }
                     }
-                    j += SET1_T_;
+                    j += SETVAR_T_;
                 }
                 j *= i;
 #ifndef VICOMP
@@ -1257,13 +1257,13 @@ char *GetASetVal( char *token )
     int         j;
     char        tmpstr[MAX_STR];
 
-    j = Tokenize( SetTokens1, token, FALSE );
+    j = Tokenize( TokensSetVar, token, FALSE );
     if( j != TOK_INVALID ) {
         return( getOneSetVal( j, TRUE, tmpstr, FALSE ) );
     }
-    j = Tokenize( SetTokens2a, token, FALSE );
+    j = Tokenize( TokensSetFlagShort, token, FALSE );
     if( j == TOK_INVALID ) {
-        j = Tokenize( SetTokens2, token, FALSE );
+        j = Tokenize( TokensSetFlag, token, FALSE );
     }
     if( j != TOK_INVALID ) {
         return( getOneSetVal( j, FALSE, tmpstr, FALSE ) );
@@ -1284,10 +1284,10 @@ char *ExpandTokenSet( char *token_no, char *buff )
         tok *= -1;
         val = FALSE;
     }
-    if( tok >= SET1_T_ ) {
-        sprintf( buff, "%s%s", GET_BOOL_PREFIX( val ), GetTokenStringCVT( SetTokens2, tok - SET1_T_, settokstr, TRUE ) );
+    if( tok >= SETVAR_T_ ) {
+        sprintf( buff, "%s%s", GET_BOOL_PREFIX( val ), GetTokenStringCVT( TokensSetFlag, tok - SETVAR_T_, settokstr, TRUE ) );
     } else {
-        sprintf( buff, "%s", GetTokenStringCVT( SetTokens1, tok, settokstr, TRUE ) );
+        sprintf( buff, "%s", GetTokenStringCVT( TokensSetVar, tok, settokstr, TRUE ) );
     }
     return( buff );
 }
