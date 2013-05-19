@@ -441,15 +441,15 @@ void StartupErr( char *err )
     KillDebugger(1);
 }
 
-void DUICopySize( void *cookie, long size )
-/*****************************************/
+void DUICopySize( void *cookie, unsigned long size )
+/**************************************************/
 {
     size = size;
     cookie = cookie;
 }
 
-void DUICopyCopied( void *cookie, long size )
-/*******************************************/
+void DUICopyCopied( void *cookie, unsigned long size )
+/****************************************************/
 {
     size = size;
     cookie = cookie;

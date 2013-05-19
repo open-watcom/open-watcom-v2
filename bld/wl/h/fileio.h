@@ -70,7 +70,7 @@ extern unsigned         QWrite( f_handle, void *, unsigned, char * );
 extern void             QWriteNL( f_handle, char * );
 extern void             QClose( f_handle, char * );
 extern long             QLSeek( f_handle, long, int, char * );
-extern void             QSeek( f_handle, long, char * );
+extern void             QSeek( f_handle, unsigned long, char * );
 extern unsigned long    QPos( f_handle );
 extern unsigned long    QFileSize( f_handle );
 extern void             QDelete( char * );

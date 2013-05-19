@@ -59,9 +59,9 @@ unsigned long SysTell( int fh )
     unsigned long pos;
     tiny_ret_t    rc;
 
-    rc = TinyLSeek( fh, 0, SEEK_CUR, (void __near *)&pos );
+    rc = TinyLSeek( fh, 0, SEEK_CUR, (u32_stk_ptr)&pos );
     if( TINY_ERROR( rc ) ) {
-        return( -1L );
+        return( -1UL );
     }
     return( pos );
 }

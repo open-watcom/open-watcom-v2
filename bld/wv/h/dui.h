@@ -73,5 +73,5 @@ extern void DUIDirty( void );
 extern void DUISrcOrAsmInspect( address );
 extern void DUIAddrInspect( address );
 extern bool DUICopyCancelled( void * );
-extern void DUICopySize( void *, long );
-extern void DUICopyCopied( void *, long );
+extern void DUICopySize( void *, unsigned long );
+extern void DUICopyCopied( void *, unsigned long );

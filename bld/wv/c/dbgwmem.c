@@ -296,11 +296,14 @@ static void MemGetNewAddr( a_window *wnd )
     unsigned    old;
 
     if( mem->file ) {
+        bool    rc;
+
         offset = mem->u.f.offset;
         old = NewCurrRadix( 10 );
-        if( !DlgLongExpr( LIT( New_Offset ), &offset ) ) return;
+        rc = DlgLongExpr( LIT( New_Offset ), &offset );
         NewCurrRadix( old );
-        if( offset > mem->u.f.size ) return;
+        if( !rc ) return;
+        if( (unsigned long)offset > mem->u.f.size ) return;
         mem->u.f.offset = offset;
     } else {
         addr = mem->u.m.home;
@@ -590,16 +593,14 @@ static void SetBreakWrite( a_window *wnd )
     }
 }
 
-static bool GetBuff( mem_window *mem,
-                     unsigned long offset, char *buff, int size )
+static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, int size )
 {
-    unsigned long new;
-    int         len;
+    unsigned long   new;
+    int             len;
 
     if( mem->file ) {
         offset += mem->u.f.offset;
-        new = SeekStream( mem->u.f.filehndl,
-                          offset, DIO_SEEK_ORG );
+        new = SeekStream( mem->u.f.filehndl, offset, DIO_SEEK_ORG );
         if( new != offset ) return( FALSE );
         len = ReadStream( mem->u.f.filehndl, buff, size );
         return( len >= size );
@@ -612,17 +613,16 @@ static bool GetBuff( mem_window *mem,
 }
 
 static WNDGETLINE MemGetLine;
-static  bool    MemGetLine( a_window *wnd, int row, int piece,
-                            wnd_line_piece *line )
+static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
-    char        buff[16];
-    unsigned long offset;
-    mem_window  *mem = WndMem( wnd );
-    address     addr;
-    char        *p;
-    unsigned    old,new;
-    unsigned    max;
-    char        ch;
+    char            buff[16];
+    unsigned long   offset;
+    mem_window      *mem = WndMem( wnd );
+    address         addr;
+    char            *p;
+    unsigned        old, new;
+    unsigned        max;
+    char            ch;
 
     line->text = TxtBuff;
     if( row < 0 ) {
@@ -844,24 +844,30 @@ static  void StkRefresh( a_window *wnd )
 static  WNDSCROLL       MemScroll;
 static  int     MemScroll( a_window *wnd, int lines )
 {
-    int         tomove;
-    long        offset;
-    long        new;
-    mem_window  *mem = WndMem( wnd );
+    int             tomove;
+    unsigned long   offset;
+    unsigned long   new;
+    mem_window      *mem = WndMem( wnd );
 
-    if( lines >= WND_MAX_ROW ) return( 0 ); // CTRL-END request
+    if( lines >= WND_MAX_ROW )
+        return( 0 ); // CTRL-END request
     if( mem->cursor_row != WND_NO_ROW &&
         mem->piece_type == MemByteType ) {
         WndPieceDirty( wnd, mem->cursor_row, mem->shadow_piece );
     }
-    tomove = mem->items_per_line*mem->item_size*lines;
-    if( mem->total_size != 0 ) return( 0 );
+    tomove = mem->items_per_line * mem->item_size * lines;
+    if( mem->total_size != 0 )
+        return( 0 );
     if( mem->file ) {
-        offset = mem->u.f.offset+tomove;
-        if( offset < 0 ) offset = 0;
+        offset = mem->u.f.offset + tomove;
+        if( tomove >= 0 && offset < mem->u.f.offset || tomove < 0 && offset > mem->u.f.offset ) {
+            offset = 0;
+        }
         new = SeekStream( mem->u.f.filehndl, offset, DIO_SEEK_ORG );
-        if( new != offset ) return( 0 );
-        if( ReadStream( mem->u.f.filehndl, TxtBuff, 1 ) != 1 ) return( 0 );
+        if( new != offset )
+            return( 0 );
+        if( ReadStream( mem->u.f.filehndl, TxtBuff, 1 ) != 1 )
+            return( 0 );
         mem->u.f.offset = offset;
         WndSetVScrollRange( wnd, WndRows( wnd ) * 2 );
         WndSetThumbPercent( wnd, ( offset * 100 ) / mem->u.f.size );
@@ -914,9 +920,8 @@ void FiniMemWindow()
 static WNDCALLBACK MemEventProc;
 static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
-    mem_window  *mem = WndMem( wnd );
-    unsigned long old;
-    int         i;
+    mem_window      *mem = WndMem( wnd );
+    int             i;
 
     parm=parm;
     switch( gui_ev ) {
@@ -934,8 +939,10 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         if( mem->file ) {
             mem->u.f.offset = 0;
             if( mem->u.f.filehndl != NIL_HANDLE ) {
-                old = SeekStream( mem->u.f.filehndl, 0L, DIO_SEEK_END );
-                mem->u.f.size = SeekStream( mem->u.f.filehndl, old, DIO_SEEK_ORG );
+                mem->u.f.size = SeekStream( mem->u.f.filehndl, 0L, DIO_SEEK_END );
+                if( mem->u.f.size == -1UL )
+                    mem->u.f.size = 0;
+                SeekStream( mem->u.f.filehndl, 0L, DIO_SEEK_ORG );
             }
         } else {
             mem->u.m.follow = NULL;
@@ -951,7 +958,7 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         WndFixedThumb( wnd );
         return( TRUE );
     case GUI_DESTROY :
-        if( mem->file && mem->u.f.filehndl != NULL ) {
+        if( mem->file && mem->u.f.filehndl != NIL_HANDLE ) {
             FileClose( mem->u.f.filehndl );
         }
         if( !mem->file ) {

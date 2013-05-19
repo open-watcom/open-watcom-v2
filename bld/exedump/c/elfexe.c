@@ -683,7 +683,7 @@ bool Dmp_lib_head( void )
 {
     char                sig[LIBMAG_LEN];
     Lib32_Hdr           hdr;
-    long                filesize;
+    unsigned long       filesize;
     unsigned long       size;
     unsigned long       Elf_off;
 

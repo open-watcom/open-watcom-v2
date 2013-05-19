@@ -49,7 +49,7 @@ static void dmp_exe( void )
 /*************************/
 {
     bool            dos_dmp;
-    unsigned_32     len;
+    unsigned long   len;
 
     Form = FORM_NE;
     Data_count = 0;
@@ -133,13 +133,16 @@ static void dmp_exe( void )
         }
     }
     if( Options_dmp & BINARY_DMP ) {
-        len = lseek( Handle, -Hexoff, SEEK_END );
-        Wdputs( "offset = " );
-        Puthex( Hexoff, 8 );
-        Wdputs( ",  length = " );
-        Puthex( len, 8 );
-        Wdputslc( "\n" );
-        Dmp_seg_data( Hexoff, len );
+        len = WFileSize();
+        if( len > Hexoff ) {
+            len -= Hexoff;
+            Wdputs( "offset = " );
+            Puthex( Hexoff, 8 );
+            Wdputs( ",  length = " );
+            Puthex( len, 8 );
+            Wdputslc( "\n" );
+            Dmp_seg_data( Hexoff, len );
+        }
     }
     if( WSize ) {
         write( Lhandle, Write_buff, WSize );

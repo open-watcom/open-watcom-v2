@@ -213,7 +213,7 @@ bool Dmp_ar_head( void )
 {
     char                sig[AR_IDENT_LEN];
     ar_header           hdr;
-    long                filesize;
+    unsigned long       filesize;
     unsigned long       size;
 
     Wlseek( 0 );

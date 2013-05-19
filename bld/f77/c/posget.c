@@ -432,10 +432,10 @@ signed_32       FGetVarRecLen( b_file *io ) {
     unsigned_32 tag;
     unsigned_32 save_tag;
     int         rc;
-    unsigned_32 ret;
+    long        pos;
     unsigned_32 size = 0;
 
-    ret = FGetFilePos( io );
+    pos = FGetFilePos( io );
     for(;;) {
         rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
         if( rc == READ_ERROR ) {
@@ -466,7 +466,7 @@ signed_32       FGetVarRecLen( b_file *io ) {
             return( -1 );
         }
     }
-    if( SysSeek( io, ret, SEEK_SET ) < 0 ) return( -1 );
+    if( SysSeek( io, pos, SEEK_SET ) < 0 ) return( -1 );
     return( size );
 }
 

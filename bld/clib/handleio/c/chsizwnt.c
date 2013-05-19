@@ -46,8 +46,7 @@ void static __padfile( int hid, long offset, long diff ) {
     unsigned amount;
     auto char buff[512];
 
-    rc = __lseek( hid, offset, SEEK_SET );
-    if( rc != offset ) {
+    if( __lseek( hid, offset, SEEK_SET ) != offset ) {
         // run away
         return;
     }
@@ -90,7 +89,7 @@ _WCRTLINK int chsize( int hid, long size )
         bytes uninitialized.
     */
     rc = SetFilePointer( h, size, 0, FILE_BEGIN );
-    if( rc == -1 ) {
+    if( rc == -1L ) {
         _ReleaseFileH( hid );
         return( __set_errno_nt() );
     }
@@ -110,7 +109,7 @@ _WCRTLINK int chsize( int hid, long size )
     if( curOffset > size ) curOffset = size;
     curOffset = __lseek( hid, curOffset, SEEK_SET );
     _ReleaseFileH( hid );
-    if( curOffset == -1 ) {
+    if( curOffset == -1L ) {
         return( __set_errno_nt() );
     }
     return( 0 );

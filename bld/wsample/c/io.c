@@ -38,8 +38,8 @@
 #include "smpstuff.h"
 #include "sysio.h"
 
-static  long    SampOffset;
-static  int     SampleHandle;
+static  unsigned long   SampOffset;
+static  int             SampleHandle;
 
 int  SampCreate( char *name )
 {

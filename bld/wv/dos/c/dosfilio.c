@@ -101,12 +101,12 @@ unsigned LocalWrite( sys_handle filehndl, void *ptr, unsigned len )
     return( TINY_INFO( ret ) );
 }
 
-unsigned long LocalSeek( sys_handle hdl, unsigned long len, unsigned method )
+unsigned long LocalSeek( sys_handle hdl, unsigned long npos, unsigned method )
 {
     tiny_ret_t      ret;
     unsigned long   pos;
 
-    ret = TinyLSeek( hdl, len, method, &pos );
+    ret = TinyLSeek( hdl, npos, method, (u32_stk_ptr)&pos );
     if( TINY_ERROR( ret ) ) {
         StashErrCode( TINY_INFO( ret ), OP_LOCAL );
         return( -1UL );

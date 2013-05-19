@@ -227,11 +227,11 @@ void QClose( f_handle file, char *name )
 long QLSeek( f_handle file, long position, int start, char *name )
 /***********************************************************************/
 {
-    tiny_ret_t    rc;
-    unsigned long pos;
+    tiny_ret_t  rc;
+    long        pos;
 
     CheckBreak();
-    rc = TinyLSeek( file, position, start, (void __near *)&pos );
+    rc = TinyLSeek( file, position, start, (u32_stk_ptr)&pos );
     if( TINY_ERROR( rc ) ) {
         if( name != NULL )
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( rc ) ) );
@@ -240,34 +240,36 @@ long QLSeek( f_handle file, long position, int start, char *name )
     return( pos );
 }
 
-void QSeek( f_handle file, long position, char *name )
-/***********************************************************/
+void QSeek( f_handle file, unsigned long position, char *name )
+/*************************************************************/
 {
     QLSeek( file, position, TIO_SEEK_START, name );
 }
 
 unsigned long QPos( f_handle file )
-/****************************************/
+/*********************************/
 {
     unsigned long pos;
 
     CheckBreak();
-    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_CURR, (void __near *)&pos ) ) ) {
-        return( -1L );
+    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_CURR, (u32_stk_ptr)&pos ) ) ) {
+        return( -1UL );
     }
     return( pos );
 }
 
 unsigned long QFileSize( f_handle file )
-/*********************************************/
+/**************************************/
 {
     unsigned long   curpos;
     unsigned long   size;
 
-    curpos = QPos( file );
-    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_END, (void __near *)&size ) ) )
-        size = 0;
-    TinySeek( file, curpos, TIO_SEEK_START );
+    CheckBreak();
+    size = 0;
+    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_CUR, (u32_stk_ptr)&curpos ) ) ) {
+        TinyLSeek( file, 0UL, TIO_SEEK_END, (u32_stk_ptr)&size );
+        TinySeek( file, curpos, TIO_SEEK_START );
+    }
     return( size );
 }
 

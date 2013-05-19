@@ -1147,16 +1147,16 @@ extern void LoadNewProg( char *cmd, char *parms )
 }
 
 
-static long SizeMinusDebugInfo( handle floc, bool strip )
-/*******************************************************/
+static unsigned long SizeMinusDebugInfo( handle floc, bool strip )
+/****************************************************************/
 {
     TISTrailer          trailer;
-    long                copylen;
+    unsigned long       copylen;
 
     copylen = SeekStream( floc, 0, DIO_SEEK_END );
     if( !strip ) return( copylen );
     SeekStream( floc, -sizeof( trailer ), DIO_SEEK_END );
-    if( ReadStream( floc, &trailer, sizeof(trailer) ) != sizeof(trailer) ) return( copylen );
+    if( ReadStream( floc, &trailer, sizeof( trailer ) ) != sizeof( trailer ) ) return( copylen );
     if( trailer.signature != TIS_TRAILER_SIGNATURE ) return( copylen );
     return( copylen - trailer.size );
 }
@@ -1170,8 +1170,8 @@ static bool CopyToRemote( char *local, char *remote, bool strip, void *cookie )
     unsigned            len;
     char                *buff;
     unsigned            bsize;
-    long                copylen;
-    long                copied;
+    unsigned long       copylen;
+    unsigned long       copied;
     long                remdate;
     long                lcldate;
 
@@ -1181,11 +1181,11 @@ static bool CopyToRemote( char *local, char *remote, bool strip, void *cookie )
         bsize = 128;
         buff = DbgMustAlloc( bsize );
     }
-    #ifdef __NT__
-        lcldate = LocalGetFileDate( local );
-    #else
-        lcldate = -1;
-    #endif
+#ifdef __NT__
+    lcldate = LocalGetFileDate( local );
+#else
+    lcldate = -1;
+#endif
     remdate = RemoteGetFileDate( remote );
     if( remdate != -1 && lcldate != -1 && remdate == lcldate ) return( TRUE );
     strip = strip; // nyi - strip debug info here

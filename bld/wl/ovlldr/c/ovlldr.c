@@ -152,10 +152,8 @@ int near LOADOVERLAY( unsigned ovl_num )
             if( TINY_ERROR( status ) )
                 __OvlExit__( OVL_OPEN_ERR );
             fp = TINY_INFO( status );
-            status = __OvlSeek__( fp, ovl->disk_addr );
-            if( TINY_ERROR( status ) ) {
+            if( TINY_ERROR( __OvlSeek__( fp, ovl->disk_addr ) ) )
                 __OvlExit__( OVL_IO_ERR );
-            }
             __OvlCodeLoad__( ovl, fp );
             __OvlRelocLoad__( ovl, fp );
             ClearInMemFlags( ovl );

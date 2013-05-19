@@ -208,7 +208,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     }
     handle = TINY_INFO( rc );
 
-    _TinySeek( handle, (DWORD) 0x38, TIO_SEEK_START );
+    _TinySeek( handle, 0x38, TIO_SEEK_START );
     _fTinyRead( handle, &exelen, sizeof( DWORD ) );
     _TinySeek( handle, exelen, TIO_SEEK_START );
 
@@ -249,7 +249,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     /*
      * get exe data - data start and stack start
      */
-    _TinySeek( handle, exelen + file_header_size + (long) exe.initial_eip, TIO_SEEK_START );
+    _TinySeek( handle, exelen + file_header_size + (long)exe.initial_eip, TIO_SEEK_START );
     _fTinyRead( handle, &exedat, sizeof( exe_data ) );
     /*
      * get file size
@@ -388,7 +388,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
         relsize += kcnt * (0x10000L*sizeof(DWORD));
     }
     if( relsize != 0 ) {
-        _TinySeek( handle, exelen+ (DWORD) exe.first_reloc, TIO_SEEK_START );
+        _TinySeek( handle, exelen + (DWORD)exe.first_reloc, TIO_SEEK_START );
         if( StackSize >= (DWORD) READSIZE ) {
             amount = READSIZE;
         } else {

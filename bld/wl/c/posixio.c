@@ -268,28 +268,35 @@ long QLSeek( f_handle file, long position, int start, char *name )
     return( h );
 }
 
-void QSeek( f_handle file, long position, char *name )
-/***********************************************************/
+void QSeek( f_handle file, unsigned long position, char *name )
+/*************************************************************/
 {
     QLSeek( file, position, SEEK_SET, name );
 }
 
 unsigned long QPos( f_handle file )
-/****************************************/
+/*********************************/
 {
     CheckBreak();
     return( lseek( file, 0L, SEEK_CUR ) );
 }
 
 unsigned long QFileSize( f_handle file )
-/*********************************************/
+/**************************************/
 {
-    unsigned long   curpos;
-    unsigned long   size;
+    long    curpos;
+    long    size;
 
-    curpos = QPos( file );
-    size = lseek( file, 0L, SEEK_END  );
-    lseek( file, curpos, SEEK_SET );
+    CheckBreak();
+    size = 0;
+    curpos = lseek( file, 0L, SEEK_CUR  );
+    if( curpos != -1L ) {
+        size = lseek( file, 0L, SEEK_END  );
+        if( size == -1L ) {
+            size = 0;
+        }
+        lseek( file, curpos, SEEK_SET );
+    }
     return( size );
 }
 

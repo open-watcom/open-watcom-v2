@@ -202,17 +202,16 @@ unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
     if( len == 0 )
         return( 0 );
 
-    #ifdef _INT_DEBUG
+#ifdef _INT_DEBUG
     {
         unsigned long pos = QPos(file);
-        if( pos <= SpyWrite && SpyWrite <= pos+len
-            && file == Root->outfile->handle) {
-            DEBUG((DBG_ALWAYS, "About to write to %s (handle %d) %d bytes at position %d:",
-                name, file, len, pos));
+
+        if( pos <= SpyWrite && SpyWrite <= pos + len && file == Root->outfile->handle) {
+            DEBUG((DBG_ALWAYS, "About to write to %s (handle %d) %d bytes at position %d:", name, file, len, pos));
             PrintMemDump(buffer, len, DUMP_BYTE);
         }
     }
-    #endif
+#endif
 
     CheckBreak();
     h = dowrite( file, buffer, len );
@@ -262,8 +261,8 @@ long QLSeek( f_handle file, long position, int start, char *name )
     return( h );
 }
 
-void QSeek( f_handle file, long position, char *name )
-/****************************************************/
+void QSeek( f_handle file, unsigned long position, char *name )
+/*************************************************************/
 {
     QLSeek( file, position, SEEK_SET, name );
 }
@@ -281,10 +280,10 @@ unsigned long QFileSize( f_handle file )
     long        result;
 
     result = filelength( file );
-    if( result == -1 ) {
+    if( result == -1L ) {
         result = 0;
     }
-    return result;
+    return( result );
 }
 
 void QDelete( char *name )

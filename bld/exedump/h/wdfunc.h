@@ -143,7 +143,7 @@ extern void Dmp_relocs( void );
 extern void Dmp_segments( void );
 extern void Dmp_le_page_seg( void );
 extern void Dmp_lx_page_seg( map_entry );
-extern void Dmp_seg_data( unsigned_32, unsigned_32 );
+extern void Dmp_seg_data( unsigned long, unsigned long );
 extern void dmp_mult_data_line( char *, unsigned_16, unsigned_16 );
 extern void dmp_data_line( char *, unsigned_16, unsigned_16 );
 
@@ -174,18 +174,18 @@ extern bool Dmp_d16m_head( void );
 /*
  * wdio.c
  */
-extern bool Weof( void );
-extern void Wread( void *, unsigned_32 );
-extern void Wlseek( signed_32 );
-extern long WFileSize( void );
-extern void Wdputc( char );
-extern void Wdputs( const char * );
-extern void Wdputslc( const char * );
-extern void Dump_header( void *, char ** );
-extern void Dump_asciiz( long offset );
-extern void DumpFlags( unsigned_32, unsigned_32, char **, char * );
-extern void *Wmalloc( size_t );
-extern void Banner( char * );
+extern bool             Weof( void );
+extern void             Wread( void *, unsigned_32 );
+extern void             Wlseek( unsigned long );
+extern unsigned long    WFileSize( void );
+extern void             Wdputc( char );
+extern void             Wdputs( const char * );
+extern void             Wdputslc( const char * );
+extern void             Dump_header( void *, char ** );
+extern void             Dump_asciiz( unsigned long offset );
+extern void             DumpFlags( unsigned_32, unsigned_32, char **, char * );
+extern void             *Wmalloc( size_t );
+extern void             Banner( char * );
 
 /*
  * wdres.c

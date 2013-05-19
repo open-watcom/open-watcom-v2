@@ -240,9 +240,11 @@ unsigned long QPos( f_handle file )
 unsigned long QFileSize( f_handle file )
 /**************************************/
 {
-    unsigned    curpos, size;
+    unsigned    curpos;
+    unsigned    size;
 
-    curpos = QPos( file );
+    CheckBreak();
+    DosSetFilePosition ( SEEK_FROM_CURRENT, 0, file, &curpos );
     DosSetFilePosition ( SEEK_FROM_END, 0, file, &size );
     DosSetFilePosition ( SEEK_FROM_START, curpos, file, &curpos );
     return( size );

@@ -42,7 +42,7 @@ static  uint    GetPrevChar( b_file *io ) {
 // Get previous character in file.
 
     if( CurrFileOffset( io ) == 0 ) return( NO_CHAR );
-    if( SysSeek( io, -1, SEEK_CUR ) < 0 ) {
+    if( SysSeek( io, -1L, SEEK_CUR ) < 0 ) {
         return( NO_CHAR );
     }
     if( ( io->attrs & READ_AHEAD ) && io->b_curs < io->read_len ) {
@@ -60,23 +60,22 @@ void    FBackspace( b_file *io, int rec_size ) {
 // Backspace a file.
 
     uint        ch;
-    unsigned_32 offset;
+    unsigned_32 u32;
     bool        start_of_logical_record;
 
     IOOk( io );
     if( io->attrs & REC_VARIABLE ) {
         for(;;) {
-            offset = sizeof( unsigned_32 );
-            if( SysSeek( io, -offset, SEEK_CUR ) < 0 ) return;
-            if( SysRead( io, (char *)(&offset), sizeof( unsigned_32 ) ) ==
-                READ_ERROR ) return;
-            if( offset & 0x80000000 ) {
-                offset &= 0x7fffffff;
+            if( SysSeek( io, -(long)sizeof( u32 ), SEEK_CUR ) < 0 ) return;
+            if( SysRead( io, (char *)&u32, sizeof( u32 ) ) == READ_ERROR )
+                return;
+            if( u32 & 0x80000000 ) {
+                u32 &= 0x7fffffff;
                 start_of_logical_record = FALSE;
             } else {
                 start_of_logical_record = TRUE;
             }
-            SysSeek( io, -( offset + 2 * sizeof( unsigned_32 ) ), SEEK_CUR );
+            SysSeek( io, -(long)( u32 + 2 * sizeof( u32 ) ), SEEK_CUR );
             if( start_of_logical_record ) break;
         }
     } else if( io->attrs & REC_TEXT ) {

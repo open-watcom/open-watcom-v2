@@ -98,15 +98,15 @@ void Wread( void *buf, unsigned_32 amount )
 /*
  * lseek in the image
  */
-void Wlseek( long offset )
-/************************/
+void Wlseek( unsigned long offset )
+/*********************************/
 {
-    long    nbuff;
+    unsigned long   nbuff;
 
     errno = 0;
     nbuff = offset / BSIZE;
     if( nbuff != Num_buff ) {
-        if( lseek( Handle, nbuff * BSIZE, SEEK_SET ) == -1l ) {
+        if( lseek( Handle, nbuff * BSIZE, SEEK_SET ) == -1L ) {
             Wdputs( "Error! Couldn't seek in the executable: " );
             Wdputs( strerror( errno ) );
             Wdputslc( ".\n" );
@@ -119,10 +119,15 @@ void Wlseek( long offset )
     Sizeleft = Num_read - ( offset % BSIZE );
 }
 
-long WFileSize( void )
-/********************/
+unsigned long WFileSize( void )
+/*****************************/
 {
-    return( filelength( Handle ) );
+    long    size;
+
+    size = filelength( Handle );
+    if( size == -1L )
+        size = 0;
+    return( size );
 }
 
 /*
@@ -261,11 +266,11 @@ extern void DumpFlags( unsigned_32 flags, unsigned_32 ignore, char **msg,
 /*
  * dump an arbitrarily long ASCIIZ string starting at specified offset
  */
-void Dump_asciiz( long offset )
-/*****************************/
+void Dump_asciiz( unsigned long offset )
+/**************************************/
 {
     char            buf[65];
-    long            fsize;
+    unsigned long   fsize;
     unsigned_32     amount;
 
 

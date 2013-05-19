@@ -469,7 +469,7 @@ void FiniOS2FlatLoadFile( void )
     DBIWrite();
 /* If debug info was written, we want to mark it in the header so that
  * RC doesn't throw it away! */
-    SeekEndLoad(0);
+    SeekEndLoad( 0 );
     debug_size =  PosLoad() - curr_loc;
     if (debug_size) {
         exe_head.debug_off = curr_loc;

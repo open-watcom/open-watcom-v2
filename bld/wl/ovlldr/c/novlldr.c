@@ -353,8 +353,7 @@ static void near redoRelocs( ovltab_entry_ptr ovl, unsigned startseg )
     if( TINY_ERROR( status ) )
         __OvlExit__( OVL_OPEN_ERR );
     fp = TINY_INFO( status );
-    status = __OvlSeek__( fp, ovl->disk_addr+((unsigned_32)ovl->num_paras<<4));
-    if( TINY_ERROR( status ) )
+    if( TINY_ERROR( __OvlSeek__( fp, ovl->disk_addr + ( (unsigned_32)ovl->num_paras << 4 ) ) ) )
         __OvlExit__( OVL_IO_ERR );
     /*
         Fool __OvlRelocLoad__ into relocating section for us by making it
@@ -569,10 +568,8 @@ void near __LoadSectionCode__( ovltab_entry_ptr ovl )
     if( TINY_ERROR( status ) )
         __OvlExit__( OVL_OPEN_ERR );
     fp = TINY_INFO( status );
-    status = __OvlSeek__( fp, ovl->disk_addr );
-    if( TINY_ERROR( status ) ) {
+    if( TINY_ERROR( __OvlSeek__( fp, ovl->disk_addr ) ) )
         __OvlExit__( OVL_IO_ERR );
-    }
     descptr = MK_FP( ovl->code_handle + ovl->num_paras - 1, 0xE );
     tmp = *descptr;             /* save the descriptor across call */
     __OvlCodeLoad__( ovl, fp );

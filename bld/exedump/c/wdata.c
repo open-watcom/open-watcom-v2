@@ -68,8 +68,7 @@ static void dmp_segment( struct segment_record *seg )
     } else {
         seg_len = seg->size;
     }
-    file_off = (unsigned_32)seg->address <<
-                   Os2_head.align;
+    file_off = (unsigned_32)seg->address << Os2_head.align;
     Wlseek( file_off );
     if( seg->info & SEG_ITERATED ) {
         Wdputslc( "Segment is iterated: NYI because of lack of examples\n" );
@@ -321,8 +320,8 @@ void Dmp_lx_page_seg( map_entry map )
 /*
  * Dump a segment's data
  */
-void Dmp_seg_data( unsigned_32 seg_off, unsigned_32 seg_len )
-/***********************************************************/
+void Dmp_seg_data( unsigned long seg_off, unsigned long seg_len )
+/***************************************************************/
 {
     unsigned_16             address, amount;
     char                    buf[ PERLINE + 1 ];
@@ -330,7 +329,7 @@ void Dmp_seg_data( unsigned_32 seg_off, unsigned_32 seg_len )
     Wlseek( seg_off );
     address = 0;
     amount = PERLINE;
-    for( ; seg_len != 0ul; ) {
+    for( ; seg_len != 0UL; ) {
         if( seg_len < PERLINE ) {
             amount = seg_len;
         }

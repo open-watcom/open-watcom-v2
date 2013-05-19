@@ -63,8 +63,8 @@ unsigned long SysSeek( int handle, unsigned long loc )
 {
     unsigned long   new_loc;
 
-    if( TINY_ERROR( TinyLSeek( handle, loc, TIO_SEEK_START, &new_loc ) ) )
-        return( -1L );
+    if( TINY_ERROR( TinyLSeek( handle, loc, TIO_SEEK_START, (u32_stk_ptr)&new_loc ) ) )
+        return( -1UL );
     return( new_loc );
 }
 

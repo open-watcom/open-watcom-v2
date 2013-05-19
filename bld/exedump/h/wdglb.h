@@ -102,7 +102,7 @@ extern unsigned_32              Data_off;       /* offset   */
 extern struct segment_record *  Int_seg_tab;    /* internal segment table  */
 extern char **                  Int_mod_ref_tab;/* internal mod_ref table  */
 extern unsigned_16              Segspec;        /* spec seg # for dmp_seg  */
-extern unsigned_32              Hexoff;         /* offset for binary dump  */
+extern unsigned long            Hexoff;         /* offset for binary dump  */
 extern Elf32_Ehdr               Elf_head;       /* the elf_header          */
 extern lmf_header               Qnx_head;       /* the qnx_header          */
 extern extended_header          Phar_ext_head;  /* the phar_extended_header*/

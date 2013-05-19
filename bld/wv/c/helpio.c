@@ -38,10 +38,13 @@ static int seekTypeConvTable[] = { DIO_SEEK_ORG, DIO_SEEK_CUR, DIO_SEEK_END };
 
 HELPIO long int HelpFileLen( HelpFp fp )
 {
-    long        old;
+    unsigned long   old;
+    long            len;
 
-    old = SeekStream( (handle)fp, 0, DIO_SEEK_END );
-    return( SeekStream( (handle)fp, old, DIO_SEEK_ORG ) );
+    old = SeekStream( (handle)fp, 0, DIO_SEEK_CUR );
+    len = SeekStream( (handle)fp, 0, DIO_SEEK_END );
+    SeekStream( (handle)fp, old, DIO_SEEK_ORG );
+    return( len );
 }
 
 HELPIO int HelpRead( HelpFp fp, void *buf, int len )
