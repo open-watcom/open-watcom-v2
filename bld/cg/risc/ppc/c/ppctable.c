@@ -350,57 +350,10 @@ _Bin(   ANY,  ANY,  ANY,  NONE ),     V_NO,            R_MOD2DIV,      RG_,FU_NO
 
 
 static  opcode_entry    *OpcodeList[] = {
-        StubUnary,              /* NO   */
-        StubUnary,              /* NYI  */
-        Binary1,                /* BIN1 */
-        Binary2,                /* BIN2 */
-        Binary4,                /* BIN4 */
-        Binary8,                /* BIN8 */
-        UBinary1,               /* UBIN1 */
-        UBinary2,               /* UBIN2 */
-        UBinary4,               /* UBIN4 */
-        NBinary1,               /* NBIN1 */
-        NBinary2,               /* NBIN2 */
-        NBinary4,               /* NBIN4 */
-        Un1,                    /* UN1  */
-        Un2,                    /* UN2  */
-        Un4,                    /* UN4  */
-        StubUnary,              /* UN8  */
-        Move1,                  /* MOV1 */
-        Move2,                  /* MOV2 */
-        Move4,                  /* MOV4 */
-        Move8,                  /* MOV8 */
-        MoveXX,                 /* MOVXX */
-        Conv,                   /* CONV */
-        Conv,                   /* FCONV */
-        Call,                   /* CALL */
-        CallI,                  /* CALLI */
-        Push,                   /* PUSH */
-        Pop,                    /* POP */
-        LoadAddr2,              /* LA2 */
-        LoadAddr4,              /* LA4 */
-        LoadAddr8,              /* LA8 */
-        Cmp4,                   /* CMP4 */
-        StubBinary,             /* CMP8 */
-        Test4,                  /* TEST4 */
-        StubBinary,             /* TEST8 */
-        Set4,                   /* SET4 */
-        StubBinary,             /* SET8 */
-        Binary4,                /* ZAP */
-        Binary4,                /* EXT4 */
-        FloatBinary,            /* FBINS */
-        FloatBinary,            /* FBIND */
-        MoveF,                  /* MOVS */
-        MoveF,                  /* MOVD */
-        CmpF,                   /* CMPS */
-        CmpF,                   /* CMPD */
-        Rtn,                    /* RTN  */
-        NegF,                   /* NEGF */
-        Promote,                /* PROM */
-        VaStart,                /* VASTR */
-        Mod4,                   /* MOD4 */
-        DoNop,                  /* DONOTHING */
-        NULL };                 /* BAD*/
+    #define pick(enum,opcode)  opcode,
+    #include "_tables.h"
+    #undef pick
+};
 
 extern  opcode_entry    *OpcodeTable( table_def i )
 /*************************************************/

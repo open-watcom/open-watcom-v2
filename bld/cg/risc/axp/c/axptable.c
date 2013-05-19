@@ -387,59 +387,10 @@ _Bin(   ANY,  ANY,  ANY,  NONE ),     V_NO,            R_BIN2QUAD,     RG_,FU_NO
 };
 
 static  opcode_entry    *OpcodeList[] = {
-        StubUnary,              /* NO */
-        StubUnary,              /* NYI */
-        Binary1,                /* BIN1 */
-        Binary2,                /* BIN2 */
-        Binary4,                /* BIN4 */
-        Binary8,                /* BIN8 */
-        Un1,                    /* UN1  */
-        Un2,                    /* UN2  */
-        Un4,                    /* UN4  */
-        Un8,                    /* UN8  */
-        Move1,                  /* MOV1 */
-        Move2,                  /* MOV2 */
-        Move4,                  /* MOV4 */
-        Move8,                  /* MOV8 */
-        MoveXX,                 /* MOVXX */
-        Conv,                   /* CONV */
-        Conv,                   /* FCONV */
-        Call,                   /* CALL */
-        CallI,                  /* CALLI */
-        Push,                   /* PUSH */
-        Pop,                    /* POP */
-        LoadAddr2,              /* LA2 */
-        LoadAddr4,              /* LA4 */
-        LoadAddr8,              /* LA8 */
-        StubBinary,             /* CMP4 */
-        Cmp8,                   /* CMP8 */
-        Test4,                  /* TEST4 */
-        Test4,                  /* TEST8 */
-        Set4,                   /* SET4 */
-        Set4,                   /* SET8 */
-        Binary4,                /* ZAP */
-        Binary4,                /* EXT4 */
-        LoadUnaligned,          /* LDQU */
-        StoreUnaligned,         /* STQU */
-        FloatBinary,            /* FBINS */
-        FloatBinary,            /* FBIND */
-        MoveF,                  /* MOVS */
-        MoveF,                  /* MOVD */
-        CmpF,                   /* CMPS */
-        CmpF,                   /* CMPD */
-        Rtn,                    /* RTN  */
-        NegF,                   /* NEGF */
-        Promote,                /* PROM */
-        Promote8,               /* PROM8 */
-        Rtn,                    /* BFUNS */
-        Rtn,                    /* BFUND */
-        Rtn,                    /* BFUNL */
-        UnaryRtn,               /* UFUNS */
-        UnaryRtn,               /* UFUND */
-        UnaryRtn,               /* UFUNL */
-        Alloca4,                /* STK4 */
-        DoNop,                  /* DONOTHING */
-        NULL };                 /* BAD*/
+    #define pick(enum,opcode)  opcode,
+    #include "_tables.h"
+    #undef pick
+};
 
 extern  opcode_entry    *OpcodeTable( table_def i ) {
 /***************************************************/
