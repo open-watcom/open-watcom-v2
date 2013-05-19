@@ -7177,7 +7177,7 @@ boolean TypeParmSize( TYPE fn_type, target_size_t *parm_size )
     p = args->type_list;
     for( i = args->num_args; i != 0; --i ) {
         size += CgMemorySize( *p );
-        size = _RoundUp( size, sizeof( target_int ) );
+        size = _RoundUp( size, TARGET_INT );
         ++p;
     }
     *parm_size = size;

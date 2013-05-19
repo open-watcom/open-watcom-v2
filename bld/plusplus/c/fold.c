@@ -776,14 +776,14 @@ static PTREE foldUInt( CGOP op, PTREE left, target_ulong v2 )
         v1 ^= v2;
         break;
     case CO_RSHIFT:
-        if( ((target_ulong) v2) >= sizeof( target_long ) * CHAR_BIT ) {
+        if( ((target_ulong) v2) >= TARGET_LONG * CHAR_BIT ) {
             v1 = 0;
         } else {
             v1 >>= v2;
         }
         break;
     case CO_LSHIFT:
-        if( ((target_ulong) v2) >= sizeof( target_long ) * CHAR_BIT ) {
+        if( ((target_ulong) v2) >= TARGET_LONG * CHAR_BIT ) {
             v1 = 0;
         } else {
             v1 <<= v2;
@@ -875,14 +875,14 @@ static PTREE foldInt( CGOP op, PTREE left, target_long v2 )
         v1 ^= v2;
         break;
     case CO_RSHIFT:
-        if( ((target_ulong) v2) >= sizeof( target_long ) * CHAR_BIT ) {
+        if( ((target_ulong) v2) >= TARGET_LONG * CHAR_BIT ) {
             v1 = FoldSignedRShiftMax( v1 );
         } else {
             v1 >>= v2;
         }
         break;
     case CO_LSHIFT:
-        if( ((target_ulong) v2) >= sizeof( target_long ) * CHAR_BIT ) {
+        if( ((target_ulong) v2) >= TARGET_LONG * CHAR_BIT ) {
             v1 = 0;
         } else {
             v1 <<= v2;
