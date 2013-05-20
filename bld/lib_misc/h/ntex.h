@@ -42,24 +42,24 @@ typedef struct _REGISTRATION_RECORD {
 
 #define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
 
-_WCRTLINK void __DefaultExceptionHandler( void );
-_WCRTLINK void __NewExceptionFilter( REGISTRATION_RECORD * );
-_WCRTLINK void __DoneExceptionFilter( void );
+_WCRTLINK extern void __DefaultExceptionHandler( void );
+_WCRTLINK extern void __NewExceptionFilter( REGISTRATION_RECORD * );
+_WCRTLINK extern void __DoneExceptionFilter( void );
 
 struct dirent;
 
-void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr );
+extern void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr );
 extern void __GetNTAccessAttr( int rwmode, LPDWORD desired_access, LPDWORD attr );
 extern void __GetNTShareAttr( int share, LPDWORD share_mode );
 extern void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t );
 extern void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp );
-void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffb );
-void _w__GetNTDirInfo( struct _wdirent *dirp, LPWIN32_FIND_DATA ffb );
-BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb );
-BOOL _w__NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb );
-int __NTRealKey( INPUT_RECORD * );
-HANDLE __NTConsoleInput( void );
-HANDLE __NTConsoleOutput( void );
+extern void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffb );
+extern void __wGetNTDirInfo( struct _wdirent *dirp, LPWIN32_FIND_DATA ffb );
+extern BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb );
+extern BOOL __wNTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb );
+extern int __NTRealKey( INPUT_RECORD * );
+extern HANDLE __NTConsoleInput( void );
+extern HANDLE __NTConsoleOutput( void );
 
 #define HANDLE_OF(dirp) ( *( HANDLE * )( &(((char *)(dirp))[0]) ) )
 #define BAD_HANDLE      ((HANDLE)(~0))
