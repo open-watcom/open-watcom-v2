@@ -74,7 +74,7 @@ PICK( "READENTIREFIle",       "RF", ReadEntireFile,      TRUE,   SETFLAG_T_READE
 PICK( "READONLYCHeck",        "RC", ReadOnlyCheck,       TRUE,   SETFLAG_T_READONLYCHECK )
 PICK( "REALTABS",             "RT", RealTabs,            TRUE,   SETFLAG_T_REALTABS )
 PICK( "REGSUBMagic",          "RM", RegSubMagic,         TRUE,   SETFLAG_T_REGSUBMAGIC )
-PICK( "REMOVESpaceTrailing",  "RS", RemoveSpaceTrailing, TRUE,   SETFLAG_T_REMOVESPACETRAILING )
+PICK( "REMOVESpaceTrailing",  "RS", RemoveSpaceTrailing, FALSE,  SETFLAG_T_REMOVESPACETRAILING )
 PICK( "REPEATInfo",           "RI", RepeatInfo,          FALSE,  SETFLAG_T_REPEATINFO )
 PICK( "SAMEFILECHeck",        "SC", SameFileCheck,       FALSE,  SETFLAG_T_SAMEFILECHECK )
 PICK( "SAVECONfig",           "SN", SaveConfig,          FALSE,  SETFLAG_T_SAVECONFIG )
