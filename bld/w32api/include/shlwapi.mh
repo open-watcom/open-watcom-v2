@@ -268,8 +268,7 @@ typedef HUSKEY  *PHUSKEY;
 
 /* Macro to make version numbers for DllGetVersion() */
 #define MAKEDLLVERULL( p1, p2, p3, p4 ) \
-    (((ULONGLONG)(p1) << 48) | ((ULONGLONG)(p2) << 32) | ((ULONGLONG)(p3) << 16)) | \
-    (ULONGLONG)(p4))
+    (((ULONGLONG)(p1) << 48) | ((ULONGLONG)(p2) << 32) | ((ULONGLONG)(p3) << 16) | (ULONGLONG)(p4))
 
 /* QueryInterface() table macros */
 #ifndef STATIC_CAST
