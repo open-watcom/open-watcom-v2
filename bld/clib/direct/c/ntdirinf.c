@@ -57,7 +57,7 @@ void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
 }
 #endif
 
-void __F_NAME(__GetNTDirInfo,_w__GetNTDirInfo)(DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
+void __F_NAME(__GetNTDirInfo,__wGetNTDirInfo)(DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
 {
     __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = ffb->dwFileAttributes;
@@ -70,7 +70,7 @@ void __F_NAME(__GetNTDirInfo,_w__GetNTDirInfo)(DIR_TYPE *dirp, LPWIN32_FIND_DATA
     dirp->d_name[NAME_MAX] = 0;
 }
 
-BOOL __F_NAME(__NTFindNextFileWithAttr,_w__NTFindNextFileWithAttr)(
+BOOL __F_NAME(__NTFindNextFileWithAttr,__wNTFindNextFileWithAttr)(
                 HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb )
 {
     for(;;) {

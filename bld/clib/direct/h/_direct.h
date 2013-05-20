@@ -44,9 +44,9 @@ typedef unsigned    UINT_WC_TYPE;
 
 extern char *__tmpdir( char *__buff );
 #ifdef __WIDECHAR__
-_WCRTLINK extern DIR_TYPE *_w_opendir( const wchar_t *__name, unsigned __attr, DIR_TYPE *__dirp );
-_WCRTLINK extern DIR_TYPE *_w__opendir( const wchar_t *__name, unsigned __attr, DIR_TYPE *__dirp );
+extern DIR_TYPE *__wopendir( const wchar_t *__name, unsigned __attr, DIR_TYPE *__dirp );
+extern DIR_TYPE *___wopendir( const wchar_t *__name, unsigned __attr, DIR_TYPE *__dirp );
 #else
-_WCRTLINK extern DIR_TYPE *_opendir( const char *__name, unsigned __attr, DIR_TYPE *__dirp );
-_WCRTLINK extern DIR_TYPE *__opendir( const char *__name, unsigned __attr, DIR_TYPE *__dirp );
+extern DIR_TYPE *__opendir( const char *__name, unsigned __attr, DIR_TYPE *__dirp );
+extern DIR_TYPE *___opendir( const char *__name, unsigned __attr, DIR_TYPE *__dirp );
 #endif

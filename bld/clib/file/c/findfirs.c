@@ -58,7 +58,7 @@
 #if defined( __NT__ )
   #ifdef __WIDECHAR__
     #define FIND_FIRST              __lib_FindFirstFileW
-    #define CHECK_FIND_NEXT_ATTR    _w__NTFindNextFileWithAttr
+    #define CHECK_FIND_NEXT_ATTR    __wNTFindNextFileWithAttr
   #else
     #define FIND_FIRST              FindFirstFileA
     #define CHECK_FIND_NEXT_ATTR    __NTFindNextFileWithAttr

@@ -172,10 +172,4 @@ wcsnco          wcsncmp         _wcsncoll       d16 d32 nt  nta ntp         o16 
 write_          write           _write          d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
 wtoi__          _wtoi           _watoi          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
 wtol__          _wtol           _watol          d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-w_acce          _waccess        _w_access       d16 d32 nt  nta ntp         o16 o32         w16 w32
-w_fsop          _wfsopen        _w_fsopen       d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32
-w_full          _wfullpath      _w_fullpath     d16 d32 nt  nta ntp         o16 o32         w16 w32
-w_make          _wmakepath      _w_makepath     d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-w_spl2          _wsplitpath2    _w_splitpath2   d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-w_spli          _wsplitpath     _w_splitpath    d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
 _isasc          isascii         __isascii       d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk

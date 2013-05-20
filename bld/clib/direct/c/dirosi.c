@@ -63,7 +63,7 @@ static  int     is_directory( const char *name )
     return( 0 );
 }
 
-_WCRTLINK DIR_TYPE *_opendir( const char *dirname, unsigned attr, DIR_TYPE *dirp )
+DIR_TYPE *__opendir( const char *dirname, unsigned attr, DIR_TYPE *dirp )
 /********************************************************************************/
 {
     DIR_TYPE    tmp;
@@ -128,7 +128,7 @@ _WCRTLINK DIR_TYPE *_opendir( const char *dirname, unsigned attr, DIR_TYPE *dirp
 
 _WCRTLINK DIR_TYPE *opendir( const char *dirname )
 {
-    return( _opendir( dirname, SEEK_ATTRIB, NULL ) );
+    return( __opendir( dirname, SEEK_ATTRIB, NULL ) );
 }
 
 
@@ -165,7 +165,7 @@ _WCRTLINK void rewinddir( DIR_TYPE *dirp )
 {
     if( dirp == NULL || dirp->d_openpath == NULL )
         return;
-    if( _opendir( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
+    if( __opendir( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
         dirp->d_first = _DIR_INVALID;    /* so reads won't work any more */
     }
 }

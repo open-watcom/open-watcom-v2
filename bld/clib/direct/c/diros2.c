@@ -139,7 +139,7 @@ static int is_directory( const CHAR_TYPE *name )
 }
 
 
-_WCRTLINK DIR_TYPE *__F_NAME(__opendir,_w__opendir)( const CHAR_TYPE *dirname,
+DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname,
                                                unsigned attr, DIR_TYPE *dirp )
 /****************************************************************************/
 {
@@ -195,7 +195,7 @@ _WCRTLINK DIR_TYPE *__F_NAME(__opendir,_w__opendir)( const CHAR_TYPE *dirname,
 }
 
 
-_WCRTLINK DIR_TYPE *__F_NAME(_opendir,_w_opendir)( const CHAR_TYPE *dirname,
+DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname,
                                             unsigned attr, DIR_TYPE *dirp )
 /**************************************************************************/
 {
@@ -211,7 +211,7 @@ _WCRTLINK DIR_TYPE *__F_NAME(_opendir,_w_opendir)( const CHAR_TYPE *dirname,
     HANDLE_OF( &tmp ) = 0;                  /* initialize handle    */
     tmp.d_attr = _A_SUBDIR;
     if( !is_directory( dirname ) ) {
-        if( __F_NAME(__opendir,_w__opendir)( dirname, attr, &tmp ) == NULL ) {
+        if( __F_NAME(___opendir,___wopendir)( dirname, attr, &tmp ) == NULL ) {
             return( NULL );
         }
     }
@@ -235,7 +235,7 @@ _WCRTLINK DIR_TYPE *__F_NAME(_opendir,_w_opendir)( const CHAR_TYPE *dirname,
                     pathname[i++] = '\\';
                 }
                 __F_NAME(strcpy,wcscpy)( &pathname[i], STRING( "*.*" ) );
-                if( __F_NAME(__opendir,_w__opendir)( pathname, attr, &tmp ) == NULL ) {
+                if( __F_NAME(___opendir,___wopendir)( pathname, attr, &tmp ) == NULL ) {
                     return( NULL );
                 }
                 break;
@@ -268,7 +268,7 @@ _WCRTLINK DIR_TYPE *__F_NAME(_opendir,_w_opendir)( const CHAR_TYPE *dirname,
 _WCRTLINK DIR_TYPE *__F_NAME(opendir,_wopendir)( const CHAR_TYPE *dirname )
 /*************************************************************************/
 {
-    return( __F_NAME(_opendir,_w_opendir)( dirname, SEEK_ATTRIB, NULL ) );
+    return( __F_NAME(__opendir,__wopendir)( dirname, SEEK_ATTRIB, NULL ) );
 }
 
 
@@ -344,7 +344,7 @@ _WCRTLINK void __F_NAME(rewinddir,_wrewinddir)( DIR_TYPE *dirp )
 {
     if( dirp == NULL || dirp->d_openpath == NULL )
         return;
-    if( __F_NAME(_opendir,_w_opendir)( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
+    if( __F_NAME(__opendir,__wopendir)( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
         dirp->d_first = _DIR_INVALID;    /* so reads won't work any more */
     }
 }
