@@ -33,7 +33,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include "wio.h"
-#include "standard.h"
+#include "cgstd.h"
 #include "cg.h"
 #include "bckdef.h"
 #include "cgdefs.h"

@@ -32,7 +32,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "cgdefs.h"
 #include "cg.h"
 #include "bckdef.h"

@@ -30,7 +30,7 @@
 
 
 #define HW_DEFINE_VARS
-#include "standard.h"
+#include "cgstd.h"
 #include "coderep.h"
 #include "cgswitch.h"
 #include "rtclass.h"

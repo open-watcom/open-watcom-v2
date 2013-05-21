@@ -34,7 +34,7 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include <string.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "coderep.h"
 #include "procdef.h"
 #include "cgdefs.h"

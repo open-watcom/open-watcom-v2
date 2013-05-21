@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "standard.h"
+#include "cgstd.h"
 #include "coderep.h"
 #include "regset.h"
 #include "mipsregn.h"

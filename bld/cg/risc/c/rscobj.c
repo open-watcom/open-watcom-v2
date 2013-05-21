@@ -32,7 +32,7 @@
 #include "wio.h"
 #include <assert.h>
 #include <string.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cgaux.h"

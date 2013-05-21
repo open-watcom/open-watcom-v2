@@ -42,7 +42,7 @@
 
 #undef BY_CG
 
-#include "standard.h"
+#include "cgstd.h"
 #include "coderep.h"
 #include "targsys.h"
 #include "cgdefs.h"

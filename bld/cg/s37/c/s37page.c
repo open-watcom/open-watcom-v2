@@ -32,7 +32,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "cgmem.h"
 #include "cg.h"
 #include "cgaux.h"

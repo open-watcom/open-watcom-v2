@@ -32,7 +32,7 @@
 
 // 93/12/20 (jww) force re-compile
 
-#include "standard.h"
+#include "cgstd.h"
 #include "cg.h"
 #include "bckdef.h"
 #include "cgdefs.h"

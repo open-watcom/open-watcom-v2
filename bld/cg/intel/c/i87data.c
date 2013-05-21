@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "standard.h"
+#include "cgstd.h"
 #include "gen8087.h"
 
 pointer         FPStatWord;

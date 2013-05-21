@@ -30,7 +30,7 @@
 
 
 #define _LBit_DEFINE_BITNEXT
-#include "standard.h"
+#include "cgstd.h"
 #include "coderep.h"
 #include "opcodes.h"
 #include "conflict.h"

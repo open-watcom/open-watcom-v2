@@ -31,7 +31,7 @@
 
 
 #include <stdio.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "dump.h"
 
 extern  void    DumpChar(char);

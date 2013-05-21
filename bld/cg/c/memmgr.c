@@ -63,7 +63,7 @@ essentially no worst case performance scenario.
 #include <assert.h>
 #include <string.h>
 
-#include "standard.h"
+#include "cgstd.h"
 #include "cg.h"
 #if defined( _M_IX86 ) && defined( __WATCOMC__ )
     #include <i86.h>

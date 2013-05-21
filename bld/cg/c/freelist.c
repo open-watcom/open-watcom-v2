@@ -33,7 +33,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "standard.h"
+#include "cgstd.h"
 #include "cgmem.h"
 
 extern    pointer_int   FrlSize;

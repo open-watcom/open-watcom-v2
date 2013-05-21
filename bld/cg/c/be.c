@@ -33,7 +33,7 @@
 // (jww) 93/12/13 -- add initialization of type aliases
 
 #include <stdarg.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "cg.h"
 #include "bckdef.h"
 #include "cgdefs.h"

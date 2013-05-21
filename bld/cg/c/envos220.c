@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "standard.h"
+#include "cgstd.h"
 
 extern  char            *_Envptr;
 extern  char            *CopyStr( char *src, char *dst );

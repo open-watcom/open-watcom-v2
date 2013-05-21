@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "standard.h"
+#include "cgstd.h"
 void Blip(unsigned_16 loc,char ch )
 {
     loc = loc;

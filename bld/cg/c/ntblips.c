@@ -32,7 +32,7 @@
 
 #undef FAR
 #include <string.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "cgdefs.h"
 #include "cgblip.h"
 #include "zoiks.h"

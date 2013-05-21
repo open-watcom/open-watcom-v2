@@ -31,7 +31,7 @@
 
 
 #include <string.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "coderep.h"
 #include "opcodes.h"
 #include "regset.h"

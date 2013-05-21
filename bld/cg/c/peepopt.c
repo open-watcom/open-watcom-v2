@@ -33,7 +33,7 @@
 /* - collapse adjacent integral ADD,SUB operations */
 /* - collapse adjacent integral MUL operations */
 
-#include "standard.h"
+#include "cgstd.h"
 #include "coderep.h"
 #include "indvars.h"
 #include "opcodes.h"

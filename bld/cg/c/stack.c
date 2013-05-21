@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "standard.h"
+#include "cgstd.h"
 
 #if defined( __AXP__ ) || defined( __MIPS__ ) || defined( __NT__ ) || !defined( __WATCOMC__ )
 

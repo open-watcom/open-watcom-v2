@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "standard.h"
+#include "cgstd.h"
 #include "pattern.h"
 #include "coderep.h"
 #include "opcodes.h"

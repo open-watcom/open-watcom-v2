@@ -34,7 +34,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include "wio.h"
-#include "standard.h"
+#include "cgstd.h"
 #include "cgdefs.h"
 #include "cgmem.h"
 #include "cg.h"

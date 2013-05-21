@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "standard.h"
+#include "cgstd.h"
 #include "cgdefs.h"
 #include "typclass.h"
 #include "typedef.h"

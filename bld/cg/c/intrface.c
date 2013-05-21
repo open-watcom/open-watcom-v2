@@ -30,7 +30,7 @@
 
 
 #include <ctype.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "coderep.h"
 #include "cgdefs.h"
 #include "model.h"

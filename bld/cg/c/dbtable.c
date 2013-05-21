@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "standard.h"
+#include "cgstd.h"
 #include "pattern.h"
 #include "vergen.h"
 #include "hwreg.h"

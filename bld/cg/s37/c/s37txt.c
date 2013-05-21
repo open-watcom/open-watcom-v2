@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "cg.h"
 #include "cgaux.h"
 #include "bckdef.h"

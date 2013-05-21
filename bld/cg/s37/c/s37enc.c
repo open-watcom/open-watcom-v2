@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "coderep.h"
 #include "typedef.h"
 #include "opcodes.h"

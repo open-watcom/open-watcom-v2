@@ -31,7 +31,7 @@
 
 #include <stdio.h>
 #include <stddef.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "memsydep.h"
 #include "memcheck.h"
 #include "zoiks.h"

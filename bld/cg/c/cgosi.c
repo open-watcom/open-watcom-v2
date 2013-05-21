@@ -30,7 +30,7 @@
 
 
 #include <stdlib.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cg.h"

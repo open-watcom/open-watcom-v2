@@ -31,7 +31,7 @@
 
 
 #include <assert.h>
-#include "standard.h"
+#include "cgstd.h"
 #include "coderep.h"
 #include "conflict.h"
 #include "opcodes.h"
