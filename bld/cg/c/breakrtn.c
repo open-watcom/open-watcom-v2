@@ -32,7 +32,7 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
-#include "model.h"
+#include "data.h"
 
 typedef struct  edge_list {
         block_edge              *edge;
@@ -47,10 +47,6 @@ extern  bool            FixReturns( void );
 extern  void            FixEdges( void );
 extern  void            UnFixEdges( void );
 extern  void            FreeABlock( block * );
-
-extern  block           *HeadBlock;
-extern  block           *CurrBlock;
-extern  block           *BlockList;
 
 static  block           *Curr;
 static  block           *Break;

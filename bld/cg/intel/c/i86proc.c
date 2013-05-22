@@ -32,18 +32,14 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "model.h"
-#include "rtclass.h"
 #include "objrep.h"
 #include "ocentry.h"
 #include "gen8087.h"
 #include "cgaux.h"
 #include "stackok.h"
 #include "zoiks.h"
+#include "data.h"
 #include "feprotos.h"
-#include "addrname.h"
 #include "display.h"
 #include "rtrtn.h"
 
@@ -114,12 +110,6 @@ static  int         Push( hw_reg_set to_push );
 static  void        DoEnter( int level );
 static  void        DoEpilog( void );
 
-extern  block       *HeadBlock;
-extern  proc_def    *CurrProc;
-extern  bool        BlockByBlock;
-extern  type_length MaxStack;
-extern  hw_reg_set  GivenRegisters;
-extern  byte        OptForSize;
 extern  pointer     Parm8087[ MAX_8087_REG+1 ];
 
 #define WINDOWS_CHEAP  ( ( _IsModel( DLL_RESIDENT_CODE ) &&         \

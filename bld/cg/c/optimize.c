@@ -31,18 +31,12 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
-#include "opcodes.h"
 #include "cgdefs.h"
 #include "zoiks.h"
-#include "procdef.h"
-#include "addrname.h"
+#include "data.h"
 #include "x87.h"
 #include "makeins.h"
 
-
-extern    block         *HeadBlock;
-extern    conflict_node *ConfList;
 
 extern  bool            PropagateMoves(void);
 extern  instruction_id  Renumber(void);

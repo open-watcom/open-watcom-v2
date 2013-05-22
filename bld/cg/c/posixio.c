@@ -48,15 +48,16 @@
 #include "feprotos.h"
 
 
-typedef int handle;
+typedef int             handle;
+typedef objhandle       objoffset;
 
 enum stdfd { HStdIn=0, HStdOut =1, HStdErr = 2 };
 
-extern  char    *       CopyStr(char*,char*);
-extern  void            FatalError(char *);
+extern  char            *CopyStr( char *, char * );
+extern  void            FatalError( char * );
 
 
-static  unsigned_32     ObjOffset;
+static  objoffset       ObjOffset;
 static  handle          ObjFile;
 static  bool            NeedSeek;
 static  char            ObjName[PATH_MAX+1];
@@ -140,8 +141,8 @@ static  handle  CreateStream( char *name )
 }
 
 
-extern  bool    CGOpenf( void )
-/*****************************/
+bool    CGOpenf( void )
+/*********************/
 {
     CopyStr( FEAuxInfo( NULL, OBJECT_FILE_NAME ), ObjName );
     ObjFile = -1;
@@ -153,8 +154,8 @@ extern  bool    CGOpenf( void )
 }
 
 
-extern  void    OpenObj( void )
-/*****************************/
+void    OpenObj( void )
+/*********************/
 {
     ObjOffset = 0;
     NeedSeek = FALSE;
@@ -162,33 +163,34 @@ extern  void    OpenObj( void )
 }
 
 
-static  byte    DoSum( byte *buff, int len )
-/******************************************/
+static  byte    DoSum( byte *buff, uint len )
+/*******************************************/
 {
     byte        sum;
 
     sum = 0;
-    while( --len >= 0 ) {
+    while( len > 0 ) {
         sum += *buff++;
+        --len;
     }
     return( sum );
 }
 
-static  unsigned_32     Byte( objhandle i )
-/*****************************************/
+static  objoffset   Byte( objhandle i )
+/*************************************/
 {
     return( i );
 }
 
 
-static  objhandle       Offset( unsigned_32 i )
-/*********************************************/
+static  objhandle   Offset( objoffset offset )
+/********************************************/
 {
-    if( i > BIGGEST ) {
+    if( offset > BIGGEST ) {
         FatalError( "Object file too large" );
         return( 0 );
     } else {
-        return( i );
+        return( offset );
     }
 }
 
@@ -276,8 +278,8 @@ static  void    GetStream( handle h, byte *b, uint len )
 }
 
 
-static  void    SeekStream( handle h, unsigned_32 offset )
-/********************************************************/
+static  void    SeekStream( handle h, objoffset offset )
+/******************************************************/
 {
 #if 0
     offset = lseek( h, offset, 0 );
@@ -286,7 +288,7 @@ static  void    SeekStream( handle h, unsigned_32 offset )
     }
 #else
     struct buf  *pbuf;
-    unsigned_32 n;
+    objoffset   n;
 
     h = h;
     pbuf = BufList;
@@ -312,14 +314,14 @@ static  void    SeekStream( handle h, unsigned_32 offset )
 }
 
 
-extern  objhandle       AskObjHandle( void )
-/******************************************/
+objhandle       AskObjHandle( void )
+/**********************************/
 {
     return( Offset( ObjOffset ) );
 }
 
-extern  void    PutObjBytes( byte *buff, uint len )
-/*************************************************/
+void    PutObjBytes( byte *buff, uint len )
+/*****************************************/
 {
     if( NeedSeek ) {
         SeekStream( ObjFile, ObjOffset );
@@ -329,8 +331,8 @@ extern  void    PutObjBytes( byte *buff, uint len )
     ObjOffset += len;
 }
 
-extern  void    PutObjRec( byte class, byte *buff, uint len )
-/***********************************************************/
+void    PutObjRec( byte class, byte *buff, uint len )
+/***************************************************/
 {
 #include "pushpck1.h"
     static struct {
@@ -363,23 +365,23 @@ extern  void    PutObjRec( byte class, byte *buff, uint len )
 }
 
 
-extern  void    PatchObj( objhandle rec, uint offset, byte *buff, int len )
-/*************************************************************************/
+void    PatchObj( objhandle rec, uint roffset, byte *buff, uint len )
+/*******************************************************************/
 {
-    unsigned_32         recoffset;
-    byte                cksum;
-    unsigned_16         reclen;
-    byte                inbuff[80];
+    objoffset       recoffset;
+    byte            cksum;
+    unsigned_16     reclen;
+    byte            inbuff[80];
 
     recoffset = Byte( rec );
 
     SeekStream( ObjFile, recoffset + 1 );
     GetStream( ObjFile, (byte *)&reclen, 2 );
     reclen = _HostInt( reclen );
-    SeekStream( ObjFile, recoffset + offset + 3 );
+    SeekStream( ObjFile, recoffset + roffset + 3 );
     GetStream( ObjFile, inbuff, len );
 
-    SeekStream( ObjFile, recoffset + offset + 3 );
+    SeekStream( ObjFile, recoffset + roffset + 3 );
     PutStream( ObjFile, buff, len );
 
     SeekStream( ObjFile, recoffset + 2 + reclen );
@@ -395,17 +397,17 @@ extern  void    PatchObj( objhandle rec, uint offset, byte *buff, int len )
 }
 
 
-extern  void    GetFromObj( objhandle rec, uint offset, byte *buff, int len )
-/***************************************************************************/
+void    GetFromObj( objhandle rec, uint roffset, byte *buff, uint len )
+/*********************************************************************/
 {
-    SeekStream( ObjFile, Byte( rec ) + offset + 3 );
+    SeekStream( ObjFile, Byte( rec ) + roffset + 3 );
     GetStream( ObjFile, buff, len );
     NeedSeek = TRUE;
 }
 
 
-extern  void    AbortObj( void )
-/******************************/
+void    AbortObj( void )
+/**********************/
 {
     EraseObj = TRUE;
 }
@@ -432,8 +434,8 @@ static void FlushBuffers( handle h )
 }
 
 
-extern  void    CloseObj( void )
-/******************************/
+void    CloseObj( void )
+/**********************/
 {
     if( ObjFile != -1 ) {
         FlushBuffers( ObjFile );
@@ -446,15 +448,15 @@ extern  void    CloseObj( void )
 }
 
 
-extern  void    ScratchObj( void )
-/********************************/
+void    ScratchObj( void )
+/************************/
 {
     EraseObj = TRUE;
     CloseObj();
 }
 
-extern  void    PutError( char *str )
-/***********************************/
+void    PutError( char *str )
+/***************************/
 {
     while( *str != '\0' ) {
         write( HStdErr, str, 1 );
@@ -463,8 +465,8 @@ extern  void    PutError( char *str )
 }
 
 
-extern  void    CopyRite( void )
-/******************************/
+void    CopyRite( void )
+/**********************/
 {
     PutError( banner1w( "80x86 Code Generator", _I86WCGL_VERSION_ ) );
     PutError( "\r\n" );

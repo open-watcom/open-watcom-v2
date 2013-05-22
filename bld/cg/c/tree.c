@@ -31,30 +31,20 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "addrname.h"
-#include "model.h"
 #include "cgdefs.h"
-#include "procdef.h"
 #include "tree.h"
 #include "zoiks.h"
-#include "opcodes.h"
 #include "freelist.h"
 #include "cfloat.h"
 #include "targsys.h"
 #include "cgaux.h"
-#include "feprotos.h"
-#include "cgprotos.h"
-#ifndef NDEBUG
-    #include "echoapi.h"
-#endif
+#include "data.h"
 
 #include "addrfold.h"
 #include "bgcall.h"
 #include "bldcall.h"
 #include "bldins.h"
 #include "blips.h"
-#include "rtclass.h"
-#include "data.h"
 #include "display.h"
 #include "foldins.h"
 #include "inline.h"
@@ -70,8 +60,14 @@
 #include "types.h"
 #include "i64.h"
 
+#include "feprotos.h"
+#include "cgprotos.h"
+
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
     #include "i86segs.h"
+#endif
+#ifndef NDEBUG
+    #include "echoapi.h"
 #endif
 
 static  void    FreeTreeNode( tn node );

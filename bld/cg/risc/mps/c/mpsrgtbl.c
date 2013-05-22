@@ -31,13 +31,9 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "regset.h"
 #include "mipsregn.h"
-#include "model.h"
-#include "procdef.h"
 #include "zoiks.h"
-
-extern proc_def         *CurrProc;
+#include "data.h"
 
 static  hw_reg_set      Empty[] = {
     EMPTY

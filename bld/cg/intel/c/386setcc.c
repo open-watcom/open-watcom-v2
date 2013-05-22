@@ -32,9 +32,7 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "cfloat.h"
-#include "opcodes.h"
-#include "regset.h"
-#include "model.h"
+#include "data.h"
 #include "i64.h"
 #include "makeins.h"
 
@@ -45,9 +43,6 @@ extern  name            *AllocTemp(type_class_def);
 extern  name            *AllocS32Const(signed_32);
 extern  name            *AllocS64Const( unsigned_32 low, unsigned_32 high );
 extern  void            RemoveBlock( block * );
-
-extern  block           *HeadBlock;
-extern  type_length     TypeClassSize[];
 
 static  instruction     *SetToConst( block *blk, signed_64 *pcons ) {
 /*******************************************************************/
@@ -131,7 +126,7 @@ static  bool    FindFlowOut( block *blk ) {
     I32ToI64( -1, &neg_one );
     U64Sub( &true_cons, &false_cons, &diff );
     if( U64Cmp( &diff, &neg_one ) == 0 ) {
-	U64IncDec( &false_cons, -1 );
+        U64IncDec( &false_cons, -1 );
         reverse = TRUE;
     } else {
         if( U64Cmp( &diff, &one ) != 0 ) return( FALSE );

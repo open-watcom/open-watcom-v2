@@ -33,18 +33,18 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "cgdefs.h"
-#include "model.h"
 #include "seldef.h"
 #include "memcheck.h"
 #include "cgmem.h"
 #include "tree.h"
-#include "addrname.h"
 #include "cfloat.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include "types.h"
+#include "data.h"
 #include "feprotos.h"
 #include "cgprotos.h"
+#include "types.h"
+#include "bldins.h"
 
 #ifndef NDEBUG
 #include "echoapi.h"
@@ -52,9 +52,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #endif
-
-#include "bldins.h"
-#include "rtclass.h"
 
 extern  void            FEPtr(sym_handle,type_def*,offset);
 extern  seg_id          AskOP(void);
@@ -149,8 +146,6 @@ extern  pointer         SafeRecurse( pointer (* rtn)( pointer ), pointer arg );
 #ifdef QNX_FLAKEY
 unsigned long   OrigModel;
 #endif
-
-extern    byte  OptForSize;
 
 #define MAX_BCK_INFO    1000    // number of bck_info's per carve block
 

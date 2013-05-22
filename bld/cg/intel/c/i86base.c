@@ -32,12 +32,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "procdef.h"
-#include "opcodes.h"
-
-extern  bool            BlockByBlock;
-extern  name            *Names[];
-extern  block           *HeadBlock;
+#include "data.h"
 
 #define MAX_SHORT_NEG   127
 #define MAX_SHORT_POS   127

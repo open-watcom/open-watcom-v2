@@ -32,12 +32,9 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "model.h"
-#include "procdef.h"
-#include "opcodes.h"
 #include "objrep.h"
-#include "addrname.h"
 #include "cgmem.h"
+#include "data.h"
 #include "addrfold.h"
 #include "makeins.h"
 #include "display.h"
@@ -58,12 +55,6 @@ extern  void            AddIns(instruction*);
 extern  name            *AllocTemp(type_class_def);
 extern  name            *AllocRegName(hw_reg_set);
 extern  hw_reg_set      DisplayReg(void);
-
-
-extern    proc_def              *CurrProc;
-extern    type_class_def        ClassPointer;
-extern    type_def              *TypePtr;
-extern    type_def              *TypeProcParm;
 
 
 static  name    *DisplayField( int level )

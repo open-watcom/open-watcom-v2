@@ -36,24 +36,22 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cgaux.h"
-#include "procdef.h"
 #include "ocentry.h"
 #include "cgmem.h"
 #include "reloc.h"
 #include "cgswitch.h"
-#include "model.h"
 #include "dbcue.h"
 #include "import.h"
 #include "owl.h"
-#include "rtclass.h"
 #include "rscobj.h"
 #include "autodep.h"
 #include "axpencod.h"
+#include "data.h"
 #include "feprotos.h"
 #include "rtrtn.h"
 
 #define HANDLE_TO_OWL(x)    ((owl_file_handle)(x + 1))
-#define OWL_TO_HANDLE2(x)   ((pointer_int)x - 1)
+#define OWL_TO_HANDLE(x)    ((pointer_int)x - 1)
 
 extern  void            CloseObj( void );
 extern  void            OpenObj( void );
@@ -110,7 +108,6 @@ static  section_def             *sectionDefs[ N_SECTIONS ];
 
 extern  int                     ObjFile;
 static  short                   CurrFNo;
-extern  proc_def                *CurrProc;
 
 extern section_def *FindSection( seg_id id )
 /******************************************/

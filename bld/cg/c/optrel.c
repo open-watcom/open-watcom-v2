@@ -31,8 +31,6 @@
 
 #include "optwif.h"
 
-extern    byte          OptForSize;
-
 extern  void            TryScrapLabel(code_lbl*);
 extern  byte            ReverseCondition(byte);
 extern  void            AddNewJump(ins_entry*,code_lbl*);

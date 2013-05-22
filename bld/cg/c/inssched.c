@@ -29,22 +29,19 @@
 ****************************************************************************/
 
 
-#include <limits.h>
 #include "cgstd.h"
+#include <limits.h>
 #include "coderep.h"
 #include "indvars.h"
-#include "opcodes.h"
 #include "cgmem.h"
-#include "model.h"
 #include "spawn.h"
 #include "memout.h"
-#include "procdef.h"
 #include "freelist.h"
 #include "sched.h"
 #include "pattern.h"
 #include "vergen.h"
 #include "zoiks.h"
-#include "addrname.h"
+#include "data.h"
 #include "x87.h"
 
 
@@ -64,10 +61,6 @@ extern  hw_reg_set      LowReg(hw_reg_set);
 extern  hw_reg_set      HighReg(hw_reg_set);
 extern  void            ClearInsBits( instruction_flags );
 extern  hw_reg_set      FullReg( hw_reg_set );
-
-extern  proc_def        *CurrProc;
-extern  block           *HeadBlock;
-extern  byte            OptForSize;
 
 #define DEPS_IN_BLOCK    20
 

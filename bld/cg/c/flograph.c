@@ -32,17 +32,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "cgmem.h"
-#include "model.h"
 #include "zoiks.h"
-#include "procdef.h"
 #include "stackok.h"
-
-extern    block         *HeadBlock;
-extern    block         *CurrBlock;
-extern    block         *BlockList;
-extern    proc_def      *CurrProc;
+#include "data.h"
 
 extern  instruction_id  Renumber( void );
 extern  block           *NewBlock(label_handle,bool);

@@ -36,8 +36,6 @@
 #include "cg.h"
 #include "feprotos.h"
 
-extern void             ScratchObj(void);
-
 extern  char            *_BreakFlagPtr;
 static  int             TicCount;
 bool                    BlipsOn;

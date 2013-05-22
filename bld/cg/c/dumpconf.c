@@ -31,9 +31,8 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
-#include "regset.h"
 #include "dump.h"
+#include "data.h"
 
 extern  void            DumpNL();
 extern  void            DumpPtr(pointer);
@@ -45,7 +44,6 @@ extern  void            Dump8h(unsigned_32);
 extern  void            DumpGBit(global_bit_set*);
 extern  void            DumpLBit(local_bit_set*);
 
-extern  conflict_node   *ConfList;
 extern  hw_reg_set      *RegSets[];
 
 

@@ -31,8 +31,8 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "addrname.h"
 #include "dump.h"
+#include "data.h"
 
 extern  void            DumpNL();
 extern  void            DumpOperand(name*);
@@ -40,8 +40,6 @@ extern  void            DumpInt(int);
 extern  void            DumpLong(signed_32);
 extern  void            DumpPtr(pointer);
 extern  void            DumpIns(instruction*);
-
-extern  block   *HeadBlock;
 
 static char *Classes[] = {
     "CL_ADDR_GLOBAL",

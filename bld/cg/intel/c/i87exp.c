@@ -32,11 +32,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "addrname.h"
-#include "model.h"
-#include "opcodes.h"
-#include "conflict.h"
-#include "procdef.h"
 #include "pattern.h"
 #include "vergen.h"
 #include "gen8087.h"
@@ -44,20 +39,17 @@
 #include "cfloat.h"
 #include "cgaux.h"
 #include "funits.h"
+#include "data.h"
 #include "feprotos.h"
 #include "x87.h"
 #include "makeins.h"
 
 
-extern  block           *HeadBlock;
-extern  bool            BlockByBlock;
 extern  hw_reg_set      FPRegs[];
 extern  name            *FPStatWord;
 extern  int             Max87Stk;
 extern  bool            Used87;
-extern  byte            OptForSize;
 extern  opcode_entry    DoNop[];
-extern  type_length     TypeClassSize[];
 
 extern  void            Opt8087( void );
 extern  bool            DoesSomething(instruction*);

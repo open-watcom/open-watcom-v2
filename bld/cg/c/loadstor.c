@@ -31,16 +31,12 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
-#include "opcodes.h"
 #include "stackok.h"
 #include "zoiks.h"
+#include "data.h"
 
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  bool            NameIsConstant(name*);
-
-extern    block *HeadBlock;
-extern    bool  BlockByBlock;
 
 #define REAL_REFERENCE  BLOCK_MARKED
 #define NO_LOAD_STORE   BLOCK_VISITED

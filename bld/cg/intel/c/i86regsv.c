@@ -32,17 +32,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
-#include "model.h"
+#include "data.h"
 #include "savings.h"
-#include "opcodes.h"
-#include "procdef.h"
 
 extern  savings         Save;
-extern  hw_reg_set      GivenRegisters;
-extern  bool            BlockByBlock;
-extern  conflict_node   *ConfList;
-extern  block           *HeadBlock;
 
 extern  hw_reg_set      MustSaveRegs( void );
 extern  void            SetCost(save_def*,save_def);

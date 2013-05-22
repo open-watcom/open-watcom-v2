@@ -31,19 +31,17 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "pattern.h"
 #include "vergen.h"
 #include "reloc.h"
 #include "zoiks.h"
-#include "model.h"
 #include "coff.h"
-#include "procdef.h"
 #include "cgaux.h"
 #include "ppcenc.h"
 #include "ppcgen.h"
 #include <assert.h>
 #include <stdio.h>
+#include "data.h"
 
 extern void DumpInsOnly( instruction * );
 extern void DumpString( char * );
@@ -72,8 +70,6 @@ extern code_lbl         *GetWeirdPPCDotDotLabel( code_lbl * );
 extern  void            GenCondJump( instruction *cond );
 
 extern type_class_def   Unsigned[];
-extern type_length      TypeClassSize[];
-extern proc_def         *CurrProc;
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 #define _IsSigned( type )               ( Unsigned[type] != type )
@@ -182,8 +178,8 @@ static  opcode  *FindImmedOpcodes( instruction *ins )
 }
 
 
-extern  void    GenFPOPINS( opcode op1, opcode op2, reg_index a, reg_index c, reg_index d )
-//*****************************************************************************************
+extern  void    GenFPOPINS( opcode op1, opcode op2, reg_idx a, reg_idx c, reg_idx d )
+//***********************************************************************************
 {
     ppc_ins             encoding;
 
@@ -192,8 +188,8 @@ extern  void    GenFPOPINS( opcode op1, opcode op2, reg_index a, reg_index c, re
 }
 
 
-extern  void    GenOPINS( opcode op1, opcode op2, reg_index a, reg_index b, reg_index s )
-//***************************************************************************************
+extern  void    GenOPINS( opcode op1, opcode op2, reg_idx a, reg_idx b, reg_idx s )
+//*********************************************************************************
 {
     ppc_ins             encoding;
 
@@ -202,8 +198,8 @@ extern  void    GenOPINS( opcode op1, opcode op2, reg_index a, reg_index b, reg_
 }
 
 
-extern  void    GenOPIMM( opcode op1, reg_index d, reg_index a, signed_16 immed )
-//*******************************************************************************
+extern  void    GenOPIMM( opcode op1, reg_idx d, reg_idx a, signed_16 immed )
+//***************************************************************************
 {
     ppc_ins             encoding;
 
@@ -212,8 +208,8 @@ extern  void    GenOPIMM( opcode op1, reg_index d, reg_index a, signed_16 immed 
 }
 
 
-extern  void    GenMTSPR( reg_index d, uint_32 spr, bool from )
-//*************************************************************
+extern  void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
+//***********************************************************
 {
     ppc_ins             encoding;
 
@@ -226,8 +222,8 @@ extern  void    GenMTSPR( reg_index d, uint_32 spr, bool from )
 }
 
 
-extern  void    GenMEMINS( opcode op, reg_index d, reg_index i, signed_16 displacement )
-/**************************************************************************************/
+extern  void    GenMEMINS( opcode op, reg_idx d, reg_idx i, signed_16 displacement )
+/**********************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -260,8 +256,8 @@ extern  void    GenCONDBR( opcode op, opcode bo, opcode bi, pointer label )
 }
 
 
-extern  void    GenCMP( opcode op, opcode op2, reg_index a, reg_index b )
-/***********************************************************************/
+extern  void    GenCMP( opcode op, opcode op2, reg_idx a, reg_idx b )
+/*******************************************************************/
 {
     ppc_ins             encoding;
 
@@ -270,8 +266,8 @@ extern  void    GenCMP( opcode op, opcode op2, reg_index a, reg_index b )
 }
 
 
-extern  void    GenCMPIMM( opcode op, reg_index a, signed_16 imm )
-/****************************************************************/
+extern  void    GenCMPIMM( opcode op, reg_idx a, signed_16 imm )
+/**************************************************************/
 {
     ppc_ins             encoding;
 
@@ -337,8 +333,8 @@ static  void    doCall( instruction *ins )
 }
 
 
-static  void    getMemEncoding( name *mem, reg_index *index, int_16 *offset )
-/***************************************************************************/
+static  void    getMemEncoding( name *mem, reg_idx *index, int_16 *offset )
+/*************************************************************************/
 {
     switch( mem->n.class ) {
     case N_INDEXED:
@@ -402,7 +398,7 @@ static  void    doLoadStore( instruction *ins, bool load )
     name        *mem;
     name        *reg;
     opcode      op;
-    reg_index   index;
+    reg_idx     index;
     int_16      offset;
 
     if( load ) {
@@ -464,9 +460,9 @@ static  void    doZero( instruction *ins )
 static  void    GenCallIndirect( instruction *call )
 /**************************************************/
 {
-    reg_index   src;
-    reg_index   reg;
-    reg_index   mem_index;
+    reg_idx     src;
+    reg_idx     reg;
+    reg_idx     mem_index;
     int_16      mem_offset;
     name        *addr;
     opcode      ldw;
@@ -502,9 +498,9 @@ static  void    GenVaStart( instruction *ins )
     opcode      stb;
     opcode      stw;
     opcode      li;
-    reg_index   reg;
-    reg_index   tmp;
-    reg_index   stack;
+    reg_idx     reg;
+    reg_idx     tmp;
+    reg_idx     stack;
 
     assert( ins->operands[0]->n.class == N_REGISTER );
     reg = _NameReg( ins->operands[0] );
@@ -551,15 +547,15 @@ extern  void    GenRET( void )
 static  void    Encode( instruction *ins )
 /****************************************/
 {
-    reg_index           a;      // usually used for the result
-    reg_index           b;
-    reg_index           s;
-    reg_index           temp;
+    reg_idx             a;      // usually used for the result
+    reg_idx             b;
+    reg_idx             s;
+    reg_idx             temp;
     opcode              op1;
     opcode              op2;
     opcode              *ops;
     signed_16           mem_offset;
-    reg_index           mem_index;
+    reg_idx             mem_index;
 
 
     switch( ins->u.gen_table->generate ) {

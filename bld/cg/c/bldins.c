@@ -31,22 +31,17 @@
 
 #include "cgstd.h"
 #include "cgdefs.h"
-#include "model.h"
 #include "coderep.h"
-#include "procdef.h"
 #include "cgmem.h"
-#include "opcodes.h"
-#include "addrname.h"
 #include "memcheck.h"
 #include "cfloat.h"
-#include "regset.h"
-#include "rttable.h"
-#include "feprotos.h"
-#include "types.h"
 #include "makeins.h"
+#include "data.h"
+#include "feprotos.h"
+
+#include "bldins.h"
 #include "addrfold.h"
 #include "display.h"
-#include "bldins.h"
 
 
 extern  an              MakeConst(pointer,type_def*);
@@ -87,14 +82,6 @@ extern  hw_reg_set      StackReg( void );
 extern  hw_reg_set      VarargsHomePtr( void );
 extern  an              RegName( hw_reg_set, type_def *);
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
-
-extern    bool          BlockByBlock;
-extern    block         *CurrBlock;
-extern    block         *BlockList;
-extern    proc_def      *CurrProc;
-extern    type_def      *TypeInteger;
-extern    type_def      *TypeNone;
-extern    bool          HaveCurrBlock;
 
 static  void    BoolFree( bn b );
 

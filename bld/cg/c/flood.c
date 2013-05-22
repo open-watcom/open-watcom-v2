@@ -34,7 +34,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "conflict.h"
-#include "opcodes.h"
 #include "cgdefs.h"
 #include "model.h"
 

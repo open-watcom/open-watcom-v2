@@ -35,12 +35,11 @@
 #include "cgmem.h"
 #include "memcheck.h"
 #include "freelist.h"
+#include "data.h"
 
 extern  hw_reg_set      LowOffsetReg(hw_reg_set);
 extern  name            *AllocRegName(hw_reg_set);
 extern  hw_reg_set      HighOffsetReg(hw_reg_set);
-
-extern  name            *Names[];
 
 
 extern  pointer ScAlloc( int size )

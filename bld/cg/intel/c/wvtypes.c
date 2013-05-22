@@ -32,18 +32,15 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
 #include "cgmem.h"
-#include "symdbg.h"
-#include "model.h"
-#include "typedef.h"
-#include "types.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
-#include "dbgstrct.h"
 #include "dbcue.h"
 #include "wvdbg.h"
+#include "data.h"
+#include "types.h"
+#include "dbgstrct.h"
 
 extern  uint            BuffLoc(void);
 extern  void            BuffByte(byte);
@@ -70,8 +67,6 @@ extern  dbg_loc         LocDupl( dbg_loc );
 static  void            NewType( temp_buff *temp, uint ty_def );
 static  void            EndType( bool check_too_big );
 
-extern  unsigned_16     TypeIdx;
-extern  seg_id          DbgTypes;
 extern  cue_ctl         LineInfo;
 extern  fname_ctl       DBFiles;
 

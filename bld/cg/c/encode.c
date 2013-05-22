@@ -32,16 +32,13 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "symdbg.h"
 #include "ocentry.h"
 #include "system.h"
 #include "cgaux.h"
 #include "cgdefs.h"
-#include "typedef.h"
 #include "objrep.h"
 #include "encode.h"
-#include "model.h"
+#include "data.h"
 
 
 extern  void            GenSetCC( instruction * );
@@ -55,8 +52,6 @@ extern  void            DumpString( char * );
 extern  void            DumpPtr( pointer );
 extern  void            DumpInt( int );
 extern  void            DumpNL( void );
-
-extern  byte            OptForSize;
 
 static  label_handle    LocateLabel( instruction *ins, int index ) {
 /*******************************************************************

@@ -32,11 +32,10 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "regset.h"
-#include "opcodes.h"
 #include "vergen.h"
 #include "memcheck.h"
 #include "zoiks.h"
+#include "data.h"
 
 extern  void            EXBlip(void);
 extern  instruction     *Reduce(instruction*);
@@ -51,7 +50,6 @@ extern  reg_set_index   SpecialPossible(instruction*);
 extern  reg_set_index   CallIPossible(instruction*);
 extern  bool            VolatileIns(instruction*);
 
-extern    block         *HeadBlock;
 extern    op_regs       RegList[];
 extern    hw_reg_set    *RegSets[];
 

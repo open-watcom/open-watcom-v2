@@ -30,27 +30,25 @@
 
 
 #include "cgstd.h"
-#include "coderep.h"
-#include "pattern.h"
-#include "procdef.h"
-#include "cgdefs.h"
-#include "cgmem.h"
-#include "model.h"
-#include "ocentry.h"
-#include "zoiks.h"
-#include "cgaux.h"
-#include "typedef.h"
-#include "types.h"
-#include "dbgstrct.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <setjmp.h>
 #include <stdlib.h>
 #include <string.h>
+#include "coderep.h"
+#include "pattern.h"
+#include "cgdefs.h"
+#include "cgmem.h"
+#include "ocentry.h"
+#include "zoiks.h"
+#include "cgaux.h"
+#include "dbgstrct.h"
 #include "dw.h"
 #include "dwarf.h"
 #include "dfdbg.h"
 #include "dbcue.h"
+#include "data.h"
+#include "types.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 
@@ -90,9 +88,7 @@ extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
 
-extern    source_line_number    SrcLine;
-extern    proc_def              *CurrProc;
-extern    struct opcode_entry   DbgInfo[];
+extern  struct opcode_entry   DbgInfo[];
 
 extern  void            DFBlkBeg( dbg_block *blk, offset lc );
 static  void            DumpLocals( dbg_local *local );

@@ -34,10 +34,7 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "conflict.h"
-#include "procdef.h"
-#include "model.h"
-#include "opcodes.h"
+#include "data.h"
 #include "feprotos.h"
 
 extern  void            FindReferences( void );
@@ -45,13 +42,6 @@ extern  conflict_node   *AddConflictNode(name*);
 extern  name            *DeAlias(name*);
 extern  save_def        Weight( save_def value, block *blk );
 extern  void            *SortList(void*,unsigned int,bool(*)(void*,void*));
-
-
-extern  block           *HeadBlock;
-extern  name            *Names[];
-extern  bool            BlockByBlock;
-extern  proc_def        *CurrProc;
-extern  global_bit_set  MemoryBits;
 
 static  void            PropagateConflicts( void );
 static  void            LiveAnalysis( block *tail, global_bit_set memory_bits );

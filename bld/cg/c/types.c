@@ -30,11 +30,9 @@
 
 
 #include "cgstd.h"
-#include "cgdefs.h"
-#include "typclass.h"
-#include "typedef.h"
+#include "coderep.h"
 #include "cgmem.h"
-#include "types.h"
+#include "data.h"
 
 typedef enum {
         TYPE_DEFINITION,
@@ -56,17 +54,6 @@ typedef struct type_list {
         struct type_list    *link;
         type_class          format;
 } type_list;
-
-extern    type_def      *TypeInteger;
-extern    type_def      *TypeHugeInteger;
-extern    type_def      *TypeLongInteger;
-extern    type_def      *TypeLongLongInteger;
-extern    type_def      *TypeNearInteger;
-extern    type_def      *TypeUnsigned;
-extern    type_def      *TypePtr;
-extern    type_def      *TypeBoolean;
-extern    type_def      *TypeNone;
-extern    type_def      *TypeProcParm;
 
 extern    void          TargTypeInit(void);
 

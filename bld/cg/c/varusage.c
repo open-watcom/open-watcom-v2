@@ -31,17 +31,11 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "cgmem.h"
-#include "conflict.h"
 #include "hwreg.h"
+#include "data.h"
 
 extern  name            *DeAlias(name*);
-
-extern    block         *HeadBlock;
-extern    name          *Names[];
-extern    conflict_node *ConfList;
-extern    bool          BlockByBlock;
 
 
 static  void    Use( name *op, block *blk, var_usage usage )

@@ -32,25 +32,22 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "symdbg.h"
 #include "ocentry.h"
 #include "cgmem.h"
 #include "vergen.h"
 #include "system.h"
 #include "escape.h"
-#include "model.h"
 #include "pcencode.h"
 #include "cgaux.h"
 #include "cgdefs.h"
 #include "seldef.h"
-#include "typedef.h"
-#include "types.h"
 #include "pccode.h"
 #include "objrep.h"
 #include "fppatch.h"
 #include "cypfunc.h"
 #include "encode.h"
+#include "data.h"
+#include "types.h"
 #include "feprotos.h"
 
 extern  hw_reg_set      Low32Reg(hw_reg_set);
@@ -91,7 +88,6 @@ static  void            Pushf(void);
 extern  int             ILen;
 extern  fp_patches      FPPatchType;
 extern  bool            Used87;
-extern  byte            OptForSize;
 
 
 static byte UCondTable[] = {

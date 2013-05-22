@@ -33,15 +33,14 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "cgmem.h"
-#include "addrname.h"
 #include "tree.h"
 #include "seldef.h"
-#include "types.h"
 #include "cgswitch.h"
-#include "makeins.h"
+#include "data.h"
 #include "cgprotos.h"
+#include "types.h"
+#include "makeins.h"
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
 #define MIN_LVALUES     5            /* to make it worth while for long sca*/
@@ -93,7 +92,6 @@ static  void    GenValuesForward( select_list *list, signed_32 hi,
                                   signed_32 lo, signed_32 to_sub,
                                   cg_type tipe );
 
-extern    byte  OptForSize;
 
 static  signed_32 Balance( signed_32 size, signed_32 time ) {
 /*********************************************************/

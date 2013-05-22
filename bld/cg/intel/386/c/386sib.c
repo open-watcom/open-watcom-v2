@@ -31,9 +31,8 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "cgmem.h"
-#include "model.h"
+#include "data.h"
 #include "makeins.h"
 
 extern  instruction     *SIBPossibleIndex( instruction *, name *, name **, bool *, hw_reg_set, hw_reg_set, bool *, bool * );
@@ -43,9 +42,6 @@ extern  name            *ScaleIndex( name *, name *, type_length, type_class_def
 extern  hw_reg_set      Low64Reg( hw_reg_set );
 extern  void            ReplaceOperand( instruction *, name *, name * );
 extern  byte            *Copy( byte *, byte *, uint );
-
-extern  block           *HeadBlock;
-extern  type_length     TypeClassSize[];
 
 typedef struct sib_info {
     struct sib_info     *next;

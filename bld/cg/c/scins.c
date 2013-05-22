@@ -33,13 +33,10 @@
 #include "coderep.h"
 #include "score.h"
 #include "vergen.h"
-#include "opcodes.h"
 #include "pattern.h"
-#include "typedef.h"
-#include "procdef.h"
-#include "addrname.h"
-#include "x87.h"
 #include "makeins.h"
+#include "data.h"
+#include "x87.h"
 
 
 extern  int             NumOperands(instruction*);
@@ -50,8 +47,6 @@ extern  bool            CanReplace(instruction*);
 extern  instruction     *rSWAPOPS(instruction*);
 extern  instruction     *rSWAPCMP(instruction*);
 extern  bool            IsStackReg(name*);
-
-extern  type_length     TypeClassSize[];
 
 extern  opcode_entry    *ResetGenEntry( instruction *ins ) {
 /**********************************************************/

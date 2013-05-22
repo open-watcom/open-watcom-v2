@@ -32,15 +32,12 @@
 #include "cgstd.h"
 #include "pattern.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "regset.h"
 #include "vergen.h"
-#include "model.h"
 #include "funits.h"
 #include "makeins.h"
 #include "zoiks.h"
-#include "rttable.h"
 #include "convins.h"
+#include "data.h"
 
 extern  name            *AllocTemp( type_class_def );
 extern  void            MoveSegOp( instruction *, instruction *, int );

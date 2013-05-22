@@ -30,19 +30,17 @@
 
 
 #include "cgstd.h"
-#include "string.h"
+#include <string.h>
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "symdbg.h"
-#include "model.h"
-#include "typedef.h"
-#include "types.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
 #include "cvdbg.h"
 #include "dbgstrct.h"
+#include "data.h"
+#include "types.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -77,8 +75,6 @@ extern  void        CVOutSym( cv_out *out, sym_handle sym );
 extern  void        CVOutBck( cv_out *out, bck_info *bck, offset add,  dbg_type tipe );
 extern  void        CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe );
 
-
-extern  uint        TypeIdx;
 extern  seg_id      CVTypes;
 
 

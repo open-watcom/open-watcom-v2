@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "procdef.h"
 #include "cgdefs.h"
 #include "typedef.h"

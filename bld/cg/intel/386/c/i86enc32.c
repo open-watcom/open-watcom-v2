@@ -33,14 +33,11 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "pattern.h"
 #include "vergen.h"
 #include "pccode.h"
 #include "system.h"
 #include "escape.h"
-#include "model.h"
-#include "procdef.h"
 #include "ocentry.h"
 #include "pcencode.h"
 #include "objrep.h"
@@ -48,9 +45,9 @@
 #include "zeropage.h"
 #include "fppatch.h"
 #include "cfloat.h"
-#include "rtclass.h"
 #include "cgaux.h"
 #include "p5prof.h"
+#include "data.h"
 #include "feprotos.h"
 #include "i86obj.h"
 
@@ -107,11 +104,9 @@ extern  seg_id          AskCodeSeg( void );
 extern  void            OutLblPatch( label_handle, fix_class, offset );
 extern  void            OutLabel( label_handle );
 
-extern  bool            OptForSize;
 extern  template        Temp;   /* template for oc_entries*/
 extern  byte            Inst[];  /* template for instructions*/
 extern  int             ILen;
-extern  proc_def        *CurrProc;
 
 /* forward declarations */
 extern  void            DoRelocConst( name *op, type_class_def kind );

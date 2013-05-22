@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "cgdefs.h"
 #include "tree.h"
 #include "addrname.h"

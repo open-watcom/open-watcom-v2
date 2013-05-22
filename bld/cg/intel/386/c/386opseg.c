@@ -31,12 +31,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "model.h"
+#include "data.h"
 #include "zeropage.h"
 
 zero_page_scheme        ZPageType;
-extern  block           *HeadBlock;
 
 extern  name            *SAllocIndex( name *, name *, type_length, type_class_def, type_length );
 extern  name            *ScaleIndex( name *, name *, type_length, type_class_def, type_length, int, i_flags );

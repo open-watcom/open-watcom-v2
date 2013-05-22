@@ -32,13 +32,9 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
-#include "opcodes.h"
 #include "stackok.h"
 #include "stack.h"
-
-extern  block           *HeadBlock;
-extern  conflict_node   *ConfList;
+#include "data.h"
 
 extern  void            NullConflicts( var_usage );
 extern  void            FreeConflicts( void );

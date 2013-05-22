@@ -35,7 +35,7 @@
 
 #include "offset.h"
 
-typedef int                     objhandle;
+typedef unsigned long           objhandle;
 
 typedef enum {
         BYTE_PATCH              = 0x00,
@@ -95,3 +95,11 @@ typedef struct object {
         unsigned                pending_label_line      : 1;
         cg_linenum              pending_line_number;
 } object;
+
+extern  void            CloseObj( void );
+extern  void            OpenObj( void );
+extern  void            AbortObj( void );
+extern  void            ScratchObj( void );
+extern  void            PatchObj(objhandle,uint,byte*,uint);
+extern  void            GetFromObj(objhandle,uint,byte*,uint);
+extern  objhandle       AskObjHandle( void );

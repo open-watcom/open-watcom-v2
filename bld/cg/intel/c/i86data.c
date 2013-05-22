@@ -33,18 +33,16 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "symdbg.h"
 #include "ocentry.h"
 #include "escape.h"
 #include "objrep.h"
 #include "system.h"
 #include "jumps.h"
 #include "zoiks.h"
-#include "model.h"
 #include "cgaux.h"
-#include "typedef.h"
-#include "feprotos.h"
 #include "i86obj.h"
+#include "data.h"
+#include "feprotos.h"
 
 extern  constant_defn   *GetFloat(name*,type_class_def);
 extern  void            OutPatch(label_handle,patch_attr);
@@ -80,8 +78,6 @@ extern  void            IterBytes( offset len, byte pat );
 
 extern  void            OutLblPatch( label_handle lbl, fix_class class, offset plus );
 static  void            DoLblPtr( label_handle lbl, seg_id seg, fix_class class, offset plus );
-
-extern  type_length     TypeClassSize[];
 
 
 extern  void    DataAlign( unsigned_32 align ) {

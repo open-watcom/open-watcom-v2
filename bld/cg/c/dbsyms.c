@@ -30,27 +30,25 @@
 
 
 #include "cgstd.h"
+#include <string.h>
 #include "coderep.h"
 #include "pattern.h"
-#include "procdef.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "model.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include "typedef.h"
-#include "types.h"
 #include "dbgstrct.h"
 #include "dbcue.h"
+#include "data.h"
+#include "types.h"
 #include "makeins.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif
-#include <string.h>
 
 extern  void            AddIns(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
@@ -103,9 +101,7 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc );
 extern  void    CVEpiBeg( dbg_rtn *rtn, offset lc );
 extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc );
 
-extern    source_line_number    SrcLine;
-extern    proc_def              *CurrProc;
-extern    struct opcode_entry   DbgInfo[];
+extern  struct opcode_entry   DbgInfo[];
 
 static  void        EmitDbg( byte class, pointer ptr );
 static  dbg_block   *MkBlock( void );

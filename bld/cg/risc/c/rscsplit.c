@@ -31,20 +31,17 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "vergen.h"
 #include "tables.h"
 #include "pattern.h"
-#include "rtclass.h"
 #include "system.h"
 #include "zoiks.h"
-#include "model.h"
-#include "regset.h"
 #include "cfloat.h"
 #include "makeins.h"
-#include <assert.h>
-#include "rtrtn.h"
 #include "convins.h"
+#include "data.h"
+#include "rtrtn.h"
+#include <assert.h>
 
 extern  instruction     *rMOVRESREG(instruction*);
 extern  instruction     *rSWAPOPS(instruction*);
@@ -128,7 +125,6 @@ extern  void            UpdateLive( instruction *, instruction * );
 extern  hw_reg_set      ReturnAddrReg();
 extern  hw_reg_set      FirstReg( reg_set_index );
 
-extern  type_length     TypeClassSize[];
 extern  type_class_def  Unsigned[];
 extern  type_class_def  HalfClass[];
 

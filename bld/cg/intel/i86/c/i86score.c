@@ -32,11 +32,9 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "score.h"
-#include "model.h"
 #include "pattern.h"
-#include "procdef.h"
 #include "vergen.h"
-#include "opcodes.h"
+#include "data.h"
 #include "makeins.h"
 
 extern  name            *AllocRegName( hw_reg_set );
@@ -46,8 +44,6 @@ extern  hw_reg_set      LowReg( hw_reg_set );
 extern  bool            IsIndexReg( hw_reg_set, type_class_def, bool );
 
 
-extern  proc_def        *CurrProc;
-extern  name            *Names[];
 extern  score_reg       **ScoreList;
 
 #define S_MAX   3

@@ -31,7 +31,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
+#include "data.h"
 #include "makeins.h"
 
 extern  name            *AllocIntConst(int);
@@ -42,8 +42,6 @@ extern  int             AddCost(void);
 extern  int             MulCost(unsigned_32);
 extern  int             ShiftCost( int );
 extern  uint_32         CountBits( uint_32 );
-
-extern  block           *HeadBlock;
 
 #define MAXOPS  20
 

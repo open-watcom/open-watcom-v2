@@ -31,16 +31,9 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "cgmem.h"
-#include "procdef.h"
+#include "data.h"
 #include "makeins.h"
-
-extern    block         *HeadBlock;
-extern    block         *BlockList;
-extern    bool          BlocksUnTrimmed;
-extern    proc_def      *CurrProc;
-
 
 extern  void            TellScrapLabel( label_handle );
 extern  void            FreeABlock( block * );

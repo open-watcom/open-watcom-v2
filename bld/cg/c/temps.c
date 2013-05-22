@@ -33,10 +33,9 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
 #include "cgmem.h"
 #include "cgaux.h"
+#include "data.h"
 #include "feprotos.h"
 #include "zoiks.h"
 
@@ -62,12 +61,6 @@ extern  void            PushLocals(void);
 extern  void            SetTempLocation(name*,type_length);
 extern  type_length     TempLocation( name * );
 extern  bool            TempAllocBefore( void *, void * );
-
-extern    name          *Names[];
-extern    proc_def      *CurrProc;
-extern    bool          BlockByBlock;
-extern    block         *HeadBlock;
-extern    name          *LastTemp;
 
 static    stack_entry   *StackMap;
 

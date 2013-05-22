@@ -32,10 +32,8 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "procdef.h"
 #include "zoiks.h"
-
-extern proc_def *CurrProc;
+#include "data.h"
 
 extern void MemtoBaseTemp( void )
 {

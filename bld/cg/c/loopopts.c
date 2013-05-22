@@ -33,15 +33,12 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "indvars.h"
-#include "opcodes.h"
-#include "procdef.h"
 #include "cgmem.h"
 #include "cfloat.h"
-#include "model.h"
-#include "addrname.h"
 #include "stackok.h"
 #include "zoiks.h"
 #include "i64.h"
+#include "data.h"
 #include "feprotos.h"
 #include "x87.h"
 #include "makeins.h"
@@ -58,10 +55,7 @@ typedef struct block_list {
 #define _POINTER_GETS_NEAR_BOUNDS 1
 #define BLOCK_WILL_EXECUTE      BLOCK_MARKED
 
-extern    block                 *HeadBlock;
-extern    name                  *Names[];
 extern    type_class_def        Unsigned[];
-extern    type_length           TypeClassSize[];
 
 extern  name            *AllocS64Const(signed_32,signed_32);
 extern  bool            ReDefinedBy(instruction*,name*);
@@ -100,8 +94,6 @@ extern  void            PointEdge(block_edge*,block*);
 static    int           NumIndVars;
 static    bool          LoopProtected;
 static    bool          MemChangedInLoop;
-extern    byte          OptForSize;
-extern    bool          BlockByBlock;
 
 block                   *Head;
 block                   *PreHead;

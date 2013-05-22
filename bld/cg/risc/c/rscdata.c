@@ -30,15 +30,15 @@
 
 
 #include "cgstd.h"
+#include <string.h>
 #include "cgdefs.h"
 #include "coderep.h"
-#include "typedef.h"
 #include "zoiks.h"
 #include "reloc.h"
 #include "cgmem.h"
+#include "data.h"
 #include "feprotos.h"
 #include <assert.h>
-#include <string.h>
 
 extern  void            ObjBytes( byte *, unsigned );
 extern  constant_defn   *GetFloat( name *, type_class_def );
@@ -56,8 +56,6 @@ extern  bool            AskSegBlank( seg_id );
 extern  void            IncLocation( offset );
 extern  seg_id          AskOP( void );
 extern  void            IterBytes( offset, byte );
-
-extern  type_length     TypeClassSize[];
 
 extern  void    DataAlign( unsigned_32 align ) {
 /**********************************************/
@@ -126,7 +124,7 @@ extern  void    BackPtr( bck_info *bck, seg_id seg,
                          offset plus, type_def *tipe ) {
 /*****************************************************/
 
-    seg = seg;
+    seg = seg; tipe = tipe;
     assert( tipe->length == 4 );
     TellOptimizerByPassed();
     OutReloc( bck->lbl, OWL_RELOC_WORD, 0 );

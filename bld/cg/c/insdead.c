@@ -31,10 +31,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "model.h"
-#include "procdef.h"
-#include "addrname.h"
+#include "data.h"
 #include "x87.h"
 #include "makeins.h"
 
@@ -45,11 +42,6 @@ extern  bool            BreakExists(void);
 extern  bool            IsVolatile(name*);
 extern  void            DoNothing(instruction*);
 extern  bool            DoesSomething(instruction*);
-
-extern    block *BlockList;
-extern    block *HeadBlock;
-extern    name  *Names[];
-extern    bool  BlockByBlock;
 
 
 static  void    InitVisitedTemps( void )

@@ -30,29 +30,23 @@
 
 
 #include "cgstd.h"
-#include "model.h"
 #include "coderep.h"
 #include "cgdefs.h"
-#include "addrname.h"
 #include "tree.h"
-#include "opcodes.h"
 #include "cfloat.h"
 #include "zoiks.h"
 #include "i64.h"
+#include "data.h"
 #include "feprotos.h"
 #include "types.h"
 #include "treefold.h"
+#include "bldins.h"
 
 typedef union i32 {
     signed_32   s;
     unsigned_32 u;
 } i32;
 
-extern  type_def        *TypeInteger;
-extern  type_def        *TypeBoolean;
-
-#include "treefold.h"
-#include "bldins.h"
 extern  an              TreeGen(tn);
 extern  name            *AllocIntConst(int);
 extern  tn              TGCompare(cg_op,tn,tn,type_def*);

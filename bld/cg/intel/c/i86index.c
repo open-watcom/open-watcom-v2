@@ -32,18 +32,11 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "procdef.h"
-#include "conflict.h"
 #include "pattern.h"
-#include "opcodes.h"
-#include "regset.h"
-#include "model.h"
+#include "data.h"
 #include "feprotos.h"
 #include "makeins.h"
 
-extern proc_def             *CurrProc;
-extern  block               *HeadBlock;
-extern  conflict_node       *ConfList;
 extern  opcode_defs         String[];
 
 extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);

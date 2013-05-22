@@ -32,9 +32,9 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "opcodes.h"
 #include "cgmem.h"
 #include "vergen.h"
+#include "data.h"
 
 
 extern  name            *AllocIntConst( int );
@@ -42,8 +42,6 @@ extern  void            DoNothing( instruction * );
 extern  bool            VolatileIns( instruction * );
 extern  void            ClearBlockBits( block_class );
 extern  bool            CondOverlaps( name *result, name *ccop );
-
-extern    block         *HeadBlock;
 
 typedef enum {          /* in order of increasing amount of information */
         UNKNOWN_STATE,

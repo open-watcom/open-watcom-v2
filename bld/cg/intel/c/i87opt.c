@@ -30,30 +30,21 @@
 
 
 #include "cgstd.h"
-#include "opcodes.h"
 #include "coderep.h"
 #include "pattern.h"
 #include "vergen.h"
 #include "gen8087.h"
-#include "procdef.h"
-#include "addrname.h"
-#include "model.h"
 #include "cgmem.h"
-#include "regset.h"
 #include "zoiks.h"
 #include "funits.h"
-#include "x87.h"
 #include "makeins.h"
+#include "data.h"
+#include "x87.h"
 
 
-extern  block           *HeadBlock;
-extern  block           *CurrBlock;
 extern  name            *Parm8087[];
 extern  hw_reg_set      *RegSets[];
 extern  hw_reg_set      FPRegs[];
-extern  proc_def        *CurrProc;
-extern  bool            BlockByBlock;
-extern  byte            OptForSize;
 extern  int             Max87Stk;
 
 extern  int             FPRegNum(name*);

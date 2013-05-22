@@ -33,10 +33,9 @@
 #include "coderep.h"
 #include "indvars.h"
 #include "dump.h"
+#include "data.h"
 
 extern  induction       *IndVarList;
-extern  block           *HeadBlock;
-extern  name            *Names[];
 
 extern  void            DumpOperand(name*);
 extern  void            DumpInt(int);

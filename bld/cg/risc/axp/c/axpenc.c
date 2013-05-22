@@ -32,10 +32,8 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "pattern.h"
 #include "vergen.h"
-#include "procdef.h"
 #include "ocentry.h"
 #include "axpencod.h"
 #include "reloc.h"
@@ -44,7 +42,7 @@
 #include "coff.h"
 #include "encode.h"
 #include "cgaux.h"
-#include "rtclass.h"
+#include "data.h"
 #include "feprotos.h"
 #include <assert.h>
 #include <stdio.h>
@@ -78,8 +76,6 @@ extern  void            FactorInt32( signed_32 val, signed_16 *, signed_16 *, si
 extern void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
 
 extern type_class_def   Unsigned[];
-extern type_length      TypeClassSize[];
-extern proc_def         *CurrProc;
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 

@@ -32,15 +32,11 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "score.h"
-#include "model.h"
 #include "pattern.h"
-#include "procdef.h"
 #include "vergen.h"
-#include "opcodes.h"
+#include "data.h"
 
 extern  name            *AllocRegName( hw_reg_set );
-
-extern  proc_def        *CurrProc;
 
 
 extern  void    ScInitRegs( score *sc )

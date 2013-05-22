@@ -37,8 +37,6 @@ typedef struct common_info {
         uint        save;
 } common_info;
 
-extern    byte  OptForSize;
-
 extern  bool            Equal( pointer, pointer, uint );
 extern  ins_entry       *IsolatedCode( ins_entry * );
 extern  void            AddNewJump( ins_entry *, code_lbl * );

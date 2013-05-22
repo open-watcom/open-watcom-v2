@@ -32,17 +32,16 @@
 ****************************************************************************/
 
 
-#include <assert.h>
 #include "cgstd.h"
+#include <assert.h>
 #include "coderep.h"
 #include "indvars.h"
-#include "opcodes.h"
 #include "cgmem.h"
 #include "cfloat.h"
-#include "model.h"
 #include "stackok.h"
 #include "zoiks.h"
 #include "cgaux.h"
+#include "data.h"
 #include "makeins.h"
 
 extern  block           *MakeBlock(label_handle,block_num);
@@ -78,14 +77,10 @@ extern  void            MakeJumpBlock( block *, block_edge * );
 extern  void            URBlip( void );
 
 extern type_class_def   Signed[];
-extern block            *HeadBlock;
 extern block            *PreHead;
 extern block            *Head;
-extern name             *Names[];
-extern byte             OptForSize;
 extern induction        *IndVarList;
 extern block            *Loop;
-extern type_length      TypeClassSize[];
 
 #define Assert( x )     { if( !(x) ) Zoiks( ZOIKS_113 ); }
 

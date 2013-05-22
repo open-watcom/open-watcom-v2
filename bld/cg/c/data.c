@@ -33,20 +33,19 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "cgswitch.h"
-#include "rtclass.h"
 #include "data.h"
 
 block                   *HeadBlock;
 block                   *BlockList;
-//pointer                 CurrBlock;
+block                   *CurrBlock;
 int                     InsId;
 int                     TempId;
-pointer                 ConfList;
-// pointer                 CurrProc;
+conflict_node           *ConfList;
+proc_def                *CurrProc;
 rt_class                RoutineNum;
-pointer                 Names[N_INDEXED+1];
-pointer                 LastTemp;
-pointer                 DummyIndex;
+name                    *Names[N_INDEXED+1];
+name                    *LastTemp;
+name                    *DummyIndex;
 source_line_number      SrcLine;
 cg_switches             Model;
 cg_target_switches      TargetModel;
@@ -68,7 +67,7 @@ type_def                *TypeLongLongInteger;
 type_def                *TypeHugeInteger;
 hw_reg_set              GivenRegisters;
 bool                    BlocksUnTrimmed;
-pointer                 AddrList;
+an                      AddrList;
 seg_id                  DbgLocals;
 seg_id                  DbgTypes;
 unsigned_16             TypeIdx;

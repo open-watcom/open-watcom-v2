@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "cgmem.h"
 
 extern  block           *MakeBlock(label_handle,block_num);

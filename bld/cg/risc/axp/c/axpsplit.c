@@ -31,15 +31,12 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "vergen.h"
 #include "tables.h"
 #include "pattern.h"
-#include "rtclass.h"
 #include "zoiks.h"
-#include "model.h"
-#include "procdef.h"
 #include <assert.h>
+#include "data.h"
 #include "makeins.h"
 #include "rtrtn.h"
 
@@ -64,10 +61,7 @@ extern  void            ChangeType(instruction*,type_class_def);
 extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *OffsetMem( name *, type_length, type_class_def );
 
-extern  type_length     TypeClassSize[];
 extern  type_class_def  Unsigned[];
-extern  type_length     MaxStack;
-extern  proc_def        *CurrProc;
 
 extern  instruction     *rLOAD_1( instruction *ins ) {
 /****************************************************/

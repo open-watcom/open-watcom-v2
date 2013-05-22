@@ -37,10 +37,10 @@
 #include "cgmisc.h"
 #include "coderep.h"
 #include "feprotos.h"
+#include "objrep.h"
 
 extern void             GrabTimer( void );
 extern void             ReleTimer( void );
-extern void             ScratchObj( void );
 
 static  bool volatile   BrkFlag;
 static  bool            OnExitFlag = TRUE;

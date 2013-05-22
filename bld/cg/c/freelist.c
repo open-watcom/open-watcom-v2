@@ -30,13 +30,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <assert.h>
-
 #include "cgstd.h"
+#include <string.h>
+#include "coderep.h"
 #include "cgmem.h"
-
-extern    pointer_int   FrlSize;
+#include "data.h"
+#include <assert.h>
 
 
 extern  void    InitFrl( pointer **head ) {

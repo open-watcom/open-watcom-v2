@@ -29,21 +29,19 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include <assert.h>
 #include <stdlib.h>
-#include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "vergen.h"
-#include "model.h"
+#include "data.h"
 #include "feprotos.h"
 
 extern  type_length     FlagsToAlignment( i_flags );
 
 extern  bool    OtherVerify( vertype, instruction *, name *, name *, name * );
 
-extern  type_length     TypeClassSize[];
 extern  type_class_def  Unsigned[];
 
 static  bool    ByteConst( name *operand )

@@ -31,8 +31,8 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "dump.h"
+#include "data.h"
 
 extern  void            DumpNL(void);
 extern  void            DumpPtr(pointer);
@@ -44,9 +44,6 @@ extern  void            DumpInstrsOnly(block*);
 extern  char            *AskName(pointer,cg_class);
 extern  void            DumpSymList(name*);
 extern  void            Dump8h(unsigned_32);
-
-extern  block   *HeadBlock;
-extern  name    *Names[];
 
 
 static void DumpBlkFlags( block *blk )

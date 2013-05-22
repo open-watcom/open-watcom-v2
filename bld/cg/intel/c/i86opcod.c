@@ -34,7 +34,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "vergen.h"
 #include "pccode.h"
 #include "symdbg.h"

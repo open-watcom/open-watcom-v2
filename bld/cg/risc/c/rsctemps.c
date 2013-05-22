@@ -32,13 +32,8 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "model.h"
-#include "conflict.h"
+#include "data.h"
 #include "savings.h"
-
-extern  proc_def        *CurrProc;
 
 extern  void    SetTempLocation( name *temp, type_length size ) {
 /****************************************************************

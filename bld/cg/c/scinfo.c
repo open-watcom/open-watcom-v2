@@ -32,13 +32,10 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "score.h"
-#include "procdef.h"
 #include "zoiks.h"
-#include "model.h"
+#include "data.h"
 
 extern  pointer         Copy(pointer,pointer,uint);
-
-extern  proc_def        *CurrProc;
 
 static  pointer SegConstSymbol;/*no other pointer points to here*/
 static  pointer HighAddrSymbol;/*ditto*/

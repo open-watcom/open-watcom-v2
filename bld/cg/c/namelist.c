@@ -32,22 +32,17 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "hwreg.h"
-#include "regset.h"
-#include "model.h"
 #include "freelist.h"
 #include "cfloat.h"
-#include "typedef.h"
 #include "zoiks.h"
-
 #include "namelist.h"
+#include "data.h"
+
 extern  void            FreeTable(sym_handle);
 extern  type_class_def  RegClass(hw_reg_set);
 extern  type_def        *ClassType(type_class_def);
 extern  pointer         LkAddBack(sym_handle,pointer);
 extern  uint_8          RegTrans( hw_reg_set );
-
-extern    name  *Names[];
-extern    int   TempId;
 
 static  pointer         *FrlHead[N_INDEXED+1];
 static  pointer         *ConstDefnFrl;
@@ -55,16 +50,13 @@ static  name            *NullReg;
 static  name            *ConstZero;
 static  name            *ConstOne;
 
-extern  name            *LastTemp;
-extern  name            *DummyIndex;
-
 static  int     Size[] = {
         sizeof( const_name ),
         sizeof( memory_name ),
         sizeof( temp_name ),
         sizeof( register_name ),
         sizeof( indexed_name )
-        };
+};
 
 static  type_length     OneClass[] = {
         U1,             /* U1*/

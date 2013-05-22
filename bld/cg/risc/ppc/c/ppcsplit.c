@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "vergen.h"
 #include "tables.h"
 #include "pattern.h"
@@ -59,7 +58,6 @@ extern  void            ChangeType(instruction*,type_class_def);
 extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *OffsetMem( name *, type_length, type_class_def );
 
-extern  type_length     TypeClassSize[];
 extern  type_class_def  Unsigned[];
 
 extern instruction      *rCONSTLOAD( instruction *ins ) {

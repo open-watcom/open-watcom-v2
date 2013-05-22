@@ -33,16 +33,10 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "procdef.h"
-#include "model.h"
 #include "cgaux.h"
 #include "cgmem.h"
-#include "typedef.h"
+#include "data.h"
 #include "feprotos.h"
-
-extern  type_class_def  ClassPointer;
-extern  proc_def        *CurrProc;
-extern  type_def        *TypeNone;
 
 extern  hw_reg_set      FullReg(hw_reg_set);
 extern  bool            IsRegClass(hw_reg_set,type_class_def);

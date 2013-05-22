@@ -33,20 +33,16 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "conflict.h"
-#include "opcodes.h"
-#include "regset.h"
-#include "model.h"
 #include "freelist.h"
-#include "feprotos.h"
 #include "zoiks.h"
+#include "data.h"
+#include "feprotos.h"
 
 extern  reg_set_index   IndexIntersect(reg_set_index,type_class_def,bool);
 extern  reg_set_index   RegIntersect(reg_set_index,reg_set_index);
 extern  reg_set_index   SegIndex(void);
 extern  name            *DeAlias(name*);
 
-extern  conflict_node   *ConfList;
 static  pointer         *ConfFrl;
 static  pointer         *ConfAliasVarsFrl;
 

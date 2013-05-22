@@ -31,17 +31,14 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "pattern.h"
-#include "regset.h"
 #include "vergen.h"
-#include "conflict.h"
 #include "cfloat.h"
-#include "model.h"
 #include "system.h"
 #include "zoiks.h"
 #include "makeins.h"
 #include "convins.h"
+#include "data.h"
 
 extern  conflict_node   *GiveRegister(conflict_node*,bool);
 extern  conflict_node   *NameConflict(instruction*,name*);
@@ -203,7 +200,6 @@ extern  opcode_entry    String[];
 extern  opcode_entry    *Move2;
 extern  opcode_entry    *Move4;
 extern  type_class_def  DoubleClass[];
-extern  bool            OptForSize;
 
 
 instruction *(*ReduceTab[])( instruction * ) = {

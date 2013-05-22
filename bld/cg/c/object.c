@@ -32,11 +32,9 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "model.h"
-#include "procdef.h"
 #include "cgaux.h"
 #include "zoiks.h"
+#include "data.h"
 #include "feprotos.h"
 
 extern  seg_id          AskCodeSeg( void );
@@ -68,14 +66,6 @@ extern  void            EdgeStackFini( void * );
 extern  bool            EdgeStackEmpty( void * );
 extern  void            EdgeStackPush( void *, block_edge * );
 extern  block_edge      *EdgeStackPop( void * );
-
-extern    block         *HeadBlock;
-extern    block         *CurrBlock;
-extern    block         *BlockList;
-extern    proc_def      *CurrProc;
-extern    bool          BlocksUnTrimmed;
-extern    bool          BlockByBlock;
-extern    byte          OptForSize;
 
 static  source_line_number      DumpLineNum( source_line_number n,
                                              source_line_number last,

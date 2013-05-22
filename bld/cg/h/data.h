@@ -31,19 +31,25 @@
 
 #include "typedef.h"
 
+#include "model.h"
+#include "addrname.h"
+#include "regset.h"
+#include "rttable.h"
+#include "conflict.h"
+#include "procdef.h"
+#include "optmac.h"
+
 extern  block                   *HeadBlock;
 extern  block                   *BlockList;
+extern  block                   *CurrBlock;
 extern  int                     InsId;
 extern  int                     TempId;
-extern  pointer                 ConfList;
+extern  conflict_node           *ConfList;
 extern  rt_class                RoutineNum;
-extern  pointer                 Names[N_INDEXED+1];
-extern  pointer                 LastTemp;
-extern  pointer                 DummyIndex;
+extern  name                    *Names[N_INDEXED+1];
+extern  name                    *LastTemp;
+extern  name                    *DummyIndex;
 extern  source_line_number      SrcLine;
-extern  cg_switches             Model;
-extern  cg_target_switches      TargetModel;
-extern  cg_target_switches      SaveTargetModel;
 extern  global_bit_set          MemoryBits;
 extern  type_class_def          ClassPointer;
 extern  bool                    BlockByBlock;
@@ -60,14 +66,14 @@ extern  type_def                *TypeLongLongInteger;
 extern  type_def                *TypeHugeInteger;
 extern  hw_reg_set              GivenRegisters;
 extern  bool                    BlocksUnTrimmed;
-extern  pointer                 AddrList;
+extern  an                      AddrList;
 extern  seg_id                  DbgLocals;
 extern  seg_id                  DbgTypes;
-extern  unsigned_16             TypeIdx;
-extern  int                     InOptimizer;
+extern  unsigned_16             TypeIdx;      // uint ???
 extern  byte                    OptForSize;
 extern  bool                    HaveLiveInfo;
 extern  bool                    HaveDominatorInfo;
 extern  pointer_int             FrlSize;
 extern  bool                    HaveCurrBlock;
-extern  proc_revision           CGProcessorVersion;
+extern  proc_def                *CurrProc;
+extern  type_length             TypeClassSize[];

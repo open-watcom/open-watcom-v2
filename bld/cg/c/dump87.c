@@ -36,7 +36,6 @@
 #if ( _TARGET & ( _TARG_IAPX86 | _TARG_80386 ) )
 
 #include "i87sched.h"
-#include "opcodes.h"
 #include "gen8087.h"
 #include "pattern.h"
 #include "vergen.h"

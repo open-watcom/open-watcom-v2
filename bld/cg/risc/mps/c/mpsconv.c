@@ -32,14 +32,12 @@
 #include "cgstd.h"
 #include "pattern.h"
 #include "coderep.h"
-#include "regset.h"
 #include "funits.h"
 #include "vergen.h"
 #include "zoiks.h"
-#include "model.h"
 #include "makeins.h"
-#include "rttable.h"
 #include "convins.h"
+#include "data.h"
 
 extern  name            *AllocS32Const( signed_32 );
 extern  name            *AllocTemp( type_class_def );

@@ -32,9 +32,7 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "cfloat.h"
-#include "opcodes.h"
-#include "regset.h"
-#include "model.h"
+#include "data.h"
 #include "makeins.h"
 
 extern  void            SuffixIns( instruction *, instruction * );
@@ -44,9 +42,6 @@ extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocS32Const( signed_32 );
 extern  instruction     *rSWAPOPS( instruction *ins );
 extern  void            RemoveBlock( block * );
-
-extern  block           *HeadBlock;
-extern  type_length     TypeClassSize[];
 
 /* This code looks for a sequence like the following:
  *

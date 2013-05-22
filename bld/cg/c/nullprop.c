@@ -32,11 +32,9 @@
 #include <assert.h>
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
 #include "cgmem.h"
-#include "opcodes.h"
 #include "cgdefs.h"
-#include "model.h"
+#include "data.h"
 
 extern  bool            ReDefinedBy( instruction *, name * );
 extern  name            *AllocS32Const( signed_32 );
@@ -44,8 +42,6 @@ extern void             KillCondBlk( block *blk, instruction *ins, int dest );
 extern  bool            SideEffect( instruction * );
 extern  pointer         SafeRecurse( pointer (* rtn)( pointer ), pointer arg );
 extern  bool            BlockTrim( void );
-
-extern  block           *HeadBlock;
 
 extern  void            ClearBlockBits( block_class mask )
 /********************************************************/

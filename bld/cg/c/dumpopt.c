@@ -29,11 +29,8 @@
 ****************************************************************************/
 
 
-#include "cgdefs.h"
 #include "optwif.h"
-#include "rtclass.h"
 #include "dump.h"
-#include "opcodes.h"
 #include "feprotos.h"
 
 extern  void            DumpNL();
@@ -47,7 +44,7 @@ static  void            DoData( oc_entry *instr );
 static  void            DoLabel( oc_handle *instr );
 static  void            DoRef( oc_handle *instr );
 
-static char * Names[] = {
+static char * CNames[] = {
 #define pick_class(x) #x ,
 #include "occlasss.h"
 #undef pick_class
@@ -206,7 +203,7 @@ extern  void    DumpOc( ins_entry *ins ) {
 
     DumpPtr( ins );
     DumpLiteral( " " );
-    DumpString(  Names[ _Class( ins ) ] );
+    DumpString(  CNames[ _Class( ins ) ] );
     DumpLiteral( " " );
     if( _Class( ins ) != OC_INFO ) {
         CheckAttr( ins->oc.oc_entry.class );

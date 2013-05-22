@@ -31,17 +31,13 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "regset.h"
-#include "rttable.h"
-#include "model.h"
 #include "zoiks.h"
-#include "conflict.h"
 #include "seldef.h"
 #include "cgaux.h"
 #include "makeins.h"
-#include "rtrtn.h"
 #include "convins.h"
+#include "data.h"
+#include "rtrtn.h"
 
 
 extern    hw_reg_set      *RegSets[];

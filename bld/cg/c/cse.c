@@ -31,15 +31,11 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "addrname.h"
 #include "zoiks.h"
-#include "typedef.h"
-#include "model.h"
 #include "cgdefs.h"
 #include "tree.h"
 #include "cfloat.h"
+#include "data.h"
 #include "feprotos.h"
 #include "x87.h"
 #include "makeins.h"
@@ -52,11 +48,7 @@ typedef enum {
         RESULT_DIES
 } who_dies;
 
-extern block            *HeadBlock;
-extern name             *Names[];
 extern type_class_def   Unsigned[];
-extern bool             BlockByBlock;
-extern  byte            OptForSize;
 
 static instruction      *ExprHeads[LAST_CSE_OP+1];
 static  bool            LeaveIndVars;

@@ -31,21 +31,15 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "pattern.h"
-#include "regset.h"
-#include "procdef.h"
 #include "cfloat.h"
-#include "model.h"
 #include "vergen.h"
 #include "zoiks.h"
 #include "score.h"
 #include "makeins.h"
+#include "data.h"
 
 extern  hw_reg_set      *RegSets[];
-extern  proc_def        *CurrProc;
-extern  block           *HeadBlock;
-extern  byte            OptForSize;
 
 extern  type_class_def  RegClass(hw_reg_set);
 extern  opcode_entry    *FindGenEntry(instruction*,bool*);
@@ -68,8 +62,6 @@ extern  void            MoveSegRes( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  int             NumOperands( instruction * );
 extern  bool            InsOrderDependant( instruction *, instruction * );
-
-extern  type_length     TypeClassSize[];
 
 static  bool            PreferSize;
 

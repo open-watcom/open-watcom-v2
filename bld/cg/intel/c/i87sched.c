@@ -31,20 +31,16 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "addrname.h"
 #include "vergen.h"
 #include "pattern.h"
 #include "zoiks.h"
 #include "cgmem.h"
 #include "gen8087.h"
-#include "model.h"
 #include "i87sched.h"
+#include "data.h"
 #include "x87.h"
 
 
-extern  block   *HeadBlock;
 extern  int     Max87Stk;
 
 extern  instruction     *PrefFXCH( instruction *ins, int i );

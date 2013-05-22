@@ -31,7 +31,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
+#include "data.h"
 
 typedef enum {
     MODIFIES_NOTHING    = 0,
@@ -44,8 +44,6 @@ extern  hw_reg_set      High64Reg( hw_reg_set );
 extern  bool            IsIndexReg( hw_reg_set, type_class_def, bool );
 extern  bool            FoldIntoIndex( instruction * );
 extern  void            UpdateLive( instruction *, instruction * );
-
-extern  block           *HeadBlock;
 
 static  bool    InsIsCandidate( instruction *ins ) 
 /************************************************/

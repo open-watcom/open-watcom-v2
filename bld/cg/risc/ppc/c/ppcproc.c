@@ -31,14 +31,12 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
 #include "pattern.h"
 #include "cgmem.h"
-#include "model.h"
 #include "ppcenc.h"
 #include "ppcparm.h"
 #include "ppcgen.h"
+#include "data.h"
 
 extern  uint_32         CountBits( uint_32 );
 extern  seg_id          SetOP( seg_id );
@@ -58,14 +56,10 @@ extern  offset          AskLocation( void );
 extern  void            OutFuncStart( label_handle label, offset start, int line );
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
-extern void             OutPDataRec( label_handle label, uint_32 pro_size, uint_32 proc_end );
-extern  uint_8          RegTrans(hw_reg_set);
+extern  void            OutPDataRec( label_handle label, uint_32 pro_size, uint_32 proc_end );
+extern  uint_8          RegTrans( hw_reg_set );
 extern  void            OutTOCRec( label_handle lbl );
 extern  type_length     TempLocation( name * );
-
-extern  proc_def        *CurrProc;
-extern  block           *HeadBlock;
-extern  type_length     MaxStack;
 
 
 static  void    CalcUsedRegs( void )

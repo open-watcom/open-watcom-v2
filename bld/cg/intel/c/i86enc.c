@@ -33,29 +33,24 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "pattern.h"
-#include "procdef.h"
 #include "ocentry.h"
 #include "vergen.h"
 #include "pccode.h"
 #include "system.h"
 #include "escape.h"
-#include "model.h"
 #include "pcencode.h"
 #include "objrep.h"
-#include "regset.h"
-#include "rttable.h"
 #include "zoiks.h"
 #include "zeropage.h"
 #include "fppatch.h"
 #include "cfloat.h"
 #include "cgaux.h"
-#include "feprotos.h"
 #include "p5prof.h"
-#include "addrname.h"
+#include "data.h"
 #include "display.h"
 #include "rtrtn.h"
+#include "feprotos.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
 extern  void            DoFunnyRef(int);
@@ -145,9 +140,7 @@ static  int             FPRegTrans( hw_reg_set reg );
 
 extern    pccode_def            PCCodeTable[];
 extern    name                  *FPStatWord;
-extern    byte                  OptForSize;
 extern    bool                  Used87;
-extern    proc_def              *CurrProc;
 
           template              Temp;   /* template for oc_entries*/
           byte                  Inst[INSSIZE];  /* template for instructions*/

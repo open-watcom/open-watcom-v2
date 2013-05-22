@@ -32,10 +32,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "model.h"
-#include "conflict.h"
+#include "data.h"
 #include "savings.h"
 
 extern  name            *DeAlias(name*);
@@ -45,11 +42,6 @@ extern  void            DoNothing(instruction*);
 extern  type_length     PushSize(type_length);
 extern  void            PropLocal(name*);
 
-extern  proc_def        *CurrProc;
-extern  bool            BlockByBlock;
-extern  block           *HeadBlock;
-extern  name            *Names[];
-extern  byte            OptForSize;
 extern  savings         Save;
 
 static  void    AssignPushLocals( void );

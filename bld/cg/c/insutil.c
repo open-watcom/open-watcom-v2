@@ -31,12 +31,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
-#include "opcodes.h"
 #include "pattern.h"
-#include "procdef.h"
 #include "zoiks.h"
 #include "makeins.h"
+#include "data.h"
 
 typedef enum {
         CB_FOR_INS1             = 0x01,
@@ -48,10 +46,6 @@ typedef struct  conflict_info {
         conflict_node   *conf;
         conflict_bits   flags;
 } conflict_info;
-
-extern    block         *HeadBlock;
-extern    conflict_node *ConfList;
-extern    bool          HaveLiveInfo;
 
 extern  void            UpdateLive(instruction*,instruction*);
 extern  name            *DeAlias(name*);

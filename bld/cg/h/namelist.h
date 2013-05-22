@@ -27,7 +27,7 @@
 * Description:  Prototypes for namelist.c
 *
 ****************************************************************************/
-extern  type_length     TypeClassSize[];
+
 
 extern  name     *AllocConst( pointer value );
 extern  name    *AllocAddrConst( name *value, int seg, constant_class class,

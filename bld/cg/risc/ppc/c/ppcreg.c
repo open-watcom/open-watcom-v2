@@ -31,14 +31,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "procdef.h"
-#include "model.h"
 #include "cgaux.h"
 #include "cgmem.h"
-#include "typedef.h"
+#include "data.h"
 
-
-extern  proc_def        *CurrProc;
 
 extern  hw_reg_set      ReturnReg(type_class_def);
 extern  hw_reg_set      *ParmRegs( void );

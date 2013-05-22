@@ -31,21 +31,19 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "pattern.h"
-#include "symdbg.h"
 #include "ocentry.h"
 #include "vergen.h"
 #include "pccode.h"
 #include "system.h"
 #include "escape.h"
-#include "model.h"
 #include "pcencode.h"
 #include "objrep.h"
 #include "zoiks.h"
 #include "zeropage.h"
 #include "fppatch.h"
 #include "cfloat.h"
+#include "data.h"
 
 
 extern  void            DoSymRef( name *, offset, bool );
@@ -79,7 +77,6 @@ extern  unsigned        UseRepForm( unsigned );
 extern  void            DoRelocConst( name *op, type_class_def kind );
 static  void            SetOff( name *op, int val );
 
-extern  byte                    OptForSize;
 extern  template                Temp;   /* template for oc_entries*/
 extern  byte                    Inst[];  /* template for instructions*/
 extern  zero_page_scheme        ZPageType;

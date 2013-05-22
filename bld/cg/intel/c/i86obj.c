@@ -34,17 +34,16 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgaux.h"
-#include "model.h"
 #include "system.h"
 #include "objrep.h"
-#include "rtclass.h"
 #include "import.h"
 #include "dbcue.h"
 #include "fppatch.h"
-#include "rtrtn.h"
 #include "cgmem.h"
 #include "zoiks.h"
+#include "data.h"
 #include "feprotos.h"
+#include "rtrtn.h"
 #include "i86obj.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -135,13 +134,7 @@ extern  import_handle   AskImportHandle(sym_handle);
 extern  void            TellDonePatch(label_handle);
 extern  void            TellAddress(label_handle,offset);
 extern  void            FatalError(char *);
-extern  void            CloseObj( void );
-extern  void            PatchObj(objhandle,uint,byte*,int);
-extern  void            GetFromObj(objhandle,uint,byte*,int);
-extern  void            ScratchObj( void );
-extern  objhandle       AskObjHandle( void );
 extern  void            PutObjRec(byte,byte*,uint);
-extern  void            OpenObj( void );
 extern  char            *CopyStr(char*,char*);
 extern  void            EmptyQueue( void );
 extern  uint            Length(pointer);
@@ -169,10 +162,7 @@ extern  void            WVObjInitInfo( void );
 extern  void            WVTypesEof( void );
 extern  void            WVDmpCueInfo( long_offset here );
 
-extern  seg_id          DbgLocals;
-extern  seg_id          DbgTypes;
 extern  bool            Used87;
-extern  byte            OptForSize;
 
 /* Forward ref's */
 static  void            DumpImportResolve( sym_handle sym, omf_idx idx );

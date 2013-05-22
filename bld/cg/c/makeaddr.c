@@ -32,26 +32,18 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "cgdefs.h"
-#include "model.h"
-#include "addrname.h"
-#include "procdef.h"
 #include "zoiks.h"
 #include "freelist.h"
 #include "cfloat.h"
+#include "makeins.h"
+#include "data.h"
 #include "feprotos.h"
 #include "types.h"
 #include "addrfold.h"
-#include "makeins.h"
 #include "display.h"
 
 static    pointer       *AddrNameFrl;
-
-extern    an            AddrList;
-extern    name          *Names[];
-extern    proc_def      *CurrProc;
-extern    block         *CurrBlock;
 
 extern  type_class_def  TypeClass(type_def*);
 extern  name            *SAllocTemp(type_class_def,type_length);

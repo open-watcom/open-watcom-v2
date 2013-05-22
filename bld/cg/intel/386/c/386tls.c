@@ -32,14 +32,9 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "procdef.h"
-#include "conflict.h"
 #include "pattern.h"
-#include "opcodes.h"
-#include "regset.h"
-#include "model.h"
-#include "rtclass.h"
 #include "zoiks.h"
+#include "data.h"
 #include "feprotos.h"
 #include "makeins.h"
 #include "rtrtn.h"
@@ -52,12 +47,6 @@ extern  name            *AllocIndex( name *, name *, type_length, type_class_def
 extern  name            *ScaleIndex( name *, name *,
                                 type_length, type_class_def, type_length, int, i_flags );
 extern  void            PrefixIns( instruction *, instruction * );
-
-extern  type_length     TypeClassSize[];
-extern  proc_def        *CurrProc;
-extern  bool            BlockByBlock;
-extern  block           *HeadBlock;
-
 
 static  name    *RTMemRef( rt_class rt_index )
 /*********************************************

@@ -31,21 +31,16 @@
 
 #include "cgstd.h"
 #include "cgdefs.h"
-#include "model.h"
 #include "coderep.h"
-#include "procdef.h"
-#include "conflict.h"
 #include "memcheck.h"
-#include "opcodes.h"
-#include "typedef.h"
+#include "data.h"
 #include "types.h"
 #include "feprotos.h"
+
 #include "addrcnst.h"
-#include "addrname.h"
 #include "x87.h"
 #include "makeins.h"
 #include "foldins.h"
-#include "rtclass.h"
 #include "rtrtn.h"
 
 
@@ -149,25 +144,7 @@ extern  void            ReConstFold( void );
 extern  void            FlushQueue( void );
 extern  bool            CalcDominatorInfo( void );
 
-extern proc_def                 *CurrProc;
-extern block                    *HeadBlock;
-extern block                    *BlockList;
-extern block                    *CurrBlock;
-extern conflict_node            *ConfList;
-extern int                      InsId;
-extern type_class_def           ClassPointer;
-extern pointer                  TypePtr;
-extern name                     *Names[];
-extern name                     *LastTemp;
-extern bool                     BlockByBlock;
-extern int                      InOptimizer;
-extern bool                     HaveLiveInfo;
-extern bool                     HaveDominatorInfo;
-extern pointer_int              FrlSize;
-extern source_line_number       SrcLine;
-
-static  bool                    abortCG;
-
+static  bool            abortCG;
 
 extern  void    InitCG( void )
 /****************************/

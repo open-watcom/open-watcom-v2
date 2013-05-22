@@ -31,12 +31,9 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "regset.h"
-#include "model.h"
-#include "procdef.h"
+#include "data.h"
 
 extern  int             Max87Stk;
-extern  proc_def        *CurrProc;
 
 /* some short forms*/
 #define RL_DP   RL_DBL_OR_PTR

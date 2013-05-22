@@ -32,21 +32,16 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
 #include "cgdefs.h"
-#include "typedef.h"
-#include "types.h"
-#include "regset.h"
 #include "zoiks.h"
+#include "data.h"
+#include "types.h"
 #include "feprotos.h"
 
 
 extern  hw_reg_set      InLineParm(hw_reg_set,hw_reg_set);
 extern  hw_reg_set      *ParmChoices(type_class_def);
 extern  hw_reg_set      ParmRegConflicts(hw_reg_set);
-
-extern    type_length   MaxStack;
 
 
 extern  hw_reg_set      ParmInLineReg( parm_state *state ) {

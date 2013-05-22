@@ -36,12 +36,10 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "indvars.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "typedef.h"
 #include "pattern.h"
 #include "score.h"
 #include "zoiks.h"
+#include "data.h"
 #include "makeins.h"
 
 extern  name                    *AllocS32Const(signed_32);
@@ -54,9 +52,6 @@ extern  bool                    ChangeIns(instruction *,name *,name **,change_ty
 extern  opcode_entry            *ResetGenEntry( instruction *ins );
 extern  bool                    VisibleToCall(instruction*,name*,bool);
 extern  bool                    VolatileIns(instruction*);
-
-extern  block           *HeadBlock;
-extern  type_length     TypeClassSize[];
 
 #define OP2VAL( ins ) ( (ins)->operands[1]->c.int_value )
 

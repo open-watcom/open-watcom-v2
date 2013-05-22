@@ -31,18 +31,15 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "regset.h"
-#include "model.h"
 #include "vergen.h"
 #include "pattern.h"
 #include "cfloat.h"
+#include "data.h"
 
 
 extern  int             NumOperands(instruction*);
 extern  bool            OtherVerify(vertype,instruction*,name*,name*,name*);
 
-extern  byte            OptForSize;
 extern  hw_reg_set      Low16Reg( hw_reg_set );
 extern  type_class_def  RegClass(hw_reg_set);
 

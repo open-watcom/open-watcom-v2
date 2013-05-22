@@ -31,16 +31,13 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "vergen.h"
 #include "tables.h"
 #include "pattern.h"
-#include "rtclass.h"
 #include "zoiks.h"
-#include "model.h"
-#include "procdef.h"
 #include "makeins.h"
 #include <assert.h>
+#include "data.h"
 #include "rtrtn.h"
 
 extern  name            *AllocMemory( pointer, type_length, cg_class, type_class_def );
@@ -68,10 +65,7 @@ extern  name            *OffsetMem( name *, type_length, type_class_def );
 
 extern  opcode_entry    *OpcodeTable( table_def );
 
-extern  type_length     TypeClassSize[];
 extern  type_class_def  Unsigned[];
-extern  type_length     MaxStack;
-extern  proc_def        *CurrProc;
 
 
 extern  instruction *rMOVEXX_8( instruction *ins )

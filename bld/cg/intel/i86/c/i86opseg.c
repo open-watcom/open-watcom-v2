@@ -31,18 +31,12 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "procdef.h"
 #include "zeropage.h"
-#include "model.h"
-#include "opcodes.h"
 #include "pattern.h"
 #include "vergen.h"
+#include "data.h"
 
 zero_page_scheme        ZPageType;
-
-extern  proc_def        *CurrProc;
-extern  block           *HeadBlock;
-extern  byte            OptForSize;
 
 extern  void            QuickSave( hw_reg_set, opcode_defs );
 extern  void            GenRegMove( hw_reg_set, hw_reg_set );

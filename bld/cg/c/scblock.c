@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "score.h"
-#include "opcodes.h"
 #include "zerobits.h"
 #include "makeins.h"
 

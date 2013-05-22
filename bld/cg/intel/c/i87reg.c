@@ -31,24 +31,15 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "model.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "conflict.h"
-#include "typedef.h"
 #include "gen8087.h"
 #include "zoiks.h"
-#include "addrname.h"
+#include "data.h"
 #include "x87.h"
 #include "makeins.h"
 
-extern  block           *HeadBlock;
-extern  proc_def        *CurrProc;
 extern  hw_reg_set      FPRegs[];
-extern  name            *Names[];
 extern  name            *FPStatWord;
 extern  int             Max87Stk;
-extern  conflict_node   *ConfList;
 
 extern  void            SuffixIns(instruction*,instruction*);
 extern  name            *AllocIntConst(int);

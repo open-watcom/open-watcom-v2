@@ -32,11 +32,9 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "zoiks.h"
-#include "typedef.h"
-#include "model.h"
 #include "cgdefs.h"
+#include "data.h"
 
 extern bool PeepOptBlock(block *, bool);
 extern void SuffixIns(instruction *,instruction *);
@@ -44,8 +42,6 @@ extern bool SameThing(name *,name *);
 extern name *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
 extern bool ReDefinedBy(instruction *,name *);
 extern void RemoveIns( instruction *);
-
-extern block            *HeadBlock;
 
 static  byte    OpRefs( name *op, name *ref ) {
 /*********************************************/

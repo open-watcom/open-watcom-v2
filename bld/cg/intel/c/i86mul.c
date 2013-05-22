@@ -31,9 +31,8 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "model.h"
+#include "data.h"
 
-extern  byte    OptForSize;
 
 extern  int     MulCost( unsigned_32 num )
 /****************************************/

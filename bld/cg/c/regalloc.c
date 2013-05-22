@@ -31,13 +31,9 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "conflict.h"
-#include "regset.h"
 #include "pattern.h"
-#include "procdef.h"
 #include "zoiks.h"
-#include "model.h"
+#include "data.h"
 #include "makeins.h"
 #include "foldins.h"
 
@@ -98,17 +94,8 @@ extern  bool            IsUncacheableMemory( name * );
 extern  hw_reg_set      MustSaveRegs(void);
 extern  void            FreePossibleForAlias( conflict_node * );
 
-extern  proc_def         *CurrProc;
-extern  conflict_node    *ConfList;
 extern  op_regs          RegList[];
 extern  hw_reg_set       *RegSets[];
-extern  hw_reg_set       GivenRegisters;
-extern  name             *Names[];
-extern  bool             BlockByBlock;
-extern  bool             HaveLiveInfo;
-extern  block           *HeadBlock;
-
-
 
 
 static  bool    ContainedIn( name *name1, name *name2 ) {

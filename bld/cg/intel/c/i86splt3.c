@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "zoiks.h"
 
 extern  int             NumOperands(instruction*);

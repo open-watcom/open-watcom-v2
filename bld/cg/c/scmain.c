@@ -32,12 +32,11 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "score.h"
-#include "procdef.h"
 #include "freelist.h"
 #include "cfloat.h"
 #include "spawn.h"
 #include "memout.h"
-#include "opcodes.h"
+#include "data.h"
 
 extern  byte            *Copy(void*,void*,uint);
 extern  void            MakeLiveInfo(void);
@@ -45,11 +44,6 @@ extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  pointer         SafeRecurse( pointer (* rtn)(), pointer arg );
-
-extern  proc_def        *CurrProc;
-extern  block           *HeadBlock;
-extern  bool            BlockByBlock;
-extern  name            *Names[];
 
 
 extern  void    ScoreInit( void )

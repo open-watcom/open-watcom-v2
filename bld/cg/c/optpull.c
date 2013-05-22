@@ -33,8 +33,6 @@
 #include "optwif.h"
 #include "escape.h"
 
-extern    byte          OptForSize;
-
 extern  void            JmpToRet( ins_entry *, ins_entry * );
 extern  oc_class        NextClass( ins_entry * );
 extern  ins_entry       *DelInstr( ins_entry * );

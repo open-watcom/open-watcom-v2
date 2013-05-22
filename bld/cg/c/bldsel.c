@@ -32,12 +32,11 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "cgmem.h"
-#include "addrname.h"
 #include "seldef.h"
 #include "tree.h"
 #include "zoiks.h"
+#include "data.h"
 #include "types.h"
 #include "bldins.h"
 #include "makeins.h"
@@ -60,8 +59,6 @@ extern  name_def        *SelIdx(tbl_control*,an);
 extern  type_def        *SelNodeType(an,bool);
 extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
 extern  void            MkSelOp( name *idx, cg_type tipe );
-
-extern    type_def      *TypeInteger;
 
 /* forward declarations */
 extern  void    BGSelRange( select_node *s_node, signed_32 lo,

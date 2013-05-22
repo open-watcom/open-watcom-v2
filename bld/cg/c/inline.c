@@ -33,27 +33,11 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "addrname.h"
 #include "cgmem.h"
 #include "zoiks.h"
-#include "feprotos.h"
 #include "makeins.h"
-
-extern  name            *GenIns(an);
-extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
-extern  void            EnLink(label_handle,bool);
-extern  void            AddIns(instruction*);
-extern  type_class_def  TypeClass(type_def*);
-extern  void            AddTarget(label_handle,bool);
-extern  void            GenBlock( block_class, int );
-extern  an              MakeTempAddr(name*,type_def*);
-extern  name            *BGNewTemp(type_def*);
-extern  void            BGDone(an);
-extern  an              BGCopy(an);
-extern  an              BGAssign(an,an,type_def*);
-
-extern  type_def        *TypeInteger;
-extern  bool            HaveCurrBlock;
+#include "data.h"
+#include "feprotos.h"
 
 typedef struct inline_parm {
         struct inline_parm      *next;
@@ -67,6 +51,19 @@ typedef struct inline_stack {
         type_def                *tipe;
         an                      addr;
 } inline_stack;
+
+extern  name            *GenIns(an);
+extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
+extern  void            EnLink(label_handle,bool);
+extern  void            AddIns(instruction*);
+extern  type_class_def  TypeClass(type_def*);
+extern  void            AddTarget(label_handle,bool);
+extern  void            GenBlock( block_class, int );
+extern  an              MakeTempAddr(name*,type_def*);
+extern  name            *BGNewTemp(type_def*);
+extern  void            BGDone(an);
+extern  an              BGCopy(an);
+extern  an              BGAssign(an,an,type_def*);
 
 static inline_stack     *InlineStack = NULL; // fix this!
 

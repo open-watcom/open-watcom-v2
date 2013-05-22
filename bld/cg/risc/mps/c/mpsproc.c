@@ -32,15 +32,11 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
 #include "pattern.h"
 #include "cgmem.h"
-#include "model.h"
-#include "regset.h"
-#include "rttable.h"
 #include "zoiks.h"
 #include "mipsenc.h"
+#include "data.h"
 #include "feprotos.h"
 #include "rtrtn.h"
 
@@ -72,10 +68,6 @@ extern  void            EmitRtnEnd( void );
 extern  void            TellKeepLabel( label_handle );
 extern  void            TellProcLabel( label_handle );
 extern  void            GenLOADS32( signed_32, uint_8 );
-
-extern  proc_def        *CurrProc;
-extern  block           *HeadBlock;
-extern  type_length     MaxStack;
 
 
 static  void calcUsedRegs( void )

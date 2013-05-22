@@ -34,17 +34,13 @@
 #include <assert.h>
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
-#include "opcodes.h"
 #include "cgdefs.h"
-#include "model.h"
 #include "zoiks.h"
 #include "edgestk.h"
+#include "data.h"
 
 extern void ClearBlockBits( block_class class );
 
-extern block    *HeadBlock;
-extern bool     HaveDominatorInfo;
 static block    *ReturnBlock;
 
 static bool             AssignDominatorBits( void )

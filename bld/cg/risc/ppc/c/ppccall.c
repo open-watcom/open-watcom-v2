@@ -32,14 +32,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "model.h"
-#include "addrname.h"
 #include "cgdefs.h"
 #include "cgaux.h"
 #include "zoiks.h"
-#include "regset.h"
+#include "data.h"
 #include "bldins.h"
 #include "makeins.h"
 
@@ -61,12 +57,6 @@ extern  type_class_def  TypeClass( type_def * );
 extern  hw_reg_set      ParmReg( type_class_def, type_length, type_length, call_state *);
 extern  instruction     *SuffixIns( instruction *, instruction * );
 extern  type_def        *ClassType( type_class_def );
-
-extern  type_length     TypeClassSize[];
-
-extern  proc_def        *CurrProc;
-extern  type_length     MaxStack;
-extern  type_def        *TypeNone;
 
 extern  an      BGCall( cn call, bool use_return, bool in_line ) {
 /****************************************************************/

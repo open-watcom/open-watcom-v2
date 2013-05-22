@@ -31,20 +31,16 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "regset.h"
-#include "model.h"
 #include "vergen.h"
 #include "pattern.h"
 #include "cfloat.h"
 #include "zoiks.h"
+#include "data.h"
 
 extern  int             GetLog2(unsigned_32);
 extern  name            *DeAlias(name*);
 
-extern  byte            OptForSize;
 extern  opcode_entry    DoNop[];
-extern  type_length     TypeClassSize[];
 extern  type_class_def  Unsigned[];
 
 

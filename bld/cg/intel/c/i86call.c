@@ -32,17 +32,12 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "model.h"
 #include "cgmem.h"
-#include "addrname.h"
 #include "cgdefs.h"
 #include "cgaux.h"
-#include "regset.h"
-#include "rtclass.h"
 #include "zoiks.h"
 #include "makeins.h"
+#include "data.h"
 #include "display.h"
 #include "cgprotos.h"
 #include "rtrtn.h"
@@ -77,18 +72,6 @@ extern  name            *STempOffset(name*,type_length,type_class_def,type_lengt
 extern  void            SuffixIns( instruction *, instruction * );
 extern  name            *BGNewTemp( type_def *tipe );
 extern  void            BGDone( an );
-
-
-extern  type_def        *TypeInteger;
-extern  type_def        *TypeNone;
-extern  type_def        *TypeProcParm;
-extern  type_class_def  ClassPointer;
-extern  proc_def        *CurrProc;
-extern  type_length     MaxStack;
-extern  block           *CurrBlock;
-
-
-extern  type_length     TypeClassSize[];
 
 static  void    AddCall( instruction *ins, cn call );
 

@@ -31,12 +31,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "regset.h"
-#include "opcodes.h"
-#include "rttable.h"
 #include "makeins.h"
-#include "rtrtn.h"
 #include "convins.h"
+#include "data.h"
+#include "rtrtn.h"
 
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);

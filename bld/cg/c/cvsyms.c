@@ -33,22 +33,20 @@
 #include <string.h>
 #include "coderep.h"
 #include "pattern.h"
-#include "procdef.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "model.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include "typedef.h"
-#include "types.h"
 #include "dbgstrct.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <setjmp.h>
 #include <stdlib.h>
 #include "cvdbg.h"
+#include "data.h"
+#include "types.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -84,10 +82,6 @@ extern  void            CVPutNullStr( cv_out * );
 extern  void            CVEndType( cv_out *out );
 extern  sym_handle      LocSimpStatic(dbg_loc);
 extern  type_length     NewBase(name*);
-
-extern  source_line_number  SrcLine;
-extern  proc_def            *CurrProc;
-extern  uint                TypeIdx;
 
 // global variables
 seg_id                  CVSyms;

@@ -33,11 +33,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "pattern.h"
 #include "vergen.h"
 #include "funits.h"
-#include "model.h"
+#include "data.h"
 #include "makeins.h"
 
 
@@ -50,9 +49,6 @@ extern  bool            VolatileIns(instruction *);
 extern  hw_reg_set      Low16Reg( hw_reg_set regs );
 extern  hw_reg_set      High16Reg( hw_reg_set regs );
 extern  hw_reg_set      FullReg( hw_reg_set regs );
-
-extern  block           *HeadBlock;
-extern  type_length     TypeClassSize[];
 
 static opcode_entry LDSES = { 0, 0, G_LDSES, 0, FU_NO };
 

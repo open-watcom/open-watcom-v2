@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "addrname.h"
 #include "tree.h"
 #include "seldef.h"

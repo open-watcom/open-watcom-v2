@@ -32,11 +32,9 @@
 #define _LBit_DEFINE_BITNEXT
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "conflict.h"
-#include "procdef.h"
 #include "zoiks.h"
 #include "makeins.h"
+#include "data.h"
 
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
@@ -45,12 +43,6 @@ extern  void            PrefixInsRenum(instruction*,instruction*,bool);
 extern  void            Renumber(void);
 extern  int             NumOperands(instruction*);
 extern  bool            IsVolatile(name*);
-
-extern  block           *HeadBlock;
-extern  conflict_node   *ConfList;
-extern  proc_def        *CurrProc;
-extern  global_bit_set  MemoryBits;
-extern  bool            HaveLiveInfo;
 
 
 static  void            GlobalConflictsFirst( void )

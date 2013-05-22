@@ -31,14 +31,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "addrname.h"
+#include "data.h"
 #include "x87.h"
 #include "makeins.h"
 
-
-extern  block           *HeadBlock;
 
 extern  bool            IndexOkay(instruction*,name*);
 extern  bool            RTLeaveOp2(instruction*);

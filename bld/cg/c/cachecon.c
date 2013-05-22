@@ -32,17 +32,13 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "stackok.h"
-#include "conflict.h"
 #include "stackok.h"
 #include "makeins.h"
 #include "foldins.h"
 #include "convins.h"
+#include "data.h"
 
 extern  type_class_def  Unsigned[];
-extern  name            *Names[];
-extern  block           *HeadBlock;
 
 extern  name            *AllocTemp(type_class_def);
 extern  name            *TempOffset(name*,type_length,type_class_def);

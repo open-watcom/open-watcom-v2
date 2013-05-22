@@ -32,10 +32,8 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "regset.h"
-#include "rttable.h"
 #include "zoiks.h"
+#include "data.h"
 #include "rtrtn.h"
 
 static  import_handle   RTHdls[RTSIZE];

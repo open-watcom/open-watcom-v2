@@ -41,7 +41,6 @@ typedef struct rtn_info {
         reg_set_index   result;
 } rtn_info;
 
-extern    rt_class      RoutineNum;
 extern    rtn_info      RTInfo[];
 
 #define OP_CMP    OP_CMP_EQUAL

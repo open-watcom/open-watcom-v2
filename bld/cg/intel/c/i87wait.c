@@ -30,15 +30,11 @@
 
 
 #include "cgstd.h"
-#include "opcodes.h"
 #include "coderep.h"
 #include "pattern.h"
 #include "vergen.h"
 #include "gen8087.h"
-#include "model.h"
-
-extern    block *HeadBlock;
-extern    bool  BlockByBlock;
+#include "data.h"
 
 extern  void            PrefixIns(instruction*,instruction*);
 extern  instruction     *MakeWait(void);

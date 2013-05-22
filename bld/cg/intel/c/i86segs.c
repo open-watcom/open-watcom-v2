@@ -32,15 +32,11 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "procdef.h"
 #include "cgaux.h"
-#include "model.h"
 #include "zoiks.h"
-#include "opcodes.h"
 #include "cgdefs.h"
+#include "data.h"
 #include "feprotos.h"
-
-extern proc_def             *CurrProc;
 
 extern  seg_id          AskCodeSeg( void );
 extern  seg_id          AskBackSeg( void );

@@ -31,22 +31,19 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "procdef.h"
-#include "model.h"
 #include "cgmem.h"
-#include "addrname.h"
 #include "cgdefs.h"
 #include "cgaux.h"
 #include "zoiks.h"
-#include "feprotos.h"
 #include "namelist.h"
+#include "makeins.h"
+#include "convins.h"
+#include "data.h"
+#include "feprotos.h"
 #include "bldins.h"
 #include "makeaddr.h"
 #include "bgcall.h"
 #include "x87.h"
-#include "makeins.h"
-#include "convins.h"
 
 
 extern  type_def        *QParmType(sym_handle,sym_handle,type_def*);
@@ -90,14 +87,6 @@ extern  pointer         FindAuxInfo( name *, aux_class );
 extern  type_length     ParmAlignment( type_def * );
 extern  void            SuffixIns( instruction *, instruction * );
 
-extern  type_def        *TypeInteger;
-extern  type_def        *TypeProcParm;
-extern  type_def        *TypeNone;
-extern  proc_def        *CurrProc;
-extern  block           *CurrBlock;
-extern  an              AddrList;
-extern  type_length     MaxStack;
-extern  name            *DummyIndex;
 extern  bool            BlipsOn;
 
 extern  type_class_def  AddCallBlock( sym_handle sym, type_def *tipe ) {

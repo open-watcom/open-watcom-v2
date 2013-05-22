@@ -29,16 +29,16 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include <stdio.h>
 #include <stddef.h>
-#include "cgstd.h"
 #include "memsydep.h"
 #include "memcheck.h"
 #include "zoiks.h"
-#include "cg.h"
 #include "spawn.h"
 #include "memout.h"
 #include "cgmem.h"
+#include "optmac.h"
 
 /*  memory tracking levels */
 #define   _NO_TRACKING     0
@@ -50,8 +50,6 @@
 #else
     #define _MEMORY_TRACKING _CHUNK_TRACKING
 #endif
-
-extern    int   InOptimizer;
 
 extern  void            CalcMemLimit( void );
 extern  void            FatalError(char *);

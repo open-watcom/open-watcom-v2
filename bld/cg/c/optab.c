@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "tables.h"
 #include "pattern.h"
 #include "vergen.h"

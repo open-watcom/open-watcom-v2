@@ -30,22 +30,17 @@
 
 
 #include "cgstd.h"
-#include "cgdefs.h"
-#include "cg.h"
-#include "cgaux.h"
-#include "bckdef.h"
-#include "model.h"
+#include "coderep.h"
 #include "targsys.h"
+#include "data.h"
 #include "feprotos.h"
 #include "cfloat.h"
 
 static    pointer_int   MemLimit;
 static    bool          IckyWicky;
 
-extern    int           InOptimizer;
 extern    pointer       MemStart;
 extern    pointer       MemFinish;
-extern    pointer_int   FrlSize;
 
 extern  bool            InsFrlFree( void );
 extern  bool            InstrFrlFree( void );

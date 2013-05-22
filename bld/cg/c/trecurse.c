@@ -30,17 +30,10 @@
 
 
 #include "cgstd.h"
-#include "model.h"
 #include "coderep.h"
-#include "opcodes.h"
-#include "typedef.h"
-#include "procdef.h"
 #include "dump.h"
+#include "data.h"
 #include "makeins.h"
-
-extern proc_def         *CurrProc;
-extern block            *HeadBlock;
-extern bool             BlockByBlock;
 
 extern  bool            SideEffect(instruction*);
 extern  pointer         SafeRecurse(pointer(*)(),pointer);

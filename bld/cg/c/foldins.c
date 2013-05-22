@@ -31,19 +31,16 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "zoiks.h"
-#include "typedef.h"
-#include "model.h"
 #include "cgdefs.h"
 #include "tree.h"
-#include "feprotos.h"
 #include "cfloat.h"
 #include "makeins.h"
-#include "addrname.h"
+#include "foldins.h"
+#include "data.h"
 #include "treefold.h"
 #include "treeconv.h"
-#include "foldins.h"
+#include "feprotos.h"
 
 extern void             ReplIns(instruction*,instruction*);
 extern void             DupSeg(instruction*,instruction*);
@@ -59,9 +56,6 @@ extern  bool            AskSegNear(segment_id);
 extern  void            SetCSEBits(instruction *,instruction *);
 extern  name            *AllocConst( cfloat * );
 extern  cfloat          *OkToNegate( cfloat *, type_def * );
-
-extern  type_length     TypeClassSize[];
-
 
 extern  bool    IsTrickyPointerConv( instruction *ins )
 /******************************************************

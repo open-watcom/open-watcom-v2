@@ -33,18 +33,16 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "procdef.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "model.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
 #include "cgaux.h"
-#include "typedef.h"
-#include "types.h"
 #include "dbgstrct.h"
 #include "wvdbg.h"
+#include "data.h"
+#include "types.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -80,12 +78,7 @@ static  void            DumpParentPtr( dbg_block *blk );
 static  void            DumpLocals( dbg_local *local );
 static  void            DumpDbgBlk( dbg_block *blk, offset lc );
 
-extern    seg_id                DbgLocals;
-extern    seg_id                DbgTypes;
-extern    proc_def              *CurrProc;
-extern    unsigned_16           TypeIdx;
-
-static    offset        CodeOffset;
+static  offset          CodeOffset;
 
 typedef struct block_patch {
     struct block_patch  *link;

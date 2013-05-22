@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "procdef.h"
 #include "cgdefs.h"
 #include "typedef.h"
@@ -47,8 +46,6 @@ extern  hw_reg_set      InLineParm(hw_reg_set,hw_reg_set);
 extern  hw_reg_set      *ParmChoices(type_class_def);
 extern  hw_reg_set      ParmRegConflicts(hw_reg_set);
 extern  type_class_def  TypeClass( type_def * );
-
-extern    type_length   MaxStack;
 
 static  hw_reg_set      floatRegs[] = {
     HW_D_1( HW_F1 ),

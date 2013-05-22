@@ -30,18 +30,15 @@
 
 
 #include "cgstd.h"
+#include <string.h>
 #include "cgdefs.h"
-#include "model.h"
 #include "coderep.h"
-#include "procdef.h"
 #include "cgmem.h"
-#include "opcodes.h"
-#include "addrname.h"
 #include "cgaux.h"
 #include "zoiks.h"
-#include "feprotos.h"
-#include <string.h>
 #include "makeins.h"
+#include "data.h"
+#include "feprotos.h"
 
 extern  void            TellBeginExecutions(void);
 extern  void            FreeNames(void);
@@ -57,22 +54,6 @@ extern  pointer         SafeRecurse( pointer (* rtn)(), pointer arg );
 extern  void            SaveToTargProc(void);
 extern  void            RestoreFromTargProc(void);
 extern  void            InitTargProc(void);
-
-
-extern    bool                  BlocksUnTrimmed;
-extern    block                 *HeadBlock;
-extern    block                 *BlockList;
-extern    int                   InsId;
-extern    type_length           MaxStack;
-extern    source_line_number    SrcLine;
-extern    name                  *Names[];
-extern    name                  *LastTemp;
-extern    name                  *DummyIndex;
-extern    bool                  BlockByBlock;
-extern    bool                  HaveCurrBlock;
-
-proc_def              *CurrProc;
-block                 *CurrBlock;
 
 
 extern  block   *MakeBlock( label_handle label, block_num edges )

@@ -33,9 +33,9 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "pattern.h"
-#include "opcodes.h"
 #include "cfloat.h"
 #include "dump.h"
+#include "data.h"
 #include "feprotos.h"
 
 extern  void            DumpRegName(hw_reg_set);
@@ -60,8 +60,6 @@ extern  void            DumpLBit(local_bit_set*);
 extern  void            DumpByte( byte n );
 extern  type_length     FlagsToAlignment( i_flags );
 
-
-extern  name            *Names[];
 
 static  void    DoOffset( char *str, unsigned_32 o ) {
 /****************************************************/

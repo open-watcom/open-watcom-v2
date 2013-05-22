@@ -32,18 +32,13 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "pattern.h"
 #include "zoiks.h"
-#include "procdef.h"
 #include "cgmem.h"
-#include "model.h"
+#include "data.h"
 #include "makeins.h"
 
-extern  bool            HaveDominatorInfo;
-extern  block           *HeadBlock;
 extern  hw_reg_set      PushRegs[];
-extern  proc_def        *CurrProc;
 
 extern  opcode_entry    *ResetGenEntry( instruction * );
 extern  void            PrefixIns( instruction *, instruction * );

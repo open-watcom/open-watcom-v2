@@ -33,18 +33,13 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "conflict.h"
 #include "pattern.h"
 #include "tables.h"
-#include "opcodes.h"
-#include "regset.h"
-#include "model.h"
+#include "data.h"
 #include "feprotos.h"
 #include <assert.h>
 #include "makeins.h"
 
-extern  block               *HeadBlock;
-extern  conflict_node       *ConfList;
 extern  opcode_defs         String[];
 
 extern  void            SuffixIns(instruction*,instruction*);
