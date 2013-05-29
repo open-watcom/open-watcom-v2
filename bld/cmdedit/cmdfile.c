@@ -119,8 +119,8 @@ int     NonFileChar( char ch )
 }
 
 
-int FileIgnore( DIRINFO *dir, int attr )
-/**************************************/
+int FileIgnore( DIRINFO PASPTR *dir, int fattr )
+/*********************************************/
 {
     int         ignore_matches;
     char        *p;
@@ -128,8 +128,8 @@ int FileIgnore( DIRINFO *dir, int attr )
     char        far *envname;
     char        *name;
 
-    if( attr != 0 && !( dir->attr & attr ) ) return( 1 );
-    name = dir->name;
+    if( fattr != 0 && !( dir->attrFile & fattr ) ) return( 1 );
+    name = dir->achName;
     if( PathCurr != 0 ) {
 #ifdef DOS
         envname = ".COM.EXE.BAT";
@@ -178,18 +178,17 @@ int FileIgnore( DIRINFO *dir, int attr )
 }
 
 
-int FindNext( DIRINFO *dir, int attr )
-/************************************/
+int FindNext( DIRINFO PASPTR *dir, int fattr )
+/********************************************/
 {
-    int tmp;
+    USHORT tmp;
     int cnt;
 
     tmp = 1;
     do {
-        cnt = DosFindNext( 1, (char PASPTR *)dir,
-                           sizeof( DIRINFO ), (int PASPTR *)&tmp);
+        cnt = DosFindNext( 1, dir, sizeof( DIRINFO ), &tmp);
         if( cnt != 0 ) return( cnt );
-    } while( FileIgnore( dir, attr ) );
+    } while( FileIgnore( dir, fattr ) );
     return( cnt );
 }
 
@@ -200,11 +199,11 @@ void NextFile( void )
 #ifdef DOS
     int                 dot;
 #endif
-    int                 hdl;
+    USHORT              hdl;
     int                 i;
     int                 path;
-    int                 attr;
-    int                 cnt;
+    int                 fattr;
+    USHORT              cnt;
     int                 searchpath;
     static              int lastrc;
     static char         buff[ MAX_FNAME+2 ];
@@ -217,9 +216,9 @@ void NextFile( void )
     char                in_quote;
     char                has_blank;
 
-    attr = 0;
+    fattr = 0;
     if( ExpandDirCommand() ) {
-        attr = _D_SDIR;
+        fattr = _D_SDIR;
     }
     if( Cursor != 0 ) {
         if( !HaveDirent ) {
@@ -284,8 +283,7 @@ recurse:
                     }
                     *word = 0;
                     ReplaceAlias( PathBuff, Line, Line );
-                    ReplaceAlias( "\\", Line+(word-PathBuff),
-                                        Line+(word-PathBuff) );
+                    ReplaceAlias( "\\", Line+(word-PathBuff), Line+(word-PathBuff) );
                 }
             }
             c0 = Line[Cursor+0];
@@ -307,25 +305,23 @@ recurse:
 #endif
             hdl = 1;
             cnt = 1;
-            lastrc = DosFindFirst( (char PASPTR *)Line + i, (int PASPTR *)&hdl,
-                                _D_SDIR, (char PASPTR *)&dir, sizeof( DIRINFO ),
-                                (int PASPTR *)&cnt, 0 );
+            lastrc = DosFindFirst( Line + i, &hdl, _D_SDIR, &dir, sizeof( DIRINFO ), &cnt, 0 );
             Line[Cursor+0] = c0;
             Line[Cursor+1] = c1;
             Line[Cursor+2] = c2;
             Line[Cursor+3] = c3;
             if( lastrc == 0 ) {
-                if( FileIgnore( &dir, attr ) ) lastrc = FindNext( &dir, attr );
+                if( FileIgnore( &dir, fattr ) ) lastrc = FindNext( &dir, fattr );
                 HaveDirent = TRUE;
             }
         }
 done:
         ++NextFileCalls;
         if( lastrc == 0 ) {
-            is_directory = dir.attr & _D_SDIR;
-            word = dir.name;
+            is_directory = dir.attrFile & _D_SDIR;
+            word = dir.achName;
             alias = buff;
-            has_blank = strchr( dir.name, ' ' ) != NULL;
+            has_blank = strchr( dir.achName, ' ' ) != NULL;
             if( has_blank ) *alias++ = '"';
             while( *alias = *word ) {
                 ++alias; ++word;
@@ -336,7 +332,7 @@ done:
                 if( PrintAllFiles ) {
                     SaveLine();
                     NextFileCalls = 0;
-                    SavePrompt( (char PASPTR *)prompt );
+                    SavePrompt( prompt );
                     PutNL();
                     i = 1;
                 }
@@ -346,12 +342,12 @@ done:
                             PutNL();
                             i = 6;
                         }
-                        PutPad( dir.name, 13 );
+                        PutPad( dir.achName, 13 );
                     }
-                    lastrc = FindNext( &dir, attr );
+                    lastrc = FindNext( &dir, fattr );
                     if( lastrc != 0 ) break;
                     alias = buff;
-                    word = dir.name;
+                    word = dir.achName;
                     while( tolower( *alias ) == tolower( *word ) && *alias != '\r' ) {
                         ++alias;
                         ++word;
@@ -361,12 +357,12 @@ done:
                 if( PrintAllFiles ) {
                     PutNL();
                     PutNL();
-                    RestorePrompt( (char PASPTR *)prompt );
+                    RestorePrompt( prompt );
                     RestoreLine();
                 }
                 HaveDirent = FALSE;
             } else {
-                lastrc = FindNext( &dir, attr );
+                lastrc = FindNext( &dir, fattr );
             }
             i = Cursor - 1;
             if( AppendSlash && NextFileCalls > 1 ) {

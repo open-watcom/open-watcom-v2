@@ -69,11 +69,11 @@ void ZapLower( char far *str ) {
 void PutChar( char ch ) {
 /***********************/
 
-    int written;
+    USHORT written;
     char c;
 
     c = ch;
-    DosWrite( 1, (char far *)&c, 1, (int PASPTR *)&written );
+    DosWrite( 1, &c, 1, &written );
 }
 
 
@@ -110,9 +110,9 @@ int PutMore() {
 /**************/
 
     PutString( "\r... More [y|n]\r" );
-    KbdCharIn( (KBDCHAR PASPTR *)&KbdChar, 0, 0 );
+    KbdCharIn( &KbdChar, 0, 0 );
     PutString( "\r              \r" );
-    return( KbdChar.ascii != 'n' && KbdChar.ascii != 'N' );
+    return( KbdChar.chChar != 'n' && KbdChar.chChar != 'N' );
 }
 
 
@@ -128,19 +128,19 @@ char *EatWhite( char *word ) {
 void SavePrompt( char PASPTR *line ) {
 /*******************************/
 
-    int         len;
+    USHORT      len;
 
     len = StartCol;
-    VioReadCharStr( line, (int PASPTR *)&len, Row, 0, 0 );
+    VioReadCharStr( line, &len, Row, 0, 0 );
 }
 
 
 void RestorePrompt( char PASPTR *line ) {
 /**********************************/
 
-    int         col;
+    USHORT      col;
 
-    VioGetCurPos( (int PASPTR *)&Row, (int PASPTR *)&col, 0 );
+    VioGetCurPos( &Row, &col, 0 );
     VioWrtCharStr( line, StartCol, Row, 0, 0 );
 }
 
@@ -148,7 +148,7 @@ void RestorePrompt( char PASPTR *line ) {
 void SetCursorType() {
 /****************/
 
-    VioSetCurType( (CURSOR PASPTR *)&Cur, 0 );
+    VioSetCurType( &Cur, 0 );
 }
 
 
@@ -156,7 +156,7 @@ char far *GetEnv( char far *name, int len ) {
 /*******************************************/
 
     char far *environ;
-    unsigned envoff, envseg;
+    USHORT envoff, envseg;
 
     if( DosGetEnv( &envseg, &envoff ) != 0 ) return( 0 );
     environ = MK_FP( envseg, 0 );

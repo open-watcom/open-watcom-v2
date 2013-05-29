@@ -31,6 +31,13 @@
 
 
 #include <dos.h>
+#ifndef   DOS
+    #define INCL_SUB
+    #define INCL_DOSQUEUES
+    #define INCL_DOSPROCESS
+    #define INCL_DOSMISC
+    #include <os2.h>
+#endif
 
 /* define DOS if compiling for dos */
 
@@ -52,54 +59,81 @@
 
 /* OPTIONS end here */
 
-char far * FindAlias( char * word, char * endword, char far * far *start );
+#ifdef DOS
 
-typedef struct {
-        int     input;
-        int     output;
-        } LENGTH;
+#pragma aux pascal "*";
+#define pasrtn int
+#define PASPTR /**/
+#define USHORT  unsigned short
 
-typedef struct {
-        int     length,mask,cr,interm,shift;
-        } KBDDESC;
+enum { FALSE, TRUE };
+
+#else
+
+#pragma aux pascal "*" parm routine reverse [];
+#define pasrtn int far pascal
+#define PASPTR far
+
+#endif
 
 #define KBD_ASCII       0x8
 #define KBD_BINARY      0x4
 #define KBD_ECHO_ON     0x2
 #define KBD_ECHO_OFF    0x1
 
+#define _D_SDIR 0x10
+
+typedef unsigned long DWORD;
+
 typedef struct {
-        char    ascii,scan,status,zero;
+        int     input;
+        int     output;
+        } LENGTH;
+
+#ifdef DOS
+
+typedef char            CHAR;
+typedef unsigned char   UCHAR;
+
+typedef struct {
+        int     cb;
+        int     fsMask;
+        int     chTurnAround;
+        int     interm;
+        int     shift;
+        } KBDDESC;
+
+typedef struct {
+        UCHAR   chChar;
+        UCHAR   chScan;
+        UCHAR   status;
+        UCHAR   zero;
         int     shift;
         long    time;
         } KBDCHAR;
 
 typedef struct {
-        char    ascii,scan,status,zero;
+        UCHAR   ascii;
+        UCHAR   scan;
+        UCHAR   status;
+        UCHAR   zero;
         int     shift;
         } KBDCHARNT;
 
 typedef struct {
-        int     start,end,width,attr;
+        int     yStart;
+        int     cEnd;
+        int     width;
+        int     attr;
         } CURSOR;
 
-#define _D_SDIR 0x10
-
 typedef struct {
-#ifdef DOS
         char    dta[21];
-        char    attr;
+        UCHAR   attrFile;
         char    crap[8];
-#else
-        char    crap[20];
-        short   attr;
-        char    nlen;
-#endif
-        char    name[MAX_FNAME];
+        char    achName[MAX_FNAME];
         } DIRINFO;
 
-typedef unsigned long DWORD;
-typedef unsigned char CHAR;
 typedef struct _FILETIME {
     DWORD dwLowDateTime;
     DWORD dwHighDateTime;
@@ -118,103 +152,16 @@ typedef struct _WIN32_FIND_DATA {
     CHAR        cAlternateFileName[ 16 ];
 } WIN32_FIND_DATA;
 
-
-#ifdef DOS
-    #pragma aux pascal "*";
-    #define pasrtn int
-    #define PASPTR /**/
-    #define DosSetSigHandler( r, p, pa, a, n )
-    #define KbdGetStatus( k, i ) DKbdGetStatus( k )
-    #define KbdCharIn( k, x, y ) DKbdCharIn( k );
-    #define KbdPeek( k, x ) DKbdPeek( k );
-    #define VioGetCurPos( r, c, z ) DVioGetCurPos( r, c )
-    #define VioSetCurPos( r, c, z ) DVioSetCurPos( r, c )
-    #define VioWrtCharStr( c, l, r, d, z ) DVioWrtCharStr( c, l, r, d )
-    #define VioReadCharStr( c, l, r, d, z ) DVioReadCharStr( c, l, r, d )
-    #define VioWrtNChar( c, t, r, d, z ) DVioWrtNChar( c, t, r, d )
-    #define VioSetCurType( c, z ) DVioSetCurType( c )
-    #define VioGetCurType( c , z ) DVioGetCurType( c )
-    #define VioReadCellStr( b, l, r, c, z ) DVioReadCellStr( b, l, r, c );
-    #define VioWrtCellStr( b, l, r, c, z ) DVioWrtCellStr( b, l, r, c );
-    #define DosOpen( n, h, ac, s, at, fl, md, z ) DDosOpen( n, h )
-    #define DosFindFirst( s, h, a, b, l, c, z ) DDosFindFirst( s, a, b )
-    #define DosFindNext( h, b, l, c ) DDosFindNext( b )
-    #define DosQCurDisk( n, m ) DDosQCurDisk( n )
-    #define DosChDir( b, z ) DDosChDir( b )
-    #define DosAllocSeg( a,b,f ) DDosAllocSeg( a,b )
-    extern int DosFreeEnv( void );
-    pasrtn     DosRead( int, char far *, int, int PASPTR *);
-    pasrtn     DosWrite( int, char far *, int, int PASPTR *);
-    extern int DDosAllocSeg( unsigned, int PASPTR * );
-    pasrtn     DosGetEnv( unsigned PASPTR *, unsigned PASPTR * );
-    extern int DVioReadCellStr( char PASPTR *, int PASPTR *, int, int );
-    extern int DDosOpen( char PASPTR *, int PASPTR * );
-    extern int DVioWrtCharStr( char PASPTR *, int, int, int );
-    extern int DVioSetCurType( CURSOR PASPTR * );
-    extern int DVioSetCurPos( int, int );
-    extern int DVioGetCurPos( int PASPTR *, int PASPTR * );
-    extern int DosClose( int );
-    extern int DKbdCharIn( KBDCHAR PASPTR * );
-    extern int DVioGetCurType( CURSOR PASPTR * );
-    extern int DDosFindFirst( char PASPTR *, int, char PASPTR * );
-    extern int DVioReadCharStr( char PASPTR *, int PASPTR *, int, int );
-    extern int DVioWrtNChar( char PASPTR *, int, int, int );
-    extern int DosChgFilePtr( int, long, int, unsigned long PASPTR * );
-    extern int DDosFindNext( char PASPTR * );
-    extern int DVioWrtCellStr( char PASPTR *, int, int, int );
-    extern int DKbdGetStatus( KBDDESC PASPTR * );
-    extern pasrtn DDosChDir( char PASPTR *);
-    extern pasrtn DosQCurDir( int, char PASPTR *, int PASPTR * );
-    extern pasrtn DosSelectDisk( int );
-    extern pasrtn DDosQCurDisk( int PASPTR *);
-
 #else
-    #pragma aux pascal "*" parm routine reverse [];
-    #define pasrtn int far pascal
-    #define PASPTR far
-    pasrtn DosSetSigHandler( void (PASPTR *r)(), void (PASPTR * PASPTR *pa)(),
-                             int PASPTR *, int, int );
-    pasrtn DosBeep(int freq, int dur);
-    pasrtn KbdGetStatus(KBDDESC PASPTR *, int );
-    pasrtn KbdCharIn(KBDCHAR PASPTR * k,int zero,int zero_again);
-    pasrtn DosDevIOCtl(void PASPTR *k, void PASPTR *, int, int, int );
-#if 0
-    #define KbdCharIn( k, z1, z2 ) \
-    { \
-    int i=1; \
-    char oldmode,newmode=0x80; \
-    DosDevIOCtl( (char PASPTR *)&oldmode, 0, 0x71, 4, KbdHandle ); \
-    DosDevIOCtl( 0, (char PASPTR *)&newmode, 0x51, 4, KbdHandle ); \
-    DosDevIOCtl( k, (int PASPTR *)&i, 0x74, 0x4, KbdHandle ); \
-    DosDevIOCtl( 0, (char PASPTR *)&oldmode, 0x51, 4, KbdHandle ); \
-    }
-#endif
-    pasrtn KbdPeek(KBDCHARNT PASPTR * k,int zero);
-    pasrtn VioGetCurPos(int PASPTR *row,int PASPTR *col,int zero);
-    pasrtn VioSetCurPos(int row,int col,int zero);
-    pasrtn VioScrollUp(int startrow,int startcol,int endrow, int endcol,
-                       int numrows,char PASPTR *cell,int zero);
-    pasrtn VioReadCellStr( char PASPTR *b, int PASPTR *len, int, int, int);
-    pasrtn VioWrtCellStr( char PASPTR *b, int len, int, int, int);
-    pasrtn VioWrtCharStr(char PASPTR *ch,int len,int row,int col,int zero);
-    pasrtn VioReadCharStr( char PASPTR *, int PASPTR *, int, int, int );
-    pasrtn VioWrtNChar(char PASPTR *ch,int times,int row,int col,int zero);
-    pasrtn VioSetCurType(CURSOR PASPTR * cur,int zero);
-    pasrtn VioGetCurType(CURSOR PASPTR * cur,int zero);
-    pasrtn DosOpen(char PASPTR *,int PASPTR *,int PASPTR *,long,int,int,int,long);
-    pasrtn DosClose( int );
-    pasrtn DosRead( int, char PASPTR *, int, int PASPTR *);
-    pasrtn DosWrite( int, char PASPTR *, int, int PASPTR *);
-    pasrtn DosFindFirst( char PASPTR *, int PASPTR *, int,
-                                 char PASPTR *, int, int PASPTR *, long );
-    pasrtn DosFindNext( int, char PASPTR *, int, int PASPTR *);
-    pasrtn DosChgFilePtr( int, long, int, unsigned long PASPTR * );
-    pasrtn DosAllocSeg( int, int PASPTR *, int );
-    pasrtn DosSelectDisk( int );
-    pasrtn DosQCurDisk( int PASPTR *, long PASPTR * );
-    pasrtn DosChDir( char PASPTR *, long );
-    pasrtn DosQCurDir( int, char PASPTR *, int PASPTR * );
-    pasrtn DosGetEnv( unsigned PASPTR *, unsigned PASPTR * );
+
+typedef struct _KBDKEYINFO KBDCHAR;
+
+typedef struct _KBDINFO KBDDESC;
+
+typedef struct _VIOCURSORINFO CURSOR;
+
+typedef struct _FILEFINDBUF DIRINFO;
+
 #endif
 
 #ifdef DOS
@@ -222,6 +169,7 @@ typedef struct _WIN32_FIND_DATA {
 #else
 #define LINE_WIDTH 512
 #endif
+
 #define SCREEN_WIDTH 80
 #define MENU_DEPTH 5
 #define MENU_SIZE (SCREEN_WIDTH*MENU_DEPTH)
@@ -323,11 +271,60 @@ enum {
 
 #define F0 ( F1 - 1 )
 
-enum { FALSE, TRUE };
-
 #define _white( ch ) ( ( ch ) == ' ' || ( ch ) == '\t' )
 #define _null( ch )  ( ( ch ) == '\0' )
 #define _white_or_null( ch ) ( _white( ch ) || _null( ch ) )
+
+extern char far * FindAlias( char * word, char * endword, char far * far *start );
+
+#ifdef DOS
+
+#define DosSetSigHandler( r, p, pa, a, n )
+#define KbdGetStatus( k, i ) DKbdGetStatus( k )
+#define KbdCharIn( k, x, y ) DKbdCharIn( k );
+#define KbdPeek( k, x ) DKbdPeek( k );
+#define VioGetCurPos( r, c, z ) DVioGetCurPos( r, c )
+#define VioSetCurPos( r, c, z ) DVioSetCurPos( r, c )
+#define VioWrtCharStr( c, l, r, d, z ) DVioWrtCharStr( c, l, r, d )
+#define VioReadCharStr( c, l, r, d, z ) DVioReadCharStr( c, l, r, d )
+#define VioWrtNChar( c, t, r, d, z ) DVioWrtNChar( c, t, r, d )
+#define VioSetCurType( c, z ) DVioSetCurType( c )
+#define VioGetCurType( c , z ) DVioGetCurType( c )
+#define VioReadCellStr( b, l, r, c, z ) DVioReadCellStr( b, l, r, c );
+#define VioWrtCellStr( b, l, r, c, z ) DVioWrtCellStr( b, l, r, c );
+#define DosOpen( n, h, ac, s, at, fl, md, z ) DDosOpen( n, h )
+#define DosFindFirst( s, h, a, b, l, c, z ) DDosFindFirst( s, a, b )
+#define DosFindNext( h, b, l, c ) DDosFindNext( b )
+#define DosQCurDisk( n, m ) DDosQCurDisk( n )
+#define DosChDir( b, z ) DDosChDir( b )
+#define DosAllocSeg( a,b,f ) DDosAllocSeg( a,b )
+extern int      DosFreeEnv( void );
+extern pasrtn   DosRead( USHORT, char far *, USHORT, USHORT PASPTR *);
+extern pasrtn   DosWrite( USHORT, char far *, USHORT, USHORT PASPTR *);
+extern int      DDosAllocSeg( unsigned, int PASPTR * );
+extern pasrtn   DosGetEnv( USHORT PASPTR *, USHORT PASPTR * );
+extern int      DVioReadCellStr( char PASPTR *, USHORT PASPTR *, USHORT, USHORT );
+extern int      DDosOpen( char PASPTR *, USHORT PASPTR * );
+extern int      DVioWrtCharStr( char PASPTR *, USHORT, USHORT, USHORT );
+extern int      DVioSetCurType( CURSOR PASPTR * );
+extern int      DVioSetCurPos( USHORT, USHORT );
+extern int      DVioGetCurPos( USHORT PASPTR *, USHORT PASPTR * );
+extern int      DosClose( USHORT );
+extern int      DKbdCharIn( KBDCHAR PASPTR * );
+extern int      DVioGetCurType( CURSOR PASPTR * );
+extern int      DDosFindFirst( char PASPTR *, int, DIRINFO PASPTR * );
+extern int      DVioReadCharStr( char PASPTR *, USHORT PASPTR *, USHORT, USHORT );
+extern int      DVioWrtNChar( UCHAR PASPTR *, int, USHORT, USHORT );
+extern int      DosChgFilePtr( int, long, int, unsigned long PASPTR * );
+extern int      DDosFindNext( DIRINFO PASPTR * );
+extern int      DVioWrtCellStr( char PASPTR *, USHORT, USHORT, USHORT );
+extern int      DKbdGetStatus( KBDDESC PASPTR * );
+extern pasrtn   DDosChDir( char PASPTR *);
+extern pasrtn   DosQCurDir( int, char PASPTR *, int PASPTR * );
+extern pasrtn   DosSelectDisk( int );
+extern pasrtn   DDosQCurDisk( USHORT PASPTR *);
+
+#endif
 
 #define GLOBAL extern
 #include "cmddata.h"

@@ -44,23 +44,24 @@
 extern void InitRetrieve( char far * );
 extern void StringIn( char far *, LENGTH far *, int, int );
 
-main() {
+int main( void ) {
     LENGTH l;
-    int row,col;
-    int written;
+    USHORT row,col;
+    USHORT written;
     static char near buff[LINE_WIDTH];
 
     getcmd( buff );
     InitRetrieve( buff );
     for( ;; ) {
-        VioGetCurPos( (int PASPTR *)&row, (int PASPTR *)&col, 0 );
-        VioWrtCharStr( (char PASPTR *)"hello>", 6, row, col, 0 );
+        VioGetCurPos( &row, &col, 0 );
+        VioWrtCharStr( "hello>", 6, row, col, 0 );
         VioSetCurPos( row, col+6, 0 );
         l.input = LINE_WIDTH;
         StringIn( &buff, &l, 1, 5 );
         if( l.output == 1 && buff[0] == 'q' ) break;
-        DosWrite( 1, (char far *)"\r\n", 2, (int PASPTR *)&written );
-        DosWrite( 1, (char far *)buff, l.output, (int PASPTR *)&written );
-        DosWrite( 1, (char far *)"\r\n", 2, (int PASPTR *)&written );
+        DosWrite( 1, "\r\n", 2, &written );
+        DosWrite( 1, buff, l.output, &written );
+        DosWrite( 1, "\r\n", 2, &written );
     }
+    return( 0 );
 }

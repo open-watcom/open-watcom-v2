@@ -36,29 +36,26 @@ void FlipScreenCursor( void )
 /***************************/
 {
     char        buffer[2];
-    int         length;
+    USHORT      length;
 
     length = 2;
-    VioReadCellStr( (char PASPTR *)&buffer, (int PASPTR *)&length,
-                    Row+RowOffset, StartCol+ColOffset, 0 );
+    VioReadCellStr( buffer, &length, Row+RowOffset, StartCol+ColOffset, 0 );
     buffer[ 1 ] ^= 0x77;
-    VioWrtCellStr( (char PASPTR *)&buffer, length,
-                    Row+RowOffset, StartCol+ColOffset, 0 );
+    VioWrtCellStr( buffer, length, Row+RowOffset, StartCol+ColOffset, 0 );
 }
 
 
 void ReadScreen( int next_line )
 /******************************/
 {
-    int len;
+    USHORT len;
 
     len = SCREEN_WIDTH - (StartCol+ColOffset);
     if( next_line ) {
         len += SCREEN_WIDTH;
         if( len > LINE_WIDTH ) len = LINE_WIDTH;
     }
-    VioReadCharStr( (char PASPTR *)&Line, (int PASPTR *)&len,
-                    Row+RowOffset, StartCol+ColOffset, 0 );
+    VioReadCharStr( Line, &len, Row+RowOffset, StartCol+ColOffset, 0 );
     while( len != 0 ) {
         if( Line[ len - 1 ] != ' ' ) break;
         --len;

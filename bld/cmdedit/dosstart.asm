@@ -35,27 +35,27 @@ extrn       InitRetrieve_   : near
 extrn       _edata      : byte      ; end of DATA (start of BSS)
 extrn       _end        : byte      ; end of BSS (start of STACK)
 
-fard segment para public 'far_data'
-fard ends
+FARD segment para public 'FAR_DATA'
+FARD ends
 
-_TEXT segment para public 'code'
+_TEXT segment para public 'CODE'
 
-_data segment para public 'data'
+_DATA segment para public 'DATA'
 stk     db 512 dup(?)
 top     db 0
 l_in        db 0,0
 l_out       db 0,0
 alias_      db "\ALIAS.DOS",0
-_data ends
+_DATA ends
 
-const segment para public 'data'
-const ends
+CONST segment para public 'DATA'
+CONST ends
 
-stack segment para stack 'stack'
+STACK segment para stack 'STACK'
     db 512 dup (?)
-stack ends
+STACK ends
 
-dgroup group _data,const,stack
+DGROUP group _DATA,CONST,STACK
 
 assume cs:_TEXT,ds:_TEXT,ss:_TEXT,es:_TEXT
 
@@ -141,13 +141,13 @@ endif1:                     ; - endif
         mov dx,ds           ; ...
         mov cl,[si]         ; set input length to stringin
         mov byte ptr cs:l_in,cl ; ...
-        mov cx,dgroup       ; point at length struct
-        mov bx,offset dgroup:l_in   ; ...
+        mov cx,DGROUP       ; point at length struct
+        mov bx,offset DGROUP:l_in   ; ...
         push    si          ; save buffer pointer
         mov bp,sp           ; ...
         mov si,ss           ; ...
         mov ss,cx           ; ...
-        mov sp,offset dgroup:top    ; ...
+        mov sp,offset DGROUP:top    ; ...
         push    ds          ; save ds
         mov es,cs:string_in     ; push requested routine num
         push    es          ; ...
@@ -221,7 +221,7 @@ kickout:
         mov si,ss           ; - - save stack
         mov di,sp           ; - - ...
         mov ss,es:MYDSOFF[bx]   ; - - set new stack
-        mov sp,offset dgroup:top    ; - - ...
+        mov sp,offset DGROUP:top    ; - - ...
         call    dword ptr es:SAVESAVEOFF[bx]; save saved commands
         mov ss,si           ; - - restore stack
         mov sp,di           ; - - ...
@@ -257,10 +257,10 @@ notalready:
         mov bx,di           ; get pointer to end of parm
         add bx,cx           ; ...
         mov byte ptr es:[bx],0  ; store a null character
-        mov bx,dgroup       ; set up stack
+        mov bx,DGROUP       ; set up stack
         mov cs:saveds,bx
         mov ss,bx           ; ...
-        mov sp,offset dgroup:top    ; ...
+        mov sp,offset DGROUP:top    ; ...
         ;
         ; initialize bss to 0
         ;
@@ -280,10 +280,10 @@ notalready:
 
         mov ds,bx           ; point ds to PSP
 
-        mov bx,offset dgroup:_end   ; calculate memory size needed
+        mov bx,offset DGROUP:_end   ; calculate memory size needed
         mov cl,4            ; ...
         shr bx,cl           ; ...
-        add bx,dgroup       ; ...
+        add bx,DGROUP       ; ...
         mov cx,es           ; ...
         sub bx,cx           ; ...
         mov cl,4            ; ...

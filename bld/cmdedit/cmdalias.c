@@ -55,7 +55,7 @@ void ListAliases( void )
     char        prompt[ 80 ];
 
     SaveLine();
-    SavePrompt( (char PASPTR *)prompt );
+    SavePrompt( prompt );
     PutNL();
     i = 0;
     alias = AliasList;
@@ -72,7 +72,7 @@ void ListAliases( void )
         PutChar( *alias );
         ++alias;
     }
-    RestorePrompt( (char PASPTR *)prompt );
+    RestorePrompt( prompt );
     RestoreLine();
     Draw = TRUE;
 }
@@ -81,11 +81,11 @@ void ListAliases( void )
 char far *InitAlias( char far * inname )
 /**************************************/
 {
-    int hdl,read;
+    USHORT hdl,read;
     static char b[80];
     char *bp;
     unsigned long ppos,pos;
-    int action;
+    USHORT action;
     char far *endname;
     static char noalias = 0;
 
@@ -108,25 +108,23 @@ char far *InitAlias( char far * inname )
         ++inname;
     }
     action=action;
-    if( DosOpen( (char PASPTR *)b, (int PASPTR *)&hdl,
-                 (int PASPTR *)&action,
-                 0L, 0, 1, 0x10 ,0L ) == 0 ) {
-        DosChgFilePtr( hdl, 0L, 2, (unsigned long PASPTR *)&ppos );
+    if( DosOpen( b, &hdl, &action, 0L, 0, 1, 0x10 ,0L ) == 0 ) {
+        DosChgFilePtr( hdl, 0L, 2, &ppos );
         pos = ppos;
-        DosChgFilePtr( hdl, 0L, 0, (unsigned long PASPTR *)&ppos );
-        #ifdef DOS
+        DosChgFilePtr( hdl, 0L, 0, &ppos );
+#ifdef DOS
         {
             static int alias_seg;
-            DosAllocSeg( pos + 1 + ALIAS_SLACK, (int PASPTR *)&alias_seg, 0 );
+            DosAllocSeg( pos + 1 + ALIAS_SLACK, &alias_seg, 0 );
             *(((int far *)&AliasList)+0) = 0;
             *(((int far *)&AliasList)+1) = alias_seg;
             AliasSize = pos + ALIAS_SLACK;
         }
-        #else
-            AliasList = (char far *)&AliasArea;
-            AliasSize = 2047;
-        #endif
-        DosRead( hdl, (char far *)AliasList, pos, (int PASPTR *)&read );
+#else
+        AliasList = AliasArea;
+        AliasSize = 2047;
+#endif
+        DosRead( hdl, AliasList, pos, &read );
         if( pos > 0 && AliasList[ pos-1 ] != '\n' ) {
             AliasList[ pos+0 ] = '\r';
             AliasList[ pos+1 ] = '\n';
@@ -136,7 +134,7 @@ char far *InitAlias( char far * inname )
         }
         DosClose( hdl );
     } else {
-        AliasList = (char far *)&noalias;
+        AliasList = &noalias;
     }
     return( endname );
 }
@@ -269,7 +267,7 @@ int SubstParms( char far *oldptr, char far *newptr,
             do {
                 ch = *++endparm;
             } while( !_white_or_null( ch ) );
-            ReplaceAlias( (char far *)"", parmptr, endparm );
+            ReplaceAlias( "", parmptr, endparm );
         }
     }
     return( TRUE );
@@ -387,7 +385,7 @@ void PFKey( void )
     char    far *start;
 
     if( WantAlias ) {
-        i = FormName( buff, KbdChar.scan );
+        i = FormName( buff, KbdChar.chScan );
         PFChars = FindAlias( buff, (buff + i), &start );
         if( PFChars && *PFChars == '!' ) {
             ++PFChars;

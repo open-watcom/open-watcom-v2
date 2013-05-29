@@ -106,8 +106,8 @@ void InitRetrieve( char far * inname )
     if( envname != 0 ) {
         inname = envname;
     }
-    VioGetCurType( (CURSOR PASPTR *)&Cur, 0 );
-    CursorDiff = 2 * ( Cur.end - Cur.start );
+    VioGetCurType( &Cur, 0 );
+    CursorDiff = 2 * ( Cur.cEnd - Cur.yStart );
     for( ;; ) {
         while( *inname == ' ' ) ++inname;
         if( *inname != '-' ) break;
@@ -151,20 +151,19 @@ void InitRetrieve( char far * inname )
     inname = InitAlias( inname );
     while( *inname == ' ' ) ++inname;
     InitSave( inname );
-    #ifndef DOS
-        {
-        int action;
-        DosOpen( (char PASPTR *)"kbd$", (int PASPTR *)&KbdHandle,
-                 (int PASPTR *)&action, 0, 0, 1, 0x20, 0 );
-        }
-    #endif
+#ifndef DOS
+    {
+        USHORT action;
+        DosOpen( "kbd$", &KbdHandle, &action, 0, 0, 1, 0x20, 0 );
+    }
+#endif
     FiniFile();
     BuffOne = FALSE;
     More = 0;
     LineSaved = FALSE;
-    #ifdef DOS
-        DosFreeEnv();
-    #endif
+#ifdef DOS
+    DosFreeEnv();
+#endif
 }
 
 
@@ -237,7 +236,7 @@ void CopyCmd( char far * userbuff, LENGTH far * l, int i )
         ++j;
     }
     l->output = j;
-    userbuff[ j ] = Kbd.cr;
+    userbuff[ j ] = Kbd.chTurnAround;
 }
 
 
@@ -261,21 +260,18 @@ static void DrawLine( int old_len, int old_base )
             oldwrite = SCREEN_WIDTH - 1 - StartCol;
         }
         left = StartDraw - Base;
-        VioWrtCharStr( (char PASPTR *)Line + Base + left,
-                       towrite - left, Row, StartCol + left, 0 );
+        VioWrtCharStr( Line + Base + left, towrite - left, Row, StartCol + left, 0 );
         if( Cursor == MaxCursor ) {
-            VioWrtNChar( (char PASPTR *)" ", 1, Row,
-                         MaxCursor + StartCol - Base, 0 );
+            VioWrtNChar( (UCHAR PASPTR *)" ", 1, Row, MaxCursor + StartCol - Base, 0 );
         }
         if( towrite < oldwrite ) {
-            VioWrtNChar( (char PASPTR *)" ", oldwrite - towrite, Row,
-                         MaxCursor + StartCol - Base, 0 );
+            VioWrtNChar( (UCHAR PASPTR *)" ", oldwrite - towrite, Row, MaxCursor + StartCol - Base, 0 );
         }
         if( Base != 0 ) {
-            VioWrtNChar( (char PASPTR *)"\021", 1, Row, StartCol, 0 );
+            VioWrtNChar( (UCHAR PASPTR *)"\021", 1, Row, StartCol, 0 );
         }
         if( right ) {
-            VioWrtNChar( (char PASPTR *)"\020", 1, Row, SCREEN_WIDTH-2, 0 );
+            VioWrtNChar( (UCHAR PASPTR *)"\020", 1, Row, SCREEN_WIDTH-2, 0 );
         }
     }
 }
@@ -299,12 +295,12 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
         CopyCmd( userbuff, l, More );
         return( 0 );
     }
-    Kbd.length = sizeof( KBDDESC );
-    KbdGetStatus( (KBDDESC PASPTR *)&Kbd, 0 );
-    if( Kbd.mask & KBD_BINARY ) return( -1 );
+    Kbd.cb = sizeof( KBDDESC );
+    KbdGetStatus( &Kbd, 0 );
+    if( Kbd.fsMask & KBD_BINARY ) return( -1 );
     RowOffset = 0;
 
-    VioGetCurPos( (int PASPTR *)&Row, (int PASPTR *)&Col, 0 );
+    VioGetCurPos( &Row, &Col, 0 );
     StartCol = Col;
     ColOffset = -StartCol;
     Overflow = LINE_WIDTH - StartCol - 1;
@@ -332,25 +328,25 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
         old_len = MaxCursor;
         old_base = Base;
         if( PFChars != 0 ) {
-            KbdChar.ascii = *PFChars++;
-            if( KbdChar.ascii == '\r' ) {
+            KbdChar.chChar = *PFChars++;
+            if( KbdChar.chChar == '\r' ) {
                 if( ImmedCommand ) break;
                 PFChars = 0;
             }
         }
         if( PFChars == 0 ) {
             if( BuffOne == FALSE ) {
-                KbdCharIn( (KBDCHAR PASPTR *)&KbdChar, 0, 0 );
+                KbdCharIn( &KbdChar, 0, 0 );
             } else {
                 BuffOne = FALSE;
             }
         }
-        if( KbdChar.ascii == Kbd.cr ) break;
-        if( ( KbdChar.ascii == 0 || KbdChar.ascii == 0xE0 ) ) {
-            if( KbdChar.scan != BACK_TAB ) {
+        if( KbdChar.chChar == Kbd.chTurnAround ) break;
+        if( ( KbdChar.chChar == 0 || KbdChar.chChar == 0xE0 ) ) {
+            if( KbdChar.chScan != BACK_TAB ) {
                 FiniFile();
             }
-            switch( KbdChar.scan ) {
+            switch( KbdChar.chScan ) {
             case CTRL_BREAK:
                 break;
             case CTRL_INSERT:
@@ -492,11 +488,11 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
                 HideDirCmds = !HideDirCmds;
                 break;
             }
-        } else if( KbdChar.ascii == TAB ) {
+        } else if( KbdChar.chChar == TAB ) {
             NextFile();
         } else {
             FiniFile();
-            switch( KbdChar.ascii ) {
+            switch( KbdChar.chChar ) {
             case ESCAPE:
                 SaveLine();
                 EraseLine();
@@ -557,19 +553,18 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
     FiniFile();
     CopyCmd( userbuff, l, 0 );
     {
-        static int dummy;
-        VioGetCurPos( (int PASPTR *)&Row, (int PASPTR *)&dummy, 0 );
+        static USHORT dummy;
+        VioGetCurPos( &Row, &dummy, 0 );
     }
 #ifndef __CMDSHELL__
     VioSetCurPos( Row, 0, 0 );
 #else
     if( VioSetCurPos( Row+1, 0, 0 ) != 0 ) {
         static char buffer[2];
-        static int  length;
+        static USHORT length;
 
         length = 2;
-        VioReadCellStr( (char PASPTR *)&buffer, (int PASPTR *)&length,
-                        Row, StartCol+Cursor-Base, 0 );
+        VioReadCellStr( &buffer, &length, Row, StartCol+Cursor-Base, 0 );
         buffer[0] = ' ';
         VioScrollUp( 0, 0, -1, -1, 1, &buffer, 0 );
         VioSetCurPos( Row, 0, 0 );

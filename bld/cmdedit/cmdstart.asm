@@ -35,12 +35,12 @@ extrn           StringIn_       : near
 extrn           DosGetInfoSeg   : far
 extrn           InitRetrieve_   : near
 
-fard segment para public 'far_data'
-fard ends
+FARD segment para public 'FAR_DATA'
+FARD ends
 
-_TEXT segment para public 'code'
+_TEXT segment para public 'CODE'
 
-_data segment para public 'data'
+_DATA segment para public 'DATA'
 alias_      db "C:\ALIAS.OS2",0
 index       dw 0
 globalseg   dw 0
@@ -50,17 +50,17 @@ want_alias  dw 0
 arewein     dw 0
 public      _AliasList
 _AliasList  dw 0,0
-_data ends
+_DATA ends
 
-const segment para public 'data'
-const ends
+CONST segment para public 'DATA'
+CONST ends
 
-last segment para public 'last'
-last ends
+LAST segment para public 'LAST'
+LAST ends
 
-dgroup group _data,const
+DGROUP group _DATA,CONST
 
-assume cs:_TEXT,ds:dgroup,ss:dgroup
+assume cs:_TEXT,ds:DGROUP,ss:DGROUP
 
 public  CMDStart_
 CMDStart_       proc    far
@@ -69,9 +69,9 @@ CMDStart_       proc    far
         push    es
         push    ds
         push    dx
-        mov     dx,dgroup
+        mov     dx,DGROUP
         mov     ds,dx
-        mov     ax,offset dgroup:alias_
+        mov     ax,offset DGROUP:alias_
         call    InitRetrieve_
     push    ds
     mov ax,offset globalseg
@@ -103,7 +103,7 @@ OS2Edit_        proc    far
         push    dx
         push    bx
         push    cx
-        mov     dx,dgroup
+        mov     dx,DGROUP
         mov     ds,dx
     push    ds
     mov ax,offset globalseg

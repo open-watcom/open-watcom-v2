@@ -50,32 +50,32 @@ _cstart_    label word
 public      __Null_Argv_
 __Null_Argv_    label word
 
-far_data segment byte public 'FAR_DATA'
+FAR_DATA segment byte public 'FAR_DATA'
 stk     db 800h dup(?)
 endstk      label   word
-far_data ends
+FAR_DATA ends
 
-dgroup group const,_data,strings,stack,_bss
+DGROUP group CONST,_DATA,STRINGS,STACK,_BSS
 
-const segment word public 'DATA'
-const ends
+CONST segment word public 'DATA'
+CONST ends
 
-strings segment word public 'DATA'
-strings ends
+STRINGS segment word public 'DATA'
+STRINGS ends
 
-assume ds:dgroup,es:dgroup,ss:dgroup
-_data segment word public 'DATA'
+assume ds:DGROUP,es:DGROUP,ss:DGROUP
+_DATA segment word public 'DATA'
 stackp  dd  stk
-_data ends
+_DATA ends
 
-_bss          segment word public 'BSS'
-_bss          ends
+_BSS          segment word public 'BSS'
+_BSS          ends
 
-stack segment para stack 'STACK'
+STACK segment para stack 'STACK'
 
 ;tk             db 800h dup(?)
 
-stack ends
+STACK ends
 
 
 ;==========================================================================

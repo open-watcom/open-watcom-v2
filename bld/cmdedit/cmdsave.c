@@ -43,7 +43,7 @@ extern int      PutMore( void );
 #define _ModIndex( ind, adj )   (ind += adj, ind &= (SAVE_SIZE-1));
 
 #ifdef DOS
-unsigned char SaveArea[SAVE_SIZE];
+char SaveArea[SAVE_SIZE];
 #else
 unsigned int SaveArea[SAVE_SIZE];
 #endif
@@ -63,12 +63,12 @@ static union REGPACK r;
 
 int RestSave( char far *file )
 {
-    int len;
-    int hdl;
+    USHORT len;
+    USHORT hdl;
 
     len = 0;
     while( file[ len ] != '\0' && file[ len ] != '\r' ) ++len;
-    while( --len >= 0 ) {
+    while( len-- > 0 ) {
         if( file[ len ] != ' ' ) break;
     }
     ++len;
@@ -104,14 +104,14 @@ int RestSave( char far *file )
 
 void far SaveSave( char far * file )
 {
-    int len;
-    int hdl;
+    USHORT len;
+    USHORT hdl;
 
     file += 2;
     while( *file == ' ' || *file == '=' ) ++file;
     len = 0;
     while( file[ len ] != '\0' && file[ len ] != '\r' ) ++len;
-    while( --len >= 0 ) {
+    while( len-- > 0 ) {
         if( file[ len ] != ' ' ) break;
     }
     ++len;
@@ -318,7 +318,7 @@ void ListCommands( void )
     int         prevs;
 
     SaveLine();
-    SavePrompt( (char PASPTR *)prompt );
+    SavePrompt( prompt );
     prevs = 0;
     while( PrevCmd( Line ) ) --prevs;
     PutNL();
@@ -336,7 +336,7 @@ void ListCommands( void )
         PutNL();
     }
     while( prevs-- ) PrevCmd( Line );
-    RestorePrompt( (char PASPTR *)prompt );
+    RestorePrompt( prompt );
     RestoreLine();
     Draw = TRUE;
 }

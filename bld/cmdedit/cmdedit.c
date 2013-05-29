@@ -219,10 +219,10 @@ void FlipInsertMode( void )
 /*************************/
 {
     if( Insert ) {
-        Cur.start += CursorDiff;
+        Cur.yStart += CursorDiff;
         Insert = FALSE;
     } else {
-        Cur.start -= CursorDiff;
+        Cur.yStart -= CursorDiff;
         Insert = TRUE;
     }
     SetCursorType();
@@ -262,7 +262,7 @@ void InsertChar( void )
             --i;
         }
         ++MaxCursor;
-        Line[ Cursor ] = KbdChar.ascii;
+        Line[ Cursor ] = KbdChar.chChar;
         ++Cursor;
         Draw = TRUE;
     }
@@ -273,7 +273,7 @@ void OverlayChar( void )
 {
     if( Cursor < Overflow ) {
         Edited = TRUE;
-        Line[ Cursor ] = KbdChar.ascii;
+        Line[ Cursor ] = KbdChar.chChar;
         ++Cursor;
         Draw = TRUE;
     }

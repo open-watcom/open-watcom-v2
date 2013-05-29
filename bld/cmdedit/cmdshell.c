@@ -34,12 +34,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <process.h>
-extern int KbdHandle;
-
-#define INCL_SUB
-#define INCL_DOSQUEUES
-#define INCL_DOSPROCESS
-#include <os2.h>
+#include "cmdedit.h"
 
 #define START "#####"
 #define END "#####"
@@ -63,11 +58,6 @@ char volatile                           CharWritten;
 extern  char    far *GetEnv( char far *, int );
 unsigned char far * AliasList;
 
-typedef struct {
-        int     input;
-        int     output;
-        } LENGTH;
-
 extern void InitRetrieve( char far * );
 extern void StringIn( char far *, LENGTH far *, int, int );
 
@@ -80,7 +70,7 @@ void far Waiter(void)
     PID         dummy;
     RESULTCODES res_code;
 
-    DosCWait( DCWA_PROCESSTREE, DCWW_WAIT, &res_code,
+    DosCwait( DCWA_PROCESSTREE, DCWW_WAIT, &res_code,
         &dummy, ChildId.codeTerminate );
     DosClose( StdinWrHdl );
     DosClose( StdoutRdHdl );
@@ -100,24 +90,7 @@ void SetOurCwd( char * buff )
     *p = '\0';
     strupr( buff );
     DosSelectDisk( (*buff - 'A') + 1 );
-    DosChdir( buff+2, 0 );
-}
-
-static char ReadCh()
-{
-/*
-    Buffered read of the output from CMD.EXE.
-*/
-    static char buff[BUF_SIZE];
-    static USHORT pos;
-    static USHORT len;
-
-    if( pos == len ) {
-        WriteCh( -1 ); // flush to keep input and output in sync
-        DosRead( StdoutRdHdl, buff, BUF_SIZE, &len );
-        pos = 0;
-    }
-    return( buff[ pos++ ] );
+    DosChDir( buff+2, 0 );
 }
 
 static void WriteCh( int ch )
@@ -142,6 +115,23 @@ static void WriteCh( int ch )
     if( pos == BUF_SIZE ) {
         WriteCh( -1 );
     }
+}
+
+static char ReadCh()
+{
+/*
+    Buffered read of the output from CMD.EXE.
+*/
+    static char buff[BUF_SIZE];
+    static USHORT pos;
+    static USHORT len;
+
+    if( pos == len ) {
+        WriteCh( -1 ); // flush to keep input and output in sync
+        DosRead( StdoutRdHdl, buff, BUF_SIZE, &len );
+        pos = 0;
+    }
+    return( buff[ pos++ ] );
 }
 
 void far Echo(void)

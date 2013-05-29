@@ -38,8 +38,8 @@ GLOBAL int     LineSaved;              // has the line ever been saved
 GLOBAL int     More;           // do we still have another command? (from !)
 GLOBAL int     BuffOne;        // is KBDChar a valid character or do we need to read?
 
-GLOBAL int     Row;            // cursor row on screen
-GLOBAL int     Col;            // cursor column on screen
+GLOBAL USHORT  Row;            // cursor row on screen
+GLOBAL USHORT  Col;            // cursor column on screen
 GLOBAL int     ColOffset;      // distance from Col of our 'block' cursor
 GLOBAL int     RowOffset;      // distance from Row of our 'block' cursor
 GLOBAL int     StartCol;       // our original cursor column
@@ -58,7 +58,7 @@ GLOBAL int     FirstNextOrPrev;// is this the first 'retrieval' key hit?
 GLOBAL CURSOR  Cur;            // cursor information
 GLOBAL KBDDESC Kbd;            // Keyboard information
 GLOBAL KBDCHAR KbdChar;        // A character gotten from the keyboard
-GLOBAL int     KbdHandle;      // The handle for kbd$ (OS/2)
+GLOBAL USHORT  KbdHandle;      // The handle for kbd$ (OS/2)
 GLOBAL char    far *PFChars;   // chars from a pfkey that we pretend are typed
 GLOBAL char    Line[LINE_WIDTH];// the buffer for the command line
 
@@ -76,9 +76,9 @@ GLOBAL int     AliasSize;
 GLOBAL int     AppendSlash;
 
 #ifdef DOS
-    extern unsigned char far * far AliasList;
+    extern char far * far AliasList;
 #else
-    extern unsigned char far * AliasList;
+    extern char far * AliasList;
     GLOBAL char AliasArea[ 2048 ]; /* The DLL seems to need static memory */
 #endif
 

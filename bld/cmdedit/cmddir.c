@@ -68,7 +68,7 @@ int ExpandDirCommand( void )
         i = 1;
         while( line[i] == ' ' ) ++i;
         --i;
-        i = ReplaceAlias( (char far *)"d ..\\", line, line+i+1 ) + i;
+        i = ReplaceAlias( "d ..\\", line, line+i+1 ) + i;
         break;
     case 'u':
         i = 1;
@@ -78,9 +78,9 @@ int ExpandDirCommand( void )
             ups = line[i] - '0';
         }
         MaxCursor = Cursor = ( line - Line ) + 1;
-        ReplaceAlias( (char far *)"d ..", line+0, line+1 );
+        ReplaceAlias( "d ..", line+0, line+1 );
         while( --ups > 0 ) {
-            ReplaceAlias( (char far *)"\\..", line+4, line+4 );
+            ReplaceAlias( "\\..", line+4, line+4 );
         }
         i = MaxCursor - ( line - Line );
         break;
@@ -101,7 +101,7 @@ int ExpandDirCommand( void )
             if( ch == ' ' || ch == '/' ) {
                 line[i] = '\\';
             } else if( ch == '-' ) {
-                i += ReplaceAlias( (char far *)"..\\", line+i, line+i+1 );
+                i += ReplaceAlias( "..\\", line+i, line+i+1 );
             }
         }
         ++i;
@@ -118,13 +118,13 @@ void    DirCmds( char *p )
 #endif
     char        cmd;
     char        drv;
-    int         drive_num;
+    USHORT      drive_num;
     int         size;
 #if 0
     char        buff[SIZE+1];
 #endif
     #ifndef DOS
-        long    drive_map;
+        unsigned long    drive_map;
     #endif
 
     cmd = *p++;
