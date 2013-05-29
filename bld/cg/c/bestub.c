@@ -62,7 +62,7 @@ extern void BEStart() {}
 extern void BEStop() {}
 extern void BEAbort() {}
 extern void BEFini() {}
-extern bool BEMoreMem() {return(0);}
+extern bool BEMoreMem(void) {return(0);}
 extern segment_id BESetSeg(segment_id _1) {return(0);}
 extern void BEDefSeg(segment_id _1,seg_attr _2,char * _3,uint _4) {}
 extern void BEFlushSeg(segment_id _1 ) {}
@@ -156,7 +156,7 @@ extern dbg_type DBIntArray(unsigned_32 _1,dbg_type _4){return(0);}
 extern dbg_type DBSubRange(signed_32 _1,signed_32 _2,dbg_type _4){return(0);}
 extern dbg_type DBDereference(cg_type _1,dbg_type _4){return(0);}
 extern dbg_type DBPtr(cg_type _1,dbg_type _4){return(0);}
-extern struct_list *DBBegStruct(cg_type _1,char _2){return(0);}
+extern struct_list *DBBegStruct(cg_type _1,bool _2){return(0);}
 extern void DBAddField(struct_list *_5,unsigned_32 _1,char *_2,dbg_type _4){}
 extern void DBAddBitField(struct_list *_5,unsigned_32 _1,byte _2,byte _3,char *_6,dbg_type _4){}
 extern dbg_type DBEndStruct(struct_list *_6){return(0);}

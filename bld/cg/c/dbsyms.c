@@ -56,7 +56,7 @@ extern  seg_id          SetOP(seg_id);
 extern  seg_id          AskCodeSeg(void);
 extern  void            EmptyQueue(void);
 extern  void            InputOC(any_oc *);
-extern  char            DBNested( char nested );
+extern  bool            DBNested( bool nested );
 extern  dbg_loc         LocDupl(dbg_loc);
 extern  dbg_loc         LocReg(dbg_loc,name*);
 extern  dbg_loc         LocParm(dbg_loc,name*);
@@ -587,6 +587,7 @@ extern  void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type ) {
 #ifndef NDEBUG
     EchoAPI( "DBObject( %i, %i, %t )\n", tipe, loc, ptr_type );
 #endif
+    ptr_type = ptr_type;
     CurrProc->targ.debug->obj_type = tipe;
     CurrProc->targ.debug->obj_loc = LocDupl( loc );
     if( _IsModel( DBG_DF ) ) {
@@ -644,8 +645,8 @@ extern  void    _CGAPI DBLocalSym( sym_handle sym, cg_type indirect ) {
     }
 }
 
-extern  void    _CGAPI DBLocalType( sym_handle sym, char kind ) {
-/***************************************************************/
+void    _CGAPI DBLocalType( sym_handle sym, bool kind ) {
+/*******************************************************/
     dbg_local   *lcl;
 
 #ifndef NDEBUG

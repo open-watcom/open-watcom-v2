@@ -432,8 +432,8 @@ extern  void    BEDefSeg( segment_id id, seg_attr attr, char *str, uint algn ) {
     SegOk[ id ] = TRUE;
     Locs[ id ] = 0;
 }
-extern  bool    BEMoreMem() {
-//===========================
+extern  bool    BEMoreMem( void ) {
+//=================================
 
     Action( "BEMoreMem() -> 0%n" );
     return(FALSE);

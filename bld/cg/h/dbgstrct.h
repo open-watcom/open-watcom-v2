@@ -138,10 +138,10 @@ typedef struct struct_list {
     uint                num;
     unsigned long       size;
     dbg_type            me;
-    int                 is_struct :1;
-    int                 is_nested :1;
-    int                 is_cnested:1;
-    int                 is_class  :1;
+    unsigned            is_struct :1;
+    unsigned            is_nested :1;
+    unsigned            is_cnested:1;
+    unsigned            is_class  :1;
     unsigned long       vtbl_off;
     dbg_type            vtbl_type;
     cg_type             ptr_type;
@@ -161,8 +161,8 @@ typedef struct enum_list {
     const_entry *list;
     uint        num;
     cg_type     tipe;
-    int         is_nested :1;
-    int         is_c      :1;
+    unsigned    is_nested :1;
+    unsigned    is_c      :1;
 } enum_list;
 
 typedef struct dim_entry{

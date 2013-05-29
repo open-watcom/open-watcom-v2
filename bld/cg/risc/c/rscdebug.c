@@ -126,7 +126,7 @@ extern  dbg_type        DBPtr( cg_type ptr_tipe, dbg_type base )
     return( 0 );
 }
 
-extern  void    *DBBegStruct()
+extern  void    *DBBegStruct( cg_type tipe, bool is_struct )
 {
     return( 0 );
 }

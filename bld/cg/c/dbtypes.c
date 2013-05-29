@@ -136,7 +136,7 @@ extern  dbg_type        CVEndEnum( enum_list *en );
 extern  dbg_type        CVEndProc( proc_list  *pr );
 #define MAX_TYPE_SIZE  (1024 * 16)
 
-static char Nested;     /* set when types are nested by others */
+static bool Nested;     /* set when types are nested by others */
 
 /*
   need to fix dbg_type so it's a handle that can be used
@@ -712,9 +712,9 @@ extern  dbg_type _CGAPI DBBasedPtr( cg_type ptr_type, dbg_type base,
 }
 
 
-extern char _CGAPI DBNested( char nested ){
-/*****************************************/
-    char ret;
+bool _CGAPI DBNested( bool nested ){
+/**********************************/
+    bool ret;
 
 #ifndef NDEBUG
     EchoAPI( "DBNested(%i)", nested );
@@ -727,8 +727,8 @@ extern char _CGAPI DBNested( char nested ){
     return( nested );
 }
 
-extern  struct_list * _CGAPI DBBegNameStruct( char *nm, cg_type tipe, char is_struct ) {
-/********************************************************************/
+struct_list * _CGAPI DBBegNameStruct( char *nm, cg_type tipe, bool is_struct ) {
+/******************************************************************************/
 
     uint      n_len;
     struct_list *st;
@@ -766,8 +766,8 @@ extern  struct_list * _CGAPI DBBegNameStruct( char *nm, cg_type tipe, char is_st
     return( st );
 }
 
-extern  struct_list * _CGAPI DBBegStruct( cg_type tipe, char is_struct ) {
-/********************************************************************/
+struct_list * _CGAPI DBBegStruct( cg_type tipe, bool is_struct ) {
+/****************************************************************/
 
     struct_list *st;
 

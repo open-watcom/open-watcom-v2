@@ -555,8 +555,8 @@ extern  void            DBTypeDef( char *nm, dbg_type  tipe ){
     Action( "DBTypeDef( %s, %l ) ==>", nm, tipe );
 }
 
-extern  void            DBLocalType(pointer sym, char kind ){
-/********************************************************/
+void            DBLocalType(pointer sym, bool kind ){
+/***************************************************/
     Action( "DBLocalType( %s, %d ) ==>", FEName((pointer)sym), kind );
 }
 
@@ -833,8 +833,9 @@ extern  dbg_type        DBPtr( cg_type ptr_tipe, dbg_type base ) {
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
-extern  struct_list     *DBBegNameStruct( char *nm, cg_type tipe, char is_struct ) {
-/********************************************************************/
+
+struct_list     *DBBegNameStruct( char *nm, cg_type tipe, bool is_struct ) {
+/**************************************************************************/
     struct_list *st;
 
     is_struct = is_struct;
@@ -847,8 +848,9 @@ extern  struct_list     *DBBegNameStruct( char *nm, cg_type tipe, char is_struct
     Action( " -> %p%n", st );
     return( st );
 }
-extern  struct_list     *DBBegStruct( cg_type tipe, char is_struct ) {
-//====================================================================
+
+struct_list     *DBBegStruct( cg_type tipe, bool is_struct ) {
+//============================================================
 
     struct_list *st;
 
@@ -1079,8 +1081,8 @@ extern  dbg_type        DBEndStruct( struct_list *st ) {
     return( TypeIdx );
 }
 
-extern  char            DBNested( char flag ){
-/***************************************/
+bool            DBNested( bool flag ){
+/************************************/
      Action( "DBNested( %d )", flag );
      return( 0 );
 }
