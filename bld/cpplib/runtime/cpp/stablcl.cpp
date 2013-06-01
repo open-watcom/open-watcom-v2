@@ -32,10 +32,9 @@
 
 #include "cpplib.h"
 #include "rtexcept.h"
-
-#if 0
 #include "rtinit.h"
 
+#if 0
 
 static RO_STATE* ls_state_table( // POINT AT STATE TABLE
     RO_DTREG* ro )              // - R/O entry

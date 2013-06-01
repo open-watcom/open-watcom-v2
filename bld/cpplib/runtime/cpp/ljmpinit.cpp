@@ -33,9 +33,7 @@
 #include "cpplib.h"
 #include "rtexcept.h"
 #include "rtinit.h"
-extern "C" {
-    #include "ljmphdl.h"
-};
+#include "ljmphdl.h"
 
 static void longjmpInit(        // INITIALIZATION FOR longjmp SUPPORT
     void )

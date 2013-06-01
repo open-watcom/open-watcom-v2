@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#define __NEED_SYSTEM_HEADER
-
 #include "cpplib.h"
 #include "rtexcept.h"
 #include "exc_pr.h"

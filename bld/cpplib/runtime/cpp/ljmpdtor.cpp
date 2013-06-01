@@ -32,9 +32,7 @@
 
 #include "cpplib.h"
 #include "rtexcept.h"
-extern "C" {
-    #include "ljmphdl.h"
-};
+#include "ljmphdl.h"
 
 
 #ifndef SYSIND_REGISTRATION

@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#ifdef __USE_FS
-#define __NEED_SYSTEM_HEADER
-#endif
-
 #include "cpplib.h"
 #include "rtexcept.h"
 #include "exc_pr.h"

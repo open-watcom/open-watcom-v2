@@ -102,8 +102,6 @@ typedef int rboolean;
 #define RT_EXC_ENABLED
 #endif
 
-
-
 #if defined(__MT__)
 #include <lock.h>
 #endif
@@ -120,7 +118,7 @@ extern "C" {
 #pragma warning 604 1
 #pragma warning 594 1
 
-#if !defined(__PENPOINT__) && defined(__MT__)
+#if defined(__MT__)
     #pragma warning 604 9
     #pragma warning 594 9
     #include "thread.h"
@@ -133,14 +131,14 @@ extern "C" {
 #endif
 
 
-#if defined( __ALPHA__ ) || defined( __386__ )
-    // pad to 4-byte boundary
-    #define AlignPad1 char padding[3];
-    #define AlignPad2 char padding[2];
-#elif defined( _M_I86 )
+#if defined( _M_I86 )
     // pad to 2-byte boundary
     #define AlignPad1 char padding[1];
     #define AlignPad2 ;
+#elif defined( __ALPHA__ ) || defined( __386__ )
+    // pad to 4-byte boundary
+    #define AlignPad1 char padding[3];
+    #define AlignPad2 char padding[2];
 #else
     #error bad target
 #endif
@@ -259,36 +257,34 @@ struct THREAD_CTL               // THREAD_CTL -- control execution thread
 //************************************************************************
 // GLOBAL DATA
 //************************************************************************
-#if( ! defined(GBL) )
-    #define GBL _WPRTLINK extern
-#endif
 
 //************************************************************************
 // Per Thread Data
 // Storage is allocated in in cppdata.obj for non multi-thread or
 // by the clib BeginThread() routine for multi-thread.
+//************************************************************************
+#if !defined(__MT__)
+_WPRTLINK extern THREAD_CTL _wint_thread_data;
+#elif !defined( _M_I86 )
+_WPRTLINK extern unsigned   _wint_thread_data_offset;
+#endif
+
 //*** PLEASE NOTE !!! ****************************************************
 // If the _ThreadData macro changes for multi-thread, be sure to
 // update clib\h\thread.h
 //************************************************************************
-#if defined(__MT__)
-#if defined(__386__) || defined(__AXP__)
-  GBL unsigned              _wint_thread_data_offset;
+#if !defined(__MT__)
+  #define _ThreadData       _wint_thread_data
+#elif !defined( _M_I86 )
   #define _ThreadData (*((THREAD_CTL*)(((char *)__THREADDATAPTR)+_wint_thread_data_offset)))
 #else
   #define _ThreadData (*((THREAD_CTL*)&(__THREADDATAPTR->_wint_thread_data)))
 #endif
-#else
-GBL THREAD_CTL              _wint_thread_data;
-#define _ThreadData         _wint_thread_data
-#endif
 
 //************************************************************************
 // Per Process Data
-// storage is allocated in prwdata.asm for everyting but PENPOINT
-// PENPOINT allocates storage with clib\ph\rtdata.h
+// storage is allocated in prwdata.asm for everyting
 //************************************************************************
-#if !defined(__PENPOINT__)
 extern short                _wint_pure_error_flag;
 extern short                _wint_undef_vfun_flag;
 extern RW_DTREG*            _wint_module_init;
@@ -300,9 +296,6 @@ extern RW_DTREG*            _wint_module_init;
 extern __lock               _wint_static_init_sema;
 #define _StaticInitSema     _wint_static_init_sema
 #endif
-
-#endif
-
 
 //************************************************************************
 // PROTOTYPES

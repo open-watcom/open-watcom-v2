@@ -60,20 +60,13 @@ struct FsExcRec;
 
 #if defined( __NT__ ) && defined( __USE_FS )
 
-#ifdef __cplusplus
+  #ifdef __cplusplus
     extern "C" {
-#endif
+  #endif
 
-    #ifdef __NEED_SYSTEM_HEADER
-    #ifndef WIN32_LEAN_AND_MEAN
-        #define WIN32_LEAN_AND_MEAN
-    #endif
+    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
     #include <excpt.h>
-    // the idiots at MS define these C++ keywords as macros
-    #undef try
-    #undef catch
-    #undef throw
 
     #define EXC_HAND_CONTINUE   ExceptionContinueSearch
     #define EXC_HAND_CATCH      ExceptionContinueExecution
@@ -100,14 +93,12 @@ struct FsExcRec;
     #define EXC_TYPE_UNWIND_EXIT   4    // can't find def'n
     #define EXC_TYPE_UNWIND_NORMAL 2    // can't find def'n
 
-    #endif
-
     #define ThreadLookup CPPLIB( fs_lookup )
 
 
-#ifdef __cplusplus
+  #ifdef __cplusplus
     };
-#endif
+  #endif
 
     #define EXCREC_FLAGS        0
 
@@ -122,11 +113,9 @@ struct FsExcRec;
 
 #elif defined( __OS2__ ) && defined( __USE_FS )
 
-    #ifdef __cplusplus
-        extern "C" {
-    #endif
-
-    #ifdef __NEED_SYSTEM_HEADER
+  #ifdef __cplusplus
+    extern "C" {
+  #endif
 
     #define INCL_DOSEXCEPTIONS
     #include <os2.h>
@@ -146,13 +135,11 @@ struct FsExcRec;
     #define FS_RAISE_EXCEPTION( a )                                 \
                 DosRaiseException( (PEXCEPTIONREPORTRECORD)a )
 
-    #endif
-
     #define ThreadLookup CPPLIB( fs_lookup )
 
-    #ifdef __cplusplus
-        };
-    #endif
+  #ifdef __cplusplus
+    };
+  #endif
 
     #define EXCREC_FLAGS        0
 
@@ -183,11 +170,9 @@ struct FsExcRec;
     #define EXC_HAND_CATCH      2
     #define EXC_HAND_UNWOUND    3
 
-    #define FS_UNWIND_GLOBAL( a, b, c )                             \
-                CPPLIB( unwind_global )( a, b, c )
+    #define FS_UNWIND_GLOBAL( a, b, c )     CPPLIB( unwind_global )( a, b, c )
 
-    #define FS_RAISE_EXCEPTION( a )                                 \
-                CPPLIB( raise_exception )( a )
+    #define FS_RAISE_EXCEPTION( a )         CPPLIB( raise_exception )( a )
 
     #define EXCREC_FLAGS        0
 
@@ -201,23 +186,18 @@ struct FsExcRec;
 
 
 
-#elif defined( __AXP__ ) && defined( __USE_PD )
+#elif defined( __NT__ ) && defined( __USE_PD ) && defined( __AXP__ )
 
     // procedure-descriptor exception handling (alpha)
 
-#ifdef __cplusplus
+  #ifdef __cplusplus
     extern "C" {
-#endif
+  #endif
 
     struct PData;
 
-    #ifdef __NEED_SYSTEM_HEADER
     #include <windows.h>
     #include <excpt.h>
-    // the idiots at MS define these C++ keywords as macros
-    #undef try
-    #undef catch
-    #undef throw
 
     #define EXC_HAND_CONTINUE   ExceptionContinueSearch
     #define EXC_HAND_CATCH      ExceptionContinueExecution
@@ -268,14 +248,6 @@ struct FsExcRec;
 
     #define GetCtxReg( ctx, reg ) (*(void**)&((ctx)->Int##reg))
 
-
-    #else
-
-    struct ProcDesc;
-    struct _CONTEXT;
-
-    #endif
-
     struct PData                // Procedure Descriptor
     {   void* entry;            // - entry point
         void* end;              // - end address
@@ -304,9 +276,9 @@ struct FsExcRec;
 
 
 
-#ifdef __cplusplus
+  #ifdef __cplusplus
     };
-#endif
+  #endif
 
     #define EXCREC_FLAGS        0
 
@@ -342,8 +314,7 @@ struct FsExcRec {               // Exception record
     DISPATCH_EXC* dispatch;     // - dispatching control
 };
 
-#define EXC_TYPE_UNWINDING  \
-            ( EXC_TYPE_UNWIND_NORMAL | EXC_TYPE_UNWIND_EXIT )
+#define EXC_TYPE_UNWINDING      ( EXC_TYPE_UNWIND_NORMAL | EXC_TYPE_UNWIND_EXIT )
 
 #define EXCREC_PARM_COUNT ( sizeof( void* ) * 2 / sizeof( unsigned ) )
 #define EXCREC_CODE_WATCOM 0x25671234

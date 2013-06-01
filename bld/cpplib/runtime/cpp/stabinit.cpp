@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#if defined( __USE_FS ) || defined( __USE_PD )
-#define __NEED_SYSTEM_HEADER
-#endif
-
 #include "cpplib.h"
 #include "rtexcept.h"
 

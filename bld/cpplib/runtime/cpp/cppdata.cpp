@@ -30,12 +30,22 @@
 
 
 
-#define GBL _WPRTLINK
 #include "cpplib.h"
 #include "rtexcept.h"
+#include "rtinit.h"
+
+//************************************************************************
+// Per Thread Data
+// Storage is allocated in in cppdata.obj for non multi-thread or
+// by the clib BeginThread() routine for multi-thread.
+//************************************************************************
+#if !defined( __MT__ )
+_WPRTLINK THREAD_CTL    _wint_thread_data;
+#elif !defined( _M_I86 )
+_WPRTLINK unsigned      _wint_thread_data_offset;
+#endif
 
 #if defined(__MT__) && defined(__386__)
-#include "rtinit.h"
 AXI( CPPLIB(multi_thread_init), INIT_PRIORITY_THREAD )
 #endif
 

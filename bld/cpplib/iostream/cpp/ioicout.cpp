@@ -47,12 +47,6 @@ struct cout_initfini {
  ~cout_initfini();
 };
 
-#if defined(__PENPOINT__)
-#error This file has not been properly set up for global data under PENPOINT
-#error It needs to ensure that the data allocated here is allocated in the
-#error task specific data area under PENPOINT.
-#endif
-
 // This is the definition of the predefined stream buffer:
 static stdiobuf cout_strmbuf( __get_std_stream( STDOUT_FILENO ) );
 
