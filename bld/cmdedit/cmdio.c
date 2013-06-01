@@ -354,10 +354,10 @@ pasrtn DosFreeEnv( void )
     return( 0 );
 }
 
-int SavDTAOff;
-int SavDTASeg;
+static int SavDTAOff;
+static int SavDTASeg;
 
-void setdta( int seg, char * off )
+void setdta( int seg, int off )
 {
     r.h.ah = 0x2F;
     intr( 0x21, &r );
@@ -399,7 +399,7 @@ pasrtn DDosFindFirst( char PASPTR * spec, int attr, DIRINFO PASPTR * buf )
     r.x.flags &= ~INTR_CF;
     intr( 0x21, &r );
     if( ( r.x.flags & INTR_CF ) != 0 ) {
-        setdta( FP_SEG( buf ), (char *)FP_OFF( buf ) );
+        setdta( FP_SEG( buf ), FP_OFF( buf ) );
         r.x.dx = FP_OFF( spec );
         r.x.ds = FP_SEG( spec );
         r.x.cx = attr;
@@ -428,7 +428,7 @@ pasrtn DDosFindNext( DIRINFO PASPTR * buf )
         memmove( buf->achName, ((WIN32_FIND_DATA*)buf)->cFileName, strlen( (char const *)( ((WIN32_FIND_DATA*)buf)->cFileName + 1 ) ) );
         buf->attrFile = ((WIN32_FIND_DATA*)buf)->dwFileAttributes;
     } else {
-        setdta( FP_SEG( buf ), (char *)FP_OFF( buf ) );
+        setdta( FP_SEG( buf ), FP_OFF( buf ) );
         r.h.ah = 0x4F;
         r.x.flags &= ~INTR_CF;
         intr( 0x21, &r );

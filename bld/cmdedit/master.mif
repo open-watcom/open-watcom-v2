@@ -32,7 +32,7 @@ os2cmdshellobjs = $+ $(cmdfiles) $-
 extra_c_flags_dos = -DDOS -oas -s
 extra_c_flags_os2 = -oxs
 
-extra_a_flags = -D_MODEL=_SMALL -fo=$^@
+extra_a_flags = -D_MODEL=_SMALL
 extra_a_flags_dos = -D_OS=_DOS
 extra_a_flags_os2 = -D_OS=_OS2
 
@@ -40,7 +40,7 @@ extra_a_flags_os2 = -D_OS=_OS2
 .c: ..
 
 .c.obj:
-        $(cc) $< -w3 $(extra_c_flags_$(host_os)) -d1 -fo=.obj $(inc_dirs_sys)
+        $(cc) $< -w3 $(extra_c_flags_$(host_os)) -d1 -fo=$@ $(inc_dirs_sys)
 
 .c{$(dll_subdir)}.obj:
         @if not exist $(dll_subdir) mkdir $(dll_subdir)
