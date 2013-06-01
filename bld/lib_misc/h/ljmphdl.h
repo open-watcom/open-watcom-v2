@@ -45,6 +45,14 @@ typedef void (*pfun)( void _WCFAR * );
     #pragma aux (__arg_convention) pfun;
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 _WCRTDATA extern pfun __longjmp_handler;
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif
