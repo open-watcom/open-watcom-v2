@@ -2,6 +2,8 @@ proj_name = cpplib
 
 suppress_zc = 1
 
+x_subdir = xobjs
+
 !include $(cpplib_dir)/libtarg.mif
 
 !ifdef mem_model_$(model)
@@ -32,7 +34,7 @@ fpu_flags_nt_386     =$(fp_option)
 fpu_flags_linux_386  =$(fp_option)
 
 !include cproj.mif
-!include deftarg.mif
+!include $(cpplib_dir)/clean.mif
 
 !include $(define_library_include)
 
@@ -40,8 +42,8 @@ fpu_flags_linux_386  =$(fp_option)
 target_objs = $(objs)
 !endif
 
-!ifndef target_xbjs
-target_xbjs = $(xbjs)
+!ifndef target_xobjs
+target_xobjs = $(xobjs)
 !endif
 
 lib_flags = -b-c-n-pa
@@ -62,9 +64,9 @@ $(target_lib) : $(target_objs) $(__MAKEFILES__)
     $(librarian) $(lib_flags) $^@ @$^&.lbc
 
 !ifdef target_lib_x
-$(target_lib_x) : $(target_xbjs) $(__MAKEFILES__)
+$(target_lib_x) : $(target_xobjs) $(__MAKEFILES__)
     %create $^&.lbc
-    @for %i in ($(target_xbjs)) do @%append $^&.lbc +%i
+    @for %i in ($(target_xobjs)) do @%append $^&.lbc +%i
     $(librarian) $(lib_flags) $^@ @$^&.lbc
 !endif
 
@@ -150,27 +152,25 @@ c_inc_dirs_linux   =-I"$(hdr_dir)/linux"
 
 inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_dir)/runtime/h" $(c_inc_dirs_$(host_os)) -I"$(watcom_dir)/h" -I"$(comp_cfg_dir)/h"
 
-.EXTENSIONS:
-.EXTENSIONS: .exe .lnk .obj .xbj .c .cpp .asm
-
 .cpp : $(cpp_dirs)
 
 .asm : $(asm_dirs)
 
 .cpp.obj : .autodepend
 !ifeq verbose 1
-    $(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cxx_flags_$[&) $[@
+    $(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags) $(pch_flags_$[&) $[@
 !else
     @echo c++ $@
-    @$(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cxx_flags_$[&) $[@
+    @$(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags) $(pch_flags_$[&) $[@
 !endif
 
-.cpp.xbj : .autodepend
+.cpp{$(x_subdir)}.obj : .autodepend
+    @if not exist $(x_subdir) mkdir $(x_subdir)
 !ifeq verbose 1
-    $(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cxx_flags_x_$[&) $[@
+    $(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags_x) $(pch_flags_x_$[&) $[@
 !else
     @echo xc++ $@
-    @$(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cxx_flags_x_$[&) $[@
+    @$(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags_x) $(pch_flags_x_$[&) $[@
 !endif
 
 .asm.obj : .autodepend

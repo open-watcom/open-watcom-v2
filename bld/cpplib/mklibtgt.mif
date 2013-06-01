@@ -6,10 +6,10 @@
 #   objs_cpp:       C++
 #
 
-obj_ext = obj
+_subdir_ = $(x_subdir)/
+xobjs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
+_subdir_ =
 objs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
-obj_ext = xbj
-xbjs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
 files = $+ $(static_objs) $-
 
 !ifdef objs_asm
@@ -20,9 +20,6 @@ files = $+ $(static_objs) $-
 !endif
 !ifdef objs_cpp
 !undef objs_cpp
-!endif
-!ifdef obj_ext
-!undef obj_ext
 !endif
 
 !ifeq processor 087

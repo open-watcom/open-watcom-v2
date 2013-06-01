@@ -1,13 +1,13 @@
 # C++ files in CPP directory
 
 objs_cpp = &
-    wcexcept.$(obj_ext) &
-    wchash.$(obj_ext) &
-    wclist.$(obj_ext) &
-    wcskip.$(obj_ext)
+    $(_subdir_)wcexcept.obj &
+    $(_subdir_)wchash.obj &
+    $(_subdir_)wclist.obj &
+    $(_subdir_)wcskip.obj
 
 pch_flags = -fh=pch01.pch
-pch_flags_x = -fh=pch02.pch
+pch_flags_x = -fh=pch01x.pch
 
 !include $(cpplib_dir)/plibname.mif
 

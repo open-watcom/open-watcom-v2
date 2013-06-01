@@ -19,24 +19,7 @@ objs_c +=   rtdbgst.obj
 objs_c +=   rtdbgcom.obj
 !endif
 
-# Obsolete 9.5 files
-
-#           arrcopy.obj
-#           arrctor.obj
-#           blkclose.obj
-#           blkignor.obj
-#           blkpart.obj
-#           moddtor.obj
-#           modinit.obj
-#           rtdebug.obj
-#           srchig.obj
-#           unwindig.obj
-#           unwindlv.obj
-#           varrcopy.obj
-#           varrctor.obj
-
 # .CPP files (in RUNTIME\CPP)
-
 
 # Used for fs,pd registration
 
@@ -66,110 +49,116 @@ objs_dyn = $(static_objs)
 !endif
 
 !ifdef require_registration
-objs_reg += fsregist.$(obj_ext) &
-            stabfunc.obj &
-            stabreg.obj
+objs_reg += &
+    $(_subdir_)fsregist.obj &
+    stabfunc.obj &
+    stabreg.obj
 !else
-objs_reg += pdctxaxp.obj &
-            pdregist.obj
+objs_reg += &
+    pdctxaxp.obj &
+    pdregist.obj
 !endif
 
-objs_cpp =  allocexc.$(obj_ext) &
-            arrassgn.obj &
-            arrdel.obj   &
-            arrnew.obj   &
-            bittest.obj  &
-            callterm.obj &
-            callunex.obj &
-            cppdata.obj  &
-            ctorarst.$(obj_ext) &
-            darrnew.obj  &
-            dtorarst.obj &
-            exc_pr.obj   &
-            fatalerr.obj &
-            $(objs_dyn)  &
-            $(objs_reg)  &
-            generr.obj   &
-            lock.obj     &
-            opnew.obj    &
-            opnewarr.obj &
-            opnewp.obj   &
-            opnewpar.obj &
-            opdel.obj    &
-            opdelarr.obj &
-            pgmthrd.obj  &
-            pure_err.obj &
-            rttidync.obj &
-            rttisupp.obj &
-            rttiptr.obj  &
-            rttivoid.obj &
-            rttiref.$(obj_ext) &
-            rttitid.$(obj_ext) &
-            setnwhdl.obj &
-            _stnwhdl.obj &
-            settrmnt.obj &
-            setunexp.obj &
-            sisema.obj   &
-            stabacp.$(obj_ext)  &
-            stabacpv.$(obj_ext) &
-            stabact.$(obj_ext)  &
-            stabactv.$(obj_ext) &
-            stabadt.$(obj_ext)  &
-            stabdisp.xbj &
-            stabdtor.$(obj_ext) &
-            stabinit.obj &
-            stabthrw.xbj &
-            stabtrav.obj &
-            termnate.obj &
-            thrddata.obj &
-            tsequiv.obj  &
-            tssize.obj   &
-            ti_bfor.obj  &
-            ti_dtor.obj  &
-            ti_name.obj  &
-            ti_raw.obj   &
-            ti_opeq.obj  &
-            ti_opne.obj  &
-            undefed.obj  &
-            undefmbr.obj &
-            unexpect.$(obj_ext) &
-            varrnew.obj  &
-            vfun_err.obj &
-
-# Obsolete 9.5 files
-
-#           throw.obj
-#           throwarr.obj
-#           throwblk.obj
-#           throwcat.obj
-#           throwfne.obj
-#           throwobj.obj
+objs_cpp = &
+    $(_subdir_)allocexc.obj &
+    arrassgn.obj &
+    arrdel.obj   &
+    arrnew.obj   &
+    bittest.obj  &
+    callterm.obj &
+    callunex.obj &
+    cppdata.obj  &
+    $(_subdir_)ctorarst.obj &
+    darrnew.obj  &
+    dtorarst.obj &
+    exc_pr.obj   &
+    fatalerr.obj &
+    $(objs_dyn)  &
+    $(objs_reg)  &
+    generr.obj   &
+    lock.obj     &
+    opnew.obj    &
+    opnewarr.obj &
+    opnewp.obj   &
+    opnewpar.obj &
+    opdel.obj    &
+    opdelarr.obj &
+    pgmthrd.obj  &
+    pure_err.obj &
+    rttidync.obj &
+    rttisupp.obj &
+    rttiptr.obj  &
+    rttivoid.obj &
+    $(_subdir_)rttiref.obj &
+    $(_subdir_)rttitid.obj &
+    setnwhdl.obj &
+    _stnwhdl.obj &
+    settrmnt.obj &
+    setunexp.obj &
+    sisema.obj   &
+    $(_subdir_)stabacp.obj  &
+    $(_subdir_)stabacpv.obj &
+    $(_subdir_)stabact.obj  &
+    $(_subdir_)stabactv.obj &
+    $(_subdir_)stabadt.obj  &
+    $(x_subdir)/stabdisp.obj &
+    $(_subdir_)stabdtor.obj &
+    stabinit.obj &
+    $(x_subdir)/stabthrw.obj &
+    stabtrav.obj &
+    termnate.obj &
+    thrddata.obj &
+    tsequiv.obj  &
+    tssize.obj   &
+    ti_bfor.obj  &
+    ti_dtor.obj  &
+    ti_name.obj  &
+    ti_raw.obj   &
+    ti_opeq.obj  &
+    ti_opne.obj  &
+    undefed.obj  &
+    undefmbr.obj &
+    $(_subdir_)unexpect.obj &
+    varrnew.obj  &
+    vfun_err.obj &
 
 pch_flags = -fh=pch01.pch
-pch_flags_x = -fh=pch02.pch
-extra_cxx_flags_cppdata = -fh=pch03.pch
-extra_cxx_flags_rttidync = -fh=pch04.pch
-extra_cxx_flags_rttiptr = -fh=pch04.pch
-extra_cxx_flags_rttiref = -fh=pch04.pch
-extra_cxx_flags_rttisupp = -fh=pch04.pch
-extra_cxx_flags_rttitid = -fh=pch04.pch
-extra_cxx_flags_rttivoid = -fh=pch04.pch
-extra_cxx_flags_fsregist = -fh=pch05.pch
-extra_cxx_flags_stabinit = -fh=pch05.pch
-extra_cxx_flags_areaexc = -fh=pch06.pch
-extra_cxx_flags_fsroot = -fh=pch06.pch
-extra_cxx_flags_moddtorr = -fh=pch06.pch
-extra_cxx_flags_stabmod = -fh=pch06.pch
-extra_cxx_flags_stablcl = -fh=pch06.pch
-extra_cxx_flags_undefmbd = -fh=pch06.pch
-extra_cxx_flags_dfsroot = -fh=pch07.pch
-extra_cxx_flags_dstabmod = -fh=pch08.pch
-extra_cxx_flags_x_rttiref = -fh=pch09.pch
-extra_cxx_flags_x_rttitid = -fh=pch09.pch
-extra_cxx_flags_x_stabthrw = -fh=pch10.pch
-extra_cxx_flags_x_fsregist = -fh=pch10.pch
-extra_cxx_flags_prwdata = -fh=pch11.pch
-extra_cxx_flags_rtdbgst = -fh=pch12.pch
+pch_flags_x = -fh=pch01x.pch
+
+pch_flags_cppdata = -fh=pch02.pch
+pch_flags_x_cppdata = -fh=pch02x.pch
+pch_flags_prwdata = -fh=pch03.pch
+pch_flags_x_prwdata = -fh=pch03x.pch
+pch_flags_rttidync = -fh=pch04.pch
+pch_flags_rttiptr = -fh=pch04.pch
+pch_flags_rttiref = -fh=pch04.pch
+pch_flags_rttisupp = -fh=pch04.pch
+pch_flags_rttitid = -fh=pch04.pch
+pch_flags_rttivoid = -fh=pch04.pch
+pch_flags_x_rttidync = -fh=pch04x.pch
+pch_flags_x_rttiptr = -fh=pch04x.pch
+pch_flags_x_rttiref = -fh=pch04x.pch
+pch_flags_x_rttisupp = -fh=pch04x.pch
+pch_flags_x_rttitid = -fh=pch04x.pch
+pch_flags_x_rttivoid = -fh=pch04x.pch
+pch_flags_dfsroot = -fh=pch05.pch
+pch_flags_x_dfsroot = -fh=pch05x.pch
+pch_flags_dstabmod = -fh=pch06.pch
+pch_flags_x_dstabmod = -fh=pch06x.pch
+pch_flags_areaexc = -fh=pch07.pch
+pch_flags_fsroot = -fh=pch07.pch
+pch_flags_moddtorr = -fh=pch07.pch
+pch_flags_stabmod = -fh=pch07.pch
+pch_flags_stablcl = -fh=pch07.pch
+pch_flags_undefmbd = -fh=pch07.pch
+pch_flags_x_areaexc = -fh=pch07x.pch
+pch_flags_x_fsroot = -fh=pch07x.pch
+pch_flags_x_moddtorr = -fh=pch07x.pch
+pch_flags_x_stabmod = -fh=pch07x.pch
+pch_flags_x_stablcl = -fh=pch07x.pch
+pch_flags_x_undefmbd = -fh=pch07x.pch
+pch_flags_rtdbgst = -fh=pch08.pch
+pch_flags_x_rtdbgst = -fh=pch08x.pch
 
 !include $(cpplib_dir)/plibname.mif
 

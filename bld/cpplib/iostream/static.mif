@@ -1,6 +1,5 @@
 # objects to be included in each image (as required)
 #
-# - use file extensions as written; .xbj not required
 # - targdir is used in rtdll project
 
 static_objs = $+ &
