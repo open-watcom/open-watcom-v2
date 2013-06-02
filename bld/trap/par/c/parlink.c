@@ -196,12 +196,6 @@
 #include "trperr.h"
 #include "packet.h"
 
-#ifdef TRUE
-typedef char bool;
-#else
-typedef enum { FALSE, TRUE } bool;
-#endif
-
 
 #if defined(__NT__)
         // We have direct port I/O for NT and Win9x
@@ -528,7 +522,7 @@ static int DataGet( unsigned long wait )
 /* if wait is not KEEP or RELINQUISH it is the latest time that this
  * operation should take before it times out */
 
-static int DataPut( char data, unsigned long wait )
+static int DataPut( unsigned char data, unsigned long wait )
 {
     dbgrtn( "\r\n-DataPut-" );
     switch( CableType ) {
@@ -682,7 +676,7 @@ static bool CountTwidle( void )
     if( !TwidleOn ) {
         if( type == WATCOM_VAL ||
             type == FMR_VAL ||
-            type == LAPLINK_VAL ||
+            type == (char)LAPLINK_VAL ||
             type == DUTCHMAN_VAL ) {
             TwidleOn = TRUE;
             if( type != CableType ) {

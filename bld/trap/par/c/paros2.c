@@ -61,7 +61,7 @@ unsigned short PortAddress[NUM_ELTS( PortTest )] = {
 
 unsigned PortsFound;
 
-int NumPrinters()
+int NumPrinters( void )
 {
     char                num_printers;
     unsigned short      rc;
@@ -83,17 +83,18 @@ void FreePorts( unsigned first, unsigned last )
     DosPortAccess( 0, 1, first, last );
 }
 
-int CheckForPort( int i, char value )
+static int CheckForPort( int i, unsigned char value )
 {
     int         j;
 
     output_port( PortTest[ i ], value );
-    for( j = 100; j != 0; j-- );
+    for( j = 100; j != 0; j-- )
+        ;
     return( input_port( PortTest[ i ] ) == value );
 }
 
 
-char *InitSys()
+char *InitSys( void )
 {
     SEL         global;
     SEL         local;
@@ -114,12 +115,12 @@ char *InitSys()
 }
 
 
-void FiniSys()
+void FiniSys( void )
 {
 }
 
 
-unsigned long Ticks()
+unsigned long Ticks( void )
 {
     return( ( GInfoSeg->msecs ) / 100 );
 }

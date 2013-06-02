@@ -1078,13 +1078,13 @@ static unsigned StartProcess( const char *exe_name, char *parms )
     strcat( appname, exe_name );
     start.PgmTitle = (PSZ)appname;
     start.PgmName = UtilBuff;
-    start.PgmInputs = parms;
+    start.PgmInputs = (PBYTE)parms;
     start.TermQ = 0;
     /* We need to inherit from parent to get open file handles etc. */
     start.InheritOpt = SSF_INHERTOPT_PARENT;
     /* We want debugger's (debugger's parent really) environment */
     DosGetInfoBlocks( &ptib, &ppib );
-    start.Environment = ppib->pib_pchenv;
+    start.Environment = (PBYTE)ppib->pib_pchenv;
     rc = 0;
     if( GetEXEFlags( UtilBuff ) == EXE_IS_PM ) {
         if( TypeProcess == SSF_TYPE_WINDOWABLEVIO ) {

@@ -314,7 +314,7 @@ BOOL NameFromProcess( lib_load_info *lli, DWORD dwPID, char *name )
     // This should not be relevant as all NT versions will use the PSAPI method anyway.
     // The PSAPI method works reliably but is not available on Win9x.
     do {
-        if( me32.modBaseAddr == lli->base ) {
+        if( (LPSTR)me32.modBaseAddr == lli->base ) {
             strcpy( name, me32.szExePath );
             bSuccess = TRUE;
             break;

@@ -96,7 +96,7 @@ void ResetBreakpoints( WORD sel )
     for( i=0;i<numBreaks;i++ ) {
         if( brkList[i].in_use ) {
             if( brkList[i].loc.segment == sel ) {
-                ch = 0xCC;
+                ch = '\xCC';
                 WriteMem( brkList[i].loc.segment, brkList[i].loc.offset,
                                 &ch, sizeof( BYTE ) );
             }

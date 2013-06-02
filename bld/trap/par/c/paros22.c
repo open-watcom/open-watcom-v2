@@ -54,7 +54,7 @@ USHORT PortAddress[NUM_ELTS(PortTest)] = {
 
 USHORT PortsFound;
 
-int NumPrinters()
+int NumPrinters( void )
 {
     char                num_printers;
     APIRET              rc;
@@ -78,7 +78,7 @@ void FreePorts(USHORT first, USHORT last)
     DosPortAccess(0, 1, first, last);
 }
 
-int CheckForPort(int i, char value)
+static int CheckForPort(int i, unsigned char value)
 {
     output_port(PortTest[i], value);
     DosSleep(1);
@@ -86,7 +86,7 @@ int CheckForPort(int i, char value)
 }
 
 
-char *InitSys()
+char *InitSys( void )
 {
     int         i;
 
@@ -102,12 +102,12 @@ char *InitSys()
 }
 
 
-void FiniSys()
+void FiniSys( void )
 {
 }
 
 
-ULONG Ticks()
+ULONG Ticks( void )
 {
     ULONG  ulMsecs;
 

@@ -102,7 +102,7 @@ static BOOL doStartTask( DWORD data )
         StopNewTask.loc.segment = HIWORD( data );
         ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
                 &StopNewTask.value, 1 );
-        val = 0xcc;
+        val = '\xcc';
         WriteMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
                     &val, 1 );
         ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
@@ -137,7 +137,7 @@ static BOOL doStartDLL( DWORD data )
         ReadMem( sd->wCS, sd->wIP, &DLLLoadSaveByte, 1 );
         DLLLoadCS = sd->wCS;
         DLLLoadIP = sd->wIP;
-        val = 0xcc;
+        val = '\xcc';
         WriteMem( sd->wCS, sd->wIP, &val, 1 );
     }
     Out((OUT_ERR,"DLL Loaded '%4.4x:%4.4x'",sd->wCS,sd->wIP));

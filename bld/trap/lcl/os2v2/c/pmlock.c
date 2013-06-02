@@ -68,7 +68,7 @@ static int SpawnLocker( HFILE inh, HFILE outh )
     start.TraceOpt = 0;
     start.PgmTitle = TRP_The_WATCOM_Debugger;
     start.PgmName = "WDPMHELP.EXE";
-    start.PgmInputs = parms;
+    start.PgmInputs = (PBYTE)parms;
     start.TermQ = 0;
     start.Environment = NULL;
     start.InheritOpt = 1;

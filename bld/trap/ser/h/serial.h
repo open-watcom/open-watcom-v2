@@ -67,9 +67,9 @@
 #define FAIL                    0  /* this MUST be defined as 0 */
 
 typedef struct baud_entry {
-    char        *name;
-    int         len;
-    char        full_test_ticks;
+    char            *name;
+    int             len;
+    unsigned char   full_test_ticks;
 } baud_entry;
 
 /* define the time needed to send a SYNC_LEN characters back and forth */

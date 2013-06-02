@@ -335,7 +335,7 @@ static int Speed( void )
              data   -- next byte to be incorporated
    Returns:  the new crc value after data is accounted for               */
 
-static word NewCRC( char data, word old_crc )
+static word NewCRC( unsigned char data, word old_crc )
 {
     word     crc_value;            /* the CRC value of the block */
     int      i;                    /* loop index */
@@ -369,7 +369,7 @@ static word NewCRC( char data, word old_crc )
              num   is the number of data bytes
    Output:   the CRC value                                             */
 
-static word CRC( char *extra, int num, char *p )
+static word CRC( unsigned char *extra, int num, char *p )
 {
     word     crc_value = 0;        /* the CRC value of the block */
     int      i;                    /* loop index */
@@ -379,7 +379,7 @@ static word CRC( char *extra, int num, char *p )
         crc_value = NewCRC( *extra, crc_value );
     }
     for( i = 0; i < num; ++i, ++p ) {
-        crc_value = NewCRC( *p, crc_value );
+        crc_value = NewCRC( *(unsigned char *)p, crc_value );
     }
     crc_value = NewCRC( 0xff, crc_value );
     crc_value = NewCRC( 0xff, crc_value );
@@ -410,7 +410,7 @@ static int BlockSend( trap_elen num, char *p, unsigned timeout )
     int             reply;              /* reply message from other machine */
     unsigned char   crc_low, crc_hi;
     unsigned char   len_low, len_hi;
-    char            extra[3];           /* ..[0]=blkno_low, ..[1]=blkno_hi, ..[2]=err */
+    unsigned char   extra[3];           /* ..[0]=blkno_low, ..[1]=blkno_hi, ..[2]=err */
     unsigned        wait;
 
     ZeroWaitCount();
@@ -496,7 +496,7 @@ static int BlockSend( trap_elen num, char *p, unsigned timeout )
 
 static int BlockReceive( char * err, trap_elen max_len, char * p )
 {
-    char            buffer[8];     /* storing bytes other than actual data from blocks */
+    unsigned char   buffer[8];     /* storing bytes other than actual data from blocks */
     trap_elen       i;             /* loop index */
     trap_elen       len;
     word            crc_val;

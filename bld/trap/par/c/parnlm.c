@@ -56,12 +56,13 @@ short PortAddress[3] =
 };
 
 
-int CheckForPort( int i, char value )
+static int CheckForPort( int i, unsigned char value )
 {
     int         j;
 
     outp( PortTest[ i ], value );
-    for( j = 100; j != 0; j-- );
+    for( j = 100; j != 0; j-- )
+        ;
     return( inp( PortTest[ i ] ) == value );
 }
 

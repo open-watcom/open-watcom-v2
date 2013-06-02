@@ -302,7 +302,7 @@ trap_elen ReqRfx_getcwd( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
-    ret->err = DosQueryCurrentDir( acc->drive, buff, &len );
+    ret->err = DosQueryCurrentDir( acc->drive, (PBYTE)buff, &len );
     return( sizeof( *ret ) + len );
 }
 
@@ -394,7 +394,7 @@ trap_elen ReqRfx_nametocannonical( void )
     if( *name != '\\' ) {
         *fullname++ = '\\';
         // DOS : TinyGetCWDir( fullname, TinyGetCurrDrive() + 1 );
-        DosQueryCurrentDir( drive + 1, fullname, &len );
+        DosQueryCurrentDir( drive + 1, (PBYTE)fullname, &len );
         if( *fullname != '\0' ) {
             level++;
             while( *fullname != '\0' ) {

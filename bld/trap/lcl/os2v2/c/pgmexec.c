@@ -114,7 +114,7 @@ bool CausePgmToLoadHelperDLL( ULONG startLinear )
     size = sizeof(loadstack_t) + dll_name_len;
     loadstack = (loadstack_t*)TempStack;
     Buff.ESP -= size;
-    strcpy( loadstack->load_name, szHelperDLL );
+    strcpy( (char *)loadstack->load_name, szHelperDLL );
     // Offsets must be relative to where loadstack will end up!
     loadstack->mod_name  = (PSZ)(MakeItFlatNumberOne( Buff.SS, Buff.ESP ) + 20);
     loadstack->phmod     = (HMODULE*)(MakeItFlatNumberOne( Buff.SS, Buff.ESP ) + 16);

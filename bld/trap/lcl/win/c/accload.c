@@ -154,7 +154,7 @@ trap_elen ReqProg_load( void )
             StopNewTask.loc.offset = FP_OFF( (LPVOID) csip );
             ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
                     &StopNewTask.value, 1 );
-            ch = 0xcc;
+            ch = '\xcc';
             WriteMem( StopNewTask.loc.segment, StopNewTask.loc.offset, &ch, 1 );
         }
     } else {

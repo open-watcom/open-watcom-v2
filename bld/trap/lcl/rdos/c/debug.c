@@ -358,7 +358,7 @@ static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *BreakL
 {
     struct TDebugBreak *b = BreakList;
     struct TDebugWatch *w = WatchList;
-    char brinstr = 0xCC;
+    char brinstr = '\xCC';
     int bnum = 0;
 
     while( w ) {
@@ -780,7 +780,7 @@ static void InitDebugBreak( struct TDebugBreak *obj, int sel, long offset, int H
 {
     obj->Sel = sel;
     obj->Offset = offset;
-    obj->Instr = 0xCC;
+    obj->Instr = '\xCC';
     obj->Next = 0;
     obj->UseHw = Hw;
 }

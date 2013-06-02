@@ -64,7 +64,7 @@
 #define INT_PRT_SCRN_KEY    0x05
 
 TSF32   Proc;
-char    Break;
+byte    Break;
 
 bool                    FakeBreak;
 bool                    AtEnd;
@@ -103,7 +103,7 @@ void SetDbgTask( void )
 {
 }
 
-static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char far*,unsigned int), addr48_ptr *addr, byte far *data, unsigned short req )
+static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void far *,unsigned int), addr48_ptr *addr, byte far *data, unsigned short req )
 {
     unsigned short  len;
 
@@ -114,8 +114,7 @@ static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char far*,unsign
     _DBG_Write( " for 0x" );
     _DBG_Write16( req );
     _DBG_Write( " bytes -- " );
-    if( rsi_addr32_check( addr->offset, addr->segment, req, NULL ) &&
-            r( addr->offset, addr->segment, 0, data, req ) == 0 ) {
+    if( rsi_addr32_check( addr->offset, addr->segment, req, NULL ) && r( addr->offset, addr->segment, 0, data, req ) == 0 ) {
         _DBG_Writeln( "OK" );
         addr->offset += req;
         return( req );
@@ -133,12 +132,12 @@ static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char far*,unsign
     return( len );
 }
 
-static unsigned short ReadMemory( addr48_ptr *addr, byte far *data, unsigned short len )
+static unsigned short ReadMemory( addr48_ptr *addr, void far *data, unsigned short len )
 {
     return( ReadWrite( D32DebugRead, addr, data, len ) );
 }
 
-static unsigned short WriteMemory( addr48_ptr *addr, byte far *data, unsigned short len )
+static unsigned short WriteMemory( addr48_ptr *addr, void far *data, unsigned short len )
 {
     return( ReadWrite( D32DebugWrite, addr, data, len ) );
 }
@@ -307,7 +306,7 @@ trap_elen ReqWrite_mem( void )
     _DBG_Writeln( "WriteMem" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( (addr48_ptr *)&acc->mem_addr, GetInPtr( sizeof(*acc) ), GetTotalSize() - sizeof(*acc) );
+    ret->len = WriteMemory( (addr48_ptr *)&acc->mem_addr, GetInPtr( sizeof( *acc ) ), GetTotalSize() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -319,11 +318,11 @@ trap_elen ReqRead_io( void )
     acc = GetInPtr(0);
     data = GetOutPtr(0);
     if( acc->len == 1 ) {
-        *( (byte *)data ) = In_b( acc->IO_offset );
+        *(byte *)data = In_b( acc->IO_offset );
     } else if( acc->len == 2 ) {
-        *( (word *)data ) = In_w( acc->IO_offset );
+        *(word *)data = In_w( acc->IO_offset );
     } else {
-        *( (dword *)data ) = In_d( acc->IO_offset );
+        *(dword *)data = In_d( acc->IO_offset );
     }
     return( acc->len );
 }
@@ -340,11 +339,11 @@ trap_elen ReqWrite_io( void )
     len = GetTotalSize() - sizeof( *acc );
     ret = GetOutPtr(0);
     if( len == 1 ) {
-        Out_b( acc->IO_offset, *( (byte *)data ) );
+        Out_b( acc->IO_offset, *(byte *)data );
     } else if( len == 2 ) {
-        Out_w( acc->IO_offset, *( (word *)data ) );
+        Out_w( acc->IO_offset, *(word *)data );
     } else {
-        Out_d( acc->IO_offset, *( (dword *)data ) );
+        Out_d( acc->IO_offset, *(dword *)data );
     }
     ret->len = len;
     return( sizeof( *ret ) );
@@ -612,7 +611,7 @@ trap_elen ReqSet_watch( void )
     curr->handle = -1;
     curr->handle2 = -1;
     curr->value = 0;
-    ReadMemory( (addr48_ptr *)&acc->watch_addr, (byte far *)&curr->value, curr->len );
+    ReadMemory( (addr48_ptr *)&acc->watch_addr, &curr->value, curr->len );
     ++WatchCount;
     needed = 0;
     for( i = 0; i < WatchCount; ++i ) {
@@ -640,22 +639,20 @@ trap_elen ReqSet_break( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment,
-                          FALSE, &Break, (byte *)&ret->old );
+    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, &Break, (byte far *)&ret->old );
     return( sizeof( *ret ) );
 }
 
 
 trap_elen ReqClear_break( void )
 {
-    clear_break_req     *acc;
-    char        dummy;
+    clear_break_req *acc;
+    byte            dummy;
 
     acc = GetInPtr( 0 );
     _DBG_Writeln( "AccRestoreBreak" );
     /* assume all breaks removed at same time */
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment,
-                          FALSE, (byte *)&acc->old, &dummy );
+    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, (byte far *)&acc->old, &dummy );
     return( 0 );
 }
 
@@ -800,7 +797,7 @@ static bool CheckWatchPoints( void )
         addr.segment = wp->addr.segment;
         addr.offset = wp->addr.offset;
         val = 0;
-        if( ReadMemory( &addr, (byte far *)&val, wp->len ) != wp->len ) {
+        if( ReadMemory( &addr, &val, wp->len ) != wp->len ) {
             return( TRUE );
         }
         if( val != wp->value ) {
@@ -981,7 +978,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
         exit(1);
     }
     Proc.int_id = -1;
-    D32DebugBreakOp(&Break);    /* Get the 1 byte break op */
+    D32DebugBreakOp( &Break );  /* Get the 1 byte break op */
     return( ver );
 }
 
