@@ -444,7 +444,7 @@ static void LoadProg( char *cmd, char *cmd_tail )
         start.TraceOpt = 1;
         start.PgmTitle = cmd;
         start.PgmName = cmd;
-        start.PgmInputs = cmd_tail;
+        start.PgmInputs = (PBYTE)cmd_tail;
         start.TermQ = 0;
         start.Environment = NULL;
         start.InheritOpt = 1;
@@ -490,7 +490,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     if( src[0] != '\\' ) {
         ++dst;
         len = BUFF_SIZE - ( dst - UtilBuff );
-        DosQueryCurrentDir( drive, dst, &len );
+        DosQueryCurrentDir( drive, (PBYTE)dst, &len );
         dst[ -1 ] = '\\';
         if( *dst == '\\' || *dst == '\0' ) {
             *dst = '\0';

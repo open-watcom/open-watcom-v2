@@ -43,7 +43,7 @@
 #include "rsi1632.h"
 
 TSF32   Proc;
-char    Break;
+byte    Break;
 
 static seg_offset       CommonAddr = { 0, 0 };
 
@@ -89,8 +89,7 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;               /* don't record this sample */
     } else {
-        D32DebugRead( CommonAddr.offset, CommonAddr.segment, 0,
-                                                 (char far*)&Comm, sizeof( Comm ) );
+        D32DebugRead( CommonAddr.offset, CommonAddr.segment, 0, &Comm, sizeof( Comm ) );
     }
 }
 
@@ -110,8 +109,7 @@ void GetNextAddr( void )
     } else {
         addr.segment = CommonAddr.segment;
         addr.offset = Comm.cgraph_top;
-        D32DebugRead( addr.offset, addr.segment, 0,
-                                 (char far*)&stack_entry, sizeof( stack_entry ) );
+        D32DebugRead( addr.offset, addr.segment, 0, &stack_entry, sizeof( stack_entry ) );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
         Comm.cgraph_top = stack_entry.ptr;
@@ -125,8 +123,7 @@ void ResetCommArea( void )
         Comm.pop_no = 0;
         Comm.push_no = 0;
         CommonAddr.offset += 11;
-        D32DebugWrite( CommonAddr.offset, CommonAddr.segment, 0,
-                                                         (char far*)&Comm.pop_no, 4 );
+        D32DebugWrite( CommonAddr.offset, CommonAddr.segment, 0, &Comm.pop_no, 4 );
         CommonAddr.offset -= 11;
     }
 }
@@ -155,7 +152,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     CurrTick  = 0L;
 
     D32HookTimer( TimerMult );  /* ask for timer - before D32DebugInit!! */
-    D32DebugBreakOp(&Break);    /* Get the 1 byte break op */
+    D32DebugBreakOp( &Break );  /* Get the 1 byte break op */
 
     error_num = D32DebugInit( &Proc, -1 );
     if( error_num == 0 ) {
