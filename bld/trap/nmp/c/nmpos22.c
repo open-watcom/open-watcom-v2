@@ -76,7 +76,7 @@ void myclose( bhandle handle )
     DosClose( handle );
 }
 
-int myread( bhandle handle, char *buff, int len )
+int myread( bhandle handle, void *buff, int len )
 {
     APIRET      rc;
     ULONG       bytes_read;
@@ -87,7 +87,7 @@ int myread( bhandle handle, char *buff, int len )
 }
 
 
-int mywrite( bhandle handle, char *buff, int len )
+int mywrite( bhandle handle, void *buff, int len )
 {
     APIRET      rc;
     ULONG       bytes_written;

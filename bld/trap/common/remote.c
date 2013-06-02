@@ -145,7 +145,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
         ++parm;
         if( *parm != '!' ) fix_minor = 1;
     }
-    err = RemoteLink( parm, 0 );
+    err = RemoteLink( parm, FALSE );
     if( err != NULL ) {
         strcpy( error, err );
     } else {

@@ -38,7 +38,7 @@
 #include "winserv.h"
 #include "trperr.h"
 
-extern unsigned NumPrinters(void);
+extern unsigned NumPrinters( void );
 extern void ServMessage( char * );
 extern void ServError( char * );
 
@@ -54,7 +54,7 @@ HWND PortChildren[MAX_PPORTS];
 char _pgmname[]=TRP_Parallel_Name;
 
 
-void SetAppl()
+void SetAppl( void )
 {
     SendMessage( PortChildren[ CurrentPort], BM_SETCHECK, 1, 0L );
 } /* SetAppl */
@@ -63,37 +63,37 @@ void SetAppl()
 /*
  * CreateSelections
  */
-#pragma off (unreferenced);
 BOOL CreateSelections( short x, short y, short avgx, short avgy )
-#pragma on (unreferenced);
 {
-HWND win;
-char caption[80];
-int i;
-int xp,yp,xs,ys;
+    HWND win;
+    char caption[80];
+    int i;
+    int xp,yp,xs,ys;
 
-    for( i=0;i<NumPrinters();i++ ) {
-        sprintf(caption,TRP_WIN_parallel_port,i+1 );
-        xp = 15 + 3*(x/4) + 10;
-        yp = 20 + i*(avgy+1);
+    y = y;
+    for( i = 0; i < NumPrinters(); i++ ) {
+        sprintf( caption, TRP_WIN_parallel_port, i + 1 );
+        xp = 15 + 3 * ( x / 4 ) + 10;
+        yp = 20 + i * ( avgy + 1 );
         ys = avgy;
-        xs = (strlen(caption)+1) * avgx;
+        xs = ( strlen( caption ) + 1 ) * avgx;
 
         win = CreateWindow(
-            "BUTTON",                  /* class */
+            "BUTTON",               /* class */
             caption,                /* caption */
             WS_CHILD | BS_RADIOBUTTON,
             xp,                     /* init. x pos */
             yp,                     /* init. y pos */
             xs,                     /* init. x size */
             ys,                     /* init. y size */
-            MainWindowHandle,            /* parent window */
-            RADIO_1+i,              /* child id */
+            MainWindowHandle,       /* parent window */
+            RADIO_1 + i,            /* child id */
             CProcHandle,            /* program handle */
             NULL                    /* create parms */
             );
 
-            if( win == NULL ) return( FALSE );
+            if( win == NULL )
+                return( FALSE );
             PortChildren[i] = win;
             ShowWindow( win, SW_SHOWNORMAL );
 
@@ -105,36 +105,35 @@ int xp,yp,xs,ys;
 /*
  * ProcAppl - receives server specific messages for the main window
  */
-#pragma off (unreferenced);
-void ProcAppl( HWND windhandle, unsigned message, WORD worddata,
-                       LONG longdata )
-#pragma on (unreferenced);
+void ProcAppl( HWND windhandle, unsigned message, WORD worddata, LONG longdata )
 {
-WORD notify;
-char buff[80],*err;
+    WORD notify;
+    char buff[80], *err;
 
+    message = message;
     switch( worddata ) {
-        case RADIO_1:
-        case RADIO_2:
-        case RADIO_3:
-            notify = HIWORD( longdata );
-            if( notify == BN_CLICKED ) {
-                SendMessage( PortChildren[ CurrentPort], BM_SETCHECK, 0, 0L );
-                CurrentPort = worddata - RADIO_1;
-                if( RemoteLinkObtained) RemoteUnLink();
-                sprintf(buff,"%d",CurrentPort+1 );
-                err = RemoteLink( buff, 1 );
-                if( err != NULL ) {
-                    ServError( err );
-                    RemoteLinkObtained = FALSE;
-                } else {
-                    sprintf(buff,TRP_WIN_port_set,CurrentPort+1 );
-                    ServMessage( buff );
-                    SendMessage( PortChildren[ CurrentPort], BM_SETCHECK, 1, 0L );
-                    RemoteLinkObtained = TRUE;
-                } /* if */
+    case RADIO_1:
+    case RADIO_2:
+    case RADIO_3:
+        notify = HIWORD( longdata );
+        if( notify == BN_CLICKED ) {
+            SendMessage( PortChildren[CurrentPort], BM_SETCHECK, 0, 0L );
+            CurrentPort = worddata - RADIO_1;
+            if( RemoteLinkObtained )
+                RemoteUnLink();
+            sprintf( buff, "%d", CurrentPort + 1 );
+            err = RemoteLink( buff, TRUE );
+            if( err != NULL ) {
+                ServError( err );
+                RemoteLinkObtained = FALSE;
+            } else {
+                sprintf( buff, TRP_WIN_port_set, CurrentPort + 1 );
+                ServMessage( buff );
+                SendMessage( PortChildren[CurrentPort], BM_SETCHECK, 1, 0L );
+                RemoteLinkObtained = TRUE;
             } /* if */
-            break;
+        } /* if */
+        break;
     } /* switch */
 
 } /* ProcAppl */

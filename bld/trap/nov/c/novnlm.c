@@ -125,7 +125,7 @@ _DBG_IPX(("Posting RecECB[%d]\r\n", i));
     CSPXListenForSequencedPacket( &RecECB[i] );
 }
 
-static trap_elen DoRemoteGet( char *rec, trap_elen len )
+static trap_elen DoRemoteGet( byte *rec, trap_elen len )
 {
     trap_elen   recvd;
     int         i;
@@ -140,7 +140,8 @@ _DBG_IPX(("RemoteGet\r\n"));
         p = -1;
         for( ;; ) {
             if( i < 0 ) {
-                if( p != -1 ) break;
+                if( p != -1 )
+                    break;
                 NothingToDo();
                 i = NUM_REC_BUFFS-1;
             }
@@ -157,35 +158,37 @@ _DBG_IPX(("Got a packet - size=%d\r\n", got));
         memcpy( rec, Buffer[p], got );
         recvd += got;
         PostAListen( p );
-        if( got != MAX_DATA_SIZE ) break;
-        rec = (char *)rec + got;
+        if( got != MAX_DATA_SIZE )
+            break;
+        rec += got;
     }
     return( recvd );
 }
 
-static trap_elen DoRemotePut( char *snd, trap_elen len )
+static trap_elen DoRemotePut( byte *snd, trap_elen len )
 {
 _DBG_IPX(("RemotePut\r\n"));
     _INITSPXECB( Send, 2, snd, len );
     SendHead.connectionControl |= 0x10;
     SendHead.length = _SWAPINT( sizeof( SendHead ) + len );
     CSPXSendSequencedPacket( Connection, &SendECB );
-    while( InUse( SendECB ) ) NothingToDo();
+    while( InUse( SendECB ) )
+        NothingToDo();
     return( len );
 }
 
-trap_elen RemoteGet( char *rec, trap_elen len )
+trap_elen RemoteGet( byte *rec, trap_elen len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-trap_elen RemotePut( char *snd, trap_elen len )
+trap_elen RemotePut( byte *snd, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
             return( REQUEST_FAILED );
         }
-        snd = (char *)snd + MAX_DATA_SIZE;
+        snd += MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
     if( DoRemotePut( snd, len ) == REQUEST_FAILED ) {
@@ -207,7 +210,7 @@ static void PostListens( void )
 }
 
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     PostListens();
     if( !Listening ) {
@@ -217,10 +220,10 @@ _DBG_IPX(("Listening for connection\r\n"));
         Listening = 1;
     } else if( !InUse( ConnECB ) && Completed( ConnECB ) ) {
 _DBG_IPX(("Found a connection\r\n"));
-        return( 1 );
+        return( TRUE );
     }
     NothingToDo();
-    return( 0 );
+    return( FALSE );
 }
 
 void RemoteDisco( void )
@@ -388,7 +391,7 @@ _DBG_IPX(( "FindPartner -- %s answered\r\n", Completed( RespECB ) ? "someone" : 
     return( FALSE );
 }
 
-char *RemoteLink( char *name, char server )
+char *RemoteLink( char *name, bool server )
 {
     unsigned    i;
 

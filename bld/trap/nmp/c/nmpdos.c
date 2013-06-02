@@ -50,7 +50,7 @@ void myclose( bhandle handle )
     TinyClose( handle );
 }
 
-int myread( bhandle handle, char *buff, int len )
+int myread( bhandle handle, void *buff, int len )
 {
     tiny_ret_t  rc;
 
@@ -63,7 +63,7 @@ int myread( bhandle handle, char *buff, int len )
 }
 
 
-int mywrite( bhandle handle, char *buff, int len )
+int mywrite( bhandle handle, void *buff, int len )
 {
     tiny_ret_t  rc;
 

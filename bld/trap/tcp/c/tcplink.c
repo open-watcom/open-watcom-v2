@@ -221,7 +221,7 @@ static unsigned FullGet( void *get, unsigned len )
 
 #endif
 
-trap_elen RemoteGet( char *rec, trap_elen len )
+trap_elen RemoteGet( byte *rec, trap_elen len )
 {
     unsigned_16         rec_len;
 #ifdef __RDOS__    
@@ -265,7 +265,7 @@ trap_elen RemoteGet( char *rec, trap_elen len )
 #endif
 }
 
-trap_elen RemotePut( char *rec, trap_elen len )
+trap_elen RemotePut( byte *rec, trap_elen len )
 {
     unsigned_16         send_len;
 
@@ -289,7 +289,7 @@ trap_elen RemotePut( char *rec, trap_elen len )
         return( REQUEST_FAILED );
     }
     if( len != 0 ) {
-        if( die || send( data_socket, rec, len, 0 ) == -1 ) {
+        if( die || send( data_socket, (void *)rec, len, 0 ) == -1 ) {
             return( REQUEST_FAILED );
         }
     }
@@ -314,7 +314,7 @@ static void nodelay( void )
 
 #endif
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
 #ifdef SERVER
 #ifdef __RDOS__
@@ -327,7 +327,7 @@ char RemoteConnect( void )
 
     if( socket_handle ) {
         _DBG_NET(("Found a connection\r\n"));
-        return( 1 );
+        return( TRUE );
     }
 #else
     struct      timeval timeout;
@@ -344,7 +344,7 @@ char RemoteConnect( void )
         if( !IS_SOCK_ERROR( data_socket ) ) {
             nodelay();
             _DBG_NET(("Found a connection\r\n"));
-            return( 1 );
+            return( TRUE );
         }
     }
 #endif
@@ -356,12 +356,12 @@ char RemoteConnect( void )
     if( !IS_SOCK_ERROR( data_socket ) ) {
         if( connect( data_socket, (struct sockaddr *)&socket_address, sizeof( socket_address ) ) >= 0 ) {
             nodelay();
-            return( 1 );
+            return( TRUE );
         }
     }
 #endif
 #endif
-    return( 0 );
+    return( FALSE );
 }
 
 void RemoteDisco( void )
@@ -381,7 +381,7 @@ void RemoteDisco( void )
 }
 
 
-char *RemoteLink( char *name, char server )
+char *RemoteLink( char *name, bool server )
 {
     unsigned            port;
 #ifndef __RDOS__    

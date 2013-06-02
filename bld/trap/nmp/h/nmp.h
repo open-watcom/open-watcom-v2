@@ -103,6 +103,6 @@ enum {
 
 extern bhandle myopen( char * );
 extern void myclose( bhandle );
-extern int myread( bhandle, char *, int );
-extern int mywrite( bhandle, char *, int );
+extern int myread( bhandle, void *, int );
+extern int mywrite( bhandle, void *, int );
 extern void mysnooze( void );

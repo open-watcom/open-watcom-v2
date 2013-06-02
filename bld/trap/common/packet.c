@@ -37,7 +37,7 @@
 #include "trpimp.h"
 #include "packet.h"
 
-static char         PackBuff[0x400];
+static byte         PackBuff[0x400];
 static trap_elen    PackInd = 0;
 
 void StartPacket( void )
@@ -91,7 +91,7 @@ void RemovePacket( trap_elen len, void *ptr )
     PackInd += len;
 }
 
-char *GetPacketBuffPtr( void )
+void *GetPacketBuffPtr( void )
 {
     return( &PackBuff[PackInd] );
 }

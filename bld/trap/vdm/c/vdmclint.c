@@ -53,11 +53,12 @@ HANDLE  pipeHdl;
 
 #define NT_PREF_LEN     (MACH_NAME_LEN + PREFIX_LEN)
 
-char *RemoteLink( char *config, char server )
+char *RemoteLink( char *config, bool server )
 {
     char        buf[ NT_PREF_LEN + MAX_NAME + 1 ];
 
-    if( server ) return( "this should never be seen" );
+    if( server )
+        return( "this should never be seen" );
     strcpy( buf, NT_MACH_NAME PREFIX );
     if( *config == 0 ) {
         strcpy( buf + NT_PREF_LEN, DEFAULT_NAME );
@@ -71,14 +72,15 @@ char *RemoteLink( char *config, char server )
                     PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT,
                     1, MAX_TRANS, MAX_TRANS, 0, NULL );
     if( pipeHdl == INVALID_HANDLE_VALUE ) {
-        if( GetLastError() == ERROR_PIPE_BUSY ) return( TRP_ERR_server_name_already_in_use );
+        if( GetLastError() == ERROR_PIPE_BUSY )
+            return( TRP_ERR_server_name_already_in_use );
         return( TRP_ERR_unable_to_access_server );
     }
     return( NULL );
 }
 
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     DWORD       mode;
     int         try;
@@ -98,21 +100,21 @@ char RemoteConnect( void )
             mode = PIPE_READMODE_BYTE | PIPE_WAIT;
             if( !SetNamedPipeHandleState( pipeHdl, &mode, NULL, NULL ) ) {
                 DisconnectNamedPipe( pipeHdl );
-                return( 0 );
+                return( FALSE );
             }
-            return( 1 );
+            return( TRUE );
         }
         Sleep( 200 );
     }
-    return( 0 );
+    return( FALSE );
 }
 
 
-trap_elen RemoteGet( char *data, trap_elen length )
+trap_elen RemoteGet( byte *data, trap_elen length )
 {
     unsigned_16     incoming;
     ULONG           bytes_read;
-    trap_elen  ret;
+    trap_elen       ret;
 
     length = length;
     ReadFile( pipeHdl, &incoming, sizeof( incoming ), &bytes_read, NULL );
@@ -126,7 +128,7 @@ trap_elen RemoteGet( char *data, trap_elen length )
 }
 
 
-trap_elen RemotePut( char *data, trap_elen length )
+trap_elen RemotePut( byte *data, trap_elen length )
 {
     unsigned_16 outgoing;
     ULONG       bytes_written;

@@ -83,7 +83,7 @@ static char *OpenRequest( void )
     BindHdl = PipeOpen( BINDERY );
     if( BindHdl == -1 ) return( TRP_ERR_NMPBIND_not_found );
     NameBuff[0] = OPEN_REQUEST;
-    bytes = mywrite( BindHdl, NameBuff, strlen( NameBuff )+1 );
+    bytes = mywrite( BindHdl, NameBuff, strlen( NameBuff ) + 1 );
     if( bytes == 0 ) return( TRP_ERR_NMPBIND_not_found );
     bytes = myread( BindHdl, NameBuff, 1 );
     if( bytes == 0 ) return( TRP_ERR_NMPBIND_not_found );
@@ -128,7 +128,7 @@ char *ValidName( char *name )
 
 char    DefLinkName[] = DEFAULT_NAME;
 
-char *RemoteLink( char *config, char server )
+char *RemoteLink( char *config, bool server )
 {
     char        *msg;
     char        *end;
@@ -150,11 +150,11 @@ char *RemoteLink( char *config, char server )
     NameEnd = NameBuff + strlen( NameBuff );
     if( msg != NULL ) return( msg );
     if( NameBuff[0] != BIND_ACK ) {
-        #ifdef SERVER
-            return( TRP_ERR_server_name_already_in_use );
-        #else
-            return( TRP_ERR_server_not_found );
-        #endif
+#ifdef SERVER
+        return( TRP_ERR_server_name_already_in_use );
+#else
+        return( TRP_ERR_server_not_found );
+#endif
     } else {
         DoOpen( &ConnHdl, CONN_SUFF );
     }
@@ -167,24 +167,24 @@ static void ConnRequest( char request )
     int         bytes;
 
     NameBuff[0] = request;
-    bytes = mywrite( ConnHdl, NameBuff, strlen( NameBuff )+1 );
+    bytes = mywrite( ConnHdl, NameBuff, strlen( NameBuff ) + 1 );
     bytes = myread( ConnHdl, NameBuff, 1 );
 }
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     ConnRequest( CONNECT_REQUEST );
     if( NameBuff[0] == BIND_ACK ) {
         DoOpen( &ReadHdl, READ_SUFF );
         DoOpen( &WriteHdl, WRITE_SUFF );
         ConnRequest( CONNECT_DONE );
-        return( 1 );
+        return( TRUE );
     }
-    return( 0 );
+    return( FALSE );
 }
 
 
-trap_elen RemoteGet( char *data, trap_elen length )
+trap_elen RemoteGet( byte *data, trap_elen length )
 {
     trap_elen      bytes_read;
     trap_elen      tmp;
@@ -194,15 +194,16 @@ trap_elen RemoteGet( char *data, trap_elen length )
     case 0:
         return( REQUEST_FAILED );
     case 1:
-        tmp = myread( ReadHdl, (char*)&bytes_read, sizeof( trap_elen ) );
-        if( tmp != sizeof( trap_elen ) ) return( REQUEST_FAILED );
+        tmp = myread( ReadHdl, &bytes_read, sizeof( trap_elen ) );
+        if( tmp != sizeof( trap_elen ) )
+            return( REQUEST_FAILED );
         break;
     }
     return( bytes_read );
 }
 
 
-trap_elen RemotePut( char *data, trap_elen length )
+trap_elen RemotePut( byte *data, trap_elen length )
 {
     trap_elen  bytes_written;
     trap_elen  real_length;
@@ -210,11 +211,14 @@ trap_elen RemotePut( char *data, trap_elen length )
     real_length = length;
     if( length == 0 ) length = 1;       /* Can't write zero bytes */
     bytes_written = mywrite( WriteHdl, data, length );
-    if( bytes_written != length ) return( REQUEST_FAILED );
+    if( bytes_written != length )
+        return( REQUEST_FAILED );
     if( length == 1 ) {
         /* Send true length through */
-        bytes_written = mywrite( WriteHdl, (char*)&real_length, sizeof( trap_elen ) );
-        if( bytes_written != sizeof( trap_elen ) ) return( REQUEST_FAILED );
+        bytes_written = mywrite( WriteHdl, &real_length, sizeof( trap_elen ) );
+        if( bytes_written != sizeof( trap_elen ) ) {
+            return( REQUEST_FAILED );
+        }
     }
     return( length );
 }

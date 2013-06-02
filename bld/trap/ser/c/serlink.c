@@ -335,7 +335,7 @@ static int Speed( void )
              data   -- next byte to be incorporated
    Returns:  the new crc value after data is accounted for               */
 
-static word NewCRC( unsigned char data, word old_crc )
+static word NewCRC( byte data, word old_crc )
 {
     word     crc_value;            /* the CRC value of the block */
     int      i;                    /* loop index */
@@ -369,7 +369,7 @@ static word NewCRC( unsigned char data, word old_crc )
              num   is the number of data bytes
    Output:   the CRC value                                             */
 
-static word CRC( unsigned char *extra, int num, char *p )
+static word CRC( byte *extra, int num, byte *p )
 {
     word     crc_value = 0;        /* the CRC value of the block */
     int      i;                    /* loop index */
@@ -379,7 +379,7 @@ static word CRC( unsigned char *extra, int num, char *p )
         crc_value = NewCRC( *extra, crc_value );
     }
     for( i = 0; i < num; ++i, ++p ) {
-        crc_value = NewCRC( *(unsigned char *)p, crc_value );
+        crc_value = NewCRC( *p, crc_value );
     }
     crc_value = NewCRC( 0xff, crc_value );
     crc_value = NewCRC( 0xff, crc_value );
@@ -402,7 +402,7 @@ static word CRC( unsigned char *extra, int num, char *p )
              timeout -- time to wait for proper acknowledgement
    Returns:  SUCCESS or FAIL (due to time-out)                  */
 
-static int BlockSend( trap_elen num, char *p, unsigned timeout )
+static int BlockSend( trap_elen num, byte *p, unsigned timeout )
 {
     word            crc_value;          /* crc value of block */
     unsigned        wait_time;          /* timer for testing time-out */
@@ -410,7 +410,7 @@ static int BlockSend( trap_elen num, char *p, unsigned timeout )
     int             reply;              /* reply message from other machine */
     unsigned char   crc_low, crc_hi;
     unsigned char   len_low, len_hi;
-    unsigned char   extra[3];           /* ..[0]=blkno_low, ..[1]=blkno_hi, ..[2]=err */
+    byte            extra[3];           /* ..[0]=blkno_low, ..[1]=blkno_hi, ..[2]=err */
     unsigned        wait;
 
     ZeroWaitCount();
@@ -494,9 +494,9 @@ static int BlockSend( trap_elen num, char *p, unsigned timeout )
             FAIL         --  fails for other reason than FAIL_BUFFER
             SUCCESS  --  data block is stored at *p; prev err no. at *err */
 
-static int BlockReceive( char * err, trap_elen max_len, char * p )
+static int BlockReceive( byte *err, trap_elen max_len, byte *p )
 {
-    unsigned char   buffer[8];     /* storing bytes other than actual data from blocks */
+    byte            buffer[8];     /* storing bytes other than actual data from blocks */
     trap_elen       i;             /* loop index */
     trap_elen       len;
     word            crc_val;
@@ -580,7 +580,7 @@ static int BlockReceive( char * err, trap_elen max_len, char * p )
             FAIL         --  block is not available/received successfully
             SUCCESS      --  data block is stored at *p; prev err no. at *err */
 
-static int WaitReceive( char * err, trap_elen max_len, char * p, unsigned timeout )
+static int WaitReceive( byte *err, trap_elen max_len, byte *p, unsigned timeout )
 {
     unsigned wait_time;               /* timer */
     int      data;                    /* data from other machine */
@@ -834,12 +834,13 @@ done:
 
 /* The format for *parm is "1.9600<modem_connect_string>" */
 
-char *RemoteLink( char *parm, char server )
+char *RemoteLink( char *parm, bool server )
 {
     char *result;
 
     server = server;
-    if( parm == NULL ) parm = "";
+    if( parm == NULL )
+        parm = "";
     result = SetLinkParms( &parm );  /* set com: port & max baud rate */
     if( result != NULL ) {
         DonePort();
@@ -851,7 +852,8 @@ char *RemoteLink( char *parm, char server )
         return( result );
     }
     result = SetupModem( parm );
-    if( result != NULL ) RemoteUnLink();
+    if( result != NULL )
+        RemoteUnLink();
     return( result );
 }
 
@@ -873,25 +875,26 @@ void RemoteUnLink( void )
 
 /* Returns: SUCCESS or FAIL */
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     int     baud_limit;     /* maximum baud that BOTH sides can achieve */
-    char    dummy;          /* hold values that we don't need here */
-    char    MaxBaud2;       /* MaxBaud at the other machine */
+    byte    dummy;          /* hold values that we don't need here */
+    byte    MaxBaud2;       /* MaxBaud at the other machine */
 
     SendBlkNo = ReceiveBlkNo = 0;
     LastResponse = SDATA_NAK;
-    if( !SetSyncTime() ) return( FALSE );
+    if( !SetSyncTime() )
+        return( FALSE );
     /* establish baud limit */
 #ifdef SERVER
     if( !WaitReceive( &dummy, 1, &MaxBaud2, SEC( 2 ) ) ) {
         return( FALSE );
     }
-    if( !BlockSend( 1, (void *)&MaxBaud, SEC( 2 ) ) ) {
+    if( !BlockSend( 1, (byte *)&MaxBaud, SEC( 2 ) ) ) {
         return( FALSE );
     }
 #else
-    if( !BlockSend( 1, (void *)&MaxBaud, SEC( 2 ) ) ) {
+    if( !BlockSend( 1, (byte *)&MaxBaud, SEC( 2 ) ) ) {
         return( FALSE );
     }
     if( !WaitReceive( &dummy, 1, &MaxBaud2, SEC( 2 ) ) ) {
@@ -906,7 +909,8 @@ char RemoteConnect( void )
     }
 
     BaudCounter = baud_limit;
-    if( !Speed() ) return( FALSE );
+    if( !Speed() ) 
+        return( FALSE );
 #ifdef SERVER
     {
         char    buff[128];
@@ -940,19 +944,20 @@ void RemoteDisco( void )
 
 /* Return:  Number of bytes received                                    */
 
-trap_elen RemoteGet( char *rec, trap_elen max_len )
+trap_elen RemoteGet( byte *rec, trap_elen max_len )
 {
-    unsigned timeout;             /* time limit for getting the data */
-    char     err;                 /* storing the # of Errors the other side
-                                        experience in sending data block */
-    int      result;              /* result of WaitReceive() operation */
+    unsigned        timeout;             /* time limit for getting the data */
+    unsigned char   err;                 /* storing the # of Errors the other side
+                                            experience in sending data block */
+    int             result;              /* result of WaitReceive() operation */
 
 
     timeout = FOREVER;
 
     /* Get data block */
     result = WaitReceive( &err, max_len, rec, timeout );
-    if( !result ) return( 0 );
+    if( !result )
+        return( 0 );
 
     if( err > MAX_ERRORS ) {    /* too many Errors */
         ReSync();
@@ -966,7 +971,7 @@ trap_elen RemoteGet( char *rec, trap_elen max_len )
 /*========================================================================*/
 
 
-trap_elen RemotePut( char *send, trap_elen len )
+trap_elen RemotePut( byte *send, trap_elen len )
 {
     unsigned timeout;             /* time limit for getting the data */
     int      result;              /* result of BlockSend() operation */
@@ -976,7 +981,8 @@ trap_elen RemotePut( char *send, trap_elen len )
 
     /* Sending data block */
     result = BlockSend( len, send, timeout );
-    if( !result ) return( REQUEST_FAILED );
+    if( !result )
+        return( REQUEST_FAILED );
 
     /* ReSync if necessary */
     if( PrevErrors > MAX_ERRORS ) {

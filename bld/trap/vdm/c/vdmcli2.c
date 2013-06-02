@@ -45,35 +45,35 @@
 
 HPIPE   pipeHdl;
 
-char *RemoteLink(char *config, char server)
+char *RemoteLink( char *config, bool server )
 {
     APIRET      rc;
     char        buf[PREFIX_LEN + MAX_NAME + 1];
 
-    if (server)
+    if( server )
         return "this should never be seen";
-    strcpy(buf, PREFIX);
-    if (*config == 0) {
-        strcpy(buf + PREFIX_LEN, DEFAULT_NAME);
-    } else if (ValidName(config)) {
-        strcpy(buf + PREFIX_LEN, config);
+    strcpy( buf, PREFIX );
+    if( *config == 0 ) {
+        strcpy( buf + PREFIX_LEN, DEFAULT_NAME );
+    } else if( ValidName( config ) ) {
+        strcpy( buf + PREFIX_LEN, config );
     } else {
-        return(TRP_ERR_invalid_server_name);
+        return( TRP_ERR_invalid_server_name );
     }
-    rc = DosCreateNPipe(buf, &pipeHdl,
+    rc = DosCreateNPipe( buf, &pipeHdl,
         NP_NOINHERIT | NP_NOWRITEBEHIND | NP_ACCESS_DUPLEX,
         NP_NOWAIT | NP_READMODE_BYTE | NP_TYPE_BYTE | 1,
-        MAX_TRANS, MAX_TRANS, 0);
-    if (rc != 0) {
-        if (rc == ERROR_PIPE_BUSY)
-            return TRP_ERR_server_name_already_in_use;
-        return TRP_ERR_unable_to_access_server;
+        MAX_TRANS, MAX_TRANS, 0 );
+    if( rc != 0 ) {
+        if( rc == ERROR_PIPE_BUSY )
+            return( TRP_ERR_server_name_already_in_use );
+        return( TRP_ERR_unable_to_access_server );
     }
-    return NULL;
+    return( NULL );
 }
 
 
-char RemoteConnect(void)
+bool RemoteConnect(void)
 {
     APIRET      rc;
     int         try;
@@ -92,27 +92,27 @@ char RemoteConnect(void)
             rc = DosSetNPHState(pipeHdl, NP_WAIT | NP_READMODE_BYTE);
             if (rc != 0) {
                 DosDisConnectNPipe(pipeHdl);
-                return 0;
+                return( FALSE );
             }
-            return  1;
+            return( TRUE );
         }
         DosSleep(200);
     }
-    return  0;
+    return( FALSE );
 }
 
 
-trap_elen RemoteGet(char *data, trap_elen length)
+trap_elen RemoteGet( byte *data, trap_elen length )
 {
     unsigned_16 incoming;
     ULONG       bytes_read;
     ULONG       ret;
 
     length = length;
-    DosRead(pipeHdl, &incoming, sizeof(incoming), &bytes_read);
+    DosRead( pipeHdl, &incoming, sizeof( incoming ), &bytes_read );
     ret = incoming;
-    while (incoming != 0) {
-        DosRead(pipeHdl, data, incoming, &bytes_read);
+    while( incoming != 0 ) {
+        DosRead( pipeHdl, data, incoming, &bytes_read );
         data += bytes_read;
         incoming -= bytes_read;
     }
@@ -120,15 +120,15 @@ trap_elen RemoteGet(char *data, trap_elen length)
 }
 
 
-trap_elen RemotePut(char *data, trap_elen length)
+trap_elen RemotePut( byte *data, trap_elen length )
 {
     unsigned_16 outgoing;
     ULONG       bytes_written;
 
     outgoing = length;
-    DosWrite(pipeHdl, &outgoing, sizeof(outgoing), &bytes_written);
-    if (length > 0) {
-        DosWrite(pipeHdl, data, length, &bytes_written);
+    DosWrite( pipeHdl, &outgoing, sizeof( outgoing ), &bytes_written );
+    if( length > 0 ) {
+        DosWrite( pipeHdl, data, length, &bytes_written );
     }
     return length ;
 }

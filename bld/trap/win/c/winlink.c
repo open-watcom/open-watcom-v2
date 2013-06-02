@@ -41,13 +41,14 @@
 
 static _dword _id;
 #ifdef DEBUG_ME
-static int _aa=10,_bb=12;
-static int _a=0,_b=2;
+static int _aa = 10, _bb = 12;
+static int _a = 0, _b = 2;
+
 void Blip( int *a, int *b, char a1 )
 {
-char far *s1 = (char far *) 0xb8000000;
-char far *s2 = (char far *) 0xb0000000;
-int c;
+    char far *s1 = (char far *)0xb8000000;
+    char far *s2 = (char far *)0xb0000000;
+    int c;
 
     s1[*a] = a1;
     s1[*b] = ' ';
@@ -60,9 +61,9 @@ int c;
 }
 #endif
 
-trap_elen RemoteGet( char *rec, trap_elen len )
+trap_elen RemoteGet( byte *rec, trap_elen len )
 {
-unsigned long rc;
+    unsigned long rc;
 
 #ifdef __WINDOWS__
     while( 1 ) {
@@ -82,10 +83,11 @@ unsigned long rc;
     return( rc >> 16 );
 }
 
-trap_elen RemotePut( char *rec, trap_elen len )
+trap_elen RemotePut( byte *rec, trap_elen len )
 {
 #ifdef __WINDOWS__
-int rc;
+    int rc;
+
     while( 1 ) {
         rc = ConvPut( _id, rec, len, NO_BLOCK );
         if( rc == BLOCK ) SetExecutionFocus( _id );
@@ -104,22 +106,24 @@ int rc;
 }
 
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
-int rc;
+    int rc;
+
 #ifdef SERVER
     rc = LookForConv( &_id );
     if( rc == 1 ) {
-        return( 1 );
+        return( TRUE );
     } else if( rc == 0 ) {
         TimeSlice();
     }
-    return( 0 );
+    return( FALSE );
 #else
-static int _first=1;
+    static bool _first = TRUE;
+
     if( _first ) {
 
-        _first = 0;
+        _first = FALSE;
         rc = StartConv( _id );
         if( rc != 0 ) {
         }
@@ -130,7 +134,7 @@ static int _first=1;
             TimeSlice();
         } else if( rc < 0 ) {
         } else {
-            return( 1 );
+            return( TRUE );
         }
     }
 #endif
@@ -147,7 +151,7 @@ void RemoteDisco( void )
 char    LinkName[80];
 char    DefLinkName[] = "WinLink";
 
-char *RemoteLink( char *name, char server )
+char *RemoteLink( char *name, bool server )
 {
     int     i;
     int     rc;

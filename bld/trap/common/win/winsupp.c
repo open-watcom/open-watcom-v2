@@ -140,38 +140,36 @@ int xp,yp,xs,ys;
 /*
  * ProcAppl - receives server specific messages for the main window
  */
-#pragma off (unreferenced);
-void ProcAppl( HWND windhandle, unsigned message, WORD worddata,
-                       LONG longdata )
-#pragma on (unreferenced);
+void ProcAppl( HWND windhandle, unsigned message, WORD worddata, LONG longdata )
 {
     char    name[80];
     char    *err;
     int i;
     char buff[80];
 
+    windhandle = windhandle; message = message; longdata = longdata;
     switch( worddata ) {
-        case SELECT_1:
-            i = GetWindowTextLength( EditChild );
-            if( i == 0 ) {
-                Output( TRP_ERR_null_name );
-                Output( "\r\n" );
+    case SELECT_1:
+        i = GetWindowTextLength( EditChild );
+        if( i == 0 ) {
+            Output( TRP_ERR_null_name );
+            Output( "\r\n" );
+        } else {
+            GetWindowText( EditChild, name, sizeof( name ) );
+            if( RemoteLinkObtained )
+                RemoteUnLink();
+            err = RemoteLink( name, TRUE );
+            if( err != NULL ) {
+                StartupErr( err );
+                RemoteLinkObtained = FALSE;
             } else {
-                GetWindowText( EditChild, name, sizeof( name ) );
-                if( RemoteLinkObtained)
-                    RemoteUnLink();
-            err = RemoteLink( name, 1 );
-                if( err != NULL ) {
-                    StartupErr( err );
-                    RemoteLinkObtained = FALSE;
-                } else {
-                    sprintf( buff, TRP_WIN_setting_name, name );
-                    Output( buff );
-                    Output( "\r\n" );
-                    RemoteLinkObtained = TRUE;
-                } /* if */
+                sprintf( buff, TRP_WIN_setting_name, name );
+                Output( buff );
+                Output( "\r\n" );
+                RemoteLinkObtained = TRUE;
             } /* if */
-            break;
+        } /* if */
+        break;
     } /* switch */
 
 } /* ProcAppl */

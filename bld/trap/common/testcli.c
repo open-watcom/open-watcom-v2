@@ -96,11 +96,11 @@ int main( unsigned argc, char *argv[] )
 
 #ifdef __WINDOWS__
     {
-    extern HANDLE           *_MainWindowData; // KLUDGE!!! (who cares - it's just a test program)
+    extern HANDLE   *_MainWindowData; // KLUDGE!!! (who cares - it's just a test program)
     Instance = *_MainWindowData;
     }
 #endif
-    err = RemoteLink( argc > 1 ? argv[1] : "", 0 );
+    err = RemoteLink( ( argc > 1 ) ? argv[1] : "", FALSE );
     if( err != NULL ) {
         printf( "Error: %s\n", err );
         return( 1 );

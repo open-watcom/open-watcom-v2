@@ -83,7 +83,7 @@ void Initialize( void )
 
     getcmd( cmdline );
     ParseCommandLine( cmdline, trap, RWBuff, &OneShot );
-    err = RemoteLink( RWBuff, 1 );
+    err = RemoteLink( RWBuff, TRUE );
     if( err == NULL ) {
         err = LoadTrap( trap[0] == '\0' ? NULL : trap, RWBuff, &TrapVersion );
     }

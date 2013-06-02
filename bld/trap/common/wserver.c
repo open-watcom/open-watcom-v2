@@ -41,17 +41,21 @@
 #include "packet.h"
 #include "tcerr.h"
 
-extern trap_version     TrapVersion;
+extern trap_version TrapVersion;
+extern char         RWBuff[ 0x400 ];
+extern char         ServName[];
+
+extern void         NothingToDo( void );
+extern bool         Session( void );
+extern bool         ParseCommandLine( char *cmdline, char *trap, char *parm, bool *oneshot );
+#ifdef __NT__
+extern void         TellHWND( HWND );
+#endif
+
+WINEXPORT extern BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 char  TrapFile[ 0x400 ];
 char  TrapParm[ 0x400 ];
-extern char  RWBuff[ 0x400 ];
-extern  char ServName[];
-
-extern void             NothingToDo(void);
-extern bool             Session( void );
-extern bool             ParseCommandLine( char *cmdline, char *trap, char *parm, bool *oneshot );
-
 
 HANDLE          Instance;
 static char     ServerClass[32]="ServerClass";
@@ -61,16 +65,11 @@ static bool     Connected;
 static bool     Linked;
 static bool     OneShot;
 
-static BOOL FirstInstance( HINSTANCE );
-static BOOL AnyInstance( HINSTANCE, int, LPSTR );
-#ifdef __NT__
-extern void TellHWND( HWND );
-#endif
+static BOOL     FirstInstance( HINSTANCE );
+static BOOL     AnyInstance( HINSTANCE, int, LPSTR );
 
-#define MENU_ON (MF_ENABLED+MF_BYCOMMAND)
-#define MENU_OFF (MF_DISABLED+MF_GRAYED+MF_BYCOMMAND)
-
-WINEXPORT extern BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+#define MENU_ON     (MF_ENABLED+MF_BYCOMMAND)
+#define MENU_OFF    (MF_DISABLED+MF_GRAYED+MF_BYCOMMAND)
 
 WINEXPORT LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -248,7 +247,7 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             err = NULL;
             if( !Linked ) {
                 HCURSOR cursor = SetCursor( LoadCursor( NULL, IDC_WAIT ) );
-                err = RemoteLink( TrapParm, 1 );
+                err = RemoteLink( TrapParm, TRUE );
                 SetCursor( cursor );
             }
             EnableMenus( hwnd, TRUE, FALSE );

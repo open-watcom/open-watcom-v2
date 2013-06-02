@@ -248,7 +248,7 @@ static void PostAListen( int i )
     _SPXListenForSequencedPacket( &RecECB[i] );
 }
 
-static trap_elen DoRemoteGet( char *rec, trap_elen len )
+static trap_elen DoRemoteGet( byte *rec, trap_elen len )
 {
     int         i;
     trap_elen   recvd;
@@ -262,13 +262,13 @@ static trap_elen DoRemoteGet( char *rec, trap_elen len )
         p = -1;
         for( ;; ) {
             if( i < 0 ) {
-                if( p != -1 ) break;
+                if( p != -1 )
+                    break;
                 _IPXRelinquishControl();
                 i = NUM_REC_BUFFS-1;
             }
             if( !RecECB[i].inUseFlag ) {
-                if( p == -1
-                 || LOWER_SEQ( RecHead[i].sequenceNumber, RecHead[p].sequenceNumber ) ) {
+                if( p == -1 || LOWER_SEQ( RecHead[i].sequenceNumber, RecHead[p].sequenceNumber ) ) {
                     p = i;
                 }
             }
@@ -278,13 +278,14 @@ static trap_elen DoRemoteGet( char *rec, trap_elen len )
         _fmemcpy( rec, Buffer[p], got );
         recvd += got;
         PostAListen( p );
-        if( got != MAX_DATA_SIZE ) break;
-        rec = (char *)rec + got;
+        if( got != MAX_DATA_SIZE )
+            break;
+        rec += got;
     }
     return( recvd );
 }
 
-static trap_elen DoRemotePut( char *snd, trap_elen len )
+static trap_elen DoRemotePut( byte *snd, trap_elen len )
 {
     _INITECB( SendECB, SendHead, 2, SPX );
     SendHead.connectControl |= 0x10;
@@ -296,18 +297,18 @@ static trap_elen DoRemotePut( char *snd, trap_elen len )
     return( len );
 }
 
-trap_elen RemoteGet( char *rec, trap_elen len )
+trap_elen RemoteGet( byte *rec, trap_elen len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-trap_elen RemotePut( char *snd, trap_elen len )
+trap_elen RemotePut( byte *snd, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
             return( REQUEST_FAILED );
         }
-        snd = (char *)snd + MAX_DATA_SIZE;
+        snd += MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
     if( DoRemotePut( snd, len ) == REQUEST_FAILED ) {
@@ -329,7 +330,7 @@ static void PostListens( void )
     Delay( TICKS_PER_SEC/5 );
 }
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     PostListens();
 #ifdef SERVER
@@ -340,7 +341,7 @@ char RemoteConnect( void )
     } else if( ConnECB.inUseFlag == 0 ) {
         if( ConnECB.completionCode == 0 ) {
             Connection = ConnECB.SPXConnectionID;
-            return( 1 );
+            return( TRUE );
         }
     }
     _IPXRelinquishControl();
@@ -348,13 +349,13 @@ char RemoteConnect( void )
     _INITECB( SendECB, SendHead, 1, SPX );
     if( _SPXEstablishConnection( 0, 0, &Connection, &SendECB ) == 0 ) {
         if( WaitTimeout( &SendECB, MAX_CONNECT_WAIT, 0 ) ) {
-            return( 1 );
+            return( TRUE );
         } else {
             _SPXAbortConnection( Connection );
         }
     }
 #endif
-    return( 0 );
+    return( FALSE );
 }
 
 void RemoteDisco( void )
@@ -520,7 +521,7 @@ putstring( "got one\r\n" );
 
 char    DefLinkName[] = "NovLink";
 
-char *RemoteLink( char *name, char server )
+char *RemoteLink( char *name, bool server )
 {
     unsigned    i;
     BYTE        major_ver,minor_ver;

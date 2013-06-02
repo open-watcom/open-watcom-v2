@@ -50,13 +50,14 @@ char    pipeName[ MACH_NAME_LEN + PREFIX_LEN + MAX_NAME ];
 
 char    DefLinkName[] = DEFAULT_NAME;
 
-char *RemoteLink( char *config, char server )
+char *RemoteLink( char *config, bool server )
 {
     tiny_ret_t          rc;
     tiny_dos_version    ver;
     char                *p;
 
-    if( server == 0 ) return( "this should never be seen" );
+    if( !server )
+        return( "this should never be seen" );
     p = pipeName;
     ver = TinyDOSVersion();
     if( ver.major < 20 ) {
@@ -86,7 +87,9 @@ char *RemoteLink( char *config, char server )
     if( TINY_ERROR( rc ) ) {
         if( ver.major >= 20 ) {
             /* in OS/2 */
-            if( TINY_INFO( rc ) == 5 ) return( TRP_ERR_server_name_already_in_use );
+            if( TINY_INFO( rc ) == 5 ) {
+                return( TRP_ERR_server_name_already_in_use );
+            }
         }
     } else {
         pipeHdl = TINY_INFO( rc );
@@ -95,7 +98,7 @@ char *RemoteLink( char *config, char server )
 }
 
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     tiny_ret_t  rc;
 
@@ -107,15 +110,15 @@ char RemoteConnect( void )
                 another server with the same name.  But we have no way of
                 indicating this.
             */
-            return( 0 );
+            return( FALSE );
         }
         pipeHdl = TINY_INFO( rc );
     }
-    return( 1 );
+    return( TRUE );
 }
 
 
-trap_elen RemoteGet( char *data, trap_elen length )
+trap_elen RemoteGet( byte *data, trap_elen length )
 {
     unsigned_16     incoming;
     trap_elen  got;
@@ -133,7 +136,7 @@ trap_elen RemoteGet( char *data, trap_elen length )
 }
 
 
-trap_elen RemotePut( char *data, trap_elen length )
+trap_elen RemotePut( byte *data, trap_elen length )
 {
     unsigned_16 outgoing;
 

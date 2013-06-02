@@ -96,9 +96,9 @@ typedef struct RMBuff {
     static unsigned short   Meg1;
     #define RMLinToPM(x,y)  MK_FP(Meg1,x)
   #endif
-    #define GetDosByte(x)   (*(char far *)RMLinToPM(x,1))
+    #define GetDosByte(x)   (*(byte far *)RMLinToPM(x,1))
     #define GetDosLong(x)   (*(unsigned long far *)RMLinToPM(x,1))
-    #define PutDosByte(x,d) (*(char far *)RMLinToPM(x,1)=d)
+    #define PutDosByte(x,d) (*(byte far *)RMLinToPM(x,1)=d)
     #define PutDosLong(x,d) (*(unsigned long far *)RMLinToPM(x,1)=d)
     extern void             CallRealMode( unsigned long dos_addr );
 
@@ -152,7 +152,7 @@ extern unsigned short   GetCS( void );
 #pragma aux GetCS = "mov ax,cs" value [ ax ];
 
 
-trap_elen RemoteGet( char *rec, trap_elen len )
+trap_elen RemoteGet( byte *rec, trap_elen len )
 {
     trap_elen       received;
 #ifdef SERVER
@@ -166,9 +166,8 @@ trap_elen RemoteGet( char *rec, trap_elen len )
     len = received;
     _DBG(("Remote Geting %d bytes\n",len));
     while( len != 0 ) {
-        *rec = GetDosByte( buff );
+        *rec++ = GetDosByte( buff );
         ++buff;
-        ++rec;
         --len;
     }
     _DBG(("Remote Get Done\n"));
@@ -184,7 +183,7 @@ trap_elen RemoteGet( char *rec, trap_elen len )
     return( received );
 }
 
-trap_elen RemotePut( char *snd, trap_elen len )
+trap_elen RemotePut( byte *snd, trap_elen len )
 {
 #ifdef SERVER
     unsigned long   buff;
@@ -194,9 +193,8 @@ trap_elen RemotePut( char *snd, trap_elen len )
     _DBG(("Remote Put %d bytes\n",len));
     buff = RMBuffPtr->ptr;
     while( len != 0 ) {
-        PutDosByte( buff, *snd );
+        PutDosByte( buff, *snd++ );
         ++buff;
-        ++snd;
         --len;
     }
     _DBG(("Remote Put Calling real mode\n"));
@@ -398,7 +396,7 @@ exp:
 #endif
 #endif
 
-char *RemoteLink( char *parm, char server )
+char *RemoteLink( char *parm, bool server )
 {
 #ifdef SERVER
     unsigned long       link;
@@ -531,8 +529,7 @@ char *RemoteLink( char *parm, char server )
             return( TRP_ERR_cant_start_extender );
         }
     } else if( BackFromFork || !BeenToProtMode ) {
-        _DBG_ExitFunc( "RemoteLink(), extender could not start extender "
-                    "help file" );
+        _DBG_ExitFunc( "RemoteLink(), extender could not start extender help file" );
         return( TRP_ERR_cant_start_extender );
     }
 #endif
@@ -557,9 +554,9 @@ void RemoteUnLink( void )
 #endif
 }
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
-    return( 1 );
+    return( TRUE );
 }
 
 void RemoteDisco( void )

@@ -36,13 +36,12 @@ extern trap_elen    PutBuffPacket( trap_elen, void * );
 extern void         AddPacket( trap_elen, void * );
 extern trap_elen    GetPacket(void);
 extern void         RemovePacket( trap_elen, void * );
-extern char         *GetPacketBuffPtr(void);
+extern void         *GetPacketBuffPtr(void);
 extern trap_elen    MaxPacketSize(void);
 
-extern char         *RemoteLink(char *, char);
-extern char         RemoteConnect(void);
+extern char         *RemoteLink(char *, bool);
+extern bool         RemoteConnect(void);
 extern void         RemoteDisco(void);
 extern void         RemoteUnLink(void);
-extern trap_elen    RemotePut(char *, trap_elen);
-extern trap_elen    RemoteGet(char *, trap_elen);
-
+extern trap_elen    RemotePut(byte *, trap_elen);
+extern trap_elen    RemoteGet(byte *, trap_elen);

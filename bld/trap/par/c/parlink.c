@@ -597,7 +597,7 @@ static int DataPut( unsigned char data, unsigned long wait )
     return( 0 );
 }
 
-trap_elen RemoteGet( char *rec, trap_elen len )
+trap_elen RemoteGet( byte *rec, trap_elen len )
 {
     trap_elen  get_len;
     trap_elen  i;
@@ -607,14 +607,13 @@ trap_elen RemoteGet( char *rec, trap_elen len )
     if( get_len & 0x80 ) {
         get_len = ((get_len & 0x7f) << 8) | DataGet( KEEP );
     }
-    i = get_len;
-    for( ; i != 0; --i, ++rec ) {
-        *rec = DataGet( KEEP );
+    for( i = get_len; i != 0; --i ) {
+        *rec++ = DataGet( KEEP );
     }
     return( get_len );
 }
 
-trap_elen RemotePut( char *snd, trap_elen len )
+trap_elen RemotePut( byte *snd, trap_elen len )
 {
     trap_elen  count;
 
@@ -622,8 +621,8 @@ trap_elen RemotePut( char *snd, trap_elen len )
         DataPut( (len >> 8) | 0x80, RELINQUISH );
     }
     DataPut( len & 0xff, RELINQUISH );
-    for( count = len; count != 0; --count, ++snd ) {
-        DataPut( *snd, KEEP );
+    for( count = len; count != 0; --count ) {
+        DataPut( *snd++, KEEP );
     }
     return( len );
 }
@@ -788,7 +787,7 @@ static bool LineTest( void )
     return( TRUE );
 }
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     unsigned long       time;
 
@@ -796,11 +795,13 @@ char RemoteConnect( void )
     bool                got_twidles;
 
     dbgrtn( "\r\n-RemoteConnect-" );
-    if( !CountTwidle() ) return( 0 );
+    if( !CountTwidle() )
+        return( FALSE );
     got_twidles = Twidle( FALSE );
 #else
     dbgrtn( "\r\n-RemoteConnect-" );
-    if( !Twidle( TRUE ) ) return( FALSE );
+    if( !Twidle( TRUE ) )
+        return( FALSE );
 #endif
 
     switch( CableType ) {
@@ -825,13 +826,14 @@ char RemoteConnect( void )
             if( Synch() ) {
                 break;
             } else if( time < Ticks() ) {
-                return( 0 );
+                return( FALSE );
             }
         }
 #ifdef SERVER
     }
 #endif
-    if( !LineTest() ) return( FALSE );
+    if( !LineTest() )
+        return( FALSE );
     return( TRUE );
 }
 
@@ -852,7 +854,7 @@ void RemoteDisco( void )
 
 static char InvalidPort[] = TRP_ERR_invalid_parallel_port_number;
 
-char *RemoteLink( char *name, char server )
+char *RemoteLink( char *name, bool server )
 {
     unsigned    printer;
     unsigned    ch;

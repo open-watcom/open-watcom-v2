@@ -68,77 +68,78 @@ bool Terminate( void )
     return( FALSE );
 }
 
-trap_elen RemoteGet( char *rec, trap_elen len )
+trap_elen RemoteGet( byte *rec, trap_elen len )
 {
     int         got;
     trap_elen   total;
 
     total = 0;
     for( ;; ) {
-        got = recv( ConnectionSocket, rec, len, 0 );
+        got = recv( ConnectionSocket, (char *)rec, len, 0 );
         if( got == SOCKET_ERROR )
             return( REQUEST_FAILED );
         total += got;
-        if( got != MAX_DATA_SIZE ) break;
+        if( got != MAX_DATA_SIZE )
+            break;
         len -= got;
-        rec = (char *)rec + got;
+        rec += got;
     }
     return( total );
 }
 
-trap_elen RemotePut( char *snd, trap_elen len )
+trap_elen RemotePut( byte *snd, trap_elen len )
 {
 
     while( len >= MAX_DATA_SIZE ) {
-        if( send( ConnectionSocket, snd, MAX_DATA_SIZE, 0 ) == SOCKET_ERROR ) {
+        if( send( ConnectionSocket, (char *)snd, MAX_DATA_SIZE, 0 ) == SOCKET_ERROR ) {
             return( REQUEST_FAILED );
         }
-        snd = (char *)snd + MAX_DATA_SIZE;
+        snd += MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
-    if( send( ConnectionSocket, snd, len, 0 ) == SOCKET_ERROR ) {
+    if( send( ConnectionSocket, (char *)snd, len, 0 ) == SOCKET_ERROR ) {
         return( REQUEST_FAILED );
     }
     return( len );
 }
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
-    #ifdef SERVER
-        struct sockaddr_ipx     address;
-        int                     addr_len;
-        struct timeval          timeout;
-        struct fd_set           fd;
+#ifdef SERVER
+    struct sockaddr_ipx     address;
+    int                     addr_len;
+    struct timeval          timeout;
+    struct fd_set           fd;
 
-        if( ListenPort == 0 ) {
-            memset( &address, 0, sizeof( address ) );
-            address.sa_family = AF_IPX;
-            ListenSocket = socket( AF_IPX, SOCK_SEQPACKET, NSPROTO_SPX );
-            bind( ListenSocket, (struct sockaddr *)&address, sizeof( address ) );
-            addr_len = sizeof( address );
-            getsockname( ListenSocket, (struct sockaddr *)&address, &addr_len );
-            ListenPort = address.sa_socket;
-            listen( ListenSocket, 1 );
-        }
-        FD_ZERO( &fd );
-        FD_SET( ListenSocket, &fd );
-        timeout.tv_sec = 0;
-        timeout.tv_usec = 10000;
-        if( select( FD_SETSIZE, &fd, NULL, NULL, &timeout ) > 0 ) {
-            addr_len = sizeof( address );
-            ConnectionSocket = accept( ListenSocket, (struct sockaddr *)&address, &addr_len );
-            ListenPort = 0;
-            closesocket( ListenSocket );
-            ListenSocket = INVALID_SOCKET;
-            return( 1 );
-        }
-    #else
-        ConnectionSocket = socket( AF_IPX, SOCK_SEQPACKET, NSPROTO_SPX );
-        if( connect( ConnectionSocket, (struct sockaddr *)&PartnerAddr, sizeof( PartnerAddr ) ) == 0 ) {
-            return( 1 );
-        }
-    #endif
-    return( 0 );
+    if( ListenPort == 0 ) {
+        memset( &address, 0, sizeof( address ) );
+        address.sa_family = AF_IPX;
+        ListenSocket = socket( AF_IPX, SOCK_SEQPACKET, NSPROTO_SPX );
+        bind( ListenSocket, (struct sockaddr *)&address, sizeof( address ) );
+        addr_len = sizeof( address );
+        getsockname( ListenSocket, (struct sockaddr *)&address, &addr_len );
+        ListenPort = address.sa_socket;
+        listen( ListenSocket, 1 );
+    }
+    FD_ZERO( &fd );
+    FD_SET( ListenSocket, &fd );
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 10000;
+    if( select( FD_SETSIZE, &fd, NULL, NULL, &timeout ) > 0 ) {
+        addr_len = sizeof( address );
+        ConnectionSocket = accept( ListenSocket, (struct sockaddr *)&address, &addr_len );
+        ListenPort = 0;
+        closesocket( ListenSocket );
+        ListenSocket = INVALID_SOCKET;
+        return( TRUE );
+    }
+#else
+    ConnectionSocket = socket( AF_IPX, SOCK_SEQPACKET, NSPROTO_SPX );
+    if( connect( ConnectionSocket, (struct sockaddr *)&PartnerAddr, sizeof( PartnerAddr ) ) == 0 ) {
+        return( TRUE );
+    }
+#endif
+    return( FALSE );
 }
 
 void RemoteDisco( void )
@@ -351,7 +352,7 @@ static char FindPartner( void )
     return( 1 );
 }
 
-char *RemoteLink( char *name, char server )
+char *RemoteLink( char *name, bool server )
 {
     unsigned    i;
     WSADATA     data;

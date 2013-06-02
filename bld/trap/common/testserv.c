@@ -93,9 +93,9 @@ void RunTime( void )
     test &= ~TEST_FULL;
     while( --iter_count != 0 ) {
         if( test != TEST_CLIENT_GET )
-            RemoteGet( (char *)&Data, block_size );
+            RemoteGet( (byte *)&Data, block_size );
         if( test != TEST_CLIENT_PUT ) {
-            RemotePut( (char *)&Data, block_size );
+            RemotePut( (byte *)&Data, block_size );
         }
     }
 }
@@ -108,7 +108,7 @@ int main( int argc, char *argv[] )
 #ifdef __WINDOWS__
     Instance = *_MainWindowData;
 #endif
-    err = RemoteLink( argc > 1 ? argv[1] : "", 1 );
+    err = RemoteLink( ( argc > 1 ) ? argv[1] : "", TRUE );
     if( err != 0 ) {
         printf( "%s\n", err );
         return( 1 );
@@ -124,7 +124,7 @@ int main( int argc, char *argv[] )
         if( RemoteConnect() ) {
             printf( "\nCONNECT\n" );
             for( ;; ) {
-                len = RemoteGet( (char *)&Data, sizeof( Data ) );
+                len = RemoteGet( (byte *)&Data, sizeof( Data ) );
                 if( len == -1 ) {
                     printf( "\nlink broken\n" );
                     break;
@@ -133,7 +133,7 @@ int main( int argc, char *argv[] )
                     break;
                 if( Data[0] == TEST_STRING ) {
                     printf( "'%s' - %d bytes\n", &Data[1], len );
-                    RemotePut( (char *)&Data, len );
+                    RemotePut( (byte *)&Data, len );
                 } else {
                     RunTime();
                 }

@@ -115,7 +115,7 @@ void Initialize( void )
 
     RWBuff[0] = '\0';
     _DBG(("About to remote link in initialize.\n" ));
-    err = RemoteLink( RWBuff, 1 );
+    err = RemoteLink( RWBuff, TRUE );
     _DBG(( "Back from PM remote link\n" ));
     if( err ) {
         _DBG(( "ERROR! '%s'\n", err ));

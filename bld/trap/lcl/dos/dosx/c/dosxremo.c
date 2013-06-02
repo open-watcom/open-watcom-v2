@@ -358,7 +358,7 @@ trap_elen ReqProg_load( void )
     endparm = LinkParm;
     while( *endparm++ != '\0' ) {}      // skip program name
     strcpy( endparm, buffer );
-    err = RemoteLink( LinkParm, 0 );
+    err = RemoteLink( LinkParm, FALSE );
     if( err != NULL ) {
         _DBG_Writeln( "Can't RemoteLink" );
         TinyWrite( TINY_ERR, err, strlen( err ) );

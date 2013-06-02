@@ -135,18 +135,18 @@ bool Terminate( void )
 }
 #endif
 
-trap_elen RemoteGet( char *rec, trap_elen len )
+trap_elen RemoteGet( byte *rec, trap_elen len )
 {
-    NetCtlBlk.ncb_buffer = (unsigned char far *)rec;
+    NetCtlBlk.ncb_buffer = rec;
     NetCtlBlk.ncb_length = len;
     NetCtlBlk.ncb_command = NCBRECV;
     NetBIOS( &NetCtlBlk );
     return( NetCtlBlk.ncb_length );
 }
 
-trap_elen RemotePut( char *rec, trap_elen len )
+trap_elen RemotePut( byte *rec, trap_elen len )
 {
-    NetCtlBlk.ncb_buffer = (unsigned char far *)rec;
+    NetCtlBlk.ncb_buffer = rec;
     NetCtlBlk.ncb_length = len;
     NetCtlBlk.ncb_command = NCBSEND;
     NetBIOS( &NetCtlBlk );
@@ -159,19 +159,21 @@ static char PostListen( void )
     return( NetBIOS( &NetCtlBlk ) == 0 );
 }
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
 #ifdef SERVER
     if( NetCtlBlk.ncb_cmd_cplt != 0xff ) {
-        if( NetCtlBlk.ncb_retcode == NRC_GOODRET ) return( 1 );
+        if( NetCtlBlk.ncb_retcode == NRC_GOODRET )
+            return( TRUE );
         PostListen();
     }
 #else
     NetCtlBlk.ncb_command = NCBCALL;
     NetBIOS( &NetCtlBlk );
-    if( NetCtlBlk.ncb_retcode == NRC_GOODRET ) return( 1 );
+    if( NetCtlBlk.ncb_retcode == NRC_GOODRET )
+        return( TRUE );
 #endif
-    return( 0 );
+    return( FALSE );
 }
 
 void RemoteDisco( void )
@@ -186,7 +188,7 @@ void RemoteDisco( void )
 char            DefLinkName[] = "NetLink";
 static char     NotThere[] = TRP_ERR_NetBIOS_is_not_running ;
 
-char *RemoteLink( char *name, char server )
+char *RemoteLink( char *name, bool server )
 {
     unsigned    i;
 
@@ -258,7 +260,7 @@ char *RemoteLink( char *name, char server )
     for( i = 1; i < NCBNAMSZ; ++i ) {
         NetCtlBlk.ncb_name[i] = (*name != '\0') ? *name++ : ' ';
     }
-    NetCtlBlk.ncb_name[0] = server ? 'S' : 'C';
+    NetCtlBlk.ncb_name[0] = ( server ) ? 'S' : 'C';
     NetCtlBlk.ncb_command = NCBADDNAME;
     NetCtlBlk.ncb_lana_num = LanaNum;
     NetBIOS( &NetCtlBlk );
@@ -268,7 +270,7 @@ char *RemoteLink( char *name, char server )
         return( TRP_ERR_NetBIOS_name_add_failed ); 
     }
     memcpy( NetCtlBlk.ncb_callname, NetCtlBlk.ncb_name, NCBNAMSZ );
-    NetCtlBlk.ncb_callname[0] = !server ? 'S' : 'C';
+    NetCtlBlk.ncb_callname[0] = ( !server ) ? 'S' : 'C';
     if( server ) {
         if( !PostListen() ) return( TRP_ERR_can_not_start_server );
     }
