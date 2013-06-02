@@ -532,7 +532,7 @@ static TOKEN charConst( int char_type, int expanding )
     Buffer[TokenLen] = '\0';
     ConstType = char_type;
     if( char_type == TYP_CHAR ) {
-        if(( value & 0xFFFFFF00 ) == 0 ) {
+        if(( value >= 0 && value < 256 ) {
             if( CompFlags.signed_char ) {
                 if( value & 0x80 ) {            /* if sign bit is on */
                     value |= 0xFFFFFF00;        /* - sign extend it */
