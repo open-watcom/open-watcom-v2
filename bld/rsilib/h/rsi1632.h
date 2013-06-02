@@ -147,7 +147,7 @@ extern void         FarPtr rsi_get_rm_ptr( void FarPtr );
 extern int          rsi_addr32_check( OFFSET32, SELECTOR, OFFSET32, OFFSET32 * );
 
 /* dbglib.c */
-extern void         D32DebugBreakOp( char * );
+extern void         D32DebugBreakOp( unsigned char * );
 extern int          D32DebugInit( TSF32 FarPtr, int );
 extern void         D32DebugTerm( void );
 extern void         D32DebugRun( TSF32 FarPtr );
@@ -171,11 +171,11 @@ extern int          D32Unrelocate( Fptr32 FarPtr fp );
 extern void         __cdecl peek32( OFFSET32, SELECTOR, void FarPtr, unsigned short );
 extern int          __cdecl poke32( OFFSET32, SELECTOR, void FarPtr, unsigned short );
 /* d32dbgrd.c */
-extern int          D32DebugRead( OFFSET32, SELECTOR, int, char FarPtr, unsigned );
+extern int          D32DebugRead( OFFSET32, SELECTOR, int, void FarPtr, unsigned );
 /* d32dbgwr.c */
-extern int          D32DebugWrite( OFFSET32, SELECTOR, int, char FarPtr, unsigned );
+extern int          D32DebugWrite( OFFSET32, SELECTOR, int, void FarPtr, unsigned );
 /* d32dbgsb.c */
-extern void         D32DebugSetBreak( OFFSET32, SELECTOR, int, char FarPtr, char FarPtr );
+extern void         D32DebugSetBreak( OFFSET32, SELECTOR, int, unsigned char FarPtr, unsigned char FarPtr );
 
 // global variables
 extern int          addr_mode;

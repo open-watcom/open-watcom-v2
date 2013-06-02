@@ -125,7 +125,7 @@ static char debugging = 0;      /* Tells crash handler to take charge */
 static char being_debugged = 0; /* Another D present? */
 
 static int  first_time = 1;
-static char saved_byte;
+static unsigned char saved_byte;
 
 /*
  *  This is the list of exceptions which 4gw hooks when it starts up.
@@ -228,8 +228,8 @@ static TSF32 far *find_user_code( TSF32 far *client )
     return( client );
 }
 
-static char hotkey_opcode;
-static char hotkey_hit;
+static unsigned char hotkey_opcode;
+static unsigned char hotkey_hit;
 static int  hotkey_int = INT_RM_PASSUP;
 
 static void set_hotkey_break( TSF32 far *client )
@@ -576,7 +576,7 @@ char Timer_Mod( void )
 #endif
 
 
-void D32DebugBreakOp( char *Int_3 )
+void D32DebugBreakOp( unsigned char *Int_3 )
 {
 #if OUTDATEDWINDOWSCRAP
     if( _d16info.swmode == 0 ) {

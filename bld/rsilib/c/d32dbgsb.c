@@ -15,7 +15,7 @@
 
 #include "rsi1632.h"
 
-void D32DebugSetBreak( OFFSET32 off, SELECTOR sel, int translate, char far *to, char far *from )
+void D32DebugSetBreak( OFFSET32 off, SELECTOR sel, int translate, unsigned char far *to, unsigned char far *from )
 {
     Fptr32  fp;
     char    temp[4];
