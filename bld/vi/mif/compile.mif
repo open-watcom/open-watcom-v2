@@ -48,7 +48,9 @@ extra_c_flags_qnx_i86 = -2
 extra_c_flags_win_i86 = -zW -2 -zc
 extra_c_flags_win_386 = -zw -s
 
-extra_c_flags_getopt = -D__ISVI__
-extra_c_flags_ideactiv = -D__ISVI__
-extra_c_flags_mem = $(trmem_cover_cflags)
-extra_c_flags_trmem = $(trmem_cflags)
+extra_c_flags_autoenv  = -fh=pch01.pch
+extra_c_flags_getopt   = -fh=pch01.pch -D__ISVI__
+extra_c_flags_ideactiv = -fh=pch02.pch -D__ISVI__
+extra_c_flags_mem      = -fh=pch03.pch $(trmem_cover_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
+extra_c_flags_version  = -fh=pch04.pch
