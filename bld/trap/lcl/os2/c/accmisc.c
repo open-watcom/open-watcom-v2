@@ -690,7 +690,7 @@ char *AddDriveAndPath( char *exe_name, char *buff )
     if( src[0] != '\\' && src[0] != '/' ) {
         ++dst;
         len = BUFF_SIZE - ( dst - buff );
-        DosQCurDir( drive, dst, &len );
+        DosQCurDir( drive, (PBYTE)dst, &len );
         dst[ -1 ] = '\\';
         if( *dst == '\\' || *dst == '\0' ) {
             *dst = '\0';

@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+typedef void(*excfn)();
+
 void   WriteRegs( uDB_t * );
 void   ReadRegs( uDB_t * );
 void   WriteLinear( void *data, ULONG lin, USHORT size );
@@ -58,7 +60,7 @@ typedef struct {
     PSZ        mod_name;            /* 32-bit flat address */
     PHMODULE   phmod;               /* 32-bit flat address */
     HMODULE    hmod;
-    BYTE       load_name[2];
+    CHAR       load_name[2];
 } loadstack_t;
 
 #pragma aux intrface modify [];
@@ -118,10 +120,10 @@ extern USHORT           FlatCS,FlatDS;
     }
 
 bool CausePgmToLoadHelperDLL( ULONG startLinear );
-long TaskExecute( void (*rtn)() );
+long TaskExecute( excfn rtn );
 bool TaskReadWord( USHORT seg, ULONG off, USHORT *data );
 bool TaskWriteWord( USHORT seg, ULONG off, USHORT data );
-void TaskPrint( char *data, unsigned len );
+void TaskPrint( byte *data, unsigned len );
 void TaskReadXMMRegs( struct x86_xmm *xmm_regs );
 void TaskWriteXMMRegs( struct x86_xmm *xmm_regs );
 

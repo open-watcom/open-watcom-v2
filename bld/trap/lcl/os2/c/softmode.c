@@ -128,7 +128,7 @@ void BeginSoftModeThread( thread_data *arglist )
 {
     TID         tid;
     SEL         sel;
-    char        *stack;
+    byte        *stack;
 
     DosSemRequest( &BeginThreadSem, -1L );
     DosAllocSeg( STACK_SIZE + sizeof( thread_data ), (PSEL)&sel, 0 );
@@ -136,7 +136,7 @@ void BeginSoftModeThread( thread_data *arglist )
     BeginThreadArg = (thread_data*)stack;
     stack += sizeof( thread_data );
     *BeginThreadArg = *arglist;
-    DosCreateThread( (PFNTHREAD)BeginThreadHelper, &tid, stack+STACK_SIZE );
+    DosCreateThread( (PFNTHREAD)BeginThreadHelper, &tid, stack + STACK_SIZE );
 }
 
 

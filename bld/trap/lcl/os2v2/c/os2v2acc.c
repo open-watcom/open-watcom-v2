@@ -1578,7 +1578,7 @@ trap_retval ReqFile_write_console( void )
 {
     ULONG        len;
     ULONG        written_len;
-    char         *ptr;
+    byte         *ptr;
     file_write_console_ret      *ret;
 
     ptr = GetInPtr( sizeof( file_write_console_req ) );

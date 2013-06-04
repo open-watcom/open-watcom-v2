@@ -46,24 +46,24 @@ void StartPacket( void )
     PackInd = 0;
 }
 
-trap_elen PutPacket( void )
+trap_retval PutPacket( void )
 {
-    trap_elen   rc;
+    trap_retval result;
 
     _DBG_Writeln( "in PutPacket()" );
-    rc = RemotePut( PackBuff, PackInd );
+    result = RemotePut( PackBuff, PackInd );
     PackInd = 0;
-    return( rc );
+    return( result );
 }
 
-trap_elen PutBuffPacket( trap_elen len, void *buff )
+trap_retval PutBuffPacket( trap_elen len, void *buff )
 {
-    trap_elen   rc;
+    trap_retval result;
 
     _DBG_Writeln( "in PutBuffPacket()" );
-    rc = RemotePut( buff, len );
+    result = RemotePut( buff, len );
     PackInd = 0;
-    return( rc );
+    return( result );
 }
 
 void AddPacket( trap_elen len, void *ptr )
@@ -75,7 +75,7 @@ void AddPacket( trap_elen len, void *ptr )
     PackInd += len;
 }
 
-trap_elen GetPacket( void )
+trap_retval GetPacket( void )
 {
     _DBG_Writeln( "in GetPacket()" );
     PackInd = 0;

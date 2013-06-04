@@ -44,9 +44,9 @@
 #include "spxerror.h"
 #include "nwcalls.h"
 #include "watcom.h"
+#include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"
-#include "trptypes.h"
 
 #define FOREVER                 0x7FFFFFFF
 
@@ -107,25 +107,26 @@ void putrc( char *func, WORD rc )
 }
 
 
-void put1( unsigned char *c )
+void put1( byte *c )
 {
-    if( *c < 0x10 ) putstring( "0" );
+    if( *c < 0x10 )
+        putstring( "0" );
     puthex( *c );
 }
 
-void put2( unsigned char *c )
+void put2( byte *c )
 {
     put1( c );
     put1( c+1 );
 }
 
-void put4( unsigned char *c )
+void put4( byte *c )
 {
     put2( c );
     put2( c+2 );
 }
 
-void put6( unsigned char *c )
+void put6( byte *c )
 {
     put4( c );
     put2( c+4 );
@@ -230,7 +231,7 @@ ULONG           SendSem = 0;
 #define IPXRelinquishControl()  DosSleep( 1 )
 
 
-static trap_retval DoRemoteGet( char *rec, trap_elen len )
+static trap_retval DoRemoteGet( byte *rec, trap_elen len )
 {
     int         i;
     int         p;
@@ -265,14 +266,14 @@ putconnstatus( Connection );
         recvd += got;
         PostAListen( p );
         if( got != MAX_DATA_SIZE ) break;
-        rec = (unsigned_8 *)rec + got;
+        rec += got;
     }
 
 putstring( "Done RemoteGet\r\n" );
     return( recvd );
 }
 
-static trap_retval DoRemotePut( char *snd, trap_elen len )
+static trap_retval DoRemotePut( byte *snd, trap_elen len )
 {
     WORD        rc;
 
@@ -281,7 +282,7 @@ putconnstatus( Connection );
     if( len == 0 ) {
         _INITSPXECB( Send, 1, NULL, 0 );
     } else {
-        _INITSPXECB( Send, 2, snd, len );
+        _INITSPXECB( Send, 2, (char *)snd, len );
     }
     SendECB.hsem = (HSEM) &SendSem;
     SendHead.connectionCtl |= 0x10;
@@ -308,18 +309,18 @@ putstring( "Done RemotePut\r\n" );
     return( len );
 }
 
-trap_retval RemoteGet( char *rec, trap_elen len )
+trap_retval RemoteGet( byte *rec, trap_elen len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-trap_retval RemotePut( char *snd, trap_elen len )
+trap_retval RemotePut( byte *snd, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
             return( REQUEST_FAILED );
         }
-        snd = (unsigned_8 *)snd + MAX_DATA_SIZE;
+        snd += MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
     if( DoRemotePut( snd, len ) == REQUEST_FAILED ) {
@@ -356,44 +357,43 @@ static void PostListens( void )
 }
 
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     WORD        rc;
-    #ifdef SERVER
-        if( !Listening ) {
-            _INITSPXECB( Conn, 1, 0, 0 );
-            rc = SpxListenForConnection( SPXSocket, &ConnECB, 0, 0, &Connection );
-            putrc( "SPXListenForConnection", rc );
-            Listening = 1;
-        } else if( !InUse( ConnECB ) ) {
-            PostListens();
-            return( 1 );
-        }
-        IPXRelinquishControl();
-    #else
+#ifdef SERVER
+    if( !Listening ) {
+        _INITSPXECB( Conn, 1, 0, 0 );
+        rc = SpxListenForConnection( SPXSocket, &ConnECB, 0, 0, &Connection );
+        putrc( "SPXListenForConnection", rc );
+        Listening = 1;
+    } else if( !InUse( ConnECB ) ) {
+        PostListens();
+	return( TRUE );
+    }
+    IPXRelinquishControl();
+#else
 putstring( "RemoteConnect\r\n" );
-        _INITSPXECB( Send, 1, NULL, 0 );
-        if( ( rc = SpxEstablishConnection( SPXSocket, &SendECB,
-                                    0, 0x10, &Connection ) ) == 0 ) {
-            int i;
+    _INITSPXECB( Send, 1, NULL, 0 );
+    if( ( rc = SpxEstablishConnection( SPXSocket, &SendECB, 0, 0x10, &Connection ) ) == 0 ) {
+        int i;
 
-            for( i = 1; i < 20; ++i ) {
+        for( i = 1; i < 20; ++i ) {
 putstring( "RemoteConnect loop\r\n" );
-                if( !InUse( SendECB ) ) {
-                    PostListens();
+            if( !InUse( SendECB ) ) {
+                PostListens();
 putstring( "RemoteConnect loop done\r\n" );
-                    return( 1 );
-                }
-                DosSleep( 100 );        /* 20 * 100 is approx 2 seconds */
+                return( TRUE );
             }
-putstring( "RemoteConnect aborting\r\n" );
-            rc = SpxAbortConnection( Connection );
-            putrc( "SPXAbortConnection", rc );
-        } else {
-            putrc( "SPXEstablishConnection", rc );
+            DosSleep( 100 );        /* 20 * 100 is approx 2 seconds */
         }
-    #endif
-    return( 0 );
+putstring( "RemoteConnect aborting\r\n" );
+        rc = SpxAbortConnection( Connection );
+        putrc( "SPXAbortConnection", rc );
+    } else {
+        putrc( "SPXEstablishConnection", rc );
+    }
+#endif
+    return( FALSE );
 }
 
 void RemoteDisco( void )
@@ -488,7 +488,7 @@ static void far Broadcast( void )
 }
 
 
-static char InitServer( void )
+static bool InitServer( void )
 {
     TID tid;
 
@@ -497,44 +497,44 @@ static char InitServer( void )
     DosCreateThread( Broadcast, &tid, BroadcastStack + STACKSIZE );
     DosSemWait( &BroadCastStart, -1L );
     DosCreateThread( Respond, &tid, RespondStack + STACKSIZE );
-    return( 1 );
+    return( TRUE );
 }
 
 #endif
 
-#define ACC_WORD( loc ) (*(unsigned *)&(loc))
-
-static char FindPartner( void )
+static bool FindPartner( void )
 {
     static BYTE segdata[128];
     BYTE        moresegs;
     BYTE        flags;
     WORD        connection;
 
-    if( NWGetPrimaryConnectionID( &connection ) != 0 ) return( 0 );
-    if( NWReadPropertyValue( connection, &SAPHead.name, DBG_SERVER_TYPE,
-        "NET_ADDRESS", 1, segdata, &moresegs, &flags ) != 0 ) return( 0 );
+    if( NWGetPrimaryConnectionID( &connection ) != 0 )
+        return( FALSE );
+    if( NWReadPropertyValue( connection, &SAPHead.name, DBG_SERVER_TYPE, "NET_ADDRESS", 1, segdata, &moresegs, &flags ) != 0 )
+        return( FALSE );
     memcpy( &ServHead.destNet, segdata, 12 );
-    if( IpxGetLocalTarget( (PUCHAR)&ServHead.destNet,
-                           &ServECB, (PULONG)segdata ) != 0 ) return( 0 );
+    if( IpxGetLocalTarget( (PUCHAR)&ServHead.destNet, &ServECB, (PULONG)segdata ) != 0 )
+        return( FALSE );
     IpxSend( IPXSocket, &ServECB );
     RespECB.fragList[1].fragAddress = &PartnerSPXSocket;
     if( IpxReceive( IPXSocket, 55*MAX_PARTNER_WAIT, &RespECB ) != 0 )
-        return( 0 );
+        return( FALSE );
     _IPX_ASSIGNADDR( SendHead.dest, RespHead.source );
     SendHead.destSocket = PartnerSPXSocket;
     AssignArray( SendECB.immediateAddress, RespECB.immediateAddress );
-    return( 1 );
+    return( TRUE );
 }
 
-char *RemoteLink( char *name, char server )
+char *RemoteLink( char *name, bool server )
 {
     unsigned    i;
 
-putstring( "RemoteLink\r\n" );
     server = server;
+putstring( "RemoteLink\r\n" );
 
-    if( name == NULL || *name == '\0' ) name = "NovLink";
+    if( name == NULL || *name == '\0' )
+        name = "NovLink";
     for( i = 0; i < 47 && *name != '\0'; ++name ) {
         if( strchr( "/\\:;,*?+-", *name ) == NULL ) {
             SAPHead.name[ i++ ] = toupper( *name );
@@ -548,39 +548,39 @@ putstring( "RemoteLink\r\n" );
     _INITIPXECB( Resp );
     RespECB.fragCount = 2;
     RespECB.fragList[1].fragSize = sizeof( WORD ); /* for SPXSocket */
-    #ifdef SERVER
-        if( FindPartner() ) {
-            RemoteUnLink();
-            return( TRP_ERR_server_name_already_in_use );
-        }
-        if( !InitServer() ) {
-            RemoteUnLink();
-            return( TRP_ERR_can_not_initialize_server );
-        }
-    #else
-        if( !FindPartner() ) {
-            RemoteUnLink();
-            return( TRP_ERR_no_such_server );
-        }
-    #endif
+#ifdef SERVER
+    if( FindPartner() ) {
+        RemoteUnLink();
+        return( TRP_ERR_server_name_already_in_use );
+    }
+    if( !InitServer() ) {
+        RemoteUnLink();
+        return( TRP_ERR_can_not_initialize_server );
+    }
+#else
+    if( !FindPartner() ) {
+        RemoteUnLink();
+        return( TRP_ERR_no_such_server );
+    }
+#endif
     return( NULL );
 }
 
 
 void RemoteUnLink( void )
 {
-    #ifdef SERVER
-        ServerDie = DIE_WANT;
-    #endif
+#ifdef SERVER
+    ServerDie = DIE_WANT;
+#endif
     IpxCloseSocket( IPXSocket );
-    #ifdef SERVER
-        DosSemClear( &BroadCastStop );
-        if( InUse( ConnECB ) ) {
-            SpxCancelPacket( &ConnECB );
-        }
-        while( ServerDie != (DIE_WANT|DIE_BROADCAST|DIE_RESPOND) )  {
-            IPXRelinquishControl();
-        }
-    #endif
+#ifdef SERVER
+    DosSemClear( &BroadCastStop );
+    if( InUse( ConnECB ) ) {
+        SpxCancelPacket( &ConnECB );
+    }
+    while( ServerDie != (DIE_WANT|DIE_BROADCAST|DIE_RESPOND) )  {
+        IPXRelinquishControl();
+    }
+#endif
     SpxCloseSocket( SPXSocket );
 }

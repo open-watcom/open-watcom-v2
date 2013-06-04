@@ -71,7 +71,7 @@ static int SpawnLocker( HFILE inh, HFILE outh )
     start.TraceOpt = 0;
     start.PgmTitle = TRP_The_WATCOM_Debugger;
     start.PgmName = "WDPMHELP.EXE";
-    start.PgmInputs = parms;
+    start.PgmInputs = (PBYTE)parms;
     start.TermQ = 0;
     start.Environment = NULL;
     start.InheritOpt = 1;
@@ -105,7 +105,7 @@ static VOID far SwitchBack( VOID )
     }
 }
 
-void StopPMHelp()
+void StopPMHelp( void )
 {
     if( !HaveHelper ) return;
     PmHelp( PMHELP_EXIT );
@@ -121,12 +121,12 @@ void PMLock( unsigned long pid, unsigned long tid )
     PmHelp( PMHELP_LOCK );
 }
 
-void PMUnLock()
+void PMUnLock( void )
 {
     PmHelp( PMHELP_UNLOCK );
 }
 
-int PMFlip()
+int PMFlip( void )
 {
     if( !HaveHelper ) return( FALSE );
     Response = 0;
@@ -136,8 +136,9 @@ int PMFlip()
 }
 
 #define STACK_SIZE 8192
-char    thestack[STACK_SIZE];
-void StartPMHelp()
+byte    thestack[STACK_SIZE];
+
+void StartPMHelp( void )
 {
     TID         tid;
 
@@ -145,6 +146,6 @@ void StartPMHelp()
     if( DosMakePipe( &PmInh, &HisOuth, sizeof( pmhelp_packet ) ) ) return;
     if( DosMakePipe( &HisInh, &PmOuth, sizeof( pmhelp_packet ) ) ) return;
     if( SpawnLocker( HisInh, HisOuth ) ) return;
-    if( DosCreateThread( SwitchBack, &tid, thestack+STACK_SIZE ) ) return;
+    if( DosCreateThread( SwitchBack, &tid, thestack + STACK_SIZE ) ) return;
     HaveHelper = TRUE;
 }

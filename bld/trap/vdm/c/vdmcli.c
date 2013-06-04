@@ -42,10 +42,11 @@
 #include <wos2.h>
 #define INCL_NOXLATE_DOS16
 #include "watcom.h"
+#include "trperr.h"
+#include "trptypes.h"
 #include "packet.h"
 #include "namepipe.h"
 #include "vdm.h"
-#include "trperr.h"
 
 HPIPE   pipeHdl;
 
@@ -107,7 +108,7 @@ bool RemoteConnect( void )
 }
 
 
-trap_retval RemoteGet( char *data, trap_elen length )
+trap_retval RemoteGet( byte *data, trap_elen length )
 {
     unsigned_16 incoming;
     USHORT      bytes_read;
@@ -125,7 +126,7 @@ trap_retval RemoteGet( char *data, trap_elen length )
 }
 
 
-trap_retval RemotePut( char *data, trap_elen length )
+trap_retval RemotePut( byte *data, trap_elen length )
 {
     unsigned_16 outgoing;
     USHORT      bytes_written;

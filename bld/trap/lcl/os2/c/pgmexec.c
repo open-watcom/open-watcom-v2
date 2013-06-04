@@ -74,7 +74,7 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     if( codesize > LOAD_THIS_DLL_SIZE ) return( FALSE );
     ReadLinear( savecode, startLinear, codesize );
     if( Buff.Cmd != DBG_N_Success ) return( FALSE );
-    WriteLinear( (char far *)LoadThisDLL, startLinear, codesize );
+    WriteLinear( (byte far *)LoadThisDLL, startLinear, codesize );
 
     /*
      * set up the stack for the routine LoadThisDLL
@@ -86,15 +86,13 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
     strcpy( loadstack->load_name, this_dll );
     loadstack->fail_name = NULL;
     loadstack->fail_len = 0;
-    ptr = MakeItSegmentedNumberOne( Buff.SS,
-                Buff.ESP + offsetof( loadstack_t, load_name ) );
+    ptr = MakeItSegmentedNumberOne( Buff.SS, Buff.ESP + offsetof( loadstack_t, load_name ) );
     loadstack->mod_name[0] = FP_OFF( ptr );
     loadstack->mod_name[1] = FP_SEG( ptr );
-    ptr = MakeItSegmentedNumberOne( Buff.SS,
-                Buff.ESP + offsetof( loadstack_t, hmod ) );
+    ptr = MakeItSegmentedNumberOne( Buff.SS, Buff.ESP + offsetof( loadstack_t, hmod ) );
     loadstack->phmod[0] = FP_OFF( ptr );
     loadstack->phmod[1] = FP_SEG( ptr );
-    len = WriteBuffer( (char far *)loadstack, Buff.SS, Buff.ESP, size );
+    len = WriteBuffer( (byte far *)loadstack, Buff.SS, Buff.ESP, size );
     if( len != size ) return( FALSE );
 
     /*
@@ -150,7 +148,7 @@ void DoDupFile( HFILE old, HFILE new )
 static char stack[1024];
 
 
-long TaskExecute( void (*rtn)() )
+long TaskExecute( excfn rtn )
 {
     long        retval;
 
@@ -189,13 +187,12 @@ long TaskOpenFile( char far *name, int mode, int flags )
     long        rc;
 
     saveRegs( &save );
-    WriteBuffer( name, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ),
-                 strlen( name ) + 1 );
+    WriteBuffer( (byte far *)name, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), strlen( name ) + 1 );
     Buff.EDX = FP_SEG( UtilBuff );
     Buff.EAX = FP_OFF( UtilBuff );
     Buff.EBX = mode;
     Buff.ECX = flags;
-    rc = TaskExecute( DoOpen );
+    rc = TaskExecute( (excfn)DoOpen );
     WriteRegs( &save );
     return( rc );
 }
@@ -208,7 +205,7 @@ long TaskCloseFile( HFILE hdl )
 
     saveRegs( &save );
     Buff.EAX = hdl;
-    rc = TaskExecute( doClose );
+    rc = TaskExecute( (excfn)doClose );
     WriteRegs( &save );
     return( rc );
 }
@@ -221,7 +218,7 @@ HFILE TaskDupFile( HFILE old, HFILE new )
     saveRegs( &save );
     Buff.EAX = old;
     Buff.EDX = new;
-    rc = TaskExecute( DoDupFile );
+    rc = TaskExecute( (excfn)DoDupFile );
     WriteRegs( &save );
     return( rc );
 }
@@ -239,7 +236,7 @@ bool TaskReadWord( USHORT seg, ULONG off, USHORT far *data )
     Buff.EBX = off;
     Buff.GS = seg;
     ExpectingAFault = TRUE;
-    TaskExecute( DoReadWord );
+    TaskExecute( (excfn)DoReadWord );
     ExpectingAFault = FALSE;
     if( Buff.Cmd != DBG_N_Breakpoint ) {
         rc = FALSE;
@@ -262,7 +259,7 @@ bool TaskWriteWord( USHORT seg, ULONG off, USHORT data )
     Buff.EBX = off;
     Buff.GS = seg;
     ExpectingAFault = TRUE;
-    TaskExecute( DoWriteWord );
+    TaskExecute( (excfn)DoWriteWord );
     ExpectingAFault = FALSE;
     if( Buff.Cmd != DBG_N_Breakpoint ) {
         rc = FALSE;
@@ -274,18 +271,17 @@ bool TaskWriteWord( USHORT seg, ULONG off, USHORT data )
 
 }
 
-void TaskPrint( char far *ptr, unsigned len )
+void TaskPrint( byte far *ptr, unsigned len )
 {
     dos_debug   save;
 
     saveRegs( &save );
     while( len > sizeof( UtilBuff ) ) {
-        WriteBuffer( ptr, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ),
-                sizeof( UtilBuff ) );
+        WriteBuffer( ptr, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), sizeof( UtilBuff ) );
         Buff.EAX = FP_OFF( UtilBuff );
         Buff.EDX = FP_SEG( UtilBuff );
         Buff.EBX = sizeof( UtilBuff );
-        TaskExecute( DoWritePgmScrn );
+        TaskExecute( (excfn)DoWritePgmScrn );
         ptr += sizeof( UtilBuff );
         len -= sizeof( UtilBuff );
     }
@@ -293,6 +289,6 @@ void TaskPrint( char far *ptr, unsigned len )
     Buff.EAX = FP_OFF( UtilBuff );
     Buff.EDX = FP_SEG( UtilBuff );
     Buff.EBX = len;
-    TaskExecute( DoWritePgmScrn );
+    TaskExecute( (excfn)DoWritePgmScrn );
     WriteRegs( &save );
 }

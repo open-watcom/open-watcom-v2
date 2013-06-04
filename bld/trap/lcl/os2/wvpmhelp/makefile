@@ -53,7 +53,7 @@ extra_c_flags = -s -zu -fpc
 extra_c_flags_pmhook = -mc -oais
 extra_c_flags_pmhelp = -ml
 
-inc_dirs = -i"$(watcom_dir)/h" -I"$(os2api_dir)/os2286/h" -I"$(os2api_dir)/os2386/h" -I"$(trap_dir)/h"
+inc_dirs = -I. -I"../h" -I"$(trap_dir)/h" -I"$(os2api_dir)/os2286/h" -I"$(os2api_dir)/os2386/h"
 
 extra_a_flags = -2 -bt=os2 -fo=.obj -mc
 

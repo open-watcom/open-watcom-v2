@@ -46,7 +46,7 @@ TRPGLOBAL subsystems            DebugeeSubsystem;
 TRPGLOBAL msg_list              *DebugString;
 TRPGLOBAL DEBUG_EVENT           DebugEvent;
 TRPGLOBAL BOOL                  IsWOW;
-#if defined( MD_x86 )
+#if !defined( MD_x64 )
 TRPGLOBAL BOOL                  IsDOS;
 TRPGLOBAL BOOL                  IsWin32s;
 TRPGLOBAL BOOL                  IsWin95;
@@ -118,7 +118,7 @@ BOOL
     LPMODULEENTRY32 lpme
 );
 
-#if defined( MD_x86 ) && defined( WOW )
+#if !defined( MD_x64 ) && defined( WOW )
 TRPGLOBAL
 BOOL
 (WINAPI*pVDMModuleFirst)(

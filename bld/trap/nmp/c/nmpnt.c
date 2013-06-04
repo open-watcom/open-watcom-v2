@@ -52,7 +52,7 @@ void myclose( bhandle handle )
     CloseHandle( handle );
 }
 
-int myread( bhandle handle, char *buff, int len )
+int myread( bhandle handle, void *buff, int len )
 {
     DWORD               bytes;
 
@@ -63,7 +63,7 @@ int myread( bhandle handle, char *buff, int len )
 }
 
 
-int mywrite( bhandle handle, char *buff, int len )
+int mywrite( bhandle handle, void *buff, int len )
 {
     DWORD               bytes;
 

@@ -52,7 +52,7 @@ int                                     ReadBuffRemove;
 int                                     ReadBuffAdd;
 
 #define READER_STACKSIZE                2048
-char                                    ReaderStack[READER_STACKSIZE];
+byte                                    ReaderStack[READER_STACKSIZE];
 TID                                     ReaderId;
 ULONG                                   ReadSemaphore;
 bool                                    OverRun;

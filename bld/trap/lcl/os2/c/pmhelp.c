@@ -45,8 +45,8 @@
 #include <os2.h>
 #include <string.h>
 #include <stdio.h>
-#include "wdpmhelp.h"
 #include "trperr.h"
+#include "wdpmhelp.h"
 
 #ifdef USE_16_BIT_API
 //extern BOOL __far16 __pascal WinThreadAssocQueue( HAB, HMQ );
@@ -242,11 +242,12 @@ VOID AbortLocker( HWND hwndFrame, HWND hwndClient )
    WinPostMsg( hwndClient, WM_QUIT, (MPARAM)NULL, (MPARAM)NULL );
 }
 
-
 #define AbortIf( x ) if( x ) AbortLocker( hwndFrame, hwndClient )
 
 #define STACK_SIZE 8192
-static char     stack[STACK_SIZE];
+
+static unsigned char    stack[STACK_SIZE];
+
 INT main( int argc, char **argv )
 {
     QMSG qmsg;                          /* Message from message queue   */
@@ -263,17 +264,13 @@ INT main( int argc, char **argv )
     AbortIf( ( Hab = WinInitialize( 0 )) == 0L );
     AbortIf( ( Hmq = WinCreateMsgQueue( Hab, 0 ) ) == 0L );
 
-    AbortIf( !WinRegisterClass( Hab, (PSZ)"MyWindow", (PFNWP)MyWindowProc,
-                                CS_SIZEREDRAW, 0 ) );
-    flCreate = FCF_TITLEBAR | FCF_MENU | FCF_SIZEBORDER
-             | FCF_ACCELTABLE | FCF_SHELLPOSITION | FCF_TASKLIST;
+    AbortIf( !WinRegisterClass( Hab, (PSZ)"MyWindow", (PFNWP)MyWindowProc, CS_SIZEREDRAW, 0 ) );
+    flCreate = FCF_TITLEBAR | FCF_MENU | FCF_SIZEBORDER | FCF_ACCELTABLE | FCF_SHELLPOSITION | FCF_TASKLIST;
     height = WinQuerySysValue( HWND_DESKTOP, SV_CYMENU )
            + 2*WinQuerySysValue( HWND_DESKTOP, SV_CYBORDER )
            + 2*WinQuerySysValue( HWND_DESKTOP, SV_CYSIZEBORDER )
            + WinQuerySysValue( HWND_DESKTOP, SV_CYTITLEBAR );
-    AbortIf( ( hwndFrame = WinCreateStdWindow( HWND_DESKTOP, 0L,
-               &flCreate, "MyWindow", "", 0L,
-               0, ID_WINDOW, &hwndClient ) ) == 0L );
+    AbortIf( ( hwndFrame = WinCreateStdWindow( HWND_DESKTOP, 0L, &flCreate, "MyWindow", "", 0L, 0, ID_WINDOW, &hwndClient ) ) == 0L );
     WinSetWindowText( hwndFrame, TRP_The_WATCOM_Debugger );
 
     width = WinQuerySysValue( HWND_DESKTOP, SV_CXSCREEN );
@@ -281,7 +278,7 @@ INT main( int argc, char **argv )
                    WinQuerySysValue( HWND_DESKTOP, SV_CYSCREEN ) - height,
                    width / 3,
                    height, SWP_MOVE | SWP_SHOW | SWP_SIZE | SWP_ACTIVATE ) );
-    AbortIf( DosCreateThread( (PFNTHREAD)ServiceRequests, &tid, stack+STACK_SIZE ) );
+    AbortIf( DosCreateThread( (PFNTHREAD)ServiceRequests, &tid, stack + STACK_SIZE ) );
     while( WinGetMsg( Hab, &qmsg, 0L, 0, 0 ) ) {
         WinDispatchMsg( Hab, &qmsg );
     }

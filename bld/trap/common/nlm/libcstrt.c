@@ -345,7 +345,7 @@ LONG _PreludeHook(
     LONG status;
     
     MyNLMHandle = NLMHandle;
-    Command = cmdLineP;
+    Command = (char *)cmdLineP;
     
     status = _LibCPrelude(
         NLMHandle,
@@ -360,14 +360,14 @@ LONG _PreludeHook(
         );
 
     MyNLMHandle = NLMHandle;
-    Command = cmdLineP;
+    Command = (char *)cmdLineP;
     return status;
 }
 
 int      __init_environment(void *  reserved){
 
 #ifdef DEBUG_ME
-    char*   cmdLineP = Command;
+    char    *cmdLineP = Command;
     if( cmdLineP[0] == '?' || ( cmdLineP[0] == '-' && cmdLineP[1] == 'h' ) ) {
         OutputToScreen( systemConsoleScreen, "Use -d[options]\r\n" );
         OutputToScreen( systemConsoleScreen, "  options are:\r\n" );
@@ -427,35 +427,35 @@ int      __init_environment(void *  reserved){
 
     ScreenTag = AllocateResourceTag(
         MyNLMHandle,
-        "Debug server screens",
+        (BYTE *)"Debug server screens",
         ScreenSignature );
     AllocTag = AllocateResourceTag(
         MyNLMHandle,
-        "Debug server work area",
+        (BYTE *)"Debug server work area",
         AllocSignature );
     SemaphoreTag = AllocateResourceTag(
         MyNLMHandle,
-        "Debug server semaphores",
+        (BYTE *)"Debug server semaphores",
         SemaphoreSignature );
     ProcessTag = AllocateResourceTag(
         MyNLMHandle,
-        "Debug server processes",
+        (BYTE *)"Debug server processes",
         ProcessSignature );
     TimerTag = AllocateResourceTag(
         MyNLMHandle,
-        "Debugger time out",
+        (BYTE *)"Debugger time out",
         TimerSignature );
     InterruptTag = AllocateResourceTag(
         MyNLMHandle,
-        "Debugger interrupts",
+        (BYTE *)"Debugger interrupts",
         InterruptSignature );
     DebugTag = AllocateResourceTag(
         MyNLMHandle,
-        "WVIDEO Debugger",
+        (BYTE *)"WVIDEO Debugger",
         DebuggerSignature );
     BreakTag = AllocateResourceTag(
         MyNLMHandle,
-        "WVIDEO Break Points",
+        (BYTE *)"WVIDEO Break Points",
         BreakpointSignature );
 
     if( OpenScreen( TRP_The_WATCOM_Debugger, ScreenTag, &screenID ) != 0 ) {

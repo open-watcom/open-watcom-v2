@@ -113,8 +113,8 @@ static unsigned_16      lastSS;
 static unsigned_32      lastEIP;
 static unsigned_32      lastESP;
 
-
 extern void bp( void );
+
 bool    ExpectingAFault;
 char    OS2ExtList[] = { ".exe\0" };
 
@@ -415,7 +415,7 @@ void ReadRegs( dos_debug *buff )
     CallDosDebug( buff );
 }
 
-void ReadLinear( char *data, ULONG lin, USHORT size )
+void ReadLinear( void far *data, ULONG lin, USHORT size )
 {
     Buff.Cmd = DBG_C_ReadMemBuf;
     Buff.Addr = lin;
@@ -424,7 +424,7 @@ void ReadLinear( char *data, ULONG lin, USHORT size )
     CallDosDebug( &Buff );
 }
 
-void WriteLinear( char *data, ULONG lin, USHORT size )
+void WriteLinear( void far *data, ULONG lin, USHORT size )
 {
     Buff.Cmd = DBG_C_WriteMemBuf;
     Buff.Addr = lin;
@@ -433,7 +433,7 @@ void WriteLinear( char *data, ULONG lin, USHORT size )
     CallDosDebug( &Buff );
 }
 
-USHORT WriteBuffer( char *data, USHORT segv, ULONG offv, USHORT size )
+USHORT WriteBuffer( byte far *data, USHORT segv, ULONG offv, USHORT size )
 {
     USHORT      length;
     bool        iugs;
@@ -458,7 +458,7 @@ USHORT WriteBuffer( char *data, USHORT segv, ULONG offv, USHORT size )
             Buff.Cmd = DBG_C_WriteMem_D;
             if( length == 1 ) {
                 if( iugs ) {
-                    if( !TaskReadWord( segv, offv, &resdata )) {
+                    if( !TaskReadWord( segv, offv, &resdata ) ) {
                         break;
                     }
                     resdata &= 0xff00;
@@ -508,7 +508,7 @@ USHORT WriteBuffer( char *data, USHORT segv, ULONG offv, USHORT size )
 }
 
 
-static USHORT ReadBuffer( char *data, USHORT segv, ULONG offv, USHORT size )
+static USHORT ReadBuffer( byte far *data, USHORT segv, ULONG offv, USHORT size )
 {
     USHORT      length;
     bool        iugs;
@@ -744,10 +744,9 @@ trap_retval ReqWrite_mem( void )
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
 
-    len = GetTotalSize() - sizeof(*acc);
+    len = GetTotalSize() - sizeof( *acc );
 
-    ret->len = WriteBuffer( GetInPtr(sizeof(*acc)),
-                            acc->mem_addr.segment, acc->mem_addr.offset, len );
+    ret->len = WriteBuffer( GetInPtr( sizeof( *acc ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
     return( sizeof( *ret ) );
 }
 
@@ -1069,7 +1068,7 @@ trap_retval ReqProg_load( void )
     strcat( appname, exe_name );
     start.PgmTitle = (PSZ) appname;
     start.PgmName = UtilBuff;
-    start.PgmInputs = parms;
+    start.PgmInputs = (PBYTE)parms;
     start.TermQ = 0;
     start.Environment = NULL;
     start.InheritOpt = 1;
@@ -1175,16 +1174,16 @@ trap_retval ReqProg_kill( void )
 
 trap_retval ReqSet_break( void )
 {
-    byte             ch;
+    byte                ch;
     set_break_req       *acc;
     set_break_ret       *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ReadBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof(byte) );
+    ReadBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof( byte ) );
     ret->old = ch;
     ch = 0xCC;
-    WriteBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof(byte) );
+    WriteBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof( byte ) );
     return( sizeof( *ret ) );
 }
 
@@ -1195,7 +1194,7 @@ trap_retval ReqClear_break( void )
 
     acc = GetInPtr( 0 );
     ch = acc->old;
-    WriteBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof(byte) );
+    WriteBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof( byte ) );
     return( 0 );
 }
 
@@ -1203,7 +1202,7 @@ trap_retval ReqSet_watch( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
-    dword         buff;
+    dword               buff;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1212,8 +1211,7 @@ trap_retval ReqSet_watch( void )
         WatchPoints[ WatchCount ].addr.segment = acc->watch_addr.segment;
         WatchPoints[ WatchCount ].addr.offset = acc->watch_addr.offset;
         WatchPoints[ WatchCount ].len = acc->size;
-        ReadBuffer( (char *)&buff, acc->watch_addr.segment,
-                    acc->watch_addr.offset, sizeof(dword) );
+        ReadBuffer( (byte *)&buff, acc->watch_addr.segment, acc->watch_addr.offset, sizeof( dword ) );
         WatchPoints[ WatchCount ].value = buff;
         DebugRegsNeeded += ( acc->watch_addr.offset & ( acc->size-1 ) ) ? 2 : 1;
         ret->err = 0;
@@ -1357,8 +1355,7 @@ static void watchSingleStep( void )
     while( Buff.Cmd == DBG_N_SStep ) {
         for( i = 0; i < WatchCount; ++i ) {
             ReadRegs( &save );
-            ReadBuffer( (char *)&memval, WatchPoints[ i ].addr.segment,
-                        WatchPoints[ i ].addr.offset, sizeof( memval ) );
+            ReadBuffer( (byte *)&memval, WatchPoints[ i ].addr.segment, WatchPoints[ i ].addr.offset, sizeof( memval ) );
             WriteRegs( &save );
             if( WatchPoints[ i ].value != memval ) {
                 Buff.Cmd = DBG_N_Watchpoint;
@@ -1445,10 +1442,10 @@ trap_retval ReqProg_step( void )
 
 trap_retval ReqFile_write_console( void )
 {
-    USHORT       len;
-    USHORT       written_len;
-    char         *ptr;
-    file_write_console_ret      *ret;
+    USHORT                  len;
+    USHORT                  written_len;
+    byte                    *ptr;
+    file_write_console_ret  *ret;
 
     ptr = GetInPtr( sizeof( file_write_console_req ) );
     len = GetTotalSize() - sizeof( file_write_console_req );

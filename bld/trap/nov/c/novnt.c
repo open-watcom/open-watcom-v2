@@ -365,7 +365,7 @@ char *RemoteLink( char *name, bool server )
     if( name == NULL || *name == '\0' ) name = "NovLink";
     for( i = 0; i < 47 && *name != '\0'; ++name ) {
         if( strchr( "/\\:;,*?+-", *name ) == NULL ) {
-            ServerName[ i++ ] = toupper( *name );
+            ServerName[ i++ ] = (char)toupper( *(byte *)name );
         }
     }
     ServerName[ i ] = '\0';

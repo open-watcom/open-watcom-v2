@@ -47,6 +47,7 @@
 #include <os2dbg.h>
 #include "dosdebug.h"
 #include "softmode.h"
+#include "trptypes.h"
 #include "trperr.h"
 
 dos_debug far           *DebugReqBuff;
@@ -61,8 +62,9 @@ extern HAB              HabDebugger;
 extern HWND             HwndDebugger;
 
 #define STACK_SIZE 8192
-static char     stack[STACK_SIZE];
-static char     stack2[STACK_SIZE];
+
+static byte     stack[STACK_SIZE];
+static byte     stack2[STACK_SIZE];
 
 extern unsigned int Call32BitDosDebug( dos_debug far *buff );
 extern void WakeThreads( PID );
@@ -145,7 +147,7 @@ unsigned int CallDosDebug( dos_debug far *buff )
                 if( ( SHORT1FROMMP( qmsg.mp1 ) & KC_VIRTUALKEY ) &&
                     ( SHORT2FROMMP( qmsg.mp2 ) == VK_BREAK ) ) {
                     SetBrkPending();
-                    DosCreateThread( (PFNTHREAD)StopApplication, &tid, stack2+STACK_SIZE );
+                    DosCreateThread( (PFNTHREAD)StopApplication, &tid, stack2 + STACK_SIZE );
                     DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 10, tid );
                     WakeThreads( StopBuff.Pid );
                     DosSemWait( &StopDoneSem, SEM_INDEFINITE_WAIT );
@@ -226,6 +228,6 @@ VOID InitDebugThread( VOID )
 
     DosSemSet( &StopDoneSem );
     DosSemSet( &DebugReqSem );
-    DosCreateThread( (PFNTHREAD)DoDebugRequests, &tid, stack+STACK_SIZE );
+    DosCreateThread( (PFNTHREAD)DoDebugRequests, &tid, stack + STACK_SIZE );
     DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
 }

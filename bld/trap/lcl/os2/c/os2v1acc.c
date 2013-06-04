@@ -45,6 +45,8 @@
 #include "x86cpu.h"
 #include "miscx87.h"
 
+typedef void (*excfn)();
+
 extern  void    BreakPoint( ULONG );
 #pragma aux     BreakPoint = 0xCC parm [ dx ax ] aborts;
 extern  void    far *Automagic( unsigned short );
@@ -146,8 +148,7 @@ static USHORT ReadRegs( TRACEBUF far *buff )
 }
 
 
-static USHORT WriteBuffer( char far *data, USHORT segv,
-                           USHORT offv, USHORT size )
+static USHORT WriteBuffer( byte far *data, USHORT segv, USHORT offv, USHORT size )
 {
     USHORT  length;
 
@@ -188,7 +189,7 @@ static USHORT WriteBuffer( char far *data, USHORT segv,
 }
 
 
-static USHORT ReadBuffer( char far *data, USHORT segv, USHORT offv, USHORT size )
+static USHORT ReadBuffer( byte far *data, USHORT segv, USHORT offv, USHORT size )
 {
     USHORT      length;
 
@@ -290,7 +291,7 @@ static void DoGetMSW( void )
 
 static char stack[1024];
 
-static long TaskExecute( void (*rtn)() )
+static long TaskExecute( excfn rtn )
 {
     TRACEBUF    buff;
 
@@ -311,27 +312,26 @@ static long TaskExecute( void (*rtn)() )
 
 long TaskOpenFile( char far *name, int mode, int flags ) {
 
-    WriteBuffer( name, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ),
-                 strlen( name ) + 1 );
+    WriteBuffer( (byte far *)name, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), strlen( name ) + 1 );
     Buff.u.r.DX = FP_SEG( UtilBuff );
     Buff.u.r.AX = FP_OFF( UtilBuff );
     Buff.u.r.BX = mode;
     Buff.u.r.CX = flags;
-    return( TaskExecute( DoOpen ) );
+    return( TaskExecute( (excfn)DoOpen ) );
 }
 
 
 long TaskCloseFile( HFILE hdl )
 {
     Buff.u.r.AX = hdl;
-    return( TaskExecute( DoClose ) );
+    return( TaskExecute( (excfn)DoClose ) );
 }
 
 HFILE TaskDupFile( HFILE old, HFILE new )
 {
     Buff.u.r.AX = old;
     Buff.u.r.DX = new;
-    return( TaskExecute( DoDupFile ) );
+    return( TaskExecute( (excfn)DoDupFile ) );
 }
 
 trap_retval ReqGet_sys_config( void )
@@ -359,9 +359,9 @@ trap_retval ReqGet_sys_config( void )
             ret->sys.fpu = NPXType();
         }
     } else {
-        ret->sys.u.fpu = X86_NO;
+        ret->sys.fpu = X86_NO;
     }
-    emu = TaskExecute( &DoGetMSW );
+    emu = TaskExecute( (excfn)&DoGetMSW );
     if( emu != -1 && (emu & 0x04) ) { /* if EM bit is on in the MSW */
         ret->sys.fpu = X86_EMU;
     }
@@ -471,13 +471,10 @@ trap_retval ReqChecksum_mem( void )
 trap_retval ReqRead_mem( void )
 {
     read_mem_req        *acc;
-    void                *ret;
     unsigned            len;
 
     acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-
-    len = ReadBuffer(ret,acc->mem_addr.segment,acc->mem_addr.offset,acc->len);
+    len = ReadBuffer( GetOutPtr(0), acc->mem_addr.segment, acc->mem_addr.offset, acc->len );
     return( len );
 }
 
@@ -491,10 +488,9 @@ trap_retval ReqWrite_mem( void )
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
 
-    len = GetTotalSize() - sizeof(*acc);
+    len = GetTotalSize() - sizeof( *acc );
 
-    ret->len = WriteBuffer( GetInPtr(sizeof(*ret)),
-                            acc->mem_addr.segment, acc->mem_addr.offset, len );
+    ret->len = WriteBuffer( GetInPtr( sizeof( *ret ) ), acc->mem_addr.segment, acc->mem_addr.offset, len );
     return( sizeof( *ret ) );
 }
 
@@ -675,8 +671,7 @@ USHORT LibLoadPTrace( TRACEBUF *buff )
 #define EXE_IS_PM               0x0300
 
 
-static bool GetExeInfo( USHORT far *pCS, USHORT far *pIP, USHORT far *pExeType,
-                        char far *name )
+static bool GetExeInfo( USHORT far *pCS, USHORT far *pIP, USHORT far *pExeType, char far *name )
 {
     long        open_rc;
     HFILE       handle;
@@ -736,14 +731,15 @@ typedef struct {
         USHORT  fail_len;
         PSZ     fail_name;              /* offset-segment */
         USHORT  hmod;
-        BYTE    load_name[2];
+        CHAR    load_name[2];
 } loadstack_t;
 
 #define LOAD_THIS_DLL_SIZE      6
+
 static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
 {
 
-    char        savecode[LOAD_THIS_DLL_SIZE];
+    byte        savecode[LOAD_THIS_DLL_SIZE];
     USHORT      codesize;
     USHORT      len;
     loadstack_t far *loadstack;
@@ -755,14 +751,18 @@ static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
         return( FALSE );
     }
     codesize = (char *)EndLoadThisDLL - (char *)LoadThisDLL;
-    if( codesize > LOAD_THIS_DLL_SIZE ) return( FALSE );
+    if( codesize > LOAD_THIS_DLL_SIZE )
+        return( FALSE );
     len = ReadBuffer( savecode, startCS, startIP, codesize );
-    if( Buff.cmd != PT_RET_SUCCESS ) return( FALSE );
-    if( len != codesize ) return( FALSE );
+    if( Buff.cmd != PT_RET_SUCCESS )
+        return( FALSE );
+    if( len != codesize )
+        return( FALSE );
 
     /* write the routine LoadThisDLL into program's code */
-    len = WriteBuffer( (char far *)LoadThisDLL, startCS, startIP, codesize );
-    if( len != codesize ) return( FALSE );
+    len = WriteBuffer( (byte far *)LoadThisDLL, startCS, startIP, codesize );
+    if( len != codesize )
+        return( FALSE );
 
     /* set up the stack for the routine LoadThisDLL */
 
@@ -776,9 +776,9 @@ static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
     loadstack->mod_name[1] = Buff.u.r.SS;
     loadstack->phmod[0] = Buff.u.r.SP + offsetof( loadstack_t, hmod );
     loadstack->phmod[1] = Buff.u.r.SS;
-    len = WriteBuffer( (char far *)loadstack, Buff.u.r.SS,
-                 Buff.u.r.SP, sizeof( loadstack_t ) + dll_name_len );
-    if( len != sizeof( loadstack_t ) + dll_name_len ) return( FALSE );
+    len = WriteBuffer( (byte far *)loadstack, Buff.u.r.SS, Buff.u.r.SP, sizeof( loadstack_t ) + dll_name_len );
+    if( len != sizeof( loadstack_t ) + dll_name_len )
+        return( FALSE );
 
     /* execute LoadThisDLL on behalf of the program */
 
@@ -810,12 +810,12 @@ static void ExecuteUntil( USHORT CS, USHORT IP )
 }
 
 
-void AppSession()
+void AppSession( void )
 {
     DosSelectSession( SID, 0 );
 }
 
-void DebugSession()
+void DebugSession( void )
 {
     DosSelectSession( 0, 0 );
 }
@@ -860,7 +860,7 @@ trap_retval ReqProg_load( void )
     strcat( appname, exe_name );
     start.PgmTitle = appname;
     start.PgmName = UtilBuff;
-    start.PgmInputs = parms;
+    start.PgmInputs = (PBYTE)parms;
     start.TermQ = 0;
     start.Environment = NULL;
     start.InheritOpt = 1;
@@ -948,17 +948,17 @@ trap_retval ReqProg_kill( void )
 
 trap_retval ReqSet_break( void )
 {
-    byte                 ch;
+    byte                ch;
     set_break_req       *acc;
     set_break_ret       *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    ReadBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof(byte) );
+    ReadBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof( byte ) );
     ret->old = ch;
     ch = 0xCC;
-    WriteBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof(byte) );
+    WriteBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof( byte ) );
     return( sizeof( *ret ) );
 }
 
@@ -969,7 +969,7 @@ trap_retval ReqClear_break( void )
 
     bp = GetInPtr( 0 );
     ch = bp->old;
-    WriteBuffer( &ch, bp->break_addr.segment, bp->break_addr.offset, sizeof(byte) );
+    WriteBuffer( &ch, bp->break_addr.segment, bp->break_addr.offset, sizeof( byte ) );
     return( 0 );
 }
 
@@ -984,8 +984,7 @@ trap_retval ReqSet_watch( void )
     if( WatchCount < MAX_WP ) { // nyi - artificial limit (32 should be lots)
         WatchPoints[ WatchCount ].addr.segment = wp->watch_addr.segment;
         WatchPoints[ WatchCount ].addr.offset = wp->watch_addr.offset;
-        ReadBuffer( (char far *)&buff, wp->watch_addr.segment,
-                    wp->watch_addr.offset, sizeof(dword) );
+        ReadBuffer( (byte far *)&buff, wp->watch_addr.segment, wp->watch_addr.offset, sizeof( dword ) );
         WatchPoints[ WatchCount ].value = buff;
         ++WatchCount;
     } else {
@@ -1005,8 +1004,7 @@ trap_retval ReqClear_watch( void )
     wp = GetInPtr( 0 );
     dst = src = WatchPoints;
     for( i = 0; i < WatchCount; ++i ) {
-        if( src->addr.segment != wp->watch_addr.segment
-         || src->addr.offset != wp->watch_addr.offset ) {
+        if( src->addr.segment != wp->watch_addr.segment || src->addr.offset != wp->watch_addr.offset ) {
             *dst = *src;
             ++dst;
         }
@@ -1152,7 +1150,7 @@ trap_retval ReqFile_write_console( void )
     unsigned     save_ax;
     unsigned     save_dx;
     unsigned     save_bx;
-    char         *ptr;
+    byte         *ptr;
     unsigned            curr;
     file_write_console_ret      *ret;
 
@@ -1174,7 +1172,7 @@ trap_retval ReqFile_write_console( void )
             Buff.u.r.AX = FP_OFF( UtilBuff );
             Buff.u.r.DX = FP_SEG( UtilBuff );
             Buff.u.r.BX = curr;
-            TaskExecute( DoWritePgmScrn );
+            TaskExecute( (excfn)DoWritePgmScrn );
             ptr += curr;
             len -= curr;
         }

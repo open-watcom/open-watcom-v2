@@ -297,9 +297,9 @@ extern void             FiniSys( void );
 static unsigned DataPort;
 static unsigned CtlPort1;
 static unsigned CtlPort2;
-static  char    CableType;
-static  char    TwidleCount;
-static  bool    TwidleOn;
+static int      CableType;
+static char     TwidleCount;
+static bool     TwidleOn;
 
 /* 0x18 is used to ensure that the control lines stay in a high state
  * until Synch is called */
@@ -432,7 +432,7 @@ static  bool    TwidleOn;
 
 static int DataGet( unsigned long wait )
 {
-    char                data;
+    byte            data = 0;
 
     dbgrtn( "\r\n-DataGet-" );
     switch( CableType ) {
@@ -522,7 +522,7 @@ static int DataGet( unsigned long wait )
 /* if wait is not KEEP or RELINQUISH it is the latest time that this
  * operation should take before it times out */
 
-static int DataPut( unsigned char data, unsigned long wait )
+static int DataPut( byte data, unsigned long wait )
 {
     dbgrtn( "\r\n-DataPut-" );
     switch( CableType ) {
@@ -656,26 +656,26 @@ static bool Synch( void )
 
 static bool CountTwidle( void )
 {
-    char                type;
+    int           type;
 
     dbgrtn( "\r\n-CountTwidle-" );
     type = ReadData();
 #if defined(_DBG)
-#ifdef SERVER
+  #ifdef SERVER
     printf( "Type %2.2x ", type );
-#else
+  #else
     {
-    char buf[10];
+        char buf[10];
 
-    itoa( type, buf, 16 );
-    cputs( " Type " ); cputs( buf );
+        itoa( type, buf, 16 );
+        cputs( " Type " ); cputs( buf );
     }
-#endif
+  #endif
 #endif
     if( !TwidleOn ) {
         if( type == WATCOM_VAL ||
             type == FMR_VAL ||
-            type == (char)LAPLINK_VAL ||
+            type == LAPLINK_VAL ||
             type == DUTCHMAN_VAL ) {
             TwidleOn = TRUE;
             if( type != CableType ) {
@@ -685,9 +685,11 @@ static bool CountTwidle( void )
         }
     } else {
         if( type != CableType )  {
-            TwidleCount ++;
+            TwidleCount++;
             TwidleOn = FALSE;
-            if( TwidleCount == TWIDLE_NUM ) return( TRUE );
+            if( TwidleCount == TWIDLE_NUM ) {
+                return( TRUE );
+            }
         }
     }
     return( FALSE );
@@ -704,10 +706,10 @@ static bool Twidle( bool check ) {
     unsigned long       time;
 
     dbgrtn( "\r\n-Twidle-" );
-    for( i = 20; i != 0; i-- ) {
+    for( i = 0; i < 20; ++i ) {
         WriteData( TWIDLE_ON );
         time = Ticks() + TWIDLE_TIME;
-        while( time > Ticks() ){
+        while( time > Ticks() ) {
             if( check ) {
                 if( CountTwidle() ) {
                     return( TRUE );
@@ -720,7 +722,7 @@ static bool Twidle( bool check ) {
         }
         WriteData( TWIDLE_OFF );
         time = Ticks() + TWIDLE_TIME;
-        while( time > Ticks() ){
+        while( time > Ticks() ) {
             if( check ) {
                 if( CountTwidle() ) {
                     return( TRUE );
@@ -741,21 +743,21 @@ static bool Twidle( bool check ) {
 
 static bool LineTest( void )
 {
-    unsigned            send;
+    int                 send;
     unsigned long       time;
 #ifdef SERVER
-    unsigned            ret;
+    int                 ret;
 
     dbgrtn( "\r\n-LineTest-" );
     for( send = 1; send != 256; send *= 2 ) {
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time ++;
-        if( time == KEEP ) time ++;
+        if( time == RELINQUISH ) time++;
+        if( time == KEEP ) time++;
         ret = DataPut( send, time );
         if( ret == TIMEOUT ) return( FALSE );
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time ++;
-        if( time == KEEP ) time ++;
+        if( time == RELINQUISH ) time++;
+        if( time == KEEP ) time++;
         ret = DataGet( time );
         if( ret == TIMEOUT ) return( FALSE );
         if( ret != send ) {
@@ -763,8 +765,8 @@ static bool LineTest( void )
         }
     }
     time = Ticks() + LINE_TEST_WAIT;
-    if( time == RELINQUISH ) time ++;
-    if( time == KEEP ) time ++;
+    if( time == RELINQUISH ) time++;
+    if( time == KEEP ) time++;
     ret = DataPut( DONE_LINE_TEST, time );
     if( ret == TIMEOUT ) return( FALSE );
 #else
@@ -772,15 +774,15 @@ static bool LineTest( void )
     send = 0;
     for( ;; ) {
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time ++;
-        if( time == KEEP ) time ++;
+        if( time == RELINQUISH ) time++;
+        if( time == KEEP ) time++;
         send = DataGet( time );
         if( send == TIMEOUT ) return( FALSE );
         if( send == DONE_LINE_TEST ) break;
         time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH ) time ++;
-        if( time == KEEP ) time ++;
-        DataPut( send, time );
+        if( time == RELINQUISH ) time++;
+        if( time == KEEP ) time++;
+        send = DataPut( send, time );
         if( send == TIMEOUT ) return( FALSE );
     }
 #endif

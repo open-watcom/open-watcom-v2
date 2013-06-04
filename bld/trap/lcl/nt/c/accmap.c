@@ -38,7 +38,7 @@
 
 typedef struct lli {
     HANDLE      file_handle;
-    LPSTR       base;
+    LPBYTE      base;
     addr_off    code_size;
     LPVOID      except_base;
     addr_off    except_size;
@@ -211,7 +211,7 @@ BOOL FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size )
 
     for( i = 0; i < ModuleTop; ++i ) {
         lli = &moduleInfo[i];
-        if( (LPSTR)off >= lli->base && (LPSTR)off < lli->base + lli->code_size ) {
+        if( (LPBYTE)off >= lli->base && (LPBYTE)off < lli->base + lli->code_size ) {
             /* this is the image */
             if( lli->except_size == 0 ) {
                 return( FALSE );
@@ -314,7 +314,7 @@ BOOL NameFromProcess( lib_load_info *lli, DWORD dwPID, char *name )
     // This should not be relevant as all NT versions will use the PSAPI method anyway.
     // The PSAPI method works reliably but is not available on Win9x.
     do {
-        if( (LPSTR)me32.modBaseAddr == lli->base ) {
+        if( me32.modBaseAddr == lli->base ) {
             strcpy( name, me32.szExePath );
             bSuccess = TRUE;
             break;

@@ -47,13 +47,13 @@ void myclose( bhandle handle )
     close( handle );
 }
 
-int myread( bhandle handle, char *buff, int len )
+int myread( bhandle handle, void *buff, int len )
 {
     return( read( handle, buff, len ) );
 }
 
 
-int mywrite( bhandle handle, char *buff, int len )
+int mywrite( bhandle handle, void *buff, int len )
 {
     return( write( handle, buff, len ) );
 }

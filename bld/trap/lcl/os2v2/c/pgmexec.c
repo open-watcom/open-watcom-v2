@@ -153,7 +153,7 @@ bool CausePgmToLoadHelperDLL( ULONG startLinear )
 }
 
 
-long TaskExecute( void (*rtn)() )
+long TaskExecute( excfn rtn )
 {
     long        retval;
 
@@ -207,7 +207,7 @@ long TaskOpenFile( char *name, int mode, int flags )
     Buff.EAX = (ULONG)&XferBuff;
     Buff.EDX = mode;
     Buff.ECX = flags;
-    rc = TaskExecute( DoOpen );
+    rc = TaskExecute( (excfn)DoOpen );
     WriteRegs( &save );
     return( rc );
 }
@@ -220,7 +220,7 @@ long TaskCloseFile( HFILE hdl )
 
     saveRegs( &save );
     Buff.EAX = hdl;
-    rc = TaskExecute( DoClose );
+    rc = TaskExecute( (excfn)DoClose );
     WriteRegs( &save );
     return( rc );
 }
@@ -234,7 +234,7 @@ HFILE TaskDupFile( HFILE old, HFILE new )
     saveRegs( &save );
     Buff.EAX = old;
     Buff.EDX = new;
-    rc = TaskExecute( DoDupFile );
+    rc = TaskExecute( (excfn)DoDupFile );
     WriteRegs( &save );
     return( rc );
 }
@@ -248,7 +248,7 @@ bool TaskReadWord( USHORT seg, ULONG off, USHORT *data )
     saveRegs( &save );
     Buff.EBX = off;
     Buff.GS  = seg;
-    TaskExecute( DoReadWord );
+    TaskExecute( (excfn)DoReadWord );
     if( Buff.Cmd != DBG_N_Breakpoint ) {
         rc = FALSE;
     } else {
@@ -269,7 +269,7 @@ bool TaskWriteWord( USHORT seg, ULONG off, USHORT data )
     Buff.EAX = data;
     Buff.EBX = off;
     Buff.GS  = seg;
-    TaskExecute( DoWriteWord );
+    TaskExecute( (excfn)DoWriteWord );
     if( Buff.Cmd != DBG_N_Breakpoint ) {
         rc = FALSE;
     } else {
@@ -280,7 +280,7 @@ bool TaskWriteWord( USHORT seg, ULONG off, USHORT data )
 }
 
 
-void TaskPrint( char *ptr, unsigned len )
+void TaskPrint( byte *ptr, unsigned len )
 {
     uDB_t       save;
 
@@ -289,14 +289,14 @@ void TaskPrint( char *ptr, unsigned len )
         WriteLinear( ptr, (ULONG)&XferBuff, sizeof( XferBuff ) );
         Buff.EAX = (ULONG)&XferBuff;
         Buff.EDX = sizeof( XferBuff );
-        TaskExecute( DoWritePgmScrn );
+        TaskExecute( (excfn)DoWritePgmScrn );
         ptr += sizeof( XferBuff );
         len -= sizeof( XferBuff );
     }
     WriteLinear( ptr, (ULONG)&XferBuff, len );
     Buff.EAX = (ULONG)&XferBuff;
     Buff.EDX = len;
-    TaskExecute( DoWritePgmScrn );
+    TaskExecute( (excfn)DoWritePgmScrn );
     WriteRegs( &save );
 }
 
@@ -307,7 +307,7 @@ void TaskReadXMMRegs( struct x86_xmm *xmm_regs )
 
     saveRegs( &save );
     Buff.EAX = (ULONG)&XferBuff;
-    TaskExecute( DoReadXMMRegs );
+    TaskExecute( (excfn)DoReadXMMRegs );
     ReadLinear( (void*)xmm_regs, (ULONG)&XferBuff, sizeof( *xmm_regs ) );
     WriteRegs( &save );
 }
@@ -320,6 +320,6 @@ void TaskWriteXMMRegs( struct x86_xmm *xmm_regs )
     saveRegs( &save );
     WriteLinear( (void*)xmm_regs, (ULONG)&XferBuff, sizeof( *xmm_regs ) );
     Buff.EAX = (ULONG)&XferBuff;
-    TaskExecute( DoWriteXMMRegs );
+    TaskExecute( (excfn)DoWriteXMMRegs );
     WriteRegs( &save );
 }

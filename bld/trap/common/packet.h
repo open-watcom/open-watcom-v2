@@ -31,10 +31,10 @@
 
 
 extern void         StartPacket(void);
-extern trap_elen    PutPacket(void);
-extern trap_elen    PutBuffPacket( trap_elen, void * );
+extern trap_retval  PutPacket(void);
+extern trap_retval  PutBuffPacket( trap_elen, void * );
 extern void         AddPacket( trap_elen, void * );
-extern trap_elen    GetPacket(void);
+extern trap_retval  GetPacket(void);
 extern void         RemovePacket( trap_elen, void * );
 extern void         *GetPacketBuffPtr(void);
 extern trap_elen    MaxPacketSize(void);
@@ -43,5 +43,5 @@ extern char         *RemoteLink(char *, bool);
 extern bool         RemoteConnect(void);
 extern void         RemoteDisco(void);
 extern void         RemoteUnLink(void);
-extern trap_elen    RemotePut(byte *, trap_elen);
-extern trap_elen    RemoteGet(byte *, trap_elen);
+extern trap_retval  RemotePut(byte *, trap_elen);
+extern trap_retval  RemoteGet(byte *, trap_elen);

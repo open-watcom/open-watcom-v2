@@ -50,6 +50,7 @@
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"
+#include "trperr.h"
 #include "doserr.h"
 #include "doscomm.h"
 
@@ -229,7 +230,7 @@ word    AltSegment( word seg )
     return( seg );
 }
 
-static int ReadWrite( int (*r)(word,dword,char*), addr48_ptr *addr, byte *data, int req ) {
+static int ReadWrite( int (*r)(word,dword,char*), addr48_ptr *addr, char *data, int req ) {
 
     int         len;
     word        segment;
@@ -278,13 +279,13 @@ static int ReadWrite( int (*r)(word,dword,char*), addr48_ptr *addr, byte *data, 
 
 static int ReadMemory( addr48_ptr *addr, byte *data, int len )
 {
-    return( ReadWrite( DoReadMem, addr, data, len ) );
+    return( ReadWrite( DoReadMem, addr, (char *)data, len ) );
 }
 
 static int WriteMemory( addr48_ptr *addr, byte *data, int len )
 {
     if( addr->segment == Regs.CS ) addr->segment = Regs.DS; // hack, ack
-    return( ReadWrite( DoWriteMem, addr, data, len ) );
+    return( ReadWrite( DoWriteMem, addr, (char *)data, len ) );
 }
 
 trap_retval ReqGet_sys_config( void )
@@ -658,7 +659,7 @@ trap_retval ReqSet_break( void )
     set_break_req       *acc;
     set_break_ret       *ret;
 
-    static char brake = 0xCC; /* cause maybe SS != DS */
+    static byte brake = 0xCC; /* cause maybe SS != DS */
 
                                                                           _DBG1(( "AccSetBreak" ));
     acc = GetInPtr( 0 );

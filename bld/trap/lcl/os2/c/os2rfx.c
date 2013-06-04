@@ -226,9 +226,9 @@ static void mylocaltime( unsigned long date_time, unsigned *time, unsigned *date
 
 trap_retval ReqRfx_setdatetime( void )
 {
-    FILESTATUS         info;
-    unsigned           time;
-    unsigned           date;
+    FILESTATUS          info;
+    unsigned            time;
+    unsigned            date;
     rfx_setdatetime_req *acc;
 
     acc = GetInPtr( 0 );
@@ -239,7 +239,7 @@ trap_retval ReqRfx_setdatetime( void )
     *(USHORT *)&info.ftimeLastAccess = time;
     *(USHORT *)&info.fdateLastWrite = date;
     *(USHORT *)&info.ftimeLastWrite = time;
-    DosSetFileInfo( acc->handle, 1, (char far *)&info, sizeof( info ) );
+    DosSetFileInfo( acc->handle, 1, (byte far *)&info, sizeof( info ) );
     return( 0 );
 }
 
@@ -280,23 +280,20 @@ trap_retval ReqRfx_getdatetime( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    DosQFileInfo( acc->handle, 1, (char *)&info, sizeof( info ) );
-    ret->time = mymktime( *(USHORT *)&info.ftimeLastWrite,
-                                  *(USHORT *)&info.fdateLastWrite );
+    DosQFileInfo( acc->handle, 1, (PVOID)&info, sizeof( info ) );
+    ret->time = mymktime( *(USHORT *)&info.ftimeLastWrite, *(USHORT *)&info.fdateLastWrite );
     return( sizeof( *ret ) );
 }
 
 trap_retval ReqRfx_getcwd( void )
 {
-    USHORT            len = BUFF_SIZE;
+    USHORT              len = BUFF_SIZE;
     rfx_getcwd_req      *acc;
     rfx_getcwd_ret      *ret;
-    char              *buff;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    buff = GetOutPtr( sizeof( *ret ) );
-    ret->err = DosQCurDir( acc->drive, buff, &len );
+    ret->err = DosQCurDir( acc->drive, GetOutPtr( sizeof( *ret ) ), &len );
     return( sizeof( *ret ) + len );
 }
 
@@ -388,7 +385,7 @@ trap_retval ReqRfx_nametocannonical( void )
     if( *name != '\\' ) {
         *fullname++ = '\\';
         // DOS : TinyGetCWDir( fullname, TinyGetCurrDrive() + 1 );
-        DosQCurDir( drive + 1, fullname, &len );
+        DosQCurDir( drive + 1, (PBYTE)fullname, &len );
         if( *fullname != '\0' ) {
             level++;
             while( *fullname != '\0' ) {

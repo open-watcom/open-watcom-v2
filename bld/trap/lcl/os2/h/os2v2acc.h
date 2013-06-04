@@ -30,12 +30,14 @@
 ****************************************************************************/
 
 
+typedef void (*excfn)();
+
 void WriteRegs( dos_debug far * );
 void ReadRegs( dos_debug far * );
 void RecordModHandle( ULONG value );
-void WriteLinear( char far *data, ULONG lin, USHORT size );
-void ReadLinear( char far *data, ULONG lin, USHORT size );
-USHORT WriteBuffer( char far *data, USHORT segv, ULONG offv, USHORT size );
+void WriteLinear( void far *data, ULONG lin, USHORT size );
+void ReadLinear( void far *data, ULONG lin, USHORT size );
+USHORT WriteBuffer( byte far *data, USHORT segv, ULONG offv, USHORT size );
 char far *GetExceptionText( void );
 ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset );
 void far * MakeItSegmentedNumberOne( USHORT seg, ULONG offset );
@@ -66,7 +68,7 @@ typedef struct {
         USHORT  fail_len;
         PSZ     fail_name;              /* offset-segment */
         USHORT  hmod;
-        BYTE    load_name[2];
+        CHAR    load_name[2];
 } loadstack_t;
 
 #pragma aux intrface far modify [];
@@ -125,7 +127,7 @@ extern USHORT           FlatCS,FlatDS;
     }
 
 bool CausePgmToLoadThisDLL( ULONG startLinear );
-long TaskExecute( void (*rtn)() );
+long TaskExecute( excfn rtn );
 #pragma aux DoOpen parm [ dx ax ] [ bx ] [ cx ];
 void DoOpen( char far *name, int mode, int flags );
 #pragma aux DoClose parm [ ax ];
@@ -136,7 +138,7 @@ void DoDupFile( HFILE old, HFILE new );
 void DoWritePgmScrn( char far *buff, USHORT len );
 bool TaskReadWord( USHORT seg, ULONG off, USHORT far *data );
 bool TaskWriteWord( USHORT seg, ULONG off, USHORT data );
-void TaskPrint( char far *data, unsigned len );
+void TaskPrint( byte far *data, unsigned len );
 
 //#define DEBUG_OUT
 

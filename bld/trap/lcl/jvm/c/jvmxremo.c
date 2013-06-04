@@ -45,7 +45,7 @@ HANDLE                  FakeHandle;
 HWND                    DebuggerHwnd;
 static char             SavedError[256];
 
-trap_elen DoAccess()
+trap_retval DoAccess( void )
 {
     trap_elen  left;
     trap_elen  len;
@@ -121,9 +121,9 @@ static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
 }
 
 static char *Errors[] = {
-#define pick( a,b,c ) c,
-#include "jvmepick.h"
-#undef pick
+    #define pick( a,b,c ) c,
+    #include "jvmepick.h"
+    #undef pick
 };
 
 trap_retval ReqGet_err_text( void )
@@ -509,17 +509,17 @@ trap_retval ReqThread_get_extra( void )
     return( DoAccess() );
 }
 
-static trap_elen (* const FileRequests[])(void) = {
-         ReqFile_get_config,
-         ReqFile_open,
-         ReqFile_seek,
-         ReqFile_read,
-         ReqFile_write,
-         ReqFile_write_console,
-         ReqFile_close,
-         ReqFile_erase,
-         ReqFile_string_to_fullpath,
-         ReqFile_run_cmd,
+static trap_retval (* const FileRequests[])(void) = {
+    ReqFile_get_config,
+    ReqFile_open,
+    ReqFile_seek,
+    ReqFile_read,
+    ReqFile_write,
+    ReqFile_write_console,
+    ReqFile_close,
+    ReqFile_erase,
+    ReqFile_string_to_fullpath,
+    ReqFile_run_cmd,
 };
 
 typedef struct {
@@ -527,7 +527,7 @@ typedef struct {
     const void *vectors;
 } service_entry;
 
-trap_retval ReqGet_supplementary_service(void)
+trap_retval ReqGet_supplementary_service( void )
 {
     char                                *name;
     get_supplementary_service_ret       *out;
@@ -594,14 +594,12 @@ done:
     return( sizeof( *ret ) );
 }
 
-#pragma off(unreferenced);
-trap_version TRAPENTRY TrapInit( char *parm, char *error,
-                                       bool remote )
-#pragma on(unreferenced);
+trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
 {
     trap_version    ver;
     extern     void InitPSP();
 
+    remote = remote;
     ver.remote = FALSE;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
@@ -612,7 +610,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *error,
     return( ver );
 }
 
-void TRAPENTRY TrapFini()
+void TRAPENTRY TrapFini( void )
 {
     RemoteDisco(); // just for debugging
     CloseHandle( FakeHandle );
