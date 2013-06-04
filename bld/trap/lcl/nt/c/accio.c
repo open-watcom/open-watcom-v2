@@ -40,7 +40,7 @@
 #endif
 #include "stdnt.h"
 
-trap_elen ReqFile_get_config( void )
+trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -55,7 +55,7 @@ trap_elen ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRead_user_keyboard( void )
+trap_retval ReqRead_user_keyboard( void )
 {
     read_user_keyboard_req  *acc;
     read_user_keyboard_ret  *ret;
@@ -73,7 +73,7 @@ trap_elen ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_open( void )
+trap_retval ReqFile_open( void )
 {
     HANDLE                  h;
     file_open_req           *acc;
@@ -121,7 +121,7 @@ trap_elen ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_seek( void )
+trap_retval ReqFile_seek( void )
 {
     DWORD           rc;
     file_seek_req   *acc;
@@ -139,7 +139,7 @@ trap_elen ReqFile_seek( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_write( void )
+trap_retval ReqFile_write( void )
 {
     DWORD           bytes;
     BOOL            rc;
@@ -165,7 +165,7 @@ trap_elen ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_write_console( void )
+trap_retval ReqFile_write_console( void )
 {
     DWORD                   bytes;
     BOOL                    rc;
@@ -196,7 +196,7 @@ trap_elen ReqFile_write_console( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_read( void )
+trap_retval ReqFile_read( void )
 {
     DWORD           bytes;
     BOOL            rc;
@@ -217,7 +217,7 @@ trap_elen ReqFile_read( void )
     return( sizeof( *ret ) + bytes );
 }
 
-trap_elen ReqFile_close( void )
+trap_retval ReqFile_close( void )
 {
     file_close_req  *acc;
     file_close_ret  *ret;
@@ -240,7 +240,7 @@ trap_elen ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_erase( void )
+trap_retval ReqFile_erase( void )
 {
     file_erase_ret  *ret;
     char            *buff;
@@ -257,7 +257,7 @@ trap_elen ReqFile_erase( void )
 
 }
 
-trap_elen ReqFile_run_cmd( void )
+trap_retval ReqFile_run_cmd( void )
 {
     file_run_cmd_ret    *ret;
 
@@ -267,7 +267,7 @@ trap_elen ReqFile_run_cmd( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_string_to_fullpath( void )
+trap_retval ReqFile_string_to_fullpath( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;

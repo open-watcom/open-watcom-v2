@@ -37,22 +37,22 @@
         These routines are never passed up to the protect mode helpers
 */
 
-unsigned ReqSet_user_screen()
+trap_retval ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen()
+trap_retval ReqSet_debug_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqSplit_cmd()
+trap_retval ReqSplit_cmd( void )
 {
     return( 0 );
 }
 
-unsigned ReqRead_user_keyboard()
+trap_retval ReqRead_user_keyboard( void )
 {
     return( 0 );
 }

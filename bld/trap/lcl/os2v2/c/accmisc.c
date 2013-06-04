@@ -68,12 +68,12 @@ extern  void    DebugSession( void );
 extern  void    AppSession( void );
 
 
-trap_elen ReqRead_io( void )
+trap_retval ReqRead_io( void )
 {
     return( 0 );
 }
 
-trap_elen ReqWrite_io()
+trap_retval ReqWrite_io( void )
 {
     write_io_ret        *ret;
 
@@ -82,7 +82,7 @@ trap_elen ReqWrite_io()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_get_config( void )
+trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -132,7 +132,7 @@ long OpenFile( char *name, USHORT mode, int flags )
 #define WRITEONLY   1
 #define READWRITE   2
 
-trap_elen ReqFile_open( void )
+trap_retval ReqFile_open( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -160,7 +160,7 @@ trap_elen ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_seek( void )
+trap_retval ReqFile_seek( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -172,7 +172,7 @@ trap_elen ReqFile_seek( void )
 }
 
 
-trap_elen ReqFile_read( void )
+trap_retval ReqFile_read( void )
 {
     ULONG               read_len;
     file_read_req       *acc;
@@ -186,7 +186,7 @@ trap_elen ReqFile_read( void )
     return( sizeof( *ret ) + read_len );
 }
 
-trap_elen ReqFile_write( void )
+trap_retval ReqFile_write( void )
 {
     ULONG               len;
     ULONG               written_len;
@@ -203,7 +203,7 @@ trap_elen ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_close( void )
+trap_retval ReqFile_close( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -214,7 +214,7 @@ trap_elen ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_erase()
+trap_retval ReqFile_erase( void )
 {
     file_erase_ret      *ret;
 
@@ -223,7 +223,7 @@ trap_elen ReqFile_erase()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqThread_get_extra( void )
+trap_retval ReqThread_get_extra( void )
 {
     char *ch;
 
@@ -232,14 +232,14 @@ trap_elen ReqThread_get_extra( void )
     return( 1 );
 }
 
-trap_elen ReqSet_user_screen( void )
+trap_retval ReqSet_user_screen( void )
 {
     AppSession();
     Screen = USER_SCREEN;
     return( 0 );
 }
 
-trap_elen ReqSet_debug_screen( void )
+trap_retval ReqSet_debug_screen( void )
 {
     DebugSession();
     Screen = DEBUG_SCREEN;
@@ -255,7 +255,7 @@ void RestoreScreen( void )
     }
 }
 
-trap_elen ReqRead_user_keyboard( void )
+trap_retval ReqRead_user_keyboard( void )
 {
     HMONITOR    mon;
     struct {
@@ -325,7 +325,7 @@ trap_elen ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqGet_err_text( void )
+trap_retval ReqGet_err_text( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -436,12 +436,12 @@ static trap_elen Redirect( bool input )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRedirect_stdin( void )
+trap_retval ReqRedirect_stdin( void )
 {
     return( Redirect( TRUE ) );
 }
 
-trap_elen ReqRedirect_stdout( void )
+trap_retval ReqRedirect_stdout( void )
 {
     return( Redirect( FALSE ) );
 }
@@ -474,7 +474,7 @@ char *StrCopy( char *src, char *dst )
     return( strlen( dst ) + dst );
 }
 
-trap_elen ReqFile_run_cmd( void )
+trap_retval ReqFile_run_cmd( void )
 {
     char                *dst;
     char                *src;
@@ -625,7 +625,7 @@ long FindFilePath( char *pgm, char *buffer, char *ext_list )
 
 extern char    OS2ExtList[];
 
-trap_elen ReqFile_string_to_fullpath( void )
+trap_retval ReqFile_string_to_fullpath( void )
 {
     char                        *ext_list;
     char                        *name;
@@ -649,7 +649,7 @@ trap_elen ReqFile_string_to_fullpath( void )
     return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }
 
-trap_elen ReqSplit_cmd( void )
+trap_retval ReqSplit_cmd( void )
 {
     char            *cmd;
     char            *start;

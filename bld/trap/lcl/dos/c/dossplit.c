@@ -32,7 +32,7 @@
 
 #include "trpimp.h"
 
-trap_elen ReqSplit_cmd()
+trap_retval ReqSplit_cmd( void )
 {
     char            *cmd;
     char            *start;

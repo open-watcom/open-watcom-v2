@@ -597,7 +597,7 @@ static int DataPut( unsigned char data, unsigned long wait )
     return( 0 );
 }
 
-trap_elen RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( byte *rec, trap_elen len )
 {
     trap_elen  get_len;
     trap_elen  i;
@@ -613,7 +613,7 @@ trap_elen RemoteGet( byte *rec, trap_elen len )
     return( get_len );
 }
 
-trap_elen RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( byte *snd, trap_elen len )
 {
     trap_elen  count;
 

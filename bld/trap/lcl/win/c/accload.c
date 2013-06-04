@@ -91,7 +91,7 @@ typedef struct
  *      - Trace one instruction. This leaves you at the first instruction
  *        of the 32-bit code
  */
-trap_elen ReqProg_load( void )
+trap_retval ReqProg_load( void )
 {
     char                exe_name[_MAX_PATH];
     char                drive[_MAX_DRIVE],directory[_MAX_DIR];
@@ -311,7 +311,7 @@ trap_elen ReqProg_load( void )
  * second pause - to allow Windows to get on with the unloading of the module,
  * if it is going to.  Ack.
  */
-trap_elen ReqProg_kill( void )
+trap_retval ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 

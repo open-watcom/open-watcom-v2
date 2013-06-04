@@ -153,7 +153,7 @@ unsigned FindFilePath( bool exe, char *name, char *result )
 }
 
 
-unsigned ReqRead_user_keyboard()
+trap_retval ReqRead_user_keyboard( void )
 {
     struct _console_ctrl    *con;
     unsigned                con_num;
@@ -202,7 +202,7 @@ unsigned ReqRead_user_keyboard()
 }
 
 
-unsigned ReqGet_err_text()
+trap_retval ReqGet_err_text( void )
 {
     get_err_text_req    *acc;
     char                *err_txt;
@@ -214,7 +214,7 @@ unsigned ReqGet_err_text()
 }
 
 
-unsigned ReqSplit_cmd()
+trap_retval ReqSplit_cmd( void )
 {
     char                ch;
     char                *cmd;
@@ -254,7 +254,7 @@ unsigned ReqSplit_cmd()
     }
 }
 
-unsigned ReqGet_next_alias()
+trap_retval ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -264,12 +264,12 @@ unsigned ReqGet_next_alias()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_user_screen()
+trap_retval ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen()
+trap_retval ReqSet_debug_screen( void )
 {
     return( 0 );
 }

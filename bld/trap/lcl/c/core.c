@@ -41,49 +41,49 @@
     #include "winctrl.h"
 #endif
 
-static trap_elen (* const CoreRequests[])(void) = {
-        ReqConnect,
-        ReqDisconnect,
-        ReqSuspend,
-        ReqResume,
-        ReqGet_supplementary_service,
-        ReqPerform_supplementary_service,
-        ReqGet_sys_config,
-        ReqMap_addr,
-        ReqAddr_info,   //obsolete
-        ReqChecksum_mem,
-        ReqRead_mem,
-        ReqWrite_mem,
-        ReqRead_io,
-        ReqWrite_io,
-        ReqRead_cpu,    //obsolete
-        ReqRead_fpu,    //obsolete
-        ReqWrite_cpu,   //obsolete
-        ReqWrite_fpu,   //obsolete
-        ReqProg_go,
-        ReqProg_step,
-        ReqProg_load,
-        ReqProg_kill,
-        ReqSet_watch,
-        ReqClear_watch,
-        ReqSet_break,
-        ReqClear_break,
-        ReqGet_next_alias,
-        ReqSet_user_screen,
-        ReqSet_debug_screen,
-        ReqRead_user_keyboard,
-        ReqGet_lib_name,
-        ReqGet_err_text,
-        ReqGet_message_text,
-        ReqRedirect_stdin,
-        ReqRedirect_stdout,
-        ReqSplit_cmd,
-        ReqRead_regs,
-        ReqWrite_regs,
-        ReqMachine_data,
+static trap_retval (* const CoreRequests[])(void) = {
+    ReqConnect,
+    ReqDisconnect,
+    ReqSuspend,
+    ReqResume,
+    ReqGet_supplementary_service,
+    ReqPerform_supplementary_service,
+    ReqGet_sys_config,
+    ReqMap_addr,
+    ReqAddr_info,   //obsolete
+    ReqChecksum_mem,
+    ReqRead_mem,
+    ReqWrite_mem,
+    ReqRead_io,
+    ReqWrite_io,
+    ReqRead_cpu,    //obsolete
+    ReqRead_fpu,    //obsolete
+    ReqWrite_cpu,   //obsolete
+    ReqWrite_fpu,   //obsolete
+    ReqProg_go,
+    ReqProg_step,
+    ReqProg_load,
+    ReqProg_kill,
+    ReqSet_watch,
+    ReqClear_watch,
+    ReqSet_break,
+    ReqClear_break,
+    ReqGet_next_alias,
+    ReqSet_user_screen,
+    ReqSet_debug_screen,
+    ReqRead_user_keyboard,
+    ReqGet_lib_name,
+    ReqGet_err_text,
+    ReqGet_message_text,
+    ReqRedirect_stdin,
+    ReqRedirect_stdout,
+    ReqSplit_cmd,
+    ReqRead_regs,
+    ReqWrite_regs,
+    ReqMachine_data,
 };
 
-trap_elen ReqConnect( void )
+trap_retval ReqConnect( void )
 {
     connect_ret *ret;
     char        *err;
@@ -105,7 +105,7 @@ trap_elen ReqConnect( void )
     return( sizeof( *ret ) + strlen( err ) + 1 );
 }
 
-trap_elen ReqDisconnect( void )
+trap_retval ReqDisconnect( void )
 {
 #if defined(DOSX)
     RemoteDisco();
@@ -115,19 +115,19 @@ trap_elen ReqDisconnect( void )
     return( 0 );
 }
 
-trap_elen ReqSuspend( void )
+trap_retval ReqSuspend( void )
 {
     return( 0 );
 }
 
-trap_elen ReqResume( void )
+trap_retval ReqResume( void )
 {
     return( 0 );
 }
 
-trap_elen TRAPENTRY TrapRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
+trap_retval TRAPENTRY TrapRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
-    trap_elen   len;
+    trap_retval     result;
 
     In_Mx_Num = num_in_mx;
     Out_Mx_Num = num_out_mx;
@@ -138,9 +138,9 @@ trap_elen TRAPENTRY TrapRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_ele
     DisableHookEvents();
 #endif
     /* The first item must be the request! */
-    len = CoreRequests[ *(access_req *)mx_in[0].ptr ]();
+    result = CoreRequests[ *(access_req *)mx_in[0].ptr ]();
 #if defined(WIN16)
     EnableHookEvents();
 #endif
-    return( len );
+    return( result );
 }

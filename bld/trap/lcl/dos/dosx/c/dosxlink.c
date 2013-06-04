@@ -152,7 +152,7 @@ extern unsigned short   GetCS( void );
 #pragma aux GetCS = "mov ax,cs" value [ ax ];
 
 
-trap_elen RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( byte *rec, trap_elen len )
 {
     trap_elen       received;
 #ifdef SERVER
@@ -183,7 +183,7 @@ trap_elen RemoteGet( byte *rec, trap_elen len )
     return( received );
 }
 
-trap_elen RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( byte *snd, trap_elen len )
 {
 #ifdef SERVER
     unsigned long   buff;

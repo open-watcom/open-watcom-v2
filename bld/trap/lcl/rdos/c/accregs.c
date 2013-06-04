@@ -36,7 +36,7 @@
 #include "madregs.h"
 #include "debug.h"
 
-trap_elen ReqRead_cpu( void )
+trap_retval ReqRead_cpu( void )
 {
     trap_cpu_regs           *regs;
     struct TDebug           *obj;
@@ -72,7 +72,7 @@ trap_elen ReqRead_cpu( void )
     return( sizeof( *regs ) );
 }
 
-trap_elen ReqRead_fpu( void )
+trap_retval ReqRead_fpu( void )
 {
     trap_fpu_regs           *fpu;
     struct TDebug           *obj;
@@ -99,7 +99,7 @@ trap_elen ReqRead_fpu( void )
     return( sizeof( *fpu ) );
 }
 
-trap_elen ReqWrite_cpu( void )
+trap_retval ReqWrite_cpu( void )
 {
     trap_cpu_regs           *regs;
     struct TDebug           *obj;
@@ -135,7 +135,7 @@ trap_elen ReqWrite_cpu( void )
     return( 0 );
 }
 
-trap_elen ReqWrite_fpu( void )
+trap_retval ReqWrite_fpu( void )
 {
     trap_fpu_regs           *fpu;
     struct TDebug           *obj;
@@ -163,7 +163,7 @@ trap_elen ReqWrite_fpu( void )
     return( 0 );
 }
 
-trap_elen ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 {
     mad_registers           _WCUNALIGNED *mr;
     struct TDebug           *obj;
@@ -209,7 +209,7 @@ trap_elen ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_elen ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 {
     mad_registers           _WCUNALIGNED *mr;
     struct TDebug           *obj;

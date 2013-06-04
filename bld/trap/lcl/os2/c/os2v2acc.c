@@ -566,7 +566,7 @@ void DoWritePgmScrn( char *buff, USHORT len )
     BreakPoint( 0 );
 }
 
-unsigned ReqGet_sys_config( void )
+trap_retval ReqGet_sys_config( void )
 {
     USHORT        version;
     USHORT        shift;
@@ -601,7 +601,7 @@ unsigned ReqGet_sys_config( void )
 }
 
 
-unsigned ReqMap_addr( void )
+trap_retval ReqMap_addr( void )
 {
     USHORT              seg;
     ULONG               flags;
@@ -659,7 +659,7 @@ unsigned ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqAddr_info( void )
+trap_retval ReqAddr_info( void )
 {
     addr_info_req       *acc;
     addr_info_ret       *ret;
@@ -670,7 +670,7 @@ unsigned ReqAddr_info( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data( void )
+trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -686,7 +686,7 @@ unsigned ReqMachine_data( void )
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-unsigned ReqChecksum_mem( void )
+trap_retval ReqChecksum_mem( void )
 {
     ULONG         offset;
     USHORT        length;
@@ -722,7 +722,7 @@ unsigned ReqChecksum_mem( void )
 }
 
 
-unsigned ReqRead_mem( void )
+trap_retval ReqRead_mem( void )
 {
     read_mem_req        *acc;
     void                *ret;
@@ -735,7 +735,7 @@ unsigned ReqRead_mem( void )
 }
 
 
-unsigned ReqWrite_mem( void )
+trap_retval ReqWrite_mem( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
@@ -802,7 +802,7 @@ static void WriteCPU( struct x86_cpu *r )
     lastEIP = Buff.EIP;
 }
 
-unsigned ReqRead_cpu( void )
+trap_retval ReqRead_cpu( void )
 {
     trap_cpu_regs *regs;
 
@@ -815,7 +815,7 @@ unsigned ReqRead_cpu( void )
     return( sizeof( *regs ) );
 }
 
-unsigned ReqRead_fpu( void )
+trap_retval ReqRead_fpu( void )
 {
     Buff.Cmd = DBG_C_ReadCoRegs;
     Buff.Buffer = (ULONG) MakeLocalPtrFlat( GetOutPtr(0) );
@@ -830,7 +830,7 @@ unsigned ReqRead_fpu( void )
     }
 }
 
-unsigned ReqWrite_cpu( void )
+trap_retval ReqWrite_cpu( void )
 {
     trap_cpu_regs       *regs;
 
@@ -842,7 +842,7 @@ unsigned ReqWrite_cpu( void )
     return( 0 );
 }
 
-unsigned ReqWrite_fpu( void )
+trap_retval ReqWrite_fpu( void )
 {
     Buff.Cmd = DBG_C_WriteCoRegs;
     Buff.Buffer = (ULONG) MakeLocalPtrFlat( GetInPtr( sizeof(write_fpu_req) ) );
@@ -853,7 +853,7 @@ unsigned ReqWrite_fpu( void )
     return( 0 );
 }
 
-unsigned ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
 
@@ -872,7 +872,7 @@ unsigned ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-unsigned ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
@@ -890,7 +890,7 @@ unsigned ReqWrite_regs( void )
     return( 0 );
 }
 
-unsigned ReqGet_lib_name( void )
+trap_retval ReqGet_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -1034,7 +1034,7 @@ void DebugSession( void )
         DosSelectSession( 0, 0 );
 }
 
-unsigned ReqProg_load( void )
+trap_retval ReqProg_load( void )
 {
     NEWSTARTDATA        start;
     char                *parms;
@@ -1148,7 +1148,7 @@ unsigned ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_kill( void )
+trap_retval ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 
@@ -1173,7 +1173,7 @@ unsigned ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_break( void )
+trap_retval ReqSet_break( void )
 {
     byte             ch;
     set_break_req       *acc;
@@ -1188,7 +1188,7 @@ unsigned ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break( void )
+trap_retval ReqClear_break( void )
 {
     clear_break_req     *acc;
     byte                 ch;
@@ -1199,7 +1199,7 @@ unsigned ReqClear_break( void )
     return( 0 );
 }
 
-unsigned ReqSet_watch( void )
+trap_retval ReqSet_watch( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
@@ -1226,7 +1226,7 @@ unsigned ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch( void )
+trap_retval ReqClear_watch( void )
 {
     clear_watch_req     *acc;
     watch            *dst;
@@ -1423,7 +1423,7 @@ static unsigned progRun( bool step )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_go( void )
+trap_retval ReqProg_go( void )
 {
     unsigned    rc;
 
@@ -1433,7 +1433,7 @@ unsigned ReqProg_go( void )
     return( rc );
 }
 
-unsigned ReqProg_step( void )
+trap_retval ReqProg_step( void )
 {
     unsigned    rc;
 
@@ -1443,7 +1443,7 @@ unsigned ReqProg_step( void )
     return( rc );
 }
 
-unsigned ReqFile_write_console( void )
+trap_retval ReqFile_write_console( void )
 {
     USHORT       len;
     USHORT       written_len;
@@ -1481,7 +1481,7 @@ static int ValidThread( TID thread )
     return( Buff.Cmd == DBG_N_Success );
 }
 
-unsigned ReqThread_get_next( void )
+trap_retval ReqThread_get_next( void )
 {
     thread_get_next_req *acc;
     thread_get_next_ret *ret;
@@ -1505,7 +1505,7 @@ unsigned ReqThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_set( void )
+trap_retval ReqThread_set( void )
 {
     thread_set_req      *acc;
     thread_set_ret      *ret;
@@ -1547,17 +1547,17 @@ static unsigned DoThread( trace_codes code )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_freeze( void )
+trap_retval ReqThread_freeze( void )
 {
     return( DoThread( DBG_C_Freeze ) );
 }
 
-unsigned ReqThread_thaw( void )
+trap_retval ReqThread_thaw( void )
 {
     return( DoThread( DBG_C_Resume ) );
 }
 
-unsigned ReqGet_message_text( void )
+trap_retval ReqGet_message_text( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -1574,7 +1574,7 @@ unsigned ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_retval ReqGet_next_alias( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;

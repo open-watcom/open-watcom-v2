@@ -34,6 +34,7 @@
 #include "dbgio.h"
 #include "trpcore.h"
 #include "trprtrd.h"
+#include "trapaccs.h"
 
 #define DEFAULT_TID     1
 
@@ -41,14 +42,7 @@ extern trap_shandle     GetSuppId( char * );
 extern void             CheckForNewThreads( bool set_exec );
 extern void             GetSysConfig( void );
 extern void             CheckMADChange( void );
-
-#if defined(__GUI__) && defined(__OS2__)
-extern unsigned         OnAnotherThread( trap_elen(*)(), unsigned, void *, unsigned, void * );
-#else
-#define                 OnAnotherThread( a,b,c,d,e ) a( b,c,d,e )
-#endif
-
-extern void             InitRunThreadWnd();
+extern void             InitRunThreadWnd( void );
 
 extern machine_state    *DbgRegs;
 extern system_config    SysConfig;

@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include "stdnt.h"
 
-trap_elen ReqRedirect_stdin( void )
+trap_retval ReqRedirect_stdin( void )
 {
     redirect_stdin_ret  *ret;
 
@@ -42,7 +42,7 @@ trap_elen ReqRedirect_stdin( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRedirect_stdout( void )
+trap_retval ReqRedirect_stdout( void )
 {
     redirect_stdout_ret *ret;
 

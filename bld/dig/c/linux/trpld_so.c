@@ -36,15 +36,13 @@
 #include "trpimp.h"
 #include "tcerr.h"
 #include "trpqimp.h"
+#include "trpld.h"
 
 #if defined( BUILTIN_TRAP_FILE )
 extern const trap_requests *TrapLoad( const trap_callbacks *client );
 #endif
 
 extern char          **environ;
-
-extern trap_version  TrapVer;
-extern trap_req_func *ReqFunc;
 
 extern  int          FullPathOpen( char const *name, char *ext, char *result, unsigned max_result );
 extern  int          GetSystemHandle(int);

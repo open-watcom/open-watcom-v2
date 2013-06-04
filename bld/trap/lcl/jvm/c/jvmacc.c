@@ -282,7 +282,7 @@ void HandleExit(void)
     TheBigSleep();
 }
 
-unsigned ReqGet_sys_config( void )
+trap_retval ReqGet_sys_config( void )
 /********************************/
 {
     get_sys_config_ret  *ret;
@@ -298,7 +298,7 @@ unsigned ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMap_addr()
+trap_retval ReqMap_addr( void )
 /********************/
 {
     map_addr_req        *acc;
@@ -323,7 +323,7 @@ unsigned ReqMap_addr()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data()
+trap_retval ReqMachine_data( void )
 /************************/
 {
     machine_data_req    *acc;
@@ -337,7 +337,7 @@ unsigned ReqMachine_data()
 }
 
 
-unsigned ReqChecksum_mem()
+trap_retval ReqChecksum_mem( void )
 /************************/
 {
     DWORD               offset;
@@ -465,7 +465,7 @@ static void LineAddrLookup( mad_jvm_findline_ret *info )
     info->ret = SR_CLOSEST;
 }
 
-unsigned ReqRead_mem()
+trap_retval ReqRead_mem( void )
 /********************/
 {
     read_mem_req        *acc;
@@ -502,7 +502,7 @@ unsigned ReqRead_mem()
     }
 }
 
-unsigned ReqWrite_mem( void )
+trap_retval ReqWrite_mem( void )
 /***************************/
 {
     DWORD               offset;
@@ -534,7 +534,7 @@ unsigned ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_io()
+trap_retval ReqRead_io( void )
 /*******************/
 {
     // never called
@@ -542,7 +542,7 @@ unsigned ReqRead_io()
 }
 
 
-unsigned ReqWrite_io()
+trap_retval ReqWrite_io( void )
 /********************/
 {
     write_io_ret        *ret;
@@ -574,7 +574,7 @@ static void GetRegs( unsigned_32 *pc,
     if( frame ) *frame = (unsigned_32)ee->current_frame;
 }
 
-unsigned ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 /***************************/
 {
     mad_registers       _WCUNALIGNED *mr;
@@ -585,7 +585,7 @@ unsigned ReqRead_regs( void )
     return( sizeof( mr->jvm ) );
 }
 
-unsigned ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 /****************************/
 {
     mad_registers       _WCUNALIGNED *mr;
@@ -826,7 +826,7 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
     return( p );
 }
 
-unsigned ReqProg_load()
+trap_retval ReqProg_load( void )
 /*********************/
 {
     prog_load_ret       *ret;
@@ -843,7 +843,7 @@ unsigned ReqProg_load()
     return( sizeof( prog_load_ret ) );
 }
 
-unsigned ReqProg_kill()
+trap_retval ReqProg_kill( void )
 /*********************/
 {
     prog_kill_ret       *ret;
@@ -855,21 +855,21 @@ unsigned ReqProg_kill()
 }
 
 
-unsigned ReqSet_watch()
+trap_retval ReqSet_watch( void )
 /*********************/
 {
     // nyi
     return( 0 );
 }
 
-unsigned ReqClear_watch()
+trap_retval ReqClear_watch( void )
 /***********************/
 {
     // nyi
     return( 0 );
 }
 
-unsigned ReqSet_break()
+trap_retval ReqSet_break( void )
 /*********************/
 {
     set_break_req       *acc;
@@ -891,7 +891,7 @@ unsigned ReqSet_break()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break()
+trap_retval ReqClear_break( void )
 /***********************/
 {
     char                        ch;
@@ -952,33 +952,33 @@ static unsigned runProg( bool single_step )
     return( sizeof( *ret ) );
 } /* runProg */
 
-unsigned ReqProg_go()
+trap_retval ReqProg_go( void )
 /*******************/
 {
     return( runProg( FALSE ) );
 }
 
-unsigned ReqProg_step()
+trap_retval ReqProg_step( void )
 /*********************/
 {
     return( runProg( TRUE ) );
 }
 
-unsigned ReqRedirect_stdin()
+trap_retval ReqRedirect_stdin( void )
 /**************************/
 {
     // never called
     return( 0 );
 }
 
-unsigned ReqRedirect_stdout()
+trap_retval ReqRedirect_stdout( void )
 /***************************/
 {
     // never called
     return( 0 );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_retval ReqGet_next_alias( void )
 /********************************/
 {
     get_next_alias_ret  *ret;
@@ -989,7 +989,7 @@ unsigned ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_err_text( void )
+trap_retval ReqGet_err_text( void )
 /******************************/
 {
 
@@ -997,7 +997,7 @@ unsigned ReqGet_err_text( void )
     return( 0 );
 }
 
-unsigned ReqGet_lib_name( void )
+trap_retval ReqGet_lib_name( void )
 /******************************/
 {
     get_lib_name_req    *acc;
@@ -1039,7 +1039,7 @@ unsigned ReqGet_lib_name( void )
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
-unsigned ReqGet_message_text( void )
+trap_retval ReqGet_message_text( void )
 /**********************************/
 {
 #if 0
@@ -1057,7 +1057,7 @@ unsigned ReqGet_message_text( void )
 #endif
 }
 
-unsigned ReqThread_get_next()
+trap_retval ReqThread_get_next( void )
 /***************************/
 {
     thread_get_next_req *acc;
@@ -1082,7 +1082,7 @@ unsigned ReqThread_get_next()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_set()
+trap_retval ReqThread_set( void )
 /**********************/
 {
     thread_set_req      *acc;
@@ -1103,7 +1103,7 @@ unsigned ReqThread_set()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_freeze()
+trap_retval ReqThread_freeze( void )
 /*************************/
 {
     thread_freeze_req   *acc;
@@ -1117,7 +1117,7 @@ unsigned ReqThread_freeze()
 }
 
 
-unsigned ReqThread_thaw()
+trap_retval ReqThread_thaw( void )
 /***********************/
 {
     thread_thaw_req     *acc;
@@ -1130,7 +1130,7 @@ unsigned ReqThread_thaw()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_get_extra()
+trap_retval ReqThread_get_extra( void )
 /****************************/
 {
     thread_get_extra_req        *acc;
@@ -1174,14 +1174,14 @@ unsigned ReqThread_get_extra()
     return( strlen( name ) + 1 );
 }
 
-unsigned ReqFile_get_config()
+trap_retval ReqFile_get_config( void )
 /***************************/
 {
     // never called
     return( 0 );
 }
 
-unsigned ReqFile_string_to_fullpath( void )
+trap_retval ReqFile_string_to_fullpath( void )
 /*****************************************/
 {
     // never called
@@ -1189,7 +1189,7 @@ unsigned ReqFile_string_to_fullpath( void )
 }
 
 static ClassClass *CbOpened;
-unsigned ReqFile_open( void )
+trap_retval ReqFile_open( void )
 /***************************/
 {
     file_open_req       *acc;
@@ -1218,21 +1218,21 @@ unsigned ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek( void )
+trap_retval ReqFile_seek( void )
 /***************************/
 {
     // never called
     return( 0 );
 }
 
-unsigned ReqFile_write( void )
+trap_retval ReqFile_write( void )
 /****************************/
 {
     // never called
     return( 0 );
 }
 
-unsigned ReqFile_write_console( void )
+trap_retval ReqFile_write_console( void )
 /************************************/
 {
     // never called
@@ -1243,7 +1243,7 @@ unsigned ReqFile_write_console( void )
 #define PREFIX_SIZE (sizeof(PREFIX)-1)
 #define LENGTH (PREFIX_SIZE+sizeof(void*))
 
-unsigned ReqFile_read( void )
+trap_retval ReqFile_read( void )
 /***************************/
 {
     file_read_req       *acc;
@@ -1265,14 +1265,14 @@ unsigned ReqFile_read( void )
     return( sizeof( *ret ) + bytes );
 }
 
-unsigned ReqFile_close( void )
+trap_retval ReqFile_close( void )
 /****************************/
 {
     // never called
     return( 0 );
 }
 
-unsigned ReqFile_erase( void )
+trap_retval ReqFile_erase( void )
 /****************************/
 {
     // never called
@@ -1280,7 +1280,7 @@ unsigned ReqFile_erase( void )
 
 }
 
-unsigned ReqFile_run_cmd( void )
+trap_retval ReqFile_run_cmd( void )
 /******************************/
 {
     // never called
@@ -1312,31 +1312,31 @@ void TRAPENTRY TrapFini()
 }
 
 //OBSOLETE - use ReqRead_regs
-unsigned ReqRead_cpu()
+trap_retval ReqRead_cpu( void )
 {
     return( 0 );
 }
 
 //OBSOLETE - use ReqRead_regs
-unsigned ReqRead_fpu()
+trap_retval ReqRead_fpu( void )
 {
     return( 0 );
 }
 
 //OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_cpu()
+trap_retval ReqWrite_cpu( void )
 {
     return( 0 );
 }
 
 //OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_fpu()
+trap_retval ReqWrite_fpu( void )
 {
     return( 0 );
 }
 
 //OBSOLETE - use ReqMachine_data
-unsigned ReqAddr_info()
+trap_retval ReqAddr_info( void )
 {
     return( 0 );
 }

@@ -68,7 +68,7 @@ bool Terminate( void )
     return( FALSE );
 }
 
-trap_elen RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( byte *rec, trap_elen len )
 {
     int         got;
     trap_elen   total;
@@ -87,7 +87,7 @@ trap_elen RemoteGet( byte *rec, trap_elen len )
     return( total );
 }
 
-trap_elen RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( byte *snd, trap_elen len )
 {
 
     while( len >= MAX_DATA_SIZE ) {

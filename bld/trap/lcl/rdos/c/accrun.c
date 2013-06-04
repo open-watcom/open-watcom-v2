@@ -36,7 +36,7 @@
 #include "stdrdos.h"
 #include "debug.h"
 
-trap_elen ReqProg_go( void )
+trap_retval ReqProg_go( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -91,7 +91,7 @@ trap_elen ReqProg_go( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqProg_step( void )
+trap_retval ReqProg_step( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;

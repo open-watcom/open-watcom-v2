@@ -125,7 +125,7 @@ _DBG_IPX(("Posting RecECB[%d]\r\n", i));
     CSPXListenForSequencedPacket( &RecECB[i] );
 }
 
-static trap_elen DoRemoteGet( byte *rec, trap_elen len )
+static trap_retval DoRemoteGet( byte *rec, trap_elen len )
 {
     trap_elen   recvd;
     int         i;
@@ -165,7 +165,7 @@ _DBG_IPX(("Got a packet - size=%d\r\n", got));
     return( recvd );
 }
 
-static trap_elen DoRemotePut( byte *snd, trap_elen len )
+static trap_retval DoRemotePut( byte *snd, trap_elen len )
 {
 _DBG_IPX(("RemotePut\r\n"));
     _INITSPXECB( Send, 2, snd, len );
@@ -177,12 +177,12 @@ _DBG_IPX(("RemotePut\r\n"));
     return( len );
 }
 
-trap_elen RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( byte *rec, trap_elen len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-trap_elen RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( byte *snd, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {

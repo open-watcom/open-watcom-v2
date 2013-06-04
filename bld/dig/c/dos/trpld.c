@@ -38,6 +38,7 @@
 #include "exedos.h"
 #include "trpimp.h"
 #include "tcerr.h"
+#include "trpld.h"
 
 #define TRAP_SIGNATURE          0xDEAF
 
@@ -53,8 +54,6 @@ typedef struct {
 extern unsigned_32      GetSystemHandle( int );
 extern int              PathOpen(char *,unsigned,char *);
 extern unsigned         FileClose( int );
-extern trap_version     TrapVer;
-extern trap_req_func    *ReqFunc;
 
 static trap_header      far *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;

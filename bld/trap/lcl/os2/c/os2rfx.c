@@ -61,7 +61,7 @@ typedef struct {
 #define BUFF_SIZE       256
 
 
-unsigned ReqRfx_rename()
+trap_retval ReqRfx_rename( void )
 {
     char           *old_name;
     char           *new_name;
@@ -75,7 +75,7 @@ unsigned ReqRfx_rename()
 }
 
 
-unsigned ReqRfx_mkdir()
+trap_retval ReqRfx_mkdir( void )
 {
     char             *name;
     rfx_mkdir_ret       *ret;
@@ -87,7 +87,7 @@ unsigned ReqRfx_mkdir()
 }
 
 
-unsigned ReqRfx_rmdir()
+trap_retval ReqRfx_rmdir( void )
 {
     char             *name;
     rfx_rmdir_ret       *ret;
@@ -99,7 +99,7 @@ unsigned ReqRfx_rmdir()
 }
 
 
-unsigned ReqRfx_setdrive()
+trap_retval ReqRfx_setdrive( void )
 {
     rfx_setdrive_req    *acc;
     rfx_setdrive_ret    *ret;
@@ -111,7 +111,7 @@ unsigned ReqRfx_setdrive()
 }
 
 
-unsigned ReqRfx_getdrive()
+trap_retval ReqRfx_getdrive( void )
 {
     USHORT             drive;
     ULONG              map;
@@ -127,7 +127,7 @@ unsigned ReqRfx_getdrive()
 }
 
 
-unsigned ReqRfx_setcwd()
+trap_retval ReqRfx_setcwd( void )
 {
     char              *name;
     rfx_setcwd_ret      *ret;
@@ -139,7 +139,7 @@ unsigned ReqRfx_setcwd()
 }
 
 
-unsigned ReqRfx_getfileattr()
+trap_retval ReqRfx_getfileattr( void )
 {
     USHORT             attrib;
     USHORT             ret_code;
@@ -154,7 +154,7 @@ unsigned ReqRfx_getfileattr()
 }
 
 
-unsigned ReqRfx_setfileattr()
+trap_retval ReqRfx_setfileattr( void )
 {
     char               *name;
     rfx_setfileattr_req *acc;
@@ -168,7 +168,7 @@ unsigned ReqRfx_setfileattr()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getfreespace()
+trap_retval ReqRfx_getfreespace( void )
 {
     FSALLOCATE      info;
     rfx_getfreespace_req        *acc;
@@ -224,7 +224,7 @@ static void mylocaltime( unsigned long date_time, unsigned *time, unsigned *date
     *date = (year << 9) | (month << 5) | day;
 }
 
-unsigned ReqRfx_setdatetime()
+trap_retval ReqRfx_setdatetime( void )
 {
     FILESTATUS         info;
     unsigned           time;
@@ -272,7 +272,7 @@ static unsigned long mymktime( unsigned time, unsigned date )
     return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
 }
 
-unsigned ReqRfx_getdatetime()
+trap_retval ReqRfx_getdatetime( void )
 {
     rfx_getdatetime_req *acc;
     rfx_getdatetime_ret *ret;
@@ -286,7 +286,7 @@ unsigned ReqRfx_getdatetime()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getcwd()
+trap_retval ReqRfx_getcwd( void )
 {
     USHORT            len = BUFF_SIZE;
     rfx_getcwd_req      *acc;
@@ -311,7 +311,7 @@ static void MoveDirInfo( FILEFINDBUF *os2, trap_dta FAR *dos )
     strcpy( dos->name, os2->achName );
 }
 
-unsigned ReqRfx_findfirst()
+trap_retval ReqRfx_findfirst( void )
 {
     FILEFINDBUF          info;
     USHORT               rc;
@@ -336,7 +336,7 @@ unsigned ReqRfx_findfirst()
     }
 }
 
-unsigned ReqRfx_findnext()
+trap_retval ReqRfx_findnext( void )
 {
     FILEFINDBUF         info;
     USHORT              rc;
@@ -355,12 +355,12 @@ unsigned ReqRfx_findnext()
     }
 }
 
-unsigned ReqRfx_findclose()
+trap_retval ReqRfx_findclose( void )
 {
     return( 0 );
 }
 
-unsigned ReqRfx_nametocannonical()
+trap_retval ReqRfx_nametocannonical( void )
 {
     rfx_nametocannonical_ret    *ret;
     char                  *name;

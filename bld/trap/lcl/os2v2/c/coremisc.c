@@ -45,7 +45,7 @@
 #define OPEN_CREATE  1
 #define OPEN_PRIVATE 2
 
-unsigned ReqFile_get_config( void )
+trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -138,7 +138,7 @@ long FindFilePath(char *pgm, char *buffer, char *ext_list)
     return rc;
 }
 
-unsigned ReqSplit_cmd( void )
+trap_retval ReqSplit_cmd( void )
 {
     char                *cmd;
     char                *start;
@@ -216,7 +216,7 @@ static long OpenFile( char *name, USHORT mode, int flags )
 #define WRITEONLY   1
 #define READWRITE   2
 
-unsigned ReqFile_open( void )
+trap_retval ReqFile_open( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -244,7 +244,7 @@ unsigned ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek( void )
+trap_retval ReqFile_seek( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -256,7 +256,7 @@ unsigned ReqFile_seek( void )
 }
 
 
-unsigned ReqFile_read( void )
+trap_retval ReqFile_read( void )
 {
     ULONG               read_len;
     file_read_req       *acc;
@@ -270,7 +270,7 @@ unsigned ReqFile_read( void )
     return( sizeof( *ret ) + read_len );
 }
 
-unsigned ReqFile_write( void )
+trap_retval ReqFile_write( void )
 {
     ULONG               len;
     ULONG               written_len;
@@ -287,7 +287,7 @@ unsigned ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_close( void )
+trap_retval ReqFile_close( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -298,7 +298,7 @@ unsigned ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_erase()
+trap_retval ReqFile_erase( void )
 {
     file_erase_ret      *ret;
 
@@ -307,17 +307,17 @@ unsigned ReqFile_erase()
     return( sizeof(*ret) );
 }
 
-unsigned ReqSet_user_screen()
+trap_retval ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen()
+trap_retval ReqSet_debug_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqRead_user_keyboard()
+trap_retval ReqRead_user_keyboard( void )
 {
     read_user_keyboard_req      *acc;
     read_user_keyboard_ret      *ret;
@@ -328,7 +328,7 @@ unsigned ReqRead_user_keyboard()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write_console( void )
+trap_retval ReqFile_write_console( void )
 {
     ULONG        len;
     ULONG        written_len;
@@ -343,7 +343,7 @@ unsigned ReqFile_write_console( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_retval ReqGet_next_alias( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;
@@ -355,7 +355,7 @@ unsigned ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_run_cmd( void )
+trap_retval ReqFile_run_cmd( void )
 {
     char                *src;
     file_run_cmd_ret    *ret;
@@ -365,7 +365,7 @@ unsigned ReqFile_run_cmd( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_err_text( void )
+trap_retval ReqGet_err_text( void )
 {
     get_err_text_req    *acc;
     char                *err_txt;

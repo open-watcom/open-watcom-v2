@@ -33,6 +33,8 @@
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #include "dbgmem.h"
+#include "trptypes.h"
+#include "trapaccs.h"
 #include <string.h>
 #define INCL_SUB
 #define INCL_PM
@@ -264,7 +266,6 @@ void *uifaralloc( unsigned size )
     return( ExtraAlloc( size ) );
 }
 
-
 void uifarfree( void *ptr )
 {
     ExtraFree( ptr );
@@ -274,6 +275,7 @@ bool SysGUI( void )
 {
     return( TRUE );
 }
+
 void PopErrBox( char *buff )
 {
     WinMessageBox( HWND_DESKTOP, HWND_DESKTOP, buff,
@@ -281,8 +283,7 @@ void PopErrBox( char *buff )
                   MB_MOVEABLE | MB_CUACRITICAL | MB_CANCEL );
 }
 
-unsigned OnAnotherThread( unsigned (*rtn)( unsigned, void *, unsigned, void *),
-                          unsigned in_len, void *in, unsigned out_len, void *out )
+unsigned OnAnotherThread( unsigned(*rtn)(unsigned,void *,unsigned,void *), unsigned in_len, void *in, unsigned out_len, void *out )
 {
     unsigned    result;
     ULONG       ulCount;

@@ -483,7 +483,7 @@ static void AddModsInfo( char *name, epsp_t *epsp )
     }
 }
 
-trap_elen ReqGet_sys_config( void )
+trap_retval ReqGet_sys_config( void )
 /********************************/
 {
     get_sys_config_ret  *ret;
@@ -502,7 +502,7 @@ trap_elen ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqMap_addr( void )
+trap_retval ReqMap_addr( void )
 /**************************/
 {
     map_addr_req    *acc;
@@ -554,7 +554,7 @@ trap_elen ReqMap_addr( void )
 }
 
 //OBSOLETE - use ReqMachine_data
-trap_elen ReqAddr_info( void )
+trap_retval ReqAddr_info( void )
 /***************************/
 {
     addr_info_req       *acc;
@@ -582,7 +582,7 @@ static trap_elen WriteMemory( addr48_ptr *addr, void *data, trap_elen len )
     return( MemoryWrite( addr->offset, addr->segment, data, len ) );
 }
 
-trap_elen ReqChecksum_mem( void )
+trap_retval ReqChecksum_mem( void )
 /******************************/
 {
     trap_elen           len;
@@ -617,7 +617,7 @@ trap_elen ReqChecksum_mem( void )
     return( sizeof( ret ) );
 }
 
-trap_elen ReqRead_mem( void )
+trap_retval ReqRead_mem( void )
 /**************************/
 {
     read_mem_req        *acc;
@@ -626,7 +626,7 @@ trap_elen ReqRead_mem( void )
     return( ReadMemory( &acc->mem_addr, GetOutPtr( 0 ), acc->len ) );
 }
 
-trap_elen ReqWrite_mem( void )
+trap_retval ReqWrite_mem( void )
 /***************************/
 {
     write_mem_req       *acc;
@@ -638,7 +638,7 @@ trap_elen ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRead_io( void )
+trap_retval ReqRead_io( void )
 /*************************/
 {
     read_io_req         *acc;
@@ -656,7 +656,7 @@ trap_elen ReqRead_io( void )
     return( acc->len );
 }
 
-trap_elen ReqWrite_io( void )
+trap_retval ReqWrite_io( void )
 /**************************/
 {
     trap_elen           len;
@@ -679,7 +679,7 @@ trap_elen ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRead_cpu( void )
+trap_retval ReqRead_cpu( void )
 /**************************/
 {
     trap_cpu_regs       *regs;
@@ -689,7 +689,7 @@ trap_elen ReqRead_cpu( void )
     return( sizeof( *regs ) );
 }
 
-trap_elen ReqRead_fpu( void )
+trap_retval ReqRead_fpu( void )
 /**************************/
 {
     trap_fpu_regs       *regs;
@@ -699,7 +699,7 @@ trap_elen ReqRead_fpu( void )
     return( sizeof( *regs ) );
 }
 
-trap_elen ReqWrite_cpu( void )
+trap_retval ReqWrite_cpu( void )
 /***************************/
 {
     trap_cpu_regs       *regs;
@@ -709,7 +709,7 @@ trap_elen ReqWrite_cpu( void )
     return( 0 );
 }
 
-trap_elen ReqWrite_fpu( void )
+trap_retval ReqWrite_fpu( void )
 /***************************/
 {
     trap_fpu_regs       *regs;
@@ -749,19 +749,19 @@ static unsigned ProgRun( bool step )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqProg_go( void )
+trap_retval ReqProg_go( void )
 /*************************/
 {
     return( ProgRun( FALSE ) );
 }
 
-trap_elen ReqProg_step( void )
+trap_retval ReqProg_step( void )
 /***************************/
 {
     return( ProgRun( TRUE ) );
 }
 
-trap_elen ReqProg_load( void )
+trap_retval ReqProg_load( void )
 /***************************/
 {
     char            *src;
@@ -816,7 +816,7 @@ trap_elen ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqProg_kill( void )
+trap_retval ReqProg_kill( void )
 /***************************/
 {
     prog_kill_req       *acc;
@@ -831,7 +831,7 @@ trap_elen ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqSet_watch( void )
+trap_retval ReqSet_watch( void )
 /***************************/
 {
     set_watch_req   *acc;
@@ -881,7 +881,7 @@ trap_elen ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqClear_watch( void )
+trap_retval ReqClear_watch( void )
 /*****************************/
 {
     clear_watch_req     *acc;
@@ -916,7 +916,7 @@ trap_elen ReqClear_watch( void )
     return( 0 );
 }
 
-trap_elen ReqSet_break( void )
+trap_retval ReqSet_break( void )
 /***************************/
 {
     byte            ch;
@@ -933,7 +933,7 @@ trap_elen ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqClear_break( void )
+trap_retval ReqClear_break( void )
 /*****************************/
 {
     byte            ch;
@@ -946,7 +946,7 @@ trap_elen ReqClear_break( void )
     return( 0 );
 }
 
-trap_elen ReqGet_next_alias( void )
+trap_retval ReqGet_next_alias( void )
 /********************************/
 {
     get_next_alias_req  *acc;
@@ -959,7 +959,7 @@ trap_elen ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqGet_lib_name( void )
+trap_retval ReqGet_lib_name( void )
 /******************************/
 {
     char                *name;
@@ -981,7 +981,7 @@ trap_elen ReqGet_lib_name( void )
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
-trap_elen ReqGet_err_text( void )
+trap_retval ReqGet_err_text( void )
 /******************************/
 {
     static char *DosErrMsgs[] = {
@@ -1007,7 +1007,7 @@ trap_elen ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-trap_elen ReqGet_message_text( void )
+trap_retval ReqGet_message_text( void )
 /**********************************/
 {
     static const char * const ExceptionMsgs[] = {
@@ -1029,7 +1029,7 @@ trap_elen ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_elen ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 /***************************/
 {
     mad_registers       *mr;
@@ -1040,7 +1040,7 @@ trap_elen ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_elen ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 /****************************/
 {
     mad_registers       *mr;
@@ -1051,7 +1051,7 @@ trap_elen ReqWrite_regs( void )
     return( 0 );
 }
 
-trap_elen ReqMachine_data( void )
+trap_retval ReqMachine_data( void )
 /******************************/
 {
     machine_data_req    *acc;

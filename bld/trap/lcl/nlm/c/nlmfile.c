@@ -60,7 +60,7 @@ extern int IOSeek( int seekhandle, int seekmode, long seekpos );
 extern int IORead( int readhandle, char *buff, int len );
 extern void StringToNLMPath( char *name, char *res );
 
-trap_elen ReqFile_get_config()
+trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -75,7 +75,7 @@ trap_elen ReqFile_get_config()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_open()
+trap_retval ReqFile_open( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -100,7 +100,7 @@ trap_elen ReqFile_open()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_close()
+trap_retval ReqFile_close( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -111,7 +111,7 @@ trap_elen ReqFile_close()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_write()
+trap_retval ReqFile_write( void )
 {
     int          retval;
     file_write_req      *acc;
@@ -132,7 +132,7 @@ trap_elen ReqFile_write()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_write_console()
+trap_retval ReqFile_write_console( void )
 {
     int          retval;
     file_write_console_req      *acc;
@@ -153,7 +153,7 @@ trap_elen ReqFile_write_console()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_seek()
+trap_retval ReqFile_seek( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -172,7 +172,7 @@ trap_elen ReqFile_seek()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_read()
+trap_retval ReqFile_read( void )
 {
     file_read_req       *acc;
     file_read_ret       *ret;
@@ -191,7 +191,7 @@ trap_elen ReqFile_read()
     return( sizeof( *ret ) + retval );
 }
 
-trap_elen ReqFile_string_to_fullpath()
+trap_retval ReqFile_string_to_fullpath( void )
 {
     char               *name;
     char               *fullname;
@@ -213,7 +213,7 @@ trap_elen ReqFile_string_to_fullpath()
     return( sizeof( *ret ) + len + 1 );
 }
 
-trap_elen ReqFile_erase()
+trap_retval ReqFile_erase( void )
 {
     file_erase_ret      *ret;
 
@@ -222,7 +222,7 @@ trap_elen ReqFile_erase()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_run_cmd()
+trap_retval ReqFile_run_cmd( void )
 {
     file_run_cmd_ret *ret;
 

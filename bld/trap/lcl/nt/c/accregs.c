@@ -178,7 +178,7 @@ static void WriteCPU( struct x86_cpu *r, MYCONTEXT *con )
 #endif
 #endif
 
-trap_elen ReqRead_cpu( void )
+trap_retval ReqRead_cpu( void )
 {
     MYCONTEXT       con;
     trap_cpu_regs   *regs;
@@ -195,7 +195,7 @@ trap_elen ReqRead_cpu( void )
     return( sizeof( *regs ) );
 }
 
-trap_elen ReqRead_fpu( void )
+trap_retval ReqRead_fpu( void )
 {
     MYCONTEXT       con;
     read_fpu_ret    *ret;
@@ -212,7 +212,7 @@ trap_elen ReqRead_fpu( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqWrite_cpu( void )
+trap_retval ReqWrite_cpu( void )
 {
     MYCONTEXT       con;
     thread_info     *ti;
@@ -230,7 +230,7 @@ trap_elen ReqWrite_cpu( void )
     return( 0 );
 }
 
-trap_elen ReqWrite_fpu( void )
+trap_retval ReqWrite_fpu( void )
 {
     MYCONTEXT       con;
     trap_fpu_regs   *fpu;
@@ -247,7 +247,7 @@ trap_elen ReqWrite_fpu( void )
     return( 0 );
 }
 
-trap_elen ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 {
     MYCONTEXT       con;
     mad_registers   _WCUNALIGNED *mr;
@@ -342,7 +342,7 @@ trap_elen ReqRead_regs( void )
 #endif
 }
 
-trap_elen ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 {
     MYCONTEXT       con;
     thread_info     *ti;

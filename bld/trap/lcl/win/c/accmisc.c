@@ -55,7 +55,7 @@ BOOL IsSegSize32( WORD seg )
     return( FALSE );
 }
 
-trap_elen ReqAddr_info( void )
+trap_retval ReqAddr_info( void )
 {
     addr_info_req       *acc;
     addr_info_ret       *ret;
@@ -66,7 +66,7 @@ trap_elen ReqAddr_info( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqMachine_data()
+trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -84,7 +84,7 @@ trap_elen ReqMachine_data()
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-trap_elen ReqGet_sys_config( void )
+trap_retval ReqGet_sys_config( void )
 {
     unsigned_8          fpu;
     get_sys_config_ret  *ret;
@@ -120,7 +120,7 @@ trap_elen ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqGet_message_text( void )
+trap_retval ReqGet_message_text( void )
 {
     static const char * const ExceptionMsgs[] = {
         #define pick(a,b) b,
@@ -150,12 +150,12 @@ trap_elen ReqGet_message_text( void )
     return( sizeof( ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_elen ReqRead_io()
+trap_retval ReqRead_io( void )
 {
     return( 0 );
 }
 
-trap_elen ReqWrite_io()
+trap_retval ReqWrite_io( void )
 {
     write_io_ret        *ret;
 
@@ -164,12 +164,12 @@ trap_elen ReqWrite_io()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqSet_user_screen()
+trap_retval ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-trap_elen ReqSet_debug_screen()
+trap_retval ReqSet_debug_screen( void )
 {
     return( 0 );
 }

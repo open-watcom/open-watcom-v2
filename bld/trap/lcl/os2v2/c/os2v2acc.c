@@ -593,7 +593,7 @@ static USHORT ReadBuffer( void *dst, USHORT segv, ULONG offv, USHORT size )
 }
 
 
-trap_elen ReqGet_sys_config( void )
+trap_retval ReqGet_sys_config( void )
 {
     ULONG               version[2];
     uDB_t               buff;
@@ -626,7 +626,7 @@ trap_elen ReqGet_sys_config( void )
 }
 
 
-trap_elen ReqMap_addr( void )
+trap_retval ReqMap_addr( void )
 {
     USHORT              seg;
     ULONG               flags;
@@ -683,7 +683,7 @@ trap_elen ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqAddr_info( void )
+trap_retval ReqAddr_info( void )
 {
     addr_info_req       *acc;
     addr_info_ret       *ret;
@@ -694,7 +694,7 @@ trap_elen ReqAddr_info( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqMachine_data( void )
+trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -711,7 +711,7 @@ trap_elen ReqMachine_data( void )
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-trap_elen ReqChecksum_mem( void )
+trap_retval ReqChecksum_mem( void )
 {
     ULONG               offset;
     trap_elen           length;
@@ -747,7 +747,7 @@ trap_elen ReqChecksum_mem( void )
 }
 
 
-trap_elen ReqRead_mem( void )
+trap_retval ReqRead_mem( void )
 {
     read_mem_req        *acc;
     void                *ret;
@@ -760,7 +760,7 @@ trap_elen ReqRead_mem( void )
 }
 
 
-trap_elen ReqWrite_mem( void )
+trap_retval ReqWrite_mem( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
@@ -826,7 +826,7 @@ static void WriteCPU( struct x86_cpu *r )
     lastEIP = Buff.EIP;
 }
 
-trap_elen ReqRead_cpu( void )
+trap_retval ReqRead_cpu( void )
 {
     trap_cpu_regs *regs;
 
@@ -839,7 +839,7 @@ trap_elen ReqRead_cpu( void )
     return( sizeof( *regs ) );
 }
 
-trap_elen ReqRead_fpu( void )
+trap_retval ReqRead_fpu( void )
 {
     Buff.Cmd    = DBG_C_ReadCoRegs;
     Buff.Buffer = (ULONG)GetOutPtr(0);
@@ -854,7 +854,7 @@ trap_elen ReqRead_fpu( void )
     }
 }
 
-trap_elen ReqWrite_cpu( void )
+trap_retval ReqWrite_cpu( void )
 {
     trap_cpu_regs       *regs;
 
@@ -866,7 +866,7 @@ trap_elen ReqWrite_cpu( void )
     return( 0 );
 }
 
-trap_elen ReqWrite_fpu( void )
+trap_retval ReqWrite_fpu( void )
 {
     Buff.Cmd    = DBG_C_WriteCoRegs;
     Buff.Buffer = (ULONG)GetInPtr(sizeof(write_fpu_req));
@@ -877,7 +877,7 @@ trap_elen ReqWrite_fpu( void )
     return( 0 );
 }
 
-trap_elen ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
 
@@ -897,7 +897,7 @@ trap_elen ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_elen ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
@@ -916,7 +916,7 @@ trap_elen ReqWrite_regs( void )
     return( 0 );
 }
 
-trap_elen ReqGet_lib_name( void )
+trap_retval ReqGet_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -1108,7 +1108,7 @@ static unsigned StartProcess( const char *exe_name, char *parms )
     return( rc );
 }
 
-trap_elen ReqProg_load( void )
+trap_retval ReqProg_load( void )
 {
     char            *parms;
     char            *end;
@@ -1258,7 +1258,7 @@ trap_elen ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqProg_kill( void )
+trap_retval ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 
@@ -1286,7 +1286,7 @@ trap_elen ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqSet_break( void )
+trap_retval ReqSet_break( void )
 {
     byte                ch;
     set_break_req       *acc;
@@ -1301,7 +1301,7 @@ trap_elen ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqClear_break( void )
+trap_retval ReqClear_break( void )
 {
     clear_break_req     *acc;
     byte                ch;
@@ -1312,7 +1312,7 @@ trap_elen ReqClear_break( void )
     return( 0 );
 }
 
-trap_elen ReqSet_watch( void )
+trap_retval ReqSet_watch( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
@@ -1339,7 +1339,7 @@ trap_elen ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqClear_watch( void )
+trap_retval ReqClear_watch( void )
 {
     clear_watch_req  *acc;
     watch            *dst;
@@ -1554,7 +1554,7 @@ static unsigned progRun( bool step )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqProg_go( void )
+trap_retval ReqProg_go( void )
 {
     trap_elen   rc;
 
@@ -1564,7 +1564,7 @@ trap_elen ReqProg_go( void )
     return( rc );
 }
 
-trap_elen ReqProg_step( void )
+trap_retval ReqProg_step( void )
 {
     trap_elen   rc;
 
@@ -1574,7 +1574,7 @@ trap_elen ReqProg_step( void )
     return( rc );
 }
 
-trap_elen ReqFile_write_console( void )
+trap_retval ReqFile_write_console( void )
 {
     ULONG        len;
     ULONG        written_len;
@@ -1619,7 +1619,7 @@ static int ValidThread( TID thread )
     return( Buff.Cmd == DBG_N_Success );
 }
 
-trap_elen ReqThread_get_next( void )
+trap_retval ReqThread_get_next( void )
 {
     thread_get_next_req *acc;
     thread_get_next_ret *ret;
@@ -1643,7 +1643,7 @@ trap_elen ReqThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqThread_set( void )
+trap_retval ReqThread_set( void )
 {
     thread_set_req      *acc;
     thread_set_ret      *ret;
@@ -1713,17 +1713,17 @@ static trap_elen DoThread( trace_codes code )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqThread_freeze( void )
+trap_retval ReqThread_freeze( void )
 {
     return( DoThread( DBG_C_Freeze ) );
 }
 
-trap_elen ReqThread_thaw( void )
+trap_retval ReqThread_thaw( void )
 {
     return( DoThread( DBG_C_Resume ) );
 }
 
-trap_elen ReqGet_message_text( void )
+trap_retval ReqGet_message_text( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -1740,7 +1740,7 @@ trap_elen ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_elen ReqGet_next_alias( void )
+trap_retval ReqGet_next_alias( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;

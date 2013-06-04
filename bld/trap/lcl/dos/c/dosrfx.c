@@ -36,7 +36,7 @@
 #include "dosver.h"
 #include "trpimp.h"
 
-trap_elen ReqRfx_rename()
+trap_retval ReqRfx_rename( void )
 {
     tiny_ret_t      rc;
     char            *old_name;
@@ -51,7 +51,7 @@ trap_elen ReqRfx_rename()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRfx_mkdir()
+trap_retval ReqRfx_mkdir( void )
 {
     tiny_ret_t      rc;
     rfx_mkdir_ret   *ret;
@@ -62,7 +62,7 @@ trap_elen ReqRfx_mkdir()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRfx_rmdir()
+trap_retval ReqRfx_rmdir( void )
 {
     tiny_ret_t      rc;
     rfx_mkdir_ret   *ret;
@@ -73,7 +73,7 @@ trap_elen ReqRfx_rmdir()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRfx_setdrive()
+trap_retval ReqRfx_setdrive( void )
 {
     rfx_setdrive_req    *acc;
     rfx_setdrive_ret    *ret;
@@ -85,7 +85,7 @@ trap_elen ReqRfx_setdrive()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRfx_getdrive()
+trap_retval ReqRfx_getdrive( void )
 {
     rfx_getdrive_ret    *ret;
 
@@ -94,7 +94,7 @@ trap_elen ReqRfx_getdrive()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRfx_setcwd()
+trap_retval ReqRfx_setcwd( void )
 {
     tiny_ret_t          rc;
     rfx_setcwd_ret      *ret;
@@ -105,7 +105,7 @@ trap_elen ReqRfx_setcwd()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRfx_getcwd()
+trap_retval ReqRfx_getcwd( void )
 {
     tiny_ret_t          rc;
     rfx_getcwd_req      *acc;
@@ -124,7 +124,7 @@ trap_elen ReqRfx_getcwd()
     return( sizeof( *ret ) + 1 + strlen( cwd ) );
 }
 
-trap_elen ReqRfx_setfileattr()
+trap_retval ReqRfx_setfileattr( void )
 {
     tiny_ret_t          rc;
     rfx_setfileattr_req *acc;
@@ -137,7 +137,7 @@ trap_elen ReqRfx_setfileattr()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRfx_getfileattr()
+trap_retval ReqRfx_getfileattr( void )
 {
     tiny_ret_t          rc;
     rfx_getfileattr_ret *ret;
@@ -148,7 +148,7 @@ trap_elen ReqRfx_getfileattr()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRfx_getfreespace()
+trap_retval ReqRfx_getfreespace( void )
 {
     rfx_getfreespace_req    *acc;
     rfx_getfreespace_ret    *ret;
@@ -198,7 +198,7 @@ static void mylocaltime( unsigned long date_time, tiny_ftime_t *time, tiny_fdate
     time->twosecs = ( date_time % 60 ) / 2;
 }
 
-trap_elen ReqRfx_setdatetime()
+trap_retval ReqRfx_setdatetime( void )
 {
     tiny_ftime_t        time;
     tiny_fdate_t        date;
@@ -240,7 +240,7 @@ static unsigned long mymktime( unsigned time, unsigned date )
     return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
 }
 
-trap_elen ReqRfx_getdatetime()
+trap_retval ReqRfx_getdatetime( void )
 {
     tiny_ret_t          rc;
     rfx_getdatetime_req *acc;
@@ -257,7 +257,7 @@ trap_elen ReqRfx_getdatetime()
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRfx_findfirst()
+trap_retval ReqRfx_findfirst( void )
 {
     tiny_ret_t          rc;
     rfx_findfirst_req   *acc;
@@ -271,7 +271,7 @@ trap_elen ReqRfx_findfirst()
     return( sizeof( *ret ) + sizeof( tiny_find_t ) );
 }
 
-trap_elen ReqRfx_findnext()
+trap_retval ReqRfx_findnext( void )
 {
     tiny_ret_t          rc;
     rfx_findnext_ret    *ret;
@@ -290,12 +290,12 @@ trap_elen ReqRfx_findnext()
     return( sizeof( *ret ) + sizeof( tiny_find_t ) );
 }
 
-trap_elen ReqRfx_findclose()
+trap_retval ReqRfx_findclose( void )
 {
     return( 0 );
 }
 
-trap_elen ReqRfx_nametocannonical()
+trap_retval ReqRfx_nametocannonical( void )
 {
     rfx_nametocannonical_ret    *ret;
     char                        *name;

@@ -86,7 +86,7 @@ trap_elen DoAccess()
 }
 
 
-trap_elen ReqGet_sys_config()
+trap_retval ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -126,7 +126,7 @@ static char *Errors[] = {
 #undef pick
 };
 
-trap_elen ReqGet_err_text( void )
+trap_retval ReqGet_err_text( void )
 {
 
     get_err_text_req    *acc;
@@ -151,7 +151,7 @@ trap_elen ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-trap_elen ReqMap_addr()
+trap_retval ReqMap_addr( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -167,7 +167,7 @@ trap_elen ReqMap_addr()
     return( DoAccess() );
 }
 
-trap_elen ReqRead_io()
+trap_retval ReqRead_io( void )
 {
     if( !TaskLoaded ) {
         return( 0 );
@@ -175,7 +175,7 @@ trap_elen ReqRead_io()
     return( DoAccess() );
 }
 
-trap_elen ReqWrite_io()
+trap_retval ReqWrite_io( void )
 {
     write_io_ret        *ret;
 
@@ -188,7 +188,7 @@ trap_elen ReqWrite_io()
 }
 
 // OBSOLETE - use ReqRead_regs
-trap_elen ReqRead_cpu()
+trap_retval ReqRead_cpu( void )
 {
     read_cpu_ret        *ret;
 
@@ -201,7 +201,7 @@ trap_elen ReqRead_cpu()
 }
 
 // OBSOLETE - use ReqRead_regs
-trap_elen ReqRead_fpu()
+trap_retval ReqRead_fpu( void )
 {
     read_fpu_ret        *ret;
 
@@ -213,7 +213,7 @@ trap_elen ReqRead_fpu()
     return( DoAccess() );
 }
 
-trap_elen ReqRead_regs()
+trap_retval ReqRead_regs( void )
 {
 
     if( !TaskLoaded ) {
@@ -226,7 +226,7 @@ trap_elen ReqRead_regs()
 }
 
 
-trap_elen ReqChecksum_mem()
+trap_retval ReqChecksum_mem( void )
 {
     checksum_mem_ret    *ret;
 
@@ -238,7 +238,7 @@ trap_elen ReqChecksum_mem()
     return( DoAccess() );
 }
 
-trap_elen ReqGet_next_alias()
+trap_retval ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -251,7 +251,7 @@ trap_elen ReqGet_next_alias()
     return( DoAccess() );
 }
 
-trap_elen ReqProg_go()
+trap_retval ReqProg_go( void )
 {
     prog_go_ret     *ret;
     trap_elen       len;
@@ -266,7 +266,7 @@ trap_elen ReqProg_go()
 }
 
 //OBSOLETE - use ReqMachine_data
-trap_elen ReqAddr_info()
+trap_retval ReqAddr_info( void )
 {
     addr_info_ret       *ret;
 
@@ -278,7 +278,7 @@ trap_elen ReqAddr_info()
     return( DoAccess() );
 }
 
-trap_elen ReqMachine_data()
+trap_retval ReqMachine_data( void )
 {
     machine_data_ret    *ret;
 
@@ -291,7 +291,7 @@ trap_elen ReqMachine_data()
     return( DoAccess() );
 }
 
-trap_elen ReqGet_lib_name()
+trap_retval ReqGet_lib_name( void )
 {
     get_lib_name_ret    *ret;
 
@@ -304,13 +304,13 @@ trap_elen ReqGet_lib_name()
     return( DoAccess() );
 }
 
-trap_elen ReqRead_mem()
+trap_retval ReqRead_mem( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqWrite_mem()
+trap_retval ReqWrite_mem( void )
 {
     write_mem_ret       *ret;
 
@@ -322,7 +322,7 @@ trap_elen ReqWrite_mem()
     return( DoAccess() );
 }
 
-trap_elen ReqProg_load()
+trap_retval ReqProg_load( void )
 {
     char                buffer[160];
     char                *src;
@@ -384,7 +384,7 @@ trap_elen ReqProg_load()
     }
 }
 
-trap_elen ReqProg_kill()
+trap_retval ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 
@@ -399,82 +399,82 @@ trap_elen ReqProg_kill()
 }
 
 // OBSOLETE - use ReqWrite_regs
-trap_elen ReqWrite_cpu()
+trap_retval ReqWrite_cpu( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
 // OBSOLETE - use ReqWrite_regs
-trap_elen ReqWrite_fpu()
+trap_retval ReqWrite_fpu( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
-trap_elen ReqWrite_regs()
-{
-    if( !TaskLoaded ) return( 0 );
-    return( DoAccess() );
-}
-
-trap_elen ReqSet_watch()
+trap_retval ReqWrite_regs( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqClear_watch()
+trap_retval ReqSet_watch( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqSet_break()
+trap_retval ReqClear_watch( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqClear_break()
+trap_retval ReqSet_break( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqGet_message_text()
+trap_retval ReqClear_break( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqRedirect_stdin()
+trap_retval ReqGet_message_text( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqRedirect_stdout()
+trap_retval ReqRedirect_stdin( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqProg_step()
+trap_retval ReqRedirect_stdout( void )
+{
+    if( !TaskLoaded ) return( 0 );
+    return( DoAccess() );
+}
+
+trap_retval ReqProg_step( void )
 {
     return( ReqProg_go() );
 }
 
-trap_elen ReqSet_user_screen()
+trap_retval ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-trap_elen ReqSet_debug_screen()
+trap_retval ReqSet_debug_screen( void )
 {
     return( 0 );
 }
 
-trap_elen ReqThread_get_next()
+trap_retval ReqThread_get_next( void )
 {
     if( !TaskLoaded ) {
         thread_get_next_ret *ret;
@@ -485,25 +485,25 @@ trap_elen ReqThread_get_next()
     return( DoAccess() );
 }
 
-trap_elen ReqThread_set()
+trap_retval ReqThread_set( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqThread_freeze()
+trap_retval ReqThread_freeze( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqThread_thaw()
+trap_retval ReqThread_thaw( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_elen ReqThread_get_extra()
+trap_retval ReqThread_get_extra( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
@@ -527,7 +527,7 @@ typedef struct {
     const void *vectors;
 } service_entry;
 
-trap_elen ReqGet_supplementary_service(void)
+trap_retval ReqGet_supplementary_service(void)
 {
     char                                *name;
     get_supplementary_service_ret       *out;
@@ -545,7 +545,7 @@ trap_elen ReqGet_supplementary_service(void)
     return( sizeof( *out ) );
 }
 
-trap_elen ReqPerform_supplementary_service( void )
+trap_retval ReqPerform_supplementary_service( void )
 {
     unsigned    (* const * _WCUNALIGNED *vectors)(void);
     access_req  *sup_req;
@@ -558,7 +558,7 @@ trap_elen ReqPerform_supplementary_service( void )
     return( (*vectors)[*sup_req]() );
 }
 
-trap_elen ReqSplit_cmd( void )
+trap_retval ReqSplit_cmd( void )
 {
     char                *cmd;
     char                *start;

@@ -39,7 +39,7 @@
 #include "madregs.h"
 #include "x86cpu.h"
 
-trap_elen ReqAddr_info( void )
+trap_retval ReqAddr_info( void )
 {
     WORD            seg;
     addr_info_req   *acc;
@@ -52,7 +52,7 @@ trap_elen ReqAddr_info( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqMachine_data()
+trap_retval ReqMachine_data( void )
 {
     int                 sel;
     int                 size;
@@ -86,7 +86,7 @@ trap_elen ReqMachine_data()
     return( sizeof( *ret ) + sizeof( data->u8 ) );
 }
 
-trap_elen ReqGet_sys_config( void )
+trap_retval ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
     int                 major, minor, release;
@@ -106,7 +106,7 @@ trap_elen ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqGet_message_text( void )
+trap_retval ReqGet_message_text( void )
 {
     get_message_text_ret    *ret;
     char                    *err_txt;
@@ -129,7 +129,7 @@ trap_elen ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_elen ReqGet_next_alias( void )
+trap_retval ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -139,7 +139,7 @@ trap_elen ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqGet_err_text( void )
+trap_retval ReqGet_err_text( void )
 {
     get_err_text_req    *acc;
     char                *err_txt;
@@ -179,7 +179,7 @@ trap_elen ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-trap_elen ReqSplit_cmd( void )
+trap_retval ReqSplit_cmd( void )
 {
     char            *cmd;
     char            *start;
@@ -223,12 +223,12 @@ done:
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRead_io( void )
+trap_retval ReqRead_io( void )
 {
     return( 0 );
 }
 
-trap_elen ReqWrite_io( void )
+trap_retval ReqWrite_io( void )
 {
     write_io_ret    *ret;
 
@@ -237,13 +237,13 @@ trap_elen ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqSet_user_screen( void )
+trap_retval ReqSet_user_screen( void )
 {
     SetUserScreen();
     return( 0 );
 }
 
-trap_elen ReqSet_debug_screen( void )
+trap_retval ReqSet_debug_screen( void )
 {
     SetDebugScreen();
     return( 0 );

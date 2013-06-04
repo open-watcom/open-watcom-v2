@@ -33,6 +33,7 @@
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #include "dbgmem.h"
+#include "trapaccs.h"
 #include <string.h>
 #define INCL_SUB
 #define INCL_PM
@@ -280,7 +281,7 @@ void PopErrBox( char *buff )
                    MB_MOVEABLE | MB_CUACRITICAL | MB_CANCEL );
 }
 
-unsigned OnAnotherThread( unsigned (*rtn)(), unsigned in_len, void *in, unsigned out_len, void *out )
+unsigned OnAnotherThread( unsigned(*rtn)(unsigned,void *,unsigned,void *), unsigned in_len, void *in, unsigned out_len, void *out )
 {
     unsigned    result;
 

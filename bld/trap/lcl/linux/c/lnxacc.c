@@ -70,7 +70,7 @@ static Elf32_Dyn        *dbg_dyn;       /* VA of debuggee's dynamic section (if 
 static bp_t             old_ld_bp;
 
 
-trap_elen ReqChecksum_mem( void )
+trap_retval ReqChecksum_mem( void )
 {
     char                buf[256];
     addr_off            offv;
@@ -104,7 +104,7 @@ trap_elen ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRead_mem( void )
+trap_retval ReqRead_mem( void )
 {
     read_mem_req    *acc;
     trap_elen       len;
@@ -117,7 +117,7 @@ trap_elen ReqRead_mem( void )
     return( len );
 }
 
-trap_elen ReqWrite_mem( void )
+trap_retval ReqWrite_mem( void )
 {
     write_mem_req   *acc;
     write_mem_ret   *ret;
@@ -184,7 +184,7 @@ static int GetExeNameFromPid( pid_t pid, char *buffer, int max_len )
     return( len );
 }
 
-trap_elen ReqProg_load( void )
+trap_retval ReqProg_load( void )
 {
     char                        **args;
     char                        *parms;
@@ -323,7 +323,7 @@ fail:
     return( 0 );
 }
 
-trap_elen ReqProg_kill( void )
+trap_retval ReqProg_kill( void )
 {
     prog_kill_ret   *ret;
 
@@ -347,7 +347,7 @@ trap_elen ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqSet_break( void )
+trap_retval ReqSet_break( void )
 {
     set_break_req   *acc;
     set_break_ret   *ret;
@@ -369,7 +369,7 @@ trap_elen ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqClear_break( void )
+trap_retval ReqClear_break( void )
 {
     clear_break_req *acc;
     bp_t            opcode;
@@ -590,17 +590,17 @@ static trap_elen ProgRun( int step )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqProg_step( void )
+trap_retval ReqProg_step( void )
 {
     return( ProgRun( TRUE ) );
 }
 
-trap_elen ReqProg_go( void )
+trap_retval ReqProg_go( void )
 {
     return( ProgRun( FALSE ) );
 }
 
-trap_elen ReqRedirect_stdin( void  )
+trap_retval ReqRedirect_stdin( void  )
 {
     redirect_stdin_ret *ret;
 
@@ -609,7 +609,7 @@ trap_elen ReqRedirect_stdin( void  )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRedirect_stdout( void  )
+trap_retval ReqRedirect_stdout( void  )
 {
     redirect_stdout_ret *ret;
 
@@ -618,7 +618,7 @@ trap_elen ReqRedirect_stdout( void  )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_string_to_fullpath( void )
+trap_retval ReqFile_string_to_fullpath( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
@@ -651,7 +651,7 @@ trap_elen ReqFile_string_to_fullpath( void )
     return( sizeof( *ret ) + len + 1 );
 }
 
-trap_elen ReqGet_message_text( void )
+trap_retval ReqGet_message_text( void )
 {
     get_message_text_ret    *ret;
     char                    *err_txt;
@@ -670,7 +670,7 @@ trap_elen ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_elen ReqAddr_info( void )
+trap_retval ReqAddr_info( void )
 {
     addr_info_req   *acc;
     addr_info_ret   *ret;

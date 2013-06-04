@@ -93,7 +93,7 @@ static bool get_nto_version( unsigned_8 *major, unsigned_8 *minor )
 }
 
 
-unsigned ReqGet_sys_config( void )
+trap_retval ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -114,7 +114,7 @@ unsigned ReqGet_sys_config( void )
 }
 
 
-unsigned ReqChecksum_mem( void )
+trap_retval ReqChecksum_mem( void )
 {
     char                buf[256];
     addr_off            offv;
@@ -151,7 +151,7 @@ unsigned ReqChecksum_mem( void )
 }
 
 
-unsigned ReqRead_mem( void )
+trap_retval ReqRead_mem( void )
 {
     read_mem_req    *acc;
     unsigned        len = 0;
@@ -170,7 +170,7 @@ unsigned ReqRead_mem( void )
 }
 
 
-unsigned ReqWrite_mem( void )
+trap_retval ReqWrite_mem( void )
 {
     write_mem_req   *acc;
     write_mem_ret   *ret;
@@ -192,7 +192,7 @@ unsigned ReqWrite_mem( void )
     return( sizeof( *ret ) );}
 
 
-unsigned ReqRead_io( void )
+trap_retval ReqRead_io( void )
 {
     read_io_req *acc;
     void        *ret;
@@ -206,7 +206,7 @@ unsigned ReqRead_io( void )
 }
 
 
-unsigned ReqWrite_io( void )
+trap_retval ReqWrite_io( void )
 {
     write_io_req    *acc;
     write_io_ret    *ret;
@@ -260,19 +260,19 @@ static void ReadFPU( struct x86_fpu *r )
     devctl( ProcInfo.procfd, DCMD_PROC_GETFPREG, r, regsize, &regsize );
 }
 
-unsigned ReqRead_cpu( void )
+trap_retval ReqRead_cpu( void )
 {
     ReadCPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_cpu ) );
 }
 
-unsigned ReqRead_fpu( void )
+trap_retval ReqRead_fpu( void )
 {
     ReadFPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_fpu ) );
 }
 
-unsigned ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
 
@@ -315,19 +315,19 @@ static void WriteFPU( struct x86_fpu *r )
     }
 }
 
-unsigned ReqWrite_cpu( void )
+trap_retval ReqWrite_cpu( void )
 {
     WriteCPU( GetInPtr( sizeof( write_cpu_req ) ) );
     return( 0 );
 }
 
-unsigned ReqWrite_fpu( void )
+trap_retval ReqWrite_fpu( void )
 {
     WriteFPU( GetInPtr( sizeof( write_fpu_req ) ) );
     return( 0 );
 }
 
-unsigned ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
@@ -538,7 +538,7 @@ static size_t pid_to_name( pid_t pid, char *exe_name, size_t len )
 }
 
 
-unsigned ReqProg_load( void )
+trap_retval ReqProg_load( void )
 {
     char                    **args;
     char                    *parms;
@@ -680,7 +680,7 @@ fail:
 }
 
 
-unsigned ReqProg_kill( void )
+trap_retval ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 
@@ -702,7 +702,7 @@ unsigned ReqProg_kill( void )
 }
 
 
-unsigned ReqSet_break( void )
+trap_retval ReqSet_break( void )
 {
     set_break_req       *acc;
     set_break_ret       *ret;
@@ -718,7 +718,7 @@ unsigned ReqSet_break( void )
 }
 
 
-unsigned ReqClear_break( void )
+trap_retval ReqClear_break( void )
 {
     clear_break_req      *acc;
 
@@ -759,7 +759,7 @@ static int nto_watchpoint( int addr, int len, int type )
 }
 
 
-unsigned ReqSet_watch( void )
+trap_retval ReqSet_watch( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -783,7 +783,7 @@ unsigned ReqSet_watch( void )
 }
 
 
-unsigned ReqClear_watch( void )
+trap_retval ReqClear_watch( void )
 {
     clear_watch_req *acc;
 
@@ -993,19 +993,19 @@ static unsigned ProgRun( bool step )
 }
 
 
-unsigned ReqProg_step( void )
+trap_retval ReqProg_step( void )
 {
     return( ProgRun( TRUE ) );
 }
 
 
-unsigned ReqProg_go( void )
+trap_retval ReqProg_go( void )
 {
     return( ProgRun( FALSE ) );
 }
 
 
-unsigned ReqRedirect_stdin( void  )
+trap_retval ReqRedirect_stdin( void  )
 {
     redirect_stdin_ret *ret;
 
@@ -1017,7 +1017,7 @@ unsigned ReqRedirect_stdin( void  )
 }
 
 
-unsigned ReqRedirect_stdout( void  )
+trap_retval ReqRedirect_stdout( void  )
 {
     redirect_stdout_ret *ret;
 
@@ -1029,7 +1029,7 @@ unsigned ReqRedirect_stdout( void  )
 }
 
 
-unsigned ReqFile_string_to_fullpath( void )
+trap_retval ReqFile_string_to_fullpath( void )
 {
     pid_t              pid;
     bool               exe;
@@ -1068,7 +1068,7 @@ unsigned ReqFile_string_to_fullpath( void )
 }
 
 
-unsigned ReqGet_message_text( void )
+trap_retval ReqGet_message_text( void )
 {
     static const char *const ExceptionMsgs[] = {
         "",
@@ -1126,7 +1126,7 @@ unsigned ReqGet_message_text( void )
 }
 
 
-unsigned ReqAddr_info( void )
+trap_retval ReqAddr_info( void )
 {
     addr_info_req       *acc;
     addr_info_ret       *ret;
@@ -1138,7 +1138,7 @@ unsigned ReqAddr_info( void )
 }
 
 
-unsigned ReqMachine_data( void )
+trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -1154,7 +1154,7 @@ unsigned ReqMachine_data( void )
 }
 
 
-unsigned ReqThread_get_next( void )
+trap_retval ReqThread_get_next( void )
 {
     thread_get_next_req *req;
     thread_get_next_ret *ret;
@@ -1184,7 +1184,7 @@ unsigned ReqThread_get_next( void )
 }
 
 
-unsigned ReqThread_set( void )
+trap_retval ReqThread_set( void )
 {
     thread_set_req      *req;
     thread_set_ret      *ret;
@@ -1211,7 +1211,7 @@ unsigned ReqThread_set( void )
 }
 
 
-unsigned ReqThread_freeze( void )
+trap_retval ReqThread_freeze( void )
 {
     thread_freeze_req   *req;
     thread_freeze_ret   *ret;
@@ -1239,7 +1239,7 @@ unsigned ReqThread_freeze( void )
 }
 
 
-unsigned ReqThread_thaw( void )
+trap_retval ReqThread_thaw( void )
 {
     thread_thaw_req     *req;
     thread_thaw_ret     *ret;
@@ -1292,7 +1292,7 @@ static char     *tstate_desc[STATE_MAX] = {
     "NET_REPLY"
 };
 
-unsigned ReqThread_get_extra( void )
+trap_retval ReqThread_get_extra( void )
 {
     thread_get_extra_req    *req;
     char                    *ret;

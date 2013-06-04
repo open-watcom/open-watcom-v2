@@ -41,16 +41,11 @@
 #include "dui.h"
 #include "trpcore.h"
 #include "trpasync.h"
+#include "trapaccs.h"
 
 extern void             GetSysConfig( void );
 extern void             CheckMADChange( void );
 extern dtid_t           RemoteSetThread( dtid_t );
-
-#if defined(__GUI__) && defined(__OS2__)
-extern unsigned         OnAnotherThread( trap_elen(*)(), unsigned, void *, unsigned, void * );
-#else
-#define                 OnAnotherThread( a,b,c,d,e ) a( b,c,d,e )
-#endif
 
 extern machine_state    *DbgRegs;
 extern system_config    SysConfig;

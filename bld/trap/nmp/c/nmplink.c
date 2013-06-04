@@ -184,7 +184,7 @@ bool RemoteConnect( void )
 }
 
 
-trap_elen RemoteGet( byte *data, trap_elen length )
+trap_retval RemoteGet( byte *data, trap_elen length )
 {
     trap_elen      bytes_read;
     trap_elen      tmp;
@@ -203,7 +203,7 @@ trap_elen RemoteGet( byte *data, trap_elen length )
 }
 
 
-trap_elen RemotePut( byte *data, trap_elen length )
+trap_retval RemotePut( byte *data, trap_elen length )
 {
     trap_elen  bytes_written;
     trap_elen  real_length;

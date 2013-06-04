@@ -119,7 +119,7 @@ static void OutNum( unsigned i )
 #endif
 
 
-unsigned ReqGet_sys_config()
+trap_retval ReqGet_sys_config( void )
 {
     struct  _osinfo     info;
     get_sys_config_ret  *ret;
@@ -243,7 +243,7 @@ addr48_ptr GetSLibTable( bool is_32 )
     return( slib );
 }
 
-unsigned ReqMap_addr()
+trap_retval ReqMap_addr( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -293,7 +293,7 @@ unsigned ReqMap_addr()
 }
 
 
-unsigned ReqChecksum_mem()
+trap_retval ReqChecksum_mem( void )
 {
     checksum_mem_ret    *ret;
 
@@ -332,7 +332,7 @@ static unsigned ReadGDT( read_mem_req *acc, unsigned len, void *ret )
     return( len );
 }
 
-unsigned ReqRead_mem()
+trap_retval ReqRead_mem( void )
 {
     read_mem_req        *acc;
     void                *ret;
@@ -365,7 +365,7 @@ unsigned ReqRead_mem()
 }
 
 
-unsigned ReqWrite_mem()
+trap_retval ReqWrite_mem( void )
 {
     write_mem_ret       *ret;
 
@@ -375,13 +375,13 @@ unsigned ReqWrite_mem()
 }
 
 
-unsigned ReqRead_io()
+trap_retval ReqRead_io( void )
 {
     return( 0 );
 }
 
 
-unsigned ReqWrite_io()
+trap_retval ReqWrite_io( void )
 {
     write_io_ret        *ret;
 
@@ -422,19 +422,19 @@ static void ReadFPU( struct x86_fpu *r )
     }
 }
 
-unsigned ReqRead_cpu()
+trap_retval ReqRead_cpu( void )
 {
     ReadCPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_cpu ) );
 }
 
-unsigned ReqRead_fpu()
+trap_retval ReqRead_fpu( void )
 {
     ReadFPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_fpu ) );
 }
 
-unsigned ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
 
@@ -445,17 +445,17 @@ unsigned ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-unsigned ReqWrite_cpu()
+trap_retval ReqWrite_cpu( void )
 {
     return( 0 );
 }
 
-unsigned ReqWrite_fpu()
+trap_retval ReqWrite_fpu( void )
 {
     return( 0 );
 }
 
-unsigned ReqWrite_regs()
+trap_retval ReqWrite_regs( void )
 {
     return( 0 );
 }
@@ -519,7 +519,7 @@ static void ReadSegData()
     }
 }
 
-unsigned ReqProg_load()
+trap_retval ReqProg_load( void )
 {
     prog_load_req       *acc;
     prog_load_ret       *ret;
@@ -586,7 +586,7 @@ unsigned ReqProg_load()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_kill()
+trap_retval ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 
@@ -602,7 +602,7 @@ unsigned ReqProg_kill()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_break()
+trap_retval ReqSet_break( void )
 {
     set_break_ret       *ret;
 
@@ -611,12 +611,12 @@ unsigned ReqSet_break()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break()
+trap_retval ReqClear_break( void )
 {
     return( 0 );
 }
 
-unsigned ReqSet_watch()
+trap_retval ReqSet_watch( void )
 {
     set_watch_ret       *ret;
 
@@ -626,13 +626,13 @@ unsigned ReqSet_watch()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch()
+trap_retval ReqClear_watch( void )
 {
     return( 0 );
 }
 
 
-unsigned ReqProg_go()
+trap_retval ReqProg_go( void )
 {
     prog_go_ret *ret;
 
@@ -641,13 +641,13 @@ unsigned ReqProg_go()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_step()
+trap_retval ReqProg_step( void )
 {
     return( ReqProg_go() );
 }
 
 
-unsigned ReqGet_message_text()
+trap_retval ReqGet_message_text( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -659,7 +659,7 @@ unsigned ReqGet_message_text()
     return( sizeof( *ret ) + 1 );
 }
 
-unsigned ReqRedirect_stdin()
+trap_retval ReqRedirect_stdin( void )
 {
     redirect_stdin_ret  *ret;
 
@@ -668,12 +668,12 @@ unsigned ReqRedirect_stdin()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRedirect_stdout()
+trap_retval ReqRedirect_stdout( void )
 {
     return( ReqRedirect_stdin() );
 }
 
-unsigned ReqFile_string_to_fullpath()
+trap_retval ReqFile_string_to_fullpath( void )
 {
     struct  stat                chk;
     unsigned_16                 len;
@@ -741,7 +741,7 @@ static bool AddrIs32( addr_seg seg )
     return( is_32 );
 }
 
-unsigned ReqAddr_info()
+trap_retval ReqAddr_info( void )
 {
     addr_info_req       *acc;
     addr_info_ret       *ret;
@@ -752,7 +752,7 @@ unsigned ReqAddr_info()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data()
+trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -770,7 +770,7 @@ unsigned ReqMachine_data()
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-unsigned ReqGet_lib_name()
+trap_retval ReqGet_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -811,7 +811,7 @@ unsigned ReqGet_lib_name()
     return( sizeof( *ret ) + 1 + strlen( name ) );
 }
 
-unsigned ReqThread_get_next()
+trap_retval ReqThread_get_next( void )
 {
     thread_get_next_req *req;
     thread_get_next_ret *ret;
@@ -827,7 +827,7 @@ unsigned ReqThread_get_next()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_set()
+trap_retval ReqThread_set( void )
 {
     thread_set_ret      *ret;
 
@@ -837,7 +837,7 @@ unsigned ReqThread_set()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_freeze()
+trap_retval ReqThread_freeze( void )
 {
     thread_freeze_ret   *ret;
 
@@ -846,7 +846,7 @@ unsigned ReqThread_freeze()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_thaw()
+trap_retval ReqThread_thaw( void )
 {
     thread_thaw_ret     *ret;
 
@@ -855,7 +855,7 @@ unsigned ReqThread_thaw()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_get_extra()
+trap_retval ReqThread_get_extra( void )
 {
     char                    *ret;
 

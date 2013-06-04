@@ -38,7 +38,7 @@
 #include "trpimp.h"
 
 
-unsigned ReqFile_get_config( void )
+trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -61,7 +61,7 @@ unsigned ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_open( void )
+trap_retval ReqFile_open( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -93,7 +93,7 @@ unsigned ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek( void )
+trap_retval ReqFile_seek( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -112,7 +112,7 @@ unsigned ReqFile_seek( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_read( void )
+trap_retval ReqFile_read( void )
 {
     unsigned            total;
     unsigned            len;
@@ -181,7 +181,7 @@ static unsigned DoWrite( int hdl, unsigned_8 *ptr, unsigned len )
     return( total );
 }
 
-unsigned ReqFile_write( void )
+trap_retval ReqFile_write( void )
 {
     file_write_req      *acc;
     file_write_ret      *ret;
@@ -197,7 +197,7 @@ unsigned ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write_console( void )
+trap_retval ReqFile_write_console( void )
 {
     file_write_console_ret      *ret;
 
@@ -210,7 +210,7 @@ unsigned ReqFile_write_console( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_close( void )
+trap_retval ReqFile_close( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -228,7 +228,7 @@ unsigned ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_erase( void )
+trap_retval ReqFile_erase( void )
 {
     file_erase_ret      *ret;
 
@@ -243,12 +243,12 @@ unsigned ReqFile_erase( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_user_screen( void )
+trap_retval ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen( void )
+trap_retval ReqSet_debug_screen( void )
 {
     return( 0 );
 }
@@ -304,7 +304,7 @@ unsigned FindFilePath( int exe, char *name, char *result )
     return( 0 );
 }
 
-unsigned ReqRead_user_keyboard( void )
+trap_retval ReqRead_user_keyboard( void )
 {
     read_user_keyboard_req      *acc;
     read_user_keyboard_ret      *ret;
@@ -315,7 +315,7 @@ unsigned ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSplit_cmd( void )
+trap_retval ReqSplit_cmd( void )
 {
     char                *cmd;
     char                *start;
@@ -348,7 +348,7 @@ unsigned ReqSplit_cmd( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_next_alias( void )
+trap_retval ReqGet_next_alias( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;
@@ -360,7 +360,7 @@ unsigned ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_run_cmd( void )
+trap_retval ReqFile_run_cmd( void )
 {
     char                *src;
     file_run_cmd_ret    *ret;

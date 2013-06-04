@@ -38,7 +38,7 @@
 extern BOOL                  Supporting8ByteBreakpoints;
 extern BOOL                  SupportingExactBreakpoints;
 
-trap_elen ReqCapabilities_get_8b_bp( void )
+trap_retval ReqCapabilities_get_8b_bp( void )
 {
     capabilities_get_8b_bp_req  *req;
     capabilities_get_8b_bp_ret  *ret;
@@ -51,7 +51,7 @@ trap_elen ReqCapabilities_get_8b_bp( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqCapabilities_set_8b_bp( void )
+trap_retval ReqCapabilities_set_8b_bp( void )
 {
     capabilities_set_8b_bp_req  *req;
     capabilities_set_8b_bp_ret  *ret;
@@ -66,7 +66,7 @@ trap_elen ReqCapabilities_set_8b_bp( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqCapabilities_get_exact_bp( void )
+trap_retval ReqCapabilities_get_exact_bp( void )
 {
     capabilities_get_exact_bp_req  *req;
     capabilities_get_exact_bp_ret  *ret;
@@ -79,7 +79,7 @@ trap_elen ReqCapabilities_get_exact_bp( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqCapabilities_set_exact_bp( void )
+trap_retval ReqCapabilities_set_exact_bp( void )
 {
     capabilities_set_exact_bp_req  *req;
     capabilities_set_exact_bp_ret  *ret;

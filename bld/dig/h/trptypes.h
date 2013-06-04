@@ -54,7 +54,7 @@
 #define TRAP_MINOR_VERSION      1
 #define OLD_TRAP_MINOR_VERSION  0
 
-#define REQUEST_FAILED ((trap_elen)-1)
+#define REQUEST_FAILED ((trap_retval)-1)
 
 #if OLD_TRAP_MINOR_VERSION > 0
     #define TrapVersionOK( ver )  (((ver).major == TRAP_MAJOR_VERSION) && \
@@ -75,6 +75,8 @@ typedef unsigned_32 trap_error;
 typedef unsigned_32 trap_mhandle;   /* module handle */
 typedef unsigned_32 trap_phandle;   /* process handle */
 typedef unsigned_32 trap_shandle;   /* supplementary service handle */
+
+typedef trap_elen   trap_retval;
 
 #include "pushpck1.h"
 
@@ -99,15 +101,15 @@ typedef struct {
 typedef mx_entry        TRAPFAR *mx_entry_p;
 
 typedef trap_version    TRAPENTRY trap_init_func( char *, char *, bool );
-typedef trap_elen       TRAPENTRY trap_req_func( trap_elen, mx_entry_p, trap_elen, mx_entry_p );
+typedef trap_retval     TRAPENTRY trap_req_func( trap_elen, mx_entry_p, trap_elen, mx_entry_p );
 typedef void            TRAPENTRY trap_fini_func( void );
 
 /* Client interface routines */
 extern char             *LoadDumbTrap( trap_version * );
 extern char             *LoadTrap( char *, char *, trap_version * );
 extern void             TrapSetFailCallBack( void (*func)(void) );
-extern trap_elen        TrapAccess( trap_elen, mx_entry_p, trap_elen, mx_entry_p );
-extern trap_elen        TrapSimpAccess( trap_elen, void *, trap_elen, void * );
+extern unsigned         TrapAccess( unsigned, mx_entry_p, unsigned, mx_entry_p );
+extern unsigned         TrapSimpAccess( unsigned, void *, unsigned, void * );
 extern void             KillTrap(void);
 
 #include "digunpck.h"

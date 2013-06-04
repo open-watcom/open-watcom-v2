@@ -39,14 +39,13 @@
 #include "tcerr.h"
 #include "dipcli.h"
 #include "trpqimp.h"
+#include "trpld.h"
 
 #include "../dsx/ldimp.h"
 
 #define TRAPSIG 0x50415254UL
 
 extern void             *_slib_func[2];
-extern trap_version     TrapVer;
-extern trap_req_func    *ReqFunc;
 
 extern int              PathOpen(char *,unsigned, char *);
 

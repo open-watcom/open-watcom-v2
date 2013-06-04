@@ -268,7 +268,7 @@ void ProcessLdBreakpoint( pid_handle pid, addr_off rdebug_va )
  * (image base 0x08048100 equals linear 0x08048100), for shared libs this will typically 
  * add the offset from zero (if that is the link time VA) to actual load base.
  */
-unsigned ReqMap_addr( void )
+trap_retval ReqMap_addr( void )
 {
     map_addr_req    *acc;
     map_addr_ret    *ret;
@@ -304,7 +304,7 @@ unsigned ReqMap_addr( void )
 /*
  * AccGetLibName - get lib name of current module
  */
-unsigned ReqGet_lib_name( void )
+trap_retval ReqGet_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;

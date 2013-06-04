@@ -30,28 +30,8 @@
 ****************************************************************************/
 
 
-#include "trpimp.h"
-
-/*
-        These routines are never passed up to the protect mode helpers
-*/
-
-trap_retval ReqSet_user_screen( void )
-{
-    return( 0 );
-}
-
-trap_retval ReqSet_debug_screen( void )
-{
-    return( 0 );
-}
-
-trap_retval ReqRead_user_keyboard( void )
-{
-    return( 0 );
-}
-
-trap_retval ReqSplit_cmd( void )
-{
-    return( 0 );
-}
+#if defined(__GUI__) && defined(__OS2__)
+extern unsigned OnAnotherThread( unsigned(*)(), unsigned, void *, unsigned, void * );
+#else
+#define     OnAnotherThread( a,b,c,d,e ) a( b,c,d,e )
+#endif

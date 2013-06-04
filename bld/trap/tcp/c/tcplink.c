@@ -221,7 +221,7 @@ static unsigned FullGet( void *get, unsigned len )
 
 #endif
 
-trap_elen RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( byte *rec, trap_elen len )
 {
     unsigned_16         rec_len;
 #ifdef __RDOS__    
@@ -265,7 +265,7 @@ trap_elen RemoteGet( byte *rec, trap_elen len )
 #endif
 }
 
-trap_elen RemotePut( byte *rec, trap_elen len )
+trap_retval RemotePut( byte *rec, trap_elen len )
 {
     unsigned_16         send_len;
 
@@ -280,8 +280,9 @@ trap_elen RemotePut( byte *rec, trap_elen len )
         RdosPushTcpConnection( socket_handle );
         _DBG_NET(("RemotePut...OK\r\n"));
         return( len );
-    } else
+    } else {
         return( REQUEST_FAILED );
+    }
 #else
     send_len = len;
     CONV_LE_16( send_len );

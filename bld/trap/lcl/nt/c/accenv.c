@@ -31,7 +31,7 @@
 
 #include "stdnt.h"
 
-trap_elen ReqEnv_setvar( void )
+trap_retval ReqEnv_setvar( void )
 {
     env_set_var_req *req;
     env_set_var_ret *ret;
@@ -53,7 +53,7 @@ trap_elen ReqEnv_setvar( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqEnv_getvar( void )
+trap_retval ReqEnv_getvar( void )
 {
     env_get_var_req *req;
     env_get_var_ret *ret;

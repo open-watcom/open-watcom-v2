@@ -41,7 +41,7 @@
 #define THD_RUN         6
 #define THD_DEBUG       7
 
-trap_elen ReqRunThread_info( void )
+trap_retval ReqRunThread_info( void )
 {
     run_thread_info_req *acc;
     run_thread_info_ret *ret;
@@ -88,7 +88,7 @@ trap_elen ReqRunThread_info( void )
     return( sizeof( *ret ) + strlen( header_txt ) + 1 );
 }
 
-trap_elen ReqRunThread_get_next( void )
+trap_retval ReqRunThread_get_next( void )
 {
     run_thread_get_next_req *acc;
     run_thread_get_next_ret *ret;
@@ -105,7 +105,7 @@ trap_elen ReqRunThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRunThread_get_runtime( void )
+trap_retval ReqRunThread_get_runtime( void )
 {
     run_thread_get_runtime_req *acc;
     run_thread_get_runtime_ret *ret;
@@ -228,7 +228,7 @@ trap_elen ReqRunThread_get_runtime( void )
     return( sizeof( *ret ) + strlen( time_txt ) + 1 );
 }
 
-trap_elen ReqRunThread_poll( void )
+trap_retval ReqRunThread_poll( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -262,7 +262,7 @@ trap_elen ReqRunThread_poll( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRunThread_set( void )
+trap_retval ReqRunThread_set( void )
 {
     run_thread_set_req      *acc;
     run_thread_set_ret      *ret;
@@ -290,7 +290,7 @@ trap_elen ReqRunThread_set( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRunThread_get_name( void )
+trap_retval ReqRunThread_get_name( void )
 {
     run_thread_get_name_req *acc;
     char                    *name;
@@ -318,7 +318,7 @@ trap_elen ReqRunThread_get_name( void )
     return( strlen( name ) + 1 );
 }
 
-trap_elen ReqRunThread_stop( void )
+trap_retval ReqRunThread_stop( void )
 {
     run_thread_stop_req     *acc;
 
@@ -328,7 +328,7 @@ trap_elen ReqRunThread_stop( void )
     return( 0 );
 }
 
-trap_elen ReqRunThread_signal_stop( void )
+trap_retval ReqRunThread_signal_stop( void )
 {
     run_thread_signal_stop_req     *acc;
 

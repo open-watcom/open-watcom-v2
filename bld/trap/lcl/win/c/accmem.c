@@ -72,7 +72,7 @@ DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
 
 } /* WriteMem */
 
-trap_elen ReqRead_mem( void )
+trap_retval ReqRead_mem( void )
 {
     read_mem_req        *acc;
     LPVOID              data;
@@ -85,7 +85,7 @@ trap_elen ReqRead_mem( void )
     return( len );
 }
 
-trap_elen ReqWrite_mem( void )
+trap_retval ReqWrite_mem( void )
 {
     trap_elen           len;
     LPVOID              data;
@@ -101,7 +101,7 @@ trap_elen ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqChecksum_mem( void )
+trap_retval ReqChecksum_mem( void )
 {
     DWORD               offset;
     trap_elen           length;

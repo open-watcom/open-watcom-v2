@@ -39,9 +39,7 @@
 #include <stdio.h>
 #include "trptypes.h"
 #include "tcerr.h"
-
-extern trap_version     TrapVer;
-extern trap_req_func    *ReqFunc;
+#include "trpld.h"
 
 static HMODULE          TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;

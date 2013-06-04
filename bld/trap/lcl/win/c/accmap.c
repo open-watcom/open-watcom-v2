@@ -150,7 +150,7 @@ void AddModuleLoaded( HANDLE mod, BOOL is_dll )
 /*
  * AccGetLibName - get lib name of current module
  */
-trap_elen ReqGet_lib_name( void )
+trap_retval ReqGet_lib_name( void )
 {
     MODULEENTRY         me;
     get_lib_name_req    *acc;
@@ -280,7 +280,7 @@ static BOOL horkyFindSegment( int module, WORD segment )
  *     horkyFindSegment.  Once horkyFindSegment is done, GlobalEntryModule
  *     will give the right answer, and we return the value we obtain from it.
  */
-trap_elen ReqMap_addr( void )
+trap_retval ReqMap_addr( void )
 {
     GLOBALENTRY ge;
     LPVOID      ptr;
@@ -349,7 +349,7 @@ trap_elen ReqMap_addr( void )
  * We maintain a list of all apps that are 32-bit, and return the
  * aliases for each of them.
  */
-trap_elen ReqGet_next_alias( void )
+trap_retval ReqGet_next_alias( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;

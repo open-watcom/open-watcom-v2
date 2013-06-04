@@ -43,6 +43,7 @@
 #include "dbglit.h"
 #include "mad.h"
 #include "dui.h"
+#include "trapaccs.h"
 
 extern void             FiniSuppServices( void );
 extern void             InitSuppServices( void );
@@ -63,11 +64,6 @@ extern dtid_t           RemoteSetThread( dtid_t );
 extern void             RemoteSectTblRead( void * );
 extern void             RemoteSectTblWrite( void * );
 extern void             CheckMADChange( void );
-#if defined(__GUI__) && defined(__OS2__)
-extern unsigned         OnAnotherThread( trap_elen(*)(), unsigned, void *, unsigned, void * );
-#else
-#define                 OnAnotherThread( a,b,c,d,e ) a( b,c,d,e )
-#endif
 
 extern unsigned         MaxPacketLen;
 extern unsigned         TaskId;
@@ -141,7 +137,7 @@ static unsigned MemRead( address addr, void *ptr, unsigned size )
         left -= got;
         if( left == 0 ) break;
         if( got != piece ) break;
-    addr.mach.offset += piece;
+        addr.mach.offset += piece;
         acc.mem_addr = addr.mach;
         ptr = (char *)ptr + piece;
     }
@@ -232,7 +228,7 @@ unsigned ProgPoke( address addr, void *data, unsigned len )
         left -= ret.len;
         if( left == 0 ) break;
         if( ret.len != piece ) break;
-    addr.mach.offset += piece;
+        addr.mach.offset += piece;
         acc.mem_addr = addr.mach;
         data = (char *)data + piece;
     }

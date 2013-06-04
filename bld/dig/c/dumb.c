@@ -39,7 +39,7 @@ mx_entry_p  Out_Mx_Ptr;
 
 extern trap_req_func    *ReqFunc;
 
-trap_elen ReqConnect( void )
+trap_retval ReqConnect( void )
 {
     OUTPTR( connect_ret, ret );
 
@@ -47,12 +47,12 @@ trap_elen ReqConnect( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqSimpleStub( void )
+trap_retval ReqSimpleStub( void )
 {
     return( 0 );
 }
 
-trap_elen ReqGet_supplementary_service(void)
+trap_retval ReqGet_supplementary_service(void)
 {
     OUTPTR( get_supplementary_service_ret, ret );
 
@@ -61,7 +61,7 @@ trap_elen ReqGet_supplementary_service(void)
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqMap_addr( void )
+trap_retval ReqMap_addr( void )
 {
     OUTPTR( map_addr_ret, ret );
 
@@ -72,7 +72,7 @@ trap_elen ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqChecksum_mem( void )
+trap_retval ReqChecksum_mem( void )
 {
     OUTPTR( checksum_mem_ret, ret );
 
@@ -80,7 +80,7 @@ trap_elen ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqProg_load( void )
+trap_retval ReqProg_load( void )
 {
     OUTPTR( prog_load_ret, ret );
 
@@ -88,7 +88,7 @@ trap_elen ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqProg_kill( void )
+trap_retval ReqProg_kill( void )
 {
     OUTPTR( prog_kill_ret, ret );
 
@@ -96,7 +96,7 @@ trap_elen ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqSet_watch( void )
+trap_retval ReqSet_watch( void )
 {
     OUTPTR( set_watch_ret, ret );
 
@@ -105,7 +105,7 @@ trap_elen ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqSet_break( void )
+trap_retval ReqSet_break( void )
 {
     OUTPTR( set_break_ret, ret );
 
@@ -113,7 +113,7 @@ trap_elen ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqGet_next_alias( void )
+trap_retval ReqGet_next_alias( void )
 {
     OUTPTR( get_next_alias_ret, ret );
 
@@ -122,7 +122,7 @@ trap_elen ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRead_user_keyboard( void )
+trap_retval ReqRead_user_keyboard( void )
 {
     OUTPTR( read_user_keyboard_ret, ret );
 
@@ -130,7 +130,7 @@ trap_elen ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqGet_lib_name( void )
+trap_retval ReqGet_lib_name( void )
 {
     OUTPTR( get_lib_name_ret, ret );
 
@@ -138,7 +138,7 @@ trap_elen ReqGet_lib_name( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRedirect_stdin( void  )
+trap_retval ReqRedirect_stdin( void  )
 {
     OUTPTR( redirect_stdin_ret, ret );
 
@@ -146,7 +146,7 @@ trap_elen ReqRedirect_stdin( void  )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRedirect_stdout( void  )
+trap_retval ReqRedirect_stdout( void  )
 {
     OUTPTR( redirect_stdout_ret, ret );
 
@@ -155,7 +155,7 @@ trap_elen ReqRedirect_stdout( void  )
 }
 
 
-trap_elen ReqSplit_cmd( void )
+trap_retval ReqSplit_cmd( void )
 {
     OUTPTR( split_cmd_ret, ret );
 
@@ -164,56 +164,56 @@ trap_elen ReqSplit_cmd( void )
     return( sizeof( *ret ) );
 }
 
-static trap_elen (* const DumbRequests[])(void) = {
-        ReqConnect,
-        ReqSimpleStub, // ReqDisconnect,
-        ReqSimpleStub, // ReqSuspend,
-        ReqSimpleStub, // ReqResume,
-        ReqGet_supplementary_service,
-        ReqSimpleStub, // ReqPerform_supplementary_service,
-        ReqSimpleStub, // ReqGet_sys_config,
-        ReqMap_addr,
-        ReqSimpleStub, // ReqAddr_info, //obsolete
-        ReqChecksum_mem,
-        ReqSimpleStub, // ReqRead_mem,
-        ReqSimpleStub, // ReqWrite_mem,
-        ReqSimpleStub, // ReqRead_io,
-        ReqSimpleStub, // ReqWrite_io,
-        ReqSimpleStub, // ReqRead_cpu,  //obsolete
-        ReqSimpleStub, // ReqRead_fpu,  //obsolete
-        ReqSimpleStub, // ReqWrite_cpu, //obsolete
-        ReqSimpleStub, // ReqWrite_fpu, //obsolete
-        ReqSimpleStub, // ReqProg_go,
-        ReqSimpleStub, // ReqProg_step,
-        ReqProg_load,
-        ReqProg_kill,
-        ReqSet_watch,
-        ReqSimpleStub, // ReqClear_watch,
-        ReqSet_break,
-        ReqSimpleStub, // ReqClear_break,
-        ReqGet_next_alias,
-        ReqSimpleStub, // ReqSet_user_screen,
-        ReqSimpleStub, // ReqSet_debug_screen,
-        ReqRead_user_keyboard,
-        ReqGet_lib_name,
-        ReqSimpleStub, // ReqGet_err_text,
-        ReqSimpleStub, // ReqGet_message_text,
-        ReqRedirect_stdin,
-        ReqRedirect_stdout,
-        ReqSplit_cmd,
-        ReqSimpleStub, // ReqRead_regs,
-        ReqSimpleStub, // ReqWrite_regs,
-        ReqSimpleStub, // ReqMachine_data,
+static trap_retval (* const DumbRequests[])(void) = {
+    ReqConnect,
+    ReqSimpleStub, // ReqDisconnect,
+    ReqSimpleStub, // ReqSuspend,
+    ReqSimpleStub, // ReqResume,
+    ReqGet_supplementary_service,
+    ReqSimpleStub, // ReqPerform_supplementary_service,
+    ReqSimpleStub, // ReqGet_sys_config,
+    ReqMap_addr,
+    ReqSimpleStub, // ReqAddr_info, //obsolete
+    ReqChecksum_mem,
+    ReqSimpleStub, // ReqRead_mem,
+    ReqSimpleStub, // ReqWrite_mem,
+    ReqSimpleStub, // ReqRead_io,
+    ReqSimpleStub, // ReqWrite_io,
+    ReqSimpleStub, // ReqRead_cpu,  //obsolete
+    ReqSimpleStub, // ReqRead_fpu,  //obsolete
+    ReqSimpleStub, // ReqWrite_cpu, //obsolete
+    ReqSimpleStub, // ReqWrite_fpu, //obsolete
+    ReqSimpleStub, // ReqProg_go,
+    ReqSimpleStub, // ReqProg_step,
+    ReqProg_load,
+    ReqProg_kill,
+    ReqSet_watch,
+    ReqSimpleStub, // ReqClear_watch,
+    ReqSet_break,
+    ReqSimpleStub, // ReqClear_break,
+    ReqGet_next_alias,
+    ReqSimpleStub, // ReqSet_user_screen,
+    ReqSimpleStub, // ReqSet_debug_screen,
+    ReqRead_user_keyboard,
+    ReqGet_lib_name,
+    ReqSimpleStub, // ReqGet_err_text,
+    ReqSimpleStub, // ReqGet_message_text,
+    ReqRedirect_stdin,
+    ReqRedirect_stdout,
+    ReqSplit_cmd,
+    ReqSimpleStub, // ReqRead_regs,
+    ReqSimpleStub, // ReqWrite_regs,
+    ReqSimpleStub, // ReqMachine_data,
 };
 
 
-trap_elen TRAPENTRY DumbRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
+trap_retval TRAPENTRY DumbRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
-    trap_elen   len;
+    trap_retval     result;
 
     Out_Mx_Ptr = mx_out;
-    len = DumbRequests[ *(access_req *)mx_in[0].ptr ]();
-    return( len );
+    result = DumbRequests[*(access_req *)mx_in[0].ptr]();
+    return( result );
 }
 
 char *LoadDumbTrap( trap_version *ver )

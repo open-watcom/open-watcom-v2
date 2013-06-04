@@ -944,13 +944,12 @@ void RemoteDisco( void )
 
 /* Return:  Number of bytes received                                    */
 
-trap_elen RemoteGet( byte *rec, trap_elen max_len )
+trap_retval RemoteGet( byte *rec, trap_elen max_len )
 {
     unsigned        timeout;             /* time limit for getting the data */
     unsigned char   err;                 /* storing the # of Errors the other side
                                             experience in sending data block */
     int             result;              /* result of WaitReceive() operation */
-
 
     timeout = FOREVER;
 
@@ -971,13 +970,12 @@ trap_elen RemoteGet( byte *rec, trap_elen max_len )
 /*========================================================================*/
 
 
-trap_elen RemotePut( byte *send, trap_elen len )
+trap_retval RemotePut( byte *send, trap_elen len )
 {
     unsigned timeout;             /* time limit for getting the data */
     int      result;              /* result of BlockSend() operation */
 
     timeout = SEC( 10 );
-
 
     /* Sending data block */
     result = BlockSend( len, send, timeout );

@@ -48,6 +48,7 @@
 #include "dbgvar.h"
 #include "dbgstk.h"
 #include "srcmgt.h"
+#include "trapaccs.h"
 
 
 extern void             FlushEOC( void );
@@ -971,7 +972,7 @@ bool DUICopyCancelled( void * cookie )
     return( FALSE );
 }
 
-unsigned OnAnotherThread( unsigned(*a)( unsigned, void *, unsigned, void * ), unsigned b, void *c, unsigned d, void *e )
+unsigned OnAnotherThread( unsigned(*rtn)(unsigned,void *,unsigned,void *), unsigned in_len, void *in, unsigned out_len, void *out )
 {
-    return( a( b, c, d, e ) );
+    return( rtn( in_len, in, out_len, out ) );
 }

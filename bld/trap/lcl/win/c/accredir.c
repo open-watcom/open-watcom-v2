@@ -101,12 +101,12 @@ static trap_elen doRedirect( BOOL isin )
     return( sizeof( redirect_stdin_ret ) );
 } /* doRedirect */
 
-trap_elen ReqRedirect_stdin( void  )
+trap_retval ReqRedirect_stdin( void  )
 {
     return( doRedirect( TRUE ) );
 }
 
-trap_elen ReqRedirect_stdout( void )
+trap_retval ReqRedirect_stdout( void )
 {
     return( doRedirect( FALSE ) );
 }

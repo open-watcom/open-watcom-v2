@@ -38,6 +38,7 @@
 #include <stddef.h>
 #include "trptypes.h"
 #include "tcerr.h"
+#include "trpld.h"
 
 void                    (TRAPENTRY*HookFunc)(LPVOID);
 void                    (TRAPENTRY*InfoFunction)(HWND);
@@ -45,9 +46,6 @@ void                    (TRAPENTRY*UnLockInput)(void);
 void                    (TRAPENTRY*SetHardMode)(char);
 static int              (TRAPENTRY*HardModeCheck)(void);
 static int              (TRAPENTRY*GetHwndFunc)(void);
-
-extern trap_version     TrapVer;
-extern trap_req_func    *ReqFunc;
 
 int HardModeRequired;
 

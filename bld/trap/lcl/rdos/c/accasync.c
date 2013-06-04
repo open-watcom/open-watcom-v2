@@ -36,7 +36,7 @@
 #include "stdrdos.h"
 #include "debug.h"
 
-trap_elen ReqAsync_go( void )
+trap_retval ReqAsync_go( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -107,7 +107,7 @@ trap_elen ReqAsync_go( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqAsync_step( void )
+trap_retval ReqAsync_step( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -179,7 +179,7 @@ trap_elen ReqAsync_step( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqAsync_poll( void )
+trap_retval ReqAsync_poll( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -250,7 +250,7 @@ trap_elen ReqAsync_poll( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqAsync_stop( void )
+trap_retval ReqAsync_stop( void )
 {
     async_go_ret            *ret;
 

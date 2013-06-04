@@ -37,6 +37,7 @@
 #include "tcerr.h"
 #include "peloader.h"
 #include "trpqimp.h"
+#include "trpld.h"
 
 #if defined( BUILTIN_TRAP_FILE )
 extern const trap_requests *TrapLoad( const trap_callbacks *client );
@@ -45,9 +46,6 @@ extern const trap_requests *TrapLoad( const trap_callbacks *client );
 #ifndef __WATCOMC__
 extern char **environ;
 #endif
-
-extern trap_version     TrapVer;
-extern trap_req_func    *ReqFunc;
 
 extern  int      FullPathOpen( char const *name, char *ext, char *result, unsigned max_result );
 extern  int      GetSystemHandle(int);

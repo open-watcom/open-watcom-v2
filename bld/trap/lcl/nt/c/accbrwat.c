@@ -58,7 +58,7 @@ typedef struct break_point {
 
 static break_point      *Breaks = NULL;
 
-trap_elen ReqSet_break( void )
+trap_retval ReqSet_break( void )
 {
     brkpnt_type     ch;
     set_break_req   *acc;
@@ -82,7 +82,7 @@ trap_elen ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqClear_break( void )
+trap_retval ReqClear_break( void )
 {
     brkpnt_type     ch;
     clear_break_req *acc;
@@ -391,7 +391,7 @@ static DWORD CalcLinear( WORD segment, DWORD offset )
 #endif
 
 
-trap_elen ReqSet_watch( void )
+trap_retval ReqSet_watch( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -512,7 +512,7 @@ trap_elen ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqClear_watch( void )
+trap_retval ReqClear_watch( void )
 {
     clear_watch_req *acc;
     watch_point     *dst;

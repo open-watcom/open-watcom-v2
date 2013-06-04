@@ -74,7 +74,7 @@ void TRAPENTRY TrapFini()
     MSJMemFini();
 }
 
-unsigned ReqGet_sys_config( void )
+trap_retval ReqGet_sys_config( void )
 /********************************/
 {
     get_sys_config_ret *ret;
@@ -96,7 +96,7 @@ unsigned ReqGet_sys_config( void )
     return sizeof( *ret );
 }
 
-unsigned ReqMap_addr( void )
+trap_retval ReqMap_addr( void )
 /**************************/
 {
     map_addr_req *      acc;
@@ -110,7 +110,7 @@ unsigned ReqMap_addr( void )
     return sizeof( *ret );
 }
 
-unsigned ReqAddr_info( void )
+trap_retval ReqAddr_info( void )
 /***************************/
 {
     addr_info_ret *     ret;
@@ -120,7 +120,7 @@ unsigned ReqAddr_info( void )
     return sizeof( *ret );
 }
 
-unsigned ReqChecksum_mem( void )
+trap_retval ReqChecksum_mem( void )
 /******************************/
 {
     unsigned_8 *        buffer;
@@ -158,7 +158,7 @@ unsigned DoRead( int addr, char *buff, unsigned length )
     return( bytes );
 }
 
-unsigned ReqRead_mem( void )
+trap_retval ReqRead_mem( void )
 /**************************/
 {
     read_mem_req *acc;
@@ -195,7 +195,7 @@ unsigned DoWrite( int addr, char *buff, unsigned length )
     return( bytes );
 }
 
-unsigned ReqWrite_mem( void )
+trap_retval ReqWrite_mem( void )
 /***************************/
 {
     write_mem_ret *     ret;
@@ -221,14 +221,14 @@ unsigned ReqWrite_mem( void )
     return sizeof( *ret );
 }
 
-unsigned ReqRead_io( void )
+trap_retval ReqRead_io( void )
 /*************************/
 // never called
 {
     return( 0 );
 }
 
-unsigned ReqWrite_io( void )
+trap_retval ReqWrite_io( void )
 /**************************/
 {
     write_io_ret *ret;
@@ -240,7 +240,7 @@ unsigned ReqWrite_io( void )
 
 // OBSOLETE - use ReqRead_regs
 
-unsigned ReqRead_cpu( void )
+trap_retval ReqRead_cpu( void )
 /**************************/
 {
     read_cpu_ret *ret;
@@ -250,7 +250,7 @@ unsigned ReqRead_cpu( void )
     return sizeof( *ret );
 }
 
-unsigned ReqRead_fpu( void )
+trap_retval ReqRead_fpu( void )
 /**************************/
 {
     read_fpu_ret * ret;
@@ -260,13 +260,13 @@ unsigned ReqRead_fpu( void )
     return sizeof( *ret );
 }
 
-unsigned ReqWrite_cpu( void )
+trap_retval ReqWrite_cpu( void )
 /***************************/
 {
     return 0;
 }
 
-unsigned ReqWrite_fpu( void )
+trap_retval ReqWrite_fpu( void )
 /***************************/
 {
     return 0;
@@ -294,13 +294,13 @@ static unsigned runProg( bool single_step )
     return sizeof( *ret );
 }
 
-unsigned ReqProg_go( void )
+trap_retval ReqProg_go( void )
 /*************************/
 {
     return runProg( FALSE );
 }
 
-unsigned ReqProg_step( void )
+trap_retval ReqProg_step( void )
 /***************************/
 {
     return runProg( TRUE );
@@ -322,7 +322,7 @@ static char * TrimName( char * name )
     return name;
 }
 
-unsigned ReqProg_load( void )
+trap_retval ReqProg_load( void )
 /***************************/
 {
     prog_load_ret *     ret;
@@ -376,7 +376,7 @@ unsigned ReqProg_load( void )
     return sizeof( *ret );
 }
 
-unsigned ReqProg_kill( void )
+trap_retval ReqProg_kill( void )
 /***************************/
 {
     prog_kill_ret *ret;
@@ -406,7 +406,7 @@ static void ClearBreak( void )
     ClearBreakpoint( &req->break_addr );
 }
 
-unsigned ReqSet_watch()
+trap_retval ReqSet_watch( void )
 /*********************/
 {
     set_watch_ret *ret;
@@ -418,14 +418,14 @@ unsigned ReqSet_watch()
     return sizeof( *ret );
 }
 
-unsigned ReqClear_watch()
+trap_retval ReqClear_watch( void )
 /***********************/
 {
     ClearBreak();
     return 0;
 }
 
-unsigned ReqSet_break()
+trap_retval ReqSet_break( void )
 /*********************/
 {
     set_break_ret *ret;
@@ -436,14 +436,14 @@ unsigned ReqSet_break()
     return sizeof(*ret);
 }
 
-unsigned ReqClear_break()
+trap_retval ReqClear_break( void )
 /***********************/
 {
     ClearBreak();
     return 0;
 }
 
-unsigned ReqGet_next_alias( void )
+trap_retval ReqGet_next_alias( void )
 /********************************/
 {
     get_next_alias_ret *ret;
@@ -454,20 +454,20 @@ unsigned ReqGet_next_alias( void )
     return sizeof( *ret );
 }
 
-unsigned ReqSet_user_screen( void )
+trap_retval ReqSet_user_screen( void )
 /*********************************/
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen( void )
+trap_retval ReqSet_debug_screen( void )
 /**********************************/
 {
     ProcessQueuedRepaints();
     return( 0 );
 }
 
-unsigned ReqGet_lib_name( void )
+trap_retval ReqGet_lib_name( void )
 /******************************/
 {
     get_lib_name_req    *acc;
@@ -503,7 +503,7 @@ static char *Errors[] = {
 #undef pick
 };
 
-unsigned ReqGet_err_text( void )
+trap_retval ReqGet_err_text( void )
 /******************************/
 {
 
@@ -532,25 +532,25 @@ unsigned ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-unsigned ReqGet_message_text( void )
+trap_retval ReqGet_message_text( void )
 /**********************************/
 {
     return 0;
 }
 
-unsigned ReqRedirect_stdin( void )
+trap_retval ReqRedirect_stdin( void )
 /********************************/
 {
     return 0;
 }
 
-unsigned ReqRedirect_stdout( void )
+trap_retval ReqRedirect_stdout( void )
 /*********************************/
 {
     return 0;
 }
 
-unsigned ReqSplit_cmd( void )
+trap_retval ReqSplit_cmd( void )
 /***************************/
 {
     char                *cmd;
@@ -587,7 +587,7 @@ done:
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 /***************************/
 // NYI - we can't fill out this structure
 {
@@ -602,14 +602,14 @@ unsigned ReqRead_regs( void )
     return( sizeof( mr->jvm ) );
 }
 
-unsigned ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 /****************************/
 // NYI: cannot write registers
 {
     return( 0 );
 }
 
-unsigned ReqMachine_data( void )
+trap_retval ReqMachine_data( void )
 /******************************/
 // NYI: what the hell does this do?
 {
@@ -623,7 +623,7 @@ unsigned ReqMachine_data( void )
     return sizeof( *ret );
 }
 
-unsigned ReqThread_get_next( void )
+trap_retval ReqThread_get_next( void )
 /*********************************/
 {
     thread_get_next_req *acc;
@@ -635,7 +635,7 @@ unsigned ReqThread_get_next( void )
     return sizeof( *ret );
 }
 
-unsigned ReqThread_set( void )
+trap_retval ReqThread_set( void )
 /****************************/
 {
     thread_set_req *acc;
@@ -648,7 +648,7 @@ unsigned ReqThread_set( void )
     return sizeof( *ret );
 }
 
-unsigned ReqThread_freeze( void )
+trap_retval ReqThread_freeze( void )
 /*******************************/
 {
     thread_freeze_req   *acc;
@@ -664,7 +664,7 @@ unsigned ReqThread_freeze( void )
     return sizeof( *ret );
 }
 
-unsigned ReqThread_thaw( void )
+trap_retval ReqThread_thaw( void )
 /*****************************/
 {
     thread_thaw_req *acc;
@@ -678,7 +678,7 @@ unsigned ReqThread_thaw( void )
     return sizeof( *ret );
 }
 
-unsigned ReqThread_get_extra( void )
+trap_retval ReqThread_get_extra( void )
 /**********************************/
 {
     thread_get_extra_req *acc;

@@ -739,12 +739,12 @@ static trap_elen runProg( bool single_step )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqProg_go( void )
+trap_retval ReqProg_go( void )
 {
     return( runProg( FALSE ) );
 }
 
-trap_elen ReqProg_step( void )
+trap_retval ReqProg_step( void )
 {
     return( runProg( TRUE ) );
 }

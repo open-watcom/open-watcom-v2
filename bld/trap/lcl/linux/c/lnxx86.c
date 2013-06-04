@@ -112,19 +112,19 @@ static void ReadFPUXMM( struct x86_fpu *r, struct x86_xmm *x )
     }
 }
 
-trap_elen ReqRead_cpu( void )
+trap_retval ReqRead_cpu( void )
 {
     ReadCPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_cpu ) );
 }
 
-trap_elen ReqRead_fpu( void )
+trap_retval ReqRead_fpu( void )
 {
     ReadFPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_fpu ) );
 }
 
-trap_elen ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 {
     mad_registers   *mr;
 
@@ -211,19 +211,19 @@ static void WriteFPUXMM( struct x86_fpu *r, struct x86_xmm *x )
     }
 }
 
-trap_elen ReqWrite_cpu( void )
+trap_retval ReqWrite_cpu( void )
 {
     WriteCPU( GetInPtr( sizeof( write_cpu_req ) ) );
     return( 0 );
 }
 
-trap_elen ReqWrite_fpu()
+trap_retval ReqWrite_fpu( void )
 {
     WriteFPU( GetInPtr( sizeof( write_fpu_req ) ) );
     return( 0 );
 }
 
-trap_elen ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 {
     mad_registers   *mr;
 
@@ -308,7 +308,7 @@ int CheckWatchPoints( void )
     return( FALSE );
 }
 
-trap_elen ReqSet_watch( void )
+trap_retval ReqSet_watch( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -342,7 +342,7 @@ trap_elen ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqClear_watch( void )
+trap_retval ReqClear_watch( void )
 {
     clear_watch_req *acc;
     watch_point     *dst;
@@ -365,7 +365,7 @@ trap_elen ReqClear_watch( void )
     return( 0 );
 }
 
-trap_elen ReqRead_io( void )
+trap_retval ReqRead_io( void )
 {
     read_io_req *acc;
     void        *ret;
@@ -402,7 +402,7 @@ trap_elen ReqRead_io( void )
     return( len );
 }
 
-trap_elen ReqWrite_io( void )
+trap_retval ReqWrite_io( void )
 {
     write_io_req    *acc;
     write_io_ret    *ret;
@@ -442,7 +442,7 @@ trap_elen ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqGet_sys_config( void )
+trap_retval ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -464,7 +464,7 @@ trap_elen ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqMachine_data( void )
+trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;

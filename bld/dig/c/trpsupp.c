@@ -76,12 +76,16 @@ int CloseTrapTraceFile( void )
 
 static void Failure( void )
 {
-    if( pFailure ) pFailure();
+    if( pFailure ) {
+        pFailure();
+    }
 }
 
 static void Access( void )
 {
-    if( pAccess ) pAccess();
+    if( pAccess ) {
+        pAccess();
+    }
 }
 
 void TrapSetFailCallBack( void (*func)(void) )
@@ -99,9 +103,9 @@ void TrapFailAllRequests()
     ReqFunc = NULL;
 }
 
-static trap_elen ReqFuncProxy( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
+static trap_retval ReqFuncProxy( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
-    trap_elen   result;
+    trap_retval     result;
 
 #ifdef ENABLE_TRAP_LOGGING
     if( TrapTraceFileHandle ) {
@@ -171,39 +175,42 @@ static trap_elen ReqFuncProxy( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen 
 }
 
 
-trap_elen TrapAccess( trap_elen num_in_mx,  mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out  )
+unsigned TrapAccess( unsigned num_in_mx, mx_entry_p mx_in, unsigned num_out_mx, mx_entry_p mx_out  )
 {
-    trap_elen   len;
+    trap_retval     result;
 
     if( ReqFunc == NULL )
-        return( REQUEST_FAILED );
+        return( -1 );
 
-    len = ReqFuncProxy( num_in_mx, mx_in, num_out_mx, mx_out );
-    if( len == REQUEST_FAILED )
+    result = ReqFuncProxy( num_in_mx, mx_in, num_out_mx, mx_out );
+    if( result == REQUEST_FAILED ) {
         Failure();
+    }
     Access();
 #if !defined(SERVER)
 #if defined(__WINDOWS__) && defined( _M_I86 )
     DoHardModeCheck();
 #endif
 #endif
-    return( len );
+    if( result == REQUEST_FAILED )
+        return( -1 );
+    return( result );
 }
 
-trap_elen TrapSimpAccess( trap_elen in_len, void *in_data, trap_elen out_len, void *out_data )
+unsigned TrapSimpAccess( unsigned in_len, void *in_data, unsigned out_len, void *out_data )
 {
     mx_entry        in[1];
     mx_entry        out[1];
-    trap_elen       len;
+    trap_retval     result;
 
     in[0].ptr = in_data;
     in[0].len = in_len;
     if( out_len != 0 ) {
         out[0].ptr = out_data;
         out[0].len = out_len;
-        len = TrapAccess( 1, in, 1, out );
+        result = TrapAccess( 1, in, 1, out );
     } else {
-        len = TrapAccess( 1, in, 0, NULL );
+        result = TrapAccess( 1, in, 0, NULL );
     }
-    return( len );
+    return( result );
 }

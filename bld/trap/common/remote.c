@@ -38,10 +38,10 @@
 #include "packet.h"
 
 
-static trap_elen DoRequest( void )
+static trap_retval DoRequest( void )
 {
     trap_elen   left;
-    trap_elen   len;
+    trap_retval result;
     trap_elen   i;
     trap_elen   piece;
 
@@ -55,38 +55,38 @@ static trap_elen DoRequest( void )
         AddPacket( In_Mx_Ptr[i].len, In_Mx_Ptr[i].ptr );
     }
     *(access_req *)In_Mx_Ptr[0].ptr &= ~0x80;
-    if( PutPacket() == REQUEST_FAILED )
-        return( REQUEST_FAILED );
-    if( Out_Mx_Num != 0 ) {
-        len = GetPacket();
-        if( len == REQUEST_FAILED )
-            return( REQUEST_FAILED );
-        left = len;
-        i = 0;
-        for( ;; ) {
-            if( i >= Out_Mx_Num )
-                break;
-            if( left > Out_Mx_Ptr[i].len ) {
-                piece = Out_Mx_Ptr[i].len;
-            } else {
-                piece = left;
-            }
-            RemovePacket( piece, Out_Mx_Ptr[i].ptr );
-            i++;
-            left -= piece;
-            if( left == 0 ) {
-                break;
+    result = PutPacket();
+    if( result != REQUEST_FAILED ) {
+        result = 0;
+        if( Out_Mx_Num != 0 ) {
+            result = GetPacket();
+            if( result != REQUEST_FAILED ) {
+                left = result;
+                i = 0;
+                for( ;; ) {
+                    if( i >= Out_Mx_Num )
+                        break;
+                    if( left > Out_Mx_Ptr[i].len ) {
+                        piece = Out_Mx_Ptr[i].len;
+                    } else {
+                        piece = left;
+                    }
+                    RemovePacket( piece, Out_Mx_Ptr[i].ptr );
+                    i++;
+                    left -= piece;
+                    if( left == 0 ) {
+                        break;
+                    }
+                }
             }
         }
-    } else {
-        len = 0;
     }
     _DBG_ExitFunc( "DoRequest" );
-    return( len );
+    return( result );
 }
 
 
-static trap_elen ReqRemoteConnect( void )
+static trap_retval ReqRemoteConnect( void )
 {
     connect_ret     *connect;
     char            *data;
@@ -157,9 +157,9 @@ trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
     return( ver );
 }
 
-trap_elen TRAPENTRY TrapRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
+trap_retval TRAPENTRY TrapRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
-    trap_elen   ret;
+    trap_retval     result;
 
     _DBG_EnterFunc( "TrapAccess" );
     _DBG_Writeln( _DBG_Request( *(access_req *)mx_in[0].ptr ) );
@@ -170,23 +170,23 @@ trap_elen TRAPENTRY TrapRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_ele
 
     switch( *(access_req *)mx_in[0].ptr ) {
     case REQ_CONNECT:
-        ret = ReqRemoteConnect();
+        result = ReqRemoteConnect();
         break;
     case REQ_DISCONNECT:
     case REQ_SUSPEND:
         ReqRemoteDisco();
-        ret = 0;
+        result = 0;
         break;
     case REQ_RESUME:
         ReqRemoteResume();
-        ret = 0;
+        result = 0;
         break;
     default:
-        ret = DoRequest();
+        result = DoRequest();
         break;
     }
     _DBG_ExitFunc( "TrapAccess" );
-    return( ret );
+    return( result );
 }
 
 void TRAPENTRY TrapFini( void )

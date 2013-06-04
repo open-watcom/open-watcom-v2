@@ -230,7 +230,7 @@ ULONG           SendSem = 0;
 #define IPXRelinquishControl()  DosSleep( 1 )
 
 
-static unsigned DoRemoteGet( char *rec, unsigned len )
+static trap_retval DoRemoteGet( char *rec, trap_elen len )
 {
     int         i;
     int         p;
@@ -272,7 +272,7 @@ putstring( "Done RemoteGet\r\n" );
     return( recvd );
 }
 
-static unsigned DoRemotePut( char *snd, unsigned len )
+static trap_retval DoRemotePut( char *snd, trap_elen len )
 {
     WORD        rc;
 
@@ -296,23 +296,24 @@ putconnstatus( Connection );
             in any documentation, but if we don't wait for it to clear,
             things mess up badly.
         */
-        if( SendECB.status != SPX_SUCCESSFUL
-         && !InUse( SendECB )
-         && SendECB.status != 0x1001 ) break;
+        if( SendECB.status != SPX_SUCCESSFUL && !InUse( SendECB ) && SendECB.status != 0x1001 )
+            break;
         rc = DosSemWait( &SendSem, 1000 );
-        if( rc != ERROR_SEM_TIMEOUT ) break;
+        if( rc != ERROR_SEM_TIMEOUT ) {
+            break;
+        }
     }
     SendECB.hsem = 0;
-    return( len );
 putstring( "Done RemotePut\r\n" );
+    return( len );
 }
 
-unsigned RemoteGet( char *rec, unsigned len )
+trap_retval RemoteGet( char *rec, trap_elen len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-unsigned RemotePut( char *snd, unsigned len )
+trap_retval RemotePut( char *snd, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
@@ -340,7 +341,7 @@ putstring( "Posting RecECB[i]\r\n" );
     putrc( "SPXListenForConnectionPacket", rc );
 }
 
-static void PostListens()
+static void PostListens( void )
 {
     int         i;
 
@@ -435,7 +436,7 @@ volatile enum {
 
 char    RespondStack[ STACKSIZE ];
 
-static void far Respond()
+static void far Respond( void )
 {
     char        dummy;
 
@@ -462,7 +463,7 @@ char    BroadcastStack[ STACKSIZE ];
 ULONG   BroadCastStop = 0;
 ULONG   BroadCastStart = 0;
 
-static void far Broadcast()
+static void far Broadcast( void )
 {
     _INITIPXECB( SAP );
     FillArray( SAPHead.destNode, 0xff );

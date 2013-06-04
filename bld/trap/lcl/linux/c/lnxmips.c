@@ -78,17 +78,17 @@ static void ReadCPU( struct mips_mad_registers *r )
     last_eip = r->pc.u._32[I64LO32];
 }
 
-unsigned ReqRead_cpu( void )
+trap_retval ReqRead_cpu( void )
 {
     return( 0 );
 }
 
-unsigned ReqRead_fpu( void )
+trap_retval ReqRead_fpu( void )
 {
     return( 0 );
 }
 
-unsigned ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 {
     mad_registers   *mr;
 
@@ -116,17 +116,17 @@ static void WriteCPU( struct mips_mad_registers *r )
     }
 }
 
-unsigned ReqWrite_cpu( void )
+trap_retval ReqWrite_cpu( void )
 {
     return( 0 );
 }
 
-unsigned ReqWrite_fpu()
+trap_retval ReqWrite_fpu( void )
 {
     return( 0 );
 }
 
-unsigned ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 {
     mad_registers   *mr;
 
@@ -135,7 +135,7 @@ unsigned ReqWrite_regs( void )
     return( 0 );
 }
 
-unsigned ReqSet_watch( void )
+trap_retval ReqSet_watch( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -147,7 +147,7 @@ unsigned ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch( void )
+trap_retval ReqClear_watch( void )
 {
     clear_watch_req *acc;
 
@@ -159,7 +159,7 @@ unsigned ReqClear_watch( void )
  * wanted to, we could access memory mapped ISA/PCI I/O ports on systems
  * where those are provided. Would require root privileges.
  */
-unsigned ReqRead_io( void )
+trap_retval ReqRead_io( void )
 {
     read_io_req *acc;
     void        *ret;
@@ -169,7 +169,7 @@ unsigned ReqRead_io( void )
     return( 0 );
 }
 
-unsigned ReqWrite_io( void )
+trap_retval ReqWrite_io( void )
 {
     write_io_req    *acc;
     write_io_ret    *ret;
@@ -182,7 +182,7 @@ unsigned ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_sys_config( void )
+trap_retval ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -201,7 +201,7 @@ unsigned ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data( void )
+trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;

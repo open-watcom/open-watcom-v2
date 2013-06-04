@@ -72,7 +72,7 @@
 static t_handle SaveStdIn;
 static t_handle SaveStdOut;
 
-static trap_elen Redirect( bool input )
+static trap_retval Redirect( bool input )
 {
     t_handle            std_hndl;
     t_handle            *var;
@@ -128,12 +128,12 @@ static trap_elen Redirect( bool input )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqRedirect_stdin( void )
+trap_retval ReqRedirect_stdin( void )
 {
     return( Redirect( TRUE ) );
 }
 
-trap_elen ReqRedirect_stdout( void )
+trap_retval ReqRedirect_stdout( void )
 {
     return( Redirect( FALSE ) );
 }

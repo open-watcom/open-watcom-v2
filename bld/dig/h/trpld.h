@@ -24,34 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  TRAP file loader global variable declaration
 *
 ****************************************************************************/
 
 
-#include "trpimp.h"
-
-/*
-        These routines are never passed up to the protect mode helpers
-*/
-
-trap_retval ReqSet_user_screen( void )
-{
-    return( 0 );
-}
-
-trap_retval ReqSet_debug_screen( void )
-{
-    return( 0 );
-}
-
-trap_retval ReqRead_user_keyboard( void )
-{
-    return( 0 );
-}
-
-trap_retval ReqSplit_cmd( void )
-{
-    return( 0 );
-}
+extern trap_version     TrapVer;
+extern trap_req_func    *ReqFunc;

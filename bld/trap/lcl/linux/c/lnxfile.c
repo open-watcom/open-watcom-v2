@@ -38,7 +38,7 @@
 #include "trpimp.h"
 
 
-trap_elen ReqFile_get_config( void )
+trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -52,7 +52,7 @@ trap_elen ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_open( void )
+trap_retval ReqFile_open( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -87,7 +87,7 @@ trap_elen ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_seek( void )
+trap_retval ReqFile_seek( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -108,7 +108,7 @@ trap_elen ReqFile_seek( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_read( void )
+trap_retval ReqFile_read( void )
 {
     trap_elen           total;
     trap_elen           len;
@@ -177,7 +177,7 @@ static trap_elen DoWrite( int hdl, unsigned_8 *ptr, trap_elen len )
     return( total );
 }
 
-trap_elen ReqFile_write( void )
+trap_retval ReqFile_write( void )
 {
     file_write_req      *acc;
     file_write_ret      *ret;
@@ -192,7 +192,7 @@ trap_elen ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_write_console( void )
+trap_retval ReqFile_write_console( void )
 {
     file_write_console_ret      *ret;
 
@@ -204,7 +204,7 @@ trap_elen ReqFile_write_console( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_close( void )
+trap_retval ReqFile_close( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -222,7 +222,7 @@ trap_elen ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_erase( void )
+trap_retval ReqFile_erase( void )
 {
     file_erase_ret      *ret;
 
@@ -237,7 +237,7 @@ trap_elen ReqFile_erase( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqFile_run_cmd( void )
+trap_retval ReqFile_run_cmd( void )
 {
     char                buff[256];
     char                *argv[4];

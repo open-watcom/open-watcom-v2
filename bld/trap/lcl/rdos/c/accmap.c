@@ -35,7 +35,7 @@
 #include "stdrdos.h"
 #include "debug.h"
 
-trap_elen ReqMap_addr( void )
+trap_retval ReqMap_addr( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -122,7 +122,7 @@ trap_elen ReqMap_addr( void )
 /*
  * AccGetLibName - get lib name of current module
  */
-trap_elen ReqGet_lib_name( void )
+trap_retval ReqGet_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;

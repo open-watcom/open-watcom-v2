@@ -49,12 +49,13 @@
 
 HPIPE   pipeHdl;
 
-char *RemoteLink( char *config, char server )
+char *RemoteLink( char *config, bool server )
 {
     APIRET      rc;
     char        buf[ PREFIX_LEN + MAX_NAME + 1 ];
 
-    if( server ) return( "this should never be seen" );
+    if( server )
+        return( "this should never be seen" );
     strcpy( buf, PREFIX );
     if( *config == 0 ) {
         strcpy( buf + PREFIX_LEN, DEFAULT_NAME );
@@ -69,14 +70,15 @@ char *RemoteLink( char *config, char server )
         MAX_TRANS, MAX_TRANS, 0 );
     if( rc != 0 ) {
         /* the bseerr in watcom\h doesn't have ERROR_PIPE_BUSY in it */
-        if( rc == 231 ) return( TRP_ERR_server_name_already_in_use );
+        if( rc == 231 ) 
+            return( TRP_ERR_server_name_already_in_use );
         return( TRP_ERR_unable_to_access_server );
     }
     return( NULL );
 }
 
 
-char RemoteConnect( void )
+bool RemoteConnect( void )
 {
     APIRET      rc;
     int         try;
@@ -95,17 +97,17 @@ char RemoteConnect( void )
             rc = DosSetNmPHandState( pipeHdl, NP_WAIT | NP_READMODE_BYTE );
             if( rc != 0 ) {
                 DosDisConnectNmPipe( pipeHdl );
-                return( 0 );
+                return( FALSE );
             }
-            return( 1 );
+            return( TRUE );
         }
         DosSleep( 200 );
     }
-    return( 0 );
+    return( FALSE );
 }
 
 
-unsigned RemoteGet( char *data, unsigned length )
+trap_retval RemoteGet( char *data, trap_elen length )
 {
     unsigned_16 incoming;
     USHORT      bytes_read;
@@ -123,7 +125,7 @@ unsigned RemoteGet( char *data, unsigned length )
 }
 
 
-unsigned RemotePut( char *data, unsigned length )
+trap_retval RemotePut( char *data, trap_elen length )
 {
     unsigned_16 outgoing;
     USHORT      bytes_written;

@@ -135,7 +135,7 @@ bool Terminate( void )
 }
 #endif
 
-trap_elen RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( byte *rec, trap_elen len )
 {
     NetCtlBlk.ncb_buffer = rec;
     NetCtlBlk.ncb_length = len;
@@ -144,7 +144,7 @@ trap_elen RemoteGet( byte *rec, trap_elen len )
     return( NetCtlBlk.ncb_length );
 }
 
-trap_elen RemotePut( byte *rec, trap_elen len )
+trap_retval RemotePut( byte *rec, trap_elen len )
 {
     NetCtlBlk.ncb_buffer = rec;
     NetCtlBlk.ncb_length = len;
@@ -193,31 +193,32 @@ char *RemoteLink( char *name, bool server )
     unsigned    i;
 
     server = server;
-    if( name == NULL || *name == '\0' ) name = DefLinkName;
+    if( name == NULL || *name == '\0' )
+        name = DefLinkName;
 #if defined(__OS2__)
-    #if defined(__386__)
-        {
-            HMODULE hmod;
+  #if defined(__386__)
+    {
+        HMODULE hmod;
 
-            if( DosLoadModule( NULL, 0, "NETAPI32", &hmod ) != 0 ) {
-                return( NotThere );
-            }
-            if( DosQueryProcAddr( hmod, 0, "NetBios32Submit", (PFN*)&NetBiosSubmit ) != 0 ) {
-                return( NotThere );
-            }
+        if( DosLoadModule( NULL, 0, "NETAPI32", &hmod ) != 0 ) {
+            return( NotThere );
         }
-    #else
-        {
-            HMODULE hmod;
+        if( DosQueryProcAddr( hmod, 0, "NetBios32Submit", (PFN*)&NetBiosSubmit ) != 0 ) {
+            return( NotThere );
+        }
+    }
+  #else
+    {
+        HMODULE hmod;
 
-            if( DosLoadModule( NULL, 0, "NETAPI", &hmod ) != 0 ) {
-                return( NotThere );
-            }
-            if( DosGetProcAddr( hmod, "NETBIOSSUBMIT", &NetBiosSubmit ) != 0 ) {
-                return( NotThere );
-            }
+        if( DosLoadModule( NULL, 0, "NETAPI", &hmod ) != 0 ) {
+            return( NotThere );
         }
-    #endif
+        if( DosGetProcAddr( hmod, "NETBIOSSUBMIT", &NetBiosSubmit ) != 0 ) {
+            return( NotThere );
+        }
+    }
+  #endif
 #elif !defined( __WINDOWS__ ) && !defined( __NT__ )
     {
         unsigned    char    *net_bios;
@@ -272,7 +273,9 @@ char *RemoteLink( char *name, bool server )
     memcpy( NetCtlBlk.ncb_callname, NetCtlBlk.ncb_name, NCBNAMSZ );
     NetCtlBlk.ncb_callname[0] = ( !server ) ? 'S' : 'C';
     if( server ) {
-        if( !PostListen() ) return( TRP_ERR_can_not_start_server );
+        if( !PostListen() ) {
+            return( TRP_ERR_can_not_start_server );
+        }
     }
     return( NULL );
 }

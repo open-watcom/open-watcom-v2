@@ -110,7 +110,7 @@ bool RemoteConnect( void )
 }
 
 
-trap_elen RemoteGet( byte *data, trap_elen length )
+trap_retval RemoteGet( byte *data, trap_elen length )
 {
     unsigned_16     incoming;
     ULONG           bytes_read;
@@ -128,7 +128,7 @@ trap_elen RemoteGet( byte *data, trap_elen length )
 }
 
 
-trap_elen RemotePut( byte *data, trap_elen length )
+trap_retval RemotePut( byte *data, trap_elen length )
 {
     unsigned_16 outgoing;
     ULONG       bytes_written;

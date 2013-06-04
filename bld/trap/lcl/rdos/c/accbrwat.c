@@ -35,7 +35,7 @@
 #include "stdrdos.h"
 #include "debug.h"
 
-trap_elen ReqSet_break( void )
+trap_retval ReqSet_break( void )
 {
     set_break_req   *acc;
     set_break_ret   *ret;
@@ -62,7 +62,7 @@ trap_elen ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqClear_break( void )
+trap_retval ReqClear_break( void )
 {
     clear_break_req *acc;
     struct TDebug   *obj;
@@ -77,7 +77,7 @@ trap_elen ReqClear_break( void )
     return( 0 );
 }
 
-trap_elen ReqSet_watch( void )
+trap_retval ReqSet_watch( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -104,7 +104,7 @@ trap_elen ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_elen ReqClear_watch( void )
+trap_retval ReqClear_watch( void )
 {
     clear_watch_req *acc;
     struct TDebug   *obj;

@@ -109,19 +109,19 @@ static void WriteFPU( struct x86_fpu *r )
     }
 }
 
-trap_elen ReqRead_cpu()
+trap_retval ReqRead_cpu( void )
 {
     ReadCPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_cpu ) );
 }
 
-trap_elen ReqRead_fpu()
+trap_retval ReqRead_fpu( void )
 {
     ReadFPU( GetOutPtr( 0 ) );
     return( sizeof( struct x86_fpu ) );
 }
 
-trap_elen ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
 
@@ -132,19 +132,19 @@ trap_elen ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_elen ReqWrite_cpu()
+trap_retval ReqWrite_cpu( void )
 {
     WriteCPU( GetInPtr( sizeof( write_cpu_req ) ) );
     return( 0 );
 }
 
-trap_elen ReqWrite_fpu()
+trap_retval ReqWrite_fpu( void )
 {
     WriteFPU( GetInPtr( sizeof( write_fpu_req ) ) );
     return( 0 );
 }
 
-trap_elen ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 {
     mad_registers       *mr;
 

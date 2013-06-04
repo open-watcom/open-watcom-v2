@@ -61,12 +61,12 @@ void Blip( int *a, int *b, char a1 )
 }
 #endif
 
-trap_elen RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( byte *rec, trap_elen len )
 {
     unsigned long rc;
 
 #ifdef __WINDOWS__
-    while( 1 ) {
+    for( ;; ) {
         rc = ConvGet( _id, rec, len, NO_BLOCK );
         if( (rc & 0xffff) == BLOCK ) SetExecutionFocus( _id );
         else break;
@@ -83,12 +83,12 @@ trap_elen RemoteGet( byte *rec, trap_elen len )
     return( rc >> 16 );
 }
 
-trap_elen RemotePut( byte *rec, trap_elen len )
+trap_retval RemotePut( byte *rec, trap_elen len )
 {
 #ifdef __WINDOWS__
     int rc;
 
-    while( 1 ) {
+    for( ;; ) {
         rc = ConvPut( _id, rec, len, NO_BLOCK );
         if( rc == BLOCK ) SetExecutionFocus( _id );
         else break;

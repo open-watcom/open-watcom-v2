@@ -248,7 +248,7 @@ static void PostAListen( int i )
     _SPXListenForSequencedPacket( &RecECB[i] );
 }
 
-static trap_elen DoRemoteGet( byte *rec, trap_elen len )
+static trap_retval DoRemoteGet( byte *rec, trap_elen len )
 {
     int         i;
     trap_elen   recvd;
@@ -258,7 +258,7 @@ static trap_elen DoRemoteGet( byte *rec, trap_elen len )
     len = len;
     recvd = 0;
     for( ;; ) {
-        i = NUM_REC_BUFFS-1;
+        i = NUM_REC_BUFFS - 1;
         p = -1;
         for( ;; ) {
             if( i < 0 ) {
@@ -285,7 +285,7 @@ static trap_elen DoRemoteGet( byte *rec, trap_elen len )
     return( recvd );
 }
 
-static trap_elen DoRemotePut( byte *snd, trap_elen len )
+static trap_retval DoRemotePut( byte *snd, trap_elen len )
 {
     _INITECB( SendECB, SendHead, 2, SPX );
     SendHead.connectControl |= 0x10;
@@ -297,12 +297,12 @@ static trap_elen DoRemotePut( byte *snd, trap_elen len )
     return( len );
 }
 
-trap_elen RemoteGet( byte *rec, trap_elen len )
+trap_retval RemoteGet( byte *rec, trap_elen len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-trap_elen RemotePut( byte *snd, trap_elen len )
+trap_retval RemotePut( byte *snd, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {

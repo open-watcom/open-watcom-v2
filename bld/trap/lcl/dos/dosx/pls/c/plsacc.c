@@ -186,7 +186,7 @@ void SetDbgTask( void )
     SetPSP( _dil_global._psp );
 }
 
-unsigned ReqGet_sys_config()
+trap_retval ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -211,7 +211,7 @@ unsigned ReqGet_sys_config()
 }
 
 
-unsigned ReqMap_addr()
+trap_retval ReqMap_addr( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -250,7 +250,7 @@ static bool IsProtSeg( USHORT seg )
 }
 
 //OBSOLETE - use ReqMachine_data
-unsigned ReqAddr_info()
+trap_retval ReqAddr_info( void )
 {
     addr_info_req       *acc;
     addr_info_ret       *ret;
@@ -262,7 +262,7 @@ unsigned ReqAddr_info()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data()
+trap_retval ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -358,7 +358,7 @@ static unsigned short ReadWrite( rtn, addr, buff, requested )
 }
 
 
-unsigned ReqChecksum_mem()
+trap_retval ReqChecksum_mem( void )
 {
     unsigned short      len;
     unsigned short      read;
@@ -394,7 +394,7 @@ unsigned ReqChecksum_mem()
 }
 
 
-unsigned ReqRead_mem()
+trap_retval ReqRead_mem( void )
 {
     PTR386            addr;
     read_mem_req        *acc;
@@ -410,7 +410,7 @@ unsigned ReqRead_mem()
     return( len );
 }
 
-unsigned ReqWrite_mem()
+trap_retval ReqWrite_mem( void )
 {
     PTR386            addr;
     write_mem_req       *acc;
@@ -427,7 +427,7 @@ unsigned ReqWrite_mem()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_io()
+trap_retval ReqRead_io( void )
 {
     int              err;
     read_io_req         *acc;
@@ -459,7 +459,7 @@ unsigned ReqRead_io()
 }
 
 
-unsigned ReqWrite_io()
+trap_retval ReqWrite_io( void )
 {
     int              err;
     int              len;
@@ -558,7 +558,7 @@ static void WriteCPU( struct x86_cpu *r )
 }
 
 //OBSOLETE - use ReqRead_regs
-unsigned ReqRead_cpu()
+trap_retval ReqRead_cpu( void )
 {
     trap_cpu_regs       *regs;
 
@@ -570,7 +570,7 @@ unsigned ReqRead_cpu()
 }
 
 //OBSOLETE - use ReqRead_regs
-unsigned ReqRead_fpu()
+trap_retval ReqRead_fpu( void )
 {
     _DBG(("AccReadFPU\r\n"));
     TaskFPExec( (ULONG)&Read387, GetOutPtr( 0 ) );
@@ -579,7 +579,7 @@ unsigned ReqRead_fpu()
 }
 
 //OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_cpu()
+trap_retval ReqWrite_cpu( void )
 {
     trap_cpu_regs       *regs;
 
@@ -590,7 +590,7 @@ unsigned ReqWrite_cpu()
 }
 
 //OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_fpu()
+trap_retval ReqWrite_fpu( void )
 {
     _DBG(("AccWriteFPU\r\n"));
     TaskFPExec( (ULONG)&Write387, GetInPtr(sizeof(write_fpu_req)) );
@@ -598,7 +598,7 @@ unsigned ReqWrite_fpu()
     return( 0 );
 }
 
-unsigned ReqRead_regs( void )
+trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
 
@@ -608,7 +608,7 @@ unsigned ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-unsigned ReqWrite_regs( void )
+trap_retval ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
@@ -659,7 +659,7 @@ static void CheckForPE( char *name )
 }
 
 
-unsigned ReqProg_load()
+trap_retval ReqProg_load( void )
 {
     char            ch;
     char            *src;
@@ -719,7 +719,7 @@ unsigned ReqProg_load()
 #pragma aux finit = ".387" "finit" "wait"
 extern void finit( void );
 
-unsigned ReqProg_kill()
+trap_retval ReqProg_kill( void )
 {
     prog_kill_ret       *ret;
 
@@ -806,7 +806,7 @@ static int Execute()
 }
 
 
-unsigned ReqSet_watch()
+trap_retval ReqSet_watch( void )
 {
     dword        l;
     watch        *curr;
@@ -842,13 +842,13 @@ unsigned ReqSet_watch()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch()
+trap_retval ReqClear_watch( void )
 {
     WatchCount = 0;
     return( 0 );
 }
 
-unsigned ReqSet_break()
+trap_retval ReqSet_break( void )
 {
     byte             ch;
     set_break_req       *acc;
@@ -865,7 +865,7 @@ unsigned ReqSet_break()
 }
 
 
-unsigned ReqClear_break()
+trap_retval ReqClear_break( void )
 {
     byte                 ch;
     clear_break_req     *acc;
@@ -962,19 +962,19 @@ leave:
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_go()
+trap_retval ReqProg_go( void )
 {
     _DBG(("AccProgGo\r\n"));
     return( ProgRun( FALSE ) );
 }
 
-unsigned ReqProg_step()
+trap_retval ReqProg_step( void )
 {
     _DBG(("AccProgStep\r\n"));
     return( ProgRun( TRUE ) );
 }
 
-unsigned ReqGet_next_alias()
+trap_retval ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -993,7 +993,7 @@ unsigned ReqGet_next_alias()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_err_text()
+trap_retval ReqGet_err_text( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -1023,7 +1023,7 @@ unsigned ReqGet_err_text()
 }
 
 
-unsigned ReqGet_message_text()
+trap_retval ReqGet_message_text( void )
 {
     static const char * const ExceptionMsgs[] = {
         #define pick(a,b) b,
@@ -1049,7 +1049,7 @@ unsigned ReqGet_message_text()
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-unsigned ReqGet_lib_name()
+trap_retval ReqGet_lib_name( void )
 {
     char                *ch;
     get_lib_name_ret    *ret;

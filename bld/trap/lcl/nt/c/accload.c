@@ -227,7 +227,7 @@ static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
 /*
  * AccLoadProg - create a new process for debugging
  */
-trap_elen ReqProg_load( void )
+trap_retval ReqProg_load( void )
 {
     char            *parm;
     char            *src;
@@ -584,7 +584,7 @@ error_exit:
 
 }
 
-trap_elen ReqProg_kill( void )
+trap_retval ReqProg_kill( void )
 {
     prog_kill_ret   *ret;
 
