@@ -334,8 +334,7 @@ WINEXPORT long CALLBACK StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wparam, 
     case WM_LBUTTONUP:
         return( processLButtonUp( hwnd, lparam ) );
     }
-    return( CallWindowProc( SubclassGenericFindOldProc( hwnd ),
-                            hwnd, msg, wparam, lparam ) );
+    return( CallWindowProc( SubclassGenericFindOldProc( hwnd ), hwnd, msg, wparam, lparam ) );
 }
 
 void addSubclasses( HWND hwnd )

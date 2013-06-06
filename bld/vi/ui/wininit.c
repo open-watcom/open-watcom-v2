@@ -66,7 +66,7 @@ void StartWindows( void )
 void FinishWindows( void )
 {
     cursor_type ct;
-    int         i;
+    window_id   i;
 
     // Close Down All Straggling Windows
     for( i = 0; i < MAX_WINDS; i++ ) {
