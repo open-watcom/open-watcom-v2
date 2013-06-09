@@ -168,7 +168,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned elm_count )
     cv->blk_map = NULL;
     DbgStmt( cv->zapped_free_list = NULL );
     DbgAssert( cv->elm_size != 0 );
-    DbgVerify( cv->blk_top < 0x10000, "carve: size * #/block > 64k" );
+    DbgVerify( cv->blk_top <= CV_MASK, "carve: size * #/block is too large" );
     return( cv );
 }
 
