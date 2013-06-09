@@ -2507,9 +2507,9 @@ static void fb_font_switch( void )
             /* The default width is a numeric. */
 
             font = current_state.font;
-            from_numeric = (uintptr_t) df_default_width();
+            from_numeric = (uintptr_t)df_default_width();
             font = desired_state.font;
-            to_numeric = (uintptr_t) df_default_width();
+            to_numeric = (uintptr_t)df_default_width();
             if( !do_now ) do_now = ( from_numeric != to_numeric );
         }
 
@@ -2518,9 +2518,9 @@ static void fb_font_switch( void )
             /* The font height is a numeric. */
 
             font = current_state.font;
-            from_numeric = (uintptr_t) df_font_height();
+            from_numeric = (uintptr_t)df_font_height();
             font = desired_state.font;
-            to_numeric = (uintptr_t) df_font_height();
+            to_numeric = (uintptr_t)df_font_height();
             if( !do_now ) do_now = ( from_numeric != to_numeric );
         }
 
@@ -2529,9 +2529,9 @@ static void fb_font_switch( void )
             /* The font out name 1 is a string. */
 
             font = current_state.font;
-            from_string = (char *)df_font_outname1();
+            from_string = df_font_outname1();
             font = desired_state.font;
-            to_string = (char *)df_font_outname1();
+            to_string = df_font_outname1();
             if( !do_now ) do_now = ( strcmp( from_string, to_string ) );
             mem_free( from_string );
             mem_free( to_string );
@@ -2542,9 +2542,9 @@ static void fb_font_switch( void )
             /* The font out name 2 is a string. */
 
             font = current_state.font;
-            from_string = (char *)df_font_outname2();
+            from_string = df_font_outname2();
             font = desired_state.font;
-            to_string = (char *)df_font_outname2();
+            to_string = df_font_outname2();
             if( !do_now ) do_now = ( strcmp( from_string, to_string ) );
             mem_free( from_string );
             mem_free( to_string );
@@ -2555,9 +2555,9 @@ static void fb_font_switch( void )
             /* The font resident flag is a string. */
 
             font = current_state.font;
-            from_string = (char *)df_font_resident();
+            from_string = df_font_resident();
             font = desired_state.font;
-            to_string = (char *)df_font_resident();
+            to_string = df_font_resident();
             if( !do_now ) do_now = ( strcmp( from_string, to_string ) );
             mem_free( from_string );
             mem_free( to_string );
@@ -2568,9 +2568,9 @@ static void fb_font_switch( void )
             /* The font space is a numeric. */
 
             font = current_state.font;
-            from_numeric = (uintptr_t) df_font_space();
+            from_numeric = (uintptr_t)df_font_space();
             font = desired_state.font;
-            to_numeric = (uintptr_t) df_font_space();
+            to_numeric = (uintptr_t)df_font_space();
             if( !do_now ) do_now = ( from_numeric != to_numeric );
         }
 
@@ -2579,9 +2579,9 @@ static void fb_font_switch( void )
             /* The line height is a numeric. */
 
             font = current_state.font;
-            from_numeric = (uintptr_t) df_line_height();
+            from_numeric = (uintptr_t)df_line_height();
             font = desired_state.font;
-            to_numeric = (uintptr_t) df_line_height();
+            to_numeric = (uintptr_t)df_line_height();
             if( !do_now ) do_now = ( from_numeric != to_numeric );
         }
 
@@ -2590,9 +2590,9 @@ static void fb_font_switch( void )
             /* The line space is a numeric. */
 
             font = current_state.font;
-            from_numeric = (uintptr_t) df_line_space();
+            from_numeric = (uintptr_t)df_line_space();
             font = desired_state.font;
-            to_numeric = (uintptr_t) df_line_space();
+            to_numeric = (uintptr_t)df_line_space();
             if( !do_now ) do_now = ( from_numeric != to_numeric );
         }
     }
