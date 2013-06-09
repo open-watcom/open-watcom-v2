@@ -237,7 +237,7 @@ void check_directory( FILE * in_file, uint32_t count )
     char                file_path[_MAX_PATH];
     char                fname[_MAX_FNAME];
     directory_entry      current_entry;
-    int                 i;
+    uint32_t            i;
     int                 retval;
     uint16_t            entry_type;
 
@@ -304,8 +304,7 @@ void check_directory( FILE * in_file, uint32_t count )
                                             "%i of type %i\n", i+1, entry_type );
                     else printf_s( "Entry: %i Device Name: %s File Name: %s\n", \
                         i+1, current_entry.defined_name, current_entry.member_name );
-                    retval = verify_device( &file_path, \
-                                            &current_entry.member_name );
+                    retval = verify_device( file_path, current_entry.member_name );
                     if( retval == BAD_MATCH ) mismatch_count++;
                     else if( retval != GOOD_MATCH) bad_file_count++;
                     break;
@@ -319,8 +318,7 @@ void check_directory( FILE * in_file, uint32_t count )
                                                                 i+1, entry_type );
                     else printf_s( "Entry: %i Driver Name: %s File Name: %s\n", \
                         i+1, current_entry.defined_name, current_entry.member_name );
-                    retval = verify_driver( &file_path, \
-                                            &current_entry.member_name );
+                    retval = verify_driver( file_path, current_entry.member_name );
                     if( retval == BAD_MATCH ) mismatch_count++;
                     else if( retval != GOOD_MATCH) bad_file_count++;
                     break;
@@ -334,7 +332,7 @@ void check_directory( FILE * in_file, uint32_t count )
                                                                 i+1, entry_type );
                     else printf_s( "Entry: %i Font Name: %s File Name: %s\n", \
                         i+1, current_entry.defined_name, current_entry.member_name );
-                    retval = verify_font( &file_path, & current_entry.member_name );
+                    retval = verify_font( file_path, current_entry.member_name );
                     if( retval == BAD_MATCH ) mismatch_count++;
                     else if( retval != GOOD_MATCH) bad_file_count++;
                     break;
@@ -364,7 +362,7 @@ void check_directory( FILE * in_file, uint32_t count )
                 printf_s( "No data for entry %i of type %i\n", i+1, entry_type);
             else printf_s( "Entry: %i Device Name: %s File Name: %s\n", i+1, \
                             current_entry.defined_name, current_entry.member_name );
-            retval = verify_device( &file_path, & current_entry.member_name );
+            retval = verify_device( file_path, current_entry.member_name );
             if( retval == BAD_MATCH ) mismatch_count++;
             else if( retval != GOOD_MATCH) bad_file_count++;
             break;
@@ -377,7 +375,7 @@ void check_directory( FILE * in_file, uint32_t count )
                 printf_s( "No data for entry %i of type %i\n", i+1, entry_type);
             else printf_s( "Entry: %i Driver Name: %s File Name: %s\n", i+1, \
                             current_entry.defined_name, current_entry.member_name );
-            retval = verify_driver( &file_path, & current_entry.member_name );
+            retval = verify_driver( file_path, current_entry.member_name );
             if( retval == BAD_MATCH ) mismatch_count++;
             else if( retval != GOOD_MATCH) bad_file_count++;
             break;
@@ -390,7 +388,7 @@ void check_directory( FILE * in_file, uint32_t count )
                 printf_s( "No data for entry %i of type %i\n", i+1, entry_type);
             else printf_s( "Entry: %i Font Name: %s File Name: %s\n", i+1, \
                             current_entry.defined_name, current_entry.member_name );
-            retval = verify_font( &file_path, & current_entry.member_name );
+            retval = verify_font( file_path, current_entry.member_name );
             if( retval == BAD_MATCH ) mismatch_count++;
             else if( retval != GOOD_MATCH) bad_file_count++;
             break;
@@ -457,7 +455,7 @@ void display_device( cop_device * in_device )
     printf_s( "Page Offset X Value:       %i\n", in_device->x_offset );
     printf_s( "Page Offset Y Value:       %i\n", in_device->y_offset );
     if( in_device->box.font_name == NULL ) printf_s( "Box Font Number:           " \
-                                           "%i\n", in_device->box.font_number );
+                                           "%i\n", in_device->box.font );
     else printf_s( "Box Font Name:             %s\n", in_device->box.font_name );
     printf_s( "Horizontal line character: %c\n", in_device->box.horizontal_line );
     printf_s( "Vertical line character:   %c\n", in_device->box.vertical_line );
@@ -470,15 +468,13 @@ void display_device( cop_device * in_device )
     printf_s( "Left join character:       %c\n", in_device->box.left_join );
     printf_s( "Right join character:      %c\n", in_device->box.right_join );
     printf_s( "Inside join character:     %c\n", in_device->box.inside_join );
-    if( in_device->underscore.specified_font == false ) \
-                                        puts( "Underscore Font Not Specified");
-    else if( in_device->underscore.font_name == NULL ) \
-        printf_s( "Underscore Font Number:    %i\n", \
-                                            in_device->underscore.font_number);
-    else printf_s( "Underscore Font Name:      %s\n", \
-                                            in_device->underscore.font_name );
-    printf_s( "Underscore character:      %c\n", \
-                                        in_device->underscore.underscore_char );
+    if( in_device->underscore.specified_font == false )
+        puts( "Underscore Font Not Specified");
+    else if( in_device->underscore.font_name == NULL )
+        printf_s( "Underscore Font Number:    %i\n", in_device->underscore.font);
+    else
+        printf_s( "Underscore Font Name:      %s\n", in_device->underscore.font_name );
+    printf_s( "Underscore character:      %c\n", in_device->underscore.underscore_char );
     if( in_device->intrans == NULL) {
         puts( "No Intrans Table");
     } else {
@@ -487,8 +483,7 @@ void display_device( cop_device * in_device )
             if( in_device->intrans->table[i] != i ) {
                 display_char( font_character, (char) i );
                 display_char( translation, in_device->intrans->table[i] );
-                printf_s( "%c%c %c%c\n", font_character[0], font_character[1], \
-                                         translation[0], translation[1] );
+                printf_s( "%c%c %c%c\n", font_character[0], font_character[1], translation[0], translation[1] );
             }
         }
     }

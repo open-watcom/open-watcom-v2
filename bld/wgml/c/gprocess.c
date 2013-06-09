@@ -47,6 +47,7 @@ void        split_input( char * buf, char * split_pos, bool sol )
     inp_line    *   wk;
     size_t          len;
 
+    buf = buf;
     len = strlen( split_pos );          // length of second part
     if( len > 0 ) {
         wk = mem_alloc( len + sizeof( inp_line ) );
@@ -76,6 +77,7 @@ static  void    split_input_var( char * buf, char * split_pos, char * part2, boo
     inp_line    *   wk;
     size_t          len;
 
+    buf = buf;
     len = strlen( split_pos ) + strlen( part2 );// length of second part
     if( len > 0 ) {
         wk = mem_alloc( len + sizeof( inp_line ) );

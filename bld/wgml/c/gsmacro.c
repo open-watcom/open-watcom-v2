@@ -270,7 +270,7 @@ void    scr_dm( void )
     inp_line    *   head;
     inp_line    *   last;
     inp_line    *   work;
-    ulong           lineno_start;
+    lineno_t        lineno_start;
     condcode        cc;
     inputcb     *   cb;
     char            linestr[MAX_L_AS_STR];
@@ -284,7 +284,7 @@ void    scr_dm( void )
     if( cc == omit ) {
         err_count++;
         g_err( err_missing_name );
-        utoa( cb->s.f->lineno, linestr, 10 );
+        ultoa( cb->s.f->lineno, linestr, 10 );
         g_info( inf_file_line, linestr, cb->s.f->filename );
         show_include_stack();
         return;
@@ -314,7 +314,7 @@ void    scr_dm( void )
         err_count++;
         // SC--048 A control word parameter is missing
         g_err( err_mac_def_fun, macname );
-        utoa( cb->s.f->lineno, linestr, 10 );
+        ultoa( cb->s.f->lineno, linestr, 10 );
         g_info( inf_file_line, linestr, cb->s.f->filename );
         return;
     }
@@ -337,7 +337,7 @@ void    scr_dm( void )
         if( ProcFlags.in_macro_define ) {
             err_count++;
             g_err( err_mac_def_nest, tok_start );
-            utoa( cb->s.f->lineno, linestr, 10 );
+            ultoa( cb->s.f->lineno, linestr, 10 );
             g_info( inf_file_line, linestr, cb->s.f->filename );
             return;
         }
@@ -375,7 +375,7 @@ void    scr_dm( void )
         err_count++;
         // SC--003: A macro is not being defined
         g_err( err_mac_def_end, macname );
-        utoa( cb->s.f->lineno, linestr, 10 );
+        ultoa( cb->s.f->lineno, linestr, 10 );
         g_info( inf_file_line, linestr, cb->s.f->filename );
         return;
     }
@@ -383,7 +383,7 @@ void    scr_dm( void )
         err_count++;
         // SC--002 The control word parameter '%s' is invalid
         g_err( err_mac_def_nest, macname );
-        utoa( cb->s.f->lineno, linestr, 10 );
+        ultoa( cb->s.f->lineno, linestr, 10 );
         g_info( inf_file_line, linestr, cb->s.f->filename );
     }
     *p  = save;
@@ -422,7 +422,7 @@ void    scr_dm( void )
                         err_count++;
                         // SC--005 Macro '%s' is not being defined
                         g_err( err_mac_def_not, tok_start );
-                        utoa( cb->s.f->lineno, linestr, 10 );
+                        ultoa( cb->s.f->lineno, linestr, 10 );
                         g_info( inf_file_line, linestr, cb->s.f->filename );
                         *p = save;
                         free_lines( head );
@@ -434,7 +434,7 @@ void    scr_dm( void )
                         err_count++;
                         // SC--048 A control word parameter is missing
                         g_err( err_mac_def_miss );
-                        utoa( cb->s.f->lineno, linestr, 10 );
+                        ultoa( cb->s.f->lineno, linestr, 10 );
                         g_info( inf_file_line, linestr, cb->s.f->filename );
                         free_lines( head );
                         return;
@@ -446,7 +446,7 @@ void    scr_dm( void )
                         err_count++;
                         // SC--002 The control word parameter '%s' is invalid
                         g_err( err_mac_def_inv, tok_start );
-                        utoa( cb->s.f->lineno, linestr, 10 );
+                        ultoa( cb->s.f->lineno, linestr, 10 );
                         g_info( inf_file_line, linestr, cb->s.f->filename );
                         free_lines( head );
                         return;
@@ -472,7 +472,7 @@ void    scr_dm( void )
             // error SC--004 End of file reached
             // macro '%s' is still being defined
             g_err( err_mac_def_eof, macname );
-            utoa( cb->s.f->lineno, linestr, 10 );
+            ultoa( cb->s.f->lineno, linestr, 10 );
             g_info( inf_file_line, linestr, cb->s.f->filename );
             free_lines( head );
             return;
@@ -587,10 +587,10 @@ static void macro_missing( void )
 
     g_err( err_mac_name_inv );
     if( input_cbs->fmflags & II_macro ) {
-        utoa( input_cbs->s.m->lineno, linestr, 10 );
+        ultoa( input_cbs->s.m->lineno, linestr, 10 );
         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
     } else {
-        utoa( input_cbs->s.f->lineno, linestr, 10 );
+        ultoa( input_cbs->s.f->lineno, linestr, 10 );
         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
     }
 }

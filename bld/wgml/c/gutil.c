@@ -540,7 +540,7 @@ bool    att_val_to_SU( su * converted, bool pos )
     } else {
         sign = '+';
     }
-    if( (p - val_start) >= val_len ) {  // value end reached, not valid
+    if( (size_t)(p - val_start) >= val_len ) {  // value end reached, not valid
         xx_line_err( err_inv_att_val, p );
         scan_start = scan_stop + 1;
         return( converterror );
@@ -565,7 +565,7 @@ bool    att_val_to_SU( su * converted, bool pos )
         } else {
             break;
         }
-        if( (p - val_start) > val_len ) {   // value end reached
+        if( (size_t)(p - val_start) > val_len ) {   // value end reached
             break;
         }
     }
@@ -575,7 +575,7 @@ bool    att_val_to_SU( su * converted, bool pos )
         return( converterror );
     }
 
-    if( ((p - val_start) < val_len) && *p == '.' ) {   // check for decimal point
+    if( ((size_t)(p - val_start) < val_len) && *p == '.' ) {   // check for decimal point
         pd = p;
         *ps++ = *p++;
         pd1 = p;                            // remember start of decimals
@@ -586,7 +586,7 @@ bool    att_val_to_SU( su * converted, bool pos )
             } else {
                 break;
             }
-            if( (p - val_start) > val_len ) {  // value end reached
+            if( (size_t)(p - val_start) > val_len ) {  // value end reached
                 break;
             }
         }
@@ -611,7 +611,7 @@ bool    att_val_to_SU( su * converted, bool pos )
         } else {
             break;
         }
-        if( (p - val_start) > val_len ) {   // value end reached
+        if( (size_t)(p - val_start) > val_len ) {   // value end reached
             break;
         }
     }
@@ -682,7 +682,7 @@ bool    att_val_to_SU( su * converted, bool pos )
                 wd = (10 * wd) + (*p - '0');
                 *ps++ = *p++;
             }
-            if( (p - val_start) > val_len ) {   // value end reached
+            if( (size_t)(p - val_start) > val_len ) {   // value end reached
                 break;
             }
         }
@@ -694,7 +694,7 @@ bool    att_val_to_SU( su * converted, bool pos )
     }
 
     *ps = '\0';
-    if( (p - val_start) < val_len ) {     // value continues on: it shouldn't
+    if( (size_t)(p - val_start) < val_len ) {     // value continues on: it shouldn't
         xx_line_err( err_inv_att_val, p );
         scan_start = scan_stop + 1;
         return( converterror );
@@ -789,7 +789,7 @@ int32_t conv_hor_unit( su * s )
         ds = s->su_whole;
         break;
     case SU_ems :
-        ds = s->su_whole * wgml_fonts[g_curr_font_num].em_base;
+        ds = s->su_whole * wgml_fonts[g_curr_font].em_base;
         break;
     case SU_inch :
     case SU_cm :
@@ -820,7 +820,7 @@ int32_t conv_vert_unit( su * s, uint8_t spc )
     case SU_chars_lines :
     case SU_ems :
         // no decimals, use spacing, round negative values down
-        ds = space * s->su_whole * wgml_fonts[g_curr_font_num].line_height;
+        ds = space * s->su_whole * wgml_fonts[g_curr_font].line_height;
         if( ds < 0 ) {
             ds++;
         }
@@ -1057,7 +1057,7 @@ char * int_to_roman( uint32_t n, char * r, size_t rsize )
 /* influencing the left margin for the paragraph                           */
 /***************************************************************************/
 
-void    start_line_with_string( char * text, uint8_t font_num )
+void    start_line_with_string( char * text, font_number font )
 {
     text_chars          *   n_char;     // new text char
     size_t                  count;
@@ -1074,13 +1074,13 @@ void    start_line_with_string( char * text, uint8_t font_num )
         }
     }
 
-    n_char = alloc_text_chars( text, count, font_num );
+    n_char = alloc_text_chars( text, count, font );
 
     n_char->x_address = g_cur_h_start;
     ju_x_start = g_cur_h_start;
     input_cbs->fmflags &= ~II_sol;      // no longer start of line
 
-    n_char->width = cop_text_width( n_char->text, n_char->count, font_num );
+    n_char->width = cop_text_width( n_char->text, n_char->count, font );
     /***********************************************************/
     /*  Test if word hits right margin                         */
     /***********************************************************/
@@ -1097,7 +1097,7 @@ void    start_line_with_string( char * text, uint8_t font_num )
 
     if( t_line->first == NULL ) {        // first element in output line
         t_line->first = n_char;
-        t_line->line_height = wgml_fonts[font_num].line_height;
+        t_line->line_height = wgml_fonts[font].line_height;
         ju_x_start = n_char->x_address;
         ProcFlags.line_started = true;
     } else {

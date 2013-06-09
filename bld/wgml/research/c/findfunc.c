@@ -40,10 +40,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+#include <unistd.h>
+#else
+#include <io.h>
+#endif
+#if defined( __UNIX__ )
+#include <dirent.h>
+#else
+#include <direct.h>
+#endif
+#include "clibext.h"
 
 #include "banner.h"
 #include "common.h"
-#include "lhdirect.h"
 #include "research.h"
 
 /* From gtype.h, this is what wgml is using. */

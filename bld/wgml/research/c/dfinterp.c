@@ -104,10 +104,10 @@
 
 #define __STDC_WANT_LIB_EXT1__  1
 #include <ctype.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "bool.h"
 #include "common.h"
 #include "dfinterp.h"
 
@@ -119,8 +119,8 @@
 
 typedef struct {
     bool        warning;
-    uint8_t *   base;
-    uint8_t *   current;
+    char        *base;
+    char        *current;
     uint8_t     parameter_type;
     uint8_t     df_code;
 } df_data;
@@ -1601,10 +1601,10 @@ static df_function function_table[0x3D] = {
  *      in any particular state.
 */
 
-void interpret_function( uint8_t * in_function )
+void interpret_function( char *in_function )
 {
     bool        last_function_done;
-    uint8_t *   current_function    = NULL;
+    char        *current_function    = NULL;
     uint16_t    current_offset;
 
     /* Initialize the loop parameters. */
@@ -1642,8 +1642,7 @@ void interpret_function( uint8_t * in_function )
          */
 
         if( current_offset < 0xFFFF ) {
-            current_function = current_df_data.current + \
-                current_offset;
+            current_function = current_df_data.current + current_offset;
         } else {
             last_function_done = true;
         }

@@ -100,18 +100,16 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <conio.h>
 #include <process.h>
-#include <stdbool.h>    // Required, but not included, by wgml.h.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "wgml.h"
 #include "banner.h"
 #include "common.h"
-#include "copfiles.h"
 #include "findfile.h"
 #include "gvars.h"
 #include "research.h"
-#include "wgml.h"
 
 /* This is used with a struct whose length can vary. */
 
@@ -196,7 +194,7 @@ typedef struct {
 } oc_hpos_list;
 
 typedef struct {
-    uint8_t             font_number;
+    font_number         font;
     bool                new_record;
     char            *   text;
 } oc_text_phrase;
@@ -489,7 +487,7 @@ static oc_element * oc_alloc_oc_element( oc_element_type el_type )
     oc_element    *   retval  = NULL;
 
     if( oc_element_pool == NULL ) {
-        retval = (oc_element *) mem_alloc( sizeof( oc_element ) );
+        retval = mem_alloc( sizeof( oc_element ) );
     } else {
         retval = oc_element_pool;
         oc_element_pool = oc_element_pool->next;
@@ -538,30 +536,29 @@ static oc_element * oc_alloc_oc_element( oc_element_type el_type )
  *      A pointer to the text_chars instance.
  */
 
-static text_chars * oc_alloc_text_chars(  char * in_text, size_t count,
-                                           uint8_t font_number, text_type type )
+static text_chars *oc_alloc_text_chars( char *in_text, size_t count, font_number font, text_type type )
 {
     uint32_t        size    = TEXT_START;
     text_chars  *   retval  = NULL;
+
     if( oc_text_chars_pool == NULL ) {
         if( count > TEXT_START ) {
             size = (( count / TEXT_START ) + 1) * TEXT_START;
         }
-        retval = (text_chars *) mem_alloc( sizeof( text_chars ) + size );
+        retval = mem_alloc( sizeof( text_chars ) + size );
         retval->length = size;
     } else {
         retval  = oc_text_chars_pool;
         oc_text_chars_pool = oc_text_chars_pool->next;
         if( count > retval->length ) {
             size = (( count / TEXT_START ) + 1) * TEXT_START;
-            retval = (text_chars *) mem_realloc( retval, \
-                                                sizeof( text_chars ) + size );
+            retval = mem_realloc( retval, sizeof( text_chars ) + size );
             retval->length = size;
         }
     }
     retval->next = NULL;
     retval->prev = NULL;
-    retval->font_number = font_number;
+    retval->font = font;
     retval->type = type;
     retval->x_address = 0;
     retval->width = 0;
@@ -590,7 +587,7 @@ static text_line * oc_alloc_text_line( void )
     text_line   *   retval  = NULL;
 
     if( oc_text_line_pool == NULL ) {
-        retval = (text_line *) mem_alloc( sizeof( text_line ) );
+        retval = mem_alloc( sizeof( text_line ) );
     } else {
         retval = oc_text_line_pool;
         oc_text_line_pool = oc_text_line_pool->next;
@@ -620,7 +617,7 @@ static text_line * oc_alloc_text_line( void )
  *      The function body is an unaltered copy of intrans() in gproctxt.c.
  */
 
-static void oc_intrans( char * data, uint16_t * len, uint8_t font )
+static void oc_intrans( char * data, uint16_t *len, font_number font )
 {
     char    *   ps;                     // source ptr
     char    *   pt;                     // target ptr
@@ -1255,14 +1252,13 @@ static void oc_process_line_full( text_line * in_line, bool justify )
  *          to be treated as having a width of "0".
  */
 
-static uint32_t oc_text_chars_width( uint8_t * text, uint32_t count, \
-                                     uint8_t font )
+static uint32_t oc_text_chars_width( char *text, uint32_t count, font_number font )
 {
-    int         i;
+    uint32_t    i;
     uint32_t    cur_count   = 0;
     uint32_t    retval      = 0;
 
-    for( i = 0; i < count; i++) {
+    for( i = 0; i < count; i++ ) {
         if( (text[i] == '\t') || (text[i] == tab_char) ) {
             break;
         }
@@ -1307,8 +1303,7 @@ static uint32_t oc_tab_position( uint32_t cur_pos )
 
         /* See if additional space is needed. */
 
-        if( (def_tabs.tabs[def_tabs.current - 1].column + req_count) > \
-                                                        def_tabs.length ) {
+        if( (def_tabs.tabs[def_tabs.current - 1].column + req_count) > def_tabs.length ) {
 
             /* Compute the new size. The intent is to add enough tabs not
              * only for the current value, but for up to TAB_COUNT - 1 more.
@@ -1318,16 +1313,14 @@ static uint32_t oc_tab_position( uint32_t cur_pos )
             req_count++;
 
             req_length = def_tabs.length + (req_count * TAB_COUNT);
-            def_tabs.tabs = mem_realloc( def_tabs.tabs, \
-                                        req_length * sizeof( tab_stop ) );
+            def_tabs.tabs = mem_realloc( def_tabs.tabs, req_length * sizeof( tab_stop ) );
             def_tabs.length = req_length;
         }
 
         /* Set tabs up to the last available position in the hpos array. */
 
         for( i = def_tabs.current; i < def_tabs.length; i++ ) {
-            def_tabs.tabs[i].column = def_tabs.tabs[i - 1].column + \
-                                                                    inter_tab;
+            def_tabs.tabs[i].column = def_tabs.tabs[i - 1].column + inter_tab;
             def_tabs.tabs[i].fill_char = ' ';
             def_tabs.tabs[i].alignment = al_left;
         }
@@ -1368,10 +1361,10 @@ static uint32_t oc_tab_position( uint32_t cur_pos )
 
 static text_chars * oc_wgml_tabs( text_chars * in_chars )
 {
-    int             i;
-    text_chars  *   cur_chars       = in_chars;
-    text_chars  *   retval          = in_chars;
-    uint8_t     *   cur_text        = in_chars->text;
+    uint32_t        i;
+    text_chars      *cur_chars      = in_chars;
+    text_chars      *retval         = in_chars;
+    char            *cur_text       = in_chars->text;
     uint32_t        count           = in_chars->count;
     uint32_t        cur_count       = 0;
     uint32_t        cur_h_address   = in_chars->x_address;
@@ -1379,7 +1372,7 @@ static text_chars * oc_wgml_tabs( text_chars * in_chars )
 
     /* The first word is to be left in in_chars. */
 
-    for( i = 0; i < count; i++) {
+    for( i = 0; i < count; i++ ) {
         if( (cur_text[i] == '\t') || (cur_text[i] == tab_char) ) {
             break;
         }
@@ -1408,8 +1401,7 @@ static text_chars * oc_wgml_tabs( text_chars * in_chars )
          * in_chars.
          */
 
-        cur_h_address = oc_tab_position( cur_h_address - oc_page_left ) \
-                                                            + oc_page_left;
+        cur_h_address = oc_tab_position( cur_h_address - oc_page_left ) + oc_page_left;
         in_chars->x_address = cur_h_address;
 
         /* Move to the next character and check it. */
@@ -1430,7 +1422,7 @@ static text_chars * oc_wgml_tabs( text_chars * in_chars )
              */
 
             start = i;
-            for( i; i < count; i++ ) {
+            for( ; i < count; i++ ) {
                 if( (cur_text[i] == '\t') || (cur_text[i] == tab_char) ) {
                     break;                
                 }
@@ -1443,11 +1435,9 @@ static text_chars * oc_wgml_tabs( text_chars * in_chars )
              */
 
             cur_count = i - start;
-            memmove_s( &in_chars->text[0], cur_count, &in_chars->text[start], \
-                                                                      cur_count);
+            memmove_s( &in_chars->text[0], cur_count, &in_chars->text[start], cur_count);
             in_chars->count = cur_count;
-            in_chars->width = cop_text_width( in_chars->text, in_chars->count, \
-                                                          in_chars->font_number );
+            in_chars->width = cop_text_width( in_chars->text, in_chars->count, in_chars->font );
             cur_h_address += in_chars->width;
         }
 
@@ -1472,8 +1462,7 @@ static text_chars * oc_wgml_tabs( text_chars * in_chars )
          * the resulting position to process the rest of the original text.
          */
 
-        cur_h_address = oc_tab_position( cur_h_address - oc_page_left ) \
-                                                            + oc_page_left;
+        cur_h_address = oc_tab_position( cur_h_address - oc_page_left ) + oc_page_left;
         i++;
         start = i;
         for( i; i < count; i++ ) {
@@ -1493,21 +1482,18 @@ static text_chars * oc_wgml_tabs( text_chars * in_chars )
              */
 
             cur_count = i - start;
-            retval = oc_alloc_text_chars( &cur_text[start], cur_count, \
-                                        in_chars->font_number, in_chars->type );
+            retval = oc_alloc_text_chars( &cur_text[start], cur_count, in_chars->font, in_chars->type );
             retval->x_address = cur_h_address;
             cur_chars->next = retval;
             retval->prev = cur_chars;
             cur_chars = cur_chars->next;
-            retval->width = cop_text_width( retval->text, retval->count, \
-                                                    in_chars->font_number );
+            retval->width = cop_text_width( retval->text, retval->count, in_chars->font );
             cur_h_address += retval->width;
 
             /* Set up for the next word. */
 
             start = i + 1;
-            cur_h_address = oc_tab_position( cur_h_address - oc_page_left ) \
-                                                            + oc_page_left;
+            cur_h_address = oc_tab_position( cur_h_address - oc_page_left ) + oc_page_left;
         }
 
         /* If the last character in the original text was a tab, add an empty
@@ -1516,8 +1502,7 @@ static text_chars * oc_wgml_tabs( text_chars * in_chars )
 
         i = count - 1;
         if( (cur_text[i] == '\t') || (cur_text[i] == tab_char) ) {
-            retval = oc_alloc_text_chars( NULL, 0, in_chars->font_number, \
-                                                            in_chars->type );
+            retval = oc_alloc_text_chars( NULL, 0, in_chars->font, in_chars->type );
             retval->x_address = cur_h_address;
             cur_chars->next = retval;
             retval->prev = cur_chars;
@@ -1581,10 +1566,8 @@ static uint32_t oc_split_text( text_chars * in_chars, uint32_t limit )
 
             /* A more exact computation is needed. */
 
-            test_count = test_limit / wgml_fonts[in_chars->font_number].\
-                                                                default_width;
-            test_width = cop_text_width( in_chars->text, test_count, \
-                                                        in_chars->font_number );
+            test_count = test_limit / wgml_fonts[in_chars->font].default_width;
+            test_width = cop_text_width( in_chars->text, test_count, in_chars->font );
 
             if( test_width != test_limit ) {
 
@@ -1593,14 +1576,12 @@ static uint32_t oc_split_text( text_chars * in_chars, uint32_t limit )
                 if( test_width < test_limit ) {
                     while( test_width < test_limit ) {
                         test_count++;
-                        test_width = cop_text_width( in_chars->text, \
-                                            test_count, in_chars->font_number );
+                        test_width = cop_text_width( in_chars->text, test_count, in_chars->font );
                     }
                 } else {
                     while( test_width > test_limit ) {
                         test_count--;
-                        test_width = cop_text_width( in_chars->text, \
-                                            test_count, in_chars->font_number );
+                        test_width = cop_text_width( in_chars->text, test_count, in_chars->font );
                     }
                 }
 
@@ -1698,8 +1679,7 @@ static bool oc_validate_text_line( text_line * in_line )
 
                 /* This is the test originally intended. */
 
-                if( cur_chars->x_address < (cur_chars->prev->x_address + \
-                                                    cur_chars->prev->width) ) {
+                if( cur_chars->x_address < (cur_chars->prev->x_address + cur_chars->prev->width) ) {
                     retval = false;
                     break;
                 }
@@ -1738,13 +1718,13 @@ static bool oc_validate_text_line( text_line * in_line )
  *          oc_element will be positioned at the location given by page_left.
  */
 
-static void oc_process_text( char * input_text, uint8_t font_number )
+static void oc_process_text( char * input_text, font_number font )
 {
     static  bool            tabbing         = false;
     static  size_t          increment       = 0;
     static  size_t          spaces          = 0;
     static  text_type       cur_type        = norm;
-    static  uint8_t         old_font        = 0;
+    static  font_number     old_font        = 0;
     static  uint32_t        cur_h_address   = 0;
     static  text_line   *   the_line        = NULL;
 
@@ -2000,12 +1980,11 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                  * used by the current phrase.
                  */
 
-                if( old_font != font_number ) {
+                if( old_font != font ) {
 
                     /* Obtain the text_chars instance and link it in. */
 
-                    the_line->last->next = \
-                            oc_alloc_text_chars( NULL, 0, old_font, cur_type );
+                    the_line->last->next = oc_alloc_text_chars( NULL, 0, old_font, cur_type );
                     the_line->last->next->prev = the_line->last;
                     the_line->last = the_line->last->next;
 
@@ -2049,7 +2028,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
 
         /* Reset old_font for the next phrase. */
 
-        old_font = font_number;
+        old_font = font;
 
         /* Pass over nay spaces before the next token. If ws_spc_done is true,
          * skip them; otherwise, count them.
@@ -2094,7 +2073,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                         if( oc_concat ) {
                             spaces = 0;
                         }
-                        space_width = spaces * wgml_fonts[font_number].spc_width;
+                        space_width = spaces * wgml_fonts[font].spc_width;
 
                     } else {
 
@@ -2103,7 +2082,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                          * NOTE: this uses font_number, not old_font.
                          */
 
-                        space_width = wgml_fonts[font_number].spc_width;
+                        space_width = wgml_fonts[font].spc_width;
 
                         ch = the_line->last->text[the_line->last->count - 1];
                         if( ch == '.' || ch == '!' || ch == '?' || ch == ':' ) {
@@ -2111,7 +2090,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                         }
                     }
                 } else {
-                    space_width = spaces * wgml_fonts[font_number].spc_width;
+                    space_width = spaces * wgml_fonts[font].spc_width;
                 }
                 spaces = 0;
             }
@@ -2121,7 +2100,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
 
         /* Process any escape sequences. */
 
-        while( *input_text == 0xFE ) {
+        while( *input_text == '\xFE' ) {
             input_text++;
             switch( *input_text ) {
             case 0xff:
@@ -2164,7 +2143,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                     }
                 }
             } else {
-                if( *input_text == 0xFE ) {
+                if( *input_text == '\xFE' ) {
                     break;
                 }
             }
@@ -2193,7 +2172,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
              * byte of that escape sequence must not be skipped.
              */
 
-            if( *input_text != 0xFE ) {
+            if( *input_text != '\xFE' ) {
                 input_text++;
             }
         }
@@ -2201,16 +2180,14 @@ static void oc_process_text( char * input_text, uint8_t font_number )
 
         /* Initialize next_chars to contain the token. */
 
-        next_chars = oc_alloc_text_chars( token_start, count, font_number, \
-                                                                    cur_type );
+        next_chars = oc_alloc_text_chars( token_start, count, font, cur_type );
         next_chars->x_address = cur_h_address;
-        oc_intrans( next_chars->text, &next_chars->count, font_number );
+        oc_intrans( (char *)next_chars->text, &next_chars->count, font );
 
         if( next_chars->count == 0 ) {
             next_chars->width = 0;
         } else {
-            next_chars->width = oc_text_chars_width( next_chars->text, \
-                                next_chars->count, next_chars->font_number );
+            next_chars->width = oc_text_chars_width( next_chars->text, next_chars->count, next_chars->font );
         }
         increment = next_chars->width;
 
@@ -2246,8 +2223,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                  */
 
                 if( save_chars != NULL ) {
-                    while( cur_h_address == (save_chars->x_address + \
-                                                        save_chars->width) ) {
+                    while( cur_h_address == (save_chars->x_address + save_chars->width) ) {
                         cur_h_address = save_chars->x_address;
                         save_chars = save_chars->prev;
                         if( save_chars == NULL ) break;
@@ -2257,9 +2233,8 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                 /* Identify when save_chars must be moved to a new line. */
 
                 if( save_chars != NULL ) {
-                    if( ((save_chars != the_line->last) && \
-                        (!(oc_page_left + increment) > oc_page_right)) || \
-                                                (save_chars->count == 0) ) {
+                    if( ((save_chars != the_line->last) && !((oc_page_left + increment) > oc_page_right))
+                        || (save_chars->count == 0) ) {
 
                         /* the_line ends in either a multi-text_chars word or
                          * an empty text_chars. A multi-text_chars word starts
@@ -2317,17 +2292,15 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                      * will fit on the current line.
                      */
 
-                    if( (the_line->last == NULL) || \
-                        ((the_line->last->x_address + the_line->last->width) \
-                                                == next_chars->x_address) || \
+                    if( (the_line->last == NULL) ||
+                            ((the_line->last->x_address + the_line->last->width) == next_chars->x_address) ||
                             ((oc_page_left + increment) > oc_page_right) ) {
 
                         /* Here we see how much of next_chars->text will fit
                          * when the width of a hyphen is taken into account.
                          */
 
-                        count = oc_split_text( next_chars, \
-                                            oc_page_right - oc_hyphen_width );
+                        count = oc_split_text( next_chars, oc_page_right - oc_hyphen_width );
 
                         /* This is unlikely, but why take chances? */
 
@@ -2362,10 +2335,8 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                              * split text.
                              */
 
-                            next_chars = oc_alloc_text_chars( \
-                                &the_line->last->text[the_line->last->count], \
-                                        count, the_line->last->font_number, \
-                                                        the_line->last->type );
+                            next_chars = oc_alloc_text_chars( &the_line->last->text[the_line->last->count],
+                                        count, the_line->last->font, the_line->last->type );
 
                             /* Finalize the_line->last. */
 
@@ -2373,7 +2344,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
 
                             /* Adjust the line_height, if appropriate. */
 
-                            cur_height = wgml_fonts[font_number].line_height;
+                            cur_height = wgml_fonts[font].line_height;
                             if( the_line->line_height < cur_height ) {
                                 the_line->line_height = cur_height;
                             }
@@ -2391,8 +2362,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                             hyphen_chars = oc_alloc_text_chars( "-", 1, 0, norm );
                             hyphen_chars->width = oc_hyphen_width;
 
-                            hyphen_chars->x_address = the_line->last->x_address \
-                                                    + the_line->last->width;
+                            hyphen_chars->x_address = the_line->last->x_address + the_line->last->width;
                             hyphen_chars->prev = the_line->last;
                             the_line->last->next = hyphen_chars;
                             the_line->last = hyphen_chars;
@@ -2456,7 +2426,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
 
                     /* Adjust the line_height, if appropriate. */
 
-                    cur_height = wgml_fonts[save_chars->font_number].line_height;
+                    cur_height = wgml_fonts[save_chars->font].line_height;
                     if( the_line->line_height < cur_height ) {
                         the_line->line_height = cur_height;
                     }
@@ -2475,8 +2445,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
 
                         /* Adjust the line_height, if appropriate. */
 
-                        cur_height = \
-                                wgml_fonts[save_chars->font_number].line_height;
+                        cur_height = wgml_fonts[save_chars->font].line_height;
                         if( the_line->line_height < cur_height ) {
                             the_line->line_height = cur_height;
                         }
@@ -2497,8 +2466,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                  * of the loop, they will be correct for the next pass.
                  */
 
-                next_chars->width = oc_text_chars_width( next_chars->text, \
-                                next_chars->count, next_chars->font_number );
+                next_chars->width = oc_text_chars_width( next_chars->text, next_chars->count, next_chars->font );
                 increment = next_chars->width;
             }
 
@@ -2548,10 +2516,8 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                          * text.
                          */
 
-                        next_chars = oc_alloc_text_chars( \
-                            &the_line->last->text[the_line->last->count], \
-                                        count, the_line->last->font_number, \
-                                                        the_line->last->type );
+                        next_chars = oc_alloc_text_chars( &the_line->last->text[the_line->last->count],
+                                        count, the_line->last->font, the_line->last->type );
                     }
 
                     /* Finalize the_line->last. */
@@ -2560,7 +2526,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
 
                     /* Adjust the line_height, if appropriate. */
 
-                    cur_height = wgml_fonts[font_number].line_height;
+                    cur_height = wgml_fonts[font].line_height;
                     if( the_line->line_height < cur_height ) {
                         the_line->line_height = cur_height;
                     }
@@ -2581,8 +2547,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
                      */
 
                     next_chars->x_address = cur_h_address;
-                    next_chars->width = oc_text_chars_width( next_chars->text, \
-                                next_chars->count, next_chars->font_number );
+                    next_chars->width = oc_text_chars_width( next_chars->text, next_chars->count, next_chars->font );
 
                     /* See if next_chars is still too long. */
 
@@ -2620,7 +2585,7 @@ static void oc_process_text( char * input_text, uint8_t font_number )
 
         /* Adjust the line_height, if appropriate. */
 
-        cur_height = wgml_fonts[font_number].line_height;
+        cur_height = wgml_fonts[font].line_height;
         if( the_line->line_height < cur_height ) {
             the_line->line_height = cur_height;
         }
@@ -2658,10 +2623,10 @@ static void emulate_input_source( oc_text_phrase * in_text )
      */
 
     cur_phrase = in_text;
-    if( cur_phrase->font_number >= wgml_font_cnt ) {
-        cur_phrase->font_number = 0;
+    if( cur_phrase->font >= wgml_font_cnt ) {
+        cur_phrase->font = 0;
     }
-    oc_font_number = cur_phrase->font_number;
+    oc_font_number = cur_phrase->font;
     oc_break = true;
     oc_process_text( cur_phrase->text, oc_font_number );
     cur_phrase++;
@@ -2669,9 +2634,9 @@ static void emulate_input_source( oc_text_phrase * in_text )
     /* Process the remaining oc_text_phrases in in_text. */
 
     while( cur_phrase->text != NULL ) {
-        if( cur_phrase->font_number >= wgml_font_cnt ) \
-                                                cur_phrase->font_number = 0;
-        oc_font_number = cur_phrase->font_number;
+        if( cur_phrase->font >= wgml_font_cnt )
+            cur_phrase->font = 0;
+        oc_font_number = cur_phrase->font;
         if( oc_concat ) {
 
             /* In this emulation, there are no breaks inside a paragraph if
@@ -2717,8 +2682,7 @@ static void emulate_input_source( oc_text_phrase * in_text )
  *      input_text points to the oc_text_phrase array to be processed.
  */
  
-static void emulate_layout_page( oc_text_phrase * input_text, \
-                                   oc_construct_type construct )
+static void emulate_layout_page( oc_text_phrase * input_text, oc_construct_type construct )
 {
     switch( construct ) {
     case oc_title_text:
@@ -2818,21 +2782,19 @@ static void emulate_wgml( void )
 
     /* Initialize the text_chars pool to hold 20 instances. */
 
-    oc_text_chars_pool = \
-                (text_chars *) mem_alloc( sizeof( text_chars ) + TEXT_START );
+    oc_text_chars_pool = mem_alloc( sizeof( text_chars ) + TEXT_START );
     oc_text_chars_pool->next = NULL;
-    oc_text_chars_pool->font_number = 0;
+    oc_text_chars_pool->font = 0;
     oc_text_chars_pool->x_address = 0;
     oc_text_chars_pool->width = 0;
     oc_text_chars_pool->count = 0;
     oc_text_chars_pool->length = TEXT_START;
     tc_pool_ptr = oc_text_chars_pool;
     for( i = 0; i < 19; i++ ) {
-        tc_pool_ptr->next = \
-                (text_chars *) mem_alloc( sizeof( text_chars ) + TEXT_START );
+        tc_pool_ptr->next = mem_alloc( sizeof( text_chars ) + TEXT_START );
         tc_pool_ptr = tc_pool_ptr->next;
         tc_pool_ptr->next = NULL;
-        tc_pool_ptr->font_number = 0;
+        tc_pool_ptr->font = 0;
         tc_pool_ptr->x_address = 0;
         tc_pool_ptr->width = 0;
         tc_pool_ptr->count = 0;
@@ -2841,14 +2803,14 @@ static void emulate_wgml( void )
 
     /* Initialize the text_line pool to hold ten instances. */
 
-    oc_text_line_pool = (text_line *) mem_alloc( sizeof( text_line ) );
+    oc_text_line_pool = mem_alloc( sizeof( text_line ) );
     oc_text_line_pool->next = NULL;
     oc_text_line_pool->line_height = 0;
     oc_text_line_pool->y_address = 0;
     oc_text_line_pool->first = 0;
     tl_pool_ptr = oc_text_line_pool;
     for( i = 0; i < 9; i++ ) {
-        tl_pool_ptr->next = (text_line *) mem_alloc( sizeof( text_line ) );
+        tl_pool_ptr->next = mem_alloc( sizeof( text_line ) );
         tl_pool_ptr = tl_pool_ptr->next;
         tl_pool_ptr->next = NULL;
         tl_pool_ptr->line_height = 0;
@@ -2856,7 +2818,7 @@ static void emulate_wgml( void )
         tl_pool_ptr->first = NULL;
     }
 
-    oc_element_pool = (oc_element *) mem_alloc( sizeof( oc_element ) );
+    oc_element_pool = mem_alloc( sizeof( oc_element ) );
     oc_element_pool->next = NULL;
     oc_element_pool->type = oc_text;
     oc_element_pool->element.oc_text.count = 0;
@@ -2864,8 +2826,7 @@ static void emulate_wgml( void )
     oc_element_pool->element.oc_text.first = NULL;
     te_pool_ptr = oc_element_pool;
     for( i = 0; i < 9; i++ ) {
-        te_pool_ptr->next = (oc_element *) \
-                                        mem_alloc( sizeof( oc_element ) );
+        te_pool_ptr->next = mem_alloc( sizeof( oc_element ) );
         te_pool_ptr = te_pool_ptr->next;
         te_pool_ptr->next = NULL;
         te_pool_ptr->type = oc_text;
@@ -2902,10 +2863,8 @@ static void emulate_wgml( void )
      * specificed in the :PAGESTART block. 
      */
 
-    oc_page_left = bin_device->horizontal_base_units + bin_device->x_start \
-                                                     - bin_device->x_offset;
-    oc_page_right = 7 * bin_device->horizontal_base_units + bin_device->x_start \
-                                                     - bin_device->x_offset;
+    oc_page_left = bin_device->horizontal_base_units + bin_device->x_start - bin_device->x_offset;
+    oc_page_right = 7 * bin_device->horizontal_base_units + bin_device->x_start - bin_device->x_offset;
 
     /* This was originally created to be used in outcheck.c but not necessarily
      * in our wgml to simplify situations where the line height is either not
@@ -2924,8 +2883,9 @@ static void emulate_wgml( void )
     max_char_width = 0;
 
     for( i = 0; i < wgml_font_cnt; i++ ) {
-        if( max_char_width < wgml_fonts[i].default_width ) \
+        if( max_char_width < wgml_fonts[i].default_width ) {
             max_char_width = wgml_fonts[i].default_width;
+        }
     }
 
     /* The OUTCHECK Test Document. */
@@ -3096,13 +3056,11 @@ static void emulate_wgml( void )
     if( has_aa_block != NULL ) {
         if( bin_driver->y_positive == 0x00 ) {
             if( bin_driver->dbox.text != NULL ) {
-//                fb_dbox( oc_h_start, oc_v_start - oc_v_len, oc_h_len, \
-                                                                oc_v_len );
+//                fb_dbox( oc_h_start, oc_v_start - oc_v_len, oc_h_len, oc_v_len );
             }
         } else {
             if( bin_driver->dbox.text != NULL ) {
-//                fb_dbox( oc_h_start, oc_v_start + oc_v_len, oc_h_len, \
-                                                                oc_v_len );
+//                fb_dbox( oc_h_start, oc_v_start + oc_v_len, oc_h_len, oc_v_len );
             }
         }
     }

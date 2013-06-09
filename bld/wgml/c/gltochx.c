@@ -194,7 +194,7 @@ void    lay_tochx( const gmltag * entry )
                                            &layout_work.tochx[hx_l].post_skip );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.tochx[hx_l].font );
+                    cvterr = i_font_number( p, curr, &layout_work.tochx[hx_l].font );
                     if( layout_work.tochx[hx_l].font >= wgml_font_cnt ) {
                         layout_work.tochx[hx_l].font = 0;
                     }

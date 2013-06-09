@@ -217,7 +217,7 @@ static void do_ban_column_out( ban_column * a_column, uint32_t v_start )
     for( cur_col = a_column; cur_col != NULL; cur_col = cur_col->next ) {
         col_count++;
     }
-    cur_el = (doc_element **) mem_alloc( col_count * sizeof( doc_element * ) );
+    cur_el = (doc_element **)mem_alloc( col_count * sizeof( doc_element * ) );
 
     cur_col = a_column;
     for( i = 0; i < col_count; i++ ) {
@@ -249,11 +249,12 @@ static void do_doc_column_out( doc_column * a_column, uint32_t v_start )
     int                 i;
     uint8_t             col_count;
 
+    v_start = v_start;
     col_count = 0;
     for( cur_col = a_column; cur_col != NULL; cur_col = cur_col->next ) {
         col_count++;
     }
-    cur_el = (doc_element **) mem_alloc( col_count * sizeof( doc_element * ) );
+    cur_el = (doc_element **)mem_alloc( col_count * sizeof( doc_element * ) );
 
     cur_col = a_column;
     for( i = 0; i < col_count; i++ ) {
@@ -1122,8 +1123,7 @@ void reset_t_page( void )
 /*  merge the various skips and set the externs appropriately              */
 /***************************************************************************/
 
-void set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip,
-                    uint32_t spacing, uint8_t font )
+void set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, uint32_t spacing, font_number font )
 {
     int32_t skiptop;
     int32_t skippost;

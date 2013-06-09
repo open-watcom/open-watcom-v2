@@ -46,14 +46,14 @@ const   lay_att     xx_att[2] =
 
 void    lay_xx( const gmltag * entry )
 {
-    char        *   p;
+    char            *p;
     condcode        cc;
     int             k;
     lay_att         curr;
     att_args        l_args;
     int             cvterr;
     lay_sub         x_tag;
-    int8_t      *   iptr;
+    font_number     *fntptr;
 
     p = scan_start;
     cvterr = false;
@@ -65,28 +65,28 @@ void    lay_xx( const gmltag * entry )
     }
     if( !strcmp( "CIT", entry->tagname ) ) {
         x_tag = el_cit;
-        iptr = &layout_work.cit.font;
+        fntptr = &layout_work.cit.font;
     } else if( !strcmp( "DTHD", entry->tagname ) ) {
         x_tag = el_dthd;
-        iptr = &layout_work.dthd.font;
+        fntptr = &layout_work.dthd.font;
     } else if( !strcmp( "DT", entry->tagname ) ) {
         x_tag = el_dt;
-        iptr = &layout_work.dt.font;
+        fntptr = &layout_work.dt.font;
     } else if( !strcmp( "GT", entry->tagname ) ) {
         x_tag = el_gt;
-        iptr = &layout_work.gt.font;
+        fntptr = &layout_work.gt.font;
     } else if( !strcmp( "GD", entry->tagname ) ) {
         x_tag = el_gd;
-        iptr = &layout_work.gd.font;
+        fntptr = &layout_work.gd.font;
     } else if( !strcmp( "DDHD", entry->tagname ) ) {
         x_tag = el_ddhd;
-        iptr = &layout_work.ddhd.font;
+        fntptr = &layout_work.ddhd.font;
     } else if( !strcmp( "IXPGNUM", entry->tagname ) ) {
         x_tag = el_ixpgnum;
-        iptr = &layout_work.ixpgnum.font;
+        fntptr = &layout_work.ixpgnum.font;
     } else if( !strcmp( "IXMAJOR", entry->tagname ) ) {
         x_tag = el_ixmajor;
-        iptr = &layout_work.ixmajor.font;
+        fntptr = &layout_work.ixmajor.font;
     } else {
          out_msg( "WGML logic error glxxfont.c.\n");
          file_mac_info();
@@ -105,9 +105,9 @@ void    lay_xx( const gmltag * entry )
 
                 switch( curr ) {
                 case   e_font:
-                    cvterr = i_int8( p, curr, iptr );
-                    if( *iptr >= wgml_font_cnt ) {
-                        *iptr = 0;
+                    cvterr = i_font_number( p, curr, fntptr );
+                    if( *fntptr >= wgml_font_cnt ) {
+                        *fntptr = 0;
                     }
                     break;
                 default:

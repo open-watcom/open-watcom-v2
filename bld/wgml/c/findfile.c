@@ -180,8 +180,7 @@ static void initialize_directory_list( char const * in_path_list, \
     /* Initialize local_list. */
 
     local_list.count = path_count;
-    local_list.directories = (char * *) mem_alloc( \
-                    (path_count * sizeof( char * )) + byte_count + path_count );
+    local_list.directories = (char **)mem_alloc( path_count * sizeof( char * ) + byte_count + path_count );
 
     array_base = local_list.directories;
     current = (char *) array_base + (path_count * sizeof( char * ));
@@ -265,8 +264,7 @@ static void initialize_directory_list( char const * in_path_list, \
     if( path_count < local_list.count) {
 
         in_list->count = path_count;
-        in_list->directories = (char * *) mem_alloc( \
-                    (path_count * sizeof( char * )) + byte_count + path_count );
+        in_list->directories = (char **)mem_alloc( path_count * sizeof( char * ) + byte_count + path_count );
 
         array_base = in_list->directories;
         current = (char *) (array_base + path_count * sizeof( char * ));
@@ -511,8 +509,7 @@ void ff_teardown( void )
  *      and try_fp to the name as found and FILE * of the file.
  */
 
-int search_file_in_dirs( char * filename, char * defext, char * altext,
-                          dirseq sequence )
+int search_file_in_dirs( const char * filename, char * defext, char * altext, dirseq sequence )
 {
     char                buff[_MAX_PATH2];
     char                alternate_file[FILENAME_MAX];

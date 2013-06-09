@@ -393,7 +393,7 @@ void    test_out_t_line( text_line  * a_line )
 
         snprintf( buf, buf_size,
                   "fnt:%d x:%d-%d w:%d cnt:%d type:%x txt:'%.*s'\n",
-                  tw->font_number, tw->x_address, tw->x_address + tw->width,
+                  tw->font, tw->x_address, tw->x_address + tw->width,
                   tw->width, tw->count, tw->type, tw->count, tw->text );
         out_msg( buf );
     }

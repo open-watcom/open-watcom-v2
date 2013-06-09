@@ -95,14 +95,16 @@
 /* string start / end characters Possible incomplete list*/
 #define d_q     '\"'                    // change also is_quote_char()
 #define s_q     '\''                    // in gargutil.c
-#define cent    0x9b                    // if list is extended
+#define cent    '\x9b'                  // if list is extended
 #define excl    '!'
 #define not_c   '^'
 #define slash   '/'
 #define vbar1   '|'
-#define vbar2   0xdd
-#define l_q     0x60
+#define vbar2   '\xdd'
+#define l_q     '\x60'
 
+
+typedef uint32_t    lineno_t;
 
 /***************************************************************************/
 /*  Space units Horiz + Vert              to be redesigned      TBD        */
@@ -223,7 +225,7 @@ typedef struct inp_line {
 typedef struct labelcb {
     struct labelcb  *   prev;
     fpos_t              pos;            // file position for label if file
-    ulong               lineno;         // lineno of label
+    lineno_t            lineno;         // lineno of label
     char                label_name[MAC_NAME_LENGTH + 1];
 } labelcb;
 
@@ -234,7 +236,7 @@ typedef struct labelcb {
 typedef struct mac_entry {
     struct mac_entry    *   next;
     inp_line            *   macline;    // macro definition lines
-    ulong                   lineno;     // lineno start of macro definition
+    lineno_t                lineno;     // lineno start of macro definition
     labelcb             *   label_cb;   // controlling label definitions
     char                *   mac_file_name;  // file name macro definition
     char                    name[MAC_NAME_LENGTH + 1];  // macro name
@@ -247,9 +249,9 @@ typedef struct mac_entry {
 
 typedef struct filecb {
     FILE        *   fp;                 // FILE ptr
-    ulong           lineno;             // current line number
-    ulong           linemin;            // first line number to process
-    ulong           linemax;            // last line number to process
+    lineno_t        lineno;             // current line number
+    lineno_t        linemin;            // first line number to process
+    lineno_t        linemax;            // last line number to process
     size_t          usedlen;            // used data of filebuf
     fpos_t          pos;                // position for reopen
     labelcb     *   label_cb;           // controlling label definitions
@@ -273,7 +275,7 @@ typedef struct mac_parms {
 /***************************************************************************/
 
 typedef struct  macrocb {
-    ulong               lineno;         // current macro line number
+    lineno_t            lineno;         // current macro line number
     inp_line        *   macline;        // list of macro lines
     mac_entry       *   mac;            // macro definition entry
     struct gtentry  *   tag;            // tag entry if macro called via tag
@@ -587,7 +589,7 @@ typedef struct opt_font {
     char *              style;
     uint32_t            space;
     uint32_t            height;
-    uint8_t             font;
+    font_number         font;
 } opt_font;
 
 /***************************************************************************/
@@ -636,20 +638,9 @@ typedef struct ix_h_blk {               // header with index text
 /***************************************************************************/
 
 typedef enum doc_section {
-    doc_sect_none,                      // nothing so far
-    doc_sect_gdoc,                      // gdoc
-    doc_sect_frontm,                    // front matter
-    doc_sect_titlep,                    // title page
-    doc_sect_etitlep,                   // end title page
-    doc_sect_abstract,                  // abstract
-    doc_sect_preface,                   // preface
-    doc_sect_toc,                       // table of contents
-    doc_sect_figlist,                   // figure list
-    doc_sect_body,                      // body
-    doc_sect_appendix,                  // appendix
-    doc_sect_backm,                     // back matter
-    doc_sect_index,                     // index
-    doc_sect_egdoc                      // egdoc  has to be last
+    #define pick(t,e,p) e,
+    #include "docsect.h"
+    #undef pick
 } doc_section;
 
 /***************************************************************************/
@@ -763,7 +754,7 @@ typedef enum lay_sub {
 /***************************************************************************/
 
 typedef enum functs {
-    function_escape         = 0xfe,
+    function_escape         = '\xfe',
     function_end            = 0x01,
 
     function_subscript      = 0x02,
@@ -802,7 +793,7 @@ typedef enum e_tags {
 typedef struct nest_stack {
     struct  nest_stack  * prev;
 
-    uint32_t            lineno;         // lineno of :xl, :HPx :SF call
+    lineno_t            lineno;         // lineno of :xl, :HPx :SF call
     union {
         char        *   filename;       // file name of :xl, :HPx :SF call
         struct mt {
@@ -828,9 +819,9 @@ typedef struct tag_cb {
     uint32_t            right_indent;
     uint32_t            post_skip;      // skip at tag end
     uint32_t            tsize;          // :dl
+    font_number         font;           // :HPx, :SF
     uint8_t             headhi;         // :dl
     uint8_t             termhi;         // :dl :gl
-    uint8_t             font;           // :HPx, :SF
     bool                dl_break : 1;   // :dl
     bool                compact  : 1;   // :dl :gl :ol :sl :ul
     e_tags              c_tag;          // enum of tag
@@ -891,23 +882,23 @@ typedef enum {
 } text_type;
 
 typedef struct text_chars {
-    struct  text_chars  *   next;
-    struct  text_chars  *   prev;
-            uint32_t        x_address;
-            uint32_t        width;
-            uint16_t        count;
-            uint16_t        length;
-            text_type       type;
-            uint8_t         font_number;
-            uint8_t         text[1];
+    struct text_chars   *next;
+    struct text_chars   *prev;
+    uint32_t            x_address;
+    uint32_t            width;
+    uint16_t            count;
+    uint16_t            length;
+    font_number         font;
+    text_type           type;
+    char                text[1];
 } text_chars;
 
 typedef struct text_line {
-    struct  text_line   *   next;
-            uint32_t        line_height;
-            uint32_t        y_address;
-            text_chars  *   first;
-            text_chars  *   last;
+    struct text_line    *next;
+    uint32_t            line_height;
+    uint32_t            y_address;
+    text_chars          *first;
+    text_chars          *last;
 } text_line;
 
 typedef enum {
@@ -946,17 +937,17 @@ typedef struct {
 } text_element;
 
 typedef struct doc_element {
-    struct  doc_element *   next;
-            uint32_t            blank_lines;
-            uint32_t            depth;
-            uint32_t            subs_skip;
-            uint32_t            top_skip;
+    struct doc_element  *next;
+    uint32_t            blank_lines;
+    uint32_t            depth;
+    uint32_t            subs_skip;
+    uint32_t            top_skip;
     union {
-            text_element        text;
-            binclude_element    binc;
-            graphic_element     graph;
+        text_element        text;
+        binclude_element    binc;
+        graphic_element     graph;
     } element;
-            element_type        type;   // placement avoids padding warning
+    element_type        type;   // placement avoids padding warning
 } doc_element;
 
 typedef struct doc_el_group {
@@ -966,46 +957,46 @@ typedef struct doc_el_group {
 } doc_el_group;
 
 typedef struct ban_column {
-    struct  ban_column  *   next;
-    doc_element         *   first;
+    struct ban_column   *next;
+    doc_element         *first;
 } ban_column;
 
 typedef struct doc_column {
-    struct  doc_column  *   next;
-            uint32_t        fig_top;
-            uint32_t        fn_top;
-            uint32_t        main_top;
-            doc_element *   main;
-            doc_element *   bot_fig;
-            doc_element *   footnote;
+    struct doc_column   *next;
+    uint32_t            fig_top;
+    uint32_t            fn_top;
+    uint32_t            main_top;
+    doc_element         *main;
+    doc_element         *bot_fig;
+    doc_element         *footnote;
 } doc_column;
 
 struct banner_lay_tag;  // avoids include circularity with gtypelay.h
 
 typedef struct {
-            uint32_t            main_top;
-            uint32_t            max_depth;
-            uint32_t            cur_depth;
-            doc_element     *   last_col_main;
-            doc_element     *   last_col_bot;
-            doc_element     *   last_col_fn;
-    struct  banner_lay_tag  *   top_banner;
-    struct  banner_lay_tag  *   bottom_banner;
-            ban_column      *   top_ban;
-            doc_element     *   page_width;
-            doc_column      *   main;
-            ban_column      *   bot_ban;
+    uint32_t                main_top;
+    uint32_t                max_depth;
+    uint32_t                cur_depth;
+    doc_element             *last_col_main;
+    doc_element             *last_col_bot;
+    doc_element             *last_col_fn;
+    struct banner_lay_tag   *top_banner;
+    struct banner_lay_tag   *bottom_banner;
+    ban_column              *top_ban;
+    doc_element             *page_width;
+    doc_column              *main;
+    ban_column              *bot_ban;
 } doc_page;
 
 typedef struct {
-            doc_element     *   last_col_top;
-            doc_element     *   last_col_main;
-            doc_element     *   last_col_bot;
-            doc_element     *   last_col_fn;
-            doc_element     *   col_top;
-            doc_element     *   col_main;
-            doc_element     *   col_bot;
-            doc_element     *   col_fn;
+    doc_element         *last_col_top;
+    doc_element         *last_col_main;
+    doc_element         *last_col_bot;
+    doc_element         *last_col_fn;
+    doc_element         *col_top;
+    doc_element         *col_main;
+    doc_element         *col_bot;
+    doc_element         *col_fn;
 } doc_next_page;
 
 /***************************************************************************/
@@ -1013,14 +1004,15 @@ typedef struct {
 /*   used for :Hx, :FIG, :FN                                               */
 /***************************************************************************/
 typedef struct ref_entry {
-    struct ref_entry    *   next;
-    uint32_t                lineno;     // input lineno of :Hx :FIG :FN
+    struct ref_entry    *next;
+    lineno_t            lineno;         // input lineno of :Hx :FIG :FN
                                         // used for checking duplicate ID
-    uint32_t                pageno;     // output page of :Hx or :FIG
-    uint32_t                number;     // figure or footnote number
-    char                    id[ID_LEN+1];   // reference id
+    uint32_t            pageno;         // output page of :Hx or :FIG
+    uint32_t            number;         // figure or footnote number
+    char                id[ID_LEN+1];   // reference id
                                         // filled with '\0' up to ID_LEN
-    char                *   text_cap;   // text line or figcap text
+    char                *text_cap;      // text line or figcap text
 } ref_entry;
 
 #endif                                  // GTYPE_H_INCLUDED
+

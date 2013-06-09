@@ -177,11 +177,11 @@ static  void    init_banner_wk( banner_lay_tag * ban )
     ban->ban_right_adjust = 0;
     ban->ban_depth = 0;
  
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(ban->left_adjust) );
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(ban->right_adjust) );
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(ban->depth) );
     ban->place = no_place;
     ban->docsect = no_ban;

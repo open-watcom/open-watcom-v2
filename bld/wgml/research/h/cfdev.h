@@ -48,12 +48,14 @@
 #ifndef CFDEV_H_INCLUDED
 #define CFDEV_H_INCLUDED
 
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 
+#include "bool.h"
 #include "cffunc.h"
 #include "cftrans.h"
+
+typedef uint8_t     font_number;
 
 /* Structure declarations. */
 
@@ -79,7 +81,7 @@
 
 typedef struct {
     char *          font_name;
-    uint8_t         font_number;
+    font_number     font;
     char            horizontal_line;
     char            vertical_line;
     char            top_left;
@@ -97,8 +99,8 @@ typedef struct {
 
 typedef struct {
     bool            specified_font;
-    char *          font_name;
-    uint8_t         font_number;
+    char            *font_name;
+    font_number     font;
     char            underscore_char;
 } underscore_block;
 

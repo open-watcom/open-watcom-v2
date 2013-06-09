@@ -24,37 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  Declares items used to smooth out the differences between
-*               Open Watcom on DOS, OS2, and Windows on the one hand and 
-*               Linux on the other.
-*                   get_file_size()
+* Description:  Declaration of various document sections constants
 *
 ****************************************************************************/
 
-#ifndef LHDIRECT_H_INCLUDED
-#define LHDIRECT_H_INCLUDED
 
-#ifdef __LINUX__
-
-#include <dirent.h>
-#include <unistd.h>
-
-#else /* DOS, OS/2, Windows. */
-
-#include <direct.h>
-
-#endif /* __LINUX__ */
-
-/* Function declarations. */
-
-#ifdef  __cplusplus
-extern "C" {    /* Use "C" linkage when in C++ mode. */
-#endif
-
-extern long    get_file_size( struct dirent * in_file );
-
-#ifdef  __cplusplus
-}   /* End of "C" linkage for C++. */
-#endif
-
-#endif  /* LHDIRECT_H_INCLUDED */
+pick( "NONE",      doc_sect_none,     no_ban       )
+pick( "GDOC",      doc_sect_gdoc,     no_ban       )
+pick( "FRONTM",    doc_sect_frontm,   no_ban       )
+pick( "TITLEP",    doc_sect_titlep,   no_ban       )
+pick( "eTITLEP",   doc_sect_etitlep,  no_ban       )
+pick( "ABSTRACT",  doc_sect_abstract, abstract_ban )
+pick( "PREFACE",   doc_sect_preface,  preface_ban  )
+pick( "TOC",       doc_sect_toc,      toc_ban      )
+pick( "FIGLIST",   doc_sect_figlist,  figlist_ban  )
+pick( "BODY",      doc_sect_body,     body_ban     )
+pick( "APPENDIX",  doc_sect_appendix, appendix_ban )
+pick( "BACKM",     doc_sect_backm,    backm_ban    )
+pick( "INDEX",     doc_sect_index,    index_ban    )
+pick( "eGDOC",     doc_sect_egdoc,    no_ban       )

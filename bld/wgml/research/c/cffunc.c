@@ -62,15 +62,14 @@
  *      NULL on failure.
  */
 
-code_block * get_code_blocks( uint8_t * * current, uint16_t cb_count, \
-                              uint8_t * base, char * block )
+code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, char *block )
 {
     code_block *    out_block   = NULL;
     size_t          difference;
     size_t          position;
-    uint8_t         junk_byte[3];
-    uint8_t         first_byte[3];
-    uint8_t         second_byte[3];
+    char            junk_byte[3];
+    char            first_byte[3];
+    char            second_byte[3];
     uint8_t         i;
 
     /* Allocate the out_block. */ 
@@ -89,8 +88,7 @@ code_block * get_code_blocks( uint8_t * * current, uint16_t cb_count, \
         /* Get the designator, shifting it if necessary. */
             
         if( position == 79 ) {
-            printf_s( "Parsing %s block: CodeBlock %i has a shifted designator\n",\
-                                                                        block, i);
+            printf_s( "Parsing %s block: CodeBlock %i has a shifted designator\n", block, i);
             display_hex_char( junk_byte, **current );
             display_hex_char( first_byte, *(*current + 1) );
             printf_s( "Values: %s %s\n", junk_byte, first_byte );
@@ -170,7 +168,7 @@ code_block * get_code_blocks( uint8_t * * current, uint16_t cb_count, \
 
 p_buffer * get_p_buffer( FILE * in_file )
 {
-    uint8_t *   current     = NULL;
+    char        *current    = NULL;
     uint8_t     i;
     p_buffer *  out_buffer  = NULL;
     uint8_t     p_count;
@@ -207,7 +205,7 @@ p_buffer * get_p_buffer( FILE * in_file )
     if( out_buffer == NULL ) return( out_buffer );
 
     out_buffer->count = 80 * p_count;
-    out_buffer->buffer = (uint8_t *) out_buffer + sizeof( p_buffer );
+    out_buffer->buffer = (char *)out_buffer + sizeof( p_buffer );
     current = out_buffer->buffer;
 
     /* Now get the data into the out_buffer. */
@@ -261,8 +259,7 @@ p_buffer * get_p_buffer( FILE * in_file )
  *      NULL on failure.
  */
 
-functions_block * parse_functions_block( uint8_t * * current, uint8_t * base, \
-                                         char * block )
+functions_block * parse_functions_block( char **current, char *base, char * block )
 {
     uint16_t            code_count;
     functions_block *   out_block   = NULL;
@@ -284,8 +281,7 @@ functions_block * parse_functions_block( uint8_t * * current, uint8_t * base, \
     if( out_block->count == 0 ) {
         out_block->code_blocks = NULL;
     } else {
-        out_block->code_blocks = get_code_blocks( current, out_block->count, \
-                                                                    base, block );
+        out_block->code_blocks = get_code_blocks( current, out_block->count, base, block );
     }
 
     return( out_block );

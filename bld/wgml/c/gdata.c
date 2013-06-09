@@ -104,7 +104,7 @@ void init_global_vars( void )
     page                = 0;            // current pageno (in body 1 - n)
     line                = 0;            // current output lineno on page
     lc                  = 0;            // remaining lines on page
-    g_curr_font_num     = 0;
+    g_curr_font         = 0;
     tm                  = 0;            // top margin              &$tm
     bm                  = 0;            // bottom margin           &$bm
     fm                  = 0;            // footing margin          &$fm

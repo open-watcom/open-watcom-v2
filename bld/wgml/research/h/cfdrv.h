@@ -55,10 +55,10 @@
 #ifndef CFDRV_H_INCLUDED
 #define CFDRV_H_INCLUDED
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
 
+#include "bool.h"
 #include "cffunc.h"
 
 /* Structure declarations */
@@ -78,7 +78,7 @@
 typedef struct {
     bool                is_fontvalue;
     uint16_t            count;
-    uint8_t *           text;
+    char                *text;
 } init_text;
 
 /* To hold the data from the InitBlock struct. */
@@ -123,7 +123,7 @@ typedef struct {
 typedef struct {
     uint16_t            advance;
     uint16_t            count;
-    uint8_t *           text;
+    char                *text;
 } newline_block;
 
 /* To hold the data extracted from a NewlineFuncs struct. */
@@ -201,7 +201,7 @@ typedef struct {
 typedef struct {
     uint32_t            thickness;
     uint16_t            count;
-    uint8_t *           text;
+    char                *text;
 } line_block;
 
 /* This struct embodies the binary form of the :DRIVER block.

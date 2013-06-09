@@ -279,8 +279,7 @@ void    scr_cp( void )
             scan_restart = scan_stop +1;
         } else {
             if( gn.result > 0 ) {       // ignore values < 1
-                if( ((gn.result * wgml_fonts[g_curr_font_num].line_height) +
-                                t_page.cur_depth) > t_page.max_depth ) {
+                if( ((gn.result * wgml_fonts[g_curr_font].line_height) + t_page.cur_depth) > t_page.max_depth ) {
                     do_page_out();
                     reset_t_page();
                 }

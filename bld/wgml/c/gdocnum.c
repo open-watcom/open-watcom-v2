@@ -46,32 +46,28 @@ static void prep_docnum_line( text_line * p_line, char * p )
  
     if( *p ) {
         curr_t = alloc_text_chars( layout_work.docnum.string, 1 + strlen( p ) +
-                                   strlen( layout_work.docnum.string ),
-                                   g_curr_font_num );
+                                   strlen( layout_work.docnum.string ), g_curr_font );
     } else {
         curr_t = alloc_text_chars( layout_work.docnum.string,
-                                   1 + strlen( layout_work.docnum.string ),
-                                   g_curr_font_num );
+                                   1 + strlen( layout_work.docnum.string ), g_curr_font );
     }
     if( *p  ) {
         strcat_s( curr_t->text, curr_t->length, p );
     }
     curr_t->count = strlen( curr_t->text );
     curr_t->count = len_to_trail_space( curr_t->text, curr_t->count );
-    intrans( curr_t->text, &curr_t->count, g_curr_font_num );
-    curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                    g_curr_font_num );
+    intrans( curr_t->text, &curr_t->count, g_curr_font );
+    curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     while( curr_t->width > (h_right - h_left) ) {   // too long for line
         if( curr_t->count < 2) {        // sanity check
             break;
         }
         curr_t->count -= 1;             // truncate text
-        curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                        g_curr_font_num );
+        curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     }
     p_line->first = curr_t;
     p_line->last = curr_t;
-    p_line->line_height = wgml_fonts[g_curr_font_num].line_height;
+    p_line->line_height = wgml_fonts[g_curr_font].line_height;
     curr_t->x_address = h_left;
     if( layout_work.docnum.page_position == pos_center ) {
         if( h_left + curr_t->width < h_right ) {
@@ -95,7 +91,7 @@ void    gml_docnum( const gmltag * entry )
     doc_element *   cur_el;
     text_line   *   p_line;
     int8_t          d_spacing;
-    int8_t          font_save;
+    font_number     font_save;
     int32_t         rc;
     symsub      *   docnumval;
  
@@ -132,16 +128,15 @@ void    gml_docnum( const gmltag * entry )
     prep_docnum_line( p_line, docnumval->value );
  
     d_spacing = layout_work.titlep.spacing;
-    font_save = g_curr_font_num;
-    g_curr_font_num = layout_work.docnum.font;
+    font_save = g_curr_font;
+    g_curr_font = layout_work.docnum.font;
 
     /************************************************************/
     /*  pre_skip is treated as pre_top_skip because it is       */
     /*  always used at the top of the page, despite the docs    */
     /************************************************************/
 
-    set_skip_vars( NULL, &layout_work.docnum.pre_skip, NULL, d_spacing, 
-                       g_curr_font_num );
+    set_skip_vars( NULL, &layout_work.docnum.pre_skip, NULL, d_spacing, g_curr_font );
  
     cur_el = alloc_doc_el( el_text );
     cur_el->blank_lines = g_blank_lines;
@@ -157,6 +152,6 @@ void    gml_docnum( const gmltag * entry )
     p_line = NULL;
     insert_col_main( cur_el );
 
-    g_curr_font_num = font_save;
+    g_curr_font = font_save;
     scan_start = scan_stop + 1;
 }

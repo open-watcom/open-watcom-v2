@@ -240,13 +240,13 @@ static  void    init_banregion_wk( region_lay_tag * reg )
     reg->reg_width = 0;
     reg->reg_voffset = 0;
     reg->reg_depth = 0;
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(reg->indent) );
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(reg->hoffset) );
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(reg->width) );
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(reg->depth) );
     reg->font = 0;
     reg->refnum = -1;
@@ -336,8 +336,9 @@ void    lay_banregion( const gmltag * entry )
                         cvterr = i_space_unit( p, curr, &wk.depth );
                         break;
                     case   e_font:
-                        cvterr = i_int8( p, curr, &wk.font );
-                        if( wk.font >= wgml_font_cnt ) wk.font = 0;
+                        cvterr = i_font_number( p, curr, &wk.font );
+                        if( wk.font >= wgml_font_cnt )
+                            wk.font = 0;
                         break;
                     case   e_refnum:
                         cvterr = i_int8( p, curr, &wk.refnum );
@@ -354,7 +355,7 @@ void    lay_banregion( const gmltag * entry )
                     case   e_contents:
                         if( l_args.quoted ) {
                             wk.contents.content_type = string_content;
-                            cvterr = i_xx_string( p, curr, &wk.contents.string );
+                            cvterr = i_xx_string( p, curr, wk.contents.string );
                         } else {
                             cvterr = i_content( p, curr, &wk.contents );
                         }

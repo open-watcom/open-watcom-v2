@@ -47,24 +47,21 @@ static void prep_date_line( text_line * p_line, char * p )
     h_right = g_page_right - conv_hor_unit( &layout_work.date.right_adjust );
  
     if( *p ) {
-        curr_t = alloc_text_chars( p, strlen( p ), g_curr_font_num );
+        curr_t = alloc_text_chars( p, strlen( p ), g_curr_font );
     } else {
         rc = find_symvar( &global_dict, "date", no_subscript, &subdate );
-        curr_t = alloc_text_chars( subdate->value, strlen( subdate->value ),
-                                   g_curr_font_num );
+        curr_t = alloc_text_chars( subdate->value, strlen( subdate->value ), g_curr_font );
     }
     curr_t->count = len_to_trail_space( curr_t->text, curr_t->count );
  
-    intrans( curr_t->text, &curr_t->count, g_curr_font_num );
-    curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                    g_curr_font_num );
+    intrans( curr_t->text, &curr_t->count, g_curr_font );
+    curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     while( curr_t->width > (h_right - h_left) ) {   // too long for line
         if( curr_t->count < 2) {        // sanity check
             break;
         }
         curr_t->count -= 1;             // truncate text
-        curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                        g_curr_font_num );
+        curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     }
     p_line->first = curr_t;
     p_line->last  = curr_t;
@@ -91,7 +88,7 @@ void    gml_date( const gmltag * entry )
     doc_element *   cur_el;
     text_line   *   p_line;
     int8_t          d_spacing;
-    int8_t          font_save;
+    font_number     font_save;
  
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
@@ -124,15 +121,14 @@ void    gml_date( const gmltag * entry )
     prep_date_line( p_line, p );
 
     d_spacing = layout_work.titlep.spacing;
-    font_save = g_curr_font_num;
-    g_curr_font_num = layout_work.date.font;
+    font_save = g_curr_font;
+    g_curr_font = layout_work.date.font;
 
     /************************************************************/
     /*  pre_skip is treated as pre_top_skip because it is       */
     /*  always used at the top of the page, despite the docs    */
     /************************************************************/
-    set_skip_vars( NULL, &layout_work.date.pre_skip, NULL, d_spacing, 
-                       g_curr_font_num );
+    set_skip_vars( NULL, &layout_work.date.pre_skip, NULL, d_spacing, g_curr_font );
  
     cur_el = alloc_doc_el( el_text );
     cur_el->depth = p_line->line_height + g_spacing;
@@ -146,6 +142,6 @@ void    gml_date( const gmltag * entry )
     p_line = NULL;
     insert_col_main( cur_el );
 
-    g_curr_font_num = font_save;
+    g_curr_font = font_save;
     scan_start = scan_stop + 1;
 }

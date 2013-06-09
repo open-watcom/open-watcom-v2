@@ -63,7 +63,7 @@
 *                   desired_state
 *                   device_function_table
 *                   driver_function_table
-*                   font_number
+*                   font
 *                   has_htab
 *                   htab_done
 *                   line_pass_number
@@ -174,10 +174,14 @@
 
 #define __STDC_WANT_LIB_EXT1__  1
 #include <conio.h>
-#include <stdbool.h>
 #include <string.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 
+#include "bool.h"
 #include "wgml.h"
 #include "devfuncs.h"
 #include "gvars.h"
@@ -194,8 +198,8 @@
 /* This keeps track of where we are in the compiled function block. */
 
 typedef struct {
-    uint8_t *   base;
-    uint8_t *   current;
+    char        *base;
+    char        *current;
     bool        last_function_done;
     uint8_t     parameter_type;
     uint8_t     df_code;
@@ -206,7 +210,7 @@ typedef struct {
 typedef struct {
     uint32_t    x_address;
     uint32_t    y_address;
-    uint8_t     font_number;
+    font_number font;
     text_type   type;
 } page_state;
 
@@ -245,7 +249,7 @@ static uint32_t         line_pass_number        = 0;
 static char         *   date_val                = NULL;
 static char         *   time_val                = NULL;
 static char             wgml_header[]           = "V4.0 PC/DOS";
-static uint32_t         font_number             = 0;
+static font_number      font                    = 0;
 static uint32_t         tab_width               = 0;
 static uint32_t         thickness               = 0;
 static uint32_t         x_address               = 0;
@@ -256,12 +260,12 @@ static uint32_t         y_size                  = 0;
 /* These are used by the interpreter. */
 static bool             has_htab                = false;
 static bool             text_out_open           = false;
-static uint32_t         active_font             = 0;
+static font_number      active_font             = 0;
 static df_data          current_df_data;
 static df_function      device_function_table[MAX_FUNC_INDEX + 1];
 static df_function      driver_function_table[MAX_FUNC_INDEX + 1];
 static df_function  *   current_function_table  = NULL;
-static uint8_t      *   current_function        = NULL;
+static char             *current_function       = NULL;
 
 /* These are used in outputting spaces and underscore characters. */
 
@@ -395,10 +399,10 @@ static char * char_convert( char * in_val )
     char *  ret_val = NULL;
 
     if( in_val == NULL ) {
-        ret_val = (char *) mem_alloc( 1 );
+        ret_val = mem_alloc( 1 );
         ret_val[0] = '\0';
     } else {
-        ret_val = (char *) mem_alloc( strlen( in_val ) + 1 );
+        ret_val = mem_alloc( strlen( in_val ) + 1 );
         strcpy_s( ret_val, strlen( in_val ) + 1, in_val );
     }
 
@@ -435,7 +439,7 @@ static void output_spaces( uint32_t count )
     int     i;
 
     if( space_chars.length < count ) {
-        space_chars.text = (uint8_t *) mem_realloc( space_chars.text, count );
+        space_chars.text = mem_realloc( space_chars.text, count );
         space_chars.length = count;
         for( i = 0; i < space_chars.length; i++ ) space_chars.text[i] = ' ';
     }
@@ -475,7 +479,7 @@ static void output_uscores( text_chars * in_chars )
      * with the underscore character, the current font is used.
      */
 
-    uscore_width = wgml_fonts[in_chars->font_number].width_table[uscore_char];
+    uscore_width = wgml_fonts[in_chars->font].width_table[uscore_char];
 
     /* The number of underscore characters is determined by the amount of
      * space from the current position to the text start point plus the
@@ -487,10 +491,11 @@ static void output_uscores( text_chars * in_chars )
     count /= uscore_width;
 
     if( uscore_chars.length < count ) {
-        uscore_chars.text = (uint8_t *) mem_realloc( uscore_chars.text, count );
+        uscore_chars.text = mem_realloc( uscore_chars.text, count );
         uscore_chars.length = count;
-        for( i = 0; i < uscore_chars.length; i++ ) \
-                                            uscore_chars.text[i] = uscore_char;
+        for( i = 0; i < uscore_chars.length; i++ ) {
+            uscore_chars.text[i] = uscore_char;
+        }
     }
 
     ob_insert_block( uscore_chars.text, count, true, true, active_font );
@@ -654,7 +659,7 @@ static void pre_text_output( void )
 
 static void * df_do_nothing_char( void )
 {
-    return( (void *) char_convert( NULL ) );
+    return( (void *)char_convert( NULL ) );
 }
 
 /* Function df_do_nothing_num().
@@ -665,7 +670,7 @@ static void * df_do_nothing_char( void )
 
 static void * df_do_nothing_num( void )
 {
-    return( (void *) 0 );
+    return( (void *)0 );
 }
 
 /* Function df_bad_code().
@@ -972,7 +977,7 @@ static void * df_wait( void )
  
 static void * df_date( void )
 {
-    return( (void *) char_convert( date_val ) );
+    return( (void *)char_convert( date_val ) );
 }
 
 /* Function df_default_width().
@@ -981,7 +986,7 @@ static void * df_date( void )
  
 static void * df_default_width( void )
 {
-    return( (void *) wgml_fonts[font_number].bin_font->char_width );
+    return( (void *)wgml_fonts[font].bin_font->char_width );
 }
 
 /* Function df_font_height().
@@ -990,7 +995,7 @@ static void * df_default_width( void )
  
 static void * df_font_height( void )
 {
-    return( (void *) wgml_fonts[font_number].font_height );
+    return( (void *)wgml_fonts[font].font_height );
 }
 
 /* Function df_font_number().
@@ -999,7 +1004,7 @@ static void * df_font_height( void )
  
 static void * df_font_number( void )
 {
-    return( (void *) font_number );
+    return( (void *)font );
 }
 
 /* Function df_font_outname1().
@@ -1010,9 +1015,9 @@ static void * df_font_outname1( void )
 {
     char    *   ret_val;
 
-    ret_val = char_convert( wgml_fonts[font_number].bin_font->font_out_name1 );
+    ret_val = char_convert( wgml_fonts[font].bin_font->font_out_name1 );
 
-    return( (void *) ret_val );
+    return( (void *)ret_val );
 }
 
 /* Function df_font_outname2().
@@ -1023,9 +1028,9 @@ static void * df_font_outname2( void )
 {
     char    *   ret_val;
 
-    ret_val = char_convert( wgml_fonts[font_number].bin_font->font_out_name2 );
+    ret_val = char_convert( wgml_fonts[font].bin_font->font_out_name2 );
 
-    return( (void *) ret_val );
+    return( (void *)ret_val );
 }
 
 /* Function df_font_resident().
@@ -1036,11 +1041,11 @@ static void * df_font_resident( void )
 {
     char    *   ret_val;
 
-    ret_val = (char *) mem_alloc( sizeof(char) + 1 );
-    ret_val[0] = (char) wgml_fonts[font_number].font_resident;
+    ret_val = mem_alloc( 2 );
+    ret_val[0] = wgml_fonts[font].font_resident;
     ret_val[1] = '\0';
     
-    return( (void *) ret_val );
+    return( (void *)ret_val );
 }
 
 /* Function df_font_space().
@@ -1049,7 +1054,7 @@ static void * df_font_resident( void )
  
 static void * df_font_space( void )
 {
-    return( (void *) wgml_fonts[font_number].font_space );
+    return( (void *)wgml_fonts[font].font_space );
 }
 
 /* Function df_line_height().
@@ -1058,7 +1063,7 @@ static void * df_font_space( void )
  
 static void * df_line_height( void )
 {
-    return( (void *) wgml_fonts[font_number].line_height );
+    return( (void *)wgml_fonts[font].line_height );
 }
 
 /* Function df_line_space().
@@ -1067,7 +1072,7 @@ static void * df_line_height( void )
  
 static void * df_line_space( void )
 {
-    return( (void *) wgml_fonts[font_number].line_space );
+    return( (void *)wgml_fonts[font].line_space );
 }
 
 /* Function df_page_depth().
@@ -1076,7 +1081,7 @@ static void * df_line_space( void )
  
 static void * df_page_depth( void )
 {
-    return( (void *) bin_device->page_depth );
+    return( (void *)bin_device->page_depth );
 }
 
 /* Function df_page_width().
@@ -1085,7 +1090,7 @@ static void * df_page_depth( void )
  
 static void * df_page_width( void )
 {
-    return( (void *) bin_device->page_width );
+    return( (void *)bin_device->page_width );
 }
 
 /* Function df_pages().
@@ -1094,7 +1099,7 @@ static void * df_page_width( void )
  
 static void * df_pages( void )
 {
-    return( (void *) apage );
+    return( (void *)apage );
 }
 
 /* Function df_tab_width().
@@ -1103,7 +1108,7 @@ static void * df_pages( void )
  
 static void * df_tab_width( void )
 {
-    return( (void *) tab_width );
+    return( (void *)tab_width );
 }
 
 /* Function df_thickness().
@@ -1112,7 +1117,7 @@ static void * df_tab_width( void )
  
 static void * df_thickness( void )
 {
-    return( (void *) thickness );
+    return( (void *)thickness );
 }
 
 /* Function df_time().
@@ -1121,7 +1126,7 @@ static void * df_thickness( void )
  
 static void * df_time( void )
 {
-    return( (void *) char_convert( time_val ) );
+    return( (void *)char_convert( time_val ) );
 }
 
 /* Function df_wgml_header().
@@ -1130,7 +1135,7 @@ static void * df_time( void )
  
 static void * df_wgml_header( void )
 {
-    return( (void *) char_convert( wgml_header ) );
+    return( (void *)char_convert( wgml_header ) );
 }
 
 /* Function df_x_address().
@@ -1139,7 +1144,7 @@ static void * df_wgml_header( void )
  
 static void * df_x_address( void )
 {
-    return( (void *) x_address );
+    return( (void *)x_address );
 }
 
 /* Function df_x_size().
@@ -1148,7 +1153,7 @@ static void * df_x_address( void )
  
 static void * df_x_size( void )
 {
-    return( (void *) x_size );
+    return( (void *)x_size );
 }
 
 /* Function df_y_address().
@@ -1157,7 +1162,7 @@ static void * df_x_size( void )
  
 static void * df_y_address( void )
 {
-    return( (void *) y_address );
+    return( (void *)y_address );
 }
 
 /* Function df_y_size().
@@ -1166,7 +1171,7 @@ static void * df_y_address( void )
  
 static void * df_y_size( void )
 {
-    return( (void *) y_size );
+    return( (void *)y_size );
 }
 
 /* Parameter block parsing functions. */
@@ -1236,7 +1241,7 @@ static void * get_parameters ( parameters * in_parameters )
  *      the value returned by the device function invoked.
 */
 
-static void * process_parameter( void )
+static void *process_parameter( void )
 {
     /* Reset current_df_data for the parameter. */
 
@@ -1310,7 +1315,7 @@ static void * df_out_text_device( void )
         /* Now get and emit the parameter. */
 
         current_df_data.current = current_df_data.base + my_parameters.first;
-        first = (char *) process_parameter();
+        first = process_parameter();
         out_msg( first );
 
         /* Free the memory allocated to the parameter. */
@@ -1340,11 +1345,9 @@ static void out_text_driver( bool out_trans, bool out_text )
 
         /* Character literal parameter. */
         
-        memcpy_s( &count, sizeof( count ), current_df_data.current, \
-                                                                sizeof( count ) );
+        memcpy_s( &count, sizeof( count ), current_df_data.current, sizeof( count ) );
         current_df_data.current += sizeof( count );
-        ob_insert_block( current_df_data.current, count, out_trans, out_text, \
-                                                                active_font );
+        ob_insert_block( current_df_data.current, count, out_trans, out_text, active_font );
         break;
 
     case 0x10:
@@ -1354,13 +1357,13 @@ static void out_text_driver( bool out_trans, bool out_text )
         /* Ensure that this is either a ShortHeader or a LongHeader. */
 
         get_parameters( &my_parameters );
-        if( (my_parameters.first != 0x0009) && \
-                            (my_parameters.first != 0x000d) ) format_error();
+        if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) )
+            format_error();
 
         /* Now get and insert the parameter. */
 
         current_df_data.current = current_df_data.base + my_parameters.first;
-        first = (char *) process_parameter();
+        first = process_parameter();
         count = strlen( first );
         ob_insert_block( first, count, out_trans, out_text, active_font );
 
@@ -1423,7 +1426,7 @@ static void * char_literal( void )
     ret_val = char_convert( current_df_data.current );
     current_df_data.current += count + 1;
 
-    return( (void *) ret_val );
+    return( (void *)ret_val );
 }
 
 /* Function numeric_literal().
@@ -1442,7 +1445,7 @@ static void * numeric_literal( void )
 
     memcpy_s( &value, sizeof( value ), current_df_data.current, \
                                                             sizeof( value ) );
-    return( (void *) value );
+    return( (void *)value );
 }
 
 /* These functions take parameters in parameter blocks only. */
@@ -1483,22 +1486,22 @@ static void * df_cancel( void )
     /* Now invoke the parameter's handler. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (char *) process_parameter();
+    first = process_parameter();
 
-    if( wgml_fonts[font_number].font_style != NULL ) {
-        if( !stricmp( first, wgml_fonts[font_number].font_style->type ) ) {
-            if( wgml_fonts[font_number].font_style->startvalue != NULL ) {
+    if( wgml_fonts[font].font_style != NULL ) {
+        if( !stricmp( first, wgml_fonts[font].font_style->type ) ) {
+            if( wgml_fonts[font].font_style->startvalue != NULL ) {
                 df_interpret_driver_functions( \
-                    wgml_fonts[font_number].font_style->startvalue->text );
+                    wgml_fonts[font].font_style->startvalue->text );
             }
         }
     }
 
-    if( wgml_fonts[font_number].font_switch != NULL ) {
-        if( !stricmp( first, wgml_fonts[font_number].font_switch->type ) ) {
-            if( wgml_fonts[font_number].font_switch->startvalue != NULL ) {
+    if( wgml_fonts[font].font_switch != NULL ) {
+        if( !stricmp( first, wgml_fonts[font].font_switch->type ) ) {
+            if( wgml_fonts[font].font_switch->startvalue != NULL ) {
                 df_interpret_driver_functions( \
-                    wgml_fonts[font_number].font_switch->startvalue->text );
+                    wgml_fonts[font].font_switch->startvalue->text );
             }
         }
     }
@@ -1570,7 +1573,7 @@ static void * df_sleep( void )
      */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t) process_parameter();
+    first = (uintptr_t)process_parameter();
 
     sleep( (unsigned) first);
 
@@ -1600,12 +1603,12 @@ static void * df_setsymbol( void )
     /* Now get the first parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (char *) process_parameter();
+    first = process_parameter();
 
     /* Now get the second parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (char *) process_parameter();
+    second = process_parameter();
 
     /* Insert the symbol into the global symbol table. */
 
@@ -1644,7 +1647,7 @@ static void * df_binary( void )
     /* Now invoke the parameter's handler. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    ob_insert_byte( (uint8_t) process_parameter() );
+    ob_insert_byte( (uint8_t)process_parameter() );
     
     return( NULL );
 }
@@ -1764,12 +1767,12 @@ static void * df_ifeqn( void )
     /* Now get the first parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t) process_parameter();
+    first = (uintptr_t)process_parameter();
 
     /* Now get the second parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t) process_parameter();
+    second = (uintptr_t)process_parameter();
 
     /* if_eqn: skip the controlled functions if the values are not equal. */
 
@@ -1801,12 +1804,12 @@ static void * df_ifnen( void )
     /* Now get the first parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t) process_parameter();
+    first = (uintptr_t)process_parameter();
 
     /* Now get the second parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t) process_parameter();
+    second = (uintptr_t)process_parameter();
 
     /* if_nen: skip the controlled functions if the values are equal. */
 
@@ -1838,12 +1841,12 @@ static void * df_ifeqs( void )
     /* Now get the first parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (char *) process_parameter();
+    first = process_parameter();
 
     /* Now get the second parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (char *) process_parameter();
+    second = process_parameter();
 
     /* if_eqs: skip the controlled functions if the values are not equal. */
 
@@ -1880,12 +1883,12 @@ static void * df_ifnes( void )
     /* Now get the first parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (char *) process_parameter();
+    first = process_parameter();
 
     /* Now get the second parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (char *) process_parameter();
+    second = process_parameter();
 
     /* if_nes: skip the controlled functions if the values are equal. */
 
@@ -1920,14 +1923,14 @@ static void * df_add( void )
     /* Now get the first parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t) process_parameter();
+    first = (uintptr_t)process_parameter();
 
     /* Now get the second parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t) process_parameter();
+    second = (uintptr_t)process_parameter();
 
-    return( (void *) (first + second) );
+    return( (void *)(first + second) );
 }
 
 /* Function df_decimal().
@@ -1947,12 +1950,12 @@ static void * df_decimal( void )
     /* Now get the parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t) process_parameter();
+    first = (uintptr_t)process_parameter();
 
     /* Convert and return the value. */
 
-    value = (char *) mem_alloc( 12 );
-    return( (void *) _ltoa( first, value, 10 ) );
+    value = mem_alloc( 12 );
+    return( (void *)_ltoa( first, value, 10 ) );
 }
 
 /* Function df_divide().
@@ -1972,12 +1975,12 @@ static void * df_divide( void )
     /* Now get the first parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t) process_parameter();
+    first = (uintptr_t)process_parameter();
 
     /* Now get the second parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t) process_parameter();
+    second = (uintptr_t)process_parameter();
 
     if( second == 0 ) {
         out_msg( "Zero divisor found in device function %%divide()!\n" );
@@ -1985,7 +1988,7 @@ static void * df_divide( void )
         g_suicide();
     }
 
-    return( (void *) (first / second) );
+    return( (void *)(first / second) );
 }
 
 /* Function df_getnumsymbol().
@@ -2017,7 +2020,7 @@ static void * df_getnumsymbol( void )
 
     mem_free( name );
 
-    return( (void *) ret_val );
+    return( (void *)ret_val );
 }
 
 /* Function df_getstrsymbol().
@@ -2050,7 +2053,7 @@ static void * df_getstrsymbol( void )
 
     mem_free( name );
 
-    return( (void *) ret_val );
+    return( (void *)ret_val );
 }
 
 /* Function df_hex().
@@ -2070,12 +2073,12 @@ static void * df_hex( void )
     /* Now get the parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t) process_parameter();
+    first = (uintptr_t)process_parameter();
 
     /* Convert and return a pointer to the parameter */
 
-    value = (char *) mem_alloc( 9 );
-    return( (void *) _ltoa( first, value, 16 ) );
+    value = mem_alloc( 9 );
+    return( (void *)_ltoa( first, value, 16 ) );
 }
 
 /* Function df_lower().
@@ -2094,11 +2097,11 @@ static void * df_lower( void )
     /* Now get the parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (char *) process_parameter();
+    first = process_parameter();
 
     /* Convert and return the parameter. */
 
-    return( (void *) strlwr( first ) );
+    return( (void *)strlwr( first ) );
 }
 
 /* Function df_remainder().
@@ -2118,12 +2121,12 @@ static void * df_remainder( void )
     /* Now get the first parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t) process_parameter();
+    first = (uintptr_t)process_parameter();
 
     /* Now get the second parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t) process_parameter();
+    second = (uintptr_t)process_parameter();
 
     if( second == 0 ) {
         out_msg( "Zero divisor found in device function %%remainder()!\n" );
@@ -2131,7 +2134,7 @@ static void * df_remainder( void )
         g_suicide();
     }
 
-    return( (void *) (first % second) );
+    return( (void *)(first % second) );
 }
 
 /* Function df_subtract().
@@ -2151,14 +2154,14 @@ static void * df_subtract( void )
     /* Now get the first parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t) process_parameter();
+    first = (uintptr_t)process_parameter();
 
     /* Now get the second parameter. */
 
     current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t) process_parameter();
+    second = (uintptr_t)process_parameter();
 
-    return( (void *) (first - second) );
+    return( (void *)(first - second) );
 }
 
 /* The function table for function blocks defined in the :DEVICE block.
@@ -2331,11 +2334,11 @@ static df_function driver_function_table[0x3D] = {
  *          restored to their value on entry on exit.
 */
 
-static void interpret_functions( uint8_t * in_function )
+static void interpret_functions( char *in_function )
 {
     bool                old_last_done   = false;
     df_function     *   old_function_table  = NULL;
-    uint8_t         *   old_function    = NULL;
+    char                *old_function   = NULL;
     uint16_t            current_offset;
 
     /* An empty or missing block is not an error, but a warning is issued
@@ -2461,17 +2464,17 @@ static void fb_font_switch( void )
     char                *   from_string;
     char                *   to_string;
     fontswitch_block    *   font_switch;
-    uint32_t                save_font_number;
+    font_number             save_font;
     uintptr_t               from_numeric;
     uintptr_t               to_numeric;
     wgml_font           *   from_font;
     wgml_font           *   to_font;
 
-    /* Acquire the "from" and "to" fonts and save the font_number. */
+    /* Acquire the "from" and "to" fonts and save the font. */
 
-    from_font = &wgml_fonts[current_state.font_number];
-    to_font = &wgml_fonts[desired_state.font_number];
-    save_font_number = font_number;
+    from_font = &wgml_fonts[current_state.font];
+    to_font = &wgml_fonts[desired_state.font];
+    save_font = font;
 
     /* The first test: do the fonts use the same :FONTSWITCH block? */
 
@@ -2503,9 +2506,9 @@ static void fb_font_switch( void )
 
             /* The default width is a numeric. */
 
-            font_number = current_state.font_number;
+            font = current_state.font;
             from_numeric = (uintptr_t) df_default_width();
-            font_number = desired_state.font_number;
+            font = desired_state.font;
             to_numeric = (uintptr_t) df_default_width();
             if( !do_now ) do_now = ( from_numeric != to_numeric );
         }
@@ -2514,9 +2517,9 @@ static void fb_font_switch( void )
 
             /* The font height is a numeric. */
 
-            font_number = current_state.font_number;
+            font = current_state.font;
             from_numeric = (uintptr_t) df_font_height();
-            font_number = desired_state.font_number;
+            font = desired_state.font;
             to_numeric = (uintptr_t) df_font_height();
             if( !do_now ) do_now = ( from_numeric != to_numeric );
         }
@@ -2525,10 +2528,10 @@ static void fb_font_switch( void )
 
             /* The font out name 1 is a string. */
 
-            font_number = current_state.font_number;
-            from_string = (char *) df_font_outname1();
-            font_number = desired_state.font_number;
-            to_string = (char *) df_font_outname1();
+            font = current_state.font;
+            from_string = (char *)df_font_outname1();
+            font = desired_state.font;
+            to_string = (char *)df_font_outname1();
             if( !do_now ) do_now = ( strcmp( from_string, to_string ) );
             mem_free( from_string );
             mem_free( to_string );
@@ -2538,10 +2541,10 @@ static void fb_font_switch( void )
 
             /* The font out name 2 is a string. */
 
-            font_number = current_state.font_number;
-            from_string = (char *) df_font_outname2();
-            font_number = desired_state.font_number;
-            to_string = (char *) df_font_outname2();
+            font = current_state.font;
+            from_string = (char *)df_font_outname2();
+            font = desired_state.font;
+            to_string = (char *)df_font_outname2();
             if( !do_now ) do_now = ( strcmp( from_string, to_string ) );
             mem_free( from_string );
             mem_free( to_string );
@@ -2551,10 +2554,10 @@ static void fb_font_switch( void )
 
             /* The font resident flag is a string. */
 
-            font_number = current_state.font_number;
-            from_string = (char *) df_font_resident();
-            font_number = desired_state.font_number;
-            to_string = (char *) df_font_resident();
+            font = current_state.font;
+            from_string = (char *)df_font_resident();
+            font = desired_state.font;
+            to_string = (char *)df_font_resident();
             if( !do_now ) do_now = ( strcmp( from_string, to_string ) );
             mem_free( from_string );
             mem_free( to_string );
@@ -2564,9 +2567,9 @@ static void fb_font_switch( void )
 
             /* The font space is a numeric. */
 
-            font_number = current_state.font_number;
+            font = current_state.font;
             from_numeric = (uintptr_t) df_font_space();
-            font_number = desired_state.font_number;
+            font = desired_state.font;
             to_numeric = (uintptr_t) df_font_space();
             if( !do_now ) do_now = ( from_numeric != to_numeric );
         }
@@ -2575,9 +2578,9 @@ static void fb_font_switch( void )
 
             /* The line height is a numeric. */
 
-            font_number = current_state.font_number;
+            font = current_state.font;
             from_numeric = (uintptr_t) df_line_height();
-            font_number = desired_state.font_number;
+            font = desired_state.font;
             to_numeric = (uintptr_t) df_line_height();
             if( !do_now ) do_now = ( from_numeric != to_numeric );
         }
@@ -2586,17 +2589,17 @@ static void fb_font_switch( void )
 
             /* The line space is a numeric. */
 
-            font_number = current_state.font_number;
+            font = current_state.font;
             from_numeric = (uintptr_t) df_line_space();
-            font_number = desired_state.font_number;
+            font = desired_state.font;
             to_numeric = (uintptr_t) df_line_space();
             if( !do_now ) do_now = ( from_numeric != to_numeric );
         }
     }
 
-    /* Restore the value of font_number. */
+    /* Restore the value of font. */
 
-    font_number = save_font_number;
+    font = save_font;
 
     /* Now for the font switch itself. */
 
@@ -2637,7 +2640,7 @@ static void fb_font_switch( void )
 
     /* This ensures that switches from the new font will be detected. */
 
-    current_state.font_number = desired_state.font_number;
+    current_state.font = desired_state.font;
 
     return;
 }
@@ -2775,12 +2778,12 @@ static void fb_first_text_chars( text_chars * in_chars, \
     bool    font_switch_needed  = true;
     bool    undo_shift          = false;        
 
-    /* Set font_number and initialize the locals. */
+    /* Set font and initialize the locals. */
 
-    font_number = desired_state.font_number;
-    active_font = desired_state.font_number;
+    font = desired_state.font;
+    active_font = desired_state.font;
 
-    if( current_state.font_number == desired_state.font_number ) \
+    if( current_state.font == desired_state.font ) \
                                                     font_switch_needed = false;
 
     /* Do the font switch, if needed. If a font switch is not needed,
@@ -2796,8 +2799,8 @@ static void fb_first_text_chars( text_chars * in_chars, \
         }
         fb_font_switch();
     } else {
-        if( wgml_fonts[font_number].font_style != NULL ) {
-            if( wgml_fonts[font_number].font_style->startvalue != NULL ) {
+        if( wgml_fonts[font].font_style != NULL ) {
+            if( wgml_fonts[font].font_style->startvalue != NULL ) {
                 if( text_out_open ) {
                     if( ps_device ) {
                         ob_insert_ps_text_end( htab_done, active_font );
@@ -2805,7 +2808,7 @@ static void fb_first_text_chars( text_chars * in_chars, \
                     post_text_output();
                 }
                 df_interpret_driver_functions( \
-                        wgml_fonts[font_number].font_style->startvalue->text );
+                        wgml_fonts[font].font_style->startvalue->text );
             }
         }
     }
@@ -2878,8 +2881,7 @@ static void fb_first_text_chars( text_chars * in_chars, \
             ob_insert_ps_text_start();
             text_out_open = true;
         }
-        ob_insert_block( in_chars->text, in_chars->count, true, true, \
-                                                        in_chars->font_number);
+        ob_insert_block( in_chars->text, in_chars->count, true, true, in_chars->font);
 
         if( undo_shift && text_out_open && ps_device ) {
             ob_insert_ps_text_end( htab_done, active_font );
@@ -2951,8 +2953,8 @@ static void fb_new_font_text_chars( text_chars * in_chars, \
 
     /* Set the appropriate globals. */
 
-    font_number = desired_state.font_number;
-    active_font = desired_state.font_number;
+    font = desired_state.font;
+    active_font = desired_state.font;
 
     /* Do the font switch, which is needed by definition. */
 
@@ -3020,8 +3022,7 @@ static void fb_new_font_text_chars( text_chars * in_chars, \
             ob_insert_ps_text_start();
             text_out_open = true;
         }
-        ob_insert_block( in_chars->text, in_chars->count, true, true, \
-                                                        in_chars->font_number);
+        ob_insert_block( in_chars->text, in_chars->count, true, true, in_chars->font);
 
         if( undo_shift && text_out_open && ps_device ) {
             ob_insert_ps_text_end( htab_done, active_font );
@@ -3110,7 +3111,7 @@ static void fb_overprint_vertical_positioning( void )
 
         /* This code: 
          *  if( current_block->advance == 1 ) {
-         *      desired_state.y_address += wgml_fonts[font_number].line_height;
+         *      desired_state.y_address += wgml_fonts[font].line_height;
          *      current_state.y_address = desired_state.y_address;
          *      y_address = current_state.y_address;
          *  }
@@ -3373,8 +3374,7 @@ static void fb_subsequent_text_chars( text_chars * in_chars, \
             ob_insert_ps_text_start();
             text_out_open = true;
         }
-        ob_insert_block( in_chars->text, in_chars->count, true, true, \
-                                                        in_chars->font_number);
+        ob_insert_block( in_chars->text, in_chars->count, true, true, in_chars->font);
         if( undo_shift && text_out_open && ps_device ) {
             ob_insert_ps_text_end( htab_done, active_font );
             htab_done = false;
@@ -3451,7 +3451,7 @@ void df_start_page( void )
  *      current_function_table is set to device_function_table.
 */
 
-void df_interpret_device_functions( uint8_t * in_function )
+void df_interpret_device_functions( char *in_function )
 {
     /* Select the table and invoke the interpreter. */
 
@@ -3471,7 +3471,7 @@ void df_interpret_device_functions( uint8_t * in_function )
  *      current_function_table is set to driver_function_table.
 */
 
-void df_interpret_driver_functions( uint8_t * in_function )
+void df_interpret_driver_functions( char *in_function )
 {
     /* Select the table and invoke the interpreter. */
 
@@ -3547,24 +3547,26 @@ void df_setup( void )
 
     /* Set has_htab to true if the device defined the :HTAB block. */
 
-    if( bin_driver->htab.text != NULL) has_htab = true;
+    if( bin_driver->htab.text != NULL)
+        has_htab = true;
 
     /* Initialize space_chars to hold 80 space characters. */     
 
-    space_chars.text = (uint8_t *) mem_alloc( 80 );
+    space_chars.text = mem_alloc( 80 );
     space_chars.length = 80;
     space_chars.current = 0;
-    for( i = 0; i < space_chars.length; i++ ) space_chars.text[i] = ' ';
+    for( i = 0; i < space_chars.length; i++ )
+        space_chars.text[i] = ' ';
 
     /* Initialize uscore_chars to hold 80 :UNDERSCORE characters. */     
 
     uscore_char = bin_device->underscore.underscore_char;
-    uscore_chars.text = (uint8_t *) mem_alloc( 80 );
+    uscore_chars.text = mem_alloc( 80 );
     uscore_chars.length = 80;
     uscore_chars.current = 0;
-    for( i = 0; i < uscore_chars.length; i++ ) \
-                                            uscore_chars.text[i] = uscore_char;
-
+    for( i = 0; i < uscore_chars.length; i++ ) {
+        uscore_chars.text[i] = uscore_char;
+    }
     return;
 }
 
@@ -3698,20 +3700,20 @@ void fb_empty_text_line( text_line * out_line )
  * eventually be refactored if needed in other functions.
  *
  * Note:
- *      active_font and font_number are set to "0" to ensure that all function
+ *      active_font and font are set to "0" to ensure that all function
  *      blocks will be done in the context of the default font. They are
  *      restored to their initial value on exit.
  */
 
 void fb_enterfont( void )
 {
-    uint32_t    old_active_font;
-    uint32_t    old_font_number;
+    font_number     old_active_font;
+    font_number     old_font;
 
     old_active_font = active_font;
-    old_font_number = font_number;
+    old_font = font;
     active_font = 0;
-    font_number = 0;
+    font = 0;
 
     if( wgml_fonts[0].font_pause != NULL ) \
         df_interpret_device_functions( wgml_fonts[0].font_pause->text );
@@ -3734,7 +3736,7 @@ void fb_enterfont( void )
         }
     }
     active_font = old_active_font;
-    font_number = old_font_number;
+    font = old_font;
 
     return;
 }
@@ -3768,7 +3770,7 @@ void fb_first_text_line_pass( text_line * out_line )
     current = out_line->first;
     desired_state.x_address = current->x_address;
     desired_state.y_address = out_line->y_address;
-    desired_state.font_number = current->font_number;
+    desired_state.font = current->font;
     desired_state.type = current->type;
     line_pass_number = 0;
 
@@ -3778,16 +3780,17 @@ void fb_first_text_line_pass( text_line * out_line )
 
     /* Update the font number. */
 
-    font_number = desired_state.font_number;
-    active_font = desired_state.font_number;
+    font = desired_state.font;
+    active_font = desired_state.font;
 
     /* The First Line Pass Sequence. */ 
 
     /* The "first text_chars instance" sequence. */
 
-    if( wgml_fonts[font_number].font_style != NULL ) {
-        if( wgml_fonts[font_number].font_style->lineprocs != NULL ) \       
-            cur_lineproc = &wgml_fonts[font_number].font_style->lineprocs[0];
+    if( wgml_fonts[font].font_style != NULL ) {
+        if( wgml_fonts[font].font_style->lineprocs != NULL ) {
+            cur_lineproc = &wgml_fonts[font].font_style->lineprocs[0];
+        }
     }
     x_address = desired_state.x_address;
     fb_first_text_chars( current, cur_lineproc );
@@ -3798,17 +3801,15 @@ void fb_first_text_line_pass( text_line * out_line )
     while( current != NULL ) {
         desired_state.x_address = current->x_address;
         desired_state.type = current->type;
-        if( current_state.font_number != current->font_number ) {
-            if( wgml_fonts[current->font_number].font_style != NULL ) {
-                if( wgml_fonts[current->font_number].font_style->lineprocs \
-                                                                == NULL ) {       
+        if( current_state.font != current->font ) {
+            if( wgml_fonts[current->font].font_style != NULL ) {
+                if( wgml_fonts[current->font].font_style->lineprocs == NULL ) {       
                     cur_lineproc = NULL;
                 } else {
-                    cur_lineproc = \
-                    &wgml_fonts[current->font_number].font_style->lineprocs[0];
+                    cur_lineproc = &wgml_fonts[current->font].font_style->lineprocs[0];
                 }
             }
-            desired_state.font_number = current->font_number;
+            desired_state.font = current->font;
             fb_new_font_text_chars( current, cur_lineproc );
         } else {
             fb_subsequent_text_chars( current, cur_lineproc );
@@ -3862,8 +3863,8 @@ void fb_init( init_block * in_block )
 {
     int i;
     int j;
-    uint32_t         old_active_font;
-    uint32_t         old_font_number;
+    font_number     old_active_font;
+    font_number     old_font;
 
     /* An empty init_block is not an error. */
 
@@ -3872,25 +3873,27 @@ void fb_init( init_block * in_block )
     /* These should be zero, but save them just to be sure. */
 
     old_active_font = active_font;
-    old_font_number = font_number;
+    old_font = font;
 
     /* :VALUE blocks are done once, :FONTVALUE blocks are done once for
      * each available font.
      */
 
     for( i = 0; i < in_block->count; i++ ) {
-        if( in_block->codeblock[i].is_fontvalue == false ) \
+        if( in_block->codeblock[i].is_fontvalue == false ) {
             df_interpret_driver_functions( in_block->codeblock[i].text );
-        else for( j = 0; j < wgml_font_cnt; j++ ) {
-            font_number = j;
-            df_interpret_driver_functions( in_block->codeblock[i].text );
+        } else {
+            for( j = 0; j < wgml_font_cnt; j++ ) {
+                font = j;
+                df_interpret_driver_functions( in_block->codeblock[i].text );
+            }
         }
     }
 
     /* Restore the original values, which should be zero. */
 
     active_font = old_active_font;
-    font_number = old_font_number;
+    font = old_font;
 
     return;
 }
@@ -3928,6 +3931,7 @@ void fb_line_block( line_block * in_line_block, uint32_t h_start, \
                     uint32_t v_start, uint32_t h_len, uint32_t v_len, \
                     char * name )
 {
+    name = name;
 
     /* Set up for fb_absoluteaddress(). */
 
@@ -3979,11 +3983,11 @@ void fb_lineproc_endvalue( void )
             }
             post_text_output();
         }
-        if( wgml_fonts[font_number].font_style->lineprocs != NULL ) {       
-            if( wgml_fonts[font_number].font_style->\
+        if( wgml_fonts[font].font_style->lineprocs != NULL ) {       
+            if( wgml_fonts[font].font_style->\
                                 lineprocs[line_pass_number].endvalue != NULL ) {
                 df_interpret_driver_functions( \
-                    wgml_fonts[font_number].font_style->lineprocs[line_pass_number].\
+                    wgml_fonts[font].font_style->lineprocs[line_pass_number].\
                                                             endvalue->text );
             }
         }
@@ -4010,7 +4014,7 @@ void fb_lineproc_endvalue( void )
  
 void fb_new_section( uint32_t v_start )
 {
-    uint32_t    save_font;
+    font_number     save_font;
 
     /* Interpret a :LINEPROC :ENDVALUE block if appropriate. */
 
@@ -4139,7 +4143,7 @@ void fb_subsequent_text_line_pass( text_line * out_line, uint16_t line_pass )
 
     current = out_line->first;
     while( current != NULL ) {
-        cur_fontstyle = wgml_fonts[current->font_number].font_style;
+        cur_fontstyle = wgml_fonts[current->font].font_style;
         if( cur_fontstyle != NULL ) {
             if( line_pass < cur_fontstyle->line_passes ) {
                 if( &cur_fontstyle->lineprocs[line_pass] != NULL) {
@@ -4159,7 +4163,7 @@ void fb_subsequent_text_line_pass( text_line * out_line, uint16_t line_pass )
     }
 
     desired_state.x_address = current->x_address;
-    desired_state.font_number = current->font_number;
+    desired_state.font = current->font;
     desired_state.type = current->type;
 
     /* Perform the Overprint Vertical Positioning. */
@@ -4168,8 +4172,8 @@ void fb_subsequent_text_line_pass( text_line * out_line, uint16_t line_pass )
 
     /* Update the font number. */
 
-    font_number = desired_state.font_number;
-    active_font = desired_state.font_number;
+    font = desired_state.font;
+    active_font = desired_state.font;
 
     /* The Subsequent Line Pass Sequence. */ 
 
@@ -4184,7 +4188,7 @@ void fb_subsequent_text_line_pass( text_line * out_line, uint16_t line_pass )
         while( current != NULL ) {
             tc_skipped = false;
             while( current != NULL ) {
-                cur_fontstyle = wgml_fonts[current->font_number].font_style;
+                cur_fontstyle = wgml_fonts[current->font].font_style;
                 if( cur_fontstyle != NULL ) {
                     if( line_pass < cur_fontstyle->line_passes ) {
                         if( &cur_fontstyle->lineprocs[line_pass] != NULL) {
@@ -4204,8 +4208,8 @@ void fb_subsequent_text_line_pass( text_line * out_line, uint16_t line_pass )
             desired_state.x_address = current->x_address;
             desired_state.type = current->type;
             if( cur_lineproc != NULL) {
-                if( current_state.font_number != current->font_number ) {
-                    desired_state.font_number = current->font_number;
+                if( current_state.font != current->font ) {
+                    desired_state.font = current->font;
                     fb_new_font_text_chars( current, cur_lineproc );
                 } else {
                     if( tc_skipped == true ) {

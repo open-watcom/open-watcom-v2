@@ -34,6 +34,7 @@
 #include "cfcheck.h"
 #include "common.h"
 #include "research.h"
+#include "clibext.h"
 
 /*  Function main().
  *  Given a valid directory path, check all files in that directory
@@ -47,7 +48,7 @@
  *      EXIT_FAILURE or EXIT_SUCCESS, as appropriate.
  */
 
-int main()
+int main( void )
 {
     /* Declare automatic variables. */
 

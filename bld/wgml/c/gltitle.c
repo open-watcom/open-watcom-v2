@@ -54,6 +54,7 @@ void    lay_title( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 
@@ -87,7 +88,7 @@ void    lay_title( const gmltag * entry )
                                          &layout_work.title.page_position );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.title.font );
+                    cvterr = i_font_number( p, curr, &layout_work.title.font );
                     if( layout_work.title.font >= wgml_font_cnt ) {
                         layout_work.title.font = 0;
                     }

@@ -42,7 +42,10 @@
 #include "gtype.h"
 #include "gtypelay.h"
 
+#ifdef __WATCOMC__
 #pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
+#endif
+
 global struct tm        doc_tm;         // document time/date
 
 global  jmp_buf     *   environment;    // var for GSuicide()
@@ -75,13 +78,13 @@ global  char        *   out_file;       // output file name
 global  char        *   out_file_attr;  // output file attributes (T:2222)
 global  unsigned        inc_level;   // include nesting level 1 = MasterFname
 global  unsigned        max_inc_level;  // maximum include level depth
-global  ulong           line_from;      // starting lineno to process
-global  ulong           line_to;        // ending lineno to process
+global  lineno_t        line_from;      // starting lineno to process
+global  lineno_t        line_to;        // ending lineno to process
 #define LINEFROM_DEFAULT    1
 #define LINETO_DEFAULT      (0x1000000) // 16 MiB lines should be enough
 
 global  char            gotarget[MAC_NAME_LENGTH +1];   // .go to target name
-global  int32_t         gotargetno;     // .go to line no
+global  uint32_t        gotargetno;     // .go to line no
 
 global  int             err_count;      // Overall Errorcount
 global  int             wng_count;      // Overall warning count
@@ -104,7 +107,7 @@ global  int             pass;           // current document pass no
 
 global  uint32_t        apage;          // current absolute pageno &$apage
 global  uint32_t        page;           // current document pageno &$page
-global  int32_t         line;           // current output lineno   &$line
+global  lineno_t        line;           // current output lineno   &$line
 global  int32_t         lcmax;          // remaining lines on page initial
 global  int32_t         lc;             // remaining lines on page &$lc
 
@@ -218,8 +221,10 @@ global struct ProcFlags {
     ju_enum         justify         : 8;// .ju on half off ...
 
 } ProcFlags;                            // processing flags
-#pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
 
+#ifdef __WATCOMC__
+#pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
+#endif
 
 global  size_t          buf_size;       // default buffer size
 global  char        *   token_buf;
@@ -282,7 +287,7 @@ global  uint32_t    g_net_page_width;
 global  int32_t     g_resh;             // horiz base units
 global  int32_t     g_resv;             // vert base units
 
-global  uint8_t     g_curr_font_num;    // the font to use for current line
+global  font_number g_curr_font;        // the font to use for current line
 global  uint32_t    g_cl;               // column length
 global  uint32_t    g_ll;               // line length
 global  uint32_t    g_cd;               // no of columns
@@ -304,7 +309,7 @@ global  uint32_t    ju_x_start;         // .. formatting
 global  uint32_t    g_indent;           // .in 1. value (left) default 0
 global  int32_t     g_indentr;          // .in 2. value (right) default 0
 
-global  int32_t     g_cur_threshold;    // current widow threshold value
+global  uint32_t    g_cur_threshold;    // current widow threshold value
                                         // from layout (widow or heading)
 
 global  tag_cb  *   nest_cb;            // infos about nested tags

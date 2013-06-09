@@ -224,7 +224,7 @@ void    gml_graphic( const gmltag * entry )
         g_skip = 0;
         g_post_skip = 0;
     }
-    set_skip_vars( NULL, NULL, NULL, 1, g_curr_font_num );
+    set_skip_vars( NULL, NULL, NULL, 1, g_curr_font );
     cur_el->blank_lines = g_blank_lines;
     g_blank_lines = 0;
     cur_el->subs_skip = g_subs_skip;

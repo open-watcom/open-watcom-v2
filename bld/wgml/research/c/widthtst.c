@@ -116,14 +116,15 @@ static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, \
  *      the sum of the widths of the count characters starting with *text.
  */
  
-uint32_t cop_text_width( uint8_t * text, uint32_t count, uint8_t font )
+uint32_t cop_text_width( char *text, uint32_t count, font_number font )
 {
     int             i;
     uint32_t        units;
     uint32_t    *   table;
     uint32_t        width;
 
-    if( font > wgml_font_cnt ) font = 0;
+    if( font > wgml_font_cnt )
+        font = 0;
 
     /* Compute the number of units. This will be either horizontal base units
      * or scale basis units, depending on whether the font is scaled.
@@ -135,7 +136,7 @@ uint32_t cop_text_width( uint8_t * text, uint32_t count, uint8_t font )
         table = wgml_fonts[font].bin_font->width->table;
         units = 0;
         for( i = 0; i < count; i++ ) {
-            units += table[text[i]];
+            units += table[(uint8_t)text[i]];
         }
     }
 

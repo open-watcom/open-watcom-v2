@@ -63,7 +63,7 @@
  *      mem_alloc() will call exit() if the allocation fails.
  */
 
-code_block * get_code_blocks( uint8_t * * current, uint16_t count, uint8_t * base )
+code_block *get_code_blocks( char **current, uint16_t count, char *base )
 {
     code_block *    out_block   = NULL;
     size_t          difference;
@@ -72,7 +72,7 @@ code_block * get_code_blocks( uint8_t * * current, uint16_t count, uint8_t * bas
 
     /* Allocate out_block. */ 
              
-    out_block = (code_block * ) mem_alloc( sizeof( code_block ) * count ); 
+    out_block = mem_alloc( sizeof( code_block ) * count ); 
 
     /* Initialize each code_block. */
 
@@ -150,9 +150,9 @@ code_block * get_code_blocks( uint8_t * * current, uint16_t count, uint8_t * bas
 
 p_buffer * get_p_buffer( FILE * in_file )
 {
-    uint8_t *   current     = NULL;
+    char        *current     = NULL;
     uint8_t     i;
-    p_buffer *  out_buffer  = NULL;
+    p_buffer    *out_buffer  = NULL;
     uint8_t     p_count;
     char        test_char;
 
@@ -171,19 +171,21 @@ p_buffer * get_p_buffer( FILE * in_file )
 
     /* There should always be at least one P-buffer. */
 
-    if( p_count == 0 ) return( out_buffer );
+    if( p_count == 0 )
+        return( out_buffer );
 
     /* Rewind the file by 81 bytes per P-buffer plus 1. */
 
     fseek( in_file, -1 * ((81 * p_count) + 1), SEEK_CUR );
-    if( ferror( in_file ) || feof( in_file ) ) return( out_buffer );
+    if( ferror( in_file ) || feof( in_file ) )
+        return( out_buffer );
 
     /* Allocate the out_buffer. */ 
 
-    out_buffer = (p_buffer *) mem_alloc( sizeof( p_buffer ) + 80 * p_count);
+    out_buffer = mem_alloc( sizeof( p_buffer ) + 80 * p_count );
 
     out_buffer->count = 80 * p_count;
-    out_buffer->buffer = (uint8_t *) out_buffer + sizeof( p_buffer );
+    out_buffer->buffer = (char *)out_buffer + sizeof( p_buffer );
     current = out_buffer->buffer;
 
     /* Now get the data into the out_buffer. */
@@ -241,7 +243,7 @@ p_buffer * get_p_buffer( FILE * in_file )
  *          but its code_blocks field will be NULL.
  */
 
-functions_block * parse_functions_block( uint8_t * * current, uint8_t * base )
+functions_block * parse_functions_block( char **current, char *base )
 {
     uint16_t            code_count;
     functions_block *   out_block   = NULL;
@@ -253,7 +255,7 @@ functions_block * parse_functions_block( uint8_t * * current, uint8_t * base )
 
     /* Allocate the out_block. */
 
-    out_block = (functions_block *) mem_alloc( sizeof( functions_block ) );
+    out_block = mem_alloc( sizeof( functions_block ) );
     out_block->count = code_count;
 
     /* Now extract the CodeBlocks, if any. */
@@ -261,8 +263,7 @@ functions_block * parse_functions_block( uint8_t * * current, uint8_t * base )
     if( out_block->count == 0 ) {
         out_block->code_blocks = NULL;
     } else {
-        out_block->code_blocks = get_code_blocks( current, out_block->count, \
-            base );
+        out_block->code_blocks = get_code_blocks( current, out_block->count, base );
     }
 
     return( out_block );

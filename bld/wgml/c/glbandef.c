@@ -60,11 +60,11 @@ void    banner_defaults( void )
     ban->next = NULL;
     ban->region = NULL;
 
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(ban->left_adjust) );
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(ban->right_adjust) );
-    p = &n3;
+    p = n3;
     to_internal_SU( &p, &(ban->depth) );
     ban->place = bottom_place;
     ban->docsect = head0_ban;
@@ -73,15 +73,15 @@ void    banner_defaults( void )
     reg = mem_alloc( sizeof( region_lay_tag ) );
     ban->region = reg;
     reg->next = NULL;
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(reg->indent) );
-    p = &leftc;
+    p = leftc;
     to_internal_SU( &p, &(reg->hoffset) );
-    p = &extendc;
+    p = extendc;
     to_internal_SU( &p, &(reg->width) );
-    p = &n2;
+    p = n2;
     to_internal_SU( &p, &(reg->voffset) );
-    p = &n1;
+    p = n1;
     to_internal_SU( &p, &(reg->depth) );
     reg->font = 0;
     reg->refnum = 1;
@@ -130,7 +130,7 @@ void    banner_defaults( void )
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
     wk->next = ban;
 
-    p = &n4;
+    p = n4;
     to_internal_SU( &p, &(ban->depth) );
     ban->docsect = abstract_ban;
 
@@ -140,7 +140,7 @@ void    banner_defaults( void )
     reg = regwk;
     ban->region = reg;
     reg->next = NULL;
-    p = &n3;
+    p = n3;
     to_internal_SU( &p, &(reg->voffset) );
     reg->region_position = pos_center;
     reg->script_format = false;
@@ -176,7 +176,7 @@ void    banner_defaults( void )
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
     wk->next = ban;
 
-    p = &n3;
+    p = n3;
     to_internal_SU( &p, &(ban->depth) );
     ban->place = top_place;
     ban->docsect = toc_ban;
@@ -187,7 +187,7 @@ void    banner_defaults( void )
     reg = regwk;
     ban->region = reg;
     reg->next = NULL;
-    p = &n1;
+    p = n1;
     to_internal_SU( &p, &(reg->voffset) );
     reg->font = 3;
     reg->contents.content_type = string_content;
@@ -253,7 +253,7 @@ void    banner_defaults( void )
     reg = regwk;
     ban->region = reg;
     reg->next = NULL;
-    p = &z0;
+    p = z0;
     to_internal_SU( &p, &(reg->voffset) );
     reg->region_position = pos_left;
     reg->font = 0;

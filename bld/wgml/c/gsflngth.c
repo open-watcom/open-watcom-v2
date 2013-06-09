@@ -51,12 +51,13 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_length( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_length( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result, int32_t ressize )
 {
     char            *   pval;
     char            *   pend;
     int                 len;
 
+    ressize = ressize;
     if( parmcount != 1 ) {
         return( neg );
     }

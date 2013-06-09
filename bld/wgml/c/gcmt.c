@@ -45,6 +45,7 @@
 
 extern  void    gml_cmt( const gmltag * entry )
 {
+    entry = entry;
     scan_start = scan_stop + 1;
     return;
 }

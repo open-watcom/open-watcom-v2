@@ -45,19 +45,17 @@ static void prep_author_line( text_line * p_line, char * p )
     h_left = g_page_left + conv_hor_unit( &layout_work.author.left_adjust );
     h_right = g_page_right - conv_hor_unit( &layout_work.author.right_adjust );
  
-    curr_t = alloc_text_chars( p, strlen( p ), g_curr_font_num );
+    curr_t = alloc_text_chars( p, strlen( p ), g_curr_font );
     curr_t->count = len_to_trail_space( curr_t->text, curr_t->count );
  
-    intrans( curr_t->text, &curr_t->count, g_curr_font_num );
-    curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                    g_curr_font_num );
+    intrans( curr_t->text, &curr_t->count, g_curr_font );
+    curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     while( curr_t->width > (h_right - h_left) ) {   // too long for line
         if( curr_t->count < 2) {        // sanity check
             break;
         }
         curr_t->count -= 1;             // truncate text
-        curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                        g_curr_font_num );
+        curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     }
     p_line->first = curr_t;
     curr_x = h_left;
@@ -84,7 +82,7 @@ void    gml_author( const gmltag * entry )
     doc_element *   cur_el;
     text_line   *   p_line;
     int8_t          a_spacing;
-    int8_t          font_save;
+    font_number     font_save;
     int32_t         rc;
     symsub      *   authorval;
  
@@ -111,8 +109,8 @@ void    gml_author( const gmltag * entry )
  
     start_doc_sect();                   // if not already done
 
-    font_save = g_curr_font_num;
-    g_curr_font_num = layout_work.author.font;
+    font_save = g_curr_font;
+    g_curr_font = layout_work.author.font;
     a_spacing = layout_work.titlep.spacing;
 
     /************************************************************/
@@ -122,15 +120,13 @@ void    gml_author( const gmltag * entry )
     /************************************************************/
 
     if( !ProcFlags.author_tag_seen ) {
-        set_skip_vars( NULL, &layout_work.author.pre_skip, NULL, a_spacing, 
-                        g_curr_font_num );
+        set_skip_vars( NULL, &layout_work.author.pre_skip, NULL, a_spacing, g_curr_font );
     } else {
-        set_skip_vars( NULL, &layout_work.author.skip, NULL, a_spacing, 
-                        g_curr_font_num );
+        set_skip_vars( NULL, &layout_work.author.skip, NULL, a_spacing, g_curr_font );
     }
 
     p_line = alloc_text_line();
-    p_line->line_height = wgml_fonts[g_curr_font_num].line_height;
+    p_line->line_height = wgml_fonts[g_curr_font].line_height;
     if( *p ) {
         prep_author_line( p_line, p );
     }
@@ -149,7 +145,7 @@ void    gml_author( const gmltag * entry )
     p_line = NULL;
     insert_col_main( cur_el );
 
-    g_curr_font_num = font_save;
+    g_curr_font = font_save;
     ProcFlags.author_tag_seen = true;
     scan_start = scan_stop + 1;
 }

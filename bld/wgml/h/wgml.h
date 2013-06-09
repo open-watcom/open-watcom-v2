@@ -40,15 +40,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdbool.h>
 #include <ctype.h>
 #include <limits.h>
 #include <process.h>
+#include "bool.h"
+#include "clibext.h"
 
-
+#include "copfiles.h"       // mostly for access to bin_device & wgml_fonts
 #include "gtype.h"
 #include "gtypelay.h"
-#include "copfiles.h"       // mostly for access to bin_device & wgml_fonts
 
 
 #ifdef  __cplusplus
@@ -59,10 +59,10 @@ extern "C" {    /* Use "C" linkage when in C++ mode */
 //================= Function Prototypes ========================
 
 /* copfiles.c                           */
-extern uint8_t      cop_in_trans( uint8_t in_char, uint8_t font );
+extern uint8_t      cop_in_trans( uint8_t in_char, font_number font );
 extern void         cop_setup( void );
 extern void         cop_teardown( void );
-extern uint32_t     cop_text_width( uint8_t * text, uint32_t count, uint8_t font );
+extern uint32_t     cop_text_width( char *text, uint32_t count, font_number font );
 extern void         cop_ti_table( char * p );
 extern void         fb_dbox( uint32_t h_start, uint32_t v_start, uint32_t h_len, uint32_t v_len );
 extern void         fb_document( void );
@@ -122,7 +122,7 @@ extern  void            insert_col_top( doc_element * a_element );
 extern  void            insert_page_width( doc_element * a_element );
 extern  void            last_page_out( void );
 extern  void            reset_t_page( void );
-extern  void            set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip, uint32_t spacing, uint8_t font );
+extern  void            set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip, uint32_t spacing, font_number font );
 extern  void            text_page_out( void );
 
 
@@ -237,10 +237,10 @@ extern  void    split_input( char * buf, char * split_pos, bool startofline );
 
 /* gproctxt.c                           */
 extern  void            do_justify( uint32_t left_m, uint32_t right_m, text_line * line );
-extern  void            intrans( char * data, uint16_t * len, uint8_t font );
+extern  void            intrans( char * data, uint16_t * len, font_number font );
 extern  void            process_line_full( text_line * a_line, bool justify );
-extern  void            process_text( char * text, uint8_t font_num );
-extern  text_chars  *   process_word( char * text, size_t count, uint8_t font_num );
+extern  void            process_text( char * text, font_number font );
+extern  text_chars  *   process_word( char * text, size_t count, font_number font );
 extern  void            set_h_start( void );
 
 
@@ -367,19 +367,19 @@ extern  gtentry *   find_tag( gtentry * * dict, char const * name );
 extern  char    *   get_att_value( char * p );
 
 /* gtxtpool.c                           */
-extern  void                add_text_chars_to_pool( text_line * a_line );
-extern  text_chars      *   alloc_text_chars( char * p, size_t cnt, uint8_t font_num );
-extern  void                add_text_line_to_pool( text_line * a_line );
-extern  text_line       *   alloc_text_line( void );
-extern  void                add_ban_col_to_pool( ban_column * a_column );
-extern  ban_column      *   alloc_ban_col( void );
-extern  void                add_doc_col_to_pool( doc_column * a_column );
-extern  doc_column      *   alloc_doc_col( void );
-extern  void                add_doc_el_to_pool( doc_element * a_element );
-extern  doc_element     *   alloc_doc_el( element_type type );
-extern  void                add_tag_cb_to_pool( tag_cb * cb );
-extern  tag_cb          *   alloc_tag_cb( void );
-extern  void                free_pool_storage( void );
+extern  void            add_text_chars_to_pool( text_line * a_line );
+extern  text_chars      *alloc_text_chars( char *p, size_t cnt, font_number font );
+extern  void            add_text_line_to_pool( text_line * a_line );
+extern  text_line       *alloc_text_line( void );
+extern  void            add_ban_col_to_pool( ban_column * a_column );
+extern  ban_column      *alloc_ban_col( void );
+extern  void            add_doc_col_to_pool( doc_column * a_column );
+extern  doc_column      *alloc_doc_col( void );
+extern  void            add_doc_el_to_pool( doc_element * a_element );
+extern  doc_element     *alloc_doc_el( element_type type );
+extern  void            add_tag_cb_to_pool( tag_cb * cb );
+extern  tag_cb          *alloc_tag_cb( void );
+extern  void            free_pool_storage( void );
 
 
 /* gtitlepo.c                           */
@@ -399,7 +399,7 @@ extern  char    *   int_to_roman( uint32_t n, char * r, size_t rsize );
 extern  int32_t     len_to_trail_space( char p[] , int32_t len );
 extern  bool        to_internal_SU( char * * scaninput, su * spaceunit );
 extern  bool        att_val_to_SU( su * spaceunit, bool pos );
-extern  void        start_line_with_string( char * text, uint8_t font_num );
+extern  void        start_line_with_string( char * text, font_number font );
 
 
 /* gxmp.c                               */
@@ -429,7 +429,9 @@ extern  void    g_banner( void );
 extern  bool    get_line( bool researchoutput );
 extern  void    inc_inc_level( void );
 
+#ifdef __WATCOMC__
 #pragma aux     my_exit aborts;
+#endif
 extern  void    my_exit( int );
 extern  void    show_include_stack( void );
 

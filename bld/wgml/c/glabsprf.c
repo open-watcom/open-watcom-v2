@@ -175,8 +175,9 @@ void    lay_abspref( const gmltag * entry )
                     cvterr = i_space_unit( p, curr, &(ap->pre_top_skip) );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &(ap->font) );
-                    if( ap->font >= wgml_font_cnt ) ap->font = 0;
+                    cvterr = i_font_number( p, curr, &(ap->font) );
+                    if( ap->font >= wgml_font_cnt )
+                        ap->font = 0;
                     break;
                 case   e_spacing:
                     cvterr = i_int8( p, curr, &(ap->spacing) );
@@ -186,12 +187,12 @@ void    lay_abspref( const gmltag * entry )
                     break;
                 case   e_abstract_string:
                     if( x_tag == el_abstract ) {
-                        cvterr = i_xx_string( p, curr, &(ap->string) );
+                        cvterr = i_xx_string( p, curr, ap->string );
                     }
                     break;
                 case   e_preface_string:
                     if( x_tag == el_preface ) {
-                        cvterr = i_xx_string( p, curr, &(ap->string) );
+                        cvterr = i_xx_string( p, curr, ap->string );
                     }
                     break;
                 case   e_page_eject:

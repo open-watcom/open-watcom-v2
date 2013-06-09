@@ -33,7 +33,7 @@
 
 static  bool            first_aline;    // special for first :ALINE
 static  int8_t          a_spacing;      // spacing between adr lines
-static  int8_t          font_save;      // save for font
+static  font_number     font_save;      // save for font
 
 
 /***************************************************************************/
@@ -52,8 +52,8 @@ extern  void    gml_address( const gmltag * entry )
     }
     ProcFlags.address_active = true;
     first_aline = true;
-    font_save = g_curr_font_num;
-    g_curr_font_num = layout_work.address.font;
+    font_save = g_curr_font;
+    g_curr_font = layout_work.address.font;
     rs_loc = address_tag;
 
     init_nest_cb();
@@ -68,8 +68,7 @@ extern  void    gml_address( const gmltag * entry )
     /*  this is not what the docs say                           */
     /************************************************************/
 
-    set_skip_vars( NULL, &layout_work.address.pre_skip, NULL, spacing,
-                       g_curr_font_num );
+    set_skip_vars( NULL, &layout_work.address.pre_skip, NULL, spacing, g_curr_font );
 
     ProcFlags.group_elements = true;
 
@@ -86,12 +85,13 @@ extern  void    gml_eaddress( const gmltag * entry )
 {
     tag_cb  *   wk;
 
+    entry = entry;
     if( !ProcFlags.address_active ) {   // no preceding :ADDRESS tag
         g_err_tag_prec( "ADDRESS" );
         scan_start = scan_stop + 1;
         return;
     }
-    g_curr_font_num = font_save;
+    g_curr_font = font_save;
     ProcFlags.address_active = false;
     rs_loc = titlep_tag;
     wk = nest_cb;
@@ -142,19 +142,17 @@ static void prep_aline( text_line * p_line, char * p )
     h_left = g_page_left + conv_hor_unit( &layout_work.address.left_adjust );
     h_right = g_page_right - conv_hor_unit( &layout_work.address.right_adjust );
 
-    curr_t = alloc_text_chars( p, strlen( p ), g_curr_font_num );
+    curr_t = alloc_text_chars( p, strlen( p ), g_curr_font );
     curr_t->count = len_to_trail_space( curr_t->text, curr_t->count );
 
-    intrans( curr_t->text, &curr_t->count, g_curr_font_num );
-    curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                    g_curr_font_num );
+    intrans( curr_t->text, &curr_t->count, g_curr_font );
+    curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     while( curr_t->width > (h_right - h_left) ) {   // too long for line
         if( curr_t->count < 2) {        // sanity check
             break;
         }
         curr_t->count -= 1;             // truncate text
-        curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                        g_curr_font_num );
+        curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     }
     p_line->first = curr_t;
     curr_t->x_address = h_left;
@@ -194,7 +192,7 @@ void    gml_aline( const gmltag * entry )
 
     start_doc_sect();               // if not already done
     a_spacing = layout_work.titlep.spacing;
-    g_curr_font_num = layout_work.address.font;
+    g_curr_font = layout_work.address.font;
     if( !first_aline ) {
 
         /************************************************************/
@@ -203,12 +201,11 @@ void    gml_aline( const gmltag * entry )
         /*  this is not what the docs say                           */
         /************************************************************/
 
-        set_skip_vars( NULL, &layout_work.aline.skip, NULL, a_spacing,
-                       g_curr_font_num );
+        set_skip_vars( NULL, &layout_work.aline.skip, NULL, a_spacing, g_curr_font );
     }
 
     ad_line = alloc_text_line();
-    ad_line->line_height = wgml_fonts[g_curr_font_num].line_height;
+    ad_line->line_height = wgml_fonts[g_curr_font].line_height;
 
     if( *p ) {
         prep_aline( ad_line, p );

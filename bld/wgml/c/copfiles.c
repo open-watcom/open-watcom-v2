@@ -99,8 +99,7 @@ static uint8_t             ti_table[0x100]; // .TI-controlled translation table
  *      the same length in horizontal_base_units.
  */
 
-static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, \
-                                                       wgml_font * in_font )
+static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, wgml_font *in_font )
 {
     uint32_t    divisor;
     uint64_t    units;
@@ -271,7 +270,7 @@ static cop_device * get_cop_device( char const * in_name )
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( (char *) in_name, "", "", ds_bin_lib ) ) {
+    if( !search_file_in_dirs( in_name, "", "", ds_bin_lib ) ) {
         return( out_device );
     }
 
@@ -344,7 +343,7 @@ static cop_driver * get_cop_driver( char const * in_name )
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( (char *) in_name, "", "", ds_bin_lib ) ) {
+    if( !search_file_in_dirs( in_name, "", "", ds_bin_lib ) ) {
         return( out_driver );
     }
 
@@ -417,7 +416,7 @@ static cop_font * get_cop_font( char const * in_name )
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( (char *) in_name, "", "", ds_bin_lib ) ) {
+    if( !search_file_in_dirs( in_name, "", "", ds_bin_lib ) ) {
         return( out_font );
     }
 
@@ -530,14 +529,14 @@ static cop_font * find_cop_font( char const * in_name )
 
 static device_font * find_dev_font( char const * in_name )
 {
-    devicefont_block    *   current = NULL;
-    device_font         *   retval  = NULL;
-    int                     i;
+    devicefont_block    *current = NULL;
+    device_font         *retval  = NULL;
+    font_number         fnt;
 
     current = &bin_device->devicefonts;
-    for( i = 0; i < current->font_count; i++ ) {
-        if( !stricmp( in_name, current->fonts[i].font_name ) ) {
-            retval = &current->fonts[i];
+    for( fnt = 0; fnt < current->font_count; fnt++ ) {
+        if( !stricmp( in_name, current->fonts[fnt].font_name ) ) {
+            retval = &current->fonts[fnt];
             break;
         }
     }
@@ -567,14 +566,14 @@ static device_font * find_dev_font( char const * in_name )
 
 static fontstyle_block * find_style( char const * in_name )
 {
-    fontstyle_group  *   current = NULL;
-    fontstyle_block  *   retval  = NULL;
-    int                 i;
+    fontstyle_group     *current = NULL;
+    fontstyle_block     *retval  = NULL;
+    font_number         fnt;
 
     current = &bin_driver->fontstyles;
-    for( i = 0; i < current->count; i++ ) {
-        if( !stricmp( in_name, current->fontstyleblocks[i].type ) ) {
-            retval = &current->fontstyleblocks[i];
+    for( fnt = 0; fnt < current->count; fnt++ ) {
+        if( !stricmp( in_name, current->fontstyleblocks[fnt].type ) ) {
+            retval = &current->fontstyleblocks[fnt];
             break;
         }
     }
@@ -665,19 +664,22 @@ static void free_opt_fonts( void )
  *      The appropriate character, which may be the same as in_char.
  */
 
-uint8_t cop_in_trans( uint8_t in_char, uint8_t font )
+uint8_t cop_in_trans( uint8_t in_char, font_number font )
 {
     intrans_block   *   block   = NULL;
     uint8_t             retval;
 
-    if( font >= wgml_font_cnt ) font = 0;
+    if( font >= wgml_font_cnt )
+        font = 0;
     retval = ti_table[in_char];
 
     block = wgml_fonts[font].bin_font->intrans;
-    if( retval == in_char ) if( block != NULL ) retval = block->table[in_char];
+    if( retval == in_char && block != NULL )
+        retval = block->table[in_char];
 
     block = bin_device->intrans;
-    if( retval == in_char ) if( block != NULL ) retval = block->table[in_char];
+    if( retval == in_char && block != NULL )
+        retval = block->table[in_char];
 
     return( retval );
 }
@@ -691,8 +693,9 @@ void cop_setup( void )
 {
     default_font    *   cur_def_fonts   = NULL;
     device_font     *   cur_dev_font    = NULL;
-    int                 font_base       = 0;
+    font_number         font_base       = 0;
     int                 gen_cnt         = 0;
+    font_number         fnt;
     int                 i;
     int                 j;
     opt_font        *   cur_opt         = NULL;
@@ -721,10 +724,10 @@ void cop_setup( void )
 
     bin_fonts = NULL;
 
-    cur_token = (record_buffer *) mem_alloc( sizeof( record_buffer ) );
+    cur_token = mem_alloc( sizeof( record_buffer ) );
     cur_token->current = 0;
     cur_token->length = 10;
-    cur_token->text = (uint8_t *) mem_alloc( cur_token->length );
+    cur_token->text = mem_alloc( cur_token->length );
 
     for( i = 0; i < 0x100; i++) {
         ti_table[i] = i;
@@ -852,10 +855,8 @@ void cop_setup( void )
             }
         } else {
             gen_cnt++;
-            if( bin_device->underscore.specified_font && \
-                                (bin_device->underscore.font_name != NULL) ) {
-                if( stricmp( bin_device->box.font_name, \
-                                        bin_device->underscore.font_name ) ) {
+            if( bin_device->underscore.specified_font && (bin_device->underscore.font_name != NULL) ) {
+                if( stricmp( bin_device->box.font_name, bin_device->underscore.font_name ) ) {
                     gen_cnt++;
                 }
             }
@@ -867,115 +868,115 @@ void cop_setup( void )
 
     /* Initialize wgml_fonts, which is an array */
 
-    wgml_fonts = (wgml_font * ) mem_alloc( wgml_font_cnt * sizeof( wgml_font ) );
-    for( i = 0; i < wgml_font_cnt; i++ ) {
-        wgml_fonts[i].bin_font = NULL;
-        wgml_fonts[i].font_switch = NULL;
-        wgml_fonts[i].font_pause = NULL;
-        wgml_fonts[i].font_style = NULL;
-        wgml_fonts[i].outtrans = NULL;
-        wgml_fonts[i].default_width = 0;
-        wgml_fonts[i].em_base = 0;
-        wgml_fonts[i].font_height = 0;
-        wgml_fonts[i].font_space = 0;
-        wgml_fonts[i].line_height = 0;
-        wgml_fonts[i].line_space = 0;
-        wgml_fonts[i].spc_width = 0;
+    wgml_fonts = mem_alloc( wgml_font_cnt * sizeof( wgml_font ) );
+    for( fnt = 0; fnt < wgml_font_cnt; fnt++ ) {
+        wgml_fonts[fnt].bin_font = NULL;
+        wgml_fonts[fnt].font_switch = NULL;
+        wgml_fonts[fnt].font_pause = NULL;
+        wgml_fonts[fnt].font_style = NULL;
+        wgml_fonts[fnt].outtrans = NULL;
+        wgml_fonts[fnt].default_width = 0;
+        wgml_fonts[fnt].em_base = 0;
+        wgml_fonts[fnt].font_height = 0;
+        wgml_fonts[fnt].font_space = 0;
+        wgml_fonts[fnt].line_height = 0;
+        wgml_fonts[fnt].line_space = 0;
+        wgml_fonts[fnt].spc_width = 0;
         for( j = 0; j < 0x100; j++ ) {
-            wgml_fonts[i].width_table[j] = 0;
+            wgml_fonts[fnt].width_table[j] = 0;
         }
-        wgml_fonts[i].font_resident = 'n';
-        wgml_fonts[i].shift_count = 0;
+        wgml_fonts[fnt].font_resident = 'n';
+        wgml_fonts[fnt].shift_count = 0;
         for( j = 0; j < 0x04; j++ ) {
-            wgml_fonts[i].shift_height[j] = '\0';
+            wgml_fonts[fnt].shift_height[j] = '\0';
         }
     }
 
     /* Process the :DEFAULTFONT Blocks. */
 
     cur_def_fonts = bin_device->defaultfonts.fonts;
-    for( i = 0; i < bin_device->defaultfonts.font_count; i++ ) {
-        if( (cur_def_fonts[i].font_name == NULL) \
-                            || (strlen( cur_def_fonts[i].font_name ) == 0) ) {
+    for( fnt = 0; fnt < bin_device->defaultfonts.font_count; i++ ) {
+        if( (cur_def_fonts[fnt].font_name == NULL) || (strlen( cur_def_fonts[fnt].font_name ) == 0) ) {
             continue; /* Do not initialize skipped font numbers. */
         } else {
-            wgml_fonts[i].bin_font = find_cop_font( cur_def_fonts[i].font_name );
+            wgml_fonts[fnt].bin_font = find_cop_font( cur_def_fonts[fnt].font_name );
         }
-        if( (cur_def_fonts[i].font_style == NULL) \
-                            || (strlen( cur_def_fonts[i].font_style ) == 0) ) {
-            wgml_fonts[i].font_style = find_style( "plain" );
+        if( (cur_def_fonts[fnt].font_style == NULL) || (strlen( cur_def_fonts[fnt].font_style ) == 0) ) {
+            wgml_fonts[fnt].font_style = find_style( "plain" );
         } else {
-            wgml_fonts[i].font_style = find_style( cur_def_fonts[i].font_style );
+            wgml_fonts[fnt].font_style = find_style( cur_def_fonts[fnt].font_style );
         }
-        wgml_fonts[i].font_height = cur_def_fonts[i].font_height;
-        wgml_fonts[i].font_space = cur_def_fonts[i].font_space;
+        wgml_fonts[fnt].font_height = cur_def_fonts[fnt].font_height;
+        wgml_fonts[fnt].font_space = cur_def_fonts[fnt].font_space;
 
-        if( cur_def_fonts[i].font_name == NULL ) {
+        if( cur_def_fonts[fnt].font_name == NULL ) {
             cur_dev_font = find_dev_font( cur_def_fonts[0].font_name );
         } else {
-            cur_dev_font = find_dev_font( cur_def_fonts[i].font_name );
+            cur_dev_font = find_dev_font( cur_def_fonts[fnt].font_name );
         }
         if( cur_dev_font->font_switch == NULL ) {
-            wgml_fonts[i].font_switch = NULL;
+            wgml_fonts[fnt].font_switch = NULL;
         } else {
-            wgml_fonts[i].font_switch = find_switch( cur_dev_font->font_switch );
+            wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
         }
-        wgml_fonts[i].font_pause = cur_dev_font->font_pause;
-        if( cur_dev_font->resident == 0x00 ) wgml_fonts[i].font_resident = 'n';
-        else wgml_fonts[i].font_resident = 'y';
-        if( wgml_fonts[i].bin_font->outtrans == NULL ) {
-            wgml_fonts[i].outtrans = bin_device->outtrans;
+        wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
+        if( cur_dev_font->resident == 0x00 )
+            wgml_fonts[fnt].font_resident = 'n';
+        else
+            wgml_fonts[fnt].font_resident = 'y';
+        if( wgml_fonts[fnt].bin_font->outtrans == NULL ) {
+            wgml_fonts[fnt].outtrans = bin_device->outtrans;
         } else {
-            wgml_fonts[i].outtrans = wgml_fonts[i].bin_font->outtrans;
+            wgml_fonts[fnt].outtrans = wgml_fonts[fnt].bin_font->outtrans;
         }
 
         /* If scale_basis is not "0", then font_height must not be "0". */
 
-        if( (wgml_fonts[i].bin_font->scale_basis != 0) && \
-                                        (wgml_fonts[i].font_height == 0)) {
+        if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && (wgml_fonts[fnt].font_height == 0)) {
             out_msg( "For default font %i, the font_height attribute\n", i );
             out_msg( "must be specified when the font is scaled.\n" );
             err_count++;
             g_suicide();
         }
 
-        compute_metrics( &wgml_fonts[i] );
+        compute_metrics( &wgml_fonts[fnt] );
     }
 
     /* Process the FONT command-line option instances. */
 
     cur_opt = opt_fonts;
     while( cur_opt != NULL ) {
-        i = cur_opt->font;
-        wgml_fonts[i].bin_font = find_cop_font( cur_opt->name );
+        fnt = cur_opt->font;
+        wgml_fonts[fnt].bin_font = find_cop_font( cur_opt->name );
         if( cur_opt->style == NULL ) {
-            wgml_fonts[i].font_style = find_style( "plain" );
+            wgml_fonts[fnt].font_style = find_style( "plain" );
         } else {
-            wgml_fonts[i].font_style = find_style( cur_opt->style );
+            wgml_fonts[fnt].font_style = find_style( cur_opt->style );
         }
-        wgml_fonts[i].font_height = cur_opt->height;
-        wgml_fonts[i].font_space = cur_opt->space;
+        wgml_fonts[fnt].font_height = cur_opt->height;
+        wgml_fonts[fnt].font_space = cur_opt->space;
         cur_dev_font = find_dev_font( cur_opt->name );
         if( cur_dev_font->font_switch == NULL ) {
-            wgml_fonts[i].font_switch = NULL;
+            wgml_fonts[fnt].font_switch = NULL;
         } else {
-            wgml_fonts[i].font_switch = find_switch( cur_dev_font->font_switch );
+            wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
         }
-        wgml_fonts[i].font_pause = cur_dev_font->font_pause;
-        if( cur_dev_font->resident == 0x00 ) wgml_fonts[i].font_resident = 'n';
-        else wgml_fonts[i].font_resident = 'y';
+        wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
+        if( cur_dev_font->resident == 0x00 )
+            wgml_fonts[fnt].font_resident = 'n';
+        else
+            wgml_fonts[fnt].font_resident = 'y';
 
         /* If scale_basis is not "0", then font_height must not be "0". */
 
-        if( (wgml_fonts[i].bin_font->scale_basis != 0) && \
-                                        (wgml_fonts[i].font_height == 0)) {
-            out_msg( "For the FONT option with font %i, the font_height\n", i );
+        if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && (wgml_fonts[fnt].font_height == 0)) {
+            out_msg( "For the FONT option with font %i, the font_height\n", fnt );
             out_msg( "attribute must be specified when the font is scaled.\n" );
             err_count++;
             g_suicide();
         }
 
-        compute_metrics( &wgml_fonts[i] );
+        compute_metrics( &wgml_fonts[fnt] );
         cur_opt = cur_opt->nxt;
     }
     free_opt_fonts();
@@ -991,135 +992,120 @@ void cop_setup( void )
         break;
     case 1:
         if( bin_device->underscore.font_name != NULL ) {
-            i = font_base;
-            bin_device->underscore.font_number = font_base;
-            wgml_fonts[i].bin_font = \
-                                find_cop_font( bin_device->underscore.font_name );
-            wgml_fonts[i].font_style = find_style( "plain" );
-            wgml_fonts[i].font_height = 0;
-            wgml_fonts[i].font_space = 0;
+            fnt = font_base;
+            bin_device->underscore.font = font_base;
+            wgml_fonts[fnt].bin_font = find_cop_font( bin_device->underscore.font_name );
+            wgml_fonts[fnt].font_style = find_style( "plain" );
+            wgml_fonts[fnt].font_height = 0;
+            wgml_fonts[fnt].font_space = 0;
             cur_dev_font = find_dev_font( bin_device->underscore.font_name );
             if( cur_dev_font->font_switch == NULL ) {
-                wgml_fonts[i].font_switch = NULL;
+                wgml_fonts[fnt].font_switch = NULL;
             } else {
-                wgml_fonts[i].font_switch = \
-                                        find_switch( cur_dev_font->font_switch );
+                wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
             }
-            wgml_fonts[i].font_pause = cur_dev_font->font_pause;
-            wgml_fonts[i].default_width = 1;
-            wgml_fonts[i].line_height = 1;
-            wgml_fonts[i].line_space = 0;
-            wgml_fonts[i].font_resident = 'n';
+            wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
+            wgml_fonts[fnt].default_width = 1;
+            wgml_fonts[fnt].line_height = 1;
+            wgml_fonts[fnt].line_space = 0;
+            wgml_fonts[fnt].font_resident = 'n';
 
             /* The font used with the :UNDERSCORE block cannot be scaled. */
 
-            if( wgml_fonts[i].bin_font->scale_basis != 0 ) {
-                out_msg( "The UNDERSCORE block cannot specify a font which "\
-                                                            "is scaled.\n" );
+            if( wgml_fonts[fnt].bin_font->scale_basis != 0 ) {
+                out_msg( "The UNDERSCORE block cannot specify a font which is scaled.\n" );
                 err_count++;
                 g_suicide();
             }
-
-            break;
-        }
-        if( bin_device->box.font_name != NULL ) {
-            i = font_base;
-            bin_device->box.font_number = font_base;
-            wgml_fonts[i].bin_font = find_cop_font( bin_device->box.font_name );
-            wgml_fonts[i].font_style = find_style( "plain" );
-            wgml_fonts[i].font_height = 0;
-            wgml_fonts[i].font_space = 0;
+        } else if( bin_device->box.font_name != NULL ) {
+            fnt = font_base;
+            bin_device->box.font = font_base;
+            wgml_fonts[fnt].bin_font = find_cop_font( bin_device->box.font_name );
+            wgml_fonts[fnt].font_style = find_style( "plain" );
+            wgml_fonts[fnt].font_height = 0;
+            wgml_fonts[fnt].font_space = 0;
             cur_dev_font = find_dev_font( bin_device->box.font_name );
             if( cur_dev_font->font_switch == NULL ) {
-                wgml_fonts[i].font_switch = NULL;
+                wgml_fonts[fnt].font_switch = NULL;
             } else {
-                wgml_fonts[i].font_switch = \
-                                        find_switch( cur_dev_font->font_switch );
+                wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
             }
-            wgml_fonts[i].font_pause = cur_dev_font->font_pause;
-            wgml_fonts[i].default_width = 1;
-            wgml_fonts[i].line_height = 1;
-            wgml_fonts[i].line_space = 0;
-            wgml_fonts[i].font_resident = 'n';
+            wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
+            wgml_fonts[fnt].default_width = 1;
+            wgml_fonts[fnt].line_height = 1;
+            wgml_fonts[fnt].line_space = 0;
+            wgml_fonts[fnt].font_resident = 'n';
 
             /* The font used with the :BOX block cannot be scaled. */
 
-            if( wgml_fonts[i].bin_font->scale_basis != 0 ) {
+            if( wgml_fonts[fnt].bin_font->scale_basis != 0 ) {
                 out_msg( "The BOX block cannot specify a font which is scaled.\n" );
                 err_count++;
                 g_suicide();
             }
-
-            break;
         }
         break;
     case 2:
         if( bin_device->underscore.font_name != NULL ) {
-            i = font_base;
-            bin_device->underscore.font_number = font_base;
-            wgml_fonts[i].bin_font = \
-                                find_cop_font( bin_device->underscore.font_name );
-            wgml_fonts[i].font_style = find_style( "plain" );
-            wgml_fonts[i].font_height = 0;
-            wgml_fonts[i].font_space = 0;
+            fnt = font_base;
+            bin_device->underscore.font = font_base;
+            wgml_fonts[fnt].bin_font = find_cop_font( bin_device->underscore.font_name );
+            wgml_fonts[fnt].font_style = find_style( "plain" );
+            wgml_fonts[fnt].font_height = 0;
+            wgml_fonts[fnt].font_space = 0;
             cur_dev_font = find_dev_font( bin_device->underscore.font_name );
             if( cur_dev_font->font_switch == NULL ) {
-                wgml_fonts[i].font_switch = NULL;
+                wgml_fonts[fnt].font_switch = NULL;
             } else {
-                wgml_fonts[i].font_switch = \
-                                        find_switch( cur_dev_font->font_switch );
+                wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
             }
-            wgml_fonts[i].font_pause = cur_dev_font->font_pause;
-            wgml_fonts[i].default_width = 1;
-            wgml_fonts[i].line_height = 1;
-            wgml_fonts[i].line_space = 0;
-            wgml_fonts[i].font_resident = 'n';
+            wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
+            wgml_fonts[fnt].default_width = 1;
+            wgml_fonts[fnt].line_height = 1;
+            wgml_fonts[fnt].line_space = 0;
+            wgml_fonts[fnt].font_resident = 'n';
 
             /* The font used with the :UNDERSCORE block cannot be scaled. */
 
-            if( wgml_fonts[i].bin_font->scale_basis != 0 ) {
-                out_msg( "The UNDERSCORE block cannot specify a font which "\
-                                                            "is scaled.\n" );
+            if( wgml_fonts[fnt].bin_font->scale_basis != 0 ) {
+                out_msg( "The UNDERSCORE block cannot specify a font which is scaled.\n" );
                 err_count++;
                 g_suicide();
             }
-
         }
         if( bin_device->box.font_name != NULL ) {
             font_base++;
-            i = font_base;
-            bin_device->box.font_number = font_base;
-            wgml_fonts[i].bin_font = find_cop_font( bin_device->box.font_name );
-            wgml_fonts[i].font_style = find_style( "plain" );
-            wgml_fonts[i].font_height = 0;
-            wgml_fonts[i].font_space = 0;
+            fnt = font_base;
+            bin_device->box.font = font_base;
+            wgml_fonts[fnt].bin_font = find_cop_font( bin_device->box.font_name );
+            wgml_fonts[fnt].font_style = find_style( "plain" );
+            wgml_fonts[fnt].font_height = 0;
+            wgml_fonts[fnt].font_space = 0;
             cur_dev_font = find_dev_font( bin_device->box.font_name );
             if( cur_dev_font->font_switch == NULL ) {
-                wgml_fonts[i].font_switch = NULL;
+                wgml_fonts[fnt].font_switch = NULL;
             } else {
-                wgml_fonts[i].font_switch = \
-                                        find_switch( cur_dev_font->font_switch );
+                wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
             }
-            wgml_fonts[i].font_pause = cur_dev_font->font_pause;
-            wgml_fonts[i].default_width = 1;
-            wgml_fonts[i].line_height = 1;
-            wgml_fonts[i].line_space = 0;
-            wgml_fonts[i].font_resident = 'n';
+            wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
+            wgml_fonts[fnt].default_width = 1;
+            wgml_fonts[fnt].line_height = 1;
+            wgml_fonts[fnt].line_space = 0;
+            wgml_fonts[fnt].font_resident = 'n';
 
             /* The font used with the :BOX block cannot be scaled. */
 
-            if( wgml_fonts[i].bin_font->scale_basis != 0 ) {
+            if( wgml_fonts[fnt].bin_font->scale_basis != 0 ) {
                 out_msg( "The BOX block cannot specify a font which is scaled.\n" );
                 err_count++;
                 g_suicide();
             }
-
         }
         break;
     default:
         out_msg( "wgml internal error\n" );
         err_count++;
-        g_suicide;
+        g_suicide();
     }
 
     /* Ensure that font 0 was initialized */
@@ -1127,7 +1113,7 @@ void cop_setup( void )
     if( wgml_fonts[0].bin_font == NULL ) {
         out_msg( "Device Library Error: Font 0 not defined\n" );
         err_count++;
-        g_suicide;
+        g_suicide();
     }
 
     /* Fill in any skipped entries with the values used for wgml_font 0 */
@@ -1143,18 +1129,18 @@ void cop_setup( void )
     def_font.line_space = wgml_fonts[0].line_space;
     def_font.font_resident = wgml_fonts[0].font_resident;
 
-    for( i = 0; i < wgml_font_cnt; i++ ) {
-        if( wgml_fonts[i].bin_font == NULL ) {
-            wgml_fonts[i].bin_font = def_font.bin_font;
-            wgml_fonts[i].font_switch = def_font.font_switch;
-            wgml_fonts[i].font_pause = def_font.font_pause;
-            wgml_fonts[i].font_style = def_font.font_style;
-            wgml_fonts[i].font_height = def_font.font_height;
-            wgml_fonts[i].font_space = def_font.font_space;
-            wgml_fonts[i].default_width = def_font.default_width;
-            wgml_fonts[i].line_height = def_font.line_height;
-            wgml_fonts[i].line_space = def_font.line_space;
-            wgml_fonts[i].font_resident = def_font.font_resident;
+    for( fnt = 0; fnt < wgml_font_cnt; fnt++ ) {
+        if( wgml_fonts[fnt].bin_font == NULL ) {
+            wgml_fonts[fnt].bin_font = def_font.bin_font;
+            wgml_fonts[fnt].font_switch = def_font.font_switch;
+            wgml_fonts[fnt].font_pause = def_font.font_pause;
+            wgml_fonts[fnt].font_style = def_font.font_style;
+            wgml_fonts[fnt].font_height = def_font.font_height;
+            wgml_fonts[fnt].font_space = def_font.font_space;
+            wgml_fonts[fnt].default_width = def_font.default_width;
+            wgml_fonts[fnt].line_height = def_font.line_height;
+            wgml_fonts[fnt].line_space = def_font.line_space;
+            wgml_fonts[fnt].font_resident = def_font.font_resident;
         }
     }
 
@@ -1163,7 +1149,7 @@ void cop_setup( void )
     if( bin_fonts == NULL ) {
         out_msg( "Device Library Error: No :FONT blocks loaded\n" );
         err_count++;
-        g_suicide;
+        g_suicide();
     }
 
     if( !has_aa_block ) {
@@ -1172,8 +1158,8 @@ void cop_setup( void )
         /* Verify that all line_height fields have the same value. */
 
         test_height = wgml_fonts[0].line_height;
-        for( i = 1; i < wgml_font_cnt - gen_cnt; i++ ) {
-            if( test_height != wgml_fonts[i].line_height ) {
+        for( fnt = 1; fnt < wgml_font_cnt - gen_cnt; fnt++ ) {
+            if( test_height != wgml_fonts[fnt].line_height ) {
                 out_msg( "     Computed line height values for devices\n" );
                 out_msg( "     which rely on :NEWLINE blocks must be the\n" );
                 out_msg( "     same for all fonts\n" );
@@ -1197,27 +1183,25 @@ void cop_setup( void )
      * directly.
      */
 
-    for( i = 0; i < wgml_font_cnt; i++ ) {
-        if( wgml_fonts[i].bin_font->width == NULL ) {
+    for( fnt = 0; fnt < wgml_font_cnt; fnt++ ) {
+        if( wgml_fonts[fnt].bin_font->width == NULL ) {
             for( j = 0; j < 0x100; j++ ) {
-                wgml_fonts[i].width_table[j] = wgml_fonts[i].default_width;
+                wgml_fonts[fnt].width_table[j] = wgml_fonts[fnt].default_width;
             }
         } else {
-            if( wgml_fonts[i].bin_font->scale_basis == 0 ) {
+            if( wgml_fonts[fnt].bin_font->scale_basis == 0 ) {
                 for( j = 0; j < 0x100; j++ ) {
-                    wgml_fonts[i].width_table[j] = \
-                                        wgml_fonts[i].bin_font->width->table[j];
+                    wgml_fonts[fnt].width_table[j] = wgml_fonts[fnt].bin_font->width->table[j];
                 }
             } else {
                 for( j = 0; j < 0x100; j++ ) {
-                    wgml_fonts[i].width_table[j] = \
-                                    scale_basis_to_horizontal_base_units( \
-                        wgml_fonts[i].bin_font->width->table[j], &wgml_fonts[i] );
+                    wgml_fonts[fnt].width_table[j] =
+                        scale_basis_to_horizontal_base_units( wgml_fonts[fnt].bin_font->width->table[j], &wgml_fonts[fnt] );
                 }
             }
         }
-        wgml_fonts[i].em_base = wgml_fonts[i].width_table['M'];
-        wgml_fonts[i].spc_width = wgml_fonts[i].width_table[' '];
+        wgml_fonts[fnt].em_base = wgml_fonts[fnt].width_table['M'];
+        wgml_fonts[fnt].spc_width = wgml_fonts[fnt].width_table[' '];
     }
 
     /* Initialize the default tabs and related extern variables. */
@@ -1336,18 +1320,19 @@ void cop_teardown( void )
  *          bin_font contains a width table must be considered.
  */
 
-uint32_t cop_text_width( uint8_t * text, uint32_t count, uint8_t font )
+uint32_t cop_text_width( char *text, uint32_t count, font_number font )
 {
     int             i;
     uint32_t        width;
 
-    if( font >= wgml_font_cnt ) font = 0;
+    if( font >= wgml_font_cnt )
+        font = 0;
 
     /* Compute the width. */
 
     width = 0;
     for( i = 0; i < count; i++ ) {
-        width += wgml_fonts[font].width_table[text[i]];
+        width += wgml_fonts[font].width_table[(uint8_t)text[i]];
     }
 
     return( width );
@@ -1366,8 +1351,9 @@ void cop_ti_table( char * p )
     uint8_t     token_char;
     uint8_t     first_char;
     uint32_t    len;
+    char        cwcurr[4];
 
-    char            cwcurr[4];
+    first_char = '\0';
     cwcurr[0] = SCR_char;
     cwcurr[1] = 't';
     cwcurr[2] = 'i';
@@ -1469,7 +1455,9 @@ void cop_ti_table( char * p )
     }
 
     if( no_data ) {         // reset the table if no_data is still true
-        for( i = 0; i < 0x100; i++ ) ti_table[i] = i;
+        for( i = 0; i < 0x100; i++ ) {
+            ti_table[i] = i;
+        }
     }
 
     return;
@@ -1510,13 +1498,13 @@ void fb_document( void )
 {
     /* Interpret the DOCUMENT :PAUSE block. */
 
-    if( bin_device->pauses.document_pause != NULL ) \
+    if( bin_device->pauses.document_pause != NULL )
         df_interpret_device_functions( bin_device->pauses.document_pause->text );
 
     /* Interpret the DOCUMENT :INIT block. */
 
-    if( bin_driver->inits.document != NULL ) \
-                                        fb_init( bin_driver->inits.document );
+    if( bin_driver->inits.document != NULL )
+        fb_init( bin_driver->inits.document );
 
     /* Perform the virtual %enterfont(0). */
 
@@ -1643,14 +1631,12 @@ void fb_output_textline( text_line * out_line )
     /* Determine the number of passes. */
 
     line_passes = 0;
-    while( current != NULL ) {
-        if( current->font_number >= wgml_font_cnt ) current->font_number = 0;
-        if( wgml_fonts[current->font_number].font_style->line_passes > \
-                                                                line_passes ) {
-                line_passes = \
-                    wgml_fonts[current->font_number].font_style->line_passes;
+    for( ; current != NULL; current = current->next ) {
+        if( current->font >= wgml_font_cnt )
+            current->font = 0;
+        if( wgml_fonts[current->font].font_style->line_passes > line_passes ) {
+            line_passes = wgml_fonts[current->font].font_style->line_passes;
         }
-        current = current->next;
     }
 
     /* Do the first pass. */

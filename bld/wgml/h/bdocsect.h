@@ -24,43 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  Implements the functions declared in dowlinux.h:
-*                   get_file_size()
+* Description:  Declaration of various banner constants
 *
 ****************************************************************************/
 
-#include "lhdirect.h"
 
-#ifdef __LINUX__
-
-/*  Function get_file_size().
- *  This should return the size of the file; however, someone who knows Linux
- *  will have to implement it.
- *
- *  Note: both the return value and the parameter type are negotiable, so long
- *  as the "other" version uses the same types so that all of the differences
- *  are handled here.
- */
-
-long get_file_size( struct dirent * in_file )
-{
-    /* So the compiler sees the parameter used. */
-    
-    in_file = in_file; 
-
-    return( 0 );
-}
-
-#else /* DOS, OS/2, Windows. */
-
-/*  Function get_file_size().
- *  Returns in_file->d_size.
- */
- 
-long get_file_size( struct dirent * in_file )
-{
-    return( in_file->d_size );
-}
-
-#endif /* __LINUX__ */
-
+pick( no_ban,       t_NONE,     "???",      3 )
+pick( abstract_ban, t_ABSTRACT, "abstract", 8 )
+pick( appendix_ban, t_APPENDIX, "appendix", 8 )
+pick( backm_ban,    t_BACKM,    "backm",    5 )
+pick( body_ban,     t_BODY,     "body",     4 )
+pick( figlist_ban,  t_FIGLIST,  "figlist",  7 )
+pick( head0_ban,    t_H0,       "head0",    5 )
+pick( head1_ban,    t_H1,       "head1",    5 )
+pick( head2_ban,    t_H2,       "head2",    5 )
+pick( head3_ban,    t_H3,       "head3",    5 )
+pick( head4_ban,    t_H4,       "head4",    5 )
+pick( head5_ban,    t_H5,       "head5",    5 )
+pick( head6_ban,    t_H6,       "head6",    5 )
+pick( letfirst_ban, t_NONE,     "letfirst", 8 )
+pick( letlast_ban,  t_NONE,     "letlast",  7 )
+pick( letter_ban,   t_NONE,     "letter",   6 )
+pick( index_ban,    t_INDEX,    "index",    5 )
+pick( preface_ban,  t_PREFACE,  "preface",  7 )
+pick( toc_ban,      t_TOC,      "toc",      3 )

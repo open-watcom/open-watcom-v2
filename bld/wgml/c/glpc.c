@@ -154,6 +154,7 @@ void    lay_p( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
+    entry = entry;
     if( !GlobalFlags.firstpass ) {
         scan_start = scan_stop + 1;
         eat_lay_sub_tag();
@@ -182,6 +183,7 @@ void    lay_pc( const gmltag * entry )
     att_args        l_args;
     bool            cvterr;
 
+    entry = entry;
     if( !GlobalFlags.firstpass ) {
         scan_start = scan_stop + 1;
         eat_lay_sub_tag();

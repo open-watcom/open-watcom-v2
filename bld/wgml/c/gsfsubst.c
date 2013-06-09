@@ -100,10 +100,10 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
                 if( !ProcFlags.suppress_msg ) {
                     g_err( err_func_parm, "2 (startpos)" );
                     if( input_cbs->fmflags & II_macro ) {
-                        utoa( input_cbs->s.m->lineno, linestr, 10 );
+                        ultoa( input_cbs->s.m->lineno, linestr, 10 );
                         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     } else {
-                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        ultoa( input_cbs->s.f->lineno, linestr, 10 );
                         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     }
                     err_count++;
@@ -124,10 +124,10 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
                 if( !ProcFlags.suppress_msg ) {
                     g_err( err_func_parm, "3 (length)" );
                     if( input_cbs->fmflags & II_macro ) {
-                        utoa( input_cbs->s.m->lineno, linestr, 10 );
+                        ultoa( input_cbs->s.m->lineno, linestr, 10 );
                         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     } else {
-                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        ultoa( input_cbs->s.f->lineno, linestr, 10 );
                         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     }
                     err_count++;

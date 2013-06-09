@@ -41,7 +41,6 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include "lhdirect.h"
 
 /* Macro definition. */
 

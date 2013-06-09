@@ -102,6 +102,7 @@ void    lay_author( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 
@@ -135,7 +136,7 @@ void    lay_author( const gmltag * entry )
                                           &layout_work.author.page_position );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.author.font );
+                    cvterr = i_font_number( p, curr, &layout_work.author.font );
                     if( layout_work.author.font >= wgml_font_cnt ) {
                         layout_work.author.font = 0;
                     }

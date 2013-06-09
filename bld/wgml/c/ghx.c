@@ -41,10 +41,10 @@ static char hnumx[7] = "$hnumX";
 /*  and update $headn global variable                                      */
 /***************************************************************************/
 
-static  void    update_headnumx( int level, char * hnumstr, size_t hnsize )
+static  void    update_headnumx( int level, char *hnumstr, size_t hnsize )
 {
     size_t          pos;
-    char          * pn;
+    char            *pn;
     int             rc;
 
     *hnumstr = 0;
@@ -80,14 +80,11 @@ static  void    update_headnumx( int level, char * hnumstr, size_t hnsize )
         rc = add_symvar_addr( &global_dict, hnumx, hnumstr, no_subscript, 0,
                               &layout_work.hx[level].headnsub );
     } else {
-        if( strlen( layout_work.hx[level].headnsub->value )
-            < strlen( hnumstr ) ) {     // need more room
+        if( strlen( layout_work.hx[level].headnsub->value ) < strlen( hnumstr ) ) {     // need more room
             layout_work.hx[level].headnsub->value =
-                mem_realloc( layout_work.hx[level].headnsub->value,
-                             strlen( hnumstr ) + 1 );
+                mem_realloc( layout_work.hx[level].headnsub->value, strlen( hnumstr ) + 1 );
         }
-        strcpy_s( layout_work.hx[level].headnsub->value, strlen( hnumstr ) + 1,
-                  hnumstr );
+        strcpy_s( layout_work.hx[level].headnsub->value, strlen( hnumstr ) + 1, hnumstr );
     }
 }
 
@@ -116,6 +113,7 @@ static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
     static char htextx[8] = "$htextX";
     static char headx[7]  = "$headX";
 
+    entry = entry;
     switch( hx_lvl ) {
     case   0:
         if( !((ProcFlags.doc_sect == doc_sect_body) ||
@@ -301,12 +299,12 @@ static  void    gml_hx_common( const gmltag * entry, int hx_lvl )
     } else {                            // empty heading text
         rc = add_symvar( &global_dict, htextx, p, no_subscript, 0 );
     }
-    update_headnumx( hx_lvl, &hnumstr, sizeof( hnumstr ) );
+    update_headnumx( hx_lvl, hnumstr, sizeof( hnumstr ) );
     txtlen = strlen( p );
-    headlen = strlen( hnumstr) + txtlen + 2;
+    headlen = strlen( hnumstr ) + txtlen + 2;
     headp = mem_alloc( headlen );
     if( layout_work.hx[hx_lvl].number_form != num_none ) {
-        strcpy_s( headp, headlen, hnumstr); // numbered header
+        strcpy_s( headp, headlen, hnumstr ); // numbered header
         strcat_s( headp, headlen, " " );
     } else {
         *headp = '\0';

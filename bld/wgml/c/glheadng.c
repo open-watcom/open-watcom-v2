@@ -90,6 +90,7 @@ void    lay_heading( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
+    entry = entry;
     p = scan_start;
 
     if( !GlobalFlags.firstpass ) {
@@ -122,7 +123,7 @@ void    lay_heading( const gmltag * entry )
                                            &layout_work.heading.para_indent );
                     break;
                 case   e_threshold:
-                    cvterr = i_int8( p, curr, &layout_work.heading.threshold );
+                    cvterr = i_uint8( p, curr, &layout_work.heading.threshold );
                     break;
                 case   e_max_group:
                     cvterr = i_int8( p, curr, &layout_work.heading.max_group );

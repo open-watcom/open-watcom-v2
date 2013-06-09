@@ -267,21 +267,17 @@ char    *scr_single_func_w( char * in, char * end, char * * result )
                               &symsubval );
         }
         if( rc == 2 ) {
-            width = cop_text_width( symsubval->value,
-                                    strlen( symsubval->value ),
-                                    g_curr_font_num);
+            width = cop_text_width( symsubval->value, strlen( symsubval->value ), g_curr_font);
         } else {
 
         /*******************************************************************/
         /* for undefined variable calc length of name, & and perhaps *     */
         /*******************************************************************/
-            width = cop_text_width( symvar_entry.name,
-                                    strlen( symvar_entry.name ),
-                                    g_curr_font_num )
-                    + wgml_fonts[g_curr_font_num].width_table['&'];
+            width = cop_text_width( symvar_entry.name, strlen( symvar_entry.name ), g_curr_font )
+                    + wgml_fonts[g_curr_font].width_table['&'];
 
             if( symvar_entry.flags & local_var ) {  // add width of *
-                width += wgml_fonts[g_curr_font_num].width_table['*'];
+                width += wgml_fonts[g_curr_font].width_table['*'];
             }
         }
     } else {                            // string
@@ -291,7 +287,7 @@ char    *scr_single_func_w( char * in, char * end, char * * result )
             len++;
             pchar++;
         }
-        width = cop_text_width( in + 3, len, g_curr_font_num );
+        width = cop_text_width( in + 3, len, g_curr_font );
     }
     len = width;
     width = (width * CPI + g_resh / 2) / g_resh;
@@ -320,14 +316,15 @@ static  char    *scr_single_func_unsupport( char * in, char * * result )
     char        linestr[MAX_L_AS_STR];
     char        charstr[2];
 
+    result = result;
     charstr[0] = *(in + 1);
     charstr[1] = '\0';
     g_warn( wng_func_unsupport, charstr );
     if( input_cbs->fmflags & II_macro ) {
-        utoa( input_cbs->s.m->lineno, linestr, 10 );
+        ultoa( input_cbs->s.m->lineno, linestr, 10 );
         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
     } else {
-        utoa( input_cbs->s.f->lineno, linestr, 10 );
+        ultoa( input_cbs->s.f->lineno, linestr, 10 );
         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
     }
 

@@ -98,15 +98,13 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
     int                 hay_len;
     int                 needle_len;
     char                c;
-
     sub_index           var_ind;
     symvar              symvar_entry;
     symsub          *   symsubval;
     symvar          *   psymvar;
     bool                suppress_msg;
 
-
-
+    ressize = ressize;
     if( parmcount != 2 ) {
         return( neg );
     }

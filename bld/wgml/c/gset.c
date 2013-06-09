@@ -62,6 +62,7 @@ extern  void    gml_set( const gmltag * entry )
     int             rc;
     symvar      * * working_dict;
  
+    entry = entry;
     subscript = no_subscript;           // not subscripted
     scan_err = false;
  
@@ -148,10 +149,10 @@ extern  void    gml_set( const gmltag * entry )
  
                 g_err( err_att_name_inv );
                 if( input_cbs->fmflags & II_macro ) {
-                    utoa( input_cbs->s.m->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
                     g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                 } else {
-                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
                     g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                 }
                 if( inc_level > 1 ) {
@@ -200,10 +201,10 @@ extern  void    gml_set( const gmltag * entry )
  
             g_err( err_att_missing );
             if( input_cbs->fmflags & II_macro ) {
-                utoa( input_cbs->s.m->lineno, linestr, 10 );
+                ultoa( input_cbs->s.m->lineno, linestr, 10 );
                 g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
-                utoa( input_cbs->s.f->lineno, linestr, 10 );
+                ultoa( input_cbs->s.f->lineno, linestr, 10 );
                 g_info( inf_file_line, linestr, input_cbs->s.f->filename );
             }
             if( inc_level > 1 ) {

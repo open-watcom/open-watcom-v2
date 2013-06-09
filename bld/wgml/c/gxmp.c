@@ -32,11 +32,11 @@
 #include    "wgml.h"
 #include    "gvars.h"
 
-static  bool    concat_save;            // for ProcFlags.concat
-static  ju_enum justify_save;           // for ProcFlags.justify
-static  bool    first_xline;            // special for first xmp LINE
-static  int8_t  a_spacing;              // spacing between adr lines
-static  int8_t  font_save;              // save for font
+static  bool        concat_save;            // for ProcFlags.concat
+static  ju_enum     justify_save;           // for ProcFlags.justify
+static  bool        first_xline;            // special for first xmp LINE
+static  int8_t      a_spacing;              // spacing between adr lines
+static  font_number font_save;              // save for font
 
 
 /***************************************************************************/
@@ -65,6 +65,7 @@ extern  void    gml_xmp( const gmltag * entry )
 {
     char    *   p;
 
+    entry = entry;
     scan_err = false;
     p = scan_start;
     p++;
@@ -114,8 +115,8 @@ extern  void    gml_xmp( const gmltag * entry )
 
     ProcFlags.xmp_active = true;
     first_xline = true;
-    font_save = g_curr_font_num;
-    g_curr_font_num = layout_work.xmp.font;
+    font_save = g_curr_font;
+    g_curr_font = layout_work.xmp.font;
 //  rs_loc = xmp_tag;
 
     init_nest_cb();
@@ -124,8 +125,7 @@ extern  void    gml_xmp( const gmltag * entry )
 
     spacing = layout_work.xmp.spacing;
 
-    set_skip_vars( NULL, &layout_work.xmp.pre_skip, NULL, spacing,
-                       g_curr_font_num );
+    set_skip_vars( NULL, &layout_work.xmp.pre_skip, NULL, spacing, g_curr_font );
 
     ProcFlags.group_elements = true;
 
@@ -138,7 +138,7 @@ extern  void    gml_xmp( const gmltag * entry )
     while( *p == ' ' ) p++;             // skip initial spaces
     if( *p == '.' ) p++;                    // possible tag end
     if( *p ) {
-        process_text( p, g_curr_font_num ); // if text follows
+        process_text( p, g_curr_font ); // if text follows
     }
     scan_start = scan_stop + 1;
     return;
@@ -157,12 +157,13 @@ void    gml_exmp( const gmltag * entry )
 {
     tag_cb  *   wk;
 
+    entry = entry;
     if( !ProcFlags.xmp_active ) {       // no preceding :XMP tag
         g_err_tag_prec( "XMP" );
         scan_start = scan_stop + 1;
         return;
     }
-    g_curr_font_num = font_save;
+    g_curr_font = font_save;
     ProcFlags.xmp_active = false;
     ProcFlags.concat = concat_save;
     ProcFlags.justify = justify_save;
@@ -214,19 +215,17 @@ static void prep_xline( text_line * p_line, char * p )
     h_left = g_page_left + conv_hor_unit( &layout_work.xmp.left_indent );
     h_right = g_page_right - conv_hor_unit( &layout_work.xmp.right_indent );
 
-    curr_t = alloc_text_chars( p, strlen( p ), g_curr_font_num );
+    curr_t = alloc_text_chars( p, strlen( p ), g_curr_font );
     curr_t->count = len_to_trail_space( curr_t->text, curr_t->count );
 
-    intrans( curr_t->text, &curr_t->count, g_curr_font_num );
-    curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                    g_curr_font_num );
+    intrans( curr_t->text, &curr_t->count, g_curr_font );
+    curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     while( curr_t->width > (h_right - h_left) ) {   // too long for line
         if( curr_t->count < 2) {        // sanity check
             break;
         }
         curr_t->count -= 1;             // truncate text
-        curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                        g_curr_font_num );
+        curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     }
     p_line->first = curr_t;
     curr_t->x_address = h_left;
@@ -253,19 +252,19 @@ void    xmp_xline( const gmltag * entry )
     doc_element *   cur_el;
     text_line   *   ad_line;
 
+    entry = entry;
     p = scan_start;
     if( *p == '.' ) p++;                // over '.'
 
     a_spacing = layout_work.xmp.spacing;
-    g_curr_font_num = layout_work.xmp.font;
+    g_curr_font = layout_work.xmp.font;
     if( !first_xline ) {
-        set_skip_vars( NULL, NULL, NULL, a_spacing,
-                       g_curr_font_num );
+        set_skip_vars( NULL, NULL, NULL, a_spacing, g_curr_font );
     } else {
         first_xline = false;
     }
     ad_line = alloc_text_line();
-    ad_line->line_height = wgml_fonts[g_curr_font_num].line_height;
+    ad_line->line_height = wgml_fonts[g_curr_font].line_height;
 
     if( *p ) {
         prep_xline( ad_line, p );

@@ -77,6 +77,7 @@ void    lay_figdesc( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 
@@ -102,7 +103,7 @@ void    lay_figdesc( const gmltag * entry )
                                            &layout_work.figdesc.pre_lines );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.figdesc.font );
+                    cvterr = i_font_number( p, curr, &layout_work.figdesc.font );
                     if( layout_work.figdesc.font >= wgml_font_cnt ) {
                         layout_work.figdesc.font = 0;
                     }

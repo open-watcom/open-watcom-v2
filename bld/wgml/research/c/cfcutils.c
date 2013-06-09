@@ -34,11 +34,21 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 
 #include <stdio.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+#include <unistd.h>
+#else
+#include <io.h>
+#endif
+#if defined( __UNIX__ )
+#include <dirent.h>
+#else
+#include <direct.h>
+#endif
+#include "clibext.h"
 
 #include "banner.h"
 #include "cfheader.h"
 #include "common.h"
-#include "lhdirect.h"
 #include "research.h"
 
 /* Local variables */
@@ -86,17 +96,17 @@ int check_directory( void )
         dir_entry = readdir( current_dir );
         if( dir_entry == NULL ) break;
 
-        /* Check the file size. */
-
-        if( (get_file_size( dir_entry ) % 16) != 0) \
-        printf_s( "Size of file %s is not a multiple of 16\n", dir_entry->d_name );
-
         /* Open the file. */
 
         fopen_s( &current_file, dir_entry->d_name, "rb" );
         if( current_file == NULL ) {
             continue;
         }
+
+        /* Check the file size. */
+
+        if( (filelength( fileno( current_file ) ) % 16) != 0)
+            printf_s( "Size of file %s is not a multiple of 16\n", dir_entry->d_name );
 
         /* Process the file. */
 

@@ -60,12 +60,12 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <ctype.h>
 #include <errno.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "bool.h"
 #include "wgml.h"
 #include "devfuncs.h"
 #include "findfile.h"
@@ -77,8 +77,8 @@
 static record_buffer    binc_buff   = { 0, 0, NULL };
 static record_buffer    buffout     = { 0, 0, NULL };
 static record_buffer    translated  = { 0, 0, NULL };
-static FILE         *   out_file_fb;
-static uint8_t          tr_table[0x100]; // .TR-controlled translation table
+static FILE             *out_file_fb;
+static char             tr_table[0x100]; // .TR-controlled translation table
 
 /* Static function definitions. */
 
@@ -134,23 +134,25 @@ static void buffer_overflow( void )
  *          output translations have four characters.
  */
 
-static void ob_insert_ps_text( uint8_t * in_block, size_t count, uint8_t font )
+static void ob_insert_ps_text( char *in_block, size_t count, font_number font )
 {
     size_t              difference;
     translation *   *   cur_table   = NULL;
     translation *       cur_trans   = NULL;
-    uint8_t             byte;
+    char                ch;
     uint32_t            i;
 
     /* If the buffer is full, flush it. */
 
-    if( buffout.current == buffout.length ) ob_flush();
+    if( buffout.current == buffout.length )
+        ob_flush();
 
     /* Adjust font if appropriate and initialize cur_trans. */
 
-    if( font >= wgml_font_cnt ) font = 0;
-    if( wgml_fonts[font].outtrans != NULL ) cur_table = \
-                                            wgml_fonts[font].outtrans->table;
+    if( font >= wgml_font_cnt )
+        font = 0;
+    if( wgml_fonts[font].outtrans != NULL )
+        cur_table = wgml_fonts[font].outtrans->table;
     for( i = 0; i < count; i++ ) {
 
         difference = buffout.length - buffout.current;
@@ -158,24 +160,24 @@ static void ob_insert_ps_text( uint8_t * in_block, size_t count, uint8_t font )
 
             /* buffout has room for at least one character. */
 
-            byte = tr_table[in_block[i]];
-            if( byte == in_block[i] ) {
+            ch = tr_table[(uint8_t)in_block[i]];
+            if( ch == in_block[i] ) {
                 if( cur_table == NULL ) {
 
                     /* No output translation was found. */
 
-                    buffout.text[buffout.current] = byte;
+                    buffout.text[buffout.current] = ch;
                     buffout.current++;
                 } else {
 
                     /* An :OUTTRANS block exists. */
 
-                    cur_trans = cur_table[byte];
+                    cur_trans = cur_table[(uint8_t)ch];
                     if( cur_trans == NULL ) {
 
                         /* No output translation was found. */
 
-                        buffout.text[buffout.current] = byte;
+                        buffout.text[buffout.current] = ch;
                         buffout.current++;
                     } else {
 
@@ -193,14 +195,14 @@ static void ob_insert_ps_text( uint8_t * in_block, size_t count, uint8_t font )
 
                             /* If it is too large to fit at all, report overflow. */
 
-                            if( cur_trans->count > buffout.length ) buffer_overflow();
+                            if( cur_trans->count > buffout.length )
+                                buffer_overflow();
 
                             /* If it won't fit in the current buffer, finalize
                              * and flush the buffer.
                              */
 
-                            if( (buffout.current + cur_trans->count + 1) > \
-                                                            buffout.length ) {
+                            if( (buffout.current + cur_trans->count + 1) > buffout.length ) {
                                 buffout.text[buffout.current] = '\\';
                                 buffout.current++;
                                 ob_flush();
@@ -208,8 +210,8 @@ static void ob_insert_ps_text( uint8_t * in_block, size_t count, uint8_t font )
 
                             /* At this point, it is known that it will fit. */
 
-                            memcpy_s( &buffout.text[buffout.current], \
-                        cur_trans->count, cur_trans->data, cur_trans->count );
+                            memcpy_s( &buffout.text[buffout.current], cur_trans->count,
+                                        cur_trans->data, cur_trans->count );
                             buffout.current += cur_trans->count;
                         }
                     }
@@ -218,7 +220,7 @@ static void ob_insert_ps_text( uint8_t * in_block, size_t count, uint8_t font )
 
                 /* A single-byte .tr output translation was found. */
 
-                buffout.text[buffout.current] = byte;
+                buffout.text[buffout.current] = ch;
                 buffout.current++;
             }
         } else {
@@ -255,7 +257,7 @@ static void ob_insert_ps_text( uint8_t * in_block, size_t count, uint8_t font )
  *          appear in any output record.
  */
 
-static void ob_insert_ps_cmd( uint8_t * in_block, size_t count )
+static void ob_insert_ps_cmd( char *in_block, size_t count )
 {
     size_t      current;
     size_t      difference;
@@ -333,7 +335,8 @@ static void ob_insert_ps_cmd( uint8_t * in_block, size_t count )
                      */
 
                     ob_flush();
-                    if( in_block[current] == ' ' ) current++;
+                    if( in_block[current] == ' ' )
+                        current++;
                     break;
                 } else {
 
@@ -362,8 +365,7 @@ static void ob_insert_ps_cmd( uint8_t * in_block, size_t count )
 
             /* Copy up to the space character found. */
 
-            memcpy_s( &buffout.text[buffout.current], difference, \
-                                            &in_block[current], difference );
+            memcpy_s( &buffout.text[buffout.current], difference, &in_block[current], difference );
             buffout.current += difference;
             current+= difference;
             text_count -= difference;
@@ -393,8 +395,7 @@ static void ob_insert_ps_cmd( uint8_t * in_block, size_t count )
     /* Insert any remaining text. */
 
     if( text_count > 0 ) {
-        memcpy_s( &buffout.text[buffout.current], text_count, \
-                                            &in_block[current], text_count );
+        memcpy_s( &buffout.text[buffout.current], text_count, &in_block[current], text_count );
         buffout.current += text_count;
     }
 
@@ -425,20 +426,21 @@ static void ob_insert_ps_cmd( uint8_t * in_block, size_t count )
  *          appear in any output record.
  */
 
-static void ob_insert_ps_cmd_ot( uint8_t * in_block, size_t count, uint8_t font )
+static void ob_insert_ps_cmd_ot( char *in_block, size_t count, font_number font )
 {
     size_t              test_length;
     size_t              text_count;
     translation *   *   cur_table   = NULL;
     translation *       cur_trans   = NULL;
-    uint8_t             byte;
+    char                ch;
     uint32_t            i;
     uint32_t            j;
     uint32_t            k;
 
     /* Adjust font if necessary and initialize cur_table and text_count. */
 
-    if( font >= wgml_font_cnt ) font = 0;
+    if( font >= wgml_font_cnt )
+        font = 0;
     if( wgml_fonts[font].outtrans != NULL ) cur_table = \
                                             wgml_fonts[font].outtrans->table;
     text_count = count;
@@ -454,24 +456,24 @@ static void ob_insert_ps_cmd_ot( uint8_t * in_block, size_t count, uint8_t font 
 
             /* Now check for an output translation. */
 
-            byte = tr_table[in_block[i]];
-            if( byte == in_block[i] ) {
+            ch = tr_table[(uint8_t)in_block[i]];
+            if( ch == in_block[i] ) {
                 if( cur_table == NULL ) {
 
                     /* No output translation was found. */
 
-                    buffout.text[buffout.current] = byte;
+                    buffout.text[buffout.current] = ch;
                     buffout.current++;
                 } else {
 
                     /* An :OUTTRANS block exists. */
 
-                    cur_trans = cur_table[byte];
+                    cur_trans = cur_table[(uint8_t)ch];
                     if( cur_trans == NULL ) {
 
                         /* No output translation was found. */
 
-                        buffout.text[buffout.current] = byte;
+                        buffout.text[buffout.current] = ch;
                         buffout.current++;
                     } else {
 
@@ -507,7 +509,7 @@ static void ob_insert_ps_cmd_ot( uint8_t * in_block, size_t count, uint8_t font 
 
                 /* A single-byte .tr output translation was found. */
 
-                buffout.text[buffout.current] = byte;
+                buffout.text[buffout.current] = ch;
                 buffout.current++;
             }
             text_count--;
@@ -524,36 +526,36 @@ static void ob_insert_ps_cmd_ot( uint8_t * in_block, size_t count, uint8_t font 
 
             /* in_block[i] points to a non-space character. */ 
 
-            if( in_block[j] == ' ' ) break;
+            if( in_block[j] == ' ' )
+                break;
 
             /* At least one character will be added to translated. */
 
             if( k >= translated.length ) {
                 translated.length *= 2;
-                translated.text = (uint8_t *) mem_realloc( translated.text, \
-                                                        translated.length );
+                translated.text = mem_realloc( translated.text, translated.length );
             }
 
             /* Add the non-space character to translated. */
 
-            byte = tr_table[in_block[j]];
-            if( byte == in_block[j] ) {
+            ch = tr_table[(uint8_t)in_block[j]];
+            if( ch == in_block[j] ) {
                 if( wgml_fonts[font].outtrans == NULL ) {
 
                     /* No translation exists: copy the character. */
 
-                    translated.text[k] = byte;
+                    translated.text[k] = ch;
                     k++;
                 } else {
 
                     /* An :OUTTRANS block exists. */
 
-                    cur_trans = cur_table[byte];
+                    cur_trans = cur_table[(uint8_t)ch];
                     if( cur_trans == NULL ) {
 
                         /* No output translation was found. */
 
-                        translated.text[k] = byte;
+                        translated.text[k] = ch;
                         k++;
                     } else {
 
@@ -571,16 +573,15 @@ static void ob_insert_ps_cmd_ot( uint8_t * in_block, size_t count, uint8_t font 
 
                             /* If it is too large to fit at all, report overflow. */
 
-                            if( cur_trans->count > buffout.length ) buffer_overflow();
+                            if( cur_trans->count > buffout.length )
+                                buffer_overflow();
 
                             if( (k + cur_trans->count) >= translated.length ) {
                                 translated.length *= 2;
-                                translated.text = (uint8_t *) mem_realloc( \
-                                        translated.text, translated.length );
+                                translated.text = mem_realloc( translated.text, translated.length );
                             }
 
-                            memcpy_s( &translated.text[k], cur_trans->count, \
-                                            cur_trans->data, cur_trans->count );
+                            memcpy_s( &translated.text[k], cur_trans->count, cur_trans->data, cur_trans->count );
                             k += cur_trans->count;
                         }
                     }
@@ -589,7 +590,7 @@ static void ob_insert_ps_cmd_ot( uint8_t * in_block, size_t count, uint8_t font 
 
                 /* A single-byte .tr translation found. */
 
-                translated.text[k] = byte;
+                translated.text[k] = ch;
                 k++;
             }
         }
@@ -599,7 +600,8 @@ static void ob_insert_ps_cmd_ot( uint8_t * in_block, size_t count, uint8_t font 
         /* If a space followed the current token, test_length must include it. */
 
         test_length = buffout.current + translated.current;
-        if( in_block[i] == ' ' ) test_length++;
+        if( in_block[i] == ' ' )
+            test_length++;
 
         /* If the token won't fit, flush the buffer. The increment at the top
          * of the loop will skip any following space character; since this is
@@ -636,7 +638,7 @@ static void ob_insert_ps_cmd_ot( uint8_t * in_block, size_t count, uint8_t font 
  *      count contains the number of bytes in the block.
  */
 
-static void ob_insert_def( uint8_t * in_block, size_t count )
+static void ob_insert_def( char *in_block, size_t count )
 {
     size_t      current;
     size_t      difference;
@@ -658,8 +660,7 @@ static void ob_insert_def( uint8_t * in_block, size_t count )
 
         if( text_count <= difference ) break;
 
-        memcpy_s( &buffout.text[buffout.current], difference, \
-                                            &in_block[current], difference );
+        memcpy_s( &buffout.text[buffout.current], difference, &in_block[current], difference );
         buffout.current += difference;
         current+= difference;
         text_count -= difference;
@@ -669,8 +670,7 @@ static void ob_insert_def( uint8_t * in_block, size_t count )
     /* Insert any remaining text. */
 
     if( text_count > 0 ) {
-        memcpy_s( &buffout.text[buffout.current], text_count, \
-                                            &in_block[current], text_count );
+        memcpy_s( &buffout.text[buffout.current], text_count, &in_block[current], text_count );
         buffout.current += text_count;
     }
 
@@ -697,17 +697,18 @@ static void ob_insert_def( uint8_t * in_block, size_t count )
  *          allowed number of characters in it.
  */
 
-static void ob_insert_def_ot( uint8_t * in_block, size_t count, uint8_t font )
+static void ob_insert_def_ot( char *in_block, size_t count, font_number font )
 {
     size_t              text_count;
     translation *   *   cur_table   = NULL;
     translation *       cur_trans   = NULL;
-    uint8_t             byte;
+    char                ch;
     uint32_t            i;
 
     /* Adjust font if necessary and initialize cur_table and text_count. */
 
-    if( font >= wgml_font_cnt ) font = 0;
+    if( font >= wgml_font_cnt )
+        font = 0;
     if( wgml_fonts[font].outtrans != NULL ) cur_table = \
                                             wgml_fonts[font].outtrans->table;
     text_count = count;
@@ -720,24 +721,24 @@ static void ob_insert_def_ot( uint8_t * in_block, size_t count, uint8_t font )
 
         /* Now check for an output translation. */
 
-        byte = tr_table[in_block[i]];
-        if( byte == in_block[i] ) {
+        ch = tr_table[(uint8_t)in_block[i]];
+        if( ch == in_block[i] ) {
             if( cur_table == NULL ) {
 
                 /* No output translation was found. */
 
-                buffout.text[buffout.current] = byte;
+                buffout.text[buffout.current] = ch;
                 buffout.current++;
             } else {
 
                 /* An :OUTTRANS block exists. */
 
-                cur_trans = cur_table[byte];
+                cur_trans = cur_table[(uint8_t)ch];
                 if( cur_trans == NULL ) {
 
                     /* No output translation was found. */
 
-                    buffout.text[buffout.current] = byte;
+                    buffout.text[buffout.current] = ch;
                     buffout.current++;
                 } else {
 
@@ -775,7 +776,7 @@ static void ob_insert_def_ot( uint8_t * in_block, size_t count, uint8_t font )
 
             /* A single-byte .tr output translation was found. */
 
-            buffout.text[buffout.current] = byte;
+            buffout.text[buffout.current] = ch;
             buffout.current++;
         }
         text_count--;
@@ -943,7 +944,7 @@ static void set_out_file( void )
 
     if( temp_outfile[0] != '\0' ) {
         if( out_file != NULL ) mem_free( out_file );
-        out_file = (char *) mem_alloc( strnlen_s( temp_outfile, _MAX_PATH ) + 1 );
+        out_file = mem_alloc( strnlen_s( temp_outfile, _MAX_PATH ) + 1 );
         strcpy_s( out_file, _MAX_PATH, temp_outfile );
     }
 
@@ -986,8 +987,7 @@ static void set_out_file_attr( void )
 
                 len -= 1;
                 out_file_attr = mem_alloc( len );
-                memcpy_s( out_file_attr, len, \
-                            &bin_driver->rec_spec[1], len - 1 );
+                memcpy_s( out_file_attr, len, &bin_driver->rec_spec[1], len - 1 );
                 out_file_attr[len - 1] = '\0';
             }
         } else {
@@ -1028,6 +1028,7 @@ void cop_tr_table( char * p )
 
     // if there is no data, then the table will be reset
     first_found = false;
+    first_char = 0;
     no_data = true;
 
     while( *p ) {
@@ -1059,7 +1060,9 @@ void cop_tr_table( char * p )
     }
 
     if( no_data ) {         // reset the table if no_data is still true
-        for( i = 0; i < 0x100; i++ ) tr_table[i] = i;
+        for( i = 0; i < 0x100; i++ ) {
+            tr_table[i] = i;
+        }
     }
 
     return;
@@ -1209,8 +1212,7 @@ void ob_graphic( graphic_element * in_el )
  *      out_text is true is the bytes are to appear in the document itself.
  */
 
-void ob_insert_block( uint8_t * in_block, size_t count, bool out_trans, \
-                              bool out_text, uint8_t font )
+void ob_insert_block( char *in_block, size_t count, bool out_trans, bool out_text, font_number font )
 {
     /* Select and invoke the proper static function. */
 
@@ -1267,7 +1269,7 @@ void ob_insert_byte( uint8_t in_char )
  *      appropriate macro after text.
  */
 
-void ob_insert_ps_text_end( bool htab_done, uint32_t font )
+void ob_insert_ps_text_end( bool htab_done, font_number font )
 {
     char    shwd_suffix[]   = "shwd ";
     char    sd_suffix[]     = "sd ";
@@ -1365,7 +1367,7 @@ void ob_setup( void )
 
     binc_buff.current = 0;
     binc_buff.length = 80;
-    binc_buff.text = (uint8_t *) mem_alloc( binc_buff.length );
+    binc_buff.text = mem_alloc( binc_buff.length );
 
     buffout.current = 0;
     buffout.length = strtoul( &out_file_attr[2], NULL, 0 );
@@ -1374,11 +1376,11 @@ void ob_setup( void )
         err_count++;
         g_suicide();
     }
-    buffout.text = (uint8_t *) mem_alloc( buffout.length );
+    buffout.text = mem_alloc( buffout.length );
 
     translated.current = 0;
     translated.length = 80;
-    translated.text = (uint8_t *) mem_alloc( translated.length );
+    translated.text = mem_alloc( translated.length );
 
     /* Create (truncate) the output file. */
 

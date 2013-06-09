@@ -36,6 +36,10 @@
 ****************************************************************************/
 
 #include <stdlib.h>
+#if !defined( __UNIX__ )
+#include <direct.h>
+#endif
+#include "wgml.h"
 #include "cfdir.h"
 #include "common.h"
 
@@ -65,7 +69,7 @@
 
 int get_compact_entry( FILE * in_file, directory_entry * entry )
 {
-    uint8_t count;
+    int count;
 
     /* Get the length of the defined_name. */
     
@@ -94,7 +98,7 @@ int get_compact_entry( FILE * in_file, directory_entry * entry )
 
     /* Ensure the length is not zero or too long for the buffer. */
 
-    if( (count == 0) || ((uint16_t) count > NAME_MAX) ) {
+    if( (count == 0) || (count > NAME_MAX) ) {
         return( FAILURE );
     }
 

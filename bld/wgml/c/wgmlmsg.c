@@ -109,7 +109,7 @@ int init_msgs( void )
 /*  get a msg text string                                                  */
 /***************************************************************************/
 
-int get_msg( msg_ids resid, char *buff, unsigned buff_len )
+int get_msg( msg_ids resid, char *buff, size_t buff_len )
 {
     if( WResLoadString( &Instance, resid + MsgShift, buff, buff_len ) != 0 ) {
         buff[0] = '\0';

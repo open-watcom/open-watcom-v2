@@ -68,6 +68,7 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     char                linestr[MAX_L_AS_STR];
     uint32_t            width;
 
+    ressize = ressize;
     if( (parmcount < 1) || (parmcount > 2) ) {
         return( neg );
     }
@@ -96,11 +97,11 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
             type = tolower( *pa );
             switch( type ) {
             case   'c':                 // CPI
-                width = cop_text_width( pval, len, g_curr_font_num );
+                width = cop_text_width( pval, len, g_curr_font );
                 width = (width * CPI + g_resh / 2) / g_resh;
                 break;
             case   'u':                 // Device Units
-                width = cop_text_width( pval, len, g_curr_font_num );
+                width = cop_text_width( pval, len, g_curr_font );
                 break;
             case   'n':                 // character count
                 width = len;
@@ -108,10 +109,10 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
             default:
                 g_err( err_func_parm, "2 (type)" );
                 if( input_cbs->fmflags & II_macro ) {
-                    utoa( input_cbs->s.m->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
                     g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                 } else {
-                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
                     g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                 }
                 err_count++;
@@ -121,7 +122,7 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
             }
         }
     } else {                            // default type c processing
-        width = cop_text_width( pval, len, g_curr_font_num );
+        width = cop_text_width( pval, len, g_curr_font );
         width = (width * CPI + g_resh / 2) / g_resh;
     }
 

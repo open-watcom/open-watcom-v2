@@ -73,7 +73,7 @@ void    init_page_geometry( void )
         if( g_max_line_height < wgml_fonts[k].line_height ) \
             g_max_line_height = wgml_fonts[k].line_height;
     }
-    g_curr_font_num = layout_work.defaults.font;
+    g_curr_font = layout_work.defaults.font;
 
     lm = conv_hor_unit( &layout_work.page.left_margin )
          - bin_device->x_offset;        // left margin &syspagelm
@@ -139,11 +139,11 @@ void    init_page_geometry( void )
         g_net_page_depth = g_page_top - g_page_bottom;
 
         lcmax = 1 + (g_net_page_depth + bin_device->y_offset)
-                 / wgml_fonts[g_curr_font_num].line_height;   // usable no of lines
+                 / wgml_fonts[g_curr_font].line_height;   // usable no of lines
     } else {
         net_y_start = max( bin_device->y_start, net_top_margin );
         if( bin_device->y_start > net_top_margin ) {
-            y_start_correction = min( bin_device->y_start - net_top_margin, wgml_fonts[g_curr_font_num].line_height );
+            y_start_correction = min( bin_device->y_start - net_top_margin, wgml_fonts[g_curr_font].line_height );
         } else {
             y_start_correction = 0;
         }
@@ -202,7 +202,7 @@ void    init_page_geometry( void )
                  bin_device->x_offset,
                  bin_device->y_offset
                );
-        out_msg( "default font number:%d font_count:%d\n", g_curr_font_num,
+        out_msg( "default font number:%d font_count:%d\n", g_curr_font,
                  wgml_font_cnt );
         for( k = 0; k < wgml_font_cnt; ++k ) {
             out_msg( "font:%d def_width:%d em:%d font_h:%d font_s:%d"
@@ -240,13 +240,13 @@ static void finish_banners( void )
     banner_lay_tag  *   cur_ban;
     region_lay_tag  *   cur_reg;
     region_lay_tag  *   top_line_reg;
-    uint8_t             s_font;
+    font_number         s_font;
     uint32_t            ban_line;
     uint32_t            max_reg_depth;
-    uint32_t            max_reg_font;
+    font_number         max_reg_font;
     uint32_t            min_top_line;
 
-    s_font = g_curr_font_num;
+    s_font = g_curr_font;
     for( cur_ban = layout_work.banner; cur_ban != NULL; cur_ban = cur_ban->next ) {
         ban_line = 0;
         max_reg_depth = 0;
@@ -254,12 +254,12 @@ static void finish_banners( void )
         min_top_line = UINT32_MAX;      // start at very large positive number
         top_line_reg = NULL;
         for( cur_reg = cur_ban->region; cur_reg != NULL; cur_reg = cur_reg->next ) {
-            g_curr_font_num = s_font;   // horizontal attributes use default font
+            g_curr_font = s_font;   // horizontal attributes use default font
             cur_reg->reg_indent = conv_hor_unit( &cur_reg->indent );
             cur_reg->reg_hoffset = conv_hor_unit( &cur_reg->hoffset );
             cur_reg->reg_width = conv_hor_unit( &cur_reg->width );
 
-            g_curr_font_num = cur_reg->font; // vertical attributes use the banregion font
+            g_curr_font = cur_reg->font; // vertical attributes use the banregion font
             cur_reg->reg_voffset = conv_vert_unit( &cur_reg->voffset, 1 );
             cur_reg->reg_depth = conv_vert_unit( &cur_reg->depth, 1 );
 
@@ -275,11 +275,11 @@ static void finish_banners( void )
                 top_line_reg = cur_reg;
             }
         }
-        g_curr_font_num = s_font;       // horizontal attributes use default font
+        g_curr_font = s_font;       // horizontal attributes use default font
         cur_ban->ban_left_adjust = conv_hor_unit( &cur_ban->left_adjust );
         cur_ban->ban_right_adjust = conv_hor_unit( &cur_ban->right_adjust );
 
-        g_curr_font_num = max_reg_font; // vertical attribute uses the largest banregion font
+        g_curr_font = max_reg_font; // vertical attribute uses the largest banregion font
         cur_ban->ban_depth = conv_vert_unit( &cur_ban->depth, 1 );
 
         cur_ban->top_line = top_line_reg;
@@ -289,7 +289,7 @@ static void finish_banners( void )
             cur_ban->ban_depth = max_reg_depth;
         }
     }
-    g_curr_font_num = s_font;
+    g_curr_font = s_font;
     return;
 }
 

@@ -59,12 +59,11 @@ void    proc_p_pc( p_lay_tag * p_pc )
 
     if( *p == '.' ) p++;                // over '.'
 
-    set_skip_vars( &(p_pc->pre_skip), NULL, &(p_pc->post_skip), spacing,
-                    g_curr_font_num );
+    set_skip_vars( &(p_pc->pre_skip), NULL, &(p_pc->post_skip), spacing, g_curr_font );
 
     post_space = 0;
 
-    process_text( p, g_curr_font_num );
+    process_text( p, g_curr_font );
 
     scan_start = scan_stop + 1;
     return;
@@ -75,6 +74,7 @@ void    proc_p_pc( p_lay_tag * p_pc )
 /***************************************************************************/
 extern  void    gml_p( const gmltag * entry )
 {
+    entry = entry;
     proc_p_pc( &layout_work.p );
     ProcFlags.empty_doc_el = true;  // for next break, not this tag's break
 }
@@ -84,6 +84,7 @@ extern  void    gml_p( const gmltag * entry )
 /***************************************************************************/
 extern  void    gml_pc( const gmltag * entry )
 {
+    entry = entry;
     proc_p_pc( &layout_work.pc );
 }
 
@@ -92,10 +93,11 @@ extern  void    gml_pc( const gmltag * entry )
 /***************************************************************************/
 extern  void    gml_note( const gmltag * entry )
 {
-    char        *   p;
-    int8_t          font_save;
+    char            *p;
+    font_number     font_save;
 //    int32_t         skip_save;
 
+    entry = entry;
     scan_err = false;
     p = scan_start;
 
@@ -103,10 +105,9 @@ extern  void    gml_note( const gmltag * entry )
 
     scr_process_break();
 
-    font_save = g_curr_font_num;
-    g_curr_font_num = layout_work.note.font;
-    set_skip_vars( &layout_work.note.pre_skip, NULL, &layout_work.note.post_skip,
-                    spacing, g_curr_font_num );
+    font_save = g_curr_font;
+    g_curr_font = layout_work.note.font;
+    set_skip_vars( &layout_work.note.pre_skip, NULL, &layout_work.note.post_skip, spacing, g_curr_font );
     post_space = 0;
 
     if( nest_cb->c_tag == t_NONE ) {
@@ -127,16 +128,15 @@ extern  void    gml_note( const gmltag * entry )
     ju_x_start = g_cur_h_start;
 
     spacing = layout_work.note.spacing;
-    g_curr_font_num = layout_work.defaults.font;
+    g_curr_font = layout_work.defaults.font;
 
-    set_skip_vars( NULL, NULL, NULL,
-                    spacing, g_curr_font_num );
+    set_skip_vars( NULL, NULL, NULL, spacing, g_curr_font );
     if( *p == '.' ) p++;                // over '.'
     while( *p == ' ' ) p++;             // skip initial spaces
     if( *p ) {
-        process_text( p, g_curr_font_num ); // if text follows
+        process_text( p, g_curr_font ); // if text follows
     }
-    g_curr_font_num = font_save;
+    g_curr_font = font_save;
     scan_start = scan_stop + 1;
     return;
 }

@@ -40,9 +40,9 @@
 #ifndef CFFON_H_INCLUDED
 #define CFFON_H_INCLUDED
 
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "bool.h"
 #include "cftrans.h"
 
 /* Structure declarations. */

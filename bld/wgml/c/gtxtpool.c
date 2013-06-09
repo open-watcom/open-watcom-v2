@@ -52,7 +52,7 @@
 /*  allocate / reuse and init a text_chars instance                        */
 /*      optionally fill in text                                            */
 /***************************************************************************/
-text_chars  * alloc_text_chars( char * p, size_t cnt, uint8_t font_num )
+text_chars  *alloc_text_chars( char *p, size_t cnt, font_number font )
 {
     text_chars   *   curr;
     text_chars   *   prev;
@@ -92,7 +92,7 @@ text_chars  * alloc_text_chars( char * p, size_t cnt, uint8_t font_num )
     curr->prev = NULL;
     curr->next = NULL;
     curr->type = norm;
-    curr->font_number = font_num;
+    curr->font = font;
     curr->width = 0;
     if( p != NULL ) {                   // text supplied
         memcpy_s(curr->text, cnt + 1, p, cnt ); // yes copy text

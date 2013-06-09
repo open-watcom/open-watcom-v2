@@ -112,6 +112,7 @@ static  char    * find_end_of_parm( char * pchar, char * pend )
     test_for_quote = true;
     cm1 = '\0';
     cm2 = '\0';
+    c = '\0';
     for(  ; *pchar != '\0' ; pchar++ ) {
         cm2 = cm1;
         cm1 = c;
@@ -205,10 +206,10 @@ static  void    err_info( char * * result )
     char                linestr[MAX_L_AS_STR];
 
     if( input_cbs->fmflags & II_macro ) {
-        utoa( input_cbs->s.m->lineno, linestr, 10 );
+        ultoa( input_cbs->s.m->lineno, linestr, 10 );
         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
     } else {
-        utoa( input_cbs->s.f->lineno, linestr, 10 );
+        ultoa( input_cbs->s.f->lineno, linestr, 10 );
         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
     }
     err_count++;

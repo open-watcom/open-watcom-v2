@@ -47,20 +47,18 @@ static void prep_title_line( text_line * p_line, char * p )
     h_left = g_page_left + conv_hor_unit( &layout_work.title.left_adjust );
     h_right = g_page_right - conv_hor_unit( &layout_work.title.right_adjust );
 
-    curr_t = alloc_text_chars( p, strlen( p ), g_curr_font_num );
+    curr_t = alloc_text_chars( p, strlen( p ), g_curr_font );
     curr_t->count = len_to_trail_space( curr_t->text, curr_t->count );
 
-    intrans( curr_t->text, &curr_t->count, g_curr_font_num );
-    curr_t->font_number = layout_work.title.font;
-    curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                    g_curr_font_num );
+    intrans( curr_t->text, &curr_t->count, g_curr_font );
+    curr_t->font = layout_work.title.font;
+    curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     while( curr_t->width > (h_right - h_left) ) {   // too long for line
         if( curr_t->count < 2) {        // sanity check
             break;
         }
         curr_t->count -= 1;             // truncate text
-        curr_t->width = cop_text_width( curr_t->text, curr_t->count,
-                                        g_curr_font_num );
+        curr_t->width = cop_text_width( curr_t->text, curr_t->count, g_curr_font );
     }
     p_line->first = curr_t;
     p_line->last  = curr_t;
@@ -89,7 +87,7 @@ void    gml_title( const gmltag * entry )
     doc_element *   cur_el;
     text_line   *   p_line      = NULL;
     int8_t          t_spacing;
-    int8_t          font_save;
+    font_number     font_save;
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
@@ -146,20 +144,18 @@ void    gml_title( const gmltag * entry )
 
     start_doc_sect();                   // if not already done
 
-    font_save = g_curr_font_num;
-    g_curr_font_num = layout_work.title.font;
+    font_save = g_curr_font;
+    g_curr_font = layout_work.title.font;
     t_spacing = layout_work.titlep.spacing;
     if( !ProcFlags.title_tag_top ) {
-        set_skip_vars( NULL, &layout_work.title.pre_top_skip, NULL, t_spacing, 
-                       g_curr_font_num );
+        set_skip_vars( NULL, &layout_work.title.pre_top_skip, NULL, t_spacing, g_curr_font );
         ProcFlags.title_tag_top = true;
     } else {
-        set_skip_vars( &layout_work.title.skip, NULL, NULL, t_spacing, 
-                       g_curr_font_num );
+        set_skip_vars( &layout_work.title.skip, NULL, NULL, t_spacing, g_curr_font );
     }
     
     p_line = alloc_text_line();
-    p_line->line_height = wgml_fonts[g_curr_font_num].line_height;
+    p_line->line_height = wgml_fonts[g_curr_font].line_height;
     if( *p ) {
         prep_title_line( p_line, p );
     }
@@ -177,6 +173,6 @@ void    gml_title( const gmltag * entry )
     p_line = NULL;
     insert_col_main( cur_el );
 
-    g_curr_font_num = font_save;
+    g_curr_font = font_save;
     scan_start = scan_stop + 1;
 }

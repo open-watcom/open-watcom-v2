@@ -114,7 +114,7 @@ void  scr_process_break( void )
     } else if( ProcFlags.empty_doc_el ) {   // empty element needed?
 
         t_element = alloc_doc_el( el_text );
-        t_element->depth = wgml_fonts[g_curr_font_num].line_height + g_spacing;
+        t_element->depth = wgml_fonts[g_curr_font].line_height + g_spacing;
         t_element->blank_lines = g_blank_lines;
         g_blank_lines = 0;
         t_element->subs_skip = g_subs_skip;
@@ -122,8 +122,7 @@ void  scr_process_break( void )
         t_element->element.text.overprint = ProcFlags.overprint;
         ProcFlags.overprint = false;
         t_element->element.text.first = alloc_text_line();
-        t_element->element.text.first->line_height =
-                                        wgml_fonts[g_curr_font_num].line_height;
+        t_element->element.text.first->line_height = wgml_fonts[g_curr_font].line_height;
         t_element->element.text.first->first = NULL;
         t_element->element.text.spacing = g_spacing;
         ProcFlags.skips_valid = false;
@@ -134,7 +133,7 @@ void  scr_process_break( void )
 
     } else if( g_blank_lines > 0 ) {              // blank lines at end of section?
         t_element = alloc_doc_el( el_text );
-        t_element->depth = wgml_fonts[g_curr_font_num].line_height + g_spacing;
+        t_element->depth = wgml_fonts[g_curr_font].line_height + g_spacing;
         t_element->blank_lines = g_blank_lines;
         g_blank_lines = 0;
         t_element->subs_skip = g_subs_skip;
@@ -142,8 +141,7 @@ void  scr_process_break( void )
         t_element->element.text.overprint = ProcFlags.overprint;
         ProcFlags.overprint = false;
         t_element->element.text.first = alloc_text_line();
-        t_element->element.text.first->line_height =
-                                        wgml_fonts[g_curr_font_num].line_height;
+        t_element->element.text.first->line_height = wgml_fonts[g_curr_font].line_height;
         t_element->element.text.first->first = NULL;
         t_element->element.text.spacing = g_spacing;
         ProcFlags.skips_valid = false;

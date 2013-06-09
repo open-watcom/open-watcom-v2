@@ -33,6 +33,7 @@
 #include "cfparse.h"
 #include "common.h"
 #include "research.h"
+#include "clibext.h"
 
 /*  Function main().
  *  Given a valid name, verify that it is a valid .COP file and parse it
@@ -45,7 +46,7 @@
  *      EXIT_FAILURE or EXIT_SUCCESS, as appropriate.
  */
 
-int main()
+int main( void )
 {
     /* Declare automatic variables. */
 

@@ -115,6 +115,7 @@ void    lay_address( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 
@@ -148,14 +149,13 @@ void    lay_address( const gmltag * entry )
                                           &layout_work.address.page_position );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.address.font );
+                    cvterr = i_font_number( p, curr, &layout_work.address.font );
                     if( layout_work.address.font >= wgml_font_cnt ) {
                         layout_work.address.font = 0;
                     }
                     break;
                 case   e_pre_skip:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.address.pre_skip );
+                    cvterr = i_space_unit( p, curr, &layout_work.address.pre_skip );
                     break;
                 default:
                     out_msg( "WGML logic error.\n");
@@ -194,6 +194,7 @@ void    lay_aline( const gmltag * entry )
     att_args            l_args;
     bool                cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 

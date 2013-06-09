@@ -73,9 +73,9 @@ bool        gotarget_reached( void )
     reached = false;
     if( gotargetno > 0 ) {              // lineno search
         if( input_cbs->fmflags & II_macro ) {
-            reached = input_cbs->s.m->lineno == gotargetno;
+            reached = ( input_cbs->s.m->lineno == gotargetno );
         } else {
-            reached = input_cbs->s.f->lineno == gotargetno;
+            reached = ( input_cbs->s.f->lineno == gotargetno );
         }
     } else {                            // label name search
         if( (*buff2 == *(buff2 + 1)) && (*buff2 == *(buff2 + 2)) ) {// "..."
@@ -103,7 +103,7 @@ bool        gotarget_reached( void )
 /*  check whether new label is duplicate                                   */
 /***************************************************************************/
 
-static  condcode    test_duplicate( char * name, ulong lineno )
+static  condcode    test_duplicate( char * name, lineno_t lineno )
 {
     labelcb     *   lb;
 
@@ -170,10 +170,10 @@ void    scr_label( void )
         err_count++;
         g_err( err_missing_name, "" );
         if( input_cbs->fmflags & II_macro ) {
-            utoa( input_cbs->s.m->lineno, linestr, 10 );
+            ultoa( input_cbs->s.m->lineno, linestr, 10 );
             g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
         } else {
-            utoa( input_cbs->s.f->lineno, linestr, 10 );
+            ultoa( input_cbs->s.f->lineno, linestr, 10 );
             g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
         show_include_stack();
@@ -196,7 +196,7 @@ void    scr_label( void )
                     scan_err = true;
                     err_count++;
                     g_err( err_label_line, gn.resultstr );
-                    utoa( input_cbs->s.m->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
                     g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     show_include_stack();
                     return;
@@ -206,7 +206,7 @@ void    scr_label( void )
                     scan_err = true;
                     err_count++;
                     g_err( err_label_line, gn.resultstr );
-                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
                     g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     show_include_stack();
                     return;
@@ -218,7 +218,7 @@ void    scr_label( void )
             } else {
                 wng_count++;
                 g_warn( wng_label_num );
-                utoa( input_cbs->s.f->lineno, linestr, 10 );
+                ultoa( input_cbs->s.f->lineno, linestr, 10 );
                 g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                 show_include_stack();
             }
@@ -241,7 +241,7 @@ void    scr_label( void )
                 if( len >  MAC_NAME_LENGTH ) {
                     err_count++;
                     g_err( err_sym_long, token_buf );
-                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
                     g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     show_include_stack();
                     token_buf[MAC_NAME_LENGTH] = '\0';
@@ -257,7 +257,7 @@ void    scr_label( void )
                             scan_err = true;
                             err_count++;
                             g_err( err_label_dup, token_buf );
-                            utoa( input_cbs->s.m->lineno, linestr, 10 );
+                            ultoa( input_cbs->s.m->lineno, linestr, 10 );
                             g_info( inf_mac_line, linestr,
                                      input_cbs->s.m->mac->name );
                             show_include_stack();
@@ -281,9 +281,8 @@ void    scr_label( void )
                             scan_err = true;
                             err_count++;
                             g_err( err_label_dup, token_buf );
-                            utoa( input_cbs->s.f->lineno, linestr, 10 );
-                            g_info( inf_file_line, linestr,
-                                    input_cbs->s.f->filename );
+                            ultoa( input_cbs->s.f->lineno, linestr, 10 );
+                            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                             show_include_stack();
                             return;
                         } else {        // new label
@@ -303,10 +302,10 @@ void    scr_label( void )
                 err_count++;
                 g_err( err_missing_name, "" );
                 if( input_cbs->fmflags & II_macro ) {
-                    utoa( input_cbs->s.m->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
                     g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                 } else {
-                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
                     g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                 }
                 show_include_stack();
@@ -391,10 +390,10 @@ void    scr_go( void )
         err_count++;
         g_err( err_missing_name, "" );
         if( input_cbs->fmflags & II_macro ) {
-            utoa( input_cbs->s.m->lineno, linestr, 10 );
+            ultoa( input_cbs->s.m->lineno, linestr, 10 );
             g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
         } else {
-            utoa( input_cbs->s.f->lineno, linestr, 10 );
+            ultoa( input_cbs->s.f->lineno, linestr, 10 );
             g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
         show_include_stack();
@@ -405,29 +404,37 @@ void    scr_go( void )
     gn.argstop       = scan_stop;
     gn.ignore_blanks = 0;
 
-    cc = getnum( &gn );             // try numeric expression evaluation
+    cc = getnum( &gn );                 // try numeric expression evaluation
     if( cc == pos  || cc  == neg) {     // numeric linenumber
         gotarget[0] = '\0';             // no target label name
         if( gn.num_sign == ' '  ) {     // absolute number
             gotargetno = gn.result;
         } else {
+            // relative number
             if( input_cbs->fmflags & II_macro ) {
                 gotargetno = input_cbs->s.m->lineno;
             } else {
                 gotargetno = input_cbs->s.m->lineno;
             }
-            gotargetno += gn.result;    // relative target line number
+            // check lineno overflow/underflow
+            if( gn.num_sign == '-' && ( gotargetno + gn.result ) > gotargetno ) {
+                gotargetno = 0;
+            } else if( gn.num_sign == '+' && ( gotargetno + gn.result ) < gotargetno ) {
+                gotargetno = 0;
+            } else {
+                gotargetno += gn.result;
+            }
         }
 
-        if( gotargetno < 1 ) {
+        if( gotargetno == 0 ) {
             scan_err = true;
             err_count++;
             g_err( err_label_zero );
             if( input_cbs->fmflags & II_macro ) {
-                utoa( input_cbs->s.m->lineno, linestr, 10 );
+                ultoa( input_cbs->s.m->lineno, linestr, 10 );
                 g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
-                utoa( input_cbs->s.f->lineno, linestr, 10 );
+                ultoa( input_cbs->s.f->lineno, linestr, 10 );
                 g_info( inf_file_line, linestr, input_cbs->s.f->filename );
             }
             show_include_stack();
@@ -446,10 +453,10 @@ void    scr_go( void )
             err_count++;
             g_err( err_sym_long, tok_start );
             if( input_cbs->fmflags & II_macro ) {
-                utoa( input_cbs->s.m->lineno, linestr, 10 );
+                ultoa( input_cbs->s.m->lineno, linestr, 10 );
                 g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
-                utoa( input_cbs->s.f->lineno, linestr, 10 );
+                ultoa( input_cbs->s.f->lineno, linestr, 10 );
                 g_info( inf_file_line, linestr, input_cbs->s.f->filename );
             }
             show_include_stack();
@@ -502,8 +509,7 @@ void        print_labels( labelcb * lcb, char * name )
         out_msg( "\nList of defined labels for %s:\n\n", name);
         while( lb != NULL ) {
             len = strlen( lb->label_name );
-            out_msg( "Label='%s'%s at line %d\n", lb->label_name, &fill[len],
-                      lb->lineno );
+            out_msg( "Label='%s'%s at line %d\n", lb->label_name, &fill[len], lb->lineno );
             lb = lb->prev;
         }
     }

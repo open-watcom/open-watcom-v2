@@ -125,11 +125,11 @@ static void scan_gml( void )
         err_count++;
         // SC--009 The tagname is too long
         if( cb->fmflags & II_macro ) {
-            utoa( cb->s.m->lineno, linestr, 10 );
+            ultoa( cb->s.m->lineno, linestr, 10 );
             g_err( err_tag_name, tok_start + 1, linestr, "macro",
                    cb->s.m->mac->name );
         } else {
-            utoa( cb->s.f->lineno, linestr, 10 );
+            ultoa( cb->s.f->lineno, linestr, 10 );
             g_err( err_tag_name, tok_start + 1, linestr, "file",
                    cb->s.f->filename );
         }
@@ -177,14 +177,12 @@ static void scan_gml( void )
             // SC--037: The macro 'xxxxxx' for the gml tag 'yyyyy'
             //          is not defined
             if( cb->fmflags & II_macro ) {
-                utoa( cb->s.m->lineno, linestr, 10 );
-                g_err( err_tag_macro,
-                         ge->macname, ge->name,
+                ultoa( cb->s.m->lineno, linestr, 10 );
+                g_err( err_tag_macro, ge->macname, ge->name,
                          linestr, "macro", cb->s.m->mac->name );
             } else {
-                utoa( cb->s.f->lineno, linestr, 10 );
-                g_err( err_tag_macro,
-                         ge->macname, ge->name,
+                ultoa( cb->s.f->lineno, linestr, 10 );
+                g_err( err_tag_macro, ge->macname, ge->name,
                          linestr, "file", cb->s.f->filename );
             }
             if( inc_level > 0 ) {
@@ -660,10 +658,10 @@ condcode    test_process( ifcb * cb )
     }
     if( cc == no ) {                    // cc not set program logic error
         if( input_cbs->fmflags & II_macro ) {
-            utoa( input_cbs->s.m->lineno, linestr, 10 );
+            ultoa( input_cbs->s.m->lineno, linestr, 10 );
             g_err( err_if_intern, linestr, "macro", input_cbs->s.m->mac->name );
         } else {
-            utoa( input_cbs->s.f->lineno, linestr, 10 );
+            ultoa( input_cbs->s.f->lineno, linestr, 10 );
             g_err( err_if_intern,
                      linestr, "file", input_cbs->s.f->filename );
         }
@@ -779,7 +777,7 @@ void    scan_line( void )
                     if( ProcFlags.xmp_active ) {
                         xmp_xline( NULL );
                     } else {
-                        process_text( scan_start, g_curr_font_num );
+                        process_text( scan_start, g_curr_font );
                     }
                 }
             }

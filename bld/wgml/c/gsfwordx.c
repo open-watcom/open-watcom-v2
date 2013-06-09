@@ -71,7 +71,7 @@ static  bool    is_word;          // true if word call, false if subword call
 /***************************************************************************/
 
 static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
-                                 char * * result, int32_t ressize )
+                                 char **result, int32_t ressize )
 {
     char            *   pval;
     char            *   pend;
@@ -87,6 +87,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
         return( neg );
     }
 
+    ptok = NULL;
     pval = parms[0].a;
     pend = parms[0].e;
 
@@ -110,10 +111,10 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
             if( !ProcFlags.suppress_msg ) {
                 g_err( err_func_parm, "2 (startword)" );
                 if( input_cbs->fmflags & II_macro ) {
-                    utoa( input_cbs->s.m->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.m->lineno, linestr, 10 );
                     g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                 } else {
-                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    ultoa( input_cbs->s.f->lineno, linestr, 10 );
                     g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                 }
                 err_count++;
@@ -136,10 +137,10 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount,
                     if( !ProcFlags.suppress_msg ) {
                         g_err( err_func_parm, "3 (length)" );
                         if( input_cbs->fmflags & II_macro ) {
-                            utoa( input_cbs->s.m->lineno, linestr, 10 );
+                            ultoa( input_cbs->s.m->lineno, linestr, 10 );
                             g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                         } else {
-                            utoa( input_cbs->s.f->lineno, linestr, 10 );
+                            ultoa( input_cbs->s.f->lineno, linestr, 10 );
                             g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                         }
                         err_count++;
@@ -252,6 +253,7 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     int                 wc;
     int                 len;
 
+    ressize = ressize;
     if( parmcount != 1 ) {
         return( neg );
     }
@@ -316,7 +318,6 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * r
     char            *   pstr;
     char            *   pstrend;
     char            *   pp;
-
     int                 index;
     condcode            cc;
     int                 k;
@@ -327,6 +328,7 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * r
     bool                found;
     char                linestr[MAX_L_AS_STR];
 
+    ressize = ressize;
     if( (parmcount < 2) || (parmcount > 3) ) {
         return( neg );
     }
@@ -363,14 +365,14 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * r
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
-                        g_err( err_func_parm, "3 (startword)" );
-                        if( input_cbs->fmflags & II_macro ) {
-                            utoa( input_cbs->s.m->lineno, linestr, 10 );
-                            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-                        } else {
-                            utoa( input_cbs->s.f->lineno, linestr, 10 );
-                            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
-                        }
+                    g_err( err_func_parm, "3 (startword)" );
+                    if( input_cbs->fmflags & II_macro ) {
+                        ultoa( input_cbs->s.m->lineno, linestr, 10 );
+                        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
+                    } else {
+                        ultoa( input_cbs->s.f->lineno, linestr, 10 );
+                        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+                    }
                     err_count++;
                     show_include_stack();
                 }

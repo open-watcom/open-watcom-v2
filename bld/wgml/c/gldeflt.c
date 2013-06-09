@@ -39,8 +39,7 @@
 /*   :DEFAULT attributes                                                   */
 /***************************************************************************/
 const   lay_att     default_att[8] =
-    { e_spacing, e_columns, e_font, e_justify, e_input_esc, e_gutter,
-      e_binding, e_dummy_zero };
+    { e_spacing, e_columns, e_font, e_justify, e_input_esc, e_gutter, e_binding, e_dummy_zero };
  
 /***************************************************************************/
 /*Define default characteristics for document processing.                  */
@@ -109,6 +108,7 @@ void    lay_default( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
  
+    entry = entry;
     p = scan_start;
     cvterr = false;
  
@@ -136,7 +136,7 @@ void    lay_default( const gmltag * entry )
                     cvterr = i_int8( p, curr, &layout_work.defaults.columns );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.defaults.font );
+                    cvterr = i_font_number( p, curr, &layout_work.defaults.font );
                     if( layout_work.defaults.font >= wgml_font_cnt ) {
                         layout_work.defaults.font = 0;
                     }

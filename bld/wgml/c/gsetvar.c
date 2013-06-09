@@ -92,10 +92,10 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
                     g_err( err_sym_long, sym_start );
                     g_info( inf_sym_10 );
                     if( input_cbs->fmflags & II_macro ) {
-                        utoa( input_cbs->s.m->lineno, linestr, 10 );
+                        ultoa( input_cbs->s.m->lineno, linestr, 10 );
                         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     } else {
-                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        ultoa( input_cbs->s.f->lineno, linestr, 10 );
                         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     }
                     show_include_stack();
@@ -303,13 +303,11 @@ void    scr_se( void )
                      wng_count++;
                      g_err( wng_miss_inv_value, sym.name, p );
                      if( input_cbs->fmflags & II_macro ) {
-                         utoa( input_cbs->s.m->lineno, linestr, 10 );
-                         g_info( inf_mac_line, linestr,
-                                 input_cbs->s.m->mac->name );
+                         ultoa( input_cbs->s.m->lineno, linestr, 10 );
+                         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                      } else {
-                         utoa( input_cbs->s.f->lineno, linestr, 10 );
-                         g_info( inf_file_line, linestr,
-                                 input_cbs->s.f->filename );
+                         ultoa( input_cbs->s.f->lineno, linestr, 10 );
+                         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                      }
                      show_include_stack();
                 }

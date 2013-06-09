@@ -65,6 +65,7 @@ extern  void    gml_include( const gmltag * entry )
 {
     char    *   p;
 
+    entry = entry;
     p = scan_start;
     p++;
     while( *p == ' ' ) {

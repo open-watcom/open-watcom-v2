@@ -91,7 +91,7 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result, int32_t ressize )
 {
     char            *   pneedle;
     char            *   pneedlend;
@@ -107,6 +107,7 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     char            *   pn;
     char                linestr[MAX_L_AS_STR];
 
+    ressize = ressize;
     if( (parmcount < 2) || (parmcount > 3) ) {
         cc = neg;
         return( cc );
@@ -136,10 +137,10 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
                 if( !ProcFlags.suppress_msg ) {
                     g_err( err_func_parm, "3 (startpos)" );
                     if( input_cbs->fmflags & II_macro ) {
-                        utoa( input_cbs->s.m->lineno, linestr, 10 );
+                        ultoa( input_cbs->s.m->lineno, linestr, 10 );
                         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     } else {
-                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        ultoa( input_cbs->s.f->lineno, linestr, 10 );
                         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     }
                     err_count++;
@@ -228,6 +229,7 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
     char            *   pn;
     char                linestr[MAX_L_AS_STR];
 
+    ressize = ressize;
     if( (parmcount < 2) || (parmcount > 3) ) {
         cc = neg;
         return( cc );
@@ -257,10 +259,10 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
                 if( !ProcFlags.suppress_msg ) {
                     g_err( err_func_parm, "3 (startpos)" );
                     if( input_cbs->fmflags & II_macro ) {
-                        utoa( input_cbs->s.m->lineno, linestr, 10 );
+                        ultoa( input_cbs->s.m->lineno, linestr, 10 );
                         g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     } else {
-                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        ultoa( input_cbs->s.f->lineno, linestr, 10 );
                         g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     }
                     err_count++;
@@ -304,4 +306,3 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
 
     return( pos );
 }
-

@@ -58,7 +58,7 @@ void init_nest_cb( void )
         wk->headhi       = 0;
         wk->dl_break     = false;
         wk->compact      = false;
-        wk->font         = g_curr_font_num;
+        wk->font         = g_curr_font;
     }
 
     nest_cb = wk;                       // new top of stack

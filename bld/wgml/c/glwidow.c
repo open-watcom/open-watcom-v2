@@ -61,6 +61,7 @@ void    lay_widow( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
+    entry = entry;
     p = scan_start;
 
     if( !GlobalFlags.firstpass ) {
@@ -81,7 +82,7 @@ void    lay_widow( const gmltag * entry )
 
                 switch( curr ) {
                 case   e_threshold:
-                    cvterr = i_int8( p, curr, &layout_work.widow.threshold );
+                    cvterr = i_uint8( p, curr, &layout_work.widow.threshold );
                     break;
                 default:
                     out_msg( "WGML logic error.\n");

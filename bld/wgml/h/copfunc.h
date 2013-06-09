@@ -47,7 +47,9 @@
 
 /* Struct declarations. */
 
+#ifdef __WATCOMC__
 #pragma disable_message( 128 ); // suppress: Warning! W128: 3 padding byte(s) added
+#endif
 
 /* This holds the raw contents of one or more contiguous P-buffers. The
  * buffer is to be interpreted as an array of count uint8_t value. The
@@ -56,7 +58,7 @@
 
 typedef struct {
     uint16_t    count;
-    uint8_t *   buffer;
+    char        *buffer;
 } p_buffer;
 
 /* To hold the data extracted from the CodeBlock struct. This is the CodeBlock
@@ -69,7 +71,7 @@ typedef struct {
     uint16_t    line_pass;
     uint16_t    count;
     uint16_t    cumulative_index;
-    uint8_t *   text;
+    char        *text;
 } code_block;
 
 /* To hold the data extracted from the Variant A FunctionsBlock struct. */
@@ -79,7 +81,9 @@ typedef struct {
     code_block *    code_blocks;
 } functions_block;
 
+#ifdef __WATCOMC__
 #pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
+#endif
 
 /* Function declarations. */
 
@@ -87,9 +91,9 @@ typedef struct {
 extern "C" {    /* Use "C" linkage when in C++ mode. */
 #endif
 
-extern code_block      *   get_code_blocks( uint8_t * * position, uint16_t count, uint8_t * base );
+extern code_block      *   get_code_blocks( char **position, uint16_t count, char *base );
 extern p_buffer        *   get_p_buffer( FILE * file );
-extern functions_block *   parse_functions_block( uint8_t * * position, uint8_t * base );
+extern functions_block *   parse_functions_block( char **position, char *base );
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */

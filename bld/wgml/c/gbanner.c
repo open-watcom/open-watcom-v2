@@ -98,26 +98,10 @@ void set_banners( void )
     static const struct {
         ban_docsect     ban_tag;
         e_tags          tag;
-    }  ban_2_tag[max_ban] =  {
-        { no_ban,       t_NONE     },   // dummy
-        { abstract_ban, t_ABSTRACT },
-        { appendix_ban, t_APPENDIX },
-        { backm_ban,    t_BACKM    },
-        { body_ban,     t_BODY     },
-        { figlist_ban,  t_FIGLIST  },
-        { head0_ban,    t_H0       },
-        { head1_ban,    t_H1       },
-        { head2_ban,    t_H2       },
-        { head3_ban,    t_H3       },
-        { head4_ban,    t_H4       },
-        { head5_ban,    t_H5       },
-        { head6_ban,    t_H6       },
-        { letfirst_ban, t_NONE     },   // dummy
-        { letlast_ban,  t_NONE     },   // dummy
-        { letter_ban,   t_NONE     },   // dummy
-        { index_ban,    t_INDEX    },
-        { preface_ban,  t_PREFACE  },
-        { toc_ban,      t_TOC      },
+    }  ban_2_tag[] =  {
+        #define pick(e,t,s,n) { e, t },
+        #include "bdocsect.h"
+        #undef pick
     };
 
     for( k = 0; k < max_ban; k++ ) {    // init banner list
@@ -177,6 +161,7 @@ static char * subst_1var( char * pout, char * pvar, size_t len )
     int                 rc;
     char            *   pchar;
 
+    len = len;
     ProcFlags.suppress_msg = true;
     scan_err = false;
 
@@ -692,6 +677,7 @@ static  void    out_ban_common( banner_lay_tag * ban, bool top )
     reg_text[2] = NULL;
 
     ban_line.first = NULL;
+    last = NULL;
 
     /* calc banner horizontal margins */
     ban_left  = g_page_left_org + ban->ban_left_adjust;
@@ -704,16 +690,16 @@ static  void    out_ban_common( banner_lay_tag * ban, bool top )
         if( reg_text[k] == NULL ) {
             continue;                   // skip empty part
         }
-        g_curr_font_num = reg_text[k]->font_number;
+        g_curr_font = reg_text[k]->font;
         if( ban_line.first == NULL ) {
             ban_line.first = reg_text[k];
-            ban_line.line_height = wgml_fonts[reg_text[k]->font_number].line_height;
+            ban_line.line_height = wgml_fonts[reg_text[k]->font].line_height;
         } else {
             ban_line.last->next = reg_text[k];
             reg_text[k]->prev = ban_line.last;
         }
-        if( ban_line.line_height < wgml_fonts[reg_text[k]->font_number].line_height ) {
-            ban_line.line_height = wgml_fonts[reg_text[k]->font_number].line_height;
+        if( ban_line.line_height < wgml_fonts[reg_text[k]->font].line_height ) {
+            ban_line.line_height = wgml_fonts[reg_text[k]->font].line_height;
         }
         curr_t = reg_text[k];
         ban_line.last  = reg_text[k];
@@ -765,8 +751,7 @@ static  void    out_ban_common( banner_lay_tag * ban, bool top )
                    break;
                 }
                 curr_p->count -= 1;     // truncate text, adjust width
-                curr_p->width -= wgml_fonts[curr_p->font_number].width_table
-                                                 [curr_p->text[curr_p->count]];
+                curr_p->width -= wgml_fonts[curr_p->font].width_table[(uint8_t)curr_p->text[curr_p->count]];
             }
             curr_p = curr_t;
         }
@@ -809,7 +794,7 @@ static  void    out_ban_common( banner_lay_tag * ban, bool top )
         ban_line.first = NULL;
     }
 
-    g_curr_font_num = layout_work.defaults.font;
+    g_curr_font = layout_work.defaults.font;
 }
 
 /***************************************************************************/

@@ -42,7 +42,8 @@
 /***************************************************************************/
 extern  void    gml_pb( const gmltag * entry )
 {
- 
+    entry = entry;
+
     scan_err = false;
  
     start_doc_sect();                   // if not already done

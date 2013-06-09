@@ -47,13 +47,14 @@ const   lay_att     docnum_att[7] =
 
 void    lay_docnum( const gmltag * entry )
 {
-    char            *   p;
+    char                *p;
     condcode            cc;
     int                 k;
     lay_att             curr;
     att_args            l_args;
     int                 cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 
@@ -75,30 +76,25 @@ void    lay_docnum( const gmltag * entry )
 
                 switch( curr ) {
                 case   e_left_adjust:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.docnum.left_adjust );
+                    cvterr = i_space_unit( p, curr, &layout_work.docnum.left_adjust );
                     break;
                 case   e_right_adjust:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.docnum.right_adjust );
+                    cvterr = i_space_unit( p, curr, &layout_work.docnum.right_adjust );
                     break;
                 case   e_page_position:
-                    cvterr = i_page_position( p, curr,
-                                          &layout_work.docnum.page_position );
+                    cvterr = i_page_position( p, curr, &layout_work.docnum.page_position );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.docnum.font );
+                    cvterr = i_font_number( p, curr, &layout_work.docnum.font );
                     if( layout_work.docnum.font >= wgml_font_cnt ) {
                         layout_work.docnum.font = 0;
                     }
                     break;
                 case   e_pre_skip:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.docnum.pre_skip );
+                    cvterr = i_space_unit( p, curr, &layout_work.docnum.pre_skip );
                     break;
                 case   e_docnum_string:
-                    cvterr = i_xx_string( p, curr,
-                                          &layout_work.docnum.string );
+                    cvterr = i_xx_string( p, curr, layout_work.docnum.string );
                     break;
                 default:
                     out_msg( "WGML logic error.\n");

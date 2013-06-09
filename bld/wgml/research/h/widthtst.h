@@ -31,7 +31,6 @@
 #ifndef WIDTHTST_H_INCLUDED
 #define WIDTHTST_H_INCLUDED
 
-//#include <stdbool.h>
 //#include <stddef.h>
 //#include <stdint.h>
 //#include <stdio.h>
@@ -42,7 +41,7 @@
 extern "C" {    /* Use "C" linkage when in C++ mode. */
 #endif
 
-extern uint32_t             cop_text_width( uint8_t * text, uint32_t count, uint8_t font );
+extern uint32_t     cop_text_width( char *text, uint32_t count, font_number font );
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */

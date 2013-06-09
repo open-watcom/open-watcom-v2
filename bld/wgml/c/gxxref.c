@@ -70,6 +70,7 @@ void    gml_hdref( const gmltag * entry )
     ref_entry   *   re;
     static char undefid[] = "\"Undefined Heading\" on page XXX";
 
+    entry = entry;
 
     idseen = false;
     pageseen = false;
@@ -176,12 +177,12 @@ void    gml_hdref( const gmltag * entry )
 
         ProcFlags.concat = true;        // make process_text add to line
         if( re == NULL ) {              // undefined refid
-            process_text( undefid, g_curr_font_num );
+            process_text( undefid, g_curr_font );
         } else {
-            process_text( idp, g_curr_font_num );
+            process_text( idp, g_curr_font );
             if( withpage || (!pageseen && (page != re->pageno)) ) {
                 sprintf_s( buf64, sizeof( buf64 ), "on page %d", re->pageno );
-                process_text( buf64, g_curr_font_num );
+                process_text( buf64, g_curr_font );
             }
             mem_free( idp );
         }

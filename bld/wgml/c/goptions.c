@@ -28,12 +28,15 @@
 *               several options are still ignored                 TBD
 ****************************************************************************/
 
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+#include <unistd.h>
+#else
+#include <io.h>
+#endif
+#include <fcntl.h>
 #include "wgml.h"
 #include "findfile.h"
 #include "gvars.h"
-
-#include <unistd.h>
-#include <fcntl.h>
 
 #define str( a ) # a
 
@@ -593,7 +596,7 @@ static void set_font( option * opt )
     cmd_tok     *   opts[3];
 
     old_errs = err_count;
-    new_font = (opt_font *) mem_alloc( sizeof( opt_font ) );
+    new_font = mem_alloc( sizeof( opt_font ) );
     new_font->nxt = NULL;
     new_font->font = 0;
     new_font->name = NULL;
@@ -628,12 +631,12 @@ static void set_font( option * opt )
             tokennext = tokennext->nxt;
         } else {
             fn = atoi( p );
-            if( fn > UINT8_MAX ) {
+            if( fn < 0 || fn > UINT8_MAX ) {
                 bad_cmd_line( err_invalid_font_number, p, ' ' );
                 tokennext = tokennext->nxt;
             } else {
                 g_info_lm( inf_recognized_xxx, "font number", p );
-                new_font->font = (uint8_t) fn;
+                new_font->font = (font_number)fn;
                 tokennext = tokennext->nxt;
             }
         }
@@ -1690,7 +1693,7 @@ static cmd_tok  *process_master_filename( cmd_tok * tok )
     int         len;
 
     len = tok->toklen;
-    p = (char *) mem_alloc( len + 1 );
+    p = mem_alloc( len + 1 );
     memcpy_s( p, len + 1, tok->token, len );
     p[len] = '\0';
     g_info_lm( inf_recognized_xxx, "document source file", p );

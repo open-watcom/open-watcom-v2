@@ -152,6 +152,7 @@ void    lay_fn( const gmltag * entry )
     att_args        l_args;
     bool            cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 
@@ -189,13 +190,13 @@ void    lay_fn( const gmltag * entry )
                     cvterr = i_int8( p, curr, &layout_work.fn.spacing );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.fn.font );
+                    cvterr = i_font_number( p, curr, &layout_work.fn.font );
                     if( layout_work.fn.font >= wgml_font_cnt ) {
                         layout_work.fn.font = 0;
                     }
                     break;
                 case   e_number_font:
-                    cvterr = i_int8( p, curr, &layout_work.fn.number_font );
+                    cvterr = i_font_number( p, curr, &layout_work.fn.number_font );
                     if( layout_work.fn.number_font >= wgml_font_cnt ) {
                         layout_work.fn.number_font = 0;
                     }
@@ -238,6 +239,7 @@ void    lay_fnref( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 
@@ -259,7 +261,7 @@ void    lay_fnref( const gmltag * entry )
 
                 switch( curr ) {
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.fnref.font );
+                    cvterr = i_font_number( p, curr, &layout_work.fnref.font );
                     if( layout_work.fnref.font >= wgml_font_cnt ) {
                         layout_work.fnref.font = 0;
                     }

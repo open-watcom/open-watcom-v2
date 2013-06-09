@@ -49,6 +49,12 @@
 #define START_SIZE 2048
 #define INC_SIZE   1024
 
+#define OUT_DEV_MAP(x)      (void *)((char *)out_device + (size_t)x)
+#define OUT_DEV_MAP_OFF()   (void *)((char *)out_device + (size_t)out_device->next_offset)
+#define OUT_DEV_GET_OFF()   (void *)(out_device->next_offset)
+#define OUT_DEV_ADD_OFF(x)  out_device->next_offset += x
+#define OUT_DEV_REMAP(x)    out_device->x = (void *)((char *)out_device + (size_t)out_device->x)
+
 /* Local enumeration. */
 
 typedef enum {
@@ -74,8 +80,7 @@ typedef enum {
  *      not_valid otherwise.
  */
 
-static index_status find_cumulative_index( functions_block * in_block, \
-                                            uint16_t in_max, uint8_t * out_index )
+static index_status find_cumulative_index( functions_block * in_block, uint16_t in_max, uint8_t * out_index )
 {
     uint8_t i;
 
@@ -127,7 +132,7 @@ static cop_device * resize_cop_device( cop_device * in_device, size_t in_size )
 
     /* Reallocate the cop_device. */
 
-    local_device = (cop_device *) mem_realloc( in_device, new_size );
+    local_device = mem_realloc( in_device, new_size );
     local_device->allocated_size = new_size;
 
     return( local_device );
@@ -148,9 +153,8 @@ static void set_cumulative_index( functions_block * in_block )
 
     if( in_block->count > 1 ) {
         for( i = 1; i < in_block->count; i++ ) {
-            in_block->code_blocks[i].cumulative_index = \
-                                in_block->code_blocks[i-1].cumulative_index + \
-                                in_block->code_blocks[i-1].count;
+            in_block->code_blocks[i].cumulative_index = 
+                in_block->code_blocks[i-1].cumulative_index + in_block->code_blocks[i-1].count;
         }
     }
 
@@ -242,8 +246,8 @@ cop_device * parse_device( FILE * in_file )
 
     /* Used to acquire the DefaultFonts and DeviceFonts. */
 
-    default_font *      defaultfont_ptr     = NULL;
-    device_font  *      devicefont_ptr      = NULL;
+    default_font        *defaultfont_ptr    = NULL;
+    device_font         *devicefont_ptr     = NULL;
 
     /* Used to acquire the PauseBlock and DevicefontBlock CodeBlocks. */
 
@@ -251,7 +255,7 @@ cop_device * parse_device( FILE * in_file )
     functions_block *   cop_functions       = NULL;
     index_status        return_value;
     p_buffer *          raw_functions       = NULL;
-    uint8_t *           current;
+    char                *current;
     uint8_t             j;
     uint16_t            cumulative_index;
     uint16_t            nulls;
@@ -260,9 +264,11 @@ cop_device * parse_device( FILE * in_file )
 
     uint8_t             count8;
 
+    size_t              size;
+
     /* Initialize the out_device. */
         
-    out_device = (cop_device *) mem_alloc( START_SIZE );
+    out_device = mem_alloc( START_SIZE );
 
     out_device->allocated_size = START_SIZE;
     out_device->next_offset = sizeof( cop_device );
@@ -287,7 +293,7 @@ cop_device * parse_device( FILE * in_file )
             out_device = resize_cop_device( out_device, length );
         }
 
-        string_ptr = (char *) out_device + out_device->next_offset;
+        string_ptr = OUT_DEV_MAP_OFF();
 
         fread( string_ptr, length, 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
@@ -295,10 +301,9 @@ cop_device * parse_device( FILE * in_file )
             out_device = NULL;
             return( out_device );
         }
-        out_device->driver_name = (char *) out_device->next_offset;
-        out_device->next_offset += length;
+        out_device->driver_name = OUT_DEV_GET_OFF();
         string_ptr[length] = '\0';
-        ++out_device->next_offset;
+        OUT_DEV_ADD_OFF( length + 1 );
     } else {
         out_device->driver_name = NULL;
     }
@@ -317,7 +322,7 @@ cop_device * parse_device( FILE * in_file )
             out_device = resize_cop_device( out_device, length );
         }
 
-        string_ptr = (char *) out_device + out_device->next_offset;
+        string_ptr = OUT_DEV_MAP_OFF();
 
         fread( string_ptr, length, 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
@@ -326,10 +331,9 @@ cop_device * parse_device( FILE * in_file )
             return( out_device );
         }
     
-        out_device->output_name = (char *) out_device->next_offset;
-        out_device->next_offset += length;
+        out_device->output_name = OUT_DEV_GET_OFF();
         string_ptr[length] = '\0';
-        ++out_device->next_offset;
+        OUT_DEV_ADD_OFF( length + 1 );
     } else {
         out_device->output_name = NULL;
     }
@@ -348,7 +352,7 @@ cop_device * parse_device( FILE * in_file )
             out_device = resize_cop_device( out_device, length );
         }
 
-        string_ptr = (char *) out_device + out_device->next_offset;
+        string_ptr = OUT_DEV_MAP_OFF();
 
         fread( string_ptr, length, 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
@@ -357,10 +361,9 @@ cop_device * parse_device( FILE * in_file )
             return( out_device );
         }
     
-        out_device->output_extension = (char *) out_device->next_offset;
-        out_device->next_offset += length;
+        out_device->output_extension = OUT_DEV_GET_OFF();
         string_ptr[length] = '\0';
-        ++out_device->next_offset;
+        OUT_DEV_ADD_OFF( length + 1 );
     } else {
         out_device->output_extension = NULL;
     }
@@ -386,8 +389,7 @@ cop_device * parse_device( FILE * in_file )
     
     /* Get the page_width. */
 
-    fread( &out_device->page_width, sizeof( out_device->page_width ), 1, \
-                                                                        in_file );
+    fread( &out_device->page_width, sizeof( out_device->page_width ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_device );
         out_device = NULL;
@@ -396,8 +398,7 @@ cop_device * parse_device( FILE * in_file )
 
     /* Get the page_depth. */
 
-    fread( &out_device->page_depth, sizeof( out_device->page_depth ), 1, \
-                                                                        in_file );
+    fread( &out_device->page_depth, sizeof( out_device->page_depth ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_device );
         out_device = NULL;
@@ -406,8 +407,7 @@ cop_device * parse_device( FILE * in_file )
 
     /* Get the horizontal_base_units. */
 
-    fread( &out_device->horizontal_base_units, \
-                        sizeof( out_device->horizontal_base_units ), 1, in_file );
+    fread( &out_device->horizontal_base_units, sizeof( out_device->horizontal_base_units ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_device );
         out_device = NULL;
@@ -416,8 +416,7 @@ cop_device * parse_device( FILE * in_file )
 
     /* Get the vertical_base_units. */
 
-    fread( &out_device->vertical_base_units, \
-                        sizeof( out_device->vertical_base_units ), 1, in_file );
+    fread( &out_device->vertical_base_units, sizeof( out_device->vertical_base_units ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_device );
         out_device = NULL;
@@ -492,8 +491,7 @@ cop_device * parse_device( FILE * in_file )
             return( out_device );
         }
 
-        fread( &out_device->box.font_number, \
-                            sizeof( out_device->box.font_number ), 1, in_file );
+        fread( &out_device->box.font, sizeof( out_device->box.font ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_device );
             out_device = NULL;
@@ -520,7 +518,7 @@ cop_device * parse_device( FILE * in_file )
                 out_device = resize_cop_device( out_device, length );
             }
 
-            string_ptr = (char *) out_device + out_device->next_offset;
+            string_ptr = OUT_DEV_MAP_OFF();
 
             fread( string_ptr, length, 1, in_file );
             if( ferror( in_file ) || feof( in_file ) ) {
@@ -529,10 +527,9 @@ cop_device * parse_device( FILE * in_file )
                 return( out_device );
             }
     
-            out_device->box.font_name = (char *) out_device->next_offset;
-            out_device->next_offset += length;
+            out_device->box.font_name = OUT_DEV_GET_OFF();
             string_ptr[length] = '\0';
-            ++out_device->next_offset;
+            OUT_DEV_ADD_OFF( length + 1 );
         } else {
             mem_free( out_device );
             out_device = NULL;
@@ -541,7 +538,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Ensure that the font_number is 0. */
     
-        out_device->box.font_number = 0;
+        out_device->box.font = 0;
         break;
     default:
         mem_free( out_device );
@@ -566,8 +563,7 @@ cop_device * parse_device( FILE * in_file )
     
     /* There are 0x0F bytes in the file but only 11 values. */
 
-    fread( &out_device->box.horizontal_line, \
-                        sizeof( out_device->box.horizontal_line ), 11, in_file );
+    fread( &out_device->box.horizontal_line, sizeof( out_device->box.horizontal_line ), 11, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_device );
         out_device = NULL;
@@ -606,8 +602,7 @@ cop_device * parse_device( FILE * in_file )
             return( out_device );
         }
 
-        fread( &out_device->underscore.font_number, \
-                    sizeof( out_device->underscore.font_number ), 1, in_file );
+        fread( &out_device->underscore.font, sizeof( out_device->underscore.font ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             mem_free( out_device );
             out_device = NULL;
@@ -631,12 +626,11 @@ cop_device * parse_device( FILE * in_file )
         }
 
         if( length > 0 ) {
-            if( out_device->allocated_size < (out_device->next_offset + \
-                                                                    length) ) {
+            if( out_device->allocated_size < (out_device->next_offset + length) ) {
                 out_device = resize_cop_device( out_device, length );
             }
 
-            string_ptr = (char *) out_device + out_device->next_offset;
+            string_ptr = OUT_DEV_MAP_OFF();
 
             fread( string_ptr, length, 1, in_file );
             if( ferror( in_file ) || feof( in_file ) ) {
@@ -645,10 +639,9 @@ cop_device * parse_device( FILE * in_file )
                 return( out_device );
             }
     
-            out_device->underscore.font_name = (char *) out_device->next_offset;
-            out_device->next_offset += length;
+            out_device->underscore.font_name = OUT_DEV_GET_OFF();
             string_ptr[length] = '\0';
-            ++out_device->next_offset;
+            OUT_DEV_ADD_OFF( length + 1 );
 
             /* Ensure that the font_name is used. */
 
@@ -663,7 +656,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Ensure that the font_number is 0. */
 
-        out_device->underscore.font_number = 0;
+        out_device->underscore.font = 0;
         break;
     default:
         mem_free( out_device );
@@ -688,8 +681,7 @@ cop_device * parse_device( FILE * in_file )
     
     /* There are 0x05 bytes in the file but only one value. */
 
-    fread( &out_device->underscore.underscore_char, \
-                sizeof( out_device->underscore.underscore_char ), 1, in_file );
+    fread( &out_device->underscore.underscore_char, sizeof( out_device->underscore.underscore_char ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_device );
         out_device = NULL;
@@ -783,13 +775,11 @@ cop_device * parse_device( FILE * in_file )
     
         /* Get the data into the array. */
 
-        if( out_device->allocated_size < (out_device->next_offset + \
-                                        sizeof( out_device->intrans->table )) ) {
-            out_device = resize_cop_device( out_device, \
-                                        sizeof( out_device->intrans->table ) );
+        if( out_device->allocated_size < (out_device->next_offset + sizeof( out_device->intrans->table )) ) {
+            out_device = resize_cop_device( out_device, sizeof( out_device->intrans->table ) );
         }
 
-        byte_ptr = (uint8_t *) out_device + out_device->next_offset;
+        byte_ptr = OUT_DEV_MAP_OFF();
         
         fread( byte_ptr, sizeof( out_device->intrans->table ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
@@ -798,9 +788,8 @@ cop_device * parse_device( FILE * in_file )
             return( out_device );
         }
 
-        out_device->intrans = (intrans_block *) out_device->next_offset;
-        out_device->next_offset += sizeof( out_device->intrans->table );
-
+        out_device->intrans = OUT_DEV_GET_OFF();
+        OUT_DEV_ADD_OFF( sizeof( out_device->intrans->table ) );
     }  
 
     /* Get the OuttransBlock, if present. */
@@ -851,17 +840,14 @@ cop_device * parse_device( FILE * in_file )
             
             /* Reserve space for the outtrans_block. */
 
-            if( out_device->allocated_size < (out_device->next_offset + \
-                                    sizeof( out_device->outtrans->table )) ) {
-                out_device = resize_cop_device( out_device, \
-                                    sizeof( out_device->outtrans->table ) );
+            if( out_device->allocated_size < (out_device->next_offset + sizeof( out_device->outtrans->table )) ) {
+                out_device = resize_cop_device( out_device, sizeof( out_device->outtrans->table ) );
             }
 
-            out_device->outtrans = (outtrans_block *) out_device->next_offset;
-            out_device->next_offset += sizeof( out_device->outtrans->table );
+            out_device->outtrans = OUT_DEV_GET_OFF();
+            OUT_DEV_ADD_OFF( sizeof( out_device->outtrans->table ) );
 
-            outtrans_ptr = (outtrans_block *) ((char *) out_device + \
-                                                (size_t) out_device->outtrans);
+            outtrans_ptr = OUT_DEV_MAP( out_device->outtrans );
 
             /* Build the actual table, which requires actual pointers in
              * place of the offsets recorded in *out_device:
@@ -885,42 +871,32 @@ cop_device * parse_device( FILE * in_file )
 
                     /* Reserve space for the translation. */
 
-                    if( out_device->allocated_size < (out_device->next_offset \
-                                                    + sizeof( translation )) ) {
-                        out_device = resize_cop_device( out_device, \
-                                                      sizeof( translation ) );
-                        outtrans_ptr = (outtrans_block *) ((uint8_t *) \
-                                      out_device + (size_t) out_device->outtrans);
+                    if( out_device->allocated_size < (out_device->next_offset + sizeof( translation )) ) {
+                        out_device = resize_cop_device( out_device, sizeof( translation ) );
+                        outtrans_ptr = OUT_DEV_MAP( out_device->outtrans );
                     }
 
-                    outtrans_ptr->table[i] = (translation *) \
-                                                        out_device->next_offset;
-                    out_device->next_offset += sizeof( translation );
+                    outtrans_ptr->table[i] = OUT_DEV_GET_OFF();
+                    OUT_DEV_ADD_OFF( sizeof( translation ) );
 
                     /* Get the translation for the current character. */
 
-                    translation_ptr = (translation *) ((char *) out_device + \
-                                            (size_t) outtrans_ptr->table[i] );
+                    translation_ptr = OUT_DEV_MAP( outtrans_ptr->table[i] );
 
                     /* The translation always contains exactly one character. */
                     
-                    translation_ptr->count = 1;
+                    size = translation_ptr->count = 1;
 
-                    if( out_device->allocated_size < (out_device->next_offset \
-                                                    + translation_ptr->count ) ) {
-                        out_device = resize_cop_device( out_device, \
-                                                      translation_ptr->count  );
-                        outtrans_ptr = (outtrans_block *) ((uint8_t *) \
-                                    out_device + (size_t) out_device->outtrans);
-                        translation_ptr = (translation *) ((uint8_t *) \
-                                    out_device + (size_t) outtrans_ptr->table[i] );
+                    if( out_device->allocated_size < (out_device->next_offset + size ) ) {
+                        out_device = resize_cop_device( out_device, size  );
+                        outtrans_ptr = OUT_DEV_MAP( out_device->outtrans );
+                        translation_ptr = OUT_DEV_MAP( outtrans_ptr->table[i] );
                     }
 
-                    translation_ptr->data = (uint8_t *) out_device->next_offset;
-                    out_device->next_offset += translation_ptr->count;
+                    translation_ptr->data = OUT_DEV_GET_OFF();
+                    OUT_DEV_ADD_OFF( size );
 
-                    byte_ptr = (uint8_t *) out_device + (size_t) \
-                                                            translation_ptr->data;
+                    byte_ptr = OUT_DEV_MAP( translation_ptr->data );
 
                     /* The translation character is the value in the input
                      * array.
@@ -951,10 +927,9 @@ cop_device * parse_device( FILE * in_file )
 
             /* Allocate a buffer and read the translation characters into it. */
 
-            outtrans_data = (uint8_t *) mem_alloc( data_count );
+            outtrans_data = mem_alloc( data_count );
 
-            fread( outtrans_data, sizeof( *outtrans_data ), data_count, \
-                                                                        in_file );
+            fread( outtrans_data, sizeof( *outtrans_data ), data_count, in_file );
             if( ferror( in_file ) || feof( in_file ) ) {
                 mem_free( outtrans_data );
                 outtrans_data = NULL;
@@ -967,17 +942,14 @@ cop_device * parse_device( FILE * in_file )
              * out_device.
              */
 
-            if( out_device->allocated_size < (out_device->next_offset + \
-                                    sizeof( out_device->outtrans->table )) ) {
-                out_device = resize_cop_device( out_device, \
-                                    sizeof( out_device->outtrans->table ) );
+            if( out_device->allocated_size < (out_device->next_offset + sizeof( out_device->outtrans->table )) ) {
+                out_device = resize_cop_device( out_device, sizeof( out_device->outtrans->table ) );
             }
 
-            out_device->outtrans = (outtrans_block *) out_device->next_offset;
-            out_device->next_offset += sizeof( out_device->outtrans->table );
+            out_device->outtrans = OUT_DEV_GET_OFF();
+            OUT_DEV_ADD_OFF( sizeof( out_device->outtrans->table ) );
 
-            outtrans_ptr = (outtrans_block *) ((char *) out_device + \
-                                                (size_t) out_device->outtrans);
+            outtrans_ptr = OUT_DEV_MAP( out_device->outtrans );
 
             /* Convert the data in uint16_array to our format, which requires
              * actual pointers in place of the offsets recorded in *out_device:
@@ -1001,22 +973,17 @@ cop_device * parse_device( FILE * in_file )
 
                     /* Reserve space for the translation. */
 
-                    if( out_device->allocated_size < (out_device->next_offset \
-                                                    + sizeof( translation )) ) {
-                        out_device = resize_cop_device( out_device, \
-                                                      sizeof( translation ) );
-                        outtrans_ptr = (outtrans_block *) ((uint8_t *) \
-                                      out_device + (size_t) out_device->outtrans);
+                    if( out_device->allocated_size < (out_device->next_offset + sizeof( translation )) ) {
+                        out_device = resize_cop_device( out_device, sizeof( translation ) );
+                        outtrans_ptr = OUT_DEV_MAP( out_device->outtrans );
                     }
 
-                    outtrans_ptr->table[i] = (translation *) \
-                                                        out_device->next_offset;
-                    out_device->next_offset += sizeof( translation );
+                    outtrans_ptr->table[i] = OUT_DEV_GET_OFF();
+                    OUT_DEV_ADD_OFF( sizeof( translation ) );
 
                     /* Get the translation for the current character */
 
-                    translation_ptr = (translation *) ((char *) out_device + \
-                                                (size_t) outtrans_ptr->table[i] );
+                    translation_ptr = OUT_DEV_MAP( outtrans_ptr->table[i] );
 
                     /* If the first byte at uint16_array[i] is 00, then the
                      * second byte is the one-byte translation. Otherwise, the
@@ -1027,30 +994,25 @@ cop_device * parse_device( FILE * in_file )
                     /* Set the count correctly. */
 
                     if( (uint16_array[i] & 0xff00) == 0x00 ) {
-                        translation_ptr->count = 1;
+                        size = 1;
                     } else {
-                        translation_start = outtrans_data + \
-                                                    (uint16_array[i] & 0x00ff);
-                        translation_ptr->count = *translation_start;
+                        translation_start = outtrans_data + (uint16_array[i] & 0x00ff);
+                        size = *translation_start;
                     }
+                    translation_ptr->count = size;
 
                     /* Allocate space and perform other common operations. */
 
-                    if( out_device->allocated_size < (out_device->next_offset \
-                                                    + translation_ptr->count ) ) {
-                        out_device = resize_cop_device( out_device, \
-                                                      translation_ptr->count );
-                        outtrans_ptr = (outtrans_block *) ((uint8_t *) \
-                                      out_device + (size_t) out_device->outtrans);
-                        translation_ptr = (translation *) ((uint8_t *) \
-                                    out_device + (size_t) outtrans_ptr->table[i] );
+                    if( out_device->allocated_size < (out_device->next_offset + size ) ) {
+                        out_device = resize_cop_device( out_device, size );
+                        outtrans_ptr = OUT_DEV_MAP( out_device->outtrans );
+                        translation_ptr = OUT_DEV_MAP( outtrans_ptr->table[i] );
                     }
 
-                    translation_ptr->data = (uint8_t *) out_device->next_offset;
-                    out_device->next_offset += translation_ptr->count;
+                    translation_ptr->data = OUT_DEV_GET_OFF();
+                    OUT_DEV_ADD_OFF( size );
 
-                    byte_ptr = (uint8_t *) out_device + (size_t) \
-                                                        translation_ptr->data;
+                    byte_ptr = OUT_DEV_MAP( translation_ptr->data );
 
                     /* Put the data into the buffer. */
 
@@ -1058,8 +1020,7 @@ cop_device * parse_device( FILE * in_file )
                         *byte_ptr = (uint16_array[i] & 0x00ff);
                     } else {
                         ++translation_start;
-                        memcpy_s( byte_ptr, translation_ptr->count, \
-                                    translation_start, translation_ptr->count );
+                        memcpy_s( byte_ptr, size, translation_start, size );
                     }
                 }
             }
@@ -1092,8 +1053,7 @@ cop_device * parse_device( FILE * in_file )
 
     /* Get the number of DefaultFonts. */
     
-    fread( &out_device->defaultfonts.font_count, \
-                    sizeof( out_device->defaultfonts.font_count ), 1, in_file );
+    fread( &out_device->defaultfonts.font_count, sizeof( out_device->defaultfonts.font_count ), 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) {
         mem_free( out_device );
         out_device = NULL;
@@ -1101,21 +1061,16 @@ cop_device * parse_device( FILE * in_file )
     }
 
     /* Set defaultfont_ptr and defaultfonts.font and adjust next_offset. */
-    
-    if( out_device->allocated_size < (out_device->next_offset + \
-                                sizeof( out_device->defaultfonts.font_count) * \
-                                out_device->defaultfonts.font_count) ) {
-        out_device = resize_cop_device( out_device, \
-                                sizeof( out_device->defaultfonts.font_count) * \
-                                out_device->defaultfonts.font_count );
-   }
 
-    out_device->defaultfonts.fonts = (default_font *) out_device->next_offset;
-    out_device->next_offset += sizeof( *out_device->defaultfonts.fonts) * \
-                                            out_device->defaultfonts.font_count;
+    size = sizeof( out_device->defaultfonts.font_count) * out_device->defaultfonts.font_count;
+    if( out_device->allocated_size < (out_device->next_offset + size ) ) {
+        out_device = resize_cop_device( out_device, size );
+    }
 
-    defaultfont_ptr = (default_font *) ((uint8_t *) out_device + \
-                                    (size_t) out_device->defaultfonts.fonts);
+    out_device->defaultfonts.fonts = OUT_DEV_GET_OFF();
+    OUT_DEV_ADD_OFF( size );
+
+    defaultfont_ptr = OUT_DEV_MAP( out_device->defaultfonts.fonts );
 
     /* Get the DefaultFonts. */
 
@@ -1132,12 +1087,11 @@ cop_device * parse_device( FILE * in_file )
 
         if( out_device->allocated_size < (out_device->next_offset + length) ) {
             out_device = resize_cop_device( out_device, length );
-            defaultfont_ptr = (default_font *) ((uint8_t *) out_device + \
-                                        (size_t) out_device->defaultfonts.fonts);
+            defaultfont_ptr = OUT_DEV_MAP( out_device->defaultfonts.fonts );
         }
 
         if( length > 0 ) {
-            string_ptr = (char *) out_device + out_device->next_offset;
+            string_ptr = OUT_DEV_MAP_OFF();
             fread( string_ptr, length, 1, in_file );
             if( ferror( in_file ) || feof( in_file ) ) {
                 mem_free( out_device );
@@ -1145,10 +1099,9 @@ cop_device * parse_device( FILE * in_file )
                 return( out_device );
             }
 
-            defaultfont_ptr[i].font_style = (char *) out_device->next_offset;
-            out_device->next_offset += length;
+            defaultfont_ptr[i].font_style = OUT_DEV_GET_OFF();
             string_ptr[length] = '\0';
-            ++out_device->next_offset;
+            OUT_DEV_ADD_OFF( length + 1 );
         } else {
             defaultfont_ptr[i].font_style = NULL;
         }
@@ -1199,12 +1152,11 @@ cop_device * parse_device( FILE * in_file )
 
         if( out_device->allocated_size < (out_device->next_offset + length) ) {
             out_device = resize_cop_device( out_device, length );
-            defaultfont_ptr = (default_font *) ((uint8_t *) out_device + \
-                                        (size_t) out_device->defaultfonts.fonts);
+            defaultfont_ptr = OUT_DEV_MAP( out_device->defaultfonts.fonts );
         }
 
         if( length > 0 ) {
-            string_ptr = (char *) out_device + out_device->next_offset;
+            string_ptr = OUT_DEV_MAP_OFF();
             fread( string_ptr, length, 1, in_file );
             if( ferror( in_file ) || feof( in_file ) ) {
                 mem_free( out_device );
@@ -1212,10 +1164,9 @@ cop_device * parse_device( FILE * in_file )
                 return( out_device );
             }
 
-            defaultfont_ptr[i].font_name = (char *) out_device->next_offset;
-            out_device->next_offset += length;
+            defaultfont_ptr[i].font_name = OUT_DEV_GET_OFF();
             string_ptr[length] = '\0';
-            ++out_device->next_offset;
+            OUT_DEV_ADD_OFF( length + 1 );
         } else {
             defaultfont_ptr[i].font_name = NULL;
         }
@@ -1319,34 +1270,29 @@ cop_device * parse_device( FILE * in_file )
 
         /* Allocate space for the code_text instance. */
 
-        if( out_device->allocated_size < (out_device->next_offset + \
-                                                    sizeof( code_text ) ) ) {
+        if( out_device->allocated_size < (out_device->next_offset + sizeof( code_text ) ) ) {
             out_device = resize_cop_device( out_device, sizeof( code_text ) );
         }
 
-        out_device->pauses.start_pause = (code_text *) out_device->next_offset;
-        out_device->next_offset += sizeof( code_text );
+        out_device->pauses.start_pause = OUT_DEV_GET_OFF();
+        OUT_DEV_ADD_OFF( sizeof( code_text ) );
 
-        pause_ptr = (code_text *) ((char *) out_device + \
-                                        (size_t) out_device->pauses.start_pause);
+        pause_ptr = OUT_DEV_MAP( out_device->pauses.start_pause );
 
         /* Initialize the code_text instance. */
 
-        pause_ptr->count = cop_functions->code_blocks[j].count;
+        size = pause_ptr->count = cop_functions->code_blocks[j].count;
 
-        if( out_device->allocated_size < (out_device->next_offset + \
-                                                            pause_ptr->count) ) {
-            out_device = resize_cop_device( out_device, pause_ptr->count );
-            pause_ptr = (code_text *) ((char *) out_device + \
-                                        (size_t) out_device->pauses.start_pause);
+        if( out_device->allocated_size < (out_device->next_offset + size) ) {
+            out_device = resize_cop_device( out_device, size );
+            pause_ptr = OUT_DEV_MAP( out_device->pauses.start_pause );
         }
 
-        pause_ptr->text = (uint8_t *) out_device->next_offset;
-        out_device->next_offset += pause_ptr->count;
+        pause_ptr->text = OUT_DEV_GET_OFF();
+        OUT_DEV_ADD_OFF( size );
 
-        byte_ptr = (uint8_t *) out_device + (size_t) pause_ptr->text;
-        memcpy_s(byte_ptr, pause_ptr->count, \
-                    cop_functions->code_blocks[j].text, pause_ptr->count );
+        byte_ptr = OUT_DEV_MAP( pause_ptr->text );
+        memcpy_s(byte_ptr, size, cop_functions->code_blocks[j].text, size );
     }
     
     /* Get the document_pause. */
@@ -1425,35 +1371,29 @@ cop_device * parse_device( FILE * in_file )
 
         /* Allocate space for the code_text instance. */
 
-        if( out_device->allocated_size < (out_device->next_offset + \
-                                                    sizeof( code_text ) ) ) {
+        if( out_device->allocated_size < (out_device->next_offset + sizeof( code_text ) ) ) {
             out_device = resize_cop_device( out_device, sizeof( code_text ) );
         }
 
-        out_device->pauses.document_pause = (code_text *) \
-                                                        out_device->next_offset;
-        out_device->next_offset += sizeof( code_text );
+        out_device->pauses.document_pause = OUT_DEV_GET_OFF();
+        OUT_DEV_ADD_OFF( sizeof( code_text ) );
 
-        pause_ptr = (code_text *) ((char *) out_device + \
-                                    (size_t) out_device->pauses.document_pause);
+        pause_ptr = OUT_DEV_MAP( out_device->pauses.document_pause );
 
         /* Initialize the code_text instance. */
 
-        pause_ptr->count = cop_functions->code_blocks[j].count;
+        size = pause_ptr->count = cop_functions->code_blocks[j].count;
 
-        if( out_device->allocated_size < (out_device->next_offset + \
-                                                            pause_ptr->count) ) {
-            out_device = resize_cop_device( out_device, pause_ptr->count );
-            pause_ptr = (code_text *) ((char *) out_device + \
-                                    (size_t) out_device->pauses.document_pause);
+        if( out_device->allocated_size < (out_device->next_offset + size) ) {
+            out_device = resize_cop_device( out_device, size );
+            pause_ptr = OUT_DEV_MAP( out_device->pauses.document_pause );
         }
 
-        pause_ptr->text = (uint8_t *) out_device->next_offset;
-        out_device->next_offset += pause_ptr->count;
+        pause_ptr->text = OUT_DEV_GET_OFF();
+        OUT_DEV_ADD_OFF( size );
 
-        byte_ptr = (uint8_t *) out_device + (size_t) pause_ptr->text;
-        memcpy_s(byte_ptr, pause_ptr->count, \
-                        cop_functions->code_blocks[j].text, pause_ptr->count );
+        byte_ptr = OUT_DEV_MAP( pause_ptr->text );
+        memcpy_s(byte_ptr, size, cop_functions->code_blocks[j].text, size );
     }
     
     /* Get the docpage_pause. */
@@ -1532,34 +1472,29 @@ cop_device * parse_device( FILE * in_file )
 
         /* Allocate space for the code_text instance. */
 
-        if( out_device->allocated_size < (out_device->next_offset + \
-                                                        sizeof( code_text ) ) ) {
+        if( out_device->allocated_size < (out_device->next_offset + sizeof( code_text ) ) ) {
             out_device = resize_cop_device( out_device, sizeof( code_text ) );
         }
 
-        out_device->pauses.docpage_pause = (code_text *) out_device->next_offset;
-        out_device->next_offset += sizeof( code_text );
+        out_device->pauses.docpage_pause = OUT_DEV_GET_OFF();
+        OUT_DEV_ADD_OFF( sizeof( code_text ) );
 
-        pause_ptr = (code_text *) ((char *) out_device + \
-                                   (size_t) out_device->pauses.docpage_pause );
+        pause_ptr = OUT_DEV_MAP( out_device->pauses.docpage_pause );
 
         /* Initialize the code_text instance. */
 
-        pause_ptr->count = cop_functions->code_blocks[j].count;
+        size = pause_ptr->count = cop_functions->code_blocks[j].count;
 
-        if( out_device->allocated_size < (out_device->next_offset + \
-                                                            pause_ptr->count) ) {
-            out_device = resize_cop_device( out_device, pause_ptr->count );
-            pause_ptr = (code_text *) ((char *) out_device + \
-                                    (size_t) out_device->pauses.docpage_pause );
+        if( out_device->allocated_size < (out_device->next_offset + size) ) {
+            out_device = resize_cop_device( out_device, size );
+            pause_ptr = OUT_DEV_MAP( out_device->pauses.docpage_pause );
         }
 
-        pause_ptr->text = (uint8_t *) out_device->next_offset;
-        out_device->next_offset += pause_ptr->count;
+        pause_ptr->text = OUT_DEV_GET_OFF();
+        OUT_DEV_ADD_OFF( size );
 
-        byte_ptr = (uint8_t *) out_device + (size_t) pause_ptr->text;
-        memcpy_s(byte_ptr, pause_ptr->count, \
-                        cop_functions->code_blocks[j].text, pause_ptr->count );
+        byte_ptr = OUT_DEV_MAP( pause_ptr->text );
+        memcpy_s(byte_ptr, size, cop_functions->code_blocks[j].text, size );
     }
     
     /* Get the devpage_pause. */
@@ -1638,34 +1573,29 @@ cop_device * parse_device( FILE * in_file )
 
         /* Allocate space for the code_text instance. */
 
-        if( out_device->allocated_size < (out_device->next_offset + \
-                                                        sizeof( code_text ) ) ) {
+        if( out_device->allocated_size < (out_device->next_offset + sizeof( code_text ) ) ) {
             out_device = resize_cop_device( out_device, sizeof( code_text ) );
         }
 
-        out_device->pauses.devpage_pause = (code_text *) out_device->next_offset;
-        out_device->next_offset += sizeof( code_text );
+        out_device->pauses.devpage_pause = OUT_DEV_GET_OFF();
+        OUT_DEV_ADD_OFF( sizeof( code_text ) );
 
-        pause_ptr = (code_text *) ((char *) out_device + \
-                                   (size_t) out_device->pauses.devpage_pause );
+        pause_ptr = OUT_DEV_MAP( out_device->pauses.devpage_pause );
 
         /* Initialize the code_text instance. */
 
-        pause_ptr->count = cop_functions->code_blocks[j].count;
+        size = pause_ptr->count = cop_functions->code_blocks[j].count;
 
-        if( out_device->allocated_size < (out_device->next_offset + \
-                                                            pause_ptr->count) ) {
-            out_device = resize_cop_device( out_device, pause_ptr->count );
-            pause_ptr = (code_text *) ((char *) out_device + \
-                                    (size_t) out_device->pauses.devpage_pause );
+        if( out_device->allocated_size < (out_device->next_offset + size) ) {
+            out_device = resize_cop_device( out_device, size );
+            pause_ptr = OUT_DEV_MAP( out_device->pauses.devpage_pause );
         }
 
-        pause_ptr->text = (uint8_t *) out_device->next_offset;
-        out_device->next_offset += pause_ptr->count;
+        pause_ptr->text = OUT_DEV_GET_OFF();
+        OUT_DEV_ADD_OFF( size );
 
-        byte_ptr = (uint8_t *) out_device + (size_t) pause_ptr->text;
-        memcpy_s(byte_ptr, pause_ptr->count, \
-                        cop_functions->code_blocks[j].text, pause_ptr->count );
+        byte_ptr = OUT_DEV_MAP( pause_ptr->text );
+        memcpy_s(byte_ptr, size, cop_functions->code_blocks[j].text, size );
     }
 
     /* Get the DevicefontBlock. */
@@ -1721,20 +1651,15 @@ cop_device * parse_device( FILE * in_file )
 
     /* Get the Devicefonts. */
 
-    if( out_device->allocated_size < (out_device->next_offset + \
-                                      out_device->devicefonts.font_count * \
-                                    sizeof( *out_device->devicefonts.fonts ) ) ) {
-        out_device = resize_cop_device( out_device, \
-                                    out_device->devicefonts.font_count * \
-                                    sizeof( *out_device->devicefonts.fonts ) );
+    size = out_device->devicefonts.font_count * sizeof( *out_device->devicefonts.fonts );
+    if( out_device->allocated_size < out_device->next_offset + size ) {
+        out_device = resize_cop_device( out_device, size );
     }
 
-    out_device->devicefonts.fonts = (device_font *) out_device->next_offset;
-    out_device->next_offset += out_device->devicefonts.font_count * \
-                                        sizeof( *out_device->devicefonts.fonts );
+    out_device->devicefonts.fonts = OUT_DEV_GET_OFF();
+    OUT_DEV_ADD_OFF( size );
     
-    devicefont_ptr = (device_font *) ((uint8_t *) out_device + \
-                                        (size_t) out_device->devicefonts.fonts);
+    devicefont_ptr = OUT_DEV_MAP( out_device->devicefonts.fonts );
 
     for( i = 0; i < out_device->devicefonts.font_count; i++ ) {
 
@@ -1757,14 +1682,12 @@ cop_device * parse_device( FILE * in_file )
 
         if( length > 0 ) {
 
-            if( out_device->allocated_size < (out_device->next_offset + \
-                                                                    length) ) {
+            if( out_device->allocated_size < (out_device->next_offset + length) ) {
                 out_device = resize_cop_device( out_device, length );
-                devicefont_ptr = (device_font *) ((uint8_t *) out_device + \
-                                        (size_t) out_device->devicefonts.fonts);
+                devicefont_ptr = OUT_DEV_MAP( out_device->devicefonts.fonts );
             }
 
-            string_ptr = (char *) out_device + out_device->next_offset;
+            string_ptr = OUT_DEV_MAP_OFF();
 
             fread( string_ptr, length, 1, in_file );
             if( ferror( in_file ) || feof( in_file ) ) {
@@ -1779,10 +1702,9 @@ cop_device * parse_device( FILE * in_file )
                 out_device = NULL;
                 return( out_device );
             }
-            devicefont_ptr[i].font_name = (char *) out_device->next_offset;
-            out_device->next_offset += length;
+            devicefont_ptr[i].font_name = OUT_DEV_GET_OFF();
             string_ptr[length] = '\0';
-            ++out_device->next_offset;
+            OUT_DEV_ADD_OFF( length + 1 );
         } else {
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
@@ -1815,14 +1737,12 @@ cop_device * parse_device( FILE * in_file )
 
         if( length > 0 ) {
 
-            if( out_device->allocated_size < (out_device->next_offset + \
-                                                                        length) ) {
+            if( out_device->allocated_size < (out_device->next_offset + length) ) {
                 out_device = resize_cop_device( out_device, length );
-                devicefont_ptr = (device_font *) ((uint8_t *) out_device + \
-                                        (size_t) out_device->devicefonts.fonts);
+                devicefont_ptr = OUT_DEV_MAP( out_device->devicefonts.fonts );
             }
 
-            string_ptr = (char *) out_device + out_device->next_offset;
+            string_ptr = OUT_DEV_MAP_OFF();
 
             fread( string_ptr, length, 1, in_file );
             if( ferror( in_file ) || feof( in_file ) ) {
@@ -1838,10 +1758,9 @@ cop_device * parse_device( FILE * in_file )
                 out_device = NULL;
                 return( out_device );
             }
-            devicefont_ptr[i].font_switch = (char *) out_device->next_offset;
-            out_device->next_offset += length;
+            devicefont_ptr[i].font_switch = OUT_DEV_GET_OFF();
             string_ptr[length] = '\0';
-            ++out_device->next_offset;
+            OUT_DEV_ADD_OFF( length + 1 );
         } else {
             devicefont_ptr[i].font_switch = NULL;
         }
@@ -1971,40 +1890,32 @@ cop_device * parse_device( FILE * in_file )
 
             /* Allocate space for the code_text instance. */
 
-            if( out_device->allocated_size < (out_device->next_offset + \
-                                                        sizeof( code_text ) ) ) {
+            if( out_device->allocated_size < (out_device->next_offset + sizeof( code_text ) ) ) {
                 out_device = resize_cop_device( out_device, sizeof( code_text ) );
-                devicefont_ptr = (device_font *) ((uint8_t *) out_device + \
-                                        (size_t) out_device->devicefonts.fonts);
-                pause_ptr = (code_text *) ((char *) out_device + \
-                                        (size_t) devicefont_ptr[i].font_pause );
+                devicefont_ptr = OUT_DEV_MAP( out_device->devicefonts.fonts );
+                pause_ptr = OUT_DEV_MAP( devicefont_ptr[i].font_pause );
             }
 
-            devicefont_ptr[i].font_pause = (code_text *) out_device->next_offset;
-            out_device->next_offset += sizeof( code_text );
+            devicefont_ptr[i].font_pause = OUT_DEV_GET_OFF();
+            OUT_DEV_ADD_OFF( sizeof( code_text ) );
 
-            pause_ptr = (code_text *) ((char *) out_device + \
-                                       (size_t) devicefont_ptr[i].font_pause );
+            pause_ptr = OUT_DEV_MAP( devicefont_ptr[i].font_pause );
 
             /* Initialize the code_text instance. */
 
-            pause_ptr->count = cop_functions->code_blocks[j].count;
+            size = pause_ptr->count = cop_functions->code_blocks[j].count;
 
-            if( out_device->allocated_size < (out_device->next_offset + \
-                                                            pause_ptr->count) ) {
-                out_device = resize_cop_device( out_device, pause_ptr->count );
-                devicefont_ptr = (device_font *) ((uint8_t *) out_device + \
-                                        (size_t) out_device->devicefonts.fonts);
-                pause_ptr = (code_text *) ((char *) out_device + \
-                                        (size_t) devicefont_ptr[i].font_pause );
+            if( out_device->allocated_size < (out_device->next_offset + size) ) {
+                out_device = resize_cop_device( out_device, size );
+                devicefont_ptr = OUT_DEV_MAP( out_device->devicefonts.fonts );
+                pause_ptr = OUT_DEV_MAP( devicefont_ptr[i].font_pause );
             }
 
-            pause_ptr->text = (uint8_t *) out_device->next_offset;
-            out_device->next_offset += pause_ptr->count;
+            pause_ptr->text = OUT_DEV_GET_OFF();
+            OUT_DEV_ADD_OFF( size );
 
-            byte_ptr = (uint8_t *) out_device + (size_t) pause_ptr->text;
-            memcpy_s(byte_ptr, pause_ptr->count, \
-                    cop_functions->code_blocks[j].text, pause_ptr->count );
+            byte_ptr = OUT_DEV_MAP( pause_ptr->text );
+            memcpy_s(byte_ptr, size, cop_functions->code_blocks[j].text, size );
         }
     }
 
@@ -2022,138 +1933,93 @@ cop_device * parse_device( FILE * in_file )
     /* Convert non-NULL offsets to pointers. */
 
     if( out_device->driver_name != NULL ) {
-        string_ptr = (char *) out_device + (size_t) out_device->driver_name;
-        out_device->driver_name = string_ptr;
+        OUT_DEV_REMAP( driver_name );
     }
     
     if( out_device->output_name != NULL ) {
-        string_ptr = (char *) out_device + (size_t) out_device->output_name;
-        out_device->output_name = string_ptr;
+        OUT_DEV_REMAP( output_name );
     }
     
     if( out_device->output_extension != NULL ) {
-        string_ptr = (char *) out_device + (size_t) out_device->output_extension;
-        out_device->output_extension = string_ptr;
+        OUT_DEV_REMAP( output_extension );
     }
     
     if( out_device->box.font_name != NULL ) {
-        string_ptr = (char *) out_device + (size_t) out_device->box.font_name;
-        out_device->box.font_name = string_ptr;
+        OUT_DEV_REMAP( box.font_name );
     }
     
     if( out_device->underscore.font_name != NULL ) {
-        string_ptr = (char *) out_device + \
-                                        (size_t) out_device->underscore.font_name;
-        out_device->underscore.font_name = string_ptr;
+        OUT_DEV_REMAP( underscore.font_name );
     }
     
     if( out_device->intrans != NULL ) {
-        byte_ptr = (uint8_t *) out_device + (size_t) out_device->intrans;
-        out_device->intrans = (intrans_block *) byte_ptr;
+        OUT_DEV_REMAP( intrans );
     }
     
     if( out_device->outtrans != NULL ) {
-        byte_ptr = (uint8_t *) out_device + (size_t) out_device->outtrans;
-        out_device->outtrans = (outtrans_block *) byte_ptr;
+        OUT_DEV_REMAP( outtrans );
     
-        for( i = 0; i < sizeof( outtrans_block ) / sizeof( translation * ); \
-                                                                            i++ ) {
+        for( i = 0; i < sizeof( outtrans_block ) / sizeof( translation * ); i++ ) {
             if( out_device->outtrans->table[i] != NULL ) {
-                byte_ptr = (uint8_t *) out_device + \
-                                        (size_t) out_device->outtrans->table[i];
-                out_device->outtrans->table[i] = (translation *) byte_ptr;
+                OUT_DEV_REMAP( outtrans->table[i] );
                 if( out_device->outtrans->table[i]->data != NULL ) {
-                    byte_ptr = (uint8_t *) out_device + \
-                               (size_t) out_device->outtrans->table[i]->data;
-                    out_device->outtrans->table[i]->data = byte_ptr;
+                    OUT_DEV_REMAP( outtrans->table[i]->data );
                 }
             }
         }
     }
     
     if( out_device->defaultfonts.fonts != NULL ) {
-        byte_ptr = (uint8_t *) out_device + \
-                                        (size_t) out_device->defaultfonts.fonts;
-        out_device->defaultfonts.fonts = (default_font *) byte_ptr;
+        OUT_DEV_REMAP( defaultfonts.fonts );
         for( i = 0; i < out_device->defaultfonts.font_count; i++ ) {
-            string_ptr = (char *) out_device + \
-                         (size_t) out_device->defaultfonts.fonts[i].font_name;
-            out_device->defaultfonts.fonts[i].font_name = string_ptr;
+            OUT_DEV_REMAP( defaultfonts.fonts[i].font_name );
             if( out_device->defaultfonts.fonts[i].font_style != NULL ) {
-                string_ptr = (char *) out_device + \
-                            (size_t) out_device->defaultfonts.fonts[i].font_style;
-                out_device->defaultfonts.fonts[i].font_style = string_ptr;
+                OUT_DEV_REMAP( defaultfonts.fonts[i].font_style );
             }
         }
     }
     
     if( out_device->pauses.start_pause != NULL ) {
-        byte_ptr = (uint8_t *) out_device + \
-                                        (size_t) out_device->pauses.start_pause;
-        out_device->pauses.start_pause = (code_text *) byte_ptr;
+        OUT_DEV_REMAP( pauses.start_pause );
         if( out_device->pauses.start_pause->text != NULL ) {
-            byte_ptr = (uint8_t *) out_device + \
-                                    (size_t) out_device->pauses.start_pause->text;
-            out_device->pauses.start_pause->text = byte_ptr;
+            OUT_DEV_REMAP( pauses.start_pause->text );
         }
     }
     
     if( out_device->pauses.document_pause != NULL ) {
-        byte_ptr = (uint8_t *) out_device + \
-                                        (size_t) out_device->pauses.document_pause;
-        out_device->pauses.document_pause = (code_text *) byte_ptr;
+        OUT_DEV_REMAP( pauses.document_pause );
         if( out_device->pauses.document_pause->text != NULL ) {
-            byte_ptr = (uint8_t *) out_device + \
-                                (size_t) out_device->pauses.document_pause->text;
-            out_device->pauses.document_pause->text = byte_ptr;
+            OUT_DEV_REMAP( pauses.document_pause->text );
         }
     }
     
     if( out_device->pauses.docpage_pause != NULL ) {
-        byte_ptr = (uint8_t *) out_device + \
-                                    (size_t) out_device->pauses.docpage_pause;
-        out_device->pauses.docpage_pause = (code_text *) byte_ptr;
+        OUT_DEV_REMAP( pauses.docpage_pause );
         if( out_device->pauses.docpage_pause->text != NULL ) {
-            byte_ptr = (uint8_t *) out_device + \
-                                (size_t) out_device->pauses.docpage_pause->text;
-            out_device->pauses.docpage_pause->text = byte_ptr;
+            OUT_DEV_REMAP( pauses.docpage_pause->text );
         }
     }
     
     if( out_device->pauses.devpage_pause != NULL ) {
-        byte_ptr = (uint8_t *) out_device + \
-                                        (size_t) out_device->pauses.devpage_pause;
-        out_device->pauses.devpage_pause = (code_text *) byte_ptr;
+        OUT_DEV_REMAP( pauses.devpage_pause );
         if( out_device->pauses.devpage_pause->text != NULL ) {
-            byte_ptr = (uint8_t *) out_device + \
-                                (size_t) out_device->pauses.devpage_pause->text;
-            out_device->pauses.devpage_pause->text = byte_ptr;
+            OUT_DEV_REMAP( pauses.devpage_pause->text );
         }
     }
     
     if( out_device->devicefonts.fonts != NULL ) {
-        byte_ptr = (uint8_t *) out_device + (size_t) out_device->devicefonts.fonts;
-        out_device->devicefonts.fonts = (device_font *) byte_ptr;
+        OUT_DEV_REMAP( devicefonts.fonts );
         for( i = 0; i < out_device->devicefonts.font_count; i++ ) {
             if( out_device->devicefonts.fonts[i].font_name != NULL ) {
-                string_ptr = (char *) out_device + \
-                            (size_t) out_device->devicefonts.fonts[i].font_name;
-                out_device->devicefonts.fonts[i].font_name = string_ptr;
+                OUT_DEV_REMAP( devicefonts.fonts[i].font_name );
             }
             if( out_device->devicefonts.fonts[i].font_switch != NULL ) {
-                string_ptr = (char *) out_device + \
-                            (size_t) out_device->devicefonts.fonts[i].font_switch;
-                out_device->devicefonts.fonts[i].font_switch= string_ptr;
+                OUT_DEV_REMAP( devicefonts.fonts[i].font_switch );
             }
             if( out_device->devicefonts.fonts[i].font_pause != NULL ) {
-                byte_ptr = (uint8_t *) out_device + \
-                            (size_t) out_device->devicefonts.fonts[i].font_pause;
-                out_device->devicefonts.fonts[i].font_pause = \
-                                                        (code_text *) byte_ptr;
+                OUT_DEV_REMAP( devicefonts.fonts[i].font_pause );
                 if( out_device->devicefonts.fonts[i].font_pause->text != NULL ) {
-                    byte_ptr = (uint8_t *) out_device + (size_t) \
-                                out_device->devicefonts.fonts[i].font_pause->text;
-                    out_device->devicefonts.fonts[i].font_pause->text = byte_ptr;
+                    OUT_DEV_REMAP( devicefonts.fonts[i].font_pause->text );
                 }
             }
         }

@@ -540,12 +540,12 @@ void    show_include_stack( void )
 
     if( input_cbs != NULL ) {
         if( input_cbs->fmflags & II_macro ) {
-            utoa( input_cbs->s.m->lineno, linestr, 10 );
-            utoa( input_cbs->s.m->mac->lineno, linemac, 10 );
+            ultoa( input_cbs->s.m->lineno, linestr, 10 );
+            ultoa( input_cbs->s.m->mac->lineno, linemac, 10 );
             g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
 //      } else {
-//          utoa( input_cbs->s.f->lineno, linestr, 10 );
+//          ultoa( input_cbs->s.f->lineno, linestr, 10 );
 //          g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
         ip = input_cbs->prev;
@@ -556,15 +556,15 @@ void    show_include_stack( void )
     while( ip != NULL ) {
         switch( ip->fmflags & II_input ) {
         case    II_file:
-            utoa( ip->s.f->lineno, linestr, 10 );
+            ultoa( ip->s.f->lineno, linestr, 10 );
             g_info( err_inf_line_file, linestr, ip->s.f->filename );
             break;
         case    II_tag :
             g_info( err_inf_tag, ip->s.m->tag->name );
             // fallthrough
         case    II_macro :
-            utoa( ip->s.m->lineno, linestr, 10 );
-            utoa( ip->s.m->mac->lineno, linemac, 10 );
+            ultoa( ip->s.m->lineno, linestr, 10 );
+            ultoa( ip->s.m->mac->lineno, linemac, 10 );
             g_info( err_inf_mac_def, linestr, ip->s.m->mac->name,
                     linemac, ip->s.m->mac->mac_file_name);
             break;

@@ -80,10 +80,13 @@
 #ifndef COPFILE_H_INCLUDED
 #define COPFILE_H_INCLUDED
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "bool.h"
+
+typedef uint8_t     font_number;
+//typedef long     font_number;
 
 /* struct declarations. */
 
@@ -101,7 +104,9 @@ typedef struct {
     uint8_t         table[0x100];
 } intrans_block;
 
+#ifdef __WATCOMC__
 #pragma disable_message( 128 ); // suppress: Warning! W128: 3 padding byte(s) added
+#endif
 
 /* To hold the data extracted from an OuttransData struct. */
 
@@ -123,7 +128,7 @@ typedef struct {
 
 typedef struct {
     uint16_t            count;
-    uint8_t *           text;
+    char                *text;
 } code_text;
 
 /* These structs are unique to the top-level struct cop_device. */
@@ -149,8 +154,8 @@ typedef struct {
 /* To hold the data from the BoxBlock struct. */
 
 typedef struct {
-    char *              font_name;
-    uint8_t             font_number;
+    char                *font_name;
+    font_number         font;
     char                horizontal_line;
     char                vertical_line;
     char                top_left;
@@ -168,8 +173,8 @@ typedef struct {
 
 typedef struct {
     bool                specified_font;
-    char *              font_name;
-    uint8_t             font_number;
+    char                *font_name;
+    font_number         font;
     char                underscore_char;
 } underscore_block;
 
@@ -231,7 +236,7 @@ typedef struct {
 typedef struct {
     bool                is_fontvalue;
     uint16_t            count;
-    uint8_t *           text;
+    char                *text;
 } init_text;
 
 /* To hold the data from the InitBlock struct. */
@@ -276,7 +281,7 @@ typedef struct {
 typedef struct {
     uint16_t            advance;
     uint16_t            count;
-    uint8_t *           text;
+    char                *text;
 } newline_block;
 
 /* To hold the data extracted from a NewlineFuncs struct. */
@@ -365,7 +370,7 @@ typedef struct {
 typedef struct {
     uint32_t            thickness;
     uint16_t            count;
-    uint8_t *           text;
+    char                *text;
 } line_block;
 
 /* This struct is unique to the top-level struct cop_font. */
@@ -464,7 +469,9 @@ typedef struct {
     line_block          dbox;
 } cop_driver;
 
+#ifdef __WATCOMC__
 #pragma enable_message( 128 ); // reenable: Warning! W128: 3 padding byte(s) added
+#endif
 
 /* This struct embodies the binary form of the :FONT block.
  * Only the fonts need to be treated as a linked list.
@@ -500,7 +507,7 @@ typedef struct cop_font {
 typedef struct {
     size_t              current;
     size_t              length;
-    uint8_t         *   text;
+    char                *text;
 } record_buffer;
 
 /* This struct implements the wgml_font struct in the Wiki. */

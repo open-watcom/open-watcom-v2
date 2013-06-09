@@ -33,7 +33,11 @@
 
 #define __STDC_WANT_LIB_EXT1__  1       /* use safer C library             */
 
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 
 #include "wgml.h"
 #include "findfile.h"
@@ -622,7 +626,7 @@ static  void    proc_input( char * filename )
                 char    linestr[MAX_L_AS_STR];
 
                 cb = input_cbs->s.f;
-                utoa( cb->lineno, linestr, 10 );
+                ultoa( cb->lineno, linestr, 10 );
                 g_info_lm( inf_curr_line, cb->filename, linestr );
             }
         } else {
@@ -748,7 +752,7 @@ int main( int argc, char * argv[] )
     clock_t     start_time;
     clock_t     end_time;
 
-
+    argc = argc; argv = argv;
     environment = &env;
     if( setjmp( env ) ) {               // if fatal error has occurred
         my_exit( 16 );
@@ -782,8 +786,6 @@ int main( int argc, char * argv[] )
         usage();                        // display usage and exit
     }
     cop_setup();                        // init copfiles
-
-
 
     if( master_fname != NULL ) {        // filename specified
         int     rc;

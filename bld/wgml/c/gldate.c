@@ -114,6 +114,7 @@ void    lay_date( const gmltag * entry )
     att_args            l_args;
     int                 cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 
@@ -135,23 +136,19 @@ void    lay_date( const gmltag * entry )
 
                 switch( curr ) {
                 case   e_date_form:
-                    cvterr = i_date_form( p, curr,
-                                          &layout_work.date.date_form );
+                    cvterr = i_date_form( p, curr, layout_work.date.date_form );
                     break;
                 case   e_left_adjust:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.date.left_adjust );
+                    cvterr = i_space_unit( p, curr, &layout_work.date.left_adjust );
                     break;
                 case   e_right_adjust:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.date.right_adjust );
+                    cvterr = i_space_unit( p, curr, &layout_work.date.right_adjust );
                     break;
                 case   e_page_position:
-                    cvterr = i_page_position( p, curr,
-                                          &layout_work.date.page_position );
+                    cvterr = i_page_position( p, curr, &layout_work.date.page_position );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.date.font );
+                    cvterr = i_font_number( p, curr, &layout_work.date.font );
                     if( layout_work.date.font >= wgml_font_cnt ) {
                         layout_work.date.font = 0;
                     }

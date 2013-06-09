@@ -85,6 +85,7 @@ void    lay_page( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 

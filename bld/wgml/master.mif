@@ -22,6 +22,7 @@ verbose    = 1
 extra_c_flags      += -zpw
 #  extra_c_flags      += -fti
 #  extra_c_flags      += -pcl
+#extra_c_flags_gsyssym = -P
 
 !include cproj.mif
 !include deftarg.mif
@@ -53,7 +54,11 @@ libs     += $(wres_lib)
 
 
 wgml.exe: $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+!else
         $(linker) name $^@ $(lflags) op map file { $(objs) } lib { $(libs) }
+!endif
         $(wstrip) -q -a -r $@ . wgml.res
 
 $(name).res : wgmlmsgs.gh ../h/wgml.msg ../h/wgmlmsg.h ../h/wgmlerr.msg ../h/wgml.rc

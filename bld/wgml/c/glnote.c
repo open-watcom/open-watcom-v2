@@ -113,6 +113,7 @@ void    lay_note( const gmltag * entry )
     att_args        l_args;
     int             cvterr;
 
+    entry = entry;
     p = scan_start;
     cvterr = false;
 
@@ -150,7 +151,7 @@ void    lay_note( const gmltag * entry )
                                            &layout_work.note.post_skip );
                     break;
                 case   e_font:
-                    cvterr = i_int8( p, curr, &layout_work.note.font );
+                    cvterr = i_font_number( p, curr, &layout_work.note.font );
                     if( layout_work.note.font >= wgml_font_cnt ) {
                         layout_work.note.font = 0;
                     }
@@ -159,7 +160,7 @@ void    lay_note( const gmltag * entry )
                     cvterr = i_int8( p, curr, &layout_work.note.spacing );
                     break;
                 case   e_note_string:
-                    cvterr = i_xx_string( p, curr, &layout_work.note.string );
+                    cvterr = i_xx_string( p, curr, layout_work.note.string );
                     break;
                 default:
                     out_msg( "WGML logic error.\n");

@@ -52,25 +52,9 @@ typedef struct  ban_sections {
 } ban_sections;
 
 static  const   ban_sections    doc_sections[max_ban] = {
-    { "???",      3, no_ban        },
-    { "abstract", 8, abstract_ban  },
-    { "appendix", 8, appendix_ban  },
-    { "backm",    5, backm_ban     },
-    { "body",     4, body_ban      },
-    { "figlist",  7, figlist_ban   },
-    { "head0",    5, head0_ban     },
-    { "head1",    5, head1_ban     },
-    { "head2",    5, head2_ban     },
-    { "head3",    5, head3_ban     },
-    { "head4",    5, head4_ban     },
-    { "head5",    5, head5_ban     },
-    { "head6",    5, head6_ban     },
-    { "letfirst", 8, letfirst_ban  },
-    { "letlast",  7, letlast_ban   },
-    { "letter",   6, letter_ban    },
-    { "index",    5, index_ban     },
-    { "preface",  7, preface_ban   },
-    { "toc",      3, toc_ban       }
+    #define pick(e,t,s,n) { s, n, e },
+    #include "bdocsect.h"
+    #undef pick
 };
 
 typedef struct  content_names {
@@ -236,6 +220,7 @@ bool    i_case( char * p, lay_att curr, case_t * tm )
 {
     bool        cvterr;
 
+    curr = curr;
     cvterr = false;
     if( !strnicmp( "mixed", p, 5 ) ) {
         *tm = case_mixed;
@@ -275,6 +260,7 @@ void    o_case( FILE * f, lay_att curr, case_t * tm )
 /***************************************************************************/
 bool    i_char( char * p, lay_att curr, char * tm )
 {
+    curr = curr;
     if( is_quote_char( *p ) && (*p == *(p + 2)) ) {
         *tm = *(p + 1);                 // 2. char if quoted
     } else {
@@ -298,6 +284,7 @@ bool    i_content( char * p, lay_att curr, content * tm )
     bool        cvterr;
     int         k;
 
+    curr = curr;
     cvterr = false;
     tm->content_type = no_content;
     for( k = no_content; k < max_content; ++k ) {
@@ -352,6 +339,7 @@ bool    i_default_frame( char * p, lay_att curr, def_frame * tm )
     bool        cvterr;
     int         len;
 
+    curr = curr;
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
         tm->type = none;
@@ -418,6 +406,7 @@ bool    i_docsect( char * p, lay_att curr, ban_docsect * tm )
     bool        cvterr;
     int         k;
 
+    curr = curr;
     cvterr = false;
     *tm = no_ban;
     for( k = no_ban; k < max_ban; ++k ) {
@@ -456,6 +445,7 @@ bool    i_frame( char * p, lay_att curr, bool * tm )
 {
     bool        cvterr;
 
+    curr = curr;
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
         *tm = false;
@@ -490,6 +480,7 @@ void    o_frame( FILE * f, lay_att curr, bool * tm )
 /***************************************************************************/
 bool    i_int32( char * p, lay_att curr, int32_t * tm )
 {
+    curr = curr;
 
     *tm = strtol( p, NULL, 10 );
     return( false );
@@ -506,6 +497,7 @@ bool    i_int8( char * p, lay_att curr, int8_t * tm )
 {
     int32_t     wk;
 
+    curr = curr;
     wk = strtol( p, NULL, 10 );
     if( abs( wk ) > 255 ) {
         return( true );
@@ -523,6 +515,42 @@ void    o_int8( FILE * f, lay_att curr, int8_t * tm )
 }
 
 
+bool    i_uint8( char *p, lay_att curr, uint8_t *tm )
+{
+    int wk;
+
+    curr = curr;
+    wk = strtol( p, NULL, 10 );
+    if( wk < 0 || wk > 255 ) {
+        return( true );
+    }
+    *tm = wk;
+    return( false );
+}
+
+void    o_uint8( FILE * f, lay_att curr, uint8_t *tm )
+{
+    unsigned wk = *tm;
+
+    fprintf_s( f, "        %s = %u\n", att_names[curr], wk );
+    return;
+}
+
+
+/***************************************************************************/
+/*  font number                                                            */
+/***************************************************************************/
+bool    i_font_number( char *p, lay_att curr, font_number *tm )
+{
+    return( i_uint8( p, curr, tm ) );
+}
+
+void    o_font_number( FILE * f, lay_att curr, font_number *tm )
+{
+    o_uint8( f, curr, tm );
+}
+
+
 /***************************************************************************/
 /*  number form                                                            */
 /***************************************************************************/
@@ -530,6 +558,7 @@ bool    i_number_form( char * p, lay_att curr, num_form * tm )
 {
     bool        cvterr;
 
+    curr = curr;
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
         *tm = num_none;
@@ -573,6 +602,7 @@ bool    i_number_style( char * p, lay_att curr, num_style * tm )
     num_style   wk = 0;
     char        c;
 
+    curr = curr;
     cvterr = false;
     c = tolower( *p );
     switch( c ) {                       // first letter
@@ -691,6 +721,7 @@ bool    i_page_eject( char * p, lay_att curr, page_ej * tm )
 {
     bool        cvterr;
 
+    curr = curr;
     cvterr = false;
     if( !strnicmp( strno, p, 2 ) ) {
         *tm = ej_no;
@@ -736,6 +767,7 @@ bool    i_page_position( char * p, lay_att curr, page_pos * tm )
 {
     bool        cvterr;
 
+    curr = curr;
     cvterr = false;
     if( !strnicmp( "left", p, 4 ) ) {
         *tm = pos_left;
@@ -777,6 +809,7 @@ bool    i_place( char * p, lay_att curr, bf_place * tm )
 {
     bool        cvterr;
 
+    curr = curr;
     cvterr = false;
     if( !strnicmp( "topeven", p, 7 ) ) {
         *tm = topeven_place;
@@ -834,6 +867,7 @@ bool    i_pouring( char * p, lay_att curr, reg_pour * tm )
 {
     bool        cvterr;
 
+    curr = curr;
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
         *tm = no_pour;
@@ -897,7 +931,7 @@ void    o_pouring( FILE * f, lay_att curr, reg_pour * tm )
 /***************************************************************************/
 bool    i_space_unit( char * p, lay_att curr, su * tm )
 {
-
+    curr = curr;
     return( to_internal_SU( &p, tm ) );
 }
 
@@ -922,6 +956,7 @@ bool    i_xx_string( char * p, lay_att curr, xx_str * tm )
     bool        cvterr;
     int         len;
 
+    curr = curr;
     cvterr = false;
     len = strlen( p );
     if( is_quote_char( *p ) ) {
@@ -977,6 +1012,7 @@ bool    i_yes_no( char * p, lay_att curr, bool * tm )
 {
     bool        cvterr;
 
+    curr = curr;
     cvterr = false;
     if( !strnicmp( strno, p, 2 ) ) {
         *tm = false;
