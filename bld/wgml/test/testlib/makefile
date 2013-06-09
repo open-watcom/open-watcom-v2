@@ -67,7 +67,6 @@ gendevcmd = $(%OWROOT)\docs\gml\dos\gendev
 # set up to use dosemu to run gendev under Linux
 #-------------------------------------------------------
 use_dosemu = dosemu
-gendevcmd = $(%OWROOT:/=\)\docs\gml\dos\gendev
 
 !else
 !error Unsupported building platform !!!!!!
@@ -122,7 +121,7 @@ gencop1 : .procedure
         %create $(dosemu_gendev_batch)
         @%append $(dosemu_gendev_batch) set GMLLIB=..\testlib
         @%append $(dosemu_gendev_batch) set GMLINC=..\testsrc
-        @%append $(dosemu_gendev_batch) $(gendevcmd) $^&
+        @%append $(dosemu_gendev_batch) ..\..\..\..\docs\gml\dos\gendev.exe $^&
         @%append $(dosemu_gendev_batch) exitemu
         dosemu -dumb $(dosemu_gendev_batch)
 !else ifeq use_dosemu dosbox
@@ -144,7 +143,7 @@ gencopall : .procedure
         %create $(dosemu_gendev_batch)
         @%append $(dosemu_gendev_batch) set GMLLIB=..\testlib
         @%append $(dosemu_gendev_batch) set GMLINC=..\testsrc
-        @%append $(dosemu_gendev_batch) $(gendevcmd) genall
+        @%append $(dosemu_gendev_batch) ..\..\..\..\docs\gml\dos\gendev.exe genall
         @%append $(dosemu_gendev_batch) exitemu
         dosemu -dumb $(dosemu_gendev_batch)
 !else ifeq use_dosemu dosbox
