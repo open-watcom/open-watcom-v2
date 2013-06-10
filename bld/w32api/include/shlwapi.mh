@@ -998,7 +998,7 @@ LWSTDAPI                PathMatchSpecExW( LPCWSTR, LPCWSTR, DWORD );
 #define StrIntlEqNIA( p1, p2, p3 )  StrIsIntlEqualA( FALSE, p1, p2, p3 )
 #define StrIntlEqNIW( p1, p2, p3 )  StrIsIntlEqualW( FALSE, p1, p2, p3 )
 #define StrIntlEqNW( p1, p2, p3 )   StrIsIntlEqualW( TRUE, p1, p2, p3 )
-#define UrlEscapeInPlace( p1, p2 ) \
+#define UrlUnescapeInPlace( p1, p2 ) \
     UrlUnescape( p1, NULL, NULL, p2 | URL_UNESCAPE_INPLACE )
 #define UrlEscapeSpaces( p1, p2, p3 ) \
     UrlCanonicalize( p1, p2, p3, URL_ESCAPE_SPACES_ONLY | URL_DONT_ESCAPE_EXTRA_INFO )
