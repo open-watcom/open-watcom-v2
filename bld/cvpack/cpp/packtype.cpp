@@ -1005,6 +1005,7 @@ LFLeafStruct* LFFieldList::Construct( const char* ptr,
 }
 
 LFSubField* LFSubField::Error( const char* )
+/******************************************/
 {
     throw InternalError("Invalid/Unsupported leaf index detected.");
 }
@@ -1012,7 +1013,7 @@ LFSubField* LFSubField::Error( const char* )
 unsigned_8 LFSubField::PadLen( const char* ptr )
 /**********************************************/
 {
-    return (unsigned_8) ( (*ptr > LF_PAD0) ? (*ptr - LF_PAD0 ) : 0 );
+    return( (unsigned_8)( ( *(const unsigned_8 *)ptr > LF_PAD0 ) ? *(const unsigned_8 *)ptr - LF_PAD0 : 0 ) );
 }
 
 LFSubField* LFBClass::Construct( const char* ptr )

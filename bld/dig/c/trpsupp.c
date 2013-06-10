@@ -32,6 +32,7 @@
 #include <stddef.h>
 #include "madregs.h"
 #include "trpimp.h"
+#include "trpld.h"
 
 #ifdef ENABLE_TRAP_LOGGING
 #include <stdio.h>
@@ -114,16 +115,16 @@ static trap_retval ReqFuncProxy( trap_elen num_in_mx, mx_entry_p mx_in, trap_ele
         unsigned short  length = 0;
         SYSTEMTIME      st;
 
-        GetSystemTime(&st);
+        GetSystemTime( &st );
 
         for( ix = 0 ; ix < num_in_mx ; ix++ ) {
             length += mx_in[ix].len;
         }
         fwrite( &rectype, sizeof( rectype ), 1, TrapTraceFileHandle );
-        fwrite( &st.wHour, sizeof(WORD), 1, TrapTraceFileHandle );
-        fwrite( &st.wMinute, sizeof(WORD), 1, TrapTraceFileHandle );
-        fwrite( &st.wSecond, sizeof(WORD), 1, TrapTraceFileHandle );
-        fwrite( &st.wMilliseconds, sizeof(WORD), 1, TrapTraceFileHandle );
+        fwrite( &st.wHour, sizeof( WORD ), 1, TrapTraceFileHandle );
+        fwrite( &st.wMinute, sizeof( WORD ), 1, TrapTraceFileHandle );
+        fwrite( &st.wSecond, sizeof( WORD ), 1, TrapTraceFileHandle );
+        fwrite( &st.wMilliseconds, sizeof( WORD ), 1, TrapTraceFileHandle );
 
         fwrite( &length, sizeof( length ), 1, TrapTraceFileHandle );
         for( ix = 0 ; ix < num_in_mx ; ix++ ) {

@@ -32,12 +32,11 @@
 
 #include <string.h>
 #include "trpimp.h"
+#include "trpld.h"
 
 mx_entry_p  Out_Mx_Ptr;
 
 #define OUTPTR( type, name ) type *name = Out_Mx_Ptr->ptr;
-
-extern trap_req_func    *ReqFunc;
 
 trap_retval ReqConnect( void )
 {
