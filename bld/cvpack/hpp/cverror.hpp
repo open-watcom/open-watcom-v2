@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <iostream.h>
+#include <iostream>
 
 #ifndef _CVERROR_H_INCLUDED
 #define _CVERROR_H_INCLUDED

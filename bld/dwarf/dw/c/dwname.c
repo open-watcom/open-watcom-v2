@@ -66,9 +66,9 @@ void InitDebugPubnames(
 void FiniDebugPubnames(
     dw_client                   cli )
 {
-    static  char const     zeros[ sizeof( uint_32 ) ];
-    char                        buf[ sizeof( debug_ref ) ];
-    debug_ref                   offset;
+    static char const   zeros[sizeof( uint_32 )] = {0};
+    char                buf[sizeof( debug_ref )];
+    debug_ref           offset;
 
     /* write the set terminator */
     CLIWrite( DW_DEBUG_PUBNAMES, zeros, sizeof( uint_32 ) );

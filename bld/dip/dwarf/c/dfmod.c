@@ -295,8 +295,7 @@ extern walk_result DFWalkModListSrc( imp_image_handle *ii,
     return( ret );
 }
 
-walk_result DIPENTRY DIPImpWalkModList( imp_image_handle *ii,
-                        IMP_MOD_WKR wk, void *d )
+walk_result DIPENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
 {
     int im;
     walk_result ret;

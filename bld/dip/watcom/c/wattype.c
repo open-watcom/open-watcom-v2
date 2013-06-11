@@ -504,7 +504,7 @@ static byte *FindAName( struct name_state *state, byte *p,
 {
     byte        *name;
     unsigned    len;
-    int         (*comp)(void const*,void const*,unsigned);
+    int         (*comp)(void const*,void const*,size_t);
     unsigned    index;
     unsigned    i;
     unsigned    type;
@@ -1620,7 +1620,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
     struct anc_graph    *pending, *new;
     imp_type_handle     new_it;
     unsigned            index;
-    int                 (*comp)(void const*,void const*,unsigned);
+    int                 (*comp)(void const*,void const*,size_t);
     imp_sym_handle      *is;
     byte                *name;
     unsigned            len;

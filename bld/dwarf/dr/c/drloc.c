@@ -359,7 +359,7 @@ static void DoLocExpr( unsigned_8       *p,
             top[0] = stk2 * stk1;
             break;
         case DW_OP_neg:
-            top[0] = -stk1;
+            top[0] = -(int_32)stk1;
             break;
         case DW_OP_not:
             top[0] = ~stk1;
@@ -380,7 +380,7 @@ static void DoLocExpr( unsigned_8       *p,
             top[0] = stk2 >> stk1;
             break;
         case DW_OP_shra:
-            top[0] = (int_32) stk2 >> stk1;
+            top[0] = (int_32)stk2 >> stk1;
             break;
         case DW_OP_xor:
             top[0] = stk2 ^ stk1;

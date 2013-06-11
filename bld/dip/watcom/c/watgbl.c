@@ -160,7 +160,7 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     gbl_link            *lnk_array;
     gbl_info            *gbl;
     hash_link           lnk_off;
-    int                 (*compare)(void const*,void const*,unsigned);
+    int                 (*compare)(void const*,void const*,size_t);
     char                *gblname;
     size_t              gbllen;
     char                *nam;
@@ -178,7 +178,7 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     search_result       sr;
 
     sr = SR_NONE;
-    compare = lc->case_sensitive ? &memcmp : &memicmp;
+    compare = lc->case_sensitive ? memcmp : memicmp;
 
     lkup_dtor = (lc->type == ST_DESTRUCTOR);
     /* only want to hash the source code portion of the name */

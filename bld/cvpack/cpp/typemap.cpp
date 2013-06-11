@@ -53,23 +53,23 @@ void TypeIndexMap::Insert( const type_index oldTypeIndex,
 /********************************************************/
 {
     try {
-    if ( newTypeIndex != 0 ) {
-        _mappingTable[oldTypeIndex].globalIndex = newTypeIndex;
-        _mappingTable[oldTypeIndex].isNewType = FALSE;
-    } else {
-        // check if running out of types.
-        if ( _currentGlobalIndex >= 0xffff ) {
-            throw MiscError("fatal : running out of type indices.");
+        if ( newTypeIndex != 0 ) {
+            _mappingTable[oldTypeIndex].globalIndex = newTypeIndex;
+            _mappingTable[oldTypeIndex].isNewType = FALSE;
+        } else {
+            // check if running out of types.
+            if ( _currentGlobalIndex >= 0xffff ) {
+                throw MiscError("fatal : running out of type indices.");
+            }
+            _mappingTable[oldTypeIndex].globalIndex = _currentGlobalIndex++;
+            _mappingTable[oldTypeIndex].isNewType = TRUE;
         }
-        _mappingTable[oldTypeIndex].globalIndex = _currentGlobalIndex++;
-        _mappingTable[oldTypeIndex].isNewType = TRUE;
-    }
-
-   // testing code.
-    _mappingTable[oldTypeIndex].isDone = TRUE;
+    
+        // testing code.
+        _mappingTable[oldTypeIndex].isDone = TRUE;
     }
     catch (...) {
-        cerr << "index : " << oldTypeIndex << endl;
+        std::cerr << "index : " << oldTypeIndex << std::endl;
         throw InternalError("packtype.cpp : TypeIndexMap::Lookup() index range failed.");
     }
 }
@@ -89,7 +89,7 @@ type_index TypeIndexMap::Lookup( const type_index oldTypeIndex ) const
 
     // Internal testing code.
     catch (...) {
-        cerr << "Index : " << oldTypeIndex << " " << endl;
+        std::cerr << "Index : " << oldTypeIndex << " " << std::endl;
         throw InternalError("packtype.cpp : TypeIndexMap::Lookup() index range failed.");
     }
 }

@@ -266,12 +266,10 @@ static void DoLink( char *cmdline )
     WritePermData();
     BuildImpLib();
     EndTime();
-#ifndef __OSI__
-  #ifdef __ZDOS__
-    signal( SIGBREAK, SIG_IGN );    /* we're going to clean up anyway */
-  #else
-    signal( SIGINT, SIG_IGN );      /* we're going to clean up anyway */
-  #endif
+#ifdef __ZDOS__
+    signal( SIGBREAK, SIG_IGN );  /* we're going to clean up anyway */
+#elif !defined( __OSI__ )
+    signal( SIGINT, SIG_IGN );    /* we're going to clean up anyway */
 #endif
 }
 

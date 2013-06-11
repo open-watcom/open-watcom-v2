@@ -136,7 +136,7 @@ search_result DIPENTRY DIPImpAddrSym( imp_image_handle *ii, imp_mod_handle im,
     return( LookupGblAddr( ii, addr, is ) );
 }
 
-#define SH_ESCAPE       '\xf0'
+#define SH_ESCAPE       0xf0
 
 unsigned DIPENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc,
@@ -231,7 +231,8 @@ static void CollectSymHdl( byte *ep, imp_sym_handle *is )
     ++is;
     while( sp < (byte *)is ) {
         curr = *ep++;
-        if( curr == SH_ESCAPE ) curr = escapes[ *ep++ - 1 ];
+        if( curr == SH_ESCAPE )
+            curr = escapes[ *ep++ - 1 ];
         *sp++ = curr;
     }
 }
@@ -268,7 +269,7 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     unsigned            op_len;
     imp_sym_handle      *scope_is;
 
-    if( *li->name.start == SH_ESCAPE ) {
+    if( *li->name.start == (char)SH_ESCAPE ) {
         CollectSymHdl( (byte *)li->name.start, DCSymCreate( ii, d ) );
         return( SR_EXACT );
     }

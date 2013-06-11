@@ -36,21 +36,21 @@
 void CVpackError::ErrorPrint() const
 /**********************************/
 {
-    cerr << "CVPACK : ";
+    std::cerr << "CVPACK : ";
 }
 
 void RetrieveError::ErrorPrint() const
 /************************************/
 {
     CVpackError::ErrorPrint();
-    cerr << "cannot retrieve debugging information : " << endl;
+    std::cerr << "cannot retrieve debugging information : " << std::endl;
 }
 
 void WriteError::ErrorPrint() const
 /*********************************/
 {
     CVpackError::ErrorPrint();
-    cerr << "error writing to file " << _fileName << endl;
+    std::cerr << "error writing to file " << _fileName << std::endl;
 }
 
 FileError::FileError(const char* fName)
@@ -63,21 +63,21 @@ void FileError::ErrorPrint() const
 /********************************/
 {
     RetrieveError::ErrorPrint();
-    cerr << "error reading from " << _fileName << endl;
+    std::cerr << "error reading from " << _fileName << std::endl;
 }
 
 void DebugInfoError::ErrorPrint() const
 /*************************************/
 {
     RetrieveError::ErrorPrint();
-    cerr << "fail to retrieve debugging information." << endl;
+    std::cerr << "fail to retrieve debugging information." << std::endl;
 }
 
 void CVSigError::ErrorPrint() const
 /*********************************/
 {
     RetrieveError::ErrorPrint();
-    cerr << "cannot detect CV signature / invalid CV signature." << endl;
+    std::cerr << "cannot detect CV signature / invalid CV signature." << std::endl;
 }
 
 OutOfMemory::OutOfMemory( const size_t reqSize )
@@ -90,7 +90,7 @@ void OutOfMemory::ErrorPrint() const
 /**********************************/
 {
     CVpackError::ErrorPrint();
-    cerr << "out of memory : requested size = " << _requestSize << endl;
+    std::cerr << "out of memory : requested size = " << _requestSize << std::endl;
 }
 
 InternalError::InternalError( const char* msg )
@@ -102,7 +102,7 @@ InternalError::InternalError( const char* msg )
 void InternalError::ErrorPrint() const
 /************************************/
 {
-    cerr << "Internal Error : " << _debugMsg << endl;
+    std::cerr << "Internal Error : " << _debugMsg << std::endl;
 }
 
 MiscError::MiscError( const char* msg )
@@ -115,5 +115,5 @@ void MiscError::ErrorPrint() const
 /**********************************/
 {
     CVpackError::ErrorPrint();
-    cerr << _errorMsg << endl;
+    std::cerr << _errorMsg << std::endl;
 }

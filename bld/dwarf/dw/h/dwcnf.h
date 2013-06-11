@@ -37,7 +37,7 @@
     dw_sym_handle has a client defined meaning; the DW library will pass these
     back to the client in CLIRelocs for DW_W_STATIC
 */
-typedef uint_32         dw_sym_handle;
+typedef void            *dw_sym_handle;
 
 
 /*

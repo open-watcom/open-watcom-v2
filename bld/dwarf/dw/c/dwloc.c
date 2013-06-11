@@ -679,7 +679,7 @@ dw_loc_handle DWENTRY DWListFini(
     dw_client                   cli,
     dw_list_id                  id )
 {
-    static char  const zeros[ 2*sizeof( dw_targ_addr ) ];
+    static char  const zeros[2 * sizeof( dw_targ_addr )] = {0};
 
     if( id->hdl.is_expr == LOC_LIST_REF ){
         CLIWrite( DW_DEBUG_LOC, zeros, sizeof( zeros ) );
@@ -717,13 +717,13 @@ void DWENTRY DWLocTrash(
 
 
 uint_32 EmitLocList(
-    dw_client                   cli,
-    uint                        sect,
-    dw_loc_handle               loc )
+    dw_client           cli,
+    uint                sect,
+    dw_loc_handle       loc )
 {
-    static char const zeros[ 2*sizeof( dw_targ_addr ) ];
-    list_entry *                cur;
-    uint_32                     bytes_written;
+    static char const   zeros[2 * sizeof( dw_targ_addr )] = {0};
+    list_entry          *cur;
+    uint_32             bytes_written;
 
     /* ensure that this is really a list */
     _Assert( loc->is_expr == LOC_LIST );

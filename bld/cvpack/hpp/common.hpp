@@ -33,11 +33,13 @@
 #ifndef _COMMON_H_INCLUDED
 #define _COMMON_H_INCLUDED
 
+#ifdef __WATCOMC__
 #pragma WARNING 389 9;
+#endif
 
 #include "watcom.h"
 #include "bool.h"
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 
 static const int DEF_ARRAY_SIZE = 100;

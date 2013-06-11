@@ -32,7 +32,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#ifdef __WATCOMC__
 #include <new.h>
+#endif
 #include "common.hpp"
 #include "cverror.hpp"
 

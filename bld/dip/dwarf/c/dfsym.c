@@ -1083,7 +1083,7 @@ typedef struct {
 
 typedef struct {
     blk_wlk_com         com;
-    int                 (*comp)(const void *, const void *, unsigned);
+    int                 (*comp)(const void *, const void *, size_t);
     lookup_item         *li;
     search_result       sr;
     char                *buff;
@@ -1686,7 +1686,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     df.com.containing = 0;
     df.com.cont = TRUE;
     df.com.kind = WLK_LOOKUP;
-    df.lookup.comp = li->case_sensitive ? &memcmp : &memicmp;
+    df.lookup.comp = li->case_sensitive ? memcmp : memicmp;
     df.lookup.li = li;
     df.lookup.len =  li->name.len+1;
     if( df.lookup.len <= sizeof( buff ) ) {

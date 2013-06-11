@@ -838,7 +838,7 @@ typedef struct {
 
 typedef struct {
     type_wlk_com     com;
-    int              (*comp)(const void *, const void *, unsigned);
+    int              (*comp)(const void *, const void *, size_t);
     lookup_item      *li;
     search_result     sr;
 }type_wlk_lookup;
