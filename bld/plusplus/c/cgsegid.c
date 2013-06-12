@@ -37,7 +37,6 @@
 #include "cgfront.h"
 #include "ring.h"
 #include "codegen.h"
-#include "errdefns.h"
 #include "segment.h"
 
 

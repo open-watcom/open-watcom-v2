@@ -34,7 +34,6 @@
 
 #include <stddef.h>
 
-#include "errdefns.h"
 #include "memmgr.h"
 #include "carve.h"
 #include "stack.h"
@@ -53,9 +52,7 @@ static void gstackInit( INITFINI* defn )
 static void gstackFini( INITFINI* defn )
 {
     defn = defn;
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveGLOBAL_STACK, "GLOBAL_STACK" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveGLOBAL_STACK, "GLOBAL_STACK" ) );
     CarveDestroy( carveGLOBAL_STACK );
 }
 

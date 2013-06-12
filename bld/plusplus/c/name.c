@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <limits.h>
 
-#include "errdefns.h"
 #include "memmgr.h"
 #include "name.h"
 #include "carve.h"

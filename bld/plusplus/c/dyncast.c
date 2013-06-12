@@ -32,7 +32,6 @@
 
 #include "plusplus.h"
 #include "cgfront.h"
-#include "errdefns.h"
 #include "convctl.h"
 #include "rtfuncod.h"
 #include "analtyid.h"

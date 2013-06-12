@@ -37,7 +37,6 @@
 #include <errno.h>
 
 #include "preproc.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "srcfile.h"
 #include "dwio.h"

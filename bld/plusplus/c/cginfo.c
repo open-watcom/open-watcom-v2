@@ -40,7 +40,6 @@
 #include "preproc.h"
 #include "cgdata.h"
 #include "codegen.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "pragdefn.h"
 #include "pdefn2.h"

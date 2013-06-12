@@ -33,10 +33,6 @@
 #include "plusplus.h"
 #include "specfuns.h"
 
-#ifndef NDEBUG
-    #include "errdefns.h"
-#endif
-
 typedef struct {
     const char* name;
     unsigned length;

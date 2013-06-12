@@ -39,7 +39,6 @@
 
 #include "preproc.h"
 #include "memmgr.h"
-#include "errdefns.h"
 #include "srcfile.h"
 #include "iosupp.h"
 #include "initdefs.h"

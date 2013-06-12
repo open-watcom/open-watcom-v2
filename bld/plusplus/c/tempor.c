@@ -36,10 +36,6 @@
 #include "label.h"
 #include "cgsegid.h"
 
-#ifndef NDEBUG
-    #include "errdefns.h"
-#endif
-
 
 static TEMP_TYPE tempClass      // default TEMP_TYPE for temp.s
     = TEMP_TYPE_EXPR;

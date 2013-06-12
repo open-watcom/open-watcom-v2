@@ -34,7 +34,6 @@
 
 #include <limits.h>
 
-#include "errdefns.h"
 #include "carve.h"
 #include "name.h"
 #include "initdefs.h"

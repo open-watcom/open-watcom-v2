@@ -41,7 +41,6 @@
 #include "initdefs.h"
 
 #ifndef NDEBUG
-    #include "errdefns.h"
     #include "pragdefn.h"
 #endif
 

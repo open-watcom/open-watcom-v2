@@ -40,7 +40,6 @@
 #include "dbg.h"
 #include "ring.h"
 #include "ptree.h"
-#include "errdefns.h"
 #include "template.h"
 #include "vstk.h"
 #include "iosupp.h"

@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <banner.h>
 
-#include "errdefns.h"
 #include "memmgr.h"
 #include "preproc.h"
 #include "scan.h"

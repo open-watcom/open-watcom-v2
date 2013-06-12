@@ -34,7 +34,6 @@
 
 #include <stdio.h>
 
-#include "errdefns.h"
 #include "carve.h"
 #include "pcheader.h"
 #include "initdefs.h"

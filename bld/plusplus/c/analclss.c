@@ -81,7 +81,6 @@ A destructor will return 'this' as its return value.
 #include "cgfront.h"
 #include "cgsegid.h"
 #include "codegen.h"
-#include "errdefns.h"
 #include "name.h"
 #include "fnbody.h"
 #include "fnovload.h"

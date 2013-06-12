@@ -34,7 +34,6 @@
 
 #include <stddef.h>
 
-#include "errdefns.h"
 #include "memmgr.h"
 #include "stringl.h"
 #include "cgfront.h"
@@ -111,9 +110,7 @@ static void ptreeFini(          // COMPLETION
     INITFINI* defn )            // - definition
 {
     defn = defn;
-#ifndef NDEBUG
-    CarveVerifyAllGone( carvePTREE, "PTREE" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carvePTREE, "PTREE" ) );
     CarveDestroy( carvePTREE );
 }
 

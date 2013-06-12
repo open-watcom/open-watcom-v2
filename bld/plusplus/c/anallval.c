@@ -34,7 +34,6 @@
 #include "memmgr.h"
 #include "cgfront.h"
 #include "fold.h"
-#include "errdefns.h"
 #include "objmodel.h"
 #include "stats.h"
 #include "brinfo.h"

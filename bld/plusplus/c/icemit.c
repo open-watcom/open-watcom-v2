@@ -43,7 +43,6 @@
 #include "toggle.h"
 #include "conpool.h"
 #include "label.h"
-#include "errdefns.h"
 #include "codegen.h"
 #include "fnbody.h"
 #include "pragdefn.h"

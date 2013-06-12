@@ -37,7 +37,6 @@
 #include "name.h"
 #include "pragdefn.h"
 #include "reposit.h"
-#include "errdefns.h"
 #include "initdefs.h"
 #include "pcheader.h"
 

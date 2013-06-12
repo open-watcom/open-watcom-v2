@@ -38,10 +38,6 @@
 #include "vstk.h"
 #include "initdefs.h"
 
-#ifndef NDEBUG
-    #include "errdefns.h"
-#endif
-
 typedef struct {                // CGEXPR -- codegen expression
     cg_name expr;               // - expression
     cg_type type;               // - expression type

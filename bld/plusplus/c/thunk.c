@@ -34,7 +34,6 @@
 #include "cgfront.h"
 #include "fnbody.h"
 #include "defarg.h"
-#include "errdefns.h"
 #include "rtngen.h"
 #include "objmodel.h"
 #include "cgio.h"

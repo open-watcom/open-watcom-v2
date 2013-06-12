@@ -38,7 +38,6 @@
 #include "vstk.h"
 #include "ring.h"
 #include "initdefs.h"
-#include "errdefns.h"
 
 
 static VSTK_CTL stack_object_init;  // stack: array initializations

@@ -35,10 +35,6 @@
 #include "objmodel.h"
 #include "fnbody.h"
 
-#ifndef NDEBUG
-    #include "errdefns.h"
-#endif
-
 
 static SYMBOL inited_temp;      // first init'ed struct temp in parsed tree
 static PTREE last_dtor_node;    // last CO_DTOR_NODE

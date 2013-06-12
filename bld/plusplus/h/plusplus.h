@@ -78,13 +78,11 @@ typedef struct idname {
 
 #ifdef NAME_PTR_IS_NAME_MEMBER
 typedef char            *NAME;      // name pointer
-#define NameStr(x)	(x)
+#define NameStr(x)      (x)
 #else
 typedef struct idname   *NAME;      // name pointer
-#define NameStr(x)	(x)->name
+#define NameStr(x)      (x)->name
 #endif
-
-void CFatal( char *msg );
 
 #ifndef NDEBUG
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
@@ -176,6 +174,7 @@ typedef struct cfloat CPP_FLOAT;
 #include "symbol.h"
 #include "utility.h"
 #include "compflag.h"
+#include "errdefns.h"
 
 #define LINE_NO_MAX  0xFFFFFFFF     // MAXIMUM LINE NO.
 #define BRINF_SYMBOL ((SYMBOL)0xFFFFFFFF) // FAKE BROWSE-INFO SYMBOL

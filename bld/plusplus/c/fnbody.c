@@ -35,7 +35,6 @@
 #include <stddef.h>
 
 #include "preproc.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "carve.h"
 #include "ring.h"
@@ -2280,12 +2279,10 @@ static void functionInit( INITFINI* defn )
 static void functionFini( INITFINI* defn )
 {
     defn = defn;
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveCSTACK, "CSTACK" );
-    CarveVerifyAllGone( carveSWCASE, "SWCASE" );
-    CarveVerifyAllGone( carveFNLABEL, "FNLABEL" );
-    CarveVerifyAllGone( carveFNCATCH, "FNCATCH" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveCSTACK, "CSTACK" ) );
+    DbgStmt( CarveVerifyAllGone( carveSWCASE, "SWCASE" ) );
+    DbgStmt( CarveVerifyAllGone( carveFNLABEL, "FNLABEL" ) );
+    DbgStmt( CarveVerifyAllGone( carveFNCATCH, "FNCATCH" ) );
     CarveDestroy( carveCSTACK );
     CarveDestroy( carveSWCASE );
     CarveDestroy( carveFNLABEL );

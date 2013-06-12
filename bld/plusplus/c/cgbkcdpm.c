@@ -38,7 +38,6 @@
 #include "carve.h"
 #include "ring.h"
 #include "initdefs.h"
-#include "errdefns.h"
 
 typedef struct                  // cdtor_entry -- info for CDTOR value
 {   void* next;                 // - next in ring

@@ -34,7 +34,6 @@
 #include "cgfront.h"
 #include "cdopt.h"
 #include "cgswitch.h"
-#include "errdefns.h"
 #include "fnovload.h"
 #include "ring.h"
 #include "vstk.h"

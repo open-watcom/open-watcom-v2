@@ -35,7 +35,6 @@
 #include <stddef.h>
 #include <limits.h>
 
-#include "errdefns.h"
 #include "ptree.h"
 #include "cgfront.h"
 #include "fold.h"

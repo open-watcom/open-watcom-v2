@@ -38,7 +38,6 @@
 #ifndef NDEBUG
     #include <stdio.h>
     #include "pragdefn.h"
-    #include "errdefns.h"
     #include "dbg.h"
     #include "toggle.h"
 #endif

@@ -34,7 +34,6 @@
 
 #include <assert.h>
 
-#include "errdefns.h"
 #include "fnovload.h"
 #include "cgfront.h"
 #include "stats.h"

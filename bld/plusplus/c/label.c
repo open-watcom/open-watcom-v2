@@ -34,7 +34,6 @@
 #include "fnbody.h"
 #include "carve.h"
 #include "cgfront.h"
-#include "errdefns.h"
 #include "ring.h"
 #include "codegen.h"
 #include "vstk.h"

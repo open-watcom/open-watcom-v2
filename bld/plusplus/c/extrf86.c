@@ -42,7 +42,6 @@
 #include "vfun.h"
 #include "initdefs.h"
 #include "stats.h"
-#include "errdefns.h"
 
 
 ExtraRptCtr( ctr_cgfiles );     // number of CGFILE lookups

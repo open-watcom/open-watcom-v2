@@ -36,7 +36,6 @@
 #include "wio.h"
 
 #include "memmgr.h"
-#include "errdefns.h"
 #include "iosupp.h"
 #include "dwiobuff.h"
 #include "ring.h"
@@ -273,9 +272,7 @@ DWIOBUFF *DwioBuffSeek(         // POSITION TO SPECIFIED OFFSET FROM START
                 next = findReWrBuffer( block );
             } else {
                 if( ctl->prev_addr == 0 ) {
-                    #ifndef NDEBUG
-                        CFatal( "dwiobuff: attempt to seek off start of file" );
-                    #endif
+                    DbgStmt( CFatal( "dwiobuff: attempt to seek off start of file" ) );
                 } else {
                     next = findReWrBuffer( ctl->prev_addr );
                 }

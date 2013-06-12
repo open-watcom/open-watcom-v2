@@ -44,7 +44,6 @@
 #include "initdefs.h"
 
 #ifndef NDEBUG
-    #include "errdefns.h"
     #include <stdio.h>
     #include "dbg.h"
     #include "toggle.h"

@@ -50,7 +50,6 @@ ANALYSE.C -- analyse parsed tree of tokens
 #include "fold.h"
 #include "dbg.h"
 #include "toggle.h"
-#include "errdefns.h"
 #include "codegen.h"
 #include "defarg.h"
 #include "fnbody.h"

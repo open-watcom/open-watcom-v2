@@ -35,7 +35,6 @@
 #include "ring.h"
 #include "carve.h"
 #include "cgsegid.h"
-#include "errdefns.h"
 #include "pcheader.h"
 #include "initdefs.h"
 
@@ -129,9 +128,7 @@ static void typeSigAccessVar(   // ACCESS A DTOR, DEFAULT-CTOR, COPY-CTOR
             sym = CopyCtorFind( type, err_locn );
             break;
           default :
-#ifndef NDEBUG
-            CFatal( "typeSigAccessVar -- impossible type" );
-#endif
+            DbgStmt( CFatal( "typeSigAccessVar -- impossible type" ) );
             sym = NULL;
         }
         if( sym == NULL ) {
@@ -280,9 +277,7 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
             size = 0;
             break;
           default :
-#ifndef NDEBUG
-            CFatal( "cgTypeSignature -- invalid throw category" );
-#endif
+            DbgStmt( CFatal( "cgTypeSignature -- invalid throw category" ) );
             size = 0;
         }
         size += typeSigNameSize( thr );

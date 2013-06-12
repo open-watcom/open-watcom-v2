@@ -51,7 +51,6 @@ typedef struct                  // SYM_TRANS -- symbol translation
 #ifndef NDEBUG
 
     #include "toggle.h"
-    #include "errdefns.h"
     #include <stdio.h>
     #include "pragdefn.h"
 

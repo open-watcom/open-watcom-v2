@@ -56,7 +56,6 @@ static VSTK_CTL stack_blk_posn;     // stack: current block position
 #ifdef NDEBUG
     #define DbgDumpBlkPosn(a,b)
 #else
-    #include "errdefns.h"
     #include "pragdefn.h"
 
 

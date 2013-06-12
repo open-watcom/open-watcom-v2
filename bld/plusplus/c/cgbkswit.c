@@ -32,7 +32,6 @@
 
 #include "plusplus.h"
 #include "cgback.h"
-#include "errdefns.h"
 #include "codegen.h"
 #include "cgbackut.h"
 #include "cgaux.h"

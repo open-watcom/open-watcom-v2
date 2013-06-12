@@ -34,7 +34,6 @@
 
 #include <ctype.h>
 
-#include "errdefns.h"
 #include "memmgr.h"
 #include "hfile.h"
 #include "iosupp.h"

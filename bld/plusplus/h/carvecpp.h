@@ -35,7 +35,6 @@
 //
 #include "fesupp.h"
 
-#include "errdefns.h"
 #include "stats.h"
 #include "ring.h"
 #include "pcheader.h"

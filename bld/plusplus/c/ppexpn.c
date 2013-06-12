@@ -33,7 +33,6 @@
 
 #include <limits.h>
 
-#include "errdefns.h"
 #include "preproc.h"
 #include "fold.h"
 #include "stack.h"

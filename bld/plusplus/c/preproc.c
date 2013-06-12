@@ -33,7 +33,6 @@
 #include "plusplus.h"
 
 #include "memmgr.h"
-#include "errdefns.h"
 #include "iosupp.h"
 #include "preproc.h"
 #include "cppexit.h"

@@ -31,7 +31,6 @@
 
 
 #include "plusplus.h"
-#include "errdefns.h"
 #include "dwio.h"
 #include "memmgr.h"
 #include "ring.h"

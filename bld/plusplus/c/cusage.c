@@ -34,7 +34,6 @@
 #include "wio.h"
 
 #include "cusage.h"
-#include "errdefns.h"
 
 static const char EUsage[] = {
     #include "cmdlnusg.gh"

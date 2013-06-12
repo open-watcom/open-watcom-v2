@@ -34,7 +34,6 @@
 #include "preproc.h"
 #include "name.h"
 #include "memmgr.h"
-#include "errdefns.h"
 #include "cgdata.h"
 #include "pragdefn.h"
 #include "pdefn2.h"

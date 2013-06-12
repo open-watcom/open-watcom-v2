@@ -31,7 +31,6 @@
 
 #include "plusplus.h"
 #include "preproc.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "cgdata.h"
 #include "cgback.h"

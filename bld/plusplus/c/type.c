@@ -36,7 +36,6 @@
 #include <assert.h>
 
 #include "memmgr.h"
-#include "errdefns.h"
 #include "ptree.h"
 #include "cgfront.h"
 #include "ring.h"
@@ -7355,9 +7354,7 @@ static void pushPrototypeAndArguments( type_bind_info *data,
             PstkPush( &(data->with_generic),
                       PTreeIdSym( p->u.symcg.symbol ) );
         } else {
-#ifndef NDEBUG
-            DumpPTree( p );
-#endif
+            DbgStmt( DumpPTree( p ) );
             CFatal( "pushPrototypeAndArguments" );
         }
 
@@ -7370,9 +7367,7 @@ static void pushPrototypeAndArguments( type_bind_info *data,
             PstkPush( &(data->without_generic),
                       PTreeIdSym( a->u.symcg.symbol ) );
         } else {
-#ifndef NDEBUG
-            DumpPTree( a );
-#endif
+            DbgStmt( DumpPTree( a ) );
             CFatal( "pushPrototypeAndArguments" );
         }
     }
@@ -8584,11 +8579,9 @@ static void typesFini(          // COMPLETION OF TYPES PROCESSING
 
     defn = defn;
     ClassFini();
-#ifndef NDEBUG
-    //DumpOfRefs();
-    CarveVerifyAllGone( carveDECL_SPEC, "DECL_SPEC" );
-    CarveVerifyAllGone( carveDECL_INFO, "DECL_INFO" );
-#endif
+    //DbgStmt( DumpOfRefs() );
+    DbgStmt( CarveVerifyAllGone( carveDECL_SPEC, "DECL_SPEC" ) );
+    DbgStmt( CarveVerifyAllGone( carveDECL_INFO, "DECL_INFO" ) );
     CarveWalkAllFree( carveTYPE, markFreeType );
     CarveWalkAll( carveTYPE, freeTypeName, &data );
     CarveDestroy( carveTYPE );

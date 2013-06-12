@@ -34,7 +34,6 @@
 
 #include <limits.h>
 
-#include "errdefns.h"
 #include "fnbody.h"
 #include "cgfront.h"
 #include "cgsegid.h"
@@ -845,10 +844,8 @@ static void dataInitFini( INITFINI* defn )
         // last initialization didn't get finished, just abandon it
         dataInitAbandon();
     }
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveNEST, "NEST" );
-    CarveVerifyAllGone( carveQUEUE, "QUEUE" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveNEST, "NEST" ) );
+    DbgStmt( CarveVerifyAllGone( carveQUEUE, "QUEUE" ) );
     CarveDestroy( carveNEST );
     CarveDestroy( carveQUEUE );
 }

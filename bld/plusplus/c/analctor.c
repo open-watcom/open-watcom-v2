@@ -35,7 +35,6 @@
 #include "fnovload.h"
 #include "calldiag.h"
 #include "memmgr.h"
-#include "errdefns.h"
 #include "rtfuncod.h"
 #include "ring.h"
 #include "defarg.h"

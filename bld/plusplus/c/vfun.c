@@ -34,7 +34,6 @@
 #include "cgfront.h"
 #include "codegen.h"
 #include "fnovload.h"
-#include "errdefns.h"
 #include "vfun.h"
 #include "extrf.h"
 

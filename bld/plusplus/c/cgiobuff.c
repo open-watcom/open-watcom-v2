@@ -34,7 +34,6 @@
 #include <sys/types.h>
 #include "wio.h"
 #include "memmgr.h"
-#include "errdefns.h"
 #include "cgiobuff.h"
 #include "ring.h"
 #include "iosupp.h"

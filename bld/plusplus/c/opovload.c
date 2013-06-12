@@ -31,7 +31,6 @@
 
 #include "plusplus.h"
 #include "cgfront.h"
-#include "errdefns.h"
 #include "fnovload.h"
 #include "memmgr.h"
 #include "name.h"

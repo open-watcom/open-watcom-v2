@@ -42,7 +42,6 @@
 #include "cgio.h"
 
 #ifndef NDEBUG
-    #include "errdefns.h"
     #include "pragdefn.h"
 #endif
 

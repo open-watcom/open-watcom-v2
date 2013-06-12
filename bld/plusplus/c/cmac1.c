@@ -32,7 +32,6 @@
 #include "plusplus.h"
 #include "preproc.h"
 #include "tokenbuf.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "macro.h"
 #include "ring.h"
@@ -130,9 +129,7 @@ static void macroFini(          // MACRO PROCESSING -- COMPLETION
     defn = defn;
     DirectiveFini();
     MacroStorageFini();
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveNESTED_MACRO, "NESTED_MACRO" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveNESTED_MACRO, "NESTED_MACRO" ) );
     CarveDestroy( carveNESTED_MACRO );
 }
 

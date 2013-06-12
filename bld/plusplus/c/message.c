@@ -42,7 +42,6 @@
 #include "preproc.h"
 #include "vbuf.h"
 #include "fmtmsg.h"
-#include "errdefns.h"
 #include "context.h"
 #include "ring.h"
 #include "srcfile.h"
@@ -739,7 +738,7 @@ msg_status_t CErr2p(            // ISSUE ERROR (char* PARAMETER)
 }
 
 void CFatal(                    // ISSUE ERROR AND COMMIT SUICIDE
-    char *msg )                 // - error message
+    const char *msg )           // - error message
 {
     CErr2p( ERR_FATAL_ERROR, msg );
     CSuicide();

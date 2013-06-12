@@ -34,7 +34,6 @@
 
 #include <stddef.h>
 
-#include "errdefns.h"
 #include "memmgr.h"
 #include "preproc.h"
 #include "carve.h"
@@ -120,11 +119,9 @@ static void rewriteFini( INITFINI* defn )
     defn = defn;
     RewriteFree( currRewrite );
     currRewrite = NULL;
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveREWRITE, "REWRITE" );
-    CarveVerifyAllGone( carveREWRITE_TOKENS, "REWRITE_TOKENS" );
-    CarveVerifyAllGone( carveSRCFILE_HANDLE, "SRCFILE_HANDLE" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveREWRITE, "REWRITE" ) );
+    DbgStmt( CarveVerifyAllGone( carveREWRITE_TOKENS, "REWRITE_TOKENS" ) );
+    DbgStmt( CarveVerifyAllGone( carveSRCFILE_HANDLE, "SRCFILE_HANDLE" ) );
     CarveDestroy( carveREWRITE );
     CarveDestroy( carveREWRITE_TOKENS );
     CarveDestroy( carveSRCFILE_HANDLE );
@@ -403,16 +400,12 @@ static PTREE recoverToken( PTREE tree )
         case CO_STORAGE:
             return( tree );
         default:
-#ifndef NDEBUG
-            CFatal( "recoverToken: unknown tree cgop" );
-#endif
+            DbgStmt( CFatal( "recoverToken: unknown tree cgop" ) );
             return( tree );
         }
         break;
     default:
-#ifndef NDEBUG
-        CFatal( "recoverToken: unknown tree cgop" );
-#endif
+        DbgStmt( CFatal( "recoverToken: unknown tree cgop" ) );
         return( tree );
     }
     saveToken( currRewrite, currLocn );
@@ -471,9 +464,7 @@ REWRITE *RewritePackageFunction( PTREE multi )
         DbgAssert( depth != 0 );
         switch( CurToken ) {
         case T_NULL:
-#ifndef NDEBUG
             DbgAssert( asm_depth != 0 );
-#endif
             PPCTL_DISABLE_EOL();
             if( depth == asm_depth ) {
                 PPCTL_DISABLE_ASM();

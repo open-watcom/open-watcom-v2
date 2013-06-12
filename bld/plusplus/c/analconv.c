@@ -33,7 +33,6 @@
 #include "plusplus.h"
 #include "cgfront.h"
 #include "fnovload.h"
-#include "errdefns.h"
 #include "cgsegid.h"
 #include "defarg.h"
 #include "class.h"

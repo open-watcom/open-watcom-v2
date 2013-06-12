@@ -32,7 +32,6 @@
 
 #include "plusplus.h"
 #include "cgfront.h"
-#include "errdefns.h"
 #include "preproc.h"
 #include "rewrite.h"
 #include "ring.h"
@@ -638,10 +637,8 @@ static boolean templateArgSame( PTREE left, PTREE right )
     }
 
     // TODO: add missing cases
-#ifndef NDEBUG
-    DumpPTree( left );
-    DumpPTree( right );
-#endif
+    DbgStmt( DumpPTree( left ) );
+    DbgStmt( DumpPTree( right ) );
     CFatal( "not yet implemented: templateArgSame" );
 
     return FALSE;
@@ -949,9 +946,7 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
                 break;
 
               default:
-#ifndef NDEBUG
-                DumpSymbol( curr );
-#endif
+                DbgStmt( DumpSymbol( curr ) );
                 CFatal( "not yet implemented: mergeClassTemplates" );
             }
             parms = PTreeBinary( CO_LIST, parms, parm );

@@ -32,7 +32,6 @@
 
 #include "plusplus.h"
 #include "preproc.h"
-#include "errdefns.h"
 #include "scan.h"
 #include "memmgr.h"
 #include "fname.h"
@@ -753,14 +752,14 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
         old_ppctl = PPControl;
         for(;;) {
             if( CompFlags.cpp_output )
-	            PrtChar( '\n' );
+                    PrtChar( '\n' );
             NextChar();
             // look for a #-char or the corresponding digraph (%:)
             if( CurrChar != PreProcChar && CurrChar != '%' ) {
                 SkipAhead();
             }
             if( CurrChar == LCHR_EOF )
-	            break;
+                    break;
 
             if( CurrChar == '%' ) {
                 NextChar();

@@ -37,7 +37,6 @@
 #include <ctype.h>
 
 #include "ppintnam.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "class.h"
 #include "ppops.h"

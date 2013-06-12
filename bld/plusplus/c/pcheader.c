@@ -41,7 +41,6 @@
 #endif
 #include "wio.h"
 #include "sopen.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "carve.h"
 #include "hfile.h"

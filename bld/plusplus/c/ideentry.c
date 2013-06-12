@@ -45,7 +45,6 @@
 #endif
 
 #ifndef NDEBUG
-#include "errdefns.h"
 // #undef DbgVerify
 // #define DbgVerify(c,m) if( !(c) ) printIDE( "** IDEDLL **" m )
 #endif

@@ -36,7 +36,6 @@
 #include <errno.h>
 
 #include "memmgr.h"
-#include "errdefns.h"
 #include "scan.h"
 #include "escchars.h"
 

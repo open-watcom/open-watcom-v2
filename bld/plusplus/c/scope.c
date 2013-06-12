@@ -36,7 +36,6 @@
 #include <stdio.h>
 #include <limits.h>
 
-#include "errdefns.h"
 #include "memmgr.h"
 #include "ring.h"
 #include "stack.h"
@@ -842,15 +841,13 @@ static void scopeFini(          // SCOPES COMPLETION
     INITFINI* defn )            // - definition
 {
     defn = defn;
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveBASE_STACK, "BASE_STACK" );
-    CarveVerifyAllGone( carveBASE_PATH, "BASE_PATH" );
-    CarveVerifyAllGone( carvePATH_CAP, "PATH_CAP" );
-    CarveVerifyAllGone( carveSEARCH_RESULT, "SEARCH_RESULT" );
-    CarveVerifyAllGone( carveGEN_LEAP, "GEN_LEAP" );
-    CarveVerifyAllGone( carveQUALIFICATION, "QUALIFICATION" );
-    CarveVerifyAllGone( carveSYMBOL_EXCLUDE, "SYMBOL_EXCLUDE" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveBASE_STACK, "BASE_STACK" ) );
+    DbgStmt( CarveVerifyAllGone( carveBASE_PATH, "BASE_PATH" ) );
+    DbgStmt( CarveVerifyAllGone( carvePATH_CAP, "PATH_CAP" ) );
+    DbgStmt( CarveVerifyAllGone( carveSEARCH_RESULT, "SEARCH_RESULT" ) );
+    DbgStmt( CarveVerifyAllGone( carveGEN_LEAP, "GEN_LEAP" ) );
+    DbgStmt( CarveVerifyAllGone( carveQUALIFICATION, "QUALIFICATION" ) );
+    DbgStmt( CarveVerifyAllGone( carveSYMBOL_EXCLUDE, "SYMBOL_EXCLUDE" ) );
     if( CompFlags.extensions_enabled ) {
         KwEnable( T_BOOL );
     }
@@ -3707,9 +3704,7 @@ static void removeDead( lookup_walk *data )
     PATH_CAP *next;
     PATH_CAP **prev;
 
-#ifndef NDEBUG
-    dumpSearch( data );
-#endif
+    DbgStmt( dumpSearch( data ) );
     prev = &(data->paths);
     for( cap = data->paths; cap != NULL; cap = next ) {
         next = cap->next;
@@ -6098,9 +6093,7 @@ static inherit_flag checkBaseAccess( SCOPE d, SCOPE b, derived_status status )
         delLookupData( &data );
         return( best_perm );
     }
-#ifndef NDEBUG
-    CFatal( "checkBaseAccess: could not find base class" );
-#endif
+    DbgStmt( CFatal( "checkBaseAccess: could not find base class" ) );
     return( IN_PRIVATE );
 }
 
@@ -7465,9 +7458,7 @@ static void saveSymbolName( void *e, carve_walk_base *d )
     SCOPE save_containing;
 
     if( s->containing == NULL ) {
-#ifndef NDEBUG
-        CarveVerifyFreeElement( carveSYMBOL_NAME, e );
-#endif
+        DbgStmt( CarveVerifyFreeElement( carveSYMBOL_NAME, e ) );
         return;
     }
     save_next = s->next;

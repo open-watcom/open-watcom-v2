@@ -31,7 +31,6 @@
 
 
 #include "plusplus.h"
-#include "errdefns.h"
 #include "carve.h"
 #include "template.h"
 #include "pragdefn.h"
@@ -375,9 +374,7 @@ static void typeCompareFini(    // COMPLETION
     INITFINI* defn )            // - definition
 {
     defn = defn;
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveTC_DATA, "TC_DATA" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveTC_DATA, "TC_DATA" ) );
     CarveDestroy( carveTC_DATA );
 }
 

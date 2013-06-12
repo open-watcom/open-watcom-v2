@@ -33,7 +33,6 @@
 #include "plusplus.h"
 #include "cgfront.h"
 #include "cgback.h"
-#include "errdefns.h"
 #include "codegen.h"
 #include "cgbackut.h"
 #include "ring.h"

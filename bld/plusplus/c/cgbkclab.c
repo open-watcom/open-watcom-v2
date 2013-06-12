@@ -42,10 +42,6 @@
 #include "ring.h"
 #include "initdefs.h"
 
-#ifndef NDEBUG
-#include "errdefns.h"
-#endif
-
 struct cond_label               // COND_LABEL -- label for conditional DTOR
 {   COND_LABEL* next;           // - next in list
     SE* se;                     // - state entry

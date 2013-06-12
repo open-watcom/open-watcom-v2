@@ -172,9 +172,7 @@ static void formatTypeInit( INITFINI* defn )
 static void formatTypeFini( INITFINI* defn )
 {
     defn = defn;
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveFMT, "FMT" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveFMT, "FMT" ) );
     CarveDestroy( carveFMT );
 }
 

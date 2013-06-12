@@ -33,7 +33,6 @@
 #include "plusplus.h"
 #include "cgfront.h"
 #include "cast.h"
-#include "errdefns.h"
 #include "defarg.h"
 #include "class.h"
 

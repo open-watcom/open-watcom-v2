@@ -36,7 +36,6 @@
 
 #include "cgfront.h"
 #include "fold.h"
-#include "errdefns.h"
 #include "fnovload.h"
 #include "fnbody.h"
 #include "objmodel.h"

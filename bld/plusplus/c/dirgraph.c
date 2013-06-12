@@ -34,10 +34,6 @@
 #include "dirgraph.h"
 #include "ring.h"
 
-#ifndef NDEBUG
-    #include "errdefns.h"
-#endif
-
 
 DIRGRAPH_EDGE *DgrfAddEdge(     // ADD EDGE TO GRAPH
     DIRGRAPH_CTL *ctl,          // - control information

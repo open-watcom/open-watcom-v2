@@ -34,7 +34,6 @@
 
 #include <setjmp.h>
 
-#include "errdefns.h"
 #include "cppexit.h"
 
 #define MAX_EXITS 2

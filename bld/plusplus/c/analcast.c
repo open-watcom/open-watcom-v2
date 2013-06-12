@@ -33,7 +33,6 @@
 #include "plusplus.h"
 #include "cgfront.h"
 #include "fold.h"
-#include "errdefns.h"
 #include "convctl.h"
 #include "class.h"
 #include "ptrcnv.h"

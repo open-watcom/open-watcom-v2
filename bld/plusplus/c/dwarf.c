@@ -36,7 +36,6 @@
 #include <assert.h>
 
 #include "preproc.h"
-#include "errdefns.h"
 #include "cgfront.h"
 #include "template.h"
 #include "codegen.h"
@@ -662,10 +661,8 @@ static boolean dwarfClassInfo( TYPE type )
             dh = 0;
         } else {
             dh = 0;
-#ifndef NDEBUG
-            DumpSymbol( curr );
-            CFatal( "dwarf: illegal member" );
-#endif
+            DbgStmt( DumpSymbol( curr ) );
+            DbgStmt( CFatal( "dwarf: illegal member" ) );
         }
         if( dh != 0 ) {
             sym_reset( curr );
@@ -1200,10 +1197,8 @@ static dw_handle dwarfType( TYPE type, DC_CONTROL control )
         type_update( type, TF2_DWARF_DEF, dh );
         break;
     default:
-#ifndef NDEBUG
-        DumpFullType( type );
-        CFatal( "dwarf: illegal type" );
-#endif
+        DbgStmt( DumpFullType( type ) );
+        DbgStmt( CFatal( "dwarf: illegal type" ) );
         break;
     }
 #ifndef NDEBUG

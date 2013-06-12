@@ -37,7 +37,6 @@
 #include <stddef.h>
 #include "wio.h"
 
-#include "errdefns.h"
 #include "memmgr.h"
 #include "toggle.h"
 #include "ring.h"

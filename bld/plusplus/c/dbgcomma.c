@@ -38,7 +38,6 @@
 #include "cgfront.h"
 #include "initdefs.h"
 #include "dbg.h"
-#include "errdefns.h"
 
 #define RTN_COMMA_AT "__dbg_comma_at"
 #define RTN_COMMA_OP "__dbg_comma_op"

@@ -111,7 +111,7 @@ boolean CErrOccurred(           // has an error occurred since state was saved?
     error_state_t *saved_state )// - saved state
 ;
 void CFatal(                    // issue error message and CSuicide()
-    char *msg )                 // - message
+    const char *msg )           // - message
 ;
 void CSuicide(                  // COMMIT SUICIDE
     void )

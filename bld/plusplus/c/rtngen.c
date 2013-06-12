@@ -31,7 +31,6 @@
 
 
 #include "plusplus.h"
-#include "errdefns.h"
 #include "cgfront.h"
 #include "carve.h"
 #include "ring.h"

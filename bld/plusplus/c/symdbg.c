@@ -34,7 +34,6 @@
 
 #include <assert.h>
 
-#include "errdefns.h"
 #include "cgfront.h"
 #include "cgback.h"
 #include "codegen.h"
@@ -112,9 +111,7 @@ void SymbolicDebugInit( void )
 void SymbolicDebugFini( void )
 /****************************/
 {
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveFWD_INFO, "FWD_INFO" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveFWD_INFO, "FWD_INFO" ) );
     CarveDestroy( carveFWD_INFO );
 }
 

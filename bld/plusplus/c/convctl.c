@@ -33,7 +33,6 @@
 #include "plusplus.h"
 #include "cgfront.h"
 #include "convctl.h"
-#include "errdefns.h"
 #include "class.h"
 
 

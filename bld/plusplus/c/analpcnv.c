@@ -33,7 +33,6 @@
 #include "plusplus.h"
 #include "cgfront.h"
 #include "fold.h"
-#include "errdefns.h"
 #include "ptrcnv.h"
 
 enum                            // DEFINE CONVERSION TO BE DONE

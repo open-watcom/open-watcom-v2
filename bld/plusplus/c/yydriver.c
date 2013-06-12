@@ -5,7 +5,6 @@ YYDRIVER: driver code to make use of YACC generated parser tables and support
 */
 
 #include "plusplus.h"
-#include "errdefns.h"
 #include "ytab.gh"
 #include "preproc.h"
 #include "fnbody.h"
@@ -336,12 +335,10 @@ static void parseFini(          // PARSER INITIALIZATION
 {
     defn = defn;
     ParseFlush();
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveRESTART_PARSE, "RESTART_PARSE" );
-    CarveVerifyAllGone( carveVALUE_STACK, "VALUE_STACK" );
-    CarveVerifyAllGone( carveSTATE_STACK, "STATE_STACK" );
-    CarveVerifyAllGone( carveLOCATION_STACK, "LOCATION_STACK" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveRESTART_PARSE, "RESTART_PARSE" ) );
+    DbgStmt( CarveVerifyAllGone( carveVALUE_STACK, "VALUE_STACK" ) );
+    DbgStmt( CarveVerifyAllGone( carveSTATE_STACK, "STATE_STACK" ) );
+    DbgStmt( CarveVerifyAllGone( carveLOCATION_STACK, "LOCATION_STACK" ) );
     CarveDestroy( carveRESTART_PARSE );
     CarveDestroy( carveVALUE_STACK );
     CarveDestroy( carveSTATE_STACK );
@@ -490,9 +487,7 @@ static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
             ExtraRptIncrementCtr( found_type );
             return( LK_TYPE );
         } else {
-#if !defined( NDEBUG )
-            DumpSymbolName( sym_name );
-#endif
+            DbgStmt( DumpSymbolName( sym_name ) );
             CFatal( "lexCategory: unable to process id with unknown type" );
         }
     } else {
@@ -2388,12 +2383,11 @@ static PTREE genericParseExpr( YYTOKENTYPE tok, TOKEN end_token, MSG_NUM err_msg
                 break;
             }
             makeStable( end_token );
-        }
 #ifndef NDEBUG
-        else {
+        } else {
             CFatal( "invalid return from doAction" );
-        }
 #endif
+        }
     } else {
         expr_tree = expr_state.vsp->tree;
     }
@@ -2465,12 +2459,11 @@ DECL_INFO *ParseException( void )
                 break;
             }
             makeStable( T_RIGHT_PAREN );
-        }
 #ifndef NDEBUG
-        else {
+        } else {
             CFatal( "invalid return from doAction" );
-        }
 #endif
+        }
     } else {
         if( except_state.vsp->dinfo != NULL ) {
             exception = except_state.vsp->dinfo;
@@ -2541,12 +2534,11 @@ void ParseDecls( void )
                     /* we don't want the linkage reset */
                     ParseFlush();
                     syncLocation();
-                }
 #ifndef NDEBUG
-                else {
+                } else {
                     CFatal( "invalid return from doAction" );
-                }
 #endif
+                }
             }
             if( CurToken == T_EOF ) break;
         } while( what == P_CLASS_TEMPLATE );
@@ -2613,12 +2605,11 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
                 CErr1( ERR_COMPLICATED_DECLARATION );
                 break;
             }
-        }
 #ifndef NDEBUG
-        else {
+        } else {
             CFatal( "invalid return from doAction" );
-        }
 #endif
+        }
     } else {
         if( instantiate_state.vsp->dspec != NULL ) {
             new_type = instantiate_state.vsp->dspec;
@@ -2688,12 +2679,11 @@ void ParseClassMemberInstantiation( REWRITE *defn )
                 CErr1( ERR_COMPLICATED_DECLARATION );
                 break;
             }
-        }
 #ifndef NDEBUG
-        else {
+        } else {
             CFatal( "invalid return from doAction" );
-        }
 #endif
+        }
     }
     deleteStack( &instantiate_state );
     LinkagePop();
@@ -2744,12 +2734,11 @@ void ParseFunctionInstantiation( REWRITE *defn )
                 CErr1( ERR_COMPLICATED_DECLARATION );
                 break;
             }
-        }
 #ifndef NDEBUG
-        else {
+        } else {
             CFatal( "invalid return from doAction" );
-        }
 #endif
+        }
     }
     deleteStack( &instantiate_state );
     LinkagePop();

@@ -34,7 +34,6 @@
 #include "cmdlnctx.h"
 #include "cmdscan.h"
 #include "context.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "vstk.h"
 

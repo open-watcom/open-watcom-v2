@@ -32,7 +32,6 @@
 
 #include "plusplus.h"
 #include "cgfront.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "ptree.h"
 #include "specname.h"

@@ -33,7 +33,6 @@
 #include "plusplus.h"
 #include <sys/types.h>
 #include "wio.h"
-#include "errdefns.h"
 #include "macro.h"
 #include "cmdline.h"
 #include "vbuf.h"

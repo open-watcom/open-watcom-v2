@@ -36,7 +36,6 @@
 #include "cgfront.h"
 #include "cgback.h"
 #include "memmgr.h"
-#include "errdefns.h"
 #include "codegen.h"
 #include "cgbackut.h"
 #include "cgaux.h"

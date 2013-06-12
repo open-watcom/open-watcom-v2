@@ -56,7 +56,6 @@ struct auto_sym {
 
 #ifndef NDEBUG
     #include <stdio.h>
-    #include "errdefns.h"
     #include "toggle.h"
     #include "pragdefn.h"
 

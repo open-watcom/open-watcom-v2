@@ -30,7 +30,6 @@
 
 
 #include "plusplus.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "macro.h"
 #include "cmdline.h"

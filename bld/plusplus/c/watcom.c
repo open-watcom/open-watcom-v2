@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <banner.h>
 
-#include "errdefns.h"
 #include "fingprnt.h"
 
 #define __puts( x )     MsgDisplayBanner( x )

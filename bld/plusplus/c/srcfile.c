@@ -43,7 +43,6 @@
 #include "stats.h"
 #include "carve.h"
 #include "sysdep.h"
-#include "errdefns.h"
 #include "name.h"
 #include "cmdline.h"
 #include "toggle.h"
@@ -1215,9 +1214,7 @@ void GetNextCharUndo( int c )
         NextChar = restartBackSlashWhiteSpaceQuestion;
         return;
     }
-#ifndef NDEBUG
-    CFatal( "more than one GetNextCharUndo executed" );
-#endif
+    DbgStmt( CFatal( "more than one GetNextCharUndo executed" ) );
 }
 
 int GetNextChar( void )

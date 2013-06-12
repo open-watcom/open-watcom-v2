@@ -40,7 +40,6 @@
 #include "scan.h"
 #include "memmgr.h"
 #include "stats.h"
-#include "errdefns.h"
 #include "iosupp.h"
 #include "preproc.h"
 #include "fname.h"

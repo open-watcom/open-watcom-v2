@@ -38,7 +38,6 @@
 
 #include "preproc.h"
 #include "memmgr.h"
-#include "errdefns.h"
 #include "srcfile.h"
 #include "iosupp.h"
 #include "initdefs.h"
@@ -652,7 +651,7 @@ static void fatalIoErr          // SIGNAL FATAL I/O ERROR
 {
     puts( strerror( errno ) );
     puts( file_name );
-    CFatal( (char*)msg );
+    CFatal( msg );
 }
 
 
@@ -701,9 +700,7 @@ static int brinfWritePch        // PCH WRITE CALLBACK FUNCTION
     , void const *buf           // - write buffer
     , unsigned len )            // - write length
 {
-    #ifndef NDEBUG
-    PCHVerifyFile( cookie );
-    #endif
+    DbgStmt( PCHVerifyFile( cookie ) );
     PCHWriteUnaligned( buf, len );
     return len;
 }
@@ -714,9 +711,7 @@ static long brinfLSeekPch       // PCH LSEEK CALLBACK FUNCTION
     , long offset               // - seek offset
     , int whence )              // - seek direction, see b_write.h
 {
-    #ifndef NDEBUG
-    PCHVerifyFile( cookie );
-    #endif
+    DbgStmt( PCHVerifyFile( cookie ) );
     PCHFlushBuffer();
     return PCHSeek( offset, whence );
 }

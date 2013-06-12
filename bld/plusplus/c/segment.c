@@ -40,7 +40,6 @@
 #include "cgdata.h"
 #include "codegen.h"
 #include "ring.h"
-#include "errdefns.h"
 #include "vbuf.h"
 #include "memmgr.h"
 #include "pragdefn.h"

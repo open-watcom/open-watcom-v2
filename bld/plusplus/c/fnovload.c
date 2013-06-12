@@ -34,7 +34,6 @@
 
 #include <assert.h>
 
-#include "errdefns.h"
 #include "fnovload.h"
 #include "cgfront.h"
 #include "memmgr.h"
@@ -2223,10 +2222,8 @@ static void fnovFini( INITFINI* defn )
 /************************************/
 {
     defn = defn;
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveFNOVLIST, "FNOVLIST" );
-    CarveVerifyAllGone( carveManyFNOVRANK, "ManyFNOVRANK" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveFNOVLIST, "FNOVLIST" ) );
+    DbgStmt( CarveVerifyAllGone( carveManyFNOVRANK, "ManyFNOVRANK" ) );
     CarveDestroy( carveFNOVLIST );
     CarveDestroy( carveManyFNOVRANK );
 }

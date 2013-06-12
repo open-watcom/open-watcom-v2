@@ -33,7 +33,6 @@
 #include "plusplus.h"
 #include "cgfront.h"
 #include "cgback.h"
-#include "errdefns.h"
 #include "fnbody.h"
 #include "fnovload.h"
 #include "fold.h"

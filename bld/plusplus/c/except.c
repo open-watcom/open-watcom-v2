@@ -34,7 +34,6 @@
 #include "cgfront.h"
 #include "cgback.h"
 #include "ctexcept.h"
-#include "errdefns.h"
 #include "ring.h"
 #include "rtfuncod.h"
 #include "typesig.h"

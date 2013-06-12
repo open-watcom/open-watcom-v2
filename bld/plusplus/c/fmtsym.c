@@ -31,7 +31,6 @@
 
 
 #include "plusplus.h"
-#include "errdefns.h"
 #include "ppops.h"
 #include "vbuf.h"
 #include "dbg.h"

@@ -31,7 +31,6 @@
 
 
 #include "plusplus.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "ptree.h"
 #include "name.h"

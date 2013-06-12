@@ -34,7 +34,6 @@
 
 #include <stddef.h>
 
-#include "errdefns.h"
 #include "fnovload.h"
 #include "memmgr.h"
 #include "ring.h"

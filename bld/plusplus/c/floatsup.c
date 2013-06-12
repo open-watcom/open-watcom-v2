@@ -36,7 +36,6 @@
 
 #include "preproc.h"
 #include "codegen.h"
-#include "errdefns.h"
 #include "floatsup.h"
 #include "floatlim.h"
 

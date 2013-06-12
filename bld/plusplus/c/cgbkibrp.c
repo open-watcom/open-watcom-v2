@@ -41,10 +41,6 @@
 #include "ring.h"
 #include "initdefs.h"
 
-#ifndef NDEBUG
-    #include "errdefns.h"
-#endif
-
 typedef struct ibrp IBRP;
 struct ibrp                     // IBRP -- inline bound reference parameters
 {   IBRP *next;                 // - next in ring

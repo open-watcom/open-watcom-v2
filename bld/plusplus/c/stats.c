@@ -34,7 +34,6 @@
 #include "stats.h"
 #include "preproc.h"
 #include "initdefs.h"
-#include "errdefns.h"
 #include "vbuf.h"
 #include "vstk.h"
 #include "pcheader.h"

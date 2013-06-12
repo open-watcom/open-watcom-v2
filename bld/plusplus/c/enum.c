@@ -35,7 +35,6 @@
 #include <limits.h>
 
 #include "cgfront.h"
-#include "errdefns.h"
 #include "stringl.h"
 #include "ptree.h"
 #include "enum.h"

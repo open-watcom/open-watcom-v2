@@ -38,7 +38,6 @@
 #include "carve.h"
 #include "pstk.h"
 #include "initdefs.h"
-#include "errdefns.h"
 #include "dbg.h"
 
 

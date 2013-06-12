@@ -37,10 +37,6 @@
 #include "fnbody.h"
 #include "pcheader.h"
 
-#ifndef NDEBUG
-    #include "errdefns.h"
-#endif
-
 #define PTD_DEFS                                                          \
                             /* PTD_KIND -- kinds of entries             */\
  PTD_DEF( PTD_CTORCOMP     )/* - ctored component (code)                */\

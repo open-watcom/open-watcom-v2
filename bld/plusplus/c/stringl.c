@@ -38,7 +38,6 @@
 #include "initdefs.h"
 #include "segment.h"
 #include "pcheader.h"
-#include "errdefns.h"
 #include "preproc.h"
 #include "carve.h"
 
@@ -482,9 +481,7 @@ STRING_CONSTANT StringGetIndex( STRING_CONSTANT str )
     }
     found = bsearch( &str, stringTranslateTable, stringCount, sizeof( STRING_CONSTANT ), cmpFindString );
     if( found == NULL ) {
-#ifndef NDEBUG
-        CFatal( "invalid string passed to StringGetIndex" );
-#endif
+        DbgStmt( CFatal( "invalid string passed to StringGetIndex" ) );
         return( PCHSetUInt( PCH_ERROR_INDEX ) );
     }
     return( PCHSetUInt( ( found - stringTranslateTable ) + PCH_FIRST_INDEX ) );

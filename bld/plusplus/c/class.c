@@ -36,7 +36,6 @@
 #include "walloca.h"
 #include "codegen.h"
 #include "cgfront.h"
-#include "errdefns.h"
 #include "preproc.h"
 #include "fnbody.h"
 #include "ring.h"
@@ -144,9 +143,7 @@ void ClassInit( void )
 void ClassFini( void )
 /********************/
 {
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveVF_HIDE, "VF_HIDE" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveVF_HIDE, "VF_HIDE" ) );
     CarveDestroy( carveVF_HIDE );
     CarveDestroy( carveBASE_CLASS );
 }

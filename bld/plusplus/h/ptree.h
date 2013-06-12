@@ -37,7 +37,6 @@
 #include "ppops.h"
 #include "srcfile.h"
 #include "ptreedec.h"
-#include "errdefns.h"
 
 /*
     flags are organized into three classes:

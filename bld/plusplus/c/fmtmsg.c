@@ -38,7 +38,6 @@
 #include "fmttype.h"
 #include "fmtsym.h"
 #include "fmtmsg.h"
-#include "errdefns.h"
 #include "template.h"
 
 static void leading( VBUF *pbuf, char lead, int len )

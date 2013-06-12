@@ -35,7 +35,6 @@
 #include <stddef.h>
 
 #include "cgfront.h"
-#include "errdefns.h"
 #include "ptree.h"
 #include "name.h"
 #include "defarg.h"

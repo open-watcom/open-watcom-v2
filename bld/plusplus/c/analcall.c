@@ -35,7 +35,6 @@
 #include "cgfront.h"
 #include "fnovload.h"
 #include "calldiag.h"
-#include "errdefns.h"
 #include "name.h"
 #include "defarg.h"
 #include "vfun.h"

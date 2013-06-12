@@ -34,7 +34,6 @@
 
 #include <stddef.h>
 
-#include "errdefns.h"
 #include "memmgr.h"
 #include "carve.h"
 #include "linkage.h"
@@ -211,9 +210,7 @@ static void linkageFini( INITFINI* defn )
     while( nestedLinkages != NULL ) {
         LinkagePop();
     }
-#ifndef NDEBUG
-    CarveVerifyAllGone( carveSTACK, "linkage STACK" );
-#endif
+    DbgStmt( CarveVerifyAllGone( carveSTACK, "linkage STACK" ) );
     CarveDestroy( carveSTACK );
 }
 

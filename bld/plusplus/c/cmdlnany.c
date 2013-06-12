@@ -37,7 +37,6 @@
 #include "wio.h"
 
 #include "memmgr.h"
-#include "errdefns.h"
 #include "preproc.h"
 #include "macro.h"
 #include "cmdline.h"

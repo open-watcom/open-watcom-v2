@@ -32,7 +32,6 @@
 
 #include "plusplus.h"
 #include "cgfront.h"
-#include "errdefns.h"
 #include "specfuns.h"
 #include "decl.h"
 

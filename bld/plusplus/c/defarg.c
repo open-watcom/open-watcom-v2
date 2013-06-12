@@ -33,7 +33,6 @@
 #include "plusplus.h"
 #include "cgfront.h"
 #include "name.h"
-#include "errdefns.h"
 #include "initdefs.h"
 #include "fnbody.h"
 #include "stats.h"

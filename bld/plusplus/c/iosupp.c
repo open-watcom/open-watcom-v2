@@ -41,7 +41,6 @@
 
 #include "wio.h"
 #include "preproc.h"
-#include "errdefns.h"
 #include "memmgr.h"
 #include "iosupp.h"
 #include "cgdata.h"
