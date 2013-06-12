@@ -10,7 +10,7 @@
 obj             = .obj
 exe             = .exe
 
-inc_dirs = -I"$(dwarfr_dir)/dr/h" -I"$(dwarfw_dir)/dw/h" -I"$(orl_dir)/h" -I"$(trmem_dir)" -I"../h"
+inc_dirs = -I"$(dwarfr_dir)/h" -I"$(dwarfw_dir)/h" -I"$(orl_dir)/h" -I"$(trmem_dir)" -I"../h"
 
 !ifeq release 0
 extra_c_flags_test      = -of+
