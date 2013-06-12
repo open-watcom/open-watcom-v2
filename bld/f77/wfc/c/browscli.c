@@ -56,8 +56,6 @@
 static section_data             Sections[ DW_DEBUG_MAX ];
 static char                     initial_section_type;
 
-static uint_32          SymHandles[ 20 ];
-
 extern  file_handle     SDOpen(char *,int);
 extern  void            SDClose(file_handle);
 extern  void            SDSeek(file_handle,int,int);
@@ -151,7 +149,8 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ) {
         break;
     case DW_W_STATIC:
         sym = va_arg( args, dw_sym_handle );
-        CLIWrite( sect, &SymHandles[ sym ], sizeof( uint_32 ) );
+        u32_data = 0;
+        CLIWrite( sect, &u32_data, sizeof( uint_32 ) );
         CLIWrite( sect, zeros, sizeof( zeros ) );
         break;
     case DW_W_SEGMENT:

@@ -85,7 +85,7 @@ void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
         break;
     case DW_W_STATIC:
         sym = va_arg( args, dw_sym_handle );
-        CLIWrite( sect, &SymHandles[ sym ], sizeof( uint_32 ) );
+        CLIWrite( sect, &SymHandles[ (uint_32)sym ], sizeof( uint_32 ) );
         CLIWrite( sect, zeros, sizeof( zeros ) );
         break;
     case DW_W_SEGMENT:
