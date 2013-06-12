@@ -34,14 +34,14 @@
 #include "drutils.h"
 #include <string.h>
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 typedef struct pubname_header {
     uint_32     len;
     uint_16     version;
     uint_32     dbg_pos;
     uint_32     dbg_length;
 } _WCUNALIGNED pubname_header;
-#pragma pack( pop )
+#include "poppck.h"
 
 extern void DRWalkPubName( DRPUBWLK callback, void *data )
 /********************************************************/

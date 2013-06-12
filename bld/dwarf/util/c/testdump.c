@@ -49,7 +49,7 @@ typedef struct {
     char *      name;
 } readable_name;
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 typedef struct arange_header {
     uint_32     len;
     uint_16     version;
@@ -57,7 +57,7 @@ typedef struct arange_header {
     uint_8      addr_size;
     uint_8      seg_size;
 } _WCUNALIGNED arange_header;
-#pragma pack( pop )
+#include "poppck.h"
 
 #define table( x )      { x, #x }
 
