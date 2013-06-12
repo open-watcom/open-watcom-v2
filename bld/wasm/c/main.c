@@ -965,7 +965,6 @@ static char *ProcessOption( char *p, char *option_start )
         }
     }
     MsgPrintf1( MSG_UNKNOWN_OPTION, option_start );
-    exit( 1 );
     return( NULL );
 }
 
@@ -975,75 +974,76 @@ static int ProcOptions( char *str, int *level )
     char *save[MAX_NESTING];
     char *buffers[MAX_NESTING];
 
-    if( str != NULL ) {
-        for( ;; ) {
-            while( *str == ' ' || *str == '\t' )
-                ++str;
-            if( *str == '@' && *level < MAX_NESTING ) {
-                save[(*level)++] = CollectEnvOrFileName( str + 1 );
-                buffers[*level] = NULL;
-                str = getenv( ParamBuf );
-                if( str == NULL ) {
-                    str = ReadIndirectFile();
-                    buffers[*level] = str;
-                }
-                if( str != NULL )
-                    continue;
-                str = save[--(*level)];
+    for( ; str != NULL; ) {
+        while( *str == ' ' || *str == '\t' )
+            ++str;
+        if( *str == '@' && *level < MAX_NESTING ) {
+            save[(*level)++] = CollectEnvOrFileName( str + 1 );
+            buffers[*level] = NULL;
+            str = getenv( ParamBuf );
+            if( str == NULL ) {
+                str = ReadIndirectFile();
+                buffers[*level] = str;
             }
-            if( *str == '\0' ) {
-                if( *level == 0 )
-                    break;
-                if( buffers[*level] != NULL ) {
-                    AsmFree( buffers[*level] );
-                    buffers[*level] = NULL;
-                }
-                str = save[--(*level)];
+            if( str != NULL )
                 continue;
+            str = save[--(*level)];
+        }
+        if( *str == '\0' ) {
+            if( *level == 0 )
+                break;
+            if( buffers[*level] != NULL ) {
+                AsmFree( buffers[*level] );
+                buffers[*level] = NULL;
             }
-            if( *str == '-'  ||  *str == SwitchChar ) {
-                str = ProcessOption(str+1, str);
-            } else {  /* collect  file name */
-                char *beg, *p;
-                int len;
+            str = save[--(*level)];
+            continue;
+        }
+        if( *str == '-' || *str == SwitchChar ) {
+            str = ProcessOption( str + 1, str );
+            if( str == NULL ) {
+                exit( 1 );
+            }
+        } else {  /* collect file name */
+            char *beg, *p;
+            int len;
 
-                beg = str;
-                if( *str == '"' ) {
-                    for( ;; ) {
+            beg = str;
+            if( *str == '"' ) {
+                for( ;; ) {
+                    ++str;
+                    if( *str == '"' ) {
                         ++str;
-                        if( *str == '"' ) {
-                            ++str;
-                            break;
-                        }
-                        if( *str == '\0' )
-                            break;
-                        if( *str == '\\' ) {
-                            ++str;
-                        }
+                        break;
                     }
-                } else {
-                    for( ;; ) {
-                        if( *str == '\0' )
-                            break;
-                        if( *str == ' ' )
-                            break;
-                        if( *str == '\t' )
-                            break;
-#if !defined(__UNIX__)
-                        if( *str == SwitchChar )
-                            break;
-#endif
+                    if( *str == '\0' )
+                        break;
+                    if( *str == '\\' ) {
                         ++str;
                     }
                 }
-                len = str-beg;
-                p = (char *) AsmAlloc( len + 1 );
-                memcpy( p, beg, len );
-                p[ len ] = '\0';
-                StripQuotes( p );
-                get_fname( p, ASM );
-                AsmFree(p);
+            } else {
+                for( ;; ) {
+                    if( *str == '\0' )
+                        break;
+                    if( *str == ' ' )
+                        break;
+                    if( *str == '\t' )
+                        break;
+#if !defined(__UNIX__)
+                    if( *str == SwitchChar )
+                        break;
+#endif
+                    ++str;
+                }
             }
+            len = str-beg;
+            p = AsmAlloc( len + 1 );
+            memcpy( p, beg, len );
+            p[ len ] = '\0';
+            StripQuotes( p );
+            get_fname( p, ASM );
+            AsmFree(p);
         }
     }
     return( 0 );

@@ -44,7 +44,7 @@ int main( int argc, char *argv[] )
     unsigned int    i;
     unsigned int    index;
     unsigned int    count;
-    unsigned int    idx;
+    int             idx;
     sword           *Words;
     char            buf[ KEY_MAX_LEN ];
 

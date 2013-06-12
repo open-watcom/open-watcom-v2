@@ -106,7 +106,7 @@ int main( int argc, char *argv[] )
     unsigned int    index;
     unsigned int    count;
     unsigned int    len;
-    unsigned int    idx;
+    int             idx;
     sword           *Words;
     char            *word;
     char            buf[KEY_MAX_LEN];
@@ -127,7 +127,7 @@ int main( int argc, char *argv[] )
         }
         fclose( in );
     }
-    Words = malloc( (count+1) * sizeof( sword ) );
+    Words = malloc( ( count + 1 ) * sizeof( sword ) );
     if( Words == NULL ) {
         printf( "Unable to allocate Words array\n" );
         exit( 1 );

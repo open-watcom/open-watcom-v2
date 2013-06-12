@@ -2191,7 +2191,7 @@ static int process_address( expr_list *opndx )
             }
         }
     }
-    return( NOT_ERROR );
+//    return( NOT_ERROR );
 }
 
 static int process_const( expr_list *opndx )
