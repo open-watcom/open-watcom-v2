@@ -1,25 +1,33 @@
 installer_c_dos_386     = open-watcom-c-dos-$(%BLD_VER_STR).exe
-installer_c_nt_386      = open-watcom-c-win32-$(%BLD_VER_STR).exe
+installer_c_nt_386      = open-watcom-c-nt32-$(%BLD_VER_STR).exe
 installer_c_os2_386     = open-watcom-c-os2-$(%BLD_VER_STR).exe
-installer_c_linux_386   = open-watcom-c-linux-$(%BLD_VER_STR)
+installer_c_linux_386   = open-watcom-c-linux32-$(%BLD_VER_STR)
+installer_c_nt_x64      = open-watcom-c-nt64-$(%BLD_VER_STR).exe
+installer_c_linux_x64   = open-watcom-c-linux64-$(%BLD_VER_STR)
 installer_c = $(installer_c_$(host_os)_$(host_cpu))
 
 installer_f77_dos_386   = open-watcom-f77-dos-$(%BLD_VER_STR).exe
-installer_f77_nt_386    = open-watcom-f77-win32-$(%BLD_VER_STR).exe
+installer_f77_nt_386    = open-watcom-f77-nt32-$(%BLD_VER_STR).exe
 installer_f77_os2_386   = open-watcom-f77-os2-$(%BLD_VER_STR).exe
-installer_f77_linux_386 = open-watcom-f77-linux-$(%BLD_VER_STR)
+installer_f77_linux_386 = open-watcom-f77-linux32-$(%BLD_VER_STR)
+installer_f77_nt_x64    = open-watcom-f77-nt64-$(%BLD_VER_STR).exe
+installer_f77_linux_x64 = open-watcom-f77-linux64-$(%BLD_VER_STR)
 installer_f77 = $(installer_f77_$(host_os)_$(host_cpu))
 
 setup_c_dos_386     = $(setupgui_dir)/dos386/setup.exe
 setup_c_nt_386      = $(setupgui_dir)/nt386.gui/csetup.exe
 setup_c_os2_386     = $(setupgui_dir)/os2386.gui/csetup.exe
 setup_c_linux_386   = $(setupgui_dir)/linux386/setup.exe
+setup_c_nt_x64      = $(setupgui_dir)/ntx64.gui/csetup.exe
+setup_c_linux_x64   = $(setupgui_dir)/linuxx64/setup.exe
 setup_c = $(setup_c_$(host_os)_$(host_cpu))
 
 setup_f77_dos_386   = $(setupgui_dir)/dos386/setup.exe
 setup_f77_nt_386    = $(setupgui_dir)/nt386.gui/f77setup.exe
 setup_f77_os2_386   = $(setupgui_dir)/os2386.gui/f77setup.exe
 setup_f77_linux_386 = $(setupgui_dir)/linux386/setup.exe
+setup_f77_nt_x64    = $(setupgui_dir)/ntx64.gui/f77setup.exe
+setup_f77_linux_x64 = $(setupgui_dir)/linuxx64/setup.exe
 setup_f77 = $(setup_f77_$(host_os)_$(host_cpu))
 
 !ifdef __UNIX__
@@ -27,11 +35,15 @@ dstdir_dos_386     = C:\\WATCOM
 dstdir_nt_386      = C:\\WATCOM
 dstdir_os2_386     = C:\\WATCOM
 dstdir_linux_386   = /usr/bin/watcom
+dstdir_nt_x64      = C:\\WATCOM
+dstdir_linux_x64   = /usr/bin/watcom
 !else
 dstdir_dos_386     = C:\WATCOM
 dstdir_nt_386      = C:\WATCOM
 dstdir_os2_386     = C:\WATCOM
 dstdir_linux_386   = /usr/bin/watcom
+dstdir_nt_x64      = C:\WATCOM
+dstdir_linux_x64   = /usr/bin/watcom
 !endif
 dstdir = $(dstdir_$(host_os)_$(host_cpu))
 
@@ -41,6 +53,21 @@ nulldevice = /dev/null
 nulldevice = nul
 !endif
 
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip_build: .symbolic
+!else ifeq host_os nt
+!ifneq bld_os nt
+skip_build: .symbolic
+!endif
+!else ifeq host_os linux
+!ifneq bld_os linux
+skip_build: .symbolic
+!endif
+!else ifneq host_os osi
+skip_build: .symbolic
+!endif
+!endif
 all : ../$(installer_c) ../$(installer_f77) .SYMBOLIC
 
 ../$(installer_c) : ../files.dat $(setup_c) .ALWAYS
