@@ -297,30 +297,6 @@ push_button=^\
         //0
 
 [Dialog]
-name=License
-static_text=\
-        //1"Please fill in the following License information:"\
-        //2"以下のライセンス情報を入力してください。"\
-        //0
-static_text=
-edit_control=LicenseName,,\
-        //1"   Name:"\
-        //2"   名前:"\
-        //0
-static_text=
-edit_control=LicenseCompanyName,,\
-        //1"Company:"\
-        //2"会社/組織名:"\
-        //0
-static_text=
-dynamic_text=LicenseMessage,""
-push_button=+"&OK"
-push_button=^\
-        //1"&Cancel"\
-        //2"キャンセル(&C)"\
-        //0
-
-[Dialog]
 name=LocCfg
 static_text=\
         //1"@ Can not find the following file:"\

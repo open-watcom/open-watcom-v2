@@ -955,9 +955,10 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
     return( rc );
 }
 
-static char * textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newline )
-/*********************************************************************************/
+static char *textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newline, bool license_file )
+/***************************************************************************************************/
 // Makes newline chars into a string into \r\n combination.
+// For license file remove single \r\n combination to revoke paragraphs.
 // Frees passed in string and allocates new one.
 {
     char        *big_buffer = NULL;
@@ -974,6 +975,47 @@ static char * textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newlin
     big_buffer = GUIMemAlloc( strlen( text ) * 2 + 1 );
     if( big_buffer == NULL ) {
         return( NULL );
+    }
+    if( license_file ) {
+        // restore paragraphs by removing single cr/crlf/lf
+        new_index = text;
+        orig_index = text;
+        for( ; *orig_index != '\0';  ) {
+            if( *orig_index == '\r' ) {
+                if( *(orig_index + 1) == '\n' ) {
+                    if( *(orig_index + 2) == '\r' ) {
+                        do {
+                            *new_index++ = *orig_index++;
+                            *new_index++ = *orig_index++;
+                        } while( *orig_index == '\r' && *(orig_index + 1) == '\n' );
+                    } else {
+                        orig_index += 2;
+                        *new_index++ = ' ';
+                    }
+                } else if( *(orig_index + 1) == '\r' ) {
+                    do {
+                        *new_index++ = *orig_index++;
+                    } while( *orig_index == '\r' );
+                } else {
+                    orig_index++;
+                    *new_index++ = ' ';
+                }
+                continue;
+            }
+            if( *orig_index == '\n' ) {
+                if( *(orig_index + 1) == '\n' ) {
+                    do {
+                        *new_index++ = *orig_index++;
+                    } while( *orig_index == '\n' );
+                } else {
+                    orig_index++;
+                    *new_index++ = ' ';
+                }
+                continue;
+            }
+            *new_index++ = *orig_index++;
+        }
+        *new_index++ = *orig_index++;
     }
     orig_index = text;
     new_index = big_buffer;
@@ -1017,8 +1059,8 @@ static char * textwindow_wrap( char *text, DIALOG_INFO *dlg, bool convert_newlin
     return( text );
 }
 
-static bool dialog_textwindow( char *next, DIALOG_INFO *dlg )
-/***********************************************************/
+static bool dialog_textwindow( char *next, DIALOG_INFO *dlg, bool license_file )
+/******************************************************************************/
 {
     char                *line;
     char                *text;
@@ -1053,11 +1095,12 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg )
                 }
             }
             GUIMemFree( file_name );
-            text = textwindow_wrap( text, dlg, FALSE ); //VERY VERY SLOW!!!!  Don't use large files!!!
-                                                        // bottleneck is the find_break function
+            //VERY VERY SLOW!!!!  Don't use large files!!!
+            // bottleneck is the find_break function
+            text = textwindow_wrap( text, dlg, FALSE, license_file );
         } else {
             GUIStrDup( line, &text );
-            text = textwindow_wrap( text, dlg, TRUE );
+            text = textwindow_wrap( text, dlg, TRUE, FALSE );
         }
 
         line = next; next = NextToken( line, ',' );
@@ -1771,7 +1814,9 @@ static bool ProcLine( char *line, pass_type pass )
                 } else if( stricmp(line, "edit_control") == 0 ) {
                     added = dialog_editcontrol( next, &dialog_info );
                 } else if( stricmp(line, "text_window") == 0 ) {
-                    added = dialog_textwindow( next, &dialog_info );
+                    added = dialog_textwindow( next, &dialog_info, FALSE );
+                } else if( stricmp(line, "text_window_license") == 0 ) {
+                    added = dialog_textwindow( next, &dialog_info, TRUE );
                 }
                 if( added ) {
                     dialog_info.row_num += 1;
