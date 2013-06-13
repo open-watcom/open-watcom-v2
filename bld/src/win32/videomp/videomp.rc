@@ -16,12 +16,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName",     "Open Watcom"
             VALUE "FileDescription", "Boxvideo Video Miniport Driver"
-            VALUE "FileVersion",     "1.2"
+            VALUE "FileVersion",     "1.3"
             VALUE "InternalName",    "boxvideo.sys"
-            VALUE "LegalCopyright",  "Copyright \251 2012 The Open Watcom Contributors"
+            VALUE "LegalCopyright",  "Copyright \251 2013 The Open Watcom Contributors"
             VALUE "OriginalFilename","boxvideo.sys"
             VALUE "ProductName",     "Sample Video Miniport"
-            VALUE "ProductVersion",  "1.2"
+            VALUE "ProductVersion",  "1.3"
         END
 
     END
