@@ -33,6 +33,7 @@
 #include "ftextvar.h"
 #include "posio.h"
 #include "sopen.h"
+#include "watcom.h"
 
 #if defined( __RT__ )
 #include "rmemmgr.h"
@@ -155,6 +156,7 @@ b_file  *Openf( char *f, f_attrs attrs ) {
     int         share;
 
     fpos = 0;
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     share = SH_COMPAT;
     if( attrs & S_DENYRW ) {
         share = SH_DENYRW;
@@ -165,6 +167,9 @@ b_file  *Openf( char *f, f_attrs attrs ) {
     } else if( attrs & S_DENYNO ) {
         share = SH_DENYNO;
     }
+#else
+    share = 0;
+#endif
     if( attrs & WRONLY ) {
         attrs |= WRITE_ONLY;
         if( attrs & APPEND ) {

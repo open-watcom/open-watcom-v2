@@ -37,7 +37,9 @@
 #include "errrtns.h"
 
 #include <stdlib.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
 #include <string.h>
 
 extern  bool            MainCmdLine(char **,char **,char **,char *);

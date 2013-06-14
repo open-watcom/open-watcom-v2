@@ -42,6 +42,7 @@
 static void _FPEHandler( int fpe_type ) {
 //=======================================
 
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     if( fpe_type == FPE_OVERFLOW ) {
         Warning( KO_FOVERFLOW );
     } else if( fpe_type == FPE_UNDERFLOW ) {
@@ -49,6 +50,7 @@ static void _FPEHandler( int fpe_type ) {
     } else if( fpe_type == FPE_ZERODIVIDE ) {
         Warning( KO_FDIV_ZERO );
     }
+#endif
 }
 
 

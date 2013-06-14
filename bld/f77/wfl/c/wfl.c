@@ -39,7 +39,9 @@
 #else
   #include <direct.h>
 #endif
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
 #include <malloc.h>
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )
 #include <fnmatch.h>
