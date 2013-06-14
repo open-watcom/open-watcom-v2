@@ -4,7 +4,7 @@
 ::
 :: for the moment: just a copy of the original wlsystem.lnk:
 :segment Pwlsystem
-# example linker initialization file.
+# linker initialization file - common systems
 :elsesegment Pspecs
 # default specs.owc file
 #
