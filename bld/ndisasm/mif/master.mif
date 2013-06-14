@@ -25,8 +25,10 @@ xlibs = $(orl_lib) $(wres_lib)
 
 !include trmem.mif
 
+extra_link_res_qnx = usage.u
+
 extra_l_flags = option map
-extra_l_flags_qnx = op res=usage.u, off=8k
+extra_l_flags_qnx = op res=$(extra_link_res_qnx), off=8k
 
 extra_c_flags_memfuncs = $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
@@ -96,14 +98,14 @@ $(proj_name).res : wdis.rc usage.gh usagej.gh msg.gh
 msg.gh : ../stand/wdis.msg
         $(awk) -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
-optencod_opt_qnx = -u usage.u
+optencod_opt_qnx = -u $(extra_link_res_qnx) 
 optencod_targ_bsd   = bsd
 optencod_targ_linux = linux
 optencod_targ_osx   = osx
 optencod_targ_qnx   = qnx
  
 usage.gh : ../stand/options.gml
-        optencod -q -u usage.u $(optencod_opt_$(host_os)) $]@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
+        optencod -q $(optencod_opt_$(host_os)) $]@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
         %append usage.tmp "."
         $(awk) -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk usage.tmp > $^@
 

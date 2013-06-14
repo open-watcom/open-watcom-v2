@@ -3,7 +3,7 @@ proj_name = cpplib
 !include $(cpplib_dir)/libtarg.mif
 
 !include cproj.mif
-!include $(cpplib_dir)/clean.mif
+!include deftarg.mif
 
 !include $(define_library_include)
 

@@ -83,10 +83,13 @@ extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 #
 # WLINK .EXE options
 #
+
+extra_link_res_qnx = usage.u
+
 extra_l_flags     = option map, symfile
 
 # NOTE: "op off=?" must be 8K bigger than the stack size in wlink_sys_qnx_f
-extra_l_flags_qnx = option stack=16k,offset=24k, res=usage.u, priv=3
+extra_l_flags_qnx = option stack=16k,offset=24k, res=$(extra_link_res_qnx), priv=3
 extra_l_flags_nt  = option stack=1024k commit stack=32k
 extra_l_flags_dos = option stack=32k
 
@@ -251,7 +254,7 @@ weights.gh keywords.gh : $(key_objs)
         findhash -q -e ",OPR_NOP" $(key_objs)
 
 # optencod options and targets for various hosts
-optencod_opt_qnx = -u usage.u
+optencod_opt_qnx = -u $(extra_link_res_$(host_os)) 
 optencod_targ_bsd   = bsd
 optencod_targ_qnx   = qnx
 optencod_targ_linux = linux

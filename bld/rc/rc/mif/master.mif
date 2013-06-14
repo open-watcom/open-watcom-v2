@@ -105,10 +105,10 @@ rc_trmem_objs += $(_subdir_)trmem.obj
 rc_template = $(common_objs) $(rc_trmem_objs)
 
 objs_drv = maindrv.obj idedrv.obj idemsgfm.obj
-_subdir_ =
-objs_exe = $+$(rc_template)$- $(objs_drv)
 _subdir_ = $(dll_subdir)/
 objs_dll = $+$(rc_template)$-
+_subdir_ =
+objs_exe = $+$(rc_template)$- $(objs_drv)
 
 !ifeq release 0
 splice_opts = -kDEBUG

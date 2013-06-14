@@ -127,12 +127,15 @@ extra_c_flags_memmgr   = $(extra_c_flags_memmgr_$(host_cpu))
 #
 # wlink .EXE options
 #
+
+extra_link_res_qnx = usage.u
+
 extra_l_flags     = OPTION map, symfile
  
 extra_l_flags_osi = OPTION stack=64k
 extra_l_flags_dos = OPTION stack=64k
 extra_l_flags_os2 = OPTION stack=128k
-extra_l_flags_qnx = OPTION stack=64k, offset=72k, priv=3, resource=usage.u
+extra_l_flags_qnx = OPTION stack=64k, offset=72k, priv=3, resource=$(extra_link_res_qnx)
 extra_l_flags_nt  = OPTION stack=0x10000k COMMIT stack=32k
  
 #
@@ -267,7 +270,7 @@ ytab.c ytab.gh : ../../y/plusplus.y ../../c/yydriver.c
     rm -f ytab.h
  
 # optencod options and targets for various hosts
-optencod_opt_qnx = -u usage.u
+optencod_opt_qnx = -u $(extra_link_res_qnx) 
 optencod_targ_bsd   = bsd
 optencod_targ_osx   = osx
 optencod_targ_qnx   = qnx

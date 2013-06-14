@@ -73,10 +73,10 @@ dll_objs_os2 = $(dll_subdir)/os2dll.obj
 wlib_template = $(common_objs) $(wlib_orl_objs)
 
 drv_objs = maindrv.obj idedrv.obj idemsgfm.obj
-_subdir_ =
-exe_objs = $+$(wlib_template)$- $(drv_objs)
 _subdir_ = $(dll_subdir)/
 dll_objs = $+$(wlib_template)$- $(dll_objs_$(host_os))
+_subdir_ =
+exe_objs = $+$(wlib_template)$- $(drv_objs)
 
 #########
 # cflags

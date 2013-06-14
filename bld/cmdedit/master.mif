@@ -2,10 +2,13 @@ proj_name = cmdedit
 
 cmdedit_autodepends = .AUTODEPEND
 
+additional_cleanup_subdir = cobjs
+
 .mif: $(mif_path)
 
 !include cproj.mif
 !include defrule.mif
+!include deftarg.mif
 
 cmdfiles = &
     $(_subdir_)cmdalias.obj &
@@ -19,15 +22,15 @@ cmdfiles = &
     $(_subdir_)cmdstub.obj &
     $(_subdir_)cmdutil.obj
 
-_subdir_ =
-dosobjs = $+ $(cmdfiles) $- cmdio.obj
-os2objs = $+ $(cmdfiles) $-
+_subdir_ = cobjs/
+os2cmdshellobjs = $+ $(cmdfiles) $-
 
 _subdir_ = $(dll_subdir)/
 os2zuobjs = $+ $(cmdfiles) $-
 
-_subdir_ = cobjs/
-os2cmdshellobjs = $+ $(cmdfiles) $-
+_subdir_ =
+dosobjs = $+ $(cmdfiles) $- cmdio.obj
+os2objs = $+ $(cmdfiles) $-
 
 extra_c_flags_dos = -DDOS -oas -s
 extra_c_flags_os2 = -oxs
@@ -132,16 +135,3 @@ os22edit.exe:    os22edit.c
         $(cc) $< -ox -d1 $(inc_dirs_sys)
         $(linker) debug all op symfile, map sys os2 file os22edit
 !endif
-
-clean: .SYMBOLIC .EXPLICIT
-        rm -f *.obj
-        @if exist $(dll_subdir) rm -f $(dll_subdir)/*.obj
-        @if exist $(dll_subdir) rmdir $(dll_subdir)
-        @if exist cobjs rm -f cobjs/*.obj
-        @if exist cobjs rmdir cobjs
-        @%make killnonobj
-
-killnonobj: .SYMBOLIC .EXPLICIT
-        rm -f *.lnk *.exe *.elf *.exp *.nlm *.dll
-        rm -f *.lib *.lbc *.rc *.dlg *.res *.lst *.err
-        rm -f *.pch *.map *.sym *.tmp *.ilk *.gh *.grc

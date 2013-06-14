@@ -99,8 +99,7 @@ cc_objs_sparc = $(_subdir_)cpragspc.obj $(_subdir_)pragspc.obj $(_subdir_)stubsp
 cc_template = $(common_objs) $(cc_debug_objs) $(asminline_objs) $(cg_objs) $(cc_objs_$(target_cpu))
 
 comp_objs_drv = $(drv_objs)
-_subdir_ =
-comp_objs_exe = $+$(cc_template)$- $(exe_objs)
 _subdir_ = $(dll_subdir)/
 comp_objs_dll = $+$(cc_template)$- $(dll_objs)
-
+_subdir_ =
+comp_objs_exe = $+$(cc_template)$- $(exe_objs)

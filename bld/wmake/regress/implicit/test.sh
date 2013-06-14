@@ -37,7 +37,7 @@ echo \# ===========================
 TEST=1
 print_header
 rm -f err1.out
-$1 -h -f makefile.u -l err1.out > tst1.out
+$1 -h -f makefile.unx -l err1.out > tst1.out
 do_check
 
 TEST=2A

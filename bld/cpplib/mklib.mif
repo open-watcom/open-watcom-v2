@@ -4,6 +4,8 @@ suppress_zc = 1
 
 x_subdir = xobjs
 
+additional_cleanup_subdir = $(x_subdir)
+
 !include $(cpplib_dir)/libtarg.mif
 
 !ifdef mem_model_$(model)
@@ -34,7 +36,7 @@ fpu_flags_nt_386     =$(fp_option)
 fpu_flags_linux_386  =$(fp_option)
 
 !include cproj.mif
-!include $(cpplib_dir)/clean.mif
+!include deftarg.mif
 
 !include $(define_library_include)
 
