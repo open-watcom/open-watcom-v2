@@ -41,6 +41,7 @@ set PROJNAME=codeview
     <CCCMD> qnx386/codeview.dip       <OWRELROOT>/qnx/watcom/wd/
     <CCCMD> qnx386/codeview.sym       <OWRELROOT>/qnx/sym/
 
+    <CCCMD> linuxx64/codeview.so      <OWRELROOT>/binl64/
     <CCCMD> ntx64/codeview.dll        <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]

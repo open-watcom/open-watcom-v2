@@ -44,6 +44,7 @@ set PROJNAME=watcom
     <CCCMD> rdos386/watcom.dll    <OWRELROOT>/rdos/
     <CCCMD> rdos386/watcom.sym    <OWRELROOT>/rdos/
 
+    <CCCMD> linuxx64/watcom.so    <OWRELROOT>/binl64/
     <CCCMD> ntx64/watcom.dll      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
