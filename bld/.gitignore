@@ -9,7 +9,7 @@
 *.lib
 *.lnk
 *.o
-*.[oux]bj
+*.obj
 *.pdb
 *.rex
 *.trp
@@ -77,6 +77,7 @@
 /ctest/*/*/*.sav
 #
 /dip/*/*/*.dll
+/dip/*/*/*.so
 #
 /editdll/*/*/*.dll
 #
@@ -98,6 +99,7 @@
 /idedemo/*/*/*.dll
 #
 /mad/*/*/*.dll
+/mad/*/*/*.so
 #
 /mathlib/library/*/*/*.def
 /mathlib/rtdll/*/*/*.dll
@@ -157,7 +159,9 @@
 /sdk/wresedit/*/*/*.dll
 #
 /trap/*/*/*.dll
+/trap/*/*/*.so
 /trap/*/*/*/*.dll
+/trap/*/*/*/*.so
 #
 /vi/*/*.vi
 !/vi/dat/*.vi
