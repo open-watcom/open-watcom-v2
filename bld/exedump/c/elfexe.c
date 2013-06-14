@@ -724,8 +724,8 @@ bool Dmp_lib_head( void )
 /*
  * Dump the ELF header, if any.
  */
-bool Dmp_elf_header( unsigned_32 start )
-/**************************************/
+bool Dmp_elf_header( unsigned long start )
+/****************************************/
 {
     Wread( &Elf_head, sizeof( Elf32_Ehdr ) );
     if( memcmp( Elf_head.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) ) {

@@ -35,14 +35,15 @@
 #include <ctype.h>
 #include <malloc.h>
 #include <setjmp.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
 #ifdef __UNIX__
 #include <utime.h>
 #else
 #include <sys/utime.h>
 #endif
 #include "wio.h"
-#include "watcom.h"
 #include "fcenable.h"
 #include "banner.h"
 
@@ -389,7 +390,7 @@ static void CloseFiles( void )
     }
 }
 
-static void ReplaceExt( char * name, char * new_ext, BYTE force )
+static void ReplaceExt( char * name, char * new_ext, bool force )
 /***************************************************************/
 {
     char        buff[ _MAX_PATH2 ];

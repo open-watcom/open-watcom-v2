@@ -104,6 +104,16 @@ extra_c_flags = -fh
 extra_c_flags_386 = -of+
 !endif
 
+!ifdef __WATCOM__
+extra_c_flags_aslexyy = -fh=pch02.pch
+extra_c_flags_asmsgj = -fh=pch03.pch
+extra_c_flags_preproc = -fh=pch04.pch
+extra_c_flags_ppexpr = -fh=pch04.pch
+extra_c_flags_ppmacro = -fh=pch04.pch
+extra_c_flags_ppmem = -fh=pch04.pch
+extra_c_flags_trmemcvr = -fh=pch05.pch
+!endif
+
 # lflags
 #########
 libs = $(owl_lib) $(wres_lib)

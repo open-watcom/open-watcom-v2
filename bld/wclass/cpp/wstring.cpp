@@ -317,7 +317,7 @@ void WEXPORT WString::chop( int count )
 bool WEXPORT WString::match( const char* mask ) const
 {
     bool ok = FALSE;
-    char* value = _value;
+    const char* value = (const char *)_value;
     if( mask == NULL ) mask = "";
     if( value == NULL ) value = "";
     int     i = 0;

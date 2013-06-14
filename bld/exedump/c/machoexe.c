@@ -759,8 +759,8 @@ void dmp_cmd_list( unsigned_32 start, int n )
 /*
  * Dump the Mach-O header at offset 'start', if any.
  */
-bool Dmp_macho_header( unsigned_32 start )
-/****************************************/
+bool Dmp_macho_header( unsigned long start )
+/******************************************/
 {
     struct mach_header  mhead;
     

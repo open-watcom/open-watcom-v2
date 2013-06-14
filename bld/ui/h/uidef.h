@@ -34,6 +34,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include "bool.h"
+#include "clibext.h"
 
 #if defined( __WATCOMC__ )
   #define cdecl __cdecl

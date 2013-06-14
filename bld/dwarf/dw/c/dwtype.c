@@ -374,6 +374,7 @@ void DWENTRY DWBeginStruct(
     start_scope = start_scope;
     SetHandleLocation( cli, struct_hdl );
     kind = GetExtra( cli, struct_hdl )->structure.kind;
+    abbrev = 0;
     switch( kind ){
     case DW_ST_CLASS:
         abbrev = AB_CLASS_TYPE;

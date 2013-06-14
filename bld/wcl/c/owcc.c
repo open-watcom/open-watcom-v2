@@ -48,7 +48,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "getopt.h"
-#include "misc.h"
+//#include "misc.h"
 #include "bool.h"
 #include "swchar.h"
 #include "diskos.h"

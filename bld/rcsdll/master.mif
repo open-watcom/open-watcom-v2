@@ -46,7 +46,7 @@ rcsdll.lib: rcsdll.dll
 !else
 rcsdll.lib: $(objs)
     @%create $^&.lbc
-    @for %f in ($(objs)) do @%append $^&.lbc +%f
+    @for %f in ($(objs)) do @%append $^&.lbc %f
     $(librarian) $(libflags) @$^&.lbc
 !endif
 

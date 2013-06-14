@@ -63,15 +63,15 @@ typedef struct {
 } ANYOBJ_REC;
 
 typedef struct {
-        BYTE    attrib;
-        BYTE    class;
+        byte    attrib;
+        byte    class;
         char    coment[ VARIABLE_SIZE ];
 } COMENT_REC;
 
 #define MAX_COMENT_DATA (MAX_OBJECT_REC_SIZE - sizeof(COMENT_REC) - 1)
 
 typedef struct {
-        BYTE    name_len;
+        byte    name_len;
         char    name[ VARIABLE_SIZE ];
 } THEADR_REC;
 
@@ -141,7 +141,7 @@ static bool     Easy32;
 static bool     MakeUnsafe;
 static int      NameIndex;
 static int      SegIndex;
-static BYTE     SubTotal = 0;
+static byte     SubTotal = 0;
 static char *   OutputBuffer;
 static unsigned InBuffer = 0;
 
@@ -203,7 +203,7 @@ static void proccoment( void )
 /****************************/
 // need to detect EASY_OMF 32-bit .obj files.
 {
-    BYTE class;
+    byte class;
 
     class = Rec1->u.coment.class;
     if( class == 0xAA ) {
@@ -245,7 +245,7 @@ static void proclnames( void )
 /****************************/
 {
     unsigned        rec_len;
-    BYTE            name_len;
+    byte            name_len;
     char            *name;
 
     rec_len = Rec1->head.length;
@@ -279,7 +279,7 @@ static bool MatchIndex( name_list *list, int index )
 static void CheckSum( void )
 /**************************/
 {
-    BYTE    cksum;
+    byte    cksum;
 
     cksum = -SubTotal;
     BuildRecord( &cksum, 1 );
@@ -289,11 +289,11 @@ static void CheckSum( void )
 static void procsegdef( bool is386 )
 /**********************************/
 {
-    BYTE            acbp;
+    byte            acbp;
     int             segidx;
     int             classidx;
     char *          dataloc;
-    BYTE            onebyte;
+    byte            onebyte;
     unsigned long   fourbytes;
     exclude_list *  exclude;
 
@@ -376,7 +376,7 @@ static void ProcDataRec( bool is386 )
 // this shuts off optimization for the following fixupp. record is of the form
 // Comment, low order length, high order length, attribute (nopurge),
 // class (linker directive), unsafe fixupp command, checksum.
-static BYTE UnsafeRec[] = { COMENT, 4, 0, 0x80, 0xFE, 'U', 0xA1 };
+static byte UnsafeRec[] = { COMENT, 4, 0, 0x80, 0xFE, 'U', 0xA1 };
 
 static void procfixupp( void )
 /****************************/
@@ -517,7 +517,7 @@ extern void IndexRecord( int index )
 /**********************************/
 // note this assumes the intel byte ordering
 {
-    BYTE            onebyte;
+    byte            onebyte;
     unsigned short  twobytes;
 
     if( index >= 128 ) {

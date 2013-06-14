@@ -100,15 +100,15 @@ void uipaintlistbox( a_list *list )
 
 static void setstartline( a_list *list )
 {
-    int             max;
+    int             maxline;
     a_list_info     *box;
 
-    max = uilistsize( list );
+    maxline = uilistsize( list );
     box = list->box;
 
-    if( box->line + box->area.height > max ) {
-        if( max > box->area.height ) {
-            box->line = max - box->area.height;
+    if( box->line + box->area.height > maxline ) {
+        if( maxline > box->area.height ) {
+            box->line = maxline - box->area.height;
         } else {
             box->line = 0;
         }
@@ -143,14 +143,14 @@ bool checkitem( a_list *list, char typed, int index )
 
 void uiupdatelistbox( a_list *list )
 {
-    int     max;
+    int     maxline;
 
     if( list->box == NULL ) {
         return;
     }
-    max = uilistsize( list );
+    maxline = uilistsize( list );
     list->box->row = list->choice;
-    list->box->gadget.total_size = max( max, (int)list->box->area.height );
+    list->box->gadget.total_size = max( maxline, (int)list->box->area.height );
     uisetgadget( &list->box->gadget, list->choice );
     setstartline( list );
     if( selectoutofrange( list->box ) ) {
@@ -213,7 +213,7 @@ void uimovelistbox( a_list *list, int row_diff, int col_diff )
 a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
 {
     a_list_info     *box;
-    unsigned        max;
+    unsigned        maxline;
 
     box = uicalloc( 1, sizeof( a_list_info ) );
     if( box == NULL ) {
@@ -230,7 +230,7 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
     box->row    = list->choice;
     box->attr   = ATTR_EDIT;
 
-    max = uilistsize( list );
+    maxline = uilistsize( list );
 
     box->gadget.win = box->vs;          // Initialize gadget
     box->gadget.dir = VERTICAL;
@@ -242,7 +242,7 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
     box->gadget.slider = EV_SCROLL_VERTICAL,
     box->gadget.pageforward = EV_SCROLL_PAGE_DOWN;
     box->gadget.pagebackward = EV_SCROLL_PAGE_UP;
-    box->gadget.total_size = max( (int)max, (int)box->area.height );
+    box->gadget.total_size = max( (int)maxline, (int)box->area.height );
     box->gadget.page_size = box->area.height;
     box->gadget.pos = 0;
     box->gadget.flags = GADGET_NONE;

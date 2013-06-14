@@ -101,8 +101,8 @@ static void insert( UI_WINDOW *wptr, int priority )
 }
 
 
-static void remove( UI_WINDOW *wptr )
-/***********************************/
+static void removewindow( UI_WINDOW *wptr )
+/*****************************************/
 {
     if( wptr->prev != NULL ) {
         wptr->prev->next = wptr->next;
@@ -134,7 +134,7 @@ bool intern openwindow( UI_WINDOW *wptr )
 void intern closewindow( UI_WINDOW *wptr )
 /****************************************/
 {
-    remove( wptr );
+    removewindow( wptr );
 }
 
 
@@ -155,7 +155,7 @@ void intern frontwindow( UI_WINDOW *wptr )
 {
     if( wptr->prev != NULL ) {
         if( wptr->prev->priority >= wptr->priority ) {
-            remove( wptr );
+            removewindow( wptr );
             wptr->dirty = wptr->area;
             /* we really only need to dirty what is covered */
             /* using a similar algorithm to dirtynext */

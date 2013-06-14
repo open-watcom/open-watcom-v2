@@ -31,14 +31,10 @@
 
 
 /* definitions used throughout fcenable */
-typedef unsigned char   BYTE;
-typedef unsigned long   unsigned_32;
-typedef unsigned short  unsigned_16;
+#include "watcom.h"
+#include "bool.h"
 
-typedef enum {
-    FALSE = 0,
-    TRUE = 1
-} bool;
+typedef unsigned char   byte;
 
 #define MAX_OBJECT_REC_SIZE 4096
 

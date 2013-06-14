@@ -41,9 +41,7 @@
 #include <dirent.h>
 #endif
 #include "wio.h"
-#ifndef __WATCOMC__
 #include "clibext.h"
-#endif
 #include "diskos.h"
 #include "pathgrp.h"
 #include "cmdlhelp.h"

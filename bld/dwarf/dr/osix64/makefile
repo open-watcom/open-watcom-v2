@@ -3,4 +3,6 @@
 host_OS = osi
 host_CPU = x64
 
+sys_dll = 1
+
 !include ../master.mif

@@ -127,11 +127,9 @@ target = $(xname)$(trap_ext_$(host_os))
 !else
 target = $(xname).trp
 !endif
-!ifeq bootstrap 1
 !ifndef __WATCOM__
 !ifdef ext_lib_shared
 target = $(xname)$(ext_lib_shared)
-!endif
 !endif
 !endif
 

@@ -67,6 +67,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "watcom.h"
 
     int MyGetProfileString( char *dir, char *filename, char *section,
                             char *key, char *def, char *buffer, int len )

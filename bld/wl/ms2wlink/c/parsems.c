@@ -32,7 +32,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <malloc.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
 #include "ms2wlink.h"
 #include "command.h"
 

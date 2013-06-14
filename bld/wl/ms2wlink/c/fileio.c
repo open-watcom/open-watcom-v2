@@ -39,6 +39,7 @@
 #include <stdio.h>      /* for SEEK_SET/SEEK_END */
 #include <string.h>
 #include "wio.h"
+#include "watcom.h"
 #include "ms2wlink.h"
 
 static bool     DeleteMsg = FALSE;
@@ -191,5 +192,7 @@ extern void CommandOut( char *command )
 extern void QSetBinary( f_handle file )
 /*************************************/
 {
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     setmode( file, O_BINARY );
+#endif
 }
