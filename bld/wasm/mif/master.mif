@@ -10,7 +10,7 @@ name = wasm
 wasm_autodepends = .AUTODEPEND
 !endif
 
-additional_cleanup += *.u *.msg
+additional_cleanup = *.u
 
 wasm_trmem = 1
 
@@ -44,9 +44,12 @@ extra_c_flags_asmmatch = -I"$(cg_dir)/intel/h"
 
 #lflags stuff
 #########
+
+extra_link_res_qnx = usage.u
+
 extra_l_flags = option map,symfile
 extra_l_flags += lib $(wres_lib)
-extra_l_flags_qnx = option offset=16k, res=usage.u, stack=12k
+extra_l_flags_qnx = option offset=16k, res=$(extra_link_res_qnx), stack=12k
 extra_l_flags_dos_i86 = option stack=6k
 extra_l_flags_dos_386 = option stack=12k
 extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
@@ -95,7 +98,7 @@ objs = $(extra_objs_$(host_OS)_$(host_CPU)) &
 
 objs += $(trmem_objs)
 
-depend_objs = asmops.gh asmopsd.gh usage.gh wmpmsg.gh wasmmsg.gh msg.gh
+depend_objs = $(extra_link_res_$(host_os)) asmops.gh asmopsd.gh usage.gh wmpmsg.gh wasmmsg.gh msg.gh
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res

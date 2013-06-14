@@ -5,8 +5,8 @@ directive  ::= "File"       obj_spec{","obj_spec}
             | "Name"        exe_file
             | "OPtion"      option{","option}
             | "FORMat"      form
-	    | "SYStem"      system_name
-	    | "SYStem Begin" system_name directive {directive} "End"      
+            | "SYStem"      system_name
+            | "SYStem Begin" system_name directive {directive} "End"      
             | "Path"        path_name{";"path_name}
             | "Debug"       dblist
             | "MODTrace"    module_name{","module_name}

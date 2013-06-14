@@ -1,12 +1,13 @@
 #
 # Master makefile for creating remote servers
 #
+extra_link_res_qnx = usage.u
 
 description = 'Open Watcom Debug Server'
 
 sys_x86_os2     = sys os2 op st=4k,modname=$^&, desc $(description)
 sys_x86_os2v2   = sys os2v2 op modname=$^&, desc $(description)
-sys_x86_qnx     = sys qnx386 flat op st=16k, offset=20k, res=$(srv).use
+sys_x86_qnx     = sys qnx386 flat op st=16k, offset=20k, res=$(extra_link_res_qnx)
 sys_x86_linux   = sys linux
 sys_x86_win     = sys windows op st=20k, modname=$^&, desc $(description)
 sys_x86_dos     = sys dos op st=4k lib doslfn$(memory_model_i86).lib

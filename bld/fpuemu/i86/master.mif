@@ -7,6 +7,8 @@ proj_name = emui86
 emui86_autodepends = .AUTODEPEND
 emui86_distrib_lib = 1
 
+additional_cleanup = usage.u
+
 memory_model_i86 = s
 memory_model_386 = s
 
@@ -60,12 +62,15 @@ objs_win = initemuw.obj
 
 all: emu86_$(cpu_size) emu86
 
-emu86 : qemu87.obj
-    $(linker) $(lflags) name $^@ file { $< } opt map,res=../../emu87.u
+emu86 : usage.u qemu87.obj
+    $(linker) $(lflags) name $^@ file { $< } opt map,res=usage.u
 !endif
 
-emu86_$(cpu_size): qnxemu87.obj emu8087.obj fpeqnx.obj
-    $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,res=../../emu87.u
+emu86_$(cpu_size): usage.u qnxemu87.obj emu8087.obj fpeqnx.obj
+    $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,res=usage.u
+
+usage.u : ../../usage.sp
+    wsplice -u $< $@
 
 !else ifeq host_os stub
 

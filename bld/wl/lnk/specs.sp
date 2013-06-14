@@ -3,13 +3,14 @@
 :: and the new, to-be-written, specs.owc control file for owcc
 ::
 :: for the moment: just a copy of the original wlsystem.lnk:
+#
 :segment Pwlsystem
-# linker initialization file - common systems
+# Linker initialization file - common systems
 :elsesegment Pspecs
 # default specs.owc file
-#
-# FIXME: should -bd and others also be passed?
+:: FIXME: should -bd and others also be passed?
 :endsegment
+#
 system begin dos
 :segment Pspecs
     CC  wcc -bt=dos

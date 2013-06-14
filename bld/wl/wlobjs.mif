@@ -136,8 +136,7 @@ wlink_orl_objs = $(_subdir_)orlstubs.obj
 wlink_template = $(common_objs) $(wlink_virtmem_objs) $(wlink_ide_objs) $(wlink_objs_$(host_os)) $(wlink_orl_objs)
 
 comp_objs_drv = $(drv_objs)
-_subdir_ =
-comp_objs_exe = $+$(wlink_template)$- $(exe_objs)
 _subdir_ = $(dll_subdir)/
 comp_objs_dll = $+$(wlink_template)$- $(dll_objs)
-
+_subdir_ =
+comp_objs_exe = $+$(wlink_template)$- $(exe_objs)

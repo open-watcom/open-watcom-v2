@@ -7,6 +7,8 @@ proj_name = wv
 wv_autodepends = .AUTODEPEND
 !endif
 
+additional_cleanup = *.u
+
 wv_trmem = 1
 
 .EXTENSIONS : .dlg .str
@@ -285,7 +287,11 @@ lnk2 = wv2.lnk
 
 # lflags
 #########
+
+extra_link_res_qnx = wvqnx.u
+
 lflags_win_i86 += memory font
+
 extra_l_flags += op map
 !ifeq sys_windowed 1
 extra_l_flags_win_i86 = op stack=12K, heap=15K import DEATH GDI.121 import RESURRECTION GDI.122
@@ -307,7 +313,7 @@ extra_l_flags_os2_386 = imp WinThreadAssocQueue PMMERGE.5398
 extra_l_flags_os2_i86 = op stack=16k, newfile
 !endif
 extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
-extra_l_flags_qnx_386 = opt stack = 0x8000, offset=0x9000, resource=..\wvqnx.u
+extra_l_flags_qnx_386 = opt stack = 0x8000, offset=0x9000, resource=$(extra_link_res_qnx)
 extra_l_flags_qnx = $(extra_l_flags_qnx_$(host_cpu))
 extra_l_flags_rdos =
 ############
@@ -340,7 +346,7 @@ extra_ldflags = -ldl
 !endif
 !endif
 
-$(exe_name) : litdef.gh $(objs) $(sysobjs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
+$(exe_name) : $(extra_link_res_$(host_os)) litdef.gh $(objs) $(sysobjs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objs) $(sysobjs) fingmsg.obj $(libs) $(ldflags)
 !else
@@ -636,7 +642,4 @@ usagej.gh : $(hdir)/usage.sp
         wsplice @usagej.tmp
 
 usage.u : $(hdir)/usage.sp
-        wsplice -kENGLISH -k$(host_os) -t8 -u $[@ $^@
-
-usagej.u : $(hdir)/usage.sp
-        wsplice -kJAPANESE -k$(host_os) -t8 -u $[@ $^@
+        wsplice -kENGLISH -k$(host_os) -klinkres -u $[@ $^@

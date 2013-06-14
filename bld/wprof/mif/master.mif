@@ -1,5 +1,7 @@
 proj_name = wprof
 
+additional_cleanup = usage.u
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -46,9 +48,12 @@ extra_c_flags_srcmgt = $(incl_file_opts)_srcmgt.h
 
 # lflags stuff
 ###############
+
+extra_link_res_qnx = usage.u
+
 extra_l_flags_nt        = op stack=100k
 extra_l_flags_os2       = op stack=32k
-extra_l_flags_qnx       = op stack=32k, offset=36k, priv=3, res=../h/wprof.u
+extra_l_flags_qnx       = op stack=32k, offset=36k, priv=3, res=$(extra_link_res_qnx)
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
 extra_l_flags_dos       = op map,stack=20k #export DOS4GOPTIONS=_DOS4GOPTIONS
 
@@ -89,7 +94,7 @@ extra_ldflags = -ldl
 
 # explicit rules
 #################
-$(proj_name).$(exe) : $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(wprof_libs) $(sys_libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
+$(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(wprof_libs) $(sys_libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
     @rm -f finger.obj
     @%make finger.obj
 !ifndef __WATCOM__
@@ -121,5 +126,8 @@ msgstr.obj : msgstr.c msg.h
 
 wprofui.res : ../h/wprofui.rc .AUTODEPEND
     $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
+
+usage.u : ../h/usage.sp
+    wsplice -u $< $@
 
 !include verrc.mif

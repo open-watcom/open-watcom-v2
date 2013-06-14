@@ -1,15 +1,5 @@
 proj_name = wlink_lnk
 
-objs_binq     = ../wlqnx.lnk
-objs_binl     = ../wlbinl.lnk
-objs_binl64   = ../wlbinl.lnk
-objs_axpnt    = ../wlaxpnt.lnk
-objs_binnt    = ../wlbinnt.lnk
-objs_binnt64  = ../wlbinnt.lnk
-objs_binp     = ../wlbinp.lnk
-objs_binz     = ../wlbinz.lnk
-objs_binw     = ../wlbin.lnk
-
 !ifeq host_subdir binnt64
 !ifneq bld_cpu x64
 skip_build: .symbolic
@@ -25,8 +15,8 @@ wlsystem.lnk : ../specs.sp wlink.lnk
     wsplice -k Pwlsystem $[@ $@
 !endif
 
-wlink.lnk : $(objs_$(host_subdir)) ../specs.sp
-    wsplice -k Pwlsystem $< $@
+wlink.lnk : ../wlink.sp ../specs.sp
+    wsplice -k Pwlsystem -k $(host_subdir) $< $@
 
 clean : .symbolic
     rm -f wlink.lnk wlsystem.lnk

@@ -19,6 +19,8 @@ dllname     = wlinkd
 wlink_autodepends = .AUTODEPEND
 !endif
 
+additional_cleanup = usage.u
+
 # get rid of the -zc
 suppress_zc = 1
 
@@ -72,8 +74,10 @@ extra_c_flags_mem        = $(trmem_cover_cflags)
 #####################
 # linker .EXE options
 
+extra_link_res_qnx = usage.u
+
 extra_l_flags     = op map, noredefs
-extra_l_flags_qnx = op res=wlink.u, st=24k, off=32k
+extra_l_flags_qnx = op res=$(extra_link_res_qnx), st=24k, off=32k
 
 #####################
 # linker .DLL options
@@ -105,7 +109,7 @@ version_res_exe_nt_x64 = exever.res
 
 !ifdef wlink_dll
 
-$(exename).exe : $(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu))
+$(exename).exe : $(extra_link_res_$(host_os)) $(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
     $(cl) $(clflags) $(comp_objs_drv) $(dllname).lib $(ldflags)
 !else
@@ -118,7 +122,7 @@ $(exename).exe : $(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(
 
 !else
 
-$(exename).exe : wlink.res $(comp_objs_exe) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu))
+$(exename).exe : $(extra_link_res_$(host_os)) wlink.res $(comp_objs_exe) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
     $(cl) $(clflags) $(comp_objs_exe) $(xlibs) $(ldflags)
 !else
@@ -160,3 +164,6 @@ rcmsg.gh : wrcmsg.gh
 
 wrcmsg.gh : $(wrc_dir)/h/rc.msg
     $(cpp) $(rc_aui_flags) $[@ >$@
+
+usage.u : ../h/usage.sp
+    wsplice -u $< $@

@@ -209,7 +209,7 @@ objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_objs)
 objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_dobjs)
 !endif
 
-$(target) : $(objs) $(extra_libs) $(dbg_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
+$(target) : $(extra_link_res_$(host_os)) $(objs) $(extra_libs) $(dbg_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objs) $(extra_libs) $(dbg_libs) $(ldflags)
 !else
@@ -252,3 +252,6 @@ inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/src" -I"$(nwoss_dir)/common/h"
 #################
 .rc.res: .AUTODEPEND
         $(rc) $(rc_flags) -I"$(trap_dir)/common" $(inc_dirs_sys) $[@ -fo=$^@
+
+usage.u : ../$(srv).sp
+        wsplice -u $< $@
