@@ -66,7 +66,6 @@ set PROJNAME=wlink
     <CCCMD> ntaxp/wlinkd.dll                <OWRELROOT>/axpnt/
     <CCCMD> ntaxp/wlinkd.sym                <OWRELROOT>/axpnt/
     <CCCMD> exe2bin/ntaxp/exe2bin.exe       <OWRELROOT>/axpnt/
-    <CCCMD> wlaxpnt.lnk                     <OWRELROOT>/axpnt/wlink.lnk
     <CCCMD> wlink.lnk/axpnt/wlink.lnk       <OWRELROOT>/axpnt/
 
     <CCCMD> qnx386/wlink.exe                <OWRELROOT>/qnx/binq/wlink
