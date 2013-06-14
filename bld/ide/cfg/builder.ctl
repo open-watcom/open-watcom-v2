@@ -48,10 +48,9 @@ set PROJNAME=ide cfg
     <CCCMD> os2386/idex.cfg   <OWRELROOT>/binp/
     <CCCMD> nt386/idex.cfg    <OWRELROOT>/binnt/
     <CCCMD> linux386/idex.cfg <OWRELROOT>/binl/
+    <CCCMD> ntx64/idex.cfg    <OWRELROOT>/binnt64/
 
     <CCCMD> ntaxp/idex.cfg    <OWRELROOT>/axpnt/
-
-    <CCCMD> ntx64/idex.cfg    <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

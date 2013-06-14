@@ -1,7 +1,6 @@
 #pmake: build os_nt cpu_axp
 
-idex.cfg : ../idex.mfg
-    wsplice -k FOR_NT -k FOR_AXP $[@ $^@
+host_os  = nt
+host_cpu = axp
 
-clean : .symbolic
-    rm -f *.cfg
+!include ../master.mif

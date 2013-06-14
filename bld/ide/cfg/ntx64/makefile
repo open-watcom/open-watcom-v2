@@ -1,7 +1,6 @@
 #pmake: build os_nt cpu_x64
 
-idex.cfg : ../idex.mfg
-    wsplice -k FOR_NT $[@ $^@
+host_os  = nt
+host_cpu = x64
 
-clean : .symbolic
-    rm -f *.cfg
+!include ../master.mif

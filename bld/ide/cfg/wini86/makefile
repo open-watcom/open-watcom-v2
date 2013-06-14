@@ -1,7 +1,6 @@
 #pmake: build os_win cpu_i86
 
-idex.cfg : ../idex.mfg
-    wsplice -k FOR_WIN $[@ $^@
+host_os  = win
+host_cpu = i86
 
-clean : .symbolic
-    rm -f *.cfg
+!include ../master.mif

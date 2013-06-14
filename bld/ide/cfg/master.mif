@@ -1,0 +1,22 @@
+proj_name = idecfg
+
+wsplice_opts_linux = -k FOR_LINUX
+wsplice_opts_nt    = -k FOR_NT
+wsplice_opts_os2   = -k FOR_OS2
+wsplice_opts_win   = -k FOR_WIN
+
+wsplice_opts_axp   = -k FOR_AXP
+
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip_build: .symbolic
+!else ifndef bld64host_$(host_os)
+skip_build: .symbolic
+!endif
+!endif
+
+idex.cfg : ../idex.mfg
+    wsplice $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $^@
+
+clean : .symbolic
+    rm -f *.cfg

@@ -1,7 +1,6 @@
 #pmake: build os_os2 cpu_386
 
-idex.cfg : ../idex.mfg
-    wsplice -k FOR_OS2 $[@ $^@
+host_os  = os2
+host_cpu = 386
 
-clean : .symbolic
-    rm -f *.cfg
+!include ../master.mif
