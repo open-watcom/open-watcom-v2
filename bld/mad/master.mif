@@ -84,11 +84,9 @@ version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
 
 xname = mad$(target_cpu)$(ext_$(host_os)_$(host_cpu))
-!ifeq bootstrap 1
 !ifndef __WATCOM__
 !ifdef ext_lib_shared
 xname = mad$(target_cpu)$(ext_lib_shared)
-!endif
 !endif
 !endif
 

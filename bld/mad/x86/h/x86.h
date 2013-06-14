@@ -141,7 +141,7 @@ extern void                     RegFini( void );
 
 extern signed_16                GetDataWord( void );
 extern signed_32                GetDataLong( void );
-extern char                     *JmpLabel( uint_32 addr, uint_32 off );
+extern char                     *JmpLabel( unsigned long addr, addr_off off );
 extern char                     *ToSegStr( uint_32 value, uint_16 seg, uint_32 addr );
 
 #define BIG_SEG( a )    ((AddrCharacteristics(a)&X86AC_BIG)!=0)
