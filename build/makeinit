@@ -32,6 +32,8 @@ bld_os = nt
 !else ifdef __NTX64__
 bld_cpu = x64
 bld_os = nt
+bld64host_nt = 1
+bld64host_osi = 1
 !else ifdef __NTAXP__
 bld_cpu = axp
 bld_os = nt
@@ -41,6 +43,8 @@ bld_os = linux
 !else ifdef __LINUXX64__
 bld_cpu = x64
 bld_os = linux
+bld64host_linux = 1
+bld64host_osi = 1
 !else ifdef __LINUXMIPS__
 bld_cpu = mps
 bld_os = linux
