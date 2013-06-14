@@ -1,6 +1,6 @@
-#pmake: nobuild cpu_386 os_linux
+#pmake: nobuild os_linux cpu_x64
 
-host_cpu = 386
-host_os = linux
+host_os  = linux
+host_cpu = x64
 
 !include ../mif/master.mif

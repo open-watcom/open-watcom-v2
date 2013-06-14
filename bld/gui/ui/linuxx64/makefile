@@ -1,6 +1,7 @@
-#pmake: build cpu_386 os_linux
-host_CPU = 386
-host_OS = linux
+#pmake: build os_linux cpu_x64
+
+host_os  = linux
+host_cpu = x64
 
 !include ../guiui.mif
 

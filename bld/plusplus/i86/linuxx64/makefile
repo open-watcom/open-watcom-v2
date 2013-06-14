@@ -1,6 +1,6 @@
-#pmake: build flat cpu_386 target_i86 os_linux
+#pmake: build target_i86 os_linux cpu_x64
 
-host_os    = linux
-host_cpu   = 386
+host_os  = linux
+host_cpu = x64
 
 !include ../target.mif
