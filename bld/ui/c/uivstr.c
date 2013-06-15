@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include "uidef.h"
+#include "clibext.h"
 
 
 void global uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,

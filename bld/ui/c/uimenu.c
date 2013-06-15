@@ -38,6 +38,7 @@
 #include "uibox.h"
 #include "uishift.h"
 #include "uigchar.h"
+#include "clibext.h"
 
 #define         TABCHAR                 '\t'
 #define         TITLE_OFFSET            2

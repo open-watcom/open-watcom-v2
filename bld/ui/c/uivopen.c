@@ -35,6 +35,7 @@
 #include "uidef.h"
 #include "uibox.h"
 #include "uigchar.h"
+#include "clibext.h"
 
 static void update( SAREA area, VSCREEN *vptr )
 /*********************************************/

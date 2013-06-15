@@ -31,6 +31,7 @@
 
 
 #include "uidef.h"
+#include "clibext.h"
 
 
 void intern dividearea( SAREA area, SAREA centre, SAREA areas[ 5 ] )

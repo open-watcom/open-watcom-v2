@@ -35,6 +35,7 @@
 #include <string.h>
 #include "uidef.h"
 #include "uiattrs.h"
+#include "clibext.h"
 
 bool uiconfig( char *fn, char **envvars )
 /***************************************/
