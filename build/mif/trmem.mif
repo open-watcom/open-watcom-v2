@@ -10,5 +10,6 @@ trmem_cover_cflags += -s
 !ifeq release 0
 trmem_cover_cflags += -DTRMEM $(trmem_cflag_$(host_cpu))
 trmem_objs = $(_subdir_)trmem.obj
+trmemcvr_objs = $(_subdir_)trmemcvr.obj
 !endif
 !endif
