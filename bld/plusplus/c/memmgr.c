@@ -46,10 +46,6 @@
 #if defined( __WATCOMC__ ) && !defined( NDEBUG )
 #include "trap.h"
 #endif
-#ifdef TRACKER
-#include "trmem.h"
-#endif
-
 
 #ifdef USE_CG_MEMMGT
 #   undef TRACKER
