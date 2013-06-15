@@ -98,8 +98,8 @@ _trmem_hdl _trmem_open(
     void (*__free)(void*),
     void * (*__realloc)(void*,size_t),
     void * (*__expand)(void*,size_t),
-    int *__prt_parm,
-    void (*__prt_line)( int *__prt_parm, const char *__buf, size_t __len ),
+    void *__prt_parm,
+    void (*__prt_line)( void *__prt_parm, const char *__buf, size_t __len ),
     unsigned __flags
 );
 

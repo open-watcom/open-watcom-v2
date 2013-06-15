@@ -62,7 +62,7 @@ struct Memory
 
 static Memory bogus;    // just need to get the ctors called
 
-void PrintLine( int *parm, const char *buf, size_t len )
+void PrintLine( void *parm, const char *buf, size_t len )
 {
     parm = parm;
     write( TrFileHandle, (void *) buf, (unsigned int) len );

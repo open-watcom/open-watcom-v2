@@ -44,8 +44,8 @@
     #include "trmem.h"
     _trmem_hdl RcMemHandle = NULL;
 
-    static void RcPutLine( int * dummy, const char * buf, size_t len )
-    /*****************************************************************/
+    static void RcPutLine( void *dummy, const char *buf, size_t len )
+    /***************************************************************/
     {
         dummy = dummy;
         write( STDOUT_FILENO, buf, len );

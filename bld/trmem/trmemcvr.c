@@ -41,7 +41,7 @@
 #ifdef TRMEM
 static _trmem_hdl   TRMemHandle;
 static int          TRFileHandle;   /* stream to put output on */
-static void TRPrintLine( int *, const char * buff, size_t len );
+static void         TRPrintLine( void *, const char * buff, size_t len );
 #endif
 
 #if defined( NLM ) || !defined( __WATCOMC__ )
@@ -157,10 +157,10 @@ extern int TRMemChkRange( void * start, size_t len )
 }
 
 /* extern to avoid problems with taking address and overlays */
-extern void TRPrintLine( int * handle, const char * buff, size_t len )
-/********************************************************************/
+extern void TRPrintLine( void *handle, const char *buff, size_t len )
+/*******************************************************************/
 {
-    write( *handle, buff, len );
+    write( *(int *)handle, buff, len );
 }
 
 #endif

@@ -41,10 +41,10 @@ static int          TRFileHandle;   /* stream to put output on */
 static MemPtr   *memPtr;
 
 #ifdef TRMEM
-extern void TRPrintLine( int * handle, const char * buff, size_t len )
-/********************************************************************/
+extern void TRPrintLine( void *handle, const char *buff, size_t len )
+/*******************************************************************/
 {
-    write( *handle, buff, len );
+    write( *(int *)handle, buff, len );
 }
 #endif
 

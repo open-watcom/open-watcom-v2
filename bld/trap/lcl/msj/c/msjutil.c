@@ -56,8 +56,8 @@ void PopErrBox( void *buff )
 }
 
 static bool Closing = FALSE;
-static void TRPrintLine( int * handle, const char * buff, size_t len )
-/********************************************************************/
+static void TRPrintLine( void *handle, const char *buff, size_t len )
+/*******************************************************************/
 {
     handle = handle;
     len=len;

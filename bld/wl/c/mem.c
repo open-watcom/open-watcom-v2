@@ -68,11 +68,11 @@ static bool         CacheRelease( void );
 
 #ifdef TRMEM
 
-void PrintLine( int *bogus, const char *buff, unsigned len )
+void PrintLine( void *bogus, const char *buff, unsigned len )
 {
     bogus = bogus;      /* to avoid a warning */
     len = len;
-    WriteStdOut( (void *) buff );
+    WriteStdOut( (void *)buff );
 }
 #endif
 

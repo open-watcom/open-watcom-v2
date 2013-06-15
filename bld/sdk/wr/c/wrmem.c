@@ -44,13 +44,13 @@
 static _trmem_hdl   TRMemHandle;
 static int          TRFileHandle;   /* stream to put output on */
 
-static void TRPrintLine( int *handle, const char *buff, size_t len );
+static void TRPrintLine( void *handle, const char *buff, size_t len );
 
 /* extern to avoid problems with taking address and overlays */
-extern void TRPrintLine( int *handle, const char *buff, size_t len )
+extern void TRPrintLine( void *handle, const char *buff, size_t len )
 /******************************************************************/
 {
-    write( *handle, buff, len );
+    write( *(int *)handle, buff, len );
 }
 
 #endif

@@ -40,7 +40,7 @@
 
 _trmem_hdl  UIMemHandle;
 static int  UIMemFileHandle;   /* stream to put output on */
-static void UIMemPrintLine( int *, const char * buff, size_t len );
+static void UIMemPrintLine( void *, const char *buff, size_t len );
 
 static int  UIMemOpened = 0;
 
@@ -145,10 +145,10 @@ void *uirealloc( void *old, unsigned size )
 }
 
 /* extern to avoid problems with taking address and overlays */
-void UIMemPrintLine( int *handle, const char *buff, size_t len )
+void UIMemPrintLine( void *handle, const char *buff, size_t len )
 {
 #ifdef TRMEM
-    write( *handle, buff, len );
+    write( *(int *)handle, buff, len );
 #else
     handle = handle, buff = buff, len = len;
 #endif

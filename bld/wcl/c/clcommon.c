@@ -74,7 +74,7 @@ char *DebugOptions[] = {
 #ifdef TRMEM
 static _trmem_hdl   TRMemHandle;
 
-static void memLine( int *fh, const char *buf, size_t size )
+static void memLine( void *fh, const char *buf, size_t size )
 {
     PrintMsg( buf );
 }
@@ -168,10 +168,10 @@ void BuildLinkFile( void )
     Fp = NULL;
 }
 
-void print_line( int * handle, const char * buff, size_t len )
-/*************************************************************/
+void print_line( void *handle, const char *buff, size_t len )
+/***********************************************************/
 {
-    write( *handle, buff, len );
+    write( *(int *)handle, buff, len );
 }
 
 void  MemInit( void )

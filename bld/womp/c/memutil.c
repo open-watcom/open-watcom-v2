@@ -48,12 +48,12 @@
 STATIC _trmem_hdl   memHandle;
 STATIC int          memFile;     /* file handle we'll write() to */
 
-STATIC void memLine( int *fh, const char *buf, unsigned size ) {
+STATIC void memLine( void *fh, const char *buf, unsigned size ) {
 
     write( 2, "***", 3 );
     write( 2, buf, size );
-    if( *fh != -1 ) {
-        write( *fh, buf, size );
+    if( *(int *)fh != -1 ) {
+        write( *(int *)fh, buf, size );
     }
 }
 #endif  /* TRACK */

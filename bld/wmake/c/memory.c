@@ -76,8 +76,8 @@ STATIC _trmem_hdl   Handle;
 STATIC int          trmemCode;
 STATIC int          trkfile = -1;     /* file handle we'll write() to */
 
-STATIC void printLine( int *h, const char *buf, unsigned size )
-/*************************************************************/
+STATIC void printLine( void *h, const char *buf, unsigned size )
+/**************************************************************/
 {
     h = h;
     if( trkfile == -1 ) {

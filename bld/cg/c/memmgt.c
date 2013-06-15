@@ -66,8 +66,8 @@ extern  void            DumpChar(char);
 extern  void            DumpNL(void);
 _trmem_hdl              Handle;
 
-static void Prt( int * handle, const char * buff, size_t len )
-/************************************************************/
+static void Prt( void *handle, const char *buff, size_t len )
+/***********************************************************/
 {
     size_t i;
 

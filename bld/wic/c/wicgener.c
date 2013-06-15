@@ -231,7 +231,7 @@ void reportError(WicErrors err, ...) {
         _MEMOUT_INFO
     } _memOutput = _MEMOUT_NORMAL;
 
-    static void _printLine( int *dummy1, const char *buf, size_t dummy2 )
+    static void _printLine( void *dummy1, const char *buf, size_t dummy2 )
     {
         dummy1 = dummy1;  dummy2 = dummy2;
         if (_memOutput == _MEMOUT_NORMAL) {

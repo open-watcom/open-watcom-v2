@@ -40,7 +40,7 @@
 #ifdef TRMEM
 _trmem_hdl  GUIMemHandle;
 static int  GUIMemFileHandle;   /* stream to put output on */
-static void GUIMemPrintLine( int *, const char * buff, size_t len );
+static void GUIMemPrintLine( void *, const char * buff, size_t len );
 
 static int  GUIMemOpened = 0;
 
@@ -143,10 +143,10 @@ extern void * GUIMemRealloc( void * ptr, size_t size )
 }
 
 /* extern to avoid problems with taking address and overlays */
-extern void GUIMemPrintLine( int * handle, const char * buff, size_t len )
-/********************************************************************/
+extern void GUIMemPrintLine( void *handle, const char *buff, size_t len )
+/***********************************************************************/
 {
 #ifdef TRMEM
-    write( *handle, buff, len );
+    write( *(int *)handle, buff, len );
 #endif
 }

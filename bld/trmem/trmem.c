@@ -129,18 +129,20 @@ struct _trmem_internal {
     void        (*free)( void * );
     void *      (*realloc)( void *, size_t );
     void *      (*expand)( void *, size_t );
-    int *       prt_parm;
-    void        (*prt_line)( int *, const char *, size_t );
+    void *      prt_parm;
+    void        (*prt_line)( void *, const char *, size_t );
     uint        flags;
     size_t      min_alloc;
 #ifdef __WINDOWS__
-    uint            use_code_seg_num;
+    uint        use_code_seg_num;
 #endif
 };
 
 static int isValidChunk( entry_ptr, const char *, _trmem_who, _trmem_hdl );
 
+#ifdef __WATCOMC__
 #pragma warning 579 9;  // shut up pointer truncated warning
+#endif
 static void setSize( entry_ptr p, size_t size )
 {
     p->size = size ^ (size_t)p->mem ^ (size_t)p->who ^ (size_t)p;
@@ -150,7 +152,9 @@ static size_t getSize( entry_ptr p )
 {
     return( p->size ^ (size_t)p->mem ^ (size_t)p->who ^ (size_t)p );
 }
+#ifdef __WATCOMC__
 #pragma warning 579 4;  // reenable pointer truncated warning.
+#endif
 
 static char *mystpcpy( char *dest, const char *src )
 {
@@ -184,9 +188,13 @@ static char * formFarPtr( char *ptr, void far *data )
     ptr = formHex( ptr, FP_SEG(data), 2 );
     *ptr = ':';
     ptr++;
+#ifdef __WATCOMC__
 #pragma warning 579 9;  // shut up pointer truncated warning for FP_OFF
+#endif
     return formHex( ptr, FP_OFF(data), sizeof( void near * ) );
+#ifdef __WATCOMC__
 #pragma warning 579 4;  // reenable pointer truncated warning
+#endif
 }
 #endif
 
@@ -374,8 +382,8 @@ _trmem_hdl _trmem_open(
     void ( *free )( void * ),
     void *( *realloc )( void *, size_t ),
     void *( *expand )( void *, size_t ),
-    int  *prt_parm,
-    void ( *prt_line )( int *, const char *, size_t ),
+    void *prt_parm,
+    void ( *prt_line )( void *, const char *, size_t ),
     unsigned flags )
 /*****************************************************/
 {
@@ -788,5 +796,7 @@ int _trmem_prt_use_seg_num( _trmem_hdl hdl, int use_seg_num )
     return( old );
 }
 
+#ifdef __WATCOMC__
 #pragma library (toolhelp);
+#endif
 #endif

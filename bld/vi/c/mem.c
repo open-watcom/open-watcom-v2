@@ -458,10 +458,10 @@ char *MemStrDup( char *string )
 
 #ifdef TRMEM
 
-extern void trmemPrint( int * handle, const char * buff, size_t len )
-/*******************************************************************/
+extern void trmemPrint( void *handle, const char *buff, size_t len )
+/******************************************************************/
 {
-    write( *handle, buff, len );
+    write( *(int *)handle, buff, len );
 }
 
 #endif

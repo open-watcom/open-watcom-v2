@@ -74,8 +74,8 @@ static _trmem_hdl       TRMemHandle;
 /* extern to avoid problems with taking address and overlays */
 static bool Closing = FALSE;
 
-static void TRPrintLine( int * handle, const char * buff, size_t len )
-/********************************************************************/
+static void TRPrintLine( void *handle, const char *buff, size_t len )
+/*******************************************************************/
 {
     handle = handle;
     len = len;

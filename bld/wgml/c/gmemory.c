@@ -44,7 +44,7 @@
     /*  Memory tracker output function                                     */
     /***********************************************************************/
 
-    static void prt( int * fhandle, const char * buff, size_t len )
+    static void prt( void *fhandle, const char *buff, size_t len )
     {
         size_t i;
 

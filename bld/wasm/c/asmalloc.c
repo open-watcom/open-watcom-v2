@@ -45,12 +45,12 @@
 static _trmem_hdl   memHandle;
 static int          memFile;     /* file handle we'll write() to */
 
-static void memLine( int *fh, const char *buf, unsigned size )
+static void memLine( void *fh, const char *buf, unsigned size )
 {
     write( 2, "***", 3 );
     write( 2, buf, size );
-    if( *fh != -1 ) {
-        write( *fh, buf, size );
+    if( *(int *)fh != -1 ) {
+        write( *(int *)fh, buf, size );
     }
 }
 #endif

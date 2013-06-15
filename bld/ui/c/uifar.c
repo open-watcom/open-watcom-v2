@@ -30,15 +30,13 @@
 
 
 #include <stdlib.h>
-#ifndef __WATCOMC__
-    #include "clibext.h"
-#else
+#include <string.h>
+#ifdef __WATCOMC__
     #if defined( _M_IX86 )
         #include <i86.h>
     #endif
     #include <conio.h>
 #endif
-#include <string.h>
 #include "uidef.h"
 
 #if defined( _M_I86 )
