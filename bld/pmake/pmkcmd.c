@@ -119,7 +119,7 @@ static int RunCommand( const char *cmd )
     argv[i] = NULL;
     i = spawnvp( P_WAIT, cmdnam, argv );
     free( cmdnam );
-    free( argv );
+    free( (void *)argv );
     return( i );
 }
 
@@ -158,14 +158,9 @@ static int ProcPMake( pmake_data  *data )
     int         res;
     char        save[_MAX_PATH];
 
-    if( data->want_help || data->signaled ) {
-        PMakeCleanup( data );
-        return( 2 );
-    }
     getcwd( save, sizeof( save ) );
     res = DoPMake( data );
     chdir( save );
-    PMakeCleanup( data );
     return( res );
 }
 
@@ -229,6 +224,7 @@ int main( void )
 {
 #endif
     pmake_data  *data;
+    int         rc = 0;
 
 #if !defined( __WATCOMC__ )
     _argv = argv;
@@ -242,15 +238,19 @@ int main( void )
     if( data->want_help ) {
         PrintHelp();
     }
+    if( data->want_help || data->signaled ) {
+        PMakeCleanup( data );
+        exit( EXIT_FAILURE );
+    }
     /* If -b was given, only write out a batch file. By default,
      * execute the commands directly.
      */
     if( data->batch ) {
         WriteCmdFile( data );
     } else {
-        ProcPMake( data );
+        rc = ProcPMake( data );
     }
 
     PMakeCleanup( data );
-    return( EXIT_SUCCESS );
+    return( rc );
 }
