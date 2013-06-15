@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
-#include "guiwind.h"
 #include <stdlib.h>
 #include <string.h>
+#include "guiwind.h"
 #include "guistr.h"
 #include "guihook.h"
 #include "guixmdi.h"
+#include "clibext.h"
 
 #define MAX_LENGTH      80
 

@@ -31,7 +31,6 @@
 *
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1       /* use safer C library             */
 
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
 #include <unistd.h>
@@ -113,7 +112,7 @@ static  void    set_default_extension( const char * masterfname )
             mem_free( def_ext);
             def_ext = mem_alloc( 1 + strlen( ext ) );
         }
-        strcpy_s( def_ext, 1 + strlen( ext ), ext );
+        strcpy( def_ext, ext );
     }
     return;
 }
@@ -166,7 +165,7 @@ static  char    * reuse_filename( const char * fn )
     }
 
     fnwk = mem_alloc( sizeof( fnstack ) + strlen( fn ) );
-    strcpy_s( fnwk->fn, 1 + strlen( fn ), fn );
+    strcpy( fnwk->fn, fn );
 
     fnwk->prev = fn_stack;
     fn_stack = fnwk;
@@ -304,7 +303,7 @@ static void remove_indentation( void )
         if( offset > 0 ) {
             memset( pb, '\0', offset ); // clear rest
         }
-        buff2_lg = strnlen_s( buff2, buf_size );
+//        buff2_lg = strnlen_s( buff2, buf_size );
 //        if( GlobalFlags.research && GlobalFlags.firstpass ) {
 //            g_info( INF_INDENT_REM, buff2 );
 //        }
@@ -407,7 +406,7 @@ static  void    proc_input( char * filename )
     condcode        cc;
 
     ProcFlags.newLevelFile = 1;
-    strcpy_s( token_buf, buf_size, filename );
+    strcpy( token_buf, filename );
 
     for( ; ; ) {                        // as long as there is input
         if( ProcFlags.newLevelFile ) {
@@ -446,7 +445,7 @@ static  void    proc_input( char * filename )
             cb = input_cbs->s.f;
             cb->flags |= FF_crlf;       // delete crlf at end
             if( attrwork[0] ) {
-                strcpy_s( cb->fileattr, sizeof( cb->fileattr ), attrwork );
+                strcpy( cb->fileattr, attrwork );
             } else {
                 cb->fileattr[0] = '\0';
             }
@@ -462,7 +461,7 @@ static  void    proc_input( char * filename )
 //            if( (lay_files != NULL) && (inc_level == 1) && (cb->lineno == 0) ) {
             if( (lay_files != NULL) && (inc_level == 1) ) {
                 curr_lay_file = lay_files;
-                strcpy_s( token_buf, buf_size, lay_files->layfn );
+                strcpy( token_buf, lay_files->layfn );
                 lay_files = curr_lay_file->next;
                 mem_free( curr_lay_file );
                 ProcFlags.newLevelFile = 1; // start a new include FILE level
@@ -615,7 +614,7 @@ static  void    proc_input( char * filename )
         }
         if( lay_files != NULL ) {   // any more  LAYfiles
             curr_lay_file = lay_files;
-            strcpy_s( token_buf, buf_size, lay_files->layfn );
+            strcpy( token_buf, lay_files->layfn );
             lay_files = curr_lay_file->next;
             mem_free( curr_lay_file );
             ProcFlags.newLevelFile = 1; // start a new include file level
@@ -680,7 +679,7 @@ static  void    print_stats( clock_t duration_ticks )
     // convert duration from clock ticks to HH:MM:SS.hh
     hour_min = ldiv( duration_ticks / CLOCKS_PER_SEC / 60L, 60L );
     sec_frac  = ldiv( duration_ticks, CLOCKS_PER_SEC );
-    sprintf_s( linestr, sizeof( linestr ), "%02lu:%02lu:%02lu.%02lu\0",
+    sprintf( linestr, "%02lu:%02lu:%02lu.%02lu\0",
         hour_min.quot, hour_min.rem, sec_frac.quot % 60, sec_frac.rem / 10 );
     g_info_lm( inf_stat_7, linestr );
 }
@@ -696,8 +695,7 @@ static  void    init_pass( void )
 
     if( GlobalFlags.research && (research_to > 0) ) {
         if( research_file_name[0] == '\0' ) {
-            strcpy_s( research_file_name, sizeof( research_file_name ),
-                      master_fname );
+            strcpy( research_file_name, master_fname );
         }
         ProcFlags.researchfile = true;
     }

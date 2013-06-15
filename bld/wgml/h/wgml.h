@@ -42,7 +42,9 @@
 #include <stdint.h>
 #include <ctype.h>
 #include <limits.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
 #include "bool.h"
 #include "clibext.h"
 
@@ -421,7 +423,7 @@ extern  int     get_msg( msg_ids resourceid, char *buffer, size_t buflen );
 
 
 /* wgmlsupp.c                           */
-extern  bool    free_resources( errno_t in_errno );
+extern  bool    free_resources( int in_errno );
 extern  void    free_some_mem( void );
 extern  void    free_layout_banner( void );
 extern  void    g_banner( void );

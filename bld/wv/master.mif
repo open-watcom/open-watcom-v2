@@ -340,7 +340,7 @@ resfile = $(resname).res
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 
-!ifeq bootstrap 1
+!ifndef __WATCOM__
 !ifeq host_os linux
 extra_ldflags = -ldl
 !endif

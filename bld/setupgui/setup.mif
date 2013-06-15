@@ -94,7 +94,7 @@ libs_os2   = $(gui_lib) $(ui_lib) $(wres_lib)
 !endif
 
 libs_dos    += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
-libs_linux  += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
+libs_linux  += ../zlib/osi$(host_cpu)/zlib.lib ../ziplib/linux$(host_cpu)/ziplib.lib
 libs_nt     += ../zlib/osi$(host_cpu)/zlib.lib ../ziplib/osi$(host_cpu)/ziplib.lib
 libs_os2    += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
 libs_win386 += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib

@@ -179,10 +179,13 @@ static void reopen_inc_fp( filecb *cb )
 /*  Report resource exhaustion: may eventually try to correct the problem  */
 /***************************************************************************/
 
-bool    free_resources( errno_t in_errno )
+bool    free_resources( int in_errno )
 {
-    if( in_errno == ENOMEM) g_err( err_no_memory );
-    else g_err( err_no_handles );
+    if( in_errno == ENOMEM) {
+        g_err( err_no_memory );
+    } else {
+        g_err( err_no_handles );
+    }
     err_count++;
     return( false );
 }

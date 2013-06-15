@@ -30,11 +30,12 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#include <string.h>
 #include "guiwind.h"
 #include "guidlg.h"
 #include "guistr.h"
-#include <stdlib.h>
-#include <string.h>
+#include "clibext.h"
 
 /* buttons and icons that can be in the dialog */
 typedef enum {
