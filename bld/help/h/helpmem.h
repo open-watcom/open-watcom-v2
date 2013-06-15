@@ -32,6 +32,8 @@
 #ifndef HELPMEM_H_INCLUDED
 #define HELPMEM
 
+extern HELPMEM void HelpMemInit( void );
+extern HELPMEM void HelpMemFini( void );
 extern HELPMEM void *HelpMemAlloc( size_t size );
 extern HELPMEM void *HelpMemRealloc( void *ptr, size_t size );
 extern HELPMEM void HelpMemFree( void *ptr );

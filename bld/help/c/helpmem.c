@@ -30,6 +30,8 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
+#include "wio.h"
 #include "helpmem.h"
 
 #ifdef TRMEM
@@ -38,6 +40,33 @@
     #define free        TRMemFree
     #define realloc     TRMemRealloc
 #endif
+
+static int      memFHdl;
+
+extern void HelpMemInit( void )
+{
+#ifdef TRMEM
+    memFHdl= open( "MEMERR", O_WRONLY | O_TRUNC | O_CREAT | O_TEXT, PMODE_RW );
+    TRMemOpen();
+    TRMemRedirect( memFHdl );
+#else
+    memFHdl = memFHdl;
+#endif
+}
+
+extern void HelpMemFini( void )
+{
+#ifdef TRMEM
+//    TRMemPrtList();
+    TRMemClose();
+    if( tell( memFHdl ) != 0 ) {
+        printf( "***************************\n" );
+        printf( "* A memory error occurred *\n" );
+        printf( "***************************\n" );
+    }
+    close( memFHdl );
+#endif
+}
 
 extern HELPMEM void *HelpMemAlloc( size_t size )
 {

@@ -37,13 +37,11 @@
 #else
     #include <direct.h>
 #endif
-#include "wio.h"
 #include "watcom.h"
 #include "uidef.h"
 #include "stdui.h"
 #include "help.h"
 #include "helpmem.h"
-#include "trmemcvr.h"
 #include "filelist.h"
 
 #define DEF_EXTENSION   ".ihp"
@@ -56,34 +54,6 @@ static HelpSrchPathItem searchList[] = {
     SRCHTYPE_ENV,       "PATH",
     SRCHTYPE_EOL,       NULL
 };
-
-static int      memFHdl;
-
-static void memInit( void )
-{
-#ifdef TRMEM
-    memFHdl= open( "MEMERR", O_WRONLY | O_TRUNC | O_CREAT | O_TEXT, PMODE_RW );
-    TRMemOpen();
-    TRMemRedirect( memFHdl );
-#else
-    memFHdl = memFHdl;
-#endif
-}
-
-static void memFini( void )
-{
-#ifdef TRMEM
-//    TRMemPrtList();
-    TRMemClose();
-    if( tell( memFHdl ) != 0 ) {
-        printf( "***************************\n" );
-        printf( "* A memory error occurred *\n" );
-        printf( "***************************\n" );
-    }
-    close( memFHdl );
-#endif
-}
-
 
 static void showHelp( char *name )
 {
@@ -140,7 +110,7 @@ int main( int argc, char *argv[] )
     int                 rc;
     bool                err;
 
-    memInit();
+    HelpMemInit();
     err = FALSE;
     if( argc < 2 || !strcmp( argv[1], "?" ) || !strcmp( argv[1], "-?" )
         || !strcmp( argv[1], "/?" ) ) {
@@ -199,6 +169,6 @@ int main( int argc, char *argv[] )
         }
         uifini();
     }
-    memFini();
+    HelpMemFini();
     return( EXIT_SUCCESS );
 }

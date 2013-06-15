@@ -2,25 +2,28 @@ proj_name = whelp
 
 whelp_autodepends = .AUTODEPEND
 
+whelp_trmem = 1
+
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
 
+!include trmem.mif
+
 !include $(ui_dir)/client.mif
+!include ../help.mif
+
+objs =  main.obj filelist.obj
+objs += $(help_objs)
+objs += $(trmem_objs) $(trmemcvr_objs)
 
 inc_dirs = -I"$(help_dir)/h" $(ui_inc_dirs) -I"$(trmem_dir)"
 
 .c: ../c;$(trmem_dir)
 
-!include ../help.mif
-
-objs =  main.obj filelist.obj
-objs += $(help_objs)
-
-!ifdef whelp_trmem
-extra_cpp_flags = -DTRMEM
-objs +=  trmemcvr.obj trmem.obj
-!endif
+extra_c_flags_helpmem  = $(trmem_cover_cflags)
+extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
 
 libs = $(ui_lib)
 
